@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Based on meson_uart.c, by AMLOGIC, INC.
- *
- * Copyright (C) 2014 Carlo Caione <carlo@caione.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/console.h>
@@ -20,7 +16,7 @@
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
 
-/* Register offsets */
+ 
 #define AML_UART_WFIFO			0x00
 #define AML_UART_RFIFO			0x04
 #define AML_UART_CONTROL		0x08
@@ -28,7 +24,7 @@
 #define AML_UART_MISC			0x10
 #define AML_UART_REG5			0x14
 
-/* AML_UART_CONTROL bits */
+ 
 #define AML_UART_TX_EN			BIT(12)
 #define AML_UART_RX_EN			BIT(13)
 #define AML_UART_TWO_WIRE_EN		BIT(15)
@@ -48,7 +44,7 @@
 #define AML_UART_DATA_LEN_6BIT		(0x02 << 20)
 #define AML_UART_DATA_LEN_5BIT		(0x03 << 20)
 
-/* AML_UART_STATUS bits */
+ 
 #define AML_UART_PARITY_ERR		BIT(16)
 #define AML_UART_FRAME_ERR		BIT(17)
 #define AML_UART_TX_FIFO_WERR		BIT(18)
@@ -60,11 +56,11 @@
 					 AML_UART_FRAME_ERR  | \
 					 AML_UART_TX_FIFO_WERR)
 
-/* AML_UART_MISC bits */
+ 
 #define AML_UART_XMIT_IRQ(c)		(((c) & 0xff) << 8)
 #define AML_UART_RECV_IRQ(c)		((c) & 0xff)
 
-/* AML_UART_REG5 bits */
+ 
 #define AML_UART_BAUD_MASK		0x7fffff
 #define AML_UART_BAUD_USE		BIT(23)
 #define AML_UART_BAUD_XTAL		BIT(24)
@@ -199,7 +195,7 @@ static void meson_receive_chars(struct uart_port *port)
 			mode |= AML_UART_CLEAR_ERR;
 			writel(mode, port->membase + AML_UART_CONTROL);
 
-			/* It doesn't clear to 0 automatically */
+			 
 			mode &= ~AML_UART_CLEAR_ERR;
 			writel(mode, port->membase + AML_UART_CONTROL);
 
@@ -258,14 +254,7 @@ static const char *meson_uart_type(struct uart_port *port)
 	return (port->type == PORT_MESON) ? "meson_uart" : NULL;
 }
 
-/*
- * This function is called only from probe() using a temporary io mapping
- * in order to perform a reset before setting up the device. Since the
- * temporarily mapped region was successfully requested, there can be no
- * console on this port at this time. Hence it is not necessary for this
- * function to acquire the port->lock. (Since there is no console on this
- * port at this time, the port->lock is not initialized yet.)
- */
+ 
 static void meson_uart_reset(struct uart_port *port)
 {
 	u32 val;
@@ -454,10 +443,7 @@ static void meson_uart_config_port(struct uart_port *port, int flags)
 }
 
 #ifdef CONFIG_CONSOLE_POLL
-/*
- * Console polling routines for writing and reading from the uart while
- * in an interrupt or debug context (i.e. kgdb).
- */
+ 
 
 static int meson_uart_poll_get_char(struct uart_port *port)
 {
@@ -484,7 +470,7 @@ static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* Wait until FIFO is empty or timeout */
+	 
 	ret = readl_poll_timeout_atomic(port->membase + AML_UART_STATUS, reg,
 					reg & AML_UART_TX_EMPTY,
 					AML_UART_POLL_USEC,
@@ -494,10 +480,10 @@ static void meson_uart_poll_put_char(struct uart_port *port, unsigned char c)
 		goto out;
 	}
 
-	/* Write the character */
+	 
 	writel(c, port->membase + AML_UART_WFIFO);
 
-	/* Wait until FIFO is empty or timeout */
+	 
 	ret = readl_poll_timeout_atomic(port->membase + AML_UART_STATUS, reg,
 					reg & AML_UART_TX_EMPTY,
 					AML_UART_POLL_USEC,
@@ -509,7 +495,7 @@ out:
 	spin_unlock_irqrestore(&port->lock, flags);
 }
 
-#endif /* CONFIG_CONSOLE_POLL */
+#endif  
 
 static const struct uart_ops meson_uart_ops = {
 	.set_mctrl      = meson_uart_set_mctrl,
@@ -706,7 +692,7 @@ static int meson_uart_probe(struct platform_device *pdev)
 	struct uart_driver *uart_driver;
 	struct resource *res_mem;
 	struct uart_port *port;
-	u32 fifosize = 64; /* Default is 64, 128 for EE UART_0 */
+	u32 fifosize = 64;  
 	int ret = 0;
 	int irq;
 	bool has_rtscts;
@@ -782,7 +768,7 @@ static int meson_uart_probe(struct platform_device *pdev)
 	meson_ports[pdev->id] = port;
 	platform_set_drvdata(pdev, port);
 
-	/* reset port before registering (and possibly registering console) */
+	 
 	if (meson_uart_request_port(port) >= 0) {
 		meson_uart_reset(port);
 		meson_uart_release_port(port);
@@ -809,7 +795,7 @@ static int meson_uart_remove(struct platform_device *pdev)
 		if (meson_ports[id])
 			return 0;
 
-	/* No more available uart ports, unregister uart driver */
+	 
 	uart_unregister_driver(uart_driver);
 
 	return 0;
@@ -846,7 +832,7 @@ static const struct of_device_id meson_uart_dt_match[] = {
 		.compatible = "amlogic,meson-a1-uart",
 		.data = (void *)&meson_a1_uart_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, meson_uart_dt_match);
 

@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- * Copyright 2017 Nexenta Systems, Inc.
- */
+ 
 
 #include <sys/zio.h>
 #include <sys/spa.h>
@@ -103,13 +79,7 @@ zap_hash(zap_name_t *zn)
 		} else {
 			const uint8_t *cp = zn->zn_key_norm;
 
-			/*
-			 * We previously stored the terminating null on
-			 * disk, but didn't hash it, so we need to
-			 * continue to not hash it.  (The
-			 * zn_key_*_numints includes the terminating
-			 * null for non-binary keys.)
-			 */
+			 
 			int len = zn->zn_key_norm_numints - 1;
 
 			ASSERT(zn->zn_key_intlen == 1);
@@ -119,12 +89,7 @@ zap_hash(zap_name_t *zn)
 			}
 		}
 	}
-	/*
-	 * Don't use all 64 bits, since we need some in the cookie for
-	 * the collision differentiator.  We MUST use the high bits,
-	 * since those are the ones that we first pay attention to when
-	 * choosing the bucket.
-	 */
+	 
 	h &= ~((1ULL << (64 - zap_hashbits(zap))) - 1);
 
 	return (h);
@@ -189,19 +154,12 @@ zap_name_init_str(zap_name_t *zn, const char *key, matchtype_t mt)
 	zn->zn_matchtype = mt;
 	zn->zn_normflags = zap->zap_normflags;
 
-	/*
-	 * If we're dealing with a case sensitive lookup on a mixed or
-	 * insensitive fs, remove U8_TEXTPREP_TOUPPER or the lookup
-	 * will fold case to all caps overriding the lookup request.
-	 */
+	 
 	if (mt & MT_MATCH_CASE)
 		zn->zn_normflags &= ~U8_TEXTPREP_TOUPPER;
 
 	if (zap->zap_normflags) {
-		/*
-		 * We *must* use zap_normflags because this normalization is
-		 * what the hash is computed from.
-		 */
+		 
 		if (zap_normalize(zap, key, zn->zn_normbuf,
 		    zap->zap_normflags) != 0)
 			return (SET_ERROR(ENOTSUP));
@@ -217,10 +175,7 @@ zap_name_init_str(zap_name_t *zn, const char *key, matchtype_t mt)
 	zn->zn_hash = zap_hash(zn);
 
 	if (zap->zap_normflags != zn->zn_normflags) {
-		/*
-		 * We *must* use zn_normflags because this normalization is
-		 * what the matching is based on.  (Not the hash!)
-		 */
+		 
 		if (zap_normalize(zap, key, zn->zn_normbuf,
 		    zn->zn_normflags) != 0)
 			return (SET_ERROR(ENOTSUP));
@@ -278,7 +233,7 @@ zap_byteswap(void *buf, size_t size)
 	uint64_t block_type = *(uint64_t *)buf;
 
 	if (block_type == ZBT_MICRO || block_type == BSWAP_64(ZBT_MICRO)) {
-		/* ASSERT(magic == ZAP_LEAF_MAGIC); */
+		 
 		mzap_byteswap(buf, size);
 	} else {
 		fzap_byteswap(buf, size);
@@ -370,17 +325,11 @@ mze_find_unused_cd(zap_t *zap, uint64_t hash)
 	return (cd);
 }
 
-/*
- * Each mzap entry requires at max : 4 chunks
- * 3 chunks for names + 1 chunk for value.
- */
+ 
 #define	MZAP_ENT_CHUNKS	(1 + ZAP_LEAF_ARRAY_NCHUNKS(MZAP_NAME_LEN) + \
 	ZAP_LEAF_ARRAY_NCHUNKS(sizeof (uint64_t)))
 
-/*
- * Check if the current entry keeps the colliding entries under the fatzap leaf
- * size.
- */
+ 
 static boolean_t
 mze_canfit_fzap_leaf(zap_name_t *zn, uint64_t hash)
 {
@@ -401,7 +350,7 @@ mze_canfit_fzap_leaf(zap_name_t *zn, uint64_t hash)
 		mzap_ents++;
 	}
 
-	/* Include the new entry being added */
+	 
 	mzap_ents++;
 
 	return (ZAP_LEAF_NUMCHUNKS_DEF > (mzap_ents * MZAP_ENT_CHUNKS));
@@ -436,18 +385,14 @@ mzap_open(objset_t *os, uint64_t obj, dmu_buf_t *db)
 		    0);
 		zap->zap_f.zap_block_shift = highbit64(db->db_size) - 1;
 		if (zap_block_type != ZBT_HEADER || zap_magic != ZAP_MAGIC) {
-			winner = NULL;	/* No actual winner here... */
+			winner = NULL;	 
 			goto handle_winner;
 		}
 	} else {
 		zap->zap_ismicro = TRUE;
 	}
 
-	/*
-	 * Make sure that zap_ismicro is set before we let others see
-	 * it, because zap_lockdir() checks zap_ismicro without the lock
-	 * held.
-	 */
+	 
 	dmu_buf_init_user(&zap->zap_dbu, zap_evict_sync, NULL, &zap->zap_dbuf);
 	winner = dmu_buf_set_user(db, &zap->zap_dbu);
 
@@ -459,11 +404,7 @@ mzap_open(objset_t *os, uint64_t obj, dmu_buf_t *db)
 		zap->zap_normflags = zap_m_phys(zap)->mz_normflags;
 		zap->zap_m.zap_num_chunks = db->db_size / MZAP_ENT_LEN - 1;
 
-		/*
-		 * Reduce B-tree leaf from 4KB to 512 bytes to reduce memmove()
-		 * overhead on massive inserts below.  It still allows to store
-		 * 62 entries before we have to add 2KB B-tree core node.
-		 */
+		 
 		zfs_btree_create_custom(&zap->zap_m.zap_tree, mze_compare,
 		    mze_find_in_buf, sizeof (mzap_ent_t), 512);
 
@@ -485,17 +426,11 @@ mzap_open(objset_t *os, uint64_t obj, dmu_buf_t *db)
 		ASSERT3U(sizeof (struct zap_leaf_header), ==,
 		    2*ZAP_LEAF_CHUNKSIZE);
 
-		/*
-		 * The embedded pointer table should not overlap the
-		 * other members.
-		 */
+		 
 		ASSERT3P(&ZAP_EMBEDDED_PTRTBL_ENT(zap, 0), >,
 		    &zap_f_phys(zap)->zap_salt);
 
-		/*
-		 * The embedded pointer table should end at the end of
-		 * the block
-		 */
+		 
 		ASSERT3U((uintptr_t)&ZAP_EMBEDDED_PTRTBL_ENT(zap,
 		    1<<ZAP_EMBEDDED_PTRTBL_SHIFT(zap)) -
 		    (uintptr_t)zap_f_phys(zap), ==,
@@ -513,10 +448,7 @@ handle_winner:
 	return (winner);
 }
 
-/*
- * This routine "consumes" the caller's hold on the dbuf, which must
- * have the specified tag.
- */
+ 
 static int
 zap_lockdir_impl(dmu_buf_t *db, const void *tag, dmu_tx_t *tx,
     krw_t lti, boolean_t fatreader, boolean_t adding, zap_t **zapp)
@@ -536,25 +468,16 @@ zap_lockdir_impl(dmu_buf_t *db, const void *tag, dmu_tx_t *tx,
 	if (zap == NULL) {
 		zap = mzap_open(os, obj, db);
 		if (zap == NULL) {
-			/*
-			 * mzap_open() didn't like what it saw on-disk.
-			 * Check for corruption!
-			 */
+			 
 			return (SET_ERROR(EIO));
 		}
 	}
 
-	/*
-	 * We're checking zap_ismicro without the lock held, in order to
-	 * tell what type of lock we want.  Once we have some sort of
-	 * lock, see if it really is the right type.  In practice this
-	 * can only be different if it was upgraded from micro to fat,
-	 * and micro wanted WRITER but fat only needs READER.
-	 */
+	 
 	krw_t lt = (!zap->zap_ismicro && fatreader) ? RW_READER : lti;
 	rw_enter(&zap->zap_rwlock, lt);
 	if (lt != ((!zap->zap_ismicro && fatreader) ? RW_READER : lti)) {
-		/* it was upgraded, now we only need reader */
+		 
 		ASSERT(lt == RW_WRITER);
 		ASSERT(RW_READER ==
 		    ((!zap->zap_ismicro && fatreader) ? RW_READER : lti));
@@ -672,7 +595,7 @@ mzap_upgrade(zap_t **zapp, const void *tag, dmu_tx_t *tx, zap_flags_t flags)
 
 	dprintf("upgrading obj=%llu with %u chunks\n",
 	    (u_longlong_t)zap->zap_object, nchunks);
-	/* XXX destroy the tree later, so we can use the stored hash value */
+	 
 	mze_destroy(zap);
 
 	fzap_upgrade(zap, tx, flags);
@@ -685,10 +608,10 @@ mzap_upgrade(zap_t **zapp, const void *tag, dmu_tx_t *tx, zap_flags_t flags)
 		dprintf("adding %s=%llu\n",
 		    mze->mze_name, (u_longlong_t)mze->mze_value);
 		zap_name_init_str(zn, mze->mze_name, 0);
-		/* If we fail here, we would end up losing entries */
+		 
 		VERIFY0(fzap_add_cd(zn, 8, 1, &mze->mze_value, mze->mze_cd,
 		    tag, tx));
-		zap = zn->zn_zap;	/* fzap_add_cd() may change zap */
+		zap = zn->zn_zap;	 
 	}
 	zap_name_free(zn);
 	vmem_free(mzp, sz);
@@ -696,23 +619,7 @@ mzap_upgrade(zap_t **zapp, const void *tag, dmu_tx_t *tx, zap_flags_t flags)
 	return (0);
 }
 
-/*
- * The "normflags" determine the behavior of the matchtype_t which is
- * passed to zap_lookup_norm().  Names which have the same normalized
- * version will be stored with the same hash value, and therefore we can
- * perform normalization-insensitive lookups.  We can be Unicode form-
- * insensitive and/or case-insensitive.  The following flags are valid for
- * "normflags":
- *
- * U8_TEXTPREP_NFC
- * U8_TEXTPREP_NFD
- * U8_TEXTPREP_NFKC
- * U8_TEXTPREP_NFKD
- * U8_TEXTPREP_TOUPPER
- *
- * The *_NF* (Normalization Form) flags are mutually exclusive; at most one
- * of them may be supplied.
- */
+ 
 void
 mzap_create_impl(dnode_t *dn, int normflags, zap_flags_t flags, dmu_tx_t *tx)
 {
@@ -729,7 +636,7 @@ mzap_create_impl(dnode_t *dn, int normflags, zap_flags_t flags, dmu_tx_t *tx)
 
 	if (flags != 0) {
 		zap_t *zap;
-		/* Only fat zap supports flags; upgrade immediately. */
+		 
 		VERIFY0(zap_lockdir_impl(db, FTAG, tx, RW_WRITER,
 		    B_FALSE, B_FALSE, &zap));
 		VERIFY0(mzap_upgrade(&zap, FTAG, tx, flags));
@@ -866,11 +773,7 @@ zap_create_flags_dnsize(objset_t *os, int normflags, zap_flags_t flags,
 	    tx));
 }
 
-/*
- * Create a zap object and return a pointer to the newly allocated dnode via
- * the allocated_dnode argument.  The returned dnode will be held and the
- * caller is responsible for releasing the hold by calling dnode_rele().
- */
+ 
 uint64_t
 zap_create_hold(objset_t *os, int normflags, zap_flags_t flags,
     dmu_object_type_t ot, int leaf_blockshift, int indirect_blockshift,
@@ -885,11 +788,7 @@ zap_create_hold(objset_t *os, int normflags, zap_flags_t flags,
 int
 zap_destroy(objset_t *os, uint64_t zapobj, dmu_tx_t *tx)
 {
-	/*
-	 * dmu_object_free will free the object number and free the
-	 * data.  Freeing the data will cause our pageout function to be
-	 * called, which will destroy our data (zap_leaf_t's and zap_t).
-	 */
+	 
 
 	return (dmu_object_free(os, zapobj, tx));
 }
@@ -927,10 +826,7 @@ zap_count(objset_t *os, uint64_t zapobj, uint64_t *count)
 	return (err);
 }
 
-/*
- * zn may be NULL; if not specified, it will be computed if needed.
- * See also the comment above zap_entry_normalization_conflict().
- */
+ 
 static boolean_t
 mzap_normalization_conflict(zap_t *zap, zap_name_t *zn, mzap_ent_t *mze,
     zfs_btree_index_t *idx)
@@ -979,9 +875,7 @@ mzap_normalization_conflict(zap_t *zap, zap_name_t *zn, mzap_ent_t *mze,
 	return (B_FALSE);
 }
 
-/*
- * Routines for manipulating attributes.
- */
+ 
 
 int
 zap_lookup(objset_t *os, uint64_t zapobj, const char *name,
@@ -1151,7 +1045,7 @@ zap_contains(objset_t *os, uint64_t zapobj, const char *name)
 	int err = zap_lookup_norm(os, zapobj, name, 0,
 	    0, NULL, 0, NULL, 0, NULL);
 	if (err == EOVERFLOW || err == EINVAL)
-		err = 0; /* found, but skipped reading the value */
+		err = 0;  
 	return (err);
 }
 
@@ -1226,7 +1120,7 @@ mzap_addent(zap_name_t *zn, uint64_t value)
 #endif
 
 	uint32_t cd = mze_find_unused_cd(zap, zn->zn_hash);
-	/* given the limited size of the microzap, this can't happen */
+	 
 	ASSERT(cd < zap_maxcd(zap));
 
 again:
@@ -1268,7 +1162,7 @@ zap_add_impl(zap_t *zap, const char *key,
 	}
 	if (!zap->zap_ismicro) {
 		err = fzap_add(zn, integer_size, num_integers, val, tag, tx);
-		zap = zn->zn_zap;	/* fzap_add() may change zap */
+		zap = zn->zn_zap;	 
 	} else if (integer_size != 8 || num_integers != 1 ||
 	    strlen(key) >= MZAP_NAME_LEN ||
 	    !mze_canfit_fzap_leaf(zn, zn->zn_hash)) {
@@ -1277,7 +1171,7 @@ zap_add_impl(zap_t *zap, const char *key,
 			err = fzap_add(zn, integer_size, num_integers, val,
 			    tag, tx);
 		}
-		zap = zn->zn_zap;	/* fzap_add() may change zap */
+		zap = zn->zn_zap;	 
 	} else {
 		zfs_btree_index_t idx;
 		if (mze_find(zn, &idx) != NULL) {
@@ -1288,7 +1182,7 @@ zap_add_impl(zap_t *zap, const char *key,
 	}
 	ASSERT(zap == zn->zn_zap);
 	zap_name_free(zn);
-	if (zap != NULL)	/* may be NULL if fzap_add() failed */
+	if (zap != NULL)	 
 		zap_unlockdir(zap, tag);
 	return (err);
 }
@@ -1305,7 +1199,7 @@ zap_add(objset_t *os, uint64_t zapobj, const char *key,
 	if (err != 0)
 		return (err);
 	err = zap_add_impl(zap, key, integer_size, num_integers, val, tx, FTAG);
-	/* zap_add_impl() calls zap_unlockdir() */
+	 
 	return (err);
 }
 
@@ -1321,7 +1215,7 @@ zap_add_by_dnode(dnode_t *dn, const char *key,
 	if (err != 0)
 		return (err);
 	err = zap_add_impl(zap, key, integer_size, num_integers, val, tx, FTAG);
-	/* zap_add_impl() calls zap_unlockdir() */
+	 
 	return (err);
 }
 
@@ -1342,9 +1236,9 @@ zap_add_uint64(objset_t *os, uint64_t zapobj, const uint64_t *key,
 		return (SET_ERROR(ENOTSUP));
 	}
 	err = fzap_add(zn, integer_size, num_integers, val, FTAG, tx);
-	zap = zn->zn_zap;	/* fzap_add() may change zap */
+	zap = zn->zn_zap;	 
 	zap_name_free(zn);
-	if (zap != NULL)	/* may be NULL if fzap_add() failed */
+	if (zap != NULL)	 
 		zap_unlockdir(zap, FTAG);
 	return (err);
 }
@@ -1368,7 +1262,7 @@ zap_update(objset_t *os, uint64_t zapobj, const char *name,
 	if (!zap->zap_ismicro) {
 		err = fzap_update(zn, integer_size, num_integers, val,
 		    FTAG, tx);
-		zap = zn->zn_zap;	/* fzap_update() may change zap */
+		zap = zn->zn_zap;	 
 	} else if (integer_size != 8 || num_integers != 1 ||
 	    strlen(name) >= MZAP_NAME_LEN) {
 		dprintf("upgrading obj %llu: intsz=%u numint=%llu name=%s\n",
@@ -1379,7 +1273,7 @@ zap_update(objset_t *os, uint64_t zapobj, const char *name,
 			err = fzap_update(zn, integer_size, num_integers,
 			    val, FTAG, tx);
 		}
-		zap = zn->zn_zap;	/* fzap_update() may change zap */
+		zap = zn->zn_zap;	 
 	} else {
 		zfs_btree_index_t idx;
 		mzap_ent_t *mze = mze_find(zn, &idx);
@@ -1391,7 +1285,7 @@ zap_update(objset_t *os, uint64_t zapobj, const char *name,
 	}
 	ASSERT(zap == zn->zn_zap);
 	zap_name_free(zn);
-	if (zap != NULL)	/* may be NULL if fzap_upgrade() failed */
+	if (zap != NULL)	 
 		zap_unlockdir(zap, FTAG);
 	return (err);
 }
@@ -1413,9 +1307,9 @@ zap_update_uint64(objset_t *os, uint64_t zapobj, const uint64_t *key,
 		return (SET_ERROR(ENOTSUP));
 	}
 	err = fzap_update(zn, integer_size, num_integers, val, FTAG, tx);
-	zap = zn->zn_zap;	/* fzap_update() may change zap */
+	zap = zn->zn_zap;	 
 	zap_name_free(zn);
-	if (zap != NULL)	/* may be NULL if fzap_upgrade() failed */
+	if (zap != NULL)	 
 		zap_unlockdir(zap, FTAG);
 	return (err);
 }
@@ -1502,9 +1396,7 @@ zap_remove_uint64(objset_t *os, uint64_t zapobj, const uint64_t *key,
 	return (err);
 }
 
-/*
- * Routines for iterating over the attributes.
- */
+ 
 
 static void
 zap_cursor_init_impl(zap_cursor_t *zc, objset_t *os, uint64_t zapobj,
@@ -1526,20 +1418,14 @@ zap_cursor_init_serialized(zap_cursor_t *zc, objset_t *os, uint64_t zapobj,
 	zap_cursor_init_impl(zc, os, zapobj, serialized, B_TRUE);
 }
 
-/*
- * Initialize a cursor at the beginning of the ZAP object.  The entire
- * ZAP object will be prefetched.
- */
+ 
 void
 zap_cursor_init(zap_cursor_t *zc, objset_t *os, uint64_t zapobj)
 {
 	zap_cursor_init_impl(zc, os, zapobj, 0, B_TRUE);
 }
 
-/*
- * Initialize a cursor at the beginning, but request that we not prefetch
- * the entire ZAP object.
- */
+ 
 void
 zap_cursor_init_noprefetch(zap_cursor_t *zc, objset_t *os, uint64_t zapobj)
 {
@@ -1572,14 +1458,7 @@ zap_cursor_serialize(zap_cursor_t *zc)
 	ASSERT((zc->zc_hash & zap_maxcd(zc->zc_zap)) == 0);
 	ASSERT(zc->zc_cd < zap_maxcd(zc->zc_zap));
 
-	/*
-	 * We want to keep the high 32 bits of the cursor zero if we can, so
-	 * that 32-bit programs can access this.  So usually use a small
-	 * (28-bit) hash value so we can fit 4 bits of cd into the low 32-bits
-	 * of the cursor.
-	 *
-	 * [ collision differentiator | zap_hashbits()-bit hash value ]
-	 */
+	 
 	return ((zc->zc_hash >> (64 - zap_hashbits(zc->zc_zap))) |
 	    ((uint64_t)zc->zc_cd << zap_hashbits(zc->zc_zap)));
 }
@@ -1599,16 +1478,12 @@ zap_cursor_retrieve(zap_cursor_t *zc, zap_attribute_t *za)
 		if (err != 0)
 			return (err);
 
-		/*
-		 * To support zap_cursor_init_serialized, advance, retrieve,
-		 * we must add to the existing zc_cd, which may already
-		 * be 1 due to the zap_cursor_advance.
-		 */
+		 
 		ASSERT(zc->zc_hash == 0);
 		hb = zap_hashbits(zc->zc_zap);
 		zc->zc_hash = zc->zc_serialized << (64 - hb);
 		zc->zc_cd += zc->zc_serialized >> hb;
-		if (zc->zc_cd >= zap_maxcd(zc->zc_zap)) /* corrupt serialized */
+		if (zc->zc_cd >= zap_maxcd(zc->zc_zap))  
 			zc->zc_cd = 0;
 	} else {
 		rw_enter(&zc->zc_zap->zap_rwlock, RW_READER);
@@ -1731,7 +1606,7 @@ EXPORT_SYMBOL(zap_cursor_serialize);
 EXPORT_SYMBOL(zap_cursor_init_serialized);
 EXPORT_SYMBOL(zap_get_stats);
 
-/* CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs, , zap_micro_max_size, INT, ZMOD_RW,
 	"Maximum micro ZAP size, before converting to a fat ZAP, in bytes");
 #endif

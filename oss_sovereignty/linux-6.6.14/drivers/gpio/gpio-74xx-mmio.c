@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * 74xx MMIO GPIO driver
- *
- *  Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/err.h>

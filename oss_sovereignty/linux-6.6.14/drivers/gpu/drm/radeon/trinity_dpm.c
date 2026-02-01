@@ -1,25 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/seq_file.h>
@@ -41,7 +20,7 @@
 
 static const u32 trinity_mgcg_shls_default[] =
 {
-	/* Register, Value, Mask */
+	 
 	0x0000802c, 0xc0000000, 0xffffffff,
 	0x00003fc4, 0xc0000000, 0xffffffff,
 	0x00005448, 0x00000100, 0xffffffff,
@@ -124,7 +103,7 @@ static const u32 trinity_mgcg_shls_default[] =
 
 static const u32 trinity_sysls_disable[] =
 {
-	/* Register, Value, Mask */
+	 
 	0x0000d0c0, 0x00000000, 0xffffffff,
 	0x0000d8c0, 0x00000000, 0xffffffff,
 	0x000055e8, 0x00000000, 0xffffffff,
@@ -148,7 +127,7 @@ static const u32 trinity_sysls_disable[] =
 
 static const u32 trinity_sysls_enable[] =
 {
-	/* Register, Value, Mask */
+	 
 	0x000055e8, 0x00000001, 0xffffffff,
 	0x0000d0bc, 0x00000100, 0xffffffff,
 	0x0000d8bc, 0x00000100, 0xffffffff,
@@ -171,7 +150,7 @@ static const u32 trinity_sysls_enable[] =
 
 static const u32 trinity_override_mgpg_sequences[] =
 {
-	/* Register, Value */
+	 
 	0x00000200, 0xE030032C,
 	0x00000204, 0x00000FFF,
 	0x00000200, 0xE0300058,
@@ -344,7 +323,7 @@ static void trinity_gfx_powergating_initialize(struct radeon_device *rdev)
 
 	WREG32_P(CG_GIPOTS, CG_GIPOT(p), ~CG_GIPOT_MASK);
 
-	/* XXX double check hw_rev */
+	 
 	if (pi->override_dynamic_mgpg && (hw_rev == 0))
 		trinity_override_dynamic_mg_powergating(rdev);
 
@@ -949,7 +928,7 @@ static void trinity_set_vce_clock(struct radeon_device *rdev,
 {
 	if ((old_rps->evclk != new_rps->evclk) ||
 	    (old_rps->ecclk != new_rps->ecclk)) {
-		/* turn the clocks on when encoding, off otherwise */
+		 
 		if (new_rps->evclk || new_rps->ecclk)
 			vce_v1_0_enable_mgcg(rdev, false);
 		else
@@ -1166,7 +1145,7 @@ int trinity_dpm_force_performance_level(struct radeon_device *rdev,
 		return 0;
 
 	if (level == RADEON_DPM_FORCED_LEVEL_HIGH) {
-		/* not supported by the hw */
+		 
 		return -EINVAL;
 	} else if (level == RADEON_DPM_FORCED_LEVEL_LOW) {
 		ret = trinity_dpm_n_levels_disabled(rdev, ps->num_levels - 1);
@@ -1356,7 +1335,7 @@ static void trinity_patch_thermal_state(struct radeon_device *rdev,
 					struct trinity_ps *current_ps)
 {
 	struct trinity_power_info *pi = trinity_get_pi(rdev);
-	u32 sclk_in_sr = pi->sys_info.min_sclk; /* ??? */
+	u32 sclk_in_sr = pi->sys_info.min_sclk;  
 	u32 current_vddc;
 	u32 current_sclk;
 	u32 current_index = 0;
@@ -1480,7 +1459,7 @@ static int trinity_get_vce_clock_voltage(struct radeon_device *rdev,
 		}
 	}
 
-	/* if no match return the highest voltage */
+	 
 	if (ret)
 		*voltage = table->entries[table->count - 1].v;
 
@@ -1494,9 +1473,9 @@ static void trinity_apply_state_adjust_rules(struct radeon_device *rdev,
 	struct trinity_ps *ps = trinity_get_ps(new_rps);
 	struct trinity_ps *current_ps = trinity_get_ps(old_rps);
 	struct trinity_power_info *pi = trinity_get_pi(rdev);
-	u32 min_voltage = 0; /* ??? */
-	u32 min_sclk = pi->sys_info.min_sclk; /* XXX check against disp reqs */
-	u32 sclk_in_sr = pi->sys_info.min_sclk; /* ??? */
+	u32 min_voltage = 0;  
+	u32 min_sclk = pi->sys_info.min_sclk;  
+	u32 sclk_in_sr = pi->sys_info.min_sclk;  
 	u32 i;
 	u16 min_vce_voltage;
 	bool force_high;
@@ -1523,12 +1502,12 @@ static void trinity_apply_state_adjust_rules(struct radeon_device *rdev,
 			ps->levels[i].sclk =
 				trinity_get_valid_engine_clock(rdev, min_sclk);
 
-		/* patch in vce limits */
+		 
 		if (new_rps->vce_active) {
-			/* sclk */
+			 
 			if (ps->levels[i].sclk < rdev->pm.dpm.vce_states[rdev->pm.dpm.vce_level].sclk)
 				ps->levels[i].sclk = rdev->pm.dpm.vce_states[rdev->pm.dpm.vce_level].sclk;
-			/* vddc */
+			 
 			trinity_get_vce_clock_voltage(rdev, new_rps->evclk, new_rps->ecclk, &min_vce_voltage);
 			if (ps->levels[i].vddc_index < min_vce_voltage)
 				ps->levels[i].vddc_index = min_vce_voltage;
@@ -1759,7 +1738,7 @@ static int trinity_parse_power_table(struct radeon_device *rdev)
 	}
 	rdev->pm.dpm.num_ps = state_array->ucNumEntries;
 
-	/* fill in the vce power states */
+	 
 	for (i = 0; i < RADEON_MAX_VCE_LEVELS; i++) {
 		u32 sclk;
 		clock_array_index = rdev->pm.dpm.vce_states[i].clk_idx;
@@ -1916,12 +1895,7 @@ int trinity_dpm_init(struct radeon_device *rdev)
 		pi->at[i] = TRINITY_AT_DFLT;
 
 	if (radeon_bapm == -1) {
-		/* There are stability issues reported on with
-		 * bapm enabled when switching between AC and battery
-		 * power.  At the same time, some MSI boards hang
-		 * if it's not enabled and dpm is enabled.  Just enable
-		 * it for MSI boards right now.
-		 */
+		 
 		if (rdev->pdev->subsystem_vendor == 0x1462)
 			pi->enable_bapm = true;
 		else
@@ -1939,8 +1913,8 @@ int trinity_dpm_init(struct radeon_device *rdev)
 	pi->enable_gfx_dynamic_mgpg = false;
 	pi->override_dynamic_mgpg = false;
 	pi->enable_auto_thermal_throttling = true;
-	pi->voltage_drop_in_dce = false; /* need to restructure dpm/modeset interaction */
-	pi->uvd_dpm = true; /* ??? */
+	pi->voltage_drop_in_dce = false;  
+	pi->uvd_dpm = true;  
 
 	ret = trinity_parse_sys_info_table(rdev);
 	if (ret)
@@ -2035,7 +2009,7 @@ void trinity_dpm_fini(struct radeon_device *rdev)
 {
 	int i;
 
-	trinity_cleanup_asic(rdev); /* ??? */
+	trinity_cleanup_asic(rdev);  
 
 	for (i = 0; i < rdev->pm.dpm.num_ps; i++) {
 		kfree(rdev->pm.dpm.ps[i].ps_priv);

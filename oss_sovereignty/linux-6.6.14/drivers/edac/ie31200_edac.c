@@ -1,47 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel E3-1200
- * Copyright (C) 2014 Jason Baron <jbaron@akamai.com>
- *
- * Support for the E3-1200 processor family. Heavily based on previous
- * Intel EDAC drivers.
- *
- * Since the DRAM controller is on the cpu chip, we can use its PCI device
- * id to identify these processors.
- *
- * PCI DRAM controller device ids (Taken from The PCI ID Repository - https://pci-ids.ucw.cz/)
- *
- * 0108: Xeon E3-1200 Processor Family DRAM Controller
- * 010c: Xeon E3-1200/2nd Generation Core Processor Family DRAM Controller
- * 0150: Xeon E3-1200 v2/3rd Gen Core processor DRAM Controller
- * 0158: Xeon E3-1200 v2/Ivy Bridge DRAM Controller
- * 015c: Xeon E3-1200 v2/3rd Gen Core processor DRAM Controller
- * 0c04: Xeon E3-1200 v3/4th Gen Core Processor DRAM Controller
- * 0c08: Xeon E3-1200 v3 Processor DRAM Controller
- * 1918: Xeon E3-1200 v5 Skylake Host Bridge/DRAM Registers
- * 5918: Xeon E3-1200 Xeon E3-1200 v6/7th Gen Core Processor Host Bridge/DRAM Registers
- * 190f: 6th Gen Core Dual-Core Processor Host Bridge/DRAM Registers
- * 191f: 6th Gen Core Quad-Core Processor Host Bridge/DRAM Registers
- * 3e..: 8th/9th Gen Core Processor Host Bridge/DRAM Registers
- *
- * Based on Intel specification:
- * https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/xeon-e3-1200v3-vol-2-datasheet.pdf
- * http://www.intel.com/content/www/us/en/processors/xeon/xeon-e3-1200-family-vol-2-datasheet.html
- * https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/desktop-6th-gen-core-family-datasheet-vol-2.pdf
- * https://www.intel.com/content/dam/www/public/us/en/documents/datasheets/xeon-e3-1200v6-vol-2-datasheet.pdf
- * https://www.intel.com/content/www/us/en/processors/core/7th-gen-core-family-mobile-h-processor-lines-datasheet-vol-2.html
- * https://www.intel.com/content/www/us/en/products/docs/processors/core/8th-gen-core-family-datasheet-vol-2.html
- *
- * According to the above datasheet (p.16):
- * "
- * 6. Software must not access B0/D0/F0 32-bit memory-mapped registers with
- * requests that cross a DW boundary.
- * "
- *
- * Thus, we make use of the explicit: lo_hi_readq(), which breaks the readq into
- * 2 readl() calls. This restriction may be lifted in subsequent chip releases,
- * but lo_hi_readq() ensures that we are safe across all e3-1200 processors.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -69,7 +27,7 @@
 #define PCI_DEVICE_ID_INTEL_IE31200_HB_10 0x191F
 #define PCI_DEVICE_ID_INTEL_IE31200_HB_11 0x5918
 
-/* Coffee Lake-S */
+ 
 #define PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_MASK 0x3e00
 #define PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_1    0x3e0f
 #define PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_2    0x3e18
@@ -82,7 +40,7 @@
 #define PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_9    0x3ec6
 #define PCI_DEVICE_ID_INTEL_IE31200_HB_CFL_10   0x3eca
 
-/* Test if HB is for Skylake or later. */
+ 
 #define DEVICE_ID_SKYLAKE_OR_LATER(did)                                        \
 	(((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_8) ||                        \
 	 ((did) == PCI_DEVICE_ID_INTEL_IE31200_HB_9) ||                        \
@@ -97,49 +55,19 @@
 #define IE31200_DIMMS_PER_CHANNEL	2
 #define IE31200_CHANNELS		2
 
-/* Intel IE31200 register addresses - device 0 function 0 - DRAM Controller */
+ 
 #define IE31200_MCHBAR_LOW		0x48
 #define IE31200_MCHBAR_HIGH		0x4c
 #define IE31200_MCHBAR_MASK		GENMASK_ULL(38, 15)
 #define IE31200_MMR_WINDOW_SIZE		BIT(15)
 
-/*
- * Error Status Register (16b)
- *
- * 15    reserved
- * 14    Isochronous TBWRR Run Behind FIFO Full
- *       (ITCV)
- * 13    Isochronous TBWRR Run Behind FIFO Put
- *       (ITSTV)
- * 12    reserved
- * 11    MCH Thermal Sensor Event
- *       for SMI/SCI/SERR (GTSE)
- * 10    reserved
- *  9    LOCK to non-DRAM Memory Flag (LCKF)
- *  8    reserved
- *  7    DRAM Throttle Flag (DTF)
- *  6:2  reserved
- *  1    Multi-bit DRAM ECC Error Flag (DMERR)
- *  0    Single-bit DRAM ECC Error Flag (DSERR)
- */
+ 
 #define IE31200_ERRSTS			0xc8
 #define IE31200_ERRSTS_UE		BIT(1)
 #define IE31200_ERRSTS_CE		BIT(0)
 #define IE31200_ERRSTS_BITS		(IE31200_ERRSTS_UE | IE31200_ERRSTS_CE)
 
-/*
- * Channel 0 ECC Error Log (64b)
- *
- * 63:48 Error Column Address (ERRCOL)
- * 47:32 Error Row Address (ERRROW)
- * 31:29 Error Bank Address (ERRBANK)
- * 28:27 Error Rank Address (ERRRANK)
- * 26:24 reserved
- * 23:16 Error Syndrome (ERRSYND)
- * 15: 2 reserved
- *    1  Multiple Bit Error Status (MERRSTS)
- *    0  Correctable Error Status (CERRSTS)
- */
+ 
 
 #define IE31200_C0ECCERRLOG			0x40c8
 #define IE31200_C1ECCERRLOG			0x44c8
@@ -173,7 +101,7 @@
 #define IE31200_MAD_DIMM_A_WIDTH_SKL		GENMASK_ULL(9, 8)
 #define IE31200_MAD_DIMM_A_WIDTH_SKL_SHIFT	8
 
-/* Skylake reports 1GB increments, everything else is 256MB */
+ 
 #define IE31200_PAGES(n, skl)	\
 	(n << (28 + (2 * skl) - PAGE_SHIFT))
 
@@ -208,19 +136,19 @@ static const struct ie31200_dev_info ie31200_devs[] = {
 };
 
 struct dimm_data {
-	u8 size; /* in multiples of 256MB, except Skylake is 1GB */
+	u8 size;  
 	u8 dual_rank : 1,
-	   x16_width : 2; /* 0 means x8 width */
+	   x16_width : 2;  
 };
 
 static int how_many_channels(struct pci_dev *pdev)
 {
 	int n_channels;
-	unsigned char capid0_2b; /* 2nd byte of CAPID0 */
+	unsigned char capid0_2b;  
 
 	pci_read_config_byte(pdev, IE31200_CAPID0 + 1, &capid0_2b);
 
-	/* check PDCD: Dual Channel Disable */
+	 
 	if (capid0_2b & IE31200_CAPID0_PDCD) {
 		edac_dbg(0, "In single channel mode\n");
 		n_channels = 1;
@@ -229,7 +157,7 @@ static int how_many_channels(struct pci_dev *pdev)
 		n_channels = 2;
 	}
 
-	/* check DDPCD - check if both channels are filled */
+	 
 	if (capid0_2b & IE31200_CAPID0_DDPCD)
 		edac_dbg(0, "2 DIMMS per channel disabled\n");
 	else
@@ -240,7 +168,7 @@ static int how_many_channels(struct pci_dev *pdev)
 
 static bool ecc_capable(struct pci_dev *pdev)
 {
-	unsigned char capid0_4b; /* 4th byte of CAPID0 */
+	unsigned char capid0_4b;  
 
 	pci_read_config_byte(pdev, IE31200_CAPID0 + 3, &capid0_4b);
 	if (capid0_4b & IE31200_CAPID0_ECC)
@@ -256,10 +184,7 @@ static int eccerrlog_row(u64 log)
 
 static void ie31200_clear_error_info(struct mem_ctl_info *mci)
 {
-	/*
-	 * Clear any error bits.
-	 * (Yes, we really clear bits by writing 1 to them.)
-	 */
+	 
 	pci_write_bits16(to_pci_dev(mci->pdev), IE31200_ERRSTS,
 			 IE31200_ERRSTS_BITS, IE31200_ERRSTS_BITS);
 }
@@ -272,11 +197,7 @@ static void ie31200_get_and_clear_error_info(struct mem_ctl_info *mci,
 
 	pdev = to_pci_dev(mci->pdev);
 
-	/*
-	 * This is a mess because there is no atomic way to read all the
-	 * registers at once and the registers can transition from CE being
-	 * overwritten by UE.
-	 */
+	 
 	pci_read_config_word(pdev, IE31200_ERRSTS, &info->errsts);
 	if (!(info->errsts & IE31200_ERRSTS_BITS))
 		return;
@@ -287,12 +208,7 @@ static void ie31200_get_and_clear_error_info(struct mem_ctl_info *mci,
 
 	pci_read_config_word(pdev, IE31200_ERRSTS, &info->errsts2);
 
-	/*
-	 * If the error is the same for both reads then the first set
-	 * of reads is valid.  If there is a change then there is a CE
-	 * with no info and the second set of reads is valid and
-	 * should be UE info.
-	 */
+	 
 	if ((info->errsts ^ info->errsts2) & IE31200_ERRSTS_BITS) {
 		info->eccerrlog[0] = lo_hi_readq(priv->c0errlog);
 		if (nr_channels == 2)
@@ -411,10 +327,7 @@ static int ie31200_probe1(struct pci_dev *pdev, int dev_idx)
 	struct ie31200_priv *priv;
 	u32 addr_decode, mad_offset;
 
-	/*
-	 * Kaby Lake, Coffee Lake seem to work like Skylake. Please re-visit
-	 * this logic when adding new CPU support.
-	 */
+	 
 	bool skl = DEVICE_ID_SKYLAKE_OR_LATER(pdev->device);
 
 	edac_dbg(0, "MC:\n");
@@ -467,7 +380,7 @@ static int ie31200_probe1(struct pci_dev *pdev, int dev_idx)
 		mad_offset = IE31200_MAD_DIMM_0_OFFSET;
 	}
 
-	/* populate DIMM info */
+	 
 	for (i = 0; i < IE31200_CHANNELS; i++) {
 		addr_decode = readl(window + mad_offset +
 					(i * 4));
@@ -482,12 +395,7 @@ static int ie31200_probe1(struct pci_dev *pdev, int dev_idx)
 		}
 	}
 
-	/*
-	 * The dram rank boundary (DRB) reg values are boundary addresses
-	 * for each DRAM rank with a granularity of 64MB.  DRB regs are
-	 * cumulative; the last one will contain the total memory
-	 * contained in all ranks.
-	 */
+	 
 	for (i = 0; i < IE31200_DIMMS_PER_CHANNEL; i++) {
 		for (j = 0; j < IE31200_CHANNELS; j++) {
 			struct dimm_info *dimm;
@@ -502,7 +410,7 @@ static int ie31200_probe1(struct pci_dev *pdev, int dev_idx)
 				dimm = edac_get_dimm(mci, (i * 2) + 1, j, 0);
 				dimm->nr_pages = nr_pages;
 				edac_dbg(0, "set nr pages: 0x%lx\n", nr_pages);
-				dimm->grain = 8; /* just a guess */
+				dimm->grain = 8;  
 				if (skl)
 					dimm->mtype = MEM_DDR4;
 				else
@@ -513,7 +421,7 @@ static int ie31200_probe1(struct pci_dev *pdev, int dev_idx)
 			dimm = edac_get_dimm(mci, i * 2, j, 0);
 			dimm->nr_pages = nr_pages;
 			edac_dbg(0, "set nr pages: 0x%lx\n", nr_pages);
-			dimm->grain = 8; /* same guess */
+			dimm->grain = 8;  
 			if (skl)
 				dimm->mtype = MEM_DDR4;
 			else
@@ -531,7 +439,7 @@ static int ie31200_probe1(struct pci_dev *pdev, int dev_idx)
 		goto fail_unmap;
 	}
 
-	/* get this far and it's successful */
+	 
 	edac_dbg(3, "MC: success\n");
 	return 0;
 
@@ -597,7 +505,7 @@ static const struct pci_device_id ie31200_pci_tbl[] = {
 	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_8),  PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
 	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_9),  PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
 	{ PCI_VEND_DEV(INTEL, IE31200_HB_CFL_10), PCI_ANY_ID, PCI_ANY_ID, 0, 0, IE31200 },
-	{ 0, } /* 0 terminated list. */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, ie31200_pci_tbl);
 
@@ -613,7 +521,7 @@ static int __init ie31200_init(void)
 	int pci_rc, i;
 
 	edac_dbg(3, "MC:\n");
-	/* Ensure that the OPSTATE is set correctly for POLL or NMI */
+	 
 	opstate_init();
 
 	pci_rc = pci_register_driver(&ie31200_driver);

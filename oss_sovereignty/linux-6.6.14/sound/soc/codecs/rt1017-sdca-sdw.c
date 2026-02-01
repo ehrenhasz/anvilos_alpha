@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt1017-sdca-sdw.c -- rt1017 SDCA ALSA SoC amplifier audio driver
-//
-// Copyright(c) 2023 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/pm_runtime.h>
@@ -268,12 +268,9 @@ static int rt1017_sdca_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = true;
 
-	/* first we need to allocate memory for set bits in port lists
-	 * port = 1 for AMP playback
-	 * port = 2 for IV capture
-	 */
-	prop->source_ports = BIT(2); /* BITMAP: 00000100 */
-	prop->sink_ports = BIT(1);   /* BITMAP: 00000010 */
+	 
+	prop->source_ports = BIT(2);  
+	prop->sink_ports = BIT(1);    
 
 	nval = hweight32(prop->source_ports);
 	prop->src_dpn_prop = devm_kcalloc(&slave->dev, nval,
@@ -292,7 +289,7 @@ static int rt1017_sdca_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* do this again for sink now */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 		sizeof(*prop->sink_dpn_prop), GFP_KERNEL);
@@ -310,7 +307,7 @@ static int rt1017_sdca_read_prop(struct sdw_slave *slave)
 		j++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 64;
 
 	return 0;
@@ -327,18 +324,16 @@ static int rt1017_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 		regcache_cache_only(rt1017->regmap, false);
 		regcache_cache_bypass(rt1017->regmap, true);
 	} else {
-		/*
-		 * PM runtime is only enabled when a Slave reports as Attached
-		 */
+		 
 
-		/* set autosuspend parameters */
+		 
 		pm_runtime_set_autosuspend_delay(&slave->dev, 3000);
 		pm_runtime_use_autosuspend(&slave->dev);
 
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 
-		/* make sure the device does not suspend immediately */
+		 
 		pm_runtime_mark_last_busy(&slave->dev);
 
 		pm_runtime_enable(&slave->dev);
@@ -346,10 +341,10 @@ static int rt1017_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 
 	pm_runtime_get_noresume(&slave->dev);
 
-	/* sw reset */
+	 
 	regmap_write(rt1017->regmap, 0xc000, 0x02);
 
-	/* initial settings - blind write */
+	 
 	regmap_multi_reg_write(rt1017->regmap, rt1017_blind_write,
 		ARRAY_SIZE(rt1017_blind_write));
 
@@ -359,7 +354,7 @@ static int rt1017_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 	} else
 		rt1017->first_hw_init = true;
 
-	/* Mark Slave initialization complete */
+	 
 	rt1017->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);
@@ -377,14 +372,11 @@ static int rt1017_sdca_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		rt1017->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt1017->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt1017_sdca_io_init(&slave->dev, slave);
 }
 
@@ -408,7 +400,7 @@ static SOC_ENUM_SINGLE_DECL(rt1017_rx_data_ch_enum,
 			0, rt1017_rx_data_ch_select);
 
 static const struct snd_kcontrol_new rt1017_sdca_controls[] = {
-	/* UDMPU Cluster Selection */
+	 
 	SOC_ENUM("RX Channel Select", rt1017_rx_data_ch_enum),
 };
 
@@ -483,15 +475,15 @@ static int rt1017_sdca_feedback_event(struct snd_soc_dapm_widget *w,
 }
 
 static const struct snd_soc_dapm_widget rt1017_sdca_dapm_widgets[] = {
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("DP1RX", "DP1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT_E("DP2TX", "DP2 Capture", 0, SND_SOC_NOPM, 0, 0,
 		rt1017_sdca_feedback_event, SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SWITCH("DAC", SND_SOC_NOPM, 0, 0, &rt1017_sto_dac),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_PGA_E("CLASS D", SND_SOC_NOPM, 0, 0, NULL, 0,
 		rt1017_sdca_classd_event, SND_SOC_DAPM_POST_PMU),
 	SND_SOC_DAPM_OUTPUT("SPO"),
@@ -591,8 +583,8 @@ static int rt1017_sdca_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (!rt1017->sdw_slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
-	/* port 1 for playback */
+	 
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		direction = SDW_DATA_DIR_RX;
 		port = 1;
@@ -623,7 +615,7 @@ static int rt1017_sdca_pcm_hw_params(struct snd_pcm_substream *substream,
 		return retval;
 	}
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 44100:
 		sampling_rate = RT1017_SDCA_RATE_44100HZ;
@@ -643,7 +635,7 @@ static int rt1017_sdca_pcm_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* set sampling frequency */
+	 
 	regmap_write(rt1017->regmap,
 		SDW_SDCA_CTL(FUNC_NUM_SMART_AMP, RT1017_SDCA_ENT_CS21,
 			RT1017_SDCA_CTL_FS_INDEX, 0),
@@ -714,10 +706,7 @@ static int rt1017_sdca_init(struct device *dev, struct regmap *regmap,
 	rt1017->sdw_slave = slave;
 	rt1017->regmap = regmap;
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt1017->hw_init = false;
 	rt1017->first_hw_init = false;
 
@@ -734,7 +723,7 @@ static int rt1017_sdca_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap;
 
-	/* Regmap Initialization */
+	 
 	regmap = devm_regmap_init_sdw(slave, &rt1017_sdca_regmap);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);

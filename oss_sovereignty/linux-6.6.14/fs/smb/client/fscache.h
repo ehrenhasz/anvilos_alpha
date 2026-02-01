@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 */
-/*
- *   CIFS filesystem cache interface definitions
- *
- *   Copyright (c) 2010 Novell, Inc.
- *   Authors(s): Suresh Jayaraman (sjayaraman@suse.de>
- *
- */
+ 
+ 
 #ifndef _CIFS_FSCACHE_H
 #define _CIFS_FSCACHE_H
 
@@ -14,18 +8,14 @@
 
 #include "cifsglob.h"
 
-/*
- * Coherency data attached to CIFS volume within the cache
- */
+ 
 struct cifs_fscache_volume_coherency_data {
-	__le64	resource_id;		/* unique server resource id */
+	__le64	resource_id;		 
 	__le64	vol_create_time;
 	__le32	vol_serial_number;
 } __packed;
 
-/*
- * Coherency data attached to CIFS inode within the cache.
- */
+ 
 struct cifs_fscache_inode_coherency_data {
 	__le64 last_write_time_sec;
 	__le64 last_change_time_sec;
@@ -35,9 +25,7 @@ struct cifs_fscache_inode_coherency_data {
 
 #ifdef CONFIG_CIFS_FSCACHE
 
-/*
- * fscache.c
- */
+ 
 extern int cifs_fscache_get_super_cookie(struct cifs_tcon *);
 extern void cifs_fscache_release_super_cookie(struct cifs_tcon *);
 
@@ -109,7 +97,7 @@ static inline void cifs_readahead_to_fscache(struct inode *inode,
 		__cifs_readahead_to_fscache(inode, pos, len);
 }
 
-#else /* CONFIG_CIFS_FSCACHE */
+#else  
 static inline
 void cifs_fscache_fill_coherency(struct inode *inode,
 				 struct cifs_fscache_inode_coherency_data *cd)
@@ -144,6 +132,6 @@ cifs_readpage_from_fscache(struct inode *inode, struct page *page)
 static inline
 void cifs_readahead_to_fscache(struct inode *inode, loff_t pos, size_t len) {}
 
-#endif /* CONFIG_CIFS_FSCACHE */
+#endif  
 
-#endif /* _CIFS_FSCACHE_H */
+#endif  

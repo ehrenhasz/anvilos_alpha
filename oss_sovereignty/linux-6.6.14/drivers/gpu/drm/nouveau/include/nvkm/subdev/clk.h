@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_CLK_H__
 #define __NVKM_CLK_H__
 #include <core/subdev.h>
@@ -6,9 +6,9 @@
 struct nvbios_pll;
 struct nvkm_pll_vals;
 
-#define NVKM_CLK_CSTATE_DEFAULT -1 /* POSTed default */
-#define NVKM_CLK_CSTATE_BASE    -2 /* pstate base */
-#define NVKM_CLK_CSTATE_HIGHEST -3 /* highest possible */
+#define NVKM_CLK_CSTATE_DEFAULT -1  
+#define NVKM_CLK_CSTATE_BASE    -2  
+#define NVKM_CLK_CSTATE_HIGHEST -3  
 
 enum nv_clk_src {
 	nv_clk_src_crystal,
@@ -17,9 +17,9 @@ enum nv_clk_src {
 	nv_clk_src_hclk,
 	nv_clk_src_hclkm3,
 	nv_clk_src_hclkm3d2,
-	nv_clk_src_hclkm2d3, /* NVAA */
-	nv_clk_src_hclkm4, /* NVAA */
-	nv_clk_src_cclk, /* NVAA */
+	nv_clk_src_hclkm2d3,  
+	nv_clk_src_hclkm4,  
+	nv_clk_src_cclk,  
 
 	nv_clk_src_host,
 
@@ -61,7 +61,7 @@ struct nvkm_cstate {
 
 struct nvkm_pstate {
 	struct list_head head;
-	struct list_head list; /* c-states */
+	struct list_head list;  
 	struct nvkm_cstate base;
 	u8 pstate;
 	u8 fanspeed;
@@ -71,7 +71,7 @@ struct nvkm_pstate {
 
 struct nvkm_domain {
 	enum nv_clk_src name;
-	u8 bios; /* 0xff for none */
+	u8 bios;  
 #define NVKM_CLK_DOM_FLAG_CORE    0x01
 #define NVKM_CLK_DOM_FLAG_VPSTATE 0x02
 	u8 flags;
@@ -94,11 +94,11 @@ struct nvkm_clk {
 	atomic_t waiting;
 
 	int pwrsrc;
-	int pstate; /* current */
-	int ustate_ac; /* user-requested (-1 disabled, -2 perfmon) */
-	int ustate_dc; /* user-requested (-1 disabled, -2 perfmon) */
-	int astate; /* perfmon adjustment (base) */
-	int dstate; /* display adjustment (min+) */
+	int pstate;  
+	int ustate_ac;  
+	int ustate_dc;  
+	int astate;  
+	int dstate;  
 	u8  temp;
 
 	bool allow_reclock;
@@ -109,9 +109,7 @@ struct nvkm_clk {
 	u32 base_khz;
 	u32 boost_khz;
 
-	/*XXX: die, these are here *only* to support the completely
-	 *     bat-shit insane what-was-nouveau_hw.c code
-	 */
+	 
 	int (*pll_calc)(struct nvkm_clk *, struct nvbios_pll *, int clk,
 			struct nvkm_pll_vals *pv);
 	int (*pll_prog)(struct nvkm_clk *, u32 reg1, struct nvkm_pll_vals *pv);

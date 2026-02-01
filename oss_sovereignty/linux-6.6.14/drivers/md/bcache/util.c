@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * random utiility code, for bcache but in theory not specific to bcache
- *
- * Copyright 2010, 2011 Kent Overstreet <kent.overstreet@gmail.com>
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #include <linux/bio.h>
 #include <linux/blkdev.h>
@@ -82,13 +77,7 @@ STRTO_H(strtouint, unsigned int)
 STRTO_H(strtoll, long long)
 STRTO_H(strtoull, unsigned long long)
 
-/**
- * bch_hprint - formats @v to human readable string for sysfs.
- * @buf: the (at least 8 byte) buffer to format the result into.
- * @v: signed 64 bit integer
- *
- * Returns the number of bytes used by format.
- */
+ 
 ssize_t bch_hprint(char *buf, int64_t v)
 {
 	static const char units[] = "?kMGTPEZY";
@@ -101,10 +90,7 @@ ssize_t bch_hprint(char *buf, int64_t v)
 	else
 		q = v;
 
-	/* For as long as the number is more than 3 digits, but at least
-	 * once, shift right / divide by 1024.  Keep the remainder for
-	 * a digit after the decimal point.
-	 */
+	 
 	do {
 		u++;
 
@@ -113,9 +99,7 @@ ssize_t bch_hprint(char *buf, int64_t v)
 	} while (q >= 1000);
 
 	if (v < 0)
-		/* '-', up to 3 digits, '.', 1 digit, 1 character, null;
-		 * yields 8 bytes.
-		 */
+		 
 		return sprintf(buf, "-%llu.%i%c", q, t * 10 / 1024, units[u]);
 	else
 		return sprintf(buf, "%llu.%i%c", q, t * 10 / 1024, units[u]);
@@ -190,26 +174,14 @@ void bch_time_stats_update(struct time_stats *stats, uint64_t start_time)
 	spin_unlock(&stats->lock);
 }
 
-/**
- * bch_next_delay() - update ratelimiting statistics and calculate next delay
- * @d: the struct bch_ratelimit to update
- * @done: the amount of work done, in arbitrary units
- *
- * Increment @d by the amount of work done, and return how long to delay in
- * jiffies until the next time to do some work.
- */
+ 
 uint64_t bch_next_delay(struct bch_ratelimit *d, uint64_t done)
 {
 	uint64_t now = local_clock();
 
 	d->next += div_u64(done * NSEC_PER_SEC, atomic_long_read(&d->rate));
 
-	/* Bound the time.  Don't let us fall further than 2 seconds behind
-	 * (this prevents unnecessary backlog that would make it impossible
-	 * to catch up).  If we're ahead of the desired writeback rate,
-	 * don't let us sleep more than 2.5 seconds (so we can notice/respond
-	 * if the control system tells us to speed up!).
-	 */
+	 
 	if (time_before64(now + NSEC_PER_SEC * 5LLU / 2LLU, d->next))
 		d->next = now + NSEC_PER_SEC * 5LLU / 2LLU;
 
@@ -221,13 +193,7 @@ uint64_t bch_next_delay(struct bch_ratelimit *d, uint64_t done)
 		: 0;
 }
 
-/*
- * Generally it isn't good to access .bi_io_vec and .bi_vcnt directly,
- * the preferred way is bio_add_page, but in this case, bch_bio_map()
- * supposes that the bvec table is empty, so it is safe to access
- * .bi_vcnt & .bi_io_vec in this way even after multipage bvec is
- * supported.
- */
+ 
 void bch_bio_map(struct bio *bio, void *base)
 {
 	size_t size = bio->bi_iter.bi_size;
@@ -255,25 +221,13 @@ start:		bv->bv_len	= min_t(size_t, PAGE_SIZE - bv->bv_offset,
 	}
 }
 
-/**
- * bch_bio_alloc_pages - allocates a single page for each bvec in a bio
- * @bio: bio to allocate pages for
- * @gfp_mask: flags for allocation
- *
- * Allocates pages up to @bio->bi_vcnt.
- *
- * Returns 0 on success, -ENOMEM on failure. On failure, any allocated pages are
- * freed.
- */
+ 
 int bch_bio_alloc_pages(struct bio *bio, gfp_t gfp_mask)
 {
 	int i;
 	struct bio_vec *bv;
 
-	/*
-	 * This is called on freshly new bio, so it is safe to access the
-	 * bvec table directly.
-	 */
+	 
 	for (i = 0, bv = bio->bi_io_vec; i < bio->bi_vcnt; bv++, i++) {
 		bv->bv_page = alloc_page(gfp_mask);
 		if (!bv->bv_page) {

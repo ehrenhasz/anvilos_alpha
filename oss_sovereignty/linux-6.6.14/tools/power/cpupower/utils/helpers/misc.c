@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <stdio.h>
 #include <errno.h>
@@ -26,10 +26,7 @@ int cpufreq_has_boost_support(unsigned int cpu, int *support, int *active,
 	if (cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_CPB) {
 		*support = 1;
 
-		/* AMD Family 0x17 does not utilize PCI D18F4 like prior
-		 * families and has no fixed discrete boost states but
-		 * has Hardware determined variable increments instead.
-		 */
+		 
 
 		if (cpupower_cpu_info.caps & CPUPOWER_CAP_AMD_CPB_MSR) {
 			if (!read_msr(cpu, MSR_AMD_HWCR, &val)) {
@@ -158,12 +155,9 @@ bool cpupower_amd_pstate_enabled(void)
 	return ret;
 }
 
-#endif /* #if defined(__i386__) || defined(__x86_64__) */
+#endif  
 
-/* get_cpustate
- *
- * Gather the information of all online CPUs into bitmask struct
- */
+ 
 void get_cpustate(void)
 {
 	unsigned int cpu = 0;
@@ -183,10 +177,7 @@ void get_cpustate(void)
 	}
 }
 
-/* print_online_cpus
- *
- * Print the CPU numbers of all CPUs that are online currently
- */
+ 
 void print_online_cpus(void)
 {
 	int str_len = 0;
@@ -201,10 +192,7 @@ void print_online_cpus(void)
 	}
 }
 
-/* print_offline_cpus
- *
- * Print the CPU numbers of all CPUs that are offline currently
- */
+ 
 void print_offline_cpus(void)
 {
 	int str_len = 0;
@@ -220,11 +208,7 @@ void print_offline_cpus(void)
 	}
 }
 
-/*
- * print_speed
- *
- * Print the exact CPU frequency with appropriate unit
- */
+ 
 void print_speed(unsigned long speed, int no_rounding)
 {
 	unsigned long tmp;

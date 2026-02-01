@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dsi_phy.h"
 #include "dsi.xml.h"
@@ -54,7 +52,7 @@ static void dsi_20nm_phy_regulator_ctrl(struct msm_dsi_phy *phy, bool enable)
 		return;
 	}
 
-	/* non LDO mode */
+	 
 	dsi_phy_write(base + REG_DSI_20nm_PHY_REGULATOR_CTRL_1, 0x03);
 	dsi_phy_write(base + REG_DSI_20nm_PHY_REGULATOR_CTRL_2, 0x03);
 	dsi_phy_write(base + REG_DSI_20nm_PHY_REGULATOR_CTRL_3, 0x00);
@@ -116,7 +114,7 @@ static int dsi_20nm_phy_enable(struct msm_dsi_phy *phy,
 
 	dsi_phy_write(base + REG_DSI_20nm_PHY_STRENGTH_1, 0x06);
 
-	/* make sure everything is written before enable */
+	 
 	wmb();
 	dsi_phy_write(base + REG_DSI_20nm_PHY_CTRL_0, 0x7f);
 
@@ -130,8 +128,8 @@ static void dsi_20nm_phy_disable(struct msm_dsi_phy *phy)
 }
 
 static const struct regulator_bulk_data dsi_phy_20nm_regulators[] = {
-	{ .supply = "vddio", .init_load_uA = 100000 },	/* 1.8 V */
-	{ .supply = "vcca", .init_load_uA = 10000 },	/* 1.0 V */
+	{ .supply = "vddio", .init_load_uA = 100000 },	 
+	{ .supply = "vcca", .init_load_uA = 10000 },	 
 };
 
 const struct msm_dsi_phy_cfg dsi_phy_20nm_cfgs = {

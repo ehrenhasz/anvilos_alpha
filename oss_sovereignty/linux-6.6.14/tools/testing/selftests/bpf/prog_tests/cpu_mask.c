@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <bpf/btf.h>
 #include "bpf/libbpf_internal.h"
@@ -46,7 +46,7 @@ static struct {
 	{ "0,2-3,5", "101101", false },
 	{ "3-3", "0001", false },
 	{ "2-4,6,9-10", "00111010011", false },
-	/* failure cases */
+	 
 	{ "", "", true },
 	{ "0-", "", true },
 	{ "0 ", "", true },

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only 
+
 
 #include "util/cgroup.h"
 #include "util/data.h"
@@ -26,7 +26,7 @@
 #include <asm/bug.h>
 #include <perf/evsel.h>
 #include <perf/cpumap.h>
-#include <internal/lib.h> // page_size
+#include <internal/lib.h> 
 #include <internal/threadmap.h>
 #include <perf/threadmap.h>
 #include <symbol/kallsyms.h>
@@ -35,7 +35,7 @@
 #include <inttypes.h>
 #include <stdio.h>
 #include <string.h>
-#include <uapi/linux/mman.h> /* To get things like MAP_HUGETLB even on older libc headers */
+#include <uapi/linux/mman.h>  
 #include <api/fs/fs.h>
 #include <api/io.h>
 #include <sys/types.h>
@@ -65,10 +65,7 @@ int perf_tool__process_synth_event(struct perf_tool *tool,
 	return process(tool, event, &synth_sample, machine);
 };
 
-/*
- * Assumes that the first 4095 bytes of /proc/pid/stat contains
- * the comm, tgid and ppid.
- */
+ 
 static int perf_event__get_comm_ids(pid_t pid, pid_t tid, char *comm, size_t len,
 				    pid_t *tgid, pid_t *ppid, bool *kernel)
 {
@@ -114,7 +111,7 @@ static int perf_event__get_comm_ids(pid_t pid, pid_t tid, char *comm, size_t len
 	if (name) {
 		char *nl;
 
-		name = skip_spaces(name + 5);  /* strlen("Name:") */
+		name = skip_spaces(name + 5);   
 		nl = strchr(name, '\n');
 		if (nl)
 			*nl = '\0';
@@ -129,14 +126,14 @@ static int perf_event__get_comm_ids(pid_t pid, pid_t tid, char *comm, size_t len
 	}
 
 	if (tgids) {
-		tgids += 5;  /* strlen("Tgid:") */
+		tgids += 5;   
 		*tgid = atoi(tgids);
 	} else {
 		pr_debug("Tgid: string not found for pid %d\n", tid);
 	}
 
 	if (ppids) {
-		ppids += 5;  /* strlen("PPid:") */
+		ppids += 5;   
 		*ppid = atoi(ppids);
 	} else {
 		pr_debug("PPid: string not found for pid %d\n", tid);
@@ -265,11 +262,7 @@ static int perf_event__synthesize_fork(struct perf_tool *tool,
 {
 	memset(&event->fork, 0, sizeof(event->fork) + machine->id_hdr_size);
 
-	/*
-	 * for main thread set parent to ppid from status file. For other
-	 * threads set parent pid to main thread. ie., assume main thread
-	 * spawns all threads in a process
-	*/
+	 
 	if (tgid == pid) {
 		event->fork.ppid = ppid;
 		event->fork.ptid = ppid;
@@ -305,7 +298,7 @@ static bool read_proc_maps_line(struct io *io, __u64 *start, __u64 *end,
 	if (io__get_hex(io, end) != ' ')
 		return false;
 
-	/* map protection and flags bits */
+	 
 	*prot = 0;
 	ch = io__get_char(io);
 	if (ch == 'r')
@@ -442,9 +435,7 @@ int perf_event__synthesize_mmap_events(struct perf_tool *tool,
 
 	io.fd = open(bf, O_RDONLY, 0);
 	if (io.fd < 0) {
-		/*
-		 * We raced with a task exiting - just return:
-		 */
+		 
 		pr_debug("couldn't open %s\n", bf);
 		return -1;
 	}
@@ -457,10 +448,10 @@ int perf_event__synthesize_mmap_events(struct perf_tool *tool,
 		static const char anonstr[] = "//anon";
 		size_t size, aligned_size;
 
-		/* ensure null termination since stack will be reused. */
+		 
 		event->mmap2.filename[0] = '\0';
 
-		/* 00400000-0040c000 r-xp 00000000 fd:01 41038  /bin/cat */
+		 
 		if (!read_proc_maps_line(&io,
 					&event->mmap2.start,
 					&event->mmap2.len,
@@ -485,9 +476,7 @@ int perf_event__synthesize_mmap_events(struct perf_tool *tool,
 
 		event->mmap2.ino_generation = 0;
 
-		/*
-		 * Just like the kernel, see __perf_event_mmap in kernel/perf_event.c
-		 */
+		 
 		if (machine__is_host(machine))
 			event->header.misc = PERF_RECORD_MISC_USER;
 		else
@@ -610,7 +599,7 @@ static int perf_event__walk_cgroup_tree(struct perf_tool *tool,
 		    !strcmp(dent->d_name, ".."))
 			continue;
 
-		/* any sane path should be less than PATH_MAX */
+		 
 		if (strlen(path) + strlen(dent->d_name) + 1 >= PATH_MAX)
 			continue;
 
@@ -636,7 +625,7 @@ int perf_event__synthesize_cgroups(struct perf_tool *tool,
 {
 	union perf_event event;
 	char cgrp_root[PATH_MAX];
-	size_t mount_len;  /* length of mount point in the path */
+	size_t mount_len;   
 
 	if (!tool || !tool->cgroup_events)
 		return 0;
@@ -647,7 +636,7 @@ int perf_event__synthesize_cgroups(struct perf_tool *tool,
 	}
 
 	mount_len = strlen(cgrp_root);
-	/* make sure the path starts with a slash (after mount point) */
+	 
 	strcat(cgrp_root, "/");
 
 	if (perf_event__walk_cgroup_tree(tool, &event, cgrp_root, mount_len,
@@ -682,10 +671,7 @@ int perf_event__synthesize_modules(struct perf_tool *tool, perf_event__handler_t
 		return -1;
 	}
 
-	/*
-	 * kernel uses 0 for user space maps, see kernel/perf_event.c
-	 * __perf_event_mmap
-	 */
+	 
 	if (machine__is_host(machine))
 		event->header.misc = PERF_RECORD_MISC_KERNEL;
 	else
@@ -756,7 +742,7 @@ static int __event__synthesize_thread(union perf_event *comm_event,
 	int rc = 0;
 	int i, n;
 
-	/* special case: only send one comm event using passed in pid */
+	 
 	if (!full) {
 		tgid = perf_event__synthesize_comm(tool, comm_event, pid,
 						   process, machine);
@@ -768,10 +754,7 @@ static int __event__synthesize_thread(union perf_event *comm_event,
 						      tgid, process, machine) < 0)
 			return -1;
 
-		/*
-		 * send mmap only for thread group leader
-		 * see thread__init_maps()
-		 */
+		 
 		if (pid == tgid && needs_mmap &&
 		    perf_event__synthesize_mmap_events(tool, mmap_event, pid, tgid,
 						       process, machine, mmap_data))
@@ -799,7 +782,7 @@ static int __event__synthesize_thread(union perf_event *comm_event,
 		if (*end)
 			continue;
 
-		/* some threads may exit just after scan, ignore it */
+		 
 		if (perf_event__prepare_comm(comm_event, pid, _pid, machine,
 					     &tgid, &ppid, &kernel_thread) != 0)
 			continue;
@@ -813,15 +796,13 @@ static int __event__synthesize_thread(union perf_event *comm_event,
 						      tgid, process, machine) < 0)
 			break;
 
-		/*
-		 * Send the prepared comm event
-		 */
+		 
 		if (perf_tool__process_synth_event(tool, comm_event, machine, process) != 0)
 			break;
 
 		rc = 0;
 		if (_pid == pid && !kernel_thread && needs_mmap) {
-			/* process the parent's maps too */
+			 
 			rc = perf_event__synthesize_mmap_events(tool, mmap_event, pid, tgid,
 						process, machine, mmap_data);
 			if (rc)
@@ -875,14 +856,11 @@ int perf_event__synthesize_thread_map(struct perf_tool *tool,
 			break;
 		}
 
-		/*
-		 * comm.pid is set to thread group id by
-		 * perf_event__synthesize_comm
-		 */
+		 
 		if ((int) comm_event->comm.pid != perf_thread_map__pid(threads, thread)) {
 			bool need_leader = true;
 
-			/* is thread group leader in thread_map? */
+			 
 			for (j = 0; j < threads->nr; ++j) {
 				if ((int) comm_event->comm.pid == perf_thread_map__pid(threads, j)) {
 					need_leader = false;
@@ -890,7 +868,7 @@ int perf_event__synthesize_thread_map(struct perf_tool *tool,
 				}
 			}
 
-			/* if not, generate events for it */
+			 
 			if (need_leader &&
 			    __event__synthesize_thread(comm_event, mmap_event,
 						       fork_event, namespaces_event,
@@ -952,13 +930,10 @@ static int __perf_event__synthesize_threads(struct perf_tool *tool,
 			continue;
 
 		pid = (pid_t)strtol(dirent[i]->d_name, &end, 10);
-		/* only interested in proper numerical dirents */
+		 
 		if (*end)
 			continue;
-		/*
-		 * We may race with exiting thread, so don't stop just because
-		 * one thread couldn't be synthesized.
-		 */
+		 
 		__event__synthesize_thread(comm_event, mmap_event, fork_event,
 					   namespaces_event, pid, 1, process,
 					   tool, machine, needs_mmap, mmap_data);
@@ -1113,11 +1088,7 @@ static int __perf_event__synthesize_kernel_mmap(struct perf_tool *tool,
 	if (!kmap->ref_reloc_sym)
 		return -1;
 
-	/*
-	 * We should get this from /sys/kernel/sections/.text, but till that is
-	 * available use this, and after it is use this as a fallback for older
-	 * kernels.
-	 */
+	 
 	event = zalloc(size + machine->id_hdr_size);
 	if (event == NULL) {
 		pr_debug("Not enough memory synthesizing mmap event "
@@ -1126,10 +1097,7 @@ static int __perf_event__synthesize_kernel_mmap(struct perf_tool *tool,
 	}
 
 	if (machine__is_host(machine)) {
-		/*
-		 * kernel uses PERF_RECORD_MISC_USER for user space maps,
-		 * see kernel/perf_event.c __perf_event_mmap
-		 */
+		 
 		event->header.misc = PERF_RECORD_MISC_KERNEL;
 	} else {
 		event->header.misc = PERF_RECORD_MISC_GUEST_KERNEL;
@@ -1240,7 +1208,7 @@ static void synthesize_mask(struct synthesize_cpu_map_data *data)
 	int idx;
 	struct perf_cpu cpu;
 
-	/* Due to padding, the 4bytes per entry mask variant is always smaller. */
+	 
 	data->data->type = PERF_CPU_MAP__MASK;
 	data->data->mask32_data.nr = BITS_TO_U32(data->max_cpu);
 	data->data->mask32_data.long_size = 4;
@@ -1272,7 +1240,7 @@ static void *cpu_map_data__alloc(struct synthesize_cpu_map_data *syn_data,
 	syn_data->min_cpu = perf_cpu_map__cpu(syn_data->map, syn_data->has_any_cpu).cpu;
 	syn_data->max_cpu = perf_cpu_map__max(syn_data->map).cpu;
 	if (syn_data->max_cpu - syn_data->min_cpu + 1 == syn_data->nr - syn_data->has_any_cpu) {
-		/* A consecutive range of CPUs can be encoded using a range. */
+		 
 		assert(sizeof(u16) + sizeof(struct perf_record_range_cpu_map) == sizeof(u64));
 		syn_data->type = PERF_CPU_MAP__RANGE_CPUS;
 		syn_data->size = header_size + sizeof(u64);
@@ -1280,16 +1248,16 @@ static void *cpu_map_data__alloc(struct synthesize_cpu_map_data *syn_data,
 	}
 
 	size_cpus = sizeof(u16) + sizeof(struct cpu_map_entries) + syn_data->nr * sizeof(u16);
-	/* Due to padding, the 4bytes per entry mask variant is always smaller. */
+	 
 	size_mask = sizeof(u16) + sizeof(struct perf_record_mask_cpu_map32) +
 		BITS_TO_U32(syn_data->max_cpu) * sizeof(__u32);
 	if (syn_data->has_any_cpu || size_cpus < size_mask) {
-		/* Follow the CPU map encoding. */
+		 
 		syn_data->type = PERF_CPU_MAP__CPUS;
 		syn_data->size = header_size + PERF_ALIGN(size_cpus, sizeof(u64));
 		return zalloc(syn_data->size);
 	}
-	/* Encode using a bitmask. */
+	 
 	syn_data->type = PERF_CPU_MAP__MASK;
 	syn_data->size = header_size + PERF_ALIGN(size_mask, sizeof(u64));
 	return zalloc(syn_data->size);
@@ -1463,7 +1431,7 @@ size_t perf_event__sample_event_size(const struct perf_sample *sample, u64 type,
 			result += sizeof(u64);
 		if (read_format & PERF_FORMAT_TOTAL_TIME_RUNNING)
 			result += sizeof(u64);
-		/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
+		 
 		if (read_format & PERF_FORMAT_GROUP) {
 			sz = sample_read_value_size(read_format);
 			result += sz * sample->read.group.nr;
@@ -1486,7 +1454,7 @@ size_t perf_event__sample_event_size(const struct perf_sample *sample, u64 type,
 
 	if (type & PERF_SAMPLE_BRANCH_STACK) {
 		sz = sample->branch_stack->nr * sizeof(struct branch_entry);
-		/* nr, hw_idx */
+		 
 		sz += 2 * sizeof(u64);
 		result += sz;
 	}
@@ -1562,7 +1530,7 @@ static __u64 *copy_read_group_values(__u64 *array, __u64 read_format,
 	struct sample_read_value *v = sample->read.group.values;
 
 	sample_read_group__for_each(v, sample->read.group.nr, read_format) {
-		/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
+		 
 		memcpy(array, v, sz);
 		array = (void *)array + sz;
 	}
@@ -1574,10 +1542,7 @@ int perf_event__synthesize_sample(union perf_event *event, u64 type, u64 read_fo
 {
 	__u64 *array;
 	size_t sz;
-	/*
-	 * used for cross-endian analysis. See git commit 65014ab3
-	 * for why this goofiness is needed.
-	 */
+	 
 	union u64_swap u;
 
 	array = event->sample.array;
@@ -1648,7 +1613,7 @@ int perf_event__synthesize_sample(union perf_event *event, u64 type, u64 read_fo
 			array++;
 		}
 
-		/* PERF_FORMAT_ID is forced for PERF_SAMPLE_READ */
+		 
 		if (read_format & PERF_FORMAT_GROUP) {
 			array = copy_read_group_values(array, read_format,
 						       sample);
@@ -1680,7 +1645,7 @@ int perf_event__synthesize_sample(union perf_event *event, u64 type, u64 read_fo
 
 	if (type & PERF_SAMPLE_BRANCH_STACK) {
 		sz = sample->branch_stack->nr * sizeof(struct branch_entry);
-		/* nr, hw_idx */
+		 
 		sz += 2 * sizeof(u64);
 		memcpy(array, sample->branch_stack, sz);
 		array = (void *)array + sz;
@@ -1767,10 +1732,7 @@ int perf_event__synthesize_id_sample(__u64 *array, u64 type, const struct perf_s
 {
 	__u64 *start = array;
 
-	/*
-	 * used for cross-endian analysis. See git commit 65014ab3
-	 * for why this goofiness is needed.
-	 */
+	 
 	union u64_swap u;
 
 	if (type & PERF_SAMPLE_TID) {
@@ -1913,17 +1875,7 @@ int __machine__synthesize_threads(struct machine *machine, struct perf_tool *too
 				  perf_event__handler_t process, bool needs_mmap,
 				  bool data_mmap, unsigned int nr_threads_synthesize)
 {
-	/*
-	 * When perf runs in non-root PID namespace, and the namespace's proc FS
-	 * is not mounted, nsinfo__is_in_root_namespace() returns false.
-	 * In this case, the proc FS is coming for the parent namespace, thus
-	 * perf tool will wrongly gather process info from its parent PID
-	 * namespace.
-	 *
-	 * To avoid the confusion that the perf tool runs in a child PID
-	 * namespace but it synthesizes thread info from its parent PID
-	 * namespace, returns failure with warning.
-	 */
+	 
 	if (!nsinfo__is_in_root_namespace()) {
 		pr_err("Perf runs in non-root PID namespace but it tries to ");
 		pr_err("gather process info from its parent PID namespace.\n");
@@ -1939,7 +1891,7 @@ int __machine__synthesize_threads(struct machine *machine, struct perf_tool *too
 		return perf_event__synthesize_threads(tool, process, machine,
 						      needs_mmap, data_mmap,
 						      nr_threads_synthesize);
-	/* command specified */
+	 
 	return 0;
 }
 
@@ -2077,17 +2029,12 @@ int perf_event__synthesize_extra_attr(struct perf_tool *tool, struct evlist *evs
 	struct evsel *evsel;
 	int err;
 
-	/*
-	 * Synthesize other events stuff not carried within
-	 * attr event - unit, scale, name
-	 */
+	 
 	evlist__for_each_entry(evsel_list, evsel) {
 		if (!evsel->supported)
 			continue;
 
-		/*
-		 * Synthesize unit and scale only if it's defined.
-		 */
+		 
 		if (has_unit(evsel)) {
 			err = perf_event__synthesize_event_update_unit(tool, evsel, process);
 			if (err < 0) {
@@ -2112,10 +2059,7 @@ int perf_event__synthesize_extra_attr(struct perf_tool *tool, struct evlist *evs
 			}
 		}
 
-		/*
-		 * Name is needed only for pipe output,
-		 * perf.data carries event names.
-		 */
+		 
 		if (is_pipe) {
 			err = perf_event__synthesize_event_update_name(tool, evsel, process);
 			if (err < 0) {
@@ -2169,17 +2113,7 @@ int perf_event__synthesize_tracing_data(struct perf_tool *tool, int fd, struct e
 	ssize_t size = 0, aligned_size = 0, padding;
 	struct feat_fd ff;
 
-	/*
-	 * We are going to store the size of the data followed
-	 * by the data contents. Since the fd descriptor is a pipe,
-	 * we cannot seek back to store the size of the data once
-	 * we know it. Instead we:
-	 *
-	 * - write the tracing data to the temp file
-	 * - get/write the data size to pipe
-	 * - write the tracing data from the temp file
-	 *   to the pipe
-	 */
+	 
 	tdata = tracing_data_get(&evlist->core.entries, fd, true);
 	if (!tdata)
 		return -1;
@@ -2195,10 +2129,7 @@ int perf_event__synthesize_tracing_data(struct perf_tool *tool, int fd, struct e
 
 	process(tool, &ev, NULL, NULL);
 
-	/*
-	 * The put function will copy all the tracing data
-	 * stored in temp file to the pipe.
-	 */
+	 
 	tracing_data_put(tdata);
 
 	ff = (struct feat_fd){ .fd = fd };
@@ -2281,7 +2212,7 @@ int perf_event__synthesize_features(struct perf_tool *tool, struct perf_session 
 
 	sz_hdr = sizeof(fe->header);
 	sz = sizeof(union perf_event);
-	/* get a nice alignment */
+	 
 	sz = PERF_ALIGN(sz, page_size);
 
 	memset(&ff, 0, sizeof(ff));
@@ -2306,7 +2237,7 @@ int perf_event__synthesize_features(struct perf_tool *tool, struct perf_session 
 			pr_debug("Error writing feature\n");
 			continue;
 		}
-		/* ff.buf may have changed due to realloc in do_write() */
+		 
 		fe = ff.buf;
 		memset(fe, 0, sizeof(*fe));
 
@@ -2321,7 +2252,7 @@ int perf_event__synthesize_features(struct perf_tool *tool, struct perf_session 
 		}
 	}
 
-	/* Send HEADER_LAST_FEATURE mark. */
+	 
 	fe = ff.buf;
 	fe->feat_id     = HEADER_LAST_FEATURE;
 	fe->header.type = PERF_RECORD_HEADER_FEATURE;
@@ -2342,10 +2273,7 @@ int perf_event__synthesize_for_pipe(struct perf_tool *tool,
 	int ret = 0;
 	struct evlist *evlist = session->evlist;
 
-	/*
-	 * We need to synthesize events first, because some
-	 * features works on top of them (on report side).
-	 */
+	 
 	err = perf_event__synthesize_attrs(tool, evlist, process);
 	if (err < 0) {
 		pr_err("Couldn't synthesize attrs.\n");
@@ -2364,14 +2292,7 @@ int perf_event__synthesize_for_pipe(struct perf_tool *tool,
 	if (have_tracepoints(&evlist->core.entries)) {
 		int fd = perf_data__fd(data);
 
-		/*
-		 * FIXME err <= 0 here actually means that
-		 * there were no tracepoints so its not really
-		 * an error, just that we don't need to
-		 * synthesize anything.  We really have to
-		 * return this more properly and also
-		 * propagate errors that now are calling die()
-		 */
+		 
 		err = perf_event__synthesize_tracing_data(tool,	fd, evlist,
 							  process);
 		if (err <= 0) {

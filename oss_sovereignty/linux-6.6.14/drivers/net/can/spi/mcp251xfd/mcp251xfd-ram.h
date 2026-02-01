@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * mcp251xfd - Microchip MCP251xFD Family CAN controller driver
- *
- * Copyright (c) 2021, 2022 Pengutronix,
- *               Marc Kleine-Budde <kernel@pengutronix.de>
- */
+ 
 
 #ifndef _MCP251XFD_RAM_H
 #define _MCP251XFD_RAM_H

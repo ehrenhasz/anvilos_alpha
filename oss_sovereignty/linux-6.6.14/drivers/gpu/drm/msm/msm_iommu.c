@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/adreno-smmu-priv.h>
 #include <linux/io-pgtable.h>
@@ -21,7 +18,7 @@ struct msm_iommu_pagetable {
 	struct msm_mmu base;
 	struct msm_mmu *parent;
 	struct io_pgtable_ops *pgtbl_ops;
-	unsigned long pgsize_bitmap;	/* Bitmap of page sizes in use */
+	unsigned long pgsize_bitmap;	 
 	phys_addr_t ttbr;
 	u32 asid;
 };
@@ -30,7 +27,7 @@ static struct msm_iommu_pagetable *to_pagetable(struct msm_mmu *mmu)
 	return container_of(mmu, struct msm_iommu_pagetable, base);
 }
 
-/* based on iommu_pgsize() in iommu.c: */
+ 
 static size_t calc_pgsize(struct msm_iommu_pagetable *pagetable,
 			   unsigned long iova, phys_addr_t paddr,
 			   size_t size, size_t *count)
@@ -40,23 +37,23 @@ static size_t calc_pgsize(struct msm_iommu_pagetable *pagetable,
 	size_t offset, pgsize, pgsize_next;
 	unsigned long addr_merge = paddr | iova;
 
-	/* Page sizes supported by the hardware and small enough for @size */
+	 
 	pgsizes = pagetable->pgsize_bitmap & GENMASK(__fls(size), 0);
 
-	/* Constrain the page sizes further based on the maximum alignment */
+	 
 	if (likely(addr_merge))
 		pgsizes &= GENMASK(__ffs(addr_merge), 0);
 
-	/* Make sure we have at least one suitable page size */
+	 
 	BUG_ON(!pgsizes);
 
-	/* Pick the biggest page size remaining */
+	 
 	pgsize_idx = __fls(pgsizes);
 	pgsize = BIT(pgsize_idx);
 	if (!count)
 		return pgsize;
 
-	/* Find the next biggest support page size, if it exists */
+	 
 	pgsizes = pagetable->pgsize_bitmap & ~GENMASK(pgsize_idx, 0);
 	if (!pgsizes)
 		goto out_set_count;
@@ -64,20 +61,14 @@ static size_t calc_pgsize(struct msm_iommu_pagetable *pagetable,
 	pgsize_idx_next = __ffs(pgsizes);
 	pgsize_next = BIT(pgsize_idx_next);
 
-	/*
-	 * There's no point trying a bigger page size unless the virtual
-	 * and physical addresses are similarly offset within the larger page.
-	 */
+	 
 	if ((iova ^ paddr) & (pgsize_next - 1))
 		goto out_set_count;
 
-	/* Calculate the offset to the next page size alignment boundary */
+	 
 	offset = pgsize_next - (addr_merge & (pgsize_next - 1));
 
-	/*
-	 * If size is big enough to accommodate the larger page, reduce
-	 * the number of smaller pages.
-	 */
+	 
 	if (offset + pgsize_next <= size)
 		size = offset;
 
@@ -132,9 +123,7 @@ static int msm_iommu_pagetable_map(struct msm_mmu *mmu, u64 iova,
 			ret = ops->map_pages(ops, addr, phys, pgsize, count,
 					     prot, GFP_KERNEL, &mapped);
 
-			/* map_pages could fail after mapping some of the pages,
-			 * so update the counters before error handling.
-			 */
+			 
 			phys += mapped;
 			addr += mapped;
 			size -= mapped;
@@ -156,10 +145,7 @@ static void msm_iommu_pagetable_destroy(struct msm_mmu *mmu)
 	struct adreno_smmu_priv *adreno_smmu =
 		dev_get_drvdata(pagetable->parent->dev);
 
-	/*
-	 * If this is the last attached pagetable for the parent,
-	 * disable TTBR0 in the arm-smmu driver
-	 */
+	 
 	if (atomic_dec_return(&iommu->pagetables) == 0)
 		adreno_smmu->set_ttbr0_cfg(adreno_smmu->cookie, NULL);
 
@@ -231,14 +217,11 @@ struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
 	struct io_pgtable_cfg ttbr0_cfg;
 	int ret;
 
-	/* Get the pagetable configuration from the domain */
+	 
 	if (adreno_smmu->cookie)
 		ttbr1_cfg = adreno_smmu->get_ttbr1_cfg(adreno_smmu->cookie);
 
-	/*
-	 * If you hit this WARN_ONCE() you are probably missing an entry in
-	 * qcom_smmu_impl_of_match[] in arm-smmu-qcom.c
-	 */
+	 
 	if (WARN_ONCE(!ttbr1_cfg, "No per-process page tables"))
 		return ERR_PTR(-ENODEV);
 
@@ -249,10 +232,10 @@ struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
 	msm_mmu_init(&pagetable->base, parent->dev, &pagetable_funcs,
 		MSM_MMU_IOMMU_PAGETABLE);
 
-	/* Clone the TTBR1 cfg as starting point for TTBR0 cfg: */
+	 
 	ttbr0_cfg = *ttbr1_cfg;
 
-	/* The incoming cfg will have the TTBR1 quirk enabled */
+	 
 	ttbr0_cfg.quirks &= ~IO_PGTABLE_QUIRK_ARM_TTBR1;
 	ttbr0_cfg.tlb = &null_tlb_ops;
 
@@ -264,10 +247,7 @@ struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/*
-	 * If this is the first pagetable that we've allocated, send it back to
-	 * the arm-smmu driver as a trigger to set up TTBR0
-	 */
+	 
 	if (atomic_inc_return(&iommu->pagetables) == 1) {
 		ret = adreno_smmu->set_ttbr0_cfg(adreno_smmu->cookie, &ttbr0_cfg);
 		if (ret) {
@@ -277,17 +257,12 @@ struct msm_mmu *msm_iommu_pagetable_create(struct msm_mmu *parent)
 		}
 	}
 
-	/* Needed later for TLB flush */
+	 
 	pagetable->parent = parent;
 	pagetable->pgsize_bitmap = ttbr0_cfg.pgsize_bitmap;
 	pagetable->ttbr = ttbr0_cfg.arm_lpae_s1_cfg.ttbr;
 
-	/*
-	 * TODO we would like each set of page tables to have a unique ASID
-	 * to optimize TLB invalidation.  But iommu_flush_iotlb_all() will
-	 * end up flushing the ASID used for TTBR1 pagetables, which is not
-	 * what we want.  So for now just use the same ASID as TTBR1.
-	 */
+	 
 	pagetable->asid = 0;
 
 	return &pagetable->base;
@@ -338,7 +313,7 @@ static int msm_iommu_map(struct msm_mmu *mmu, uint64_t iova,
 	struct msm_iommu *iommu = to_msm_iommu(mmu);
 	size_t ret;
 
-	/* The arm-smmu driver expects the addresses to be sign extended */
+	 
 	if (iova & BIT_ULL(48))
 		iova |= GENMASK_ULL(63, 49);
 
@@ -421,7 +396,7 @@ struct msm_mmu *msm_iommu_gpu_new(struct device *dev, struct msm_gpu *gpu, unsig
 	iommu = to_msm_iommu(mmu);
 	iommu_set_fault_handler(iommu->domain, msm_fault_handler, iommu);
 
-	/* Enable stall on iommu fault: */
+	 
 	if (adreno_smmu->set_stall)
 		adreno_smmu->set_stall(adreno_smmu->cookie, true);
 

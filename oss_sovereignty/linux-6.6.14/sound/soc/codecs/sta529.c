@@ -1,15 +1,4 @@
-/*
- * ASoC codec driver for spear platform
- *
- * sound/soc/codecs/sta529.c -- spear ALSA Soc codec driver
- *
- * Copyright (C) 2012 ST Microelectronics
- * Rajeev Kumar <rajeevkumar.linux@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -29,7 +18,7 @@
 #include <sound/soc-dapm.h>
 #include <sound/tlv.h>
 
-/* STA529 Register offsets */
+ 
 #define	 STA529_FFXCFG0		0x00
 #define	 STA529_FFXCFG1		0x01
 #define	 STA529_MVOL		0x02
@@ -49,7 +38,7 @@
 #define	 STA529_PLLCFG3		0x17
 #define	 STA529_PLLPFE		0x18
 #define	 STA529_PLLST		0x19
-#define	 STA529_ADCCFG		0x1E /*mic_select*/
+#define	 STA529_ADCCFG		0x1E  
 #define	 STA529_CKOCFG		0x1F
 #define	 STA529_MISC		0x20
 #define	 STA529_PADST0		0x21
@@ -95,18 +84,18 @@
 #define AUDIO_MUTE_MSK		0x80
 
 static const struct reg_default sta529_reg_defaults[] = {
-	{ 0,  0x35 },     /* R0   - FFX Configuration reg 0 */
-	{ 1,  0xc8 },     /* R1   - FFX Configuration reg 1 */
-	{ 2,  0x50 },     /* R2   - Master Volume */
-	{ 3,  0x00 },     /* R3   - Left Volume */
-	{ 4,  0x00 },     /* R4  -  Right Volume */
-	{ 10, 0xb2 },     /* R10  - S2P Config Reg 0 */
-	{ 11, 0x41 },     /* R11  - S2P Config Reg 1 */
-	{ 12, 0x92 },     /* R12  - P2S Config Reg 0 */
-	{ 13, 0x41 },     /* R13  - P2S Config Reg 1 */
-	{ 30, 0xd2 },     /* R30  - ADC Config Reg */
-	{ 31, 0x40 },     /* R31  - clock Out Reg */
-	{ 32, 0x21 },     /* R32  - Misc Register */
+	{ 0,  0x35 },      
+	{ 1,  0xc8 },      
+	{ 2,  0x50 },      
+	{ 3,  0x00 },      
+	{ 4,  0x00 },      
+	{ 10, 0xb2 },      
+	{ 11, 0x41 },      
+	{ 12, 0x92 },      
+	{ 13, 0x41 },      
+	{ 30, 0xd2 },      
+	{ 31, 0x40 },      
+	{ 32, 0x21 },      
 };
 
 struct sta529 {
@@ -169,7 +158,7 @@ static int sta529_set_bias_level(struct snd_soc_component *component, enum
 			regcache_sync(sta529->regmap);
 		snd_soc_component_update_bits(component, STA529_FFXCFG0,
 					POWER_CNTLMSAK, POWER_STDBY);
-		/* Making FFX output to zero */
+		 
 		snd_soc_component_update_bits(component, STA529_FFXCFG0, FFX_MASK,
 				FFX_OFF);
 		snd_soc_component_update_bits(component, STA529_MISC, FFX_CLK_MSK,
@@ -268,7 +257,7 @@ static int sta529_set_dai_fmt(struct snd_soc_dai *codec_dai, u32 fmt)
 	struct snd_soc_component *component = codec_dai->component;
 	u8 mode = 0;
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_LEFT_J:
 		mode = LEFT_J_DATA_FORMAT;

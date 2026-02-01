@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Vitesse PHYs
- *
- * Author: Kriston Carson
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -11,12 +7,12 @@
 #include <linux/ethtool.h>
 #include <linux/phy.h>
 
-/* Vitesse Extended Page Magic Register(s) */
+ 
 #define MII_VSC82X4_EXT_PAGE_16E	0x10
 #define MII_VSC82X4_EXT_PAGE_17E	0x11
 #define MII_VSC82X4_EXT_PAGE_18E	0x12
 
-/* Vitesse Extended Control Register 1 */
+ 
 #define MII_VSC8244_EXT_CON1           0x17
 #define MII_VSC8244_EXTCON1_INIT       0x0000
 #define MII_VSC8244_EXTCON1_TX_SKEW_MASK	0x0c00
@@ -24,7 +20,7 @@
 #define MII_VSC8244_EXTCON1_TX_SKEW	0x0800
 #define MII_VSC8244_EXTCON1_RX_SKEW	0x0200
 
-/* Vitesse Interrupt Mask Register */
+ 
 #define MII_VSC8244_IMASK		0x19
 #define MII_VSC8244_IMASK_IEN		0x8000
 #define MII_VSC8244_IMASK_SPEED		0x4000
@@ -34,7 +30,7 @@
 
 #define MII_VSC8221_IMASK_MASK		0xa000
 
-/* Vitesse Interrupt Status Register */
+ 
 #define MII_VSC8244_ISTAT		0x1a
 #define MII_VSC8244_ISTAT_STATUS	0x8000
 #define MII_VSC8244_ISTAT_SPEED		0x4000
@@ -46,7 +42,7 @@
 
 #define MII_VSC8221_ISTAT_MASK		MII_VSC8244_ISTAT_LINK
 
-/* Vitesse Auxiliary Control/Status Register */
+ 
 #define MII_VSC8244_AUX_CONSTAT		0x1c
 #define MII_VSC8244_AUXCONSTAT_INIT	0x0000
 #define MII_VSC8244_AUXCONSTAT_DUPLEX	0x0020
@@ -54,13 +50,13 @@
 #define MII_VSC8244_AUXCONSTAT_GBIT	0x0010
 #define MII_VSC8244_AUXCONSTAT_100	0x0008
 
-#define MII_VSC8221_AUXCONSTAT_INIT	0x0004 /* need to set this bit? */
+#define MII_VSC8221_AUXCONSTAT_INIT	0x0004  
 #define MII_VSC8221_AUXCONSTAT_RESERVED	0x0004
 
-/* Vitesse Extended Page Access Register */
+ 
 #define MII_VSC82X4_EXT_PAGE_ACCESS	0x1f
 
-/* Vitesse VSC8601 Extended PHY Control Register 1 */
+ 
 #define MII_VSC8601_EPHY_CTL		0x17
 #define MII_VSC8601_EPHY_CTL_RGMII_SKEW	(1 << 8)
 
@@ -130,23 +126,19 @@ static int vsc73xx_write_page(struct phy_device *phydev, int page)
 
 static void vsc73xx_config_init(struct phy_device *phydev)
 {
-	/* Receiver init */
+	 
 	phy_write(phydev, 0x1f, 0x2a30);
 	phy_modify(phydev, 0x0c, 0x0300, 0x0200);
 	phy_write(phydev, 0x1f, 0x0000);
 
-	/* Config LEDs 0x61 */
+	 
 	phy_modify(phydev, MII_TPISTATUS, 0xff00, 0x0061);
 }
 
 static int vsc738x_config_init(struct phy_device *phydev)
 {
 	u16 rev;
-	/* This magic sequence appear in the application note
-	 * "VSC7385/7388 PHY Configuration".
-	 *
-	 * Maybe one day we will get to know what it all means.
-	 */
+	 
 	phy_write(phydev, 0x1f, 0x2a30);
 	phy_modify(phydev, 0x08, 0x0200, 0x0200);
 	phy_write(phydev, 0x1f, 0x52b5);
@@ -158,11 +150,11 @@ static int vsc738x_config_init(struct phy_device *phydev)
 	phy_modify(phydev, 0x08, 0x0200, 0x0000);
 	phy_write(phydev, 0x1f, 0x0000);
 
-	/* Read revision */
+	 
 	rev = phy_read(phydev, MII_PHYSID2);
 	rev &= 0x0f;
 
-	/* Special quirk for revision 0 */
+	 
 	if (rev == 0) {
 		phy_write(phydev, 0x1f, 0x2a30);
 		phy_modify(phydev, 0x08, 0x0200, 0x0200);
@@ -192,9 +184,7 @@ static int vsc738x_config_init(struct phy_device *phydev)
 		phy_write(phydev, 0x1f, 0x2a30);
 		phy_modify(phydev, 0x16, 0x0fc0, 0x0240);
 		phy_modify(phydev, 0x14, 0x6000, 0x4000);
-		/* bits 14-15 in extended register 0x14 controls DACG amplitude
-		 * 6 = -8%, 2 is hardware default
-		 */
+		 
 		phy_write(phydev, 0x1f, 0x0001);
 		phy_modify(phydev, 0x14, 0xe000, 0x6000);
 		phy_write(phydev, 0x1f, 0x0000);
@@ -207,11 +197,7 @@ static int vsc738x_config_init(struct phy_device *phydev)
 
 static int vsc739x_config_init(struct phy_device *phydev)
 {
-	/* This magic sequence appears in the VSC7395 SparX-G5e application
-	 * note "VSC7395/VSC7398 PHY Configuration"
-	 *
-	 * Maybe one day we will get to know what it all means.
-	 */
+	 
 	phy_write(phydev, 0x1f, 0x2a30);
 	phy_modify(phydev, 0x08, 0x0200, 0x0200);
 	phy_write(phydev, 0x1f, 0x52b5);
@@ -239,18 +225,11 @@ static int vsc739x_config_init(struct phy_device *phydev)
 
 static int vsc73xx_config_aneg(struct phy_device *phydev)
 {
-	/* The VSC73xx switches does not like to be instructed to
-	 * do autonegotiation in any way, it prefers that you just go
-	 * with the power-on/reset defaults. Writing some registers will
-	 * just make autonegotiation permanently fail.
-	 */
+	 
 	return 0;
 }
 
-/* This adds a skew for both TX and RX clocks, so the skew should only be
- * applied to "rgmii-id" interfaces. It may not work as expected
- * on "rgmii-txid", "rgmii-rxid" or "rgmii" interfaces.
- */
+ 
 static int vsc8601_add_skew(struct phy_device *phydev)
 {
 	int ret;
@@ -281,9 +260,7 @@ static int vsc82xx_config_intr(struct phy_device *phydev)
 	int err;
 
 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED)
-		/* Don't bother to ACK the interrupts since the 824x cannot
-		 * clear the interrupts if they are disabled.
-		 */
+		 
 		err = phy_write(phydev, MII_VSC8244_IMASK,
 			(phydev->drv->phy_id == PHY_ID_VSC8234 ||
 			 phydev->drv->phy_id == PHY_ID_VSC8244 ||
@@ -292,9 +269,7 @@ static int vsc82xx_config_intr(struct phy_device *phydev)
 				MII_VSC8244_IMASK_MASK :
 				MII_VSC8221_IMASK_MASK);
 	else {
-		/* The Vitesse PHY cannot clear the interrupt
-		 * once it has disabled them, so we clear them first
-		 */
+		 
 		err = phy_read(phydev, MII_VSC8244_ISTAT);
 
 		if (err < 0)
@@ -339,17 +314,10 @@ static int vsc8221_config_init(struct phy_device *phydev)
 			MII_VSC8221_AUXCONSTAT_INIT);
 	return err;
 
-	/* Perhaps we should set EXT_CON1 based on the interface?
-	 * Options are 802.3Z SerDes or SGMII
-	 */
+	 
 }
 
-/* vsc82x4_config_autocross_enable - Enable auto MDI/MDI-X for forced links
- * @phydev: target phy_device struct
- *
- * Enable auto MDI/MDI-X when in 10/100 forced link speeds by writing
- * special values in the VSC8234/VSC8244 extended reserved registers
- */
+ 
 static int vsc82x4_config_autocross_enable(struct phy_device *phydev)
 {
 	int ret;
@@ -357,7 +325,7 @@ static int vsc82x4_config_autocross_enable(struct phy_device *phydev)
 	if (phydev->autoneg == AUTONEG_ENABLE || phydev->speed > SPEED_100)
 		return 0;
 
-	/* map extended registers set 0x10 - 0x1e */
+	 
 	ret = phy_write(phydev, MII_VSC82X4_EXT_PAGE_ACCESS, 0x52b5);
 	if (ret >= 0)
 		ret = phy_write(phydev, MII_VSC82X4_EXT_PAGE_18E, 0x0012);
@@ -365,7 +333,7 @@ static int vsc82x4_config_autocross_enable(struct phy_device *phydev)
 		ret = phy_write(phydev, MII_VSC82X4_EXT_PAGE_17E, 0x2803);
 	if (ret >= 0)
 		ret = phy_write(phydev, MII_VSC82X4_EXT_PAGE_16E, 0x87fa);
-	/* map standard registers set 0x10 - 0x1e */
+	 
 	if (ret >= 0)
 		ret = phy_write(phydev, MII_VSC82X4_EXT_PAGE_ACCESS, 0x0000);
 	else
@@ -374,25 +342,16 @@ static int vsc82x4_config_autocross_enable(struct phy_device *phydev)
 	return ret;
 }
 
-/* vsc82x4_config_aneg - restart auto-negotiation or write BMCR
- * @phydev: target phy_device struct
- *
- * Description: If auto-negotiation is enabled, we configure the
- *   advertising, and then restart auto-negotiation.  If it is not
- *   enabled, then we write the BMCR and also start the auto
- *   MDI/MDI-X feature
- */
+ 
 static int vsc82x4_config_aneg(struct phy_device *phydev)
 {
 	int ret;
 
-	/* Enable auto MDI/MDI-X when in 10/100 forced link speeds by
-	 * writing special values in the VSC8234 extended reserved registers
-	 */
+	 
 	if (phydev->autoneg != AUTONEG_ENABLE && phydev->speed <= SPEED_100) {
 		ret = genphy_setup_forced(phydev);
 
-		if (ret < 0) /* error */
+		if (ret < 0)  
 			return ret;
 
 		return vsc82x4_config_autocross_enable(phydev);
@@ -401,13 +360,13 @@ static int vsc82x4_config_aneg(struct phy_device *phydev)
 	return genphy_config_aneg(phydev);
 }
 
-/* Vitesse 82xx */
+ 
 static struct phy_driver vsc82xx_driver[] = {
 {
 	.phy_id         = PHY_ID_VSC8234,
 	.name           = "Vitesse VSC8234",
 	.phy_id_mask    = 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init    = &vsc824x_config_init,
 	.config_aneg    = &vsc82x4_config_aneg,
 	.config_intr    = &vsc82xx_config_intr,
@@ -416,7 +375,7 @@ static struct phy_driver vsc82xx_driver[] = {
 	.phy_id		= PHY_ID_VSC8244,
 	.name		= "Vitesse VSC8244",
 	.phy_id_mask	= 0x000fffc0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init	= &vsc824x_config_init,
 	.config_aneg	= &vsc82x4_config_aneg,
 	.config_intr	= &vsc82xx_config_intr,
@@ -425,7 +384,7 @@ static struct phy_driver vsc82xx_driver[] = {
 	.phy_id         = PHY_ID_VSC8572,
 	.name           = "Vitesse VSC8572",
 	.phy_id_mask    = 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init    = &vsc824x_config_init,
 	.config_aneg    = &vsc82x4_config_aneg,
 	.config_intr    = &vsc82xx_config_intr,
@@ -434,7 +393,7 @@ static struct phy_driver vsc82xx_driver[] = {
 	.phy_id         = PHY_ID_VSC8601,
 	.name           = "Vitesse VSC8601",
 	.phy_id_mask    = 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init    = &vsc8601_config_init,
 	.config_intr    = &vsc82xx_config_intr,
 	.handle_interrupt = &vsc82xx_handle_interrupt,
@@ -442,7 +401,7 @@ static struct phy_driver vsc82xx_driver[] = {
 	.phy_id         = PHY_ID_VSC7385,
 	.name           = "Vitesse VSC7385",
 	.phy_id_mask    = 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init    = vsc738x_config_init,
 	.config_aneg    = vsc73xx_config_aneg,
 	.read_page      = vsc73xx_read_page,
@@ -451,7 +410,7 @@ static struct phy_driver vsc82xx_driver[] = {
 	.phy_id         = PHY_ID_VSC7388,
 	.name           = "Vitesse VSC7388",
 	.phy_id_mask    = 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init    = vsc738x_config_init,
 	.config_aneg    = vsc73xx_config_aneg,
 	.read_page      = vsc73xx_read_page,
@@ -460,7 +419,7 @@ static struct phy_driver vsc82xx_driver[] = {
 	.phy_id         = PHY_ID_VSC7395,
 	.name           = "Vitesse VSC7395",
 	.phy_id_mask    = 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init    = vsc739x_config_init,
 	.config_aneg    = vsc73xx_config_aneg,
 	.read_page      = vsc73xx_read_page,
@@ -469,7 +428,7 @@ static struct phy_driver vsc82xx_driver[] = {
 	.phy_id         = PHY_ID_VSC7398,
 	.name           = "Vitesse VSC7398",
 	.phy_id_mask    = 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init    = vsc739x_config_init,
 	.config_aneg    = vsc73xx_config_aneg,
 	.read_page      = vsc73xx_read_page,
@@ -478,26 +437,26 @@ static struct phy_driver vsc82xx_driver[] = {
 	.phy_id         = PHY_ID_VSC8662,
 	.name           = "Vitesse VSC8662",
 	.phy_id_mask    = 0x000ffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init    = &vsc824x_config_init,
 	.config_aneg    = &vsc82x4_config_aneg,
 	.config_intr    = &vsc82xx_config_intr,
 	.handle_interrupt = &vsc82xx_handle_interrupt,
 }, {
-	/* Vitesse 8221 */
+	 
 	.phy_id		= PHY_ID_VSC8221,
 	.phy_id_mask	= 0x000ffff0,
 	.name		= "Vitesse VSC8221",
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init	= &vsc8221_config_init,
 	.config_intr	= &vsc82xx_config_intr,
 	.handle_interrupt = &vsc82xx_handle_interrupt,
 }, {
-	/* Vitesse 8211 */
+	 
 	.phy_id		= PHY_ID_VSC8211,
 	.phy_id_mask	= 0x000ffff0,
 	.name		= "Vitesse VSC8211",
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init	= &vsc8221_config_init,
 	.config_intr	= &vsc82xx_config_intr,
 	.handle_interrupt = &vsc82xx_handle_interrupt,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * User Events ABI Test Program
- *
- * Copyright (c) 2022 Beau Belgrave <beaub@linux.microsoft.com>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <sched.h>
@@ -108,7 +104,7 @@ FIXTURE_TEARDOWN(user) {
 }
 
 TEST_F(user, enablement) {
-	/* Changes should be reflected immediately */
+	 
 	ASSERT_EQ(0, self->check);
 	ASSERT_EQ(0, reg_enable(&self->check, sizeof(int), 0));
 	ASSERT_EQ(0, change_event(true));
@@ -116,20 +112,20 @@ TEST_F(user, enablement) {
 	ASSERT_EQ(0, change_event(false));
 	ASSERT_EQ(0, self->check);
 
-	/* Ensure kernel clears bit after disable */
+	 
 	ASSERT_EQ(0, change_event(true));
 	ASSERT_EQ(1, self->check);
 	ASSERT_EQ(0, reg_disable(&self->check, 0));
 	ASSERT_EQ(0, self->check);
 
-	/* Ensure doesn't change after unreg */
+	 
 	ASSERT_EQ(0, change_event(true));
 	ASSERT_EQ(0, self->check);
 	ASSERT_EQ(0, change_event(false));
 }
 
 TEST_F(user, bit_sizes) {
-	/* Allow 0-31 bits for 32-bit */
+	 
 	ASSERT_EQ(0, reg_enable(&self->check, sizeof(int), 0));
 	ASSERT_EQ(0, reg_enable(&self->check, sizeof(int), 31));
 	ASSERT_NE(0, reg_enable(&self->check, sizeof(int), 32));
@@ -137,13 +133,13 @@ TEST_F(user, bit_sizes) {
 	ASSERT_EQ(0, reg_disable(&self->check, 31));
 
 #if BITS_PER_LONG == 8
-	/* Allow 0-64 bits for 64-bit */
+	 
 	ASSERT_EQ(0, reg_enable(&self->check_long, sizeof(long), 63));
 	ASSERT_NE(0, reg_enable(&self->check_long, sizeof(long), 64));
 	ASSERT_EQ(0, reg_disable(&self->check_long, 63));
 #endif
 
-	/* Disallowed sizes (everything beside 4 and 8) */
+	 
 	ASSERT_NE(0, reg_enable(&self->check, 1, 0));
 	ASSERT_NE(0, reg_enable(&self->check, 2, 0));
 	ASSERT_NE(0, reg_enable(&self->check, 3, 0));
@@ -157,15 +153,15 @@ TEST_F(user, bit_sizes) {
 TEST_F(user, forks) {
 	int i;
 
-	/* Ensure COW pages get updated after fork */
+	 
 	ASSERT_EQ(0, reg_enable(&self->check, sizeof(int), 0));
 	ASSERT_EQ(0, self->check);
 
 	if (fork() == 0) {
-		/* Force COW */
+		 
 		self->check = 0;
 
-		/* Up to 1 sec for enablement */
+		 
 		for (i = 0; i < 10; ++i) {
 			usleep(100000);
 
@@ -176,14 +172,14 @@ TEST_F(user, forks) {
 		exit(1);
 	}
 
-	/* Allow generous time for COW, then enable */
+	 
 	usleep(100000);
 	ASSERT_EQ(0, change_event(true));
 
 	ASSERT_NE(-1, wait(&i));
 	ASSERT_EQ(0, WEXITSTATUS(i));
 
-	/* Ensure child doesn't disable parent */
+	 
 	if (fork() == 0)
 		exit(reg_disable(&self->check, 0));
 
@@ -194,7 +190,7 @@ TEST_F(user, forks) {
 	ASSERT_EQ(0, self->check);
 }
 
-/* Waits up to 1 sec for enablement */
+ 
 static int clone_check(void *check)
 {
 	int i;
@@ -219,7 +215,7 @@ TEST_F(user, clones) {
 	ASSERT_EQ(0, reg_enable(&self->check, sizeof(int), 0));
 	ASSERT_EQ(0, self->check);
 
-	/* Shared VM should see enablements */
+	 
 	ASSERT_NE(-1, clone(&clone_check, stack + stack_size,
 			    CLONE_VM | SIGCHLD, &self->check));
 

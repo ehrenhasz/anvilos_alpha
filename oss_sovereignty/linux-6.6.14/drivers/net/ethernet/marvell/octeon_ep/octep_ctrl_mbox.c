@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell Octeon EP (EndPoint) Ethernet Driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 #include <linux/types.h>
 #include <linux/errno.h>
 #include <linux/string.h>
@@ -19,16 +15,16 @@
 #include "octep_config.h"
 #include "octep_main.h"
 
-/* Timeout in msecs for message response */
+ 
 #define OCTEP_CTRL_MBOX_MSG_TIMEOUT_MS			100
-/* Time in msecs to wait for message response */
+ 
 #define OCTEP_CTRL_MBOX_MSG_WAIT_MS			10
 
-/* Size of mbox info in bytes */
+ 
 #define OCTEP_CTRL_MBOX_INFO_SZ				256
-/* Size of mbox host to fw queue info in bytes */
+ 
 #define OCTEP_CTRL_MBOX_H2FQ_INFO_SZ			16
-/* Size of mbox fw to host queue info in bytes */
+ 
 #define OCTEP_CTRL_MBOX_F2HQ_INFO_SZ			16
 
 #define OCTEP_CTRL_MBOX_TOTAL_INFO_SZ	(OCTEP_CTRL_MBOX_INFO_SZ + \
@@ -119,7 +115,7 @@ int octep_ctrl_mbox_init(struct octep_ctrl_mbox *mbox)
 			  mbox->h2fq.sz;
 
 	writeq(mbox->version, OCTEP_CTRL_MBOX_INFO_HOST_VERSION(mbox->barmem));
-	/* ensure ready state is seen after everything is initialized */
+	 
 	wmb();
 	writeq(OCTEP_CTRL_MBOX_STATUS_READY,
 	       OCTEP_CTRL_MBOX_INFO_HOST_STATUS(mbox->barmem));
@@ -135,20 +131,20 @@ octep_write_mbox_data(struct octep_ctrl_mbox_q *q, u32 *pi, u32 ci, void *buf, u
 	u8 __iomem *qbuf;
 	u32 cp_sz;
 
-	/* Assumption: Caller has ensured enough write space */
+	 
 	qbuf = (q->hw_q + *pi);
 	if (*pi < ci) {
-		/* copy entire w_sz */
+		 
 		memcpy_toio(qbuf, buf, w_sz);
 		*pi = octep_ctrl_mbox_circq_inc(*pi, w_sz, q->sz);
 	} else {
-		/* copy up to end of queue */
+		 
 		cp_sz = min((q->sz - *pi), w_sz);
 		memcpy_toio(qbuf, buf, cp_sz);
 		w_sz -= cp_sz;
 		*pi = octep_ctrl_mbox_circq_inc(*pi, cp_sz, q->sz);
 		if (w_sz) {
-			/* roll over and copy remaining w_sz */
+			 
 			buf += cp_sz;
 			qbuf = (q->hw_q + *pi);
 			memcpy_toio(qbuf, buf, w_sz);
@@ -200,20 +196,20 @@ octep_read_mbox_data(struct octep_ctrl_mbox_q *q, u32 pi, u32 *ci, void *buf, u3
 	u8 __iomem *qbuf;
 	u32 cp_sz;
 
-	/* Assumption: Caller has ensured enough read space */
+	 
 	qbuf = (q->hw_q + *ci);
 	if (*ci < pi) {
-		/* copy entire r_sz */
+		 
 		memcpy_fromio(buf, qbuf, r_sz);
 		*ci = octep_ctrl_mbox_circq_inc(*ci, r_sz, q->sz);
 	} else {
-		/* copy up to end of queue */
+		 
 		cp_sz = min((q->sz - *ci), r_sz);
 		memcpy_fromio(buf, qbuf, cp_sz);
 		r_sz -= cp_sz;
 		*ci = octep_ctrl_mbox_circq_inc(*ci, cp_sz, q->sz);
 		if (r_sz) {
-			/* roll over and copy remaining r_sz */
+			 
 			buf += cp_sz;
 			qbuf = (q->hw_q + *ci);
 			memcpy_fromio(buf, qbuf, r_sz);
@@ -267,7 +263,7 @@ int octep_ctrl_mbox_uninit(struct octep_ctrl_mbox *mbox)
 	writeq(0, OCTEP_CTRL_MBOX_INFO_HOST_VERSION(mbox->barmem));
 	writeq(OCTEP_CTRL_MBOX_STATUS_INVALID,
 	       OCTEP_CTRL_MBOX_INFO_HOST_STATUS(mbox->barmem));
-	/* ensure uninit state is written before uninitialization */
+	 
 	wmb();
 
 	mutex_destroy(&mbox->h2fq_lock);

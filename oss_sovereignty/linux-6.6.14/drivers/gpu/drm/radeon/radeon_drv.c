@@ -1,33 +1,6 @@
-/*
- * \file radeon_drv.c
- * ATI Radeon driver
- *
- * \author Gareth Hughes <gareth@valinux.com>
- */
+ 
 
-/*
- * Copyright 2000 VA Linux Systems, Inc., Sunnyvale, California.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * VA LINUX SYSTEMS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 
 #include <linux/compat.h>
@@ -54,62 +27,7 @@
 #include "radeon_device.h"
 #include "radeon_prime.h"
 
-/*
- * KMS wrapper.
- * - 2.0.0 - initial interface
- * - 2.1.0 - add square tiling interface
- * - 2.2.0 - add r6xx/r7xx const buffer support
- * - 2.3.0 - add MSPOS + 3D texture + r500 VAP regs
- * - 2.4.0 - add crtc id query
- * - 2.5.0 - add get accel 2 to work around ddx breakage for evergreen
- * - 2.6.0 - add tiling config query (r6xx+), add initial HiZ support (r300->r500)
- *   2.7.0 - fixups for r600 2D tiling support. (no external ABI change), add eg dyn gpr regs
- *   2.8.0 - pageflip support, r500 US_FORMAT regs. r500 ARGB2101010 colorbuf, r300->r500 CMASK, clock crystal query
- *   2.9.0 - r600 tiling (s3tc,rgtc) working, SET_PREDICATION packet 3 on r600 + eg, backend query
- *   2.10.0 - fusion 2D tiling
- *   2.11.0 - backend map, initial compute support for the CS checker
- *   2.12.0 - RADEON_CS_KEEP_TILING_FLAGS
- *   2.13.0 - virtual memory support, streamout
- *   2.14.0 - add evergreen tiling informations
- *   2.15.0 - add max_pipes query
- *   2.16.0 - fix evergreen 2D tiled surface calculation
- *   2.17.0 - add STRMOUT_BASE_UPDATE for r7xx
- *   2.18.0 - r600-eg: allow "invalid" DB formats
- *   2.19.0 - r600-eg: MSAA textures
- *   2.20.0 - r600-si: RADEON_INFO_TIMESTAMP query
- *   2.21.0 - r600-r700: FMASK and CMASK
- *   2.22.0 - r600 only: RESOLVE_BOX allowed
- *   2.23.0 - allow STRMOUT_BASE_UPDATE on RS780 and RS880
- *   2.24.0 - eg only: allow MIP_ADDRESS=0 for MSAA textures
- *   2.25.0 - eg+: new info request for num SE and num SH
- *   2.26.0 - r600-eg: fix htile size computation
- *   2.27.0 - r600-SI: Add CS ioctl support for async DMA
- *   2.28.0 - r600-eg: Add MEM_WRITE packet support
- *   2.29.0 - R500 FP16 color clear registers
- *   2.30.0 - fix for FMASK texturing
- *   2.31.0 - Add fastfb support for rs690
- *   2.32.0 - new info request for rings working
- *   2.33.0 - Add SI tiling mode array query
- *   2.34.0 - Add CIK tiling mode array query
- *   2.35.0 - Add CIK macrotile mode array query
- *   2.36.0 - Fix CIK DCE tiling setup
- *   2.37.0 - allow GS ring setup on r6xx/r7xx
- *   2.38.0 - RADEON_GEM_OP (GET_INITIAL_DOMAIN, SET_INITIAL_DOMAIN),
- *            CIK: 1D and linear tiling modes contain valid PIPE_CONFIG
- *   2.39.0 - Add INFO query for number of active CUs
- *   2.40.0 - Add RADEON_GEM_GTT_WC/UC, flush HDP cache before submitting
- *            CS to GPU on >= r600
- *   2.41.0 - evergreen/cayman: Add SET_BASE/DRAW_INDIRECT command parsing support
- *   2.42.0 - Add VCE/VUI (Video Usability Information) support
- *   2.43.0 - RADEON_INFO_GPU_RESET_COUNTER
- *   2.44.0 - SET_APPEND_CNT packet3 support
- *   2.45.0 - Allow setting shader registers using DMA/COPY packet3 on SI
- *   2.46.0 - Add PFP_SYNC_ME support on evergreen
- *   2.47.0 - Add UVD_NO_OP register support
- *   2.48.0 - TA_CS_BC_BASE_ADDR allowed on SI
- *   2.49.0 - DRM_RADEON_GEM_INFO ioctl returns correct vram_size/visible values
- *   2.50.0 - Allows unaligned shader loads on CIK. (needed by OpenGL)
- */
+ 
 #define KMS_DRIVER_MAJOR	2
 #define KMS_DRIVER_MINOR	50
 #define KMS_DRIVER_PATCHLEVEL	0
@@ -120,7 +38,7 @@ int radeon_dynclks = -1;
 int radeon_r4xx_atom;
 int radeon_agpmode = -1;
 int radeon_vram_limit;
-int radeon_gart_size = -1; /* auto */
+int radeon_gart_size = -1;  
 int radeon_benchmarking;
 int radeon_testing;
 int radeon_connector_table;
@@ -263,7 +181,7 @@ static int radeon_pci_probe(struct pci_dev *pdev,
 	int ret;
 
 	if (!ent)
-		return -ENODEV; /* Avoid NULL-ptr deref in drm_get_pci_dev */
+		return -ENODEV;  
 
 	flags = ent->driver_data;
 
@@ -295,7 +213,7 @@ static int radeon_pci_probe(struct pci_dev *pdev,
 	if (vga_switcheroo_client_probe_defer(pdev))
 		return -EPROBE_DEFER;
 
-	/* Get rid of things like offb */
+	 
 	ret = drm_aperture_remove_conflicting_pci_framebuffers(pdev, &kms_driver);
 	if (ret)
 		return ret;
@@ -336,20 +254,12 @@ radeon_pci_remove(struct pci_dev *pdev)
 static void
 radeon_pci_shutdown(struct pci_dev *pdev)
 {
-	/* if we are running in a VM, make sure the device
-	 * torn down properly on reboot/shutdown
-	 */
+	 
 	if (radeon_device_is_virtual())
 		radeon_pci_remove(pdev);
 
 #if defined(CONFIG_PPC64) || defined(CONFIG_MACH_LOONGSON64)
-	/*
-	 * Some adapters need to be suspended before a
-	 * shutdown occurs in order to prevent an error
-	 * during kexec, shutdown or reboot.
-	 * Make this power and Loongson specific because
-	 * it breaks some other boards.
-	 */
+	 
 	radeon_suspend_kms(pci_get_drvdata(pdev), true, true, false);
 #endif
 }
@@ -365,7 +275,7 @@ static int radeon_pmops_resume(struct device *dev)
 {
 	struct drm_device *drm_dev = dev_get_drvdata(dev);
 
-	/* GPU comes up enabled by the bios on resume */
+	 
 	if (radeon_is_px(drm_dev)) {
 		pm_runtime_disable(dev);
 		pm_runtime_set_active(dev);
@@ -460,7 +370,7 @@ static int radeon_pmops_runtime_idle(struct device *dev)
 
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_autosuspend(dev);
-	/* we don't want the main rpm_idle to call suspend - we want to autosuspend */
+	 
 	return 1;
 }
 
@@ -550,7 +460,7 @@ static const struct drm_ioctl_desc radeon_ioctls_kms[] = {
 	DRM_IOCTL_DEF_DRV(RADEON_SETPARAM, drm_invalid_op, DRM_AUTH),
 	DRM_IOCTL_DEF_DRV(RADEON_SURF_ALLOC, drm_invalid_op, DRM_AUTH),
 	DRM_IOCTL_DEF_DRV(RADEON_SURF_FREE, drm_invalid_op, DRM_AUTH),
-	/* KMS */
+	 
 	DRM_IOCTL_DEF_DRV(RADEON_GEM_INFO, radeon_gem_info_ioctl, DRM_AUTH|DRM_RENDER_ALLOW),
 	DRM_IOCTL_DEF_DRV(RADEON_GEM_CREATE, radeon_gem_create_ioctl, DRM_AUTH|DRM_RENDER_ALLOW),
 	DRM_IOCTL_DEF_DRV(RADEON_GEM_MMAP, radeon_gem_mmap_ioctl, DRM_AUTH|DRM_RENDER_ALLOW),

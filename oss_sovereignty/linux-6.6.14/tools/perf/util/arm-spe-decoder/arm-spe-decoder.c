@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * arm_spe_decoder.c: ARM SPE support
- */
+
+ 
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -26,46 +24,33 @@ static u64 arm_spe_calc_ip(int index, u64 payload)
 {
 	u64 ns, el, val;
 
-	/* Instruction virtual address or Branch target address */
+	 
 	if (index == SPE_ADDR_PKT_HDR_INDEX_INS ||
 	    index == SPE_ADDR_PKT_HDR_INDEX_BRANCH) {
 		ns = SPE_ADDR_PKT_GET_NS(payload);
 		el = SPE_ADDR_PKT_GET_EL(payload);
 
-		/* Clean highest byte */
+		 
 		payload = SPE_ADDR_PKT_ADDR_GET_BYTES_0_6(payload);
 
-		/* Fill highest byte for EL1 or EL2 (VHE) mode */
+		 
 		if (ns && (el == SPE_ADDR_PKT_EL1 || el == SPE_ADDR_PKT_EL2))
 			payload |= 0xffULL << SPE_ADDR_PKT_ADDR_BYTE7_SHIFT;
 
-	/* Data access virtual address */
+	 
 	} else if (index == SPE_ADDR_PKT_HDR_INDEX_DATA_VIRT) {
 
-		/* Clean tags */
+		 
 		payload = SPE_ADDR_PKT_ADDR_GET_BYTES_0_6(payload);
 
-		/*
-		 * Armv8 ARM (ARM DDI 0487F.c), chapter "D10.2.1 Address packet"
-		 * defines the data virtual address payload format, the top byte
-		 * (bits [63:56]) is assigned as top-byte tag; so we only can
-		 * retrieve address value from bits [55:0].
-		 *
-		 * According to Documentation/arch/arm64/memory.rst, if detects the
-		 * specific pattern in bits [55:52] of payload which falls in
-		 * the kernel space, should fixup the top byte and this allows
-		 * perf tool to parse DSO symbol for data address correctly.
-		 *
-		 * For this reason, if detects the bits [55:52] is 0xf, will
-		 * fill 0xff into the top byte.
-		 */
+		 
 		val = SPE_ADDR_PKT_ADDR_GET_BYTE_6(payload);
 		if ((val & 0xf0ULL) == 0xf0ULL)
 			payload |= 0xffULL << SPE_ADDR_PKT_ADDR_BYTE7_SHIFT;
 
-	/* Data access physical address */
+	 
 	} else if (index == SPE_ADDR_PKT_HDR_INDEX_DATA_PHYS) {
-		/* Clean highest byte */
+		 
 		payload = SPE_ADDR_PKT_ADDR_GET_BYTES_0_6(payload);
 	} else {
 		static u32 seen_idx = 0;
@@ -127,7 +112,7 @@ static int arm_spe_get_next_packet(struct arm_spe_decoder *decoder)
 		if (!decoder->len) {
 			ret = arm_spe_get_data(decoder);
 
-			/* Failed to read out trace data */
+			 
 			if (ret <= 0)
 				return ret;
 		}
@@ -135,7 +120,7 @@ static int arm_spe_get_next_packet(struct arm_spe_decoder *decoder)
 		ret = arm_spe_get_packet(decoder->buf, decoder->len,
 					 &decoder->packet);
 		if (ret <= 0) {
-			/* Move forward for 1 byte */
+			 
 			decoder->buf += 1;
 			decoder->len -= 1;
 			return -EBADMSG;

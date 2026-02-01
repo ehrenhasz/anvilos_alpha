@@ -1,42 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Neil Brown <neilb@cse.unsw.edu.au>
- * J. Bruce Fields <bfields@umich.edu>
- * Andy Adamson <andros@umich.edu>
- * Dug Song <dugsong@monkey.org>
- *
- * RPCSEC_GSS server authentication.
- * This implements RPCSEC_GSS as defined in rfc2203 (rpcsec_gss) and rfc2078
- * (gssapi)
- *
- * The RPCSEC_GSS involves three stages:
- *  1/ context creation
- *  2/ data exchange
- *  3/ context destruction
- *
- * Context creation is handled largely by upcalls to user-space.
- *  In particular, GSS_Accept_sec_context is handled by an upcall
- * Data exchange is handled entirely within the kernel
- *  In particular, GSS_GetMIC, GSS_VerifyMIC, GSS_Seal, GSS_Unseal are in-kernel.
- * Context destruction is handled in-kernel
- *  GSS_Delete_sec_context is in-kernel
- *
- * Context creation is initiated by a RPCSEC_GSS_INIT request arriving.
- * The context handle and gss_token are used as a key into the rpcsec_init cache.
- * The content of this cache includes some of the outputs of GSS_Accept_sec_context,
- * being major_status, minor_status, context_handle, reply_token.
- * These are sent back to the client.
- * Sequence window management is handled by the kernel.  The window size if currently
- * a compile time constant.
- *
- * When user-space is happy that a context is established, it places an entry
- * in the rpcsec_context cache. The key for this cache is the context_handle.
- * The content includes:
- *   uid/gidlist - for determining access rights
- *   mechanism type
- *   mechanism specific information, such as a key
- *
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -55,37 +18,24 @@
 
 #include "gss_rpc_upcall.h"
 
-/*
- * Unfortunately there isn't a maximum checksum size exported via the
- * GSS API. Manufacture one based on GSS mechanisms supported by this
- * implementation.
- */
+ 
 #define GSS_MAX_CKSUMSIZE (GSS_KRB5_TOK_HDR_LEN + GSS_KRB5_MAX_CKSUM_LEN)
 
-/*
- * This value may be increased in the future to accommodate other
- * usage of the scratch buffer.
- */
+ 
 #define GSS_SCRATCH_SIZE GSS_MAX_CKSUMSIZE
 
 struct gss_svc_data {
-	/* decoded gss client cred: */
+	 
 	struct rpc_gss_wire_cred	clcred;
 	u32				gsd_databody_offset;
 	struct rsc			*rsci;
 
-	/* for temporary results */
+	 
 	__be32				gsd_seq_num;
 	u8				gsd_scratch[GSS_SCRATCH_SIZE];
 };
 
-/* The rpcsec_init cache is used for mapping RPCSEC_GSS_{,CONT_}INIT requests
- * into replies.
- *
- * Key is context handle (\x if empty) and gss_token.
- * Content is major_status minor_status (integers) context_handle, reply_token.
- *
- */
+ 
 
 static int netobj_equal(struct xdr_netobj *a, struct xdr_netobj *b)
 {
@@ -225,7 +175,7 @@ static void rsi_request(struct cache_detail *cd,
 static int rsi_parse(struct cache_detail *cd,
 		    char *mesg, int mlen)
 {
-	/* context token expiry major minor context token */
+	 
 	char *buf = mesg;
 	char *ep;
 	int len;
@@ -234,7 +184,7 @@ static int rsi_parse(struct cache_detail *cd,
 	int status = -EINVAL;
 
 	memset(&rsii, 0, sizeof(rsii));
-	/* handle */
+	 
 	len = qword_get(&mesg, buf, mlen);
 	if (len < 0)
 		goto out;
@@ -242,7 +192,7 @@ static int rsi_parse(struct cache_detail *cd,
 	if (dup_to_netobj(&rsii.in_handle, buf, len))
 		goto out;
 
-	/* token */
+	 
 	len = qword_get(&mesg, buf, mlen);
 	status = -EINVAL;
 	if (len < 0)
@@ -256,13 +206,13 @@ static int rsi_parse(struct cache_detail *cd,
 		goto out;
 
 	rsii.h.flags = 0;
-	/* expiry */
+	 
 	status = get_expiry(&mesg, &expiry);
 	if (status)
 		goto out;
 
 	status = -EINVAL;
-	/* major/minor */
+	 
 	len = qword_get(&mesg, buf, mlen);
 	if (len <= 0)
 		goto out;
@@ -276,7 +226,7 @@ static int rsi_parse(struct cache_detail *cd,
 	if (*ep)
 		goto out;
 
-	/* out_handle */
+	 
 	len = qword_get(&mesg, buf, mlen);
 	if (len < 0)
 		goto out;
@@ -284,7 +234,7 @@ static int rsi_parse(struct cache_detail *cd,
 	if (dup_to_netobj(&rsii.out_handle, buf, len))
 		goto out;
 
-	/* out_token */
+	 
 	len = qword_get(&mesg, buf, mlen);
 	status = -EINVAL;
 	if (len < 0)
@@ -344,12 +294,7 @@ static struct rsi *rsi_update(struct cache_detail *cd, struct rsi *new, struct r
 }
 
 
-/*
- * The rpcsec_context cache is used to store a context that is
- * used in data exchange.
- * The key is a context handle. The content is:
- *  uid, gidlist, mechanism, service-set, mech-specific-data
- */
+ 
 
 #define	RSC_HASHBITS	10
 #define	RSC_HASHMAX	(1<<RSC_HASHBITS)
@@ -357,10 +302,9 @@ static struct rsi *rsi_update(struct cache_detail *cd, struct rsi *new, struct r
 #define GSS_SEQ_WIN	128
 
 struct gss_svc_seq_data {
-	/* highest seq number seen so far: */
+	 
 	u32			sd_max;
-	/* for i such that sd_max-GSS_SEQ_WIN < i <= sd_max, the i-th bit of
-	 * sd_win is nonzero iff sequence number i has been seen already: */
+	 
 	unsigned long		sd_win[GSS_SEQ_WIN/BITS_PER_LONG];
 	spinlock_t		sd_lock;
 };
@@ -464,7 +408,7 @@ static int rsc_upcall(struct cache_detail *cd, struct cache_head *h)
 static int rsc_parse(struct cache_detail *cd,
 		     char *mesg, int mlen)
 {
-	/* contexthandle expiry [ uid gid N <n gids> mechname ...mechdata... ] */
+	 
 	char *buf = mesg;
 	int id;
 	int len, rv;
@@ -474,7 +418,7 @@ static int rsc_parse(struct cache_detail *cd,
 	struct gss_api_mech *gm = NULL;
 
 	memset(&rsci, 0, sizeof(rsci));
-	/* context handle */
+	 
 	len = qword_get(&mesg, buf, mlen);
 	if (len < 0) goto out;
 	status = -ENOMEM;
@@ -482,7 +426,7 @@ static int rsc_parse(struct cache_detail *cd,
 		goto out;
 
 	rsci.h.flags = 0;
-	/* expiry */
+	 
 	status = get_expiry(&mesg, &expiry);
 	if (status)
 		goto out;
@@ -492,7 +436,7 @@ static int rsc_parse(struct cache_detail *cd,
 	if (!rscp)
 		goto out;
 
-	/* uid, or NEGATIVE */
+	 
 	rv = get_int(&mesg, &id);
 	if (rv == -EINVAL)
 		goto out;
@@ -501,23 +445,16 @@ static int rsc_parse(struct cache_detail *cd,
 	else {
 		int N, i;
 
-		/*
-		 * NOTE: we skip uid_valid()/gid_valid() checks here:
-		 * instead, * -1 id's are later mapped to the
-		 * (export-specific) anonymous id by nfsd_setuser.
-		 *
-		 * (But supplementary gid's get no such special
-		 * treatment so are checked for validity here.)
-		 */
-		/* uid */
+		 
+		 
 		rsci.cred.cr_uid = make_kuid(current_user_ns(), id);
 
-		/* gid */
+		 
 		if (get_int(&mesg, &id))
 			goto out;
 		rsci.cred.cr_gid = make_kgid(current_user_ns(), id);
 
-		/* number of additional gid's */
+		 
 		if (get_int(&mesg, &N))
 			goto out;
 		if (N < 0 || N > NGROUPS_MAX)
@@ -527,7 +464,7 @@ static int rsc_parse(struct cache_detail *cd,
 		if (rsci.cred.cr_group_info == NULL)
 			goto out;
 
-		/* gid's */
+		 
 		status = -EINVAL;
 		for (i=0; i<N; i++) {
 			kgid_t kgid;
@@ -540,7 +477,7 @@ static int rsc_parse(struct cache_detail *cd,
 		}
 		groups_sort(rsci.cred.cr_group_info);
 
-		/* mech name */
+		 
 		len = qword_get(&mesg, buf, mlen);
 		if (len < 0)
 			goto out;
@@ -550,7 +487,7 @@ static int rsc_parse(struct cache_detail *cd,
 			goto out;
 
 		status = -EINVAL;
-		/* mech-specific data: */
+		 
 		len = qword_get(&mesg, buf, mlen);
 		if (len < 0)
 			goto out;
@@ -559,7 +496,7 @@ static int rsc_parse(struct cache_detail *cd,
 		if (status)
 			goto out;
 
-		/* get client name */
+		 
 		len = qword_get(&mesg, buf, mlen);
 		if (len > 0) {
 			rsci.cred.cr_principal = kstrdup(buf, GFP_KERNEL);
@@ -639,19 +576,7 @@ gss_svc_searchbyctx(struct cache_detail *cd, struct xdr_netobj *handle)
 	return found;
 }
 
-/**
- * gss_check_seq_num - GSS sequence number window check
- * @rqstp: RPC Call to use when reporting errors
- * @rsci: cached GSS context state (updated on return)
- * @seq_num: sequence number to check
- *
- * Implements sequence number algorithm as specified in
- * RFC 2203, Section 5.3.3.1. "Context Management".
- *
- * Return values:
- *   %true: @rqstp's GSS sequence number is inside the window
- *   %false: @rqstp's GSS sequence number is outside the window
- */
+ 
 static bool gss_check_seq_num(const struct svc_rqst *rqstp, struct rsc *rsci,
 			      u32 seq_num)
 {
@@ -691,13 +616,7 @@ alreadyseen:
 	goto out;
 }
 
-/*
- * Decode and verify a Call's verifier field. For RPC_AUTH_GSS Calls,
- * the body of this field contains a variable length checksum.
- *
- * GSS-specific auth_stat values are mandated by RFC 2203 Section
- * 5.3.3.3.
- */
+ 
 static int
 svcauth_gss_verify_header(struct svc_rqst *rqstp, struct rsc *rsci,
 			  __be32 *rpcstart, struct rpc_gss_wire_cred *gc)
@@ -709,15 +628,12 @@ svcauth_gss_verify_header(struct svc_rqst *rqstp, struct rsc *rsci,
 	struct xdr_netobj	checksum;
 	struct kvec		iov;
 
-	/*
-	 * Compute the checksum of the incoming Call from the
-	 * XID field to credential field:
-	 */
+	 
 	iov.iov_base = rpcstart;
 	iov.iov_len = (u8 *)xdr->p - (u8 *)rpcstart;
 	xdr_buf_from_iov(&iov, &rpchdr);
 
-	/* Call's verf field: */
+	 
 	if (xdr_stream_decode_opaque_auth(xdr, &flavor,
 					  (void **)&checksum.data,
 					  &checksum.len) < 0) {
@@ -748,11 +664,7 @@ svcauth_gss_verify_header(struct svc_rqst *rqstp, struct rsc *rsci,
 	return SVC_OK;
 }
 
-/*
- * Construct and encode a Reply's verifier field. The verifier's body
- * field contains a variable-length checksum of the GSS sequence
- * number.
- */
+ 
 static bool
 svcauth_gss_encode_verf(struct svc_rqst *rqstp, struct gss_ctx *ctx_id, u32 seq)
 {
@@ -843,19 +755,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(svcauth_gss_register_pseudoflavor);
 
-/*
- * RFC 2203, Section 5.3.2.2
- *
- *	struct rpc_gss_integ_data {
- *		opaque databody_integ<>;
- *		opaque checksum<>;
- *	};
- *
- *	struct rpc_gss_data_t {
- *		unsigned int seq_num;
- *		proc_req_arg_t arg;
- *	};
- */
+ 
 static noinline_for_stack int
 svcauth_gss_unwrap_integ(struct svc_rqst *rqstp, u32 seq, struct gss_ctx *ctx)
 {
@@ -866,15 +766,10 @@ svcauth_gss_unwrap_integ(struct svc_rqst *rqstp, u32 seq, struct gss_ctx *ctx)
 	struct xdr_buf databody_integ;
 	struct xdr_netobj checksum;
 
-	/* NFS READ normally uses splice to send data in-place. However
-	 * the data in cache can change after the reply's MIC is computed
-	 * but before the RPC reply is sent. To prevent the client from
-	 * rejecting the server-computed MIC in this somewhat rare case,
-	 * do not use splice with the GSS integrity service.
-	 */
+	 
 	clear_bit(RQ_SPLICE_OK, &rqstp->rq_flags);
 
-	/* Did we already verify the signature on the original pass through? */
+	 
 	if (rqstp->rq_deferred)
 		return 0;
 
@@ -886,13 +781,7 @@ svcauth_gss_unwrap_integ(struct svc_rqst *rqstp, u32 seq, struct gss_ctx *ctx)
 	if (xdr_buf_subsegment(buf, &databody_integ, offset, len))
 		goto unwrap_failed;
 
-	/*
-	 * The xdr_stream now points to the @seq_num field. The next
-	 * XDR data item is the @arg field, which contains the clear
-	 * text RPC program payload. The checksum, which follows the
-	 * @arg field, is located and decoded without updating the
-	 * xdr_stream.
-	 */
+	 
 
 	offset += len;
 	if (xdr_decode_word(buf, offset, &checksum.len))
@@ -908,7 +797,7 @@ svcauth_gss_unwrap_integ(struct svc_rqst *rqstp, u32 seq, struct gss_ctx *ctx)
 	if (maj_stat != GSS_S_COMPLETE)
 		goto bad_mic;
 
-	/* The received seqno is protected by the checksum. */
+	 
 	if (xdr_stream_decode_u32(xdr, &seq_num) < 0)
 		goto unwrap_failed;
 	if (seq_num != seq)
@@ -928,18 +817,7 @@ bad_mic:
 	return -EINVAL;
 }
 
-/*
- * RFC 2203, Section 5.3.2.3
- *
- *	struct rpc_gss_priv_data {
- *		opaque databody_priv<>
- *	};
- *
- *	struct rpc_gss_data_t {
- *		unsigned int seq_num;
- *		proc_req_arg_t arg;
- *	};
- */
+ 
 static noinline_for_stack int
 svcauth_gss_unwrap_priv(struct svc_rqst *rqstp, u32 seq, struct gss_ctx *ctx)
 {
@@ -953,8 +831,7 @@ svcauth_gss_unwrap_priv(struct svc_rqst *rqstp, u32 seq, struct gss_ctx *ctx)
 	if (xdr_stream_decode_u32(xdr, &len) < 0)
 		goto unwrap_failed;
 	if (rqstp->rq_deferred) {
-		/* Already decrypted last time through! The sequence number
-		 * check at out_seq is unnecessary but harmless: */
+		 
 		goto out_seq;
 	}
 	if (len > xdr_stream_remaining(xdr))
@@ -968,7 +845,7 @@ svcauth_gss_unwrap_priv(struct svc_rqst *rqstp, u32 seq, struct gss_ctx *ctx)
 	xdr->nwords -= XDR_QUADLEN(saved_len - buf->len);
 
 out_seq:
-	/* gss_unwrap() decrypted the sequence number. */
+	 
 	if (xdr_stream_decode_u32(xdr, &seq_num) < 0)
 		goto unwrap_failed;
 	if (seq_num != seq)
@@ -996,15 +873,7 @@ svcauth_gss_set_client(struct svc_rqst *rqstp)
 
 	rqstp->rq_auth_stat = rpc_autherr_badcred;
 
-	/*
-	 * A gss export can be specified either by:
-	 * 	export	*(sec=krb5,rw)
-	 * or by
-	 * 	export gss/krb5(rw)
-	 * The latter is deprecated; but for backwards compatibility reasons
-	 * the nfsd code will still fall back on trying it if the former
-	 * doesn't work; so we try to make both available to nfsd, below.
-	 */
+	 
 	rqstp->rq_gssclient = find_gss_auth_domain(rsci->mechctx, gc->gc_svc);
 	if (rqstp->rq_gssclient == NULL)
 		return SVC_DENIED;
@@ -1072,13 +941,7 @@ static int gss_read_proxy_verf(struct svc_rqst *rqstp,
 	if (dup_netobj(in_handle, &gc->gc_ctx))
 		return SVC_CLOSE;
 
-	/*
-	 *  RFC 2203 Section 5.2.2
-	 *
-	 *	struct rpc_gss_init_arg {
-	 *		opaque gss_token<>;
-	 *	};
-	 */
+	 
 	if (xdr_stream_decode_u32(xdr, &inlen) < 0)
 		goto out_denied_free;
 	if (inlen > xdr_stream_remaining(xdr))
@@ -1128,17 +991,7 @@ out_denied_free:
 	return SVC_DENIED;
 }
 
-/*
- * RFC 2203, Section 5.2.3.1.
- *
- *	struct rpc_gss_init_res {
- *		opaque handle<>;
- *		unsigned int gss_major;
- *		unsigned int gss_minor;
- *		unsigned int seq_window;
- *		opaque gss_token<>;
- *	};
- */
+ 
 static bool
 svcxdr_encode_gss_init_res(struct xdr_stream *xdr,
 			   struct xdr_netobj *handle,
@@ -1159,13 +1012,7 @@ svcxdr_encode_gss_init_res(struct xdr_stream *xdr,
 	return true;
 }
 
-/*
- * Having read the cred already and found we're in the context
- * initiation case, read the verifier and initiate (or check the results
- * of) upcalls to userspace for help with context initiation.  If
- * the upcall results are available, write the verifier and result.
- * Otherwise, drop the request pending an answer to the upcall.
- */
+ 
 static int
 svcauth_gss_legacy_init(struct svc_rqst *rqstp,
 			struct rpc_gss_wire_cred *gc)
@@ -1181,13 +1028,7 @@ svcauth_gss_legacy_init(struct svc_rqst *rqstp,
 	if (dup_netobj(&rsikey.in_handle, &gc->gc_ctx))
 		return SVC_CLOSE;
 
-	/*
-	 *  RFC 2203 Section 5.2.2
-	 *
-	 *	struct rpc_gss_init_arg {
-	 *		opaque gss_token<>;
-	 *	};
-	 */
+	 
 	if (xdr_stream_decode_u32(xdr, &len) < 0) {
 		kfree(rsikey.in_handle.data);
 		return SVC_DENIED;
@@ -1205,13 +1046,13 @@ svcauth_gss_legacy_init(struct svc_rqst *rqstp,
 	memcpy(rsikey.in_token.data, p, len);
 	rsikey.in_token.len = len;
 
-	/* Perform upcall, or find upcall result: */
+	 
 	rsip = rsi_lookup(sn->rsi_cache, &rsikey);
 	rsi_free(&rsikey);
 	if (!rsip)
 		return SVC_CLOSE;
 	if (cache_check(sn->rsi_cache, &rsip->h, &rqstp->rq_chandle) < 0)
-		/* No upcall result: */
+		 
 		return SVC_CLOSE;
 
 	ret = SVC_CLOSE;
@@ -1243,43 +1084,41 @@ static int gss_proxy_save_rsc(struct cache_detail *cd,
 	int status;
 
 	memset(&rsci, 0, sizeof(rsci));
-	/* context handle */
+	 
 	status = -ENOMEM;
-	/* the handle needs to be just a unique id,
-	 * use a static counter */
+	 
 	ctxh = atomic64_inc_return(&ctxhctr);
 
-	/* make a copy for the caller */
+	 
 	*handle = ctxh;
 
-	/* make a copy for the rsc cache */
+	 
 	if (dup_to_netobj(&rsci.handle, (char *)handle, sizeof(uint64_t)))
 		goto out;
 	rscp = rsc_lookup(cd, &rsci);
 	if (!rscp)
 		goto out;
 
-	/* creds */
+	 
 	if (!ud->found_creds) {
-		/* userspace seem buggy, we should always get at least a
-		 * mapping to nobody */
+		 
 		goto out;
 	} else {
 		struct timespec64 boot;
 
-		/* steal creds */
+		 
 		rsci.cred = ud->creds;
 		memset(&ud->creds, 0, sizeof(struct svc_cred));
 
 		status = -EOPNOTSUPP;
-		/* get mech handle from OID */
+		 
 		gm = gss_mech_get_by_OID(&ud->mech_oid);
 		if (!gm)
 			goto out;
 		rsci.cred.cr_gss_mech = gm;
 
 		status = -EINVAL;
-		/* mech-specific data: */
+		 
 		status = gss_import_sec_context(ud->out_handle.data,
 						ud->out_handle.len,
 						gm, &rsci.mechctx,
@@ -1321,7 +1160,7 @@ static int svcauth_gss_proxy_init(struct svc_rqst *rqstp,
 
 	ret = SVC_CLOSE;
 
-	/* Perform synchronous upcall to gss-proxy */
+	 
 	status = gssp_accept_sec_context_upcall(net, &ud);
 	if (status)
 		goto out;
@@ -1360,11 +1199,7 @@ out:
 	return ret;
 }
 
-/*
- * Try to set the sn->use_gss_proxy variable to a new value. We only allow
- * it to be changed if it's currently undefined (-1). If it's any other value
- * then return -EBUSY unless the type wouldn't have changed anyway.
- */
+ 
 static int set_gss_proxy(struct net *net, int type)
 {
 	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
@@ -1381,7 +1216,7 @@ static bool use_gss_proxy(struct net *net)
 {
 	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
 
-	/* If use_gss_proxy is still undefined, then try to disable it */
+	 
 	if (sn->use_gss_proxy == -1)
 		set_gss_proxy(net, 0);
 	return sn->use_gss_proxy;
@@ -1394,7 +1229,7 @@ svcauth_gss_proc_init(struct svc_rqst *rqstp, struct rpc_gss_wire_cred *gc)
 	u32 flavor, len;
 	void *body;
 
-	/* Call's verf field: */
+	 
 	if (xdr_stream_decode_opaque_auth(xdr, &flavor, &body, &len) < 0)
 		return SVC_GARBAGE;
 	if (flavor != RPC_AUTH_NULL || len != 0) {
@@ -1544,7 +1379,7 @@ static void destroy_krb5_enctypes_proc_entry(struct net *net)
 		remove_proc_entry("gss_krb5_enctypes", sn->proc_net_rpc);
 }
 
-#else /* CONFIG_PROC_FS */
+#else  
 
 static int create_use_gss_proxy_proc_entry(struct net *net)
 {
@@ -1560,25 +1395,9 @@ static int create_krb5_enctypes_proc_entry(struct net *net)
 
 static void destroy_krb5_enctypes_proc_entry(struct net *net) {}
 
-#endif /* CONFIG_PROC_FS */
+#endif  
 
-/*
- * The Call's credential body should contain a struct rpc_gss_cred_t.
- *
- * RFC 2203 Section 5
- *
- *	struct rpc_gss_cred_t {
- *		union switch (unsigned int version) {
- *		case RPCSEC_GSS_VERS_1:
- *			struct {
- *				rpc_gss_proc_t gss_proc;
- *				unsigned int seq_num;
- *				rpc_gss_service_t service;
- *				opaque handle<>;
- *			} rpc_gss_cred_vers_1_t;
- *		}
- *	};
- */
+ 
 static bool
 svcauth_gss_decode_credbody(struct xdr_stream *xdr,
 			    struct rpc_gss_wire_cred *gc,
@@ -1591,16 +1410,13 @@ svcauth_gss_decode_credbody(struct xdr_stream *xdr,
 	p = xdr_inline_decode(xdr, XDR_UNIT);
 	if (!p)
 		return false;
-	/*
-	 * start of rpc packet is 7 u32's back from here:
-	 * xid direction rpcversion prog vers proc flavour
-	 */
+	 
 	*rpcstart = p - 7;
 	body_len = be32_to_cpup(p);
 	if (body_len > RPC_MAX_AUTH_SIZE)
 		return false;
 
-	/* struct rpc_gss_cred_t */
+	 
 	if (xdr_stream_decode_u32(xdr, &gc->gc_v) < 0)
 		return false;
 	if (xdr_stream_decode_u32(xdr, &gc->gc_proc) < 0)
@@ -1621,19 +1437,7 @@ svcauth_gss_decode_credbody(struct xdr_stream *xdr,
 	return true;
 }
 
-/**
- * svcauth_gss_accept - Decode and validate incoming RPC_AUTH_GSS credential
- * @rqstp: RPC transaction
- *
- * Return values:
- *   %SVC_OK: Success
- *   %SVC_COMPLETE: GSS context lifetime event
- *   %SVC_DENIED: Credential or verifier is not valid
- *   %SVC_GARBAGE: Failed to decode credential or verifier
- *   %SVC_CLOSE: Temporary failure
- *
- * The rqstp->rq_auth_stat field is also set (see RFCs 2203 and 5531).
- */
+ 
 static enum svc_auth_status
 svcauth_gss_accept(struct svc_rqst *rqstp)
 {
@@ -1690,14 +1494,14 @@ svcauth_gss_accept(struct svc_rqst *rqstp)
 		goto auth_err;
 	}
 
-	/* now act upon the command: */
+	 
 	switch (gc->gc_proc) {
 	case RPC_GSS_PROC_DESTROY:
 		if (!svcauth_gss_encode_verf(rqstp, rsci->mechctx, gc->gc_seq))
 			goto auth_err;
 		if (!svcxdr_set_accept_stat(rqstp))
 			goto auth_err;
-		/* Delete the entry from the cache_list and call cache_put */
+		 
 		sunrpc_cache_unhash(sn->rsc_cache, &rsci->h);
 		goto complete;
 	case RPC_GSS_PROC_DATA:
@@ -1714,7 +1518,7 @@ svcauth_gss_accept(struct svc_rqst *rqstp)
 		case RPC_GSS_SVC_NONE:
 			break;
 		case RPC_GSS_SVC_INTEGRITY:
-			/* placeholders for body length and seq. number: */
+			 
 			xdr_reserve_space(&rqstp->rq_res_stream, XDR_UNIT * 2);
 			if (svcauth_gss_unwrap_integ(rqstp, gc->gc_seq,
 						     rsci->mechctx))
@@ -1722,7 +1526,7 @@ svcauth_gss_accept(struct svc_rqst *rqstp)
 			svcxdr_set_auth_slack(rqstp, RPC_MAX_AUTH_SIZE);
 			break;
 		case RPC_GSS_SVC_PRIVACY:
-			/* placeholders for body length and seq. number: */
+			 
 			xdr_reserve_space(&rqstp->rq_res_stream, XDR_UNIT * 2);
 			if (svcauth_gss_unwrap_priv(rqstp, gc->gc_seq,
 						    rsci->mechctx))
@@ -1765,38 +1569,22 @@ svcauth_gss_prepare_to_wrap(struct svc_rqst *rqstp, struct gss_svc_data *gsd)
 {
 	u32 offset;
 
-	/* Release can be called twice, but we only wrap once. */
+	 
 	offset = gsd->gsd_databody_offset;
 	gsd->gsd_databody_offset = 0;
 
-	/* AUTH_ERROR replies are not wrapped. */
+	 
 	if (rqstp->rq_auth_stat != rpc_auth_ok)
 		return 0;
 
-	/* Also don't wrap if the accept_stat is nonzero: */
+	 
 	if (*rqstp->rq_accept_statp != rpc_success)
 		return 0;
 
 	return offset;
 }
 
-/*
- * RFC 2203, Section 5.3.2.2
- *
- *	struct rpc_gss_integ_data {
- *		opaque databody_integ<>;
- *		opaque checksum<>;
- *	};
- *
- *	struct rpc_gss_data_t {
- *		unsigned int seq_num;
- *		proc_req_arg_t arg;
- *	};
- *
- * The RPC Reply message has already been XDR-encoded. rq_res_stream
- * is now positioned so that the checksum can be written just past
- * the RPC Reply message.
- */
+ 
 static int svcauth_gss_wrap_integ(struct svc_rqst *rqstp)
 {
 	struct gss_svc_data *gsd = rqstp->rq_auth_data;
@@ -1814,8 +1602,7 @@ static int svcauth_gss_wrap_integ(struct svc_rqst *rqstp)
 	if (xdr_buf_subsegment(buf, &databody_integ, offset + XDR_UNIT,
 			       buf->len - offset - XDR_UNIT))
 		goto wrap_failed;
-	/* Buffer space for these has already been reserved in
-	 * svcauth_gss_accept(). */
+	 
 	if (xdr_encode_word(buf, offset, databody_integ.len))
 		goto wrap_failed;
 	if (xdr_encode_word(buf, offset + XDR_UNIT, gc->gc_seq))
@@ -1841,23 +1628,7 @@ wrap_failed:
 	return -EINVAL;
 }
 
-/*
- * RFC 2203, Section 5.3.2.3
- *
- *	struct rpc_gss_priv_data {
- *		opaque databody_priv<>
- *	};
- *
- *	struct rpc_gss_data_t {
- *		unsigned int seq_num;
- *		proc_req_arg_t arg;
- *	};
- *
- * gss_wrap() expands the size of the RPC message payload in the
- * response buffer. The main purpose of svcauth_gss_wrap_priv()
- * is to ensure there is adequate space in the response buffer to
- * avoid overflow during the wrap.
- */
+ 
 static int svcauth_gss_wrap_priv(struct svc_rqst *rqstp)
 {
 	struct gss_svc_data *gsd = rqstp->rq_auth_data;
@@ -1872,21 +1643,11 @@ static int svcauth_gss_wrap_priv(struct svc_rqst *rqstp)
 	if (!offset)
 		return 0;
 
-	/*
-	 * Buffer space for this field has already been reserved
-	 * in svcauth_gss_accept(). Note that the GSS sequence
-	 * number is encrypted along with the RPC reply payload.
-	 */
+	 
 	if (xdr_encode_word(buf, offset + XDR_UNIT, gc->gc_seq))
 		goto wrap_failed;
 
-	/*
-	 * If there is currently tail data, make sure there is
-	 * room for the head, tail, and 2 * RPC_MAX_AUTH_SIZE in
-	 * the page, and move the current tail data such that
-	 * there is RPC_MAX_AUTH_SIZE slack space available in
-	 * both the head and tail.
-	 */
+	 
 	if (tail->iov_base) {
 		if (tail->iov_base >= head->iov_base + PAGE_SIZE)
 			goto wrap_failed;
@@ -1899,13 +1660,7 @@ static int svcauth_gss_wrap_priv(struct svc_rqst *rqstp)
 			tail->iov_len);
 		tail->iov_base += RPC_MAX_AUTH_SIZE;
 	}
-	/*
-	 * If there is no current tail data, make sure there is
-	 * room for the head data, and 2 * RPC_MAX_AUTH_SIZE in the
-	 * allotted page, and set up tail information such that there
-	 * is RPC_MAX_AUTH_SIZE slack space available in both the
-	 * head and tail.
-	 */
+	 
 	if (!tail->iov_base) {
 		if (head->iov_len + 2 * RPC_MAX_AUTH_SIZE > PAGE_SIZE)
 			goto wrap_failed;
@@ -1919,7 +1674,7 @@ static int svcauth_gss_wrap_priv(struct svc_rqst *rqstp)
 	if (maj_stat != GSS_S_COMPLETE)
 		goto bad_wrap;
 
-	/* Wrapping can change the size of databody_priv. */
+	 
 	if (xdr_encode_word(buf, offset, buf->len - offset - XDR_UNIT))
 		goto wrap_failed;
 	pad = xdr_pad_size(buf->len - offset - XDR_UNIT);
@@ -1937,15 +1692,7 @@ bad_wrap:
 	return -ENOMEM;
 }
 
-/**
- * svcauth_gss_release - Wrap payload and release resources
- * @rqstp: RPC transaction context
- *
- * Return values:
- *    %0: the Reply is ready to be sent
- *    %-ENOMEM: failed to allocate memory
- *    %-EINVAL: encoding error
- */
+ 
 static int
 svcauth_gss_release(struct svc_rqst *rqstp)
 {
@@ -1973,10 +1720,7 @@ svcauth_gss_release(struct svc_rqst *rqstp)
 		if (stat)
 			goto out_err;
 		break;
-	/*
-	 * For any other gc_svc value, svcauth_gss_accept() already set
-	 * the auth_error appropriately; just fall through:
-	 */
+	 
 	}
 
 out:

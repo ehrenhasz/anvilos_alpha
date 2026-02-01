@@ -1,17 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tc358743 - Toshiba HDMI to CSI-2 bridge - register names and bit masks
- *
- * Copyright 2015 Cisco Systems, Inc. and/or its affiliates. All rights
- * reserved.
- */
+ 
+ 
 
-/*
- * References (c = chapter, p = page):
- * REF_01 - Toshiba, TC358743XBG (H2C), Functional Specification, Rev 0.60
- */
+ 
 
-/* Bit masks has prefix 'MASK_' and options after '_'. */
+ 
 
 #ifndef __TC358743_REGS_H
 #define __TC358743_REGS_H
@@ -180,11 +172,11 @@
 #define CSI_START                             0x0518
 #define MASK_STRT                             0x00000001
 
-/* *** CEC (32 bit) *** */
-#define CECHCLK				      0x0028	/* 16 bits */
+ 
+#define CECHCLK				      0x0028	 
 #define MASK_CECHCLK			      (0x7ff << 0)
 
-#define CECLCLK				      0x002a	/* 16 bits */
+#define CECLCLK				      0x002a	 
 #define MASK_CECLCLK			      (0x7ff << 0)
 
 #define CECEN				      0x0600
@@ -421,7 +413,7 @@
 #define MASK_PHY_CTL                          0x01
 
 
-#define PHY_CTL1                              0x8532 /* Not in REF_01 */
+#define PHY_CTL1                              0x8532  
 #define MASK_PHY_AUTO_RST1                    0xf0
 #define MASK_PHY_AUTO_RST1_OFF                0x00
 #define SET_PHY_AUTO_RST1_US(us)             ((((us) / 200) << 4) & \
@@ -430,7 +422,7 @@
 #define SET_FREQ_RANGE_MODE_CYCLES(cycles)   (((cycles) - 1) & \
 						MASK_FREQ_RANGE_MODE)
 
-#define PHY_CTL2                              0x8533 /* Not in REF_01 */
+#define PHY_CTL2                              0x8533  
 #define MASK_PHY_AUTO_RST4                    0x04
 #define MASK_PHY_AUTO_RST3                    0x02
 #define MASK_PHY_AUTO_RST2                    0x01
@@ -442,18 +434,18 @@
 #define MASK_ENABLE_PHY                       0x01
 
 #define PHY_RST                               0x8535
-#define MASK_RESET_CTRL                       0x01   /* Reset active low */
+#define MASK_RESET_CTRL                       0x01    
 
-#define PHY_BIAS                              0x8536 /* Not in REF_01 */
+#define PHY_BIAS                              0x8536  
 
-#define PHY_CSQ                               0x853F /* Not in REF_01 */
+#define PHY_CSQ                               0x853F  
 #define MASK_CSQ_CNT                          0x0f
 #define SET_CSQ_CNT_LEVEL(n)                 (n & MASK_CSQ_CNT)
 
 #define SYS_FREQ0                             0x8540
 #define SYS_FREQ1                             0x8541
 
-#define SYS_CLK                               0x8542 /* Not in REF_01 */
+#define SYS_CLK                               0x8542  
 #define MASK_CLK_DIFF                         0x0C
 #define MASK_CLK_DIV                          0x03
 
@@ -483,7 +475,7 @@
 #define INIT_END                              0x854A
 #define MASK_INIT_END                         0x01
 
-#define HDMI_DET                              0x8552 /* Not in REF_01 */
+#define HDMI_DET                              0x8552  
 #define MASK_HDMI_DET_MOD1                    0x80
 #define MASK_HDMI_DET_MOD0                    0x40
 #define MASK_HDMI_DET_V                       0x30
@@ -497,9 +489,9 @@
 #define MASK_MODE_RST_TN                      0x20
 #define MASK_LINE_REKEY                       0x10
 #define MASK_AUTO_CLR                         0x04
-#define MASK_MANUAL_AUTHENTICATION            0x02 /* Not in REF_01 */
+#define MASK_MANUAL_AUTHENTICATION            0x02  
 
-#define HDCP_REG1                             0x8563 /* Not in REF_01 */
+#define HDCP_REG1                             0x8563  
 #define MASK_AUTH_UNAUTH_SEL                  0x70
 #define MASK_AUTH_UNAUTH_SEL_12_FRAMES        0x70
 #define MASK_AUTH_UNAUTH_SEL_8_FRAMES         0x60
@@ -512,13 +504,13 @@
 #define MASK_AUTH_UNAUTH                      0x01
 #define MASK_AUTH_UNAUTH_AUTO                 0x01
 
-#define HDCP_REG2                             0x8564 /* Not in REF_01 */
+#define HDCP_REG2                             0x8564  
 #define MASK_AUTO_P3_RESET                    0x0F
 #define SET_AUTO_P3_RESET_FRAMES(n)          (n & MASK_AUTO_P3_RESET)
 #define MASK_AUTO_P3_RESET_OFF                0x00
 
 #define VI_MODE                               0x8570
-#define MASK_RGB_DVI                          0x08 /* Not in REF_01 */
+#define MASK_RGB_DVI                          0x08  
 
 #define VOUT_SET2                             0x8573
 #define MASK_SEL422                           0x80
@@ -548,23 +540,23 @@
 #define MASK_AUTO_MUTE                        0xc0
 #define MASK_VI_MUTE                          0x10
 
-#define DE_WIDTH_H_LO                         0x8582 /* Not in REF_01 */
-#define DE_WIDTH_H_HI                         0x8583 /* Not in REF_01 */
-#define DE_WIDTH_V_LO                         0x8588 /* Not in REF_01 */
-#define DE_WIDTH_V_HI                         0x8589 /* Not in REF_01 */
-#define H_SIZE_LO                             0x858A /* Not in REF_01 */
-#define H_SIZE_HI                             0x858B /* Not in REF_01 */
-#define V_SIZE_LO                             0x858C /* Not in REF_01 */
-#define V_SIZE_HI                             0x858D /* Not in REF_01 */
-#define FV_CNT_LO                             0x85A1 /* Not in REF_01 */
-#define FV_CNT_HI                             0x85A2 /* Not in REF_01 */
+#define DE_WIDTH_H_LO                         0x8582  
+#define DE_WIDTH_H_HI                         0x8583  
+#define DE_WIDTH_V_LO                         0x8588  
+#define DE_WIDTH_V_HI                         0x8589  
+#define H_SIZE_LO                             0x858A  
+#define H_SIZE_HI                             0x858B  
+#define V_SIZE_LO                             0x858C  
+#define V_SIZE_HI                             0x858D  
+#define FV_CNT_LO                             0x85A1  
+#define FV_CNT_HI                             0x85A2  
 
-#define FH_MIN0                               0x85AA /* Not in REF_01 */
-#define FH_MIN1                               0x85AB /* Not in REF_01 */
-#define FH_MAX0                               0x85AC /* Not in REF_01 */
-#define FH_MAX1                               0x85AD /* Not in REF_01 */
+#define FH_MIN0                               0x85AA  
+#define FH_MIN1                               0x85AB  
+#define FH_MAX0                               0x85AC  
+#define FH_MAX1                               0x85AD  
 
-#define HV_RST                                0x85AF /* Not in REF_01 */
+#define HV_RST                                0x85AF  
 #define MASK_H_PI_RST                         0x20
 #define MASK_V_PI_RST                         0x10
 
@@ -578,7 +570,7 @@
 #define EDID_LEN1                             0x85CA
 #define EDID_LEN2                             0x85CB
 
-#define HDCP_REG3                             0x85D1 /* Not in REF_01 */
+#define HDCP_REG3                             0x85D1  
 #define KEY_RD_CMD                            0x01
 
 #define FORCE_MUTE                            0x8600
@@ -681,7 +673,7 @@
 #define MASK_SDO_FMT_LEFT                     0x01
 #define MASK_SDO_FMT_I2S                      0x02
 
-#define DIV_MODE                              0x8665 /* Not in REF_01 */
+#define DIV_MODE                              0x8665  
 #define MASK_DIV_DLY                          0xf0
 #define SET_DIV_DLY_MS(milliseconds)         ((((milliseconds) / 100) << 4) & \
 						MASK_DIV_DLY)

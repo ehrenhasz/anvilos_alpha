@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_DMA_CH_0_REGS_H_
 #define ASIC_REG_DMA_CH_0_REGS_H_
 
-/*
- *****************************************
- *   DMA_CH_0 (Prototype: DMA_CH)
- *****************************************
- */
+ 
 
 #define mmDMA_CH_0_CFG0                                              0x401000
 
@@ -205,4 +193,4 @@
 
 #define mmDMA_CH_0_MEM_INIT_BUSY                                     0x4011FC
 
-#endif /* ASIC_REG_DMA_CH_0_REGS_H_ */
+#endif  

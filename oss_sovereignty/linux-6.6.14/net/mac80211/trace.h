@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Portions of this file
- * Copyright(c) 2016-2017 Intel Deutschland GmbH
- * Copyright (C) 2018 - 2023 Intel Corporation
- */
+ 
+ 
 
 #if !defined(__MAC80211_DRIVER_TRACE) || defined(TRACE_HEADER_MULTI_READ)
 #define __MAC80211_DRIVER_TRACE
@@ -119,9 +115,7 @@
 				__entry->buf_size, __entry->amsdu, __entry->timeout,	\
 				__entry->action
 
-/*
- * Tracing for driver callbacks.
- */
+ 
 
 DECLARE_EVENT_CLASS(local_only_evt,
 	TP_PROTO(struct ieee80211_local *local),
@@ -2570,9 +2564,7 @@ TRACE_EVENT(drv_change_sta_links,
 	)
 );
 
-/*
- * Tracing for API calls that drivers call.
- */
+ 
 
 TRACE_EVENT(api_start_tx_ba_session,
 	TP_PROTO(struct ieee80211_sta *sta, u16 tid),
@@ -3007,10 +2999,7 @@ TRACE_EVENT(api_radar_detected,
 	)
 );
 
-/*
- * Tracing for internal functions
- * (which may also be called in response to driver calls)
- */
+ 
 
 TRACE_EVENT(wake_queue,
 	TP_PROTO(struct ieee80211_local *local, u16 queue,
@@ -3060,7 +3049,7 @@ TRACE_EVENT(stop_queue,
 	)
 );
 
-#endif /* !__MAC80211_DRIVER_TRACE || TRACE_HEADER_MULTI_READ */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

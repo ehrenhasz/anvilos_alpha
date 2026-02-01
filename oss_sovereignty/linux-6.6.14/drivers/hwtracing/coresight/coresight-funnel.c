@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011-2012, The Linux Foundation. All rights reserved.
- *
- * Description: CoreSight Funnel driver
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kernel.h>
@@ -32,14 +28,7 @@
 
 DEFINE_CORESIGHT_DEVLIST(funnel_devs, "funnel");
 
-/**
- * struct funnel_drvdata - specifics associated to a funnel component
- * @base:	memory mapped base address for this component.
- * @atclk:	optional clock for the core parts of the funnel.
- * @csdev:	component vitals needed by the framework.
- * @priority:	port selection order.
- * @spinlock:	serialize enable/disable operations.
- */
+ 
 struct funnel_drvdata {
 	void __iomem		*base;
 	struct clk		*atclk;
@@ -57,7 +46,7 @@ static int dynamic_funnel_enable_hw(struct funnel_drvdata *drvdata, int port)
 	CS_UNLOCK(drvdata->base);
 
 	functl = readl_relaxed(drvdata->base + FUNNEL_FUNCTL);
-	/* Claim the device only when we enable the first slave */
+	 
 	if (!(functl & FUNNEL_ENSx_MASK)) {
 		rc = coresight_claim_device_unlocked(csdev);
 		if (rc)
@@ -112,7 +101,7 @@ static void dynamic_funnel_disable_hw(struct funnel_drvdata *drvdata,
 	functl &= ~(1 << inport);
 	writel_relaxed(functl, drvdata->base + FUNNEL_FUNCTL);
 
-	/* Disclaim the device if none of the slaves are now active */
+	 
 	if (!(functl & FUNNEL_ENSx_MASK))
 		coresight_disclaim_device_unlocked(csdev);
 
@@ -229,17 +218,14 @@ static int funnel_probe(struct device *dev, struct resource *res)
 	if (!drvdata)
 		return -ENOMEM;
 
-	drvdata->atclk = devm_clk_get(dev, "atclk"); /* optional */
+	drvdata->atclk = devm_clk_get(dev, "atclk");  
 	if (!IS_ERR(drvdata->atclk)) {
 		ret = clk_prepare_enable(drvdata->atclk);
 		if (ret)
 			return ret;
 	}
 
-	/*
-	 * Map the device base for dynamic-funnel, which has been
-	 * validated by AMBA core.
-	 */
+	 
 	if (res) {
 		base = devm_ioremap_resource(dev, res);
 		if (IS_ERR(base)) {
@@ -324,7 +310,7 @@ static int static_funnel_probe(struct platform_device *pdev)
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
-	/* Static funnel do not have programming base */
+	 
 	ret = funnel_probe(&pdev->dev, NULL);
 
 	if (ret) {
@@ -363,7 +349,7 @@ static struct platform_driver static_funnel_driver = {
 	.remove          = static_funnel_remove,
 	.driver         = {
 		.name   = "coresight-static-funnel",
-		/* THIS_MODULE is taken care of by platform_driver_register() */
+		 
 		.of_match_table = static_funnel_match,
 		.acpi_match_table = ACPI_PTR(static_funnel_ids),
 		.pm	= &funnel_dev_pm_ops,
@@ -388,7 +374,7 @@ static const struct amba_id dynamic_funnel_ids[] = {
 		.mask   = 0x000fffff,
 	},
 	{
-		/* Coresight SoC-600 */
+		 
 		.id     = 0x000bb9eb,
 		.mask   = 0x000fffff,
 	},

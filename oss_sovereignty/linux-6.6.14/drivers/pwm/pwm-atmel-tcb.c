@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Overkiz SAS 2012
- *
- * Author: Boris BREZILLON <b.brezillon@overkiz.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -33,9 +29,9 @@
 				 ATMEL_TC_BEEVT | ATMEL_TC_BSWTRG)
 
 struct atmel_tcb_pwm_device {
-	unsigned div;			/* PWM clock divider */
-	unsigned duty;			/* PWM duty expressed in clk cycles */
-	unsigned period;		/* PWM period expressed in clk cycles */
+	unsigned div;			 
+	unsigned duty;			 
+	unsigned period;		 
 };
 
 struct atmel_tcb_channel {
@@ -84,10 +80,7 @@ static int atmel_tcb_pwm_request(struct pwm_chip *chip,
 
 	spin_lock(&tcbpwmc->lock);
 	regmap_read(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), &cmr);
-	/*
-	 * Get init config from Timer Counter registers if
-	 * Timer Counter is already configured as a PWM generator.
-	 */
+	 
 	if (cmr & ATMEL_TC_WAVE) {
 		if (pwm->hwpwm == 0)
 			regmap_read(tcbpwmc->regmap,
@@ -127,21 +120,14 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm,
 	struct atmel_tcb_pwm_device *tcbpwm = &tcbpwmc->pwms[pwm->hwpwm];
 	unsigned cmr;
 
-	/*
-	 * If duty is 0 the timer will be stopped and we have to
-	 * configure the output correctly on software trigger:
-	 *  - set output to high if PWM_POLARITY_INVERSED
-	 *  - set output to low if PWM_POLARITY_NORMAL
-	 *
-	 * This is why we're reverting polarity in this case.
-	 */
+	 
 	if (tcbpwm->duty == 0)
 		polarity = !polarity;
 
 	spin_lock(&tcbpwmc->lock);
 	regmap_read(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), &cmr);
 
-	/* flush old setting and set the new one */
+	 
 	if (pwm->hwpwm == 0) {
 		cmr &= ~ATMEL_TC_ACMR_MASK;
 		if (polarity == PWM_POLARITY_INVERSED)
@@ -158,10 +144,7 @@ static void atmel_tcb_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	regmap_write(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), cmr);
 
-	/*
-	 * Use software trigger to apply the new setting.
-	 * If both PWM devices in this group are disabled we stop the clock.
-	 */
+	 
 	if (!(cmr & (ATMEL_TC_ACPC | ATMEL_TC_BCPC))) {
 		regmap_write(tcbpwmc->regmap,
 			     ATMEL_TC_REG(tcbpwmc->channel, CCR),
@@ -184,27 +167,20 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm,
 	struct atmel_tcb_pwm_device *tcbpwm = &tcbpwmc->pwms[pwm->hwpwm];
 	u32 cmr;
 
-	/*
-	 * If duty is 0 the timer will be stopped and we have to
-	 * configure the output correctly on software trigger:
-	 *  - set output to high if PWM_POLARITY_INVERSED
-	 *  - set output to low if PWM_POLARITY_NORMAL
-	 *
-	 * This is why we're reverting polarity in this case.
-	 */
+	 
 	if (tcbpwm->duty == 0)
 		polarity = !polarity;
 
 	spin_lock(&tcbpwmc->lock);
 	regmap_read(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CMR), &cmr);
 
-	/* flush old setting and set the new one */
+	 
 	cmr &= ~ATMEL_TC_TCCLKS;
 
 	if (pwm->hwpwm == 0) {
 		cmr &= ~ATMEL_TC_ACMR_MASK;
 
-		/* Set CMR flags according to given polarity */
+		 
 		if (polarity == PWM_POLARITY_INVERSED)
 			cmr |= ATMEL_TC_ASWTRG_CLEAR;
 		else
@@ -217,12 +193,7 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm,
 			cmr |= ATMEL_TC_BSWTRG_SET;
 	}
 
-	/*
-	 * If duty is 0 or equal to period there's no need to register
-	 * a specific action on RA/RB and RC compare.
-	 * The output will be configured on software trigger and keep
-	 * this config till next config call.
-	 */
+	 
 	if (tcbpwm->duty != tcbpwm->period && tcbpwm->duty > 0) {
 		if (pwm->hwpwm == 0) {
 			if (polarity == PWM_POLARITY_INVERSED)
@@ -253,7 +224,7 @@ static int atmel_tcb_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm,
 	regmap_write(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, RC),
 		     tcbpwm->period);
 
-	/* Use software trigger to apply the new setting */
+	 
 	regmap_write(tcbpwmc->regmap, ATMEL_TC_REG(tcbpwmc->channel, CCR),
 		     ATMEL_TC_SWTRG | ATMEL_TC_CLKEN);
 	tcbpwmc->bkup.enabled = 1;
@@ -275,11 +246,7 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	unsigned long long min;
 	unsigned long long max;
 
-	/*
-	 * Find best clk divisor:
-	 * the smallest divisor which can fulfill the period_ns requirements.
-	 * If there is a gclk, the first divisor is actually the gclk selector
-	 */
+	 
 	if (tcbpwmc->gclk)
 		i = 1;
 	for (; i < ARRAY_SIZE(atmel_tcb_divisors); ++i) {
@@ -293,17 +260,14 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 			break;
 	}
 
-	/*
-	 * If none of the divisor are small enough to represent period_ns
-	 * take slow clock (32KHz).
-	 */
+	 
 	if (i == ARRAY_SIZE(atmel_tcb_divisors)) {
 		i = slowclk;
 		rate = clk_get_rate(tcbpwmc->slow_clk);
 		min = div_u64(NSEC_PER_SEC, rate);
 		max = min << tcbpwmc->width;
 
-		/* If period is too big return ERANGE error */
+		 
 		if (max < period_ns)
 			return -ERANGE;
 	}
@@ -316,14 +280,7 @@ static int atmel_tcb_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	else
 		atcbpwm = &tcbpwmc->pwms[0];
 
-	/*
-	 * PWM devices provided by the TCB driver are grouped by 2.
-	 * PWM devices in a given group must be configured with the
-	 * same period_ns.
-	 *
-	 * We're checking the period value of the second PWM device
-	 * in this group before applying the new config.
-	 */
+	 
 	if ((atcbpwm && atcbpwm->duty > 0 &&
 			atcbpwm->duty != atcbpwm->period) &&
 		(atcbpwm->div != i || atcbpwm->period != period)) {
@@ -384,7 +341,7 @@ static const struct of_device_id atmel_tcb_of_match[] = {
 	{ .compatible = "atmel,at91rm9200-tcb", .data = &tcb_rm9200_config, },
 	{ .compatible = "atmel,at91sam9x5-tcb", .data = &tcb_sam9x5_config, },
 	{ .compatible = "atmel,sama5d2-tcb", .data = &tcb_sama5d2_config, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int atmel_tcb_pwm_probe(struct platform_device *pdev)
@@ -486,7 +443,7 @@ static void atmel_tcb_pwm_remove(struct platform_device *pdev)
 
 static const struct of_device_id atmel_tcb_pwm_dt_ids[] = {
 	{ .compatible = "atmel,tcb-pwm", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, atmel_tcb_pwm_dt_ids);
 

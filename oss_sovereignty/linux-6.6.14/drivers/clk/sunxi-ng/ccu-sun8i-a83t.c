@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Chen-Yu Tsai. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -23,13 +21,7 @@
 
 #define CCU_SUN8I_A83T_LOCK_REG	0x20c
 
-/*
- * The CPU PLLs are actually NP clocks, with P being /1 or /4. However
- * P should only be used for output frequencies lower than 228 MHz.
- * Neither mainline Linux, U-boot, nor the vendor BSPs use these.
- *
- * For now we can just model it as a multiplier clock, and force P to /1.
- */
+ 
 #define SUN8I_A83T_PLL_C0CPUX_REG	0x000
 #define SUN8I_A83T_PLL_C1CPUX_REG	0x004
 
@@ -61,15 +53,10 @@ static struct ccu_mult pll_c1cpux_clk = {
 	},
 };
 
-/*
- * The Audio PLL has d1, d2 dividers in addition to the usual N, M
- * factors. Since we only need 2 frequencies from this PLL: 22.5792 MHz
- * and 24.576 MHz, ignore them for now. Enforce the default for them,
- * which is d1 = 0, d2 = 1.
- */
+ 
 #define SUN8I_A83T_PLL_AUDIO_REG	0x008
 
-/* clock rates doubled for post divider */
+ 
 static struct ccu_sdm_setting pll_audio_sdm_table[] = {
 	{ .rate = 45158400, .pattern = 0xc00121ff, .m = 29, .n = 54 },
 	{ .rate = 49152000, .pattern = 0xc000e147, .m = 30, .n = 61 },
@@ -94,13 +81,13 @@ static struct ccu_nm pll_audio_clk = {
 	},
 };
 
-/* Some PLLs are input * N / div1 / P. Model them as NKMP with no K */
+ 
 static struct ccu_nkmp pll_video0_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(3),
 	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 12, 0),
-	.m		= _SUNXI_CCU_DIV(16, 1), /* input divider */
-	.p		= _SUNXI_CCU_DIV(0, 2), /* output divider */
+	.m		= _SUNXI_CCU_DIV(16, 1),  
+	.p		= _SUNXI_CCU_DIV(0, 2),  
 	.max_rate	= 3000000000UL,
 	.common		= {
 		.reg		= 0x010,
@@ -116,8 +103,8 @@ static struct ccu_nkmp pll_ve_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(4),
 	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 12, 0),
-	.m		= _SUNXI_CCU_DIV(16, 1), /* input divider */
-	.p		= _SUNXI_CCU_DIV(18, 1), /* output divider */
+	.m		= _SUNXI_CCU_DIV(16, 1),  
+	.p		= _SUNXI_CCU_DIV(18, 1),  
 	.common		= {
 		.reg		= 0x018,
 		.lock_reg	= CCU_SUN8I_A83T_LOCK_REG,
@@ -132,8 +119,8 @@ static struct ccu_nkmp pll_ddr_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(5),
 	.n		= _SUNXI_CCU_MULT_MIN(8, 8, 12),
-	.m		= _SUNXI_CCU_DIV(16, 1), /* input divider */
-	.p		= _SUNXI_CCU_DIV(18, 1), /* output divider */
+	.m		= _SUNXI_CCU_DIV(16, 1),  
+	.p		= _SUNXI_CCU_DIV(18, 1),  
 	.common		= {
 		.reg		= 0x020,
 		.lock_reg	= CCU_SUN8I_A83T_LOCK_REG,
@@ -148,8 +135,8 @@ static struct ccu_nkmp pll_periph_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(6),
 	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 12, 0),
-	.m		= _SUNXI_CCU_DIV(16, 1), /* input divider */
-	.p		= _SUNXI_CCU_DIV(18, 1), /* output divider */
+	.m		= _SUNXI_CCU_DIV(16, 1),  
+	.p		= _SUNXI_CCU_DIV(18, 1),  
 	.common		= {
 		.reg		= 0x028,
 		.lock_reg	= CCU_SUN8I_A83T_LOCK_REG,
@@ -164,8 +151,8 @@ static struct ccu_nkmp pll_gpu_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(7),
 	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 12, 0),
-	.m		= _SUNXI_CCU_DIV(16, 1), /* input divider */
-	.p		= _SUNXI_CCU_DIV(18, 1), /* output divider */
+	.m		= _SUNXI_CCU_DIV(16, 1),  
+	.p		= _SUNXI_CCU_DIV(18, 1),  
 	.common		= {
 		.reg		= 0x038,
 		.lock_reg	= CCU_SUN8I_A83T_LOCK_REG,
@@ -180,8 +167,8 @@ static struct ccu_nkmp pll_hsic_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(8),
 	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 12, 0),
-	.m		= _SUNXI_CCU_DIV(16, 1), /* input divider */
-	.p		= _SUNXI_CCU_DIV(18, 1), /* output divider */
+	.m		= _SUNXI_CCU_DIV(16, 1),  
+	.p		= _SUNXI_CCU_DIV(18, 1),  
 	.common		= {
 		.reg		= 0x044,
 		.lock_reg	= CCU_SUN8I_A83T_LOCK_REG,
@@ -196,8 +183,8 @@ static struct ccu_nkmp pll_de_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(9),
 	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 12, 0),
-	.m		= _SUNXI_CCU_DIV(16, 1), /* input divider */
-	.p		= _SUNXI_CCU_DIV(18, 1), /* output divider */
+	.m		= _SUNXI_CCU_DIV(16, 1),  
+	.p		= _SUNXI_CCU_DIV(18, 1),  
 	.common		= {
 		.reg		= 0x048,
 		.lock_reg	= CCU_SUN8I_A83T_LOCK_REG,
@@ -212,8 +199,8 @@ static struct ccu_nkmp pll_video1_clk = {
 	.enable		= BIT(31),
 	.lock		= BIT(10),
 	.n		= _SUNXI_CCU_MULT_OFFSET_MIN_MAX(8, 8, 0, 12, 0),
-	.m		= _SUNXI_CCU_DIV(16, 1), /* input divider */
-	.p		= _SUNXI_CCU_DIV(0, 2), /* external divider p */
+	.m		= _SUNXI_CCU_DIV(16, 1),  
+	.p		= _SUNXI_CCU_DIV(0, 2),  
 	.max_rate	= 3000000000UL,
 	.common		= {
 		.reg		= 0x04c,
@@ -267,9 +254,9 @@ static const char * const apb2_parents[] = { "osc16M-d512", "osc24M",
 					     "pll-periph", "pll-periph" };
 
 static SUNXI_CCU_MP_WITH_MUX(apb2_clk, "apb2", apb2_parents, 0x058,
-			     0, 5,	/* M */
-			     16, 2,	/* P */
-			     24, 2,	/* mux */
+			     0, 5,	 
+			     16, 2,	 
+			     24, 2,	 
 			     0);
 
 static const char * const ahb2_parents[] = { "ahb1", "pll-periph" };
@@ -392,18 +379,18 @@ static const char * const mod0_default_parents[] = { "osc24M", "pll-periph" };
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(nand_clk, "nand", mod0_default_parents,
 				  0x080,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(mmc0_clk, "mmc0", mod0_default_parents,
 				  0x088,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_PHASE(mmc0_sample_clk, "mmc0-sample", "mmc0",
@@ -413,10 +400,10 @@ static SUNXI_CCU_PHASE(mmc0_output_clk, "mmc0-output", "mmc0",
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(mmc1_clk, "mmc1", mod0_default_parents,
 				  0x08c,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_PHASE(mmc1_sample_clk, "mmc1-sample", "mmc1",
@@ -434,26 +421,26 @@ static SUNXI_CCU_PHASE(mmc2_output_clk, "mmc2-output", "mmc2",
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(ss_clk, "ss", mod0_default_parents,
 				  0x09c,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 2,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 2,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(spi0_clk, "spi0", mod0_default_parents,
 				  0x0a0,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 4,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 4,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_MP_WITH_MUX_GATE(spi1_clk, "spi1", mod0_default_parents,
 				  0x0a4,
-				  0, 4,		/* M */
-				  16, 2,	/* P */
-				  24, 4,	/* mux */
-				  BIT(31),	/* gate */
+				  0, 4,		 
+				  16, 2,	 
+				  24, 4,	 
+				  BIT(31),	 
 				  0);
 
 static SUNXI_CCU_M_WITH_GATE(i2s0_clk, "i2s0", "pll-audio",
@@ -486,7 +473,7 @@ static struct ccu_gate usb_hsic_12m_clk = {
 static SUNXI_CCU_GATE(usb_ohci0_clk,	"usb-ohci0",	"osc24M",
 		      0x0cc, BIT(16), 0);
 
-/* TODO divider has minimum of 2 */
+ 
 static SUNXI_CCU_M(dram_clk, "dram", "pll-ddr", 0x0f4, 0, 4, CLK_IS_CRITICAL);
 
 static SUNXI_CCU_GATE(dram_ve_clk,	"dram-ve",	"dram",
@@ -512,9 +499,9 @@ static const u8 csi_mclk_table[] = { 0, 3, 5 };
 static SUNXI_CCU_M_WITH_MUX_TABLE_GATE(csi_mclk_clk, "csi-mclk",
 				       csi_mclk_parents, csi_mclk_table,
 				       0x134,
-				       0, 5,	/* M */
-				       8, 3,	/* mux */
-				       BIT(15),	/* gate */
+				       0, 5,	 
+				       8, 3,	 
+				       BIT(15),	 
 				       0);
 
 static const char * const csi_sclk_parents[] = { "pll-periph", "pll-ve" };
@@ -522,9 +509,9 @@ static const u8 csi_sclk_table[] = { 0, 5 };
 static SUNXI_CCU_M_WITH_MUX_TABLE_GATE(csi_sclk_clk, "csi-sclk",
 				       csi_sclk_parents, csi_sclk_table,
 				       0x134,
-				       16, 4,	/* M */
-				       24, 3,	/* mux */
-				       BIT(31),	/* gate */
+				       16, 4,	 
+				       24, 3,	 
+				       BIT(31),	 
 				       0);
 
 static SUNXI_CCU_M_WITH_GATE(ve_clk, "ve", "pll-ve", 0x13c,
@@ -535,9 +522,9 @@ static SUNXI_CCU_GATE(avs_clk, "avs", "osc24M", 0x144, BIT(31), 0);
 static const char * const hdmi_parents[] = { "pll-video1" };
 static SUNXI_CCU_M_WITH_MUX_GATE(hdmi_clk, "hdmi", hdmi_parents,
 				 0x150,
-				 0, 4,	/* M */
-				 24, 2,	/* mux */
-				 BIT(31),	/* gate */
+				 0, 4,	 
+				 24, 2,	 
+				 BIT(31),	 
 				 CLK_SET_RATE_PARENT);
 
 static SUNXI_CCU_GATE(hdmi_slow_clk, "hdmi-slow", "osc24M", 0x154, BIT(31), 0);
@@ -546,9 +533,9 @@ static const char * const mbus_parents[] = { "osc24M", "pll-periph",
 					     "pll-ddr" };
 static SUNXI_CCU_M_WITH_MUX_GATE(mbus_clk, "mbus", mbus_parents,
 				 0x15c,
-				 0, 3,	/* M */
-				 24, 2,	/* mux */
-				 BIT(31),	/* gate */
+				 0, 3,	 
+				 24, 2,	 
+				 BIT(31),	 
 				 CLK_IS_CRITICAL);
 
 static const char * const mipi_dsi0_parents[] = { "pll-video0" };
@@ -556,9 +543,9 @@ static const u8 mipi_dsi0_table[] = { 8 };
 static SUNXI_CCU_M_WITH_MUX_TABLE_GATE(mipi_dsi0_clk, "mipi-dsi0",
 				       mipi_dsi0_parents, mipi_dsi0_table,
 				       0x168,
-				       0, 4,	/* M */
-				       24, 4,	/* mux */
-				       BIT(31),	/* gate */
+				       0, 4,	 
+				       24, 4,	 
+				       BIT(31),	 
 				       CLK_SET_RATE_PARENT);
 
 static const char * const mipi_dsi1_parents[] = { "osc24M", "pll-video0" };
@@ -566,9 +553,9 @@ static const u8 mipi_dsi1_table[] = { 0, 9 };
 static SUNXI_CCU_M_WITH_MUX_TABLE_GATE(mipi_dsi1_clk, "mipi-dsi1",
 				       mipi_dsi1_parents, mipi_dsi1_table,
 				       0x16c,
-				       0, 4,	/* M */
-				       24, 4,	/* mux */
-				       BIT(31),	/* gate */
+				       0, 4,	 
+				       24, 4,	 
+				       BIT(31),	 
 				       CLK_SET_RATE_PARENT);
 
 static SUNXI_CCU_M_WITH_GATE(gpu_core_clk, "gpu-core", "pll-gpu", 0x1a0,
@@ -578,9 +565,9 @@ static const char * const gpu_memory_parents[] = { "pll-gpu", "pll-ddr" };
 static SUNXI_CCU_M_WITH_MUX_GATE(gpu_memory_clk, "gpu-memory",
 				 gpu_memory_parents,
 				 0x1a4,
-				 0, 3,		/* M */
-				 24, 1,		/* mux */
-				 BIT(31),	/* gate */
+				 0, 3,		 
+				 24, 1,		 
+				 BIT(31),	 
 				 CLK_SET_RATE_PARENT);
 
 static SUNXI_CCU_M_WITH_GATE(gpu_hyd_clk, "gpu-hyd", "pll-gpu", 0x1a8,
@@ -863,23 +850,16 @@ static void sun8i_a83t_cpu_pll_fixup(void __iomem *reg)
 {
 	u32 val = readl(reg);
 
-	/* bail out if P divider is not used */
+	 
 	if (!(val & BIT(SUN8I_A83T_PLL_P_SHIFT)))
 		return;
 
-	/*
-	 * If P is used, output should be less than 288 MHz. When we
-	 * set P to 1, we should also decrease the multiplier so the
-	 * output doesn't go out of range, but not too much such that
-	 * the multiplier stays above 12, the minimal operation value.
-	 *
-	 * To keep it simple, set the multiplier to 17, the reset value.
-	 */
+	 
 	val &= ~GENMASK(SUN8I_A83T_PLL_N_SHIFT + SUN8I_A83T_PLL_N_WIDTH - 1,
 			SUN8I_A83T_PLL_N_SHIFT);
 	val |= 17 << SUN8I_A83T_PLL_N_SHIFT;
 
-	/* And clear P */
+	 
 	val &= ~BIT(SUN8I_A83T_PLL_P_SHIFT);
 
 	writel(val, reg);
@@ -894,13 +874,13 @@ static int sun8i_a83t_ccu_probe(struct platform_device *pdev)
 	if (IS_ERR(reg))
 		return PTR_ERR(reg);
 
-	/* Enforce d1 = 0, d2 = 1 for Audio PLL */
+	 
 	val = readl(reg + SUN8I_A83T_PLL_AUDIO_REG);
 	val &= ~BIT(16);
 	val |= BIT(18);
 	writel(val, reg + SUN8I_A83T_PLL_AUDIO_REG);
 
-	/* Enforce P = 1 for both CPU cluster PLLs */
+	 
 	sun8i_a83t_cpu_pll_fixup(reg + SUN8I_A83T_PLL_C0CPUX_REG);
 	sun8i_a83t_cpu_pll_fixup(reg + SUN8I_A83T_PLL_C1CPUX_REG);
 

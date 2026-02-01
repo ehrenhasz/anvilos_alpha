@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: ISC */
+ 
 
 #ifndef __MT7603_H
 #define __MT7603_H
@@ -29,15 +29,15 @@
 
 #define MT_AGG_SIZE_LIMIT(_n)	(((_n) + 1) * 4)
 
-#define MT7603_PRE_TBTT_TIME	5000 /* ms */
+#define MT7603_PRE_TBTT_TIME	5000  
 
-#define MT7603_WATCHDOG_TIME	100 /* ms */
-#define MT7603_WATCHDOG_TIMEOUT	10 /* number of checks */
+#define MT7603_WATCHDOG_TIME	100  
+#define MT7603_WATCHDOG_TIMEOUT	10  
 
 #define MT7603_EDCCA_BLOCK_TH	10
 
-#define MT7603_CFEND_RATE_DEFAULT	0x69 /* chip default (24M) */
-#define MT7603_CFEND_RATE_11B		0x03 /* 11B LP, 11M */
+#define MT7603_CFEND_RATE_DEFAULT	0x69  
+#define MT7603_CFEND_RATE_11B		0x03  
 
 struct mt7603_vif;
 struct mt7603_sta;
@@ -60,7 +60,7 @@ struct mt7603_rate_set {
 };
 
 struct mt7603_sta {
-	struct mt76_wcid wcid; /* must be first */
+	struct mt76_wcid wcid;  
 
 	struct mt7603_vif *vif;
 
@@ -83,7 +83,7 @@ struct mt7603_sta {
 };
 
 struct mt7603_vif {
-	struct mt7603_sta sta; /* must be first */
+	struct mt7603_sta sta;  
 
 	u8 idx;
 };
@@ -100,7 +100,7 @@ enum mt7603_reset_cause {
 };
 
 struct mt7603_dev {
-	union { /* must be first */
+	union {  
 		struct mt76_dev mt76;
 		struct mt76_phy mphy;
 	};
@@ -172,7 +172,7 @@ static inline bool is_mt7628(struct mt7603_dev *dev)
 	return mt76xx_chip(dev) == 0x7628;
 }
 
-/* need offset to prevent conflict with ampdu_ack_len */
+ 
 #define MT_RATE_DRIVER_DATA_OFFSET	4
 
 u32 mt7603_reg_map(struct mt7603_dev *dev, u32 addr);

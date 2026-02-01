@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vdso_test.c: Sample code to test parse_vdso.c on x86
- * Copyright (c) 2011-2014 Andy Lutomirski
- *
- * You can amuse yourself by compiling with:
- * gcc -std=gnu99 -nostdlib
- *     -Os -fno-asynchronous-unwind-tables -flto -lgcc_s
- *      vdso_standalone_test_x86.c parse_vdso.c
- * to generate a small binary.  On x86_64, you can omit -lgcc_s
- * if you want the binary to be completely standalone.
- */
+
+ 
 
 #include <sys/syscall.h>
 #include <sys/time.h>
@@ -18,10 +8,10 @@
 
 #include "parse_vdso.h"
 
-/* We need a libc functions... */
+ 
 int strcmp(const char *a, const char *b)
 {
-	/* This implementation is buggy: it never returns -1. */
+	 
 	while (*a || *b) {
 		if (*a != *b)
 			return 1;
@@ -34,7 +24,7 @@ int strcmp(const char *a, const char *b)
 	return 0;
 }
 
-/* ...and two syscalls.  This is x86-specific. */
+ 
 static inline long x86_syscall3(long nr, long a0, long a1, long a2)
 {
 	long ret;
@@ -72,19 +62,19 @@ void to_base10(char *lastdig, time_t n)
 
 __attribute__((externally_visible)) void c_main(void **stack)
 {
-	/* Parse the stack */
+	 
 	long argc = (long)*stack;
 	stack += argc + 2;
 
-	/* Now we're pointing at the environment.  Skip it. */
+	 
 	while(*stack)
 		stack++;
 	stack++;
 
-	/* Now we're pointing at auxv.  Initialize the vDSO parser. */
+	 
 	vdso_init_from_auxv((void *)stack);
 
-	/* Find gettimeofday. */
+	 
 	typedef long (*gtod_t)(struct timeval *tv, struct timezone *tz);
 	gtod_t gtod = (gtod_t)vdso_sym("LINUX_2.6", "__vdso_gettimeofday");
 
@@ -106,10 +96,7 @@ __attribute__((externally_visible)) void c_main(void **stack)
 	linux_exit(0);
 }
 
-/*
- * This is the real entry point.  It passes the initial stack into
- * the C entry point.
- */
+ 
 asm (
 	".text\n"
 	".global _start\n"

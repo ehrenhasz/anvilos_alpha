@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * psci_test - Tests relating to KVM's PSCI implementation.
- *
- * Copyright (c) 2021 Google LLC.
- *
- * This test includes:
- *  - A regression test for a race between KVM servicing the PSCI CPU_ON call
- *    and userspace reading the targeted vCPU's registers.
- *  - A test for KVM's handling of PSCI SYSTEM_SUSPEND and the associated
- *    KVM_SYSTEM_EVENT_SUSPEND UAPI.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -138,9 +128,7 @@ static void host_test_cpu_on(void)
 
 	vm = setup_vm(guest_test_cpu_on, &source, &target);
 
-	/*
-	 * make sure the target is already off when executing the test.
-	 */
+	 
 	vcpu_power_off(target);
 
 	vcpu_get_reg(target, KVM_ARM64_SYS_REG(SYS_MPIDR_EL1), &target_mpidr);
@@ -158,7 +146,7 @@ static void guest_test_system_suspend(void)
 {
 	uint64_t ret;
 
-	/* assert that SYSTEM_SUSPEND is discoverable */
+	 
 	GUEST_ASSERT(!psci_features(PSCI_1_0_FN_SYSTEM_SUSPEND));
 	GUEST_ASSERT(!psci_features(PSCI_1_0_FN64_SYSTEM_SUSPEND));
 

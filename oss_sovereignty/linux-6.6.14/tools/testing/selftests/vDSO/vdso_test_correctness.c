@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ldt_gdt.c - Test cases for LDT and GDT access
- * Copyright (c) 2011-2015 Andrew Lutomirski
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -43,7 +40,7 @@ struct __kernel_timespec {
 };
 #endif
 
-/* max length of lines in /proc/self/maps - anything longer is skipped here */
+ 
 #define MAPS_LINE_LEN 128
 
 int nerrs = 0;
@@ -73,7 +70,7 @@ static void *vsyscall_getcpu(void)
 	bool found = false;
 
 	maps = fopen("/proc/self/maps", "r");
-	if (!maps) /* might still be present, but ignore it here, as we test vDSO not vsyscall */
+	if (!maps)  
 		return NULL;
 
 	while (fgets(line, MAPS_LINE_LEN, maps)) {
@@ -81,7 +78,7 @@ static void *vsyscall_getcpu(void)
 		void *start, *end;
 		char name[MAPS_LINE_LEN];
 
-		/* sscanf() is safe here as strlen(name) >= strlen(line) */
+		 
 		if (sscanf(line, "%p-%p %c-%cp %*x %*x:%*x %*u %s",
 			   &start, &end, &r, &x, name) != 5)
 			continue;
@@ -89,7 +86,7 @@ static void *vsyscall_getcpu(void)
 		if (strcmp(name, "[vsyscall]"))
 			continue;
 
-		/* assume entries are OK, as we test vDSO here not vsyscall */
+		 
 		found = true;
 		break;
 	}
@@ -310,7 +307,7 @@ static void test_clock_gettime(void)
 	for (int clock = 0; clock < ARRAY_SIZE(clocknames); clock++)
 		test_one_clock_gettime(clock, clocknames[clock]);
 
-	/* Also test some invalid clock ids */
+	 
 	test_one_clock_gettime(-1, "invalid");
 	test_one_clock_gettime(INT_MIN, "invalid");
 	test_one_clock_gettime(INT_MAX, "invalid");
@@ -372,7 +369,7 @@ static void test_clock_gettime64(void)
 	for (int clock = 0; clock < ARRAY_SIZE(clocknames); clock++)
 		test_one_clock_gettime64(clock, clocknames[clock]);
 
-	/* Also test some invalid clock ids */
+	 
 	test_one_clock_gettime64(-1, "invalid");
 	test_one_clock_gettime64(INT_MIN, "invalid");
 	test_one_clock_gettime64(INT_MAX, "invalid");
@@ -424,7 +421,7 @@ static void test_gettimeofday(void)
 		nerrs++;
 	}
 
-	/* And make sure that passing NULL for tz doesn't crash. */
+	 
 	vdso_gettimeofday(&vdso, NULL);
 }
 
@@ -438,10 +435,7 @@ int main(int argc, char **argv)
 	test_clock_gettime64();
 	test_gettimeofday();
 
-	/*
-	 * Test getcpu() last so that, if something goes wrong setting affinity,
-	 * we still run the other tests.
-	 */
+	 
 	test_getcpu();
 
 	return nerrs ? 1 : 0;

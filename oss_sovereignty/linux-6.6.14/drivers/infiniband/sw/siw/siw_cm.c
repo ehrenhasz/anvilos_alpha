@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/*          Fredy Neeser */
-/*          Greg Joyce <greg@opengridcomputing.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
-/* Copyright (c) 2017, Open Grid Computing, Inc. */
+
+ 
+ 
+ 
+ 
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -25,10 +25,7 @@
 #include "siw.h"
 #include "siw_cm.h"
 
-/*
- * Set to any combination of
- * MPA_V2_RDMA_NO_RTR, MPA_V2_RDMA_READ_RTR, MPA_V2_RDMA_WRITE_RTR
- */
+ 
 static __be16 rtr_type = MPA_V2_RDMA_READ_RTR | MPA_V2_RDMA_WRITE_RTR;
 static const bool relaxed_ird_negotiation = true;
 
@@ -126,12 +123,7 @@ static void siw_rtr_data_ready(struct sock *sk)
 	rd_desc.count = 1;
 
 	tcp_read_sock(sk, &rd_desc, siw_tcp_rx_data);
-	/*
-	 * Check if first frame was successfully processed.
-	 * Signal connection full establishment if yes.
-	 * Failed data processing would have already scheduled
-	 * connection drop.
-	 */
+	 
 	if (!qp->rx_stream.rx_suspend)
 		siw_cm_upcall(cep, IW_CM_EVENT_ESTABLISHED, 0);
 out:
@@ -205,7 +197,7 @@ static void siw_cancel_mpatimer(struct siw_cep *cep)
 	if (cep->mpa_timer) {
 		if (cancel_delayed_work(&cep->mpa_timer->work)) {
 			siw_cep_put(cep);
-			kfree(cep->mpa_timer); /* not needed again */
+			kfree(cep->mpa_timer);  
 		}
 		cep->mpa_timer = NULL;
 	}
@@ -257,7 +249,7 @@ static void __siw_cep_dealloc(struct kref *ref)
 
 	WARN_ON(cep->listen_cep);
 
-	/* kfree(NULL) is safe */
+	 
 	kfree(cep->mpa.pdata);
 	spin_lock_bh(&cep->lock);
 	if (!list_empty(&cep->work_freelist))
@@ -304,11 +296,7 @@ static int siw_cm_alloc_work(struct siw_cep *cep, int num)
 	return 0;
 }
 
-/*
- * siw_cm_upcall()
- *
- * Upcall to IWCM to inform about async connection events
- */
+ 
 static int siw_cm_upcall(struct siw_cep *cep, enum iw_cm_event_type reason,
 			 int status)
 {
@@ -325,29 +313,27 @@ static int siw_cm_upcall(struct siw_cep *cep, enum iw_cm_event_type reason,
 	} else {
 		id = cep->cm_id;
 	}
-	/* Signal IRD and ORD */
+	 
 	if (reason == IW_CM_EVENT_ESTABLISHED ||
 	    reason == IW_CM_EVENT_CONNECT_REPLY) {
-		/* Signal negotiated IRD/ORD values we will use */
+		 
 		event.ird = cep->ird;
 		event.ord = cep->ord;
 	} else if (reason == IW_CM_EVENT_CONNECT_REQUEST) {
 		event.ird = cep->ord;
 		event.ord = cep->ird;
 	}
-	/* Signal private data and address information */
+	 
 	if (reason == IW_CM_EVENT_CONNECT_REQUEST ||
 	    reason == IW_CM_EVENT_CONNECT_REPLY) {
 		u16 pd_len = be16_to_cpu(cep->mpa.hdr.params.pd_len);
 
 		if (pd_len) {
-			/*
-			 * hand over MPA private data
-			 */
+			 
 			event.private_data_len = pd_len;
 			event.private_data = cep->mpa.pdata;
 
-			/* Hide MPA V2 IRD/ORD control */
+			 
 			if (cep->enhanced_rdma_conn_est) {
 				event.private_data_len -=
 					sizeof(struct mpa_v2_data);
@@ -364,14 +350,7 @@ static int siw_cm_upcall(struct siw_cep *cep, enum iw_cm_event_type reason,
 	return id->event_handler(id, &event);
 }
 
-/*
- * siw_qp_cm_drop()
- *
- * Drops established LLP connection if present and not already
- * scheduled for dropping. Called from user context, SQ workqueue
- * or receive IRQ. Caller signals if socket can be immediately
- * closed (basically, if not in IRQ).
- */
+ 
 void siw_qp_cm_drop(struct siw_qp *qp, int schedule)
 {
 	struct siw_cep *cep = qp->cep;
@@ -424,9 +403,7 @@ void siw_qp_cm_drop(struct siw_qp *qp, int schedule)
 
 		if (cep->sock) {
 			siw_socket_disassoc(cep->sock);
-			/*
-			 * Immediately close socket
-			 */
+			 
 			sock_release(cep->sock);
 			cep->sock = NULL;
 		}
@@ -450,9 +427,7 @@ void siw_cep_get(struct siw_cep *cep)
 	kref_get(&cep->ref);
 }
 
-/*
- * Expects params->pd_len in host byte order
- */
+ 
 static int siw_send_mpareqrep(struct siw_cep *cep, const void *pdata, u8 pd_len)
 {
 	struct socket *s = cep->sock;
@@ -491,15 +466,7 @@ static int siw_send_mpareqrep(struct siw_cep *cep, const void *pdata, u8 pd_len)
 	return rv < 0 ? rv : 0;
 }
 
-/*
- * Receive MPA Request/Reply header.
- *
- * Returns 0 if complete MPA Request/Reply header including
- * eventual private data was received. Returns -EAGAIN if
- * header was partially received or negative error code otherwise.
- *
- * Context: May be called in process context only
- */
+ 
 static int siw_recv_mpa_rr(struct siw_cep *cep)
 {
 	struct mpa_rr *hdr = &cep->mpa.hdr;
@@ -524,19 +491,11 @@ static int siw_recv_mpa_rr(struct siw_cep *cep)
 	}
 	pd_len = be16_to_cpu(hdr->params.pd_len);
 
-	/*
-	 * At least the MPA Request/Reply header (frame not including
-	 * private data) has been received.
-	 * Receive (or continue receiving) any private data.
-	 */
+	 
 	to_rcv = pd_len - (cep->mpa.bytes_rcvd - sizeof(struct mpa_rr));
 
 	if (!to_rcv) {
-		/*
-		 * We must have hdr->params.pd_len == 0 and thus received a
-		 * complete MPA Request/Reply frame.
-		 * Check against peer protocol violation.
-		 */
+		 
 		u32 word;
 
 		rcvd = ksock_recv(s, (char *)&word, sizeof(word), MSG_DONTWAIT);
@@ -556,10 +515,7 @@ static int siw_recv_mpa_rr(struct siw_cep *cep)
 		return -EPROTO;
 	}
 
-	/*
-	 * At this point, we must have hdr->params.pd_len != 0.
-	 * A private data buffer gets allocated if hdr->params.pd_len != 0.
-	 */
+	 
 	if (!cep->mpa.pdata) {
 		cep->mpa.pdata = kmalloc(pd_len + 4, GFP_KERNEL);
 		if (!cep->mpa.pdata)
@@ -584,12 +540,7 @@ static int siw_recv_mpa_rr(struct siw_cep *cep)
 	return -EAGAIN;
 }
 
-/*
- * siw_proc_mpareq()
- *
- * Read MPA Request from socket and signal new connection to IWCM
- * if success. Caller must hold lock on corresponding listening CEP.
- */
+ 
 static int siw_proc_mpareq(struct siw_cep *cep)
 {
 	struct mpa_rr *req;
@@ -606,71 +557,51 @@ static int siw_proc_mpareq(struct siw_cep *cep)
 	pd_len = be16_to_cpu(req->params.pd_len);
 
 	if (version > MPA_REVISION_2)
-		/* allow for 0, 1, and 2 only */
+		 
 		return -EPROTO;
 
 	if (memcmp(req->key, MPA_KEY_REQ, 16))
 		return -EPROTO;
 
-	/* Prepare for sending MPA reply */
+	 
 	memcpy(req->key, MPA_KEY_REP, 16);
 
 	if (version == MPA_REVISION_2 &&
 	    (req->params.bits & MPA_RR_FLAG_ENHANCED)) {
-		/*
-		 * MPA version 2 must signal IRD/ORD values and P2P mode
-		 * in private data if header flag MPA_RR_FLAG_ENHANCED
-		 * is set.
-		 */
+		 
 		if (pd_len < sizeof(struct mpa_v2_data))
 			goto reject_conn;
 
 		cep->enhanced_rdma_conn_est = true;
 	}
 
-	/* MPA Markers: currently not supported. Marker TX to be added. */
+	 
 	if (req->params.bits & MPA_RR_FLAG_MARKERS)
 		goto reject_conn;
 
 	if (req->params.bits & MPA_RR_FLAG_CRC) {
-		/*
-		 * RFC 5044, page 27: CRC MUST be used if peer requests it.
-		 * siw specific: 'mpa_crc_strict' parameter to reject
-		 * connection with CRC if local CRC off enforced by
-		 * 'mpa_crc_strict' module parameter.
-		 */
+		 
 		if (!mpa_crc_required && mpa_crc_strict)
 			goto reject_conn;
 
-		/* Enable CRC if requested by module parameter */
+		 
 		if (mpa_crc_required)
 			req->params.bits |= MPA_RR_FLAG_CRC;
 	}
 	if (cep->enhanced_rdma_conn_est) {
 		struct mpa_v2_data *v2 = (struct mpa_v2_data *)cep->mpa.pdata;
 
-		/*
-		 * Peer requested ORD becomes requested local IRD,
-		 * peer requested IRD becomes requested local ORD.
-		 * IRD and ORD get limited by global maximum values.
-		 */
+		 
 		cep->ord = ntohs(v2->ird) & MPA_IRD_ORD_MASK;
 		cep->ord = min(cep->ord, SIW_MAX_ORD_QP);
 		cep->ird = ntohs(v2->ord) & MPA_IRD_ORD_MASK;
 		cep->ird = min(cep->ird, SIW_MAX_IRD_QP);
 
-		/* May get overwritten by locally negotiated values */
+		 
 		cep->mpa.v2_ctrl.ird = htons(cep->ird);
 		cep->mpa.v2_ctrl.ord = htons(cep->ord);
 
-		/*
-		 * Support for peer sent zero length Write or Read to
-		 * let local side enter RTS. Writes are preferred.
-		 * Sends would require pre-posting a Receive and are
-		 * not supported.
-		 * Propose zero length Write if none of Read and Write
-		 * is indicated.
-		 */
+		 
 		if (v2->ird & MPA_V2_PEER_TO_PEER) {
 			cep->mpa.v2_ctrl.ird |= MPA_V2_PEER_TO_PEER;
 
@@ -685,7 +616,7 @@ static int siw_proc_mpareq(struct siw_cep *cep)
 
 	cep->state = SIW_EPSTATE_RECVD_MPAREQ;
 
-	/* Keep reference until IWCM accepts/rejects */
+	 
 	siw_cep_get(cep);
 	rv = siw_cm_upcall(cep, IW_CM_EVENT_CONNECT_REQUEST, 0);
 	if (rv)
@@ -736,7 +667,7 @@ static int siw_proc_mpareply(struct siw_cep *cep)
 	rep = &cep->mpa.hdr;
 
 	if (__mpa_rr_revision(rep->params.bits) > MPA_REVISION_2) {
-		/* allow for 0, 1,  and 2 only */
+		 
 		rv = -EPROTO;
 		goto out_err;
 	}
@@ -775,10 +706,7 @@ static int siw_proc_mpareply(struct siw_cep *cep)
 
 		if (__mpa_rr_revision(rep->params.bits) < MPA_REVISION_2 ||
 		    !(rep->params.bits & MPA_RR_FLAG_ENHANCED)) {
-			/*
-			 * Protocol failure: The responder MUST reply with
-			 * MPA version 2 and MUST set MPA_RR_FLAG_ENHANCED.
-			 */
+			 
 			siw_dbg_cep(cep, "mpa reply error: vers %d, enhcd %d\n",
 				    __mpa_rr_revision(rep->params.bits),
 				    rep->params.bits & MPA_RR_FLAG_ENHANCED ?
@@ -806,18 +734,12 @@ static int siw_proc_mpareply(struct siw_cep *cep)
 				    rep_ird);
 			ird_insufficient = true;
 		}
-		/*
-		 * Always report negotiated peer values to user,
-		 * even if IRD/ORD negotiation failed
-		 */
+		 
 		cep->ird = rep_ord;
 		cep->ord = rep_ird;
 
 		if (ird_insufficient) {
-			/*
-			 * If the initiator IRD is insuffient for the
-			 * responder ORD, send a TERM.
-			 */
+			 
 			siw_init_terminate(qp, TERM_ERROR_LAYER_LLP,
 					   LLP_ETYPE_MPA,
 					   LLP_ECODE_INSUFFICIENT_IRD, 0);
@@ -830,15 +752,10 @@ static int siw_proc_mpareply(struct siw_cep *cep)
 				cep->mpa.v2_ctrl_req.ord &
 				(MPA_V2_RDMA_WRITE_RTR | MPA_V2_RDMA_READ_RTR);
 
-		/*
-		 * Check if we requested P2P mode, and if peer agrees
-		 */
+		 
 		if (mpa_p2p_mode != MPA_V2_RDMA_NO_RTR) {
 			if ((mpa_p2p_mode & v2->ord) == 0) {
-				/*
-				 * We requested RTR mode(s), but the peer
-				 * did not pick any mode we support.
-				 */
+				 
 				siw_dbg_cep(cep,
 					    "rtr mode:  req %2x, got %2x\n",
 					    mpa_p2p_mode,
@@ -870,7 +787,7 @@ static int siw_proc_mpareply(struct siw_cep *cep)
 	qp_attr_mask = SIW_QP_ATTR_STATE | SIW_QP_ATTR_LLP_HANDLE |
 		       SIW_QP_ATTR_ORD | SIW_QP_ATTR_IRD | SIW_QP_ATTR_MPA;
 
-	/* Move socket RX/TX under QP control */
+	 
 	down_write(&qp->state_lock);
 	if (qp->attrs.state > SIW_QP_STATE_RTR) {
 		rv = -EINVAL;
@@ -883,7 +800,7 @@ static int siw_proc_mpareply(struct siw_cep *cep)
 
 	up_write(&qp->state_lock);
 
-	/* Send extra RDMA frame to trigger peer RTS if negotiated */
+	 
 	if (mpa_p2p_mode != MPA_V2_RDMA_NO_RTR) {
 		rv = siw_qp_mpa_rts(qp, mpa_p2p_mode);
 		if (rv)
@@ -904,16 +821,13 @@ out_err:
 	return rv;
 }
 
-/*
- * siw_accept_newconn - accept an incoming pending connection
- *
- */
+ 
 static void siw_accept_newconn(struct siw_cep *cep)
 {
 	struct socket *s = cep->sock;
 	struct socket *new_s = NULL;
 	struct siw_cep *new_cep = NULL;
-	int rv = 0; /* debug only. should disappear */
+	int rv = 0;  
 
 	if (cep->state != SIW_EPSTATE_LISTENING)
 		goto error;
@@ -922,18 +836,11 @@ static void siw_accept_newconn(struct siw_cep *cep)
 	if (!new_cep)
 		goto error;
 
-	/*
-	 * 4: Allocate a sufficient number of work elements
-	 * to allow concurrent handling of local + peer close
-	 * events, MPA header processing + MPA timeout.
-	 */
+	 
 	if (siw_cm_alloc_work(new_cep, 4) != 0)
 		goto error;
 
-	/*
-	 * Copy saved socket callbacks from listening CEP
-	 * and assign new socket with new CEP
-	 */
+	 
 	new_cep->sk_state_change = cep->sk_state_change;
 	new_cep->sk_data_ready = cep->sk_data_ready;
 	new_cep->sk_write_space = cep->sk_write_space;
@@ -941,9 +848,7 @@ static void siw_accept_newconn(struct siw_cep *cep)
 
 	rv = kernel_accept(s, &new_s, O_NONBLOCK);
 	if (rv != 0) {
-		/*
-		 * Connection already aborted by peer..?
-		 */
+		 
 		siw_dbg_cep(cep, "kernel_accept() error: %d\n", rv);
 		goto error;
 	}
@@ -958,16 +863,12 @@ static void siw_accept_newconn(struct siw_cep *cep)
 	rv = siw_cm_queue_work(new_cep, SIW_CM_WORK_MPATIMEOUT);
 	if (rv)
 		goto error;
-	/*
-	 * See siw_proc_mpareq() etc. for the use of new_cep->listen_cep.
-	 */
+	 
 	new_cep->listen_cep = cep;
 	siw_cep_get(cep);
 
 	if (atomic_read(&new_s->sk->sk_rmem_alloc)) {
-		/*
-		 * MPA REQ already queued
-		 */
+		 
 		siw_dbg_cep(cep, "immediate mpa request\n");
 
 		siw_cep_set_inuse(new_cep);
@@ -1040,11 +941,7 @@ static void siw_cm_work_handler(struct work_struct *w)
 		} else if (cep->state == SIW_EPSTATE_AWAIT_MPAREP) {
 			rv = siw_proc_mpareply(cep);
 		} else {
-			/*
-			 * CEP already moved out of MPA handshake.
-			 * any connection management already done.
-			 * silently ignore the mpa packet.
-			 */
+			 
 			if (cep->state == SIW_EPSTATE_RDMA_MODE) {
 				cep->sock->sk->sk_data_ready(cep->sock->sk);
 				siw_dbg_cep(cep, "already in RDMA mode");
@@ -1058,9 +955,7 @@ static void siw_cm_work_handler(struct work_struct *w)
 		break;
 
 	case SIW_CM_WORK_CLOSE_LLP:
-		/*
-		 * QP scheduled LLP close
-		 */
+		 
 		if (cep->qp && cep->qp->term_info.valid)
 			siw_send_terminate(cep->qp);
 
@@ -1073,34 +968,22 @@ static void siw_cm_work_handler(struct work_struct *w)
 	case SIW_CM_WORK_PEER_CLOSE:
 		if (cep->cm_id) {
 			if (cep->state == SIW_EPSTATE_AWAIT_MPAREP) {
-				/*
-				 * MPA reply not received, but connection drop
-				 */
+				 
 				siw_cm_upcall(cep, IW_CM_EVENT_CONNECT_REPLY,
 					      -ECONNRESET);
 			} else if (cep->state == SIW_EPSTATE_RDMA_MODE) {
-				/*
-				 * NOTE: IW_CM_EVENT_DISCONNECT is given just
-				 *       to transition IWCM into CLOSING.
-				 */
+				 
 				siw_cm_upcall(cep, IW_CM_EVENT_DISCONNECT, 0);
 				siw_cm_upcall(cep, IW_CM_EVENT_CLOSE, 0);
 			}
-			/*
-			 * for other states there is no connection
-			 * known to the IWCM.
-			 */
+			 
 		} else {
 			if (cep->state == SIW_EPSTATE_RECVD_MPAREQ) {
-				/*
-				 * Wait for the ulp/CM to call accept/reject
-				 */
+				 
 				siw_dbg_cep(cep,
 					    "mpa req recvd, wait for ULP\n");
 			} else if (cep->state == SIW_EPSTATE_AWAIT_MPAREQ) {
-				/*
-				 * Socket close before MPA request received.
-				 */
+				 
 				if (cep->listen_cep) {
 					siw_dbg_cep(cep,
 						"no mpareq: drop listener\n");
@@ -1116,11 +999,7 @@ static void siw_cm_work_handler(struct work_struct *w)
 		cep->mpa_timer = NULL;
 
 		if (cep->state == SIW_EPSTATE_AWAIT_MPAREP) {
-			/*
-			 * MPA request timed out:
-			 * Hide any partially received private data and signal
-			 * timeout
-			 */
+			 
 			cep->mpa.hdr.params.pd_len = 0;
 
 			if (cep->cm_id)
@@ -1129,9 +1008,7 @@ static void siw_cm_work_handler(struct work_struct *w)
 			release_cep = 1;
 
 		} else if (cep->state == SIW_EPSTATE_AWAIT_MPAREQ) {
-			/*
-			 * No MPA request received after peer TCP stream setup.
-			 */
+			 
 			if (cep->listen_cep) {
 				siw_cep_put(cep->listen_cep);
 				cep->listen_cep = NULL;
@@ -1155,10 +1032,7 @@ static void siw_cm_work_handler(struct work_struct *w)
 
 		if (cep->qp) {
 			struct siw_qp *qp = cep->qp;
-			/*
-			 * Serialize a potential race with application
-			 * closing the QP and calling siw_qp_cm_drop()
-			 */
+			 
 			siw_qp_get(qp);
 			siw_cep_set_free(cep);
 
@@ -1283,7 +1157,7 @@ static void siw_cm_llp_state_change(struct sock *sk)
 
 	cep = sk_to_cep(sk);
 	if (!cep) {
-		/* endpoint already disassociated */
+		 
 		read_unlock(&sk->sk_callback_lock);
 		return;
 	}
@@ -1293,10 +1167,7 @@ static void siw_cm_llp_state_change(struct sock *sk)
 
 	switch (sk->sk_state) {
 	case TCP_ESTABLISHED:
-		/*
-		 * handle accepting socket as special case where only
-		 * new connection is possible
-		 */
+		 
 		siw_cm_queue_work(cep, SIW_CM_WORK_ACCEPT);
 		break;
 
@@ -1321,9 +1192,7 @@ static int kernel_bindconnect(struct socket *s, struct sockaddr *laddr,
 	size_t size = laddr->sa_family == AF_INET ?
 		sizeof(struct sockaddr_in) : sizeof(struct sockaddr_in6);
 
-	/*
-	 * Make address available again asap.
-	 */
+	 
 	sock_set_reuseaddr(s->sk);
 
 	if (afonly) {
@@ -1365,11 +1234,7 @@ int siw_connect(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 	else if (laddr->sa_family != AF_INET)
 		return -EAFNOSUPPORT;
 
-	/*
-	 * Respect any iwarp port mapping: Use mapped remote address
-	 * if valid. Local address must not be mapped, since siw
-	 * uses kernel TCP stack.
-	 */
+	 
 	if ((v4 && to_sockaddr_in(id->remote_addr).sin_port != 0) ||
 	     to_sockaddr_in6(id->remote_addr).sin6_port != 0)
 		raddr = (struct sockaddr *)&id->m_remote_addr;
@@ -1387,11 +1252,7 @@ int siw_connect(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 	if (rv < 0)
 		goto error;
 
-	/*
-	 * NOTE: For simplification, connect() is called in blocking
-	 * mode. Might be reconsidered for async connection setup at
-	 * TCP level.
-	 */
+	 
 	rv = kernel_bindconnect(s, laddr, raddr, id->afonly);
 	if (rv != 0) {
 		siw_dbg_qp(qp, "kernel_bindconnect: error %d\n", rv);
@@ -1406,21 +1267,17 @@ int siw_connect(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 	}
 	siw_cep_set_inuse(cep);
 
-	/* Associate QP with CEP */
+	 
 	siw_cep_get(cep);
 	qp->cep = cep;
 
-	/* siw_qp_get(qp) already done by QP lookup */
+	 
 	cep->qp = qp;
 
 	id->add_ref(id);
 	cep->cm_id = id;
 
-	/*
-	 * 4: Allocate a sufficient number of work elements
-	 * to allow concurrent handling of local + peer close
-	 * events, MPA header processing + MPA timeout.
-	 */
+	 
 	rv = siw_cm_alloc_work(cep, 4);
 	if (rv != 0) {
 		rv = -ENOMEM;
@@ -1434,22 +1291,17 @@ int siw_connect(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 
 	cep->state = SIW_EPSTATE_CONNECTING;
 
-	/*
-	 * Associate CEP with socket
-	 */
+	 
 	siw_cep_socket_assoc(cep, s);
 
 	cep->state = SIW_EPSTATE_AWAIT_MPAREP;
 
-	/*
-	 * Set MPA Request bits: CRC if required, no MPA Markers,
-	 * MPA Rev. according to module parameter 'mpa_version', Key 'Request'.
-	 */
+	 
 	cep->mpa.hdr.params.bits = 0;
 	if (version > MPA_REVISION_2) {
 		pr_warn("Setting MPA version to %u\n", MPA_REVISION_2);
 		version = MPA_REVISION_2;
-		/* Adjust also module parameter */
+		 
 		mpa_version = MPA_REVISION_2;
 	}
 	__mpa_rr_set_revision(&cep->mpa.hdr.params.bits, version);
@@ -1460,12 +1312,7 @@ int siw_connect(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 	if (mpa_crc_required)
 		cep->mpa.hdr.params.bits |= MPA_RR_FLAG_CRC;
 
-	/*
-	 * If MPA version == 2:
-	 * o Include ORD and IRD.
-	 * o Indicate peer-to-peer mode, if required by module
-	 *   parameter 'peer_to_peer'.
-	 */
+	 
 	if (version == MPA_REVISION_2) {
 		cep->enhanced_rdma_conn_est = true;
 		cep->mpa.hdr.params.bits |= MPA_RR_FLAG_ENHANCED;
@@ -1477,16 +1324,14 @@ int siw_connect(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 			cep->mpa.v2_ctrl.ird |= MPA_V2_PEER_TO_PEER;
 			cep->mpa.v2_ctrl.ord |= rtr_type;
 		}
-		/* Remember own P2P mode requested */
+		 
 		cep->mpa.v2_ctrl_req.ird = cep->mpa.v2_ctrl.ird;
 		cep->mpa.v2_ctrl_req.ord = cep->mpa.v2_ctrl.ord;
 	}
 	memcpy(cep->mpa.hdr.key, MPA_KEY_REQ, 16);
 
 	rv = siw_send_mpareqrep(cep, params->private_data, pd_len);
-	/*
-	 * Reset private data.
-	 */
+	 
 	cep->mpa.hdr.params.pd_len = 0;
 
 	if (rv >= 0) {
@@ -1528,20 +1373,7 @@ error:
 	return rv;
 }
 
-/*
- * siw_accept - Let SoftiWARP accept an RDMA connection request
- *
- * @id:		New connection management id to be used for accepted
- *		connection request
- * @params:	Connection parameters provided by ULP for accepting connection
- *
- * Transition QP to RTS state, associate new CM id @id with accepted CEP
- * and get prepared for TCP input by installing socket callbacks.
- * Then send MPA Reply and generate the "connection established" event.
- * Socket callbacks must be installed before sending MPA Reply, because
- * the latter may cause a first RDMA message to arrive from the RDMA Initiator
- * side very quickly, at which time the socket callbacks must be ready.
- */
+ 
 int siw_accept(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 {
 	struct siw_device *sdev = to_siw_dev(id->device);
@@ -1554,7 +1386,7 @@ int siw_accept(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 	siw_cep_set_inuse(cep);
 	siw_cep_put(cep);
 
-	/* Free lingering inbound private data */
+	 
 	if (cep->mpa.hdr.params.pd_len) {
 		cep->mpa.hdr.params.pd_len = 0;
 		kfree(cep->mpa.pdata);
@@ -1638,9 +1470,7 @@ int siw_accept(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 		if (cep->mpa.v2_ctrl.ord &
 		    (MPA_V2_RDMA_WRITE_RTR | MPA_V2_RDMA_READ_RTR))
 			wait_for_peer_rts = true;
-		/*
-		 * Signal back negotiated IRD and ORD values
-		 */
+		 
 		cep->mpa.v2_ctrl.ord =
 			htons(params->ord & MPA_IRD_ORD_MASK) |
 			(cep->mpa.v2_ctrl.ord & ~MPA_V2_MASK_IRD_ORD);
@@ -1664,16 +1494,16 @@ int siw_accept(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 
 	siw_dbg_cep(cep, "[QP%u]: moving to rts\n", qp_id(qp));
 
-	/* Associate QP with CEP */
+	 
 	siw_cep_get(cep);
 	qp->cep = cep;
 
-	/* siw_qp_get(qp) already done by QP lookup */
+	 
 	cep->qp = qp;
 
 	cep->state = SIW_EPSTATE_RDMA_MODE;
 
-	/* Move socket RX/TX under QP control */
+	 
 	rv = siw_qp_modify(qp, &qp_attrs,
 			   SIW_QP_ATTR_STATE | SIW_QP_ATTR_LLP_HANDLE |
 				   SIW_QP_ATTR_ORD | SIW_QP_ATTR_IRD |
@@ -1726,12 +1556,7 @@ error:
 	return rv;
 }
 
-/*
- * siw_reject()
- *
- * Local connection reject case. Send private data back to peer,
- * close connection and dereference connection id.
- */
+ 
 int siw_reject(struct iw_cm_id *id, const void *pdata, u8 pd_len)
 {
 	struct siw_cep *cep = (struct siw_cep *)id->provider_data;
@@ -1745,7 +1570,7 @@ int siw_reject(struct iw_cm_id *id, const void *pdata, u8 pd_len)
 		siw_dbg_cep(cep, "out of state\n");
 
 		siw_cep_set_free(cep);
-		siw_cep_put(cep); /* put last reference */
+		siw_cep_put(cep);  
 
 		return -ECONNRESET;
 	}
@@ -1753,7 +1578,7 @@ int siw_reject(struct iw_cm_id *id, const void *pdata, u8 pd_len)
 		    pd_len);
 
 	if (__mpa_rr_revision(cep->mpa.hdr.params.bits) >= MPA_REVISION_1) {
-		cep->mpa.hdr.params.bits |= MPA_RR_FLAG_REJECT; /* reject */
+		cep->mpa.hdr.params.bits |= MPA_RR_FLAG_REJECT;  
 		siw_send_mpareqrep(cep, pdata, pd_len);
 	}
 	siw_socket_disassoc(cep->sock);
@@ -1768,12 +1593,7 @@ int siw_reject(struct iw_cm_id *id, const void *pdata, u8 pd_len)
 	return 0;
 }
 
-/*
- * siw_create_listen - Create resources for a listener's IWCM ID @id
- *
- * Starts listen on the socket address id->local_addr.
- *
- */
+ 
 int siw_create_listen(struct iw_cm_id *id, int backlog)
 {
 	struct socket *s;
@@ -1789,15 +1609,13 @@ int siw_create_listen(struct iw_cm_id *id, int backlog)
 	if (rv < 0)
 		return rv;
 
-	/*
-	 * Allow binding local port when still in TIME_WAIT from last close.
-	 */
+	 
 	sock_set_reuseaddr(s->sk);
 
 	if (addr_family == AF_INET) {
 		struct sockaddr_in *laddr = &to_sockaddr_in(id->local_addr);
 
-		/* For wildcard addr, limit binding to current device only */
+		 
 		if (ipv4_is_zeronet(laddr->sin_addr.s_addr))
 			s->sk->sk_bound_dev_if = sdev->netdev->ifindex;
 
@@ -1815,7 +1633,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlog)
 			}
 		}
 
-		/* For wildcard addr, limit binding to current device only */
+		 
 		if (ipv6_addr_any(&laddr->sin6_addr))
 			s->sk->sk_bound_dev_if = sdev->netdev->ifindex;
 
@@ -1848,26 +1666,7 @@ int siw_create_listen(struct iw_cm_id *id, int backlog)
 	cep->cm_id = id;
 	id->add_ref(id);
 
-	/*
-	 * In case of a wildcard rdma_listen on a multi-homed device,
-	 * a listener's IWCM id is associated with more than one listening CEP.
-	 *
-	 * We currently use id->provider_data in three different ways:
-	 *
-	 * o For a listener's IWCM id, id->provider_data points to
-	 *   the list_head of the list of listening CEPs.
-	 *   Uses: siw_create_listen(), siw_destroy_listen()
-	 *
-	 * o For each accepted passive-side IWCM id, id->provider_data
-	 *   points to the CEP itself. This is a consequence of
-	 *   - siw_cm_upcall() setting event.provider_data = cep and
-	 *   - the IWCM's cm_conn_req_handler() setting provider_data of the
-	 *     new passive-side IWCM id equal to event.provider_data
-	 *   Uses: siw_accept(), siw_reject()
-	 *
-	 * o For an active-side IWCM id, id->provider_data is not used at all.
-	 *
-	 */
+	 
 	if (!id->provider_data) {
 		id->provider_data =
 			kmalloc(sizeof(struct list_head), GFP_KERNEL);
@@ -1910,10 +1709,7 @@ static void siw_drop_listeners(struct iw_cm_id *id)
 {
 	struct list_head *p, *tmp;
 
-	/*
-	 * In case of a wildcard rdma_listen on a multi-homed device,
-	 * a listener's IWCM id is associated with more than one listening CEP.
-	 */
+	 
 	list_for_each_safe(p, tmp, (struct list_head *)id->provider_data) {
 		struct siw_cep *cep = list_entry(p, struct siw_cep, listenq);
 
@@ -1953,9 +1749,7 @@ int siw_destroy_listen(struct iw_cm_id *id)
 
 int siw_cm_init(void)
 {
-	/*
-	 * create_single_workqueue for strict ordering
-	 */
+	 
 	siw_cm_wq = create_singlethread_workqueue("siw_cm_wq");
 	if (!siw_cm_wq)
 		return -ENOMEM;

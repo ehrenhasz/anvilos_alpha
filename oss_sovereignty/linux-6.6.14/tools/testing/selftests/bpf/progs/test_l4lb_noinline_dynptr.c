@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Facebook
+
+
 #include <stddef.h>
 #include <stdbool.h>
 #include <string.h>
@@ -24,9 +24,7 @@ static __always_inline __u32 rol32(__u32 word, unsigned int shift)
 	return (word << shift) | (word >> ((-shift) & 31));
 }
 
-/* copy paste of jhash from kernel sources to make sure llvm
- * can compile it into valid sequence of bpf instructions
- */
+ 
 #define __jhash_mix(a, b, c)			\
 {						\
 	a -= c;  a ^= rol32(c, 4);  c += b;	\
@@ -81,7 +79,7 @@ static __noinline u32 jhash(const void *key, u32 length, u32 initval)
 	case 2:  a += (u32)k[1]<<8;
 	case 1:  a += k[0];
 		 __jhash_final(a, b, c);
-	case 0: /* Nothing left to add */
+	case 0:  
 		break;
 	}
 
@@ -218,8 +216,8 @@ static __noinline bool get_packet_dst(struct real_definition **real,
 	__u32 key = RING_SIZE * vip_info->vip_num + hash % RING_SIZE;
 	__u32 *real_pos;
 
-	if (hash != 0x358459b7 /* jhash of ipv4 packet */  &&
-	    hash != 0x2f4bc6bb /* jhash of ipv6 packet */)
+	if (hash != 0x358459b7    &&
+	    hash != 0x2f4bc6bb  )
 		return false;
 
 	real_pos = bpf_map_lookup_elem(&ch_rings, &key);

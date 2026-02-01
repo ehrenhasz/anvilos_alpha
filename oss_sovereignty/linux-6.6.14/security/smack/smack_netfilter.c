@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Simplified MAC Kernel (smack) security module
- *
- *  This file contains the Smack netfilter implementation
- *
- *  Author:
- *	Casey Schaufler <casey@schaufler-ca.com>
- *
- *  Copyright (C) 2014 Casey Schaufler <casey@schaufler-ca.com>
- *  Copyright (C) 2014 Intel Corporation.
- */
+
+ 
 
 #include <linux/netfilter_ipv4.h>
 #include <linux/netfilter_ipv6.h>
@@ -49,7 +39,7 @@ static const struct nf_hook_ops smack_nf_ops[] = {
 		.hooknum =	NF_INET_LOCAL_OUT,
 		.priority =	NF_IP6_PRI_SELINUX_FIRST,
 	},
-#endif	/* IPV6 */
+#endif	 
 };
 
 static int __net_init smack_nf_register(struct net *net)

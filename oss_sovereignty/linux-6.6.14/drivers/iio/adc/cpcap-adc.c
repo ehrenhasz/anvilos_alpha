@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Tony Lindgren <tony@atomide.com>
- *
- * Rewritten for Linux IIO framework with some code based on
- * earlier driver found in the Motorola Linux kernel:
- *
- * Copyright (C) 2009-2010 Motorola, Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -26,11 +19,11 @@
 #include <linux/iio/kfifo_buf.h>
 #include <linux/mfd/motorola-cpcap.h>
 
-/* Register CPCAP_REG_ADCC1 bits */
-#define CPCAP_BIT_ADEN_AUTO_CLR		BIT(15)	/* Currently unused */
-#define CPCAP_BIT_CAL_MODE		BIT(14) /* Set with BIT_RAND0 */
-#define CPCAP_BIT_ADC_CLK_SEL1		BIT(13)	/* Currently unused */
-#define CPCAP_BIT_ADC_CLK_SEL0		BIT(12)	/* Currently unused */
+ 
+#define CPCAP_BIT_ADEN_AUTO_CLR		BIT(15)	 
+#define CPCAP_BIT_CAL_MODE		BIT(14)  
+#define CPCAP_BIT_ADC_CLK_SEL1		BIT(13)	 
+#define CPCAP_BIT_ADC_CLK_SEL0		BIT(12)	 
 #define CPCAP_BIT_ATOX			BIT(11)
 #define CPCAP_BIT_ATO3			BIT(10)
 #define CPCAP_BIT_ATO2			BIT(9)
@@ -39,32 +32,32 @@
 #define CPCAP_BIT_ADA2			BIT(6)
 #define CPCAP_BIT_ADA1			BIT(5)
 #define CPCAP_BIT_ADA0			BIT(4)
-#define CPCAP_BIT_AD_SEL1		BIT(3)	/* Set for bank1 */
-#define CPCAP_BIT_RAND1			BIT(2)	/* Set for channel 16 & 17 */
-#define CPCAP_BIT_RAND0			BIT(1)	/* Set with CAL_MODE */
-#define CPCAP_BIT_ADEN			BIT(0)	/* Currently unused */
+#define CPCAP_BIT_AD_SEL1		BIT(3)	 
+#define CPCAP_BIT_RAND1			BIT(2)	 
+#define CPCAP_BIT_RAND0			BIT(1)	 
+#define CPCAP_BIT_ADEN			BIT(0)	 
 
 #define CPCAP_REG_ADCC1_DEFAULTS	(CPCAP_BIT_ADEN_AUTO_CLR | \
 					 CPCAP_BIT_ADC_CLK_SEL0 |  \
 					 CPCAP_BIT_RAND1)
 
-/* Register CPCAP_REG_ADCC2 bits */
-#define CPCAP_BIT_CAL_FACTOR_ENABLE	BIT(15)	/* Currently unused */
-#define CPCAP_BIT_BATDETB_EN		BIT(14)	/* Currently unused */
-#define CPCAP_BIT_ADTRIG_ONESHOT	BIT(13)	/* Set for !TIMING_IMM */
-#define CPCAP_BIT_ASC			BIT(12)	/* Set for TIMING_IMM */
+ 
+#define CPCAP_BIT_CAL_FACTOR_ENABLE	BIT(15)	 
+#define CPCAP_BIT_BATDETB_EN		BIT(14)	 
+#define CPCAP_BIT_ADTRIG_ONESHOT	BIT(13)	 
+#define CPCAP_BIT_ASC			BIT(12)	 
 #define CPCAP_BIT_ATOX_PS_FACTOR	BIT(11)
 #define CPCAP_BIT_ADC_PS_FACTOR1	BIT(10)
 #define CPCAP_BIT_ADC_PS_FACTOR0	BIT(9)
-#define CPCAP_BIT_AD4_SELECT		BIT(8)	/* Currently unused */
-#define CPCAP_BIT_ADC_BUSY		BIT(7)	/* Currently unused */
-#define CPCAP_BIT_THERMBIAS_EN		BIT(6)	/* Bias for AD0_BATTDETB */
-#define CPCAP_BIT_ADTRIG_DIS		BIT(5)	/* Disable interrupt */
-#define CPCAP_BIT_LIADC			BIT(4)	/* Currently unused */
-#define CPCAP_BIT_TS_REFEN		BIT(3)	/* Currently unused */
-#define CPCAP_BIT_TS_M2			BIT(2)	/* Currently unused */
-#define CPCAP_BIT_TS_M1			BIT(1)	/* Currently unused */
-#define CPCAP_BIT_TS_M0			BIT(0)	/* Currently unused */
+#define CPCAP_BIT_AD4_SELECT		BIT(8)	 
+#define CPCAP_BIT_ADC_BUSY		BIT(7)	 
+#define CPCAP_BIT_THERMBIAS_EN		BIT(6)	 
+#define CPCAP_BIT_ADTRIG_DIS		BIT(5)	 
+#define CPCAP_BIT_LIADC			BIT(4)	 
+#define CPCAP_BIT_TS_REFEN		BIT(3)	 
+#define CPCAP_BIT_TS_M2			BIT(2)	 
+#define CPCAP_BIT_TS_M1			BIT(1)	 
+#define CPCAP_BIT_TS_M0			BIT(0)	 
 
 #define CPCAP_REG_ADCC2_DEFAULTS	(CPCAP_BIT_AD4_SELECT | \
 					 CPCAP_BIT_ADTRIG_DIS | \
@@ -80,14 +73,9 @@
 #define ST_ADC_CAL_BATTI_LOW_THRESHOLD	494
 #define ST_ADC_CALIBRATE_DIFF_THRESHOLD	3
 
-#define CPCAP_ADC_MAX_RETRIES		5	/* Calibration */
+#define CPCAP_ADC_MAX_RETRIES		5	 
 
-/*
- * struct cpcap_adc_ato - timing settings for cpcap adc
- *
- * Unfortunately no cpcap documentation available, please document when
- * using these.
- */
+ 
 struct cpcap_adc_ato {
 	unsigned short ato_in;
 	unsigned short atox_in;
@@ -99,79 +87,55 @@ struct cpcap_adc_ato {
 	unsigned short atox_ps_factor_out;
 };
 
-/**
- * struct cpcap_adc - cpcap adc device driver data
- * @reg: cpcap regmap
- * @dev: struct device
- * @vendor: cpcap vendor
- * @irq: interrupt
- * @lock: mutex
- * @ato: request timings
- * @wq_data_avail: work queue
- * @done: work done
- */
+ 
 struct cpcap_adc {
 	struct regmap *reg;
 	struct device *dev;
 	u16 vendor;
 	int irq;
-	struct mutex lock;	/* ADC register access lock */
+	struct mutex lock;	 
 	const struct cpcap_adc_ato *ato;
 	wait_queue_head_t wq_data_avail;
 	bool done;
 };
 
-/*
- * enum cpcap_adc_channel - cpcap adc channels
- */
+ 
 enum cpcap_adc_channel {
-	/* Bank0 channels */
-	CPCAP_ADC_AD0,		/* Battery temperature */
-	CPCAP_ADC_BATTP,	/* Battery voltage */
-	CPCAP_ADC_VBUS,		/* USB VBUS voltage */
-	CPCAP_ADC_AD3,		/* Die temperature when charging */
-	CPCAP_ADC_BPLUS_AD4,	/* Another battery or system voltage */
-	CPCAP_ADC_CHG_ISENSE,	/* Calibrated charge current */
-	CPCAP_ADC_BATTI,	/* Calibrated system current */
-	CPCAP_ADC_USB_ID,	/* USB OTG ID, unused on droid 4? */
+	 
+	CPCAP_ADC_AD0,		 
+	CPCAP_ADC_BATTP,	 
+	CPCAP_ADC_VBUS,		 
+	CPCAP_ADC_AD3,		 
+	CPCAP_ADC_BPLUS_AD4,	 
+	CPCAP_ADC_CHG_ISENSE,	 
+	CPCAP_ADC_BATTI,	 
+	CPCAP_ADC_USB_ID,	 
 
-	/* Bank1 channels */
-	CPCAP_ADC_AD8,		/* Seems unused */
-	CPCAP_ADC_AD9,		/* Seems unused */
-	CPCAP_ADC_LICELL,	/* Maybe system voltage? Always 3V */
-	CPCAP_ADC_HV_BATTP,	/* Another battery detection? */
-	CPCAP_ADC_TSX1_AD12,	/* Seems unused, for touchscreen? */
-	CPCAP_ADC_TSX2_AD13,	/* Seems unused, for touchscreen? */
-	CPCAP_ADC_TSY1_AD14,	/* Seems unused, for touchscreen? */
-	CPCAP_ADC_TSY2_AD15,	/* Seems unused, for touchscreen? */
+	 
+	CPCAP_ADC_AD8,		 
+	CPCAP_ADC_AD9,		 
+	CPCAP_ADC_LICELL,	 
+	CPCAP_ADC_HV_BATTP,	 
+	CPCAP_ADC_TSX1_AD12,	 
+	CPCAP_ADC_TSX2_AD13,	 
+	CPCAP_ADC_TSY1_AD14,	 
+	CPCAP_ADC_TSY2_AD15,	 
 
-	/* Remuxed channels using bank0 entries */
-	CPCAP_ADC_BATTP_PI16,	/* Alternative mux mode for BATTP */
-	CPCAP_ADC_BATTI_PI17,	/* Alternative mux mode for BATTI */
+	 
+	CPCAP_ADC_BATTP_PI16,	 
+	CPCAP_ADC_BATTI_PI17,	 
 
 	CPCAP_ADC_CHANNEL_NUM,
 };
 
-/*
- * enum cpcap_adc_timing - cpcap adc timing options
- *
- * CPCAP_ADC_TIMING_IMM seems to be immediate with no timings.
- * Please document when using.
- */
+ 
 enum cpcap_adc_timing {
 	CPCAP_ADC_TIMING_IMM,
 	CPCAP_ADC_TIMING_IN,
 	CPCAP_ADC_TIMING_OUT,
 };
 
-/**
- * struct cpcap_adc_phasing_tbl - cpcap phasing table
- * @offset: offset in the phasing table
- * @multiplier: multiplier in the phasing table
- * @divider: divider in the phasing table
- * @min: minimum value
- * @max: maximum value
- */
+ 
 struct cpcap_adc_phasing_tbl {
 	short offset;
 	unsigned short multiplier;
@@ -180,15 +144,7 @@ struct cpcap_adc_phasing_tbl {
 	short max;
 };
 
-/**
- * struct cpcap_adc_conversion_tbl - cpcap conversion table
- * @conv_type: conversion type
- * @align_offset: align offset
- * @conv_offset: conversion offset
- * @cal_offset: calibration offset
- * @multiplier: conversion multiplier
- * @divider: conversion divider
- */
+ 
 struct cpcap_adc_conversion_tbl {
 	enum iio_chan_info_enum conv_type;
 	int align_offset;
@@ -198,15 +154,7 @@ struct cpcap_adc_conversion_tbl {
 	int divider;
 };
 
-/**
- * struct cpcap_adc_request - cpcap adc request
- * @channel: request channel
- * @phase_tbl: channel phasing table
- * @conv_tbl: channel conversion table
- * @bank_index: channel index within the bank
- * @timing: timing settings
- * @result: result
- */
+ 
 struct cpcap_adc_request {
 	int channel;
 	const struct cpcap_adc_phasing_tbl *phase_tbl;
@@ -216,9 +164,9 @@ struct cpcap_adc_request {
 	int result;
 };
 
-/* Phasing table for channels. Note that channels 16 & 17 use BATTP and BATTI */
+ 
 static const struct cpcap_adc_phasing_tbl bank_phasing[] = {
-	/* Bank0 */
+	 
 	[CPCAP_ADC_AD0] =          {0, 0x80, 0x80,    0, 1023},
 	[CPCAP_ADC_BATTP] =        {0, 0x80, 0x80,    0, 1023},
 	[CPCAP_ADC_VBUS] =         {0, 0x80, 0x80,    0, 1023},
@@ -228,7 +176,7 @@ static const struct cpcap_adc_phasing_tbl bank_phasing[] = {
 	[CPCAP_ADC_BATTI] =        {0, 0x80, 0x80, -512,  511},
 	[CPCAP_ADC_USB_ID] =       {0, 0x80, 0x80,    0, 1023},
 
-	/* Bank1 */
+	 
 	[CPCAP_ADC_AD8] =          {0, 0x80, 0x80,    0, 1023},
 	[CPCAP_ADC_AD9] =          {0, 0x80, 0x80,    0, 1023},
 	[CPCAP_ADC_LICELL] =       {0, 0x80, 0x80,    0, 1023},
@@ -239,12 +187,9 @@ static const struct cpcap_adc_phasing_tbl bank_phasing[] = {
 	[CPCAP_ADC_TSY2_AD15] =    {0, 0x80, 0x80,    0, 1023},
 };
 
-/*
- * Conversion table for channels. Updated during init based on calibration.
- * Here too channels 16 & 17 use BATTP and BATTI.
- */
+ 
 static struct cpcap_adc_conversion_tbl bank_conversion[] = {
-	/* Bank0 */
+	 
 	[CPCAP_ADC_AD0] = {
 		IIO_CHAN_INFO_PROCESSED,    0,    0, 0,     1,    1,
 	},
@@ -270,7 +215,7 @@ static struct cpcap_adc_conversion_tbl bank_conversion[] = {
 		IIO_CHAN_INFO_RAW,          0,    0, 0,     1,    1,
 	},
 
-	/* Bank1 */
+	 
 	[CPCAP_ADC_AD8] = {
 		IIO_CHAN_INFO_RAW,          0,    0, 0,     1,    1,
 	},
@@ -297,10 +242,7 @@ static struct cpcap_adc_conversion_tbl bank_conversion[] = {
 	},
 };
 
-/*
- * Temperature lookup table of register values to milliCelcius.
- * REVISIT: Check the duplicate 0x3ff entry in a freezer
- */
+ 
 static const int temp_map[CPCAP_MAX_TEMP_LVL][2] = {
 	{ 0x03ff, -40000 },
 	{ 0x03ff, -35000 },
@@ -348,13 +290,9 @@ static const int temp_map[CPCAP_MAX_TEMP_LVL][2] = {
 	.datasheet_name = (_datasheet_name), \
 }
 
-/*
- * The datasheet names are from Motorola mapphone Linux kernel except
- * for the last two which might be uncalibrated charge voltage and
- * current.
- */
+ 
 static const struct iio_chan_spec cpcap_adc_channels[] = {
-	/* Bank0 */
+	 
 	CPCAP_CHAN(IIO_TEMP,    0, CPCAP_REG_ADCD0,  "battdetb"),
 	CPCAP_CHAN(IIO_VOLTAGE, 1, CPCAP_REG_ADCD1,  "battp"),
 	CPCAP_CHAN(IIO_VOLTAGE, 2, CPCAP_REG_ADCD2,  "vbus"),
@@ -364,7 +302,7 @@ static const struct iio_chan_spec cpcap_adc_channels[] = {
 	CPCAP_CHAN(IIO_CURRENT, 6, CPCAP_REG_ADCD6,  "batti"),
 	CPCAP_CHAN(IIO_VOLTAGE, 7, CPCAP_REG_ADCD7,  "usb_id"),
 
-	/* Bank1 */
+	 
 	CPCAP_CHAN(IIO_CURRENT, 8, CPCAP_REG_ADCD0,  "ad8"),
 	CPCAP_CHAN(IIO_VOLTAGE, 9, CPCAP_REG_ADCD1,  "ad9"),
 	CPCAP_CHAN(IIO_VOLTAGE, 10, CPCAP_REG_ADCD2, "licell"),
@@ -374,7 +312,7 @@ static const struct iio_chan_spec cpcap_adc_channels[] = {
 	CPCAP_CHAN(IIO_VOLTAGE, 14, CPCAP_REG_ADCD6, "tsy1_ad14"),
 	CPCAP_CHAN(IIO_VOLTAGE, 15, CPCAP_REG_ADCD7, "tsy2_ad15"),
 
-	/* There are two registers with multiplexed functionality */
+	 
 	CPCAP_CHAN(IIO_VOLTAGE, 16, CPCAP_REG_ADCD0, "chg_vsense"),
 	CPCAP_CHAN(IIO_CURRENT, 17, CPCAP_REG_ADCD1, "batti2"),
 };
@@ -397,7 +335,7 @@ static irqreturn_t cpcap_adc_irq_thread(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* ADC calibration functions */
+ 
 static void cpcap_adc_setup_calibrate(struct cpcap_adc *ddata,
 				      enum cpcap_adc_channel chan)
 {
@@ -530,7 +468,7 @@ static int cpcap_adc_calibrate(struct cpcap_adc *ddata)
 	return 0;
 }
 
-/* ADC setup, read and scale functions */
+ 
 static void cpcap_adc_setup_bank(struct cpcap_adc *ddata,
 				 struct cpcap_adc_request *req)
 {
@@ -676,7 +614,7 @@ static void cpcap_adc_phase(struct cpcap_adc_request *req)
 	const struct cpcap_adc_phasing_tbl *phase_tbl = req->phase_tbl;
 	int index = req->channel;
 
-	/* Remuxed channels 16 and 17 use BATTP and BATTI entries */
+	 
 	switch (req->channel) {
 	case CPCAP_ADC_BATTP:
 	case CPCAP_ADC_BATTP_PI16:
@@ -709,7 +647,7 @@ static void cpcap_adc_phase(struct cpcap_adc_request *req)
 		req->result = phase_tbl[index].max;
 }
 
-/* Looks up temperatures in a table and calculates averages if needed */
+ 
 static int cpcap_adc_table_to_millicelcius(unsigned short value)
 {
 	int i, result = 0, alpha;
@@ -747,7 +685,7 @@ static void cpcap_adc_convert(struct cpcap_adc_request *req)
 	const struct cpcap_adc_conversion_tbl *conv_tbl = req->conv_tbl;
 	int index = req->channel;
 
-	/* Remuxed channels 16 and 17 use BATTP and BATTI entries */
+	 
 	switch (req->channel) {
 	case CPCAP_ADC_BATTP_PI16:
 		index = CPCAP_ADC_BATTP;
@@ -759,11 +697,11 @@ static void cpcap_adc_convert(struct cpcap_adc_request *req)
 		break;
 	}
 
-	/* No conversion for raw channels */
+	 
 	if (conv_tbl[index].conv_type == IIO_CHAN_INFO_RAW)
 		return;
 
-	/* Temperatures use a lookup table instead of conversion table */
+	 
 	if ((req->channel == CPCAP_ADC_AD0) ||
 	    (req->channel == CPCAP_ADC_AD3)) {
 		req->result =
@@ -772,7 +710,7 @@ static void cpcap_adc_convert(struct cpcap_adc_request *req)
 		return;
 	}
 
-	/* All processed channels use a conversion table */
+	 
 	req->result *= conv_tbl[index].multiplier;
 	if (conv_tbl[index].divider == 0)
 		return;
@@ -780,10 +718,7 @@ static void cpcap_adc_convert(struct cpcap_adc_request *req)
 	req->result += conv_tbl[index].conv_offset;
 }
 
-/*
- * REVISIT: Check if timed sampling can use multiple channels at the
- * same time. If not, replace channel_mask with just channel.
- */
+ 
 static int cpcap_adc_read_bank_scaled(struct cpcap_adc *ddata,
 				      struct cpcap_adc_request *req)
 {
@@ -927,10 +862,7 @@ static const struct iio_info cpcap_adc_info = {
 	.read_raw = &cpcap_adc_read,
 };
 
-/*
- * Configuration for Motorola mapphone series such as droid 4.
- * Copied from the Motorola mapphone kernel tree.
- */
+ 
 static const struct cpcap_adc_ato mapphone_adc = {
 	.ato_in = 0x0480,
 	.atox_in = 0,
@@ -950,7 +882,7 @@ static const struct of_device_id cpcap_adc_id_table[] = {
 		.compatible = "motorola,mapphone-cpcap-adc",
 		.data = &mapphone_adc,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, cpcap_adc_id_table);
 

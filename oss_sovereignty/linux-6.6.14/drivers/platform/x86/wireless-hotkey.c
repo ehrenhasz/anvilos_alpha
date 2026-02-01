@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Airplane mode button for AMD, HP & Xiaomi laptops
- *
- *  Copyright (C) 2014-2017 Alex Hung <alex.hung@canonical.com>
- *  Copyright (C) 2021 Advanced Micro Devices
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

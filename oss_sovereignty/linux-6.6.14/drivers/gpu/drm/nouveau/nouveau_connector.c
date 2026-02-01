@@ -1,28 +1,4 @@
-/*
- * Copyright (C) 2008 Maarten Maathuis.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining
- * a copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sublicense, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial
- * portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
- * IN NO EVENT SHALL THE COPYRIGHT OWNER(S) AND/OR ITS SUPPLIERS BE
- * LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
- * OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
- * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <acpi/button.h>
 
@@ -63,15 +39,13 @@ nouveau_conn_native_mode(struct drm_connector *connector)
 		    (mode->flags & DRM_MODE_FLAG_INTERLACE))
 			continue;
 
-		/* Use preferred mode if there is one.. */
+		 
 		if (mode->type & DRM_MODE_TYPE_PREFERRED) {
 			NV_DEBUG(drm, "native mode from preferred\n");
 			return drm_mode_duplicate(dev, mode);
 		}
 
-		/* Otherwise, take the resolution with the largest width, then
-		 * height, then vertical refresh
-		 */
+		 
 		if (mode->hdisplay < high_w)
 			continue;
 
@@ -136,20 +110,11 @@ nouveau_conn_atomic_set_property(struct drm_connector *connector,
 	if (property == dev->mode_config.scaling_mode_property) {
 		switch (val) {
 		case DRM_MODE_SCALE_NONE:
-			/* We allow 'None' for EDID modes, even on a fixed
-			 * panel (some exist with support for lower refresh
-			 * rates, which people might want to use for power-
-			 * saving purposes).
-			 *
-			 * Non-EDID modes will force the use of GPU scaling
-			 * to the native mode regardless of this setting.
-			 */
+			 
 			switch (connector->connector_type) {
 			case DRM_MODE_CONNECTOR_LVDS:
 			case DRM_MODE_CONNECTOR_eDP:
-				/* ... except prior to G80, where the code
-				 * doesn't support such things.
-				 */
+				 
 				if (disp->disp.object.oclass < NV50_DISP)
 					return -EINVAL;
 				break;
@@ -271,7 +236,7 @@ nouveau_conn_reset(struct drm_connector *connector)
 	if (nouveau_display(connector->dev)->disp.object.oclass < NV50_DISP) {
 		switch (connector->connector_type) {
 		case DRM_MODE_CONNECTOR_LVDS:
-			/* See note in nouveau_conn_atomic_set_property(). */
+			 
 			asyc->scaler.mode = DRM_MODE_SCALE_FULLSCREEN;
 			break;
 		default:
@@ -293,12 +258,12 @@ nouveau_conn_attach_properties(struct drm_connector *connector)
 	else
 		armc = &nv_connector->properties_state;
 
-	/* Init DVI-I specific properties. */
+	 
 	if (connector->connector_type == DRM_MODE_CONNECTOR_DVII)
 		drm_object_attach_property(&connector->base, dev->mode_config.
 					   dvi_i_subconnector_property, 0);
 
-	/* Add overscan compensation options to digital outputs. */
+	 
 	if (disp->underscan_property &&
 	    (connector->connector_type == DRM_MODE_CONNECTOR_DVID ||
 	     connector->connector_type == DRM_MODE_CONNECTOR_DVII ||
@@ -313,7 +278,7 @@ nouveau_conn_attach_properties(struct drm_connector *connector)
 					   disp->underscan_vborder_property, 0);
 	}
 
-	/* Add hue and saturation options. */
+	 
 	if (disp->vibrant_hue_property)
 		drm_object_attach_property(&connector->base,
 					   disp->vibrant_hue_property,
@@ -323,13 +288,13 @@ nouveau_conn_attach_properties(struct drm_connector *connector)
 					   disp->color_vibrance_property,
 					   armc->procamp.color_vibrance);
 
-	/* Scaling mode property. */
+	 
 	switch (connector->connector_type) {
 	case DRM_MODE_CONNECTOR_TV:
 		break;
 	case DRM_MODE_CONNECTOR_VGA:
 		if (disp->disp.object.oclass < NV50_DISP)
-			break; /* Can only scale on DFPs. */
+			break;  
 		fallthrough;
 	default:
 		drm_object_attach_property(&connector->base, dev->mode_config.
@@ -338,7 +303,7 @@ nouveau_conn_attach_properties(struct drm_connector *connector)
 		break;
 	}
 
-	/* Dithering properties. */
+	 
 	switch (connector->connector_type) {
 	case DRM_MODE_CONNECTOR_TV:
 	case DRM_MODE_CONNECTOR_VGA:
@@ -518,7 +483,7 @@ nouveau_connector_set_encoder(struct drm_connector *connector,
 		    (drm->client.device.info.family == NV_DEVICE_INFO_V0_CELSIUS &&
 		     (pdev->device & 0x0ff0) != 0x0100 &&
 		     (pdev->device & 0x0ff0) != 0x0150))
-			/* HW is broken */
+			 
 			connector->interlace_allowed = false;
 		else
 			connector->interlace_allowed = true;
@@ -559,12 +524,7 @@ nouveau_connector_detect(struct drm_connector *connector, bool force)
 	int ret;
 	enum drm_connector_status conn_status = connector_status_disconnected;
 
-	/* Outputs are only polled while runtime active, so resuming the
-	 * device here is unnecessary (and would deadlock upon runtime suspend
-	 * because it waits for polling to finish). We do however, want to
-	 * prevent the autosuspend timer from elapsing during this operation
-	 * if possible.
-	 */
+	 
 	if (drm_kms_helper_is_poll_worker()) {
 		pm_runtime_get_noresume(dev->dev);
 	} else {
@@ -594,11 +554,7 @@ nouveau_connector_detect(struct drm_connector *connector, bool force)
 			goto detect_analog;
 		}
 
-		/* Override encoder type for DVI-I based on whether EDID
-		 * says the display is digital or analog, both use the
-		 * same i2c channel so the value returned from ddc_detect
-		 * isn't necessarily correct.
-		 */
+		 
 		nv_partner = NULL;
 		if (nv_encoder->dcb->type == DCB_OUTPUT_TMDS)
 			nv_partner = find_encoder(connector, DCB_OUTPUT_ANALOG);
@@ -676,7 +632,7 @@ nouveau_connector_detect_lvds(struct drm_connector *connector, bool force)
 	if (!nv_encoder)
 		goto out;
 
-	/* Try retrieving EDID via DDC */
+	 
 	if (!drm->vbios.fp_no_ddc) {
 		status = nouveau_connector_detect(connector, force);
 		if (status == connector_status_connected) {
@@ -685,15 +641,7 @@ nouveau_connector_detect_lvds(struct drm_connector *connector, bool force)
 		}
 	}
 
-	/* On some laptops (Sony, i'm looking at you) there appears to
-	 * be no direct way of accessing the panel's EDID.  The only
-	 * option available to us appears to be to ask ACPI for help..
-	 *
-	 * It's important this check's before trying straps, one of the
-	 * said manufacturer's laptops are configured in such a way
-	 * the nouveau decides an entry in the VBIOS FP mode table is
-	 * valid - it's not (rh#613284)
-	 */
+	 
 	if (nv_encoder->dcb->lvdsconf.use_acpi_for_edid) {
 		edid = nouveau_acpi_edid(dev, connector);
 		if (edid) {
@@ -702,19 +650,14 @@ nouveau_connector_detect_lvds(struct drm_connector *connector, bool force)
 		}
 	}
 
-	/* If no EDID found above, and the VBIOS indicates a hardcoded
-	 * modeline is avalilable for the panel, set it as the panel's
-	 * native mode and exit.
-	 */
+	 
 	if (nouveau_bios_fp_mode(dev, NULL) && (drm->vbios.fp_no_ddc ||
 	    nv_encoder->dcb->lvdsconf.use_straps_for_mode)) {
 		status = connector_status_connected;
 		goto out;
 	}
 
-	/* Still nothing, some VBIOS images have a hardcoded EDID block
-	 * stored for the panel stored in them.
-	 */
+	 
 	if (!drm->vbios.fp_no_ddc) {
 		edid = (struct edid *)nouveau_bios_embedded_edid(dev);
 		if (edid) {
@@ -867,17 +810,17 @@ nouveau_connector_detect_depth(struct drm_connector *connector)
 	struct drm_display_mode *mode = nv_connector->native_mode;
 	bool duallink;
 
-	/* if the edid is feeling nice enough to provide this info, use it */
+	 
 	if (nv_connector->edid && connector->display_info.bpc)
 		return;
 
-	/* EDID 1.4 is *supposed* to be supported on eDP, but, Apple... */
+	 
 	if (nv_connector->type == DCB_CONNECTOR_eDP) {
 		connector->display_info.bpc = 6;
 		return;
 	}
 
-	/* we're out of options unless we're LVDS, default to 8bpc */
+	 
 	if (nv_encoder->dcb->type != DCB_OUTPUT_LVDS) {
 		connector->display_info.bpc = 8;
 		return;
@@ -885,16 +828,14 @@ nouveau_connector_detect_depth(struct drm_connector *connector)
 
 	connector->display_info.bpc = 6;
 
-	/* LVDS: panel straps */
+	 
 	if (bios->fp_no_ddc) {
 		if (bios->fp.if_is_24bit)
 			connector->display_info.bpc = 8;
 		return;
 	}
 
-	/* LVDS: DDC panel, need to first determine the number of links to
-	 * know which if_is_24bit flag to check...
-	 */
+	 
 	if (nv_connector->edid &&
 	    nv_connector->type == DCB_CONNECTOR_LVDS_SPWG)
 		duallink = ((u8 *)nv_connector->edid)[121] == 2;
@@ -948,8 +889,7 @@ nouveau_connector_get_modes(struct drm_connector *connector)
 	struct drm_encoder *encoder = to_drm_encoder(nv_encoder);
 	int ret = 0;
 
-	/* destroy the native mode, the attached monitor could have changed.
-	 */
+	 
 	if (nv_connector->native_mode) {
 		drm_mode_destroy(dev, nv_connector->native_mode);
 		nv_connector->native_mode = NULL;
@@ -967,16 +907,11 @@ nouveau_connector_get_modes(struct drm_connector *connector)
 		nv_connector->native_mode = drm_mode_duplicate(dev, &mode);
 	}
 
-	/* Determine display colour depth for everything except LVDS now,
-	 * DP requires this before mode_valid() is called.
-	 */
+	 
 	if (connector->connector_type != DRM_MODE_CONNECTOR_LVDS)
 		nouveau_connector_detect_depth(connector);
 
-	/* Find the native mode if this is a digital panel, if we didn't
-	 * find any modes through DDC previously add the native mode to
-	 * the list of modes.
-	 */
+	 
 	if (!nv_connector->native_mode)
 		nv_connector->native_mode = nouveau_conn_native_mode(connector);
 	if (ret == 0 && nv_connector->native_mode) {
@@ -987,10 +922,7 @@ nouveau_connector_get_modes(struct drm_connector *connector)
 		ret = 1;
 	}
 
-	/* Determine LVDS colour depth, must happen after determining
-	 * "native" mode as some VBIOS tables require us to use the
-	 * pixel clock as part of the lookup...
-	 */
+	 
 	if (connector->connector_type == DRM_MODE_CONNECTOR_LVDS && nv_connector->native_mode)
 		nouveau_connector_detect_depth(connector);
 
@@ -1024,9 +956,7 @@ get_tmds_link_bandwidth(struct drm_connector *connector)
 	if (info) {
 		if (nouveau_hdmimhz > 0)
 			return nouveau_hdmimhz * 1000;
-		/* Note: these limits are conservative, some Fermi's
-		 * can do 297 MHz. Unclear how this can be determined.
-		 */
+		 
 		if (drm->client.device.info.chipset >= 0x120) {
 			const int max_tmds_clock =
 				info->hdmi.scdc.scrambling.supported ?
@@ -1295,7 +1225,7 @@ nouveau_connector_create(struct drm_device *dev,
 	nv_connector->index = index;
 	INIT_WORK(&nv_connector->irq_work, nouveau_dp_irq);
 
-	/* attempt to parse vbios connector type and hotplug gpio */
+	 
 	nv_connector->dcb = olddcb_conn(dev, index);
 	if (nv_connector->dcb) {
 		u32 entry = ROM16(nv_connector->dcb[0]);
@@ -1310,13 +1240,13 @@ nouveau_connector_create(struct drm_device *dev,
 			nv_connector->type = DCB_CONNECTOR_NONE;
 		}
 
-		/* Gigabyte NX85T */
+		 
 		if (nv_match_device(dev, 0x0421, 0x1458, 0x344c)) {
 			if (nv_connector->type == DCB_CONNECTOR_HDMI_1)
 				nv_connector->type = DCB_CONNECTOR_DVI_I;
 		}
 
-		/* Gigabyte GV-NX86T512H */
+		 
 		if (nv_match_device(dev, 0x0402, 0x1458, 0x3455)) {
 			if (nv_connector->type == DCB_CONNECTOR_HDMI_1)
 				nv_connector->type = DCB_CONNECTOR_DVI_I;
@@ -1325,9 +1255,7 @@ nouveau_connector_create(struct drm_device *dev,
 		nv_connector->type = DCB_CONNECTOR_NONE;
 	}
 
-	/* no vbios data, or an unknown dcb connector type - attempt to
-	 * figure out something suitable ourselves
-	 */
+	 
 	if (nv_connector->type == DCB_CONNECTOR_NONE) {
 		struct nouveau_drm *drm = nouveau_drm(dev);
 		struct dcb_table *dcbt = &drm->vbios.dcb;
@@ -1392,14 +1320,14 @@ nouveau_connector_create(struct drm_device *dev,
 		break;
 	}
 
-	/* HDMI 3D support */
+	 
 	if ((disp->disp.object.oclass >= G82_DISP)
 	    && ((type == DRM_MODE_CONNECTOR_DisplayPort)
 		|| (type == DRM_MODE_CONNECTOR_eDP)
 		|| (type == DRM_MODE_CONNECTOR_HDMIA)))
 		connector->stereo_allowed = true;
 
-	/* defaults, will get overridden in detect() */
+	 
 	connector->interlace_allowed = false;
 	connector->doublescan_allowed = false;
 
@@ -1436,12 +1364,12 @@ nouveau_connector_create(struct drm_device *dev,
 	connector->funcs->reset(connector);
 	nouveau_conn_attach_properties(connector);
 
-	/* Default scaling mode */
+	 
 	switch (nv_connector->type) {
 	case DCB_CONNECTOR_LVDS:
 	case DCB_CONNECTOR_LVDS_SPWG:
 	case DCB_CONNECTOR_eDP:
-		/* see note in nouveau_connector_set_property() */
+		 
 		if (disp->disp.object.oclass < NV50_DISP) {
 			nv_connector->scaling_mode = DRM_MODE_SCALE_FULLSCREEN;
 			break;
@@ -1453,7 +1381,7 @@ nouveau_connector_create(struct drm_device *dev,
 		break;
 	}
 
-	/* dithering properties */
+	 
 	switch (nv_connector->type) {
 	case DCB_CONNECTOR_TV_0:
 	case DCB_CONNECTOR_TV_1:

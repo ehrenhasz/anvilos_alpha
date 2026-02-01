@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Copyright (C) 2017 Impinj
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_IMX7_POWER_H__
 #define __DT_BINDINGS_IMX7_POWER_H__

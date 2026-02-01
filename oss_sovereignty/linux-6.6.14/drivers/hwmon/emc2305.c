@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for EMC2305 fan controller
- *
- * Copyright (C) 2022 Nvidia Technologies Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -32,10 +28,7 @@ emc2305_normal_i2c[] = { 0x27, 0x2c, 0x2d, 0x2e, 0x2f, 0x4c, 0x4d, I2C_CLIENT_EN
 #define EMC2305_PWM_STATE2DUTY(state, max_state, pwm_max) \
 	DIV_ROUND_CLOSEST((state) * (pwm_max), (max_state))
 
-/*
- * Factor by equations [2] and [3] from data sheet; valid for fans where the number of edges
- * equal (poles * 2 + 1).
- */
+ 
 #define EMC2305_RPM_FACTOR		3932160
 
 #define EMC2305_REG_FAN_DRIVE(n)	(0x30 + 0x10 * (n))
@@ -58,27 +51,7 @@ static const struct i2c_device_id emc2305_ids[] = {
 };
 MODULE_DEVICE_TABLE(i2c, emc2305_ids);
 
-/**
- * struct emc2305_cdev_data - device-specific cooling device state
- * @cdev: cooling device
- * @cur_state: cooling current state
- * @last_hwmon_state: last cooling state updated by hwmon subsystem
- * @last_thermal_state: last cooling state updated by thermal subsystem
- *
- * The 'last_hwmon_state' and 'last_thermal_state' fields are provided to support fan low limit
- * speed feature. The purpose of this feature is to provides ability to limit fan speed
- * according to some system wise considerations, like absence of some replaceable units (PSU or
- * line cards), high system ambient temperature, unreliable transceivers temperature sensing or
- * some other factors which indirectly impacts system's airflow
- * Fan low limit feature is supported through 'hwmon' interface: 'hwmon' 'pwm' attribute is
- * used for setting low limit for fan speed in case 'thermal' subsystem is configured in
- * kernel. In this case setting fan speed through 'hwmon' will never let the 'thermal'
- * subsystem to select a lower duty cycle than the duty cycle selected with the 'pwm'
- * attribute.
- * From other side, fan speed is to be updated in hardware through 'pwm' only in case the
- * requested fan speed is above last speed set by 'thermal' subsystem, otherwise requested fan
- * speed will be just stored with no PWM update.
- */
+ 
 struct emc2305_cdev_data {
 	struct thermal_cooling_device *cdev;
 	unsigned int cur_state;
@@ -86,16 +59,7 @@ struct emc2305_cdev_data {
 	unsigned long last_thermal_state;
 };
 
-/**
- * struct emc2305_data - device-specific data
- * @client: i2c client
- * @hwmon_dev: hwmon device
- * @max_state: maximum cooling state of the cooling device
- * @pwm_num: number of PWM channels
- * @pwm_separate: separate PWM settings for every channel
- * @pwm_min: array of minimum PWM per channel
- * @cdev_data: array of cooling devices data
- */
+ 
 struct emc2305_data {
 	struct i2c_client *client;
 	struct device *hwmon_dev;
@@ -131,15 +95,7 @@ static int emc2305_get_cdev_idx(struct thermal_cooling_device *cdev)
 	if (len <= 0)
 		return -EINVAL;
 
-	/*
-	 * Returns index of cooling device 0..4 in case of separate PWM setting.
-	 * Zero index is used in case of one common PWM setting.
-	 * If the mode is not set as pwm_separate, all PWMs are to be bound
-	 * to the common thermal zone and should work at the same speed
-	 * to perform cooling for the same thermal junction.
-	 * Otherwise, return specific channel that will be used in bound
-	 * related PWM to the thermal zone.
-	 */
+	 
 	if (!data->pwm_separate)
 		return 0;
 
@@ -189,10 +145,7 @@ static int __emc2305_set_cur_state(struct emc2305_data *data, int cdev_idx, unsi
 		if (ret < 0)
 			return ret;
 	} else {
-		/*
-		 * Set the same PWM value in all channels
-		 * if common PWM channel is used.
-		 */
+		 
 		for (i = 0; i < data->pwm_num; i++) {
 			ret = i2c_smbus_write_byte_data(client, EMC2305_REG_FAN_DRIVE(i), val);
 			if (ret < 0)
@@ -215,7 +168,7 @@ static int emc2305_set_cur_state(struct thermal_cooling_device *cdev, unsigned l
 	if (cdev_idx < 0)
 		return cdev_idx;
 
-	/* Save thermal state. */
+	 
 	data->cdev_data[cdev_idx].last_thermal_state = state;
 	ret = __emc2305_set_cur_state(data, cdev_idx, state);
 	if (ret < 0)
@@ -303,7 +256,7 @@ static int emc2305_set_single_tz(struct device *dev, int idx)
 		dev_err(dev, "Failed to register cooling device %s\n", emc2305_fan_name[idx]);
 		return PTR_ERR(data->cdev_data[cdev_idx].cdev);
 	}
-	/* Set minimal PWM speed. */
+	 
 	if (data->pwm_separate) {
 		ret = emc2305_set_pwm(dev, pwm, cdev_idx);
 		if (ret < 0)
@@ -349,7 +302,7 @@ static void emc2305_unset_tz(struct device *dev)
 	struct emc2305_data *data = dev_get_drvdata(dev);
 	int i;
 
-	/* Unregister cooling device. */
+	 
 	for (i = 0; i < EMC2305_PWM_MAX; i++)
 		if (data->cdev_data[i].cdev)
 			thermal_cooling_device_unregister(data->cdev_data[i].cdev);
@@ -360,7 +313,7 @@ emc2305_is_visible(const void *data, enum hwmon_sensor_types type, u32 attr, int
 {
 	int max_channel = emc2305_get_max_channel(data);
 
-	/* Don't show channels which are not physically connected. */
+	 
 	if (channel >= max_channel)
 		return 0;
 	switch (type) {
@@ -399,7 +352,7 @@ emc2305_write(struct device *dev, enum hwmon_sensor_types type, u32 attr, int ch
 	case hwmon_pwm:
 		switch (attr) {
 		case hwmon_pwm_input:
-			/* If thermal is configured - handle PWM limit setting. */
+			 
 			if (IS_REACHABLE(CONFIG_THERMAL)) {
 				if (data->pwm_separate)
 					cdev_idx = channel;
@@ -408,10 +361,7 @@ emc2305_write(struct device *dev, enum hwmon_sensor_types type, u32 attr, int ch
 				data->cdev_data[cdev_idx].last_hwmon_state =
 					EMC2305_PWM_DUTY2STATE(val, data->max_state,
 							       EMC2305_FAN_MAX);
-				/*
-				 * Update PWM only in case requested state is not less than the
-				 * last thermal state.
-				 */
+				 
 				if (data->cdev_data[cdev_idx].last_hwmon_state >=
 				    data->cdev_data[cdev_idx].last_thermal_state)
 					return __emc2305_set_cur_state(data, cdev_idx,
@@ -563,11 +513,7 @@ static int emc2305_probe(struct i2c_client *client)
 		if (!pdata->max_state || pdata->max_state > EMC2305_FAN_MAX_STATE)
 			return -EINVAL;
 		data->max_state = pdata->max_state;
-		/*
-		 * Validate a number of active PWM channels. Note that
-		 * configured number can be less than the actual maximum
-		 * supported by the device.
-		 */
+		 
 		if (!pdata->pwm_num || pdata->pwm_num > EMC2305_PWM_MAX)
 			return -EINVAL;
 		data->pwm_num = pdata->pwm_num;

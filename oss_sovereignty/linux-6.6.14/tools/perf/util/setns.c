@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1
+
 
 #include "namespaces.h"
 #include <unistd.h>

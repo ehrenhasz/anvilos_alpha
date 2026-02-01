@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,15 +14,15 @@
 #include "sxgbe_common.h"
 #include "sxgbe_reg.h"
 
-#define SXGBE_SMA_WRITE_CMD	0x01 /* write command */
-#define SXGBE_SMA_PREAD_CMD	0x02 /* post read  increament address */
-#define SXGBE_SMA_READ_CMD	0x03 /* read command */
-#define SXGBE_SMA_SKIP_ADDRFRM	0x00040000 /* skip the address frame */
-#define SXGBE_MII_BUSY		0x00400000 /* mii busy */
+#define SXGBE_SMA_WRITE_CMD	0x01  
+#define SXGBE_SMA_PREAD_CMD	0x02  
+#define SXGBE_SMA_READ_CMD	0x03  
+#define SXGBE_SMA_SKIP_ADDRFRM	0x00040000  
+#define SXGBE_MII_BUSY		0x00400000  
 
 static int sxgbe_mdio_busy_wait(void __iomem *ioaddr, unsigned int mii_data)
 {
-	unsigned long fin_time = jiffies + 3 * HZ; /* 3 seconds */
+	unsigned long fin_time = jiffies + 3 * HZ;  
 
 	while (!time_after(jiffies, fin_time)) {
 		if (!(readl(ioaddr + mii_data) & SXGBE_MII_BUSY))
@@ -54,7 +48,7 @@ static void sxgbe_mdio_c45(struct sxgbe_priv_data *sp, u32 cmd, int phyaddr,
 {
 	u32 reg;
 
-	/* set mdio address register */
+	 
 	reg = (devad & 0x1f) << 21;
 	reg |= (phyaddr << 16) | (phyreg & 0xffff);
 	writel(reg, sp->ioaddr + sp->hw->mii.addr);
@@ -69,7 +63,7 @@ static void sxgbe_mdio_c22(struct sxgbe_priv_data *sp, u32 cmd, int phyaddr,
 
 	writel(1 << phyaddr, sp->ioaddr + SXGBE_MDIO_CLAUSE22_PORT_REG);
 
-	/* set mdio address register */
+	 
 	reg = (phyaddr << 16) | (phyreg & 0x1f);
 	writel(reg, sp->ioaddr + sp->hw->mii.addr);
 
@@ -86,7 +80,7 @@ static int sxgbe_mdio_access_c22(struct sxgbe_priv_data *sp, u32 cmd,
 	if (rc < 0)
 		return rc;
 
-	/* Ports 0-3 only support C22. */
+	 
 	if (phyaddr >= 4)
 		return -ENODEV;
 
@@ -111,13 +105,7 @@ static int sxgbe_mdio_access_c45(struct sxgbe_priv_data *sp, u32 cmd,
 	return sxgbe_mdio_busy_wait(sp->ioaddr, mii->data);
 }
 
-/**
- * sxgbe_mdio_read_c22
- * @bus: points to the mii_bus structure
- * @phyaddr: address of phy port
- * @phyreg: address of register with in phy register
- * Description: this function used for C22 MDIO Read
- */
+ 
 static int sxgbe_mdio_read_c22(struct mii_bus *bus, int phyaddr, int phyreg)
 {
 	struct net_device *ndev = bus->priv;
@@ -132,14 +120,7 @@ static int sxgbe_mdio_read_c22(struct mii_bus *bus, int phyaddr, int phyreg)
 	return readl(priv->ioaddr + priv->hw->mii.data) & 0xffff;
 }
 
-/**
- * sxgbe_mdio_read_c45
- * @bus: points to the mii_bus structure
- * @phyaddr: address of phy port
- * @devad: device (MMD) address
- * @phyreg: address of register with in phy register
- * Description: this function used for C45 MDIO Read
- */
+ 
 static int sxgbe_mdio_read_c45(struct mii_bus *bus, int phyaddr, int devad,
 			       int phyreg)
 {
@@ -155,14 +136,7 @@ static int sxgbe_mdio_read_c45(struct mii_bus *bus, int phyaddr, int devad,
 	return readl(priv->ioaddr + priv->hw->mii.data) & 0xffff;
 }
 
-/**
- * sxgbe_mdio_write_c22
- * @bus: points to the mii_bus structure
- * @phyaddr: address of phy port
- * @phyreg: address of phy registers
- * @phydata: data to be written into phy register
- * Description: this function is used for C22 MDIO write
- */
+ 
 static int sxgbe_mdio_write_c22(struct mii_bus *bus, int phyaddr, int phyreg,
 				u16 phydata)
 {
@@ -173,15 +147,7 @@ static int sxgbe_mdio_write_c22(struct mii_bus *bus, int phyaddr, int phyreg,
 				     phydata);
 }
 
-/**
- * sxgbe_mdio_write_c45
- * @bus: points to the mii_bus structure
- * @phyaddr: address of phy port
- * @phyreg: address of phy registers
- * @devad: device (MMD) address
- * @phydata: data to be written into phy register
- * Description: this function is used for C45 MDIO write
- */
+ 
 static int sxgbe_mdio_write_c45(struct mii_bus *bus, int phyaddr, int devad,
 				int phyreg, u16 phydata)
 {
@@ -202,7 +168,7 @@ int sxgbe_mdio_register(struct net_device *ndev)
 	bool phy_found = false;
 	bool act;
 
-	/* allocate the new mdio bus */
+	 
 	mdio_bus = mdiobus_alloc();
 	if (!mdio_bus) {
 		netdev_err(ndev, "%s: mii bus allocation failed\n", __func__);
@@ -214,7 +180,7 @@ int sxgbe_mdio_register(struct net_device *ndev)
 	else
 		irqlist = priv->mii_irq;
 
-	/* assign mii bus fields */
+	 
 	mdio_bus->name = "sxgbe";
 	mdio_bus->read = sxgbe_mdio_read_c22;
 	mdio_bus->write = sxgbe_mdio_write_c22;
@@ -226,7 +192,7 @@ int sxgbe_mdio_register(struct net_device *ndev)
 	mdio_bus->phy_mask = mdio_data->phy_mask;
 	mdio_bus->parent = priv->device;
 
-	/* register with kernel subsystem */
+	 
 	err = mdiobus_register(mdio_bus);
 	if (err != 0) {
 		netdev_err(ndev, "mdiobus register failed\n");
@@ -239,19 +205,14 @@ int sxgbe_mdio_register(struct net_device *ndev)
 		if (phy) {
 			char irq_num[4];
 			char *irq_str;
-			/* If an IRQ was provided to be assigned after
-			 * the bus probe, do it here.
-			 */
+			 
 			if ((mdio_data->irqs == NULL) &&
 			    (mdio_data->probed_phy_irq > 0)) {
 				irqlist[phy_addr] = mdio_data->probed_phy_irq;
 				phy->irq = mdio_data->probed_phy_irq;
 			}
 
-			/* If we're  going to bind the MAC to this PHY bus,
-			 * and no PHY number was provided to the MAC,
-			 * use the one probed here.
-			 */
+			 
 			if (priv->plat->phy_addr == -1)
 				priv->plat->phy_addr = phy_addr;
 

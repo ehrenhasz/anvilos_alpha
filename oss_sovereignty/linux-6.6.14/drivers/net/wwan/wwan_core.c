@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2021, Linaro Ltd <loic.poulain@linaro.org> */
+
+ 
 
 #include <linux/err.h>
 #include <linux/errno.h>
@@ -19,12 +19,12 @@
 #include <net/rtnetlink.h>
 #include <uapi/linux/wwan.h>
 
-/* Maximum number of minors in use */
+ 
 #define WWAN_MAX_MINORS		(1 << MINORBITS)
 
-static DEFINE_MUTEX(wwan_register_lock); /* WWAN device create|remove lock */
-static DEFINE_IDA(minors); /* minors for WWAN port chardevs */
-static DEFINE_IDA(wwan_dev_ids); /* for unique WWAN device IDs */
+static DEFINE_MUTEX(wwan_register_lock);  
+static DEFINE_IDA(minors);  
+static DEFINE_IDA(wwan_dev_ids);  
 static struct class *wwan_class;
 static int wwan_major;
 static struct dentry *wwan_debugfs_dir;
@@ -32,19 +32,10 @@ static struct dentry *wwan_debugfs_dir;
 #define to_wwan_dev(d) container_of(d, struct wwan_device, dev)
 #define to_wwan_port(d) container_of(d, struct wwan_port, dev)
 
-/* WWAN port flags */
+ 
 #define WWAN_PORT_TX_OFF	0
 
-/**
- * struct wwan_device - The structure that defines a WWAN device
- *
- * @id: WWAN device unique ID.
- * @dev: Underlying device.
- * @port_id: Current available port ID to pick.
- * @ops: wwan device ops
- * @ops_ctxt: context to pass to ops
- * @debugfs_dir:  WWAN device debugfs dir
- */
+ 
 struct wwan_device {
 	unsigned int id;
 	struct device dev;
@@ -56,31 +47,17 @@ struct wwan_device {
 #endif
 };
 
-/**
- * struct wwan_port - The structure that defines a WWAN port
- * @type: Port type
- * @start_count: Port start counter
- * @flags: Store port state and capabilities
- * @ops: Pointer to WWAN port operations
- * @ops_lock: Protect port ops
- * @dev: Underlying device
- * @rxq: Buffer inbound queue
- * @waitqueue: The waitqueue for port fops (read/write/poll)
- * @data_lock: Port specific data access serialization
- * @headroom_len: SKB reserved headroom size
- * @frag_len: Length to fragment packet
- * @at_data: AT port specific data
- */
+ 
 struct wwan_port {
 	enum wwan_port_type type;
 	unsigned int start_count;
 	unsigned long flags;
 	const struct wwan_port_ops *ops;
-	struct mutex ops_lock; /* Serialize ops + protect against removal */
+	struct mutex ops_lock;  
 	struct device dev;
 	struct sk_buff_head rxq;
 	wait_queue_head_t waitqueue;
-	struct mutex data_lock;	/* Port specific data access serialization */
+	struct mutex data_lock;	 
 	size_t headroom_len;
 	size_t frag_len;
 	union {
@@ -196,30 +173,23 @@ void wwan_put_debugfs_dir(struct dentry *dir)
 	if (WARN_ON(IS_ERR(wwandev)))
 		return;
 
-	/* wwan_dev_get_by_debugfs() also got a reference */
+	 
 	put_device(&wwandev->dev);
 	put_device(&wwandev->dev);
 }
 EXPORT_SYMBOL_GPL(wwan_put_debugfs_dir);
 #endif
 
-/* This function allocates and registers a new WWAN device OR if a WWAN device
- * already exist for the given parent, it gets a reference and return it.
- * This function is not exported (for now), it is called indirectly via
- * wwan_create_port().
- */
+ 
 static struct wwan_device *wwan_create_dev(struct device *parent)
 {
 	struct wwan_device *wwandev;
 	int err, id;
 
-	/* The 'find-alloc-register' operation must be protected against
-	 * concurrent execution, a WWAN device is possibly shared between
-	 * multiple callers or concurrently unregistered from wwan_remove_dev().
-	 */
+	 
 	mutex_lock(&wwan_register_lock);
 
-	/* If wwandev already exists, return it */
+	 
 	wwandev = wwan_dev_get_by_parent(parent);
 	if (!IS_ERR(wwandev))
 		goto done_unlock;
@@ -271,15 +241,10 @@ static void wwan_remove_dev(struct wwan_device *wwandev)
 {
 	int ret;
 
-	/* Prevent concurrent picking from wwan_create_dev */
+	 
 	mutex_lock(&wwan_register_lock);
 
-	/* WWAN device is created and registered (get+add) along with its first
-	 * child port, and subsequent port registrations only grab a reference
-	 * (get). The WWAN device must then be unregistered (del+put) along with
-	 * its last port, and reference simply dropped (put) otherwise. In the
-	 * same fashion, we must not unregister it when the ops are still there.
-	 */
+	 
 	if (wwandev->ops)
 		ret = 1;
 	else
@@ -297,11 +262,11 @@ static void wwan_remove_dev(struct wwan_device *wwandev)
 	mutex_unlock(&wwan_register_lock);
 }
 
-/* ------- WWAN port management ------- */
+ 
 
 static const struct {
-	const char * const name;	/* Port type name */
-	const char * const devsuf;	/* Port devce name suffix */
+	const char * const name;	 
+	const char * const devsuf;	 
 } wwan_port_types[WWAN_PORT_MAX + 1] = {
 	[WWAN_PORT_AT] = {
 		.name = "AT",
@@ -377,14 +342,7 @@ static struct wwan_port *wwan_port_get_by_minor(unsigned int minor)
 	return to_wwan_port(dev);
 }
 
-/* Allocate and set unique name based on passed format
- *
- * Name allocation approach is highly inspired by the __dev_alloc_name()
- * function.
- *
- * To avoid names collision, the caller must prevent the new port device
- * registration as well as concurrent invocation of this function.
- */
+ 
 static int __wwan_port_dev_assign_name(struct wwan_port *port, const char *fmt)
 {
 	struct wwan_device *wwandev = to_wwan_dev(port->dev.parent);
@@ -399,7 +357,7 @@ static int __wwan_port_dev_assign_name(struct wwan_port *port, const char *fmt)
 	if (!idmap)
 		return -ENOMEM;
 
-	/* Collect ids of same name format ports */
+	 
 	class_dev_iter_init(&iter, wwan_class, NULL, &wwan_port_dev_type);
 	while ((dev = class_dev_iter_next(&iter))) {
 		if (dev->parent != &wwandev->dev)
@@ -412,11 +370,11 @@ static int __wwan_port_dev_assign_name(struct wwan_port *port, const char *fmt)
 	}
 	class_dev_iter_exit(&iter);
 
-	/* Allocate unique id */
+	 
 	id = find_first_zero_bit(idmap, max_ports);
 	free_page((unsigned long)idmap);
 
-	snprintf(buf, sizeof(buf), fmt, id);	/* Name generation */
+	snprintf(buf, sizeof(buf), fmt, id);	 
 
 	dev = device_find_child_by_name(&wwandev->dev, buf);
 	if (dev) {
@@ -441,14 +399,12 @@ struct wwan_port *wwan_create_port(struct device *parent,
 	if (type > WWAN_PORT_MAX || !ops)
 		return ERR_PTR(-EINVAL);
 
-	/* A port is always a child of a WWAN device, retrieve (allocate or
-	 * pick) the WWAN device based on the provided parent device.
-	 */
+	 
 	wwandev = wwan_create_dev(parent);
 	if (IS_ERR(wwandev))
 		return ERR_CAST(wwandev);
 
-	/* A port is exposed as character device, get a minor */
+	 
 	minor = ida_alloc_range(&minors, 0, WWAN_MAX_MINORS - 1, GFP_KERNEL);
 	if (minor < 0) {
 		err = minor;
@@ -477,11 +433,11 @@ struct wwan_port *wwan_create_port(struct device *parent,
 	port->dev.devt = MKDEV(wwan_major, minor);
 	dev_set_drvdata(&port->dev, drvdata);
 
-	/* allocate unique name based on wwan device id, port type and number */
+	 
 	snprintf(namefmt, sizeof(namefmt), "wwan%u%s%%d", wwandev->id,
 		 wwan_port_types[port->type].devsuf);
 
-	/* Serialize ports registration */
+	 
 	mutex_lock(&wwan_register_lock);
 
 	__wwan_port_dev_assign_name(port, namefmt);
@@ -511,7 +467,7 @@ void wwan_remove_port(struct wwan_port *port)
 	mutex_lock(&port->ops_lock);
 	if (port->start_count)
 		port->ops->stop(port);
-	port->ops = NULL; /* Prevent any new port operations (e.g. from fops) */
+	port->ops = NULL;  
 	mutex_unlock(&port->ops_lock);
 
 	wake_up_interruptible(&port->waitqueue);
@@ -522,7 +478,7 @@ void wwan_remove_port(struct wwan_port *port)
 	dev_info(&wwandev->dev, "port %s disconnected\n", dev_name(&port->dev));
 	device_unregister(&port->dev);
 
-	/* Release related wwan device */
+	 
 	wwan_remove_dev(wwandev);
 }
 EXPORT_SYMBOL_GPL(wwan_remove_port);
@@ -558,12 +514,12 @@ static int wwan_port_op_start(struct wwan_port *port)
 	int ret = 0;
 
 	mutex_lock(&port->ops_lock);
-	if (!port->ops) { /* Port got unplugged */
+	if (!port->ops) {  
 		ret = -ENODEV;
 		goto out_unlock;
 	}
 
-	/* If port is already started, don't start again */
+	 
 	if (!port->start_count)
 		ret = port->ops->start(port);
 
@@ -594,7 +550,7 @@ static int wwan_port_op_tx(struct wwan_port *port, struct sk_buff *skb,
 	int ret;
 
 	mutex_lock(&port->ops_lock);
-	if (!port->ops) { /* Port got unplugged */
+	if (!port->ops) {  
 		ret = -ENODEV;
 		goto out_unlock;
 	}
@@ -700,7 +656,7 @@ static ssize_t wwan_port_fops_read(struct file *filp, char __user *buf,
 	}
 	skb_pull(skb, copied);
 
-	/* skb is not fully consumed, keep it in the queue */
+	 
 	if (skb->len)
 		skb_queue_head(&port->rxq, skb);
 	else
@@ -782,7 +738,7 @@ static __poll_t wwan_port_fops_poll(struct file *filp, poll_table *wait)
 	return mask;
 }
 
-/* Implements minimalistic stub terminal IOCTLs support */
+ 
 static long wwan_port_fops_at_ioctl(struct wwan_port *port, unsigned int cmd,
 				    unsigned long arg)
 {
@@ -861,14 +817,14 @@ static long wwan_port_fops_ioctl(struct file *filp, unsigned int cmd,
 	struct wwan_port *port = filp->private_data;
 	int res;
 
-	if (port->type == WWAN_PORT_AT) {	/* AT port specific IOCTLs */
+	if (port->type == WWAN_PORT_AT) {	 
 		res = wwan_port_fops_at_ioctl(port, cmd, arg);
 		if (res != -ENOIOCTLCMD)
 			return res;
 	}
 
 	switch (cmd) {
-	case TIOCINQ: {	/* aka SIOCINQ aka FIONREAD */
+	case TIOCINQ: {	 
 		unsigned long flags;
 		struct sk_buff *skb;
 		int amount = 0;
@@ -931,7 +887,7 @@ static struct net_device *wwan_rtnl_alloc(struct nlattr *tb[],
 	if (IS_ERR(wwandev))
 		return ERR_CAST(wwandev);
 
-	/* only supported if ops were registered (not just ports) */
+	 
 	if (!wwandev->ops) {
 		dev = ERR_PTR(-EOPNOTSUPP);
 		goto out;
@@ -947,7 +903,7 @@ static struct net_device *wwan_rtnl_alloc(struct nlattr *tb[],
 	}
 
 out:
-	/* release the reference */
+	 
 	put_device(&wwandev->dev);
 	return dev;
 }
@@ -964,7 +920,7 @@ static int wwan_rtnl_newlink(struct net *src_net, struct net_device *dev,
 	if (IS_ERR(wwandev))
 		return PTR_ERR(wwandev);
 
-	/* shouldn't have a netdev (left) with us as parent so WARN */
+	 
 	if (WARN_ON(!wwandev->ops)) {
 		ret = -EOPNOTSUPP;
 		goto out;
@@ -978,7 +934,7 @@ static int wwan_rtnl_newlink(struct net *src_net, struct net_device *dev,
 		ret = register_netdevice(dev);
 
 out:
-	/* release the reference */
+	 
 	put_device(&wwandev->dev);
 	return ret;
 }
@@ -990,7 +946,7 @@ static void wwan_rtnl_dellink(struct net_device *dev, struct list_head *head)
 	if (IS_ERR(wwandev))
 		return;
 
-	/* shouldn't have a netdev (left) with us as parent so WARN */
+	 
 	if (WARN_ON(!wwandev->ops))
 		goto out;
 
@@ -1000,14 +956,14 @@ static void wwan_rtnl_dellink(struct net_device *dev, struct list_head *head)
 		unregister_netdevice_queue(dev, head);
 
 out:
-	/* release the reference */
+	 
 	put_device(&wwandev->dev);
 }
 
 static size_t wwan_rtnl_get_size(const struct net_device *dev)
 {
 	return
-		nla_total_size(4) +	/* IFLA_WWAN_LINK_ID */
+		nla_total_size(4) +	 
 		0;
 }
 
@@ -1050,10 +1006,7 @@ static void wwan_create_default_link(struct wwan_device *wwandev,
 	struct nlmsghdr *nlh;
 	struct sk_buff *msg;
 
-	/* Forge attributes required to create a WWAN netdev. We first
-	 * build a netlink message and then parse it. This looks
-	 * odd, but such approach is less error prone.
-	 */
+	 
 	msg = nlmsg_new(NLMSG_DEFAULT_SIZE, GFP_KERNEL);
 	if (WARN_ON(!msg))
 		return;
@@ -1076,7 +1029,7 @@ static void wwan_create_default_link(struct wwan_device *wwandev,
 
 	nlmsg_end(msg, nlh);
 
-	/* The next three parsing calls can not fail */
+	 
 	nlmsg_parse_deprecated(nlh, 0, tb, IFLA_MAX, NULL, NULL);
 	nla_parse_nested_deprecated(linkinfo, IFLA_INFO_MAX, tb[IFLA_LINKINFO],
 				    NULL, NULL);
@@ -1095,7 +1048,7 @@ static void wwan_create_default_link(struct wwan_device *wwandev,
 		goto unlock;
 	}
 
-	rtnl_configure_link(dev, NULL, 0, NULL); /* Link initialized, notify new link */
+	rtnl_configure_link(dev, NULL, 0, NULL);  
 
 unlock:
 	rtnl_unlock();
@@ -1104,18 +1057,7 @@ free_attrs:
 	nlmsg_free(msg);
 }
 
-/**
- * wwan_register_ops - register WWAN device ops
- * @parent: Device to use as parent and shared by all WWAN ports and
- *	created netdevs
- * @ops: operations to register
- * @ctxt: context to pass to operations
- * @def_link_id: id of the default link that will be automatically created by
- *	the WWAN core for the WWAN device. The default link will not be created
- *	if the passed value is WWAN_NO_DEFAULT_LINK.
- *
- * Returns: 0 on success, a negative error code on failure
- */
+ 
 int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
 		      void *ctxt, u32 def_link_id)
 {
@@ -1136,12 +1078,7 @@ int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
 	wwandev->ops = ops;
 	wwandev->ops_ctxt = ctxt;
 
-	/* NB: we do not abort ops registration in case of default link
-	 * creation failure. Link ops is the management interface, while the
-	 * default link creation is a service option. And we should not prevent
-	 * a user from manually creating a link latter if service option failed
-	 * now.
-	 */
+	 
 	if (def_link_id != WWAN_NO_DEFAULT_LINK)
 		wwan_create_default_link(wwandev, def_link_id);
 
@@ -1149,7 +1086,7 @@ int wwan_register_ops(struct device *parent, const struct wwan_ops *ops,
 }
 EXPORT_SYMBOL_GPL(wwan_register_ops);
 
-/* Enqueue child netdev deletion */
+ 
 static int wwan_child_dellink(struct device *dev, void *data)
 {
 	struct list_head *kill_list = data;
@@ -1160,11 +1097,7 @@ static int wwan_child_dellink(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * wwan_unregister_ops - remove WWAN device ops
- * @parent: Device to use as parent and shared by all WWAN ports and
- *	created netdevs
- */
+ 
 void wwan_unregister_ops(struct device *parent)
 {
 	struct wwan_device *wwandev = wwan_dev_get_by_parent(parent);
@@ -1177,20 +1110,17 @@ void wwan_unregister_ops(struct device *parent)
 		return;
 	}
 
-	/* put the reference obtained by wwan_dev_get_by_parent(),
-	 * we should still have one (that the owner is giving back
-	 * now) due to the ops being assigned.
-	 */
+	 
 	put_device(&wwandev->dev);
 
-	rtnl_lock();	/* Prevent concurent netdev(s) creation/destroying */
+	rtnl_lock();	 
 
-	/* Remove all child netdev(s), using batch removing */
+	 
 	device_for_each_child(&wwandev->dev, &kill_list,
 			      wwan_child_dellink);
 	unregister_netdevice_many(&kill_list);
 
-	wwandev->ops = NULL;	/* Finally remove ops */
+	wwandev->ops = NULL;	 
 
 	rtnl_unlock();
 
@@ -1213,7 +1143,7 @@ static int __init wwan_init(void)
 		goto unregister;
 	}
 
-	/* chrdev used for wwan ports */
+	 
 	wwan_major = __register_chrdev(0, 0, WWAN_MAX_MINORS, "wwan_port",
 				       &wwan_port_fops);
 	if (wwan_major < 0) {

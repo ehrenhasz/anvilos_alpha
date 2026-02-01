@@ -32,7 +32,7 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

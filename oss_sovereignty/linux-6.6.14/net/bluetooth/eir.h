@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * BlueZ - Bluetooth protocol stack for Linux
- *
- * Copyright (C) 2021 Intel Corporation
- */
+ 
+ 
 
 #include <asm/unaligned.h>
 
@@ -83,7 +79,7 @@ static inline void *eir_get_data(u8 *eir, size_t eir_len, u8 type,
 			continue;
 		}
 
-		/* Zero length data */
+		 
 		if (field_len == 1)
 			return NULL;
 

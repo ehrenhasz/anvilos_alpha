@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include <linux/string.h>
 #include "rtl_core.h"
 #include "rtl_wx.h"
@@ -275,24 +271,19 @@ static int _rtl92e_wx_set_mode(struct net_device *dev,
 }
 
 struct  iw_range_with_scan_capa {
-	/* Informative stuff (to choose between different interface) */
-	__u32	   throughput;     /* To give an idea... */
-	/* In theory this value should be the maximum benchmarked
-	 * TCP/IP throughput, because with most of these devices the
-	 * bit rate is meaningless (overhead an co) to estimate how
-	 * fast the connection will go and pick the fastest one.
-	 * I suggest people to play with Netperf or any benchmark...
-	 */
+	 
+	__u32	   throughput;      
+	 
 
-	/* NWID (or domain id) */
-	__u32	   min_nwid;	/* Minimal NWID we are able to set */
-	__u32	   max_nwid;	/* Maximal NWID we are able to set */
+	 
+	__u32	   min_nwid;	 
+	__u32	   max_nwid;	 
 
-	/* Old Frequency (backward compat - moved lower ) */
+	 
 	__u16	   old_num_channels;
 	__u8	    old_num_frequency;
 
-	/* Scan capabilities */
+	 
 	__u8	    scan_capa;
 };
 
@@ -308,18 +299,18 @@ static int _rtl92e_wx_get_range(struct net_device *dev,
 	wrqu->data.length = sizeof(*range);
 	memset(range, 0, sizeof(*range));
 
-	/* ~130 Mb/s real (802.11n) */
+	 
 	range->throughput = 130 * 1000 * 1000;
 
 	range->max_qual.qual = 100;
 	range->max_qual.level = 0;
 	range->max_qual.noise = 0;
-	range->max_qual.updated = 7; /* Updated all three */
+	range->max_qual.updated = 7;  
 
-	range->avg_qual.qual = 70; /* > 8% missed beacons is 'bad' */
+	range->avg_qual.qual = 70;  
 	range->avg_qual.level = 0;
 	range->avg_qual.noise = 0;
-	range->avg_qual.updated = 7; /* Updated all three */
+	range->avg_qual.updated = 7;  
 
 	range->num_bitrates = min(RATE_COUNT, IW_MAX_BITRATES);
 
@@ -360,7 +351,7 @@ static int _rtl92e_wx_get_range(struct net_device *dev,
 			  IW_ENC_CAPA_CIPHER_TKIP | IW_ENC_CAPA_CIPHER_CCMP;
 	range->scan_capa = IW_SCAN_CAPA_ESSID | IW_SCAN_CAPA_TYPE;
 
-	/* Event capability (kernel + driver) */
+	 
 
 	return 0;
 }
@@ -527,7 +518,7 @@ static int _rtl92e_wx_get_nick(struct net_device *dev,
 	mutex_lock(&priv->wx_mutex);
 	wrqu->data.length = strlen(priv->nick);
 	memcpy(extra, priv->nick, wrqu->data.length);
-	wrqu->data.flags = 1;   /* active */
+	wrqu->data.flags = 1;    
 	mutex_unlock(&priv->wx_mutex);
 	return 0;
 }
@@ -588,7 +579,7 @@ static int _rtl92e_wx_get_frag(struct net_device *dev,
 	struct r8192_priv *priv = rtllib_priv(dev);
 
 	wrqu->frag.value = priv->rtllib->fts;
-	wrqu->frag.fixed = 0;	/* no auto select */
+	wrqu->frag.fixed = 0;	 
 	wrqu->frag.disabled = (wrqu->frag.value == DEFAULT_FRAG_THRESHOLD);
 
 	return 0;
@@ -785,7 +776,7 @@ static int _rtl92e_wx_get_retry(struct net_device *dev,
 {
 	struct r8192_priv *priv = rtllib_priv(dev);
 
-	wrqu->retry.disabled = 0; /* can't be disabled */
+	wrqu->retry.disabled = 0;  
 
 	if ((wrqu->retry.flags & IW_RETRY_TYPE) ==
 	    IW_RETRY_LIFETIME)
@@ -1047,10 +1038,7 @@ static iw_handler r8192_wx_handlers[] = {
 	[IW_IOCTL(SIOCSIWENCODEEXT)] = _rtl92e_wx_set_encode_ext,
 };
 
-/* the following rule need to be following,
- * Odd : get (world access),
- * even : set (root access)
- */
+ 
 static const struct iw_priv_args r8192_private_args[] = {
 	{
 		SIOCIWFIRSTPRIV + 0x0,
@@ -1087,7 +1075,7 @@ static const struct iw_priv_args r8192_private_args[] = {
 };
 
 static iw_handler r8192_private_handler[] = {
-	(iw_handler)_rtl92e_wx_set_debug,   /*SIOCIWSECONDPRIV*/
+	(iw_handler)_rtl92e_wx_set_debug,    
 	(iw_handler)_rtl92e_wx_set_scan_type,
 	(iw_handler)_rtl92e_wx_set_rawtx,
 	(iw_handler)_rtl92e_wx_force_reset,
@@ -1125,7 +1113,7 @@ static struct iw_statistics *_rtl92e_get_wireless_stats(struct net_device *dev)
 	if (ieee->link_state < MAC80211_LINKED) {
 		wstats->qual.qual = 10;
 		wstats->qual.level = 0;
-		wstats->qual.noise = 0x100 - 100;	/* -100 dBm */
+		wstats->qual.noise = 0x100 - 100;	 
 		wstats->qual.updated = IW_QUAL_ALL_UPDATED | IW_QUAL_DBM;
 		return wstats;
 	}

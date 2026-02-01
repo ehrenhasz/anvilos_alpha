@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Atmel Pulse Width Modulation Controller
- *
- * Copyright (C) 2013 Atmel Corporation
- *		 Bo Shen <voice.shen@atmel.com>
- *
- * Links to reference manuals for the supported PWM chips can be found in
- * Documentation/arch/arm/microchip.rst.
- *
- * Limitations:
- * - Periods start with the inactive level.
- * - Hardware has to be stopped in general to update settings.
- *
- * Software bugs/possible improvements:
- * - When atmel_pwm_apply() is called with state->enabled=false a change in
- *   state->polarity isn't honored.
- * - Instead of sleeping to wait for a completed period, the interrupt
- *   functionality could be used.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -29,30 +11,30 @@
 #include <linux/pwm.h>
 #include <linux/slab.h>
 
-/* The following is global registers for PWM controller */
+ 
 #define PWM_ENA			0x04
 #define PWM_DIS			0x08
 #define PWM_SR			0x0C
 #define PWM_ISR			0x1C
-/* Bit field in SR */
+ 
 #define PWM_SR_ALL_CH_MASK	0x0F
 
-/* The following register is PWM channel related registers */
+ 
 #define PWM_CH_REG_OFFSET	0x200
 #define PWM_CH_REG_SIZE		0x20
 
 #define PWM_CMR			0x0
-/* Bit field in CMR */
+ 
 #define PWM_CMR_CPOL		(1 << 9)
 #define PWM_CMR_UPD_CDTY	(1 << 10)
 #define PWM_CMR_CPRE_MSK	0xF
 
-/* The following registers for PWM v1 */
+ 
 #define PWMV1_CDTY		0x04
 #define PWMV1_CPRD		0x08
 #define PWMV1_CUPD		0x10
 
-/* The following registers for PWM v2 */
+ 
 #define PWMV2_CDTY		0x04
 #define PWMV2_CDTYUPD		0x08
 #define PWMV2_CPRD		0x0C
@@ -82,18 +64,10 @@ struct atmel_pwm_chip {
 	void __iomem *base;
 	const struct atmel_pwm_data *data;
 
-	/*
-	 * The hardware supports a mechanism to update a channel's duty cycle at
-	 * the end of the currently running period. When such an update is
-	 * pending we delay disabling the PWM until the new configuration is
-	 * active because otherwise pmw_config(duty_cycle=0); pwm_disable();
-	 * might not result in an inactive output.
-	 * This bitmask tracks for which channels an update is pending in
-	 * hardware.
-	 */
+	 
 	u32 update_pending;
 
-	/* Protects .update_pending */
+	 
 	spinlock_t lock;
 };
 
@@ -133,12 +107,7 @@ static inline void atmel_pwm_ch_writel(struct atmel_pwm_chip *chip,
 
 static void atmel_pwm_update_pending(struct atmel_pwm_chip *chip)
 {
-	/*
-	 * Each channel that has its bit in ISR set started a new period since
-	 * ISR was cleared and so there is no more update pending.  Note that
-	 * reading ISR clears it, so this needs to handle all channels to not
-	 * loose information.
-	 */
+	 
 	u32 isr = atmel_pwm_readl(chip, PWM_ISR);
 
 	chip->update_pending &= ~isr;
@@ -148,10 +117,7 @@ static void atmel_pwm_set_pending(struct atmel_pwm_chip *chip, unsigned int ch)
 {
 	spin_lock(&chip->lock);
 
-	/*
-	 * Clear pending flags in hardware because otherwise there might still
-	 * be a stale flag in ISR.
-	 */
+	 
 	atmel_pwm_update_pending(chip);
 
 	chip->update_pending |= (1 << ch);
@@ -198,15 +164,11 @@ static int atmel_pwm_calculate_cprd_and_pres(struct pwm_chip *chip,
 	unsigned long long cycles = state->period;
 	int shift;
 
-	/* Calculate the period cycles and prescale value */
+	 
 	cycles *= clkrate;
 	do_div(cycles, NSEC_PER_SEC);
 
-	/*
-	 * The register for the period length is cfg.period_bits bits wide.
-	 * So for each bit the number of clock cycles is wider divide the input
-	 * clock frequency by two using pres and shift cprd accordingly.
-	 */
+	 
 	shift = fls(cycles) - atmel_pwm->data->cfg.period_bits;
 
 	if (shift > PWM_MAX_PRES) {
@@ -276,10 +238,7 @@ static void atmel_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	atmel_pwm_writel(atmel_pwm, PWM_DIS, 1 << pwm->hwpwm);
 
-	/*
-	 * Wait for the PWM channel disable operation to be effective before
-	 * stopping the clock.
-	 */
+	 
 	timeout = jiffies + 2 * HZ;
 
 	while ((atmel_pwm_readl(atmel_pwm, PWM_SR) & (1 << pwm->hwpwm)) &&
@@ -338,7 +297,7 @@ static int atmel_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 			}
 		}
 
-		/* It is necessary to preserve CPOL, inside CMR */
+		 
 		val = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm, PWM_CMR);
 		val = (val & ~PWM_CMR_CPRE_MSK) | (pres & PWM_CMR_CPRE_MSK);
 		if (state->polarity == PWM_POLARITY_NORMAL)
@@ -377,7 +336,7 @@ static int atmel_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 		tmp <<= pres;
 		state->period = DIV64_U64_ROUND_UP(tmp, rate);
 
-		/* Wait for an updated duty_cycle queued in hardware */
+		 
 		atmel_pwm_wait_nonpending(atmel_pwm, pwm->hwpwm);
 
 		cdty = atmel_pwm_ch_readl(atmel_pwm, pwm->hwpwm,
@@ -413,7 +372,7 @@ static const struct atmel_pwm_data atmel_sam9rl_pwm_data = {
 		.duty_upd	= PWMV1_CUPD,
 	},
 	.cfg = {
-		/* 16 bits to keep period and duty. */
+		 
 		.period_bits	= 16,
 	},
 };
@@ -426,7 +385,7 @@ static const struct atmel_pwm_data atmel_sama5_pwm_data = {
 		.duty_upd	= PWMV2_CDTYUPD,
 	},
 	.cfg = {
-		/* 16 bits to keep period and duty. */
+		 
 		.period_bits	= 16,
 	},
 };
@@ -439,7 +398,7 @@ static const struct atmel_pwm_data mchp_sam9x60_pwm_data = {
 		.duty_upd	= PWMV1_CUPD,
 	},
 	.cfg = {
-		/* 32 bits to keep period and duty. */
+		 
 		.period_bits	= 32,
 	},
 };
@@ -458,7 +417,7 @@ static const struct of_device_id atmel_pwm_dt_ids[] = {
 		.compatible = "microchip,sam9x60-pwm",
 		.data = &mchp_sam9x60_pwm_data,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, atmel_pwm_dt_ids);

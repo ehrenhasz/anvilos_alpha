@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register map access API - MMIO support
-//
-// Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -46,7 +46,7 @@ static int regmap_mmio_get_min_stride(size_t val_bits)
 
 	switch (val_bits) {
 	case 8:
-		/* The core treats 0 as 1 */
+		 
 		min_stride = 0;
 		break;
 	case 16:
@@ -180,12 +180,7 @@ static int regmap_mmio_noinc_write(void *context, unsigned int reg,
 			return ret;
 	}
 
-	/*
-	 * There are no native, assembly-optimized write single register
-	 * operations for big endian, so fall back to emulation if this
-	 * is needed. (Single bytes are fine, they are not affected by
-	 * endianness.)
-	 */
+	 
 	if (ctx->big_endian && (ctx->val_bytes > 1)) {
 		switch (ctx->val_bytes) {
 		case 2:
@@ -354,12 +349,7 @@ static int regmap_mmio_noinc_read(void *context, unsigned int reg,
 		goto out_clk;
 	}
 
-	/*
-	 * There are no native, assembly-optimized write single register
-	 * operations for big endian, so fall back to emulation if this
-	 * is needed. (Single bytes are fine, they are not affected by
-	 * endianness.)
-	 */
+	 
 	if (ctx->big_endian && (ctx->val_bytes > 1)) {
 		switch (ctx->val_bytes) {
 		case 2:

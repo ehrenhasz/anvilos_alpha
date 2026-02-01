@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fireworks.c - a part of driver for Fireworks based devices
- *
- * Copyright (c) 2009-2010 Clemens Ladisch
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
 
-/*
- * Fireworks is a board module which Echo Audio produced. This module consists
- * of three chipsets:
- *  - Communication chipset for IEEE1394 PHY/Link and IEC 61883-1/6
- *  - DSP or/and FPGA for signal processing
- *  - Flash Memory to store firmwares
- */
+ 
+
+ 
 
 #include "fireworks.h"
 
@@ -49,23 +38,23 @@ static DECLARE_BITMAP(devices_used, SNDRV_CARDS);
 #define  MODEL_ECHO_AUDIOFIRE_12	0x00af12
 #define  MODEL_ECHO_AUDIOFIRE_12HD	0x0af12d
 #define  MODEL_ECHO_AUDIOFIRE_12_APPLE	0x0af12a
-/* This is applied for AudioFire8 (until 2009 July) */
+ 
 #define  MODEL_ECHO_AUDIOFIRE_8		0x000af8
 #define  MODEL_ECHO_AUDIOFIRE_2		0x000af2
 #define  MODEL_ECHO_AUDIOFIRE_4		0x000af4
-/* AudioFire9 is applied for AudioFire8(since 2009 July) and AudioFirePre8 */
+ 
 #define  MODEL_ECHO_AUDIOFIRE_9		0x000af9
-/* unknown as product */
+ 
 #define  MODEL_ECHO_FIREWORKS_8		0x0000f8
 #define  MODEL_ECHO_FIREWORKS_HDMI	0x00afd1
 
 #define VENDOR_GIBSON			0x00075b
-/* for Robot Interface Pack of Dark Fire, Dusk Tiger, Les Paul Standard 2010 */
+ 
 #define  MODEL_GIBSON_RIP		0x00afb2
-/* unknown as product */
+ 
 #define  MODEL_GIBSON_GOLDTOP		0x00afb9
 
-/* part of hardware capability flags */
+ 
 #define FLAG_RESP_ADDR_CHANGABLE	0
 
 static int
@@ -84,7 +73,7 @@ get_hardware_info(struct snd_efw *efw)
 	if (err < 0)
 		goto end;
 
-	/* firmware version for communication chipset */
+	 
 	snprintf(version, sizeof(version), "%u.%u",
 		 (hwinfo->arm_version >> 24) & 0xff,
 		 (hwinfo->arm_version >> 16) & 0xff);
@@ -128,7 +117,7 @@ get_hardware_info(struct snd_efw *efw)
 	 && (192000 <= hwinfo->max_sample_rate))
 		efw->supported_sampling_rate |= SNDRV_PCM_RATE_192000;
 
-	/* the number of MIDI ports, not of MIDI conformant data channels */
+	 
 	if (hwinfo->midi_out_ports > SND_EFW_MAX_MIDI_OUT_PORTS ||
 	    hwinfo->midi_in_ports > SND_EFW_MAX_MIDI_IN_PORTS) {
 		err = -EIO;
@@ -153,7 +142,7 @@ get_hardware_info(struct snd_efw *efw)
 	efw->pcm_playback_channels[1] = hwinfo->amdtp_rx_pcm_channels_2x;
 	efw->pcm_playback_channels[2] = hwinfo->amdtp_rx_pcm_channels_4x;
 
-	/* Hardware metering. */
+	 
 	if (hwinfo->phys_in_grp_count  > HWINFO_MAX_CAPS_GROUPS ||
 	    hwinfo->phys_out_grp_count > HWINFO_MAX_CAPS_GROUPS) {
 		err = -EIO;
@@ -168,10 +157,10 @@ get_hardware_info(struct snd_efw *efw)
 	memcpy(&efw->phys_out_grps, hwinfo->phys_out_grps,
 	       sizeof(struct snd_efw_phys_grp) * hwinfo->phys_out_grp_count);
 
-	/* AudioFire8 (since 2009) and AudioFirePre8 */
+	 
 	if (hwinfo->type == MODEL_ECHO_AUDIOFIRE_9)
 		efw->is_af9 = true;
-	/* These models uses the same firmware. */
+	 
 	if (hwinfo->type == MODEL_ECHO_AUDIOFIRE_2 ||
 	    hwinfo->type == MODEL_ECHO_AUDIOFIRE_4 ||
 	    hwinfo->type == MODEL_ECHO_AUDIOFIRE_9 ||
@@ -206,7 +195,7 @@ static int efw_probe(struct fw_unit *unit, const struct ieee1394_device_id *entr
 	struct snd_efw *efw;
 	int err;
 
-	// check registered cards.
+	
 	mutex_lock(&devices_mutex);
 	for (card_index = 0; card_index < SNDRV_CARDS; ++card_index) {
 		if (!test_bit(card_index, devices_used) && enable[card_index])
@@ -237,7 +226,7 @@ static int efw_probe(struct fw_unit *unit, const struct ieee1394_device_id *entr
 	spin_lock_init(&efw->lock);
 	init_waitqueue_head(&efw->hwdep_wait);
 
-	// prepare response buffer.
+	
 	snd_efw_resp_buf_size = clamp(snd_efw_resp_buf_size, SND_EFW_RESPONSE_MAXIMUM_BYTES, 4096U);
 	efw->resp_buf = devm_kzalloc(&card->card_dev, snd_efw_resp_buf_size, GFP_KERNEL);
 	if (!efw->resp_buf) {
@@ -296,7 +285,7 @@ static void efw_remove(struct fw_unit *unit)
 {
 	struct snd_efw *efw = dev_get_drvdata(&unit->device);
 
-	// Block till all of ALSA character devices are released.
+	
 	snd_card_free(efw->card);
 }
 

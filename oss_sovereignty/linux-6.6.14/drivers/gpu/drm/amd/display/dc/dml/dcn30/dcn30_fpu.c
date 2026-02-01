@@ -1,27 +1,4 @@
-/*
- * Copyright 2020-2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include "resource.h"
 #include "clk_mgr.h"
 #include "reg_helper.h"
@@ -64,17 +41,17 @@ struct _vcs_dpi_ip_params_st dcn3_0_ip = {
 	.pixel_chunk_size_kbytes = 8,
 	.pte_enable = 1,
 	.max_page_table_levels = 2,
-	.pte_chunk_size_kbytes = 2,  // ?
+	.pte_chunk_size_kbytes = 2,  
 	.meta_chunk_size_kbytes = 2,
 	.writeback_chunk_size_kbytes = 8,
 	.line_buffer_size_bits = 789504,
-	.is_line_buffer_bpp_fixed = 0,  // ?
-	.line_buffer_fixed_bpp = 0,     // ?
+	.is_line_buffer_bpp_fixed = 0,  
+	.line_buffer_fixed_bpp = 0,     
 	.dcc_supported = true,
 	.writeback_interface_buffer_size_kbytes = 90,
 	.writeback_line_buffer_buffer_size = 0,
 	.max_line_buffer_lines = 12,
-	.writeback_luma_buffer_size_kbytes = 12,  // writeback_line_buffer_buffer_size = 656640
+	.writeback_luma_buffer_size_kbytes = 12,  
 	.writeback_chroma_buffer_size_kbytes = 8,
 	.writeback_chroma_line_buffer_width_pixels = 4,
 	.writeback_max_hscl_ratio = 1,
@@ -110,7 +87,7 @@ struct _vcs_dpi_ip_params_st dcn3_0_ip = {
 	.dppclk_delay_cnvc_formatter = 27,
 	.dppclk_delay_cnvc_cursor = 6,
 	.dispclk_delay_subtotal = 119,
-	.dcfclk_cstate_latency = 5.2, // SRExitTime
+	.dcfclk_cstate_latency = 5.2, 
 	.max_inter_dcn_tile_repeaters = 8,
 	.max_num_hdmi_frl_outputs = 1,
 	.odm_combine_4to1_supported = true,
@@ -134,7 +111,7 @@ struct _vcs_dpi_soc_bounding_box_st dcn3_0_soc = {
 			},
 		},
 
-	.min_dcfclk = 500.0, /* TODO: set this to actual min DCFCLK */
+	.min_dcfclk = 500.0,  
 	.num_states = 1,
 	.sr_exit_time_us = 15.5,
 	.sr_enter_plus_exit_time_us = 20,
@@ -169,9 +146,9 @@ struct _vcs_dpi_soc_bounding_box_st dcn3_0_soc = {
 	.writeback_dram_clock_change_latency_us = 23.0,
 	.return_bus_width_bytes = 64,
 	.dispclk_dppclk_vco_speed_mhz = 3650,
-	.xfc_bus_transport_time_us = 20,      // ?
-	.xfc_xbuf_latency_tolerance_us = 4,  // ?
-	.use_urgent_burst_bw = 1,            // ?
+	.xfc_bus_transport_time_us = 20,      
+	.xfc_xbuf_latency_tolerance_us = 4,  
+	.use_urgent_burst_bw = 1,            
 	.do_urgent_latency_adjustment = true,
 	.urgent_latency_adjustment_fabric_clock_component_us = 1.0,
 	.urgent_latency_adjustment_fabric_clock_reference_mhz = 1000,
@@ -189,24 +166,17 @@ void optc3_fpu_set_vrr_m_const(struct timing_generator *optc,
 
 	dc_assert_fp_enabled();
 
-	/* Compute VTOTAL_MIN and VTOTAL_MAX, so that
-	 * VOTAL_MAX - VTOTAL_MIN = 1
-	 */
+	 
 	v_total_mask_value = 16;
 	vtotal_min = dcn_bw_floor(vtotal_avg);
 	vtotal_max = dcn_bw_ceil(vtotal_avg);
 
-	/* Check that bottom VBLANK is at least 2 lines tall when running with
-	 * VTOTAL_MIN. Note that VTOTAL registers are defined as 'total number
-	 * of lines in a frame - 1'.
-	 */
+	 
 	REG_GET(OTG_V_BLANK_START_END, OTG_V_BLANK_START,
 		&vblank_start);
 	ASSERT(vtotal_min >= vblank_start + 1);
 
-	/* Special case where the average frame rate can be achieved
-	 * without using the DTO
-	 */
+	 
 	if (vtotal_min == vtotal_max) {
 		REG_SET(OTG_V_TOTAL, 0, OTG_V_TOTAL, (uint32_t)vtotal_min);
 
@@ -221,12 +191,10 @@ void optc3_fpu_set_vrr_m_const(struct timing_generator *optc,
 	}
 
 	ratio = vtotal_max - vtotal_avg;
-	modulo = 65536.0 * 65536.0 - 1.0; /* 2^32 - 1 */
+	modulo = 65536.0 * 65536.0 - 1.0;  
 	phase = ratio * modulo;
 
-	/* Special cases where the DTO phase gets rounded to 0 or
-	 * to DTO modulo
-	 */
+	 
 	if (phase <= 0 || phase >= modulo) {
 		REG_SET(OTG_V_TOTAL, 0, OTG_V_TOTAL,
 			phase <= 0 ?
@@ -271,7 +239,7 @@ void dcn30_fpu_populate_dml_writeback_from_context(
 			continue;
 		max_calc_writeback_dispclk = 0;
 
-		/* Set writeback information */
+		 
 		pipes[pipe_cnt].dout.wb_enable = 0;
 		pipes[pipe_cnt].dout.num_active_wb = 0;
 		for (j = 0; j < stream->num_wb_info; j++) {
@@ -290,7 +258,7 @@ void dcn30_fpu_populate_dml_writeback_from_context(
 				dout_wb.wb_dst_width = wb_info->dwb_params.dest_width;
 				dout_wb.wb_dst_height = wb_info->dwb_params.dest_height;
 
-				/* For IP that doesn't support WB scaling, set h/v taps to 1 to avoid DML validation failure */
+				 
 				if (dc->dml.ip.writeback_max_hscl_taps > 1) {
 					dout_wb.wb_htaps_luma = wb_info->dwb_params.scaler_taps.h_taps;
 					dout_wb.wb_vtaps_luma = wb_info->dwb_params.scaler_taps.v_taps;
@@ -316,11 +284,7 @@ void dcn30_fpu_populate_dml_writeback_from_context(
 				else
 					dout_wb.wb_pixel_format = dm_444_32;
 
-				/* Workaround for cases where multiple writebacks are connected to same plane
-				 * In which case, need to compute worst case and set the associated writeback parameters
-				 * This workaround is necessary due to DML computation assuming only 1 set of writeback
-				 * parameters per pipe
-				 */
+				 
 				writeback_dispclk = dml30_CalculateWriteBackDISPCLK(
 						dout_wb.wb_pixel_format,
 						pipes[pipe_cnt].pipe.dest.pixel_rate_mhz,
@@ -359,7 +323,7 @@ void dcn30_fpu_set_mcif_arb_params(struct mcif_arb_params *wb_arb_params,
 		wb_arb_params->pstate_watermark[i] = get_wm_writeback_dram_clock_change(dml, pipes, pipe_cnt) * 1000;
 	}
 
-	wb_arb_params->dram_speed_change_duration = dml->vba.WritebackAllowDRAMClockChangeEndPosition[cur_pipe] * pipes[0].clks_cfg.refclk_mhz; /* num_clock_cycles = us * MHz */
+	wb_arb_params->dram_speed_change_duration = dml->vba.WritebackAllowDRAMClockChangeEndPosition[cur_pipe] * pipes[0].clks_cfg.refclk_mhz;  
 }
 
 void dcn30_fpu_update_soc_for_wm_a(struct dc *dc, struct dc_state *context)
@@ -397,7 +361,7 @@ void dcn30_fpu_calculate_wm_and_dlg(
 	}
 
 	if (!pstate_en) {
-		/* only when the mclk switch can not be natural, is the fw based vblank stretch attempted */
+		 
 		context->bw_ctx.bw.dcn.clk.fw_based_mclk_switching =
 			dcn30_can_support_mclk_switch_using_fw_based_vblank_stretch(dc, context);
 
@@ -405,11 +369,7 @@ void dcn30_fpu_calculate_wm_and_dlg(
 			dummy_latency_index = dcn30_find_dummy_latency_index_for_fw_based_mclk_switch(dc,
 				context, pipes, pipe_cnt, vlevel);
 
-			/* After calling dcn30_find_dummy_latency_index_for_fw_based_mclk_switch
-			 * we reinstate the original dram_clock_change_latency_us on the context
-			 * and all variables that may have changed up to this point, except the
-			 * newly found dummy_latency_index
-			 */
+			 
 			context->bw_ctx.dml.soc.dram_clock_change_latency_us = dc->clk_mgr->bw_params->wm_table.nv_entries[WM_A].dml_input.pstate_latency_us;
 			dcn30_internal_validate_bw(dc, context, pipes, &pipe_cnt, &vlevel, false, true);
 			maxMpcComb = context->bw_ctx.dml.vba.maxMpcComb;
@@ -425,10 +385,7 @@ void dcn30_fpu_calculate_wm_and_dlg(
 	pipes[0].clks_cfg.dcfclk_mhz = dcfclk;
 	pipes[0].clks_cfg.socclk_mhz = context->bw_ctx.dml.soc.clock_limits[vlevel].socclk_mhz;
 
-	/* Set B:
-	 * DCFCLK: 1GHz or min required above 1GHz
-	 * FCLK/UCLK: Max
-	 */
+	 
 	if (dc->clk_mgr->bw_params->wm_table.nv_entries[WM_B].valid) {
 		if (vlevel == 0) {
 			pipes[0].clks_cfg.voltage = 1;
@@ -450,32 +407,10 @@ void dcn30_fpu_calculate_wm_and_dlg(
 	pipes[0].clks_cfg.voltage = vlevel;
 	pipes[0].clks_cfg.dcfclk_mhz = dcfclk;
 
-	/* Set D:
-	 * DCFCLK: Min Required
-	 * FCLK(proportional to UCLK): 1GHz or Max
-	 * MALL stutter, sr_enter_exit = 4, sr_exit = 2us
-	 */
-	/*
-	if (dc->clk_mgr->bw_params->wm_table.nv_entries[WM_D].valid) {
-		context->bw_ctx.dml.soc.dram_clock_change_latency_us = dc->clk_mgr->bw_params->wm_table.nv_entries[WM_D].dml_input.pstate_latency_us;
-		context->bw_ctx.dml.soc.sr_enter_plus_exit_time_us = dc->clk_mgr->bw_params->wm_table.nv_entries[WM_D].dml_input.sr_enter_plus_exit_time_us;
-		context->bw_ctx.dml.soc.sr_exit_time_us = dc->clk_mgr->bw_params->wm_table.nv_entries[WM_D].dml_input.sr_exit_time_us;
-	}
-	context->bw_ctx.bw.dcn.watermarks.d.urgent_ns = get_wm_urgent(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
-	context->bw_ctx.bw.dcn.watermarks.d.cstate_pstate.cstate_enter_plus_exit_ns = get_wm_stutter_enter_exit(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
-	context->bw_ctx.bw.dcn.watermarks.d.cstate_pstate.cstate_exit_ns = get_wm_stutter_exit(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
-	context->bw_ctx.bw.dcn.watermarks.d.cstate_pstate.pstate_change_ns = get_wm_dram_clock_change(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
-	context->bw_ctx.bw.dcn.watermarks.d.pte_meta_urgent_ns = get_wm_memory_trip(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
-	context->bw_ctx.bw.dcn.watermarks.d.frac_urg_bw_nom = get_fraction_of_urgent_bandwidth(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
-	context->bw_ctx.bw.dcn.watermarks.d.frac_urg_bw_flip = get_fraction_of_urgent_bandwidth_imm_flip(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
-	context->bw_ctx.bw.dcn.watermarks.d.urgent_latency_ns = get_urgent_latency(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
-	*/
+	 
+	 
 
-	/* Set C:
-	 * DCFCLK: Min Required
-	 * FCLK(proportional to UCLK): 1GHz or Max
-	 * pstate latency overridden to 5us
-	 */
+	 
 	if (dc->clk_mgr->bw_params->wm_table.nv_entries[WM_C].valid) {
 		unsigned int min_dram_speed_mts = context->bw_ctx.dml.vba.DRAMSpeed;
 		unsigned int min_dram_speed_mts_margin = 160;
@@ -492,9 +427,7 @@ void dcn30_fpu_calculate_wm_and_dlg(
 		}
 
 		if (!context->bw_ctx.bw.dcn.clk.fw_based_mclk_switching) {
-			/* find largest table entry that is lower than dram speed,
-			 * but lower than DPM0 still uses DPM0
-			 */
+			 
 			for (dummy_latency_index = 3; dummy_latency_index > 0; dummy_latency_index--)
 				if (min_dram_speed_mts + min_dram_speed_mts_margin >
 					dc->clk_mgr->bw_params->dummy_pstate_table[dummy_latency_index].dram_speed_mts)
@@ -518,18 +451,11 @@ void dcn30_fpu_calculate_wm_and_dlg(
 	context->bw_ctx.bw.dcn.watermarks.c.urgent_latency_ns = get_urgent_latency(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
 
 	if (!pstate_en) {
-		/* The only difference between A and C is p-state latency, if p-state is not supported we want to
-		 * calculate DLG based on dummy p-state latency, and max out the set A p-state watermark
-		 */
+		 
 		context->bw_ctx.bw.dcn.watermarks.a = context->bw_ctx.bw.dcn.watermarks.c;
 		context->bw_ctx.bw.dcn.watermarks.a.cstate_pstate.pstate_change_ns = 0;
 	} else {
-		/* Set A:
-		 * DCFCLK: Min Required
-		 * FCLK(proportional to UCLK): 1GHz or Max
-		 *
-		 * Set A calculated last so that following calculations are based on Set A
-		 */
+		 
 		dc->res_pool->funcs->update_soc_for_wm_a(dc, context);
 		context->bw_ctx.bw.dcn.watermarks.a.urgent_ns = get_wm_urgent(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
 		context->bw_ctx.bw.dcn.watermarks.a.cstate_pstate.cstate_enter_plus_exit_ns = get_wm_stutter_enter_exit(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
@@ -543,7 +469,7 @@ void dcn30_fpu_calculate_wm_and_dlg(
 
 	context->perf_params.stutter_period_us = context->bw_ctx.dml.vba.StutterPeriod;
 
-	/* Make set D = set A until set D is enabled */
+	 
 	context->bw_ctx.bw.dcn.watermarks.d = context->bw_ctx.bw.dcn.watermarks.a;
 
 	for (i = 0, pipe_idx = 0; i < dc->res_pool->pipe_count; i++) {
@@ -565,7 +491,7 @@ void dcn30_fpu_calculate_wm_and_dlg(
 		pipe_idx++;
 	}
 
-	// WA: restrict FPO to use first non-strobe mode (NV24 BW issue)
+	
 	if (context->bw_ctx.bw.dcn.clk.fw_based_mclk_switching &&
 			dc->dml.soc.num_chans <= 4 &&
 			context->bw_ctx.dml.vba.DRAMSpeed <= 1700 &&
@@ -582,7 +508,7 @@ void dcn30_fpu_calculate_wm_and_dlg(
 	dcn20_calculate_dlg_params(dc, context, pipes, pipe_cnt, vlevel);
 
 	if (!pstate_en)
-		/* Restore full p-state latency */
+		 
 		context->bw_ctx.dml.soc.dram_clock_change_latency_us =
 				dc->clk_mgr->bw_params->wm_table.nv_entries[WM_A].dml_input.pstate_latency_us;
 
@@ -655,39 +581,25 @@ void dcn30_fpu_update_bw_bounding_box(struct dc *dc,
 		dcn3_0_soc.clock_limits[i].fabricclk_mhz = dcfclk_mhz[i];
 		dcn3_0_soc.clock_limits[i].dram_speed_mts = dram_speed_mts[i];
 
-		/* Fill all states with max values of all other clocks */
+		 
 		dcn3_0_soc.clock_limits[i].dispclk_mhz = dcn30_bb_max_clk->max_dispclk_mhz;
 		dcn3_0_soc.clock_limits[i].dppclk_mhz  = dcn30_bb_max_clk->max_dppclk_mhz;
 		dcn3_0_soc.clock_limits[i].phyclk_mhz  = dcn30_bb_max_clk->max_phyclk_mhz;
 		dcn3_0_soc.clock_limits[i].dtbclk_mhz = dcn3_0_soc.clock_limits[0].dtbclk_mhz;
-		/* These clocks cannot come from bw_params, always fill from dcn3_0_soc[1] */
-		/* FCLK, PHYCLK_D18, SOCCLK, DSCCLK */
+		 
+		 
 		dcn3_0_soc.clock_limits[i].phyclk_d18_mhz = dcn3_0_soc.clock_limits[0].phyclk_d18_mhz;
 		dcn3_0_soc.clock_limits[i].socclk_mhz = dcn3_0_soc.clock_limits[0].socclk_mhz;
 		dcn3_0_soc.clock_limits[i].dscclk_mhz = dcn3_0_soc.clock_limits[0].dscclk_mhz;
 	}
-	/* re-init DML with updated bb */
+	 
 	dml_init_instance(&dc->dml, &dcn3_0_soc, &dcn3_0_ip, DML_PROJECT_DCN30);
 	if (dc->current_state)
 		dml_init_instance(&dc->current_state->bw_ctx.dml, &dcn3_0_soc, &dcn3_0_ip, DML_PROJECT_DCN30);
 
 }
 
-/**
- * dcn30_find_dummy_latency_index_for_fw_based_mclk_switch() - Finds
- * dummy_latency_index when MCLK switching using firmware based vblank stretch
- * is enabled. This function will iterate through the table of dummy pstate
- * latencies until the lowest value that allows
- * dm_allow_self_refresh_and_mclk_switch to happen is found
- *
- * @dc: Current DC state
- * @context: new dc state
- * @pipes: DML pipe params
- * @pipe_cnt: number of DML pipes
- * @vlevel: Voltage level calculated by DML
- *
- * Return: lowest dummy_latency_index value
- */
+ 
 int dcn30_find_dummy_latency_index_for_fw_based_mclk_switch(struct dc *dc,
 							    struct dc_state *context,
 							    display_e2e_pipe_params_st *pipes,
@@ -713,12 +625,7 @@ int dcn30_find_dummy_latency_index_for_fw_based_mclk_switch(struct dc *dc,
 
 	if (dummy_latency_index == max_latency_table_entries) {
 		ASSERT(dummy_latency_index != max_latency_table_entries);
-		/* If the execution gets here, it means dummy p_states are
-		 * not possible. This should never happen and would mean
-		 * something is severely wrong.
-		 * Here we reset dummy_latency_index to 3, because it is
-		 * better to have underflows than system crashes.
-		 */
+		 
 		dummy_latency_index = 3;
 	}
 
@@ -727,7 +634,7 @@ int dcn30_find_dummy_latency_index_for_fw_based_mclk_switch(struct dc *dc,
 
 void dcn3_fpu_build_wm_range_table(struct clk_mgr *base)
 {
-	/* defaults */
+	 
 	double pstate_latency_us = base->ctx->dc->dml.soc.dram_clock_change_latency_us;
 	double sr_exit_time_us = base->ctx->dc->dml.soc.sr_exit_time_us;
 	double sr_enter_plus_exit_time_us = base->ctx->dc->dml.soc.sr_enter_plus_exit_time_us;
@@ -735,7 +642,7 @@ void dcn3_fpu_build_wm_range_table(struct clk_mgr *base)
 
 	dc_assert_fp_enabled();
 
-	/* Set A - Normal - default values*/
+	 
 	base->bw_params->wm_table.nv_entries[WM_A].valid = true;
 	base->bw_params->wm_table.nv_entries[WM_A].dml_input.pstate_latency_us = pstate_latency_us;
 	base->bw_params->wm_table.nv_entries[WM_A].dml_input.sr_exit_time_us = sr_exit_time_us;
@@ -746,18 +653,18 @@ void dcn3_fpu_build_wm_range_table(struct clk_mgr *base)
 	base->bw_params->wm_table.nv_entries[WM_A].pmfw_breakdown.min_uclk = min_uclk_mhz;
 	base->bw_params->wm_table.nv_entries[WM_A].pmfw_breakdown.max_uclk = 0xFFFF;
 
-	/* Set B - Performance - higher minimum clocks */
-//	base->bw_params->wm_table.nv_entries[WM_B].valid = true;
-//	base->bw_params->wm_table.nv_entries[WM_B].dml_input.pstate_latency_us = pstate_latency_us;
-//	base->bw_params->wm_table.nv_entries[WM_B].dml_input.sr_exit_time_us = sr_exit_time_us;
-//	base->bw_params->wm_table.nv_entries[WM_B].dml_input.sr_enter_plus_exit_time_us = sr_enter_plus_exit_time_us;
-//	base->bw_params->wm_table.nv_entries[WM_B].pmfw_breakdown.wm_type = WATERMARKS_CLOCK_RANGE;
-//	base->bw_params->wm_table.nv_entries[WM_B].pmfw_breakdown.min_dcfclk = TUNED VALUE;
-//	base->bw_params->wm_table.nv_entries[WM_B].pmfw_breakdown.max_dcfclk = 0xFFFF;
-//	base->bw_params->wm_table.nv_entries[WM_B].pmfw_breakdown.min_uclk = TUNED VALUE;
-//	base->bw_params->wm_table.nv_entries[WM_B].pmfw_breakdown.max_uclk = 0xFFFF;
+	 
 
-	/* Set C - Dummy P-State - P-State latency set to "dummy p-state" value */
+
+
+
+
+
+
+
+
+
+	 
 	base->bw_params->wm_table.nv_entries[WM_C].valid = true;
 	base->bw_params->wm_table.nv_entries[WM_C].dml_input.pstate_latency_us = 0;
 	base->bw_params->wm_table.nv_entries[WM_C].dml_input.sr_exit_time_us = sr_exit_time_us;
@@ -776,7 +683,7 @@ void dcn3_fpu_build_wm_range_table(struct clk_mgr *base)
 	base->bw_params->dummy_pstate_table[3].dram_speed_mts = 16000;
 	base->bw_params->dummy_pstate_table[3].dummy_pstate_latency_us = 5;
 
-	/* Set D - MALL - SR enter and exit times adjusted for MALL */
+	 
 	base->bw_params->wm_table.nv_entries[WM_D].valid = true;
 	base->bw_params->wm_table.nv_entries[WM_D].dml_input.pstate_latency_us = pstate_latency_us;
 	base->bw_params->wm_table.nv_entries[WM_D].dml_input.sr_exit_time_us = 2;

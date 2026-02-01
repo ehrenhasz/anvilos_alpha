@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020, Mellanox Technologies inc. All rights reserved. */
+
+ 
 #include <net/sch_generic.h>
 
 #include <net/pkt_cls.h>
@@ -33,23 +33,17 @@ int mlx5e_qos_max_leaf_nodes(struct mlx5_core_dev *mdev)
 	return min(MLX5E_QOS_MAX_LEAF_NODES, mlx5_qos_max_leaf_nodes(mdev));
 }
 
-/* TX datapath API */
+ 
 
 u16 mlx5e_qid_from_qos(struct mlx5e_channels *chs, u16 qid)
 {
-	/* These channel params are safe to access from the datapath, because:
-	 * 1. This function is called only after checking selq->htb_maj_id != 0,
-	 *    and the number of queues can't change while HTB offload is active.
-	 * 2. When selq->htb_maj_id becomes 0, synchronize_rcu waits for
-	 *    mlx5e_select_queue to finish while holding priv->state_lock,
-	 *    preventing other code from changing the number of queues.
-	 */
+	 
 	bool is_ptp = MLX5E_GET_PFLAG(&chs->params, MLX5E_PFLAG_TX_PORT_TS);
 
 	return (chs->params.num_channels + is_ptp) * mlx5e_get_dcb_num_tc(&chs->params) + qid;
 }
 
-/* SQ lifecycle */
+ 
 
 static struct mlx5e_txqsq *mlx5e_get_qos_sq(struct mlx5e_priv *priv, int qid)
 {
@@ -101,9 +95,7 @@ int mlx5e_open_qos_sq(struct mlx5e_priv *priv, struct mlx5e_channels *chs,
 		if (stats_list)
 			WRITE_ONCE(priv->htb_qos_sq_stats, stats_list);
 		WRITE_ONCE(priv->htb_qos_sq_stats[node_qid], stats);
-		/* Order htb_max_qos_sqs increment after writing the array pointer.
-		 * Pairs with smp_load_acquire in en_stats.c.
-		 */
+		 
 		smp_store_release(&priv->htb_max_qos_sqs, priv->htb_max_qos_sqs + 1);
 	}
 
@@ -160,17 +152,12 @@ int mlx5e_activate_qos_sq(void *data, u16 node_qid, u32 hw_id)
 
 	qid = mlx5e_qid_from_qos(&priv->channels, node_qid);
 
-	/* If it's a new queue, it will be marked as started at this point.
-	 * Stop it before updating txq2sq.
-	 */
+	 
 	mlx5e_tx_disable_queue(netdev_get_tx_queue(priv->netdev, qid));
 
 	priv->txq2sq[qid] = sq;
 
-	/* Make the change to txq2sq visible before the queue is started.
-	 * As mlx5e_xmit runs under a spinlock, there is an implicit ACQUIRE,
-	 * which pairs with this barrier.
-	 */
+	 
 	smp_wmb();
 
 	qos_dbg(priv->mdev, "Activate QoS SQ qid %u\n", node_qid);
@@ -184,7 +171,7 @@ void mlx5e_deactivate_qos_sq(struct mlx5e_priv *priv, u16 qid)
 	struct mlx5e_txqsq *sq;
 
 	sq = mlx5e_get_qos_sq(priv, qid);
-	if (!sq) /* Handle the case when the SQ failed to open. */
+	if (!sq)  
 		return;
 
 	qos_dbg(priv->mdev, "Deactivate QoS SQ qid %u\n", qid);
@@ -192,10 +179,7 @@ void mlx5e_deactivate_qos_sq(struct mlx5e_priv *priv, u16 qid)
 
 	priv->txq2sq[mlx5e_qid_from_qos(&priv->channels, qid)] = NULL;
 
-	/* Make the change to txq2sq visible before the queue is started again.
-	 * As mlx5e_xmit runs under a spinlock, there is an implicit ACQUIRE,
-	 * which pairs with this barrier.
-	 */
+	 
 	smp_wmb();
 }
 
@@ -214,10 +198,10 @@ void mlx5e_close_qos_sq(struct mlx5e_priv *priv, u16 qid)
 	c = priv->channels.c[ix];
 	qos_sqs = mlx5e_state_dereference(priv, c->qos_sqs);
 	sq = rcu_replace_pointer(qos_sqs[qid], NULL, lockdep_is_held(&priv->state_lock));
-	if (!sq) /* Handle the case when the SQ failed to open. */
+	if (!sq)  
 		return;
 
-	synchronize_rcu(); /* Sync with NAPI. */
+	synchronize_rcu();  
 
 	mlx5e_close_txqsq(sq);
 	mlx5e_close_cq(&sq->cq);
@@ -232,13 +216,13 @@ void mlx5e_qos_close_queues(struct mlx5e_channel *c)
 	qos_sqs = rcu_replace_pointer(c->qos_sqs, NULL, lockdep_is_held(&c->priv->state_lock));
 	if (!qos_sqs)
 		return;
-	synchronize_rcu(); /* Sync with NAPI. */
+	synchronize_rcu();  
 
 	for (i = 0; i < c->qos_sqs_size; i++) {
 		struct mlx5e_txqsq *sq;
 
 		sq = mlx5e_state_dereference(c->priv, qos_sqs[i]);
-		if (!sq) /* Handle the case when the SQ failed to open. */
+		if (!sq)  
 			continue;
 
 		mlx5e_close_txqsq(sq);
@@ -272,7 +256,7 @@ int mlx5e_qos_alloc_queues(struct mlx5e_priv *priv, struct mlx5e_channels *chs)
 			goto err_free;
 
 		WRITE_ONCE(chs->c[i]->qos_sqs_size, qos_sqs_size);
-		smp_wmb(); /* Pairs with mlx5e_napi_poll. */
+		smp_wmb();  
 		rcu_assign_pointer(chs->c[i]->qos_sqs, sqs);
 	}
 
@@ -285,7 +269,7 @@ err_free:
 		sqs = rcu_replace_pointer(chs->c[i]->qos_sqs, NULL,
 					  lockdep_is_held(&priv->state_lock));
 
-		synchronize_rcu(); /* Sync with NAPI. */
+		synchronize_rcu();  
 		kvfree(sqs);
 	}
 	return -ENOMEM;
@@ -332,13 +316,13 @@ void mlx5e_qos_deactivate_queues(struct mlx5e_channel *c)
 		struct mlx5e_txqsq *sq;
 
 		sq = mlx5e_state_dereference(c->priv, qos_sqs[i]);
-		if (!sq) /* Handle the case when the SQ failed to open. */
+		if (!sq)  
 			continue;
 
 		qos_dbg(c->mdev, "Deactivate QoS SQ qid %u\n", qid);
 		mlx5e_deactivate_txqsq(sq);
 
-		/* The queue is disabled, no synchronization with datapath is needed. */
+		 
 		c->priv->txq2sq[mlx5e_qid_from_qos(&c->priv->channels, qid)] = NULL;
 	}
 }

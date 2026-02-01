@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * tmon.c Thermal Monitor (TMON) main function and entry point
- *
- * Copyright (C) 2012 Intel Corporation. All rights reserved.
- *
- * Author: Jacob Pan <jacob.jun.pan@linux.intel.com>
- */
+
+ 
 
 #include <getopt.h>
 #include <unistd.h>
@@ -27,21 +21,19 @@
 
 #include "tmon.h"
 
-unsigned long ticktime = 1; /* seconds */
-unsigned long no_control = 1; /* monitoring only or use cooling device for
-			       * temperature control.
-			       */
+unsigned long ticktime = 1;  
+unsigned long no_control = 1;  
 double time_elapsed = 0.0;
-unsigned long target_temp_user = 65; /* can be select by tui later */
+unsigned long target_temp_user = 65;  
 int dialogue_on;
 int tmon_exit;
 static short	daemon_mode;
-static int logging; /* for recording thermal data to a file */
+static int logging;  
 static int debug_on;
 FILE *tmon_log;
-/*cooling device used for the PID controller */
+ 
 char ctrl_cdev[CDEV_NAME_SIZE] = "None";
-int target_thermal_zone; /* user selected target zone instance */
+int target_thermal_zone;  
 static void	start_daemon_mode(void);
 
 pthread_t event_tid;
@@ -82,7 +74,7 @@ static void tmon_cleanup(void)
 		pthread_mutex_destroy(&input_lock);
 	}
 	closelog();
-	/* relax control knobs, undo throttling */
+	 
 	set_ctrl_state(0);
 
 	keypad(stdscr, FALSE);
@@ -135,7 +127,7 @@ static void prepare_logging(void)
 
 	if (!logging)
 		return;
-	/* open local data log file */
+	 
 	tmon_log = fopen(TMON_LOG_FILE, "w+");
 	if (!tmon_log) {
 		syslog(LOG_ERR, "failed to open log file %s\n", TMON_LOG_FILE);
@@ -149,7 +141,7 @@ static void prepare_logging(void)
 		return;
 	}
 
-	/* The log file must be a regular file owned by us */
+	 
 	if (S_ISLNK(logstat.st_mode)) {
 		syslog(LOG_ERR, "Log file is a symlink.  Will not log\n");
 		fclose(tmon_log);
@@ -166,7 +158,7 @@ static void prepare_logging(void)
 
 	fprintf(tmon_log, "#----------- THERMAL SYSTEM CONFIG -------------\n");
 	for (i = 0; i < ptdata.nr_tz_sensor; i++) {
-		char binding_str[33]; /* size of long + 1 */
+		char binding_str[33];  
 		int j;
 
 		memset(binding_str, 0, sizeof(binding_str));
@@ -218,7 +210,7 @@ int main(int argc, char **argv)
 {
 	int err = 0;
 	int id2 = 0, c;
-	double yk = 0.0, temp; /* controller output */
+	double yk = 0.0, temp;  
 	int target_tz_index;
 
 	if (geteuid() != 0) {
@@ -303,9 +295,7 @@ int main(int argc, char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/* validate range of user selected target zone, default to the first
-	 * instance if out of range
-	 */
+	 
 	target_tz_index = zone_instance_to_index(target_thermal_zone);
 	if (target_tz_index < 0) {
 		target_thermal_zone = ptdata.tzi[0].instance;
@@ -336,27 +326,27 @@ int main(int argc, char **argv)
 static void start_daemon_mode(void)
 {
 	daemon_mode = 1;
-	/* fork */
+	 
 	pid_t	sid, pid = fork();
 
 	if (pid < 0)
 		exit(EXIT_FAILURE);
 	else if (pid > 0)
-		/* kill parent */
+		 
 		exit(EXIT_SUCCESS);
 
-	/* disable TUI, it may not be necessary, but saves some resource */
+	 
 	disable_tui();
 
-	/* change the file mode mask */
+	 
 	umask(S_IWGRP | S_IWOTH);
 
-	/* new SID for the daemon process */
+	 
 	sid = setsid();
 	if (sid < 0)
 		exit(EXIT_FAILURE);
 
-	/* change working directory */
+	 
 	if ((chdir("/")) < 0)
 		exit(EXIT_FAILURE);
 

@@ -1,25 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "radeon.h"
 #include "radeon_asic.h"
@@ -868,11 +847,7 @@ static void sumo_set_uvd_clock_after_set_eng_clock(struct radeon_device *rdev,
 
 void sumo_take_smu_control(struct radeon_device *rdev, bool enable)
 {
-/* This bit selects who handles display phy powergating.
- * Clear the bit to let atom handle it.
- * Set it to let the driver handle it.
- * For now we just let atom handle it.
- */
+ 
 #if 0
 	u32 v = RREG32(DOUT_SCRATCH3);
 
@@ -1044,7 +1019,7 @@ static void sumo_patch_thermal_state(struct radeon_device *rdev,
 				     struct sumo_ps *current_ps)
 {
 	struct sumo_power_info *pi = sumo_get_pi(rdev);
-	u32 sclk_in_sr = pi->sys_info.min_sclk; /* ??? */
+	u32 sclk_in_sr = pi->sys_info.min_sclk;  
 	u32 current_vddc;
 	u32 current_sclk;
 	u32 current_index = 0;
@@ -1090,9 +1065,9 @@ static void sumo_apply_state_adjust_rules(struct radeon_device *rdev,
 	struct sumo_ps *ps = sumo_get_ps(new_rps);
 	struct sumo_ps *current_ps = sumo_get_ps(old_rps);
 	struct sumo_power_info *pi = sumo_get_pi(rdev);
-	u32 min_voltage = 0; /* ??? */
-	u32 min_sclk = pi->sys_info.min_sclk; /* XXX check against disp reqs */
-	u32 sclk_in_sr = pi->sys_info.min_sclk; /* ??? */
+	u32 min_voltage = 0;  
+	u32 min_sclk = pi->sys_info.min_sclk;  
+	u32 sclk_in_sr = pi->sys_info.min_sclk;  
 	u32 i;
 
 	if (new_rps->class & ATOM_PPLIB_CLASSIFICATION_THERMAL)
@@ -1759,9 +1734,7 @@ int sumo_dpm_init(struct radeon_device *rdev)
 	pi->enable_sclk_ds = true;
 	pi->enable_dynamic_m3_arbiter = false;
 	pi->enable_dynamic_patch_ps = true;
-	/* Some PALM chips don't seem to properly ungate gfx when UVD is in use;
-	 * for now just disable gfx PG.
-	 */
+	 
 	if (rdev->family == CHIP_PALM)
 		pi->enable_gfx_power_gating = false;
 	else
@@ -1891,7 +1864,7 @@ void sumo_dpm_fini(struct radeon_device *rdev)
 {
 	int i;
 
-	sumo_cleanup_asic(rdev); /* ??? */
+	sumo_cleanup_asic(rdev);  
 
 	for (i = 0; i < rdev->pm.dpm.num_ps; i++) {
 		kfree(rdev->pm.dpm.ps[i].ps_priv);

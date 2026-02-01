@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <linux/bpf.h>
 #include <stdint.h>
@@ -60,7 +60,7 @@ int test_core_enum64val(void *ctx)
 	out->unsigned_val2 = bpf_core_enum_value(named_unsigned, UNSIGNED_ENUM64_VAL2);
 	out->signed_val1 = bpf_core_enum_value(named_signed, SIGNED_ENUM64_VAL1);
 	out->signed_val2 = bpf_core_enum_value(named_signed, SIGNED_ENUM64_VAL2);
-	/* NAMED_ENUM64_VAL3 value is optional */
+	 
 
 #else
 	data.skip = true;

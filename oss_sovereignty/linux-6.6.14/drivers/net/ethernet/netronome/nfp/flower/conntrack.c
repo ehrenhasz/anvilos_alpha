@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2021 Corigine, Inc. */
+
+ 
 
 #include <net/tc_act/tc_csum.h>
 #include <net/tc_act/tc_ct.h>
@@ -26,16 +26,7 @@ const struct rhashtable_params nfp_nft_ct_merge_params = {
 static struct flow_action_entry *get_flow_act(struct flow_rule *rule,
 					      enum flow_action_id act_id);
 
-/**
- * get_hashentry() - Wrapper around hashtable lookup.
- * @ht:		hashtable where entry could be found
- * @key:	key to lookup
- * @params:	hashtable params
- * @size:	size of entry to allocate if not in table
- *
- * Returns an entry from a hashtable. If entry does not exist
- * yet allocate the memory for it and return the new entry.
- */
+ 
 static void *get_hashentry(struct rhashtable *ht, void *key,
 			   const struct rhashtable_params params, size_t size)
 {
@@ -72,9 +63,7 @@ bool is_pre_ct_flow(struct flow_cls_offload *flow)
 
 	flow_action_for_each(i, act, &flow->rule->action) {
 		if (act->id == FLOW_ACTION_CT) {
-			/* The pre_ct rule only have the ct or ct nat action, cannot
-			 * contains other ct action e.g ct commit and so on.
-			 */
+			 
 			if ((!act->ct.action || act->ct.action == TCA_CT_ACT_NAT))
 				return true;
 			else
@@ -99,10 +88,10 @@ bool is_post_ct_flow(struct flow_cls_offload *flow)
 		if (ct.key->ct_state & TCA_FLOWER_KEY_CT_FLAGS_ESTABLISHED)
 			return true;
 	} else {
-		/* post ct entry cannot contains any ct action except ct_clear. */
+		 
 		flow_action_for_each(i, act, &flow->rule->action) {
 			if (act->id == FLOW_ACTION_CT) {
-				/* ignore ct clear action. */
+				 
 				if (act->ct.action == TCA_CT_ACT_CLEAR) {
 					exist_ct_clear = true;
 					continue;
@@ -111,10 +100,7 @@ bool is_post_ct_flow(struct flow_cls_offload *flow)
 				return false;
 			}
 		}
-		/* when do nat with ct, the post ct entry ignore the ct status,
-		 * will match the nat field(sip/dip) instead. In this situation,
-		 * the flow chain index is not zero and contains ct clear action.
-		 */
+		 
 		if (flow->common.chain_index && exist_ct_clear)
 			return true;
 	}
@@ -122,16 +108,7 @@ bool is_post_ct_flow(struct flow_cls_offload *flow)
 	return false;
 }
 
-/**
- * get_mangled_key() - Mangle the key if mangle act exists
- * @rule:	rule that carries the actions
- * @buf:	pointer to key to be mangled
- * @offset:	used to adjust mangled offset in L2/L3/L4 header
- * @key_sz:	key size
- * @htype:	mangling type
- *
- * Returns buf where the mangled key stores.
- */
+ 
 static void *get_mangled_key(struct flow_rule *rule, void *buf,
 			     u32 offset, size_t key_sz,
 			     enum flow_action_mangle_base htype)
@@ -148,7 +125,7 @@ static void *get_mangled_key(struct flow_rule *rule, void *buf,
 			msk = act->mangle.mask;
 			key = act->mangle.val;
 
-			/* Mangling is supposed to be u32 aligned */
+			 
 			if (off % 4 || off >= key_sz)
 				continue;
 
@@ -160,11 +137,7 @@ static void *get_mangled_key(struct flow_rule *rule, void *buf,
 	return buf;
 }
 
-/* Only tos and ttl are involved in flow_match_ip structure, which
- * doesn't conform to the layout of ip/ipv6 header definition. So
- * they need particular process here: fill them into the ip/ipv6
- * header, so that mangling actions can work directly.
- */
+ 
 #define NFP_IPV4_TOS_MASK	GENMASK(23, 16)
 #define NFP_IPV4_TTL_MASK	GENMASK(31, 24)
 #define NFP_IPV6_TCLASS_MASK	GENMASK(27, 20)
@@ -173,7 +146,7 @@ static void *get_mangled_tos_ttl(struct flow_rule *rule, void *buf,
 				 bool is_v6)
 {
 	struct flow_match_ip match;
-	/* IPv4's ttl field is in third dword. */
+	 
 	__be32 ip_hdr[3];
 	u32 tmp, hdr_len;
 
@@ -214,13 +187,11 @@ static void *get_mangled_tos_ttl(struct flow_rule *rule, void *buf,
 	return buf;
 }
 
-/* Note entry1 and entry2 are not swappable. only skip ip and
- * tport merge check for pre_ct and post_ct when pre_ct do nat.
- */
+ 
 static bool nfp_ct_merge_check_cannot_skip(struct nfp_fl_ct_flow_entry *entry1,
 					   struct nfp_fl_ct_flow_entry *entry2)
 {
-	/* only pre_ct have NFP_FL_ACTION_DO_NAT flag. */
+	 
 	if ((entry1->flags & NFP_FL_ACTION_DO_NAT) &&
 	    entry2->type == CT_TYPE_POST_CT)
 		return false;
@@ -228,11 +199,7 @@ static bool nfp_ct_merge_check_cannot_skip(struct nfp_fl_ct_flow_entry *entry1,
 	return true;
 }
 
-/* Note entry1 and entry2 are not swappable, entry1 should be
- * the former flow whose mangle action need be taken into account
- * if existed, and entry2 should be the latter flow whose action
- * we don't care.
- */
+ 
 static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
 			      struct nfp_fl_ct_flow_entry *entry2)
 {
@@ -241,23 +208,14 @@ static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
 	u8 ip_proto = 0;
 	ovlp_keys = entry1->rule->match.dissector->used_keys &
 			entry2->rule->match.dissector->used_keys;
-	/* Temporary buffer for mangling keys, 64 is enough to cover max
-	 * struct size of key in various fields that may be mangled.
-	 * Supported fields to mangle:
-	 * mac_src/mac_dst(struct flow_match_eth_addrs, 12B)
-	 * nw_tos/nw_ttl(struct flow_match_ip, 2B)
-	 * nw_src/nw_dst(struct flow_match_ipv4/6_addrs, 32B)
-	 * tp_src/tp_dst(struct flow_match_ports, 4B)
-	 */
+	 
 	char buf[64];
 
 	if (entry1->netdev && entry2->netdev &&
 	    entry1->netdev != entry2->netdev)
 		return -EINVAL;
 
-	/* Check the overlapped fields one by one, the unmasked part
-	 * should not conflict with each other.
-	 */
+	 
 	if (ovlp_keys & BIT_ULL(FLOW_DISSECTOR_KEY_CONTROL)) {
 		struct flow_match_control match1, match2;
 
@@ -274,11 +232,9 @@ static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
 		flow_rule_match_basic(entry1->rule, &match1);
 		flow_rule_match_basic(entry2->rule, &match2);
 
-		/* n_proto field is a must in ct-related flows,
-		 * it should be either ipv4 or ipv6.
-		 */
+		 
 		is_v6 = match1.key->n_proto == htons(ETH_P_IPV6);
-		/* ip_proto field is a must when port field is cared */
+		 
 		ip_proto = match1.key->ip_proto;
 
 		COMPARE_UNMASKED_FIELDS(match1, match2, &out);
@@ -286,10 +242,7 @@ static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
 			goto check_failed;
 	}
 
-	/* if pre ct entry do nat, the nat ip exists in nft entry,
-	 * will be do merge check when do nft and post ct merge,
-	 * so skip this ip merge check here.
-	 */
+	 
 	if ((ovlp_keys & BIT_ULL(FLOW_DISSECTOR_KEY_IPV4_ADDRS)) &&
 	    nfp_ct_merge_check_cannot_skip(entry1, entry2)) {
 		struct flow_match_ipv4_addrs match1, match2;
@@ -308,10 +261,7 @@ static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
 			goto check_failed;
 	}
 
-	/* if pre ct entry do nat, the nat ip exists in nft entry,
-	 * will be do merge check when do nft and post ct merge,
-	 * so skip this ip merge check here.
-	 */
+	 
 	if ((ovlp_keys & BIT_ULL(FLOW_DISSECTOR_KEY_IPV6_ADDRS)) &&
 	    nfp_ct_merge_check_cannot_skip(entry1, entry2)) {
 		struct flow_match_ipv6_addrs match1, match2;
@@ -330,10 +280,7 @@ static int nfp_ct_merge_check(struct nfp_fl_ct_flow_entry *entry1,
 			goto check_failed;
 	}
 
-	/* if pre ct entry do nat, the nat tport exists in nft entry,
-	 * will be do merge check when do nft and post ct merge,
-	 * so skip this tport merge check here.
-	 */
+	 
 	if ((ovlp_keys & BIT_ULL(FLOW_DISSECTOR_KEY_PORTS)) &&
 	    nfp_ct_merge_check_cannot_skip(entry1, entry2)) {
 		enum flow_action_mangle_base htype = FLOW_ACT_MANGLE_UNSPEC;
@@ -488,29 +435,29 @@ static int nfp_ct_check_vlan_merge(struct flow_action_entry *a_in,
 	if (unlikely(flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_CVLAN)))
 		return -EOPNOTSUPP;
 
-	/* post_ct does not match VLAN KEY, can be merged. */
+	 
 	if (likely(!flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_VLAN)))
 		return 0;
 
 	switch (a_in->id) {
-	/* pre_ct has pop vlan, post_ct cannot match VLAN KEY, cannot be merged. */
+	 
 	case FLOW_ACTION_VLAN_POP:
 		return -EOPNOTSUPP;
 
 	case FLOW_ACTION_VLAN_PUSH:
 	case FLOW_ACTION_VLAN_MANGLE:
 		flow_rule_match_vlan(rule, &match);
-		/* different vlan id, cannot be merged. */
+		 
 		if ((match.key->vlan_id & match.mask->vlan_id) ^
 		    (a_in->vlan.vid & match.mask->vlan_id))
 			return -EOPNOTSUPP;
 
-		/* different tpid, cannot be merged. */
+		 
 		if ((match.key->vlan_tpid & match.mask->vlan_tpid) ^
 		    (a_in->vlan.proto & match.mask->vlan_tpid))
 			return -EOPNOTSUPP;
 
-		/* different priority, cannot be merged. */
+		 
 		if ((match.key->vlan_priority & match.mask->vlan_priority) ^
 		    (a_in->vlan.prio & match.mask->vlan_priority))
 			return -EOPNOTSUPP;
@@ -523,9 +470,7 @@ static int nfp_ct_check_vlan_merge(struct flow_action_entry *a_in,
 	return 0;
 }
 
-/* Extra check for multiple ct-zones merge
- * currently surpport nft entries merge check in different zones
- */
+ 
 static int nfp_ct_merge_extra_check(struct nfp_fl_ct_flow_entry *nft_entry,
 				    struct nfp_fl_ct_tc_merge *tc_m_entry)
 {
@@ -545,7 +490,7 @@ static int nfp_ct_merge_act_check(struct nfp_fl_ct_flow_entry *pre_ct_entry,
 	struct flow_action_entry *act;
 	int i, err;
 
-	/* Check for pre_ct->action conflicts */
+	 
 	flow_action_for_each(i, act, &pre_ct_entry->rule->action) {
 		switch (act->id) {
 		case FLOW_ACTION_VLAN_PUSH:
@@ -564,7 +509,7 @@ static int nfp_ct_merge_act_check(struct nfp_fl_ct_flow_entry *pre_ct_entry,
 		}
 	}
 
-	/* Check for nft->action conflicts */
+	 
 	flow_action_for_each(i, act, &nft_entry->rule->action) {
 		switch (act->id) {
 		case FLOW_ACTION_VLAN_PUSH:
@@ -607,9 +552,7 @@ static int nfp_ct_check_meta(struct nfp_fl_ct_flow_entry *post_ct_entry,
 
 		return 0;
 	} else {
-		/* post_ct with ct clear action will not match the
-		 * ct status when nft is nat entry.
-		 */
+		 
 		if (nft_entry->flags & NFP_FL_ACTION_DO_MANGLE)
 			return 0;
 	}
@@ -622,7 +565,7 @@ nfp_fl_calc_key_layers_sz(struct nfp_fl_key_ls in_key_ls, uint16_t *map)
 {
 	int key_size;
 
-	/* This field must always be present */
+	 
 	key_size = sizeof(struct nfp_flower_meta_tci);
 	map[FLOW_PAY_META_TCI] = 0;
 
@@ -681,7 +624,7 @@ nfp_fl_calc_key_layers_sz(struct nfp_fl_key_ls in_key_ls, uint16_t *map)
 	return key_size;
 }
 
-/* get the csum flag according the ip proto and mangle action. */
+ 
 static void nfp_fl_get_csum_flag(struct flow_action_entry *a_in, u8 ip_proto, u32 *csum)
 {
 	if (a_in->id != FLOW_ACTION_MANGLE)
@@ -721,21 +664,19 @@ static int nfp_fl_merge_actions_offload(struct flow_rule **rules,
 	for (i = 0; i < num_rules; i++)
 		num_actions += rules[i]->action.num_entries;
 
-	/* Add one action to make sure there is enough room to add an checksum action
-	 * when do nat.
-	 */
+	 
 	a_rule = flow_rule_alloc(num_actions + (num_rules / 2));
 	if (!a_rule)
 		return -ENOMEM;
 
-	/* post_ct entry have one action at least. */
+	 
 	if (rules[num_rules - 1]->action.num_entries != 0)
 		tmp_stats = rules[num_rules - 1]->action.entries[0].hw_stats;
 
-	/* Actions need a BASIC dissector. */
+	 
 	a_rule->match = rules[0]->match;
 
-	/* Copy actions */
+	 
 	for (j = 0; j < num_rules; j++) {
 		u32 csum_updated = 0;
 		u8 ip_proto = 0;
@@ -743,13 +684,7 @@ static int nfp_fl_merge_actions_offload(struct flow_rule **rules,
 		if (flow_rule_match_key(rules[j], FLOW_DISSECTOR_KEY_BASIC)) {
 			struct flow_match_basic match;
 
-			/* ip_proto is the only field that is needed in later compile_action,
-			 * needed to set the correct checksum flags. It doesn't really matter
-			 * which input rule's ip_proto field we take as the earlier merge checks
-			 * would have made sure that they don't conflict. We do not know which
-			 * of the subflows would have the ip_proto filled in, so we need to iterate
-			 * through the subflows and assign the proper subflow to a_rule
-			 */
+			 
 			flow_rule_match_basic(rules[j], &match);
 			if (match.mask->ip_proto) {
 				a_rule->match = rules[j]->match;
@@ -761,21 +696,14 @@ static int nfp_fl_merge_actions_offload(struct flow_rule **rules,
 			a_in = &rules[j]->action.entries[i];
 			id = a_in->id;
 
-			/* Ignore CT related actions as these would already have
-			 * been taken care of by previous checks, and we do not send
-			 * any CT actions to the firmware.
-			 */
+			 
 			switch (id) {
 			case FLOW_ACTION_CT:
 			case FLOW_ACTION_GOTO:
 			case FLOW_ACTION_CT_METADATA:
 				continue;
 			default:
-				/* nft entry is generated by tc ct, which mangle action do not care
-				 * the stats, inherit the post entry stats to meet the
-				 * flow_action_hw_stats_check.
-				 * nft entry flow rules are at odd array index.
-				 */
+				 
 				if (j & 0x01) {
 					if (a_in->hw_stats == FLOW_ACTION_HW_STATS_DONT_CARE)
 						a_in->hw_stats = tmp_stats;
@@ -786,10 +714,7 @@ static int nfp_fl_merge_actions_offload(struct flow_rule **rules,
 				break;
 			}
 		}
-		/* nft entry have mangle action, but do not have checksum action when do NAT,
-		 * hardware will automatically fix IPv4 and TCP/UDP checksum. so add an csum action
-		 * to meet csum action check.
-		 */
+		 
 		if (csum_updated) {
 			struct flow_action_entry *csum_action;
 
@@ -800,7 +725,7 @@ static int nfp_fl_merge_actions_offload(struct flow_rule **rules,
 		}
 	}
 
-	/* Some actions would have been ignored, so update the num_entries field */
+	 
 	a_rule->action.num_entries = offset;
 	err = nfp_flower_compile_action(priv->app, a_rule, netdev, flow_pay, NULL);
 	kfree(a_rule);
@@ -844,7 +769,7 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
 	memset(&key_layer, 0, sizeof(struct nfp_fl_key_ls));
 	memset(&key_map, 0, sizeof(key_map));
 
-	/* Calculate the resultant key layer and size for offload */
+	 
 	for (i = 0; i < num_rules; i++) {
 		err = nfp_flower_calculate_key_layers(priv->app,
 						      m_entry->netdev,
@@ -885,9 +810,7 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
 					    key_layer.key_layer_two);
 	}
 
-	/* Using in_port from the -trk rule. The tc merge checks should already
-	 * be checking that the ingress netdevs are the same
-	 */
+	 
 	port_id = nfp_flower_get_port_id_from_netdev(priv->app, netdev);
 	offset = key_map[FLOW_PAY_INPORT];
 	key = kdata + offset;
@@ -901,15 +824,7 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
 	if (err)
 		goto ct_offload_err;
 
-	/* This following part works on the assumption that previous checks has
-	 * already filtered out flows that has different values for the different
-	 * layers. Here we iterate through all three rules and merge their respective
-	 * masked value(cared bits), basic method is:
-	 * final_key = (r1_key & r1_mask) | (r2_key & r2_mask) | (r3_key & r3_mask)
-	 * final_mask = r1_mask | r2_mask | r3_mask
-	 * If none of the rules contains a match that is also fine, that simply means
-	 * that the layer is not present.
-	 */
+	 
 	if (!qinq_sup) {
 		for (i = 0; i < num_rules; i++) {
 			offset = key_map[FLOW_PAY_META_TCI];
@@ -1013,9 +928,7 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
 			}
 			dst = ((struct nfp_flower_ipv4_gre_tun *)key)->ipv4.dst;
 
-			/* Store the tunnel destination in the rule data.
-			 * This must be present and be an exact match.
-			 */
+			 
 			flow_pay->nfp_tun_ipv4_addr = dst;
 			nfp_tunnel_add_ipv4_off(priv->app, dst);
 		}
@@ -1054,9 +967,7 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
 			}
 			dst = ((struct nfp_flower_ipv4_udp_tun *)key)->ipv4.dst;
 
-			/* Store the tunnel destination in the rule data.
-			 * This must be present and be an exact match.
-			 */
+			 
 			flow_pay->nfp_tun_ipv4_addr = dst;
 			nfp_tunnel_add_ipv4_off(priv->app, dst);
 		}
@@ -1070,16 +981,12 @@ static int nfp_fl_ct_add_offload(struct nfp_fl_nft_tc_merge *m_entry)
 		}
 	}
 
-	/* Merge actions into flow_pay */
+	 
 	err = nfp_fl_merge_actions_offload(rules, priv, netdev, flow_pay, num_rules);
 	if (err)
 		goto ct_offload_err;
 
-	/* Use the pointer address as the cookie, but set the last bit to 1.
-	 * This is to avoid the 'is_merge_flow' check from detecting this as
-	 * an already merged flow. This works since address alignment means
-	 * that the last bit for pointer addresses will be 0.
-	 */
+	 
 	flow_pay->tc_flower_cookie = ((unsigned long)flow_pay) | 0x1;
 	err = nfp_compile_flow_metadata(priv->app, flow_pay->tc_flower_cookie,
 					flow_pay, netdev, NULL);
@@ -1188,12 +1095,7 @@ static int nfp_ct_do_nft_merge(struct nfp_fl_ct_zone_entry *zt,
 	if (err)
 		return err;
 
-	/* Check that the two tc flows are also compatible with
-	 * the nft entry. No need to check the pre_ct and post_ct
-	 * entries as that was already done during pre_merge.
-	 * The nft entry does not have a chain populated, so
-	 * skip this check.
-	 */
+	 
 	err = nfp_ct_merge_check(pre_ct_entry, nft_entry);
 	if (err)
 		return err;
@@ -1210,7 +1112,7 @@ static int nfp_ct_do_nft_merge(struct nfp_fl_ct_zone_entry *zt,
 			return err;
 	}
 
-	/* Combine tc_merge and nft cookies for this cookie. */
+	 
 	new_cookie[0] = tc_m_entry->cookie[0];
 	new_cookie[1] = tc_m_entry->cookie[1];
 	new_cookie[2] = nft_entry->cookie;
@@ -1222,7 +1124,7 @@ static int nfp_ct_do_nft_merge(struct nfp_fl_ct_zone_entry *zt,
 	if (IS_ERR(nft_m_entry))
 		return PTR_ERR(nft_m_entry);
 
-	/* nft_m_entry already present, not merging again */
+	 
 	if (!memcmp(&new_cookie, nft_m_entry->cookie, sizeof(new_cookie)))
 		return 0;
 
@@ -1231,12 +1133,10 @@ static int nfp_ct_do_nft_merge(struct nfp_fl_ct_zone_entry *zt,
 	nft_m_entry->tc_m_parent = tc_m_entry;
 	nft_m_entry->nft_parent = nft_entry;
 	nft_m_entry->tc_flower_cookie = 0;
-	/* Copy the netdev from the pre_ct entry. When the tc_m_entry was created
-	 * it only combined them if the netdevs were the same, so can use any of them.
-	 */
+	 
 	nft_m_entry->netdev = pre_ct_entry->netdev;
 
-	/* Add this entry to the tc_m_list and nft_flow lists */
+	 
 	list_add(&nft_m_entry->tc_merge_list, &tc_m_entry->children);
 	list_add(&nft_m_entry->nft_flow_list, &nft_entry->children);
 
@@ -1250,7 +1150,7 @@ static int nfp_ct_do_nft_merge(struct nfp_fl_ct_zone_entry *zt,
 	if (post_ct_entry->goto_chain_index > 0)
 		return nfp_fl_create_new_pre_ct(nft_m_entry);
 
-	/* Generate offload structure and send to nfp */
+	 
 	err = nfp_fl_ct_add_offload(nft_m_entry);
 	if (err)
 		goto err_nft_ct_offload;
@@ -1285,9 +1185,7 @@ static int nfp_ct_do_tc_merge(struct nfp_fl_ct_zone_entry *zt,
 		pre_ct_entry = ct_entry2;
 	}
 
-	/* Checks that the chain_index of the filter matches the
-	 * chain_index of the GOTO action.
-	 */
+	 
 	if (post_ct_entry->chain_index != pre_ct_entry->goto_chain_index)
 		return -EINVAL;
 
@@ -1302,7 +1200,7 @@ static int nfp_ct_do_tc_merge(struct nfp_fl_ct_zone_entry *zt,
 	if (IS_ERR(m_entry))
 		return PTR_ERR(m_entry);
 
-	/* m_entry already present, not merging again */
+	 
 	if (!memcmp(&new_cookie, m_entry->cookie, sizeof(new_cookie)))
 		return 0;
 
@@ -1311,7 +1209,7 @@ static int nfp_ct_do_tc_merge(struct nfp_fl_ct_zone_entry *zt,
 	m_entry->post_ct_parent = post_ct_entry;
 	m_entry->pre_ct_parent = pre_ct_entry;
 
-	/* Add this entry to the pre_ct and post_ct lists */
+	 
 	list_add(&m_entry->post_ct_list, &post_ct_entry->children);
 	list_add(&m_entry->pre_ct_list, &pre_ct_entry->children);
 	INIT_LIST_HEAD(&m_entry->children);
@@ -1322,7 +1220,7 @@ static int nfp_ct_do_tc_merge(struct nfp_fl_ct_zone_entry *zt,
 		goto err_ct_tc_merge_insert;
 	zt->tc_merge_count++;
 
-	/* Merge with existing nft flows */
+	 
 	list_for_each_entry_safe(nft_entry, nft_tmp, &zt->nft_flows_list,
 				 list_node) {
 		nfp_ct_do_nft_merge(zt, nft_entry, m_entry);
@@ -1351,7 +1249,7 @@ nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
 		zt = get_hashentry(&priv->ct_zone_table, &zone,
 				   nfp_zone_table_params, sizeof(*zt));
 
-		/* If priv is set this is an existing entry, just return it */
+		 
 		if (IS_ERR(zt) || zt->priv)
 			return zt;
 	} else {
@@ -1364,7 +1262,7 @@ nfp_fl_ct_zone_entry *get_nfp_zone_entry(struct nfp_flower_priv *priv,
 	zt->priv = priv;
 	zt->nft = NULL;
 
-	/* init the various hash tables and lists */
+	 
 	INIT_LIST_HEAD(&zt->pre_ct_list);
 	INIT_LIST_HEAD(&zt->post_ct_list);
 	INIT_LIST_HEAD(&zt->nft_flows_list);
@@ -1477,9 +1375,7 @@ nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
 		goto err_pre_ct_rule;
 	}
 
-	/* nft flows gets destroyed after callback return, so need
-	 * to do a full copy instead of just a reference.
-	 */
+	 
 	if (is_nft) {
 		nft_match = kzalloc(sizeof(*nft_match), GFP_KERNEL);
 		if (!nft_match) {
@@ -1510,27 +1406,19 @@ nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
 	entry->chain_index = flow->common.chain_index;
 	entry->tun_offset = NFP_FL_CT_NO_TUN;
 
-	/* Copy over action data. Unfortunately we do not get a handle to the
-	 * original tcf_action data, and the flow objects gets destroyed, so we
-	 * cannot just save a pointer to this either, so need to copy over the
-	 * data unfortunately.
-	 */
+	 
 	entry->rule->action.num_entries = flow->rule->action.num_entries;
 	flow_action_for_each(i, act, &flow->rule->action) {
 		struct flow_action_entry *new_act;
 
 		new_act = &entry->rule->action.entries[i];
 		memcpy(new_act, act, sizeof(struct flow_action_entry));
-		/* nft entry mangle field is host byte order, need translate to
-		 * network byte order.
-		 */
+		 
 		if (is_nft)
 			nfp_nft_ct_translate_mangle_action(new_act);
 
 		nfp_nft_ct_set_flow_flag(new_act, entry);
-		/* Entunnel is a special case, need to allocate and copy
-		 * tunnel info.
-		 */
+		 
 		if (act->id == FLOW_ACTION_TUNNEL_ENCAP) {
 			struct ip_tunnel_info *tun = act->tunnel;
 			size_t tun_size = sizeof(*tun) + tun->options_len;
@@ -1549,7 +1437,7 @@ nfp_fl_ct_flow_entry *nfp_fl_ct_add_flow(struct nfp_fl_ct_zone_entry *zt,
 	if (flow->cookie == 0)
 		return entry;
 
-	/* Now add a ct map entry to flower-priv */
+	 
 	map = get_hashentry(&zt->priv->ct_map_table, &flow->cookie,
 			    nfp_ct_map_params, sizeof(*map));
 	if (IS_ERR(map)) {
@@ -1592,7 +1480,7 @@ static void cleanup_nft_merge_entry(struct nfp_fl_nft_tc_merge *m_entry)
 
 	zt = m_entry->zt;
 
-	/* Flow is in HW, need to delete */
+	 
 	if (m_entry->tc_flower_cookie) {
 		err = nfp_fl_ct_del_offload(zt->priv->app, m_entry->tc_flower_cookie,
 					    m_entry->netdev);
@@ -1622,13 +1510,10 @@ static void nfp_free_nft_merge_children(void *entry, bool is_nft_flow)
 {
 	struct nfp_fl_nft_tc_merge *m_entry, *tmp;
 
-	/* These post entries are parts of two lists, one is a list of nft_entries
-	 * and the other is of from a list of tc_merge structures. Iterate
-	 * through the relevant list and cleanup the entries.
-	 */
+	 
 
 	if (is_nft_flow) {
-		/* Need to iterate through list of nft_flow entries */
+		 
 		struct nfp_fl_ct_flow_entry *ct_entry = entry;
 
 		list_for_each_entry_safe(m_entry, tmp, &ct_entry->children,
@@ -1636,7 +1521,7 @@ static void nfp_free_nft_merge_children(void *entry, bool is_nft_flow)
 			cleanup_nft_merge_entry(m_entry);
 		}
 	} else {
-		/* Need to iterate through list of tc_merged_flow entries */
+		 
 		struct nfp_fl_ct_tc_merge *ct_entry = entry;
 
 		list_for_each_entry_safe(m_entry, tmp, &ct_entry->children,
@@ -1717,9 +1602,7 @@ static struct flow_action_entry *get_flow_act_ct(struct flow_rule *rule)
 	struct flow_action_entry *act;
 	int i;
 
-	/* More than one ct action may be present in a flow rule,
-	 * Return the first one that is not a CT clear action
-	 */
+	 
 	flow_action_for_each(i, act, &rule->action) {
 		if (act->id == FLOW_ACTION_CT && act->ct.action != TCA_CT_ACT_CLEAR)
 			return act;
@@ -1824,7 +1707,7 @@ int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
 		}
 	}
 
-	/* Add entry to pre_ct_list */
+	 
 	ct_entry = nfp_fl_ct_add_flow(zt, netdev, flow, false, extack);
 	if (IS_ERR(ct_entry))
 		return PTR_ERR(ct_entry);
@@ -1850,7 +1733,7 @@ int nfp_fl_ct_handle_pre_ct(struct nfp_flower_priv *priv,
 
 	nfp_ct_merge_tc_entries(ct_entry, zt, zt);
 
-	/* Need to check and merge with tables in the wc_zone as well */
+	 
 	if (priv->ct_zone_wc)
 		nfp_ct_merge_tc_entries(ct_entry, priv->ct_zone_wc, zt);
 
@@ -1885,7 +1768,7 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
 		return PTR_ERR(zt);
 	}
 
-	/* Add entry to post_ct_list */
+	 
 	ct_entry = nfp_fl_ct_add_flow(zt, netdev, flow, false, extack);
 	if (IS_ERR(ct_entry))
 		return PTR_ERR(ct_entry);
@@ -1898,9 +1781,7 @@ int nfp_fl_ct_handle_post_ct(struct nfp_flower_priv *priv,
 	zt->post_ct_count++;
 
 	if (wildcarded) {
-		/* Iterate through all zone tables if not empty, look for merges with
-		 * pre_ct entries and merge them.
-		 */
+		 
 		struct rhashtable_iter iter;
 		struct nfp_fl_ct_zone_entry *zone_table;
 
@@ -1962,27 +1843,25 @@ nfp_fl_ct_sub_stats(struct nfp_fl_nft_tc_merge *nft_merge,
 	*m_bytes += priv->stats[ctx_id].bytes;
 	*m_used = max_t(u64, *m_used, priv->stats[ctx_id].used);
 
-	/* If request is for a sub_flow which is part of a tunnel merged
-	 * flow then update stats from tunnel merged flows first.
-	 */
+	 
 	if (!list_empty(&nfp_flow->linked_flows))
 		nfp_flower_update_merge_stats(priv->app, nfp_flow);
 
 	if (type != CT_TYPE_NFT) {
-		/* Update nft cached stats */
+		 
 		flow_stats_update(&nft_merge->nft_parent->stats,
 				  priv->stats[ctx_id].bytes,
 				  priv->stats[ctx_id].pkts,
 				  0, priv->stats[ctx_id].used,
 				  FLOW_ACTION_HW_STATS_DELAYED);
 	} else {
-		/* Update pre_ct cached stats */
+		 
 		flow_stats_update(&nft_merge->tc_m_parent->pre_ct_parent->stats,
 				  priv->stats[ctx_id].bytes,
 				  priv->stats[ctx_id].pkts,
 				  0, priv->stats[ctx_id].used,
 				  FLOW_ACTION_HW_STATS_DELAYED);
-		/* Update post_ct cached stats */
+		 
 		flow_stats_update(&nft_merge->tc_m_parent->post_ct_parent->stats,
 				  priv->stats[ctx_id].bytes,
 				  priv->stats[ctx_id].pkts,
@@ -1990,7 +1869,7 @@ nfp_fl_ct_sub_stats(struct nfp_fl_nft_tc_merge *nft_merge,
 				  FLOW_ACTION_HW_STATS_DELAYED);
 	}
 
-	/* Update previous pre_ct/post_ct/nft flow stats */
+	 
 	if (nft_merge->tc_m_parent->pre_ct_parent->num_prev_m_entries > 0) {
 		struct nfp_fl_nft_tc_merge *tmp_nft_merge;
 		int i;
@@ -2015,7 +1894,7 @@ nfp_fl_ct_sub_stats(struct nfp_fl_nft_tc_merge *nft_merge,
 		}
 	}
 
-	/* Reset stats from the nfp */
+	 
 	priv->stats[ctx_id].pkts = 0;
 	priv->stats[ctx_id].bytes = 0;
 }
@@ -2033,13 +1912,13 @@ int nfp_fl_ct_stats(struct flow_cls_offload *flow,
 	spin_lock_bh(&ct_entry->zt->priv->stats_lock);
 
 	if (ct_entry->type == CT_TYPE_PRE_CT) {
-		/* Iterate tc_merge entries associated with this flow */
+		 
 		list_for_each_entry_safe(tc_merge, tc_m_tmp, &ct_entry->children,
 					 pre_ct_list) {
 			m_pkts = 0;
 			m_bytes = 0;
 			m_used = 0;
-			/* Iterate nft_merge entries associated with this tc_merge flow */
+			 
 			list_for_each_entry_safe(nft_merge, nft_m_tmp, &tc_merge->children,
 						 tc_merge_list) {
 				nfp_fl_ct_sub_stats(nft_merge, CT_TYPE_PRE_CT,
@@ -2048,19 +1927,19 @@ int nfp_fl_ct_stats(struct flow_cls_offload *flow,
 			pkts += m_pkts;
 			bytes += m_bytes;
 			used = max_t(u64, used, m_used);
-			/* Update post_ct partner */
+			 
 			flow_stats_update(&tc_merge->post_ct_parent->stats,
 					  m_bytes, m_pkts, 0, m_used,
 					  FLOW_ACTION_HW_STATS_DELAYED);
 		}
 	} else if (ct_entry->type == CT_TYPE_POST_CT) {
-		/* Iterate tc_merge entries associated with this flow */
+		 
 		list_for_each_entry_safe(tc_merge, tc_m_tmp, &ct_entry->children,
 					 post_ct_list) {
 			m_pkts = 0;
 			m_bytes = 0;
 			m_used = 0;
-			/* Iterate nft_merge entries associated with this tc_merge flow */
+			 
 			list_for_each_entry_safe(nft_merge, nft_m_tmp, &tc_merge->children,
 						 tc_merge_list) {
 				nfp_fl_ct_sub_stats(nft_merge, CT_TYPE_POST_CT,
@@ -2069,13 +1948,13 @@ int nfp_fl_ct_stats(struct flow_cls_offload *flow,
 			pkts += m_pkts;
 			bytes += m_bytes;
 			used = max_t(u64, used, m_used);
-			/* Update pre_ct partner */
+			 
 			flow_stats_update(&tc_merge->pre_ct_parent->stats,
 					  m_bytes, m_pkts, 0, m_used,
 					  FLOW_ACTION_HW_STATS_DELAYED);
 		}
 	} else  {
-		/* Iterate nft_merge entries associated with this nft flow */
+		 
 		list_for_each_entry_safe(nft_merge, nft_m_tmp, &ct_entry->children,
 					 nft_flow_list) {
 			nfp_fl_ct_sub_stats(nft_merge, CT_TYPE_NFT,
@@ -2083,19 +1962,15 @@ int nfp_fl_ct_stats(struct flow_cls_offload *flow,
 		}
 	}
 
-	/* Add stats from this request to stats potentially cached by
-	 * previous requests.
-	 */
+	 
 	flow_stats_update(&ct_entry->stats, bytes, pkts, 0, used,
 			  FLOW_ACTION_HW_STATS_DELAYED);
-	/* Finally update the flow stats from the original stats request */
+	 
 	flow_stats_update(&flow->stats, ct_entry->stats.bytes,
 			  ct_entry->stats.pkts, 0,
 			  ct_entry->stats.lastused,
 			  FLOW_ACTION_HW_STATS_DELAYED);
-	/* Stats has been synced to original flow, can now clear
-	 * the cache.
-	 */
+	 
 	ct_entry->stats.pkts = 0;
 	ct_entry->stats.bytes = 0;
 	spin_unlock_bh(&ct_entry->zt->priv->stats_lock);
@@ -2137,9 +2012,7 @@ nfp_fl_ct_offload_nft_flow(struct nfp_fl_ct_zone_entry *zt, struct flow_cls_offl
 		if (!nfp_fl_ct_offload_nft_supported(flow))
 			return -EOPNOTSUPP;
 
-		/* Netfilter can request offload multiple times for the same
-		 * flow - protect against adding duplicates.
-		 */
+		 
 		ct_map_ent = rhashtable_lookup_fast(&zt->priv->ct_map_table, &flow->cookie,
 						    nfp_ct_map_params);
 		if (!ct_map_ent) {
@@ -2177,7 +2050,7 @@ int nfp_fl_ct_handle_nft_flow(enum tc_setup_type type, void *type_data, void *cb
 	switch (type) {
 	case TC_SETUP_CLSFLOWER:
 		while (!mutex_trylock(&zt->priv->nfp_fl_lock)) {
-			if (!zt->nft) /* avoid deadlock */
+			if (!zt->nft)  
 				return err;
 			msleep(20);
 		}
@@ -2231,7 +2104,7 @@ int nfp_fl_ct_del_flow(struct nfp_fl_ct_map_entry *ct_map_ent)
 
 		if (!zt->pre_ct_count && zt->nft) {
 			nft = zt->nft;
-			zt->nft = NULL; /* avoid deadlock */
+			zt->nft = NULL;  
 			nf_flow_table_offload_del_cb(nft,
 						     nfp_fl_ct_handle_nft_flow,
 						     zt);

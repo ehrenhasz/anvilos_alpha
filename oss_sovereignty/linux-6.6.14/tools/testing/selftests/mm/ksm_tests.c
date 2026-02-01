@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <sys/mman.h>
 #include <sys/prctl.h>
@@ -258,7 +258,7 @@ static int ksm_merge_pages(int merge_type, void *addr, size_t size,
 	if (ksm_write_sysfs(KSM_FP("run"), 1))
 		return 1;
 
-	/* Since merging occurs only after 2 scans, make sure to get at least 2 full scans */
+	 
 	if (ksm_do_scan(2, start_time, timeout))
 		return 1;
 
@@ -289,16 +289,7 @@ static bool assert_ksm_pages_count(long dupl_page_count)
 		ksm_print_procfs();
 	}
 
-	/*
-	 * Since there must be at least 2 pages for merging and 1 page can be
-	 * shared with the limited number of pages (max_page_sharing), sometimes
-	 * there are 'leftover' pages that cannot be merged. For example, if there
-	 * are 11 pages and max_page_sharing = 10, then only 10 pages will be
-	 * merged and the 11th page won't be affected. As a result, when the number
-	 * of duplicate pages is divided by max_page_sharing and the remainder is 1,
-	 * pages_shared and pages_sharing values will be equal between dupl_page_count
-	 * and dupl_page_count - 1.
-	 */
+	 
 	if (dupl_page_count % max_page_sharing == 1 || dupl_page_count % max_page_sharing == 0) {
 		if (pages_shared == dupl_page_count / max_page_sharing &&
 		    pages_sharing == pages_shared * (max_page_sharing - 1))
@@ -355,7 +346,7 @@ static int check_ksm_merge(int merge_type, int mapping, int prot,
 		return KSFT_FAIL;
 	}
 
-	/* fill pages with the same data and merge them */
+	 
 	map_ptr = allocate_memory(NULL, prot, mapping, '*', page_size * page_count);
 	if (!map_ptr)
 		return KSFT_FAIL;
@@ -363,7 +354,7 @@ static int check_ksm_merge(int merge_type, int mapping, int prot,
 	if (ksm_merge_pages(merge_type, map_ptr, page_size * page_count, start_time, timeout))
 		goto err_out;
 
-	/* verify that the right number of pages are merged */
+	 
 	if (assert_ksm_pages_count(page_count)) {
 		printf("OK\n");
 		munmap(map_ptr, page_size * page_count);
@@ -389,7 +380,7 @@ static int check_ksm_unmerge(int merge_type, int mapping, int prot, int timeout,
 		return KSFT_FAIL;
 	}
 
-	/* fill pages with the same data and merge them */
+	 
 	map_ptr = allocate_memory(NULL, prot, mapping, '*', page_size * page_count);
 	if (!map_ptr)
 		return KSFT_FAIL;
@@ -397,15 +388,15 @@ static int check_ksm_unmerge(int merge_type, int mapping, int prot, int timeout,
 	if (ksm_merge_pages(merge_type, map_ptr, page_size * page_count, start_time, timeout))
 		goto err_out;
 
-	/* change 1 byte in each of the 2 pages -- KSM must automatically unmerge them */
+	 
 	memset(map_ptr, '-', 1);
 	memset(map_ptr + page_size, '+', 1);
 
-	/* get at least 1 scan, so KSM can detect that the pages were modified */
+	 
 	if (ksm_do_scan(1, start_time, timeout))
 		goto err_out;
 
-	/* check that unmerging was successful and 0 pages are currently merged */
+	 
 	if (assert_ksm_pages_count(0)) {
 		printf("OK\n");
 		munmap(map_ptr, page_size * page_count);
@@ -432,7 +423,7 @@ static int check_ksm_zero_page_merge(int merge_type, int mapping, int prot, long
 	if (ksm_write_sysfs(KSM_FP("use_zero_pages"), use_zero_pages))
 		return KSFT_FAIL;
 
-	/* fill pages with zero and try to merge them */
+	 
 	map_ptr = allocate_memory(NULL, prot, mapping, 0, page_size * page_count);
 	if (!map_ptr)
 		return KSFT_FAIL;
@@ -440,13 +431,7 @@ static int check_ksm_zero_page_merge(int merge_type, int mapping, int prot, long
 	if (ksm_merge_pages(merge_type, map_ptr, page_size * page_count, start_time, timeout))
 		goto err_out;
 
-       /*
-	* verify that the right number of pages are merged:
-	* 1) if use_zero_pages is set to 1, empty pages are merged
-	*    with the kernel zero page instead of with each other;
-	* 2) if use_zero_pages is set to 0, empty pages are not treated specially
-	*    and merged as usual.
-	*/
+        
 	if (use_zero_pages && !assert_ksm_pages_count(0))
 		goto err_out;
 	else if (!use_zero_pages && !assert_ksm_pages_count(page_count))
@@ -507,7 +492,7 @@ static int check_ksm_numa_merge(int merge_type, int mapping, int prot, int timeo
 	if (ksm_write_sysfs(KSM_FP("merge_across_nodes"), merge_across_nodes))
 		return KSFT_FAIL;
 
-	/* allocate 2 pages in 2 different NUMA nodes and fill them with the same data */
+	 
 	first_node = get_first_mem_node();
 	numa1_map_ptr = numa_alloc_onnode(page_size, first_node);
 	numa2_map_ptr = numa_alloc_onnode(page_size, get_next_mem_node(first_node));
@@ -519,17 +504,12 @@ static int check_ksm_numa_merge(int merge_type, int mapping, int prot, int timeo
 	memset(numa1_map_ptr, '*', page_size);
 	memset(numa2_map_ptr, '*', page_size);
 
-	/* try to merge the pages */
+	 
 	if (ksm_merge_pages(merge_type, numa1_map_ptr, page_size, start_time, timeout) ||
 	    ksm_merge_pages(merge_type, numa2_map_ptr, page_size, start_time, timeout))
 		goto err_out;
 
-       /*
-	* verify that the right number of pages are merged:
-	* 1) if merge_across_nodes was enabled, 2 duplicate pages will be merged;
-	* 2) if merge_across_nodes = 0, there must be 0 merged pages, since there is
-	*    only 1 unique page in each node and they can't be shared.
-	*/
+        
 	if (merge_across_nodes && !assert_ksm_pages_count(page_count))
 		goto err_out;
 	else if (!merge_across_nodes && !assert_ksm_pages_count(0))
@@ -709,7 +689,7 @@ static int ksm_cow_time(int merge_type, int mapping, int prot, int timeout, size
 	struct timespec start_time, end_time;
 	unsigned long cow_time_ns;
 
-	/* page_count must be less than 2*page_size */
+	 
 	size_t page_count = 4000;
 
 	map_ptr = allocate_memory(NULL, prot, mapping, '*', page_size * page_count);
@@ -737,7 +717,7 @@ static int ksm_cow_time(int merge_type, int mapping, int prot, int timeout, size
 	printf("Average speed:  %.3f MiB/s\n\n", ((page_size * (page_count / 2)) / MB) /
 					       ((double)cow_time_ns / NSEC_PER_SEC));
 
-	/* Create 2000 pairs of duplicate pages */
+	 
 	for (size_t i = 0; i < page_count - 1; i = i + 2) {
 		memset(map_ptr + page_size * i, '+', i / 2 + 1);
 		memset(map_ptr + page_size * (i + 1), '+', i / 2 + 1);

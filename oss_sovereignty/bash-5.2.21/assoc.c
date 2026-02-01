@@ -1,29 +1,6 @@
-/*
- * assoc.c - functions to manipulate associative arrays
- *
- * Associative arrays are standard shell hash tables.
- *
- * Chet Ramey
- * chet@ins.cwru.edu
- */
+ 
 
-/* Copyright (C) 2008,2009,2011-2021 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -46,7 +23,7 @@
 
 static WORD_LIST *assoc_to_word_list_internal PARAMS((HASH_TABLE *, int));
 
-/* assoc_create == hash_create */
+ 
 
 void
 assoc_dispose (hash)
@@ -77,9 +54,7 @@ assoc_insert (hash, key, value)
   b = hash_search (key, hash, HASH_CREATE);
   if (b == 0)
     return -1;
-  /* If we are overwriting an existing element's value, we're not going to
-     use the key.  Nothing in the array assignment code path frees the key
-     string, so we can free it here to avoid a memory leak. */
+   
   if (b->key != key)
     free (key);
   FREE (b->data);
@@ -87,7 +62,7 @@ assoc_insert (hash, key, value)
   return (0);
 }
 
-/* Like assoc_insert, but returns b->data instead of freeing it */
+ 
 PTR_T
 assoc_replace (hash, key, value)
      HASH_TABLE *hash;
@@ -100,9 +75,7 @@ assoc_replace (hash, key, value)
   b = hash_search (key, hash, HASH_CREATE);
   if (b == 0)
     return (PTR_T)0;
-  /* If we are overwriting an existing element's value, we're not going to
-     use the key.  Nothing in the array assignment code path frees the key
-     string, so we can free it here to avoid a memory leak. */
+   
   if (b->key != key)
     free (key);
   t = b->data;
@@ -140,8 +113,7 @@ assoc_reference (hash, string)
   return (b ? (char *)b->data : 0);
 }
 
-/* Quote the data associated with each element of the hash table ASSOC,
-   using quote_string */
+ 
 HASH_TABLE *
 assoc_quote (h)
      HASH_TABLE *h;
@@ -164,8 +136,7 @@ assoc_quote (h)
   return h;
 }
 
-/* Quote escape characters in the data associated with each element
-   of the hash table ASSOC, using quote_escapes */
+ 
 HASH_TABLE *
 assoc_quote_escapes (h)
      HASH_TABLE *h;
@@ -253,10 +224,7 @@ assoc_remove_quoted_nulls (h)
   return h;
 }
 
-/*
- * Return a string whose elements are the members of array H beginning at
- * the STARTth element and spanning NELEM members.  Null elements are counted.
- */
+ 
 char *
 assoc_subrange (hash, start, nelem, starsub, quoted, pflags)
      HASH_TABLE *hash;
@@ -586,9 +554,7 @@ assoc_to_string (h, sep, quoted)
 
   result = NULL;
   l = list = NULL;
-  /* This might be better implemented directly, but it's simple to implement
-     by converting to a word list first, possibly quoting the data, then
-     using list_string */
+   
   for (i = 0; i < h->nbuckets; i++)
     for (tlist = hash_items (i, h); tlist; tlist = tlist->next)
       {
@@ -608,4 +574,4 @@ assoc_to_string (h, sep, quoted)
   return result;
 }
 
-#endif /* ARRAY_VARS */
+#endif  

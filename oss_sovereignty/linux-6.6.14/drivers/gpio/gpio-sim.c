@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * GPIO testing driver based on configfs.
- *
- * Copyright (C) 2021 Bartosz Golaszewski <brgl@bgdev.pl>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,8 +30,8 @@
 #include "gpiolib.h"
 
 #define GPIO_SIM_NGPIO_MAX	1024
-#define GPIO_SIM_PROP_MAX	4 /* Max 3 properties + sentinel. */
-#define GPIO_SIM_NUM_ATTRS	3 /* value, pull and sentinel */
+#define GPIO_SIM_PROP_MAX	4  
+#define GPIO_SIM_NUM_ATTRS	3  
 
 static DEFINE_IDA(gpio_sim_ida);
 
@@ -77,12 +73,7 @@ static int gpio_sim_apply_pull(struct gpio_sim_chip *chip,
 		if (value == !!test_bit(offset, chip->value_map))
 			goto set_pull;
 
-		/*
-		 * This is fine - it just means, nobody is listening
-		 * for interrupts on this line, otherwise
-		 * irq_create_mapping() would have been called from
-		 * the to_irq() callback.
-		 */
+		 
 		irq = irq_find_mapping(chip->irq_sim, offset);
 		if (!irq)
 			goto set_value;
@@ -99,7 +90,7 @@ static int gpio_sim_apply_pull(struct gpio_sim_chip *chip,
 	}
 
 set_value:
-	/* Change the value unless we're actively driving the line. */
+	 
 	if (!test_bit(FLAG_REQUESTED, &desc->flags) ||
 	    !test_bit(FLAG_IS_OUT, &desc->flags))
 		__assign_bit(offset, chip->value_map, value);
@@ -231,10 +222,7 @@ static ssize_t gpio_sim_sysfs_val_store(struct device *dev,
 					struct device_attribute *attr,
 					const char *buf, size_t count)
 {
-	/*
-	 * Not assigning this function will result in write() returning -EIO
-	 * which is confusing. Return -EPERM explicitly.
-	 */
+	 
 	return -EPERM;
 }
 
@@ -392,7 +380,7 @@ static int gpio_sim_add_bank(struct fwnode_handle *swnode, struct device *dev)
 	if (!chip->direction_map)
 		return -ENOMEM;
 
-	/* Default to input mode. */
+	 
 	bitmap_fill(chip->direction_map, num_lines);
 
 	chip->value_map = devm_bitmap_zalloc(dev, num_lines, GFP_KERNEL);
@@ -440,7 +428,7 @@ static int gpio_sim_add_bank(struct fwnode_handle *swnode, struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Used by sysfs and configfs callbacks. */
+	 
 	dev_set_drvdata(&gc->gpiodev->dev, chip);
 
 	return gpio_sim_setup_sysfs(chip);
@@ -480,29 +468,14 @@ static struct platform_driver gpio_sim_driver = {
 struct gpio_sim_device {
 	struct config_group group;
 
-	/*
-	 * If pdev is NULL, the device is 'pending' (waiting for configuration).
-	 * Once the pointer is assigned, the device has been created and the
-	 * item is 'live'.
-	 */
+	 
 	struct platform_device *pdev;
 	int id;
 
-	/*
-	 * Each configfs filesystem operation is protected with the subsystem
-	 * mutex. Each separate attribute is protected with the buffer mutex.
-	 * This structure however can be modified by callbacks of different
-	 * attributes so we need another lock.
-	 *
-	 * We use this lock for protecting all data structures owned by this
-	 * object too.
-	 */
+	 
 	struct mutex lock;
 
-	/*
-	 * This is used to synchronously wait for the driver's probe to complete
-	 * and notify the user-space about any errors.
-	 */
+	 
 	struct notifier_block bus_notifier;
 	struct completion probe_completion;
 	bool driver_bound;
@@ -512,7 +485,7 @@ struct gpio_sim_device {
 	struct list_head bank_list;
 };
 
-/* This is called with dev->lock already taken. */
+ 
 static int gpio_sim_bus_notifier_call(struct notifier_block *nb,
 				      unsigned long action, void *data)
 {
@@ -549,19 +522,7 @@ static struct gpio_sim_device *to_gpio_sim_device(struct config_item *item)
 struct gpio_sim_bank {
 	struct config_group group;
 
-	/*
-	 * We could have used the ci_parent field of the config_item but
-	 * configfs is stupid and calls the item's release callback after
-	 * already having cleared the parent pointer even though the parent
-	 * is guaranteed to survive the child...
-	 *
-	 * So we need to store the pointer to the parent struct here. We can
-	 * dereference it anywhere we need with no checks and no locking as
-	 * it's guaranteed to survive the children and protected by configfs
-	 * locks.
-	 *
-	 * Same for other structures.
-	 */
+	 
 	struct gpio_sim_device *parent;
 	struct list_head siblings;
 
@@ -602,7 +563,7 @@ struct gpio_sim_line {
 	unsigned int offset;
 	char *name;
 
-	/* There can only be one hog per line. */
+	 
 	struct gpio_sim_hog *hog;
 };
 
@@ -752,7 +713,7 @@ static int gpio_sim_add_hogs(struct gpio_sim_device *dev)
 	if (!num_hogs)
 		return 0;
 
-	/* Allocate one more for the sentinel. */
+	 
 	dev->hogs = kcalloc(num_hogs + 1, sizeof(*dev->hogs), GFP_KERNEL);
 	if (!dev->hogs)
 		return -ENOMEM;
@@ -767,11 +728,7 @@ static int gpio_sim_add_hogs(struct gpio_sim_device *dev)
 
 			hog = &dev->hogs[idx++];
 
-			/*
-			 * We need to make this string manually because at this
-			 * point the device doesn't exist yet and so dev_name()
-			 * is not available.
-			 */
+			 
 			if (gpio_sim_bank_has_label(bank))
 				hog->chip_label = kstrdup(bank->label,
 							  GFP_KERNEL);
@@ -785,12 +742,7 @@ static int gpio_sim_add_hogs(struct gpio_sim_device *dev)
 				return -ENOMEM;
 			}
 
-			/*
-			 * We need to duplicate this because the hog config
-			 * item can be removed at any time (and we can't block
-			 * it) and gpiolib doesn't make a deep copy of the hog
-			 * data.
-			 */
+			 
 			if (line->hog->name) {
 				hog->line_name = kstrdup(line->hog->name,
 							 GFP_KERNEL);
@@ -881,11 +833,7 @@ static int gpio_sim_device_activate_unlocked(struct gpio_sim_device *dev)
 	if (list_empty(&dev->bank_list))
 		return -ENODATA;
 
-	/*
-	 * Non-unique GPIO device labels are a corner-case we don't support
-	 * as it would interfere with machine hogging mechanism and has little
-	 * use in real life.
-	 */
+	 
 	if (gpio_sim_bank_labels_non_unique(dev))
 		return -EINVAL;
 
@@ -930,7 +878,7 @@ static int gpio_sim_device_activate_unlocked(struct gpio_sim_device *dev)
 	bus_unregister_notifier(&platform_bus_type, &dev->bus_notifier);
 
 	if (!dev->driver_bound) {
-		/* Probe failed, check kernel log. */
+		 
 		platform_device_unregister(pdev);
 		gpio_sim_remove_hogs(dev);
 		gpio_sim_remove_swnode_recursive(swnode);
@@ -994,7 +942,7 @@ static int gpio_sim_emit_chip_name(struct device *dev, void *data)
 {
 	struct gpio_sim_chip_name_ctx *ctx = data;
 
-	/* This would be the sysfs device exported in /sys/class/gpio. */
+	 
 	if (dev->class)
 		return 0;
 
@@ -1200,7 +1148,7 @@ static ssize_t gpio_sim_hog_config_direction_show(struct config_item *item,
 		repr = "output-low";
 		break;
 	default:
-		/* This would be a programmer bug. */
+		 
 		WARN(1, "Unexpected hog direction value: %d", dir);
 		return -EINVAL;
 	}

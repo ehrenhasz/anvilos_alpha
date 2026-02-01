@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2022 Intel Corporation
- */
+
+ 
 
 #include "mvm.h"
 #include "time-sync.h"
@@ -35,10 +33,7 @@ static struct sk_buff *iwl_mvm_time_sync_find_skb(struct iwl_mvm *mvm, u8 *addr,
 {
 	struct sk_buff *skb;
 
-	/* The queue is expected to have only one SKB. If there are other SKBs
-	 * in the queue, they did not get a time sync notification and are
-	 * probably obsolete by now, so drop them.
-	 */
+	 
 	while ((skb = skb_dequeue(&mvm->time_sync.frame_list))) {
 		if (iwl_mvm_is_skb_match(skb, addr, dialog_token))
 			break;
@@ -136,9 +131,7 @@ int iwl_mvm_time_sync_config(struct iwl_mvm *mvm, const u8 *addr, u32 protocols)
 			 IWL_UCODE_TLV_CAPA_TIME_SYNC_BOTH_FTM_TM))
 		return -EINVAL;
 
-	/* The fw only supports one peer. We do allow reconfiguration of the
-	 * same peer for cases of fw reset etc.
-	 */
+	 
 	if (mvm->time_sync.active &&
 	    !ether_addr_equal(addr, mvm->time_sync.peer_addr)) {
 		IWL_DEBUG_INFO(mvm, "Time sync: reject config for peer: %pM\n",

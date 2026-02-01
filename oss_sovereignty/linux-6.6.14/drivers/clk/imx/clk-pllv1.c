@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -12,15 +12,7 @@
 #define MFN_SIGN	(BIT(MFN_BITS - 1))
 #define MFN_MASK	(MFN_SIGN - 1)
 
-/**
- * struct clk_pllv1 - IMX PLLv1 clock descriptor
- *
- * @hw:		clock source
- * @base:	base address of pll registers
- * @type:	type of IMX_PLLV1
- *
- * PLL clock version 1, found on i.MX1/21/25/27/31/35
- */
+ 
 struct clk_pllv1 {
 	struct clk_hw	hw;
 	void __iomem	*base;
@@ -61,15 +53,7 @@ static unsigned long clk_pllv1_recalc_rate(struct clk_hw *hw,
 
 	reg = readl(pll->base);
 
-	/*
-	 * Get the resulting clock rate from a PLL register value and the input
-	 * frequency. PLLs with this register layout can be found on i.MX1,
-	 * i.MX21, i.MX27 and i,MX31
-	 *
-	 *                  mfi + mfn / (mfd + 1)
-	 *  f = 2 * f_ref * --------------------
-	 *                        pd + 1
-	 */
+	 
 
 	mfi = (reg >> 10) & 0xf;
 	mfn = reg & 0x3ff;
@@ -80,11 +64,7 @@ static unsigned long clk_pllv1_recalc_rate(struct clk_hw *hw,
 
 	mfn_abs = mfn;
 
-	/*
-	 * On all i.MXs except i.MX1 and i.MX21 mfn is a 10bit
-	 * 2's complements number.
-	 * On i.MX27 the bit 9 is the sign bit.
-	 */
+	 
 	if (mfn_is_negative(pll, mfn)) {
 		if (is_imx27_pllv1(pll))
 			mfn_abs = mfn & MFN_MASK;

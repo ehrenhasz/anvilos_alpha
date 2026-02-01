@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lnbp22.h - driver for lnb supply and control ic lnbp22
- *
- * Copyright (C) 2006 Dominik Kuhlen
- * Based on lnbp21 driver
- *
- * the project's page is at https://linuxtv.org
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -45,7 +38,7 @@ static int lnbp22_set_voltage(struct dvb_frontend *fe,
 	dprintk(1, "%s: %d (18V=%d 13V=%d)\n", __func__, voltage,
 	       SEC_VOLTAGE_18, SEC_VOLTAGE_13);
 
-	lnbp22->config[3] = 0x60; /* Power down */
+	lnbp22->config[3] = 0x60;  
 	switch (voltage) {
 	case SEC_VOLTAGE_OFF:
 		break;
@@ -85,10 +78,10 @@ static int lnbp22_enable_high_lnb_voltage(struct dvb_frontend *fe, long arg)
 static void lnbp22_release(struct dvb_frontend *fe)
 {
 	dprintk(1, "%s\n", __func__);
-	/* LNBP power off */
+	 
 	lnbp22_set_voltage(fe, SEC_VOLTAGE_OFF);
 
-	/* free data */
+	 
 	kfree(fe->sec_priv);
 	fe->sec_priv = NULL;
 }
@@ -100,15 +93,15 @@ struct dvb_frontend *lnbp22_attach(struct dvb_frontend *fe,
 	if (!lnbp22)
 		return NULL;
 
-	/* default configuration */
-	lnbp22->config[0] = 0x00; /* ? */
-	lnbp22->config[1] = 0x28; /* ? */
-	lnbp22->config[2] = 0x48; /* ? */
-	lnbp22->config[3] = 0x60; /* Power down */
+	 
+	lnbp22->config[0] = 0x00;  
+	lnbp22->config[1] = 0x28;  
+	lnbp22->config[2] = 0x48;  
+	lnbp22->config[3] = 0x60;  
 	lnbp22->i2c = i2c;
 	fe->sec_priv = lnbp22;
 
-	/* detect if it is present or not */
+	 
 	if (lnbp22_set_voltage(fe, SEC_VOLTAGE_OFF)) {
 		dprintk(0, "%s LNBP22 not found\n", __func__);
 		kfree(lnbp22);
@@ -116,10 +109,10 @@ struct dvb_frontend *lnbp22_attach(struct dvb_frontend *fe,
 		return NULL;
 	}
 
-	/* install release callback */
+	 
 	fe->ops.release_sec = lnbp22_release;
 
-	/* override frontend ops */
+	 
 	fe->ops.set_voltage = lnbp22_set_voltage;
 	fe->ops.enable_high_lnb_voltage = lnbp22_enable_high_lnb_voltage;
 

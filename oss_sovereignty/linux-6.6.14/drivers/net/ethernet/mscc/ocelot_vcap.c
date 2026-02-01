@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Microsemi Ocelot Switch driver
- * Copyright (c) 2019 Microsemi Corporation
- */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/proc_fs.h>
@@ -20,30 +18,30 @@ enum vcap_sel {
 };
 
 enum vcap_cmd {
-	VCAP_CMD_WRITE = 0, /* Copy from Cache to TCAM */
-	VCAP_CMD_READ = 1, /* Copy from TCAM to Cache */
-	VCAP_CMD_MOVE_UP = 2, /* Move <count> up */
-	VCAP_CMD_MOVE_DOWN = 3, /* Move <count> down */
-	VCAP_CMD_INITIALIZE = 4, /* Write all (from cache) */
+	VCAP_CMD_WRITE = 0,  
+	VCAP_CMD_READ = 1,  
+	VCAP_CMD_MOVE_UP = 2,  
+	VCAP_CMD_MOVE_DOWN = 3,  
+	VCAP_CMD_INITIALIZE = 4,  
 };
 
-#define VCAP_ENTRY_WIDTH 12 /* Max entry width (32bit words) */
-#define VCAP_COUNTER_WIDTH 4 /* Max counter width (32bit words) */
+#define VCAP_ENTRY_WIDTH 12  
+#define VCAP_COUNTER_WIDTH 4  
 
 struct vcap_data {
-	u32 entry[VCAP_ENTRY_WIDTH]; /* ENTRY_DAT */
-	u32 mask[VCAP_ENTRY_WIDTH]; /* MASK_DAT */
-	u32 action[VCAP_ENTRY_WIDTH]; /* ACTION_DAT */
-	u32 counter[VCAP_COUNTER_WIDTH]; /* CNT_DAT */
-	u32 tg; /* TG_DAT */
-	u32 type; /* Action type */
-	u32 tg_sw; /* Current type-group */
-	u32 cnt; /* Current counter */
-	u32 key_offset; /* Current entry offset */
-	u32 action_offset; /* Current action offset */
-	u32 counter_offset; /* Current counter offset */
-	u32 tg_value; /* Current type-group value */
-	u32 tg_mask; /* Current type-group mask */
+	u32 entry[VCAP_ENTRY_WIDTH];  
+	u32 mask[VCAP_ENTRY_WIDTH];  
+	u32 action[VCAP_ENTRY_WIDTH];  
+	u32 counter[VCAP_COUNTER_WIDTH];  
+	u32 tg;  
+	u32 type;  
+	u32 tg_sw;  
+	u32 cnt;  
+	u32 key_offset;  
+	u32 action_offset;  
+	u32 counter_offset;  
+	u32 tg_value;  
+	u32 tg_mask;  
 };
 
 static u32 vcap_read_update_ctrl(struct ocelot *ocelot,
@@ -78,7 +76,7 @@ static void vcap_cmd(struct ocelot *ocelot, const struct vcap_props *vcap,
 			  10, 100000, false, ocelot, vcap);
 }
 
-/* Convert from 0-based row to VCAP entry row and run command */
+ 
 static void vcap_row_cmd(struct ocelot *ocelot, const struct vcap_props *vcap,
 			 u32 row, int cmd, int sel)
 {
@@ -113,7 +111,7 @@ static void vcap_cache2entry(struct ocelot *ocelot,
 	for (i = 0; i < entry_words; i++) {
 		data->entry[i] = ocelot_target_read_rix(ocelot, vcap->target,
 							VCAP_CACHE_ENTRY_DAT, i);
-		// Invert mask
+		
 		data->mask[i] = ~ocelot_target_read_rix(ocelot, vcap->target,
 							VCAP_CACHE_MASK_DAT, i);
 	}
@@ -127,7 +125,7 @@ static void vcap_action2cache(struct ocelot *ocelot,
 	u32 action_words, mask;
 	int i, width;
 
-	/* Encode action type */
+	 
 	width = vcap->action_type_width;
 	if (width) {
 		mask = GENMASK(width, 0);
@@ -164,12 +162,12 @@ static void vcap_cache2action(struct ocelot *ocelot,
 							  VCAP_CACHE_CNT_DAT,
 							  i);
 
-	/* Extract action type */
+	 
 	width = vcap->action_type_width;
 	data->type = (width ? (data->action[0] & GENMASK(width, 0)) : 0);
 }
 
-/* Calculate offsets for entry */
+ 
 static void vcap_data_offset_get(const struct vcap_props *vcap,
 				 struct vcap_data *data, int ix)
 {
@@ -203,7 +201,7 @@ static void vcap_data_offset_get(const struct vcap_props *vcap,
 		data->tg_mask |= GENMASK(offset + width - 1, offset);
 	}
 
-	/* Calculate key/action/counter offsets */
+	 
 	col = (num_entries_per_row - col - 1);
 	data->key_offset = (base * vcap->entry_width) / vcap->sw_count;
 	data->counter_offset = (num_subwords_per_entry * col *
@@ -270,9 +268,7 @@ static void vcap_key_bytes_set(const struct vcap_props *vcap,
 
 	WARN_ON(count % 8);
 
-	/* Data wider than 32 bits are split up in chunks of maximum 32 bits.
-	 * The 32 LSB of the data are written to the 32 MSB of the TCAM.
-	 */
+	 
 	offset += count;
 	count /= 8;
 
@@ -355,7 +351,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
 	memset(&payload, 0, sizeof(payload));
 	memset(&data, 0, sizeof(data));
 
-	/* Read row */
+	 
 	vcap_row_cmd(ocelot, vcap, row, VCAP_CMD_READ, VCAP_SEL_ALL);
 	vcap_cache2entry(ocelot, vcap, &data);
 	vcap_cache2action(ocelot, vcap, &data);
@@ -396,7 +392,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
 				   etype->smac.value, etype->smac.mask);
 		vcap_key_bytes_set(vcap, &data, VCAP_IS2_HK_MAC_ETYPE_ETYPE,
 				   etype->etype.value, etype->etype.mask);
-		/* Clear unused bits */
+		 
 		vcap_key_set(vcap, &data, VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD0,
 			     0, 0);
 		vcap_key_set(vcap, &data, VCAP_IS2_HK_MAC_ETYPE_L2_PAYLOAD1,
@@ -462,7 +458,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
 				 VCAP_IS2_HK_MAC_ARP_OPCODE_UNKNOWN,
 				 arp->unknown);
 
-		/* OPCODE is inverse, bit 0 is reply flag, bit 1 is RARP flag */
+		 
 		val = ((arp->req == OCELOT_VCAP_BIT_0 ? 1 : 0) |
 		       (arp->arp == OCELOT_VCAP_BIT_0 ? 2 : 0));
 		msk = ((arp->req == OCELOT_VCAP_BIT_ANY ? 0 : 1) |
@@ -565,7 +561,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
 		msk = proto.mask[0];
 		type = IS2_TYPE_IP_UDP_TCP;
 		if (msk == 0xff && (val == IPPROTO_TCP || val == IPPROTO_UDP)) {
-			/* UDP/TCP protocol match */
+			 
 			tcp = (val == IPPROTO_TCP ?
 			       OCELOT_VCAP_BIT_1 : OCELOT_VCAP_BIT_0);
 			vcap_key_bit_set(vcap, &data, VCAP_IS2_HK_TCP, tcp);
@@ -598,10 +594,10 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
 				     0, 0);
 		} else {
 			if (msk == 0) {
-				/* Any IP protocol match */
+				 
 				type_mask = IS2_TYPE_MASK_IP_ANY;
 			} else {
-				/* Non-UDP/TCP protocol match */
+				 
 				type = IS2_TYPE_IP_OTHER;
 				for (i = 0; i < 6; i++) {
 					payload.value[i] = ip_data->value[i];
@@ -622,9 +618,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
 		type = 0;
 		type_mask = 0;
 		count = vcap->entry_width / 2;
-		/* Iterate over the non-common part of the key and
-		 * clear entry data
-		 */
+		 
 		for (i = vcap->keys[VCAP_IS2_HK_L2_DMAC].offset;
 		     i < count; i += ENTRY_WIDTH) {
 			vcap_key_field_set(&data, i, min(32u, count - i), 0, 0);
@@ -637,7 +631,7 @@ static void is2_entry_set(struct ocelot *ocelot, int ix,
 	vcap_data_set(data.counter, data.counter_offset,
 		      vcap->counter_width, filter->stats.pkts);
 
-	/* Write row */
+	 
 	vcap_entry2cache(ocelot, vcap, &data);
 	vcap_action2cache(ocelot, vcap, &data);
 	vcap_row_cmd(ocelot, vcap, row, VCAP_CMD_WRITE, VCAP_SEL_ALL);
@@ -677,7 +671,7 @@ static void is1_entry_set(struct ocelot *ocelot, int ix,
 
 	memset(&data, 0, sizeof(data));
 
-	/* Read row */
+	 
 	vcap_row_cmd(ocelot, vcap, row, VCAP_CMD_READ, VCAP_SEL_ALL);
 	vcap_cache2entry(ocelot, vcap, &data);
 	vcap_cache2action(ocelot, vcap, &data);
@@ -745,14 +739,14 @@ static void is1_entry_set(struct ocelot *ocelot, int ix,
 			vcap_key_bit_set(vcap, &data, VCAP_IS1_HK_TCP, tcp);
 			vcap_key_l4_port_set(vcap, &data, VCAP_IS1_HK_L4_SPORT,
 					     sport);
-			/* Overloaded field */
+			 
 			vcap_key_l4_port_set(vcap, &data, VCAP_IS1_HK_ETYPE,
 					     dport);
 		} else {
-			/* IPv4 "other" frame */
+			 
 			struct ocelot_vcap_u16 etype = {0};
 
-			/* Overloaded field */
+			 
 			etype.value[0] = proto.value[0];
 			etype.mask[0] = proto.mask[0];
 
@@ -771,7 +765,7 @@ static void is1_entry_set(struct ocelot *ocelot, int ix,
 	vcap_data_set(data.counter, data.counter_offset,
 		      vcap->counter_width, filter->stats.pkts);
 
-	/* Write row */
+	 
 	vcap_entry2cache(ocelot, vcap, &data);
 	vcap_action2cache(ocelot, vcap, &data);
 	vcap_row_cmd(ocelot, vcap, row, VCAP_CMD_WRITE, VCAP_SEL_ALL);
@@ -815,7 +809,7 @@ static void es0_entry_set(struct ocelot *ocelot, int ix,
 
 	memset(&data, 0, sizeof(data));
 
-	/* Read row */
+	 
 	vcap_row_cmd(ocelot, vcap, row, VCAP_CMD_READ, VCAP_SEL_ALL);
 	vcap_cache2entry(ocelot, vcap, &data);
 	vcap_cache2action(ocelot, vcap, &data);
@@ -842,7 +836,7 @@ static void es0_entry_set(struct ocelot *ocelot, int ix,
 	vcap_data_set(data.counter, data.counter_offset,
 		      vcap->counter_width, filter->stats.pkts);
 
-	/* Write row */
+	 
 	vcap_entry2cache(ocelot, vcap, &data);
 	vcap_action2cache(ocelot, vcap, &data);
 	vcap_row_cmd(ocelot, vcap, row, VCAP_CMD_WRITE, VCAP_SEL_ALL);
@@ -1065,16 +1059,7 @@ ocelot_vcap_block_find_filter_by_id(struct ocelot_vcap_block *block,
 }
 EXPORT_SYMBOL(ocelot_vcap_block_find_filter_by_id);
 
-/* If @on=false, then SNAP, ARP, IP and OAM frames will not match on keys based
- * on destination and source MAC addresses, but only on higher-level protocol
- * information. The only frame types to match on keys containing MAC addresses
- * in this case are non-SNAP, non-ARP, non-IP and non-OAM frames.
- *
- * If @on=true, then the above frame types (SNAP, ARP, IP and OAM) will match
- * on MAC_ETYPE keys such as destination and source MAC on this ingress port.
- * However the setting has the side effect of making these frames not matching
- * on any _other_ keys than MAC_ETYPE ones.
- */
+ 
 static void ocelot_match_all_as_mac_etype(struct ocelot *ocelot, int port,
 					  int lookup, bool on)
 {
@@ -1107,7 +1092,7 @@ ocelot_vcap_is_problematic_mac_etype(struct ocelot_vcap_filter *filter)
 	proto = ntohs(*(__be16 *)filter->key.etype.etype.value);
 	mask = ntohs(*(__be16 *)filter->key.etype.etype.mask);
 
-	/* ETH_P_ALL match, so all protocols below are included */
+	 
 	if (mask == 0)
 		return true;
 	if (proto == ETH_P_ARP)
@@ -1143,12 +1128,12 @@ ocelot_exclusive_mac_etype_filter_rules(struct ocelot *ocelot,
 	unsigned long port;
 	int i;
 
-	/* We only have the S2_IP_TCPUDP_DIS set of knobs for VCAP IS2 */
+	 
 	if (filter->block_id != VCAP_IS2)
 		return true;
 
 	if (ocelot_vcap_is_problematic_mac_etype(filter)) {
-		/* Search for any non-MAC_ETYPE rules on the port */
+		 
 		for (i = 0; i < block->count; i++) {
 			tmp = ocelot_vcap_block_find_filter_by_index(block, i);
 			if (tmp->ingress_port_mask & filter->ingress_port_mask &&
@@ -1162,7 +1147,7 @@ ocelot_exclusive_mac_etype_filter_rules(struct ocelot *ocelot,
 			ocelot_match_all_as_mac_etype(ocelot, port,
 						      filter->lookup, true);
 	} else if (ocelot_vcap_is_problematic_non_mac_etype(filter)) {
-		/* Search for any MAC_ETYPE rules on the port */
+		 
 		for (i = 0; i < block->count; i++) {
 			tmp = ocelot_vcap_block_find_filter_by_index(block, i);
 			if (tmp->ingress_port_mask & filter->ingress_port_mask &&
@@ -1193,27 +1178,27 @@ int ocelot_vcap_filter_add(struct ocelot *ocelot,
 		return -EBUSY;
 	}
 
-	/* Add filter to the linked list */
+	 
 	ret = ocelot_vcap_filter_add_to_block(ocelot, block, filter, extack);
 	if (ret)
 		return ret;
 
-	/* Get the index of the inserted filter */
+	 
 	index = ocelot_vcap_block_get_filter_index(block, filter);
 	if (index < 0)
 		return index;
 
-	/* Move down the rules to make place for the new filter */
+	 
 	for (i = block->count - 1; i > index; i--) {
 		struct ocelot_vcap_filter *tmp;
 
 		tmp = ocelot_vcap_block_find_filter_by_index(block, i);
-		/* Read back the filter's counters before moving it */
+		 
 		vcap_entry_get(ocelot, i - 1, tmp);
 		vcap_entry_set(ocelot, i, tmp);
 	}
 
-	/* Now insert the new filter */
+	 
 	vcap_entry_set(ocelot, index, filter);
 	return 0;
 }
@@ -1243,31 +1228,29 @@ int ocelot_vcap_filter_del(struct ocelot *ocelot,
 	struct ocelot_vcap_filter del_filter;
 	int i, index;
 
-	/* Need to inherit the block_id so that vcap_entry_set()
-	 * does not get confused and knows where to install it.
-	 */
+	 
 	memset(&del_filter, 0, sizeof(del_filter));
 	del_filter.block_id = filter->block_id;
 
-	/* Gets index of the filter */
+	 
 	index = ocelot_vcap_block_get_filter_index(block, filter);
 	if (index < 0)
 		return index;
 
-	/* Delete filter */
+	 
 	ocelot_vcap_block_remove_filter(ocelot, block, filter);
 
-	/* Move up all the blocks over the deleted filter */
+	 
 	for (i = index; i < block->count; i++) {
 		struct ocelot_vcap_filter *tmp;
 
 		tmp = ocelot_vcap_block_find_filter_by_index(block, i);
-		/* Read back the filter's counters before moving it */
+		 
 		vcap_entry_get(ocelot, i + 1, tmp);
 		vcap_entry_set(ocelot, i, tmp);
 	}
 
-	/* Now delete the last filter, because it is duplicated */
+	 
 	vcap_entry_set(ocelot, block->count, &del_filter);
 
 	return 0;
@@ -1303,7 +1286,7 @@ int ocelot_vcap_filter_stats_update(struct ocelot *ocelot,
 
 	vcap_entry_get(ocelot, index, filter);
 
-	/* After we get the result we need to clear the counters */
+	 
 	tmp = *filter;
 	tmp.stats.pkts = 0;
 	vcap_entry_set(ocelot, index, &tmp);
@@ -1339,47 +1322,20 @@ static void ocelot_vcap_detect_constants(struct ocelot *ocelot,
 
 	version = ocelot_target_read(ocelot, vcap->target,
 				     VCAP_CONST_VCAP_VER);
-	/* Only version 0 VCAP supported for now */
+	 
 	if (WARN_ON(version != 0))
 		return;
 
-	/* Width in bits of type-group field */
+	 
 	vcap->tg_width = ocelot_target_read(ocelot, vcap->target,
 					    VCAP_CONST_ENTRY_TG_WIDTH);
-	/* Number of subwords per TCAM row */
+	 
 	vcap->sw_count = ocelot_target_read(ocelot, vcap->target,
 					    VCAP_CONST_ENTRY_SWCNT);
-	/* Number of rows in TCAM. There can be this many full keys, or double
-	 * this number half keys, or 4 times this number quarter keys.
-	 */
+	 
 	vcap->entry_count = ocelot_target_read(ocelot, vcap->target,
 					       VCAP_CONST_ENTRY_CNT);
-	/* Assuming there are 4 subwords per TCAM row, their layout in the
-	 * actual TCAM (not in the cache) would be:
-	 *
-	 * |  SW 3  | TG 3 |  SW 2  | TG 2 |  SW 1  | TG 1 |  SW 0  | TG 0 |
-	 *
-	 * (where SW=subword and TG=Type-Group).
-	 *
-	 * What VCAP_CONST_ENTRY_CNT is giving us is the width of one full TCAM
-	 * row. But when software accesses the TCAM through the cache
-	 * registers, the Type-Group values are written through another set of
-	 * registers VCAP_TG_DAT, and therefore, it appears as though the 4
-	 * subwords are contiguous in the cache memory.
-	 * Important mention: regardless of the number of key entries per row
-	 * (and therefore of key size: 1 full key or 2 half keys or 4 quarter
-	 * keys), software always has to configure 4 Type-Group values. For
-	 * example, in the case of 1 full key, the driver needs to set all 4
-	 * Type-Group to be full key.
-	 *
-	 * For this reason, we need to fix up the value that the hardware is
-	 * giving us. We don't actually care about the width of the entry in
-	 * the TCAM. What we care about is the width of the entry in the cache
-	 * registers, which is how we get to interact with it. And since the
-	 * VCAP_ENTRY_DAT cache registers access only the subwords and not the
-	 * Type-Groups, this means we need to subtract the width of the
-	 * Type-Groups when packing and unpacking key entry data in a TCAM row.
-	 */
+	 
 	vcap->entry_width = ocelot_target_read(ocelot, vcap->target,
 					       VCAP_CONST_ENTRY_WIDTH);
 	vcap->entry_width -= vcap->tg_width * vcap->sw_count;
@@ -1388,11 +1344,7 @@ static void ocelot_vcap_detect_constants(struct ocelot *ocelot,
 	vcap->action_count = vcap->entry_count + num_default_actions;
 	vcap->action_width = ocelot_target_read(ocelot, vcap->target,
 						VCAP_CONST_ACTION_WIDTH);
-	/* The width of the counter memory, this is the complete width of all
-	 * counter-fields associated with one full-word entry. There is one
-	 * counter per entry sub-word (see CAP_CORE::ENTRY_SWCNT for number of
-	 * subwords.)
-	 */
+	 
 	vcap->counter_words = vcap->sw_count;
 	counter_memory_width = ocelot_target_read(ocelot, vcap->target,
 						  VCAP_CONST_CNT_WIDTH);
@@ -1406,10 +1358,7 @@ int ocelot_vcap_init(struct ocelot *ocelot)
 	};
 	int ret, i;
 
-	/* Create a policer that will drop the frames for the cpu.
-	 * This policer will be used as action in the acl rules to drop
-	 * frames.
-	 */
+	 
 	ret = qos_policer_conf_set(ocelot, OCELOT_POLICER_DISCARD, &cpu_drop);
 	if (ret)
 		return ret;

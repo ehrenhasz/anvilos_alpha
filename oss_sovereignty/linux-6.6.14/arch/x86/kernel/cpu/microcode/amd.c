@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  AMD CPU Microcode Update Driver for Linux
- *
- *  This driver allows to upgrade microcode on F10h AMD
- *  CPUs and later.
- *
- *  Copyright (C) 2008-2011 Advanced Micro Devices Inc.
- *	          2013-2018 Borislav Petkov <bp@alien8.de>
- *
- *  Author: Peter Oruba <peter.oruba@amd.com>
- *
- *  Based on work by:
- *  Tigran Aivazian <aivazian.tigran@gmail.com>
- *
- *  early loader:
- *  Copyright (C) 2013 Advanced Micro Devices, Inc.
- *
- *  Author: Jacob Shin <jacob.shin@amd.com>
- *  Fixes: Borislav Petkov <bp@suse.de>
- */
+
+ 
 #define pr_fmt(fmt) "microcode: " fmt
 
 #include <linux/earlycpio.h>
@@ -81,11 +62,7 @@ static struct equiv_cpu_table {
 	struct equiv_cpu_entry *entry;
 } equiv_table;
 
-/*
- * This points to the current valid container of microcode patches which we will
- * save from the initrd/builtin before jettisoning its contents. @mc is the
- * microcode patch we found to match.
- */
+ 
 struct cont_desc {
 	struct microcode_amd *mc;
 	u32		     cpuid_1_eax;
@@ -96,10 +73,7 @@ struct cont_desc {
 
 static u32 ucode_new_rev;
 
-/*
- * Microcode patch container file is prepended to the initrd in cpio
- * format. See Documentation/arch/x86/microcode.rst
- */
+ 
 static const char
 ucode_path[] __maybe_unused = "kernel/x86/microcode/AuthenticAMD.bin";
 
@@ -119,10 +93,7 @@ static u16 find_equiv_id(struct equiv_cpu_table *et, u32 sig)
 	return 0;
 }
 
-/*
- * Check whether there is a valid microcode container file at the beginning
- * of @buf of size @buf_size. Set @early to use this function in the early path.
- */
+ 
 static bool verify_container(const u8 *buf, size_t buf_size, bool early)
 {
 	u32 cont_magic;
@@ -145,11 +116,7 @@ static bool verify_container(const u8 *buf, size_t buf_size, bool early)
 	return true;
 }
 
-/*
- * Check whether there is a valid, non-truncated CPU equivalence table at the
- * beginning of @buf of size @buf_size. Set @early to use this function in the
- * early path.
- */
+ 
 static bool verify_equivalence_table(const u8 *buf, size_t buf_size, bool early)
 {
 	const u32 *hdr = (const u32 *)buf;
@@ -181,14 +148,7 @@ static bool verify_equivalence_table(const u8 *buf, size_t buf_size, bool early)
 	return true;
 }
 
-/*
- * Check whether there is a valid, non-truncated microcode patch section at the
- * beginning of @buf of size @buf_size. Set @early to use this function in the
- * early path.
- *
- * On success, @sh_psize returns the patch size according to the section header,
- * to the caller.
- */
+ 
 static bool
 __verify_patch_section(const u8 *buf, size_t buf_size, u32 *sh_psize, bool early)
 {
@@ -226,12 +186,7 @@ __verify_patch_section(const u8 *buf, size_t buf_size, u32 *sh_psize, bool early
 	return true;
 }
 
-/*
- * Check whether the passed remaining file @buf_size is large enough to contain
- * a patch of the indicated @sh_psize (and also whether this size does not
- * exceed the per-family maximum). @sh_psize is the size read from the section
- * header.
- */
+ 
 static unsigned int __verify_patch_size(u8 family, u32 sh_psize, size_t buf_size)
 {
 	u32 max_size;
@@ -260,14 +215,7 @@ static unsigned int __verify_patch_size(u8 family, u32 sh_psize, size_t buf_size
 	return sh_psize;
 }
 
-/*
- * Verify the patch in @buf.
- *
- * Returns:
- * negative: on error
- * positive: patch is not for this family, skip it
- * 0: success
- */
+ 
 static int
 verify_patch(u8 family, const u8 *buf, size_t buf_size, u32 *patch_size, bool early)
 {
@@ -280,17 +228,10 @@ verify_patch(u8 family, const u8 *buf, size_t buf_size, u32 *patch_size, bool ea
 	if (!__verify_patch_section(buf, buf_size, &sh_psize, early))
 		return -1;
 
-	/*
-	 * The section header length is not included in this indicated size
-	 * but is present in the leftover file length so we need to subtract
-	 * it before passing this value to the function below.
-	 */
+	 
 	buf_size -= SECTION_HDR_SIZE;
 
-	/*
-	 * Check if the remaining buffer is big enough to contain a patch of
-	 * size sh_psize, as the section claims.
-	 */
+	 
 	if (buf_size < sh_psize) {
 		if (!early)
 			pr_debug("Patch of size %u truncated.\n", sh_psize);
@@ -322,13 +263,7 @@ verify_patch(u8 family, const u8 *buf, size_t buf_size, u32 *patch_size, bool ea
 	return 0;
 }
 
-/*
- * This scans the ucode blob for the proper container as we can have multiple
- * containers glued together. Returns the equivalence ID from the equivalence
- * table or 0 if none found.
- * Returns the amount of bytes consumed while scanning. @desc contains all the
- * data we're going to use in later stages of the application.
- */
+ 
 static size_t parse_container(u8 *ucode, size_t size, struct cont_desc *desc)
 {
 	struct equiv_cpu_table table;
@@ -345,20 +280,13 @@ static size_t parse_container(u8 *ucode, size_t size, struct cont_desc *desc)
 	table.entry = (struct equiv_cpu_entry *)(buf + CONTAINER_HDR_SZ);
 	table.num_entries = hdr[2] / sizeof(struct equiv_cpu_entry);
 
-	/*
-	 * Find the equivalence ID of our CPU in this table. Even if this table
-	 * doesn't contain a patch for the CPU, scan through the whole container
-	 * so that it can be skipped in case there are other containers appended.
-	 */
+	 
 	eq_id = find_equiv_id(&table, desc->cpuid_1_eax);
 
 	buf  += hdr[2] + CONTAINER_HDR_SZ;
 	size -= hdr[2] + CONTAINER_HDR_SZ;
 
-	/*
-	 * Scan through the rest of the container to find where it ends. We do
-	 * some basic sanity-checking too.
-	 */
+	 
 	while (size > 0) {
 		struct microcode_amd *mc;
 		u32 patch_size;
@@ -366,11 +294,7 @@ static size_t parse_container(u8 *ucode, size_t size, struct cont_desc *desc)
 
 		ret = verify_patch(x86_family(desc->cpuid_1_eax), buf, size, &patch_size, true);
 		if (ret < 0) {
-			/*
-			 * Patch verification failed, skip to the next container, if
-			 * there is one. Before exit, check whether that container has
-			 * found a patch already. If so, use it.
-			 */
+			 
 			goto out;
 		} else if (ret > 0) {
 			goto skip;
@@ -383,19 +307,13 @@ static size_t parse_container(u8 *ucode, size_t size, struct cont_desc *desc)
 		}
 
 skip:
-		/* Skip patch section header too: */
+		 
 		buf  += patch_size + SECTION_HDR_SIZE;
 		size -= patch_size + SECTION_HDR_SIZE;
 	}
 
 out:
-	/*
-	 * If we have found a patch (desc->mc), it means we're looking at the
-	 * container which has a patch for this CPU so return 0 to mean, @ucode
-	 * already points to the proper container. Otherwise, we return the size
-	 * we scanned so that we can advance to the next container in the
-	 * buffer.
-	 */
+	 
 	if (desc->mc) {
 		desc->data = ucode;
 		desc->size = orig_size - size;
@@ -406,10 +324,7 @@ out:
 	return orig_size - size;
 }
 
-/*
- * Scan the ucode blob for the proper container as we can have multiple
- * containers glued together.
- */
+ 
 static void scan_containers(u8 *ucode, size_t size, struct cont_desc *desc)
 {
 	while (size) {
@@ -417,7 +332,7 @@ static void scan_containers(u8 *ucode, size_t size, struct cont_desc *desc)
 		if (!s)
 			return;
 
-		/* catch wraparound */
+		 
 		if (size >= s) {
 			ucode += s;
 			size  -= s;
@@ -433,7 +348,7 @@ static int __apply_microcode_amd(struct microcode_amd *mc)
 
 	native_wrmsrl(MSR_AMD64_PATCH_LOADER, (u64)(long)&mc->hdr.data_code);
 
-	/* verify patch application was successful */
+	 
 	native_rdmsr(MSR_AMD64_PATCH_LEVEL, rev, dummy);
 	if (rev != mc->hdr.patch_id)
 		return -1;
@@ -441,17 +356,7 @@ static int __apply_microcode_amd(struct microcode_amd *mc)
 	return 0;
 }
 
-/*
- * Early load occurs before we can vmalloc(). So we look for the microcode
- * patch container file in initrd, traverse equivalent cpu table, look for a
- * matching microcode patch, and update, all in initrd memory in place.
- * When vmalloc() is available for use later -- on 64-bit during first AP load,
- * and on 32-bit during save_microcode_in_initrd_amd() -- we can call
- * load_microcode_amd() to save equivalent cpu table and microcode patches in
- * kernel heap memory.
- *
- * Returns true if container found (sets @desc), false otherwise.
- */
+ 
 static bool early_apply_microcode(u32 cpuid_1_eax, void *ucode, size_t size)
 {
 	struct cont_desc desc = { 0 };
@@ -475,11 +380,7 @@ static bool early_apply_microcode(u32 cpuid_1_eax, void *ucode, size_t size)
 
 	native_rdmsr(MSR_AMD64_PATCH_LEVEL, rev, dummy);
 
-	/*
-	 * Allow application of the same revision to pick up SMT-specific
-	 * changes even if the revision of the other SMT thread is already
-	 * up-to-date.
-	 */
+	 
 	if (rev > mc->hdr.patch_id)
 		return ret;
 
@@ -532,7 +433,7 @@ static void find_blobs_in_containers(unsigned int cpuid_1_eax, struct cpio_data 
 	if (!get_builtin_microcode(&cp, x86_family(cpuid_1_eax)))
 		cp = find_microcode_in_initrd(path, use_pa);
 
-	/* Needed in load_microcode_amd() */
+	 
 	uci->cpu_sig.sig = cpuid_1_eax;
 
 	*ret = cp;
@@ -579,9 +480,7 @@ int __init save_microcode_in_initrd_amd(unsigned int cpuid_1_eax)
 	return 0;
 }
 
-/*
- * a small, trivial cache of per-family ucode patches
- */
+ 
 static struct ucode_patch *cache_find_patch(u16 equiv_cpu)
 {
 	struct ucode_patch *p;
@@ -599,7 +498,7 @@ static void update_cache(struct ucode_patch *new_patch)
 	list_for_each_entry(p, &microcode_cache, plist) {
 		if (p->equiv_cpu == new_patch->equiv_cpu) {
 			if (p->patch_id >= new_patch->patch_id) {
-				/* we already have the latest patch */
+				 
 				kfree(new_patch->data);
 				kfree(new_patch);
 				return;
@@ -611,7 +510,7 @@ static void update_cache(struct ucode_patch *new_patch)
 			return;
 		}
 	}
-	/* no patch found, add it */
+	 
 	list_add_tail(&new_patch->plist, &microcode_cache);
 }
 
@@ -670,10 +569,7 @@ static int collect_cpu_info_amd(int cpu, struct cpu_signature *csig)
 	csig->sig = cpuid_eax(0x00000001);
 	csig->rev = c->microcode;
 
-	/*
-	 * a patch could have been loaded early, set uci->mc so that
-	 * mc_bp_resume() can call apply_microcode()
-	 */
+	 
 	p = find_patch(cpu);
 	if (p && (p->patch_id == csig->rev))
 		uci->mc = p->data;
@@ -705,7 +601,7 @@ static enum ucode_state apply_microcode_amd(int cpu)
 
 	rdmsr(MSR_AMD64_PATCH_LEVEL, rev, dummy);
 
-	/* need to apply patch? */
+	 
 	if (rev > mc_amd->hdr.patch_id) {
 		ret = UCODE_OK;
 		goto out;
@@ -726,7 +622,7 @@ out:
 	uci->cpu_sig.rev = rev;
 	c->microcode	 = rev;
 
-	/* Update boot_cpu_data's revision too, if we're on the BSP: */
+	 
 	if (c->cpu_index == boot_cpu_data.cpu_index)
 		boot_cpu_data.microcode = rev;
 
@@ -753,7 +649,7 @@ static size_t install_equiv_cpu_table(const u8 *buf, size_t buf_size)
 	memcpy(equiv_table.entry, buf + CONTAINER_HDR_SZ, equiv_tbl_len);
 	equiv_table.num_entries = equiv_tbl_len / sizeof(struct equiv_cpu_entry);
 
-	/* add header length */
+	 
 	return equiv_tbl_len + CONTAINER_HDR_SZ;
 }
 
@@ -769,13 +665,7 @@ static void cleanup(void)
 	free_cache();
 }
 
-/*
- * Return a non-negative value even if some of the checks failed so that
- * we can skip over the next patch. If we return a negative value, we
- * signal a grave error like a memory allocation has failed and the
- * driver cannot continue functioning normally. In such cases, we tear
- * down everything we've used up so far and exit.
- */
+ 
 static int verify_and_add_patch(u8 family, u8 *fw, unsigned int leftover,
 				unsigned int *patch_size)
 {
@@ -812,13 +702,13 @@ static int verify_and_add_patch(u8 family, u8 *fw, unsigned int leftover,
 	pr_debug("%s: Added patch_id: 0x%08x, proc_id: 0x%04x\n",
 		 __func__, patch->patch_id, proc_id);
 
-	/* ... and add to cache. */
+	 
 	update_cache(patch);
 
 	return 0;
 }
 
-/* Scan the blob in @data and add microcode patches to the cache. */
+ 
 static enum ucode_state __load_microcode_amd(u8 family, const u8 *data,
 					     size_t size)
 {
@@ -860,7 +750,7 @@ static enum ucode_state load_microcode_amd(u8 family, const u8 *data, size_t siz
 	struct ucode_patch *p;
 	enum ucode_state ret;
 
-	/* free old equiv table */
+	 
 	free_equiv_cpu_table();
 
 	ret = __load_microcode_amd(family, data, size);
@@ -886,22 +776,7 @@ static enum ucode_state load_microcode_amd(u8 family, const u8 *data, size_t siz
 	return ret;
 }
 
-/*
- * AMD microcode firmware naming convention, up to family 15h they are in
- * the legacy file:
- *
- *    amd-ucode/microcode_amd.bin
- *
- * This legacy file is always smaller than 2K in size.
- *
- * Beginning with family 15h, they are in family-specific firmware files:
- *
- *    amd-ucode/microcode_amd_fam15h.bin
- *    amd-ucode/microcode_amd_fam16h.bin
- *    ...
- *
- * These might be larger than 2K.
- */
+ 
 static enum ucode_state request_microcode_amd(int cpu, struct device *device)
 {
 	char fw_name[36] = "amd-ucode/microcode_amd.bin";

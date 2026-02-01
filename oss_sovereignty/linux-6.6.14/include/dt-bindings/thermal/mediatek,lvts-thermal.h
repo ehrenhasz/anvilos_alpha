@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2023 MediaTek Inc.
- * Author: Balsam CHIHI <bchihi@baylibre.com>
- */
+ 
+ 
 
 #ifndef __MEDIATEK_LVTS_DT_H
 #define __MEDIATEK_LVTS_DT_H
@@ -26,4 +23,4 @@
 #define MT8195_AP_CAM0  15
 #define MT8195_AP_CAM1  16
 
-#endif /* __MEDIATEK_LVTS_DT_H */
+#endif  

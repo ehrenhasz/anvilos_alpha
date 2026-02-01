@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Free Electrons
- * Copyright (C) 2016 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -73,11 +68,7 @@ static int sun4i_tmds_determine_rate(struct clk_hw *hw,
 	int best_div = 1, best_half = 1;
 	int i, j, p;
 
-	/*
-	 * We only consider PLL3, since the TCON is very likely to be
-	 * clocked from it, and to have the same rate than our HDMI
-	 * clock, so we should not need to do anything.
-	 */
+	 
 
 	for (p = 0; p < clk_hw_get_num_parents(hw); p++) {
 		parent = clk_hw_get_parent_by_index(hw, p);

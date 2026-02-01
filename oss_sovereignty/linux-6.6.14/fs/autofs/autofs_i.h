@@ -1,10 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright 1997-1998 Transmeta Corporation - All Rights Reserved
- *  Copyright 2005-2006 Ian Kent <raven@themaw.net>
- */
+ 
+ 
 
-/* Internal header file for autofs */
+ 
 
 #include <linux/auto_fs.h>
 #include <linux/auto_dev-ioctl.h>
@@ -26,7 +23,7 @@
 #include <linux/file.h>
 #include <linux/magic.h>
 
-/* This is the range of ioctl() numbers we claim as ours */
+ 
 #define AUTOFS_IOC_FIRST     AUTOFS_IOC_READY
 #define AUTOFS_IOC_COUNT     32
 
@@ -41,14 +38,7 @@
 
 extern struct file_system_type autofs_fs_type;
 
-/*
- * Unified info structure.  This is pointed to by both the dentry and
- * inode structures.  Each file in the filesystem has an instance of this
- * structure.  It holds a reference to the dentry, so dentries are never
- * flushed while the file exists.  All name lookups are dealt with at the
- * dentry level, although the filesystem can interfere in the validation
- * process.  Readdir is implemented by traversing the dentry lists.
- */
+ 
 struct autofs_info {
 	struct dentry	*dentry;
 	int		flags;
@@ -68,22 +58,15 @@ struct autofs_info {
 	struct rcu_head rcu;
 };
 
-#define AUTOFS_INF_EXPIRING	(1<<0) /* dentry in the process of expiring */
-#define AUTOFS_INF_WANT_EXPIRE	(1<<1) /* the dentry is being considered
-					* for expiry, so RCU_walk is
-					* not permitted.  If it progresses to
-					* actual expiry attempt, the flag is
-					* not cleared when EXPIRING is set -
-					* in that case it gets cleared only
-					* when it comes to clearing EXPIRING.
-					*/
-#define AUTOFS_INF_PENDING	(1<<2) /* dentry pending mount */
+#define AUTOFS_INF_EXPIRING	(1<<0)  
+#define AUTOFS_INF_WANT_EXPIRE	(1<<1)  
+#define AUTOFS_INF_PENDING	(1<<2)  
 
 struct autofs_wait_queue {
 	wait_queue_head_t queue;
 	struct autofs_wait_queue *next;
 	autofs_wqt_t wait_queue_token;
-	/* We use the following to see what we are waiting for */
+	 
 	struct qstr name;
 	u32 offset;
 	u32 dev;
@@ -92,7 +75,7 @@ struct autofs_wait_queue {
 	kgid_t gid;
 	pid_t pid;
 	pid_t tgid;
-	/* This is for status reporting upon return */
+	 
 	int status;
 	unsigned int wait_ctr;
 };
@@ -119,7 +102,7 @@ struct autofs_sb_info {
 	struct mutex wq_mutex;
 	struct mutex pipe_mutex;
 	spinlock_t fs_lock;
-	struct autofs_wait_queue *queues; /* Wait queue pointer */
+	struct autofs_wait_queue *queues;  
 	spinlock_t lookup_lock;
 	struct list_head active_list;
 	struct list_head expiring_list;
@@ -136,10 +119,7 @@ static inline struct autofs_info *autofs_dentry_ino(struct dentry *dentry)
 	return (struct autofs_info *)(dentry->d_fsdata);
 }
 
-/* autofs_oz_mode(): do we see the man behind the curtain?  (The
- * processes which do manipulations for us in user space sees the raw
- * filesystem without "magic".)
- */
+ 
 static inline int autofs_oz_mode(struct autofs_sb_info *sbi)
 {
 	return ((sbi->flags & AUTOFS_SBI_CATATONIC) ||
@@ -154,7 +134,7 @@ static inline bool autofs_empty(struct autofs_info *ino)
 struct inode *autofs_get_inode(struct super_block *, umode_t);
 void autofs_free_ino(struct autofs_info *);
 
-/* Expiration */
+ 
 int is_autofs_dentry(struct dentry *);
 int autofs_expire_wait(const struct path *path, int rcu_walk);
 int autofs_expire_run(struct super_block *, struct vfsmount *,
@@ -165,12 +145,12 @@ int autofs_do_expire_multi(struct super_block *sb, struct vfsmount *mnt,
 int autofs_expire_multi(struct super_block *, struct vfsmount *,
 			struct autofs_sb_info *, int __user *);
 
-/* Device node initialization */
+ 
 
 int autofs_dev_ioctl_init(void);
 void autofs_dev_ioctl_exit(void);
 
-/* Operations structures */
+ 
 
 extern const struct inode_operations autofs_symlink_inode_operations;
 extern const struct inode_operations autofs_dir_inode_operations;
@@ -178,7 +158,7 @@ extern const struct file_operations autofs_dir_operations;
 extern const struct file_operations autofs_root_operations;
 extern const struct dentry_operations autofs_dentry_operations;
 
-/* VFS automount flags management functions */
+ 
 static inline void __managed_dentry_set_managed(struct dentry *dentry)
 {
 	dentry->d_flags |= (DCACHE_NEED_AUTOMOUNT|DCACHE_MANAGE_TRANSIT);
@@ -203,7 +183,7 @@ static inline void managed_dentry_clear_managed(struct dentry *dentry)
 	spin_unlock(&dentry->d_lock);
 }
 
-/* Initializing function */
+ 
 
 int autofs_fill_super(struct super_block *, void *, int);
 struct autofs_info *autofs_new_ino(struct autofs_sb_info *);
@@ -215,14 +195,14 @@ static inline int autofs_prepare_pipe(struct file *pipe)
 		return -EINVAL;
 	if (!S_ISFIFO(file_inode(pipe)->i_mode))
 		return -EINVAL;
-	/* We want a packet pipe */
+	 
 	pipe->f_flags |= O_DIRECT;
-	/* We don't expect -EAGAIN */
+	 
 	pipe->f_flags &= ~O_NONBLOCK;
 	return 0;
 }
 
-/* Queue management functions */
+ 
 
 int autofs_wait(struct autofs_sb_info *,
 		 const struct path *, enum autofs_notify);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * page-types: Tool for querying page flags
- *
- * Copyright (C) 2009 Intel corporation
- *
- * Authors: Wu Fengguang <fengguang.wu@intel.com>
- */
+
+ 
 
 #define _FILE_OFFSET_BITS 64
 #define _GNU_SOURCE
@@ -41,9 +35,7 @@
 # define STR(x) _STR(x)
 #endif
 
-/*
- * pagemap kernel ABI bits
- */
+ 
 
 #define PM_ENTRY_BYTES		8
 #define PM_PFRAME_BITS		55
@@ -57,9 +49,7 @@
 #define PM_SWAP			(1ULL << 62)
 #define PM_PRESENT		(1ULL << 63)
 
-/*
- * kernel page flags
- */
+ 
 
 #define KPF_BYTES		8
 #define PROC_KPAGEFLAGS		"/proc/kpageflags"
@@ -68,7 +58,7 @@
 
 #define SYS_KERNEL_MM_PAGE_IDLE "/sys/kernel/mm/page_idle/bitmap"
 
-/* [32-] kernel hacking assistances */
+ 
 #define KPF_RESERVED		32
 #define KPF_MLOCKED		33
 #define KPF_MAPPEDTODISK	34
@@ -80,9 +70,7 @@
 #define KPF_SOFTDIRTY		40
 #define KPF_ARCH_2		41
 
-/* [47-] take some arbitrary free slots for expanding overloaded flags
- * not part of kernel API
- */
+ 
 #define KPF_ANON_EXCLUSIVE	47
 #define KPF_READAHEAD		48
 #define KPF_SLUB_FROZEN		50
@@ -149,20 +137,18 @@ static const char * const page_flag_names[] = {
 };
 
 
-/*
- * data structures
- */
+ 
 
-static int		opt_raw;	/* for kernel developers */
-static int		opt_list;	/* list pages (in ranges) */
-static int		opt_mark_idle;	/* set accessed bit */
-static int		opt_no_summary;	/* don't show summary */
-static pid_t		opt_pid;	/* process to walk */
-const char		*opt_file;	/* file or directory path */
-static uint64_t		opt_cgroup;	/* cgroup inode */
-static int		opt_list_cgroup;/* list page cgroup */
-static int		opt_list_mapcnt;/* list page map count */
-static const char	*opt_kpageflags;/* kpageflags file to parse */
+static int		opt_raw;	 
+static int		opt_list;	 
+static int		opt_mark_idle;	 
+static int		opt_no_summary;	 
+static pid_t		opt_pid;	 
+const char		*opt_file;	 
+static uint64_t		opt_cgroup;	 
+static int		opt_list_cgroup; 
+static int		opt_list_mapcnt; 
+static const char	*opt_kpageflags; 
 
 #define MAX_ADDR_RANGES	1024
 static int		nr_addr_ranges;
@@ -204,9 +190,7 @@ static unsigned long	nr_pages[HASH_SIZE];
 static uint64_t		page_flags[HASH_SIZE];
 
 
-/*
- * helper functions
- */
+ 
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
@@ -247,9 +231,7 @@ static int checked_open(const char *pathname, int flags)
 	return fd;
 }
 
-/*
- * pagemap/kpageflags routines
- */
+ 
 
 static unsigned long do_u64_read(int fd, const char *name,
 				 uint64_t *buf,
@@ -322,9 +304,7 @@ static unsigned long pagemap_swap_offset(uint64_t val)
 	return val & PM_SWAP ? PM_SWAP_OFFSET(val) : 0;
 }
 
-/*
- * page flag names
- */
+ 
 
 static char *page_flag_name(uint64_t flags)
 {
@@ -365,9 +345,7 @@ static char *page_flag_longname(uint64_t flags)
 }
 
 
-/*
- * page list and summary
- */
+ 
 
 static void show_page_range(unsigned long voffset, unsigned long offset,
 			    unsigned long size, uint64_t flags,
@@ -449,9 +427,7 @@ static void show_summary(void)
 }
 
 
-/*
- * page flag filters
- */
+ 
 
 static int bit_mask_ok(uint64_t flags)
 {
@@ -472,11 +448,11 @@ static int bit_mask_ok(uint64_t flags)
 
 static uint64_t expand_overloaded_flags(uint64_t flags, uint64_t pme)
 {
-	/* Anonymous pages overload PG_mappedtodisk */
+	 
 	if ((flags & BIT(ANON)) && (flags & BIT(MAPPEDTODISK)))
 		flags ^= BIT(MAPPEDTODISK) | BIT(ANON_EXCLUSIVE);
 
-	/* SLUB overloads several page flags */
+	 
 	if (flags & BIT(SLAB)) {
 		if (flags & BIT(ACTIVE))
 			flags ^= BIT(ACTIVE) | BIT(SLUB_FROZEN);
@@ -484,7 +460,7 @@ static uint64_t expand_overloaded_flags(uint64_t flags, uint64_t pme)
 			flags ^= BIT(ERROR) | BIT(SLUB_DEBUG);
 	}
 
-	/* PG_reclaim is overloaded as PG_readahead in the read path */
+	 
 	if ((flags & (BIT(RECLAIM) | BIT(WRITEBACK))) == BIT(RECLAIM))
 		flags ^= BIT(RECLAIM) | BIT(READAHEAD);
 
@@ -502,10 +478,10 @@ static uint64_t expand_overloaded_flags(uint64_t flags, uint64_t pme)
 
 static uint64_t well_known_flags(uint64_t flags)
 {
-	/* hide flags intended only for kernel hacker */
+	 
 	flags &= ~KPF_HACKERS_BITS;
 
-	/* hide non-hugeTLB compound pages */
+	 
 	if ((flags & BITS_COMPOUND) && !(flags & BIT(HUGE)))
 		flags &= ~BITS_COMPOUND;
 
@@ -522,9 +498,7 @@ static uint64_t kpageflags_flags(uint64_t flags, uint64_t pme)
 	return flags;
 }
 
-/*
- * page actions
- */
+ 
 
 static void prepare_hwpoison_fd(void)
 {
@@ -601,22 +575,18 @@ static int mark_page_idle(unsigned long offset)
 	return 0;
 }
 
-/*
- * page frame walker
- */
+ 
 
 static size_t hash_slot(uint64_t flags)
 {
 	size_t k = HASH_KEY(flags);
 	size_t i;
 
-	/* Explicitly reserve slot 0 for flags 0: the following logic
-	 * cannot distinguish an unoccupied slot from slot (flags==0).
-	 */
+	 
 	if (flags == 0)
 		return 0;
 
-	/* search through the remaining (HASH_SIZE-1) slots */
+	 
 	for (i = 1; i < ARRAY_SIZE(page_flags); i++, k++) {
 		if (!k || k >= ARRAY_SIZE(page_flags))
 			k = 1;
@@ -661,7 +631,7 @@ static void add_page(unsigned long voffset, unsigned long offset,
 	total_pages++;
 }
 
-#define KPAGEFLAGS_BATCH	(64 << 10)	/* 64k pages */
+#define KPAGEFLAGS_BATCH	(64 << 10)	 
 static void walk_pfn(unsigned long voffset,
 		     unsigned long index,
 		     unsigned long count,
@@ -674,11 +644,7 @@ static void walk_pfn(unsigned long voffset,
 	unsigned long pages;
 	unsigned long i;
 
-	/*
-	 * kpagecgroup_read() reads only if kpagecgroup were opened, but
-	 * /proc/kpagecgroup might even not exist, so it's better to fill
-	 * them with zeros here.
-	 */
+	 
 	if (count == 1)
 		cgi[0] = 0;
 	else
@@ -807,9 +773,7 @@ static void walk_addr_ranges(void)
 }
 
 
-/*
- * user interface
- */
+ 
 
 static const char *page_flag_type(uint64_t flag)
 {
@@ -991,11 +955,11 @@ static void walk_file_range(const char *name, int fd,
 		if (ptr == MAP_FAILED)
 			fatal("mmap failed: %s", name);
 
-		/* determine cached pages */
+		 
 		if (mincore(ptr, len, vec))
 			fatal("mincore failed: %s", name);
 
-		/* turn off readahead */
+		 
 		if (madvise(ptr, len, MADV_RANDOM))
 			fatal("madvice failed: %s", name);
 
@@ -1006,14 +970,14 @@ static void walk_file_range(const char *name, int fd,
 			goto got_sigbus;
 		}
 
-		/* populate ptes */
+		 
 		for (i = 0; i < nr_pages ; i++) {
 			if (vec[i] & 1)
 				(void)*(volatile int *)(ptr + i * page_size);
 		}
 got_sigbus:
 
-		/* turn off harvesting reference bits */
+		 
 		if (madvise(ptr, len, MADV_SEQUENTIAL))
 			fatal("madvice failed: %s", name);
 
@@ -1089,7 +1053,7 @@ static void walk_page_cache(void)
 	if (S_ISREG(st.st_mode)) {
 		walk_file(opt_file, &st);
 	} else if (S_ISDIR(st.st_mode)) {
-		/* do not follow symlinks and mountpoints */
+		 
 		if (nftw(opt_file, walk_tree, 64, FTW_MOUNT | FTW_PHYS) < 0)
 			fatal("nftw failed: %s\n", opt_file);
 	} else

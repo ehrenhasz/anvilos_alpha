@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC remote transport endpoint record management
- *
- * Copyright (C) 2007, 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,9 +18,7 @@
 #include <net/ip6_route.h>
 #include "ar-internal.h"
 
-/*
- * Hash a peer key.
- */
+ 
 static unsigned long rxrpc_peer_hash_key(struct rxrpc_local *local,
 					 const struct sockaddr_rxrpc *srx)
 {
@@ -57,7 +51,7 @@ static unsigned long rxrpc_peer_hash_key(struct rxrpc_local *local,
 		return 0;
 	}
 
-	/* Step through the peer address in 16-bit portions for speed */
+	 
 	for (i = 0; i < size; i += sizeof(*p), p++)
 		hash_key += *p;
 
@@ -65,14 +59,7 @@ static unsigned long rxrpc_peer_hash_key(struct rxrpc_local *local,
 	return hash_key;
 }
 
-/*
- * Compare a peer to a key.  Return -ve, 0 or +ve to indicate less than, same
- * or greater than.
- *
- * Unfortunately, the primitives in linux/hashtable.h don't allow for sorted
- * buckets and mid-bucket insertion, so we don't make full use of this
- * information at this point.
- */
+ 
 static long rxrpc_peer_cmp_key(const struct rxrpc_peer *peer,
 			       struct rxrpc_local *local,
 			       const struct sockaddr_rxrpc *srx,
@@ -108,9 +95,7 @@ static long rxrpc_peer_cmp_key(const struct rxrpc_peer *peer,
 	}
 }
 
-/*
- * Look up a remote transport endpoint for the specified address using RCU.
- */
+ 
 static struct rxrpc_peer *__rxrpc_lookup_peer_rcu(
 	struct rxrpc_local *local,
 	const struct sockaddr_rxrpc *srx,
@@ -128,9 +113,7 @@ static struct rxrpc_peer *__rxrpc_lookup_peer_rcu(
 	return NULL;
 }
 
-/*
- * Look up a remote transport endpoint for the specified address using RCU.
- */
+ 
 struct rxrpc_peer *rxrpc_lookup_peer_rcu(struct rxrpc_local *local,
 					 const struct sockaddr_rxrpc *srx)
 {
@@ -143,10 +126,7 @@ struct rxrpc_peer *rxrpc_lookup_peer_rcu(struct rxrpc_local *local,
 	return peer;
 }
 
-/*
- * assess the MTU size for the network interface through which this peer is
- * reached
- */
+ 
 static void rxrpc_assess_MTU_size(struct rxrpc_local *local,
 				  struct rxrpc_peer *peer)
 {
@@ -202,9 +182,7 @@ static void rxrpc_assess_MTU_size(struct rxrpc_local *local,
 	_leave(" [if_mtu %u]", peer->if_mtu);
 }
 
-/*
- * Allocate a peer.
- */
+ 
 struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp,
 				    enum rxrpc_peer_trace why)
 {
@@ -233,9 +211,7 @@ struct rxrpc_peer *rxrpc_alloc_peer(struct rxrpc_local *local, gfp_t gfp,
 	return peer;
 }
 
-/*
- * Initialise peer record.
- */
+ 
 static void rxrpc_init_peer(struct rxrpc_local *local, struct rxrpc_peer *peer,
 			    unsigned long hash_key)
 {
@@ -269,9 +245,7 @@ static void rxrpc_init_peer(struct rxrpc_local *local, struct rxrpc_peer *peer,
 	peer->maxdata = peer->mtu - peer->hdrsize;
 }
 
-/*
- * Set up a new peer.
- */
+ 
 static struct rxrpc_peer *rxrpc_create_peer(struct rxrpc_local *local,
 					    struct sockaddr_rxrpc *srx,
 					    unsigned long hash_key,
@@ -298,11 +272,7 @@ static void rxrpc_free_peer(struct rxrpc_peer *peer)
 	kfree_rcu(peer, rcu);
 }
 
-/*
- * Set up a new incoming peer.  There shouldn't be any other matching peers
- * since we've already done a search in the list from the non-reentrant context
- * (the data_ready handler) that is the only place we can add new peers.
- */
+ 
 void rxrpc_new_incoming_peer(struct rxrpc_local *local, struct rxrpc_peer *peer)
 {
 	struct rxrpc_net *rxnet = local->rxnet;
@@ -317,9 +287,7 @@ void rxrpc_new_incoming_peer(struct rxrpc_local *local, struct rxrpc_peer *peer)
 	spin_unlock(&rxnet->peer_hash_lock);
 }
 
-/*
- * obtain a remote transport endpoint for the specified address
- */
+ 
 struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *local,
 				     struct sockaddr_rxrpc *srx, gfp_t gfp)
 {
@@ -329,7 +297,7 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *local,
 
 	_enter("{%pISp}", &srx->transport);
 
-	/* search the peer list first */
+	 
 	rcu_read_lock();
 	peer = __rxrpc_lookup_peer_rcu(local, srx, hash_key);
 	if (peer && !rxrpc_get_peer_maybe(peer, rxrpc_peer_get_lookup_client))
@@ -337,9 +305,7 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *local,
 	rcu_read_unlock();
 
 	if (!peer) {
-		/* The peer is not yet present in hash - create a candidate
-		 * for a new record and then redo the search.
-		 */
+		 
 		candidate = rxrpc_create_peer(local, srx, hash_key, gfp);
 		if (!candidate) {
 			_leave(" = NULL [nomem]");
@@ -348,7 +314,7 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *local,
 
 		spin_lock(&rxnet->peer_hash_lock);
 
-		/* Need to check that we aren't racing with someone else */
+		 
 		peer = __rxrpc_lookup_peer_rcu(local, srx, hash_key);
 		if (peer && !rxrpc_get_peer_maybe(peer, rxrpc_peer_get_lookup_client))
 			peer = NULL;
@@ -371,9 +337,7 @@ struct rxrpc_peer *rxrpc_lookup_peer(struct rxrpc_local *local,
 	return peer;
 }
 
-/*
- * Get a ref on a peer record.
- */
+ 
 struct rxrpc_peer *rxrpc_get_peer(struct rxrpc_peer *peer, enum rxrpc_peer_trace why)
 {
 	int r;
@@ -383,9 +347,7 @@ struct rxrpc_peer *rxrpc_get_peer(struct rxrpc_peer *peer, enum rxrpc_peer_trace
 	return peer;
 }
 
-/*
- * Get a ref on a peer record unless its usage has already reached 0.
- */
+ 
 struct rxrpc_peer *rxrpc_get_peer_maybe(struct rxrpc_peer *peer,
 					enum rxrpc_peer_trace why)
 {
@@ -400,9 +362,7 @@ struct rxrpc_peer *rxrpc_get_peer_maybe(struct rxrpc_peer *peer,
 	return peer;
 }
 
-/*
- * Discard a peer record.
- */
+ 
 static void __rxrpc_put_peer(struct rxrpc_peer *peer)
 {
 	struct rxrpc_net *rxnet = peer->local->rxnet;
@@ -417,9 +377,7 @@ static void __rxrpc_put_peer(struct rxrpc_peer *peer)
 	rxrpc_free_peer(peer);
 }
 
-/*
- * Drop a ref on a peer record.
- */
+ 
 void rxrpc_put_peer(struct rxrpc_peer *peer, enum rxrpc_peer_trace why)
 {
 	unsigned int debug_id;
@@ -435,9 +393,7 @@ void rxrpc_put_peer(struct rxrpc_peer *peer, enum rxrpc_peer_trace why)
 	}
 }
 
-/*
- * Make sure all peer records have been discarded.
- */
+ 
 void rxrpc_destroy_all_peers(struct rxrpc_net *rxnet)
 {
 	struct rxrpc_peer *peer;
@@ -456,14 +412,7 @@ void rxrpc_destroy_all_peers(struct rxrpc_net *rxnet)
 	}
 }
 
-/**
- * rxrpc_kernel_get_peer - Get the peer address of a call
- * @sock: The socket on which the call is in progress.
- * @call: The call to query
- * @_srx: Where to place the result
- *
- * Get the address of the remote peer in a call.
- */
+ 
 void rxrpc_kernel_get_peer(struct socket *sock, struct rxrpc_call *call,
 			   struct sockaddr_rxrpc *_srx)
 {
@@ -471,21 +420,14 @@ void rxrpc_kernel_get_peer(struct socket *sock, struct rxrpc_call *call,
 }
 EXPORT_SYMBOL(rxrpc_kernel_get_peer);
 
-/**
- * rxrpc_kernel_get_srtt - Get a call's peer smoothed RTT
- * @sock: The socket on which the call is in progress.
- * @call: The call to query
- * @_srtt: Where to store the SRTT value.
- *
- * Get the call's peer smoothed RTT in uS.
- */
+ 
 bool rxrpc_kernel_get_srtt(struct socket *sock, struct rxrpc_call *call,
 			   u32 *_srtt)
 {
 	struct rxrpc_peer *peer = call->peer;
 
 	if (peer->rtt_count == 0) {
-		*_srtt = 1000000; /* 1S */
+		*_srtt = 1000000;  
 		return false;
 	}
 

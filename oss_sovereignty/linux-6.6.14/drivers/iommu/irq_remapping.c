@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/cpumask.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -29,13 +29,7 @@ static struct irq_remap_ops *remap_ops;
 
 static void irq_remapping_restore_boot_irq_mode(void)
 {
-	/*
-	 * With interrupt-remapping, for now we will use virtual wire A
-	 * mode, as virtual wire B is little complex (need to configure
-	 * both IOAPIC RTE as well as interrupt-remapping table entry).
-	 * As this gets called during crash dump, keep this simple for
-	 * now.
-	 */
+	 
 	if (boot_cpu_has(X86_FEATURE_APIC) || apic_from_smp_config())
 		disconnect_bsp_APIC(0);
 }

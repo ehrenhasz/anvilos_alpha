@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __MAC80211_DEBUGFS_KEY_H
 #define __MAC80211_DEBUGFS_KEY_H
 
@@ -41,4 +41,4 @@ static inline void ieee80211_debugfs_key_sta_del(struct ieee80211_key *key,
 {}
 #endif
 
-#endif /* __MAC80211_DEBUGFS_KEY_H */
+#endif  

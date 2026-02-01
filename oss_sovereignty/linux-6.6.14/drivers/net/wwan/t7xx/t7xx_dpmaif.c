@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -41,11 +26,11 @@ static int t7xx_dpmaif_init_intr(struct dpmaif_hw_info *hw_info)
 	isr_en_msk->ap_ul_l2intr_en_msk = ul_intr_enable;
 	iowrite32(DPMAIF_AP_ALL_L2TISAR0_MASK, hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
 
-	/* Set interrupt enable mask */
+	 
 	iowrite32(ul_intr_enable, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMCR0);
 	iowrite32(~ul_intr_enable, hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMSR0);
 
-	/* Check mask status */
+	 
 	ret = ioread32_poll_timeout_atomic(hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0,
 					   value, (value & ul_intr_enable) != ul_intr_enable, 0,
 					   DPMAIF_CHECK_INIT_TIMEOUT_US);
@@ -59,7 +44,7 @@ static int t7xx_dpmaif_init_intr(struct dpmaif_hw_info *hw_info)
 	isr_en_msk->ap_ul_l2intr_en_msk = ul_intr_enable;
 	iowrite32(DPMAIF_AP_APDL_ALL_L2TISAR0_MASK, hw_info->pcie_base + DPMAIF_AP_APDL_L2TISAR0);
 
-	/* Set DL ISR PD enable mask */
+	 
 	iowrite32(~ul_intr_enable, hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMSR0);
 	ret = ioread32_poll_timeout_atomic(hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMR0,
 					   value, (value & ul_intr_enable) != ul_intr_enable, 0,
@@ -218,9 +203,7 @@ static void t7xx_dpmaif_set_intr_para(struct dpmaif_hw_intr_st_para *para,
 	para->intr_cnt++;
 }
 
-/* The para->intr_cnt counter is set to zero before this function is called.
- * It does not check for overflow as there is no risk of overflowing intr_types or intr_queues.
- */
+ 
 static void t7xx_dpmaif_hw_check_tx_intr(struct dpmaif_hw_info *hw_info,
 					 unsigned int intr_status,
 					 struct dpmaif_hw_intr_st_para *para)
@@ -253,13 +236,11 @@ static void t7xx_dpmaif_hw_check_tx_intr(struct dpmaif_hw_info *hw_info,
 	if (value)
 		t7xx_dpmaif_set_intr_para(para, DPF_INTR_UL_LEN_ERR, value);
 
-	/* Clear interrupt status */
+	 
 	iowrite32(intr_status, hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
 }
 
-/* The para->intr_cnt counter is set to zero before this function is called.
- * It does not check for overflow as there is no risk of overflowing intr_types or intr_queues.
- */
+ 
 static void t7xx_dpmaif_hw_check_rx_intr(struct dpmaif_hw_info *hw_info,
 					 unsigned int intr_status,
 					 struct dpmaif_hw_intr_st_para *para, int qno)
@@ -304,9 +285,7 @@ static void t7xx_dpmaif_hw_check_rx_intr(struct dpmaif_hw_info *hw_info,
 						  DPF_RX_QNO_DFT);
 
 		if (intr_status & DP_DL_INT_Q0_DONE) {
-			/* Mask RX done interrupt immediately after it occurs, do not clear
-			 * the interrupt if the mask operation fails.
-			 */
+			 
 			if (!t7xx_mask_dlq_intr(hw_info, qno))
 				t7xx_dpmaif_set_intr_para(para, DPF_INTR_DL_Q0_DONE, BIT(qno));
 			else
@@ -327,20 +306,11 @@ static void t7xx_dpmaif_hw_check_rx_intr(struct dpmaif_hw_info *hw_info,
 	}
 
 	intr_status |= DP_DL_INT_BATCNT_LEN_ERR;
-	/* Clear interrupt status */
+	 
 	iowrite32(intr_status, hw_info->pcie_base + DPMAIF_AP_APDL_L2TISAR0);
 }
 
-/**
- * t7xx_dpmaif_hw_get_intr_cnt() - Reads interrupt status and count from HW.
- * @hw_info: Pointer to struct hw_info.
- * @para: Pointer to struct dpmaif_hw_intr_st_para.
- * @qno: Queue number.
- *
- * Reads RX/TX interrupt status from HW and clears UL/DL status as needed.
- *
- * Return: Interrupt count.
- */
+ 
 int t7xx_dpmaif_hw_get_intr_cnt(struct dpmaif_hw_info *hw_info,
 				struct dpmaif_hw_intr_st_para *para, int qno)
 {
@@ -350,11 +320,9 @@ int t7xx_dpmaif_hw_get_intr_cnt(struct dpmaif_hw_info *hw_info,
 	rx_intr_status = ioread32(hw_info->pcie_base + DPMAIF_AP_APDL_L2TISAR0);
 	rx_intr_qdone = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_APDL_L2TIMR0);
 
-	/* TX interrupt status */
+	 
 	if (qno == DPF_RX_QNO_DFT) {
-		/* All ULQ and DLQ0 interrupts use the same source no need to check ULQ interrupts
-		 * when a DLQ1 interrupt has occurred.
-		 */
+		 
 		tx_intr_status = ioread32(hw_info->pcie_base + DPMAIF_AP_L2TISAR0);
 		tx_intr_qdone = ioread32(hw_info->pcie_base + DPMAIF_AO_UL_AP_L2TIMR0);
 	}
@@ -362,9 +330,7 @@ int t7xx_dpmaif_hw_get_intr_cnt(struct dpmaif_hw_info *hw_info,
 	t7xx_dpmaif_clr_ip_busy_sts(hw_info);
 
 	if (qno == DPF_RX_QNO_DFT) {
-		/* Do not schedule bottom half again or clear UL interrupt status when we
-		 * have already masked it.
-		 */
+		 
 		tx_intr_status &= ~tx_intr_qdone;
 		if (tx_intr_status)
 			t7xx_dpmaif_hw_check_tx_intr(hw_info, tx_intr_status, para);
@@ -374,9 +340,7 @@ int t7xx_dpmaif_hw_get_intr_cnt(struct dpmaif_hw_info *hw_info,
 		if (qno == DPF_RX_QNO0) {
 			rx_intr_status &= DP_DL_Q0_STATUS_MASK;
 			if (rx_intr_qdone & DPMAIF_DL_INT_DLQ0_QDONE)
-				/* Do not schedule bottom half again or clear DL
-				 * queue done interrupt status when we have already masked it.
-				 */
+				 
 				rx_intr_status &= ~DP_DL_INT_Q0_DONE;
 		} else {
 			rx_intr_status &= DP_DL_Q1_STATUS_MASK;
@@ -452,7 +416,7 @@ static void t7xx_dpmaif_dl_performance(struct dpmaif_hw_info *hw_info)
 	iowrite32(enable_pit_burst, hw_info->pcie_base + DPMAIF_AO_DL_RDY_CHK_THRES);
 }
 
- /* DPMAIF DL DLQ part HW setting */
+  
 
 static void t7xx_dpmaif_hw_hpc_cntl_set(struct dpmaif_hw_info *hw_info)
 {
@@ -487,7 +451,7 @@ static void t7xx_dpmaif_hw_dlq_timeout_thres_set(struct dpmaif_hw_info *hw_info)
 {
 	unsigned int value, i;
 
-	/* Each register holds two DLQ threshold timeout values */
+	 
 	for (i = 0; i < DPMAIF_HPC_MAX_TOTAL_NUM / 2; i++) {
 		value = FIELD_PREP(DPMAIF_DLQ_LOW_TIMEOUT_THRES_MKS, DPMAIF_DLQ_TIMEOUT_THRES_DF);
 		value |= FIELD_PREP(DPMAIF_DLQ_HIGH_TIMEOUT_THRES_MSK,
@@ -817,7 +781,7 @@ static int t7xx_dpmaif_config_dlq_hw(struct dpmaif_hw_info *hw_info)
 
 	t7xx_dpmaif_dl_dlq_hpc_hw_init(hw_info);
 
-	dl_que = &hw_info->dl_que[0]; /* All queues share one BAT/frag BAT table */
+	dl_que = &hw_info->dl_que[0];  
 	if (!dl_que->que_started)
 		return -EBUSY;
 
@@ -850,7 +814,7 @@ static int t7xx_dpmaif_config_dlq_hw(struct dpmaif_hw_info *hw_info)
 	if (ret)
 		return ret;
 
-	/* Init PIT (two PIT table) */
+	 
 	t7xx_dpmaif_config_all_dlq_hw(hw_info);
 	t7xx_dpmaif_dl_all_q_en(hw_info, true);
 	t7xx_dpmaif_dl_set_pkt_checksum(hw_info);
@@ -1144,17 +1108,7 @@ static void t7xx_dpmaif_set_queue_property(struct dpmaif_hw_info *hw_info,
 	}
 }
 
-/**
- * t7xx_dpmaif_hw_stop_all_txq() - Stop all TX queues.
- * @hw_info: Pointer to struct hw_info.
- *
- * Disable HW UL queues. Checks busy UL queues to go to idle
- * with an attempt count of 1000000.
- *
- * Return:
- * * 0			- Success
- * * -ETIMEDOUT		- Timed out checking busy queues
- */
+ 
 int t7xx_dpmaif_hw_stop_all_txq(struct dpmaif_hw_info *hw_info)
 {
 	int count = 0;
@@ -1171,19 +1125,7 @@ int t7xx_dpmaif_hw_stop_all_txq(struct dpmaif_hw_info *hw_info)
 	return 0;
 }
 
-/**
- * t7xx_dpmaif_hw_stop_all_rxq() - Stop all RX queues.
- * @hw_info: Pointer to struct hw_info.
- *
- * Disable HW DL queue. Checks busy UL queues to go to idle
- * with an attempt count of 1000000.
- * Check that HW PIT write index equals read index with the same
- * attempt count.
- *
- * Return:
- * * 0			- Success.
- * * -ETIMEDOUT		- Timed out checking busy queues.
- */
+ 
 int t7xx_dpmaif_hw_stop_all_rxq(struct dpmaif_hw_info *hw_info)
 {
 	unsigned int wr_idx, rd_idx;
@@ -1198,7 +1140,7 @@ int t7xx_dpmaif_hw_stop_all_rxq(struct dpmaif_hw_info *hw_info)
 		}
 	}
 
-	/* Check middle PIT sync done */
+	 
 	count = 0;
 	do {
 		wr_idx = ioread32(hw_info->pcie_base + DPMAIF_AO_DL_PIT_WR_IDX);
@@ -1220,17 +1162,7 @@ void t7xx_dpmaif_start_hw(struct dpmaif_hw_info *hw_info)
 	t7xx_dpmaif_dl_all_q_en(hw_info, true);
 }
 
-/**
- * t7xx_dpmaif_hw_init() - Initialize HW data path API.
- * @hw_info: Pointer to struct hw_info.
- * @init_param: Pointer to struct dpmaif_hw_params.
- *
- * Configures port mode, clock config, HW interrupt initialization, and HW queue.
- *
- * Return:
- * * 0		- Success.
- * * -ERROR	- Error code from failure sub-initializations.
- */
+ 
 int t7xx_dpmaif_hw_init(struct dpmaif_hw_info *hw_info, struct dpmaif_hw_params *init_param)
 {
 	int ret;

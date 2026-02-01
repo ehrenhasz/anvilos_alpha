@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2023. Huawei Technologies Co., Ltd */
+
+ 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -29,7 +29,7 @@ int pid = 0;
 	}; \
 	struct map_value_##_size { \
 		struct bin_data_##_size __kptr * data; \
-		/* To emit BTF info for bin_data_xx */ \
+		  \
 		struct bin_data_##_size not_used; \
 	}; \
 	struct { \
@@ -103,9 +103,7 @@ int test_bpf_mem_alloc_free(void *ctx)
 	if ((u32)bpf_get_current_pid_tgid() != pid)
 		return 0;
 
-	/* Alloc 128 8-bytes objects in batch to trigger refilling,
-	 * then free 128 8-bytes objects in batch to trigger freeing.
-	 */
+	 
 	CALL_BATCH_ALLOC_FREE(8, 128, 0);
 	CALL_BATCH_ALLOC_FREE(16, 128, 1);
 	CALL_BATCH_ALLOC_FREE(32, 128, 2);

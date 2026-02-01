@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: station TX data handling
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "decl.h"
 #include "ioctl.h"
@@ -12,23 +8,7 @@
 #include "main.h"
 #include "wmm.h"
 
-/*
- * This function fills the TxPD for tx packets.
- *
- * The Tx buffer received by this function should already have the
- * header space allocated for TxPD.
- *
- * This function inserts the TxPD in between interface header and actual
- * data and adjusts the buffer pointers accordingly.
- *
- * The following TxPD fields are set by this function, as required -
- *      - BSS number
- *      - Tx packet length and offset
- *      - Priority
- *      - Packet delay
- *      - Priority specific Tx control
- *      - Flags
- */
+ 
 void mwifiex_process_sta_txpd(struct mwifiex_private *priv,
 			      struct sk_buff *skb)
 {
@@ -65,10 +45,7 @@ void mwifiex_process_sta_txpd(struct mwifiex_private *priv,
 
 	if (local_tx_pd->priority <
 	    ARRAY_SIZE(priv->wmm.user_pri_pkt_tx_ctrl))
-		/*
-		 * Set the priority specific tx_control field, setting of 0 will
-		 *   cause the default value to be used later in this function
-		 */
+		 
 		local_tx_pd->tx_control =
 			cpu_to_le32(priv->wmm.user_pri_pkt_tx_ctrl[local_tx_pd->
 								   priority]);
@@ -84,36 +61,31 @@ void mwifiex_process_sta_txpd(struct mwifiex_private *priv,
 	if (tx_info->flags & MWIFIEX_BUF_FLAG_TDLS_PKT)
 		local_tx_pd->flags |= MWIFIEX_TXPD_FLAGS_TDLS_PACKET;
 
-	/* Offset of actual data */
+	 
 	pkt_offset = sizeof(struct txpd) + pad;
 	if (pkt_type == PKT_TYPE_MGMT) {
-		/* Set the packet type and add header for management frame */
+		 
 		local_tx_pd->tx_pkt_type = cpu_to_le16(pkt_type);
 		pkt_offset += MWIFIEX_MGMT_FRAME_HEADER_SIZE;
 	}
 
 	local_tx_pd->tx_pkt_offset = cpu_to_le16(pkt_offset);
 
-	/* make space for adapter->intf_hdr_len */
+	 
 	skb_push(skb, hroom);
 
 	if (!local_tx_pd->tx_control)
-		/* TxCtrl set by user or default */
+		 
 		local_tx_pd->tx_control = cpu_to_le32(priv->pkt_tx_ctrl);
 }
 
-/*
- * This function tells firmware to send a NULL data packet.
- *
- * The function creates a NULL data packet with TxPD and sends to the
- * firmware for transmission, with highest priority setting.
- */
+ 
 int mwifiex_send_null_packet(struct mwifiex_private *priv, u8 flags)
 {
 	struct mwifiex_adapter *adapter = priv->adapter;
 	struct txpd *local_tx_pd;
 	struct mwifiex_tx_param tx_param;
-/* sizeof(struct txpd) + Interface specific header */
+ 
 #define NULL_PACKET_HDR 64
 	u32 data_len = NULL_PACKET_HDR;
 	struct sk_buff *skb;
@@ -195,9 +167,7 @@ int mwifiex_send_null_packet(struct mwifiex_private *priv, u8 flags)
 	return ret;
 }
 
-/*
- * This function checks if we need to send last packet indication.
- */
+ 
 u8
 mwifiex_check_last_packet_indication(struct mwifiex_private *priv)
 {

@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx Switch Global 2 Scratch & Misc Registers support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2017 National Instruments
- *      Brandon Streiff <brandon.streiff@ni.com>
- */
+
+ 
 
 #include "chip.h"
 #include "global2.h"
 
-/* Offset 0x1A: Scratch and Misc. Register */
+ 
 static int mv88e6xxx_g2_scratch_read(struct mv88e6xxx_chip *chip, int reg,
 				     u8 *data)
 {
@@ -41,13 +34,7 @@ static int mv88e6xxx_g2_scratch_write(struct mv88e6xxx_chip *chip, int reg,
 				  MV88E6XXX_G2_SCRATCH_MISC_UPDATE | value);
 }
 
-/**
- * mv88e6xxx_g2_scratch_get_bit - get a bit
- * @chip: chip private data
- * @base_reg: base of scratch bits
- * @offset: index of bit within the register
- * @set: is bit set?
- */
+ 
 static int mv88e6xxx_g2_scratch_get_bit(struct mv88e6xxx_chip *chip,
 					int base_reg, unsigned int offset,
 					int *set)
@@ -66,15 +53,7 @@ static int mv88e6xxx_g2_scratch_get_bit(struct mv88e6xxx_chip *chip,
 	return 0;
 }
 
-/**
- * mv88e6xxx_g2_scratch_set_bit - set (or clear) a bit
- * @chip: chip private data
- * @base_reg: base of scratch bits
- * @offset: index of bit within the register
- * @set: should this bit be set?
- *
- * Helper function for dealing with the direction and data registers.
- */
+ 
 static int mv88e6xxx_g2_scratch_set_bit(struct mv88e6xxx_chip *chip,
 					int base_reg, unsigned int offset,
 					int set)
@@ -96,13 +75,7 @@ static int mv88e6xxx_g2_scratch_set_bit(struct mv88e6xxx_chip *chip,
 	return mv88e6xxx_g2_scratch_write(chip, reg, val);
 }
 
-/**
- * mv88e6352_g2_scratch_gpio_get_data - get data on gpio pin
- * @chip: chip private data
- * @pin: gpio index
- *
- * Return: 0 for low, 1 for high, negative error
- */
+ 
 static int mv88e6352_g2_scratch_gpio_get_data(struct mv88e6xxx_chip *chip,
 					      unsigned int pin)
 {
@@ -118,12 +91,7 @@ static int mv88e6352_g2_scratch_gpio_get_data(struct mv88e6xxx_chip *chip,
 	return val;
 }
 
-/**
- * mv88e6352_g2_scratch_gpio_set_data - set data on gpio pin
- * @chip: chip private data
- * @pin: gpio index
- * @value: value to set
- */
+ 
 static int mv88e6352_g2_scratch_gpio_set_data(struct mv88e6xxx_chip *chip,
 					      unsigned int pin, int value)
 {
@@ -141,13 +109,7 @@ static int mv88e6352_g2_scratch_gpio_set_data(struct mv88e6xxx_chip *chip,
 	return mv88e6xxx_g2_scratch_write(chip, reg, chip->gpio_data[offset]);
 }
 
-/**
- * mv88e6352_g2_scratch_gpio_get_dir - get direction of gpio pin
- * @chip: chip private data
- * @pin: gpio index
- *
- * Return: 0 for output, 1 for input (same as GPIOF_DIR_XXX).
- */
+ 
 static int mv88e6352_g2_scratch_gpio_get_dir(struct mv88e6xxx_chip *chip,
 					     unsigned int pin)
 {
@@ -163,12 +125,7 @@ static int mv88e6352_g2_scratch_gpio_get_dir(struct mv88e6xxx_chip *chip,
 	return val;
 }
 
-/**
- * mv88e6352_g2_scratch_gpio_set_dir - set direction of gpio pin
- * @chip: chip private data
- * @pin: gpio index
- * @input: should the gpio be an input, or an output?
- */
+ 
 static int mv88e6352_g2_scratch_gpio_set_dir(struct mv88e6xxx_chip *chip,
 					     unsigned int pin, bool input)
 {
@@ -180,14 +137,7 @@ static int mv88e6352_g2_scratch_gpio_set_dir(struct mv88e6xxx_chip *chip,
 					    pin, value);
 }
 
-/**
- * mv88e6352_g2_scratch_gpio_get_pctl - get pin control setting
- * @chip: chip private data
- * @pin: gpio index
- * @func: function number
- *
- * Note that the function numbers themselves may vary by chipset.
- */
+ 
 static int mv88e6352_g2_scratch_gpio_get_pctl(struct mv88e6xxx_chip *chip,
 					      unsigned int pin, int *func)
 {
@@ -206,12 +156,7 @@ static int mv88e6352_g2_scratch_gpio_get_pctl(struct mv88e6xxx_chip *chip,
 	return 0;
 }
 
-/**
- * mv88e6352_g2_scratch_gpio_set_pctl - set pin control setting
- * @chip: chip private data
- * @pin: gpio index
- * @func: function number
- */
+ 
 static int mv88e6352_g2_scratch_gpio_set_pctl(struct mv88e6xxx_chip *chip,
 					      unsigned int pin, int func)
 {
@@ -239,15 +184,7 @@ const struct mv88e6xxx_gpio_ops mv88e6352_gpio_ops = {
 	.set_pctl = mv88e6352_g2_scratch_gpio_set_pctl,
 };
 
-/**
- * mv88e6xxx_g2_scratch_gpio_set_smi - set gpio muxing for external smi
- * @chip: chip private data
- * @external: set mux for external smi, or free for gpio usage
- *
- * Some mv88e6xxx models have GPIO pins that may be configured as
- * an external SMI interface, or they may be made free for other
- * GPIO uses.
- */
+ 
 int mv88e6xxx_g2_scratch_gpio_set_smi(struct mv88e6xxx_chip *chip,
 				      bool external)
 {
@@ -278,7 +215,7 @@ int mv88e6xxx_g2_scratch_gpio_set_smi(struct mv88e6xxx_chip *chip,
 	if (err)
 		return err;
 
-	/* NO_CPU being 0 inverts the meaning of the bit */
+	 
 	if (!no_cpu)
 		external = !external;
 
@@ -290,16 +227,7 @@ int mv88e6xxx_g2_scratch_gpio_set_smi(struct mv88e6xxx_chip *chip,
 	return mv88e6xxx_g2_scratch_write(chip, misc_cfg, val);
 }
 
-/**
- * mv88e6352_g2_scratch_port_has_serdes - indicate if a port can have a serdes
- * @chip: chip private data
- * @port: port number to check for serdes
- *
- * Indicates whether the port may have a serdes attached according to the
- * pin strapping. Returns negative error number, 0 if the port is not
- * configured to have a serdes, and 1 if the port is configured to have a
- * serdes attached.
- */
+ 
 int mv88e6352_g2_scratch_port_has_serdes(struct mv88e6xxx_chip *chip, int port)
 {
 	u8 config3, p;

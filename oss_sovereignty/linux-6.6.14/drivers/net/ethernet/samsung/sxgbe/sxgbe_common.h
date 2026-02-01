@@ -1,16 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* 10G controller driver for Samsung SoCs
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Siva Reddy Kallam <siva.kallam@samsung.com>
- */
+ 
+ 
 
 #ifndef __SXGBE_COMMON_H__
 #define __SXGBE_COMMON_H__
 
-/* forward references */
+ 
 struct sxgbe_desc_ops;
 struct sxgbe_dma_ops;
 struct sxgbe_mtl_ops;
@@ -18,12 +12,12 @@ struct sxgbe_mtl_ops;
 #define SXGBE_RESOURCE_NAME	"sam_sxgbeeth"
 #define DRV_MODULE_VERSION	"November_2013"
 
-/* MAX HW feature words */
+ 
 #define SXGBE_HW_WORDS 3
 
 #define SXGBE_RX_COE_NONE	0
 
-/* CSR Frequency Access Defines*/
+ 
 #define SXGBE_CSR_F_150M	150000000
 #define SXGBE_CSR_F_250M	250000000
 #define SXGBE_CSR_F_300M	300000000
@@ -31,27 +25,24 @@ struct sxgbe_mtl_ops;
 #define SXGBE_CSR_F_400M	400000000
 #define SXGBE_CSR_F_500M	500000000
 
-/* pause time */
+ 
 #define SXGBE_PAUSE_TIME 0x200
 
-/* tx queues */
+ 
 #define SXGBE_TX_QUEUES   8
 #define SXGBE_RX_QUEUES   16
 
-/* Calculated based how much time does it take to fill 256KB Rx memory
- * at 10Gb speed at 156MHz clock rate and considered little less then
- * the actual value.
- */
+ 
 #define SXGBE_MAX_DMA_RIWT	0x70
 #define SXGBE_MIN_DMA_RIWT	0x01
 
-/* Tx coalesce parameters */
+ 
 #define SXGBE_COAL_TX_TIMER	40000
 #define SXGBE_MAX_COAL_TX_TICK	100000
 #define SXGBE_TX_MAX_FRAMES	512
 #define SXGBE_TX_FRAMES	128
 
-/* SXGBE TX FIFO is 8K, Rx FIFO is 16K */
+ 
 #define BUF_SIZE_16KiB 16384
 #define BUF_SIZE_8KiB 8192
 #define BUF_SIZE_4KiB 4096
@@ -60,15 +51,15 @@ struct sxgbe_mtl_ops;
 #define SXGBE_DEFAULT_LIT_LS	0x3E8
 #define SXGBE_DEFAULT_TWT_LS	0x0
 
-/* Flow Control defines */
+ 
 #define SXGBE_FLOW_OFF		0
 #define SXGBE_FLOW_RX		1
 #define SXGBE_FLOW_TX		2
 #define SXGBE_FLOW_AUTO		(SXGBE_FLOW_TX | SXGBE_FLOW_RX)
 
-#define SF_DMA_MODE 1		/* DMA STORE-AND-FORWARD Operation Mode */
+#define SF_DMA_MODE 1		 
 
-/* errors */
+ 
 #define RX_GMII_ERR		0x01
 #define RX_WATCHDOG_ERR		0x02
 #define RX_CRC_ERR		0x03
@@ -77,7 +68,7 @@ struct sxgbe_mtl_ops;
 #define RX_PAYLOAD_ERR		0x06
 #define RX_OVERFLOW_ERR		0x07
 
-/* pkt type */
+ 
 #define RX_LEN_PKT		0x00
 #define RX_MACCTL_PKT		0x01
 #define RX_DCBCTL_PKT		0x02
@@ -115,20 +106,20 @@ struct sxgbe_mtl_ops;
 #define RX_PTP_SIGNAL		0x0A
 #define RX_PTP_RESV_MSG		0x0F
 
-/* EEE-LPI mode  flags*/
+ 
 #define TX_ENTRY_LPI_MODE	0x10
 #define TX_EXIT_LPI_MODE	0x20
 #define RX_ENTRY_LPI_MODE	0x40
 #define RX_EXIT_LPI_MODE	0x80
 
-/* EEE-LPI Interrupt status flag */
+ 
 #define LPI_INT_STATUS		BIT(5)
 
-/* EEE-LPI Default timer values */
+ 
 #define LPI_LINK_STATUS_TIMER	0x3E8
 #define LPI_MAC_WAIT_TIMER	0x00
 
-/* EEE-LPI Control and status definitions */
+ 
 #define LPI_CTRL_STATUS_TXA	BIT(19)
 #define LPI_CTRL_STATUS_PLSDIS	BIT(18)
 #define LPI_CTRL_STATUS_PLS	BIT(17)
@@ -158,36 +149,36 @@ enum dma_irq_status {
 				 NETIF_F_HW_VLAN_CTAG_FILTER |	\
 				 NETIF_F_HW_VLAN_STAG_FILTER)
 
-/* MMC control defines */
+ 
 #define SXGBE_MMC_CTRL_CNT_FRZ  0x00000008
 
-/* SXGBE HW ADDR regs */
+ 
 #define SXGBE_ADDR_HIGH(reg)    (((reg > 15) ? 0x00000800 : 0x00000040) + \
 				 (reg * 8))
 #define SXGBE_ADDR_LOW(reg)     (((reg > 15) ? 0x00000804 : 0x00000044) + \
 				 (reg * 8))
-#define SXGBE_MAX_PERFECT_ADDRESSES 32 /* Maximum unicast perfect filtering */
-#define SXGBE_FRAME_FILTER       0x00000004      /* Frame Filter */
+#define SXGBE_MAX_PERFECT_ADDRESSES 32  
+#define SXGBE_FRAME_FILTER       0x00000004       
 
-/* SXGBE Frame Filter defines */
-#define SXGBE_FRAME_FILTER_PR    0x00000001      /* Promiscuous Mode */
-#define SXGBE_FRAME_FILTER_HUC   0x00000002      /* Hash Unicast */
-#define SXGBE_FRAME_FILTER_HMC   0x00000004      /* Hash Multicast */
-#define SXGBE_FRAME_FILTER_DAIF  0x00000008      /* DA Inverse Filtering */
-#define SXGBE_FRAME_FILTER_PM    0x00000010      /* Pass all multicast */
-#define SXGBE_FRAME_FILTER_DBF   0x00000020      /* Disable Broadcast frames */
-#define SXGBE_FRAME_FILTER_SAIF  0x00000100      /* Inverse Filtering */
-#define SXGBE_FRAME_FILTER_SAF   0x00000200      /* Source Address Filter */
-#define SXGBE_FRAME_FILTER_HPF   0x00000400      /* Hash or perfect Filter */
-#define SXGBE_FRAME_FILTER_RA    0x80000000      /* Receive all mode */
+ 
+#define SXGBE_FRAME_FILTER_PR    0x00000001       
+#define SXGBE_FRAME_FILTER_HUC   0x00000002       
+#define SXGBE_FRAME_FILTER_HMC   0x00000004       
+#define SXGBE_FRAME_FILTER_DAIF  0x00000008       
+#define SXGBE_FRAME_FILTER_PM    0x00000010       
+#define SXGBE_FRAME_FILTER_DBF   0x00000020       
+#define SXGBE_FRAME_FILTER_SAIF  0x00000100       
+#define SXGBE_FRAME_FILTER_SAF   0x00000200       
+#define SXGBE_FRAME_FILTER_HPF   0x00000400       
+#define SXGBE_FRAME_FILTER_RA    0x80000000       
 
 #define SXGBE_HASH_TABLE_SIZE    64
-#define SXGBE_HASH_HIGH          0x00000008      /* Multicast Hash Table High */
-#define SXGBE_HASH_LOW           0x0000000c      /* Multicast Hash Table Low */
+#define SXGBE_HASH_HIGH          0x00000008       
+#define SXGBE_HASH_LOW           0x0000000c       
 
 #define SXGBE_HI_REG_AE          0x80000000
 
-/* Minimum and maximum MTU */
+ 
 #define MIN_MTU         68
 #define MAX_MTU         9000
 
@@ -208,9 +199,9 @@ enum dma_irq_status {
 
 #define REG_SPACE_SIZE		0x2000
 
-/* sxgbe statistics counters */
+ 
 struct sxgbe_extra_stats {
-	/* TX/RX IRQ events */
+	 
 	unsigned long tx_underflow_irq;
 	unsigned long tx_process_stopped_irq;
 	unsigned long tx_ctxt_desc_err;
@@ -227,7 +218,7 @@ struct sxgbe_extra_stats {
 	unsigned long rx_process_stopped_irq;
 	unsigned long rx_underflow_irq;
 
-	/* Bus access errors */
+	 
 	unsigned long fatal_bus_error_irq;
 	unsigned long tx_read_transfer_err;
 	unsigned long tx_write_transfer_err;
@@ -240,15 +231,15 @@ struct sxgbe_extra_stats {
 	unsigned long rx_buffer_access_err;
 	unsigned long rx_data_transfer_err;
 
-	/* EEE-LPI stats */
+	 
 	unsigned long tx_lpi_entry_n;
 	unsigned long tx_lpi_exit_n;
 	unsigned long rx_lpi_entry_n;
 	unsigned long rx_lpi_exit_n;
 	unsigned long eee_wakeup_error_n;
 
-	/* RX specific */
-	/* L2 error */
+	 
+	 
 	unsigned long rx_code_gmii_err;
 	unsigned long rx_watchdog_err;
 	unsigned long rx_crc_err;
@@ -257,7 +248,7 @@ struct sxgbe_extra_stats {
 	unsigned long ip_payload_err;
 	unsigned long overflow_error;
 
-	/* L2 Pkt type */
+	 
 	unsigned long len_pkt;
 	unsigned long mac_ctl_pkt;
 	unsigned long dcb_ctl_pkt;
@@ -272,7 +263,7 @@ struct sxgbe_extra_stats {
 	unsigned long dvlan_osvlan_icvlan_pkt;
 	unsigned long dvan_ocvlan_icvlan_pkt;
 
-	/* L3/L4 Pkt type */
+	 
 	unsigned long not_ip_pkt;
 	unsigned long ip4_tcp_pkt;
 	unsigned long ip4_udp_pkt;
@@ -283,7 +274,7 @@ struct sxgbe_extra_stats {
 	unsigned long ip6_icmp_pkt;
 	unsigned long ip6_unknown_pkt;
 
-	/* Filter specific */
+	 
 	unsigned long vlan_filter_match;
 	unsigned long sa_filter_fail;
 	unsigned long da_filter_fail;
@@ -291,7 +282,7 @@ struct sxgbe_extra_stats {
 	unsigned long l3_filter_match;
 	unsigned long l4_filter_match;
 
-	/* RX context specific */
+	 
 	unsigned long timestamp_dropped;
 	unsigned long rx_msg_type_no_ptp;
 	unsigned long rx_ptp_type_sync;
@@ -314,21 +305,21 @@ struct mac_link {
 };
 
 struct mii_regs {
-	unsigned int addr;	/* MII Address */
-	unsigned int data;	/* MII Data */
+	unsigned int addr;	 
+	unsigned int data;	 
 };
 
 struct sxgbe_core_ops {
-	/* MAC core initialization */
+	 
 	void (*core_init)(void __iomem *ioaddr);
-	/* Dump MAC registers */
+	 
 	void (*dump_regs)(void __iomem *ioaddr);
-	/* Handle extra events on specific interrupts hw dependent */
+	 
 	int (*host_irq_status)(void __iomem *ioaddr,
 			       struct sxgbe_extra_stats *x);
-	/* Set power management mode (e.g. magic frame) */
+	 
 	void (*pmt)(void __iomem *ioaddr, unsigned long mode);
-	/* Set/Get Unicast MAC addresses */
+	 
 	void (*set_umac_addr)(void __iomem *ioaddr, const unsigned char *addr,
 			      unsigned int reg_n);
 	void (*get_umac_addr)(void __iomem *ioaddr, unsigned char *addr,
@@ -336,23 +327,23 @@ struct sxgbe_core_ops {
 	void (*enable_rx)(void __iomem *ioaddr, bool enable);
 	void (*enable_tx)(void __iomem *ioaddr, bool enable);
 
-	/* controller version specific operations */
+	 
 	int (*get_controller_version)(void __iomem *ioaddr);
 
-	/* If supported then get the optional core features */
+	 
 	unsigned int (*get_hw_feature)(void __iomem *ioaddr,
 				       unsigned char feature_index);
-	/* adjust SXGBE speed */
+	 
 	void (*set_speed)(void __iomem *ioaddr, unsigned char speed);
 
-	/* EEE-LPI specific operations */
+	 
 	void (*set_eee_mode)(void __iomem *ioaddr);
 	void (*reset_eee_mode)(void __iomem *ioaddr);
 	void (*set_eee_timer)(void __iomem *ioaddr, const int ls,
 			      const int tw);
 	void (*set_eee_pls)(void __iomem *ioaddr, const int link);
 
-	/* Enable disable checksum offload operations */
+	 
 	void (*enable_rx_csum)(void __iomem *ioaddr);
 	void (*disable_rx_csum)(void __iomem *ioaddr);
 	void (*enable_rxqueue)(void __iomem *ioaddr, int queue_num);
@@ -366,13 +357,13 @@ struct sxgbe_ops {
 	const struct sxgbe_desc_ops *desc;
 	const struct sxgbe_dma_ops *dma;
 	const struct sxgbe_mtl_ops *mtl;
-	struct mii_regs mii;	/* MII register Addresses */
+	struct mii_regs mii;	 
 	struct mac_link link;
 	unsigned int ctrl_uid;
 	unsigned int ctrl_id;
 };
 
-/* SXGBE private data structures */
+ 
 struct sxgbe_tx_queue {
 	unsigned int irq_no;
 	struct sxgbe_priv_data *priv_ptr;
@@ -404,12 +395,12 @@ struct sxgbe_rx_queue {
 	u8 queue_no;
 };
 
-/* SXGBE HW capabilities */
+ 
 struct sxgbe_hw_features {
-	/****** CAP [0] *******/
+	 
 	unsigned int pmt_remote_wake_up;
 	unsigned int pmt_magic_frame;
-	/* IEEE 1588-2008 */
+	 
 	unsigned int atime_stamp;
 
 	unsigned int eee;
@@ -420,7 +411,7 @@ struct sxgbe_hw_features {
 	unsigned int tstamp_srcselect;
 	unsigned int sa_vlan_insert;
 
-	/****** CAP [1] *******/
+	 
 	unsigned int rxfifo_size;
 	unsigned int txfifo_size;
 	unsigned int atstmap_hword;
@@ -432,15 +423,12 @@ struct sxgbe_hw_features {
 	unsigned int hash_tsize;
 	unsigned int l3l4_filer_size;
 
-	/* This value is in bytes and
-	 * as mentioned in HW features
-	 * of SXGBE data book
-	 */
+	 
 	unsigned int rx_mtl_qsize;
 	unsigned int tx_mtl_qsize;
 
-	/****** CAP [2] *******/
-	/* TX and RX number of channels */
+	 
+	 
 	unsigned int rx_mtl_queues;
 	unsigned int tx_mtl_queues;
 	unsigned int rx_dma_channels;
@@ -450,7 +438,7 @@ struct sxgbe_hw_features {
 };
 
 struct sxgbe_priv_data {
-	/* DMA descriptos */
+	 
 	struct sxgbe_tx_queue *txq[SXGBE_TX_QUEUES];
 	struct sxgbe_rx_queue *rxq[SXGBE_RX_QUEUES];
 	u8 cur_rx_qnum;
@@ -465,11 +453,11 @@ struct sxgbe_priv_data {
 	void __iomem *ioaddr;
 	struct net_device *dev;
 	struct device *device;
-	struct sxgbe_ops *hw;	/* sxgbe specific ops */
+	struct sxgbe_ops *hw;	 
 	int no_csum_insertion;
 	int irq;
 	int rxcsum_insertion;
-	spinlock_t stats_lock;	/* lock for tx/rx statatics */
+	spinlock_t stats_lock;	 
 
 	int oldlink;
 	int speed;
@@ -490,15 +478,15 @@ struct sxgbe_priv_data {
 	unsigned int mode;
 	unsigned int default_addend;
 
-	/* advanced time stamp support */
+	 
 	u32 adv_ts;
 	int use_riwt;
 	struct ptp_clock *ptp_clock;
 
-	/* tc control */
+	 
 	int tx_tc;
 	int rx_tc;
-	/* EEE-LPI specific members */
+	 
 	struct timer_list eee_ctrl_timer;
 	bool tx_path_in_lpi_mode;
 	int lpi_irq;
@@ -507,7 +495,7 @@ struct sxgbe_priv_data {
 	int tx_lpi_timer;
 };
 
-/* Function prototypes */
+ 
 struct sxgbe_priv_data *sxgbe_drv_probe(struct device *device,
 					struct sxgbe_plat_data *plat_dat,
 					void __iomem *addr);
@@ -523,10 +511,10 @@ int sxgbe_suspend(struct net_device *ndev);
 int sxgbe_resume(struct net_device *ndev);
 int sxgbe_freeze(struct net_device *ndev);
 int sxgbe_restore(struct net_device *ndev);
-#endif /* CONFIG_PM */
+#endif  
 
 const struct sxgbe_mtl_ops *sxgbe_get_mtl_ops(void);
 
 void sxgbe_disable_eee_mode(struct sxgbe_priv_data * const priv);
 bool sxgbe_eee_init(struct sxgbe_priv_data * const priv);
-#endif /* __SXGBE_COMMON_H__ */
+#endif  

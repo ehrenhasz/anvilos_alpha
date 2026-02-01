@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007-2016, Synaptics Incorporated
- * Copyright (C) 2016 Zodiac Inflight Innovations
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/rmi.h>
@@ -217,10 +214,7 @@ static int rmi_f34_flash_firmware(struct f34_data *f34,
 	}
 
 	if (config_size) {
-		/*
-		 * We only need to erase config if we haven't updated
-		 * firmware.
-		 */
+		 
 		if (!image_size) {
 			dev_info(&fn->dev, "Erasing config...\n");
 			ret = rmi_f34_command(f34, F34_ERASE_CONFIG,
@@ -302,10 +296,7 @@ static int rmi_f34_status(struct rmi_function *fn)
 {
 	struct f34_data *f34 = dev_get_drvdata(&fn->dev);
 
-	/*
-	 * The status is the percentage complete, or once complete,
-	 * zero for success or a negative return code.
-	 */
+	 
 	return f34->update_status;
 }
 
@@ -381,7 +372,7 @@ static int rmi_firmware_update(struct rmi_driver_data *data,
 		return -ENODEV;
 	}
 
-	/* Enter flash mode */
+	 
 	if (f34->bl_version >= 7)
 		ret = rmi_f34v7_start_reflash(f34, fw);
 	else
@@ -391,7 +382,7 @@ static int rmi_firmware_update(struct rmi_driver_data *data,
 
 	rmi_disable_irq(rmi_dev, false);
 
-	/* Tear down functions and re-probe */
+	 
 	rmi_free_function_list(rmi_dev);
 
 	ret = rmi_probe_interrupts(data);
@@ -412,7 +403,7 @@ static int rmi_firmware_update(struct rmi_driver_data *data,
 
 	f34 = dev_get_drvdata(&data->f34_container->dev);
 
-	/* Perform firmware update */
+	 
 	if (f34->bl_version >= 7)
 		ret = rmi_f34v7_do_reflash(f34, fw);
 	else
@@ -428,7 +419,7 @@ static int rmi_firmware_update(struct rmi_driver_data *data,
 
 	rmi_disable_irq(rmi_dev, false);
 
-	/* Re-probe */
+	 
 	rmi_dbg(RMI_DEBUG_FN, dev, "Re-probing device\n");
 	rmi_free_function_list(rmi_dev);
 
@@ -447,7 +438,7 @@ static int rmi_firmware_update(struct rmi_driver_data *data,
 	rmi_enable_irq(rmi_dev, false);
 
 	if (data->f01_container->dev.driver)
-		/* Driver already bound, so enable ATTN now. */
+		 
 		return rmi_enable_sensor(rmi_dev);
 
 	rmi_dbg(RMI_DEBUG_FN, dev, "%s complete\n", __func__);
@@ -532,7 +523,7 @@ static int rmi_f34_probe(struct rmi_function *fn)
 	f34->fn = fn;
 	dev_set_drvdata(&fn->dev, f34);
 
-	/* v5 code only supported version 0, try V7 probe */
+	 
 	if (version > 0)
 		return rmi_f34v7_probe(f34);
 

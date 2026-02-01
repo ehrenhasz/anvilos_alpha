@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2013 Noralf Tronnes
- *
- * This driver is inspired by:
- *   st7735fb.c, Copyright (C) 2011, Matt Porter
- *   broadsheetfb.c, Copyright (C) 2008, Jaya Kumar
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -178,7 +172,7 @@ void fbtft_register_backlight(struct fbtft_par *par)
 	}
 
 	bl_props.type = BACKLIGHT_RAW;
-	/* Assume backlight is off, get polarity from current state of pin */
+	 
 	bl_props.power = FB_BLANK_POWERDOWN;
 	if (!gpiod_get_value(par->gpio.led[0]))
 		par->polarity = true;
@@ -223,7 +217,7 @@ static void fbtft_reset(struct fbtft_par *par)
 	gpiod_set_value_cansleep(par->gpio.reset, 0);
 	msleep(120);
 
-	gpiod_set_value_cansleep(par->gpio.cs, 1);  /* Activate chip */
+	gpiod_set_value_cansleep(par->gpio.cs, 1);   
 }
 
 static void fbtft_update_display(struct fbtft_par *par, unsigned int start_line,
@@ -245,7 +239,7 @@ static void fbtft_update_display(struct fbtft_par *par, unsigned int start_line,
 		}
 	}
 
-	/* Sanity checks */
+	 
 	if (start_line > end_line) {
 		dev_warn(par->info->device,
 			 "%s: start_line=%u is larger than end_line=%u. Shouldn't happen, will do full display update\n",
@@ -303,13 +297,13 @@ static void fbtft_mkdirty(struct fb_info *info, int y, int height)
 	struct fbtft_par *par = info->par;
 	struct fb_deferred_io *fbdefio = info->fbdefio;
 
-	/* special case, needed ? */
+	 
 	if (y == -1) {
 		y = 0;
 		height = info->var.yres;
 	}
 
-	/* Mark display lines/area as dirty */
+	 
 	spin_lock(&par->dirty_lock);
 	if (y < par->dirty_lines_start)
 		par->dirty_lines_start = y;
@@ -317,7 +311,7 @@ static void fbtft_mkdirty(struct fb_info *info, int y, int height)
 		par->dirty_lines_end = y + height - 1;
 	spin_unlock(&par->dirty_lock);
 
-	/* Schedule deferred_io to update display (no-op if already on queue)*/
+	 
 	schedule_delayed_work(&info->deferred_work, fbdefio->delay);
 }
 
@@ -332,12 +326,12 @@ static void fbtft_deferred_io(struct fb_info *info, struct list_head *pagereflis
 	spin_lock(&par->dirty_lock);
 	dirty_lines_start = par->dirty_lines_start;
 	dirty_lines_end = par->dirty_lines_end;
-	/* set display line markers as clean */
+	 
 	par->dirty_lines_start = par->info->var.yres - 1;
 	par->dirty_lines_end = 0;
 	spin_unlock(&par->dirty_lock);
 
-	/* Mark display lines as dirty */
+	 
 	list_for_each_entry(pageref, pagereflist, list) {
 		count++;
 		y_low = pageref->offset / info->fix.line_length;
@@ -406,13 +400,13 @@ static ssize_t fbtft_fb_write(struct fb_info *info, const char __user *buf,
 		"%s: count=%zd, ppos=%llu\n", __func__,  count, *ppos);
 	res = fb_sys_write(info, buf, count, ppos);
 
-	/* TODO: only mark changed area update all for now */
+	 
 	par->fbtftops.mkdirty(info, -1, 0);
 
 	return res;
 }
 
-/* from pxafb.c */
+ 
 static unsigned int chan_to_field(unsigned int chan, struct fb_bitfield *bf)
 {
 	chan &= 0xffff;
@@ -511,25 +505,7 @@ static void fbtft_merge_fbtftops(struct fbtft_ops *dst, struct fbtft_ops *src)
 		dst->set_gamma = src->set_gamma;
 }
 
-/**
- * fbtft_framebuffer_alloc - creates a new frame buffer info structure
- *
- * @display: pointer to structure describing the display
- * @dev: pointer to the device for this fb, this can be NULL
- * @pdata: platform data for the display in use
- *
- * Creates a new frame buffer info structure.
- *
- * Also creates and populates the following structures:
- *   info->fbops
- *   info->fbdefio
- *   info->pseudo_palette
- *   par->fbtftops
- *   par->txbuf
- *
- * Returns the new structure, or NULL if an error occurred.
- *
- */
+ 
 struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
 					struct device *dev,
 					struct fbtft_platform_data *pdata)
@@ -551,7 +527,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
 	char *gamma = display->gamma;
 	u32 *gamma_curves = NULL;
 
-	/* sanity check */
+	 
 	if (display->gamma_num * display->gamma_len >
 			FBTFT_GAMMA_MAX_VALUES_TOTAL) {
 		dev_err(dev, "FBTFT_GAMMA_MAX_VALUES_TOTAL=%d is exceeded\n",
@@ -559,7 +535,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
 		return NULL;
 	}
 
-	/* defaults */
+	 
 	if (!fps)
 		fps = 20;
 	if (!bpp)
@@ -570,7 +546,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
 		return NULL;
 	}
 
-	/* override driver values? */
+	 
 	if (pdata->fps)
 		fps = pdata->fps;
 	if (pdata->txbuflen)
@@ -674,7 +650,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
 	info->var.bits_per_pixel = bpp;
 	info->var.nonstd =         1;
 
-	/* RGB565 */
+	 
 	info->var.red.offset =     11;
 	info->var.red.length =     5;
 	info->var.green.offset =   5;
@@ -707,15 +683,15 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
 			goto release_framebuf;
 	}
 
-	/* Transmit buffer */
+	 
 	if (txbuflen == -1)
-		txbuflen = vmem_size + 2; /* add in case startbyte is used */
+		txbuflen = vmem_size + 2;  
 	if (txbuflen >= vmem_size + 2)
 		txbuflen = 0;
 
 #ifdef __LITTLE_ENDIAN
 	if ((!txbuflen) && (bpp > 8))
-		txbuflen = PAGE_SIZE; /* need buffer for byteswapping */
+		txbuflen = PAGE_SIZE;  
 #endif
 
 	if (txbuflen > 0) {
@@ -726,7 +702,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
 		par->txbuf.len = txbuflen;
 	}
 
-	/* default fbtft operations */
+	 
 	par->fbtftops.write = fbtft_write_spi;
 	par->fbtftops.read = fbtft_read_spi;
 	par->fbtftops.write_vmem = fbtft_write_vmem16_bus8;
@@ -738,7 +714,7 @@ struct fb_info *fbtft_framebuffer_alloc(struct fbtft_display *display,
 	if (display->backlight)
 		par->fbtftops.register_backlight = fbtft_register_backlight;
 
-	/* use driver provided functions */
+	 
 	fbtft_merge_fbtftops(&par->fbtftops, &display->fbtftops);
 
 	return info;
@@ -753,12 +729,7 @@ alloc_fail:
 }
 EXPORT_SYMBOL(fbtft_framebuffer_alloc);
 
-/**
- * fbtft_framebuffer_release - frees up all memory used by the framebuffer
- *
- * @info: frame buffer info structure
- *
- */
+ 
 void fbtft_framebuffer_release(struct fb_info *info)
 {
 	fb_deferred_io_cleanup(info);
@@ -767,19 +738,7 @@ void fbtft_framebuffer_release(struct fb_info *info)
 }
 EXPORT_SYMBOL(fbtft_framebuffer_release);
 
-/**
- *	fbtft_register_framebuffer - registers a tft frame buffer device
- *	@fb_info: frame buffer info structure
- *
- *  Sets SPI driverdata if needed
- *  Requests needed gpios.
- *  Initializes display
- *  Updates display.
- *	Registers a frame buffer device @fb_info.
- *
- *	Returns negative errno on error, or zero for success.
- *
- */
+ 
 int fbtft_register_framebuffer(struct fb_info *fb_info)
 {
 	int ret;
@@ -788,7 +747,7 @@ int fbtft_register_framebuffer(struct fb_info *fb_info)
 	struct fbtft_par *par = fb_info->par;
 	struct spi_device *spi = par->spi;
 
-	/* sanity checks */
+	 
 	if (!par->fbtftops.init_display) {
 		dev_err(fb_info->device, "missing fbtftops.init_display()\n");
 		return -EINVAL;
@@ -818,7 +777,7 @@ int fbtft_register_framebuffer(struct fb_info *fb_info)
 			goto reg_fail;
 	}
 
-	/* update the entire display */
+	 
 	par->fbtftops.update_display(par, 0, par->info->var.yres - 1);
 
 	if (par->fbtftops.set_gamma && par->gamma.curves) {
@@ -847,7 +806,7 @@ int fbtft_register_framebuffer(struct fb_info *fb_info)
 		 fb_info->fix.smem_len >> 10, text1,
 		 HZ / fb_info->fbdefio->delay, text2);
 
-	/* Turn on backlight if available */
+	 
 	if (fb_info->bl_dev) {
 		fb_info->bl_dev->props.power = FB_BLANK_UNBLANK;
 		fb_info->bl_dev->ops->update_status(fb_info->bl_dev);
@@ -863,15 +822,7 @@ reg_fail:
 }
 EXPORT_SYMBOL(fbtft_register_framebuffer);
 
-/**
- *	fbtft_unregister_framebuffer - releases a tft frame buffer device
- *	@fb_info: frame buffer info structure
- *
- *  Frees SPI driverdata if needed
- *  Frees gpios.
- *	Unregisters frame buffer device.
- *
- */
+ 
 int fbtft_unregister_framebuffer(struct fb_info *fb_info)
 {
 	struct fbtft_par *par = fb_info->par;
@@ -885,12 +836,7 @@ int fbtft_unregister_framebuffer(struct fb_info *fb_info)
 }
 EXPORT_SYMBOL(fbtft_unregister_framebuffer);
 
-/**
- * fbtft_init_display_from_property() - Device Tree init_display() function
- * @par: Driver data
- *
- * Return: 0 if successful, negative if error
- */
+ 
 static int fbtft_init_display_from_property(struct fbtft_par *par)
 {
 	struct device *dev = par->info->device;
@@ -932,7 +878,7 @@ static int fbtft_init_display_from_property(struct fbtft_par *par)
 				buf[i++] = val;
 				val = values[++index];
 			}
-			/* make debug message */
+			 
 			fbtft_par_dbg(DEBUG_INIT_DISPLAY, par,
 				      "init: write_register:\n");
 			for (j = 0; j < i; j++)
@@ -973,28 +919,21 @@ out_free:
 	return ret;
 }
 
-/**
- * fbtft_init_display() - Generic init_display() function
- * @par: Driver data
- *
- * Uses par->init_sequence to do the initialization
- *
- * Return: 0 if successful, negative if error
- */
+ 
 int fbtft_init_display(struct fbtft_par *par)
 {
 	int buf[64];
 	int i;
 	int j;
 
-	/* sanity check */
+	 
 	if (!par->init_sequence) {
 		dev_err(par->info->device,
 			"error: init_sequence is not set\n");
 		return -EINVAL;
 	}
 
-	/* make sure stop marker exists */
+	 
 	for (i = 0; i < FBTFT_MAX_INIT_SEQUENCE; i++) {
 		if (par->init_sequence[i] == -3)
 			break;
@@ -1011,7 +950,7 @@ int fbtft_init_display(struct fbtft_par *par)
 	i = 0;
 	while (i < FBTFT_MAX_INIT_SEQUENCE) {
 		if (par->init_sequence[i] == -3) {
-			/* done */
+			 
 			return 0;
 		}
 		if (par->init_sequence[i] >= 0) {
@@ -1029,7 +968,7 @@ int fbtft_init_display(struct fbtft_par *par)
 		case -1:
 			i++;
 
-			/* make debug message */
+			 
 			for (j = 0; par->init_sequence[i + 1 + j] >= 0; j++)
 				;
 
@@ -1037,7 +976,7 @@ int fbtft_init_display(struct fbtft_par *par)
 					  s16, &par->init_sequence[i + 1], j,
 					  "init: write(0x%02X)", par->init_sequence[i]);
 
-			/* Write */
+			 
 			j = 0;
 			while (par->init_sequence[i] >= 0) {
 				if (j > 63) {
@@ -1087,14 +1026,7 @@ int fbtft_init_display(struct fbtft_par *par)
 }
 EXPORT_SYMBOL(fbtft_init_display);
 
-/**
- * fbtft_verify_gpios() - Generic verify_gpios() function
- * @par: Driver data
- *
- * Uses @spi, @pdev and @buswidth to determine which GPIOs is needed
- *
- * Return: 0 if successful, negative if error
- */
+ 
 static int fbtft_verify_gpios(struct fbtft_par *par)
 {
 	struct fbtft_platform_data *pdata = par->pdata;
@@ -1127,7 +1059,7 @@ static int fbtft_verify_gpios(struct fbtft_par *par)
 	return 0;
 }
 
-/* returns 0 if the property is not present */
+ 
 static u32 fbtft_property_value(struct device *dev, const char *propname)
 {
 	int ret;
@@ -1178,18 +1110,7 @@ static struct fbtft_platform_data *fbtft_properties_read(struct device *dev)
 	return pdata;
 }
 
-/**
- * fbtft_probe_common() - Generic device probe() helper function
- * @display: Display properties
- * @sdev: SPI device
- * @pdev: Platform device
- *
- * Allocates, initializes and registers a framebuffer
- *
- * Either @sdev or @pdev should be NULL
- *
- * Return: 0 if successful, negative if error
- */
+ 
 int fbtft_probe_common(struct fbtft_display *display,
 		       struct spi_device *sdev,
 		       struct platform_device *pdev)
@@ -1228,7 +1149,7 @@ int fbtft_probe_common(struct fbtft_display *display,
 		return -EINVAL;
 	}
 
-	/* write register functions */
+	 
 	if (display->regwidth == 8 && display->buswidth == 8)
 		par->fbtftops.write_register = fbtft_write_reg8_bus8;
 	else if (display->regwidth == 8 && display->buswidth == 9 && par->spi)
@@ -1242,7 +1163,7 @@ int fbtft_probe_common(struct fbtft_display *display,
 			 "no default functions for regwidth=%d and buswidth=%d\n",
 			 display->regwidth, display->buswidth);
 
-	/* write_vmem() functions */
+	 
 	if (display->buswidth == 8)
 		par->fbtftops.write_vmem = fbtft_write_vmem16_bus8;
 	else if (display->buswidth == 9)
@@ -1250,7 +1171,7 @@ int fbtft_probe_common(struct fbtft_display *display,
 	else if (display->buswidth == 16)
 		par->fbtftops.write_vmem = fbtft_write_vmem16_bus16;
 
-	/* GPIO write() functions */
+	 
 	if (par->pdev) {
 		if (display->buswidth == 8)
 			par->fbtftops.write = fbtft_write_gpio8_wr;
@@ -1258,14 +1179,14 @@ int fbtft_probe_common(struct fbtft_display *display,
 			par->fbtftops.write = fbtft_write_gpio16_wr;
 	}
 
-	/* 9-bit SPI setup */
+	 
 	if (par->spi && display->buswidth == 9) {
 		if (par->spi->master->bits_per_word_mask & SPI_BPW_MASK(9)) {
 			par->spi->bits_per_word = 9;
 		} else {
 			dev_warn(&par->spi->dev,
 				 "9-bit SPI not available, emulating using 8-bit.\n");
-			/* allocate buffer with room for dc bits */
+			 
 			par->extra = devm_kzalloc(par->info->device,
 						  par->txbuf.len +
 						  (par->txbuf.len / 8) + 8,
@@ -1281,14 +1202,14 @@ int fbtft_probe_common(struct fbtft_display *display,
 	if (!par->fbtftops.verify_gpios)
 		par->fbtftops.verify_gpios = fbtft_verify_gpios;
 
-	/* make sure we still use the driver provided functions */
+	 
 	fbtft_merge_fbtftops(&par->fbtftops, &display->fbtftops);
 
-	/* use init_sequence if provided */
+	 
 	if (par->init_sequence)
 		par->fbtftops.init_display = fbtft_init_display;
 
-	/* use platform_data provided functions above all */
+	 
 	fbtft_merge_fbtftops(&par->fbtftops, &pdata->display.fbtftops);
 
 	ret = fbtft_register_framebuffer(info);
@@ -1304,13 +1225,7 @@ out_release:
 }
 EXPORT_SYMBOL(fbtft_probe_common);
 
-/**
- * fbtft_remove_common() - Generic device remove() helper function
- * @dev: Device
- * @info: Framebuffer
- *
- * Unregisters and releases the framebuffer
- */
+ 
 void fbtft_remove_common(struct device *dev, struct fb_info *info)
 {
 	struct fbtft_par *par;

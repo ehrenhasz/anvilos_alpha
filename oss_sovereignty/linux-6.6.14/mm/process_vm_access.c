@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/mm/process_vm_access.c
- *
- * Copyright (C) 2010-2011 Christopher Yeoh <cyeoh@au1.ibm.com>, IBM Corp.
- */
+
+ 
 
 #include <linux/compat.h>
 #include <linux/mm.h>
@@ -15,22 +11,14 @@
 #include <linux/slab.h>
 #include <linux/syscalls.h>
 
-/**
- * process_vm_rw_pages - read/write pages from task specified
- * @pages: array of pointers to pages we want to copy
- * @offset: offset in page to start copying from/to
- * @len: number of bytes to copy
- * @iter: where to copy to/from locally
- * @vm_write: 0 means copy from, 1 means copy to
- * Returns 0 on success, error code otherwise
- */
+ 
 static int process_vm_rw_pages(struct page **pages,
 			       unsigned offset,
 			       size_t len,
 			       struct iov_iter *iter,
 			       int vm_write)
 {
-	/* Do the copy for each page */
+	 
 	while (len && iov_iter_count(iter)) {
 		struct page *page = *pages++;
 		size_t copy = PAGE_SIZE - offset;
@@ -52,21 +40,10 @@ static int process_vm_rw_pages(struct page **pages,
 	return 0;
 }
 
-/* Maximum number of pages kmalloc'd to hold struct page's during copy */
+ 
 #define PVM_MAX_KMALLOC_PAGES (PAGE_SIZE * 2)
 
-/**
- * process_vm_rw_single_vec - read/write pages from task specified
- * @addr: start memory address of target process
- * @len: size of area to copy to/from
- * @iter: where to copy to/from locally
- * @process_pages: struct pages area that can store at least
- *  nr_pages_to_copy struct page pointers
- * @mm: mm for task
- * @task: task to read/write from
- * @vm_write: 0 means copy from, 1 means copy to
- * Returns 0 on success or on failure error code
- */
+ 
 static int process_vm_rw_single_vec(unsigned long addr,
 				    unsigned long len,
 				    struct iov_iter *iter,
@@ -83,7 +60,7 @@ static int process_vm_rw_single_vec(unsigned long addr,
 		/ sizeof(struct pages *);
 	unsigned int flags = 0;
 
-	/* Work out address and page range required */
+	 
 	if (len == 0)
 		return 0;
 	nr_pages = (addr + len - 1) / PAGE_SIZE - addr / PAGE_SIZE + 1;
@@ -96,11 +73,7 @@ static int process_vm_rw_single_vec(unsigned long addr,
 		int locked = 1;
 		size_t bytes;
 
-		/*
-		 * Get the pages we're interested in.  We must
-		 * access remotely because task/mm might not
-		 * current/current->mm
-		 */
+		 
 		mmap_read_lock(mm);
 		pinned_pages = pin_user_pages_remote(mm, pa, pinned_pages,
 						     flags, process_pages,
@@ -122,7 +95,7 @@ static int process_vm_rw_single_vec(unsigned long addr,
 		nr_pages -= pinned_pages;
 		pa += pinned_pages * PAGE_SIZE;
 
-		/* If vm_write is set, the pages need to be made dirty: */
+		 
 		unpin_user_pages_dirty_lock(process_pages, pinned_pages,
 					    vm_write);
 	}
@@ -130,23 +103,10 @@ static int process_vm_rw_single_vec(unsigned long addr,
 	return rc;
 }
 
-/* Maximum number of entries for process pages array
-   which lives on stack */
+ 
 #define PVM_MAX_PP_ARRAY_COUNT 16
 
-/**
- * process_vm_rw_core - core of reading/writing pages from task specified
- * @pid: PID of process to read/write from/to
- * @iter: where to copy to/from locally
- * @rvec: iovec array specifying where to copy to/from in the other process
- * @riovcnt: size of rvec array
- * @flags: currently unused
- * @vm_write: 0 if reading from other process, 1 if writing to other process
- *
- * Returns the number of bytes read/written or error code. May
- *  return less bytes than expected if an error occurs during the copying
- *  process.
- */
+ 
 static ssize_t process_vm_rw_core(pid_t pid, struct iov_iter *iter,
 				  const struct iovec *rvec,
 				  unsigned long riovcnt,
@@ -163,10 +123,7 @@ static ssize_t process_vm_rw_core(pid_t pid, struct iov_iter *iter,
 	ssize_t iov_len;
 	size_t total_len = iov_iter_count(iter);
 
-	/*
-	 * Work out how many pages of struct pages we're going to need
-	 * when eventually calling get_user_pages
-	 */
+	 
 	for (i = 0; i < riovcnt; i++) {
 		iov_len = rvec[i].iov_len;
 		if (iov_len > 0) {
@@ -182,8 +139,7 @@ static ssize_t process_vm_rw_core(pid_t pid, struct iov_iter *iter,
 		return 0;
 
 	if (nr_pages > PVM_MAX_PP_ARRAY_COUNT) {
-		/* For reliability don't try to kmalloc more than
-		   2 pages worth */
+		 
 		process_pages = kmalloc(min_t(size_t, PVM_MAX_KMALLOC_PAGES,
 					      sizeof(struct pages *)*nr_pages),
 					GFP_KERNEL);
@@ -192,7 +148,7 @@ static ssize_t process_vm_rw_core(pid_t pid, struct iov_iter *iter,
 			return -ENOMEM;
 	}
 
-	/* Get process information */
+	 
 	task = find_get_task_by_vpid(pid);
 	if (!task) {
 		rc = -ESRCH;
@@ -202,10 +158,7 @@ static ssize_t process_vm_rw_core(pid_t pid, struct iov_iter *iter,
 	mm = mm_access(task, PTRACE_MODE_ATTACH_REALCREDS);
 	if (!mm || IS_ERR(mm)) {
 		rc = IS_ERR(mm) ? PTR_ERR(mm) : -ESRCH;
-		/*
-		 * Explicitly map EACCES to EPERM as EPERM is a more
-		 * appropriate error code for process_vw_readv/writev
-		 */
+		 
 		if (rc == -EACCES)
 			rc = -EPERM;
 		goto put_task_struct;
@@ -216,12 +169,10 @@ static ssize_t process_vm_rw_core(pid_t pid, struct iov_iter *iter,
 			(unsigned long)rvec[i].iov_base, rvec[i].iov_len,
 			iter, process_pages, mm, task, vm_write);
 
-	/* copied = space before - space after */
+	 
 	total_len -= iov_iter_count(iter);
 
-	/* If we have managed to copy any data at all then
-	   we return the number of bytes copied. Otherwise
-	   we return the error code */
+	 
 	if (total_len)
 		rc = total_len;
 
@@ -236,20 +187,7 @@ free_proc_pages:
 	return rc;
 }
 
-/**
- * process_vm_rw - check iovecs before calling core routine
- * @pid: PID of process to read/write from/to
- * @lvec: iovec array specifying where to copy to/from locally
- * @liovcnt: size of lvec array
- * @rvec: iovec array specifying where to copy to/from in the other process
- * @riovcnt: size of rvec array
- * @flags: currently unused
- * @vm_write: 0 if reading from other process, 1 if writing to other process
- *
- * Returns the number of bytes read/written or error code. May
- *  return less bytes than expected if an error occurs during the copying
- *  process.
- */
+ 
 static ssize_t process_vm_rw(pid_t pid,
 			     const struct iovec __user *lvec,
 			     unsigned long liovcnt,
@@ -268,7 +206,7 @@ static ssize_t process_vm_rw(pid_t pid,
 	if (flags != 0)
 		return -EINVAL;
 
-	/* Check iovecs */
+	 
 	rc = import_iovec(dir, lvec, liovcnt, UIO_FASTIOV, &iov_l, &iter);
 	if (rc < 0)
 		return rc;

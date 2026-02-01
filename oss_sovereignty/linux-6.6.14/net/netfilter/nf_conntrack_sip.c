@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* SIP extension for IP connection tracking.
- *
- * (C) 2005 by Christian Hentschel <chentschel@arnet.com.ar>
- * based on RR's ip_conntrack_ftp.c and other modules.
- * (C) 2007 United Security Providers
- * (C) 2007, 2008 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -125,7 +119,7 @@ static int callid_len(const struct nf_conn *ct, const char *dptr,
 	return len + domain_len;
 }
 
-/* get media type + port length */
+ 
 static int media_len(const struct nf_conn *ct, const char *dptr,
 		     const char *limit, int *shift)
 {
@@ -181,7 +175,7 @@ static int sip_parse_addr(const struct nf_conn *ct, const char *cp,
 	return 1;
 }
 
-/* skip ip address. returns its length. */
+ 
 static int epaddr_len(const struct nf_conn *ct, const char *dptr,
 		      const char *limit, int *shift)
 {
@@ -193,7 +187,7 @@ static int epaddr_len(const struct nf_conn *ct, const char *dptr,
 		return 0;
 	}
 
-	/* Port number */
+	 
 	if (*dptr == ':') {
 		dptr++;
 		dptr += digits_len(ct, dptr, limit, shift);
@@ -201,16 +195,14 @@ static int epaddr_len(const struct nf_conn *ct, const char *dptr,
 	return dptr - aux;
 }
 
-/* get address length, skiping user info. */
+ 
 static int skp_epaddr_len(const struct nf_conn *ct, const char *dptr,
 			  const char *limit, int *shift)
 {
 	const char *start = dptr;
 	int s = *shift;
 
-	/* Search for @, but stop at the end of the line.
-	 * We are inside a sip: URI, so we don't need to worry about
-	 * continuation lines. */
+	 
 	while (dptr < limit &&
 	       *dptr != '@' && *dptr != '\r' && *dptr != '\n') {
 		(*shift)++;
@@ -228,12 +220,7 @@ static int skp_epaddr_len(const struct nf_conn *ct, const char *dptr,
 	return epaddr_len(ct, dptr, limit, shift);
 }
 
-/* Parse a SIP request line of the form:
- *
- * Request-Line = Method SP Request-URI SP SIP-Version CRLF
- *
- * and return the offset and length of the address contained in the Request-URI.
- */
+ 
 int ct_sip_parse_request(const struct nf_conn *ct,
 			 const char *dptr, unsigned int datalen,
 			 unsigned int *matchoff, unsigned int *matchlen,
@@ -244,7 +231,7 @@ int ct_sip_parse_request(const struct nf_conn *ct,
 	unsigned int p;
 	int shift = 0;
 
-	/* Skip method and following whitespace */
+	 
 	mlen = string_len(ct, dptr, limit, NULL);
 	if (!mlen)
 		return 0;
@@ -252,7 +239,7 @@ int ct_sip_parse_request(const struct nf_conn *ct,
 	if (++dptr >= limit)
 		return 0;
 
-	/* Find SIP URI */
+	 
 	for (; dptr < limit - strlen("sip:"); dptr++) {
 		if (*dptr == '\r' || *dptr == '\n')
 			return -1;
@@ -284,19 +271,7 @@ int ct_sip_parse_request(const struct nf_conn *ct,
 }
 EXPORT_SYMBOL_GPL(ct_sip_parse_request);
 
-/* SIP header parsing: SIP headers are located at the beginning of a line, but
- * may span several lines, in which case the continuation lines begin with a
- * whitespace character. RFC 2543 allows lines to be terminated with CR, LF or
- * CRLF, RFC 3261 allows only CRLF, we support both.
- *
- * Headers are followed by (optionally) whitespace, a colon, again (optionally)
- * whitespace and the values. Whitespace in this context means any amount of
- * tabs, spaces and continuation lines, which are treated as a single whitespace
- * character.
- *
- * Some headers may appear multiple times. A comma separated list of values is
- * equivalent to multiple headers.
- */
+ 
 static const struct sip_header ct_sip_hdrs[] = {
 	[SIP_HDR_CSEQ]			= SIP_HDR("CSeq", NULL, NULL, digits_len),
 	[SIP_HDR_FROM]			= SIP_HDR("From", "f", "sip:", skp_epaddr_len),
@@ -311,21 +286,21 @@ static const struct sip_header ct_sip_hdrs[] = {
 
 static const char *sip_follow_continuation(const char *dptr, const char *limit)
 {
-	/* Walk past newline */
+	 
 	if (++dptr >= limit)
 		return NULL;
 
-	/* Skip '\n' in CR LF */
+	 
 	if (*(dptr - 1) == '\r' && *dptr == '\n') {
 		if (++dptr >= limit)
 			return NULL;
 	}
 
-	/* Continuation line? */
+	 
 	if (*dptr != ' ' && *dptr != '\t')
 		return NULL;
 
-	/* skip leading whitespace */
+	 
 	for (; dptr < limit; dptr++) {
 		if (*dptr != ' ' && *dptr != '\t')
 			break;
@@ -346,7 +321,7 @@ static const char *sip_skip_whitespace(const char *dptr, const char *limit)
 	return dptr;
 }
 
-/* Search within a SIP header value, dealing with continuation lines */
+ 
 static const char *ct_sip_header_search(const char *dptr, const char *limit,
 					const char *needle, unsigned int len)
 {
@@ -374,7 +349,7 @@ int ct_sip_get_header(const struct nf_conn *ct, const char *dptr,
 	int shift = 0;
 
 	for (dptr += dataoff; dptr < limit; dptr++) {
-		/* Find beginning of line */
+		 
 		if (*dptr != '\r' && *dptr != '\n')
 			continue;
 		if (++dptr >= limit)
@@ -384,12 +359,11 @@ int ct_sip_get_header(const struct nf_conn *ct, const char *dptr,
 				break;
 		}
 
-		/* Skip continuation lines */
+		 
 		if (*dptr == ' ' || *dptr == '\t')
 			continue;
 
-		/* Find header. Compact headers must be followed by a
-		 * non-alphabetic character to avoid mismatches. */
+		 
 		if (limit - dptr >= hdr->len &&
 		    strncasecmp(dptr, hdr->name, hdr->len) == 0)
 			dptr += hdr->len;
@@ -400,14 +374,14 @@ int ct_sip_get_header(const struct nf_conn *ct, const char *dptr,
 		else
 			continue;
 
-		/* Find and skip colon */
+		 
 		dptr = sip_skip_whitespace(dptr, limit);
 		if (dptr == NULL)
 			break;
 		if (*dptr != ':' || ++dptr >= limit)
 			break;
 
-		/* Skip whitespace after colon */
+		 
 		dptr = sip_skip_whitespace(dptr, limit);
 		if (dptr == NULL)
 			break;
@@ -431,7 +405,7 @@ int ct_sip_get_header(const struct nf_conn *ct, const char *dptr,
 }
 EXPORT_SYMBOL_GPL(ct_sip_get_header);
 
-/* Get next header field in a list of comma separated values */
+ 
 static int ct_sip_next_header(const struct nf_conn *ct, const char *dptr,
 			      unsigned int dataoff, unsigned int datalen,
 			      enum sip_header_types type,
@@ -460,8 +434,7 @@ static int ct_sip_next_header(const struct nf_conn *ct, const char *dptr,
 	return 1;
 }
 
-/* Walk through headers until a parsable one is found or no header of the
- * given type is left. */
+ 
 static int ct_sip_walk_headers(const struct nf_conn *ct, const char *dptr,
 			       unsigned int dataoff, unsigned int datalen,
 			       enum sip_header_types type, int *in_header,
@@ -497,11 +470,7 @@ static int ct_sip_walk_headers(const struct nf_conn *ct, const char *dptr,
 	return 1;
 }
 
-/* Locate a SIP header, parse the URI and return the offset and length of
- * the address as well as the address and port themselves. A stream of
- * headers can be parsed by handing in a non-NULL datalen and in_header
- * pointer.
- */
+ 
 int ct_sip_parse_header_uri(const struct nf_conn *ct, const char *dptr,
 			    unsigned int *dataoff, unsigned int datalen,
 			    enum sip_header_types type, int *in_header,
@@ -562,7 +531,7 @@ static int ct_sip_parse_param(const struct nf_conn *ct, const char *dptr,
 	return 1;
 }
 
-/* Parse address from header parameter and return address, offset and length */
+ 
 int ct_sip_parse_address_param(const struct nf_conn *ct, const char *dptr,
 			       unsigned int dataoff, unsigned int datalen,
 			       const char *name,
@@ -589,7 +558,7 @@ int ct_sip_parse_address_param(const struct nf_conn *ct, const char *dptr,
 }
 EXPORT_SYMBOL_GPL(ct_sip_parse_address_param);
 
-/* Parse numerical header parameter and return value, offset and length */
+ 
 int ct_sip_parse_numerical_param(const struct nf_conn *ct, const char *dptr,
 				 unsigned int dataoff, unsigned int datalen,
 				 const char *name,
@@ -669,7 +638,7 @@ static int sdp_parse_addr(const struct nf_conn *ct, const char *cp,
 	return 1;
 }
 
-/* skip ip address. returns its length. */
+ 
 static int sdp_addr_len(const struct nf_conn *ct, const char *dptr,
 			const char *limit, int *shift)
 {
@@ -684,15 +653,7 @@ static int sdp_addr_len(const struct nf_conn *ct, const char *dptr,
 	return dptr - aux;
 }
 
-/* SDP header parsing: a SDP session description contains an ordered set of
- * headers, starting with a section containing general session parameters,
- * optionally followed by multiple media descriptions.
- *
- * SDP headers always start at the beginning of a line. According to RFC 2327:
- * "The sequence CRLF (0x0d0a) is used to end a record, although parsers should
- * be tolerant and also accept records terminated with a single newline
- * character". We handle both cases.
- */
+ 
 static const struct sip_header ct_sdp_hdrs_v4[] = {
 	[SDP_HDR_VERSION]	= SDP_HDR("v=", NULL, digits_len),
 	[SDP_HDR_OWNER]		= SDP_HDR("o=", "IN IP4 ", sdp_addr_len),
@@ -707,7 +668,7 @@ static const struct sip_header ct_sdp_hdrs_v6[] = {
 	[SDP_HDR_MEDIA]		= SDP_HDR("m=", NULL, media_len),
 };
 
-/* Linear string search within SDP header values */
+ 
 static const char *ct_sdp_header_search(const char *dptr, const char *limit,
 					const char *needle, unsigned int len)
 {
@@ -720,10 +681,7 @@ static const char *ct_sdp_header_search(const char *dptr, const char *limit,
 	return NULL;
 }
 
-/* Locate a SDP header (optionally a substring within the header value),
- * optionally stopping at the first occurrence of the term header, parse
- * it and return the offset and length of the data we're interested in.
- */
+ 
 int ct_sip_get_sdp_header(const struct nf_conn *ct, const char *dptr,
 			  unsigned int dataoff, unsigned int datalen,
 			  enum sdp_header_types type,
@@ -739,7 +697,7 @@ int ct_sip_get_sdp_header(const struct nf_conn *ct, const char *dptr,
 	thdr = &hdrs[term];
 
 	for (dptr += dataoff; dptr < limit; dptr++) {
-		/* Find beginning of line */
+		 
 		if (*dptr != '\r' && *dptr != '\n')
 			continue;
 		if (++dptr >= limit)
@@ -887,9 +845,7 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 				break;
 		}
 
-		/* Don't predict any conntracks when media endpoint is reachable
-		 * through the same interface as the signalling peer.
-		 */
+		 
 		if (dst) {
 			bool external_media = (dst->dev == dev);
 
@@ -899,19 +855,7 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 		}
 	}
 
-	/* We need to check whether the registration exists before attempting
-	 * to register it since we can see the same media description multiple
-	 * times on different connections in case multiple endpoints receive
-	 * the same call.
-	 *
-	 * RTP optimization: if we find a matching media channel expectation
-	 * and both the expectation and this connection are SNATed, we assume
-	 * both sides can reach each other directly and use the final
-	 * destination address from the expectation. We still need to keep
-	 * the NATed expectations for media that might arrive from the
-	 * outside, and additionally need to expect the direct RTP stream
-	 * in case it passes through us even without NAT.
-	 */
+	 
 	memset(&tuple, 0, sizeof(tuple));
 	if (saddr)
 		tuple.src.u3 = *saddr;
@@ -974,12 +918,7 @@ static int set_expected_rtp_rtcp(struct sk_buff *skb, unsigned int protoff,
 				       datalen, rtp_exp, rtcp_exp,
 				       mediaoff, medialen, daddr);
 	else {
-		/* -EALREADY handling works around end-points that send
-		 * SDP messages with identical port but different media type,
-		 * we pretend expectation was set up.
-		 * It also works in the case that SDP messages are sent with
-		 * identical expect tuples but for different master conntracks.
-		 */
+		 
 		int errp = nf_ct_expect_related(rtp_exp,
 						NF_CT_EXP_F_SKIP_MASTER);
 
@@ -1043,16 +982,14 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 
 	hooks = rcu_dereference(nf_nat_sip_hooks);
 
-	/* Find beginning of session description */
+	 
 	if (ct_sip_get_sdp_header(ct, *dptr, 0, *datalen,
 				  SDP_HDR_VERSION, SDP_HDR_UNSPEC,
 				  &matchoff, &matchlen) <= 0)
 		return NF_ACCEPT;
 	sdpoff = matchoff;
 
-	/* The connection information is contained in the session description
-	 * and/or once per media description. The first media description marks
-	 * the end of the session description. */
+	 
 	caddr_len = 0;
 	if (ct_sip_parse_sdp_addr(ct, *dptr, sdpoff, *datalen,
 				  SDP_HDR_CONNECTION, SDP_HDR_MEDIA,
@@ -1066,8 +1003,7 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 					  &mediaoff, &medialen) <= 0)
 			break;
 
-		/* Get media type and port number. A media port value of zero
-		 * indicates an inactive stream. */
+		 
 		t = sdp_media_type(*dptr, mediaoff, medialen);
 		if (!t) {
 			mediaoff += medialen;
@@ -1084,7 +1020,7 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 			return NF_DROP;
 		}
 
-		/* The media description overrides the session description. */
+		 
 		maddr_len = 0;
 		if (ct_sip_parse_sdp_addr(ct, *dptr, mediaoff, *datalen,
 					  SDP_HDR_CONNECTION, SDP_HDR_MEDIA,
@@ -1108,7 +1044,7 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 			return ret;
 		}
 
-		/* Update media connection address if present */
+		 
 		if (maddr_len && hooks && ct->status & IPS_NAT_MASK) {
 			ret = hooks->sdp_addr(skb, protoff, dataoff,
 					      dptr, datalen, mediaoff,
@@ -1123,7 +1059,7 @@ static int process_sdp(struct sk_buff *skb, unsigned int protoff,
 		i++;
 	}
 
-	/* Update session connection and owner addresses */
+	 
 	hooks = rcu_dereference(nf_nat_sip_hooks);
 	if (hooks && ct->status & IPS_NAT_MASK)
 		ret = hooks->sdp_session(skb, protoff, dataoff,
@@ -1212,10 +1148,7 @@ static int process_bye_request(struct sk_buff *skb, unsigned int protoff,
 	return NF_ACCEPT;
 }
 
-/* Parse a REGISTER request and create a permanent expectation for incoming
- * signalling connections. The expectation is marked inactive and is activated
- * when receiving a response indicating success from the registrar.
- */
+ 
 static int process_register_request(struct sk_buff *skb, unsigned int protoff,
 				    unsigned int dataoff,
 				    const char **dptr, unsigned int *datalen,
@@ -1235,18 +1168,11 @@ static int process_register_request(struct sk_buff *skb, unsigned int protoff,
 	unsigned int expires = 0;
 	int ret;
 
-	/* Expected connections can not register again. */
+	 
 	if (ct->status & IPS_EXPECTED)
 		return NF_ACCEPT;
 
-	/* We must check the expiration time: a value of zero signals the
-	 * registrar to release the binding. We'll remove our expectation
-	 * when receiving the new bindings in the response, but we don't
-	 * want to create new ones.
-	 *
-	 * The expiration time may be contained in Expires: header, the
-	 * Contact: header parameters or the URI parameters.
-	 */
+	 
 	if (ct_sip_get_header(ct, *dptr, 0, *datalen, SIP_HDR_EXPIRES,
 			      &matchoff, &matchlen) > 0)
 		expires = simple_strtoul(*dptr + matchoff, NULL, 10);
@@ -1260,7 +1186,7 @@ static int process_register_request(struct sk_buff *skb, unsigned int protoff,
 	} else if (ret == 0)
 		return NF_ACCEPT;
 
-	/* We don't support third-party registrations */
+	 
 	if (!nf_inet_addr_cmp(&ct->tuplehash[dir].tuple.src.u3, &daddr))
 		return NF_ACCEPT;
 
@@ -1335,14 +1261,7 @@ static int process_register_response(struct sk_buff *skb, unsigned int protoff,
 	unsigned int expires = 0;
 	int in_contact = 0, ret;
 
-	/* According to RFC 3261, "UAs MUST NOT send a new registration until
-	 * they have received a final response from the registrar for the
-	 * previous one or the previous REGISTER request has timed out".
-	 *
-	 * However, some servers fail to detect retransmissions and send late
-	 * responses, so we store the sequence number of the last valid
-	 * request and compare it here.
-	 */
+	 
 	if (ct_sip_info->register_cseq != cseq)
 		return NF_ACCEPT;
 
@@ -1368,7 +1287,7 @@ static int process_register_response(struct sk_buff *skb, unsigned int protoff,
 		} else if (ret == 0)
 			break;
 
-		/* We don't support third-party registrations */
+		 
 		if (!nf_inet_addr_cmp(&ct->tuplehash[dir].tuple.dst.u3, &addr))
 			continue;
 
@@ -1462,12 +1381,7 @@ static int process_sip_request(struct sk_buff *skb, unsigned int protoff,
 	union nf_inet_addr addr;
 	__be16 port;
 
-	/* Many Cisco IP phones use a high source port for SIP requests, but
-	 * listen for the response on port 5060.  If we are the local
-	 * router for one of these phones, save the port number from the
-	 * Via: header so that nf_nat_sip can redirect the responses to
-	 * the correct port.
-	 */
+	 
 	if (ct_sip_parse_header_uri(ct, *dptr, NULL, *datalen,
 				    SIP_HDR_VIA_UDP, NULL, &matchoff,
 				    &matchlen, &addr, &port) > 0 &&
@@ -1545,7 +1459,7 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 	    ctinfo != IP_CT_ESTABLISHED_REPLY)
 		return NF_ACCEPT;
 
-	/* No Data ? */
+	 
 	th = skb_header_pointer(skb, protoff, sizeof(_tcph), &_tcph);
 	if (th == NULL)
 		return NF_ACCEPT;
@@ -1591,7 +1505,7 @@ static int sip_help_tcp(struct sk_buff *skb, unsigned int protoff,
 
 		ret = process_sip_msg(skb, ct, protoff, dataoff,
 				      &dptr, &msglen);
-		/* process_sip_* functions report why this packet is dropped */
+		 
 		if (ret != NF_ACCEPT)
 			break;
 		diff     = msglen - origlen;
@@ -1619,7 +1533,7 @@ static int sip_help_udp(struct sk_buff *skb, unsigned int protoff,
 	unsigned int dataoff, datalen;
 	const char *dptr;
 
-	/* No Data ? */
+	 
 	dataoff = protoff + sizeof(struct udphdr);
 	if (dataoff >= skb->len)
 		return NF_ACCEPT;

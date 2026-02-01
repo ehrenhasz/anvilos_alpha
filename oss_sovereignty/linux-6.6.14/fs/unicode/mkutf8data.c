@@ -1,22 +1,6 @@
-/*
- * Copyright (c) 2014 SGI.
- * All rights reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it would be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write the Free Software Foundation,
- * Inc.,  51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
- */
+ 
 
-/* Generator for a compact trie for unicode normalization */
+ 
 
 #include <sys/types.h>
 #include <stddef.h>
@@ -27,7 +11,7 @@
 #include <unistd.h>
 #include <errno.h>
 
-/* Default names of the in- and output files. */
+ 
 
 #define AGE_NAME	"DerivedAge.txt"
 #define CCC_NAME	"DerivedCombiningClass.txt"
@@ -49,7 +33,7 @@ const char	*utf8_name = UTF8_NAME;
 
 int verbose = 0;
 
-/* An arbitrary line size limit on input lines. */
+ 
 
 #define LINESIZE	1024
 char line[LINESIZE];
@@ -62,18 +46,9 @@ const char *argv0;
 
 #define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 
-/* ------------------------------------------------------------------ */
+ 
 
-/*
- * Unicode version numbers consist of three parts: major, minor, and a
- * revision.  These numbers are packed into an unsigned int to obtain
- * a single version number.
- *
- * To save space in the generated trie, the unicode version is not
- * stored directly, instead we calculate a generation number from the
- * unicode versions seen in the DerivedAge file, and use that as an
- * index into a table of unicode versions.
- */
+ 
 #define UNICODE_MAJ_SHIFT		(16)
 #define UNICODE_MIN_SHIFT		(8)
 
@@ -103,32 +78,9 @@ static int age_valid(unsigned int major, unsigned int minor,
 	return 1;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
-/*
- * utf8trie_t
- *
- * A compact binary tree, used to decode UTF-8 characters.
- *
- * Internal nodes are one byte for the node itself, and up to three
- * bytes for an offset into the tree.  The first byte contains the
- * following information:
- *  NEXTBYTE  - flag        - advance to next byte if set
- *  BITNUM    - 3 bit field - the bit number to tested
- *  OFFLEN    - 2 bit field - number of bytes in the offset
- * if offlen == 0 (non-branching node)
- *  RIGHTPATH - 1 bit field - set if the following node is for the
- *                            right-hand path (tested bit is set)
- *  TRIENODE  - 1 bit field - set if the following node is an internal
- *                            node, otherwise it is a leaf node
- * if offlen != 0 (branching node)
- *  LEFTNODE  - 1 bit field - set if the left-hand node is internal
- *  RIGHTNODE - 1 bit field - set if the right-hand node is internal
- *
- * Due to the way utf8 works, there cannot be branching nodes with
- * NEXTBYTE set, and moreover those nodes always have a righthand
- * descendant.
- */
+ 
 typedef unsigned char utf8trie_t;
 #define BITNUM		0x07
 #define NEXTBYTE	0x08
@@ -139,37 +91,7 @@ typedef unsigned char utf8trie_t;
 #define RIGHTNODE	0x40
 #define LEFTNODE	0x80
 
-/*
- * utf8leaf_t
- *
- * The leaves of the trie are embedded in the trie, and so the same
- * underlying datatype, unsigned char.
- *
- * leaf[0]: The unicode version, stored as a generation number that is
- *          an index into utf8agetab[].  With this we can filter code
- *          points based on the unicode version in which they were
- *          defined.  The CCC of a non-defined code point is 0.
- * leaf[1]: Canonical Combining Class. During normalization, we need
- *          to do a stable sort into ascending order of all characters
- *          with a non-zero CCC that occur between two characters with
- *          a CCC of 0, or at the begin or end of a string.
- *          The unicode standard guarantees that all CCC values are
- *          between 0 and 254 inclusive, which leaves 255 available as
- *          a special value.
- *          Code points with CCC 0 are known as stoppers.
- * leaf[2]: Decomposition. If leaf[1] == 255, then leaf[2] is the
- *          start of a NUL-terminated string that is the decomposition
- *          of the character.
- *          The CCC of a decomposable character is the same as the CCC
- *          of the first character of its decomposition.
- *          Some characters decompose as the empty string: these are
- *          characters with the Default_Ignorable_Code_Point property.
- *          These do affect normalization, as they all have CCC 0.
- *
- * The decompositions in the trie have been fully expanded.
- *
- * Casefolding, if applicable, is also done using decompositions.
- */
+ 
 typedef unsigned char utf8leaf_t;
 
 #define LEAF_GEN(LEAF)	((LEAF)[0])
@@ -197,56 +119,9 @@ size_t utf8data_size;
 utf8trie_t *nfdi;
 utf8trie_t *nfdicf;
 
-/* ------------------------------------------------------------------ */
+ 
 
-/*
- * UTF8 valid ranges.
- *
- * The UTF-8 encoding spreads the bits of a 32bit word over several
- * bytes. This table gives the ranges that can be held and how they'd
- * be represented.
- *
- * 0x00000000 0x0000007F: 0xxxxxxx
- * 0x00000000 0x000007FF: 110xxxxx 10xxxxxx
- * 0x00000000 0x0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx
- * 0x00000000 0x001FFFFF: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
- * 0x00000000 0x03FFFFFF: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
- * 0x00000000 0x7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
- *
- * There is an additional requirement on UTF-8, in that only the
- * shortest representation of a 32bit value is to be used.  A decoder
- * must not decode sequences that do not satisfy this requirement.
- * Thus the allowed ranges have a lower bound.
- *
- * 0x00000000 0x0000007F: 0xxxxxxx
- * 0x00000080 0x000007FF: 110xxxxx 10xxxxxx
- * 0x00000800 0x0000FFFF: 1110xxxx 10xxxxxx 10xxxxxx
- * 0x00010000 0x001FFFFF: 11110xxx 10xxxxxx 10xxxxxx 10xxxxxx
- * 0x00200000 0x03FFFFFF: 111110xx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
- * 0x04000000 0x7FFFFFFF: 1111110x 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx 10xxxxxx
- *
- * Actual unicode characters are limited to the range 0x0 - 0x10FFFF,
- * 17 planes of 65536 values.  This limits the sequences actually seen
- * even more, to just the following.
- *
- *          0 -     0x7f: 0                     0x7f
- *       0x80 -    0x7ff: 0xc2 0x80             0xdf 0xbf
- *      0x800 -   0xffff: 0xe0 0xa0 0x80        0xef 0xbf 0xbf
- *    0x10000 - 0x10ffff: 0xf0 0x90 0x80 0x80   0xf4 0x8f 0xbf 0xbf
- *
- * Even within those ranges not all values are allowed: the surrogates
- * 0xd800 - 0xdfff should never be seen.
- *
- * Note that the longest sequence seen with valid usage is 4 bytes,
- * the same a single UTF-32 character.  This makes the UTF-8
- * representation of Unicode strictly smaller than UTF-32.
- *
- * The shortest sequence requirement was introduced by:
- *    Corrigendum #1: UTF-8 Shortest Form
- * It can be found here:
- *    http://www.unicode.org/versions/corrigendum1.html
- *
- */
+ 
 
 #define UTF8_2_BITS     0xC0
 #define UTF8_3_BITS     0xE0
@@ -374,9 +249,7 @@ struct node {
 	unsigned int keymask;
 };
 
-/*
- * Example lookup function for a tree.
- */
+ 
 static void *lookup(struct tree *tree, const char *key)
 {
 	struct node *node;
@@ -387,7 +260,7 @@ static void *lookup(struct tree *tree, const char *key)
 		if (node->nextbyte)
 			key++;
 		if (*key & (1 << (node->bitnum & 7))) {
-			/* Right leg */
+			 
 			if (node->rightnode == NODE) {
 				node = node->right;
 			} else if (node->rightnode == LEAF) {
@@ -396,7 +269,7 @@ static void *lookup(struct tree *tree, const char *key)
 				node = NULL;
 			}
 		} else {
-			/* Left leg */
+			 
 			if (node->leftnode == NODE) {
 				node = node->left;
 			} else if (node->leftnode == LEAF) {
@@ -410,10 +283,7 @@ static void *lookup(struct tree *tree, const char *key)
 	return leaf;
 }
 
-/*
- * A simple non-recursive tree walker: keep track of visits to the
- * left and right branches in the leftmask and rightmask.
- */
+ 
 static void tree_walk(struct tree *tree)
 {
 	struct node *node;
@@ -486,9 +356,7 @@ static void tree_walk(struct tree *tree)
 	       nodes, leaves, singletons);
 }
 
-/*
- * Allocate an initialize a new internal node.
- */
+ 
 static struct node *alloc_node(struct node *parent)
 {
 	struct node *node;
@@ -523,13 +391,7 @@ static struct node *alloc_node(struct node *parent)
 	return node;
 }
 
-/*
- * Insert a new leaf into the tree, and collapse any subtrees that are
- * fully populated and end in identical leaves. A nextbyte tagged
- * internal node will not be removed to preserve the tree's integrity.
- * Note that due to the structure of utf8, no nextbyte tagged node
- * will be a candidate for removal.
- */
+ 
 static int insert(struct tree *tree, char *key, int keylen, void *leaf)
 {
 	struct node *node;
@@ -543,7 +405,7 @@ static int insert(struct tree *tree, char *key, int keylen, void *leaf)
 	cursor = &tree->root;
 	keybits = 8 * keylen;
 
-	/* Insert, creating path along the way. */
+	 
 	while (keybits) {
 		if (!*cursor)
 			*cursor = alloc_node(node);
@@ -558,7 +420,7 @@ static int insert(struct tree *tree, char *key, int keylen, void *leaf)
 	}
 	*cursor = leaf;
 
-	/* Merge subtrees if possible. */
+	 
 	while (node) {
 		if (*key & (1 << (node->bitnum & 7)))
 			node->rightnode = LEAF;
@@ -570,15 +432,15 @@ static int insert(struct tree *tree, char *key, int keylen, void *leaf)
 			break;
 		assert(node->left);
 		assert(node->right);
-		/* Compare */
+		 
 		if (! tree->leaf_equal(node->left, node->right))
 			break;
-		/* Keep left, drop right leaf. */
+		 
 		leaf = node->left;
-		/* Check in parent */
+		 
 		parent = node->parent;
 		if (!parent) {
-			/* root of tree! */
+			 
 			tree->root = leaf;
 			tree->childnode = LEAF;
 		} else if (parent->left == node) {
@@ -601,19 +463,19 @@ static int insert(struct tree *tree, char *key, int keylen, void *leaf)
 				parent->keybits |= (1 << node->bitnum);
 			}
 		} else {
-			/* internal tree error */
+			 
 			assert(0);
 		}
 		free(node);
 		node = parent;
 	}
 
-	/* Propagate keymasks up along singleton chains. */
+	 
 	while (node) {
 		parent = node->parent;
 		if (!parent)
 			break;
-		/* Nix the mask for parents with two children. */
+		 
 		if (node->keymask == 0) {
 			parent->keymask = 0;
 			parent->keybits = 0;
@@ -634,23 +496,7 @@ static int insert(struct tree *tree, char *key, int keylen, void *leaf)
 	return 0;
 }
 
-/*
- * Prune internal nodes.
- *
- * Fully populated subtrees that end at the same leaf have already
- * been collapsed.  There are still internal nodes that have for both
- * their left and right branches a sequence of singletons that make
- * identical choices and end in identical leaves.  The keymask and
- * keybits collected in the nodes describe the choices made in these
- * singleton chains.  When they are identical for the left and right
- * branch of a node, and the two leaves comare identical, the node in
- * question can be removed.
- *
- * Note that nodes with the nextbyte tag set will not be removed by
- * this to ensure tree integrity.  Note as well that the structure of
- * utf8 ensures that these nodes would not have been candidates for
- * removal in any case.
- */
+ 
 static void prune(struct tree *tree)
 {
 	struct node *node;
@@ -726,10 +572,7 @@ static void prune(struct tree *tree)
 		}
 		if (! tree->leaf_equal(leftleaf, rightleaf))
 			goto advance;
-		/*
-		 * This node has identical singleton-only subtrees.
-		 * Remove it.
-		 */
+		 
 		parent = node->parent;
 		left = node->left;
 		right = node->right;
@@ -760,9 +603,9 @@ static void prune(struct tree *tree)
 				node = NULL;
 			}
 		}
-		/* Propagate keymasks up along singleton chains. */
+		 
 		node = parent;
-		/* Force re-check */
+		 
 		bitmask = 1 << node->bitnum;
 		leftmask &= ~bitmask;
 		rightmask &= ~bitmask;
@@ -781,7 +624,7 @@ static void prune(struct tree *tree)
 			}
 			node->keymask |= (1 << node->bitnum);
 			node = node->parent;
-			/* Force re-check */
+			 
 			bitmask = 1 << node->bitnum;
 			leftmask &= ~bitmask;
 			rightmask &= ~bitmask;
@@ -808,10 +651,7 @@ static void prune(struct tree *tree)
 		printf("Pruned %d nodes\n", count);
 }
 
-/*
- * Mark the nodes in the tree that lead to leaves that must be
- * emitted.
- */
+ 
 static void mark_nodes(struct tree *tree)
 {
 	struct node *node;
@@ -873,7 +713,7 @@ static void mark_nodes(struct tree *tree)
 		node = node->parent;
 	}
 
-	/* second pass: left siblings and singletons */
+	 
 
 	assert(tree->childnode == NODE);
 	node = tree->root;
@@ -934,11 +774,7 @@ done:
 		printf("Marked %d nodes\n", marked);
 }
 
-/*
- * Compute the index of each node and leaf, which is the offset in the
- * emitted trie.  These values must be pre-computed because relative
- * offsets between nodes are used to navigate the tree.
- */
+ 
 static int index_nodes(struct tree *tree, int index)
 {
 	struct node *node;
@@ -948,7 +784,7 @@ static int index_nodes(struct tree *tree, int index)
 	int count;
 	int indent;
 
-	/* Align to a cache line (or half a cache line?). */
+	 
 	while (index % 64)
 		index++;
 	tree->index = index;
@@ -1011,7 +847,7 @@ skip:
 		}
 	}
 done:
-	/* Round up to a multiple of 16 */
+	 
 	while (index % 16)
 		index++;
 	if (verbose > 0)
@@ -1019,9 +855,7 @@ done:
 	return index;
 }
 
-/*
- * Mark the nodes in a subtree, helper for size_nodes().
- */
+ 
 static int mark_subtree(struct node *node)
 {
 	int changed;
@@ -1038,13 +872,7 @@ static int mark_subtree(struct node *node)
 	return changed;
 }
 
-/*
- * Compute the size of nodes and leaves. We start by assuming that
- * each node needs to store a three-byte offset. The indexes of the
- * nodes are calculated based on that, and then this function is
- * called to see if the sizes of some nodes can be reduced.  This is
- * repeated until no more changes are seen.
- */
+ 
 static int size_nodes(struct tree *tree)
 {
 	struct tree *next;
@@ -1084,12 +912,7 @@ static int size_nodes(struct tree *tree)
 			size = 1;
 		} else {
 			if (node->rightnode == NODE) {
-				/*
-				 * If the right node is not marked,
-				 * look for a corresponding node in
-				 * the next tree.  Such a node need
-				 * not exist.
-				 */
+				 
 				right = node->right;
 				next = tree->next;
 				while (!right->mark) {
@@ -1115,7 +938,7 @@ static int size_nodes(struct tree *tree)
 					right = n;
 					next = next->next;
 				}
-				/* Make sure the right node is marked. */
+				 
 				if (!right->mark)
 					changed += mark_subtree(right);
 				offset = right->index - node->index;
@@ -1129,7 +952,7 @@ static int size_nodes(struct tree *tree)
 				size = 2;
 			} else if (offset <= 0xffff) {
 				size = 3;
-			} else { /* offset <= 0xffffff */
+			} else {  
 				size = 4;
 			}
 		}
@@ -1179,9 +1002,7 @@ done:
 	return changed;
 }
 
-/*
- * Emit a trie for the given tree into the data array.
- */
+ 
 static void emit(struct tree *tree, unsigned char *data)
 {
 	struct node *node;
@@ -1319,23 +1140,9 @@ done:
 	}
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
-/*
- * Unicode data.
- *
- * We need to keep track of the Canonical Combining Class, the Age,
- * and decompositions for a code point.
- *
- * For the Age, we store the index into the ages table.  Effectively
- * this is a generation number that the table maps to a unicode
- * version.
- *
- * The correction field is used to indicate that this entry is in the
- * corrections array, which contains decompositions that were
- * corrected in later revisions.  The value of the correction field is
- * the Unicode version in which the mapping was corrected.
- */
+ 
 struct unicode_data {
 	unsigned int code;
 	int ccc;
@@ -1357,10 +1164,7 @@ struct tree *nfdicf_tree;
 struct tree *trees;
 int          trees_count;
 
-/*
- * Check the corrections array to see if this entry was corrected at
- * some point.
- */
+ 
 static struct unicode_data *corrections_lookup(struct unicode_data *u)
 {
 	int i;
@@ -1603,7 +1407,7 @@ static void trees_init(void)
 	int i;
 	int j;
 
-	/* Count the number of different ages. */
+	 
 	count = 0;
 	nextage = (unsigned int)-1;
 	do {
@@ -1618,11 +1422,11 @@ static void trees_init(void)
 		count++;
 	} while (nextage);
 
-	/* Two trees per age: nfdi and nfdicf */
+	 
 	trees_count = count * 2;
 	trees = calloc(trees_count, sizeof(struct tree));
 
-	/* Assign ages to the trees. */
+	 
 	count = trees_count;
 	nextage = (unsigned int)-1;
 	do {
@@ -1638,7 +1442,7 @@ static void trees_init(void)
 		}
 	} while (nextage);
 
-	/* The ages assigned above are off by one. */
+	 
 	for (i = 0; i != trees_count; i++) {
 		j = 0;
 		while (ages[j] < trees[i].maxage)
@@ -1646,7 +1450,7 @@ static void trees_init(void)
 		trees[i].maxage = ages[j-1];
 	}
 
-	/* Set up the forwarding between trees. */
+	 
 	trees[trees_count-2].next = &trees[trees_count-1];
 	trees[trees_count-1].leaf_mark = nfdi_mark;
 	trees[trees_count-2].leaf_mark = nfdicf_mark;
@@ -1657,7 +1461,7 @@ static void trees_init(void)
 		trees[i+1].leaf_mark = correction_mark;
 	}
 
-	/* Assign the callouts. */
+	 
 	for (i = 0; i != trees_count; i += 2) {
 		trees[i].type = "nfdicf";
 		trees[i].leaf_equal = nfdicf_equal;
@@ -1674,7 +1478,7 @@ static void trees_init(void)
 		trees[i+1].leaf_emit = nfdi_emit;
 	}
 
-	/* Finish init. */
+	 
 	for (i = 0; i != trees_count; i++)
 		trees[i].childnode = NODE;
 }
@@ -1831,7 +1635,7 @@ static void trees_verify(void)
 		verify(&trees[i]);
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static void help(void)
 {
@@ -1902,7 +1706,7 @@ static void line_fail(const char *filename, const char *line)
 	exit(1);
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static void print_utf32(unsigned int *utf32str)
 {
@@ -1926,7 +1730,7 @@ static void print_utf32nfdicf(unsigned int unichar)
 	printf("\n");
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static void age_init(void)
 {
@@ -1973,16 +1777,16 @@ static void age_init(void)
 		}
 	}
 
-	/* We must have found something above. */
+	 
 	if (verbose > 1)
 		printf("%d age entries\n", ages_count);
 	if (ages_count == 0 || ages_count > MAXGEN)
 		file_fail(age_name);
 
-	/* There is a 0 entry. */
+	 
 	ages_count++;
 	ages = calloc(ages_count + 1, sizeof(*ages));
-	/* And a guard entry. */
+	 
 	ages[ages_count] = (unsigned int)-1;
 
 	rewind(file);
@@ -2037,7 +1841,7 @@ static void age_init(void)
 	unicode_maxage = ages[gen];
 	fclose(file);
 
-	/* Nix surrogate block */
+	 
 	if (verbose > 1)
 		printf(" Removing surrogate block D800..DFFF\n");
 	for (unichar = 0xd800; unichar <= 0xdfff; unichar++)
@@ -2117,7 +1921,7 @@ static void nfdi_init(void)
 {
 	FILE *file;
 	unsigned int unichar;
-	unsigned int mapping[19]; /* Magic - guaranteed not to be exceeded. */
+	unsigned int mapping[19];  
 	char *s;
 	char *type;
 	unsigned int *um;
@@ -2141,7 +1945,7 @@ static void nfdi_init(void)
 			line_fail(data_name, line);
 
 		s = buf0;
-		/* skip over <tag> */
+		 
 		if (*s == '<') {
 			type = ++s;
 			while (*++s != '>');
@@ -2149,7 +1953,7 @@ static void nfdi_init(void)
 			if(ignore_compatibility_form(type))
 				continue;
 		}
-		/* decode the decomposition into UTF-32 */
+		 
 		i = 0;
 		while (*s) {
 			mapping[i] = strtoul(s, &s, 16);
@@ -2178,7 +1982,7 @@ static void nfdicf_init(void)
 {
 	FILE *file;
 	unsigned int unichar;
-	unsigned int mapping[19]; /* Magic - guaranteed not to be exceeded. */
+	unsigned int mapping[19];  
 	char status;
 	char *s;
 	unsigned int *um;
@@ -2199,7 +2003,7 @@ static void nfdicf_init(void)
 			continue;
 		if (!utf32valid(unichar))
 			line_fail(fold_name, line);
-		/* Use the C+F casefold. */
+		 
 		if (status != 'C' && status != 'F')
 			continue;
 		s = buf0;
@@ -2308,7 +2112,7 @@ static void corrections_init(void)
 	unsigned int revision;
 	unsigned int age;
 	unsigned int *um;
-	unsigned int mapping[19]; /* Magic - guaranteed not to be exceeded. */
+	unsigned int mapping[19];  
 	char *s;
 	int i;
 	int count;
@@ -2376,53 +2180,9 @@ static void corrections_init(void)
 		file_fail(norm_name);
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
-/*
- * Hangul decomposition (algorithm from Section 3.12 of Unicode 6.3.0)
- *
- * AC00;<Hangul Syllable, First>;Lo;0;L;;;;;N;;;;;
- * D7A3;<Hangul Syllable, Last>;Lo;0;L;;;;;N;;;;;
- *
- * SBase = 0xAC00
- * LBase = 0x1100
- * VBase = 0x1161
- * TBase = 0x11A7
- * LCount = 19
- * VCount = 21
- * TCount = 28
- * NCount = 588 (VCount * TCount)
- * SCount = 11172 (LCount * NCount)
- *
- * Decomposition:
- *   SIndex = s - SBase
- *
- * LV (Canonical/Full)
- *   LIndex = SIndex / NCount
- *   VIndex = (Sindex % NCount) / TCount
- *   LPart = LBase + LIndex
- *   VPart = VBase + VIndex
- *
- * LVT (Canonical)
- *   LVIndex = (SIndex / TCount) * TCount
- *   TIndex = (Sindex % TCount)
- *   LVPart = SBase + LVIndex
- *   TPart = TBase + TIndex
- *
- * LVT (Full)
- *   LIndex = SIndex / NCount
- *   VIndex = (Sindex % NCount) / TCount
- *   TIndex = (Sindex % TCount)
- *   LPart = LBase + LIndex
- *   VPart = VBase + VIndex
- *   if (TIndex == 0) {
- *          d = <LPart, VPart>
- *   } else {
- *          TPart = TBase + TIndex
- *          d = <LPart, VPart, TPart>
- *   }
- *
- */
+ 
 
 static void hangul_decompose(void)
 {
@@ -2430,11 +2190,11 @@ static void hangul_decompose(void)
 	unsigned int lb = 0x1100;
 	unsigned int vb = 0x1161;
 	unsigned int tb = 0x11a7;
-	/* unsigned int lc = 19; */
+	 
 	unsigned int vc = 21;
 	unsigned int tc = 28;
 	unsigned int nc = (vc * tc);
-	/* unsigned int sc = (lc * nc); */
+	 
 	unsigned int unichar;
 	unsigned int mapping[4];
 	unsigned int *um;
@@ -2443,7 +2203,7 @@ static void hangul_decompose(void)
 
 	if (verbose > 0)
 		printf("Decomposing hangul\n");
-	/* Hangul */
+	 
 	count = 0;
 	for (unichar = 0xAC00; unichar <= 0xD7A3; unichar++) {
 		unsigned int si = unichar - sb;
@@ -2468,11 +2228,7 @@ static void hangul_decompose(void)
 		memcpy(um, mapping, i * sizeof(unsigned int));
 		unicode_data[unichar].utf32nfdicf = um;
 
-		/*
-		 * Add a cookie as a reminder that the hangul syllable
-		 * decompositions must not be stored in the generated
-		 * trie.
-		 */
+		 
 		unicode_data[unichar].utf8nfdi = malloc(2);
 		unicode_data[unichar].utf8nfdi[0] = HANGUL;
 		unicode_data[unichar].utf8nfdi[1] = '\0';
@@ -2489,7 +2245,7 @@ static void hangul_decompose(void)
 static void nfdi_decompose(void)
 {
 	unsigned int unichar;
-	unsigned int mapping[19]; /* Magic - guaranteed not to be exceeded. */
+	unsigned int mapping[19];  
 	unsigned int *um;
 	unsigned int *dc;
 	int count;
@@ -2527,7 +2283,7 @@ static void nfdi_decompose(void)
 			memcpy(um, mapping, i * sizeof(unsigned int));
 			unicode_data[unichar].utf32nfdi = um;
 		}
-		/* Add this decomposition to nfdicf if there is no entry. */
+		 
 		if (!unicode_data[unichar].utf32nfdicf) {
 			um = malloc(i * sizeof(unsigned int));
 			memcpy(um, mapping, i * sizeof(unsigned int));
@@ -2544,7 +2300,7 @@ static void nfdi_decompose(void)
 static void nfdicf_decompose(void)
 {
 	unsigned int unichar;
-	unsigned int mapping[19]; /* Magic - guaranteed not to be exceeded. */
+	unsigned int mapping[19];  
 	unsigned int *um;
 	unsigned int *dc;
 	int count;
@@ -2589,7 +2345,7 @@ static void nfdicf_decompose(void)
 		printf("Processed %d entries\n", count);
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 int utf8agemax(struct tree *, const char *);
 int utf8nagemax(struct tree *, const char *, size_t);
@@ -2602,52 +2358,9 @@ int utf8cursor(struct utf8cursor *, struct tree *, const char *);
 int utf8ncursor(struct utf8cursor *, struct tree *, const char *, size_t);
 int utf8byte(struct utf8cursor *);
 
-/*
- * Hangul decomposition (algorithm from Section 3.12 of Unicode 6.3.0)
- *
- * AC00;<Hangul Syllable, First>;Lo;0;L;;;;;N;;;;;
- * D7A3;<Hangul Syllable, Last>;Lo;0;L;;;;;N;;;;;
- *
- * SBase = 0xAC00
- * LBase = 0x1100
- * VBase = 0x1161
- * TBase = 0x11A7
- * LCount = 19
- * VCount = 21
- * TCount = 28
- * NCount = 588 (VCount * TCount)
- * SCount = 11172 (LCount * NCount)
- *
- * Decomposition:
- *   SIndex = s - SBase
- *
- * LV (Canonical/Full)
- *   LIndex = SIndex / NCount
- *   VIndex = (Sindex % NCount) / TCount
- *   LPart = LBase + LIndex
- *   VPart = VBase + VIndex
- *
- * LVT (Canonical)
- *   LVIndex = (SIndex / TCount) * TCount
- *   TIndex = (Sindex % TCount)
- *   LVPart = SBase + LVIndex
- *   TPart = TBase + TIndex
- *
- * LVT (Full)
- *   LIndex = SIndex / NCount
- *   VIndex = (Sindex % NCount) / TCount
- *   TIndex = (Sindex % TCount)
- *   LPart = LBase + LIndex
- *   VPart = VBase + VIndex
- *   if (TIndex == 0) {
- *          d = <LPart, VPart>
- *   } else {
- *          TPart = TBase + TIndex
- *          d = <LPart, VPart, TPart>
- *   }
- */
+ 
 
-/* Constants */
+ 
 #define SB	(0xAC00)
 #define LB	(0x1100)
 #define VB	(0x1161)
@@ -2658,7 +2371,7 @@ int utf8byte(struct utf8cursor *);
 #define NC	(VC * TC)
 #define SC	(LC * NC)
 
-/* Algorithmic decomposition of hangul syllable. */
+ 
 static utf8leaf_t *utf8hangul(const char *str, unsigned char *hangul)
 {
 	unsigned int	si;
@@ -2667,42 +2380,35 @@ static utf8leaf_t *utf8hangul(const char *str, unsigned char *hangul)
 	unsigned int	ti;
 	unsigned char	*h;
 
-	/* Calculate the SI, LI, VI, and TI values. */
+	 
 	si = utf8decode(str) - SB;
 	li = si / NC;
 	vi = (si % NC) / TC;
 	ti = si % TC;
 
-	/* Fill in base of leaf. */
+	 
 	h = hangul;
 	LEAF_GEN(h) = 2;
 	LEAF_CCC(h) = DECOMPOSE;
 	h += 2;
 
-	/* Add LPart, a 3-byte UTF-8 sequence. */
+	 
 	h += utf8encode((char *)h, li + LB);
 
-	/* Add VPart, a 3-byte UTF-8 sequence. */
+	 
 	h += utf8encode((char *)h, vi + VB);
 
-	/* Add TPart if required, also a 3-byte UTF-8 sequence. */
+	 
 	if (ti)
 		h += utf8encode((char *)h, ti + TB);
 
-	/* Terminate string. */
+	 
 	h[0] = '\0';
 
 	return hangul;
 }
 
-/*
- * Use trie to scan s, touching at most len bytes.
- * Returns the leaf if one exists, NULL otherwise.
- *
- * A non-NULL return guarantees that the UTF-8 sequence starting at s
- * is well-formed and corresponds to a known unicode code point.  The
- * shorthand for this will be "is valid UTF-8 unicode".
- */
+ 
 static utf8leaf_t *utf8nlookup(struct tree *tree, unsigned char *hangul,
 			       const char *s, size_t len)
 {
@@ -2727,9 +2433,9 @@ static utf8leaf_t *utf8nlookup(struct tree *tree, unsigned char *hangul,
 		}
 		mask = 1 << (*trie & BITNUM);
 		if (*s & mask) {
-			/* Right leg */
+			 
 			if (offlen) {
-				/* Right node at offset of trie */
+				 
 				node = (*trie & RIGHTNODE);
 				offset = trie[offlen];
 				while (--offlen) {
@@ -2738,68 +2444,50 @@ static utf8leaf_t *utf8nlookup(struct tree *tree, unsigned char *hangul,
 				}
 				trie += offset;
 			} else if (*trie & RIGHTPATH) {
-				/* Right node after this node */
+				 
 				node = (*trie & TRIENODE);
 				trie++;
 			} else {
-				/* No right node. */
+				 
 				return NULL;
 			}
 		} else {
-			/* Left leg */
+			 
 			if (offlen) {
-				/* Left node after this node. */
+				 
 				node = (*trie & LEFTNODE);
 				trie += offlen + 1;
 			} else if (*trie & RIGHTPATH) {
-				/* No left node. */
+				 
 				return NULL;
 			} else {
-				/* Left node after this node */
+				 
 				node = (*trie & TRIENODE);
 				trie++;
 			}
 		}
 	}
-	/*
-	 * Hangul decomposition is done algorithmically. These are the
-	 * codepoints >= 0xAC00 and <= 0xD7A3. Their UTF-8 encoding is
-	 * always 3 bytes long, so s has been advanced twice, and the
-	 * start of the sequence is at s-2.
-	 */
+	 
 	if (LEAF_CCC(trie) == DECOMPOSE && LEAF_STR(trie)[0] == HANGUL)
 		trie = utf8hangul(s - 2, hangul);
 	return trie;
 }
 
-/*
- * Use trie to scan s.
- * Returns the leaf if one exists, NULL otherwise.
- *
- * Forwards to trie_nlookup().
- */
+ 
 static utf8leaf_t *utf8lookup(struct tree *tree, unsigned char *hangul,
 			      const char *s)
 {
 	return utf8nlookup(tree, hangul, s, (size_t)-1);
 }
 
-/*
- * Return the number of bytes used by the current UTF-8 sequence.
- * Assumes the input points to the first byte of a valid UTF-8
- * sequence.
- */
+ 
 static inline int utf8clen(const char *s)
 {
 	unsigned char c = *s;
 	return 1 + (c >= 0xC0) + (c >= 0xE0) + (c >= 0xF0);
 }
 
-/*
- * Maximum age of any character in s.
- * Return -1 if s is not valid UTF-8 unicode.
- * Return 0 if only non-assigned code points are used.
- */
+ 
 int utf8agemax(struct tree *tree, const char *s)
 {
 	utf8leaf_t	*leaf;
@@ -2822,11 +2510,7 @@ int utf8agemax(struct tree *tree, const char *s)
 	return age;
 }
 
-/*
- * Minimum age of any character in s.
- * Return -1 if s is not valid UTF-8 unicode.
- * Return 0 if non-assigned code points are used.
- */
+ 
 int utf8agemin(struct tree *tree, const char *s)
 {
 	utf8leaf_t	*leaf;
@@ -2849,10 +2533,7 @@ int utf8agemin(struct tree *tree, const char *s)
 	return age;
 }
 
-/*
- * Maximum age of any character in s, touch at most len bytes.
- * Return -1 if s is not valid UTF-8 unicode.
- */
+ 
 int utf8nagemax(struct tree *tree, const char *s, size_t len)
 {
 	utf8leaf_t	*leaf;
@@ -2876,10 +2557,7 @@ int utf8nagemax(struct tree *tree, const char *s, size_t len)
 	return age;
 }
 
-/*
- * Maximum age of any character in s, touch at most len bytes.
- * Return -1 if s is not valid UTF-8 unicode.
- */
+ 
 int utf8nagemin(struct tree *tree, const char *s, size_t len)
 {
 	utf8leaf_t	*leaf;
@@ -2903,12 +2581,7 @@ int utf8nagemin(struct tree *tree, const char *s, size_t len)
 	return age;
 }
 
-/*
- * Length of the normalization of s.
- * Return -1 if s is not valid UTF-8 unicode.
- *
- * A string of Default_Ignorable_Code_Point has length 0.
- */
+ 
 ssize_t utf8len(struct tree *tree, const char *s)
 {
 	utf8leaf_t	*leaf;
@@ -2932,10 +2605,7 @@ ssize_t utf8len(struct tree *tree, const char *s)
 	return ret;
 }
 
-/*
- * Length of the normalization of s, touch at most len bytes.
- * Return -1 if s is not valid UTF-8 unicode.
- */
+ 
 ssize_t utf8nlen(struct tree *tree, const char *s, size_t len)
 {
 	utf8leaf_t	*leaf;
@@ -2960,9 +2630,7 @@ ssize_t utf8nlen(struct tree *tree, const char *s, size_t len)
 	return ret;
 }
 
-/*
- * Cursor structure used by the normalizer.
- */
+ 
 struct utf8cursor {
 	struct tree	*tree;
 	const char	*s;
@@ -2977,16 +2645,7 @@ struct utf8cursor {
 	unsigned char	hangul[UTF8HANGULLEAF];
 };
 
-/*
- * Set up an utf8cursor for use by utf8byte().
- *
- *   s      : string.
- *   len    : length of s.
- *   u8c    : pointer to cursor.
- *   trie   : utf8trie_t to use for normalization.
- *
- * Returns -1 on error, 0 on success.
- */
+ 
 int utf8ncursor(struct utf8cursor *u8c, struct tree *tree, const char *s,
 		size_t len)
 {
@@ -3004,84 +2663,50 @@ int utf8ncursor(struct utf8cursor *u8c, struct tree *tree, const char *s,
 	u8c->ccc = STOPPER;
 	u8c->nccc = STOPPER;
 	u8c->unichar = 0;
-	/* Check we didn't clobber the maximum length. */
+	 
 	if (u8c->len != len)
 		return -1;
-	/* The first byte of s may not be an utf8 continuation. */
+	 
 	if (len > 0 && (*s & 0xC0) == 0x80)
 		return -1;
 	return 0;
 }
 
-/*
- * Set up an utf8cursor for use by utf8byte().
- *
- *   s      : NUL-terminated string.
- *   u8c    : pointer to cursor.
- *   trie   : utf8trie_t to use for normalization.
- *
- * Returns -1 on error, 0 on success.
- */
+ 
 int utf8cursor(struct utf8cursor *u8c, struct tree *tree, const char *s)
 {
 	return utf8ncursor(u8c, tree, s, (unsigned int)-1);
 }
 
-/*
- * Get one byte from the normalized form of the string described by u8c.
- *
- * Returns the byte cast to an unsigned char on succes, and -1 on failure.
- *
- * The cursor keeps track of the location in the string in u8c->s.
- * When a character is decomposed, the current location is stored in
- * u8c->p, and u8c->s is set to the start of the decomposition. Note
- * that bytes from a decomposition do not count against u8c->len.
- *
- * Characters are emitted if they match the current CCC in u8c->ccc.
- * Hitting end-of-string while u8c->ccc == STOPPER means we're done,
- * and the function returns 0 in that case.
- *
- * Sorting by CCC is done by repeatedly scanning the string.  The
- * values of u8c->s and u8c->p are stored in u8c->ss and u8c->sp at
- * the start of the scan.  The first pass finds the lowest CCC to be
- * emitted and stores it in u8c->nccc, the second pass emits the
- * characters with this CCC and finds the next lowest CCC. This limits
- * the number of passes to 1 + the number of different CCCs in the
- * sequence being scanned.
- *
- * Therefore:
- *  u8c->p  != NULL -> a decomposition is being scanned.
- *  u8c->ss != NULL -> this is a repeating scan.
- *  u8c->ccc == -1  -> this is the first scan of a repeating scan.
- */
+ 
 int utf8byte(struct utf8cursor *u8c)
 {
 	utf8leaf_t *leaf;
 	int ccc;
 
 	for (;;) {
-		/* Check for the end of a decomposed character. */
+		 
 		if (u8c->p && *u8c->s == '\0') {
 			u8c->s = u8c->p;
 			u8c->p = NULL;
 		}
 
-		/* Check for end-of-string. */
+		 
 		if (!u8c->p && (u8c->len == 0 || *u8c->s == '\0')) {
-			/* There is no next byte. */
+			 
 			if (u8c->ccc == STOPPER)
 				return 0;
-			/* End-of-string during a scan counts as a stopper. */
+			 
 			ccc = STOPPER;
 			goto ccc_mismatch;
 		} else if ((*u8c->s & 0xC0) == 0x80) {
-			/* This is a continuation of the current character. */
+			 
 			if (!u8c->p)
 				u8c->len--;
 			return (unsigned char)*u8c->s++;
 		}
 
-		/* Look up the data for the current character. */
+		 
 		if (u8c->p) {
 			leaf = utf8lookup(u8c->tree, u8c->hangul, u8c->s);
 		} else {
@@ -3089,18 +2714,18 @@ int utf8byte(struct utf8cursor *u8c)
 					   u8c->s, u8c->len);
 		}
 
-		/* No leaf found implies that the input is a binary blob. */
+		 
 		if (!leaf)
 			return -1;
 
-		/* Characters that are too new have CCC 0. */
+		 
 		if (ages[LEAF_GEN(leaf)] > u8c->tree->maxage) {
 			ccc = STOPPER;
 		} else if ((ccc = LEAF_CCC(leaf)) == DECOMPOSE) {
 			u8c->len -= utf8clen(u8c->s);
 			u8c->p = u8c->s + utf8clen(u8c->s);
 			u8c->s = LEAF_STR(leaf);
-			/* Empty decomposition implies CCC 0. */
+			 
 			if (*u8c->s == '\0') {
 				if (u8c->ccc == STOPPER)
 					continue;
@@ -3112,31 +2737,21 @@ int utf8byte(struct utf8cursor *u8c)
 		}
 		u8c->unichar = utf8decode(u8c->s);
 
-		/*
-		 * If this is not a stopper, then see if it updates
-		 * the next canonical class to be emitted.
-		 */
+		 
 		if (ccc != STOPPER && u8c->ccc < ccc && ccc < u8c->nccc)
 			u8c->nccc = ccc;
 
-		/*
-		 * Return the current byte if this is the current
-		 * combining class.
-		 */
+		 
 		if (ccc == u8c->ccc) {
 			if (!u8c->p)
 				u8c->len--;
 			return (unsigned char)*u8c->s++;
 		}
 
-		/* Current combining class mismatch. */
+		 
 	ccc_mismatch:
 		if (u8c->nccc == STOPPER) {
-			/*
-			 * Scan forward for the first canonical class
-			 * to be emitted.  Save the position from
-			 * which to restart.
-			 */
+			 
 			assert(u8c->ccc == STOPPER);
 			u8c->ccc = MINCCC - 1;
 			u8c->nccc = ccc;
@@ -3147,19 +2762,19 @@ int utf8byte(struct utf8cursor *u8c)
 				u8c->len -= utf8clen(u8c->s);
 			u8c->s += utf8clen(u8c->s);
 		} else if (ccc != STOPPER) {
-			/* Not a stopper, and not the ccc we're emitting. */
+			 
 			if (!u8c->p)
 				u8c->len -= utf8clen(u8c->s);
 			u8c->s += utf8clen(u8c->s);
 		} else if (u8c->nccc != MAXCCC + 1) {
-			/* At a stopper, restart for next ccc. */
+			 
 			u8c->ccc = u8c->nccc;
 			u8c->nccc = MAXCCC + 1;
 			u8c->s = u8c->ss;
 			u8c->p = u8c->sp;
 			u8c->len = u8c->slen;
 		} else {
-			/* All done, proceed from here. */
+			 
 			u8c->ccc = STOPPER;
 			u8c->nccc = STOPPER;
 			u8c->sp = NULL;
@@ -3169,7 +2784,7 @@ int utf8byte(struct utf8cursor *u8c)
 	}
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int normalize_line(struct tree *tree)
 {
@@ -3178,7 +2793,7 @@ static int normalize_line(struct tree *tree)
 	int c;
 	struct utf8cursor u8c;
 
-	/* First test: null-terminated string. */
+	 
 	s = buf2;
 	t = buf3;
 	if (utf8cursor(&u8c, tree, s))
@@ -3191,9 +2806,9 @@ static int normalize_line(struct tree *tree)
 	if (*t != 0)
 		return -1;
 
-	/* Second test: length-limited string. */
+	 
 	s = buf2;
-	/* Replace NUL with a value that will cause an error if seen. */
+	 
 	s[strlen(s) + 1] = -1;
 	t = buf3;
 	if (utf8cursor(&u8c, tree, s))
@@ -3223,7 +2838,7 @@ static void normalization_test(void)
 
 	if (verbose > 0)
 		printf("Parsing %s\n", test_name);
-	/* Step one, read data from file. */
+	 
 	file = fopen(test_name, "r");
 	if (!file)
 		open_fail(test_name, errno);
@@ -3270,7 +2885,7 @@ static void normalization_test(void)
 		file_fail(test_name);
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static void write_file(void)
 {
@@ -3356,7 +2971,7 @@ static void write_file(void)
 	fclose(file);
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 int main(int argc, char *argv[])
 {
@@ -3420,7 +3035,7 @@ int main(int argc, char *argv[])
 	trees_populate();
 	trees_reduce();
 	trees_verify();
-	/* Prevent "unused function" warning. */
+	 
 	(void)lookup(nfdi_tree, " ");
 	if (verbose > 2)
 		tree_walk(nfdi_tree);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KUnit test for struct string_stream.
- *
- * Copyright (C) 2019, Google LLC.
- * Author: Brendan Higgins <brendanhiggins@google.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/slab.h>

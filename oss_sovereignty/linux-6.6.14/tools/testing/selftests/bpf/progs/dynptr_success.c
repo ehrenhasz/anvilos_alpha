@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Facebook */
+
+ 
 
 #include <string.h>
 #include <stdbool.h>
@@ -45,13 +45,13 @@ int test_read_write(void *ctx)
 
 	bpf_ringbuf_reserve_dynptr(&ringbuf, sizeof(write_data), 0, &ptr);
 
-	/* Write data into the dynptr */
+	 
 	err = bpf_dynptr_write(&ptr, 0, write_data, sizeof(write_data), 0);
 
-	/* Read the data that was written into the dynptr */
+	 
 	err = err ?: bpf_dynptr_read(read_data, sizeof(read_data), &ptr, 0, 0);
 
-	/* Ensure the data we read matches the data we wrote */
+	 
 	for (i = 0; i < sizeof(read_data); i++) {
 		if (read_data[i] != write_data[i]) {
 			err = 1;
@@ -86,14 +86,14 @@ int test_dynptr_data(void *ctx)
 
 	bpf_dynptr_from_mem(map_val, map_val_size, 0, &ptr);
 
-	/* Try getting a data slice that is out of range */
+	 
 	data = bpf_dynptr_data(&ptr, map_val_size + 1, 1);
 	if (data) {
 		err = 2;
 		return 0;
 	}
 
-	/* Try getting more bytes than available */
+	 
 	data = bpf_dynptr_data(&ptr, 0, map_val_size + 1);
 	if (data) {
 		err = 3;
@@ -144,7 +144,7 @@ int test_ringbuf(void *ctx)
 
 	val = 100;
 
-	/* check that you can reserve a dynamic size reservation */
+	 
 	err = bpf_ringbuf_reserve_dynptr(&ringbuf, val, 0, &ptr);
 
 	sample = err ? NULL : bpf_dynptr_data(&ptr, 0, sizeof(*sample));
@@ -155,7 +155,7 @@ int test_ringbuf(void *ctx)
 
 	sample->pid = 10;
 
-	/* Can pass dynptr to callback functions */
+	 
 	bpf_loop(10, ringbuf_callback, &ptr, 0);
 
 	if (sample->pid != 55)
@@ -178,7 +178,7 @@ int test_skb_readonly(struct __sk_buff *skb)
 		return 1;
 	}
 
-	/* since cgroup skbs are read only, writes should fail */
+	 
 	ret = bpf_dynptr_write(&ptr, 0, write_data, sizeof(write_data), 0);
 	if (ret != -EINVAL) {
 		err = 2;
@@ -199,7 +199,7 @@ int test_dynptr_skb_data(struct __sk_buff *skb)
 		return 1;
 	}
 
-	/* This should return NULL. Must use bpf_dynptr_slice API */
+	 
 	data = bpf_dynptr_data(&ptr, 0, 1);
 	if (data) {
 		err = 2;
@@ -231,7 +231,7 @@ int test_adjust(void *ctx)
 		goto done;
 	}
 
-	/* Advance the dynptr by off */
+	 
 	err = bpf_dynptr_adjust(&ptr, off, bpf_dynptr_size(&ptr));
 	if (err) {
 		err = 3;
@@ -243,14 +243,14 @@ int test_adjust(void *ctx)
 		goto done;
 	}
 
-	/* Trim the dynptr */
+	 
 	err = bpf_dynptr_adjust(&ptr, off, 15);
 	if (err) {
 		err = 5;
 		goto done;
 	}
 
-	/* Check that the size was adjusted correctly */
+	 
 	if (bpf_dynptr_size(&ptr) != trim - off) {
 		err = 6;
 		goto done;
@@ -277,19 +277,19 @@ int test_adjust_err(void *ctx)
 		goto done;
 	}
 
-	/* Check that start can't be greater than end */
+	 
 	if (bpf_dynptr_adjust(&ptr, 5, 1) != -EINVAL) {
 		err = 2;
 		goto done;
 	}
 
-	/* Check that start can't be greater than size */
+	 
 	if (bpf_dynptr_adjust(&ptr, size + 1, size + 1) != -ERANGE) {
 		err = 3;
 		goto done;
 	}
 
-	/* Check that end can't be greater than size */
+	 
 	if (bpf_dynptr_adjust(&ptr, 0, size + 1) != -ERANGE) {
 		err = 4;
 		goto done;
@@ -300,17 +300,13 @@ int test_adjust_err(void *ctx)
 		goto done;
 	}
 
-	/* Check that you can't write more bytes than available into the dynptr
-	 * after you've adjusted it
-	 */
+	 
 	if (bpf_dynptr_write(&ptr, 0, &write_data, sizeof(write_data), 0) != -E2BIG) {
 		err = 6;
 		goto done;
 	}
 
-	/* Check that even after adjusting, submitting/discarding
-	 * a ringbuf dynptr works
-	 */
+	 
 	bpf_ringbuf_submit_dynptr(&ptr, 0);
 	return 0;
 
@@ -334,13 +330,13 @@ int test_zero_size_dynptr(void *ctx)
 		goto done;
 	}
 
-	/* After this, the dynptr has a size of 0 */
+	 
 	if (bpf_dynptr_adjust(&ptr, size, size)) {
 		err = 2;
 		goto done;
 	}
 
-	/* Test that reading + writing non-zero bytes is not ok */
+	 
 	if (bpf_dynptr_read(&read_data, sizeof(read_data), &ptr, 0, 0) != -E2BIG) {
 		err = 3;
 		goto done;
@@ -351,7 +347,7 @@ int test_zero_size_dynptr(void *ctx)
 		goto done;
 	}
 
-	/* Test that reading + writing 0 bytes from a 0-size dynptr is ok */
+	 
 	if (bpf_dynptr_read(&read_data, 0, &ptr, 0, 0)) {
 		err = 5;
 		goto done;
@@ -379,25 +375,25 @@ int test_dynptr_is_null(void *ctx)
 	if (bpf_get_current_pid_tgid() >> 32 != pid)
 		return 0;
 
-	/* Pass in invalid flags, get back an invalid dynptr */
+	 
 	if (bpf_ringbuf_reserve_dynptr(&ringbuf, size, 123, &ptr1) != -EINVAL) {
 		err = 1;
 		goto exit_early;
 	}
 
-	/* Test that the invalid dynptr is null */
+	 
 	if (!bpf_dynptr_is_null(&ptr1)) {
 		err = 2;
 		goto exit_early;
 	}
 
-	/* Get a valid dynptr */
+	 
 	if (bpf_ringbuf_reserve_dynptr(&ringbuf, size, 0, &ptr2)) {
 		err = 3;
 		goto exit;
 	}
 
-	/* Test that the valid dynptr is not null */
+	 
 	if (bpf_dynptr_is_null(&ptr2)) {
 		err = 4;
 		goto exit;
@@ -417,37 +413,37 @@ int test_dynptr_is_rdonly(struct __sk_buff *skb)
 	struct bpf_dynptr ptr2;
 	struct bpf_dynptr ptr3;
 
-	/* Pass in invalid flags, get back an invalid dynptr */
+	 
 	if (bpf_dynptr_from_skb(skb, 123, &ptr1) != -EINVAL) {
 		err = 1;
 		return 0;
 	}
 
-	/* Test that an invalid dynptr is_rdonly returns false */
+	 
 	if (bpf_dynptr_is_rdonly(&ptr1)) {
 		err = 2;
 		return 0;
 	}
 
-	/* Get a read-only dynptr */
+	 
 	if (bpf_dynptr_from_skb(skb, 0, &ptr2)) {
 		err = 3;
 		return 0;
 	}
 
-	/* Test that the dynptr is read-only */
+	 
 	if (!bpf_dynptr_is_rdonly(&ptr2)) {
 		err = 4;
 		return 0;
 	}
 
-	/* Get a read-writeable dynptr */
+	 
 	if (bpf_ringbuf_reserve_dynptr(&ringbuf, 64, 0, &ptr3)) {
 		err = 5;
 		goto done;
 	}
 
-	/* Test that the dynptr is read-only */
+	 
 	if (bpf_dynptr_is_rdonly(&ptr3)) {
 		err = 6;
 		goto done;
@@ -465,7 +461,7 @@ int test_dynptr_clone(struct __sk_buff *skb)
 	struct bpf_dynptr ptr2;
 	__u32 off = 2, size;
 
-	/* Get a dynptr */
+	 
 	if (bpf_dynptr_from_skb(skb, 0, &ptr1)) {
 		err = 1;
 		return 0;
@@ -476,7 +472,7 @@ int test_dynptr_clone(struct __sk_buff *skb)
 		return 0;
 	}
 
-	/* Clone the dynptr */
+	 
 	if (bpf_dynptr_clone(&ptr1, &ptr2)) {
 		err = 3;
 		return 0;
@@ -484,7 +480,7 @@ int test_dynptr_clone(struct __sk_buff *skb)
 
 	size = bpf_dynptr_size(&ptr1);
 
-	/* Check that the clone has the same size and rd-only */
+	 
 	if (bpf_dynptr_size(&ptr2) != size) {
 		err = 4;
 		return 0;
@@ -495,10 +491,10 @@ int test_dynptr_clone(struct __sk_buff *skb)
 		return 0;
 	}
 
-	/* Advance and trim the original dynptr */
+	 
 	bpf_dynptr_adjust(&ptr1, 5, 5);
 
-	/* Check that only original dynptr was affected, and the clone wasn't */
+	 
 	if (bpf_dynptr_size(&ptr2) != size) {
 		err = 6;
 		return 0;
@@ -518,7 +514,7 @@ int test_dynptr_skb_no_buff(struct __sk_buff *skb)
 		return 1;
 	}
 
-	/* This may return NULL. SKB may require a buffer */
+	 
 	data = bpf_dynptr_slice(&ptr, 0, NULL, 1);
 
 	return !!data;
@@ -535,7 +531,7 @@ int test_dynptr_skb_strcmp(struct __sk_buff *skb)
 		return 1;
 	}
 
-	/* This may return NULL. SKB may require a buffer */
+	 
 	data = bpf_dynptr_slice(&ptr, 0, NULL, 10);
 	if (data) {
 		bpf_strncmp(data, 10, "foo");

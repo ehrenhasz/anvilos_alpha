@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-haps.c - Synopsys HAPS PCI Specific glue layer
- *
- * Copyright (C) 2018 Synopsys, Inc.
- *
- * Authors: Thinh Nguyen <thinhn@synopsys.com>,
- *          John Youn <johnyoun@synopsys.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -15,11 +8,7 @@
 #include <linux/platform_device.h>
 #include <linux/property.h>
 
-/**
- * struct dwc3_haps - Driver private structure
- * @dwc3: child dwc3 platform_device
- * @pci: our link to PCI bus
- */
+ 
 struct dwc3_haps {
 	struct platform_device *dwc3;
 	struct pci_dev *pci;
@@ -112,13 +101,7 @@ static const struct pci_device_id dwc3_haps_id_table[] = {
 	{
 		PCI_DEVICE(PCI_VENDOR_ID_SYNOPSYS,
 			   PCI_DEVICE_ID_SYNOPSYS_HAPSUSB3),
-		/*
-		 * i.MX6QP and i.MX7D platform use a PCIe controller with the
-		 * same VID and PID as this USB controller. The system may
-		 * incorrectly match this driver to that PCIe controller. To
-		 * workaround this, specifically use class type USB to prevent
-		 * incorrect driver matching.
-		 */
+		 
 		.class = (PCI_CLASS_SERIAL_USB << 8),
 		.class_mask = 0xffff00,
 	},
@@ -130,7 +113,7 @@ static const struct pci_device_id dwc3_haps_id_table[] = {
 		PCI_DEVICE(PCI_VENDOR_ID_SYNOPSYS,
 			   PCI_DEVICE_ID_SYNOPSYS_HAPSUSB31),
 	},
-	{  }	/* Terminating Entry */
+	{  }	 
 };
 MODULE_DEVICE_TABLE(pci, dwc3_haps_id_table);
 

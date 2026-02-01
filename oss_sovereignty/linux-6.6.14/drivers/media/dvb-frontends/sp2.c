@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CIMaX SP2/SP2HF (Atmel T90FJR) CI driver
- *
- * Copyright (C) 2014 Olli Salonen <olli.salonen@iki.fi>
- *
- * Heavily based on CIMax2(R) SP2 driver in conjunction with NetUp Dual
- * DVB-S2 CI card (cimax2) with following copyrights:
- *
- *  Copyright (C) 2009 NetUP Inc.
- *  Copyright (C) 2009 Igor M. Liplianin <liplianin@netup.ru>
- *  Copyright (C) 2009 Abylay Ospan <aospan@netup.ru>
- */
+
+ 
 
 #include "sp2_priv.h"
 
@@ -100,10 +89,7 @@ static int sp2_ci_op_cam(struct dvb_ca_en50221 *en50221, int slot, u8 acs,
 	if (slot != 0)
 		return -EINVAL;
 
-	/*
-	 * change module access type between IO space and attribute memory
-	 * when needed
-	 */
+	 
 	if (s->module_access_type != acs) {
 		ret = sp2_read_i2c(s, 0x00, &store, 1);
 
@@ -120,7 +106,7 @@ static int sp2_ci_op_cam(struct dvb_ca_en50221 *en50221, int slot, u8 acs,
 
 	s->module_access_type = acs;
 
-	/* implementation of ci_op_cam is device specific */
+	 
 	if (ci_op_cam) {
 		ret = ci_op_cam(s->priv, read, addr, data, &mem);
 	} else {
@@ -182,7 +168,7 @@ int sp2_ci_slot_reset(struct dvb_ca_en50221 *en50221, int slot)
 	if (slot != 0)
 		return -EINVAL;
 
-	/* RST on */
+	 
 	buf = SP2_MOD_CTL_RST;
 	ret = sp2_write_i2c(s, 0x00, &buf, 1);
 
@@ -191,7 +177,7 @@ int sp2_ci_slot_reset(struct dvb_ca_en50221 *en50221, int slot)
 
 	usleep_range(500, 600);
 
-	/* RST off */
+	 
 	buf = 0x00;
 	ret = sp2_write_i2c(s, 0x00, &buf, 1);
 
@@ -209,7 +195,7 @@ int sp2_ci_slot_shutdown(struct dvb_ca_en50221 *en50221, int slot)
 
 	dev_dbg(&s->client->dev, "slot:%d\n", slot);
 
-	/* not implemented */
+	 
 	return 0;
 }
 
@@ -225,7 +211,7 @@ int sp2_ci_slot_ts_enable(struct dvb_ca_en50221 *en50221, int slot)
 
 	sp2_read_i2c(s, 0x00, &buf, 1);
 
-	/* disable bypass and enable TS */
+	 
 	buf |= (SP2_MOD_CTL_TSOEN | SP2_MOD_CTL_TSIEN);
 	return sp2_write_i2c(s, 0, &buf, 1);
 }
@@ -239,10 +225,7 @@ int sp2_ci_poll_slot_status(struct dvb_ca_en50221 *en50221,
 
 	dev_dbg(&s->client->dev, "slot:%d open:%d\n", slot, open);
 
-	/*
-	 * CAM module INSERT/REMOVE processing. Slow operation because of i2c
-	 * transfers. Throttle read to one per sec.
-	 */
+	 
 	if (time_after(jiffies, s->next_status_checked_time)) {
 		ret = sp2_read_i2c(s, 0x00, buf, 1);
 		s->next_status_checked_time = jiffies +	msecs_to_jiffies(1000);
@@ -265,40 +248,40 @@ static int sp2_init(struct sp2 *s)
 	int ret = 0;
 	u8 buf;
 	u8 cimax_init[34] = {
-		0x00, /* module A control*/
-		0x00, /* auto select mask high A */
-		0x00, /* auto select mask low A */
-		0x00, /* auto select pattern high A */
-		0x00, /* auto select pattern low A */
-		0x44, /* memory access time A, 600 ns */
-		0x00, /* invert input A */
-		0x00, /* RFU */
-		0x00, /* RFU */
-		0x00, /* module B control*/
-		0x00, /* auto select mask high B */
-		0x00, /* auto select mask low B */
-		0x00, /* auto select pattern high B */
-		0x00, /* auto select pattern low B */
-		0x44, /* memory access time B, 600 ns */
-		0x00, /* invert input B */
-		0x00, /* RFU */
-		0x00, /* RFU */
-		0x00, /* auto select mask high Ext */
-		0x00, /* auto select mask low Ext */
-		0x00, /* auto select pattern high Ext */
-		0x00, /* auto select pattern low Ext */
-		0x00, /* RFU */
-		0x02, /* destination - module A */
-		0x01, /* power control reg, VCC power on */
-		0x00, /* RFU */
-		0x00, /* int status read only */
-		0x00, /* Interrupt Mask Register */
-		0x05, /* EXTINT=active-high, INT=push-pull */
-		0x00, /* USCG1 */
-		0x04, /* ack active low */
-		0x00, /* LOCK = 0 */
-		0x22, /* unknown */
-		0x00, /* synchronization? */
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x44,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x44,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x02,  
+		0x01,  
+		0x00,  
+		0x00,  
+		0x00,  
+		0x05,  
+		0x00,  
+		0x04,  
+		0x00,  
+		0x22,  
+		0x00,  
 	};
 
 	dev_dbg(&s->client->dev, "\n");
@@ -315,18 +298,18 @@ static int sp2_init(struct sp2 *s)
 	s->ca.data = s;
 	s->module_access_type = 0;
 
-	/* initialize all regs */
+	 
 	ret = sp2_write_i2c(s, 0x00, &cimax_init[0], 34);
 	if (ret)
 		goto err;
 
-	/* lock registers */
+	 
 	buf = 1;
 	ret = sp2_write_i2c(s, 0x1f, &buf, 1);
 	if (ret)
 		goto err;
 
-	/* power on slots */
+	 
 	ret = sp2_write_i2c(s, 0x18, &buf, 1);
 	if (ret)
 		goto err;

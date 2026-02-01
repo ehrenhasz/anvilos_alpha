@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Altera PCIe MSI support
- *
- * Author: Ley Foon Tan <lftan@altera.com>
- *
- * Copyright Altera Corporation (C) 2013-2015. All rights reserved
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irqchip/chained_irq.h>
@@ -27,7 +21,7 @@
 
 struct altera_msi {
 	DECLARE_BITMAP(used, MAX_MSI_VECTORS);
-	struct mutex		lock;	/* protect "used" bitmap */
+	struct mutex		lock;	 
 	struct platform_device	*pdev;
 	struct irq_domain	*msi_domain;
 	struct irq_domain	*inner_domain;
@@ -62,7 +56,7 @@ static void altera_msi_isr(struct irq_desc *desc)
 
 	while ((status = msi_readl(msi, MSI_STATUS)) != 0) {
 		for_each_set_bit(bit, &status, msi->num_of_vectors) {
-			/* Dummy read from vector to clear the interrupt */
+			 
 			readl_relaxed(msi->vector_base + (bit * sizeof(u32)));
 
 			ret = generic_handle_domain_irq(msi->inner_domain, bit);

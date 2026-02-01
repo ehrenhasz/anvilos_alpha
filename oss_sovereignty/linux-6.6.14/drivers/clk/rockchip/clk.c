@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- *
- * Copyright (c) 2016 Rockchip Electronics Co. Ltd.
- * Author: Xing Zheng <zhengxing@rock-chips.com>
- *
- * based on
- *
- * samsung/clk.c
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Copyright (c) 2013 Linaro Ltd.
- * Author: Thomas Abraham <thomas.ab@samsung.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/clk.h>
@@ -25,16 +12,7 @@
 #include "../clk-fractional-divider.h"
 #include "clk.h"
 
-/*
- * Register a clock branch.
- * Most clock branches have a form like
- *
- * src1 --|--\
- *        |M |--[GATE]-[DIV]-
- * src2 --|--/
- *
- * sometimes without one of those components.
- */
+ 
 static struct clk *rockchip_clk_register_branch(const char *name,
 		const char *const *parent_names, u8 num_parents,
 		void __iomem *base,
@@ -157,12 +135,7 @@ static int rockchip_clk_frac_notifier_cb(struct notifier_block *nb,
 			frac->rate_change_remuxed = 1;
 		}
 	} else if (event == POST_RATE_CHANGE) {
-		/*
-		 * The POST_RATE_CHANGE notifier runs directly after the
-		 * divider clock is set in clk_change_rate, so we'll have
-		 * remuxed back to the original parent before clk_change_rate
-		 * reaches the mux itself.
-		 */
+		 
 		if (frac->rate_change_remuxed) {
 			frac->mux_ops->set_parent(&frac_mux->hw,
 						  frac->rate_change_idx);
@@ -173,10 +146,7 @@ static int rockchip_clk_frac_notifier_cb(struct notifier_block *nb,
 	return notifier_from_errno(ret);
 }
 
-/*
- * fractional divider must set that denominator is 20 times larger than
- * numerator to generate precise clock frequency.
- */
+ 
 static void rockchip_fractional_approximation(struct clk_hw *hw,
 		unsigned long rate, unsigned long *parent_rate,
 		unsigned long *m, unsigned long *n)
@@ -294,7 +264,7 @@ static struct clk *rockchip_clk_register_frac_branch(
 
 		rockchip_clk_add_lookup(ctx, mux_clk, child->id);
 
-		/* notifier on the fraction divider to catch rate changes */
+		 
 		if (frac->mux_frac_idx >= 0) {
 			pr_debug("%s: found fractional parent in mux at pos %d\n",
 				 __func__, frac->mux_frac_idx);
@@ -321,7 +291,7 @@ static struct clk *rockchip_clk_register_factor_branch(const char *name,
 	struct clk_gate *gate = NULL;
 	struct clk_fixed_factor *fix = NULL;
 
-	/* without gate, register a simple factor clock */
+	 
 	if (gate_offset == 0) {
 		return clk_register_fixed_factor(NULL, name,
 				parent_names[0], flags, mult,
@@ -440,7 +410,7 @@ void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
 	for (idx = 0; idx < nr_clk; idx++, list++) {
 		flags = list->flags;
 
-		/* catch simple muxes */
+		 
 		switch (list->branch_type) {
 		case branch_mux:
 			if (list->mux_table)
@@ -555,7 +525,7 @@ void rockchip_clk_register_branches(struct rockchip_clk_provider *ctx,
 			break;
 		}
 
-		/* none of the cases above matched */
+		 
 		if (!clk) {
 			pr_err("%s: unknown clock type %d\n",
 			       __func__, list->branch_type);
@@ -601,7 +571,7 @@ void rockchip_clk_protect_critical(const char *const clocks[],
 {
 	int i;
 
-	/* Protect the clocks that needs to stay on */
+	 
 	for (i = 0; i < nclocks; i++) {
 		struct clk *clk = __clk_lookup(clocks[i]);
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: ioctl data structures & APIs
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_IOCTL_H_
 #define _MWIFIEX_IOCTL_H_
@@ -246,7 +242,7 @@ struct mwifiex_ds_encrypt_key {
 	u8 key_material[WLAN_MAX_KEY_LEN];
 	u8 mac_addr[ETH_ALEN];
 	u32 is_wapi_key;
-	u8 pn[PN_LEN];		/* packet number */
+	u8 pn[PN_LEN];		 
 	u8 pn_len;
 	u8 is_igtk_key;
 	u8 is_current_wep_key;
@@ -262,11 +258,7 @@ struct mwifiex_power_cfg {
 
 struct mwifiex_ds_hs_cfg {
 	u32 is_invoke_hostcmd;
-	/*  Bit0: non-unicast data
-	 *  Bit1: unicast data
-	 *  Bit2: mac events
-	 *  Bit3: magic packet
-	 */
+	 
 	u32 conditions;
 	u32 gpio;
 	u32 gap;
@@ -306,7 +298,7 @@ struct mwifiex_11ac_vht_cfg {
 struct mwifiex_ds_11n_tx_cfg {
 	u16 tx_htcap;
 	u16 tx_htinfo;
-	u16 misc_config; /* Needed for 802.11AC cards only */
+	u16 misc_config;  
 };
 
 struct mwifiex_ds_11n_amsdu_aggr_ctrl {
@@ -390,7 +382,7 @@ struct mwifiex_ds_misc_subsc_evt {
 	struct subsc_evt_cfg bcn_h_rssi_cfg;
 };
 
-#define MWIFIEX_MEF_MAX_BYTESEQ		6	/* non-adjustable */
+#define MWIFIEX_MEF_MAX_BYTESEQ		6	 
 #define MWIFIEX_MEF_MAX_FILTERS		10
 
 struct mwifiex_mef_filter {
@@ -438,9 +430,9 @@ enum COALESCE_PACKET_TYPE {
 };
 
 #define MWIFIEX_COALESCE_MAX_RULES	8
-#define MWIFIEX_COALESCE_MAX_BYTESEQ	4	/* non-adjustable */
+#define MWIFIEX_COALESCE_MAX_BYTESEQ	4	 
 #define MWIFIEX_COALESCE_MAX_FILTERS	4
-#define MWIFIEX_MAX_COALESCING_DELAY	100     /* in msecs */
+#define MWIFIEX_MAX_COALESCING_DELAY	100      
 
 struct filt_field_param {
 	u8 operation;
@@ -473,4 +465,4 @@ struct mwifiex_ds_tdls_oper {
 	u8 *ht_capab;
 };
 
-#endif /* !_MWIFIEX_IOCTL_H_ */
+#endif  

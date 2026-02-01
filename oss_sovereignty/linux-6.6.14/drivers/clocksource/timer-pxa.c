@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * arch/arm/mach-pxa/time.c
- *
- * PXA clocksource, clockevents, and OST interrupt handlers.
- * Copyright (c) 2007 by Bill Gatliff <bgat@billgatliff.com>.
- *
- * Derived from Nicolas Pitre's PXA timer handler Copyright (c) 2001
- * by MontaVista Software, Inc.  (Nico, your code rocks!)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -23,31 +15,24 @@
 
 #include <asm/div64.h>
 
-#define OSMR0		0x00	/* OS Timer 0 Match Register */
-#define OSMR1		0x04	/* OS Timer 1 Match Register */
-#define OSMR2		0x08	/* OS Timer 2 Match Register */
-#define OSMR3		0x0C	/* OS Timer 3 Match Register */
+#define OSMR0		0x00	 
+#define OSMR1		0x04	 
+#define OSMR2		0x08	 
+#define OSMR3		0x0C	 
 
-#define OSCR		0x10	/* OS Timer Counter Register */
-#define OSSR		0x14	/* OS Timer Status Register */
-#define OWER		0x18	/* OS Timer Watchdog Enable Register */
-#define OIER		0x1C	/* OS Timer Interrupt Enable Register */
+#define OSCR		0x10	 
+#define OSSR		0x14	 
+#define OWER		0x18	 
+#define OIER		0x1C	 
 
-#define OSSR_M3		(1 << 3)	/* Match status channel 3 */
-#define OSSR_M2		(1 << 2)	/* Match status channel 2 */
-#define OSSR_M1		(1 << 1)	/* Match status channel 1 */
-#define OSSR_M0		(1 << 0)	/* Match status channel 0 */
+#define OSSR_M3		(1 << 3)	 
+#define OSSR_M2		(1 << 2)	 
+#define OSSR_M1		(1 << 1)	 
+#define OSSR_M0		(1 << 0)	 
 
-#define OIER_E0		(1 << 0)	/* Interrupt enable channel 0 */
+#define OIER_E0		(1 << 0)	 
 
-/*
- * This is PXA's sched_clock implementation. This has a resolution
- * of at least 308 ns and a maximum value of 208 days.
- *
- * The return value is guaranteed to be monotonic in that range as
- * long as there is always less than 582 seconds between successive
- * calls to sched_clock() which should always be the case in practice.
- */
+ 
 
 #define timer_readl(reg) readl_relaxed(timer_base + (reg))
 #define timer_writel(val, reg) writel_relaxed((val), timer_base + (reg))
@@ -67,7 +52,7 @@ pxa_ost0_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *c = dev_id;
 
-	/* Disarm the compare/match, signal the event. */
+	 
 	timer_writel(timer_readl(OIER) & ~OIER_E0, OIER);
 	timer_writel(OSSR_M0, OSSR);
 	c->event_handler(c);
@@ -90,7 +75,7 @@ pxa_osmr0_set_next_event(unsigned long delta, struct clock_event_device *dev)
 
 static int pxa_osmr0_shutdown(struct clock_event_device *evt)
 {
-	/* initializing, released, or preparing for suspend */
+	 
 	timer_writel(timer_readl(OIER) & ~OIER_E0, OIER);
 	timer_writel(OSSR_M0, OSSR);
 	return 0;
@@ -111,12 +96,7 @@ static void pxa_timer_suspend(struct clock_event_device *cedev)
 
 static void pxa_timer_resume(struct clock_event_device *cedev)
 {
-	/*
-	 * Ensure that we have at least MIN_OSCR_DELTA between match
-	 * register 0 and the OSCR, to guarantee that we will receive
-	 * the one-shot timer interrupt.  We adjust OSMR0 in preference
-	 * to OSCR to guarantee that OSCR is monotonically incrementing.
-	 */
+	 
 	if (osmr[0] - oscr < MIN_OSCR_DELTA)
 		osmr[0] += MIN_OSCR_DELTA;
 
@@ -179,7 +159,7 @@ static int __init pxa_timer_dt_init(struct device_node *np)
 	struct clk *clk;
 	int irq, ret;
 
-	/* timer registers are shared with watchdog timer */
+	 
 	timer_base = of_iomap(np, 0);
 	if (!timer_base) {
 		pr_err("%pOFn: unable to map resource\n", np);
@@ -198,7 +178,7 @@ static int __init pxa_timer_dt_init(struct device_node *np)
 		return ret;
 	}
 
-	/* we are only interested in OS-timer0 irq */
+	 
 	irq = irq_of_parse_and_map(np, 0);
 	if (irq <= 0) {
 		pr_crit("%pOFn: unable to parse OS-timer0 irq\n", np);
@@ -209,9 +189,7 @@ static int __init pxa_timer_dt_init(struct device_node *np)
 }
 TIMER_OF_DECLARE(pxa_timer, "marvell,pxa-timer", pxa_timer_dt_init);
 
-/*
- * Legacy timer init for non device-tree boards.
- */
+ 
 void __init pxa_timer_nodt_init(int irq, void __iomem *base)
 {
 	struct clk *clk;

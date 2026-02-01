@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * genelf_debug.c
- * Copyright (C) 2015, Google, Inc
- *
- * Contributed by:
- * 	Stephane Eranian <eranian@google.com>
- *
- * based on GPLv2 source code from Oprofile
- * @remark Copyright 2007 OProfile authors
- * @author Philippe Elie
- */
+
+ 
 #include <linux/compiler.h>
 #include <linux/zalloc.h>
 #include <sys/types.h>
@@ -107,38 +97,28 @@ buffer_ext_addr(struct buffer_ext *be)
 }
 
 struct debug_line_header {
-	// Not counting this field
+	
 	uword total_length;
-	// version number (2 currently)
+	
 	uhalf version;
-	// relative offset from next field to
-	// program statement
+	
+	
 	uword prolog_length;
 	ubyte minimum_instruction_length;
 	ubyte default_is_stmt;
-	// line_base - see DWARF 2 specs
+	
 	sbyte line_base;
-	// line_range - see DWARF 2 specs
+	
 	ubyte line_range;
-	// number of opcode + 1
+	
 	ubyte opcode_base;
-	/* follow the array of opcode args nr: ubytes [nr_opcode_base] */
-	/* follow the search directories index, zero terminated string
-	 * terminated by an empty string.
-	 */
-	/* follow an array of { filename, LEB128, LEB128, LEB128 }, first is
-	 * the directory index entry, 0 means current directory, then mtime
-	 * and filesize, last entry is followed by en empty string.
-	 */
-	/* follow the first program statement */
+	 
+	 
+	 
+	 
 } __packed;
 
-/* DWARF 2 spec talk only about one possible compilation unit header while
- * binutils can handle two flavours of dwarf 2, 32 and 64 bits, this is not
- * related to the used arch, an ELF 32 can hold more than 4 Go of debug
- * information. For now we handle only DWARF 2 32 bits comp unit. It'll only
- * become a problem if we generate more than 4GB of debug information.
- */
+ 
 struct compilation_unit_header {
 	uword total_length;
 	uhalf version;
@@ -148,15 +128,15 @@ struct compilation_unit_header {
 
 #define DW_LNS_num_opcode (DW_LNS_set_isa + 1)
 
-/* field filled at run time are marked with -1 */
+ 
 static struct debug_line_header const default_debug_line_header = {
 	.total_length = -1,
 	.version = 2,
 	.prolog_length = -1,
-	.minimum_instruction_length = 1,	/* could be better when min instruction size != 1 */
-	.default_is_stmt = 1,	/* we don't take care about basic block */
-	.line_base = -5,	/* sensible value for line base ... */
-	.line_range = -14,     /* ... and line range are guessed statically */
+	.minimum_instruction_length = 1,	 
+	.default_is_stmt = 1,	 
+	.line_base = -5,	 
+	.line_range = -14,      
 	.opcode_base = DW_LNS_num_opcode
 };
 
@@ -175,11 +155,11 @@ static ubyte standard_opcode_length[] =
 };
 #endif
 
-/* field filled at run time are marked with -1 */
+ 
 static struct compilation_unit_header default_comp_unit_header = {
 	.total_length = -1,
 	.version = 2,
-	.debug_abbrev_offset = 0,     /* we reuse the same abbrev entries for all comp unit */
+	.debug_abbrev_offset = 0,      
 	.pointer_size = sizeof(void *)
 };
 
@@ -279,15 +259,15 @@ static void emit_lne_define_filename(struct buffer_ext *be,
 {
 	buffer_ext_add(be, (void *)"", 1);
 
-	/* LNE field, strlen(filename) + zero termination, 3 bytes for: the dir entry, timestamp, filesize */
+	 
 	emit_unsigned_LEB128(be, strlen(filename) + 5);
 	emit_opcode(be, DW_LNE_define_file);
 	emit_string(be, filename);
-	/* directory index 0=do not know */
+	 
         emit_unsigned_LEB128(be, 0);
-	/* last modification date on file 0=do not know */
+	 
         emit_unsigned_LEB128(be, 0);
-	/* filesize 0=do not know */
+	 
         emit_unsigned_LEB128(be, 0);
 }
 
@@ -304,22 +284,16 @@ static ubyte get_special_opcode(struct debug_entry *ent,
 	unsigned int temp;
 	unsigned long delta_addr;
 
-	/*
-	 * delta from line_base
-	 */
+	 
 	temp = (ent->lineno - last_line) - default_debug_line_header.line_base;
 
 	if (temp >= default_debug_line_header.line_range)
 		return 0;
 
-	/*
-	 * delta of addresses
-	 */
+	 
 	delta_addr = (ent->addr - last_vma) / default_debug_line_header.minimum_instruction_length;
 
-	/* This is not sufficient to ensure opcode will be in [0-256] but
-	 * sufficient to ensure when summing with the delta lineno we will
-	 * not overflow the unsigned long opcode */
+	 
 
 	if (delta_addr <= 256 / default_debug_line_header.line_range) {
 		unsigned long opcode = temp +
@@ -337,21 +311,12 @@ static void emit_lineno_info(struct buffer_ext *be,
 {
 	size_t i;
 
-	/* as described in the jitdump format */
+	 
 	const char repeated_name_marker[] = {'\xff', '\0'};
 
-	/*
-	 * Machine state at start of a statement program
-	 * address = 0
-	 * file    = 1
-	 * line    = 1
-	 * column  = 0
-	 * is_stmt = default_is_stmt as given in the debug_line_header
-	 * basic block = 0
-	 * end sequence = 0
-	 */
+	 
 
-	/* start state of the state machine we take care of */
+	 
 	unsigned long last_vma = 0;
 	char const  *cur_filename = NULL;
 	unsigned long cur_file_idx = 0;
@@ -363,9 +328,7 @@ static void emit_lineno_info(struct buffer_ext *be,
 		int need_copy = 0;
 		ubyte special_opcode;
 
-		/*
-		 * check if filename changed, if so add it
-		 */
+		 
 		if ((!cur_filename || strcmp(cur_filename, ent->name)) &&
 			strcmp(repeated_name_marker, ent->name)) {
 			emit_lne_define_filename(be, ent->name);
@@ -380,25 +343,19 @@ static void emit_lineno_info(struct buffer_ext *be,
 			last_vma  = ent->addr;
 			emit_opcode(be, special_opcode);
 		} else {
-			/*
-			 * lines differ, emit line delta
-			 */
+			 
 			if (last_line != ent->lineno) {
 				emit_advance_lineno(be, ent->lineno - last_line);
 				last_line = ent->lineno;
 				need_copy = 1;
 			}
-			/*
-			 * addresses differ, emit address delta
-			 */
+			 
 			if (last_vma != ent->addr) {
 				emit_advance_pc(be, ent->addr - last_vma);
 				last_vma = ent->addr;
 				need_copy = 1;
 			}
-			/*
-			 * add new row to matrix
-			 */
+			 
 			if (need_copy)
 				emit_opcode(be, DW_LNS_copy);
 		}
@@ -419,10 +376,10 @@ static void add_debug_line(struct buffer_ext *be,
 
 	buffer_ext_add(be, &standard_opcode_length,  sizeof(standard_opcode_length));
 
-	// empty directory entry
+	
 	buffer_ext_add(be, (void *)"", 1);
 
-	// empty filename directory
+	
 	buffer_ext_add(be, (void *)"", 1);
 
 	dbg_header = buffer_ext_addr(be) + old_size;
@@ -507,9 +464,7 @@ jit_add_debug_info(Elf *e, uint64_t code_addr, void *debug, int nr_debug_entries
 	if (jit_process_debug_info(code_addr, debug, nr_debug_entries, &dl, &da, &di))
 		goto out;
 
-	/*
-	 * setup .debug_line section
-	 */
+	 
 	scn = elf_newscn(e);
 	if (!scn) {
 		warnx("cannot create section");
@@ -535,15 +490,13 @@ jit_add_debug_info(Elf *e, uint64_t code_addr, void *debug, int nr_debug_entries
 		goto out;
 	}
 
-	shdr->sh_name = 52; /* .debug_line */
+	shdr->sh_name = 52;  
 	shdr->sh_type = SHT_PROGBITS;
-	shdr->sh_addr = 0; /* must be zero or == sh_offset -> dynamic object */
+	shdr->sh_addr = 0;  
 	shdr->sh_flags = 0;
 	shdr->sh_entsize = 0;
 
-	/*
-	 * setup .debug_info section
-	 */
+	 
 	scn = elf_newscn(e);
 	if (!scn) {
 		warnx("cannot create section");
@@ -569,15 +522,13 @@ jit_add_debug_info(Elf *e, uint64_t code_addr, void *debug, int nr_debug_entries
 		goto out;
 	}
 
-	shdr->sh_name = 64; /* .debug_info */
+	shdr->sh_name = 64;  
 	shdr->sh_type = SHT_PROGBITS;
-	shdr->sh_addr = 0; /* must be zero or == sh_offset -> dynamic object */
+	shdr->sh_addr = 0;  
 	shdr->sh_flags = 0;
 	shdr->sh_entsize = 0;
 
-	/*
-	 * setup .debug_abbrev section
-	 */
+	 
 	scn = elf_newscn(e);
 	if (!scn) {
 		warnx("cannot create section");
@@ -603,15 +554,13 @@ jit_add_debug_info(Elf *e, uint64_t code_addr, void *debug, int nr_debug_entries
 		goto out;
 	}
 
-	shdr->sh_name = 76; /* .debug_info */
+	shdr->sh_name = 76;  
 	shdr->sh_type = SHT_PROGBITS;
-	shdr->sh_addr = 0; /* must be zero or == sh_offset -> dynamic object */
+	shdr->sh_addr = 0;  
 	shdr->sh_flags = 0;
 	shdr->sh_entsize = 0;
 
-	/*
-	 * now we update the ELF image with all the sections
-	 */
+	 
 	if (elf_update(e, ELF_C_WRITE) < 0)
 		warnx("elf_update debug failed");
 	else

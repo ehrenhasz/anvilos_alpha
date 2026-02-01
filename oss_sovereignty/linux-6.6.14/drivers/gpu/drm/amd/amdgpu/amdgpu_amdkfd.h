@@ -1,26 +1,6 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
-/* amdgpu_amdkfd.h defines the private interface between amdgpu and amdkfd. */
+ 
 
 #ifndef AMDGPU_AMDKFD_H_INCLUDED
 #define AMDGPU_AMDKFD_H_INCLUDED
@@ -48,10 +28,10 @@ enum TLB_FLUSH_TYPE {
 struct amdgpu_device;
 
 enum kfd_mem_attachment_type {
-	KFD_MEM_ATT_SHARED,	/* Share kgd_mem->bo or another attachment's */
-	KFD_MEM_ATT_USERPTR,	/* SG bo to DMA map pages from a userptr bo */
-	KFD_MEM_ATT_DMABUF,	/* DMAbuf to DMA map TTM BOs */
-	KFD_MEM_ATT_SG		/* Tag to DMA map SG BOs */
+	KFD_MEM_ATT_SHARED,	 
+	KFD_MEM_ATT_USERPTR,	 
+	KFD_MEM_ATT_DMABUF,	 
+	KFD_MEM_ATT_SG		 
 };
 
 struct kfd_mem_attachment {
@@ -70,7 +50,7 @@ struct kgd_mem {
 	struct dma_buf *dmabuf;
 	struct hmm_range *range;
 	struct list_head attachments;
-	/* protected by amdkfd_process_info.lock */
+	 
 	struct list_head validate_list;
 	uint32_t domain;
 	unsigned int mapped_to_gpu_memory;
@@ -87,7 +67,7 @@ struct kgd_mem {
 	bool is_imported;
 };
 
-/* KFD Memory Eviction */
+ 
 struct amdgpu_amdkfd_fence {
 	struct dma_fence base;
 	struct mm_struct *mm;
@@ -103,7 +83,7 @@ struct amdgpu_kfd_dev {
 	bool init_complete;
 	struct work_struct reset_work;
 
-	/* HMM page migration MEMORY_DEVICE_PRIVATE mapping */
+	 
 	struct dev_pagemap pgmap;
 };
 
@@ -121,22 +101,22 @@ enum kgd_engine_type {
 
 
 struct amdkfd_process_info {
-	/* List head of all VMs that belong to a KFD process */
+	 
 	struct list_head vm_list_head;
-	/* List head for all KFD BOs that belong to a KFD process. */
+	 
 	struct list_head kfd_bo_list;
-	/* List of userptr BOs that are valid or invalid */
+	 
 	struct list_head userptr_valid_list;
 	struct list_head userptr_inval_list;
-	/* Lock to protect kfd_bo_list */
+	 
 	struct mutex lock;
 
-	/* Number of VMs */
+	 
 	unsigned int n_vms;
-	/* Eviction Fence */
+	 
 	struct amdgpu_amdkfd_fence *eviction_fence;
 
-	/* MMU-notifier related fields */
+	 
 	struct mutex notifier_lock;
 	uint32_t evicted_bos;
 	struct delayed_work restore_userptr_work;
@@ -217,7 +197,7 @@ int amdgpu_amdkfd_evict_userptr(struct mmu_interval_notifier *mni,
 	return 0;
 }
 #endif
-/* Shared API */
+ 
 int amdgpu_amdkfd_alloc_gtt_mem(struct amdgpu_device *adev, size_t size,
 				void **mem_obj, uint64_t *gpu_addr,
 				void **cpu_ptr, bool mqd_gfx9);
@@ -253,12 +233,7 @@ int amdgpu_amdkfd_send_close_event_drain_irq(struct amdgpu_device *adev,
 int amdgpu_amdkfd_unmap_hiq(struct amdgpu_device *adev, u32 doorbell_off,
 				u32 inst);
 
-/* Read user wptr from a specified user address space with page fault
- * disabled. The memory must be pinned and mapped to the hardware when
- * this is called in hqd_load functions, so it should never fault in
- * the first place. This resolves a circular lock dependency involving
- * four locks, including the DQM lock and mmap_lock.
- */
+ 
 #define read_user_wptr(mmptr, wptr, dst)				\
 	({								\
 		bool valid = false;					\
@@ -276,7 +251,7 @@ int amdgpu_amdkfd_unmap_hiq(struct amdgpu_device *adev, u32 doorbell_off,
 		valid;							\
 	})
 
-/* GPUVM API */
+ 
 #define drm_priv_to_vm(drm_priv)					\
 	(&((struct amdgpu_fpriv *)					\
 		((struct drm_file *)(drm_priv))->driver_priv)->vm)
@@ -350,11 +325,7 @@ void amdgpu_amdkfd_gpuvm_init_mem_limits(void);
 void amdgpu_amdkfd_gpuvm_destroy_cb(struct amdgpu_device *adev,
 				struct amdgpu_vm *vm);
 
-/**
- * @amdgpu_amdkfd_release_notify() - Notify KFD when GEM object is released
- *
- * Allows KFD to release its resources associated with the GEM object.
- */
+ 
 void amdgpu_amdkfd_release_notify(struct amdgpu_bo *bo);
 void amdgpu_amdkfd_reserve_system_mem(uint64_t size);
 #else
@@ -385,7 +356,7 @@ int kgd2kfd_init_zone_device(struct amdgpu_device *adev)
 }
 #endif
 
-/* KGD2KFD callbacks */
+ 
 int kgd2kfd_quiesce_mm(struct mm_struct *mm, uint32_t trigger);
 int kgd2kfd_resume_mm(struct mm_struct *mm);
 int kgd2kfd_schedule_evict_and_restore_process(struct mm_struct *mm,
@@ -476,4 +447,4 @@ static inline void kgd2kfd_unlock_kfd(void)
 {
 }
 #endif
-#endif /* AMDGPU_AMDKFD_H_INCLUDED */
+#endif  

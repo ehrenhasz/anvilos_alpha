@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 #include <linux/ceph/striper.h>
 
@@ -53,31 +53,9 @@ static __le32 ceph_flags_sys2wire(u32 flags)
 	return cpu_to_le32(wire_flags);
 }
 
-/*
- * Ceph file operations
- *
- * Implement basic open/close functionality, and implement
- * read/write.
- *
- * We implement three modes of file I/O:
- *  - buffered uses the generic_file_aio_{read,write} helpers
- *
- *  - synchronous is used when there is multi-client read/write
- *    sharing, avoids the page cache, and synchronously waits for an
- *    ack from the OSD.
- *
- *  - direct io takes the variant of the sync path that references
- *    user pages directly.
- *
- * fsync() flushes and waits on dirty pages, but just queues metadata
- * for writeback: since the MDS can recover size and mtime there is no
- * need to wait for MDS acknowledgement.
- */
+ 
 
-/*
- * How many pages to get in one call to iov_iter_get_pages().  This
- * determines the size of the on-stack array used as a buffer.
- */
+ 
 #define ITER_GET_BVECS_PAGES	64
 
 static ssize_t __iter_get_bvecs(struct iov_iter *iter, size_t maxsize,
@@ -114,14 +92,7 @@ static ssize_t __iter_get_bvecs(struct iov_iter *iter, size_t maxsize,
 	return size;
 }
 
-/*
- * iov_iter_get_pages() only considers one iov_iter segment, no matter
- * what maxsize or maxpages are given.  For ITER_BVEC that is a single
- * page.
- *
- * Attempt to get up to @maxsize bytes worth of pages from @iter.
- * Return the number of bytes in the created bio_vec array, or an error.
- */
+ 
 static ssize_t iter_get_bvecs_alloc(struct iov_iter *iter, size_t maxsize,
 				    struct bio_vec **bvecs, int *num_bvecs)
 {
@@ -134,19 +105,14 @@ static ssize_t iter_get_bvecs_alloc(struct iov_iter *iter, size_t maxsize,
 	npages = iov_iter_npages(iter, INT_MAX);
 	iov_iter_reexpand(iter, orig_count);
 
-	/*
-	 * __iter_get_bvecs() may populate only part of the array -- zero it
-	 * out.
-	 */
+	 
 	bv = kvmalloc_array(npages, sizeof(*bv), GFP_KERNEL | __GFP_ZERO);
 	if (!bv)
 		return -ENOMEM;
 
 	bytes = __iter_get_bvecs(iter, maxsize, bv);
 	if (bytes < 0) {
-		/*
-		 * No pages were pinned -- just free the array.
-		 */
+		 
 		kvfree(bv);
 		return bytes;
 	}
@@ -170,10 +136,7 @@ static void put_bvecs(struct bio_vec *bvecs, int num_bvecs, bool should_dirty)
 	kvfree(bvecs);
 }
 
-/*
- * Prepare an open request.  Preallocate ceph_cap to avoid an
- * inopportune ENOMEM later.
- */
+ 
 static struct ceph_mds_request *
 prepare_open_request(struct super_block *sb, int flags, int create_mode)
 {
@@ -248,15 +211,12 @@ error:
 	ceph_fscache_unuse_cookie(inode, file->f_mode & FMODE_WRITE);
 	ceph_put_fmode(ci, fi->fmode, 1);
 	kmem_cache_free(ceph_file_cachep, fi);
-	/* wake up anyone waiting for caps on this inode */
+	 
 	wake_up_all(&ci->i_cap_wq);
 	return ret;
 }
 
-/*
- * initialize private struct file data.
- * if we fail, clean up by dropping fmode reference on the ceph_inode
- */
+ 
 static int ceph_init_file(struct inode *inode, struct file *file, int fmode)
 {
 	int ret = 0;
@@ -278,21 +238,16 @@ static int ceph_init_file(struct inode *inode, struct file *file, int fmode)
 	default:
 		dout("init_file %p %p 0%o (special)\n", inode, file,
 		     inode->i_mode);
-		/*
-		 * we need to drop the open ref now, since we don't
-		 * have .release set to ceph_release.
-		 */
+		 
 		BUG_ON(inode->i_fop->release == ceph_release);
 
-		/* call the proper open fop */
+		 
 		ret = inode->i_fop->open(inode, file);
 	}
 	return ret;
 }
 
-/*
- * try renew caps after session gets killed.
- */
+ 
 int ceph_renew_caps(struct inode *inode, int fmode)
 {
 	struct ceph_mds_client *mdsc = ceph_sb_to_mdsc(inode->i_sb);
@@ -343,12 +298,7 @@ out:
 	return err < 0 ? err : 0;
 }
 
-/*
- * If we already have the requisite capabilities, we can satisfy
- * the open request locally (no need to request new caps from the
- * MDS).  We do, however, need to inform the MDS (asynchronously)
- * if our wanted caps set expands.
- */
+ 
 int ceph_open(struct inode *inode, struct file *file)
 {
 	struct ceph_inode_info *ci = ceph_inode(inode);
@@ -364,10 +314,10 @@ int ceph_open(struct inode *inode, struct file *file)
 		return 0;
 	}
 
-	/* filter out O_CREAT|O_EXCL; vfs did that already.  yuck. */
+	 
 	flags = file->f_flags & ~(O_CREAT|O_EXCL);
 	if (S_ISDIR(inode->i_mode)) {
-		flags = O_DIRECTORY;  /* mds likes to know */
+		flags = O_DIRECTORY;   
 	} else if (S_ISREG(inode->i_mode)) {
 		err = fscrypt_file_open(inode, file);
 		if (err)
@@ -379,20 +329,16 @@ int ceph_open(struct inode *inode, struct file *file)
 	fmode = ceph_flags_to_mode(flags);
 	wanted = ceph_caps_for_mode(fmode);
 
-	/* snapped files are read-only */
+	 
 	if (ceph_snap(inode) != CEPH_NOSNAP && (file->f_mode & FMODE_WRITE))
 		return -EROFS;
 
-	/* trivially open snapdir */
+	 
 	if (ceph_snap(inode) == CEPH_SNAPDIR) {
 		return ceph_init_file(inode, file, fmode);
 	}
 
-	/*
-	 * No need to block if we have caps on the auth MDS (for
-	 * write) or any MDS (for read).  Update wanted set
-	 * asynchronously.
-	 */
+	 
 	spin_lock(&ci->i_ceph_lock);
 	if (__ceph_is_any_real_caps(ci) &&
 	    (((fmode & CEPH_FILE_MODE_WR) == 0) || ci->i_auth_cap)) {
@@ -405,7 +351,7 @@ int ceph_open(struct inode *inode, struct file *file)
 		__ceph_touch_fmode(ci, mdsc, fmode);
 		spin_unlock(&ci->i_ceph_lock);
 
-		/* adjust wanted? */
+		 
 		if ((issued & wanted) != wanted &&
 		    (mds_wanted & wanted) != wanted &&
 		    ceph_snap(inode) != CEPH_SNAPDIR)
@@ -440,7 +386,7 @@ out:
 	return err;
 }
 
-/* Clone the layout from a synchronous create, if the dir now has Dc caps */
+ 
 static void
 cache_file_layout(struct inode *dst, struct inode *src)
 {
@@ -458,12 +404,7 @@ cache_file_layout(struct inode *dst, struct inode *src)
 	spin_unlock(&cdst->i_ceph_lock);
 }
 
-/*
- * Try to set up an async create. We need caps, a file layout, and inode number,
- * and either a lease on the dentry or complete dir info. If any of those
- * criteria are not satisfied, then return false and the caller can go
- * synchronous.
- */
+ 
 static int try_prep_async_create(struct inode *dir, struct dentry *dentry,
 				 struct ceph_file_layout *lo, u64 *pino)
 {
@@ -473,11 +414,11 @@ static int try_prep_async_create(struct inode *dir, struct dentry *dentry,
 	u64 ino;
 
 	spin_lock(&ci->i_ceph_lock);
-	/* No auth cap means no chance for Dc caps */
+	 
 	if (!ci->i_auth_cap)
 		goto no_async;
 
-	/* Any delegated inos? */
+	 
 	if (xa_empty(&ci->i_auth_cap->session->s_delegated_inos))
 		goto no_async;
 
@@ -565,7 +506,7 @@ static void ceph_async_create_cb(struct ceph_mds_client *mdsc,
 
 	WARN_ON_ONCE(dinode && tinode && dinode != tinode);
 
-	/* MDS changed -- caller must resubmit */
+	 
 	if (result == -EJUKEBOX)
 		goto out;
 
@@ -638,7 +579,7 @@ static int ceph_finish_async_create(struct inode *dir, struct inode *inode,
 		iinfo.xattr_len = req->r_pagelist->length;
 		iinfo.xattr_data = req->r_pagelist->mapped_tail;
 	} else {
-		/* fake it */
+		 
 		iinfo.xattr_len = ARRAY_SIZE(xattr_buf);
 		iinfo.xattr_data = xattr_buf;
 		memset(iinfo.xattr_data, 0, iinfo.xattr_len);
@@ -646,7 +587,7 @@ static int ceph_finish_async_create(struct inode *dir, struct inode *inode,
 
 	in.ino = cpu_to_le64(vino.ino);
 	in.snapid = cpu_to_le64(CEPH_NOSNAP);
-	in.version = cpu_to_le64(1);	// ???
+	in.version = cpu_to_le64(1);	 
 	in.cap.caps = in.cap.wanted = cpu_to_le32(CEPH_CAP_ALL_FILE);
 	in.cap.cap_id = cpu_to_le64(1);
 	in.cap.realm = cpu_to_le64(ci->i_snap_realm->ino);
@@ -659,7 +600,7 @@ static int ceph_finish_async_create(struct inode *dir, struct inode *inode,
 	if (dir->i_mode & S_ISGID) {
 		in.gid = cpu_to_le32(from_kgid(&init_user_ns, dir->i_gid));
 
-		/* Directories always inherit the setgid bit. */
+		 
 		if (S_ISDIR(mode))
 			mode |= S_ISGID;
 	} else {
@@ -671,7 +612,7 @@ static int ceph_finish_async_create(struct inode *dir, struct inode *inode,
 	in.max_size = cpu_to_le64(lo->stripe_unit);
 
 	ceph_file_layout_to_legacy(lo, &in.layout);
-	/* lo is private, so pool_ns can't change */
+	 
 	pool_ns = rcu_dereference_raw(lo->pool_ns);
 	if (pool_ns) {
 		iinfo.pool_ns_len = pool_ns->len;
@@ -696,12 +637,7 @@ static int ceph_finish_async_create(struct inode *dir, struct inode *inode,
 		ceph_dir_clear_ordered(dir);
 		ceph_init_inode_acls(inode, as_ctx);
 		if (inode->i_state & I_NEW) {
-			/*
-			 * If it's not I_NEW, then someone created this before
-			 * we got here. Assume the server is aware of it at
-			 * that point and don't worry about setting
-			 * CEPH_I_ASYNC_CREATE.
-			 */
+			 
 			ceph_inode(inode)->i_ceph_flags = CEPH_I_ASYNC_CREATE;
 			unlock_new_inode(inode);
 		}
@@ -723,10 +659,7 @@ static int ceph_finish_async_create(struct inode *dir, struct inode *inode,
 	return ret;
 }
 
-/*
- * Do a lookup + open with a single request.  If we get a non-existent
- * file or symlink, return 1 so the VFS can retry.
- */
+ 
 int ceph_atomic_open(struct inode *dir, struct dentry *dentry,
 		     struct file *file, unsigned flags, umode_t mode)
 {
@@ -750,10 +683,7 @@ int ceph_atomic_open(struct inode *dir, struct dentry *dentry,
 	err = ceph_wait_on_conflict_unlink(dentry);
 	if (err)
 		return err;
-	/*
-	 * Do not truncate the file, since atomic_open is called before the
-	 * permission check. The caller will do the truncation afterward.
-	 */
+	 
 	flags &= ~O_TRUNC;
 
 retry:
@@ -766,16 +696,16 @@ retry:
 			err = PTR_ERR(new_inode);
 			goto out_ctx;
 		}
-		/* Async create can't handle more than a page of xattrs */
+		 
 		if (as_ctx.pagelist &&
 		    !list_is_singular(&as_ctx.pagelist->head))
 			try_async = false;
 	} else if (!d_in_lookup(dentry)) {
-		/* If it's not being looked up, it's negative */
+		 
 		return -ENOENT;
 	}
 
-	/* do the open */
+	 
 	req = prepare_open_request(dir->i_sb, flags, mode);
 	if (IS_ERR(req)) {
 		err = PTR_ERR(req);
@@ -816,7 +746,7 @@ retry:
 			req->r_args.open.flags |= cpu_to_le32(CEPH_O_EXCL);
 			req->r_callback = ceph_async_create_cb;
 
-			/* Hash inode before RPC */
+			 
 			new_inode = ceph_get_inode(dir->i_sb, vino, new_inode);
 			if (IS_ERR(new_inode)) {
 				err = PTR_ERR(new_inode);
@@ -873,13 +803,13 @@ retry:
 		if (IS_ERR(dn))
 			err = PTR_ERR(dn);
 	} else {
-		/* we were given a hashed negative dentry */
+		 
 		dn = NULL;
 	}
 	if (err)
 		goto out_req;
 	if (dn || d_really_is_negative(dentry) || d_is_symlink(dentry)) {
-		/* make vfs retry on splice, ENOENT, or symlink */
+		 
 		dout("atomic_open finish_no_open on dn %p\n", dn);
 		err = finish_no_open(file, dn);
 	} else {
@@ -936,7 +866,7 @@ int ceph_release(struct inode *inode, struct file *file)
 		kmem_cache_free(ceph_file_cachep, fi);
 	}
 
-	/* wake up anyone waiting for caps on this inode */
+	 
 	wake_up_all(&ci->i_cap_wq);
 	return 0;
 }
@@ -947,16 +877,7 @@ enum {
 	READ_INLINE =  3,
 };
 
-/*
- * Completely synchronous read and write methods.  Direct from __user
- * buffer to osd, or directly to user pages (if O_DIRECT).
- *
- * If the read spans object boundary, just do multiple reads.  (That's not
- * atomic, but good enough for now.)
- *
- * If we get a short result from the OSD, check against i_size; we need to
- * only return a short read to the caller if we hit EOF.
- */
+ 
 ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
 			 struct iov_iter *to, int *retry_op,
 			 u64 *last_objver)
@@ -978,12 +899,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
 
 	if (!len)
 		return 0;
-	/*
-	 * flush any page cache pages in this range.  this
-	 * will make concurrent normal and sync io slow,
-	 * but it will at least behave sensibly when they are
-	 * in sequence.
-	 */
+	 
 	ret = filemap_write_and_wait_range(inode->i_mapping,
 					   off, off + len - 1);
 	if (ret < 0)
@@ -1002,7 +918,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
 		u64 read_off = off;
 		u64 read_len = len;
 
-		/* determine new offset/length if encrypted */
+		 
 		ceph_fscrypt_adjust_off_and_len(inode, &read_off, &read_len);
 
 		dout("sync_read orig %llu~%llu reading %llu~%llu",
@@ -1020,7 +936,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
 			break;
 		}
 
-		/* adjust len downward if the request truncated the len */
+		 
 		if (off + len > read_off + read_len)
 			len = read_off + read_len - off;
 		more = len < iov_iter_count(to);
@@ -1062,7 +978,7 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
 		dout("sync_read %llu~%llu got %zd i_size %llu%s\n",
 		     off, len, ret, i_size, (more ? " MORE" : ""));
 
-		/* Fix it to go to end of extent map */
+		 
 		if (sparse && ret >= 0)
 			ret = ceph_sparse_ext_map_end(op);
 		else if (ret == -ENOENT)
@@ -1080,23 +996,19 @@ ssize_t __ceph_sync_read(struct inode *inode, loff_t *ki_pos,
 				break;
 			}
 
-			/* account for any partial block at the beginning */
+			 
 			fret -= (off - read_off);
 
-			/*
-			 * Short read after big offset adjustment?
-			 * Nothing is usable, just call it a zero
-			 * len read.
-			 */
+			 
 			fret = max(fret, 0);
 
-			/* account for partial block at the end */
+			 
 			ret = min_t(ssize_t, fret, len);
 		}
 
 		ceph_osdc_put_request(req);
 
-		/* Short read but not EOF? Zero out the remainder. */
+		 
 		if (ret >= 0 && ret < len && (off + ret < i_size)) {
 			int zlen = min(len - ret, i_size - off - ret);
 			int zoff = page_off + ret;
@@ -1270,11 +1182,7 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
 			struct iov_iter i;
 			int zlen = len - rc;
 
-			/*
-			 * If read is satisfied by single OSD request,
-			 * it can pass EOF. Otherwise read is within
-			 * i_size.
-			 */
+			 
 			if (aio_req->num_reqs == 1) {
 				loff_t i_size = i_size_read(inode);
 				loff_t endoff = aio_req->iocb->ki_pos + rc;
@@ -1291,7 +1199,7 @@ static void ceph_aio_complete_req(struct ceph_osd_request *req)
 		}
 	}
 
-	/* r_start_latency == 0 means the request was not submitted */
+	 
 	if (req->r_start_latency) {
 		if (aio_req->write)
 			ceph_update_write_metrics(metric, req->r_start_latency,
@@ -1345,7 +1253,7 @@ static void ceph_aio_retry_work(struct work_struct *work)
 		goto out;
 	}
 
-	req->r_flags = /* CEPH_OSD_FLAG_ORDERSNAP | */ CEPH_OSD_FLAG_WRITE;
+	req->r_flags =   CEPH_OSD_FLAG_WRITE;
 	ceph_oloc_copy(&req->r_base_oloc, &orig_req->r_base_oloc);
 	ceph_oid_copy(&req->r_base_oid, &orig_req->r_base_oid);
 
@@ -1420,7 +1328,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
 		if (ret2 < 0)
 			dout("invalidate_inode_pages2_range returned %d\n", ret2);
 
-		flags = /* CEPH_OSD_FLAG_ORDERSNAP | */ CEPH_OSD_FLAG_WRITE;
+		flags =   CEPH_OSD_FLAG_WRITE;
 	} else {
 		flags = CEPH_OSD_FLAG_READ;
 	}
@@ -1459,10 +1367,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
 		if (len != size)
 			osd_req_op_extent_update(req, 0, len);
 
-		/*
-		 * To simplify error handling, allow AIO when IO within i_size
-		 * or IO can be satisfied by single OSD request.
-		 */
+		 
 		if (pos == iocb->ki_pos && !is_sync_kiocb(iocb) &&
 		    (len == count || pos + count <= i_size_read(inode))) {
 			aio_req = kzalloc(sizeof(*aio_req), GFP_KERNEL);
@@ -1476,14 +1381,11 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
 					swap(aio_req->prealloc_cf, *pcf);
 				}
 			}
-			/* ignore error */
+			 
 		}
 
 		if (write) {
-			/*
-			 * throw out any page cache pages in this range. this
-			 * may block.
-			 */
+			 
 			truncate_inode_pages_range(inode->i_mapping, pos,
 						   PAGE_ALIGN(pos + len) - 1);
 
@@ -1596,13 +1498,7 @@ ceph_direct_read_write(struct kiocb *iocb, struct iov_iter *iter,
 	return ret;
 }
 
-/*
- * Synchronous write, straight from __user pointer or user pages.
- *
- * If write spans object boundary, just do multiple writes.  (For a
- * correct atomic write, we should e.g. take write locks on all
- * objects, rollback on failure, etc.)
- */
+ 
 static ssize_t
 ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 		struct ceph_snap_context *snapc)
@@ -1650,22 +1546,17 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 
 		ceph_fscrypt_adjust_off_and_len(inode, &write_pos, &write_len);
 
-		/* clamp the length to the end of first object */
+		 
 		ceph_calc_file_object_mapping(&ci->i_layout, write_pos,
 					      write_len, &objnum, &objoff,
 					      &xlen);
 		write_len = xlen;
 
-		/* adjust len downward if it goes beyond current object */
+		 
 		if (pos + len > write_pos + write_len)
 			len = write_pos + write_len - pos;
 
-		/*
-		 * If we had to adjust the length or position to align with a
-		 * crypto block, then we must do a read/modify/write cycle. We
-		 * use a version assertion to redrive the thing if something
-		 * changes in between.
-		 */
+		 
 		first = pos != write_pos;
 		last = (pos + len) != (write_pos + write_len);
 		rmw = first || last;
@@ -1674,10 +1565,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 		     ci->i_vino.ino, pos, len, write_pos, write_len,
 		     rmw ? "" : "no ");
 
-		/*
-		 * The data is emplaced into the page as it would be if it were
-		 * in an array of pagecache pages.
-		 */
+		 
 		num_pages = calc_pages_for(write_pos, write_len);
 		pages = ceph_alloc_page_vector(num_pages, GFP_KERNEL);
 		if (IS_ERR(pages)) {
@@ -1685,24 +1573,21 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 			break;
 		}
 
-		/* Do we need to preload the pages? */
+		 
 		if (rmw) {
 			u64 first_pos = write_pos;
 			u64 last_pos = (write_pos + write_len) - CEPH_FSCRYPT_BLOCK_SIZE;
 			u64 read_len = CEPH_FSCRYPT_BLOCK_SIZE;
 			struct ceph_osd_req_op *op;
 
-			/* We should only need to do this for encrypted inodes */
+			 
 			WARN_ON_ONCE(!IS_ENCRYPTED(inode));
 
-			/* No need to do two reads if first and last blocks are same */
+			 
 			if (first && last_pos == first_pos)
 				last = false;
 
-			/*
-			 * Allocate a read request for one or two extents,
-			 * depending on how the request was aligned.
-			 */
+			 
 			req = ceph_osdc_new_request(osdc, &ci->i_layout,
 					ci->i_vino, first ? first_pos : last_pos,
 					&read_len, 0, (first && last) ? 2 : 1,
@@ -1715,7 +1600,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 				break;
 			}
 
-			/* Something is misaligned! */
+			 
 			if (read_len != CEPH_FSCRYPT_BLOCK_SIZE) {
 				ceph_osdc_put_request(req);
 				ceph_release_page_vector(pages, num_pages);
@@ -1723,7 +1608,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 				break;
 			}
 
-			/* Add extent for first block? */
+			 
 			op = &req->r_ops[0];
 
 			if (first) {
@@ -1731,7 +1616,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 							 CEPH_FSCRYPT_BLOCK_SIZE,
 							 offset_in_page(first_pos),
 							 false, false);
-				/* We only expect a single extent here */
+				 
 				ret = __ceph_alloc_sparse_ext_map(op, 1);
 				if (ret) {
 					ceph_osdc_put_request(req);
@@ -1740,9 +1625,9 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 				}
 			}
 
-			/* Add extent for last block */
+			 
 			if (last) {
-				/* Init the other extent if first extent has been used */
+				 
 				if (first) {
 					op = &req->r_ops[1];
 					osd_req_op_extent_init(req, 1,
@@ -1769,26 +1654,19 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 			ceph_osdc_start_request(osdc, req);
 			ret = ceph_osdc_wait_request(osdc, req);
 
-			/* FIXME: length field is wrong if there are 2 extents */
+			 
 			ceph_update_read_metrics(&fsc->mdsc->metric,
 						 req->r_start_latency,
 						 req->r_end_latency,
 						 read_len, ret);
 
-			/* Ok if object is not already present */
+			 
 			if (ret == -ENOENT) {
-				/*
-				 * If there is no object, then we can't assert
-				 * on its version. Set it to 0, and we'll use an
-				 * exclusive create instead.
-				 */
+				 
 				ceph_osdc_put_request(req);
 				ret = 0;
 
-				/*
-				 * zero out the soon-to-be uncopied parts of the
-				 * first and last pages.
-				 */
+				 
 				if (first)
 					zero_user_segment(pages[0], 0,
 							  offset_in_page(first_pos));
@@ -1837,7 +1715,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 					}
 				}
 
-				/* Grab assert version. It must be non-zero. */
+				 
 				assert_ver = req->r_version;
 				WARN_ON_ONCE(ret > 0 && assert_ver == 0);
 
@@ -1871,7 +1749,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 		for (n = 0; n < num_pages; n++) {
 			size_t plen = min_t(size_t, left, PAGE_SIZE - off);
 
-			/* copy the data */
+			 
 			ret = copy_page_from_iter(pages[n], off, plen, from);
 			if (ret != plen) {
 				ret = -EFAULT;
@@ -1917,14 +1795,9 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 		req->r_inode = inode;
 		req->r_mtime = mtime;
 
-		/* Set up the assertion */
+		 
 		if (rmw) {
-			/*
-			 * Set up the assertion. If we don't have a version
-			 * number, then the object doesn't exist yet. Use an
-			 * exclusive create instead of a version assertion in
-			 * that case.
-			 */
+			 
 			if (assert_ver) {
 				osd_req_op_init(req, 0, CEPH_OSD_OP_ASSERT_VER, 0);
 				req->r_ops[0].assert_ver.ver = assert_ver;
@@ -1942,18 +1815,18 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 		ceph_osdc_put_request(req);
 		if (ret != 0) {
 			dout("sync_write osd write returned %d\n", ret);
-			/* Version changed! Must re-do the rmw cycle */
+			 
 			if ((assert_ver && (ret == -ERANGE || ret == -EOVERFLOW)) ||
 			    (!assert_ver && ret == -EEXIST)) {
-				/* We should only ever see this on a rmw */
+				 
 				WARN_ON_ONCE(!rmw);
 
-				/* The version should never go backward */
+				 
 				WARN_ON_ONCE(ret == -EOVERFLOW);
 
 				*from = saved_iter;
 
-				/* FIXME: limit number of times we loop? */
+				 
 				continue;
 			}
 			ceph_set_error_write(ci);
@@ -1962,10 +1835,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 
 		ceph_clear_error_write(ci);
 
-		/*
-		 * We successfully wrote to a range of the file. Declare
-		 * that region of the pagecache invalid.
-		 */
+		 
 		ret = invalidate_inode_pages2_range(
 				inode->i_mapping,
 				pos >> PAGE_SHIFT,
@@ -1995,13 +1865,7 @@ ceph_sync_write(struct kiocb *iocb, struct iov_iter *from, loff_t pos,
 	return ret;
 }
 
-/*
- * Wrap generic_file_aio_read with checks for cap bits on the inode.
- * Atomically grab references, so that those bits are not released
- * back to the MDS mid-read.
- *
- * Hmm, the sync read case isn't actually async... should it be?
- */
+ 
 static ssize_t ceph_read_iter(struct kiocb *iocb, struct iov_iter *to)
 {
 	struct file *filp = iocb->ki_filp;
@@ -2130,7 +1994,7 @@ again:
 			return read;
 		}
 
-		/* hit EOF or hole? */
+		 
 		if (retry_op == CHECK_EOF && iocb->ki_pos < i_size &&
 		    ret < len) {
 			dout("sync_read hit hole, ppos %lld < size %lld"
@@ -2149,11 +2013,7 @@ again:
 	return ret;
 }
 
-/*
- * Wrap filemap_splice_read with checks for cap bits on the inode.
- * Atomically grab references, so that those bits are not released
- * back to the MDS mid-read.
- */
+ 
 static ssize_t ceph_splice_read(struct file *in, loff_t *ppos,
 				struct pipe_inode_info *pipe,
 				size_t len, unsigned int flags)
@@ -2212,16 +2072,7 @@ out_end:
 	return ret;
 }
 
-/*
- * Take cap references to avoid releasing caps to MDS mid-write.
- *
- * If we are synchronous, and write with an old snap context, the OSD
- * may return EOLDSNAPC.  In that case, retry the write.. _after_
- * dropping our cap refs and allowing the pending snap to logically
- * complete _before_ this write occurs.
- *
- * If we are near ENOSPC, write synchronously.
- */
+ 
 static ssize_t ceph_write_iter(struct kiocb *iocb, struct iov_iter *from)
 {
 	struct file *file = iocb->ki_filp;
@@ -2335,7 +2186,7 @@ retry_snap:
 		}
 		spin_unlock(&ci->i_ceph_lock);
 
-		/* we might need to revert back to that point */
+		 
 		data = *from;
 		if ((iocb->ki_flags & IOCB_DIRECT) && !IS_ENCRYPTED(inode))
 			written = ceph_direct_read_write(iocb, &data, snapc,
@@ -2350,13 +2201,7 @@ retry_snap:
 			iov_iter_advance(from, written);
 		ceph_put_snap_context(snapc);
 	} else {
-		/*
-		 * No need to acquire the i_truncate_mutex. Because
-		 * the MDS revokes Fwb caps before sending truncate
-		 * message to us. We can't get Fwb cap while there
-		 * are pending vmtruncate. So write and vmtruncate
-		 * can not run at the same time
-		 */
+		 
 		written = generic_perform_write(iocb, from);
 		ceph_end_io_write(inode);
 	}
@@ -2405,9 +2250,7 @@ out_unlocked:
 	return written ? written : err;
 }
 
-/*
- * llseek.  be sure to verify file size on SEEK_END.
- */
+ 
 static loff_t ceph_llseek(struct file *file, loff_t offset, int whence)
 {
 	if (whence == SEEK_END || whence == SEEK_DATA || whence == SEEK_HOLE) {
@@ -2510,7 +2353,7 @@ static int ceph_zero_objects(struct inode *inode, loff_t offset, loff_t length)
 	u64 object_set_size = object_size * stripe_count;
 	u64 nearly, t;
 
-	/* round offset up to next period boundary */
+	 
 	nearly = offset + object_set_size - 1;
 	t = nearly;
 	nearly -= do_div(t, object_set_size);
@@ -2584,7 +2427,7 @@ static long ceph_fallocate(struct file *file, int mode,
 
 	size = i_size_read(inode);
 
-	/* Are we punching a hole beyond EOF? */
+	 
 	if (offset >= size)
 		goto unlock;
 	if ((offset + length) > size)
@@ -2626,11 +2469,7 @@ unlock:
 	return ret;
 }
 
-/*
- * This function tries to get FILE_WR capabilities for dst_ci and FILE_RD for
- * src_ci.  Two attempts are made to obtain both caps, and an error is return if
- * this fails; zero is returned on success.
- */
+ 
 static int get_rd_wr_caps(struct file *src_filp, int *src_got,
 			  struct file *dst_filp,
 			  loff_t dst_endoff, int *dst_got)
@@ -2644,20 +2483,16 @@ retry_caps:
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Since we're already holding the FILE_WR capability for the dst file,
-	 * we would risk a deadlock by using ceph_get_caps.  Thus, we'll do some
-	 * retry dance instead to try to get both capabilities.
-	 */
+	 
 	ret = ceph_try_get_caps(file_inode(src_filp),
 				CEPH_CAP_FILE_RD, CEPH_CAP_FILE_SHARED,
 				false, src_got);
 	if (ret <= 0) {
-		/* Start by dropping dst_ci caps and getting src_ci caps */
+		 
 		ceph_put_cap_refs(ceph_inode(file_inode(dst_filp)), *dst_got);
 		if (retrying) {
 			if (!ret)
-				/* ceph_try_get_caps masks EAGAIN */
+				 
 				ret = -EAGAIN;
 			return ret;
 		}
@@ -2665,7 +2500,7 @@ retry_caps:
 				    CEPH_CAP_FILE_SHARED, -1, src_got);
 		if (ret < 0)
 			return ret;
-		/*... drop src_ci caps too, and retry */
+		 
 		ceph_put_cap_refs(ceph_inode(file_inode(src_filp)), *src_got);
 		retrying = true;
 		goto retry_caps;
@@ -2680,24 +2515,14 @@ static void put_rd_wr_caps(struct ceph_inode_info *src_ci, int src_got,
 	ceph_put_cap_refs(dst_ci, dst_got);
 }
 
-/*
- * This function does several size-related checks, returning an error if:
- *  - source file is smaller than off+len
- *  - destination file size is not OK (inode_newsize_ok())
- *  - max bytes quotas is exceeded
- */
+ 
 static int is_file_size_ok(struct inode *src_inode, struct inode *dst_inode,
 			   loff_t src_off, loff_t dst_off, size_t len)
 {
 	loff_t size, endoff;
 
 	size = i_size_read(src_inode);
-	/*
-	 * Don't copy beyond source file EOF.  Instead of simply setting length
-	 * to (size - src_off), just drop to VFS default implementation, as the
-	 * local i_size may be stale due to other clients writing to the source
-	 * inode.
-	 */
+	 
 	if (src_off + len > size) {
 		dout("Copy beyond EOF (%llu + %zu > %llu)\n",
 		     src_off, len, size);
@@ -2797,7 +2622,7 @@ static ssize_t ceph_do_objects_copy(struct ceph_inode_info *src_ci, u64 *src_off
 		ceph_oid_init(&dst_oid);
 		ceph_oid_printf(&dst_oid, "%llx.%08llx",
 				dst_ci->i_vino.ino, dst_objnum);
-		/* Do an object remote copy */
+		 
 		req = ceph_alloc_copyfrom_request(osdc, src_ci->i_vino.snap,
 						  &src_oid, &src_oloc,
 						  &dst_oid, &dst_oloc,
@@ -2865,13 +2690,7 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
 	if (ceph_snap(dst_inode) != CEPH_NOSNAP)
 		return -EROFS;
 
-	/*
-	 * Some of the checks below will return -EOPNOTSUPP, which will force a
-	 * fallback to the default VFS copy_file_range implementation.  This is
-	 * desirable in several cases (for ex, the 'len' is smaller than the
-	 * size of the objects, or in cases where that would be more
-	 * efficient).
-	 */
+	 
 
 	if (ceph_test_mount_opt(src_fsc, NOCOPYFROM))
 		return -EOPNOTSUPP;
@@ -2879,11 +2698,7 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
 	if (!src_fsc->have_copy_from2)
 		return -EOPNOTSUPP;
 
-	/*
-	 * Striped file layouts require that we copy partial objects, but the
-	 * OSD copy-from operation only supports full-object copies.  Limit
-	 * this to non-striped file layouts for now.
-	 */
+	 
 	if ((src_ci->i_layout.stripe_unit != dst_ci->i_layout.stripe_unit) ||
 	    (src_ci->i_layout.stripe_count != 1) ||
 	    (dst_ci->i_layout.stripe_count != 1) ||
@@ -2892,18 +2707,18 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
 		return -EOPNOTSUPP;
 	}
 
-	/* Every encrypted inode gets its own key, so we can't offload them */
+	 
 	if (IS_ENCRYPTED(src_inode) || IS_ENCRYPTED(dst_inode))
 		return -EOPNOTSUPP;
 
 	if (len < src_ci->i_layout.object_size)
-		return -EOPNOTSUPP; /* no remote copy will be done */
+		return -EOPNOTSUPP;  
 
 	prealloc_cf = ceph_alloc_cap_flush();
 	if (!prealloc_cf)
 		return -ENOMEM;
 
-	/* Start by sync'ing the source and destination files */
+	 
 	ret = file_write_and_wait_range(src_file, src_off, (src_off + len));
 	if (ret < 0) {
 		dout("failed to write src file (%zd)\n", ret);
@@ -2915,11 +2730,7 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
 		goto out;
 	}
 
-	/*
-	 * We need FILE_WR caps for dst_ci and FILE_RD for src_ci as other
-	 * clients may have dirty data in their caches.  And OSDs know nothing
-	 * about caps, so they can't safely do the remote object copies.
-	 */
+	 
 	err = get_rd_wr_caps(src_file, &src_got,
 			     dst_file, (dst_off + len), &dst_got);
 	if (err < 0) {
@@ -2932,14 +2743,14 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
 	if (ret < 0)
 		goto out_caps;
 
-	/* Drop dst file cached pages */
+	 
 	ceph_fscache_invalidate(dst_inode, false);
 	ret = invalidate_inode_pages2_range(dst_inode->i_mapping,
 					    dst_off >> PAGE_SHIFT,
 					    (dst_off + len) >> PAGE_SHIFT);
 	if (ret < 0) {
 		dout("Failed to invalidate inode pages (%zd)\n", ret);
-		ret = 0; /* XXX */
+		ret = 0;  
 	}
 	ceph_calc_file_object_mapping(&src_ci->i_layout, src_off,
 				      src_ci->i_layout.object_size,
@@ -2947,28 +2758,21 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
 	ceph_calc_file_object_mapping(&dst_ci->i_layout, dst_off,
 				      dst_ci->i_layout.object_size,
 				      &dst_objnum, &dst_objoff, &dst_objlen);
-	/* object-level offsets need to the same */
+	 
 	if (src_objoff != dst_objoff) {
 		ret = -EOPNOTSUPP;
 		goto out_caps;
 	}
 
-	/*
-	 * Do a manual copy if the object offset isn't object aligned.
-	 * 'src_objlen' contains the bytes left until the end of the object,
-	 * starting at the src_off
-	 */
+	 
 	if (src_objoff) {
 		dout("Initial partial copy of %u bytes\n", src_objlen);
 
-		/*
-		 * we need to temporarily drop all caps as we'll be calling
-		 * {read,write}_iter, which will get caps again.
-		 */
+		 
 		put_rd_wr_caps(src_ci, src_got, dst_ci, dst_got);
 		ret = do_splice_direct(src_file, &src_off, dst_file,
 				       &dst_off, src_objlen, flags);
-		/* Abort on short copies or on error */
+		 
 		if (ret < (long)src_objlen) {
 			dout("Failed partial copy (%zd)\n", ret);
 			goto out;
@@ -3000,12 +2804,12 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
 	inode_inc_iversion_raw(dst_inode);
 
 	if (dst_off > size) {
-		/* Let the MDS know about dst file size change */
+		 
 		if (ceph_inode_set_size(dst_inode, dst_off) ||
 		    ceph_quota_is_max_bytes_approaching(dst_inode, dst_off))
 			ceph_check_caps(dst_ci, CHECK_CAPS_AUTHONLY | CHECK_CAPS_FLUSH);
 	}
-	/* Mark Fw dirty */
+	 
 	spin_lock(&dst_ci->i_ceph_lock);
 	dirty = __ceph_mark_dirty_caps(dst_ci, CEPH_CAP_FILE_WR, &prealloc_cf);
 	spin_unlock(&dst_ci->i_ceph_lock);
@@ -3015,10 +2819,7 @@ static ssize_t __ceph_copy_file_range(struct file *src_file, loff_t src_off,
 out_caps:
 	put_rd_wr_caps(src_ci, src_got, dst_ci, dst_got);
 
-	/*
-	 * Do the final manual copy if we still have some bytes left, unless
-	 * there were errors in remote object copies (len >= object_size).
-	 */
+	 
 	if (len && (len < src_ci->i_layout.object_size)) {
 		dout("Final partial copy of %zu bytes\n", len);
 		bytes = do_splice_direct(src_file, &src_off, dst_file,

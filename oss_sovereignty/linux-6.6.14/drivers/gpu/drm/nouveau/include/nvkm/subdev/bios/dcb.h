@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVBIOS_DCB_H__
 #define __NVBIOS_DCB_H__
 enum dcb_output_type {
@@ -14,7 +14,7 @@ enum dcb_output_type {
 };
 
 struct dcb_output {
-	int index;	/* may not be raw dcb index if merging has happened */
+	int index;	 
 	u16 hasht;
 	u16 hashm;
 	enum dcb_output_type type;

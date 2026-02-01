@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * digi00x-pcm.c - a part of driver for Digidesign Digi 002/003 family
- *
- * Copyright (c) 2014-2015 Takashi Sakamoto
- */
+
+ 
 
 #include "digi00x.h"
 
@@ -113,7 +109,7 @@ static int pcm_open(struct snd_pcm_substream *substream)
 	if (err < 0)
 		goto err_locked;
 
-	/* Check current clock source. */
+	 
 	err = snd_dg00x_stream_get_clock(dg00x, &clock);
 	if (err < 0)
 		goto err_locked;
@@ -129,9 +125,9 @@ static int pcm_open(struct snd_pcm_substream *substream)
 
 	mutex_lock(&dg00x->mutex);
 
-	// When source of clock is not internal or any stream is reserved for
-	// transmission of PCM frames, the available sampling rate is limited
-	// at current one.
+	
+	
+	
 	if ((clock != SND_DG00X_CLOCK_INTERNAL) ||
 	    (dg00x->substreams_counter > 0 && d->events_per_period > 0)) {
 		unsigned int frames_per_period = d->events_per_period;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -27,32 +27,32 @@ static int init_display(struct fbtft_par *par)
 {
 	if (par->pdata &&
 	    par->pdata->display.backlight == FBTFT_ONBOARD_BACKLIGHT) {
-		/* module uses onboard GPIO for panel power */
+		 
 		par->fbtftops.register_backlight = register_onboard_backlight;
 	}
 
 	par->fbtftops.reset(par);
 
-	write_reg(par, 0xfd, 0x12); /* Command Lock */
-	write_reg(par, 0xfd, 0xb1); /* Command Lock */
-	write_reg(par, 0xae); /* Display Off */
-	write_reg(par, 0xb3, 0xf1); /* Front Clock Div */
-	write_reg(par, 0xca, 0x7f); /* Set Mux Ratio */
-	write_reg(par, 0x15, 0x00, 0x7f); /* Set Column Address */
-	write_reg(par, 0x75, 0x00, 0x7f); /* Set Row Address */
-	write_reg(par, 0xa1, 0x00); /* Set Display Start Line */
-	write_reg(par, 0xa2, 0x00); /* Set Display Offset */
-	write_reg(par, 0xb5, 0x00); /* Set GPIO */
-	write_reg(par, 0xab, 0x01); /* Set Function Selection */
-	write_reg(par, 0xb1, 0x32); /* Set Phase Length */
-	write_reg(par, 0xb4, 0xa0, 0xb5, 0x55); /* Set Segment Low Voltage */
-	write_reg(par, 0xbb, 0x17); /* Set Precharge Voltage */
-	write_reg(par, 0xbe, 0x05); /* Set VComH Voltage */
-	write_reg(par, 0xc1, 0xc8, 0x80, 0xc8); /* Set Contrast */
-	write_reg(par, 0xc7, 0x0f); /* Set Master Contrast */
-	write_reg(par, 0xb6, 0x01); /* Set Second Precharge Period */
-	write_reg(par, 0xa6); /* Set Display Mode Reset */
-	write_reg(par, 0xaf); /* Set Sleep Mode Display On */
+	write_reg(par, 0xfd, 0x12);  
+	write_reg(par, 0xfd, 0xb1);  
+	write_reg(par, 0xae);  
+	write_reg(par, 0xb3, 0xf1);  
+	write_reg(par, 0xca, 0x7f);  
+	write_reg(par, 0x15, 0x00, 0x7f);  
+	write_reg(par, 0x75, 0x00, 0x7f);  
+	write_reg(par, 0xa1, 0x00);  
+	write_reg(par, 0xa2, 0x00);  
+	write_reg(par, 0xb5, 0x00);  
+	write_reg(par, 0xab, 0x01);  
+	write_reg(par, 0xb1, 0x32);  
+	write_reg(par, 0xb4, 0xa0, 0xb5, 0x55);  
+	write_reg(par, 0xbb, 0x17);  
+	write_reg(par, 0xbe, 0x05);  
+	write_reg(par, 0xc1, 0xc8, 0x80, 0xc8);  
+	write_reg(par, 0xc7, 0x0f);  
+	write_reg(par, 0xb6, 0x01);  
+	write_reg(par, 0xa6);  
+	write_reg(par, 0xaf);  
 
 	return 0;
 }
@@ -69,14 +69,14 @@ static int set_var(struct fbtft_par *par)
 	unsigned int remap;
 
 	if (par->fbtftops.init_display != init_display) {
-		/* don't risk messing up register A0h */
+		 
 		fbtft_par_dbg(DEBUG_INIT_DISPLAY, par,
 			      "%s: skipping since custom init_display() is used\n",
 			       __func__);
 		return 0;
 	}
 
-	remap = 0x60 | (par->bgr << 2); /* Set Colour Depth */
+	remap = 0x60 | (par->bgr << 2);  
 
 	switch (par->info->var.rotate) {
 	case 0:
@@ -96,27 +96,7 @@ static int set_var(struct fbtft_par *par)
 	return 0;
 }
 
-/*
- * Grayscale Lookup Table
- * GS1 - GS63
- * The driver Gamma curve contains the relative values between the entries
- * in the Lookup table.
- *
- * From datasheet:
- * 8.8 Gray Scale Decoder
- *
- *	there are total 180 Gamma Settings (Setting 0 to Setting 180)
- *	available for the Gray Scale table.
- *
- *	The gray scale is defined in incremental way, with reference
- *	to the length of previous table entry:
- *		Setting of GS1 has to be >= 0
- *		Setting of GS2 has to be > Setting of GS1 +1
- *		Setting of GS3 has to be > Setting of GS2 +1
- *		:
- *		Setting of GS63 has to be > Setting of GS62 +1
- *
- */
+ 
 static int set_gamma(struct fbtft_par *par, u32 *curves)
 {
 	unsigned long tmp[GAMMA_NUM * GAMMA_LEN];
@@ -197,7 +177,7 @@ static int update_onboard_backlight(struct backlight_device *bd)
 		      __func__, bd->props.power, bd->props.fb_blank);
 
 	on = !backlight_is_blank(bd);
-	/* Onboard backlight connected to GPIO0 on SSD1351, GPIO1 unused */
+	 
 	write_reg(par, 0xB5, on ? 0x03 : 0x02);
 
 	return 0;

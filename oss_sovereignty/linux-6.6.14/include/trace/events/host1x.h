@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/trace/events/host1x.h
- *
- * host1x event logging to ftrace.
- *
- * Copyright (c) 2010-2013, NVIDIA Corporation.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM host1x
@@ -261,7 +255,7 @@ TRACE_EVENT(host1x_syncpt_wait_check,
 		__entry->min)
 );
 
-#endif /*  _TRACE_HOST1X_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

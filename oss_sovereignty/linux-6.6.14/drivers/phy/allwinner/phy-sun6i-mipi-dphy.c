@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2016 Allwinnertech Co., Ltd.
- * Copyright (C) 2017-2018 Bootlin
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -296,7 +291,7 @@ static void sun50i_a100_mipi_dphy_tx_power_on(struct sun6i_dphy *dphy)
 	regmap_write(dphy->regs, SUN50I_COMBO_PHY_REG0,
 		     SUN50I_COMBO_PHY_REG0_EN_CP);
 
-	/* Choose a divider to limit the VCO frequency to around 2 GHz. */
+	 
 	div = 16 >> order_base_2(DIV_ROUND_UP(mipi_symbol_rate, 264000000));
 	n = mipi_symbol_rate * div / 24000000;
 
@@ -311,7 +306,7 @@ static void sun50i_a100_mipi_dphy_tx_power_on(struct sun6i_dphy *dphy)
 		     SUN50I_DPHY_PLL_REG0_M0((div - 1) / 8) |
 		     SUN50I_DPHY_PLL_REG0_M1(2));
 
-	/* Disable sigma-delta modulation. */
+	 
 	regmap_write(dphy->regs, SUN50I_DPHY_PLL_REG2, 0);
 
 	regmap_update_bits(dphy->regs, SUN6I_DPHY_ANA4_REG,
@@ -392,7 +387,7 @@ static int sun6i_dphy_tx_power_on(struct sun6i_dphy *dphy)
 
 static int sun6i_dphy_rx_power_on(struct sun6i_dphy *dphy)
 {
-	/* Physical clock rate is actually half of symbol rate with DDR. */
+	 
 	unsigned long mipi_symbol_rate = dphy->config.hs_clk_rate;
 	unsigned long dphy_clk_rate;
 	unsigned int rx_dly;
@@ -403,41 +398,31 @@ static int sun6i_dphy_rx_power_on(struct sun6i_dphy *dphy)
 	if (!dphy_clk_rate)
 		return -EINVAL;
 
-	/* Hardcoded timing parameters from the Allwinner BSP. */
+	 
 	regmap_write(dphy->regs, SUN6I_DPHY_RX_TIME0_REG,
 		     SUN6I_DPHY_RX_TIME0_HS_RX_SYNC(255) |
 		     SUN6I_DPHY_RX_TIME0_HS_RX_CLK_MISS(255) |
 		     SUN6I_DPHY_RX_TIME0_LP_RX(255));
 
-	/*
-	 * Formula from the Allwinner BSP, with hardcoded coefficients
-	 * (probably internal divider/multiplier).
-	 */
+	 
 	rx_dly = 8 * (unsigned int)(dphy_clk_rate / (mipi_symbol_rate / 8));
 
-	/*
-	 * The Allwinner BSP has an alternative formula for LP_RX_ULPS_WP:
-	 * lp_ulps_wp_cnt = lp_ulps_wp_ms * lp_clk / 1000
-	 * but does not use it and hardcodes 255 instead.
-	 */
+	 
 	regmap_write(dphy->regs, SUN6I_DPHY_RX_TIME1_REG,
 		     SUN6I_DPHY_RX_TIME1_RX_DLY(rx_dly) |
 		     SUN6I_DPHY_RX_TIME1_LP_RX_ULPS_WP(255));
 
-	/* HS_RX_ANA0 value is hardcoded in the Allwinner BSP. */
+	 
 	regmap_write(dphy->regs, SUN6I_DPHY_RX_TIME2_REG,
 		     SUN6I_DPHY_RX_TIME2_HS_RX_ANA0(4));
 
-	/*
-	 * Formula from the Allwinner BSP, with hardcoded coefficients
-	 * (probably internal divider/multiplier).
-	 */
+	 
 	lprst_dly = 4 * (unsigned int)(dphy_clk_rate / (mipi_symbol_rate / 2));
 
 	regmap_write(dphy->regs, SUN6I_DPHY_RX_TIME3_REG,
 		     SUN6I_DPHY_RX_TIME3_LPRST_DLY(lprst_dly));
 
-	/* Analog parameters are hardcoded in the Allwinner BSP. */
+	 
 	regmap_write(dphy->regs, SUN6I_DPHY_ANA0_REG,
 		     SUN6I_DPHY_ANA0_REG_PWS |
 		     SUN6I_DPHY_ANA0_REG_SLV(7) |
@@ -458,18 +443,12 @@ static int sun6i_dphy_rx_power_on(struct sun6i_dphy *dphy)
 		     SUN6I_DPHY_ANA3_EN_LDOC |
 		     SUN6I_DPHY_ANA3_EN_LDOD);
 
-	/*
-	 * Delay comes from the Allwinner BSP, likely for internal regulator
-	 * ramp-up.
-	 */
+	 
 	udelay(3);
 
 	value = SUN6I_DPHY_RX_CTL_EN_DBC | SUN6I_DPHY_RX_CTL_RX_CLK_FORCE;
 
-	/*
-	 * Rx data lane force-enable bits are used as regular RX enable by the
-	 * Allwinner BSP.
-	 */
+	 
 	if (dphy->config.lanes >= 1)
 		value |= SUN6I_DPHY_RX_CTL_RX_D0_FORCE;
 	if (dphy->config.lanes >= 2)

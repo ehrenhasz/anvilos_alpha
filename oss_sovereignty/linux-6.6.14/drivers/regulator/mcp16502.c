@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MCP16502 PMIC driver
-//
-// Copyright (C) 2018 Microchip Technology Inc. and its subsidiaries
-//
-// Author: Andrei Stefanescu <andrei.stefanescu@microchip.com>
-//
-// Inspired from tps65086-regulator.c
+
+
+
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/init.h>
@@ -25,35 +25,9 @@
 #define MCP16502_DVSR		GENMASK(3, 2)
 #define MCP16502_ENS		BIT(0)
 
-/*
- * The PMIC has four sets of registers corresponding to four power modes:
- * Performance, Active, Low-power, Hibernate.
- *
- * Registers:
- * Each regulator has a register for each power mode. To access a register
- * for a specific regulator and mode BASE_* and OFFSET_* need to be added.
- *
- * Operating modes:
- * In order for the PMIC to transition to operating modes it has to be
- * controlled via GPIO lines called LPM and HPM.
- *
- * The registers are fully configurable such that you can put all regulators in
- * a low-power state while the PMIC is in Active mode. They are supposed to be
- * configured at startup and then simply transition to/from a global low-power
- * state by setting the GPIO lpm pin high/low.
- *
- * This driver keeps the PMIC in Active mode, Low-power state is set for the
- * regulators by enabling/disabling operating mode (FPWM or Auto PFM).
- *
- * The PMIC's Low-power and Hibernate modes are used during standby/suspend.
- * To enter standby/suspend the PMIC will go to Low-power mode. From there, it
- * will transition to Hibernate when the PWRHLD line is set to low by the MPU.
- */
+ 
 
-/*
- * This function is useful for iterating over all regulators and accessing their
- * registers in a generic way or accessing a regulator device by its id.
- */
+ 
 #define MCP16502_REG_BASE(i, r) ((((i) + 1) << 4) + MCP16502_REG_##r)
 #define MCP16502_STAT_BASE(i) ((i) + 5)
 
@@ -71,15 +45,7 @@
 #define MCP16502_MIN_REG 0x0
 #define MCP16502_MAX_REG 0x65
 
-/**
- * enum mcp16502_reg - MCP16502 regulators's registers
- * @MCP16502_REG_A: active state register
- * @MCP16502_REG_LPM: low power mode state register
- * @MCP16502_REG_HIB: hibernate state register
- * @MCP16502_REG_HPM: high-performance mode register
- * @MCP16502_REG_SEQ: startup sequence register
- * @MCP16502_REG_CFG: configuration register
- */
+ 
 enum mcp16502_reg {
 	MCP16502_REG_A,
 	MCP16502_REG_LPM,
@@ -89,12 +55,12 @@ enum mcp16502_reg {
 	MCP16502_REG_CFG,
 };
 
-/* Ramp delay (uV/us) for buck1, ldo1, ldo2. */
+ 
 static const unsigned int mcp16502_ramp_b1l12[] = {
 	6250, 3125, 2083, 1563
 };
 
-/* Ramp delay (uV/us) for buck2, buck3, buck4. */
+ 
 static const unsigned int mcp16502_ramp_b234[] = {
 	3125, 1563, 1042, 781
 };
@@ -141,19 +107,12 @@ enum {
 	NUM_REGULATORS
 };
 
-/*
- * struct mcp16502 - PMIC representation
- * @lpm: LPM GPIO descriptor
- */
+ 
 struct mcp16502 {
 	struct gpio_desc *lpm;
 };
 
-/*
- * mcp16502_gpio_set_mode() - set the GPIO corresponding value
- *
- * Used to prepare transitioning into hibernate or resuming from it.
- */
+ 
 static void mcp16502_gpio_set_mode(struct mcp16502 *mcp, int mode)
 {
 	switch (mode) {
@@ -169,12 +128,7 @@ static void mcp16502_gpio_set_mode(struct mcp16502 *mcp, int mode)
 	}
 }
 
-/*
- * mcp16502_get_reg() - get the PMIC's state configuration register for opmode
- *
- * @rdev: the regulator whose register we are searching
- * @opmode: the PMIC's operating mode ACTIVE, Low-power, Hibernate
- */
+ 
 static int mcp16502_get_state_reg(struct regulator_dev *rdev, int opmode)
 {
 	switch (opmode) {
@@ -189,15 +143,7 @@ static int mcp16502_get_state_reg(struct regulator_dev *rdev, int opmode)
 	}
 }
 
-/*
- * mcp16502_get_mode() - return the current operating mode of a regulator
- *
- * Note: all functions that are not part of entering/exiting standby/suspend
- *	 use the Active mode registers.
- *
- * Note: this is different from the PMIC's operatig mode, it is the
- *	 MODE bit from the regulator's register.
- */
+ 
 static unsigned int mcp16502_get_mode(struct regulator_dev *rdev)
 {
 	unsigned int val;
@@ -221,13 +167,7 @@ static unsigned int mcp16502_get_mode(struct regulator_dev *rdev)
 	}
 }
 
-/*
- * _mcp16502_set_mode() - helper for set_mode and set_suspend_mode
- *
- * @rdev: the regulator for which we are setting the mode
- * @mode: the regulator's mode (the one from MODE bit)
- * @opmode: the PMIC's operating mode: Active/Low-power/Hibernate
- */
+ 
 static int _mcp16502_set_mode(struct regulator_dev *rdev, unsigned int mode,
 			      unsigned int op_mode)
 {
@@ -253,17 +193,13 @@ static int _mcp16502_set_mode(struct regulator_dev *rdev, unsigned int mode,
 	return reg;
 }
 
-/*
- * mcp16502_set_mode() - regulator_ops set_mode
- */
+ 
 static int mcp16502_set_mode(struct regulator_dev *rdev, unsigned int mode)
 {
 	return _mcp16502_set_mode(rdev, mode, MCP16502_OPMODE_ACTIVE);
 }
 
-/*
- * mcp16502_get_status() - regulator_ops get_status
- */
+ 
 static int mcp16502_get_status(struct regulator_dev *rdev)
 {
 	int ret;
@@ -323,10 +259,7 @@ static int mcp16502_set_voltage_time_sel(struct regulator_dev *rdev,
 }
 
 #ifdef CONFIG_SUSPEND
-/*
- * mcp16502_suspend_get_target_reg() - get the reg of the target suspend PMIC
- *				       mode
- */
+ 
 static int mcp16502_suspend_get_target_reg(struct regulator_dev *rdev)
 {
 	switch (pm_suspend_target_state) {
@@ -343,9 +276,7 @@ static int mcp16502_suspend_get_target_reg(struct regulator_dev *rdev)
 	return -EINVAL;
 }
 
-/*
- * mcp16502_set_suspend_voltage() - regulator_ops set_suspend_voltage
- */
+ 
 static int mcp16502_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 {
 	int sel = regulator_map_voltage_linear_range(rdev, uV, uV);
@@ -360,9 +291,7 @@ static int mcp16502_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 	return regmap_update_bits(rdev->regmap, reg, MCP16502_VSEL, sel);
 }
 
-/*
- * mcp16502_set_suspend_mode() - regulator_ops set_suspend_mode
- */
+ 
 static int mcp16502_set_suspend_mode(struct regulator_dev *rdev,
 				     unsigned int mode)
 {
@@ -380,9 +309,7 @@ static int mcp16502_set_suspend_mode(struct regulator_dev *rdev,
 	return -EINVAL;
 }
 
-/*
- * mcp16502_set_suspend_enable() - regulator_ops set_suspend_enable
- */
+ 
 static int mcp16502_set_suspend_enable(struct regulator_dev *rdev)
 {
 	int reg = mcp16502_suspend_get_target_reg(rdev);
@@ -393,9 +320,7 @@ static int mcp16502_set_suspend_enable(struct regulator_dev *rdev)
 	return regmap_update_bits(rdev->regmap, reg, MCP16502_EN, MCP16502_EN);
 }
 
-/*
- * mcp16502_set_suspend_disable() - regulator_ops set_suspend_disable
- */
+ 
 static int mcp16502_set_suspend_disable(struct regulator_dev *rdev)
 {
 	int reg = mcp16502_suspend_get_target_reg(rdev);
@@ -405,7 +330,7 @@ static int mcp16502_set_suspend_disable(struct regulator_dev *rdev)
 
 	return regmap_update_bits(rdev->regmap, reg, MCP16502_EN, 0);
 }
-#endif /* CONFIG_SUSPEND */
+#endif  
 
 static const struct regulator_ops mcp16502_buck_ops = {
 	.list_voltage			= regulator_list_voltage_linear_range,
@@ -427,12 +352,10 @@ static const struct regulator_ops mcp16502_buck_ops = {
 	.set_suspend_mode		= mcp16502_set_suspend_mode,
 	.set_suspend_enable		= mcp16502_set_suspend_enable,
 	.set_suspend_disable		= mcp16502_set_suspend_disable,
-#endif /* CONFIG_SUSPEND */
+#endif  
 };
 
-/*
- * LDOs cannot change operating modes.
- */
+ 
 static const struct regulator_ops mcp16502_ldo_ops = {
 	.list_voltage			= regulator_list_voltage_linear_range,
 	.map_voltage			= regulator_map_voltage_linear_range,
@@ -449,7 +372,7 @@ static const struct regulator_ops mcp16502_ldo_ops = {
 	.set_suspend_voltage		= mcp16502_set_suspend_voltage,
 	.set_suspend_enable		= mcp16502_set_suspend_enable,
 	.set_suspend_disable		= mcp16502_set_suspend_disable,
-#endif /* CONFIG_SUSPEND */
+#endif  
 };
 
 static const struct of_device_id mcp16502_ids[] = {
@@ -467,7 +390,7 @@ static const struct linear_range b234_ranges[] = {
 };
 
 static const struct regulator_desc mcp16502_desc[] = {
-	/* MCP16502_REGULATOR(_name, _id, ranges, regulator_ops, ramp_table) */
+	 
 	MCP16502_REGULATOR("VDD_IO", BUCK1, b1l12_ranges, mcp16502_buck_ops,
 			   mcp16502_ramp_b1l12),
 	MCP16502_REGULATOR("VDD_DDR", BUCK2, b234_ranges, mcp16502_buck_ops,

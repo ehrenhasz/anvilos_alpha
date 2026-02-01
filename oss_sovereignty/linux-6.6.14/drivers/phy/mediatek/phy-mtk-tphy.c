@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- *
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <linux/clk.h>
@@ -21,24 +17,24 @@
 
 #include "phy-mtk-io.h"
 
-/* version V1 sub-banks offset base address */
-/* banks shared by multiple phys */
-#define SSUSB_SIFSLV_V1_SPLLC		0x000	/* shared by u3 phys */
-#define SSUSB_SIFSLV_V1_U2FREQ		0x100	/* shared by u2 phys */
-#define SSUSB_SIFSLV_V1_CHIP		0x300	/* shared by u3 phys */
-/* u2 phy bank */
+ 
+ 
+#define SSUSB_SIFSLV_V1_SPLLC		0x000	 
+#define SSUSB_SIFSLV_V1_U2FREQ		0x100	 
+#define SSUSB_SIFSLV_V1_CHIP		0x300	 
+ 
 #define SSUSB_SIFSLV_V1_U2PHY_COM	0x000
-/* u3/pcie/sata phy banks */
+ 
 #define SSUSB_SIFSLV_V1_U3PHYD		0x000
 #define SSUSB_SIFSLV_V1_U3PHYA		0x200
 
-/* version V2/V3 sub-banks offset base address */
-/* V3: U2FREQ is not used anymore, but reserved */
-/* u2 phy banks */
+ 
+ 
+ 
 #define SSUSB_SIFSLV_V2_MISC		0x000
 #define SSUSB_SIFSLV_V2_U2FREQ		0x100
 #define SSUSB_SIFSLV_V2_U2PHY_COM	0x300
-/* u3/pcie/sata phy banks */
+ 
 #define SSUSB_SIFSLV_V2_SPLLC		0x000
 #define SSUSB_SIFSLV_V2_CHIP		0x100
 #define SSUSB_SIFSLV_V2_U3PHYD		0x200
@@ -206,47 +202,47 @@
 #define P2F_USB_FM_VALID	BIT(0)
 #define P2F_RG_FRCK_EN		BIT(8)
 
-#define U3P_REF_CLK		26	/* MHZ */
+#define U3P_REF_CLK		26	 
 #define U3P_SLEW_RATE_COEF	28
 #define U3P_SR_COEF_DIVISOR	1000
 #define U3P_FM_DET_CYCLE_CNT	1024
 
-/* SATA register setting */
+ 
 #define PHYD_CTRL_SIGNAL_MODE4		0x1c
-/* CDR Charge Pump P-path current adjustment */
+ 
 #define RG_CDR_BICLTD1_GEN1_MSK		GENMASK(23, 20)
 #define RG_CDR_BICLTD0_GEN1_MSK		GENMASK(11, 8)
 
 #define PHYD_DESIGN_OPTION2		0x24
-/* Symbol lock count selection */
+ 
 #define RG_LOCK_CNT_SEL_MSK		GENMASK(5, 4)
 
 #define PHYD_DESIGN_OPTION9	0x40
-/* COMWAK GAP width window */
+ 
 #define RG_TG_MAX_MSK		GENMASK(20, 16)
-/* COMINIT GAP width window */
+ 
 #define RG_T2_MAX_MSK		GENMASK(13, 8)
-/* COMWAK GAP width window */
+ 
 #define RG_TG_MIN_MSK		GENMASK(7, 5)
-/* COMINIT GAP width window */
+ 
 #define RG_T2_MIN_MSK		GENMASK(4, 0)
 
 #define ANA_RG_CTRL_SIGNAL1		0x4c
-/* TX driver tail current control for 0dB de-empahsis mdoe for Gen1 speed */
+ 
 #define RG_IDRV_0DB_GEN1_MSK		GENMASK(13, 8)
 
 #define ANA_RG_CTRL_SIGNAL4		0x58
 #define RG_CDR_BICLTR_GEN1_MSK		GENMASK(23, 20)
-/* Loop filter R1 resistance adjustment for Gen1 speed */
+ 
 #define RG_CDR_BR_GEN2_MSK		GENMASK(10, 8)
 
 #define ANA_RG_CTRL_SIGNAL6		0x60
-/* I-path capacitance adjustment for Gen1 */
+ 
 #define RG_CDR_BC_GEN1_MSK		GENMASK(28, 24)
 #define RG_CDR_BIRLTR_GEN1_MSK		GENMASK(4, 0)
 
 #define ANA_EQ_EYE_CTRL_SIGNAL1		0x6c
-/* RX Gen1 LEQ tuning step */
+ 
 #define RG_EQ_DLEQ_LFI_GEN1_MSK		GENMASK(11, 8)
 
 #define ANA_EQ_EYE_CTRL_SIGNAL4		0xd8
@@ -255,7 +251,7 @@
 #define ANA_EQ_EYE_CTRL_SIGNAL5		0xdc
 #define RG_CDR_BIRLTD0_GEN3_MSK		GENMASK(4, 0)
 
-/* PHY switch between pcie/usb3/sgmii/sata */
+ 
 #define USB_PHY_SWITCH_CTRL	0x0
 #define RG_PHY_SW_TYPE		GENMASK(3, 0)
 #define RG_PHY_SW_PCIE		0x0
@@ -274,18 +270,11 @@ enum mtk_phy_version {
 };
 
 struct mtk_phy_pdata {
-	/* avoid RX sensitivity level degradation only for mt8173 */
+	 
 	bool avoid_rx_sen_degradation;
-	/*
-	 * workaround only for mt8195, HW fix it for others of V3,
-	 * u2phy should use integer mode instead of fractional mode of
-	 * 48M PLL, fix it by switching PLL to 26M from default 48M
-	 */
+	 
 	bool sw_pll_48m_to_26m;
-	/*
-	 * Some SoCs (e.g. mt8195) drop a bit when use auto load efuse,
-	 * support sw way, also support it for v2/v3 optionally.
-	 */
+	 
 	bool sw_efuse_supported;
 	enum mtk_phy_version version;
 };
@@ -299,8 +288,8 @@ struct u2phy_banks {
 struct u3phy_banks {
 	void __iomem *spllc;
 	void __iomem *chip;
-	void __iomem *phyd; /* include u3phyd_bank2 */
-	void __iomem *phya; /* include u3phya_da */
+	void __iomem *phyd;  
+	void __iomem *phya;  
 };
 
 struct mtk_phy_instance {
@@ -331,12 +320,12 @@ struct mtk_phy_instance {
 
 struct mtk_tphy {
 	struct device *dev;
-	void __iomem *sif_base;	/* only shared sif */
+	void __iomem *sif_base;	 
 	const struct mtk_phy_pdata *pdata;
 	struct mtk_phy_instance **phys;
 	int nphys;
-	int src_ref_clk; /* MHZ, reference clock for slew rate calibrate */
-	int src_coef; /* coefficient for slew rate calibrate */
+	int src_ref_clk;  
+	int src_coef;  
 };
 
 #if IS_ENABLED(CONFIG_DEBUG_FS)
@@ -666,7 +655,7 @@ static int phy_type_show(struct seq_file *sf, void *unused)
 }
 DEFINE_SHOW_ATTRIBUTE(phy_type);
 
-/* these files will be removed when phy is released by phy core */
+ 
 static void phy_debugfs_init(struct mtk_phy_instance *inst)
 {
 	debugfs_create_file("type", 0444, inst->phy->debugfs, inst, &phy_type_fops);
@@ -701,22 +690,22 @@ static void hs_slew_rate_calibrate(struct mtk_tphy *tphy,
 	int fm_out;
 	u32 tmp;
 
-	/* HW V3 doesn't support slew rate cal anymore */
+	 
 	if (tphy->pdata->version == MTK_PHY_V3)
 		return;
 
-	/* use force value */
+	 
 	if (instance->eye_src)
 		return;
 
-	/* enable USB ring oscillator */
+	 
 	mtk_phy_set_bits(com + U3P_USBPHYACR5, PA5_RG_U2_HSTX_SRCAL_EN);
 	udelay(1);
 
-	/*enable free run clock */
+	 
 	mtk_phy_set_bits(fmreg + U3P_U2FREQ_FMMONR1, P2F_RG_FRCK_EN);
 
-	/* set cycle count as 1024, and select u2 channel */
+	 
 	tmp = readl(fmreg + U3P_U2FREQ_FMCR0);
 	tmp &= ~(P2F_RG_CYCLECNT | P2F_RG_MONCLK_SEL);
 	tmp |= FIELD_PREP(P2F_RG_CYCLECNT, U3P_FM_DET_CYCLE_CNT);
@@ -725,39 +714,39 @@ static void hs_slew_rate_calibrate(struct mtk_tphy *tphy,
 
 	writel(tmp, fmreg + U3P_U2FREQ_FMCR0);
 
-	/* enable frequency meter */
+	 
 	mtk_phy_set_bits(fmreg + U3P_U2FREQ_FMCR0, P2F_RG_FREQDET_EN);
 
-	/* ignore return value */
+	 
 	readl_poll_timeout(fmreg + U3P_U2FREQ_FMMONR1, tmp,
 			   (tmp & P2F_USB_FM_VALID), 10, 200);
 
 	fm_out = readl(fmreg + U3P_U2FREQ_VALUE);
 
-	/* disable frequency meter */
+	 
 	mtk_phy_clear_bits(fmreg + U3P_U2FREQ_FMCR0, P2F_RG_FREQDET_EN);
 
-	/*disable free run clock */
+	 
 	mtk_phy_clear_bits(fmreg + U3P_U2FREQ_FMMONR1, P2F_RG_FRCK_EN);
 
 	if (fm_out) {
-		/* ( 1024 / FM_OUT ) x reference clock frequency x coef */
+		 
 		tmp = tphy->src_ref_clk * tphy->src_coef;
 		tmp = (tmp * U3P_FM_DET_CYCLE_CNT) / fm_out;
 		calibration_val = DIV_ROUND_CLOSEST(tmp, U3P_SR_COEF_DIVISOR);
 	} else {
-		/* if FM detection fail, set default value */
+		 
 		calibration_val = 4;
 	}
 	dev_dbg(tphy->dev, "phy:%d, fm_out:%d, calib:%d (clk:%d, coef:%d)\n",
 		instance->index, fm_out, calibration_val,
 		tphy->src_ref_clk, tphy->src_coef);
 
-	/* set HS slew rate */
+	 
 	mtk_phy_update_field(com + U3P_USBPHYACR5, PA5_RG_U2_HSTX_SRCTRL,
 			     calibration_val);
 
-	/* disable USB ring oscillator */
+	 
 	mtk_phy_clear_bits(com + U3P_USBPHYACR5, PA5_RG_U2_HSTX_SRCAL_EN);
 }
 
@@ -768,11 +757,11 @@ static void u3_phy_instance_init(struct mtk_tphy *tphy,
 	void __iomem *phya = u3_banks->phya;
 	void __iomem *phyd = u3_banks->phyd;
 
-	/* gating PCIe Analog XTAL clock */
+	 
 	mtk_phy_set_bits(u3_banks->spllc + U3P_SPLLC_XTALCTL3,
 			 XC3_RG_U3_XTAL_RX_PWD | XC3_RG_U3_FRC_XTAL_RX_PWD);
 
-	/* gating XSQ */
+	 
 	mtk_phy_update_field(phya + U3P_U3_PHYA_DA_REG0, P3A_RG_XTAL_EXT_EN_U3, 2);
 
 	mtk_phy_update_field(phya + U3P_U3_PHYA_REG9, P3A_RG_RX_DAC_MUX, 4);
@@ -819,7 +808,7 @@ static void u2_phy_instance_init(struct mtk_tphy *tphy,
 	void __iomem *com = u2_banks->com;
 	u32 index = instance->index;
 
-	/* switch to USB function, and enable usb pll */
+	 
 	mtk_phy_clear_bits(com + U3P_U2PHYDTM0, P2C_FORCE_UART_EN | P2C_FORCE_SUSPENDM);
 
 	mtk_phy_clear_bits(com + U3P_U2PHYDTM0,
@@ -829,7 +818,7 @@ static void u2_phy_instance_init(struct mtk_tphy *tphy,
 
 	mtk_phy_set_bits(com + U3P_USBPHYACR0, PA0_RG_USB20_INTR_EN);
 
-	/* disable switch 100uA current to SSUSB */
+	 
 	mtk_phy_clear_bits(com + U3P_USBPHYACR5, PA5_RG_U2_HS_100U_U3_EN);
 
 	mtk_phy_clear_bits(com + U3P_U2PHYACR4, P2C_U2_GPIO_CTR_MSK);
@@ -847,12 +836,12 @@ static void u2_phy_instance_init(struct mtk_tphy *tphy,
 		}
 	}
 
-	/* DP/DM BC1.1 path Disable */
+	 
 	mtk_phy_clear_bits(com + U3P_USBPHYACR6, PA6_RG_U2_BC11_SW_EN);
 
 	mtk_phy_update_field(com + U3P_USBPHYACR6, PA6_RG_U2_SQTH, 2);
 
-	/* Workaround only for mt8195, HW fix it for others (V3) */
+	 
 	u2_phy_pll_26m_set(tphy, instance);
 
 	dev_dbg(tphy->dev, "%s(%d)\n", __func__, index);
@@ -865,7 +854,7 @@ static void u2_phy_instance_power_on(struct mtk_tphy *tphy,
 	void __iomem *com = u2_banks->com;
 	u32 index = instance->index;
 
-	/* OTG Enable */
+	 
 	mtk_phy_set_bits(com + U3P_USBPHYACR6, PA6_RG_U2_OTG_VBUSCMP_EN);
 
 	mtk_phy_set_bits(com + U3P_U2PHYDTM1, P2C_RG_VBUSVALID | P2C_RG_AVALID);
@@ -887,7 +876,7 @@ static void u2_phy_instance_power_off(struct mtk_tphy *tphy,
 	void __iomem *com = u2_banks->com;
 	u32 index = instance->index;
 
-	/* OTG Disable */
+	 
 	mtk_phy_clear_bits(com + U3P_USBPHYACR6, PA6_RG_U2_OTG_VBUSCMP_EN);
 
 	mtk_phy_clear_bits(com + U3P_U2PHYDTM1, P2C_RG_VBUSVALID | P2C_RG_AVALID);
@@ -956,17 +945,17 @@ static void pcie_phy_instance_init(struct mtk_tphy *tphy,
 			    FIELD_PREP(P3A_RG_XTAL_EXT_PE1H, 0x2) |
 			    FIELD_PREP(P3A_RG_XTAL_EXT_PE2H, 0x2));
 
-	/* ref clk drive */
+	 
 	mtk_phy_update_field(phya + U3P_U3_PHYA_REG1, P3A_RG_CLKDRV_AMP, 0x4);
 
 	mtk_phy_update_field(phya + U3P_U3_PHYA_REG0, P3A_RG_CLKDRV_OFF, 0x1);
 
-	/* SSC delta -5000ppm */
+	 
 	mtk_phy_update_field(phya + U3P_U3_PHYA_DA_REG20, P3A_RG_PLL_DELTA1_PE2H, 0x3c);
 
 	mtk_phy_update_field(phya + U3P_U3_PHYA_DA_REG25, P3A_RG_PLL_DELTA_PE2H, 0x36);
 
-	/* change pll BW 0.6M */
+	 
 	mtk_phy_update_bits(phya + U3P_U3_PHYA_DA_REG5,
 			    P3A_RG_PLL_BR_PE2H | P3A_RG_PLL_IC_PE2H,
 			    FIELD_PREP(P3A_RG_PLL_BR_PE2H, 0x1) |
@@ -980,14 +969,14 @@ static void pcie_phy_instance_init(struct mtk_tphy *tphy,
 
 	mtk_phy_update_field(phya + U3P_U3_PHYA_DA_REG7, P3A_RG_PLL_BP_PE2H, 0xa);
 
-	/* Tx Detect Rx Timing: 10us -> 5us */
+	 
 	mtk_phy_update_field(u3_banks->phyd + U3P_U3_PHYD_RXDET1,
 			     P3D_RG_RXDET_STB2_SET, 0x10);
 
 	mtk_phy_update_field(u3_banks->phyd + U3P_U3_PHYD_RXDET2,
 			     P3D_RG_RXDET_STB2_SET_P3, 0x10);
 
-	/* wait for PCIe subsys register to active */
+	 
 	usleep_range(2500, 3000);
 	dev_dbg(tphy->dev, "%s(%d)\n", __func__, instance->index);
 }
@@ -1023,7 +1012,7 @@ static void sata_phy_instance_init(struct mtk_tphy *tphy,
 	struct u3phy_banks *u3_banks = &instance->u3_banks;
 	void __iomem *phyd = u3_banks->phyd;
 
-	/* charge current adjustment */
+	 
 	mtk_phy_update_bits(phyd + ANA_RG_CTRL_SIGNAL6,
 			    RG_CDR_BIRLTR_GEN1_MSK | RG_CDR_BC_GEN1_MSK,
 			    FIELD_PREP(RG_CDR_BIRLTR_GEN1_MSK, 0x6) |
@@ -1149,7 +1138,7 @@ static void u2_phy_props_set(struct mtk_tphy *tphy,
 	struct u2phy_banks *u2_banks = &instance->u2_banks;
 	void __iomem *com = u2_banks->com;
 
-	if (instance->bc12_en) /* BC1.2 path Enable */
+	if (instance->bc12_en)  
 		mtk_phy_set_bits(com + U3P_U2PHYBC12C, P2C_RG_CHGDT_EN);
 
 	if (tphy->pdata->version < MTK_PHY_V3 && instance->eye_src)
@@ -1182,14 +1171,14 @@ static void u2_phy_props_set(struct mtk_tphy *tphy,
 				     instance->pre_emphasis);
 }
 
-/* type switch for usb3/pcie/sgmii/sata */
+ 
 static int phy_type_syscon_get(struct mtk_phy_instance *instance,
 			       struct device_node *dn)
 {
 	struct of_phandle_args args;
 	int ret;
 
-	/* type switch function is optional */
+	 
 	if (!of_property_read_bool(dn, "mediatek,syscon-type"))
 		return 0;
 
@@ -1199,7 +1188,7 @@ static int phy_type_syscon_get(struct mtk_phy_instance *instance,
 		return ret;
 
 	instance->type_sw_reg = args.args[0];
-	instance->type_sw_index = args.args[1] & 0x3; /* <=3 */
+	instance->type_sw_index = args.args[1] & 0x3;  
 	instance->type_sw = syscon_node_to_regmap(args.np);
 	of_node_put(args.np);
 	dev_info(&instance->phy->dev, "type_sw - reg %#x, index %d\n",
@@ -1246,13 +1235,13 @@ static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instanc
 	struct device *dev = &instance->phy->dev;
 	int ret = 0;
 
-	/* tphy v1 doesn't support sw efuse, skip it */
+	 
 	if (!tphy->pdata->sw_efuse_supported) {
 		instance->efuse_sw_en = 0;
 		return 0;
 	}
 
-	/* software efuse is optional */
+	 
 	instance->efuse_sw_en = device_property_read_bool(dev, "nvmem-cells");
 	if (!instance->efuse_sw_en)
 		return 0;
@@ -1265,7 +1254,7 @@ static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instanc
 			break;
 		}
 
-		/* no efuse, ignore it */
+		 
 		if (!instance->efuse_intr) {
 			dev_warn(dev, "no u2 intr efuse, but dts enable it\n");
 			instance->efuse_sw_en = 0;
@@ -1295,7 +1284,7 @@ static int phy_efuse_get(struct mtk_tphy *tphy, struct mtk_phy_instance *instanc
 			break;
 		}
 
-		/* no efuse, ignore it */
+		 
 		if (!instance->efuse_intr &&
 		    !instance->efuse_rx_imp &&
 		    !instance->efuse_tx_imp) {
@@ -1379,7 +1368,7 @@ static int mtk_phy_init(struct phy *phy)
 		sata_phy_instance_init(tphy, instance);
 		break;
 	case PHY_TYPE_SGMII:
-		/* nothing to do, only used to set type */
+		 
 		break;
 	default:
 		dev_err(tphy->dev, "incompatible PHY type\n");
@@ -1577,9 +1566,9 @@ static int mtk_tphy_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, tphy);
 
 	sif_res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-	/* SATA phy of V1 needn't it if not shared with PCIe or USB */
+	 
 	if (sif_res && tphy->pdata->version == MTK_PHY_V1) {
-		/* get banks shared by multiple phys */
+		 
 		tphy->sif_base = devm_ioremap_resource(dev, sif_res);
 		if (IS_ERR(tphy->sif_base)) {
 			dev_err(dev, "failed to remap sif regs\n");
@@ -1590,7 +1579,7 @@ static int mtk_tphy_probe(struct platform_device *pdev)
 	if (tphy->pdata->version < MTK_PHY_V3) {
 		tphy->src_ref_clk = U3P_REF_CLK;
 		tphy->src_coef = U3P_SLEW_RATE_COEF;
-		/* update parameters of slew rate calibrate if exist */
+		 
 		device_property_read_u32(dev, "mediatek,src-ref-clk-mhz",
 					 &tphy->src_ref_clk);
 		device_property_read_u32(dev, "mediatek,src-coef",
@@ -1639,8 +1628,8 @@ static int mtk_tphy_probe(struct platform_device *pdev)
 		port++;
 
 		clks = instance->clks;
-		clks[0].id = "ref";     /* digital (& analog) clock */
-		clks[1].id = "da_ref";  /* analog clock */
+		clks[0].id = "ref";      
+		clks[1].id = "da_ref";   
 		retval = devm_clk_bulk_get_optional(subdev, TPHY_CLKS_CNT, clks);
 		if (retval)
 			goto put_child;

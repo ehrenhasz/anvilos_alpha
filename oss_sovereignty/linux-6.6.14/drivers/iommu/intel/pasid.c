@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * intel-pasid.c - PASID idr, table and entry manipulation
- *
- * Copyright (C) 2018 Intel Corporation
- *
- * Author: Lu Baolu <baolu.lu@linux.intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"DMAR: " fmt
 
@@ -21,9 +15,7 @@
 #include "iommu.h"
 #include "pasid.h"
 
-/*
- * Intel IOMMU system wide PASID name space:
- */
+ 
 u32 intel_pasid_max_id = PASID_MAX;
 
 int vcmd_alloc_pasid(struct intel_iommu *iommu, u32 *pasid)
@@ -83,14 +75,9 @@ void vcmd_free_pasid(struct intel_iommu *iommu, u32 pasid)
 	}
 }
 
-/*
- * Per device pasid table management:
- */
+ 
 
-/*
- * Allocate a pasid table for @dev. It should be called in a
- * single-thread context.
- */
+ 
 int intel_pasid_alloc_table(struct device *dev)
 {
 	struct device_domain_info *info;
@@ -149,7 +136,7 @@ void intel_pasid_free_table(struct device *dev)
 	pasid_table = info->pasid_table;
 	info->pasid_table = NULL;
 
-	/* Free scalable mode PASID directory tables: */
+	 
 	dir = pasid_table->table;
 	max_pde = pasid_table->max_pasid >> PASID_PDE_SHIFT;
 	for (i = 0; i < max_pde; i++) {
@@ -207,12 +194,7 @@ retry:
 		if (!entries)
 			return NULL;
 
-		/*
-		 * The pasid directory table entry won't be freed after
-		 * allocation. No worry about the race with free and
-		 * clear. However, this entry might be populated by others
-		 * while we are preparing it. Use theirs with a retry.
-		 */
+		 
 		if (cmpxchg64(&dir[dir_index].val, 0ULL,
 			      (u64)virt_to_phys(entries) | PASID_PTE_PRESENT)) {
 			free_pgtable_page(entries);
@@ -227,9 +209,7 @@ retry:
 	return &entries[index];
 }
 
-/*
- * Interfaces for PASID table entry manipulation:
- */
+ 
 static inline void pasid_clear_entry(struct pasid_entry *pe)
 {
 	WRITE_ONCE(pe->val[0], 0);
@@ -277,125 +257,86 @@ static inline void pasid_set_bits(u64 *ptr, u64 mask, u64 bits)
 	WRITE_ONCE(*ptr, (old & ~mask) | bits);
 }
 
-/*
- * Setup the DID(Domain Identifier) field (Bit 64~79) of scalable mode
- * PASID entry.
- */
+ 
 static inline void
 pasid_set_domain_id(struct pasid_entry *pe, u64 value)
 {
 	pasid_set_bits(&pe->val[1], GENMASK_ULL(15, 0), value);
 }
 
-/*
- * Get domain ID value of a scalable mode PASID entry.
- */
+ 
 static inline u16
 pasid_get_domain_id(struct pasid_entry *pe)
 {
 	return (u16)(READ_ONCE(pe->val[1]) & GENMASK_ULL(15, 0));
 }
 
-/*
- * Setup the SLPTPTR(Second Level Page Table Pointer) field (Bit 12~63)
- * of a scalable mode PASID entry.
- */
+ 
 static inline void
 pasid_set_slptr(struct pasid_entry *pe, u64 value)
 {
 	pasid_set_bits(&pe->val[0], VTD_PAGE_MASK, value);
 }
 
-/*
- * Setup the AW(Address Width) field (Bit 2~4) of a scalable mode PASID
- * entry.
- */
+ 
 static inline void
 pasid_set_address_width(struct pasid_entry *pe, u64 value)
 {
 	pasid_set_bits(&pe->val[0], GENMASK_ULL(4, 2), value << 2);
 }
 
-/*
- * Setup the PGTT(PASID Granular Translation Type) field (Bit 6~8)
- * of a scalable mode PASID entry.
- */
+ 
 static inline void
 pasid_set_translation_type(struct pasid_entry *pe, u64 value)
 {
 	pasid_set_bits(&pe->val[0], GENMASK_ULL(8, 6), value << 6);
 }
 
-/*
- * Enable fault processing by clearing the FPD(Fault Processing
- * Disable) field (Bit 1) of a scalable mode PASID entry.
- */
+ 
 static inline void pasid_set_fault_enable(struct pasid_entry *pe)
 {
 	pasid_set_bits(&pe->val[0], 1 << 1, 0);
 }
 
-/*
- * Setup the WPE(Write Protect Enable) field (Bit 132) of a
- * scalable mode PASID entry.
- */
+ 
 static inline void pasid_set_wpe(struct pasid_entry *pe)
 {
 	pasid_set_bits(&pe->val[2], 1 << 4, 1 << 4);
 }
 
-/*
- * Setup the P(Present) field (Bit 0) of a scalable mode PASID
- * entry.
- */
+ 
 static inline void pasid_set_present(struct pasid_entry *pe)
 {
 	pasid_set_bits(&pe->val[0], 1 << 0, 1);
 }
 
-/*
- * Setup Page Walk Snoop bit (Bit 87) of a scalable mode PASID
- * entry.
- */
+ 
 static inline void pasid_set_page_snoop(struct pasid_entry *pe, bool value)
 {
 	pasid_set_bits(&pe->val[1], 1 << 23, value << 23);
 }
 
-/*
- * Setup No Execute Enable bit (Bit 133) of a scalable mode PASID
- * entry. It is required when XD bit of the first level page table
- * entry is about to be set.
- */
+ 
 static inline void pasid_set_nxe(struct pasid_entry *pe)
 {
 	pasid_set_bits(&pe->val[2], 1 << 5, 1 << 5);
 }
 
-/*
- * Setup the Page Snoop (PGSNP) field (Bit 88) of a scalable mode
- * PASID entry.
- */
+ 
 static inline void
 pasid_set_pgsnp(struct pasid_entry *pe)
 {
 	pasid_set_bits(&pe->val[1], 1ULL << 24, 1ULL << 24);
 }
 
-/*
- * Setup the First Level Page table Pointer field (Bit 140~191)
- * of a scalable mode PASID entry.
- */
+ 
 static inline void
 pasid_set_flptr(struct pasid_entry *pe, u64 value)
 {
 	pasid_set_bits(&pe->val[2], VTD_PAGE_MASK, value);
 }
 
-/*
- * Setup the First Level Paging Mode field (Bit 130~131) of a
- * scalable mode PASID entry.
- */
+ 
 static inline void
 pasid_set_flpm(struct pasid_entry *pe, u64 value)
 {
@@ -432,12 +373,7 @@ devtlb_invalidation_with_pasid(struct intel_iommu *iommu,
 	qdep = info->ats_qdep;
 	pfsid = info->pfsid;
 
-	/*
-	 * When PASID 0 is used, it indicates RID2PASID(DMA request w/o PASID),
-	 * devTLB flush w/o PASID should be used. For non-zero PASID under
-	 * SVA usage, device could do DMA with multiple PASIDs. It is more
-	 * efficient to flush devTLB specific to the PASID.
-	 */
+	 
 	if (pasid == IOMMU_NO_PASID)
 		qi_flush_dev_iotlb(iommu, sid, pfsid, qdep, 0, 64 - VTD_PAGE_SHIFT);
 	else
@@ -472,15 +408,12 @@ void intel_pasid_tear_down_entry(struct intel_iommu *iommu, struct device *dev,
 	else
 		iommu->flush.flush_iotlb(iommu, did, 0, 0, DMA_TLB_DSI_FLUSH);
 
-	/* Device IOTLB doesn't need to be flushed in caching mode. */
+	 
 	if (!cap_caching_mode(iommu->cap))
 		devtlb_invalidation_with_pasid(iommu, dev, pasid);
 }
 
-/*
- * This function flushes cache for a newly setup pasid table entry.
- * Caller of it should not modify the in-use pasid table entries.
- */
+ 
 static void pasid_flush_caches(struct intel_iommu *iommu,
 				struct pasid_entry *pte,
 			       u32 pasid, u16 did)
@@ -496,10 +429,7 @@ static void pasid_flush_caches(struct intel_iommu *iommu,
 	}
 }
 
-/*
- * Set up the scalable mode pasid table entry for first only
- * translation type.
- */
+ 
 int intel_pasid_setup_first_level(struct intel_iommu *iommu,
 				  struct device *dev, pgd_t *pgd,
 				  u32 pasid, u16 did, int flags)
@@ -532,7 +462,7 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
 
 	pasid_clear_entry(pte);
 
-	/* Setup the first level page table pointer: */
+	 
 	pasid_set_flptr(pte, (u64)__pa(pgd));
 
 	if (flags & PASID_FLAG_FL5LP)
@@ -546,7 +476,7 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
 	pasid_set_page_snoop(pte, !!ecap_smpwc(iommu->ecap));
 	pasid_set_nxe(pte);
 
-	/* Setup Present and PASID Granular Transfer Type: */
+	 
 	pasid_set_translation_type(pte, PASID_ENTRY_PGTT_FL_ONLY);
 	pasid_set_present(pte);
 	spin_unlock(&iommu->lock);
@@ -556,10 +486,7 @@ int intel_pasid_setup_first_level(struct intel_iommu *iommu,
 	return 0;
 }
 
-/*
- * Skip top levels of page tables for iommu which has less agaw
- * than default. Unnecessary for PT mode.
- */
+ 
 static inline int iommu_skip_agaw(struct dmar_domain *domain,
 				  struct intel_iommu *iommu,
 				  struct dma_pte **pgd)
@@ -575,9 +502,7 @@ static inline int iommu_skip_agaw(struct dmar_domain *domain,
 	return agaw;
 }
 
-/*
- * Set up the scalable mode pasid entry for second only translation type.
- */
+ 
 int intel_pasid_setup_second_level(struct intel_iommu *iommu,
 				   struct dmar_domain *domain,
 				   struct device *dev, u32 pasid)
@@ -588,10 +513,7 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
 	int agaw;
 	u16 did;
 
-	/*
-	 * If hardware advertises no support for second level
-	 * translation, return directly.
-	 */
+	 
 	if (!ecap_slts(iommu->ecap)) {
 		pr_err("No second level translation support on %s\n",
 		       iommu->name);
@@ -636,9 +558,7 @@ int intel_pasid_setup_second_level(struct intel_iommu *iommu,
 	return 0;
 }
 
-/*
- * Set up the scalable mode pasid entry for passthrough translation type.
- */
+ 
 int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
 				   struct dmar_domain *domain,
 				   struct device *dev, u32 pasid)
@@ -672,9 +592,7 @@ int intel_pasid_setup_pass_through(struct intel_iommu *iommu,
 	return 0;
 }
 
-/*
- * Set the page snoop control for a pasid entry which has been set up.
- */
+ 
 void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
 					  struct device *dev, u32 pasid)
 {
@@ -695,21 +613,11 @@ void intel_pasid_setup_page_snoop_control(struct intel_iommu *iommu,
 	if (!ecap_coherent(iommu->ecap))
 		clflush_cache_range(pte, sizeof(*pte));
 
-	/*
-	 * VT-d spec 3.4 table23 states guides for cache invalidation:
-	 *
-	 * - PASID-selective-within-Domain PASID-cache invalidation
-	 * - PASID-selective PASID-based IOTLB invalidation
-	 * - If (pasid is RID_PASID)
-	 *    - Global Device-TLB invalidation to affected functions
-	 *   Else
-	 *    - PASID-based Device-TLB invalidation (with S=1 and
-	 *      Addr[63:12]=0x7FFFFFFF_FFFFF) to affected functions
-	 */
+	 
 	pasid_cache_invalidation_with_pasid(iommu, did, pasid);
 	qi_flush_piotlb(iommu, did, pasid, 0, -1, 0);
 
-	/* Device IOTLB doesn't need to be flushed in caching mode. */
+	 
 	if (!cap_caching_mode(iommu->cap))
 		devtlb_invalidation_with_pasid(iommu, dev, pasid);
 }

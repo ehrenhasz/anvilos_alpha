@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Altera Arria10 DevKit System Resource MFD Driver
- *
- * Author: Thor Thayer <tthayer@opensource.altera.com>
- *
- * Copyright Intel Corporation (C) 2014-2016. All Rights Reserved
- *
- * SPI access for Altera Arria10 MAX5 System Resource Chip
- *
- * Adapted from DA9052
- */
+
+ 
 
 #include <linux/mfd/altera-a10sr.h>
 #include <linux/mfd/core.h>

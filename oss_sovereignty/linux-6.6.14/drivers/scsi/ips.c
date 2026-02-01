@@ -1,165 +1,147 @@
-/*****************************************************************************/
-/* ips.c -- driver for the Adaptec / IBM ServeRAID controller                */
-/*                                                                           */
-/* Written By: Keith Mitchell, IBM Corporation                               */
-/*             Jack Hammer, Adaptec, Inc.                                    */
-/*             David Jeffery, Adaptec, Inc.                                  */
-/*                                                                           */
-/* Copyright (C) 2000 IBM Corporation                                        */
-/* Copyright (C) 2002,2003 Adaptec, Inc.                                     */
-/*                                                                           */
-/* This program is free software; you can redistribute it and/or modify      */
-/* it under the terms of the GNU General Public License as published by      */
-/* the Free Software Foundation; either version 2 of the License, or         */
-/* (at your option) any later version.                                       */
-/*                                                                           */
-/* This program is distributed in the hope that it will be useful,           */
-/* but WITHOUT ANY WARRANTY; without even the implied warranty of            */
-/* MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the             */
-/* GNU General Public License for more details.                              */
-/*                                                                           */
-/* NO WARRANTY                                                               */
-/* THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR        */
-/* CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT      */
-/* LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,      */
-/* MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is    */
-/* solely responsible for determining the appropriateness of using and       */
-/* distributing the Program and assumes all risks associated with its        */
-/* exercise of rights under this Agreement, including but not limited to     */
-/* the risks and costs of program errors, damage to or loss of data,         */
-/* programs or equipment, and unavailability or interruption of operations.  */
-/*                                                                           */
-/* DISCLAIMER OF LIABILITY                                                   */
-/* NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY   */
-/* DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL        */
-/* DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND   */
-/* ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR     */
-/* TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE    */
-/* USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED  */
-/* HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES             */
-/*                                                                           */
-/* You should have received a copy of the GNU General Public License         */
-/* along with this program; if not, write to the Free Software               */
-/* Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA */
-/*                                                                           */
-/* Bugs/Comments/Suggestions about this driver should be mailed to:          */
-/*      ipslinux@adaptec.com        	                                     */
-/*                                                                           */
-/* For system support issues, contact your local IBM Customer support.       */
-/* Directions to find IBM Customer Support for each country can be found at: */
-/*      http://www.ibm.com/planetwide/                                       */
-/*                                                                           */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
-/*****************************************************************************/
-/* Change Log                                                                */
-/*                                                                           */
-/* 0.99.02  - Breakup commands that are bigger than 8 * the stripe size      */
-/* 0.99.03  - Make interrupt routine handle all completed request on the     */
-/*            adapter not just the first one                                 */
-/*          - Make sure passthru commands get woken up if we run out of      */
-/*            SCBs                                                           */
-/*          - Send all of the commands on the queue at once rather than      */
-/*            one at a time since the card will support it.                  */
-/* 0.99.04  - Fix race condition in the passthru mechanism -- this required  */
-/*            the interface to the utilities to change                       */
-/*          - Fix error recovery code                                        */
-/* 0.99.05  - Fix an oops when we get certain passthru commands              */
-/* 1.00.00  - Initial Public Release                                         */
-/*            Functionally equivalent to 0.99.05                             */
-/* 3.60.00  - Bump max commands to 128 for use with firmware 3.60            */
-/*          - Change version to 3.60 to coincide with release numbering.     */
-/* 3.60.01  - Remove bogus error check in passthru routine                   */
-/* 3.60.02  - Make DCDB direction based on lookup table                      */
-/*          - Only allow one DCDB command to a SCSI ID at a time             */
-/* 4.00.00  - Add support for ServeRAID 4                                    */
-/* 4.00.01  - Add support for First Failure Data Capture                     */
-/* 4.00.02  - Fix problem with PT DCDB with no buffer                        */
-/* 4.00.03  - Add alternative passthru interface                             */
-/*          - Add ability to flash BIOS                                      */
-/* 4.00.04  - Rename structures/constants to be prefixed with IPS_           */
-/* 4.00.05  - Remove wish_block from init routine                            */
-/*          - Use linux/spinlock.h instead of asm/spinlock.h for kernels     */
-/*            2.3.18 and later                                               */
-/*          - Sync with other changes from the 2.3 kernels                   */
-/* 4.00.06  - Fix timeout with initial FFDC command                          */
-/* 4.00.06a - Port to 2.4 (trivial) -- Christoph Hellwig <hch@infradead.org> */
-/* 4.10.00  - Add support for ServeRAID 4M/4L                                */
-/* 4.10.13  - Fix for dynamic unload and proc file system                    */
-/* 4.20.03  - Rename version to coincide with new release schedules          */
-/*            Performance fixes                                              */
-/*            Fix truncation of /proc files with cat                         */
-/*            Merge in changes through kernel 2.4.0test1ac21                 */
-/* 4.20.13  - Fix some failure cases / reset code                            */
-/*          - Hook into the reboot_notifier to flush the controller cache    */
-/* 4.50.01  - Fix problem when there is a hole in logical drive numbering    */
-/* 4.70.09  - Use a Common ( Large Buffer ) for Flashing from the JCRM CD    */
-/*          - Add IPSSEND Flash Support                                      */
-/*          - Set Sense Data for Unknown SCSI Command                        */
-/*          - Use Slot Number from NVRAM Page 5                              */
-/*          - Restore caller's DCDB Structure                                */
-/* 4.70.12  - Corrective actions for bad controller ( during initialization )*/
-/* 4.70.13  - Don't Send CDB's if we already know the device is not present  */
-/*          - Don't release HA Lock in ips_next() until SC taken off queue   */
-/*          - Unregister SCSI device in ips_release()                        */
-/* 4.70.15  - Fix Breakup for very large ( non-SG ) requests in ips_done()   */
-/* 4.71.00  - Change all memory allocations to not use GFP_DMA flag          */
-/*            Code Clean-Up for 2.4.x kernel                                 */
-/* 4.72.00  - Allow for a Scatter-Gather Element to exceed MAX_XFER Size     */
-/* 4.72.01  - I/O Mapped Memory release ( so "insmod ips" does not Fail )    */
-/*          - Don't Issue Internal FFDC Command if there are Active Commands */
-/*          - Close Window for getting too many IOCTL's active               */
-/* 4.80.00  - Make ia64 Safe                                                 */
-/* 4.80.04  - Eliminate calls to strtok() if 2.4.x or greater                */
-/*          - Adjustments to Device Queue Depth                              */
-/* 4.80.14  - Take all semaphores off stack                                  */
-/*          - Clean Up New_IOCTL path                                        */
-/* 4.80.20  - Set max_sectors in Scsi_Host structure ( if >= 2.4.7 kernel )  */
-/*          - 5 second delay needed after resetting an i960 adapter          */
-/* 4.80.26  - Clean up potential code problems ( Arjan's recommendations )   */
-/* 4.90.01  - Version Matching for FirmWare, BIOS, and Driver                */
-/* 4.90.05  - Use New PCI Architecture to facilitate Hot Plug Development    */
-/* 4.90.08  - Increase Delays in Flashing ( Trombone Only - 4H )             */
-/* 4.90.08  - Data Corruption if First Scatter Gather Element is > 64K       */
-/* 4.90.11  - Don't actually RESET unless it's physically required           */
-/*          - Remove unused compile options                                  */
-/* 5.00.01  - Sarasota ( 5i ) adapters must always be scanned first          */
-/*          - Get rid on IOCTL_NEW_COMMAND code                              */
-/*          - Add Extended DCDB Commands for Tape Support in 5I              */
-/* 5.10.12  - use pci_dma interfaces, update for 2.5 kernel changes          */
-/* 5.10.15  - remove unused code (sem, macros, etc.)                         */
-/* 5.30.00  - use __devexit_p()                                              */
-/* 6.00.00  - Add 6x Adapters and Battery Flash                              */
-/* 6.10.00  - Remove 1G Addressing Limitations                               */
-/* 6.11.xx  - Get VersionInfo buffer off the stack !              DDTS 60401 */
-/* 6.11.xx  - Make Logical Drive Info structure safe for DMA      DDTS 60639 */
-/* 7.10.18  - Add highmem_io flag in SCSI Templete for 2.4 kernels           */
-/*          - Fix path/name for scsi_hosts.h include for 2.6 kernels         */
-/*          - Fix sort order of 7k                                           */
-/*          - Remove 3 unused "inline" functions                             */
-/* 7.12.xx  - Use STATIC functions wherever possible                        */
-/*          - Clean up deprecated MODULE_PARM calls                          */
-/* 7.12.05  - Remove Version Matching per IBM request                        */
-/*****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
-/*
- * Conditional Compilation directives for this driver:
- *
- * IPS_DEBUG            - Turn on debugging info
- *
- * Parameters:
- *
- * debug:<number>       - Set debug level to <number>
- *                        NOTE: only works when IPS_DEBUG compile directive is used.
- *       1              - Normal debug messages
- *       2              - Verbose debug messages
- *       11             - Method trace (non interrupt)
- *       12             - Method trace (includes interrupt)
- *
- * noi2o                - Don't use I2O Queues (ServeRAID 4 only)
- * nommap               - Don't use memory mapped I/O
- * ioctlsize            - Initial size of the IOCTL buffer
- */
+ 
 
 #include <asm/io.h>
 #include <asm/byteorder.h>
@@ -204,9 +186,7 @@ static char *ips = NULL;
 module_param(ips, charp, 0);
 #endif
 
-/*
- * DRIVER_VER
- */
+ 
 #define IPS_VERSION_HIGH        IPS_VER_MAJOR_STRING "." IPS_VER_MINOR_STRING
 #define IPS_VERSION_LOW         "." IPS_VER_BUILD_STRING " "
 
@@ -225,9 +205,7 @@ module_param(ips, charp, 0);
 #define DEBUG_VAR(i, s, v...)
 #endif
 
-/*
- * Function prototypes
- */
+ 
 static int ips_eh_abort(struct scsi_cmnd *);
 static int ips_eh_reset(struct scsi_cmnd *);
 static int ips_queue(struct Scsi_Host *, struct scsi_cmnd *);
@@ -336,26 +314,24 @@ static int ips_register_scsi(int index);
 static int  ips_poll_for_flush_complete(ips_ha_t * ha);
 static void ips_flush_and_reset(ips_ha_t *ha);
 
-/*
- * global variables
- */
+ 
 static const char ips_name[] = "ips";
-static struct Scsi_Host *ips_sh[IPS_MAX_ADAPTERS];	/* Array of host controller structures */
-static ips_ha_t *ips_ha[IPS_MAX_ADAPTERS];	/* Array of HA structures */
+static struct Scsi_Host *ips_sh[IPS_MAX_ADAPTERS];	 
+static ips_ha_t *ips_ha[IPS_MAX_ADAPTERS];	 
 static unsigned int ips_next_controller;
 static unsigned int ips_num_controllers;
 static unsigned int ips_released_controllers;
 static int ips_hotplug;
 static int ips_cmd_timeout = 60;
 static int ips_reset_timeout = 60 * 5;
-static int ips_force_memio = 1;		/* Always use Memory Mapped I/O    */
-static int ips_force_i2o = 1;	/* Always use I2O command delivery */
-static int ips_ioctlsize = IPS_IOCTL_SIZE;	/* Size of the ioctl buffer        */
-static int ips_cd_boot;			/* Booting from Manager CD         */
-static char *ips_FlashData = NULL;	/* CD Boot - Flash Data Buffer      */
+static int ips_force_memio = 1;		 
+static int ips_force_i2o = 1;	 
+static int ips_ioctlsize = IPS_IOCTL_SIZE;	 
+static int ips_cd_boot;			 
+static char *ips_FlashData = NULL;	 
 static dma_addr_t ips_flashbusaddr;
-static long ips_FlashDataInUse;		/* CD Boot - Flash Data In Use Flag */
-static uint32_t MaxLiteCmds = 32;	/* Max Active Cmds for a Lite Adapter */
+static long ips_FlashDataInUse;		 
+static uint32_t MaxLiteCmds = 32;	 
 static struct scsi_host_template ips_driver_template = {
 	.info			= ips_info,
 	.queuecommand		= ips_queue,
@@ -373,7 +349,7 @@ static struct scsi_host_template ips_driver_template = {
 };
 
 
-/* This table describes all ServeRAID Adapters */
+ 
 static struct  pci_device_id  ips_pci_table[] = {
 	{ 0x1014, 0x002E, PCI_ANY_ID, PCI_ANY_ID, 0, 0 },
 	{ 0x1014, 0x01BD, PCI_ANY_ID, PCI_ANY_ID, 0, 0 },
@@ -396,9 +372,7 @@ static struct pci_driver ips_pci_driver = {
 };
 
 
-/*
- * Necessary forward function protoypes
- */
+ 
 static int ips_halt(struct notifier_block *nb, ulong event, void *buf);
 
 #define MAX_ADAPTER_NAME 15
@@ -428,9 +402,7 @@ static struct notifier_block ips_notifier = {
 	ips_halt, NULL, 0
 };
 
-/*
- * Direction table
- */
+ 
 static char ips_command_direction[] = {
 	IPS_DATA_NONE, IPS_DATA_NONE, IPS_DATA_IN, IPS_DATA_IN, IPS_DATA_OUT,
 	IPS_DATA_IN, IPS_DATA_IN, IPS_DATA_OUT, IPS_DATA_IN, IPS_DATA_UNK,
@@ -486,15 +458,15 @@ static char ips_command_direction[] = {
 };
 
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_setup                                                  */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   setup parameters to the driver                                         */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_setup(char *ips_str)
 {
@@ -510,18 +482,15 @@ ips_setup(char *ips_str)
 		{"maxcmds", &MaxLiteCmds, 32},
 	};
 
-	/* Don't use strtok() anymore ( if 2.4 Kernel or beyond ) */
-	/* Search for value */
+	 
+	 
 	while ((key = strsep(&ips_str, ",."))) {
 		if (!*key)
 			continue;
 		value = strchr(key, ':');
 		if (value)
 			*value++ = '\0';
-		/*
-		 * We now have key/value pairs.
-		 * Update the variables
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(options); i++) {
 			if (strncasecmp
 			    (key, options[i].option_name,
@@ -542,17 +511,17 @@ ips_setup(char *ips_str)
 
 __setup("ips=", ips_setup);
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_detect                                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Detect and initialize the driver                                       */
-/*                                                                          */
-/* NOTE: this routine is called under the io_request_lock spinlock          */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_detect(struct scsi_host_template * SHT)
 {
@@ -574,19 +543,17 @@ ips_detect(struct scsi_host_template * SHT)
 	return (ips_num_controllers);
 }
 
-/****************************************************************************/
-/*   configure the function pointers to use the functions that will work    */
-/*   with the found version of the adapter                                  */
-/****************************************************************************/
+ 
+ 
+ 
+ 
 static void
 ips_setup_funclist(ips_ha_t * ha)
 {
 
-	/*
-	 * Setup Functions
-	 */
+	 
 	if (IPS_IS_MORPHEUS(ha) || IPS_IS_MARCO(ha)) {
-		/* morpheus / marco / sebring */
+		 
 		ha->func.isintr = ips_isintr_morpheus;
 		ha->func.isinit = ips_isinit_morpheus;
 		ha->func.issue = ips_issue_i2o_memio;
@@ -596,7 +563,7 @@ ips_setup_funclist(ips_ha_t * ha)
 		ha->func.intr = ips_intr_morpheus;
 		ha->func.enableint = ips_enable_int_morpheus;
 	} else if (IPS_USE_MEMIO(ha)) {
-		/* copperhead w/MEMIO */
+		 
 		ha->func.isintr = ips_isintr_copperhead_memio;
 		ha->func.isinit = ips_isinit_copperhead_memio;
 		ha->func.init = ips_init_copperhead_memio;
@@ -613,7 +580,7 @@ ips_setup_funclist(ips_ha_t * ha)
 		else
 			ha->func.issue = ips_issue_copperhead_memio;
 	} else {
-		/* copperhead */
+		 
 		ha->func.isintr = ips_isintr_copperhead;
 		ha->func.isinit = ips_isinit_copperhead;
 		ha->func.init = ips_init_copperhead;
@@ -633,15 +600,15 @@ ips_setup_funclist(ips_ha_t * ha)
 	}
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_release                                                */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove a driver                                                        */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void ips_release(struct Scsi_Host *sh)
 {
 	ips_scb_t *scb;
@@ -665,7 +632,7 @@ static void ips_release(struct Scsi_Host *sh)
 	if (!ha)
 		return;
 
-	/* flush the cache on the controller */
+	 
 	scb = &ha->scbs[ha->max_cmds - 1];
 
 	ips_init_scb(ha, scb);
@@ -683,7 +650,7 @@ static void ips_release(struct Scsi_Host *sh)
 
 	IPS_PRINTK(KERN_WARNING, ha->pcidev, "Flushing Cache.\n");
 
-	/* send command */
+	 
 	if (ips_send_wait(ha, scb, ips_cmd_timeout, IPS_INTR_ON) == IPS_FAILURE)
 		IPS_PRINTK(KERN_WARNING, ha->pcidev, "Incomplete Flush.\n");
 
@@ -692,10 +659,10 @@ static void ips_release(struct Scsi_Host *sh)
 	ips_sh[i] = NULL;
 	ips_ha[i] = NULL;
 
-	/* free extra memory */
+	 
 	ips_free(ha);
 
-	/* free IRQ */
+	 
 	free_irq(ha->pcidev->irq, ha);
 
 	scsi_host_put(sh);
@@ -703,15 +670,15 @@ static void ips_release(struct Scsi_Host *sh)
 	ips_released_controllers++;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_halt                                                   */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Perform cleanup when the system reboots                                */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_halt(struct notifier_block *nb, ulong event, void *buf)
 {
@@ -732,7 +699,7 @@ ips_halt(struct notifier_block *nb, ulong event, void *buf)
 		if (!ha->active)
 			continue;
 
-		/* flush the cache on the controller */
+		 
 		scb = &ha->scbs[ha->max_cmds - 1];
 
 		ips_init_scb(ha, scb);
@@ -750,7 +717,7 @@ ips_halt(struct notifier_block *nb, ulong event, void *buf)
 
 		IPS_PRINTK(KERN_WARNING, ha->pcidev, "Flushing Cache.\n");
 
-		/* send command */
+		 
 		if (ips_send_wait(ha, scb, ips_cmd_timeout, IPS_INTR_ON) ==
 		    IPS_FAILURE)
 			IPS_PRINTK(KERN_WARNING, ha->pcidev,
@@ -763,15 +730,15 @@ ips_halt(struct notifier_block *nb, ulong event, void *buf)
 	return (NOTIFY_OK);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_eh_abort                                               */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Abort a command (using the new error code stuff)                       */
-/* Note: this routine is called under the io_request_lock                   */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 int ips_eh_abort(struct scsi_cmnd *SC)
 {
 	ips_ha_t *ha;
@@ -795,22 +762,22 @@ int ips_eh_abort(struct scsi_cmnd *SC)
 
 	spin_lock(host->host_lock);
 
-	/* See if the command is on the copp queue */
+	 
 	item = ha->copp_waitlist.head;
 	while ((item) && (item->scsi_cmd != SC))
 		item = item->next;
 
 	if (item) {
-		/* Found it */
+		 
 		ips_removeq_copp(&ha->copp_waitlist, item);
 		ret = (SUCCESS);
 
-		/* See if the command is on the wait queue */
+		 
 	} else if (ips_removeq_wait(&ha->scb_waitlist, SC)) {
-		/* command not sent yet */
+		 
 		ret = (SUCCESS);
 	} else {
-		/* command must have already been sent */
+		 
 		ret = (FAILED);
 	}
 
@@ -818,17 +785,17 @@ int ips_eh_abort(struct scsi_cmnd *SC)
 	return ret;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_eh_reset                                               */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Reset the controller (with new eh error code)                          */
-/*                                                                          */
-/* NOTE: this routine is called under the io_request_lock spinlock          */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int __ips_eh_reset(struct scsi_cmnd *SC)
 {
 	int ret;
@@ -860,34 +827,34 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 	if (!ha->active)
 		return (FAILED);
 
-	/* See if the command is on the copp queue */
+	 
 	item = ha->copp_waitlist.head;
 	while ((item) && (item->scsi_cmd != SC))
 		item = item->next;
 
 	if (item) {
-		/* Found it */
+		 
 		ips_removeq_copp(&ha->copp_waitlist, item);
 		return (SUCCESS);
 	}
 
-	/* See if the command is on the wait queue */
+	 
 	if (ips_removeq_wait(&ha->scb_waitlist, SC)) {
-		/* command not sent yet */
+		 
 		return (SUCCESS);
 	}
 
-	/* An explanation for the casual observer:                              */
-	/* Part of the function of a RAID controller is automatic error         */
-	/* detection and recovery.  As such, the only problem that physically   */
-	/* resetting an adapter will ever fix is when, for some reason,         */
-	/* the driver is not successfully communicating with the adapter.       */
-	/* Therefore, we will attempt to flush this adapter.  If that succeeds, */
-	/* then there's no real purpose in a physical reset. This will complete */
-	/* much faster and avoids any problems that might be caused by a        */
-	/* physical reset ( such as having to fail all the outstanding I/O's ). */
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
+	 
 
-	if (ha->ioctl_reset == 0) {	/* IF Not an IOCTL Requested Reset */
+	if (ha->ioctl_reset == 0) {	 
 		scb = &ha->scbs[ha->max_cmds - 1];
 
 		ips_init_scb(ha, scb);
@@ -903,7 +870,7 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 		scb->cmd.flush_cache.reserved3 = 0;
 		scb->cmd.flush_cache.reserved4 = 0;
 
-		/* Attempt the flush command */
+		 
 		ret = ips_send_wait(ha, scb, ips_cmd_timeout, IPS_INTR_IORL);
 		if (ret == IPS_SUCCESS) {
 			IPS_PRINTK(KERN_NOTICE, ha->pcidev,
@@ -912,15 +879,12 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 		}
 	}
 
-	/* Either we can't communicate with the adapter or it's an IOCTL request */
-	/* from a utility.  A physical reset is needed at this point.            */
+	 
+	 
 
-	ha->ioctl_reset = 0;	/* Reset the IOCTL Requested Reset Flag */
+	ha->ioctl_reset = 0;	 
 
-	/*
-	 * command must have already been sent
-	 * reset the controller
-	 */
+	 
 	IPS_PRINTK(KERN_NOTICE, ha->pcidev, "Resetting controller.\n");
 	ret = (*ha->func.reset) (ha);
 
@@ -930,7 +894,7 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 		IPS_PRINTK(KERN_NOTICE, ha->pcidev,
 			   "Controller reset failed - controller now offline.\n");
 
-		/* Now fail all of the active commands */
+		 
 		DEBUG_VAR(1, "(%s%d) Failing active commands",
 			  ips_name, ha->host_num);
 
@@ -940,7 +904,7 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 			ips_freescb(ha, scb);
 		}
 
-		/* Now fail all of the pending commands */
+		 
 		DEBUG_VAR(1, "(%s%d) Failing pending commands",
 			  ips_name, ha->host_num);
 
@@ -959,7 +923,7 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 		IPS_PRINTK(KERN_NOTICE, ha->pcidev,
 			   "Controller reset failed - controller now offline.\n");
 
-		/* Now fail all of the active commands */
+		 
 		DEBUG_VAR(1, "(%s%d) Failing active commands",
 			  ips_name, ha->host_num);
 
@@ -969,7 +933,7 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 			ips_freescb(ha, scb);
 		}
 
-		/* Now fail all of the pending commands */
+		 
 		DEBUG_VAR(1, "(%s%d) Failing pending commands",
 			  ips_name, ha->host_num);
 
@@ -982,14 +946,14 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 		return (FAILED);
 	}
 
-	/* FFDC */
+	 
 	if (le32_to_cpu(ha->subsys->param[3]) & 0x300000) {
 		ha->last_ffdc = ktime_get_real_seconds();
 		ha->reset_count++;
 		ips_ffdc_reset(ha, IPS_INTR_IORL);
 	}
 
-	/* Now fail all of the active commands */
+	 
 	DEBUG_VAR(1, "(%s%d) Failing active commands", ips_name, ha->host_num);
 
 	while ((scb = ips_removeq_scb_head(&ha->scb_activelist))) {
@@ -998,17 +962,17 @@ static int __ips_eh_reset(struct scsi_cmnd *SC)
 		ips_freescb(ha, scb);
 	}
 
-	/* Reset DCDB active command bits */
+	 
 	for (i = 1; i < ha->nbus; i++)
 		ha->dcdb_active[i - 1] = 0;
 
-	/* Reset the number of active IOCTLs */
+	 
 	ha->num_ioctl = 0;
 
 	ips_next(ha, IPS_INTR_IORL);
 
 	return (SUCCESS);
-#endif				/* NO_IPS_RESET */
+#endif				 
 
 }
 
@@ -1023,18 +987,18 @@ static int ips_eh_reset(struct scsi_cmnd *SC)
 	return rc;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_queue                                                  */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Send a command to the controller                                       */
-/*                                                                          */
-/* NOTE:                                                                    */
-/*    Linux obtains io_request_lock before calling this function            */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int ips_queue_lck(struct scsi_cmnd *SC)
 {
 	void (*done)(struct scsi_cmnd *) = scsi_done;
@@ -1071,7 +1035,7 @@ static int ips_queue_lck(struct scsi_cmnd *SC)
 		  SC->cmnd[0],
 		  SC->device->channel, SC->device->id, SC->device->lun);
 
-	/* Check for command to initiator IDs */
+	 
 	if ((scmd_channel(SC) > 0)
 	    && (scmd_id(SC) == ha->ha_id[scmd_channel(SC)])) {
 		SC->result = DID_NO_CONNECT << 16;
@@ -1084,9 +1048,9 @@ static int ips_queue_lck(struct scsi_cmnd *SC)
 
 		ips_copp_wait_item_t *scratch;
 
-		/* A Reset IOCTL is only sent by the boot CD in extreme cases.           */
-		/* There can never be any system activity ( network or disk ), but check */
-		/* anyway just as a good practice.                                       */
+		 
+		 
+		 
 		pt = (ips_passthru_t *) scsi_sglist(SC);
 		if ((pt->CoppCP.cmd.reset.op_code == IPS_CMD_RESET_CHANNEL) &&
 		    (pt->CoppCP.cmd.reset.adapter_flag == 1)) {
@@ -1095,14 +1059,14 @@ static int ips_queue_lck(struct scsi_cmnd *SC)
 				done(SC);
 				return (0);
 			}
-			ha->ioctl_reset = 1;	/* This reset request is from an IOCTL */
+			ha->ioctl_reset = 1;	 
 			__ips_eh_reset(SC);
 			SC->result = DID_OK << 16;
 			scsi_done(SC);
 			return (0);
 		}
 
-		/* allocate space for the scribble */
+		 
 		scratch = kmalloc(sizeof (ips_copp_wait_item_t), GFP_ATOMIC);
 
 		if (!scratch) {
@@ -1132,15 +1096,15 @@ out_error:
 
 static DEF_SCSI_QCMD(ips_queue)
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_biosparam                                              */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Set bios geometry for the controller                                   */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int ips_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 			 sector_t capacity, int geom[])
 {
@@ -1152,14 +1116,14 @@ static int ips_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 	METHOD_TRACE("ips_biosparam", 1);
 
 	if (!ha)
-		/* ?!?! host adater info invalid */
+		 
 		return (0);
 
 	if (!ha->active)
 		return (0);
 
 	if (!ips_read_adapter_status(ha, IPS_INTR_ON))
-		/* ?!?! Enquiry command failed */
+		 
 		return (0);
 
 	if ((capacity > 0x400000) && ((ha->enq->ucMiscFlag & 0x8) == 0)) {
@@ -1182,15 +1146,15 @@ static int ips_biosparam(struct scsi_device *sdev, struct block_device *bdev,
 	return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_slave_configure                                        */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Set queue depths on devices once scan is complete                      */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_slave_configure(struct scsi_device * SDptr)
 {
@@ -1210,15 +1174,15 @@ ips_slave_configure(struct scsi_device * SDptr)
 	return 0;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: do_ipsintr                                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Wrapper for the interrupt handler                                      */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static irqreturn_t
 do_ipsintr(int irq, void *dev_id)
 {
@@ -1232,7 +1196,7 @@ do_ipsintr(int irq, void *dev_id)
 	if (!ha)
 		return IRQ_NONE;
 	host = ips_sh[ha->host_num];
-	/* interrupt during initialization */
+	 
 	if (!host) {
 		(*ha->func.intr) (ha);
 		return IRQ_HANDLED;
@@ -1249,22 +1213,22 @@ do_ipsintr(int irq, void *dev_id)
 
 	spin_unlock(host->host_lock);
 
-	/* start the next command */
+	 
 	ips_next(ha, IPS_INTR_ON);
 	return IRQ_RETVAL(irqstatus);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_intr_copperhead                                        */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Polling interrupt handler                                              */
-/*                                                                          */
-/*   ASSUMES interrupts are disabled                                        */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 int
 ips_intr_copperhead(ips_ha_t * ha)
 {
@@ -1284,9 +1248,7 @@ ips_intr_copperhead(ips_ha_t * ha)
 	intrstatus = (*ha->func.isintr) (ha);
 
 	if (!intrstatus) {
-		/*
-		 * Unexpected/Shared interrupt
-		 */
+		 
 
 		return 0;
 	}
@@ -1302,33 +1264,30 @@ ips_intr_copperhead(ips_ha_t * ha)
 			cstatus.value = (*ha->func.statupd) (ha);
 
 		if (cstatus.fields.command_id > (IPS_MAX_CMDS - 1)) {
-			/* Spurious Interrupt ? */
+			 
 			continue;
 		}
 
 		ips_chkstatus(ha, &cstatus);
 		scb = (ips_scb_t *) sp->scb_addr;
 
-		/*
-		 * use the callback function to finish things up
-		 * NOTE: interrupts are OFF for this
-		 */
+		 
 		(*scb->callback) (ha, scb);
-	}			/* end while */
+	}			 
 	return 1;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_intr_morpheus                                          */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Polling interrupt handler                                              */
-/*                                                                          */
-/*   ASSUMES interrupts are disabled                                        */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 int
 ips_intr_morpheus(ips_ha_t * ha)
 {
@@ -1348,9 +1307,7 @@ ips_intr_morpheus(ips_ha_t * ha)
 	intrstatus = (*ha->func.isintr) (ha);
 
 	if (!intrstatus) {
-		/*
-		 * Unexpected/Shared interrupt
-		 */
+		 
 
 		return 0;
 	}
@@ -1366,7 +1323,7 @@ ips_intr_morpheus(ips_ha_t * ha)
 			cstatus.value = (*ha->func.statupd) (ha);
 
 		if (cstatus.value == 0xffffffff)
-			/* No more to process */
+			 
 			break;
 
 		if (cstatus.fields.command_id > (IPS_MAX_CMDS - 1)) {
@@ -1379,24 +1336,21 @@ ips_intr_morpheus(ips_ha_t * ha)
 		ips_chkstatus(ha, &cstatus);
 		scb = (ips_scb_t *) sp->scb_addr;
 
-		/*
-		 * use the callback function to finish things up
-		 * NOTE: interrupts are OFF for this
-		 */
+		 
 		(*scb->callback) (ha, scb);
-	}			/* end while */
+	}			 
 	return 1;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_info                                                   */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Return info about the driver                                           */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static const char *
 ips_info(struct Scsi_Host *SH)
 {
@@ -1432,7 +1386,7 @@ ips_write_info(struct Scsi_Host *host, char *buffer, int length)
 	int i;
 	ips_ha_t *ha = NULL;
 
-	/* Find our host structure */
+	 
 	for (i = 0; i < ips_next_controller; i++) {
 		if (ips_sh[i]) {
 			if (ips_sh[i] == host) {
@@ -1454,7 +1408,7 @@ ips_show_info(struct seq_file *m, struct Scsi_Host *host)
 	int i;
 	ips_ha_t *ha = NULL;
 
-	/* Find our host structure */
+	 
 	for (i = 0; i < ips_next_controller; i++) {
 		if (ips_sh[i]) {
 			if (ips_sh[i] == host) {
@@ -1470,19 +1424,19 @@ ips_show_info(struct seq_file *m, struct Scsi_Host *host)
 	return ips_host_info(ha, m);
 }
 
-/*--------------------------------------------------------------------------*/
-/* Helper Functions                                                         */
-/*--------------------------------------------------------------------------*/
+ 
+ 
+ 
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_is_passthru                                            */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Determine if the specified SCSI command is really a passthru command   */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int ips_is_passthru(struct scsi_cmnd *SC)
 {
 	unsigned long flags;
@@ -1499,7 +1453,7 @@ static int ips_is_passthru(struct scsi_cmnd *SC)
                 struct scatterlist *sg = scsi_sglist(SC);
                 char  *buffer;
 
-                /* local_irq_save() protects the KM_IRQ0 address slot.     */
+                 
                 local_irq_save(flags);
 		buffer = kmap_local_page(sg_page(sg)) + sg->offset;
 		if (buffer && buffer[0] == 'C' && buffer[1] == 'O' &&
@@ -1514,14 +1468,14 @@ static int ips_is_passthru(struct scsi_cmnd *SC)
 	return 0;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_alloc_passthru_buffer                                  */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   allocate a buffer large enough for the ioctl data if the ioctl buffer  */
-/*   is too small or doesn't exist                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_alloc_passthru_buffer(ips_ha_t * ha, int length)
 {
@@ -1530,14 +1484,14 @@ ips_alloc_passthru_buffer(ips_ha_t * ha, int length)
 
 	if (ha->ioctl_data && length <= ha->ioctl_len)
 		return 0;
-	/* there is no buffer or it's not big enough, allocate a new one */
+	 
 	bigger_buf = dma_alloc_coherent(&ha->pcidev->dev, length, &dma_busaddr,
 			GFP_KERNEL);
 	if (bigger_buf) {
-		/* free the old memory */
+		 
 		dma_free_coherent(&ha->pcidev->dev, ha->ioctl_len,
 				  ha->ioctl_data, ha->ioctl_busaddr);
-		/* use the new memory */
+		 
 		ha->ioctl_data = (char *) bigger_buf;
 		ha->ioctl_len = length;
 		ha->ioctl_busaddr = dma_busaddr;
@@ -1547,15 +1501,15 @@ ips_alloc_passthru_buffer(ips_ha_t * ha, int length)
 	return 0;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_make_passthru                                          */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Make a passthru command out of the info in the Scsi block              */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_make_passthru(ips_ha_t *ha, struct scsi_cmnd *SC, ips_scb_t *scb, int intr)
 {
@@ -1570,14 +1524,13 @@ ips_make_passthru(ips_ha_t *ha, struct scsi_cmnd *SC, ips_scb_t *scb, int intr)
 		length += sg->length;
 
 	if (length < sizeof (ips_passthru_t)) {
-		/* wrong size */
+		 
 		DEBUG_VAR(1, "(%s%d) Passthru structure wrong size",
 			  ips_name, ha->host_num);
 		return (IPS_FAILURE);
 	}
 	if (ips_alloc_passthru_buffer(ha, length)) {
-		/* allocation failure!  If ha->ioctl_data exists, use it to return
-		   some error codes.  Return a failed command to the scsi layer. */
+		 
 		if (ha->ioctl_data) {
 			pt = (ips_passthru_t *) ha->ioctl_data;
 			ips_scmd_buf_read(SC, pt, sizeof (ips_passthru_t));
@@ -1592,15 +1545,7 @@ ips_make_passthru(ips_ha_t *ha, struct scsi_cmnd *SC, ips_scb_t *scb, int intr)
 	ips_scmd_buf_read(SC, ha->ioctl_data, ha->ioctl_datasize);
 	pt = (ips_passthru_t *) ha->ioctl_data;
 
-	/*
-	 * Some notes about the passthru interface used
-	 *
-	 * IF the scsi op_code == 0x0d then we assume
-	 * that the data came along with/goes with the
-	 * packet we received from the sg driver. In this
-	 * case the CmdBSize field of the pt structure is
-	 * used for the size of the buffer.
-	 */
+	 
 
 	switch (pt->CoppCmd) {
 	case IPS_NUMCTRLS:
@@ -1616,7 +1561,7 @@ ips_make_passthru(ips_ha_t *ha, struct scsi_cmnd *SC, ips_scb_t *scb, int intr)
 	case IPS_COPPIOCCMD:
 		if (SC->cmnd[0] == IPS_IOCTL_COMMAND) {
 			if (length < (sizeof (ips_passthru_t) + pt->CmdBSize)) {
-				/* wrong size */
+				 
 				DEBUG_VAR(1,
 					  "(%s%d) Passthru structure wrong size",
 					  ips_name, ha->host_num);
@@ -1640,23 +1585,22 @@ ips_make_passthru(ips_ha_t *ha, struct scsi_cmnd *SC, ips_scb_t *scb, int intr)
 
 		break;
 
-	}			/* end switch */
+	}			 
 
 	return (IPS_FAILURE);
 }
 
-/****************************************************************************/
-/* Routine Name: ips_flash_copperhead                                       */
-/* Routine Description:                                                     */
-/*   Flash the BIOS/FW on a Copperhead style controller                     */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 static int
 ips_flash_copperhead(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 {
 	int datasize;
 
-	/* Trombone is the only copperhead that can do packet flash, but only
-	 * for firmware. No one said it had to make sense. */
+	 
 	if (IPS_IS_TROMBONE(ha) && pt->CoppCP.cmd.flashfw.type == IPS_FW_IMAGE) {
 		if (ips_usrcmd(ha, pt, scb))
 			return IPS_SUCCESS;
@@ -1666,8 +1610,8 @@ ips_flash_copperhead(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 	pt->BasicStatus = 0x0B;
 	pt->ExtendedStatus = 0;
 	scb->scsi_cmd->result = DID_OK << 16;
-	/* IF it's OK to Use the "CD BOOT" Flash Buffer, then you can     */
-	/* avoid allocating a huge buffer per adapter ( which can fail ). */
+	 
+	 
 	if (pt->CoppCP.cmd.flashfw.type == IPS_BIOS_IMAGE &&
 	    pt->CoppCP.cmd.flashfw.direction == IPS_ERASE_BIOS) {
 		pt->BasicStatus = 0;
@@ -1716,11 +1660,11 @@ ips_flash_copperhead(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 	return IPS_SUCCESS_IMM;
 }
 
-/****************************************************************************/
-/* Routine Name: ips_flash_bios                                             */
-/* Routine Description:                                                     */
-/*   flashes the bios of a copperhead adapter                               */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 static int
 ips_flash_bios(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 {
@@ -1777,14 +1721,14 @@ ips_flash_bios(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 	return IPS_FAILURE;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_fill_scb_sg_single                                     */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Fill in a single scb sg_list element from an address                   */
-/*   return a -1 if a breakup occurred                                      */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_fill_scb_sg_single(ips_ha_t * ha, dma_addr_t busaddr,
 		       ips_scb_t * scb, int indx, unsigned int e_len)
@@ -1818,11 +1762,11 @@ ips_fill_scb_sg_single(ips_ha_t * ha, dma_addr_t busaddr,
 	return ret_val;
 }
 
-/****************************************************************************/
-/* Routine Name: ips_flash_firmware                                         */
-/* Routine Description:                                                     */
-/*   flashes the firmware of a copperhead adapter                           */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 static int
 ips_flash_firmware(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 {
@@ -1840,12 +1784,12 @@ ips_flash_firmware(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 		ips_free_flash_copperhead(ha);
 		return IPS_FAILURE;
 	}
-	/* Save the S/G list pointer so it doesn't get clobbered */
+	 
 	sg_list.list = scb->sg_list.list;
 	cmd_busaddr = scb->scb_busaddr;
-	/* copy in the CP */
+	 
 	memcpy(&scb->cmd, &pt->CoppCP.cmd, sizeof (IPS_IOCTL_CMD));
-	/* FIX stuff that might be wrong */
+	 
 	scb->sg_list.list = sg_list.list;
 	scb->scb_busaddr = cmd_busaddr;
 	scb->bus = scb->scsi_cmd->device->channel;
@@ -1871,11 +1815,11 @@ ips_flash_firmware(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 	return IPS_SUCCESS;
 }
 
-/****************************************************************************/
-/* Routine Name: ips_free_flash_copperhead                                  */
-/* Routine Description:                                                     */
-/*   release the memory resources used to hold the flash image              */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
 static void
 ips_free_flash_copperhead(ips_ha_t * ha)
 {
@@ -1887,15 +1831,15 @@ ips_free_flash_copperhead(ips_ha_t * ha)
 	ha->flash_data = NULL;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_usrcmd                                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Process a user command and make it ready to send                       */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_usrcmd(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 {
@@ -1907,14 +1851,14 @@ ips_usrcmd(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 	if ((!scb) || (!pt) || (!ha))
 		return (0);
 
-	/* Save the S/G list pointer so it doesn't get clobbered */
+	 
 	sg_list.list = scb->sg_list.list;
 	cmd_busaddr = scb->scb_busaddr;
-	/* copy in the CP */
+	 
 	memcpy(&scb->cmd, &pt->CoppCP.cmd, sizeof (IPS_IOCTL_CMD));
 	memcpy(&scb->dcdb, &pt->CoppCP.dcdb, sizeof (IPS_DCDB_TABLE));
 
-	/* FIX stuff that might be wrong */
+	 
 	scb->sg_list.list = sg_list.list;
 	scb->scb_busaddr = cmd_busaddr;
 	scb->bus = scb->scsi_cmd->device->channel;
@@ -1928,7 +1872,7 @@ ips_usrcmd(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 	scb->timeout = ips_cmd_timeout;
 	scb->cmd.basic_io.command_id = IPS_COMMAND_ID(ha, scb);
 
-	/* we don't support DCDB/READ/WRITE Scatter Gather */
+	 
 	if ((scb->cmd.basic_io.op_code == IPS_CMD_READ_SG) ||
 	    (scb->cmd.basic_io.op_code == IPS_CMD_WRITE_SG) ||
 	    (scb->cmd.basic_io.op_code == IPS_CMD_DCDB_SG))
@@ -1956,7 +1900,7 @@ ips_usrcmd(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 			    cpu_to_le32(scb->data_busaddr);
 	}
 
-	/* set timeouts */
+	 
 	if (pt->TimeOut) {
 		scb->timeout = pt->TimeOut;
 
@@ -1968,22 +1912,22 @@ ips_usrcmd(ips_ha_t * ha, ips_passthru_t * pt, ips_scb_t * scb)
 			scb->dcdb.cmd_attribute |= IPS_TIMEOUT20M;
 	}
 
-	/* assume success */
+	 
 	scb->scsi_cmd->result = DID_OK << 16;
 
-	/* success */
+	 
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_cleanup_passthru                                       */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Cleanup after a passthru command                                       */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_cleanup_passthru(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -1999,8 +1943,8 @@ ips_cleanup_passthru(ips_ha_t * ha, ips_scb_t * scb)
 	}
 	pt = (ips_passthru_t *) ha->ioctl_data;
 
-	/* Copy data back to the user */
-	if (scb->cmd.dcdb.op_code == IPS_CMD_DCDB)	/* Copy DCDB Back to Caller's Area */
+	 
+	if (scb->cmd.dcdb.op_code == IPS_CMD_DCDB)	 
 		memcpy(&pt->CoppCP.dcdb, &scb->dcdb, sizeof (IPS_DCDB_TABLE));
 
 	pt->BasicStatus = scb->basic_status;
@@ -2015,15 +1959,15 @@ ips_cleanup_passthru(ips_ha_t * ha, ips_scb_t * scb)
 	ips_scmd_buf_write(scb->scsi_cmd, ha->ioctl_data, ha->ioctl_datasize);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_host_info                                              */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   The passthru interface for the driver                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_host_info(ips_ha_t *ha, struct seq_file *m)
 {
@@ -2054,8 +1998,8 @@ ips_host_info(ips_ha_t *ha, struct seq_file *m)
 
 	seq_printf(m, "\tIRQ number                        : %d\n", ha->pcidev->irq);
 
-    /* For the Next 3 lines Check for Binary 0 at the end and don't include it if it's there. */
-    /* That keeps everything happy for "text" operations on the proc file.                    */
+     
+     
 
 	if (le32_to_cpu(ha->nvram->signature) == IPS_NVRAM_P5_SIG) {
 	if (ha->nvram->bios_low[3] == 0) {
@@ -2133,15 +2077,15 @@ ips_host_info(ips_ha_t *ha, struct seq_file *m)
 	return 0;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_identify_controller                                    */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Identify this controller                                               */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_identify_controller(ips_ha_t * ha)
 {
@@ -2218,15 +2162,15 @@ ips_identify_controller(ips_ha_t * ha)
 	}
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_get_bios_version                                       */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Get the BIOS revision number                                           */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_get_bios_version(ips_ha_t * ha, int intr)
 {
@@ -2246,84 +2190,84 @@ ips_get_bios_version(ips_ha_t * ha, int intr)
 
 	if (ha->pcidev->device == IPS_DEVICEID_COPPERHEAD) {
 		if (IPS_USE_MEMIO(ha)) {
-			/* Memory Mapped I/O */
+			 
 
-			/* test 1st byte */
+			 
 			writel(0, ha->mem_ptr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			if (readb(ha->mem_ptr + IPS_REG_FLDP) != 0x55)
 				return;
 
 			writel(1, ha->mem_ptr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			if (readb(ha->mem_ptr + IPS_REG_FLDP) != 0xAA)
 				return;
 
-			/* Get Major version */
+			 
 			writel(0x1FF, ha->mem_ptr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			major = readb(ha->mem_ptr + IPS_REG_FLDP);
 
-			/* Get Minor version */
+			 
 			writel(0x1FE, ha->mem_ptr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 			minor = readb(ha->mem_ptr + IPS_REG_FLDP);
 
-			/* Get SubMinor version */
+			 
 			writel(0x1FD, ha->mem_ptr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 			subminor = readb(ha->mem_ptr + IPS_REG_FLDP);
 
 		} else {
-			/* Programmed I/O */
+			 
 
-			/* test 1st byte */
+			 
 			outl(0, ha->io_addr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			if (inb(ha->io_addr + IPS_REG_FLDP) != 0x55)
 				return;
 
 			outl(1, ha->io_addr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			if (inb(ha->io_addr + IPS_REG_FLDP) != 0xAA)
 				return;
 
-			/* Get Major version */
+			 
 			outl(0x1FF, ha->io_addr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			major = inb(ha->io_addr + IPS_REG_FLDP);
 
-			/* Get Minor version */
+			 
 			outl(0x1FE, ha->io_addr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			minor = inb(ha->io_addr + IPS_REG_FLDP);
 
-			/* Get SubMinor version */
+			 
 			outl(0x1FD, ha->io_addr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			subminor = inb(ha->io_addr + IPS_REG_FLDP);
 
 		}
 	} else {
-		/* Morpheus Family - Send Command to the card */
+		 
 
 		buffer = ha->ioctl_data;
 
@@ -2346,21 +2290,21 @@ ips_get_bios_version(ips_ha_t * ha, int intr)
 		scb->data_len = 0x1000;
 		scb->cmd.flashfw.buffer_addr = ha->ioctl_busaddr;
 
-		/* issue the command */
+		 
 		if (((ret =
 		      ips_send_wait(ha, scb, ips_cmd_timeout,
 				    intr)) == IPS_FAILURE)
 		    || (ret == IPS_SUCCESS_IMM)
 		    || ((scb->basic_status & IPS_GSC_STATUS_MASK) > 1)) {
-			/* Error occurred */
+			 
 
 			return;
 		}
 
 		if ((buffer[0xC0] == 0x55) && (buffer[0xC1] == 0xAA)) {
-			major = buffer[0x1ff + 0xC0];	/* Offset 0x1ff after the header (0xc0) */
-			minor = buffer[0x1fe + 0xC0];	/* Offset 0x1fe after the header (0xc0) */
-			subminor = buffer[0x1fd + 0xC0];	/* Offset 0x1fd after the header (0xc0) */
+			major = buffer[0x1ff + 0xC0];	 
+			minor = buffer[0x1fe + 0xC0];	 
+			subminor = buffer[0x1fd + 0xC0];	 
 		} else {
 			return;
 		}
@@ -2376,17 +2320,17 @@ ips_get_bios_version(ips_ha_t * ha, int intr)
 	ha->bios_version[7] = 0;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_hainit                                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Initialize the controller                                              */
-/*                                                                          */
-/* NOTE: Assumes to be called from with a lock                              */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_hainit(ips_ha_t * ha)
 {
@@ -2403,7 +2347,7 @@ ips_hainit(ips_ha_t * ha)
 	if (ha->func.enableint)
 		(*ha->func.enableint) (ha);
 
-	/* Send FFDC */
+	 
 	ha->reset_count = 1;
 	ha->last_ffdc = ktime_get_real_seconds();
 	ips_ffdc_reset(ha, IPS_INTR_IORL);
@@ -2414,7 +2358,7 @@ ips_hainit(ips_ha_t * ha)
 
 		return (0);
 	}
-	/* end if */
+	 
 	if (!ips_read_adapter_status(ha, IPS_INTR_IORL)) {
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "unable to read controller status.\n");
@@ -2422,7 +2366,7 @@ ips_hainit(ips_ha_t * ha)
 		return (0);
 	}
 
-	/* Identify this controller */
+	 
 	ips_identify_controller(ha);
 
 	if (!ips_read_subsystem_parameters(ha, IPS_INTR_IORL)) {
@@ -2432,7 +2376,7 @@ ips_hainit(ips_ha_t * ha)
 		return (0);
 	}
 
-	/* write nvram user page 5 */
+	 
 	if (!ips_write_driver_status(ha, IPS_INTR_IORL)) {
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "unable to write driver info to controller.\n");
@@ -2440,11 +2384,11 @@ ips_hainit(ips_ha_t * ha)
 		return (0);
 	}
 
-	/* If there are Logical Drives and a Reset Occurred, then an EraseStripeLock is Needed */
+	 
 	if ((ha->conf->ucLogDriveCount > 0) && (ha->requires_esl == 1))
 		ips_clear_adapter(ha, IPS_INTR_IORL);
 
-	/* set limits on SID, LUN, BUS */
+	 
 	ha->ntargets = IPS_MAX_TARGETS + 1;
 	ha->nlun = 1;
 	ha->nbus = (ha->enq->ucMaxPhysicalDevices / IPS_MAX_TARGETS) + 1;
@@ -2468,12 +2412,12 @@ ips_hainit(ips_ha_t * ha)
 		break;
 	}
 
-	/* setup max concurrent commands */
+	 
 	if (le32_to_cpu(ha->subsys->param[4]) & 0x1) {
-		/* Use the new method */
+		 
 		ha->max_cmds = ha->enq->ucConcurrentCmdCount;
 	} else {
-		/* use the old method */
+		 
 		switch (ha->conf->logical_drive[0].ucStripeSize) {
 		case 4:
 			ha->max_cmds = 32;
@@ -2494,7 +2438,7 @@ ips_hainit(ips_ha_t * ha)
 		}
 	}
 
-	/* Limit the Active Commands on a Lite Adapter */
+	 
 	if ((ha->ad_type == IPS_ADTYPE_SERVERAID3L) ||
 	    (ha->ad_type == IPS_ADTYPE_SERVERAID4L) ||
 	    (ha->ad_type == IPS_ADTYPE_SERVERAID4LX)) {
@@ -2502,7 +2446,7 @@ ips_hainit(ips_ha_t * ha)
 			ha->max_cmds = MaxLiteCmds;
 	}
 
-	/* set controller IDs */
+	 
 	ha->ha_id[0] = IPS_ADAPTER_ID;
 	for (i = 1; i < ha->nbus; i++) {
 		ha->ha_id[i] = ha->conf->init_id[i - 1] & 0x1f;
@@ -2512,15 +2456,15 @@ ips_hainit(ips_ha_t * ha)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_next                                                   */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Take the next command off the queue and send it to the controller      */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_next(ips_ha_t * ha, int intr)
 {
@@ -2536,10 +2480,7 @@ ips_next(ips_ha_t * ha, int intr)
 	if (!ha)
 		return;
 	host = ips_sh[ha->host_num];
-	/*
-	 * Block access to the queue function so
-	 * this command won't time out
-	 */
+	 
 	if (intr == IPS_INTR_ON)
 		spin_lock(host->host_lock);
 
@@ -2552,13 +2493,7 @@ ips_next(ips_ha_t * ha, int intr)
 		}
 	}
 
-	/*
-	 * Send passthru commands
-	 * These have priority over normal I/O
-	 * but shouldn't affect performance too much
-	 * since we limit the number that can be active
-	 * on the card at any one time
-	 */
+	 
 	while ((ha->num_ioctl < IPS_MAX_IOCTL) &&
 	       (ha->copp_waitlist.head) && (scb = ips_getscb(ha))) {
 
@@ -2592,7 +2527,7 @@ ips_next(ips_ha_t * ha, int intr)
 			break;
 		default:
 			break;
-		}		/* end case */
+		}		 
 
 		if (ret != IPS_SUCCESS) {
 			ha->num_ioctl--;
@@ -2619,13 +2554,11 @@ ips_next(ips_ha_t * ha, int intr)
 			break;
 		default:
 			break;
-		}		/* end case */
+		}		 
 
 	}
 
-	/*
-	 * Send "Normal" I/O commands
-	 */
+	 
 
 	p = ha->scb_waitlist.head;
 	while ((p) && (scb = ips_getscb(ha))) {
@@ -2642,7 +2575,7 @@ ips_next(ips_ha_t * ha, int intr)
 		SC = ips_removeq_wait(&ha->scb_waitlist, q);
 
 		if (intr == IPS_INTR_ON)
-			spin_unlock(host->host_lock);	/* Unlock HA after command is taken off queue */
+			spin_unlock(host->host_lock);	 
 
 		SC->result = DID_OK;
 		SC->host_scribble = NULL;
@@ -2657,7 +2590,7 @@ ips_next(ips_ha_t * ha, int intr)
 		scb->timeout = ips_cmd_timeout;
 		memset(&scb->cmd, 0, 16);
 
-		/* copy in the CDB */
+		 
 		memcpy(scb->cdb, SC->cmnd, SC->cmd_len);
 
                 scb->sg_count = scsi_dma_map(SC);
@@ -2685,8 +2618,8 @@ ips_next(ips_ha_t * ha, int intr)
 		scb->dcdb.cmd_attribute =
 		    ips_command_direction[scb->scsi_cmd->cmnd[0]];
 
-		/* Allow a WRITE BUFFER Command to Have no Data */
-		/* This is Used by Tape Flash Utilites          */
+		 
+		 
 		if ((scb->scsi_cmd->cmnd[0] == WRITE_BUFFER) &&
 				(scb->data_len == 0))
 			scb->dcdb.cmd_attribute = 0;
@@ -2731,27 +2664,27 @@ ips_next(ips_ha_t * ha, int intr)
 			break;
 		default:
 			break;
-		}		/* end case */
+		}		 
 
 		p = (struct scsi_cmnd *) p->host_scribble;
 
-	}			/* end while */
+	}			 
 
 	if (intr == IPS_INTR_ON)
 		spin_unlock(host->host_lock);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_putq_scb_head                                          */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Add an item to the head of the queue                                   */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_putq_scb_head(ips_scb_queue_t * queue, ips_scb_t * item)
 {
@@ -2769,17 +2702,17 @@ ips_putq_scb_head(ips_scb_queue_t * queue, ips_scb_t * item)
 	queue->count++;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_removeq_scb_head                                       */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove the head of the queue                                           */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static ips_scb_t *
 ips_removeq_scb_head(ips_scb_queue_t * queue)
 {
@@ -2804,17 +2737,17 @@ ips_removeq_scb_head(ips_scb_queue_t * queue)
 	return (item);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_removeq_scb                                            */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove an item from a queue                                            */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static ips_scb_t *
 ips_removeq_scb(ips_scb_queue_t * queue, ips_scb_t * item)
 {
@@ -2835,7 +2768,7 @@ ips_removeq_scb(ips_scb_queue_t * queue, ips_scb_t * item)
 		p = p->q_next;
 
 	if (p) {
-		/* found a match */
+		 
 		p->q_next = item->q_next;
 
 		if (!item->q_next)
@@ -2850,17 +2783,17 @@ ips_removeq_scb(ips_scb_queue_t * queue, ips_scb_t * item)
 	return (NULL);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_putq_wait_tail                                         */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Add an item to the tail of the queue                                   */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void ips_putq_wait_tail(ips_wait_queue_entry_t *queue, struct scsi_cmnd *item)
 {
 	METHOD_TRACE("ips_putq_wait_tail", 1);
@@ -2881,17 +2814,17 @@ static void ips_putq_wait_tail(ips_wait_queue_entry_t *queue, struct scsi_cmnd *
 	queue->count++;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_removeq_wait_head                                      */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove the head of the queue                                           */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static struct scsi_cmnd *ips_removeq_wait_head(ips_wait_queue_entry_t *queue)
 {
 	struct scsi_cmnd *item;
@@ -2915,17 +2848,17 @@ static struct scsi_cmnd *ips_removeq_wait_head(ips_wait_queue_entry_t *queue)
 	return (item);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_removeq_wait                                           */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove an item from a queue                                            */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static struct scsi_cmnd *ips_removeq_wait(ips_wait_queue_entry_t *queue,
 					  struct scsi_cmnd *item)
 {
@@ -2946,7 +2879,7 @@ static struct scsi_cmnd *ips_removeq_wait(ips_wait_queue_entry_t *queue,
 		p = (struct scsi_cmnd *) p->host_scribble;
 
 	if (p) {
-		/* found a match */
+		 
 		p->host_scribble = item->host_scribble;
 
 		if (!item->host_scribble)
@@ -2961,17 +2894,17 @@ static struct scsi_cmnd *ips_removeq_wait(ips_wait_queue_entry_t *queue,
 	return (NULL);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_putq_copp_tail                                         */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Add an item to the tail of the queue                                   */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_putq_copp_tail(ips_copp_queue_t * queue, ips_copp_wait_item_t * item)
 {
@@ -2993,17 +2926,17 @@ ips_putq_copp_tail(ips_copp_queue_t * queue, ips_copp_wait_item_t * item)
 	queue->count++;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_removeq_copp_head                                      */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove the head of the queue                                           */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static ips_copp_wait_item_t *
 ips_removeq_copp_head(ips_copp_queue_t * queue)
 {
@@ -3028,17 +2961,17 @@ ips_removeq_copp_head(ips_copp_queue_t * queue)
 	return (item);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_removeq_copp                                           */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove an item from a queue                                            */
-/*                                                                          */
-/* ASSUMED to be called from within the HA lock                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static ips_copp_wait_item_t *
 ips_removeq_copp(ips_copp_queue_t * queue, ips_copp_wait_item_t * item)
 {
@@ -3059,7 +2992,7 @@ ips_removeq_copp(ips_copp_queue_t * queue, ips_copp_wait_item_t * item)
 		p = p->next;
 
 	if (p) {
-		/* found a match */
+		 
 		p->next = item->next;
 
 		if (!item->next)
@@ -3074,15 +3007,15 @@ ips_removeq_copp(ips_copp_queue_t * queue, ips_copp_wait_item_t * item)
 	return (NULL);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ipsintr_blocking                                           */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Finalize an interrupt for internal commands                            */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ipsintr_blocking(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -3096,15 +3029,15 @@ ipsintr_blocking(ips_ha_t * ha, ips_scb_t * scb)
 	}
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ipsintr_done                                               */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Finalize an interrupt for non-internal commands                        */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ipsintr_done(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -3118,7 +3051,7 @@ ipsintr_done(ips_ha_t * ha, ips_scb_t * scb)
 	}
 
 	if (scb->scsi_cmd == NULL) {
-		/* unexpected interrupt */
+		 
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "Spurious interrupt; scsi_cmd not set.\n");
 
@@ -3128,15 +3061,15 @@ ipsintr_done(ips_ha_t * ha, ips_scb_t * scb)
 	ips_done(ha, scb);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_done                                                   */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Do housekeeping on completed commands                                  */
-/*  ASSUMED to be called form within the request lock                       */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_done(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -3151,26 +3084,22 @@ ips_done(ips_ha_t * ha, ips_scb_t * scb)
 		ips_cleanup_passthru(ha, scb);
 		ha->num_ioctl--;
 	} else {
-		/*
-		 * Check to see if this command had too much
-		 * data and had to be broke up.  If so, queue
-		 * the rest of the data and continue.
-		 */
+		 
 		if ((scb->breakup) || (scb->sg_break)) {
                         struct scatterlist *sg;
                         int i, sg_dma_index, ips_sg_index = 0;
 
-			/* we had a data breakup */
+			 
 			scb->data_len = 0;
 
                         sg = scsi_sglist(scb->scsi_cmd);
 
-                        /* Spin forward to last dma chunk */
+                         
                         sg_dma_index = scb->breakup;
                         for (i = 0; i < scb->breakup; i++)
                                 sg = sg_next(sg);
 
-			/* Take care of possible partial on last chunk */
+			 
                         ips_fill_scb_sg_single(ha,
                                                sg_dma_address(sg),
                                                scb, ips_sg_index++,
@@ -3219,11 +3148,11 @@ ips_done(ips_ha_t * ha, ips_scb_t * scb)
 				break;
 			default:
 				break;
-			}	/* end case */
+			}	 
 
 			return;
 		}
-	}			/* end if passthru */
+	}			 
 
 	if (scb->bus) {
 		ha->dcdb_active[scb->bus - 1] &= ~(1 << scb->target_id);
@@ -3234,15 +3163,15 @@ ips_done(ips_ha_t * ha, ips_scb_t * scb)
 	ips_freescb(ha, scb);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_map_status                                             */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Map Controller Error codes to Linux Error Codes                        */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_map_status(ips_ha_t * ha, ips_scb_t * scb, ips_stat_t * sp)
 {
@@ -3269,7 +3198,7 @@ ips_map_status(ips_ha_t * ha, ips_scb_t * scb, ips_stat_t * sp)
 			  IPS_ERR_CKCOND ? scb->dcdb.sense_info[13] : 0);
 	}
 
-	/* default driver error */
+	 
 	errcode = DID_ERROR;
 	device_error = 0;
 
@@ -3305,10 +3234,10 @@ ips_map_status(ips_ha_t * ha, ips_scb_t * scb, ips_stat_t * sp)
 			}
 
 			if ((scb->bus) && (transfer_len < scb->data_len)) {
-				/* Underrun - set default to no error */
+				 
 				errcode = DID_OK;
 
-				/* Restrict access to physical DASD */
+				 
 				if (scb->scsi_cmd->cmnd[0] == INQUIRY) {
 				    ips_scmd_buf_read(scb->scsi_cmd,
                                       &inquiryData, sizeof (inquiryData));
@@ -3323,7 +3252,7 @@ ips_map_status(ips_ha_t * ha, ips_scb_t * scb, ips_stat_t * sp)
 			break;
 
 		case IPS_ERR_RECOVERY:
-			/* don't fail recovered errors */
+			 
 			if (scb->bus)
 				errcode = DID_OK;
 
@@ -3352,7 +3281,7 @@ ips_map_status(ips_ha_t * ha, ips_scb_t * scb, ips_stat_t * sp)
 					       scb->dcdb.sense_info,
 					       sizeof(scb->dcdb.sense_info), 0);
 				}
-				device_error = 2;	/* check condition */
+				device_error = 2;	 
 			}
 
 			errcode = DID_OK;
@@ -3363,25 +3292,25 @@ ips_map_status(ips_ha_t * ha, ips_scb_t * scb, ips_stat_t * sp)
 			errcode = DID_ERROR;
 			break;
 
-		}		/* end switch */
-	}			/* end switch */
+		}		 
+	}			 
 
 	scb->scsi_cmd->result = device_error | (errcode << 16);
 
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_send_wait                                              */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Send a command to the controller and wait for it to return             */
-/*                                                                          */
-/*   The FFDC Time Stamp use this function for the callback, but doesn't    */
-/*   actually need to wait.                                                 */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_send_wait(ips_ha_t * ha, ips_scb_t * scb, int timeout, int intr)
 {
@@ -3389,7 +3318,7 @@ ips_send_wait(ips_ha_t * ha, ips_scb_t * scb, int timeout, int intr)
 
 	METHOD_TRACE("ips_send_wait", 1);
 
-	if (intr != IPS_FFDC) {	/* Won't be Waiting if this is a Time Stamp */
+	if (intr != IPS_FFDC) {	 
 		ha->waitflag = true;
 		ha->cmd_in_progress = scb->cdb[0];
 	}
@@ -3399,19 +3328,19 @@ ips_send_wait(ips_ha_t * ha, ips_scb_t * scb, int timeout, int intr)
 	if ((ret == IPS_FAILURE) || (ret == IPS_SUCCESS_IMM))
 		return (ret);
 
-	if (intr != IPS_FFDC)	/* Don't Wait around if this is a Time Stamp */
+	if (intr != IPS_FFDC)	 
 		ret = ips_wait(ha, timeout, intr);
 
 	return (ret);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_scmd_buf_write                                         */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*  Write data to struct scsi_cmnd request_buffer at proper offsets	    */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_scmd_buf_write(struct scsi_cmnd *scmd, void *data, unsigned int count)
 {
@@ -3422,13 +3351,13 @@ ips_scmd_buf_write(struct scsi_cmnd *scmd, void *data, unsigned int count)
 	local_irq_restore(flags);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_scmd_buf_read                                          */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*  Copy data from a struct scsi_cmnd to a new, linear buffer		    */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_scmd_buf_read(struct scsi_cmnd *scmd, void *data, unsigned int count)
 {
@@ -3439,15 +3368,15 @@ ips_scmd_buf_read(struct scsi_cmnd *scmd, void *data, unsigned int count)
 	local_irq_restore(flags);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_send_cmd                                               */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Map SCSI commands to ServeRAID commands for logical drives             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -3462,18 +3391,18 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 	ret = IPS_SUCCESS;
 
 	if (!scb->scsi_cmd) {
-		/* internal command */
+		 
 
 		if (scb->bus > 0) {
-			/* Controller commands can't be issued */
-			/* to real devices -- fail them        */
+			 
+			 
 			if (ha->waitflag && ha->cmd_in_progress == scb->cdb[0])
 				ha->waitflag = false;
 
 			return (1);
 		}
 	} else if ((scb->bus == 0) && (!ips_is_passthru(scb->scsi_cmd))) {
-		/* command to logical bus -- interpret */
+		 
 		ret = IPS_SUCCESS_IMM;
 
 		switch (scb->scsi_cmd->cmnd[0]) {
@@ -3492,10 +3421,7 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 		case TEST_UNIT_READY:
 		case INQUIRY:
 			if (scb->target_id == IPS_ADAPTER_ID) {
-				/*
-				 * Either we have a TUR
-				 * or we have a SCSI inquiry
-				 */
+				 
 				if (scb->scsi_cmd->cmnd[0] == TEST_UNIT_READY)
 					scb->scsi_cmd->result = DID_OK << 16;
 
@@ -3638,11 +3564,7 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 			    cpu_to_le16(scb->data_len / IPS_BLKSIZE);
 
 			if (cpu_to_le16(scb->cmd.basic_io.sector_count) == 0) {
-				/*
-				 * This is a null condition
-				 * we don't have to do anything
-				 * so just return
-				 */
+				 
 				scb->scsi_cmd->result = DID_OK << 16;
 			} else
 				ret = IPS_SUCCESS;
@@ -3689,31 +3611,31 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 			break;
 
 		default:
-			/* Set the Return Info to appear like the Command was */
-			/* attempted, a Check Condition occurred, and Sense   */
-			/* Data indicating an Invalid CDB OpCode is returned. */
+			 
+			 
+			 
 			sp = (char *) scb->scsi_cmd->sense_buffer;
 
-			sp[0] = 0x70;	/* Error Code               */
-			sp[2] = ILLEGAL_REQUEST;	/* Sense Key 5 Illegal Req. */
-			sp[7] = 0x0A;	/* Additional Sense Length  */
-			sp[12] = 0x20;	/* ASC = Invalid OpCode     */
-			sp[13] = 0x00;	/* ASCQ                     */
+			sp[0] = 0x70;	 
+			sp[2] = ILLEGAL_REQUEST;	 
+			sp[7] = 0x0A;	 
+			sp[12] = 0x20;	 
+			sp[13] = 0x00;	 
 
-			device_error = 2;	/* Indicate Check Condition */
+			device_error = 2;	 
 			scb->scsi_cmd->result = device_error | (DID_OK << 16);
 			break;
-		}		/* end switch */
+		}		 
 	}
-	/* end if */
+	 
 	if (ret == IPS_SUCCESS_IMM)
 		return (ret);
 
-	/* setup DCDB */
+	 
 	if (scb->bus > 0) {
 
-		/* If we already know the Device is Not there, no need to attempt a Command   */
-		/* This also protects an NT FailOver Controller from getting CDB's sent to it */
+		 
+		 
 		if (ha->conf->dev[scb->bus - 1][scb->target_id].ucState == 0) {
 			scb->scsi_cmd->result = DID_NO_CONNECT << 16;
 			return (IPS_SUCCESS_IMM);
@@ -3733,7 +3655,7 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 
 		TimeOut = scsi_cmd_to_rq(scb->scsi_cmd)->timeout;
 
-		if (ha->subsys->param[4] & 0x00100000) {	/* If NEW Tape DCDB is Supported */
+		if (ha->subsys->param[4] & 0x00100000) {	 
 			if (!scb->sg_len) {
 				scb->cmd.dcdb.op_code = IPS_CMD_EXTENDED_DCDB;
 			} else {
@@ -3743,19 +3665,19 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 				    IPS_USE_ENH_SGLIST(ha) ? 0xFF : 0;
 			}
 
-			tapeDCDB = (IPS_DCDB_TABLE_TAPE *) & scb->dcdb;	/* Use Same Data Area as Old DCDB Struct */
+			tapeDCDB = (IPS_DCDB_TABLE_TAPE *) & scb->dcdb;	 
 			tapeDCDB->device_address =
 			    ((scb->bus - 1) << 4) | scb->target_id;
 			tapeDCDB->cmd_attribute |= IPS_DISCONNECT_ALLOWED;
-			tapeDCDB->cmd_attribute &= ~IPS_TRANSFER64K;	/* Always Turn OFF 64K Size Flag */
+			tapeDCDB->cmd_attribute &= ~IPS_TRANSFER64K;	 
 
 			if (TimeOut) {
 				if (TimeOut < (10 * HZ))
-					tapeDCDB->cmd_attribute |= IPS_TIMEOUT10;	/* TimeOut is 10 Seconds */
+					tapeDCDB->cmd_attribute |= IPS_TIMEOUT10;	 
 				else if (TimeOut < (60 * HZ))
-					tapeDCDB->cmd_attribute |= IPS_TIMEOUT60;	/* TimeOut is 60 Seconds */
+					tapeDCDB->cmd_attribute |= IPS_TIMEOUT60;	 
 				else if (TimeOut < (1200 * HZ))
-					tapeDCDB->cmd_attribute |= IPS_TIMEOUT20M;	/* TimeOut is 20 Minutes */
+					tapeDCDB->cmd_attribute |= IPS_TIMEOUT20M;	 
 			}
 
 			tapeDCDB->cdb_length = scb->scsi_cmd->cmd_len;
@@ -3788,11 +3710,11 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 
 			if (TimeOut) {
 				if (TimeOut < (10 * HZ))
-					scb->dcdb.cmd_attribute |= IPS_TIMEOUT10;	/* TimeOut is 10 Seconds */
+					scb->dcdb.cmd_attribute |= IPS_TIMEOUT10;	 
 				else if (TimeOut < (60 * HZ))
-					scb->dcdb.cmd_attribute |= IPS_TIMEOUT60;	/* TimeOut is 60 Seconds */
+					scb->dcdb.cmd_attribute |= IPS_TIMEOUT60;	 
 				else if (TimeOut < (1200 * HZ))
-					scb->dcdb.cmd_attribute |= IPS_TIMEOUT20M;	/* TimeOut is 20 Minutes */
+					scb->dcdb.cmd_attribute |= IPS_TIMEOUT20M;	 
 			}
 
 			scb->dcdb.transfer_length = scb->data_len;
@@ -3820,15 +3742,15 @@ ips_send_cmd(ips_ha_t * ha, ips_scb_t * scb)
 	return ((*ha->func.issue) (ha, scb));
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_chk_status                                             */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Check the status of commands to logical drives                         */
-/*   Assumed to be called with the HA lock                                  */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_chkstatus(ips_ha_t * ha, IPS_STATUS * pstatus)
 {
@@ -3850,11 +3772,11 @@ ips_chkstatus(ips_ha_t * ha, IPS_STATUS * pstatus)
 	sp->residue_len = 0;
 	sp->scb_addr = (void *) scb;
 
-	/* Remove the item from the active queue */
+	 
 	ips_removeq_scb(&ha->scb_activelist, scb);
 
 	if (!scb->scsi_cmd)
-		/* internal commands are handled in do_ipsintr */
+		 
 		return;
 
 	DEBUG_VAR(2, "(%s%d) ips_chkstatus: cmd 0x%X id %d (%d %d %d)",
@@ -3865,7 +3787,7 @@ ips_chkstatus(ips_ha_t * ha, IPS_STATUS * pstatus)
 		  scb->bus, scb->target_id, scb->lun);
 
 	if ((scb->scsi_cmd) && (ips_is_passthru(scb->scsi_cmd)))
-		/* passthru - just returns the raw result */
+		 
 		return;
 
 	errcode = DID_OK;
@@ -3953,19 +3875,19 @@ ips_chkstatus(ips_ha_t * ha, IPS_STATUS * pstatus)
 
 			default:
 				errcode = DID_ERROR;
-			}	/* end switch */
+			}	 
 
 			scb->scsi_cmd->result = errcode << 16;
-		} else {	/* bus == 0 */
-			/* restrict access to physical drives */
+		} else {	 
+			 
 			if (scb->scsi_cmd->cmnd[0] == INQUIRY) {
 			    ips_scmd_buf_read(scb->scsi_cmd,
                                   &inquiryData, sizeof (inquiryData));
 			    if ((inquiryData.DeviceType & 0x1f) == TYPE_DISK)
 			        scb->scsi_cmd->result = DID_TIME_OUT << 16;
 			}
-		}		/* else */
-	} else {		/* recovered error / success */
+		}		 
+	} else {		 
 		if (scb->bus == 0) {
 			DEBUG_VAR(1,
 				  "(%s%d) Unrecovered Logical Drive Error OpCode: %x, BSB: %x, ESB: %x",
@@ -3975,18 +3897,18 @@ ips_chkstatus(ips_ha_t * ha, IPS_STATUS * pstatus)
 		}
 
 		ips_map_status(ha, scb, sp);
-	}			/* else */
+	}			 
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_online                                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Determine if a logical drive is online                                 */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_online(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -4013,15 +3935,15 @@ ips_online(ips_ha_t * ha, ips_scb_t * scb)
 		return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_inquiry                                                */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Simulate an inquiry command to a logical drive                         */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_inquiry(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -4048,15 +3970,15 @@ ips_inquiry(ips_ha_t * ha, ips_scb_t * scb)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_rdcap                                                  */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Simulate a read capacity command to a logical drive                    */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_rdcap(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -4078,15 +4000,15 @@ ips_rdcap(ips_ha_t * ha, ips_scb_t * scb)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_msense                                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Simulate a mode sense command to a logical drive                       */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_msense(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -4115,7 +4037,7 @@ ips_msense(ips_ha_t * ha, ips_scb_t * scb)
 	mdata.hdr.BlockDescLength = 8;
 
 	switch (scb->scsi_cmd->cmnd[2] & 0x3f) {
-	case 0x03:		/* page 3 */
+	case 0x03:		 
 		mdata.pdata.pg3.PageCode = 3;
 		mdata.pdata.pg3.PageLength = sizeof (IPS_SCSI_MODE_PAGE3);
 		mdata.hdr.DataLength =
@@ -4157,27 +4079,27 @@ ips_msense(ips_ha_t * ha, ips_scb_t * scb)
 		mdata.pdata.pg8.PageLength = sizeof (IPS_SCSI_MODE_PAGE8);
 		mdata.hdr.DataLength =
 		    3 + mdata.hdr.BlockDescLength + mdata.pdata.pg8.PageLength;
-		/* everything else is left set to 0 */
+		 
 		break;
 
 	default:
 		return (0);
-	}			/* end switch */
+	}			 
 
 	ips_scmd_buf_write(scb->scsi_cmd, &mdata, sizeof (mdata));
 
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_reqsen                                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Simulate a request sense command to a logical drive                    */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_reqsen(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -4198,15 +4120,15 @@ ips_reqsen(ips_ha_t * ha, ips_scb_t * scb)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_free                                                   */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Free any allocated space for this controller                           */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_free(ips_ha_t * ha)
 {
@@ -4254,7 +4176,7 @@ ips_free(ips_ha_t * ha)
 		}
 		ips_deallocatescbs(ha, ha->max_cmds);
 
-		/* free memory mapped (if applicable) */
+		 
 		if (ha->mem_ptr) {
 			iounmap(ha->ioremap_ptr);
 			ha->ioremap_ptr = NULL;
@@ -4266,15 +4188,15 @@ ips_free(ips_ha_t * ha)
 	}
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_deallocatescbs                                         */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Free the command blocks                                                */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_deallocatescbs(ips_ha_t * ha, int cmds)
 {
@@ -4286,19 +4208,19 @@ ips_deallocatescbs(ips_ha_t * ha, int cmds)
 		dma_free_coherent(&ha->pcidev->dev, sizeof (ips_scb_t) * cmds,
 				    ha->scbs, ha->scbs->scb_busaddr);
 		ha->scbs = NULL;
-	}			/* end if */
+	}			 
 	return 1;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_allocatescbs                                           */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Allocate the command blocks                                            */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_allocatescbs(ips_ha_t * ha)
 {
@@ -4309,7 +4231,7 @@ ips_allocatescbs(ips_ha_t * ha)
 
 	METHOD_TRACE("ips_allocatescbs", 1);
 
-	/* Allocate memory for the SCBs */
+	 
 	ha->scbs = dma_alloc_coherent(&ha->pcidev->dev,
 			ha->max_cmds * sizeof (ips_scb_t),
 			&command_dma, GFP_KERNEL);
@@ -4330,7 +4252,7 @@ ips_allocatescbs(ips_ha_t * ha)
 	for (i = 0; i < ha->max_cmds; i++) {
 		scb_p = &ha->scbs[i];
 		scb_p->scb_busaddr = command_dma + sizeof (ips_scb_t) * i;
-		/* set up S/G list */
+		 
 		if (IPS_USE_ENH_SGLIST(ha)) {
 			scb_p->sg_list.enh_list =
 			    ips_sg.enh_list + i * IPS_MAX_SG;
@@ -4343,26 +4265,26 @@ ips_allocatescbs(ips_ha_t * ha)
 			    sg_dma + IPS_SGLIST_SIZE(ha) * IPS_MAX_SG * i;
 		}
 
-		/* add to the free list */
+		 
 		if (i < ha->max_cmds - 1) {
 			scb_p->q_next = ha->scb_freelist;
 			ha->scb_freelist = scb_p;
 		}
 	}
 
-	/* success */
+	 
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_init_scb                                               */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Initialize a CCB to default values                                     */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_init_scb(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -4376,38 +4298,38 @@ ips_init_scb(ips_ha_t * ha, ips_scb_t * scb)
 	sg_list.list = scb->sg_list.list;
 	cmd_busaddr = scb->scb_busaddr;
 	sg_busaddr = scb->sg_busaddr;
-	/* zero fill */
+	 
 	memset(scb, 0, sizeof (ips_scb_t));
 	memset(ha->dummy, 0, sizeof (IPS_IO_CMD));
 
-	/* Initialize dummy command bucket */
+	 
 	ha->dummy->op_code = 0xFF;
 	ha->dummy->ccsar = cpu_to_le32(ha->adapt->hw_status_start
 				       + sizeof (IPS_ADAPTER));
 	ha->dummy->command_id = IPS_MAX_CMDS;
 
-	/* set bus address of scb */
+	 
 	scb->scb_busaddr = cmd_busaddr;
 	scb->sg_busaddr = sg_busaddr;
 	scb->sg_list.list = sg_list.list;
 
-	/* Neptune Fix */
+	 
 	scb->cmd.basic_io.cccr = cpu_to_le32((uint32_t) IPS_BIT_ILE);
 	scb->cmd.basic_io.ccsar = cpu_to_le32(ha->adapt->hw_status_start
 					      + sizeof (IPS_ADAPTER));
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_get_scb                                                */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Initialize a CCB to default values                                     */
-/*                                                                          */
-/* ASSUMED to be called from within a lock                                 */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static ips_scb_t *
 ips_getscb(ips_ha_t * ha)
 {
@@ -4429,17 +4351,17 @@ ips_getscb(ips_ha_t * ha)
 	return (scb);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_free_scb                                               */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Return an unused CCB back to the free list                             */
-/*                                                                          */
-/* ASSUMED to be called from within a lock                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_freescb(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -4451,22 +4373,22 @@ ips_freescb(ips_ha_t * ha, ips_scb_t * scb)
 		dma_unmap_single(&ha->pcidev->dev, scb->data_busaddr,
 				 scb->data_len, IPS_DMA_DIR(scb));
 
-	/* check to make sure this is not our "special" scb */
+	 
 	if (IPS_COMMAND_ID(ha, scb) < (ha->max_cmds - 1)) {
 		scb->q_next = ha->scb_freelist;
 		ha->scb_freelist = scb;
 	}
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_isinit_copperhead                                      */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Is controller initialized ?                                            */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_isinit_copperhead(ips_ha_t * ha)
 {
@@ -4484,15 +4406,15 @@ ips_isinit_copperhead(ips_ha_t * ha)
 		return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_isinit_copperhead_memio                                */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Is controller initialized ?                                            */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_isinit_copperhead_memio(ips_ha_t * ha)
 {
@@ -4510,15 +4432,15 @@ ips_isinit_copperhead_memio(ips_ha_t * ha)
 		return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_isinit_morpheus                                        */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Is controller initialized ?                                            */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_isinit_morpheus(ips_ha_t * ha)
 {
@@ -4541,16 +4463,16 @@ ips_isinit_morpheus(ips_ha_t * ha)
 		return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_flush_and_reset                                        */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Perform cleanup ( FLUSH and RESET ) when the adapter is in an unknown  */
-/*   state ( was trying to INIT and an interrupt was already pending ) ...  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_flush_and_reset(ips_ha_t *ha)
 {
@@ -4560,7 +4482,7 @@ ips_flush_and_reset(ips_ha_t *ha)
 	int  done;
 	dma_addr_t command_dma;
 
-	/* Create a usuable SCB */
+	 
 	scb = dma_alloc_coherent(&ha->pcidev->dev, sizeof(ips_scb_t),
 			&command_dma, GFP_KERNEL);
 	if (scb) {
@@ -4572,45 +4494,45 @@ ips_flush_and_reset(ips_ha_t *ha)
 	    scb->cdb[0] = IPS_CMD_FLUSH;
 
 	    scb->cmd.flush_cache.op_code = IPS_CMD_FLUSH;
-	    scb->cmd.flush_cache.command_id = IPS_MAX_CMDS;   /* Use an ID that would otherwise not exist */
+	    scb->cmd.flush_cache.command_id = IPS_MAX_CMDS;    
 	    scb->cmd.flush_cache.state = IPS_NORM_STATE;
 	    scb->cmd.flush_cache.reserved = 0;
 	    scb->cmd.flush_cache.reserved2 = 0;
 	    scb->cmd.flush_cache.reserved3 = 0;
 	    scb->cmd.flush_cache.reserved4 = 0;
 
-	    ret = ips_send_cmd(ha, scb);                      /* Send the Flush Command */
+	    ret = ips_send_cmd(ha, scb);                       
 
 	    if (ret == IPS_SUCCESS) {
-	        time = 60 * IPS_ONE_SEC;	              /* Max Wait time is 60 seconds */
+	        time = 60 * IPS_ONE_SEC;	               
 	        done = 0;
 
 	        while ((time > 0) && (!done)) {
 		   done = ips_poll_for_flush_complete(ha);
-	           /* This may look evil, but it's only done during extremely rare start-up conditions ! */
+	            
 	           udelay(1000);
 	           time--;
 	        }
         }
 	}
 
-	/* Now RESET and INIT the adapter */
+	 
 	(*ha->func.reset) (ha);
 
 	dma_free_coherent(&ha->pcidev->dev, sizeof(ips_scb_t), scb, command_dma);
 	return;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_poll_for_flush_complete                                */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Poll for the Flush Command issued by ips_flush_and_reset() to complete */
-/*   All other responses are just taken off the queue and ignored           */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_poll_for_flush_complete(ips_ha_t * ha)
 {
@@ -4619,10 +4541,10 @@ ips_poll_for_flush_complete(ips_ha_t * ha)
 	while (true) {
 	    cstatus.value = (*ha->func.statupd) (ha);
 
-	    if (cstatus.value == 0xffffffff)      /* If No Interrupt to process */
+	    if (cstatus.value == 0xffffffff)       
 			break;
 
-	    /* Success is when we see the Flush Command ID */
+	     
 	    if (cstatus.fields.command_id == IPS_MAX_CMDS)
 	        return 1;
 	 }
@@ -4630,48 +4552,48 @@ ips_poll_for_flush_complete(ips_ha_t * ha)
 	return 0;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_enable_int_copperhead                                  */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Turn on interrupts                                                     */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_enable_int_copperhead(ips_ha_t * ha)
 {
 	METHOD_TRACE("ips_enable_int_copperhead", 1);
 
 	outb(ha->io_addr + IPS_REG_HISR, IPS_BIT_EI);
-	inb(ha->io_addr + IPS_REG_HISR);	/*Ensure PCI Posting Completes*/
+	inb(ha->io_addr + IPS_REG_HISR);	 
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_enable_int_copperhead_memio                            */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Turn on interrupts                                                     */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_enable_int_copperhead_memio(ips_ha_t * ha)
 {
 	METHOD_TRACE("ips_enable_int_copperhead_memio", 1);
 
 	writeb(IPS_BIT_EI, ha->mem_ptr + IPS_REG_HISR);
-	readb(ha->mem_ptr + IPS_REG_HISR);	/*Ensure PCI Posting Completes*/
+	readb(ha->mem_ptr + IPS_REG_HISR);	 
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_enable_int_morpheus                                    */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Turn on interrupts                                                     */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_enable_int_morpheus(ips_ha_t * ha)
 {
@@ -4682,18 +4604,18 @@ ips_enable_int_morpheus(ips_ha_t * ha)
 	Oimr = readl(ha->mem_ptr + IPS_REG_I960_OIMR);
 	Oimr &= ~0x08;
 	writel(Oimr, ha->mem_ptr + IPS_REG_I960_OIMR);
-	readl(ha->mem_ptr + IPS_REG_I960_OIMR);	/*Ensure PCI Posting Completes*/
+	readl(ha->mem_ptr + IPS_REG_I960_OIMR);	 
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_init_copperhead                                        */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Initialize a copperhead controller                                     */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_init_copperhead(ips_ha_t * ha)
 {
@@ -4710,12 +4632,12 @@ ips_init_copperhead(ips_ha_t * ha)
 			if (Isr & IPS_BIT_GHI)
 				break;
 
-			/* Delay for 1 Second */
+			 
 			MDELAY(IPS_ONE_SEC);
 		}
 
 		if (j >= 45)
-			/* error occurred */
+			 
 			return (0);
 
 		PostByte[i] = inb(ha->io_addr + IPS_REG_ISPR);
@@ -4736,12 +4658,12 @@ ips_init_copperhead(ips_ha_t * ha)
 			if (Isr & IPS_BIT_GHI)
 				break;
 
-			/* Delay for 1 Second */
+			 
 			MDELAY(IPS_ONE_SEC);
 		}
 
 		if (j >= 240)
-			/* error occurred */
+			 
 			return (0);
 
 		inb(ha->io_addr + IPS_REG_ISPR);
@@ -4754,39 +4676,39 @@ ips_init_copperhead(ips_ha_t * ha)
 		if ((Cbsp & IPS_BIT_OP) == 0)
 			break;
 
-		/* Delay for 1 Second */
+		 
 		MDELAY(IPS_ONE_SEC);
 	}
 
 	if (i >= 240)
-		/* reset failed */
+		 
 		return (0);
 
-	/* setup CCCR */
+	 
 	outl(0x1010, ha->io_addr + IPS_REG_CCCR);
 
-	/* Enable busmastering */
+	 
 	outb(IPS_BIT_EBM, ha->io_addr + IPS_REG_SCPR);
 
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		/* fix for anaconda64 */
+		 
 		outl(0, ha->io_addr + IPS_REG_NDAE);
 
-	/* Enable interrupts */
+	 
 	outb(IPS_BIT_EI, ha->io_addr + IPS_REG_HISR);
 
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_init_copperhead_memio                                  */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Initialize a copperhead controller with memory mapped I/O              */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_init_copperhead_memio(ips_ha_t * ha)
 {
@@ -4803,12 +4725,12 @@ ips_init_copperhead_memio(ips_ha_t * ha)
 			if (Isr & IPS_BIT_GHI)
 				break;
 
-			/* Delay for 1 Second */
+			 
 			MDELAY(IPS_ONE_SEC);
 		}
 
 		if (j >= 45)
-			/* error occurred */
+			 
 			return (0);
 
 		PostByte[i] = readb(ha->mem_ptr + IPS_REG_ISPR);
@@ -4829,12 +4751,12 @@ ips_init_copperhead_memio(ips_ha_t * ha)
 			if (Isr & IPS_BIT_GHI)
 				break;
 
-			/* Delay for 1 Second */
+			 
 			MDELAY(IPS_ONE_SEC);
 		}
 
 		if (j >= 240)
-			/* error occurred */
+			 
 			return (0);
 
 		readb(ha->mem_ptr + IPS_REG_ISPR);
@@ -4847,40 +4769,40 @@ ips_init_copperhead_memio(ips_ha_t * ha)
 		if ((Cbsp & IPS_BIT_OP) == 0)
 			break;
 
-		/* Delay for 1 Second */
+		 
 		MDELAY(IPS_ONE_SEC);
 	}
 
 	if (i >= 240)
-		/* error occurred */
+		 
 		return (0);
 
-	/* setup CCCR */
+	 
 	writel(0x1010, ha->mem_ptr + IPS_REG_CCCR);
 
-	/* Enable busmastering */
+	 
 	writeb(IPS_BIT_EBM, ha->mem_ptr + IPS_REG_SCPR);
 
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		/* fix for anaconda64 */
+		 
 		writel(0, ha->mem_ptr + IPS_REG_NDAE);
 
-	/* Enable interrupts */
+	 
 	writeb(IPS_BIT_EI, ha->mem_ptr + IPS_REG_HISR);
 
-	/* if we get here then everything went OK */
+	 
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_init_morpheus                                          */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Initialize a morpheus controller                                       */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_init_morpheus(ips_ha_t * ha)
 {
@@ -4892,19 +4814,19 @@ ips_init_morpheus(ips_ha_t * ha)
 
 	METHOD_TRACE("ips_init_morpheus", 1);
 
-	/* Wait up to 45 secs for Post */
+	 
 	for (i = 0; i < 45; i++) {
 		Isr = readl(ha->mem_ptr + IPS_REG_I2O_HIR);
 
 		if (Isr & IPS_BIT_I960_MSG0I)
 			break;
 
-		/* Delay for 1 Second */
+		 
 		MDELAY(IPS_ONE_SEC);
 	}
 
 	if (i >= 45) {
-		/* error occurred */
+		 
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "timeout waiting for post.\n");
 
@@ -4913,19 +4835,19 @@ ips_init_morpheus(ips_ha_t * ha)
 
 	Post = readl(ha->mem_ptr + IPS_REG_I960_MSG0);
 
-	if (Post == 0x4F00) {	/* If Flashing the Battery PIC         */
+	if (Post == 0x4F00) {	 
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "Flashing Battery PIC, Please wait ...\n");
 
-		/* Clear the interrupt bit */
+		 
 		Isr = (uint32_t) IPS_BIT_I960_MSG0I;
 		writel(Isr, ha->mem_ptr + IPS_REG_I2O_HIR);
 
-		for (i = 0; i < 120; i++) {	/*    Wait Up to 2 Min. for Completion */
+		for (i = 0; i < 120; i++) {	 
 			Post = readl(ha->mem_ptr + IPS_REG_I960_MSG0);
 			if (Post != 0x4F00)
 				break;
-			/* Delay for 1 Second */
+			 
 			MDELAY(IPS_ONE_SEC);
 		}
 
@@ -4937,7 +4859,7 @@ ips_init_morpheus(ips_ha_t * ha)
 
 	}
 
-	/* Clear the interrupt bit */
+	 
 	Isr = (uint32_t) IPS_BIT_I960_MSG0I;
 	writel(Isr, ha->mem_ptr + IPS_REG_I2O_HIR);
 
@@ -4948,19 +4870,19 @@ ips_init_morpheus(ips_ha_t * ha)
 		return (0);
 	}
 
-	/* Wait up to 240 secs for config bytes */
+	 
 	for (i = 0; i < 240; i++) {
 		Isr = readl(ha->mem_ptr + IPS_REG_I2O_HIR);
 
 		if (Isr & IPS_BIT_I960_MSG1I)
 			break;
 
-		/* Delay for 1 Second */
+		 
 		MDELAY(IPS_ONE_SEC);
 	}
 
 	if (i >= 240) {
-		/* error occurred */
+		 
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "timeout waiting for config.\n");
 
@@ -4969,18 +4891,18 @@ ips_init_morpheus(ips_ha_t * ha)
 
 	Config = readl(ha->mem_ptr + IPS_REG_I960_MSG1);
 
-	/* Clear interrupt bit */
+	 
 	Isr = (uint32_t) IPS_BIT_I960_MSG1I;
 	writel(Isr, ha->mem_ptr + IPS_REG_I2O_HIR);
 
-	/* Turn on the interrupts */
+	 
 	Oimr = readl(ha->mem_ptr + IPS_REG_I960_OIMR);
 	Oimr &= ~0x8;
 	writel(Oimr, ha->mem_ptr + IPS_REG_I960_OIMR);
 
-	/* if we get here then everything went OK */
+	 
 
-	/* Since we did a RESET, an EraseStripeLock may be needed */
+	 
 	if (Post == 0xEF10) {
 		if ((Config == 0x000F) || (Config == 0x0009))
 			ha->requires_esl = 1;
@@ -4989,15 +4911,15 @@ ips_init_morpheus(ips_ha_t * ha)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_reset_copperhead                                       */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Reset the controller                                                   */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_reset_copperhead(ips_ha_t * ha)
 {
@@ -5015,12 +4937,12 @@ ips_reset_copperhead(ips_ha_t * ha)
 
 		outb(IPS_BIT_RST, ha->io_addr + IPS_REG_SCPR);
 
-		/* Delay for 1 Second */
+		 
 		MDELAY(IPS_ONE_SEC);
 
 		outb(0, ha->io_addr + IPS_REG_SCPR);
 
-		/* Delay for 1 Second */
+		 
 		MDELAY(IPS_ONE_SEC);
 
 		if ((*ha->func.init) (ha))
@@ -5034,15 +4956,15 @@ ips_reset_copperhead(ips_ha_t * ha)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_reset_copperhead_memio                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Reset the controller                                                   */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_reset_copperhead_memio(ips_ha_t * ha)
 {
@@ -5060,12 +4982,12 @@ ips_reset_copperhead_memio(ips_ha_t * ha)
 
 		writeb(IPS_BIT_RST, ha->mem_ptr + IPS_REG_SCPR);
 
-		/* Delay for 1 Second */
+		 
 		MDELAY(IPS_ONE_SEC);
 
 		writeb(0, ha->mem_ptr + IPS_REG_SCPR);
 
-		/* Delay for 1 Second */
+		 
 		MDELAY(IPS_ONE_SEC);
 
 		if ((*ha->func.init) (ha))
@@ -5079,15 +5001,15 @@ ips_reset_copperhead_memio(ips_ha_t * ha)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_reset_morpheus                                         */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Reset the controller                                                   */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_reset_morpheus(ips_ha_t * ha)
 {
@@ -5106,10 +5028,10 @@ ips_reset_morpheus(ips_ha_t * ha)
 
 		writel(0x80000000, ha->mem_ptr + IPS_REG_I960_IDR);
 
-		/* Delay for 5 Seconds */
+		 
 		MDELAY(5 * IPS_ONE_SEC);
 
-		/* Do a PCI config read to wait for adapter */
+		 
 		pci_read_config_byte(ha->pcidev, 4, &junk);
 
 		if ((*ha->func.init) (ha))
@@ -5123,15 +5045,15 @@ ips_reset_morpheus(ips_ha_t * ha)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_statinit                                               */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Initialize the status queues on the controller                         */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_statinit(ips_ha_t * ha)
 {
@@ -5154,15 +5076,15 @@ ips_statinit(ips_ha_t * ha)
 	ha->adapt->hw_status_tail = phys_status_start;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_statinit_memio                                         */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Initialize the status queues on the controller                         */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_statinit_memio(ips_ha_t * ha)
 {
@@ -5184,15 +5106,15 @@ ips_statinit_memio(ips_ha_t * ha)
 	ha->adapt->hw_status_tail = phys_status_start;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_statupd_copperhead                                     */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove an element from the status queue                                */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static uint32_t
 ips_statupd_copperhead(ips_ha_t * ha)
 {
@@ -5212,15 +5134,15 @@ ips_statupd_copperhead(ips_ha_t * ha)
 	return (ha->adapt->p_status_tail->value);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_statupd_copperhead_memio                               */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove an element from the status queue                                */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static uint32_t
 ips_statupd_copperhead_memio(ips_ha_t * ha)
 {
@@ -5239,15 +5161,15 @@ ips_statupd_copperhead_memio(ips_ha_t * ha)
 	return (ha->adapt->p_status_tail->value);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_statupd_morpheus                                       */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Remove an element from the status queue                                */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static uint32_t
 ips_statupd_morpheus(ips_ha_t * ha)
 {
@@ -5260,15 +5182,15 @@ ips_statupd_morpheus(ips_ha_t * ha)
 	return (val);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_issue_copperhead                                       */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Send a command down to the controller                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_issue_copperhead(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -5305,8 +5227,8 @@ ips_issue_copperhead(ips_ha_t * ha, ips_scb_t * scb)
 				   "ips_issue semaphore chk timeout.\n");
 
 			return (IPS_FAILURE);
-		}		/* end if */
-	}			/* end while */
+		}		 
+	}			 
 
 	outl(scb->scb_busaddr, ha->io_addr + IPS_REG_CCSAR);
 	outw(IPS_BIT_START_CMD, ha->io_addr + IPS_REG_CCCR);
@@ -5314,15 +5236,15 @@ ips_issue_copperhead(ips_ha_t * ha, ips_scb_t * scb)
 	return (IPS_SUCCESS);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_issue_copperhead_memio                                 */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Send a command down to the controller                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_issue_copperhead_memio(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -5358,8 +5280,8 @@ ips_issue_copperhead_memio(ips_ha_t * ha, ips_scb_t * scb)
 				   "ips_issue semaphore chk timeout.\n");
 
 			return (IPS_FAILURE);
-		}		/* end if */
-	}			/* end while */
+		}		 
+	}			 
 
 	writel(scb->scb_busaddr, ha->mem_ptr + IPS_REG_CCSAR);
 	writel(IPS_BIT_START_CMD, ha->mem_ptr + IPS_REG_CCCR);
@@ -5367,15 +5289,15 @@ ips_issue_copperhead_memio(ips_ha_t * ha, ips_scb_t * scb)
 	return (IPS_SUCCESS);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_issue_i2o                                              */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Send a command down to the controller                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_issue_i2o(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -5399,15 +5321,15 @@ ips_issue_i2o(ips_ha_t * ha, ips_scb_t * scb)
 	return (IPS_SUCCESS);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_issue_i2o_memio                                        */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Send a command down to the controller                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_issue_i2o_memio(ips_ha_t * ha, ips_scb_t * scb)
 {
@@ -5431,15 +5353,15 @@ ips_issue_i2o_memio(ips_ha_t * ha, ips_scb_t * scb)
 	return (IPS_SUCCESS);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_isintr_copperhead                                      */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Test to see if an interrupt is for us                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_isintr_copperhead(ips_ha_t * ha)
 {
@@ -5450,29 +5372,29 @@ ips_isintr_copperhead(ips_ha_t * ha)
 	Isr = inb(ha->io_addr + IPS_REG_HISR);
 
 	if (Isr == 0xFF)
-		/* ?!?! Nothing really there */
+		 
 		return (0);
 
 	if (Isr & IPS_BIT_SCE)
 		return (1);
 	else if (Isr & (IPS_BIT_SQO | IPS_BIT_GHI)) {
-		/* status queue overflow or GHI */
-		/* just clear the interrupt */
+		 
+		 
 		outb(Isr, ha->io_addr + IPS_REG_HISR);
 	}
 
 	return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_isintr_copperhead_memio                                */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Test to see if an interrupt is for us                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_isintr_copperhead_memio(ips_ha_t * ha)
 {
@@ -5483,29 +5405,29 @@ ips_isintr_copperhead_memio(ips_ha_t * ha)
 	Isr = readb(ha->mem_ptr + IPS_REG_HISR);
 
 	if (Isr == 0xFF)
-		/* ?!?! Nothing really there */
+		 
 		return (0);
 
 	if (Isr & IPS_BIT_SCE)
 		return (1);
 	else if (Isr & (IPS_BIT_SQO | IPS_BIT_GHI)) {
-		/* status queue overflow or GHI */
-		/* just clear the interrupt */
+		 
+		 
 		writeb(Isr, ha->mem_ptr + IPS_REG_HISR);
 	}
 
 	return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_isintr_morpheus                                        */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Test to see if an interrupt is for us                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_isintr_morpheus(ips_ha_t * ha)
 {
@@ -5521,15 +5443,15 @@ ips_isintr_morpheus(ips_ha_t * ha)
 		return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_wait                                                   */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Wait for a command to complete                                         */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_wait(ips_ha_t * ha, int time, int intr)
 {
@@ -5541,7 +5463,7 @@ ips_wait(ips_ha_t * ha, int time, int intr)
 	ret = IPS_FAILURE;
 	done = false;
 
-	time *= IPS_ONE_SEC;	/* convert seconds */
+	time *= IPS_ONE_SEC;	 
 
 	while ((time > 0) && (!done)) {
 		if (intr == IPS_INTR_ON) {
@@ -5552,26 +5474,18 @@ ips_wait(ips_ha_t * ha, int time, int intr)
 			}
 		} else if (intr == IPS_INTR_IORL) {
 			if (!ha->waitflag) {
-				/*
-				 * controller generated an interrupt to
-				 * acknowledge completion of the command
-				 * and ips_intr() has serviced the interrupt.
-				 */
+				 
 				ret = IPS_SUCCESS;
 				done = true;
 				break;
 			}
 
-			/*
-			 * NOTE: we already have the io_request_lock so
-			 * even if we get an interrupt it won't get serviced
-			 * until after we finish.
-			 */
+			 
 
 			(*ha->func.intr) (ha);
 		}
 
-		/* This looks like a very evil loop, but it only does this during start-up */
+		 
 		udelay(1000);
 		time--;
 	}
@@ -5579,15 +5493,15 @@ ips_wait(ips_ha_t * ha, int time, int intr)
 	return (ret);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_write_driver_status                                    */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Write OS/Driver version to Page 5 of the nvram on the controller       */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_write_driver_status(ips_ha_t * ha, int intr)
 {
@@ -5600,8 +5514,8 @@ ips_write_driver_status(ips_ha_t * ha, int intr)
 		return (0);
 	}
 
-	/* check to make sure the page has a valid */
-	/* signature */
+	 
+	 
 	if (le32_to_cpu(ha->nvram->signature) != IPS_NVRAM_P5_SIG) {
 		DEBUG_VAR(1,
 			  "(%s%d) NVRAM page 5 has an invalid signature: %X.",
@@ -5620,7 +5534,7 @@ ips_write_driver_status(ips_ha_t * ha, int intr)
 
 	ips_get_bios_version(ha, intr);
 
-	/* change values (as needed) */
+	 
 	ha->nvram->operating_system = IPS_OS_LINUX;
 	ha->nvram->adapter_type = ha->ad_type;
 	memcpy((char *) ha->nvram->driver_high, IPS_VERSION_HIGH, 4);
@@ -5628,9 +5542,9 @@ ips_write_driver_status(ips_ha_t * ha, int intr)
 	memcpy((char *) ha->nvram->bios_high, ha->bios_version, 4);
 	memcpy((char *) ha->nvram->bios_low, ha->bios_version + 4, 4);
 
-	ha->nvram->versioning = 0;	/* Indicate the Driver Does Not Support Versioning */
+	ha->nvram->versioning = 0;	 
 
-	/* now update the page */
+	 
 	if (!ips_readwrite_page5(ha, true, intr)) {
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "unable to write NVRAM page 5.\n");
@@ -5638,21 +5552,21 @@ ips_write_driver_status(ips_ha_t * ha, int intr)
 		return (0);
 	}
 
-	/* IF NVRAM Page 5 is OK, Use it for Slot Number Info Because Linux Doesn't Do Slots */
+	 
 	ha->slot_num = ha->nvram->adapter_slot;
 
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_read_adapter_status                                    */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Do an Inquiry command to the adapter                                   */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_read_adapter_status(ips_ha_t * ha, int intr)
 {
@@ -5677,7 +5591,7 @@ ips_read_adapter_status(ips_ha_t * ha, int intr)
 	scb->data_len = sizeof (*ha->enq);
 	scb->cmd.basic_io.sg_addr = ha->enq_busaddr;
 
-	/* send command */
+	 
 	if (((ret =
 	      ips_send_wait(ha, scb, ips_cmd_timeout, intr)) == IPS_FAILURE)
 	    || (ret == IPS_SUCCESS_IMM)
@@ -5687,15 +5601,15 @@ ips_read_adapter_status(ips_ha_t * ha, int intr)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_read_subsystem_parameters                              */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Read subsystem parameters from the adapter                             */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_read_subsystem_parameters(ips_ha_t * ha, int intr)
 {
@@ -5720,7 +5634,7 @@ ips_read_subsystem_parameters(ips_ha_t * ha, int intr)
 	scb->data_len = sizeof (*ha->subsys);
 	scb->cmd.basic_io.sg_addr = ha->ioctl_busaddr;
 
-	/* send command */
+	 
 	if (((ret =
 	      ips_send_wait(ha, scb, ips_cmd_timeout, intr)) == IPS_FAILURE)
 	    || (ret == IPS_SUCCESS_IMM)
@@ -5731,15 +5645,15 @@ ips_read_subsystem_parameters(ips_ha_t * ha, int intr)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_read_config                                            */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Read the configuration on the adapter                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_read_config(ips_ha_t * ha, int intr)
 {
@@ -5749,7 +5663,7 @@ ips_read_config(ips_ha_t * ha, int intr)
 
 	METHOD_TRACE("ips_read_config", 1);
 
-	/* set defaults for initiator IDs */
+	 
 	for (i = 0; i < 4; i++)
 		ha->conf->init_id[i] = 7;
 
@@ -5765,7 +5679,7 @@ ips_read_config(ips_ha_t * ha, int intr)
 	scb->data_len = sizeof (*ha->conf);
 	scb->cmd.basic_io.sg_addr = ha->ioctl_busaddr;
 
-	/* send command */
+	 
 	if (((ret =
 	      ips_send_wait(ha, scb, ips_cmd_timeout, intr)) == IPS_FAILURE)
 	    || (ret == IPS_SUCCESS_IMM)
@@ -5773,11 +5687,11 @@ ips_read_config(ips_ha_t * ha, int intr)
 
 		memset(ha->conf, 0, sizeof (IPS_CONF));
 
-		/* reset initiator IDs */
+		 
 		for (i = 0; i < 4; i++)
 			ha->conf->init_id[i] = 7;
 
-		/* Allow Completed with Errors, so JCRM can access the Adapter to fix the problems */
+		 
 		if ((scb->basic_status & IPS_GSC_STATUS_MASK) ==
 		    IPS_CMD_CMPLT_WERROR)
 			return (1);
@@ -5789,15 +5703,15 @@ ips_read_config(ips_ha_t * ha, int intr)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_readwrite_page5                                        */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Read nvram page 5 from the adapter                                     */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_readwrite_page5(ips_ha_t * ha, int write, int intr)
 {
@@ -5824,7 +5738,7 @@ ips_readwrite_page5(ips_ha_t * ha, int write, int intr)
 	if (write)
 		memcpy(ha->ioctl_data, ha->nvram, sizeof(*ha->nvram));
 
-	/* issue the command */
+	 
 	if (((ret =
 	      ips_send_wait(ha, scb, ips_cmd_timeout, intr)) == IPS_FAILURE)
 	    || (ret == IPS_SUCCESS_IMM)
@@ -5839,15 +5753,15 @@ ips_readwrite_page5(ips_ha_t * ha, int write, int intr)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_clear_adapter                                          */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   Clear the stripe lock tables                                           */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_clear_adapter(ips_ha_t * ha, int intr)
 {
@@ -5871,14 +5785,14 @@ ips_clear_adapter(ips_ha_t * ha, int intr)
 	scb->cmd.config_sync.reserved2 = 0;
 	scb->cmd.config_sync.reserved3 = 0;
 
-	/* issue command */
+	 
 	if (((ret =
 	      ips_send_wait(ha, scb, ips_reset_timeout, intr)) == IPS_FAILURE)
 	    || (ret == IPS_SUCCESS_IMM)
 	    || ((scb->basic_status & IPS_GSC_STATUS_MASK) > 1))
 		return (0);
 
-	/* send unlock stripe command */
+	 
 	ips_init_scb(ha, scb);
 
 	scb->cdb[0] = IPS_CMD_ERROR_TABLE;
@@ -5892,7 +5806,7 @@ ips_clear_adapter(ips_ha_t * ha, int intr)
 	scb->cmd.unlock_stripe.reserved2 = 0;
 	scb->cmd.unlock_stripe.reserved3 = 0;
 
-	/* issue command */
+	 
 	if (((ret =
 	      ips_send_wait(ha, scb, ips_cmd_timeout, intr)) == IPS_FAILURE)
 	    || (ret == IPS_SUCCESS_IMM)
@@ -5902,15 +5816,15 @@ ips_clear_adapter(ips_ha_t * ha, int intr)
 	return (1);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_ffdc_reset                                             */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   FFDC: write reset info                                                 */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_ffdc_reset(ips_ha_t * ha, int intr)
 {
@@ -5929,22 +5843,22 @@ ips_ffdc_reset(ips_ha_t * ha, int intr)
 	scb->cmd.ffdc.reset_count = ha->reset_count;
 	scb->cmd.ffdc.reset_type = 0x80;
 
-	/* convert time to what the card wants */
+	 
 	ips_fix_ffdc_time(ha, scb, ha->last_ffdc);
 
-	/* issue command */
+	 
 	ips_send_wait(ha, scb, ips_cmd_timeout, intr);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_ffdc_time                                              */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*                                                                          */
-/*   FFDC: write time info                                                  */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_ffdc_time(ips_ha_t * ha)
 {
@@ -5965,21 +5879,21 @@ ips_ffdc_time(ips_ha_t * ha)
 	scb->cmd.ffdc.reset_count = 0;
 	scb->cmd.ffdc.reset_type = 0;
 
-	/* convert time to what the card wants */
+	 
 	ips_fix_ffdc_time(ha, scb, ha->last_ffdc);
 
-	/* issue command */
+	 
 	ips_send_wait(ha, scb, ips_cmd_timeout, IPS_FFDC);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_fix_ffdc_time                                          */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Adjust time_t to what the card wants                                   */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_fix_ffdc_time(ips_ha_t * ha, ips_scb_t * scb, time64_t current_time)
 {
@@ -5998,18 +5912,16 @@ ips_fix_ffdc_time(ips_ha_t * ha, ips_scb_t * scb, time64_t current_time)
 	scb->cmd.ffdc.day    = tm.tm_mday;
 }
 
-/****************************************************************************
- * BIOS Flash Routines                                                      *
- ****************************************************************************/
+ 
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_erase_bios                                             */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Erase the BIOS on the adapter                                          */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_erase_bios(ips_ha_t * ha)
 {
@@ -6020,36 +5932,36 @@ ips_erase_bios(ips_ha_t * ha)
 
 	status = 0;
 
-	/* Clear the status register */
+	 
 	outl(0, ha->io_addr + IPS_REG_FLAP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	outb(0x50, ha->io_addr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	/* Erase Setup */
+	 
 	outb(0x20, ha->io_addr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	/* Erase Confirm */
+	 
 	outb(0xD0, ha->io_addr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	/* Erase Status */
+	 
 	outb(0x70, ha->io_addr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	timeout = 80000;	/* 80 seconds */
+	timeout = 80000;	 
 
 	while (timeout > 0) {
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64) {
 			outl(0, ha->io_addr + IPS_REG_FLAP);
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 		}
 
 		status = inb(ha->io_addr + IPS_REG_FLDP);
@@ -6061,21 +5973,21 @@ ips_erase_bios(ips_ha_t * ha)
 		timeout--;
 	}
 
-	/* check for timeout */
+	 
 	if (timeout <= 0) {
-		/* timeout */
+		 
 
-		/* try to suspend the erase */
+		 
 		outb(0xB0, ha->io_addr + IPS_REG_FLDP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
-		/* wait for 10 seconds */
+		 
 		timeout = 10000;
 		while (timeout > 0) {
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64) {
 				outl(0, ha->io_addr + IPS_REG_FLAP);
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 			}
 
 			status = inb(ha->io_addr + IPS_REG_FLDP);
@@ -6090,38 +6002,38 @@ ips_erase_bios(ips_ha_t * ha)
 		return (1);
 	}
 
-	/* check for valid VPP */
+	 
 	if (status & 0x08)
-		/* VPP failure */
+		 
 		return (1);
 
-	/* check for successful flash */
+	 
 	if (status & 0x30)
-		/* sequence error */
+		 
 		return (1);
 
-	/* Otherwise, we were successful */
-	/* clear status */
+	 
+	 
 	outb(0x50, ha->io_addr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	/* enable reads */
+	 
 	outb(0xFF, ha->io_addr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_erase_bios_memio                                       */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Erase the BIOS on the adapter                                          */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_erase_bios_memio(ips_ha_t * ha)
 {
@@ -6132,36 +6044,36 @@ ips_erase_bios_memio(ips_ha_t * ha)
 
 	status = 0;
 
-	/* Clear the status register */
+	 
 	writel(0, ha->mem_ptr + IPS_REG_FLAP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	writeb(0x50, ha->mem_ptr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	/* Erase Setup */
+	 
 	writeb(0x20, ha->mem_ptr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	/* Erase Confirm */
+	 
 	writeb(0xD0, ha->mem_ptr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	/* Erase Status */
+	 
 	writeb(0x70, ha->mem_ptr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	timeout = 80000;	/* 80 seconds */
+	timeout = 80000;	 
 
 	while (timeout > 0) {
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64) {
 			writel(0, ha->mem_ptr + IPS_REG_FLAP);
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 		}
 
 		status = readb(ha->mem_ptr + IPS_REG_FLDP);
@@ -6173,21 +6085,21 @@ ips_erase_bios_memio(ips_ha_t * ha)
 		timeout--;
 	}
 
-	/* check for timeout */
+	 
 	if (timeout <= 0) {
-		/* timeout */
+		 
 
-		/* try to suspend the erase */
+		 
 		writeb(0xB0, ha->mem_ptr + IPS_REG_FLDP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
-		/* wait for 10 seconds */
+		 
 		timeout = 10000;
 		while (timeout > 0) {
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64) {
 				writel(0, ha->mem_ptr + IPS_REG_FLAP);
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 			}
 
 			status = readb(ha->mem_ptr + IPS_REG_FLDP);
@@ -6202,38 +6114,38 @@ ips_erase_bios_memio(ips_ha_t * ha)
 		return (1);
 	}
 
-	/* check for valid VPP */
+	 
 	if (status & 0x08)
-		/* VPP failure */
+		 
 		return (1);
 
-	/* check for successful flash */
+	 
 	if (status & 0x30)
-		/* sequence error */
+		 
 		return (1);
 
-	/* Otherwise, we were successful */
-	/* clear status */
+	 
+	 
 	writeb(0x50, ha->mem_ptr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
-	/* enable reads */
+	 
 	writeb(0xFF, ha->mem_ptr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_program_bios                                           */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Program the BIOS on the adapter                                        */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_program_bios(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 		 uint32_t offset)
@@ -6247,25 +6159,25 @@ ips_program_bios(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 	status = 0;
 
 	for (i = 0; i < buffersize; i++) {
-		/* write a byte */
+		 
 		outl(i + offset, ha->io_addr + IPS_REG_FLAP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
 		outb(0x40, ha->io_addr + IPS_REG_FLDP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
 		outb(buffer[i], ha->io_addr + IPS_REG_FLDP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
-		/* wait up to one second */
+		 
 		timeout = 1000;
 		while (timeout > 0) {
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64) {
 				outl(0, ha->io_addr + IPS_REG_FLAP);
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 			}
 
 			status = inb(ha->io_addr + IPS_REG_FLDP);
@@ -6278,53 +6190,53 @@ ips_program_bios(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 		}
 
 		if (timeout == 0) {
-			/* timeout error */
+			 
 			outl(0, ha->io_addr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			outb(0xFF, ha->io_addr + IPS_REG_FLDP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			return (1);
 		}
 
-		/* check the status */
+		 
 		if (status & 0x18) {
-			/* programming error */
+			 
 			outl(0, ha->io_addr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			outb(0xFF, ha->io_addr + IPS_REG_FLDP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			return (1);
 		}
-	}			/* end for */
+	}			 
 
-	/* Enable reading */
+	 
 	outl(0, ha->io_addr + IPS_REG_FLAP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	outb(0xFF, ha->io_addr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_program_bios_memio                                     */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Program the BIOS on the adapter                                        */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_program_bios_memio(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 		       uint32_t offset)
@@ -6338,25 +6250,25 @@ ips_program_bios_memio(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 	status = 0;
 
 	for (i = 0; i < buffersize; i++) {
-		/* write a byte */
+		 
 		writel(i + offset, ha->mem_ptr + IPS_REG_FLAP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
 		writeb(0x40, ha->mem_ptr + IPS_REG_FLDP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
 		writeb(buffer[i], ha->mem_ptr + IPS_REG_FLDP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
-		/* wait up to one second */
+		 
 		timeout = 1000;
 		while (timeout > 0) {
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64) {
 				writel(0, ha->mem_ptr + IPS_REG_FLAP);
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 			}
 
 			status = readb(ha->mem_ptr + IPS_REG_FLDP);
@@ -6369,53 +6281,53 @@ ips_program_bios_memio(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 		}
 
 		if (timeout == 0) {
-			/* timeout error */
+			 
 			writel(0, ha->mem_ptr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			writeb(0xFF, ha->mem_ptr + IPS_REG_FLDP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			return (1);
 		}
 
-		/* check the status */
+		 
 		if (status & 0x18) {
-			/* programming error */
+			 
 			writel(0, ha->mem_ptr + IPS_REG_FLAP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			writeb(0xFF, ha->mem_ptr + IPS_REG_FLDP);
 			if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-				udelay(25);	/* 25 us */
+				udelay(25);	 
 
 			return (1);
 		}
-	}			/* end for */
+	}			 
 
-	/* Enable reading */
+	 
 	writel(0, ha->mem_ptr + IPS_REG_FLAP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	writeb(0xFF, ha->mem_ptr + IPS_REG_FLDP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_verify_bios                                            */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Verify the BIOS on the adapter                                         */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_verify_bios(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 		uint32_t offset)
@@ -6425,17 +6337,17 @@ ips_verify_bios(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 
 	METHOD_TRACE("ips_verify_bios", 1);
 
-	/* test 1st byte */
+	 
 	outl(0, ha->io_addr + IPS_REG_FLAP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	if (inb(ha->io_addr + IPS_REG_FLDP) != 0x55)
 		return (1);
 
 	outl(1, ha->io_addr + IPS_REG_FLAP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 	if (inb(ha->io_addr + IPS_REG_FLDP) != 0xAA)
 		return (1);
 
@@ -6444,27 +6356,27 @@ ips_verify_bios(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 
 		outl(i + offset, ha->io_addr + IPS_REG_FLAP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
 		checksum = (uint8_t) checksum + inb(ha->io_addr + IPS_REG_FLDP);
 	}
 
 	if (checksum != 0)
-		/* failure */
+		 
 		return (1);
 	else
-		/* success */
+		 
 		return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_verify_bios_memio                                      */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   Verify the BIOS on the adapter                                         */
-/*                                                                          */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_verify_bios_memio(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 		      uint32_t offset)
@@ -6474,17 +6386,17 @@ ips_verify_bios_memio(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 
 	METHOD_TRACE("ips_verify_bios_memio", 1);
 
-	/* test 1st byte */
+	 
 	writel(0, ha->mem_ptr + IPS_REG_FLAP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 
 	if (readb(ha->mem_ptr + IPS_REG_FLDP) != 0x55)
 		return (1);
 
 	writel(1, ha->mem_ptr + IPS_REG_FLAP);
 	if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-		udelay(25);	/* 25 us */
+		udelay(25);	 
 	if (readb(ha->mem_ptr + IPS_REG_FLDP) != 0xAA)
 		return (1);
 
@@ -6493,27 +6405,27 @@ ips_verify_bios_memio(ips_ha_t * ha, char *buffer, uint32_t buffersize,
 
 		writel(i + offset, ha->mem_ptr + IPS_REG_FLAP);
 		if (ha->pcidev->revision == IPS_REVID_TROMBONE64)
-			udelay(25);	/* 25 us */
+			udelay(25);	 
 
 		checksum =
 		    (uint8_t) checksum + readb(ha->mem_ptr + IPS_REG_FLDP);
 	}
 
 	if (checksum != 0)
-		/* failure */
+		 
 		return (1);
 	else
-		/* success */
+		 
 		return (0);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_abort_init                                             */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   cleanup routine for a failed adapter initialization                    */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_abort_init(ips_ha_t * ha, int index)
 {
@@ -6524,13 +6436,13 @@ ips_abort_init(ips_ha_t * ha, int index)
 	return -1;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_shift_controllers                                      */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   helper function for ordering adapters                                  */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_shift_controllers(int lowindex, int highindex)
 {
@@ -6548,13 +6460,13 @@ ips_shift_controllers(int lowindex, int highindex)
 	ips_sh[lowindex] = sh_sav;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_order_controllers                                      */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   place controllers is the "proper" boot order                           */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_order_controllers(void)
 {
@@ -6614,10 +6526,10 @@ ips_order_controllers(void)
 				}
 			}
 		}
-		/* if adapter_order[0], then ordering is complete */
+		 
 		return;
 	}
-	/* old bios, use older ordering */
+	 
 	tmp = 0;
 	for (i = position; i < ips_num_controllers; i++) {
 		if (ips_ha[i]->ad_type == IPS_ADTYPE_SERVERAID5I2 ||
@@ -6627,7 +6539,7 @@ ips_order_controllers(void)
 			tmp = 1;
 		}
 	}
-	/* if there were no 5I cards, then don't do any extra ordering */
+	 
 	if (!tmp)
 		return;
 	for (i = position; i < ips_num_controllers; i++) {
@@ -6643,13 +6555,13 @@ ips_order_controllers(void)
 	return;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_register_scsi                                          */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   perform any registration and setup with the scsi layer                 */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_register_scsi(int index)
 {
@@ -6664,7 +6576,7 @@ ips_register_scsi(int index)
 	ha = IPS_HA(sh);
 	memcpy(ha, oldha, sizeof (ips_ha_t));
 	free_irq(oldha->pcidev->irq, oldha);
-	/* Install the interrupt handler with the new ha */
+	 
 	if (request_irq(ha->pcidev->irq, do_ipsintr, IRQF_SHARED, ips_name, ha)) {
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "Unable to install interrupt handler\n");
@@ -6673,7 +6585,7 @@ ips_register_scsi(int index)
 
 	kfree(oldha);
 
-	/* Store away needed values for later use */
+	 
 	sh->unique_id = (ha->io_addr) ? ha->io_addr : ha->mem_addr;
 	sh->sg_tablesize = sh->hostt->sg_tablesize;
 	sh->can_queue = sh->hostt->can_queue;
@@ -6702,12 +6614,12 @@ err_out_sh:
 	return -1;
 }
 
-/*---------------------------------------------------------------------------*/
-/*   Routine Name: ips_remove_device                                         */
-/*                                                                           */
-/*   Routine Description:                                                    */
-/*     Remove one Adapter ( Hot Plugging )                                   */
-/*---------------------------------------------------------------------------*/
+ 
+ 
+ 
+ 
+ 
+ 
 static void
 ips_remove_device(struct pci_dev *pci_dev)
 {
@@ -6721,13 +6633,13 @@ ips_remove_device(struct pci_dev *pci_dev)
 	pci_disable_device(pci_dev);
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_module_init                                            */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   function called on module load                                         */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int __init
 ips_module_init(void)
 {
@@ -6748,13 +6660,13 @@ ips_module_init(void)
 	return 0;
 }
 
-/****************************************************************************/
-/*                                                                          */
-/* Routine Name: ips_module_exit                                            */
-/*                                                                          */
-/* Routine Description:                                                     */
-/*   function called on module unload                                       */
-/****************************************************************************/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static void __exit
 ips_module_exit(void)
 {
@@ -6765,15 +6677,15 @@ ips_module_exit(void)
 module_init(ips_module_init);
 module_exit(ips_module_exit);
 
-/*---------------------------------------------------------------------------*/
-/*   Routine Name: ips_insert_device                                         */
-/*                                                                           */
-/*   Routine Description:                                                    */
-/*     Add One Adapter ( Hot Plug )                                          */
-/*                                                                           */
-/*   Return Value:                                                           */
-/*     0 if Successful, else non-zero                                        */
-/*---------------------------------------------------------------------------*/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_insert_device(struct pci_dev *pci_dev, const struct pci_device_id *ent)
 {
@@ -6819,15 +6731,15 @@ err_out:
 	return rc;
 }
 
-/*---------------------------------------------------------------------------*/
-/*   Routine Name: ips_init_phase1                                           */
-/*                                                                           */
-/*   Routine Description:                                                    */
-/*     Adapter Initialization                                                */
-/*                                                                           */
-/*   Return Value:                                                           */
-/*     0 if Successful, else non-zero                                        */
-/*---------------------------------------------------------------------------*/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 {
@@ -6855,7 +6767,7 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 	if (index >= IPS_MAX_ADAPTERS)
 		return -1;
 
-	/* Init MEM/IO addresses to 0 */
+	 
 	mem_addr = 0;
 	io_addr = 0;
 	mem_len = 0;
@@ -6874,7 +6786,7 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 		}
 	}
 
-	/* setup memory mapped area (if applicable) */
+	 
 	if (mem_addr) {
 		uint32_t base;
 		uint32_t offs;
@@ -6890,7 +6802,7 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 		mem_ptr = NULL;
 	}
 
-	/* found a controller */
+	 
 	ha = kzalloc(sizeof (ips_ha_t), GFP_KERNEL);
 	if (ha == NULL) {
 		IPS_PRINTK(KERN_WARNING, pci_dev,
@@ -6902,7 +6814,7 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 	ips_ha[index] = ha;
 	ha->active = 1;
 
-	/* Store info in HA structure */
+	 
 	ha->io_addr = io_addr;
 	ha->io_len = io_len;
 	ha->mem_addr = mem_addr;
@@ -6913,12 +6825,7 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 	ha->slot_num = PCI_SLOT(pci_dev->devfn);
 	ha->pcidev = pci_dev;
 
-	/*
-	 * Set the pci_dev's dma_mask.  Not all adapters support 64bit
-	 * addressing so don't enable it if the adapter can't support
-	 * it!  Also, don't use 64bit addressing if dma addresses
-	 * are guaranteed to be < 4G.
-	 */
+	 
 	if (sizeof(dma_addr_t) > 4 && IPS_HAS_ENH_SGLIST(ha) &&
 	    !dma_set_mask(&ha->pcidev->dev, DMA_BIT_MASK(64))) {
 		(ha)->flags |= IPS_HA_ENH_SG;
@@ -6988,8 +6895,7 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 		return ips_abort_init(ha, index);
 	}
 
-	/* the ioctl buffer is now used during adapter initialization, so its
-	 * successful allocation is now required */
+	 
 	if (ips_ioctlsize < PAGE_SIZE)
 		ips_ioctlsize = PAGE_SIZE;
 
@@ -7002,28 +6908,22 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 		return ips_abort_init(ha, index);
 	}
 
-	/*
-	 * Setup Functions
-	 */
+	 
 	ips_setup_funclist(ha);
 
 	if ((IPS_IS_MORPHEUS(ha)) || (IPS_IS_MARCO(ha))) {
-		/* If Morpheus appears dead, reset it */
+		 
 		IsDead = readl(ha->mem_ptr + IPS_REG_I960_MSG1);
 		if (IsDead == 0xDEADBEEF) {
 			ips_reset_morpheus(ha);
 		}
 	}
 
-	/*
-	 * Initialize the card if it isn't already
-	 */
+	 
 
 	if (!(*ha->func.isinit) (ha)) {
 		if (!(*ha->func.init) (ha)) {
-			/*
-			 * Initialization failed
-			 */
+			 
 			IPS_PRINTK(KERN_WARNING, pci_dev,
 				   "Unable to initialize controller\n");
 			return ips_abort_init(ha, index);
@@ -7034,15 +6934,15 @@ ips_init_phase1(struct pci_dev *pci_dev, int *indexPtr)
 	return SUCCESS;
 }
 
-/*---------------------------------------------------------------------------*/
-/*   Routine Name: ips_init_phase2                                           */
-/*                                                                           */
-/*   Routine Description:                                                    */
-/*     Adapter Initialization Phase 2                                        */
-/*                                                                           */
-/*   Return Value:                                                           */
-/*     0 if Successful, else non-zero                                        */
-/*---------------------------------------------------------------------------*/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 static int
 ips_init_phase2(int index)
 {
@@ -7056,16 +6956,14 @@ ips_init_phase2(int index)
 		return -1;
 	}
 
-	/* Install the interrupt handler */
+	 
 	if (request_irq(ha->pcidev->irq, do_ipsintr, IRQF_SHARED, ips_name, ha)) {
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "Unable to install interrupt handler\n");
 		return ips_abort_init(ha, index);
 	}
 
-	/*
-	 * Allocate a temporary SCB for initialization
-	 */
+	 
 	ha->max_cmds = 1;
 	if (!ips_allocatescbs(ha)) {
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
@@ -7080,10 +6978,10 @@ ips_init_phase2(int index)
 		free_irq(ha->pcidev->irq, ha);
 		return ips_abort_init(ha, index);
 	}
-	/* Free the temporary SCB */
+	 
 	ips_deallocatescbs(ha, 1);
 
-	/* allocate CCBs */
+	 
 	if (!ips_allocatescbs(ha)) {
 		IPS_PRINTK(KERN_WARNING, ha->pcidev,
 			   "Unable to allocate CCBs\n");

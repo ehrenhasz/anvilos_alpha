@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -33,7 +31,7 @@ static const struct pll_vco lucid_vco[] = {
 	{ 249600000, 2000000000, 0 },
 };
 
-/* 614.4MHz configuration */
+ 
 static const struct alpha_pll_config lpass_core_cc_dig_pll_config = {
 	.l = 0x20,
 	.alpha = 0x0,

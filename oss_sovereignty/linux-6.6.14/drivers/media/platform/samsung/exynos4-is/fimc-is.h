@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Samsung EXYNOS4x12 FIMC-IS (Imaging Subsystem) driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *
- * Authors: Younghwan Joo <yhwan.joo@samsung.com>
- *          Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+ 
+ 
 #ifndef FIMC_IS_H_
 #define FIMC_IS_H_
 
@@ -32,12 +25,12 @@
 #define FIMC_IS_FW_FILENAME		"exynos4_fimc_is_fw.bin"
 #define FIMC_IS_SETFILE_6A3		"exynos4_s5k6a3_setfile.bin"
 
-#define FIMC_IS_FW_LOAD_TIMEOUT		1000 /* ms */
-#define FIMC_IS_POWER_ON_TIMEOUT	1000 /* us */
+#define FIMC_IS_FW_LOAD_TIMEOUT		1000  
+#define FIMC_IS_POWER_ON_TIMEOUT	1000  
 
 #define FIMC_IS_SENSORS_NUM		2
 
-/* Memory definitions */
+ 
 #define FIMC_IS_CPU_MEM_SIZE		(0xa00000)
 #define FIMC_IS_CPU_BASE_MASK		((1 << 26) - 1)
 #define FIMC_IS_REGION_SIZE		0x5000
@@ -55,7 +48,7 @@
 #define FIMC_IS_EXTRA_FW_SIZE		0x180000
 #define FIMC_IS_EXTRA_SETFILE_SIZE	0x4b000
 
-/* TODO: revisit */
+ 
 #define FIMC_IS_FW_ADDR_MASK		((1 << 26) - 1)
 #define FIMC_IS_FW_SIZE_MAX		(SZ_4M)
 #define FIMC_IS_FW_SIZE_MIN		(SZ_32K)
@@ -89,7 +82,7 @@ enum {
 	ISS_CLKS_MAX
 };
 
-/* The driver's internal state flags */
+ 
 enum {
 	IS_ST_IDLE,
 	IS_ST_PWR_ON,
@@ -184,11 +177,11 @@ struct fimc_is_firmware {
 };
 
 struct fimc_is_memory {
-	/* DMA base address */
+	 
 	dma_addr_t addr;
-	/* virtual base address */
+	 
 	void *vaddr;
-	/* total length */
+	 
 	unsigned int size;
 };
 
@@ -227,37 +220,7 @@ struct chain_config {
 	unsigned long		p_region_index[2];
 };
 
-/**
- * struct fimc_is - fimc-is data structure
- * @pdev: pointer to FIMC-IS platform device
- * @v4l2_dev: pointer to the top level v4l2_device
- * @fw: data structure describing the FIMC-IS firmware binary
- * @memory: memory region assigned for the FIMC-IS (firmware)
- * @isp: the ISP block data structure
- * @sensor: fimc-is sensor subdevice array
- * @setfile: descriptor of the imaging pipeline calibration data
- * @ctrl_handler: the v4l2 controls handler
- * @lock: mutex serializing video device and the subdev operations
- * @slock: spinlock protecting this data structure and the hw registers
- * @clocks: FIMC-LITE gate clock
- * @regs: MCUCTL mmapped registers region
- * @pmu_regs: PMU ISP mmapped registers region
- * @irq: FIMC-IS interrupt
- * @irq_queue: interrupt handling waitqueue
- * @lpm: low power mode flag
- * @state: internal driver's state flags
- * @sensor_index: image sensor index for the firmware
- * @i2h_cmd: FIMC-IS to the host (CPU) mailbox command data structure
- * @h2i_cmd: the host (CPU) to FIMC-IS mailbox command data structure
- * @fd_header: the face detection result data structure
- * @config: shared HW pipeline configuration data
- * @config_index: index to the @config entry currently in use
- * @is_p_region: pointer to the shared parameter memory region
- * @is_dma_p_region: DMA address of the shared parameter memory region
- * @is_shared_region: pointer to the IS shared region data structure
- * @af: auto focus data
- * @debugfs_entry: debugfs entry for the firmware log
- */
+ 
 struct fimc_is {
 	struct platform_device		*pdev;
 	struct v4l2_device		*v4l2_dev;
@@ -353,4 +316,4 @@ int fimc_is_start_firmware(struct fimc_is *is);
 int fimc_is_hw_initialize(struct fimc_is *is);
 void fimc_is_log_dump(const char *level, const void *buf, size_t len);
 
-#endif /* FIMC_IS_H_ */
+#endif  

@@ -1,30 +1,14 @@
-/* Create a temporary file.
-   Copyright (C) 2007, 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Ben Pfaff. */
+ 
 
 #include <config.h>
 
-/* Specification.  */
+ 
 #include <stdio.h>
 
 #include <errno.h>
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* A native Windows platform.  */
+ 
 
 # include <fcntl.h>
 # include <string.h>
@@ -32,7 +16,7 @@
 
 # include <io.h>
 
-# define WIN32_LEAN_AND_MEAN  /* avoid including junk */
+# define WIN32_LEAN_AND_MEAN   
 # include <windows.h>
 
 #else
@@ -45,13 +29,12 @@
 #include "tempname.h"
 #include "tmpdir.h"
 
-/* PATH_MAX is guaranteed to be defined, because this replacement is only
-   used on native Windows and Android.  */
+ 
 
 #if defined _WIN32 && ! defined __CYGWIN__
-/* A native Windows platform.  */
+ 
 
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef OSVERSIONINFO
 # define OSVERSIONINFO OSVERSIONINFOA
 # undef GetVersionEx
@@ -59,23 +42,17 @@
 # undef GetTempPath
 # define GetTempPath GetTempPathA
 
-/* On Windows, opening a file with _O_TEMPORARY has the effect of passing
-   the FILE_FLAG_DELETE_ON_CLOSE flag to CreateFile(), which has the effect
-   of deleting the file when it is closed - even when the program crashes.
-   But (according to the Cygwin sources) it works only on Windows NT or newer.
-   So we cache the info whether we are running on Windows NT or newer.  */
+ 
 
 static bool
 supports_delete_on_close ()
 {
-  static int known; /* 1 = yes, -1 = no, 0 = unknown */
+  static int known;  
   if (!known)
     {
       OSVERSIONINFO v;
 
-      /* According to
-         <https://docs.microsoft.com/en-us/windows/desktop/api/sysinfoapi/nf-sysinfoapi-getversionexa>
-         this structure must be initialized as follows:  */
+       
       v.dwOSVersionInfoSize = sizeof (OSVERSIONINFO);
 
       if (GetVersionEx (&v))
@@ -92,10 +69,7 @@ tmpfile (void)
   char dir[PATH_MAX];
   DWORD retval;
 
-  /* Find Windows temporary file directory.
-     We provide this as the directory argument to path_search because Windows
-     defines P_tmpdir to "\\" and will therefore try to put all temporary files
-     in the root directory (unless $TMPDIR is set). */
+   
   retval = GetTempPath (PATH_MAX, dir);
   if (retval > 0 && retval < PATH_MAX)
     {
@@ -143,7 +117,7 @@ tmpfile (void)
       if (retval > 0)
         errno = ENAMETOOLONG;
       else
-        /* Ideally this should translate GetLastError () to an errno value.  */
+         
         errno = ENOENT;
     }
 
@@ -159,8 +133,7 @@ tmpfile (void)
   int fd;
   FILE *fp;
 
-  /* Try $TMPDIR first, not /tmp nor P_tmpdir, because we need this replacement
-     on Android, and /tmp does not exist on Android.  */
+   
 
   if (path_search (buf, sizeof buf, NULL, "tmpf", true))
     return NULL;
@@ -169,8 +142,7 @@ tmpfile (void)
   if (fd < 0)
     return NULL;
 
-  /* Note that this relies on the Unix semantics that
-     a file is not really removed until it is closed.  */
+   
   (void) unlink (buf);
 
   if ((fp = fdopen (fd, "w+b")) == NULL)

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include "clk-regmap.h"
@@ -66,7 +63,7 @@ static unsigned long clk_regmap_div_recalc_rate(struct clk_hw *hw,
 
 	ret = regmap_read(clk->map, div->offset, &val);
 	if (ret)
-		/* Gives a hint that something is wrong */
+		 
 		return 0;
 
 	val >>= div->shift;
@@ -83,7 +80,7 @@ static int clk_regmap_div_determine_rate(struct clk_hw *hw,
 	unsigned int val;
 	int ret;
 
-	/* if read only, just return current value */
+	 
 	if (div->flags & CLK_DIVIDER_READ_ONLY) {
 		ret = regmap_read(clk->map, div->offset, &val);
 		if (ret)
@@ -118,7 +115,7 @@ static int clk_regmap_div_set_rate(struct clk_hw *hw, unsigned long rate,
 				  clk_div_mask(div->width) << div->shift, val);
 };
 
-/* Would prefer clk_regmap_div_ro_ops but clashes with qcom */
+ 
 
 const struct clk_ops clk_regmap_divider_ops = {
 	.recalc_rate = clk_regmap_div_recalc_rate,

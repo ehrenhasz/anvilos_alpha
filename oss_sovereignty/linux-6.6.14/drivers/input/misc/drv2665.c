@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DRV2665 haptics driver family
- *
- * Author: Dan Murphy <dmurphy@ti.com>
- *
- * Copyright: (C) 2015 Texas Instruments, Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/input.h>
@@ -15,17 +9,17 @@
 #include <linux/delay.h>
 #include <linux/regulator/consumer.h>
 
-/* Contol registers */
+ 
 #define DRV2665_STATUS	0x00
 #define DRV2665_CTRL_1	0x01
 #define DRV2665_CTRL_2	0x02
 #define DRV2665_FIFO	0x0b
 
-/* Status Register */
+ 
 #define DRV2665_FIFO_FULL		BIT(0)
 #define DRV2665_FIFO_EMPTY		BIT(1)
 
-/* Control 1 Register */
+ 
 #define DRV2665_25_VPP_GAIN		0x00
 #define DRV2665_50_VPP_GAIN		0x01
 #define DRV2665_75_VPP_GAIN		0x02
@@ -33,7 +27,7 @@
 #define DRV2665_DIGITAL_IN		0xfc
 #define DRV2665_ANALOG_IN		BIT(2)
 
-/* Control 2 Register */
+ 
 #define DRV2665_BOOST_EN		BIT(1)
 #define DRV2665_STANDBY			BIT(6)
 #define DRV2665_DEV_RST			BIT(7)
@@ -42,14 +36,7 @@
 #define DRV2665_15_MS_IDLE_TOUT		0x08
 #define DRV2665_20_MS_IDLE_TOUT		0x0c
 
-/**
- * struct drv2665_data -
- * @input_dev: Pointer to the input device
- * @client: Pointer to the I2C client
- * @regmap: Register map of the device
- * @work: Work item used to off load the enable/disable of the vibration
- * @regulator: Pointer to the regulator for the IC
- */
+ 
 struct drv2665_data {
 	struct input_dev *input_dev;
 	struct i2c_client *client;
@@ -58,7 +45,7 @@ struct drv2665_data {
 	struct regulator *regulator;
 };
 
-/* 8kHz Sine wave to stream to the FIFO */
+ 
 static const u8 drv2665_sine_wave_form[] = {
 	0x00, 0x10, 0x20, 0x2e, 0x3c, 0x48, 0x53, 0x5b, 0x61, 0x65, 0x66,
 	0x65, 0x61, 0x5b, 0x53, 0x48, 0x3c, 0x2e, 0x20, 0x10,

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2004 Intel Corporation. All rights reserved.
- *
- * Portions of this file are based on the WEP enablement code provided by the
- * Host AP project hostap-drivers v0.1.3
- * Copyright (c) 2001-2002, SSH Communications Security Corp and Jouni Malinen
- * <jkmaline@cc.hut.fi>
- * Copyright (c) 2002-2003, Jouni Malinen <jkmaline@cc.hut.fi>
- *
- * Contact Information:
- * James P. Ketrenos <ipw2100-admin@linux.intel.com>
- * Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/errno.h>
@@ -92,12 +80,12 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	}
 	rtllib_networks_initialize(ieee);
 
-	/* Default fragmentation threshold is maximum payload size */
+	 
 	ieee->fts = DEFAULT_FTS;
 	ieee->scan_age = DEFAULT_MAX_SCAN_AGE;
 	ieee->open_wep = 1;
 
-	ieee->ieee802_1x = 1; /* Default to supporting 802.1x */
+	ieee->ieee802_1x = 1;  
 
 	ieee->rtllib_ap_sec_type = rtllib_ap_sec_type;
 
@@ -106,7 +94,7 @@ struct net_device *alloc_rtllib(int sizeof_priv)
 	spin_lock_init(&ieee->reorder_spinlock);
 	atomic_set(&ieee->atm_swbw, 0);
 
-	/* SAM FIXME */
+	 
 	lib80211_crypt_info_init(&ieee->crypt_info, "RTLLIB", &ieee->lock);
 
 	ieee->wpa_enabled = 0;

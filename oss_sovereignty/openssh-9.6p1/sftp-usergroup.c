@@ -1,20 +1,6 @@
-/*
- * Copyright (c) 2022 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/* sftp client user/group lookup and caching */
+ 
 
 #include "includes.h"
 
@@ -32,12 +18,12 @@
 #include "sftp-client.h"
 #include "sftp-usergroup.h"
 
-/* Tree of id, name */
+ 
 struct idname {
         u_int id;
 	char *name;
         RB_ENTRY(idname) entry;
-	/* XXX implement bounded cache as TAILQ */
+	 
 };
 static int
 idname_cmp(struct idname *a, struct idname *b)
@@ -139,7 +125,7 @@ has_id(u_int id, u_int *ids, u_int nids)
 	if (nids == 0)
 		return 0;
 
-	/* XXX O(N^2) */
+	 
 	for (i = 0; i < nids; i++) {
 		if (ids[i] == id)
 			break;
@@ -155,11 +141,11 @@ collect_ids_from_glob(glob_t *g, int user, u_int **idsp, u_int *nidsp)
 	for (i = 0; g->gl_pathv[i] != NULL; i++) {
 		if (user) {
 			if (ruser_name(g->gl_statv[i]->st_uid) != NULL)
-				continue; /* Already seen */
+				continue;  
 			id = (u_int)g->gl_statv[i]->st_uid;
 		} else {
 			if (rgroup_name(g->gl_statv[i]->st_gid) != NULL)
-				continue; /* Already seen */
+				continue;  
 			id = (u_int)g->gl_statv[i]->st_gid;
 		}
 		if (has_id(id, ids, n))
@@ -194,11 +180,11 @@ collect_ids_from_dirents(SFTP_DIRENT **d, int user, u_int **idsp, u_int *nidsp)
 	for (i = 0; d[i] != NULL; i++) {
 		if (user) {
 			if (ruser_name((uid_t)(d[i]->a.uid)) != NULL)
-				continue; /* Already seen */
+				continue;  
 			id = d[i]->a.uid;
 		} else {
 			if (rgroup_name((gid_t)(d[i]->a.gid)) != NULL)
-				continue; /* Already seen */
+				continue;  
 			id = d[i]->a.gid;
 		}
 		if (has_id(id, ids, n))

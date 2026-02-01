@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_red.c	Random Early Detection queue.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *
- * Changes:
- * J Hadi Salim 980914:	computation fixes
- * Alexey Makarenko <makar@phoenix.kharkov.ua> 990814: qave on idle link was calculated incorrectly.
- * J Hadi Salim 980816:  ECN support
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -20,24 +11,13 @@
 #include <net/red.h>
 
 
-/*	Parameters, settable by user:
-	-----------------------------
-
-	limit		- bytes (must be > qth_max + burst)
-
-	Hard limit on queue length, should be chosen >qth_max
-	to allow packet bursts. This parameter does not
-	affect the algorithms behaviour and can be chosen
-	arbitrarily high (well, less than ram size)
-	Really, this limit will never be reached
-	if RED works correctly.
- */
+ 
 
 struct red_sched_data {
-	u32			limit;		/* HARD maximal queue length */
+	u32			limit;		 
 
 	unsigned char		flags;
-	/* Non-flags in tc_red_qopt.flags. */
+	 
 	unsigned char		userbits;
 
 	struct timer_list	adapt_timer;
@@ -103,7 +83,7 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 			goto congestion_drop;
 		}
 
-		/* Non-ECT packet in ECN nodrop mode: queue it. */
+		 
 		break;
 
 	case RED_HARD_MARK:
@@ -123,7 +103,7 @@ static int red_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 			goto congestion_drop;
 		}
 
-		/* Non-ECT packet in ECN nodrop mode: queue it. */
+		 
 		break;
 	}
 
@@ -268,7 +248,7 @@ static int __red_change(struct Qdisc *sch, struct nlattr **tb,
 		if (IS_ERR(child))
 			return PTR_ERR(child);
 
-		/* child is fifo, no need to check for noop_qdisc */
+		 
 		qdisc_hash_add(child, true);
 	}
 

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitops.h>
@@ -88,7 +75,7 @@ static int t7xx_pcie_mac_atr_cfg(struct t7xx_pci_dev *t7xx_dev, struct t7xx_atr_
 	u64 value;
 
 	if (cfg->transparent) {
-		/* No address conversion is performed */
+		 
 		atr_size = ATR_TRANSPARENT_SIZE;
 	} else {
 		if (cfg->src_addr & (cfg->size - 1)) {
@@ -104,7 +91,7 @@ static int t7xx_pcie_mac_atr_cfg(struct t7xx_pci_dev *t7xx_dev, struct t7xx_atr_
 
 		pos = __ffs64(cfg->size);
 
-		/* HW calculates the address translation space as 2^(atr_size + 1) */
+		 
 		atr_size = pos - 1;
 	}
 
@@ -121,28 +108,23 @@ static int t7xx_pcie_mac_atr_cfg(struct t7xx_pci_dev *t7xx_dev, struct t7xx_atr_
 	value = (cfg->src_addr & ATR_PCIE_WIN0_ADDR_ALGMT) | (atr_size << 1) | BIT(0);
 	iowrite64(value, reg);
 
-	/* Ensure ATR is set */
+	 
 	ioread64(reg);
 	return 0;
 }
 
-/**
- * t7xx_pcie_mac_atr_init() - Initialize address translation.
- * @t7xx_dev: MTK device.
- *
- * Setup ATR for ports & device.
- */
+ 
 void t7xx_pcie_mac_atr_init(struct t7xx_pci_dev *t7xx_dev)
 {
 	struct t7xx_atr_config cfg;
 	u32 i;
 
-	/* Disable for all ports */
+	 
 	for (i = ATR_SRC_PCI_WIN0; i <= ATR_SRC_AXIS_3; i++)
 		t7xx_pcie_mac_atr_tables_dis(IREG_BASE(t7xx_dev), i);
 
 	memset(&cfg, 0, sizeof(cfg));
-	/* Config ATR for RC to access device's register */
+	 
 	cfg.src_addr = pci_resource_start(t7xx_dev->pdev, T7XX_PCIE_REG_BAR);
 	cfg.size = T7XX_PCIE_REG_SIZE_CHIP;
 	cfg.trsl_addr = T7XX_PCIE_REG_TRSL_ADDR_CHIP;
@@ -154,7 +136,7 @@ void t7xx_pcie_mac_atr_init(struct t7xx_pci_dev *t7xx_dev)
 
 	t7xx_dev->base_addr.pcie_dev_reg_trsl_addr = T7XX_PCIE_REG_TRSL_ADDR_CHIP;
 
-	/* Config ATR for EP to access RC's memory */
+	 
 	for (i = T7XX_PCIE_DEV_DMA_PORT_START; i <= T7XX_PCIE_DEV_DMA_PORT_END; i++) {
 		cfg.src_addr = T7XX_PCIE_DEV_DMA_SRC_ADDR;
 		cfg.size = T7XX_PCIE_DEV_DMA_SIZE;
@@ -168,13 +150,7 @@ void t7xx_pcie_mac_atr_init(struct t7xx_pci_dev *t7xx_dev)
 	}
 }
 
-/**
- * t7xx_pcie_mac_enable_disable_int() - Enable/disable interrupts.
- * @t7xx_dev: MTK device.
- * @enable: Enable/disable.
- *
- * Enable or disable device interrupts.
- */
+ 
 static void t7xx_pcie_mac_enable_disable_int(struct t7xx_pci_dev *t7xx_dev, bool enable)
 {
 	u32 value;
@@ -199,14 +175,7 @@ void t7xx_pcie_mac_interrupts_dis(struct t7xx_pci_dev *t7xx_dev)
 	t7xx_pcie_mac_enable_disable_int(t7xx_dev, false);
 }
 
-/**
- * t7xx_pcie_mac_clear_set_int() - Clear/set interrupt by type.
- * @t7xx_dev: MTK device.
- * @int_type: Interrupt type.
- * @clear: Clear/set.
- *
- * Clear or set device interrupt by type.
- */
+ 
 static void t7xx_pcie_mac_clear_set_int(struct t7xx_pci_dev *t7xx_dev,
 					enum t7xx_int int_type, bool clear)
 {
@@ -232,13 +201,7 @@ void t7xx_pcie_mac_set_int(struct t7xx_pci_dev *t7xx_dev, enum t7xx_int int_type
 	t7xx_pcie_mac_clear_set_int(t7xx_dev, int_type, false);
 }
 
-/**
- * t7xx_pcie_mac_clear_int_status() - Clear interrupt status by type.
- * @t7xx_dev: MTK device.
- * @int_type: Interrupt type.
- *
- * Enable or disable device interrupts' status by type.
- */
+ 
 void t7xx_pcie_mac_clear_int_status(struct t7xx_pci_dev *t7xx_dev, enum t7xx_int int_type)
 {
 	void __iomem *reg = IREG_BASE(t7xx_dev) + MSIX_ISTAT_HST_GRP0_0;
@@ -247,13 +210,7 @@ void t7xx_pcie_mac_clear_int_status(struct t7xx_pci_dev *t7xx_dev, enum t7xx_int
 	iowrite32(val, reg);
 }
 
-/**
- * t7xx_pcie_set_mac_msix_cfg() - Write MSIX control configuration.
- * @t7xx_dev: MTK device.
- * @irq_count: Number of MSIX IRQ vectors.
- *
- * Write IRQ count to device.
- */
+ 
 void t7xx_pcie_set_mac_msix_cfg(struct t7xx_pci_dev *t7xx_dev, unsigned int irq_count)
 {
 	u32 val = ffs(irq_count) * 2 - 1;

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+ 
+ 
 
 #ifndef HINIC_HW_WQE_H
 #define HINIC_HW_WQE_H
@@ -98,7 +95,7 @@
 #define HINIC_SQ_TASK_INFO0_INNER_L3TYPE_SHIFT  10
 #define HINIC_SQ_TASK_INFO0_VLAN_OFFLOAD_SHIFT  12
 #define HINIC_SQ_TASK_INFO0_PARSE_FLAG_SHIFT    13
-/* 1 bit reserved */
+ 
 #define HINIC_SQ_TASK_INFO0_TSO_FLAG_SHIFT      15
 #define HINIC_SQ_TASK_INFO0_VLAN_TAG_SHIFT      16
 
@@ -107,7 +104,7 @@
 #define HINIC_SQ_TASK_INFO0_INNER_L3TYPE_MASK   0x3
 #define HINIC_SQ_TASK_INFO0_VLAN_OFFLOAD_MASK   0x1
 #define HINIC_SQ_TASK_INFO0_PARSE_FLAG_MASK     0x1
-/* 1 bit reserved */
+ 
 #define HINIC_SQ_TASK_INFO0_TSO_FLAG_MASK       0x1
 #define HINIC_SQ_TASK_INFO0_VLAN_TAG_MASK       0xFFFF
 
@@ -115,12 +112,12 @@
 		(((u32)(val) & HINIC_SQ_TASK_INFO0_##member##_MASK) <<  \
 		 HINIC_SQ_TASK_INFO0_##member##_SHIFT)
 
-/* 8 bits reserved */
+ 
 #define HINIC_SQ_TASK_INFO1_MEDIA_TYPE_SHIFT    8
 #define HINIC_SQ_TASK_INFO1_INNER_L4LEN_SHIFT   16
 #define HINIC_SQ_TASK_INFO1_INNER_L3LEN_SHIFT   24
 
-/* 8 bits reserved */
+ 
 #define HINIC_SQ_TASK_INFO1_MEDIA_TYPE_MASK     0xFF
 #define HINIC_SQ_TASK_INFO1_INNER_L4LEN_MASK    0xFF
 #define HINIC_SQ_TASK_INFO1_INNER_L3LEN_MASK    0xFF
@@ -132,25 +129,25 @@
 #define HINIC_SQ_TASK_INFO2_TUNNEL_L4LEN_SHIFT  0
 #define HINIC_SQ_TASK_INFO2_OUTER_L3LEN_SHIFT   8
 #define HINIC_SQ_TASK_INFO2_TUNNEL_L4TYPE_SHIFT 16
-/* 1 bit reserved */
+ 
 #define HINIC_SQ_TASK_INFO2_OUTER_L3TYPE_SHIFT  24
-/* 8 bits reserved */
+ 
 
 #define HINIC_SQ_TASK_INFO2_TUNNEL_L4LEN_MASK   0xFF
 #define HINIC_SQ_TASK_INFO2_OUTER_L3LEN_MASK    0xFF
 #define HINIC_SQ_TASK_INFO2_TUNNEL_L4TYPE_MASK  0x7
-/* 1 bit reserved */
+ 
 #define HINIC_SQ_TASK_INFO2_OUTER_L3TYPE_MASK   0x3
-/* 8 bits reserved */
+ 
 
 #define HINIC_SQ_TASK_INFO2_SET(val, member)    \
 		(((u32)(val) & HINIC_SQ_TASK_INFO2_##member##_MASK) <<  \
 		 HINIC_SQ_TASK_INFO2_##member##_SHIFT)
 
-/* 31 bits reserved */
+ 
 #define HINIC_SQ_TASK_INFO4_L2TYPE_SHIFT        31
 
-/* 31 bits reserved */
+ 
 #define HINIC_SQ_TASK_INFO4_L2TYPE_MASK         0x1
 
 #define HINIC_SQ_TASK_INFO4_SET(val, member)    \
@@ -311,7 +308,7 @@ struct hinic_sge_resp {
 };
 
 struct hinic_cmdq_completion {
-	/* HW Format */
+	 
 	union {
 		struct hinic_sge_resp   sge_resp;
 		u64                     direct_resp;
@@ -353,7 +350,7 @@ struct hinic_cmdq_direct_wqe {
 };
 
 struct hinic_cmdq_wqe {
-	/* HW Format */
+	 
 	union {
 		struct hinic_cmdq_direct_wqe    direct_wqe;
 		struct hinic_cmdq_wqe_lcmd      wqe_lcmd;
@@ -419,7 +416,7 @@ struct hinic_rq_wqe {
 };
 
 struct hinic_hw_wqe {
-	/* HW Format */
+	 
 	union {
 		struct hinic_cmdq_wqe   cmdq_wqe;
 		struct hinic_sq_wqe     sq_wqe;

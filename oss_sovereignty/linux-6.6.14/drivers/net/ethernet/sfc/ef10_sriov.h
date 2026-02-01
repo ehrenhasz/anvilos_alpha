@@ -1,23 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2015 Solarflare Communications Inc.
- */
+ 
+ 
 
 #ifndef EF10_SRIOV_H
 #define EF10_SRIOV_H
 
 #include "net_driver.h"
 
-/**
- * struct ef10_vf - PF's store of VF data
- * @efx: efx_nic struct for the current VF
- * @pci_dev: the pci_dev struct for the VF, retained while the VF is assigned
- * @vport_id: vport ID for the VF
- * @vport_assigned: record whether the vport is currently assigned to the VF
- * @mac: MAC address for the VF, zero when address is removed from the vport
- * @vlan: Default VLAN for the VF or #EFX_EF10_NO_VLAN
- */
+ 
 struct ef10_vf {
 	struct efx_nic *efx;
 	struct pci_dev *pci_dev;
@@ -67,4 +56,4 @@ int efx_ef10_vadaptor_query(struct efx_nic *efx, unsigned int port_id,
 			    unsigned int *vlan_tags);
 int efx_ef10_vadaptor_free(struct efx_nic *efx, unsigned int port_id);
 
-#endif /* EF10_SRIOV_H */
+#endif  

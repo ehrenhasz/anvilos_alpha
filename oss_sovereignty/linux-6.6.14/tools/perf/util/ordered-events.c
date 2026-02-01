@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <inttypes.h>
 #include <linux/list.h>
@@ -32,11 +32,7 @@ static void queue_event(struct ordered_events *oe, struct ordered_event *new)
 		return;
 	}
 
-	/*
-	 * last event might point to some random place in the list as it's
-	 * the last queued event. We expect that the new event is close to
-	 * this.
-	 */
+	 
 	if (last->timestamp <= timestamp) {
 		while (last->timestamp <= timestamp) {
 			p = last->list.next;
@@ -108,33 +104,7 @@ static struct ordered_event *alloc_event(struct ordered_events *oe,
 	if (!new_event)
 		return NULL;
 
-	/*
-	 * We maintain the following scheme of buffers for ordered
-	 * event allocation:
-	 *
-	 *   to_free list -> buffer1 (64K)
-	 *                   buffer2 (64K)
-	 *                   ...
-	 *
-	 * Each buffer keeps an array of ordered events objects:
-	 *    buffer -> event[0]
-	 *              event[1]
-	 *              ...
-	 *
-	 * Each allocated ordered event is linked to one of
-	 * following lists:
-	 *   - time ordered list 'events'
-	 *   - list of currently removed events 'cache'
-	 *
-	 * Allocation of the ordered event uses the following order
-	 * to get the memory:
-	 *   - use recently removed object from 'cache' list
-	 *   - use available object in current allocation buffer
-	 *   - allocate new buffer if the current buffer is full
-	 *
-	 * Removal of ordered event object moves it from events to
-	 * the cache list.
-	 */
+	 
 	size = sizeof(*oe->buffer) + MAX_SAMPLE_BUFFER * sizeof(*new);
 
 	if (!list_empty(cache)) {
@@ -297,7 +267,7 @@ static int __ordered_events__flush(struct ordered_events *oe, enum oe_flush how,
 		first = list_entry(head->next, struct ordered_event, list);
 		last = oe->last;
 
-		/* Warn if we are called before any event got allocated. */
+		 
 		if (WARN_ONCE(!last || list_empty(head), "empty queue"))
 			return 0;
 
@@ -391,16 +361,13 @@ void ordered_events__free(struct ordered_events *oe)
 	if (list_empty(&oe->to_free))
 		return;
 
-	/*
-	 * Current buffer might not have all the events allocated
-	 * yet, we need to free only allocated ones ...
-	 */
+	 
 	if (oe->buffer) {
 		list_del_init(&oe->buffer->list);
 		ordered_events_buffer__free(oe->buffer, oe->buffer_idx, oe);
 	}
 
-	/* ... and continue with the rest */
+	 
 	list_for_each_entry_safe(buffer, tmp, &oe->to_free, list) {
 		list_del_init(&buffer->list);
 		ordered_events_buffer__free(buffer, MAX_SAMPLE_BUFFER, oe);

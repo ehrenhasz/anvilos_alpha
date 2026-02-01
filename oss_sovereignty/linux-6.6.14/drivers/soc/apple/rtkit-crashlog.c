@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-/*
- * Apple RTKit IPC library
- * Copyright (C) The Asahi Linux Contributors
- */
+
+ 
 #include "rtkit-internal.h"
 
 #define FOURCC(a, b, c, d) \
@@ -15,7 +12,7 @@
 #define APPLE_RTKIT_CRASHLOG_TIME FOURCC('C', 't', 'i', 'm')
 #define APPLE_RTKIT_CRASHLOG_REGS FOURCC('C', 'r', 'g', '8')
 
-/* For COMPILE_TEST on non-ARM64 architectures */
+ 
 #ifndef PSR_MODE_EL0t
 #define PSR_MODE_EL0t	0x00000000
 #define PSR_MODE_EL1t	0x00000004

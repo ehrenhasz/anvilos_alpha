@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip MIPI RX Innosilicon DPHY driver
- *
- * Copyright (C) 2021 Fuzhou Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -20,7 +16,7 @@
 #include <linux/regmap.h>
 #include <linux/reset.h>
 
-/* GRF */
+ 
 #define RK1808_GRF_PD_VI_CON_OFFSET	0x0430
 
 #define RK3326_GRF_PD_VI_CON_OFFSET	0x0430
@@ -30,13 +26,13 @@
 #define RK3568_GRF_VI_CON0		0x0340
 #define RK3568_GRF_VI_CON1		0x0344
 
-/* PHY */
+ 
 #define CSIDPHY_CTRL_LANE_ENABLE		0x00
 #define CSIDPHY_CTRL_LANE_ENABLE_CK		BIT(6)
 #define CSIDPHY_CTRL_LANE_ENABLE_MASK		GENMASK(5, 2)
 #define CSIDPHY_CTRL_LANE_ENABLE_UNDEFINED	BIT(0)
 
-/* not present on all variants */
+ 
 #define CSIDPHY_CTRL_PWRCTL			0x04
 #define CSIDPHY_CTRL_PWRCTL_UNDEFINED		GENMASK(7, 5)
 #define CSIDPHY_CTRL_PWRCTL_SYNCRST		BIT(2)
@@ -47,37 +43,34 @@
 #define CSIDPHY_CTRL_DIG_RST_UNDEFINED		0x1e
 #define CSIDPHY_CTRL_DIG_RST_RESET		BIT(0)
 
-/* offset after ths_settle_offset */
+ 
 #define CSIDPHY_CLK_THS_SETTLE			0
 #define CSIDPHY_LANE_THS_SETTLE(n)		(((n) + 1) * 0x80)
 #define CSIDPHY_THS_SETTLE_MASK			GENMASK(6, 0)
 
-/* offset after calib_offset */
+ 
 #define CSIDPHY_CLK_CALIB_EN			0
 #define CSIDPHY_LANE_CALIB_EN(n)		(((n) + 1) * 0x80)
 #define CSIDPHY_CALIB_EN			BIT(7)
 
-/* Configure the count time of the THS-SETTLE by protocol. */
+ 
 #define RK1808_CSIDPHY_CLK_WR_THS_SETTLE	0x160
 #define RK3326_CSIDPHY_CLK_WR_THS_SETTLE	0x100
 #define RK3368_CSIDPHY_CLK_WR_THS_SETTLE	0x100
 #define RK3568_CSIDPHY_CLK_WR_THS_SETTLE	0x160
 
-/* Calibration reception enable */
+ 
 #define RK1808_CSIDPHY_CLK_CALIB_EN		0x168
 #define RK3568_CSIDPHY_CLK_CALIB_EN		0x168
 
-/*
- * The higher 16-bit of this register is used for write protection
- * only if BIT(x + 16) set to 1 the BIT(x) can be written.
- */
+ 
 #define HIWORD_UPDATE(val, mask, shift) \
 		((val) << (shift) | (mask) << ((shift) + 16))
 
 #define HZ_TO_MHZ(freq)				div_u64(freq, 1000 * 1000)
 
 enum dphy_reg_id {
-	/* rk1808 & rk3326 */
+	 
 	GRF_DPHY_CSIPHY_FORCERXMODE,
 	GRF_DPHY_CSIPHY_CLKLANE_EN,
 	GRF_DPHY_CSIPHY_DATALANE_EN,
@@ -150,7 +143,7 @@ static inline void write_grf_reg(struct rockchip_inno_csidphy *priv,
 			     HIWORD_UPDATE(value, reg->mask, reg->shift));
 }
 
-/* These tables must be sorted by .range_h ascending. */
+ 
 static const struct hsfreq_range rk1808_mipidphy_hsfreq_ranges[] = {
 	{ 109, 0x02}, { 149, 0x03}, { 199, 0x06}, { 249, 0x06},
 	{ 299, 0x06}, { 399, 0x08}, { 499, 0x0b}, { 599, 0x0e},
@@ -196,7 +189,7 @@ static int rockchip_inno_csidphy_configure(struct phy *phy,
 	u64 data_rate_mbps;
 	int ret;
 
-	/* pass with phy_mipi_dphy_get_default_config (with pixel rate?) */
+	 
 	ret = phy_mipi_dphy_config_validate(config);
 	if (ret)
 		return ret;
@@ -237,34 +230,34 @@ static int rockchip_inno_csidphy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* phy start */
+	 
 	if (drv_data->pwrctl_offset >= 0)
 		writel(CSIDPHY_CTRL_PWRCTL_UNDEFINED |
 		       CSIDPHY_CTRL_PWRCTL_SYNCRST,
 		       priv->phy_base + drv_data->pwrctl_offset);
 
-	/* set data lane num and enable clock lane */
+	 
 	val = FIELD_PREP(CSIDPHY_CTRL_LANE_ENABLE_MASK, GENMASK(priv->config.lanes - 1, 0)) |
 	      FIELD_PREP(CSIDPHY_CTRL_LANE_ENABLE_CK, 1) |
 	      FIELD_PREP(CSIDPHY_CTRL_LANE_ENABLE_UNDEFINED, 1);
 	writel(val, priv->phy_base + CSIDPHY_CTRL_LANE_ENABLE);
 
-	/* Reset dphy analog part */
+	 
 	if (drv_data->pwrctl_offset >= 0)
 		writel(CSIDPHY_CTRL_PWRCTL_UNDEFINED,
 		       priv->phy_base + drv_data->pwrctl_offset);
 	usleep_range(500, 1000);
 
-	/* Reset dphy digital part */
+	 
 	writel(CSIDPHY_CTRL_DIG_RST_UNDEFINED,
 	       priv->phy_base + CSIDPHY_CTRL_DIG_RST);
 	writel(CSIDPHY_CTRL_DIG_RST_UNDEFINED + CSIDPHY_CTRL_DIG_RST_RESET,
 	       priv->phy_base + CSIDPHY_CTRL_DIG_RST);
 
-	/* not into receive mode/wait stopstate */
+	 
 	write_grf_reg(priv, GRF_DPHY_CSIPHY_FORCERXMODE, 0x0);
 
-	/* enable calibration */
+	 
 	if (data_rate_mbps > 1500 && drv_data->calib_offset >= 0) {
 		writel(CSIDPHY_CALIB_EN,
 		       priv->phy_base + drv_data->calib_offset +
@@ -293,11 +286,11 @@ static int rockchip_inno_csidphy_power_off(struct phy *phy)
 	struct rockchip_inno_csidphy *priv = phy_get_drvdata(phy);
 	const struct dphy_drv_data *drv_data = priv->drv_data;
 
-	/* disable all lanes */
+	 
 	writel(CSIDPHY_CTRL_LANE_ENABLE_UNDEFINED,
 	       priv->phy_base + CSIDPHY_CTRL_LANE_ENABLE);
 
-	/* disable pll and ldo */
+	 
 	if (drv_data->pwrctl_offset >= 0)
 		writel(CSIDPHY_CTRL_PWRCTL_UNDEFINED |
 		       CSIDPHY_CTRL_PWRCTL_LDO_PD |

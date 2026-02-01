@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: Henry Chen <henryc.chen@mediatek.com>
- */
+ 
+ 
 
 #ifndef __LINUX_REGULATOR_MT6311_H
 #define __LINUX_REGULATOR_MT6311_H
@@ -18,4 +15,4 @@ enum {
 #define MT6311_E2_CID_CODE    0x20
 #define MT6311_E3_CID_CODE    0x30
 
-#endif /* __LINUX_REGULATOR_MT6311_H */
+#endif  

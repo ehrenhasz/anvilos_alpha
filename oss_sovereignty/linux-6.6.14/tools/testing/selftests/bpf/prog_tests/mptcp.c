@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Tessares SA. */
-/* Copyright (c) 2022, SUSE. */
+
+ 
+ 
 
 #include <linux/const.h>
 #include <netinet/in.h>
@@ -201,7 +201,7 @@ static void test_base(void)
 	if (!ASSERT_OK_PTR(nstoken, "create_netns"))
 		goto fail;
 
-	/* without MPTCP */
+	 
 	server_fd = start_server(AF_INET, SOCK_STREAM, NULL, 0, 0);
 	if (!ASSERT_GE(server_fd, 0, "start_server"))
 		goto with_mptcp;
@@ -211,7 +211,7 @@ static void test_base(void)
 	close(server_fd);
 
 with_mptcp:
-	/* with MPTCP */
+	 
 	server_fd = start_mptcp_server(AF_INET, NULL, 0, 0);
 	if (!ASSERT_GE(server_fd, 0, "start_mptcp_server"))
 		goto fail;
@@ -277,7 +277,7 @@ static int run_mptcpify(int cgroup_fd)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto out;
 
-	/* without MPTCP */
+	 
 	server_fd = start_server(AF_INET, SOCK_STREAM, NULL, 0, 0);
 	if (!ASSERT_GE(server_fd, 0, "start_server")) {
 		err = -EIO;

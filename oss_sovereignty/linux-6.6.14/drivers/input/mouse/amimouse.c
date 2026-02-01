@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Amiga mouse driver for Linux/m68k
- *
- *  Copyright (c) 2000-2002 Vojtech Pavlik
- *
- *  Based on the work of:
- *	Michael Rausch		James Banks
- *	Matther Dillon		David Giller
- *	Nathan Laredo		Linus Torvalds
- *	Johan Myreen		Jes Sorensen
- *	Russell King
- */
+
+ 
 
 
 #include <linux/module.h>

@@ -1,25 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* ir-sharp-decoder.c - handle Sharp IR Pulse/Space protocol
- *
- * Copyright (C) 2013-2014 Imagination Technologies Ltd.
- *
- * Based on NEC decoder:
- * Copyright (C) 2010 by Mauro Carvalho Chehab
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/module.h>
 #include "rc-core-priv.h"
 
 #define SHARP_NBITS		15
-#define SHARP_UNIT		40  /* us */
-#define SHARP_BIT_PULSE		(8    * SHARP_UNIT) /* 320us */
-#define SHARP_BIT_0_PERIOD	(25   * SHARP_UNIT) /* 1ms (680us space) */
-#define SHARP_BIT_1_PERIOD	(50   * SHARP_UNIT) /* 2ms (1680us space) */
-#define SHARP_BIT_0_SPACE	(17   * SHARP_UNIT) /* 680us space */
-#define SHARP_BIT_1_SPACE	(42   * SHARP_UNIT) /* 1680us space */
-#define SHARP_ECHO_SPACE	(1000 * SHARP_UNIT) /* 40 ms */
-#define SHARP_TRAILER_SPACE	(125  * SHARP_UNIT) /* 5 ms (even longer) */
+#define SHARP_UNIT		40   
+#define SHARP_BIT_PULSE		(8    * SHARP_UNIT)  
+#define SHARP_BIT_0_PERIOD	(25   * SHARP_UNIT)  
+#define SHARP_BIT_1_PERIOD	(50   * SHARP_UNIT)  
+#define SHARP_BIT_0_SPACE	(17   * SHARP_UNIT)  
+#define SHARP_BIT_1_SPACE	(42   * SHARP_UNIT)  
+#define SHARP_ECHO_SPACE	(1000 * SHARP_UNIT)  
+#define SHARP_TRAILER_SPACE	(125  * SHARP_UNIT)  
 
 enum sharp_state {
 	STATE_INACTIVE,
@@ -30,13 +24,7 @@ enum sharp_state {
 	STATE_TRAILER_SPACE,
 };
 
-/**
- * ir_sharp_decode() - Decode one Sharp pulse or space
- * @dev:	the struct rc_dev descriptor of the device
- * @ev:		the struct ir_raw_event descriptor of the pulse/space
- *
- * This function returns -EINVAL if the pulse violates the state machine
- */
+ 
 static int ir_sharp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 {
 	struct sharp_dec *data = &dev->raw->sharp;
@@ -108,9 +96,9 @@ static int ir_sharp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 			break;
 
 		if (data->count == SHARP_NBITS) {
-			/* exp,chk bits should be 1,0 */
+			 
 			if ((data->bits & 0x3) != 0x2 &&
-			/* DENON variant, both chk bits 0 */
+			 
 			    (data->bits & 0x3) != 0x0)
 				break;
 			data->state = STATE_ECHO_SPACE;
@@ -139,7 +127,7 @@ static int ir_sharp_decode(struct rc_dev *dev, struct ir_raw_event ev)
 				SHARP_BIT_PULSE / 2))
 			break;
 
-		/* Validate - command, ext, chk should be inverted in 2nd */
+		 
 		msg = (data->bits >> 15) & 0x7fff;
 		echo = data->bits & 0x7fff;
 		if ((msg ^ echo) != 0x3ff) {
@@ -177,18 +165,7 @@ static const struct ir_raw_timings_pd ir_sharp_timings = {
 	.msb_first     = 1,
 };
 
-/**
- * ir_sharp_encode() - Encode a scancode as a stream of raw events
- *
- * @protocol:	protocol to encode
- * @scancode:	scancode to encode
- * @events:	array of raw ir events to write into
- * @max:	maximum size of @events
- *
- * Returns:	The number of events written.
- *		-ENOBUFS if there isn't enough space in the array to fit the
- *		encoding. In this case all @max events will have been written.
- */
+ 
 static int ir_sharp_encode(enum rc_proto protocol, u32 scancode,
 			   struct ir_raw_event *events, unsigned int max)
 {

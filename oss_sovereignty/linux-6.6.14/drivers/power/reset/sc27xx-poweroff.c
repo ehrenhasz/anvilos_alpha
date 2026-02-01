@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Spreadtrum Communications Inc.
- * Copyright (C) 2018 Linaro Ltd.
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/kernel.h>
@@ -19,15 +16,7 @@
 
 static struct regmap *regmap;
 
-/*
- * On Spreadtrum platform, we need power off system through external SC27xx
- * series PMICs, and it is one similar SPI bus mapped by regmap to access PMIC,
- * which is not fast io access.
- *
- * So before stopping other cores, we need release other cores' resource by
- * taking cpus down to avoid racing regmap or spi mutex lock when poweroff
- * system through PMIC.
- */
+ 
 static void sc27xx_poweroff_shutdown(void)
 {
 #ifdef CONFIG_HOTPLUG_CPU
@@ -46,7 +35,7 @@ static struct syscore_ops poweroff_syscore_ops = {
 
 static void sc27xx_poweroff_do_poweroff(void)
 {
-	/* Disable the external subsys connection's power firstly */
+	 
 	regmap_write(regmap, SC27XX_SLP_CTRL, SC27XX_LDO_XTL_EN);
 
 	regmap_write(regmap, SC27XX_PWR_PD_HW, SC27XX_PWR_OFF_EN);

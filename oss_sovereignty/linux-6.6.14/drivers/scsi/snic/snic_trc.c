@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2014 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/mempool.h>
@@ -9,9 +9,7 @@
 #include "snic_io.h"
 #include "snic.h"
 
-/*
- * snic_get_trc_buf : Allocates a trace record and returns.
- */
+ 
 struct snic_trc_data *
 snic_get_trc_buf(void)
 {
@@ -36,17 +34,15 @@ snic_get_trc_buf(void)
 	if (trc->rd_idx == trc->max_idx)
 		trc->rd_idx = 0;
 
-	td->ts = 0;	/* Marker for checking the record, for complete data*/
+	td->ts = 0;	 
 	spin_unlock_irqrestore(&trc->lock, flags);
 
 end:
 
 	return td;
-} /* end of snic_get_trc_buf */
+}  
 
-/*
- * snic_fmt_trc_data : Formats trace data for printing.
- */
+ 
 static int
 snic_fmt_trc_data(struct snic_trc_data *td, char *buf, int buf_sz)
 {
@@ -66,11 +62,9 @@ snic_fmt_trc_data(struct snic_trc_data *td, char *buf, int buf_sz)
 			td->data[4]);
 
 	return len;
-} /* end of snic_fmt_trc_data */
+}  
 
-/*
- * snic_get_trc_data : Returns a formatted trace buffer.
- */
+ 
 int
 snic_get_trc_data(char *buf, int buf_sz)
 {
@@ -87,7 +81,7 @@ snic_get_trc_data(char *buf, int buf_sz)
 	td = &trc->buf[trc->rd_idx];
 
 	if (td->ts == 0) {
-		/* write in progress. */
+		 
 		spin_unlock_irqrestore(&trc->lock, flags);
 
 		return -1;
@@ -99,11 +93,9 @@ snic_get_trc_data(char *buf, int buf_sz)
 	spin_unlock_irqrestore(&trc->lock, flags);
 
 	return snic_fmt_trc_data(td, buf, buf_sz);
-} /* end of snic_get_trc_data */
+}  
 
-/*
- * snic_trc_init() : Configures Trace Functionality for snic.
- */
+ 
 int
 snic_trc_init(void)
 {
@@ -134,11 +126,9 @@ snic_trc_init(void)
 	ret = 0;
 
 	return ret;
-} /* end of snic_trc_init */
+}  
 
-/*
- * snic_trc_free : Releases the trace buffer and disables the tracing.
- */
+ 
 void
 snic_trc_free(void)
 {
@@ -153,4 +143,4 @@ snic_trc_free(void)
 	}
 
 	SNIC_INFO("Trace Facility Disabled.\n");
-} /* end of snic_trc_free */
+}  

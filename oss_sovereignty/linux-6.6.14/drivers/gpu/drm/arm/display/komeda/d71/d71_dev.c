@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 
 #include <drm/drm_blend.h>
 #include <drm/drm_print.h>
@@ -26,7 +22,7 @@ static u64 get_lpu_event(struct d71_pipeline *d71_pipeline)
 
 	if (raw_status & (LPU_IRQ_ERR | LPU_IRQ_IBSY | LPU_IRQ_OVR)) {
 		u32 restore = 0, tbu_status;
-		/* Check error of LPU status */
+		 
 		status = malidp_read32(reg, BLK_STATUS);
 		if (status & LPU_STATUS_AXIE) {
 			restore |= LPU_STATUS_AXIE;
@@ -61,7 +57,7 @@ static u64 get_lpu_event(struct d71_pipeline *d71_pipeline)
 			malidp_write32_mask(reg, BLK_STATUS, restore, 0);
 
 		restore = 0;
-		/* Check errors of TBU status */
+		 
 		tbu_status = malidp_read32(reg, LPU_TBU_STATUS);
 		if (tbu_status & LPU_TBU_STATUS_TCF) {
 			restore |= LPU_TBU_STATUS_TCF;
@@ -328,7 +324,7 @@ void d71_read_block_header(u32 __iomem *reg, struct block_header *blk)
 
 	blk->pipeline_info = malidp_read32(reg, BLK_PIPELINE_INFO);
 
-	/* get valid input and output ids */
+	 
 	for (i = 0; i < PIPELINE_INFO_N_VALID_INPUTS(blk->pipeline_info); i++)
 		blk->input_ids[i] = malidp_read32(reg + i, BLK_VALID_INPUT_ID0);
 	for (i = 0; i < PIPELINE_INFO_N_OUTPUTS(blk->pipeline_info); i++)
@@ -370,7 +366,7 @@ static int d71_enum_resources(struct komeda_dev *mdev)
 		goto err_cleanup;
 	}
 
-	/* probe GCU */
+	 
 	value = malidp_read32(d71->gcu_addr, GLB_CORE_INFO);
 	d71->num_blocks = value & 0xFF;
 	d71->num_pipelines = (value >> 8) & 0x7;
@@ -382,15 +378,13 @@ static int d71_enum_resources(struct komeda_dev *mdev)
 		goto err_cleanup;
 	}
 
-	/* Only the legacy HW has the periph block, the newer merges the periph
-	 * into GCU
-	 */
+	 
 	value = malidp_read32(d71->periph_addr, BLK_BLOCK_INFO);
 	if (BLOCK_INFO_BLK_TYPE(value) != D71_BLK_TYPE_PERIPH)
 		d71->periph_addr = NULL;
 
 	if (d71->periph_addr) {
-		/* probe PERIPHERAL in legacy HW */
+		 
 		value = malidp_read32(d71->periph_addr, PERIPH_CONFIGURATION_ID);
 
 		d71->max_line_size	= value & PERIPH_MAX_LINE_SIZE ? 4096 : 2048;
@@ -417,16 +411,7 @@ static int d71_enum_resources(struct komeda_dev *mdev)
 			goto err_cleanup;
 		}
 
-		/* D71 HW doesn't update shadow registers when display output
-		 * is turning off, so when we disable all pipeline components
-		 * together with display output disable by one flush or one
-		 * operation, the disable operation updated registers will not
-		 * be flush to or valid in HW, which may leads problem.
-		 * To workaround this problem, introduce a two phase disable.
-		 * Phase1: Disabling components with display is on to make sure
-		 *	   the disable can be flushed to HW.
-		 * Phase2: Only turn-off display output.
-		 */
+		 
 		value = KOMEDA_PIPELINE_IMPROCS |
 			BIT(KOMEDA_COMPONENT_TIMING_CTRLR);
 
@@ -435,12 +420,9 @@ static int d71_enum_resources(struct komeda_dev *mdev)
 		d71->pipes[i] = to_d71_pipeline(pipe);
 	}
 
-	/* loop the register blks and probe.
-	 * NOTE: d71->num_blocks includes reserved blocks.
-	 * d71->num_blocks = GCU + valid blocks + reserved blocks
-	 */
-	i = 1; /* exclude GCU */
-	offset = D71_BLOCK_SIZE; /* skip GCU */
+	 
+	i = 1;  
+	offset = D71_BLOCK_SIZE;  
 	while (i < d71->num_blocks) {
 		blk_base = mdev->reg_base + (offset >> 2);
 
@@ -487,44 +469,44 @@ err_cleanup:
 #define AFB_TH_SC_YTR_BS AFBC(_TILED | _SC | _SPARSE | _YTR | _SPLIT)
 
 static struct komeda_format_caps d71_format_caps_table[] = {
-	/*   HW_ID    |        fourcc         |   layer_types |   rots    | afbc_layouts | afbc_features */
-	/* ABGR_2101010*/
+	 
+	 
 	{__HW_ID(0, 0),	DRM_FORMAT_ARGB2101010,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
 	{__HW_ID(0, 1),	DRM_FORMAT_ABGR2101010,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
-	{__HW_ID(0, 1),	DRM_FORMAT_ABGR2101010,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR_BS}, /* afbc */
+	{__HW_ID(0, 1),	DRM_FORMAT_ABGR2101010,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR_BS},  
 	{__HW_ID(0, 2),	DRM_FORMAT_RGBA1010102,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
 	{__HW_ID(0, 3),	DRM_FORMAT_BGRA1010102,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
-	/* ABGR_8888*/
+	 
 	{__HW_ID(1, 0),	DRM_FORMAT_ARGB8888,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
 	{__HW_ID(1, 1),	DRM_FORMAT_ABGR8888,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
-	{__HW_ID(1, 1),	DRM_FORMAT_ABGR8888,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR_BS}, /* afbc */
+	{__HW_ID(1, 1),	DRM_FORMAT_ABGR8888,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR_BS},  
 	{__HW_ID(1, 2),	DRM_FORMAT_RGBA8888,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
 	{__HW_ID(1, 3),	DRM_FORMAT_BGRA8888,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
-	/* XBGB_8888 */
+	 
 	{__HW_ID(2, 0),	DRM_FORMAT_XRGB8888,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
 	{__HW_ID(2, 1),	DRM_FORMAT_XBGR8888,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
 	{__HW_ID(2, 2),	DRM_FORMAT_RGBX8888,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
 	{__HW_ID(2, 3),	DRM_FORMAT_BGRX8888,	RICH_SIMPLE_WB,	Flip_H_V,		0, 0},
-	/* BGR_888 */ /* none-afbc RGB888 doesn't support rotation and flip */
+	   
 	{__HW_ID(3, 0),	DRM_FORMAT_RGB888,	RICH_SIMPLE_WB,	Rot_0,			0, 0},
 	{__HW_ID(3, 1),	DRM_FORMAT_BGR888,	RICH_SIMPLE_WB,	Rot_0,			0, 0},
-	{__HW_ID(3, 1),	DRM_FORMAT_BGR888,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR_BS}, /* afbc */
-	/* BGR 16bpp */
+	{__HW_ID(3, 1),	DRM_FORMAT_BGR888,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR_BS},  
+	 
 	{__HW_ID(4, 0),	DRM_FORMAT_RGBA5551,	RICH_SIMPLE,	Flip_H_V,		0, 0},
 	{__HW_ID(4, 1),	DRM_FORMAT_ABGR1555,	RICH_SIMPLE,	Flip_H_V,		0, 0},
-	{__HW_ID(4, 1),	DRM_FORMAT_ABGR1555,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR}, /* afbc */
+	{__HW_ID(4, 1),	DRM_FORMAT_ABGR1555,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR},  
 	{__HW_ID(4, 2),	DRM_FORMAT_RGB565,	RICH_SIMPLE,	Flip_H_V,		0, 0},
 	{__HW_ID(4, 3),	DRM_FORMAT_BGR565,	RICH_SIMPLE,	Flip_H_V,		0, 0},
-	{__HW_ID(4, 3),	DRM_FORMAT_BGR565,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR}, /* afbc */
+	{__HW_ID(4, 3),	DRM_FORMAT_BGR565,	RICH_SIMPLE,	Rot_ALL_H_V,	LYT_NM_WB, AFB_TH_SC_YTR},  
 	{__HW_ID(4, 4), DRM_FORMAT_R8,		SIMPLE,		Rot_0,			0, 0},
-	/* YUV 444/422/420 8bit  */
-	{__HW_ID(5, 1),	DRM_FORMAT_YUYV,	RICH,		Rot_ALL_H_V,	LYT_NM, AFB_TH}, /* afbc */
+	 
+	{__HW_ID(5, 1),	DRM_FORMAT_YUYV,	RICH,		Rot_ALL_H_V,	LYT_NM, AFB_TH},  
 	{__HW_ID(5, 2),	DRM_FORMAT_YUYV,	RICH,		Flip_H_V,		0, 0},
 	{__HW_ID(5, 3),	DRM_FORMAT_UYVY,	RICH,		Flip_H_V,		0, 0},
 	{__HW_ID(5, 6),	DRM_FORMAT_NV12,	RICH,		Flip_H_V,		0, 0},
-	{__HW_ID(5, 6),	DRM_FORMAT_YUV420_8BIT,	RICH,		Rot_ALL_H_V,	LYT_NM, AFB_TH}, /* afbc */
+	{__HW_ID(5, 6),	DRM_FORMAT_YUV420_8BIT,	RICH,		Rot_ALL_H_V,	LYT_NM, AFB_TH},  
 	{__HW_ID(5, 7),	DRM_FORMAT_YUV420,	RICH,		Flip_H_V,		0, 0},
-	/* YUV 10bit*/
+	 
 	{__HW_ID(6, 6),	DRM_FORMAT_X0L2,	RICH,		Flip_H_V,		0, 0},
 	{__HW_ID(6, 7),	DRM_FORMAT_P010,	RICH,		Flip_H_V,		0, 0},
 	{__HW_ID(6, 7),	DRM_FORMAT_YUV420_10BIT, RICH,		Rot_ALL_H_V,	LYT_NM, AFB_TH},

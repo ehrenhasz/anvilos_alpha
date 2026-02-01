@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
- *  (C) 2010       Thomas Renninger <trenn@suse.de>
- */
+
+ 
 
 
 #include <unistd.h>
@@ -47,7 +44,7 @@ static void cpuidle_cpu_output(unsigned int cpu, int verbose)
 
 	for (idlestate = 0; idlestate < idlestates; idlestate++) {
 		int disabled = cpuidle_is_state_disabled(cpu, idlestate);
-		/* Disabled interface not supported on older kernels */
+		 
 		if (disabled < 0)
 			disabled = 0;
 		tmp = cpuidle_state_name(cpu, idlestate);
@@ -176,7 +173,7 @@ int cmd_idle_info(int argc, char **argv)
 		cpuidle_exit(EXIT_FAILURE);
 	}
 
-	/* Default is: show output of base_cpu only */
+	 
 	if (bitmask_isallclear(cpus_chosen))
 		bitmask_setbit(cpus_chosen, base_cpu);
 

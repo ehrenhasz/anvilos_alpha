@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * net/dsa/tag_trailer.c - Trailer tag format handling
- * Copyright (c) 2008-2009 Marvell Semiconductor
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/list.h>

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_MAPS_H
 #define __PERF_MAPS_H
 
@@ -133,4 +133,4 @@ int maps__merge_in(struct maps *kmaps, struct map *new_map);
 
 void __maps__sort_by_name(struct maps *maps);
 
-#endif // __PERF_MAPS_H
+#endif 

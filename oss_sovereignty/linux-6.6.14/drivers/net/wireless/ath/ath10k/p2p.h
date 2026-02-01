@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2015 Qualcomm Atheros, Inc.
- */
+ 
+ 
 
 #ifndef _P2P_H
 #define _P2P_H

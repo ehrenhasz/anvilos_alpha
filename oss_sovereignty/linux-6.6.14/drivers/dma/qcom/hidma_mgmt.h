@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Qualcomm Technologies HIDMA Management common header
- *
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 struct hidma_mgmt_dev {
 	u8 hw_version_major;
@@ -19,7 +15,7 @@ struct hidma_mgmt_dev {
 	u32 *priority;
 	u32 *weight;
 
-	/* Hardware device constants */
+	 
 	void __iomem *virtaddr;
 	resource_size_t addrsize;
 

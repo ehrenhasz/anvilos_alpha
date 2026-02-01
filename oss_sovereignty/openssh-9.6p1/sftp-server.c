@@ -1,19 +1,5 @@
-/* $OpenBSD: sftp-server.c,v 1.147 2023/04/12 08:53:54 jsg Exp $ */
-/*
- * Copyright (c) 2000-2004 Markus Friedl.  All rights reserved.
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -57,35 +43,35 @@
 #include "sftp.h"
 #include "sftp-common.h"
 
-char *sftp_realpath(const char *, char *); /* sftp-realpath.c */
+char *sftp_realpath(const char *, char *);  
 
-/* Maximum data read that we are willing to accept */
+ 
 #define SFTP_MAX_READ_LENGTH (SFTP_MAX_MSG_LENGTH - 1024)
 
-/* Our verbosity */
+ 
 static LogLevel log_level = SYSLOG_LEVEL_ERROR;
 
-/* Our client */
+ 
 static struct passwd *pw = NULL;
 static char *client_addr = NULL;
 
-/* input and output queue */
+ 
 struct sshbuf *iqueue;
 struct sshbuf *oqueue;
 
-/* Version of client */
+ 
 static u_int version;
 
-/* SSH2_FXP_INIT received */
+ 
 static int init_done;
 
-/* Disable writes */
+ 
 static int readonly;
 
-/* Requests that are allowed/denied */
+ 
 static char *request_allowlist, *request_denylist;
 
-/* portable attributes, etc. */
+ 
 typedef struct Stat Stat;
 
 struct Stat {
@@ -94,7 +80,7 @@ struct Stat {
 	Attrib attrib;
 };
 
-/* Packet handlers */
+ 
 static void process_open(u_int32_t id);
 static void process_close(u_int32_t id);
 static void process_read(u_int32_t id);
@@ -127,15 +113,15 @@ static void process_extended_get_users_groups_by_id(u_int32_t id);
 static void process_extended(u_int32_t id);
 
 struct sftp_handler {
-	const char *name;	/* user-visible name for fine-grained perms */
-	const char *ext_name;	/* extended request name */
-	u_int type;		/* packet type, for non extended packets */
+	const char *name;	 
+	const char *ext_name;	 
+	u_int type;		 
 	void (*handler)(u_int32_t);
-	int does_write;		/* if nonzero, banned for readonly mode */
+	int does_write;		 
 };
 
 static const struct sftp_handler handlers[] = {
-	/* NB. SSH2_FXP_OPEN does the readonly check in the handler itself */
+	 
 	{ "open", NULL, SSH2_FXP_OPEN, process_open, 0 },
 	{ "close", NULL, SSH2_FXP_CLOSE, process_close, 0 },
 	{ "read", NULL, SSH2_FXP_READ, process_read, 0 },
@@ -157,7 +143,7 @@ static const struct sftp_handler handlers[] = {
 	{ NULL, NULL, 0, NULL, 0 }
 };
 
-/* SSH2_FXP_EXTENDED submessages */
+ 
 static const struct sftp_handler extended_handlers[] = {
 	{ "posix-rename", "posix-rename@openssh.com", 0,
 	    process_extended_posix_rename, 1 },
@@ -304,7 +290,7 @@ string_from_portable(int pflags)
 	return ret;
 }
 
-/* handle handles */
+ 
 
 typedef struct Handle Handle;
 struct Handle {
@@ -515,7 +501,7 @@ get_handle(struct sshbuf *queue, int *hp)
 	return 0;
 }
 
-/* send replies */
+ 
 
 static void
 send_msg(struct sshbuf *m)
@@ -531,16 +517,16 @@ static const char *
 status_to_message(u_int32_t status)
 {
 	static const char * const status_messages[] = {
-		"Success",			/* SSH_FX_OK */
-		"End of file",			/* SSH_FX_EOF */
-		"No such file",			/* SSH_FX_NO_SUCH_FILE */
-		"Permission denied",		/* SSH_FX_PERMISSION_DENIED */
-		"Failure",			/* SSH_FX_FAILURE */
-		"Bad message",			/* SSH_FX_BAD_MESSAGE */
-		"No connection",		/* SSH_FX_NO_CONNECTION */
-		"Connection lost",		/* SSH_FX_CONNECTION_LOST */
-		"Operation unsupported",	/* SSH_FX_OP_UNSUPPORTED */
-		"Unknown error"			/* Others */
+		"Success",			 
+		"End of file",			 
+		"No such file",			 
+		"Permission denied",		 
+		"Failure",			 
+		"Bad message",			 
+		"No connection",		 
+		"Connection lost",		 
+		"Operation unsupported",	 
+		"Unknown error"			 
 	};
 	return (status_messages[MINIMUM(status,SSH2_FX_MAX)]);
 }
@@ -682,10 +668,7 @@ send_statvfs(u_int32_t id, struct statvfs *st)
 	sshbuf_free(msg);
 }
 
-/*
- * Prepare SSH2_FXP_VERSION extension advertisement for a single extension.
- * The extension is checked for permission prior to advertisement.
- */
+ 
 static int
 compose_extension(struct sshbuf *msg, const char *name, const char *ver)
 {
@@ -704,7 +687,7 @@ compose_extension(struct sshbuf *msg, const char *name, const char *ver)
 	return 0;
 }
 
-/* parse incoming */
+ 
 
 static void
 process_init(void)
@@ -721,7 +704,7 @@ process_init(void)
 	    (r = sshbuf_put_u32(msg, SSH2_FILEXFER_VERSION)) != 0)
 		fatal_fr(r, "compose");
 
-	 /* extension advertisements */
+	  
 	compose_extension(msg, "posix-rename@openssh.com", "1");
 	compose_extension(msg, "statvfs@openssh.com", "2");
 	compose_extension(msg, "fstatvfs@openssh.com", "2");
@@ -747,7 +730,7 @@ process_open(u_int32_t id)
 	int r, handle, fd, flags, mode, status = SSH2_FX_FAILURE;
 
 	if ((r = sshbuf_get_cstring(iqueue, &name, NULL)) != 0 ||
-	    (r = sshbuf_get_u32(iqueue, &pflags)) != 0 || /* portable flags */
+	    (r = sshbuf_get_u32(iqueue, &pflags)) != 0 ||  
 	    (r = decode_attrib(iqueue, &a)) != 0)
 		fatal_fr(r, "parse");
 
@@ -830,7 +813,7 @@ process_read(u_int32_t id)
 		goto out;
 	}
 	if (len == 0) {
-		/* weird, but not strictly disallowed */
+		 
 		ret = 0;
 	} else if ((ret = read(fd, buf, len)) == -1) {
 		status = errno_to_portable(errno);
@@ -843,7 +826,7 @@ process_read(u_int32_t id)
 	}
 	send_data(id, buf, ret);
 	handle_update_read(handle, ret);
-	/* success */
+	 
 	status = SSH2_FX_OK;
  out:
 	if (status != SSH2_FX_OK)
@@ -876,7 +859,7 @@ process_write(u_int32_t id)
 			error_f("seek \"%.100s\": %s", handle_to_name(handle),
 			    strerror(errno));
 		} else {
-/* XXX ATOMICIO ? */
+ 
 			ret = write(fd, data, len);
 			if (ret == -1) {
 				status = errno_to_portable(errno);
@@ -1154,7 +1137,7 @@ process_readdir(u_int32_t id)
 				nstats *= 2;
 				stats = xreallocarray(stats, nstats, sizeof(Stat));
 			}
-/* XXX OVERFLOW ? */
+ 
 			snprintf(pathname, sizeof pathname, "%s%s%s", path,
 			    strcmp(path, "/") ? "/" : "", dp->d_name);
 			if (lstat(pathname, &st) == -1)
@@ -1164,8 +1147,8 @@ process_readdir(u_int32_t id)
 			stats[count].long_name = ls_file(dp->d_name, &st,
 			    0, 0, NULL, NULL);
 			count++;
-			/* send up to 100 entries in one message */
-			/* XXX check packet size instead */
+			 
+			 
 			if (count == 100)
 				break;
 		}
@@ -1281,7 +1264,7 @@ process_rename(u_int32_t id)
 	if (lstat(oldpath, &sb) == -1)
 		status = errno_to_portable(errno);
 	else if (S_ISREG(sb.st_mode)) {
-		/* Race-free rename of regular files */
+		 
 		if (link(oldpath, newpath) == -1) {
 			if (errno == EOPNOTSUPP || errno == ENOSYS
 #ifdef EXDEV
@@ -1293,10 +1276,7 @@ process_rename(u_int32_t id)
 			    ) {
 				struct stat st;
 
-				/*
-				 * fs doesn't support links, so fall back to
-				 * stat+rename.  This is racy.
-				 */
+				 
 				if (stat(newpath, &st) == -1) {
 					if (rename(oldpath, newpath) == -1)
 						status =
@@ -1309,7 +1289,7 @@ process_rename(u_int32_t id)
 			}
 		} else if (unlink(oldpath) == -1) {
 			status = errno_to_portable(errno);
-			/* clean spare link */
+			 
 			unlink(newpath);
 		} else
 			status = SSH2_FX_OK;
@@ -1361,7 +1341,7 @@ process_symlink(u_int32_t id)
 
 	debug3("request %u: symlink", id);
 	logit("symlink old \"%s\" new \"%s\"", oldpath, newpath);
-	/* this will fail if 'newpath' exists */
+	 
 	r = symlink(oldpath, newpath);
 	status = (r == -1) ? errno_to_portable(errno) : SSH2_FX_OK;
 	send_status(id, status);
@@ -1477,7 +1457,7 @@ process_extended_lsetstat(u_int32_t id)
 
 	debug("request %u: lsetstat name \"%s\"", id, name);
 	if (a.flags & SSH2_FILEXFER_ATTR_SIZE) {
-		/* nonsensical for links */
+		 
 		status = SSH2_FX_BAD_MESSAGE;
 		goto out;
 	}
@@ -1527,20 +1507,20 @@ process_extended_limits(u_int32_t id)
 
 #if defined(HAVE_GETRLIMIT) && defined(RLIMIT_NOFILE)
 	if (getrlimit(RLIMIT_NOFILE, &rlim) != -1 && rlim.rlim_cur > 5)
-		nfiles = rlim.rlim_cur - 5; /* stdio(3) + syslog + spare */
+		nfiles = rlim.rlim_cur - 5;  
 #endif
 
 	if ((msg = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
 	if ((r = sshbuf_put_u8(msg, SSH2_FXP_EXTENDED_REPLY)) != 0 ||
 	    (r = sshbuf_put_u32(msg, id)) != 0 ||
-	    /* max-packet-length */
+	     
 	    (r = sshbuf_put_u64(msg, SFTP_MAX_MSG_LENGTH)) != 0 ||
-	    /* max-read-length */
+	     
 	    (r = sshbuf_put_u64(msg, SFTP_MAX_READ_LENGTH)) != 0 ||
-	    /* max-write-length */
+	     
 	    (r = sshbuf_put_u64(msg, SFTP_MAX_MSG_LENGTH - 1024)) != 0 ||
-	    /* max-open-handles */
+	     
 	    (r = sshbuf_put_u64(msg, nfiles)) != 0)
 		fatal_fr(r, "compose");
 	send_msg(msg);
@@ -1564,12 +1544,12 @@ process_extended_expand(u_int32_t id)
 
 	debug3("request %u: expand, original \"%s\"", id, path);
 	if (path[0] == '\0') {
-		/* empty path */
+		 
 		free(path);
 		path = xstrdup(".");
 	} else if (*path == '~') {
-		/* ~ expand path */
-		/* Special-case for "~" and "~/" to respect homedir flag */
+		 
+		 
 		if (strcmp(path, "~") == 0) {
 			free(path);
 			path = xstrdup(cwd);
@@ -1579,7 +1559,7 @@ process_extended_expand(u_int32_t id)
 			xasprintf(&path, "%s/%s", cwd, npath);
 			free(npath);
 		} else {
-			/* ~user expansions */
+			 
 			if (tilde_expand(path, pw->pw_uid, &npath) != 0) {
 				send_status_errmsg(id,
 				    errno_to_portable(ENOENT), "no such user");
@@ -1589,7 +1569,7 @@ process_extended_expand(u_int32_t id)
 			path = npath;
 		}
 	} else if (*path != '/') {
-		/* relative path */
+		 
 		xasprintf(&npath, "%s/%s", cwd, path);
 		free(path);
 		path = npath;
@@ -1629,7 +1609,7 @@ process_extended_copy_data(u_int32_t id)
 	    handle_to_name(write_handle), write_handle,
 	    (unsigned long long)write_off);
 
-	/* For read length of 0, we read until EOF. */
+	 
 	if (read_len == 0) {
 		read_len = (u_int64_t)-1 - read_off;
 		copy_until_eof = 1;
@@ -1639,7 +1619,7 @@ process_extended_copy_data(u_int32_t id)
 	read_fd = handle_to_fd(read_handle);
 	write_fd = handle_to_fd(write_handle);
 
-	/* Disallow reading & writing to the same handle or same path or dirs */
+	 
 	if (read_handle == write_handle || read_fd < 0 || write_fd < 0 ||
 	    !strcmp(handle_to_name(read_handle), handle_to_name(write_handle))) {
 		status = SSH2_FX_FAILURE;
@@ -1659,7 +1639,7 @@ process_extended_copy_data(u_int32_t id)
 		goto out;
 	}
 
-	/* Process the request in chunks. */
+	 
 	while (read_len > 0 || copy_until_eof) {
 		len = MINIMUM(sizeof(buf), read_len);
 		read_len -= len;
@@ -1785,7 +1765,7 @@ process_extended(u_int32_t id)
 		fatal_fr(r, "parse");
 	if ((exthand = extended_handler_byname(request)) == NULL) {
 		error("Unknown extended request \"%.100s\"", request);
-		send_status(id, SSH2_FX_OP_UNSUPPORTED);	/* MUST */
+		send_status(id, SSH2_FX_OP_UNSUPPORTED);	 
 	} else {
 		if (!request_permitted(exthand))
 			send_status(id, SSH2_FX_PERMISSION_DENIED);
@@ -1795,7 +1775,7 @@ process_extended(u_int32_t id)
 	free(request);
 }
 
-/* stolen from ssh-agent */
+ 
 
 static void
 process(void)
@@ -1810,7 +1790,7 @@ process(void)
 
 	buf_len = sshbuf_len(iqueue);
 	if (buf_len < 5)
-		return;		/* Incomplete message. */
+		return;		 
 	cp = sshbuf_ptr(iqueue);
 	msg_len = get_u32(cp);
 	if (msg_len > SFTP_MAX_MSG_LENGTH) {
@@ -1857,7 +1837,7 @@ process(void)
 		if (handlers[i].handler == NULL)
 			error("Unknown message %u", type);
 	}
-	/* discard the remaining bytes from the current packet */
+	 
 	if (buf_len < sshbuf_len(iqueue)) {
 		error("iqueue grew unexpectedly");
 		sftp_server_cleanup_exit(255);
@@ -1872,7 +1852,7 @@ process(void)
 		fatal_fr(r, "consume");
 }
 
-/* Cleanup handler that logs active handles upon normal exit */
+ 
 void
 sftp_server_cleanup_exit(int i)
 {
@@ -1933,10 +1913,7 @@ sftp_server_main(int argc, char **argv, struct passwd *user_pw)
 			readonly = 1;
 			break;
 		case 'c':
-			/*
-			 * Ignore all arguments if we are invoked as a
-			 * shell using "sftp-server -c command"
-			 */
+			 
 			skipargs = 1;
 			break;
 		case 'e':
@@ -1986,15 +1963,10 @@ sftp_server_main(int argc, char **argv, struct passwd *user_pw)
 
 	log_init(__progname, log_level, log_facility, log_stderr);
 
-	/*
-	 * On platforms where we can, avoid making /proc/self/{mem,maps}
-	 * available to the user so that sftp access doesn't automatically
-	 * imply arbitrary code execution access that will break
-	 * restricted configurations.
-	 */
-	platform_disable_tracing(1);	/* strict */
+	 
+	platform_disable_tracing(1);	 
 
-	/* Drop any fine-grained privileges we don't need */
+	 
 	platform_pledge_sftp_server();
 
 	if ((cp = getenv("SSH_CONNECTION")) != NULL) {
@@ -2037,11 +2009,7 @@ sftp_server_main(int argc, char **argv, struct passwd *user_pw)
 		memset(pfd, 0, sizeof pfd);
 		pfd[0].fd = pfd[1].fd = -1;
 
-		/*
-		 * Ensure that we can read a full buffer and handle
-		 * the worst-case length packet it can generate,
-		 * otherwise apply backpressure by stopping reads.
-		 */
+		 
 		if ((r = sshbuf_check_reserve(iqueue, sizeof(buf))) == 0 &&
 		    (r = sshbuf_check_reserve(oqueue,
 		    SFTP_MAX_MSG_LENGTH)) == 0) {
@@ -2064,7 +2032,7 @@ sftp_server_main(int argc, char **argv, struct passwd *user_pw)
 			sftp_server_cleanup_exit(2);
 		}
 
-		/* copy stdin to iqueue */
+		 
 		if (pfd[0].revents & (POLLIN|POLLHUP)) {
 			len = read(in, buf, sizeof buf);
 			if (len == 0) {
@@ -2078,7 +2046,7 @@ sftp_server_main(int argc, char **argv, struct passwd *user_pw)
 			} else if ((r = sshbuf_put(iqueue, buf, len)) != 0)
 				fatal_fr(r, "sshbuf_put");
 		}
-		/* send oqueue to stdout */
+		 
 		if (pfd[1].revents & (POLLOUT|POLLHUP)) {
 			len = write(out, sshbuf_ptr(oqueue), olen);
 			if (len == 0 || (len == -1 && errno == EPIPE)) {
@@ -2094,11 +2062,7 @@ sftp_server_main(int argc, char **argv, struct passwd *user_pw)
 				fatal_fr(r, "consume");
 		}
 
-		/*
-		 * Process requests from client if we can fit the results
-		 * into the output buffer, otherwise stop processing input
-		 * and let the output queue drain.
-		 */
+		 
 		r = sshbuf_check_reserve(oqueue, SFTP_MAX_MSG_LENGTH);
 		if (r == 0)
 			process();

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Scan implementation for ST-Ericsson CW1200 mac80211 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+
+ 
 
 #include <linux/sched.h>
 #include "cw1200.h"
@@ -62,7 +57,7 @@ int cw1200_hw_scan(struct ieee80211_hw *hw,
 	if (!priv->vif)
 		return -EINVAL;
 
-	/* Scan when P2P_GO corrupt firmware MiniAP mode */
+	 
 	if (priv->join_status == CW1200_JOIN_STATUS_AP)
 		return -EOPNOTSUPP;
 
@@ -83,13 +78,13 @@ int cw1200_hw_scan(struct ieee80211_hw *hw,
 	if (req->ie_len)
 		skb_put_data(frame.skb, req->ie, req->ie_len);
 
-	/* will be unlocked in cw1200_scan_work() */
+	 
 	down(&priv->scan.lock);
 	mutex_lock(&priv->conf_mutex);
 
 	ret = wsm_set_template_frame(priv, &frame);
 	if (!ret) {
-		/* Host want to be the probe responder. */
+		 
 		ret = wsm_set_probe_responder(priv, true);
 	}
 	if (ret) {
@@ -137,10 +132,7 @@ void cw1200_scan_work(struct work_struct *work)
 	int i;
 
 	if (first_run) {
-		/* Firmware gets crazy if scan request is sent
-		 * when STA is joined but not yet associated.
-		 * Force unjoin in this case.
-		 */
+		 
 		if (cancel_delayed_work_sync(&priv->join_timeout) > 0)
 			cw1200_join_timeout(&priv->join_timeout.work);
 	}
@@ -154,9 +146,7 @@ void cw1200_scan_work(struct work_struct *work)
 			pm.mode = WSM_PSM_PS;
 			cw1200_set_pm(priv, &pm);
 		} else if (priv->join_status == CW1200_JOIN_STATUS_MONITOR) {
-			/* FW bug: driver has to restart p2p-dev mode
-			 * after scan
-			 */
+			 
 			cw1200_disable_listening(priv);
 		}
 	}
@@ -215,12 +205,9 @@ void cw1200_scan_work(struct work_struct *work)
 		scan.num_ssids = priv->scan.n_ssids;
 		scan.ssids = &priv->scan.ssids[0];
 		scan.num_channels = it - priv->scan.curr;
-		/* TODO: Is it optimal? */
+		 
 		scan.probe_delay = 100;
-		/* It is not stated in WSM specification, however
-		 * FW team says that driver may not use FG scan
-		 * when joined.
-		 */
+		 
 		if (priv->join_status == CW1200_JOIN_STATUS_STA) {
 			scan.type = WSM_SCAN_TYPE_BACKGROUND;
 			scan.flags = WSM_SCAN_FLAG_FORCE_BACKGROUND;
@@ -266,7 +253,7 @@ fail:
 
 static void cw1200_scan_restart_delayed(struct cw1200_common *priv)
 {
-	/* FW bug: driver has to restart p2p-dev mode after scan. */
+	 
 	if (priv->join_status == CW1200_JOIN_STATUS_MONITOR) {
 		cw1200_enable_listening(priv);
 		cw1200_update_filtering(priv);
@@ -300,7 +287,7 @@ static void cw1200_scan_complete(struct cw1200_common *priv)
 void cw1200_scan_failed_cb(struct cw1200_common *priv)
 {
 	if (priv->mode == NL80211_IFTYPE_UNSPECIFIED)
-		/* STA is stopped. */
+		 
 		return;
 
 	if (cancel_delayed_work_sync(&priv->scan.timeout) > 0) {
@@ -314,7 +301,7 @@ void cw1200_scan_complete_cb(struct cw1200_common *priv,
 				struct wsm_scan_complete *arg)
 {
 	if (priv->mode == NL80211_IFTYPE_UNSPECIFIED)
-		/* STA is stopped. */
+		 
 		return;
 
 	if (cancel_delayed_work_sync(&priv->scan.timeout) > 0) {
@@ -383,7 +370,7 @@ void cw1200_probe_work(struct work_struct *work)
 
 	mutex_lock(&priv->conf_mutex);
 	if (down_trylock(&priv->scan.lock)) {
-		/* Scan is already in progress. Requeue self. */
+		 
 		schedule();
 		queue_delayed_work(priv->workqueue, &priv->scan.probe_work,
 				   msecs_to_jiffies(100));
@@ -391,7 +378,7 @@ void cw1200_probe_work(struct work_struct *work)
 		return;
 	}
 
-	/* Make sure we still have a pending probe req */
+	 
 	if (cw1200_queue_get_skb(queue,	priv->pending_frame_id,
 				 &frame.skb, &txpriv)) {
 		up(&priv->scan.lock);
@@ -420,23 +407,21 @@ void cw1200_probe_work(struct work_struct *work)
 			(u8 *)cfg80211_find_ie(WLAN_EID_SSID, ies, ies_len);
 		if (ssidie && ssidie[1] && ssidie[1] <= sizeof(ssids[0].ssid)) {
 			u8 *nextie = &ssidie[2 + ssidie[1]];
-			/* Remove SSID from the IE list. It has to be provided
-			 * as a separate argument in cw1200_scan_start call
-			 */
+			 
 
-			/* Store SSID localy */
+			 
 			ssids[0].length = ssidie[1];
 			memcpy(ssids[0].ssid, &ssidie[2], ssids[0].length);
 			scan.num_ssids = 1;
 
-			/* Remove SSID from IE list */
+			 
 			ssidie[1] = 0;
 			memmove(&ssidie[2], nextie, &ies[ies_len] - nextie);
 			skb_trim(frame.skb, frame.skb->len - ssids[0].length);
 		}
 	}
 
-	/* FW bug: driver has to restart p2p-dev mode after scan */
+	 
 	if (priv->join_status == CW1200_JOIN_STATUS_MONITOR)
 		cw1200_disable_listening(priv);
 	ret = wsm_set_template_frame(priv, &frame);

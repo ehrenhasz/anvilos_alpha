@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl18xx
- *
- * Copyright (C) 2009 Nokia Corporation
- * Copyright (C) 2011-2012 Texas Instruments
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 
@@ -351,7 +346,7 @@ static ssize_t radar_debug_mode_write(struct file *file,
 		return -EINVAL;
 	}
 
-	/* valid values: 0/1 */
+	 
 	if (!(value == 0 || value == 1)) {
 		wl1271_warning("value is not in valid!");
 		return -EINVAL;
@@ -397,7 +392,7 @@ static const struct file_operations radar_debug_mode_ops = {
 	.open = simple_open,
 	.llseek = default_llseek,
 };
-#endif /* CFG80211_CERTIFICATION_ONUS */
+#endif  
 
 int wl18xx_debugfs_add_files(struct wl1271 *wl,
 			     struct dentry *rootdir)

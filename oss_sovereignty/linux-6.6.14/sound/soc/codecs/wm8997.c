@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8997.c  --  WM8997 ALSA SoC Audio driver
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Charles Keepax <ckeepax@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -1132,7 +1126,7 @@ static int wm8997_probe(struct platform_device *pdev)
 
 	arizona_init_dvfs(&wm8997->core);
 
-	/* This may return -EPROBE_DEFER, so do this early on */
+	 
 	ret = arizona_jack_codec_dev_probe(&wm8997->core, &pdev->dev);
 	if (ret)
 		return ret;
@@ -1147,7 +1141,7 @@ static int wm8997_probe(struct platform_device *pdev)
 			 ARIZONA_IRQ_FLL2_LOCK, ARIZONA_IRQ_FLL2_CLOCK_OK,
 			 &wm8997->fll[1]);
 
-	/* SR2 fixed at 8kHz, SR3 fixed at 16kHz */
+	 
 	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_2,
 			   ARIZONA_SAMPLE_RATE_2_MASK, 0x11);
 	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_3,
@@ -1156,7 +1150,7 @@ static int wm8997_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(wm8997_dai); i++)
 		arizona_init_dai(&wm8997->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(wm8997_digital_vu); i++)
 		regmap_update_bits(arizona->regmap, wm8997_digital_vu[i],
 				   WM8997_DIG_VU, WM8997_DIG_VU);

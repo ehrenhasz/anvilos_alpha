@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Copyright (C) 2021-2022 Linaro Ltd. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -39,7 +39,7 @@ static const char *ipa_version_string(struct ipa *ipa)
 	case IPA_VERSION_5_0:
 		return "5.0";
 	default:
-		return "0.0";	/* Won't happen (checked at probe time) */
+		return "0.0";	 
 	}
 }
 
@@ -106,7 +106,7 @@ static umode_t ipa_endpoint_id_is_visible(struct kobject *kobj,
 	struct dev_ext_attribute *ea;
 	bool visible;
 
-	/* An endpoint id attribute is only visible if it's defined */
+	 
 	dev_attr = container_of(attr, struct device_attribute, attr);
 	ea = container_of(dev_attr, struct dev_ext_attribute, attr);
 
@@ -149,7 +149,7 @@ const struct attribute_group ipa_endpoint_id_attribute_group = {
 	.attrs		= ipa_endpoint_id_attrs,
 };
 
-/* Reuse endpoint ID attributes for the legacy modem endpoint IDs */
+ 
 #define MODEM_ATTR(_n, _endpoint_name)					    \
 	static struct dev_ext_attribute dev_attr_modem_ ## _n = {	    \
 		.attr	= __ATTR(_n, 0444, endpoint_id_attr_show, NULL),    \

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 #include <linux/extcon.h>
 #include <linux/iio/consumer.h>
 #include <linux/input-event-codes.h>
@@ -33,7 +33,7 @@ struct aries_wm8994_data {
 	const struct aries_wm8994_variant *variant;
 };
 
-/* USB dock */
+ 
 static struct snd_soc_jack aries_dock;
 
 static struct snd_soc_jack_pin dock_pins[] = {
@@ -59,7 +59,7 @@ static struct notifier_block aries_extcon_notifier_block = {
 	.notifier_call = aries_extcon_notifier,
 };
 
-/* Headset jack */
+ 
 static struct snd_soc_jack aries_headset;
 
 static struct snd_soc_jack_pin jack_pins[] = {
@@ -106,7 +106,7 @@ static irqreturn_t headset_det_irq_thread(int irq, void *data)
 		time_left_ms -= 20;
 	}
 
-	/* Temporarily enable micbias and earpath selector */
+	 
 	ret = regulator_enable(priv->reg_headset_micbias);
 	if (ret)
 		pr_err("%s failed to enable micbias: %d", __func__, ret);
@@ -115,7 +115,7 @@ static irqreturn_t headset_det_irq_thread(int irq, void *data)
 
 	ret = iio_read_channel_processed(priv->adc, &adc);
 	if (ret < 0) {
-		/* failed to read ADC, so assume headphone */
+		 
 		pr_err("%s failed to read ADC, assuming headphones", __func__);
 		snd_soc_jack_report(&aries_headset, SND_JACK_HEADPHONE,
 				SND_JACK_HEADSET);
@@ -129,7 +129,7 @@ static irqreturn_t headset_det_irq_thread(int irq, void *data)
 	if (ret)
 		pr_err("%s failed disable micbias: %d", __func__, ret);
 
-	/* Disable earpath selector when no mic connected */
+	 
 	if (!(aries_headset.status & SND_JACK_MICROPHONE))
 		gpiod_set_value(priv->gpio_earpath_sel, 0);
 
@@ -140,7 +140,7 @@ static int headset_button_check(void *data)
 {
 	struct aries_wm8994_data *priv = (struct aries_wm8994_data *) data;
 
-	/* Filter out keypresses when 4 pole jack not detected */
+	 
 	if (gpiod_get_value_cansleep(priv->gpio_headset_key) &&
 			aries_headset.status & SND_JACK_MICROPHONE)
 		return SND_JACK_BTN_0;
@@ -168,14 +168,7 @@ static int aries_spk_cfg(struct snd_soc_dapm_widget *w,
 	rtd = snd_soc_get_pcm_runtime(card, &card->dai_link[0]);
 	component = asoc_rtd_to_codec(rtd, 0)->component;
 
-	/**
-	 * We have an odd setup - the SPKMODE pin is pulled up so
-	 * we only have access to the left side SPK configs,
-	 * but SPKOUTR isn't bridged so when playing back in
-	 * stereo, we only get the left hand channel.  The only
-	 * option we're left with is to force the AIF into mono
-	 * mode.
-	 */
+	 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
 		ret = snd_soc_component_update_bits(component,
@@ -252,7 +245,7 @@ static const struct snd_soc_dapm_widget aries_dapm_widgets[] = {
 	SND_SOC_DAPM_LINE("Modem In", NULL),
 	SND_SOC_DAPM_LINE("Modem Out", NULL),
 
-	/* This must be last as it is conditionally not used */
+	 
 	SND_SOC_DAPM_LINE("FM In", NULL),
 };
 
@@ -264,7 +257,7 @@ static int aries_hw_params(struct snd_pcm_substream *substream,
 	unsigned int pll_out;
 	int ret;
 
-	/* AIF1CLK should be >=3MHz for optimal performance */
+	 
 	if (params_width(params) == 24)
 		pll_out = params_rate(params) * 384;
 	else if (params_rate(params) == 8000 || params_rate(params) == 11025)
@@ -291,13 +284,13 @@ static int aries_hw_free(struct snd_pcm_substream *substream)
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	int ret;
 
-	/* Switch sysclk to MCLK1 */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_MCLK1,
 				ARIES_MCLK1_FREQ, SND_SOC_CLOCK_IN);
 	if (ret < 0)
 		return ret;
 
-	/* Stop PLL */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL1, WM8994_FLL_SRC_MCLK1,
 				ARIES_MCLK1_FREQ, 0);
 	if (ret < 0)
@@ -306,9 +299,7 @@ static int aries_hw_free(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/*
- * Main DAI operations
- */
+ 
 static const struct snd_soc_ops aries_ops = {
 	.hw_params = aries_hw_params,
 	.hw_free = aries_hw_free,
@@ -322,13 +313,13 @@ static int aries_baseband_init(struct snd_soc_pcm_runtime *rtd)
 
 	pll_out = 8000 * 512;
 
-	/* Set the codec FLL */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, WM8994_FLL2, WM8994_FLL_SRC_MCLK1,
 			ARIES_MCLK1_FREQ, pll_out);
 	if (ret < 0)
 		return ret;
 
-	/* Set the codec system clock */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_FLL2,
 			pll_out, SND_SOC_CLOCK_IN);
 	if (ret < 0)
@@ -531,7 +522,7 @@ static const struct of_device_id samsung_wm8994_of_match[] = {
 		.compatible = "samsung,aries-wm8994",
 		.data = &aries_variant,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, samsung_wm8994_of_match);
 
@@ -561,7 +552,7 @@ static int aries_audio_probe(struct platform_device *pdev)
 	match = of_match_node(samsung_wm8994_of_match, np);
 	priv->variant = match->data;
 
-	/* Remove FM widget if not present */
+	 
 	if (!priv->variant->has_fm_radio)
 		card->num_dapm_widgets--;
 
@@ -617,12 +608,12 @@ static int aries_audio_probe(struct platform_device *pdev)
 		return PTR_ERR(priv->gpio_headset_detect);
 	}
 
-	/* Update card-name if provided through DT, else use default name */
+	 
 	snd_soc_of_parse_card_name(card, "model");
 
 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
 	if (ret < 0) {
-		/* Backwards compatible way */
+		 
 		ret = snd_soc_of_parse_audio_routing(card, "samsung,audio-routing");
 		if (ret < 0) {
 			dev_err(dev, "Audio routing invalid/unspecified\n");
@@ -651,7 +642,7 @@ static int aries_audio_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Set CPU and platform of_node for main DAI */
+	 
 	aries_dai[0].cpus->of_node = of_parse_phandle(cpu,
 			"sound-dai", 0);
 	if (!aries_dai[0].cpus->of_node) {
@@ -661,7 +652,7 @@ static int aries_audio_probe(struct platform_device *pdev)
 
 	aries_dai[0].platforms->of_node = aries_dai[0].cpus->of_node;
 
-	/* Set CPU of_node for BT DAI */
+	 
 	aries_dai[2].cpus->of_node = of_parse_phandle(cpu,
 			"sound-dai", 1);
 	if (!aries_dai[2].cpus->of_node) {

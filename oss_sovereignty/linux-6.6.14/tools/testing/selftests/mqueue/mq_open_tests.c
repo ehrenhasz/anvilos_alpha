@@ -1,24 +1,4 @@
-/*
- * This application is Copyright 2012 Red Hat, Inc.
- *	Doug Ledford <dledford@redhat.com>
- *
- * mq_open_tests is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, version 3.
- *
- * mq_open_tests is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * For the full text of the license, see <http://www.gnu.org/licenses/>.
- *
- * mq_open_tests.c
- *   Tests the various situations that should either succeed or fail to
- *   open a posix message queue and then reports whether or not they
- *   did as they were supposed to.
- *
- */
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -80,7 +60,7 @@ void shutdown(int exit_val, char *err_cause, int line_no)
 {
 	static int in_shutdown = 0;
 
-	/* In case we get called recursively by a set() call below */
+	 
 	if (in_shutdown++)
 		return;
 
@@ -91,10 +71,7 @@ void shutdown(int exit_val, char *err_cause, int line_no)
 		if (mq_close(queue))
 			perror("mq_close() during shutdown");
 	if (queue_path)
-		/*
-		 * Be silent if this fails, if we cleaned up already it's
-		 * expected to fail
-		 */
+		 
 		mq_unlink(queue_path);
 	if (default_settings) {
 		if (saved_def_msgs)
@@ -192,11 +169,7 @@ void validate_current_settings()
 	}
 }
 
-/*
- * test_queue - Test opening a queue, shutdown if we fail.  This should
- * only be called in situations that should never fail.  We clean up
- * after ourselves and return the queue attributes in *result.
- */
+ 
 static inline void test_queue(struct mq_attr *attr, struct mq_attr *result)
 {
 	int flags = O_RDWR | O_EXCL | O_CREAT;
@@ -213,12 +186,7 @@ static inline void test_queue(struct mq_attr *attr, struct mq_attr *result)
 		shutdown(1, "mq_unlink()", __LINE__);
 }
 
-/*
- * Same as test_queue above, but failure is not fatal.
- * Returns:
- * 0 - Failed to create a queue
- * 1 - Created a queue, attributes in *result
- */
+ 
 static inline int test_queue_fail(struct mq_attr *attr, struct mq_attr *result)
 {
 	int flags = O_RDWR | O_EXCL | O_CREAT;
@@ -245,11 +213,7 @@ int main(int argc, char *argv[])
 		queue_path = default_queue_path;
 	} else {
 
-	/*
-	 * Although we can create a msg queue with a non-absolute path name,
-	 * unlink will fail.  So, if the name doesn't start with a /, add one
-	 * when we save it.
-	 */
+	 
 		if (*argv[1] == '/')
 			queue_path = strdup(argv[1]);
 		else {
@@ -269,7 +233,7 @@ int main(int argc, char *argv[])
 			"require root in order to modify\nsystem settings.  "
 			"Exiting.\n");
 
-	/* Find out what files there are for us to make tweaks in */
+	 
 	def_msgs = fopen(DEF_MSGS, "r+");
 	def_msgsize = fopen(DEF_MSGSIZE, "r+");
 	max_msgs = fopen(MAX_MSGS, "r+");
@@ -282,7 +246,7 @@ int main(int argc, char *argv[])
 	if (def_msgs || def_msgsize)
 		default_settings = 1;
 
-	/* Load up the current system values for everything we can */
+	 
 	getr(RLIMIT_MSGQUEUE, &saved_limits);
 	cur_limits = saved_limits;
 	if (default_settings) {
@@ -292,7 +256,7 @@ int main(int argc, char *argv[])
 	saved_max_msgs = cur_max_msgs = get(max_msgs);
 	saved_max_msgsize = cur_max_msgsize = get(max_msgsize);
 
-	/* Tell the user our initial state */
+	 
 	printf("\nInitial system state:\n");
 	printf("\tUsing queue path:\t\t%s\n", queue_path);
 	printf("\tRLIMIT_MSGQUEUE(soft):\t\t%ld\n",
@@ -353,10 +317,7 @@ int main(int argc, char *argv[])
 	} else {
 		printf("Kernel supports setting defaults separately from "
 		       "maximums:\t\tPASS\n");
-		/*
-		 * While we are here, go ahead and test that the kernel
-		 * properly follows the default settings
-		 */
+		 
 		test_queue(NULL, &result);
 		printf("Given sane values, mq_open without an attr struct "
 		       "succeeds:\t\tPASS\n");
@@ -367,7 +328,7 @@ int main(int argc, char *argv[])
 		else {
 			set(def_msgs, ++cur_def_msgs);
 			set(def_msgsize, ++cur_def_msgsize);
-			/* In case max was the same as the default */
+			 
 			set(max_msgs, ++cur_max_msgs);
 			set(max_msgsize, ++cur_max_msgsize);
 			test_queue(NULL, &result);
@@ -418,9 +379,7 @@ int main(int argc, char *argv[])
 			       "\t\t\t\t\t\t\t\tPASS\n");
 	}
 
-	/*
-	 * Test #2 - open with an attr struct that exceeds rlimit
-	 */
+	 
 	printf("\n\nTest series 2, behavior when attr struct is "
 	       "passed to mq_open:\n");
 	cur_max_msgs = 32;

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include <linux/vmalloc.h>
 
@@ -394,12 +393,12 @@ static const struct txpwr_ent __txpwr_ent_byr[] = {
 	__GEN_TXPWR_ENT4("CCK       ", "1M   ", "2M   ", "5.5M ", "11M  "),
 	__GEN_TXPWR_ENT4("LEGACY    ", "6M   ", "9M   ", "12M  ", "18M  "),
 	__GEN_TXPWR_ENT4("LEGACY    ", "24M  ", "36M  ", "48M  ", "54M  "),
-	/* 1NSS */
+	 
 	__GEN_TXPWR_ENT4("MCS_1NSS  ", "MCS0 ", "MCS1 ", "MCS2 ", "MCS3 "),
 	__GEN_TXPWR_ENT4("MCS_1NSS  ", "MCS4 ", "MCS5 ", "MCS6 ", "MCS7 "),
 	__GEN_TXPWR_ENT4("MCS_1NSS  ", "MCS8 ", "MCS9 ", "MCS10", "MCS11"),
 	__GEN_TXPWR_ENT4("HEDCM_1NSS", "MCS0 ", "MCS1 ", "MCS3 ", "MCS4 "),
-	/* 2NSS */
+	 
 	__GEN_TXPWR_ENT4("MCS_2NSS  ", "MCS0 ", "MCS1 ", "MCS2 ", "MCS3 "),
 	__GEN_TXPWR_ENT4("MCS_2NSS  ", "MCS4 ", "MCS5 ", "MCS6 ", "MCS7 "),
 	__GEN_TXPWR_ENT4("MCS_2NSS  ", "MCS8 ", "MCS9 ", "MCS10", "MCS11"),
@@ -418,7 +417,7 @@ static const struct txpwr_map __txpwr_map_byr = {
 };
 
 static const struct txpwr_ent __txpwr_ent_lmt[] = {
-	/* 1TX */
+	 
 	__GEN_TXPWR_ENT2("CCK_1TX_20M    ", "NON_BF", "BF"),
 	__GEN_TXPWR_ENT2("CCK_1TX_40M    ", "NON_BF", "BF"),
 	__GEN_TXPWR_ENT2("OFDM_1TX       ", "NON_BF", "BF"),
@@ -439,7 +438,7 @@ static const struct txpwr_ent __txpwr_ent_lmt[] = {
 	__GEN_TXPWR_ENT2("MCS_1TX_160M   ", "NON_BF", "BF"),
 	__GEN_TXPWR_ENT2("MCS_1TX_40M_0p5", "NON_BF", "BF"),
 	__GEN_TXPWR_ENT2("MCS_1TX_40M_2p5", "NON_BF", "BF"),
-	/* 2TX */
+	 
 	__GEN_TXPWR_ENT2("CCK_2TX_20M    ", "NON_BF", "BF"),
 	__GEN_TXPWR_ENT2("CCK_2TX_40M    ", "NON_BF", "BF"),
 	__GEN_TXPWR_ENT2("OFDM_2TX       ", "NON_BF", "BF"),
@@ -474,14 +473,14 @@ static const struct txpwr_map __txpwr_map_lmt = {
 };
 
 static const struct txpwr_ent __txpwr_ent_lmt_ru[] = {
-	/* 1TX */
+	 
 	__GEN_TXPWR_ENT8("1TX", "RU26__0", "RU26__1", "RU26__2", "RU26__3",
 			 "RU26__4", "RU26__5", "RU26__6", "RU26__7"),
 	__GEN_TXPWR_ENT8("1TX", "RU52__0", "RU52__1", "RU52__2", "RU52__3",
 			 "RU52__4", "RU52__5", "RU52__6", "RU52__7"),
 	__GEN_TXPWR_ENT8("1TX", "RU106_0", "RU106_1", "RU106_2", "RU106_3",
 			 "RU106_4", "RU106_5", "RU106_6", "RU106_7"),
-	/* 2TX */
+	 
 	__GEN_TXPWR_ENT8("2TX", "RU26__0", "RU26__1", "RU26__2", "RU26__3",
 			 "RU26__4", "RU26__5", "RU26__6", "RU26__7"),
 	__GEN_TXPWR_ENT8("2TX", "RU52__0", "RU52__1", "RU52__2", "RU52__3",
@@ -554,7 +553,7 @@ static int __print_txpwr_map(struct seq_file *m, struct rtw89_dev *rtwdev,
 
 		cur = addr - map->addr_from;
 		for (i = 0; i < 4; i++, val >>= 8) {
-			/* signed 7 bits, and reserved BIT(7) */
+			 
 			tmp = sign_extend32(val, 6);
 			buf[cur + i] = tmp >> fct;
 		}
@@ -3114,11 +3113,11 @@ static int rtw89_dbg_trigger_ctrl_error(struct rtw89_dev *rtwdev)
 	if (ret)
 		return ret;
 
-	/* intentionally, enqueue two pkt, but has only one pkt id */
+	 
 	ctrl_para.cmd_type = CPUIO_OP_CMD_ENQ_TO_HEAD;
 	ctrl_para.start_pktid = pkt_id;
 	ctrl_para.end_pktid = pkt_id;
-	ctrl_para.pkt_num = 1; /* start from 0 */
+	ctrl_para.pkt_num = 1;  
 	ctrl_para.dst_pid = WDE_DLE_PORT_ID_WDRLS;
 	ctrl_para.dst_qid = WDE_DLE_QUEID_NO_REPORT;
 

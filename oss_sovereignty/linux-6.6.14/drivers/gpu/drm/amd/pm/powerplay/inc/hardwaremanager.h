@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef _HARDWARE_MANAGER_H_
 #define _HARDWARE_MANAGER_H_
 
@@ -43,7 +22,7 @@ struct phm_fan_speed_info {
 	bool supports_rpm_write;
 };
 
-/* Automatic Power State Throttling */
+ 
 enum PHM_AutoThrottleSource {
     PHM_AutoThrottleSource_Thermal,
     PHM_AutoThrottleSource_External
@@ -83,112 +62,112 @@ enum phm_platform_caps {
 	PHM_PlatformCaps_StepVddc,
 	PHM_PlatformCaps_DynamicPCIEGen2Support,
 	PHM_PlatformCaps_SMC,
-	PHM_PlatformCaps_FaultyInternalThermalReading,          /* Internal thermal controller reports faulty temperature value when DAC2 is active */
-	PHM_PlatformCaps_EnableVoltageControl,                  /* indicates voltage can be controlled */
-	PHM_PlatformCaps_EnableSideportControl,                 /* indicates Sideport can be controlled */
-	PHM_PlatformCaps_VideoPlaybackEEUNotification,          /* indicates EEU notification of video start/stop is required */
-	PHM_PlatformCaps_TurnOffPll_ASPML1,                     /* PCIE Turn Off PLL in ASPM L1 */
-	PHM_PlatformCaps_EnableHTLinkControl,                   /* indicates HT Link can be controlled by ACPI or CLMC overridden/automated mode. */
-	PHM_PlatformCaps_PerformanceStateOnly,                  /* indicates only performance power state to be used on current system. */
-	PHM_PlatformCaps_ExclusiveModeAlwaysHigh,               /* In Exclusive (3D) mode always stay in High state. */
-	PHM_PlatformCaps_DisableMGClockGating,                  /* to disable Medium Grain Clock Gating or not */
-	PHM_PlatformCaps_DisableMGCGTSSM,                       /* TO disable Medium Grain Clock Gating Shader Complex control */
-	PHM_PlatformCaps_UVDAlwaysHigh,                         /* In UVD mode always stay in High state */
-	PHM_PlatformCaps_DisablePowerGating,                    /* to disable power gating */
-	PHM_PlatformCaps_CustomThermalPolicy,                   /* indicates only performance power state to be used on current system. */
-	PHM_PlatformCaps_StayInBootState,                       /* Stay in Boot State, do not do clock/voltage or PCIe Lane and Gen switching (RV7xx and up). */
-	PHM_PlatformCaps_SMCAllowSeparateSWThermalState,        /* SMC use separate SW thermal state, instead of the default SMC thermal policy. */
-	PHM_PlatformCaps_MultiUVDStateSupport,                  /* Powerplay state table supports multi UVD states. */
-	PHM_PlatformCaps_EnableSCLKDeepSleepForUVD,             /* With HW ECOs, we don't need to disable SCLK Deep Sleep for UVD state. */
-	PHM_PlatformCaps_EnableMCUHTLinkControl,                /* Enable HT link control by MCU */
-	PHM_PlatformCaps_ABM,                                   /* ABM support.*/
-	PHM_PlatformCaps_KongThermalPolicy,                     /* A thermal policy specific for Kong */
-	PHM_PlatformCaps_SwitchVDDNB,                           /* if the users want to switch VDDNB */
-	PHM_PlatformCaps_ULPS,                                  /* support ULPS mode either through ACPI state or ULPS state */
-	PHM_PlatformCaps_NativeULPS,                            /* hardware capable of ULPS state (other than through the ACPI state) */
-	PHM_PlatformCaps_EnableMVDDControl,                     /* indicates that memory voltage can be controlled */
-	PHM_PlatformCaps_ControlVDDCI,                          /* Control VDDCI separately from VDDC. */
-	PHM_PlatformCaps_DisableDCODT,                          /* indicates if DC ODT apply or not */
-	PHM_PlatformCaps_DynamicACTiming,                       /* if the SMC dynamically re-programs MC SEQ register values */
-	PHM_PlatformCaps_EnableThermalIntByGPIO,                /* enable throttle control through GPIO */
-	PHM_PlatformCaps_BootStateOnAlert,                      /* Go to boot state on alerts, e.g. on an AC->DC transition. */
-	PHM_PlatformCaps_DontWaitForVBlankOnAlert,              /* Do NOT wait for VBLANK during an alert (e.g. AC->DC transition). */
-	PHM_PlatformCaps_Force3DClockSupport,                   /* indicates if the platform supports force 3D clock. */
-	PHM_PlatformCaps_MicrocodeFanControl,                   /* Fan is controlled by the SMC microcode. */
+	PHM_PlatformCaps_FaultyInternalThermalReading,           
+	PHM_PlatformCaps_EnableVoltageControl,                   
+	PHM_PlatformCaps_EnableSideportControl,                  
+	PHM_PlatformCaps_VideoPlaybackEEUNotification,           
+	PHM_PlatformCaps_TurnOffPll_ASPML1,                      
+	PHM_PlatformCaps_EnableHTLinkControl,                    
+	PHM_PlatformCaps_PerformanceStateOnly,                   
+	PHM_PlatformCaps_ExclusiveModeAlwaysHigh,                
+	PHM_PlatformCaps_DisableMGClockGating,                   
+	PHM_PlatformCaps_DisableMGCGTSSM,                        
+	PHM_PlatformCaps_UVDAlwaysHigh,                          
+	PHM_PlatformCaps_DisablePowerGating,                     
+	PHM_PlatformCaps_CustomThermalPolicy,                    
+	PHM_PlatformCaps_StayInBootState,                        
+	PHM_PlatformCaps_SMCAllowSeparateSWThermalState,         
+	PHM_PlatformCaps_MultiUVDStateSupport,                   
+	PHM_PlatformCaps_EnableSCLKDeepSleepForUVD,              
+	PHM_PlatformCaps_EnableMCUHTLinkControl,                 
+	PHM_PlatformCaps_ABM,                                    
+	PHM_PlatformCaps_KongThermalPolicy,                      
+	PHM_PlatformCaps_SwitchVDDNB,                            
+	PHM_PlatformCaps_ULPS,                                   
+	PHM_PlatformCaps_NativeULPS,                             
+	PHM_PlatformCaps_EnableMVDDControl,                      
+	PHM_PlatformCaps_ControlVDDCI,                           
+	PHM_PlatformCaps_DisableDCODT,                           
+	PHM_PlatformCaps_DynamicACTiming,                        
+	PHM_PlatformCaps_EnableThermalIntByGPIO,                 
+	PHM_PlatformCaps_BootStateOnAlert,                       
+	PHM_PlatformCaps_DontWaitForVBlankOnAlert,               
+	PHM_PlatformCaps_Force3DClockSupport,                    
+	PHM_PlatformCaps_MicrocodeFanControl,                    
 	PHM_PlatformCaps_AdjustUVDPriorityForSP,
-	PHM_PlatformCaps_DisableLightSleep,                     /* Light sleep for evergreen family. */
-	PHM_PlatformCaps_DisableMCLS,                           /* MC Light sleep */
-	PHM_PlatformCaps_RegulatorHot,                          /* Enable throttling on 'regulator hot' events. */
-	PHM_PlatformCaps_BACO,                                  /* Support Bus Alive Chip Off mode */
-	PHM_PlatformCaps_DisableDPM,                            /* Disable DPM, supported from Llano */
-	PHM_PlatformCaps_DynamicM3Arbiter,                      /* support dynamically change m3 arbitor parameters */
-	PHM_PlatformCaps_SclkDeepSleep,                         /* support sclk deep sleep */
-	PHM_PlatformCaps_DynamicPatchPowerState,                /* this ASIC supports to patch power state dynamically */
-	PHM_PlatformCaps_ThermalAutoThrottling,                 /* enabling auto thermal throttling, */
-	PHM_PlatformCaps_SumoThermalPolicy,                     /* A thermal policy specific for Sumo */
-	PHM_PlatformCaps_PCIEPerformanceRequest,                /* support to change RC voltage */
-	PHM_PlatformCaps_BLControlledByGPU,                     /* support varibright */
-	PHM_PlatformCaps_PowerContainment,                      /* support DPM2 power containment (AKA TDP clamping) */
-	PHM_PlatformCaps_SQRamping,                             /* support DPM2 SQ power throttle */
-	PHM_PlatformCaps_CAC,                                   /* support Capacitance * Activity power estimation */
-	PHM_PlatformCaps_NIChipsets,                            /* Northern Island and beyond chipsets */
-	PHM_PlatformCaps_TrinityChipsets,                       /* Trinity chipset */
-	PHM_PlatformCaps_EvergreenChipsets,                     /* Evergreen family chipset */
-	PHM_PlatformCaps_PowerControl,                          /* Cayman and beyond chipsets */
-	PHM_PlatformCaps_DisableLSClockGating,                  /* to disable Light Sleep control for HDP memories */
-	PHM_PlatformCaps_BoostState,                            /* this ASIC supports boost state */
-	PHM_PlatformCaps_UserMaxClockForMultiDisplays,          /* indicates if max memory clock is used for all status when multiple displays are connected */
-	PHM_PlatformCaps_RegWriteDelay,                         /* indicates if back to back reg write delay is required */
-	PHM_PlatformCaps_NonABMSupportInPPLib,                  /* ABM is not supported in PPLIB, (moved from PPLIB to DAL) */
-	PHM_PlatformCaps_GFXDynamicMGPowerGating,               /* Enable Dynamic MG PowerGating on Trinity */
-	PHM_PlatformCaps_DisableSMUUVDHandshake,                /* Disable SMU UVD Handshake */
-	PHM_PlatformCaps_DTE,                                   /* Support Digital Temperature Estimation */
-	PHM_PlatformCaps_W5100Specifc_SmuSkipMsgDTE,            /* This is for the feature requested by David B., and Tonny W.*/
-	PHM_PlatformCaps_UVDPowerGating,                        /* enable UVD power gating, supported from Llano */
-	PHM_PlatformCaps_UVDDynamicPowerGating,                 /* enable UVD Dynamic power gating, supported from UVD5 */
-	PHM_PlatformCaps_VCEPowerGating,                        /* Enable VCE power gating, supported for TN and later ASICs */
-	PHM_PlatformCaps_SamuPowerGating,                       /* Enable SAMU power gating, supported for KV and later ASICs */
-	PHM_PlatformCaps_UVDDPM,                                /* UVD clock DPM */
-	PHM_PlatformCaps_VCEDPM,                                /* VCE clock DPM */
-	PHM_PlatformCaps_SamuDPM,                               /* SAMU clock DPM */
-	PHM_PlatformCaps_AcpDPM,                                /* ACP clock DPM */
-	PHM_PlatformCaps_SclkDeepSleepAboveLow,                 /* Enable SCLK Deep Sleep on all DPM states */
-	PHM_PlatformCaps_DynamicUVDState,                       /* Dynamic UVD State */
-	PHM_PlatformCaps_WantSAMClkWithDummyBackEnd,            /* Set SAM Clk With Dummy Back End */
-	PHM_PlatformCaps_WantUVDClkWithDummyBackEnd,            /* Set UVD Clk With Dummy Back End */
-	PHM_PlatformCaps_WantVCEClkWithDummyBackEnd,            /* Set VCE Clk With Dummy Back End */
-	PHM_PlatformCaps_WantACPClkWithDummyBackEnd,            /* Set SAM Clk With Dummy Back End */
-	PHM_PlatformCaps_OD6inACSupport,                        /* indicates that the ASIC/back end supports OD6 */
-	PHM_PlatformCaps_OD6inDCSupport,                        /* indicates that the ASIC/back end supports OD6 in DC */
-	PHM_PlatformCaps_EnablePlatformPowerManagement,         /* indicates that Platform Power Management feature is supported */
-	PHM_PlatformCaps_SurpriseRemoval,                       /* indicates that surprise removal feature is requested */
-	PHM_PlatformCaps_NewCACVoltage,                         /* indicates new CAC voltage table support */
-	PHM_PlatformCaps_DiDtSupport,                           /* for dI/dT feature */
-	PHM_PlatformCaps_DBRamping,                             /* for dI/dT feature */
-	PHM_PlatformCaps_TDRamping,                             /* for dI/dT feature */
-	PHM_PlatformCaps_TCPRamping,                            /* for dI/dT feature */
-	PHM_PlatformCaps_DBRRamping,                            /* for dI/dT feature */
-	PHM_PlatformCaps_DiDtEDCEnable,                         /* for dI/dT feature */
-	PHM_PlatformCaps_GCEDC,                                 /* for dI/dT feature */
-	PHM_PlatformCaps_PSM,                                   /* for dI/dT feature */
-	PHM_PlatformCaps_EnableSMU7ThermalManagement,           /* SMC will manage thermal events */
-	PHM_PlatformCaps_FPS,                                   /* FPS support */
-	PHM_PlatformCaps_ACP,                                   /* ACP support */
-	PHM_PlatformCaps_SclkThrottleLowNotification,           /* SCLK Throttle Low Notification */
-	PHM_PlatformCaps_XDMAEnabled,                           /* XDMA engine is enabled */
-	PHM_PlatformCaps_UseDummyBackEnd,                       /* use dummy back end */
-	PHM_PlatformCaps_EnableDFSBypass,                       /* Enable DFS bypass */
+	PHM_PlatformCaps_DisableLightSleep,                      
+	PHM_PlatformCaps_DisableMCLS,                            
+	PHM_PlatformCaps_RegulatorHot,                           
+	PHM_PlatformCaps_BACO,                                   
+	PHM_PlatformCaps_DisableDPM,                             
+	PHM_PlatformCaps_DynamicM3Arbiter,                       
+	PHM_PlatformCaps_SclkDeepSleep,                          
+	PHM_PlatformCaps_DynamicPatchPowerState,                 
+	PHM_PlatformCaps_ThermalAutoThrottling,                  
+	PHM_PlatformCaps_SumoThermalPolicy,                      
+	PHM_PlatformCaps_PCIEPerformanceRequest,                 
+	PHM_PlatformCaps_BLControlledByGPU,                      
+	PHM_PlatformCaps_PowerContainment,                       
+	PHM_PlatformCaps_SQRamping,                              
+	PHM_PlatformCaps_CAC,                                    
+	PHM_PlatformCaps_NIChipsets,                             
+	PHM_PlatformCaps_TrinityChipsets,                        
+	PHM_PlatformCaps_EvergreenChipsets,                      
+	PHM_PlatformCaps_PowerControl,                           
+	PHM_PlatformCaps_DisableLSClockGating,                   
+	PHM_PlatformCaps_BoostState,                             
+	PHM_PlatformCaps_UserMaxClockForMultiDisplays,           
+	PHM_PlatformCaps_RegWriteDelay,                          
+	PHM_PlatformCaps_NonABMSupportInPPLib,                   
+	PHM_PlatformCaps_GFXDynamicMGPowerGating,                
+	PHM_PlatformCaps_DisableSMUUVDHandshake,                 
+	PHM_PlatformCaps_DTE,                                    
+	PHM_PlatformCaps_W5100Specifc_SmuSkipMsgDTE,             
+	PHM_PlatformCaps_UVDPowerGating,                         
+	PHM_PlatformCaps_UVDDynamicPowerGating,                  
+	PHM_PlatformCaps_VCEPowerGating,                         
+	PHM_PlatformCaps_SamuPowerGating,                        
+	PHM_PlatformCaps_UVDDPM,                                 
+	PHM_PlatformCaps_VCEDPM,                                 
+	PHM_PlatformCaps_SamuDPM,                                
+	PHM_PlatformCaps_AcpDPM,                                 
+	PHM_PlatformCaps_SclkDeepSleepAboveLow,                  
+	PHM_PlatformCaps_DynamicUVDState,                        
+	PHM_PlatformCaps_WantSAMClkWithDummyBackEnd,             
+	PHM_PlatformCaps_WantUVDClkWithDummyBackEnd,             
+	PHM_PlatformCaps_WantVCEClkWithDummyBackEnd,             
+	PHM_PlatformCaps_WantACPClkWithDummyBackEnd,             
+	PHM_PlatformCaps_OD6inACSupport,                         
+	PHM_PlatformCaps_OD6inDCSupport,                         
+	PHM_PlatformCaps_EnablePlatformPowerManagement,          
+	PHM_PlatformCaps_SurpriseRemoval,                        
+	PHM_PlatformCaps_NewCACVoltage,                          
+	PHM_PlatformCaps_DiDtSupport,                            
+	PHM_PlatformCaps_DBRamping,                              
+	PHM_PlatformCaps_TDRamping,                              
+	PHM_PlatformCaps_TCPRamping,                             
+	PHM_PlatformCaps_DBRRamping,                             
+	PHM_PlatformCaps_DiDtEDCEnable,                          
+	PHM_PlatformCaps_GCEDC,                                  
+	PHM_PlatformCaps_PSM,                                    
+	PHM_PlatformCaps_EnableSMU7ThermalManagement,            
+	PHM_PlatformCaps_FPS,                                    
+	PHM_PlatformCaps_ACP,                                    
+	PHM_PlatformCaps_SclkThrottleLowNotification,            
+	PHM_PlatformCaps_XDMAEnabled,                            
+	PHM_PlatformCaps_UseDummyBackEnd,                        
+	PHM_PlatformCaps_EnableDFSBypass,                        
 	PHM_PlatformCaps_VddNBDirectRequest,
 	PHM_PlatformCaps_PauseMMSessions,
-	PHM_PlatformCaps_UnTabledHardwareInterface,             /* Tableless/direct call hardware interface for CI and newer ASICs */
-	PHM_PlatformCaps_SMU7,                                  /* indicates that vpuRecoveryBegin without SMU shutdown */
-	PHM_PlatformCaps_RevertGPIO5Polarity,                   /* indicates revert GPIO5 plarity table support */
-	PHM_PlatformCaps_Thermal2GPIO17,                        /* indicates thermal2GPIO17 table support */
-	PHM_PlatformCaps_ThermalOutGPIO,                        /* indicates ThermalOutGPIO support, pin number is assigned by VBIOS */
-	PHM_PlatformCaps_DisableMclkSwitchingForFrameLock,      /* Disable memory clock switch during Framelock */
-	PHM_PlatformCaps_ForceMclkHigh,                         /* Disable memory clock switching by forcing memory clock high */
-	PHM_PlatformCaps_VRHotGPIOConfigurable,                 /* indicates VR_HOT GPIO configurable */
-	PHM_PlatformCaps_TempInversion,                         /* enable Temp Inversion feature */
+	PHM_PlatformCaps_UnTabledHardwareInterface,              
+	PHM_PlatformCaps_SMU7,                                   
+	PHM_PlatformCaps_RevertGPIO5Polarity,                    
+	PHM_PlatformCaps_Thermal2GPIO17,                         
+	PHM_PlatformCaps_ThermalOutGPIO,                         
+	PHM_PlatformCaps_DisableMclkSwitchingForFrameLock,       
+	PHM_PlatformCaps_ForceMclkHigh,                          
+	PHM_PlatformCaps_VRHotGPIOConfigurable,                  
+	PHM_PlatformCaps_TempInversion,                          
 	PHM_PlatformCaps_IOIC3,
 	PHM_PlatformCaps_ConnectedStandby,
 	PHM_PlatformCaps_EVV,
@@ -252,7 +231,7 @@ enum phm_platform_caps {
 
 #define PHM_MAX_NUM_CAPS_BITS_PER_FIELD (sizeof(uint32_t)*8)
 
-/* Number of uint32_t entries used by CAPS table */
+ 
 #define PHM_MAX_NUM_CAPS_ULONG_ENTRIES \
 	((PHM_PlatformCaps_Max + ((PHM_MAX_NUM_CAPS_BITS_PER_FIELD) - 1)) / (PHM_MAX_NUM_CAPS_BITS_PER_FIELD))
 
@@ -278,7 +257,7 @@ struct PHM_PerformanceLevel {
 
 typedef struct PHM_PerformanceLevel PHM_PerformanceLevel;
 
-/* Function for setting a platform cap */
+ 
 static inline void phm_cap_set(uint32_t *caps,
 			enum phm_platform_caps c)
 {
@@ -302,9 +281,9 @@ static inline bool phm_cap_enabled(const uint32_t *caps, enum phm_platform_caps 
 
 #define PP_PCIEGenInvalid  0xffff
 enum PP_PCIEGen {
-    PP_PCIEGen1 = 0,                /* PCIE 1.0 - Transfer rate of 2.5 GT/s */
-    PP_PCIEGen2,                    /*PCIE 2.0 - Transfer rate of 5.0 GT/s */
-    PP_PCIEGen3                     /*PCIE 3.0 - Transfer rate of 8.0 GT/s */
+    PP_PCIEGen1 = 0,                 
+    PP_PCIEGen2,                     
+    PP_PCIEGen3                      
 };
 
 typedef enum PP_PCIEGen PP_PCIEGen;
@@ -391,7 +370,7 @@ struct phm_odn_clock_levels {
 	uint32_t options;
 	uint32_t flags;
 	uint32_t num_of_pl;
-	/* variable-sized array, specify by num_of_pl. */
+	 
 	struct phm_odn_performance_level entries[8];
 };
 
@@ -462,5 +441,5 @@ extern int phm_disable_smc_firmware_ctf(struct pp_hwmgr *hwmgr);
 
 extern int phm_set_active_display_count(struct pp_hwmgr *hwmgr, uint32_t count);
 
-#endif /* _HARDWARE_MANAGER_H_ */
+#endif  
 

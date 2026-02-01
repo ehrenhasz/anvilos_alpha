@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/slab.h>
 #include <linux/ctype.h>
 #include <linux/kernel.h>
@@ -145,7 +145,7 @@ static void qat_uclo_wr_umem_by_words(struct icp_qat_fw_loader_handle *handle,
 	unsigned int outval;
 	unsigned char *ptr = (unsigned char *)val;
 
-	addr >>= 0x2; /* convert to uword address */
+	addr >>= 0x2;  
 
 	while (num_in_bytes) {
 		memcpy(&outval, ptr, 4);
@@ -289,7 +289,7 @@ static int qat_uclo_create_batch_init_list(struct icp_qat_fw_loader_handle
 	}
 	return 0;
 out_err:
-	/* Do not free the list head unless we allocated it. */
+	 
 	tail_old = tail_old->next;
 	if (flag) {
 		kfree(*init_tab_base);
@@ -332,7 +332,7 @@ static int qat_uclo_init_umem_seg(struct icp_qat_fw_loader_handle *handle,
 	if (qat_uclo_create_batch_init_list(handle, init_mem, ae,
 					    &obj_handle->umem_init_tab[ae]))
 		return -EINVAL;
-	/* set the highest ustore address referenced */
+	 
 	uaddr = (init_mem->addr + init_mem->num_in_bytes) >> 0x2;
 	aed = &obj_handle->ae_data[ae];
 	for (i = 0; i < aed->slice_num; i++) {
@@ -831,7 +831,7 @@ static int qat_uclo_init_reg_sym(struct icp_qat_fw_loader_handle *handle,
 					  exp_res);
 			break;
 		case ICP_QAT_UOF_INIT_REG_CTX:
-			/* check if ctx is appropriate for the ctxMode */
+			 
 			if (!((1 << init_regsym->ctx) & ctx_mask)) {
 				pr_err("QAT: invalid ctx num = 0x%x\n",
 				       init_regsym->ctx);
@@ -1445,7 +1445,7 @@ static int qat_uclo_map_auth_fw(struct icp_qat_fw_loader_handle *handle,
 	virt_addr = virt_base;
 
 	memcpy((void *)(uintptr_t)virt_addr, image, sizeof(*css_hdr));
-	/* pub key */
+	 
 	bus_addr = ADD_ADDR(auth_desc->css_hdr_high, auth_desc->css_hdr_low) +
 			   sizeof(*css_hdr);
 	virt_addr = virt_addr + sizeof(*css_hdr);
@@ -1456,18 +1456,18 @@ static int qat_uclo_map_auth_fw(struct icp_qat_fw_loader_handle *handle,
 	memcpy((void *)(uintptr_t)virt_addr,
 	       (void *)(image + sizeof(*css_hdr)),
 	       ICP_QAT_CSS_FWSK_MODULUS_LEN(handle));
-	/* padding */
+	 
 	memset((void *)(uintptr_t)(virt_addr + ICP_QAT_CSS_FWSK_MODULUS_LEN(handle)),
 	       0, ICP_QAT_CSS_FWSK_PAD_LEN(handle));
 
-	/* exponent */
+	 
 	memcpy((void *)(uintptr_t)(virt_addr + ICP_QAT_CSS_FWSK_MODULUS_LEN(handle) +
 	       ICP_QAT_CSS_FWSK_PAD_LEN(handle)),
 	       (void *)(image + sizeof(*css_hdr) +
 			ICP_QAT_CSS_FWSK_MODULUS_LEN(handle)),
 	       sizeof(unsigned int));
 
-	/* signature */
+	 
 	bus_addr = ADD_ADDR(auth_desc->fwsk_pub_high,
 			    auth_desc->fwsk_pub_low) +
 		   ICP_QAT_CSS_FWSK_PUB_LEN(handle);
@@ -1493,7 +1493,7 @@ static int qat_uclo_map_auth_fw(struct icp_qat_fw_loader_handle *handle,
 	       (void *)(image + ICP_QAT_AE_IMG_OFFSET(handle)),
 	       auth_desc->img_len);
 	virt_addr = virt_base;
-	/* AE firmware */
+	 
 	if (((struct icp_qat_css_hdr *)(uintptr_t)virt_addr)->fw_type ==
 	    CSS_AE_FIRMWARE) {
 		auth_desc->img_ae_mode_data_high = auth_desc->img_high;
@@ -1757,7 +1757,7 @@ static int qat_uclo_map_objs_from_mof(struct icp_qat_mof_handle *mobj_handle)
 	sobj_chunkhdr = (struct icp_qat_mof_obj_chunkhdr *)
 			((uintptr_t)sobj_hdr + sizeof(*sobj_hdr));
 
-	/* map uof objects */
+	 
 	for (i = 0; i < uobj_chunk_num; i++) {
 		ret = qat_uclo_map_obj_from_mof(mobj_handle,
 						&mobj_hdr[*valid_chunk],
@@ -1767,7 +1767,7 @@ static int qat_uclo_map_objs_from_mof(struct icp_qat_mof_handle *mobj_handle)
 		(*valid_chunk)++;
 	}
 
-	/* map suof objects */
+	 
 	for (i = 0; i < sobj_chunk_num; i++) {
 		ret = qat_uclo_map_obj_from_mof(mobj_handle,
 						&mobj_hdr[*valid_chunk],
@@ -1869,11 +1869,11 @@ static int qat_uclo_map_mof_obj(struct icp_qat_fw_loader_handle *handle,
 	mof_chunkhdr = (void *)mof_ptr + sizeof(*mof_ptr);
 	chunks_num = mof_ptr->num_chunks;
 
-	/* Parse MOF file chunks */
+	 
 	for (i = 0; i < chunks_num; i++)
 		qat_uclo_map_mof_chunk(mobj_handle, &mof_chunkhdr[i]);
 
-	/* All sym_objs uobjs and sobjs should be available */
+	 
 	if (!mobj_handle->sym_str ||
 	    (!mobj_handle->uobjs_hdr && !mobj_handle->sobjs_hdr))
 		return -EINVAL;
@@ -1882,7 +1882,7 @@ static int qat_uclo_map_mof_obj(struct icp_qat_fw_loader_handle *handle,
 	if (ret)
 		return ret;
 
-	/* Seek specified uof object in MOF */
+	 
 	return qat_uclo_seek_obj_inside_mof(mobj_handle, obj_name,
 					    obj_ptr, obj_size);
 }
@@ -1978,8 +1978,8 @@ static void qat_uclo_wr_uimage_raw_page(struct icp_qat_fw_loader_handle *handle,
 	struct icp_qat_uclo_objhandle *obj_handle = handle->obj_handle;
 	u64 fill_pat;
 
-	/* load the page starting at appropriate ustore address */
-	/* get fill-pattern from an image -- they are all the same */
+	 
+	 
 	memcpy(&fill_pat, obj_handle->ae_uimage[0].img_ptr->fill_pattern,
 	       sizeof(u64));
 	uw_physical_addr = encap_page->beg_addr_p;
@@ -1988,14 +1988,14 @@ static void qat_uclo_wr_uimage_raw_page(struct icp_qat_fw_loader_handle *handle,
 	while (words_num) {
 		cpylen = min(words_num, UWORD_CPYBUF_SIZE);
 
-		/* load the buffer */
+		 
 		for (i = 0; i < cpylen; i++)
 			qat_uclo_fill_uwords(obj_handle, encap_page,
 					     &obj_handle->uword_buf[i],
 					     uw_physical_addr + i,
 					     uw_relative_addr + i, fill_pat);
 
-		/* copy the buffer to ustore */
+		 
 		qat_hal_wr_uwords(handle, (unsigned char)ae,
 				  uw_physical_addr, cpylen,
 				  obj_handle->uword_buf);
@@ -2023,8 +2023,7 @@ static void qat_uclo_wr_uimage_page(struct icp_qat_fw_loader_handle *handle,
 		ctx_mask = 0xff;
 	else
 		ctx_mask = 0x55;
-	/* load the default page and set assigned CTX PC
-	 * to the entrypoint address */
+	 
 	for_each_set_bit(ae, &ae_mask, handle->hal_handle->ae_max_num) {
 		if (!test_bit(ae, &cfg_ae_mask))
 			continue;
@@ -2033,7 +2032,7 @@ static void qat_uclo_wr_uimage_page(struct icp_qat_fw_loader_handle *handle,
 			continue;
 
 		aed = &obj_handle->ae_data[ae];
-		/* find the slice to which this image is assigned */
+		 
 		for (s = 0; s < aed->slice_num; s++) {
 			if (image->ctx_assigned &
 			    aed->ae_slices[s].ctx_mask_assigned)

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * R-Car Gen3 HDMI PHY
- *
- * Copyright (C) 2016 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -14,15 +8,15 @@
 #include <drm/bridge/dw_hdmi.h>
 #include <drm/drm_modes.h>
 
-#define RCAR_HDMI_PHY_OPMODE_PLLCFG	0x06	/* Mode of operation and PLL dividers */
-#define RCAR_HDMI_PHY_PLLCURRGMPCTRL	0x10	/* PLL current and Gmp (conductance) */
-#define RCAR_HDMI_PHY_PLLDIVCTRL	0x11	/* PLL dividers */
+#define RCAR_HDMI_PHY_OPMODE_PLLCFG	0x06	 
+#define RCAR_HDMI_PHY_PLLCURRGMPCTRL	0x10	 
+#define RCAR_HDMI_PHY_PLLDIVCTRL	0x11	 
 
 struct rcar_hdmi_phy_params {
 	unsigned long mpixelclock;
-	u16 opmode_div;	/* Mode of operation and PLL dividers */
-	u16 curr_gmp;	/* PLL current and Gmp (conductance) */
-	u16 div;	/* PLL dividers */
+	u16 opmode_div;	 
+	u16 curr_gmp;	 
+	u16 div;	 
 };
 
 static const struct rcar_hdmi_phy_params rcar_hdmi_phy_params[] = {
@@ -42,10 +36,7 @@ rcar_hdmi_mode_valid(struct dw_hdmi *hdmi, void *data,
 		     const struct drm_display_info *info,
 		     const struct drm_display_mode *mode)
 {
-	/*
-	 * The maximum supported clock frequency is 297 MHz, as shown in the PHY
-	 * parameters table.
-	 */
+	 
 	if (mode->clock > 297000)
 		return MODE_CLOCK_HIGH;
 
@@ -102,7 +93,7 @@ static void rcar_dw_hdmi_remove(struct platform_device *pdev)
 
 static const struct of_device_id rcar_dw_hdmi_of_table[] = {
 	{ .compatible = "renesas,rcar-gen3-hdmi" },
-	{ /* Sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rcar_dw_hdmi_of_table);
 

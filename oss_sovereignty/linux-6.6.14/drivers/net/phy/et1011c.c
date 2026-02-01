@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/net/phy/et1011c.c
- *
- * Driver for LSI ET1011C PHYs
- *
- * Author: Chaithrika U S
- *
- * Copyright (c) 2008 Texas Instruments
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -52,7 +44,7 @@ static int et1011c_config_aneg(struct phy_device *phydev)
 		return ctl;
 	ctl &= ~(BMCR_FULLDPLX | BMCR_SPEED100 | BMCR_SPEED1000 |
 		 BMCR_ANENABLE);
-	/* First clear the PHY */
+	 
 	phy_write(phydev, MII_BMCR, ctl | BMCR_RESET);
 
 	return genphy_config_aneg(phydev);
@@ -87,7 +79,7 @@ static struct phy_driver et1011c_driver[] = { {
 	.phy_id		= 0x0282f014,
 	.name		= "ET1011C",
 	.phy_id_mask	= 0xfffffff0,
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_aneg	= et1011c_config_aneg,
 	.read_status	= et1011c_read_status,
 } };

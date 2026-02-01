@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2021 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef __MFD_MT6359_CORE_H__
 #define __MFD_MT6359_CORE_H__
@@ -130,4 +128,4 @@ enum mt6359_irq_numbers {
 	.top_offset = MT6359_##sp##_TOP,	\
 }
 
-#endif /* __MFD_MT6359_CORE_H__ */
+#endif  

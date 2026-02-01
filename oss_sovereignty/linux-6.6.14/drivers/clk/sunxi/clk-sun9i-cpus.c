@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Chen-Yu Tsai
- *
- * Chen-Yu Tsai <wens@csie.org>
- *
- * Allwinner A80 CPUS clock driver
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -18,9 +11,7 @@
 
 static DEFINE_SPINLOCK(sun9i_a80_cpus_lock);
 
-/**
- * sun9i_a80_cpus_clk_setup() - Setup function for a80 cpus composite clk
- */
+ 
 
 #define SUN9I_CPUS_MAX_PARENTS		4
 #define SUN9I_CPUS_MUX_PARENT_PLL4	3
@@ -56,14 +47,14 @@ static unsigned long sun9i_a80_cpus_clk_recalc_rate(struct clk_hw *hw,
 	unsigned long rate;
 	u32 reg;
 
-	/* Fetch the register value */
+	 
 	reg = readl(cpus->reg);
 
-	/* apply pre-divider first if parent is pll4 */
+	 
 	if (SUN9I_CPUS_MUX_GET_PARENT(reg) == SUN9I_CPUS_MUX_PARENT_PLL4)
 		parent_rate /= SUN9I_CPUS_PLL4_DIV_GET(reg) + 1;
 
-	/* clk divider */
+	 
 	rate = parent_rate / (SUN9I_CPUS_DIV_GET(reg) + 1);
 
 	return rate;
@@ -74,18 +65,15 @@ static long sun9i_a80_cpus_clk_round(unsigned long rate, u8 *divp, u8 *pre_divp,
 {
 	u8 div, pre_div = 1;
 
-	/*
-	 * clock can only divide, so we will never be able to achieve
-	 * frequencies higher than the parent frequency
-	 */
+	 
 	if (parent_rate && rate > parent_rate)
 		rate = parent_rate;
 
 	div = DIV_ROUND_UP(parent_rate, rate);
 
-	/* calculate pre-divider if parent is pll4 */
+	 
 	if (parent == SUN9I_CPUS_MUX_PARENT_PLL4 && div > 4) {
-		/* pre-divider is 1 ~ 32 */
+		 
 		if (div < 32) {
 			pre_div = div;
 			div = 1;
@@ -101,7 +89,7 @@ static long sun9i_a80_cpus_clk_round(unsigned long rate, u8 *divp, u8 *pre_divp,
 		}
 	}
 
-	/* we were asked to pass back divider values */
+	 
 	if (divp) {
 		*divp = div - 1;
 		*pre_divp = pre_div - 1;
@@ -118,7 +106,7 @@ static int sun9i_a80_cpus_clk_determine_rate(struct clk_hw *clk,
 	unsigned long parent_rate, best = 0, child_rate, best_child_rate = 0;
 	unsigned long rate = req->rate;
 
-	/* find the parent that can help provide the fastest rate <= rate */
+	 
 	num_parents = clk_hw_get_num_parents(clk);
 	for (i = 0; i < num_parents; i++) {
 		parent = clk_hw_get_parent_by_index(clk, i);
@@ -161,7 +149,7 @@ static int sun9i_a80_cpus_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	reg = readl(cpus->reg);
 
-	/* need to know which parent is used to apply pre-divider */
+	 
 	parent = SUN9I_CPUS_MUX_GET_PARENT(reg);
 	sun9i_a80_cpus_clk_round(rate, &div, &pre_div, parent, parent_rate);
 
@@ -200,17 +188,17 @@ static void sun9i_a80_cpus_setup(struct device_node *node)
 
 	of_property_read_string(node, "clock-output-names", &clk_name);
 
-	/* we have a mux, we will have >1 parents */
+	 
 	ret = of_clk_parent_fill(node, parents, SUN9I_CPUS_MAX_PARENTS);
 
 	mux = kzalloc(sizeof(*mux), GFP_KERNEL);
 	if (!mux)
 		goto err_unmap;
 
-	/* set up clock properties */
+	 
 	mux->reg = cpus->reg;
 	mux->shift = SUN9I_CPUS_MUX_SHIFT;
-	/* un-shifted mask is what mux_clk expects */
+	 
 	mux->mask = SUN9I_CPUS_MUX_MASK >> SUN9I_CPUS_MUX_SHIFT;
 	mux->lock = &sun9i_a80_cpus_lock;
 

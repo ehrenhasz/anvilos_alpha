@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/elf.h>
 
@@ -1739,14 +1736,10 @@ static int ath11k_qmi_host_cap_send(struct ath11k_base *ab)
 	if (ab->hw_params.internal_sleep_clock) {
 		req.nm_modem_valid = 1;
 
-		/* Notify firmware that this is non-qualcomm platform. */
+		 
 		req.nm_modem |= HOST_CSTATE_BIT;
 
-		/* Notify firmware about the sleep clock selection,
-		 * nm_modem_bit[1] is used for this purpose. Host driver on
-		 * non-qualcomm platforms should select internal sleep
-		 * clock.
-		 */
+		 
 		req.nm_modem |= SLEEP_CLOCK_SELECT_INTERNAL_BIT;
 	}
 
@@ -1817,10 +1810,7 @@ static int ath11k_qmi_fw_ind_register_send(struct ath11k_base *ab)
 	req->pin_connect_result_enable_valid = 0;
 	req->pin_connect_result_enable = 0;
 
-	/* WCN6750 doesn't request for DDR memory via QMI,
-	 * instead it uses a fixed 12MB reserved memory
-	 * region in DDR.
-	 */
+	 
 	if (!ab->hw_params.fixed_fw_mem) {
 		req->request_mem_enable_valid = 1;
 		req->request_mem_enable = 1;
@@ -1880,11 +1870,7 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
 
 	memset(&resp, 0, sizeof(resp));
 
-	/* For QCA6390 by default FW requests a block of ~4M contiguous
-	 * DMA memory, it's hard to allocate from OS. So host returns
-	 * failure to FW and FW will then request multiple blocks of small
-	 * chunk size memory.
-	 */
+	 
 	if (!(ab->hw_params.fixed_mem_region ||
 	      test_bit(ATH11K_FLAG_FIXED_MEM_RGN, &ab->dev_flags)) &&
 	      ab->qmi.target_mem_delayed) {
@@ -1934,9 +1920,7 @@ static int ath11k_qmi_respond_fw_mem_request(struct ath11k_base *ab)
 	}
 
 	if (resp.resp.result != QMI_RESULT_SUCCESS_V01) {
-		/* the error response is expected when
-		 * target_mem_delayed is true.
-		 */
+		 
 		if (delayed && resp.resp.error == 0)
 			goto out;
 
@@ -1981,15 +1965,13 @@ static int ath11k_qmi_alloc_target_mem_chunk(struct ath11k_base *ab)
 	for (i = 0; i < ab->qmi.mem_seg_count; i++) {
 		chunk = &ab->qmi.target_mem[i];
 
-		/* Firmware reloads in coldboot/firmware recovery.
-		 * in such case, no need to allocate memory for FW again.
-		 */
+		 
 		if (chunk->vaddr) {
 			if (chunk->prev_type == chunk->type &&
 			    chunk->prev_size == chunk->size)
 				continue;
 
-			/* cannot reuse the existing chunk */
+			 
 			dma_free_coherent(ab->dev, chunk->prev_size,
 					  chunk->vaddr, chunk->paddr);
 			chunk->vaddr = NULL;
@@ -2119,7 +2101,7 @@ static int ath11k_qmi_request_device_info(struct ath11k_base *ab)
 	void __iomem *bar_addr_va;
 	int ret;
 
-	/* device info message req is only sent for hybrid bus devices */
+	 
 	if (!ab->hw_params.hybrid_bus_type)
 		return 0;
 
@@ -2442,7 +2424,7 @@ static int ath11k_qmi_load_bdf_qmi(struct ath11k_base *ab,
 		goto out;
 	}
 
-	/* QCA6390/WCN6855 does not support cal data, skip it */
+	 
 	if (bdf_type == ATH11K_QMI_BDF_TYPE_ELF || bdf_type == ATH11K_QMI_BDF_TYPE_REGDB)
 		goto out;
 
@@ -2453,7 +2435,7 @@ static int ath11k_qmi_load_bdf_qmi(struct ath11k_base *ab,
 	} else {
 		file_type = ATH11K_QMI_FILE_TYPE_CALDATA;
 
-		/* cal-<bus>-<id>.bin */
+		 
 		snprintf(filename, sizeof(filename), "cal-%s-%s.bin",
 			 ath11k_bus_str(ab->hif.bus), dev_name(dev));
 		fw_entry = ath11k_core_firmware_request(ab, filename);
@@ -2462,9 +2444,7 @@ static int ath11k_qmi_load_bdf_qmi(struct ath11k_base *ab,
 
 		fw_entry = ath11k_core_firmware_request(ab, ATH11K_DEFAULT_CAL_FILE);
 		if (IS_ERR(fw_entry)) {
-			/* Caldata may not be present during first time calibration in
-			 * factory hence allow to boot without loading caldata in ftm mode
-			 */
+			 
 			if (ath11k_ftm_mode) {
 				ath11k_info(ab,
 					    "Booting without cal data file in factory test mode\n");
@@ -2686,7 +2666,7 @@ static int ath11k_qmi_wlanfw_wlan_cfg_send(struct ath11k_base *ab)
 		sizeof(req->host_version));
 
 	req->tgt_cfg_valid = 1;
-	/* This is number of CE configs */
+	 
 	req->tgt_cfg_len = ab->qmi.ce_cfg.tgt_ce_len;
 	for (pipe_num = 0; pipe_num < req->tgt_cfg_len ; pipe_num++) {
 		req->tgt_cfg[pipe_num].pipe_num = ce_cfg[pipe_num].pipenum;
@@ -2697,7 +2677,7 @@ static int ath11k_qmi_wlanfw_wlan_cfg_send(struct ath11k_base *ab)
 	}
 
 	req->svc_cfg_valid = 1;
-	/* This is number of Service/CE configs */
+	 
 	req->svc_cfg_len = ab->qmi.ce_cfg.svc_to_ce_map_len;
 	for (pipe_num = 0; pipe_num < req->svc_cfg_len; pipe_num++) {
 		req->svc_cfg[pipe_num].service_id = svc_cfg[pipe_num].service_id;
@@ -2706,7 +2686,7 @@ static int ath11k_qmi_wlanfw_wlan_cfg_send(struct ath11k_base *ab)
 	}
 	req->shadow_reg_valid = 0;
 
-	/* set shadow v2 configuration */
+	 
 	if (ab->hw_params.supports_shadow_regs) {
 		req->shadow_reg_v2_valid = 1;
 		req->shadow_reg_v2_len = min_t(u32,
@@ -2858,7 +2838,7 @@ int ath11k_qmi_fwreset_from_cold_boot(struct ath11k_base *ab)
 		return -ETIMEDOUT;
 	}
 
-	/* reset the firmware */
+	 
 	ath11k_hif_power_down(ab);
 	ath11k_hif_power_up(ab);
 	ath11k_dbg(ab, ATH11K_DBG_QMI, "exit wait for cold boot done\n");
@@ -3131,7 +3111,7 @@ static const struct qmi_msg_handler ath11k_qmi_msg_handlers[] = {
 		.fn = ath11k_qmi_msg_fw_init_done_cb,
 	},
 
-	/* end of list */
+	 
 	{},
 };
 
@@ -3253,11 +3233,7 @@ static void ath11k_qmi_driver_event_work(struct work_struct *work)
 
 			break;
 		case ATH11K_QMI_EVENT_FW_READY:
-			/* For targets requiring a FW restart upon cold
-			 * boot completion, there is no need to process
-			 * FW ready; such targets will receive FW init
-			 * done message after FW restart.
-			 */
+			 
 			if (ab->hw_params.cbcal_restart_fw)
 				break;
 

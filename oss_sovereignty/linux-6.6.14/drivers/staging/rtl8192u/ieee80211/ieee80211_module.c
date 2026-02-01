@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*******************************************************************************
- *
- *  Copyright(c) 2004 Intel Corporation. All rights reserved.
- *
- *  Portions of this file are based on the WEP enablement code provided by the
- *  Host AP project hostap-drivers v0.1.3
- *  Copyright (c) 2001-2002, SSH Communications Security Corp and Jouni Malinen
- *  <jkmaline@cc.hut.fi>
- *  Copyright (c) 2002-2003, Jouni Malinen <jkmaline@cc.hut.fi>
- *
- *  Contact Information:
- *  James P. Ketrenos <ipw2100-admin@linux.intel.com>
- *  Intel Corporation, 5200 N.E. Elam Young Parkway, Hillsboro, OR 97124-6497
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/errno.h>
@@ -102,15 +88,15 @@ struct net_device *alloc_ieee80211(int sizeof_priv)
 	}
 	ieee80211_networks_initialize(ieee);
 
-	/* Default fragmentation threshold is maximum payload size */
+	 
 	ieee->fts = DEFAULT_FTS;
 	ieee->scan_age = DEFAULT_MAX_SCAN_AGE;
 	ieee->open_wep = 1;
 
-	/* Default to enabling full open WEP with host based encrypt/decrypt */
+	 
 	ieee->host_encrypt = 1;
 	ieee->host_decrypt = 1;
-	ieee->ieee802_1x = 1; /* Default to supporting 802.1x */
+	ieee->ieee802_1x = 1;  
 
 	INIT_LIST_HEAD(&ieee->crypt_deinit_list);
 	timer_setup(&ieee->crypt_deinit_timer, ieee80211_crypt_deinit_handler,
@@ -120,7 +106,7 @@ struct net_device *alloc_ieee80211(int sizeof_priv)
 	spin_lock_init(&ieee->wpax_suitlist_lock);
 	spin_lock_init(&ieee->bw_spinlock);
 	spin_lock_init(&ieee->reorder_spinlock);
-	/* added by WB */
+	 
 	atomic_set(&ieee->atm_chnlop, 0);
 	atomic_set(&ieee->atm_swbw, 0);
 
@@ -131,8 +117,8 @@ struct net_device *alloc_ieee80211(int sizeof_priv)
 	ieee->privacy_invoked = 0;
 	ieee->ieee802_1x = 1;
 	ieee->raw_tx = 0;
-	//ieee->hwsec_support = 1; //defalt support hw security. //use module_param instead.
-	ieee->hwsec_active = 0; /* disable hwsec, switch it on when necessary. */
+	
+	ieee->hwsec_active = 0;  
 
 	ieee80211_softmac_init(ieee);
 
@@ -140,14 +126,12 @@ struct net_device *alloc_ieee80211(int sizeof_priv)
 	if (!ieee->pHTInfo) {
 		IEEE80211_DEBUG(IEEE80211_DL_ERR, "can't alloc memory for HTInfo\n");
 
-		/* By this point in code ieee80211_networks_allocate() has been
-		 * successfully called so the memory allocated should be freed
-		 */
+		 
 		ieee80211_networks_free(ieee);
 		goto failed;
 	}
 	HTUpdateDefaultSetting(ieee);
-	HTInitializeHTInfo(ieee); /* may move to other place. */
+	HTInitializeHTInfo(ieee);  
 	TSInitialize(ieee);
 
 	for (i = 0; i < IEEE_IBSS_MAC_HASH_SIZE; i++)
@@ -172,8 +156,8 @@ void free_ieee80211(struct net_device *dev)
 {
 	struct ieee80211_device *ieee = netdev_priv(dev);
 	int i;
-	/* struct list_head *p, *q; */
-//	del_timer_sync(&ieee->SwBwTimer);
+	 
+
 	kfree(ieee->pHTInfo);
 	ieee->pHTInfo = NULL;
 	RemoveAllTS(ieee);
@@ -199,24 +183,24 @@ void free_ieee80211(struct net_device *dev)
 #ifdef CONFIG_IEEE80211_DEBUG
 
 u32 ieee80211_debug_level;
-static int debug = //	    IEEE80211_DL_INFO	|
-	//		    IEEE80211_DL_WX	|
-	//		    IEEE80211_DL_SCAN	|
-	//		    IEEE80211_DL_STATE	|
-	//		    IEEE80211_DL_MGMT	|
-	//		    IEEE80211_DL_FRAG	|
-	//		    IEEE80211_DL_EAP	|
-	//		    IEEE80211_DL_DROP	|
-	//		    IEEE80211_DL_TX	|
-	//		    IEEE80211_DL_RX	|
-			    //IEEE80211_DL_QOS    |
-	//		    IEEE80211_DL_HT	|
-	//		    IEEE80211_DL_TS	|
-//			    IEEE80211_DL_BA	|
-	//		    IEEE80211_DL_REORDER|
-//			    IEEE80211_DL_TRACE  |
-			    //IEEE80211_DL_DATA	|
-			    IEEE80211_DL_ERR	  /* awayls open this flags to show error out */
+static int debug = 
+	
+	
+	
+	
+	
+	
+	
+	
+	
+			    
+	
+	
+
+	
+
+			    
+			    IEEE80211_DL_ERR	   
 			    ;
 static struct proc_dir_entry *ieee80211_proc;
 

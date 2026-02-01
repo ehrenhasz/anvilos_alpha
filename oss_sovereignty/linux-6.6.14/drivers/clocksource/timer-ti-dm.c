@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * linux/arch/arm/plat-omap/dmtimer.c
- *
- * OMAP Dual-Mode Timers
- *
- * Copyright (C) 2010 Texas Instruments Incorporated - https://www.ti.com/
- * Tarun Kanti DebBarma <tarun.kanti@ti.com>
- * Thara Gopinath <thara@ti.com>
- *
- * dmtimer adaptation to platform_driver.
- *
- * Copyright (C) 2005 Nokia Corporation
- * OMAP2 support by Juha Yrjola
- * API improvements and OMAP2 clock framework support by Timo Teras
- *
- * Copyright (C) 2009 Texas Instruments
- * Added OMAP4 support - Santosh Shilimkar <santosh.shilimkar@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -32,21 +15,14 @@
 
 #include <clocksource/timer-ti-dm.h>
 
-/*
- * timer errata flags
- *
- * Errata i103/i767 impacts all OMAP3/4/5 devices including AM33xx. This
- * errata prevents us from using posted mode on these devices, unless the
- * timer counter register is never read. For more details please refer to
- * the OMAP3/4/5 errata documents.
- */
+ 
 #define OMAP_TIMER_ERRATA_I103_I767			0x80000000
 
-/* posted mode types */
+ 
 #define OMAP_TIMER_NONPOSTED			0x00
 #define OMAP_TIMER_POSTED			0x01
 
-/* register offsets with the write pending bit encoded */
+ 
 #define	WPSHIFT					16
 
 #define OMAP_TIMER_WAKEUP_EN_REG		(_OMAP_TIMER_WAKEUP_EN_OFFSET \
@@ -122,11 +98,11 @@ struct dmtimer {
 	struct clk *fclk;
 
 	void __iomem	*io_base;
-	int		irq_stat;	/* TISR/IRQSTATUS interrupt status */
-	int		irq_ena;	/* irq enable */
-	int		irq_dis;	/* irq disable, only on v2 ip */
-	void __iomem	*pend;		/* write pending */
-	void __iomem	*func_base;	/* function register base */
+	int		irq_stat;	 
+	int		irq_ena;	 
+	int		irq_dis;	 
+	void __iomem	*pend;		 
+	void __iomem	*func_base;	 
 
 	atomic_t enabled;
 	unsigned long rate;
@@ -155,15 +131,7 @@ enum {
 	REQUEST_BY_NODE,
 };
 
-/**
- * dmtimer_read - read timer registers in posted and non-posted mode
- * @timer:	timer pointer over which read operation to perform
- * @reg:	lowest byte holds the register offset
- *
- * The posted mode bit is encoded in reg. Note that in posted mode, write
- * pending bit must be checked. Otherwise a read of a non completed write
- * will produce an error.
- */
+ 
 static inline u32 dmtimer_read(struct dmtimer *timer, u32 reg)
 {
 	u16 wp, offset;
@@ -171,7 +139,7 @@ static inline u32 dmtimer_read(struct dmtimer *timer, u32 reg)
 	wp = reg >> WPSHIFT;
 	offset = reg & 0xff;
 
-	/* Wait for a possible write pending bit in posted mode */
+	 
 	if (wp && timer->posted)
 		while (readl_relaxed(timer->pend) & wp)
 			cpu_relax();
@@ -179,16 +147,7 @@ static inline u32 dmtimer_read(struct dmtimer *timer, u32 reg)
 	return readl_relaxed(timer->func_base + offset);
 }
 
-/**
- * dmtimer_write - write timer registers in posted and non-posted mode
- * @timer:      timer pointer over which write operation is to perform
- * @reg:        lowest byte holds the register offset
- * @val:        data to write into the register
- *
- * The posted mode bit is encoded in reg. Note that in posted mode, the write
- * pending bit must be checked. Otherwise a write on a register which has a
- * pending write will be lost.
- */
+ 
 static inline void dmtimer_write(struct dmtimer *timer, u32 reg, u32 val)
 {
 	u16 wp, offset;
@@ -196,7 +155,7 @@ static inline void dmtimer_write(struct dmtimer *timer, u32 reg, u32 val)
 	wp = reg >> WPSHIFT;
 	offset = reg & 0xff;
 
-	/* Wait for a possible write pending bit in posted mode */
+	 
 	if (wp && timer->posted)
 		while (readl_relaxed(timer->pend) & wp)
 			cpu_relax();
@@ -208,7 +167,7 @@ static inline void __omap_dm_timer_init_regs(struct dmtimer *timer)
 {
 	u32 tidr;
 
-	/* Assume v1 ip if bits [31:16] are zero */
+	 
 	tidr = readl_relaxed(timer->io_base);
 	if (!(tidr >> 16)) {
 		timer->revision = 1;
@@ -229,16 +188,7 @@ static inline void __omap_dm_timer_init_regs(struct dmtimer *timer)
 	}
 }
 
-/*
- * __omap_dm_timer_enable_posted - enables write posted mode
- * @timer:      pointer to timer instance handle
- *
- * Enables the write posted mode for the timer. When posted mode is enabled
- * writes to certain timer registers are immediately acknowledged by the
- * internal bus and hence prevents stalling the CPU waiting for the write to
- * complete. Enabling this feature can improve performance for writing to the
- * timer registers.
- */
+ 
 static inline void __omap_dm_timer_enable_posted(struct dmtimer *timer)
 {
 	if (timer->posted)
@@ -264,17 +214,14 @@ static inline void __omap_dm_timer_stop(struct dmtimer *timer)
 		l &= ~0x1;
 		dmtimer_write(timer, OMAP_TIMER_CTRL_REG, l);
 #ifdef CONFIG_ARCH_OMAP2PLUS
-		/* Readback to make sure write has completed */
+		 
 		dmtimer_read(timer, OMAP_TIMER_CTRL_REG);
-		/*
-		 * Wait for functional clock period x 3.5 to make sure that
-		 * timer is stopped
-		 */
+		 
 		udelay(3500000 / timer->fclk_rate + 1);
 #endif
 	}
 
-	/* Ack possibly pending interrupt */
+	 
 	dmtimer_write(timer, timer->irq_stat, OMAP_TIMER_INT_OVERFLOW);
 }
 
@@ -336,7 +283,7 @@ static int omap_timer_context_notifier(struct notifier_block *nb,
 			break;
 		omap_timer_save_context(timer);
 		break;
-	case CPU_CLUSTER_PM_ENTER_FAILED:	/* No need to restore context */
+	case CPU_CLUSTER_PM_ENTER_FAILED:	 
 		break;
 	case CPU_CLUSTER_PM_EXIT:
 		if ((timer->capability & OMAP_TIMER_ALWON) ||
@@ -382,7 +329,7 @@ static int omap_dm_timer_reset(struct dmtimer *timer)
 		return -ETIMEDOUT;
 	}
 
-	/* Configure timer for smart-idle mode */
+	 
 	l = dmtimer_read(timer, OMAP_TIMER_OCP_CFG_OFFSET);
 	l |= 0x2 << 0x3;
 	dmtimer_write(timer, OMAP_TIMER_OCP_CFG_OFFSET, l);
@@ -392,12 +339,7 @@ static int omap_dm_timer_reset(struct dmtimer *timer)
 	return 0;
 }
 
-/*
- * Functions exposed to PWM and remoteproc drivers via platform_data.
- * Do not use these in the driver, these will get deprecated and will
- * will be replaced by Linux generic framework functions such as
- * chained interrupts and clock framework.
- */
+ 
 static struct dmtimer *to_dmtimer(struct omap_dm_timer *cookie)
 {
 	if (!cookie)
@@ -434,16 +376,12 @@ static int omap_dm_timer_set_source(struct omap_dm_timer *cookie, int source)
 
 	pdata = timer->pdev->dev.platform_data;
 
-	/*
-	 * FIXME: Used for OMAP1 devices only because they do not currently
-	 * use the clock framework to set the parent clock. To be removed
-	 * once OMAP1 migrated to using clock framework for dmtimers
-	 */
+	 
 	if (timer->omap1 && pdata && pdata->set_timer_src)
 		return pdata->set_timer_src(timer->pdev, source);
 
 #if defined(CONFIG_COMMON_CLK)
-	/* Check if the clock has configurable parents */
+	 
 	if (clk_hw_get_num_parents(__clk_get_hw(timer->fclk)) < 2)
 		return 0;
 #endif
@@ -530,7 +468,7 @@ static struct dmtimer *_omap_dm_timer_request(int req_type, void *data)
 		np = (struct device_node *)data;
 		break;
 	default:
-		/* REQUEST_ANY */
+		 
 		break;
 	}
 
@@ -549,20 +487,13 @@ static struct dmtimer *_omap_dm_timer_request(int req_type, void *data)
 			break;
 		case REQUEST_BY_CAP:
 			if (cap == (t->capability & cap)) {
-				/*
-				 * If timer is not NULL, we have already found
-				 * one timer. But it was not an exact match
-				 * because it had more capabilities than what
-				 * was required. Therefore, unreserve the last
-				 * timer found and see if this one is a better
-				 * match.
-				 */
+				 
 				if (timer)
 					timer->reserved = 0;
 				timer = t;
 				timer->reserved = 1;
 
-				/* Exit loop early if we find an exact match */
+				 
 				if (t->capability == cap)
 					goto found;
 			}
@@ -575,7 +506,7 @@ static struct dmtimer *_omap_dm_timer_request(int req_type, void *data)
 			}
 			break;
 		default:
-			/* REQUEST_ANY */
+			 
 			timer = t;
 			timer->reserved = 1;
 			goto found;
@@ -610,7 +541,7 @@ static struct omap_dm_timer *omap_dm_timer_request_specific(int id)
 {
 	struct dmtimer *timer;
 
-	/* Requesting timer by ID is not supported when device tree is used */
+	 
 	if (of_have_populated_dt()) {
 		pr_warn("%s: Please use omap_dm_timer_request_by_node()\n",
 			__func__);
@@ -624,13 +555,7 @@ static struct omap_dm_timer *omap_dm_timer_request_specific(int id)
 	return &timer->cookie;
 }
 
-/**
- * omap_dm_timer_request_by_node - Request a timer by device-tree node
- * @np:		Pointer to device-tree timer node
- *
- * Request a timer based upon a device node pointer. Returns pointer to
- * timer handle on success and a NULL pointer on failure.
- */
+ 
 static struct omap_dm_timer *omap_dm_timer_request_by_node(struct device_node *np)
 {
 	struct dmtimer *timer;
@@ -663,7 +588,7 @@ static int omap_dm_timer_free(struct omap_dm_timer *cookie)
 	if (rc)
 		return rc;
 
-	/* Clear timer configuration */
+	 
 	dmtimer_write(timer, OMAP_TIMER_CTRL_REG, 0);
 
 	pm_runtime_put_sync(dev);
@@ -687,21 +612,18 @@ static struct clk *omap_dm_timer_get_fclk(struct omap_dm_timer *cookie)
 	return NULL;
 }
 
-/**
- * omap_dm_timer_modify_idlect_mask - Check if any running timers use ARMXOR
- * @inputmask: current value of idlect mask
- */
+ 
 __u32 omap_dm_timer_modify_idlect_mask(__u32 inputmask)
 {
 	int i = 0;
 	struct dmtimer *timer = NULL;
 	unsigned long flags;
 
-	/* If ARMXOR cannot be idled this function call is unnecessary */
+	 
 	if (!(inputmask & (1 << 1)))
 		return inputmask;
 
-	/* If any active timer is using ARMXOR return modified mask */
+	 
 	spin_lock_irqsave(&dm_timer_lock, flags);
 	list_for_each_entry(timer, &omap_timer_list, node) {
 		u32 l;
@@ -947,13 +869,7 @@ static int omap_dm_timer_set_int_enable(struct omap_dm_timer *cookie,
 	return 0;
 }
 
-/**
- * omap_dm_timer_set_int_disable - disable timer interrupts
- * @cookie:	pointer to timer cookie
- * @mask:	bit mask of interrupts to be disabled
- *
- * Disables the specified timer interrupts for a timer.
- */
+ 
 static int omap_dm_timer_set_int_disable(struct omap_dm_timer *cookie, u32 mask)
 {
 	struct dmtimer *timer;
@@ -1036,7 +952,7 @@ static int omap_dm_timer_write_counter(struct omap_dm_timer *cookie, unsigned in
 
 	dmtimer_write(timer, OMAP_TIMER_COUNTER_REG, value);
 
-	/* Save the context */
+	 
 	timer->context.tcrr = value;
 	return 0;
 }
@@ -1074,13 +990,7 @@ static const struct dev_pm_ops omap_dm_timer_pm_ops = {
 
 static const struct of_device_id omap_timer_match[];
 
-/**
- * omap_dm_timer_probe - probe function called for every registered device
- * @pdev:	pointer to current timer platform device
- *
- * Called by driver framework at the end of device registration for all
- * timer devices.
- */
+ 
 static int omap_dm_timer_probe(struct platform_device *pdev)
 {
 	unsigned long flags;
@@ -1131,7 +1041,7 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
 
 	timer->omap1 = timer->capability & OMAP_TIMER_NEEDS_RESET;
 
-	/* OMAP1 devices do not yet use the clock framework for dmtimers */
+	 
 	if (!timer->omap1) {
 		timer->fclk = devm_clk_get(dev, "fck");
 		if (IS_ERR(timer->fclk))
@@ -1168,13 +1078,13 @@ static int omap_dm_timer_probe(struct platform_device *pdev)
 		}
 		__omap_dm_timer_init_regs(timer);
 
-		/* Clear timer configuration */
+		 
 		dmtimer_write(timer, OMAP_TIMER_CTRL_REG, 0);
 
 		pm_runtime_put(dev);
 	}
 
-	/* add the timer element to the list */
+	 
 	spin_lock_irqsave(&dm_timer_lock, flags);
 	list_add_tail(&timer->node, &omap_timer_list);
 	spin_unlock_irqrestore(&dm_timer_lock, flags);
@@ -1188,14 +1098,7 @@ err_disable:
 	return ret;
 }
 
-/**
- * omap_dm_timer_remove - cleanup a registered timer device
- * @pdev:	pointer to current timer platform device
- *
- * Called by driver framework whenever a timer device is unregistered.
- * In addition to freeing platform resources it also deletes the timer
- * entry from the local list.
- */
+ 
 static void omap_dm_timer_remove(struct platform_device *pdev)
 {
 	struct dmtimer *timer;

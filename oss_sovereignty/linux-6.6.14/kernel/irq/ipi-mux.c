@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Multiplex several virtual IPIs over a single HW IPI.
- *
- * Copyright The Asahi Linux Contributors
- * Copyright (c) 2022 Ventana Micro Systems Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) "ipi-mux: " fmt
 #include <linux/cpu.h>
@@ -40,13 +35,10 @@ static void ipi_mux_unmask(struct irq_data *d)
 
 	atomic_or(ibit, &icpu->enable);
 
-	/*
-	 * The atomic_or() above must complete before the atomic_read()
-	 * below to avoid racing ipi_mux_send_mask().
-	 */
+	 
 	smp_mb__after_atomic();
 
-	/* If a pending IPI was unmasked, raise a parent IPI immediately. */
+	 
 	if (atomic_read(&icpu->bits) & ibit)
 		ipi_mux_send(smp_processor_id());
 }
@@ -61,28 +53,13 @@ static void ipi_mux_send_mask(struct irq_data *d, const struct cpumask *mask)
 	for_each_cpu(cpu, mask) {
 		icpu = per_cpu_ptr(ipi_mux_pcpu, cpu);
 
-		/*
-		 * This sequence is the mirror of the one in ipi_mux_unmask();
-		 * see the comment there. Additionally, release semantics
-		 * ensure that the vIPI flag set is ordered after any shared
-		 * memory accesses that precede it. This therefore also pairs
-		 * with the atomic_fetch_andnot in ipi_mux_process().
-		 */
+		 
 		pending = atomic_fetch_or_release(ibit, &icpu->bits);
 
-		/*
-		 * The atomic_fetch_or_release() above must complete
-		 * before the atomic_read() below to avoid racing with
-		 * ipi_mux_unmask().
-		 */
+		 
 		smp_mb__after_atomic();
 
-		/*
-		 * The flag writes must complete before the physical IPI is
-		 * issued to another CPU. This is implied by the control
-		 * dependency on the result of atomic_read() below, which is
-		 * itself already ordered after the vIPI flag write.
-		 */
+		 
 		if (!(pending & ibit) && (atomic_read(&icpu->enable) & ibit))
 			ipi_mux_send(cpu);
 	}
@@ -114,9 +91,7 @@ static const struct irq_domain_ops ipi_mux_domain_ops = {
 	.free		= irq_domain_free_irqs_top,
 };
 
-/**
- * ipi_mux_process - Process multiplexed virtual IPIs
- */
+ 
 void ipi_mux_process(void)
 {
 	struct ipi_mux_cpu *icpu = this_cpu_ptr(ipi_mux_pcpu);
@@ -124,33 +99,17 @@ void ipi_mux_process(void)
 	unsigned long ipis;
 	unsigned int en;
 
-	/*
-	 * Reading enable mask does not need to be ordered as long as
-	 * this function is called from interrupt handler because only
-	 * the CPU itself can change it's own enable mask.
-	 */
+	 
 	en = atomic_read(&icpu->enable);
 
-	/*
-	 * Clear the IPIs we are about to handle. This pairs with the
-	 * atomic_fetch_or_release() in ipi_mux_send_mask().
-	 */
+	 
 	ipis = atomic_fetch_andnot(en, &icpu->bits) & en;
 
 	for_each_set_bit(hwirq, &ipis, BITS_PER_TYPE(int))
 		generic_handle_domain_irq(ipi_mux_domain, hwirq);
 }
 
-/**
- * ipi_mux_create - Create virtual IPIs multiplexed on top of a single
- * parent IPI.
- * @nr_ipi:		number of virtual IPIs to create. This should
- *			be <= BITS_PER_TYPE(int)
- * @mux_send:		callback to trigger parent IPI for a particular CPU
- *
- * Returns first virq of the newly created virtual IPIs upon success
- * or <=0 upon failure
- */
+ 
 int ipi_mux_create(unsigned int nr_ipi, void (*mux_send)(unsigned int cpu))
 {
 	struct fwnode_handle *fwnode;

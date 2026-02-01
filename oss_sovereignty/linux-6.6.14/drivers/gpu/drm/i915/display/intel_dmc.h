@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DMC_H__
 #define __INTEL_DMC_H__
@@ -27,4 +25,4 @@ void intel_dmc_print_error_state(struct drm_i915_error_state_buf *m,
 
 void assert_dmc_loaded(struct drm_i915_private *i915);
 
-#endif /* __INTEL_DMC_H__ */
+#endif  

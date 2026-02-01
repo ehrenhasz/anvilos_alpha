@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2008, cozybit Inc.
- *  Copyright (C) 2003-2006, Marvell International Ltd.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/hardirq.h>
@@ -29,16 +26,7 @@ static u16 lbtf_region_code_to_index[MRVDRV_MAX_REGION_CODE] =
 static struct cmd_ctrl_node *lbtf_get_cmd_ctrl_node(struct lbtf_private *priv);
 
 
-/**
- *  lbtf_cmd_copyback - Simple callback that copies response back into command
- *
- *  @priv:	A pointer to struct lbtf_private structure
- *  @extra:	A pointer to the original command structure for which
- *		'resp' is a response
- *  @resp:	A pointer to the command response
- *
- *  Returns: 0 on success, error on failure
- */
+ 
 int lbtf_cmd_copyback(struct lbtf_private *priv, unsigned long extra,
 		     struct cmd_header *resp)
 {
@@ -69,13 +57,7 @@ static void lbtf_geo_init(struct lbtf_private *priv)
 		priv->channels[CHAN_TO_IDX(ch)].flags = 0;
 }
 
-/**
- *  lbtf_update_hw_spec: Updates the hardware details.
- *
- *  @priv:    	A pointer to struct lbtf_private structure
- *
- *  Returns: 0 on success, error on failure
- */
+ 
 int lbtf_update_hw_spec(struct lbtf_private *priv)
 {
 	struct cmd_ds_get_hw_spec cmd;
@@ -93,8 +75,7 @@ int lbtf_update_hw_spec(struct lbtf_private *priv)
 
 	priv->fwcapinfo = le32_to_cpu(cmd.fwcapinfo);
 
-	/* The firmware release is in an interesting format: the patch
-	 * level is in the most significant nibble ... so fix that: */
+	 
 	priv->fwrelease = le32_to_cpu(cmd.fwrelease);
 	priv->fwrelease = (priv->fwrelease << 8) |
 		(priv->fwrelease >> 24 & 0xff);
@@ -109,19 +90,16 @@ int lbtf_update_hw_spec(struct lbtf_private *priv)
 	lbtf_deb_cmd("GET_HW_SPEC: hardware interface 0x%x, hardware spec 0x%04x\n",
 		    cmd.hwifversion, cmd.version);
 
-	/* Clamp region code to 8-bit since FW spec indicates that it should
-	 * only ever be 8-bit, even though the field size is 16-bit.  Some
-	 * firmware returns non-zero high 8 bits here.
-	 */
+	 
 	priv->regioncode = le16_to_cpu(cmd.regioncode) & 0xFF;
 
 	for (i = 0; i < MRVDRV_MAX_REGION_CODE; i++) {
-		/* use the region code to search for the index */
+		 
 		if (priv->regioncode == lbtf_region_code_to_index[i])
 			break;
 	}
 
-	/* if it's unidentified region code, use the default (USA) */
+	 
 	if (i >= MRVDRV_MAX_REGION_CODE) {
 		priv->regioncode = 0x10;
 		pr_info("unidentified region code; using the default (USA)\n");
@@ -138,14 +116,7 @@ out:
 	return ret;
 }
 
-/**
- *  lbtf_set_channel: Set the radio channel
- *
- *  @priv:	A pointer to struct lbtf_private structure
- *  @channel:	The desired channel, or 0 to clear a locked channel
- *
- *  Returns: 0 on success, error on failure
- */
+ 
 int lbtf_set_channel(struct lbtf_private *priv, u8 channel)
 {
 	int ret = 0;
@@ -257,21 +228,17 @@ static void lbtf_submit_command(struct lbtf_private *priv,
 
 	if (ret) {
 		pr_info("DNLD_CMD: hw_host_to_card failed: %d\n", ret);
-		/* Let the timer kick in and retry, and potentially reset
-		   the whole thing if the condition persists */
+		 
 		timeo = HZ;
 	}
 
-	/* Setup the timer after transmit command */
+	 
 	mod_timer(&priv->command_timer, jiffies + timeo);
 
 	lbtf_deb_leave(LBTF_DEB_HOST);
 }
 
-/*
- *  This function inserts command node to cmdfreeq
- *  after cleans it. Requires priv->driver_lock held.
- */
+ 
 static void __lbtf_cleanup_and_insert_cmd(struct lbtf_private *priv,
 					 struct cmd_ctrl_node *cmdnode)
 {
@@ -431,13 +398,7 @@ void lbtf_set_mac_control(struct lbtf_private *priv)
 	lbtf_deb_leave(LBTF_DEB_CMD);
 }
 
-/**
- *  lbtf_allocate_cmd_buffer - Allocates cmd buffer, links it to free cmd queue
- *
- *  @priv:	A pointer to struct lbtf_private structure
- *
- *  Returns: 0 on success.
- */
+ 
 int lbtf_allocate_cmd_buffer(struct lbtf_private *priv)
 {
 	int ret = 0;
@@ -447,7 +408,7 @@ int lbtf_allocate_cmd_buffer(struct lbtf_private *priv)
 
 	lbtf_deb_enter(LBTF_DEB_HOST);
 
-	/* Allocate and initialize the command array */
+	 
 	bufsize = sizeof(struct cmd_ctrl_node) * LBS_NUM_CMD_BUFFERS;
 	cmdarray = kzalloc(bufsize, GFP_KERNEL);
 	if (!cmdarray) {
@@ -457,7 +418,7 @@ int lbtf_allocate_cmd_buffer(struct lbtf_private *priv)
 	}
 	priv->cmd_array = cmdarray;
 
-	/* Allocate and initialize each command buffer in the command array */
+	 
 	for (i = 0; i < LBS_NUM_CMD_BUFFERS; i++) {
 		cmdarray[i].cmdbuf = kzalloc(LBS_CMD_BUFFER_SIZE, GFP_KERNEL);
 		if (!cmdarray[i].cmdbuf) {
@@ -479,13 +440,7 @@ done:
 	return ret;
 }
 
-/**
- *  lbtf_free_cmd_buffer - Frees the cmd buffer.
- *
- *  @priv:	A pointer to struct lbtf_private structure
- *
- *  Returns: 0
- */
+ 
 int lbtf_free_cmd_buffer(struct lbtf_private *priv)
 {
 	struct cmd_ctrl_node *cmdarray;
@@ -493,7 +448,7 @@ int lbtf_free_cmd_buffer(struct lbtf_private *priv)
 
 	lbtf_deb_enter(LBTF_DEB_HOST);
 
-	/* need to check if cmd array is allocated or not */
+	 
 	if (priv->cmd_array == NULL) {
 		lbtf_deb_host("FREE_CMD_BUF: cmd_array is NULL\n");
 		goto done;
@@ -501,13 +456,13 @@ int lbtf_free_cmd_buffer(struct lbtf_private *priv)
 
 	cmdarray = priv->cmd_array;
 
-	/* Release shared memory buffers */
+	 
 	for (i = 0; i < LBS_NUM_CMD_BUFFERS; i++) {
 		kfree(cmdarray[i].cmdbuf);
 		cmdarray[i].cmdbuf = NULL;
 	}
 
-	/* Release cmd_ctrl_node */
+	 
 	kfree(priv->cmd_array);
 	priv->cmd_array = NULL;
 
@@ -516,13 +471,7 @@ done:
 	return 0;
 }
 
-/**
- *  lbtf_get_cmd_ctrl_node - Gets free cmd node from free cmd queue.
- *
- *  @priv:		A pointer to struct lbtf_private structure
- *
- *  Returns: pointer to a struct cmd_ctrl_node or NULL if none available.
- */
+ 
 static struct cmd_ctrl_node *lbtf_get_cmd_ctrl_node(struct lbtf_private *priv)
 {
 	struct cmd_ctrl_node *tempnode;
@@ -550,13 +499,7 @@ static struct cmd_ctrl_node *lbtf_get_cmd_ctrl_node(struct lbtf_private *priv)
 	return tempnode;
 }
 
-/**
- *  lbtf_execute_next_command: execute next command in cmd pending queue.
- *
- *  @priv:     A pointer to struct lbtf_private structure
- *
- *  Returns: 0 on success.
- */
+ 
 int lbtf_execute_next_command(struct lbtf_private *priv)
 {
 	struct cmd_ctrl_node *cmdnode = NULL;
@@ -564,9 +507,7 @@ int lbtf_execute_next_command(struct lbtf_private *priv)
 	unsigned long flags;
 	int ret = 0;
 
-	/* Debug group is lbtf_deb_THREAD and not lbtf_deb_HOST, because the
-	 * only caller to us is lbtf_thread() and we get even when a
-	 * data packet is received */
+	 
 	lbtf_deb_enter(LBTF_DEB_THREAD);
 
 	spin_lock_irqsave(&priv->driver_lock, flags);
@@ -620,7 +561,7 @@ static struct cmd_ctrl_node *__lbtf_cmd_async(struct lbtf_private *priv,
 	if (cmdnode == NULL) {
 		lbtf_deb_host("PREP_CMD: cmdnode is NULL\n");
 
-		/* Wake up main thread to execute next command */
+		 
 		queue_work(lbtf_wq, &priv->cmd_work);
 		cmdnode = ERR_PTR(-ENOBUFS);
 		goto done;
@@ -629,10 +570,10 @@ static struct cmd_ctrl_node *__lbtf_cmd_async(struct lbtf_private *priv,
 	cmdnode->callback = callback;
 	cmdnode->callback_arg = callback_arg;
 
-	/* Copy the incoming command to the buffer */
+	 
 	memcpy(cmdnode->cmdbuf, in_cmd, in_cmd_size);
 
-	/* Set sequence number, clean result, move to buffer */
+	 
 	priv->seqnum++;
 	cmdnode->cmdbuf->command = cpu_to_le16(command);
 	cmdnode->cmdbuf->size    = cpu_to_le16(in_cmd_size);
@@ -701,7 +642,7 @@ done:
 }
 EXPORT_SYMBOL_GPL(__lbtf_cmd);
 
-/* Call holding driver_lock */
+ 
 void lbtf_cmd_response_rx(struct lbtf_private *priv)
 {
 	priv->cmd_response_rxed = 1;
@@ -749,24 +690,21 @@ int lbtf_process_rx_command(struct lbtf_private *priv)
 	}
 
 	if (resp->result == cpu_to_le16(0x0004)) {
-		/* 0x0004 means -EAGAIN. Drop the response, let it time out
-		   and be resubmitted */
+		 
 		spin_unlock_irqrestore(&priv->driver_lock, flags);
 		ret = -1;
 		goto done;
 	}
 
-	/* Now we got response from FW, cancel the command timer */
+	 
 	del_timer(&priv->command_timer);
 	priv->cmd_timed_out = 0;
 	if (priv->nr_retries)
 		priv->nr_retries = 0;
 
-	/* If the command is not successful, cleanup and return failure */
+	 
 	if ((result != 0 || !(respcmd & 0x8000))) {
-		/*
-		 * Handling errors here
-		 */
+		 
 		switch (respcmd) {
 		case CMD_RET(CMD_GET_HW_SPEC):
 		case CMD_RET(CMD_802_11_RESET):
@@ -790,7 +728,7 @@ int lbtf_process_rx_command(struct lbtf_private *priv)
 	spin_lock_irqsave(&priv->driver_lock, flags);
 
 	if (priv->cur_cmd) {
-		/* Clean up and Put current command back to cmdfreeq */
+		 
 		lbtf_complete_command(priv, priv->cur_cmd, result);
 	}
 	spin_unlock_irqrestore(&priv->driver_lock, flags);

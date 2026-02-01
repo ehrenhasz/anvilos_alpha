@@ -1,11 +1,6 @@
 #ifndef _PERF_BRANCH_H
 #define _PERF_BRANCH_H 1
-/*
- * The linux/stddef.h isn't need here, but is needed for __always_inline used
- * in files included from uapi/linux/perf_event.h such as
- * /usr/include/linux/swab.h and /usr/include/linux/byteorder/little_endian.h,
- * detected in at least musl libc, used in Alpine Linux. -acme
- */
+ 
 #include <stdio.h>
 #include <linux/perf_event.h>
 #include <linux/types.h>
@@ -50,16 +45,7 @@ struct branch_stack {
 	struct branch_entry	entries[];
 };
 
-/*
- * The hw_idx is only available when PERF_SAMPLE_BRANCH_HW_INDEX is applied.
- * Otherwise, the output format of a sample with branch stack is
- * struct branch_stack {
- *	u64			nr;
- *	struct branch_entry	entries[0];
- * }
- * Check whether the hw_idx is available,
- * and return the corresponding pointer of entries[0].
- */
+ 
 static inline struct branch_entry *perf_sample__branch_entries(struct perf_sample *sample)
 {
 	u64 *entry = (u64 *)sample->branch_stack;
@@ -91,4 +77,4 @@ int branch_type_str(struct branch_type_stat *st, char *bf, int bfsize);
 
 const char *branch_spec_desc(int spec);
 
-#endif /* _PERF_BRANCH_H */
+#endif  

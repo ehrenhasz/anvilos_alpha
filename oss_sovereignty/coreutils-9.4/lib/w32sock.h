@@ -1,31 +1,14 @@
-/* w32sock.h --- internal auxiliary functions for Windows socket functions
-
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paolo Bonzini */
+ 
 
 #include <errno.h>
 
-/* Get O_RDWR and O_BINARY.  */
+ 
 #include <fcntl.h>
 
-/* Get _open_osfhandle().  */
+ 
 #include <io.h>
 
-/* Get _get_osfhandle().  */
+ 
 #if GNULIB_MSVC_NOTHROW
 # include "msvc-nothrow.h"
 #else
@@ -40,7 +23,7 @@ set_winsock_errno (void)
 {
   int err = WSAGetLastError ();
 
-  /* Map some WSAE* errors to the runtime library's error codes.  */
+   
   switch (err)
     {
     case WSA_INVALID_HANDLE:

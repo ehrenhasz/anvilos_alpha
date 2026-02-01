@@ -1,15 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
+ 
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
+ 
+ 
+ 
 
 #ifndef __ERDMA_VERBS_H__
 #define __ERDMA_VERBS_H__
 
 #include "erdma.h"
 
-/* RDMA Capability. */
+ 
 #define ERDMA_MAX_PD (128 * 1024)
 #define ERDMA_MAX_SEND_WR 8192
 #define ERDMA_MAX_ORD 128
@@ -22,7 +22,7 @@
 #define ERDMA_MAX_FRMR_PA 512
 
 enum {
-	ERDMA_MMAP_IO_NC = 0, /* no cache */
+	ERDMA_MMAP_IO_NC = 0,  
 };
 
 struct erdma_user_mmap_entry {
@@ -51,7 +51,7 @@ struct erdma_ucontext {
 	struct rdma_user_mmap_entry *rq_db_mmap_entry;
 	struct rdma_user_mmap_entry *cq_db_mmap_entry;
 
-	/* doorbell records */
+	 
 	struct list_head dbrecords_page_list;
 	struct mutex dbrecords_page_mutex;
 };
@@ -61,11 +61,9 @@ struct erdma_pd {
 	u32 pdn;
 };
 
-/*
- * MemoryRegion definition.
- */
+ 
 #define ERDMA_MAX_INLINE_MTT_ENTRIES 4
-#define MTT_SIZE(mtt_cnt) ((mtt_cnt) << 3) /* per mtt entry takes 8 Bytes. */
+#define MTT_SIZE(mtt_cnt) ((mtt_cnt) << 3)  
 #define ERDMA_MR_MAX_MTT_CNT 524288
 #define ERDMA_MTT_ENTRY_SIZE 8
 
@@ -90,7 +88,7 @@ static inline u8 to_erdma_access_flags(int access)
 	       (access & IB_ACCESS_REMOTE_ATOMIC ? ERDMA_MR_ACC_RA : 0);
 }
 
-/* Hierarchical storage structure for MTT entries */
+ 
 struct erdma_mtt {
 	u64 *buf;
 	size_t size;
@@ -200,7 +198,7 @@ enum erdma_qp_flags {
 
 struct erdma_qp_attrs {
 	enum erdma_qp_state state;
-	enum erdma_cc_alg cc; /* Congestion control algorithm */
+	enum erdma_cc_alg cc;  
 	u32 sq_size;
 	u32 rq_size;
 	u32 orq_size;

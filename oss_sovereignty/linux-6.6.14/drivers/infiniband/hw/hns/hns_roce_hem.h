@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2016 Hisilicon Limited.
- * Copyright (c) 2007, 2008 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef _HNS_ROCE_HEM_H
 #define _HNS_ROCE_HEM_H
@@ -37,7 +6,7 @@
 #define HEM_HOP_STEP_DIRECT 0xff
 
 enum {
-	/* MAP HEM(Hardware Entry Memory) */
+	 
 	HEM_TYPE_QPC = 0,
 	HEM_TYPE_MTPT,
 	HEM_TYPE_CQC,
@@ -47,7 +16,7 @@ enum {
 	HEM_TYPE_CQC_TIMER,
 	HEM_TYPE_GMV,
 
-	 /* UNMAP HEM */
+	  
 	HEM_TYPE_MTT,
 	HEM_TYPE_CQE,
 	HEM_TYPE_SRQWQE,
@@ -96,9 +65,9 @@ struct hns_roce_hem_mhop {
 	u32	buf_chunk_size;
 	u32	bt_chunk_size;
 	u32	ba_l0_num;
-	u32	l0_idx; /* level 0 base address table index */
-	u32	l1_idx; /* level 1 base address table index */
-	u32	l2_idx; /* level 2 base address table index */
+	u32	l0_idx;  
+	u32	l1_idx;  
+	u32	l2_idx;  
 };
 
 void hns_roce_free_hem(struct hns_roce_dev *hr_dev, struct hns_roce_hem *hem);
@@ -167,4 +136,4 @@ static inline dma_addr_t hns_roce_hem_addr(struct hns_roce_hem_iter *iter)
 	return sg_dma_address(&iter->chunk->mem[iter->page_idx]);
 }
 
-#endif /* _HNS_ROCE_HEM_H */
+#endif  

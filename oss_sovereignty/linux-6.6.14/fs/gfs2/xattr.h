@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __EATTR_DOT_H__
 #define __EATTR_DOT_H__
@@ -41,7 +38,7 @@ struct gfs2_ea_request {
 	char *er_data;
 	unsigned int er_name_len;
 	unsigned int er_data_len;
-	unsigned int er_type; /* GFS2_EATYPE_... */
+	unsigned int er_type;  
 };
 
 struct gfs2_ea_location {
@@ -56,8 +53,8 @@ extern int __gfs2_xattr_set(struct inode *inode, const char *name,
 extern ssize_t gfs2_listxattr(struct dentry *dentry, char *buffer, size_t size);
 extern int gfs2_ea_dealloc(struct gfs2_inode *ip);
 
-/* Exported to acl.c */
+ 
 
 extern int gfs2_xattr_acl_get(struct gfs2_inode *ip, const char *name, char **data);
 
-#endif /* __EATTR_DOT_H__ */
+#endif  

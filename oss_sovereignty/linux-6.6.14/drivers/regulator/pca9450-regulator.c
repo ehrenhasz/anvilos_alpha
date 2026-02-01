@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020 NXP.
- * NXP PCA9450 pmic driver
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -18,9 +15,9 @@
 #include <linux/regulator/pca9450.h>
 
 struct pc9450_dvs_config {
-	unsigned int run_reg; /* dvs0 */
+	unsigned int run_reg;  
 	unsigned int run_mask;
-	unsigned int standby_reg; /* dvs1 */
+	unsigned int standby_reg;  
 	unsigned int standby_mask;
 };
 
@@ -56,14 +53,7 @@ static const struct regmap_config pca9450_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-/*
- * BUCK1/2/3
- * BUCK1RAM[1:0] BUCK1 DVS ramp rate setting
- * 00: 25mV/1usec
- * 01: 25mV/2usec
- * 10: 25mV/4usec
- * 11: 25mV/8usec
- */
+ 
 static const unsigned int pca9450_dvs_buck_ramp_table[] = {
 	25000, 12500, 6250, 3125
 };
@@ -98,53 +88,35 @@ static const struct regulator_ops pca9450_ldo_regulator_ops = {
 	.get_voltage_sel = regulator_get_voltage_sel_regmap,
 };
 
-/*
- * BUCK1/2/3
- * 0.60 to 2.1875V (12.5mV step)
- */
+ 
 static const struct linear_range pca9450_dvs_buck_volts[] = {
 	REGULATOR_LINEAR_RANGE(600000,  0x00, 0x7F, 12500),
 };
 
-/*
- * BUCK4/5/6
- * 0.6V to 3.4V (25mV step)
- */
+ 
 static const struct linear_range pca9450_buck_volts[] = {
 	REGULATOR_LINEAR_RANGE(600000, 0x00, 0x70, 25000),
 	REGULATOR_LINEAR_RANGE(3400000, 0x71, 0x7F, 0),
 };
 
-/*
- * LDO1
- * 1.6 to 3.3V ()
- */
+ 
 static const struct linear_range pca9450_ldo1_volts[] = {
 	REGULATOR_LINEAR_RANGE(1600000, 0x00, 0x03, 100000),
 	REGULATOR_LINEAR_RANGE(3000000, 0x04, 0x07, 100000),
 };
 
-/*
- * LDO2
- * 0.8 to 1.15V (50mV step)
- */
+ 
 static const struct linear_range pca9450_ldo2_volts[] = {
 	REGULATOR_LINEAR_RANGE(800000, 0x00, 0x07, 50000),
 };
 
-/*
- * LDO3/4
- * 0.8 to 3.3V (100mV step)
- */
+ 
 static const struct linear_range pca9450_ldo34_volts[] = {
 	REGULATOR_LINEAR_RANGE(800000, 0x00, 0x19, 100000),
 	REGULATOR_LINEAR_RANGE(3300000, 0x1A, 0x1F, 0),
 };
 
-/*
- * LDO5
- * 1.8 to 3.3V (100mV step)
- */
+ 
 static const struct linear_range pca9450_ldo5_volts[] = {
 	REGULATOR_LINEAR_RANGE(1800000,  0x00, 0x0F, 100000),
 };
@@ -177,7 +149,7 @@ static int buck_set_dvs(const struct regulator_desc *desc,
 		struct pca9450_regulator_desc *regulator = container_of(desc,
 					struct pca9450_regulator_desc, desc);
 
-		/* Enable DVS control through PMIC_STBY_REQ for this BUCK */
+		 
 		ret = regmap_update_bits(regmap, regulator->desc.enable_reg,
 					 BUCK1_DVS_CTRL, BUCK1_DVS_CTRL);
 	}
@@ -453,10 +425,7 @@ static const struct pca9450_regulator_desc pca9450a_regulators[] = {
 	},
 };
 
-/*
- * Buck3 removed on PCA9450B and connected with Buck1 internal for dual phase
- * on PCA9450C as no Buck3.
- */
+ 
 static const struct pca9450_regulator_desc pca9450bc_regulators[] = {
 	{
 		.desc = {
@@ -753,7 +722,7 @@ static int pca9450_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Check your board and dts for match the right pmic */
+	 
 	if (((device_id >> 4) != 0x1 && type == PCA9450_TYPE_PCA9450A) ||
 	    ((device_id >> 4) != 0x3 && type == PCA9450_TYPE_PCA9450BC)) {
 		dev_err(&i2c->dev, "Device id(%x) mismatched\n",
@@ -791,7 +760,7 @@ static int pca9450_i2c_probe(struct i2c_client *i2c)
 			pca9450->irq);
 		return ret;
 	}
-	/* Unmask all interrupt except PWRON/WDOG/RSVD */
+	 
 	ret = regmap_update_bits(pca9450->regmap, PCA9450_REG_INT1_MSK,
 				IRQ_VR_FLT1 | IRQ_VR_FLT2 | IRQ_LOWVSYS |
 				IRQ_THERM_105 | IRQ_THERM_125,
@@ -801,7 +770,7 @@ static int pca9450_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Clear PRESET_EN bit in BUCK123_DVS to use DVS registers */
+	 
 	ret = regmap_clear_bits(pca9450->regmap, PCA9450_REG_BUCK123_DVS,
 				BUCK123_PRESET_EN);
 	if (ret) {
@@ -814,7 +783,7 @@ static int pca9450_i2c_probe(struct i2c_client *i2c)
 	else
 		reset_ctrl = WDOG_B_CFG_COLD_LDO12;
 
-	/* Set reset behavior on assertion of WDOG_B signal */
+	 
 	ret = regmap_update_bits(pca9450->regmap, PCA9450_REG_RESET_CTRL,
 				 WDOG_B_CFG_MASK, reset_ctrl);
 	if (ret) {
@@ -823,7 +792,7 @@ static int pca9450_i2c_probe(struct i2c_client *i2c)
 	}
 
 	if (of_property_read_bool(i2c->dev.of_node, "nxp,i2c-lt-enable")) {
-		/* Enable I2C Level Translator */
+		 
 		ret = regmap_update_bits(pca9450->regmap, PCA9450_REG_CONFIG2,
 					 I2C_LT_MASK, I2C_LT_ON_STANDBY_RUN);
 		if (ret) {
@@ -833,11 +802,7 @@ static int pca9450_i2c_probe(struct i2c_client *i2c)
 		}
 	}
 
-	/*
-	 * The driver uses the LDO5CTRL_H register to control the LDO5 regulator.
-	 * This is only valid if the SD_VSEL input of the PMIC is high. Let's
-	 * check if the pin is available as GPIO and set it to high.
-	 */
+	 
 	pca9450->sd_vsel_gpio = gpiod_get_optional(pca9450->dev, "sd-vsel", GPIOD_OUT_HIGH);
 
 	if (IS_ERR(pca9450->sd_vsel_gpio)) {

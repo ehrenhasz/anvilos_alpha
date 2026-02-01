@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * DebugFS code for ST-Ericsson CW1200 mac80211 driver
- *
- * Copyright (c) 2011, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+ 
+ 
 
 #ifndef CW1200_DEBUG_H_INCLUDED
 #define CW1200_DEBUG_H_INCLUDED
@@ -87,4 +82,4 @@ static inline void cw1200_debug_ba(struct cw1200_common *priv,
 	priv->debug->ba_acc_rx = ba_acc_rx;
 }
 
-#endif /* CW1200_DEBUG_H_INCLUDED */
+#endif  

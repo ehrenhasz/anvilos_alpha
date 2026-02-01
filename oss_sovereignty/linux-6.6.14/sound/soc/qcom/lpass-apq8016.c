@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010-2011,2013-2015 The Linux Foundation. All rights reserved.
- *
- * lpass-apq8016.c -- ALSA SoC CPU DAI driver for APQ8016 LPASS
- */
+
+ 
 
 
 #include <linux/clk.h>

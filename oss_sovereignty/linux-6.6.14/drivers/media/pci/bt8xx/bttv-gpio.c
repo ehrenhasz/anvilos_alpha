@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-    bttv-gpio.c  --  gpio sub drivers
-
-    sysfs-based sub driver interface for bttv
-    mainly intended for gpio access
-
-
-    Copyright (C) 1996,97,98 Ralph  Metzler (rjkm@thp.uni-koeln.de)
-			   & Marcus Metzler (mocm@thp.uni-koeln.de)
-    (c) 1999-2003 Gerd Knorr <kraxel@bytesex.org>
-
-
-*/
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,8 +12,8 @@
 
 #include "bttvp.h"
 
-/* ----------------------------------------------------------------------- */
-/* internal: the bttv "bus"                                                */
+ 
+ 
 
 static int bttv_sub_bus_match(struct device *dev, struct device_driver *drv)
 {
@@ -104,8 +91,8 @@ int bttv_sub_del_devices(struct bttv_core *core)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
-/* external: sub-driver register/unregister                                */
+ 
+ 
 
 int bttv_sub_register(struct bttv_sub_driver *sub, char *wanted)
 {
@@ -122,8 +109,8 @@ int bttv_sub_unregister(struct bttv_sub_driver *sub)
 }
 EXPORT_SYMBOL(bttv_sub_unregister);
 
-/* ----------------------------------------------------------------------- */
-/* external: gpio access functions                                         */
+ 
+ 
 
 void bttv_gpio_inout(struct bttv_core *core, u32 mask, u32 outbits)
 {

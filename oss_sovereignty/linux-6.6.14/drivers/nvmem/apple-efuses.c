@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple SoC eFuse driver
- *
- * Copyright (C) The Asahi Linux Contributors
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/mod_devicetable.h>

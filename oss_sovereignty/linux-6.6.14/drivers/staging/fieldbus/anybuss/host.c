@@ -1,143 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HMS Anybus-S Host Driver
- *
- * Copyright (C) 2018 Arcx Inc
- */
 
-/*
- * Architecture Overview
- * =====================
- * This driver (running on the CPU/SoC) and the Anybus-S card communicate
- * by reading and writing data to/from the Anybus-S Dual-Port RAM (dpram).
- * This is memory connected to both the SoC and Anybus-S card, which both sides
- * can access freely and concurrently.
- *
- * Synchronization happens by means of two registers located in the dpram:
- * IND_AB: written exclusively by the Anybus card; and
- * IND_AP: written exclusively by this driver.
- *
- * Communication happens using one of the following mechanisms:
- * 1. reserve, read/write, release dpram memory areas:
- *	using an IND_AB/IND_AP protocol, the driver is able to reserve certain
- *	memory areas. no dpram memory can be read or written except if reserved.
- *	(with a few limited exceptions)
- * 2. send and receive data structures via a shared mailbox:
- *	using an IND_AB/IND_AP protocol, the driver and Anybus card are able to
- *	exchange commands and responses using a shared mailbox.
- * 3. receive software interrupts:
- *	using an IND_AB/IND_AP protocol, the Anybus card is able to notify the
- *	driver of certain events such as: bus online/offline, data available.
- *	note that software interrupt event bits are located in a memory area
- *	which must be reserved before it can be accessed.
- *
- * The manual[1] is silent on whether these mechanisms can happen concurrently,
- * or how they should be synchronized. However, section 13 (Driver Example)
- * provides the following suggestion for developing a driver:
- * a) an interrupt handler which updates global variables;
- * b) a continuously-running task handling area requests (1 above)
- * c) a continuously-running task handling mailbox requests (2 above)
- * The example conspicuously leaves out software interrupts (3 above), which
- * is the thorniest issue to get right (see below).
- *
- * The naive, straightforward way to implement this would be:
- * - create an isr which updates shared variables;
- * - create a work_struct which handles software interrupts on a queue;
- * - create a function which does reserve/update/unlock in a loop;
- * - create a function which does mailbox send/receive in a loop;
- * - call the above functions from the driver's read/write/ioctl;
- * - synchronize using mutexes/spinlocks:
- *	+ only one area request at a time
- *	+ only one mailbox request at a time
- *	+ protect AB_IND, AB_IND against data hazards (e.g. read-after-write)
- *
- * Unfortunately, the presence of the software interrupt causes subtle yet
- * considerable synchronization issues; especially problematic is the
- * requirement to reserve/release the area which contains the status bits.
- *
- * The driver architecture presented here sidesteps these synchronization issues
- * by accessing the dpram from a single kernel thread only. User-space throws
- * "tasks" (i.e. 1, 2 above) into a task queue, waits for their completion,
- * and the kernel thread runs them to completion.
- *
- * Each task has a task_function, which is called/run by the queue thread.
- * That function communicates with the Anybus card, and returns either
- * 0 (OK), a negative error code (error), or -EINPROGRESS (waiting).
- * On OK or error, the queue thread completes and dequeues the task,
- * which also releases the user space thread which may still be waiting for it.
- * On -EINPROGRESS (waiting), the queue thread will leave the task on the queue,
- * and revisit (call again) whenever an interrupt event comes in.
- *
- * Each task has a state machine, which is run by calling its task_function.
- * It ensures that the task will go through its various stages over time,
- * returning -EINPROGRESS if it wants to wait for an event to happen.
- *
- * Note that according to the manual's driver example, the following operations
- * may run independent of each other:
- * - area reserve/read/write/release	(point 1 above)
- * - mailbox operations			(point 2 above)
- * - switching power on/off
- *
- * To allow them to run independently, each operation class gets its own queue.
- *
- * Userspace processes A, B, C, D post tasks to the appropriate queue,
- * and wait for task completion:
- *
- *	process A	B	C	D
- *		|	|	|	|
- *		v	v	v	v
- *	|<-----	========================================
- *	|		|	   |		|
- *	|		v	   v		v-------<-------+
- *	|	+--------------------------------------+	|
- *	|	| power q     | mbox q    | area q     |	|
- *	|	|------------|------------|------------|	|
- *	|	| task       | task       | task       |	|
- *	|	| task       | task       | task       |	|
- *	|	| task wait  | task wait  | task wait  |	|
- *	|	+--------------------------------------+	|
- *	|		^	   ^		^		|
- *	|		|	   |		|		^
- *	|	+--------------------------------------+	|
- *	|	|	     queue thread	       |	|
- *	|	|--------------------------------------|	|
- *	|	| single-threaded:		       |	|
- *	|	| loop:				       |	|
- *	v	|   for each queue:		       |	|
- *	|	|     run task state machine	       |	|
- *	|	|     if task waiting:		       |	|
- *	|	|       leave on queue		       |	|
- *	|	|     if task done:		       |	|
- *	|	|       complete task, remove from q   |	|
- *	|	|   if software irq event bits set:    |	|
- *	|	|     notify userspace		       |	|
- *	|	|     post clear event bits task------>|>-------+
- *	|	|   wait for IND_AB changed event OR   |
- *	|	|            task added event	  OR   |
- *	|	|	     timeout		       |
- *	|	| end loop			       |
- *	|	+--------------------------------------+
- *	|	+		wake up		       +
- *	|	+--------------------------------------+
- *	|		^			^
- *	|		|			|
- *	+-------->-------			|
- *						|
- *		+--------------------------------------+
- *		|	interrupt service routine      |
- *		|--------------------------------------|
- *		| wake up queue thread on IND_AB change|
- *		+--------------------------------------+
- *
- * Note that the Anybus interrupt is dual-purpose:
- * - after a reset, triggered when the card becomes ready;
- * - during normal operation, triggered when AB_IND changes.
- * This is why the interrupt service routine doesn't just wake up the
- * queue thread, but also completes the card_boot completion.
- *
- * [1] https://www.anybus.com/docs/librariesprovider7/default-document-library/
- *	manuals-design-guides/hms-hmsi-27-275.pdf
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -155,7 +19,7 @@
 #include <linux/kref.h>
 #include <linux/of_address.h>
 
-/* move to <linux/anybuss-*.h> when taking this out of staging */
+ 
 #include "anybuss-client.h"
 #include "anybuss-controller.h"
 
@@ -209,13 +73,7 @@
 #define CMD_ANYBUS_INIT		0x0002
 #define CMD_END_INIT		0x0003
 
-/*
- * ---------------------------------------------------------------
- * Anybus mailbox messages - definitions
- * ---------------------------------------------------------------
- * note that we're depending on the layout of these structures being
- * exactly as advertised.
- */
+ 
 
 struct anybus_mbox_hdr {
 	__be16 id;
@@ -241,7 +99,7 @@ struct msg_anybus_init {
 	__be16 wd_val;
 };
 
-/* ------------- ref counted tasks ------------- */
+ 
 
 struct ab_task;
 typedef int (*ab_task_fn_t)(struct anybuss_host *cd,
@@ -364,7 +222,7 @@ ab_task_enqueue_wait(struct ab_task *t, struct kfifo *q, spinlock_t *slock,
 	return t->result;
 }
 
-/* ------------------------ anybus hardware ------------------------ */
+ 
 
 struct anybuss_host {
 	struct device *dev;
@@ -377,7 +235,7 @@ struct anybuss_host {
 	wait_queue_head_t wq;
 	struct completion card_boot;
 	atomic_t ind_ab;
-	spinlock_t qlock; /* protects IN side of powerq, mboxq, areaq */
+	spinlock_t qlock;  
 	struct kmem_cache *qcache;
 	struct kfifo qs[3];
 	struct kfifo *powerq;
@@ -459,14 +317,7 @@ static irqreturn_t irq_handler(int irq, void *data)
 	struct anybuss_host *cd = data;
 	int ind_ab;
 
-	/*
-	 * irq handler needs exclusive access to the IND_AB register,
-	 * because the act of reading the register acks the interrupt.
-	 *
-	 * store the register value in cd->ind_ab (an atomic_t), so that the
-	 * queue thread is able to read it without causing an interrupt ack
-	 * side-effect (and without spuriously acking an interrupt).
-	 */
+	 
 	ind_ab = read_ind_ab(cd->regmap);
 	if (ind_ab < 0)
 		return IRQ_NONE;
@@ -476,7 +327,7 @@ static irqreturn_t irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* ------------------------ power on/off tasks --------------------- */
+ 
 
 static int task_fn_power_off(struct anybuss_host *cd,
 			     struct ab_task *t)
@@ -517,10 +368,7 @@ static int task_fn_power_on(struct anybuss_host *cd,
 
 	if (cd->power_on)
 		return 0;
-	/*
-	 * anybus docs: prevent false 'init done' interrupt by
-	 * doing a dummy read of IND_AB register while in reset.
-	 */
+	 
 	regmap_read(cd->regmap, REG_IND_AB, &dummy);
 	reinit_completion(&cd->card_boot);
 	enable_irq(cd->irq);
@@ -545,7 +393,7 @@ int anybuss_set_power(struct anybuss_client *client, bool power_on)
 }
 EXPORT_SYMBOL_GPL(anybuss_set_power);
 
-/* ---------------------------- area tasks ------------------------ */
+ 
 
 static int task_fn_area_3(struct anybuss_host *cd, struct ab_task *t)
 {
@@ -554,7 +402,7 @@ static int task_fn_area_3(struct anybuss_host *cd, struct ab_task *t)
 	if (!cd->power_on)
 		return -EIO;
 	if (atomic_read(&cd->ind_ab) & pd->flags) {
-		/* area not released yet */
+		 
 		if (time_after(jiffies, t->start_jiffies + TIMEOUT))
 			return -ETIMEDOUT;
 		return -EINPROGRESS;
@@ -572,7 +420,7 @@ static int task_fn_area_2(struct anybuss_host *cd, struct ab_task *t)
 		return -EIO;
 	regmap_read(cd->regmap, REG_IND_AP, &ind_ap);
 	if (!(atomic_read(&cd->ind_ab) & pd->flags)) {
-		/* we don't own the area yet */
+		 
 		if (time_after(jiffies, t->start_jiffies + TIMEOUT)) {
 			dev_warn(cd->dev, "timeout waiting for area");
 			dump_stack();
@@ -580,14 +428,14 @@ static int task_fn_area_2(struct anybuss_host *cd, struct ab_task *t)
 		}
 		return -EINPROGRESS;
 	}
-	/* we own the area, do what we're here to do */
+	 
 	if (pd->is_write)
 		regmap_bulk_write(cd->regmap, pd->addr, pd->buf,
 				  pd->count);
 	else
 		regmap_bulk_read(cd->regmap, pd->addr, pd->buf,
 				 pd->count);
-	/* ask to release the area, must use unlocked release */
+	 
 	ind_ap &= ~IND_AP_ABITS;
 	ind_ap |= pd->flags;
 	ret = write_ind_ap(cd->regmap, ind_ap);
@@ -606,7 +454,7 @@ static int task_fn_area(struct anybuss_host *cd, struct ab_task *t)
 	if (!cd->power_on)
 		return -EIO;
 	regmap_read(cd->regmap, REG_IND_AP, &ind_ap);
-	/* ask to take the area */
+	 
 	ind_ap &= ~IND_AP_ABITS;
 	ind_ap |= pd->flags | IND_AP_ACTION | IND_AP_LOCK;
 	ret = write_ind_ap(cd->regmap, ind_ap);
@@ -691,7 +539,7 @@ static bool area_range_ok(u16 addr, size_t count, u16 area_start,
 	return true;
 }
 
-/* -------------------------- mailbox tasks ----------------------- */
+ 
 
 static int task_fn_mbox_2(struct anybuss_host *cd, struct ab_task *t)
 {
@@ -702,17 +550,17 @@ static int task_fn_mbox_2(struct anybuss_host *cd, struct ab_task *t)
 		return -EIO;
 	regmap_read(cd->regmap, REG_IND_AP, &ind_ap);
 	if (((atomic_read(&cd->ind_ab) ^ ind_ap) & IND_AX_MOUT) == 0) {
-		/* output message not here */
+		 
 		if (time_after(jiffies, t->start_jiffies + TIMEOUT))
 			return -ETIMEDOUT;
 		return -EINPROGRESS;
 	}
-	/* grab the returned header and msg */
+	 
 	regmap_bulk_read(cd->regmap, MBOX_OUT_AREA, &pd->hdr,
 			 sizeof(pd->hdr));
 	regmap_bulk_read(cd->regmap, MBOX_OUT_AREA + sizeof(pd->hdr),
 			 pd->msg, pd->msg_in_sz);
-	/* tell anybus we've consumed the message */
+	 
 	ind_ap ^= IND_AX_MOUT;
 	return write_ind_ap(cd->regmap, ind_ap);
 }
@@ -727,17 +575,17 @@ static int task_fn_mbox(struct anybuss_host *cd, struct ab_task *t)
 		return -EIO;
 	regmap_read(cd->regmap, REG_IND_AP, &ind_ap);
 	if ((atomic_read(&cd->ind_ab) ^ ind_ap) & IND_AX_MIN) {
-		/* mbox input area busy */
+		 
 		if (time_after(jiffies, t->start_jiffies + TIMEOUT))
 			return -ETIMEDOUT;
 		return -EINPROGRESS;
 	}
-	/* write the header and msg to input area */
+	 
 	regmap_bulk_write(cd->regmap, MBOX_IN_AREA, &pd->hdr,
 			  sizeof(pd->hdr));
 	regmap_bulk_write(cd->regmap, MBOX_IN_AREA + sizeof(pd->hdr),
 			  pd->msg, pd->msg_out_sz);
-	/* tell anybus we gave it a message */
+	 
 	ind_ap ^= IND_AX_MIN;
 	ret = write_ind_ap(cd->regmap, ind_ap);
 	if (ret)
@@ -824,10 +672,7 @@ static int _anybus_mbox_cmd(struct anybuss_host *cd,
 	pd = &t->mbox_pd;
 	h = &pd->hdr;
 	info = is_fb_cmd ? INFO_TYPE_FB : INFO_TYPE_APP;
-	/*
-	 * prevent uninitialized memory in the header from being sent
-	 * across the anybus
-	 */
+	 
 	memset(h, 0, sizeof(*h));
 	h->info = cpu_to_be16(info | INFO_COMMAND);
 	h->cmd_num = cpu_to_be16(cmd_num);
@@ -844,10 +689,7 @@ static int _anybus_mbox_cmd(struct anybuss_host *cd,
 	err = ab_task_enqueue_wait(t, cd->powerq, &cd->qlock, &cd->wq);
 	if (err)
 		goto out;
-	/*
-	 * mailbox mechanism worked ok, but maybe the mbox response
-	 * contains an error ?
-	 */
+	 
 	err = mbox_cmd_err(cd->dev, pd);
 	if (err)
 		goto out;
@@ -857,7 +699,7 @@ out:
 	return err;
 }
 
-/* ------------------------ anybus queues ------------------------ */
+ 
 
 static void process_q(struct anybuss_host *cd, struct kfifo *q)
 {
@@ -924,7 +766,7 @@ static void process_softint(struct anybuss_host *cd)
 	regmap_read(cd->regmap, REG_IND_AP, &ind_ap);
 	if (!((atomic_read(&cd->ind_ab) ^ ind_ap) & IND_AX_EVNT))
 		return;
-	/* process software interrupt */
+	 
 	regmap_read(cd->regmap, REG_EVENT_CAUSE, &ev);
 	if (ev & EVENT_CAUSE_FBON) {
 		if (client->on_online_changed)
@@ -941,11 +783,7 @@ static void process_softint(struct anybuss_host *cd)
 			client->on_area_updated(client);
 		dev_dbg(cd->dev, "Fieldbus data changed");
 	}
-	/*
-	 * reset the event cause bits.
-	 * this must be done while owning the fbctrl area, so we'll
-	 * enqueue a task to do that.
-	 */
+	 
 	t = create_area_writer(cd->qcache, IND_AX_FBCTRL,
 			       REG_EVENT_CAUSE, &zero, sizeof(zero));
 	if (!t) {
@@ -969,22 +807,10 @@ static int qthread_fn(void *data)
 	size_t nqs = ARRAY_SIZE(cd->qs);
 	unsigned int ind_ab;
 
-	/*
-	 * this kernel thread has exclusive access to the anybus's memory.
-	 * only exception: the IND_AB register, which is accessed exclusively
-	 * by the interrupt service routine (ISR). This thread must not touch
-	 * the IND_AB register, but it does require access to its value.
-	 *
-	 * the interrupt service routine stores the register's value in
-	 * cd->ind_ab (an atomic_t), where we may safely access it, with the
-	 * understanding that it can be modified by the ISR at any time.
-	 */
+	 
 
 	while (!kthread_should_stop()) {
-		/*
-		 * make a local copy of IND_AB, so we can go around the loop
-		 * again in case it changed while processing queues and softint.
-		 */
+		 
 		ind_ab = atomic_read(&cd->ind_ab);
 		process_qs(cd);
 		process_softint(cd);
@@ -993,16 +819,13 @@ static int qthread_fn(void *data)
 				qs_have_work(qs, nqs) ||
 				kthread_should_stop(),
 			HZ);
-		/*
-		 * time out so even 'stuck' tasks will run eventually,
-		 * and can time out.
-		 */
+		 
 	}
 
 	return 0;
 }
 
-/* ------------------------ anybus exports ------------------------ */
+ 
 
 int anybuss_start_init(struct anybuss_client *client,
 		       const struct anybuss_memcfg *cfg)
@@ -1097,7 +920,7 @@ int anybuss_write_input(struct anybuss_client *client,
 	ab_task_put(t);
 	if (ret)
 		return ret;
-	/* success */
+	 
 	*offset += len;
 	return len;
 }
@@ -1127,7 +950,7 @@ out:
 	ab_task_put(t);
 	if (ret)
 		return ret;
-	/* success */
+	 
 	*offset += len;
 	return len;
 }
@@ -1163,7 +986,7 @@ int anybuss_recv_msg(struct anybuss_client *client, u16 cmd_num,
 }
 EXPORT_SYMBOL_GPL(anybuss_recv_msg);
 
-/* ------------------------ bus functions ------------------------ */
+ 
 
 static int anybus_bus_match(struct device *dev,
 			    struct device_driver *drv)
@@ -1300,10 +1123,7 @@ anybuss_host_common_probe(struct device *dev,
 		ret = -EINVAL;
 		goto err_qcache;
 	}
-	/*
-	 * use a dpram test to check if a card is present, this is only
-	 * possible while in reset.
-	 */
+	 
 	reset_assert(cd);
 	if (test_dpram(cd->regmap)) {
 		dev_err(dev, "no Anybus-S card in slot");
@@ -1316,23 +1136,13 @@ anybuss_host_common_probe(struct device *dev,
 		dev_err(dev, "could not request irq");
 		goto err_qcache;
 	}
-	/*
-	 * startup sequence:
-	 *   a) perform dummy IND_AB read to prevent false 'init done' irq
-	 *     (already done by test_dpram() above)
-	 *   b) release reset
-	 *   c) wait for first interrupt
-	 *   d) interrupt came in: ready to go !
-	 */
+	 
 	reset_deassert(cd);
 	if (!wait_for_completion_timeout(&cd->card_boot, TIMEOUT)) {
 		ret = -ETIMEDOUT;
 		goto err_reset;
 	}
-	/*
-	 * according to the anybus docs, we're allowed to read these
-	 * without handshaking / reserving the area
-	 */
+	 
 	dev_info(dev, "Anybus-S card detected");
 	regmap_bulk_read(cd->regmap, REG_BOOTLOADER_V, val, 2);
 	dev_info(dev, "Bootloader version: %02X%02X",
@@ -1351,21 +1161,18 @@ anybuss_host_common_probe(struct device *dev,
 	regmap_bulk_read(cd->regmap, REG_MODULE_SW_V, val, 2);
 	dev_info(dev, "Module SW version: %02X%02X",
 		 val[0], val[1]);
-	/* put card back reset until a client driver releases it */
+	 
 	disable_irq(cd->irq);
 	reset_assert(cd);
 	atomic_set(&cd->ind_ab, IND_AB_UPDATED);
-	/* fire up the queue thread */
+	 
 	cd->qthread = kthread_run(qthread_fn, cd, dev_name(dev));
 	if (IS_ERR(cd->qthread)) {
 		dev_err(dev, "could not create kthread");
 		ret = PTR_ERR(cd->qthread);
 		goto err_reset;
 	}
-	/*
-	 * now advertise that we've detected a client device (card).
-	 * the bus infrastructure will match it to a client driver.
-	 */
+	 
 	cd->client = kzalloc(sizeof(*cd->client), GFP_KERNEL);
 	if (!cd->client) {
 		ret = -ENOMEM;

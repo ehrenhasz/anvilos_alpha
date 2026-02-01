@@ -1,20 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2016, Avago Technologies
- */
+ 
+ 
 
 #ifndef _NVME_FC_TRANSPORT_H
 #define _NVME_FC_TRANSPORT_H 1
 
 
-/*
- * Common definitions between the nvme_fc (host) transport and
- * nvmet_fc (target) transport implementation.
- */
+ 
 
-/*
- * ******************  FC-NVME LS HANDLING ******************
- */
+ 
 
 union nvmefc_ls_requests {
 	struct fcnvme_ls_rqst_w0		w0;
@@ -22,7 +15,7 @@ union nvmefc_ls_requests {
 	struct fcnvme_ls_cr_conn_rqst		rq_cr_conn;
 	struct fcnvme_ls_disconnect_assoc_rqst	rq_dis_assoc;
 	struct fcnvme_ls_disconnect_conn_rqst	rq_dis_conn;
-} __aligned(128);	/* alignment for other things alloc'd with */
+} __aligned(128);	 
 
 union nvmefc_ls_responses {
 	struct fcnvme_ls_rjt			rsp_rjt;
@@ -30,7 +23,7 @@ union nvmefc_ls_responses {
 	struct fcnvme_ls_cr_conn_acc		rsp_cr_conn;
 	struct fcnvme_ls_disconnect_assoc_acc	rsp_dis_assoc;
 	struct fcnvme_ls_disconnect_conn_acc	rsp_dis_conn;
-} __aligned(128);	/* alignment for other things alloc'd with */
+} __aligned(128);	 
 
 static inline void
 nvme_fc_format_rsp_hdr(void *buf, u8 ls_cmd, __be32 desc_len, u8 rqst_ls_cmd)
@@ -63,7 +56,7 @@ nvme_fc_format_rjt(void *buf, u16 buflen, u8 ls_cmd,
 	return sizeof(struct fcnvme_ls_rjt);
 }
 
-/* Validation Error indexes into the string table below */
+ 
 enum {
 	VERR_NO_ERROR		= 0,
 	VERR_CR_ASSOC_LEN	= 1,
@@ -214,14 +207,11 @@ nvmefc_vldt_lsreq_discon_assoc(u32 rqstlen,
 			fcnvme_lsdesc_len(
 				sizeof(struct fcnvme_lsdesc_disconn_cmd)))
 		ret = VERR_DISCONN_CMD_LEN;
-	/*
-	 * As the standard changed on the LS, check if old format and scope
-	 * something other than Association (e.g. 0).
-	 */
+	 
 	else if (rqst->discon_cmd.rsvd8[0])
 		ret = VERR_DISCONN_SCOPE;
 
 	return ret;
 }
 
-#endif /* _NVME_FC_TRANSPORT_H */
+#endif  

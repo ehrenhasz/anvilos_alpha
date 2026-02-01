@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for usb functionality of Hikey series boards
- * based on Hisilicon Kirin Soc.
- *
- * Copyright (C) 2017-2018 Hilisicon Electronics Co., Ltd.
- *		http://www.huawei.com
- *
- * Authors: Yu Chen <chenyu56@huawei.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/kernel.h>

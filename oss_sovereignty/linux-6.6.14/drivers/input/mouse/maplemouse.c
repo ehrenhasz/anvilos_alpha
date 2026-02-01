@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	SEGA Dreamcast mouse driver
- *	Based on drivers/usb/usbmouse.c
- *
- *	Copyright (c) Yaegashi Takeshi, 2001
- *	Copyright (c) Adrian McMenamin, 2008 - 2009
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -64,7 +58,7 @@ static void dc_mouse_close(struct input_dev *dev)
 		MAPLE_FUNC_MOUSE);
 }
 
-/* allow the mouse to be used */
+ 
 static int probe_maple_mouse(struct device *dev)
 {
 	struct maple_device *mdev = to_maple_dev(dev);

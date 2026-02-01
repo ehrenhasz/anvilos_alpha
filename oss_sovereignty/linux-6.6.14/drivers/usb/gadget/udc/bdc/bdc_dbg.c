@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * bdc_dbg.c - BRCM BDC USB3.0 device controller debug functions
- *
- * Copyright (C) 2014 Broadcom Corporation
- *
- * Author: Ashwini Pahuja
- */
+
+ 
 
 #include "bdc.h"
 #include "bdc_dbg.h"

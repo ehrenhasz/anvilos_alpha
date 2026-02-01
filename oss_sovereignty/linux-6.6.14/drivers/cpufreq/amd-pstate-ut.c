@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMD Processor P-state Frequency Driver Unit Test
- *
- * Copyright (C) 2022 Advanced Micro Devices, Inc. All Rights Reserved.
- *
- * Author: Meng Li <li.meng@amd.com>
- *
- * The AMD P-State Unit Test is a test module for testing the amd-pstate
- * driver. 1) It can help all users to verify their processor support
- * (SBIOS/Firmware or Hardware). 2) Kernel can have a basic function
- * test to avoid the kernel regression during the update. 3) We can
- * introduce more functional or performance tests to align the result
- * together, it will benefit power and performance scale optimization.
- *
- * This driver implements basic framework with plans to enhance it with
- * additional test cases to improve the depth and coverage of the test.
- *
- * See Documentation/admin-guide/pm/amd-pstate.rst Unit Tests for
- * amd-pstate to get more detail.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,11 +11,7 @@
 
 #include <acpi/cppc_acpi.h>
 
-/*
- * Abbreviations:
- * amd_pstate_ut: used as a shortform for AMD P-State unit test.
- * It helps to keep variable names smaller, simpler
- */
+ 
 enum amd_pstate_ut_result {
 	AMD_PSTATE_UT_RESULT_PASS,
 	AMD_PSTATE_UT_RESULT_FAIL,
@@ -46,9 +23,7 @@ struct amd_pstate_ut_struct {
 	enum amd_pstate_ut_result result;
 };
 
-/*
- * Kernel module for testing the AMD P-State unit test
- */
+ 
 static void amd_pstate_ut_acpi_cpc_valid(u32 index);
 static void amd_pstate_ut_check_enabled(u32 index);
 static void amd_pstate_ut_check_perf(u32 index);
@@ -71,9 +46,7 @@ static bool get_shared_mem(void)
 	return result;
 }
 
-/*
- * check the _CPC object is present in SBIOS.
- */
+ 
 static void amd_pstate_ut_acpi_cpc_valid(u32 index)
 {
 	if (acpi_cpc_valid())
@@ -103,9 +76,7 @@ static void amd_pstate_ut_pstate_enable(u32 index)
 	}
 }
 
-/*
- * check if amd pstate is enabled
- */
+ 
 static void amd_pstate_ut_check_enabled(u32 index)
 {
 	if (get_shared_mem())
@@ -114,10 +85,7 @@ static void amd_pstate_ut_check_enabled(u32 index)
 		amd_pstate_ut_pstate_enable(index);
 }
 
-/*
- * check if performance values are reasonable.
- * highest_perf >= nominal_perf > lowest_nonlinear_perf > lowest_perf > 0
- */
+ 
 static void amd_pstate_ut_check_perf(u32 index)
 {
 	int cpu = 0, ret = 0;
@@ -191,11 +159,7 @@ skip_test:
 	cpufreq_cpu_put(policy);
 }
 
-/*
- * Check if frequency values are reasonable.
- * max_freq >= nominal_freq > lowest_nonlinear_freq > min_freq > 0
- * check max freq when set support boost mode.
- */
+ 
 static void amd_pstate_ut_check_freq(u32 index)
 {
 	int cpu = 0;

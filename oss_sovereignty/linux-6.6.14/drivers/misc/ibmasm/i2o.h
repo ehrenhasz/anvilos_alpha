@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * IBM ASM Service Processor Device Driver
- *
- * Copyright (C) IBM Corporation, 2004
- *
- * Author: Max Asböck <amax@us.ibm.com>
- */
+ 
+ 
 
 #pragma pack(1)
 struct i2o_header {

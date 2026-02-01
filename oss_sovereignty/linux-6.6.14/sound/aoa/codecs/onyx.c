@@ -1,33 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple Onboard Audio driver for Onyx codec
- *
- * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
- *
- * This is a driver for the pcm3052 codec chip (codenamed Onyx)
- * that is present in newer Apple hardware (with digital output).
- *
- * The Onyx codec has the following connections (listed by the bit
- * to be used in aoa_codec.connected):
- *  0: analog output
- *  1: digital output
- *  2: line input
- *  3: microphone input
- * Note that even though I know of no machine that has for example
- * the digital output connected but not the analog, I have handled
- * all the different cases in the code so that this driver may serve
- * as a good example of what to do.
- *
- * NOTE: This driver assumes that there's at most one chip to be
- * 	 used with one alsa card, in form of creating all kinds
- *	 of mixer elements without regard for their existence.
- *	 But snd-aoa assumes that there's at most one card, so
- *	 this means you can only have one onyx on a system. This
- *	 should probably be fixed by changing the assumption of
- *	 having just a single card on a system, and making the
- *	 'card' pointer accessible to anyone who needs it instead
- *	 of hiding it in the aoa_snd_* functions...
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -43,7 +15,7 @@ MODULE_DESCRIPTION("pcm3052 (onyx) codec driver for snd-aoa");
 #define PFX "snd-aoa-codec-onyx: "
 
 struct onyx {
-	/* cache registers 65 to 80, they are write-only! */
+	 
 	u8			cache[16];
 	struct i2c_client	*i2c;
 	struct aoa_codec	codec;
@@ -54,14 +26,12 @@ struct onyx {
 	int			open_count;
 	struct codec_info	*codec_info;
 
-	/* mutex serializes concurrent access to the device
-	 * and this structure.
-	 */
+	 
 	struct mutex mutex;
 };
 #define codec_to_onyx(c) container_of(c, struct onyx, codec)
 
-/* both return 0 if all ok, else on error */
+ 
 static int onyx_read_register(struct onyx *onyx, u8 reg, u8 *value)
 {
 	s32 v;
@@ -90,7 +60,7 @@ static int onyx_write_register(struct onyx *onyx, u8 reg, u8 value)
 	return result;
 }
 
-/* alsa stuff */
+ 
 
 static int onyx_dev_register(struct snd_device *dev)
 {
@@ -101,8 +71,7 @@ static const struct snd_device_ops ops = {
 	.dev_register = onyx_dev_register,
 };
 
-/* this is necessary because most alsa mixer programs
- * can't properly handle the negative range */
+ 
 #define VOLUME_RANGE_SHIFT	128
 
 static int onyx_snd_vol_info(struct snd_kcontrol *kcontrol,
@@ -175,10 +144,7 @@ static const struct snd_kcontrol_new volume_control = {
 	.put = onyx_snd_vol_put,
 };
 
-/* like above, this is necessary because a lot
- * of alsa mixer programs don't handle ranges
- * that don't start at 0 properly.
- * even alsamixer is one of them... */
+ 
 #define INPUTGAIN_RANGE_SHIFT	(-3)
 
 static int onyx_snd_inputgain_info(struct snd_kcontrol *kcontrol,
@@ -285,17 +251,7 @@ static int onyx_snd_capture_source_put(struct snd_kcontrol *kcontrol,
 
 static const struct snd_kcontrol_new capture_source_control = {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
-	/* If we name this 'Input Source', it properly shows up in
-	 * alsamixer as a selection, * but it's shown under the
-	 * 'Playback' category.
-	 * If I name it 'Capture Source', it shows up in strange
-	 * ways (two bools of which one can be selected at a
-	 * time) but at least it's shown in the 'Capture'
-	 * category.
-	 * I was told that this was due to backward compatibility,
-	 * but I don't understand then why the mangling is *not*
-	 * done when I name it "Input Source".....
-	 */
+	 
 	.name = "Capture Source",
 	.access = SNDRV_CTL_ELEM_ACCESS_READWRITE,
 	.info = onyx_snd_capture_source_info,
@@ -395,7 +351,7 @@ static int onyx_snd_single_bit_put(struct snd_kcontrol *kcontrol,
 
 	mutex_lock(&onyx->mutex);
 	if (spdiflock && onyx->spdif_locked) {
-		/* even if alsamixer doesn't care.. */
+		 
 		err = -EBUSY;
 		goto out_unlock;
 	}
@@ -465,7 +421,7 @@ static int onyx_spdif_info(struct snd_kcontrol *kcontrol,
 static int onyx_spdif_mask_get(struct snd_kcontrol *kcontrol,
 			       struct snd_ctl_elem_value *ucontrol)
 {
-	/* datasheet page 30, all others are 0 */
+	 
 	ucontrol->value.iec958.status[0] = 0x3e;
 	ucontrol->value.iec958.status[1] = 0xff;
 
@@ -541,7 +497,7 @@ static const struct snd_kcontrol_new onyx_spdif_ctrl = {
 	.put =		onyx_spdif_put,
 };
 
-/* our registers */
+ 
 
 static const u8 register_map[] = {
 	ONYX_REG_DAC_ATTEN_LEFT,
@@ -560,21 +516,21 @@ static const u8 register_map[] = {
 };
 
 static const u8 initial_values[ARRAY_SIZE(register_map)] = {
-	0x80, 0x80, /* muted */
-	ONYX_MRST | ONYX_SRST, /* but handled specially! */
+	0x80, 0x80,  
+	ONYX_MRST | ONYX_SRST,  
 	ONYX_MUTE_LEFT | ONYX_MUTE_RIGHT,
-	0, /* no deemphasis */
+	0,  
 	ONYX_DAC_FILTER_ALWAYS,
 	ONYX_OUTPHASE_INVERTED,
-	(-1 /*dB*/ + 8) & 0xF, /* line in selected, -1 dB gain*/
+	(-1   + 8) & 0xF,  
 	ONYX_ADC_HPF_ALWAYS,
-	(1<<2),	/* pcm audio */
-	2,	/* category: pcm coder */
-	0,	/* sampling frequency 44.1 kHz, clock accuracy level II */
-	1	/* 24 bit depth */
+	(1<<2),	 
+	2,	 
+	0,	 
+	1	 
 };
 
-/* reset registers of chip, either to initial or to previous values */
+ 
 static int onyx_register_init(struct onyx *onyx)
 {
 	int i;
@@ -602,11 +558,9 @@ static int onyx_register_init(struct onyx *onyx)
 }
 
 static struct transfer_info onyx_transfers[] = {
-	/* this is first so we can skip it if no input is present...
-	 * No hardware exists with that, but it's here as an example
-	 * of what to do :) */
+	 
 	{
-		/* analog input */
+		 
 		.formats = SNDRV_PCM_FMTBIT_S8 |
 			   SNDRV_PCM_FMTBIT_S16_BE |
 			   SNDRV_PCM_FMTBIT_S24_BE,
@@ -616,8 +570,7 @@ static struct transfer_info onyx_transfers[] = {
 		.tag = 0,
 	},
 	{
-		/* if analog and digital are currently off, anything should go,
-		 * so this entry describes everything we can do... */
+		 
 		.formats = SNDRV_PCM_FMTBIT_S8 |
 			   SNDRV_PCM_FMTBIT_S16_BE |
 			   SNDRV_PCM_FMTBIT_S24_BE
@@ -629,7 +582,7 @@ static struct transfer_info onyx_transfers[] = {
 		.tag = 0,
 	},
 	{
-		/* analog output */
+		 
 		.formats = SNDRV_PCM_FMTBIT_S8 |
 			   SNDRV_PCM_FMTBIT_S16_BE |
 			   SNDRV_PCM_FMTBIT_S24_BE,
@@ -639,7 +592,7 @@ static struct transfer_info onyx_transfers[] = {
 		.tag = 1,
 	},
 	{
-		/* digital pcm output, also possible for analog out */
+		 
 		.formats = SNDRV_PCM_FMTBIT_S8 |
 			   SNDRV_PCM_FMTBIT_S16_BE |
 			   SNDRV_PCM_FMTBIT_S24_BE,
@@ -651,9 +604,9 @@ static struct transfer_info onyx_transfers[] = {
 		.tag = 2,
 	},
 #ifdef SNDRV_PCM_FMTBIT_COMPRESSED_16BE
-	/* Once alsa gets supports for this kind of thing we can add it... */
+	 
 	{
-		/* digital compressed output */
+		 
 		.formats =  SNDRV_PCM_FMTBIT_COMPRESSED_16BE,
 		.rates = SNDRV_PCM_RATE_32000 |
 			 SNDRV_PCM_RATE_44100 |
@@ -701,7 +654,7 @@ static int onyx_prepare(struct codec_info_item *cii,
 
 #ifdef SNDRV_PCM_FMTBIT_COMPRESSED_16BE
 	if (substream->runtime->format == SNDRV_PCM_FMTBIT_COMPRESSED_16BE) {
-		/* mute and lock analog output */
+		 
 		onyx_read_register(onyx, ONYX_REG_DAC_CONTROL, &v);
 		if (onyx_write_register(onyx,
 					ONYX_REG_DAC_CONTROL,
@@ -716,14 +669,12 @@ static int onyx_prepare(struct codec_info_item *cii,
 	case 32000:
 	case 44100:
 	case 48000:
-		/* these rates are ok for all outputs */
-		/* FIXME: program spdif channel control bits here so that
-		 *	  userspace doesn't have to if it only plays pcm! */
+		 
+		 
 		err = 0;
 		goto out_unlock;
 	default:
-		/* got some rate that the digital output can't do,
-		 * so disable and lock it */
+		 
 		onyx_read_register(cii->codec_data, ONYX_REG_DIG_INFO4, &v);
 		if (onyx_write_register(onyx,
 					ONYX_REG_DIG_INFO4,
@@ -772,7 +723,7 @@ static int onyx_switch_clock(struct codec_info_item *cii,
 	struct onyx *onyx = cii->codec_data;
 
 	mutex_lock(&onyx->mutex);
-	/* this *MUST* be more elaborate later... */
+	 
 	switch (what) {
 	case CLOCK_SWITCH_PREPARE_SLAVE:
 		onyx->codec.gpio->methods->all_amps_off(onyx->codec.gpio);
@@ -780,7 +731,7 @@ static int onyx_switch_clock(struct codec_info_item *cii,
 	case CLOCK_SWITCH_SLAVE:
 		onyx->codec.gpio->methods->all_amps_restore(onyx->codec.gpio);
 		break;
-	default: /* silence warning */
+	default:  
 		break;
 	}
 	mutex_unlock(&onyx->mutex);
@@ -800,7 +751,7 @@ static int onyx_suspend(struct codec_info_item *cii, pm_message_t state)
 	if (onyx_read_register(onyx, ONYX_REG_CONTROL, &v))
 		goto out_unlock;
 	onyx_write_register(onyx, ONYX_REG_CONTROL, v | ONYX_ADPSV | ONYX_DAPSV);
-	/* Apple does a sleep here but the datasheet says to do it on resume */
+	 
 	err = 0;
  out_unlock:
 	mutex_unlock(&onyx->mutex);
@@ -816,7 +767,7 @@ static int onyx_resume(struct codec_info_item *cii)
 
 	mutex_lock(&onyx->mutex);
 
-	/* reset codec */
+	 
 	onyx->codec.gpio->methods->set_hw_reset(onyx->codec.gpio, 0);
 	msleep(1);
 	onyx->codec.gpio->methods->set_hw_reset(onyx->codec.gpio, 1);
@@ -824,13 +775,13 @@ static int onyx_resume(struct codec_info_item *cii)
 	onyx->codec.gpio->methods->set_hw_reset(onyx->codec.gpio, 0);
 	msleep(1);
 
-	/* take codec out of suspend (if it still is after reset) */
+	 
 	if (onyx_read_register(onyx, ONYX_REG_CONTROL, &v))
 		goto out_unlock;
 	onyx_write_register(onyx, ONYX_REG_CONTROL, v & ~(ONYX_ADPSV | ONYX_DAPSV));
-	/* FIXME: should divide by sample rate, but 8k is the lowest we go */
+	 
 	msleep(2205000/8000);
-	/* reset all values */
+	 
 	onyx_register_init(onyx);
 	err = 0;
  out_unlock:
@@ -839,7 +790,7 @@ static int onyx_resume(struct codec_info_item *cii)
 	return err;
 }
 
-#endif /* CONFIG_PM */
+#endif  
 
 static struct codec_info onyx_codec_info = {
 	.transfers = onyx_transfers,
@@ -887,11 +838,11 @@ static int onyx_init_codec(struct aoa_codec *codec)
 		return -ENODEV;
 	}
 
-	/* nothing connected? what a joke! */
+	 
 	if ((onyx->codec.connected & 0xF) == 0)
 		return -ENOTCONN;
 
-	/* if no inputs are present... */
+	 
 	if ((onyx->codec.connected & 0xC) == 0) {
 		if (!onyx->codec_info)
 			onyx->codec_info = kmalloc(sizeof(struct codec_info), GFP_KERNEL);
@@ -902,15 +853,14 @@ static int onyx_init_codec(struct aoa_codec *codec)
 		ci->transfers++;
 	}
 
-	/* if no outputs are present... */
+	 
 	if ((onyx->codec.connected & 3) == 0) {
 		if (!onyx->codec_info)
 			onyx->codec_info = kmalloc(sizeof(struct codec_info), GFP_KERNEL);
 		if (!onyx->codec_info)
 			return -ENOMEM;
 		ci = onyx->codec_info;
-		/* this is fine as there have to be inputs
-		 * if we end up in this part of the code */
+		 
 		*ci = onyx_codec_info;
 		ci->transfers[1].formats = 0;
 	}
@@ -934,8 +884,7 @@ static int onyx_init_codec(struct aoa_codec *codec)
 	} while (0)
 
 	if (onyx->codec.soundbus_dev->pcm) {
-		/* give the user appropriate controls
-		 * depending on what inputs are connected */
+		 
 		if ((onyx->codec.connected & 0xC) == 0xC)
 			ADDCTL(capture_source_control);
 		else if (onyx->codec.connected & 4)
@@ -945,8 +894,7 @@ static int onyx_init_codec(struct aoa_codec *codec)
 		if (onyx->codec.connected & 0xC)
 			ADDCTL(inputgain_control);
 
-		/* depending on what output is connected,
-		 * give the user appropriate controls */
+		 
 		if (onyx->codec.connected & 1) {
 			ADDCTL(volume_control);
 			ADDCTL(mute_control);
@@ -954,7 +902,7 @@ static int onyx_init_codec(struct aoa_codec *codec)
 			ADDCTL(flt0_control);
 			ADDCTL(hpf_control);
 			ADDCTL(dm12_control);
-			/* spdif control defaults to off */
+			 
 		}
 		if (onyx->codec.connected & 2) {
 			ADDCTL(onyx_spdif_mask);
@@ -962,7 +910,7 @@ static int onyx_init_codec(struct aoa_codec *codec)
 		}
 		if ((onyx->codec.connected & 3) == 3)
 			ADDCTL(spdif_control);
-		/* if only S/PDIF is connected, enable it unconditionally */
+		 
 		if ((onyx->codec.connected & 3) == 2) {
 			onyx_read_register(onyx, ONYX_REG_DIG_INFO4, &v);
 			v |= ONYX_SPDIF_ENABLE;
@@ -1005,8 +953,7 @@ static int onyx_i2c_probe(struct i2c_client *client)
 	onyx->i2c = client;
 	i2c_set_clientdata(client, onyx);
 
-	/* we try to read from register ONYX_REG_CONTROL
-	 * to check if the codec is present */
+	 
 	if (onyx_read_register(onyx, ONYX_REG_CONTROL, &dummy) != 0) {
 		printk(KERN_ERR PFX "failed to read control register\n");
 		goto fail;

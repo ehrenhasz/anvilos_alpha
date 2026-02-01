@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Industrialio event test code.
- *
- * Copyright (c) 2011-2012 Lars-Peter Clausen <lars@metafoo.de>
- *
- * This program is primarily intended as an example application.
- * Reads the current buffer setup from sysfs and starts a short capture
- * from the specified device, pretty printing the result after appropriate
- * conversion.
- *
- * Usage:
- *	iio_event_monitor <device_name>
- */
+
+ 
 
 #include <unistd.h>
 #include <stdlib.h>
@@ -295,7 +284,7 @@ static void print_event(struct iio_event_data *event)
 	fflush(stdout);
 }
 
-/* Enable or disable events in sysfs if the knob is available */
+ 
 static void enable_events(char *dev_dir, int enable)
 {
 	const struct dirent *ent;
@@ -365,15 +354,12 @@ int main(int argc, char **argv)
 		ret = asprintf(&chrdev_name, "/dev/iio:device%d", dev_num);
 		if (ret < 0)
 			return -ENOMEM;
-		/* Look up sysfs dir as well if we can */
+		 
 		ret = asprintf(&dev_dir_name, "%siio:device%d", iio_dir, dev_num);
 		if (ret < 0)
 			return -ENOMEM;
 	} else {
-		/*
-		 * If we can't find an IIO device by name assume device_name is
-		 * an IIO chrdev
-		 */
+		 
 		chrdev_name = strdup(device_name);
 		if (!chrdev_name)
 			return -ENOMEM;
@@ -434,7 +420,7 @@ int main(int argc, char **argv)
 		perror("Failed to close event file");
 
 error_free_chrdev_name:
-	/* Disable events after use */
+	 
 	if (all_events && dev_dir_name)
 		enable_events(dev_dir_name, 0);
 

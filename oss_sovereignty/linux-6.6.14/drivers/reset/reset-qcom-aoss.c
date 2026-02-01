@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -54,7 +52,7 @@ static int qcom_aoss_control_assert(struct reset_controller_dev *rcdev,
 	const struct qcom_aoss_reset_map *map = &data->desc->resets[idx];
 
 	writel(1, data->base + map->reg);
-	/* Wait 6 32kHz sleep cycles for reset */
+	 
 	usleep_range(200, 300);
 	return 0;
 }
@@ -66,7 +64,7 @@ static int qcom_aoss_control_deassert(struct reset_controller_dev *rcdev,
 	const struct qcom_aoss_reset_map *map = &data->desc->resets[idx];
 
 	writel(0, data->base + map->reg);
-	/* Wait 6 32kHz sleep cycles for reset */
+	 
 	usleep_range(200, 300);
 	return 0;
 }

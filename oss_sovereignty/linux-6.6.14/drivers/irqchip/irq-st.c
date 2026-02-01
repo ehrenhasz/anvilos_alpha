@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2014 STMicroelectronics – All Rights Reserved
- *
- *  Author: Lee Jones <lee.jones@linaro.org>
- *
- *  This is a re-write of Christophe Kerello's PMU driver.
- */
+
+ 
 
 #include <dt-bindings/interrupt-controller/irq-st.h>
 #include <linux/err.h>
@@ -53,7 +47,7 @@ static int st_irq_xlate(struct platform_device *pdev,
 {
 	struct st_irq_syscfg *ddata = dev_get_drvdata(&pdev->dev);
 
-	/* Set the device enable bit. */
+	 
 	switch (device) {
 	case ST_IRQ_SYSCFG_EXT_0:
 		ddata->config |= ST_A9_IRQ_EN_EXT_0;
@@ -86,7 +80,7 @@ static int st_irq_xlate(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* Select IRQ/FIQ channel for device. */
+	 
 	ddata->config |= irq ?
 		ST_A9_IRQ_N_SEL(device, channel) :
 		ST_A9_FIQ_N_SEL(device, channel);
@@ -127,7 +121,7 @@ static int st_irq_syscfg_enable(struct platform_device *pdev)
 			return ret;
 	}
 
-	/* External IRQs may be inverted. */
+	 
 	of_property_read_u32(np, "st,invert-ext", &invert);
 	ddata->config |= ST_A9_EXTIRQ_INV_SEL(invert);
 

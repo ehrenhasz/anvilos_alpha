@@ -1,9 +1,4 @@
-/* sunxvr1000.c: Sun XVR-1000 fb driver for sparc64 systems
- *
- * License: GPL
- *
- * Copyright (C) 2010 David S. Miller (davem@davemloft.net)
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/fb.h>
@@ -77,7 +72,7 @@ static int gfb_set_fbinfo(struct gfb_info *gp)
 
 	info->pseudo_palette = gp->pseudo_palette;
 
-	/* Fill fix common fields */
+	 
 	strscpy(info->fix.id, "gfb", sizeof(info->fix.id));
         info->fix.smem_start = gp->fb_base_phys;
         info->fix.smem_len = gp->fb_size;
@@ -133,7 +128,7 @@ static int gfb_probe(struct platform_device *op)
 	if (err)
 		goto err_release_fb;
 
-	/* Framebuffer length is the same regardless of resolution. */
+	 
 	info->fix.line_length = 16384;
 	gp->fb_size = info->fix.line_length * gp->height;
 

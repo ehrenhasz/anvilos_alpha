@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -197,7 +197,7 @@ void nft_fib6_eval(const struct nft_expr *expr, struct nft_regs *regs,
 	if (rt->dst.error)
 		goto put_rt_err;
 
-	/* Should not see RTF_LOCAL here */
+	 
 	if (rt->rt6i_flags & (RTF_REJECT | RTF_ANYCAST | RTF_LOCAL))
 		goto put_rt_err;
 

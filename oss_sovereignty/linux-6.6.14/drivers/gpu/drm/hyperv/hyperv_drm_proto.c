@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2021 Microsoft
- *
- * Portions of this code is derived from hyperv_fb.c
- */
+
+ 
 
 #include <linux/hyperv.h>
 
@@ -19,7 +15,7 @@
 #define SYNTHVID_VER_GET_MAJOR(ver) (ver & 0x0000ffff)
 #define SYNTHVID_VER_GET_MINOR(ver) ((ver & 0xffff0000) >> 16)
 
-/* Support for VERSION_WIN7 is removed. #define is retained for reference. */
+ 
 #define SYNTHVID_VERSION_WIN7 SYNTHVID_VERSION(3, 0)
 #define SYNTHVID_VERSION_WIN8 SYNTHVID_VERSION(3, 2)
 #define SYNTHVID_VERSION_WIN10 SYNTHVID_VERSION(3, 5)
@@ -55,7 +51,7 @@ enum synthvid_msg_type {
 
 struct pipe_msg_hdr {
 	u32 type;
-	u32 size; /* size of message after this field */
+	u32 size;  
 } __packed;
 
 struct hvd_screen_info {
@@ -65,7 +61,7 @@ struct hvd_screen_info {
 
 struct synthvid_msg_hdr {
 	u32 type;
-	u32 size;  /* size of this header + payload after this field */
+	u32 size;   
 } __packed;
 
 struct synthvid_version_req {
@@ -124,9 +120,9 @@ struct synthvid_pointer_position {
 struct synthvid_pointer_shape {
 	u8 part_idx;
 	u8 is_argb;
-	u32 width; /* SYNTHVID_CURSOR_MAX_X at most */
-	u32 height; /* SYNTHVID_CURSOR_MAX_Y at most */
-	u32 hot_x; /* hotspot relative to upper-left of pointer image */
+	u32 width;  
+	u32 height;  
+	u32 hot_x;  
 	u32 hot_y;
 	u8 data[4];
 } __packed;
@@ -139,8 +135,8 @@ struct synthvid_feature_change {
 } __packed;
 
 struct rect {
-	s32 x1, y1; /* top left corner */
-	s32 x2, y2; /* bottom right corner, exclusive */
+	s32 x1, y1;  
+	s32 x2, y2;  
 } __packed;
 
 struct synthvid_dirt {
@@ -287,7 +283,7 @@ int hyperv_update_situation(struct hv_device *hdev, u8 active, u32 bpp,
 	msg.situ.user_ctx = 0;
 	msg.situ.video_output_count = 1;
 	msg.situ.video_output[0].active = active;
-	/* vram_offset should always be 0 */
+	 
 	msg.situ.video_output[0].vram_offset = 0;
 	msg.situ.video_output[0].depth_bits = bpp;
 	msg.situ.video_output[0].width_pixels = w;
@@ -299,22 +295,7 @@ int hyperv_update_situation(struct hv_device *hdev, u8 active, u32 bpp,
 	return 0;
 }
 
-/*
- * Hyper-V supports a hardware cursor feature. It's not used by Linux VM,
- * but the Hyper-V host still draws a point as an extra mouse pointer,
- * which is unwanted, especially when Xorg is running.
- *
- * The hyperv_fb driver uses synthvid_send_ptr() to hide the unwanted
- * pointer, by setting msg.ptr_pos.is_visible = 1 and setting the
- * msg.ptr_shape.data. Note: setting msg.ptr_pos.is_visible to 0 doesn't
- * work in tests.
- *
- * Copy synthvid_send_ptr() to hyperv_drm and rename it to
- * hyperv_hide_hw_ptr(). Note: hyperv_hide_hw_ptr() is also called in the
- * handler of the SYNTHVID_FEATURE_CHANGE event, otherwise the host still
- * draws an extra unwanted mouse pointer after the VM Connection window is
- * closed and reopened.
- */
+ 
 int hyperv_hide_hw_ptr(struct hv_device *hdev)
 {
 	struct synthvid_msg msg;
@@ -432,7 +413,7 @@ static void hyperv_receive_sub(struct hv_device *hdev)
 
 	msg = (struct synthvid_msg *)hv->recv_buf;
 
-	/* Complete the wait event */
+	 
 	if (msg->vid_hdr.type == SYNTHVID_VERSION_RESPONSE ||
 	    msg->vid_hdr.type == SYNTHVID_RESOLUTION_RESPONSE ||
 	    msg->vid_hdr.type == SYNTHVID_VRAM_LOCATION_ACK) {
@@ -485,7 +466,7 @@ int hyperv_connect_vsp(struct hv_device *hdev)
 		return ret;
 	}
 
-	/* Negotiate the protocol version with host */
+	 
 	switch (vmbus_proto_version) {
 	case VERSION_WIN10:
 	case VERSION_WIN10_V5:

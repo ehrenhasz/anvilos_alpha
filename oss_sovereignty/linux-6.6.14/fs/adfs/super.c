@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/fs/adfs/super.c
- *
- *  Copyright (C) 1997-1999 Russell King
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/parser.h>
@@ -55,33 +51,26 @@ static int adfs_checkdiscrecord(struct adfs_discrecord *dr)
 	unsigned int max_idlen;
 	int i;
 
-	/* sector size must be 256, 512 or 1024 bytes */
+	 
 	if (dr->log2secsize != 8 &&
 	    dr->log2secsize != 9 &&
 	    dr->log2secsize != 10)
 		return 1;
 
-	/* idlen must be at least log2secsize + 3 */
+	 
 	if (dr->idlen < dr->log2secsize + 3)
 		return 1;
 
-	/* we cannot have such a large disc that we
-	 * are unable to represent sector offsets in
-	 * 32 bits.  This works out at 2.0 TB.
-	 */
+	 
 	if (le32_to_cpu(dr->disc_size_high) >> dr->log2secsize)
 		return 1;
 
-	/*
-	 * Maximum idlen is limited to 16 bits for new directories by
-	 * the three-byte storage of an indirect disc address.  For
-	 * big directories, idlen must be no greater than 19 v2 [1.0]
-	 */
+	 
 	max_idlen = dr->format_version ? 19 : 16;
 	if (dr->idlen > max_idlen)
 		return 1;
 
-	/* reserved bytes should be zero */
+	 
 	for (i = 0; i < sizeof(dr->unused52); i++)
 		if (dr->unused52[i] != 0)
 			return 1;
@@ -233,7 +222,7 @@ static void adfs_free_inode(struct inode *inode)
 
 static int adfs_drop_inode(struct inode *inode)
 {
-	/* always drop inodes if we are read-only */
+	 
 	return !IS_ENABLED(CONFIG_ADFS_FS_RW) || IS_RDONLY(inode);
 }
 
@@ -258,10 +247,7 @@ static int __init init_inodecache(void)
 
 static void destroy_inodecache(void)
 {
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(adfs_inode_cachep);
 }
@@ -289,7 +275,7 @@ static int adfs_probe(struct super_block *sb, unsigned int offset, int silent,
 	int ret, try;
 
 	for (try = 0; try < 2; try++) {
-		/* try to set the requested block size */
+		 
 		if (sb->s_blocksize != blocksize &&
 		    !sb_set_blocksize(sb, blocksize)) {
 			if (!silent)
@@ -298,7 +284,7 @@ static int adfs_probe(struct super_block *sb, unsigned int offset, int silent,
 			return -EINVAL;
 		}
 
-		/* read the buffer */
+		 
 		bh = sb_bread(sb, offset >> sb->s_blocksize_bits);
 		if (!bh) {
 			adfs_msg(sb, KERN_ERR,
@@ -307,14 +293,14 @@ static int adfs_probe(struct super_block *sb, unsigned int offset, int silent,
 			return -EIO;
 		}
 
-		/* validate it */
+		 
 		ret = validate(sb, bh, &dr);
 		if (ret) {
 			brelse(bh);
 			return ret;
 		}
 
-		/* does the block size match the filesystem block size? */
+		 
 		blocksize = 1 << dr->log2secsize;
 		if (sb->s_blocksize == blocksize) {
 			asb->s_map = adfs_read_map(sb, dr);
@@ -338,7 +324,7 @@ static int adfs_validate_bblk(struct super_block *sb, struct buffer_head *bh,
 	if (adfs_checkbblk(b_data))
 		return -EILSEQ;
 
-	/* Do some sanity checks on the ADFS disc record */
+	 
 	dr = (struct adfs_discrecord *)(b_data + ADFS_DR_OFFSET);
 	if (adfs_checkdiscrecord(dr))
 		return -EILSEQ;
@@ -352,7 +338,7 @@ static int adfs_validate_dr0(struct super_block *sb, struct buffer_head *bh,
 {
 	struct adfs_discrecord *dr;
 
-	/* Do some sanity checks on the ADFS disc record */
+	 
 	dr = (struct adfs_discrecord *)(bh->b_data + 4);
 	if (adfs_checkdiscrecord(dr) || dr->nzones_high || dr->nzones != 1)
 		return -EILSEQ;
@@ -379,7 +365,7 @@ static int adfs_fill_super(struct super_block *sb, void *data, int silent)
 	sb->s_magic = ADFS_SUPER_MAGIC;
 	sb->s_time_gran = 10000000;
 
-	/* set default options */
+	 
 	asb->s_uid = GLOBAL_ROOT_UID;
 	asb->s_gid = GLOBAL_ROOT_GID;
 	asb->s_owner_mask = ADFS_DEFAULT_OWNER_MASK;
@@ -389,7 +375,7 @@ static int adfs_fill_super(struct super_block *sb, void *data, int silent)
 	if (parse_options(sb, asb, data))
 		goto error;
 
-	/* Try to probe the filesystem boot block */
+	 
 	ret = adfs_probe(sb, ADFS_DISCRECORD, 1, adfs_validate_bblk);
 	if (ret == -EILSEQ)
 		ret = adfs_probe(sb, 0, silent, adfs_validate_dr0);
@@ -403,24 +389,21 @@ static int adfs_fill_super(struct super_block *sb, void *data, int silent)
 	if (ret)
 		goto error;
 
-	/* set up enough so that we can read an inode */
+	 
 	sb->s_op = &adfs_sops;
 
 	dr = adfs_map_discrecord(asb->s_map);
 
 	root_obj.parent_id = root_obj.indaddr = le32_to_cpu(dr->root);
 	root_obj.name_len  = 0;
-	/* Set root object date as 01 Jan 1987 00:00:00 */
+	 
 	root_obj.loadaddr  = 0xfff0003f;
 	root_obj.execaddr  = 0xec22c000;
 	root_obj.size	   = ADFS_NEWDIR_SIZE;
 	root_obj.attr	   = ADFS_NDA_DIRECTORY   | ADFS_NDA_OWNER_READ |
 			     ADFS_NDA_OWNER_WRITE | ADFS_NDA_PUBLIC_READ;
 
-	/*
-	 * If this is a F+ disk with variable length directories,
-	 * get the root_size from the disc record.
-	 */
+	 
 	if (dr->format_version) {
 		root_obj.size = le32_to_cpu(dr->root_size);
 		asb->s_dir     = &adfs_fplus_dir_ops;
@@ -429,10 +412,7 @@ static int adfs_fill_super(struct super_block *sb, void *data, int silent)
 		asb->s_dir     = &adfs_f_dir_ops;
 		asb->s_namelen = ADFS_F_NAME_LEN;
 	}
-	/*
-	 * ,xyz hex filetype suffix may be added by driver
-	 * to files that have valid RISC OS filetype
-	 */
+	 
 	if (asb->s_ftsuffix)
 		asb->s_namelen += 4;
 

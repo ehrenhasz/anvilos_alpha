@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 
 #include <subdev/bios.h>
@@ -34,9 +12,7 @@
 
 #include <core/option.h>
 
-/******************************************************************************
- * misc
- *****************************************************************************/
+ 
 static u32
 nvkm_clk_adjust(struct nvkm_clk *clk, bool adjust,
 		u8 pstate, u8 domain, u32 input)
@@ -72,9 +48,7 @@ nvkm_clk_adjust(struct nvkm_clk *clk, bool adjust,
 	return input;
 }
 
-/******************************************************************************
- * C-States
- *****************************************************************************/
+ 
 static bool
 nvkm_cstate_valid(struct nvkm_clk *clk, struct nvkm_cstate *cstate,
 		  u32 max_volt, int temp)
@@ -260,9 +234,7 @@ nvkm_cstate_new(struct nvkm_clk *clk, int idx, struct nvkm_pstate *pstate)
 	return 0;
 }
 
-/******************************************************************************
- * P-States
- *****************************************************************************/
+ 
 static int
 nvkm_pstate_prog(struct nvkm_clk *clk, int pstatei)
 {
@@ -466,9 +438,7 @@ nvkm_pstate_new(struct nvkm_clk *clk, int idx)
 	return 0;
 }
 
-/******************************************************************************
- * Adjustment triggers
- *****************************************************************************/
+ 
 static int
 nvkm_clk_ustate_update(struct nvkm_clk *clk, int req)
 {
@@ -566,9 +536,7 @@ nvkm_clk_pwrsrc(struct nvkm_device *device)
 	return 0;
 }
 
-/******************************************************************************
- * subdev base class implementation
- *****************************************************************************/
+ 
 
 int
 nvkm_clk_read(struct nvkm_clk *clk, enum nv_clk_src src)
@@ -615,7 +583,7 @@ nvkm_clk_init(struct nvkm_subdev *subdev)
 	clk->astate = clk->state_nr - 1;
 	clk->dstate = 0;
 	clk->pstate = -1;
-	clk->temp = 90; /* reasonable default value */
+	clk->temp = 90;  
 	nvkm_pstate_calc(clk, true);
 	return 0;
 }
@@ -626,7 +594,7 @@ nvkm_clk_dtor(struct nvkm_subdev *subdev)
 	struct nvkm_clk *clk = nvkm_clk(subdev);
 	struct nvkm_pstate *pstate, *temp;
 
-	/* Early return if the pstates have been provided statically */
+	 
 	if (clk->func->pstates)
 		return clk;
 
@@ -675,7 +643,7 @@ nvkm_clk_ctor(const struct nvkm_clk_func *func, struct nvkm_device *device,
 	init_waitqueue_head(&clk->wait);
 	atomic_set(&clk->waiting, 0);
 
-	/* If no pstates are provided, try and fetch them from the BIOS */
+	 
 	if (!func->pstates) {
 		idx = 0;
 		do {

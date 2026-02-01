@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2021 Samsung Electronics Co., Ltd.
- *   Author(s): Namjae Jeon <linkinjeon@kernel.org>
- */
+
+ 
 
 #include <linux/fs.h>
 
@@ -330,7 +327,7 @@ static int ndr_encode_posix_acl_entry(struct ndr *n, struct xattr_smb_acl *acl)
 		if (ret)
 			return ret;
 
-		/* push permission */
+		 
 		ret = ndr_write_int32(n, acl->entries[i].perm);
 	}
 
@@ -355,7 +352,7 @@ int ndr_encode_posix_acl(struct ndr *n,
 		return -ENOMEM;
 
 	if (acl) {
-		/* ACL ACCESS */
+		 
 		ret = ndr_write_int32(n, ref_id);
 		ref_id += 4;
 	} else {
@@ -365,7 +362,7 @@ int ndr_encode_posix_acl(struct ndr *n,
 		return ret;
 
 	if (def_acl) {
-		/* DEFAULT ACL ACCESS */
+		 
 		ret = ndr_write_int32(n, ref_id);
 		ref_id += 4;
 	} else {
@@ -421,7 +418,7 @@ int ndr_encode_v4_ntacl(struct ndr *n, struct xattr_ntacl *acl)
 	if (ret)
 		return ret;
 
-	/* push hash type and hash 64bytes */
+	 
 	ret = ndr_write_int16(n, acl->hash_type);
 	if (ret)
 		return ret;
@@ -442,7 +439,7 @@ int ndr_encode_v4_ntacl(struct ndr *n, struct xattr_ntacl *acl)
 	if (ret)
 		return ret;
 
-	/* push ndr for security descriptor */
+	 
 	ret = ndr_write_bytes(n, acl->sd_buf, acl->sd_size);
 	return ret;
 }
@@ -470,12 +467,12 @@ int ndr_decode_v4_ntacl(struct ndr *n, struct xattr_ntacl *acl)
 		return -EINVAL;
 	}
 
-	/* Read Level */
+	 
 	ret = ndr_read_int16(n, NULL);
 	if (ret)
 		return ret;
 
-	/* Read Ref Id */
+	 
 	ret = ndr_read_int32(n, NULL);
 	if (ret)
 		return ret;
@@ -494,12 +491,12 @@ int ndr_decode_v4_ntacl(struct ndr *n, struct xattr_ntacl *acl)
 		return -EINVAL;
 	}
 
-	/* Read Time */
+	 
 	ret = ndr_read_int64(n, NULL);
 	if (ret)
 		return ret;
 
-	/* Read Posix ACL hash */
+	 
 	ret = ndr_read_bytes(n, acl->posix_acl_hash, XATTR_SD_HASH_SIZE);
 	if (ret)
 		return ret;

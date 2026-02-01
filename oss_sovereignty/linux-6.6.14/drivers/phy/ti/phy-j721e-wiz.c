@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Wrapper driver for SERDES used in J721E
- *
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com/
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <dt-bindings/phy/phy.h>
 #include <dt-bindings/phy/phy-ti.h>
@@ -29,10 +24,10 @@
 #define REF_CLK_100MHZ          100000000
 #define REF_CLK_156_25MHZ       156250000
 
-/* SCM offsets */
+ 
 #define SERDES_SUP_CTRL		0x4400
 
-/* SERDES offsets */
+ 
 #define WIZ_SERDES_CTRL		0x404
 #define WIZ_SERDES_TOP_CTRL	0x408
 #define WIZ_SERDES_RST		0x40c
@@ -41,7 +36,7 @@
 #define WIZ_LANEDIV(n)		(0x484 + (0x40 * (n)))
 
 #define WIZ_MAX_INPUT_CLOCKS	4
-/* To include mux clocks, divider clocks and gate clocks */
+ 
 #define WIZ_MAX_OUTPUT_CLOCKS	32
 
 #define WIZ_MAX_LANES		4
@@ -58,9 +53,7 @@ enum wiz_lane_standard_mode {
 	LANE_MODE_GEN4,
 };
 
-/*
- * List of master lanes used for lane swapping
- */
+ 
 enum wiz_typec_master_lane {
 	LANE0 = 0,
 	LANE2 = 2,
@@ -245,10 +238,7 @@ struct wiz_phy_en_refclk {
 
 static const struct wiz_clk_mux_sel clk_mux_sel_16g[] = {
 	{
-		/*
-		 * Mux value to be configured for each of the input clocks
-		 * in the order populated in device tree
-		 */
+		 
 		.table = { 1, 0 },
 		.node_name = "pll0-refclk",
 	},
@@ -264,10 +254,7 @@ static const struct wiz_clk_mux_sel clk_mux_sel_16g[] = {
 
 static const struct wiz_clk_mux_sel clk_mux_sel_10g[] = {
 	{
-		/*
-		 * Mux value to be configured for each of the input clocks
-		 * in the order populated in device tree
-		 */
+		 
 		.num_parents = 2,
 		.parents = { WIZ_CORE_REFCLK, WIZ_EXT_REFCLK },
 		.table = { 1, 0 },
@@ -313,7 +300,7 @@ static const struct clk_div_table clk_div_table[] = {
 	{ .val = 1, .div = 2, },
 	{ .val = 2, .div = 4, },
 	{ .val = 3, .div = 8, },
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct wiz_clk_div_sel clk_div_sel[] = {
@@ -329,9 +316,9 @@ static const struct wiz_clk_div_sel clk_div_sel[] = {
 
 enum wiz_type {
 	J721E_WIZ_16G,
-	J721E_WIZ_10G,	/* Also for J7200 SR1.0 */
+	J721E_WIZ_10G,	 
 	AM64_WIZ_10G,
-	J7200_WIZ_10G,  /* J7200 SR2.0 */
+	J7200_WIZ_10G,   
 	J784S4_WIZ_10G,
 	J721S2_WIZ_10G,
 };
@@ -347,7 +334,7 @@ struct wiz_data {
 	unsigned int clk_div_sel_num;
 };
 
-#define WIZ_TYPEC_DIR_DEBOUNCE_MIN	100	/* ms */
+#define WIZ_TYPEC_DIR_DEBOUNCE_MIN	100	 
 #define WIZ_TYPEC_DIR_DEBOUNCE_MAX	1000
 
 struct wiz {
@@ -518,7 +505,7 @@ static int wiz_init(struct wiz *wiz)
 static int wiz_regfield_init(struct wiz *wiz)
 {
 	struct regmap *regmap = wiz->regmap;
-	struct regmap *scm_regmap = wiz->regmap; /* updated later to scm_regmap if applicable */
+	struct regmap *scm_regmap = wiz->regmap;  
 	int num_lanes = wiz->num_lanes;
 	struct device *dev = wiz->dev;
 	const struct wiz_data *data = wiz->data;
@@ -1257,7 +1244,7 @@ static int wiz_phy_reset_deassert(struct reset_controller_dev *rcdev,
 	int ret;
 
 	if (id == 0) {
-		/* if typec-dir gpio was specified, set LN10 SWAP bit based on that */
+		 
 		if (wiz->gpio_typec_dir) {
 			if (wiz->typec_dir_delay)
 				msleep_interruptible(wiz->typec_dir_delay);
@@ -1267,10 +1254,7 @@ static int wiz_phy_reset_deassert(struct reset_controller_dev *rcdev,
 			else
 				regmap_field_write(wiz->typec_ln10_swap, 0);
 		} else {
-			/* if no typec-dir gpio is specified and PHY type is USB3
-			 * with master lane number is '0' or '2', then set LN10 or
-			 * LN23 SWAP bit to '1' respectively.
-			 */
+			 
 			u32 num_lanes = wiz->num_lanes;
 			int i;
 
@@ -1536,7 +1520,7 @@ static int wiz_probe(struct platform_device *pdev)
 			goto err_addr_to_resource;
 		}
 
-		/* use min. debounce from Type-C spec if not provided in DT  */
+		 
 		if (ret == -EINVAL)
 			wiz->typec_dir_delay = WIZ_TYPEC_DIR_DEBOUNCE_MIN;
 
@@ -1567,7 +1551,7 @@ static int wiz_probe(struct platform_device *pdev)
 		goto err_addr_to_resource;
 	}
 
-	/* Enable supplemental Control override if available */
+	 
 	if (wiz->scm_regmap)
 		regmap_field_write(wiz->sup_legacy_clk_override, 1);
 
@@ -1576,7 +1560,7 @@ static int wiz_probe(struct platform_device *pdev)
 	phy_reset_dev->ops = &wiz_phy_reset_ops,
 	phy_reset_dev->owner = THIS_MODULE,
 	phy_reset_dev->of_node = node;
-	/* Reset for each of the lane and one for the entire SERDES */
+	 
 	phy_reset_dev->nr_resets = num_lanes + 1;
 
 	ret = devm_reset_controller_register(dev, phy_reset_dev);

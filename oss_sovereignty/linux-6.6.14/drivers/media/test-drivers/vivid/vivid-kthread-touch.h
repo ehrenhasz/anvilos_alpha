@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * vivid-kthread-cap.h - video/vbi capture thread support functions.
- *
- */
+ 
+ 
 
 #ifndef _VIVID_KTHREAD_CAP_H_
 #define _VIVID_KTHREAD_CAP_H_

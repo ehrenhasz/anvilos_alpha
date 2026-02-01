@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shared Memory Communications over RDMA (SMC-R) and RoCE
- *
- * Macros for SMC statistics
- *
- * Copyright IBM Corp. 2021
- *
- * Author(s):  Guvenc Gulce
- */
+ 
+ 
 
 #ifndef NET_SMC_SMC_STATS_H_
 #define NET_SMC_SMC_STATS_H_
@@ -267,4 +259,4 @@ int smc_nl_get_fback_stats(struct sk_buff *skb, struct netlink_callback *cb);
 int smc_stats_init(struct net *net);
 void smc_stats_exit(struct net *net);
 
-#endif /* NET_SMC_SMC_STATS_H_ */
+#endif  

@@ -1,73 +1,57 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
 
-#include "assert_support.h"		/* assert */
+ 
+
+#include "assert_support.h"		 
 #include "ia_css_buffer.h"
 #include "sp.h"
-#include "ia_css_bufq.h"		/* Bufq API's */
-#include "ia_css_queue.h"		/* ia_css_queue_t */
-#include "sw_event_global.h"		/* Event IDs.*/
-#include "ia_css_eventq.h"		/* ia_css_eventq_recv()*/
-#include "ia_css_debug.h"		/* ia_css_debug_dtrace*/
-#include "sh_css_internal.h"		/* sh_css_queue_type */
-#include "sp_local.h"			/* sp_address_of */
-#include "sh_css_firmware.h"		/* sh_css_sp_fw*/
+#include "ia_css_bufq.h"		 
+#include "ia_css_queue.h"		 
+#include "sw_event_global.h"		 
+#include "ia_css_eventq.h"		 
+#include "ia_css_debug.h"		 
+#include "sh_css_internal.h"		 
+#include "sp_local.h"			 
+#include "sh_css_firmware.h"		 
 
 #define BUFQ_DUMP_FILE_NAME_PREFIX_SIZE 256
 
 static char prefix[BUFQ_DUMP_FILE_NAME_PREFIX_SIZE] = {0};
 
-/*********************************************************/
-/* Global Queue objects used by CSS                      */
-/*********************************************************/
+ 
+ 
+ 
 
 struct sh_css_queues {
-	/* Host2SP buffer queue */
+	 
 	ia_css_queue_t host2sp_buffer_queue_handles
 	[SH_CSS_MAX_SP_THREADS][SH_CSS_MAX_NUM_QUEUES];
-	/* SP2Host buffer queue */
+	 
 	ia_css_queue_t sp2host_buffer_queue_handles
 	[SH_CSS_MAX_NUM_QUEUES];
 
-	/* Host2SP event queue */
+	 
 	ia_css_queue_t host2sp_psys_event_queue_handle;
 
-	/* SP2Host event queue */
+	 
 	ia_css_queue_t sp2host_psys_event_queue_handle;
 
-	/* Host2SP ISYS event queue */
+	 
 	ia_css_queue_t host2sp_isys_event_queue_handle;
 
-	/* SP2Host ISYS event queue */
+	 
 	ia_css_queue_t sp2host_isys_event_queue_handle;
-	/* Tagger command queue */
+	 
 	ia_css_queue_t host2sp_tag_cmd_queue_handle;
 };
 
-/*******************************************************
-*** Static variables
-********************************************************/
+ 
 static struct sh_css_queues css_queues;
 
 static int
 buffer_type_to_queue_id_map[SH_CSS_MAX_SP_THREADS][IA_CSS_NUM_DYNAMIC_BUFFER_TYPE];
 static bool queue_availability[SH_CSS_MAX_SP_THREADS][SH_CSS_MAX_NUM_QUEUES];
 
-/*******************************************************
-*** Static functions
-********************************************************/
+ 
 static void map_buffer_type_to_queue_id(
     unsigned int thread_id,
     enum ia_css_buffer_type buf_type
@@ -83,9 +67,7 @@ static ia_css_queue_t *bufq_get_qhandle(
     int thread
 );
 
-/*******************************************************
-*** Public functions
-********************************************************/
+ 
 void ia_css_queue_map_init(void)
 {
 	unsigned int i, j;
@@ -118,9 +100,7 @@ void ia_css_queue_map(
 		unmap_buffer_type_to_queue_id(thread_id, buf_type);
 }
 
-/*
- * @brief Query the internal queue ID.
- */
+ 
 bool ia_css_query_internal_queue_id(
     enum ia_css_buffer_type buf_type,
     unsigned int thread_id,
@@ -144,9 +124,7 @@ bool ia_css_query_internal_queue_id(
 	return true;
 }
 
-/*******************************************************
-*** Static functions
-********************************************************/
+ 
 static void map_buffer_type_to_queue_id(
     unsigned int thread_id,
     enum ia_css_buffer_type buf_type)
@@ -158,7 +136,7 @@ static void map_buffer_type_to_queue_id(
 	assert(buffer_type_to_queue_id_map[thread_id][buf_type] ==
 	       SH_CSS_INVALID_QUEUE_ID);
 
-	/* queue 0 is reserved for parameters because it doesn't depend on events */
+	 
 	if (buf_type == IA_CSS_BUFFER_TYPE_PARAMETER_SET) {
 		assert(queue_availability[thread_id][IA_CSS_PARAMETER_SET_QUEUE_ID]);
 		queue_availability[thread_id][IA_CSS_PARAMETER_SET_QUEUE_ID] = false;
@@ -167,7 +145,7 @@ static void map_buffer_type_to_queue_id(
 		return;
 	}
 
-	/* queue 1 is reserved for per frame parameters because it doesn't depend on events */
+	 
 	if (buf_type == IA_CSS_BUFFER_TYPE_PER_FRAME_PARAMETER_SET) {
 		assert(queue_availability[thread_id][IA_CSS_PER_FRAME_PARAMETER_SET_QUEUE_ID]);
 		queue_availability[thread_id][IA_CSS_PER_FRAME_PARAMETER_SET_QUEUE_ID] = false;
@@ -245,9 +223,7 @@ static ia_css_queue_t *bufq_get_qhandle(
 	return q;
 }
 
-/* Local function to initialize a buffer queue. This reduces
- * the chances of copy-paste errors or typos.
- */
+ 
 static inline void
 init_bufq(unsigned int desc_offset,
 	  unsigned int elems_offset,
@@ -260,12 +236,12 @@ init_bufq(unsigned int desc_offset,
 	fw = &sh_css_sp_fw;
 	q_base_addr = fw->info.sp.host_sp_queue;
 
-	/* Setup queue location as SP and proc id as SP0_ID */
+	 
 	remoteq.location = IA_CSS_QUEUE_LOC_SP;
 	remoteq.proc_id = SP0_ID;
 	remoteq.cb_desc_addr = q_base_addr + desc_offset;
 	remoteq.cb_elems_addr = q_base_addr + elems_offset;
-	/* Initialize the queue instance and obtain handle */
+	 
 	ia_css_queue_remote_init(handle, &remoteq);
 }
 
@@ -275,7 +251,7 @@ void ia_css_bufq_init(void)
 
 	IA_CSS_ENTER_PRIVATE("");
 
-	/* Setup all the local queue descriptors for Host2SP Buffer Queues */
+	 
 	for (i = 0; i < SH_CSS_MAX_SP_THREADS; i++)
 		for (j = 0; j < SH_CSS_MAX_NUM_QUEUES; j++) {
 			init_bufq((uint32_t)offsetof(struct host_sp_queues,
@@ -284,38 +260,38 @@ void ia_css_bufq_init(void)
 				  &css_queues.host2sp_buffer_queue_handles[i][j]);
 		}
 
-	/* Setup all the local queue descriptors for SP2Host Buffer Queues */
+	 
 	for (i = 0; i < SH_CSS_MAX_NUM_QUEUES; i++) {
 		init_bufq(offsetof(struct host_sp_queues, sp2host_buffer_queues_desc[i]),
 			  offsetof(struct host_sp_queues, sp2host_buffer_queues_elems[i]),
 			  &css_queues.sp2host_buffer_queue_handles[i]);
 	}
 
-	/* Host2SP event queue*/
+	 
 	init_bufq((uint32_t)offsetof(struct host_sp_queues,
 				     host2sp_psys_event_queue_desc),
 		  (uint32_t)offsetof(struct host_sp_queues, host2sp_psys_event_queue_elems),
 		  &css_queues.host2sp_psys_event_queue_handle);
 
-	/* SP2Host event queue */
+	 
 	init_bufq((uint32_t)offsetof(struct host_sp_queues,
 				     sp2host_psys_event_queue_desc),
 		  (uint32_t)offsetof(struct host_sp_queues, sp2host_psys_event_queue_elems),
 		  &css_queues.sp2host_psys_event_queue_handle);
 
-	/* Host2SP ISYS event queue */
+	 
 	init_bufq((uint32_t)offsetof(struct host_sp_queues,
 				     host2sp_isys_event_queue_desc),
 		  (uint32_t)offsetof(struct host_sp_queues, host2sp_isys_event_queue_elems),
 		  &css_queues.host2sp_isys_event_queue_handle);
 
-	/* SP2Host ISYS event queue*/
+	 
 	init_bufq((uint32_t)offsetof(struct host_sp_queues,
 				     sp2host_isys_event_queue_desc),
 		  (uint32_t)offsetof(struct host_sp_queues, sp2host_isys_event_queue_elems),
 		  &css_queues.sp2host_isys_event_queue_handle);
 
-	/* Host2SP tagger command queue */
+	 
 	init_bufq((uint32_t)offsetof(struct host_sp_queues, host2sp_tag_cmd_queue_desc),
 		  (uint32_t)offsetof(struct host_sp_queues, host2sp_tag_cmd_queue_elems),
 		  &css_queues.host2sp_tag_cmd_queue_handle);
@@ -336,7 +312,7 @@ int ia_css_bufq_enqueue_buffer(
 	    (queue_id == SH_CSS_INVALID_QUEUE_ID))
 		return -EINVAL;
 
-	/* Get the queue for communication */
+	 
 	q = bufq_get_qhandle(sh_css_host2sp_buffer_queue,
 			     queue_id,
 			     thread_index);
@@ -408,9 +384,7 @@ int ia_css_bufq_dequeue_psys_event(
 	int error = 0;
 	ia_css_queue_t *q;
 
-	/* No ENTER/LEAVE in this function since this is polled
-	 * by some test apps. Enablign logging here floods the log
-	 * files which may cause timeouts. */
+	 
 	if (!item)
 		return -EINVAL;
 
@@ -430,9 +404,7 @@ int ia_css_bufq_dequeue_isys_event(
 	int error = 0;
 	ia_css_queue_t *q;
 
-	/* No ENTER/LEAVE in this function since this is polled
-	 * by some test apps. Enablign logging here floods the log
-	 * files which may cause timeouts. */
+	 
 	if (!item)
 		return -EINVAL;
 

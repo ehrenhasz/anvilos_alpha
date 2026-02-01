@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015 Linaro Limited
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -780,13 +778,7 @@ static struct clk_rcg2 cci_clk_src = {
 	},
 };
 
-/*
- * This is a frequency table for "General Purpose" clocks.
- * These clocks can be muxed to the SoC pins and may be used by
- * external devices. They're often used as PWM source.
- *
- * See comment at ftbl_gcc_gp1_3_clk.
- */
+ 
 static const struct freq_tbl ftbl_gcc_camss_gp0_1_clk[] = {
 	F(10000,   P_XO,    16,  1, 120),
 	F(100000,  P_XO,    16,  1,  12),
@@ -955,22 +947,7 @@ static struct clk_rcg2 crypto_clk_src = {
 	},
 };
 
-/*
- * This is a frequency table for "General Purpose" clocks.
- * These clocks can be muxed to the SoC pins and may be used by
- * external devices. They're often used as PWM source.
- *
- * Please note that MND divider must be enabled for duty-cycle
- * control to be possible. (M != N) Also since D register is configured
- * with a value multiplied by 2, and duty cycle is calculated as
- *                             (2 * D) % 2^W
- *                DutyCycle = ----------------
- *                              2 * (N % 2^W)
- * (where W = .mnd_width)
- * N must be half or less than maximum value for the register.
- * Otherwise duty-cycle control would be limited.
- * (e.g. for 8-bit NMD N should be less than 128)
- */
+ 
 static const struct freq_tbl ftbl_gcc_gp1_3_clk[] = {
 	F(10000,   P_XO,    16,  1, 120),
 	F(100000,  P_XO,    16,  1,  12),

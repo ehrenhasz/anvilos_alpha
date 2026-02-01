@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Axis Communications AB
- *
- * Based on ttyprintk.c:
- *  Copyright (C) 2010 Samo Pogacnik
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/module.h>

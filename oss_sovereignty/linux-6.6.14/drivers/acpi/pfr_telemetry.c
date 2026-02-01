@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ACPI Platform Firmware Runtime Telemetry driver
- *
- * Copyright (C) 2021 Intel Corporation
- * Author: Chen Yu <yu.c.chen@intel.com>
- *
- * This driver allows user space to fetch telemetry data from the
- * firmware with the help of the Platform Firmware Runtime Telemetry
- * interface.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -64,7 +55,7 @@ struct pfrt_log_device {
 	struct miscdevice miscdev;
 };
 
-/* pfrt_guid is the parameter for _DSM method */
+ 
 static const guid_t pfrt_log_guid =
 	GUID_INIT(0x75191659, 0x8178, 0x4D9D, 0xB8, 0x8F, 0xAC, 0x5E,
 		  0x5E, 0x93, 0xE8, 0xBF);
@@ -309,7 +300,7 @@ pfrt_log_mmap(struct file *file, struct vm_area_struct *vma)
 	if (vma->vm_flags & VM_WRITE)
 		return -EROFS;
 
-	/* changing from read to write with mprotect is not allowed */
+	 
 	vm_flags_clear(vma, VM_MAYWRITE);
 
 	pfrt_log_dev = to_pfrt_log_dev(file);
@@ -319,12 +310,12 @@ pfrt_log_mmap(struct file *file, struct vm_area_struct *vma)
 		return ret;
 
 	base_addr = (phys_addr_t)((info.chunk2_addr_hi << 32) | info.chunk2_addr_lo);
-	/* pfrt update has not been launched yet */
+	 
 	if (!base_addr)
 		return -ENODEV;
 
 	psize = info.max_data_size;
-	/* base address and total buffer size must be page aligned */
+	 
 	if (!PAGE_ALIGNED(base_addr) || !PAGE_ALIGNED(psize))
 		return -ENODEV;
 

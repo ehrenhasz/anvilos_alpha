@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test that KVM_GET_MSR_INDEX_LIST and
- * KVM_GET_MSR_FEATURE_INDEX_LIST work as intended
- *
- * Copyright (C) 2020, Red Hat, Inc.
- */
+
+ 
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,11 +15,7 @@ int main(int argc, char *argv[])
 	const struct kvm_msr_list *feature_list;
 	int i;
 
-	/*
-	 * Skip the entire test if MSR_FEATURES isn't supported, other tests
-	 * will cover the "regular" list of MSRs, the coverage here is purely
-	 * opportunistic and not interesting on its own.
-	 */
+	 
 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_GET_MSR_FEATURES));
 
 	(void)kvm_get_msr_index_list();

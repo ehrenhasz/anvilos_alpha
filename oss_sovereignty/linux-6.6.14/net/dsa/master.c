@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Handling of a master device, switching frames via its switch fabric CPU port
- *
- * Copyright (c) 2017 Savoir-faire Linux Inc.
- *	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/netdevice.h>
@@ -160,7 +155,7 @@ static void dsa_master_get_strings(struct net_device *dev, uint32_t stringset,
 	uint8_t *ndata;
 
 	snprintf(pfx, sizeof(pfx), "p%.2d", port);
-	/* We do not want to be NULL-terminated, since this is a prefix */
+	 
 	pfx[sizeof(pfx) - 1] = '_';
 
 	if (stringset == ETH_SS_PHY_STATS && dev->phydev &&
@@ -179,10 +174,7 @@ static void dsa_master_get_strings(struct net_device *dev, uint32_t stringset,
 
 	if (ds->ops->get_strings) {
 		ndata = data + mcount * len;
-		/* This function copies ETH_GSTRINGS_LEN bytes, we will mangle
-		 * the output after to prepend our CPU port prefix we
-		 * constructed earlier
-		 */
+		 
 		ds->ops->get_strings(ds, port, stringset, ndata);
 		count = ds->ops->get_sset_count(ds, port, stringset);
 		if (count < 0)
@@ -195,9 +187,7 @@ static void dsa_master_get_strings(struct net_device *dev, uint32_t stringset,
 	}
 }
 
-/* Deny PTP operations on master if there is at least one switch in the tree
- * that is PTP capable.
- */
+ 
 int __dsa_master_hwtstamp_validate(struct net_device *dev,
 				   const struct kernel_hwtstamp_config *config,
 				   struct netlink_ext_ack *extack)
@@ -260,11 +250,7 @@ static void dsa_master_ethtool_teardown(struct net_device *dev)
 	cpu_dp->orig_ethtool_ops = NULL;
 }
 
-/* Keep the master always promiscuous if the tagging protocol requires that
- * (garbles MAC DA) or if it doesn't support unicast filtering, case in which
- * it would revert to promiscuous mode as soon as we call dev_uc_add() on it
- * anyway.
- */
+ 
 static void dsa_master_set_promiscuity(struct net_device *dev, int inc)
 {
 	const struct dsa_device_ops *ops = dev->dsa_ptr->tag_ops;
@@ -297,7 +283,7 @@ static ssize_t tagging_store(struct device *d, struct device_attribute *attr,
 	size_t len = end - buf;
 	int err;
 
-	/* Empty string passed */
+	 
 	if (!len)
 		return -ENOPROTOOPT;
 
@@ -308,28 +294,23 @@ static ssize_t tagging_store(struct device *d, struct device_attribute *attr,
 	old_tag_ops = cpu_dp->tag_ops;
 	new_tag_ops = dsa_tag_driver_get_by_name(name);
 	kfree(name);
-	/* Bad tagger name? */
+	 
 	if (IS_ERR(new_tag_ops))
 		return PTR_ERR(new_tag_ops);
 
 	if (new_tag_ops == old_tag_ops)
-		/* Drop the temporarily held duplicate reference, since
-		 * the DSA switch tree uses this tagger.
-		 */
+		 
 		goto out;
 
 	err = dsa_tree_change_tag_proto(cpu_dp->ds->dst, new_tag_ops,
 					old_tag_ops);
 	if (err) {
-		/* On failure the old tagger is restored, so we don't need the
-		 * driver for the new one.
-		 */
+		 
 		dsa_tag_driver_put(new_tag_ops);
 		return err;
 	}
 
-	/* On success we no longer need the module for the old tagging protocol
-	 */
+	 
 out:
 	dsa_tag_driver_put(old_tag_ops);
 	return count;
@@ -365,7 +346,7 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
 
 	mtu = ETH_DATA_LEN + dsa_tag_protocol_overhead(tag_ops);
 
-	/* The DSA master must use SET_NETDEV_DEV for this to work. */
+	 
 	if (!netif_is_lag_master(dev)) {
 		consumer_link = device_link_add(ds->dev, dev->dev.parent,
 						DL_FLAG_AUTOREMOVE_CONSUMER);
@@ -375,19 +356,13 @@ int dsa_master_setup(struct net_device *dev, struct dsa_port *cpu_dp)
 				   dev_name(ds->dev));
 	}
 
-	/* The switch driver may not implement ->port_change_mtu(), case in
-	 * which dsa_slave_change_mtu() will not update the master MTU either,
-	 * so we need to do that here.
-	 */
+	 
 	ret = dev_set_mtu(dev, mtu);
 	if (ret)
 		netdev_warn(dev, "error %d setting MTU to %d to include DSA overhead\n",
 			    ret, mtu);
 
-	/* If we use a tagging format that doesn't have an ethertype
-	 * field, make sure that all packets from this point on get
-	 * sent to the tag format's receive function.
-	 */
+	 
 	wmb();
 
 	dev->dsa_ptr = cpu_dp;
@@ -420,10 +395,7 @@ void dsa_master_teardown(struct net_device *dev)
 
 	dev->dsa_ptr = NULL;
 
-	/* If we used a tagging format that doesn't have an ethertype
-	 * field, make sure that all packets from this point get sent
-	 * without the tag and go through the regular receive path.
-	 */
+	 
 	wmb();
 }
 
@@ -456,9 +428,7 @@ out_master_teardown:
 	return err;
 }
 
-/* Tear down a master if there isn't any other user port on it,
- * optionally also destroying LAG information.
- */
+ 
 void dsa_master_lag_teardown(struct net_device *lag_dev,
 			     struct dsa_port *cpu_dp)
 {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include <linux/if_vlan.h>
 #include "act.h"
@@ -152,7 +152,7 @@ tc_act_parse_vlan(struct mlx5e_tc_act_parse_state *parse_state,
 
 	if (act->id == FLOW_ACTION_VLAN_PUSH &&
 	    (attr->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP)) {
-		/* Replace vlan pop+push with vlan modify */
+		 
 		attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
 		err = mlx5e_tc_act_vlan_add_rewrite_action(priv, MLX5_FLOW_NAMESPACE_FDB, act,
 							   attr->parse_attr, &attr->action,
@@ -183,9 +183,7 @@ tc_act_post_parse_vlan(struct mlx5e_tc_act_parse_state *parse_state,
 
 	if (MLX5_CAP_GEN(esw->dev, prio_tag_required) &&
 	    attr->action & MLX5_FLOW_CONTEXT_ACTION_VLAN_POP) {
-		/* For prio tag mode, replace vlan pop with rewrite vlan prio
-		 * tag rewrite.
-		 */
+		 
 		attr->action &= ~MLX5_FLOW_CONTEXT_ACTION_VLAN_POP;
 		err = add_vlan_prio_tag_rewrite_action(priv, parse_attr,
 						       &attr->action, extack);

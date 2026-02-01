@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _ATH11K_DEBUGFS_STA_H_
 #define _ATH11K_DEBUGFS_STA_H_
@@ -21,7 +19,7 @@ void ath11k_debugfs_sta_add_tx_stats(struct ath11k_sta *arsta,
 void ath11k_debugfs_sta_update_txcompl(struct ath11k *ar,
 				       struct hal_tx_status *ts);
 
-#else /* CONFIG_ATH11K_DEBUGFS */
+#else  
 
 #define ath11k_debugfs_sta_op_add NULL
 
@@ -37,6 +35,6 @@ static inline void ath11k_debugfs_sta_update_txcompl(struct ath11k *ar,
 {
 }
 
-#endif /* CONFIG_ATH11K_DEBUGFS */
+#endif  
 
-#endif /* _ATH11K_DEBUGFS_STA_H_ */
+#endif  

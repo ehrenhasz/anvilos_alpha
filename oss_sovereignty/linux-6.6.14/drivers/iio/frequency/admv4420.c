@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-/*
- * ADMV4420
- *
- * Copyright 2021 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/iio/iio.h>
@@ -15,7 +11,7 @@
 
 #include <asm/unaligned.h>
 
-/* ADMV4420 Register Map */
+ 
 #define ADMV4420_SPI_CONFIG_1			0x00
 #define ADMV4420_SPI_CONFIG_2			0x01
 #define ADMV4420_CHIPTYPE			0x03

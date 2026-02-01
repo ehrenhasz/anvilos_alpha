@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// soc-util.c  --  ALSA SoC Audio Layer utility functions
-//
-// Copyright 2009 Wolfson Microelectronics PLC.
-//
-// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
-//         Liam Girdwood <lrg@slimlogic.co.uk>
+
+
+
+
+
+
+
+
 
 #include <linux/platform_device.h>
 #include <linux/export.h>
@@ -53,32 +53,7 @@ int snd_soc_params_to_bclk(struct snd_pcm_hw_params *params)
 }
 EXPORT_SYMBOL_GPL(snd_soc_params_to_bclk);
 
-/**
- * snd_soc_tdm_params_to_bclk - calculate bclk from params and tdm slot info.
- *
- * Calculate the bclk from the params sample rate, the tdm slot count and the
- * tdm slot width. Optionally round-up the slot count to a given multiple.
- * Either or both of tdm_width and tdm_slots can be 0.
- *
- * If tdm_width == 0:	use params_width() as the slot width.
- * If tdm_slots == 0:	use params_channels() as the slot count.
- *
- * If slot_multiple > 1 the slot count (or params_channels() if tdm_slots == 0)
- * will be rounded up to a multiple of slot_multiple. This is mainly useful for
- * I2S mode, which has a left and right phase so the number of slots is always
- * a multiple of 2.
- *
- * If tdm_width == 0 && tdm_slots == 0 && slot_multiple < 2, this is equivalent
- * to calling snd_soc_params_to_bclk().
- *
- * @params:        Pointer to struct_pcm_hw_params.
- * @tdm_width:     Width in bits of the tdm slots. Must be >= 0.
- * @tdm_slots:     Number of tdm slots per frame. Must be >= 0.
- * @slot_multiple: If >1 roundup slot count to a multiple of this value.
- *
- * Return: bclk frequency in Hz, else a negative error code if params format
- *	   is invalid.
- */
+ 
 int snd_soc_tdm_params_to_bclk(struct snd_pcm_hw_params *params,
 			       int tdm_width, int tdm_slots, int slot_multiple)
 {
@@ -99,7 +74,7 @@ int snd_soc_tdm_params_to_bclk(struct snd_pcm_hw_params *params,
 EXPORT_SYMBOL_GPL(snd_soc_tdm_params_to_bclk);
 
 static const struct snd_pcm_hardware dummy_dma_hardware = {
-	/* Random values to keep userspace happy when checking constraints */
+	 
 	.info			= SNDRV_PCM_INFO_INTERLEAVED |
 				  SNDRV_PCM_INFO_BLOCK_TRANSFER,
 	.buffer_bytes_max	= 128*1024,
@@ -118,16 +93,13 @@ static int dummy_dma_open(struct snd_soc_component *component,
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 	int i;
 
-	/*
-	 * If there are other components associated with rtd, we shouldn't
-	 * override their hwparams
-	 */
+	 
 	for_each_rtd_components(rtd, i, component) {
 		if (component->driver == &dummy_platform)
 			return 0;
 	}
 
-	/* BE's dont need dummy params */
+	 
 	if (!rtd->dai_link->no_pcm)
 		snd_soc_set_runtime_hwparams(substream, &dummy_dma_hardware);
 
@@ -156,13 +128,7 @@ static const struct snd_soc_component_driver dummy_codec = {
 			SNDRV_PCM_FMTBIT_U32_LE | \
 			SNDRV_PCM_FMTBIT_IEC958_SUBFRAME_LE)
 
-/*
- * Select these from Sound Card Manually
- *	SND_SOC_POSSIBLE_DAIFMT_CBP_CFP
- *	SND_SOC_POSSIBLE_DAIFMT_CBP_CFC
- *	SND_SOC_POSSIBLE_DAIFMT_CBC_CFP
- *	SND_SOC_POSSIBLE_DAIFMT_CBC_CFC
- */
+ 
 static u64 dummy_dai_formats =
 	SND_SOC_POSSIBLE_DAIFMT_I2S	|
 	SND_SOC_POSSIBLE_DAIFMT_RIGHT_J	|
@@ -183,15 +149,7 @@ static const struct snd_soc_dai_ops dummy_dai_ops = {
 	.num_auto_selectable_formats	= 1,
 };
 
-/*
- * The dummy CODEC is only meant to be used in situations where there is no
- * actual hardware.
- *
- * If there is actual hardware even if it does not have a control bus
- * the hardware will still have constraints like supported samplerates, etc.
- * which should be modelled. And the data flow graph also should be modelled
- * using DAPM.
- */
+ 
 static struct snd_soc_dai_driver dummy_dai = {
 	.name = "snd-soc-dummy-dai",
 	.playback = {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023, Collabora
- *
- * Author: Benjamin Gaignard <benjamin.gaignard@collabora.com>
- */
+
+ 
 
 #include <media/v4l2-mem2mem.h>
 #include "hantro.h"
@@ -22,10 +18,7 @@
 #define MAX_FRAME_DISTANCE	31
 #define AV1_PRIMARY_REF_NONE	7
 #define AV1_TILE_SIZE		ALIGN(32 * 128, 4096)
-/*
- * These 3 values aren't defined enum v4l2_av1_segment_feature because
- * they are not part of the specification
- */
+ 
 #define V4L2_AV1_SEG_LVL_ALT_LF_Y_H	2
 #define V4L2_AV1_SEG_LVL_ALT_LF_U	3
 #define V4L2_AV1_SEG_LVL_ALT_LF_V	4
@@ -456,9 +449,9 @@ static short rockchip_vpu981_av1_dec_resolve_divisor_32(u32 d, short *shift)
 	u64 e;
 
 	*shift = rockchip_vpu981_av1_dec_get_msb(d);
-	/* e is obtained from D after resetting the most significant 1 bit. */
+	 
 	e = d - ((u32)1 << *shift);
-	/* Get the most significant DIV_LUT_BITS (8) bits of e into f */
+	 
 	if (*shift > DIV_LUT_BITS)
 		f = AV1_DIV_ROUND_UP_POW2(e, *shift - DIV_LUT_BITS);
 	else
@@ -466,7 +459,7 @@ static short rockchip_vpu981_av1_dec_resolve_divisor_32(u32 d, short *shift)
 	if (f > DIV_LUT_NUM)
 		return -1;
 	*shift += DIV_LUT_PREC_BITS;
-	/* Use f as lookup into the precomputed table of multipliers */
+	 
 	return div_lut[f];
 }
 
@@ -554,10 +547,7 @@ static int rockchip_vpu981_av1_tile_log2(int target)
 {
 	int k;
 
-	/*
-	 * returns the smallest value for k such that 1 << k is greater
-	 * than or equal to target
-	 */
+	 
 	for (k = 0; (1 << k) < target; k++);
 
 	return k;
@@ -590,7 +580,7 @@ static void rockchip_vpu981_av1_dec_set_tile_info(struct hantro_ctx *ctx)
 			    tile_info->height_in_sbs_minus_1[tile1] + 1;
 			u32 x0 = tile_info->width_in_sbs_minus_1[tile0] + 1;
 
-			/* tile size in SB units (width,height) */
+			 
 			*dst++ = x0;
 			*dst++ = 0;
 			*dst++ = 0;
@@ -600,14 +590,14 @@ static void rockchip_vpu981_av1_dec_set_tile_info(struct hantro_ctx *ctx)
 			*dst++ = 0;
 			*dst++ = 0;
 
-			/* tile start position */
+			 
 			start = group_entry[tile_id].tile_offset - group_entry[0].tile_offset;
 			*dst++ = start & 255;
 			*dst++ = (start >> 8) & 255;
 			*dst++ = (start >> 16) & 255;
 			*dst++ = (start >> 24) & 255;
 
-			/* number of bytes in tile data */
+			 
 			end = start + group_entry[tile_id].tile_size;
 			*dst++ = end & 255;
 			*dst++ = (end >> 8) & 255;
@@ -664,7 +654,7 @@ static void rockchip_vpu981_av1_dec_set_frame_sign_bias(struct hantro_ctx *ctx)
 
 		return;
 	}
-	// Identify the nearest forward and backward references.
+	
 	for (i = 0; i < V4L2_AV1_TOTAL_REFS_PER_FRAME - 1; i++) {
 		if (rockchip_vpu981_get_frame_index(ctx, i) >= 0) {
 			int rel_off =
@@ -897,7 +887,7 @@ static void rockchip_vpu981_av1_dec_set_segmentation(struct hantro_ctx *ctx)
 
 	hantro_reg_write(vpu, &av1_seg_quant_sign, segsign);
 
-	/* Write QP, filter level, ref frame and skip for every segment */
+	 
 	hantro_reg_write(vpu, &av1_quant_seg0,
 			 segval[0][V4L2_AV1_SEG_LVL_ALT_Q]);
 	hantro_reg_write(vpu, &av1_filt_level_delta0_seg0,
@@ -1183,7 +1173,7 @@ static void rockchip_vpu981_av1_dec_set_prob(struct hantro_ctx *ctx)
 
 	if (frame_is_intra) {
 		int mv_offset = offsetof(struct av1cdfs, mv_cdf);
-		/* Overwrite MV context area with intrabc MV context */
+		 
 		memcpy(av1_dec->prob_tbl.cpu + mv_offset, av1_dec->cdfs_ndvc,
 		       sizeof(struct mvcdfs));
 	}
@@ -2180,7 +2170,7 @@ static void rockchip_vpu981_postproc_enable(struct hantro_ctx *ctx)
 	chroma_offset = ctx->dst_fmt.plane_fmt[0].bytesperline *
 	    ctx->dst_fmt.height;
 
-	/* enable post processor */
+	 
 	hantro_reg_write(vpu, &av1_pp_out_e, 1);
 	hantro_reg_write(vpu, &av1_pp_in_format, 0);
 	hantro_reg_write(vpu, &av1_pp0_dup_hor, 1);
@@ -2222,7 +2212,7 @@ static void rockchip_vpu981_postproc_disable(struct hantro_ctx *ctx)
 {
 	struct hantro_dev *vpu = ctx->dev;
 
-	/* disable post processor */
+	 
 	hantro_reg_write(vpu, &av1_pp_out_e, 0);
 }
 

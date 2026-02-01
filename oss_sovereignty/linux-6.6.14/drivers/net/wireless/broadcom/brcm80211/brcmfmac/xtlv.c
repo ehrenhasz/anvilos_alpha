@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2019 Broadcom
- */
+
+ 
 
 #include <asm/unaligned.h>
 
@@ -47,21 +45,21 @@ void brcmf_xtlv_pack_header(struct brcmf_xtlv *xtlv, u16 id, u16 len,
 		put_unaligned_le16(id, idp);
 		put_unaligned_le16(len, lenp);
 		data_buf = lenp + sizeof(u16);
-	} else if ((opts & mask) == mask) { /* u8 id and u8 len */
+	} else if ((opts & mask) == mask) {  
 		u8 *idp = (u8 *)xtlv;
 		u8 *lenp = idp + 1;
 
 		*idp = (u8)id;
 		*lenp = (u8)len;
 		data_buf = lenp + sizeof(u8);
-	} else if (opts & BRCMF_XTLV_OPTION_IDU8) { /* u8 id, u16 len */
+	} else if (opts & BRCMF_XTLV_OPTION_IDU8) {  
 		u8 *idp = (u8 *)xtlv;
 		u8 *lenp = idp + 1;
 
 		*idp = (u8)id;
 		put_unaligned_le16(len, lenp);
 		data_buf = lenp + sizeof(u16);
-	} else if (opts & BRCMF_XTLV_OPTION_LENU8) { /* u16 id, u8 len */
+	} else if (opts & BRCMF_XTLV_OPTION_LENU8) {  
 		u8 *idp = (u8 *)xtlv;
 		u8 *lenp = idp + sizeof(u16);
 

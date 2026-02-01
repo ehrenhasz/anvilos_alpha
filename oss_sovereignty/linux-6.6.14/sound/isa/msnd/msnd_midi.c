@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Copyright (c) 2009 by Krzysztof Helt
- *  Routines for control of MPU-401 in UART mode
- *
- *  MPU-401 supports UART mode which is not capable generate transmit
- *  interrupts thus output is done via polling. Also, if irq < 0, then
- *  input is done also via polling. Do not expect good performance.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/slab.h>
@@ -28,16 +20,14 @@
 struct snd_msndmidi {
 	struct snd_msnd *dev;
 
-	unsigned long mode;		/* MSNDMIDI_MODE_XXXX */
+	unsigned long mode;		 
 
 	struct snd_rawmidi_substream *substream_input;
 
 	spinlock_t input_lock;
 };
 
-/*
- * input/output open/close - protected by open_mutex in rawmidi.c
- */
+ 
 static int snd_msndmidi_input_open(struct snd_rawmidi_substream *substream)
 {
 	struct snd_msndmidi *mpu;
@@ -75,9 +65,7 @@ static void snd_msndmidi_input_drop(struct snd_msndmidi *mpu)
 	writew(tail, mpu->dev->MIDQ + JQS_wHead);
 }
 
-/*
- * trigger input
- */
+ 
 static void snd_msndmidi_input_trigger(struct snd_rawmidi_substream *substream,
 					int up)
 {

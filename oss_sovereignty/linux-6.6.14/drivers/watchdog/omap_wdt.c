@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * omap_wdt.c
- *
- * Watchdog driver for the TI OMAP 16xx & 24xx/34xx 32KHz (non-secure) watchdog
- *
- * Author: MontaVista Software, Inc.
- *	 <gdavis@mvista.com> or <source@mvista.com>
- *
- * 2003 (c) MontaVista Software, Inc.
- *
- * History:
- *
- * 20030527: George G. Davis <gdavis@mvista.com>
- *	Initially based on linux-2.4.19-rmk7-pxa1/drivers/char/sa1100_wdt.c
- *	(c) Copyright 2000 Oleg Drokin <green@crimea.edu>
- *	Based on SoftDog driver by Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- * Copyright (c) 2004 Texas Instruments.
- *	1. Modified to support OMAP1610 32-KHz watchdog timer
- *	2. Ported to 2.6 kernel
- *
- * Copyright (c) 2005 David Brownell
- *	Use the driver model and standard identifiers; handle bigger timeouts.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -61,35 +38,35 @@ MODULE_PARM_DESC(early_enable,
 
 struct omap_wdt_dev {
 	struct watchdog_device wdog;
-	void __iomem    *base;          /* physical */
+	void __iomem    *base;           
 	struct device   *dev;
 	bool		omap_wdt_users;
 	int		wdt_trgr_pattern;
-	struct mutex	lock;		/* to avoid races with PM */
+	struct mutex	lock;		 
 };
 
 static void omap_wdt_reload(struct omap_wdt_dev *wdev)
 {
 	void __iomem    *base = wdev->base;
 
-	/* wait for posted write to complete */
+	 
 	while ((readl_relaxed(base + OMAP_WATCHDOG_WPS)) & 0x08)
 		cpu_relax();
 
 	wdev->wdt_trgr_pattern = ~wdev->wdt_trgr_pattern;
 	writel_relaxed(wdev->wdt_trgr_pattern, (base + OMAP_WATCHDOG_TGR));
 
-	/* wait for posted write to complete */
+	 
 	while ((readl_relaxed(base + OMAP_WATCHDOG_WPS)) & 0x08)
 		cpu_relax();
-	/* reloaded WCRR from WLDR */
+	 
 }
 
 static void omap_wdt_enable(struct omap_wdt_dev *wdev)
 {
 	void __iomem *base = wdev->base;
 
-	/* Sequence to enable the watchdog */
+	 
 	writel_relaxed(0xBBBB, base + OMAP_WATCHDOG_SPR);
 	while ((readl_relaxed(base + OMAP_WATCHDOG_WPS)) & 0x10)
 		cpu_relax();
@@ -103,12 +80,12 @@ static void omap_wdt_disable(struct omap_wdt_dev *wdev)
 {
 	void __iomem *base = wdev->base;
 
-	/* sequence required to disable watchdog */
-	writel_relaxed(0xAAAA, base + OMAP_WATCHDOG_SPR);	/* TIMER_MODE */
+	 
+	writel_relaxed(0xAAAA, base + OMAP_WATCHDOG_SPR);	 
 	while (readl_relaxed(base + OMAP_WATCHDOG_WPS) & 0x10)
 		cpu_relax();
 
-	writel_relaxed(0x5555, base + OMAP_WATCHDOG_SPR);	/* TIMER_MODE */
+	writel_relaxed(0x5555, base + OMAP_WATCHDOG_SPR);	 
 	while (readl_relaxed(base + OMAP_WATCHDOG_WPS) & 0x10)
 		cpu_relax();
 }
@@ -119,7 +96,7 @@ static void omap_wdt_set_timer(struct omap_wdt_dev *wdev,
 	u32 pre_margin = GET_WLDR_VAL(timeout);
 	void __iomem *base = wdev->base;
 
-	/* just count up at 32 KHz */
+	 
 	while (readl_relaxed(base + OMAP_WATCHDOG_WPS) & 0x04)
 		cpu_relax();
 
@@ -139,14 +116,10 @@ static int omap_wdt_start(struct watchdog_device *wdog)
 
 	pm_runtime_get_sync(wdev->dev);
 
-	/*
-	 * Make sure the watchdog is disabled. This is unfortunately required
-	 * because writing to various registers with the watchdog running has no
-	 * effect.
-	 */
+	 
 	omap_wdt_disable(wdev);
 
-	/* initialize prescaler */
+	 
 	while (readl_relaxed(base + OMAP_WATCHDOG_WPS) & 0x01)
 		cpu_relax();
 
@@ -155,7 +128,7 @@ static int omap_wdt_start(struct watchdog_device *wdog)
 		cpu_relax();
 
 	omap_wdt_set_timer(wdev, wdog->timeout);
-	omap_wdt_reload(wdev); /* trigger loading of new timeout value */
+	omap_wdt_reload(wdev);  
 	omap_wdt_enable(wdev);
 
 	mutex_unlock(&wdev->lock);
@@ -241,7 +214,7 @@ static int omap_wdt_probe(struct platform_device *pdev)
 	wdev->wdt_trgr_pattern	= 0x1234;
 	mutex_init(&wdev->lock);
 
-	/* reserve static register mappings */
+	 
 	wdev->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(wdev->base))
 		return PTR_ERR(wdev->base);
@@ -314,11 +287,7 @@ static void omap_wdt_remove(struct platform_device *pdev)
 	watchdog_unregister_device(&wdev->wdog);
 }
 
-/* REVISIT ... not clear this is the best way to handle system suspend; and
- * it's very inappropriate for selective device suspend (e.g. suspending this
- * through sysfs rather than by stopping the watchdog daemon).  Also, this
- * may not play well enough with NOWAYOUT...
- */
+ 
 
 static int omap_wdt_suspend(struct platform_device *pdev, pm_message_t state)
 {

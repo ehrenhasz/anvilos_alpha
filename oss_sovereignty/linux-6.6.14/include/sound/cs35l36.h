@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * linux/sound/cs35l36.h -- Platform data for CS35L36
- *
- * Copyright 2018 Cirrus Logic, Inc.
- *
- * Author: James Schulman <james.schulman@cirrus.com>
- *
- */
+ 
+ 
 
 #ifndef __CS35L36_H
 #define __CS35L36_H
@@ -40,4 +33,4 @@ struct cs35l36_platform_data {
 	struct cs35l36_vpbr_cfg vpbr_config;
 };
 
-#endif /* __CS35L36_H */
+#endif  

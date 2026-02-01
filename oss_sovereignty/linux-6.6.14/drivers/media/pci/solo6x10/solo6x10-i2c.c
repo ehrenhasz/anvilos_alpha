@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
 
-/* XXX: The SOLO6x10 i2c does not have separate interrupts for each i2c
- * channel. The bus can only handle one i2c event at a time. The below handles
- * this all wrong. We should be using the status registers to see if the bus
- * is in use, and have a global lock to check the status register. Also,
- * the bulk of the work should be handled out-of-interrupt. The ugly loops
- * that occur during interrupt scare me. The ISR should merely signal
- * thread context, ACK the interrupt, and move on. -- BenC */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched/signal.h>
@@ -218,7 +204,7 @@ static int solo_i2c_master_xfer(struct i2c_adapter *adap,
 	}
 
 	if (i == SOLO_I2C_ADAPTERS)
-		return num; /* XXX Right return value for failure? */
+		return num;  
 
 	mutex_lock(&solo_dev->i2c_mutex);
 	solo_dev->i2c_id = i;

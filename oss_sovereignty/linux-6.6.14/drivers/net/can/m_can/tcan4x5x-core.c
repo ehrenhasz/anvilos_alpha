@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-// SPI to CAN driver for the Texas Instruments TCAN4x5x
-// Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
+
+
+
 
 #include "tcan4x5x.h"
 
 #define TCAN4X5X_EXT_CLK_DEF 40000000
 
 #define TCAN4X5X_DEV_ID1 0x00
-#define TCAN4X5X_DEV_ID1_TCAN 0x4e414354 /* ASCII TCAN */
+#define TCAN4X5X_DEV_ID1_TCAN 0x4e414354  
 #define TCAN4X5X_DEV_ID2 0x04
 #define TCAN4X5X_REV 0x08
 #define TCAN4X5X_STATUS 0x0C
@@ -21,7 +21,7 @@
 #define TCAN4X5X_MCAN_INT_REG 0x824
 #define TCAN4X5X_INT_EN 0x830
 
-/* Interrupt bits */
+ 
 #define TCAN4X5X_CANBUSTERMOPEN_INT_EN BIT(30)
 #define TCAN4X5X_CANHCANL_INT_EN BIT(29)
 #define TCAN4X5X_CANHBAT_INT_EN BIT(28)
@@ -44,7 +44,7 @@
 	(TCAN4X5X_MCAN_INT | TCAN4X5X_BUS_FAULT | \
 	 TCAN4X5X_CANBUS_ERR_INT_EN | TCAN4X5X_CANINT_INT_EN)
 
-/* MCAN Interrupt bits */
+ 
 #define TCAN4X5X_MCAN_IR_ARA BIT(29)
 #define TCAN4X5X_MCAN_IR_PED BIT(28)
 #define TCAN4X5X_MCAN_IR_PEA BIT(27)
@@ -127,7 +127,7 @@ static const struct tcan4x5x_version_info tcan4x5x_versions[] = {
 		.name = "4553",
 		.id2_register = 0x33353534,
 	},
-	/* generic version with no id2_register at the end */
+	 
 	[TCAN4X5X] = {
 		.name = "generic",
 		.has_wake_pin = true,
@@ -161,7 +161,7 @@ static int tcan4x5x_reset(struct tcan4x5x_priv *priv)
 	if (priv->reset_gpio) {
 		gpiod_set_value(priv->reset_gpio, 1);
 
-		/* tpulse_width minimum 30us */
+		 
 		usleep_range(30, 100);
 		gpiod_set_value(priv->reset_gpio, 0);
 	} else {
@@ -400,7 +400,7 @@ static int tcan4x5x_can_probe(struct spi_device *spi)
 		freq = clk_get_rate(mcan_class->cclk);
 	}
 
-	/* Sanity check */
+	 
 	if (freq < 20000000 || freq > TCAN4X5X_EXT_CLK_DEF) {
 		dev_err(&spi->dev, "Clock frequency is out of supported range %d\n",
 			freq);
@@ -419,7 +419,7 @@ static int tcan4x5x_can_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, priv);
 
-	/* Configure the SPI bus */
+	 
 	spi->bits_per_word = 8;
 	ret = spi_setup(spi);
 	if (ret) {
@@ -491,7 +491,7 @@ static const struct of_device_id tcan4x5x_of_match[] = {
 	{
 		.compatible = "ti,tcan4x5x",
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, tcan4x5x_of_match);
@@ -500,7 +500,7 @@ static const struct spi_device_id tcan4x5x_id_table[] = {
 	{
 		.name = "tcan4x5x",
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(spi, tcan4x5x_id_table);

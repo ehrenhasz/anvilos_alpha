@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or http://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2013 Saso Kiselkov.  All rights reserved.
- * Use is subject to license terms.
- */
-/*
- * Copyright (c) 2016 by Delphix. All rights reserved.
- */
+ 
+ 
+ 
 #include <sys/zfs_context.h>
 #include <sys/zio.h>
 #include <sys/zio_checksum.h>
@@ -42,9 +18,7 @@ edonr_incremental(void *buf, size_t size, void *arg)
 	return (0);
 }
 
-/*
- * Native zio_checksum interface for the Edon-R hash function.
- */
+ 
 void
 abd_checksum_edonr_native(abd_t *abd, uint64_t size,
     const void *ctx_template, zio_cksum_t *zcp)
@@ -59,9 +33,7 @@ abd_checksum_edonr_native(abd_t *abd, uint64_t size,
 	memcpy(zcp->zc_word, digest, sizeof (zcp->zc_word));
 }
 
-/*
- * Byteswapped zio_checksum interface for the Edon-R hash function.
- */
+ 
 void
 abd_checksum_edonr_byteswap(abd_t *abd, uint64_t size,
     const void *ctx_template, zio_cksum_t *zcp)
@@ -81,22 +53,13 @@ abd_checksum_edonr_tmpl_init(const zio_cksum_salt_t *salt)
 	EdonRState	*ctx;
 	uint8_t		salt_block[EDONR_BLOCK_SIZE];
 
-	/*
-	 * Edon-R needs all but the last hash invocation to be on full-size
-	 * blocks, but the salt is too small. Rather than simply padding it
-	 * with zeros, we expand the salt into a new salt block of proper
-	 * size by double-hashing it (the new salt block will be composed of
-	 * H(salt) || H(H(salt))).
-	 */
+	 
 	_Static_assert(EDONR_BLOCK_SIZE == 2 * (EDONR_MODE / 8),
 	    "Edon-R block size mismatch");
 	EdonRHash(salt->zcs_bytes, sizeof (salt->zcs_bytes) * 8, salt_block);
 	EdonRHash(salt_block, EDONR_MODE, salt_block + EDONR_MODE / 8);
 
-	/*
-	 * Feed the new salt block into the hash function - this will serve
-	 * as our MAC key.
-	 */
+	 
 	ctx = kmem_zalloc(sizeof (*ctx), KM_SLEEP);
 	EdonRInit(ctx);
 	EdonRUpdate(ctx, salt_block, sizeof (salt_block) * 8);

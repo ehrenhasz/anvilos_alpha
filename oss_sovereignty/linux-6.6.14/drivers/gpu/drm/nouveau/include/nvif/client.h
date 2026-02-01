@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_CLIENT_H__
 #define __NVIF_CLIENT_H__
 
@@ -18,7 +18,7 @@ int  nvif_client_ioctl(struct nvif_client *, void *, u32);
 int  nvif_client_suspend(struct nvif_client *);
 int  nvif_client_resume(struct nvif_client *);
 
-/*XXX*/
+ 
 #include <core/client.h>
 #define nvxx_client(a) ({                                                      \
 	struct nvif_client *_client = (a);                                     \

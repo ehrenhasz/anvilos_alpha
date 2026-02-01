@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2015-18 Intel Corporation.
- */
+ 
+ 
 
 #ifndef __HDAC_HDA_H__
 #define __HDAC_HDA_H__
@@ -30,4 +28,4 @@ struct hdac_hda_priv {
 
 struct hdac_ext_bus_ops *snd_soc_hdac_hda_get_ops(void);
 
-#endif /* __HDAC_HDA_H__ */
+#endif  

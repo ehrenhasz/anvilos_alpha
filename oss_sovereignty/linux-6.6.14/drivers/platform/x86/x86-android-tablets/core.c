@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DMI based code to deal with broken DSDTs on X86 tablets which ship with
- * Android as (part of) the factory image. The factory kernels shipped on these
- * devices typically have a bunch of things hardcoded, rather than specified
- * in their DSDT.
- *
- * Copyright (C) 2021-2023 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,7 +14,7 @@
 #include <linux/string.h>
 
 #include "x86-android-tablets.h"
-/* For gpiochip_get_desc() which is EXPORT_SYMBOL_GPL() */
+ 
 #include "../../../gpio/gpiolib.h"
 #include "../../../gpio/gpiolib-acpi.h"
 
@@ -64,11 +57,7 @@ int x86_acpi_irq_helper_get(const struct x86_acpi_irq_data *data)
 
 	switch (data->type) {
 	case X86_ACPI_IRQ_TYPE_APIC:
-		/*
-		 * The DSDT may already reference the GSI in a device skipped by
-		 * acpi_quirk_skip_i2c_client_enumeration(). Unregister the GSI
-		 * to avoid EBUSY errors in this case.
-		 */
+		 
 		acpi_unregister_gsi(data->index);
 		irq = acpi_register_gsi(NULL, data->index, data->trigger, data->polarity);
 		if (irq < 0)
@@ -76,7 +65,7 @@ int x86_acpi_irq_helper_get(const struct x86_acpi_irq_data *data)
 
 		return irq;
 	case X86_ACPI_IRQ_TYPE_GPIOINT:
-		/* Like acpi_dev_gpio_irq_get(), but without parsing ACPI resources */
+		 
 		ret = x86_android_tablet_get_gpiod(data->chip, data->index, &gpiod);
 		if (ret)
 			return ret;
@@ -183,7 +172,7 @@ static __init int x86_instantiate_serdev(const struct x86_serdev_info *info, int
 		goto put_ctrl_adev;
 	}
 
-	/* get_first_physical_node() returns a weak ref, no need to put() it */
+	 
 	ctrl_dev = acpi_get_first_physical_node(ctrl_adev);
 	if (!ctrl_dev)	{
 		pr_err("error could not get %s/%s ctrl physical dev\n",
@@ -191,7 +180,7 @@ static __init int x86_instantiate_serdev(const struct x86_serdev_info *info, int
 		goto put_serdev_adev;
 	}
 
-	/* ctrl_dev now points to the controller's parent, get the controller */
+	 
 	ctrl_dev = device_find_child_by_name(ctrl_dev, info->ctrl_devname);
 	if (!ctrl_dev) {
 		pr_err("error could not get %s/%s %s ctrl dev\n",
@@ -268,10 +257,7 @@ static __init int x86_android_tablet_init(void)
 
 	dev_info = id->driver_data;
 
-	/*
-	 * The broken DSDTs on these devices often also include broken
-	 * _AEI (ACPI Event Interrupt) handlers, disable these.
-	 */
+	 
 	if (dev_info->invalid_aei_gpiochip) {
 		chip = gpiochip_find(dev_info->invalid_aei_gpiochip,
 				     gpiochip_find_match_label);
@@ -282,10 +268,7 @@ static __init int x86_android_tablet_init(void)
 		acpi_gpiochip_free_interrupts(chip);
 	}
 
-	/*
-	 * Since this runs from module_init() it cannot use -EPROBE_DEFER,
-	 * instead pre-load any modules which are listed as requirements.
-	 */
+	 
 	for (i = 0; dev_info->modules && dev_info->modules[i]; i++)
 		request_module(dev_info->modules[i]);
 
@@ -324,7 +307,7 @@ static __init int x86_android_tablet_init(void)
 		}
 	}
 
-	/* + 1 to make space for (optional) gpio_keys_button pdev */
+	 
 	pdevs = kcalloc(dev_info->pdev_count + 1, sizeof(*pdevs), GFP_KERNEL);
 	if (!pdevs) {
 		x86_android_tablet_cleanup();

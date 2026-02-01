@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Driver for the Auvitek AU0828 USB bridge
- *
- *  Copyright (c) 2008 Steven Toth <stoth@linuxtv.org>
- */
+ 
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -13,7 +9,7 @@
 #include <linux/i2c-algo-bit.h>
 #include <media/tveeprom.h>
 
-/* Analog */
+ 
 #include <linux/videodev2.h>
 #include <media/videobuf2-v4l2.h>
 #include <media/videobuf2-vmalloc.h>
@@ -23,7 +19,7 @@
 #include <media/media-device.h>
 #include <media/media-dev-allocator.h>
 
-/* DVB */
+ 
 #include <media/demux.h>
 #include <media/dmxdev.h>
 #include <media/dvb_demux.h>
@@ -37,14 +33,14 @@
 #define URB_COUNT   16
 #define URB_BUFSIZE (0xe522)
 
-/* Analog constants */
+ 
 #define NTSC_STD_W      720
 #define NTSC_STD_H      480
 
 #define AU0828_INTERLACED_DEFAULT       1
 
-/* Definition for AU0828 USB transfer */
-#define AU0828_MAX_ISO_BUFS    12  /* maybe resize this value in the future */
+ 
+#define AU0828_MAX_ISO_BUFS    12   
 #define AU0828_ISO_PACKETS_PER_URB      128
 
 #define AU0828_MIN_BUF 4
@@ -52,7 +48,7 @@
 
 #define AU0828_MAX_INPUT        4
 
-/* au0828 resource types (used for res_get/res_lock etc */
+ 
 #define AU0828_RESOURCE_VIDEO 0x01
 #define AU0828_RESOURCE_VBI   0x02
 
@@ -106,7 +102,7 @@ enum au0828_stream_state {
 
 #define AUVI_INPUT(nr) (dev->board.input[nr])
 
-/* device state */
+ 
 enum au0828_dev_state {
 	DEV_INITIALIZED = 0,
 	DEV_DISCONNECTED = 1,
@@ -116,57 +112,57 @@ enum au0828_dev_state {
 struct au0828_dev;
 
 struct au0828_usb_isoc_ctl {
-		/* max packet size of isoc transaction */
+		 
 	int				max_pkt_size;
 
-		/* number of allocated urbs */
+		 
 	int				num_bufs;
 
-		/* urb for isoc transfers */
+		 
 	struct urb			**urb;
 
-		/* transfer buffers for isoc transfer */
+		 
 	char				**transfer_buffer;
 
-		/* Last buffer command and region */
+		 
 	u8				cmd;
 	int				pos, size, pktsize;
 
-		/* Last field: ODD or EVEN? */
+		 
 	int				field;
 
-		/* Stores incomplete commands */
+		 
 	u32				tmp_buf;
 	int				tmp_buf_len;
 
-		/* Stores already requested buffers */
+		 
 	struct au0828_buffer		*buf;
 	struct au0828_buffer		*vbi_buf;
 
-		/* Stores the number of received fields */
+		 
 	int				nfields;
 
-		/* isoc urb callback */
+		 
 	int (*isoc_copy) (struct au0828_dev *dev, struct urb *urb);
 
 };
 
-/* buffer for one video frame */
+ 
 struct au0828_buffer {
-	/* common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer vb;
 	struct list_head list;
 
 	void *mem;
 	unsigned long length;
 	int top_field;
-	/* pointer to vmalloc memory address in vb */
+	 
 	char *vb_buf;
 };
 
 struct au0828_dmaqueue {
 	struct list_head       active;
-	/* Counters to control buffer fill */
+	 
 	int                    pos;
 };
 
@@ -177,20 +173,20 @@ struct au0828_dev {
 	struct au0828_board	board;
 	u8			ctrlmsg[64];
 
-	/* I2C */
+	 
 	struct i2c_adapter		i2c_adap;
 	struct i2c_algorithm		i2c_algo;
 	struct i2c_client		i2c_client;
 	u32				i2c_rc;
 
-	/* Digital */
+	 
 	struct au0828_dvb		dvb;
 	struct work_struct              restart_streaming;
 	struct timer_list               bulk_timeout;
 	int                             bulk_timeout_running;
 
 #ifdef CONFIG_VIDEO_AU0828_V4L2
-	/* Analog */
+	 
 	struct v4l2_device v4l2_dev;
 	struct v4l2_ctrl_handler v4l2_ctrl_hdl;
 #endif
@@ -201,7 +197,7 @@ struct au0828_dev {
 	struct video_device vdev;
 	struct video_device vbi_dev;
 
-	/* Videobuf2 */
+	 
 	struct vb2_queue vb_vidq;
 	struct vb2_queue vb_vbiq;
 	struct mutex vb_queue_lock;
@@ -236,32 +232,31 @@ struct au0828_dev {
 	int input_type;
 	int std_set_in_tuner_core;
 	unsigned int ctrl_input;
-	long unsigned int dev_state; /* defined at enum au0828_dev_state */;
+	long unsigned int dev_state;  ;
 	enum au0828_stream_state stream_state;
 	wait_queue_head_t open;
 
 	struct mutex lock;
 
-	/* Isoc control struct */
+	 
 	struct au0828_dmaqueue vidq;
 	struct au0828_dmaqueue vbiq;
 	struct au0828_usb_isoc_ctl isoc_ctl;
 	spinlock_t slock;
 
-	/* usb transfer */
-	int alt;		/* alternate */
-	int max_pkt_size;	/* max packet size of isoc transaction */
-	int num_alt;		/* Number of alternative settings */
-	unsigned int *alt_max_pkt_size;	/* array of wMaxPacketSize */
-	struct urb *urb[AU0828_MAX_ISO_BUFS];	/* urb for isoc transfers */
-	char *transfer_buffer[AU0828_MAX_ISO_BUFS];/* transfer buffers for isoc
-						   transfer */
+	 
+	int alt;		 
+	int max_pkt_size;	 
+	int num_alt;		 
+	unsigned int *alt_max_pkt_size;	 
+	struct urb *urb[AU0828_MAX_ISO_BUFS];	 
+	char *transfer_buffer[AU0828_MAX_ISO_BUFS]; 
 
-	/* DVB USB / URB Related */
+	 
 	bool		urb_streaming, need_urb_start;
 	struct urb	*urbs[URB_COUNT];
 
-	/* Preallocated transfer digital transfer buffers */
+	 
 
 	char *dig_transfer_buffer[URB_COUNT];
 
@@ -284,7 +279,7 @@ struct au0828_dev {
 };
 
 
-/* ----------------------------------------------------------- */
+ 
 #define au0828_read(dev, reg) au0828_readreg(dev, reg)
 #define au0828_write(dev, reg, value) au0828_writereg(dev, reg, value)
 #define au0828_andor(dev, reg, mask, value)				\
@@ -294,15 +289,15 @@ struct au0828_dev {
 #define au0828_set(dev, reg, bit) au0828_andor(dev, (reg), (bit), (bit))
 #define au0828_clear(dev, reg, bit) au0828_andor(dev, (reg), (bit), 0)
 
-/* ----------------------------------------------------------- */
-/* au0828-core.c */
+ 
+ 
 extern u32 au0828_read(struct au0828_dev *dev, u16 reg);
 extern u32 au0828_write(struct au0828_dev *dev, u16 reg, u32 val);
 extern void au0828_usb_release(struct au0828_dev *dev);
 extern int au0828_debug;
 
-/* ----------------------------------------------------------- */
-/* au0828-cards.c */
+ 
+ 
 extern struct au0828_board au0828_boards[];
 extern struct usb_device_id au0828_usb_id_table[];
 extern void au0828_gpio_setup(struct au0828_dev *dev);
@@ -310,13 +305,13 @@ extern int au0828_tuner_callback(void *priv, int component,
 				 int command, int arg);
 extern void au0828_card_setup(struct au0828_dev *dev);
 
-/* ----------------------------------------------------------- */
-/* au0828-i2c.c */
+ 
+ 
 extern int au0828_i2c_register(struct au0828_dev *dev);
 extern int au0828_i2c_unregister(struct au0828_dev *dev);
 
-/* ----------------------------------------------------------- */
-/* au0828-video.c */
+ 
+ 
 extern int au0828_start_analog_streaming(struct vb2_queue *vq,
 						unsigned int count);
 extern void au0828_stop_vbi_streaming(struct vb2_queue *vq);
@@ -344,14 +339,14 @@ static inline void au0828_v4l2_suspend(struct au0828_dev *dev) { };
 static inline void au0828_v4l2_resume(struct au0828_dev *dev) { };
 #endif
 
-/* ----------------------------------------------------------- */
-/* au0828-dvb.c */
+ 
+ 
 extern int au0828_dvb_register(struct au0828_dev *dev);
 extern void au0828_dvb_unregister(struct au0828_dev *dev);
 void au0828_dvb_suspend(struct au0828_dev *dev);
 void au0828_dvb_resume(struct au0828_dev *dev);
 
-/* au0828-vbi.c */
+ 
 extern const struct vb2_ops au0828_vbi_qops;
 
 #define dprintk(level, fmt, arg...)\
@@ -359,7 +354,7 @@ extern const struct vb2_ops au0828_vbi_qops;
 		printk(KERN_DEBUG pr_fmt(fmt), ## arg);\
 	} while (0)
 
-/* au0828-input.c */
+ 
 #ifdef CONFIG_VIDEO_AU0828_RC
 extern int au0828_rc_register(struct au0828_dev *dev);
 extern void au0828_rc_unregister(struct au0828_dev *dev);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2012 ARM Limited
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/err.h>
@@ -36,7 +33,7 @@
 #define SYS_CFGCTRL		0x0a4
 #define SYS_CFGSTAT		0x0a8
 
-/* The sysreg block is just a random collection of various functions... */
+ 
 
 static struct bgpio_pdata vexpress_sysreg_sys_led_pdata = {
 	.label = "sys_led",
@@ -99,10 +96,7 @@ static int vexpress_sysreg_probe(struct platform_device *pdev)
 	if (!base)
 		return -ENOMEM;
 
-	/*
-	 * Duplicated SYS_MCI pseudo-GPIO controller for compatibility with
-	 * older trees using sysreg node for MMC control lines.
-	 */
+	 
 	mmc_gpio_chip = devm_kzalloc(&pdev->dev, sizeof(*mmc_gpio_chip),
 			GFP_KERNEL);
 	if (!mmc_gpio_chip)

@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host bridge driver for Apple system-on-chips.
- *
- * The HW is ECAM compliant, so once the controller is initialized,
- * the driver mostly deals MSI mapping and handling of per-port
- * interrupts (INTx, management and error signals).
- *
- * Initialization requires enabling power and clocks, along with a
- * number of register pokes.
- *
- * Copyright (C) 2021 Alyssa Rosenzweig <alyssa@rosenzweig.io>
- * Copyright (C) 2021 Google LLC
- * Copyright (C) 2021 Corellium LLC
- * Copyright (C) 2021 Mark Kettenis <kettenis@openbsd.org>
- *
- * Author: Alyssa Rosenzweig <alyssa@rosenzweig.io>
- * Author: Marc Zyngier <maz@kernel.org>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/kernel.h>
@@ -121,13 +104,7 @@
 
 #define MAX_RID2SID			64
 
-/*
- * The doorbell address is set to 0xfffff000, which by convention
- * matches what MacOS does, and it is possible to use any other
- * address (in the bottom 4GB, as the base register is only 32bit).
- * However, it has to be excluded from the IOVA range, and the DART
- * driver has to know about it.
- */
+ 
 #define DOORBELL_ADDR		CONFIG_PCIE_APPLE_MSI_DOORBELL_ADDR
 
 struct apple_pcie {
@@ -287,11 +264,7 @@ static void apple_port_irq_ack(struct irq_data *data)
 
 static int apple_port_irq_set_type(struct irq_data *data, unsigned int type)
 {
-	/*
-	 * It doesn't seem that there is any way to configure the
-	 * trigger, so assume INTx have to be level (as per the spec),
-	 * and the rest is edge (which looks likely).
-	 */
+	 
 	if (hwirq_is_intx(data->hwirq) ^ !!(type & IRQ_TYPE_LEVEL_MASK))
 		return -EINVAL;
 
@@ -375,7 +348,7 @@ static int apple_pcie_port_setup_irq(struct apple_pcie_port *port)
 	struct fwnode_handle *fwnode = &port->np->fwnode;
 	unsigned int irq;
 
-	/* FIXME: consider moving each interrupt under each port */
+	 
 	irq = irq_of_parse_and_map(to_of_node(dev_fwnode(port->pcie->dev)),
 				   port->idx);
 	if (!irq)
@@ -387,17 +360,17 @@ static int apple_pcie_port_setup_irq(struct apple_pcie_port *port)
 	if (!port->domain)
 		return -ENOMEM;
 
-	/* Disable all interrupts */
+	 
 	writel_relaxed(~0, port->base + PORT_INTMSKSET);
 	writel_relaxed(~0, port->base + PORT_INTSTAT);
 
 	irq_set_chained_handler_and_data(irq, apple_port_irq_handler, port);
 
-	/* Configure MSI base address */
+	 
 	BUILD_BUG_ON(upper_32_bits(DOORBELL_ADDR));
 	writel_relaxed(lower_32_bits(DOORBELL_ADDR), port->base + PORT_MSIADDR);
 
-	/* Enable MSIs, shared between all ports */
+	 
 	writel_relaxed(0, port->base + PORT_MSIBASE);
 	writel_relaxed((ilog2(port->pcie->nvecs) << PORT_MSICFG_L2MSINUM_SHIFT) |
 		       PORT_MSICFG_EN, port->base + PORT_MSICFG);
@@ -503,7 +476,7 @@ static u32 apple_pcie_rid2sid_write(struct apple_pcie_port *port,
 				    int idx, u32 val)
 {
 	writel_relaxed(val, port->base + PORT_RID2SID(idx));
-	/* Read back to ensure completion of the write */
+	 
 	return readl_relaxed(port->base + PORT_RID2SID(idx));
 }
 
@@ -529,7 +502,7 @@ static int apple_pcie_setup_port(struct apple_pcie *pcie,
 	if (ret)
 		return ret;
 
-	/* Use the first reg entry to work out the port index */
+	 
 	port->idx = idx >> 11;
 	port->pcie = pcie;
 	port->np = np;
@@ -540,21 +513,21 @@ static int apple_pcie_setup_port(struct apple_pcie *pcie,
 
 	rmw_set(PORT_APPCLK_EN, port->base + PORT_APPCLK);
 
-	/* Assert PERST# before setting up the clock */
+	 
 	gpiod_set_value(reset, 1);
 
 	ret = apple_pcie_setup_refclk(pcie, port);
 	if (ret < 0)
 		return ret;
 
-	/* The minimal Tperst-clk value is 100us (PCIe CEM r5.0, 2.9.2) */
+	 
 	usleep_range(100, 200);
 
-	/* Deassert PERST# */
+	 
 	rmw_set(PORT_PERST_OFF, port->base + PORT_PERST);
 	gpiod_set_value(reset, 0);
 
-	/* Wait for 100ms after PERST# deassertion (PCIe r5.0, 6.6.1) */
+	 
 	msleep(100);
 
 	ret = readl_relaxed_poll_timeout(port->base + PORT_STATUS, stat,
@@ -571,7 +544,7 @@ static int apple_pcie_setup_port(struct apple_pcie *pcie,
 	if (ret)
 		return ret;
 
-	/* Reset all RID/SID mappings, and check for RAZ/WI registers */
+	 
 	for (i = 0; i < MAX_RID2SID; i++) {
 		if (apple_pcie_rid2sid_write(port, i, 0xbad1d) != 0xbad1d)
 			break;
@@ -652,10 +625,10 @@ static struct apple_pcie_port *apple_pcie_get_port(struct pci_dev *pdev)
 	struct pci_dev *port_pdev;
 	struct apple_pcie_port *port;
 
-	/* Find the root port this device is on */
+	 
 	port_pdev = pcie_find_root_port(pdev);
 
-	/* If finding the port itself, nothing to do */
+	 
 	if (WARN_ON(!port_pdev) || pdev == port_pdev)
 		return NULL;
 
@@ -730,12 +703,7 @@ static int apple_pcie_bus_notifier(struct notifier_block *nb,
 	struct apple_pcie_port *port;
 	int err;
 
-	/*
-	 * This is a bit ugly. We assume that if we get notified for
-	 * any PCI device, we must be in charge of it, and that there
-	 * is no other PCI controller in the whole system. It probably
-	 * holds for now, but who knows for how long?
-	 */
+	 
 	port = apple_pcie_get_port(pdev);
 	if (!port)
 		return NOTIFY_DONE;

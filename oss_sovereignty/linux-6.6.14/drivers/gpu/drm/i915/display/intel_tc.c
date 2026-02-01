@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -49,7 +47,7 @@ struct intel_tc_port {
 
 	const struct intel_tc_phy_ops *phy_ops;
 
-	struct mutex lock;	/* protects the TypeC port mode */
+	struct mutex lock;	 
 	intel_wakeref_t lock_wakeref;
 #if IS_ENABLED(CONFIG_DRM_I915_DEBUG_RUNTIME_PM)
 	enum intel_display_power_domain lock_power_domain;
@@ -122,54 +120,7 @@ bool intel_tc_port_in_legacy_mode(struct intel_digital_port *dig_port)
 	return intel_tc_port_in_mode(dig_port, TC_PORT_LEGACY);
 }
 
-/*
- * The display power domains used for TC ports depending on the
- * platform and TC mode (legacy, DP-alt, TBT):
- *
- * POWER_DOMAIN_DISPLAY_CORE:
- * --------------------------
- * ADLP/all modes:
- *   - TCSS/IOM access for PHY ready state.
- * ADLP+/all modes:
- *   - DE/north-,south-HPD ISR access for HPD live state.
- *
- * POWER_DOMAIN_PORT_DDI_LANES_<port>:
- * -----------------------------------
- * ICL+/all modes:
- *   - DE/DDI_BUF access for port enabled state.
- * ADLP/all modes:
- *   - DE/DDI_BUF access for PHY owned state.
- *
- * POWER_DOMAIN_AUX_USBC<TC port index>:
- * -------------------------------------
- * ICL/legacy mode:
- *   - TCSS/IOM,FIA access for PHY ready, owned and HPD live state
- *   - TCSS/PHY: block TC-cold power state for using the PHY AUX and
- *     main lanes.
- * ADLP/legacy, DP-alt modes:
- *   - TCSS/PHY: block TC-cold power state for using the PHY AUX and
- *     main lanes.
- *
- * POWER_DOMAIN_TC_COLD_OFF:
- * -------------------------
- * ICL/DP-alt, TBT mode:
- *   - TCSS/TBT: block TC-cold power state for using the (direct or
- *     TBT DP-IN) AUX and main lanes.
- *
- * TGL/all modes:
- *   - TCSS/IOM,FIA access for PHY ready, owned and HPD live state
- *   - TCSS/PHY: block TC-cold power state for using the (direct or
- *     TBT DP-IN) AUX and main lanes.
- *
- * ADLP/TBT mode:
- *   - TCSS/TBT: block TC-cold power state for using the (TBT DP-IN)
- *     AUX and main lanes.
- *
- * XELPDP+/all modes:
- *   - TCSS/IOM,FIA access for PHY ready, owned state
- *   - TCSS/PHY: block TC-cold power state for using the (direct or
- *     TBT DP-IN) AUX and main lanes.
- */
+ 
 bool intel_tc_cold_requires_aux_pw(struct intel_digital_port *dig_port)
 {
 	struct drm_i915_private *i915 = to_i915(dig_port->base.base.dev);
@@ -405,7 +356,7 @@ static void tc_port_fixup_legacy_flag(struct intel_tc_port *tc,
 	if (!(live_status_mask & ~valid_hpd_mask))
 		return;
 
-	/* If live status mismatches the VBT flag, trust the live status. */
+	 
 	drm_dbg_kms(&i915->drm,
 		    "Port %s: live status %08x mismatches the legacy port flag %08x, fixing flag\n",
 		    tc->port_name, live_status_mask, valid_hpd_mask);
@@ -419,10 +370,7 @@ static void tc_phy_load_fia_params(struct intel_tc_port *tc, bool modular_fia)
 	enum port port = tc->dig_port->base.port;
 	enum tc_port tc_port = intel_port_to_tc(i915, port);
 
-	/*
-	 * Each Modular FIA instance houses 2 TC ports. In SOC that has more
-	 * than two TC ports, there are multiple instances of Modular FIA.
-	 */
+	 
 	if (modular_fia) {
 		tc->phy_fia = tc_port / 2;
 		tc->phy_fia_idx = tc_port % 2;
@@ -432,10 +380,7 @@ static void tc_phy_load_fia_params(struct intel_tc_port *tc, bool modular_fia)
 	}
 }
 
-/*
- * ICL TC PHY handlers
- * -------------------
- */
+ 
 static enum intel_display_power_domain
 icl_tc_phy_cold_off_domain(struct intel_tc_port *tc)
 {
@@ -481,14 +426,7 @@ static u32 icl_tc_phy_hpd_live_status(struct intel_tc_port *tc)
 	return mask;
 }
 
-/*
- * Return the PHY status complete flag indicating that display can acquire the
- * PHY ownership. The IOM firmware sets this flag when a DP-alt or legacy sink
- * is connected and it's ready to switch the ownership to display. The flag
- * will be left cleared when a TBT-alt sink is connected, where the PHY is
- * owned by the TBT subsystem and so switching the ownership to display is not
- * required.
- */
+ 
 static bool icl_tc_phy_is_ready(struct intel_tc_port *tc)
 {
 	struct drm_i915_private *i915 = tc_to_i915(tc);
@@ -565,17 +503,7 @@ static void icl_tc_phy_get_hw_state(struct intel_tc_port *tc)
 	__tc_cold_unblock(tc, domain, tc_cold_wref);
 }
 
-/*
- * This function implements the first part of the Connect Flow described by our
- * specification, Gen11 TypeC Programming chapter. The rest of the flow (reading
- * lanes, EDID, etc) is done as needed in the typical places.
- *
- * Unlike the other ports, type-C ports are not available to use as soon as we
- * get a hotplug. The type-C PHYs can be shared between multiple controllers:
- * display, USB, etc. As a result, handshaking through FIA is required around
- * connect and disconnect to cleanly transfer ownership with the controller and
- * set the type-C power state.
- */
+ 
 static bool tc_phy_verify_legacy_or_dp_alt_mode(struct intel_tc_port *tc,
 						int required_lanes)
 {
@@ -591,10 +519,7 @@ static bool tc_phy_verify_legacy_or_dp_alt_mode(struct intel_tc_port *tc,
 
 	drm_WARN_ON(&i915->drm, tc->mode != TC_PORT_DP_ALT);
 
-	/*
-	 * Now we have to re-check the live state, in case the port recently
-	 * became disconnected. Not necessary for legacy mode.
-	 */
+	 
 	if (!(tc_phy_hpd_live_status(tc) & BIT(TC_PORT_DP_ALT))) {
 		drm_dbg_kms(&i915->drm, "Port %s: PHY sudden disconnect\n",
 			    tc->port_name);
@@ -645,10 +570,7 @@ out_unblock_tc_cold:
 	return false;
 }
 
-/*
- * See the comment at the connect function. This implements the Disconnect
- * Flow.
- */
+ 
 static void icl_tc_phy_disconnect(struct intel_tc_port *tc)
 {
 	switch (tc->mode) {
@@ -680,10 +602,7 @@ static const struct intel_tc_phy_ops icl_tc_phy_ops = {
 	.init = icl_tc_phy_init,
 };
 
-/*
- * TGL TC PHY handlers
- * -------------------
- */
+ 
 static enum intel_display_power_domain
 tgl_tc_phy_cold_off_domain(struct intel_tc_port *tc)
 {
@@ -715,10 +634,7 @@ static const struct intel_tc_phy_ops tgl_tc_phy_ops = {
 	.init = tgl_tc_phy_init,
 };
 
-/*
- * ADLP TC PHY handlers
- * --------------------
- */
+ 
 static enum intel_display_power_domain
 adlp_tc_phy_cold_off_domain(struct intel_tc_port *tc)
 {
@@ -759,13 +675,7 @@ static u32 adlp_tc_phy_hpd_live_status(struct intel_tc_port *tc)
 	return mask;
 }
 
-/*
- * Return the PHY status complete flag indicating that display can acquire the
- * PHY ownership. The IOM firmware sets this flag when it's ready to switch
- * the ownership to display, regardless of what sink is connected (TBT-alt,
- * DP-alt, legacy or nothing). For TBT-alt sinks the PHY is owned by the TBT
- * subsystem and so switching the ownership to display is not required.
- */
+ 
 static bool adlp_tc_phy_is_ready(struct intel_tc_port *tc)
 {
 	struct drm_i915_private *i915 = tc_to_i915(tc);
@@ -915,10 +825,7 @@ static const struct intel_tc_phy_ops adlp_tc_phy_ops = {
 	.init = adlp_tc_phy_init,
 };
 
-/*
- * XELPDP TC PHY handlers
- * ----------------------
- */
+ 
 static u32 xelpdp_tc_phy_hpd_live_status(struct intel_tc_port *tc)
 {
 	struct drm_i915_private *i915 = tc_to_i915(tc);
@@ -1109,10 +1016,7 @@ static const struct intel_tc_phy_ops xelpdp_tc_phy_ops = {
 	.init = adlp_tc_phy_init,
 };
 
-/*
- * Generic TC PHY handlers
- * -----------------------
- */
+ 
 static enum intel_display_power_domain
 tc_phy_cold_off_domain(struct intel_tc_port *tc)
 {
@@ -1126,7 +1030,7 @@ static u32 tc_phy_hpd_live_status(struct intel_tc_port *tc)
 
 	mask = tc->phy_ops->hpd_live_status(tc);
 
-	/* The sink can be connected only in a single mode. */
+	 
 	drm_WARN_ON_ONCE(&i915->drm, hweight32(mask) > 1);
 
 	return mask;
@@ -1263,11 +1167,7 @@ tc_phy_get_current_mode(struct intel_tc_port *tc)
 	bool phy_is_owned;
 	enum tc_port_mode mode;
 
-	/*
-	 * For legacy ports the IOM firmware initializes the PHY during boot-up
-	 * and system resume whether or not a sink is connected. Wait here for
-	 * the initialization to get ready.
-	 */
+	 
 	if (tc->legacy_port)
 		tc_phy_wait_for_ready(tc);
 
@@ -1414,13 +1314,7 @@ static bool tc_port_is_enabled(struct intel_tc_port *tc)
 	       DDI_BUF_CTL_ENABLE;
 }
 
-/**
- * intel_tc_port_init_mode: Read out HW state and init the given port's TypeC mode
- * @dig_port: digital port
- *
- * Read out the HW state and initialize the TypeC mode of @dig_port. The mode
- * will be locked until intel_tc_port_sanitize_mode() is called.
- */
+ 
 void intel_tc_port_init_mode(struct intel_digital_port *dig_port)
 {
 	struct drm_i915_private *i915 = to_i915(dig_port->base.base.dev);
@@ -1434,23 +1328,10 @@ void intel_tc_port_init_mode(struct intel_digital_port *dig_port)
 	drm_WARN_ON(&i915->drm, tc->link_refcount);
 
 	tc_phy_get_hw_state(tc);
-	/*
-	 * Save the initial mode for the state check in
-	 * intel_tc_port_sanitize_mode().
-	 */
+	 
 	tc->init_mode = tc->mode;
 
-	/*
-	 * The PHY needs to be connected for AUX to work during HW readout and
-	 * MST topology resume, but the PHY mode can only be changed if the
-	 * port is disabled.
-	 *
-	 * An exception is the case where BIOS leaves the PHY incorrectly
-	 * disconnected on an enabled legacy port. Work around that by
-	 * connecting the PHY even though the port is enabled. This doesn't
-	 * cause a problem as the PHY ownership state is ignored by the
-	 * IOM/TCSS firmware (only display can own the PHY in that case).
-	 */
+	 
 	if (!tc_port_is_enabled(tc)) {
 		update_mode = true;
 	} else if (tc->mode == TC_PORT_DISCONNECTED) {
@@ -1464,7 +1345,7 @@ void intel_tc_port_init_mode(struct intel_digital_port *dig_port)
 	if (update_mode)
 		intel_tc_port_update_mode(tc, 1, false);
 
-	/* Prevent changing tc->mode until intel_tc_port_sanitize_mode() is called. */
+	 
 	__intel_tc_port_get_link(tc);
 
 	mutex_unlock(&tc->lock);
@@ -1479,7 +1360,7 @@ static bool tc_port_has_active_links(struct intel_tc_port *tc,
 	int active_links = 0;
 
 	if (dig_port->dp.is_mst) {
-		/* TODO: get the PLL type for MST, once HW readout is done for it. */
+		 
 		active_links = intel_dp_mst_encoder_active_links(dig_port);
 	} else if (crtc_state && crtc_state->hw.active) {
 		pll_type = intel_ddi_port_pll_type(&dig_port->base, crtc_state);
@@ -1494,18 +1375,7 @@ static bool tc_port_has_active_links(struct intel_tc_port *tc,
 	return active_links;
 }
 
-/**
- * intel_tc_port_sanitize_mode: Sanitize the given port's TypeC mode
- * @dig_port: digital port
- * @crtc_state: atomic state of CRTC connected to @dig_port
- *
- * Sanitize @dig_port's TypeC mode wrt. the encoder's state right after driver
- * loading and system resume:
- * If the encoder is enabled keep the TypeC mode/PHY connected state locked until
- * the encoder is disabled.
- * If the encoder is disabled make sure the PHY is disconnected.
- * @crtc_state is valid if @dig_port is enabled, NULL otherwise.
- */
+ 
 void intel_tc_port_sanitize_mode(struct intel_digital_port *dig_port,
 				 const struct intel_crtc_state *crtc_state)
 {
@@ -1516,12 +1386,7 @@ void intel_tc_port_sanitize_mode(struct intel_digital_port *dig_port,
 
 	drm_WARN_ON(&i915->drm, tc->link_refcount != 1);
 	if (!tc_port_has_active_links(tc, crtc_state)) {
-		/*
-		 * TBT-alt is the default mode in any case the PHY ownership is not
-		 * held (regardless of the sink's connected live state), so
-		 * we'll just switch to disconnected mode from it here without
-		 * a note.
-		 */
+		 
 		if (tc->init_mode != TC_PORT_TBT_ALT &&
 		    tc->init_mode != TC_PORT_DISCONNECTED)
 			drm_dbg_kms(&i915->drm,
@@ -1539,16 +1404,7 @@ void intel_tc_port_sanitize_mode(struct intel_digital_port *dig_port,
 	mutex_unlock(&tc->lock);
 }
 
-/*
- * The type-C ports are different because even when they are connected, they may
- * not be available/usable by the graphics driver: see the comment on
- * icl_tc_phy_connect(). So in our driver instead of adding the additional
- * concept of "usable" and make everything check for "connected and usable" we
- * define a port as "connected" when it is not only connected, but also when it
- * is usable by the rest of the driver. That maintains the old assumption that
- * connected ports are usable, and avoids exposing to the users objects they
- * can't really use.
- */
+ 
 bool intel_tc_port_connected_locked(struct intel_encoder *encoder)
 {
 	struct intel_digital_port *dig_port = enc_to_dig_port(encoder);
@@ -1732,11 +1588,7 @@ void intel_tc_port_lock(struct intel_digital_port *dig_port)
 	__intel_tc_port_lock(to_tc_port(dig_port), 1);
 }
 
-/*
- * Disconnect the given digital port from its TypeC PHY (handing back the
- * control of the PHY to the TypeC subsystem). This will happen in a delayed
- * manner after each aux transactions and modeset disables.
- */
+ 
 static void intel_tc_port_disconnect_phy_work(struct work_struct *work)
 {
 	struct intel_tc_port *tc =
@@ -1750,12 +1602,7 @@ static void intel_tc_port_disconnect_phy_work(struct work_struct *work)
 	mutex_unlock(&tc->lock);
 }
 
-/**
- * intel_tc_port_flush_work: flush the work disconnecting the PHY
- * @dig_port: digital port
- *
- * Flush the delayed work disconnecting an idle PHY.
- */
+ 
 static void intel_tc_port_flush_work(struct intel_digital_port *dig_port)
 {
 	flush_delayed_work(&to_tc_port(dig_port)->disconnect_phy_work);
@@ -1806,12 +1653,7 @@ void intel_tc_port_put_link(struct intel_digital_port *dig_port)
 	__intel_tc_port_put_link(tc);
 	intel_tc_port_unlock(dig_port);
 
-	/*
-	 * The firmware will not update the HPD status of other TypeC ports
-	 * that are active in DP-alt mode with their sink disconnected, until
-	 * this port is disabled and its PHY gets disconnected. Make sure this
-	 * happens in a timely manner by disconnecting the PHY synchronously.
-	 */
+	 
 	intel_tc_port_flush_work(dig_port);
 }
 
@@ -1849,7 +1691,7 @@ int intel_tc_port_init(struct intel_digital_port *dig_port, bool is_legacy)
 	}
 
 	mutex_init(&tc->lock);
-	/* TODO: Combine the two works */
+	 
 	INIT_DELAYED_WORK(&tc->disconnect_phy_work, intel_tc_port_disconnect_phy_work);
 	INIT_DELAYED_WORK(&tc->link_reset_work, intel_tc_port_link_reset_work);
 	tc->legacy_port = is_legacy;

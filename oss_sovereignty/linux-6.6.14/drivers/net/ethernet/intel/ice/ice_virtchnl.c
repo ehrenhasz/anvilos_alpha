@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2022, Intel Corporation. */
+
+ 
 
 #include "ice_virtchnl.h"
 #include "ice_vf_lib_private.h"
@@ -17,8 +17,8 @@
 		BIT((proto_hdr_field) & PROTO_HDR_FIELD_MASK)
 
 struct ice_vc_hdr_match_type {
-	u32 vc_hdr;	/* virtchnl headers (VIRTCHNL_PROTO_HDR_XXX) */
-	u32 ice_hdr;	/* ice headers (ICE_FLOW_SEG_HDR_XXX) */
+	u32 vc_hdr;	 
+	u32 ice_hdr;	 
 };
 
 static const struct ice_vc_hdr_match_type ice_vc_hdr_list[] = {
@@ -47,15 +47,9 @@ static const struct ice_vc_hdr_match_type ice_vc_hdr_list[] = {
 };
 
 struct ice_vc_hash_field_match_type {
-	u32 vc_hdr;		/* virtchnl headers
-				 * (VIRTCHNL_PROTO_HDR_XXX)
-				 */
-	u32 vc_hash_field;	/* virtchnl hash fields selector
-				 * FIELD_SELECTOR((VIRTCHNL_PROTO_HDR_ETH_XXX))
-				 */
-	u64 ice_hash_field;	/* ice hash fields
-				 * (BIT_ULL(ICE_FLOW_FIELD_IDX_XXX))
-				 */
+	u32 vc_hdr;		 
+	u32 vc_hash_field;	 
+	u64 ice_hash_field;	 
 };
 
 static const struct
@@ -165,14 +159,7 @@ ice_vc_hash_field_match_type ice_vc_hash_field_list[] = {
 		BIT_ULL(ICE_FLOW_FIELD_IDX_PFCP_SEID)},
 };
 
-/**
- * ice_vc_vf_broadcast - Broadcast a message to all VFs on PF
- * @pf: pointer to the PF structure
- * @v_opcode: operation code
- * @v_retval: return value
- * @msg: pointer to the msg buffer
- * @msglen: msg length
- */
+ 
 static void
 ice_vc_vf_broadcast(struct ice_pf *pf, enum virtchnl_ops v_opcode,
 		    enum virtchnl_status_code v_retval, u8 *msg, u16 msglen)
@@ -183,51 +170,38 @@ ice_vc_vf_broadcast(struct ice_pf *pf, enum virtchnl_ops v_opcode,
 
 	mutex_lock(&pf->vfs.table_lock);
 	ice_for_each_vf(pf, bkt, vf) {
-		/* Not all vfs are enabled so skip the ones that are not */
+		 
 		if (!test_bit(ICE_VF_STATE_INIT, vf->vf_states) &&
 		    !test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states))
 			continue;
 
-		/* Ignore return value on purpose - a given VF may fail, but
-		 * we need to keep going and send to all of them
-		 */
+		 
 		ice_aq_send_msg_to_vf(hw, vf->vf_id, v_opcode, v_retval, msg,
 				      msglen, NULL);
 	}
 	mutex_unlock(&pf->vfs.table_lock);
 }
 
-/**
- * ice_set_pfe_link - Set the link speed/status of the virtchnl_pf_event
- * @vf: pointer to the VF structure
- * @pfe: pointer to the virtchnl_pf_event to set link speed/status for
- * @ice_link_speed: link speed specified by ICE_AQ_LINK_SPEED_*
- * @link_up: whether or not to set the link up/down
- */
+ 
 static void
 ice_set_pfe_link(struct ice_vf *vf, struct virtchnl_pf_event *pfe,
 		 int ice_link_speed, bool link_up)
 {
 	if (vf->driver_caps & VIRTCHNL_VF_CAP_ADV_LINK_SPEED) {
 		pfe->event_data.link_event_adv.link_status = link_up;
-		/* Speed in Mbps */
+		 
 		pfe->event_data.link_event_adv.link_speed =
 			ice_conv_link_speed_to_virtchnl(true, ice_link_speed);
 	} else {
 		pfe->event_data.link_event.link_status = link_up;
-		/* Legacy method for virtchnl link speeds */
+		 
 		pfe->event_data.link_event.link_speed =
 			(enum virtchnl_link_speed)
 			ice_conv_link_speed_to_virtchnl(false, ice_link_speed);
 	}
 }
 
-/**
- * ice_vc_notify_vf_link_state - Inform a VF of link status
- * @vf: pointer to the VF structure
- *
- * send a link status message to a single VF
- */
+ 
 void ice_vc_notify_vf_link_state(struct ice_vf *vf)
 {
 	struct virtchnl_pf_event pfe = { 0 };
@@ -247,10 +221,7 @@ void ice_vc_notify_vf_link_state(struct ice_vf *vf)
 			      sizeof(pfe), NULL);
 }
 
-/**
- * ice_vc_notify_link_state - Inform all VFs on a PF of link status
- * @pf: pointer to the PF structure
- */
+ 
 void ice_vc_notify_link_state(struct ice_pf *pf)
 {
 	struct ice_vf *vf;
@@ -262,12 +233,7 @@ void ice_vc_notify_link_state(struct ice_pf *pf)
 	mutex_unlock(&pf->vfs.table_lock);
 }
 
-/**
- * ice_vc_notify_reset - Send pending reset message to all VFs
- * @pf: pointer to the PF structure
- *
- * indicate a pending reset to all VFs on a given PF
- */
+ 
 void ice_vc_notify_reset(struct ice_pf *pf)
 {
 	struct virtchnl_pf_event pfe;
@@ -281,16 +247,7 @@ void ice_vc_notify_reset(struct ice_pf *pf)
 			    (u8 *)&pfe, sizeof(struct virtchnl_pf_event));
 }
 
-/**
- * ice_vc_send_msg_to_vf - Send message to VF
- * @vf: pointer to the VF info
- * @v_opcode: virtual channel opcode
- * @v_retval: virtual channel return value
- * @msg: pointer to the msg buffer
- * @msglen: msg length
- *
- * send msg to VF
- */
+ 
 int
 ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
 		      enum virtchnl_status_code v_retval, u8 *msg, u16 msglen)
@@ -314,13 +271,7 @@ ice_vc_send_msg_to_vf(struct ice_vf *vf, u32 v_opcode,
 	return 0;
 }
 
-/**
- * ice_vc_get_ver_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * called from the VF to request the API version used by the PF
- */
+ 
 static int ice_vc_get_ver_msg(struct ice_vf *vf, u8 *msg)
 {
 	struct virtchnl_version_info info = {
@@ -328,7 +279,7 @@ static int ice_vc_get_ver_msg(struct ice_vf *vf, u8 *msg)
 	};
 
 	vf->vf_ver = *(struct virtchnl_version_info *)msg;
-	/* VFs running the 1.0 API expect to get 1.0 back or they will cry. */
+	 
 	if (VF_IS_V10(&vf->vf_ver))
 		info.minor = VIRTCHNL_VERSION_MINOR_NO_VF_CAPS;
 
@@ -337,15 +288,7 @@ static int ice_vc_get_ver_msg(struct ice_vf *vf, u8 *msg)
 				     sizeof(struct virtchnl_version_info));
 }
 
-/**
- * ice_vc_get_max_frame_size - get max frame size allowed for VF
- * @vf: VF used to determine max frame size
- *
- * Max frame size is determined based on the current port's max frame size and
- * whether a port VLAN is configured on this VF. The VF is not aware whether
- * it's in a port VLAN so the PF needs to account for this in max frame size
- * checks and sending the max frame size to the VF.
- */
+ 
 static u16 ice_vc_get_max_frame_size(struct ice_vf *vf)
 {
 	struct ice_port_info *pi = ice_vf_get_port_info(vf);
@@ -359,47 +302,29 @@ static u16 ice_vc_get_max_frame_size(struct ice_vf *vf)
 	return max_frame_size;
 }
 
-/**
- * ice_vc_get_vlan_caps
- * @hw: pointer to the hw
- * @vf: pointer to the VF info
- * @vsi: pointer to the VSI
- * @driver_caps: current driver caps
- *
- * Return 0 if there is no VLAN caps supported, or VLAN caps value
- */
+ 
 static u32
 ice_vc_get_vlan_caps(struct ice_hw *hw, struct ice_vf *vf, struct ice_vsi *vsi,
 		     u32 driver_caps)
 {
 	if (ice_is_eswitch_mode_switchdev(vf->pf))
-		/* In switchdev setting VLAN from VF isn't supported */
+		 
 		return 0;
 
 	if (driver_caps & VIRTCHNL_VF_OFFLOAD_VLAN_V2) {
-		/* VLAN offloads based on current device configuration */
+		 
 		return VIRTCHNL_VF_OFFLOAD_VLAN_V2;
 	} else if (driver_caps & VIRTCHNL_VF_OFFLOAD_VLAN) {
-		/* allow VF to negotiate VIRTCHNL_VF_OFFLOAD explicitly for
-		 * these two conditions, which amounts to guest VLAN filtering
-		 * and offloads being based on the inner VLAN or the
-		 * inner/single VLAN respectively and don't allow VF to
-		 * negotiate VIRTCHNL_VF_OFFLOAD in any other cases
-		 */
+		 
 		if (ice_is_dvm_ena(hw) && ice_vf_is_port_vlan_ena(vf)) {
 			return VIRTCHNL_VF_OFFLOAD_VLAN;
 		} else if (!ice_is_dvm_ena(hw) &&
 			   !ice_vf_is_port_vlan_ena(vf)) {
-			/* configure backward compatible support for VFs that
-			 * only support VIRTCHNL_VF_OFFLOAD_VLAN, the PF is
-			 * configured in SVM, and no port VLAN is configured
-			 */
+			 
 			ice_vf_vsi_cfg_svm_legacy_vlan_mode(vsi);
 			return VIRTCHNL_VF_OFFLOAD_VLAN;
 		} else if (ice_is_dvm_ena(hw)) {
-			/* configure software offloaded VLAN support when DVM
-			 * is enabled, but no port VLAN is enabled
-			 */
+			 
 			ice_vf_vsi_cfg_dvm_legacy_vlan_mode(vsi);
 		}
 	}
@@ -407,13 +332,7 @@ ice_vc_get_vlan_caps(struct ice_hw *hw, struct ice_vf *vf, struct ice_vsi *vsi,
 	return 0;
 }
 
-/**
- * ice_vc_get_vf_res_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * called from the VF to request its resources
- */
+ 
 static int ice_vc_get_vf_res_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -496,7 +415,7 @@ static int ice_vc_get_vf_res_msg(struct ice_vf *vf, u8 *msg)
 		vfres->vf_cap_flags |= VIRTCHNL_VF_OFFLOAD_USO;
 
 	vfres->num_vsis = 1;
-	/* Tx and Rx queue are equal for VF */
+	 
 	vfres->num_queue_pairs = vsi->num_txq;
 	vfres->max_vectors = vf->pf->vfs.num_msix_per;
 	vfres->rss_key_size = ICE_VSIQF_HKEY_ARRAY_SIZE;
@@ -509,7 +428,7 @@ static int ice_vc_get_vf_res_msg(struct ice_vf *vf, u8 *msg)
 	ether_addr_copy(vfres->vsi_res[0].default_mac_addr,
 			vf->hw_lan_addr);
 
-	/* match guest capabilities */
+	 
 	vf->driver_caps = vfres->vf_cap_flags;
 
 	ice_vc_set_caps_allowlist(vf);
@@ -518,7 +437,7 @@ static int ice_vc_get_vf_res_msg(struct ice_vf *vf, u8 *msg)
 	set_bit(ICE_VF_STATE_ACTIVE, vf->vf_states);
 
 err:
-	/* send the response back to the VF */
+	 
 	ret = ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_GET_VF_RESOURCES, v_ret,
 				    (u8 *)vfres, len);
 
@@ -526,27 +445,14 @@ err:
 	return ret;
 }
 
-/**
- * ice_vc_reset_vf_msg
- * @vf: pointer to the VF info
- *
- * called from the VF to reset itself,
- * unlike other virtchnl messages, PF driver
- * doesn't send the response back to the VF
- */
+ 
 static void ice_vc_reset_vf_msg(struct ice_vf *vf)
 {
 	if (test_bit(ICE_VF_STATE_INIT, vf->vf_states))
 		ice_reset_vf(vf, 0);
 }
 
-/**
- * ice_vc_isvalid_vsi_id
- * @vf: pointer to the VF info
- * @vsi_id: VF relative VSI ID
- *
- * check for the valid VSI ID
- */
+ 
 bool ice_vc_isvalid_vsi_id(struct ice_vf *vf, u16 vsi_id)
 {
 	struct ice_pf *pf = vf->pf;
@@ -557,28 +463,15 @@ bool ice_vc_isvalid_vsi_id(struct ice_vf *vf, u16 vsi_id)
 	return (vsi && (vsi->vf == vf));
 }
 
-/**
- * ice_vc_isvalid_q_id
- * @vf: pointer to the VF info
- * @vsi_id: VSI ID
- * @qid: VSI relative queue ID
- *
- * check for the valid queue ID
- */
+ 
 static bool ice_vc_isvalid_q_id(struct ice_vf *vf, u16 vsi_id, u8 qid)
 {
 	struct ice_vsi *vsi = ice_find_vsi(vf->pf, vsi_id);
-	/* allocated Tx and Rx queues should be always equal for VF VSI */
+	 
 	return (vsi && (qid < vsi->alloc_txq));
 }
 
-/**
- * ice_vc_isvalid_ring_len
- * @ring_len: length of ring
- *
- * check for the valid ring count, should be multiple of ICE_REQ_DESC_MULTIPLE
- * or zero
- */
+ 
 static bool ice_vc_isvalid_ring_len(u16 ring_len)
 {
 	return ring_len == 0 ||
@@ -587,15 +480,7 @@ static bool ice_vc_isvalid_ring_len(u16 ring_len)
 		!(ring_len % ICE_REQ_DESC_MULTIPLE));
 }
 
-/**
- * ice_vc_validate_pattern
- * @vf: pointer to the VF info
- * @proto: virtchnl protocol headers
- *
- * validate the pattern is supported or not.
- *
- * Return: true on success, false on error.
- */
+ 
 bool
 ice_vc_validate_pattern(struct ice_vf *vf, struct virtchnl_proto_hdrs *proto)
 {
@@ -681,21 +566,7 @@ out:
 	return ice_hw_ptype_ena(&vf->pf->hw, ptype);
 }
 
-/**
- * ice_vc_parse_rss_cfg - parses hash fields and headers from
- * a specific virtchnl RSS cfg
- * @hw: pointer to the hardware
- * @rss_cfg: pointer to the virtchnl RSS cfg
- * @addl_hdrs: pointer to the protocol header fields (ICE_FLOW_SEG_HDR_*)
- * to configure
- * @hash_flds: pointer to the hash bit fields (ICE_FLOW_HASH_*) to configure
- *
- * Return true if all the protocol header and hash fields in the RSS cfg could
- * be parsed, else return false
- *
- * This function parses the virtchnl RSS cfg to be the intended
- * hash fields and the intended header for RSS configuration
- */
+ 
 static bool
 ice_vc_parse_rss_cfg(struct ice_hw *hw, struct virtchnl_rss_cfg *rss_cfg,
 		     u32 *addl_hdrs, u64 *hash_flds)
@@ -715,7 +586,7 @@ ice_vc_parse_rss_cfg(struct ice_hw *hw, struct virtchnl_rss_cfg *rss_cfg,
 		bool hdr_found = false;
 		int j;
 
-		/* Find matched ice headers according to virtchnl headers. */
+		 
 		for (j = 0; j < hdr_list_len; j++) {
 			struct ice_vc_hdr_match_type hdr_map = hdr_list[j];
 
@@ -728,9 +599,7 @@ ice_vc_parse_rss_cfg(struct ice_hw *hw, struct virtchnl_rss_cfg *rss_cfg,
 		if (!hdr_found)
 			return false;
 
-		/* Find matched ice hash fields according to
-		 * virtchnl hash fields.
-		 */
+		 
 		for (j = 0; j < hf_list_len; j++) {
 			struct ice_vc_hash_field_match_type hf_map = hf_list[j];
 
@@ -745,27 +614,13 @@ ice_vc_parse_rss_cfg(struct ice_hw *hw, struct virtchnl_rss_cfg *rss_cfg,
 	return true;
 }
 
-/**
- * ice_vf_adv_rss_offload_ena - determine if capabilities support advanced
- * RSS offloads
- * @caps: VF driver negotiated capabilities
- *
- * Return true if VIRTCHNL_VF_OFFLOAD_ADV_RSS_PF capability is set,
- * else return false
- */
+ 
 static bool ice_vf_adv_rss_offload_ena(u32 caps)
 {
 	return !!(caps & VIRTCHNL_VF_OFFLOAD_ADV_RSS_PF);
 }
 
-/**
- * ice_vc_handle_rss_cfg
- * @vf: pointer to the VF info
- * @msg: pointer to the message buffer
- * @add: add a RSS config if true, otherwise delete a RSS config
- *
- * This function adds/deletes a RSS config
- */
+ 
 static int ice_vc_handle_rss_cfg(struct ice_vf *vf, u8 *msg, bool add)
 {
 	u32 v_opcode = add ? VIRTCHNL_OP_ADD_RSS_CFG : VIRTCHNL_OP_DEL_RSS_CFG;
@@ -835,7 +690,7 @@ static int ice_vc_handle_rss_cfg(struct ice_vf *vf, u8 *msg, bool add)
 				       (hash_type &
 					ICE_AQ_VSI_Q_OPT_RSS_HASH_M);
 
-		/* Preserve existing queueing option setting */
+		 
 		ctx->info.q_opt_rss |= (vsi->info.q_opt_rss &
 					  ICE_AQ_VSI_Q_OPT_RSS_GBL_LUT_M);
 		ctx->info.q_opt_tc = vsi->info.q_opt_tc;
@@ -876,10 +731,7 @@ static int ice_vc_handle_rss_cfg(struct ice_vf *vf, u8 *msg, bool add)
 
 			status = ice_rem_rss_cfg(hw, vsi->idx, hash_flds,
 						 addl_hdrs);
-			/* We just ignore -ENOENT, because if two configurations
-			 * share the same profile remove one of them actually
-			 * removes both, since the profile is deleted.
-			 */
+			 
 			if (status && status != -ENOENT) {
 				v_ret = VIRTCHNL_STATUS_ERR_PARAM;
 				dev_err(dev, "ice_rem_rss_cfg failed for VF ID:%d, error:%d\n",
@@ -892,13 +744,7 @@ error_param:
 	return ice_vc_send_msg_to_vf(vf, v_opcode, v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_config_rss_key
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * Configure the VF's RSS key
- */
+ 
 static int ice_vc_config_rss_key(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -939,13 +785,7 @@ error_param:
 				     NULL, 0);
 }
 
-/**
- * ice_vc_config_rss_lut
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * Configure the VF's RSS LUT
- */
+ 
 static int ice_vc_config_rss_lut(struct ice_vf *vf, u8 *msg)
 {
 	struct virtchnl_rss_lut *vrl = (struct virtchnl_rss_lut *)msg;
@@ -985,13 +825,7 @@ error_param:
 				     NULL, 0);
 }
 
-/**
- * ice_vc_cfg_promiscuous_mode_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * called from the VF to configure VF VSIs promiscuous mode
- */
+ 
 static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -1026,7 +860,7 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
 	if (!ice_is_vf_trusted(vf)) {
 		dev_err(dev, "Unprivileged VF %d is attempting to configure promiscuous mode\n",
 			vf->vf_id);
-		/* Leave v_ret alone, lie to the VF on purpose. */
+		 
 		goto error_param;
 	}
 
@@ -1053,17 +887,15 @@ static int ice_vc_cfg_promiscuous_mode_msg(struct ice_vf *vf, u8 *msg)
 
 	if (!test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, pf->flags)) {
 		if (alluni) {
-			/* in this case we're turning on promiscuous mode */
+			 
 			ret = ice_set_dflt_vsi(vsi);
 		} else {
-			/* in this case we're turning off promiscuous mode */
+			 
 			if (ice_is_dflt_vsi_in_use(vsi->port_info))
 				ret = ice_clear_dflt_vsi(vsi);
 		}
 
-		/* in this case we're turning on/off only
-		 * allmulticast
-		 */
+		 
 		if (allmulti)
 			mcast_err = ice_vf_set_vsi_promisc(vf, vsi, mcast_m);
 		else
@@ -1125,13 +957,7 @@ error_param:
 				     v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_get_stats_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * called from the VF to get VSI stats
- */
+ 
 static int ice_vc_get_stats_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -1161,17 +987,12 @@ static int ice_vc_get_stats_msg(struct ice_vf *vf, u8 *msg)
 	stats = vsi->eth_stats;
 
 error_param:
-	/* send the response to the VF */
+	 
 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_GET_STATS, v_ret,
 				     (u8 *)&stats, sizeof(stats));
 }
 
-/**
- * ice_vc_validate_vqs_bitmaps - validate Rx/Tx queue bitmaps from VIRTCHNL
- * @vqs: virtchnl_queue_select structure containing bitmaps to validate
- *
- * Return true on successful validation, else false
- */
+ 
 static bool ice_vc_validate_vqs_bitmaps(struct virtchnl_queue_select *vqs)
 {
 	if ((!vqs->rx_queues && !vqs->tx_queues) ||
@@ -1182,11 +1003,7 @@ static bool ice_vc_validate_vqs_bitmaps(struct virtchnl_queue_select *vqs)
 	return true;
 }
 
-/**
- * ice_vf_ena_txq_interrupt - enable Tx queue interrupt via QINT_TQCTL
- * @vsi: VSI of the VF to configure
- * @q_idx: VF queue index used to determine the queue in the PF's space
- */
+ 
 static void ice_vf_ena_txq_interrupt(struct ice_vsi *vsi, u32 q_idx)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -1195,21 +1012,14 @@ static void ice_vf_ena_txq_interrupt(struct ice_vsi *vsi, u32 q_idx)
 
 	reg = rd32(hw, QINT_TQCTL(pfq));
 
-	/* MSI-X index 0 in the VF's space is always for the OICR, which means
-	 * this is most likely a poll mode VF driver, so don't enable an
-	 * interrupt that was never configured via VIRTCHNL_OP_CONFIG_IRQ_MAP
-	 */
+	 
 	if (!(reg & QINT_TQCTL_MSIX_INDX_M))
 		return;
 
 	wr32(hw, QINT_TQCTL(pfq), reg | QINT_TQCTL_CAUSE_ENA_M);
 }
 
-/**
- * ice_vf_ena_rxq_interrupt - enable Tx queue interrupt via QINT_RQCTL
- * @vsi: VSI of the VF to configure
- * @q_idx: VF queue index used to determine the queue in the PF's space
- */
+ 
 static void ice_vf_ena_rxq_interrupt(struct ice_vsi *vsi, u32 q_idx)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -1218,23 +1028,14 @@ static void ice_vf_ena_rxq_interrupt(struct ice_vsi *vsi, u32 q_idx)
 
 	reg = rd32(hw, QINT_RQCTL(pfq));
 
-	/* MSI-X index 0 in the VF's space is always for the OICR, which means
-	 * this is most likely a poll mode VF driver, so don't enable an
-	 * interrupt that was never configured via VIRTCHNL_OP_CONFIG_IRQ_MAP
-	 */
+	 
 	if (!(reg & QINT_RQCTL_MSIX_INDX_M))
 		return;
 
 	wr32(hw, QINT_RQCTL(pfq), reg | QINT_RQCTL_CAUSE_ENA_M);
 }
 
-/**
- * ice_vc_ena_qs_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * called from the VF to enable all or specific queue(s)
- */
+ 
 static int ice_vc_ena_qs_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -1265,10 +1066,7 @@ static int ice_vc_ena_qs_msg(struct ice_vf *vf, u8 *msg)
 		goto error_param;
 	}
 
-	/* Enable only Rx rings, Tx rings were enabled by the FW when the
-	 * Tx queue group list was configured and the context bits were
-	 * programmed using ice_vsi_cfg_txqs
-	 */
+	 
 	q_map = vqs->rx_queues;
 	for_each_set_bit(vf_q_id, &q_map, ICE_MAX_RSS_QS_PER_VF) {
 		if (!ice_vc_isvalid_q_id(vf, vqs->vsi_id, vf_q_id)) {
@@ -1276,7 +1074,7 @@ static int ice_vc_ena_qs_msg(struct ice_vf *vf, u8 *msg)
 			goto error_param;
 		}
 
-		/* Skip queue if enabled */
+		 
 		if (test_bit(vf_q_id, vf->rxq_ena))
 			continue;
 
@@ -1298,7 +1096,7 @@ static int ice_vc_ena_qs_msg(struct ice_vf *vf, u8 *msg)
 			goto error_param;
 		}
 
-		/* Skip queue if enabled */
+		 
 		if (test_bit(vf_q_id, vf->txq_ena))
 			continue;
 
@@ -1306,26 +1104,17 @@ static int ice_vc_ena_qs_msg(struct ice_vf *vf, u8 *msg)
 		set_bit(vf_q_id, vf->txq_ena);
 	}
 
-	/* Set flag to indicate that queues are enabled */
+	 
 	if (v_ret == VIRTCHNL_STATUS_SUCCESS)
 		set_bit(ICE_VF_STATE_QS_ENA, vf->vf_states);
 
 error_param:
-	/* send the response to the VF */
+	 
 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_ENABLE_QUEUES, v_ret,
 				     NULL, 0);
 }
 
-/**
- * ice_vf_vsi_dis_single_txq - disable a single Tx queue
- * @vf: VF to disable queue for
- * @vsi: VSI for the VF
- * @q_id: VF relative (0-based) queue ID
- *
- * Attempt to disable the Tx queue passed in. If the Tx queue was successfully
- * disabled then clear q_id bit in the enabled queues bitmap and return
- * success. Otherwise return error.
- */
+ 
 static int
 ice_vf_vsi_dis_single_txq(struct ice_vf *vf, struct ice_vsi *vsi, u16 q_id)
 {
@@ -1350,19 +1139,13 @@ ice_vf_vsi_dis_single_txq(struct ice_vf *vf, struct ice_vsi *vsi, u16 q_id)
 		return err;
 	}
 
-	/* Clear enabled queues flag */
+	 
 	clear_bit(q_id, vf->txq_ena);
 
 	return 0;
 }
 
-/**
- * ice_vc_dis_qs_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * called from the VF to disable all or specific queue(s)
- */
+ 
 static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -1411,7 +1194,7 @@ static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
 	}
 
 	q_map = vqs->rx_queues;
-	/* speed up Rx queue disable by batching them if possible */
+	 
 	if (q_map &&
 	    bitmap_equal(&q_map, vf->rxq_ena, ICE_MAX_RSS_QS_PER_VF)) {
 		if (ice_vsi_stop_all_rx_rings(vsi)) {
@@ -1429,7 +1212,7 @@ static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
 				goto error_param;
 			}
 
-			/* Skip queue if not enabled */
+			 
 			if (!test_bit(vf_q_id, vf->rxq_ena))
 				continue;
 
@@ -1441,30 +1224,22 @@ static int ice_vc_dis_qs_msg(struct ice_vf *vf, u8 *msg)
 				goto error_param;
 			}
 
-			/* Clear enabled queues flag */
+			 
 			clear_bit(vf_q_id, vf->rxq_ena);
 		}
 	}
 
-	/* Clear enabled queues flag */
+	 
 	if (v_ret == VIRTCHNL_STATUS_SUCCESS && ice_vf_has_no_qs_ena(vf))
 		clear_bit(ICE_VF_STATE_QS_ENA, vf->vf_states);
 
 error_param:
-	/* send the response to the VF */
+	 
 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_DISABLE_QUEUES, v_ret,
 				     NULL, 0);
 }
 
-/**
- * ice_cfg_interrupt
- * @vf: pointer to the VF info
- * @vsi: the VSI being configured
- * @vector_id: vector ID
- * @map: vector map for mapping vectors to queues
- * @q_vector: structure for interrupt vector
- * configure the IRQ to queue map
- */
+ 
 static int
 ice_cfg_interrupt(struct ice_vf *vf, struct ice_vsi *vsi, u16 vector_id,
 		  struct virtchnl_vector_map *map,
@@ -1507,13 +1282,7 @@ ice_cfg_interrupt(struct ice_vf *vf, struct ice_vsi *vsi, u16 vector_id,
 	return VIRTCHNL_STATUS_SUCCESS;
 }
 
-/**
- * ice_vc_cfg_irq_map_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * called from the VF to configure the IRQ to queue map
- */
+ 
 static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -1527,10 +1296,7 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
 	irqmap_info = (struct virtchnl_irq_map_info *)msg;
 	num_q_vectors_mapped = irqmap_info->num_vectors;
 
-	/* Check to make sure number of VF vectors mapped is not greater than
-	 * number of VF vectors originally allocated, and check that
-	 * there is actually at least a single VF queue vector mapped
-	 */
+	 
 	if (!test_bit(ICE_VF_STATE_ACTIVE, vf->vf_states) ||
 	    pf->vfs.num_msix_per < num_q_vectors_mapped ||
 	    !num_q_vectors_mapped) {
@@ -1551,9 +1317,7 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
 
 		vector_id = map->vector_id;
 		vsi_id = map->vsi_id;
-		/* vector_id is always 0-based for each VF, and can never be
-		 * larger than or equal to the max allowed interrupts per VF
-		 */
+		 
 		if (!(vector_id < pf->vfs.num_msix_per) ||
 		    !ice_vc_isvalid_vsi_id(vf, vsi_id) ||
 		    (!vector_id && (map->rxq_map || map->txq_map))) {
@@ -1561,20 +1325,18 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
 			goto error_param;
 		}
 
-		/* No need to map VF miscellaneous or rogue vector */
+		 
 		if (!vector_id)
 			continue;
 
-		/* Subtract non queue vector from vector_id passed by VF
-		 * to get actual number of VSI queue vector array index
-		 */
+		 
 		q_vector = vsi->q_vectors[vector_id - ICE_NONQ_VECS_VF];
 		if (!q_vector) {
 			v_ret = VIRTCHNL_STATUS_ERR_PARAM;
 			goto error_param;
 		}
 
-		/* lookout for the invalid queue index */
+		 
 		v_ret = (enum virtchnl_status_code)
 			ice_cfg_interrupt(vf, vsi, vector_id, map, q_vector);
 		if (v_ret)
@@ -1582,18 +1344,12 @@ static int ice_vc_cfg_irq_map_msg(struct ice_vf *vf, u8 *msg)
 	}
 
 error_param:
-	/* send the response to the VF */
+	 
 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_CONFIG_IRQ_MAP, v_ret,
 				     NULL, 0);
 }
 
-/**
- * ice_vc_cfg_qs_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * called from the VF to configure the Rx/Tx queues
- */
+ 
 static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
 {
 	struct virtchnl_vsi_queue_config_info *qci =
@@ -1649,23 +1405,21 @@ static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
 
 		q_idx = qpi->rxq.queue_id;
 
-		/* make sure selected "q_idx" is in valid range of queues
-		 * for selected "vsi"
-		 */
+		 
 		if (q_idx >= vsi->alloc_txq || q_idx >= vsi->alloc_rxq) {
 			goto error_param;
 		}
 
-		/* copy Tx queue info from VF into VSI */
+		 
 		if (qpi->txq.ring_len > 0) {
 			vsi->tx_rings[i]->dma = qpi->txq.dma_ring_addr;
 			vsi->tx_rings[i]->count = qpi->txq.ring_len;
 
-			/* Disable any existing queue first */
+			 
 			if (ice_vf_vsi_dis_single_txq(vf, vsi, q_idx))
 				goto error_param;
 
-			/* Configure a queue with the requested settings */
+			 
 			if (ice_vsi_cfg_single_txq(vsi, vsi->tx_rings, q_idx)) {
 				dev_warn(ice_pf_to_dev(pf), "VF-%d failed to configure TX queue %d\n",
 					 vf->vf_id, i);
@@ -1673,7 +1427,7 @@ static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
 			}
 		}
 
-		/* copy Rx queue info from VF into VSI */
+		 
 		if (qpi->rxq.ring_len > 0) {
 			u16 max_frame_size = ice_vc_get_max_frame_size(vf);
 			u32 rxdid;
@@ -1692,10 +1446,7 @@ static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
 				goto error_param;
 
 			vsi->max_frame = qpi->rxq.max_pkt_size;
-			/* add space for the port VLAN since the VF driver is
-			 * not expected to account for it in the MTU
-			 * calculation
-			 */
+			 
 			if (ice_vf_is_port_vlan_ena(vf))
 				vsi->max_frame += VLAN_HLEN;
 
@@ -1705,11 +1456,7 @@ static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
 				goto error_param;
 			}
 
-			/* If Rx flex desc is supported, select RXDID for Rx
-			 * queues. Otherwise, use legacy 32byte descriptor
-			 * format. Legacy 16byte descriptor is not supported.
-			 * If this RXDID is selected, return error.
-			 */
+			 
 			if (vf->driver_caps &
 			    VIRTCHNL_VF_OFFLOAD_RX_FLEX_DESC) {
 				rxdid = qpi->rxq.rxdid;
@@ -1730,11 +1477,11 @@ static int ice_vc_cfg_qs_msg(struct ice_vf *vf, u8 *msg)
 		ice_lag_move_vf_nodes_cfg(lag, pri_prt, act_prt);
 	mutex_unlock(&pf->lag_mutex);
 
-	/* send the response to the VF */
+	 
 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_CONFIG_VSI_QUEUES,
 				     VIRTCHNL_STATUS_SUCCESS, NULL, 0);
 error_param:
-	/* disable whatever we can */
+	 
 	for (; i >= 0; i--) {
 		if (ice_vsi_ctrl_one_rx_ring(vsi, false, i, true))
 			dev_err(ice_pf_to_dev(pf), "VF-%d could not disable RX queue %d\n",
@@ -1751,43 +1498,29 @@ error_param:
 
 	ice_lag_move_new_vf_nodes(vf);
 
-	/* send the response to the VF */
+	 
 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_CONFIG_VSI_QUEUES,
 				     VIRTCHNL_STATUS_ERR_PARAM, NULL, 0);
 }
 
-/**
- * ice_can_vf_change_mac
- * @vf: pointer to the VF info
- *
- * Return true if the VF is allowed to change its MAC filters, false otherwise
- */
+ 
 static bool ice_can_vf_change_mac(struct ice_vf *vf)
 {
-	/* If the VF MAC address has been set administratively (via the
-	 * ndo_set_vf_mac command), then deny permission to the VF to
-	 * add/delete unicast MAC addresses, unless the VF is trusted
-	 */
+	 
 	if (vf->pf_set_mac && !ice_is_vf_trusted(vf))
 		return false;
 
 	return true;
 }
 
-/**
- * ice_vc_ether_addr_type - get type of virtchnl_ether_addr
- * @vc_ether_addr: used to extract the type
- */
+ 
 static u8
 ice_vc_ether_addr_type(struct virtchnl_ether_addr *vc_ether_addr)
 {
 	return (vc_ether_addr->type & VIRTCHNL_ETHER_ADDR_TYPE_MASK);
 }
 
-/**
- * ice_is_vc_addr_legacy - check if the MAC address is from an older VF
- * @vc_ether_addr: VIRTCHNL structure that contains MAC and type
- */
+ 
 static bool
 ice_is_vc_addr_legacy(struct virtchnl_ether_addr *vc_ether_addr)
 {
@@ -1796,13 +1529,7 @@ ice_is_vc_addr_legacy(struct virtchnl_ether_addr *vc_ether_addr)
 	return (type == VIRTCHNL_ETHER_ADDR_LEGACY);
 }
 
-/**
- * ice_is_vc_addr_primary - check if the MAC address is the VF's primary MAC
- * @vc_ether_addr: VIRTCHNL structure that contains MAC and type
- *
- * This function should only be called when the MAC address in
- * virtchnl_ether_addr is a valid unicast MAC
- */
+ 
 static bool
 ice_is_vc_addr_primary(struct virtchnl_ether_addr __maybe_unused *vc_ether_addr)
 {
@@ -1811,11 +1538,7 @@ ice_is_vc_addr_primary(struct virtchnl_ether_addr __maybe_unused *vc_ether_addr)
 	return (type == VIRTCHNL_ETHER_ADDR_PRIMARY);
 }
 
-/**
- * ice_vfhw_mac_add - update the VF's cached hardware MAC if allowed
- * @vf: VF to update
- * @vc_ether_addr: structure from VIRTCHNL with MAC to add
- */
+ 
 static void
 ice_vfhw_mac_add(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
 {
@@ -1824,10 +1547,7 @@ ice_vfhw_mac_add(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
 	if (!is_valid_ether_addr(mac_addr))
 		return;
 
-	/* only allow legacy VF drivers to set the device and hardware MAC if it
-	 * is zero and allow new VF drivers to set the hardware MAC if the type
-	 * was correctly specified over VIRTCHNL
-	 */
+	 
 	if ((ice_is_vc_addr_legacy(vc_ether_addr) &&
 	     is_zero_ether_addr(vf->hw_lan_addr)) ||
 	    ice_is_vc_addr_primary(vc_ether_addr)) {
@@ -1835,12 +1555,7 @@ ice_vfhw_mac_add(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
 		ether_addr_copy(vf->hw_lan_addr, mac_addr);
 	}
 
-	/* hardware and device MACs are already set, but its possible that the
-	 * VF driver sent the VIRTCHNL_OP_ADD_ETH_ADDR message before the
-	 * VIRTCHNL_OP_DEL_ETH_ADDR when trying to update its MAC, so save it
-	 * away for the legacy VF driver case as it will be updated in the
-	 * delete flow for this case
-	 */
+	 
 	if (ice_is_vc_addr_legacy(vc_ether_addr)) {
 		ether_addr_copy(vf->legacy_last_added_umac.addr,
 				mac_addr);
@@ -1848,12 +1563,7 @@ ice_vfhw_mac_add(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
 	}
 }
 
-/**
- * ice_vc_add_mac_addr - attempt to add the MAC address passed in
- * @vf: pointer to the VF info
- * @vsi: pointer to the VF's VSI
- * @vc_ether_addr: VIRTCHNL MAC address structure used to add MAC
- */
+ 
 static int
 ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
 		    struct virtchnl_ether_addr *vc_ether_addr)
@@ -1862,7 +1572,7 @@ ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
 	u8 *mac_addr = vc_ether_addr->addr;
 	int ret;
 
-	/* device MAC already added */
+	 
 	if (ether_addr_equal(mac_addr, vf->dev_lan_addr))
 		return 0;
 
@@ -1875,9 +1585,7 @@ ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
 	if (ret == -EEXIST) {
 		dev_dbg(dev, "MAC %pM already exists for VF %d\n", mac_addr,
 			vf->vf_id);
-		/* don't return since we might need to update
-		 * the primary MAC in ice_vfhw_mac_add() below
-		 */
+		 
 	} else if (ret) {
 		dev_err(dev, "Failed to add MAC %pM for VF %d\n, error %d\n",
 			mac_addr, vf->vf_id, ret);
@@ -1891,10 +1599,7 @@ ice_vc_add_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
 	return ret;
 }
 
-/**
- * ice_is_legacy_umac_expired - check if last added legacy unicast MAC expired
- * @last_added_umac: structure used to check expiration
- */
+ 
 static bool ice_is_legacy_umac_expired(struct ice_time_mac *last_added_umac)
 {
 #define ICE_LEGACY_VF_MAC_CHANGE_EXPIRE_TIME	msecs_to_jiffies(3000)
@@ -1902,14 +1607,7 @@ static bool ice_is_legacy_umac_expired(struct ice_time_mac *last_added_umac)
 				      ICE_LEGACY_VF_MAC_CHANGE_EXPIRE_TIME);
 }
 
-/**
- * ice_update_legacy_cached_mac - update cached hardware MAC for legacy VF
- * @vf: VF to update
- * @vc_ether_addr: structure from VIRTCHNL with MAC to check
- *
- * only update cached hardware MAC for legacy VF drivers on delete
- * because we cannot guarantee order/type of MAC from the VF driver
- */
+ 
 static void
 ice_update_legacy_cached_mac(struct ice_vf *vf,
 			     struct virtchnl_ether_addr *vc_ether_addr)
@@ -1922,11 +1620,7 @@ ice_update_legacy_cached_mac(struct ice_vf *vf,
 	ether_addr_copy(vf->hw_lan_addr, vf->legacy_last_added_umac.addr);
 }
 
-/**
- * ice_vfhw_mac_del - update the VF's cached hardware MAC if allowed
- * @vf: VF to update
- * @vc_ether_addr: structure from VIRTCHNL with MAC to delete
- */
+ 
 static void
 ice_vfhw_mac_del(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
 {
@@ -1936,22 +1630,13 @@ ice_vfhw_mac_del(struct ice_vf *vf, struct virtchnl_ether_addr *vc_ether_addr)
 	    !ether_addr_equal(vf->dev_lan_addr, mac_addr))
 		return;
 
-	/* allow the device MAC to be repopulated in the add flow and don't
-	 * clear the hardware MAC (i.e. hw_lan_addr) here as that is meant
-	 * to be persistent on VM reboot and across driver unload/load, which
-	 * won't work if we clear the hardware MAC here
-	 */
+	 
 	eth_zero_addr(vf->dev_lan_addr);
 
 	ice_update_legacy_cached_mac(vf, vc_ether_addr);
 }
 
-/**
- * ice_vc_del_mac_addr - attempt to delete the MAC address passed in
- * @vf: pointer to the VF info
- * @vsi: pointer to the VF's VSI
- * @vc_ether_addr: VIRTCHNL MAC address structure used to delete MAC
- */
+ 
 static int
 ice_vc_del_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
 		    struct virtchnl_ether_addr *vc_ether_addr)
@@ -1982,14 +1667,7 @@ ice_vc_del_mac_addr(struct ice_vf *vf, struct ice_vsi *vsi,
 	return 0;
 }
 
-/**
- * ice_vc_handle_mac_addr_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- * @set: true if MAC filters are being set, false otherwise
- *
- * add guest MAC address filter
- */
+ 
 static int
 ice_vc_handle_mac_addr_msg(struct ice_vf *vf, u8 *msg, bool set)
 {
@@ -2018,10 +1696,7 @@ ice_vc_handle_mac_addr_msg(struct ice_vf *vf, u8 *msg, bool set)
 		goto handle_mac_exit;
 	}
 
-	/* If this VF is not privileged, then we can't add more than a
-	 * limited number of addresses. Check to make sure that the
-	 * additions do not push us over the limit.
-	 */
+	 
 	if (set && !ice_is_vf_trusted(vf) &&
 	    (vf->num_mac + al->num_elements) > ICE_MAX_MACADDR_PER_VF) {
 		dev_err(ice_pf_to_dev(pf), "Can't add more MAC addresses, because VF-%d is not trusted, switch the VF to trusted mode in order to add more functionalities\n",
@@ -2054,44 +1729,23 @@ ice_vc_handle_mac_addr_msg(struct ice_vf *vf, u8 *msg, bool set)
 	}
 
 handle_mac_exit:
-	/* send the response to the VF */
+	 
 	return ice_vc_send_msg_to_vf(vf, vc_op, v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_add_mac_addr_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * add guest MAC address filter
- */
+ 
 static int ice_vc_add_mac_addr_msg(struct ice_vf *vf, u8 *msg)
 {
 	return ice_vc_handle_mac_addr_msg(vf, msg, true);
 }
 
-/**
- * ice_vc_del_mac_addr_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * remove guest MAC address filter
- */
+ 
 static int ice_vc_del_mac_addr_msg(struct ice_vf *vf, u8 *msg)
 {
 	return ice_vc_handle_mac_addr_msg(vf, msg, false);
 }
 
-/**
- * ice_vc_request_qs_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * VFs get a default number of queues but can use this message to request a
- * different number. If the request is successful, PF will reset the VF and
- * return 0. If unsuccessful, PF will send message informing VF of number of
- * available queue pairs via virtchnl message response to VF.
- */
+ 
 static int ice_vc_request_qs_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -2128,7 +1782,7 @@ static int ice_vc_request_qs_msg(struct ice_vf *vf, u8 *msg)
 		vfres->num_queue_pairs = min_t(u16, max_allowed_vf_queues,
 					       ICE_MAX_RSS_QS_PER_VF);
 	} else {
-		/* request is successful, then reset VF */
+		 
 		vf->num_req_qs = req_queues;
 		ice_reset_vf(vf, ICE_VF_RESET_NOTIFY);
 		dev_info(dev, "VF %d granted request of %u queues.\n",
@@ -2137,26 +1791,18 @@ static int ice_vc_request_qs_msg(struct ice_vf *vf, u8 *msg)
 	}
 
 error_param:
-	/* send the response to the VF */
+	 
 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_REQUEST_QUEUES,
 				     v_ret, (u8 *)vfres, sizeof(*vfres));
 }
 
-/**
- * ice_vf_vlan_offload_ena - determine if capabilities support VLAN offloads
- * @caps: VF driver negotiated capabilities
- *
- * Return true if VIRTCHNL_VF_OFFLOAD_VLAN capability is set, else return false
- */
+ 
 static bool ice_vf_vlan_offload_ena(u32 caps)
 {
 	return !!(caps & VIRTCHNL_VF_OFFLOAD_VLAN);
 }
 
-/**
- * ice_is_vlan_promisc_allowed - check if VLAN promiscuous config is allowed
- * @vf: VF used to determine if VLAN promiscuous config is allowed
- */
+ 
 static bool ice_is_vlan_promisc_allowed(struct ice_vf *vf)
 {
 	if ((test_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states) ||
@@ -2167,14 +1813,7 @@ static bool ice_is_vlan_promisc_allowed(struct ice_vf *vf)
 	return false;
 }
 
-/**
- * ice_vf_ena_vlan_promisc - Enable Tx/Rx VLAN promiscuous for the VLAN
- * @vsi: VF's VSI used to enable VLAN promiscuous mode
- * @vlan: VLAN used to enable VLAN promiscuous
- *
- * This function should only be called if VLAN promiscuous mode is allowed,
- * which can be determined via ice_is_vlan_promisc_allowed().
- */
+ 
 static int ice_vf_ena_vlan_promisc(struct ice_vsi *vsi, struct ice_vlan *vlan)
 {
 	u8 promisc_m = ICE_PROMISC_VLAN_TX | ICE_PROMISC_VLAN_RX;
@@ -2188,14 +1827,7 @@ static int ice_vf_ena_vlan_promisc(struct ice_vsi *vsi, struct ice_vlan *vlan)
 	return 0;
 }
 
-/**
- * ice_vf_dis_vlan_promisc - Disable Tx/Rx VLAN promiscuous for the VLAN
- * @vsi: VF's VSI used to disable VLAN promiscuous mode for
- * @vlan: VLAN used to disable VLAN promiscuous
- *
- * This function should only be called if VLAN promiscuous mode is allowed,
- * which can be determined via ice_is_vlan_promisc_allowed().
- */
+ 
 static int ice_vf_dis_vlan_promisc(struct ice_vsi *vsi, struct ice_vlan *vlan)
 {
 	u8 promisc_m = ICE_PROMISC_VLAN_TX | ICE_PROMISC_VLAN_RX;
@@ -2209,17 +1841,7 @@ static int ice_vf_dis_vlan_promisc(struct ice_vsi *vsi, struct ice_vlan *vlan)
 	return 0;
 }
 
-/**
- * ice_vf_has_max_vlans - check if VF already has the max allowed VLAN filters
- * @vf: VF to check against
- * @vsi: VF's VSI
- *
- * If the VF is trusted then the VF is allowed to add as many VLANs as it
- * wants to, so return false.
- *
- * When the VF is untrusted compare the number of non-zero VLANs + 1 to the max
- * allowed VLANs for an untrusted VF. Return the result of this comparison.
- */
+ 
 static bool ice_vf_has_max_vlans(struct ice_vf *vf, struct ice_vsi *vsi)
 {
 	if (ice_is_vf_trusted(vf))
@@ -2230,14 +1852,7 @@ static bool ice_vf_has_max_vlans(struct ice_vf *vf, struct ice_vsi *vsi)
 		ICE_VF_ADDED_VLAN_ZERO_FLTRS) >= ICE_MAX_VLAN_PER_VF);
 }
 
-/**
- * ice_vc_process_vlan_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- * @add_v: Add VLAN if true, otherwise delete VLAN
- *
- * Process virtchnl op to add or remove programmed guest VLAN ID
- */
+ 
 static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -2284,24 +1899,17 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
 	if (add_v && ice_vf_has_max_vlans(vf, vsi)) {
 		dev_info(dev, "VF-%d is not trusted, switch the VF to trusted mode, in order to add more VLAN addresses\n",
 			 vf->vf_id);
-		/* There is no need to let VF know about being not trusted,
-		 * so we can just return success message here
-		 */
+		 
 		goto error_param;
 	}
 
-	/* in DVM a VF can add/delete inner VLAN filters when
-	 * VIRTCHNL_VF_OFFLOAD_VLAN is negotiated, so only reject in SVM
-	 */
+	 
 	if (ice_vf_is_port_vlan_ena(vf) && !ice_is_dvm_ena(&pf->hw)) {
 		v_ret = VIRTCHNL_STATUS_ERR_PARAM;
 		goto error_param;
 	}
 
-	/* in DVM VLAN promiscuous is based on the outer VLAN, which would be
-	 * the port VLAN if VIRTCHNL_VF_OFFLOAD_VLAN was negotiated, so only
-	 * allow vlan_promisc = true in SVM and if no port VLAN is configured
-	 */
+	 
 	vlan_promisc = ice_is_vlan_promisc_allowed(vf) &&
 		!ice_is_dvm_ena(&pf->hw) &&
 		!ice_vf_is_port_vlan_ena(vf);
@@ -2314,17 +1922,11 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
 			if (ice_vf_has_max_vlans(vf, vsi)) {
 				dev_info(dev, "VF-%d is not trusted, switch the VF to trusted mode, in order to add more VLAN addresses\n",
 					 vf->vf_id);
-				/* There is no need to let VF know about being
-				 * not trusted, so we can just return success
-				 * message here as well.
-				 */
+				 
 				goto error_param;
 			}
 
-			/* we add VLAN 0 by default for each VF so we can enable
-			 * Tx VLAN anti-spoof without triggering MDD events so
-			 * we don't need to add it again here
-			 */
+			 
 			if (!vid)
 				continue;
 
@@ -2335,7 +1937,7 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
 				goto error_param;
 			}
 
-			/* Enable VLAN filtering on first non-zero VLAN */
+			 
 			if (!vlan_promisc && vid && !ice_is_dvm_ena(&pf->hw)) {
 				if (vf->spoofchk) {
 					status = vsi->inner_vlan_ops.ena_tx_filtering(vsi);
@@ -2362,13 +1964,7 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
 			}
 		}
 	} else {
-		/* In case of non_trusted VF, number of VLAN elements passed
-		 * to PF for removal might be greater than number of VLANs
-		 * filter programmed for that VF - So, use actual number of
-		 * VLANS added earlier with add VLAN opcode. In order to avoid
-		 * removing VLAN that doesn't exist, which result to sending
-		 * erroneous failed message back to the VF
-		 */
+		 
 		int num_vf_vlan;
 
 		num_vf_vlan = vsi->num_vlan;
@@ -2376,10 +1972,7 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
 			u16 vid = vfl->vlan_id[i];
 			struct ice_vlan vlan;
 
-			/* we add VLAN 0 by default for each VF so we can enable
-			 * Tx VLAN anti-spoof without triggering MDD events so
-			 * we don't want a VIRTCHNL request to remove it
-			 */
+			 
 			if (!vid)
 				continue;
 
@@ -2390,7 +1983,7 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
 				goto error_param;
 			}
 
-			/* Disable VLAN filtering when only VLAN 0 is left */
+			 
 			if (!ice_vsi_has_non_zero_vlans(vsi)) {
 				vsi->inner_vlan_ops.dis_tx_filtering(vsi);
 				vsi->inner_vlan_ops.dis_rx_filtering(vsi);
@@ -2402,7 +1995,7 @@ static int ice_vc_process_vlan_msg(struct ice_vf *vf, u8 *msg, bool add_v)
 	}
 
 error_param:
-	/* send the response to the VF */
+	 
 	if (add_v)
 		return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_ADD_VLAN, v_ret,
 					     NULL, 0);
@@ -2411,36 +2004,19 @@ error_param:
 					     NULL, 0);
 }
 
-/**
- * ice_vc_add_vlan_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * Add and program guest VLAN ID
- */
+ 
 static int ice_vc_add_vlan_msg(struct ice_vf *vf, u8 *msg)
 {
 	return ice_vc_process_vlan_msg(vf, msg, true);
 }
 
-/**
- * ice_vc_remove_vlan_msg
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- *
- * remove programmed guest VLAN ID
- */
+ 
 static int ice_vc_remove_vlan_msg(struct ice_vf *vf, u8 *msg)
 {
 	return ice_vc_process_vlan_msg(vf, msg, false);
 }
 
-/**
- * ice_vc_ena_vlan_stripping
- * @vf: pointer to the VF info
- *
- * Enable VLAN header stripping for a given VF
- */
+ 
 static int ice_vc_ena_vlan_stripping(struct ice_vf *vf)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -2470,12 +2046,7 @@ error_param:
 				     v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_dis_vlan_stripping
- * @vf: pointer to the VF info
- *
- * Disable VLAN header stripping for a given VF
- */
+ 
 static int ice_vc_dis_vlan_stripping(struct ice_vf *vf)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -2505,10 +2076,7 @@ error_param:
 				     v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_get_rss_hena - return the RSS HENA bits allowed by the hardware
- * @vf: pointer to the VF info
- */
+ 
 static int ice_vc_get_rss_hena(struct ice_vf *vf)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -2536,18 +2104,14 @@ static int ice_vc_get_rss_hena(struct ice_vf *vf)
 
 	vrh->hena = ICE_DEFAULT_RSS_HENA;
 err:
-	/* send the response back to the VF */
+	 
 	ret = ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_GET_RSS_HENA_CAPS, v_ret,
 				    (u8 *)vrh, len);
 	kfree(vrh);
 	return ret;
 }
 
-/**
- * ice_vc_set_rss_hena - set RSS HENA bits for the VF
- * @vf: pointer to the VF info
- * @msg: pointer to the msg buffer
- */
+ 
 static int ice_vc_set_rss_hena(struct ice_vf *vf, u8 *msg)
 {
 	struct virtchnl_rss_hena *vrh = (struct virtchnl_rss_hena *)msg;
@@ -2576,22 +2140,14 @@ static int ice_vc_set_rss_hena(struct ice_vf *vf, u8 *msg)
 		goto err;
 	}
 
-	/* clear all previously programmed RSS configuration to allow VF drivers
-	 * the ability to customize the RSS configuration and/or completely
-	 * disable RSS
-	 */
+	 
 	status = ice_rem_vsi_rss_cfg(&pf->hw, vsi->idx);
 	if (status && !vrh->hena) {
-		/* only report failure to clear the current RSS configuration if
-		 * that was clearly the VF's intention (i.e. vrh->hena = 0)
-		 */
+		 
 		v_ret = ice_err_to_virt_err(status);
 		goto err;
 	} else if (status) {
-		/* allow the VF to update the RSS configuration even on failure
-		 * to clear the current RSS confguration in an attempt to keep
-		 * RSS in a working state
-		 */
+		 
 		dev_warn(dev, "Failed to clear the RSS configuration for VF %u\n",
 			 vf->vf_id);
 	}
@@ -2601,19 +2157,13 @@ static int ice_vc_set_rss_hena(struct ice_vf *vf, u8 *msg)
 		v_ret = ice_err_to_virt_err(status);
 	}
 
-	/* send the response to the VF */
+	 
 err:
 	return ice_vc_send_msg_to_vf(vf, VIRTCHNL_OP_SET_RSS_HENA, v_ret,
 				     NULL, 0);
 }
 
-/**
- * ice_vc_query_rxdid - query RXDID supported by DDP package
- * @vf: pointer to VF info
- *
- * Called from VF to query a bitmap of supported flexible
- * descriptor RXDIDs of a DDP package.
- */
+ 
 static int ice_vc_query_rxdid(struct ice_vf *vf)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -2642,11 +2192,7 @@ static int ice_vc_query_rxdid(struct ice_vf *vf)
 		goto err;
 	}
 
-	/* RXDIDs supported by DDP package can be read from the register
-	 * to get the supported RXDID bitmap. But the legacy 32byte RXDID
-	 * is not listed in DDP package, add it in the bitmap manually.
-	 * Legacy 16byte descriptor is not supported.
-	 */
+	 
 	rxdid->supported_rxdids |= BIT(ICE_RXDID_LEGACY_1);
 
 	for (i = ICE_RXDID_FLEX_NIC; i < ICE_FLEX_DESC_RXDID_MAX_NUM; i++) {
@@ -2665,13 +2211,7 @@ err:
 	return ret;
 }
 
-/**
- * ice_vf_init_vlan_stripping - enable/disable VLAN stripping on initialization
- * @vf: VF to enable/disable VLAN stripping for on initialization
- *
- * Set the default for VLAN stripping based on whether a port VLAN is configured
- * and the current VLAN mode of the device.
- */
+ 
 static int ice_vf_init_vlan_stripping(struct ice_vf *vf)
 {
 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
@@ -2679,9 +2219,7 @@ static int ice_vf_init_vlan_stripping(struct ice_vf *vf)
 	if (!vsi)
 		return -EINVAL;
 
-	/* don't modify stripping if port VLAN is configured in SVM since the
-	 * port VLAN is based on the inner/single VLAN in SVM
-	 */
+	 
 	if (ice_vf_is_port_vlan_ena(vf) && !ice_is_dvm_ena(&vsi->back->hw))
 		return 0;
 
@@ -2699,13 +2237,7 @@ static u16 ice_vc_get_max_vlan_fltrs(struct ice_vf *vf)
 		return ICE_MAX_VLAN_PER_VF;
 }
 
-/**
- * ice_vf_outer_vlan_not_allowed - check if outer VLAN can be used
- * @vf: VF that being checked for
- *
- * When the device is in double VLAN mode, check whether or not the outer VLAN
- * is allowed.
- */
+ 
 static bool ice_vf_outer_vlan_not_allowed(struct ice_vf *vf)
 {
 	if (ice_vf_is_port_vlan_ena(vf))
@@ -2714,26 +2246,14 @@ static bool ice_vf_outer_vlan_not_allowed(struct ice_vf *vf)
 	return false;
 }
 
-/**
- * ice_vc_set_dvm_caps - set VLAN capabilities when the device is in DVM
- * @vf: VF that capabilities are being set for
- * @caps: VLAN capabilities to populate
- *
- * Determine VLAN capabilities support based on whether a port VLAN is
- * configured. If a port VLAN is configured then the VF should use the inner
- * filtering/offload capabilities since the port VLAN is using the outer VLAN
- * capabilies.
- */
+ 
 static void
 ice_vc_set_dvm_caps(struct ice_vf *vf, struct virtchnl_vlan_caps *caps)
 {
 	struct virtchnl_vlan_supported_caps *supported_caps;
 
 	if (ice_vf_outer_vlan_not_allowed(vf)) {
-		/* until support for inner VLAN filtering is added when a port
-		 * VLAN is configured, only support software offloaded inner
-		 * VLANs when a port VLAN is confgured in DVM
-		 */
+		 
 		supported_caps = &caps->filtering.filtering_support;
 		supported_caps->inner = VIRTCHNL_VLAN_UNSUPPORTED;
 
@@ -2794,17 +2314,7 @@ ice_vc_set_dvm_caps(struct ice_vf *vf, struct virtchnl_vlan_caps *caps)
 	caps->filtering.max_filters = ice_vc_get_max_vlan_fltrs(vf);
 }
 
-/**
- * ice_vc_set_svm_caps - set VLAN capabilities when the device is in SVM
- * @vf: VF that capabilities are being set for
- * @caps: VLAN capabilities to populate
- *
- * Determine VLAN capabilities support based on whether a port VLAN is
- * configured. If a port VLAN is configured then the VF does not have any VLAN
- * filtering or offload capabilities since the port VLAN is using the inner VLAN
- * capabilities in single VLAN mode (SVM). Otherwise allow the VF to use inner
- * VLAN fitlering and offload capabilities.
- */
+ 
 static void
 ice_vc_set_svm_caps(struct ice_vf *vf, struct virtchnl_vlan_caps *caps)
 {
@@ -2851,16 +2361,7 @@ ice_vc_set_svm_caps(struct ice_vf *vf, struct virtchnl_vlan_caps *caps)
 	}
 }
 
-/**
- * ice_vc_get_offload_vlan_v2_caps - determine VF's VLAN capabilities
- * @vf: VF to determine VLAN capabilities for
- *
- * This will only be called if the VF and PF successfully negotiated
- * VIRTCHNL_VF_OFFLOAD_VLAN_V2.
- *
- * Set VLAN capabilities based on the current VLAN mode and whether a port VLAN
- * is configured or not.
- */
+ 
 static int ice_vc_get_offload_vlan_v2_caps(struct ice_vf *vf)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -2884,7 +2385,7 @@ static int ice_vc_get_offload_vlan_v2_caps(struct ice_vf *vf)
 	else
 		ice_vc_set_svm_caps(vf, caps);
 
-	/* store negotiated caps to prevent invalid VF messages */
+	 
 	memcpy(&vf->vlan_v2_caps, caps, sizeof(*caps));
 
 out:
@@ -2894,14 +2395,7 @@ out:
 	return err;
 }
 
-/**
- * ice_vc_validate_vlan_tpid - validate VLAN TPID
- * @filtering_caps: negotiated/supported VLAN filtering capabilities
- * @tpid: VLAN TPID used for validation
- *
- * Convert the VLAN TPID to a VIRTCHNL_VLAN_ETHERTYPE_* and then compare against
- * the negotiated/supported filtering caps to see if the VLAN TPID is valid.
- */
+ 
 static bool ice_vc_validate_vlan_tpid(u16 filtering_caps, u16 tpid)
 {
 	enum virtchnl_vlan_support vlan_ethertype = VIRTCHNL_VLAN_UNSUPPORTED;
@@ -2924,13 +2418,7 @@ static bool ice_vc_validate_vlan_tpid(u16 filtering_caps, u16 tpid)
 	return true;
 }
 
-/**
- * ice_vc_is_valid_vlan - validate the virtchnl_vlan
- * @vc_vlan: virtchnl_vlan to validate
- *
- * If the VLAN TCI and VLAN TPID are 0, then this filter is invalid, so return
- * false. Otherwise return true.
- */
+ 
 static bool ice_vc_is_valid_vlan(struct virtchnl_vlan *vc_vlan)
 {
 	if (!vc_vlan->tci || !vc_vlan->tpid)
@@ -2939,14 +2427,7 @@ static bool ice_vc_is_valid_vlan(struct virtchnl_vlan *vc_vlan)
 	return true;
 }
 
-/**
- * ice_vc_validate_vlan_filter_list - validate the filter list from the VF
- * @vfc: negotiated/supported VLAN filtering capabilities
- * @vfl: VLAN filter list from VF to validate
- *
- * Validate all of the filters in the VLAN filter list from the VF. If any of
- * the checks fail then return false. Otherwise return true.
- */
+ 
 static bool
 ice_vc_validate_vlan_filter_list(struct virtchnl_vlan_filtering_caps *vfc,
 				 struct virtchnl_vlan_filter_list_v2 *vfl)
@@ -2993,10 +2474,7 @@ ice_vc_validate_vlan_filter_list(struct virtchnl_vlan_filtering_caps *vfc,
 	return true;
 }
 
-/**
- * ice_vc_to_vlan - transform from struct virtchnl_vlan to struct ice_vlan
- * @vc_vlan: struct virtchnl_vlan to transform
- */
+ 
 static struct ice_vlan ice_vc_to_vlan(struct virtchnl_vlan *vc_vlan)
 {
 	struct ice_vlan vlan = { 0 };
@@ -3008,12 +2486,7 @@ static struct ice_vlan ice_vc_to_vlan(struct virtchnl_vlan *vc_vlan)
 	return vlan;
 }
 
-/**
- * ice_vc_vlan_action - action to perform on the virthcnl_vlan
- * @vsi: VF's VSI used to perform the action
- * @vlan_action: function to perform the action with (i.e. add/del)
- * @vlan: VLAN filter to perform the action with
- */
+ 
 static int
 ice_vc_vlan_action(struct ice_vsi *vsi,
 		   int (*vlan_action)(struct ice_vsi *, struct ice_vlan *),
@@ -3028,12 +2501,7 @@ ice_vc_vlan_action(struct ice_vsi *vsi,
 	return 0;
 }
 
-/**
- * ice_vc_del_vlans - delete VLAN(s) from the virtchnl filter list
- * @vf: VF used to delete the VLAN(s)
- * @vsi: VF's VSI used to delete the VLAN(s)
- * @vfl: virthchnl filter list used to delete the filters
- */
+ 
 static int
 ice_vc_del_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 		 struct virtchnl_vlan_filter_list_v2 *vfl)
@@ -3059,7 +2527,7 @@ ice_vc_del_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 			if (vlan_promisc)
 				ice_vf_dis_vlan_promisc(vsi, &vlan);
 
-			/* Disable VLAN filtering when only VLAN 0 is left */
+			 
 			if (!ice_vsi_has_non_zero_vlans(vsi) && ice_is_dvm_ena(&vsi->back->hw)) {
 				err = vsi->outer_vlan_ops.dis_tx_filtering(vsi);
 				if (err)
@@ -3077,14 +2545,12 @@ ice_vc_del_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 			if (err)
 				return err;
 
-			/* no support for VLAN promiscuous on inner VLAN unless
-			 * we are in Single VLAN Mode (SVM)
-			 */
+			 
 			if (!ice_is_dvm_ena(&vsi->back->hw)) {
 				if (vlan_promisc)
 					ice_vf_dis_vlan_promisc(vsi, &vlan);
 
-				/* Disable VLAN filtering when only VLAN 0 is left */
+				 
 				if (!ice_vsi_has_non_zero_vlans(vsi)) {
 					err = vsi->inner_vlan_ops.dis_tx_filtering(vsi);
 					if (err)
@@ -3097,11 +2563,7 @@ ice_vc_del_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 	return 0;
 }
 
-/**
- * ice_vc_remove_vlan_v2_msg - virtchnl handler for VIRTCHNL_OP_DEL_VLAN_V2
- * @vf: VF the message was received from
- * @msg: message received from the VF
- */
+ 
 static int ice_vc_remove_vlan_v2_msg(struct ice_vf *vf, u8 *msg)
 {
 	struct virtchnl_vlan_filter_list_v2 *vfl =
@@ -3134,12 +2596,7 @@ out:
 				     0);
 }
 
-/**
- * ice_vc_add_vlans - add VLAN(s) from the virtchnl filter list
- * @vf: VF used to add the VLAN(s)
- * @vsi: VF's VSI used to add the VLAN(s)
- * @vfl: virthchnl filter list used to add the filters
- */
+ 
 static int
 ice_vc_add_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 		 struct virtchnl_vlan_filter_list_v2 *vfl)
@@ -3168,7 +2625,7 @@ ice_vc_add_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 					return err;
 			}
 
-			/* Enable VLAN filtering on first non-zero VLAN */
+			 
 			if (vf->spoofchk && vlan.vid && ice_is_dvm_ena(&vsi->back->hw)) {
 				err = vsi->outer_vlan_ops.ena_tx_filtering(vsi);
 				if (err)
@@ -3186,9 +2643,7 @@ ice_vc_add_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 			if (err)
 				return err;
 
-			/* no support for VLAN promiscuous on inner VLAN unless
-			 * we are in Single VLAN Mode (SVM)
-			 */
+			 
 			if (!ice_is_dvm_ena(&vsi->back->hw)) {
 				if (vlan_promisc) {
 					err = ice_vf_ena_vlan_promisc(vsi, &vlan);
@@ -3196,7 +2651,7 @@ ice_vc_add_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 						return err;
 				}
 
-				/* Enable VLAN filtering on first non-zero VLAN */
+				 
 				if (vf->spoofchk && vlan.vid) {
 					err = vsi->inner_vlan_ops.ena_tx_filtering(vsi);
 					if (err)
@@ -3209,16 +2664,7 @@ ice_vc_add_vlans(struct ice_vf *vf, struct ice_vsi *vsi,
 	return 0;
 }
 
-/**
- * ice_vc_validate_add_vlan_filter_list - validate add filter list from the VF
- * @vsi: VF VSI used to get number of existing VLAN filters
- * @vfc: negotiated/supported VLAN filtering capabilities
- * @vfl: VLAN filter list from VF to validate
- *
- * Validate all of the filters in the VLAN filter list from the VF during the
- * VIRTCHNL_OP_ADD_VLAN_V2 opcode. If any of the checks fail then return false.
- * Otherwise return true.
- */
+ 
 static bool
 ice_vc_validate_add_vlan_filter_list(struct ice_vsi *vsi,
 				     struct virtchnl_vlan_filtering_caps *vfc,
@@ -3233,11 +2679,7 @@ ice_vc_validate_add_vlan_filter_list(struct ice_vsi *vsi,
 	return ice_vc_validate_vlan_filter_list(vfc, vfl);
 }
 
-/**
- * ice_vc_add_vlan_v2_msg - virtchnl handler for VIRTCHNL_OP_ADD_VLAN_V2
- * @vf: VF the message was received from
- * @msg: message received from the VF
- */
+ 
 static int ice_vc_add_vlan_v2_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -3276,40 +2718,26 @@ out:
 				     0);
 }
 
-/**
- * ice_vc_valid_vlan_setting - validate VLAN setting
- * @negotiated_settings: negotiated VLAN settings during VF init
- * @ethertype_setting: ethertype(s) requested for the VLAN setting
- */
+ 
 static bool
 ice_vc_valid_vlan_setting(u32 negotiated_settings, u32 ethertype_setting)
 {
 	if (ethertype_setting && !(negotiated_settings & ethertype_setting))
 		return false;
 
-	/* only allow a single VIRTCHNL_VLAN_ETHERTYPE if
-	 * VIRTHCNL_VLAN_ETHERTYPE_AND is not negotiated/supported
-	 */
+	 
 	if (!(negotiated_settings & VIRTCHNL_VLAN_ETHERTYPE_AND) &&
 	    hweight32(ethertype_setting) > 1)
 		return false;
 
-	/* ability to modify the VLAN setting was not negotiated */
+	 
 	if (!(negotiated_settings & VIRTCHNL_VLAN_TOGGLE))
 		return false;
 
 	return true;
 }
 
-/**
- * ice_vc_valid_vlan_setting_msg - validate the VLAN setting message
- * @caps: negotiated VLAN settings during VF init
- * @msg: message to validate
- *
- * Used to validate any VLAN virtchnl message sent as a
- * virtchnl_vlan_setting structure. Validates the message against the
- * negotiated/supported caps during VF driver init.
- */
+ 
 static bool
 ice_vc_valid_vlan_setting_msg(struct virtchnl_vlan_supported_caps *caps,
 			      struct virtchnl_vlan_setting *msg)
@@ -3332,11 +2760,7 @@ ice_vc_valid_vlan_setting_msg(struct virtchnl_vlan_supported_caps *caps,
 	return true;
 }
 
-/**
- * ice_vc_get_tpid - transform from VIRTCHNL_VLAN_ETHERTYPE_* to VLAN TPID
- * @ethertype_setting: VIRTCHNL_VLAN_ETHERTYPE_* used to get VLAN TPID
- * @tpid: VLAN TPID to populate
- */
+ 
 static int ice_vc_get_tpid(u32 ethertype_setting, u16 *tpid)
 {
 	switch (ethertype_setting) {
@@ -3357,12 +2781,7 @@ static int ice_vc_get_tpid(u32 ethertype_setting, u16 *tpid)
 	return 0;
 }
 
-/**
- * ice_vc_ena_vlan_offload - enable VLAN offload based on the ethertype_setting
- * @vsi: VF's VSI used to enable the VLAN offload
- * @ena_offload: function used to enable the VLAN offload
- * @ethertype_setting: VIRTCHNL_VLAN_ETHERTYPE_* to enable offloads for
- */
+ 
 static int
 ice_vc_ena_vlan_offload(struct ice_vsi *vsi,
 			int (*ena_offload)(struct ice_vsi *vsi, u16 tpid),
@@ -3389,15 +2808,7 @@ enum ice_l2tsel {
 	ICE_L2TSEL_EXTRACT_FIRST_TAG_L2TAG1,
 };
 
-/**
- * ice_vsi_update_l2tsel - update l2tsel field for all Rx rings on this VSI
- * @vsi: VSI used to update l2tsel on
- * @l2tsel: l2tsel setting requested
- *
- * Use the l2tsel setting to update all of the Rx queue context bits for l2tsel.
- * This will modify which descriptor field the first offloaded VLAN will be
- * stripped into.
- */
+ 
 static void ice_vsi_update_l2tsel(struct ice_vsi *vsi, enum ice_l2tsel l2tsel)
 {
 	struct ice_hw *hw = &vsi->back->hw;
@@ -3424,13 +2835,7 @@ static void ice_vsi_update_l2tsel(struct ice_vsi *vsi, enum ice_l2tsel l2tsel)
 	}
 }
 
-/**
- * ice_vc_ena_vlan_stripping_v2_msg
- * @vf: VF the message was received from
- * @msg: message received from the VF
- *
- * virthcnl handler for VIRTCHNL_OP_ENABLE_VLAN_STRIPPING_V2
- */
+ 
 static int ice_vc_ena_vlan_stripping_v2_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -3473,14 +2878,7 @@ static int ice_vc_ena_vlan_stripping_v2_msg(struct ice_vf *vf, u8 *msg)
 			enum ice_l2tsel l2tsel =
 				ICE_L2TSEL_EXTRACT_FIRST_TAG_L2TAG2_2ND;
 
-			/* PF tells the VF that the outer VLAN tag is always
-			 * extracted to VIRTCHNL_VLAN_TAG_LOCATION_L2TAG2_2 and
-			 * inner is always extracted to
-			 * VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1. This is needed to
-			 * support outer stripping so the first tag always ends
-			 * up in L2TAG2_2ND and the second/inner tag, if
-			 * enabled, is extracted in L2TAG1.
-			 */
+			 
 			ice_vsi_update_l2tsel(vsi, l2tsel);
 		}
 	}
@@ -3498,13 +2896,7 @@ out:
 				     v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_dis_vlan_stripping_v2_msg
- * @vf: VF the message was received from
- * @msg: message received from the VF
- *
- * virthcnl handler for VIRTCHNL_OP_DISABLE_VLAN_STRIPPING_V2
- */
+ 
 static int ice_vc_dis_vlan_stripping_v2_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -3545,14 +2937,7 @@ static int ice_vc_dis_vlan_stripping_v2_msg(struct ice_vf *vf, u8 *msg)
 			enum ice_l2tsel l2tsel =
 				ICE_L2TSEL_EXTRACT_FIRST_TAG_L2TAG1;
 
-			/* PF tells the VF that the outer VLAN tag is always
-			 * extracted to VIRTCHNL_VLAN_TAG_LOCATION_L2TAG2_2 and
-			 * inner is always extracted to
-			 * VIRTCHNL_VLAN_TAG_LOCATION_L2TAG1. This is needed to
-			 * support inner stripping while outer stripping is
-			 * disabled so that the first and only tag is extracted
-			 * in L2TAG1.
-			 */
+			 
 			ice_vsi_update_l2tsel(vsi, l2tsel);
 		}
 	}
@@ -3568,13 +2953,7 @@ out:
 				     v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_ena_vlan_insertion_v2_msg
- * @vf: VF the message was received from
- * @msg: message received from the VF
- *
- * virthcnl handler for VIRTCHNL_OP_ENABLE_VLAN_INSERTION_V2
- */
+ 
 static int ice_vc_ena_vlan_insertion_v2_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -3627,13 +3006,7 @@ out:
 				     v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_dis_vlan_insertion_v2_msg
- * @vf: VF the message was received from
- * @msg: message received from the VF
- *
- * virthcnl handler for VIRTCHNL_OP_DISABLE_VLAN_INSERTION_V2
- */
+ 
 static int ice_vc_dis_vlan_insertion_v2_msg(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -3716,24 +3089,13 @@ static const struct ice_virtchnl_ops ice_virtchnl_dflt_ops = {
 	.dis_vlan_insertion_v2_msg = ice_vc_dis_vlan_insertion_v2_msg,
 };
 
-/**
- * ice_virtchnl_set_dflt_ops - Switch to default virtchnl ops
- * @vf: the VF to switch ops
- */
+ 
 void ice_virtchnl_set_dflt_ops(struct ice_vf *vf)
 {
 	vf->virtchnl_ops = &ice_virtchnl_dflt_ops;
 }
 
-/**
- * ice_vc_repr_add_mac
- * @vf: pointer to VF
- * @msg: virtchannel message
- *
- * When port representors are created, we do not add MAC rule
- * to firmware, we store it so that PF could report same
- * MAC as VF.
- */
+ 
 static int ice_vc_repr_add_mac(struct ice_vf *vf, u8 *msg)
 {
 	enum virtchnl_status_code v_ret = VIRTCHNL_STATUS_SUCCESS;
@@ -3780,14 +3142,7 @@ handle_mac_exit:
 				     v_ret, NULL, 0);
 }
 
-/**
- * ice_vc_repr_del_mac - response with success for deleting MAC
- * @vf: pointer to VF
- * @msg: virtchannel message
- *
- * Respond with success to not break normal VF flow.
- * For legacy VF driver try to update cached MAC address.
- */
+ 
 static int
 ice_vc_repr_del_mac(struct ice_vf __always_unused *vf, u8 __always_unused *msg)
 {
@@ -3845,23 +3200,13 @@ static const struct ice_virtchnl_ops ice_virtchnl_repr_ops = {
 	.dis_vlan_insertion_v2_msg = ice_vc_dis_vlan_insertion_v2_msg,
 };
 
-/**
- * ice_virtchnl_set_repr_ops - Switch to representor virtchnl ops
- * @vf: the VF to switch ops
- */
+ 
 void ice_virtchnl_set_repr_ops(struct ice_vf *vf)
 {
 	vf->virtchnl_ops = &ice_virtchnl_repr_ops;
 }
 
-/**
- * ice_is_malicious_vf - check if this vf might be overflowing mailbox
- * @vf: the VF to check
- * @mbxdata: data about the state of the mailbox
- *
- * Detect if a given VF might be malicious and attempting to overflow the PF
- * mailbox. If so, log a warning message and ignore this event.
- */
+ 
 static bool
 ice_is_malicious_vf(struct ice_vf *vf, struct ice_mbx_data *mbxdata)
 {
@@ -3876,7 +3221,7 @@ ice_is_malicious_vf(struct ice_vf *vf, struct ice_mbx_data *mbxdata)
 	if (test_bit(ICE_VF_STATE_DIS, vf->vf_states))
 		return vf->mbx_info.malicious;
 
-	/* check to see if we have a newly malicious VF */
+	 
 	status = ice_mbx_vf_state_handler(&pf->hw, mbxdata, &vf->mbx_info,
 					  &report_malvf);
 	if (status)
@@ -3895,15 +3240,7 @@ ice_is_malicious_vf(struct ice_vf *vf, struct ice_mbx_data *mbxdata)
 	return vf->mbx_info.malicious;
 }
 
-/**
- * ice_vc_process_vf_msg - Process request from VF
- * @pf: pointer to the PF structure
- * @event: pointer to the AQ event
- * @mbxdata: information used to detect VF attempting mailbox overflow
- *
- * called from the common asq/arq handler to
- * process request from VF
- */
+ 
 void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event,
 			   struct ice_mbx_data *mbxdata)
 {
@@ -3927,11 +3264,11 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event,
 
 	mutex_lock(&vf->cfg_lock);
 
-	/* Check if the VF is trying to overflow the mailbox */
+	 
 	if (ice_is_malicious_vf(vf, mbxdata))
 		goto finish;
 
-	/* Check if VF is disabled. */
+	 
 	if (test_bit(ICE_VF_STATE_DIS, vf->vf_states)) {
 		err = -EPERM;
 		goto error_handler;
@@ -3939,7 +3276,7 @@ void ice_vc_process_vf_msg(struct ice_pf *pf, struct ice_rq_event_info *event,
 
 	ops = vf->virtchnl_ops;
 
-	/* Perform basic checks on the msg */
+	 
 	err = virtchnl_vc_validate_vf_msg(&vf->vf_ver, v_opcode, msg, msglen);
 	if (err) {
 		if (err == VIRTCHNL_STATUS_ERR_PARAM)
@@ -4076,9 +3413,7 @@ error_handler:
 		break;
 	}
 	if (err) {
-		/* Helper function cares less about error return values here
-		 * as it is busy with pending work.
-		 */
+		 
 		dev_info(dev, "PF failed to honor VF %d, opcode %d, error %d\n",
 			 vf_id, v_opcode, err);
 	}

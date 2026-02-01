@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 Birger Koblitz <mail@birger-koblitz.de>
- * Copyright (C) 2020 Bert Vermeulen <bert@biot.com>
- * Copyright (C) 2020 John Crispin <john@phrozen.org>
- */
+
+ 
 
 #include <linux/of_irq.h>
 #include <linux/irqchip.h>
@@ -11,11 +7,11 @@
 #include <linux/of_address.h>
 #include <linux/irqchip/chained_irq.h>
 
-/* Global Interrupt Mask Register */
+ 
 #define RTL_ICTL_GIMR		0x00
-/* Global Interrupt Status Register */
+ 
 #define RTL_ICTL_GISR		0x04
-/* Interrupt Routing Registers */
+ 
 #define RTL_ICTL_IRR0		0x08
 #define RTL_ICTL_IRR1		0x0c
 #define RTL_ICTL_IRR2		0x10
@@ -28,12 +24,7 @@
 static DEFINE_RAW_SPINLOCK(irq_lock);
 static void __iomem *realtek_ictl_base;
 
-/*
- * IRR0-IRR3 store 4 bits per interrupt, but Realtek uses inverted numbering,
- * placing IRQ 31 in the first four bits. A routing value of '0' means the
- * interrupt is left disconnected. Routing values {1..15} connect to output
- * lines {0..14}.
- */
+ 
 #define IRR_OFFSET(idx)		(4 * (3 - (idx * 4) / 32))
 #define IRR_SHIFT(idx)		((idx * 4) % 32)
 
@@ -134,18 +125,13 @@ static int __init realtek_rtl_of_init(struct device_node *node, struct device_no
 	if (!realtek_ictl_base)
 		return -ENXIO;
 
-	/* Disable all cascaded interrupts and clear routing */
+	 
 	writel(0, REG(RTL_ICTL_GIMR));
 	for (soc_irq = 0; soc_irq < RTL_ICTL_NUM_INPUTS; soc_irq++)
 		write_irr(REG(RTL_ICTL_IRR0), soc_irq, 0);
 
 	if (WARN_ON(!of_irq_count(node))) {
-		/*
-		 * If DT contains no parent interrupts, assume MIPS CPU IRQ 2
-		 * (HW0) is connected to the first output. This is the case for
-		 * all known hardware anyway. "interrupt-map" is deprecated, so
-		 * don't bother trying to parse that.
-		 */
+		 
 		oirq.np = of_find_compatible_node(NULL, NULL, "mti,cpu-interrupt-controller");
 		oirq.args_count = 1;
 		oirq.args[0] = 2;

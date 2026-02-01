@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus "AP" USB driver for "ES2" controller chips
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+ 
 #include <linux/kthread.h>
 #include <linux/sizes.h>
 #include <linux/usb.h>
@@ -18,20 +13,20 @@
 #include "greybus_trace.h"
 
 
-/* Default timeout for USB vendor requests. */
+ 
 #define ES2_USB_CTRL_TIMEOUT	500
 
-/* Default timeout for ARPC CPort requests */
+ 
 #define ES2_ARPC_CPORT_TIMEOUT	500
 
-/* Fixed CPort numbers */
+ 
 #define ES2_CPORT_CDSI0		16
 #define ES2_CPORT_CDSI1		17
 
-/* Memory sizes for the buffers sent to/from the ES2 controller */
+ 
 #define ES2_GBUF_MSG_SIZE_MAX	2048
 
-/* Memory sizes for the ARPC buffers */
+ 
 #define ARPC_OUT_SIZE_MAX	U16_MAX
 #define ARPC_IN_SIZE_MAX	128
 
@@ -43,60 +38,23 @@ MODULE_DEVICE_TABLE(usb, id_table);
 
 #define APB1_LOG_SIZE		SZ_16K
 
-/*
- * Number of CPort IN urbs in flight at any point in time.
- * Adjust if we are having stalls in the USB buffer due to not enough urbs in
- * flight.
- */
+ 
 #define NUM_CPORT_IN_URB	4
 
-/* Number of CPort OUT urbs in flight at any point in time.
- * Adjust if we get messages saying we are out of urbs in the system log.
- */
+ 
 #define NUM_CPORT_OUT_URB	8
 
-/*
- * Number of ARPC in urbs in flight at any point in time.
- */
+ 
 #define NUM_ARPC_IN_URB		2
 
-/*
- * @endpoint: bulk in endpoint for CPort data
- * @urb: array of urbs for the CPort in messages
- * @buffer: array of buffers for the @cport_in_urb urbs
- */
+ 
 struct es2_cport_in {
 	__u8 endpoint;
 	struct urb *urb[NUM_CPORT_IN_URB];
 	u8 *buffer[NUM_CPORT_IN_URB];
 };
 
-/**
- * struct es2_ap_dev - ES2 USB Bridge to AP structure
- * @usb_dev: pointer to the USB device we are.
- * @usb_intf: pointer to the USB interface we are bound to.
- * @hd: pointer to our gb_host_device structure
- *
- * @cport_in: endpoint, urbs and buffer for cport in messages
- * @cport_out_endpoint: endpoint for cport out messages
- * @cport_out_urb: array of urbs for the CPort out messages
- * @cport_out_urb_busy: array of flags to see if the @cport_out_urb is busy or
- *			not.
- * @cport_out_urb_cancelled: array of flags indicating whether the
- *			corresponding @cport_out_urb is being cancelled
- * @cport_out_urb_lock: locks the @cport_out_urb_busy "list"
- * @cdsi1_in_use: true if cport CDSI1 is in use
- * @apb_log_task: task pointer for logging thread
- * @apb_log_dentry: file system entry for the log file interface
- * @apb_log_enable_dentry: file system entry for enabling logging
- * @apb_log_fifo: kernel FIFO to carry logged data
- * @arpc_urb: array of urbs for the ARPC in messages
- * @arpc_buffer: array of buffers for the @arpc_urb urbs
- * @arpc_endpoint_in: bulk in endpoint for APBridgeA RPC
- * @arpc_id_cycle: gives an unique id to ARPC
- * @arpc_lock: locks ARPC list
- * @arpcs: list of in progress ARPCs
- */
+ 
 struct es2_ap_dev {
 	struct usb_device *usb_dev;
 	struct usb_interface *usb_intf;
@@ -313,7 +271,7 @@ static struct urb *next_free_urb(struct es2_ap_dev *es2, gfp_t gfp_mask)
 
 	spin_lock_irqsave(&es2->cport_out_urb_lock, flags);
 
-	/* Look in our pool of allocated urbs first, as that's the "fastest" */
+	 
 	for (i = 0; i < NUM_CPORT_OUT_URB; ++i) {
 		if (!es2->cport_out_urb_busy[i] &&
 		    !es2->cport_out_urb_cancelled[i]) {
@@ -326,10 +284,7 @@ static struct urb *next_free_urb(struct es2_ap_dev *es2, gfp_t gfp_mask)
 	if (urb)
 		return urb;
 
-	/*
-	 * Crap, pool is empty, complain to the syslog and go allocate one
-	 * dynamically as we have to succeed.
-	 */
+	 
 	dev_dbg(&es2->usb_dev->dev,
 		"No free CPort OUT urbs, having to dynamically allocate one!\n");
 	return usb_alloc_urb(0, gfp_mask);
@@ -339,10 +294,7 @@ static void free_urb(struct es2_ap_dev *es2, struct urb *urb)
 {
 	unsigned long flags;
 	int i;
-	/*
-	 * See if this was an urb in our pool, if so mark it "free", otherwise
-	 * we need to free it ourselves.
-	 */
+	 
 	spin_lock_irqsave(&es2->cport_out_urb_lock, flags);
 	for (i = 0; i < NUM_CPORT_OUT_URB; ++i) {
 		if (urb == es2->cport_out_urb[i]) {
@@ -353,27 +305,24 @@ static void free_urb(struct es2_ap_dev *es2, struct urb *urb)
 	}
 	spin_unlock_irqrestore(&es2->cport_out_urb_lock, flags);
 
-	/* If urb is not NULL, then we need to free this urb */
+	 
 	usb_free_urb(urb);
 }
 
-/*
- * We (ab)use the operation-message header pad bytes to transfer the
- * cport id in order to minimise overhead.
- */
+ 
 static void
 gb_message_cport_pack(struct gb_operation_msg_hdr *header, u16 cport_id)
 {
 	header->pad[0] = cport_id;
 }
 
-/* Clear the pad bytes used for the CPort id */
+ 
 static void gb_message_cport_clear(struct gb_operation_msg_hdr *header)
 {
 	header->pad[0] = 0;
 }
 
-/* Extract the CPort id packed into the header, and clear it */
+ 
 static u16 gb_message_cport_unpack(struct gb_operation_msg_hdr *header)
 {
 	u16 cport_id = header->pad[0];
@@ -383,10 +332,7 @@ static u16 gb_message_cport_unpack(struct gb_operation_msg_hdr *header)
 	return cport_id;
 }
 
-/*
- * Returns zero if the message was successfully queued, or a negative errno
- * otherwise.
- */
+ 
 static int message_send(struct gb_host_device *hd, u16 cport_id,
 			struct gb_message *message, gfp_t gfp_mask)
 {
@@ -397,17 +343,13 @@ static int message_send(struct gb_host_device *hd, u16 cport_id,
 	struct urb *urb;
 	unsigned long flags;
 
-	/*
-	 * The data actually transferred will include an indication
-	 * of where the data should be sent.  Do one last check of
-	 * the target CPort id before filling it in.
-	 */
+	 
 	if (!cport_id_valid(hd, cport_id)) {
 		dev_err(&udev->dev, "invalid cport %u\n", cport_id);
 		return -EINVAL;
 	}
 
-	/* Find a free urb */
+	 
 	urb = next_free_urb(es2, gfp_mask);
 	if (!urb)
 		return -ENOMEM;
@@ -416,7 +358,7 @@ static int message_send(struct gb_host_device *hd, u16 cport_id,
 	message->hcpriv = urb;
 	spin_unlock_irqrestore(&es2->cport_out_urb_lock, flags);
 
-	/* Pack the cport id into the message header */
+	 
 	gb_message_cport_pack(message->header, cport_id);
 
 	buffer_size = sizeof(*message->header) + message->payload_size;
@@ -447,9 +389,7 @@ static int message_send(struct gb_host_device *hd, u16 cport_id,
 	return 0;
 }
 
-/*
- * Can not be called in atomic context.
- */
+ 
 static void message_cancel(struct gb_message *message)
 {
 	struct gb_host_device *hd = message->operation->connection->hd;
@@ -462,10 +402,10 @@ static void message_cancel(struct gb_message *message)
 	spin_lock_irq(&es2->cport_out_urb_lock);
 	urb = message->hcpriv;
 
-	/* Prevent dynamically allocated urb from being deallocated. */
+	 
 	usb_get_urb(urb);
 
-	/* Prevent pre-allocated urb from being reused. */
+	 
 	for (i = 0; i < NUM_CPORT_OUT_URB; ++i) {
 		if (urb == es2->cport_out_urb[i]) {
 			es2->cport_out_urb_cancelled[i] = true;
@@ -743,7 +683,7 @@ static struct gb_hd_driver es2_driver = {
 	.output				= output,
 };
 
-/* Common function to report consistent warnings based on URB status */
+ 
 static int check_urb_status(struct urb *urb)
 {
 	struct device *dev = &urb->dev->dev;
@@ -762,7 +702,7 @@ static int check_urb_status(struct urb *urb)
 	case -ESHUTDOWN:
 	case -EILSEQ:
 	case -EPROTO:
-		/* device is gone, stop sending */
+		 
 		return status;
 	}
 	dev_err(dev, "%s: unknown status %d\n", __func__, status);
@@ -779,13 +719,13 @@ static void es2_destroy(struct es2_ap_dev *es2)
 	debugfs_remove(es2->apb_log_enable_dentry);
 	usb_log_disable(es2);
 
-	/* Tear down everything! */
+	 
 	for (i = 0; i < NUM_CPORT_OUT_URB; ++i) {
 		urb = es2->cport_out_urb[i];
 		usb_kill_urb(urb);
 		usb_free_urb(urb);
 		es2->cport_out_urb[i] = NULL;
-		es2->cport_out_urb_busy[i] = false;	/* just to be anal */
+		es2->cport_out_urb_busy[i] = false;	 
 	}
 
 	for (i = 0; i < NUM_ARPC_IN_URB; ++i) {
@@ -800,7 +740,7 @@ static void es2_destroy(struct es2_ap_dev *es2)
 		es2->cport_in.buffer[i] = NULL;
 	}
 
-	/* release reserved CDSI0 and CDSI1 cports */
+	 
 	gb_hd_cport_release_reserved(es2->hd, ES2_CPORT_CDSI1);
 	gb_hd_cport_release_reserved(es2->hd, ES2_CPORT_CDSI0);
 
@@ -823,7 +763,7 @@ static void cport_in_callback(struct urb *urb)
 		if ((status == -EAGAIN) || (status == -EPROTO))
 			goto exit;
 
-		/* The urb is being unlinked */
+		 
 		if (status == -ENOENT || status == -ESHUTDOWN)
 			return;
 
@@ -836,7 +776,7 @@ static void cport_in_callback(struct urb *urb)
 		goto exit;
 	}
 
-	/* Extract the CPort id, which is packed in the message header */
+	 
 	header = urb->transfer_buffer;
 	cport_id = gb_message_cport_unpack(header);
 
@@ -847,7 +787,7 @@ static void cport_in_callback(struct urb *urb)
 		dev_err(dev, "invalid cport id %u received\n", cport_id);
 	}
 exit:
-	/* put our urb back in the request pool */
+	 
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
 	if (retval)
 		dev_err(dev, "failed to resubmit in-urb: %d\n", retval);
@@ -867,10 +807,7 @@ static void cport_out_callback(struct urb *urb)
 	message->hcpriv = NULL;
 	spin_unlock_irqrestore(&es2->cport_out_urb_lock, flags);
 
-	/*
-	 * Tell the submitter that the message send (attempt) is
-	 * complete, and report the status.
-	 */
+	 
 	greybus_message_sent(hd, message, status);
 
 	free_urb(es2, urb);
@@ -1035,7 +972,7 @@ static void arpc_in_callback(struct urb *urb)
 		if ((status == -EAGAIN) || (status == -EPROTO))
 			goto exit;
 
-		/* The urb is being unlinked */
+		 
 		if (status == -ENOENT || status == -ESHUTDOWN)
 			return;
 
@@ -1064,7 +1001,7 @@ static void arpc_in_callback(struct urb *urb)
 	spin_unlock_irqrestore(&es2->arpc_lock, flags);
 
 exit:
-	/* put our urb back in the request pool */
+	 
 	retval = usb_submit_urb(urb, GFP_ATOMIC);
 	if (retval)
 		dev_err(dev, "failed to resubmit arpc in-urb: %d\n", retval);
@@ -1141,11 +1078,11 @@ static void usb_log_enable(struct es2_ap_dev *es2)
 	if (!IS_ERR_OR_NULL(es2->apb_log_task))
 		return;
 
-	/* get log from APB1 */
+	 
 	es2->apb_log_task = kthread_run(apb_log_poll, es2, "apb_log");
 	if (IS_ERR(es2->apb_log_task))
 		return;
-	/* XXX We will need to rename this per APB */
+	 
 	es2->apb_log_dentry = debugfs_create_file("apb_log", 0444,
 						  gb_debugfs_get(), es2,
 						  &apb_log_fops);
@@ -1224,7 +1161,7 @@ static int apb_get_cport_count(struct usb_device *udev)
 
 	retval = le16_to_cpu(*cport_count);
 
-	/* We need to fit a CPort ID in one byte of a message header */
+	 
 	if (retval > U8_MAX) {
 		retval = U8_MAX;
 		dev_warn(&udev->dev, "Limiting number of CPorts to U8_MAX\n");
@@ -1235,12 +1172,7 @@ out:
 	return retval;
 }
 
-/*
- * The ES2 USB Bridge device has 15 endpoints
- * 1 Control - usual USB stuff + AP -> APBridgeA messages
- * 7 Bulk IN - CPort data in
- * 7 Bulk OUT - CPort data out
- */
+ 
 static int ap_probe(struct usb_interface *interface,
 		    const struct usb_device_id *id)
 {
@@ -1282,10 +1214,7 @@ static int ap_probe(struct usb_interface *interface,
 	INIT_KFIFO(es2->apb_log_fifo);
 	usb_set_intfdata(interface, es2);
 
-	/*
-	 * Reserve the CDSI0 and CDSI1 CPorts so they won't be allocated
-	 * dynamically.
-	 */
+	 
 	retval = gb_hd_cport_reserve(hd, ES2_CPORT_CDSI0);
 	if (retval)
 		goto error;
@@ -1293,7 +1222,7 @@ static int ap_probe(struct usb_interface *interface,
 	if (retval)
 		goto error;
 
-	/* find all bulk endpoints */
+	 
 	iface_desc = interface->cur_altsetting;
 	for (i = 0; i < iface_desc->desc.bNumEndpoints; ++i) {
 		endpoint = &iface_desc->endpoint[i].desc;
@@ -1334,7 +1263,7 @@ static int ap_probe(struct usb_interface *interface,
 		goto error;
 	}
 
-	/* Allocate buffers for our cport in messages */
+	 
 	for (i = 0; i < NUM_CPORT_IN_URB; ++i) {
 		struct urb *urb;
 		u8 *buffer;
@@ -1360,7 +1289,7 @@ static int ap_probe(struct usb_interface *interface,
 		es2->cport_in.buffer[i] = buffer;
 	}
 
-	/* Allocate buffers for ARPC in messages */
+	 
 	for (i = 0; i < NUM_ARPC_IN_URB; ++i) {
 		struct urb *urb;
 		u8 *buffer;
@@ -1387,7 +1316,7 @@ static int ap_probe(struct usb_interface *interface,
 		es2->arpc_buffer[i] = buffer;
 	}
 
-	/* Allocate urbs for our CPort OUT messages */
+	 
 	for (i = 0; i < NUM_CPORT_OUT_URB; ++i) {
 		struct urb *urb;
 
@@ -1398,10 +1327,10 @@ static int ap_probe(struct usb_interface *interface,
 		}
 
 		es2->cport_out_urb[i] = urb;
-		es2->cport_out_urb_busy[i] = false;	/* just to be anal */
+		es2->cport_out_urb_busy[i] = false;	 
 	}
 
-	/* XXX We will need to rename this per APB */
+	 
 	es2->apb_log_enable_dentry = debugfs_create_file("apb_log_enable",
 							 0644,
 							 gb_debugfs_get(), es2,

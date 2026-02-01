@@ -1,58 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/em_meta.c	Metadata ematch
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- *
- * ==========================================================================
- *
- * 	The metadata ematch compares two meta objects where each object
- * 	represents either a meta value stored in the kernel or a static
- * 	value provided by userspace. The objects are not provided by
- * 	userspace itself but rather a definition providing the information
- * 	to build them. Every object is of a certain type which must be
- * 	equal to the object it is being compared to.
- *
- * 	The definition of a objects conists of the type (meta type), a
- * 	identifier (meta id) and additional type specific information.
- * 	The meta id is either TCF_META_TYPE_VALUE for values provided by
- * 	userspace or a index to the meta operations table consisting of
- * 	function pointers to type specific meta data collectors returning
- * 	the value of the requested meta value.
- *
- * 	         lvalue                                   rvalue
- * 	      +-----------+                           +-----------+
- * 	      | type: INT |                           | type: INT |
- * 	 def  | id: DEV   |                           | id: VALUE |
- * 	      | data:     |                           | data: 3   |
- * 	      +-----------+                           +-----------+
- * 	            |                                       |
- * 	            ---> meta_ops[INT][DEV](...)            |
- *	                      |                             |
- * 	            -----------                             |
- * 	            V                                       V
- * 	      +-----------+                           +-----------+
- * 	      | type: INT |                           | type: INT |
- * 	 obj  | id: DEV |                             | id: VALUE |
- * 	      | data: 2   |<--data got filled out     | data: 3   |
- * 	      +-----------+                           +-----------+
- * 	            |                                         |
- * 	            --------------> 2  equals 3 <--------------
- *
- * 	This is a simplified schema, the complexity varies depending
- * 	on the meta type. Obviously, the length of the data must also
- * 	be provided for non-numeric types.
- *
- * 	Additionally, type dependent modifiers such as shift operators
- * 	or mask may be applied to extend the functionality. As of now,
- * 	the variable length type supports shifting the byte string to
- * 	the right, eating up any number of octets and thus supporting
- * 	wildcard interface name comparisons such as "ppp%" matching
- * 	ppp0..9.
- *
- * 	NOTE: Certain meta values depend on other subsystems and are
- * 	      only available if that subsystem is enabled in the kernel.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -100,9 +47,7 @@ static inline int meta_type(struct meta_value *v)
 	struct tcf_pkt_info *info, struct meta_value *v, \
 	struct meta_obj *dst, int *err)
 
-/**************************************************************************
- * System status & misc
- **************************************************************************/
+ 
 
 META_COLLECTOR(int_random)
 {
@@ -132,9 +77,7 @@ META_COLLECTOR(int_loadavg_2)
 	dst->value = fixed_loadavg(avenrun[2]);
 }
 
-/**************************************************************************
- * Device names & indices
- **************************************************************************/
+ 
 
 static inline int int_dev(struct net_device *dev, struct meta_obj *dst)
 {
@@ -165,9 +108,7 @@ META_COLLECTOR(var_dev)
 	*err = var_dev(skb->dev, dst);
 }
 
-/**************************************************************************
- * vlan tag
- **************************************************************************/
+ 
 
 META_COLLECTOR(int_vlan_tag)
 {
@@ -183,9 +124,7 @@ META_COLLECTOR(int_vlan_tag)
 
 
 
-/**************************************************************************
- * skb attributes
- **************************************************************************/
+ 
 
 META_COLLECTOR(int_priority)
 {
@@ -194,7 +133,7 @@ META_COLLECTOR(int_priority)
 
 META_COLLECTOR(int_protocol)
 {
-	/* Let userspace take care of the byte ordering */
+	 
 	dst->value = skb_protocol(skb, false);
 }
 
@@ -223,27 +162,21 @@ META_COLLECTOR(int_rxhash)
 	dst->value = skb_get_hash(skb);
 }
 
-/**************************************************************************
- * Netfilter
- **************************************************************************/
+ 
 
 META_COLLECTOR(int_mark)
 {
 	dst->value = skb->mark;
 }
 
-/**************************************************************************
- * Traffic Control
- **************************************************************************/
+ 
 
 META_COLLECTOR(int_tcindex)
 {
 	dst->value = skb->tc_index;
 }
 
-/**************************************************************************
- * Routing
- **************************************************************************/
+ 
 
 META_COLLECTOR(int_rtclassid)
 {
@@ -265,9 +198,7 @@ META_COLLECTOR(int_rtiif)
 		dst->value = inet_iif(skb);
 }
 
-/**************************************************************************
- * Socket Attributes
- **************************************************************************/
+ 
 
 #define skip_nonlocal(skb) \
 	(unlikely(skb->sk == NULL))
@@ -305,7 +236,7 @@ META_COLLECTOR(int_sk_bound_if)
 		*err = -1;
 		return;
 	}
-	/* No error if bound_dev_if is 0, legal userspace check */
+	 
 	dst->value = skb->sk->sk_bound_dev_if;
 }
 
@@ -604,9 +535,7 @@ META_COLLECTOR(int_sk_write_pend)
 	dst->value = sk->sk_write_pending;
 }
 
-/**************************************************************************
- * Meta value collectors assignment table
- **************************************************************************/
+ 
 
 struct meta_ops {
 	void		(*get)(struct sk_buff *, struct tcf_pkt_info *,
@@ -616,8 +545,7 @@ struct meta_ops {
 #define META_ID(name) TCF_META_ID_##name
 #define META_FUNC(name) { .get = meta_##name }
 
-/* Meta value operations table listing all meta value collectors and
- * assigns them to a type and meta id. */
+ 
 static struct meta_ops __meta_ops[TCF_META_TYPE_MAX + 1][TCF_META_ID_MAX + 1] = {
 	[TCF_META_TYPE_VAR] = {
 		[META_ID(DEV)]			= META_FUNC(var_dev),
@@ -678,9 +606,7 @@ static inline struct meta_ops *meta_ops(struct meta_value *val)
 	return &__meta_ops[meta_type(val)][meta_id(val)];
 }
 
-/**************************************************************************
- * Type specific operations for TCF_META_TYPE_VAR
- **************************************************************************/
+ 
 
 static int meta_var_compare(struct meta_obj *a, struct meta_obj *b)
 {
@@ -728,15 +654,11 @@ nla_put_failure:
 	return -1;
 }
 
-/**************************************************************************
- * Type specific operations for TCF_META_TYPE_INT
- **************************************************************************/
+ 
 
 static int meta_int_compare(struct meta_obj *a, struct meta_obj *b)
 {
-	/* Let gcc optimize it, the unlikely is not really based on
-	 * some numbers but jump free code for mismatches seems
-	 * more logical. */
+	 
 	if (unlikely(a->value == b->value))
 		return 0;
 	else if (a->value < b->value)
@@ -785,9 +707,7 @@ nla_put_failure:
 	return -1;
 }
 
-/**************************************************************************
- * Type specific operations table
- **************************************************************************/
+ 
 
 struct meta_type_ops {
 	void	(*destroy)(struct meta_value *);
@@ -818,9 +738,7 @@ static inline const struct meta_type_ops *meta_type_ops(struct meta_value *v)
 	return &__meta_type_ops[meta_type(v)];
 }
 
-/**************************************************************************
- * Core
- **************************************************************************/
+ 
 
 static int meta_get(struct sk_buff *skb, struct tcf_pkt_info *info,
 		    struct meta_value *v, struct meta_obj *dst)

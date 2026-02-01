@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * POWER Data Stream Control Register (DSCR) default test
- *
- * This test modifies the system wide default DSCR through
- * it's sysfs interface and then verifies that all threads
- * see the correct changed DSCR value immediately.
- *
- * Copyright 2012, Anton Blanchard, IBM Corporation.
- * Copyright 2015, Anshuman Khandual, IBM Corporation.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -47,7 +38,7 @@ int dscr_default_lockstep_test(void)
 	SKIP_IF(!have_hwcap2(PPC_FEATURE2_DSCR));
 
 	FAIL_IF(sem_init(reader_sem, 0, 0));
-	FAIL_IF(sem_init(writer_sem, 0, 1));  /* writer starts first */
+	FAIL_IF(sem_init(writer_sem, 0, 1));   
 	FAIL_IF(bind_to_cpu(BIND_CPU_ANY) < 0);
 	FAIL_IF(pthread_create(&writer, NULL, dscr_default_lockstep_writer, (void *)rw_semaphores));
 

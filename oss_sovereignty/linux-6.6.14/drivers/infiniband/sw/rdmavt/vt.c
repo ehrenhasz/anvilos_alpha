@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2016 - 2018 Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -32,19 +30,7 @@ static void __exit rvt_cleanup(void)
 }
 module_exit(rvt_cleanup);
 
-/**
- * rvt_alloc_device - allocate rdi
- * @size: how big of a structure to allocate
- * @nports: number of ports to allocate array slots for
- *
- * Use IB core device alloc to allocate space for the rdi which is assumed to be
- * inside of the ib_device. Any extra space that drivers require should be
- * included in size.
- *
- * We also allocate a port array based on the number of ports.
- *
- * Return: pointer to allocated rdi
- */
+ 
 struct rvt_dev_info *rvt_alloc_device(size_t size, int nports)
 {
 	struct rvt_dev_info *rdi;
@@ -61,12 +47,7 @@ struct rvt_dev_info *rvt_alloc_device(size_t size, int nports)
 }
 EXPORT_SYMBOL(rvt_alloc_device);
 
-/**
- * rvt_dealloc_device - deallocate rdi
- * @rdi: structure to free
- *
- * Free a structure allocated with rvt_alloc_device()
- */
+ 
 void rvt_dealloc_device(struct rvt_dev_info *rdi)
 {
 	kfree(rdi->ports);
@@ -82,9 +63,7 @@ static int rvt_query_device(struct ib_device *ibdev,
 
 	if (uhw->inlen || uhw->outlen)
 		return -EINVAL;
-	/*
-	 * Return rvt_dev_info.dparms.props contents
-	 */
+	 
 	*props = rdi->dparms.props;
 	return 0;
 }
@@ -100,22 +79,12 @@ static int rvt_modify_device(struct ib_device *device,
 			     int device_modify_mask,
 			     struct ib_device_modify *device_modify)
 {
-	/*
-	 * There is currently no need to supply this based on qib and hfi1.
-	 * Future drivers may need to implement this though.
-	 */
+	 
 
 	return -EOPNOTSUPP;
 }
 
-/**
- * rvt_query_port - Passes the query port call to the driver
- * @ibdev: Verbs IB dev
- * @port_num: port number, 1 based from ib core
- * @props: structure to hold returned properties
- *
- * Return: 0 on success
- */
+ 
 static int rvt_query_port(struct ib_device *ibdev, u32 port_num,
 			  struct ib_port_attr *props)
 {
@@ -124,7 +93,7 @@ static int rvt_query_port(struct ib_device *ibdev, u32 port_num,
 	u32 port_index = ibport_num_to_idx(ibdev, port_num);
 
 	rvp = rdi->ports[port_index];
-	/* props being zeroed by the caller, avoid zeroing it here */
+	 
 	props->sm_lid = rvp->sm_lid;
 	props->sm_sl = rvp->sm_sl;
 	props->port_cap_flags = rvp->port_cap_flags;
@@ -135,19 +104,11 @@ static int rvt_query_port(struct ib_device *ibdev, u32 port_num,
 	props->subnet_timeout = rvp->subnet_timeout;
 	props->init_type_reply = 0;
 
-	/* Populate the remaining ib_port_attr elements */
+	 
 	return rdi->driver_f.query_port_state(rdi, port_num, props);
 }
 
-/**
- * rvt_modify_port - modify port
- * @ibdev: Verbs IB dev
- * @port_num: Port number, 1 based from ib core
- * @port_modify_mask: How to change the port
- * @props: Structure to fill in
- *
- * Return: 0 on success
- */
+ 
 static int rvt_modify_port(struct ib_device *ibdev, u32 port_num,
 			   int port_modify_mask, struct ib_port_modify *props)
 {
@@ -175,24 +136,11 @@ static int rvt_modify_port(struct ib_device *ibdev, u32 port_num,
 	return ret;
 }
 
-/**
- * rvt_query_pkey - Return a pkey from the table at a given index
- * @ibdev: Verbs IB dev
- * @port_num: Port number, 1 based from ib core
- * @index: Index into pkey table
- * @pkey: returned pkey from the port pkey table
- *
- * Return: 0 on failure pkey otherwise
- */
+ 
 static int rvt_query_pkey(struct ib_device *ibdev, u32 port_num, u16 index,
 			  u16 *pkey)
 {
-	/*
-	 * Driver will be responsible for keeping rvt_dev_info.pkey_table up to
-	 * date. This function will just return that value. There is no need to
-	 * lock, if a stale value is read and sent to the user so be it there is
-	 * no way to protect against that anyway.
-	 */
+	 
 	struct rvt_dev_info *rdi = ib_to_rvt(ibdev);
 	u32 port_index;
 
@@ -205,15 +153,7 @@ static int rvt_query_pkey(struct ib_device *ibdev, u32 port_num, u16 index,
 	return 0;
 }
 
-/**
- * rvt_query_gid - Return a gid from the table
- * @ibdev: Verbs IB dev
- * @port_num: Port number, 1 based from ib core
- * @guid_index: Index in table
- * @gid: Gid to return
- *
- * Return: 0 on success
- */
+ 
 static int rvt_query_gid(struct ib_device *ibdev, u32 port_num,
 			 int guid_index, union ib_gid *gid)
 {
@@ -221,11 +161,7 @@ static int rvt_query_gid(struct ib_device *ibdev, u32 port_num,
 	struct rvt_ibport *rvp;
 	u32 port_index;
 
-	/*
-	 * Driver is responsible for updating the guid table. Which will be used
-	 * to craft the return value. This will work similar to how query_pkey()
-	 * is being done.
-	 */
+	 
 	port_index = ibport_num_to_idx(ibdev, port_num);
 
 	rdi = ib_to_rvt(ibdev);
@@ -237,20 +173,13 @@ static int rvt_query_gid(struct ib_device *ibdev, u32 port_num,
 					 &gid->global.interface_id);
 }
 
-/**
- * rvt_alloc_ucontext - Allocate a user context
- * @uctx: Verbs context
- * @udata: User data allocated
- */
+ 
 static int rvt_alloc_ucontext(struct ib_ucontext *uctx, struct ib_udata *udata)
 {
 	return 0;
 }
 
-/**
- * rvt_dealloc_ucontext - Free a user context
- * @context: Unused
- */
+ 
 static void rvt_dealloc_ucontext(struct ib_ucontext *context)
 {
 	return;
@@ -321,7 +250,7 @@ enum {
 	RESIZE_CQ,
 	ALLOC_PD,
 	DEALLOC_PD,
-	_VERB_IDX_MAX /* Must always be last! */
+	_VERB_IDX_MAX  
 };
 
 static const struct ib_device_ops rvt_dev_ops = {
@@ -381,20 +310,14 @@ static noinline int check_support(struct rvt_dev_info *rdi, int verb)
 {
 	switch (verb) {
 	case MISC:
-		/*
-		 * These functions are not part of verbs specifically but are
-		 * required for rdmavt to function.
-		 */
+		 
 		if ((!rdi->ibdev.ops.port_groups) ||
 		    (!rdi->driver_f.get_pci_dev))
 			return -EINVAL;
 		break;
 
 	case MODIFY_DEVICE:
-		/*
-		 * rdmavt does not support modify device currently drivers must
-		 * provide.
-		 */
+		 
 		if (!rdi->ibdev.ops.modify_device)
 			return -EOPNOTSUPP;
 		break;
@@ -466,15 +389,7 @@ static noinline int check_support(struct rvt_dev_info *rdi, int verb)
 	return 0;
 }
 
-/**
- * rvt_register_device - register a driver
- * @rdi: main dev structure for all of rdmavt operations
- *
- * It is up to drivers to allocate the rdi and fill in the appropriate
- * information.
- *
- * Return: 0 on success otherwise an errno.
- */
+ 
 int rvt_register_device(struct rvt_dev_info *rdi)
 {
 	int ret = 0, i;
@@ -482,10 +397,7 @@ int rvt_register_device(struct rvt_dev_info *rdi)
 	if (!rdi)
 		return -EINVAL;
 
-	/*
-	 * Check to ensure drivers have setup the required helpers for the verbs
-	 * they want rdmavt to handle
-	 */
+	 
 	for (i = 0; i < _VERB_IDX_MAX; i++)
 		if (check_support(rdi, i)) {
 			pr_err("Driver support req not met at %d\n", i);
@@ -494,54 +406,49 @@ int rvt_register_device(struct rvt_dev_info *rdi)
 
 	ib_set_device_ops(&rdi->ibdev, &rvt_dev_ops);
 
-	/* Once we get past here we can use rvt_pr macros and tracepoints */
+	 
 	trace_rvt_dbg(rdi, "Driver attempting registration");
 	rvt_mmap_init(rdi);
 
-	/* Queue Pairs */
+	 
 	ret = rvt_driver_qp_init(rdi);
 	if (ret) {
 		pr_err("Error in driver QP init.\n");
 		return -EINVAL;
 	}
 
-	/* Address Handle */
+	 
 	spin_lock_init(&rdi->n_ahs_lock);
 	rdi->n_ahs_allocated = 0;
 
-	/* Shared Receive Queue */
+	 
 	rvt_driver_srq_init(rdi);
 
-	/* Multicast */
+	 
 	rvt_driver_mcast_init(rdi);
 
-	/* Mem Region */
+	 
 	ret = rvt_driver_mr_init(rdi);
 	if (ret) {
 		pr_err("Error in driver MR init.\n");
 		goto bail_no_mr;
 	}
 
-	/* Memory Working Set Size */
+	 
 	ret = rvt_wss_init(rdi);
 	if (ret) {
 		rvt_pr_err(rdi, "Error in WSS init.\n");
 		goto bail_mr;
 	}
 
-	/* Completion queues */
+	 
 	spin_lock_init(&rdi->n_cqs_lock);
 
-	/* Protection Domain */
+	 
 	spin_lock_init(&rdi->n_pds_lock);
 	rdi->n_pds_allocated = 0;
 
-	/*
-	 * There are some things which could be set by underlying drivers but
-	 * really should be up to rdmavt to set. For instance drivers can't know
-	 * exactly which functions rdmavt supports, nor do they know the ABI
-	 * version, so we do all of this sort of stuff here.
-	 */
+	 
 	rdi->ibdev.uverbs_cmd_mask |=
 		(1ull << IB_USER_VERBS_CMD_POLL_CQ)             |
 		(1ull << IB_USER_VERBS_CMD_REQ_NOTIFY_CQ)       |
@@ -552,7 +459,7 @@ int rvt_register_device(struct rvt_dev_info *rdi)
 	if (!rdi->ibdev.num_comp_vectors)
 		rdi->ibdev.num_comp_vectors = 1;
 
-	/* We are now good to announce we exist */
+	 
 	ret = ib_register_device(&rdi->ibdev, dev_name(&rdi->ibdev.dev), NULL);
 	if (ret) {
 		rvt_pr_err(rdi, "Failed to register driver with ib core.\n");
@@ -576,10 +483,7 @@ bail_no_mr:
 }
 EXPORT_SYMBOL(rvt_register_device);
 
-/**
- * rvt_unregister_device - remove a driver
- * @rdi: rvt dev struct
- */
+ 
 void rvt_unregister_device(struct rvt_dev_info *rdi)
 {
 	trace_rvt_dbg(rdi, "Driver is unregistering.");
@@ -595,18 +499,7 @@ void rvt_unregister_device(struct rvt_dev_info *rdi)
 }
 EXPORT_SYMBOL(rvt_unregister_device);
 
-/**
- * rvt_init_port - init internal data for driver port
- * @rdi: rvt_dev_info struct
- * @port: rvt port
- * @port_index: 0 based index of ports, different from IB core port num
- * @pkey_table: pkey_table for @port
- *
- * Keep track of a list of ports. No need to have a detach port.
- * They persist until the driver goes away.
- *
- * Return: always 0
- */
+ 
 int rvt_init_port(struct rvt_dev_info *rdi, struct rvt_ibport *port,
 		  int port_index, u16 *pkey_table)
 {

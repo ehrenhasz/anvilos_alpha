@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Thunderbolt driver - NHI driver
- *
- * The NHI (native host interface) is the pci device that allows us to send and
- * receive frames from the thunderbolt bus.
- *
- * Copyright (c) 2014 Andreas Noever <andreas.noever@gmail.com>
- * Copyright (C) 2018, Intel Corporation
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/slab.h>
@@ -28,21 +20,15 @@
 #define RING_TYPE(ring) ((ring)->is_tx ? "TX ring" : "RX ring")
 
 #define RING_FIRST_USABLE_HOPID	1
-/*
- * Used with QUIRK_E2E to specify an unused HopID the Rx credits are
- * transferred.
- */
+ 
 #define RING_E2E_RESERVED_HOPID	RING_FIRST_USABLE_HOPID
-/*
- * Minimal number of vectors when we use MSI-X. Two for control channel
- * Rx/Tx and the rest four are for cross domain DMA paths.
- */
+ 
 #define MSIX_MIN_VECS		6
 #define MSIX_MAX_VECS		16
 
-#define NHI_MAILBOX_TIMEOUT	500 /* ms */
+#define NHI_MAILBOX_TIMEOUT	500  
 
-/* Host interface quirks */
+ 
 #define QUIRK_AUTO_CLEAR_INT	BIT(0)
 #define QUIRK_E2E		BIT(1)
 
@@ -78,11 +64,7 @@ static void nhi_clear_interrupt(struct tb_nhi *nhi, int ring)
 		iowrite32(~0, nhi->iobase + REG_RING_INT_CLEAR + ring);
 }
 
-/*
- * ring_interrupt_active() - activate/deactivate interrupts for a single ring
- *
- * ring->nhi->lock must be held.
- */
+ 
 static void ring_interrupt_active(struct tb_ring *ring, bool active)
 {
 	int index = ring_interrupt_index(ring) / 32 * 4;
@@ -102,17 +84,7 @@ static void ring_interrupt_active(struct tb_ring *ring, bool active)
 		else
 			index = ring->hop + ring->nhi->hop_count;
 
-		/*
-		 * Intel routers support a bit that isn't part of
-		 * the USB4 spec to ask the hardware to clear
-		 * interrupt status bits automatically since
-		 * we already know which interrupt was triggered.
-		 *
-		 * Other routers explicitly disable auto-clear
-		 * to prevent conditions that may occur where two
-		 * MSIX interrupts are simultaneously active and
-		 * reading the register clears both of them.
-		 */
+		 
 		misc = ioread32(ring->nhi->iobase + REG_DMA_MISC);
 		if (ring->nhi->quirks & QUIRK_AUTO_CLEAR_INT)
 			auto_clear_bit = REG_DMA_MISC_INT_AUTO_CLEAR;
@@ -154,24 +126,20 @@ static void ring_interrupt_active(struct tb_ring *ring, bool active)
 		nhi_mask_interrupt(ring->nhi, mask, index);
 }
 
-/*
- * nhi_disable_interrupts() - disable interrupts for all rings
- *
- * Use only during init and shutdown.
- */
+ 
 static void nhi_disable_interrupts(struct tb_nhi *nhi)
 {
 	int i = 0;
-	/* disable interrupts */
+	 
 	for (i = 0; i < RING_INTERRUPT_REG_COUNT(nhi); i++)
 		nhi_mask_interrupt(nhi, ~0, 4 * i);
 
-	/* clear interrupt status bits */
+	 
 	for (i = 0; i < RING_NOTIFY_REG_COUNT(nhi); i++)
 		nhi_clear_interrupt(nhi, 4 * i);
 }
 
-/* ring helper methods */
+ 
 
 static void __iomem *ring_desc_base(struct tb_ring *ring)
 {
@@ -191,17 +159,13 @@ static void __iomem *ring_options_base(struct tb_ring *ring)
 
 static void ring_iowrite_cons(struct tb_ring *ring, u16 cons)
 {
-	/*
-	 * The other 16-bits in the register is read-only and writes to it
-	 * are ignored by the hardware so we can save one ioread32() by
-	 * filling the read-only bits with zeroes.
-	 */
+	 
 	iowrite32(cons, ring_desc_base(ring) + 8);
 }
 
 static void ring_iowrite_prod(struct tb_ring *ring, u16 prod)
 {
-	/* See ring_iowrite_cons() above for explanation */
+	 
 	iowrite32(prod << 16, ring_desc_base(ring) + 8);
 }
 
@@ -231,11 +195,7 @@ static bool ring_empty(struct tb_ring *ring)
 	return ring->head == ring->tail;
 }
 
-/*
- * ring_write_descriptors() - post frames from ring->queue to the controller
- *
- * ring->lock is held.
- */
+ 
 static void ring_write_descriptors(struct tb_ring *ring)
 {
 	struct ring_frame *frame, *n;
@@ -261,15 +221,7 @@ static void ring_write_descriptors(struct tb_ring *ring)
 	}
 }
 
-/*
- * ring_work() - progress completed frames
- *
- * If the ring is shutting down then all frames are marked as canceled and
- * their callbacks are invoked.
- *
- * Otherwise we collect all completed frame from the ring buffer, write new
- * frame to the ring buffer and invoke the callbacks for the completed frames.
- */
+ 
 static void ring_work(struct work_struct *work)
 {
 	struct tb_ring *ring = container_of(work, typeof(*ring), work);
@@ -281,7 +233,7 @@ static void ring_work(struct work_struct *work)
 	spin_lock_irqsave(&ring->lock, flags);
 
 	if (!ring->running) {
-		/*  Move all frames to done and mark them as canceled. */
+		 
 		list_splice_tail_init(&ring->in_flight, &done);
 		list_splice_tail_init(&ring->queue, &done);
 		canceled = true;
@@ -306,14 +258,11 @@ static void ring_work(struct work_struct *work)
 	ring_write_descriptors(ring);
 
 invoke_callback:
-	/* allow callbacks to schedule new work */
+	 
 	spin_unlock_irqrestore(&ring->lock, flags);
 	while (!list_empty(&done)) {
 		frame = list_first_entry(&done, typeof(*frame), list);
-		/*
-		 * The callback may reenqueue or delete frame.
-		 * Do not hold on to it.
-		 */
+		 
 		list_del_init(&frame->list);
 		if (frame->callback)
 			frame->callback(ring, frame, canceled);
@@ -337,15 +286,7 @@ int __tb_ring_enqueue(struct tb_ring *ring, struct ring_frame *frame)
 }
 EXPORT_SYMBOL_GPL(__tb_ring_enqueue);
 
-/**
- * tb_ring_poll() - Poll one completed frame from the ring
- * @ring: Ring to poll
- *
- * This function can be called when @start_poll callback of the @ring
- * has been called. It will read one completed frame from the ring and
- * return it to the caller. Returns %NULL if there is no more completed
- * frames.
- */
+ 
 struct ring_frame *tb_ring_poll(struct tb_ring *ring)
 {
 	struct ring_frame *frame = NULL;
@@ -393,7 +334,7 @@ static void __ring_interrupt_mask(struct tb_ring *ring, bool mask)
 	iowrite32(val, ring->nhi->iobase + reg);
 }
 
-/* Both @nhi->lock and @ring->lock should be held */
+ 
 static void __ring_interrupt(struct tb_ring *ring)
 {
 	if (!ring->running)
@@ -407,13 +348,7 @@ static void __ring_interrupt(struct tb_ring *ring)
 	}
 }
 
-/**
- * tb_ring_poll_complete() - Re-start interrupt for the ring
- * @ring: Ring to re-start the interrupt
- *
- * This will re-start (unmask) the ring interrupt once the user is done
- * with polling.
- */
+ 
 void tb_ring_poll_complete(struct tb_ring *ring)
 {
 	unsigned long flags;
@@ -520,10 +455,7 @@ static int nhi_alloc_hop(struct tb_nhi *nhi, struct tb_ring *ring)
 	if (ring->hop < 0) {
 		unsigned int i;
 
-		/*
-		 * Automatically allocate HopID from the non-reserved
-		 * range 1 .. hop_count - 1.
-		 */
+		 
 		for (i = start_hop; i < nhi->hop_count; i++) {
 			if (ring->is_tx) {
 				if (!nhi->tx_rings[i]) {
@@ -633,13 +565,7 @@ err_free_ring:
 	return NULL;
 }
 
-/**
- * tb_ring_alloc_tx() - Allocate DMA ring for transmit
- * @nhi: Pointer to the NHI the ring is to be allocated
- * @hop: HopID (ring) to allocate
- * @size: Number of entries in the ring
- * @flags: Flags for the ring
- */
+ 
 struct tb_ring *tb_ring_alloc_tx(struct tb_nhi *nhi, int hop, int size,
 				 unsigned int flags)
 {
@@ -647,20 +573,7 @@ struct tb_ring *tb_ring_alloc_tx(struct tb_nhi *nhi, int hop, int size,
 }
 EXPORT_SYMBOL_GPL(tb_ring_alloc_tx);
 
-/**
- * tb_ring_alloc_rx() - Allocate DMA ring for receive
- * @nhi: Pointer to the NHI the ring is to be allocated
- * @hop: HopID (ring) to allocate. Pass %-1 for automatic allocation.
- * @size: Number of entries in the ring
- * @flags: Flags for the ring
- * @e2e_tx_hop: Transmit HopID when E2E is enabled in @flags
- * @sof_mask: Mask of PDF values that start a frame
- * @eof_mask: Mask of PDF values that end a frame
- * @start_poll: If not %NULL the ring will call this function when an
- *		interrupt is triggered and masked, instead of callback
- *		in each Rx frame.
- * @poll_data: Optional data passed to @start_poll
- */
+ 
 struct tb_ring *tb_ring_alloc_rx(struct tb_nhi *nhi, int hop, int size,
 				 unsigned int flags, int e2e_tx_hop,
 				 u16 sof_mask, u16 eof_mask,
@@ -671,12 +584,7 @@ struct tb_ring *tb_ring_alloc_rx(struct tb_nhi *nhi, int hop, int size,
 }
 EXPORT_SYMBOL_GPL(tb_ring_alloc_rx);
 
-/**
- * tb_ring_start() - enable a ring
- * @ring: Ring to start
- *
- * Must not be invoked in parallel with tb_ring_stop().
- */
+ 
 void tb_ring_start(struct tb_ring *ring)
 {
 	u16 frame_size;
@@ -694,7 +602,7 @@ void tb_ring_start(struct tb_ring *ring)
 		RING_TYPE(ring), ring->hop);
 
 	if (ring->flags & RING_FLAG_FRAME) {
-		/* Means 4096 */
+		 
 		frame_size = 0;
 		flags = RING_FLAG_ENABLE;
 	} else {
@@ -705,7 +613,7 @@ void tb_ring_start(struct tb_ring *ring)
 	ring_iowrite64desc(ring, ring->descriptors_dma, 0);
 	if (ring->is_tx) {
 		ring_iowrite32desc(ring, ring->size, 12);
-		ring_iowrite32options(ring, 0, 4); /* time releated ? */
+		ring_iowrite32options(ring, 0, 4);  
 		ring_iowrite32options(ring, flags, 0);
 	} else {
 		u32 sof_eof_mask = ring->sof_mask << 16 | ring->eof_mask;
@@ -715,10 +623,7 @@ void tb_ring_start(struct tb_ring *ring)
 		ring_iowrite32options(ring, flags, 0);
 	}
 
-	/*
-	 * Now that the ring valid bit is set we can configure E2E if
-	 * enabled for the ring.
-	 */
+	 
 	if (ring->flags & RING_FLAG_E2E) {
 		if (!ring->is_tx) {
 			u32 hop;
@@ -747,20 +652,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(tb_ring_start);
 
-/**
- * tb_ring_stop() - shutdown a ring
- * @ring: Ring to stop
- *
- * Must not be invoked from a callback.
- *
- * This method will disable the ring. Further calls to
- * tb_ring_tx/tb_ring_rx will return -ESHUTDOWN until ring_stop has been
- * called.
- *
- * All enqueued frames will be canceled and their callbacks will be executed
- * with frame->canceled set to true (on the callback thread). This method
- * returns only after all callback invocations have finished.
- */
+ 
 void tb_ring_stop(struct tb_ring *ring)
 {
 	spin_lock_irq(&ring->nhi->lock);
@@ -788,31 +680,17 @@ err:
 	spin_unlock(&ring->lock);
 	spin_unlock_irq(&ring->nhi->lock);
 
-	/*
-	 * schedule ring->work to invoke callbacks on all remaining frames.
-	 */
+	 
 	schedule_work(&ring->work);
 	flush_work(&ring->work);
 }
 EXPORT_SYMBOL_GPL(tb_ring_stop);
 
-/*
- * tb_ring_free() - free ring
- *
- * When this method returns all invocations of ring->callback will have
- * finished.
- *
- * Ring must be stopped.
- *
- * Must NOT be called from ring_frame->callback!
- */
+ 
 void tb_ring_free(struct tb_ring *ring)
 {
 	spin_lock_irq(&ring->nhi->lock);
-	/*
-	 * Dissociate the ring from the NHI. This also ensures that
-	 * nhi_interrupt_work cannot reschedule ring->work.
-	 */
+	 
 	if (ring->is_tx)
 		ring->nhi->tx_rings[ring->hop] = NULL;
 	else
@@ -837,25 +715,13 @@ void tb_ring_free(struct tb_ring *ring)
 	dev_dbg(&ring->nhi->pdev->dev, "freeing %s %d\n", RING_TYPE(ring),
 		ring->hop);
 
-	/*
-	 * ring->work can no longer be scheduled (it is scheduled only
-	 * by nhi_interrupt_work, ring_stop and ring_msix). Wait for it
-	 * to finish before freeing the ring.
-	 */
+	 
 	flush_work(&ring->work);
 	kfree(ring);
 }
 EXPORT_SYMBOL_GPL(tb_ring_free);
 
-/**
- * nhi_mailbox_cmd() - Send a command through NHI mailbox
- * @nhi: Pointer to the NHI structure
- * @cmd: Command to send
- * @data: Data to be send with the command
- *
- * Sends mailbox command to the firmware running on NHI. Returns %0 in
- * case of success and negative errno in case of failure.
- */
+ 
 int nhi_mailbox_cmd(struct tb_nhi *nhi, enum nhi_mailbox_cmd cmd, u32 data)
 {
 	ktime_t timeout;
@@ -884,13 +750,7 @@ int nhi_mailbox_cmd(struct tb_nhi *nhi, enum nhi_mailbox_cmd cmd, u32 data)
 	return 0;
 }
 
-/**
- * nhi_mailbox_mode() - Return current firmware operation mode
- * @nhi: Pointer to the NHI structure
- *
- * The function reads current firmware operation mode using NHI mailbox
- * registers and returns it to the caller.
- */
+ 
 enum nhi_fw_mode nhi_mailbox_mode(struct tb_nhi *nhi)
 {
 	u32 val;
@@ -905,19 +765,15 @@ enum nhi_fw_mode nhi_mailbox_mode(struct tb_nhi *nhi)
 static void nhi_interrupt_work(struct work_struct *work)
 {
 	struct tb_nhi *nhi = container_of(work, typeof(*nhi), interrupt_work);
-	int value = 0; /* Suppress uninitialized usage warning. */
+	int value = 0;  
 	int bit;
 	int hop = -1;
-	int type = 0; /* current interrupt type 0: TX, 1: RX, 2: RX overflow */
+	int type = 0;  
 	struct tb_ring *ring;
 
 	spin_lock_irq(&nhi->lock);
 
-	/*
-	 * Starting at REG_RING_NOTIFY_BASE there are three status bitfields
-	 * (TX, RX, RX overflow). We iterate over the bits and read a new
-	 * dwords as required. The registers are cleared on read.
-	 */
+	 
 	for (bit = 0; bit < 3 * nhi->hop_count; bit++) {
 		if (bit % 32 == 0)
 			value = ioread32(nhi->iobase
@@ -1006,10 +862,7 @@ static bool nhi_wake_supported(struct pci_dev *pdev)
 {
 	u8 val;
 
-	/*
-	 * If power rails are sustainable for wakeup from S4 this
-	 * property is set by the BIOS.
-	 */
+	 
 	if (device_property_read_u8(&pdev->dev, "WAKE_SUPPORTED", &val))
 		return !!val;
 
@@ -1027,14 +880,11 @@ static int nhi_poweroff_noirq(struct device *dev)
 
 static void nhi_enable_int_throttling(struct tb_nhi *nhi)
 {
-	/* Throttling is specified in 256ns increments */
+	 
 	u32 throttle = DIV_ROUND_UP(128 * NSEC_PER_USEC, 256);
 	unsigned int i;
 
-	/*
-	 * Configure interrupt throttling for all vectors even if we
-	 * only use few.
-	 */
+	 
 	for (i = 0; i < MSIX_MAX_VECS; i++) {
 		u32 reg = REG_INT_THROTTLING_RATE + i * 4;
 		iowrite32(throttle, nhi->iobase + reg);
@@ -1048,11 +898,7 @@ static int nhi_resume_noirq(struct device *dev)
 	struct tb_nhi *nhi = tb->nhi;
 	int ret;
 
-	/*
-	 * Check that the device is still there. It may be that the user
-	 * unplugged last device which causes the host controller to go
-	 * away on PCs.
-	 */
+	 
 	if (!pci_device_is_present(pdev)) {
 		nhi->going_away = true;
 	} else {
@@ -1080,11 +926,7 @@ static void nhi_complete(struct device *dev)
 	struct pci_dev *pdev = to_pci_dev(dev);
 	struct tb *tb = pci_get_drvdata(pdev);
 
-	/*
-	 * If we were runtime suspended when system suspend started,
-	 * schedule runtime resume now. It should bring the domain back
-	 * to functional state.
-	 */
+	 
 	if (pm_runtime_suspended(&pdev->dev))
 		pm_runtime_resume(&pdev->dev);
 	else
@@ -1142,10 +984,7 @@ static void nhi_shutdown(struct tb_nhi *nhi)
 				 "RX ring %d is still active\n", i);
 	}
 	nhi_disable_interrupts(nhi);
-	/*
-	 * We have to release the irq before calling flush_work. Otherwise an
-	 * already executing IRQ handler could call schedule_work again.
-	 */
+	 
 	if (!nhi->pdev->msix_enabled) {
 		devm_free_irq(&nhi->pdev->dev, nhi->pdev->irq, nhi);
 		flush_work(&nhi->interrupt_work);
@@ -1159,21 +998,13 @@ static void nhi_shutdown(struct tb_nhi *nhi)
 static void nhi_check_quirks(struct tb_nhi *nhi)
 {
 	if (nhi->pdev->vendor == PCI_VENDOR_ID_INTEL) {
-		/*
-		 * Intel hardware supports auto clear of the interrupt
-		 * status register right after interrupt is being
-		 * issued.
-		 */
+		 
 		nhi->quirks |= QUIRK_AUTO_CLEAR_INT;
 
 		switch (nhi->pdev->device) {
 		case PCI_DEVICE_ID_INTEL_FALCON_RIDGE_2C_NHI:
 		case PCI_DEVICE_ID_INTEL_FALCON_RIDGE_4C_NHI:
-			/*
-			 * Falcon Ridge controller needs the end-to-end
-			 * flow control workaround to avoid losing Rx
-			 * packets when RING_FLAG_E2E is set.
-			 */
+			 
 			nhi->quirks |= QUIRK_E2E;
 			break;
 		}
@@ -1186,7 +1017,7 @@ static int nhi_check_iommu_pdev(struct pci_dev *pdev, void *data)
 	    !device_iommu_capable(&pdev->dev, IOMMU_CAP_PRE_BOOT_PROTECTION))
 		return 0;
 	*(bool *)data = true;
-	return 1; /* Stop walking */
+	return 1;  
 }
 
 static void nhi_check_iommu(struct tb_nhi *nhi)
@@ -1194,23 +1025,7 @@ static void nhi_check_iommu(struct tb_nhi *nhi)
 	struct pci_bus *bus = nhi->pdev->bus;
 	bool port_ok = false;
 
-	/*
-	 * Ideally what we'd do here is grab every PCI device that
-	 * represents a tunnelling adapter for this NHI and check their
-	 * status directly, but unfortunately USB4 seems to make it
-	 * obnoxiously difficult to reliably make any correlation.
-	 *
-	 * So for now we'll have to bodge it... Hoping that the system
-	 * is at least sane enough that an adapter is in the same PCI
-	 * segment as its NHI, if we can find *something* on that segment
-	 * which meets the requirements for Kernel DMA Protection, we'll
-	 * take that to imply that firmware is aware and has (hopefully)
-	 * done the right thing in general. We need to know that the PCI
-	 * layer has seen the ExternalFacingPort property which will then
-	 * inform the IOMMU layer to enforce the complete "untrusted DMA"
-	 * flow, but also that the IOMMU driver itself can be trusted not
-	 * to have been subverted by a pre-boot DMA attack.
-	 */
+	 
 	while (bus->parent)
 		bus = bus->parent;
 
@@ -1227,7 +1042,7 @@ static void nhi_reset(struct tb_nhi *nhi)
 	u32 val;
 
 	val = ioread32(nhi->iobase + REG_CAPS);
-	/* Reset only v2 and later routers */
+	 
 	if (FIELD_GET(REG_CAPS_VERSION_MASK, val) < REG_CAPS_VERSION_2)
 		return;
 
@@ -1258,19 +1073,14 @@ static int nhi_init_msi(struct tb_nhi *nhi)
 	struct device *dev = &pdev->dev;
 	int res, irq, nvec;
 
-	/* In case someone left them on. */
+	 
 	nhi_disable_interrupts(nhi);
 
 	nhi_enable_int_throttling(nhi);
 
 	ida_init(&nhi->msix_ida);
 
-	/*
-	 * The NHI has 16 MSI-X vectors or a single MSI. We first try to
-	 * get all MSI-X vectors and if we succeed, each ring will have
-	 * one MSI-X. If for some reason that does not work out, we
-	 * fallback to a single MSI.
-	 */
+	 
 	nvec = pci_alloc_irq_vectors(pdev, MSIX_MIN_VECS, MSIX_MAX_VECS,
 				     PCI_IRQ_MSIX);
 	if (nvec < 0) {
@@ -1307,18 +1117,11 @@ static struct tb *nhi_select_cm(struct tb_nhi *nhi)
 {
 	struct tb *tb;
 
-	/*
-	 * USB4 case is simple. If we got control of any of the
-	 * capabilities, we use software CM.
-	 */
+	 
 	if (tb_acpi_is_native())
 		return tb_probe(nhi);
 
-	/*
-	 * Either firmware based CM is running (we did not get control
-	 * from the firmware) or this is pre-USB4 PC so try first
-	 * firmware CM and then fallback to software CM.
-	 */
+	 
 	tb = icm_probe(nhi);
 	if (!tb)
 		tb = tb_probe(nhi);
@@ -1350,7 +1153,7 @@ static int nhi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	nhi->pdev = pdev;
 	nhi->ops = (const struct tb_nhi_ops *)id->driver_data;
-	/* cannot fail - table is allocated in pcim_iomap_regions */
+	 
 	nhi->iobase = pcim_iomap_table(pdev)[0];
 	nhi->hop_count = ioread32(nhi->iobase + REG_CAPS) & 0x3ff;
 	dev_dbg(dev, "total paths: %d\n", nhi->hop_count);
@@ -1394,10 +1197,7 @@ static int nhi_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 	res = tb_domain_add(tb);
 	if (res) {
-		/*
-		 * At this point the RX/TX rings might already have been
-		 * activated. Do a proper shutdown.
-		 */
+		 
 		tb_domain_put(tb);
 		nhi_shutdown(nhi);
 		return res;
@@ -1427,18 +1227,11 @@ static void nhi_remove(struct pci_dev *pdev)
 	nhi_shutdown(nhi);
 }
 
-/*
- * The tunneled pci bridges are siblings of us. Use resume_noirq to reenable
- * the tunnels asap. A corresponding pci quirk blocks the downstream bridges
- * resume_noirq until we are done.
- */
+ 
 static const struct dev_pm_ops nhi_pm_ops = {
 	.suspend_noirq = nhi_suspend_noirq,
 	.resume_noirq = nhi_resume_noirq,
-	.freeze_noirq = nhi_freeze_noirq,  /*
-					    * we just disable hotplug, the
-					    * pci-tunnels stay alive.
-					    */
+	.freeze_noirq = nhi_freeze_noirq,   
 	.thaw_noirq = nhi_thaw_noirq,
 	.restore_noirq = nhi_resume_noirq,
 	.suspend = nhi_suspend,
@@ -1450,10 +1243,7 @@ static const struct dev_pm_ops nhi_pm_ops = {
 };
 
 static struct pci_device_id nhi_ids[] = {
-	/*
-	 * We have to specify class, the TB bridges use the same device and
-	 * vendor (sub)id on gen 1 and gen 2 controllers.
-	 */
+	 
 	{
 		.class = PCI_CLASS_SYSTEM_OTHER << 8, .class_mask = ~0,
 		.vendor = PCI_VENDOR_ID_INTEL,
@@ -1479,7 +1269,7 @@ static struct pci_device_id nhi_ids[] = {
 		.subvendor = PCI_ANY_ID, .subdevice = PCI_ANY_ID,
 	},
 
-	/* Thunderbolt 3 */
+	 
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_2C_NHI) },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_4C_NHI) },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_ALPINE_RIDGE_USBONLY_NHI) },
@@ -1494,7 +1284,7 @@ static struct pci_device_id nhi_ids[] = {
 	  .driver_data = (kernel_ulong_t)&icl_nhi_ops },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_ICL_NHI1),
 	  .driver_data = (kernel_ulong_t)&icl_nhi_ops },
-	/* Thunderbolt 4 */
+	 
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_TGL_NHI0),
 	  .driver_data = (kernel_ulong_t)&icl_nhi_ops },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_TGL_NHI1),
@@ -1520,7 +1310,7 @@ static struct pci_device_id nhi_ids[] = {
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_BARLOW_RIDGE_HOST_80G_NHI) },
 	{ PCI_VDEVICE(INTEL, PCI_DEVICE_ID_INTEL_BARLOW_RIDGE_HOST_40G_NHI) },
 
-	/* Any USB4 compliant host */
+	 
 	{ PCI_DEVICE_CLASS(PCI_CLASS_SERIAL_USB_USB4, ~0) },
 
 	{ 0,}

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Voltage Protocol
- *
- * Copyright (C) 2020-2022 ARM Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/scmi_protocol.h>
@@ -96,10 +92,7 @@ static int scmi_init_voltage_levels(struct device *dev,
 	u32 num_levels;
 
 	num_levels = num_returned + num_remaining;
-	/*
-	 * segmented levels entries are represented by a single triplet
-	 * returned all in one go.
-	 */
+	 
 	if (!num_levels ||
 	    (segmented && (num_remaining || num_returned != 3))) {
 		dev_err(dev,
@@ -146,7 +139,7 @@ static int iter_volt_levels_update_state(struct scmi_iterator_state *st,
 	st->num_returned = NUM_RETURNED_LEVELS(flags);
 	st->num_remaining = NUM_REMAINING_LEVELS(flags);
 
-	/* Allocate space for num_levels if not already done */
+	 
 	if (!p->v->num_levels) {
 		ret = scmi_init_voltage_levels(p->dev, p->v, st->num_returned,
 					       st->num_remaining,
@@ -223,9 +216,9 @@ static int scmi_voltage_descriptors_get(const struct scmi_protocol_handle *ph,
 		u32 attributes;
 		struct scmi_voltage_info *v;
 
-		/* Retrieve domain attributes at first ... */
+		 
 		put_unaligned_le32(dom, td->tx.buf);
-		/* Skip domain on comms error */
+		 
 		if (ph->xops->do_xfer(ph, td))
 			continue;
 
@@ -234,10 +227,7 @@ static int scmi_voltage_descriptors_get(const struct scmi_protocol_handle *ph,
 		attributes = le32_to_cpu(resp_dom->attr);
 		strscpy(v->name, resp_dom->name, SCMI_SHORT_NAME_MAX_SIZE);
 
-		/*
-		 * If supported overwrite short name with the extended one;
-		 * on error just carry on and use already provided short name.
-		 */
+		 
 		if (PROTOCOL_REV_MAJOR(vinfo->version) >= 0x2) {
 			if (SUPPORTS_EXTENDED_NAMES(attributes))
 				ph->hops->extended_name_get(ph,
@@ -248,7 +238,7 @@ static int scmi_voltage_descriptors_get(const struct scmi_protocol_handle *ph,
 				v->async_level_set = true;
 		}
 
-		/* Skip invalid voltage descriptors */
+		 
 		scmi_voltage_levels_get(ph, v);
 	}
 

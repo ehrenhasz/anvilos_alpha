@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Sargun Dhillon <sargun@sargun.me>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -34,7 +33,7 @@ int main(int argc, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;
@@ -70,10 +69,7 @@ int main(int argc, char **argv)
 	if (join_cgroup(CGROUP_PATH))
 		goto err;
 
-	/*
-	 * The installed helper program catched the sync call, and should
-	 * write it to the map.
-	 */
+	 
 
 	sync();
 	bpf_map_lookup_elem(map_fd[1], &idx, &remote_pid);
@@ -85,7 +81,7 @@ int main(int argc, char **argv)
 		goto err;
 	}
 
-	/* Verify the negative scenario; leave the cgroup */
+	 
 	if (join_cgroup("/"))
 		goto err;
 

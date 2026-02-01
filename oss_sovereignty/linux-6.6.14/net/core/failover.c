@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018, Intel Corporation. */
 
-/* A common module to handle registrations and notifications for paravirtual
- * drivers to enable accelerated datapath and support VF live migration.
- *
- * The notifier and event handling code is based on netvsc driver.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/etherdevice.h>
@@ -35,14 +31,7 @@ static struct net_device *failover_get_bymac(u8 *mac, struct failover_ops **ops)
 	return NULL;
 }
 
-/**
- * failover_slave_register - Register a slave netdev
- *
- * @slave_dev: slave netdev that is being registered
- *
- * Registers a slave device to a failover instance. Only ethernet devices
- * are supported.
- */
+ 
 static int failover_slave_register(struct net_device *slave_dev)
 {
 	struct netdev_lag_upper_info lag_upper_info;
@@ -94,13 +83,7 @@ done:
 	return NOTIFY_DONE;
 }
 
-/**
- * failover_slave_unregister - Unregister a slave netdev
- *
- * @slave_dev: slave netdev that is being unregistered
- *
- * Unregisters a slave device from a failover instance.
- */
+ 
 int failover_slave_unregister(struct net_device *slave_dev)
 {
 	struct net_device *failover_dev;
@@ -187,7 +170,7 @@ failover_event(struct notifier_block *this, unsigned long event, void *ptr)
 {
 	struct net_device *event_dev = netdev_notifier_info_to_dev(ptr);
 
-	/* Skip parent events */
+	 
 	if (netif_is_failover(event_dev))
 		return NOTIFY_DONE;
 
@@ -227,18 +210,7 @@ failover_existing_slave_register(struct net_device *failover_dev)
 	rtnl_unlock();
 }
 
-/**
- * failover_register - Register a failover instance
- *
- * @dev: failover netdev
- * @ops: failover ops
- *
- * Allocate and register a failover instance for a failover netdev. ops
- * provides handlers for slave device register/unregister/link change/
- * name change events.
- *
- * Return: pointer to failover instance
- */
+ 
 struct failover *failover_register(struct net_device *dev,
 				   struct failover_ops *ops)
 {
@@ -268,13 +240,7 @@ struct failover *failover_register(struct net_device *dev,
 }
 EXPORT_SYMBOL_GPL(failover_register);
 
-/**
- * failover_unregister - Unregister a failover instance
- *
- * @failover: pointer to failover instance
- *
- * Unregisters and frees a failover instance.
- */
+ 
 void failover_unregister(struct failover *failover)
 {
 	struct net_device *failover_dev;

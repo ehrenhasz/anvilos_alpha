@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ce-hash.c - hardware cryptographic offloader for
- * Allwinner H3/A64/H5/H2+/H6/R40 SoC
- *
- * Copyright (C) 2015-2020 Corentin Labbe <clabbe@baylibre.com>
- *
- * This file add support for MD5 and SHA1/SHA224/SHA256/SHA384/SHA512.
- *
- * You could find the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 
 #include <crypto/internal/hash.h>
 #include <crypto/md5.h>
@@ -33,7 +24,7 @@ int sun8i_ce_hash_init_tfm(struct crypto_ahash *tfm)
 	algt = container_of(alg, struct sun8i_ce_alg_template, alg.hash.base);
 	op->ce = algt->ce;
 
-	/* FALLBACK */
+	 
 	op->fallback_tfm = crypto_alloc_ahash(crypto_ahash_alg_name(tfm), 0,
 					      CRYPTO_ALG_NEED_FALLBACK);
 	if (IS_ERR(op->fallback_tfm)) {
@@ -216,7 +207,7 @@ static bool sun8i_ce_hash_need_fallback(struct ahash_request *areq)
 		algt->stat_fb_len0++;
 		return true;
 	}
-	/* we need to reserve one SG for padding one */
+	 
 	if (sg_nents_for_len(areq->src, areq->nbytes) > MAX_SG - 1) {
 		algt->stat_fb_maxsg++;
 		return true;
@@ -299,18 +290,18 @@ static u64 hash_pad(__le32 *buf, unsigned int bufsize, u64 padi, u64 byte_count,
 		buf[k] = 0;
 
 	if (le) {
-		/* MD5 */
+		 
 		lebits = (__le64 *)&buf[j];
 		*lebits = cpu_to_le64(byte_count << 3);
 		j += 2;
 	} else {
 		if (bs == 64) {
-			/* sha1 sha224 sha256 */
+			 
 			bebits = (__be64 *)&buf[j];
 			*bebits = cpu_to_be64(byte_count << 3);
 			j += 2;
 		} else {
-			/* sha384 sha512*/
+			 
 			bebits = (__be64 *)&buf[j];
 			*bebits = cpu_to_be64(byte_count >> 61);
 			j += 2;
@@ -361,7 +352,7 @@ int sun8i_ce_hash_run(struct crypto_engine *engine, void *breq)
 	if (digestsize == SHA384_DIGEST_SIZE)
 		digestsize = SHA512_DIGEST_SIZE;
 
-	/* the padding could be up to two block. */
+	 
 	buf = kzalloc(bs * 2, GFP_KERNEL | GFP_DMA);
 	if (!buf) {
 		err = -ENOMEM;

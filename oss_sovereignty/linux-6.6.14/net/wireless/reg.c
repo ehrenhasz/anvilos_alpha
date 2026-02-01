@@ -1,49 +1,7 @@
-/*
- * Copyright 2002-2005, Instant802 Networks, Inc.
- * Copyright 2005-2006, Devicescape Software, Inc.
- * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2008-2011	Luis R. Rodriguez <mcgrof@qca.qualcomm.com>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright      2017  Intel Deutschland GmbH
- * Copyright (C) 2018 - 2023 Intel Corporation
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 
-/**
- * DOC: Wireless regulatory infrastructure
- *
- * The usual implementation is for a driver to read a device EEPROM to
- * determine which regulatory domain it should be operating under, then
- * looking up the allowable channels in a driver-local table and finally
- * registering those channels in the wiphy structure.
- *
- * Another set of compliance enforcement is for drivers to use their
- * own compliance limits which can be stored on the EEPROM. The host
- * driver or firmware may ensure these are used.
- *
- * In addition to all this we provide an extra layer of regulatory
- * conformance. For drivers which do not have any regulatory
- * information CRDA provides the complete regulatory solution.
- * For others it provides a community effort on further restrictions
- * to enhance compliance.
- *
- * Note: When number of rules --> infinity we will not be able to
- * index on alpha2 any more, instead we'll probably have to
- * rely on some SHA1 checksum of the regdomain for example.
- *
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -63,22 +21,10 @@
 #include "rdev-ops.h"
 #include "nl80211.h"
 
-/*
- * Grace period we give before making sure all current interfaces reside on
- * channels allowed by the current regulatory domain.
- */
+ 
 #define REG_ENFORCE_GRACE_MS 60000
 
-/**
- * enum reg_request_treatment - regulatory request treatment
- *
- * @REG_REQ_OK: continue processing the regulatory request
- * @REG_REQ_IGNORE: ignore the regulatory request
- * @REG_REQ_INTERSECT: the regulatory domain resulting from this request should
- *	be intersected with the current one.
- * @REG_REQ_ALREADY_SET: the regulatory request will not change the current
- *	regulatory settings, and no further processing is required.
- */
+ 
 enum reg_request_treatment {
 	REG_REQ_OK,
 	REG_REQ_IGNORE,
@@ -95,40 +41,24 @@ static struct regulatory_request core_request_world = {
 	.country_ie_env = ENVIRON_ANY,
 };
 
-/*
- * Receipt of information from last regulatory request,
- * protected by RTNL (and can be accessed with RCU protection)
- */
+ 
 static struct regulatory_request __rcu *last_request =
 	(void __force __rcu *)&core_request_world;
 
-/* To trigger userspace events and load firmware */
+ 
 static struct platform_device *reg_pdev;
 
-/*
- * Central wireless core regulatory domains, we only need two,
- * the current one and a world regulatory domain in case we have no
- * information to give us an alpha2.
- * (protected by RTNL, can be read under RCU)
- */
+ 
 const struct ieee80211_regdomain __rcu *cfg80211_regdomain;
 
-/*
- * Number of devices that registered to the core
- * that support cellular base station regulatory hints
- * (protected by RTNL)
- */
+ 
 static int reg_num_devs_support_basehint;
 
-/*
- * State variable indicating if the platform on which the devices
- * are attached is operating in an indoor environment. The state variable
- * is relevant for all registered devices.
- */
+ 
 static bool reg_is_indoor;
 static DEFINE_SPINLOCK(reg_indoor_lock);
 
-/* Used to track the userspace process controlling the indoor setting */
+ 
 static u32 reg_is_indoor_portid;
 
 static void restore_regulatory_settings(bool reset_user, bool cached);
@@ -140,11 +70,7 @@ static const struct ieee80211_regdomain *get_cfg80211_regdom(void)
 	return rcu_dereference_rtnl(cfg80211_regdomain);
 }
 
-/*
- * Returns the regulatory domain associated with the wiphy.
- *
- * Requires any of RTNL, wiphy mutex or RCU protection.
- */
+ 
 const struct ieee80211_regdomain *get_wiphy_regdom(struct wiphy *wiphy)
 {
 	return rcu_dereference_check(wiphy->regd,
@@ -216,15 +142,15 @@ static struct regulatory_request *get_last_request(void)
 	return rcu_dereference_rtnl(last_request);
 }
 
-/* Used to queue up regulatory hints */
+ 
 static LIST_HEAD(reg_requests_list);
 static DEFINE_SPINLOCK(reg_requests_lock);
 
-/* Used to queue up beacon hints for review */
+ 
 static LIST_HEAD(reg_pending_beacons);
 static DEFINE_SPINLOCK(reg_pending_beacons_lock);
 
-/* Used to keep track of processed beacon hints */
+ 
 static LIST_HEAD(reg_beacon_list);
 
 struct reg_beacon {
@@ -238,47 +164,46 @@ static DECLARE_DELAYED_WORK(reg_check_chans, reg_check_chans_work);
 static void reg_todo(struct work_struct *work);
 static DECLARE_WORK(reg_work, reg_todo);
 
-/* We keep a static world regulatory domain in case of the absence of CRDA */
+ 
 static const struct ieee80211_regdomain world_regdom = {
 	.n_reg_rules = 8,
 	.alpha2 =  "00",
 	.reg_rules = {
-		/* IEEE 802.11b/g, channels 1..11 */
+		 
 		REG_RULE(2412-10, 2462+10, 40, 6, 20, 0),
-		/* IEEE 802.11b/g, channels 12..13. */
+		 
 		REG_RULE(2467-10, 2472+10, 20, 6, 20,
 			NL80211_RRF_NO_IR | NL80211_RRF_AUTO_BW),
-		/* IEEE 802.11 channel 14 - Only JP enables
-		 * this and for 802.11b only */
+		 
 		REG_RULE(2484-10, 2484+10, 20, 6, 20,
 			NL80211_RRF_NO_IR |
 			NL80211_RRF_NO_OFDM),
-		/* IEEE 802.11a, channel 36..48 */
+		 
 		REG_RULE(5180-10, 5240+10, 80, 6, 20,
                         NL80211_RRF_NO_IR |
                         NL80211_RRF_AUTO_BW),
 
-		/* IEEE 802.11a, channel 52..64 - DFS required */
+		 
 		REG_RULE(5260-10, 5320+10, 80, 6, 20,
 			NL80211_RRF_NO_IR |
 			NL80211_RRF_AUTO_BW |
 			NL80211_RRF_DFS),
 
-		/* IEEE 802.11a, channel 100..144 - DFS required */
+		 
 		REG_RULE(5500-10, 5720+10, 160, 6, 20,
 			NL80211_RRF_NO_IR |
 			NL80211_RRF_DFS),
 
-		/* IEEE 802.11a, channel 149..165 */
+		 
 		REG_RULE(5745-10, 5825+10, 80, 6, 20,
 			NL80211_RRF_NO_IR),
 
-		/* IEEE 802.11ad (60GHz), channels 1..3 */
+		 
 		REG_RULE(56160+2160*1-1080, 56160+2160*3+1080, 2160, 0, 0, 0),
 	}
 };
 
-/* protected by RTNL */
+ 
 static const struct ieee80211_regdomain *cfg80211_world_regdom =
 	&world_regdom;
 
@@ -327,7 +252,7 @@ static void reset_regdomains(bool full_reset,
 
 	r = get_cfg80211_regdom();
 
-	/* avoid freeing static information or freeing something twice */
+	 
 	if (r == cfg80211_world_regdom)
 		r = NULL;
 	if (cfg80211_world_regdom == &world_regdom)
@@ -347,10 +272,7 @@ static void reset_regdomains(bool full_reset,
 	reg_update_last_request(&core_request_world);
 }
 
-/*
- * Dynamic world regulatory domain requested by the wireless
- * core upon initialization
- */
+ 
 static void update_world_regdomain(const struct ieee80211_regdomain *rd)
 {
 	struct regulatory_request *lr;
@@ -382,10 +304,7 @@ static bool is_unknown_alpha2(const char *alpha2)
 {
 	if (!alpha2)
 		return false;
-	/*
-	 * Special case where regulatory domain was built by driver
-	 * but a specific alpha2 cannot be determined
-	 */
+	 
 	return alpha2[0] == '9' && alpha2[1] == '9';
 }
 
@@ -393,11 +312,7 @@ static bool is_intersected_alpha2(const char *alpha2)
 {
 	if (!alpha2)
 		return false;
-	/*
-	 * Special case where regulatory domain is the
-	 * result of an intersection between two regulatory domain
-	 * structures
-	 */
+	 
 	return alpha2[0] == '9' && alpha2[1] == '8';
 }
 
@@ -424,17 +339,13 @@ static bool regdom_changes(const char *alpha2)
 	return !alpha2_equal(r->alpha2, alpha2);
 }
 
-/*
- * The NL80211_REGDOM_SET_BY_USER regdom alpha2 is cached, this lets
- * you know if a valid regulatory hint with NL80211_REGDOM_SET_BY_USER
- * has ever been issued.
- */
+ 
 static bool is_user_regdom_saved(void)
 {
 	if (user_alpha2[0] == '9' && user_alpha2[1] == '7')
 		return false;
 
-	/* This would indicate a mistake on the design */
+	 
 	if (WARN(!is_world_regdom(user_alpha2) && !is_an_alpha2(user_alpha2),
 		 "Unexpected user alpha2: %c%c\n",
 		 user_alpha2[0], user_alpha2[1]))
@@ -524,7 +435,7 @@ static int reg_schedule_apply(const struct ieee80211_regdomain *regdom)
 }
 
 #ifdef CONFIG_CFG80211_CRDA_SUPPORT
-/* Max number of consecutive attempts to communicate with CRDA  */
+ 
 #define REG_MAX_CRDA_TIMEOUTS 10
 
 static u32 reg_crda_timeouts;
@@ -556,10 +467,7 @@ static void reset_crda_timeouts(void)
 	reg_crda_timeouts = 0;
 }
 
-/*
- * This lets us keep regulatory code which is updated on a regulatory
- * basis in userspace.
- */
+ 
 static int call_crda(const char *alpha2)
 {
 	char country[12];
@@ -596,23 +504,23 @@ static inline int call_crda(const char *alpha2)
 {
 	return -ENODATA;
 }
-#endif /* CONFIG_CFG80211_CRDA_SUPPORT */
+#endif  
 
-/* code to directly load a firmware database through request_firmware */
+ 
 static const struct fwdb_header *regdb;
 
 struct fwdb_country {
 	u8 alpha2[2];
 	__be16 coll_ptr;
-	/* this struct cannot be extended */
+	 
 } __packed __aligned(4);
 
 struct fwdb_collection {
 	u8 len;
 	u8 n_rules;
 	u8 dfs_region;
-	/* no optional data yet */
-	/* aligned to 2, then followed by __be16 array of rule pointers */
+	 
+	 
 } __packed __aligned(4);
 
 enum fwdb_flags {
@@ -639,7 +547,7 @@ struct fwdb_rule {
 	u8 flags;
 	__be16 max_eirp;
 	__be32 start, end, max_bw;
-	/* start of optional data */
+	 
 	__be16 cac_timeout;
 	__be16 wmm_ptr;
 } __packed __aligned(4);
@@ -685,7 +593,7 @@ static bool valid_rule(const u8 *data, unsigned int size, u16 rule_ptr)
 	if ((u8 *)rule + sizeof(rule->len) > data + size)
 		return false;
 
-	/* mandatory fields */
+	 
 	if (rule->len < offsetofend(struct fwdb_rule, max_bw))
 		return false;
 	if (rule->len >= offsetofend(struct fwdb_rule, wmm_ptr)) {
@@ -711,16 +619,16 @@ static bool valid_country(const u8 *data, unsigned int size,
 	__be16 *rules_ptr;
 	unsigned int i;
 
-	/* make sure we can read len/n_rules */
+	 
 	if ((u8 *)coll + offsetofend(typeof(*coll), n_rules) > data + size)
 		return false;
 
-	/* make sure base struct and all rules fit */
+	 
 	if ((u8 *)coll + ALIGN(coll->len, 2) +
 	    (coll->n_rules * 2) > data + size)
 		return false;
 
-	/* mandatory fields must exist */
+	 
 	if (coll->len < offsetofend(struct fwdb_collection, dfs_region))
 		return false;
 
@@ -807,7 +715,7 @@ static bool regdb_has_valid_signature(const u8 *data, unsigned int size)
 static void free_regdb_keyring(void)
 {
 }
-#endif /* CONFIG_CFG80211_REQUIRE_SIGNED_REGDB */
+#endif  
 
 static bool valid_regdb(const u8 *data, unsigned int size)
 {
@@ -967,7 +875,7 @@ static int regdb_query_country(const struct fwdb_header *db,
 
 		rrule->dfs_cac_ms = 0;
 
-		/* handle optional data */
+		 
 		if (rule->len >= offsetofend(struct fwdb_rule, cac_timeout))
 			rrule->dfs_cac_ms =
 				1000 * be16_to_cpu(rule->cac_timeout);
@@ -1014,12 +922,7 @@ static void regdb_fw_cb(const struct firmware *fw, void *context)
 
 	rtnl_lock();
 	if (regdb && !IS_ERR(regdb)) {
-		/* negative case - a bug
-		 * positive case - can happen due to race in case of multiple cb's in
-		 * queue, due to usage of asynchronous callback
-		 *
-		 * Either case, just restore and free new db.
-		 */
+		 
 	} else if (set_error) {
 		regdb = ERR_PTR(set_error);
 	} else if (fw) {
@@ -1094,7 +997,7 @@ int reg_reload_regdb(void)
 		kfree(regdb);
 	regdb = db;
 
-	/* reset regulatory domain */
+	 
 	current_regdomain = get_cfg80211_regdom();
 
 	request = kzalloc(sizeof(*request), GFP_KERNEL);
@@ -1143,10 +1046,7 @@ static const struct ieee80211_regdomain *reg_get_regdomain(struct wiphy *wiphy)
 {
 	struct regulatory_request *lr = get_last_request();
 
-	/*
-	 * Follow the driver's regulatory domain, if present, unless a country
-	 * IE has been processed or a user wants to help complaince further
-	 */
+	 
 	if (lr->initiator != NL80211_REGDOM_SET_BY_COUNTRY_IE &&
 	    lr->initiator != NL80211_REGDOM_SET_BY_USER &&
 	    wiphy->regd)
@@ -1171,7 +1071,7 @@ reg_get_max_bandwidth_from_range(const struct ieee80211_regdomain *rd,
 	if (idx == rd->n_reg_rules)
 		return 0;
 
-	/* get start_freq */
+	 
 	no = idx;
 
 	while (no) {
@@ -1186,7 +1086,7 @@ reg_get_max_bandwidth_from_range(const struct ieee80211_regdomain *rd,
 
 	start_freq = freq_range->start_freq_khz;
 
-	/* get end_freq */
+	 
 	freq_range = &rule->freq_range;
 	no = idx;
 
@@ -1217,10 +1117,7 @@ unsigned int reg_get_max_bandwidth(const struct ieee80211_regdomain *rd,
 	if (rule->flags & NL80211_RRF_NO_80MHZ)
 		bw = min_t(unsigned int, bw, MHZ_TO_KHZ(40));
 
-	/*
-	 * HT40+/HT40- limits are handled per-channel. Only limit BW if both
-	 * are not allowed.
-	 */
+	 
 	if (rule->flags & NL80211_RRF_NO_HT40MINUS &&
 	    rule->flags & NL80211_RRF_NO_HT40PLUS)
 		bw = min_t(unsigned int, bw, MHZ_TO_KHZ(20));
@@ -1228,7 +1125,7 @@ unsigned int reg_get_max_bandwidth(const struct ieee80211_regdomain *rd,
 	return bw;
 }
 
-/* Sanity check on a regulatory rule */
+ 
 static bool is_valid_reg_rule(const struct ieee80211_reg_rule *rule)
 {
 	const struct ieee80211_freq_range *freq_range = &rule->freq_range;
@@ -1269,30 +1166,12 @@ static bool is_valid_rd(const struct ieee80211_regdomain *rd)
 	return true;
 }
 
-/**
- * freq_in_rule_band - tells us if a frequency is in a frequency band
- * @freq_range: frequency rule we want to query
- * @freq_khz: frequency we are inquiring about
- *
- * This lets us know if a specific frequency rule is or is not relevant to
- * a specific frequency's band. Bands are device specific and artificial
- * definitions (the "2.4 GHz band", the "5 GHz band" and the "60GHz band"),
- * however it is safe for now to assume that a frequency rule should not be
- * part of a frequency's band if the start freq or end freq are off by more
- * than 2 GHz for the 2.4 and 5 GHz bands, and by more than 20 GHz for the
- * 60 GHz band.
- * This resolution can be lowered and should be considered as we add
- * regulatory rule support for other "bands".
- **/
+ 
 static bool freq_in_rule_band(const struct ieee80211_freq_range *freq_range,
 			      u32 freq_khz)
 {
 #define ONE_GHZ_IN_KHZ	1000000
-	/*
-	 * From 802.11ad: directional multi-gigabit (DMG):
-	 * Pertaining to operation in a frequency band containing a channel
-	 * with the Channel starting frequency above 45 GHz.
-	 */
+	 
 	u32 limit = freq_khz > 45 * ONE_GHZ_IN_KHZ ?
 			20 * ONE_GHZ_IN_KHZ : 2 * ONE_GHZ_IN_KHZ;
 	if (abs(freq_khz - freq_range->start_freq_khz) <= limit)
@@ -1303,11 +1182,7 @@ static bool freq_in_rule_band(const struct ieee80211_freq_range *freq_range,
 #undef ONE_GHZ_IN_KHZ
 }
 
-/*
- * Later on we can perhaps use the more restrictive DFS
- * region but we don't have information for that yet so
- * for now simply disallow conflicts.
- */
+ 
 static enum nl80211_dfs_regions
 reg_intersect_dfs_region(const enum nl80211_dfs_regions dfs_region1,
 			 const enum nl80211_dfs_regions dfs_region2)
@@ -1327,10 +1202,7 @@ static void reg_wmm_rules_intersect(const struct ieee80211_wmm_ac *wmm_ac1,
 	intersect->aifsn = max_t(u8, wmm_ac1->aifsn, wmm_ac2->aifsn);
 }
 
-/*
- * Helper for regdom_intersect(), this does the real
- * mathematical intersection fun
- */
+ 
 static int reg_rules_intersect(const struct ieee80211_regdomain *rd1,
 			       const struct ieee80211_regdomain *rd2,
 			       const struct ieee80211_reg_rule *rule1,
@@ -1374,14 +1246,7 @@ static int reg_rules_intersect(const struct ieee80211_regdomain *rd1,
 
 	intersected_rule->flags = rule1->flags | rule2->flags;
 
-	/*
-	 * In case NL80211_RRF_AUTO_BW requested for both rules
-	 * set AUTO_BW in intersected rule also. Next we will
-	 * calculate BW correctly in handle_channel function.
-	 * In other case remove AUTO_BW flag while we calculate
-	 * maximum bandwidth correctly and auto calculation is
-	 * not required.
-	 */
+	 
 	if ((rule1->flags & NL80211_RRF_AUTO_BW) &&
 	    (rule2->flags & NL80211_RRF_AUTO_BW))
 		intersected_rule->flags |= NL80211_RRF_AUTO_BW;
@@ -1429,26 +1294,26 @@ static int reg_rules_intersect(const struct ieee80211_regdomain *rd1,
 	return 0;
 }
 
-/* check whether old rule contains new rule */
+ 
 static bool rule_contains(struct ieee80211_reg_rule *r1,
 			  struct ieee80211_reg_rule *r2)
 {
-	/* for simplicity, currently consider only same flags */
+	 
 	if (r1->flags != r2->flags)
 		return false;
 
-	/* verify r1 is more restrictive */
+	 
 	if ((r1->power_rule.max_antenna_gain >
 	     r2->power_rule.max_antenna_gain) ||
 	    r1->power_rule.max_eirp > r2->power_rule.max_eirp)
 		return false;
 
-	/* make sure r2's range is contained within r1 */
+	 
 	if (r1->freq_range.start_freq_khz > r2->freq_range.start_freq_khz ||
 	    r1->freq_range.end_freq_khz < r2->freq_range.end_freq_khz)
 		return false;
 
-	/* and finally verify that r1.max_bw >= r2.max_bw */
+	 
 	if (r1->freq_range.max_bandwidth_khz <
 	    r2->freq_range.max_bandwidth_khz)
 		return false;
@@ -1456,7 +1321,7 @@ static bool rule_contains(struct ieee80211_reg_rule *r1,
 	return true;
 }
 
-/* add or extend current rules. do nothing if rule is already contained */
+ 
 static void add_rule(struct ieee80211_reg_rule *rule,
 		     struct ieee80211_reg_rule *reg_rules, u32 *n_rules)
 {
@@ -1465,11 +1330,11 @@ static void add_rule(struct ieee80211_reg_rule *rule,
 
 	for (i = 0; i < *n_rules; i++) {
 		tmp_rule = &reg_rules[i];
-		/* rule is already contained - do nothing */
+		 
 		if (rule_contains(tmp_rule, rule))
 			return;
 
-		/* extend rule if possible */
+		 
 		if (rule_contains(rule, tmp_rule)) {
 			memcpy(tmp_rule, rule, sizeof(*rule));
 			return;
@@ -1480,19 +1345,7 @@ static void add_rule(struct ieee80211_reg_rule *rule,
 	(*n_rules)++;
 }
 
-/**
- * regdom_intersect - do the intersection between two regulatory domains
- * @rd1: first regulatory domain
- * @rd2: second regulatory domain
- *
- * Use this function to get the intersection between two regulatory domains.
- * Once completed we will mark the alpha2 for the rd as intersected, "98",
- * as no one single alpha2 can represent this regulatory domain.
- *
- * Returns a pointer to the regulatory domain structure which will hold the
- * resulting intersection of rules between rd1 and rd2. We will
- * kzalloc() this structure for you.
- */
+ 
 static struct ieee80211_regdomain *
 regdom_intersect(const struct ieee80211_regdomain *rd1,
 		 const struct ieee80211_regdomain *rd2)
@@ -1507,13 +1360,7 @@ regdom_intersect(const struct ieee80211_regdomain *rd1,
 	if (!rd1 || !rd2)
 		return NULL;
 
-	/*
-	 * First we get a count of the rules we'll need, then we actually
-	 * build them. This is to so we can malloc() and free() a
-	 * regdomain once. The reason we use reg_rules_intersect() here
-	 * is it will return -EINVAL if the rule computed makes no sense.
-	 * All rules that do check out OK are valid.
-	 */
+	 
 
 	for (x = 0; x < rd1->n_reg_rules; x++) {
 		rule1 = &rd1->reg_rules[x];
@@ -1538,10 +1385,7 @@ regdom_intersect(const struct ieee80211_regdomain *rd1,
 			rule2 = &rd2->reg_rules[y];
 			r = reg_rules_intersect(rd1, rd2, rule1, rule2,
 						&intersected_rule);
-			/*
-			 * No need to memset here the intersected rule here as
-			 * we're not using the stack anymore
-			 */
+			 
 			if (r)
 				continue;
 
@@ -1558,10 +1402,7 @@ regdom_intersect(const struct ieee80211_regdomain *rd1,
 	return rd;
 }
 
-/*
- * XXX: add support for the rest of enum nl80211_reg_rule_flags, we may
- * want to just have the channel structure use these
- */
+ 
 static u32 map_regdom_flags(u32 rd_flags)
 {
 	u32 channel_flags = 0;
@@ -1610,11 +1451,7 @@ freq_reg_info_regd(u32 center_freq,
 		rr = &regd->reg_rules[i];
 		fr = &rr->freq_range;
 
-		/*
-		 * We only need to know if one frequency rule was
-		 * in center_freq's band, that's enough, so let's
-		 * not overwrite it once found
-		 */
+		 
 		if (!band_rule_found)
 			band_rule_found = freq_in_rule_band(fr, center_freq);
 
@@ -1687,11 +1524,11 @@ static uint32_t reg_rule_to_chan_bw_flags(const struct ieee80211_regdomain *regd
 
 	max_bandwidth_khz = freq_range->max_bandwidth_khz;
 	center_freq_khz = ieee80211_channel_to_khz(chan);
-	/* Check if auto calculation requested */
+	 
 	if (reg_rule->flags & NL80211_RRF_AUTO_BW)
 		max_bandwidth_khz = reg_get_max_bandwidth(regd, reg_rule);
 
-	/* If we get a reg_rule we can assume that at least 5Mhz fit */
+	 
 	if (!cfg80211_does_bw_fit_range(freq_range,
 					center_freq_khz,
 					MHZ_TO_KHZ(10)))
@@ -1702,10 +1539,7 @@ static uint32_t reg_rule_to_chan_bw_flags(const struct ieee80211_regdomain *regd
 		bw_flags |= IEEE80211_CHAN_NO_20MHZ;
 
 	if (is_s1g) {
-		/* S1G is strict about non overlapping channels. We can
-		 * calculate which bandwidth is allowed per channel by finding
-		 * the largest bandwidth which cleanly divides the freq_range.
-		 */
+		 
 		int edge_offset;
 		int ch_bw = max_bandwidth_khz;
 
@@ -1730,9 +1564,7 @@ static uint32_t reg_rule_to_chan_bw_flags(const struct ieee80211_regdomain *regd
 					bw_flags |= IEEE80211_CHAN_16MHZ;
 					break;
 				default:
-					/* If we got here, no bandwidths fit on
-					 * this frequency, ie. band edge.
-					 */
+					 
 					bw_flags |= IEEE80211_CHAN_DISABLED;
 					break;
 				}
@@ -1777,11 +1609,7 @@ static void handle_channel_single_rule(struct wiphy *wiphy,
 	if (lr->initiator == NL80211_REGDOM_SET_BY_DRIVER &&
 	    request_wiphy && request_wiphy == wiphy &&
 	    request_wiphy->regulatory_flags & REGULATORY_STRICT_REG) {
-		/*
-		 * This guarantees the driver's requested regulatory domain
-		 * will always be used as a base for further regulatory
-		 * settings
-		 */
+		 
 		chan->flags = chan->orig_flags =
 			map_regdom_flags(reg_rule->flags) | bw_flags;
 		chan->max_antenna_gain = chan->orig_mag =
@@ -1816,10 +1644,7 @@ static void handle_channel_single_rule(struct wiphy *wiphy,
 	}
 
 	if (chan->orig_mpwr) {
-		/*
-		 * Devices that use REGULATORY_COUNTRY_IE_FOLLOW_POWER
-		 * will always follow the passed country IE power settings.
-		 */
+		 
 		if (initiator == NL80211_REGDOM_SET_BY_COUNTRY_IE &&
 		    wiphy->regulatory_flags & REGULATORY_COUNTRY_IE_FOLLOW_POWER)
 			chan->max_power = chan->max_reg_power;
@@ -1856,10 +1681,7 @@ static void handle_channel_adjacent_rules(struct wiphy *wiphy,
 	if (lr->initiator == NL80211_REGDOM_SET_BY_DRIVER &&
 	    request_wiphy && request_wiphy == wiphy &&
 	    request_wiphy->regulatory_flags & REGULATORY_STRICT_REG) {
-		/* This guarantees the driver's requested regulatory domain
-		 * will always be used as a base for further regulatory
-		 * settings
-		 */
+		 
 		chan->flags =
 			map_regdom_flags(rrule1->flags) |
 			map_regdom_flags(rrule2->flags) |
@@ -1895,9 +1717,7 @@ static void handle_channel_adjacent_rules(struct wiphy *wiphy,
 		      map_regdom_flags(rrule1->flags) |
 		      map_regdom_flags(rrule2->flags);
 
-	/* reg_rule_to_chan_bw_flags may forbids 10 and forbids 20 MHz
-	 * (otherwise no adj. rule case), recheck therefore
-	 */
+	 
 	if (cfg80211_does_bw_fit_range(comb_range,
 				       ieee80211_channel_to_khz(chan),
 				       MHZ_TO_KHZ(10)))
@@ -1926,9 +1746,7 @@ static void handle_channel_adjacent_rules(struct wiphy *wiphy,
 	}
 
 	if (chan->orig_mpwr) {
-		/* Devices that use REGULATORY_COUNTRY_IE_FOLLOW_POWER
-		 * will always follow the passed country IE power settings.
-		 */
+		 
 		if (initiator == NL80211_REGDOM_SET_BY_COUNTRY_IE &&
 		    wiphy->regulatory_flags & REGULATORY_COUNTRY_IE_FOLLOW_POWER)
 			chan->max_power = chan->max_reg_power;
@@ -1940,10 +1758,7 @@ static void handle_channel_adjacent_rules(struct wiphy *wiphy,
 	}
 }
 
-/* Note that right now we assume the desired channel bandwidth
- * is always 20 MHz for each individual channel (HT40 uses 20 MHz
- * per channel, the primary and the extension channel).
- */
+ 
 static void handle_channel(struct wiphy *wiphy,
 			   enum nl80211_reg_initiator initiator,
 			   struct ieee80211_channel *chan)
@@ -1959,10 +1774,7 @@ static void handle_channel(struct wiphy *wiphy,
 
 	rrule = freq_reg_info(wiphy, orig_chan_freq);
 	if (IS_ERR(rrule)) {
-		/* check for adjacent match, therefore get rules for
-		 * chan - 20 MHz and chan + 20 MHz and test
-		 * if reg rules are adjacent
-		 */
+		 
 		rrule1 = freq_reg_info(wiphy,
 				       orig_chan_freq - MHZ_TO_KHZ(20));
 		rrule2 = freq_reg_info(wiphy,
@@ -1996,15 +1808,7 @@ static void handle_channel(struct wiphy *wiphy,
 		}
 
 disable_chan:
-		/* We will disable all channels that do not match our
-		 * received regulatory rule unless the hint is coming
-		 * from a Country IE and the Country IE had no information
-		 * about a band. The IEEE 802.11 spec allows for an AP
-		 * to send only a subset of the regulatory rules allowed,
-		 * so an AP in the US that only supports 2.4 GHz may only send
-		 * a country IE with information for the 2.4 GHz band
-		 * while 5 GHz is still supported.
-		 */
+		 
 		if (initiator == NL80211_REGDOM_SET_BY_COUNTRY_IE &&
 		    PTR_ERR(rrule) == -ERANGE)
 			return;
@@ -2054,7 +1858,7 @@ bool reg_last_request_cell_base(void)
 }
 
 #ifdef CONFIG_CFG80211_REG_CELLULAR_HINTS
-/* Core specific check */
+ 
 static enum reg_request_treatment
 reg_ignore_cell_hint(struct regulatory_request *pending_request)
 {
@@ -2070,7 +1874,7 @@ reg_ignore_cell_hint(struct regulatory_request *pending_request)
 	return REG_REQ_OK;
 }
 
-/* Device specific check */
+ 
 static bool reg_dev_ignore_cell_hint(struct wiphy *wiphy)
 {
 	return !(wiphy->features & NL80211_FEATURE_CELL_BASE_REG_HINTS);
@@ -2117,10 +1921,7 @@ static bool ignore_reg_update(struct wiphy *wiphy,
 		return true;
 	}
 
-	/*
-	 * wiphy->regd will be set once the device has its own
-	 * desired regulatory domain set
-	 */
+	 
 	if (wiphy_strict_alpha2_regd(wiphy) && !wiphy->regd &&
 	    initiator != NL80211_REGDOM_SET_BY_COUNTRY_IE &&
 	    !is_world_regdom(lr->alpha2)) {
@@ -2187,10 +1988,7 @@ static void handle_reg_beacon(struct wiphy *wiphy, unsigned int chan_idx,
 		nl80211_send_beacon_hint_event(wiphy, &chan_before, chan);
 }
 
-/*
- * Called when a scan on a wiphy finds a beacon on
- * new channel
- */
+ 
 static void wiphy_update_new_beacon(struct wiphy *wiphy,
 				    struct reg_beacon *reg_beacon)
 {
@@ -2206,9 +2004,7 @@ static void wiphy_update_new_beacon(struct wiphy *wiphy,
 		handle_reg_beacon(wiphy, i, reg_beacon);
 }
 
-/*
- * Called upon reg changes or a new wiphy is added
- */
+ 
 static void wiphy_update_beacon_reg(struct wiphy *wiphy)
 {
 	unsigned int i;
@@ -2224,13 +2020,10 @@ static void wiphy_update_beacon_reg(struct wiphy *wiphy)
 	}
 }
 
-/* Reap the advantages of previously found beacons */
+ 
 static void reg_process_beacons(struct wiphy *wiphy)
 {
-	/*
-	 * Means we are just firing up cfg80211, so no beacons would
-	 * have been processed yet.
-	 */
+	 
 	if (!last_request)
 		return;
 	wiphy_update_beacon_reg(wiphy);
@@ -2242,7 +2035,7 @@ static bool is_ht40_allowed(struct ieee80211_channel *chan)
 		return false;
 	if (chan->flags & IEEE80211_CHAN_DISABLED)
 		return false;
-	/* This would happen when regulatory rules disallow HT40 completely */
+	 
 	if ((chan->flags & IEEE80211_CHAN_NO_HT40) == IEEE80211_CHAN_NO_HT40)
 		return false;
 	return true;
@@ -2262,10 +2055,7 @@ static void reg_process_ht_flags_channel(struct wiphy *wiphy,
 		return;
 	}
 
-	/*
-	 * We need to ensure the extension channels exist to
-	 * be able to use HT40- or HT40+, this finds them (or not)
-	 */
+	 
 	for (i = 0; i < sband->n_channels; i++) {
 		struct ieee80211_channel *c = &sband->channels[i];
 
@@ -2286,11 +2076,7 @@ static void reg_process_ht_flags_channel(struct wiphy *wiphy,
 			flags = reg_rule->flags;
 	}
 
-	/*
-	 * Please note that this assumes target bandwidth is 20 MHz,
-	 * if that ever changes we also need to change the below logic
-	 * to include that as well.
-	 */
+	 
 	if (!is_ht40_allowed(channel_before) ||
 	    flags & NL80211_RRF_NO_HT40MINUS)
 		channel->flags |= IEEE80211_CHAN_NO_HT40MINUS;
@@ -2345,7 +2131,7 @@ static bool reg_wdev_chan_valid(struct wiphy *wiphy, struct wireless_dev *wdev)
 	wdev_lock(wdev);
 	iftype = wdev->iftype;
 
-	/* make sure the interface is active */
+	 
 	if (!wdev->netdev || !netif_running(wdev->netdev))
 		goto wdev_inactive_unlock;
 
@@ -2375,7 +2161,7 @@ static bool reg_wdev_chan_valid(struct wiphy *wiphy, struct wireless_dev *wdev)
 			break;
 		case NL80211_IFTYPE_STATION:
 		case NL80211_IFTYPE_P2P_CLIENT:
-			/* Maybe we could consider disabling that link only? */
+			 
 			if (!wdev->links[link].client.current_bss)
 				continue;
 
@@ -2391,7 +2177,7 @@ static bool reg_wdev_chan_valid(struct wiphy *wiphy, struct wireless_dev *wdev)
 		case NL80211_IFTYPE_MONITOR:
 		case NL80211_IFTYPE_AP_VLAN:
 		case NL80211_IFTYPE_P2P_DEVICE:
-			/* no enforcement required */
+			 
 			break;
 		case NL80211_IFTYPE_OCB:
 			if (!wdev->u.ocb.chandef.chan)
@@ -2399,10 +2185,10 @@ static bool reg_wdev_chan_valid(struct wiphy *wiphy, struct wireless_dev *wdev)
 			chandef = wdev->u.ocb.chandef;
 			break;
 		case NL80211_IFTYPE_NAN:
-			/* we have no info, but NAN is also pretty universal */
+			 
 			continue;
 		default:
-			/* others not implemented for now */
+			 
 			WARN_ON_ONCE(1);
 			break;
 		}
@@ -2469,10 +2255,7 @@ static void reg_check_chans_work(struct work_struct *work)
 
 static void reg_check_channels(void)
 {
-	/*
-	 * Give usermode a chance to do something nicer (move to another
-	 * channel, orderly disconnection), before forcing a disconnection.
-	 */
+	 
 	mod_delayed_work(system_power_efficient_wq,
 			 &reg_check_chans,
 			 msecs_to_jiffies(REG_ENFORCE_GRACE_MS));
@@ -2485,11 +2268,7 @@ static void wiphy_update_regulatory(struct wiphy *wiphy,
 	struct regulatory_request *lr = get_last_request();
 
 	if (ignore_reg_update(wiphy, initiator)) {
-		/*
-		 * Regulatory updates set by CORE are ignored for custom
-		 * regulatory cards. Let us notify the changes to the driver,
-		 * as some drivers used this to restore its orig_* reg domain.
-		 */
+		 
 		if (initiator == NL80211_REGDOM_SET_BY_CORE &&
 		    wiphy->regulatory_flags & REGULATORY_CUSTOM_REG &&
 		    !(wiphy->regulatory_flags &
@@ -2589,17 +2368,13 @@ static void handle_band_custom(struct wiphy *wiphy,
 	if (!sband)
 		return;
 
-	/*
-	 * We currently assume that you always want at least 20 MHz,
-	 * otherwise channel 12 might get enabled if this rule is
-	 * compatible to US, which permits 2402 - 2472 MHz.
-	 */
+	 
 	for (i = 0; i < sband->n_channels; i++)
 		handle_channel_custom(wiphy, &sband->channels[i], regd,
 				      MHZ_TO_KHZ(20));
 }
 
-/* Used by drivers prior to wiphy registration */
+ 
 void wiphy_apply_custom_regulatory(struct wiphy *wiphy,
 				   const struct ieee80211_regdomain *regd)
 {
@@ -2618,10 +2393,7 @@ void wiphy_apply_custom_regulatory(struct wiphy *wiphy,
 		bands_set++;
 	}
 
-	/*
-	 * no point in calling this if it won't have any effect
-	 * on your device's supported bands.
-	 */
+	 
 	WARN_ON(!bands_set);
 	new_regd = reg_copy_regd(regd);
 	if (IS_ERR(new_regd))
@@ -2657,13 +2429,7 @@ static void reg_set_request_processed(void)
 		schedule_work(&reg_work);
 }
 
-/**
- * reg_process_hint_core - process core regulatory requests
- * @core_request: a pending core regulatory request
- *
- * The wireless subsystem can use this function to process
- * a regulatory request issued by the regulatory core.
- */
+ 
 static enum reg_request_treatment
 reg_process_hint_core(struct regulatory_request *core_request)
 {
@@ -2690,17 +2456,11 @@ __reg_process_hint_user(struct regulatory_request *user_request)
 
 	if (lr->initiator == NL80211_REGDOM_SET_BY_COUNTRY_IE)
 		return REG_REQ_INTERSECT;
-	/*
-	 * If the user knows better the user should set the regdom
-	 * to their country before the IE is picked up
-	 */
+	 
 	if (lr->initiator == NL80211_REGDOM_SET_BY_USER &&
 	    lr->intersect)
 		return REG_REQ_IGNORE;
-	/*
-	 * Process user requests only after previous user/driver/core
-	 * requests have been processed
-	 */
+	 
 	if ((lr->initiator == NL80211_REGDOM_SET_BY_CORE ||
 	     lr->initiator == NL80211_REGDOM_SET_BY_DRIVER ||
 	     lr->initiator == NL80211_REGDOM_SET_BY_USER) &&
@@ -2713,13 +2473,7 @@ __reg_process_hint_user(struct regulatory_request *user_request)
 	return REG_REQ_OK;
 }
 
-/**
- * reg_process_hint_user - process user regulatory requests
- * @user_request: a pending user regulatory request
- *
- * The wireless subsystem can use this function to process
- * a regulatory request initiated by userspace.
- */
+ 
 static enum reg_request_treatment
 reg_process_hint_user(struct regulatory_request *user_request)
 {
@@ -2754,11 +2508,7 @@ __reg_process_hint_driver(struct regulatory_request *driver_request)
 		return REG_REQ_ALREADY_SET;
 	}
 
-	/*
-	 * This would happen if you unplug and plug your card
-	 * back in or if you add a new device for which the previously
-	 * loaded card also agrees on the regulatory domain.
-	 */
+	 
 	if (lr->initiator == NL80211_REGDOM_SET_BY_DRIVER &&
 	    !regdom_changes(driver_request->alpha2))
 		return REG_REQ_ALREADY_SET;
@@ -2766,16 +2516,7 @@ __reg_process_hint_driver(struct regulatory_request *driver_request)
 	return REG_REQ_INTERSECT;
 }
 
-/**
- * reg_process_hint_driver - process driver regulatory requests
- * @wiphy: the wireless device for the regulatory request
- * @driver_request: a pending driver regulatory request
- *
- * The wireless subsystem can use this function to process
- * a regulatory request issued by an 802.11 driver.
- *
- * Returns one of the different reg request treatment values.
- */
+ 
 static enum reg_request_treatment
 reg_process_hint_driver(struct wiphy *wiphy,
 			struct regulatory_request *driver_request)
@@ -2808,11 +2549,7 @@ reg_process_hint_driver(struct wiphy *wiphy,
 	driver_request->intersect = treatment == REG_REQ_INTERSECT;
 	driver_request->processed = false;
 
-	/*
-	 * Since CRDA will not be called in this case as we already
-	 * have applied the requested regulatory domain before we just
-	 * inform userspace we have processed the request
-	 */
+	 
 	if (treatment == REG_REQ_ALREADY_SET) {
 		nl80211_send_reg_change_event(driver_request);
 		reg_update_last_request(driver_request);
@@ -2836,7 +2573,7 @@ __reg_process_hint_country_ie(struct wiphy *wiphy,
 	struct regulatory_request *lr = get_last_request();
 
 	if (reg_request_cell_base(lr)) {
-		/* Trust a Cell base station over the AP's country IE */
+		 
 		if (regdom_changes(country_ie_request->alpha2))
 			return REG_REQ_IGNORE;
 		return REG_REQ_ALREADY_SET;
@@ -2854,12 +2591,7 @@ __reg_process_hint_country_ie(struct wiphy *wiphy,
 	last_wiphy = wiphy_idx_to_wiphy(lr->wiphy_idx);
 
 	if (last_wiphy != wiphy) {
-		/*
-		 * Two cards with two APs claiming different
-		 * Country IE alpha2s. We could
-		 * intersect them, but that seems unlikely
-		 * to be correct. Reject second one for now.
-		 */
+		 
 		if (regdom_changes(country_ie_request->alpha2))
 			return REG_REQ_IGNORE;
 		return REG_REQ_ALREADY_SET;
@@ -2870,16 +2602,7 @@ __reg_process_hint_country_ie(struct wiphy *wiphy,
 	return REG_REQ_ALREADY_SET;
 }
 
-/**
- * reg_process_hint_country_ie - process regulatory requests from country IEs
- * @wiphy: the wireless device for the regulatory request
- * @country_ie_request: a regulatory request from a country IE
- *
- * The wireless subsystem can use this function to process
- * a regulatory request issued by a country Information Element.
- *
- * Returns one of the different reg request treatment values.
- */
+ 
 static enum reg_request_treatment
 reg_process_hint_country_ie(struct wiphy *wiphy,
 			    struct regulatory_request *country_ie_request)
@@ -2897,10 +2620,7 @@ reg_process_hint_country_ie(struct wiphy *wiphy,
 		reg_free_request(country_ie_request);
 		return REG_REQ_ALREADY_SET;
 	case REG_REQ_INTERSECT:
-		/*
-		 * This doesn't happen yet, not sure we
-		 * ever want to support it for this case.
-		 */
+		 
 		WARN_ONCE(1, "Unexpected intersection for country elements");
 		return REG_REQ_IGNORE;
 	}
@@ -2998,7 +2718,7 @@ static void wiphy_all_share_dfs_chan_state(struct wiphy *wiphy)
 	}
 }
 
-/* This processes *all* regulatory hints */
+ 
 static void reg_process_hint(struct regulatory_request *reg_request)
 {
 	struct wiphy *wiphy = NULL;
@@ -3036,9 +2756,7 @@ static void reg_process_hint(struct regulatory_request *reg_request)
 	WARN(treatment != REG_REQ_OK && treatment != REG_REQ_ALREADY_SET,
 	     "unexpected treatment value %d\n", treatment);
 
-	/* This is required so that the orig_* parameters are saved.
-	 * NOTE: treatment must be set for any case that reaches here!
-	 */
+	 
 	if (treatment == REG_REQ_ALREADY_SET && wiphy &&
 	    wiphy->regulatory_flags & REGULATORY_STRICT_REG) {
 		wiphy_update_regulatory(wiphy, initiator);
@@ -3065,18 +2783,14 @@ static void notify_self_managed_wiphys(struct regulatory_request *request)
 	}
 }
 
-/*
- * Processes regulatory hints, this is all the NL80211_REGDOM_SET_BY_*
- * Regulatory hints come on a first come first serve basis and we
- * must process each one atomically.
- */
+ 
 static void reg_process_pending_hints(void)
 {
 	struct regulatory_request *reg_request, *lr;
 
 	lr = get_last_request();
 
-	/* When last_request->processed becomes true this will be rescheduled */
+	 
 	if (lr && !lr->processed) {
 		pr_debug("Pending regulatory request, waiting for it to be processed...\n");
 		return;
@@ -3108,24 +2822,24 @@ static void reg_process_pending_hints(void)
 	spin_unlock(&reg_requests_lock);
 }
 
-/* Processes beacon hints -- this has nothing to do with country IEs */
+ 
 static void reg_process_pending_beacon_hints(void)
 {
 	struct cfg80211_registered_device *rdev;
 	struct reg_beacon *pending_beacon, *tmp;
 
-	/* This goes through the _pending_ beacon list */
+	 
 	spin_lock_bh(&reg_pending_beacons_lock);
 
 	list_for_each_entry_safe(pending_beacon, tmp,
 				 &reg_pending_beacons, list) {
 		list_del_init(&pending_beacon->list);
 
-		/* Applies the beacon hint to current wiphys */
+		 
 		list_for_each_entry(rdev, &cfg80211_rdev_list, list)
 			wiphy_update_new_beacon(&rdev->wiphy, pending_beacon);
 
-		/* Remembers the beacon hint for new wiphys or reg changes */
+		 
 		list_add_tail(&pending_beacon->list, &reg_beacon_list);
 	}
 
@@ -3207,10 +2921,7 @@ static void queue_regulatory_request(struct regulatory_request *request)
 	schedule_work(&reg_work);
 }
 
-/*
- * Core regulatory hint -- happens during cfg80211_init()
- * and when we restore regulatory settings.
- */
+ 
 static int regulatory_hint_core(const char *alpha2)
 {
 	struct regulatory_request *request;
@@ -3229,7 +2940,7 @@ static int regulatory_hint_core(const char *alpha2)
 	return 0;
 }
 
-/* User hints */
+ 
 int regulatory_hint_user(const char *alpha2,
 			 enum nl80211_user_reg_hint_type user_reg_hint_type)
 {
@@ -3251,7 +2962,7 @@ int regulatory_hint_user(const char *alpha2,
 	request->initiator = NL80211_REGDOM_SET_BY_USER;
 	request->user_reg_hint_type = user_reg_hint_type;
 
-	/* Allow calling CRDA again */
+	 
 	reset_crda_timeouts();
 
 	queue_regulatory_request(request);
@@ -3263,13 +2974,7 @@ int regulatory_hint_indoor(bool is_indoor, u32 portid)
 {
 	spin_lock(&reg_indoor_lock);
 
-	/* It is possible that more than one user space process is trying to
-	 * configure the indoor setting. To handle such cases, clear the indoor
-	 * setting in case that some process does not think that the device
-	 * is operating in an indoor environment. In addition, if a user space
-	 * process indicates that it is controlling the indoor setting, save its
-	 * portid, i.e., make it the owner.
-	 */
+	 
 	reg_is_indoor = is_indoor;
 	if (reg_is_indoor) {
 		if (!reg_is_indoor_portid)
@@ -3303,7 +3008,7 @@ void regulatory_netlink_notify(u32 portid)
 	reg_check_channels();
 }
 
-/* Driver hints */
+ 
 int regulatory_hint(struct wiphy *wiphy, const char *alpha2)
 {
 	struct regulatory_request *request;
@@ -3323,7 +3028,7 @@ int regulatory_hint(struct wiphy *wiphy, const char *alpha2)
 	request->alpha2[1] = alpha2[1];
 	request->initiator = NL80211_REGDOM_SET_BY_DRIVER;
 
-	/* Allow calling CRDA again */
+	 
 	reset_crda_timeouts();
 
 	queue_regulatory_request(request);
@@ -3339,7 +3044,7 @@ void regulatory_hint_country_ie(struct wiphy *wiphy, enum nl80211_band band,
 	enum environment_cap env = ENVIRON_ANY;
 	struct regulatory_request *request = NULL, *lr;
 
-	/* IE len must be evenly divisible by 2 */
+	 
 	if (country_ie_len & 0x01)
 		return;
 
@@ -3364,11 +3069,7 @@ void regulatory_hint_country_ie(struct wiphy *wiphy, enum nl80211_band band,
 	if (unlikely(!lr))
 		goto out;
 
-	/*
-	 * We will run this only upon a successful connection on cfg80211.
-	 * We leave conflict resolution to the workqueue, where can hold
-	 * the RTNL.
-	 */
+	 
 	if (lr->initiator == NL80211_REGDOM_SET_BY_COUNTRY_IE &&
 	    lr->wiphy_idx != WIPHY_IDX_INVALID)
 		goto out;
@@ -3379,7 +3080,7 @@ void regulatory_hint_country_ie(struct wiphy *wiphy, enum nl80211_band band,
 	request->initiator = NL80211_REGDOM_SET_BY_COUNTRY_IE;
 	request->country_ie_env = env;
 
-	/* Allow calling CRDA again */
+	 
 	reset_crda_timeouts();
 
 	queue_regulatory_request(request);
@@ -3391,23 +3092,19 @@ out:
 
 static void restore_alpha2(char *alpha2, bool reset_user)
 {
-	/* indicates there is no alpha2 to consider for restoration */
+	 
 	alpha2[0] = '9';
 	alpha2[1] = '7';
 
-	/* The user setting has precedence over the module parameter */
+	 
 	if (is_user_regdom_saved()) {
-		/* Unless we're asked to ignore it and reset it */
+		 
 		if (reset_user) {
 			pr_debug("Restoring regulatory settings including user preference\n");
 			user_alpha2[0] = '9';
 			user_alpha2[1] = '7';
 
-			/*
-			 * If we're ignoring user settings, we still need to
-			 * check the module parameter to ensure we put things
-			 * back as they were for a full restore.
-			 */
+			 
 			if (!is_world_regdom(ieee80211_regdom)) {
 				pr_debug("Keeping preference on module parameter ieee80211_regdom: %c%c\n",
 					 ieee80211_regdom[0], ieee80211_regdom[1]);
@@ -3450,21 +3147,7 @@ static void restore_custom_reg_settings(struct wiphy *wiphy)
 	}
 }
 
-/*
- * Restoring regulatory settings involves ignoring any
- * possibly stale country IE information and user regulatory
- * settings if so desired, this includes any beacon hints
- * learned as we could have traveled outside to another country
- * after disconnection. To restore regulatory settings we do
- * exactly what we did at bootup:
- *
- *   - send a core regulatory hint
- *   - send a user regulatory hint if applicable
- *
- * Device drivers that send a regulatory hint for a specific country
- * keep their own regulatory domain on wiphy->regd so that does
- * not need to be remembered.
- */
+ 
 static void restore_regulatory_settings(bool reset_user, bool cached)
 {
 	char alpha2[2];
@@ -3475,11 +3158,7 @@ static void restore_regulatory_settings(bool reset_user, bool cached)
 
 	ASSERT_RTNL();
 
-	/*
-	 * Clear the indoor setting in case that it is not controlled by user
-	 * space, as otherwise there is no guarantee that the device is still
-	 * operating in an indoor environment.
-	 */
+	 
 	spin_lock(&reg_indoor_lock);
 	if (reg_is_indoor && !reg_is_indoor_portid) {
 		reg_is_indoor = false;
@@ -3490,17 +3169,12 @@ static void restore_regulatory_settings(bool reset_user, bool cached)
 	reset_regdomains(true, &world_regdom);
 	restore_alpha2(alpha2, reset_user);
 
-	/*
-	 * If there's any pending requests we simply
-	 * stash them to a temporary pending queue and
-	 * add then after we've restored regulatory
-	 * settings.
-	 */
+	 
 	spin_lock(&reg_requests_lock);
 	list_splice_tail_init(&reg_requests_list, &tmp_reg_req_list);
 	spin_unlock(&reg_requests_lock);
 
-	/* Clear beacon hints */
+	 
 	spin_lock_bh(&reg_pending_beacons_lock);
 	list_for_each_entry_safe(reg_beacon, btmp, &reg_pending_beacons, list) {
 		list_del(&reg_beacon->list);
@@ -3513,7 +3187,7 @@ static void restore_regulatory_settings(bool reset_user, bool cached)
 		kfree(reg_beacon);
 	}
 
-	/* First restore to the basic regulatory settings */
+	 
 	world_alpha2[0] = cfg80211_world_regdom->alpha2[0];
 	world_alpha2[1] = cfg80211_world_regdom->alpha2[1];
 
@@ -3551,11 +3225,7 @@ static void restore_regulatory_settings(bool reset_user, bool cached)
 	} else {
 		regulatory_hint_core(world_alpha2);
 
-		/*
-		 * This restores the ieee80211_regdom module parameter
-		 * preference or the last user requested regulatory
-		 * settings, user regulatory settings takes precedence.
-		 */
+		 
 		if (is_an_alpha2(alpha2))
 			regulatory_hint_user(alpha2, NL80211_USER_REG_HINT_USER);
 	}
@@ -3590,10 +3260,7 @@ static bool is_wiphy_all_set_reg_flag(enum ieee80211_regulatory_flags flag)
 
 void regulatory_hint_disconnect(void)
 {
-	/* Restore of regulatory settings is not required when wiphy(s)
-	 * ignore IE from connected access point but clearance of beacon hints
-	 * is required when wiphy(s) supports beacon hints.
-	 */
+	 
 	if (is_wiphy_all_set_reg_flag(REGULATORY_COUNTRY_IE_IGNORE)) {
 		struct reg_beacon *reg_beacon, *btmp;
 
@@ -3674,10 +3341,7 @@ int regulatory_hint_found_beacon(struct wiphy *wiphy,
 	memcpy(&reg_beacon->chan, beacon_chan,
 	       sizeof(struct ieee80211_channel));
 
-	/*
-	 * Since we can be called from BH or and non-BH context
-	 * we must use spin_lock_bh()
-	 */
+	 
 	spin_lock_bh(&reg_pending_beacons_lock);
 	list_add_tail(&reg_beacon->list, &reg_pending_beacons);
 	spin_unlock_bh(&reg_pending_beacons_lock);
@@ -3717,10 +3381,7 @@ static void print_rd_rules(const struct ieee80211_regdomain *rd)
 			scnprintf(cac_time, sizeof(cac_time), "N/A");
 
 
-		/*
-		 * There may not be documentation for max antenna gain
-		 * in certain regions
-		 */
+		 
 		if (power_rule->max_antenna_gain)
 			pr_debug("  (%d KHz - %d KHz @ %s), (%d mBi, %d mBm), (%s)\n",
 				freq_range->start_freq_khz,
@@ -3882,11 +3543,7 @@ static int reg_set_rd_driver(const struct ieee80211_regdomain *rd,
 	if (!intersected_rd)
 		return -EINVAL;
 
-	/*
-	 * We can trash what CRDA provided now.
-	 * However if a driver requested this specific regulatory
-	 * domain we keep it for its private use
-	 */
+	 
 	tmp = get_wiphy_regdom(request_wiphy);
 	rcu_assign_pointer(request_wiphy->regd, rd);
 	rcu_free_regdom(tmp);
@@ -3907,11 +3564,7 @@ static int reg_set_rd_country_ie(const struct ieee80211_regdomain *rd,
 	    !is_unknown_alpha2(rd->alpha2))
 		return -EINVAL;
 
-	/*
-	 * Lets only bother proceeding on the same alpha2 if the current
-	 * rd is non static (it means CRDA was present and was used last)
-	 * and the pending request came in from a country IE
-	 */
+	 
 
 	if (!is_valid_rd(rd)) {
 		pr_err("Invalid regulatory domain detected: %c%c\n",
@@ -3931,11 +3584,7 @@ static int reg_set_rd_country_ie(const struct ieee80211_regdomain *rd,
 	return 0;
 }
 
-/*
- * Use this call to set the current regulatory domain. Conflicts with
- * multiple drivers can be ironed out later. Caller must've already
- * kmalloc'd the rd structure.
- */
+ 
 int set_regdom(const struct ieee80211_regdomain *rd,
 	       enum ieee80211_regd_source regd_src)
 {
@@ -3956,7 +3605,7 @@ int set_regdom(const struct ieee80211_regdomain *rd,
 
 	lr = get_last_request();
 
-	/* Note that this doesn't update the wiphys, this is done below */
+	 
 	switch (lr->initiator) {
 	case NL80211_REGDOM_SET_BY_CORE:
 		r = reg_set_rd_core(rd);
@@ -3984,7 +3633,7 @@ int set_regdom(const struct ieee80211_regdomain *rd,
 			reg_set_request_processed();
 			break;
 		default:
-			/* Back to world regulatory in case of errors */
+			 
 			restore_regulatory_settings(user_reset, false);
 		}
 
@@ -3992,11 +3641,11 @@ int set_regdom(const struct ieee80211_regdomain *rd,
 		return r;
 	}
 
-	/* This would make this whole thing pointless */
+	 
 	if (WARN_ON(!lr->intersect && rd != get_cfg80211_regdom()))
 		return -EINVAL;
 
-	/* update all wiphys now with the new established regulatory domain */
+	 
 	update_all_wiphy_regulatory(lr->initiator);
 
 	print_regdomain(get_cfg80211_regdom());
@@ -4068,7 +3717,7 @@ int regulatory_set_wiphy_regd_sync(struct wiphy *wiphy,
 	if (ret)
 		return ret;
 
-	/* process the request immediately */
+	 
 	reg_process_self_managed_hint(wiphy);
 	reg_check_channels();
 	return 0;
@@ -4079,16 +3728,12 @@ void wiphy_regulatory_register(struct wiphy *wiphy)
 {
 	struct regulatory_request *lr = get_last_request();
 
-	/* self-managed devices ignore beacon hints and country IE */
+	 
 	if (wiphy->regulatory_flags & REGULATORY_WIPHY_SELF_MANAGED) {
 		wiphy->regulatory_flags |= REGULATORY_DISABLE_BEACON_HINTS |
 					   REGULATORY_COUNTRY_IE_IGNORE;
 
-		/*
-		 * The last request may have been received before this
-		 * registration call. Call the driver notifier if
-		 * initiator is USER.
-		 */
+		 
 		if (lr->initiator == NL80211_REGDOM_SET_BY_USER)
 			reg_call_notifier(wiphy, lr);
 	}
@@ -4124,46 +3769,42 @@ void wiphy_regulatory_deregister(struct wiphy *wiphy)
 	lr->country_ie_env = ENVIRON_ANY;
 }
 
-/*
- * See FCC notices for UNII band definitions
- *  5GHz: https://www.fcc.gov/document/5-ghz-unlicensed-spectrum-unii
- *  6GHz: https://www.fcc.gov/document/fcc-proposes-more-spectrum-unlicensed-use-0
- */
+ 
 int cfg80211_get_unii(int freq)
 {
-	/* UNII-1 */
+	 
 	if (freq >= 5150 && freq <= 5250)
 		return 0;
 
-	/* UNII-2A */
+	 
 	if (freq > 5250 && freq <= 5350)
 		return 1;
 
-	/* UNII-2B */
+	 
 	if (freq > 5350 && freq <= 5470)
 		return 2;
 
-	/* UNII-2C */
+	 
 	if (freq > 5470 && freq <= 5725)
 		return 3;
 
-	/* UNII-3 */
+	 
 	if (freq > 5725 && freq <= 5825)
 		return 4;
 
-	/* UNII-5 */
+	 
 	if (freq > 5925 && freq <= 6425)
 		return 5;
 
-	/* UNII-6 */
+	 
 	if (freq > 6425 && freq <= 6525)
 		return 6;
 
-	/* UNII-7 */
+	 
 	if (freq > 6525 && freq <= 6875)
 		return 7;
 
-	/* UNII-8 */
+	 
 	if (freq > 6875 && freq <= 7125)
 		return 8;
 
@@ -4207,22 +3848,14 @@ EXPORT_SYMBOL(regulatory_pre_cac_allowed);
 static void cfg80211_check_and_end_cac(struct cfg80211_registered_device *rdev)
 {
 	struct wireless_dev *wdev;
-	/* If we finished CAC or received radar, we should end any
-	 * CAC running on the same channels.
-	 * the check !cfg80211_chandef_dfs_usable contain 2 options:
-	 * either all channels are available - those the CAC_FINISHED
-	 * event has effected another wdev state, or there is a channel
-	 * in unavailable state in wdev chandef - those the RADAR_DETECTED
-	 * event has effected another wdev state.
-	 * In both cases we should end the CAC on the wdev.
-	 */
+	 
 	list_for_each_entry(wdev, &rdev->wiphy.wdev_list, list) {
 		struct cfg80211_chan_def *chandef;
 
 		if (!wdev->cac_started)
 			continue;
 
-		/* FIXME: radar detection is tied to link 0 for now */
+		 
 		chandef = wdev_chandef(wdev, 0);
 		if (!chandef)
 			continue;
@@ -4271,12 +3904,7 @@ static int __init regulatory_init_db(void)
 {
 	int err;
 
-	/*
-	 * It's possible that - due to other bugs/issues - cfg80211
-	 * never called regulatory_init() below, or that it failed;
-	 * in that case, don't try to do any further work here as
-	 * it's doomed to lead to crashes.
-	 */
+	 
 	if (IS_ERR_OR_NULL(reg_pdev))
 		return -EINVAL;
 
@@ -4286,27 +3914,18 @@ static int __init regulatory_init_db(void)
 		return err;
 	}
 
-	/* We always try to get an update for the static regdomain */
+	 
 	err = regulatory_hint_core(cfg80211_world_regdom->alpha2);
 	if (err) {
 		if (err == -ENOMEM) {
 			platform_device_unregister(reg_pdev);
 			return err;
 		}
-		/*
-		 * N.B. kobject_uevent_env() can fail mainly for when we're out
-		 * memory which is handled and propagated appropriately above
-		 * but it can also fail during a netlink_broadcast() or during
-		 * early boot for call_usermodehelper(). For now treat these
-		 * errors as non-fatal.
-		 */
+		 
 		pr_err("kobject_uevent_env() was unable to call CRDA during init\n");
 	}
 
-	/*
-	 * Finally, if the user set the module parameter treat it
-	 * as a user hint.
-	 */
+	 
 	if (!is_world_regdom(ieee80211_regdom))
 		regulatory_hint_user(ieee80211_regdom,
 				     NL80211_USER_REG_HINT_USER);
@@ -4344,7 +3963,7 @@ void regulatory_exit(void)
 	cancel_crda_timeout_sync();
 	cancel_delayed_work_sync(&reg_check_chans);
 
-	/* Lock to suppress warnings */
+	 
 	rtnl_lock();
 	reset_regdomains(true, NULL);
 	rtnl_unlock();

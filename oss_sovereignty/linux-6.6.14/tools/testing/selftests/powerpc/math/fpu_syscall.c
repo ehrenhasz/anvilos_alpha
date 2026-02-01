@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015, Cyril Bur, IBM Corp.
- *
- * This test attempts to see if the FPU registers change across a syscall (fork).
- */
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -28,7 +24,7 @@ int syscall_fpu(void)
 	int ret;
 	int child_ret;
 	for (i = 0; i < 1000; i++) {
-		/* test_fpu will fork() */
+		 
 		ret = test_fpu(darray, &fork_pid);
 		if (fork_pid == -1)
 			return -1;
@@ -44,9 +40,7 @@ int syscall_fpu(void)
 
 int test_syscall_fpu(void)
 {
-	/*
-	 * Setup an environment with much context switching
-	 */
+	 
 	pid_t pid2;
 	pid_t pid = fork();
 	int ret;
@@ -54,11 +48,9 @@ int test_syscall_fpu(void)
 	FAIL_IF(pid == -1);
 
 	pid2 = fork();
-	/* Can't FAIL_IF(pid2 == -1); because already forked once */
+	 
 	if (pid2 == -1) {
-		/*
-		 * Couldn't fork, ensure test is a fail
-		 */
+		 
 		child_ret = ret = 1;
 	} else {
 		ret = syscall_fpu();

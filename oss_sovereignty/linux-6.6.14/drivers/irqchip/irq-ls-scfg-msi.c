@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Freescale SCFG MSI(-X) support
- *
- * Copyright (C) 2016 Freescale Semiconductor.
- *
- * Author: Minghuan Lian <Minghuan.Lian@nxp.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -27,9 +21,9 @@
 #define MSI_LS1043V1_1_MSIR_OFFSET	0x10
 
 struct ls_scfg_msi_cfg {
-	u32 ibs_shift; /* Shift of interrupt bit select */
-	u32 msir_irqs; /* The irq number per MSIR */
-	u32 msir_base; /* The base address of MSIR */
+	u32 ibs_shift;  
+	u32 msir_irqs;  
+	u32 msir_base;  
 };
 
 struct ls_scfg_msir {
@@ -38,7 +32,7 @@ struct ls_scfg_msir {
 	unsigned int gic_irq;
 	unsigned int bit_start;
 	unsigned int bit_end;
-	unsigned int srs; /* Shared interrupt register select */
+	unsigned int srs;  
 	void __iomem *reg;
 };
 
@@ -214,7 +208,7 @@ static void ls_scfg_msi_irq_handler(struct irq_desc *desc)
 
 static int ls_scfg_msi_domains_init(struct ls_scfg_msi *msi_data)
 {
-	/* Initialize MSI domain parent */
+	 
 	msi_data->parent = irq_domain_add_linear(NULL,
 						 msi_data->irqs_num,
 						 &ls_scfg_msi_domain_ops,
@@ -267,13 +261,13 @@ static int ls_scfg_msi_setup_hwirq(struct ls_scfg_msi *msi_data, int index)
 					 msir);
 
 	if (msi_affinity_flag) {
-		/* Associate MSIR interrupt to the cpu */
+		 
 		irq_set_affinity(msir->gic_irq, get_cpu_mask(index));
-		msir->srs = 0; /* This value is determined by the CPU */
+		msir->srs = 0;  
 	} else
 		msir->srs = index;
 
-	/* Release the hwirqs corresponding to this MSIR */
+	 
 	if (!msi_affinity_flag || msir->index == 0) {
 		for (i = 0; i < msi_data->cfg->msir_irqs; i++) {
 			hwirq = i << msi_data->cfg->ibs_shift | msir->index;
@@ -319,7 +313,7 @@ static struct ls_scfg_msi_cfg ls1043_v1_1_msi_cfg = {
 };
 
 static const struct of_device_id ls_scfg_msi_id[] = {
-	/* The following two misspelled compatibles are obsolete */
+	 
 	{ .compatible = "fsl,1s1021a-msi", .data = &ls1021_msi_cfg},
 	{ .compatible = "fsl,1s1043a-msi", .data = &ls1021_msi_cfg},
 
@@ -364,10 +358,7 @@ static int ls_scfg_msi_probe(struct platform_device *pdev)
 	msi_data->used = devm_bitmap_zalloc(&pdev->dev, msi_data->irqs_num, GFP_KERNEL);
 	if (!msi_data->used)
 		return -ENOMEM;
-	/*
-	 * Reserve all the hwirqs
-	 * The available hwirqs will be released in ls1_msi_setup_hwirq()
-	 */
+	 
 	bitmap_set(msi_data->used, 0, msi_data->irqs_num);
 
 	msi_data->msir_num = of_irq_count(pdev->dev.of_node);

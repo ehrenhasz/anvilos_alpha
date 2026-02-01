@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "dr_types.h"
 #include "mlx5_ifc_dr_ste_v1.h"
@@ -15,12 +15,12 @@ enum dr_ptrn_modify_hdr_action_id {
 struct mlx5dr_ptrn_mgr {
 	struct mlx5dr_domain *dmn;
 	struct mlx5dr_icm_pool *ptrn_icm_pool;
-	/* cache for modify_header ptrn */
+	 
 	struct list_head ptrn_list;
-	struct mutex modify_hdr_mutex; /* protect the pattern cache */
+	struct mutex modify_hdr_mutex;  
 };
 
-/* Cache structure and functions */
+ 
 static bool dr_ptrn_compare_modify_hdr(size_t cur_num_of_actions,
 				       __be64 cur_hw_actions[],
 				       size_t num_of_actions,
@@ -61,9 +61,7 @@ dr_ptrn_find_cached_pattern(struct mlx5dr_ptrn_mgr *mgr,
 					       (__be64 *)cached_pattern->data,
 					       num_of_actions,
 					       hw_actions)) {
-			/* Put this pattern in the head of the list,
-			 * as we will probably use it more.
-			 */
+			 
 			list_del_init(&cached_pattern->list);
 			list_add(&cached_pattern->list, &mgr->ptrn_list);
 			return cached_pattern;
@@ -83,7 +81,7 @@ dr_ptrn_alloc_pattern(struct mlx5dr_ptrn_mgr *mgr,
 	u32 index;
 
 	chunk_size = ilog2(roundup_pow_of_two(num_of_actions));
-	/* HW modify action index granularity is at least 64B */
+	 
 	chunk_size = max_t(u32, chunk_size, DR_CHUNK_SIZE_8);
 
 	chunk = mlx5dr_icm_alloc_chunk(mgr->ptrn_icm_pool, chunk_size);
@@ -144,15 +142,13 @@ mlx5dr_ptrn_cache_get_pattern(struct mlx5dr_ptrn_mgr *mgr,
 					      num_of_actions,
 					      (__be64 *)data);
 	if (!pattern) {
-		/* Alloc and add new pattern to cache */
+		 
 		pattern = dr_ptrn_alloc_pattern(mgr, num_of_actions, data);
 		if (!pattern)
 			goto out_unlock;
 
 		hw_actions = (u64 *)pattern->data;
-		/* Here we mask the pattern data to create a valid pattern
-		 * since we do an OR operation between the arg and pattern
-		 */
+		 
 		for (i = 0; i < num_of_actions; i++) {
 			action_id = MLX5_GET(ste_double_action_set_v1, &hw_actions[i], action_id);
 

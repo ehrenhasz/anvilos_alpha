@@ -1,10 +1,5 @@
-/* $OpenBSD: xmss_wots.c,v 1.3 2018/04/10 00:10:49 djm Exp $ */
-/*
-wots.c version 20160722
-Andreas Hülsing
-Joost Rijneveld
-Public domain.
-*/
+ 
+ 
 
 #include "includes.h"
 #ifdef WITH_XMSS
@@ -20,7 +15,7 @@ Public domain.
 #include "xmss_hash_address.h"
 
 
-/* libm-free version of log2() for wots */
+ 
 static inline int
 wots_log2(uint32_t v)
 {
@@ -46,11 +41,7 @@ wots_set_params(wots_params *params, int n, int w)
   params->keysize = params->len * params->n;
 }
 
-/**
- * Helper method for pseudorandom key generation
- * Expands an n-byte array into a len*n byte array
- * this is done using PRF
- */
+ 
 static void expand_seed(unsigned char *outseeds, const unsigned char *inseed, const wots_params *params)
 {
   uint32_t i = 0;
@@ -61,13 +52,7 @@ static void expand_seed(unsigned char *outseeds, const unsigned char *inseed, co
   }
 }
 
-/**
- * Computes the chaining function.
- * out and in have to be n-byte arrays
- *
- * interprets in as start-th value of the chain
- * addr has to contain the address of the chain
- */
+ 
 static void gen_chain(unsigned char *out, const unsigned char *in, unsigned int start, unsigned int steps, const wots_params *params, const unsigned char *pub_seed, uint32_t addr[8])
 {
   uint32_t i, j;
@@ -80,11 +65,7 @@ static void gen_chain(unsigned char *out, const unsigned char *in, unsigned int 
   }
 }
 
-/**
- * base_w algorithm as described in draft.
- *
- *
- */
+ 
 static void base_w(int *output, const int out_len, const unsigned char *input, const wots_params *params)
 {
   int in = 0;
@@ -118,7 +99,7 @@ void wots_pkgen(unsigned char *pk, const unsigned char *sk, const wots_params *p
 
 int wots_sign(unsigned char *sig, const unsigned char *msg, const unsigned char *sk, const wots_params *params, const unsigned char *pub_seed, uint32_t addr[8])
 {
-  //int basew[params->len];
+  
   int csum = 0;
   uint32_t i = 0;
   int *basew = calloc(params->len, sizeof(int));
@@ -189,4 +170,4 @@ int wots_pkFromSig(unsigned char *pk, const unsigned char *sig, const unsigned c
   free(basew);
   return 0;
 }
-#endif /* WITH_XMSS */
+#endif  

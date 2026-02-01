@@ -1,24 +1,6 @@
-/*
- * Copyright (c) 2013 Eugene Krasnikov <k.eugene.e@gmail.com>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY
- * SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION
- * OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- * CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/* DXE - DMA transfer engine
- * we have 2 channels(High prio and Low prio) for TX and 2 channels for RX.
- * through low channels data packets are transfered
- * through high channels managment packets are transfered
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -127,7 +109,7 @@ int wcn36xx_dxe_alloc_ctl_blks(struct wcn36xx *wcn)
 	wcn->dxe_tx_l_ch.def_ctrl = WCN36XX_DXE_CH_DEFAULT_CTL_TX_L;
 	wcn->dxe_tx_h_ch.def_ctrl = WCN36XX_DXE_CH_DEFAULT_CTL_TX_H;
 
-	/* DXE control block allocation */
+	 
 	ret = wcn36xx_dxe_allocate_ctl_block(&wcn->dxe_tx_l_ch);
 	if (ret)
 		goto out_err;
@@ -141,7 +123,7 @@ int wcn36xx_dxe_alloc_ctl_blks(struct wcn36xx *wcn)
 	if (ret)
 		goto out_err;
 
-	/* Initialize SMSM state  Clear TX Enable RING EMPTY STATE */
+	 
 	ret = qcom_smem_state_update_bits(wcn->tx_enable_state,
 					  WCN36XX_SMSM_WLAN_TX_ENABLE |
 					  WCN36XX_SMSM_WLAN_TX_RINGS_EMPTY,
@@ -242,8 +224,7 @@ static void wcn36xx_dxe_init_tx_bd(struct wcn36xx_dxe_ch *ch,
 	struct wcn36xx_dxe_ctl *cur = ch->head_blk_ctl;
 
 	for (i = 0; i < ch->desc_num; i++) {
-		/* Only every second dxe needs a bd pointer,
-		   the other will point to the skb data */
+		 
 		if (!(i & 1)) {
 			cur->bd_phy_addr = bd_phy_addr;
 			cur->bd_cpu_addr = bd_cpu_addr;
@@ -378,7 +359,7 @@ static void wcn36xx_dxe_tx_timer(struct timer_list *t)
 	unsigned long flags;
 	struct sk_buff *skb;
 
-	/* TX Timeout */
+	 
 	wcn36xx_dbg(WCN36XX_DBG_DXE, "TX timeout\n");
 
 	spin_lock_irqsave(&wcn->dxe_lock, flags);
@@ -403,11 +384,7 @@ static void reap_tx_dxes(struct wcn36xx *wcn, struct wcn36xx_dxe_ch *ch)
 	struct ieee80211_tx_info *info;
 	unsigned long flags;
 
-	/*
-	 * Make at least one loop of do-while because in case ring is
-	 * completely full head and tail are pointing to the same element
-	 * and while-do will not make any cycles.
-	 */
+	 
 	spin_lock_irqsave(&ch->lock, flags);
 	ctl = ch->tail_blk_ctl;
 	do {
@@ -424,15 +401,15 @@ static void reap_tx_dxes(struct wcn36xx *wcn, struct wcn36xx_dxe_ch *ch)
 					info->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;
 					ieee80211_tx_status_irqsafe(wcn->hw, ctl->skb);
 				} else {
-					/* Wait for the TX ack indication or timeout... */
+					 
 					spin_lock(&wcn->dxe_lock);
 					if (WARN_ON(wcn->tx_ack_skb))
 						ieee80211_free_txskb(wcn->hw, wcn->tx_ack_skb);
-					wcn->tx_ack_skb = ctl->skb; /* Tracking ref */
+					wcn->tx_ack_skb = ctl->skb;  
 					mod_timer(&wcn->tx_ack_timer, jiffies + HZ / 10);
 					spin_unlock(&wcn->dxe_lock);
 				}
-				/* do not free, ownership transferred to mac80211 status cb */
+				 
 			} else {
 				ieee80211_free_txskb(wcn->hw, ctl->skb);
 			}
@@ -622,26 +599,22 @@ static int wcn36xx_rx_handle_packets(struct wcn36xx *wcn,
 	dxe = ctl->desc;
 
 	while (!(READ_ONCE(dxe->ctrl) & WCN36xx_DXE_CTRL_VLD)) {
-		/* do not read until we own DMA descriptor */
+		 
 		dma_rmb();
 
-		/* read/modify DMA descriptor */
+		 
 		skb = ctl->skb;
 		dma_addr = dxe->dst_addr_l;
 		ret = wcn36xx_dxe_fill_skb(wcn->dev, ctl, GFP_ATOMIC);
 		if (0 == ret) {
-			/* new skb allocation ok. Use the new one and queue
-			 * the old one to network system.
-			 */
+			 
 			dma_unmap_single(wcn->dev, dma_addr, WCN36XX_PKT_SIZE,
 					DMA_FROM_DEVICE);
 			wcn36xx_rx_skb(wcn, skb);
 		}
-		/* else keep old skb not submitted and reuse it for rx DMA
-		 * (dropping the packet that it contained)
-		 */
+		 
 
-		/* flush descriptor changes before re-marking as valid */
+		 
 		dma_wmb();
 		dxe->ctrl = ctrl;
 
@@ -663,7 +636,7 @@ void wcn36xx_dxe_rx_frame(struct wcn36xx *wcn)
 
 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_INT_SRC_RAW_REG, &int_src);
 
-	/* RX_LOW_PRI */
+	 
 	if (int_src & WCN36XX_DXE_INT_CH1_MASK)
 		wcn36xx_rx_handle_packets(wcn, &wcn->dxe_rx_l_ch,
 					  WCN36XX_DXE_CTRL_RX_L,
@@ -671,7 +644,7 @@ void wcn36xx_dxe_rx_frame(struct wcn36xx *wcn)
 					  WCN36XX_INT_MASK_CHAN_RX_L,
 					  WCN36XX_DXE_CH_STATUS_REG_ADDR_RX_L);
 
-	/* RX_HIGH_PRI */
+	 
 	if (int_src & WCN36XX_DXE_INT_CH3_MASK)
 		wcn36xx_rx_handle_packets(wcn, &wcn->dxe_rx_h_ch,
 					  WCN36XX_DXE_CTRL_RX_H,
@@ -688,9 +661,9 @@ int wcn36xx_dxe_allocate_mem_pools(struct wcn36xx *wcn)
 	size_t s;
 	void *cpu_addr;
 
-	/* Allocate BD headers for MGMT frames */
+	 
 
-	/* Where this come from ask QC */
+	 
 	wcn->mgmt_mem_pool.chunk_size =	WCN36XX_BD_CHUNK_SIZE +
 		16 - (WCN36XX_BD_CHUNK_SIZE % 8);
 
@@ -703,9 +676,9 @@ int wcn36xx_dxe_allocate_mem_pools(struct wcn36xx *wcn)
 
 	wcn->mgmt_mem_pool.virt_addr = cpu_addr;
 
-	/* Allocate BD headers for DATA frames */
+	 
 
-	/* Where this come from ask QC */
+	 
 	wcn->data_mem_pool.chunk_size = WCN36XX_BD_CHUNK_SIZE +
 		16 - (WCN36XX_BD_CHUNK_SIZE % 8);
 
@@ -760,11 +733,7 @@ int wcn36xx_dxe_tx_frame(struct wcn36xx *wcn,
 	ctl_bd = ch->head_blk_ctl;
 	ctl_skb = ctl_bd->next;
 
-	/*
-	 * If skb is not null that means that we reached the tail of the ring
-	 * hence ring is full. Stop queues to let mac80211 back off until ring
-	 * has an empty slot again.
-	 */
+	 
 	if (NULL != ctl_skb->skb) {
 		ieee80211_stop_queues(wcn->hw);
 		wcn->queues_stopped = true;
@@ -783,10 +752,10 @@ int wcn36xx_dxe_tx_frame(struct wcn36xx *wcn,
 
 	ctl_bd->skb = NULL;
 
-	/* write buffer descriptor */
+	 
 	memcpy(ctl_bd->bd_cpu_addr, bd, sizeof(*bd));
 
-	/* Set source address of the BD we send */
+	 
 	desc_bd->src_addr_l = ctl_bd->bd_phy_addr;
 	desc_bd->dst_addr_l = ch->dxe_wq;
 	desc_bd->fr_len = sizeof(struct wcn36xx_tx_bd);
@@ -818,28 +787,22 @@ int wcn36xx_dxe_tx_frame(struct wcn36xx *wcn,
 	wcn36xx_dbg_dump(WCN36XX_DBG_DXE_DUMP, "SKB   >>> ",
 			 (char *)ctl_skb->skb->data, ctl_skb->skb->len);
 
-	/* Move the head of the ring to the next empty descriptor */
+	 
 	ch->head_blk_ctl = ctl_skb->next;
 
-	/* Commit all previous writes and set descriptors to VALID */
+	 
 	wmb();
 	desc_skb->ctrl = ch->ctrl_skb;
 	wmb();
 	desc_bd->ctrl = ch->ctrl_bd;
 
-	/*
-	 * When connected and trying to send data frame chip can be in sleep
-	 * mode and writing to the register will not wake up the chip. Instead
-	 * notify chip about new frame through SMSM bus.
-	 */
+	 
 	if (is_low &&  vif_priv->pw_state == WCN36XX_BMPS) {
 		qcom_smem_state_update_bits(wcn->tx_rings_empty_state,
 					    WCN36XX_SMSM_WLAN_TX_ENABLE,
 					    WCN36XX_SMSM_WLAN_TX_ENABLE);
 	} else {
-		/* indicate End Of Packet and generate interrupt on descriptor
-		 * done.
-		 */
+		 
 		wcn36xx_dxe_write_register(wcn,
 			ch->reg_ctrl, ch->def_ctrl);
 	}
@@ -859,7 +822,7 @@ static bool _wcn36xx_dxe_tx_channel_is_empty(struct wcn36xx_dxe_ch *ch)
 
 	spin_lock_irqsave(&ch->lock, flags);
 
-	/* Loop through ring buffer looking for nonempty entries. */
+	 
 	ctl_bd_start = ch->head_blk_ctl;
 	ctl_bd = ctl_bd_start;
 	ctl_skb_start = ctl_bd_start->next;
@@ -882,15 +845,13 @@ int wcn36xx_dxe_tx_flush(struct wcn36xx *wcn)
 {
 	int i = 0;
 
-	/* Called with mac80211 queues stopped. Wait for empty HW queues. */
+	 
 	do {
 		if (_wcn36xx_dxe_tx_channel_is_empty(&wcn->dxe_tx_l_ch) &&
 		    _wcn36xx_dxe_tx_channel_is_empty(&wcn->dxe_tx_h_ch)) {
 			return 0;
 		}
-		/* This ieee80211_ops callback is specifically allowed to
-		 * sleep.
-		 */
+		 
 		usleep_range(1000, 1100);
 	} while (++i < 100);
 
@@ -904,7 +865,7 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
 	reg_data = WCN36XX_DXE_REG_RESET;
 	wcn36xx_dxe_write_register(wcn, WCN36XX_DXE_REG_CSR_RESET, reg_data);
 
-	/* Select channels for rx avail and xfer done interrupts... */
+	 
 	reg_data = (WCN36XX_DXE_INT_CH3_MASK | WCN36XX_DXE_INT_CH1_MASK) << 16 |
 		    WCN36XX_DXE_INT_CH0_MASK | WCN36XX_DXE_INT_CH4_MASK;
 	if (wcn->is_pronto)
@@ -912,9 +873,9 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
 	else
 		wcn36xx_ccu_write_register(wcn, WCN36XX_CCU_DXE_INT_SELECT_RIVA, reg_data);
 
-	/***************************************/
-	/* Init descriptors for TX LOW channel */
-	/***************************************/
+	 
+	 
+	 
 	ret = wcn36xx_dxe_init_descs(wcn, &wcn->dxe_tx_l_ch);
 	if (ret) {
 		dev_err(wcn->dev, "Error allocating descriptor\n");
@@ -922,20 +883,20 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
 	}
 	wcn36xx_dxe_init_tx_bd(&wcn->dxe_tx_l_ch, &wcn->data_mem_pool);
 
-	/* Write channel head to a NEXT register */
+	 
 	wcn36xx_dxe_write_register(wcn, WCN36XX_DXE_CH_NEXT_DESC_ADDR_TX_L,
 		wcn->dxe_tx_l_ch.head_blk_ctl->desc_phy_addr);
 
-	/* Program DMA destination addr for TX LOW */
+	 
 	wcn36xx_dxe_write_register(wcn,
 		WCN36XX_DXE_CH_DEST_ADDR_TX_L,
 		WCN36XX_DXE_WQ_TX_L(wcn));
 
 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_REG_CH_EN, &reg_data);
 
-	/***************************************/
-	/* Init descriptors for TX HIGH channel */
-	/***************************************/
+	 
+	 
+	 
 	ret = wcn36xx_dxe_init_descs(wcn, &wcn->dxe_tx_h_ch);
 	if (ret) {
 		dev_err(wcn->dev, "Error allocating descriptor\n");
@@ -944,75 +905,75 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
 
 	wcn36xx_dxe_init_tx_bd(&wcn->dxe_tx_h_ch, &wcn->mgmt_mem_pool);
 
-	/* Write channel head to a NEXT register */
+	 
 	wcn36xx_dxe_write_register(wcn, WCN36XX_DXE_CH_NEXT_DESC_ADDR_TX_H,
 		wcn->dxe_tx_h_ch.head_blk_ctl->desc_phy_addr);
 
-	/* Program DMA destination addr for TX HIGH */
+	 
 	wcn36xx_dxe_write_register(wcn,
 		WCN36XX_DXE_CH_DEST_ADDR_TX_H,
 		WCN36XX_DXE_WQ_TX_H(wcn));
 
 	wcn36xx_dxe_read_register(wcn, WCN36XX_DXE_REG_CH_EN, &reg_data);
 
-	/***************************************/
-	/* Init descriptors for RX LOW channel */
-	/***************************************/
+	 
+	 
+	 
 	ret = wcn36xx_dxe_init_descs(wcn, &wcn->dxe_rx_l_ch);
 	if (ret) {
 		dev_err(wcn->dev, "Error allocating descriptor\n");
 		goto out_err_rxl_ch;
 	}
 
-	/* For RX we need to preallocated buffers */
+	 
 	wcn36xx_dxe_ch_alloc_skb(wcn, &wcn->dxe_rx_l_ch);
 
-	/* Write channel head to a NEXT register */
+	 
 	wcn36xx_dxe_write_register(wcn, WCN36XX_DXE_CH_NEXT_DESC_ADDR_RX_L,
 		wcn->dxe_rx_l_ch.head_blk_ctl->desc_phy_addr);
 
-	/* Write DMA source address */
+	 
 	wcn36xx_dxe_write_register(wcn,
 		WCN36XX_DXE_CH_SRC_ADDR_RX_L,
 		WCN36XX_DXE_WQ_RX_L);
 
-	/* Program preallocated destination address */
+	 
 	wcn36xx_dxe_write_register(wcn,
 		WCN36XX_DXE_CH_DEST_ADDR_RX_L,
 		wcn->dxe_rx_l_ch.head_blk_ctl->desc->phy_next_l);
 
-	/* Enable default control registers */
+	 
 	wcn36xx_dxe_write_register(wcn,
 		WCN36XX_DXE_REG_CTL_RX_L,
 		WCN36XX_DXE_CH_DEFAULT_CTL_RX_L);
 
-	/***************************************/
-	/* Init descriptors for RX HIGH channel */
-	/***************************************/
+	 
+	 
+	 
 	ret = wcn36xx_dxe_init_descs(wcn, &wcn->dxe_rx_h_ch);
 	if (ret) {
 		dev_err(wcn->dev, "Error allocating descriptor\n");
 		goto out_err_rxh_ch;
 	}
 
-	/* For RX we need to prealocat buffers */
+	 
 	wcn36xx_dxe_ch_alloc_skb(wcn, &wcn->dxe_rx_h_ch);
 
-	/* Write chanel head to a NEXT register */
+	 
 	wcn36xx_dxe_write_register(wcn, WCN36XX_DXE_CH_NEXT_DESC_ADDR_RX_H,
 		wcn->dxe_rx_h_ch.head_blk_ctl->desc_phy_addr);
 
-	/* Write DMA source address */
+	 
 	wcn36xx_dxe_write_register(wcn,
 		WCN36XX_DXE_CH_SRC_ADDR_RX_H,
 		WCN36XX_DXE_WQ_RX_H);
 
-	/* Program preallocated destination address */
+	 
 	wcn36xx_dxe_write_register(wcn,
 		WCN36XX_DXE_CH_DEST_ADDR_RX_H,
 		 wcn->dxe_rx_h_ch.head_blk_ctl->desc->phy_next_l);
 
-	/* Enable default control registers */
+	 
 	wcn36xx_dxe_write_register(wcn,
 		WCN36XX_DXE_REG_CTL_RX_H,
 		WCN36XX_DXE_CH_DEFAULT_CTL_RX_H);
@@ -1023,7 +984,7 @@ int wcn36xx_dxe_init(struct wcn36xx *wcn)
 
 	timer_setup(&wcn->tx_ack_timer, wcn36xx_dxe_tx_timer, 0);
 
-	/* Enable channel interrupts */
+	 
 	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_L);
 	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_H);
 	wcn36xx_dxe_enable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_L);
@@ -1047,7 +1008,7 @@ void wcn36xx_dxe_deinit(struct wcn36xx *wcn)
 {
 	int reg_data = 0;
 
-	/* Disable channel interrupts */
+	 
 	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_H);
 	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_RX_L);
 	wcn36xx_dxe_disable_ch_int(wcn, WCN36XX_INT_MASK_CHAN_TX_H);
@@ -1062,7 +1023,7 @@ void wcn36xx_dxe_deinit(struct wcn36xx *wcn)
 		wcn->tx_ack_skb = NULL;
 	}
 
-	/* Put the DXE block into reset before freeing memory */
+	 
 	reg_data = WCN36XX_DXE_REG_RESET;
 	wcn36xx_dxe_write_register(wcn, WCN36XX_DXE_REG_CSR_RESET, reg_data);
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+ 
+ 
 
 #ifndef __MXS_CLK_H
 #define __MXS_CLK_H
@@ -58,4 +56,4 @@ static inline struct clk *mxs_clk_fixed_factor(const char *name,
 					 CLK_SET_RATE_PARENT, mult, div);
 }
 
-#endif /* __MXS_CLK_H */
+#endif  

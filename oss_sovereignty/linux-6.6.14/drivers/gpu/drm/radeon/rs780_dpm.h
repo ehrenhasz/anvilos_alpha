@@ -1,25 +1,4 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __RS780_DPM_H__
 #define __RS780_DPM_H__
 
@@ -30,12 +9,12 @@ enum rs780_vddc_level {
 };
 
 struct igp_power_info {
-	/* flags */
+	 
 	bool invert_pwm_required;
 	bool pwm_voltage_control;
 	bool voltage_control;
 	bool gfx_clock_gating;
-	/* stored values */
+	 
 	u32 system_config;
 	u32 bootup_uma_clk;
 	u16 max_voltage;
@@ -44,7 +23,7 @@ struct igp_power_info {
 	u16 inter_voltage_low;
 	u16 inter_voltage_high;
 	u16 num_of_cycles_in_period;
-	/* variable */
+	 
 	int crtc_id;
 	int refresh_rate;
 };
@@ -103,7 +82,7 @@ struct igp_ps {
 
 #define RS780_CGCLKGATING_DFLT           0x0000E204
 
-#define RS780_DEFAULT_VCLK_FREQ  53300 /* 10 khz */
-#define RS780_DEFAULT_DCLK_FREQ  40000 /* 10 khz */
+#define RS780_DEFAULT_VCLK_FREQ  53300  
+#define RS780_DEFAULT_DCLK_FREQ  40000  
 
 #endif

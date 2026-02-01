@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019 MediaTek Inc.
- *               James Liao <jamesjj.liao@mediatek.com>
- *               Fabien Parent <fparent@baylibre.com>
- *
- * Copyright (c) 2023 Collabora, Ltd.
- *               AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mt8516-clk.h>
 #include <linux/clk.h>
@@ -53,7 +46,7 @@ static const struct mtk_pll_div_table mmpll_div_table[] = {
 	{ .div = 2, .freq = 604500000 },
 	{ .div = 3, .freq = 253500000 },
 	{ .div = 4, .freq = 126750000 },
-	{ } /* sentinel */
+	{ }  
 };
 
 static const struct mtk_pll_data plls[] = {
@@ -105,7 +98,7 @@ unregister_plls:
 
 static const struct of_device_id of_match_clk_mt8516_apmixed[] = {
 	{ .compatible = "mediatek,mt8516-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8516_apmixed);
 

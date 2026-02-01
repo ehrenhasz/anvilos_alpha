@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011 - 2012 Cavium, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/phy.h>
@@ -18,19 +16,7 @@
 #define BCM87XX_LASI_STATUS		0x9005
 
 #if IS_ENABLED(CONFIG_OF_MDIO)
-/* Set and/or override some configuration registers based on the
- * broadcom,c45-reg-init property stored in the of_node for the phydev.
- *
- * broadcom,c45-reg-init = <devid reg mask value>,...;
- *
- * There may be one or more sets of <devid reg mask value>:
- *
- * devid: which sub-device to use.
- * reg: the register.
- * mask: if non-zero, ANDed with existing register value.
- * value: ORed with the masked value and written to the regiser.
- *
- */
+ 
 static int bcm87xx_of_reg_init(struct phy_device *phydev)
 {
 	const __be32 *paddr;
@@ -78,7 +64,7 @@ static int bcm87xx_of_reg_init(struct phy_device *phydev)
 {
 	return 0;
 }
-#endif /* CONFIG_OF_MDIO */
+#endif  
 
 static int bcm87xx_get_features(struct phy_device *phydev)
 {

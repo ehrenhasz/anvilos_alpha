@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pinctrl data for VIA VT8500 SoC
- *
- * Copyright (c) 2013 Tony Prisk <linux@prisktech.co.nz>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/init.h>
@@ -13,25 +9,18 @@
 
 #include "pinctrl-wmt.h"
 
-/*
- * Describe the register offsets within the GPIO memory space
- * The dedicated external GPIO's should always be listed in bank 0
- * so they are exported in the 0..31 range which is what users
- * expect.
- *
- * Do not reorder these banks as it will change the pin numbering
- */
+ 
 static const struct wmt_pinctrl_bank_registers vt8500_banks[] = {
-	WMT_PINCTRL_BANK(NO_REG, 0x3C, 0x5C, 0x7C, NO_REG, NO_REG),	/* 0 */
-	WMT_PINCTRL_BANK(0x00, 0x20, 0x40, 0x60, NO_REG, NO_REG),	/* 1 */
-	WMT_PINCTRL_BANK(0x04, 0x24, 0x44, 0x64, NO_REG, NO_REG),	/* 2 */
-	WMT_PINCTRL_BANK(0x08, 0x28, 0x48, 0x68, NO_REG, NO_REG),	/* 3 */
-	WMT_PINCTRL_BANK(0x0C, 0x2C, 0x4C, 0x6C, NO_REG, NO_REG),	/* 4 */
-	WMT_PINCTRL_BANK(0x10, 0x30, 0x50, 0x70, NO_REG, NO_REG),	/* 5 */
-	WMT_PINCTRL_BANK(0x14, 0x34, 0x54, 0x74, NO_REG, NO_REG),	/* 6 */
+	WMT_PINCTRL_BANK(NO_REG, 0x3C, 0x5C, 0x7C, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x00, 0x20, 0x40, 0x60, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x04, 0x24, 0x44, 0x64, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x08, 0x28, 0x48, 0x68, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x0C, 0x2C, 0x4C, 0x6C, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x10, 0x30, 0x50, 0x70, NO_REG, NO_REG),	 
+	WMT_PINCTRL_BANK(0x14, 0x34, 0x54, 0x74, NO_REG, NO_REG),	 
 };
 
-/* Please keep sorted by bank/bit */
+ 
 #define WMT_PIN_EXTGPIO0	WMT_PIN(0, 0)
 #define WMT_PIN_EXTGPIO1	WMT_PIN(0, 1)
 #define WMT_PIN_EXTGPIO2	WMT_PIN(0, 2)
@@ -306,7 +295,7 @@ static const struct pinctrl_pin_desc vt8500_pins[] = {
 	PINCTRL_PIN(WMT_PIN_LCDBIAS, "lcd_bias"),
 };
 
-/* Order of these names must match the above list */
+ 
 static const char * const vt8500_groups[] = {
 	"extgpio0",
 	"extgpio1",
@@ -465,7 +454,7 @@ static int vt8500_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id wmt_pinctrl_of_match[] = {
 	{ .compatible = "via,vt8500-pinctrl" },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver wmt_pinctrl_driver = {

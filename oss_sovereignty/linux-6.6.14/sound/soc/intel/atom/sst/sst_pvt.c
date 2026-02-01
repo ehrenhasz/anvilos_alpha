@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  sst_pvt.c - Intel SST Driver for audio engine
- *
- *  Copyright (C) 2008-14	Intel Corp
- *  Authors:	Vinod Koul <vinod.koul@intel.com>
- *		Harsha Priya <priya.harsha@intel.com>
- *		Dharageswari R <dharageswari.r@intel.com>
- *		KP Jeeja <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 #include <linux/kobject.h>
 #include <linux/pci.h>
 #include <linux/fs.h>
@@ -69,15 +58,7 @@ void sst_set_fw_state_locked(
 	mutex_unlock(&sst_drv_ctx->sst_lock);
 }
 
-/*
- * sst_wait_interruptible - wait on event
- *
- * @sst_drv_ctx: Driver context
- * @block: Driver block to wait on
- *
- * This function waits without a timeout (and is interruptable) for a
- * given block event
- */
+ 
 int sst_wait_interruptible(struct intel_sst_drv *sst_drv_ctx,
 				struct sst_block *block)
 {
@@ -85,7 +66,7 @@ int sst_wait_interruptible(struct intel_sst_drv *sst_drv_ctx,
 
 	if (!wait_event_interruptible(sst_drv_ctx->wait_queue,
 				block->condition)) {
-		/* event wake */
+		 
 		if (block->ret_code < 0) {
 			dev_err(sst_drv_ctx->dev,
 				"stream failed %d\n", block->ret_code);
@@ -102,31 +83,19 @@ int sst_wait_interruptible(struct intel_sst_drv *sst_drv_ctx,
 
 }
 
-/*
- * sst_wait_timeout - wait on event for timeout
- *
- * @sst_drv_ctx: Driver context
- * @block: Driver block to wait on
- *
- * This function waits with a timeout value (and is not interruptible) on a
- * given block event
- */
+ 
 int sst_wait_timeout(struct intel_sst_drv *sst_drv_ctx, struct sst_block *block)
 {
 	int retval = 0;
 
-	/*
-	 * NOTE:
-	 * Observed that FW processes the alloc msg and replies even
-	 * before the alloc thread has finished execution
-	 */
+	 
 	dev_dbg(sst_drv_ctx->dev,
 		"waiting for condition %x ipc %d drv_id %d\n",
 		block->condition, block->msg_id, block->drv_id);
 	if (wait_event_timeout(sst_drv_ctx->wait_queue,
 				block->condition,
 				msecs_to_jiffies(SST_BLOCK_TIMEOUT))) {
-		/* event wake */
+		 
 		dev_dbg(sst_drv_ctx->dev, "Event wake %x\n",
 				block->condition);
 		dev_dbg(sst_drv_ctx->dev, "message ret: %d\n",
@@ -144,15 +113,7 @@ int sst_wait_timeout(struct intel_sst_drv *sst_drv_ctx, struct sst_block *block)
 	return retval;
 }
 
-/*
- * sst_create_ipc_msg - create a IPC message
- *
- * @arg: ipc message
- * @large: large or short message
- *
- * this function allocates structures to send a large or short
- * message to the firmware
- */
+ 
 int sst_create_ipc_msg(struct ipc_post **arg, bool large)
 {
 	struct ipc_post *msg;
@@ -174,15 +135,7 @@ int sst_create_ipc_msg(struct ipc_post **arg, bool large)
 	return 0;
 }
 
-/*
- * sst_create_block_and_ipc_msg - Creates IPC message and sst block
- * @arg: passed to sst_create_ipc_message API
- * @large: large or short message
- * @sst_drv_ctx: sst driver context
- * @block: return block allocated
- * @msg_id: IPC
- * @drv_id: stream id or private id
- */
+ 
 int sst_create_block_and_ipc_msg(struct ipc_post **arg, bool large,
 		struct intel_sst_drv *sst_drv_ctx, struct sst_block **block,
 		u32 msg_id, u32 drv_id)
@@ -200,14 +153,7 @@ int sst_create_block_and_ipc_msg(struct ipc_post **arg, bool large,
 	return 0;
 }
 
-/*
- * sst_clean_stream - clean the stream context
- *
- * @stream: stream structure
- *
- * this function resets the stream contexts
- * should be called in free
- */
+ 
 void sst_clean_stream(struct stream_info *stream)
 {
 	stream->status = STREAM_UN_INIT;
@@ -323,21 +269,13 @@ void sst_fill_header_dsp(struct ipc_dsp_hdr *dsp, int msg,
 }
 
 #define SST_MAX_BLOCKS 15
-/*
- * sst_assign_pvt_id - assign a pvt id for stream
- *
- * @sst_drv_ctx : driver context
- *
- * this function assigns a private id for calls that dont have stream
- * context yet, should be called with lock held
- * uses bits for the id, and finds first free bits and assigns that
- */
+ 
 int sst_assign_pvt_id(struct intel_sst_drv *drv)
 {
 	int local;
 
 	spin_lock(&drv->block_lock);
-	/* find first zero index from lsb */
+	 
 	local = ffz(drv->pvt_id);
 	dev_dbg(drv->dev, "pvt_id assigned --> %d\n", local);
 	if (local >= SST_MAX_BLOCKS){
@@ -345,7 +283,7 @@ int sst_assign_pvt_id(struct intel_sst_drv *drv)
 		dev_err(drv->dev, "PVT _ID error: no free id blocks ");
 		return -EINVAL;
 	}
-	/* toggle the index */
+	 
 	change_bit(local, &drv->pvt_id);
 	spin_unlock(&drv->block_lock);
 	return local;
@@ -387,8 +325,8 @@ int get_stream_id_mrfld(struct intel_sst_drv *sst_drv_ctx,
 
 u32 relocate_imr_addr_mrfld(u32 base_addr)
 {
-	/* Get the difference from 512MB aligned base addr */
-	/* relocate the base */
+	 
+	 
 	base_addr = MRFLD_FW_VIRTUAL_BASE + (base_addr % (512 * 1024 * 1024));
 	return base_addr;
 }

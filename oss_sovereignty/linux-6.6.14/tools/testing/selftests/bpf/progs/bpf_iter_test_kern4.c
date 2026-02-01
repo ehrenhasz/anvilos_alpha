@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include <bpf/bpf_helpers.h>
 
@@ -23,7 +23,7 @@ int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
 	if (map == (void *)0)
 		return 0;
 
-	/* only dump map1_id and map2_id */
+	 
 	if (map->id != map1_id && map->id != map2_id)
 		return 0;
 
@@ -44,7 +44,7 @@ int dump_bpf_map(struct bpf_iter__bpf_map *ctx)
 		map2_accessed++;
 	}
 
-	/* fill seq_file buffer */
+	 
 	for (i = 0; i < print_len; i++)
 		bpf_seq_write(seq, &seq_num, sizeof(seq_num));
 

@@ -1,34 +1,4 @@
-/* QLogic qedr NIC Driver
- * Copyright (c) 2015-2016  QLogic Corporation
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and /or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/dma-mapping.h>
 #include <linux/crc32.h>
 #include <net/ip.h>
@@ -205,7 +175,7 @@ static inline void get_link_speed_and_width(int speed, u16 *ib_speed,
 		break;
 
 	default:
-		/* Unsupported */
+		 
 		*ib_speed = IB_SPEED_SDR;
 		*ib_width = IB_WIDTH_1X;
 	}
@@ -226,7 +196,7 @@ int qedr_query_port(struct ib_device *ibdev, u32 port,
 
 	rdma_port = dev->ops->rdma_query_port(dev->rdma_ctx);
 
-	/* *attr being zeroed by the caller, avoid zeroing it here */
+	 
 	if (rdma_port->port_state == QED_RDMA_PORT_UP) {
 		attr->state = IB_PORT_ACTIVE;
 		attr->phys_state = IB_PORT_PHYS_STATE_LINK_UP;
@@ -551,9 +521,7 @@ static struct qedr_pbl *qedr_alloc_pbl_tbl(struct qedr_dev *dev,
 		pbl_table[i].pa = pa;
 	}
 
-	/* Two-Layer PBLs, if we have more than one pbl we need to initialize
-	 * the first one with physical pointers to all of the rest
-	 */
+	 
 	pbl_main_tbl = (dma_addr_t *)pbl_table[0].va;
 	for (i = 0; i < pbl_info->num_pbls - 1; i++)
 		pbl_main_tbl[i] = pbl_table[i + 1].pa;
@@ -585,7 +553,7 @@ static int qedr_prepare_pbl_tbl(struct qedr_dev *dev,
 			return -EINVAL;
 		}
 
-		/* calculate required pbl page size */
+		 
 		pbl_size = MIN_FW_PBL_PAGE_SIZE;
 		pbl_capacity = NUM_PBES_ON_PAGE(pbl_size) *
 			       NUM_PBES_ON_PAGE(pbl_size);
@@ -597,10 +565,10 @@ static int qedr_prepare_pbl_tbl(struct qedr_dev *dev,
 		}
 
 		num_pbls = DIV_ROUND_UP(num_pbes, NUM_PBES_ON_PAGE(pbl_size));
-		num_pbls++;	/* One for the layer0 ( points to the pbls) */
+		num_pbls++;	 
 		pbl_info->two_layered = true;
 	} else {
-		/* One layered PBL */
+		 
 		num_pbls = 1;
 		pbl_size = max_t(u32, MIN_FW_PBL_PAGE_SIZE,
 				 roundup_pow_of_two((num_pbes * sizeof(u64))));
@@ -630,9 +598,7 @@ static void qedr_populate_pbls(struct qedr_dev *dev, struct ib_umem *umem,
 	if (!pbl_info->num_pbes)
 		return;
 
-	/* If we have a two layered pbl, the first pbl points to the rest
-	 * of the pbls and the first entry lays on the second pbl in the table
-	 */
+	 
 	if (pbl_info->two_layered)
 		pbl_tbl = &pbl[1];
 	else
@@ -659,8 +625,7 @@ static void qedr_populate_pbls(struct qedr_dev *dev, struct ib_umem *umem,
 		if (total_num_pbes == pbl_info->num_pbes)
 			return;
 
-		/* If the given pbl is full storing the pbes, move to next pbl.
-		 */
+		 
 		if (pbe_cnt == (pbl_info->pbl_size / sizeof(u64))) {
 			pbl_tbl++;
 			pbe = (struct regpair *)pbl_tbl->va;
@@ -693,9 +658,7 @@ static void qedr_db_recovery_del(struct qedr_dev *dev,
 		return;
 	}
 
-	/* Ignore return code as there is not much we can do about it. Error
-	 * log will be printed inside.
-	 */
+	 
 	dev->ops->common->db_recovery_del(dev->cdev, db_addr, db_data);
 }
 
@@ -733,7 +696,7 @@ static inline int qedr_align_cq_entries(int entries)
 {
 	u64 size, aligned_size;
 
-	/* We allocate an extra entry that we don't report to the FW. */
+	 
 	size = (entries + 1) * QEDR_CQE_SIZE;
 	aligned_size = ALIGN(size, PAGE_SIZE);
 
@@ -750,11 +713,11 @@ static int qedr_init_user_db_rec(struct ib_udata *udata,
 	struct qedr_user_mmap_entry *entry;
 	int rc;
 
-	/* Aborting for non doorbell userqueue (SRQ) or non-supporting lib */
+	 
 	if (requires_db_rec == 0 || !uctx->db_rec)
 		return 0;
 
-	/* Allocate a page for doorbell recovery, add to mmap */
+	 
 	q->db_rec_data = (void *)get_zeroed_page(GFP_USER);
 	if (!q->db_rec_data) {
 		DP_ERR(dev, "get_zeroed_page failed\n");
@@ -827,7 +790,7 @@ static inline int qedr_init_user_queue(struct ib_udata *udata,
 		}
 	}
 
-	/* mmap the user address used to store doorbell data for recovery */
+	 
 	return qedr_init_user_db_rec(udata, dev, q, requires_db_rec);
 
 err0:
@@ -944,7 +907,7 @@ int qedr_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 	chain_entries = min_t(int, chain_entries, QEDR_MAX_CQES);
 	chain_params.num_elems = chain_entries;
 
-	/* calc db offset. user will add DPI base, kernel will add db addr */
+	 
 	db_offset = DB_ADDR_SHIFT(DQ_PWM_OFFSET_UCM_RDMA_CQ_CONS_32BIT);
 
 	if (udata) {
@@ -1011,13 +974,13 @@ int qedr_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 			goto err2;
 
 	} else {
-		/* Generate doorbell address. */
+		 
 		cq->db.data.icid = cq->icid;
 		cq->db_addr = dev->db_addr + db_offset;
 		cq->db.data.params = DB_AGG_CMD_MAX <<
 		    RDMA_PWM_VAL32_DATA_AGG_CMD_SHIFT;
 
-		/* point to the very last element, passing it we will toggle */
+		 
 		cq->toggle_cqe = qed_chain_get_last_elem(&cq->pbl);
 		cq->pbl_toggle = RDMA_CQE_REQUESTER_TOGGLE_BIT_MASK;
 		cq->latest_cqe = NULL;
@@ -1068,7 +1031,7 @@ int qedr_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata)
 
 	cq->destroyed = 1;
 
-	/* GSIs CQs are handled by driver, so they don't exist in the FW */
+	 
 	if (cq->cq_type == QEDR_CQ_TYPE_GSI) {
 		qedr_db_recovery_del(dev, cq->db_addr, &cq->db.data);
 		return 0;
@@ -1091,17 +1054,7 @@ int qedr_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata)
 		qedr_db_recovery_del(dev, cq->db_addr, &cq->db.data);
 	}
 
-	/* We don't want the IRQ handler to handle a non-existing CQ so we
-	 * wait until all CNQ interrupts, if any, are received. This will always
-	 * happen and will always happen very fast. If not, then a serious error
-	 * has occured. That is why we can use a long delay.
-	 * We spin for a short time so we don’t lose time on context switching
-	 * in case all the completions are handled in that span. Otherwise
-	 * we sleep for a while and check again. Since the CNQ may be
-	 * associated with (only) the current CPU we use msleep to allow the
-	 * current CPU to be freed.
-	 * The CNQ notification is increased in qedr_irq_handler().
-	 */
+	 
 	iter = QEDR_DESTROY_CQ_MAX_ITERATIONS;
 	while (oparams.num_cq_notif != READ_ONCE(cq->cnq_notif) && iter) {
 		udelay(QEDR_DESTROY_CQ_ITER_DURATION);
@@ -1114,11 +1067,7 @@ int qedr_destroy_cq(struct ib_cq *ibcq, struct ib_udata *udata)
 		iter--;
 	}
 
-	/* Note that we don't need to have explicit code to wait for the
-	 * completion of the event handler because it is invoked from the EQ.
-	 * Since the destroy CQ ramrod has also been received on the EQ we can
-	 * be certain that there's no event handler in process.
-	 */
+	 
 	return 0;
 }
 
@@ -1193,7 +1142,7 @@ static int qedr_check_qp_attrs(struct ib_pd *ibpd, struct qedr_dev *dev,
 {
 	struct qedr_device_attr *qattr = &dev->attr;
 
-	/* QP0... attrs->qp_type == IB_QPT_GSI */
+	 
 	if (attrs->qp_type != IB_QPT_RC &&
 	    attrs->qp_type != IB_QPT_GSI &&
 	    attrs->qp_type != IB_QPT_XRC_INI &&
@@ -1232,9 +1181,7 @@ static int qedr_check_qp_attrs(struct ib_pd *ibpd, struct qedr_dev *dev,
 		return -EINVAL;
 	}
 
-	/* verify consumer QPs are not trying to use GSI QP's CQ.
-	 * TGT QP isn't associated with RQ/SQ
-	 */
+	 
 	if ((attrs->qp_type != IB_QPT_GSI) && (dev->gsi_qp_created) &&
 	    (attrs->qp_type != IB_QPT_XRC_TGT) &&
 	    (attrs->qp_type != IB_QPT_XRC_INI)) {
@@ -1271,7 +1218,7 @@ static void qedr_copy_rq_uresp(struct qedr_dev *dev,
 			       struct qedr_create_qp_uresp *uresp,
 			       struct qedr_qp *qp)
 {
-	/* iWARP requires two doorbells per RQ. */
+	 
 	if (rdma_protocol_iwarp(&dev->ibdev, 1)) {
 		uresp->rq_db_offset =
 		    DB_ADDR_SHIFT(DQ_PWM_OFFSET_TCM_IWARP_RQ_PROD);
@@ -1293,7 +1240,7 @@ static void qedr_copy_sq_uresp(struct qedr_dev *dev,
 {
 	uresp->sq_db_offset = DB_ADDR_SHIFT(DQ_PWM_OFFSET_XCM_RDMA_SQ_PROD);
 
-	/* iWARP uses the same cid for rq and sq */
+	 
 	if (rdma_protocol_iwarp(&dev->ibdev, 1))
 		uresp->sq_icid = qp->icid;
 	else
@@ -1732,7 +1679,7 @@ qedr_init_common_qp_in_params(struct qedr_dev *dev,
 			      bool fmr_and_reserved_lkey,
 			      struct qed_rdma_create_qp_in_params *params)
 {
-	/* QP handle to be written in an async event */
+	 
 	params->qp_handle_async_lo = lower_32_bits((uintptr_t) qp);
 	params->qp_handle_async_hi = upper_32_bits((uintptr_t) qp);
 
@@ -1868,7 +1815,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
 	}
 
 	if (qedr_qp_has_sq(qp)) {
-		/* SQ - read access only (0) */
+		 
 		rc = qedr_init_user_queue(udata, dev, &qp->usq, ureq.sq_addr,
 					  ureq.sq_len, true, 0, alloc_and_init);
 		if (rc)
@@ -1876,7 +1823,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
 	}
 
 	if (qedr_qp_has_rq(qp)) {
-		/* RQ - read access only (0) */
+		 
 		rc = qedr_init_user_queue(udata, dev, &qp->urq, ureq.rq_addr,
 					  ureq.rq_len, true, 0, alloc_and_init);
 		if (rc)
@@ -1929,7 +1876,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
 			goto err;
 	}
 
-	/* db offset was calculated in copy_qp_uresp, now set in the user q */
+	 
 	if (qedr_qp_has_sq(qp)) {
 		qp->usq.db_addr = ctx->dpi_addr + uresp.sq_db_offset;
 		qp->sq.max_wr = attrs->cap.max_send_wr;
@@ -1955,9 +1902,7 @@ static int qedr_create_user_qp(struct qedr_dev *dev,
 	if (rdma_protocol_iwarp(&dev->ibdev, 1)) {
 		qp->urq.db_rec_db2_addr = ctx->dpi_addr + uresp.rq_db2_offset;
 
-		/* calculate the db_rec_db2 data since it is constant so no
-		 * need to reflect from user
-		 */
+		 
 		qp->urq.db_rec_db2_data.data.icid = cpu_to_le16(qp->icid);
 		qp->urq.db_rec_db2_data.data.value =
 			cpu_to_le16(DQ_TCM_IWARP_POST_RQ_CF_CMD);
@@ -2093,7 +2038,7 @@ qedr_iwarp_create_kernel_qp(struct qedr_dev *dev,
 	if (!qp->qed_qp)
 		return -EINVAL;
 
-	/* Now we allocate the chain */
+	 
 
 	params.intended_use = QED_CHAIN_USE_TO_PRODUCE;
 	params.num_elems = n_sq_elems;
@@ -2134,7 +2079,7 @@ static void qedr_cleanup_kernel(struct qedr_dev *dev, struct qedr_qp *qp)
 	dev->ops->common->chain_free(dev->cdev, &qp->rq.pbl);
 	kfree(qp->rqe_wr_id);
 
-	/* GSI qp is not registered to db mechanism so no need to delete */
+	 
 	if (qp->qp_type == IB_QPT_GSI)
 		return;
 
@@ -2164,16 +2109,7 @@ static int qedr_create_kernel_qp(struct qedr_dev *dev,
 	memset(&in_params, 0, sizeof(in_params));
 	qp->create_type = QEDR_QP_CREATE_KERNEL;
 
-	/* A single work request may take up to QEDR_MAX_SQ_WQE_SIZE elements in
-	 * the ring. The ring should allow at least a single WR, even if the
-	 * user requested none, due to allocation issues.
-	 * We should add an extra WR since the prod and cons indices of
-	 * wqe_wr_id are managed in such a way that the WQ is considered full
-	 * when (prod+1)%max_wr==cons. We currently don't do that because we
-	 * double the number of entries due an iSER issue that pushes far more
-	 * WRs than indicated. If we decline its ib_post_send() then we get
-	 * error prints in the dmesg we'd like to avoid.
-	 */
+	 
 	qp->sq.max_wr = min_t(u32, attrs->cap.max_send_wr * dev->wq_multiplier,
 			      dev->attr.max_sqe);
 
@@ -2184,17 +2120,14 @@ static int qedr_create_kernel_qp(struct qedr_dev *dev,
 		return -ENOMEM;
 	}
 
-	/* QP handle to be written in CQE */
+	 
 	in_params.qp_handle_lo = lower_32_bits((uintptr_t) qp);
 	in_params.qp_handle_hi = upper_32_bits((uintptr_t) qp);
 
-	/* A single work request may take up to QEDR_MAX_RQ_WQE_SIZE elements in
-	 * the ring. There ring should allow at least a single WR, even if the
-	 * user requested none, due to allocation issues.
-	 */
+	 
 	qp->rq.max_wr = (u16) max_t(u32, attrs->cap.max_recv_wr, 1);
 
-	/* Allocate driver internal RQ array */
+	 
 	qp->rqe_wr_id = kcalloc(qp->rq.max_wr, sizeof(*qp->rqe_wr_id),
 				GFP_KERNEL);
 	if (!qp->rqe_wr_id) {
@@ -2373,9 +2306,7 @@ static int qedr_update_qp_state(struct qedr_dev *dev,
 	case QED_ROCE_QP_STATE_INIT:
 		switch (new_state) {
 		case QED_ROCE_QP_STATE_RTR:
-			/* Update doorbell (in case post_recv was
-			 * done before move to RTR)
-			 */
+			 
 
 			if (rdma_protocol_roce(&dev->ibdev, 1)) {
 				writel(qp->rq.db_data.raw, qp->rq.db);
@@ -2384,51 +2315,51 @@ static int qedr_update_qp_state(struct qedr_dev *dev,
 		case QED_ROCE_QP_STATE_ERR:
 			break;
 		default:
-			/* Invalid state change. */
+			 
 			status = -EINVAL;
 			break;
 		}
 		break;
 	case QED_ROCE_QP_STATE_RTR:
-		/* RTR->XXX */
+		 
 		switch (new_state) {
 		case QED_ROCE_QP_STATE_RTS:
 			break;
 		case QED_ROCE_QP_STATE_ERR:
 			break;
 		default:
-			/* Invalid state change. */
+			 
 			status = -EINVAL;
 			break;
 		}
 		break;
 	case QED_ROCE_QP_STATE_RTS:
-		/* RTS->XXX */
+		 
 		switch (new_state) {
 		case QED_ROCE_QP_STATE_SQD:
 			break;
 		case QED_ROCE_QP_STATE_ERR:
 			break;
 		default:
-			/* Invalid state change. */
+			 
 			status = -EINVAL;
 			break;
 		}
 		break;
 	case QED_ROCE_QP_STATE_SQD:
-		/* SQD->XXX */
+		 
 		switch (new_state) {
 		case QED_ROCE_QP_STATE_RTS:
 		case QED_ROCE_QP_STATE_ERR:
 			break;
 		default:
-			/* Invalid state change. */
+			 
 			status = -EINVAL;
 			break;
 		}
 		break;
 	case QED_ROCE_QP_STATE_ERR:
-		/* ERR->XXX */
+		 
 		switch (new_state) {
 		case QED_ROCE_QP_STATE_RESET:
 			if ((qp->rq.prod != qp->rq.cons) ||
@@ -2490,7 +2421,7 @@ int qedr_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 		}
 	}
 
-	/* Translate the masks... */
+	 
 	if (attr_mask & IB_QP_STATE) {
 		SET_FIELD(qp_params.modify_flags,
 			  QED_RDMA_MODIFY_QP_VALID_NEW_STATE, 1);
@@ -2586,7 +2517,7 @@ int qedr_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 	}
 
 	if (!qp_params.mtu) {
-		/* Stay with current MTU */
+		 
 		if (qp->mtu)
 			qp_params.mtu = qp->mtu;
 		else
@@ -2598,16 +2529,7 @@ int qedr_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 		SET_FIELD(qp_params.modify_flags,
 			  QED_ROCE_MODIFY_QP_VALID_ACK_TIMEOUT, 1);
 
-		/* The received timeout value is an exponent used like this:
-		 *    "12.7.34 LOCAL ACK TIMEOUT
-		 *    Value representing the transport (ACK) timeout for use by
-		 *    the remote, expressed as: 4.096 * 2^timeout [usec]"
-		 * The FW expects timeout in msec so we need to divide the usec
-		 * result by 1000. We'll approximate 1000~2^10, and 4.096 ~ 2^2,
-		 * so we get: 2^2 * 2^timeout / 2^10 = 2^(timeout - 8).
-		 * The value of zero means infinite so we use a 'max_t' to make
-		 * sure that sub 1 msec values will be configured as 1 msec.
-		 */
+		 
 		if (attr->timeout)
 			qp_params.ack_timeout =
 					1 << max_t(int, attr->timeout - 8, 0);
@@ -2691,11 +2613,7 @@ int qedr_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 
 	cur_state = qp->state;
 
-	/* Update the QP state before the actual ramrod to prevent a race with
-	 * fast path. Modifying the QP state to error will cause the device to
-	 * flush the CQEs and while polling the flushed CQEs will considered as
-	 * a potential issue if the QP isn't in error state.
-	 */
+	 
 	if ((attr_mask & IB_QP_STATE) && qp->qp_type != IB_QPT_GSI &&
 	    !udata && qp_params.new_state == QED_ROCE_QP_STATE_ERR)
 		qp->state = QED_ROCE_QP_STATE_ERR;
@@ -2817,28 +2735,16 @@ int qedr_destroy_qp(struct ib_qp *ibqp, struct ib_udata *udata)
 			attr.qp_state = IB_QPS_ERR;
 			attr_mask |= IB_QP_STATE;
 
-			/* Change the QP state to ERROR */
+			 
 			qedr_modify_qp(ibqp, &attr, attr_mask, NULL);
 		}
 	} else {
-		/* If connection establishment started the WAIT_FOR_CONNECT
-		 * bit will be on and we need to Wait for the establishment
-		 * to complete before destroying the qp.
-		 */
+		 
 		if (test_and_set_bit(QEDR_IWARP_CM_WAIT_FOR_CONNECT,
 				     &qp->iwarp_cm_flags))
 			wait_for_completion(&qp->iwarp_cm_comp);
 
-		/* If graceful disconnect started, the WAIT_FOR_DISCONNECT
-		 * bit will be on, and we need to wait for the disconnect to
-		 * complete before continuing. We can use the same completion,
-		 * iwarp_cm_comp, since this is the only place that waits for
-		 * this completion and it is sequential. In addition,
-		 * disconnect can't occur before the connection is fully
-		 * established, therefore if WAIT_FOR_DISCONNECT is on it
-		 * means WAIT_FOR_CONNECT is also on and the completion for
-		 * CONNECT already occurred.
-		 */
+		 
 		if (test_and_set_bit(QEDR_IWARP_CM_WAIT_FOR_DISCONNECT,
 				     &qp->iwarp_cm_flags))
 			wait_for_completion(&qp->iwarp_cm_comp);
@@ -2847,10 +2753,7 @@ int qedr_destroy_qp(struct ib_qp *ibqp, struct ib_udata *udata)
 	if (qp->qp_type == IB_QPT_GSI)
 		qedr_destroy_gsi_qp(dev);
 
-	/* We need to remove the entry from the xarray before we release the
-	 * qp_id to avoid a race of the qp_id being reallocated and failing
-	 * on xa_insert
-	 */
+	 
 	if (rdma_protocol_iwarp(&dev->ibdev, 1))
 		xa_erase(&dev->qps, qp->qp_id);
 
@@ -2922,9 +2825,7 @@ static int init_mr_info(struct qedr_dev *dev, struct mr_info *info,
 	DP_DEBUG(dev, QEDR_MSG_MR, "pbl_table_pa = %pa\n",
 		 &info->pbl_table->pa);
 
-	/* in usual case we use 2 PBLs, so we add one to free
-	 * list and allocating another one
-	 */
+	 
 	tmp = qedr_alloc_pbl_tbl(dev, &info->pbl_info, GFP_KERNEL);
 	if (IS_ERR(tmp)) {
 		DP_DEBUG(dev, QEDR_MSG_MR, "Extra PBL is not allocated\n");
@@ -2988,7 +2889,7 @@ struct ib_mr *qedr_reg_user_mr(struct ib_pd *ibpd, u64 start, u64 len,
 		goto err1;
 	}
 
-	/* Index only, 18 bit long, lkey = itid << 8 | key */
+	 
 	mr->hw_mr.tid_type = QED_RDMA_TID_REGISTERED_MR;
 	mr->hw_mr.key = 0;
 	mr->hw_mr.pd = pd->pd_id;
@@ -3046,7 +2947,7 @@ int qedr_dereg_mr(struct ib_mr *ib_mr, struct ib_udata *udata)
 	if (mr->type != QEDR_MR_DMA)
 		free_mr_info(dev, &mr->info);
 
-	/* it could be user registered memory. */
+	 
 	ib_umem_release(mr->umem);
 
 	kfree(mr);
@@ -3087,7 +2988,7 @@ static struct qedr_mr *__qedr_alloc_mr(struct ib_pd *ibpd,
 		goto err1;
 	}
 
-	/* Index only, 18 bit long, lkey = itid << 8 | key */
+	 
 	mr->hw_mr.tid_type = QED_RDMA_TID_FMR;
 	mr->hw_mr.key = 0;
 	mr->hw_mr.pd = pd->pd_id;
@@ -3177,11 +3078,7 @@ static void handle_completed_mrs(struct qedr_dev *dev, struct mr_info *info)
 	while (work-- > 0 && !list_empty(&info->inuse_pbl_list)) {
 		struct qedr_pbl *pbl;
 
-		/* Free all the page list that are possible to be freed
-		 * (all the ones that were invalidated), under the assumption
-		 * that if an FMR was completed successfully that means that
-		 * if there was an invalidate operation before it also ended
-		 */
+		 
 		pbl = list_first_entry(&info->inuse_pbl_list,
 				       struct qedr_pbl, list_entry);
 		list_move_tail(&pbl->list_entry, &info->free_pbl_list);
@@ -3223,7 +3120,7 @@ struct ib_mr *qedr_get_dma_mr(struct ib_pd *ibpd, int acc)
 		goto err1;
 	}
 
-	/* index only, 18 bit long, lkey = itid << 8 | key */
+	 
 	mr->hw_mr.tid_type = QED_RDMA_TID_REGISTERED_MR;
 	mr->hw_mr.pd = pd->pd_id;
 	mr->hw_mr.local_read = 1;
@@ -3302,7 +3199,7 @@ static u32 qedr_prepare_sq_inline_data(struct qedr_dev *dev,
 	wqe = NULL;
 	seg_siz = 0;
 
-	/* Copy data inline */
+	 
 	for (i = 0; i < wr->num_sge; i++) {
 		u32 len = wr->sg_list[i].length;
 		void *src = (void *)(uintptr_t)wr->sg_list[i].addr;
@@ -3310,7 +3207,7 @@ static u32 qedr_prepare_sq_inline_data(struct qedr_dev *dev,
 		while (len > 0) {
 			u32 cur;
 
-			/* New segment required */
+			 
 			if (!seg_siz) {
 				wqe = (char *)qed_chain_produce(&qp->sq.pbl);
 				seg_prt = wqe;
@@ -3318,25 +3215,25 @@ static u32 qedr_prepare_sq_inline_data(struct qedr_dev *dev,
 				(*wqe_size)++;
 			}
 
-			/* Calculate currently allowed length */
+			 
 			cur = min_t(u32, len, seg_siz);
 			memcpy(seg_prt, src, cur);
 
-			/* Update segment variables */
+			 
 			seg_prt += cur;
 			seg_siz -= cur;
 
-			/* Update sge variables */
+			 
 			src += cur;
 			len -= cur;
 
-			/* Swap fully-completed segments */
+			 
 			if (!seg_siz)
 				swap_wqe_data64((u64 *)wqe);
 		}
 	}
 
-	/* swap last not completed segment */
+	 
 	if (seg_siz)
 		swap_wqe_data64((u64 *)wqe);
 
@@ -3496,7 +3393,7 @@ static inline bool qedr_can_post_send(struct qedr_qp *qp,
 	int wq_is_full, err_wr, pbl_is_full;
 	struct qedr_dev *dev = qp->dev;
 
-	/* prevent SQ overflow and/or processing of a bad WR */
+	 
 	err_wr = wr->num_sge > qp->sq.max_sges;
 	wq_is_full = qedr_wq_is_full(&qp->sq);
 	pbl_is_full = qed_chain_get_elem_left_u32(&qp->sq.pbl) <
@@ -3648,7 +3545,7 @@ static int __qedr_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 		break;
 	case IB_WR_RDMA_READ_WITH_INV:
 		SET_FIELD2(wqe->flags, RDMA_SQ_RDMA_WQE_1ST_READ_INV_FLG, 1);
-		fallthrough;	/* same is identical to RDMA READ */
+		fallthrough;	 
 
 	case IB_WR_RDMA_READ:
 		wqe->req_type = RDMA_SQ_REQ_TYPE_RDMA_RD;
@@ -3728,13 +3625,11 @@ static int __qedr_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 	if (*bad_wr) {
 		u16 value;
 
-		/* Restore prod to its position before
-		 * this WR was processed
-		 */
+		 
 		value = le16_to_cpu(qp->sq.db_data.data.value);
 		qed_chain_set_prod(&qp->sq.pbl, value, wqe);
 
-		/* Restore prev_wqe_size */
+		 
 		qp->prev_wqe_size = wqe->prev_wqe_size;
 		rc = -EINVAL;
 		DP_ERR(dev, "POST SEND FAILED\n");
@@ -3785,19 +3680,7 @@ int qedr_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 		wr = wr->next;
 	}
 
-	/* Trigger doorbell
-	 * If there was a failure in the first WR then it will be triggered in
-	 * vane. However this is not harmful (as long as the producer value is
-	 * unchanged). For performance reasons we avoid checking for this
-	 * redundant doorbell.
-	 *
-	 * qp->wqe_wr_id is accessed during qedr_poll_cq, as
-	 * soon as we give the doorbell, we could get a completion
-	 * for this wr, therefore we need to make sure that the
-	 * memory is updated before giving the doorbell.
-	 * During qedr_poll_cq, rmb is called before accessing the
-	 * cqe. This covers for the smp_rmb as well.
-	 */
+	 
 	smp_wmb();
 	writel(qp->sq.db_data.raw, qp->sq.db);
 
@@ -3810,10 +3693,7 @@ static u32 qedr_srq_elem_left(struct qedr_srq_hwq_info *hw_srq)
 {
 	u32 used;
 
-	/* Calculate number of elements used based on producer
-	 * count and consumer count and subtract it from max
-	 * work request supported so that we get elements left.
-	 */
+	 
 	used = hw_srq->wr_prod_cnt - (u32)atomic_read(&hw_srq->wr_cons_cnt);
 
 	return hw_srq->max_wr - used;
@@ -3851,7 +3731,7 @@ int qedr_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 
 		hdr = qed_chain_produce(pbl);
 		num_sge = wr->num_sge;
-		/* Set number of sge and work request id in header */
+		 
 		SRQ_HDR_SET(hdr, wr->wr_id, num_sge);
 
 		srq->hw_srq.wr_prod_cnt++;
@@ -3865,7 +3745,7 @@ int qedr_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 		for (i = 0; i < wr->num_sge; i++) {
 			struct rdma_srq_sge *srq_sge = qed_chain_produce(pbl);
 
-			/* Set SGE length, lkey and address */
+			 
 			SRQ_SGE_SET(srq_sge, wr->sg_list[i].addr,
 				    wr->sg_list[i].length, wr->sg_list[i].lkey);
 
@@ -3876,17 +3756,12 @@ int qedr_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 			hw_srq->sge_prod++;
 		}
 
-		/* Update WQE and SGE information before
-		 * updating producer.
-		 */
+		 
 		dma_wmb();
 
-		/* SRQ producer is 8 bytes. Need to update SGE producer index
-		 * in first 4 bytes and need to update WQE producer in
-		 * next 4 bytes.
-		 */
+		 
 		srq->hw_srq.virt_prod_pair_addr->sge_prod = cpu_to_le32(hw_srq->sge_prod);
-		/* Make sure sge producer is updated first */
+		 
 		dma_wmb();
 		srq->hw_srq.virt_prod_pair_addr->wqe_prod = cpu_to_le32(hw_srq->wqe_prod);
 
@@ -3932,9 +3807,7 @@ int qedr_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 			struct rdma_rq_sge *rqe =
 			    qed_chain_produce(&qp->rq.pbl);
 
-			/* First one must include the number
-			 * of SGE in the list
-			 */
+			 
 			if (!i)
 				SET_FIELD(flags, RDMA_RQ_SGE_NUM_SGES,
 					  wr->num_sge);
@@ -3946,18 +3819,13 @@ int qedr_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 				   wr->sg_list[i].length, flags);
 		}
 
-		/* Special case of no sges. FW requires between 1-4 sges...
-		 * in this case we need to post 1 sge with length zero. this is
-		 * because rdma write with immediate consumes an RQ.
-		 */
+		 
 		if (!wr->num_sge) {
 			u32 flags = 0;
 			struct rdma_rq_sge *rqe =
 			    qed_chain_produce(&qp->rq.pbl);
 
-			/* First one must include the number
-			 * of SGE in the list
-			 */
+			 
 			SET_FIELD(flags, RDMA_RQ_SGE_L_KEY_LO, 0);
 			SET_FIELD(flags, RDMA_RQ_SGE_NUM_SGES, 1);
 
@@ -3970,13 +3838,7 @@ int qedr_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 
 		qedr_inc_sw_prod(&qp->rq);
 
-		/* qp->rqe_wr_id is accessed during qedr_poll_cq, as
-		 * soon as we give the doorbell, we could get a completion
-		 * for this wr, therefore we need to make sure that the
-		 * memory is update before giving the doorbell.
-		 * During qedr_poll_cq, rmb is called before accessing the
-		 * cqe. This covers for the smp_rmb as well.
-		 */
+		 
 		smp_wmb();
 
 		qp->rq.db_data.data.value++;
@@ -4021,19 +3883,13 @@ static enum rdma_cqe_type cqe_get_type(union rdma_cqe *cqe)
 	return GET_FIELD(resp_cqe->flags, RDMA_CQE_REQUESTER_TYPE);
 }
 
-/* Return latest CQE (needs processing) */
+ 
 static union rdma_cqe *get_cqe(struct qedr_cq *cq)
 {
 	return cq->latest_cqe;
 }
 
-/* In fmr we need to increase the number of fmr completed counter for the fmr
- * algorithm determining whether we can free a pbl or not.
- * we need to perform this whether the work request was signaled or not. for
- * this purpose we call this function from the condition that checks if a wr
- * should be skipped, to make sure we don't miss it ( possibly this fmr
- * operation was not signalted)
- */
+ 
 static inline void qedr_chk_if_fmr(struct qedr_qp *qp)
 {
 	if (qp->wqe_wr_id[qp->sq.cons].opcode == IB_WC_REG_MR)
@@ -4050,11 +3906,11 @@ static int process_req(struct qedr_dev *dev, struct qedr_qp *qp,
 	while (num_entries && qp->sq.wqe_cons != hw_cons) {
 		if (!qp->wqe_wr_id[qp->sq.cons].signaled && !force) {
 			qedr_chk_if_fmr(qp);
-			/* skip WC */
+			 
 			goto next_cqe;
 		}
 
-		/* fill WC */
+		 
 		wc->status = status;
 		wc->vendor_err = 0;
 		wc->wc_flags = 0;
@@ -4116,12 +3972,12 @@ static int qedr_poll_cq_req(struct qedr_dev *dev,
 				  IB_WC_WR_FLUSH_ERR, 1);
 		break;
 	default:
-		/* process all WQE before the cosumer */
+		 
 		qp->state = QED_ROCE_QP_STATE_ERR;
 		cnt = process_req(dev, qp, cq, num_entries, wc,
 				  req->sq_cons - 1, IB_WC_SUCCESS, 0);
 		wc += cnt;
-		/* if we have extra WC fill it with actual error info */
+		 
 		if (cnt < num_entries) {
 			enum ib_wc_status wc_status;
 
@@ -4256,7 +4112,7 @@ static void __process_resp_one(struct qedr_dev *dev, struct qedr_qp *qp,
 			       struct qedr_cq *cq, struct ib_wc *wc,
 			       struct rdma_cqe_responder *resp, u64 wr_id)
 {
-	/* Must fill fields before qedr_set_ok_cqe_resp_wc() */
+	 
 	wc->opcode = IB_WC_RECV;
 	wc->wc_flags = 0;
 
@@ -4274,7 +4130,7 @@ static void __process_resp_one(struct qedr_dev *dev, struct qedr_qp *qp,
 			       cq, cq->icid, resp->status);
 	}
 
-	/* Fill the rest of the WC */
+	 
 	wc->vendor_err = 0;
 	wc->src_qp = qp->id;
 	wc->qp = &qp->ibqp;
@@ -4327,7 +4183,7 @@ static int process_resp_flush(struct qedr_qp *qp, struct qedr_cq *cq,
 	u16 cnt = 0;
 
 	while (num_entries && qp->rq.wqe_cons != hw_cons) {
-		/* fill WC */
+		 
 		wc->status = IB_WC_WR_FLUSH_ERR;
 		wc->vendor_err = 0;
 		wc->wc_flags = 0;
@@ -4424,7 +4280,7 @@ int qedr_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 		struct qedr_qp *qp;
 		int cnt = 0;
 
-		/* prevent speculative reads of any field of CQE */
+		 
 		rmb();
 
 		qp = cqe_get_qp(cqe);
@@ -4466,9 +4322,7 @@ int qedr_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 	cq->cq_cons += new_cons - old_cons;
 
 	if (update)
-		/* doorbell notifies abount latest VALID entry,
-		 * but chain already point to the next INVALID one
-		 */
+		 
 		doorbell_cq(cq, cq->cq_cons - 1, cq->arm_flags);
 
 	spin_unlock_irqrestore(&cq->cq_lock, flags);

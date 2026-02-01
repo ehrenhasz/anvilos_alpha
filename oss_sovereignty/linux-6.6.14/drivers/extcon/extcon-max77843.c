@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// extcon-max77843.c - Maxim MAX77843 extcon driver to support
-//			MUIC(Micro USB Interface Controller)
-//
-// Copyright (C) 2015 Samsung Electronics
-// Author: Jaewon Kim <jaewon02.kim@samsung.com>
+
+
+
+
+
+
+
 
 #include <linux/extcon-provider.h>
 #include <linux/i2c.h>
@@ -16,7 +16,7 @@
 #include <linux/platform_device.h>
 #include <linux/workqueue.h>
 
-#define DELAY_MS_DEFAULT		15000	/* unit: millisecond */
+#define DELAY_MS_DEFAULT		15000	 
 
 enum max77843_muic_status {
 	MAX77843_MUIC_STATUS1 = 0,
@@ -57,7 +57,7 @@ enum max77843_muic_adc_debounce_time {
 	MAX77843_DEBOUNCE_TIME_38_62MS,
 };
 
-/* Define accessory cable type */
+ 
 enum max77843_muic_accessory_type {
 	MAX77843_MUIC_ADC_GROUND = 0,
 	MAX77843_MUIC_ADC_SEND_END_BUTTON,
@@ -75,7 +75,7 @@ enum max77843_muic_accessory_type {
 	MAX77843_MUIC_ADC_REMOTE_S12_BUTTON,
 	MAX77843_MUIC_ADC_RESERVED_ACC_1,
 	MAX77843_MUIC_ADC_RESERVED_ACC_2,
-	MAX77843_MUIC_ADC_RESERVED_ACC_3, /* SmartDock */
+	MAX77843_MUIC_ADC_RESERVED_ACC_3,  
 	MAX77843_MUIC_ADC_RESERVED_ACC_4,
 	MAX77843_MUIC_ADC_RESERVED_ACC_5,
 	MAX77843_MUIC_ADC_AUDIO_DEVICE_TYPE2,
@@ -92,18 +92,15 @@ enum max77843_muic_accessory_type {
 	MAX77843_MUIC_ADC_AUDIO_DEVICE_TYPE1,
 	MAX77843_MUIC_ADC_OPEN,
 
-	/*
-	 * The below accessories should check
-	 * not only ADC value but also ADC1K and VBVolt value.
-	 */
-						/* Offset|ADC1K|VBVolt| */
-	MAX77843_MUIC_GND_USB_HOST = 0x100,	/*    0x1|    0|     0| */
-	MAX77843_MUIC_GND_USB_HOST_VB = 0x101,	/*    0x1|    0|     1| */
-	MAX77843_MUIC_GND_MHL = 0x102,		/*    0x1|    1|     0| */
-	MAX77843_MUIC_GND_MHL_VB = 0x103,	/*    0x1|    1|     1| */
+	 
+						 
+	MAX77843_MUIC_GND_USB_HOST = 0x100,	 
+	MAX77843_MUIC_GND_USB_HOST_VB = 0x101,	 
+	MAX77843_MUIC_GND_MHL = 0x102,		 
+	MAX77843_MUIC_GND_MHL_VB = 0x103,	 
 };
 
-/* Define charger cable type */
+ 
 enum max77843_muic_charger_type {
 	MAX77843_MUIC_CHG_NONE = 0,
 	MAX77843_MUIC_CHG_USB,
@@ -163,19 +160,19 @@ static const struct regmap_config max77843_muic_regmap_config = {
 };
 
 static const struct regmap_irq max77843_muic_irq[] = {
-	/* INT1 interrupt */
+	 
 	{ .reg_offset = 0, .mask = MAX77843_MUIC_ADC, },
 	{ .reg_offset = 0, .mask = MAX77843_MUIC_ADCERROR, },
 	{ .reg_offset = 0, .mask = MAX77843_MUIC_ADC1K, },
 
-	/* INT2 interrupt */
+	 
 	{ .reg_offset = 1, .mask = MAX77843_MUIC_CHGTYP, },
 	{ .reg_offset = 1, .mask = MAX77843_MUIC_CHGDETRUN, },
 	{ .reg_offset = 1, .mask = MAX77843_MUIC_DCDTMR, },
 	{ .reg_offset = 1, .mask = MAX77843_MUIC_DXOVP, },
 	{ .reg_offset = 1, .mask = MAX77843_MUIC_VBVOLT, },
 
-	/* INT3 interrupt */
+	 
 	{ .reg_offset = 2, .mask = MAX77843_MUIC_VBADC, },
 	{ .reg_offset = 2, .mask = MAX77843_MUIC_VDNMON, },
 	{ .reg_offset = 2, .mask = MAX77843_MUIC_DNRES, },
@@ -207,7 +204,7 @@ static int max77843_muic_set_path(struct max77843_muic_info *info,
 	else
 		ctrl1 = MAX77843_MUIC_CONTROL1_SW_OPEN;
 	if (nobccomp) {
-		/* Disable BC1.2 protocol and force manual switch control */
+		 
 		ctrl1 |= MAX77843_MUIC_CONTROL1_NOBCCOMP_MASK;
 	}
 
@@ -281,23 +278,16 @@ static int max77843_muic_get_cable_type(struct max77843_muic_info *info,
 		chg_type = info->status[MAX77843_MUIC_STATUS2] &
 				MAX77843_MUIC_STATUS2_CHGTYP_MASK;
 
-		/* Check GROUND accessory with charger cable */
+		 
 		if (adc == MAX77843_MUIC_ADC_GROUND) {
 			if (chg_type == MAX77843_MUIC_CHG_NONE) {
-				/*
-				 * The following state when charger cable is
-				 * disconnected but the GROUND accessory still
-				 * connected.
-				 */
+				 
 				*attached = false;
 				cable_type = info->prev_chg_type;
 				info->prev_chg_type = MAX77843_MUIC_CHG_NONE;
 			} else {
 
-				/*
-				 * The following state when charger cable is
-				 * connected on the GROUND accessory.
-				 */
+				 
 				*attached = true;
 				cable_type = MAX77843_MUIC_CHG_GND;
 				info->prev_chg_type = MAX77843_MUIC_CHG_GND;
@@ -305,7 +295,7 @@ static int max77843_muic_get_cable_type(struct max77843_muic_info *info,
 			break;
 		}
 
-		if (adc == MAX77843_MUIC_ADC_RESERVED_ACC_3) { /* SmartDock */
+		if (adc == MAX77843_MUIC_ADC_RESERVED_ACC_3) {  
 			if (chg_type == MAX77843_MUIC_CHG_NONE) {
 				*attached = false;
 				cable_type = info->prev_chg_type;
@@ -335,23 +325,17 @@ static int max77843_muic_get_cable_type(struct max77843_muic_info *info,
 		} else {
 			*attached = true;
 
-			/*
-			 * Offset|ADC1K|VBVolt|
-			 *    0x1|    0|     0| USB-HOST
-			 *    0x1|    0|     1| USB-HOST with VB
-			 *    0x1|    1|     0| MHL
-			 *    0x1|    1|     1| MHL with VB
-			 */
-			/* Get ADC1K register bit */
+			 
+			 
 			gnd_type = (info->status[MAX77843_MUIC_STATUS1] &
 					MAX77843_MUIC_STATUS1_ADC1K_MASK);
 
-			/* Get VBVolt register bit */
+			 
 			gnd_type |= (info->status[MAX77843_MUIC_STATUS2] &
 					MAX77843_MUIC_STATUS2_VBVOLT_MASK);
 			gnd_type >>= MAX77843_MUIC_STATUS2_VBVOLT_SHIFT;
 
-			/* Offset of GND cable */
+			 
 			gnd_type |= MAX77843_MUIC_GND_USB_HOST;
 			cable_type = info->prev_gnd_type = gnd_type;
 		}
@@ -470,7 +454,7 @@ static int max77843_muic_adc_handler(struct max77843_muic_info *info)
 		info->prev_cable_type);
 
 	switch (cable_type) {
-	case MAX77843_MUIC_ADC_RESERVED_ACC_3: /* SmartDock */
+	case MAX77843_MUIC_ADC_RESERVED_ACC_3:  
 		ret = max77843_muic_dock_handler(info, attached);
 		if (ret < 0)
 			return ret;
@@ -597,7 +581,7 @@ static int max77843_muic_chg_handler(struct max77843_muic_info *info)
 		gnd_type = max77843_muic_get_cable_type(info,
 				MAX77843_CABLE_GROUP_ADC_GND, &attached);
 
-		/* Charger cable on MHL accessory is attach or detach */
+		 
 		if (gnd_type == MAX77843_MUIC_GND_MHL_VB)
 			extcon_set_state_sync(info->edev, EXTCON_CHG_USB_DCP,
 						true);
@@ -825,21 +809,21 @@ static int max77843_muic_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, info);
 	mutex_init(&info->mutex);
 
-	/* Initialize i2c and regmap */
+	 
 	ret = max77843_init_muic_regmap(max77843);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to init MUIC regmap\n");
 		return ret;
 	}
 
-	/* Turn off auto detection configuration */
+	 
 	ret = regmap_update_bits(max77843->regmap_muic,
 			MAX77843_MUIC_REG_CONTROL4,
 			MAX77843_MUIC_CONTROL4_USBAUTO_MASK |
 			MAX77843_MUIC_CONTROL4_FCTAUTO_MASK,
 			CONTROL4_AUTO_DISABLE);
 
-	/* Initialize extcon device */
+	 
 	info->edev = devm_extcon_dev_allocate(&pdev->dev,
 			max77843_extcon_cable);
 	if (IS_ERR(info->edev)) {
@@ -854,10 +838,10 @@ static int max77843_muic_probe(struct platform_device *pdev)
 		goto err_muic_irq;
 	}
 
-	/* Set ADC debounce time */
+	 
 	max77843_muic_set_debounce_time(info, MAX77843_DEBOUNCE_TIME_25MS);
 
-	/* Set initial path for UART when JIG is connected to get serial logs */
+	 
 	ret = regmap_bulk_read(max77843->regmap_muic,
 			MAX77843_MUIC_REG_STATUS1, info->status,
 			MAX77843_MUIC_STATUS_NUM);
@@ -871,7 +855,7 @@ static int max77843_muic_probe(struct platform_device *pdev)
 		max77843_muic_set_path(info, MAX77843_MUIC_CONTROL1_SW_UART,
 				       true, false);
 
-	/* Check revision number of MUIC device */
+	 
 	ret = regmap_read(max77843->regmap_muic, MAX77843_MUIC_REG_ID, &id);
 	if (ret < 0) {
 		dev_err(&pdev->dev, "Failed to read revision number\n");
@@ -879,10 +863,10 @@ static int max77843_muic_probe(struct platform_device *pdev)
 	}
 	dev_info(info->dev, "MUIC device ID : 0x%x\n", id);
 
-	/* Support virtual irq domain for max77843 MUIC device */
+	 
 	INIT_WORK(&info->irq_work, max77843_muic_irq_work);
 
-	/* Clear IRQ bits before request IRQs */
+	 
 	ret = regmap_bulk_read(max77843->regmap_muic,
 			MAX77843_MUIC_REG_INT1, info->status,
 			MAX77843_MUIC_STATUS_NUM);
@@ -914,7 +898,7 @@ static int max77843_muic_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Detect accessory after completing the initialization of platform */
+	 
 	INIT_DELAYED_WORK(&info->wq_detcable, max77843_muic_detect_cable_wq);
 	queue_delayed_work(system_power_efficient_wq,
 			&info->wq_detcable, msecs_to_jiffies(DELAY_MS_DEFAULT));
@@ -942,7 +926,7 @@ static int max77843_muic_remove(struct platform_device *pdev)
 
 static const struct platform_device_id max77843_muic_id[] = {
 	{ "max77843-muic", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, max77843_muic_id);
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 2007, 2012
- *    Author(s): Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <linux/bitmap.h>
@@ -74,7 +71,7 @@ void idset_sch_del(struct idset *set, struct subchannel_id schid)
 	idset_del(set, schid.ssid, schid.sch_no);
 }
 
-/* Clear ids starting from @schid up to end of subchannel set. */
+ 
 void idset_sch_del_subseq(struct idset *set, struct subchannel_id schid)
 {
 	int pos = schid.ssid * set->num_id + schid.sch_no;

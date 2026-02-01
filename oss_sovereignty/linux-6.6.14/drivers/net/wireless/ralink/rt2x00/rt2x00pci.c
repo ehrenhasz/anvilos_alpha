@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Copyright (C) 2004 - 2009 Ivo van Doorn <IvDoorn@gmail.com>
-	<http://rt2x00.serialmonkey.com>
 
- */
+ 
 
-/*
-	Module: rt2x00pci
-	Abstract: rt2x00 generic pci device routines.
- */
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/kernel.h>
@@ -19,9 +12,7 @@
 #include "rt2x00.h"
 #include "rt2x00pci.h"
 
-/*
- * PCI driver handlers.
- */
+ 
 static void rt2x00pci_free_reg(struct rt2x00_dev *rt2x00dev)
 {
 	kfree(rt2x00dev->rf);
@@ -117,11 +108,7 @@ int rt2x00pci_probe(struct pci_dev *pci_dev, const struct rt2x00_ops *ops)
 	if (retval)
 		goto exit_free_device;
 
-	/*
-	 * Because rt3290 chip use different efuse offset to read efuse data.
-	 * So before read efuse it need to indicate it is the
-	 * rt3290 or not.
-	 */
+	 
 	pci_read_config_word(pci_dev, PCI_DEVICE_ID, &chip);
 	rt2x00dev->chip.rt = chip;
 
@@ -153,16 +140,12 @@ void rt2x00pci_remove(struct pci_dev *pci_dev)
 	struct ieee80211_hw *hw = pci_get_drvdata(pci_dev);
 	struct rt2x00_dev *rt2x00dev = hw->priv;
 
-	/*
-	 * Free all allocated data.
-	 */
+	 
 	rt2x00lib_remove_dev(rt2x00dev);
 	rt2x00pci_free_reg(rt2x00dev);
 	ieee80211_free_hw(hw);
 
-	/*
-	 * Free the PCI device data.
-	 */
+	 
 	pci_clear_mwi(pci_dev);
 	pci_disable_device(pci_dev);
 	pci_release_regions(pci_dev);
@@ -188,9 +171,7 @@ static int __maybe_unused rt2x00pci_resume(struct device *dev)
 SIMPLE_DEV_PM_OPS(rt2x00pci_pm_ops, rt2x00pci_suspend, rt2x00pci_resume);
 EXPORT_SYMBOL_GPL(rt2x00pci_pm_ops);
 
-/*
- * rt2x00pci module information.
- */
+ 
 MODULE_AUTHOR(DRV_PROJECT);
 MODULE_VERSION(DRV_VERSION);
 MODULE_DESCRIPTION("rt2x00 pci library");

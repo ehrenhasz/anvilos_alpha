@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Audio Sound SoC helper APIs
- */
+
+ 
 
 #include <sound/core.h>
 #include <sound/soc.h>
@@ -19,7 +17,7 @@ static void gbaudio_dapm_link_dai_widget(struct snd_soc_dapm_widget *dai_w,
 	struct snd_soc_dapm_widget *src, *sink;
 	struct snd_soc_dai *dai = dai_w->priv;
 
-	/* ...find all widgets with the same stream and link them */
+	 
 	list_for_each_entry(w, &card->widgets, list) {
 		if (w->dapm != dai_w->dapm)
 			continue;
@@ -35,11 +33,7 @@ static void gbaudio_dapm_link_dai_widget(struct snd_soc_dapm_widget *dai_w,
 		if (!w->sname || !strstr(w->sname, dai_w->sname))
 			continue;
 
-		/*
-		 * check if widget is already linked,
-		 * if (w->linked)
-		 *	return;
-		 */
+		 
 
 		if (dai_w->id == snd_soc_dapm_dai_in) {
 			src = dai_w;
@@ -49,10 +43,7 @@ static void gbaudio_dapm_link_dai_widget(struct snd_soc_dapm_widget *dai_w,
 			sink = dai_w;
 		}
 		dev_dbg(dai->dev, "%s -> %s\n", src->name, sink->name);
-		/* Add the DAPM path and set widget's linked status
-		 * snd_soc_dapm_add_path(w->dapm, src, sink, NULL, NULL);
-		 * w->linked = 1;
-		 */
+		 
 	}
 }
 
@@ -61,7 +52,7 @@ int gbaudio_dapm_link_component_dai_widgets(struct snd_soc_card *card,
 {
 	struct snd_soc_dapm_widget *dai_w;
 
-	/* For each DAI widget... */
+	 
 	list_for_each_entry(dai_w, &card->widgets, list) {
 		if (dai_w->dapm != dapm)
 			continue;
@@ -93,11 +84,7 @@ static void gbaudio_dapm_free_widget(struct snd_soc_dapm_widget *w)
 	enum snd_soc_dapm_direction dir;
 
 	list_del(&w->list);
-	/*
-	 * remove source and sink paths associated to this widget.
-	 * While removing the path, remove reference to it from both
-	 * source and sink widgets so that path is removed only once.
-	 */
+	 
 	gbaudio_dapm_for_each_direction(dir) {
 		snd_soc_dapm_widget_for_each_path_safe(w, dir, p, next_p)
 			gbaudio_dapm_free_path(p);
@@ -118,7 +105,7 @@ int gbaudio_dapm_free_controls(struct snd_soc_dapm_context *dapm,
 
 	mutex_lock(&dapm->card->dapm_mutex);
 	for (i = 0; i < num; i++) {
-		/* below logic can be optimized to identify widget pointer */
+		 
 		w = NULL;
 		list_for_each_entry(tmp_w, &dapm->card->widgets, list) {
 			if (tmp_w->dapm == dapm &&

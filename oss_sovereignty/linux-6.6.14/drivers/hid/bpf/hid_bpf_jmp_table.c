@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- *  HID-BPF support for Linux
- *
- *  Copyright (c) 2022 Benjamin Tissoires
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/btf.h>
@@ -19,17 +15,12 @@
 #include "hid_bpf_dispatch.h"
 #include "entrypoints/entrypoints.lskel.h"
 
-#define HID_BPF_MAX_PROGS 1024 /* keep this in sync with preloaded bpf,
-				* needs to be a power of 2 as we use it as
-				* a circular buffer
-				*/
+#define HID_BPF_MAX_PROGS 1024  
 
 #define NEXT(idx) (((idx) + 1) & (HID_BPF_MAX_PROGS - 1))
 #define PREV(idx) (((idx) - 1) & (HID_BPF_MAX_PROGS - 1))
 
-/*
- * represents one attached program stored in the hid jump table
- */
+ 
 struct hid_bpf_prog_entry {
 	struct bpf_prog *prog;
 	struct hid_device *hdev;
@@ -39,9 +30,9 @@ struct hid_bpf_prog_entry {
 
 struct hid_bpf_jmp_table {
 	struct bpf_map *map;
-	struct hid_bpf_prog_entry entries[HID_BPF_MAX_PROGS]; /* compacted list, circular buffer */
+	struct hid_bpf_prog_entry entries[HID_BPF_MAX_PROGS];  
 	int tail, head;
-	struct bpf_prog *progs[HID_BPF_MAX_PROGS]; /* idx -> progs mapping */
+	struct bpf_prog *progs[HID_BPF_MAX_PROGS];  
 	unsigned long enabled[BITS_TO_LONGS(HID_BPF_MAX_PROGS)];
 };
 
@@ -50,15 +41,15 @@ struct hid_bpf_jmp_table {
 
 static struct hid_bpf_jmp_table jmp_table;
 
-static DEFINE_MUTEX(hid_bpf_attach_lock);		/* held when attaching/detaching programs */
+static DEFINE_MUTEX(hid_bpf_attach_lock);		 
 
 static void hid_bpf_release_progs(struct work_struct *work);
 
 static DECLARE_WORK(release_work, hid_bpf_release_progs);
 
 BTF_ID_LIST(hid_bpf_btf_ids)
-BTF_ID(func, hid_bpf_device_event)			/* HID_BPF_PROG_TYPE_DEVICE_EVENT */
-BTF_ID(func, hid_bpf_rdesc_fixup)			/* HID_BPF_PROG_TYPE_RDESC_FIXUP */
+BTF_ID(func, hid_bpf_device_event)			 
+BTF_ID(func, hid_bpf_rdesc_fixup)			 
 
 static int hid_bpf_max_programs(enum hid_bpf_prog_type type)
 {
@@ -136,9 +127,7 @@ int hid_bpf_prog_run(struct hid_device *hdev, enum hid_bpf_prog_type type,
 	return err;
 }
 
-/*
- * assign the list of programs attached to a given hid device.
- */
+ 
 static void __hid_bpf_set_hdev_progs(struct hid_device *hdev, struct hid_bpf_prog_list *new_list,
 				     enum hid_bpf_prog_type type)
 {
@@ -154,11 +143,7 @@ static void __hid_bpf_set_hdev_progs(struct hid_device *hdev, struct hid_bpf_pro
 	kfree(old_list);
 }
 
-/*
- * allocate and populate the list of programs attached to a given hid device.
- *
- * Must be called under lock.
- */
+ 
 static int hid_bpf_populate_hdev(struct hid_device *hdev, enum hid_bpf_prog_type type)
 {
 	struct hid_bpf_prog_list *new_list;
@@ -200,14 +185,14 @@ static void hid_bpf_release_progs(struct work_struct *work)
 	if (!jmp_table.map)
 		return;
 
-	/* retrieve a fd of our prog_array map in BPF */
+	 
 	map_fd = skel_map_get_fd_by_id(jmp_table.map->id);
 	if (map_fd < 0)
 		return;
 
-	mutex_lock(&hid_bpf_attach_lock); /* protects against attaching new programs */
+	mutex_lock(&hid_bpf_attach_lock);  
 
-	/* detach unused progs from HID devices */
+	 
 	FOR_ENTRIES(i, jmp_table.tail, jmp_table.head) {
 		struct hid_bpf_prog_entry *entry = &jmp_table.entries[i];
 		enum hid_bpf_prog_type type;
@@ -216,14 +201,14 @@ static void hid_bpf_release_progs(struct work_struct *work)
 		if (test_bit(entry->idx, jmp_table.enabled))
 			continue;
 
-		/* we have an attached prog */
+		 
 		if (entry->hdev) {
 			hdev = entry->hdev;
 			type = entry->type;
 
 			hid_bpf_populate_hdev(hdev, type);
 
-			/* mark all other disabled progs from hdev of the given type as detached */
+			 
 			FOR_ENTRIES(j, i, jmp_table.head) {
 				struct hid_bpf_prog_entry *next;
 
@@ -236,13 +221,13 @@ static void hid_bpf_release_progs(struct work_struct *work)
 					next->hdev = NULL;
 			}
 
-			/* if type was rdesc fixup, reconnect device */
+			 
 			if (type == HID_BPF_PROG_TYPE_RDESC_FIXUP)
 				hid_bpf_reconnect(hdev);
 		}
 	}
 
-	/* remove all unused progs from the jump table */
+	 
 	FOR_ENTRIES(i, jmp_table.tail, jmp_table.head) {
 		struct hid_bpf_prog_entry *entry = &jmp_table.entries[i];
 
@@ -253,7 +238,7 @@ static void hid_bpf_release_progs(struct work_struct *work)
 			__hid_bpf_do_release_prog(map_fd, entry->idx);
 	}
 
-	/* compact the entry list */
+	 
 	n = jmp_table.tail;
 	FOR_ENTRIES(i, jmp_table.tail, jmp_table.head) {
 		struct hid_bpf_prog_entry *entry = &jmp_table.entries[i];
@@ -277,7 +262,7 @@ static void hid_bpf_release_prog_at(int idx)
 {
 	int map_fd = -1;
 
-	/* retrieve a fd of our prog_array map in BPF */
+	 
 	map_fd = skel_map_get_fd_by_id(jmp_table.map->id);
 	if (map_fd < 0)
 		return;
@@ -287,15 +272,12 @@ static void hid_bpf_release_prog_at(int idx)
 	close(map_fd);
 }
 
-/*
- * Insert the given BPF program represented by its fd in the jmp table.
- * Returns the index in the jump table or a negative error.
- */
+ 
 static int hid_bpf_insert_prog(int prog_fd, struct bpf_prog *prog)
 {
 	int i, index = -1, map_fd = -1, err = -EINVAL;
 
-	/* retrieve a fd of our prog_array map in BPF */
+	 
 	map_fd = skel_map_get_fd_by_id(jmp_table.map->id);
 
 	if (map_fd < 0) {
@@ -303,10 +285,10 @@ static int hid_bpf_insert_prog(int prog_fd, struct bpf_prog *prog)
 		goto out;
 	}
 
-	/* find the first available index in the jmp_table */
+	 
 	for (i = 0; i < HID_BPF_MAX_PROGS; i++) {
 		if (!jmp_table.progs[i] && index < 0) {
-			/* mark the index as used */
+			 
 			jmp_table.progs[i] = prog;
 			index = i;
 			__set_bit(i, jmp_table.enabled);
@@ -317,12 +299,12 @@ static int hid_bpf_insert_prog(int prog_fd, struct bpf_prog *prog)
 		goto out;
 	}
 
-	/* insert the program in the jump table */
+	 
 	err = skel_map_update_elem(map_fd, &index, &prog_fd, 0);
 	if (err)
 		goto out;
 
-	/* return the index */
+	 
 	err = index;
 
  out:
@@ -385,7 +367,7 @@ static const struct bpf_link_ops hid_bpf_link_lops = {
 	.show_fdinfo = hid_bpf_link_show_fdinfo,
 };
 
-/* called from syscall */
+ 
 noinline int
 __hid_bpf_attach_prog(struct hid_device *hdev, enum hid_bpf_prog_type prog_type,
 		      int prog_fd, __u32 flags)
@@ -396,7 +378,7 @@ __hid_bpf_attach_prog(struct hid_device *hdev, enum hid_bpf_prog_type prog_type,
 	struct hid_bpf_prog_entry *prog_entry;
 	int cnt, err = -EINVAL, prog_table_idx = -1;
 
-	/* take a ref on the prog itself */
+	 
 	prog = bpf_prog_get(prog_fd);
 	if (IS_ERR(prog))
 		return PTR_ERR(prog);
@@ -412,7 +394,7 @@ __hid_bpf_attach_prog(struct hid_device *hdev, enum hid_bpf_prog_type prog_type,
 	bpf_link_init(&link->link, BPF_LINK_TYPE_UNSPEC,
 		      &hid_bpf_link_lops, prog);
 
-	/* do not attach too many programs to a given HID device */
+	 
 	cnt = hid_bpf_program_count(hdev, NULL, prog_type);
 	if (cnt < 0) {
 		err = cnt;
@@ -425,29 +407,29 @@ __hid_bpf_attach_prog(struct hid_device *hdev, enum hid_bpf_prog_type prog_type,
 	}
 
 	prog_table_idx = hid_bpf_insert_prog(prog_fd, prog);
-	/* if the jmp table is full, abort */
+	 
 	if (prog_table_idx < 0) {
 		err = prog_table_idx;
 		goto err_unlock;
 	}
 
 	if (flags & HID_BPF_FLAG_INSERT_HEAD) {
-		/* take the previous prog_entry slot */
+		 
 		jmp_table.tail = PREV(jmp_table.tail);
 		prog_entry = &jmp_table.entries[jmp_table.tail];
 	} else {
-		/* take the next prog_entry slot */
+		 
 		prog_entry = &jmp_table.entries[jmp_table.head];
 		jmp_table.head = NEXT(jmp_table.head);
 	}
 
-	/* we steal the ref here */
+	 
 	prog_entry->prog = prog;
 	prog_entry->idx = prog_table_idx;
 	prog_entry->hdev = hdev;
 	prog_entry->type = prog_type;
 
-	/* finally store the index in the device list */
+	 
 	err = hid_bpf_populate_hdev(hdev, prog_type);
 	if (err) {
 		hid_bpf_release_prog_at(prog_table_idx);
@@ -495,7 +477,7 @@ void __hid_bpf_destroy_device(struct hid_device *hdev)
 	for (type = 0; type < HID_BPF_PROG_TYPE_MAX; type++)
 		__hid_bpf_set_hdev_progs(hdev, NULL, type);
 
-	/* schedule release of all detached progs */
+	 
 	schedule_work(&release_work);
 }
 
@@ -508,7 +490,7 @@ void hid_bpf_free_links_and_skel(void)
 {
 	int i;
 
-	/* the following is enough to release all programs attached to hid */
+	 
 	if (jmp_table.map)
 		bpf_map_put_with_uref(jmp_table.map);
 
@@ -530,9 +512,7 @@ void hid_bpf_free_links_and_skel(void)
 		goto out;							\
 	}									\
 										\
-	/* Avoid taking over stdin/stdout/stderr of init process. Zeroing out	\
-	 * makes skel_closenz() a no-op later in iterators_bpf__destroy().	\
-	 */									\
+	 									\
 	close_fd(skel->links.__name##_fd);					\
 	skel->links.__name##_fd = 0;						\
 	idx++;									\

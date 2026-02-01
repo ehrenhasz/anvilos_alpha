@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/leds-pwm.c
- *
- * simple PWM based LED control
- *
- * Copyright 2009 Luotao Fu @ Pengutronix (l.fu@pengutronix.de)
- *
- * based on leds-gpio.c by Raphael Assenat <raph@8d.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -79,7 +71,7 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
 
 	led_data->cdev.brightness_set_blocking = led_pwm_set;
 
-	/* init PWM state */
+	 
 	switch (led->default_state) {
 	case LEDS_DEFSTATE_KEEP:
 		pwm_get_state(led_data->pwm, &led_data->pwmstate);
@@ -95,7 +87,7 @@ static int led_pwm_add(struct device *dev, struct led_pwm_priv *priv,
 		break;
 	}
 
-	/* set brightness */
+	 
 	switch (led->default_state) {
 	case LEDS_DEFSTATE_ON:
 		led_data->cdev.brightness = led->max_brightness;

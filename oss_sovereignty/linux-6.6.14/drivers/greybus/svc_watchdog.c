@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SVC Greybus "watchdog" driver.
- *
- * Copyright 2016 Google Inc.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/suspend.h>
@@ -72,13 +68,7 @@ static void do_work(struct work_struct *work)
 	dev_dbg(&svc->dev, "%s: ping.\n", __func__);
 	retval = gb_svc_ping(svc);
 	if (retval) {
-		/*
-		 * Something went really wrong, let's warn userspace and then
-		 * pull the plug and reset the whole greybus network.
-		 * We need to do this outside of this workqueue as we will be
-		 * tearing down the svc device itself.  So queue up
-		 * yet-another-callback to do that.
-		 */
+		 
 		dev_err(&svc->dev,
 			"SVC ping has returned %d, something is wrong!!!\n",
 			retval);
@@ -91,15 +81,12 @@ static void do_work(struct work_struct *work)
 			INIT_DELAYED_WORK(&reset_work, greybus_reset);
 			schedule_delayed_work(&reset_work, HZ / 2);
 
-			/*
-			 * Disable ourselves, we don't want to trip again unless
-			 * userspace wants us to.
-			 */
+			 
 			watchdog->enabled = false;
 		}
 	}
 
-	/* resubmit our work to happen again, if we are still "alive" */
+	 
 	if (watchdog->enabled)
 		schedule_delayed_work(&watchdog->work, SVC_WATCHDOG_PERIOD);
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  SGI Volume Button interface driver
- *
- *  Copyright (C) 2008  Thomas Bogendoerfer <tsbogend@alpha.franken.de>
- */
+
+ 
 #include <linux/input.h>
 #include <linux/ioport.h>
 #include <linux/module.h>
@@ -36,7 +32,7 @@ static inline u8 button_status(void)
 }
 #endif
 
-#define BUTTONS_POLL_INTERVAL	30	/* msec */
+#define BUTTONS_POLL_INTERVAL	30	 
 #define BUTTONS_COUNT_THRESHOLD	3
 
 static const unsigned short sgi_map[] = {

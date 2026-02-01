@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Shared descriptors for aead, skcipher algorithms
- *
- * Copyright 2016 NXP
- */
+ 
+ 
 
 #ifndef _CAAMALG_DESC_H_
 #define _CAAMALG_DESC_H_
 
-/* length of descriptors text */
+ 
 #define DESC_AEAD_BASE			(4 * CAAM_CMD_SZ)
 #define DESC_AEAD_ENC_LEN		(DESC_AEAD_BASE + 11 * CAAM_CMD_SZ)
 #define DESC_AEAD_DEC_LEN		(DESC_AEAD_BASE + 15 * CAAM_CMD_SZ)
@@ -17,7 +13,7 @@
 #define DESC_QI_AEAD_DEC_LEN		(DESC_AEAD_DEC_LEN + 3 * CAAM_CMD_SZ)
 #define DESC_QI_AEAD_GIVENC_LEN		(DESC_AEAD_GIVENC_LEN + 3 * CAAM_CMD_SZ)
 
-/* Note: Nonce is counted in cdata.keylen */
+ 
 #define DESC_AEAD_CTR_RFC3686_LEN	(4 * CAAM_CMD_SZ)
 
 #define DESC_AEAD_NULL_BASE		(3 * CAAM_CMD_SZ)
@@ -113,4 +109,4 @@ void cnstr_shdsc_xts_skcipher_encap(u32 * const desc, struct alginfo *cdata);
 
 void cnstr_shdsc_xts_skcipher_decap(u32 * const desc, struct alginfo *cdata);
 
-#endif /* _CAAMALG_DESC_H_ */
+#endif  

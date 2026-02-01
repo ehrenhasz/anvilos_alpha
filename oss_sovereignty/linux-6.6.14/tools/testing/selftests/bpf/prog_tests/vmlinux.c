@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <time.h>
@@ -29,7 +29,7 @@ void test_vmlinux(void)
 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
 		goto cleanup;
 
-	/* trigger everything */
+	 
 	nsleep();
 
 	CHECK(!bss->tp_called, "tp", "not called\n");

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2013-2017 Broadcom
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -18,13 +18,13 @@
 #include "../core.h"
 #include "../pinctrl-utils.h"
 
-/* BCM281XX Pin Control Registers Definitions */
+ 
 
-/* Function Select bits are the same for all pin control registers */
+ 
 #define BCM281XX_PIN_REG_F_SEL_MASK		0x0700
 #define BCM281XX_PIN_REG_F_SEL_SHIFT		8
 
-/* Standard pin register */
+ 
 #define BCM281XX_STD_PIN_REG_DRV_STR_MASK	0x0007
 #define BCM281XX_STD_PIN_REG_DRV_STR_SHIFT	0
 #define BCM281XX_STD_PIN_REG_INPUT_DIS_MASK	0x0008
@@ -38,7 +38,7 @@
 #define BCM281XX_STD_PIN_REG_HYST_MASK		0x0080
 #define BCM281XX_STD_PIN_REG_HYST_SHIFT		7
 
-/* I2C pin register */
+ 
 #define BCM281XX_I2C_PIN_REG_INPUT_DIS_MASK	0x0004
 #define BCM281XX_I2C_PIN_REG_INPUT_DIS_SHIFT	2
 #define BCM281XX_I2C_PIN_REG_SLEW_MASK		0x0008
@@ -46,15 +46,13 @@
 #define BCM281XX_I2C_PIN_REG_PULL_UP_STR_MASK	0x0070
 #define BCM281XX_I2C_PIN_REG_PULL_UP_STR_SHIFT	4
 
-/* HDMI pin register */
+ 
 #define BCM281XX_HDMI_PIN_REG_INPUT_DIS_MASK	0x0008
 #define BCM281XX_HDMI_PIN_REG_INPUT_DIS_SHIFT	3
 #define BCM281XX_HDMI_PIN_REG_MODE_MASK		0x0010
 #define BCM281XX_HDMI_PIN_REG_MODE_SHIFT	4
 
-/*
- * bcm281xx_pin_type - types of pin register
- */
+ 
 enum bcm281xx_pin_type {
 	BCM281XX_PIN_TYPE_UNKNOWN = 0,
 	BCM281XX_PIN_TYPE_STD,
@@ -66,23 +64,18 @@ static enum bcm281xx_pin_type std_pin = BCM281XX_PIN_TYPE_STD;
 static enum bcm281xx_pin_type i2c_pin = BCM281XX_PIN_TYPE_I2C;
 static enum bcm281xx_pin_type hdmi_pin = BCM281XX_PIN_TYPE_HDMI;
 
-/*
- * bcm281xx_pin_function- define pin function
- */
+ 
 struct bcm281xx_pin_function {
 	const char *name;
 	const char * const *groups;
 	const unsigned ngroups;
 };
 
-/*
- * bcm281xx_pinctrl_data - Broadcom-specific pinctrl data
- * @reg_base - base of pinctrl registers
- */
+ 
 struct bcm281xx_pinctrl_data {
 	void __iomem *reg_base;
 
-	/* List of all pins */
+	 
 	const struct pinctrl_pin_desc *pins;
 	const unsigned npins;
 
@@ -92,10 +85,7 @@ struct bcm281xx_pinctrl_data {
 	struct regmap *regmap;
 };
 
-/*
- * Pin number definition.  The order here must be the same as defined in the
- * PADCTRLREG block in the RDB.
- */
+ 
 #define BCM281XX_PIN_ADCSYNC		0
 #define BCM281XX_PIN_BAT_RM		1
 #define BCM281XX_PIN_BSC1_SCL		2
@@ -368,11 +358,7 @@ struct bcm281xx_pinctrl_data {
 #define BCM281XX_PIN_DESC(a, b, c) \
 	{ .number = a, .name = b, .drv_data = &c##_pin }
 
-/*
- * Pin description definition.  The order here must be the same as defined in
- * the PADCTRLREG block in the RDB, since the pin number is used as an index
- * into this array.
- */
+ 
 static const struct pinctrl_pin_desc bcm281xx_pinctrl_pins[] = {
 	BCM281XX_PIN_DESC(BCM281XX_PIN_ADCSYNC, "adcsync", std),
 	BCM281XX_PIN_DESC(BCM281XX_PIN_BAT_RM, "bat_rm", std),
@@ -918,7 +904,7 @@ static const char * const bcm281xx_alt_groups[] = {
 	"vc_cam3_sda",
 };
 
-/* Every pin can implement all ALT1-ALT4 functions */
+ 
 #define BCM281XX_PIN_FUNCTION(fcn_name)			\
 {							\
 	.name = #fcn_name,				\
@@ -957,10 +943,7 @@ static inline enum bcm281xx_pin_type pin_type_get(struct pinctrl_dev *pctldev,
 #define BCM281XX_PIN_MASK(type, param) \
 	(BCM281XX_ ## type ## _PIN_REG_ ## param ## _MASK)
 
-/*
- * This helper function is used to build up the value and mask used to write to
- * a pin register, but does not actually write to the register.
- */
+ 
 static inline void bcm281xx_pin_update(u32 *reg_val, u32 *reg_mask,
 				       u32 param_val, u32 param_shift,
 				       u32 param_mask)
@@ -1089,7 +1072,7 @@ static int bcm281xx_pinctrl_pin_config_get(struct pinctrl_dev *pctldev,
 }
 
 
-/* Goes through the configs and update register val/mask */
+ 
 static int bcm281xx_std_pin_update(struct pinctrl_dev *pctldev,
 				   unsigned pin,
 				   unsigned long *configs,
@@ -1113,12 +1096,7 @@ static int bcm281xx_std_pin_update(struct pinctrl_dev *pctldev,
 				BCM281XX_PIN_SHIFT(STD, HYST),
 				BCM281XX_PIN_MASK(STD, HYST));
 			break;
-		/*
-		 * The pin bias can only be one of pull-up, pull-down, or
-		 * disable.  The user does not need to specify a value for the
-		 * property, and the default value from pinconf-generic is
-		 * ignored.
-		 */
+		 
 		case PIN_CONFIG_BIAS_DISABLE:
 			bcm281xx_pin_update(val, mask, 0,
 				BCM281XX_PIN_SHIFT(STD, PULL_UP),
@@ -1154,7 +1132,7 @@ static int bcm281xx_std_pin_update(struct pinctrl_dev *pctldev,
 			break;
 
 		case PIN_CONFIG_INPUT_ENABLE:
-			/* inversed since register is for input _disable_ */
+			 
 			arg = (arg >= 1 ? 0 : 1);
 			bcm281xx_pin_update(val, mask, arg,
 				BCM281XX_PIN_SHIFT(STD, INPUT_DIS),
@@ -1162,7 +1140,7 @@ static int bcm281xx_std_pin_update(struct pinctrl_dev *pctldev,
 			break;
 
 		case PIN_CONFIG_DRIVE_STRENGTH:
-			/* Valid range is 2-16 mA, even numbers only */
+			 
 			if ((arg < 2) || (arg > 16) || (arg % 2)) {
 				dev_err(pctldev->dev,
 					"Invalid Drive Strength value (%d) for "
@@ -1182,30 +1160,18 @@ static int bcm281xx_std_pin_update(struct pinctrl_dev *pctldev,
 				param, pdata->pins[pin].name, pin);
 			return -EINVAL;
 
-		} /* switch config */
-	} /* for each config */
+		}  
+	}  
 
 	return 0;
 }
 
-/*
- * The pull-up strength for an I2C pin is represented by bits 4-6 in the
- * register with the following mapping:
- *   0b000: No pull-up
- *   0b001: 1200 Ohm
- *   0b010: 1800 Ohm
- *   0b011: 720 Ohm
- *   0b100: 2700 Ohm
- *   0b101: 831 Ohm
- *   0b110: 1080 Ohm
- *   0b111: 568 Ohm
- * This array maps pull-up strength in Ohms to register values (1+index).
- */
+ 
 static const u16 bcm281xx_pullup_map[] = {
 	1200, 1800, 720, 2700, 831, 1080, 568
 };
 
-/* Goes through the configs and update register val/mask */
+ 
 static int bcm281xx_i2c_pin_update(struct pinctrl_dev *pctldev,
 				   unsigned pin,
 				   unsigned long *configs,
@@ -1256,7 +1222,7 @@ static int bcm281xx_i2c_pin_update(struct pinctrl_dev *pctldev,
 			break;
 
 		case PIN_CONFIG_INPUT_ENABLE:
-			/* inversed since register is for input _disable_ */
+			 
 			arg = (arg >= 1 ? 0 : 1);
 			bcm281xx_pin_update(val, mask, arg,
 				BCM281XX_PIN_SHIFT(I2C, INPUT_DIS),
@@ -1269,13 +1235,13 @@ static int bcm281xx_i2c_pin_update(struct pinctrl_dev *pctldev,
 				param, pdata->pins[pin].name, pin);
 			return -EINVAL;
 
-		} /* switch config */
-	} /* for each config */
+		}  
+	}  
 
 	return 0;
 }
 
-/* Goes through the configs and update register val/mask */
+ 
 static int bcm281xx_hdmi_pin_update(struct pinctrl_dev *pctldev,
 				    unsigned pin,
 				    unsigned long *configs,
@@ -1301,7 +1267,7 @@ static int bcm281xx_hdmi_pin_update(struct pinctrl_dev *pctldev,
 			break;
 
 		case PIN_CONFIG_INPUT_ENABLE:
-			/* inversed since register is for input _disable_ */
+			 
 			arg = (arg >= 1 ? 0 : 1);
 			bcm281xx_pin_update(val, mask, arg,
 				BCM281XX_PIN_SHIFT(HDMI, INPUT_DIS),
@@ -1314,8 +1280,8 @@ static int bcm281xx_hdmi_pin_update(struct pinctrl_dev *pctldev,
 				param, pdata->pins[pin].name, pin);
 			return -EINVAL;
 
-		} /* switch config */
-	} /* for each config */
+		}  
+	}  
 
 	return 0;
 }
@@ -1335,7 +1301,7 @@ static int bcm281xx_pinctrl_pin_config_set(struct pinctrl_dev *pctldev,
 	cfg_mask = 0;
 	pin_type = pin_type_get(pctldev, pin);
 
-	/* Different pins have different configuration options */
+	 
 	switch (pin_type) {
 	case BCM281XX_PIN_TYPE_STD:
 		rc = bcm281xx_std_pin_update(pctldev, pin, configs,
@@ -1357,7 +1323,7 @@ static int bcm281xx_pinctrl_pin_config_set(struct pinctrl_dev *pctldev,
 			pdata->pins[pin].name, pin);
 		return -EINVAL;
 
-	} /* switch pin type */
+	}  
 
 	if (rc)
 		return rc;
@@ -1383,7 +1349,7 @@ static const struct pinconf_ops bcm281xx_pinctrl_pinconf_ops = {
 };
 
 static struct pinctrl_desc bcm281xx_pinctrl_desc = {
-	/* name, pins, npins members initialized in probe function */
+	 
 	.pctlops = &bcm281xx_pinctrl_ops,
 	.pmxops = &bcm281xx_pinctrl_pinmux_ops,
 	.confops = &bcm281xx_pinctrl_pinconf_ops,
@@ -1395,14 +1361,14 @@ static int __init bcm281xx_pinctrl_probe(struct platform_device *pdev)
 	struct bcm281xx_pinctrl_data *pdata = &bcm281xx_pinctrl;
 	struct pinctrl_dev *pctl;
 
-	/* So far We can assume there is only 1 bank of registers */
+	 
 	pdata->reg_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(pdata->reg_base)) {
 		dev_err(&pdev->dev, "Failed to ioremap MEM resource\n");
 		return PTR_ERR(pdata->reg_base);
 	}
 
-	/* Initialize the dynamic part of pinctrl_desc */
+	 
 	pdata->regmap = devm_regmap_init_mmio(&pdev->dev, pdata->reg_base,
 		&bcm281xx_pinctrl_regmap_config);
 	if (IS_ERR(pdata->regmap)) {

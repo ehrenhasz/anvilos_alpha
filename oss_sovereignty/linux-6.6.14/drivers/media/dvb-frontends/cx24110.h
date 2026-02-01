@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    cx24110 - Single Chip Satellite Channel Receiver driver module
-
-    Copyright (C) 2002 Peter Hettkamp <peter.hettkamp@htp-tel.de> based on
-    work
-    Copyright (C) 1999 Convergence Integrated Media GmbH <ralph@convergence.de>
-
-
-*/
+ 
+ 
 
 #ifndef CX24110_H
 #define CX24110_H
@@ -16,7 +8,7 @@
 
 struct cx24110_config
 {
-	/* the demodulator's i2c address */
+	 
 	u8 demod_address;
 };
 
@@ -43,6 +35,6 @@ static inline struct dvb_frontend* cx24110_attach(const struct cx24110_config* c
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return NULL;
 }
-#endif // CONFIG_DVB_CX24110
+#endif 
 
-#endif // CX24110_H
+#endif 

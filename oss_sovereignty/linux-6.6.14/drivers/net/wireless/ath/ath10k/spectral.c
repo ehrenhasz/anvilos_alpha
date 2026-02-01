@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2013-2017 Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include <linux/relay.h>
 #include "core.h"
@@ -29,7 +27,7 @@ static uint8_t get_max_exp(s8 max_index, u16 max_magnitude, size_t bin_len,
 
 	dc_pos = bin_len / 2;
 
-	/* peak index outside of bins */
+	 
 	if (dc_pos < max_index || -dc_pos >= max_index)
 		return 0;
 
@@ -38,7 +36,7 @@ static uint8_t get_max_exp(s8 max_index, u16 max_magnitude, size_t bin_len,
 			break;
 	}
 
-	/* max_exp not found */
+	 
 	if (data[dc_pos + max_index] != (max_magnitude >> max_exp))
 		return 0;
 
@@ -48,12 +46,7 @@ static uint8_t get_max_exp(s8 max_index, u16 max_magnitude, size_t bin_len,
 static inline size_t ath10k_spectral_fix_bin_size(struct ath10k *ar,
 						  size_t bin_len)
 {
-	/* some chipsets reports bin size as 2^n bytes + 'm' bytes in
-	 * report mode 2. First 2^n bytes carries inband tones and last
-	 * 'm' bytes carries band edge detection data mainly used in
-	 * radar detection purpose. Strip last 'm' bytes to make bin size
-	 * as a valid one. 'm' can take possible values of 4, 12.
-	 */
+	 
 	if (!is_power_of_2(bin_len))
 		bin_len -= ar->hw_params.spectral_bin_discard;
 
@@ -86,9 +79,7 @@ int ath10k_spectral_process_fft(struct ath10k *ar,
 	fft_sample->tlv.type = ATH_FFT_SAMPLE_ATH10K;
 	fft_sample->tlv.length = __cpu_to_be16(length);
 
-	/* TODO: there might be a reason why the hardware reports 20/40/80 MHz,
-	 * but the results/plots suggest that its actually 22/44/88 MHz.
-	 */
+	 
 	switch (phyerr->chan_width_mhz) {
 	case 20:
 		fft_sample->chan_width_mhz = 22;
@@ -97,12 +88,7 @@ int ath10k_spectral_process_fft(struct ath10k *ar,
 		fft_sample->chan_width_mhz = 44;
 		break;
 	case 80:
-		/* TODO: As experiments with an analogue sender and various
-		 * configurations (fft-sizes of 64/128/256 and 20/40/80 Mhz)
-		 * show, the particular configuration of 80 MHz/64 bins does
-		 * not match with the other samples at all. Until the reason
-		 * for that is found, don't report these samples.
-		 */
+		 
 		if (bin_len == 64)
 			return -EINVAL;
 		fft_sample->chan_width_mhz = 88;
@@ -138,17 +124,13 @@ int ath10k_spectral_process_fft(struct ath10k *ar,
 
 	fft_sample->tsf = __cpu_to_be64(tsf);
 
-	/* max_exp has been directly reported by previous hardware (ath9k),
-	 * maybe its possible to get it by other means?
-	 */
+	 
 	fft_sample->max_exp = get_max_exp(fft_sample->max_index, peak_mag,
 					  bin_len, bins);
 
 	memcpy(fft_sample->data, bins, bin_len);
 
-	/* DC value (value in the middle) is the blind spot of the spectral
-	 * sample and invalid, interpolate it.
-	 */
+	 
 	dc_pos = bin_len / 2;
 	fft_sample->data[dc_pos] = (fft_sample->data[dc_pos + 1] +
 				    fft_sample->data[dc_pos - 1]) / 2;
@@ -167,12 +149,12 @@ static struct ath10k_vif *ath10k_get_spectral_vdev(struct ath10k *ar)
 	if (list_empty(&ar->arvifs))
 		return NULL;
 
-	/* if there already is a vif doing spectral, return that. */
+	 
 	list_for_each_entry(arvif, &ar->arvifs, list)
 		if (arvif->spectral_enabled)
 			return arvif;
 
-	/* otherwise, return the first vif. */
+	 
 	return list_first_entry(&ar->arvifs, typeof(*arvif), list);
 }
 
@@ -318,9 +300,7 @@ static ssize_t write_file_spec_scan_ctl(struct file *file,
 	if (strncmp("trigger", buf, 7) == 0) {
 		if (ar->spectral.mode == SPECTRAL_MANUAL ||
 		    ar->spectral.mode == SPECTRAL_BACKGROUND) {
-			/* reset the configuration to adopt possibly changed
-			 * debugfs parameters
-			 */
+			 
 			res = ath10k_spectral_scan_config(ar,
 							  ar->spectral.mode);
 			if (res < 0) {
@@ -528,9 +508,7 @@ int ath10k_spectral_vif_stop(struct ath10k_vif *arvif)
 
 int ath10k_spectral_create(struct ath10k *ar)
 {
-	/* The buffer size covers whole channels in dual bands up to 128 bins.
-	 * Scan with bigger than 128 bins needs to be run on single band each.
-	 */
+	 
 	ar->spectral.rfs_chan_spec_scan = relay_open("spectral_scan",
 						     ar->debug.debugfs_phy,
 						     1140, 2500,

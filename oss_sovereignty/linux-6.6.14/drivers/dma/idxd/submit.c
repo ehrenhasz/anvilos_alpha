@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2019 Intel Corporation. All rights rsvd. */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -83,12 +83,7 @@ static struct idxd_desc *list_abort_desc(struct idxd_wq *wq, struct idxd_irq_ent
 		}
 	}
 
-	/*
-	 * At this point, the desc needs to be aborted is held by the completion
-	 * handler where it has taken it off the pending list but has not added to the
-	 * work list. It will be cleaned up by the interrupt handler when it sees the
-	 * IDXD_COMP_DESC_ABORT for completion status.
-	 */
+	 
 	return NULL;
 }
 
@@ -100,10 +95,7 @@ static void llist_abort_desc(struct idxd_wq *wq, struct idxd_irq_entry *ie,
 	LIST_HEAD(flist);
 
 	desc->completion->status = IDXD_COMP_DESC_ABORT;
-	/*
-	 * Grab the list lock so it will block the irq thread handler. This allows the
-	 * abort code to locate the descriptor need to be aborted.
-	 */
+	 
 	spin_lock(&ie->list_lock);
 	head = llist_del_all(&ie->pending_llist);
 	if (head) {
@@ -127,27 +119,14 @@ static void llist_abort_desc(struct idxd_wq *wq, struct idxd_irq_entry *ie,
 	if (found)
 		idxd_dma_complete_txd(found, IDXD_COMPLETE_ABORT, false);
 
-	/*
-	 * completing the descriptor will return desc to allocator and
-	 * the desc can be acquired by a different process and the
-	 * desc->list can be modified.  Delete desc from list so the
-	 * list trasversing does not get corrupted by the other process.
-	 */
+	 
 	list_for_each_entry_safe(d, t, &flist, list) {
 		list_del_init(&d->list);
 		idxd_dma_complete_txd(found, IDXD_COMPLETE_ABORT, true);
 	}
 }
 
-/*
- * ENQCMDS typically fail when the WQ is inactive or busy. On host submission, the driver
- * has better control of number of descriptors being submitted to a shared wq by limiting
- * the number of driver allocated descriptors to the wq size. However, when the swq is
- * exported to a guest kernel, it may be shared with multiple guest kernels. This means
- * the likelihood of getting busy returned on the swq when submitting goes significantly up.
- * Having a tunable retry mechanism allows the driver to keep trying for a bit before giving
- * up. The sysfs knob can be tuned by the system administrator.
- */
+ 
 int idxd_enqcmds(struct idxd_wq *wq, void __iomem *portal, const void *desc)
 {
 	unsigned int retries = wq->enqcmds_retries;
@@ -182,21 +161,14 @@ int idxd_submit_desc(struct idxd_wq *wq, struct idxd_desc *desc)
 
 	portal = idxd_wq_portal_addr(wq);
 
-	/*
-	 * Pending the descriptor to the lockless list for the irq_entry
-	 * that we designated the descriptor to.
-	 */
+	 
 	if (desc_flags & IDXD_OP_FLAG_RCI) {
 		ie = &wq->ie;
 		desc->hw->int_handle = ie->int_handle;
 		llist_add(&desc->llnode, &ie->pending_llist);
 	}
 
-	/*
-	 * The wmb() flushes writes to coherent DMA data before
-	 * possibly triggering a DMA read. The wmb() is necessary
-	 * even on UP because the recipient is a device.
-	 */
+	 
 	wmb();
 
 	if (wq_dedicated(wq)) {
@@ -205,7 +177,7 @@ int idxd_submit_desc(struct idxd_wq *wq, struct idxd_desc *desc)
 		rc = idxd_enqcmds(wq, portal, desc->hw);
 		if (rc < 0) {
 			percpu_ref_put(&wq->wq_active);
-			/* abort operation frees the descriptor */
+			 
 			if (ie)
 				llist_abort_desc(wq, ie, desc);
 			return rc;

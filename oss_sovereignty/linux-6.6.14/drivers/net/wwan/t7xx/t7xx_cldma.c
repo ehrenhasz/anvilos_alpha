@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -34,12 +20,7 @@ void t7xx_cldma_clear_ip_busy(struct t7xx_cldma_hw *hw_info)
 	iowrite32(val, hw_info->ap_pdn_base + REG_CLDMA_IP_BUSY);
 }
 
-/**
- * t7xx_cldma_hw_restore() - Restore CLDMA HW registers.
- * @hw_info: Pointer to struct t7xx_cldma_hw.
- *
- * Restore HW after resume. Writes uplink configuration for CLDMA HW.
- */
+ 
 void t7xx_cldma_hw_restore(struct t7xx_cldma_hw *hw_info)
 {
 	u32 ul_cfg;
@@ -55,7 +36,7 @@ void t7xx_cldma_hw_restore(struct t7xx_cldma_hw *hw_info)
 		ul_cfg |= UL_CFG_BIT_MODE_36;
 
 	iowrite32(ul_cfg, hw_info->ap_pdn_base + REG_CLDMA_UL_CFG);
-	/* Disable TX and RX invalid address check */
+	 
 	iowrite32(UL_MEM_CHECK_DIS, hw_info->ap_pdn_base + REG_CLDMA_UL_MEM);
 	iowrite32(DL_MEM_CHECK_DIS, hw_info->ap_pdn_base + REG_CLDMA_DL_MEM);
 }
@@ -74,10 +55,10 @@ void t7xx_cldma_hw_start_queue(struct t7xx_cldma_hw *hw_info, unsigned int qno,
 
 void t7xx_cldma_hw_start(struct t7xx_cldma_hw *hw_info)
 {
-	/* Enable the TX & RX interrupts */
+	 
 	iowrite32(TXRX_STATUS_BITMASK, hw_info->ap_pdn_base + REG_CLDMA_L2TIMCR0);
 	iowrite32(TXRX_STATUS_BITMASK, hw_info->ap_ao_base + REG_CLDMA_L2RIMCR0);
-	/* Enable the empty queue interrupt */
+	 
 	iowrite32(EMPTY_STATUS_BITMASK, hw_info->ap_pdn_base + REG_CLDMA_L2TIMCR0);
 	iowrite32(EMPTY_STATUS_BITMASK, hw_info->ap_ao_base + REG_CLDMA_L2RIMCR0);
 }
@@ -151,7 +132,7 @@ void t7xx_cldma_hw_tx_done(struct t7xx_cldma_hw *hw_info, unsigned int bitmask)
 
 	ch_id = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L2TISAR0);
 	ch_id &= bitmask;
-	/* Clear the ch IDs in the TX interrupt status register */
+	 
 	iowrite32(ch_id, hw_info->ap_pdn_base + REG_CLDMA_L2TISAR0);
 	ioread32(hw_info->ap_pdn_base + REG_CLDMA_L2TISAR0);
 }
@@ -162,7 +143,7 @@ void t7xx_cldma_hw_rx_done(struct t7xx_cldma_hw *hw_info, unsigned int bitmask)
 
 	ch_id = ioread32(hw_info->ap_pdn_base + REG_CLDMA_L2RISAR0);
 	ch_id &= bitmask;
-	/* Clear the ch IDs in the RX interrupt status register */
+	 
 	iowrite32(ch_id, hw_info->ap_pdn_base + REG_CLDMA_L2RISAR0);
 	ioread32(hw_info->ap_pdn_base + REG_CLDMA_L2RISAR0);
 }
@@ -225,19 +206,14 @@ void t7xx_cldma_hw_irq_en_eq(struct t7xx_cldma_hw *hw_info, unsigned int qno, en
 	iowrite32(val << EQ_STA_BIT_OFFSET, reg);
 }
 
-/**
- * t7xx_cldma_hw_init() - Initialize CLDMA HW.
- * @hw_info: Pointer to struct t7xx_cldma_hw.
- *
- * Write uplink and downlink configuration to CLDMA HW.
- */
+ 
 void t7xx_cldma_hw_init(struct t7xx_cldma_hw *hw_info)
 {
 	u32 ul_cfg, dl_cfg;
 
 	ul_cfg = ioread32(hw_info->ap_pdn_base + REG_CLDMA_UL_CFG);
 	dl_cfg = ioread32(hw_info->ap_ao_base + REG_CLDMA_DL_CFG);
-	/* Configure the DRAM address mode */
+	 
 	ul_cfg &= ~UL_CFG_BIT_MODE_MASK;
 	dl_cfg &= ~DL_CFG_BIT_MODE_MASK;
 

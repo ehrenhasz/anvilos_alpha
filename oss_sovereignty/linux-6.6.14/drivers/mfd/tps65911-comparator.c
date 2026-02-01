@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * tps65910.c  --  TI TPS6591x
- *
- * Copyright 2010 Texas Instruments Inc.
- *
- * Author: Jorge Eduardo Candelaria <jedu@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,7 +14,7 @@
 #define COMP1					0
 #define COMP2					1
 
-/* Comparator 1 voltage selection table in millivolts */
+ 
 static const u16 COMP_VSEL_TABLE[] = {
 	0, 2500, 2500, 2500, 2500, 2550, 2600, 2650,
 	2700, 2750, 2800, 2850, 2900, 2950, 3000, 3050,
@@ -128,7 +122,7 @@ static int tps65911_comparator_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Create sysfs entry */
+	 
 	ret = device_create_file(&pdev->dev, &dev_attr_comp1_threshold);
 	if (ret < 0)
 		dev_err(&pdev->dev, "failed to add COMP1 sysfs file\n");

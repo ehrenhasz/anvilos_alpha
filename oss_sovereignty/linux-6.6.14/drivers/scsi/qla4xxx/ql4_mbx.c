@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/ctype.h>
 #include "ql4_def.h"
@@ -16,11 +13,11 @@ void qla4xxx_queue_mbox_cmd(struct scsi_qla_host *ha, uint32_t *mbx_cmd,
 {
 	int i;
 
-	/* Load all mailbox registers, except mailbox 0. */
+	 
 	for (i = 1; i < in_count; i++)
 		writel(mbx_cmd[i], &ha->reg->mailbox[i]);
 
-	/* Wakeup firmware  */
+	 
 	writel(mbx_cmd[0], &ha->reg->mailbox[0]);
 	readl(&ha->reg->mailbox[0]);
 	writel(set_rmask(CSR_INTR_RISC), &ha->reg->ctrl_status);
@@ -33,21 +30,13 @@ void qla4xxx_process_mbox_intr(struct scsi_qla_host *ha, int out_count)
 
 	intr_status = readl(&ha->reg->ctrl_status);
 	if (intr_status & INTR_PENDING) {
-		/*
-		 * Service the interrupt.
-		 * The ISR will save the mailbox status registers
-		 * to a temporary storage location in the adapter structure.
-		 */
+		 
 		ha->mbox_status_count = out_count;
 		ha->isp_ops->interrupt_service_routine(ha, intr_status);
 	}
 }
 
-/**
- * qla4xxx_is_intr_poll_mode - Are we allowed to poll for interrupts?
- * @ha: Pointer to host adapter structure.
- * returns: 1=polling mode, 0=non-polling mode
- **/
+ 
 static int qla4xxx_is_intr_poll_mode(struct scsi_qla_host *ha)
 {
 	int rval = 1;
@@ -67,18 +56,7 @@ static int qla4xxx_is_intr_poll_mode(struct scsi_qla_host *ha)
 	return rval;
 }
 
-/**
- * qla4xxx_mailbox_command - issues mailbox commands
- * @ha: Pointer to host adapter structure.
- * @inCount: number of mailbox registers to load.
- * @outCount: number of mailbox registers to return.
- * @mbx_cmd: data pointer for mailbox in registers.
- * @mbx_sts: data pointer for mailbox out registers.
- *
- * This routine issue mailbox commands and waits for completion.
- * If outCount is 0, this routine completes successfully WITHOUT waiting
- * for the mailbox command to complete.
- **/
+ 
 int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 			    uint8_t outCount, uint32_t *mbx_cmd,
 			    uint32_t *mbx_sts)
@@ -89,7 +67,7 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 	unsigned long flags = 0;
 	uint32_t dev_state;
 
-	/* Make sure that pointers are valid */
+	 
 	if (!mbx_cmd || !mbx_sts) {
 		DEBUG2(printk("scsi%ld: %s: Invalid mbx_cmd or mbx_sts "
 			      "pointer\n", ha->host_no, __func__));
@@ -113,7 +91,7 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 		return status;
 	}
 
-	/* Mailbox code active */
+	 
 	wait_count = MBOX_TOV * 100;
 
 	while (wait_count--) {
@@ -139,7 +117,7 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 					  ha->host_no, __func__));
 			goto mbox_exit;
 		}
-		/* Do not send any mbx cmd if h/w is in failed state*/
+		 
 		ha->isp_ops->idc_lock(ha);
 		dev_state = qla4_8xxx_rd_direct(ha, QLA8XXX_CRB_DEV_STATE);
 		ha->isp_ops->idc_unlock(ha);
@@ -157,51 +135,40 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 	for (i = 0; i < outCount; i++)
 		ha->mbox_status[i] = 0;
 
-	/* Queue the mailbox command to the firmware */
+	 
 	ha->isp_ops->queue_mailbox_command(ha, mbx_cmd, inCount);
 
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
-	/* Wait for completion */
+	 
 
-	/*
-	 * If we don't want status, don't wait for the mailbox command to
-	 * complete.  For example, MBOX_CMD_RESET_FW doesn't return status,
-	 * you must poll the inbound Interrupt Mask for completion.
-	 */
+	 
 	if (outCount == 0) {
 		status = QLA_SUCCESS;
 		goto mbox_exit;
 	}
 
-	/*
-	 * Wait for completion: Poll or completion queue
-	 */
+	 
 	if (qla4xxx_is_intr_poll_mode(ha)) {
-		/* Poll for command to complete */
+		 
 		wait_count = jiffies + MBOX_TOV * HZ;
 		while (test_bit(AF_MBOX_COMMAND_DONE, &ha->flags) == 0) {
 			if (time_after_eq(jiffies, wait_count))
 				break;
-			/*
-			 * Service the interrupt.
-			 * The ISR will save the mailbox status registers
-			 * to a temporary storage location in the adapter
-			 * structure.
-			 */
+			 
 			spin_lock_irqsave(&ha->hardware_lock, flags);
 			ha->isp_ops->process_mailbox_interrupt(ha, outCount);
 			spin_unlock_irqrestore(&ha->hardware_lock, flags);
 			msleep(10);
 		}
 	} else {
-		/* Do not poll for completion. Use completion queue */
+		 
 		set_bit(AF_MBOX_COMMAND_NOPOLL, &ha->flags);
 		wait_for_completion_timeout(&ha->mbx_intr_comp, MBOX_TOV * HZ);
 		clear_bit(AF_MBOX_COMMAND_NOPOLL, &ha->flags);
 	}
 
-	/* Check for mailbox timeout. */
+	 
 	if (!test_bit(AF_MBOX_COMMAND_DONE, &ha->flags)) {
 		if (is_qla80XX(ha) &&
 		    test_bit(AF_FW_RECOVERY, &ha->flags)) {
@@ -230,15 +197,12 @@ int qla4xxx_mailbox_command(struct scsi_qla_host *ha, uint8_t inCount,
 		goto mbox_exit;
 	}
 
-	/*
-	 * Copy the mailbox out registers to the caller's mailbox in/out
-	 * structure.
-	 */
+	 
 	spin_lock_irqsave(&ha->hardware_lock, flags);
 	for (i = 0; i < outCount; i++)
 		mbx_sts[i] = ha->mbox_status[i];
 
-	/* Set return status and error flags (if applicable). */
+	 
 	switch (ha->mbox_status[0]) {
 	case MBOX_STS_COMMAND_COMPLETE:
 		status = QLA_SUCCESS;
@@ -272,14 +236,7 @@ mbox_exit:
 	return status;
 }
 
-/**
- * qla4xxx_get_minidump_template - Get the firmware template
- * @ha: Pointer to host adapter structure.
- * @phys_addr: dma address for template
- *
- * Obtain the minidump template from firmware during initialization
- * as it may not be available when minidump is desired.
- **/
+ 
 int qla4xxx_get_minidump_template(struct scsi_qla_host *ha,
 				  dma_addr_t phys_addr)
 {
@@ -308,10 +265,7 @@ int qla4xxx_get_minidump_template(struct scsi_qla_host *ha,
 	return status;
 }
 
-/**
- * qla4xxx_req_template_size - Get minidump template size from firmware.
- * @ha: Pointer to host adapter structure.
- **/
+ 
 int qla4xxx_req_template_size(struct scsi_qla_host *ha)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
@@ -468,7 +422,7 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 				le16_to_cpu(init_fw_cb->ipv6_tcp_opts);
 	}
 
-	/* Save IPv4 Address Info */
+	 
 	memcpy(ha->ip_config.ip_address, init_fw_cb->ipv4_addr,
 	       min(sizeof(ha->ip_config.ip_address),
 		   sizeof(init_fw_cb->ipv4_addr)));
@@ -509,7 +463,7 @@ qla4xxx_update_local_ip(struct scsi_qla_host *ha,
 		   sizeof(init_fw_cb->iscsi_name)));
 
 	if (is_ipv6_enabled(ha)) {
-		/* Save IPv6 Address */
+		 
 		ha->ip_config.ipv6_link_local_state =
 		  qla4xxx_set_ipaddr_state(init_fw_cb->ipv6_lnk_lcl_addr_state);
 		ha->ip_config.ipv6_addr0_state =
@@ -596,7 +550,7 @@ qla4xxx_update_local_ifcb(struct scsi_qla_host *ha,
 
 	DEBUG2(qla4xxx_dump_buffer(init_fw_cb, sizeof(struct addr_ctrl_blk)));
 
-	/* Save some info in adapter structure. */
+	 
 	ha->acb_version = init_fw_cb->acb_version;
 	ha->firmware_options = le16_to_cpu(init_fw_cb->fw_options);
 	ha->heartbeat_interval = init_fw_cb->hb_interval;
@@ -604,18 +558,14 @@ qla4xxx_update_local_ifcb(struct scsi_qla_host *ha,
 		min(sizeof(ha->name_string),
 		sizeof(init_fw_cb->iscsi_name)));
 	ha->def_timeout = le16_to_cpu(init_fw_cb->def_timeout);
-	/*memcpy(ha->alias, init_fw_cb->Alias,
-	       min(sizeof(ha->alias), sizeof(init_fw_cb->Alias)));*/
+	 
 
 	qla4xxx_update_local_ip(ha, init_fw_cb);
 
 	return QLA_SUCCESS;
 }
 
-/**
- * qla4xxx_initialize_fw_cb - initializes firmware control block.
- * @ha: Pointer to host adapter structure.
- **/
+ 
 int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 {
 	struct addr_ctrl_blk *init_fw_cb;
@@ -633,7 +583,7 @@ int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 		goto exit_init_fw_cb_no_free;
 	}
 
-	/* Get Initialize Firmware Control Block. */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
 
@@ -642,7 +592,7 @@ int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 		goto exit_init_fw_cb;
 	}
 
-	/* Fill in the request and response queue information. */
+	 
 	init_fw_cb->rqq_consumer_idx = cpu_to_le16(ha->request_out);
 	init_fw_cb->compq_producer_idx = cpu_to_le16(ha->response_in);
 	init_fw_cb->rqq_len = cpu_to_le16(REQUEST_QUEUE_DEPTH);
@@ -654,7 +604,7 @@ int qla4xxx_initialize_fw_cb(struct scsi_qla_host * ha)
 	init_fw_cb->shdwreg_addr_lo = cpu_to_le32(LSDW(ha->shadow_regs_dma));
 	init_fw_cb->shdwreg_addr_hi = cpu_to_le32(MSDW(ha->shadow_regs_dma));
 
-	/* Set up required options. */
+	 
 	init_fw_cb->fw_options |=
 		cpu_to_le16(FWOPT_SESSION_MODE |
 			    FWOPT_INITIATOR_MODE);
@@ -694,10 +644,7 @@ exit_init_fw_cb_no_free:
 	return status;
 }
 
-/**
- * qla4xxx_get_dhcp_ip_address - gets HBA ip address via DHCP
- * @ha: Pointer to host adapter structure.
- **/
+ 
 int qla4xxx_get_dhcp_ip_address(struct scsi_qla_host * ha)
 {
 	struct addr_ctrl_blk *init_fw_cb;
@@ -714,7 +661,7 @@ int qla4xxx_get_dhcp_ip_address(struct scsi_qla_host * ha)
 		return QLA_ERROR;
 	}
 
-	/* Get Initialize Firmware Control Block. */
+	 
 	if (qla4xxx_get_ifcb(ha, &mbox_cmd[0], &mbox_sts[0], init_fw_cb_dma) !=
 	    QLA_SUCCESS) {
 		DEBUG2(printk("scsi%ld: %s: Failed to get init_fw_ctrl_blk\n",
@@ -725,7 +672,7 @@ int qla4xxx_get_dhcp_ip_address(struct scsi_qla_host * ha)
 		return QLA_ERROR;
 	}
 
-	/* Save IP Address. */
+	 
 	qla4xxx_update_local_ip(ha, init_fw_cb);
 	dma_free_coherent(&ha->pdev->dev, sizeof(struct addr_ctrl_blk),
 				init_fw_cb, init_fw_cb_dma);
@@ -733,16 +680,13 @@ int qla4xxx_get_dhcp_ip_address(struct scsi_qla_host * ha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qla4xxx_get_firmware_state - gets firmware state of HBA
- * @ha: Pointer to host adapter structure.
- **/
+ 
 int qla4xxx_get_firmware_state(struct scsi_qla_host * ha)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
 	uint32_t mbox_sts[MBOX_REG_COUNT];
 
-	/* Get firmware version */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
 
@@ -764,16 +708,13 @@ int qla4xxx_get_firmware_state(struct scsi_qla_host * ha)
 	return QLA_SUCCESS;
 }
 
-/**
- * qla4xxx_get_firmware_status - retrieves firmware status
- * @ha: Pointer to host adapter structure.
- **/
+ 
 int qla4xxx_get_firmware_status(struct scsi_qla_host * ha)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
 	uint32_t mbox_sts[MBOX_REG_COUNT];
 
-	/* Get firmware version */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
 
@@ -787,7 +728,7 @@ int qla4xxx_get_firmware_status(struct scsi_qla_host * ha)
 		return QLA_ERROR;
 	}
 
-	/* High-water mark of IOCBs */
+	 
 	ha->iocb_hiwat = mbox_sts[2];
 	DEBUG2(ql4_printk(KERN_INFO, ha,
 			  "%s: firmware IOCBs available = %d\n", __func__,
@@ -796,9 +737,7 @@ int qla4xxx_get_firmware_status(struct scsi_qla_host * ha)
 	if (ha->iocb_hiwat > IOCB_HIWAT_CUSHION)
 		ha->iocb_hiwat -= IOCB_HIWAT_CUSHION;
 
-	/* Ideally, we should not enter this code, as the # of firmware
-	 * IOCBs is hard-coded in the firmware. We set a default
-	 * iocb_hiwat here just in case */
+	 
 	if (ha->iocb_hiwat == 0) {
 		ha->iocb_hiwat = REQUEST_QUEUE_DEPTH / 4;
 		DEBUG2(ql4_printk(KERN_WARNING, ha,
@@ -809,15 +748,7 @@ int qla4xxx_get_firmware_status(struct scsi_qla_host * ha)
 	return QLA_SUCCESS;
 }
 
-/*
- * qla4xxx_get_fwddb_entry - retrieves firmware ddb entry
- * @ha: Pointer to host adapter structure.
- * @fw_ddb_index: Firmware's device database index
- * @fw_ddb_entry: Pointer to firmware's device database entry structure
- * @num_valid_ddb_entries: Pointer to number of valid ddb entries
- * @next_ddb_index: Pointer to next valid device database index
- * @fw_ddb_device_state: Pointer to device state
- **/
+ 
 int qla4xxx_get_fwddb_entry(struct scsi_qla_host *ha,
 			    uint16_t fw_ddb_index,
 			    struct dev_db_entry *fw_ddb_entry,
@@ -834,7 +765,7 @@ int qla4xxx_get_fwddb_entry(struct scsi_qla_host *ha,
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
 	uint32_t mbox_sts[MBOX_REG_COUNT];
 
-	/* Make sure the device index is valid */
+	 
 	if (fw_ddb_index >= MAX_DDB_ENTRIES) {
 		DEBUG2(printk("scsi%ld: %s: ddb [%d] out of range.\n",
 			      ha->host_no, __func__, fw_ddb_index));
@@ -893,13 +824,7 @@ int qla4xxx_get_fwddb_entry(struct scsi_qla_host *ha,
 	if (fw_ddb_device_state)
 		*fw_ddb_device_state = mbox_sts[4];
 
-	/*
-	 * RA: This mailbox has been changed to pass connection error and
-	 * details.  Its true for ISP4010 as per Version E - Not sure when it
-	 * was changed.	 Get the time2wait from the fw_dd_entry field :
-	 * default_time2wait which we call it as minTime2Wait DEV_DB_ENTRY
-	 * struct.
-	 */
+	 
 	if (conn_err_detail)
 		*conn_err_detail = mbox_sts[5];
 	if (tcp_source_port_num)
@@ -932,16 +857,7 @@ int qla4xxx_conn_open(struct scsi_qla_host *ha, uint16_t fw_ddb_index)
 	return status;
 }
 
-/**
- * qla4xxx_set_ddb_entry - sets a ddb entry.
- * @ha: Pointer to host adapter structure.
- * @fw_ddb_index: Firmware's device database index
- * @fw_ddb_entry_dma: dma address of ddb entry
- * @mbx_sts: mailbox 0 to be returned or NULL
- *
- * This routine initializes or updates the adapter's device database
- * entry for the specified device.
- **/
+ 
 int qla4xxx_set_ddb_entry(struct scsi_qla_host * ha, uint16_t fw_ddb_index,
 			  dma_addr_t fw_ddb_entry_dma, uint32_t *mbx_sts)
 {
@@ -949,9 +865,7 @@ int qla4xxx_set_ddb_entry(struct scsi_qla_host * ha, uint16_t fw_ddb_index,
 	uint32_t mbox_sts[MBOX_REG_COUNT];
 	int status;
 
-	/* Do not wait for completion. The firmware will send us an
-	 * ASTS_DATABASE_CHANGED (0x8014) to notify us of the login status.
-	 */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
 
@@ -1001,12 +915,7 @@ int qla4xxx_session_logout_ddb(struct scsi_qla_host *ha,
 	return status;
 }
 
-/**
- * qla4xxx_get_crash_record - retrieves crash record.
- * @ha: Pointer to host adapter structure.
- *
- * This routine retrieves a crash record from the QLA4010 after an 8002h aen.
- **/
+ 
 void qla4xxx_get_crash_record(struct scsi_qla_host * ha)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
@@ -1018,7 +927,7 @@ void qla4xxx_get_crash_record(struct scsi_qla_host * ha)
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_cmd));
 
-	/* Get size of crash record. */
+	 
 	mbox_cmd[0] = MBOX_CMD_GET_CRASH_RECORD;
 
 	if (qla4xxx_mailbox_command(ha, MBOX_REG_COUNT, 5, &mbox_cmd[0], &mbox_sts[0]) !=
@@ -1034,13 +943,13 @@ void qla4xxx_get_crash_record(struct scsi_qla_host * ha)
 		goto exit_get_crash_record;
 	}
 
-	/* Alloc Memory for Crash Record. */
+	 
 	crash_record = dma_alloc_coherent(&ha->pdev->dev, crash_record_size,
 					  &crash_record_dma, GFP_KERNEL);
 	if (crash_record == NULL)
 		goto exit_get_crash_record;
 
-	/* Get Crash Record. */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_cmd));
 
@@ -1053,7 +962,7 @@ void qla4xxx_get_crash_record(struct scsi_qla_host * ha)
 	    QLA_SUCCESS)
 		goto exit_get_crash_record;
 
-	/* Dump Crash Record. */
+	 
 
 exit_get_crash_record:
 	if (crash_record)
@@ -1061,10 +970,7 @@ exit_get_crash_record:
 				  crash_record, crash_record_dma);
 }
 
-/**
- * qla4xxx_get_conn_event_log - retrieves connection event log
- * @ha: Pointer to host adapter structure.
- **/
+ 
 void qla4xxx_get_conn_event_log(struct scsi_qla_host * ha)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
@@ -1080,7 +986,7 @@ void qla4xxx_get_conn_event_log(struct scsi_qla_host * ha)
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_cmd));
 
-	/* Get size of crash record. */
+	 
 	mbox_cmd[0] = MBOX_CMD_GET_CONN_EVENT_LOG;
 
 	if (qla4xxx_mailbox_command(ha, MBOX_REG_COUNT, 5, &mbox_cmd[0], &mbox_sts[0]) !=
@@ -1091,13 +997,13 @@ void qla4xxx_get_conn_event_log(struct scsi_qla_host * ha)
 	if (event_log_size == 0)
 		goto exit_get_event_log;
 
-	/* Alloc Memory for Crash Record. */
+	 
 	event_log = dma_alloc_coherent(&ha->pdev->dev, event_log_size,
 				       &event_log_dma, GFP_KERNEL);
 	if (event_log == NULL)
 		goto exit_get_event_log;
 
-	/* Get Crash Record. */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_cmd));
 
@@ -1112,7 +1018,7 @@ void qla4xxx_get_conn_event_log(struct scsi_qla_host * ha)
 		goto exit_get_event_log;
 	}
 
-	/* Dump Event Log. */
+	 
 	num_valid_entries = mbox_sts[1];
 
 	max_event_log_entries = event_log_size /
@@ -1126,7 +1032,7 @@ void qla4xxx_get_conn_event_log(struct scsi_qla_host * ha)
 
 	if (ql4xextended_error_logging == 3) {
 		if (oldest_entry == 0) {
-			/* Circular Buffer has not wrapped around */
+			 
 			for (i=0; i < num_valid_entries; i++) {
 				qla4xxx_dump_buffer((uint8_t *)event_log+
 						    (i*sizeof(*event_log)),
@@ -1134,8 +1040,7 @@ void qla4xxx_get_conn_event_log(struct scsi_qla_host * ha)
 			}
 		}
 		else {
-			/* Circular Buffer has wrapped around -
-			 * display accordingly*/
+			 
 			for (i=oldest_entry; i < max_event_log_entries; i++) {
 				qla4xxx_dump_buffer((uint8_t *)event_log+
 						    (i*sizeof(*event_log)),
@@ -1155,15 +1060,7 @@ exit_get_event_log:
 				  event_log_dma);
 }
 
-/**
- * qla4xxx_abort_task - issues Abort Task
- * @ha: Pointer to host adapter structure.
- * @srb: Pointer to srb entry
- *
- * This routine performs a LUN RESET on the specified target/lun.
- * The caller must ensure that the ddb_entry and lun_entry pointers
- * are valid before calling this routine.
- **/
+ 
 int qla4xxx_abort_task(struct scsi_qla_host *ha, struct srb *srb)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
@@ -1173,10 +1070,7 @@ int qla4xxx_abort_task(struct scsi_qla_host *ha, struct srb *srb)
 	unsigned long flags = 0;
 	uint32_t index;
 
-	/*
-	 * Send abort task command to ISP, so that the ISP will return
-	 * request with ABORT status
-	 */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
 
@@ -1184,14 +1078,14 @@ int qla4xxx_abort_task(struct scsi_qla_host *ha, struct srb *srb)
 	index = (unsigned long)(unsigned char *)cmd->host_scribble;
 	spin_unlock_irqrestore(&ha->hardware_lock, flags);
 
-	/* Firmware already posted completion on response queue */
+	 
 	if (index == MAX_SRBS)
 		return status;
 
 	mbox_cmd[0] = MBOX_CMD_ABORT_TASK;
 	mbox_cmd[1] = srb->ddb->fw_ddb_index;
 	mbox_cmd[2] = index;
-	/* Immediate Command Enable */
+	 
 	mbox_cmd[5] = 0x01;
 
 	qla4xxx_mailbox_command(ha, MBOX_REG_COUNT, 5, &mbox_cmd[0],
@@ -1208,16 +1102,7 @@ int qla4xxx_abort_task(struct scsi_qla_host *ha, struct srb *srb)
 	return status;
 }
 
-/**
- * qla4xxx_reset_lun - issues LUN Reset
- * @ha: Pointer to host adapter structure.
- * @ddb_entry: Pointer to device database entry
- * @lun: lun number
- *
- * This routine performs a LUN RESET on the specified target/lun.
- * The caller must ensure that the ddb_entry and lun_entry pointers
- * are valid before calling this routine.
- **/
+ 
 int qla4xxx_reset_lun(struct scsi_qla_host * ha, struct ddb_entry * ddb_entry,
 		      uint64_t lun)
 {
@@ -1229,23 +1114,18 @@ int qla4xxx_reset_lun(struct scsi_qla_host * ha, struct ddb_entry * ddb_entry,
 	DEBUG2(printk("scsi%ld:%d:%llu: lun reset issued\n", ha->host_no,
 		      ddb_entry->fw_ddb_index, lun));
 
-	/*
-	 * Send lun reset command to ISP, so that the ISP will return all
-	 * outstanding requests with RESET status
-	 */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
 	int_to_scsilun(lun, (struct scsi_lun *) scsi_lun);
 
 	mbox_cmd[0] = MBOX_CMD_LUN_RESET;
 	mbox_cmd[1] = ddb_entry->fw_ddb_index;
-	/* FW expects LUN bytes 0-3 in Incoming Mailbox 2
-	 * (LUN byte 0 is LSByte, byte 3 is MSByte) */
+	 
 	mbox_cmd[2] = cpu_to_le32(scsi_lun[0]);
-	/* FW expects LUN bytes 4-7 in Incoming Mailbox 3
-	 * (LUN byte 4 is LSByte, byte 7 is MSByte) */
+	 
 	mbox_cmd[3] = cpu_to_le32(scsi_lun[1]);
-	mbox_cmd[5] = 0x01;	/* Immediate Command Enable */
+	mbox_cmd[5] = 0x01;	 
 
 	qla4xxx_mailbox_command(ha, MBOX_REG_COUNT, 1, &mbox_cmd[0], &mbox_sts[0]);
 	if (mbox_sts[0] != MBOX_STS_COMMAND_COMPLETE &&
@@ -1255,15 +1135,7 @@ int qla4xxx_reset_lun(struct scsi_qla_host * ha, struct ddb_entry * ddb_entry,
 	return status;
 }
 
-/**
- * qla4xxx_reset_target - issues target Reset
- * @ha: Pointer to host adapter structure.
- * @ddb_entry: Pointer to device database entry
- *
- * This routine performs a TARGET RESET on the specified target.
- * The caller must ensure that the ddb_entry pointers
- * are valid before calling this routine.
- **/
+ 
 int qla4xxx_reset_target(struct scsi_qla_host *ha,
 			 struct ddb_entry *ddb_entry)
 {
@@ -1274,16 +1146,13 @@ int qla4xxx_reset_target(struct scsi_qla_host *ha,
 	DEBUG2(printk("scsi%ld:%d: target reset issued\n", ha->host_no,
 		      ddb_entry->fw_ddb_index));
 
-	/*
-	 * Send target reset command to ISP, so that the ISP will return all
-	 * outstanding requests with RESET status
-	 */
+	 
 	memset(&mbox_cmd, 0, sizeof(mbox_cmd));
 	memset(&mbox_sts, 0, sizeof(mbox_sts));
 
 	mbox_cmd[0] = MBOX_CMD_TARGET_WARM_RESET;
 	mbox_cmd[1] = ddb_entry->fw_ddb_index;
-	mbox_cmd[5] = 0x01;	/* Immediate Command Enable */
+	mbox_cmd[5] = 0x01;	 
 
 	qla4xxx_mailbox_command(ha, MBOX_REG_COUNT, 1, &mbox_cmd[0],
 				&mbox_sts[0]);
@@ -1319,14 +1188,7 @@ int qla4xxx_get_flash(struct scsi_qla_host * ha, dma_addr_t dma_addr,
 	return QLA_SUCCESS;
 }
 
-/**
- * qla4xxx_about_firmware - gets FW, iscsi draft and boot loader version
- * @ha: Pointer to host adapter structure.
- *
- * Retrieves the FW version, iSCSI draft version & bootloader version of HBA.
- * Mailboxes 2 & 3 may hold an address for data. Make sure that we write 0 to
- * those mailboxes, if unused.
- **/
+ 
 int qla4xxx_about_firmware(struct scsi_qla_host *ha)
 {
 	struct about_fw_info *about_fw = NULL;
@@ -1361,7 +1223,7 @@ int qla4xxx_about_firmware(struct scsi_qla_host *ha)
 		goto exit_about_fw;
 	}
 
-	/* Save version information. */
+	 
 	ha->fw_info.fw_major = le16_to_cpu(about_fw->fw_major);
 	ha->fw_info.fw_minor = le16_to_cpu(about_fw->fw_minor);
 	ha->fw_info.fw_patch = le16_to_cpu(about_fw->fw_patch);
@@ -1537,9 +1399,7 @@ int qla4xxx_flashdb_by_index(struct scsi_qla_host *ha,
 	} else {
 		dev_db_start_offset = FLASH_RAW_ACCESS_ADDR +
 				      (ha->hw.flt_region_ddb << 2);
-		/* flt_ddb_size is DDB table size for both ports
-		 * so divide it by 2 to calculate the offset for second port
-		 */
+		 
 		if (ha->port_num == 1)
 			dev_db_start_offset += (ha->hw.flt_ddb_size / 2);
 
@@ -1589,9 +1449,7 @@ int qla4xxx_get_chap(struct scsi_qla_host *ha, char *username, char *password,
 		offset = FLASH_CHAP_OFFSET | (idx * chap_size);
 	else {
 		offset = FLASH_RAW_ACCESS_ADDR + (ha->hw.flt_region_chap << 2);
-		/* flt_chap_size is CHAP table size for both ports
-		 * so divide it by 2 to calculate the offset for second port
-		 */
+		 
 		if (ha->port_num == 1)
 			offset += (ha->hw.flt_chap_size / 2);
 		offset += (idx * chap_size);
@@ -1620,18 +1478,7 @@ exit_get_chap:
 	return ret;
 }
 
-/**
- * qla4xxx_set_chap - Make a chap entry at the given index
- * @ha: pointer to adapter structure
- * @username: CHAP username to set
- * @password: CHAP password to set
- * @idx: CHAP index at which to make the entry
- * @bidi: type of chap entry (chap_in or chap_out)
- *
- * Create chap entry at the given index with the information provided.
- *
- * Note: Caller should acquire the chap lock before getting here.
- **/
+ 
 int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username, char *password,
 		     uint16_t idx, int bidi)
 {
@@ -1649,9 +1496,9 @@ int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username, char *password,
 	}
 
 	if (bidi)
-		chap_table->flags |= BIT_6; /* peer */
+		chap_table->flags |= BIT_6;  
 	else
-		chap_table->flags |= BIT_7; /* local */
+		chap_table->flags |= BIT_7;  
 	chap_table->secret_len = strlen(password);
 	strncpy(chap_table->secret, password, MAX_CHAP_SECRET_LEN - 1);
 	strncpy(chap_table->name, username, MAX_CHAP_NAME_LEN - 1);
@@ -1660,9 +1507,7 @@ int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username, char *password,
 	if (is_qla40XX(ha)) {
 		chap_size = MAX_CHAP_ENTRIES_40XX * sizeof(*chap_table);
 		offset = FLASH_CHAP_OFFSET;
-	} else { /* Single region contains CHAP info for both ports which is
-		  * divided into half for each port.
-		  */
+	} else {  
 		chap_size = ha->hw.flt_chap_size / 2;
 		offset = FLASH_RAW_ACCESS_ADDR + (ha->hw.flt_region_chap << 2);
 		if (ha->port_num == 1)
@@ -1675,7 +1520,7 @@ int qla4xxx_set_chap(struct scsi_qla_host *ha, char *username, char *password,
 				FLASH_OPT_RMW_COMMIT);
 
 	if (rval == QLA_SUCCESS && ha->chap_list) {
-		/* Update ha chap_list cache */
+		 
 		memcpy((struct ql4_chap_table *)ha->chap_list + idx,
 		       chap_table, sizeof(struct ql4_chap_table));
 	}
@@ -1743,18 +1588,7 @@ exit_uni_chap:
 	return rval;
 }
 
-/**
- * qla4xxx_get_chap_index - Get chap index given username and secret
- * @ha: pointer to adapter structure
- * @username: CHAP username to be searched
- * @password: CHAP password to be searched
- * @bidi: Is this a BIDI CHAP
- * @chap_index: CHAP index to be returned
- *
- * Match the username and password in the chap_list, return the index if a
- * match is found. If a match is not found then add the entry in FLASH and
- * return the index at which entry is written in the FLASH.
- **/
+ 
 int qla4xxx_get_chap_index(struct scsi_qla_host *ha, char *username,
 			   char *password, int bidi, uint16_t *chap_index)
 {
@@ -1806,9 +1640,7 @@ int qla4xxx_get_chap_index(struct scsi_qla_host *ha, char *username,
 		}
 	}
 
-	/* If chap entry is not present and a free index is available then
-	 * write the entry in flash
-	 */
+	 
 	if (!found_index && free_index != -1) {
 		rval = qla4xxx_set_chap(ha, username, password,
 					free_index, bidi);
@@ -1851,13 +1683,7 @@ int qla4xxx_conn_close_sess_logout(struct scsi_qla_host *ha,
 	return status;
 }
 
-/**
- * qla4_84xx_extend_idc_tmo - Extend IDC Timeout.
- * @ha: Pointer to host adapter structure.
- * @ext_tmo: idc timeout value
- *
- * Requests firmware to extend the idc timeout value.
- **/
+ 
 static int qla4_84xx_extend_idc_tmo(struct scsi_qla_host *ha, uint32_t ext_tmo)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
@@ -1870,7 +1696,7 @@ static int qla4_84xx_extend_idc_tmo(struct scsi_qla_host *ha, uint32_t ext_tmo)
 
 	mbox_cmd[0] = MBOX_CMD_IDC_TIME_EXTEND;
 	mbox_cmd[1] = ((ha->idc_info.request_desc & 0xfffff0ff) |
-		       (ext_tmo << 8));		/* new timeout */
+		       (ext_tmo << 8));		 
 	mbox_cmd[2] = ha->idc_info.info1;
 	mbox_cmd[3] = ha->idc_info.info2;
 	mbox_cmd[4] = ha->idc_info.info3;
@@ -1910,13 +1736,7 @@ int qla4xxx_disable_acb(struct scsi_qla_host *ha)
 		if (is_qla8042(ha) &&
 		    test_bit(DPC_POST_IDC_ACK, &ha->dpc_flags) &&
 		    (mbox_sts[0] != MBOX_STS_COMMAND_COMPLETE)) {
-			/*
-			 * Disable ACB mailbox command takes time to complete
-			 * based on the total number of targets connected.
-			 * For 512 targets, it took approximately 5 secs to
-			 * complete. Setting the timeout value to 8, with the 3
-			 * secs buffer.
-			 */
+			 
 			qla4_84xx_extend_idc_tmo(ha, IDC_EXTEND_TOV);
 			if (!wait_for_completion_timeout(&ha->disable_acb_comp,
 							 IDC_EXTEND_TOV * HZ)) {
@@ -1961,7 +1781,7 @@ int qla4xxx_set_acb(struct scsi_qla_host *ha, uint32_t *mbox_cmd,
 	memset(mbox_cmd, 0, sizeof(mbox_cmd[0]) * MBOX_REG_COUNT);
 	memset(mbox_sts, 0, sizeof(mbox_sts[0]) * MBOX_REG_COUNT);
 	mbox_cmd[0] = MBOX_CMD_SET_ACB;
-	mbox_cmd[1] = 0; /* Primary ACB */
+	mbox_cmd[1] = 0;  
 	mbox_cmd[2] = LSDW(acb_dma);
 	mbox_cmd[3] = MSDW(acb_dma);
 	mbox_cmd[4] = sizeof(struct addr_ctrl_blk);
@@ -2067,7 +1887,7 @@ int qla4xxx_set_param_ddbentry(struct scsi_qla_host *ha,
 		goto exit_set_param;
 	}
 
-	/* CHAP */
+	 
 	if (sess->username != NULL && sess->password != NULL) {
 		if (strlen(sess->username) && strlen(sess->password)) {
 			iscsi_opts |= BIT_7;
@@ -2083,7 +1903,7 @@ int qla4xxx_set_param_ddbentry(struct scsi_qla_host *ha,
 	}
 
 	if (sess->username_in != NULL && sess->password_in != NULL) {
-		/* Check if BIDI CHAP */
+		 
 		if (strlen(sess->username_in) && strlen(sess->password_in)) {
 			iscsi_opts |= BIT_4;
 
@@ -2264,11 +2084,7 @@ int qla4xxx_restore_factory_defaults(struct scsi_qla_host *ha,
 	return status;
 }
 
-/**
- * qla4_8xxx_set_param - set driver version in firmware.
- * @ha: Pointer to host adapter structure.
- * @param: Parameter to set i.e driver version
- **/
+ 
 int qla4_8xxx_set_param(struct scsi_qla_host *ha, int param)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];
@@ -2300,12 +2116,7 @@ exit_set_param:
 	return status;
 }
 
-/**
- * qla4_83xx_post_idc_ack - post IDC ACK
- * @ha: Pointer to host adapter structure.
- *
- * Posts IDC ACK for IDC Request Notification AEN.
- **/
+ 
 int qla4_83xx_post_idc_ack(struct scsi_qla_host *ha)
 {
 	uint32_t mbox_cmd[MBOX_REG_COUNT];

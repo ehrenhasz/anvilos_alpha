@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _BPF_CGROUP_DEFS_H
 #define _BPF_CGROUP_DEFS_H
 
@@ -11,7 +11,7 @@
 struct bpf_prog_array;
 
 #ifdef CONFIG_BPF_LSM
-/* Maximum number of concurrently attachable per-cgroup LSM hooks. */
+ 
 #define CGROUP_LSM_NUM 10
 #else
 #define CGROUP_LSM_NUM 0
@@ -48,32 +48,28 @@ enum cgroup_bpf_attach_type {
 };
 
 struct cgroup_bpf {
-	/* array of effective progs in this cgroup */
+	 
 	struct bpf_prog_array __rcu *effective[MAX_CGROUP_BPF_ATTACH_TYPE];
 
-	/* attached progs to this cgroup and attach flags
-	 * when flags == 0 or BPF_F_ALLOW_OVERRIDE the progs list will
-	 * have either zero or one element
-	 * when BPF_F_ALLOW_MULTI the list can have up to BPF_CGROUP_MAX_PROGS
-	 */
+	 
 	struct hlist_head progs[MAX_CGROUP_BPF_ATTACH_TYPE];
 	u8 flags[MAX_CGROUP_BPF_ATTACH_TYPE];
 
-	/* list of cgroup shared storages */
+	 
 	struct list_head storages;
 
-	/* temp storage for effective prog array used by prog_attach/detach */
+	 
 	struct bpf_prog_array *inactive;
 
-	/* reference counter used to detach bpf programs after cgroup removal */
+	 
 	struct percpu_ref refcnt;
 
-	/* cgroup_bpf is released using a work queue */
+	 
 	struct work_struct release_work;
 };
 
-#else /* CONFIG_CGROUP_BPF */
+#else  
 struct cgroup_bpf {};
-#endif /* CONFIG_CGROUP_BPF */
+#endif  
 
 #endif

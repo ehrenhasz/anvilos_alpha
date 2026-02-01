@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus SPI library
- *
- * Copyright 2014-2016 Google Inc.
- * Copyright 2014-2016 Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -69,7 +64,7 @@ static size_t calc_rx_xfer_size(u32 rx_size, u32 *tx_xfer_size, u32 len,
 	else
 		rx_xfer_size = len;
 
-	/* if this is a write_read, for symmetry read the same as write */
+	 
 	if (*tx_xfer_size && rx_xfer_size > *tx_xfer_size)
 		rx_xfer_size = *tx_xfer_size;
 	if (*tx_xfer_size && rx_xfer_size < *tx_xfer_size)
@@ -120,10 +115,7 @@ static int setup_next_xfer(struct gb_spilib *spi, struct spi_message *msg)
 	if (msg->state != GB_SPI_STATE_OP_DONE)
 		return 0;
 
-	/*
-	 * if we transferred all content of the last transfer, reset values and
-	 * check if this was the last transfer in the message
-	 */
+	 
 	if (is_last_xfer_done(spi)) {
 		spi->tx_xfer_offset = 0;
 		spi->rx_xfer_offset = 0;
@@ -158,7 +150,7 @@ static struct spi_transfer *get_next_xfer(struct spi_transfer *xfer,
 	return list_next_entry(xfer, transfer_list);
 }
 
-/* Routines to transfer data */
+ 
 static struct gb_operation *gb_spi_operation_create(struct gb_spilib *spi,
 		struct gb_connection *connection, struct spi_message *msg)
 {
@@ -177,7 +169,7 @@ static struct gb_operation *gb_spi_operation_create(struct gb_spilib *spi,
 	data_max = gb_operation_get_payload_size_max(connection);
 	xfer = spi->first_xfer;
 
-	/* Find number of transfers queued and tx/rx length in the message */
+	 
 
 	while (msg->state != GB_SPI_STATE_OP_READY) {
 		msg->state = GB_SPI_STATE_MSG_RUNNING;
@@ -220,15 +212,12 @@ static struct gb_operation *gb_spi_operation_create(struct gb_spilib *spi,
 			msg->state = GB_SPI_STATE_OP_READY;
 	}
 
-	/*
-	 * In addition to space for all message descriptors we need
-	 * to have enough to hold all tx data.
-	 */
+	 
 	request_size = sizeof(*request);
 	request_size += count * sizeof(*gb_xfer);
 	request_size += tx_size;
 
-	/* Response consists only of incoming data */
+	 
 	operation = gb_operation_create(connection, GB_SPI_TYPE_TRANSFER,
 					request_size, rx_size, GFP_KERNEL);
 	if (!operation)
@@ -240,9 +229,9 @@ static struct gb_operation *gb_spi_operation_create(struct gb_spilib *spi,
 	request->chip_select = spi_get_chipselect(dev, 0);
 
 	gb_xfer = &request->transfers[0];
-	tx_data = gb_xfer + count;	/* place tx data after last gb_xfer */
+	tx_data = gb_xfer + count;	 
 
-	/* Fill in the transfers array */
+	 
 	xfer = spi->first_xfer;
 	while (msg->state != GB_SPI_STATE_OP_DONE) {
 		int xfer_delay;
@@ -252,7 +241,7 @@ static struct gb_operation *gb_spi_operation_create(struct gb_spilib *spi,
 		else
 			xfer_len = xfer->len;
 
-		/* make sure we do not timeout in a slow transfer */
+		 
 		xfer_timeout = xfer_len * 8 * MSEC_PER_SEC / xfer->speed_hz;
 		xfer_timeout += GB_OPERATION_TIMEOUT_DEFAULT;
 
@@ -267,7 +256,7 @@ static struct gb_operation *gb_spi_operation_create(struct gb_spilib *spi,
 		gb_xfer->cs_change = xfer->cs_change;
 		gb_xfer->bits_per_word = xfer->bits_per_word;
 
-		/* Copy tx data */
+		 
 		if (xfer->tx_buf) {
 			gb_xfer->xfer_flags |= GB_SPI_XFER_WRITE;
 			memcpy(tx_data, xfer->tx_buf + spi->tx_xfer_offset,
@@ -303,7 +292,7 @@ static void gb_spi_decode_response(struct gb_spilib *spi,
 	u32 xfer_len;
 
 	while (xfer) {
-		/* Copy rx data */
+		 
 		if (xfer->rx_buf) {
 			if (xfer == spi->first_xfer)
 				xfer_len = xfer->len - spi->rx_xfer_offset;
@@ -394,21 +383,18 @@ static int gb_spi_unprepare_transfer_hardware(struct spi_master *master)
 
 static int gb_spi_setup(struct spi_device *spi)
 {
-	/* Nothing to do for now */
+	 
 	return 0;
 }
 
 static void gb_spi_cleanup(struct spi_device *spi)
 {
-	/* Nothing to do for now */
+	 
 }
 
-/* Routines to get controller information */
+ 
 
-/*
- * Map Greybus spi mode bits/flags/bpw into Linux ones.
- * All bits are same for now and so these macro's return same values.
- */
+ 
 #define gb_spi_mode_map(mode) mode
 #define gb_spi_flags_map(flags) flags
 
@@ -490,7 +476,7 @@ int gb_spilib_master_init(struct gb_connection *connection, struct device *dev,
 	int ret;
 	u8 i;
 
-	/* Allocate master with space for data */
+	 
 	master = spi_alloc_master(dev, sizeof(*spi));
 	if (!master) {
 		dev_err(dev, "cannot alloc SPI master\n");
@@ -503,18 +489,18 @@ int gb_spilib_master_init(struct gb_connection *connection, struct device *dev,
 	spi->parent = dev;
 	spi->ops = ops;
 
-	/* get master configuration */
+	 
 	ret = gb_spi_get_master_config(spi);
 	if (ret)
 		goto exit_spi_put;
 
-	master->bus_num = -1; /* Allow spi-core to allocate it dynamically */
+	master->bus_num = -1;  
 	master->num_chipselect = spi->num_chipselect;
 	master->mode_bits = spi->mode;
 	master->flags = spi->flags;
 	master->bits_per_word_mask = spi->bits_per_word_mask;
 
-	/* Attach methods */
+	 
 	master->cleanup = gb_spi_cleanup;
 	master->setup = gb_spi_setup;
 	master->transfer_one_message = gb_spi_transfer_one_message;
@@ -535,7 +521,7 @@ int gb_spilib_master_init(struct gb_connection *connection, struct device *dev,
 	if (ret < 0)
 		goto exit_spi_put;
 
-	/* now, fetch the devices configuration */
+	 
 	for (i = 0; i < spi->num_chipselect; i++) {
 		ret = gb_spi_setup_device(spi, i);
 		if (ret < 0) {

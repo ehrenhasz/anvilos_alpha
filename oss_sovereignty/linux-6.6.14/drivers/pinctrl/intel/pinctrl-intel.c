@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel pinctrl/GPIO core driver.
- *
- * Copyright (C) 2015, Intel Corporation
- * Authors: Mathias Nyman <mathias.nyman@linux.intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/gpio/driver.h>
@@ -29,7 +23,7 @@
 #include "../core.h"
 #include "pinctrl-intel.h"
 
-/* Offset from regs */
+ 
 #define REVID				0x000
 #define REVID_SHIFT			16
 #define REVID_MASK			GENMASK(31, 16)
@@ -53,7 +47,7 @@
 
 #define PWMC				0x204
 
-/* Offset from pad_regs */
+ 
 #define PADCFG0				0x000
 #define PADCFG0_RXEVCFG_MASK		GENMASK(26, 25)
 #define PADCFG0_RXEVCFG_LEVEL		(0 << 25)
@@ -209,18 +203,7 @@ static bool intel_pad_acpi_mode(struct intel_pinctrl *pctrl, unsigned int pin)
 	return !(readl(hostown) & BIT(gpp_offset));
 }
 
-/**
- * enum - Locking variants of the pad configuration
- *
- * @PAD_UNLOCKED:	pad is fully controlled by the configuration registers
- * @PAD_LOCKED:		pad configuration registers, except TX state, are locked
- * @PAD_LOCKED_TX:	pad configuration TX state is locked
- * @PAD_LOCKED_FULL:	pad configuration registers are locked completely
- *
- * Locking is considered as read-only mode for corresponding registers and
- * their respective fields. That said, TX state bit is locked separately from
- * the main locking scheme.
- */
+ 
 enum {
 	PAD_UNLOCKED	= 0,
 	PAD_LOCKED	= 1,
@@ -248,11 +231,7 @@ static int intel_pad_locked(struct intel_pinctrl *pctrl, unsigned int pin)
 
 	gpp_offset = padgroup_offset(padgrp, pin);
 
-	/*
-	 * If PADCFGLOCK and PADCFGLOCKTX bits are both clear for this pad,
-	 * the pad is considered unlocked. Any other case means that it is
-	 * either fully or partially locked.
-	 */
+	 
 	offset = community->padcfglock_offset + 0 + padgrp->reg_num * 8;
 	value = readl(community->regs + offset);
 	if (value & BIT(gpp_offset))
@@ -328,7 +307,7 @@ static void intel_pin_dbg_show(struct pinctrl_dev *pctldev, struct seq_file *s,
 
 	seq_printf(s, "0x%08x 0x%08x", cfg0, cfg1);
 
-	/* Dump the additional PADCFG registers if available */
+	 
 	padcfg = intel_get_padcfg(pctrl, pin, PADCFG2);
 	if (padcfg)
 		seq_printf(s, " 0x%08x", readl(padcfg));
@@ -398,10 +377,7 @@ static int intel_pinmux_set_mux(struct pinctrl_dev *pctldev,
 
 	raw_spin_lock_irqsave(&pctrl->lock, flags);
 
-	/*
-	 * All pins in the groups needs to be accessible and writable
-	 * before we can enable the mux for this group.
-	 */
+	 
 	for (i = 0; i < grp->grp.npins; i++) {
 		if (!intel_pad_usable(pctrl, grp->grp.pins[i])) {
 			raw_spin_unlock_irqrestore(&pctrl->lock, flags);
@@ -409,7 +385,7 @@ static int intel_pinmux_set_mux(struct pinctrl_dev *pctldev,
 		}
 	}
 
-	/* Now enable the mux setting for each pin in the group */
+	 
 	for (i = 0; i < grp->grp.npins; i++) {
 		void __iomem *padcfg0;
 		u32 value, pmode;
@@ -464,15 +440,15 @@ static void intel_gpio_set_gpio_mode(void __iomem *padcfg0)
 
 	value = readl(padcfg0);
 
-	/* Put the pad into GPIO mode */
+	 
 	value &= ~PADCFG0_PMODE_MASK;
 	value |= PADCFG0_PMODE_GPIO;
 
-	/* Disable TX buffer and enable RX (this will be input) */
+	 
 	value &= ~PADCFG0_GPIORXDIS;
 	value |= PADCFG0_GPIOTXDIS;
 
-	/* Disable SCI/SMI/NMI generation */
+	 
 	value &= ~(PADCFG0_GPIROUTIOXAPIC | PADCFG0_GPIROUTSCI);
 	value &= ~(PADCFG0_GPIROUTSMI | PADCFG0_GPIROUTNMI);
 
@@ -501,12 +477,7 @@ static int intel_gpio_request_enable(struct pinctrl_dev *pctldev,
 		return 0;
 	}
 
-	/*
-	 * If pin is already configured in GPIO mode, we assume that
-	 * firmware provides correct settings. In such case we avoid
-	 * potential glitches on the pin. Otherwise, for the pin in
-	 * alternative mode, consumer has to supply respective flags.
-	 */
+	 
 	if (intel_gpio_get_gpio_mode(padcfg0) == PADCFG0_PMODE_GPIO) {
 		raw_spin_unlock_irqrestore(&pctrl->lock, flags);
 		return 0;
@@ -704,7 +675,7 @@ static int intel_config_set_pull(struct intel_pinctrl *pctrl, unsigned int pin,
 	value = readl(padcfg1);
 	value &= ~(PADCFG1_TERM_MASK | PADCFG1_TERM_UP);
 
-	/* Set default strength value in case none is given */
+	 
 	if (arg == 1)
 		arg = 5000;
 
@@ -800,7 +771,7 @@ static int intel_config_set_debounce(struct intel_pinctrl *pctrl,
 	value0 = readl(padcfg0);
 	value2 = readl(padcfg2);
 
-	/* Disable glitch filter and debouncer */
+	 
 	value0 &= ~PADCFG0_PREGFRXSEL;
 	value2 &= ~(PADCFG2_DEBEN | PADCFG2_DEBOUNCE_MASK);
 
@@ -813,7 +784,7 @@ static int intel_config_set_debounce(struct intel_pinctrl *pctrl,
 			return -EINVAL;
 		}
 
-		/* Enable glitch filter and debouncer */
+		 
 		value0 |= PADCFG0_PREGFRXSEL;
 		value2 |= v << PADCFG2_DEBOUNCE_SHIFT;
 		value2 |= PADCFG2_DEBEN;
@@ -874,20 +845,7 @@ static const struct pinctrl_desc intel_pinctrl_desc = {
 	.owner = THIS_MODULE,
 };
 
-/**
- * intel_gpio_to_pin() - Translate from GPIO offset to pin number
- * @pctrl: Pinctrl structure
- * @offset: GPIO offset from gpiolib
- * @community: Community is filled here if not %NULL
- * @padgrp: Pad group is filled here if not %NULL
- *
- * When coming through gpiolib irqchip, the GPIO offset is not
- * automatically translated to pinctrl pin number. This function can be
- * used to find out the corresponding pinctrl pin.
- *
- * Return: a pin number and pointers to the community and pad group, which
- * the pin belongs to, or negative error code if translation can't be done.
- */
+ 
 static int intel_gpio_to_pin(struct intel_pinctrl *pctrl, unsigned int offset,
 			     const struct intel_community **community,
 			     const struct intel_padgroup **padgrp)
@@ -922,15 +880,7 @@ static int intel_gpio_to_pin(struct intel_pinctrl *pctrl, unsigned int offset,
 	return -EINVAL;
 }
 
-/**
- * intel_pin_to_gpio() - Translate from pin number to GPIO offset
- * @pctrl: Pinctrl structure
- * @pin: pin number
- *
- * Translate the pin number of pinctrl to GPIO offset
- *
- * Return: a GPIO offset, or negative error code if translation can't be done.
- */
+ 
 static __maybe_unused int intel_pin_to_gpio(struct intel_pinctrl *pctrl, int pin)
 {
 	const struct intel_community *community;
@@ -1092,7 +1042,7 @@ static void intel_gpio_irq_mask_unmask(struct gpio_chip *gc, irq_hw_number_t hwi
 
 		raw_spin_lock_irqsave(&pctrl->lock, flags);
 
-		/* Clear interrupt status first to avoid unexpected interrupt */
+		 
 		writel(BIT(gpp_offset), is);
 
 		value = readl(reg);
@@ -1136,11 +1086,7 @@ static int intel_gpio_irq_type(struct irq_data *d, unsigned int type)
 	if (!reg)
 		return -EINVAL;
 
-	/*
-	 * If the pin is in ACPI mode it is still usable as a GPIO but it
-	 * cannot be used as IRQ because GPI_IS status bit will not be
-	 * updated by the host controller hardware.
-	 */
+	 
 	if (intel_pad_acpi_mode(pctrl, pin)) {
 		dev_warn(pctrl->dev, "pin %u cannot be used as IRQ\n", pin);
 		return -EPERM;
@@ -1230,7 +1176,7 @@ static int intel_gpio_community_irq_handler(struct intel_pinctrl *pctrl,
 
 		raw_spin_unlock(&pctrl->lock);
 
-		/* Only interrupts that are enabled */
+		 
 		pending &= enabled;
 
 		for_each_set_bit(gpp_offset, &pending, padgrp->size)
@@ -1249,7 +1195,7 @@ static irqreturn_t intel_gpio_irq(int irq, void *data)
 	unsigned int i;
 	int ret = 0;
 
-	/* Need to check all communities for pending interrupts */
+	 
 	for (i = 0; i < pctrl->ncommunities; i++) {
 		community = &pctrl->communities[i];
 		ret += intel_gpio_community_irq_handler(pctrl, community);
@@ -1271,7 +1217,7 @@ static void intel_gpio_irq_init(struct intel_pinctrl *pctrl)
 		base = community->regs;
 
 		for (gpp = 0; gpp < community->ngpps; gpp++) {
-			/* Mask and clear all interrupts */
+			 
 			writel(0, base + community->ie_offset + gpp * 4);
 			writel(0xffff, base + community->is_offset + gpp * 4);
 		}
@@ -1282,10 +1228,7 @@ static int intel_gpio_irq_init_hw(struct gpio_chip *gc)
 {
 	struct intel_pinctrl *pctrl = gpiochip_get_data(gc);
 
-	/*
-	 * Make sure the interrupt lines are in a proper state before
-	 * further configuration.
-	 */
+	 
 	intel_gpio_irq_init(pctrl);
 
 	return 0;
@@ -1359,7 +1302,7 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
 
 	pctrl->chip = intel_gpio_chip;
 
-	/* Setup GPIO chip */
+	 
 	pctrl->chip.ngpio = intel_gpio_ngpio(pctrl);
 	pctrl->chip.label = dev_name(pctrl->dev);
 	pctrl->chip.parent = pctrl->dev;
@@ -1367,10 +1310,7 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
 	pctrl->chip.add_pin_ranges = intel_gpio_add_pin_ranges;
 	pctrl->irq = irq;
 
-	/*
-	 * On some platforms several GPIO controllers share the same interrupt
-	 * line.
-	 */
+	 
 	ret = devm_request_irq(pctrl->dev, irq, intel_gpio_irq,
 			       IRQF_SHARED | IRQF_NO_THREAD,
 			       dev_name(pctrl->dev), pctrl);
@@ -1379,10 +1319,10 @@ static int intel_gpio_probe(struct intel_pinctrl *pctrl, int irq)
 		return ret;
 	}
 
-	/* Setup IRQ chip */
+	 
 	girq = &pctrl->chip.irq;
 	gpio_irq_chip_set_chip(girq, &intel_gpio_irq_chip);
-	/* This will let us handle the IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->default_type = IRQ_TYPE_NONE;
@@ -1415,7 +1355,7 @@ static int intel_pinctrl_add_padgroups_by_gpps(struct intel_pinctrl *pctrl,
 		if (gpps[i].size > INTEL_PINCTRL_MAX_GPP_SIZE)
 			return -EINVAL;
 
-		/* Special treatment for GPIO base */
+		 
 		switch (gpps[i].gpio_base) {
 			case INTEL_GPIO_BASE_MATCH:
 				gpps[i].gpio_base = gpps[i].base;
@@ -1553,10 +1493,7 @@ static int intel_pinctrl_probe(struct platform_device *pdev,
 	pctrl->soc = soc_data;
 	raw_spin_lock_init(&pctrl->lock);
 
-	/*
-	 * Make a copy of the communities which we can use to hold pointers
-	 * to the registers.
-	 */
+	 
 	pctrl->ncommunities = pctrl->soc->ncommunities;
 	pctrl->communities = devm_kcalloc(dev, pctrl->ncommunities,
 					  sizeof(*pctrl->communities), GFP_KERNEL);
@@ -1575,10 +1512,7 @@ static int intel_pinctrl_probe(struct platform_device *pdev,
 		if (IS_ERR(regs))
 			return PTR_ERR(regs);
 
-		/*
-		 * Determine community features based on the revision.
-		 * A value of all ones means the device is not present.
-		 */
+		 
 		value = readl(regs + REVID);
 		if (value == ~0u)
 			return -ENODEV;
@@ -1587,7 +1521,7 @@ static int intel_pinctrl_probe(struct platform_device *pdev,
 			community->features |= PINCTRL_FEATURE_1K_PD;
 		}
 
-		/* Determine community features based on the capabilities */
+		 
 		offset = CAPLIST;
 		do {
 			value = readl(regs + offset);
@@ -1612,7 +1546,7 @@ static int intel_pinctrl_probe(struct platform_device *pdev,
 
 		dev_dbg(dev, "Community%d features: %#08x\n", i, community->features);
 
-		/* Read offset of the pad configuration registers */
+		 
 		offset = readl(regs + PADBAR);
 
 		community->regs = regs;
@@ -1729,30 +1663,12 @@ static bool intel_pinctrl_should_save(struct intel_pinctrl *pctrl, unsigned int 
 	if (!pd || !intel_pad_usable(pctrl, pin))
 		return false;
 
-	/*
-	 * Only restore the pin if it is actually in use by the kernel (or
-	 * by userspace). It is possible that some pins are used by the
-	 * BIOS during resume and those are not always locked down so leave
-	 * them alone.
-	 */
+	 
 	if (pd->mux_owner || pd->gpio_owner ||
 	    gpiochip_line_is_irq(&pctrl->chip, intel_pin_to_gpio(pctrl, pin)))
 		return true;
 
-	/*
-	 * The firmware on some systems may configure GPIO pins to be
-	 * an interrupt source in so called "direct IRQ" mode. In such
-	 * cases the GPIO controller driver has no idea if those pins
-	 * are being used or not. At the same time, there is a known bug
-	 * in the firmwares that don't restore the pin settings correctly
-	 * after suspend, i.e. by an unknown reason the Rx value becomes
-	 * inverted.
-	 *
-	 * Hence, let's save and restore the pins that are configured
-	 * as GPIOs in the input mode with GPIROUTIOXAPIC bit set.
-	 *
-	 * See https://bugzilla.kernel.org/show_bug.cgi?id=214749.
-	 */
+	 
 	value = readl(intel_get_padcfg(pctrl, pin, PADCFG0));
 	if (__intel_gpio_is_direct_irq(value))
 		return true;
@@ -1877,7 +1793,7 @@ int intel_pinctrl_resume_noirq(struct device *dev)
 	const struct intel_pad_context *pads;
 	int i;
 
-	/* Mask all interrupts */
+	 
 	intel_gpio_irq_init(pctrl);
 
 	pads = pctrl->context.pads;
@@ -1885,10 +1801,7 @@ int intel_pinctrl_resume_noirq(struct device *dev)
 		const struct pinctrl_pin_desc *desc = &pctrl->soc->pins[i];
 
 		if (!(intel_pinctrl_should_save(pctrl, desc->number) ||
-		      /*
-		       * If the firmware mangled the register contents too much,
-		       * check the saved value for the Direct IRQ mode.
-		       */
+		       
 		      __intel_gpio_is_direct_irq(pads[i].padcfg0)))
 			continue;
 

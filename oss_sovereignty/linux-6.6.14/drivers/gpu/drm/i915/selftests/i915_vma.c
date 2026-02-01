@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/prime_numbers.h>
 
@@ -72,7 +50,7 @@ checked_vma_instance(struct drm_i915_gem_object *obj,
 	if (IS_ERR(vma))
 		return vma;
 
-	/* Manual checks, will be reinforced by i915_vma_compare! */
+	 
 	if (vma->vm != vm) {
 		pr_err("VMA's vm [%p] does not match request [%p]\n",
 		       vma->vm, vm);
@@ -159,9 +137,7 @@ static int igt_vma_create(void *arg)
 	LIST_HEAD(objects);
 	int err = -ENOMEM;
 
-	/* Exercise creating many vma amonst many objections, checking the
-	 * vma creation and lookup routines.
-	 */
+	 
 
 	no = 0;
 	for_each_prime_number(num_obj, ULONG_MAX - 1) {
@@ -202,7 +178,7 @@ static int igt_vma_create(void *arg)
 	}
 
 end:
-	/* Final pass to lookup all created contexts */
+	 
 	err = create_vmas(i915, &objects, &contexts);
 out:
 	list_for_each_entry_safe(ctx, cn, &contexts, link) {
@@ -292,11 +268,7 @@ static int igt_vma_pin1(void *arg)
 		VALID(8192, PIN_GLOBAL | PIN_OFFSET_BIAS | (ggtt->mappable_end - 4096)),
 
 #if !IS_ENABLED(CONFIG_DRM_I915_DEBUG_GEM)
-		/* Misusing BIAS is a programming error (it is not controllable
-		 * from userspace) so when debugging is enabled, it explodes.
-		 * However, the tests are still quite interesting for checking
-		 * variable start, end and size.
-		 */
+		 
 		NOSPACE(0, PIN_GLOBAL | PIN_MAPPABLE | PIN_OFFSET_BIAS | ggtt->mappable_end),
 		NOSPACE(0, PIN_GLOBAL | PIN_OFFSET_BIAS | ggtt->vm.total),
 		NOSPACE(8192, PIN_GLOBAL | PIN_MAPPABLE | PIN_OFFSET_BIAS | (ggtt->mappable_end - 4096)),
@@ -312,9 +284,7 @@ static int igt_vma_pin1(void *arg)
 	struct i915_vma *vma;
 	int err = -EINVAL;
 
-	/* Exercise all the weird and wonderful i915_vma_pin requests,
-	 * focusing on error handling of boundary conditions.
-	 */
+	 
 
 	GEM_BUG_ON(!drm_mm_clean(&ggtt->vm.mm));
 
@@ -577,9 +547,7 @@ static int igt_vma_rotate_remap(void *arg)
 	const unsigned int max_pages = 64;
 	int err = -ENOMEM;
 
-	/* Create VMA for many different combinations of planes and check
-	 * that the page layout within the rotated VMA match our expectations.
-	 */
+	 
 
 	obj = i915_gem_object_create_internal(vm->i915, max_pages * PAGE_SIZE);
 	if (IS_ERR(obj))
@@ -791,7 +759,7 @@ static int igt_vma_partial(void *arg)
 {
 	struct i915_ggtt *ggtt = arg;
 	struct i915_address_space *vm = &ggtt->vm;
-	const unsigned int npages = 1021; /* prime! */
+	const unsigned int npages = 1021;  
 	struct drm_i915_gem_object *obj;
 	const struct phase {
 		const char *name;
@@ -804,15 +772,13 @@ static int igt_vma_partial(void *arg)
 	struct i915_vma *vma;
 	int err = -ENOMEM;
 
-	/* Create lots of different VMA for the object and check that
-	 * we are returned the same VMA when we later request the same range.
-	 */
+	 
 
 	obj = i915_gem_object_create_internal(vm->i915, npages * PAGE_SIZE);
 	if (IS_ERR(obj))
 		goto out;
 
-	for (p = phases; p->name; p++) { /* exercise both create/lookup */
+	for (p = phases; p->name; p++) {  
 		unsigned int count, nvma;
 
 		nvma = 0;
@@ -873,7 +839,7 @@ static int igt_vma_partial(void *arg)
 			goto out_object;
 		}
 
-		/* Check that we did create the whole object mapping */
+		 
 		vma = checked_vma_instance(obj, vm, NULL);
 		if (IS_ERR(vma)) {
 			err = PTR_ERR(vma);
@@ -930,7 +896,7 @@ int i915_vma_mock_selftests(void)
 	if (!i915)
 		return -ENOMEM;
 
-	/* allocate the ggtt */
+	 
 	err = intel_gt_assign_ggtt(to_gt(i915));
 	if (err)
 		goto out_put;

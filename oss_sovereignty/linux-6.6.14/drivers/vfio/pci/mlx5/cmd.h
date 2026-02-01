@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
- */
+ 
+ 
 
 #ifndef MLX5_VFIO_CMD_H
 #define MLX5_VFIO_CMD_H
@@ -50,10 +48,10 @@ enum mlx5_vf_migf_header_tag {
 
 struct mlx5_vf_migration_header {
 	__le64 record_size;
-	/* For future use in case we may need to change the kernel protocol */
-	__le32 flags; /* Use mlx5_vf_migf_header_flags */
-	__le32 tag; /* Use mlx5_vf_migf_header_tag */
-	__u8 data[]; /* Its size is given in the record_size */
+	 
+	__le32 flags;  
+	__le32 tag;  
+	__u8 data[];  
 };
 
 struct mlx5_vhca_data_buffer {
@@ -66,7 +64,7 @@ struct mlx5_vhca_data_buffer {
 	u8 dmaed:1;
 	struct list_head buf_elm;
 	struct mlx5_vf_migration_file *migf;
-	/* Optimize mlx5vf_get_migration_page() for sequential access */
+	 
 	struct scatterlist *last_offset_sg;
 	unsigned int sg_last_entry;
 	unsigned long last_offset;
@@ -165,10 +163,10 @@ struct mlx5vf_pci_core_device {
 	u8 mdev_detach:1;
 	u8 log_active:1;
 	struct completion tracker_comp;
-	/* protect migration state */
+	 
 	struct mutex state_mutex;
 	enum vfio_device_mig_state mig_state;
-	/* protect the reset_done flow */
+	 
 	spinlock_t reset_lock;
 	struct mlx5_vf_migration_file *resuming_migf;
 	struct mlx5_vf_migration_file *saving_migf;
@@ -222,4 +220,4 @@ int mlx5vf_start_page_tracker(struct vfio_device *vdev,
 int mlx5vf_stop_page_tracker(struct vfio_device *vdev);
 int mlx5vf_tracker_read_and_clear(struct vfio_device *vdev, unsigned long iova,
 			unsigned long length, struct iova_bitmap *dirty);
-#endif /* MLX5_VFIO_CMD_H */
+#endif  

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/devlink.yaml */
-/* YNL-GEN user source */
+
+ 
+ 
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -12,7 +12,7 @@
 #include <libmnl/libmnl.h>
 #include <linux/genetlink.h>
 
-/* Enums */
+ 
 static const char * const devlink_op_strmap[] = {
 	[3] = "get",
 	[7] = "port-get",
@@ -51,7 +51,7 @@ const char *devlink_sb_pool_type_str(enum devlink_sb_pool_type value)
 	return devlink_sb_pool_type_strmap[value];
 }
 
-/* Policies */
+ 
 struct ynl_policy_attr devlink_dl_info_version_policy[DEVLINK_ATTR_MAX + 1] = {
 	[DEVLINK_ATTR_INFO_VERSION_NAME] = { .name = "info-version-name", .type = YNL_PT_NUL_STR, },
 	[DEVLINK_ATTR_INFO_VERSION_VALUE] = { .name = "info-version-value", .type = YNL_PT_NUL_STR, },
@@ -150,7 +150,7 @@ struct ynl_policy_nest devlink_nest = {
 	.table = devlink_policy,
 };
 
-/* Common nested types */
+ 
 void devlink_dl_info_version_free(struct devlink_dl_info_version *obj)
 {
 	free(obj->info_version_name);
@@ -418,8 +418,8 @@ int devlink_dl_dev_stats_parse(struct ynl_parse_arg *yarg,
 	return 0;
 }
 
-/* ============== DEVLINK_CMD_GET ============== */
-/* DEVLINK_CMD_GET - do */
+ 
+ 
 void devlink_get_req_free(struct devlink_get_req *req)
 {
 	free(req->bus_name);
@@ -528,7 +528,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_GET - dump */
+ 
 void devlink_get_list_free(struct devlink_get_list *rsp)
 {
 	struct devlink_get_list *next = rsp;
@@ -569,8 +569,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_PORT_GET ============== */
-/* DEVLINK_CMD_PORT_GET - do */
+ 
+ 
 void devlink_port_get_req_free(struct devlink_port_get_req *req)
 {
 	free(req->bus_name);
@@ -664,7 +664,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_PORT_GET - dump */
+ 
 int devlink_port_get_rsp_dump_parse(const struct nlmsghdr *nlh, void *data)
 {
 	struct devlink_port_get_rsp_dump *dst;
@@ -756,8 +756,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_SB_GET ============== */
-/* DEVLINK_CMD_SB_GET - do */
+ 
+ 
 void devlink_sb_get_req_free(struct devlink_sb_get_req *req)
 {
 	free(req->bus_name);
@@ -851,7 +851,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_SB_GET - dump */
+ 
 void devlink_sb_get_list_free(struct devlink_sb_get_list *rsp)
 {
 	struct devlink_sb_get_list *next = rsp;
@@ -898,8 +898,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_SB_POOL_GET ============== */
-/* DEVLINK_CMD_SB_POOL_GET - do */
+ 
+ 
 void devlink_sb_pool_get_req_free(struct devlink_sb_pool_get_req *req)
 {
 	free(req->bus_name);
@@ -1000,7 +1000,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_SB_POOL_GET - dump */
+ 
 void devlink_sb_pool_get_list_free(struct devlink_sb_pool_get_list *rsp)
 {
 	struct devlink_sb_pool_get_list *next = rsp;
@@ -1048,8 +1048,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_SB_PORT_POOL_GET ============== */
-/* DEVLINK_CMD_SB_PORT_POOL_GET - do */
+ 
+ 
 void
 devlink_sb_port_pool_get_req_free(struct devlink_sb_port_pool_get_req *req)
 {
@@ -1160,7 +1160,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_SB_PORT_POOL_GET - dump */
+ 
 void
 devlink_sb_port_pool_get_list_free(struct devlink_sb_port_pool_get_list *rsp)
 {
@@ -1209,8 +1209,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_SB_TC_POOL_BIND_GET ============== */
-/* DEVLINK_CMD_SB_TC_POOL_BIND_GET - do */
+ 
+ 
 void
 devlink_sb_tc_pool_bind_get_req_free(struct devlink_sb_tc_pool_bind_get_req *req)
 {
@@ -1329,7 +1329,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_SB_TC_POOL_BIND_GET - dump */
+ 
 void
 devlink_sb_tc_pool_bind_get_list_free(struct devlink_sb_tc_pool_bind_get_list *rsp)
 {
@@ -1378,8 +1378,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_PARAM_GET ============== */
-/* DEVLINK_CMD_PARAM_GET - do */
+ 
+ 
 void devlink_param_get_req_free(struct devlink_param_get_req *req)
 {
 	free(req->bus_name);
@@ -1481,7 +1481,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_PARAM_GET - dump */
+ 
 void devlink_param_get_list_free(struct devlink_param_get_list *rsp)
 {
 	struct devlink_param_get_list *next = rsp;
@@ -1530,8 +1530,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_REGION_GET ============== */
-/* DEVLINK_CMD_REGION_GET - do */
+ 
+ 
 void devlink_region_get_req_free(struct devlink_region_get_req *req)
 {
 	free(req->bus_name);
@@ -1640,7 +1640,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_REGION_GET - dump */
+ 
 void devlink_region_get_list_free(struct devlink_region_get_list *rsp)
 {
 	struct devlink_region_get_list *next = rsp;
@@ -1689,8 +1689,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_INFO_GET ============== */
-/* DEVLINK_CMD_INFO_GET - do */
+ 
+ 
 void devlink_info_get_req_free(struct devlink_info_get_req *req)
 {
 	free(req->bus_name);
@@ -1874,7 +1874,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_INFO_GET - dump */
+ 
 void devlink_info_get_list_free(struct devlink_info_get_list *rsp)
 {
 	struct devlink_info_get_list *next = rsp;
@@ -1927,8 +1927,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_HEALTH_REPORTER_GET ============== */
-/* DEVLINK_CMD_HEALTH_REPORTER_GET - do */
+ 
+ 
 void
 devlink_health_reporter_get_req_free(struct devlink_health_reporter_get_req *req)
 {
@@ -2041,7 +2041,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_HEALTH_REPORTER_GET - dump */
+ 
 void
 devlink_health_reporter_get_list_free(struct devlink_health_reporter_get_list *rsp)
 {
@@ -2093,8 +2093,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_TRAP_GET ============== */
-/* DEVLINK_CMD_TRAP_GET - do */
+ 
+ 
 void devlink_trap_get_req_free(struct devlink_trap_get_req *req)
 {
 	free(req->bus_name);
@@ -2196,7 +2196,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_TRAP_GET - dump */
+ 
 void devlink_trap_get_list_free(struct devlink_trap_get_list *rsp)
 {
 	struct devlink_trap_get_list *next = rsp;
@@ -2245,8 +2245,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_TRAP_GROUP_GET ============== */
-/* DEVLINK_CMD_TRAP_GROUP_GET - do */
+ 
+ 
 void devlink_trap_group_get_req_free(struct devlink_trap_group_get_req *req)
 {
 	free(req->bus_name);
@@ -2349,7 +2349,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_TRAP_GROUP_GET - dump */
+ 
 void devlink_trap_group_get_list_free(struct devlink_trap_group_get_list *rsp)
 {
 	struct devlink_trap_group_get_list *next = rsp;
@@ -2398,8 +2398,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_TRAP_POLICER_GET ============== */
-/* DEVLINK_CMD_TRAP_POLICER_GET - do */
+ 
+ 
 void
 devlink_trap_policer_get_req_free(struct devlink_trap_policer_get_req *req)
 {
@@ -2496,7 +2496,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_TRAP_POLICER_GET - dump */
+ 
 void
 devlink_trap_policer_get_list_free(struct devlink_trap_policer_get_list *rsp)
 {
@@ -2545,8 +2545,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_RATE_GET ============== */
-/* DEVLINK_CMD_RATE_GET - do */
+ 
+ 
 void devlink_rate_get_req_free(struct devlink_rate_get_req *req)
 {
 	free(req->bus_name);
@@ -2655,7 +2655,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_RATE_GET - dump */
+ 
 void devlink_rate_get_list_free(struct devlink_rate_get_list *rsp)
 {
 	struct devlink_rate_get_list *next = rsp;
@@ -2704,8 +2704,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_LINECARD_GET ============== */
-/* DEVLINK_CMD_LINECARD_GET - do */
+ 
+ 
 void devlink_linecard_get_req_free(struct devlink_linecard_get_req *req)
 {
 	free(req->bus_name);
@@ -2799,7 +2799,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_LINECARD_GET - dump */
+ 
 void devlink_linecard_get_list_free(struct devlink_linecard_get_list *rsp)
 {
 	struct devlink_linecard_get_list *next = rsp;
@@ -2847,8 +2847,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== DEVLINK_CMD_SELFTESTS_GET ============== */
-/* DEVLINK_CMD_SELFTESTS_GET - do */
+ 
+ 
 void devlink_selftests_get_req_free(struct devlink_selftests_get_req *req)
 {
 	free(req->bus_name);
@@ -2936,7 +2936,7 @@ err_free:
 	return NULL;
 }
 
-/* DEVLINK_CMD_SELFTESTS_GET - dump */
+ 
 void devlink_selftests_get_list_free(struct devlink_selftests_get_list *rsp)
 {
 	struct devlink_selftests_get_list *next = rsp;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * DES & Triple DES EDE Cipher Algorithms.
- *
- * Copyright (c) 2005 Dag Arne Osvik <da@osvik.no>
- */
+
+ 
 
 #include <asm/byteorder.h>
 #include <crypto/algapi.h>

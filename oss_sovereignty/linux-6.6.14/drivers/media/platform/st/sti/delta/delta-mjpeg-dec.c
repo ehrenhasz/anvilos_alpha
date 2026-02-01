@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2013
- * Author: Hugues Fruchet <hugues.fruchet@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -14,15 +11,15 @@
 #define DELTA_MJPEG_MAX_RESO DELTA_MAX_RESO
 
 struct delta_mjpeg_ctx {
-	/* jpeg header */
+	 
 	struct mjpeg_header header_struct;
 	struct mjpeg_header *header;
 
-	/* ipc */
+	 
 	void *ipc_hdl;
 	struct delta_buf *ipc_buf;
 
-	/* decoded output frame */
+	 
 	struct delta_frame *out_frame;
 
 	unsigned char str[3000];
@@ -259,13 +256,7 @@ static int delta_mjpeg_ipc_decode(struct delta_ctx *pctx, struct delta_au *au)
 	params->picture_start_addr_p = (u32)(au->paddr);
 	params->picture_end_addr_p = (u32)(au->paddr + au->size - 1);
 
-	/*
-	 * !WARNING!
-	 * the NV12 decoded frame is only available
-	 * on decimated output when enabling flag
-	 * "JPEG_ADDITIONAL_FLAG_420MB"...
-	 * the non decimated output gives YUV422SP
-	 */
+	 
 	params->main_aux_enable = JPEG_DISP_AUX_EN;
 	params->additional_flags = JPEG_ADDITIONAL_FLAG_420MB;
 	params->horizontal_decimation_factor = JPEG_HDEC_1;
@@ -284,7 +275,7 @@ static int delta_mjpeg_ipc_decode(struct delta_ctx *pctx, struct delta_au *au)
 		 "%s  %s\n", pctx->name,
 		 ipc_decode_param_str(params, ctx->str, sizeof(ctx->str)));
 
-	/* status */
+	 
 	memset(status, 0, sizeof(*status));
 	status->error_code = JPEG_DECODER_NO_ERROR;
 
@@ -303,7 +294,7 @@ static int delta_mjpeg_ipc_decode(struct delta_ctx *pctx, struct delta_au *au)
 
 	pctx->decoded_frames++;
 
-	/* check firmware decoding status */
+	 
 	if (delta_mjpeg_check_status(pctx, status)) {
 		dev_err(delta->dev,
 			"%s  dumping command %s\n", pctx->name,
@@ -358,7 +349,7 @@ static int delta_mjpeg_get_streaminfo(struct delta_ctx *pctx,
 	streaminfo->width = ctx->header->frame_width;
 	streaminfo->height = ctx->header->frame_height;
 
-	/* progressive stream */
+	 
 	streaminfo->field = V4L2_FIELD_NONE;
 
 	streaminfo->dpb = 1;

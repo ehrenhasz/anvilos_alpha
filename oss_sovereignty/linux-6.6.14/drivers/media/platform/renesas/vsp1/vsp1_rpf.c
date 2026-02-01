@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_rpf.c  --  R-Car VSP1 Read Pixel Formatter
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 
@@ -20,7 +14,7 @@
 #define RPF_MAX_WIDTH				8190
 #define RPF_MAX_HEIGHT				8190
 
-/* Pre extended display list command data structure. */
+ 
 struct vsp1_extcmd_auto_fld_body {
 	u32 top_y0;
 	u32 bottom_y0;
@@ -32,9 +26,7 @@ struct vsp1_extcmd_auto_fld_body {
 	u32 reserved1;
 } __packed;
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline void vsp1_rpf_write(struct vsp1_rwpf *rpf,
 				  struct vsp1_dl_body *dlb, u32 reg, u32 data)
@@ -43,17 +35,13 @@ static inline void vsp1_rpf_write(struct vsp1_rwpf *rpf,
 			       data);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static const struct v4l2_subdev_ops rpf_ops = {
 	.pad    = &vsp1_rwpf_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void rpf_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -70,24 +58,20 @@ static void rpf_configure_stream(struct vsp1_entity *entity,
 	u32 pstride;
 	u32 infmt;
 
-	/* Stride */
+	 
 	pstride = format->plane_fmt[0].bytesperline
 		<< VI6_RPF_SRCM_PSTRIDE_Y_SHIFT;
 	if (format->num_planes > 1)
 		pstride |= format->plane_fmt[1].bytesperline
 			<< VI6_RPF_SRCM_PSTRIDE_C_SHIFT;
 
-	/*
-	 * pstride has both STRIDE_Y and STRIDE_C, but multiplying the whole
-	 * of pstride by 2 is conveniently OK here as we are multiplying both
-	 * values.
-	 */
+	 
 	if (pipe->interlaced)
 		pstride *= 2;
 
 	vsp1_rpf_write(rpf, dlb, VI6_RPF_SRCM_PSTRIDE, pstride);
 
-	/* Format */
+	 
 	sink_format = vsp1_entity_get_pad_format(&rpf->entity,
 						 rpf->entity.config,
 						 RWPF_PAD_SINK);
@@ -161,7 +145,7 @@ static void rpf_configure_stream(struct vsp1_entity *entity,
 		vsp1_rpf_write(rpf, dlb, VI6_RPF_EXT_INFMT2, ext_infmt2);
 	}
 
-	/* Output location. */
+	 
 	if (pipe->brx) {
 		const struct v4l2_rect *compose;
 
@@ -180,29 +164,7 @@ static void rpf_configure_stream(struct vsp1_entity *entity,
 		       (left << VI6_RPF_LOC_HCOORD_SHIFT) |
 		       (top << VI6_RPF_LOC_VCOORD_SHIFT));
 
-	/*
-	 * On Gen2 use the alpha channel (extended to 8 bits) when available or
-	 * a fixed alpha value set through the V4L2_CID_ALPHA_COMPONENT control
-	 * otherwise.
-	 *
-	 * The Gen3+ RPF has extended alpha capability and can both multiply the
-	 * alpha channel by a fixed global alpha value, and multiply the pixel
-	 * components to convert the input to premultiplied alpha.
-	 *
-	 * As alpha premultiplication is available in the BRx for both Gen2 and
-	 * Gen3+ we handle it there and use the Gen3 alpha multiplier for global
-	 * alpha multiplication only. This however prevents conversion to
-	 * premultiplied alpha if no BRx is present in the pipeline. If that use
-	 * case turns out to be useful we will revisit the implementation (for
-	 * Gen3 only).
-	 *
-	 * We enable alpha multiplication on Gen3+ using the fixed alpha value
-	 * set through the V4L2_CID_ALPHA_COMPONENT control when the input
-	 * contains an alpha channel. On Gen2 the global alpha is ignored in
-	 * that case.
-	 *
-	 * In all cases, disable color keying.
-	 */
+	 
 	vsp1_rpf_write(rpf, dlb, VI6_RPF_ALPH_SEL, VI6_RPF_ALPH_SEL_AEXT_EXT |
 		       (fmtinfo->alpha ? VI6_RPF_ALPH_SEL_ASEL_PACKED
 				       : VI6_RPF_ALPH_SEL_ASEL_FIXED));
@@ -211,14 +173,7 @@ static void rpf_configure_stream(struct vsp1_entity *entity,
 		u32 mult;
 
 		if (fmtinfo->alpha) {
-			/*
-			 * When the input contains an alpha channel enable the
-			 * alpha multiplier. If the input is premultiplied we
-			 * need to multiply both the alpha channel and the pixel
-			 * components by the global alpha value to keep them
-			 * premultiplied. Otherwise multiply the alpha channel
-			 * only.
-			 */
+			 
 			bool premultiplied = format->flags
 					   & V4L2_PIX_FMT_FLAG_PREMUL_ALPHA;
 
@@ -227,12 +182,7 @@ static void rpf_configure_stream(struct vsp1_entity *entity,
 				VI6_RPF_MULT_ALPHA_P_MMD_RATIO :
 				VI6_RPF_MULT_ALPHA_P_MMD_NONE);
 		} else {
-			/*
-			 * When the input doesn't contain an alpha channel the
-			 * global alpha value is applied in the unpacking unit,
-			 * the alpha multiplier isn't needed and must be
-			 * disabled.
-			 */
+			 
 			mult = VI6_RPF_MULT_ALPHA_A_MMD_NONE
 			     | VI6_RPF_MULT_ALPHA_P_MMD_NONE;
 		}
@@ -257,7 +207,7 @@ static void vsp1_rpf_configure_autofld(struct vsp1_rwpf *rpf,
 	if (WARN_ONCE(!cmd, "Failed to obtain an autofld cmd"))
 		return;
 
-	/* Re-index our auto_fld to match the current RPF. */
+	 
 	auto_fld = cmd->data;
 	auto_fld = &auto_fld[rpf->entity.index];
 
@@ -302,26 +252,10 @@ static void rpf_configure_partition(struct vsp1_entity *entity,
 	const struct v4l2_pix_format_mplane *format = &rpf->format;
 	struct v4l2_rect crop;
 
-	/*
-	 * Source size and crop offsets.
-	 *
-	 * The crop offsets correspond to the location of the crop
-	 * rectangle top left corner in the plane buffer. Only two
-	 * offsets are needed, as planes 2 and 3 always have identical
-	 * strides.
-	 */
+	 
 	crop = *vsp1_rwpf_get_crop(rpf, rpf->entity.config);
 
-	/*
-	 * Partition Algorithm Control
-	 *
-	 * The partition algorithm can split this frame into multiple
-	 * slices. We must scale our partition window based on the pipe
-	 * configuration to match the destination partition window.
-	 * To achieve this, we adjust our crop to provide a 'sub-crop'
-	 * matching the expected partition window. Only 'left' and
-	 * 'width' need to be adjusted.
-	 */
+	 
 	if (pipe->partitions > 1) {
 		crop.width = pipe->partition->rpf.width;
 		crop.left += pipe->partition->rpf.left;
@@ -352,18 +286,12 @@ static void rpf_configure_partition(struct vsp1_entity *entity,
 		mem.addr[2] += offset;
 	}
 
-	/*
-	 * On Gen3+ hardware the SPUVS bit has no effect on 3-planar
-	 * formats. Swap the U and V planes manually in that case.
-	 */
+	 
 	if (vsp1->info->gen >= 3 && format->num_planes == 3 &&
 	    fmtinfo->swap_uv)
 		swap(mem.addr[1], mem.addr[2]);
 
-	/*
-	 * Interlaced pipelines will use the extended pre-cmd to process
-	 * SRCM_ADDR_{Y,C0,C1}.
-	 */
+	 
 	if (pipe->interlaced) {
 		vsp1_rpf_configure_autofld(rpf, dl);
 	} else {
@@ -389,9 +317,7 @@ static const struct vsp1_entity_operations rpf_entity_ops = {
 	.partition = rpf_partition,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 struct vsp1_rwpf *vsp1_rpf_create(struct vsp1_device *vsp1, unsigned int index)
 {
@@ -416,7 +342,7 @@ struct vsp1_rwpf *vsp1_rpf_create(struct vsp1_device *vsp1, unsigned int index)
 	if (ret < 0)
 		return ERR_PTR(ret);
 
-	/* Initialize the control handler. */
+	 
 	ret = vsp1_rwpf_init_ctrls(rpf, 0);
 	if (ret < 0) {
 		dev_err(vsp1->dev, "rpf%u: failed to initialize controls\n",

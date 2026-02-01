@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "nv50.h"
 
 #include <subdev/bios.h>
@@ -102,21 +80,7 @@ gt215_devinit_mmio(struct nvkm_devinit *base, u32 addr)
 	struct nvkm_device *device = init->base.subdev.device;
 	u32 *mmio = gt215_devinit_mmio_part;
 
-	/* the init tables on some boards have INIT_RAM_RESTRICT_ZM_REG_GROUP
-	 * instructions which touch registers that may not even exist on
-	 * some configurations (Quadro 400), which causes the register
-	 * interface to screw up for some amount of time after attempting to
-	 * write to one of these, and results in all sorts of things going
-	 * horribly wrong.
-	 *
-	 * the binary driver avoids touching these registers at all, however,
-	 * the video bios doesn't care and does what the scripts say.  it's
-	 * presumed that the io-port access to init registers isn't effected
-	 * by the screw-up bug mentioned above.
-	 *
-	 * really, a new opcode should've been invented to handle these
-	 * requirements, but whatever, it's too late for that now.
-	 */
+	 
 	while (mmio[0]) {
 		if (addr >= mmio[0] && addr <= mmio[1]) {
 			u32 part = (addr / mmio[2]) & 7;

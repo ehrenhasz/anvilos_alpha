@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * motu-hwdep.c - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
 
-/*
- * This codes have five functionalities.
- *
- * 1.get information about firewire node
- * 2.get notification about starting/stopping stream
- * 3.lock/unlock streaming
- *
- */
+ 
+
+ 
 
 #include "motu.h"
 
@@ -69,7 +58,7 @@ static long hwdep_read(struct snd_hwdep *hwdep, char __user *buf, long count,
 
 		spin_unlock_irq(&motu->lock);
 
-		// Header is filled later.
+		
 		consumed += sizeof(event.motu_register_dsp_change);
 
 		while (consumed < count &&

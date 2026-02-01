@@ -1,21 +1,4 @@
-/* wc - print the number of lines, words, and bytes in files
-   Copyright (C) 1985-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Rubin, phr@ocf.berkeley.edu
-   and David MacKenzie, djm@gnu.ai.mit.edu. */
+ 
 
 #include <config.h>
 
@@ -43,18 +26,18 @@
     ((wc) == to_uchar (wc) && isspace (to_uchar (wc)))
 #endif
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "wc"
 
 #define AUTHORS \
   proper_name ("Paul Rubin"), \
   proper_name ("David MacKenzie")
 
-/* Size of atomic reads. */
+ 
 #define BUFFER_SIZE (16 * 1024)
 
 #ifdef USE_AVX2_WC_LINECOUNT
-/* From wc_avx2.c */
+ 
 extern bool
 wc_lines_avx2 (char const *file, int fd, uintmax_t *lines_out,
                uintmax_t *bytes_out);
@@ -62,8 +45,7 @@ wc_lines_avx2 (char const *file, int fd, uintmax_t *lines_out,
 
 static bool debug;
 
-/* Cumulative number of lines, words, chars and bytes in all files so far.
-   max_line_length is the maximum over all files processed so far.  */
+ 
 static uintmax_t total_lines;
 static uintmax_t total_words;
 static uintmax_t total_chars;
@@ -74,35 +56,33 @@ static uintmax_t total_chars_overflow;
 static uintmax_t total_bytes_overflow;
 static uintmax_t max_line_length;
 
-/* Which counts to print. */
+ 
 static bool print_lines, print_words, print_chars, print_bytes;
 static bool print_linelength;
 
-/* The print width of each count.  */
+ 
 static int number_width;
 
-/* True if we have ever read the standard input. */
+ 
 static bool have_read_stdin;
 
-/* Used to determine if file size can be determined without reading.  */
+ 
 static size_t page_size;
 
-/* Enable to _not_ treat non breaking space as a word separator.  */
+ 
 static bool posixly_correct;
 
-/* The result of calling fstat or stat on a file descriptor or file.  */
+ 
 struct fstatus
 {
-  /* If positive, fstat or stat has not been called yet.  Otherwise,
-     this is the value returned from fstat or stat.  */
+   
   int failed;
 
-  /* If FAILED is zero, this is the file's status.  */
+   
   struct stat st;
 };
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   DEBUG_PROGRAM_OPTION = CHAR_MAX + 1,
@@ -127,10 +107,10 @@ static struct option const longopts[] =
 
 enum total_type
   {
-    total_auto,         /* 0: default or --total=auto */
-    total_always,       /* 1: --total=always */
-    total_only,         /* 2: --total=only */
-    total_never         /* 3: --total=never */
+    total_auto,          
+    total_always,        
+    total_only,          
+    total_never          
   };
 static char const *const total_args[] =
 {

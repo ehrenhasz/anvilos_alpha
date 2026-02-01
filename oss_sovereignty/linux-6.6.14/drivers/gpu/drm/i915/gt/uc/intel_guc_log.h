@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GUC_LOG_H_
 #define _INTEL_GUC_LOG_H_
@@ -15,12 +13,7 @@
 
 struct intel_guc;
 
-/*
- * While we're using plain log level in i915, GuC controls are much more...
- * "elaborate"? We have a couple of bits for verbosity, separate bit for actual
- * log enabling, and separate bit for default logging - which "conveniently"
- * ignores the enable bit.
- */
+ 
 #define GUC_LOG_LEVEL_DISABLED		0
 #define GUC_LOG_LEVEL_NON_VERBOSE	1
 #define GUC_LOG_LEVEL_IS_ENABLED(x)	((x) > GUC_LOG_LEVEL_DISABLED)
@@ -42,20 +35,20 @@ enum {
 struct intel_guc_log {
 	u32 level;
 
-	/* Allocation settings */
+	 
 	struct {
-		s32 bytes;	/* Size in bytes */
-		s32 units;	/* GuC API units - 1MB or 4KB */
-		s32 count;	/* Number of API units */
-		u32 flag;	/* GuC API units flag */
+		s32 bytes;	 
+		s32 units;	 
+		s32 count;	 
+		u32 flag;	 
 	} sizes[GUC_LOG_SECTIONS_LIMIT];
 	bool sizes_initialised;
 
-	/* Combined buffer allocation */
+	 
 	struct i915_vma *vma;
 	void *buf_addr;
 
-	/* RelayFS support */
+	 
 	struct {
 		bool buf_in_use;
 		bool started;
@@ -65,7 +58,7 @@ struct intel_guc_log {
 		u32 full_count;
 	} relay;
 
-	/* logging related stats */
+	 
 	struct {
 		u32 sampled_overflow;
 		u32 overflow;

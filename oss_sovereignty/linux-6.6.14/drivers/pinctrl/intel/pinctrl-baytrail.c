@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Pinctrl GPIO driver for Intel Baytrail
- *
- * Copyright (c) 2012-2013, Intel Corporation
- * Author: Mathias Nyman <mathias.nyman@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -28,7 +23,7 @@
 
 #include "pinctrl-intel.h"
 
-/* memory mapped register offsets */
+ 
 #define BYT_CONF0_REG		0x000
 #define BYT_CONF1_REG		0x004
 #define BYT_VAL_REG		0x008
@@ -37,7 +32,7 @@
 #define BYT_DIRECT_IRQ_REG	0x980
 #define BYT_DEBOUNCE_REG	0x9d0
 
-/* BYT_CONF0_REG register bits */
+ 
 #define BYT_IODEN		BIT(31)
 #define BYT_DIRECT_IRQ_EN	BIT(27)
 #define BYT_TRIG_MASK		GENMASK(26, 24)
@@ -59,16 +54,16 @@
 #define BYT_PULL_ASSIGN_UP	BIT(7)
 #define BYT_PIN_MUX		GENMASK(2, 0)
 
-/* BYT_VAL_REG register bits */
+ 
 #define BYT_DIR_MASK		GENMASK(2, 1)
-#define BYT_INPUT_EN		BIT(2)  /* 0: input enabled (active low)*/
-#define BYT_OUTPUT_EN		BIT(1)  /* 0: output enabled (active low)*/
+#define BYT_INPUT_EN		BIT(2)   
+#define BYT_OUTPUT_EN		BIT(1)   
 #define BYT_LEVEL		BIT(0)
 
 #define BYT_CONF0_RESTORE_MASK	(BYT_DIRECT_IRQ_EN | BYT_TRIG_MASK | BYT_PIN_MUX)
 #define BYT_VAL_RESTORE_MASK	(BYT_DIR_MASK | BYT_LEVEL)
 
-/* BYT_DEBOUNCE_REG bits */
+ 
 #define BYT_DEBOUNCE_PULSE_MASK		GENMASK(2, 0)
 #define BYT_DEBOUNCE_PULSE_375US	1
 #define BYT_DEBOUNCE_PULSE_750US	2
@@ -86,12 +81,7 @@
 #define BYT_NCORE_ACPI_UID	"2"
 #define BYT_SUS_ACPI_UID	"3"
 
-/*
- * This is the function value most pins have for GPIO muxing. If the value
- * differs from the default one, it must be explicitly mentioned. Otherwise, the
- * pin control implementation will set the muxing value to default GPIO if it
- * does not find a match for the requested function.
- */
+ 
 #define BYT_DEFAULT_GPIO_MUX	0
 #define BYT_ALTER_GPIO_MUX	1
 
@@ -107,7 +97,7 @@ struct intel_pad_context {
 		.pad_map	= (map),\
 	}
 
-/* SCORE pins, aka GPIOC_<pin_no> or GPIO_S0_SC[<pin_no>] */
+ 
 static const struct pinctrl_pin_desc byt_score_pins[] = {
 	PINCTRL_PIN(0, "SATA_GP0"),
 	PINCTRL_PIN(1, "SATA_GP1"),
@@ -227,7 +217,7 @@ static const unsigned int byt_score_pins_map[BYT_NGPIO_SCORE] = {
 	97, 100,
 };
 
-/* SCORE groups */
+ 
 static const unsigned int byt_score_uart1_pins[] = { 70, 71, 72, 73 };
 static const unsigned int byt_score_uart2_pins[] = { 74, 75, 76, 77 };
 
@@ -371,7 +361,7 @@ static const struct intel_pinctrl_soc_data byt_score_soc_data = {
 	.ncommunities	= ARRAY_SIZE(byt_score_communities),
 };
 
-/* SUS pins, aka GPIOS_<pin_no> or GPIO_S5[<pin_no>]  */
+ 
 static const struct pinctrl_pin_desc byt_sus_pins[] = {
 	PINCTRL_PIN(0, "GPIO_S50"),
 	PINCTRL_PIN(1, "GPIO_S51"),
@@ -660,12 +650,12 @@ static int byt_set_mux(struct pinctrl_dev *pctldev, unsigned int func_selector,
 
 static u32 byt_get_gpio_mux(struct intel_pinctrl *vg, unsigned int offset)
 {
-	/* SCORE pin 92-93 */
+	 
 	if (!strcmp(vg->soc->uid, BYT_SCORE_ACPI_UID) &&
 	    offset >= 92 && offset <= 93)
 		return BYT_ALTER_GPIO_MUX;
 
-	/* SUS pin 11-21 */
+	 
 	if (!strcmp(vg->soc->uid, BYT_SUS_ACPI_UID) &&
 	    offset >= 11 && offset <= 21)
 		return BYT_ALTER_GPIO_MUX;
@@ -682,7 +672,7 @@ static void byt_gpio_clear_triggering(struct intel_pinctrl *vg, unsigned int off
 	raw_spin_lock_irqsave(&byt_lock, flags);
 	value = readl(reg);
 
-	/* Do not clear direct-irq enabled IRQs (from gpio_disable_free) */
+	 
 	if (!(value & BYT_DIRECT_IRQ_EN))
 		value &= ~(BYT_TRIG_POS | BYT_TRIG_NEG | BYT_TRIG_LVL);
 
@@ -701,15 +691,7 @@ static int byt_gpio_request_enable(struct pinctrl_dev *pctl_dev,
 
 	raw_spin_lock_irqsave(&byt_lock, flags);
 
-	/*
-	 * In most cases, func pin mux 000 means GPIO function.
-	 * But, some pins may have func pin mux 001 represents
-	 * GPIO function.
-	 *
-	 * Because there are devices out there where some pins were not
-	 * configured correctly we allow changing the mux value from
-	 * request (but print out warning about that).
-	 */
+	 
 	value = readl(reg) & BYT_PIN_MUX;
 	gpio_mux = byt_get_gpio_mux(vg, offset);
 	if (gpio_mux != value) {
@@ -742,12 +724,7 @@ static void byt_gpio_direct_irq_check(struct intel_pinctrl *vg,
 {
 	void __iomem *conf_reg = byt_gpio_reg(vg, offset, BYT_CONF0_REG);
 
-	/*
-	 * Before making any direction modifications, do a check if gpio is set
-	 * for direct IRQ. On Bay Trail, setting GPIO to output does not make
-	 * sense, so let's at least inform the caller before they shoot
-	 * themselves in the foot.
-	 */
+	 
 	if (readl(conf_reg) & BYT_DIRECT_IRQ_EN)
 		dev_info_once(vg->dev,
 			      "Potential Error: Pin %i: forcibly set GPIO with DIRECT_IRQ_EN to output\n",
@@ -856,7 +833,7 @@ static int byt_pin_config_get(struct pinctrl_dev *pctl_dev, unsigned int offset,
 			return -EINVAL;
 		break;
 	case PIN_CONFIG_BIAS_PULL_DOWN:
-		/* Pull assignment is only applicable in input mode */
+		 
 		if ((val & BYT_INPUT_EN) || pull != BYT_PULL_ASSIGN_DOWN)
 			return -EINVAL;
 
@@ -864,7 +841,7 @@ static int byt_pin_config_get(struct pinctrl_dev *pctl_dev, unsigned int offset,
 
 		break;
 	case PIN_CONFIG_BIAS_PULL_UP:
-		/* Pull assignment is only applicable in input mode */
+		 
 		if ((val & BYT_INPUT_EN) || pull != BYT_PULL_ASSIGN_UP)
 			return -EINVAL;
 
@@ -943,14 +920,11 @@ static int byt_pin_config_set(struct pinctrl_dev *pctl_dev,
 			conf &= ~BYT_PULL_ASSIGN_MASK;
 			break;
 		case PIN_CONFIG_BIAS_PULL_DOWN:
-			/* Set default strength value in case none is given */
+			 
 			if (arg == 1)
 				arg = 2000;
 
-			/*
-			 * Pull assignment is only applicable in input mode. If
-			 * chip is not in input mode, set it and warn about it.
-			 */
+			 
 			if (val & BYT_INPUT_EN) {
 				val &= ~BYT_INPUT_EN;
 				writel(val, val_reg);
@@ -963,14 +937,11 @@ static int byt_pin_config_set(struct pinctrl_dev *pctl_dev,
 
 			break;
 		case PIN_CONFIG_BIAS_PULL_UP:
-			/* Set default strength value in case none is given */
+			 
 			if (arg == 1)
 				arg = 2000;
 
-			/*
-			 * Pull assignment is only applicable in input mode. If
-			 * chip is not in input mode, set it and warn about it.
-			 */
+			 
 			if (val & BYT_INPUT_EN) {
 				val &= ~BYT_INPUT_EN;
 				writel(val, val_reg);
@@ -988,10 +959,7 @@ static int byt_pin_config_set(struct pinctrl_dev *pctl_dev,
 			} else {
 				conf &= ~BYT_DEBOUNCE_EN;
 
-				/*
-				 * No need to update the pulse value.
-				 * Debounce is going to be disabled.
-				 */
+				 
 				break;
 			}
 
@@ -1133,12 +1101,7 @@ static int byt_gpio_direction_input(struct gpio_chip *chip, unsigned int offset)
 	return 0;
 }
 
-/*
- * Note despite the temptation this MUST NOT be converted into a call to
- * pinctrl_gpio_direction_output() + byt_gpio_set() that does not work this
- * MUST be done as a single BYT_VAL_REG register write.
- * See the commit message of the commit adding this comment for details.
- */
+ 
 static int byt_gpio_direction_output(struct gpio_chip *chip,
 				     unsigned int offset, int value)
 {
@@ -1354,12 +1317,10 @@ static int byt_irq_type(struct irq_data *d, unsigned int type)
 	WARN(value & BYT_DIRECT_IRQ_EN,
 	     "Bad pad config for IO mode, force DIRECT_IRQ_EN bit clearing");
 
-	/* For level trigges the BYT_TRIG_POS and BYT_TRIG_NEG bits
-	 * are used to indicate high and low level triggering
-	 */
+	 
 	value &= ~(BYT_DIRECT_IRQ_EN | BYT_TRIG_POS | BYT_TRIG_NEG |
 		   BYT_TRIG_LVL);
-	/* Enable glitch filtering */
+	 
 	value |= BYT_GLITCH_FILTER_EN | BYT_GLITCH_F_SLOW_CLK |
 		 BYT_GLITCH_F_FAST_CLK;
 
@@ -1394,7 +1355,7 @@ static void byt_gpio_irq_handler(struct irq_desc *desc)
 	void __iomem *reg;
 	unsigned long pending;
 
-	/* check from GPIO controller which pin triggered the interrupt */
+	 
 	for (base = 0; base < vg->chip.ngpio; base += 32) {
 		reg = byt_gpio_reg(vg, base, BYT_INT_STAT_REG);
 
@@ -1427,25 +1388,12 @@ static bool byt_direct_irq_sanity_check(struct intel_pinctrl *vg, int pin, u32 c
 	}
 
 	direct_irq = match - direct_irq_mux;
-	/* Base IO-APIC pin numbers come from atom-e3800-family-datasheet.pdf */
+	 
 	ioapic_direct_irq_base = (vg->communities->npins == BYT_NGPIO_SCORE) ? 51 : 67;
 	dev_dbg(vg->dev, "Pin %i: uses direct IRQ %d (IO-APIC %d)\n", pin,
 		direct_irq, direct_irq + ioapic_direct_irq_base);
 
-	/*
-	 * Testing has shown that the way direct IRQs work is that the combination of the
-	 * direct-irq-en flag and the direct IRQ mux connect the output of the GPIO's IRQ
-	 * trigger block, which normally sets the status flag in the IRQ status reg at
-	 * 0x800, to one of the IO-APIC pins according to the mux registers.
-	 *
-	 * This means that:
-	 * 1. The TRIG_MASK bits must be set to configure the GPIO's IRQ trigger block
-	 * 2. The TRIG_LVL bit *must* be set, so that the GPIO's input value is directly
-	 *    passed (1:1 or inverted) to the IO-APIC pin, if TRIG_LVL is not set,
-	 *    selecting edge mode operation then on the first edge the IO-APIC pin goes
-	 *    high, but since no write-to-clear write will be done to the IRQ status reg
-	 *    at 0x800, the detected edge condition will never get cleared.
-	 */
+	 
 	trig = conf0 & BYT_TRIG_MASK;
 	if (trig != (BYT_TRIG_POS | BYT_TRIG_LVL) &&
 	    trig != (BYT_TRIG_NEG | BYT_TRIG_LVL)) {
@@ -1467,11 +1415,7 @@ static void byt_init_irq_valid_mask(struct gpio_chip *chip,
 	u32 value;
 	int i;
 
-	/*
-	 * Clear interrupt triggers for all pins that are GPIOs and
-	 * do not use direct IRQ mode. This will prevent spurious
-	 * interrupts from misconfigured pins.
-	 */
+	 
 	for (i = 0; i < vg->soc->npins; i++) {
 		unsigned int pin = vg->soc->pins[i].number;
 
@@ -1503,7 +1447,7 @@ static int byt_gpio_irq_init_hw(struct gpio_chip *chip)
 	void __iomem *reg;
 	u32 base, value;
 
-	/* clear interrupt status trigger registers */
+	 
 	for (base = 0; base < vg->soc->npins; base += 32) {
 		reg = byt_gpio_reg(vg, base, BYT_INT_STAT_REG);
 
@@ -1513,8 +1457,7 @@ static int byt_gpio_irq_init_hw(struct gpio_chip *chip)
 		}
 
 		writel(0xffffffff, reg);
-		/* make sure trigger bits are cleared, if not then a pin
-		   might be misconfigured in bios */
+		 
 		value = readl(reg);
 		if (value)
 			dev_err(vg->dev,
@@ -1544,7 +1487,7 @@ static int byt_gpio_probe(struct intel_pinctrl *vg)
 	struct gpio_chip *gc;
 	int irq, ret;
 
-	/* Set up gpio chip */
+	 
 	vg->chip	= byt_gpio_chip;
 	gc		= &vg->chip;
 	gc->label	= dev_name(vg->dev);
@@ -1561,7 +1504,7 @@ static int byt_gpio_probe(struct intel_pinctrl *vg)
 		return -ENOMEM;
 #endif
 
-	/* set up interrupts  */
+	 
 	irq = platform_get_irq_optional(pdev, 0);
 	if (irq > 0) {
 		struct gpio_irq_chip *girq;

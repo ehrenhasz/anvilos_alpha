@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2013-2017 Oracle Corporation
- * This file is based on ast_mode.c
- * Copyright 2012 Red Hat Inc.
- * Parts based on xf86-video-ast
- * Copyright (c) 2005 ASPEED Technology Inc.
- * Authors: Dave Airlie <airlied@redhat.com>
- *          Michael Thayer <michael.thayer@oracle.com,
- *          Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/iosys-map.h>
 #include <linux/export.h>
@@ -28,10 +19,7 @@
 #include "vbox_drv.h"
 #include "vboxvideo.h"
 
-/*
- * Set a graphics mode.  Poke any required values into registers, do an HGSMI
- * mode set and tell the host we support advanced graphics functions.
- */
+ 
 static void vbox_do_modeset(struct drm_crtc *crtc)
 {
 	struct drm_framebuffer *fb = crtc->primary->state->fb;
@@ -49,12 +37,7 @@ static void vbox_do_modeset(struct drm_crtc *crtc)
 	x_offset = vbox->single_framebuffer ? vbox_crtc->x : vbox_crtc->x_hint;
 	y_offset = vbox->single_framebuffer ? vbox_crtc->y : vbox_crtc->y_hint;
 
-	/*
-	 * This is the old way of setting graphics modes.  It assumed one screen
-	 * and a frame-buffer at the start of video RAM.  On older versions of
-	 * VirtualBox, certain parts of the code still assume that the first
-	 * screen is programmed this way, so try to fake it.
-	 */
+	 
 	if (vbox_crtc->crtc_id == 0 && fb &&
 	    vbox_crtc->fb_offset / pitch < 0xffff - crtc->y &&
 	    vbox_crtc->fb_offset % (bpp / 8) == 0) {
@@ -85,17 +68,7 @@ static int vbox_set_view(struct drm_crtc *crtc)
 	struct vbox_private *vbox = to_vbox_dev(crtc->dev);
 	struct vbva_infoview *p;
 
-	/*
-	 * Tell the host about the view.  This design originally targeted the
-	 * Windows XP driver architecture and assumed that each screen would
-	 * have a dedicated frame buffer with the command buffer following it,
-	 * the whole being a "view".  The host works out which screen a command
-	 * buffer belongs to by checking whether it is in the first view, then
-	 * whether it is in the second and so on.  The first match wins.  We
-	 * cheat around this by making the first view be the managed memory
-	 * plus the first command buffer, the second the same plus the second
-	 * buffer and so on.
-	 */
+	 
 	p = hgsmi_buffer_alloc(vbox->guest_pool, sizeof(*p),
 			       HGSMI_CH_VBVA, VBVA_INFO_VIEW);
 	if (!p)
@@ -113,11 +86,7 @@ static int vbox_set_view(struct drm_crtc *crtc)
 	return 0;
 }
 
-/*
- * Try to map the layout of virtual screens to the range of the input device.
- * Return true if we need to re-set the crtc modes due to screen offset
- * changes.
- */
+ 
 static bool vbox_set_up_input_mapping(struct vbox_private *vbox)
 {
 	struct drm_crtc *crtci;
@@ -127,11 +96,7 @@ static bool vbox_set_up_input_mapping(struct vbox_private *vbox)
 	bool old_single_framebuffer = vbox->single_framebuffer;
 	u16 width = 0, height = 0;
 
-	/*
-	 * Are we using an X.Org-style single large frame-buffer for all crtcs?
-	 * If so then screen layout can be deduced from the crtc offsets.
-	 * Same fall-back if this is the fbdev frame-buffer.
-	 */
+	 
 	list_for_each_entry(crtci, &vbox->ddev.mode_config.crtc_list, head) {
 		fb = crtci->primary->state->fb;
 		if (!fb)
@@ -154,7 +119,7 @@ static bool vbox_set_up_input_mapping(struct vbox_private *vbox)
 		vbox->input_mapping_height = fb1->height;
 		return old_single_framebuffer != vbox->single_framebuffer;
 	}
-	/* Otherwise calculate the total span of all screens. */
+	 
 	list_for_each_entry(connectori, &vbox->ddev.mode_config.connector_list,
 			    head) {
 		struct vbox_connector *vbox_connector =
@@ -194,7 +159,7 @@ static void vbox_crtc_set_base_and_mode(struct drm_crtc *crtc,
 	vbox_crtc->y = y;
 	vbox_crtc->fb_offset = drm_gem_vram_offset(gbo);
 
-	/* vbox_do_modeset() checks vbox->single_framebuffer so update it now */
+	 
 	if (needs_modeset && vbox_set_up_input_mapping(vbox)) {
 		struct drm_crtc *crtci;
 
@@ -247,7 +212,7 @@ static void vbox_crtc_destroy(struct drm_crtc *crtc)
 static const struct drm_crtc_funcs vbox_crtc_funcs = {
 	.set_config = drm_atomic_helper_set_config,
 	.page_flip = drm_atomic_helper_page_flip,
-	/* .gamma_set = vbox_crtc_gamma_set, */
+	 
 	.destroy = vbox_crtc_destroy,
 	.reset = drm_atomic_helper_crtc_reset,
 	.atomic_duplicate_state = drm_atomic_helper_crtc_duplicate_state,
@@ -289,7 +254,7 @@ static void vbox_primary_atomic_update(struct drm_plane *plane,
 				    new_state->src_x >> 16,
 				    new_state->src_y >> 16);
 
-	/* Send information about dirty rectangles to VBVA. */
+	 
 
 	clips = drm_plane_get_damage_clips(new_state);
 	num_clips = drm_plane_get_damage_clips_count(new_state);
@@ -327,7 +292,7 @@ static void vbox_primary_atomic_disable(struct drm_plane *plane,
 									   plane);
 	struct drm_crtc *crtc = old_state->crtc;
 
-	/* vbox_do_modeset checks plane->state->fb and will disable if NULL */
+	 
 	vbox_crtc_set_base_and_mode(crtc, old_state->fb,
 				    old_state->src_x >> 16,
 				    old_state->src_y >> 16);
@@ -367,11 +332,7 @@ static int vbox_cursor_atomic_check(struct drm_plane *plane,
 	return 0;
 }
 
-/*
- * Copy the ARGB image and generate the mask, which is needed in case the host
- * does not support ARGB cursors.  The mask is a 1BPP bitmap with the bit set
- * if the corresponding alpha value in the ARGB image is greater than 0xF0.
- */
+ 
 static void copy_cursor_image(u8 *src, u8 *dst, u32 width, u32 height,
 			      size_t mask_size)
 {
@@ -401,14 +362,11 @@ static void vbox_cursor_atomic_update(struct drm_plane *plane,
 	struct drm_shadow_plane_state *shadow_plane_state =
 		to_drm_shadow_plane_state(new_state);
 	struct iosys_map map = shadow_plane_state->data[0];
-	u8 *src = map.vaddr; /* TODO: Use mapping abstraction properly */
+	u8 *src = map.vaddr;  
 	size_t data_size, mask_size;
 	u32 flags;
 
-	/*
-	 * VirtualBox uses the host windowing system to draw the cursor so
-	 * moves are a no-op, we only need to upload new cursor sprites.
-	 */
+	 
 	if (fb == old_state->fb)
 		return;
 
@@ -416,11 +374,7 @@ static void vbox_cursor_atomic_update(struct drm_plane *plane,
 
 	vbox_crtc->cursor_enabled = true;
 
-	/*
-	 * The mask must be calculated based on the alpha
-	 * channel, one bit per ARGB word, and must be 32-bit
-	 * padded.
-	 */
+	 
 	mask_size = ((width + 7) / 8 * height + 3) & ~3;
 	data_size = width * height * 4 + mask_size;
 
@@ -632,57 +586,52 @@ static struct drm_encoder *vbox_encoder_init(struct drm_device *dev,
 	return &vbox_encoder->base;
 }
 
-/*
- * Generate EDID data with a mode-unique serial number for the virtual
- * monitor to try to persuade Unity that different modes correspond to
- * different monitors and it should not try to force the same resolution on
- * them.
- */
+ 
 static void vbox_set_edid(struct drm_connector *connector, int width,
 			  int height)
 {
 	enum { EDID_SIZE = 128 };
 	unsigned char edid[EDID_SIZE] = {
-		0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,	/* header */
-		0x58, 0x58,	/* manufacturer (VBX) */
-		0x00, 0x00,	/* product code */
-		0x00, 0x00, 0x00, 0x00,	/* serial number goes here */
-		0x01,		/* week of manufacture */
-		0x00,		/* year of manufacture */
-		0x01, 0x03,	/* EDID version */
-		0x80,		/* capabilities - digital */
-		0x00,		/* horiz. res in cm, zero for projectors */
-		0x00,		/* vert. res in cm */
-		0x78,		/* display gamma (120 == 2.2). */
-		0xEE,		/* features (standby, suspend, off, RGB, std */
-				/* colour space, preferred timing mode) */
+		0x00, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0x00,	 
+		0x58, 0x58,	 
+		0x00, 0x00,	 
+		0x00, 0x00, 0x00, 0x00,	 
+		0x01,		 
+		0x00,		 
+		0x01, 0x03,	 
+		0x80,		 
+		0x00,		 
+		0x00,		 
+		0x78,		 
+		0xEE,		 
+				 
 		0xEE, 0x91, 0xA3, 0x54, 0x4C, 0x99, 0x26, 0x0F, 0x50, 0x54,
-		/* chromaticity for standard colour space. */
-		0x00, 0x00, 0x00,	/* no default timings */
+		 
+		0x00, 0x00, 0x00,	 
 		0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01, 0x01,
 		    0x01, 0x01,
-		0x01, 0x01, 0x01, 0x01,	/* no standard timings */
+		0x01, 0x01, 0x01, 0x01,	 
 		0x00, 0x00, 0x00, 0x06, 0x00, 0x00, 0x06, 0x00, 0x02, 0x02,
 		    0x02, 0x02,
-		/* descriptor block 1 goes below */
+		 
 		0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-		/* descriptor block 2, monitor ranges */
+		 
 		0x00, 0x00, 0x00, 0xFD, 0x00,
 		0x00, 0xC8, 0x00, 0xC8, 0x64, 0x00, 0x0A, 0x20, 0x20, 0x20,
 		    0x20, 0x20,
-		/* 0-200Hz vertical, 0-200KHz horizontal, 1000MHz pixel clock */
+		 
 		0x20,
-		/* descriptor block 3, monitor name */
+		 
 		0x00, 0x00, 0x00, 0xFC, 0x00,
 		'V', 'B', 'O', 'X', ' ', 'm', 'o', 'n', 'i', 't', 'o', 'r',
 		'\n',
-		/* descriptor block 4: dummy data */
+		 
 		0x00, 0x00, 0x00, 0x10, 0x00,
 		0x0A, 0x20, 0x20, 0x20, 0x20, 0x20,
 		0x20, 0x20, 0x20, 0x20, 0x20, 0x20,
 		0x20,
-		0x00,		/* number of extensions */
-		0x00		/* checksum goes here */
+		0x00,		 
+		0x00		 
 	};
 	int clock = (width + 6) * (height + 6) * 60 / 10000;
 	unsigned int i, sum = 0;

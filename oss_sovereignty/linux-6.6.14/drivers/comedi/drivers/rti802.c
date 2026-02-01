@@ -1,32 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * rti802.c
- * Comedi driver for Analog Devices RTI-802 board
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1999 Anders Blomdell <anders.blomdell@control.lth.se>
- */
 
-/*
- * Driver: rti802
- * Description: Analog Devices RTI-802
- * Author: Anders Blomdell <anders.blomdell@control.lth.se>
- * Devices: [Analog Devices] RTI-802 (rti802)
- * Status: works
- *
- * Configuration Options:
- *   [0] - i/o base
- *   [1] - unused
- *   [2,4,6,8,10,12,14,16] - dac#[0-7]  0=two's comp, 1=straight
- *   [3,5,7,9,11,13,15,17] - dac#[0-7]  0=bipolar, 1=unipolar
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
 
-/*
- * Register I/O map
- */
+ 
 #define RTI802_SELECT		0x00
 #define RTI802_DATALOW		0x01
 #define RTI802_DATAHIGH		0x02
@@ -54,7 +34,7 @@ static int rti802_ao_insn_write(struct comedi_device *dev,
 
 		s->readback[chan] = val;
 
-		/* munge offset binary to two's complement if needed */
+		 
 		if (devpriv->dac_coding[chan] == dac_2comp)
 			val = comedi_offset_munge(s, val);
 
@@ -84,7 +64,7 @@ static int rti802_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;

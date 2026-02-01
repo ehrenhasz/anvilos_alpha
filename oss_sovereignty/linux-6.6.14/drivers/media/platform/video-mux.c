@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * video stream multiplexer controlled via mux control
- *
- * Copyright (C) 2013 Pengutronix, Sascha Hauer <kernel@pengutronix.de>
- * Copyright (C) 2016-2017 Pengutronix, Philipp Zabel <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -56,10 +51,7 @@ static int video_mux_link_setup(struct media_entity *entity,
 	u16 source_pad = entity->num_pads - 1;
 	int ret = 0;
 
-	/*
-	 * The mux state is determined by the enabled sink pad link.
-	 * Enabling or disabling the source pad link has no effect.
-	 */
+	 
 	if (local->flags & MEDIA_PAD_FL_SOURCE)
 		return 0;
 
@@ -87,7 +79,7 @@ static int video_mux_link_setup(struct media_entity *entity,
 			goto out;
 		vmux->active = local->index;
 
-		/* Propagate the active format to the source */
+		 
 		sd_state = v4l2_subdev_lock_and_get_active_state(sd);
 		source_mbusformat = v4l2_subdev_get_pad_format(sd, sd_state,
 							       source_pad);
@@ -162,11 +154,11 @@ static int video_mux_set_format(struct v4l2_subdev *sd,
 	if (!source_mbusformat)
 		return -EINVAL;
 
-	/* No size limitations except V4L2 compliance requirements */
+	 
 	v4l_bound_align_image(&sdformat->format.width, 1, 65536, 0,
 			      &sdformat->format.height, 1, 65536, 0, 0);
 
-	/* All formats except LVDS and vendor specific formats are acceptable */
+	 
 	switch (sdformat->format.code) {
 	case MEDIA_BUS_FMT_RGB444_1X12:
 	case MEDIA_BUS_FMT_RGB444_2X8_PADHI_BE:
@@ -266,14 +258,14 @@ static int video_mux_set_format(struct v4l2_subdev *sd,
 
 	mutex_lock(&vmux->lock);
 
-	/* Source pad mirrors active sink pad, no limitations on sink pads */
+	 
 	if ((pad->flags & MEDIA_PAD_FL_SOURCE) && vmux->active >= 0)
 		sdformat->format = *v4l2_subdev_get_pad_format(sd, sd_state,
 							       vmux->active);
 
 	*mbusformat = sdformat->format;
 
-	/* Propagate the format from an active sink to source */
+	 
 	if ((pad->flags & MEDIA_PAD_FL_SINK) && (pad->index == vmux->active))
 		*source_mbusformat = sdformat->format;
 
@@ -343,7 +335,7 @@ static int video_mux_async_register(struct video_mux *vmux,
 		if (!ep)
 			continue;
 
-		/* Skip dangling endpoints for backwards compatibility */
+		 
 		remote_ep = fwnode_graph_get_remote_endpoint(ep);
 		if (!remote_ep) {
 			fwnode_handle_put(ep);
@@ -358,7 +350,7 @@ static int video_mux_async_register(struct video_mux *vmux,
 
 		if (IS_ERR(asd)) {
 			ret = PTR_ERR(asd);
-			/* OK if asd already exists */
+			 
 			if (ret != -EEXIST)
 				goto err_nf_cleanup;
 		}
@@ -404,10 +396,7 @@ static int video_mux_probe(struct platform_device *pdev)
 	vmux->subdev.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	vmux->subdev.dev = dev;
 
-	/*
-	 * The largest numbered port is the output port. It determines
-	 * total number of pads.
-	 */
+	 
 	for_each_endpoint_of_node(np, ep) {
 		struct of_endpoint endpoint;
 
@@ -476,7 +465,7 @@ static void video_mux_remove(struct platform_device *pdev)
 
 static const struct of_device_id video_mux_dt_ids[] = {
 	{ .compatible = "video-mux", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, video_mux_dt_ids);
 

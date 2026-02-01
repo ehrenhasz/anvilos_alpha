@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+ 
+ 
 
 #ifndef __QLCNIC_83XX_HW_H
 #define __QLCNIC_83XX_HW_H
@@ -14,7 +11,7 @@
 
 #define QLCNIC_83XX_BAR0_LENGTH 0x4000
 
-/* Directly mapped registers */
+ 
 #define QLC_83XX_CRB_WIN_BASE		0x3800
 #define QLC_83XX_CRB_WIN_FUNC(f)	(QLC_83XX_CRB_WIN_BASE+((f)*4))
 #define QLC_83XX_SEM_LOCK_BASE		0x3840
@@ -45,7 +42,7 @@
 
 #define QLC_83XX_FLASH_SECTOR_SIZE		(64 * 1024)
 
-/* PEG status definitions */
+ 
 #define QLC_83XX_CMDPEG_COMPLETE		0xff01
 #define QLC_83XX_VALID_INTX_BIT30(val)		((val) & BIT_30)
 #define QLC_83XX_VALID_INTX_BIT31(val)		((val) & BIT_31)
@@ -62,7 +59,7 @@
 
 #define QLCNIC_HOST_RDS_MBX_IDX			88
 
-/* Pause control registers */
+ 
 #define QLC_83XX_SRE_SHIM_REG		0x0D200284
 #define QLC_83XX_PORT0_THRESHOLD	0x0B2003A4
 #define QLC_83XX_PORT1_THRESHOLD	0x0B2013A4
@@ -73,14 +70,14 @@
 #define QLC_83XX_PORT2_IFB_THRESHOLD	0x0B200704
 #define QLC_83XX_PORT3_IFB_THRESHOLD	0x0B201704
 
-/* Peg PC status registers */
+ 
 #define QLC_83XX_CRB_PEG_NET_0		0x3400003c
 #define QLC_83XX_CRB_PEG_NET_1		0x3410003c
 #define QLC_83XX_CRB_PEG_NET_2		0x3420003c
 #define QLC_83XX_CRB_PEG_NET_3		0x3430003c
 #define QLC_83XX_CRB_PEG_NET_4		0x34b0003c
 
-/* Firmware image definitions */
+ 
 #define QLC_83XX_BOOTLOADER_FLASH_ADDR	0x10000
 #define QLC_83XX_FW_FILE_NAME		"83xx_fw.bin"
 #define QLC_83XX_POST_FW_FILE_NAME	"83xx_post_fw.bin"
@@ -98,12 +95,7 @@
 #define QLC_83XX_MBX_TIMEOUT		(5 * HZ)
 #define QLC_83XX_MBX_CMD_LOOP		5000000
 
-/* status descriptor mailbox data
- * @phy_addr_{low|high}: physical address of buffer
- * @sds_ring_size: buffer size
- * @intrpt_id: interrupt id
- * @intrpt_val: source of interrupt
- */
+ 
 struct qlcnic_sds_mbx {
 	u32	phy_addr_low;
 	u32	phy_addr_high;
@@ -126,14 +118,7 @@ struct qlcnic_sds_mbx {
 	u32	rsvd5;
 } __packed;
 
-/* receive descriptor buffer data
- * phy_addr_reg_{low|high}: physical address of regular buffer
- * phy_addr_jmb_{low|high}: physical address of jumbo buffer
- * reg_ring_sz: size of regular buffer
- * reg_ring_len: no. of entries in regular buffer
- * jmb_ring_len: no. of entries in jumbo buffer
- * jmb_ring_sz: size of jumbo buffer
- */
+ 
 struct qlcnic_rds_mbx {
 	u32	phy_addr_reg_low;
 	u32	phy_addr_reg_high;
@@ -152,19 +137,13 @@ struct qlcnic_rds_mbx {
 #endif
 } __packed;
 
-/* host producers for regular and jumbo rings */
+ 
 struct __host_producer_mbx {
 	u32	reg_buf;
 	u32	jmb_buf;
 } __packed;
 
-/* Receive context mailbox data outbox registers
- * @state: state of the context
- * @vport_id: virtual port id
- * @context_id: receive context id
- * @num_pci_func: number of pci functions of the port
- * @phy_port: physical port id
- */
+ 
 struct qlcnic_rcv_mbx_out {
 #if defined(__LITTLE_ENDIAN)
 	u8	rcv_num;
@@ -201,13 +180,7 @@ struct qlcnic_add_rings_mbx_out {
 	struct __host_producer_mbx host_prod[QLCNIC_MAX_SDS_RINGS];
 } __packed;
 
-/* Transmit context mailbox inbox registers
- * @phys_addr_{low|high}: DMA address of the transmit buffer
- * @cnsmr_index_{low|high}: host consumer index
- * @size: legth of transmit buffer ring
- * @intr_id: interrupt id
- * @src: src of interrupt
- */
+ 
 struct qlcnic_tx_mbx {
 	u32	phys_addr_low;
 	u32	phys_addr_high;
@@ -226,11 +199,7 @@ struct qlcnic_tx_mbx {
 #endif
 } __packed;
 
-/* Transmit context mailbox outbox registers
- * @host_prod: host producer index
- * @ctx_id: transmit context id
- * @state: state of the transmit context
- */
+ 
 
 struct qlcnic_tx_mbx_out {
 	u32	host_prod;
@@ -332,7 +301,7 @@ enum qlcnic_vlan_operations {
 	QLC_VLAN_DELETE
 };
 
-/* Device States */
+ 
 enum qlcnic_83xx_states {
 	QLC_83XX_IDC_DEV_UNKNOWN,
 	QLC_83XX_IDC_DEV_COLD,
@@ -350,7 +319,7 @@ enum qlcnic_83xx_states {
 #define QLCNIC_MBX_HOST(ahw, i)	((ahw)->pci_base0 + ((i) * 4))
 #define QLCNIC_MBX_FW(ahw, i)		((ahw)->pci_base0 + 0x800 + ((i) * 4))
 
-/* Mailbox process AEN count */
+ 
 #define QLC_83XX_IDC_COMP_AEN			3
 #define QLC_83XX_MBX_AEN_CNT			5
 #define QLC_83XX_MODULE_LOADED			1
@@ -381,7 +350,7 @@ enum qlcnic_83xx_states {
 #define QLC_83XX_CFG_LOOPBACK_PHY		(3 << 1)
 #define QLC_83XX_CFG_LOOPBACK_EXT		(4 << 1)
 
-/* LED configuration settings */
+ 
 #define QLC_83XX_ENABLE_BEACON		0xe
 #define QLC_83XX_BEACON_ON		1
 #define QLC_83XX_BEACON_OFF		0
@@ -479,7 +448,7 @@ enum qlc_83xx_mbx_response_states {
 #define QLC_83XX_MBX_RESPONSE_FAILED	0x2
 #define QLC_83XX_MBX_RESPONSE_UNKNOWN	0x3
 
-/* Additional registers in 83xx */
+ 
 enum qlc_83xx_ext_regs {
 	QLCNIC_GLOBAL_RESET = 0,
 	QLCNIC_WILDCARD,
@@ -526,13 +495,13 @@ enum qlc_83xx_ext_regs {
 	QLC_83XX_ASIC_TEMP,
 };
 
-/* Initialize/Stop NIC command bit definitions */
+ 
 #define QLC_REGISTER_LB_IDC		BIT_0
 #define QLC_REGISTER_DCB_AEN		BIT_1
 #define QLC_83XX_MULTI_TENANCY_INFO	BIT_29
 #define QLC_INIT_FW_RESOURCES		BIT_31
 
-/* 83xx funcitons */
+ 
 int qlcnic_83xx_get_fw_version(struct qlcnic_adapter *);
 int qlcnic_83xx_issue_cmd(struct qlcnic_adapter *, struct qlcnic_cmd_args *);
 int qlcnic_83xx_setup_intr(struct qlcnic_adapter *);

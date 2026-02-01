@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2013  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include <linux/vmalloc.h>
@@ -169,9 +169,7 @@ void rtl_btc_deinit_variables(struct rtl_priv *rtlpriv)
 
 void rtl_btc_init_hal_vars(struct rtl_priv *rtlpriv)
 {
-	/* move ant_num, bt_type and single_ant_path to
-	 * exhalbtc_bind_bt_coex_withadapter()
-	 */
+	 
 }
 
 void rtl_btc_power_on_setting(struct rtl_priv *rtlpriv)
@@ -221,9 +219,7 @@ void rtl_btc_ips_notify(struct rtl_priv *rtlpriv, u8 type)
 	exhalbtc_ips_notify(btcoexist, type);
 
 	if (type == ERFON) {
-		/* In some situation, it doesn't scan after leaving IPS, and
-		 * this will cause btcoex in wrong state.
-		 */
+		 
 		exhalbtc_scan_notify(btcoexist, 1);
 		exhalbtc_scan_notify(btcoexist, 0);
 	}
@@ -289,7 +285,7 @@ void rtl_btc_periodical(struct rtl_priv *rtlpriv)
 	if (!btcoexist)
 		return;
 
-	/*rtl_bt_dm_monitor();*/
+	 
 	exhalbtc_periodical(btcoexist);
 }
 
@@ -328,14 +324,14 @@ void rtl_btc_btmpinfo_notify(struct rtl_priv *rtlpriv, u8 *tmp_buf, u8 length)
 		return;
 
 	extid = tmp_buf[0];
-	/* not response from BT FW then exit*/
-	if (extid != 1) /* C2H_TRIG_BY_BT_FW = 1 */
+	 
+	if (extid != 1)  
 		return;
 
 	seq = tmp_buf[2] >> 4;
 	data = &tmp_buf[3];
 
-	/* BT Firmware version response */
+	 
 	switch (seq) {
 	case BT_SEQ_GET_BT_VERSION:
 		bt_real_fw_ver = tmp_buf[3] | (tmp_buf[4] << 8);
@@ -433,7 +429,7 @@ bool rtl_btc_is_bt_disabled(struct rtl_priv *rtlpriv)
 	if (!btcoexist)
 		return true;
 
-	/* It seems 'bt_disabled' is never be initialized or set. */
+	 
 	if (btcoexist->bt_info.bt_disabled)
 		return true;
 	else

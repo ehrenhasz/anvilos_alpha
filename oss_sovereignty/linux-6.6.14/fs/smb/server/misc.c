@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/xattr.h>
@@ -16,17 +13,7 @@
 
 #include "mgmt/share_config.h"
 
-/**
- * match_pattern() - compare a string with a pattern which might include
- * wildcard '*' and '?'
- * TODO : implement consideration about DOS_DOT, DOS_QM and DOS_STAR
- *
- * @str:	string to compare with a pattern
- * @len:	string length
- * @pattern:	pattern string which might include wildcard '*' and '?'
- *
- * Return:	0 if pattern matched with the string, otherwise non zero value
- */
+ 
 int match_pattern(const char *str, size_t len, const char *pattern)
 {
 	const char *s = str;
@@ -68,15 +55,10 @@ int match_pattern(const char *str, size_t len, const char *pattern)
 	return !*p;
 }
 
-/*
- * is_char_allowed() - check for valid character
- * @ch:		input character to be checked
- *
- * Return:	1 if char is allowed, otherwise 0
- */
+ 
 static inline int is_char_allowed(char ch)
 {
-	/* check for control chars, wildcards etc. */
+	 
 	if (!(ch & 0x80) &&
 	    (ch <= 0x1f ||
 	     ch == '?' || ch == '"' || ch == '<' ||
@@ -150,14 +132,7 @@ out:
 	return rc;
 }
 
-/**
- * convert_to_nt_pathname() - extract and return windows path string
- *      whose share directory prefix was removed from file path
- * @share: ksmbd_share_config pointer
- * @path: path to report
- *
- * Return : windows path string or error
- */
+ 
 
 char *convert_to_nt_pathname(struct ksmbd_share_config *share,
 			     const struct path *path)
@@ -259,12 +234,7 @@ out_ascii:
 	return cf_name - cf_len;
 }
 
-/**
- * ksmbd_extract_sharename() - get share name from tree connect request
- * @treename:	buffer containing tree name and share name
- *
- * Return:      share name on success, otherwise error
- */
+ 
 char *ksmbd_extract_sharename(struct unicode_map *um, const char *treename)
 {
 	const char *name = treename, *pos = strrchr(name, '\\');
@@ -272,17 +242,11 @@ char *ksmbd_extract_sharename(struct unicode_map *um, const char *treename)
 	if (pos)
 		name = (pos + 1);
 
-	/* caller has to free the memory */
+	 
 	return ksmbd_casefold_sharename(um, name);
 }
 
-/**
- * convert_to_unix_name() - convert windows name to unix format
- * @share:	ksmbd_share_config pointer
- * @name:	file name that is relative to share
- *
- * Return:	converted name on success, otherwise NULL
- */
+ 
 char *convert_to_unix_name(struct ksmbd_share_config *share, const char *name)
 {
 	int no_slash = 0, name_len, path_len;
@@ -323,34 +287,27 @@ char *ksmbd_convert_dir_info_name(struct ksmbd_dir_info *d_info,
 	if (!conv)
 		return NULL;
 
-	/* XXX */
+	 
 	*conv_len = smbConvertToUTF16((__le16 *)conv, d_info->name,
 				      d_info->name_len, local_nls, 0);
 	*conv_len *= 2;
 
-	/* We allocate buffer twice bigger than needed. */
+	 
 	conv[*conv_len] = 0x00;
 	conv[*conv_len + 1] = 0x00;
 	return conv;
 }
 
-/*
- * Convert the NT UTC (based 1601-01-01, in hundred nanosecond units)
- * into Unix UTC (based 1970-01-01, in seconds).
- */
+ 
 struct timespec64 ksmbd_NTtimeToUnix(__le64 ntutc)
 {
 	struct timespec64 ts;
 
-	/* Subtract the NTFS time offset, then convert to 1s intervals. */
+	 
 	s64 t = le64_to_cpu(ntutc) - NTFS_TIME_OFFSET;
 	u64 abs_t;
 
-	/*
-	 * Unfortunately can not use normal 64 bit division on 32 bit arch, but
-	 * the alternative, do_div, does not work with negative numbers so have
-	 * to special case them
-	 */
+	 
 	if (t < 0) {
 		abs_t = -t;
 		ts.tv_nsec = do_div(abs_t, 10000000) * 100;
@@ -365,10 +322,10 @@ struct timespec64 ksmbd_NTtimeToUnix(__le64 ntutc)
 	return ts;
 }
 
-/* Convert the Unix UTC into NT UTC. */
+ 
 inline u64 ksmbd_UnixTimeToNT(struct timespec64 t)
 {
-	/* Convert to 100ns intervals and then add the NTFS time offset. */
+	 
 	return (u64)t.tv_sec * 10000000 + t.tv_nsec / 100 + NTFS_TIME_OFFSET;
 }
 

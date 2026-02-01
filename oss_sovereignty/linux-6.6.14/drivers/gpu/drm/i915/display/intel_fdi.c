@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 
@@ -25,12 +23,7 @@ static void assert_fdi_tx(struct drm_i915_private *dev_priv,
 	bool cur_state;
 
 	if (HAS_DDI(dev_priv)) {
-		/*
-		 * DDI does not have a specific FDI_TX register.
-		 *
-		 * FDI is never fed from EDP transcoder
-		 * so pipe->transcoder cast is fine here.
-		 */
+		 
 		enum transcoder cpu_transcoder = (enum transcoder)pipe;
 		cur_state = intel_de_read(dev_priv, TRANS_DDI_FUNC_CTL(cpu_transcoder)) & TRANS_DDI_FUNC_ENABLE;
 	} else {
@@ -77,11 +70,11 @@ void assert_fdi_tx_pll_enabled(struct drm_i915_private *i915,
 {
 	bool cur_state;
 
-	/* ILK FDI PLL is always enabled */
+	 
 	if (IS_IRONLAKE(i915))
 		return;
 
-	/* On Haswell, DDI ports are responsible for the FDI PLL setup */
+	 
 	if (HAS_DDI(i915))
 		return;
 
@@ -119,7 +112,7 @@ void intel_fdi_link_train(struct intel_crtc *crtc,
 	dev_priv->display.funcs.fdi->fdi_link_train(crtc, crtc_state);
 }
 
-/* units of 100MHz */
+ 
 static int pipe_required_fdi_lanes(struct intel_crtc_state *crtc_state)
 {
 	if (crtc_state->hw.enable && crtc_state->has_pch_encoder)
@@ -160,7 +153,7 @@ static int ilk_check_fdi_lanes(struct drm_device *dev, enum pipe pipe,
 	if (INTEL_NUM_PIPES(dev_priv) == 2)
 		return 0;
 
-	/* Ivybridge 3 pipe is really complicated */
+	 
 	switch (pipe) {
 	case PIPE_A:
 		return 0;
@@ -227,7 +220,7 @@ int intel_fdi_link_freq(struct drm_i915_private *i915,
 			const struct intel_crtc_state *pipe_config)
 {
 	if (HAS_DDI(i915))
-		return pipe_config->port_clock; /* SPLL */
+		return pipe_config->port_clock;  
 	else
 		return i915->display.fdi.pll_freq;
 }
@@ -242,13 +235,7 @@ int ilk_fdi_compute_config(struct intel_crtc *crtc,
 	bool needs_recompute = false;
 
 retry:
-	/* FDI is a binary signal running at ~2.7GHz, encoding
-	 * each output octet as 10 bits. The actual frequency
-	 * is stored as a divider into a 100MHz clock, and the
-	 * mode pixel clock is stored in units of 1KHz.
-	 * Hence the bw of each lane in terms of the mode signal
-	 * is:
-	 */
+	 
 	link_bw = intel_fdi_link_freq(i915, pipe_config);
 
 	fdi_dotclock = adjusted_mode->crtc_clock;
@@ -339,7 +326,7 @@ void intel_fdi_normal_train(struct intel_crtc *crtc)
 	i915_reg_t reg;
 	u32 temp;
 
-	/* enable normal train */
+	 
 	reg = FDI_TX_CTL(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	if (IS_IVYBRIDGE(dev_priv)) {
@@ -362,16 +349,16 @@ void intel_fdi_normal_train(struct intel_crtc *crtc)
 	}
 	intel_de_write(dev_priv, reg, temp | FDI_RX_ENHANCE_FRAME_ENABLE);
 
-	/* wait one idle pattern time */
+	 
 	intel_de_posting_read(dev_priv, reg);
 	udelay(1000);
 
-	/* IVB wants error correction enabled */
+	 
 	if (IS_IVYBRIDGE(dev_priv))
 		intel_de_rmw(dev_priv, reg, 0, FDI_FS_ERRC_ENABLE | FDI_FE_ERRC_ENABLE);
 }
 
-/* The FDI link training functions for ILK/Ibexpeak. */
+ 
 static void ilk_fdi_link_train(struct intel_crtc *crtc,
 			       const struct intel_crtc_state *crtc_state)
 {
@@ -381,18 +368,14 @@ static void ilk_fdi_link_train(struct intel_crtc *crtc,
 	i915_reg_t reg;
 	u32 temp, tries;
 
-	/*
-	 * Write the TU size bits before fdi link training, so that error
-	 * detection works.
-	 */
+	 
 	intel_de_write(dev_priv, FDI_RX_TUSIZE1(pipe),
 		       intel_de_read(dev_priv, PIPE_DATA_M1(pipe)) & TU_SIZE_MASK);
 
-	/* FDI needs bits from pipe first */
+	 
 	assert_transcoder_enabled(dev_priv, crtc_state->cpu_transcoder);
 
-	/* Train 1: umask FDI RX Interrupt symbol_lock and bit_lock bit
-	   for train result */
+	 
 	reg = FDI_RX_IMR(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	temp &= ~FDI_RX_SYMBOL_LOCK;
@@ -401,7 +384,7 @@ static void ilk_fdi_link_train(struct intel_crtc *crtc,
 	intel_de_read(dev_priv, reg);
 	udelay(150);
 
-	/* enable CPU FDI TX and PCH FDI RX */
+	 
 	reg = FDI_TX_CTL(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	temp &= ~FDI_DP_PORT_WIDTH_MASK;
@@ -419,7 +402,7 @@ static void ilk_fdi_link_train(struct intel_crtc *crtc,
 	intel_de_posting_read(dev_priv, reg);
 	udelay(150);
 
-	/* Ironlake workaround, enable clock pointer after FDI enable*/
+	 
 	intel_de_write(dev_priv, FDI_RX_CHICKEN(pipe),
 		       FDI_RX_PHASE_SYNC_POINTER_OVR);
 	intel_de_write(dev_priv, FDI_RX_CHICKEN(pipe),
@@ -439,7 +422,7 @@ static void ilk_fdi_link_train(struct intel_crtc *crtc,
 	if (tries == 5)
 		drm_err(&dev_priv->drm, "FDI train 1 fail!\n");
 
-	/* Train 2 */
+	 
 	intel_de_rmw(dev_priv, FDI_TX_CTL(pipe),
 		     FDI_LINK_TRAIN_NONE, FDI_LINK_TRAIN_PATTERN_2);
 	intel_de_rmw(dev_priv, FDI_RX_CTL(pipe),
@@ -473,7 +456,7 @@ static const int snb_b_fdi_train_param[] = {
 	FDI_LINK_TRAIN_800MV_0DB_SNB_B,
 };
 
-/* The FDI link training functions for SNB/Cougarpoint. */
+ 
 static void gen6_fdi_link_train(struct intel_crtc *crtc,
 				const struct intel_crtc_state *crtc_state)
 {
@@ -483,15 +466,11 @@ static void gen6_fdi_link_train(struct intel_crtc *crtc,
 	i915_reg_t reg;
 	u32 temp, i, retry;
 
-	/*
-	 * Write the TU size bits before fdi link training, so that error
-	 * detection works.
-	 */
+	 
 	intel_de_write(dev_priv, FDI_RX_TUSIZE1(pipe),
 		       intel_de_read(dev_priv, PIPE_DATA_M1(pipe)) & TU_SIZE_MASK);
 
-	/* Train 1: umask FDI RX Interrupt symbol_lock and bit_lock bit
-	   for train result */
+	 
 	reg = FDI_RX_IMR(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	temp &= ~FDI_RX_SYMBOL_LOCK;
@@ -501,7 +480,7 @@ static void gen6_fdi_link_train(struct intel_crtc *crtc,
 	intel_de_posting_read(dev_priv, reg);
 	udelay(150);
 
-	/* enable CPU FDI TX and PCH FDI RX */
+	 
 	reg = FDI_TX_CTL(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	temp &= ~FDI_DP_PORT_WIDTH_MASK;
@@ -509,7 +488,7 @@ static void gen6_fdi_link_train(struct intel_crtc *crtc,
 	temp &= ~FDI_LINK_TRAIN_NONE;
 	temp |= FDI_LINK_TRAIN_PATTERN_1;
 	temp &= ~FDI_LINK_TRAIN_VOL_EMP_MASK;
-	/* SNB-B */
+	 
 	temp |= FDI_LINK_TRAIN_400MV_0DB_SNB_B;
 	intel_de_write(dev_priv, reg, temp | FDI_TX_ENABLE);
 
@@ -555,14 +534,14 @@ static void gen6_fdi_link_train(struct intel_crtc *crtc,
 	if (i == 4)
 		drm_err(&dev_priv->drm, "FDI train 1 fail!\n");
 
-	/* Train 2 */
+	 
 	reg = FDI_TX_CTL(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	temp &= ~FDI_LINK_TRAIN_NONE;
 	temp |= FDI_LINK_TRAIN_PATTERN_2;
 	if (IS_SANDYBRIDGE(dev_priv)) {
 		temp &= ~FDI_LINK_TRAIN_VOL_EMP_MASK;
-		/* SNB-B */
+		 
 		temp |= FDI_LINK_TRAIN_400MV_0DB_SNB_B;
 	}
 	intel_de_write(dev_priv, reg, temp);
@@ -609,7 +588,7 @@ static void gen6_fdi_link_train(struct intel_crtc *crtc,
 	drm_dbg_kms(&dev_priv->drm, "FDI train done.\n");
 }
 
-/* Manual link training for Ivy Bridge A0 parts */
+ 
 static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 				      const struct intel_crtc_state *crtc_state)
 {
@@ -621,15 +600,11 @@ static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 
 	ivb_update_fdi_bc_bifurcation(crtc_state);
 
-	/*
-	 * Write the TU size bits before fdi link training, so that error
-	 * detection works.
-	 */
+	 
 	intel_de_write(dev_priv, FDI_RX_TUSIZE1(pipe),
 		       intel_de_read(dev_priv, PIPE_DATA_M1(pipe)) & TU_SIZE_MASK);
 
-	/* Train 1: umask FDI RX Interrupt symbol_lock and bit_lock bit
-	   for train result */
+	 
 	reg = FDI_RX_IMR(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	temp &= ~FDI_RX_SYMBOL_LOCK;
@@ -642,9 +617,9 @@ static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 	drm_dbg_kms(&dev_priv->drm, "FDI_RX_IIR before link train 0x%x\n",
 		    intel_de_read(dev_priv, FDI_RX_IIR(pipe)));
 
-	/* Try each vswing and preemphasis setting twice before moving on */
+	 
 	for (j = 0; j < ARRAY_SIZE(snb_b_fdi_train_param) * 2; j++) {
-		/* disable first in case we need to retry */
+		 
 		reg = FDI_TX_CTL(pipe);
 		temp = intel_de_read(dev_priv, reg);
 		temp &= ~(FDI_LINK_TRAIN_AUTO | FDI_LINK_TRAIN_NONE_IVB);
@@ -658,7 +633,7 @@ static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 		temp &= ~FDI_RX_ENABLE;
 		intel_de_write(dev_priv, reg, temp);
 
-		/* enable CPU FDI TX and PCH FDI RX */
+		 
 		reg = FDI_TX_CTL(pipe);
 		temp = intel_de_read(dev_priv, reg);
 		temp &= ~FDI_DP_PORT_WIDTH_MASK;
@@ -679,7 +654,7 @@ static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 		intel_de_write(dev_priv, reg, temp | FDI_RX_ENABLE);
 
 		intel_de_posting_read(dev_priv, reg);
-		udelay(1); /* should be 0.5us */
+		udelay(1);  
 
 		for (i = 0; i < 4; i++) {
 			reg = FDI_RX_IIR(pipe);
@@ -695,7 +670,7 @@ static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 					    i);
 				break;
 			}
-			udelay(1); /* should be 0.5us */
+			udelay(1);  
 		}
 		if (i == 4) {
 			drm_dbg_kms(&dev_priv->drm,
@@ -703,7 +678,7 @@ static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 			continue;
 		}
 
-		/* Train 2 */
+		 
 		intel_de_rmw(dev_priv, FDI_TX_CTL(pipe),
 			     FDI_LINK_TRAIN_NONE_IVB,
 			     FDI_LINK_TRAIN_PATTERN_2_IVB);
@@ -711,7 +686,7 @@ static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 			     FDI_LINK_TRAIN_PATTERN_MASK_CPT,
 			     FDI_LINK_TRAIN_PATTERN_2_CPT);
 		intel_de_posting_read(dev_priv, FDI_RX_CTL(pipe));
-		udelay(2); /* should be 1.5us */
+		udelay(2);  
 
 		for (i = 0; i < 4; i++) {
 			reg = FDI_RX_IIR(pipe);
@@ -727,7 +702,7 @@ static void ivb_manual_fdi_link_train(struct intel_crtc *crtc,
 					    i);
 				goto train_done;
 			}
-			udelay(2); /* should be 1.5us */
+			udelay(2);  
 		}
 		if (i == 4)
 			drm_dbg_kms(&dev_priv->drm,
@@ -738,14 +713,7 @@ train_done:
 	drm_dbg_kms(&dev_priv->drm, "FDI train done.\n");
 }
 
-/* Starting with Haswell, different DDI ports can work in FDI mode for
- * connection to the PCH-located connectors. For this, it is necessary to train
- * both the DDI port and PCH receiver for the desired DDI buffer settings.
- *
- * The recommended port to work in FDI mode is DDI E, which we use here. Also,
- * please note that when FDI mode is active on DDI E, it shares 2 lines with
- * DDI A (which is used for eDP)
- */
+ 
 void hsw_fdi_link_train(struct intel_encoder *encoder,
 			const struct intel_crtc_state *crtc_state)
 {
@@ -758,17 +726,11 @@ void hsw_fdi_link_train(struct intel_encoder *encoder,
 
 	hsw_prepare_dp_ddi_buffers(encoder, crtc_state);
 
-	/* Set the FDI_RX_MISC pwrdn lanes and the 2 workarounds listed at the
-	 * mode set "sequence for CRT port" document:
-	 * - TP1 to TP2 time with the default value
-	 * - FDI delay to 90h
-	 *
-	 * WaFDIAutoLinkSetTimingOverrride:hsw
-	 */
+	 
 	intel_de_write(dev_priv, FDI_RX_MISC(PIPE_A),
 		       FDI_RX_PWRDN_LANE1_VAL(2) | FDI_RX_PWRDN_LANE0_VAL(2) | FDI_RX_TP1_TO_TP2_48 | FDI_RX_FDI_DELAY_90);
 
-	/* Enable the PCH Receiver FDI PLL */
+	 
 	rx_ctl_val = dev_priv->display.fdi.rx_config | FDI_RX_ENHANCE_FRAME_ENABLE |
 		     FDI_RX_PLL_ENABLE |
 		     FDI_DP_PORT_WIDTH(crtc_state->fdi_lanes);
@@ -776,51 +738,47 @@ void hsw_fdi_link_train(struct intel_encoder *encoder,
 	intel_de_posting_read(dev_priv, FDI_RX_CTL(PIPE_A));
 	udelay(220);
 
-	/* Switch from Rawclk to PCDclk */
+	 
 	rx_ctl_val |= FDI_PCDCLK;
 	intel_de_write(dev_priv, FDI_RX_CTL(PIPE_A), rx_ctl_val);
 
-	/* Configure Port Clock Select */
+	 
 	drm_WARN_ON(&dev_priv->drm, crtc_state->shared_dpll->info->id != DPLL_ID_SPLL);
 	intel_ddi_enable_clock(encoder, crtc_state);
 
-	/* Start the training iterating through available voltages and emphasis,
-	 * testing each value twice. */
+	 
 	for (i = 0; i < n_entries * 2; i++) {
-		/* Configure DP_TP_CTL with auto-training */
+		 
 		intel_de_write(dev_priv, DP_TP_CTL(PORT_E),
 			       DP_TP_CTL_FDI_AUTOTRAIN |
 			       DP_TP_CTL_ENHANCED_FRAME_ENABLE |
 			       DP_TP_CTL_LINK_TRAIN_PAT1 |
 			       DP_TP_CTL_ENABLE);
 
-		/* Configure and enable DDI_BUF_CTL for DDI E with next voltage.
-		 * DDI E does not support port reversal, the functionality is
-		 * achieved on the PCH side in FDI_RX_CTL, so no need to set the
-		 * port reversal bit */
+		 
 		intel_de_write(dev_priv, DDI_BUF_CTL(PORT_E),
 			       DDI_BUF_CTL_ENABLE | ((crtc_state->fdi_lanes - 1) << 1) | DDI_BUF_TRANS_SELECT(i / 2));
 		intel_de_posting_read(dev_priv, DDI_BUF_CTL(PORT_E));
 
 		udelay(600);
 
-		/* Program PCH FDI Receiver TU */
+		 
 		intel_de_write(dev_priv, FDI_RX_TUSIZE1(PIPE_A), TU_SIZE(64));
 
-		/* Enable PCH FDI Receiver with auto-training */
+		 
 		rx_ctl_val |= FDI_RX_ENABLE | FDI_LINK_TRAIN_AUTO;
 		intel_de_write(dev_priv, FDI_RX_CTL(PIPE_A), rx_ctl_val);
 		intel_de_posting_read(dev_priv, FDI_RX_CTL(PIPE_A));
 
-		/* Wait for FDI receiver lane calibration */
+		 
 		udelay(30);
 
-		/* Unset FDI_RX_MISC pwrdn lanes */
+		 
 		intel_de_rmw(dev_priv, FDI_RX_MISC(PIPE_A),
 			     FDI_RX_PWRDN_LANE1_MASK | FDI_RX_PWRDN_LANE0_MASK, 0);
 		intel_de_posting_read(dev_priv, FDI_RX_MISC(PIPE_A));
 
-		/* Wait for FDI auto training time */
+		 
 		udelay(5);
 
 		temp = intel_de_read(dev_priv, DP_TP_STATUS(PORT_E));
@@ -830,10 +788,7 @@ void hsw_fdi_link_train(struct intel_encoder *encoder,
 			break;
 		}
 
-		/*
-		 * Leave things enabled even if we failed to train FDI.
-		 * Results in less fireworks from the state checker.
-		 */
+		 
 		if (i == n_entries * 2 - 1) {
 			drm_err(&dev_priv->drm, "FDI link training failed!\n");
 			break;
@@ -846,20 +801,20 @@ void hsw_fdi_link_train(struct intel_encoder *encoder,
 		intel_de_rmw(dev_priv, DDI_BUF_CTL(PORT_E), DDI_BUF_CTL_ENABLE, 0);
 		intel_de_posting_read(dev_priv, DDI_BUF_CTL(PORT_E));
 
-		/* Disable DP_TP_CTL and FDI_RX_CTL and retry */
+		 
 		intel_de_rmw(dev_priv, DP_TP_CTL(PORT_E), DP_TP_CTL_ENABLE, 0);
 		intel_de_posting_read(dev_priv, DP_TP_CTL(PORT_E));
 
 		intel_wait_ddi_buf_idle(dev_priv, PORT_E);
 
-		/* Reset FDI_RX_MISC pwrdn lanes */
+		 
 		intel_de_rmw(dev_priv, FDI_RX_MISC(PIPE_A),
 			     FDI_RX_PWRDN_LANE1_MASK | FDI_RX_PWRDN_LANE0_MASK,
 			     FDI_RX_PWRDN_LANE1_VAL(2) | FDI_RX_PWRDN_LANE0_VAL(2));
 		intel_de_posting_read(dev_priv, FDI_RX_MISC(PIPE_A));
 	}
 
-	/* Enable normal pixel sending for FDI */
+	 
 	intel_de_write(dev_priv, DP_TP_CTL(PORT_E),
 		       DP_TP_CTL_FDI_AUTOTRAIN |
 		       DP_TP_CTL_LINK_TRAIN_NORMAL |
@@ -871,12 +826,7 @@ void hsw_fdi_disable(struct intel_encoder *encoder)
 {
 	struct drm_i915_private *dev_priv = to_i915(encoder->base.dev);
 
-	/*
-	 * Bspec lists this as both step 13 (before DDI_BUF_CTL disable)
-	 * and step 18 (after clearing PORT_CLK_SEL). Based on a BUN,
-	 * step 13 is the correct place for it. Step 18 is where it was
-	 * originally before the BUN.
-	 */
+	 
 	intel_de_rmw(dev_priv, FDI_RX_CTL(PIPE_A), FDI_RX_ENABLE, 0);
 	intel_de_rmw(dev_priv, DDI_BUF_CTL(PORT_E), DDI_BUF_CTL_ENABLE, 0);
 	intel_wait_ddi_buf_idle(dev_priv, PORT_E);
@@ -896,7 +846,7 @@ void ilk_fdi_pll_enable(const struct intel_crtc_state *crtc_state)
 	i915_reg_t reg;
 	u32 temp;
 
-	/* enable PCH FDI RX PLL, wait warmup plus DMI latency */
+	 
 	reg = FDI_RX_CTL(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	temp &= ~(FDI_DP_PORT_WIDTH_MASK | (0x7 << 16));
@@ -907,12 +857,12 @@ void ilk_fdi_pll_enable(const struct intel_crtc_state *crtc_state)
 	intel_de_posting_read(dev_priv, reg);
 	udelay(200);
 
-	/* Switch from Rawclk to PCDclk */
+	 
 	intel_de_rmw(dev_priv, reg, 0, FDI_PCDCLK);
 	intel_de_posting_read(dev_priv, reg);
 	udelay(200);
 
-	/* Enable CPU FDI TX PLL, always on for Ironlake */
+	 
 	reg = FDI_TX_CTL(pipe);
 	temp = intel_de_read(dev_priv, reg);
 	if ((temp & FDI_TX_PLL_ENABLE) == 0) {
@@ -929,15 +879,15 @@ void ilk_fdi_pll_disable(struct intel_crtc *crtc)
 	struct drm_i915_private *dev_priv = to_i915(dev);
 	enum pipe pipe = crtc->pipe;
 
-	/* Switch from PCDclk to Rawclk */
+	 
 	intel_de_rmw(dev_priv, FDI_RX_CTL(pipe), FDI_PCDCLK, 0);
 
-	/* Disable CPU FDI TX PLL */
+	 
 	intel_de_rmw(dev_priv, FDI_TX_CTL(pipe), FDI_TX_PLL_ENABLE, 0);
 	intel_de_posting_read(dev_priv, FDI_TX_CTL(pipe));
 	udelay(100);
 
-	/* Wait for the clocks to turn off. */
+	 
 	intel_de_rmw(dev_priv, FDI_RX_CTL(pipe), FDI_RX_PLL_ENABLE, 0);
 	intel_de_posting_read(dev_priv, FDI_RX_CTL(pipe));
 	udelay(100);
@@ -950,7 +900,7 @@ void ilk_fdi_disable(struct intel_crtc *crtc)
 	i915_reg_t reg;
 	u32 temp;
 
-	/* disable CPU FDI tx and PCH FDI rx */
+	 
 	intel_de_rmw(dev_priv, FDI_TX_CTL(pipe), FDI_TX_ENABLE, 0);
 	intel_de_posting_read(dev_priv, FDI_TX_CTL(pipe));
 
@@ -963,12 +913,12 @@ void ilk_fdi_disable(struct intel_crtc *crtc)
 	intel_de_posting_read(dev_priv, reg);
 	udelay(100);
 
-	/* Ironlake workaround, disable clock pointer after downing FDI */
+	 
 	if (HAS_PCH_IBX(dev_priv))
 		intel_de_write(dev_priv, FDI_RX_CHICKEN(pipe),
 			       FDI_RX_PHASE_SYNC_POINTER_OVR);
 
-	/* still set train pattern 1 */
+	 
 	intel_de_rmw(dev_priv, FDI_TX_CTL(pipe),
 		     FDI_LINK_TRAIN_NONE, FDI_LINK_TRAIN_PATTERN_1);
 
@@ -981,7 +931,7 @@ void ilk_fdi_disable(struct intel_crtc *crtc)
 		temp &= ~FDI_LINK_TRAIN_NONE;
 		temp |= FDI_LINK_TRAIN_PATTERN_1;
 	}
-	/* BPC in FDI rx is consistent with that in TRANSCONF */
+	 
 	temp &= ~(0x07 << 16);
 	temp |= (intel_de_read(dev_priv, TRANSCONF(pipe)) & TRANSCONF_BPC_MASK) << 11;
 	intel_de_write(dev_priv, reg, temp);
@@ -1010,7 +960,7 @@ intel_fdi_init_hook(struct drm_i915_private *dev_priv)
 	} else if (IS_SANDYBRIDGE(dev_priv)) {
 		dev_priv->display.funcs.fdi = &gen6_funcs;
 	} else if (IS_IVYBRIDGE(dev_priv)) {
-		/* FIXME: detect B0+ stepping and use auto training */
+		 
 		dev_priv->display.funcs.fdi = &ivb_funcs;
 	}
 }

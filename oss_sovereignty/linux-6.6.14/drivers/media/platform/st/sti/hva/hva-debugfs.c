@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Yannick Fertre <yannick.fertre@st.com>
- *          Hugues Fruchet <hugues.fruchet@st.com>
- */
+
+ 
 
 #include <linux/debugfs.h>
 
@@ -113,9 +109,7 @@ static void format_ctx(struct seq_file *s, struct hva_ctx *ctx)
 		      dbg->last_bitrate);
 }
 
-/*
- * performance debug info
- */
+ 
 void hva_dbg_perf_begin(struct hva_ctx *ctx)
 {
 	u64 div;
@@ -127,7 +121,7 @@ void hva_dbg_perf_begin(struct hva_ctx *ctx)
 	dbg->begin = ktime_get();
 
 	if (dbg->is_valid_period) {
-		/* encoding period */
+		 
 		div = (u64)ktime_us_delta(dbg->begin, prev);
 		do_div(div, 100);
 		period = (u32)div;
@@ -136,18 +130,11 @@ void hva_dbg_perf_begin(struct hva_ctx *ctx)
 		dbg->total_period += period;
 		dbg->cnt_period++;
 
-		/*
-		 * minimum and maximum bitrates are based on the
-		 * encoding period values upon a window of 32 samples
-		 */
+		 
 		dbg->window_duration += period;
 		dbg->cnt_window++;
 		if (dbg->cnt_window >= 32) {
-			/*
-			 * bitrate in kbps = (size * 8 / 1000) /
-			 *                   (duration / 10000)
-			 *                 = size * 80 / duration
-			 */
+			 
 			if (dbg->window_duration > 0) {
 				div = (u64)dbg->window_stream_size * 80;
 				do_div(div, dbg->window_duration);
@@ -164,11 +151,7 @@ void hva_dbg_perf_begin(struct hva_ctx *ctx)
 		}
 	}
 
-	/*
-	 * filter sequences valid for performance:
-	 * - begin/begin (no stream available) is an invalid sequence
-	 * - begin/end is a valid sequence
-	 */
+	 
 	dbg->is_valid_period = false;
 }
 
@@ -182,13 +165,13 @@ void hva_dbg_perf_end(struct hva_ctx *ctx, struct hva_stream *stream)
 	struct hva_ctx_dbg *dbg = &ctx->dbg;
 	ktime_t end = ktime_get();
 
-	/* stream bytesused and timestamp in us */
+	 
 	bytesused = vb2_get_plane_payload(&stream->vbuf.vb2_buf, 0);
 	div = stream->vbuf.vb2_buf.timestamp;
 	do_div(div, 1000);
 	timestamp = (u32)div;
 
-	/* encoding duration */
+	 
 	div = (u64)ktime_us_delta(end, dbg->begin);
 
 	dev_dbg(dev,
@@ -206,10 +189,7 @@ void hva_dbg_perf_end(struct hva_ctx *ctx, struct hva_stream *stream)
 	dbg->total_duration += duration;
 	dbg->cnt_duration++;
 
-	/*
-	 * the average bitrate is based on the total stream size
-	 * and the total encoding periods
-	 */
+	 
 	dbg->total_stream_size += bytesused;
 	dbg->window_stream_size += bytesused;
 
@@ -254,11 +234,7 @@ static void hva_dbg_perf_compute(struct hva_ctx *ctx)
 	}
 
 	if (dbg->total_period > 0) {
-		/*
-		 * bitrate in kbps = (video size * 8 / 1000) /
-		 *                   (video duration / 10000)
-		 *                 = video size * 80 / video duration
-		 */
+		 
 		div = (u64)dbg->total_stream_size * 80;
 		do_div(div, dbg->total_period);
 		dbg->avg_bitrate = (u32)div;
@@ -267,9 +243,7 @@ static void hva_dbg_perf_compute(struct hva_ctx *ctx)
 	}
 }
 
-/*
- * device debug info
- */
+ 
 
 static int device_show(struct seq_file *s, void *data)
 {
@@ -350,9 +324,7 @@ void hva_debugfs_remove(struct hva_dev *hva)
 	hva->dbg.debugfs_entry = NULL;
 }
 
-/*
- * context (instance) debug info
- */
+ 
 
 static int ctx_show(struct seq_file *s, void *data)
 {
@@ -389,7 +361,7 @@ void hva_dbg_ctx_remove(struct hva_ctx *ctx)
 	struct hva_dev *hva = ctx->hva_dev;
 
 	if (ctx->flags & HVA_FLAG_STREAMINFO)
-		/* save context before removing */
+		 
 		memcpy(&hva->dbg.last_ctx, ctx, sizeof(*ctx));
 
 	debugfs_remove(ctx->dbg.debugfs_entry);

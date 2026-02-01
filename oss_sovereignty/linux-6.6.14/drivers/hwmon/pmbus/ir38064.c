@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for Infineon IR38064
- *
- * Copyright (c) 2017 Google Inc
- *
- * VOUT_MODE is not supported by the device. The driver fakes VOUT linear16
- * mode with exponent value -8 as direct mode with m=256/b=0/R=0.
- *
- * The device supports VOUT_PEAK, IOUT_PEAK, and TEMPERATURE_PEAK, however
- * this driver does not currently support them.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -24,7 +14,7 @@
 static const struct regulator_desc ir38064_reg_desc[] = {
 	PMBUS_REGULATOR("vout", 0),
 };
-#endif /* CONFIG_SENSORS_IR38064_REGULATOR */
+#endif  
 
 static struct pmbus_driver_info ir38064_info = {
 	.pages = 1,
@@ -72,7 +62,7 @@ static const struct of_device_id __maybe_unused ir38064_of_match[] = {
 
 MODULE_DEVICE_TABLE(of, ir38064_of_match);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver ir38064_driver = {
 	.driver = {
 		   .name = "ir38064",

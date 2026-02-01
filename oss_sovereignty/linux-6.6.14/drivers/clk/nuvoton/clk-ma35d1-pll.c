@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Nuvoton Technology Corp.
- * Author: Chi-Fang Li <cfli0@nuvoton.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk-provider.h>
@@ -17,7 +14,7 @@
 
 #include "clk-ma35d1.h"
 
-/* PLL frequency limits */
+ 
 #define PLL_FREF_MAX_FREQ	(200 * HZ_PER_MHZ)
 #define PLL_FREF_MIN_FREQ	(1 * HZ_PER_MHZ)
 #define PLL_FREF_M_MAX_FREQ	(40 * HZ_PER_MHZ)
@@ -33,14 +30,14 @@
 #define REG_PLL_CTL1_OFFSET	0x4
 #define REG_PLL_CTL2_OFFSET	0x8
 
-/* bit fields for REG_CLK_PLL0CTL0, which is SMIC PLL design */
+ 
 #define SPLL0_CTL0_FBDIV	GENMASK(7, 0)
 #define SPLL0_CTL0_INDIV	GENMASK(11, 8)
 #define SPLL0_CTL0_OUTDIV	GENMASK(13, 12)
 #define SPLL0_CTL0_PD		BIT(16)
 #define SPLL0_CTL0_BP		BIT(17)
 
-/* bit fields for REG_CLK_PLLxCTL0 ~ REG_CLK_PLLxCTL2, where x = 2 ~ 5 */
+ 
 #define PLL_CTL0_FBDIV		GENMASK(10, 0)
 #define PLL_CTL0_INDIV		GENMASK(17, 12)
 #define PLL_CTL0_MODE		GENMASK(19, 18)
@@ -113,7 +110,7 @@ static unsigned long ma35d1_calc_pll_freq(u8 mode, u32 *reg_ctl, unsigned long p
 		div_u64(pll_freq, m * p);
 	} else {
 		x = FIELD_GET(PLL_CTL1_FRAC, reg_ctl[1]);
-		/* 2 decimal places floating to integer (ex. 1.23 to 123) */
+		 
 		n = n * 100 + ((x * 100) / FIELD_MAX(PLL_CTL1_FRAC));
 		pll_freq = div_u64(parent_rate * n, 100 * m * p);
 	}
@@ -148,21 +145,21 @@ static int ma35d1_pll_find_closest(struct ma35d1_clk_pll *pll, unsigned long rat
 				tmp = div_u64(parent_rate, m);
 				if (tmp < PLL_FREF_M_MIN_FREQ ||
 				    tmp > PLL_FREF_M_MAX_FREQ)
-					continue; /* constrain */
+					continue;  
 
 				fclk = div_u64(parent_rate * n, m);
-				/* for 2 decimal places */
+				 
 				if (pll->mode != PLL_MODE_INT)
 					fclk = div_u64(fclk, 100);
 
 				if (fclk < PLL_FCLK_MIN_FREQ ||
 				    fclk > PLL_FCLK_MAX_FREQ)
-					continue; /* constrain */
+					continue;  
 
 				fout = div_u64(fclk, p);
 				if (fout < PLL_FCLKO_MIN_FREQ ||
 				    fout > PLL_FCLKO_MAX_FREQ)
-					continue; /* constrain */
+					continue;  
 
 				diff = abs(rate - fout);
 				if (diff < min_diff) {
@@ -178,7 +175,7 @@ static int ma35d1_pll_find_closest(struct ma35d1_clk_pll *pll, unsigned long rat
 		}
 	}
 	if (*freq == 0)
-		return -EINVAL; /* cannot find even one valid setting */
+		return -EINVAL;  
 	return 0;
 }
 

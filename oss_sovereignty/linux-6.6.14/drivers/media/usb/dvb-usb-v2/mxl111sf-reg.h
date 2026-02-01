@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  mxl111sf-reg.h - driver for the MaxLinear MXL111SF
- *
- *  Copyright (C) 2010-2014 Michael Krufky <mkrufky@linuxtv.org>
- */
+ 
+ 
 
 #ifndef _DVB_USB_MXL111SF_REG_H_
 #define _DVB_USB_MXL111SF_REG_H_
@@ -157,4 +153,4 @@
 #define V6_DIG_RF_PWR_LSB_REG  0x46
 #define V6_DIG_RF_PWR_MSB_REG  0x47
 
-#endif /* _DVB_USB_MXL111SF_REG_H_ */
+#endif  

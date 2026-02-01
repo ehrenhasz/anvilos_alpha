@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2018 Jernej Skrabec <jernej.skrabec@siol.net>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/of.h>
@@ -10,10 +8,7 @@
 
 #include "sun8i_dw_hdmi.h"
 
-/*
- * Address can be actually any value. Here is set to same value as
- * it is set in BSP driver.
- */
+ 
 #define I2C_ADDR	0x69
 
 static const struct dw_hdmi_mpll_config sun50i_h6_mpll_cfg[] = {
@@ -105,7 +100,7 @@ static const struct dw_hdmi_mpll_config sun50i_h6_mpll_cfg[] = {
 };
 
 static const struct dw_hdmi_curr_ctrl sun50i_h6_cur_ctr[] = {
-	/* pixelclk    bpp8    bpp10   bpp12 */
+	 
 	{ 27000000,  { 0x0012, 0x0000, 0x0000 }, },
 	{ 74250000,  { 0x0013, 0x001a, 0x001b }, },
 	{ 148500000, { 0x0019, 0x0033, 0x0034 }, },
@@ -115,7 +110,7 @@ static const struct dw_hdmi_curr_ctrl sun50i_h6_cur_ctr[] = {
 };
 
 static const struct dw_hdmi_phy_config sun50i_h6_phy_config[] = {
-	/*pixelclk   symbol   term   vlev*/
+	 
 	{ 27000000,  0x8009, 0x0007, 0x02b0 },
 	{ 74250000,  0x8009, 0x0006, 0x022d },
 	{ 148500000, 0x8029, 0x0006, 0x0270 },
@@ -152,7 +147,7 @@ static int sun8i_a83t_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
 			   SUN8I_HDMI_PHY_REXT_CTRL_REXT_EN,
 			   SUN8I_HDMI_PHY_REXT_CTRL_REXT_EN);
 
-	/* power down */
+	 
 	dw_hdmi_phy_gen2_txpwron(hdmi, 0);
 	dw_hdmi_phy_gen2_pddq(hdmi, 1);
 
@@ -162,11 +157,7 @@ static int sun8i_a83t_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
 
 	dw_hdmi_phy_i2c_set_addr(hdmi, I2C_ADDR);
 
-	/*
-	 * Values are taken from BSP HDMI driver. Although AW didn't
-	 * release any documentation, explanation of this values can
-	 * be found in i.MX 6Dual/6Quad Reference Manual.
-	 */
+	 
 	if (clk_rate <= 27000000) {
 		dw_hdmi_phy_i2c_write(hdmi, 0x01e0, 0x06);
 		dw_hdmi_phy_i2c_write(hdmi, 0x0000, 0x15);
@@ -244,7 +235,7 @@ static int sun8i_h3_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
 
 	sun8i_hdmi_phy_set_polarity(phy, mode);
 
-	/* bandwidth / frequency independent settings */
+	 
 
 	pll_cfg1_init = SUN8I_HDMI_PHY_PLL_CFG1_LDO2_EN |
 			SUN8I_HDMI_PHY_PLL_CFG1_LDO1_EN |
@@ -293,7 +284,7 @@ static int sun8i_h3_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
 			SUN8I_HDMI_PHY_ANA_CFG3_SDAEN |
 			SUN8I_HDMI_PHY_ANA_CFG3_SCLEN;
 
-	/* bandwidth / frequency dependent settings */
+	 
 	if (clk_rate <= 27000000) {
 		pll_cfg1_init |= SUN8I_HDMI_PHY_PLL_CFG1_HV_IS_33 |
 				 SUN8I_HDMI_PHY_PLL_CFG1_CNT_INT(32);
@@ -340,10 +331,7 @@ static int sun8i_h3_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
 	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_ANA_CFG1_REG,
 			   SUN8I_HDMI_PHY_ANA_CFG1_TXEN_MASK, 0);
 
-	/*
-	 * NOTE: We have to be careful not to overwrite PHY parent
-	 * clock selection bit and clock divider.
-	 */
+	 
 	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_PLL_CFG1_REG,
 			   (u32)~SUN8I_HDMI_PHY_PLL_CFG1_CKIN_SEL_MSK,
 			   pll_cfg1_init);
@@ -358,7 +346,7 @@ static int sun8i_h3_hdmi_phy_config(struct dw_hdmi *hdmi, void *data,
 			   SUN8I_HDMI_PHY_PLL_CFG1_PLLEN);
 	msleep(100);
 
-	/* get B value */
+	 
 	regmap_read(phy->regs, SUN8I_HDMI_PHY_ANA_STS_REG, &val);
 	val = (val & SUN8I_HDMI_PHY_ANA_STS_B_OUT_MSK) >>
 		SUN8I_HDMI_PHY_ANA_STS_B_OUT_SHIFT;
@@ -401,11 +389,11 @@ static const struct dw_hdmi_phy_ops sun8i_h3_hdmi_phy_ops = {
 
 static void sun8i_hdmi_phy_unlock(struct sun8i_hdmi_phy *phy)
 {
-	/* enable read access to HDMI controller */
+	 
 	regmap_write(phy->regs, SUN8I_HDMI_PHY_READ_EN_REG,
 		     SUN8I_HDMI_PHY_READ_EN_MAGIC);
 
-	/* unscramble register offsets */
+	 
 	regmap_write(phy->regs, SUN8I_HDMI_PHY_UNSCRAMBLE_REG,
 		     SUN8I_HDMI_PHY_UNSCRAMBLE_MAGIC);
 }
@@ -428,10 +416,7 @@ static void sun8i_hdmi_phy_init_a83t(struct sun8i_hdmi_phy *phy)
 			   SUN8I_HDMI_PHY_DBG_CTRL_PX_LOCK,
 			   SUN8I_HDMI_PHY_DBG_CTRL_PX_LOCK);
 
-	/*
-	 * Set PHY I2C address. It must match to the address set by
-	 * dw_hdmi_phy_set_slave_addr().
-	 */
+	 
 	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_DBG_CTRL_REG,
 			   SUN8I_HDMI_PHY_DBG_CTRL_ADDR_MASK,
 			   SUN8I_HDMI_PHY_DBG_CTRL_ADDR(I2C_ADDR));
@@ -478,7 +463,7 @@ static void sun8i_hdmi_phy_init_h3(struct sun8i_hdmi_phy *phy)
 			   SUN8I_HDMI_PHY_ANA_CFG1_ENP2S_TMDS1 |
 			   SUN8I_HDMI_PHY_ANA_CFG1_ENP2S_TMDS2);
 
-	/* wait for calibration to finish */
+	 
 	regmap_read_poll_timeout(phy->regs, SUN8I_HDMI_PHY_ANA_STS_REG, val,
 				 (val & SUN8I_HDMI_PHY_ANA_STS_RCALEND2D),
 				 100, 2000);
@@ -496,21 +481,21 @@ static void sun8i_hdmi_phy_init_h3(struct sun8i_hdmi_phy *phy)
 			   SUN8I_HDMI_PHY_ANA_CFG1_BIASEN_TMDS2 |
 			   SUN8I_HDMI_PHY_ANA_CFG1_BIASEN_TMDSCLK);
 
-	/* enable DDC communication */
+	 
 	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_ANA_CFG3_REG,
 			   SUN8I_HDMI_PHY_ANA_CFG3_SCLEN |
 			   SUN8I_HDMI_PHY_ANA_CFG3_SDAEN,
 			   SUN8I_HDMI_PHY_ANA_CFG3_SCLEN |
 			   SUN8I_HDMI_PHY_ANA_CFG3_SDAEN);
 
-	/* reset PHY PLL clock parent */
+	 
 	regmap_update_bits(phy->regs, SUN8I_HDMI_PHY_PLL_CFG1_REG,
 			   SUN8I_HDMI_PHY_PLL_CFG1_CKIN_SEL_MSK, 0);
 
-	/* set HW control of CEC pins */
+	 
 	regmap_write(phy->regs, SUN8I_HDMI_PHY_CEC_REG, 0);
 
-	/* read calibration data */
+	 
 	regmap_read(phy->regs, SUN8I_HDMI_PHY_ANA_STS_REG, &val);
 	phy->rcal = (val & SUN8I_HDMI_PHY_ANA_STS_RCAL_MASK) >> 2;
 }
@@ -647,7 +632,7 @@ static const struct of_device_id sun8i_hdmi_phy_of_table[] = {
 		.compatible = "allwinner,sun50i-h6-hdmi-phy",
 		.data = &sun50i_h6_hdmi_phy,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 int sun8i_hdmi_phy_get(struct sun8i_dw_hdmi *hdmi, struct device_node *node)

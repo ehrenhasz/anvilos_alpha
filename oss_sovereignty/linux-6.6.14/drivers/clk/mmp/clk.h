@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __MACH_MMP_CLK_H
 #define __MACH_MMP_CLK_H
 
@@ -10,7 +10,7 @@
 #define APBC_POWER_CTRL		BIT(1)
 
 
-/* Clock type "factor" */
+ 
 struct mmp_clk_factor_masks {
 	unsigned int factor;
 	unsigned int num_mask;
@@ -40,7 +40,7 @@ extern struct clk *mmp_clk_register_factor(const char *name,
 		struct mmp_clk_factor_tbl *ftbl, unsigned int ftbl_cnt,
 		spinlock_t *lock);
 
-/* Clock type "mix" */
+ 
 #define MMP_CLK_BITS_MASK(width, shift)			\
 		(((1 << (width)) - 1) << (shift))
 #define MMP_CLK_BITS_GET_VAL(data, width, shift)	\
@@ -54,7 +54,7 @@ enum {
 	MMP_CLK_MIX_TYPE_V3,
 };
 
-/* The register layout */
+ 
 struct mmp_clk_mix_reg_info {
 	void __iomem *reg_clk_ctrl;
 	void __iomem *reg_clk_sel;
@@ -65,7 +65,7 @@ struct mmp_clk_mix_reg_info {
 	u8 bit_fc;
 };
 
-/* The suggested clock table from user. */
+ 
 struct mmp_clk_mix_clk_table {
 	unsigned long rate;
 	u8 parent_index;
@@ -106,7 +106,7 @@ extern struct clk *mmp_clk_register_mix(struct device *dev,
 					spinlock_t *lock);
 
 
-/* Clock type "gate". MMP private gate */
+ 
 #define MMP_CLK_GATE_NEED_DELAY		BIT(0)
 
 struct mmp_clk_gate {
@@ -231,7 +231,7 @@ struct mmp_param_pll_clk {
 	u32 enable;
 	unsigned long offset;
 	u8 shift;
-	/* MMP3 specific: */
+	 
 	unsigned long input_rate;
 	unsigned long postdiv_offset;
 	unsigned long postdiv_shift;
@@ -254,7 +254,7 @@ void mmp_clk_init(struct device_node *np, struct mmp_clk_unit *unit,
 void mmp_clk_add(struct mmp_clk_unit *unit, unsigned int id,
 		struct clk *clk);
 
-/* Power islands */
+ 
 #define MMP_PM_DOMAIN_NO_DISABLE		BIT(0)
 
 struct generic_pm_domain *mmp_pm_domain_register(const char *name,

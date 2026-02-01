@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Virtio I2C Bus Driver
- *
- * The Virtio I2C Specification:
- * https://raw.githubusercontent.com/oasis-tcs/virtio-spec/master/virtio-i2c.tex
- *
- * Copyright (c) 2021 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/completion.h>
@@ -19,25 +12,14 @@
 #include <linux/virtio_config.h>
 #include <linux/virtio_i2c.h>
 
-/**
- * struct virtio_i2c - virtio I2C data
- * @vdev: virtio device for this controller
- * @adap: I2C adapter for this controller
- * @vq: the virtio virtqueue for communication
- */
+ 
 struct virtio_i2c {
 	struct virtio_device *vdev;
 	struct i2c_adapter adap;
 	struct virtqueue *vq;
 };
 
-/**
- * struct virtio_i2c_req - the virtio I2C request structure
- * @completion: completion of virtio I2C message
- * @out_hdr: the OUT header of the virtio I2C message
- * @buf: the buffer into which data is read, or from which it's written
- * @in_hdr: the IN header of the virtio I2C message
- */
+ 
 struct virtio_i2c_req {
 	struct completion completion;
 	struct virtio_i2c_out_hdr out_hdr	____cacheline_aligned;
@@ -66,10 +48,7 @@ static int virtio_i2c_prepare_reqs(struct virtqueue *vq,
 
 		init_completion(&reqs[i].completion);
 
-		/*
-		 * Only 7-bit mode supported for this moment. For the address
-		 * format, Please check the Virtio I2C Specification.
-		 */
+		 
 		reqs[i].out_hdr.addr = cpu_to_le16(msgs[i].addr << 1);
 
 		if (msgs[i].flags & I2C_M_RD)
@@ -146,14 +125,7 @@ static int virtio_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	if (!count)
 		goto err_free;
 
-	/*
-	 * For the case where count < num, i.e. we weren't able to queue all the
-	 * msgs, ideally we should abort right away and return early, but some
-	 * of the messages are already sent to the remote I2C controller and the
-	 * virtqueue will be left in undefined state in that case. We kick the
-	 * remote here to clear the virtqueue, so we can try another set of
-	 * messages later on.
-	 */
+	 
 	virtqueue_kick(vq);
 
 	count = virtio_i2c_complete_reqs(vq, reqs, msgs, count);
@@ -216,10 +188,7 @@ static int virtio_i2c_probe(struct virtio_device *vdev)
 	vi->adap.dev.of_node = vdev->dev.of_node;
 	i2c_set_adapdata(&vi->adap, vi);
 
-	/*
-	 * Setup ACPI node for controlled devices which will be probed through
-	 * ACPI.
-	 */
+	 
 	ACPI_COMPANION_SET(&vi->adap.dev, ACPI_COMPANION(vdev->dev.parent));
 
 	ret = i2c_add_adapter(&vi->adap);

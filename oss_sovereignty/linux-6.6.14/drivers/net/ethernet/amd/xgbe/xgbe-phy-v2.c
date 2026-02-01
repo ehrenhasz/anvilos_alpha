@@ -1,118 +1,4 @@
-/*
- * AMD 10Gb Ethernet driver
- *
- * This file is available to you under your choice of the following two
- * licenses:
- *
- * License 1: GPLv2
- *
- * Copyright (c) 2016 Advanced Micro Devices, Inc.
- *
- * This file is free software; you may copy, redistribute and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or (at
- * your option) any later version.
- *
- * This file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- * License 2: Modified BSD
- *
- * Copyright (c) 2016 Advanced Micro Devices, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -134,27 +20,27 @@
 
 #define XGBE_SFP_DIRECT			7
 
-/* I2C target addresses */
+ 
 #define XGBE_SFP_SERIAL_ID_ADDRESS	0x50
 #define XGBE_SFP_DIAG_INFO_ADDRESS	0x51
 #define XGBE_SFP_PHY_ADDRESS		0x56
 #define XGBE_GPIO_ADDRESS_PCA9555	0x20
 
-/* SFP sideband signal indicators */
+ 
 #define XGBE_GPIO_NO_TX_FAULT		BIT(0)
 #define XGBE_GPIO_NO_RATE_SELECT	BIT(1)
 #define XGBE_GPIO_NO_MOD_ABSENT		BIT(2)
 #define XGBE_GPIO_NO_RX_LOS		BIT(3)
 
-/* Rate-change complete wait/retry count */
+ 
 #define XGBE_RATECHANGE_COUNT		500
 
-/* CDR delay values for KR support (in usec) */
+ 
 #define XGBE_CDR_DELAY_INIT		10000
 #define XGBE_CDR_DELAY_INC		10000
 #define XGBE_CDR_DELAY_MAX		100000
 
-/* RRC frequency during link status check */
+ 
 #define XGBE_RRC_FREQUENCY		10
 
 enum xgbe_port_mode {
@@ -180,7 +66,7 @@ enum xgbe_conn_type {
 	XGBE_CONN_TYPE_MAX,
 };
 
-/* SFP/SFP+ related definitions */
+ 
 enum xgbe_sfp_comm {
 	XGBE_SFP_COMM_DIRECT = 0,
 	XGBE_SFP_COMM_PCA9545,
@@ -213,7 +99,7 @@ enum xgbe_sfp_speed {
 	XGBE_SFP_SPEED_10000,
 };
 
-/* SFP Serial ID Base ID values relative to an offset of 0 */
+ 
 #define XGBE_SFP_BASE_ID			0
 #define XGBE_SFP_ID_SFP				0x03
 
@@ -251,7 +137,7 @@ enum xgbe_sfp_speed {
 
 #define XGBE_SFP_BASE_CC			63
 
-/* SFP Serial ID Extended ID values relative to an offset of 64 */
+ 
 #define XGBE_SFP_BASE_VENDOR_SN			4
 #define XGBE_SFP_BASE_VENDOR_SN_LEN		16
 
@@ -295,7 +181,7 @@ struct xgbe_sfp_ascii {
 	} u;
 };
 
-/* MDIO PHY reset types */
+ 
 enum xgbe_mdio_reset {
 	XGBE_MDIO_RESET_NONE = 0,
 	XGBE_MDIO_RESET_I2C_GPIO,
@@ -303,7 +189,7 @@ enum xgbe_mdio_reset {
 	XGBE_MDIO_RESET_MAX,
 };
 
-/* Re-driver related definitions */
+ 
 enum xgbe_phy_redrv_if {
 	XGBE_PHY_REDRV_IF_MDIO = 0,
 	XGBE_PHY_REDRV_IF_I2C,
@@ -323,7 +209,7 @@ enum xgbe_phy_redrv_mode {
 
 #define XGBE_PHY_REDRV_MODE_REG	0x12b0
 
-/* PHY related configuration information */
+ 
 struct xgbe_phy_data {
 	enum xgbe_port_mode port_mode;
 
@@ -340,7 +226,7 @@ struct xgbe_phy_data {
 
 	unsigned int mdio_addr;
 
-	/* SFP Support */
+	 
 	enum xgbe_sfp_comm sfp_comm;
 	unsigned int sfp_mux_address;
 	unsigned int sfp_mux_channel;
@@ -364,7 +250,7 @@ struct xgbe_phy_data {
 	enum xgbe_sfp_speed sfp_speed;
 	struct xgbe_sfp_eeprom sfp_eeprom;
 
-	/* External PHY support */
+	 
 	enum xgbe_mdio_mode phydev_mode;
 	struct mii_bus *mii;
 	struct phy_device *phydev;
@@ -372,19 +258,19 @@ struct xgbe_phy_data {
 	unsigned int mdio_reset_addr;
 	unsigned int mdio_reset_gpio;
 
-	/* Re-driver support */
+	 
 	unsigned int redrv;
 	unsigned int redrv_if;
 	unsigned int redrv_addr;
 	unsigned int redrv_lane;
 	unsigned int redrv_model;
 
-	/* KR AN support */
+	 
 	unsigned int phy_cdr_notrack;
 	unsigned int phy_cdr_delay;
 };
 
-/* I2C, MDIO and GPIO lines are muxed, so only one device at a time */
+ 
 static DEFINE_MUTEX(xgbe_phy_comm_lock);
 
 static enum xgbe_an_mode xgbe_phy_an_mode(struct xgbe_prv_data *pdata);
@@ -409,13 +295,13 @@ static int xgbe_phy_redrv_write(struct xgbe_prv_data *pdata, unsigned int reg,
 	unsigned int i, retry;
 	int ret;
 
-	/* High byte of register contains read/write indicator */
+	 
 	redrv_data[0] = ((reg >> 8) & 0xff) << 1;
 	redrv_data[1] = reg & 0xff;
 	redrv_val = (__be16 *)&redrv_data[2];
 	*redrv_val = cpu_to_be16(val);
 
-	/* Calculate 1 byte checksum */
+	 
 	csum = 0;
 	for (i = 0; i < 4; i++) {
 		csum += redrv_data[i];
@@ -469,7 +355,7 @@ static int xgbe_phy_i2c_write(struct xgbe_prv_data *pdata, unsigned int target,
 
 	retry = 1;
 again:
-	/* Write the specfied register */
+	 
 	i2c_op.cmd = XGBE_I2C_CMD_WRITE;
 	i2c_op.target = target;
 	i2c_op.len = val_len;
@@ -490,7 +376,7 @@ static int xgbe_phy_i2c_read(struct xgbe_prv_data *pdata, unsigned int target,
 
 	retry = 1;
 again1:
-	/* Set the specified register to read */
+	 
 	i2c_op.cmd = XGBE_I2C_CMD_WRITE;
 	i2c_op.target = target;
 	i2c_op.len = reg_len;
@@ -505,7 +391,7 @@ again1:
 
 	retry = 1;
 again2:
-	/* Read the specfied register */
+	 
 	i2c_op.cmd = XGBE_I2C_CMD_READ;
 	i2c_op.target = target;
 	i2c_op.len = val_len;
@@ -526,7 +412,7 @@ static int xgbe_phy_sfp_put_mux(struct xgbe_prv_data *pdata)
 	if (phy_data->sfp_comm == XGBE_SFP_COMM_DIRECT)
 		return 0;
 
-	/* Select no mux channels */
+	 
 	mux_channel = 0;
 	i2c_op.cmd = XGBE_I2C_CMD_WRITE;
 	i2c_op.target = phy_data->sfp_mux_address;
@@ -545,7 +431,7 @@ static int xgbe_phy_sfp_get_mux(struct xgbe_prv_data *pdata)
 	if (phy_data->sfp_comm == XGBE_SFP_COMM_DIRECT)
 		return 0;
 
-	/* Select desired mux channel */
+	 
 	mux_channel = 1 << phy_data->sfp_mux_channel;
 	i2c_op.cmd = XGBE_I2C_CMD_WRITE;
 	i2c_op.target = phy_data->sfp_mux_address;
@@ -566,31 +452,28 @@ static int xgbe_phy_get_comm_ownership(struct xgbe_prv_data *pdata)
 	unsigned long timeout;
 	unsigned int mutex_id;
 
-	/* The I2C and MDIO/GPIO bus is multiplexed between multiple devices,
-	 * the driver needs to take the software mutex and then the hardware
-	 * mutexes before being able to use the busses.
-	 */
+	 
 	mutex_lock(&xgbe_phy_comm_lock);
 
-	/* Clear the mutexes */
+	 
 	XP_IOWRITE(pdata, XP_I2C_MUTEX, XGBE_MUTEX_RELEASE);
 	XP_IOWRITE(pdata, XP_MDIO_MUTEX, XGBE_MUTEX_RELEASE);
 
-	/* Mutex formats are the same for I2C and MDIO/GPIO */
+	 
 	mutex_id = 0;
 	XP_SET_BITS(mutex_id, XP_I2C_MUTEX, ID, phy_data->port_id);
 	XP_SET_BITS(mutex_id, XP_I2C_MUTEX, ACTIVE, 1);
 
 	timeout = jiffies + (5 * HZ);
 	while (time_before(jiffies, timeout)) {
-		/* Must be all zeroes in order to obtain the mutex */
+		 
 		if (XP_IOREAD(pdata, XP_I2C_MUTEX) ||
 		    XP_IOREAD(pdata, XP_MDIO_MUTEX)) {
 			usleep_range(100, 200);
 			continue;
 		}
 
-		/* Obtain the mutex */
+		 
 		XP_IOWRITE(pdata, XP_I2C_MUTEX, mutex_id);
 		XP_IOWRITE(pdata, XP_MDIO_MUTEX, mutex_id);
 
@@ -933,12 +816,12 @@ static bool xgbe_phy_finisar_phy_quirks(struct xgbe_prv_data *pdata)
 	if ((phy_id & 0xfffffff0) != 0x01ff0cc0)
 		return false;
 
-	/* Enable Base-T AN */
+	 
 	phy_write(phy_data->phydev, 0x16, 0x0001);
 	phy_write(phy_data->phydev, 0x00, 0x9140);
 	phy_write(phy_data->phydev, 0x16, 0x0000);
 
-	/* Enable SGMII at 100Base-T/1000Base-T Full Duplex */
+	 
 	phy_write(phy_data->phydev, 0x1b, 0x9084);
 	phy_write(phy_data->phydev, 0x09, 0x0e00);
 	phy_write(phy_data->phydev, 0x00, 0x8140);
@@ -977,7 +860,7 @@ static bool xgbe_phy_belfuse_phy_quirks(struct xgbe_prv_data *pdata)
 		   XGBE_BEL_FUSE_VENDOR, XGBE_SFP_BASE_VENDOR_NAME_LEN))
 		return false;
 
-	/* For Bel-Fuse, use the extra AN flag */
+	 
 	pdata->an_again = 1;
 
 	if (memcmp(&sfp_eeprom->base[XGBE_SFP_BASE_VENDOR_PN],
@@ -987,44 +870,44 @@ static bool xgbe_phy_belfuse_phy_quirks(struct xgbe_prv_data *pdata)
 	if ((phy_id & 0xfffffff0) != 0x03625d10)
 		return false;
 
-	/* Reset PHY - wait for self-clearing reset bit to clear */
+	 
 	genphy_soft_reset(phy_data->phydev);
 
-	/* Disable RGMII mode */
+	 
 	phy_write(phy_data->phydev, 0x18, 0x7007);
 	reg = phy_read(phy_data->phydev, 0x18);
 	phy_write(phy_data->phydev, 0x18, reg & ~0x0080);
 
-	/* Enable fiber register bank */
+	 
 	phy_write(phy_data->phydev, 0x1c, 0x7c00);
 	reg = phy_read(phy_data->phydev, 0x1c);
 	reg &= 0x03ff;
 	reg &= ~0x0001;
 	phy_write(phy_data->phydev, 0x1c, 0x8000 | 0x7c00 | reg | 0x0001);
 
-	/* Power down SerDes */
+	 
 	reg = phy_read(phy_data->phydev, 0x00);
 	phy_write(phy_data->phydev, 0x00, reg | 0x00800);
 
-	/* Configure SGMII-to-Copper mode */
+	 
 	phy_write(phy_data->phydev, 0x1c, 0x7c00);
 	reg = phy_read(phy_data->phydev, 0x1c);
 	reg &= 0x03ff;
 	reg &= ~0x0006;
 	phy_write(phy_data->phydev, 0x1c, 0x8000 | 0x7c00 | reg | 0x0004);
 
-	/* Power up SerDes */
+	 
 	reg = phy_read(phy_data->phydev, 0x00);
 	phy_write(phy_data->phydev, 0x00, reg & ~0x00800);
 
-	/* Enable copper register bank */
+	 
 	phy_write(phy_data->phydev, 0x1c, 0x7c00);
 	reg = phy_read(phy_data->phydev, 0x1c);
 	reg &= 0x03ff;
 	reg &= ~0x0001;
 	phy_write(phy_data->phydev, 0x1c, 0x8000 | 0x7c00 | reg);
 
-	/* Power up SerDes */
+	 
 	reg = phy_read(phy_data->phydev, 0x00);
 	phy_write(phy_data->phydev, 0x00, reg & ~0x00800);
 
@@ -1059,23 +942,23 @@ static int xgbe_phy_find_phy_device(struct xgbe_prv_data *pdata)
 	struct phy_device *phydev;
 	int ret;
 
-	/* If we already have a PHY, just return */
+	 
 	if (phy_data->phydev)
 		return 0;
 
-	/* Clear the extra AN flag */
+	 
 	pdata->an_again = 0;
 
-	/* Check for the use of an external PHY */
+	 
 	if (phy_data->phydev_mode == XGBE_MDIO_MODE_NONE)
 		return 0;
 
-	/* For SFP, only use an external PHY if available */
+	 
 	if ((phy_data->port_mode == XGBE_PORT_MODE_SFP) &&
 	    !phy_data->sfp_phy_avail)
 		return 0;
 
-	/* Set the proper MDIO mode for the PHY */
+	 
 	ret = pdata->hw_if.set_ext_mii_mode(pdata, phy_data->mdio_addr,
 					    phy_data->phydev_mode);
 	if (ret) {
@@ -1085,7 +968,7 @@ static int xgbe_phy_find_phy_device(struct xgbe_prv_data *pdata)
 		return ret;
 	}
 
-	/* Create and connect to the PHY device */
+	 
 	phydev = get_phy_device(phy_data->mii, phy_data->mdio_addr,
 				(phy_data->phydev_mode == XGBE_MDIO_MODE_CL45));
 	if (IS_ERR(phydev)) {
@@ -1095,7 +978,7 @@ static int xgbe_phy_find_phy_device(struct xgbe_prv_data *pdata)
 	netif_dbg(pdata, drv, pdata->netdev, "external PHY id is %#010x\n",
 		  phydev->phy_id);
 
-	/*TODO: If c45, add request_module based on one of the MMD ids? */
+	 
 
 	ret = phy_device_register(phydev);
 	if (ret) {
@@ -1137,12 +1020,12 @@ static void xgbe_phy_sfp_external_phy(struct xgbe_prv_data *pdata)
 	if (phy_data->sfp_base != XGBE_SFP_BASE_1000_T)
 		return;
 
-	/* Check access to the PHY by reading CTRL1 */
+	 
 	ret = xgbe_phy_i2c_mii_read(pdata, MII_BMCR);
 	if (ret < 0)
 		return;
 
-	/* Successfully accessed the PHY */
+	 
 	phy_data->sfp_phy_avail = 1;
 }
 
@@ -1203,11 +1086,11 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
 	if (sfp_base[XGBE_SFP_BASE_EXT_ID] != XGBE_SFP_EXT_ID_SFP)
 		return;
 
-	/* Update transceiver signals (eeprom extd/options) */
+	 
 	phy_data->sfp_tx_fault = xgbe_phy_check_sfp_tx_fault(phy_data);
 	phy_data->sfp_rx_los = xgbe_phy_check_sfp_rx_los(phy_data);
 
-	/* Assume FIBER cable unless told otherwise */
+	 
 	if (sfp_base[XGBE_SFP_BASE_CABLE] & XGBE_SFP_BASE_CABLE_PASSIVE) {
 		phy_data->sfp_cable = XGBE_SFP_CABLE_PASSIVE;
 		phy_data->sfp_cable_len = sfp_base[XGBE_SFP_BASE_CU_CABLE_LEN];
@@ -1217,7 +1100,7 @@ static void xgbe_phy_sfp_parse_eeprom(struct xgbe_prv_data *pdata)
 		phy_data->sfp_cable = XGBE_SFP_CABLE_FIBER;
 	}
 
-	/* Determine the type of SFP */
+	 
 	if (phy_data->sfp_cable != XGBE_SFP_CABLE_FIBER &&
 	    xgbe_phy_sfp_bit_rate(sfp_eeprom, XGBE_SFP_SPEED_10000))
 		phy_data->sfp_base = XGBE_SFP_BASE_10000_CR;
@@ -1315,7 +1198,7 @@ static int xgbe_phy_sfp_read_eeprom(struct xgbe_prv_data *pdata)
 		return ret;
 	}
 
-	/* Read the SFP serial ID eeprom */
+	 
 	eeprom_addr = 0;
 	ret = xgbe_phy_i2c_read(pdata, XGBE_SFP_SERIAL_ID_ADDRESS,
 				&eeprom_addr, sizeof(eeprom_addr),
@@ -1326,7 +1209,7 @@ static int xgbe_phy_sfp_read_eeprom(struct xgbe_prv_data *pdata)
 		goto put;
 	}
 
-	/* Validate the contents read */
+	 
 	if (!xgbe_phy_sfp_verify_eeprom(sfp_eeprom.base[XGBE_SFP_BASE_CC],
 					sfp_eeprom.base,
 					sizeof(sfp_eeprom.base) - 1)) {
@@ -1341,7 +1224,7 @@ static int xgbe_phy_sfp_read_eeprom(struct xgbe_prv_data *pdata)
 		goto put;
 	}
 
-	/* Check for an added or changed SFP */
+	 
 	if (memcmp(&phy_data->sfp_eeprom, &sfp_eeprom, sizeof(sfp_eeprom))) {
 		phy_data->sfp_changed = 1;
 
@@ -1367,7 +1250,7 @@ static void xgbe_phy_sfp_signals(struct xgbe_prv_data *pdata)
 	u8 gpio_reg, gpio_ports[2];
 	int ret;
 
-	/* Read the input port registers */
+	 
 	gpio_reg = 0;
 	ret = xgbe_phy_i2c_read(pdata, phy_data->sfp_gpio_address,
 				&gpio_reg, sizeof(gpio_reg),
@@ -1409,14 +1292,14 @@ static void xgbe_phy_sfp_detect(struct xgbe_prv_data *pdata)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	int ret;
 
-	/* Reset the SFP signals and info */
+	 
 	xgbe_phy_sfp_reset(phy_data);
 
 	ret = xgbe_phy_get_comm_ownership(pdata);
 	if (ret)
 		return;
 
-	/* Read the SFP signals and check for module presence */
+	 
 	xgbe_phy_sfp_signals(pdata);
 	if (phy_data->sfp_mod_absent) {
 		xgbe_phy_sfp_mod_absent(pdata);
@@ -1425,7 +1308,7 @@ static void xgbe_phy_sfp_detect(struct xgbe_prv_data *pdata)
 
 	ret = xgbe_phy_sfp_read_eeprom(pdata);
 	if (ret) {
-		/* Treat any error as if there isn't an SFP plugged in */
+		 
 		xgbe_phy_sfp_reset(phy_data);
 		xgbe_phy_sfp_mod_absent(pdata);
 		goto put;
@@ -1490,7 +1373,7 @@ static int xgbe_phy_module_eeprom(struct xgbe_prv_data *pdata,
 		goto put_own;
 	}
 
-	/* Read the SFP serial ID eeprom */
+	 
 	eeprom_addr = 0;
 	ret = xgbe_phy_i2c_read(pdata, XGBE_SFP_SERIAL_ID_ADDRESS,
 				&eeprom_addr, sizeof(eeprom_addr),
@@ -1505,7 +1388,7 @@ static int xgbe_phy_module_eeprom(struct xgbe_prv_data *pdata,
 	sfp_eeprom = (struct xgbe_sfp_eeprom *)eeprom_data;
 
 	if (XGBE_SFP_DIAGS_SUPPORTED(sfp_eeprom)) {
-		/* Read the SFP diagnostic eeprom */
+		 
 		eeprom_addr = 0;
 		ret = xgbe_phy_i2c_read(pdata, XGBE_SFP_DIAG_INFO_ADDRESS,
 					&eeprom_addr, sizeof(eeprom_addr),
@@ -1604,7 +1487,7 @@ static enum xgbe_mode xgbe_phy_an37_sgmii_outcome(struct xgbe_prv_data *pdata)
 	XGBE_SET_LP_ADV(lks, Autoneg);
 	XGBE_SET_LP_ADV(lks, TP);
 
-	/* Use external PHY to determine flow control */
+	 
 	if (pdata->phy.pause_autoneg)
 		xgbe_phy_phydev_flowctrl(pdata);
 
@@ -1614,7 +1497,7 @@ static enum xgbe_mode xgbe_phy_an37_sgmii_outcome(struct xgbe_prv_data *pdata)
 			XGBE_SET_LP_ADV(lks, 10baseT_Full);
 			mode = XGBE_MODE_SGMII_10;
 		} else {
-			/* Half-duplex not supported */
+			 
 			XGBE_SET_LP_ADV(lks, 10baseT_Half);
 			mode = XGBE_MODE_UNKNOWN;
 		}
@@ -1624,7 +1507,7 @@ static enum xgbe_mode xgbe_phy_an37_sgmii_outcome(struct xgbe_prv_data *pdata)
 			XGBE_SET_LP_ADV(lks, 100baseT_Full);
 			mode = XGBE_MODE_SGMII_100;
 		} else {
-			/* Half-duplex not supported */
+			 
 			XGBE_SET_LP_ADV(lks, 100baseT_Half);
 			mode = XGBE_MODE_UNKNOWN;
 		}
@@ -1634,7 +1517,7 @@ static enum xgbe_mode xgbe_phy_an37_sgmii_outcome(struct xgbe_prv_data *pdata)
 			XGBE_SET_LP_ADV(lks, 1000baseT_Full);
 			mode = XGBE_MODE_SGMII_1000;
 		} else {
-			/* Half-duplex not supported */
+			 
 			XGBE_SET_LP_ADV(lks, 1000baseT_Half);
 			mode = XGBE_MODE_UNKNOWN;
 		}
@@ -1655,7 +1538,7 @@ static enum xgbe_mode xgbe_phy_an37_outcome(struct xgbe_prv_data *pdata)
 	XGBE_SET_LP_ADV(lks, Autoneg);
 	XGBE_SET_LP_ADV(lks, FIBRE);
 
-	/* Compare Advertisement and Link Partner register */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_VEND2, MDIO_VEND2_AN_ADVERTISE);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_VEND2, MDIO_VEND2_AN_LP_ABILITY);
 	if (lp_reg & 0x100)
@@ -1664,7 +1547,7 @@ static enum xgbe_mode xgbe_phy_an37_outcome(struct xgbe_prv_data *pdata)
 		XGBE_SET_LP_ADV(lks, Asym_Pause);
 
 	if (pdata->phy.pause_autoneg) {
-		/* Set flow control based on auto-negotiation result */
+		 
 		pdata->phy.tx_pause = 0;
 		pdata->phy.rx_pause = 0;
 
@@ -1682,7 +1565,7 @@ static enum xgbe_mode xgbe_phy_an37_outcome(struct xgbe_prv_data *pdata)
 	if (lp_reg & 0x20)
 		XGBE_SET_LP_ADV(lks, 1000baseX_Full);
 
-	/* Half duplex is not supported */
+	 
 	ad_reg &= lp_reg;
 	mode = (ad_reg & 0x20) ? XGBE_MODE_X : XGBE_MODE_UNKNOWN;
 
@@ -1699,11 +1582,11 @@ static enum xgbe_mode xgbe_phy_an73_redrv_outcome(struct xgbe_prv_data *pdata)
 	XGBE_SET_LP_ADV(lks, Autoneg);
 	XGBE_SET_LP_ADV(lks, Backplane);
 
-	/* Use external PHY to determine flow control */
+	 
 	if (pdata->phy.pause_autoneg)
 		xgbe_phy_phydev_flowctrl(pdata);
 
-	/* Compare Advertisement and Link Partner register 2 */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 1);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA + 1);
 	if (lp_reg & 0x80)
@@ -1766,7 +1649,7 @@ static enum xgbe_mode xgbe_phy_an73_redrv_outcome(struct xgbe_prv_data *pdata)
 		mode = XGBE_MODE_UNKNOWN;
 	}
 
-	/* Compare Advertisement and Link Partner register 3 */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 2);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA + 2);
 	if (lp_reg & 0xc000)
@@ -1784,7 +1667,7 @@ static enum xgbe_mode xgbe_phy_an73_outcome(struct xgbe_prv_data *pdata)
 	XGBE_SET_LP_ADV(lks, Autoneg);
 	XGBE_SET_LP_ADV(lks, Backplane);
 
-	/* Compare Advertisement and Link Partner register 1 */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA);
 	if (lp_reg & 0x400)
@@ -1793,7 +1676,7 @@ static enum xgbe_mode xgbe_phy_an73_outcome(struct xgbe_prv_data *pdata)
 		XGBE_SET_LP_ADV(lks, Asym_Pause);
 
 	if (pdata->phy.pause_autoneg) {
-		/* Set flow control based on auto-negotiation result */
+		 
 		pdata->phy.tx_pause = 0;
 		pdata->phy.rx_pause = 0;
 
@@ -1808,7 +1691,7 @@ static enum xgbe_mode xgbe_phy_an73_outcome(struct xgbe_prv_data *pdata)
 		}
 	}
 
-	/* Compare Advertisement and Link Partner register 2 */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 1);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA + 1);
 	if (lp_reg & 0x80)
@@ -1824,7 +1707,7 @@ static enum xgbe_mode xgbe_phy_an73_outcome(struct xgbe_prv_data *pdata)
 	else
 		mode = XGBE_MODE_UNKNOWN;
 
-	/* Compare Advertisement and Link Partner register 3 */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 2);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA + 2);
 	if (lp_reg & 0xc000)
@@ -1857,15 +1740,15 @@ static void xgbe_phy_an_advertising(struct xgbe_prv_data *pdata,
 
 	XGBE_LM_COPY(dlks, advertising, slks, advertising);
 
-	/* Without a re-driver, just return current advertising */
+	 
 	if (!phy_data->redrv)
 		return;
 
-	/* With the KR re-driver we need to advertise a single speed */
+	 
 	XGBE_CLR_ADV(dlks, 1000baseKX_Full);
 	XGBE_CLR_ADV(dlks, 10000baseKR_Full);
 
-	/* Advertise FEC support is present */
+	 
 	if (pdata->fec_ability & MDIO_PMA_10GBR_FECABLE_ABLE)
 		XGBE_SET_ADV(dlks, 10000baseR_FEC);
 
@@ -1960,7 +1843,7 @@ static enum xgbe_an_mode xgbe_phy_an_mode(struct xgbe_prv_data *pdata)
 {
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 
-	/* A KR re-driver will always require CL73 AN */
+	 
 	if (phy_data->redrv)
 		return XGBE_AN_MODE_CL73_REDRV;
 
@@ -2007,7 +1890,7 @@ static int xgbe_phy_set_redrv_mode_i2c(struct xgbe_prv_data *pdata,
 	unsigned int redrv_reg;
 	int ret;
 
-	/* Calculate the register to write */
+	 
 	redrv_reg = XGBE_PHY_REDRV_MODE_REG + (phy_data->redrv_lane * 0x1000);
 
 	ret = xgbe_phy_redrv_write(pdata, redrv_reg, mode);
@@ -2066,35 +1949,31 @@ static void xgbe_rx_adaptation(struct xgbe_prv_data *pdata)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	unsigned int reg;
 
-	/* step 2: force PCS to send RX_ADAPT Req to PHY */
+	 
 	XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_EQ_CTRL4,
 			 XGBE_PMA_RX_AD_REQ_MASK, XGBE_PMA_RX_AD_REQ_ENABLE);
 
-	/* Step 3: Wait for RX_ADAPT ACK from the PHY */
+	 
 	msleep(200);
 
-	/* Software polls for coefficient update command (given by local PHY) */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_PHY_RX_EQ_CEU);
 
-	/* Clear the RX_AD_REQ bit */
+	 
 	XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_EQ_CTRL4,
 			 XGBE_PMA_RX_AD_REQ_MASK, XGBE_PMA_RX_AD_REQ_DISABLE);
 
-	/* Check if coefficient update command is set */
+	 
 	if ((reg & XGBE_PMA_CFF_UPDT_MASK) != XGBE_PMA_CFF_UPDT_MASK)
 		goto set_mode;
 
-	/* Step 4: Check for Block lock */
+	 
 
-	/* Link status is latched low, so read once to clear
-	 * and then read again to get current state
-	 */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
 	if (reg & MDIO_STAT1_LSTATUS) {
-		/* If the block lock is found, update the helpers
-		 * and declare the link up
-		 */
+		 
 		netif_dbg(pdata, link, pdata->netdev, "Block_lock done");
 		pdata->rx_adapt_done = true;
 		pdata->mode_set = false;
@@ -2113,7 +1992,7 @@ rx_adapt_reinit:
 	reg = XMDIO_READ_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_LSTS,
 			      XGBE_PMA_RX_VAL_SIG_MASK);
 
-	/* step 1: Check for RX_VALID && LF_SIGDET */
+	 
 	if ((reg & XGBE_PMA_RX_VAL_SIG_MASK) != XGBE_PMA_RX_VAL_SIG_MASK) {
 		netif_dbg(pdata, link, pdata->netdev,
 			  "RX_VALID or LF_SIGDET is unset, issue rrc");
@@ -2125,7 +2004,7 @@ rx_adapt_reinit:
 		goto rx_adapt_reinit;
 	}
 
-	/* perform rx adaptation */
+	 
 	xgbe_rx_adaptation(pdata);
 }
 
@@ -2136,10 +2015,7 @@ static void xgbe_phy_rx_reset(struct xgbe_prv_data *pdata)
 	reg = XMDIO_READ_BITS(pdata, MDIO_MMD_PCS, MDIO_PCS_DIGITAL_STAT,
 			      XGBE_PCS_PSEQ_STATE_MASK);
 	if (reg == XGBE_PCS_PSEQ_STATE_POWER_GOOD) {
-		/* Mailbox command timed out, reset of RX block is required.
-		 * This can be done by asseting the reset bit and wait for
-		 * its compeletion.
-		 */
+		 
 		XMDIO_WRITE_BITS(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_RX_CTRL1,
 				 XGBE_PMA_RX_RST_0_MASK, XGBE_PMA_RX_RST_0_RESET_ON);
 		ndelay(20);
@@ -2152,7 +2028,7 @@ static void xgbe_phy_rx_reset(struct xgbe_prv_data *pdata)
 
 static void xgbe_phy_pll_ctrl(struct xgbe_prv_data *pdata, bool enable)
 {
-	/* PLL_CTRL feature needs to be enabled for fixed PHY modes (Non-Autoneg) only */
+	 
 	if (pdata->phy.autoneg != AUTONEG_DISABLE)
 		return;
 
@@ -2161,7 +2037,7 @@ static void xgbe_phy_pll_ctrl(struct xgbe_prv_data *pdata, bool enable)
 			 enable ? XGBE_PMA_PLL_CTRL_ENABLE
 				: XGBE_PMA_PLL_CTRL_DISABLE);
 
-	/* Wait for command to complete */
+	 
 	usleep_range(100, 200);
 }
 
@@ -2171,26 +2047,26 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
 	unsigned int s0 = 0;
 	unsigned int wait;
 
-	/* Disable PLL re-initialization during FW command processing */
+	 
 	xgbe_phy_pll_ctrl(pdata, false);
 
-	/* Log if a previous command did not complete */
+	 
 	if (XP_IOREAD_BITS(pdata, XP_DRIVER_INT_RO, STATUS)) {
 		netif_dbg(pdata, link, pdata->netdev,
 			  "firmware mailbox not ready for command\n");
 		xgbe_phy_rx_reset(pdata);
 	}
 
-	/* Construct the command */
+	 
 	XP_SET_BITS(s0, XP_DRIVER_SCRATCH_0, COMMAND, cmd);
 	XP_SET_BITS(s0, XP_DRIVER_SCRATCH_0, SUB_COMMAND, sub_cmd);
 
-	/* Issue the command */
+	 
 	XP_IOWRITE(pdata, XP_DRIVER_SCRATCH_0, s0);
 	XP_IOWRITE(pdata, XP_DRIVER_SCRATCH_1, 0);
 	XP_IOWRITE_BITS(pdata, XP_DRIVER_INT_REQ, REQUEST, 1);
 
-	/* Wait for command to complete */
+	 
 	wait = XGBE_RATECHANGE_COUNT;
 	while (wait--) {
 		if (!XP_IOREAD_BITS(pdata, XP_DRIVER_INT_RO, STATUS))
@@ -2202,7 +2078,7 @@ static void xgbe_phy_perform_ratechange(struct xgbe_prv_data *pdata,
 	netif_dbg(pdata, link, pdata->netdev,
 		  "firmware mailbox command did not complete\n");
 
-	/* Reset on error */
+	 
 	xgbe_phy_rx_reset(pdata);
 	goto reenable_pll;
 
@@ -2213,14 +2089,12 @@ do_rx_adaptation:
 			  "Enabling RX adaptation\n");
 		pdata->mode_set = true;
 		xgbe_phy_rx_adaptation(pdata);
-		/* return from here to avoid enabling PLL ctrl
-		 * during adaptation phase
-		 */
+		 
 		return;
 	}
 
 reenable_pll:
-	/* Enable PLL re-initialization, not needed for PHY Power Off and RRC cmds */
+	 
 	if (cmd != XGBE_MB_CMD_POWER_OFF &&
 	    cmd != XGBE_MB_CMD_RRC)
 		xgbe_phy_pll_ctrl(pdata, true);
@@ -2228,7 +2102,7 @@ reenable_pll:
 
 static void xgbe_phy_rrc(struct xgbe_prv_data *pdata)
 {
-	/* Receiver Reset Cycle */
+	 
 	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_RRC, XGBE_MB_SUBCMD_NONE);
 
 	netif_dbg(pdata, link, pdata->netdev, "receiver reset complete\n");
@@ -2238,7 +2112,7 @@ static void xgbe_phy_power_off(struct xgbe_prv_data *pdata)
 {
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 
-	/* Power off */
+	 
 	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_POWER_OFF, XGBE_MB_SUBCMD_NONE);
 
 	phy_data->cur_mode = XGBE_MODE_UNKNOWN;
@@ -2251,18 +2125,18 @@ static bool enable_rx_adap(struct xgbe_prv_data *pdata, enum xgbe_mode mode)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	unsigned int ver;
 
-	/* Rx-Adaptation is not supported on older platforms(< 0x30H) */
+	 
 	ver = XGMAC_GET_BITS(pdata->hw_feat.version, MAC_VR, SNPSVER);
 	if (ver < 0x30)
 		return false;
 
-	/* Re-driver models 4223 && 4227 do not support Rx-Adaptation */
+	 
 	if (phy_data->redrv &&
 	    (phy_data->redrv_model == XGBE_PHY_REDRV_MODEL_4223 ||
 	     phy_data->redrv_model == XGBE_PHY_REDRV_MODEL_4227))
 		return false;
 
-	/* 10G KR mode with AN does not support Rx-Adaptation */
+	 
 	if (mode == XGBE_MODE_KR &&
 	    phy_data->port_mode != XGBE_PORT_MODE_BACKPLANE_NO_AUTONEG)
 		return false;
@@ -2277,7 +2151,7 @@ static void xgbe_phy_sfi_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_set_redrv_mode(pdata);
 
-	/* 10G/SFI */
+	 
 	if (phy_data->sfp_cable != XGBE_SFP_CABLE_PASSIVE) {
 		pdata->en_rx_adap = 0;
 		xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_10G_SFI, XGBE_MB_SUBCMD_ACTIVE);
@@ -2308,7 +2182,7 @@ static void xgbe_phy_x_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_set_redrv_mode(pdata);
 
-	/* 1G/X */
+	 
 	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_1G, XGBE_MB_SUBCMD_1G_KX);
 
 	phy_data->cur_mode = XGBE_MODE_X;
@@ -2322,7 +2196,7 @@ static void xgbe_phy_sgmii_1000_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_set_redrv_mode(pdata);
 
-	/* 1G/SGMII */
+	 
 	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_1G, XGBE_MB_SUBCMD_1G_SGMII);
 
 	phy_data->cur_mode = XGBE_MODE_SGMII_1000;
@@ -2336,7 +2210,7 @@ static void xgbe_phy_sgmii_100_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_set_redrv_mode(pdata);
 
-	/* 100M/SGMII */
+	 
 	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_1G, XGBE_MB_SUBCMD_100MBITS);
 
 	phy_data->cur_mode = XGBE_MODE_SGMII_100;
@@ -2350,7 +2224,7 @@ static void xgbe_phy_sgmii_10_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_set_redrv_mode(pdata);
 
-	/* 10M/SGMII */
+	 
 	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_1G, XGBE_MB_SUBCMD_10MBITS);
 
 	phy_data->cur_mode = XGBE_MODE_SGMII_10;
@@ -2364,7 +2238,7 @@ static void xgbe_phy_kr_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_set_redrv_mode(pdata);
 
-	/* 10G/KR */
+	 
 	if (enable_rx_adap(pdata, XGBE_MODE_KR))
 		xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_10G_KR,
 					    XGBE_MB_SUBCMD_RX_ADAP);
@@ -2383,7 +2257,7 @@ static void xgbe_phy_kx_2500_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_set_redrv_mode(pdata);
 
-	/* 2.5G/KX */
+	 
 	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_2_5G, XGBE_MB_SUBCMD_NONE);
 
 	phy_data->cur_mode = XGBE_MODE_KX_2500;
@@ -2397,7 +2271,7 @@ static void xgbe_phy_kx_1000_mode(struct xgbe_prv_data *pdata)
 
 	xgbe_phy_set_redrv_mode(pdata);
 
-	/* 1G/KX */
+	 
 	xgbe_phy_perform_ratechange(pdata, XGBE_MB_CMD_SET_1G, XGBE_MB_SUBCMD_1G_KX);
 
 	phy_data->cur_mode = XGBE_MODE_KX_1000;
@@ -2416,7 +2290,7 @@ static enum xgbe_mode xgbe_phy_switch_baset_mode(struct xgbe_prv_data *pdata)
 {
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 
-	/* No switching if not 10GBase-T */
+	 
 	if (phy_data->port_mode != XGBE_PORT_MODE_10GBASE_T)
 		return xgbe_phy_cur_mode(pdata);
 
@@ -2440,7 +2314,7 @@ static enum xgbe_mode xgbe_phy_switch_bp_2500_mode(struct xgbe_prv_data *pdata)
 
 static enum xgbe_mode xgbe_phy_switch_bp_mode(struct xgbe_prv_data *pdata)
 {
-	/* If we are in KR switch to KX, and vice-versa */
+	 
 	switch (xgbe_phy_cur_mode(pdata)) {
 	case XGBE_MODE_KX_1000:
 		return XGBE_MODE_KR;
@@ -2467,7 +2341,7 @@ static enum xgbe_mode xgbe_phy_switch_mode(struct xgbe_prv_data *pdata)
 	case XGBE_PORT_MODE_1000BASE_X:
 	case XGBE_PORT_MODE_10GBASE_R:
 	case XGBE_PORT_MODE_SFP:
-		/* No switching, so just return current mode */
+		 
 		return xgbe_phy_cur_mode(pdata);
 	default:
 		return XGBE_MODE_UNKNOWN;
@@ -2782,7 +2656,7 @@ static bool xgbe_phy_valid_speed_baset_mode(struct xgbe_prv_data *pdata,
 
 	switch (speed) {
 	case SPEED_10:
-		/* Supported in ver 21H and ver >= 30H */
+		 
 		ver = XGMAC_GET_BITS(pdata->hw_feat.version, MAC_VR, SNPSVER);
 		return (ver == 0x21 || ver >= 0x30);
 	case SPEED_100:
@@ -2806,7 +2680,7 @@ static bool xgbe_phy_valid_speed_sfp_mode(struct xgbe_prv_data *pdata,
 
 	switch (speed) {
 	case SPEED_10:
-		/* Supported in ver 21H and ver >= 30H */
+		 
 		ver = XGMAC_GET_BITS(pdata->hw_feat.version, MAC_VR, SNPSVER);
 		return ((ver == 0x21 || ver >= 0x30) &&
 			(phy_data->sfp_speed == XGBE_SFP_SPEED_100_1000));
@@ -2876,7 +2750,7 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
 	*an_restart = 0;
 
 	if (phy_data->port_mode == XGBE_PORT_MODE_SFP) {
-		/* Check SFP signals */
+		 
 		xgbe_phy_sfp_detect(pdata);
 
 		if (phy_data->sfp_changed) {
@@ -2892,7 +2766,7 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
 	}
 
 	if (phy_data->phydev) {
-		/* Check external PHY */
+		 
 		ret = phy_read_status(phy_data->phydev);
 		if (ret < 0)
 			return 0;
@@ -2905,22 +2779,15 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
 			return 0;
 	}
 
-	/* Link status is latched low, so read once to clear
-	 * and then read again to get current state
-	 */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
 	reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
 
 	if (pdata->en_rx_adap) {
-		/* if the link is available and adaptation is done,
-		 * declare link up
-		 */
+		 
 		if ((reg & MDIO_STAT1_LSTATUS) && pdata->rx_adapt_done)
 			return 1;
-		/* If either link is not available or adaptation is not done,
-		 * retrigger the adaptation logic. (if the mode is not set,
-		 * then issue mailbox command first)
-		 */
+		 
 		if (pdata->mode_set) {
 			xgbe_phy_rx_adaptation(pdata);
 		} else {
@@ -2928,7 +2795,7 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
 			xgbe_phy_set_mode(pdata, phy_data->cur_mode);
 		}
 
-		/* check again for the link and adaptation status */
+		 
 		reg = XMDIO_READ(pdata, MDIO_MMD_PCS, MDIO_STAT1);
 		if ((reg & MDIO_STAT1_LSTATUS) && pdata->rx_adapt_done)
 			return 1;
@@ -2943,7 +2810,7 @@ static int xgbe_phy_link_status(struct xgbe_prv_data *pdata, int *an_restart)
 		}
 	}
 
-	/* No link, attempt a receiver reset cycle */
+	 
 	if (pdata->vdata->enable_rrc && phy_data->rrc_count++ > XGBE_RRC_FREQUENCY) {
 		phy_data->rrc_count = 0;
 		xgbe_phy_rrc(pdata);
@@ -3037,7 +2904,7 @@ static int xgbe_phy_i2c_mdio_reset(struct xgbe_prv_data *pdata)
 	u8 gpio_reg, gpio_ports[2], gpio_data[3];
 	int ret;
 
-	/* Read the output port registers */
+	 
 	gpio_reg = 2;
 	ret = xgbe_phy_i2c_read(pdata, phy_data->mdio_reset_addr,
 				&gpio_reg, sizeof(gpio_reg),
@@ -3045,30 +2912,30 @@ static int xgbe_phy_i2c_mdio_reset(struct xgbe_prv_data *pdata)
 	if (ret)
 		return ret;
 
-	/* Prepare to write the GPIO data */
+	 
 	gpio_data[0] = 2;
 	gpio_data[1] = gpio_ports[0];
 	gpio_data[2] = gpio_ports[1];
 
-	/* Set the GPIO pin */
+	 
 	if (phy_data->mdio_reset_gpio < 8)
 		gpio_data[1] |= (1 << (phy_data->mdio_reset_gpio % 8));
 	else
 		gpio_data[2] |= (1 << (phy_data->mdio_reset_gpio % 8));
 
-	/* Write the output port registers */
+	 
 	ret = xgbe_phy_i2c_write(pdata, phy_data->mdio_reset_addr,
 				 gpio_data, sizeof(gpio_data));
 	if (ret)
 		return ret;
 
-	/* Clear the GPIO pin */
+	 
 	if (phy_data->mdio_reset_gpio < 8)
 		gpio_data[1] &= ~(1 << (phy_data->mdio_reset_gpio % 8));
 	else
 		gpio_data[2] &= ~(1 << (phy_data->mdio_reset_gpio % 8));
 
-	/* Write the output port registers */
+	 
 	ret = xgbe_phy_i2c_write(pdata, phy_data->mdio_reset_addr,
 				 gpio_data, sizeof(gpio_data));
 
@@ -3159,7 +3026,7 @@ static bool xgbe_phy_port_mode_mismatch(struct xgbe_prv_data *pdata)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	unsigned int ver;
 
-	/* 10 Mbps speed is supported in ver 21H and ver >= 30H */
+	 
 	ver = XGMAC_GET_BITS(pdata->hw_feat.version, MAC_VR, SNPSVER);
 	if ((ver < 0x30 && ver != 0x21) && (phy_data->port_speeds & XGBE_PHY_PORT_SPEED_10))
 		return true;
@@ -3359,20 +3226,20 @@ static void xgbe_phy_stop(struct xgbe_prv_data *pdata)
 {
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 
-	/* If we have an external PHY, free it */
+	 
 	xgbe_phy_free_phy_device(pdata);
 
-	/* Reset SFP data */
+	 
 	xgbe_phy_sfp_reset(phy_data);
 	xgbe_phy_sfp_mod_absent(pdata);
 
-	/* Reset CDR support */
+	 
 	xgbe_phy_cdr_track(pdata);
 
-	/* Power off the PHY */
+	 
 	xgbe_phy_power_off(pdata);
 
-	/* Stop the I2C controller */
+	 
 	pdata->i2c_if.i2c_stop(pdata);
 }
 
@@ -3381,12 +3248,12 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 	int ret;
 
-	/* Start the I2C controller */
+	 
 	ret = pdata->i2c_if.i2c_start(pdata);
 	if (ret)
 		return ret;
 
-	/* Set the proper MDIO mode for the re-driver */
+	 
 	if (phy_data->redrv && !phy_data->redrv_if) {
 		ret = pdata->hw_if.set_ext_mii_mode(pdata, phy_data->redrv_addr,
 						    XGBE_MDIO_MODE_CL22);
@@ -3398,13 +3265,13 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
 		}
 	}
 
-	/* Start in highest supported mode */
+	 
 	xgbe_phy_set_mode(pdata, phy_data->start_mode);
 
-	/* Reset CDR support */
+	 
 	xgbe_phy_cdr_track(pdata);
 
-	/* After starting the I2C controller, we can check for an SFP */
+	 
 	switch (phy_data->port_mode) {
 	case XGBE_PORT_MODE_SFP:
 		xgbe_phy_sfp_detect(pdata);
@@ -3413,7 +3280,7 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
 		break;
 	}
 
-	/* If we have an external PHY, start it */
+	 
 	ret = xgbe_phy_find_phy_device(pdata);
 	if (ret)
 		goto err_i2c;
@@ -3432,7 +3299,7 @@ static int xgbe_phy_reset(struct xgbe_prv_data *pdata)
 	enum xgbe_mode cur_mode;
 	int ret;
 
-	/* Reset by power cycling the PHY */
+	 
 	cur_mode = phy_data->cur_mode;
 	xgbe_phy_power_off(pdata);
 	xgbe_phy_set_mode(pdata, cur_mode);
@@ -3440,7 +3307,7 @@ static int xgbe_phy_reset(struct xgbe_prv_data *pdata)
 	if (!phy_data->phydev)
 		return 0;
 
-	/* Reset the external PHY */
+	 
 	ret = xgbe_phy_mdio_reset(pdata);
 	if (ret)
 		return ret;
@@ -3452,7 +3319,7 @@ static void xgbe_phy_exit(struct xgbe_prv_data *pdata)
 {
 	struct xgbe_phy_data *phy_data = pdata->phy_data;
 
-	/* Unregister for driving external PHYs */
+	 
 	mdiobus_unregister(phy_data->mii);
 }
 
@@ -3463,13 +3330,13 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 	struct mii_bus *mii;
 	int ret;
 
-	/* Check if enabled */
+	 
 	if (!xgbe_phy_port_enabled(pdata)) {
 		dev_info(pdata->dev, "device is not enabled\n");
 		return -ENODEV;
 	}
 
-	/* Initialize the I2C controller */
+	 
 	ret = pdata->i2c_if.i2c_init(pdata);
 	if (ret)
 		return ret;
@@ -3505,40 +3372,40 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		dev_dbg(pdata->dev, "redrv model=%u\n", phy_data->redrv_model);
 	}
 
-	/* Validate the connection requested */
+	 
 	if (xgbe_phy_conn_type_mismatch(pdata)) {
 		dev_err(pdata->dev, "phy mode/connection mismatch (%#x/%#x)\n",
 			phy_data->port_mode, phy_data->conn_type);
 		return -EINVAL;
 	}
 
-	/* Validate the mode requested */
+	 
 	if (xgbe_phy_port_mode_mismatch(pdata)) {
 		dev_err(pdata->dev, "phy mode/speed mismatch (%#x/%#x)\n",
 			phy_data->port_mode, phy_data->port_speeds);
 		return -EINVAL;
 	}
 
-	/* Check for and validate MDIO reset support */
+	 
 	ret = xgbe_phy_mdio_reset_setup(pdata);
 	if (ret)
 		return ret;
 
-	/* Validate the re-driver information */
+	 
 	if (xgbe_phy_redrv_error(phy_data)) {
 		dev_err(pdata->dev, "phy re-driver settings error\n");
 		return -EINVAL;
 	}
 	pdata->kr_redrv = phy_data->redrv;
 
-	/* Indicate current mode is unknown */
+	 
 	phy_data->cur_mode = XGBE_MODE_UNKNOWN;
 
-	/* Initialize supported features */
+	 
 	XGBE_ZERO_SUP(lks);
 
 	switch (phy_data->port_mode) {
-	/* Backplane support */
+	 
 	case XGBE_PORT_MODE_BACKPLANE:
 		XGBE_SET_SUP(lks, Autoneg);
 		fallthrough;
@@ -3569,7 +3436,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		phy_data->phydev_mode = XGBE_MDIO_MODE_NONE;
 		break;
 
-	/* MDIO 1GBase-T support */
+	 
 	case XGBE_PORT_MODE_1000BASE_T:
 		XGBE_SET_SUP(lks, Autoneg);
 		XGBE_SET_SUP(lks, Pause);
@@ -3591,7 +3458,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		phy_data->phydev_mode = XGBE_MDIO_MODE_CL22;
 		break;
 
-	/* MDIO Base-X support */
+	 
 	case XGBE_PORT_MODE_1000BASE_X:
 		XGBE_SET_SUP(lks, Autoneg);
 		XGBE_SET_SUP(lks, Pause);
@@ -3603,7 +3470,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		phy_data->phydev_mode = XGBE_MDIO_MODE_CL22;
 		break;
 
-	/* MDIO NBase-T support */
+	 
 	case XGBE_PORT_MODE_NBASE_T:
 		XGBE_SET_SUP(lks, Autoneg);
 		XGBE_SET_SUP(lks, Pause);
@@ -3629,7 +3496,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		phy_data->phydev_mode = XGBE_MDIO_MODE_CL45;
 		break;
 
-	/* 10GBase-T support */
+	 
 	case XGBE_PORT_MODE_10GBASE_T:
 		XGBE_SET_SUP(lks, Autoneg);
 		XGBE_SET_SUP(lks, Pause);
@@ -3659,7 +3526,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		phy_data->phydev_mode = XGBE_MDIO_MODE_CL45;
 		break;
 
-	/* 10GBase-R support */
+	 
 	case XGBE_PORT_MODE_10GBASE_R:
 		XGBE_SET_SUP(lks, Autoneg);
 		XGBE_SET_SUP(lks, Pause);
@@ -3676,7 +3543,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 		phy_data->phydev_mode = XGBE_MDIO_MODE_NONE;
 		break;
 
-	/* SFP support */
+	 
 	case XGBE_PORT_MODE_SFP:
 		XGBE_SET_SUP(lks, Autoneg);
 		XGBE_SET_SUP(lks, Pause);
@@ -3730,7 +3597,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 
 	phy_data->phy_cdr_delay = XGBE_CDR_DELAY_INIT;
 
-	/* Register for driving external PHYs */
+	 
 	mii = devm_mdiobus_alloc(pdata->dev);
 	if (!mii) {
 		dev_err(pdata->dev, "mdiobus_alloc failed\n");

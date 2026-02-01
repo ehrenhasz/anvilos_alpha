@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef __DRBD_INTERVAL_H
 #define __DRBD_INTERVAL_H
 
@@ -7,13 +7,12 @@
 
 struct drbd_interval {
 	struct rb_node rb;
-	sector_t sector;		/* start sector of the interval */
-	unsigned int size;		/* size in bytes */
-	sector_t end;			/* highest interval end in subtree */
-	unsigned int local:1		/* local or remote request? */;
-	unsigned int waiting:1;		/* someone is waiting for completion */
-	unsigned int completed:1;	/* this has been completed already;
-					 * ignore for conflict detection */
+	sector_t sector;		 
+	unsigned int size;		 
+	sector_t end;			 
+	unsigned int local:1		 ;
+	unsigned int waiting:1;		 
+	unsigned int completed:1;	 
 };
 
 static inline void drbd_clear_interval(struct drbd_interval *i)
@@ -40,4 +39,4 @@ extern struct drbd_interval *drbd_next_overlap(struct drbd_interval *, sector_t,
 	     i;							\
 	     i = drbd_next_overlap(i, sector, size))
 
-#endif  /* __DRBD_INTERVAL_H */
+#endif   

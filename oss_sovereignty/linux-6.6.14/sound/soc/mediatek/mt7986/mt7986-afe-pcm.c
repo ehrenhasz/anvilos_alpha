@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek ALSA SoC AFE platform driver for MT7986
- *
- * Copyright (c) 2023 MediaTek Inc.
- * Authors: Vic Wu <vic.wu@mediatek.com>
- *          Maso Huang <maso.huang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -134,7 +128,7 @@ static int mt7986_irq_fs(struct snd_pcm_substream *substream,
 			 SNDRV_PCM_FMTBIT_S32_LE)
 
 static struct snd_soc_dai_driver mt7986_memif_dai_driver[] = {
-	/* FE DAIs: memory intefaces to CPU */
+	 
 	{
 		.name = "DL1",
 		.id = MT7986_MEMIF_DL1,
@@ -170,11 +164,11 @@ static const struct snd_kcontrol_new o019_mix[] = {
 };
 
 static const struct snd_soc_dapm_widget mt7986_memif_widgets[] = {
-	/* DL */
+	 
 	SND_SOC_DAPM_MIXER("I032", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_MIXER("I033", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* UL */
+	 
 	SND_SOC_DAPM_MIXER("O018", SND_SOC_NOPM, 0, 0,
 			   o018_mix, ARRAY_SIZE(o018_mix)),
 	SND_SOC_DAPM_MIXER("O019", SND_SOC_NOPM, 0, 0,
@@ -287,11 +281,7 @@ static const struct mtk_base_irq_data irq_data[MT7986_IRQ_NUM] = {
 
 static bool mt7986_is_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/*
-	 * Those auto-gen regs are read-only, so put it as volatile because
-	 * volatile registers cannot be cached, which means that they cannot
-	 * be set when power is off
-	 */
+	 
 
 	switch (reg) {
 	case AFE_DL0_CUR_MSB:
@@ -347,11 +337,11 @@ static irqreturn_t mt7986_afe_irq_handler(int irq_id, void *dev)
 	int i, ret;
 	irqreturn_t irq_ret = IRQ_HANDLED;
 
-	/* get irq that is sent to MCU */
+	 
 	regmap_read(afe->regmap, AFE_IRQ_MCU_EN, &mcu_en);
 
 	ret = regmap_read(afe->regmap, AFE_IRQ_MCU_STATUS, &status);
-	/* only care IRQ which is sent to MCU */
+	 
 	status_mcu = status & mcu_en & AFE_IRQ_STATUS_BITS;
 
 	if (ret || status_mcu == 0) {
@@ -378,7 +368,7 @@ static irqreturn_t mt7986_afe_irq_handler(int irq_id, void *dev)
 	}
 
 err_irq:
-	/* clear irq */
+	 
 	regmap_write(afe->regmap, AFE_IRQ_MCU_CLR, status_mcu);
 
 	return irq_ret;
@@ -392,12 +382,12 @@ static int mt7986_afe_runtime_suspend(struct device *dev)
 	if (!afe->regmap || afe_priv->pm_runtime_bypass_reg_ctl)
 		goto skip_regmap;
 
-	/* disable clk*/
+	 
 	regmap_update_bits(afe->regmap, AUDIO_TOP_CON4, 0x3fff, 0x3fff);
 	regmap_update_bits(afe->regmap, AUDIO_ENGEN_CON0, AUD_APLL2_EN_MASK, 0);
 	regmap_update_bits(afe->regmap, AUDIO_ENGEN_CON0, AUD_26M_EN_MASK, 0);
 
-	/* make sure all irq status are cleared, twice intended */
+	 
 	regmap_update_bits(afe->regmap, AFE_IRQ_MCU_CLR, 0xffff, 0xffff);
 
 skip_regmap:
@@ -419,7 +409,7 @@ static int mt7986_afe_runtime_resume(struct device *dev)
 	if (!afe->regmap || afe_priv->pm_runtime_bypass_reg_ctl)
 		return 0;
 
-	/* enable clk*/
+	 
 	regmap_update_bits(afe->regmap, AUDIO_TOP_CON4, 0x3fff, 0);
 	regmap_update_bits(afe->regmap, AUDIO_ENGEN_CON0, AUD_APLL2_EN_MASK,
 			   AUD_APLL2_EN);
@@ -493,7 +483,7 @@ static int mt7986_afe_pcm_dev_probe(struct platform_device *pdev)
 	if (IS_ERR(afe->base_addr))
 		return PTR_ERR(afe->base_addr);
 
-	/* initial audio related clock */
+	 
 	ret = mt7986_init_clock(afe);
 	if (ret)
 		return dev_err_probe(dev, ret, "Cannot initialize clocks\n");
@@ -502,7 +492,7 @@ static int mt7986_afe_pcm_dev_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* enable clock for regcache get default value from hw */
+	 
 	afe_priv->pm_runtime_bypass_reg_ctl = true;
 	pm_runtime_get_sync(&pdev->dev);
 
@@ -515,7 +505,7 @@ static int mt7986_afe_pcm_dev_probe(struct platform_device *pdev)
 
 	afe_priv->pm_runtime_bypass_reg_ctl = false;
 
-	/* init memif */
+	 
 	afe->memif_size = MT7986_MEMIF_NUM;
 	afe->memif = devm_kcalloc(dev, afe->memif_size, sizeof(*afe->memif),
 				  GFP_KERNEL);
@@ -529,7 +519,7 @@ static int mt7986_afe_pcm_dev_probe(struct platform_device *pdev)
 
 	mutex_init(&afe->irq_alloc_lock);
 
-	/* irq initialize */
+	 
 	afe->irqs_size = MT7986_IRQ_NUM;
 	afe->irqs = devm_kcalloc(dev, afe->irqs_size, sizeof(*afe->irqs),
 				 GFP_KERNEL);
@@ -539,7 +529,7 @@ static int mt7986_afe_pcm_dev_probe(struct platform_device *pdev)
 	for (i = 0; i < afe->irqs_size; i++)
 		afe->irqs[i].irq_data = &irq_data[i];
 
-	/* request irq */
+	 
 	irq_id = platform_get_irq(pdev, 0);
 	if (irq_id < 0) {
 		ret = irq_id;
@@ -550,7 +540,7 @@ static int mt7986_afe_pcm_dev_probe(struct platform_device *pdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to request irq for asys-isr\n");
 
-	/* init sub_dais */
+	 
 	INIT_LIST_HEAD(&afe->sub_dais);
 
 	for (i = 0; i < ARRAY_SIZE(dai_register_cbs); i++) {
@@ -559,7 +549,7 @@ static int mt7986_afe_pcm_dev_probe(struct platform_device *pdev)
 			return dev_err_probe(dev, ret, "DAI register failed, i: %d\n", i);
 	}
 
-	/* init dai_driver and component_driver */
+	 
 	ret = mtk_afe_combine_sub_dai(afe);
 	if (ret)
 		return dev_err_probe(dev, ret, "mtk_afe_combine_sub_dai fail\n");
@@ -571,7 +561,7 @@ static int mt7986_afe_pcm_dev_probe(struct platform_device *pdev)
 	afe->runtime_resume = mt7986_afe_runtime_resume;
 	afe->runtime_suspend = mt7986_afe_runtime_suspend;
 
-	/* register component */
+	 
 	ret = devm_snd_soc_register_component(&pdev->dev,
 					      &mt7986_afe_component,
 					      NULL, 0);
@@ -597,7 +587,7 @@ static void mt7986_afe_pcm_dev_remove(struct platform_device *pdev)
 
 static const struct of_device_id mt7986_afe_pcm_dt_match[] = {
 	{ .compatible = "mediatek,mt7986-afe" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mt7986_afe_pcm_dt_match);
 

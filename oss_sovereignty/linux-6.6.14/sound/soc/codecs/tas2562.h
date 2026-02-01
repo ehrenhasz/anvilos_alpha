@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tas2562.h - ALSA SoC Texas Instruments TAS2562 Mono Audio Amplifier
- *
- * Copyright (C) 2019 Texas Instruments Incorporated -  https://www.ti.com
- *
- * Author: Dan Murphy <dmurphy@ti.com>
- */
+ 
+ 
 
 #ifndef __TAS2562_H__
 #define __TAS2562_H__
@@ -38,7 +32,7 @@
 #define TAS2562_TX_OFF_MASK	GENMASK(3, 1)
 #define TAS2562_RIGHT_SLOT_SHIFT 4
 
-/* Page 2 */
+ 
 #define TAS2562_DVC_CFG1	TAS2562_REG(2, 0x0c)
 #define TAS2562_DVC_CFG2	TAS2562_REG(2, 0x0d)
 #define TAS2562_DVC_CFG3	TAS2562_REG(2, 0x0e)
@@ -87,4 +81,4 @@
 #define TAS2562_TDM_CFG6_ISNS_EN	BIT(6)
 #define TAS2562_TDM_CFG6_ISNS_SLOT_MASK	GENMASK(5, 0)
 
-#endif /* __TAS2562_H__ */
+#endif  

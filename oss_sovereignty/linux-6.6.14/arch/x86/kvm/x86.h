@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ARCH_X86_KVM_X86_H
 #define ARCH_X86_KVM_X86_H
 
@@ -10,19 +10,19 @@
 #include "kvm_emulate.h"
 
 struct kvm_caps {
-	/* control of guest tsc rate supported? */
+	 
 	bool has_tsc_control;
-	/* maximum supported tsc_khz for guests */
+	 
 	u32  max_guest_tsc_khz;
-	/* number of bits of the fractional part of the TSC scaling ratio */
+	 
 	u8   tsc_scaling_ratio_frac_bits;
-	/* maximum allowed value of TSC scaling ratio */
+	 
 	u64  max_tsc_scaling_ratio;
-	/* 1ull << kvm_caps.tsc_scaling_ratio_frac_bits */
+	 
 	u64  default_tsc_scaling_ratio;
-	/* bus lock detection supported? */
+	 
 	bool has_bus_lock_exit;
-	/* notify VM exit supported? */
+	 
 	bool has_notify_vmexit;
 
 	u64 supported_mce_cap;
@@ -41,11 +41,7 @@ void kvm_spurious_fault(void);
 	failed;								\
 })
 
-/*
- * The first...last VMX feature MSRs that are emulated by KVM.  This may or may
- * not cover all known VMX MSRs, as KVM doesn't emulate an MSR until there's an
- * associated feature that KVM supports for nested virtualization.
- */
+ 
 #define KVM_FIRST_EMULATED_VMX_MSR	MSR_IA32_VMX_BASIC
 #define KVM_LAST_EMULATED_VMX_MSR	MSR_IA32_VMX_VMFUNC
 
@@ -163,11 +159,7 @@ static inline bool is_64_bit_mode(struct kvm_vcpu *vcpu)
 
 static inline bool is_64_bit_hypercall(struct kvm_vcpu *vcpu)
 {
-	/*
-	 * If running with protected guest state, the CS register is not
-	 * accessible. The hypercall register values will have had to been
-	 * provided in 64-bit mode, so assume the guest is in 64-bit.
-	 */
+	 
 	return vcpu->arch.guest_state_protected || is_64_bit_mode(vcpu);
 }
 
@@ -223,10 +215,7 @@ static inline void vcpu_cache_mmio_info(struct kvm_vcpu *vcpu,
 	if (unlikely(gen & KVM_MEMSLOT_GEN_UPDATE_IN_PROGRESS))
 		return;
 
-	/*
-	 * If this is a shadow nested page table, the "GVA" is
-	 * actually a nGPA.
-	 */
+	 
 	vcpu->arch.mmio_gva = mmu_is_nested(vcpu) ? 0 : gva & PAGE_MASK;
 	vcpu->arch.mmio_access = access;
 	vcpu->arch.mmio_gfn = gfn;
@@ -238,10 +227,7 @@ static inline bool vcpu_match_mmio_gen(struct kvm_vcpu *vcpu)
 	return vcpu->arch.mmio_gen == kvm_memslots(vcpu->kvm)->generation;
 }
 
-/*
- * Clear the mmio cache info for the given gva. If gva is MMIO_GVA_ANY, we
- * clear all mmio cache info.
- */
+ 
 #define MMIO_GVA_ANY (~(gva_t)0)
 
 static inline void vcpu_clear_mmio_info(struct kvm_vcpu *vcpu, gva_t gva)
@@ -329,14 +315,7 @@ extern struct kvm_caps kvm_caps;
 
 extern bool enable_pmu;
 
-/*
- * Get a filtered version of KVM's supported XCR0 that strips out dynamic
- * features for which the current process doesn't (yet) have permission to use.
- * This is intended to be used only when enumerating support to userspace,
- * e.g. in KVM_GET_SUPPORTED_CPUID and KVM_CAP_XSAVE2, it does NOT need to be
- * used to check/restrict guest behavior as KVM rejects KVM_SET_CPUID{2} if
- * userspace attempts to enable unpermitted features.
- */
+ 
 static inline u64 kvm_get_filtered_xcr0(void)
 {
 	u64 permitted_xcr0 = kvm_caps.supported_xcr0;
@@ -346,11 +325,7 @@ static inline u64 kvm_get_filtered_xcr0(void)
 	if (permitted_xcr0 & XFEATURE_MASK_USER_DYNAMIC) {
 		permitted_xcr0 &= xstate_get_guest_group_perm();
 
-		/*
-		 * Treat XTILE_CFG as unsupported if the current process isn't
-		 * allowed to use XTILE_DATA, as attempting to set XTILE_CFG in
-		 * XCR0 without setting XTILE_DATA is architecturally illegal.
-		 */
+		 
 		if (!(permitted_xcr0 & XFEATURE_MASK_XTILE_DATA))
 			permitted_xcr0 &= ~XFEATURE_MASK_XTILE_CFG;
 	}
@@ -391,11 +366,7 @@ static inline u64 nsec_to_cycles(struct kvm_vcpu *vcpu, u64 nsec)
 				   vcpu->arch.virtual_tsc_shift);
 }
 
-/* Same "calling convention" as do_div:
- * - divide (n << 32) by base
- * - put result in n
- * - return remainder
- */
+ 
 #define do_shl32_div32(n, base)					\
 	({							\
 	    u32 __quot, __rem;					\
@@ -431,7 +402,7 @@ static inline bool kvm_notify_vmexit_enabled(struct kvm *kvm)
 }
 
 enum kvm_intr_type {
-	/* Values are arbitrary, but must be non-zero. */
+	 
 	KVM_HANDLING_IRQ = 1,
 	KVM_HANDLING_NMI,
 };
@@ -456,33 +427,27 @@ static inline bool kvm_pat_valid(u64 data)
 {
 	if (data & 0xF8F8F8F8F8F8F8F8ull)
 		return false;
-	/* 0, 1, 4, 5, 6, 7 are valid values.  */
+	 
 	return (data | ((data & 0x0202020202020202ull) << 1)) == data;
 }
 
 static inline bool kvm_dr7_valid(u64 data)
 {
-	/* Bits [63:32] are reserved */
+	 
 	return !(data >> 32);
 }
 static inline bool kvm_dr6_valid(u64 data)
 {
-	/* Bits [63:32] are reserved */
+	 
 	return !(data >> 32);
 }
 
-/*
- * Trigger machine check on the host. We assume all the MSRs are already set up
- * by the CPU and that we still run on the same CPU as the MCE occurred on.
- * We pass a fake environment to the machine check handler because we want
- * the guest to be always treated like user space, no matter what context
- * it used internally.
- */
+ 
 static inline void kvm_machine_check(void)
 {
 #if defined(CONFIG_X86_MCE)
 	struct pt_regs regs = {
-		.cs = 3, /* Fake ring 3 no matter what the guest ran on */
+		.cs = 3,  
 		.flags = X86_EFLAGS_IF,
 	};
 
@@ -499,13 +464,9 @@ int kvm_handle_memory_failure(struct kvm_vcpu *vcpu, int r,
 int kvm_handle_invpcid(struct kvm_vcpu *vcpu, unsigned long type, gva_t gva);
 bool kvm_msr_allowed(struct kvm_vcpu *vcpu, u32 index, u32 type);
 
-/*
- * Internal error codes that are used to indicate that MSR emulation encountered
- * an error that should result in #GP in the guest, unless userspace
- * handles it.
- */
-#define  KVM_MSR_RET_INVALID	2	/* in-kernel MSR emulation #GP condition */
-#define  KVM_MSR_RET_FILTERED	3	/* #GP due to userspace MSR filter */
+ 
+#define  KVM_MSR_RET_INVALID	2	 
+#define  KVM_MSR_RET_FILTERED	3	 
 
 #define __cr4_reserved_bits(__cpu_has, __c)             \
 ({                                                      \

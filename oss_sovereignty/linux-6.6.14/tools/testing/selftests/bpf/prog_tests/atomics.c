@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 
@@ -9,7 +9,7 @@ static void test_add(struct atomics_lskel *skel)
 	int err, prog_fd;
 	LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-	/* No need to attach it, just run it directly */
+	 
 	prog_fd = skel->progs.add.prog_fd;
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	if (!ASSERT_OK(err, "test_run_opts err"))
@@ -34,7 +34,7 @@ static void test_sub(struct atomics_lskel *skel)
 	int err, prog_fd;
 	LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-	/* No need to attach it, just run it directly */
+	 
 	prog_fd = skel->progs.sub.prog_fd;
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	if (!ASSERT_OK(err, "test_run_opts err"))
@@ -59,7 +59,7 @@ static void test_and(struct atomics_lskel *skel)
 	int err, prog_fd;
 	LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-	/* No need to attach it, just run it directly */
+	 
 	prog_fd = skel->progs.and.prog_fd;
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	if (!ASSERT_OK(err, "test_run_opts err"))
@@ -81,7 +81,7 @@ static void test_or(struct atomics_lskel *skel)
 	int err, prog_fd;
 	LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-	/* No need to attach it, just run it directly */
+	 
 	prog_fd = skel->progs.or.prog_fd;
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	if (!ASSERT_OK(err, "test_run_opts err"))
@@ -103,7 +103,7 @@ static void test_xor(struct atomics_lskel *skel)
 	int err, prog_fd;
 	LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-	/* No need to attach it, just run it directly */
+	 
 	prog_fd = skel->progs.xor.prog_fd;
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	if (!ASSERT_OK(err, "test_run_opts err"))
@@ -125,7 +125,7 @@ static void test_cmpxchg(struct atomics_lskel *skel)
 	int err, prog_fd;
 	LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-	/* No need to attach it, just run it directly */
+	 
 	prog_fd = skel->progs.cmpxchg.prog_fd;
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	if (!ASSERT_OK(err, "test_run_opts err"))
@@ -147,7 +147,7 @@ static void test_xchg(struct atomics_lskel *skel)
 	int err, prog_fd;
 	LIBBPF_OPTS(bpf_test_run_opts, topts);
 
-	/* No need to attach it, just run it directly */
+	 
 	prog_fd = skel->progs.xchg.prog_fd;
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	if (!ASSERT_OK(err, "test_run_opts err"))

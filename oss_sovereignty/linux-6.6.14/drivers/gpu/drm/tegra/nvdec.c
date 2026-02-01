@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2022, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -44,10 +42,10 @@ struct nvdec {
 	unsigned int num_clks;
 	struct reset_control *reset;
 
-	/* Platform configuration */
+	 
 	const struct nvdec_config *config;
 
-	/* RISC-V specific data */
+	 
 	struct tegra_drm_riscv riscv;
 	phys_addr_t carveout_base;
 };
@@ -179,10 +177,7 @@ static int nvdec_init(struct host1x_client *client)
 	if (err < 0)
 		goto free_syncpt;
 
-	/*
-	 * Inherit the DMA parameters (such as maximum segment size) from the
-	 * parent host1x device.
-	 */
+	 
 	client->dev->dma_parms = client->host->dma_parms;
 
 	return 0;
@@ -205,7 +200,7 @@ static int nvdec_exit(struct host1x_client *client)
 	struct nvdec *nvdec = to_nvdec(drm);
 	int err;
 
-	/* avoid a dangling pointer just in case this disappears */
+	 
 	client->dev->dma_parms = NULL;
 
 	err = tegra_drm_unregister_client(tegra, drm);
@@ -278,11 +273,7 @@ static int nvdec_load_falcon_firmware(struct nvdec *nvdec)
 	if (err < 0)
 		goto cleanup;
 
-	/*
-	 * In this case we have received an IOVA from the shared domain, so we
-	 * need to make sure to get the physical address so that the DMA API
-	 * knows what memory pages to flush the cache for.
-	 */
+	 
 	if (client->group) {
 		dma_addr_t phys;
 
@@ -429,7 +420,7 @@ static int nvdec_probe(struct platform_device *pdev)
 	u32 host_class;
 	int err;
 
-	/* inherit DMA mask from host1x parent */
+	 
 	err = dma_coerce_mask_and_coherent(dev, *dev->parent->dma_mask);
 	if (err < 0) {
 		dev_err(&pdev->dev, "failed to set DMA mask: %d\n", err);

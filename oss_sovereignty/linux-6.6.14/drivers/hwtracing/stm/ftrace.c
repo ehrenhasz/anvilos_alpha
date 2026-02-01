@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Simple kernel driver to link kernel Ftrace and an STM device
- * Copyright (c) 2016, Linaro Ltd.
- *
- * STM Ftrace will be registered as a trace_export.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/stm.h>
@@ -28,16 +23,12 @@ static struct stm_ftrace {
 	},
 };
 
-/**
- * stm_ftrace_write() - write data to STM via 'stm_ftrace' source
- * @buf:	buffer containing the data packet
- * @len:	length of the data packet
- */
+ 
 static void notrace
 stm_ftrace_write(struct trace_export *export, const void *buf, unsigned int len)
 {
 	struct stm_ftrace *stm = container_of(export, struct stm_ftrace, ftrace);
-	/* This is called from trace system with preemption disabled */
+	 
 	unsigned int cpu = smp_processor_id();
 
 	stm_source_write(&stm->data, STM_FTRACE_CHAN + cpu, buf, len);

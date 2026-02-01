@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * SPEAr SPDIF IN controller header file
- *
- * Copyright (ST) 2011 Vipin Kumar (vipin.kumar@st.com)
- */
+ 
+ 
 
 #ifndef SPDIF_IN_REGS_H
 #define SPDIF_IN_REGS_H
@@ -44,4 +40,4 @@
 #define SPDIF_IN_STA		0x0C
 	#define SPDIF_IN_LOCK		(0x1 << 0)
 
-#endif /* SPDIF_IN_REGS_H */
+#endif  

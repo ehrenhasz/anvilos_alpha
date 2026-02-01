@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/limits.h>
 #include <signal.h>
@@ -19,7 +19,7 @@ static int do_migration_fn(const char *cgroup, void *arg)
 	if (setuid(TEST_UID))
 		return EXIT_FAILURE;
 
-	// XXX checking /proc/$pid/cgroup would be quicker than wait
+	
 	if (cg_enter(cgroup, object_pid) ||
 	    cg_wait_for_proc_count(cgroup, 1))
 		return EXIT_FAILURE;
@@ -53,15 +53,7 @@ static int do_controller_fn(const char *cgroup, void *arg)
 	return EXIT_SUCCESS;
 }
 
-/*
- * Migrate a process between two sibling cgroups.
- * The success should only depend on the parent cgroup permissions and not the
- * migrated process itself (cpuset controller is in place because it uses
- * security_task_setscheduler() in cgroup v1).
- *
- * Deliberately don't set cpuset.cpus in children to avoid definining migration
- * permissions between two different cpusets.
- */
+ 
 static int test_cpuset_perms_object(const char *root, bool allow)
 {
 	char *parent = NULL, *child_src = NULL, *child_dst = NULL;
@@ -104,7 +96,7 @@ static int test_cpuset_perms_object(const char *root, bool allow)
 	    cg_read_strstr(child_dst, "cgroup.controllers", "cpuset"))
 		goto cleanup;
 
-	/* Enable permissions along src->dst tree path */
+	 
 	if (chown(child_src_procs, test_euid, -1) ||
 	    chown(child_dst_procs, test_euid, -1))
 		goto cleanup;
@@ -112,17 +104,12 @@ static int test_cpuset_perms_object(const char *root, bool allow)
 	if (allow && chown(parent_procs, test_euid, -1))
 		goto cleanup;
 
-	/* Fork a privileged child as a test object */
+	 
 	object_pid = cg_run_nowait(child_src, idle_process_fn, NULL);
 	if (object_pid < 0)
 		goto cleanup;
 
-	/* Carry out migration in a child process that can drop all privileges
-	 * (including capabilities), the main process must remain privileged for
-	 * cleanup.
-	 * Child process's cgroup is irrelevant but we place it into child_dst
-	 * as hacky way to pass information about migration target to the child.
-	 */
+	 
 	if (allow ^ (cg_run(child_dst, do_migration_fn, (void *)(size_t)object_pid) == EXIT_SUCCESS))
 		goto cleanup;
 
@@ -159,11 +146,7 @@ static int test_cpuset_perms_object_deny(const char *root)
 	return test_cpuset_perms_object(root, false);
 }
 
-/*
- * Migrate a process between parent and child implicitely
- * Implicit migration happens when a controller is enabled/disabled.
- *
- */
+ 
 static int test_cpuset_perms_subtree(const char *root)
 {
 	char *parent = NULL, *child = NULL;
@@ -193,18 +176,13 @@ static int test_cpuset_perms_subtree(const char *root)
 	if (cg_create(child))
 		goto cleanup;
 
-	/* Enable permissions as in a delegated subtree */
+	 
 	if (chown(parent_procs, test_euid, -1) ||
 	    chown(parent_subctl, test_euid, -1) ||
 	    chown(child_procs, test_euid, -1))
 		goto cleanup;
 
-	/* Put a privileged child in the subtree and modify controller state
-	 * from an unprivileged process, the main process remains privileged
-	 * for cleanup.
-	 * The unprivileged child runs in subtree too to avoid parent and
-	 * internal-node constraing violation.
-	 */
+	 
 	object_pid = cg_run_nowait(child, idle_process_fn, NULL);
 	if (object_pid < 0)
 		goto cleanup;

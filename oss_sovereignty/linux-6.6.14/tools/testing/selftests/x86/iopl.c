@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * iopl.c - Test case for a Linux on Xen 64-bit bug
- * Copyright (c) 2015 Andrew Lutomirski
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <err.h>
@@ -100,7 +97,7 @@ static int try_cli(void)
 		asm volatile("cli; pushf; pop %[flags]"
 				: [flags] "=rm" (flags));
 
-		/* X86_FLAGS_IF */
+		 
 		if (!(flags & (1 << 9)))
 			return RET_FAIL;
 		else
@@ -120,7 +117,7 @@ static int try_sti(bool irqs_off)
 		asm volatile("sti; pushf; pop %[flags]"
 				: [flags] "=rm" (flags));
 
-		/* X86_FLAGS_IF */
+		 
 		if (irqs_off && (flags & (1 << 9)))
 			return RET_FAIL;
 		else
@@ -146,9 +143,7 @@ static void expect_gp_sti(bool irqs_off)
 	}
 }
 
-/*
- * Returns whether it managed to disable interrupts.
- */
+ 
 static bool test_cli(void)
 {
 	int ret = try_cli();
@@ -178,7 +173,7 @@ int main(void)
 	if (sched_setaffinity(0, sizeof(cpuset), &cpuset) != 0)
 		err(1, "sched_setaffinity to CPU 0");
 
-	/* Probe for iopl support.  Note that iopl(0) works even as nonroot. */
+	 
 	switch(iopl(3)) {
 	case 0:
 		break;
@@ -191,25 +186,22 @@ int main(void)
 		return 0;
 	}
 
-	/* Make sure that CLI/STI are blocked even with IOPL level 3 */
+	 
 	expect_gp_sti(test_cli());
 	expect_ok_outb(0x80);
 
-	/* Establish an I/O bitmap to test the restore */
+	 
 	if (ioperm(0x80, 1, 1) != 0)
 		err(1, "ioperm(0x80, 1, 1) failed\n");
 
-	/* Restore our original state prior to starting the fork test. */
+	 
 	if (iopl(0) != 0)
 		err(1, "iopl(0)");
 
-	/*
-	 * Verify that IOPL emulation is disabled and the I/O bitmap still
-	 * works.
-	 */
+	 
 	expect_ok_outb(0x80);
 	expect_gp_outb(0xed);
-	/* Drop the I/O bitmap */
+	 
 	if (ioperm(0x80, 1, 0) != 0)
 		err(1, "ioperm(0x80, 1, 0) failed\n");
 
@@ -245,7 +237,7 @@ int main(void)
 	expect_gp_outb(0x80);
 	expect_gp_sti(test_cli());
 
-	/* Test the capability checks. */
+	 
 	printf("\tiopl(3)\n");
 	if (iopl(3) != 0)
 		err(1, "iopl(3)");

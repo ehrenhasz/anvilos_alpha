@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// MXS GPIO support. (c) 2008 Daniel Mack <daniel@caiaq.de>
-// Copyright 2008 Juergen Beisert, kernel@pengutronix.de
-//
-// Based on code from Freescale,
-// Copyright (C) 2004-2010 Freescale Semiconductor, Inc. All Rights Reserved.
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -59,7 +59,7 @@ static inline int is_imx23_gpio(struct mxs_gpio_port *port)
 	return port->devid == IMX23_GPIO;
 }
 
-/* Note: This driver assumes 32 GPIOs are handled in one register */
+ 
 
 static int mxs_gpio_set_irq_type(struct irq_data *d, unsigned int type)
 {
@@ -101,7 +101,7 @@ static int mxs_gpio_set_irq_type(struct irq_data *d, unsigned int type)
 		return -EINVAL;
 	}
 
-	/* set level or edge */
+	 
 	pin_addr = port->base + PINCTRL_IRQLEV(port);
 	if (edge & GPIO_INT_LEV_MASK) {
 		writel(pin_mask, pin_addr + MXS_SET);
@@ -111,7 +111,7 @@ static int mxs_gpio_set_irq_type(struct irq_data *d, unsigned int type)
 		writel(pin_mask, port->base + PINCTRL_PIN2IRQ(port) + MXS_SET);
 	}
 
-	/* set polarity */
+	 
 	pin_addr = port->base + PINCTRL_IRQPOL(port);
 	if (edge & GPIO_INT_POL_MASK)
 		writel(pin_mask, pin_addr + MXS_SET);
@@ -140,7 +140,7 @@ static void mxs_flip_edge(struct mxs_gpio_port *port, u32 gpio)
 		writel(bit, pin_addr + MXS_SET);
 }
 
-/* MXS has one interrupt *per* gpio port */
+ 
 static void mxs_gpio_irq_handler(struct irq_desc *desc)
 {
 	u32 irq_stat;
@@ -161,15 +161,7 @@ static void mxs_gpio_irq_handler(struct irq_desc *desc)
 	}
 }
 
-/*
- * Set interrupt number "irq" in the GPIO as a wake-up source.
- * While system is running, all registered GPIO interrupts need to have
- * wake-up enabled. When system is suspended, only selected GPIO interrupts
- * need to have wake-up enabled.
- * @param  irq          interrupt source number
- * @param  enable       enable as wake-up if equal to non-zero
- * @return       This function returns 0 on success.
- */
+ 
 static int mxs_gpio_set_wake_irq(struct irq_data *d, unsigned int enable)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
@@ -251,7 +243,7 @@ static int mxs_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
 static const struct of_device_id mxs_gpio_dt_ids[] = {
 	{ .compatible = "fsl,imx23-gpio", .data = (void *) IMX23_GPIO, },
 	{ .compatible = "fsl,imx28-gpio", .data = (void *) IMX28_GPIO, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mxs_gpio_dt_ids);
 
@@ -277,10 +269,7 @@ static int mxs_gpio_probe(struct platform_device *pdev)
 	if (port->irq < 0)
 		return port->irq;
 
-	/*
-	 * map memory region only once, as all the gpio ports
-	 * share the same one
-	 */
+	 
 	if (!base) {
 		parent = of_get_parent(np);
 		base = of_iomap(parent, 0);
@@ -290,11 +279,11 @@ static int mxs_gpio_probe(struct platform_device *pdev)
 	}
 	port->base = base;
 
-	/* initially disable the interrupts */
+	 
 	writel(0, port->base + PINCTRL_PIN2IRQ(port));
 	writel(0, port->base + PINCTRL_IRQEN(port));
 
-	/* clear address has to be used to clear IRQSTAT bits */
+	 
 	writel(~0U, port->base + PINCTRL_IRQSTAT(port) + MXS_CLR);
 
 	irq_base = devm_irq_alloc_descs(&pdev->dev, -1, 0, 32, numa_node_id());
@@ -310,12 +299,12 @@ static int mxs_gpio_probe(struct platform_device *pdev)
 		goto out_iounmap;
 	}
 
-	/* gpio-mxs can be a generic irq chip */
+	 
 	err = mxs_gpio_init_gc(port, irq_base);
 	if (err < 0)
 		goto out_irqdomain_remove;
 
-	/* setup one handler for each entry */
+	 
 	irq_set_chained_handler_and_data(port->irq, mxs_gpio_irq_handler,
 					 port);
 

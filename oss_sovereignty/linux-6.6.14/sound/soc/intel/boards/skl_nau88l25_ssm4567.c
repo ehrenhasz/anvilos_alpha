@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Skylake I2S Machine Driver for NAU88L25+SSM4567
- *
- * Copyright (C) 2015, Intel Corporation. All rights reserved.
- *
- * Modified from:
- *   Intel Skylake I2S Machine Driver for NAU88L25 and SSM4567
- *
- *   Copyright (C) 2015, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -113,24 +104,24 @@ static struct snd_soc_jack_pin jack_pins[] = {
 };
 
 static const struct snd_soc_dapm_route skylake_map[] = {
-	/* HP jack connectors - unknown if we have jack detection */
+	 
 	{"Headphone Jack", NULL, "HPOL"},
 	{"Headphone Jack", NULL, "HPOR"},
 
-	/* speaker */
+	 
 	{"Left Speaker", NULL, "Left OUT"},
 	{"Right Speaker", NULL, "Right OUT"},
 
-	/* other jacks */
+	 
 	{"MIC", NULL, "Headset Mic"},
 	{"DMic", NULL, "SoC DMIC"},
 
-	/* CODEC BE connections */
+	 
 	{ "Left Playback", NULL, "ssp0 Tx"},
 	{ "Right Playback", NULL, "ssp0 Tx"},
 	{ "ssp0 Tx", NULL, "codec0_out"},
 
-	/* IV feedback path */
+	 
 	{ "codec0_lp_in", NULL, "ssp0 Rx"},
 	{ "ssp0 Rx", NULL, "Left Capture Sense" },
 	{ "ssp0 Rx", NULL, "Right Capture Sense" },
@@ -141,7 +132,7 @@ static const struct snd_soc_dapm_route skylake_map[] = {
 	{ "codec0_in", NULL, "ssp1 Rx" },
 	{ "ssp1 Rx", NULL, "Capture" },
 
-	/* DMIC */
+	 
 	{ "dmic01_hifi", NULL, "DMIC01 Rx" },
 	{ "DMIC01 Rx", NULL, "DMIC AIF" },
 
@@ -171,12 +162,12 @@ static int skylake_ssm4567_codec_init(struct snd_soc_pcm_runtime *rtd)
 {
 	int ret;
 
-	/* Slot 1 for left */
+	 
 	ret = snd_soc_dai_set_tdm_slot(asoc_rtd_to_codec(rtd, 0), 0x01, 0x01, 2, 48);
 	if (ret < 0)
 		return ret;
 
-	/* Slot 2 for right */
+	 
 	ret = snd_soc_dai_set_tdm_slot(asoc_rtd_to_codec(rtd, 1), 0x02, 0x02, 2, 48);
 	if (ret < 0)
 		return ret;
@@ -189,10 +180,7 @@ static int skylake_nau8825_codec_init(struct snd_soc_pcm_runtime *rtd)
 	int ret;
 	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
 
-	/*
-	 * 4 buttons here map to the google Reference headset
-	 * The use of these buttons can be decided by the user space.
-	 */
+	 
 	ret = snd_soc_card_jack_new_pins(&skylake_audio_card, "Headset Jack",
 					 SND_JACK_HEADSET | SND_JACK_BTN_0 | SND_JACK_BTN_1 |
 					 SND_JACK_BTN_2 | SND_JACK_BTN_3, &skylake_headset,
@@ -300,12 +288,7 @@ static int skl_fe_startup(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
 
-	/*
-	 * on this platform for PCM device we support,
-	 *	48Khz
-	 *	stereo
-	 *	16 bit audio
-	 */
+	 
 
 	runtime->hw.channels_max = 2;
 	snd_pcm_hw_constraint_list(runtime, 0, SNDRV_PCM_HW_PARAM_CHANNELS,
@@ -333,11 +316,11 @@ static int skylake_ssp_fixup(struct snd_soc_pcm_runtime *rtd,
 						SNDRV_PCM_HW_PARAM_CHANNELS);
 	struct snd_mask *fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = 48000;
 	chan->min = chan->max = 2;
 
-	/* set SSP0 to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
 	return 0;
@@ -471,8 +454,8 @@ SND_SOC_DAILINK_DEF(ssp0_pin,
 	DAILINK_COMP_ARRAY(COMP_CPU("SSP0 Pin")));
 SND_SOC_DAILINK_DEF(ssp0_codec,
 	DAILINK_COMP_ARRAY(
-	/* Left */	COMP_CODEC("i2c-INT343B:00", SKL_SSM_CODEC_DAI),
-	/* Right */	COMP_CODEC("i2c-INT343B:01", SKL_SSM_CODEC_DAI)));
+	 	COMP_CODEC("i2c-INT343B:00", SKL_SSM_CODEC_DAI),
+	 	COMP_CODEC("i2c-INT343B:01", SKL_SSM_CODEC_DAI)));
 
 SND_SOC_DAILINK_DEF(ssp1_pin,
 	DAILINK_COMP_ARRAY(COMP_CPU("SSP1 Pin")));
@@ -502,9 +485,9 @@ SND_SOC_DAILINK_DEF(idisp3_codec,
 SND_SOC_DAILINK_DEF(platform,
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("0000:00:1f.3")));
 
-/* skylake digital audio interface glue - connects codec <--> CPU */
+ 
 static struct snd_soc_dai_link skylake_dais[] = {
-	/* Front End DAI links */
+	 
 	[SKL_DPCM_AUDIO_PB] = {
 		.name = "Skl Audio Port",
 		.stream_name = "Audio",
@@ -582,9 +565,9 @@ static struct snd_soc_dai_link skylake_dais[] = {
 		SND_SOC_DAILINK_REG(hdmi3, dummy, platform),
 	},
 
-	/* Back End DAI links */
+	 
 	{
-		/* SSP0 - Codec */
+		 
 		.name = "SSP0-Codec",
 		.id = 0,
 		.no_pcm = 1,
@@ -599,7 +582,7 @@ static struct snd_soc_dai_link skylake_dais[] = {
 		SND_SOC_DAILINK_REG(ssp0_pin, ssp0_codec, platform),
 	},
 	{
-		/* SSP1 - Codec */
+		 
 		.name = "SSP1-Codec",
 		.id = 1,
 		.no_pcm = 1,
@@ -682,7 +665,7 @@ static int skylake_card_late_probe(struct snd_soc_card *card)
 	return hdac_hdmi_jack_port_init(component, &card->dapm);
 }
 
-/* skylake audio machine driver for SPT + NAU88L25 */
+ 
 static struct snd_soc_card skylake_audio_card = {
 	.name = "sklnau8825adi",
 	.owner = THIS_MODULE,
@@ -741,7 +724,7 @@ static struct platform_driver skylake_audio = {
 
 module_platform_driver(skylake_audio)
 
-/* Module information */
+ 
 MODULE_AUTHOR("Conrad Cooke  <conrad.cooke@intel.com>");
 MODULE_AUTHOR("Harsha Priya <harshapriya.n@intel.com>");
 MODULE_AUTHOR("Naveen M <naveen.m@intel.com>");

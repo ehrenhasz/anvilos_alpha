@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <stdio.h>
 #include <fcntl.h>
 #include <poll.h>
@@ -58,7 +58,7 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;

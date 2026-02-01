@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include <linux/devcoredump.h>
 
@@ -20,10 +19,10 @@ enum ser_evt {
 	SER_EV_NONE,
 	SER_EV_STATE_IN,
 	SER_EV_STATE_OUT,
-	SER_EV_L1_RESET_PREPARE, /* pre-M0 */
-	SER_EV_L1_RESET, /* M1 */
-	SER_EV_DO_RECOVERY, /* M3 */
-	SER_EV_MAC_RESET_DONE, /* M5 */
+	SER_EV_L1_RESET_PREPARE,  
+	SER_EV_L1_RESET,  
+	SER_EV_DO_RECOVERY,  
+	SER_EV_MAC_RESET_DONE,  
 	SER_EV_L2_RESET,
 	SER_EV_L2_RECFG_DONE,
 	SER_EV_L2_RECFG_TIMEOUT,
@@ -126,11 +125,7 @@ static void rtw89_ser_cd_send(struct rtw89_dev *rtwdev,
 {
 	rtw89_debug(rtwdev, RTW89_DBG_SER, "SER sends core dump\n");
 
-	/* After calling dev_coredump, buf's lifetime is supposed to be
-	 * handled by the device coredump framework. Note that a new dump
-	 * will be discarded if a previous one hasn't been released by
-	 * framework yet.
-	 */
+	 
 	dev_coredumpv(rtwdev->dev, buf, sizeof(*buf), GFP_KERNEL);
 }
 
@@ -142,10 +137,7 @@ static void rtw89_ser_cd_free(struct rtw89_dev *rtwdev,
 
 	rtw89_debug(rtwdev, RTW89_DBG_SER, "SER frees core dump by self\n");
 
-	/* When some problems happen during filling data of core dump,
-	 * we won't send it to device coredump framework. Instead, we
-	 * free buf by ourselves.
-	 */
+	 
 	vfree(buf);
 }
 
@@ -252,7 +244,7 @@ static void ser_del_alarm(struct rtw89_ser *ser)
 	ser->alarm_event = SER_EV_NONE;
 }
 
-/* driver function */
+ 
 static void drv_stop_tx(struct rtw89_ser *ser)
 {
 	struct rtw89_dev *rtwdev = container_of(ser, struct rtw89_dev, ser);
@@ -346,7 +338,7 @@ static void ser_reset_mac_binding(struct rtw89_dev *rtwdev)
 	rtwdev->total_sta_assoc = 0;
 }
 
-/* hal function */
+ 
 static int hal_enable_dma(struct rtw89_ser *ser)
 {
 	struct rtw89_dev *rtwdev = container_of(ser, struct rtw89_dev, ser);
@@ -401,7 +393,7 @@ static void hal_send_m4_event(struct rtw89_ser *ser)
 	rtw89_mac_set_err_status(rtwdev, MAC_AX_ERR_L1_RCVY_EN);
 }
 
-/* state handler */
+ 
 static void ser_idle_st_hdl(struct rtw89_ser *ser, u8 evt)
 {
 	struct rtw89_dev *rtwdev = container_of(ser, struct rtw89_dev, ser);
@@ -469,10 +461,10 @@ static void ser_reset_trx_st_hdl(struct rtw89_ser *ser, u8 evt)
 		drv_stop_rx(ser);
 		drv_trx_reset(ser);
 
-		/* wait m3 */
+		 
 		hal_send_m2_event(ser);
 
-		/* set alarm to prevent FW response timeout */
+		 
 		ser_set_alarm(ser, 1000, SER_EV_M3_TIMEOUT);
 		break;
 
@@ -502,10 +494,10 @@ static void ser_do_hci_st_hdl(struct rtw89_ser *ser, u8 evt)
 {
 	switch (evt) {
 	case SER_EV_STATE_IN:
-		/* wait m5 */
+		 
 		hal_send_m4_event(ser);
 
-		/* prevent FW response timeout */
+		 
 		ser_set_alarm(ser, 1000, SER_EV_FW_M5_TIMEOUT);
 		break;
 
@@ -762,18 +754,18 @@ int rtw89_ser_notify(struct rtw89_dev *rtwdev, u32 err)
 	rtw89_info(rtwdev, "SER catches error: 0x%x\n", err);
 
 	switch (err) {
-	case MAC_AX_ERR_L1_PREERR_DMAC: /* pre-M0 */
+	case MAC_AX_ERR_L1_PREERR_DMAC:  
 		event = SER_EV_L1_RESET_PREPARE;
 		break;
 	case MAC_AX_ERR_L1_ERR_DMAC:
 	case MAC_AX_ERR_L0_PROMOTE_TO_L1:
-		event = SER_EV_L1_RESET; /* M1 */
+		event = SER_EV_L1_RESET;  
 		break;
 	case MAC_AX_ERR_L1_RESET_DISABLE_DMAC_DONE:
-		event = SER_EV_DO_RECOVERY; /* M3 */
+		event = SER_EV_DO_RECOVERY;  
 		break;
 	case MAC_AX_ERR_L1_RESET_RECOVERY_DONE:
-		event = SER_EV_MAC_RESET_DONE; /* M5 */
+		event = SER_EV_MAC_RESET_DONE;  
 		break;
 	case MAC_AX_ERR_L0_ERR_CMAC0:
 	case MAC_AX_ERR_L0_ERR_CMAC1:

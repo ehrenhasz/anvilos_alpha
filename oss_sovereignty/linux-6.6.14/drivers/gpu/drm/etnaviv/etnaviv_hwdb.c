@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Etnaviv Project
- */
+
+ 
 
 #include "etnaviv_gpu.h"
 

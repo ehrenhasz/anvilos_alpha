@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	SBC EPX C3 0.1	A Hardware Watchdog Device for the Winsystems EPX-C3
- *	single board computer
- *
- *	(c) Copyright 2006 Calin A. Culianu <calin@ajvar.org>, All Rights
- *	Reserved.
- *
- *	based on softdog.c by Alan Cox <alan@lxorguk.ukuu.org.uk>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,15 +20,15 @@
 
 static int epx_c3_alive;
 
-#define WATCHDOG_TIMEOUT 1		/* 1 sec default timeout */
+#define WATCHDOG_TIMEOUT 1		 
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
 MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 					__MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
-#define EPXC3_WATCHDOG_CTL_REG 0x1ee /* write 1 to enable, 0 to disable */
-#define EPXC3_WATCHDOG_PET_REG 0x1ef /* write anything to pet once enabled */
+#define EPXC3_WATCHDOG_CTL_REG 0x1ee  
+#define EPXC3_WATCHDOG_PET_REG 0x1ef  
 
 static void epx_c3_start(void)
 {
@@ -56,9 +48,7 @@ static void epx_c3_pet(void)
 	outb(1, EPXC3_WATCHDOG_PET_REG);
 }
 
-/*
- *	Allow only one person to hold it open
- */
+ 
 static int epx_c3_open(struct inode *inode, struct file *file)
 {
 	if (epx_c3_alive)
@@ -67,7 +57,7 @@ static int epx_c3_open(struct inode *inode, struct file *file)
 	if (nowayout)
 		__module_get(THIS_MODULE);
 
-	/* Activate timer */
+	 
 	epx_c3_start();
 	epx_c3_pet();
 
@@ -79,10 +69,9 @@ static int epx_c3_open(struct inode *inode, struct file *file)
 
 static int epx_c3_release(struct inode *inode, struct file *file)
 {
-	/* Shut off the timer.
-	 * Lock it in if it's a module and we defined ...NOWAYOUT */
+	 
 	if (!nowayout)
-		epx_c3_stop();		/* Turn the WDT off */
+		epx_c3_stop();		 
 
 	epx_c3_alive = 0;
 
@@ -92,7 +81,7 @@ static int epx_c3_release(struct inode *inode, struct file *file)
 static ssize_t epx_c3_write(struct file *file, const char __user *data,
 			size_t len, loff_t *ppos)
 {
-	/* Refresh the timer. */
+	 
 	if (len)
 		epx_c3_pet();
 	return len;
@@ -146,7 +135,7 @@ static int epx_c3_notify_sys(struct notifier_block *this, unsigned long code,
 				void *unused)
 {
 	if (code == SYS_DOWN || code == SYS_HALT)
-		epx_c3_stop();		/* Turn the WDT off */
+		epx_c3_stop();		 
 
 	return NOTIFY_DONE;
 }

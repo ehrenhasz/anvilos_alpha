@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2019 Hangzhou C-SKY Microsystems co.,ltd. */
+ 
+ 
 
 #ifndef ARCH_PERF_REGS_H
 #define ARCH_PERF_REGS_H
@@ -16,4 +16,4 @@
 #define PERF_SAMPLE_REGS_ABI	PERF_SAMPLE_REGS_ABI_32
 #endif
 
-#endif /* ARCH_PERF_REGS_H */
+#endif  

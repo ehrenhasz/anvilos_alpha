@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2013, Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 #include <linux/init.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
@@ -51,12 +20,12 @@
 #define USNIC_DEFAULT_TRANSPORT USNIC_TRANSPORT_ROCE_CUSTOM
 
 const struct usnic_vnic_res_spec min_transport_spec[USNIC_TRANSPORT_MAX] = {
-	{ /*USNIC_TRANSPORT_UNKNOWN*/
+	{  
 		.resources = {
 			{.type = USNIC_VNIC_RES_TYPE_EOL,	.cnt = 0,},
 		},
 	},
-	{ /*USNIC_TRANSPORT_ROCE_CUSTOM*/
+	{  
 		.resources = {
 			{.type = USNIC_VNIC_RES_TYPE_WQ,	.cnt = 1,},
 			{.type = USNIC_VNIC_RES_TYPE_RQ,	.cnt = 1,},
@@ -64,7 +33,7 @@ const struct usnic_vnic_res_spec min_transport_spec[USNIC_TRANSPORT_MAX] = {
 			{.type = USNIC_VNIC_RES_TYPE_EOL,	.cnt = 0,},
 		},
 	},
-	{ /*USNIC_TRANSPORT_IPV4_UDP*/
+	{  
 		.resources = {
 			{.type = USNIC_VNIC_RES_TYPE_WQ,	.cnt = 1,},
 			{.type = USNIC_VNIC_RES_TYPE_RQ,	.cnt = 1,},
@@ -188,7 +157,7 @@ find_free_vf_and_create_qp_grp(struct ib_qp *qp,
 	}
 
 	if (usnic_ib_share_vf) {
-		/* Try to find resouces on a used vf which is in pd */
+		 
 		dev_list = usnic_uiom_get_dev_list(pd->umem_pd);
 		if (IS_ERR(dev_list))
 			return PTR_ERR(dev_list);
@@ -217,7 +186,7 @@ find_free_vf_and_create_qp_grp(struct ib_qp *qp,
 		dev_list = NULL;
 	}
 
-	/* Try to find resources on an unused vf */
+	 
 	list_for_each_entry(vf, &us_ibdev->vf_dev_list, link) {
 		mutex_lock(&vf->lock);
 		vnic = vf->vnic;
@@ -266,7 +235,7 @@ static int create_qp_validate_user_data(struct usnic_ib_create_qp_cmd cmd)
 	return 0;
 }
 
-/* Start of ib callback functions */
+ 
 
 enum rdma_link_layer usnic_ib_port_link_layer(struct ib_device *device,
 					      u32 port_num)
@@ -325,8 +294,7 @@ int usnic_ib_query_device(struct ib_device *ibdev,
 	props->max_mcast_grp = 0;
 	props->max_mcast_qp_attach = 0;
 	props->max_total_mcast_qp_attach = 0;
-	/* Owned by Userspace
-	 * max_qp_wr, max_sge, max_sge_rd, max_cqe */
+	 
 	mutex_unlock(&us_ibdev->usdev_lock);
 
 	return 0;
@@ -343,13 +311,9 @@ int usnic_ib_query_port(struct ib_device *ibdev, u32 port,
 			     &props->active_width))
 		return -EINVAL;
 
-	/*
-	 * usdev_lock is acquired after (and not before) ib_get_eth_speed call
-	 * because acquiring rtnl_lock in ib_get_eth_speed, while holding
-	 * usdev_lock could lead to a deadlock.
-	 */
+	 
 	mutex_lock(&us_ibdev->usdev_lock);
-	/* props being zeroed by the caller, avoid zeroing it here */
+	 
 
 	props->lid = 0;
 	props->lmc = 1;
@@ -374,7 +338,7 @@ int usnic_ib_query_port(struct ib_device *ibdev, u32 port,
 	props->qkey_viol_cntr = 0;
 	props->max_mtu = IB_MTU_4096;
 	props->active_mtu = iboe_get_mtu(us_ibdev->ufdev->mtu);
-	/* Userspace will adjust for hdrs */
+	 
 	props->max_msg_sz = us_ibdev->ufdev->mtu;
 	props->max_vl_num = 1;
 	mutex_unlock(&us_ibdev->usdev_lock);
@@ -560,7 +524,7 @@ int usnic_ib_modify_qp(struct ib_qp *ibqp, struct ib_qp_attr *attr,
 
 	mutex_lock(&qp_grp->vf->pf->usdev_lock);
 	if ((attr_mask & IB_QP_PORT) && attr->port_num != 1) {
-		/* usnic devices only have one port */
+		 
 		status = -EINVAL;
 		goto out_unlock;
 	}

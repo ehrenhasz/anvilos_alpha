@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// cs4234.c -- ALSA SoC CS4234 driver
-//
-// Copyright (C) 2020 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
-//
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -41,7 +41,7 @@ struct cs4234 {
 	struct snd_pcm_hw_constraint_ratnums rate_constraint;
 };
 
-/* -89.92dB to +6.02dB with step of 0.38dB */
+ 
 static const DECLARE_TLV_DB_SCALE(dac_tlv, -8992, 38, 0);
 
 static const char * const cs4234_dac14_delay_text[] = {
@@ -94,14 +94,14 @@ static int cs4234_dac14_grp_delay_put(struct snd_kcontrol *kctrl,
 	snd_soc_dapm_mutex_lock(dapm);
 
 	regmap_read(cs4234->regmap, CS4234_ADC_CTRL2, &val);
-	if ((val & 0x0F) != 0x0F) { // are all the ADCs powerdown
+	if ((val & 0x0F) != 0x0F) { 
 		ret = -EBUSY;
 		dev_err(component->dev, "Can't change group delay while ADC are ON\n");
 		goto exit;
 	}
 
 	regmap_read(cs4234->regmap, CS4234_DAC_CTRL4, &val);
-	if ((val & 0x1F) != 0x1F) { // are all the DACs powerdown
+	if ((val & 0x1F) != 0x1F) { 
 		ret = -EBUSY;
 		dev_err(component->dev, "Can't change group delay while DAC are ON\n");
 		goto exit;
@@ -180,7 +180,7 @@ static const struct snd_soc_dapm_widget cs4234_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route cs4234_dapm_routes[] = {
-	/* Playback */
+	 
 	{ "AOUT1", NULL, "DAC1" },
 	{ "AOUT2", NULL, "DAC2" },
 	{ "AOUT3", NULL, "DAC3" },
@@ -199,7 +199,7 @@ static const struct snd_soc_dapm_route cs4234_dapm_routes[] = {
 	{ "SDRX4", NULL, "Playback" },
 	{ "SDRX5", NULL, "Playback" },
 
-	/* Capture */
+	 
 	{ "ADC1", NULL, "AIN1" },
 	{ "ADC2", NULL, "AIN2" },
 	{ "ADC3", NULL, "AIN3" },
@@ -298,7 +298,7 @@ static int cs4234_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int format
 	case SND_SOC_DAIFMT_I2S:
 		sp_ctrl |= CS4234_I2S << CS4234_SP_FORMAT_SHIFT;
 		break;
-	case SND_SOC_DAIFMT_DSP_A: /* TDM mode in datasheet */
+	case SND_SOC_DAIFMT_DSP_A:  
 		sp_ctrl |= CS4234_TDM << CS4234_SP_FORMAT_SHIFT;
 		break;
 	default:
@@ -424,7 +424,7 @@ static int cs4234_dai_hw_params(struct snd_pcm_substream *sub,
 	return ret;
 }
 
-/* Scale MCLK rate by 64 to avoid overflow in the ratnum calculation */
+ 
 #define CS4234_MCLK_SCALE  64
 
 static const struct snd_ratnum cs4234_dividers[] = {
@@ -447,11 +447,11 @@ static int cs4234_dai_rule_rate(struct snd_pcm_hw_params *params, struct snd_pcm
 	struct cs4234 *cs4234 = rule->private;
 	int mclk = cs4234->mclk_rate;
 	struct snd_interval ranges[] = {
-		{ /* Single Speed Mode */
+		{  
 			.min = mclk / clamp(mclk / 30000, 256, 512),
 			.max = mclk / clamp(mclk / 50000, 256, 512),
 		},
-		{ /* Double Speed Mode */
+		{  
 			.min = mclk / clamp(mclk / 60000,  128, 256),
 			.max = mclk / clamp(mclk / 100000, 128, 256),
 		},
@@ -472,11 +472,7 @@ static int cs4234_dai_startup(struct snd_pcm_substream *sub, struct snd_soc_dai 
 	case SND_SOC_DAIFMT_I2S:
 		cs4234->rate_constraint.nrats = 2;
 
-		/*
-		 * Playback only supports 24-bit samples in these modes.
-		 * Note: SNDRV_PCM_HW_PARAM_SAMPLE_BITS constrains the physical
-		 * width, which we don't care about, so constrain the format.
-		 */
+		 
 		if (sub->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 			ret = snd_pcm_hw_constraint_mask64(
 						sub->runtime,
@@ -511,10 +507,7 @@ static int cs4234_dai_startup(struct snd_pcm_substream *sub, struct snd_soc_dai 
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * MCLK/rate may be a valid ratio but out-of-spec (e.g. 24576000/64000)
-	 * so this rule limits the range of sample rate for given MCLK.
-	 */
+	 
 	return snd_pcm_hw_rule_add(sub->runtime, 0, SNDRV_PCM_HW_PARAM_RATE,
 				   cs4234_dai_rule_rate, cs4234, -1);
 }
@@ -532,7 +525,7 @@ static int cs4234_dai_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask
 		return -EINVAL;
 	}
 
-	/* Either 4 or 5 consecutive bits, DAC5 is optional */
+	 
 	slot_offset = ffs(tx_mask) - 1;
 	tx_mask >>= slot_offset;
 	if ((slot_offset % 4) || ((tx_mask != 0x0F) && (tx_mask != 0x1F))) {
@@ -694,7 +687,7 @@ static void cs4234_shutdown(struct cs4234 *cs4234)
 			   CS4234_VQ_RAMP_MASK);
 	msleep(50);
 	regcache_cache_only(cs4234->regmap, true);
-	/* Clear VQ Ramp Bit in cache for the next PowerUp */
+	 
 	regmap_update_bits(cs4234->regmap, CS4234_DAC_CTRL4, CS4234_VQ_RAMP_MASK, 0);
 	gpiod_set_value_cansleep(cs4234->reset_gpio, 0);
 	regulator_bulk_disable(cs4234->num_core_supplies, cs4234->core_supplies);
@@ -721,7 +714,7 @@ static int cs4234_powerup(struct cs4234 *cs4234)
 	usleep_range(CS4234_HOLD_RESET_TIME_US, 2 * CS4234_HOLD_RESET_TIME_US);
 	gpiod_set_value_cansleep(cs4234->reset_gpio, 1);
 
-	/* Make sure hardware reset done 2 ms + (3000/MCLK) */
+	 
 	usleep_range(CS4234_BOOT_TIME_US, CS4234_BOOT_TIME_US * 2);
 
 	queue_delayed_work(system_power_efficient_wq,

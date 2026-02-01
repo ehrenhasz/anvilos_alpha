@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -140,7 +136,7 @@ CLK_OF_DECLARE(sun9i_a80_apbs, "allwinner,sun9i-a80-apbs-gates-clk",
 	       sunxi_simple_gates_init);
 
 static const int sun4i_a10_ahb_critical_clocks[] __initconst = {
-	14,	/* ahb_sdram */
+	14,	 
 };
 
 static void __init sun4i_a10_ahb_init(struct device_node *node)
@@ -158,7 +154,7 @@ CLK_OF_DECLARE(sun7i_a20_ahb, "allwinner,sun7i-a20-ahb-gates-clk",
 	       sun4i_a10_ahb_init);
 
 static const int sun4i_a10_dram_critical_clocks[] __initconst = {
-	15,	/* dram_output */
+	15,	 
 };
 
 static void __init sun4i_a10_dram_init(struct device_node *node)

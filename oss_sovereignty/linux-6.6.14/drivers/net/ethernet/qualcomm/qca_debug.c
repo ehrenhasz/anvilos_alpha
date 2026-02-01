@@ -1,24 +1,6 @@
-/*
- *   Copyright (c) 2011, 2012, Qualcomm Atheros Communications Inc.
- *   Copyright (c) 2014, I2SE GmbH
- *
- *   Permission to use, copy, modify, and/or distribute this software
- *   for any purpose with or without fee is hereby granted, provided
- *   that the above copyright notice and this permission notice appear
- *   in all copies.
- *
- *   THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL
- *   WARRANTIES WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED
- *   WARRANTIES OF MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL
- *   THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT, INDIRECT, OR
- *   CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
- *   LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT,
- *   NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF OR IN
- *   CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
-/*   This file contains debugging routines for use in the QCA7K driver.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/ethtool.h>
@@ -46,10 +28,7 @@ static const u16 qcaspi_spi_regs[] = {
 	SPI_REG_ACTION_CTRL
 };
 
-/* The order of these strings must match the order of the fields in
- * struct qcaspi_stats
- * See qca_spi.h
- */
+ 
 static const char qcaspi_gstrings_stats[][ETH_GSTRING_LEN] = {
 	"Triggered resets",
 	"Device resets",
@@ -147,7 +126,7 @@ qcaspi_remove_device_debugfs(struct qcaspi *qca)
 	debugfs_remove_recursive(qca->device_root);
 }
 
-#else /* CONFIG_DEBUG_FS */
+#else  
 
 void
 qcaspi_init_device_debugfs(struct qcaspi *qca)

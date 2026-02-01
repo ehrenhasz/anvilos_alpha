@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/idr.h>
 #include <linux/slab.h>
 #include <linux/debugfs.h>
@@ -6,7 +6,7 @@
 #include <linux/shrinker.h>
 #include <linux/memcontrol.h>
 
-/* defined in vmscan.c */
+ 
 extern struct rw_semaphore shrinker_rwsem;
 extern struct list_head shrinker_list;
 
@@ -179,7 +179,7 @@ int shrinker_debugfs_add(struct shrinker *shrinker)
 
 	lockdep_assert_held(&shrinker_rwsem);
 
-	/* debugfs isn't initialized yet, add debugfs entries later. */
+	 
 	if (!shrinker_debugfs_root)
 		return 0;
 
@@ -190,7 +190,7 @@ int shrinker_debugfs_add(struct shrinker *shrinker)
 
 	snprintf(buf, sizeof(buf), "%s-%d", shrinker->name, id);
 
-	/* create debugfs entry */
+	 
 	entry = debugfs_create_dir(buf, shrinker_debugfs_root);
 	if (IS_ERR(entry)) {
 		ida_free(&shrinker_debugfs_ida, id);
@@ -279,7 +279,7 @@ static int __init shrinker_debugfs_init(void)
 		return PTR_ERR(dentry);
 	shrinker_debugfs_root = dentry;
 
-	/* Create debugfs entries for shrinkers registered at boot */
+	 
 	down_write(&shrinker_rwsem);
 	list_for_each_entry(shrinker, &shrinker_list, list)
 		if (!shrinker->debugfs_entry) {

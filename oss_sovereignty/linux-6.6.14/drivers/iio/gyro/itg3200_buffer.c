@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * itg3200_buffer.c -- support InvenSense ITG3200
- *                     Digital 3-Axis Gyroscope driver
- *
- * Copyright (c) 2011 Christian Strobel <christian.strobel@iis.fraunhofer.de>
- * Copyright (c) 2011 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
- * Copyright (c) 2012 Thorsten Nowak <thorsten.nowak@iis.fraunhofer.de>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/i2c.h>
@@ -46,10 +39,7 @@ static irqreturn_t itg3200_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct itg3200 *st = iio_priv(indio_dev);
-	/*
-	 * Ensure correct alignment and padding including for the
-	 * timestamp that may be inserted.
-	 */
+	 
 	struct {
 		__be16 buf[ITG3200_SCAN_ELEMENTS];
 		s64 ts __aligned(8);
@@ -133,7 +123,7 @@ int itg3200_probe_trigger(struct iio_dev *indio_dev)
 	if (ret)
 		goto error_free_irq;
 
-	/* select default trigger */
+	 
 	indio_dev->trig = iio_trigger_get(st->trig);
 
 	return 0;

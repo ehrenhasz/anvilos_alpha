@@ -1,20 +1,4 @@
-/*
- * Qualcomm Atheros IPQ806x GMAC glue layer
- *
- * Copyright (C) 2015 The Linux Foundation
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/device.h>
 #include <linux/platform_device.h>
@@ -45,11 +29,7 @@
 
 #define NSS_COMMON_CLK_SRC_CTRL			0x14
 #define NSS_COMMON_CLK_SRC_CTRL_OFFSET(x)	(x)
-/* Mode is coded on 1 bit but is different depending on the MAC ID:
- * MAC0: QSGMII=0 RGMII=1
- * MAC1: QSGMII=0 SGMII=0 RGMII=1
- * MAC2 & MAC3: QSGMII=0 SGMII=1
- */
+ 
 #define NSS_COMMON_CLK_SRC_CTRL_RGMII(x)	1
 #define NSS_COMMON_CLK_SRC_CTRL_SGMII(x)	((x >= 2) ? 1 : 0)
 
@@ -80,7 +60,7 @@
 #define QSGMII_PCS_CAL_LCKDT_CTL		0x120
 #define QSGMII_PCS_CAL_LCKDT_CTL_RST		BIT(19)
 
-/* Only GMAC1/2/3 support SGMII and their CTL register are not contiguous */
+ 
 #define QSGMII_PHY_SGMII_CTL(x)			((x == 1) ? 0x134 : \
 						 (0x13c + (4 * (x - 2))))
 #define QSGMII_PHY_CDR_EN			BIT(0)
@@ -188,19 +168,19 @@ static int ipq806x_gmac_set_speed(struct ipq806x_gmac *gmac, unsigned int speed)
 		return -EINVAL;
 	}
 
-	/* Disable the clocks */
+	 
 	regmap_read(gmac->nss_common, NSS_COMMON_CLK_GATE, &val);
 	val &= ~clk_bits;
 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_GATE, val);
 
-	/* Set the divider */
+	 
 	regmap_read(gmac->nss_common, NSS_COMMON_CLK_DIV0, &val);
 	val &= ~(NSS_COMMON_CLK_DIV_MASK
 		 << NSS_COMMON_CLK_DIV_OFFSET(gmac->id));
 	val |= div << NSS_COMMON_CLK_DIV_OFFSET(gmac->id);
 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_DIV0, val);
 
-	/* Enable the clock back */
+	 
 	regmap_read(gmac->nss_common, NSS_COMMON_CLK_GATE, &val);
 	val |= clk_bits;
 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_GATE, val);
@@ -224,10 +204,7 @@ static int ipq806x_gmac_of_parse(struct ipq806x_gmac *gmac)
 		return -EINVAL;
 	}
 
-	/* The GMACs are called 1 to 4 in the documentation, but to simplify the
-	 * code and keep it consistent with the Linux convention, we'll number
-	 * them from 0 to 3 here.
-	 */
+	 
 	if (gmac->id > 3) {
 		dev_err(dev, "invalid gmac id\n");
 		return -EINVAL;
@@ -240,7 +217,7 @@ static int ipq806x_gmac_of_parse(struct ipq806x_gmac *gmac)
 	}
 	clk_set_rate(gmac->core_clk, 266000000);
 
-	/* Setup the register map for the nss common registers */
+	 
 	gmac->nss_common = syscon_regmap_lookup_by_phandle(dev->of_node,
 							   "qcom,nss-common");
 	if (IS_ERR(gmac->nss_common)) {
@@ -248,7 +225,7 @@ static int ipq806x_gmac_of_parse(struct ipq806x_gmac *gmac)
 		return PTR_ERR(gmac->nss_common);
 	}
 
-	/* Setup the register map for the qsgmii csr registers */
+	 
 	gmac->qsgmii_csr = syscon_regmap_lookup_by_phandle(dev->of_node,
 							   "qcom,qsgmii-csr");
 	if (IS_ERR(gmac->qsgmii_csr))
@@ -274,10 +251,7 @@ ipq806x_gmac_configure_qsgmii_pcs_speed(struct ipq806x_gmac *gmac)
 	int val = 0;
 	int ret;
 
-	/* Some bootloader may apply wrong configuration and cause
-	 * not functioning port. If fixed link is not set,
-	 * reset the force speed bit.
-	 */
+	 
 	if (!of_phy_is_fixed_link(pdev->dev.of_node))
 		goto write;
 
@@ -318,7 +292,7 @@ static const struct soc_device_attribute ipq806x_gmac_soc_v1[] = {
 		.revision = "1.*",
 	},
 	{
-		/* sentinel */
+		 
 	}
 };
 
@@ -350,12 +324,12 @@ ipq806x_gmac_configure_qsgmii_params(struct ipq806x_gmac *gmac)
 		qsgmii_param = QSGMII_PHY_RX_DC_BIAS(0x3) |
 			       QSGMII_PHY_TX_DRV_AMP(0xc);
 		break;
-	default: /* gmac 0 can't be set in SGMII mode */
+	default:  
 		dev_err(dev, "gmac id %d can't be in SGMII mode", gmac->id);
 		return -EINVAL;
 	}
 
-	/* Common params across all gmac id */
+	 
 	qsgmii_param |= QSGMII_PHY_CDR_EN |
 			QSGMII_PHY_RX_FRONT_EN |
 			QSGMII_PHY_RX_SIGNAL_DETECT_EN |
@@ -405,10 +379,10 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
 	regmap_write(gmac->qsgmii_csr, QSGMII_PCS_CAL_LCKDT_CTL,
 		     QSGMII_PCS_CAL_LCKDT_CTL_RST);
 
-	/* Inter frame gap is set to 12 */
+	 
 	val = 12 << NSS_COMMON_GMAC_CTL_IFG_OFFSET |
 	      12 << NSS_COMMON_GMAC_CTL_IFG_LIMIT_OFFSET;
-	/* We also initiate an AXI low power exit request */
+	 
 	val |= NSS_COMMON_GMAC_CTL_CSYS_REQ;
 	switch (gmac->phy_mode) {
 	case PHY_INTERFACE_MODE_RGMII:
@@ -422,7 +396,7 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
 	}
 	regmap_write(gmac->nss_common, NSS_COMMON_GMAC_CTL(gmac->id), val);
 
-	/* Configure the clock src according to the mode */
+	 
 	regmap_read(gmac->nss_common, NSS_COMMON_CLK_SRC_CTRL, &val);
 	val &= ~(1 << NSS_COMMON_CLK_SRC_CTRL_OFFSET(gmac->id));
 	switch (gmac->phy_mode) {
@@ -439,7 +413,7 @@ static int ipq806x_gmac_probe(struct platform_device *pdev)
 	}
 	regmap_write(gmac->nss_common, NSS_COMMON_CLK_SRC_CTRL, val);
 
-	/* Enable PTP clock */
+	 
 	regmap_read(gmac->nss_common, NSS_COMMON_CLK_GATE, &val);
 	val |= NSS_COMMON_CLK_GATE_PTP_EN(gmac->id);
 	switch (gmac->phy_mode) {

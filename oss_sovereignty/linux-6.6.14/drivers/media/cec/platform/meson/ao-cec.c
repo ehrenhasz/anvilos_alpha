@@ -1,12 +1,4 @@
-/*
- * Driver for Amlogic Meson AO CEC Controller
- *
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved
- * Copyright (C) 2017 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- * SPDX-License-Identifier: GPL-2.0+
- */
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -24,14 +16,9 @@
 #include <media/cec.h>
 #include <media/cec-notifier.h>
 
-/* CEC Registers */
+ 
 
-/*
- * [2:1] cntl_clk
- *  - 0 = Disable clk (Power-off mode)
- *  - 1 = Enable gated clock (Normal mode)
- *  - 2 = Enable free-run clk (Debug mode)
- */
+ 
 #define CEC_GEN_CNTL_REG		0x00
 
 #define CEC_GEN_CNTL_RESET		BIT(0)
@@ -40,15 +27,7 @@
 #define CEC_GEN_CNTL_CLK_ENABLE_DBG	2
 #define CEC_GEN_CNTL_CLK_CTRL_MASK	GENMASK(2, 1)
 
-/*
- * [7:0] cec_reg_addr
- * [15:8] cec_reg_wrdata
- * [16] cec_reg_wr
- *  - 0 = Read
- *  - 1 = Write
- * [23] bus free
- * [31:24] cec_reg_rddata
- */
+ 
 #define CEC_RW_REG			0x04
 
 #define CEC_RW_ADDR			GENMASK(7, 0)
@@ -57,10 +36,7 @@
 #define CEC_RW_BUS_BUSY			BIT(23)
 #define CEC_RW_RD_DATA			GENMASK(31, 24)
 
-/*
- * [1] tx intr
- * [2] rx intr
- */
+ 
 #define CEC_INTR_MASKN_REG		0x08
 #define CEC_INTR_CLR_REG		0x0c
 #define CEC_INTR_STAT_REG		0x10
@@ -68,7 +44,7 @@
 #define CEC_INTR_TX			BIT(1)
 #define CEC_INTR_RX			BIT(2)
 
-/* CEC Commands */
+ 
 
 #define CEC_TX_MSG_0_HEADER		0x00
 #define CEC_TX_MSG_1_OPCODE		0x01
@@ -180,35 +156,35 @@
 #define CEC_TX_NUM_MSG			0x94
 
 
-/* CEC_TX_MSG_CMD definition */
-#define TX_NO_OP	0  /* No transaction */
-#define TX_REQ_CURRENT	1  /* Transmit earliest message in buffer */
-#define TX_ABORT	2  /* Abort transmitting earliest message */
-#define TX_REQ_NEXT	3  /* Overwrite earliest msg, transmit next */
+ 
+#define TX_NO_OP	0   
+#define TX_REQ_CURRENT	1   
+#define TX_ABORT	2   
+#define TX_REQ_NEXT	3   
 
-/* tx_msg_status definition */
-#define TX_IDLE		0  /* No transaction */
-#define TX_BUSY		1  /* Transmitter is busy */
-#define TX_DONE		2  /* Message successfully transmitted */
-#define TX_ERROR	3  /* Message transmitted with error */
+ 
+#define TX_IDLE		0   
+#define TX_BUSY		1   
+#define TX_DONE		2   
+#define TX_ERROR	3   
 
-/* rx_msg_cmd */
-#define RX_NO_OP	0  /* No transaction */
-#define RX_ACK_CURRENT	1  /* Read earliest message in buffer */
-#define RX_DISABLE	2  /* Disable receiving latest message */
-#define RX_ACK_NEXT	3  /* Clear earliest msg, read next */
+ 
+#define RX_NO_OP	0   
+#define RX_ACK_CURRENT	1   
+#define RX_DISABLE	2   
+#define RX_ACK_NEXT	3   
 
-/* rx_msg_status */
-#define RX_IDLE		0  /* No transaction */
-#define RX_BUSY		1  /* Receiver is busy */
-#define RX_DONE		2  /* Message has been received successfully */
-#define RX_ERROR	3  /* Message has been received with error */
+ 
+#define RX_IDLE		0   
+#define RX_BUSY		1   
+#define RX_DONE		2   
+#define RX_ERROR	3   
 
-/* RX_CLEAR_BUF options */
+ 
 #define CLEAR_START	1
 #define CLEAR_STOP	0
 
-/* CEC_LOGICAL_ADDRx options */
+ 
 #define LOGICAL_ADDR_MASK	0xf
 #define LOGICAL_ADDR_VALID	BIT(4)
 #define LOGICAL_ADDR_DISABLE	0
@@ -408,10 +384,10 @@ static void meson_ao_cec_irq_tx(struct meson_ao_cec_device *ao_cec)
 		break;
 	}
 
-	/* Clear Interruption */
+	 
 	writel_relaxed(CEC_INTR_TX, ao_cec->base + CEC_INTR_CLR_REG);
 
-	/* Stop TX */
+	 
 	meson_ao_cec_write(ao_cec, CEC_TX_MSG_CMD, TX_NO_OP, &ret);
 	if (ret)
 		goto tx_reg_err;
@@ -456,14 +432,14 @@ static void meson_ao_cec_irq_rx(struct meson_ao_cec_device *ao_cec)
 	cec_received_msg(ao_cec->adap, &ao_cec->rx_msg);
 
 rx_out:
-	/* Clear Interruption */
+	 
 	writel_relaxed(CEC_INTR_RX, ao_cec->base + CEC_INTR_CLR_REG);
 
-	/* Ack RX message */
+	 
 	meson_ao_cec_write(ao_cec, CEC_RX_MSG_CMD, RX_ACK_CURRENT, &ret);
 	meson_ao_cec_write(ao_cec, CEC_RX_MSG_CMD, RX_NO_OP, &ret);
 
-	/* Clear RX buffer */
+	 
 	meson_ao_cec_write(ao_cec, CEC_RX_CLEAR_BUF, CLEAR_START, &ret);
 	meson_ao_cec_write(ao_cec, CEC_RX_CLEAR_BUF, CLEAR_STOP, &ret);
 }
@@ -553,7 +529,7 @@ static int meson_ao_cec_adap_enable(struct cec_adapter *adap, bool enable)
 	if (!enable)
 		return 0;
 
-	/* Enable gated clock (Normal mode). */
+	 
 	writel_bits_relaxed(CEC_GEN_CNTL_CLK_CTRL_MASK,
 			    FIELD_PREP(CEC_GEN_CNTL_CLK_CTRL_MASK,
 				       CEC_GEN_CNTL_CLK_ENABLE),
@@ -561,16 +537,16 @@ static int meson_ao_cec_adap_enable(struct cec_adapter *adap, bool enable)
 
 	udelay(100);
 
-	/* Release Reset */
+	 
 	writel_bits_relaxed(CEC_GEN_CNTL_RESET, 0,
 			    ao_cec->base + CEC_GEN_CNTL_REG);
 
-	/* Clear buffers */
+	 
 	ret = meson_ao_cec_clear(ao_cec);
 	if (ret)
 		return ret;
 
-	/* CEC arbitration 3/5/7 bit time set. */
+	 
 	ret = meson_ao_cec_arbit_bit_time_set(ao_cec,
 					CEC_SIGNAL_FREE_TIME_RETRY,
 					0x118);
@@ -619,7 +595,7 @@ static int meson_ao_cec_probe(struct platform_device *pdev)
 					    "meson_ao_cec",
 					    CEC_CAP_DEFAULTS |
 					    CEC_CAP_CONNECTOR_INFO,
-					    1); /* Use 1 for now */
+					    1);  
 	if (IS_ERR(ao_cec->adap))
 		return PTR_ERR(ao_cec->adap);
 
@@ -676,7 +652,7 @@ static int meson_ao_cec_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto out_probe_notify;
 
-	/* Setup Hardware */
+	 
 	writel_relaxed(CEC_GEN_CNTL_RESET,
 		       ao_cec->base + CEC_GEN_CNTL_REG);
 
@@ -708,7 +684,7 @@ static void meson_ao_cec_remove(struct platform_device *pdev)
 
 static const struct of_device_id meson_ao_cec_of_match[] = {
 	{ .compatible = "amlogic,meson-gx-ao-cec", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_ao_cec_of_match);
 

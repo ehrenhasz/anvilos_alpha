@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI testing utility (using spidev driver)
- *
- * Copyright (c) 2007  MontaVista Software, Inc.
- * Copyright (c) 2007  Anton Vorontsov <avorontsov@ru.mvista.com>
- *
- * Cross-compile with cross-gcc -I/path/to/cross-kernel/include
- */
+
+ 
 
 #include <stdint.h>
 #include <unistd.h>
@@ -45,7 +38,7 @@ static uint16_t delay;
 static int verbose;
 static int transfer_size;
 static int iterations;
-static int interval = 5; /* interval in seconds for showing transfer rate */
+static int interval = 5;  
 
 static uint8_t default_tx[] = {
 	0xFF, 0xFF, 0xFF, 0xFF, 0xFF, 0xFF,
@@ -87,10 +80,7 @@ static void hex_dump(const void *src, size_t length, size_t line_size,
 	}
 }
 
-/*
- *  Unescape - process hexadecimal escape character
- *      converts shell input "\x23" -> 0x23
- */
+ 
 static int unescape(char *_dst, char *_src, size_t len)
 {
 	int ret = 0;
@@ -449,30 +439,23 @@ int main(int argc, char *argv[])
 	if (fd < 0)
 		pabort("can't open device");
 
-	/*
-	 * spi mode
-	 */
-	/* WR is make a request to assign 'mode' */
+	 
+	 
 	request = mode;
 	ret = ioctl(fd, SPI_IOC_WR_MODE32, &mode);
 	if (ret == -1)
 		pabort("can't set spi mode");
 
-	/* RD is read what mode the device actually is in */
+	 
 	ret = ioctl(fd, SPI_IOC_RD_MODE32, &mode);
 	if (ret == -1)
 		pabort("can't get spi mode");
-	/* Drivers can reject some mode bits without returning an error.
-	 * Read the current value to identify what mode it is in, and if it
-	 * differs from the requested mode, warn the user.
-	 */
+	 
 	if (request != mode)
 		printf("WARNING device does not support requested mode 0x%x\n",
 			request);
 
-	/*
-	 * bits per word
-	 */
+	 
 	ret = ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits);
 	if (ret == -1)
 		pabort("can't set bits per word");
@@ -481,9 +464,7 @@ int main(int argc, char *argv[])
 	if (ret == -1)
 		pabort("can't get bits per word");
 
-	/*
-	 * max speed hz
-	 */
+	 
 	ret = ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed);
 	if (ret == -1)
 		pabort("can't set max speed hz");

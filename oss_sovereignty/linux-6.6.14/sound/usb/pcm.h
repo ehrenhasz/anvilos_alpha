@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __USBAUDIO_PCM_H
 #define __USBAUDIO_PCM_H
 
@@ -15,4 +15,4 @@ void snd_usb_preallocate_buffer(struct snd_usb_substream *subs);
 int snd_usb_audioformat_set_sync_ep(struct snd_usb_audio *chip,
 				    struct audioformat *fmt);
 
-#endif /* __USBAUDIO_PCM_H */
+#endif  

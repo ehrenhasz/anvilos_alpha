@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Platform Monitory Technology Telemetry driver
- *
- * Copyright (c) 2020, Intel Corporation.
- * All Rights Reserved.
- *
- * Author: "David E. Box" <david.e.box@linux.intel.com>
- */
+
+ 
 
 #include <linux/auxiliary_bus.h>
 #include <linux/kernel.h>
@@ -24,10 +17,10 @@
 #define TELEM_BASE_OFFSET	0x8
 #define TELEM_ACCESS(v)		((v) & GENMASK(3, 0))
 #define TELEM_TYPE(v)		(((v) & GENMASK(7, 4)) >> 4)
-/* size is in bytes */
+ 
 #define TELEM_SIZE(v)		(((v) & GENMASK(27, 12)) >> 10)
 
-/* Used by client hardware to identify a fixed telemetry entry*/
+ 
 #define TELEM_CLIENT_FIXED_BLOCK_GUID	0x10000000
 
 enum telem_type {
@@ -70,14 +63,10 @@ static int pmt_telem_header_decode(struct intel_pmt_entry *entry,
 	header->guid = readl(disc_table + TELEM_GUID_OFFSET);
 	header->base_offset = readl(disc_table + TELEM_BASE_OFFSET);
 
-	/* Size is measured in DWORDS, but accessor returns bytes */
+	 
 	header->size = TELEM_SIZE(readl(disc_table));
 
-	/*
-	 * Some devices may expose non-functioning entries that are
-	 * reserved for future use. They have zero size. Do not fail
-	 * probe for these. Just ignore them.
-	 */
+	 
 	if (header->size == 0 || header->access_type == 0xF)
 		return 1;
 

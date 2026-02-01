@@ -1,27 +1,4 @@
-/*
- * Copyright 2013 Ilia Mirkin
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
- * WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF
- * OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Implementation based on the pre-KMS implementation in xf86-video-nouveau,
- * written by Arthur Huillet.
- */
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_fourcc.h>
@@ -65,12 +42,7 @@ static uint32_t formats[] = {
 	DRM_FORMAT_NV21,
 };
 
-/* Sine can be approximated with
- * http://en.wikipedia.org/wiki/Bhaskara_I's_sine_approximation_formula
- * sin(x degrees) ~= 4 x (180 - x) / (40500 - x (180 - x) )
- * Note that this only works for the range [0, 180].
- * Also note that sin(x) == -sin(x - 180)
- */
+ 
 static inline int
 sin_mul(int degrees, int factor)
 {
@@ -82,7 +54,7 @@ sin_mul(int degrees, int factor)
 		(40500 - degrees * (180 - degrees));
 }
 
-/* cos(x) = sin(x + 90) */
+ 
 static inline int
 cos_mul(int degrees, int factor)
 {
@@ -131,7 +103,7 @@ nv10_update_plane(struct drm_plane *plane, struct drm_crtc *crtc,
 	unsigned format = 0;
 	int ret;
 
-	/* Source parameters given in 16.16 fixed point, ignore fractional. */
+	 
 	src_x >>= 16;
 	src_y >>= 16;
 	src_w >>= 16;
@@ -178,7 +150,7 @@ nv10_update_plane(struct drm_plane *plane, struct drm_crtc *crtc,
 	}
 	nvif_wr32(dev, NV_PVIDEO_FORMAT(flip), format | fb->pitches[0]);
 	nvif_wr32(dev, NV_PVIDEO_STOP, 0);
-	/* TODO: wait for vblank? */
+	 
 	nvif_wr32(dev, NV_PVIDEO_BUFFER, flip ? 0x10 : 0x1);
 	nv_plane->flip = !flip;
 
@@ -296,14 +268,14 @@ nv10_overlay_init(struct drm_device *device)
 		break;
 	}
 
-	ret = drm_universal_plane_init(device, &plane->base, 3 /* both crtc's */,
+	ret = drm_universal_plane_init(device, &plane->base, 3  ,
 				       &nv10_plane_funcs,
 				       formats, num_formats, NULL,
 				       DRM_PLANE_TYPE_OVERLAY, NULL);
 	if (ret)
 		goto err;
 
-	/* Set up the plane properties */
+	 
 	plane->props.colorkey = drm_property_create_range(
 			device, 0, "colorkey", 0, 0x01ffffff);
 	plane->props.contrast = drm_property_create_range(
@@ -377,7 +349,7 @@ nv04_update_plane(struct drm_plane *plane, struct drm_crtc *crtc,
 	int brightness = (nv_plane->brightness - 512) * 62 / 512;
 	int ret, i;
 
-	/* Source parameters given in 16.16 fixed point, ignore fractional. */
+	 
 	src_x >>= 16;
 	src_y >>= 16;
 	src_w >>= 16;
@@ -410,14 +382,14 @@ nv04_update_plane(struct drm_plane *plane, struct drm_crtc *crtc,
 	nvif_wr32(dev, NV_PVIDEO_STEP_SIZE,
 		(uint32_t)(((src_h - 1) << 11) / (crtc_h - 1)) << 16 | (uint32_t)(((src_w - 1) << 11) / (crtc_w - 1)));
 
-	/* It should be possible to convert hue/contrast to this */
+	 
 	nvif_wr32(dev, NV_PVIDEO_RED_CSC_OFFSET, 0x69 - brightness);
 	nvif_wr32(dev, NV_PVIDEO_GREEN_CSC_OFFSET, 0x3e + brightness);
 	nvif_wr32(dev, NV_PVIDEO_BLUE_CSC_OFFSET, 0x89 - brightness);
 	nvif_wr32(dev, NV_PVIDEO_CSC_ADJUST, 0);
 
-	nvif_wr32(dev, NV_PVIDEO_CONTROL_Y, 0x001); /* (BLUR_ON, LINE_HALF) */
-	nvif_wr32(dev, NV_PVIDEO_CONTROL_X, 0x111); /* (WEIGHT_HEAVY, SHARPENING_ON, SMOOTHING_ON) */
+	nvif_wr32(dev, NV_PVIDEO_CONTROL_Y, 0x001);  
+	nvif_wr32(dev, NV_PVIDEO_CONTROL_X, 0x111);  
 
 	nvif_wr32(dev, NV_PVIDEO_FIFO_BURST_LENGTH, 0x03);
 	nvif_wr32(dev, NV_PVIDEO_FIFO_THRES_SIZE, 0x38);
@@ -476,13 +448,13 @@ nv04_overlay_init(struct drm_device *device)
 	if (!plane)
 		return;
 
-	ret = drm_universal_plane_init(device, &plane->base, 1 /* single crtc */,
+	ret = drm_universal_plane_init(device, &plane->base, 1  ,
 				       &nv04_plane_funcs, formats, 2, NULL,
 				       DRM_PLANE_TYPE_OVERLAY, NULL);
 	if (ret)
 		goto err;
 
-	/* Set up the plane properties */
+	 
 	plane->props.colorkey = drm_property_create_range(
 			device, 0, "colorkey", 0, 0x01ffffff);
 	plane->props.brightness = drm_property_create_range(

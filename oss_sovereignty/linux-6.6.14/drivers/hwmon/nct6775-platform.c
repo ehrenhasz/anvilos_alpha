@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * nct6775 - Platform driver for the hardware monitoring
- *	     functionality of Nuvoton NCT677x Super-I/O chips
- *
- * Copyright (C) 2012  Guenter Roeck <linux@roeck-us.net>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -50,9 +45,7 @@ MODULE_PARM_DESC(fan_debounce, "Enable debouncing for fan RPM signal");
 
 #define NCT6775_PORT_CHIPID	0x58
 
-/*
- * ISA constants
- */
+ 
 
 #define IOREGION_ALIGNMENT	(~7)
 #define IOREGION_OFFSET		5
@@ -60,19 +53,17 @@ MODULE_PARM_DESC(fan_debounce, "Enable debouncing for fan RPM signal");
 #define ADDR_REG_OFFSET		0
 #define DATA_REG_OFFSET		1
 
-/*
- * Super-I/O constants and functions
- */
+ 
 
 #define NCT6775_LD_ACPI		0x0a
 #define NCT6775_LD_HWM		0x0b
 #define NCT6775_LD_VID		0x0d
 #define NCT6775_LD_12		0x12
 
-#define SIO_REG_LDSEL		0x07	/* Logical device select */
-#define SIO_REG_DEVID		0x20	/* Device ID (2 bytes) */
-#define SIO_REG_ENABLE		0x30	/* Logical device enable */
-#define SIO_REG_ADDR		0x60	/* Logical device address (2 bytes) */
+#define SIO_REG_LDSEL		0x07	 
+#define SIO_REG_DEVID		0x20	 
+#define SIO_REG_ENABLE		0x30	 
+#define SIO_REG_ADDR		0x60	 
 
 #define SIO_NCT6106_ID		0xc450
 #define SIO_NCT6116_ID		0xd280
@@ -89,9 +80,7 @@ MODULE_PARM_DESC(fan_debounce, "Enable debouncing for fan RPM signal");
 #define SIO_NCT6799_ID		0xd800
 #define SIO_ID_MASK		0xFFF8
 
-/*
- * Control registers
- */
+ 
 #define NCT6775_REG_CR_FAN_DEBOUNCE	0xf0
 
 struct nct6775_sio_data {
@@ -100,7 +89,7 @@ struct nct6775_sio_data {
 	enum kinds kind;
 	enum sensor_access access;
 
-	/* superio_() callbacks  */
+	 
 	void (*sio_outb)(struct nct6775_sio_data *sio_data, int reg, int val);
 	int (*sio_inb)(struct nct6775_sio_data *sio_data, int reg);
 	void (*sio_select)(struct nct6775_sio_data *sio_data, int ld);
@@ -119,10 +108,7 @@ struct nct6775_sio_data {
 #define ASUSMSI_DEVICE_UID		"AsusMbSwInterface"
 
 #if IS_ENABLED(CONFIG_ACPI)
-/*
- * ASUS boards have only one device with WMI "WMBD" method and have provided
- * access to only one SuperIO chip at 0x0290.
- */
+ 
 static struct acpi_device *asus_acpi_dev;
 #endif
 
@@ -232,9 +218,7 @@ static int superio_enter(struct nct6775_sio_data *sio_data)
 {
 	int ioreg = sio_data->sioreg;
 
-	/*
-	 * Try to reserve <ioreg> and <ioreg + 1> for exclusive access.
-	 */
+	 
 	if (!request_muxed_region(ioreg, 2, DRVNAME))
 		return -EBUSY;
 
@@ -306,12 +290,7 @@ static int nct6775_wmi_reg_write(void *ctx, unsigned int reg, unsigned int value
 	return res;
 }
 
-/*
- * On older chips, only registers 0x50-0x5f are banked.
- * On more recent chips, all registers are banked.
- * Assume that is the case and set the bank number for each access.
- * Cache the bank number so it only needs to be set if it changes.
- */
+ 
 static inline void nct6775_set_bank(struct nct6775_data *data, u16 reg)
 {
 	u8 bank = reg >> 8;
@@ -406,7 +385,7 @@ static int nct6775_resume(struct device *dev)
 	u8 reg;
 
 	mutex_lock(&data->update_lock);
-	data->bank = 0xff;		/* Force initial bank selection */
+	data->bank = 0xff;		 
 
 	err = sio_data->sio_enter(sio_data);
 	if (err)
@@ -425,7 +404,7 @@ static int nct6775_resume(struct device *dev)
 
 	sio_data->sio_exit(sio_data);
 
-	/* Restore limits */
+	 
 	for (i = 0; i < data->in_num; i++) {
 		if (!(data->have_in & BIT(i)))
 			continue;
@@ -460,7 +439,7 @@ static int nct6775_resume(struct device *dev)
 			}
 	}
 
-	/* Restore other settings */
+	 
 	err = nct6775_write_value(data, data->REG_VBAT, data->vbat);
 	if (err)
 		goto abort;
@@ -472,7 +451,7 @@ static int nct6775_resume(struct device *dev)
 	}
 
 abort:
-	/* Force re-reading all values */
+	 
 	data->valid = false;
 	mutex_unlock(&data->update_lock);
 
@@ -489,18 +468,18 @@ nct6775_check_fan_inputs(struct nct6775_data *data, struct nct6775_sio_data *sio
 	bool pwm3pin = false, pwm4pin = false, pwm5pin = false;
 	bool pwm6pin = false, pwm7pin = false;
 
-	/* Store SIO_REG_ENABLE for use during resume */
+	 
 	sio_data->sio_select(sio_data, NCT6775_LD_HWM);
 	data->sio_reg_enable = sio_data->sio_inb(sio_data, SIO_REG_ENABLE);
 
-	/* fan4 and fan5 share some pins with the GPIO and serial flash */
+	 
 	if (data->kind == nct6775) {
 		int cr2c = sio_data->sio_inb(sio_data, 0x2c);
 
 		fan3pin = cr2c & BIT(6);
 		pwm3pin = cr2c & BIT(7);
 
-		/* On NCT6775, fan4 shares pins with the fdc interface */
+		 
 		fan4pin = !(sio_data->sio_inb(sio_data, 0x2A) & 0x80);
 	} else if (data->kind == nct6776) {
 		bool gpok = sio_data->sio_inb(sio_data, 0x27) & 0x80;
@@ -511,11 +490,7 @@ nct6775_check_fan_inputs(struct nct6775_data *data, struct nct6775_sio_data *sio
 
 		if (board_name && board_vendor &&
 		    !strcmp(board_vendor, "ASRock")) {
-			/*
-			 * Auxiliary fan monitoring is not enabled on ASRock
-			 * Z77 Pro4-M if booted in UEFI Ultra-FastBoot mode.
-			 * Observed with BIOS version 2.00.
-			 */
+			 
 			if (!strcmp(board_name, "Z77 Pro4-M")) {
 				if ((data->sio_reg_enable & 0xe0) != 0xe0) {
 					data->sio_reg_enable |= 0xe0;
@@ -556,19 +531,16 @@ nct6775_check_fan_inputs(struct nct6775_data *data, struct nct6775_sio_data *sio
 		int cr2f = sio_data->sio_inb(sio_data, 0x2f);
 
 		fan3pin = !(cr2b & 0x10);
-		fan4pin = (cr2b & 0x80) ||			// pin 1(2)
-			(!(cr2f & 0x10) && (cr1a & 0x04));	// pin 65(66)
-		fan5pin = (cr2b & 0x80) ||			// pin 126(127)
-			(!(cr1b & 0x03) && (cr2a & 0x02));	// pin 94(96)
+		fan4pin = (cr2b & 0x80) ||			
+			(!(cr2f & 0x10) && (cr1a & 0x04));	
+		fan5pin = (cr2b & 0x80) ||			
+			(!(cr1b & 0x03) && (cr2a & 0x02));	
 
 		pwm3pin = fan3pin && (cr24 & 0x08);
 		pwm4pin = fan4pin;
 		pwm5pin = fan5pin;
 	} else {
-		/*
-		 * NCT6779D, NCT6791D, NCT6792D, NCT6793D, NCT6795D, NCT6796D,
-		 * NCT6797D, NCT6798D, NCT6799D
-		 */
+		 
 		int cr1a = sio_data->sio_inb(sio_data, 0x1a);
 		int cr1b = sio_data->sio_inb(sio_data, 0x1b);
 		int cr1c = sio_data->sio_inb(sio_data, 0x1c);
@@ -714,14 +686,14 @@ nct6775_check_fan_inputs(struct nct6775_data *data, struct nct6775_sio_data *sio
 			pwm7pin |= cr2d & BIT(7);
 
 			break;
-		default:	/* NCT6779D */
+		default:	 
 			break;
 		}
 
 		fan4min = fan4pin;
 	}
 
-	/* fan 1 and 2 (0x03) are always present */
+	 
 	data->has_fan = 0x03 | (fan3pin << 2) | (fan4pin << 3) |
 		(fan5pin << 4) | (fan6pin << 5) | (fan7pin << 6);
 	data->has_fan_min = 0x03 | (fan3pin << 2) | (fan4min << 3) |
@@ -740,7 +712,7 @@ cpu0_vid_show(struct device *dev, struct device_attribute *attr, char *buf)
 
 static DEVICE_ATTR_RO(cpu0_vid);
 
-/* Case open detection */
+ 
 
 static const u8 NCT6775_REG_CR_CASEOPEN_CLR[] = { 0xe6, 0xee };
 static const u8 NCT6775_CR_CASEOPEN_CLR_MASK[] = { 0x20, 0x01 };
@@ -761,11 +733,7 @@ clear_caseopen(struct device *dev, struct device_attribute *attr,
 
 	mutex_lock(&data->update_lock);
 
-	/*
-	 * Use CR registers to clear caseopen status.
-	 * The CR registers are the same for all chips, and not all chips
-	 * support clearing the caseopen status through "regular" registers.
-	 */
+	 
 	ret = sio_data->sio_enter(sio_data);
 	if (ret) {
 		count = ret;
@@ -780,7 +748,7 @@ clear_caseopen(struct device *dev, struct device_attribute *attr,
 	sio_data->sio_outb(sio_data, NCT6775_REG_CR_CASEOPEN_CLR[nr], reg);
 	sio_data->sio_exit(sio_data);
 
-	data->valid = false;	/* Force cache refresh */
+	data->valid = false;	 
 error:
 	mutex_unlock(&data->update_lock);
 	return count;
@@ -819,18 +787,14 @@ static umode_t nct6775_other_is_visible(struct kobject *kobj,
 	return nct6775_attr_mode(data, attr);
 }
 
-/*
- * nct6775_other_is_visible uses the index into the following array
- * to determine if attributes should be created or not.
- * Any change in order or content must be matched.
- */
+ 
 static struct attribute *nct6775_attributes_other[] = {
-	&dev_attr_cpu0_vid.attr,				/* 0 */
-	&sensor_dev_attr_intrusion0_alarm.dev_attr.attr,	/* 1 */
-	&sensor_dev_attr_intrusion1_alarm.dev_attr.attr,	/* 2 */
-	&sensor_dev_attr_intrusion0_beep.dev_attr.attr,		/* 3 */
-	&sensor_dev_attr_intrusion1_beep.dev_attr.attr,		/* 4 */
-	&sensor_dev_attr_beep_enable.dev_attr.attr,		/* 5 */
+	&dev_attr_cpu0_vid.attr,				 
+	&sensor_dev_attr_intrusion0_alarm.dev_attr.attr,	 
+	&sensor_dev_attr_intrusion1_alarm.dev_attr.attr,	 
+	&sensor_dev_attr_intrusion0_beep.dev_attr.attr,		 
+	&sensor_dev_attr_intrusion1_beep.dev_attr.attr,		 
+	&sensor_dev_attr_beep_enable.dev_attr.attr,		 
 
 	NULL
 };
@@ -872,10 +836,7 @@ static int nct6775_platform_probe_init(struct nct6775_data *data)
 		break;
 	}
 
-	/*
-	 * Read VID value
-	 * We can get the VID input values directly at logical device D 0xe3.
-	 */
+	 
 	if (data->have_vid) {
 		sio_data->sio_select(sio_data, NCT6775_LD_VID);
 		data->vid = sio_data->sio_inb(sio_data, 0xe3);
@@ -981,7 +942,7 @@ static struct platform_driver nct6775_driver = {
 	.probe		= nct6775_platform_probe,
 };
 
-/* nct6775_find() looks for a '627 in the Super-I/O config space */
+ 
 static int __init nct6775_find(int sioaddr, struct nct6775_sio_data *sio_data)
 {
 	u16 val;
@@ -1047,7 +1008,7 @@ static int __init nct6775_find(int sioaddr, struct nct6775_sio_data *sio_data)
 		return -ENODEV;
 	}
 
-	/* We have a known chip, find the HWM I/O address */
+	 
 	sio_data->sio_select(sio_data, NCT6775_LD_HWM);
 	val = (sio_data->sio_inb(sio_data, SIO_REG_ADDR) << 8)
 	    | sio_data->sio_inb(sio_data, SIO_REG_ADDR + 1);
@@ -1058,7 +1019,7 @@ static int __init nct6775_find(int sioaddr, struct nct6775_sio_data *sio_data)
 		return -ENODEV;
 	}
 
-	/* Activate logical device if needed */
+	 
 	val = sio_data->sio_inb(sio_data, SIO_REG_ENABLE);
 	if (!(val & 0x01)) {
 		pr_warn("Forcibly enabling Super-I/O. Sensor is probably unusable.\n");
@@ -1078,12 +1039,7 @@ static int __init nct6775_find(int sioaddr, struct nct6775_sio_data *sio_data)
 	return addr;
 }
 
-/*
- * when Super-I/O functions move to a separate file, the Super-I/O
- * bus will manage the lifetime of the device and this module will only keep
- * track of the nct6775 driver. But since we use platform_device_alloc(), we
- * must keep track of the device
- */
+ 
 static struct platform_device *pdev[2];
 
 static const char * const asus_wmi_boards[] = {
@@ -1458,10 +1414,7 @@ static const char * const asus_msi_boards[] = {
 };
 
 #if IS_ENABLED(CONFIG_ACPI)
-/*
- * Callback for acpi_bus_for_each_dev() to find the right device
- * by _UID and _HID and return 1 to stop iteration.
- */
+ 
 static int nct6775_asuswmi_device_match(struct device *dev, void *data)
 {
 	struct acpi_device *adev = to_acpi_device(dev);
@@ -1486,7 +1439,7 @@ static enum sensor_access nct6775_determine_access(const char *device_uid)
 	if (!asus_acpi_dev)
 		return access_direct;
 
-	/* if reading chip id via ACPI succeeds, use WMI "WMBD" method for access */
+	 
 	if (!nct6775_asuswmi_read(0, NCT6775_PORT_CHIPID, &tmp) && tmp) {
 		pr_debug("Using Asus WMBD method of %s to access %#x chip.\n", device_uid, tmp);
 		return access_asuswmi;
@@ -1527,13 +1480,7 @@ static int __init sensors_nct6775_platform_init(void)
 			access = nct6775_determine_access(ASUSMSI_DEVICE_UID);
 	}
 
-	/*
-	 * initialize sio_data->kind and sio_data->sioreg.
-	 *
-	 * when Super-I/O functions move to a separate file, the Super-I/O
-	 * driver will probe 0x2e and 0x4e and auto-detect the presence of a
-	 * nct6775 hardware monitor, and call probe()
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(pdev); i++) {
 		sio_data.sio_outb = superio_outb;
 		sio_data.sio_inb = superio_inb;
@@ -1587,7 +1534,7 @@ static int __init sensors_nct6775_platform_init(void)
 				goto exit_device_put;
 		}
 
-		/* platform_device_add calls probe() */
+		 
 		err = platform_device_add(pdev[i]);
 		if (err)
 			goto exit_device_put;

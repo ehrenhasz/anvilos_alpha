@@ -1,65 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 Joe Lawrence <joe.lawrence@redhat.com>
- */
 
-/*
- * livepatch-shadow-mod.c - Shadow variables, buggy module demo
- *
- * Purpose
- * -------
- *
- * As a demonstration of livepatch shadow variable API, this module
- * introduces memory leak behavior that livepatch modules
- * livepatch-shadow-fix1.ko and livepatch-shadow-fix2.ko correct and
- * enhance.
- *
- * WARNING - even though the livepatch-shadow-fix modules patch the
- * memory leak, please load these modules at your own risk -- some
- * amount of memory may leaked before the bug is patched.
- *
- *
- * Usage
- * -----
- *
- * Step 1 - Load the buggy demonstration module:
- *
- *   insmod samples/livepatch/livepatch-shadow-mod.ko
- *
- * Watch dmesg output for a few moments to see new dummy being allocated
- * and a periodic cleanup check.  (Note: a small amount of memory is
- * being leaked.)
- *
- *
- * Step 2 - Load livepatch fix1:
- *
- *   insmod samples/livepatch/livepatch-shadow-fix1.ko
- *
- * Continue watching dmesg and note that now livepatch_fix1_dummy_free()
- * and livepatch_fix1_dummy_alloc() are logging messages about leaked
- * memory and eventually leaks prevented.
- *
- *
- * Step 3 - Load livepatch fix2 (on top of fix1):
- *
- *   insmod samples/livepatch/livepatch-shadow-fix2.ko
- *
- * This module extends functionality through shadow variables, as a new
- * "check" counter is added to the dummy structure.  Periodic dmesg
- * messages will log these as dummies are cleaned up.
- *
- *
- * Step 4 - Cleanup
- *
- * Unwind the demonstration by disabling the livepatch fix modules, then
- * removing them and the demo module:
- *
- *   echo 0 > /sys/kernel/livepatch/livepatch_shadow_fix2/enabled
- *   echo 0 > /sys/kernel/livepatch/livepatch_shadow_fix1/enabled
- *   rmmod livepatch-shadow-fix2
- *   rmmod livepatch-shadow-fix1
- *   rmmod livepatch-shadow-mod
- */
+ 
+
+ 
 
 
 #include <linux/kernel.h>
@@ -73,17 +15,14 @@ MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Joe Lawrence <joe.lawrence@redhat.com>");
 MODULE_DESCRIPTION("Buggy module for shadow variable demo");
 
-/* Allocate new dummies every second */
+ 
 #define ALLOC_PERIOD	1
-/* Check for expired dummies after a few new ones have been allocated */
+ 
 #define CLEANUP_PERIOD	(3 * ALLOC_PERIOD)
-/* Dummies expire after a few cleanup instances */
+ 
 #define EXPIRE_PERIOD	(4 * CLEANUP_PERIOD)
 
-/*
- * Keep a list of all the dummies so we can clean up any residual ones
- * on module exit
- */
+ 
 static LIST_HEAD(dummy_list);
 static DEFINE_MUTEX(dummy_list_mutex);
 
@@ -104,7 +43,7 @@ static __used noinline struct dummy *dummy_alloc(void)
 	d->jiffies_expire = jiffies +
 		msecs_to_jiffies(1000 * EXPIRE_PERIOD);
 
-	/* Oops, forgot to save leak! */
+	 
 	leak = kzalloc(sizeof(*leak), GFP_KERNEL);
 	if (!leak) {
 		kfree(d);
@@ -131,11 +70,7 @@ static __used noinline bool dummy_check(struct dummy *d,
 	return time_after(jiffies, d->jiffies_expire);
 }
 
-/*
- * alloc_work_func: allocates new dummy structures, allocates additional
- *                  memory, aptly named "leak", but doesn't keep
- *                  permanent record of it.
- */
+ 
 
 static void alloc_work_func(struct work_struct *work);
 static DECLARE_DELAYED_WORK(alloc_dwork, alloc_work_func);
@@ -156,11 +91,7 @@ static void alloc_work_func(struct work_struct *work)
 		msecs_to_jiffies(1000 * ALLOC_PERIOD));
 }
 
-/*
- * cleanup_work_func: frees dummy structures.  Without knownledge of
- *                    "leak", it leaks the additional memory that
- *                    alloc_work_func created.
- */
+ 
 
 static void cleanup_work_func(struct work_struct *work);
 static DECLARE_DELAYED_WORK(cleanup_dwork, cleanup_work_func);
@@ -176,7 +107,7 @@ static void cleanup_work_func(struct work_struct *work)
 	mutex_lock(&dummy_list_mutex);
 	list_for_each_entry_safe(d, tmp, &dummy_list, list) {
 
-		/* Kick out and free any expired dummies */
+		 
 		if (dummy_check(d, j)) {
 			list_del(&d->list);
 			dummy_free(d);
@@ -202,11 +133,11 @@ static void livepatch_shadow_mod_exit(void)
 {
 	struct dummy *d, *tmp;
 
-	/* Wait for any dummies at work */
+	 
 	cancel_delayed_work_sync(&alloc_dwork);
 	cancel_delayed_work_sync(&cleanup_dwork);
 
-	/* Cleanup residual dummies */
+	 
 	list_for_each_entry_safe(d, tmp, &dummy_list, list) {
 		list_del(&d->list);
 		dummy_free(d);

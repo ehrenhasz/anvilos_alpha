@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _ASM_MIPS_PERF_REGS_H
 #define _ASM_MIPS_PERF_REGS_H
 
@@ -37,4 +37,4 @@ enum perf_event_mips_regs {
 	PERF_REG_MIPS_R31,
 	PERF_REG_MIPS_MAX = PERF_REG_MIPS_R31 + 1,
 };
-#endif /* _ASM_MIPS_PERF_REGS_H */
+#endif  

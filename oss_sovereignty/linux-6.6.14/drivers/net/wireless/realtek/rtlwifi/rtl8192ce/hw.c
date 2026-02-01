@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../efuse.h"
@@ -494,7 +494,7 @@ void rtl92ce_set_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val)
 			bool fw_current_inps;
 
 			if (enter_fwlps) {
-				rpwm_val = 0x02;	/* RF off */
+				rpwm_val = 0x02;	 
 				fw_current_inps = true;
 				rtlpriv->cfg->ops->set_hw_reg(hw,
 						HW_VAR_FW_PSMODE_STATUS,
@@ -507,7 +507,7 @@ void rtl92ce_set_hw_reg(struct ieee80211_hw *hw, u8 variable, u8 *val)
 							      HW_VAR_SET_RPWM,
 							      &rpwm_val);
 			} else {
-				rpwm_val = 0x0C;	/* RF on */
+				rpwm_val = 0x0C;	 
 				fw_pwrmode = FW_PS_ACTIVE_MODE;
 				fw_current_inps = false;
 				rtlpriv->cfg->ops->set_hw_reg(hw,
@@ -925,13 +925,7 @@ int rtl92ce_hw_init(struct ieee80211_hw *hw)
 
 	rtlpci->being_init_adapter = true;
 
-	/* Since this function can take a very long time (up to 350 ms)
-	 * and can be called with irqs disabled, reenable the irqs
-	 * to let the other devices continue being serviced.
-	 *
-	 * It is safe doing so since our own interrupts will only be enabled
-	 * in a subsequent step.
-	 */
+	 
 	local_save_flags(flags);
 	local_irq_enable();
 
@@ -955,10 +949,7 @@ int rtl92ce_hw_init(struct ieee80211_hw *hw)
 	rtlhal->fw_ready = true;
 	rtlhal->last_hmeboxnum = 0;
 	rtl92c_phy_mac_config(hw);
-	/* because last function modify RCR, so we update
-	 * rcr var here, or TP will unstable for receive_config
-	 * is wrong, RX RCR_ACRC32 will cause TP unstabel & Rx
-	 * RCR_APP_ICV will cause mac80211 unassoc for cisco 1252*/
+	 
 	rtlpci->receive_config = rtl_read_dword(rtlpriv, REG_RCR);
 	rtlpci->receive_config &= ~(RCR_ACRC32 | RCR_AICV);
 	rtl_write_dword(rtlpriv, REG_RCR, rtlpci->receive_config);
@@ -1172,12 +1163,7 @@ static int _rtl92ce_set_media_status(struct ieee80211_hw *hw,
 
 	}
 
-	/* MSR_INFRA == Link in infrastructure network;
-	 * MSR_ADHOC == Link in ad hoc network;
-	 * Therefore, check link state is necessary.
-	 *
-	 * MSR_AP == AP mode; link state does not matter here.
-	 */
+	 
 	if (mode != MSR_AP &&
 	    rtlpriv->mac80211.link_state < MAC80211_LINKED) {
 		mode = MSR_NOLINK;
@@ -1246,7 +1232,7 @@ int rtl92ce_set_network_type(struct ieee80211_hw *hw, enum nl80211_iftype type)
 	return 0;
 }
 
-/* don't set REG_EDCA_BE_PARAM here because mac80211 will send pkt when scan */
+ 
 void rtl92ce_set_qos(struct ieee80211_hw *hw, int aci)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
@@ -1257,7 +1243,7 @@ void rtl92ce_set_qos(struct ieee80211_hw *hw, int aci)
 		rtl_write_dword(rtlpriv, REG_EDCA_BK_PARAM, 0xa44f);
 		break;
 	case AC0_BE:
-		/* rtl_write_dword(rtlpriv, REG_EDCA_BE_PARAM, u4b_ac_param); */
+		 
 		break;
 	case AC2_VI:
 		rtl_write_dword(rtlpriv, REG_EDCA_VI_PARAM, 0x5e4322);
@@ -1354,7 +1340,7 @@ void rtl92ce_card_disable(struct ieee80211_hw *hw)
 	RT_SET_PS_LEVEL(ppsc, RT_RF_OFF_LEVL_HALT_NIC);
 	_rtl92ce_poweroff_adapter(hw);
 
-	/* after power off we should do iqk again */
+	 
 	rtlpriv->phy.iqk_initialized = false;
 }
 
@@ -1376,7 +1362,7 @@ void rtl92ce_set_beacon_related_registers(struct ieee80211_hw *hw)
 	u16 bcn_interval, atim_window;
 
 	bcn_interval = mac->beacon_interval;
-	atim_window = 2;	/*FIX MERGE */
+	atim_window = 2;	 
 	rtl92ce_disable_interrupt(hw);
 	rtl_write_word(rtlpriv, REG_ATIMWND, atim_window);
 	rtl_write_word(rtlpriv, REG_BCN_INTERVAL, bcn_interval);
@@ -2286,11 +2272,11 @@ void rtl8192ce_bt_reg_init(struct ieee80211_hw *hw)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 
-	/* 0:Low, 1:High, 2:From Efuse. */
+	 
 	rtlpriv->btcoexist.reg_bt_iso = 2;
-	/* 0:Idle, 1:None-SCO, 2:SCO, 3:From Counter. */
+	 
 	rtlpriv->btcoexist.reg_bt_sco = 3;
-	/* 0:Disable BT control A-MPDU, 1:Enable BT control A-MPDU. */
+	 
 	rtlpriv->btcoexist.reg_bt_sco = 0;
 }
 
@@ -2320,7 +2306,7 @@ void rtl8192ce_bt_hw_init(struct ieee80211_hw *hw)
 		rtl_write_dword(rtlpriv, REG_BT_COEX_TABLE+8, 0xffbd0040);
 		rtl_write_dword(rtlpriv, REG_BT_COEX_TABLE+0xc, 0x40000010);
 
-		/* Config to 1T1R. */
+		 
 		if (rtlphy->rf_type == RF_1T1R) {
 			u1_tmp = rtl_read_byte(rtlpriv, ROFDM0_TRXPATHENABLE);
 			u1_tmp &= ~(BIT(1));

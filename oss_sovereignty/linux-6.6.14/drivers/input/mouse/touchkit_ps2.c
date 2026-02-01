@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* ----------------------------------------------------------------------------
- * touchkit_ps2.c  --  Driver for eGalax TouchKit PS/2 Touchscreens
- *
- * Copyright (C) 2005 by Stefan Lucke
- * Copyright (C) 2004 by Daniel Ritz
- * Copyright (C) by Todd E. Johnson (mtouchusb.c)
- *
- * Based upon touchkitusb.c
- *
- * Vendor documentation is available at:
- * http://home.eeti.com.tw/web20/drivers/Software%20Programming%20Guide_v2.0.pdf 
- */
+
+ 
 
 #include <linux/kernel.h>
 

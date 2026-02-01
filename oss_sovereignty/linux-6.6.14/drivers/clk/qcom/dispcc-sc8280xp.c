@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -23,7 +20,7 @@
 #include "gdsc.h"
 #include "reset.h"
 
-/* Need to match the order of clocks in DT binding */
+ 
 enum {
 	DT_IFACE,
 	DT_BI_TCXO,
@@ -3178,7 +3175,7 @@ static int disp_cc_sc8280xp_probe(struct platform_device *pdev)
 		goto out_pm_runtime_put;
 	}
 
-	/* DISP_CC_XO_CLK always-on */
+	 
 	regmap_update_bits(regmap, 0x605c, BIT(0), BIT(0));
 
 out_pm_runtime_put:

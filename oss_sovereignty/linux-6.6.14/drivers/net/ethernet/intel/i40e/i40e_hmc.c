@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+ 
 
 #include "i40e.h"
 #include "i40e_osdep.h"
@@ -8,14 +8,7 @@
 #include "i40e_hmc.h"
 #include "i40e_type.h"
 
-/**
- * i40e_add_sd_table_entry - Adds a segment descriptor to the table
- * @hw: pointer to our hw struct
- * @hmc_info: pointer to the HMC configuration information struct
- * @sd_index: segment descriptor index to manipulate
- * @type: what type of segment descriptor we're manipulating
- * @direct_mode_sz: size to alloc in direct mode
- **/
+ 
 int i40e_add_sd_table_entry(struct i40e_hw *hw,
 			    struct i40e_hmc_info *hmc_info,
 			    u32 sd_index,
@@ -51,7 +44,7 @@ int i40e_add_sd_table_entry(struct i40e_hw *hw,
 			alloc_len = direct_mode_sz;
 		}
 
-		/* allocate a 4K pd page or 2M backing page */
+		 
 		ret_code = i40e_allocate_dma_mem(hw, &mem, mem_type, alloc_len,
 						 I40E_HMC_PD_BP_BUF_ALIGNMENT);
 		if (ret_code)
@@ -71,13 +64,13 @@ int i40e_add_sd_table_entry(struct i40e_hw *hw,
 			sd_entry->u.bp.addr = mem;
 			sd_entry->u.bp.sd_pd_index = sd_index;
 		}
-		/* initialize the sd entry */
+		 
 		hmc_info->sd_table.sd_entry[sd_index].entry_type = type;
 
-		/* increment the ref count */
+		 
 		I40E_INC_SD_REFCNT(&hmc_info->sd_table);
 	}
-	/* Increment backing page reference count */
+	 
 	if (I40E_SD_TYPE_DIRECT == sd_entry->entry_type)
 		I40E_INC_BP_REFCNT(&sd_entry->u.bp);
 exit:
@@ -88,23 +81,7 @@ exit:
 	return ret_code;
 }
 
-/**
- * i40e_add_pd_table_entry - Adds page descriptor to the specified table
- * @hw: pointer to our HW structure
- * @hmc_info: pointer to the HMC configuration information structure
- * @pd_index: which page descriptor index to manipulate
- * @rsrc_pg: if not NULL, use preallocated page instead of allocating new one.
- *
- * This function:
- *	1. Initializes the pd entry
- *	2. Adds pd_entry in the pd_table
- *	3. Mark the entry valid in i40e_hmc_pd_entry structure
- *	4. Initializes the pd_entry's ref count to 1
- * assumptions:
- *	1. The memory for pd should be pinned down, physically contiguous and
- *	   aligned on 4K boundary and zeroed memory.
- *	2. It should be 4K in size.
- **/
+ 
 int i40e_add_pd_table_entry(struct i40e_hw *hw,
 			    struct i40e_hmc_info *hmc_info,
 			    u32 pd_index,
@@ -125,7 +102,7 @@ int i40e_add_pd_table_entry(struct i40e_hw *hw,
 		goto exit;
 	}
 
-	/* find corresponding sd */
+	 
 	sd_idx = (pd_index / I40E_HMC_PD_CNT_IN_SD);
 	if (I40E_SD_TYPE_PAGED !=
 	    hmc_info->sd_table.sd_entry[sd_idx].entry_type)
@@ -139,7 +116,7 @@ int i40e_add_pd_table_entry(struct i40e_hw *hw,
 			pd_entry->rsrc_pg = true;
 			page = rsrc_pg;
 		} else {
-			/* allocate a 4K backing page */
+			 
 			ret_code = i40e_allocate_dma_mem(hw, page, i40e_mem_bp,
 						I40E_HMC_PAGED_BP_SIZE,
 						I40E_HMC_PD_BP_BUF_ALIGNMENT);
@@ -151,13 +128,13 @@ int i40e_add_pd_table_entry(struct i40e_hw *hw,
 		pd_entry->bp.addr = *page;
 		pd_entry->bp.sd_pd_index = pd_index;
 		pd_entry->bp.entry_type = I40E_SD_TYPE_PAGED;
-		/* Set page address and valid bit */
+		 
 		page_desc = page->pa | 0x1;
 
 		pd_addr = (u64 *)pd_table->pd_page_addr.va;
 		pd_addr += rel_pd_idx;
 
-		/* Add the backing page physical address in the pd entry */
+		 
 		memcpy(pd_addr, &page_desc, sizeof(u64));
 
 		pd_entry->sd_index = sd_idx;
@@ -169,21 +146,7 @@ exit:
 	return ret_code;
 }
 
-/**
- * i40e_remove_pd_bp - remove a backing page from a page descriptor
- * @hw: pointer to our HW structure
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: the page index
- *
- * This function:
- *	1. Marks the entry in pd tabe (for paged address mode) or in sd table
- *	   (for direct address mode) invalid.
- *	2. Write to register PMPDINV to invalidate the backing page in FV cache
- *	3. Decrement the ref count for the pd _entry
- * assumptions:
- *	1. Caller can deallocate the memory used by backing storage after this
- *	   function returns.
- **/
+ 
 int i40e_remove_pd_bp(struct i40e_hw *hw,
 		      struct i40e_hmc_info *hmc_info,
 		      u32 idx)
@@ -195,7 +158,7 @@ int i40e_remove_pd_bp(struct i40e_hw *hw,
 	int ret_code = 0;
 	u64 *pd_addr;
 
-	/* calculate index */
+	 
 	sd_idx = idx / I40E_HMC_PD_CNT_IN_SD;
 	rel_pd_idx = idx % I40E_HMC_PD_CNT_IN_SD;
 	if (sd_idx >= hmc_info->sd_table.sd_cnt) {
@@ -209,14 +172,14 @@ int i40e_remove_pd_bp(struct i40e_hw *hw,
 		hw_dbg(hw, "i40e_remove_pd_bp: wrong sd_entry type\n");
 		goto exit;
 	}
-	/* get the entry and decrease its ref counter */
+	 
 	pd_table = &hmc_info->sd_table.sd_entry[sd_idx].u.pd_table;
 	pd_entry = &pd_table->pd_entry[rel_pd_idx];
 	I40E_DEC_BP_REFCNT(&pd_entry->bp);
 	if (pd_entry->bp.ref_cnt)
 		goto exit;
 
-	/* mark the entry invalid */
+	 
 	pd_entry->valid = false;
 	I40E_DEC_PD_REFCNT(pd_table);
 	pd_addr = (u64 *)pd_table->pd_page_addr.va;
@@ -224,7 +187,7 @@ int i40e_remove_pd_bp(struct i40e_hw *hw,
 	memset(pd_addr, 0, sizeof(u64));
 	I40E_INVALIDATE_PF_HMC_PD(hw, sd_idx, idx);
 
-	/* free memory here */
+	 
 	if (!pd_entry->rsrc_pg)
 		ret_code = i40e_free_dma_mem(hw, &pd_entry->bp.addr);
 	if (ret_code)
@@ -235,18 +198,14 @@ exit:
 	return ret_code;
 }
 
-/**
- * i40e_prep_remove_sd_bp - Prepares to remove a backing page from a sd entry
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: the page index
- **/
+ 
 int i40e_prep_remove_sd_bp(struct i40e_hmc_info *hmc_info,
 			   u32 idx)
 {
 	struct i40e_hmc_sd_entry *sd_entry;
 	int ret_code = 0;
 
-	/* get the entry and decrease its ref counter */
+	 
 	sd_entry = &hmc_info->sd_table.sd_entry[idx];
 	I40E_DEC_BP_REFCNT(&sd_entry->u.bp);
 	if (sd_entry->u.bp.ref_cnt) {
@@ -255,19 +214,13 @@ int i40e_prep_remove_sd_bp(struct i40e_hmc_info *hmc_info,
 	}
 	I40E_DEC_SD_REFCNT(&hmc_info->sd_table);
 
-	/* mark the entry invalid */
+	 
 	sd_entry->valid = false;
 exit:
 	return ret_code;
 }
 
-/**
- * i40e_remove_sd_bp_new - Removes a backing page from a segment descriptor
- * @hw: pointer to our hw struct
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: the page index
- * @is_pf: used to distinguish between VF and PF
- **/
+ 
 int i40e_remove_sd_bp_new(struct i40e_hw *hw,
 			  struct i40e_hmc_info *hmc_info,
 			  u32 idx, bool is_pf)
@@ -277,18 +230,14 @@ int i40e_remove_sd_bp_new(struct i40e_hw *hw,
 	if (!is_pf)
 		return -EOPNOTSUPP;
 
-	/* get the entry and decrease its ref counter */
+	 
 	sd_entry = &hmc_info->sd_table.sd_entry[idx];
 	I40E_CLEAR_PF_SD_ENTRY(hw, idx, I40E_SD_TYPE_DIRECT);
 
 	return i40e_free_dma_mem(hw, &sd_entry->u.bp.addr);
 }
 
-/**
- * i40e_prep_remove_pd_page - Prepares to remove a PD page from sd entry.
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: segment descriptor index to find the relevant page descriptor
- **/
+ 
 int i40e_prep_remove_pd_page(struct i40e_hmc_info *hmc_info,
 			     u32 idx)
 {
@@ -302,7 +251,7 @@ int i40e_prep_remove_pd_page(struct i40e_hmc_info *hmc_info,
 		goto exit;
 	}
 
-	/* mark the entry invalid */
+	 
 	sd_entry->valid = false;
 
 	I40E_DEC_SD_REFCNT(&hmc_info->sd_table);
@@ -310,13 +259,7 @@ exit:
 	return ret_code;
 }
 
-/**
- * i40e_remove_pd_page_new - Removes a PD page from sd entry.
- * @hw: pointer to our hw struct
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: segment descriptor index to find the relevant page descriptor
- * @is_pf: used to distinguish between VF and PF
- **/
+ 
 int i40e_remove_pd_page_new(struct i40e_hw *hw,
 			    struct i40e_hmc_info *hmc_info,
 			    u32 idx, bool is_pf)

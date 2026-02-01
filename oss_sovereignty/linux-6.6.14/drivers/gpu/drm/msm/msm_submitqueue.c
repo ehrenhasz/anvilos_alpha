@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2017 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kref.h>
 #include <linux/uaccess.h>
@@ -10,11 +9,7 @@
 int msm_file_private_set_sysprof(struct msm_file_private *ctx,
 				 struct msm_gpu *gpu, int sysprof)
 {
-	/*
-	 * Since pm_runtime and sysprof_active are both refcounts, we
-	 * call apply the new value first, and then unwind the previous
-	 * value
-	 */
+	 
 
 	switch (sysprof) {
 	default:
@@ -29,7 +24,7 @@ int msm_file_private_set_sysprof(struct msm_file_private *ctx,
 		break;
 	}
 
-	/* unwind old value: */
+	 
 	switch (ctx->sysprof) {
 	case 2:
 		pm_runtime_put_autosuspend(&gpu->pdev->dev);
@@ -108,10 +103,7 @@ void msm_submitqueue_close(struct msm_file_private *ctx)
 	if (!ctx)
 		return;
 
-	/*
-	 * No lock needed in close and there won't
-	 * be any more user ioctls coming our way
-	 */
+	 
 	list_for_each_entry_safe(entry, tmp, &ctx->submitqueues, node) {
 		list_del(&entry->node);
 		msm_submitqueue_put(entry);
@@ -125,9 +117,7 @@ get_sched_entity(struct msm_file_private *ctx, struct msm_ringbuffer *ring,
 	static DEFINE_MUTEX(entity_lock);
 	unsigned idx = (ring_nr * NR_SCHED_PRIORITIES) + sched_prio;
 
-	/* We should have already validated that the requested priority is
-	 * valid by the time we get here.
-	 */
+	 
 	if (WARN_ON(idx >= ARRAY_SIZE(ctx->entities)))
 		return ERR_PTR(-EINVAL);
 
@@ -210,10 +200,7 @@ int msm_submitqueue_create(struct drm_device *drm, struct msm_file_private *ctx,
 	return 0;
 }
 
-/*
- * Create the default submit-queue (id==0), used for backwards compatibility
- * for userspace that pre-dates the introduction of submitqueues.
- */
+ 
 int msm_submitqueue_init(struct drm_device *drm, struct msm_file_private *ctx)
 {
 	struct msm_drm_private *priv = drm->dev_private;
@@ -224,11 +211,7 @@ int msm_submitqueue_init(struct drm_device *drm, struct msm_file_private *ctx)
 
 	max_priority = (priv->gpu->nr_rings * NR_SCHED_PRIORITIES) - 1;
 
-	/*
-	 * Pick a medium priority level as default.  Lower numeric value is
-	 * higher priority, so round-up to pick a priority that is not higher
-	 * than the middle priority level.
-	 */
+	 
 	default_prio = DIV_ROUND_UP(max_priority, 2);
 
 	return msm_submitqueue_create(drm, ctx, default_prio, 0, NULL);
@@ -240,13 +223,13 @@ static int msm_submitqueue_query_faults(struct msm_gpu_submitqueue *queue,
 	size_t size = min_t(size_t, args->len, sizeof(queue->faults));
 	int ret;
 
-	/* If a zero length was passed in, return the data size we expect */
+	 
 	if (!args->len) {
 		args->len = sizeof(queue->faults);
 		return 0;
 	}
 
-	/* Set the length to the actual size of the data */
+	 
 	args->len = size;
 
 	ret = copy_to_user(u64_to_user_ptr(args->data), &queue->faults, size);
@@ -282,10 +265,7 @@ int msm_submitqueue_remove(struct msm_file_private *ctx, u32 id)
 	if (!ctx)
 		return 0;
 
-	/*
-	 * id 0 is the "default" queue and can't be destroyed
-	 * by the user
-	 */
+	 
 	if (!id)
 		return -ENOENT;
 

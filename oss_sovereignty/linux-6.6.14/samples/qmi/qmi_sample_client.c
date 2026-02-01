@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sample in-kernel QMI client driver
- *
- * Copyright (c) 2013-2014, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/debugfs.h>
@@ -284,20 +279,7 @@ static const struct qmi_elem_info test_data_resp_msg_v01_ei[] = {
 	{}
 };
 
-/*
- * ping_write() - ping_pong debugfs file write handler
- * @file:	debugfs file context
- * @user_buf:	reference to the user data (ignored)
- * @count:	number of bytes in @user_buf
- * @ppos:	offset in @file to write
- *
- * This function allows user space to send out a ping_pong QMI encoded message
- * to the associated remote test service and will return with the result of the
- * transaction. It serves as an example of how to provide a custom response
- * handler.
- *
- * Return: @count, or negative errno on failure.
- */
+ 
 static ssize_t ping_write(struct file *file, const char __user *user_buf,
 			  size_t count, loff_t *ppos)
 {
@@ -351,20 +333,7 @@ static void ping_pong_cb(struct qmi_handle *qmi, struct sockaddr_qrtr *sq,
 	complete(&txn->completion);
 }
 
-/*
- * data_write() - data debugfs file write handler
- * @file:	debugfs file context
- * @user_buf:	reference to the user data
- * @count:	number of bytes in @user_buf
- * @ppos:	offset in @file to write
- *
- * This function allows user space to send out a data QMI encoded message to
- * the associated remote test service and will return with the result of the
- * transaction. It serves as an example of how to have the QMI helpers decode a
- * transaction response into a provided object automatically.
- *
- * Return: @count, or negative errno on failure.
- */
+ 
 static ssize_t data_write(struct file *file, const char __user *user_buf,
 			  size_t count, loff_t *ppos)
 

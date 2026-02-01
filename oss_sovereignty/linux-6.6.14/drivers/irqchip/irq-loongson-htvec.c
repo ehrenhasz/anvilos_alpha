@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2020, Jiaxun Yang <jiaxun.yang@flygoat.com>
- *  Loongson HyperTransport Interrupt Vector support
- */
+
+ 
 
 #define pr_fmt(fmt) "htvec: " fmt
 
@@ -17,7 +14,7 @@
 #include <linux/of_irq.h>
 #include <linux/syscore_ops.h>
 
-/* Registers */
+ 
 #define HTVEC_EN_OFF		0x20
 #define HTVEC_MAX_PARENT_IRQ	8
 #define VEC_COUNT_PER_REG	32
@@ -150,7 +147,7 @@ static void htvec_reset(struct htvec *priv)
 {
 	u32 idx;
 
-	/* Clear IRQ cause registers, mask all interrupts */
+	 
 	for (idx = 0; idx < priv->num_parents; idx++) {
 		writel_relaxed(0x0, priv->base + HTVEC_EN_OFF + 4 * idx);
 		writel_relaxed(0xFFFFFFFF, priv->base + 4 * idx);
@@ -194,7 +191,7 @@ static int htvec_init(phys_addr_t addr, unsigned long size,
 	priv->base = ioremap(addr, size);
 	raw_spin_lock_init(&priv->htvec_lock);
 
-	/* Setup IRQ domain */
+	 
 	priv->htvec_domain = irq_domain_create_linear(domain_handle,
 					(VEC_COUNT_PER_REG * priv->num_parents),
 					&htvec_domain_ops, priv);
@@ -236,7 +233,7 @@ static int htvec_of_init(struct device_node *node,
 	if (of_address_to_resource(node, 0, &res))
 		return -EINVAL;
 
-	/* Interrupt may come from any of the 8 interrupt lines */
+	 
 	for (i = 0; i < HTVEC_MAX_PARENT_IRQ; i++) {
 		parent_irq[i] = irq_of_parse_and_map(node, i);
 		if (parent_irq[i] <= 0)
@@ -307,7 +304,7 @@ int __init htvec_acpi_init(struct irq_domain *parent,
 		return -ENOMEM;
 	}
 
-	/* Interrupt may come from any of the 8 interrupt lines */
+	 
 	for (i = 0; i < HTVEC_MAX_PARENT_IRQ; i++)
 		parent_irq[i] = irq_create_mapping(parent, acpi_htvec->cascade[i]);
 

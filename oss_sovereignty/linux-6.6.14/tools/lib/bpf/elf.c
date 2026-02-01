@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
+
 
 #include <libelf.h>
 #include <gelf.h>
@@ -46,7 +46,7 @@ void elf_close(struct elf_fd *elf_fd)
 	close(elf_fd->fd);
 }
 
-/* Return next ELF section of sh_type after scn, or first of that type if scn is NULL. */
+ 
 static Elf_Scn *elf_find_next_scn_by_type(Elf *elf, int sh_type, Elf_Scn *scn)
 {
 	while ((scn = elf_nextscn(elf, scn)) != NULL) {
@@ -145,24 +145,13 @@ static struct elf_sym *elf_sym_iter_next(struct elf_sym_iter *iter)
 }
 
 
-/* Transform symbol's virtual address (absolute for binaries and relative
- * for shared libs) into file offset, which is what kernel is expecting
- * for uprobe/uretprobe attachment.
- * See Documentation/trace/uprobetracer.rst for more details. This is done
- * by looking up symbol's containing section's header and using iter's virtual
- * address (sh_addr) and corresponding file offset (sh_offset) to transform
- * sym.st_value (virtual address) into desired final file offset.
- */
+ 
 static unsigned long elf_sym_offset(struct elf_sym *sym)
 {
 	return sym->sym.st_value - sym->sh.sh_addr + sym->sh.sh_offset;
 }
 
-/* Find offset of function name in the provided ELF object. "binary_path" is
- * the path to the ELF binary represented by "elf", and only used for error
- * reporting matters. "name" matches symbol name or name@@LIB for library
- * functions.
- */
+ 
 long elf_find_func_offset(Elf *elf, const char *binary_path, const char *name)
 {
 	int i, sh_types[2] = { SHT_DYNSYM, SHT_SYMTAB };
@@ -176,18 +165,14 @@ long elf_find_func_offset(Elf *elf, const char *binary_path, const char *name)
 		ret = -LIBBPF_ERRNO__FORMAT;
 		goto out;
 	}
-	/* for shared lib case, we do not need to calculate relative offset */
+	 
 	is_shared_lib = ehdr.e_type == ET_DYN;
 
 	name_len = strlen(name);
-	/* Does name specify "@@LIB"? */
+	 
 	is_name_qualified = strstr(name, "@@") != NULL;
 
-	/* Search SHT_DYNSYM, SHT_SYMTAB for symbol. This search order is used because if
-	 * a binary is stripped, it may only have SHT_DYNSYM, and a fully-statically
-	 * linked binary may not have SHT_DYMSYM, so absence of a section should not be
-	 * reported as a warning/error.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(sh_types); i++) {
 		struct elf_sym_iter iter;
 		struct elf_sym *sym;
@@ -201,29 +186,25 @@ long elf_find_func_offset(Elf *elf, const char *binary_path, const char *name)
 			goto out;
 
 		while ((sym = elf_sym_iter_next(&iter))) {
-			/* User can specify func, func@@LIB or func@@LIB_VERSION. */
+			 
 			if (strncmp(sym->name, name, name_len) != 0)
 				continue;
-			/* ...but we don't want a search for "foo" to match 'foo2" also, so any
-			 * additional characters in sname should be of the form "@@LIB".
-			 */
+			 
 			if (!is_name_qualified && sym->name[name_len] != '\0' && sym->name[name_len] != '@')
 				continue;
 
 			cur_bind = GELF_ST_BIND(sym->sym.st_info);
 
 			if (ret > 0) {
-				/* handle multiple matches */
+				 
 				if (last_bind != STB_WEAK && cur_bind != STB_WEAK) {
-					/* Only accept one non-weak bind. */
+					 
 					pr_warn("elf: ambiguous match for '%s', '%s' in '%s'\n",
 						sym->name, name, binary_path);
 					ret = -LIBBPF_ERRNO__FORMAT;
 					goto out;
 				} else if (cur_bind == STB_WEAK) {
-					/* already have a non-weak bind, and
-					 * this is a weak bind, so ignore.
-					 */
+					 
 					continue;
 				}
 			}
@@ -252,9 +233,7 @@ out:
 	return ret;
 }
 
-/* Find offset of function name in ELF object specified by path. "name" matches
- * symbol name or name@@LIB for library functions.
- */
+ 
 long elf_find_func_offset_from_file(const char *binary_path, const char *name)
 {
 	struct elf_fd elf_fd;
@@ -282,11 +261,7 @@ static int symbol_cmp(const void *a, const void *b)
 	return strcmp(sym_a->name, sym_b->name);
 }
 
-/*
- * Return offsets in @poffsets for symbols specified in @syms array argument.
- * On success returns 0 and offsets are returned in allocated array with @cnt
- * size, that needs to be released by the caller.
- */
+ 
 int elf_resolve_syms_offsets(const char *binary_path, int cnt,
 			     const char **syms, unsigned long **poffsets)
 {
@@ -339,20 +314,18 @@ int elf_resolve_syms_offsets(const char *binary_path, int cnt,
 
 			offset = &offsets[found->idx];
 			if (*offset > 0) {
-				/* same offset, no problem */
+				 
 				if (*offset == sym_offset)
 					continue;
-				/* handle multiple matches */
+				 
 				if (found->bind != STB_WEAK && bind != STB_WEAK) {
-					/* Only accept one non-weak bind. */
+					 
 					pr_warn("elf: ambiguous match found '%s@%lu' in '%s' previous offset %lu\n",
 						sym->name, sym_offset, binary_path, *offset);
 					err = -ESRCH;
 					goto out;
 				} else if (bind == STB_WEAK) {
-					/* already have a non-weak bind, and
-					 * this is a weak bind, so ignore.
-					 */
+					 
 					continue;
 				}
 			} else {
@@ -378,11 +351,7 @@ out:
 	return err;
 }
 
-/*
- * Return offsets in @poffsets for symbols specified by @pattern argument.
- * On success returns 0 and offsets are returned in allocated @poffsets
- * array with the @pctn size, that needs to be released by the caller.
- */
+ 
 int elf_resolve_pattern_offsets(const char *binary_path, const char *pattern,
 				unsigned long **poffsets, size_t *pcnt)
 {
@@ -418,9 +387,7 @@ int elf_resolve_pattern_offsets(const char *binary_path, const char *pattern,
 			offsets[cnt++] = elf_sym_offset(sym);
 		}
 
-		/* If we found anything in the first symbol section,
-		 * do not search others to avoid duplicates.
-		 */
+		 
 		if (cnt)
 			break;
 	}

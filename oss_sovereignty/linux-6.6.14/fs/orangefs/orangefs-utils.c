@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- * Copyright 2018 Omnibond Systems, L.L.C.
- *
- * See COPYING in top-level directory.
- */
+
+ 
 #include <linux/kernel.h>
 #include "protocol.h"
 #include "orangefs-kernel.h"
@@ -132,10 +127,7 @@ static int orangefs_inode_perms(struct ORANGEFS_sys_attr_s *attrs)
 	return perm_mode;
 }
 
-/*
- * NOTE: in kernel land, we never use the sys_attr->link_target for
- * anything, so don't bother copying it into the sys_attr object here.
- */
+ 
 static inline void copy_attributes_from_inode(struct inode *inode,
     struct ORANGEFS_sys_attr_s *attrs)
 {
@@ -169,11 +161,7 @@ static inline void copy_attributes_from_inode(struct inode *inode,
 	if (orangefs_inode->attr_valid & ATTR_CTIME)
 		attrs->mask |= ORANGEFS_ATTR_SYS_CTIME;
 
-	/*
-	 * ORANGEFS cannot set size with a setattr operation. Probably not
-	 * likely to be requested through the VFS, but just in case, don't
-	 * worry about ATTR_SIZE
-	 */
+	 
 
 	if (orangefs_inode->attr_valid & ATTR_MODE) {
 		attrs->perms = ORANGEFS_util_translate_mode(inode->i_mode);
@@ -196,11 +184,7 @@ static int orangefs_inode_type(enum orangefs_ds_type objtype)
 static void orangefs_make_bad_inode(struct inode *inode)
 {
 	if (is_root_handle(inode)) {
-		/*
-		 * if this occurs, the pvfs2-client-core was killed but we
-		 * can't afford to lose the inode operations and such
-		 * associated with the root handle in any case.
-		 */
+		 
 		gossip_debug(GOSSIP_UTILS_DEBUG,
 			     "*** NOT making bad root inode %pU\n",
 			     get_khandle_from_ino(inode));
@@ -217,10 +201,7 @@ static int orangefs_inode_is_stale(struct inode *inode,
 {
 	struct orangefs_inode_s *orangefs_inode = ORANGEFS_I(inode);
 	int type = orangefs_inode_type(attrs->objtype);
-	/*
-	 * If the inode type or symlink target have changed then this
-	 * inode is stale.
-	 */
+	 
 	if (type == -1 || inode_wrong_type(inode, type)) {
 		orangefs_make_bad_inode(inode);
 		return 1;
@@ -245,7 +226,7 @@ int orangefs_inode_getattr(struct inode *inode, int flags)
 
 again:
 	spin_lock(&inode->i_lock);
-	/* Must have all the attributes in the mask and be within cache time. */
+	 
 	if ((!flags && time_before(jiffies, orangefs_inode->getattr_time)) ||
 	    orangefs_inode->attr_valid || inode->i_state & I_DIRTY_PAGES) {
 		if (orangefs_inode->attr_valid) {
@@ -262,10 +243,7 @@ again:
 	if (!new_op)
 		return -ENOMEM;
 	new_op->upcall.req.getattr.refn = orangefs_inode->refn;
-	/*
-	 * Size is the hardest attribute to get.  The incremental cost of any
-	 * other attribute is essentially zero.
-	 */
+	 
 	if (flags)
 		new_op->upcall.req.getattr.mask = ORANGEFS_ATTR_SYS_ALL_NOHINT;
 	else
@@ -279,7 +257,7 @@ again:
 
 again2:
 	spin_lock(&inode->i_lock);
-	/* Must have all the attributes in the mask and be within cache time. */
+	 
 	if ((!flags && time_before(jiffies, orangefs_inode->getattr_time)) ||
 	    orangefs_inode->attr_valid || inode->i_state & I_DIRTY_PAGES) {
 		if (orangefs_inode->attr_valid) {
@@ -345,9 +323,9 @@ again2:
 			inode->i_link = orangefs_inode->link_target;
 		}
 		break;
-	/* i.e. -1 */
+	 
 	default:
-		/* XXX: ESTALE?  This is what is done if it is not new. */
+		 
 		orangefs_make_bad_inode(inode);
 		ret = -ESTALE;
 		goto out_unlock;
@@ -367,7 +345,7 @@ again2:
 	inode->i_atime.tv_nsec = 0;
 	inode->i_mtime.tv_nsec = 0;
 
-	/* special case: mark the root inode as sticky */
+	 
 	inode->i_mode = type | (is_root_handle(inode) ? S_ISVTX : 0) |
 	    orangefs_inode_perms(&new_op->downcall.resp.getattr.attributes);
 
@@ -410,10 +388,7 @@ out:
 	return ret;
 }
 
-/*
- * issues a orangefs setattr request to make sure the new attribute values
- * take effect if successful.  returns 0 on success; -errno otherwise
- */
+ 
 int orangefs_inode_setattr(struct inode *inode)
 {
 	struct orangefs_inode_s *orangefs_inode = ORANGEFS_I(inode);
@@ -452,12 +427,9 @@ int orangefs_inode_setattr(struct inode *inode)
 	return ret;
 }
 
-/*
- * The following is a very dirty hack that is now a permanent part of the
- * ORANGEFS protocol. See protocol.h for more error definitions.
- */
+ 
 
-/* The order matches include/orangefs-types.h in the OrangeFS source. */
+ 
 static int PINT_errno_mapping[] = {
 	0, EPERM, ENOENT, EINTR, EIO, ENXIO, EBADF, EAGAIN, ENOMEM,
 	EFAULT, EBUSY, EEXIST, ENODEV, ENOTDIR, EISDIR, EINVAL, EMFILE,
@@ -475,46 +447,34 @@ int orangefs_normalize_to_errno(__s32 error_code)
 {
 	__u32 i;
 
-	/* Success */
+	 
 	if (error_code == 0) {
 		return 0;
-	/*
-	 * This shouldn't ever happen. If it does it should be fixed on the
-	 * server.
-	 */
+	 
 	} else if (error_code > 0) {
 		gossip_err("orangefs: error status received.\n");
 		gossip_err("orangefs: assuming error code is inverted.\n");
 		error_code = -error_code;
 	}
 
-	/*
-	 * XXX: This is very bad since error codes from ORANGEFS may not be
-	 * suitable for return into userspace.
-	 */
+	 
 
-	/*
-	 * Convert ORANGEFS error values into errno values suitable for return
-	 * from the kernel.
-	 */
+	 
 	if ((-error_code) & ORANGEFS_NON_ERRNO_ERROR_BIT) {
 		if (((-error_code) &
 		    (ORANGEFS_ERROR_NUMBER_BITS|ORANGEFS_NON_ERRNO_ERROR_BIT|
 		    ORANGEFS_ERROR_BIT)) == ORANGEFS_ECANCEL) {
-			/*
-			 * cancellation error codes generally correspond to
-			 * a timeout from the client's perspective
-			 */
+			 
 			error_code = -ETIMEDOUT;
 		} else {
-			/* assume a default error code */
+			 
 			gossip_err("%s: bad error code :%d:.\n",
 				__func__,
 				error_code);
 			error_code = -EINVAL;
 		}
 
-	/* Convert ORANGEFS encoded errno values into regular errno values. */
+	 
 	} else if ((-error_code) & ORANGEFS_ERROR_BIT) {
 		i = (-error_code) & ~(ORANGEFS_ERROR_BIT|ORANGEFS_ERROR_CLASS_BITS);
 		if (i < ARRAY_SIZE(PINT_errno_mapping))
@@ -522,10 +482,7 @@ int orangefs_normalize_to_errno(__s32 error_code)
 		else
 			error_code = -EINVAL;
 
-	/*
-	 * Only ORANGEFS protocol error codes should ever come here. Otherwise
-	 * there is a bug somewhere.
-	 */
+	 
 	} else {
 		gossip_err("%s: unknown error code.\n", __func__);
 		error_code = -EINVAL;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Test cases for API provided by cmdline.c
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/kernel.h>
@@ -60,7 +58,7 @@ static void cmdline_test_noint(struct kunit *test)
 		int rc = 0;
 		int offset;
 
-		/* Only first and leading '-' will advance the pointer */
+		 
 		offset = !!(*str == '-');
 		cmdline_do_one_test(test, str, rc, offset);
 	} while (++i < ARRAY_SIZE(cmdline_test_strings));
@@ -77,7 +75,7 @@ static void cmdline_test_lead_int(struct kunit *test)
 		int offset;
 
 		sprintf(in, "%u%s", get_random_u8(), str);
-		/* Only first '-' after the number will advance the pointer */
+		 
 		offset = strlen(in) - strlen(str) + !!(rc == 2);
 		cmdline_do_one_test(test, in, rc, offset);
 	} while (++i < ARRAY_SIZE(cmdline_test_strings));
@@ -90,15 +88,12 @@ static void cmdline_test_tail_int(struct kunit *test)
 
 	do {
 		const char *str = cmdline_test_strings[i];
-		/* When "" or "-" the result will be valid integer */
+		 
 		int rc = strcmp(str, "") ? (strcmp(str, "-") ? 0 : 1) : 1;
 		int offset;
 
 		sprintf(in, "%s%u", str, get_random_u8());
-		/*
-		 * Only first and leading '-' not followed by integer
-		 * will advance the pointer.
-		 */
+		 
 		offset = rc ? strlen(in) : !!(*str == '-');
 		cmdline_do_one_test(test, in, rc, offset);
 	} while (++i < ARRAY_SIZE(cmdline_test_strings));

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) STMicroelectronics 2018
-// Author: Pascal Paillet <p.paillet@st.com> for STMicroelectronics.
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/mfd/stpmic1.h>
@@ -11,7 +11,7 @@
 #include <linux/slab.h>
 #include <linux/watchdog.h>
 
-/* WATCHDOG CONTROL REGISTER bit */
+ 
 #define WDT_START		BIT(0)
 #define WDT_PING		BIT(1)
 #define WDT_START_MASK		BIT(0)
@@ -62,7 +62,7 @@ static int pmic_wdt_set_timeout(struct watchdog_device *wdd,
 	struct stpmic1_wdt *wdt = watchdog_get_drvdata(wdd);
 
 	wdd->timeout = timeout;
-	/* timeout is equal to register value + 1 */
+	 
 	return regmap_write(wdt->pmic->regmap, WCHDG_TIMER_CR, timeout - 1);
 }
 

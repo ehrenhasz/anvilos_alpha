@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Golden Delicious Comp. GmbH&Co. KG
- *	Nikolaus Schaller <hns@goldelico.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/iio/iio.h>
@@ -28,7 +25,7 @@ static const struct iio_chan_spec tsc2007_iio_channel[] = {
 	TSC2007_CHAN_IIO(2, "z1", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
 	TSC2007_CHAN_IIO(3, "z2", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
 	TSC2007_CHAN_IIO(4, "adc", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-	TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW), /* Ohms? */
+	TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),  
 	TSC2007_CHAN_IIO(6, "pen", IIO_PRESSURE, IIO_CHAN_INFO_RAW),
 	TSC2007_CHAN_IIO(7, "temp0", IIO_TEMP, IIO_CHAN_INFO_RAW),
 	TSC2007_CHAN_IIO(8, "temp1", IIO_TEMP, IIO_CHAN_INFO_RAW),
@@ -89,7 +86,7 @@ static int tsc2007_read_raw(struct iio_dev *indio_dev,
 		break;
 	}
 
-	/* Prepare for next touch reading - power down ADC, enable PENIRQ */
+	 
 	tsc2007_xfer(tsc, PWRDOWN);
 
 	mutex_unlock(&tsc->mlock);

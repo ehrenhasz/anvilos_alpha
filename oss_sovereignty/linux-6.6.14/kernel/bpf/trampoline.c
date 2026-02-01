@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2019 Facebook */
+
+ 
 #include <linux/hash.h>
 #include <linux/bpf.h>
 #include <linux/filter.h>
@@ -14,19 +14,19 @@
 #include <linux/bpf_lsm.h>
 #include <linux/delay.h>
 
-/* dummy _ops. The verifier will operate on target program's ops. */
+ 
 const struct bpf_verifier_ops bpf_extension_verifier_ops = {
 };
 const struct bpf_prog_ops bpf_extension_prog_ops = {
 };
 
-/* btf_vmlinux has ~22k attachable functions. 1k htab is enough. */
+ 
 #define TRAMPOLINE_HASH_BITS 10
 #define TRAMPOLINE_TABLE_SIZE (1 << TRAMPOLINE_HASH_BITS)
 
 static struct hlist_head trampoline_table[TRAMPOLINE_TABLE_SIZE];
 
-/* serializes access to trampoline_table */
+ 
 static DEFINE_MUTEX(trampoline_mutex);
 
 #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
@@ -38,16 +38,10 @@ static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd
 	int ret = 0;
 
 	if (cmd == FTRACE_OPS_CMD_ENABLE_SHARE_IPMODIFY_SELF) {
-		/* This is called inside register_ftrace_direct_multi(), so
-		 * tr->mutex is already locked.
-		 */
+		 
 		lockdep_assert_held_once(&tr->mutex);
 
-		/* Instead of updating the trampoline here, we propagate
-		 * -EAGAIN to register_ftrace_direct(). Then we can
-		 * retry register_ftrace_direct() after updating the
-		 * trampoline.
-		 */
+		 
 		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
 		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK)) {
 			if (WARN_ON_ONCE(tr->flags & BPF_TRAMP_F_SHARE_IPMODIFY))
@@ -60,22 +54,9 @@ static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd
 		return 0;
 	}
 
-	/* The normal locking order is
-	 *    tr->mutex => direct_mutex (ftrace.c) => ftrace_lock (ftrace.c)
-	 *
-	 * The following two commands are called from
-	 *
-	 *   prepare_direct_functions_for_ipmodify
-	 *   cleanup_direct_functions_after_ipmodify
-	 *
-	 * In both cases, direct_mutex is already locked. Use
-	 * mutex_trylock(&tr->mutex) to avoid deadlock in race condition
-	 * (something else is making changes to this same trampoline).
-	 */
+	 
 	if (!mutex_trylock(&tr->mutex)) {
-		/* sleep 1 ms to make sure whatever holding tr->mutex makes
-		 * some progress.
-		 */
+		 
 		msleep(1);
 		return -EAGAIN;
 	}
@@ -86,13 +67,13 @@ static int bpf_tramp_ftrace_ops_func(struct ftrace_ops *ops, enum ftrace_ops_cmd
 
 		if ((tr->flags & BPF_TRAMP_F_CALL_ORIG) &&
 		    !(tr->flags & BPF_TRAMP_F_ORIG_STACK))
-			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
+			ret = bpf_trampoline_update(tr, false  );
 		break;
 	case FTRACE_OPS_CMD_DISABLE_SHARE_IPMODIFY_PEER:
 		tr->flags &= ~BPF_TRAMP_F_SHARE_IPMODIFY;
 
 		if (tr->flags & BPF_TRAMP_F_ORIG_STACK)
-			ret = bpf_trampoline_update(tr, false /* lock_direct_mutex */);
+			ret = bpf_trampoline_update(tr, false  );
 		break;
 	default:
 		ret = -EINVAL;
@@ -201,7 +182,7 @@ static int modify_fentry(struct bpf_trampoline *tr, void *old_addr, void *new_ad
 	return ret;
 }
 
-/* first time registering */
+ 
 static int register_fentry(struct bpf_trampoline *tr, void *new_addr)
 {
 	void *ip = tr->func.addr;
@@ -268,7 +249,7 @@ static void __bpf_tramp_image_put_deferred(struct work_struct *work)
 	bpf_tramp_image_free(im);
 }
 
-/* callback, fexit step 3 or fentry step 2 */
+ 
 static void __bpf_tramp_image_put_rcu(struct rcu_head *rcu)
 {
 	struct bpf_tramp_image *im;
@@ -278,7 +259,7 @@ static void __bpf_tramp_image_put_rcu(struct rcu_head *rcu)
 	schedule_work(&im->work);
 }
 
-/* callback, fexit step 2. Called after percpu_ref_kill confirms. */
+ 
 static void __bpf_tramp_image_release(struct percpu_ref *pcref)
 {
 	struct bpf_tramp_image *im;
@@ -287,48 +268,23 @@ static void __bpf_tramp_image_release(struct percpu_ref *pcref)
 	call_rcu_tasks(&im->rcu, __bpf_tramp_image_put_rcu);
 }
 
-/* callback, fexit or fentry step 1 */
+ 
 static void __bpf_tramp_image_put_rcu_tasks(struct rcu_head *rcu)
 {
 	struct bpf_tramp_image *im;
 
 	im = container_of(rcu, struct bpf_tramp_image, rcu);
 	if (im->ip_after_call)
-		/* the case of fmod_ret/fexit trampoline and CONFIG_PREEMPTION=y */
+		 
 		percpu_ref_kill(&im->pcref);
 	else
-		/* the case of fentry trampoline */
+		 
 		call_rcu_tasks(&im->rcu, __bpf_tramp_image_put_rcu);
 }
 
 static void bpf_tramp_image_put(struct bpf_tramp_image *im)
 {
-	/* The trampoline image that calls original function is using:
-	 * rcu_read_lock_trace to protect sleepable bpf progs
-	 * rcu_read_lock to protect normal bpf progs
-	 * percpu_ref to protect trampoline itself
-	 * rcu tasks to protect trampoline asm not covered by percpu_ref
-	 * (which are few asm insns before __bpf_tramp_enter and
-	 *  after __bpf_tramp_exit)
-	 *
-	 * The trampoline is unreachable before bpf_tramp_image_put().
-	 *
-	 * First, patch the trampoline to avoid calling into fexit progs.
-	 * The progs will be freed even if the original function is still
-	 * executing or sleeping.
-	 * In case of CONFIG_PREEMPT=y use call_rcu_tasks() to wait on
-	 * first few asm instructions to execute and call into
-	 * __bpf_tramp_enter->percpu_ref_get.
-	 * Then use percpu_ref_kill to wait for the trampoline and the original
-	 * function to finish.
-	 * Then use call_rcu_tasks() to make sure few asm insns in
-	 * the trampoline epilogue are done as well.
-	 *
-	 * In !PREEMPT case the task that got interrupted in the first asm
-	 * insns won't go through an RCU quiescent state which the
-	 * percpu_ref_kill will be waiting for. Hence the first
-	 * call_rcu_tasks() is not necessary.
-	 */
+	 
 	if (im->ip_after_call) {
 		int err = bpf_arch_text_poke(im->ip_after_call, BPF_MOD_JUMP,
 					     NULL, im->ip_epilogue);
@@ -340,12 +296,7 @@ static void bpf_tramp_image_put(struct bpf_tramp_image *im)
 		return;
 	}
 
-	/* The trampoline without fexit and fmod_ret progs doesn't call original
-	 * function and doesn't use percpu_ref.
-	 * Use call_rcu_tasks_trace() to wait for sleepable progs to finish.
-	 * Then use call_rcu_tasks() to wait for the rest of trampoline asm
-	 * and normal progs.
-	 */
+	 
 	call_rcu_tasks_trace(&im->rcu, __bpf_tramp_image_put_rcu_tasks);
 }
 
@@ -415,14 +366,12 @@ static int bpf_trampoline_update(struct bpf_trampoline *tr, bool lock_direct_mut
 		goto out;
 	}
 
-	/* clear all bits except SHARE_IPMODIFY and TAIL_CALL_CTX */
+	 
 	tr->flags &= (BPF_TRAMP_F_SHARE_IPMODIFY | BPF_TRAMP_F_TAIL_CALL_CTX);
 
 	if (tlinks[BPF_TRAMP_FEXIT].nr_links ||
 	    tlinks[BPF_TRAMP_MODIFY_RETURN].nr_links) {
-		/* NOTE: BPF_TRAMP_F_RESTORE_REGS and BPF_TRAMP_F_SKIP_FRAME
-		 * should not be set together.
-		 */
+		 
 		tr->flags |= BPF_TRAMP_F_CALL_ORIG | BPF_TRAMP_F_SKIP_FRAME;
 	} else {
 		tr->flags |= BPF_TRAMP_F_RESTORE_REGS;
@@ -448,23 +397,20 @@ again:
 
 	WARN_ON(tr->cur_image && total == 0);
 	if (tr->cur_image)
-		/* progs already running at this address */
+		 
 		err = modify_fentry(tr, tr->cur_image->image, im->image, lock_direct_mutex);
 	else
-		/* first time registering */
+		 
 		err = register_fentry(tr, im->image);
 
 #ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
 	if (err == -EAGAIN) {
-		/* -EAGAIN from bpf_tramp_ftrace_ops_func. Now
-		 * BPF_TRAMP_F_SHARE_IPMODIFY is set, we can generate the
-		 * trampoline again, and retry register.
-		 */
-		/* reset fops->func and fops->trampoline for re-register */
+		 
+		 
 		tr->fops->func = NULL;
 		tr->fops->trampoline = 0;
 
-		/* reset im->image memory attr for arch_prepare_bpf_trampoline */
+		 
 		set_memory_nx((long)im->image, 1);
 		set_memory_rw((long)im->image, 1);
 		goto again;
@@ -477,7 +423,7 @@ again:
 		bpf_tramp_image_put(tr->cur_image);
 	tr->cur_image = im;
 out:
-	/* If any error happens, restore previous flags */
+	 
 	if (err)
 		tr->flags = orig_flags;
 	kfree(tlinks);
@@ -499,9 +445,7 @@ static enum bpf_tramp_prog_type bpf_attach_type_to_tramp(struct bpf_prog *prog)
 		return BPF_TRAMP_FEXIT;
 	case BPF_LSM_MAC:
 		if (!prog->aux->attach_func_proto->type)
-			/* The function returns void, we cannot modify its
-			 * return value.
-			 */
+			 
 			return BPF_TRAMP_FEXIT;
 		else
 			return BPF_TRAMP_MODIFY_RETURN;
@@ -519,16 +463,14 @@ static int __bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_tr
 
 	kind = bpf_attach_type_to_tramp(link->link.prog);
 	if (tr->extension_prog)
-		/* cannot attach fentry/fexit if extension prog is attached.
-		 * cannot overwrite extension prog either.
-		 */
+		 
 		return -EBUSY;
 
 	for (i = 0; i < BPF_TRAMP_MAX; i++)
 		cnt += tr->progs_cnt[i];
 
 	if (kind == BPF_TRAMP_REPLACE) {
-		/* Cannot attach extension if fentry/fexit are in use. */
+		 
 		if (cnt)
 			return -EBUSY;
 		tr->extension_prog = link->link.prog;
@@ -538,18 +480,18 @@ static int __bpf_trampoline_link_prog(struct bpf_tramp_link *link, struct bpf_tr
 	if (cnt >= BPF_MAX_TRAMP_LINKS)
 		return -E2BIG;
 	if (!hlist_unhashed(&link->tramp_hlist))
-		/* prog already linked */
+		 
 		return -EBUSY;
 	hlist_for_each_entry(link_exiting, &tr->progs_hlist[kind], tramp_hlist) {
 		if (link_exiting->link.prog != link->link.prog)
 			continue;
-		/* prog already linked */
+		 
 		return -EBUSY;
 	}
 
 	hlist_add_head(&link->tramp_hlist, &tr->progs_hlist[kind]);
 	tr->progs_cnt[kind]++;
-	err = bpf_trampoline_update(tr, true /* lock_direct_mutex */);
+	err = bpf_trampoline_update(tr, true  );
 	if (err) {
 		hlist_del_init(&link->tramp_hlist);
 		tr->progs_cnt[kind]--;
@@ -582,10 +524,10 @@ static int __bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_
 	}
 	hlist_del_init(&link->tramp_hlist);
 	tr->progs_cnt[kind]--;
-	return bpf_trampoline_update(tr, true /* lock_direct_mutex */);
+	return bpf_trampoline_update(tr, true  );
 }
 
-/* bpf_trampoline_unlink_prog() should never fail. */
+ 
 int bpf_trampoline_unlink_prog(struct bpf_tramp_link *link, struct bpf_trampoline *tr)
 {
 	int err;
@@ -602,7 +544,7 @@ static void bpf_shim_tramp_link_release(struct bpf_link *link)
 	struct bpf_shim_tramp_link *shim_link =
 		container_of(link, struct bpf_shim_tramp_link, link.link);
 
-	/* paired with 'shim_link->trampoline = tr' in bpf_trampoline_link_cgroup_shim */
+	 
 	if (!shim_link->trampoline)
 		return;
 
@@ -704,15 +646,15 @@ int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
 
 	shim_link = cgroup_shim_find(tr, bpf_func);
 	if (shim_link) {
-		/* Reusing existing shim attached by the other program. */
+		 
 		bpf_link_inc(&shim_link->link.link);
 
 		mutex_unlock(&tr->mutex);
-		bpf_trampoline_put(tr); /* bpf_trampoline_get above */
+		bpf_trampoline_put(tr);  
 		return 0;
 	}
 
-	/* Allocate and install new shim. */
+	 
 
 	shim_link = cgroup_shim_alloc(prog, bpf_func, cgroup_atype);
 	if (!shim_link) {
@@ -725,7 +667,7 @@ int bpf_trampoline_link_cgroup_shim(struct bpf_prog *prog,
 		goto err;
 
 	shim_link->trampoline = tr;
-	/* note, we're still holding tr refcnt from above */
+	 
 
 	mutex_unlock(&tr->mutex);
 
@@ -736,8 +678,8 @@ err:
 	if (shim_link)
 		bpf_link_put(&shim_link->link.link);
 
-	/* have to release tr while _not_ holding its mutex */
-	bpf_trampoline_put(tr); /* bpf_trampoline_get above */
+	 
+	bpf_trampoline_put(tr);  
 
 	return err;
 }
@@ -764,7 +706,7 @@ void bpf_trampoline_unlink_cgroup_shim(struct bpf_prog *prog)
 	if (shim_link)
 		bpf_link_put(&shim_link->link.link);
 
-	bpf_trampoline_put(tr); /* bpf_trampoline_lookup above */
+	bpf_trampoline_put(tr);  
 }
 #endif
 
@@ -803,12 +745,7 @@ void bpf_trampoline_put(struct bpf_trampoline *tr)
 		if (WARN_ON_ONCE(!hlist_empty(&tr->progs_hlist[i])))
 			goto out;
 
-	/* This code will be executed even when the last bpf_tramp_image
-	 * is alive. All progs are detached from the trampoline and the
-	 * trampoline image is patched with jmp into epilogue to skip
-	 * fexit progs. The fentry-only trampoline will be freed via
-	 * multiple rcu callbacks.
-	 */
+	 
 	hlist_del(&tr->hlist);
 	if (tr->fops) {
 		ftrace_free_filter(tr->fops);
@@ -832,19 +769,7 @@ static __always_inline u64 notrace bpf_prog_start_time(void)
 	return start;
 }
 
-/* The logic is similar to bpf_prog_run(), but with an explicit
- * rcu_read_lock() and migrate_disable() which are required
- * for the trampoline. The macro is split into
- * call __bpf_prog_enter
- * call prog->bpf_func
- * call __bpf_prog_exit
- *
- * __bpf_prog_enter returns:
- * 0 - skip execution of the bpf prog
- * 1 - execute bpf prog
- * [2..MAX_U64] - execute bpf prog and record execution time.
- *     This is start time.
- */
+ 
 static u64 notrace __bpf_prog_enter_recur(struct bpf_prog *prog, struct bpf_tramp_run_ctx *run_ctx)
 	__acquires(RCU)
 {
@@ -866,11 +791,7 @@ static void notrace update_prog_stats(struct bpf_prog *prog,
 	struct bpf_prog_stats *stats;
 
 	if (static_branch_unlikely(&bpf_stats_enabled_key) &&
-	    /* static_key could be enabled in __bpf_prog_enter*
-	     * and disabled in __bpf_prog_exit*.
-	     * And vice versa.
-	     * Hence check that 'start' is valid.
-	     */
+	     
 	    start > NO_START_TIME) {
 		unsigned long flags;
 
@@ -898,9 +819,7 @@ static u64 notrace __bpf_prog_enter_lsm_cgroup(struct bpf_prog *prog,
 					       struct bpf_tramp_run_ctx *run_ctx)
 	__acquires(RCU)
 {
-	/* Runtime stats are exported via actual BPF_LSM_CGROUP
-	 * programs, not the shims.
-	 */
+	 
 	rcu_read_lock();
 	migrate_disable();
 

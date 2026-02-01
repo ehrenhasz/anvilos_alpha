@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef BTRFS_ORPHAN_H
 #define BTRFS_ORPHAN_H

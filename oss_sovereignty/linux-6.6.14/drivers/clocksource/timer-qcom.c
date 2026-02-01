@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2007 Google, Inc.
- * Copyright (c) 2009-2012,2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clocksource.h>
 #include <linux/clockchips.h>
@@ -37,7 +33,7 @@ static void __iomem *sts_base;
 static irqreturn_t msm_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *evt = dev_id;
-	/* Stop the timer tick */
+	 
 	if (clockevent_state_oneshot(evt)) {
 		u32 ctrl = readl_relaxed(event_base + TIMER_ENABLE);
 		ctrl &= ~TIMER_ENABLE_EN;
@@ -171,7 +167,7 @@ static int __init msm_timer_init(u32 dgt_hz, int sched_bits, int irq,
 	if (res) {
 		pr_err("request_percpu_irq failed\n");
 	} else {
-		/* Install and invoke hotplug callbacks */
+		 
 		res = cpuhp_setup_state(CPUHP_AP_QCOM_TIMER_STARTING,
 					"clockevents/qcom/timer:starting",
 					msm_local_timer_starting_cpu,
@@ -209,14 +205,14 @@ static int __init msm_dt_timer_init(struct device_node *np)
 		return -ENXIO;
 	}
 
-	/* We use GPT0 for the clockevent */
+	 
 	irq = irq_of_parse_and_map(np, 1);
 	if (irq <= 0) {
 		pr_err("Can't get irq\n");
 		return -EINVAL;
 	}
 
-	/* We use CPU0's DGT for the clocksource */
+	 
 	if (of_property_read_u32(np, "cpu-offset", &percpu_offset))
 		percpu_offset = 0;
 

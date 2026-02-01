@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Timberdale FPGA GPIO driver
- * Author: Mocean Laboratories
- * Copyright (c) 2009 Intel Corporation
- */
 
-/* Supports:
- * Timberdale FPGA GPIO
- */
+ 
+
+ 
 
 #include <linux/init.h>
 #include <linux/gpio/driver.h>
@@ -33,7 +27,7 @@
 
 struct timbgpio {
 	void __iomem		*membase;
-	spinlock_t		lock; /* mutual exclusion */
+	spinlock_t		lock;  
 	struct gpio_chip	gpio;
 	int			irq_base;
 	unsigned long		last_ier;
@@ -96,9 +90,7 @@ static int timbgpio_to_irq(struct gpio_chip *gpio, unsigned offset)
 	return tgpio->irq_base + offset;
 }
 
-/*
- * GPIO IRQ
- */
+ 
 static void timbgpio_irq_disable(struct irq_data *d)
 {
 	struct timbgpio *tgpio = irq_data_get_irq_chip_data(d);
@@ -193,10 +185,7 @@ static void timbgpio_irq(struct irq_desc *desc)
 	ipr = ioread32(tgpio->membase + TGPIO_IPR);
 	iowrite32(ipr, tgpio->membase + TGPIO_ICR);
 
-	/*
-	 * Some versions of the hardware trash the IER register if more than
-	 * one interrupt is received simultaneously.
-	 */
+	 
 	iowrite32(0, tgpio->membase + TGPIO_IER);
 
 	for_each_set_bit(offset, &ipr, tgpio->gpio.ngpio)
@@ -257,7 +246,7 @@ static int timbgpio_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* make sure to disable interrupts */
+	 
 	iowrite32(0x0, tgpio->membase + TGPIO_IER);
 
 	if (irq < 0 || tgpio->irq_base <= 0)
@@ -283,6 +272,6 @@ static struct platform_driver timbgpio_platform_driver = {
 	.probe		= timbgpio_probe,
 };
 
-/*--------------------------------------------------------------------------*/
+ 
 
 builtin_platform_driver(timbgpio_platform_driver);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Driver for PowerMac Burgundy onboard soundchips
- * Copyright (c) 2001 by Takashi Iwai <tiwai@suse.de>
- *   based on dmasound.c.
- */
+ 
+ 
 
 
 #ifndef __BURGUNDY_H
@@ -52,7 +48,7 @@
 #define MASK_ADDR_BURGUNDY_GAINMODEM (MASK_ADDR_BURGUNDY_VOLCH4)
 
 
-/* These are all default values for the burgundy */
+ 
 #define DEF_BURGUNDY_INPSEL21 (0xAA)
 #define DEF_BURGUNDY_INPSEL3_IMAC (0x0A)
 #define DEF_BURGUNDY_INPSEL3_PMAC (0x05)
@@ -62,7 +58,7 @@
 #define DEF_BURGUNDY_GAINMIC (0x44)
 #define DEF_BURGUNDY_GAINMODEM (0x06)
 
-/* Remember: lowest volume here is 0x9B (155) */
+ 
 #define DEF_BURGUNDY_VOLCD (0xCCCCCCCC)
 #define DEF_BURGUNDY_VOLLINE (0x00000000)
 #define DEF_BURGUNDY_VOLMIC (0x00000000)
@@ -71,7 +67,7 @@
 #define DEF_BURGUNDY_OUTPUTSELECTS (0x010F010F)
 #define DEF_BURGUNDY_OUTPUTENABLES (0x0100000A)
 
-/* #define DEF_BURGUNDY_MASTER_VOLUME (0xFFFFFFFF) */ /* too loud */
+   
 #define DEF_BURGUNDY_MASTER_VOLUME (0xDDDDDDDD)
 
 #define DEF_BURGUNDY_MORE_OUTPUTENABLES (0x7E)
@@ -80,7 +76,7 @@
 #define DEF_BURGUNDY_ATTENLINEOUT (0xCC)
 #define DEF_BURGUNDY_ATTENHP (0xCC)
 
-/* MORE_OUTPUTENABLES bits */
+ 
 #define BURGUNDY_OUTPUT_LEFT	0x02
 #define BURGUNDY_OUTPUT_RIGHT	0x04
 #define BURGUNDY_LINEOUT_LEFT	0x08
@@ -89,13 +85,13 @@
 #define BURGUNDY_HP_RIGHT	0x40
 #define BURGUNDY_OUTPUT_INTERN	0x80
 
-/* Headphone detection bits */
+ 
 #define BURGUNDY_HPDETECT_PMAC_BACK	0x04
 #define BURGUNDY_HPDETECT_IMAC_SIDE	0x04
 #define BURGUNDY_HPDETECT_IMAC_UPPER	0x08
 #define BURGUNDY_HPDETECT_IMAC_LOWER	0x01
 
-/* Volume offset */
+ 
 #define BURGUNDY_VOLUME_OFFSET	155
 
-#endif /* __BURGUNDY_H */
+#endif  

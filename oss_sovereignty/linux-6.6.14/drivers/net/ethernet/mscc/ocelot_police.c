@@ -1,24 +1,21 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Microsemi Ocelot Switch driver
- *
- * Copyright (c) 2019 Microsemi Corporation
- */
+
+ 
 
 #include <soc/mscc/ocelot.h>
 #include "ocelot_police.h"
 
-/* Types for ANA:POL[0-192]:POL_MODE_CFG.FRM_MODE */
-#define POL_MODE_LINERATE   0 /* Incl IPG. Unit: 33 1/3 kbps, 4096 bytes */
-#define POL_MODE_DATARATE   1 /* Excl IPG. Unit: 33 1/3 kbps, 4096 bytes  */
-#define POL_MODE_FRMRATE_HI 2 /* Unit: 33 1/3 fps, 32.8 frames */
-#define POL_MODE_FRMRATE_LO 3 /* Unit: 1/3 fps, 0.3 frames */
+ 
+#define POL_MODE_LINERATE   0  
+#define POL_MODE_DATARATE   1  
+#define POL_MODE_FRMRATE_HI 2  
+#define POL_MODE_FRMRATE_LO 3  
 
-/* Policer indexes */
-#define POL_IX_PORT    0    /* 0-11    : Port policers */
-#define POL_IX_QUEUE   32   /* 32-127  : Queue policers  */
+ 
+#define POL_IX_PORT    0     
+#define POL_IX_QUEUE   32    
 
-/* Default policer order */
-#define POL_ORDER 0x1d3 /* Ocelot policer order: Serial (QoS -> Port -> VCAP) */
+ 
+#define POL_ORDER 0x1d3  
 
 int qos_policer_conf_set(struct ocelot *ocelot, u32 pol_ix,
 			 struct qos_policer_conf *conf)
@@ -47,60 +44,60 @@ int qos_policer_conf_set(struct ocelot *ocelot, u32 pol_ix,
 			cir = conf->cir;
 			cbs = conf->cbs;
 			if (cir == 0 && cbs == 0) {
-				/* Discard cir frames */
+				 
 				cir_discard = 1;
 			} else {
 				cir = DIV_ROUND_UP(cir, 100);
-				cir *= 3; /* 33 1/3 kbps */
+				cir *= 3;  
 				cbs = DIV_ROUND_UP(cbs, 4096);
-				cbs = (cbs ? cbs : 1); /* No zero burst size */
-				cbs_max = 60; /* Limit burst size */
+				cbs = (cbs ? cbs : 1);  
+				cbs_max = 60;  
 				cf = conf->cf;
 				if (cf)
 					pir += conf->cir;
 			}
 		}
 		if (pir == 0 && pbs == 0) {
-			/* Discard PIR frames */
+			 
 			pir_discard = 1;
 		} else {
 			pir = DIV_ROUND_UP(pir, 100);
-			pir *= 3;  /* 33 1/3 kbps */
+			pir *= 3;   
 			pbs = DIV_ROUND_UP(pbs, 4096);
-			pbs = (pbs ? pbs : 1); /* No zero burst size */
-			pbs_max = 60; /* Limit burst size */
+			pbs = (pbs ? pbs : 1);  
+			pbs_max = 60;  
 		}
 		break;
 	case MSCC_QOS_RATE_MODE_FRAME:
 		if (pir >= 100) {
 			frm_mode = POL_MODE_FRMRATE_HI;
 			pir = DIV_ROUND_UP(pir, 100);
-			pir *= 3;  /* 33 1/3 fps */
-			pbs = (pbs * 10) / 328; /* 32.8 frames */
-			pbs = (pbs ? pbs : 1); /* No zero burst size */
-			pbs_max = GENMASK(6, 0); /* Limit burst size */
+			pir *= 3;   
+			pbs = (pbs * 10) / 328;  
+			pbs = (pbs ? pbs : 1);  
+			pbs_max = GENMASK(6, 0);  
 		} else {
 			frm_mode = POL_MODE_FRMRATE_LO;
 			if (pir == 0 && pbs == 0) {
-				/* Discard all frames */
+				 
 				pir_discard = 1;
 				cir_discard = 1;
 			} else {
-				pir *= 3; /* 1/3 fps */
-				pbs = (pbs * 10) / 3; /* 0.3 frames */
-				pbs = (pbs ? pbs : 1); /* No zero burst size */
-				pbs_max = 61; /* Limit burst size */
+				pir *= 3;  
+				pbs = (pbs * 10) / 3;  
+				pbs = (pbs ? pbs : 1);  
+				pbs_max = 61;  
 			}
 		}
 		break;
-	default: /* MSCC_QOS_RATE_MODE_DISABLED */
-		/* Disable policer using maximum rate and zero burst */
+	default:  
+		 
 		pir = GENMASK(15, 0);
 		pbs = 0;
 		break;
 	}
 
-	/* Check limits */
+	 
 	if (pir > GENMASK(15, 0)) {
 		dev_err(ocelot->dev,
 			"Invalid pir for policer %u: %u (max %lu)\n",

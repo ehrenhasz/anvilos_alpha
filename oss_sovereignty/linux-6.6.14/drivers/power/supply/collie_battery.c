@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery and Power Management code for the Sharp SL-5x00
- *
- * Copyright (C) 2009 Thomas Kunze
- *
- * based on tosa_battery.c
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/power_supply.h>
@@ -21,7 +15,7 @@
 #include <asm/mach-types.h>
 #include <mach/collie.h>
 
-static DEFINE_MUTEX(bat_lock); /* protects gpio pins */
+static DEFINE_MUTEX(bat_lock);  
 static struct work_struct bat_work;
 static struct ucb1x00 *ucb;
 
@@ -30,7 +24,7 @@ struct collie_bat {
 	struct power_supply *psy;
 	int full_chrg;
 
-	struct mutex work_lock; /* protects data */
+	struct mutex work_lock;  
 
 	bool (*is_present)(struct collie_bat *bat);
 	struct gpio_desc *gpio_full;
@@ -278,7 +272,7 @@ static struct collie_bat collie_bat_bu = {
 	.adc_temp_divider = -1,
 };
 
-/* Obtained but unused GPIO */
+ 
 static struct gpio_desc *collie_mbat_low;
 
 #ifdef CONFIG_PM
@@ -286,7 +280,7 @@ static int wakeup_enabled;
 
 static int collie_bat_suspend(struct ucb1x00_dev *dev)
 {
-	/* flush all pending status updates */
+	 
 	flush_work(&bat_work);
 
 	if (device_may_wakeup(&dev->ucb->dev) &&
@@ -303,7 +297,7 @@ static int collie_bat_resume(struct ucb1x00_dev *dev)
 	if (wakeup_enabled)
 		disable_irq_wake(gpiod_to_irq(collie_bat_main.gpio_full));
 
-	/* things may have changed while we were away */
+	 
 	schedule_work(&bat_work);
 	return 0;
 }
@@ -323,7 +317,7 @@ static int collie_bat_probe(struct ucb1x00_dev *dev)
 
 	ucb = dev->ucb;
 
-	/* Obtain all the main battery GPIOs */
+	 
 	collie_bat_main.gpio_full = gpiod_get(&dev->ucb->dev,
 					      "main battery full",
 					      GPIOD_IN);
@@ -346,7 +340,7 @@ static int collie_bat_probe(struct ucb1x00_dev *dev)
 		goto err_put_mbat_low;
 	}
 
-	/* COLLIE_GPIO_MBAT_ON = GPIO 7 on the UCB (TC35143) */
+	 
 	collie_bat_main.gpio_bat = gpiochip_request_own_desc(gc,
 						7,
 						"main battery",
@@ -357,7 +351,7 @@ static int collie_bat_probe(struct ucb1x00_dev *dev)
 		goto err_put_gpio_charge_on;
 	}
 
-	/* COLLIE_GPIO_TMP_ON = GPIO 9 on the UCB (TC35143) */
+	 
 	collie_bat_main.gpio_temp = gpiochip_request_own_desc(gc,
 						9,
 						"main battery temp",
@@ -368,10 +362,7 @@ static int collie_bat_probe(struct ucb1x00_dev *dev)
 		goto err_free_gpio_bat;
 	}
 
-	/*
-	 * Obtain the backup battery COLLIE_GPIO_BBAT_ON which is
-	 * GPIO 8 on the UCB (TC35143)
-	 */
+	 
 	collie_bat_bu.gpio_bat = gpiochip_request_own_desc(gc,
 						8,
 						"backup battery",
@@ -421,7 +412,7 @@ err_irq:
 err_psy_reg_bu:
 	power_supply_unregister(collie_bat_main.psy);
 err_psy_reg_main:
-	/* see comment in collie_bat_remove */
+	 
 	cancel_work_sync(&bat_work);
 	gpiochip_free_own_desc(collie_bat_bu.gpio_bat);
 err_free_gpio_temp:
@@ -444,19 +435,15 @@ static void collie_bat_remove(struct ucb1x00_dev *dev)
 	power_supply_unregister(collie_bat_bu.psy);
 	power_supply_unregister(collie_bat_main.psy);
 
-	/* These are obtained from the machine */
+	 
 	gpiod_put(collie_bat_main.gpio_full);
 	gpiod_put(collie_mbat_low);
 	gpiod_put(collie_bat_main.gpio_charge_on);
-	/* These are directly from the UCB so let's free them */
+	 
 	gpiochip_free_own_desc(collie_bat_main.gpio_bat);
 	gpiochip_free_own_desc(collie_bat_main.gpio_temp);
 	gpiochip_free_own_desc(collie_bat_bu.gpio_bat);
-	/*
-	 * Now cancel the bat_work.  We won't get any more schedules,
-	 * since all sources (isr and external_power_changed) are
-	 * unregistered now.
-	 */
+	 
 	cancel_work_sync(&bat_work);
 }
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * v4l2-tpg.h - Test Pattern Generator
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef _V4L2_TPG_H_
 #define _V4L2_TPG_H_
@@ -82,7 +78,7 @@ enum tpg_pattern {
 	TPG_PAT_CROSS_10_PIXELS,
 	TPG_PAT_GRAY_RAMP,
 
-	/* Must be the last pattern */
+	 
 	TPG_PAT_NOISE,
 };
 
@@ -131,23 +127,23 @@ extern const char * const tpg_aspect_strings[];
 #define TPG_MAX_PAT_LINES 8
 
 struct tpg_data {
-	/* Source frame size */
+	 
 	unsigned			src_width, src_height;
-	/* Buffer height */
+	 
 	unsigned			buf_height;
-	/* Scaled output frame size */
+	 
 	unsigned			scaled_width;
 	u32				field;
 	bool				field_alternate;
-	/* crop coordinates are frame-based */
+	 
 	struct v4l2_rect		crop;
-	/* compose coordinates are format-based */
+	 
 	struct v4l2_rect		compose;
-	/* border and square coordinates are frame-based */
+	 
 	struct v4l2_rect		border;
 	struct v4l2_rect		square;
 
-	/* Color-related fields */
+	 
 	enum tpg_quality		qual;
 	unsigned			qual_offset;
 	u8				alpha_component;
@@ -162,22 +158,13 @@ struct tpg_data {
 	u32				xfer_func;
 	u32				ycbcr_enc;
 	u32				hsv_enc;
-	/*
-	 * Stores the actual transfer function, i.e. will never be
-	 * V4L2_XFER_FUNC_DEFAULT.
-	 */
+	 
 	u32				real_xfer_func;
-	/*
-	 * Stores the actual Y'CbCr encoding, i.e. will never be
-	 * V4L2_YCBCR_ENC_DEFAULT.
-	 */
+	 
 	u32				real_hsv_enc;
 	u32				real_ycbcr_enc;
 	u32				quantization;
-	/*
-	 * Stores the actual quantization, i.e. will never be
-	 * V4L2_QUANTIZATION_DEFAULT.
-	 */
+	 
 	u32				real_quantization;
 	enum tpg_video_aspect		vid_aspect;
 	enum tpg_pixel_aspect		pix_aspect;
@@ -188,19 +175,16 @@ struct tpg_data {
 	bool				interleaved;
 	u8				vdownsampling[TPG_MAX_PLANES];
 	u8				hdownsampling[TPG_MAX_PLANES];
-	/*
-	 * horizontal positions must be ANDed with this value to enforce
-	 * correct boundaries for packed YUYV values.
-	 */
+	 
 	unsigned			hmask[TPG_MAX_PLANES];
-	/* Used to store the colors in native format, either RGB or YUV */
+	 
 	u8				colors[TPG_COLOR_MAX][3];
 	u8				textfg[TPG_MAX_PLANES][8], textbg[TPG_MAX_PLANES][8];
-	/* size in bytes for two pixels in each plane */
+	 
 	unsigned			twopixelsize[TPG_MAX_PLANES];
 	unsigned			bytesperline[TPG_MAX_PLANES];
 
-	/* Configuration */
+	 
 	enum tpg_pattern		pattern;
 	bool				hflip;
 	bool				vflip;
@@ -212,7 +196,7 @@ struct tpg_data {
 	bool				insert_eav;
 	bool				insert_hdmi_video_guard_band;
 
-	/* Test pattern movement */
+	 
 	enum tpg_move_mode		mv_hor_mode;
 	int				mv_hor_count;
 	int				mv_hor_step;
@@ -224,7 +208,7 @@ struct tpg_data {
 	bool				recalc_lines;
 	bool				recalc_square_border;
 
-	/* Used to store TPG_MAX_PAT_LINES lines, each with up to two planes */
+	 
 	unsigned			max_line_width;
 	u8				*lines[TPG_MAX_PAT_LINES][TPG_MAX_PLANES];
 	u8				*downsampled_lines[TPG_MAX_PAT_LINES][TPG_MAX_PLANES];
@@ -592,15 +576,7 @@ static inline void tpg_s_insert_eav(struct tpg_data *tpg, bool insert_eav)
 	tpg->insert_eav = insert_eav;
 }
 
-/*
- * This inserts 4 pixels of the RGB color 0xab55ab at the left hand side of the
- * image. This is only done for 3 or 4 byte RGB pixel formats. This pixel value
- * equals the Video Guard Band value as defined by HDMI (see section 5.2.2.1
- * in the HDMI 1.3 Specification) that preceeds the first actual pixel. If the
- * HDMI receiver doesn't handle this correctly, then it might keep skipping
- * these Video Guard Band patterns and end up with a shorter video line. So this
- * is a nice pattern to test with.
- */
+ 
 static inline void tpg_s_insert_hdmi_video_guard_band(struct tpg_data *tpg,
 						      bool insert_hdmi_video_guard_band)
 {

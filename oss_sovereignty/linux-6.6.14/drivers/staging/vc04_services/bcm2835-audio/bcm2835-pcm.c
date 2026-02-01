@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2011 Broadcom Corporation.  All rights reserved. */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/slab.h>
@@ -8,7 +8,7 @@
 
 #include "bcm2835.h"
 
-/* hardware definition */
+ 
 static const struct snd_pcm_hardware snd_bcm2835_playback_hw = {
 	.info = (SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
 		 SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_MMAP_VALID |
@@ -81,7 +81,7 @@ void bcm2835_playback_fifo(struct bcm2835_alsa_stream *alsa_stream,
 	}
 }
 
-/* open callback */
+ 
 static int snd_bcm2835_playback_open_generic(struct snd_pcm_substream *substream, int spdif)
 {
 	struct bcm2835_chip *chip = snd_pcm_substream_chip(substream);
@@ -114,7 +114,7 @@ static int snd_bcm2835_playback_open_generic(struct snd_pcm_substream *substream
 		goto out;
 	}
 
-	/* Initialise alsa_stream */
+	 
 	alsa_stream->chip = chip;
 	alsa_stream->substream = substream;
 	alsa_stream->idx = idx;
@@ -129,17 +129,17 @@ static int snd_bcm2835_playback_open_generic(struct snd_pcm_substream *substream
 	if (spdif) {
 		runtime->hw = snd_bcm2835_playback_spdif_hw;
 	} else {
-		/* clear spdif status, as we are not in spdif mode */
+		 
 		chip->spdif_status = 0;
 		runtime->hw = snd_bcm2835_playback_hw;
 	}
-	/* minimum 16 bytes alignment (for vchiq bulk transfers) */
+	 
 	snd_pcm_hw_constraint_step(runtime,
 				   0,
 				   SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
 				   16);
 
-	/* position update is in 10ms order */
+	 
 	snd_pcm_hw_constraint_minmax(runtime,
 				     SNDRV_PCM_HW_PARAM_PERIOD_TIME,
 				     10 * 1000, UINT_MAX);
@@ -180,10 +180,7 @@ static int snd_bcm2835_playback_close(struct snd_pcm_substream *substream)
 
 	bcm2835_audio_close(alsa_stream);
 	alsa_stream->chip->alsa_stream[alsa_stream->idx] = NULL;
-	/*
-	 * Do not free up alsa_stream here, it will be freed up by
-	 * runtime->private_free callback we registered in *_open above
-	 */
+	 
 
 	chip->opened &= ~(1 << substream->number);
 
@@ -200,10 +197,7 @@ static int snd_bcm2835_pcm_prepare(struct snd_pcm_substream *substream)
 	int channels;
 	int err;
 
-	/* notify the vchiq that it should enter spdif passthrough mode by
-	 * setting channels=0 (see
-	 * https://github.com/raspberrypi/linux/issues/528)
-	 */
+	 
 	if (chip->spdif_status & IEC958_AES0_NONAUDIO)
 		channels = 0;
 	else
@@ -251,7 +245,7 @@ static int snd_bcm2835_pcm_ack(struct snd_pcm_substream *substream)
 						  snd_bcm2835_pcm_transfer);
 }
 
-/* trigger callback */
+ 
 static int snd_bcm2835_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -270,7 +264,7 @@ static int snd_bcm2835_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	}
 }
 
-/* pointer callback */
+ 
 static snd_pcm_uframes_t
 snd_bcm2835_pcm_pointer(struct snd_pcm_substream *substream)
 {
@@ -278,10 +272,7 @@ snd_bcm2835_pcm_pointer(struct snd_pcm_substream *substream)
 	struct bcm2835_alsa_stream *alsa_stream = runtime->private_data;
 	ktime_t now = ktime_get();
 
-	/* Give userspace better delay reporting by interpolating between GPU
-	 * notifications, assuming audio speed is close enough to the clock
-	 * used for ktime
-	 */
+	 
 
 	if ((ktime_to_ns(alsa_stream->interpolate_start)) &&
 	    (ktime_compare(alsa_stream->interpolate_start, now) < 0)) {
@@ -300,7 +291,7 @@ snd_bcm2835_pcm_pointer(struct snd_pcm_substream *substream)
 		atomic_read(&alsa_stream->pos));
 }
 
-/* operators */
+ 
 static const struct snd_pcm_ops snd_bcm2835_playback_ops = {
 	.open = snd_bcm2835_playback_open,
 	.close = snd_bcm2835_playback_close,
@@ -319,7 +310,7 @@ static const struct snd_pcm_ops snd_bcm2835_playback_spdif_ops = {
 	.ack = snd_bcm2835_pcm_ack,
 };
 
-/* create a pcm device */
+ 
 int snd_bcm2835_new_pcm(struct bcm2835_chip *chip, const char *name,
 			int idx, enum snd_bcm2835_route route,
 			u32 numchannels, bool spdif)

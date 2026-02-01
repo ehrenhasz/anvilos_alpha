@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ALSA Soc PCM3008 codec support
- *
- * Author:	Hugo Villeneuve
- * Copyright (C) 2008 Lyrtech inc
- *
- * Based on AC97 Soc codec, original copyright follow:
- * Copyright 2005 Wolfson Microelectronics PLC.
- *
- * Generic PCM3008 support.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -112,32 +102,27 @@ static int pcm3008_codec_probe(struct platform_device *pdev)
 	if (!setup)
 		return -EINVAL;
 
-	/* DEM1  DEM0  DE-EMPHASIS_MODE
-	 * Low   Low   De-emphasis 44.1 kHz ON
-	 * Low   High  De-emphasis OFF
-	 * High  Low   De-emphasis 48 kHz ON
-	 * High  High  De-emphasis 32 kHz ON
-	 */
+	 
 
-	/* Configure DEM0 GPIO (turning OFF DAC De-emphasis). */
+	 
 	ret = devm_gpio_request_one(&pdev->dev, setup->dem0_pin,
 				    GPIOF_OUT_INIT_HIGH, "codec_dem0");
 	if (ret != 0)
 		return ret;
 
-	/* Configure DEM1 GPIO (turning OFF DAC De-emphasis). */
+	 
 	ret = devm_gpio_request_one(&pdev->dev, setup->dem1_pin,
 				    GPIOF_OUT_INIT_LOW, "codec_dem1");
 	if (ret != 0)
 		return ret;
 
-	/* Configure PDAD GPIO. */
+	 
 	ret = devm_gpio_request_one(&pdev->dev, setup->pdad_pin,
 				    GPIOF_OUT_INIT_LOW, "codec_pdad");
 	if (ret != 0)
 		return ret;
 
-	/* Configure PDDA GPIO. */
+	 
 	ret = devm_gpio_request_one(&pdev->dev, setup->pdda_pin,
 				    GPIOF_OUT_INIT_LOW, "codec_pdda");
 	if (ret != 0)

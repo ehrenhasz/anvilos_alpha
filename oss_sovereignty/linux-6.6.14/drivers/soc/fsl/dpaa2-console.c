@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Freescale DPAA2 Platforms Console Driver
- *
- * Copyright 2015-2016 Freescale Semiconductor Inc.
- * Copyright 2018 NXP
- */
+
+ 
 
 #define pr_fmt(fmt) "dpaa2-console: " fmt
 
@@ -18,11 +13,11 @@
 #include <linux/fs.h>
 #include <linux/io.h>
 
-/* MC firmware base low/high registers indexes */
+ 
 #define MCFBALR_OFFSET 0
 #define MCFBAHR_OFFSET 1
 
-/* Bit masks used to get the most/least significant part of the MC base addr */
+ 
 #define MC_FW_ADDR_MASK_HIGH 0x1FFFF
 #define MC_FW_ADDR_MASK_LOW  0xE0000000
 
@@ -37,7 +32,7 @@
 #define LOG_HEADER_FLAG_BUFFER_WRAPAROUND 0x80000000
 #define LAST_BYTE(a) ((a) & ~(LOG_HEADER_FLAG_BUFFER_WRAPAROUND))
 
-/* MC and AIOP Magic words */
+ 
 #define MAGIC_MC   0x4d430100
 #define MAGIC_AIOP 0x41494F50
 
@@ -199,7 +194,7 @@ static ssize_t dpaa2_console_read(struct file *fp, char __user *buf,
 	void *kbuf;
 	int err;
 
-	/* Check if we need to adjust the end of data addr */
+	 
 	adjust_end(cd);
 
 	if (cd->end_of_data == cd->cur_ptr)

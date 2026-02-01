@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Acer WMI Laptop Extras
- *
- *  Copyright (C) 2007-2009	Carlos Corbacho <carlos@strangeworlds.co.uk>
- *
- *  Based on acer_acpi:
- *    Copyright (C) 2005-2007	E.M. Smith
- *    Copyright (C) 2007-2008	Carlos Corbacho <cathectic@gmail.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -34,23 +26,15 @@ MODULE_AUTHOR("Carlos Corbacho");
 MODULE_DESCRIPTION("Acer Laptop WMI Extras Driver");
 MODULE_LICENSE("GPL");
 
-/*
- * Magic Number
- * Meaning is unknown - this number is required for writing to ACPI for AMW0
- * (it's also used in acerhk when directly accessing the BIOS)
- */
+ 
 #define ACER_AMW0_WRITE	0x9610
 
-/*
- * Bit masks for the AMW0 interface
- */
+ 
 #define ACER_AMW0_WIRELESS_MASK  0x35
 #define ACER_AMW0_BLUETOOTH_MASK 0x34
 #define ACER_AMW0_MAILLED_MASK   0x31
 
-/*
- * Method IDs for WMID interface
- */
+ 
 #define ACER_WMID_GET_WIRELESS_METHODID		1
 #define ACER_WMID_GET_BLUETOOTH_METHODID	2
 #define ACER_WMID_GET_BRIGHTNESS_METHODID	3
@@ -65,9 +49,7 @@ MODULE_LICENSE("GPL");
 #define ACER_WMID_SET_GAMING_FAN_BEHAVIOR 14
 #define ACER_WMID_SET_GAMING_MISC_SETTING_METHODID 22
 
-/*
- * Acer ACPI method GUIDs
- */
+ 
 #define AMW0_GUID1		"67C3371D-95A3-4C37-BB61-DD47B491DAAB"
 #define AMW0_GUID2		"431F16ED-0C2B-444C-B267-27DEB140CF9C"
 #define WMID_GUID1		"6AF4F258-B401-42FD-BE91-3D4AC2D7C0D3"
@@ -75,9 +57,7 @@ MODULE_LICENSE("GPL");
 #define WMID_GUID3		"61EF69EA-865C-4BC3-A502-A0DEBA0CB531"
 #define WMID_GUID4		"7A4DDFE7-5B5D-40B4-8595-4408E0CC7F56"
 
-/*
- * Acer ACPI event GUIDs
- */
+ 
 #define ACERWMID_EVENT_GUID "676AA15E-6A47-4D9F-A2CC-1E6D18D14026"
 
 MODULE_ALIAS("wmi:67C3371D-95A3-4C37-BB61-DD47B491DAAB");
@@ -91,16 +71,16 @@ enum acer_wmi_event_ids {
 };
 
 static const struct key_entry acer_wmi_keymap[] __initconst = {
-	{KE_KEY, 0x01, {KEY_WLAN} },     /* WiFi */
-	{KE_KEY, 0x03, {KEY_WLAN} },     /* WiFi */
-	{KE_KEY, 0x04, {KEY_WLAN} },     /* WiFi */
-	{KE_KEY, 0x12, {KEY_BLUETOOTH} },	/* BT */
-	{KE_KEY, 0x21, {KEY_PROG1} },    /* Backup */
-	{KE_KEY, 0x22, {KEY_PROG2} },    /* Arcade */
-	{KE_KEY, 0x23, {KEY_PROG3} },    /* P_Key */
-	{KE_KEY, 0x24, {KEY_PROG4} },    /* Social networking_Key */
+	{KE_KEY, 0x01, {KEY_WLAN} },      
+	{KE_KEY, 0x03, {KEY_WLAN} },      
+	{KE_KEY, 0x04, {KEY_WLAN} },      
+	{KE_KEY, 0x12, {KEY_BLUETOOTH} },	 
+	{KE_KEY, 0x21, {KEY_PROG1} },     
+	{KE_KEY, 0x22, {KEY_PROG2} },     
+	{KE_KEY, 0x23, {KEY_PROG3} },     
+	{KE_KEY, 0x24, {KEY_PROG4} },     
 	{KE_KEY, 0x27, {KEY_HELP} },
-	{KE_KEY, 0x29, {KEY_PROG3} },    /* P_Key for TM8372 */
+	{KE_KEY, 0x29, {KEY_PROG3} },     
 	{KE_IGNORE, 0x41, {KEY_MUTE} },
 	{KE_IGNORE, 0x42, {KEY_PREVIOUSSONG} },
 	{KE_IGNORE, 0x4d, {KEY_PREVIOUSSONG} },
@@ -113,19 +93,14 @@ static const struct key_entry acer_wmi_keymap[] __initconst = {
 	{KE_IGNORE, 0x48, {KEY_VOLUMEUP} },
 	{KE_IGNORE, 0x49, {KEY_VOLUMEDOWN} },
 	{KE_IGNORE, 0x4a, {KEY_VOLUMEDOWN} },
-	/*
-	 * 0x61 is KEY_SWITCHVIDEOMODE. Usually this is a duplicate input event
-	 * with the "Video Bus" input device events. But sometimes it is not
-	 * a dup. Map it to KEY_UNKNOWN instead of using KE_IGNORE so that
-	 * udev/hwdb can override it on systems where it is not a dup.
-	 */
+	 
 	{KE_KEY, 0x61, {KEY_UNKNOWN} },
 	{KE_IGNORE, 0x62, {KEY_BRIGHTNESSUP} },
 	{KE_IGNORE, 0x63, {KEY_BRIGHTNESSDOWN} },
-	{KE_KEY, 0x64, {KEY_SWITCHVIDEOMODE} },	/* Display Switch */
+	{KE_KEY, 0x64, {KEY_SWITCHVIDEOMODE} },	 
 	{KE_IGNORE, 0x81, {KEY_SLEEP} },
-	{KE_KEY, 0x82, {KEY_TOUCHPAD_TOGGLE} },	/* Touch Pad Toggle */
-	{KE_IGNORE, 0x84, {KEY_KBDILLUMTOGGLE} }, /* Automatic Keyboard background light toggle */
+	{KE_KEY, 0x82, {KEY_TOUCHPAD_TOGGLE} },	 
+	{KE_IGNORE, 0x84, {KEY_KBDILLUMTOGGLE} },  
 	{KE_KEY, KEY_TOUCHPAD_ON, {KEY_TOUCHPAD_ON} },
 	{KE_KEY, KEY_TOUCHPAD_OFF, {KEY_TOUCHPAD_OFF} },
 	{KE_IGNORE, 0x83, {KEY_TOUCHPAD_TOGGLE} },
@@ -147,63 +122,48 @@ struct event_return_value {
 	u8 reserved2;
 } __packed;
 
-/*
- * GUID3 Get Device Status device flags
- */
-#define ACER_WMID3_GDS_WIRELESS		(1<<0)	/* WiFi */
-#define ACER_WMID3_GDS_THREEG		(1<<6)	/* 3G */
-#define ACER_WMID3_GDS_WIMAX		(1<<7)	/* WiMAX */
-#define ACER_WMID3_GDS_BLUETOOTH	(1<<11)	/* BT */
-#define ACER_WMID3_GDS_RFBTN		(1<<14)	/* RF Button */
+ 
+#define ACER_WMID3_GDS_WIRELESS		(1<<0)	 
+#define ACER_WMID3_GDS_THREEG		(1<<6)	 
+#define ACER_WMID3_GDS_WIMAX		(1<<7)	 
+#define ACER_WMID3_GDS_BLUETOOTH	(1<<11)	 
+#define ACER_WMID3_GDS_RFBTN		(1<<14)	 
 
-#define ACER_WMID3_GDS_TOUCHPAD		(1<<1)	/* Touchpad */
+#define ACER_WMID3_GDS_TOUCHPAD		(1<<1)	 
 
-/* Hotkey Customized Setting and Acer Application Status.
- * Set Device Default Value and Report Acer Application Status.
- * When Acer Application starts, it will run this method to inform
- * BIOS/EC that Acer Application is on.
- * App Status
- *	Bit[0]: Launch Manager Status
- *	Bit[1]: ePM Status
- *	Bit[2]: Device Control Status
- *	Bit[3]: Acer Power Button Utility Status
- *	Bit[4]: RF Button Status
- *	Bit[5]: ODD PM Status
- *	Bit[6]: Device Default Value Control
- *	Bit[7]: Hall Sensor Application Status
- */
+ 
 struct func_input_params {
-	u8 function_num;        /* Function Number */
-	u16 commun_devices;     /* Communication type devices default status */
-	u16 devices;            /* Other type devices default status */
-	u8 app_status;          /* Acer Device Status. LM, ePM, RF Button... */
-	u8 app_mask;		/* Bit mask to app_status */
+	u8 function_num;         
+	u16 commun_devices;      
+	u16 devices;             
+	u8 app_status;           
+	u8 app_mask;		 
 	u8 reserved;
 } __packed;
 
 struct func_return_value {
-	u8 error_code;          /* Error Code */
-	u8 ec_return_value;     /* EC Return Value */
+	u8 error_code;           
+	u8 ec_return_value;      
 	u16 reserved;
 } __packed;
 
-struct wmid3_gds_set_input_param {     /* Set Device Status input parameter */
-	u8 function_num;        /* Function Number */
-	u8 hotkey_number;       /* Hotkey Number */
-	u16 devices;            /* Set Device */
-	u8 volume_value;        /* Volume Value */
+struct wmid3_gds_set_input_param {      
+	u8 function_num;         
+	u8 hotkey_number;        
+	u16 devices;             
+	u8 volume_value;         
 } __packed;
 
-struct wmid3_gds_get_input_param {     /* Get Device Status input parameter */
-	u8 function_num;	/* Function Number */
-	u8 hotkey_number;	/* Hotkey Number */
-	u16 devices;		/* Get Device */
+struct wmid3_gds_get_input_param {      
+	u8 function_num;	 
+	u8 hotkey_number;	 
+	u16 devices;		 
 } __packed;
 
-struct wmid3_gds_return_value {	/* Get Device Status return value*/
-	u8 error_code;		/* Error Code */
-	u8 ec_return_value;	/* EC Return Value */
-	u16 devices;		/* Current Device Status */
+struct wmid3_gds_return_value {	 
+	u8 error_code;		 
+	u8 ec_return_value;	 
+	u16 devices;		 
 	u32 reserved;
 } __packed;
 
@@ -219,9 +179,7 @@ struct hotkey_function_type_aa {
 	u8 commun_fn_key_number;
 } __packed;
 
-/*
- * Interface capability flags
- */
+ 
 #define ACER_CAP_MAILLED		BIT(0)
 #define ACER_CAP_WIRELESS		BIT(1)
 #define ACER_CAP_BLUETOOTH		BIT(2)
@@ -233,9 +191,7 @@ struct hotkey_function_type_aa {
 #define ACER_CAP_TURBO_LED     BIT(8)
 #define ACER_CAP_TURBO_FAN     BIT(9)
 
-/*
- * Interface type flags
- */
+ 
 enum interface_flags {
 	ACER_AMW0,
 	ACER_AMW0_V2,
@@ -289,29 +245,25 @@ static struct rfkill *bluetooth_rfkill;
 static struct rfkill *threeg_rfkill;
 static bool rfkill_inited;
 
-/* Each low-level interface must define at least some of the following */
+ 
 struct wmi_interface {
-	/* The WMI device type */
+	 
 	u32 type;
 
-	/* The capabilities this interface provides */
+	 
 	u32 capability;
 
-	/* Private data for the current interface */
+	 
 	struct acer_data data;
 
-	/* debugfs entries associated with this interface */
+	 
 	struct acer_debug debug;
 };
 
-/* The static interface pointer, points to the currently detected interface */
+ 
 static struct wmi_interface *interface;
 
-/*
- * Embedded Controller quirks
- * Some laptops require us to directly access the EC to either enable or query
- * features that are not available through WMI.
- */
+ 
 
 struct quirk_entry {
 	u8 wireless;
@@ -370,7 +322,7 @@ static struct quirk_entry quirk_acer_predator_ph315_53 = {
 	.gpu_fans = 1,
 };
 
-/* This AMW0 laptop has no bluetooth */
+ 
 static struct quirk_entry quirk_medion_md_98300 = {
 	.wireless = 1,
 };
@@ -383,7 +335,7 @@ static struct quirk_entry quirk_lenovo_ideapad_s205 = {
 	.wireless = 3,
 };
 
-/* The Aspire One has a dummy ACPI-WMI interface - disable it */
+ 
 static const struct dmi_system_id acer_blacklist[] __initconst = {
 	{
 		.ident = "Acer Aspire One (SSD)",
@@ -424,10 +376,7 @@ static const struct dmi_system_id amw0_whitelist[] __initconst = {
 	{}
 };
 
-/*
- * This quirk table is only for Acer/Gateway/Packard Bell family
- * that those machines are supported by acer-wmi driver.
- */
+ 
 static const struct dmi_system_id acer_quirks[] __initconst = {
 	{
 		.callback = dmi_matched,
@@ -585,13 +534,7 @@ static const struct dmi_system_id acer_quirks[] __initconst = {
 	{}
 };
 
-/*
- * This quirk list is for those non-acer machines that have AMW0_GUID1
- * but supported by acer-wmi in past days. Keeping this quirk list here
- * is only for backward compatible. Please do not add new machine to
- * here anymore. Those non-acer machines should be supported by
- * appropriate wmi drivers.
- */
+ 
 static const struct dmi_system_id non_acer_quirks[] __initconst = {
 	{
 		.callback = dmi_matched,
@@ -659,7 +602,7 @@ static const struct dmi_system_id non_acer_quirks[] __initconst = {
 	{}
 };
 
-/* Find which quirks are needed for a particular vendor/ model pair */
+ 
 static void __init find_quirks(void)
 {
 	if (!force_series) {
@@ -673,18 +616,14 @@ static void __init find_quirks(void)
 		quirks = &quirk_unknown;
 }
 
-/*
- * General interface convenience methods
- */
+ 
 
 static bool has_cap(u32 cap)
 {
 	return interface->capability & cap;
 }
 
-/*
- * AMW0 (V1) interface
- */
+ 
 struct wmab_args {
 	u32 eax;
 	u32 ebx;
@@ -818,7 +757,7 @@ static acpi_status AMW0_set_u32(u32 value, u32 cap)
 		return AE_ERROR;
 	}
 
-	/* Actually do the set */
+	 
 	return wmab_execute(&args, NULL);
 }
 
@@ -858,7 +797,7 @@ static const struct acpi_device_id norfkill_ids[] __initconst = {
 	{ "VPC2004", 0},
 	{ "IBM0068", 0},
 	{ "LEN0068", 0},
-	{ "SNY5001", 0},	/* sony-laptop in charge */
+	{ "SNY5001", 0},	 
 	{ "HPQ6601", 0},
 	{ "", 0},
 };
@@ -882,10 +821,7 @@ static acpi_status __init AMW0_set_capabilities(void)
 	struct acpi_buffer out = { ACPI_ALLOCATE_BUFFER, NULL };
 	union acpi_object *obj;
 
-	/*
-	 * On laptops with this strange GUID (non Acer), normal probing doesn't
-	 * work.
-	 */
+	 
 	if (wmi_has_guid(AMW0_GUID2)) {
 		if ((quirks != &quirk_unknown) ||
 		    !AMW0_set_cap_acpi_check_device())
@@ -918,10 +854,7 @@ static acpi_status __init AMW0_set_capabilities(void)
 	args.ebx = 2 << 8;
 	args.ebx |= ACER_AMW0_BLUETOOTH_MASK;
 
-	/*
-	 * It's ok to use existing buffer for next wmab_execute call.
-	 * But we need to kfree(out.pointer) if next wmab_execute fail.
-	 */
+	 
 	status = wmab_execute(&args, &out);
 	if (ACPI_FAILURE(status))
 		goto out;
@@ -938,11 +871,7 @@ static acpi_status __init AMW0_set_capabilities(void)
 	if (ret.eax & 0x1)
 		interface->capability |= ACER_CAP_BLUETOOTH;
 
-	/*
-	 * This appears to be safe to enable, since all Wistron based laptops
-	 * appear to use the same EC register for brightness, even if they
-	 * differ for wireless, etc
-	 */
+	 
 	if (quirks->brightness >= 0)
 		interface->capability |= ACER_CAP_BRIGHTNESS;
 
@@ -960,9 +889,7 @@ static struct wmi_interface AMW0_V2_interface = {
 	.type = ACER_AMW0_V2,
 };
 
-/*
- * New interface (The WMID interface)
- */
+ 
 static acpi_status
 WMI_execute_u32(u32 method_id, u32 in, u32 *out)
 {
@@ -1255,7 +1182,7 @@ static void __init type_aa_dmi_decode(const struct dmi_header *header, void *d)
 {
 	struct hotkey_function_type_aa *type_aa;
 
-	/* We are looking for OEM-specific Type AAh */
+	 
 	if (header->type != 0xAA)
 		return;
 
@@ -1329,9 +1256,7 @@ static struct wmi_interface wmid_v2_interface = {
 	.type = ACER_WMID_v2,
 };
 
-/*
- * WMID Gaming interface
- */
+ 
 
 static acpi_status
 WMI_gaming_execute_u64(u32 method_id, u64 in, u64 *out)
@@ -1418,7 +1343,7 @@ static acpi_status WMID_gaming_get_u64(u64 *value, u32 cap)
 
 static void WMID_gaming_set_fan_mode(u8 fan_mode)
 {
-	/* fan_mode = 1 is used for auto, fan_mode = 2 used for turbo*/
+	 
 	u64 gpu_fan_config1 = 0, gpu_fan_config2 = 0;
 	int i;
 
@@ -1437,9 +1362,7 @@ static void WMID_gaming_set_fan_mode(u8 fan_mode)
 	WMID_gaming_set_u64(gpu_fan_config2 | gpu_fan_config1 << 16, ACER_CAP_TURBO_FAN);
 }
 
-/*
- * Generic Device (interface-independent)
- */
+ 
 
 static acpi_status get_u32(u32 *value, u32 cap)
 {
@@ -1483,12 +1406,7 @@ static acpi_status set_u32(u32 value, u32 cap)
 			if (cap == ACER_CAP_MAILLED)
 				return AMW0_set_u32(value, cap);
 
-			/*
-			 * On some models, some WMID methods don't toggle
-			 * properly. For those cases, we want to run the AMW0
-			 * method afterwards to be certain we've really toggled
-			 * the device state.
-			 */
+			 
 			if (cap == ACER_CAP_WIRELESS ||
 				cap == ACER_CAP_BLUETOOTH) {
 				status = WMID_set_u32(value, cap);
@@ -1517,10 +1435,7 @@ static acpi_status set_u32(u32 value, u32 cap)
 
 static void __init acer_commandline_init(void)
 {
-	/*
-	 * These will all fail silently if the value given is invalid, or the
-	 * capability isn't available on the given interface
-	 */
+	 
 	if (mailled >= 0)
 		set_u32(mailled, ACER_CAP_MAILLED);
 	if (!has_type_aa && threeg >= 0)
@@ -1529,9 +1444,7 @@ static void __init acer_commandline_init(void)
 		set_u32(brightness, ACER_CAP_BRIGHTNESS);
 }
 
-/*
- * LED device (Mail LED only, no other LEDs known yet)
- */
+ 
 static void mail_led_set(struct led_classdev *led_cdev,
 enum led_brightness value)
 {
@@ -1554,9 +1467,7 @@ static void acer_led_exit(void)
 	led_classdev_unregister(&mail_led);
 }
 
-/*
- * Backlight device
- */
+ 
 static struct backlight_device *acer_backlight_device;
 
 static int read_brightness(struct backlight_device *bd)
@@ -1609,9 +1520,7 @@ static void acer_backlight_exit(void)
 	backlight_device_unregister(acer_backlight_device);
 }
 
-/*
- * Accelerometer device
- */
+ 
 static acpi_handle gsensor_handle;
 
 static int acer_gsensor_init(void)
@@ -1663,51 +1572,47 @@ static int acer_gsensor_event(void)
 	return 0;
 }
 
-/*
- *  Predator series turbo button
- */
+ 
 static int acer_toggle_turbo(void)
 {
 	u64 turbo_led_state;
 
-	/* Get current state from turbo button */
+	 
 	if (ACPI_FAILURE(WMID_gaming_get_u64(&turbo_led_state, ACER_CAP_TURBO_LED)))
 		return -1;
 
 	if (turbo_led_state) {
-		/* Turn off turbo led */
+		 
 		WMID_gaming_set_u64(0x1, ACER_CAP_TURBO_LED);
 
-		/* Set FAN mode to auto */
+		 
 		WMID_gaming_set_fan_mode(0x1);
 
-		/* Set OC to normal */
+		 
 		WMID_gaming_set_u64(0x5, ACER_CAP_TURBO_OC);
 		WMID_gaming_set_u64(0x7, ACER_CAP_TURBO_OC);
 	} else {
-		/* Turn on turbo led */
+		 
 		WMID_gaming_set_u64(0x10001, ACER_CAP_TURBO_LED);
 
-		/* Set FAN mode to turbo */
+		 
 		WMID_gaming_set_fan_mode(0x2);
 
-		/* Set OC to turbo mode */
+		 
 		WMID_gaming_set_u64(0x205, ACER_CAP_TURBO_OC);
 		WMID_gaming_set_u64(0x207, ACER_CAP_TURBO_OC);
 	}
 	return turbo_led_state;
 }
 
-/*
- * Switch series keyboard dock status
- */
+ 
 static int acer_kbd_dock_state_to_sw_tablet_mode(u8 kbd_dock_state)
 {
 	switch (kbd_dock_state) {
-	case 0x01: /* Docked, traditional clamshell laptop mode */
+	case 0x01:  
 		return 0;
-	case 0x04: /* Stand-alone tablet */
-	case 0x40: /* Docked, tent mode, keyboard not usable */
+	case 0x04:  
+	case 0x40:  
 		return 1;
 	default:
 		pr_warn("Unknown kbd_dock_state 0x%02x\n", kbd_dock_state);
@@ -1764,9 +1669,7 @@ static void acer_kbd_dock_event(const struct event_return_value *event)
 	input_sync(acer_wmi_input_dev);
 }
 
-/*
- * Rfkill devices
- */
+ 
 static void acer_rfkill_update(struct work_struct *ignored);
 static DECLARE_DELAYED_WORK(acer_rfkill_work, acer_rfkill_update);
 static void acer_rfkill_update(struct work_struct *ignored)
@@ -2048,7 +1951,7 @@ static int __init acer_wmi_enable_ec_raw(void)
 		.function_num = 0x1,
 		.commun_devices = 0xFFFF,
 		.devices = 0xFFFF,
-		.app_status = 0x00,		/* Launch Manager Deactive */
+		.app_status = 0x00,		 
 		.app_mask = 0x01,
 	};
 
@@ -2072,7 +1975,7 @@ static int __init acer_wmi_enable_lm(void)
 		.function_num = 0x1,
 		.commun_devices = 0xFFFF,
 		.devices = 0xFFFF,
-		.app_status = 0x01,            /* Launch Manager Active */
+		.app_status = 0x01,             
 		.app_mask = 0x01,
 	};
 
@@ -2094,7 +1997,7 @@ static int __init acer_wmi_enable_rf_button(void)
 		.function_num = 0x1,
 		.commun_devices = 0xFFFF,
 		.devices = 0xFFFF,
-		.app_status = 0x10,            /* RF Button Active */
+		.app_status = 0x10,             
 		.app_mask = 0x10,
 	};
 
@@ -2194,9 +2097,7 @@ static void acer_wmi_input_destroy(void)
 	input_unregister_device(acer_wmi_input_dev);
 }
 
-/*
- * debugfs functions
- */
+ 
 static u32 get_wmid_devices(void)
 {
 	struct acpi_buffer out = {ACPI_ALLOCATE_BUFFER, NULL};
@@ -2223,9 +2124,7 @@ static u32 get_wmid_devices(void)
 	return devices;
 }
 
-/*
- * Platform device
- */
+ 
 static int acer_platform_probe(struct platform_device *device)
 {
 	int err;
@@ -2365,17 +2264,7 @@ static int __init acer_wmi_init(void)
 
 	find_quirks();
 
-	/*
-	 * The AMW0_GUID1 wmi is not only found on Acer family but also other
-	 * machines like Lenovo, Fujitsu and Medion. In the past days,
-	 * acer-wmi driver handled those non-Acer machines by quirks list.
-	 * But actually acer-wmi driver was loaded on any machines that have
-	 * AMW0_GUID1. This behavior is strange because those machines should
-	 * be supported by appropriate wmi drivers. e.g. fujitsu-laptop,
-	 * ideapad-laptop. So, here checks the machine that has AMW0_GUID1
-	 * should be in Acer/Gateway/Packard Bell white list, or it's already
-	 * in the past quirk list.
-	 */
+	 
 	if (wmi_has_guid(AMW0_GUID1) &&
 	    !dmi_check_system(amw0_whitelist) &&
 	    quirks == &quirk_unknown) {
@@ -2383,9 +2272,7 @@ static int __init acer_wmi_init(void)
 		return -ENODEV;
 	}
 
-	/*
-	 * Detect which ACPI-WMI interface we're using.
-	 */
+	 
 	if (wmi_has_guid(AMW0_GUID1) && wmi_has_guid(WMID_GUID1))
 		interface = &AMW0_V2_interface;
 
@@ -2403,7 +2290,7 @@ static int __init acer_wmi_init(void)
 			pr_err("Unable to detect available WMID devices\n");
 			return -ENODEV;
 		}
-		/* WMID always provides brightness methods */
+		 
 		interface->capability |= ACER_CAP_BRIGHTNESS;
 	} else if (!wmi_has_guid(WMID_GUID2) && interface && !has_type_aa && force_caps == -1) {
 		pr_err("No WMID device detection method found\n");
@@ -2486,7 +2373,7 @@ static int __init acer_wmi_init(void)
 		create_debugfs();
 	}
 
-	/* Override any initial settings with values from the commandline */
+	 
 	acer_commandline_init();
 
 	return 0;

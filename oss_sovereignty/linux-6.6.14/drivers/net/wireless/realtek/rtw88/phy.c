@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/bcd.h>
 
@@ -141,7 +140,7 @@ void rtw_phy_adaptivity_set_mode(struct rtw_dev *rtwdev)
 	const struct rtw_chip_info *chip = rtwdev->chip;
 	struct rtw_dm_info *dm_info = &rtwdev->dm_info;
 
-	/* turn off in debugfs for debug usage */
+	 
 	if (!rtw_edcca_enabled) {
 		dm_info->edcca_mode = RTW_EDCCA_NORMAL;
 		rtw_dbg(rtwdev, RTW_DBG_PHY, "EDCCA disabled, cannot be set\n");
@@ -365,7 +364,7 @@ rtw_phy_dig_check_damping(struct rtw_dm_info *dm_info)
 	igi_bitmap = dm_info->igi_bitmap & 0xf;
 	switch (igi_bitmap) {
 	case 5:
-		/* down -> up -> down -> up */
+		 
 		if (igi_history[0] > igi_history[1] &&
 		    igi_history[2] > igi_history[3] &&
 		    igi_history[0] - igi_history[1] >= 2 &&
@@ -375,7 +374,7 @@ rtw_phy_dig_check_damping(struct rtw_dm_info *dm_info)
 			damping = true;
 		break;
 	case 9:
-		/* up -> down -> down -> up */
+		 
 		if (igi_history[0] > igi_history[1] &&
 		    igi_history[3] > igi_history[2] &&
 		    igi_history[0] - igi_history[1] >= 4 &&
@@ -416,7 +415,7 @@ static void rtw_phy_dig_get_boundary(struct rtw_dev *rtwdev,
 		min_rssi = dig_min;
 	}
 
-	/* DIG MAX should be bounded by minimum RSSI with offset +15 */
+	 
 	dig_max = min_t(u8, dig_max, min_rssi + DIG_RSSI_GAIN_OFFSET);
 
 	*lower = clamp_t(u8, min_rssi, dig_min, dig_mid);
@@ -500,11 +499,7 @@ static void rtw_phy_dig(struct rtw_dev *rtwdev)
 
 	rtw_phy_dig_get_threshold(dm_info, fa_th, step, linked);
 
-	/* test the false alarm count from the highest threshold level first,
-	 * and increase it by corresponding step size
-	 *
-	 * note that the step size is offset by -2, compensate it afterall
-	 */
+	 
 	cur_igi = pre_igi;
 	for (level = 0; level < 3; level++) {
 		if (fa_cnt > fa_th[level]) {
@@ -514,17 +509,12 @@ static void rtw_phy_dig(struct rtw_dev *rtwdev)
 	}
 	cur_igi -= 2;
 
-	/* calculate the upper/lower bound by the minimum rssi we have among
-	 * the peers connected with us, meanwhile make sure the igi value does
-	 * not beyond the hardware limitation
-	 */
+	 
 	rtw_phy_dig_get_boundary(rtwdev, dm_info, &upper_bound, &lower_bound,
 				 linked);
 	cur_igi = clamp_t(u8, cur_igi, lower_bound, upper_bound);
 
-	/* record current igi value and false alarm statistics for further
-	 * damping checks, and record the trend of igi values
-	 */
+	 
 	rtw_phy_dig_recorder(dm_info, cur_igi, fa_cnt);
 
 	if (cur_igi != pre_igi)
@@ -762,7 +752,7 @@ static void rtw_phy_ra_track(struct rtw_dev *rtwdev)
 
 void rtw_phy_dynamic_mechanism(struct rtw_dev *rtwdev)
 {
-	/* for further calculation */
+	 
 	rtw_phy_statistics(rtwdev);
 	rtw_phy_dig(rtwdev);
 	rtw_phy_cck_pd(rtwdev);
@@ -800,7 +790,7 @@ static u64 rtw_phy_db_2_linear(u8 power_db)
 	else if (power_db < 1)
 		return 1;
 
-	/* 1dB ~ 96dB */
+	 
 	i = (power_db - 1) >> 3;
 	j = (power_db - 1) - (i << 3);
 
@@ -825,7 +815,7 @@ static u8 rtw_phy_linear_2_db(u64 linear)
 		}
 	}
 
-	return 96; /* maximum 96 dB */
+	return 96;  
 
 cnt:
 	if (j == 0 && i == 0)
@@ -945,7 +935,7 @@ u32 rtw_phy_read_rf_sipi(struct rtw_dev *rtwdev, enum rtw_rf_path rf_path,
 	val32 = (val32 & ~LSSI_READ_ADDR_MASK) | (addr << 23);
 	rtw_write32(rtwdev, rf_sipi_addr->hssi_2, val32);
 
-	/* toggle read edge of path A */
+	 
 	val32 = rtw_read32(rtwdev, rf_sipi_addr_a->hssi_2);
 	rtw_write32(rtwdev, rf_sipi_addr_a->hssi_2, val32 & ~LSSI_READ_EDGE_MASK);
 	rtw_write32(rtwdev, rf_sipi_addr_a->hssi_2, val32 | LSSI_READ_EDGE_MASK);
@@ -1495,13 +1485,13 @@ void rtw_parse_tbl_bb_pg(struct rtw_dev *rtwdev, const struct rtw_table *tbl)
 EXPORT_SYMBOL(rtw_parse_tbl_bb_pg);
 
 static const u8 rtw_channel_idx_5g[RTW_MAX_CHANNEL_NUM_5G] = {
-	36,  38,  40,  42,  44,  46,  48, /* Band 1 */
-	52,  54,  56,  58,  60,  62,  64, /* Band 2 */
-	100, 102, 104, 106, 108, 110, 112, /* Band 3 */
-	116, 118, 120, 122, 124, 126, 128, /* Band 3 */
-	132, 134, 136, 138, 140, 142, 144, /* Band 3 */
-	149, 151, 153, 155, 157, 159, 161, /* Band 4 */
-	165, 167, 169, 171, 173, 175, 177}; /* Band 4 */
+	36,  38,  40,  42,  44,  46,  48,  
+	52,  54,  56,  58,  60,  62,  64,  
+	100, 102, 104, 106, 108, 110, 112,  
+	116, 118, 120, 122, 124, 126, 128,  
+	132, 134, 136, 138, 140, 142, 144,  
+	149, 151, 153, 155, 157, 159, 161,  
+	165, 167, 169, 171, 173, 175, 177};  
 
 static int rtw_channel_to_idx(u8 band, u8 channel)
 {
@@ -1559,7 +1549,7 @@ static void rtw_phy_set_tx_power_limit(struct rtw_dev *rtwdev, u8 regd, u8 band,
 	}
 }
 
-/* cross-reference 5G power limits if values are not assigned */
+ 
 static void
 rtw_xref_5g_txpwr_lmt(struct rtw_dev *rtwdev, u8 regd,
 		      u8 bw, u8 ch_idx, u8 rs_ht, u8 rs_vht)
@@ -1579,7 +1569,7 @@ rtw_xref_5g_txpwr_lmt(struct rtw_dev *rtwdev, u8 regd,
 		hal->tx_pwr_limit_5g[regd][bw][rs_vht][ch_idx] = lmt_ht;
 }
 
-/* cross-reference power limits for ht and vht */
+ 
 static void
 rtw_xref_txpwr_lmt_by_rs(struct rtw_dev *rtwdev, u8 regd, u8 bw, u8 ch_idx)
 {
@@ -1595,7 +1585,7 @@ rtw_xref_txpwr_lmt_by_rs(struct rtw_dev *rtwdev, u8 regd, u8 bw, u8 ch_idx)
 	}
 }
 
-/* cross-reference power limits for 5G channels */
+ 
 static void
 rtw_xref_5g_txpwr_lmt_by_ch(struct rtw_dev *rtwdev, u8 regd, u8 bw)
 {
@@ -1605,7 +1595,7 @@ rtw_xref_5g_txpwr_lmt_by_ch(struct rtw_dev *rtwdev, u8 regd, u8 bw)
 		rtw_xref_txpwr_lmt_by_rs(rtwdev, regd, bw, ch_idx);
 }
 
-/* cross-reference power limits for 20/40M bandwidth */
+ 
 static void
 rtw_xref_txpwr_lmt_by_bw(struct rtw_dev *rtwdev, u8 regd)
 {
@@ -1615,7 +1605,7 @@ rtw_xref_txpwr_lmt_by_bw(struct rtw_dev *rtwdev, u8 regd)
 		rtw_xref_5g_txpwr_lmt_by_ch(rtwdev, regd, bw);
 }
 
-/* cross-reference power limits */
+ 
 static void rtw_xref_txpwr_lmt(struct rtw_dev *rtwdev)
 {
 	u8 regd;
@@ -1937,7 +1927,7 @@ static u8 rtw_phy_get_2g_tx_power_index(struct rtw_dev *rtwdev,
 			tx_power += pwr_idx_2g->ht_2s_diff.bw20 * factor;
 		break;
 	case RTW_CHANNEL_WIDTH_40:
-		/* bw40 is the base power */
+		 
 		if (above_2ss)
 			tx_power += pwr_idx_2g->ht_2s_diff.bw40 * factor;
 		break;
@@ -1981,12 +1971,12 @@ static u8 rtw_phy_get_5g_tx_power_index(struct rtw_dev *rtwdev,
 			tx_power += pwr_idx_5g->ht_2s_diff.bw20 * factor;
 		break;
 	case RTW_CHANNEL_WIDTH_40:
-		/* bw40 is the base power */
+		 
 		if (above_2ss)
 			tx_power += pwr_idx_5g->ht_2s_diff.bw40 * factor;
 		break;
 	case RTW_CHANNEL_WIDTH_80:
-		/* the base idx of bw80 is the average of bw40+/bw40- */
+		 
 		lower = pwr_idx_5g->bw40_base[group];
 		upper = pwr_idx_5g->bw40_base[group + 1];
 
@@ -2000,7 +1990,7 @@ static u8 rtw_phy_get_5g_tx_power_index(struct rtw_dev *rtwdev,
 	return tx_power;
 }
 
-/* return RTW_RATE_SECTION_MAX to indicate rate is invalid */
+ 
 static u8 rtw_phy_rate_to_rate_section(u8 rate)
 {
 	if (rate >= DESC_RATE1M && rate <= DESC_RATE11M)
@@ -2037,15 +2027,15 @@ static s8 rtw_phy_get_tx_power_limit(struct rtw_dev *rtwdev, u8 band,
 	if (rs == RTW_RATE_SECTION_MAX)
 		goto err;
 
-	/* only 20M BW with cck and ofdm */
+	 
 	if (rs == RTW_RATE_SECTION_CCK || rs == RTW_RATE_SECTION_OFDM)
 		bw = RTW_CHANNEL_WIDTH_20;
 
-	/* only 20/40M BW with ht */
+	 
 	if (rs == RTW_RATE_SECTION_HT_1S || rs == RTW_RATE_SECTION_HT_2S)
 		bw = min_t(u8, bw, RTW_CHANNEL_WIDTH_40);
 
-	/* select min power limit among [20M BW ~ current BW] */
+	 
 	for (cur_bw = RTW_CHANNEL_WIDTH_20; cur_bw <= bw; cur_bw++) {
 		cur_ch = cch_by_bw[cur_bw];
 
@@ -2105,7 +2095,7 @@ void rtw_get_tx_power_params(struct rtw_dev *rtwdev, u8 path, u8 rate, u8 bw,
 	pwr_idx = &rtwdev->efuse.txpwr_idx_table[path];
 	group = rtw_get_channel_group(ch, rate);
 
-	/* base power index for 2.4G/5G */
+	 
 	if (IS_CH_2G_BAND(ch)) {
 		band = PHY_BAND_2G;
 		*base = rtw_phy_get_2g_tx_power_index(rtwdev,
@@ -2181,18 +2171,14 @@ static void rtw_phy_set_tx_power_index_by_rs(struct rtw_dev *rtwdev,
 	}
 }
 
-/* set tx power level by path for each rates, note that the order of the rates
- * are *very* important, bacause 8822B/8821C combines every four bytes of tx
- * power index into a four-byte power index register, and calls set_tx_agc to
- * write these values into hardware
- */
+ 
 static void rtw_phy_set_tx_power_level_by_path(struct rtw_dev *rtwdev,
 					       u8 ch, u8 path)
 {
 	struct rtw_hal *hal = &rtwdev->hal;
 	u8 rs;
 
-	/* do not need cck rates if we are not in 2.4G */
+	 
 	if (hal->current_band_type == RTW_BAND_2G)
 		rs = RTW_RATE_SECTION_CCK;
 	else
@@ -2288,7 +2274,7 @@ void rtw_phy_tx_power_limit_config(struct rtw_hal *hal)
 {
 	u8 regd, bw, rs;
 
-	/* default at channel 1 */
+	 
 	hal->cch_by_bw[RTW_CHANNEL_WIDTH_20] = 1;
 
 	for (regd = 0; regd < RTW_REGD_MAX; regd++)
@@ -2304,11 +2290,11 @@ static void rtw_phy_init_tx_power_limit(struct rtw_dev *rtwdev,
 	s8 max_power_index = (s8)rtwdev->chip->max_power_index;
 	u8 ch;
 
-	/* 2.4G channels */
+	 
 	for (ch = 0; ch < RTW_MAX_CHANNEL_NUM_2G; ch++)
 		hal->tx_pwr_limit_2g[regd][bw][rs][ch] = max_power_index;
 
-	/* 5G channels */
+	 
 	for (ch = 0; ch < RTW_MAX_CHANNEL_NUM_5G; ch++)
 		hal->tx_pwr_limit_5g[regd][bw][rs][ch] = max_power_index;
 }
@@ -2318,7 +2304,7 @@ void rtw_phy_init_tx_power(struct rtw_dev *rtwdev)
 	struct rtw_hal *hal = &rtwdev->hal;
 	u8 regd, path, rate, rs, bw;
 
-	/* init tx power by rate offset */
+	 
 	for (path = 0; path < RTW_RF_PATH_MAX; path++) {
 		for (rate = 0; rate < DESC_RATE_MAX; rate++) {
 			hal->tx_pwr_by_rate_offset_2g[path][rate] = 0;
@@ -2326,7 +2312,7 @@ void rtw_phy_init_tx_power(struct rtw_dev *rtwdev)
 		}
 	}
 
-	/* init tx power limit */
+	 
 	for (regd = 0; regd < RTW_REGD_MAX; regd++)
 		for (bw = 0; bw < RTW_CHANNEL_WIDTH_MAX; bw++)
 			for (rs = 0; rs < RTW_RATE_SECTION_MAX; rs++)

@@ -1,12 +1,4 @@
-/*
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- *
- * Copyright (C) 2012 Cavium, Inc.
- * Copyright (C) 2009 Wind River Systems,
- *   written by Ralf Baechle <ralf@linux-mips.org>
- */
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -25,34 +17,34 @@ static void octeon_pci_poll(struct edac_pci_ctl_info *pci)
 	union cvmx_pci_cfg01 cfg01;
 
 	cfg01.u32 = octeon_npi_read32(CVMX_NPI_PCI_CFG01);
-	if (cfg01.s.dpe) {		/* Detected parity error */
+	if (cfg01.s.dpe) {		 
 		edac_pci_handle_pe(pci, pci->ctl_name);
-		cfg01.s.dpe = 1;		/* Reset  */
+		cfg01.s.dpe = 1;		 
 		octeon_npi_write32(CVMX_NPI_PCI_CFG01, cfg01.u32);
 	}
 	if (cfg01.s.sse) {
 		edac_pci_handle_npe(pci, "Signaled System Error");
-		cfg01.s.sse = 1;		/* Reset */
+		cfg01.s.sse = 1;		 
 		octeon_npi_write32(CVMX_NPI_PCI_CFG01, cfg01.u32);
 	}
 	if (cfg01.s.rma) {
 		edac_pci_handle_npe(pci, "Received Master Abort");
-		cfg01.s.rma = 1;		/* Reset */
+		cfg01.s.rma = 1;		 
 		octeon_npi_write32(CVMX_NPI_PCI_CFG01, cfg01.u32);
 	}
 	if (cfg01.s.rta) {
 		edac_pci_handle_npe(pci, "Received Target Abort");
-		cfg01.s.rta = 1;		/* Reset */
+		cfg01.s.rta = 1;		 
 		octeon_npi_write32(CVMX_NPI_PCI_CFG01, cfg01.u32);
 	}
 	if (cfg01.s.sta) {
 		edac_pci_handle_npe(pci, "Signaled Target Abort");
-		cfg01.s.sta = 1;		/* Reset */
+		cfg01.s.sta = 1;		 
 		octeon_npi_write32(CVMX_NPI_PCI_CFG01, cfg01.u32);
 	}
 	if (cfg01.s.mdpe) {
 		edac_pci_handle_npe(pci, "Master Data Parity Error");
-		cfg01.s.mdpe = 1;		/* Reset */
+		cfg01.s.mdpe = 1;		 
 		octeon_npi_write32(CVMX_NPI_PCI_CFG01, cfg01.u32);
 	}
 }

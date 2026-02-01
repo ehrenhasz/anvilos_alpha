@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/nfs/callback_xdr.c
- *
- * Copyright (C) 2004 Trond Myklebust
- *
- * NFSv4 callback encode/decode procedures
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/sunrpc/svc.h>
 #include <linux/nfs4.h>
@@ -21,11 +15,11 @@
 #include "nfs4trace.h"
 
 #define CB_OP_TAGLEN_MAXSZ		(512)
-#define CB_OP_HDR_RES_MAXSZ		(2 * 4) // opcode, status
-#define CB_OP_GETATTR_BITMAP_MAXSZ	(4 * 4) // bitmap length, 3 bitmaps
+#define CB_OP_HDR_RES_MAXSZ		(2 * 4) 
+#define CB_OP_GETATTR_BITMAP_MAXSZ	(4 * 4) 
 #define CB_OP_GETATTR_RES_MAXSZ		(CB_OP_HDR_RES_MAXSZ + \
 					 CB_OP_GETATTR_BITMAP_MAXSZ + \
-					 /* change, size, ctime, mtime */\
+					  \
 					 (2 + 2 + 3 + 3) * 4)
 #define CB_OP_RECALL_RES_MAXSZ		(CB_OP_HDR_RES_MAXSZ)
 
@@ -34,18 +28,18 @@
 #define CB_OP_DEVICENOTIFY_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
 #define CB_OP_SEQUENCE_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ + \
 					 NFS4_MAX_SESSIONID_LEN + \
-					 (1 + 3) * 4) // seqid, 3 slotids
+					 (1 + 3) * 4) 
 #define CB_OP_RECALLANY_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
 #define CB_OP_RECALLSLOT_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
 #define CB_OP_NOTIFY_LOCK_RES_MAXSZ	(CB_OP_HDR_RES_MAXSZ)
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 #ifdef CONFIG_NFS_V4_2
 #define CB_OP_OFFLOAD_RES_MAXSZ		(CB_OP_HDR_RES_MAXSZ)
-#endif /* CONFIG_NFS_V4_2 */
+#endif  
 
 #define NFSDBG_FACILITY NFSDBG_CALLBACK
 
-/* Internal error code */
+ 
 #define NFS4ERR_RESOURCE_HDR	11050
 
 struct callback_op {
@@ -63,10 +57,7 @@ static __be32 nfs4_callback_null(struct svc_rqst *rqstp)
 	return htonl(NFS4_OK);
 }
 
-/*
- * svc_process_common() looks for an XDR encoder to know when
- * not to drop a Reply.
- */
+ 
 static bool nfs4_encode_void(struct svc_rqst *rqstp, struct xdr_stream *xdr)
 {
 	return true;
@@ -150,9 +141,9 @@ static __be32 decode_compound_hdr_arg(struct xdr_stream *xdr, struct cb_compound
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_RESOURCE);
 	hdr->minorversion = ntohl(*p++);
-	/* Check for minor version support */
+	 
 	if (hdr->minorversion <= NFS4_MAX_MINOR_VERSION) {
-		hdr->cb_ident = ntohl(*p++); /* ignored by v4.1 and v4.2 */
+		hdr->cb_ident = ntohl(*p++);  
 	} else {
 		pr_warn_ratelimited("NFS: %s: NFSv4 server callback with "
 			"illegal minor version %u!\n",
@@ -222,9 +213,7 @@ static __be32 decode_layoutrecall_args(struct svc_rqst *rqstp,
 		return htonl(NFS4ERR_BADXDR);
 
 	args->cbl_layout_type = ntohl(*p++);
-	/* Depite the spec's xdr, iomode really belongs in the FILE switch,
-	 * as it is unusable and ignored with the other types.
-	 */
+	 
 	iomode = ntohl(*p++);
 	args->cbl_layoutchanged = ntohl(*p++);
 	args->cbl_recall_type = ntohl(*p++);
@@ -262,7 +251,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 	__be32 *p;
 	__be32 status = 0;
 
-	/* Num of device notifications */
+	 
 	p = xdr_inline_decode(xdr, sizeof(uint32_t));
 	if (unlikely(p == NULL)) {
 		status = htonl(NFS4ERR_BADXDR);
@@ -278,7 +267,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 		goto out;
 	}
 
-	/* Decode each dev notification */
+	 
 	for (i = 0; i < n; i++) {
 		struct cb_devicenotifyitem *dev = &args->devs[i];
 
@@ -289,7 +278,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 			goto err;
 		}
 
-		tmp = ntohl(*p++);	/* bitmap size */
+		tmp = ntohl(*p++);	 
 		if (tmp != 1) {
 			status = htonl(NFS4ERR_INVAL);
 			goto err;
@@ -301,7 +290,7 @@ __be32 decode_devicenotify_args(struct svc_rqst *rqstp,
 			goto err;
 		}
 
-		tmp = ntohl(*p++);	/* opaque size */
+		tmp = ntohl(*p++);	 
 		if (((dev->cbd_notify_type == NOTIFY_DEVICEID4_CHANGE) &&
 		     (tmp != NFS4_DEVICEID4_SIZE + 8)) ||
 		    ((dev->cbd_notify_type == NOTIFY_DEVICEID4_DELETE) &&
@@ -490,9 +479,9 @@ static __be32 decode_lockowner(struct xdr_stream *xdr, struct cb_notify_lock_arg
 	if (unlikely(p == NULL))
 		return htonl(NFS4ERR_BADXDR);
 
-	/* Only try to decode if the length is right */
+	 
 	if (len == 20) {
-		p += 2;	/* skip "lock id:" */
+		p += 2;	 
 		args->cbnl_owner.s_dev = be32_to_cpu(*p++);
 		xdr_decode_hyper(p, &args->cbnl_owner.id);
 		args->cbnl_valid = true;
@@ -516,20 +505,20 @@ static __be32 decode_notify_lock_args(struct svc_rqst *rqstp,
 	return decode_lockowner(xdr, args);
 }
 
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 #ifdef CONFIG_NFS_V4_2
 static __be32 decode_write_response(struct xdr_stream *xdr,
 					struct cb_offloadargs *args)
 {
 	__be32 *p;
 
-	/* skip the always zero field */
+	 
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
 		goto out;
 	p++;
 
-	/* decode count, stable_how, verifier */
+	 
 	p = xdr_inline_decode(xdr, 8 + 4);
 	if (unlikely(!p))
 		goto out;
@@ -553,17 +542,17 @@ static __be32 decode_offload_args(struct svc_rqst *rqstp,
 	__be32 *p;
 	__be32 status;
 
-	/* decode fh */
+	 
 	status = decode_fh(xdr, &args->coa_fh);
 	if (unlikely(status != 0))
 		return status;
 
-	/* decode stateid */
+	 
 	status = decode_stateid(xdr, &args->coa_stateid);
 	if (unlikely(status != 0))
 		return status;
 
-	/* decode status */
+	 
 	p = xdr_inline_decode(xdr, 4);
 	if (unlikely(!p))
 		goto out;
@@ -582,7 +571,7 @@ static __be32 decode_offload_args(struct svc_rqst *rqstp,
 out:
 	return htonl(NFS4ERR_RESOURCE);
 }
-#endif /* CONFIG_NFS_V4_2 */
+#endif  
 static __be32 encode_string(struct xdr_stream *xdr, unsigned int len, const char *str)
 {
 	if (unlikely(xdr_stream_encode_opaque(xdr, str, len) < 0))
@@ -791,10 +780,7 @@ static void nfs4_callback_free_slot(struct nfs4_session *session,
 	struct nfs4_slot_table *tbl = &session->bc_slot_table;
 
 	spin_lock(&tbl->slot_tbl_lock);
-	/*
-	 * Let the state manager know callback processing done.
-	 * A single slot, so highest used slotid is either 0 or -1
-	 */
+	 
 	nfs4_free_slot(tbl, slot);
 	spin_unlock(&tbl->slot_tbl_lock);
 }
@@ -807,7 +793,7 @@ static void nfs4_cb_free_slot(struct cb_process_state *cps)
 	}
 }
 
-#else /* CONFIG_NFS_V4_1 */
+#else  
 
 static __be32
 preprocess_nfs41_op(int nop, unsigned int op_nr, struct callback_op **op)
@@ -818,7 +804,7 @@ preprocess_nfs41_op(int nop, unsigned int op_nr, struct callback_op **op)
 static void nfs4_cb_free_slot(struct cb_process_state *cps)
 {
 }
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 
 #ifdef CONFIG_NFS_V4_2
 static __be32
@@ -835,13 +821,13 @@ preprocess_nfs42_op(int nop, unsigned int op_nr, struct callback_op **op)
 		return htonl(NFS4ERR_NOTSUPP);
 	return htonl(NFS4ERR_OP_ILLEGAL);
 }
-#else /* CONFIG_NFS_V4_2 */
+#else  
 static __be32
 preprocess_nfs42_op(int nop, unsigned int op_nr, struct callback_op **op)
 {
 	return htonl(NFS4ERR_MINOR_VERS_MISMATCH);
 }
-#endif /* CONFIG_NFS_V4_2 */
+#endif  
 
 static __be32
 preprocess_nfs4_op(unsigned int op_nr, struct callback_op **op)
@@ -915,9 +901,7 @@ encode_hdr:
 	return status;
 }
 
-/*
- * Decode, process and encode a COMPOUND
- */
+ 
 static __be32 nfs4_callback_compound(struct svc_rqst *rqstp)
 {
 	struct cb_compound_hdr_arg hdr_arg = { 0 };
@@ -960,8 +944,7 @@ static __be32 nfs4_callback_compound(struct svc_rqst *rqstp)
 		nops++;
 	}
 
-	/* Buffer overflow in decode_ops_hdr or encode_ops_hdr. Return
-	* resource error in cb_compound status without returning op */
+	 
 	if (unlikely(status == htonl(NFS4ERR_RESOURCE_HDR))) {
 		status = htonl(NFS4ERR_RESOURCE);
 		nops--;
@@ -988,9 +971,7 @@ nfs_callback_dispatch(struct svc_rqst *rqstp)
 	return 1;
 }
 
-/*
- * Define NFS4 callback COMPOUND ops.
- */
+ 
 static struct callback_op callback_ops[] = {
 	[0] = {
 		.res_maxsize = CB_OP_HDR_RES_MAXSZ,
@@ -1038,19 +1019,17 @@ static struct callback_op callback_ops[] = {
 		.decode_args = decode_notify_lock_args,
 		.res_maxsize = CB_OP_NOTIFY_LOCK_RES_MAXSZ,
 	},
-#endif /* CONFIG_NFS_V4_1 */
+#endif  
 #ifdef CONFIG_NFS_V4_2
 	[OP_CB_OFFLOAD] = {
 		.process_op = nfs4_callback_offload,
 		.decode_args = decode_offload_args,
 		.res_maxsize = CB_OP_OFFLOAD_RES_MAXSZ,
 	},
-#endif /* CONFIG_NFS_V4_2 */
+#endif  
 };
 
-/*
- * Define NFS4 callback procedures
- */
+ 
 static const struct svc_procedure nfs4_callback_procedures1[] = {
 	[CB_NULL] = {
 		.pc_func = nfs4_callback_null,

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * maxim_thermocouple.c  - Support for Maxim thermocouple chips
- *
- * Copyright (C) 2016-2018 Matt Ranostay
- * Author: <matt.ranostay@konsulko.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/mod_devicetable.h>
@@ -38,7 +33,7 @@ static const char maxim_tc_types[] = {
 };
 
 static const struct iio_chan_spec max6675_channels[] = {
-	{	/* thermocouple temperature */
+	{	 
 		.type = IIO_TEMP,
 		.info_mask_separate =
 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE) |
@@ -56,7 +51,7 @@ static const struct iio_chan_spec max6675_channels[] = {
 };
 
 static const struct iio_chan_spec max31855_channels[] = {
-	{	/* thermocouple temperature */
+	{	 
 		.type = IIO_TEMP,
 		.address = 2,
 		.info_mask_separate =
@@ -71,7 +66,7 @@ static const struct iio_chan_spec max31855_channels[] = {
 			.endianness = IIO_BE,
 		},
 	},
-	{	/* cold junction temperature */
+	{	 
 		.type = IIO_TEMP,
 		.address = 0,
 		.channel2 = IIO_MOD_TEMP_AMBIENT,
@@ -98,7 +93,7 @@ struct maxim_thermocouple_chip {
 	u8 num_channels;
 	u8 read_size;
 
-	/* bit-check for valid input */
+	 
 	u32 status_bit;
 };
 
@@ -151,7 +146,7 @@ static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
 	if (ret)
 		return ret;
 
-	/* check to be sure this is a valid reading */
+	 
 	if (*val & data->chip->status_bit)
 		return -EINVAL;
 
@@ -202,11 +197,11 @@ static int maxim_thermocouple_read_raw(struct iio_dev *indio_dev,
 		switch (chan->channel2) {
 		case IIO_MOD_TEMP_AMBIENT:
 			*val = 62;
-			*val2 = 500000; /* 1000 * 0.0625 */
+			*val2 = 500000;  
 			ret = IIO_VAL_INT_PLUS_MICRO;
 			break;
 		default:
-			*val = 250; /* 1000 * 0.25 */
+			*val = 250;  
 			ret = IIO_VAL_INT;
 		}
 		break;

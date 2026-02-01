@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom SATA3 AHCI Controller PHY Driver
- *
- * Copyright (C) 2016 Broadcom
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -21,15 +17,13 @@
 
 #define MAX_PORTS					2
 
-/* Register offset between PHYs in PCB space */
+ 
 #define SATA_PCB_REG_28NM_SPACE_SIZE			0x1000
 
-/* The older SATA PHY registers duplicated per port registers within the map,
- * rather than having a separate map per port.
- */
+ 
 #define SATA_PCB_REG_40NM_SPACE_SIZE			0x10
 
-/* Register offset between PHYs in PHY control space */
+ 
 #define SATA_PHY_CTRL_REG_28NM_SPACE_SIZE		0x8
 
 enum brcm_sata_phy_version {
@@ -240,7 +234,7 @@ static u32 brcm_sata_phy_rd(struct brcm_sata_port *port, u32 bank, u32 ofs)
 	return readl(pcb_base + SATA_PCB_REG_OFFSET(ofs));
 }
 
-/* These defaults were characterized by H/W group */
+ 
 #define STB_FMIN_VAL_DEFAULT	0x3df
 #define STB_FMAX_VAL_DEFAULT	0x3df
 #define STB_FMAX_VAL_SSC	0x83
@@ -250,16 +244,16 @@ static void brcm_stb_sata_ssc_init(struct brcm_sata_port *port)
 	struct brcm_sata_phy *priv = port->phy_priv;
 	u32 tmp;
 
-	/* override the TX spread spectrum setting */
+	 
 	tmp = TXPMD_CONTROL1_TX_SSC_EN_FRC_VAL | TXPMD_CONTROL1_TX_SSC_EN_FRC;
 	brcm_sata_phy_wr(port, TXPMD_REG_BANK, TXPMD_CONTROL1, ~tmp, tmp);
 
-	/* set fixed min freq */
+	 
 	brcm_sata_phy_wr(port, TXPMD_REG_BANK, TXPMD_TX_FREQ_CTRL_CONTROL2,
 			 ~TXPMD_TX_FREQ_CTRL_CONTROL2_FMIN_MASK,
 			 STB_FMIN_VAL_DEFAULT);
 
-	/* set fixed max freq depending on SSC config */
+	 
 	if (port->ssc_en) {
 		dev_info(priv->dev, "enabling SSC on port%d\n", port->portnum);
 		tmp = STB_FMAX_VAL_SSC;
@@ -313,20 +307,20 @@ static int brcm_stb_sata_16nm_ssc_init(struct brcm_sata_port *port)
 {
 	u32 tmp, value;
 
-	/* Reduce CP tail current to 1/16th of its default value */
+	 
 	brcm_sata_phy_wr(port, PLL1_REG_BANK, PLL1_ACTRL6, 0, 0x141);
 
-	/* Turn off CP tail current boost */
+	 
 	brcm_sata_phy_wr(port, PLL1_REG_BANK, PLL1_ACTRL8, 0, 0xc006);
 
-	/* Set a specific AEQ equalizer value */
+	 
 	tmp = AEQ_FRC_EQ_FORCE_VAL | AEQ_FRC_EQ_FORCE;
 	brcm_sata_phy_wr(port, AEQRX_REG_BANK_0, AEQ_FRC_EQ,
 			 ~(tmp | AEQ_RFZ_FRC_VAL |
 			   AEQ_FRC_EQ_VAL_MASK << AEQ_FRC_EQ_VAL_SHIFT),
 			 tmp | 32 << AEQ_FRC_EQ_VAL_SHIFT);
 
-	/* Set RX PPM val center frequency */
+	 
 	if (port->ssc_en)
 		value = 0x52;
 	else
@@ -334,7 +328,7 @@ static int brcm_stb_sata_16nm_ssc_init(struct brcm_sata_port *port)
 	brcm_sata_phy_wr(port, RXPMD_REG_BANK, RXPMD_RX_CDR_CONTROL1,
 			 ~RXPMD_RX_PPM_VAL_MASK, value);
 
-	/* Set proportional loop bandwith Gen1/2/3 */
+	 
 	tmp = RXPMD_G_CDR_PROP_BW_MASK << RXPMD_G1_CDR_PROP_BW_SHIFT |
 	      RXPMD_G_CDR_PROP_BW_MASK << RXPMD_G2_CDR_PROP_BW_SHIFT |
 	      RXPMD_G_CDR_PROP_BW_MASK << RXPMD_G3_CDR_PROB_BW_SHIFT;
@@ -349,7 +343,7 @@ static int brcm_stb_sata_16nm_ssc_init(struct brcm_sata_port *port)
 	brcm_sata_phy_wr(port, RXPMD_REG_BANK, RXPMD_RX_CDR_CDR_PROP_BW, ~tmp,
 			 value);
 
-	/* Set CDR integral loop acquisition bandwidth for Gen1/2/3 */
+	 
 	tmp = RXPMD_G_CDR_ACQ_INT_BW_MASK << RXPMD_G1_CDR_ACQ_INT_BW_SHIFT |
 	      RXPMD_G_CDR_ACQ_INT_BW_MASK << RXPMD_G2_CDR_ACQ_INT_BW_SHIFT |
 	      RXPMD_G_CDR_ACQ_INT_BW_MASK << RXPMD_G3_CDR_ACQ_INT_BW_SHIFT;
@@ -362,7 +356,7 @@ static int brcm_stb_sata_16nm_ssc_init(struct brcm_sata_port *port)
 	brcm_sata_phy_wr(port, RXPMD_REG_BANK, RXPMD_RX_CDR_CDR_ACQ_INTEG_BW,
 			 ~tmp, value);
 
-	/* Set CDR integral loop locking bandwidth to 1 for Gen 1/2/3 */
+	 
 	tmp = RXPMD_G_CDR_LOCK_INT_BW_MASK << RXPMD_G1_CDR_LOCK_INT_BW_SHIFT |
 	      RXPMD_G_CDR_LOCK_INT_BW_MASK << RXPMD_G2_CDR_LOCK_INT_BW_SHIFT |
 	      RXPMD_G_CDR_LOCK_INT_BW_MASK << RXPMD_G3_CDR_LOCK_INT_BW_SHIFT;
@@ -375,7 +369,7 @@ static int brcm_stb_sata_16nm_ssc_init(struct brcm_sata_port *port)
 	brcm_sata_phy_wr(port, RXPMD_REG_BANK, RXPMD_RX_CDR_CDR_LOCK_INTEG_BW,
 			 ~tmp, value);
 
-	/* Set no guard band and clamp CDR */
+	 
 	tmp = RXPMD_MON_CORRECT_EN | RXPMD_MON_MARGIN_VAL_MASK;
 	if (port->ssc_en)
 		value = 0x51;
@@ -407,7 +401,7 @@ static int brcm_stb_sata_16nm_ssc_init(struct brcm_sata_port *port)
 		brcm_sata_phy_wr(port, BLOCK1_REG_BANK, BLOCK1_TEST_TX, ~tmp,
 				 value);
 
-	/* Turn on/off SSC */
+	 
 	brcm_sata_phy_wr(port, TX_REG_BANK, TX_ACTRL5, ~TX_ACTRL5_SSC_EN,
 			 port->ssc_en ? TX_ACTRL5_SSC_EN : 0);
 
@@ -419,7 +413,7 @@ static int brcm_stb_sata_16nm_init(struct brcm_sata_port *port)
 	return brcm_stb_sata_16nm_ssc_init(port);
 }
 
-/* NS2 SATA PLL1 defaults were characterized by H/W group */
+ 
 #define NS2_PLL1_ACTRL2_MAGIC	0x1df8
 #define NS2_PLL1_ACTRL3_MAGIC	0x2b00
 #define NS2_PLL1_ACTRL4_MAGIC	0x8824
@@ -431,7 +425,7 @@ static int brcm_ns2_sata_init(struct brcm_sata_port *port)
 	void __iomem *ctrl_base = brcm_sata_ctrl_base(port);
 	struct device *dev = port->phy_priv->dev;
 
-	/* Configure OOB control */
+	 
 	val = 0x0;
 	val |= (0xc << OOB_CTRL1_BURST_MAX_SHIFT);
 	val |= (0x4 << OOB_CTRL1_BURST_MIN_SHIFT);
@@ -444,7 +438,7 @@ static int brcm_ns2_sata_init(struct brcm_sata_port *port)
 	val |= (0x9 << OOB_CTRL2_RESET_IDLE_MIN_SHIFT);
 	brcm_sata_phy_wr(port, OOB_REG_BANK, OOB_CTRL2, 0x0, val);
 
-	/* Configure PHY PLL register bank 1 */
+	 
 	val = NS2_PLL1_ACTRL2_MAGIC;
 	brcm_sata_phy_wr(port, PLL1_REG_BANK, PLL1_ACTRL2, 0x0, val);
 	val = NS2_PLL1_ACTRL3_MAGIC;
@@ -452,19 +446,19 @@ static int brcm_ns2_sata_init(struct brcm_sata_port *port)
 	val = NS2_PLL1_ACTRL4_MAGIC;
 	brcm_sata_phy_wr(port, PLL1_REG_BANK, PLL1_ACTRL4, 0x0, val);
 
-	/* Configure PHY BLOCK0 register bank */
-	/* Set oob_clk_sel to refclk/2 */
+	 
+	 
 	brcm_sata_phy_wr(port, BLOCK0_REG_BANK, BLOCK0_SPARE,
 			 ~BLOCK0_SPARE_OOB_CLK_SEL_MASK,
 			 BLOCK0_SPARE_OOB_CLK_SEL_REFBY2);
 
-	/* Strobe PHY reset using PHY control register */
+	 
 	writel(PHY_CTRL_1_RESET, ctrl_base + PHY_CTRL_1);
 	mdelay(1);
 	writel(0x0, ctrl_base + PHY_CTRL_1);
 	mdelay(1);
 
-	/* Wait for PHY PLL lock by polling pll_lock bit */
+	 
 	try = 50;
 	while (try) {
 		val = brcm_sata_phy_rd(port, BLOCK0_REG_BANK,
@@ -475,7 +469,7 @@ static int brcm_ns2_sata_init(struct brcm_sata_port *port)
 		try--;
 	}
 	if (!try) {
-		/* PLL did not lock; give up */
+		 
 		dev_err(dev, "port%d PLL did not lock\n", port->portnum);
 		return -ETIMEDOUT;
 	}
@@ -491,7 +485,7 @@ static int brcm_nsp_sata_init(struct brcm_sata_port *port)
 	unsigned int oob_bank;
 	unsigned int val, try;
 
-	/* Configure OOB control */
+	 
 	if (port->portnum == 0)
 		oob_bank = OOB_REG_BANK;
 	else if (port->portnum == 1)
@@ -530,7 +524,7 @@ static int brcm_nsp_sata_init(struct brcm_sata_port *port)
 	brcm_sata_phy_wr(port, PLL_REG_BANK_0, PLL_REG_BANK_0_PLLCONTROL_0,
 								~val, val);
 
-	/* Wait for pll_seq_done bit */
+	 
 	try = 50;
 	while (--try) {
 		val = brcm_sata_phy_rd(port, BLOCK0_REG_BANK,
@@ -540,7 +534,7 @@ static int brcm_nsp_sata_init(struct brcm_sata_port *port)
 		msleep(20);
 	}
 	if (!try) {
-		/* PLL did not lock; give up */
+		 
 		dev_err(dev, "port%d PLL did not lock\n", port->portnum);
 		return -ETIMEDOUT;
 	}
@@ -550,10 +544,10 @@ static int brcm_nsp_sata_init(struct brcm_sata_port *port)
 	return 0;
 }
 
-/* SR PHY PLL0 registers */
+ 
 #define SR_PLL0_ACTRL6_MAGIC			0xa
 
-/* SR PHY PLL1 registers */
+ 
 #define SR_PLL1_ACTRL2_MAGIC			0x32
 #define SR_PLL1_ACTRL3_MAGIC			0x2
 #define SR_PLL1_ACTRL4_MAGIC			0x3e8
@@ -563,7 +557,7 @@ static int brcm_sr_sata_init(struct brcm_sata_port *port)
 	struct device *dev = port->phy_priv->dev;
 	unsigned int val, try;
 
-	/* Configure PHY PLL register bank 1 */
+	 
 	val = SR_PLL1_ACTRL2_MAGIC;
 	brcm_sata_phy_wr(port, PLL1_REG_BANK, PLL1_ACTRL2, 0x0, val);
 	val = SR_PLL1_ACTRL3_MAGIC;
@@ -571,11 +565,11 @@ static int brcm_sr_sata_init(struct brcm_sata_port *port)
 	val = SR_PLL1_ACTRL4_MAGIC;
 	brcm_sata_phy_wr(port, PLL1_REG_BANK, PLL1_ACTRL4, 0x0, val);
 
-	/* Configure PHY PLL register bank 0 */
+	 
 	val = SR_PLL0_ACTRL6_MAGIC;
 	brcm_sata_phy_wr(port, PLL_REG_BANK_0, PLL_ACTRL6, 0x0, val);
 
-	/* Wait for PHY PLL lock by polling pll_lock bit */
+	 
 	try = 50;
 	do {
 		val = brcm_sata_phy_rd(port, BLOCK0_REG_BANK,
@@ -587,16 +581,16 @@ static int brcm_sr_sata_init(struct brcm_sata_port *port)
 	} while (try);
 
 	if ((val & BLOCK0_XGXSSTATUS_PLL_LOCK) == 0) {
-		/* PLL did not lock; give up */
+		 
 		dev_err(dev, "port%d PLL did not lock\n", port->portnum);
 		return -ETIMEDOUT;
 	}
 
-	/* Invert Tx polarity */
+	 
 	brcm_sata_phy_wr(port, TX_REG_BANK, TX_ACTRL0,
 			 ~TX_ACTRL0_TXPOL_FLIP, TX_ACTRL0_TXPOL_FLIP);
 
-	/* Configure OOB control to handle 100MHz reference clock */
+	 
 	val = ((0xc << OOB_CTRL1_BURST_MAX_SHIFT) |
 		(0x4 << OOB_CTRL1_BURST_MIN_SHIFT) |
 		(0x8 << OOB_CTRL1_WAKE_IDLE_MAX_SHIFT) |
@@ -642,7 +636,7 @@ static int brcm_dsl_sata_init(struct brcm_sata_port *port)
 	brcm_sata_phy_wr(port, PLL_REG_BANK_0, PLL_FREQ_DET_TIME, 0, 0x64);
 	usleep_range(1000, 2000);
 
-	/* Acquire PLL lock */
+	 
 	try = 50;
 	while (try) {
 		tmp = brcm_sata_phy_rd(port, BLOCK0_REG_BANK,
@@ -654,7 +648,7 @@ static int brcm_dsl_sata_init(struct brcm_sata_port *port)
 	}
 
 	if (!try) {
-		/* PLL did not lock; give up */
+		 
 		dev_err(dev, "port%d PLL did not lock\n", port->portnum);
 		return -ETIMEDOUT;
 	}

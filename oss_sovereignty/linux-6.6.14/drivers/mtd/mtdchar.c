@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright © 1999-2010 David Woodhouse <dwmw2@infradead.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/fs.h>
@@ -27,10 +25,7 @@
 
 #include "mtdcore.h"
 
-/*
- * Data structure to hold the pointer to the mtd device as well
- * as mode information of various use cases.
- */
+ 
 struct mtd_file_info {
 	struct mtd_info *mtd;
 	enum mtd_file_modes mode;
@@ -52,7 +47,7 @@ static int mtdchar_open(struct inode *inode, struct file *file)
 
 	pr_debug("MTD_open\n");
 
-	/* You can't open the RO devices RW */
+	 
 	if ((file->f_mode & FMODE_WRITE) && (minor & 1))
 		return -EACCES;
 
@@ -66,7 +61,7 @@ static int mtdchar_open(struct inode *inode, struct file *file)
 		goto out1;
 	}
 
-	/* You can't open it RW if it's not a writeable device */
+	 
 	if ((file->f_mode & FMODE_WRITE) && !(mtd->flags & MTD_WRITEABLE)) {
 		ret = -EACCES;
 		goto out1;
@@ -84,9 +79,9 @@ static int mtdchar_open(struct inode *inode, struct file *file)
 out1:
 	put_mtd_device(mtd);
 	return ret;
-} /* mtdchar_open */
+}  
 
-/*====================================================================*/
+ 
 
 static int mtdchar_close(struct inode *inode, struct file *file)
 {
@@ -95,7 +90,7 @@ static int mtdchar_close(struct inode *inode, struct file *file)
 
 	pr_debug("MTD_close\n");
 
-	/* Only sync if opened RW */
+	 
 	if ((file->f_mode & FMODE_WRITE))
 		mtd_sync(mtd);
 
@@ -104,25 +99,9 @@ static int mtdchar_close(struct inode *inode, struct file *file)
 	kfree(mfi);
 
 	return 0;
-} /* mtdchar_close */
+}  
 
-/* Back in June 2001, dwmw2 wrote:
- *
- *   FIXME: This _really_ needs to die. In 2.5, we should lock the
- *   userspace buffer down and use it directly with readv/writev.
- *
- * The implementation below, using mtd_kmalloc_up_to, mitigates
- * allocation failures when the system is under low-memory situations
- * or if memory is highly fragmented at the cost of reducing the
- * performance of the requested transfer due to a smaller buffer size.
- *
- * A more complex but more memory-efficient implementation based on
- * get_user_pages and iovecs to cover extents of those pages is a
- * longer-term goal, as intimated by dwmw2 above. However, for the
- * write case, this requires yet more complex head and tail transfer
- * handling when those head and tail offsets and sizes are such that
- * alignment requirements are not met in the NAND subdriver.
- */
+ 
 
 static ssize_t mtdchar_read(struct file *file, char __user *buf, size_t count,
 			loff_t *ppos)
@@ -180,15 +159,7 @@ static ssize_t mtdchar_read(struct file *file, char __user *buf, size_t count,
 		default:
 			ret = mtd_read(mtd, *ppos, len, &retlen, kbuf);
 		}
-		/* Nand returns -EBADMSG on ECC errors, but it returns
-		 * the data. For our userspace tools it is important
-		 * to dump areas with ECC errors!
-		 * For kernel internal usage it also might return -EUCLEAN
-		 * to signal the caller that a bitflip has occurred and has
-		 * been corrected by the ECC algorithm.
-		 * Userspace software which accesses NAND this way
-		 * must be aware of the fact that it deals with NAND
-		 */
+		 
 		if (!ret || mtd_is_bitflip_or_eccerr(ret)) {
 			*ppos += retlen;
 			if (copy_to_user(buf, kbuf, retlen)) {
@@ -212,7 +183,7 @@ static ssize_t mtdchar_read(struct file *file, char __user *buf, size_t count,
 
 	kfree(kbuf);
 	return total_retlen;
-} /* mtdchar_read */
+}  
 
 static ssize_t mtdchar_write(struct file *file, const char __user *buf, size_t count,
 			loff_t *ppos)
@@ -277,11 +248,7 @@ static ssize_t mtdchar_write(struct file *file, const char __user *buf, size_t c
 			ret = mtd_write(mtd, *ppos, len, &retlen, kbuf);
 		}
 
-		/*
-		 * Return -ENOSPC only if no data could be written at all.
-		 * Otherwise just return the number of bytes that actually
-		 * have been written.
-		 */
+		 
 		if ((ret == -ENOSPC) && (total_retlen))
 			break;
 
@@ -299,13 +266,9 @@ static ssize_t mtdchar_write(struct file *file, const char __user *buf, size_t c
 
 	kfree(kbuf);
 	return total_retlen;
-} /* mtdchar_write */
+}  
 
-/*======================================================================
-
-    IOCTL calls for getting device parameters.
-
-======================================================================*/
+ 
 
 static int otp_select_filemode(struct mtd_file_info *mfi, int mode)
 {
@@ -414,32 +377,14 @@ static int mtdchar_readoob(struct file *file, struct mtd_info *mtd,
 
 	kfree(ops.oobbuf);
 
-	/*
-	 * NAND returns -EBADMSG on ECC errors, but it returns the OOB
-	 * data. For our userspace tools it is important to dump areas
-	 * with ECC errors!
-	 * For kernel internal usage it also might return -EUCLEAN
-	 * to signal the caller that a bitflip has occurred and has
-	 * been corrected by the ECC algorithm.
-	 *
-	 * Note: currently the standard NAND function, nand_read_oob_std,
-	 * does not calculate ECC for the OOB area, so do not rely on
-	 * this behavior unless you have replaced it with your own.
-	 */
+	 
 	if (mtd_is_bitflip_or_eccerr(ret))
 		return 0;
 
 	return ret;
 }
 
-/*
- * Copies (and truncates, if necessary) OOB layout information to the
- * deprecated layout struct, nand_ecclayout_user. This is necessary only to
- * support the deprecated API ioctl ECCGETLAYOUT while allowing all new
- * functionality to use mtd_ooblayout_ops flexibly (i.e. mtd_ooblayout_ops
- * can describe any kind of OOB layout with almost zero overhead from a
- * memory usage point of view).
- */
+ 
 static int shrink_ecclayout(struct mtd_info *mtd,
 			    struct nand_ecclayout_user *to)
 {
@@ -552,11 +497,11 @@ static int mtdchar_blkpg_ioctl(struct mtd_info *mtd,
 	switch (arg->op) {
 	case BLKPG_ADD_PARTITION:
 
-		/* Only master mtd device must be used to add partitions */
+		 
 		if (mtd_is_partition(mtd))
 			return -EINVAL;
 
-		/* Sanitize user input */
+		 
 		p.devname[BLKPG_DEVNAMELTH - 1] = '\0';
 
 		return mtd_add_partition(mtd, p.devname, p.start, p.length);
@@ -646,22 +591,11 @@ mtdchar_write_ioctl(struct mtd_info *mtd, struct mtd_write_req __user *argp)
 			.oobbuf = oobbuf,
 		};
 
-		/*
-		 * Shorten non-page-aligned, eraseblock-sized writes so that
-		 * the write ends on an eraseblock boundary.  This is necessary
-		 * for adjust_oob_length() to properly handle non-page-aligned
-		 * writes.
-		 */
+		 
 		if (ops.len == mtd->erasesize)
 			ops.len -= mtd_mod_by_ws(req.start + ops.len, mtd);
 
-		/*
-		 * For writes which are not OOB-only, adjust the amount of OOB
-		 * data written according to the number of data pages written.
-		 * This is necessary to prevent OOB data from being skipped
-		 * over in data+OOB writes requiring multiple mtd_write_oob()
-		 * calls to be completed.
-		 */
+		 
 		adjust_oob_length(mtd, req.start, &ops);
 
 		if (copy_from_user(datbuf, usr_data, ops.len) ||
@@ -758,13 +692,7 @@ mtdchar_read_ioctl(struct mtd_info *mtd, struct mtd_read_req __user *argp)
 			.stats = &stats,
 		};
 
-		/*
-		 * Shorten non-page-aligned, eraseblock-sized reads so that the
-		 * read ends on an eraseblock boundary.  This is necessary in
-		 * order to prevent OOB data for some pages from being
-		 * duplicated in the output of non-page-aligned reads requiring
-		 * multiple mtd_read_oob() calls to be completed.
-		 */
+		 
 		if (ops.len == mtd->erasesize)
 			ops.len -= mtd_mod_by_ws(req.start + ops.len, mtd);
 
@@ -793,12 +721,7 @@ mtdchar_read_ioctl(struct mtd_info *mtd, struct mtd_read_req __user *argp)
 		usr_oob += ops.oobretlen;
 	}
 
-	/*
-	 * As multiple iterations of the above loop (and therefore multiple
-	 * mtd_read_oob() calls) may be necessary to complete the read request,
-	 * adjust the final return code to ensure it accounts for all detected
-	 * ECC errors.
-	 */
+	 
 	if (!ret || mtd_is_bitflip(ret)) {
 		if (req.ecc_stats.uncorrectable_errors > 0)
 			ret = -EBADMSG;
@@ -830,12 +753,9 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 
 	pr_debug("MTD_ioctl\n");
 
-	/*
-	 * Check the file mode to require "dangerous" commands to have write
-	 * permissions.
-	 */
+	 
 	switch (cmd) {
-	/* "safe" commands */
+	 
 	case MEMGETREGIONCOUNT:
 	case MEMGETREGIONINFO:
 	case MEMGETINFO:
@@ -855,7 +775,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 	case BLKRRPART:
 		break;
 
-	/* "dangerous" commands */
+	 
 	case MEMERASE:
 	case MEMERASE64:
 	case MEMLOCK:
@@ -910,7 +830,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		info.erasesize	= mtd->erasesize;
 		info.writesize	= mtd->writesize;
 		info.oobsize	= mtd->oobsize;
-		/* The below field is obsolete */
+		 
 		info.padding	= 0;
 		if (copy_to_user(argp, &info, sizeof(struct mtd_info_user)))
 			return -EFAULT;
@@ -958,7 +878,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		struct mtd_oob_buf buf;
 		struct mtd_oob_buf __user *buf_user = argp;
 
-		/* NOTE: writes return length to buf_user->length */
+		 
 		if (copy_from_user(&buf, argp, sizeof(buf)))
 			ret = -EFAULT;
 		else
@@ -972,7 +892,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		struct mtd_oob_buf buf;
 		struct mtd_oob_buf __user *buf_user = argp;
 
-		/* NOTE: writes return length to buf_user->start */
+		 
 		if (copy_from_user(&buf, argp, sizeof(buf)))
 			ret = -EFAULT;
 		else
@@ -1056,7 +976,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		break;
 	}
 
-	/* Legacy interface */
+	 
 	case MEMGETOOBSEL:
 	{
 		struct nand_oobinfo oi;
@@ -1152,7 +1072,7 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 		break;
 	}
 
-	/* This ioctl is being deprecated - it truncates the ECC layout */
+	 
 	case ECCGETLAYOUT:
 	{
 		struct nand_ecclayout_user *usrlay;
@@ -1219,14 +1139,14 @@ static int mtdchar_ioctl(struct file *file, u_int cmd, u_long arg)
 
 	case BLKRRPART:
 	{
-		/* No reread partition feature. Just return ok */
+		 
 		ret = 0;
 		break;
 	}
 	}
 
 	return ret;
-} /* memory_ioctl */
+}  
 
 static long mtdchar_unlocked_ioctl(struct file *file, u_int cmd, u_long arg)
 {
@@ -1247,7 +1167,7 @@ static long mtdchar_unlocked_ioctl(struct file *file, u_int cmd, u_long arg)
 struct mtd_oob_buf32 {
 	u_int32_t start;
 	u_int32_t length;
-	compat_caddr_t ptr;	/* unsigned char* */
+	compat_caddr_t ptr;	 
 };
 
 #define MEMWRITEOOB32		_IOWR('M', 3, struct mtd_oob_buf32)
@@ -1289,7 +1209,7 @@ static long mtdchar_compat_ioctl(struct file *file, unsigned int cmd,
 		struct mtd_oob_buf32 buf;
 		struct mtd_oob_buf32 __user *buf_user = argp;
 
-		/* NOTE: writes return length to buf->start */
+		 
 		if (copy_from_user(&buf, argp, sizeof(buf)))
 			ret = -EFAULT;
 		else
@@ -1301,7 +1221,7 @@ static long mtdchar_compat_ioctl(struct file *file, unsigned int cmd,
 
 	case BLKPG:
 	{
-		/* Convert from blkpg_compat_ioctl_arg to blkpg_ioctl_arg */
+		 
 		struct blkpg_compat_ioctl_arg __user *uarg = argp;
 		struct blkpg_compat_ioctl_arg compat_arg;
 		struct blkpg_ioctl_arg a;
@@ -1330,13 +1250,9 @@ static long mtdchar_compat_ioctl(struct file *file, unsigned int cmd,
 	return ret;
 }
 
-#endif /* CONFIG_COMPAT */
+#endif  
 
-/*
- * try to determine where a shared mapping can be made
- * - only supported for NOMMU at the moment (MMU can't doesn't copy private
- *   mappings)
- */
+ 
 #ifndef CONFIG_MMU
 static unsigned long mtdchar_get_unmapped_area(struct file *file,
 					   unsigned long addr,
@@ -1371,9 +1287,7 @@ static unsigned mtdchar_mmap_capabilities(struct file *file)
 }
 #endif
 
-/*
- * set up a mapping for shared memory segments
- */
+ 
 static int mtdchar_mmap(struct file *file, struct vm_area_struct *vma)
 {
 #ifdef CONFIG_MMU
@@ -1381,11 +1295,8 @@ static int mtdchar_mmap(struct file *file, struct vm_area_struct *vma)
 	struct mtd_info *mtd = mfi->mtd;
 	struct map_info *map = mtd->priv;
 
-        /* This is broken because it assumes the MTD device is map-based
-	   and that mtd->priv is a valid struct map_info.  It should be
-	   replaced with something that uses the mtd_get_unmapped_area()
-	   operation properly. */
-	if (0 /*mtd->type == MTD_RAM || mtd->type == MTD_ROM*/) {
+         
+	if (0  ) {
 #ifdef pgprot_noncached
 		if (file->f_flags & O_DSYNC || map->phys >= __pa(high_memory))
 			vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);

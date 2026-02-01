@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for MAX20710, MAX20730, MAX20734, and MAX20743 Integrated,
- * Step-Down Switching Regulators
- *
- * Copyright 2019 Google LLC.
- * Copyright 2020 Maxim Integrated
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/debugfs.h>
@@ -49,7 +43,7 @@ enum {
 struct max20730_data {
 	enum chips id;
 	struct pmbus_driver_info info;
-	struct mutex lock;	/* Used to protect against parallel writes */
+	struct mutex lock;	 
 	u16 mfr_devset1;
 	u16 mfr_devset2;
 	u16 mfr_voutmin;
@@ -162,7 +156,7 @@ static ssize_t max20730_debugfs_read(struct file *file, char __user *buf,
 			>> MAX20730_MFR_DEVSET1_RGAIN_BIT_POS;
 
 		if (data->id == max20734) {
-			/* AN6209 */
+			 
 			if (val == 0)
 				result = "0.8\n";
 			else if (val == 1)
@@ -172,7 +166,7 @@ static ssize_t max20730_debugfs_read(struct file *file, char __user *buf,
 			else
 				result = "6.4\n";
 		} else if (data->id == max20730 || data->id == max20710) {
-			/* AN6042 or AN6140 */
+			 
 			if (val == 0)
 				result = "0.9\n";
 			else if (val == 1)
@@ -182,7 +176,7 @@ static ssize_t max20730_debugfs_read(struct file *file, char __user *buf,
 			else
 				result = "7.2\n";
 		} else if (data->id == max20743) {
-			/* AN6042 */
+			 
 			if (val == 0)
 				result = "0.45\n";
 			else if (val == 1)
@@ -388,28 +382,20 @@ static int max20730_init_debugfs(struct i2c_client *client,
 {
 	return 0;
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static const struct i2c_device_id max20730_id[];
 
-/*
- * Convert discreet value to direct data format. Strictly speaking, all passed
- * values are constants, so we could do that calculation manually. On the
- * downside, that would make the driver more difficult to maintain, so lets
- * use this approach.
- */
+ 
 static u16 val_to_direct(int v, enum pmbus_sensor_classes class,
 			 const struct pmbus_driver_info *info)
 {
-	int R = info->R[class] - 3;	/* take milli-units into account */
+	int R = info->R[class] - 3;	 
 	int b = info->b[class] * 1000;
 	long d;
 
 	d = v * info->m[class] + b;
-	/*
-	 * R < 0 is true for all callers, so we don't need to bother
-	 * about the R > 0 case.
-	 */
+	 
 	while (R < 0) {
 		d = DIV_ROUND_CLOSEST(d, 10);
 		R++;
@@ -535,7 +521,7 @@ static const struct pmbus_driver_info max20730_info[] = {
 		.read_word_data = max20730_read_word_data,
 		.write_word_data = max20730_write_word_data,
 
-		/* Source : Maxim AN6140 and AN6042 */
+		 
 		.format[PSC_TEMPERATURE] = direct,
 		.m[PSC_TEMPERATURE] = 21,
 		.b[PSC_TEMPERATURE] = 5887,
@@ -564,7 +550,7 @@ static const struct pmbus_driver_info max20730_info[] = {
 		.read_word_data = max20730_read_word_data,
 		.write_word_data = max20730_write_word_data,
 
-		/* Source : Maxim AN6042 */
+		 
 		.format[PSC_TEMPERATURE] = direct,
 		.m[PSC_TEMPERATURE] = 21,
 		.b[PSC_TEMPERATURE] = 5887,
@@ -575,16 +561,7 @@ static const struct pmbus_driver_info max20730_info[] = {
 		.b[PSC_VOLTAGE_IN] = 0,
 		.R[PSC_VOLTAGE_IN] = -2,
 
-		/*
-		 * Values in the datasheet are adjusted for temperature and
-		 * for the relationship between Vin and Vout.
-		 * Unfortunately, the data sheet suggests that Vout measurement
-		 * may be scaled with a resistor array. This is indeed the case
-		 * at least on the evaulation boards. As a result, any in-driver
-		 * adjustments would either be wrong or require elaborate means
-		 * to configure the scaling. Instead of doing that, just report
-		 * raw values and let userspace handle adjustments.
-		 */
+		 
 		.format[PSC_CURRENT_OUT] = direct,
 		.m[PSC_CURRENT_OUT] = 153,
 		.b[PSC_CURRENT_OUT] = 4976,
@@ -603,7 +580,7 @@ static const struct pmbus_driver_info max20730_info[] = {
 		.read_word_data = max20730_read_word_data,
 		.write_word_data = max20730_write_word_data,
 
-		/* Source : Maxim AN6209 */
+		 
 		.format[PSC_TEMPERATURE] = direct,
 		.m[PSC_TEMPERATURE] = 21,
 		.b[PSC_TEMPERATURE] = 5887,
@@ -632,7 +609,7 @@ static const struct pmbus_driver_info max20730_info[] = {
 		.read_word_data = max20730_read_word_data,
 		.write_word_data = max20730_write_word_data,
 
-		/* Source : Maxim AN6042 */
+		 
 		.format[PSC_TEMPERATURE] = direct,
 		.m[PSC_TEMPERATURE] = 21,
 		.b[PSC_TEMPERATURE] = 5887,
@@ -683,16 +660,7 @@ static int max20730_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/*
-	 * The chips support reading PMBUS_MFR_MODEL. On both MAX20730
-	 * and MAX20734, reading it returns M20743. Presumably that is
-	 * the reason why the command is not documented. Unfortunately,
-	 * that means that there is no reliable means to detect the chip.
-	 * However, we can at least detect the chip series. Compare
-	 * the returned value against 'M20743' and bail out if there is
-	 * a mismatch. If that doesn't work for all chips, we may have
-	 * to remove this check.
-	 */
+	 
 	ret = i2c_smbus_read_block_data(client, PMBUS_MFR_MODEL, buf);
 	if (ret < 0) {
 		dev_err(dev, "Failed to read Manufacturer Model\n");

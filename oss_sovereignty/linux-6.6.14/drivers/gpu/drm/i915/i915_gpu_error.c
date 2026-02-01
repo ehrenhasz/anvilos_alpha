@@ -1,31 +1,4 @@
-/*
- * Copyright (c) 2008 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- *    Keith Packard <keithp@keithp.com>
- *    Mika Kuoppala <mika.kuoppala@intel.com>
- *
- */
+ 
 
 #include <linux/ascii85.h>
 #include <linux/highmem.h>
@@ -186,7 +159,7 @@ i915_error_printer(struct drm_i915_error_state_buf *e)
 	return p;
 }
 
-/* single threaded page allocator with a reserved stash for emergencies */
+ 
 static void pool_fini(struct folio_batch *fbatch)
 {
 	folio_batch_release(fbatch);
@@ -324,7 +297,7 @@ static int compress_page(struct i915_vma_compress *c,
 		cond_resched();
 	} while (zstream->avail_in);
 
-	/* Fallback to uncompressed if we increase size? */
+	 
 	if (0 && zstream->total_out > zstream->total_in)
 		return -E2BIG;
 
@@ -338,7 +311,7 @@ static int compress_flush(struct i915_vma_compress *c,
 
 	do {
 		switch (zlib_deflate(zstream, Z_FINISH)) {
-		case Z_OK: /* more space requested */
+		case Z_OK:  
 			zstream->next_out = compress_next_page(c, dst);
 			if (IS_ERR(zstream->next_out))
 				return PTR_ERR(zstream->next_out);
@@ -349,7 +322,7 @@ static int compress_flush(struct i915_vma_compress *c,
 		case Z_STREAM_END:
 			goto end;
 
-		default: /* any error */
+		default:  
 			return -EIO;
 		}
 	} while (1);
@@ -776,11 +749,7 @@ static void err_print_gt_global(struct drm_i915_error_state_buf *m,
 		int i;
 
 		for (i = 0; i < I915_MAX_SFC; i++) {
-			/*
-			 * SFC_DONE resides in the VD forcewake domain, so it
-			 * only exists if the corresponding VCS engine is
-			 * present.
-			 */
+			 
 			if ((gt->_gt->info.sfc_mask & BIT(i)) == 0 ||
 			    !HAS_ENGINE(gt->_gt, _VCS(i * 2)))
 				continue;
@@ -885,10 +854,7 @@ static void __err_print_to_sgl(struct drm_i915_error_state_buf *m,
 		err_print_gt_global_nonguc(m, error->gt);
 		err_print_gt_fences(m, error->gt);
 
-		/*
-		 * GuC dumped global, eng-class and eng-instance registers together
-		 * as part of engine state dump so we print in err_print_gt_engines
-		 */
+		 
 		if (!print_guc_capture)
 			err_print_gt_global(m, error->gt);
 
@@ -1311,7 +1277,7 @@ static void engine_record_registers(struct intel_engine_coredump *ee)
 		} else if (GRAPHICS_VER(engine->i915) == 6) {
 			mmio = RING_HWS_PGA_GEN6(engine->mmio_base);
 		} else {
-			/* XXX: gen8 returns to sanity */
+			 
 			mmio = RING_HWS_PGA(engine->mmio_base);
 		}
 
@@ -1461,11 +1427,7 @@ capture_vma(struct intel_engine_capture_vma *next,
 	if (!vma)
 		return next;
 
-	/*
-	 * If the vma isn't pinned, then the vma should be snapshotted
-	 * to a struct i915_vma_snapshot at command submission time.
-	 * Not here.
-	 */
+	 
 	if (GEM_WARN_ON(!i915_vma_is_pinned(vma)))
 		return next;
 
@@ -1557,11 +1519,7 @@ engine_coredump_add_context(struct intel_engine_coredump *ee,
 	if (ee->simulated)
 		return NULL;
 
-	/*
-	 * We need to copy these to an anonymous buffer
-	 * as the simplest method to avoid being overwritten
-	 * by userspace.
-	 */
+	 
 	vma = capture_vma(vma, ce->ring->vma, "ring", gfp);
 	vma = capture_vma(vma, ce->state, "HW context", gfp);
 
@@ -1579,11 +1537,7 @@ intel_engine_coredump_add_request(struct intel_engine_coredump *ee,
 	if (!vma)
 		return NULL;
 
-	/*
-	 * We need to copy these to an anonymous buffer
-	 * as the simplest method to avoid being overwritten
-	 * by userspace.
-	 */
+	 
 	vma = capture_vma_snapshot(vma, rq->batch_res, gfp, "batch");
 	vma = capture_user(vma, rq, gfp);
 
@@ -1674,7 +1628,7 @@ gt_record_engines(struct intel_gt_coredump *gt,
 	for_each_engine(engine, gt->_gt, id) {
 		struct intel_engine_coredump *ee;
 
-		/* Refill our page pool before entering atomic section */
+		 
 		pool_refill(&compress->pool, ALLOW_FAIL);
 
 		ee = capture_engine(engine, compress, dump_flags);
@@ -1732,11 +1686,7 @@ gt_record_uc(struct intel_gt_coredump *gt,
 	error_uc->guc_fw.file_wanted.path = kstrdup(uc->guc.fw.file_wanted.path, ALLOW_FAIL);
 	error_uc->huc_fw.file_wanted.path = kstrdup(uc->huc.fw.file_wanted.path, ALLOW_FAIL);
 
-	/*
-	 * Save the GuC log and include a timestamp reference for converting the
-	 * log times to system times (in conjunction with the error->boottime and
-	 * gt->clock_frequency fields saved elsewhere).
-	 */
+	 
 	error_uc->guc.timestamp = intel_uncore_read(gt->_gt->uncore, GUCPMTIMESTAMP);
 	error_uc->guc.vma_log = create_vma_coredump(gt->_gt, uc->guc.log.vma,
 						    "GuC log buffer", compress);
@@ -1751,7 +1701,7 @@ gt_record_uc(struct intel_gt_coredump *gt,
 	return error_uc;
 }
 
-/* Capture display registers. */
+ 
 static void gt_record_display_regs(struct intel_gt_coredump *gt)
 {
 	struct intel_uncore *uncore = gt->_gt->uncore;
@@ -1772,7 +1722,7 @@ static void gt_record_display_regs(struct intel_gt_coredump *gt)
 		gt->ier = intel_uncore_read(uncore, GEN2_IER);
 }
 
-/* Capture all other registers that GuC doesn't capture. */
+ 
 static void gt_record_global_nonguc_regs(struct intel_gt_coredump *gt)
 {
 	struct intel_uncore *uncore = gt->_gt->uncore;
@@ -1814,26 +1764,16 @@ static void gt_record_global_nonguc_regs(struct intel_gt_coredump *gt)
 	gt->pgtbl_er = intel_uncore_read(uncore, PGTBL_ER);
 }
 
-/*
- * Capture all registers that relate to workload submission.
- * NOTE: In GuC submission, when GuC resets an engine, it can dump these for us
- */
+ 
 static void gt_record_global_regs(struct intel_gt_coredump *gt)
 {
 	struct intel_uncore *uncore = gt->_gt->uncore;
 	struct drm_i915_private *i915 = uncore->i915;
 	int i;
 
-	/*
-	 * General organization
-	 * 1. Registers specific to a single generation
-	 * 2. Registers which belong to multiple generations
-	 * 3. Feature specific registers.
-	 * 4. Everything else
-	 * Please try to follow the order.
-	 */
+	 
 
-	/* 1: Registers specific to a single generation */
+	 
 	if (IS_VALLEYVIEW(i915))
 		gt->forcewake = intel_uncore_read_fw(uncore, FORCEWAKE_VLV);
 
@@ -1863,7 +1803,7 @@ static void gt_record_global_regs(struct intel_gt_coredump *gt)
 		gt->gfx_mode = intel_uncore_read(uncore, GFX_MODE);
 	}
 
-	/* 2: Registers which belong to multiple generations */
+	 
 	if (GRAPHICS_VER(i915) >= 7)
 		gt->forcewake = intel_uncore_read_fw(uncore, FORCEWAKE_MT);
 
@@ -1874,7 +1814,7 @@ static void gt_record_global_regs(struct intel_gt_coredump *gt)
 		}
 	}
 
-	/* 3: Feature specific registers */
+	 
 	if (IS_GRAPHICS_VER(i915, 6, 7)) {
 		gt->gam_ecochk = intel_uncore_read(uncore, GAM_ECOCHK);
 		gt->gac_eco = intel_uncore_read(uncore, GAC_ECO_BITS);
@@ -1888,11 +1828,7 @@ static void gt_record_global_regs(struct intel_gt_coredump *gt)
 
 	if (GRAPHICS_VER(i915) >= 12) {
 		for (i = 0; i < I915_MAX_SFC; i++) {
-			/*
-			 * SFC_DONE resides in the VD forcewake domain, so it
-			 * only exists if the corresponding VCS engine is
-			 * present.
-			 */
+			 
 			if ((gt->_gt->info.sfc_mask & BIT(i)) == 0 ||
 			    !HAS_ENGINE(gt->_gt, _VCS(i * 2)))
 				continue;
@@ -1912,24 +1848,10 @@ static void gt_record_info(struct intel_gt_coredump *gt)
 	gt->clock_period_ns = gt->_gt->clock_period_ns;
 }
 
-/*
- * Generate a semi-unique error code. The code is not meant to have meaning, The
- * code's only purpose is to try to prevent false duplicated bug reports by
- * grossly estimating a GPU error state.
- *
- * TODO Ideally, hashing the batchbuffer would be a very nice way to determine
- * the hang if we could strip the GTT offset information from it.
- *
- * It's only a small step better than a random number in its current form.
- */
+ 
 static u32 generate_ecode(const struct intel_engine_coredump *ee)
 {
-	/*
-	 * IPEHR would be an ideal way to detect errors, as it's the gross
-	 * measure of "the command that hung." However, has some very common
-	 * synchronization commands which almost always appear in the case
-	 * strictly a client bug. Use instdone to differentiate those some.
-	 */
+	 
 	return ee ? ee->ipehr ^ ee->instdone.instdone : 0;
 }
 
@@ -1957,7 +1879,7 @@ static const char *error_msg(struct i915_gpu_coredump *error)
 			GRAPHICS_VER(error->i915), hung_classes,
 			generate_ecode(first));
 	if (first && first->context.pid) {
-		/* Just show the first executing process, more is confusing */
+		 
 		len += scnprintf(error->error_msg + len,
 				 sizeof(error->error_msg) - len,
 				 ", in %s [%d]",
@@ -2034,15 +1956,7 @@ intel_gt_coredump_alloc(struct intel_gt *gt, gfp_t gfp, u32 dump_flags)
 	gt_record_display_regs(gc);
 	gt_record_global_nonguc_regs(gc);
 
-	/*
-	 * GuC dumps global, eng-class and eng-instance registers
-	 * (that can change as part of engine state during execution)
-	 * before an engine is reset due to a hung context.
-	 * GuC captures and reports all three groups of registers
-	 * together as a single set before the engine is reset.
-	 * Thus, if GuC triggered the context reset we retrieve
-	 * the register values as part of gt_record_engines.
-	 */
+	 
 	if (!(dump_flags & CORE_DUMP_FLAG_IS_GUC_CAPTURE))
 		gt_record_global_regs(gc);
 
@@ -2084,7 +1998,7 @@ __i915_gpu_coredump(struct intel_gt *gt, intel_engine_mask_t engine_mask, u32 du
 	struct drm_i915_private *i915 = gt->i915;
 	struct i915_gpu_coredump *error;
 
-	/* Check if GPU capture has been disabled */
+	 
 	error = READ_ONCE(i915->gpu_error.first_error);
 	if (IS_ERR(error))
 		return error;
@@ -2173,17 +2087,7 @@ void i915_error_state_store(struct i915_gpu_coredump *error)
 	}
 }
 
-/**
- * i915_capture_error_state - capture an error record for later analysis
- * @gt: intel_gt which originated the hang
- * @engine_mask: hung engines
- * @dump_flags: dump flags
- *
- * Should be called when an error is detected (either a hang or an error
- * interrupt) to capture error state from the time of the error.  Fills
- * out a structure which becomes available in debugfs for user level tools
- * to pick up.
- */
+ 
 void i915_capture_error_state(struct intel_gt *gt,
 			      intel_engine_mask_t engine_mask, u32 dump_flags)
 {
@@ -2219,7 +2123,7 @@ void i915_reset_error_state(struct drm_i915_private *i915)
 
 	spin_lock_irq(&i915->gpu_error.lock);
 	error = i915->gpu_error.first_error;
-	if (error != ERR_PTR(-ENODEV)) /* if disabled, always disabled */
+	if (error != ERR_PTR(-ENODEV))  
 		i915->gpu_error.first_error = NULL;
 	spin_unlock_irq(&i915->gpu_error.lock);
 
@@ -2249,7 +2153,7 @@ void intel_klog_error_capture(struct intel_gt *gt,
 	int l_count = g_count++;
 	int line = 0;
 
-	/* Can't allocate memory during a reset */
+	 
 	if (test_bit(I915_RESET_BACKOFF, &gt->reset.flags)) {
 		drm_err(&gt->i915->drm, "[Capture/%d.%d] Inside GT reset, skipping error capture :(\n",
 			l_count, line++);
@@ -2283,7 +2187,7 @@ void intel_klog_error_capture(struct intel_gt *gt,
 	drm_info(&i915->drm, "[Capture/%d.%d] Dumping i915 error capture for %ps...\n",
 		 l_count, line++, __builtin_return_address(0));
 
-	/* Largest string length safe to print via dmesg */
+	 
 #	define MAX_CHUNK	800
 
 	pos_err = 0;
@@ -2326,11 +2230,7 @@ void intel_klog_error_capture(struct intel_gt *gt,
 					ptr[pos] = chr;
 					ptr2 = ptr + pos;
 
-					/*
-					 * If spewing large amounts of data via a serial console,
-					 * this can be a very slow process. So be friendly and try
-					 * not to cause 'softlockup on CPU' problems.
-					 */
+					 
 					cond_resched();
 				}
 
@@ -2352,7 +2252,7 @@ void intel_klog_error_capture(struct intel_gt *gt,
 				got--;
 			}
 
-			/* As above. */
+			 
 			cond_resched();
 		}
 

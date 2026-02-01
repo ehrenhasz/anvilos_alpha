@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_lut.c  --  R-Car VSP1 Look-Up Table
- *
- * Copyright (C) 2013 Renesas Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -21,9 +15,7 @@
 
 #define LUT_SIZE				256
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline void vsp1_lut_write(struct vsp1_lut *lut,
 				  struct vsp1_dl_body *dlb, u32 reg, u32 data)
@@ -31,9 +23,7 @@ static inline void vsp1_lut_write(struct vsp1_lut *lut,
 	vsp1_dl_body_write(dlb, reg, data);
 }
 
-/* -----------------------------------------------------------------------------
- * Controls
- */
+ 
 
 #define V4L2_CID_VSP1_LUT_TABLE			(V4L2_CID_USER_BASE | 0x1001)
 
@@ -88,9 +78,7 @@ static const struct v4l2_ctrl_config lut_table_control = {
 	.dims = { LUT_SIZE },
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Pad Operations
- */
+ 
 
 static const unsigned int lut_codes[] = {
 	MEDIA_BUS_FMT_ARGB8888_1X32,
@@ -126,9 +114,7 @@ static int lut_set_format(struct v4l2_subdev *subdev,
 					  LUT_MAX_SIZE, LUT_MAX_SIZE);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static const struct v4l2_subdev_pad_ops lut_pad_ops = {
 	.init_cfg = vsp1_entity_init_cfg,
@@ -142,9 +128,7 @@ static const struct v4l2_subdev_ops lut_ops = {
 	.pad    = &lut_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void lut_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -173,7 +157,7 @@ static void lut_configure_frame(struct vsp1_entity *entity,
 	if (lut_dlb) {
 		vsp1_dl_list_add_body(dl, lut_dlb);
 
-		/* Release our local reference. */
+		 
 		vsp1_dl_body_put(lut_dlb);
 	}
 }
@@ -191,9 +175,7 @@ static const struct vsp1_entity_operations lut_entity_ops = {
 	.destroy = lut_destroy,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 struct vsp1_lut *vsp1_lut_create(struct vsp1_device *vsp1)
 {
@@ -214,16 +196,12 @@ struct vsp1_lut *vsp1_lut_create(struct vsp1_device *vsp1)
 	if (ret < 0)
 		return ERR_PTR(ret);
 
-	/*
-	 * Pre-allocate a body pool, with 3 bodies allowing a userspace update
-	 * before the hardware has committed a previous set of tables, handling
-	 * both the queued and pending dl entries.
-	 */
+	 
 	lut->pool = vsp1_dl_body_pool_create(vsp1, 3, LUT_SIZE, 0);
 	if (!lut->pool)
 		return ERR_PTR(-ENOMEM);
 
-	/* Initialize the control handler. */
+	 
 	v4l2_ctrl_handler_init(&lut->ctrls, 1);
 	v4l2_ctrl_new_custom(&lut->ctrls, &lut_table_control, NULL);
 

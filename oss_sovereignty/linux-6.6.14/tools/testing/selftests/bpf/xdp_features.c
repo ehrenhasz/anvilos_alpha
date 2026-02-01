@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <uapi/linux/bpf.h>
 #include <uapi/linux/netdev.h>
 #include <linux/if_link.h>
@@ -39,7 +39,7 @@ static struct env {
 
 #define BUFSIZE		128
 
-void test__fail(void) { /* for network_helpers.c */ }
+void test__fail(void) {   }
 
 static int libbpf_print_fn(enum libbpf_print_level level,
 			   const char *format, va_list args)
@@ -262,7 +262,7 @@ static int dut_run_echo_thread(pthread_t *t, int *sockfd)
 		return -errno;
 	}
 
-	/* start echo channel */
+	 
 	err = pthread_create(t, NULL, dut_echo_thread, sockfd);
 	if (err) {
 		fprintf(stderr,
@@ -382,7 +382,7 @@ static int dut_run(struct xdp_features *skel)
 		return -errno;
 	}
 
-	/* CTRL loop */
+	 
 	while (!exiting) {
 		unsigned char buf[BUFSIZE] = {};
 		struct tlv_hdr *tlv = (struct tlv_hdr *)buf;
@@ -397,7 +397,7 @@ static int dut_run(struct xdp_features *skel)
 				continue;
 
 			state = CMD_START;
-			/* Load the XDP program on the DUT */
+			 
 			err = dut_attach_xdp_prog(skel, flags);
 			if (err)
 				goto out;
@@ -635,9 +635,9 @@ static int tester_run(struct xdp_features *skel)
 	if (err)
 		goto out;
 
-	/* stop the test */
+	 
 	err = send_and_recv_msg(sockfd, CMD_STOP, NULL, 0);
-	/* send a new echo message to wake echo thread of the dut */
+	 
 	send_echo_msg();
 
 	detected_cap = tester_collect_detected_cap(skel, ntohl(stats));
@@ -665,7 +665,7 @@ int main(int argc, char **argv)
 
 	set_env_default();
 
-	/* Parse command line arguments */
+	 
 	err = argp_parse(&argp, argc, argv, 0, NULL, NULL);
 	if (err)
 		return err;
@@ -675,7 +675,7 @@ int main(int argc, char **argv)
 		return -ENODEV;
 	}
 
-	/* Load and verify BPF application */
+	 
 	skel = xdp_features__open();
 	if (!skel) {
 		fprintf(stderr, "Failed to open and load BPF skeleton\n");
@@ -687,7 +687,7 @@ int main(int argc, char **argv)
 	skel->rodata->dut_addr =
 		((struct sockaddr_in6 *)&env.dut_addr)->sin6_addr;
 
-	/* Load & verify BPF programs */
+	 
 	err = xdp_features__load(skel);
 	if (err) {
 		fprintf(stderr, "Failed to load and verify BPF skeleton\n");
@@ -701,12 +701,12 @@ int main(int argc, char **argv)
 	}
 
 	if (env.is_tester) {
-		/* Tester */
+		 
 		fprintf(stdout, "Starting tester service on device %s\n",
 			env.ifname);
 		err = tester_run(skel);
 	} else {
-		/* DUT */
+		 
 		fprintf(stdout, "Starting test on device %s\n", env.ifname);
 		err = dut_run(skel);
 	}

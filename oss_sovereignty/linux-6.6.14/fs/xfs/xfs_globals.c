@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_error.h"
 
-/*
- * Tunable XFS parameters.  xfs_params is required even when CONFIG_SYSCTL=n,
- * other XFS code uses these values.  Times are measured in centisecs (i.e.
- * 100ths of a second) with the exception of blockgc_timer, which is measured
- * in seconds.
- */
+ 
 xfs_param_t xfs_params = {
-			  /*	MIN		DFLT		MAX	*/
+			   
 	.sgid_inherit	= {	0,		0,		1	},
 	.symlink_mode	= {	0,		0,		1	},
 	.panic_mask	= {	0,		0,		XFS_PTAG_MASK},
@@ -33,15 +25,15 @@ xfs_param_t xfs_params = {
 };
 
 struct xfs_globals xfs_globals = {
-	.log_recovery_delay	=	0,	/* no delay by default */
-	.mount_delay		=	0,	/* no delay by default */
+	.log_recovery_delay	=	0,	 
+	.mount_delay		=	0,	 
 #ifdef XFS_ASSERT_FATAL
-	.bug_on_assert		=	true,	/* assert failures BUG() */
+	.bug_on_assert		=	true,	 
 #else
-	.bug_on_assert		=	false,	/* assert failures WARN() */
+	.bug_on_assert		=	false,	 
 #endif
 #ifdef DEBUG
-	.pwork_threads		=	-1,	/* automatic thread detection */
-	.larp			=	false,	/* log attribute replay */
+	.pwork_threads		=	-1,	 
+	.larp			=	false,	 
 #endif
 };

@@ -1,15 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2016 - 2021 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_UDA_D_H
 #define IRDMA_UDA_D_H
 
-/* L4 packet type */
+ 
 #define IRDMA_E_UDA_SQ_L4T_UNKNOWN	0
 #define IRDMA_E_UDA_SQ_L4T_TCP		1
 #define IRDMA_E_UDA_SQ_L4T_SCTP		2
 #define IRDMA_E_UDA_SQ_L4T_UDP		3
 
-/* Inner IP header type */
+ 
 #define IRDMA_E_UDA_SQ_IIPT_UNKNOWN		0
 #define IRDMA_E_UDA_SQ_IIPT_IPV6		1
 #define IRDMA_E_UDA_SQ_IIPT_IPV4_NO_CSUM	2
@@ -40,7 +40,7 @@
 #define IRDMA_UDA_QPSQ_FWD_PROG_CONFIRM_LINE 3
 #define IRDMA_UDA_QPSQ_IMMDATA GENMASK_ULL(63, 0)
 
-/* Byte Offset 0 */
+ 
 #define IRDMA_UDAQPC_IPV4_M BIT_ULL(3)
 #define IRDMA_UDAQPC_INSERTVLANTAG BIT_ULL(5)
 #define IRDMA_UDAQPC_ISQP1 BIT_ULL(6)
@@ -125,4 +125,4 @@
 #define IRDMA_UDA_CQPSQ_QHASH_IPV4VALID GENMASK_ULL(60, 60)
 #define IRDMA_UDA_CQPSQ_QHASH_LANFWD GENMASK_ULL(59, 59)
 #define IRDMA_UDA_CQPSQ_QHASH_ENTRYTYPE GENMASK_ULL(44, 42)
-#endif /* IRDMA_UDA_D_H */
+#endif  

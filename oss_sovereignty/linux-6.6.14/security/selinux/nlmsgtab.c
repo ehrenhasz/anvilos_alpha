@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Netlink message type permission tables, for user generated messages.
- *
- * Author: James Morris <jmorris@redhat.com>
- *
- * Copyright (C) 2004 Red Hat, Inc., James Morris <jmorris@redhat.com>
- */
+
+ 
 #include <linux/types.h>
 #include <linux/kernel.h>
 #include <linux/netlink.h>
@@ -172,11 +166,7 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
 
 	switch (sclass) {
 	case SECCLASS_NETLINK_ROUTE_SOCKET:
-		/* RTM_MAX always points to RTM_SETxxxx, ie RTM_NEWxxx + 3.
-		 * If the BUILD_BUG_ON() below fails you must update the
-		 * structures at the top of this file with the new mappings
-		 * before updating the BUILD_BUG_ON() macro!
-		 */
+		 
 		BUILD_BUG_ON(RTM_MAX != (RTM_NEWTUNNEL + 3));
 		err = nlmsg_perm(nlmsg_type, perm, nlmsg_route_perms,
 				 sizeof(nlmsg_route_perms));
@@ -188,10 +178,7 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
 		break;
 
 	case SECCLASS_NETLINK_XFRM_SOCKET:
-		/* If the BUILD_BUG_ON() below fails you must update the
-		 * structures at the top of this file with the new mappings
-		 * before updating the BUILD_BUG_ON() macro!
-		 */
+		 
 		BUILD_BUG_ON(XFRM_MSG_MAX != XFRM_MSG_GETDEFAULT);
 		err = nlmsg_perm(nlmsg_type, perm, nlmsg_xfrm_perms,
 				 sizeof(nlmsg_xfrm_perms));
@@ -209,7 +196,7 @@ int selinux_nlmsg_lookup(u16 sclass, u16 nlmsg_type, u32 *perm)
 		}
 		break;
 
-	/* No messaging from userspace, or class unknown/unhandled */
+	 
 	default:
 		err = -ENOENT;
 		break;

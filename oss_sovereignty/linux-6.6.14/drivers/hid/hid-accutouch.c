@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HID driver for Elo Accutouch touchscreens
- *
- * Copyright (c) 2016, Collabora Ltd.
- * Copyright (c) 2016, General Electric Company
- *
- * based on hid-penmount.c
- *  Copyright (c) 2014 Christian Gmeiner <christian.gmeiner <at> gmail.com>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/hid.h>
 #include <linux/module.h>

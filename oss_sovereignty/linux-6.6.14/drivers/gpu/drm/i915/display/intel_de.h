@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DE_H__
 #define __INTEL_DE_H__
@@ -85,14 +83,7 @@ intel_de_wait_for_clear(struct drm_i915_private *i915, i915_reg_t reg,
 	return intel_de_wait_for_register(i915, reg, mask, 0, timeout);
 }
 
-/*
- * Unlocked mmio-accessors, think carefully before using these.
- *
- * Certain architectures will die if the same cacheline is concurrently accessed
- * by different clients (e.g. on Ivybridge). Access to registers should
- * therefore generally be serialised, by either the dev_priv->uncore.lock or
- * a more localised lock guarding all access to that bank of registers.
- */
+ 
 static inline u32
 intel_de_read_fw(struct drm_i915_private *i915, i915_reg_t reg)
 {
@@ -123,4 +114,4 @@ intel_de_write_notrace(struct drm_i915_private *i915, i915_reg_t reg, u32 val)
 	intel_uncore_write_notrace(&i915->uncore, reg, val);
 }
 
-#endif /* __INTEL_DE_H__ */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Texas Instruments TMP102 SMBus temperature sensor driver
- *
- * Copyright (C) 2010 Steven King <sfking@fdwdc.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -22,7 +19,7 @@
 
 #define	TMP102_TEMP_REG			0x00
 #define	TMP102_CONF_REG			0x01
-/* note: these bit definitions are byte swapped */
+ 
 #define		TMP102_CONF_SD		0x0100
 #define		TMP102_CONF_TM		0x0200
 #define		TMP102_CONF_POL		0x0400
@@ -49,7 +46,7 @@
 #define TMP102_CONFIG_SET	(TMP102_CONF_TM | TMP102_CONF_EM | \
 				 TMP102_CONF_CR1)
 
-#define CONVERSION_TIME_MS		35	/* in milli-seconds */
+#define CONVERSION_TIME_MS		35	 
 
 struct tmp102 {
 	struct regmap *regmap;
@@ -57,13 +54,13 @@ struct tmp102 {
 	unsigned long ready_time;
 };
 
-/* convert left adjusted 13-bit TMP102 register value to milliCelsius */
+ 
 static inline int tmp102_reg_to_mC(s16 val)
 {
 	return ((val & ~0x01) * 1000) / 128;
 }
 
-/* convert milliCelsius to left adjusted 13-bit TMP102 register value */
+ 
 static inline u16 tmp102_mC_to_reg(int val)
 {
 	return (val * 128) / 1000;
@@ -78,7 +75,7 @@ static int tmp102_read(struct device *dev, enum hwmon_sensor_types type,
 
 	switch (attr) {
 	case hwmon_temp_input:
-		/* Is it too early to return a conversion ? */
+		 
 		if (time_before(jiffies, tmp102->ready_time)) {
 			dev_dbg(dev, "%s: Conversion not ready yet..\n", __func__);
 			return -EAGAIN;
@@ -241,10 +238,7 @@ static int tmp102_probe(struct i2c_client *client)
 		return err;
 	}
 
-	/*
-	 * Mark that we are not ready with data until the first
-	 * conversion is complete
-	 */
+	 
 	tmp102->ready_time = jiffies + msecs_to_jiffies(CONVERSION_TIME_MS);
 
 	hwmon_dev = devm_hwmon_device_register_with_info(dev, client->name,

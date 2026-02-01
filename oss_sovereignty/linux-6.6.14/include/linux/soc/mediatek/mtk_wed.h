@@ -86,7 +86,7 @@ struct mtk_wed_device {
 	int irq;
 	u8 version;
 
-	/* used by wlan driver */
+	 
 	u32 rev_id;
 
 	struct mtk_wed_ring tx_ring[MTK_WED_TX_QUEUES];
@@ -114,7 +114,7 @@ struct mtk_wed_device {
 		dma_addr_t fdbk_phys;
 	} rro;
 
-	/* filled by driver: */
+	 
 	struct {
 		union {
 			struct platform_device *platform_dev;

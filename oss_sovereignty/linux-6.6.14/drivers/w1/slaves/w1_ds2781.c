@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 1-Wire implementation for the ds2781 chip
- *
- * Author: Renata Sayakhova <renata@oktetlabs.ru>
- *
- * Based on w1-ds2780 driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

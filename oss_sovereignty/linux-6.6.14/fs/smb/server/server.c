@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2016 Namjae Jeon <linkinjeon@kernel.org>
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include "glob.h"
 #include "oplock.h"
@@ -83,12 +80,7 @@ char *ksmbd_work_group(void)
 	return server_conf.conf[SERVER_CONF_WORK_GROUP];
 }
 
-/**
- * check_conn_state() - check state of server thread connection
- * @work:     smb work containing server thread information
- *
- * Return:	0 on valid connection, otherwise 1 to reconnect
- */
+ 
 static inline int check_conn_state(struct ksmbd_work *work)
 {
 	struct smb_hdr *rsp_hdr;
@@ -148,7 +140,7 @@ andx_again:
 
 	if (ret < 0)
 		ksmbd_debug(CONN, "Failed to process %u [%d]\n", command, ret);
-	/* AndX commands - chained request can return positive values */
+	 
 	else if (ret > 0) {
 		command = ret;
 		*cmd = command;
@@ -183,7 +175,7 @@ static void __handle_ksmbd_work(struct ksmbd_work *work,
 
 	rc = conn->ops->init_rsp_hdr(work);
 	if (rc) {
-		/* either uid or tid is not correct */
+		 
 		conn->ops->set_rsp_status(work, STATUS_INVALID_HANDLE);
 		goto send;
 	}
@@ -217,10 +209,7 @@ static void __handle_ksmbd_work(struct ksmbd_work *work,
 		if (rc == SERVER_HANDLER_ABORT)
 			break;
 
-		/*
-		 * Call smb2_set_rsp_credits() function to set number of credits
-		 * granted in hdr of smb2 response.
-		 */
+		 
 		if (conn->ops->set_rsp_credits) {
 			spin_lock(&conn->credits_lock);
 			rc = conn->ops->set_rsp_credits(work);
@@ -254,12 +243,7 @@ send:
 	ksmbd_conn_write(work);
 }
 
-/**
- * handle_ksmbd_work() - process pending smb work requests
- * @wk:	smb work containing request command buffer
- *
- * called by kworker threads to processing remaining smb work requests
- */
+ 
 static void handle_ksmbd_work(struct work_struct *wk)
 {
 	struct ksmbd_work *work = container_of(wk, struct ksmbd_work, work);
@@ -271,22 +255,12 @@ static void handle_ksmbd_work(struct work_struct *wk)
 
 	ksmbd_conn_try_dequeue_request(work);
 	ksmbd_free_work_struct(work);
-	/*
-	 * Checking waitqueue to dropping pending requests on
-	 * disconnection. waitqueue_active is safe because it
-	 * uses atomic operation for condition.
-	 */
+	 
 	if (!atomic_dec_return(&conn->r_count) && waitqueue_active(&conn->r_count_q))
 		wake_up(&conn->r_count_q);
 }
 
-/**
- * queue_ksmbd_work() - queue a smb request to worker thread queue
- *		for proccessing smb command and sending response
- * @conn:	connection instance
- *
- * read remaining data from socket create and submit work.
- */
+ 
 static int queue_ksmbd_work(struct ksmbd_conn *conn)
 {
 	struct ksmbd_work *work;
@@ -310,7 +284,7 @@ static int queue_ksmbd_work(struct ksmbd_conn *conn)
 
 	ksmbd_conn_enqueue_request(work);
 	atomic_inc(&conn->r_count);
-	/* update activity on connection */
+	 
 	conn->last_active = jiffies;
 	INIT_WORK(&work->work, handle_ksmbd_work);
 	ksmbd_queue_work(work);
@@ -435,10 +409,7 @@ int server_queue_ctrl_reset_work(void)
 static ssize_t stats_show(const struct class *class, const struct class_attribute *attr,
 			  char *buf)
 {
-	/*
-	 * Inc this each time you change stats output format,
-	 * so user space will know what to do.
-	 */
+	 
 	static int stats_version = 2;
 	static const char * const state[] = {
 		"startup",
@@ -614,9 +585,7 @@ err_unregister:
 	return ret;
 }
 
-/**
- * ksmbd_server_exit() - shutdown forker thread and free memory at module exit
- */
+ 
 static void __exit ksmbd_server_exit(void)
 {
 	ksmbd_server_shutdown();

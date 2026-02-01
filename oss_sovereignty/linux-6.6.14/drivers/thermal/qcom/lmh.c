@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright (C) 2021, Linaro Limited. All rights reserved.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
@@ -41,7 +39,7 @@ static irqreturn_t lmh_handle_irq(int hw_irq, void *data)
 	struct lmh_hw_data *lmh_data = data;
 	int irq = irq_find_mapping(lmh_data->domain, 0);
 
-	/* Call the cpufreq driver to handle the interrupt */
+	 
 	if (irq)
 		generic_handle_irq(irq);
 
@@ -52,7 +50,7 @@ static void lmh_enable_interrupt(struct irq_data *d)
 {
 	struct lmh_hw_data *lmh_data = irq_data_get_irq_chip_data(d);
 
-	/* Clear the existing interrupt */
+	 
 	writel(0xff, lmh_data->base + LMH_REG_DCVS_INTR_CLR);
 	enable_irq(lmh_data->irq);
 }
@@ -127,11 +125,7 @@ static int lmh_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Only sdm845 has lmh hardware currently enabled from hlos. If this is needed
-	 * for other platforms, revisit this to check if the <cpu-id, node-id> should be part
-	 * of a dt match table.
-	 */
+	 
 	if (cpu_id == 0) {
 		node_id = LMH_CLUSTER0_NODE_ID;
 	} else if (cpu_id == 4) {
@@ -176,7 +170,7 @@ static int lmh_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Set default thermal trips */
+	 
 	ret = qcom_scm_lmh_dcvsh(LMH_SUB_FN_THERMAL, LMH_TH_ARM_THRESHOLD, temp_arm,
 				 LMH_NODE_DCVS, node_id, 0);
 	if (ret) {
@@ -205,7 +199,7 @@ static int lmh_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Disable the irq and let cpufreq enable it when ready to handle the interrupt */
+	 
 	irq_set_status_flags(lmh_data->irq, IRQ_NOAUTOEN);
 	ret = devm_request_irq(dev, lmh_data->irq, lmh_handle_irq,
 			       IRQF_ONESHOT | IRQF_NO_SUSPEND,

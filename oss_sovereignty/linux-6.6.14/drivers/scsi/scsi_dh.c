@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SCSI device handler infrastructure.
- *
- * Copyright IBM Corporation, 2007
- *      Authors:
- *               Chandra Seetharaman <sekharan@us.ibm.com>
- *               Mike Anderson <andmike@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -116,11 +109,7 @@ static struct scsi_device_handler *scsi_dh_lookup(const char *name)
 	return dh;
 }
 
-/*
- * scsi_dh_handler_attach - Attach a device handler to a device
- * @sdev - SCSI device the device handler should attach to
- * @scsi_dh - The device handler to attach
- */
+ 
 static int scsi_dh_handler_attach(struct scsi_device *sdev,
 				  struct scsi_device_handler *scsi_dh)
 {
@@ -156,10 +145,7 @@ static int scsi_dh_handler_attach(struct scsi_device *sdev,
 	return ret;
 }
 
-/*
- * scsi_dh_handler_detach - Detach a device handler from a device
- * @sdev - SCSI device the device handler should be detached from
- */
+ 
 static void scsi_dh_handler_detach(struct scsi_device *sdev)
 {
 	sdev->handler->detach(sdev);
@@ -175,10 +161,7 @@ void scsi_dh_add_device(struct scsi_device *sdev)
 	drv = scsi_dh_find_driver(sdev);
 	if (drv)
 		devinfo = __scsi_dh_lookup(drv);
-	/*
-	 * device_handler is optional, so ignore errors
-	 * from scsi_dh_handler_attach()
-	 */
+	 
 	if (devinfo)
 		(void)scsi_dh_handler_attach(sdev, devinfo);
 }
@@ -189,13 +172,7 @@ void scsi_dh_release_device(struct scsi_device *sdev)
 		scsi_dh_handler_detach(sdev);
 }
 
-/*
- * scsi_register_device_handler - register a device handler personality
- *      module.
- * @scsi_dh - device handler to be registered.
- *
- * Returns 0 on success, -EBUSY if handler already registered.
- */
+ 
 int scsi_register_device_handler(struct scsi_device_handler *scsi_dh)
 {
 	if (__scsi_dh_lookup(scsi_dh->name))
@@ -214,13 +191,7 @@ int scsi_register_device_handler(struct scsi_device_handler *scsi_dh)
 }
 EXPORT_SYMBOL_GPL(scsi_register_device_handler);
 
-/*
- * scsi_unregister_device_handler - register a device handler personality
- *      module.
- * @scsi_dh - device handler to be unregistered.
- *
- * Returns 0 on success, -ENODEV if handler not registered.
- */
+ 
 int scsi_unregister_device_handler(struct scsi_device_handler *scsi_dh)
 {
 	if (!__scsi_dh_lookup(scsi_dh->name))
@@ -235,19 +206,7 @@ int scsi_unregister_device_handler(struct scsi_device_handler *scsi_dh)
 }
 EXPORT_SYMBOL_GPL(scsi_unregister_device_handler);
 
-/*
- * scsi_dh_activate - activate the path associated with the scsi_device
- *      corresponding to the given request queue.
- *     Returns immediately without waiting for activation to be completed.
- * @q    - Request queue that is associated with the scsi_device to be
- *         activated.
- * @fn   - Function to be called upon completion of the activation.
- *         Function fn is called with data (below) and the error code.
- *         Function fn may be called from the same calling context. So,
- *         do not hold the lock in the caller which may be needed in fn.
- * @data - data passed to the function fn upon completion.
- *
- */
+ 
 int scsi_dh_activate(struct request_queue *q, activate_complete fn, void *data)
 {
 	struct scsi_device *sdev;
@@ -285,16 +244,7 @@ out_fn:
 }
 EXPORT_SYMBOL_GPL(scsi_dh_activate);
 
-/*
- * scsi_dh_set_params - set the parameters for the device as per the
- *      string specified in params.
- * @q - Request queue that is associated with the scsi_device for
- *      which the parameters to be set.
- * @params - parameters in the following format
- *      "no_of_params\0param1\0param2\0param3\0...\0"
- *      for example, string for 2 parameters with value 10 and 21
- *      is specified as "2\010\021\0".
- */
+ 
 int scsi_dh_set_params(struct request_queue *q, const char *params)
 {
 	struct scsi_device *sdev;
@@ -311,12 +261,7 @@ int scsi_dh_set_params(struct request_queue *q, const char *params)
 }
 EXPORT_SYMBOL_GPL(scsi_dh_set_params);
 
-/*
- * scsi_dh_attach - Attach device handler
- * @q - Request queue that is associated with the scsi_device
- *      the handler should be attached to
- * @name - name of the handler to attach
- */
+ 
 int scsi_dh_attach(struct request_queue *q, const char *name)
 {
 	struct scsi_device *sdev;
@@ -347,15 +292,7 @@ out_put_device:
 }
 EXPORT_SYMBOL_GPL(scsi_dh_attach);
 
-/*
- * scsi_dh_attached_handler_name - Get attached device handler's name
- * @q - Request queue that is associated with the scsi_device
- *      that may have a device handler attached
- * @gfp - the GFP mask used in the kmalloc() call when allocating memory
- *
- * Returns name of attached handler, NULL if no handler is attached.
- * Caller must take care to free the returned string.
- */
+ 
 const char *scsi_dh_attached_handler_name(struct request_queue *q, gfp_t gfp)
 {
 	struct scsi_device *sdev;

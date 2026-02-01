@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Abilis Systems Single DVB-T Receiver
- * Copyright (C) 2014 Mauro Carvalho Chehab <mchehab+samsung@kernel.org>
- */
+ 
+ 
 
 #include "as102_fe_types.h"
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright Leon Hwang */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -19,21 +19,11 @@ struct {
 struct xdp_attach_error_ctx {
 	unsigned long unused;
 
-	/*
-	 * bpf does not support tracepoint __data_loc directly.
-	 *
-	 * Actually, this field is a 32 bit integer whose value encodes
-	 * information on where to find the actual data. The first 2 bytes is
-	 * the size of the data. The last 2 bytes is the offset from the start
-	 * of the tracepoint struct where the data begins.
-	 * -- https://github.com/iovisor/bpftrace/pull/1542
-	 */
-	__u32 msg; // __data_loc char[] msg;
+	 
+	__u32 msg; 
 };
 
-/*
- * Catch the error message at the tracepoint.
- */
+ 
 
 SEC("tp/xdp/bpf_xdp_link_attach_failed")
 int tp__xdp__bpf_xdp_link_attach_failed(struct xdp_attach_error_ctx *ctx)
@@ -47,8 +37,6 @@ int tp__xdp__bpf_xdp_link_attach_failed(struct xdp_attach_error_ctx *ctx)
 	return 0;
 }
 
-/*
- * Reuse the XDP program in xdp_dummy.c.
- */
+ 
 
 char LICENSE[] SEC("license") = "GPL";

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Exynos DRM Parallel output support.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- *
- * Contacts: Andrzej Hajda <a.hajda@samsung.com>
-*/
+
+ 
 
 #include <linux/of.h>
 #include <linux/of_graph.h>
@@ -65,7 +59,7 @@ static int exynos_dpi_get_modes(struct drm_connector *connector)
 {
 	struct exynos_dpi *ctx = connector_to_dpi(connector);
 
-	/* fimd timings gets precedence over panel modes */
+	 
 	if (ctx->vm) {
 		struct drm_display_mode *mode;
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Power Interface(SCPI) based hwmon sensor driver
- *
- * Copyright (C) 2015 ARM Ltd.
- * Punit Agrawal <punit.agrawal@arm.com>
- */
+
+ 
 
 #include <linux/hwmon.h>
 #include <linux/module.h>
@@ -39,19 +34,19 @@ struct scpi_sensors {
 };
 
 static const u32 gxbb_scpi_scale[] = {
-	[TEMPERATURE]	= 1,		/* (celsius)		*/
-	[VOLTAGE]	= 1000,		/* (millivolts)		*/
-	[CURRENT]	= 1000,		/* (milliamperes)	*/
-	[POWER]		= 1000000,	/* (microwatts)		*/
-	[ENERGY]	= 1000000,	/* (microjoules)	*/
+	[TEMPERATURE]	= 1,		 
+	[VOLTAGE]	= 1000,		 
+	[CURRENT]	= 1000,		 
+	[POWER]		= 1000000,	 
+	[ENERGY]	= 1000000,	 
 };
 
 static const u32 scpi_scale[] = {
-	[TEMPERATURE]	= 1000,		/* (millicelsius)	*/
-	[VOLTAGE]	= 1000,		/* (millivolts)		*/
-	[CURRENT]	= 1000,		/* (milliamperes)	*/
-	[POWER]		= 1000000,	/* (microwatts)		*/
-	[ENERGY]	= 1000000,	/* (microjoules)	*/
+	[TEMPERATURE]	= 1000,		 
+	[VOLTAGE]	= 1000,		 
+	[CURRENT]	= 1000,		 
+	[POWER]		= 1000000,	 
+	[ENERGY]	= 1000000,	 
 };
 
 static void scpi_scale_reading(u64 *value, struct sensor_data *sensor)
@@ -81,7 +76,7 @@ static int scpi_read_temp(struct thermal_zone_device *tz, int *temp)
 	return 0;
 }
 
-/* hwmon callback functions */
+ 
 static ssize_t
 scpi_show_sensor(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -99,12 +94,7 @@ scpi_show_sensor(struct device *dev, struct device_attribute *attr, char *buf)
 
 	scpi_scale_reading(&value, sensor);
 
-	/*
-	 * Temperature sensor values are treated as signed values based on
-	 * observation even though that is not explicitly specified, and
-	 * because an unsigned u64 temperature does not really make practical
-	 * sense especially when the temperature is below zero degrees Celsius.
-	 */
+	 
 	if (sensor->info.class == TEMPERATURE)
 		return sprintf(buf, "%lld\n", (s64)value);
 
@@ -252,14 +242,7 @@ static int scpi_hwmon_probe(struct platform_device *pdev)
 	if (IS_ERR(hwdev))
 		return PTR_ERR(hwdev);
 
-	/*
-	 * Register the temperature sensors with the thermal framework
-	 * to allow their usage in setting up the thermal zones from
-	 * device tree.
-	 *
-	 * NOTE: Not all temperature sensors maybe used for thermal
-	 * control
-	 */
+	 
 	INIT_LIST_HEAD(&scpi_sensors->thermal_zones);
 	for (i = 0; i < nr_sensors; i++) {
 		struct sensor_data *sensor = &scpi_sensors->data[i];
@@ -279,12 +262,7 @@ static int scpi_hwmon_probe(struct platform_device *pdev)
 						  sensor->info.sensor_id,
 						  zone,
 						  &scpi_sensor_ops);
-		/*
-		 * The call to thermal_zone_of_sensor_register returns
-		 * an error for sensors that are not associated with
-		 * any thermal zones or if the thermal subsystem is
-		 * not configured.
-		 */
+		 
 		if (IS_ERR(z))
 			devm_kfree(dev, zone);
 	}

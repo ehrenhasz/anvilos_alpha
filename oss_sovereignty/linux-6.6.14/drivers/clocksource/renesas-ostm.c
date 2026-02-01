@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas Timer Support - OSTM
- *
- * Copyright (C) 2017 Renesas Electronics America, Inc.
- * Copyright (C) 2017 Chris Brandt
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -16,25 +11,17 @@
 
 #include "timer-of.h"
 
-/*
- * The OSTM contains independent channels.
- * The first OSTM channel probed will be set up as a free running
- * clocksource. Additionally we will use this clocksource for the system
- * schedule timer sched_clock().
- *
- * The second (or more) channel probed will be set up as an interrupt
- * driven clock event.
- */
+ 
 
-static void __iomem *system_clock;	/* For sched_clock() */
+static void __iomem *system_clock;	 
 
-/* OSTM REGISTERS */
-#define	OSTM_CMP		0x000	/* RW,32 */
-#define	OSTM_CNT		0x004	/* R,32 */
-#define	OSTM_TE			0x010	/* R,8 */
-#define	OSTM_TS			0x014	/* W,8 */
-#define	OSTM_TT			0x018	/* W,8 */
-#define	OSTM_CTL		0x020	/* RW,8 */
+ 
+#define	OSTM_CMP		0x000	 
+#define	OSTM_CNT		0x004	 
+#define	OSTM_TE			0x010	 
+#define	OSTM_TS			0x014	 
+#define	OSTM_TT			0x018	 
+#define	OSTM_CTL		0x020	 
 
 #define	TE			0x01
 #define	TS			0x01
@@ -48,11 +35,7 @@ static void ostm_timer_stop(struct timer_of *to)
 	if (readb(timer_of_base(to) + OSTM_TE) & TE) {
 		writeb(TT, timer_of_base(to) + OSTM_TT);
 
-		/*
-		 * Read back the register simply to confirm the write operation
-		 * has completed since I/O writes can sometimes get queued by
-		 * the bus architecture.
-		 */
+		 
 		while (readb(timer_of_base(to) + OSTM_TE) & TE)
 			;
 	}
@@ -134,7 +117,7 @@ static irqreturn_t ostm_timer_interrupt(int irq, void *dev_id)
 	if (clockevent_state_oneshot(ced))
 		ostm_timer_stop(to_timer_of(ced));
 
-	/* notify clockevent layer */
+	 
 	if (ced->event_handler)
 		ced->event_handler(ced);
 
@@ -179,9 +162,7 @@ static int __init ostm_init(struct device_node *np)
 
 	to->flags = TIMER_OF_BASE | TIMER_OF_CLOCK;
 	if (system_clock) {
-		/*
-		 * clock sources don't use interrupts, clock events do
-		 */
+		 
 		to->flags |= TIMER_OF_IRQ;
 		to->of_irq.flags = IRQF_TIMER | IRQF_IRQPOLL;
 		to->of_irq.handler = ostm_timer_interrupt;
@@ -191,10 +172,7 @@ static int __init ostm_init(struct device_node *np)
 	if (ret)
 		goto err_reset;
 
-	/*
-	 * First probed device will be used as system clocksource. Any
-	 * additional devices will be used as clock events.
-	 */
+	 
 	if (!system_clock) {
 		ret = ostm_init_clksrc(to);
 		if (ret)
@@ -234,7 +212,7 @@ static int __init ostm_probe(struct platform_device *pdev)
 
 static const struct of_device_id ostm_of_table[] = {
 	{ .compatible = "renesas,ostm", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver ostm_device_driver = {

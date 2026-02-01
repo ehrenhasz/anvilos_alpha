@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* -
- * net/sched/act_ct.c  Connection Tracking action
- *
- * Authors:   Paul Blakey <paulb@mellanox.com>
- *            Yossi Kuperman <yossiku@mellanox.com>
- *            Marcelo Ricardo Leitner <marcelo.leitner@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -42,7 +36,7 @@ static struct rhashtable zones_ht;
 static DEFINE_MUTEX(zones_mutex);
 
 struct tcf_ct_flow_table {
-	struct rhash_head node; /* In zones tables */
+	struct rhash_head node;  
 
 	struct rcu_work rwork;
 	struct nf_flowtable nf_ft;
@@ -83,10 +77,7 @@ static void tcf_ct_add_mangle_action(struct flow_action *action,
 	entry->mangle.val = val;
 }
 
-/* The following nat helper functions check if the inverted reverse tuple
- * (target) is different then the current dir tuple - meaning nat for ports
- * and/or ip is needed, and add the relevant mangle actions.
- */
+ 
 static void
 tcf_ct_flow_table_add_action_nat_ipv4(const struct nf_conntrack_tuple *tuple,
 				      struct nf_conntrack_tuple target,
@@ -182,7 +173,7 @@ static void tcf_ct_flow_table_add_action_meta(struct nf_conn *ct,
 #if IS_ENABLED(CONFIG_NF_CONNTRACK_MARK)
 	entry->ct_metadata.mark = READ_ONCE(ct->mark);
 #endif
-	/* aligns with the CT reference on the SKB nf_ct_set */
+	 
 	entry->ct_metadata.cookie = (unsigned long)ct | ctinfo;
 	entry->ct_metadata.orig_dir = dir == IP_CT_DIR_ORIGINAL;
 
@@ -270,7 +261,7 @@ static int tcf_ct_flow_table_fill_actions(struct net *net,
 	return 0;
 
 err_nat:
-	/* Clear filled actions */
+	 
 	for (i = num_entries; i < action->num_entries; i++)
 		memset(&action->entries[i], 0, sizeof(action->entries[i]));
 	action->num_entries = num_entries;
@@ -484,7 +475,7 @@ static void tcf_ct_flow_table_process_conn(struct tcf_ct_flow_table *ct_ft,
 			return;
 
 		tuple = &ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple;
-		/* No support for GRE v1 */
+		 
 		if (tuple->src.u.gre.key || tuple->dst.u.gre.key)
 			return;
 		break;
@@ -680,15 +671,11 @@ static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
 
 	if (dir == FLOW_OFFLOAD_DIR_REPLY &&
 	    !test_bit(NF_FLOW_HW_BIDIRECTIONAL, &flow->flags)) {
-		/* Only offload reply direction after connection became
-		 * assured.
-		 */
+		 
 		if (test_bit(IPS_ASSURED_BIT, &ct->status))
 			set_bit(NF_FLOW_HW_BIDIRECTIONAL, &flow->flags);
 		else if (test_bit(NF_FLOW_HW_ESTABLISHED, &flow->flags))
-			/* If flow_table flow has already been updated to the
-			 * established state, then don't refresh.
-			 */
+			 
 			return false;
 		force_refresh = true;
 	}
@@ -708,7 +695,7 @@ static bool tcf_ct_flow_table_lookup(struct tcf_ct_params *p,
 	tcf_ct_flow_ct_ext_ifidx_update(flow);
 	flow_offload_refresh(nf_ft, flow, force_refresh);
 	if (!test_bit(IPS_ASSURED_BIT, &ct->status)) {
-		/* Process this flow in SW to allow promoting to ASSURED */
+		 
 		return false;
 	}
 
@@ -733,11 +720,11 @@ static void tcf_ct_flow_tables_uninit(void)
 static struct tc_action_ops act_ct_ops;
 
 struct tc_ct_action_net {
-	struct tc_action_net tn; /* Must be first */
+	struct tc_action_net tn;  
 	bool labels;
 };
 
-/* Determine whether skb->_nfct is equal to the result of conntrack lookup. */
+ 
 static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
 				   struct tcf_ct_params *p)
 {
@@ -759,7 +746,7 @@ static bool tcf_ct_skb_nfct_cached(struct net *net, struct sk_buff *skb,
 			goto drop_ct;
 	}
 
-	/* Force conntrack entry direction. */
+	 
 	if ((p->ct_action & TCA_CT_ACT_FORCE) &&
 	    CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL) {
 		if (nf_ct_is_confirmed(ct))
@@ -839,7 +826,7 @@ static int tcf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
 	u8 proto;
 	u16 mru;
 
-	/* Previously seen (loopback)? Ignore. */
+	 
 	ct = nf_ct_get(skb, &ctinfo);
 	if ((ct && !nf_ct_is_template(ct)) || ctinfo == IP_CT_UNTRACKED)
 		return 0;
@@ -988,9 +975,7 @@ TC_INDIRECT_SCOPE int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
 	if (family == NFPROTO_UNSPEC)
 		goto drop;
 
-	/* The conntrack module expects to be working at L3.
-	 * We also try to pull the IPv4/6 header to linear area
-	 */
+	 
 	nh_ofs = skb_network_offset(skb);
 	skb_pull_rcsum(skb, nh_ofs);
 	err = tcf_ct_handle_fragments(net, skb, family, p->zone, &defrag);
@@ -1001,11 +986,7 @@ TC_INDIRECT_SCOPE int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
 	if (err)
 		goto drop;
 
-	/* If we are recirculating packets to match on ct fields and
-	 * committing with a separate ct action, then we don't need to
-	 * actually run the packet through conntrack twice unless it's for a
-	 * different zone.
-	 */
+	 
 	cached = tcf_ct_skb_nfct_cached(net, skb, p);
 	if (!cached) {
 		if (tcf_ct_flow_table_lookup(p, skb, family)) {
@@ -1013,7 +994,7 @@ TC_INDIRECT_SCOPE int tcf_ct_act(struct sk_buff *skb, const struct tc_action *a,
 			goto do_nat;
 		}
 
-		/* Associate skb with specified zone. */
+		 
 		if (tmpl) {
 			nf_conntrack_put(skb_nfct(skb));
 			nf_conntrack_get(&tmpl->ct_general);
@@ -1062,9 +1043,7 @@ do_nat:
 		if (!nf_ct_is_confirmed(ct))
 			nf_conn_act_ct_ext_add(skb, ct, ctinfo);
 
-		/* This will take care of sending queued events
-		 * even if the connection is already confirmed.
-		 */
+		 
 		if (nf_conntrack_confirm(skb) != NF_ACCEPT)
 			goto drop;
 	}

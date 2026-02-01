@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2017 Omnibond Systems, L.L.C.
- */
+
+ 
 
 #include "protocol.h"
 #include "orangefs-kernel.h"
@@ -23,40 +21,7 @@ struct orangefs_dir {
 #define PART_SIZE (1<<24)
 #define PART_MASK (~(PART_SIZE - 1))
 
-/*
- * There can be up to 512 directory entries.  Each entry is encoded as
- * follows:
- * 4 bytes: string size (n)
- * n bytes: string
- * 1 byte: trailing zero
- * padding to 8 bytes
- * 16 bytes: khandle
- * padding to 8 bytes
- *
- * The trailer_buf starts with a struct orangefs_readdir_response_s
- * which must be skipped to get to the directory data.
- *
- * The data which is received from the userspace daemon is termed a
- * part and is stored in a linked list in case more than one part is
- * needed for a large directory.
- *
- * The position pointer (ctx->pos) encodes the part and offset on which
- * to begin reading at.  Bits above PART_SHIFT encode the part and bits
- * below PART_SHIFT encode the offset.  Parts are stored in a linked
- * list which grows as data is received from the server.  The overhead
- * associated with managing the list is presumed to be small compared to
- * the overhead of communicating with the server.
- *
- * As data is received from the server, it is placed at the end of the
- * part list.  Data is parsed from the current position as it is needed.
- * When data is determined to be corrupt, it is either because the
- * userspace component has sent back corrupt data or because the file
- * pointer has been moved to an invalid location.  Since the two cannot
- * be differentiated, return EIO.
- *
- * Part zero is synthesized to contains `.' and `..'.  Part one is the
- * first part of the part list.
- */
+ 
 
 static int do_readdir(struct orangefs_inode_s *oi,
     struct orangefs_dir *od, struct dentry *dentry,
@@ -65,12 +30,7 @@ static int do_readdir(struct orangefs_inode_s *oi,
 	struct orangefs_readdir_response_s *resp;
 	int bufi, r;
 
-	/*
-	 * Despite the badly named field, readdir does not use shared
-	 * memory.  However, there are a limited number of readdir
-	 * slots, which must be allocated here.  This flag simply tells
-	 * the op scheduler to return the op here for retry.
-	 */
+	 
 	op->uses_shared_memory = 1;
 	op->upcall.req.readdir.refn = oi->refn;
 	op->upcall.req.readdir.token = od->token;
@@ -112,10 +72,7 @@ again:
 		return op->downcall.status;
 	}
 
-	/*
-	 * The maximum size is size per entry times the 512 entries plus
-	 * the header.  This is well under the limit.
-	 */
+	 
 	if (op->downcall.trailer_size > PART_SIZE) {
 		vfree(op->downcall.trailer_buf);
 		od->error = -EIO;
@@ -196,14 +153,11 @@ static int fill_from_part(struct orangefs_dir_part *part,
 	char *s;
 	i = ctx->pos & ~PART_MASK;
 
-	/* The file offset from userspace is too large. */
+	 
 	if (i > part->len)
 		return 1;
 
-	/*
-	 * If the seek pointer is positioned just before an entry it
-	 * should find the next entry.
-	 */
+	 
 	if (i % 8)
 		i = i + (8 - i%8)%8;
 
@@ -211,10 +165,7 @@ static int fill_from_part(struct orangefs_dir_part *part,
 		if (part->len < i + sizeof *len)
 			break;
 		len = (void *)part + offset + i;
-		/*
-		 * len is the size of the string itself.  padlen is the
-		 * total size of the encoded string.
-		 */
+		 
 		padlen = (sizeof *len + *len + 1) +
 		    (8 - (sizeof *len + *len + 1)%8)%8;
 		if (part->len < i + padlen + sizeof *khandle)
@@ -252,7 +203,7 @@ static int orangefs_dir_fill(struct orangefs_inode_s *oi,
 		count--;
 		part = part->next;
 	}
-	/* This means the userspace file offset is invalid. */
+	 
 	if (count) {
 		od->error = -EIO;
 		return -EIO;
@@ -265,12 +216,10 @@ static int orangefs_dir_fill(struct orangefs_inode_s *oi,
 			od->error = r;
 			return r;
 		} else if (r == 0) {
-			/* Userspace buffer is full. */
+			 
 			break;
 		} else {
-			/*
-			 * The part ran out of data.  Move to the next
-			 * part. */
+			 
 			ctx->pos = (ctx->pos & PART_MASK) +
 			    (1 << PART_SHIFT);
 			part = part->next;
@@ -283,10 +232,7 @@ static loff_t orangefs_dir_llseek(struct file *file, loff_t offset,
     int whence)
 {
 	struct orangefs_dir *od = file->private_data;
-	/*
-	 * Delete the stored data so userspace sees new directory
-	 * entries.
-	 */
+	 
 	if (!whence && offset < od->end) {
 		struct orangefs_dir_part *part = od->part;
 		while (part) {
@@ -327,19 +273,13 @@ static int orangefs_dir_iterate(struct file *file,
 		ctx->pos = 1 << PART_SHIFT;
 	}
 
-	/*
-	 * The seek position is in the first synthesized part but is not
-	 * valid.
-	 */
+	 
 	if ((ctx->pos & PART_MASK) == 0)
 		return -EIO;
 
 	r = 0;
 
-	/*
-	 * Must read more if the user has sought past what has been read
-	 * so far.  Stop a user who has sought past the end.
-	 */
+	 
 	while (od->token != ORANGEFS_ITERATE_END &&
 	    ctx->pos > od->end) {
 		r = orangefs_dir_more(oi, od, dentry);
@@ -349,14 +289,14 @@ static int orangefs_dir_iterate(struct file *file,
 	if (od->token == ORANGEFS_ITERATE_END && ctx->pos > od->end)
 		return -EIO;
 
-	/* Then try to fill if there's any left in the buffer. */
+	 
 	if (ctx->pos < od->end) {
 		r = orangefs_dir_fill(oi, od, dentry, ctx);
 		if (r)
 			return r;
 	}
 
-	/* Finally get some more and try to fill. */
+	 
 	if (od->token != ORANGEFS_ITERATE_END) {
 		r = orangefs_dir_more(oi, od, dentry);
 		if (r)

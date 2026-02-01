@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UNISOC UFS Host Controller driver
- *
- * Copyright (C) 2022 Unisoc, Inc.
- * Author: Zhe Wang <zhe.wang1@unisoc.com>
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/mfd/syscon.h>
@@ -98,7 +93,7 @@ static int ufs_sprd_parse_dt(struct device *dev, struct ufs_hba *hba, struct ufs
 	struct ufs_sprd_priv *priv = host->priv;
 	int ret = 0;
 
-	/* Parse UFS reset ctrl info */
+	 
 	for (i = 0; i < SPRD_UFS_RST_MAX; i++) {
 		if (!priv->rci[i].name)
 			continue;
@@ -107,7 +102,7 @@ static int ufs_sprd_parse_dt(struct device *dev, struct ufs_hba *hba, struct ufs
 			goto out;
 	}
 
-	/* Parse UFS syscon reg info */
+	 
 	for (i = 0; i < SPRD_UFS_SYSCON_MAX; i++) {
 		if (!priv->sysci[i].name)
 			continue;
@@ -116,7 +111,7 @@ static int ufs_sprd_parse_dt(struct device *dev, struct ufs_hba *hba, struct ufs
 			goto out;
 	}
 
-	/* Parse UFS vreg info */
+	 
 	for (i = 0; i < SPRD_UFS_VREG_MAX; i++) {
 		if (!priv->vregi[i].name)
 			continue;
@@ -224,7 +219,7 @@ static void ufs_sprd_n6_key_acc_enable(struct ufs_hba *hba)
 	struct arm_smccc_res res;
 
 check_hce:
-	/* Key access only can be enabled under HCE enable */
+	 
 	val = ufshcd_readl(hba, REG_CONTROLLER_ENABLE);
 	if (!(val & CONTROLLER_ENABLE)) {
 		ufs_sprd_n6_host_reset(hba);
@@ -287,11 +282,11 @@ static int ufs_sprd_n6_phy_init(struct ufs_hba *hba)
 	ufshcd_dme_set(hba, UIC_ARG_MIB(CBRATESEL), 0x01);
 
 	do {
-		/* phy_sram_init_done */
+		 
 		ufs_sprd_regmap_read(priv, SPRD_UFS_ANLG, 0xc, &val);
 		if ((val & 0x1) == 0x1) {
 			for (offset = 0x40; offset < 0x42; offset++) {
-				/* Lane afe calibration */
+				 
 				ufshcd_dme_set(hba, UIC_ARG_MIB(CBCREGADDRLSB), 0x1c);
 				ufshcd_dme_set(hba, UIC_ARG_MIB(CBCREGADDRMSB), offset);
 				ufshcd_dme_set(hba, UIC_ARG_MIB(CBCREGWRLSB), 0x04);
@@ -310,7 +305,7 @@ static int ufs_sprd_n6_phy_init(struct ufs_hba *hba)
 	goto out;
 
 update_phy:
-	/* phy_sram_ext_ld_done */
+	 
 	ufs_sprd_regmap_update(priv, SPRD_UFS_ANLG, 0xc, 0x2, 0);
 	ufshcd_dme_set(hba, UIC_ARG_MIB(VS_MPHYCFGUPDT), 0x01);
 	ufshcd_dme_set(hba, UIC_ARG_MIB(VS_MPHYDISABLE), 0x0);
@@ -326,9 +321,9 @@ static int sprd_ufs_n6_hce_enable_notify(struct ufs_hba *hba,
 	struct ufs_sprd_priv *priv = ufs_sprd_get_priv_data(hba);
 
 	if (status == PRE_CHANGE) {
-		/* phy_sram_ext_ld_done */
+		 
 		ufs_sprd_regmap_update(priv, SPRD_UFS_ANLG, 0xc, 0x2, 0x2);
-		/* phy_sram_bypass */
+		 
 		ufs_sprd_regmap_update(priv, SPRD_UFS_ANLG, 0xc, 0x4, 0x4);
 
 		ufs_sprd_n6_host_reset(hba);
@@ -358,10 +353,7 @@ static void sprd_ufs_n6_h8_notify(struct ufs_hba *hba,
 
 	if (status == PRE_CHANGE) {
 		if (cmd == UIC_CMD_DME_HIBER_ENTER)
-			/*
-			 * Disable UIC COMPL INTR to prevent access to UFSHCI after
-			 * checking HCS.UPMCRS
-			 */
+			 
 			ufs_sprd_ctrl_uic_compl(hba, false);
 
 		if (cmd == UIC_CMD_DME_HIBER_EXIT) {

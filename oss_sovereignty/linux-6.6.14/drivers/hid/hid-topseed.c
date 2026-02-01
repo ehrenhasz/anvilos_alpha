@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for TopSeed Cyberlink remote
- *
- *  Copyright (c) 2008 Lev Babiev
- *  based on hid-cherry driver
- *
- *  Modified to also support BTC "Emprex 3009URF III Vista MCE Remote" by
- *  Wayne Thomas 2010.
- *
- *  Modified to support Conceptronic CLLRCMCE by
- *  Kees Bakker 2010.
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>

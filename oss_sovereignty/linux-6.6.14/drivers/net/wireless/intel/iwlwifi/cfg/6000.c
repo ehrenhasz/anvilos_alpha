@@ -1,29 +1,25 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- *
- * Copyright(c) 2008 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2018 - 2020, 2023 Intel Corporation
- *****************************************************************************/
+
+ 
 
 #include <linux/module.h>
 #include <linux/stringify.h>
 #include "iwl-config.h"
 #include "iwl-agn-hw.h"
-#include "dvm/commands.h" /* needed for BT for now */
+#include "dvm/commands.h"  
 
-/* Highest firmware API version supported */
+ 
 #define IWL6000_UCODE_API_MAX 6
 #define IWL6050_UCODE_API_MAX 5
 #define IWL6000G2_UCODE_API_MAX 6
 #define IWL6035_UCODE_API_MAX 6
 
-/* Lowest firmware API version supported */
+ 
 #define IWL6000_UCODE_API_MIN 4
 #define IWL6050_UCODE_API_MIN 4
 #define IWL6000G2_UCODE_API_MIN 5
 #define IWL6035_UCODE_API_MIN 6
 
-/* EEPROM versions */
+ 
 #define EEPROM_6000_TX_POWER_VERSION	(4)
 #define EEPROM_6000_EEPROM_VERSION	(0x423)
 #define EEPROM_6050_TX_POWER_VERSION	(4)
@@ -58,7 +54,7 @@ static const struct iwl_base_params iwl6000_base_params = {
 	.led_compensation = 51,
 	.wd_timeout = IWL_DEF_WD_TIMEOUT,
 	.max_event_log_size = 512,
-	.shadow_reg_enable = false, /* TODO: fix bugs using this feature */
+	.shadow_reg_enable = false,  
 	.scd_chain_ext_wa = true,
 };
 
@@ -71,7 +67,7 @@ static const struct iwl_base_params iwl6050_base_params = {
 	.led_compensation = 51,
 	.wd_timeout = IWL_DEF_WD_TIMEOUT,
 	.max_event_log_size = 1024,
-	.shadow_reg_enable = false, /* TODO: fix bugs using this feature */
+	.shadow_reg_enable = false,  
 	.scd_chain_ext_wa = true,
 };
 
@@ -84,13 +80,13 @@ static const struct iwl_base_params iwl6000_g2_base_params = {
 	.led_compensation = 57,
 	.wd_timeout = IWL_LONG_WD_TIMEOUT,
 	.max_event_log_size = 512,
-	.shadow_reg_enable = false, /* TODO: fix bugs using this feature */
+	.shadow_reg_enable = false,  
 	.scd_chain_ext_wa = true,
 };
 
 static const struct iwl_ht_params iwl6000_ht_params = {
 	.ht_greenfield_support = true,
-	.use_rts_for_aggregation = true, /* use rts/cts protection */
+	.use_rts_for_aggregation = true,  
 	.ht40_bands = BIT(NL80211_BAND_2GHZ) | BIT(NL80211_BAND_5GHZ),
 };
 
@@ -244,9 +240,7 @@ const struct iwl_cfg iwl130_bg_cfg = {
 	.rx_with_siso_diversity = true,
 };
 
-/*
- * "i": Internal configuration, use internal Power Amplifier
- */
+ 
 #define IWL_DEVICE_6000i					\
 	.fw_name_pre = IWL6000_FW_PRE,				\
 	.ucode_api_max = IWL6000_UCODE_API_MAX,			\
@@ -254,8 +248,8 @@ const struct iwl_cfg iwl130_bg_cfg = {
 	.trans.device_family = IWL_DEVICE_FAMILY_6000i,		\
 	.max_inst_size = IWL60_RTC_INST_SIZE,			\
 	.max_data_size = IWL60_RTC_DATA_SIZE,			\
-	.valid_tx_ant = ANT_BC,		/* .cfg overwrite */	\
-	.valid_rx_ant = ANT_BC,		/* .cfg overwrite */	\
+	.valid_tx_ant = ANT_BC,		 	\
+	.valid_rx_ant = ANT_BC,		 	\
 	.nvm_ver = EEPROM_6000_EEPROM_VERSION,		\
 	.nvm_calib_ver = EEPROM_6000_TX_POWER_VERSION,	\
 	.trans.base_params = &iwl6000_base_params,		\
@@ -285,8 +279,8 @@ const struct iwl_cfg iwl6000i_2bg_cfg = {
 	.trans.device_family = IWL_DEVICE_FAMILY_6050,		\
 	.max_inst_size = IWL60_RTC_INST_SIZE,			\
 	.max_data_size = IWL60_RTC_DATA_SIZE,			\
-	.valid_tx_ant = ANT_AB,		/* .cfg overwrite */	\
-	.valid_rx_ant = ANT_AB,		/* .cfg overwrite */	\
+	.valid_tx_ant = ANT_AB,		 	\
+	.valid_rx_ant = ANT_AB,		 	\
 	.nvm_ver = EEPROM_6050_EEPROM_VERSION,		\
 	.nvm_calib_ver = EEPROM_6050_TX_POWER_VERSION,	\
 	.trans.base_params = &iwl6050_base_params,		\

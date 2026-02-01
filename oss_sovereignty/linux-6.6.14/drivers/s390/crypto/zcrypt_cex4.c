@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright IBM Corp. 2012, 2022
- *  Author(s): Holger Dengler <hd@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -21,18 +18,14 @@
 #include "zcrypt_ccamisc.h"
 #include "zcrypt_ep11misc.h"
 
-#define CEX4A_MIN_MOD_SIZE	  1	/*    8 bits	*/
-#define CEX4A_MAX_MOD_SIZE_2K	256	/* 2048 bits	*/
-#define CEX4A_MAX_MOD_SIZE_4K	512	/* 4096 bits	*/
+#define CEX4A_MIN_MOD_SIZE	  1	 
+#define CEX4A_MAX_MOD_SIZE_2K	256	 
+#define CEX4A_MAX_MOD_SIZE_4K	512	 
 
-#define CEX4C_MIN_MOD_SIZE	 16	/*  256 bits	*/
-#define CEX4C_MAX_MOD_SIZE	512	/* 4096 bits	*/
+#define CEX4C_MIN_MOD_SIZE	 16	 
+#define CEX4C_MAX_MOD_SIZE	512	 
 
-/* Waiting time for requests to be processed.
- * Currently there are some types of request which are not deterministic.
- * But the maximum time limit managed by the stomper code is set to 60sec.
- * Hence we have to wait at least that time period.
- */
+ 
 #define CEX4_CLEANUP_TIME	(900 * HZ)
 
 MODULE_AUTHOR("IBM Corporation");
@@ -51,7 +44,7 @@ static struct ap_device_id zcrypt_cex4_card_ids[] = {
 	  .match_flags = AP_DEVICE_ID_MATCH_CARD_TYPE },
 	{ .dev_type = AP_DEVICE_TYPE_CEX8,
 	  .match_flags = AP_DEVICE_ID_MATCH_CARD_TYPE },
-	{ /* end of list */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(ap, zcrypt_cex4_card_ids);
@@ -67,14 +60,12 @@ static struct ap_device_id zcrypt_cex4_queue_ids[] = {
 	  .match_flags = AP_DEVICE_ID_MATCH_QUEUE_TYPE },
 	{ .dev_type = AP_DEVICE_TYPE_CEX8,
 	  .match_flags = AP_DEVICE_ID_MATCH_QUEUE_TYPE },
-	{ /* end of list */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(ap, zcrypt_cex4_queue_ids);
 
-/*
- * CCA card additional device attributes
- */
+ 
 static ssize_t cca_serialnr_show(struct device *dev,
 				 struct device_attribute *attr,
 				 char *buf)
@@ -103,9 +94,7 @@ static const struct attribute_group cca_card_attr_grp = {
 	.attrs = cca_card_attrs,
 };
 
- /*
-  * CCA queue additional device attributes
-  */
+  
 static ssize_t cca_mkvps_show(struct device *dev,
 			      struct device_attribute *attr,
 			      char *buf)
@@ -203,9 +192,7 @@ static const struct attribute_group cca_queue_attr_grp = {
 	.attrs = cca_queue_attrs,
 };
 
-/*
- * EP11 card additional device attributes
- */
+ 
 static ssize_t ep11_api_ordinalnr_show(struct device *dev,
 				       struct device_attribute *attr,
 				       char *buf)
@@ -324,9 +311,7 @@ static const struct attribute_group ep11_card_attr_grp = {
 	.attrs = ep11_card_attrs,
 };
 
-/*
- * EP11 queue additional device attributes
- */
+ 
 
 static ssize_t ep11_mkvps_show(struct device *dev,
 			       struct device_attribute *attr,
@@ -419,18 +404,10 @@ static const struct attribute_group ep11_queue_attr_grp = {
 	.attrs = ep11_queue_attrs,
 };
 
-/*
- * Probe function for CEX[45678] card device. It always
- * accepts the AP device since the bus_match already checked
- * the hardware type.
- * @ap_dev: pointer to the AP device.
- */
+ 
 static int zcrypt_cex4_card_probe(struct ap_device *ap_dev)
 {
-	/*
-	 * Normalized speed ratings per crypto adapter
-	 * MEX_1k, MEX_2k, MEX_4k, CRT_1k, CRT_2k, CRT_4k, RNG, SECKEY
-	 */
+	 
 	static const int CEX4A_SPEED_IDX[NUM_OPS] = {
 		 14,  19, 249, 42, 228, 1458, 0, 0};
 	static const int CEX5A_SPEED_IDX[NUM_OPS] = {
@@ -489,16 +466,12 @@ static int zcrypt_cex4_card_probe(struct ap_device *ap_dev)
 		} else if (ac->ap_dev.device_type == AP_DEVICE_TYPE_CEX7) {
 			zc->type_string = "CEX7A";
 			zc->speed_rating = CEX7A_SPEED_IDX;
-			/* wrong user space type, just for compatibility
-			 * with the ZCRYPT_STATUS_MASK ioctl.
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX6;
 		} else {
 			zc->type_string = "CEX8A";
 			zc->speed_rating = CEX8A_SPEED_IDX;
-			/* wrong user space type, just for compatibility
-			 * with the ZCRYPT_STATUS_MASK ioctl.
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX6;
 		}
 		zc->min_mod_size = CEX4A_MIN_MOD_SIZE;
@@ -516,37 +489,27 @@ static int zcrypt_cex4_card_probe(struct ap_device *ap_dev)
 		if (ac->ap_dev.device_type == AP_DEVICE_TYPE_CEX4) {
 			zc->type_string = "CEX4C";
 			zc->speed_rating = CEX4C_SPEED_IDX;
-			/* wrong user space type, must be CEX3C
-			 * just keep it for cca compatibility
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX3C;
 		} else if (ac->ap_dev.device_type == AP_DEVICE_TYPE_CEX5) {
 			zc->type_string = "CEX5C";
 			zc->speed_rating = CEX5C_SPEED_IDX;
-			/* wrong user space type, must be CEX3C
-			 * just keep it for cca compatibility
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX3C;
 		} else if (ac->ap_dev.device_type == AP_DEVICE_TYPE_CEX6) {
 			zc->type_string = "CEX6C";
 			zc->speed_rating = CEX6C_SPEED_IDX;
-			/* wrong user space type, must be CEX3C
-			 * just keep it for cca compatibility
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX3C;
 		} else if (ac->ap_dev.device_type == AP_DEVICE_TYPE_CEX7) {
 			zc->type_string = "CEX7C";
 			zc->speed_rating = CEX7C_SPEED_IDX;
-			/* wrong user space type, must be CEX3C
-			 * just keep it for cca compatibility
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX3C;
 		} else {
 			zc->type_string = "CEX8C";
 			zc->speed_rating = CEX8C_SPEED_IDX;
-			/* wrong user space type, must be CEX3C
-			 * just keep it for cca compatibility
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX3C;
 		}
 		zc->min_mod_size = CEX4C_MIN_MOD_SIZE;
@@ -568,16 +531,12 @@ static int zcrypt_cex4_card_probe(struct ap_device *ap_dev)
 		} else if (ac->ap_dev.device_type == AP_DEVICE_TYPE_CEX7) {
 			zc->type_string = "CEX7P";
 			zc->speed_rating = CEX7P_SPEED_IDX;
-			/* wrong user space type, just for compatibility
-			 * with the ZCRYPT_STATUS_MASK ioctl.
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX6;
 		} else {
 			zc->type_string = "CEX8P";
 			zc->speed_rating = CEX8P_SPEED_IDX;
-			/* wrong user space type, just for compatibility
-			 * with the ZCRYPT_STATUS_MASK ioctl.
-			 */
+			 
 			zc->user_space_type = ZCRYPT_CEX6;
 		}
 		zc->min_mod_size = CEX4C_MIN_MOD_SIZE;
@@ -614,10 +573,7 @@ static int zcrypt_cex4_card_probe(struct ap_device *ap_dev)
 	return rc;
 }
 
-/*
- * This is called to remove the CEX[45678] card driver
- * information if an AP card device is removed.
- */
+ 
 static void zcrypt_cex4_card_remove(struct ap_device *ap_dev)
 {
 	struct zcrypt_card *zc = dev_get_drvdata(&ap_dev->device);
@@ -638,12 +594,7 @@ static struct ap_driver zcrypt_cex4_card_driver = {
 	.flags = AP_DRIVER_FLAG_DEFAULT,
 };
 
-/*
- * Probe function for CEX[45678] queue device. It always
- * accepts the AP device since the bus_match already checked
- * the hardware type.
- * @ap_dev: pointer to the AP device.
- */
+ 
 static int zcrypt_cex4_queue_probe(struct ap_device *ap_dev)
 {
 	struct ap_queue *aq = to_ap_queue(&ap_dev->device);
@@ -704,10 +655,7 @@ static int zcrypt_cex4_queue_probe(struct ap_device *ap_dev)
 	return rc;
 }
 
-/*
- * This is called to remove the CEX[45678] queue driver
- * information if an AP queue device is removed.
- */
+ 
 static void zcrypt_cex4_queue_remove(struct ap_device *ap_dev)
 {
 	struct zcrypt_queue *zq = dev_get_drvdata(&ap_dev->device);

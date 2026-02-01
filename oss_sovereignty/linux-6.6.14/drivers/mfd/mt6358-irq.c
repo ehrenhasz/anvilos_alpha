@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 MediaTek Inc.
+
+
+
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -107,13 +107,13 @@ static void pmic_irq_sync_unlock(struct irq_data *data)
 		if (irqd->enable_hwirq[i] == irqd->cache_hwirq[i])
 			continue;
 
-		/* Find out the IRQ group */
+		 
 		top_gp = 0;
 		while ((top_gp + 1) < irqd->num_top &&
 		       i >= irqd->pmic_ints[top_gp + 1].hwirq_base)
 			top_gp++;
 
-		/* Find the IRQ registers */
+		 
 		gp_offset = i - irqd->pmic_ints[top_gp].hwirq_base;
 		int_regs = gp_offset / MTK_PMIC_REG_WIDTH;
 		shift = gp_offset % MTK_PMIC_REG_WIDTH;
@@ -264,7 +264,7 @@ int mt6358_irq_init(struct mt6397_chip *chip)
 	if (!irqd->cache_hwirq)
 		return -ENOMEM;
 
-	/* Disable all interrupts for initializing */
+	 
 	for (i = 0; i < irqd->num_top; i++) {
 		for (j = 0; j < irqd->pmic_ints[i].num_int_regs; j++)
 			regmap_write(chip->regmap,

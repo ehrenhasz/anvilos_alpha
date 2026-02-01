@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1
+
 #include <sys/types.h>
 #include <sys/stat.h>
 #include <fcntl.h>
@@ -82,7 +82,7 @@ size_t syscall_arg__scnprintf_open_flags(char *bf, size_t size, struct syscall_a
 	int flags = arg->val;
 
 	if (!(flags & O_CREAT))
-		arg->mask |= 1 << (arg->idx + 1); /* Mask the mode parm */
+		arg->mask |= 1 << (arg->idx + 1);  
 
 	return open__scnprintf_flags(flags, bf, size, arg->show_string_prefix);
 }

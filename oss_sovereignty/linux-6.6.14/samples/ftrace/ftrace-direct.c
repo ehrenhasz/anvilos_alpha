@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 
-#include <linux/sched.h> /* for wake_up_process() */
+#include <linux/sched.h>  
 #include <linux/ftrace.h>
 #ifndef CONFIG_ARM64
 #include <asm/asm-offsets.h>
@@ -39,7 +39,7 @@ asm (
 "	.popsection\n"
 );
 
-#endif /* CONFIG_X86_64 */
+#endif  
 
 #ifdef CONFIG_S390
 
@@ -63,7 +63,7 @@ asm (
 "	.popsection\n"
 );
 
-#endif /* CONFIG_S390 */
+#endif  
 
 #ifdef CONFIG_ARM64
 
@@ -72,7 +72,7 @@ asm (
 "	.type		my_tramp, @function\n"
 "	.globl		my_tramp\n"
 "   my_tramp:"
-"	hint	34\n" // bti	c
+"	hint	34\n" 
 "	sub	sp, sp, #32\n"
 "	stp	x9, x30, [sp]\n"
 "	str	x0, [sp, #16]\n"
@@ -85,7 +85,7 @@ asm (
 "	.popsection\n"
 );
 
-#endif /* CONFIG_ARM64 */
+#endif  
 
 #ifdef CONFIG_LOONGARCH
 
@@ -108,7 +108,7 @@ asm (
 "	.popsection\n"
 );
 
-#endif /* CONFIG_LOONGARCH */
+#endif  
 
 static struct ftrace_ops direct;
 

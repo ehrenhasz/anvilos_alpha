@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Xen grant DMA-mapping layer - contains special DMA-mapping routines
- * for providing grant references as DMA addresses to be used by frontends
- * (e.g. virtio) in Xen guests
- *
- * Copyright (c) 2021, Juergen Gross <jgross@suse.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/dma-map-ops.h>
@@ -20,9 +14,9 @@
 #include <xen/grant_table.h>
 
 struct xen_grant_dma_data {
-	/* The ID of backend domain */
+	 
 	domid_t backend_domid;
-	/* Is device behaving sane? */
+	 
 	bool broken;
 };
 
@@ -66,15 +60,7 @@ static int store_xen_grant_dma_data(struct device *dev,
 	return ret;
 }
 
-/*
- * DMA ops for Xen frontends (e.g. virtio).
- *
- * Used to act as a kind of software IOMMU for Xen guests by using grants as
- * DMA addresses.
- * Such a DMA address is formed by using the grant reference as a frame
- * number and setting the highest address bit (this bit is for the backend
- * to be able to distinguish it from e.g. a mmio address).
- */
+ 
 static void *xen_grant_dma_alloc(struct device *dev, size_t size,
 				 dma_addr_t *dma_handle, gfp_t gfp,
 				 unsigned long attrs)
@@ -299,7 +285,7 @@ static struct device_node *xen_dt_get_node(struct device *dev)
 		struct pci_dev *pdev = to_pci_dev(dev);
 		struct pci_bus *bus = pdev->bus;
 
-		/* Walk up to the root bus to look for PCI Host controller */
+		 
 		while (!pci_is_root_bus(bus))
 			bus = bus->parent;
 
@@ -343,10 +329,7 @@ static int xen_dt_grant_init_backend_domid(struct device *dev,
 
 	of_node_put(iommu_spec.np);
 
-	/*
-	 * The endpoint ID here means the ID of the domain where the
-	 * corresponding backend is running
-	 */
+	 
 	*backend_domid = iommu_spec.args[0];
 
 	return 0;

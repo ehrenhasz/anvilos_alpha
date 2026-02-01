@@ -1,16 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * An rtc/i2c driver for the Dallas DS1672
- * Copyright 2005-06 Tower Technologies
- *
- * Author: Alessandro Zummo <a.zummo@towertech.it>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/rtc.h>
 #include <linux/module.h>
 
-/* Registers */
+ 
 
 #define DS1672_REG_CNT_BASE	0
 #define DS1672_REG_CONTROL	4
@@ -18,11 +13,7 @@
 
 #define DS1672_REG_CONTROL_EOSC	0x80
 
-/*
- * In the routines that deal directly with the ds1672 hardware, we use
- * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch
- * Time is set to UTC.
- */
+ 
 static int ds1672_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -31,12 +22,12 @@ static int ds1672_read_time(struct device *dev, struct rtc_time *tm)
 	unsigned char buf[4];
 
 	struct i2c_msg msgs[] = {
-		{/* setup read ptr */
+		{ 
 			.addr = client->addr,
 			.len = 1,
 			.buf = &addr
 		},
-		{/* read date */
+		{ 
 			.addr = client->addr,
 			.flags = I2C_M_RD,
 			.len = 1,
@@ -44,7 +35,7 @@ static int ds1672_read_time(struct device *dev, struct rtc_time *tm)
 		},
 	};
 
-	/* read control register */
+	 
 	if ((i2c_transfer(client->adapter, &msgs[0], 2)) != 2) {
 		dev_warn(&client->dev, "Unable to read the control register\n");
 		return -EIO;
@@ -58,7 +49,7 @@ static int ds1672_read_time(struct device *dev, struct rtc_time *tm)
 	addr = DS1672_REG_CNT_BASE;
 	msgs[1].len = 4;
 
-	/* read date registers */
+	 
 	if ((i2c_transfer(client->adapter, &msgs[0], 2)) != 2) {
 		dev_err(&client->dev, "%s: read error\n", __func__);
 		return -EIO;
@@ -90,7 +81,7 @@ static int ds1672_set_time(struct device *dev, struct rtc_time *tm)
 	buf[2] = (secs & 0x0000FF00) >> 8;
 	buf[3] = (secs & 0x00FF0000) >> 16;
 	buf[4] = (secs & 0xFF000000) >> 24;
-	buf[5] = 0;		/* set control reg to enable counting */
+	buf[5] = 0;		 
 
 	xfer = i2c_master_send(client, buf, 6);
 	if (xfer != 6) {

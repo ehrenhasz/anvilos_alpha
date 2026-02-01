@@ -1,21 +1,7 @@
-/*	$OpenBSD: fuzz.c,v 1.8 2015/03/03 20:42:49 djm Exp $	*/
-/*
- * Copyright (c) 2011 Damien Miller <djm@mindrot.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
-/* Utility functions/framework for fuzz tests */
+ 
 
 #include "includes.h"
 
@@ -36,7 +22,7 @@
 #include "test_helper.h"
 #include "atomicio.h"
 
-/* #define FUZZ_DEBUG */
+ 
 
 #ifdef FUZZ_DEBUG
 # define FUZZ_DBG(x) do { \
@@ -49,28 +35,28 @@
 # define FUZZ_DBG(x)
 #endif
 
-/* For brevity later */
+ 
 typedef unsigned long long fuzz_ullong;
 
-/* For base-64 fuzzing */
+ 
 static const char fuzz_b64chars[] =
     "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
 struct fuzz {
-	/* Fuzz method currently in use */
+	 
 	int strategy;
 
-	/* Fuzz methods remaining */
+	 
 	int strategies;
 
-	/* Original seed data blob */
+	 
 	void *seed;
 	size_t slen;
 
-	/* Current working copy of seed with fuzz mutations applied */
+	 
 	u_char *fuzzed;
 
-	/* Used by fuzz methods */
+	 
 	size_t o1, o2;
 };
 
@@ -290,12 +276,12 @@ fuzz_next(struct fuzz *fuzz)
 	    (u_long)fuzz->strategies, fuzz->o1, fuzz->o2, fuzz->slen));
 
 	if (fuzz->strategy == 0 || fuzz_strategy_done(fuzz)) {
-		/* If we are just starting out, we need to allocate too */
+		 
 		if (fuzz->fuzzed == NULL) {
 			FUZZ_DBG(("alloc"));
 			fuzz->fuzzed = calloc(fuzz->slen, 1);
 		}
-		/* Pick next strategy */
+		 
 		FUZZ_DBG(("advance"));
 		for (i = 1; i <= FUZZ_MAX; i <<= 1) {
 			if ((fuzz->strategies & i) != 0) {

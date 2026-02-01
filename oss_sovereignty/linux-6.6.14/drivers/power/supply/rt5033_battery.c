@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Fuel gauge driver for Richtek RT5033
- *
- * Copyright (C) 2014 Samsung Electronics, Co., Ltd.
- * Author: Beomho Seo <beomho.seo@samsung.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>

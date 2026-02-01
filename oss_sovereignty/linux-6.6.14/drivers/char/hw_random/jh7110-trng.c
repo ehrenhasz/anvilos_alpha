@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TRNG driver for the StarFive JH7110 SoC
- *
- * Copyright (C) 2022 StarFive Technology Co.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -21,7 +17,7 @@
 #include <linux/random.h>
 #include <linux/reset.h>
 
-/* trng register offset */
+ 
 #define STARFIVE_CTRL			0x00
 #define STARFIVE_STAT			0x04
 #define STARFIVE_MODE			0x08
@@ -39,12 +35,12 @@
 #define STARFIVE_AUTO_RQSTS		0x60
 #define STARFIVE_AUTO_AGE		0x64
 
-/* CTRL CMD */
+ 
 #define STARFIVE_CTRL_EXEC_NOP		0x0
 #define STARFIVE_CTRL_GENE_RANDNUM	0x1
 #define STARFIVE_CTRL_EXEC_RANDRESEED	0x2
 
-/* STAT */
+ 
 #define STARFIVE_STAT_NONCE_MODE	BIT(2)
 #define STARFIVE_STAT_R256		BIT(3)
 #define STARFIVE_STAT_MISSION_MODE	BIT(8)
@@ -54,15 +50,15 @@
 #define STARFIVE_STAT_RAND_GENERATING	BIT(30)
 #define STARFIVE_STAT_RAND_SEEDING	BIT(31)
 
-/* MODE */
+ 
 #define STARFIVE_MODE_R256		BIT(3)
 
-/* SMODE */
+ 
 #define STARFIVE_SMODE_NONCE_MODE	BIT(2)
 #define STARFIVE_SMODE_MISSION_MODE	BIT(8)
 #define STARFIVE_SMODE_MAX_REJECTS(x)	((x) << 16)
 
-/* IE */
+ 
 #define STARFIVE_IE_RAND_RDY_EN		BIT(0)
 #define STARFIVE_IE_SEED_DONE_EN	BIT(1)
 #define STARFIVE_IE_LFSR_LOCKUP_EN	BIT(4)
@@ -73,7 +69,7 @@
 					 STARFIVE_IE_SEED_DONE_EN | \
 					 STARFIVE_IE_LFSR_LOCKUP_EN)
 
-/* ISTAT */
+ 
 #define STARFIVE_ISTAT_RAND_RDY		BIT(0)
 #define STARFIVE_ISTAT_SEED_DONE	BIT(1)
 #define STARFIVE_ISTAT_LFSR_LOCKUP	BIT(4)
@@ -104,7 +100,7 @@ struct starfive_trng {
 	u32			mode;
 	u32			mission;
 	u32			reseed;
-	/* protects against concurrent write to ctrl register */
+	 
 	spinlock_t		write_lock;
 };
 
@@ -132,7 +128,7 @@ static inline int starfive_trng_wait_idle(struct starfive_trng *trng)
 
 static inline void starfive_trng_irq_mask_clear(struct starfive_trng *trng)
 {
-	/* clear register: ISTAT */
+	 
 	u32 data = readl(trng->base + STARFIVE_ISTAT);
 
 	writel(data, trng->base + STARFIVE_ISTAT);
@@ -142,7 +138,7 @@ static int starfive_trng_cmd(struct starfive_trng *trng, u32 cmd, bool wait)
 {
 	int wait_time = 1000;
 
-	/* allow up to 40 us for wait == 0 */
+	 
 	if (!wait)
 		wait_time = 40;
 
@@ -175,11 +171,11 @@ static int starfive_trng_init(struct hwrng *rng)
 	struct starfive_trng *trng = to_trng(rng);
 	u32 mode, intr = 0;
 
-	/* setup Auto Request/Age register */
+	 
 	writel(autoage, trng->base + STARFIVE_AUTO_AGE);
 	writel(autoreq, trng->base + STARFIVE_AUTO_RQSTS);
 
-	/* clear register: ISTAT */
+	 
 	starfive_trng_irq_mask_clear(trng);
 
 	intr |= STARFIVE_IE_ALL;
@@ -222,7 +218,7 @@ static irqreturn_t starfive_trng_irq(int irq, void *priv)
 
 	if (status & STARFIVE_ISTAT_LFSR_LOCKUP) {
 		writel(STARFIVE_ISTAT_LFSR_LOCKUP, trng->base + STARFIVE_ISTAT);
-		/* SEU occurred, reseeding required*/
+		 
 		spin_lock(&trng->write_lock);
 		writel(STARFIVE_CTRL_EXEC_RANDRESEED, trng->base + STARFIVE_CTRL);
 		spin_unlock(&trng->write_lock);

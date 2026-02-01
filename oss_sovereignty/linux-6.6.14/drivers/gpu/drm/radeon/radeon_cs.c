@@ -1,29 +1,4 @@
-/*
- * Copyright 2008 Jerome Glisse.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * PRECISION INSIGHT AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
- * DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *    Jerome Glisse <glisse@freedesktop.org>
- */
+ 
 
 #include <linux/list_sort.h>
 #include <linux/pci.h>
@@ -40,10 +15,7 @@
 #define RADEON_CS_MAX_PRIORITY		32u
 #define RADEON_CS_NUM_BUCKETS		(RADEON_CS_MAX_PRIORITY + 1)
 
-/* This is based on the bucket sort with O(n) time complexity.
- * An item with priority "i" is added to bucket[i]. The lists are then
- * concatenated in descending order.
- */
+ 
 struct radeon_cs_buckets {
 	struct list_head bucket[RADEON_CS_NUM_BUCKETS];
 };
@@ -59,11 +31,7 @@ static void radeon_cs_buckets_init(struct radeon_cs_buckets *b)
 static void radeon_cs_buckets_add(struct radeon_cs_buckets *b,
 				  struct list_head *item, unsigned priority)
 {
-	/* Since buffers which appear sooner in the relocation list are
-	 * likely to be used more often than buffers which appear later
-	 * in the list, the sort mustn't change the ordering of buffers
-	 * with the same priority, i.e. it must be stable.
-	 */
+	 
 	list_add_tail(item, &b->bucket[min(priority, RADEON_CS_MAX_PRIORITY)]);
 }
 
@@ -72,7 +40,7 @@ static void radeon_cs_buckets_get_list(struct radeon_cs_buckets *b,
 {
 	unsigned i;
 
-	/* Connect the sorted buckets in the output list. */
+	 
 	for (i = 0; i < RADEON_CS_NUM_BUCKETS; i++) {
 		list_splice(&b->bucket[i], out_list);
 	}
@@ -91,7 +59,7 @@ static int radeon_cs_parser_relocs(struct radeon_cs_parser *p)
 	}
 	chunk = p->chunk_relocs;
 	p->dma_reloc_idx = 0;
-	/* FIXME: we assume that each relocs use 4 dwords */
+	 
 	p->nrelocs = chunk->length_dw / 4;
 	p->relocs = kvcalloc(p->nrelocs, sizeof(struct radeon_bo_list),
 			GFP_KERNEL);
@@ -115,33 +83,24 @@ static int radeon_cs_parser_relocs(struct radeon_cs_parser *p)
 		}
 		p->relocs[i].robj = gem_to_radeon_bo(gobj);
 
-		/* The userspace buffer priorities are from 0 to 15. A higher
-		 * number means the buffer is more important.
-		 * Also, the buffers used for write have a higher priority than
-		 * the buffers used for read only, which doubles the range
-		 * to 0 to 31. 32 is reserved for the kernel driver.
-		 */
+		 
 		priority = (r->flags & RADEON_RELOC_PRIO_MASK) * 2
 			   + !!r->write_domain;
 
-		/* The first reloc of an UVD job is the msg and that must be in
-		 * VRAM, the second reloc is the DPB and for WMV that must be in
-		 * VRAM as well. Also put everything into VRAM on AGP cards and older
-		 * IGP chips to avoid image corruptions
-		 */
+		 
 		if (p->ring == R600_RING_TYPE_UVD_INDEX &&
 		    (i <= 0 || pci_find_capability(p->rdev->pdev, PCI_CAP_ID_AGP) ||
 		     p->rdev->family == CHIP_RS780 ||
 		     p->rdev->family == CHIP_RS880)) {
 
-			/* TODO: is this still needed for NI+ ? */
+			 
 			p->relocs[i].preferred_domains =
 				RADEON_GEM_DOMAIN_VRAM;
 
 			p->relocs[i].allowed_domains =
 				RADEON_GEM_DOMAIN_VRAM;
 
-			/* prioritize this over any other relocation */
+			 
 			priority = RADEON_CS_MAX_PRIORITY;
 		} else {
 			uint32_t domain = r->write_domain ?
@@ -172,7 +131,7 @@ static int radeon_cs_parser_relocs(struct radeon_cs_parser *p)
 			p->relocs[i].allowed_domains = domain;
 		}
 
-		/* Objects shared as dma-bufs cannot be moved to VRAM */
+		 
 		if (p->relocs[i].robj->prime_shared_count) {
 			p->relocs[i].allowed_domains &= ~RADEON_GEM_DOMAIN_VRAM;
 			if (!p->relocs[i].allowed_domains) {
@@ -241,7 +200,7 @@ static int radeon_cs_get_ring(struct radeon_cs_parser *p, u32 ring, s32 priority
 		p->ring = R600_RING_TYPE_UVD_INDEX;
 		break;
 	case RADEON_CS_RING_VCE:
-		/* TODO: only use the low priority ring for now */
+		 
 		p->ring = TN_RING_TYPE_VCE1_INDEX;
 		break;
 	}
@@ -265,7 +224,7 @@ static int radeon_cs_sync_rings(struct radeon_cs_parser *p)
 	return 0;
 }
 
-/* XXX: note that this is called from the legacy UMS CS ioctl as well */
+ 
 int radeon_cs_parser_init(struct radeon_cs_parser *p, void *data)
 {
 	struct drm_radeon_cs *cs = data;
@@ -281,7 +240,7 @@ int radeon_cs_parser_init(struct radeon_cs_parser *p, void *data)
 		return 0;
 	}
 
-	/* get chunks */
+	 
 	p->idx = 0;
 	p->ib.sa_bo = NULL;
 	p->const_ib.sa_bo = NULL;
@@ -320,19 +279,19 @@ int radeon_cs_parser_init(struct radeon_cs_parser *p, void *data)
 		}
 		if (user_chunk.chunk_id == RADEON_CHUNK_ID_IB) {
 			p->chunk_ib = &p->chunks[i];
-			/* zero length IB isn't useful */
+			 
 			if (p->chunks[i].length_dw == 0)
 				return -EINVAL;
 		}
 		if (user_chunk.chunk_id == RADEON_CHUNK_ID_CONST_IB) {
 			p->chunk_const_ib = &p->chunks[i];
-			/* zero length CONST IB isn't useful */
+			 
 			if (p->chunks[i].length_dw == 0)
 				return -EINVAL;
 		}
 		if (user_chunk.chunk_id == RADEON_CHUNK_ID_FLAGS) {
 			p->chunk_flags = &p->chunks[i];
-			/* zero length flags aren't useful */
+			 
 			if (p->chunks[i].length_dw == 0)
 				return -EINVAL;
 		}
@@ -365,7 +324,7 @@ int radeon_cs_parser_init(struct radeon_cs_parser *p, void *data)
 		}
 	}
 
-	/* these are KMS only */
+	 
 	if (p->rdev) {
 		if ((p->cs_flags & RADEON_CS_USE_VM) &&
 		    !p->rdev->vm_manager.enabled) {
@@ -376,7 +335,7 @@ int radeon_cs_parser_init(struct radeon_cs_parser *p, void *data)
 		if (radeon_cs_get_ring(p, ring, priority))
 			return -EINVAL;
 
-		/* we only support VM on some SI+ rings */
+		 
 		if ((p->cs_flags & RADEON_CS_USE_VM) == 0) {
 			if (p->rdev->asic->ring[p->ring]->cs_parse == NULL) {
 				DRM_ERROR("Ring %d requires VM!\n", p->ring);
@@ -400,7 +359,7 @@ static int cmp_size_smaller_first(void *priv, const struct list_head *a,
 	struct radeon_bo_list *la = list_entry(a, struct radeon_bo_list, tv.head);
 	struct radeon_bo_list *lb = list_entry(b, struct radeon_bo_list, tv.head);
 
-	/* Sort A before B if A is smaller. */
+	 
 	if (la->robj->tbo.base.size > lb->robj->tbo.base.size)
 		return 1;
 	if (la->robj->tbo.base.size < lb->robj->tbo.base.size)
@@ -408,30 +367,13 @@ static int cmp_size_smaller_first(void *priv, const struct list_head *a,
 	return 0;
 }
 
-/**
- * radeon_cs_parser_fini() - clean parser states
- * @parser:	parser structure holding parsing context.
- * @error:	error number
- * @backoff:	indicator to backoff the reservation
- *
- * If error is set than unvalidate buffer, otherwise just free memory
- * used by parsing context.
- **/
+ 
 static void radeon_cs_parser_fini(struct radeon_cs_parser *parser, int error, bool backoff)
 {
 	unsigned i;
 
 	if (!error) {
-		/* Sort the buffer list from the smallest to largest buffer,
-		 * which affects the order of buffers in the LRU list.
-		 * This assures that the smallest buffers are added first
-		 * to the LRU list, so they are likely to be later evicted
-		 * first, instead of large buffers whose eviction is more
-		 * expensive.
-		 *
-		 * This slightly lowers the number of bytes moved by TTM
-		 * per frame under memory pressure.
-		 */
+		 
 		list_sort(NULL, &parser->validated, cmp_size_smaller_first);
 
 		ttm_eu_fence_buffer_objects(&parser->ticket,
@@ -684,7 +626,7 @@ int radeon_cs_ioctl(struct drm_device *dev, void *data, struct drm_file *filp)
 			r = -EAGAIN;
 		return r;
 	}
-	/* initialize parser */
+	 
 	memset(&parser, 0, sizeof(struct radeon_cs_parser));
 	parser.filp = filp;
 	parser.rdev = rdev;
@@ -730,15 +672,7 @@ out:
 	return r;
 }
 
-/**
- * radeon_cs_packet_parse() - parse cp packet and point ib index to next packet
- * @p:		parser structure holding parsing context.
- * @pkt:	where to store packet information
- * @idx:	packet index
- *
- * Assume that chunk_ib_index is properly set. Will return -EINVAL
- * if packet is bigger than remaining ib size. or if packets is unknown.
- **/
+ 
 int radeon_cs_packet_parse(struct radeon_cs_parser *p,
 			   struct radeon_cs_packet *pkt,
 			   unsigned idx)
@@ -796,12 +730,7 @@ dump_ib:
 	return ret;
 }
 
-/**
- * radeon_cs_packet_next_is_pkt3_nop() - test if the next packet is P3 NOP
- * @p:		structure holding the parser context.
- *
- * Check if the next packet is NOP relocation packet3.
- **/
+ 
 bool radeon_cs_packet_next_is_pkt3_nop(struct radeon_cs_parser *p)
 {
 	struct radeon_cs_packet p3reloc;
@@ -817,13 +746,7 @@ bool radeon_cs_packet_next_is_pkt3_nop(struct radeon_cs_parser *p)
 	return true;
 }
 
-/**
- * radeon_cs_dump_packet() - dump raw packet context
- * @p:		structure holding the parser context.
- * @pkt:	structure holding the packet.
- *
- * Used mostly for debugging and error reporting.
- **/
+ 
 void radeon_cs_dump_packet(struct radeon_cs_parser *p,
 			   struct radeon_cs_packet *pkt)
 {
@@ -837,15 +760,7 @@ void radeon_cs_dump_packet(struct radeon_cs_parser *p,
 		DRM_INFO("ib[%d]=0x%08X\n", idx, ib[idx]);
 }
 
-/**
- * radeon_cs_packet_next_reloc() - parse next (should be reloc) packet
- * @p:			parser structure holding parsing context.
- * @cs_reloc:		reloc informations
- * @nomm:		no memory management for debugging
- *
- * Check if next packet is relocation packet3, do bo validation and compute
- * GPU offset using the provided start.
- **/
+ 
 int radeon_cs_packet_next_reloc(struct radeon_cs_parser *p,
 				struct radeon_bo_list **cs_reloc,
 				int nomm)
@@ -879,7 +794,7 @@ int radeon_cs_packet_next_reloc(struct radeon_cs_parser *p,
 		radeon_cs_dump_packet(p, &p3reloc);
 		return -EINVAL;
 	}
-	/* FIXME: we assume reloc size is 4 dwords */
+	 
 	if (nomm) {
 		*cs_reloc = p->relocs;
 		(*cs_reloc)->gpu_offset =

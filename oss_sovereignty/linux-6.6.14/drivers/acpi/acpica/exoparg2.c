@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: exoparg2 - AML execution - opcodes with 2 arguments
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -17,41 +11,8 @@
 #define _COMPONENT          ACPI_EXECUTER
 ACPI_MODULE_NAME("exoparg2")
 
-/*!
- * Naming convention for AML interpreter execution routines.
- *
- * The routines that begin execution of AML opcodes are named with a common
- * convention based upon the number of arguments, the number of target operands,
- * and whether or not a value is returned:
- *
- *      AcpiExOpcode_xA_yT_zR
- *
- * Where:
- *
- * xA - ARGUMENTS:    The number of arguments (input operands) that are
- *                    required for this opcode type (1 through 6 args).
- * yT - TARGETS:      The number of targets (output operands) that are required
- *                    for this opcode type (0, 1, or 2 targets).
- * zR - RETURN VALUE: Indicates whether this opcode type returns a value
- *                    as the function return (0 or 1).
- *
- * The AcpiExOpcode* functions are called via the Dispatcher component with
- * fully resolved operands.
-!*/
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_opcode_2A_0T_0R
- *
- * PARAMETERS:  walk_state          - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute opcode with two arguments, no target, and no return
- *              value.
- *
- * ALLOCATION:  Deletes both operands
- *
- ******************************************************************************/
+ 
+ 
 acpi_status acpi_ex_opcode_2A_0T_0R(struct acpi_walk_state *walk_state)
 {
 	union acpi_operand_object **operand = &walk_state->operands[0];
@@ -62,20 +23,20 @@ acpi_status acpi_ex_opcode_2A_0T_0R(struct acpi_walk_state *walk_state)
 	ACPI_FUNCTION_TRACE_STR(ex_opcode_2A_0T_0R,
 				acpi_ps_get_opcode_name(walk_state->opcode));
 
-	/* Examine the opcode */
+	 
 
 	switch (walk_state->opcode) {
-	case AML_NOTIFY_OP:	/* Notify (notify_object, notify_value) */
+	case AML_NOTIFY_OP:	 
 
-		/* The first operand is a namespace node */
+		 
 
 		node = (struct acpi_namespace_node *)operand[0];
 
-		/* Second value is the notify value */
+		 
 
 		value = (u32) operand[1]->integer.value;
 
-		/* Are notifies allowed on this object? */
+		 
 
 		if (!acpi_ev_is_notify_object(node)) {
 			ACPI_ERROR((AE_INFO,
@@ -86,13 +47,7 @@ acpi_status acpi_ex_opcode_2A_0T_0R(struct acpi_walk_state *walk_state)
 			break;
 		}
 
-		/*
-		 * Dispatch the notify to the appropriate handler
-		 * NOTE: the request is queued for execution after this method
-		 * completes. The notify handlers are NOT invoked synchronously
-		 * from this thread -- because handlers may in turn run other
-		 * control methods.
-		 */
+		 
 		status = acpi_ev_queue_notify_request(node, value);
 		break;
 
@@ -106,18 +61,7 @@ acpi_status acpi_ex_opcode_2A_0T_0R(struct acpi_walk_state *walk_state)
 	return_ACPI_STATUS(status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_opcode_2A_2T_1R
- *
- * PARAMETERS:  walk_state          - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute a dyadic operator (2 operands) with 2 output targets
- *              and one implicit return value.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_ex_opcode_2A_2T_1R(struct acpi_walk_state *walk_state)
 {
@@ -129,12 +73,12 @@ acpi_status acpi_ex_opcode_2A_2T_1R(struct acpi_walk_state *walk_state)
 	ACPI_FUNCTION_TRACE_STR(ex_opcode_2A_2T_1R,
 				acpi_ps_get_opcode_name(walk_state->opcode));
 
-	/* Execute the opcode */
+	 
 
 	switch (walk_state->opcode) {
 	case AML_DIVIDE_OP:
 
-		/* Divide (Dividend, Divisor, remainder_result quotient_result) */
+		 
 
 		return_desc1 =
 		    acpi_ut_create_internal_object(ACPI_TYPE_INTEGER);
@@ -150,7 +94,7 @@ acpi_status acpi_ex_opcode_2A_2T_1R(struct acpi_walk_state *walk_state)
 			goto cleanup;
 		}
 
-		/* Quotient to return_desc1, remainder to return_desc2 */
+		 
 
 		status = acpi_ut_divide(operand[0]->integer.value,
 					operand[1]->integer.value,
@@ -170,7 +114,7 @@ acpi_status acpi_ex_opcode_2A_2T_1R(struct acpi_walk_state *walk_state)
 		goto cleanup;
 	}
 
-	/* Store the results to the target reference operands */
+	 
 
 	status = acpi_ex_store(return_desc2, operand[2], walk_state);
 	if (ACPI_FAILURE(status)) {
@@ -183,20 +127,17 @@ acpi_status acpi_ex_opcode_2A_2T_1R(struct acpi_walk_state *walk_state)
 	}
 
 cleanup:
-	/*
-	 * Since the remainder is not returned indirectly, remove a reference to
-	 * it. Only the quotient is returned indirectly.
-	 */
+	 
 	acpi_ut_remove_reference(return_desc2);
 
 	if (ACPI_FAILURE(status)) {
 
-		/* Delete the return object */
+		 
 
 		acpi_ut_remove_reference(return_desc1);
 	}
 
-	/* Save return object (the remainder) on success */
+	 
 
 	else {
 		walk_state->result_obj = return_desc1;
@@ -205,18 +146,7 @@ cleanup:
 	return_ACPI_STATUS(status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_opcode_2A_1T_1R
- *
- * PARAMETERS:  walk_state          - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute opcode with two arguments, one target, and a return
- *              value.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 {
@@ -229,11 +159,11 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 	ACPI_FUNCTION_TRACE_STR(ex_opcode_2A_1T_1R,
 				acpi_ps_get_opcode_name(walk_state->opcode));
 
-	/* Execute the opcode */
+	 
 
 	if (walk_state->op_info->flags & AML_MATH) {
 
-		/* All simple math opcodes (add, etc.) */
+		 
 
 		return_desc = acpi_ut_create_internal_object(ACPI_TYPE_INTEGER);
 		if (!return_desc) {
@@ -249,7 +179,7 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 	}
 
 	switch (walk_state->opcode) {
-	case AML_MOD_OP:	/* Mod (Dividend, Divisor, remainder_result (ACPI 2.0) */
+	case AML_MOD_OP:	 
 
 		return_desc = acpi_ut_create_internal_object(ACPI_TYPE_INTEGER);
 		if (!return_desc) {
@@ -257,43 +187,31 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 			goto cleanup;
 		}
 
-		/* return_desc will contain the remainder */
+		 
 
 		status = acpi_ut_divide(operand[0]->integer.value,
 					operand[1]->integer.value,
 					NULL, &return_desc->integer.value);
 		break;
 
-	case AML_CONCATENATE_OP:	/* Concatenate (Data1, Data2, Result) */
+	case AML_CONCATENATE_OP:	 
 
 		status =
 		    acpi_ex_do_concatenate(operand[0], operand[1], &return_desc,
 					   walk_state);
 		break;
 
-	case AML_TO_STRING_OP:	/* to_string (Buffer, Length, Result) (ACPI 2.0) */
-		/*
-		 * Input object is guaranteed to be a buffer at this point (it may have
-		 * been converted.)  Copy the raw buffer data to a new object of
-		 * type String.
-		 */
+	case AML_TO_STRING_OP:	 
+		 
 
-		/*
-		 * Get the length of the new string. It is the smallest of:
-		 * 1) Length of the input buffer
-		 * 2) Max length as specified in the to_string operator
-		 * 3) Length of input buffer up to a zero byte (null terminator)
-		 *
-		 * NOTE: A length of zero is ok, and will create a zero-length, null
-		 *       terminated string.
-		 */
-		while ((length < operand[0]->buffer.length) &&	/* Length of input buffer */
-		       (length < operand[1]->integer.value) &&	/* Length operand */
-		       (operand[0]->buffer.pointer[length])) {	/* Null terminator */
+		 
+		while ((length < operand[0]->buffer.length) &&	 
+		       (length < operand[1]->integer.value) &&	 
+		       (operand[0]->buffer.pointer[length])) {	 
 			length++;
 		}
 
-		/* Allocate a new string object */
+		 
 
 		return_desc = acpi_ut_create_string_object(length);
 		if (!return_desc) {
@@ -301,26 +219,23 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 			goto cleanup;
 		}
 
-		/*
-		 * Copy the raw buffer data with no transform.
-		 * (NULL terminated already)
-		 */
+		 
 		memcpy(return_desc->string.pointer,
 		       operand[0]->buffer.pointer, length);
 		break;
 
 	case AML_CONCATENATE_TEMPLATE_OP:
 
-		/* concatenate_res_template (Buffer, Buffer, Result) (ACPI 2.0) */
+		 
 
 		status =
 		    acpi_ex_concat_template(operand[0], operand[1],
 					    &return_desc, walk_state);
 		break;
 
-	case AML_INDEX_OP:	/* Index (Source Index Result) */
+	case AML_INDEX_OP:	 
 
-		/* Create the internal return object */
+		 
 
 		return_desc =
 		    acpi_ut_create_internal_object(ACPI_TYPE_LOCAL_REFERENCE);
@@ -329,16 +244,13 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 			goto cleanup;
 		}
 
-		/* Initialize the Index reference object */
+		 
 
 		index = operand[1]->integer.value;
 		return_desc->reference.value = (u32) index;
 		return_desc->reference.class = ACPI_REFCLASS_INDEX;
 
-		/*
-		 * At this point, the Source operand is a String, Buffer, or Package.
-		 * Verify that the index is within range.
-		 */
+		 
 		switch ((operand[0])->common.type) {
 		case ACPI_TYPE_STRING:
 
@@ -387,7 +299,7 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 			goto cleanup;
 		}
 
-		/* Failure means that the Index was beyond the end of the object */
+		 
 
 		if (ACPI_FAILURE(status)) {
 			ACPI_BIOS_EXCEPTION((AE_INFO, status,
@@ -397,18 +309,15 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 			goto cleanup;
 		}
 
-		/*
-		 * Save the target object and add a reference to it for the life
-		 * of the index
-		 */
+		 
 		return_desc->reference.object = operand[0];
 		acpi_ut_add_reference(operand[0]);
 
-		/* Store the reference to the Target */
+		 
 
 		status = acpi_ex_store(return_desc, operand[2], walk_state);
 
-		/* Return the reference */
+		 
 
 		walk_state->result_obj = return_desc;
 		goto cleanup;
@@ -424,10 +333,7 @@ acpi_status acpi_ex_opcode_2A_1T_1R(struct acpi_walk_state *walk_state)
 store_result_to_target:
 
 	if (ACPI_SUCCESS(status)) {
-		/*
-		 * Store the result of the operation (which is now in return_desc) into
-		 * the Target descriptor.
-		 */
+		 
 		status = acpi_ex_store(return_desc, operand[2], walk_state);
 		if (ACPI_FAILURE(status)) {
 			goto cleanup;
@@ -440,7 +346,7 @@ store_result_to_target:
 
 cleanup:
 
-	/* Delete return object on error */
+	 
 
 	if (ACPI_FAILURE(status)) {
 		acpi_ut_remove_reference(return_desc);
@@ -450,17 +356,7 @@ cleanup:
 	return_ACPI_STATUS(status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_opcode_2A_0T_1R
- *
- * PARAMETERS:  walk_state          - Current walk state
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Execute opcode with 2 arguments, no target, and a return value
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_ex_opcode_2A_0T_1R(struct acpi_walk_state *walk_state)
 {
@@ -472,7 +368,7 @@ acpi_status acpi_ex_opcode_2A_0T_1R(struct acpi_walk_state *walk_state)
 	ACPI_FUNCTION_TRACE_STR(ex_opcode_2A_0T_1R,
 				acpi_ps_get_opcode_name(walk_state->opcode));
 
-	/* Create the internal return object */
+	 
 
 	return_desc = acpi_ut_create_internal_object(ACPI_TYPE_INTEGER);
 	if (!return_desc) {
@@ -480,11 +376,11 @@ acpi_status acpi_ex_opcode_2A_0T_1R(struct acpi_walk_state *walk_state)
 		goto cleanup;
 	}
 
-	/* Execute the Opcode */
+	 
 
 	if (walk_state->op_info->flags & AML_LOGICAL_NUMERIC) {
 
-		/* logical_op (Operand0, Operand1) */
+		 
 
 		status = acpi_ex_do_logical_numeric_op(walk_state->opcode,
 						       operand[0]->integer.
@@ -494,7 +390,7 @@ acpi_status acpi_ex_opcode_2A_0T_1R(struct acpi_walk_state *walk_state)
 		goto store_logical_result;
 	} else if (walk_state->op_info->flags & AML_LOGICAL) {
 
-		/* logical_op (Operand0, Operand1) */
+		 
 
 		status = acpi_ex_do_logical_op(walk_state->opcode, operand[0],
 					       operand[1], &logical_result);
@@ -502,21 +398,21 @@ acpi_status acpi_ex_opcode_2A_0T_1R(struct acpi_walk_state *walk_state)
 	}
 
 	switch (walk_state->opcode) {
-	case AML_ACQUIRE_OP:	/* Acquire (mutex_object, Timeout) */
+	case AML_ACQUIRE_OP:	 
 
 		status =
 		    acpi_ex_acquire_mutex(operand[1], operand[0], walk_state);
 		if (status == AE_TIME) {
-			logical_result = TRUE;	/* TRUE = Acquire timed out */
+			logical_result = TRUE;	 
 			status = AE_OK;
 		}
 		break;
 
-	case AML_WAIT_OP:	/* Wait (event_object, Timeout) */
+	case AML_WAIT_OP:	 
 
 		status = acpi_ex_system_wait_event(operand[1], operand[0]);
 		if (status == AE_TIME) {
-			logical_result = TRUE;	/* TRUE, Wait timed out */
+			logical_result = TRUE;	 
 			status = AE_OK;
 		}
 		break;
@@ -531,23 +427,20 @@ acpi_status acpi_ex_opcode_2A_0T_1R(struct acpi_walk_state *walk_state)
 	}
 
 store_logical_result:
-	/*
-	 * Set return value to according to logical_result. logical TRUE (all ones)
-	 * Default is FALSE (zero)
-	 */
+	 
 	if (logical_result) {
 		return_desc->integer.value = ACPI_UINT64_MAX;
 	}
 
 cleanup:
 
-	/* Delete return object on error */
+	 
 
 	if (ACPI_FAILURE(status)) {
 		acpi_ut_remove_reference(return_desc);
 	}
 
-	/* Save return object on success */
+	 
 
 	else {
 		walk_state->result_obj = return_desc;

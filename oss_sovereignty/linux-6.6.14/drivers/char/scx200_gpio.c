@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* linux/drivers/char/scx200_gpio.c
 
-   National Semiconductor SCx200 GPIO driver.  Allows a user space
-   process to play with the GPIO pins.
-
-   Copyright (c) 2001,2002 Christer Weinigel <wingel@nano-system.com> */
+ 
 
 #include <linux/device.h>
 #include <linux/fs.h>
@@ -30,11 +25,11 @@ MODULE_AUTHOR("Christer Weinigel <wingel@nano-system.com>");
 MODULE_DESCRIPTION("NatSemi/AMD SCx200 GPIO Pin Driver");
 MODULE_LICENSE("GPL");
 
-static int major = 0;		/* default to dynamic major */
+static int major = 0;		 
 module_param(major, int, 0);
 MODULE_PARM_DESC(major, "Major device number");
 
-#define MAX_PINS 32		/* 64 later, when known ok */
+#define MAX_PINS 32		 
 
 struct nsc_gpio_ops scx200_gpio_ops = {
 	.owner		= THIS_MODULE,
@@ -71,7 +66,7 @@ static const struct file_operations scx200_gpio_fileops = {
 	.llseek  = no_llseek,
 };
 
-static struct cdev scx200_gpio_cdev;  /* use 1 cdev for all pins */
+static struct cdev scx200_gpio_cdev;   
 
 static int __init scx200_gpio_init(void)
 {
@@ -83,7 +78,7 @@ static int __init scx200_gpio_init(void)
 		return -ENODEV;
 	}
 
-	/* support dev_dbg() with pdev->dev */
+	 
 	pdev = platform_device_alloc(DRVNAME, 0);
 	if (!pdev)
 		return -ENOMEM;
@@ -92,7 +87,7 @@ static int __init scx200_gpio_init(void)
 	if (rc)
 		goto undo_malloc;
 
-	/* nsc_gpio uses dev_dbg(), so needs this */
+	 
 	scx200_gpio_ops.dev = &pdev->dev;
 
 	if (major) {
@@ -110,7 +105,7 @@ static int __init scx200_gpio_init(void)
 	cdev_init(&scx200_gpio_cdev, &scx200_gpio_fileops);
 	cdev_add(&scx200_gpio_cdev, devid, MAX_PINS);
 
-	return 0; /* succeed */
+	return 0;  
 
 undo_platform_device_add:
 	platform_device_del(pdev);
@@ -123,7 +118,7 @@ undo_malloc:
 static void __exit scx200_gpio_cleanup(void)
 {
 	cdev_del(&scx200_gpio_cdev);
-	/* cdev_put(&scx200_gpio_cdev); */
+	 
 
 	unregister_chrdev_region(MKDEV(major, 0), MAX_PINS);
 	platform_device_unregister(pdev);

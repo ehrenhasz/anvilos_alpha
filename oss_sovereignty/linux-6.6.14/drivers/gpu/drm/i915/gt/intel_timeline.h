@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2016 Intel Corporation
- */
+ 
+ 
 
 #ifndef I915_TIMELINE_H
 #define I915_TIMELINE_H

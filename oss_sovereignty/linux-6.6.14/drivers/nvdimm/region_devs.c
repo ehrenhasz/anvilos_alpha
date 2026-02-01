@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/scatterlist.h>
 #include <linux/memregion.h>
 #include <linux/highmem.h>
@@ -15,10 +13,7 @@
 #include "nd-core.h"
 #include "nd.h"
 
-/*
- * For readq() and writeq() on 32-bit builds, the hi-lo, lo-hi order is
- * irrelevant.
- */
+ 
 #include <linux/io-64-nonatomic-hi-lo.h>
 
 static DEFINE_PER_CPU(int, flush_idx);
@@ -35,7 +30,7 @@ static int nvdimm_map_flush(struct device *dev, struct nvdimm *nvdimm, int dimm,
 		unsigned long pfn = PHYS_PFN(res->start);
 		void __iomem *flush_page;
 
-		/* check if flush hints share a page */
+		 
 		for (j = 0; j < i; j++) {
 			struct resource *res_j = &nvdimm->flush_wpq[j];
 			unsigned long pfn_j = PHYS_PFN(res_j->start);
@@ -119,7 +114,7 @@ int nd_region_activate(struct nd_region *nd_region)
 			return -EBUSY;
 		}
 
-		/* at least one null hint slot per-dimm for the "no-hint" case */
+		 
 		flush_data_size += sizeof(void *);
 		num_flush = min_not_zero(num_flush, nvdimm->num_flush);
 		if (!nvdimm->num_flush)
@@ -150,12 +145,9 @@ int nd_region_activate(struct nd_region *nd_region)
 			return rc;
 	}
 
-	/*
-	 * Clear out entries that are duplicates. This should prevent the
-	 * extra flushings.
-	 */
+	 
 	for (i = 0; i < nd_region->ndr_mappings - 1; i++) {
-		/* ignore if NULL already */
+		 
 		if (!ndrd_get_flush_wpq(ndrd, i, 0))
 			continue;
 
@@ -208,14 +200,7 @@ void *nd_region_provider_data(struct nd_region *nd_region)
 }
 EXPORT_SYMBOL_GPL(nd_region_provider_data);
 
-/**
- * nd_region_to_nstype() - region to an integer namespace type
- * @nd_region: region-device to interrogate
- *
- * This is the 'nstype' attribute of a region as well, an input to the
- * MODALIAS for namespace devices, and bit number for a nvdimm_bus to match
- * namespace devices with namespace drivers.
- */
+ 
 int nd_region_to_nstype(struct nd_region *nd_region)
 {
 	if (is_memory(&nd_region->dev)) {
@@ -265,10 +250,7 @@ static ssize_t deep_flush_show(struct device *dev,
 {
 	struct nd_region *nd_region = to_nd_region(dev);
 
-	/*
-	 * NOTE: in the nvdimm_has_flush() error case this attribute is
-	 * not visible.
-	 */
+	 
 	return sprintf(buf, "%d\n", nvdimm_has_flush(nd_region));
 }
 
@@ -317,16 +299,11 @@ static ssize_t set_cookie_show(struct device *dev,
 	ssize_t rc = 0;
 
 	if (is_memory(dev) && nd_set)
-		/* pass, should be precluded by region_visible */;
+		 ;
 	else
 		return -ENXIO;
 
-	/*
-	 * The cookie to show depends on which specification of the
-	 * labels we are using. If there are not labels then default to
-	 * the v1.1 namespace label cookie definition. To read all this
-	 * data we need to wait for probing to settle.
-	 */
+	 
 	device_lock(dev);
 	nvdimm_bus_lock(dev);
 	wait_nvdimm_bus_probe_idle(dev);
@@ -364,7 +341,7 @@ resource_size_t nd_region_available_dpa(struct nd_region *nd_region)
 		struct nd_mapping *nd_mapping = &nd_region->mapping[i];
 		struct nvdimm_drvdata *ndd = to_ndd(nd_mapping);
 
-		/* if a dimm is disabled the available capacity is zero */
+		 
 		if (!ndd)
 			return 0;
 
@@ -395,12 +372,7 @@ static ssize_t available_size_show(struct device *dev,
 	struct nd_region *nd_region = to_nd_region(dev);
 	unsigned long long available = 0;
 
-	/*
-	 * Flush in-flight updates and grab a snapshot of the available
-	 * size.  Of course, this value is potentially invalidated the
-	 * memory nvdimm_bus_lock() is dropped, but that's userspace's
-	 * problem to not race itself.
-	 */
+	 
 	device_lock(dev);
 	nvdimm_bus_lock(dev);
 	wait_nvdimm_bus_probe_idle(dev);
@@ -563,24 +535,14 @@ static ssize_t align_store(struct device *dev,
 	if (rc)
 		return rc;
 
-	/*
-	 * Ensure space-align is evenly divisible by the region
-	 * interleave-width because the kernel typically has no facility
-	 * to determine which DIMM(s), dimm-physical-addresses, would
-	 * contribute to the tail capacity in system-physical-address
-	 * space for the namespace.
-	 */
+	 
 	mappings = max_t(u32, 1, nd_region->ndr_mappings);
 	dpa = div_u64_rem(val, mappings, &remainder);
 	if (!is_power_of_2(dpa) || dpa < PAGE_SIZE
 			|| val > region_size(nd_region) || remainder)
 		return -EINVAL;
 
-	/*
-	 * Given that space allocation consults this value multiple
-	 * times ensure it does not change for the duration of the
-	 * allocation.
-	 */
+	 
 	nvdimm_bus_lock(dev);
 	nd_region->align = val;
 	nvdimm_bus_unlock(dev);
@@ -727,10 +689,7 @@ static ssize_t mapping##idx##_show(struct device *dev,		\
 }								\
 static DEVICE_ATTR_RO(mapping##idx)
 
-/*
- * 32 should be enough for a while, even in the presence of socket
- * interleave a 32-way interleave set is a degenerate case.
- */
+ 
 REGION_MAPPING(0);
 REGION_MAPPING(1);
 REGION_MAPPING(2);
@@ -884,10 +843,7 @@ void nd_mapping_free_labels(struct nd_mapping *nd_mapping)
 	}
 }
 
-/*
- * When a namespace is activated create new seeds for the next
- * namespace, or namespace-personality to be configured.
- */
+ 
 void nd_region_advance_seeds(struct nd_region *nd_region, struct device *dev)
 {
 	nvdimm_bus_lock(dev);
@@ -918,23 +874,7 @@ void nd_region_advance_seeds(struct nd_region *nd_region, struct device *dev)
 	nvdimm_bus_unlock(dev);
 }
 
-/**
- * nd_region_acquire_lane - allocate and lock a lane
- * @nd_region: region id and number of lanes possible
- *
- * A lane correlates to a BLK-data-window and/or a log slot in the BTT.
- * We optimize for the common case where there are 256 lanes, one
- * per-cpu.  For larger systems we need to lock to share lanes.  For now
- * this implementation assumes the cost of maintaining an allocator for
- * free lanes is on the order of the lock hold time, so it implements a
- * static lane = cpu % num_lanes mapping.
- *
- * In the case of a BTT instance on top of a BLK namespace a lane may be
- * acquired recursively.  We lock on the first instance.
- *
- * In the case of a BTT instance on top of PMEM, we only acquire a lane
- * for the BTT metadata updates.
- */
+ 
 unsigned int nd_region_acquire_lane(struct nd_region *nd_region)
 {
 	unsigned int cpu, lane;
@@ -971,10 +911,7 @@ void nd_region_release_lane(struct nd_region *nd_region, unsigned int lane)
 }
 EXPORT_SYMBOL(nd_region_release_lane);
 
-/*
- * PowerPC requires this alignment for memremap_pages(). All other archs
- * should be ok with SUBSECTION_SIZE (see memremap_compat_align()).
- */
+ 
 #define MEMREMAP_COMPAT_ALIGN_MAX SZ_16M
 
 static unsigned long default_align(struct nd_region *nd_region)
@@ -1028,7 +965,7 @@ static struct nd_region *nd_region_create(struct nvdimm_bus *nvdimm_bus,
 
 	if (!nd_region)
 		return NULL;
-	/* CXL pre-assigns memregion ids before creating nvdimm regions */
+	 
 	if (test_bit(ND_REGION_CXL, &ndr_desc->flags)) {
 		nd_region->id = ndr_desc->memregion;
 	} else {
@@ -1140,29 +1077,17 @@ int nvdimm_flush(struct nd_region *nd_region, struct bio *bio)
 
 	return rc;
 }
-/**
- * generic_nvdimm_flush() - flush any posted write queues between the cpu and pmem media
- * @nd_region: interleaved pmem region
- */
+ 
 int generic_nvdimm_flush(struct nd_region *nd_region)
 {
 	struct nd_region_data *ndrd = dev_get_drvdata(&nd_region->dev);
 	int i, idx;
 
-	/*
-	 * Try to encourage some diversity in flush hint addresses
-	 * across cpus assuming a limited number of flush hints.
-	 */
+	 
 	idx = this_cpu_read(flush_idx);
 	idx = this_cpu_add_return(flush_idx, hash_32(current->pid + idx, 8));
 
-	/*
-	 * The pmem_wmb() is needed to 'sfence' all
-	 * previous writes such that they are architecturally visible for
-	 * the platform buffer flush. Note that we've already arranged for pmem
-	 * writes to avoid the cache via memcpy_flushcache().  The final
-	 * wmb() ensures ordering for the NVDIMM flush write.
-	 */
+	 
 	pmem_wmb();
 	for (i = 0; i < nd_region->ndr_mappings; i++)
 		if (ndrd_get_flush_wpq(ndrd, i, 0))
@@ -1173,41 +1098,31 @@ int generic_nvdimm_flush(struct nd_region *nd_region)
 }
 EXPORT_SYMBOL_GPL(nvdimm_flush);
 
-/**
- * nvdimm_has_flush - determine write flushing requirements
- * @nd_region: interleaved pmem region
- *
- * Returns 1 if writes require flushing
- * Returns 0 if writes do not require flushing
- * Returns -ENXIO if flushing capability can not be determined
- */
+ 
 int nvdimm_has_flush(struct nd_region *nd_region)
 {
 	int i;
 
-	/* no nvdimm or pmem api == flushing capability unknown */
+	 
 	if (nd_region->ndr_mappings == 0
 			|| !IS_ENABLED(CONFIG_ARCH_HAS_PMEM_API))
 		return -ENXIO;
 
-	/* Test if an explicit flush function is defined */
+	 
 	if (test_bit(ND_REGION_ASYNC, &nd_region->flags) && nd_region->flush)
 		return 1;
 
-	/* Test if any flush hints for the region are available */
+	 
 	for (i = 0; i < nd_region->ndr_mappings; i++) {
 		struct nd_mapping *nd_mapping = &nd_region->mapping[i];
 		struct nvdimm *nvdimm = nd_mapping->nvdimm;
 
-		/* flush hints present / available */
+		 
 		if (nvdimm->num_flush)
 			return 1;
 	}
 
-	/*
-	 * The platform defines dimm devices without hints nor explicit flush,
-	 * assume platform persistence mechanism like ADR
-	 */
+	 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(nvdimm_has_flush);

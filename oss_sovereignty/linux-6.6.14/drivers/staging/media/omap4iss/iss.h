@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * TI OMAP4 ISS V4L2 Driver
- *
- * Copyright (C) 2012 Texas Instruments.
- *
- * Author: Sergio Aguirre <sergio.a.aguirre@gmail.com>
- */
+ 
+ 
 
 #ifndef _OMAP4_ISS_H_
 #define _OMAP4_ISS_H_
@@ -66,29 +60,21 @@ enum iss_isp_subclk_resource {
 	OMAP4_ISS_ISP_SUBCLK_IPIPEIF	= (1 << 5),
 };
 
-/*
- * struct iss_reg - Structure for ISS register values.
- * @reg: 32-bit Register address.
- * @val: 32-bit Register value.
- */
+ 
 struct iss_reg {
 	enum iss_mem_resources mmio_range;
 	u32 reg;
 	u32 val;
 };
 
-/*
- * struct iss_device - ISS device structure.
- * @syscon: Regmap for the syscon register space
- * @crashed: Crashed entities
- */
+ 
 struct iss_device {
 	struct v4l2_device v4l2_dev;
 	struct media_device media_dev;
 	struct device *dev;
 	u32 revision;
 
-	/* platform HW resources */
+	 
 	struct iss_platform_data *pdata;
 	unsigned int irq_num;
 
@@ -98,7 +84,7 @@ struct iss_device {
 
 	u64 raw_dmamask;
 
-	struct mutex iss_mutex;	/* For handling ref_count field */
+	struct mutex iss_mutex;	 
 	struct media_entity_enum crashed;
 	int has_context;
 	int ref_count;
@@ -106,7 +92,7 @@ struct iss_device {
 	struct clk *iss_fck;
 	struct clk *iss_ctrlclk;
 
-	/* ISS modules */
+	 
 	struct iss_csi2_device csi2a;
 	struct iss_csi2_device csi2b;
 	struct iss_csiphy csiphy1;
@@ -150,14 +136,7 @@ int omap4iss_register_entities(struct platform_device *pdev,
 			       struct v4l2_device *v4l2_dev);
 void omap4iss_unregister_entities(struct platform_device *pdev);
 
-/*
- * iss_reg_read - Read the value of an OMAP4 ISS register
- * @iss: the ISS device
- * @res: memory resource in which the register is located
- * @offset: register offset in the memory resource
- *
- * Return the register value.
- */
+ 
 static inline
 u32 iss_reg_read(struct iss_device *iss, enum iss_mem_resources res,
 		 u32 offset)
@@ -165,13 +144,7 @@ u32 iss_reg_read(struct iss_device *iss, enum iss_mem_resources res,
 	return readl(iss->regs[res] + offset);
 }
 
-/*
- * iss_reg_write - Write a value to an OMAP4 ISS register
- * @iss: the ISS device
- * @res: memory resource in which the register is located
- * @offset: register offset in the memory resource
- * @value: value to be written
- */
+ 
 static inline
 void iss_reg_write(struct iss_device *iss, enum iss_mem_resources res,
 		   u32 offset, u32 value)
@@ -179,13 +152,7 @@ void iss_reg_write(struct iss_device *iss, enum iss_mem_resources res,
 	writel(value, iss->regs[res] + offset);
 }
 
-/*
- * iss_reg_clr - Clear bits in an OMAP4 ISS register
- * @iss: the ISS device
- * @res: memory resource in which the register is located
- * @offset: register offset in the memory resource
- * @clr: bit mask to be cleared
- */
+ 
 static inline
 void iss_reg_clr(struct iss_device *iss, enum iss_mem_resources res,
 		 u32 offset, u32 clr)
@@ -195,13 +162,7 @@ void iss_reg_clr(struct iss_device *iss, enum iss_mem_resources res,
 	iss_reg_write(iss, res, offset, v & ~clr);
 }
 
-/*
- * iss_reg_set - Set bits in an OMAP4 ISS register
- * @iss: the ISS device
- * @res: memory resource in which the register is located
- * @offset: register offset in the memory resource
- * @set: bit mask to be set
- */
+ 
 static inline
 void iss_reg_set(struct iss_device *iss, enum iss_mem_resources res,
 		 u32 offset, u32 set)
@@ -211,16 +172,7 @@ void iss_reg_set(struct iss_device *iss, enum iss_mem_resources res,
 	iss_reg_write(iss, res, offset, v | set);
 }
 
-/*
- * iss_reg_update - Clear and set bits in an OMAP4 ISS register
- * @iss: the ISS device
- * @res: memory resource in which the register is located
- * @offset: register offset in the memory resource
- * @clr: bit mask to be cleared
- * @set: bit mask to be set
- *
- * Clear the clr mask first and then set the set mask.
- */
+ 
 static inline
 void iss_reg_update(struct iss_device *iss, enum iss_mem_resources res,
 		    u32 offset, u32 clr, u32 set)
@@ -244,4 +196,4 @@ void iss_reg_update(struct iss_device *iss, enum iss_mem_resources res,
 	!__cond;							\
 })
 
-#endif /* _OMAP4_ISS_H_ */
+#endif  

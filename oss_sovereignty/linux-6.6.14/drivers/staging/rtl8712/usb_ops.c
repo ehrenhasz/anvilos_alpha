@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * usb_ops.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _HCI_OPS_C_
 
@@ -34,7 +21,7 @@ static u8 usb_read8(struct intf_hdl *intfhdl, u32 addr)
 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
 
 	request = 0x05;
-	requesttype = 0x01; /* read_in */
+	requesttype = 0x01;  
 	index = 0;
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 1;
@@ -57,7 +44,7 @@ static u16 usb_read16(struct intf_hdl *intfhdl, u32 addr)
 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
 
 	request = 0x05;
-	requesttype = 0x01; /* read_in */
+	requesttype = 0x01;  
 	index = 0;
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 2;
@@ -80,7 +67,7 @@ static u32 usb_read32(struct intf_hdl *intfhdl, u32 addr)
 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
 
 	request = 0x05;
-	requesttype = 0x01; /* read_in */
+	requesttype = 0x01;  
 	index = 0;
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 4;
@@ -102,7 +89,7 @@ static void usb_write8(struct intf_hdl *intfhdl, u32 addr, u8 val)
 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
 
 	request = 0x05;
-	requesttype = 0x00; /* write_out */
+	requesttype = 0x00;  
 	index = 0;
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 1;
@@ -122,7 +109,7 @@ static void usb_write16(struct intf_hdl *intfhdl, u32 addr, u16 val)
 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
 
 	request = 0x05;
-	requesttype = 0x00; /* write_out */
+	requesttype = 0x00;  
 	index = 0;
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 2;
@@ -142,7 +129,7 @@ static void usb_write32(struct intf_hdl *intfhdl, u32 addr, u32 val)
 	struct intf_priv *intfpriv = intfhdl->pintfpriv;
 
 	request = 0x05;
-	requesttype = 0x00; /* write_out */
+	requesttype = 0x00;  
 	index = 0;
 	wvalue = (u16)(addr & 0x0000ffff);
 	len = 4;

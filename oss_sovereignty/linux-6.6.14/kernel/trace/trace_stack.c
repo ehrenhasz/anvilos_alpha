@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2008 Steven Rostedt <srostedt@redhat.com>
- *
- */
+
+ 
 #include <linux/sched/task_stack.h>
 #include <linux/stacktrace.h>
 #include <linux/security.h>
@@ -54,104 +51,7 @@ static void print_max_stack(void)
 	}
 }
 
-/*
- * The stack tracer looks for a maximum stack at each call from a function. It
- * registers a callback from ftrace, and in that callback it examines the stack
- * size. It determines the stack size from the variable passed in, which is the
- * address of a local variable in the stack_trace_call() callback function.
- * The stack size is calculated by the address of the local variable to the top
- * of the current stack. If that size is smaller than the currently saved max
- * stack size, nothing more is done.
- *
- * If the size of the stack is greater than the maximum recorded size, then the
- * following algorithm takes place.
- *
- * For architectures (like x86) that store the function's return address before
- * saving the function's local variables, the stack will look something like
- * this:
- *
- *   [ top of stack ]
- *    0: sys call entry frame
- *   10: return addr to entry code
- *   11: start of sys_foo frame
- *   20: return addr to sys_foo
- *   21: start of kernel_func_bar frame
- *   30: return addr to kernel_func_bar
- *   31: [ do trace stack here ]
- *
- * The save_stack_trace() is called returning all the functions it finds in the
- * current stack. Which would be (from the bottom of the stack to the top):
- *
- *   return addr to kernel_func_bar
- *   return addr to sys_foo
- *   return addr to entry code
- *
- * Now to figure out how much each of these functions' local variable size is,
- * a search of the stack is made to find these values. When a match is made, it
- * is added to the stack_dump_trace[] array. The offset into the stack is saved
- * in the stack_trace_index[] array. The above example would show:
- *
- *        stack_dump_trace[]        |   stack_trace_index[]
- *        ------------------        +   -------------------
- *  return addr to kernel_func_bar  |          30
- *  return addr to sys_foo          |          20
- *  return addr to entry            |          10
- *
- * The print_max_stack() function above, uses these values to print the size of
- * each function's portion of the stack.
- *
- *  for (i = 0; i < nr_entries; i++) {
- *     size = i == nr_entries - 1 ? stack_trace_index[i] :
- *                    stack_trace_index[i] - stack_trace_index[i+1]
- *     print "%d %d %d %s\n", i, stack_trace_index[i], size, stack_dump_trace[i]);
- *  }
- *
- * The above shows
- *
- *     depth size  location
- *     ----- ----  --------
- *  0    30   10   kernel_func_bar
- *  1    20   10   sys_foo
- *  2    10   10   entry code
- *
- * Now for architectures that might save the return address after the functions
- * local variables (saving the link register before calling nested functions),
- * this will cause the stack to look a little different:
- *
- * [ top of stack ]
- *  0: sys call entry frame
- * 10: start of sys_foo_frame
- * 19: return addr to entry code << lr saved before calling kernel_func_bar
- * 20: start of kernel_func_bar frame
- * 29: return addr to sys_foo_frame << lr saved before calling next function
- * 30: [ do trace stack here ]
- *
- * Although the functions returned by save_stack_trace() may be the same, the
- * placement in the stack will be different. Using the same algorithm as above
- * would yield:
- *
- *        stack_dump_trace[]        |   stack_trace_index[]
- *        ------------------        +   -------------------
- *  return addr to kernel_func_bar  |          30
- *  return addr to sys_foo          |          29
- *  return addr to entry            |          19
- *
- * Where the mapping is off by one:
- *
- *   kernel_func_bar stack frame size is 29 - 19 not 30 - 29!
- *
- * To fix this, if the architecture sets ARCH_RET_ADDR_AFTER_LOCAL_VARS the
- * values in stack_trace_index[] are shifted by one to and the number of
- * stack trace entries is decremented by one.
- *
- *        stack_dump_trace[]        |   stack_trace_index[]
- *        ------------------        +   -------------------
- *  return addr to kernel_func_bar  |          29
- *  return addr to sys_foo          |          19
- *
- * Although the entry function is not displayed, the first function (sys_foo)
- * will still include the stack size of it.
- */
+ 
 static void check_stack(unsigned long ip, unsigned long *stack)
 {
 	unsigned long this_size, flags; unsigned long *p, *top, *start;
@@ -161,28 +61,28 @@ static void check_stack(unsigned long ip, unsigned long *stack)
 
 	this_size = ((unsigned long)stack) & (THREAD_SIZE-1);
 	this_size = THREAD_SIZE - this_size;
-	/* Remove the frame of the tracer */
+	 
 	this_size -= frame_size;
 
 	if (this_size <= stack_trace_max_size)
 		return;
 
-	/* we do not handle interrupt stacks yet */
+	 
 	if (!object_is_on_stack(stack))
 		return;
 
-	/* Can't do this from NMI context (can cause deadlocks) */
+	 
 	if (in_nmi())
 		return;
 
 	local_irq_save(flags);
 	arch_spin_lock(&stack_trace_max_lock);
 
-	/* In case another CPU set the tracer_frame on us */
+	 
 	if (unlikely(!frame_size))
 		this_size -= tracer_frame;
 
-	/* a race could have already updated it */
+	 
 	if (this_size <= stack_trace_max_size)
 		goto out;
 
@@ -192,34 +92,23 @@ static void check_stack(unsigned long ip, unsigned long *stack)
 					       ARRAY_SIZE(stack_dump_trace) - 1,
 					       0);
 
-	/* Skip over the overhead of the stack tracer itself */
+	 
 	for (i = 0; i < stack_trace_nr_entries; i++) {
 		if (stack_dump_trace[i] == ip)
 			break;
 	}
 
-	/*
-	 * Some archs may not have the passed in ip in the dump.
-	 * If that happens, we need to show everything.
-	 */
+	 
 	if (i == stack_trace_nr_entries)
 		i = 0;
 
-	/*
-	 * Now find where in the stack these are.
-	 */
+	 
 	x = 0;
 	start = stack;
 	top = (unsigned long *)
 		(((unsigned long)start & ~(THREAD_SIZE-1)) + THREAD_SIZE);
 
-	/*
-	 * Loop through all the entries. One of the entries may
-	 * for some reason be missed on the stack, so we may
-	 * have to account for them. If they are all there, this
-	 * loop will only happen once. This code only takes place
-	 * on a new max, so it is far from a fast path.
-	 */
+	 
 	while (i < stack_trace_nr_entries) {
 		int found = 0;
 
@@ -227,24 +116,15 @@ static void check_stack(unsigned long ip, unsigned long *stack)
 		p = start;
 
 		for (; p < top && i < stack_trace_nr_entries; p++) {
-			/*
-			 * The READ_ONCE_NOCHECK is used to let KASAN know that
-			 * this is not a stack-out-of-bounds error.
-			 */
+			 
 			if ((READ_ONCE_NOCHECK(*p)) == stack_dump_trace[i]) {
 				stack_dump_trace[x] = stack_dump_trace[i++];
 				this_size = stack_trace_index[x++] =
 					(top - p) * sizeof(unsigned long);
 				found = 1;
-				/* Start the search from here */
+				 
 				start = p + 1;
-				/*
-				 * We do not want to show the overhead
-				 * of the stack tracer stack in the
-				 * max stack. If we haven't figured
-				 * out what that is, then figure it out
-				 * now.
-				 */
+				 
 				if (unlikely(!tracer_frame)) {
 					tracer_frame = (p - stack) *
 						sizeof(unsigned long);
@@ -258,12 +138,7 @@ static void check_stack(unsigned long ip, unsigned long *stack)
 	}
 
 #ifdef ARCH_FTRACE_SHIFT_STACK_TRACER
-	/*
-	 * Some archs will store the link register before calling
-	 * nested functions. This means the saved return address
-	 * comes after the local storage, and we need to shift
-	 * for that.
-	 */
+	 
 	if (x > 1) {
 		memmove(&stack_trace_index[0], &stack_trace_index[1],
 			sizeof(stack_trace_index[0]) * (x - 1));
@@ -283,7 +158,7 @@ static void check_stack(unsigned long ip, unsigned long *stack)
 	local_irq_restore(flags);
 }
 
-/* Some archs may not define MCOUNT_INSN_SIZE */
+ 
 #ifndef MCOUNT_INSN_SIZE
 # define MCOUNT_INSN_SIZE 0
 #endif
@@ -296,12 +171,12 @@ stack_trace_call(unsigned long ip, unsigned long parent_ip,
 
 	preempt_disable_notrace();
 
-	/* no atomic needed, we only modify this variable by this cpu */
+	 
 	__this_cpu_inc(disable_stack_tracer);
 	if (__this_cpu_read(disable_stack_tracer) != 1)
 		goto out;
 
-	/* If rcu is not watching, then save stack trace can fail */
+	 
 	if (!rcu_is_watching())
 		goto out;
 
@@ -311,7 +186,7 @@ stack_trace_call(unsigned long ip, unsigned long parent_ip,
 
  out:
 	__this_cpu_dec(disable_stack_tracer);
-	/* prevent recursion in schedule */
+	 
 	preempt_enable_notrace();
 }
 
@@ -348,11 +223,7 @@ stack_max_size_write(struct file *filp, const char __user *ubuf,
 
 	local_irq_save(flags);
 
-	/*
-	 * In case we trace inside arch_spin_lock() or after (NMI),
-	 * we will cause circular lock, so we also need to increase
-	 * the percpu disable_stack_tracer here.
-	 */
+	 
 	__this_cpu_inc(disable_stack_tracer);
 
 	arch_spin_lock(&stack_trace_max_lock);
@@ -498,7 +369,7 @@ stack_trace_filter_open(struct inode *inode, struct file *file)
 {
 	struct ftrace_ops *ops = inode->i_private;
 
-	/* Checks for tracefs lockdown */
+	 
 	return ftrace_regex_open(ops, FTRACE_ITER_FILTER,
 				 inode, file);
 }
@@ -511,7 +382,7 @@ static const struct file_operations stack_trace_filter_fops = {
 	.release = ftrace_regex_release,
 };
 
-#endif /* CONFIG_DYNAMIC_FTRACE */
+#endif  
 
 int
 stack_trace_sysctl(struct ctl_table *table, int write, void *buffer,

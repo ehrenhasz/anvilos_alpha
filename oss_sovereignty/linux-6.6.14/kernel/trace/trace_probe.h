@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common header file for probe-based Dynamic events.
- *
- * This code was copied from kernel/trace/trace_kprobe.h written by
- * Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>
- *
- * Updates to make this generic:
- * Copyright (C) IBM Corporation, 2010-2011
- * Author:     Srikar Dronamraju
- */
+
+ 
 
 #include <linux/seq_file.h>
 #include <linux/slab.h>
@@ -37,7 +28,7 @@
 #define MAX_STRING_SIZE		PATH_MAX
 #define MAX_ARG_BUF_LEN		(MAX_TRACE_ARGS * MAX_ARG_NAME_LEN)
 
-/* Reserved field names */
+ 
 #define FIELD_STRING_IP		"__probe_ip"
 #define FIELD_STRING_RETIP	"__probe_ret_ip"
 #define FIELD_STRING_FUNC	"__probe_func"
@@ -54,11 +45,11 @@
 	} while (0)
 
 
-/* Flags for trace_probe */
+ 
 #define TP_FLAG_TRACE		1
 #define TP_FLAG_PROFILE		2
 
-/* data_loc: data location, compatible with u32 */
+ 
 #define make_data_loc(len, offs)	\
 	(((u32)(len) << 16) | ((u32)(offs) & 0xffff))
 #define get_loc_len(dl)		((u32)(dl) >> 16)
@@ -77,38 +68,38 @@ static nokprobe_inline u32 update_data_loc(u32 loc, int consumed)
 	return make_data_loc(maxlen - consumed, offset + consumed);
 }
 
-/* Printing function type */
+ 
 typedef int (*print_type_func_t)(struct trace_seq *, void *, void *);
 
 enum fetch_op {
 	FETCH_OP_NOP = 0,
-	// Stage 1 (load) ops
-	FETCH_OP_REG,		/* Register : .param = offset */
-	FETCH_OP_STACK,		/* Stack : .param = index */
-	FETCH_OP_STACKP,	/* Stack pointer */
-	FETCH_OP_RETVAL,	/* Return value */
-	FETCH_OP_IMM,		/* Immediate : .immediate */
-	FETCH_OP_COMM,		/* Current comm */
-	FETCH_OP_ARG,		/* Function argument : .param */
-	FETCH_OP_FOFFS,		/* File offset: .immediate */
-	FETCH_OP_DATA,		/* Allocated data: .data */
-	// Stage 2 (dereference) op
-	FETCH_OP_DEREF,		/* Dereference: .offset */
-	FETCH_OP_UDEREF,	/* User-space Dereference: .offset */
-	// Stage 3 (store) ops
-	FETCH_OP_ST_RAW,	/* Raw: .size */
-	FETCH_OP_ST_MEM,	/* Mem: .offset, .size */
-	FETCH_OP_ST_UMEM,	/* Mem: .offset, .size */
-	FETCH_OP_ST_STRING,	/* String: .offset, .size */
-	FETCH_OP_ST_USTRING,	/* User String: .offset, .size */
-	FETCH_OP_ST_SYMSTR,	/* Kernel Symbol String: .offset, .size */
-	// Stage 4 (modify) op
-	FETCH_OP_MOD_BF,	/* Bitfield: .basesize, .lshift, .rshift */
-	// Stage 5 (loop) op
-	FETCH_OP_LP_ARRAY,	/* Array: .param = loop count */
-	FETCH_OP_TP_ARG,	/* Trace Point argument */
+	
+	FETCH_OP_REG,		 
+	FETCH_OP_STACK,		 
+	FETCH_OP_STACKP,	 
+	FETCH_OP_RETVAL,	 
+	FETCH_OP_IMM,		 
+	FETCH_OP_COMM,		 
+	FETCH_OP_ARG,		 
+	FETCH_OP_FOFFS,		 
+	FETCH_OP_DATA,		 
+	
+	FETCH_OP_DEREF,		 
+	FETCH_OP_UDEREF,	 
+	
+	FETCH_OP_ST_RAW,	 
+	FETCH_OP_ST_MEM,	 
+	FETCH_OP_ST_UMEM,	 
+	FETCH_OP_ST_STRING,	 
+	FETCH_OP_ST_USTRING,	 
+	FETCH_OP_ST_SYMSTR,	 
+	
+	FETCH_OP_MOD_BF,	 
+	
+	FETCH_OP_LP_ARRAY,	 
+	FETCH_OP_TP_ARG,	 
 	FETCH_OP_END,
-	FETCH_NOP_SYMBOL,	/* Unresolved Symbol holder */
+	FETCH_NOP_SYMBOL,	 
 };
 
 struct fetch_insn {
@@ -129,29 +120,29 @@ struct fetch_insn {
 	};
 };
 
-/* fetch + deref*N + store + mod + end <= 16, this allows N=12, enough */
+ 
 #define FETCH_INSN_MAX	16
 #define FETCH_TOKEN_COMM	(-ECOMM)
 
-/* Fetch type information table */
+ 
 struct fetch_type {
-	const char		*name;		/* Name of type */
-	size_t			size;		/* Byte size of type */
-	bool			is_signed;	/* Signed flag */
-	bool			is_string;	/* String flag */
-	print_type_func_t	print;		/* Print functions */
-	const char		*fmt;		/* Format string */
-	const char		*fmttype;	/* Name in format file */
+	const char		*name;		 
+	size_t			size;		 
+	bool			is_signed;	 
+	bool			is_string;	 
+	print_type_func_t	print;		 
+	const char		*fmt;		 
+	const char		*fmttype;	 
 };
 
-/* For defining macros, define string/string_size types */
+ 
 typedef u32 string;
 typedef u32 string_size;
 
 #define PRINT_TYPE_FUNC_NAME(type)	print_type_##type
 #define PRINT_TYPE_FMT_NAME(type)	print_type_format_##type
 
-/* Printing  in basic type function template */
+ 
 #define DECLARE_BASIC_PRINT_TYPE_FUNC(type)				\
 int PRINT_TYPE_FUNC_NAME(type)(struct trace_seq *s, void *data, void *ent);\
 extern const char PRINT_TYPE_FMT_NAME(type)[]
@@ -173,7 +164,7 @@ DECLARE_BASIC_PRINT_TYPE_FUNC(char);
 DECLARE_BASIC_PRINT_TYPE_FUNC(string);
 DECLARE_BASIC_PRINT_TYPE_FUNC(symbol);
 
-/* Default (unsigned long) fetch type */
+ 
 #define __DEFAULT_FETCH_TYPE(t) x##t
 #define _DEFAULT_FETCH_TYPE(t) __DEFAULT_FETCH_TYPE(t)
 #define DEFAULT_FETCH_TYPE _DEFAULT_FETCH_TYPE(BITS_PER_LONG)
@@ -193,13 +184,13 @@ DECLARE_BASIC_PRINT_TYPE_FUNC(symbol);
 	 .fmttype = _fmttype,				\
 	}
 
-/* Non string types can use these macros */
+ 
 #define _ASSIGN_FETCH_TYPE(_name, ptype, ftype, _size, sign, _fmttype)	\
 	__ASSIGN_FETCH_TYPE(_name, ptype, ftype, _size, sign, 0, #_fmttype)
 #define ASSIGN_FETCH_TYPE(ptype, ftype, sign)			\
 	_ASSIGN_FETCH_TYPE(#ptype, ptype, ftype, sizeof(ftype), sign, ptype)
 
-/* If ptype is an alias of atype, use this macro (show atype in format) */
+ 
 #define ASSIGN_FETCH_TYPE_ALIAS(ptype, atype, ftype, sign)		\
 	_ASSIGN_FETCH_TYPE(#ptype, ptype, ftype, sizeof(ftype), sign, atype)
 
@@ -219,17 +210,17 @@ static inline bool trace_kprobe_error_injectable(struct trace_event_call *call)
 {
 	return false;
 }
-#endif /* CONFIG_KPROBE_EVENTS */
+#endif  
 
 struct probe_arg {
 	struct fetch_insn	*code;
-	bool			dynamic;/* Dynamic array (string) is used */
-	unsigned int		offset;	/* Offset from argument entry */
-	unsigned int		count;	/* Array count */
-	const char		*name;	/* Name of this argument */
-	const char		*comm;	/* Command of this argument */
-	char			*fmt;	/* Format string if needed */
-	const struct fetch_type	*type;	/* Type of this argument */
+	bool			dynamic; 
+	unsigned int		offset;	 
+	unsigned int		count;	 
+	const char		*name;	 
+	const char		*comm;	 
+	char			*fmt;	 
+	const struct fetch_type	*type;	 
 };
 
 struct trace_uprobe_filter {
@@ -238,9 +229,9 @@ struct trace_uprobe_filter {
 	struct list_head	perf_events;
 };
 
-/* Event call and class holder */
+ 
 struct trace_probe_event {
-	unsigned int			flags;	/* For TP_FLAG_* */
+	unsigned int			flags;	 
 	struct trace_event_class	class;
 	struct trace_event_call		call;
 	struct list_head 		files;
@@ -251,7 +242,7 @@ struct trace_probe_event {
 struct trace_probe {
 	struct list_head		list;
 	struct trace_probe_event	*event;
-	ssize_t				size;	/* trace entry size */
+	ssize_t				size;	 
 	unsigned int			nr_args;
 	struct probe_arg		args[];
 };
@@ -328,7 +319,7 @@ static inline bool trace_probe_has_sibling(struct trace_probe *tp)
 
 static inline int trace_probe_unregister_event_call(struct trace_probe *tp)
 {
-	/* tp->event is unregistered in trace_remove_event_call() */
+	 
 	return trace_remove_event_call(&tp->event->call);
 }
 
@@ -360,13 +351,7 @@ int trace_probe_print_args(struct trace_seq *s, struct probe_arg *args, int nr_a
 #define trace_probe_for_each_link_rcu(pos, tp)	\
 	list_for_each_entry_rcu(pos, &(tp)->event->files, list)
 
-/*
- * The flags used for parsing trace_probe arguments.
- * TPARG_FL_RETURN, TPARG_FL_FENTRY and TPARG_FL_TEVENT are mutually exclusive.
- * TPARG_FL_KERNEL and TPARG_FL_USER are also mutually exclusive.
- * TPARG_FL_FPROBE and TPARG_FL_TPOINT are optional but it should be with
- * TPARG_FL_KERNEL.
- */
+ 
 #define TPARG_FL_RETURN BIT(0)
 #define TPARG_FL_KERNEL BIT(1)
 #define TPARG_FL_FENTRY BIT(2)
@@ -383,15 +368,15 @@ static inline bool tparg_is_function_entry(unsigned int flags)
 
 struct traceprobe_parse_context {
 	struct trace_event_call *event;
-	/* BTF related parameters */
-	const char *funcname;		/* Function name in BTF */
-	const struct btf_type  *proto;	/* Prototype of the function */
-	const struct btf_param *params;	/* Parameter of the function */
-	s32 nr_params;			/* The number of the parameters */
-	struct btf *btf;		/* The BTF to be used */
-	const struct btf_type *last_type;	/* Saved type */
-	u32 last_bitoffs;		/* Saved bitoffs */
-	u32 last_bitsize;		/* Saved bitsize */
+	 
+	const char *funcname;		 
+	const struct btf_type  *proto;	 
+	const struct btf_param *params;	 
+	s32 nr_params;			 
+	struct btf *btf;		 
+	const struct btf_type *last_type;	 
+	u32 last_bitoffs;		 
+	u32 last_bitsize;		 
 	unsigned int flags;
 	int offset;
 };
@@ -406,10 +391,7 @@ const char **traceprobe_expand_meta_args(int argc, const char *argv[],
 extern int traceprobe_update_arg(struct probe_arg *arg);
 extern void traceprobe_free_probe_arg(struct probe_arg *arg);
 
-/*
- * If either traceprobe_parse_probe_arg() or traceprobe_expand_meta_args() is called,
- * this MUST be called for clean up the context and return a resource.
- */
+ 
 void traceprobe_finish_parse(struct traceprobe_parse_context *ctx);
 
 extern int traceprobe_split_symbol_offset(char *symbol, long *offset);
@@ -520,10 +502,10 @@ extern int traceprobe_define_arg_fields(struct trace_event_call *event_call,
 #undef C
 #define C(a, b)		TP_ERR_##a
 
-/* Define TP_ERR_ */
+ 
 enum { ERRORS };
 
-/* Error text is defined in trace_probe.c */
+ 
 
 struct trace_probe_log {
 	const char	*subsystem;

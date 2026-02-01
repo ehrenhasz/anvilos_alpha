@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rl6347a.h - RL6347A class device shared support
- *
- * Copyright 2015 Realtek Semiconductor Corp.
- *
- * Author: Oder Chiou <oder_chiou@realtek.com>
- */
+ 
+ 
 #ifndef __RL6347A_H__
 #define __RL6347A_H__
 
@@ -28,4 +22,4 @@ struct rl6347a_priv {
 int rl6347a_hw_write(void *context, unsigned int reg, unsigned int value);
 int rl6347a_hw_read(void *context, unsigned int reg, unsigned int *value);
 
-#endif /* __RL6347A_H__ */
+#endif  

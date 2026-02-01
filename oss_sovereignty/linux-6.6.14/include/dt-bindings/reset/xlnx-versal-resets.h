@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) 2020 Xilinx, Inc.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_VERSAL_RESETS_H
 #define _DT_BINDINGS_VERSAL_RESETS_H

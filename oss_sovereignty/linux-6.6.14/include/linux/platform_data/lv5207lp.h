@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * lv5207lp.h - Sanyo LV5207LP LEDs Driver
- */
+ 
+ 
 #ifndef __LV5207LP_H__
 #define __LV5207LP_H__
 

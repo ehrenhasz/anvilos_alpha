@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+
+ 
 
 #include "wifi.h"
 #include "stats.h"
@@ -159,7 +159,7 @@ static void rtl_process_pwdb(struct ieee80211_hw *hw, struct rtl_stats *pstatus)
 	if (rtlpriv->mac80211.opmode != NL80211_IFTYPE_STATION)
 		sta = rtl_find_sta(hw, pstatus->psaddr);
 
-	/* adhoc or ap mode */
+	 
 	if (sta) {
 		drv_priv = (struct rtl_sta_info *) sta->drv_priv;
 		undec_sm_pwdb = drv_priv->rssi_stat.undec_sm_pwdb;

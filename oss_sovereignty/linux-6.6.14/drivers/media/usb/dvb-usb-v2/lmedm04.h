@@ -1,62 +1,22 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* DVB USB compliant linux driver for
- *
- * DM04/QQBOX DVB-S USB BOX	LME2510C + SHARP:BS2F7HZ7395
- *				LME2510C + LG TDQY-P001F
- *				LME2510 + LG TDQY-P001F
- *
- * MVB7395 (LME2510C+SHARP:BS2F7HZ7395)
- * SHARP:BS2F7HZ7395 = (STV0288+Sharp IX2505V)
- *
- * MVB001F (LME2510+LGTDQT-P001F)
- * LG TDQY - P001F =(TDA8263 + TDA10086H)
- *
- * MVB0001F (LME2510C+LGTDQT-P001F)
- *
- * *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+ 
+ 
 #ifndef _DVB_USB_LME2510_H_
 #define _DVB_USB_LME2510_H_
 
-/* Streamer &  PID
- *
- * Note:	These commands do not actually stop the streaming
- *		but form some kind of packet filtering/stream count
- *		or tuning related functions.
- *  06 XX
- *  offset 1 = 00 Enable Streaming
- *
- *
- *  PID
- *  03 XX XX  ----> reg number ---> setting....20 XX
- *  offset 1 = length
- *  offset 2 = start of data
- *  end byte -1 = 20
- *  end byte = clear pid always a0, other wise 9c, 9a ??
- *
-*/
+ 
 #define LME_ST_ON_W	{0x06, 0x00}
 #define LME_CLEAR_PID   {0x03, 0x02, 0x20, 0xa0}
 #define LME_ZERO_PID	{0x03, 0x06, 0x00, 0x00, 0x01, 0x00, 0x20, 0x9c}
 #define LME_ALL_PIDS	{0x03, 0x06, 0x00, 0xff, 0x01, 0x1f, 0x20, 0x81}
 
-/*  LNB Voltage
- *  07 XX XX
- *  offset 1 = 01
- *  offset 2 = 00=Voltage low 01=Voltage high
- *
- *  LNB Power
- *  03 01 XX
- *  offset 2 = 00=ON 01=OFF
- */
+ 
 
 #define LME_VOLTAGE_L	{0x07, 0x01, 0x00}
 #define LME_VOLTAGE_H	{0x07, 0x01, 0x01}
 #define LNB_ON		{0x3a, 0x01, 0x00}
 #define LNB_OFF		{0x3a, 0x01, 0x01}
 
-/* Initial stv0288 settings for 7395 Frontend */
+ 
 static u8 s7395_inittab[] = {
 	0x01, 0x15,
 	0x02, 0x20,

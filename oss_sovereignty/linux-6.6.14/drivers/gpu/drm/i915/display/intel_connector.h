@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_CONNECTOR_H__
 #define __INTEL_CONNECTOR_H__
@@ -34,4 +32,4 @@ void intel_attach_hdmi_colorspace_property(struct drm_connector *connector);
 void intel_attach_dp_colorspace_property(struct drm_connector *connector);
 void intel_attach_scaling_mode_property(struct drm_connector *connector);
 
-#endif /* __INTEL_CONNECTOR_H__ */
+#endif  

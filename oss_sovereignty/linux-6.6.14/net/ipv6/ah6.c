@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C)2002 USAGI/WIDE Project
- *
- * Authors
- *
- *	Mitsuru KANDA @USAGI       : IPv6 Support
- *	Kazunori MIYAZAWA @USAGI   :
- *	Kunihiro Ishiguro <kunihiro@ipinfusion.com>
- *
- *	This file is derived from net/ipv4/ah.c.
- */
+
+ 
 
 #define pr_fmt(fmt) "IPv6: " fmt
 
@@ -141,11 +131,7 @@ bad:
 }
 
 #if IS_ENABLED(CONFIG_IPV6_MIP6)
-/**
- *	ipv6_rearrange_destopt - rearrange IPv6 destination options header
- *	@iph: IPv6 header
- *	@destopt: destionation options header
- */
+ 
 static void ipv6_rearrange_destopt(struct ipv6hdr *iph, struct ipv6_opt_hdr *destopt)
 {
 	u8 *opt = (u8 *)destopt;
@@ -170,10 +156,7 @@ static void ipv6_rearrange_destopt(struct ipv6hdr *iph, struct ipv6_opt_hdr *des
 			if (len < optlen)
 				goto bad;
 
-			/* Rearrange the source address in @iph and the
-			 * addresses in home address option for final source.
-			 * See 11.3.2 of RFC 3775 for details.
-			 */
+			 
 			if (opt[off] == IPV6_TLV_HAO) {
 				struct ipv6_destopt_hao *hao;
 
@@ -191,7 +174,7 @@ static void ipv6_rearrange_destopt(struct ipv6hdr *iph, struct ipv6_opt_hdr *des
 		off += optlen;
 		len -= optlen;
 	}
-	/* Note: ok if len == 0 */
+	 
 bad:
 	return;
 }
@@ -199,15 +182,7 @@ bad:
 static void ipv6_rearrange_destopt(struct ipv6hdr *iph, struct ipv6_opt_hdr *destopt) {}
 #endif
 
-/**
- *	ipv6_rearrange_rthdr - rearrange IPv6 routing header
- *	@iph: IPv6 header
- *	@rthdr: routing header
- *
- *	Rearrange the destination address in @iph and the addresses in @rthdr
- *	so that they appear in the order they will at the final destination.
- *	See Appendix A2 of RFC 2402 for details.
- */
+ 
 static void ipv6_rearrange_rthdr(struct ipv6hdr *iph, struct ipv6_rt_hdr *rthdr)
 {
 	int segments, segments_left;
@@ -219,13 +194,7 @@ static void ipv6_rearrange_rthdr(struct ipv6hdr *iph, struct ipv6_rt_hdr *rthdr)
 		return;
 	rthdr->segments_left = 0;
 
-	/* The value of rthdr->hdrlen has been verified either by the system
-	 * call if it is locally generated, or by ipv6_rthdr_rcv() for incoming
-	 * packets.  So we can assume that it is even and that segments is
-	 * greater than or equal to segments_left.
-	 *
-	 * For the same reason we can assume that this option is of type 0.
-	 */
+	 
 	segments = rthdr->hdrlen >> 1;
 
 	addrs = ((struct rt0_hdr *)rthdr)->addr;
@@ -376,9 +345,7 @@ static int ah6_output(struct xfrm_state *x, struct sk_buff *skb)
 	nexthdr = *skb_mac_header(skb);
 	*skb_mac_header(skb) = IPPROTO_AH;
 
-	/* When there are no extension headers, we only need to save the first
-	 * 8 bytes of the base IP header.
-	 */
+	 
 	memcpy(iph_base, top_iph, IPV6HDR_BASELEN);
 
 	if (extlen) {
@@ -415,7 +382,7 @@ static int ah6_output(struct xfrm_state *x, struct sk_buff *skb)
 		goto out_free;
 
 	if (x->props.flags & XFRM_STATE_ESN) {
-		/* Attach seqhi sg right after packet payload */
+		 
 		*seqhi = htonl(XFRM_SKB_CB(skb)->seq.output.hi);
 		sg_set_buf(seqhisg, seqhi, seqhi_len);
 	}
@@ -492,20 +459,7 @@ out:
 
 static int ah6_input(struct xfrm_state *x, struct sk_buff *skb)
 {
-	/*
-	 * Before process AH
-	 * [IPv6][Ext1][Ext2][AH][Dest][Payload]
-	 * |<-------------->| hdr_len
-	 *
-	 * To erase AH:
-	 * Keeping copy of cleared headers. After AH processing,
-	 * Moving the pointer of skb->network_header by using skb_pull as long
-	 * as AH header length. Then copy back the copy as long as hdr_len
-	 * If destination header following AH exists, copy it into after [Ext2].
-	 *
-	 * |<>|[IPv6][Ext1][Ext2][Dest][Payload]
-	 * There is offset of AH before IPv6 header after the process.
-	 */
+	 
 
 	u8 *auth_data;
 	u8 *icv;
@@ -530,8 +484,7 @@ static int ah6_input(struct xfrm_state *x, struct sk_buff *skb)
 	if (!pskb_may_pull(skb, sizeof(struct ip_auth_hdr)))
 		goto out;
 
-	/* We are going to _remove_ AH header to keep sockets happy,
-	 * so... Later this can change. */
+	 
 	if (skb_unclone(skb, GFP_ATOMIC))
 		goto out;
 
@@ -601,7 +554,7 @@ static int ah6_input(struct xfrm_state *x, struct sk_buff *skb)
 		goto out_free;
 
 	if (x->props.flags & XFRM_STATE_ESN) {
-		/* Attach seqhi sg right after packet payload */
+		 
 		*seqhi = XFRM_SKB_CB(skb)->seq.input.hi;
 		sg_set_buf(seqhisg, seqhi, seqhi_len);
 	}
@@ -699,12 +652,7 @@ static int ah6_init_state(struct xfrm_state *x, struct netlink_ext_ack *extack)
 		goto error;
 	}
 
-	/*
-	 * Lookup the algorithm description maintained by xfrm_algo,
-	 * verify crypto transform properties, and store information
-	 * we need for AH processing.  This lookup cannot fail here
-	 * after a successful crypto_alloc_hash().
-	 */
+	 
 	aalg_desc = xfrm_aalg_get_byname(x->aalg->alg_name, 0);
 	BUG_ON(!aalg_desc);
 

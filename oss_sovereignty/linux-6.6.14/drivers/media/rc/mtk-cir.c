@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Mediatek IR Receiver Controller
- *
- * Copyright (C) 2017 Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -15,63 +11,60 @@
 
 #define MTK_IR_DEV KBUILD_MODNAME
 
-/* Register to enable PWM and IR */
+ 
 #define MTK_CONFIG_HIGH_REG       0x0c
 
-/* Bit to enable IR pulse width detection */
+ 
 #define MTK_PWM_EN		  BIT(13)
 
-/*
- * Register to setting ok count whose unit based on hardware sampling period
- * indicating IR receiving completion and then making IRQ fires
- */
+ 
 #define MTK_OK_COUNT_MASK	  (GENMASK(22, 16))
 #define MTK_OK_COUNT(x)		  ((x) << 16)
 
-/* Bit to enable IR hardware function */
+ 
 #define MTK_IR_EN		  BIT(0)
 
-/* Bit to restart IR receiving */
+ 
 #define MTK_IRCLR		  BIT(0)
 
-/* Fields containing pulse width data */
+ 
 #define MTK_WIDTH_MASK		  (GENMASK(7, 0))
 
-/* IR threshold */
+ 
 #define MTK_IRTHD		 0x14
 #define MTK_DG_CNT_MASK		 (GENMASK(12, 8))
 #define MTK_DG_CNT(x)		 ((x) << 8)
 
-/* Bit to enable interrupt */
+ 
 #define MTK_IRINT_EN		  BIT(0)
 
-/* Bit to clear interrupt status */
+ 
 #define MTK_IRINT_CLR		  BIT(0)
 
-/* Maximum count of samples */
+ 
 #define MTK_MAX_SAMPLES		  0xff
-/* Indicate the end of IR message */
+ 
 #define MTK_IR_END(v, p)	  ((v) == MTK_MAX_SAMPLES && (p) == 0)
-/* Number of registers to record the pulse width */
+ 
 #define MTK_CHKDATA_SZ		  17
-/* Sample period in us */
+ 
 #define MTK_IR_SAMPLE		  46
 
 enum mtk_fields {
-	/* Register to setting software sampling period */
+	 
 	MTK_CHK_PERIOD,
-	/* Register to setting hardware sampling period */
+	 
 	MTK_HW_PERIOD,
 };
 
 enum mtk_regs {
-	/* Register to clear state of state machine */
+	 
 	MTK_IRCLR_REG,
-	/* Register containing pulse width data */
+	 
 	MTK_CHKDATA_REG,
-	/* Register to enable IR interrupt */
+	 
 	MTK_IRINT_EN_REG,
-	/* Register to ack IR interrupt */
+	 
 	MTK_IRINT_CLR_REG
 };
 
@@ -95,16 +88,7 @@ struct mtk_field_type {
 	u32 mask;
 };
 
-/*
- * struct mtk_ir_data -	This is the structure holding all differences among
-			various hardwares
- * @regs:		The pointer to the array holding registers offset
- * @fields:		The pointer to the array holding fields location
- * @div:		The internal divisor for the based reference clock
- * @ok_count:		The count indicating the completion of IR data
- *			receiving when count is reached
- * @hw_period:		The value indicating the hardware sampling period
- */
+ 
 struct mtk_ir_data {
 	const u32 *regs;
 	const struct mtk_field_type *fields;
@@ -123,17 +107,7 @@ static const struct mtk_field_type mt7622_fields[] = {
 	[MTK_HW_PERIOD] = {0x10, 0, GENMASK(24, 0)},
 };
 
-/*
- * struct mtk_ir -	This is the main datasructure for holding the state
- *			of the driver
- * @dev:		The device pointer
- * @rc:			The rc instrance
- * @base:		The mapped register i/o base
- * @irq:		The IRQ that we are using
- * @clk:		The clock that IR internal is using
- * @bus:		The clock that software decoder is using
- * @data:		Holding specific data for vaious platform
- */
+ 
 struct mtk_ir {
 	struct device	*dev;
 	struct rc_dev	*rc;
@@ -153,10 +127,7 @@ static inline u32 mtk_chk_period(struct mtk_ir *ir)
 {
 	u32 val;
 
-	/*
-	 * Period for software decoder used in the
-	 * unit of raw software sampling
-	 */
+	 
 	val = DIV_ROUND_CLOSEST(clk_get_rate(ir->bus),
 				USEC_PER_SEC * ir->data->div / MTK_IR_SAMPLE);
 
@@ -209,21 +180,9 @@ static irqreturn_t mtk_ir_irq(int irqno, void *dev_id)
 	u32 i, j, val;
 	u8 wid;
 
-	/*
-	 * Each pulse and space is encoded as a single byte, each byte
-	 * alternating between pulse and space. If a pulse or space is longer
-	 * than can be encoded in a single byte, it is encoded as the maximum
-	 * value 0xff.
-	 *
-	 * If a space is longer than ok_count (about 23ms), the value is
-	 * encoded as zero, and all following bytes are zero. Any IR that
-	 * follows will be presented in the next interrupt.
-	 *
-	 * If there are more than 68 (=MTK_CHKDATA_SZ * 4) pulses and spaces,
-	 * then the only the first 68 will be presented; the rest is lost.
-	 */
+	 
 
-	/* Handle all pulse and space IR controller captures */
+	 
 	for (i = 0 ; i < MTK_CHKDATA_SZ ; i++) {
 		val = mtk_r32(ir, mtk_chkdata_reg(ir, i));
 		dev_dbg(ir->dev, "@reg%d=0x%08x\n", i, val);
@@ -237,15 +196,7 @@ static irqreturn_t mtk_ir_irq(int irqno, void *dev_id)
 		}
 	}
 
-	/*
-	 * The maximum number of edges the IR controller can
-	 * hold is MTK_CHKDATA_SZ * 4. So if received IR messages
-	 * is over the limit, the last incomplete IR message would
-	 * be appended trailing space and still would be sent into
-	 * ir-rc-raw to decode. That helps it is possible that it
-	 * has enough information to decode a scancode even if the
-	 * trailing end of the message is missing.
-	 */
+	 
 	if (!MTK_IR_END(wid, rawir.pulse)) {
 		rawir.pulse = false;
 		rawir.duration = MTK_MAX_SAMPLES * (MTK_IR_SAMPLE + 1);
@@ -254,13 +205,10 @@ static irqreturn_t mtk_ir_irq(int irqno, void *dev_id)
 
 	ir_raw_event_handle(ir->rc);
 
-	/*
-	 * Restart controller for the next receive that would
-	 * clear up all CHKDATA registers
-	 */
+	 
 	mtk_w32_mask(ir, 0x1, MTK_IRCLR, ir->data->regs[MTK_IRCLR_REG]);
 
-	/* Clear interrupt status */
+	 
 	mtk_w32_mask(ir, 0x1, MTK_IRINT_CLR,
 		     ir->data->regs[MTK_IRINT_CLR_REG]);
 
@@ -314,10 +262,7 @@ static int mtk_ir_probe(struct platform_device *pdev)
 
 	ir->bus = devm_clk_get(dev, "bus");
 	if (IS_ERR(ir->bus)) {
-		/*
-		 * For compatibility with older device trees try unnamed
-		 * ir->bus uses the same clock as ir->clock.
-		 */
+		 
 		ir->bus = ir->clk;
 	}
 
@@ -369,10 +314,7 @@ static int mtk_ir_probe(struct platform_device *pdev)
 		goto exit_clkdisable_clk;
 	}
 
-	/*
-	 * Enable interrupt after proper hardware
-	 * setup and IRQ handler registration
-	 */
+	 
 	mtk_irq_disable(ir, MTK_IRINT_EN);
 
 	ret = devm_request_irq(dev, ir->irq, mtk_ir_irq, 0, MTK_IR_DEV, ir);
@@ -381,27 +323,22 @@ static int mtk_ir_probe(struct platform_device *pdev)
 		goto exit_clkdisable_bus;
 	}
 
-	/*
-	 * Setup software sample period as the reference of software decoder
-	 */
+	 
 	val = (mtk_chk_period(ir) << ir->data->fields[MTK_CHK_PERIOD].offset) &
 	       ir->data->fields[MTK_CHK_PERIOD].mask;
 	mtk_w32_mask(ir, val, ir->data->fields[MTK_CHK_PERIOD].mask,
 		     ir->data->fields[MTK_CHK_PERIOD].reg);
 
-	/*
-	 * Setup hardware sampling period used to setup the proper timeout for
-	 * indicating end of IR receiving completion
-	 */
+	 
 	val = (ir->data->hw_period << ir->data->fields[MTK_HW_PERIOD].offset) &
 	       ir->data->fields[MTK_HW_PERIOD].mask;
 	mtk_w32_mask(ir, val, ir->data->fields[MTK_HW_PERIOD].mask,
 		     ir->data->fields[MTK_HW_PERIOD].reg);
 
-	/* Set de-glitch counter */
+	 
 	mtk_w32_mask(ir, MTK_DG_CNT(1), MTK_DG_CNT_MASK, MTK_IRTHD);
 
-	/* Enable IR and PWM */
+	 
 	val = mtk_r32(ir, MTK_CONFIG_HIGH_REG) & ~MTK_OK_COUNT_MASK;
 	val |= MTK_OK_COUNT(ir->data->ok_count) |  MTK_PWM_EN | MTK_IR_EN;
 	mtk_w32(ir, val, MTK_CONFIG_HIGH_REG);
@@ -425,11 +362,7 @@ static void mtk_ir_remove(struct platform_device *pdev)
 {
 	struct mtk_ir *ir = platform_get_drvdata(pdev);
 
-	/*
-	 * Avoid contention between remove handler and
-	 * IRQ handler so that disabling IR interrupt and
-	 * waiting for pending IRQ handler to complete
-	 */
+	 
 	mtk_irq_disable(ir, MTK_IRINT_EN);
 	synchronize_irq(ir->irq);
 

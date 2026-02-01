@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include <linux/mlx5/fs.h>
 #include "en/mapping.h"
@@ -21,11 +21,11 @@ struct mlx5e_tc_int_port {
 
 struct mlx5e_tc_int_port_priv {
 	struct mlx5_core_dev *dev;
-	struct mutex int_ports_lock; /* Protects int ports list */
-	struct list_head int_ports; /* Uses int_ports_lock */
+	struct mutex int_ports_lock;  
+	struct list_head int_ports;  
 	u16 num_ports;
-	bool ul_rep_rx_ready; /* Set when uplink is performing teardown */
-	struct mapping_ctx *metadata_mapping; /* Metadata for source port rewrite and matching */
+	bool ul_rep_rx_ready;  
+	struct mapping_ctx *metadata_mapping;  
 };
 
 bool mlx5e_tc_int_port_supported(const struct mlx5_eswitch *esw)
@@ -41,12 +41,7 @@ u32 mlx5e_tc_int_port_get_metadata(struct mlx5e_tc_int_port *int_port)
 
 int mlx5e_tc_int_port_get_flow_source(struct mlx5e_tc_int_port *int_port)
 {
-	/* For egress forwarding we can have the case
-	 * where the packet came from a vport and redirected
-	 * to int port or it came from the uplink, going
-	 * via internal port and hairpinned back to uplink
-	 * so we set the source to any port in this case.
-	 */
+	 
 	return int_port->type == MLX5E_TC_INT_PORT_EGRESS ?
 		MLX5_FLOW_CONTEXT_FLOW_SOURCE_ANY_VPORT :
 		MLX5_FLOW_CONTEXT_FLOW_SOURCE_UPLINK;
@@ -83,9 +78,7 @@ mlx5e_int_port_create_rx_rule(struct mlx5_eswitch *esw,
 
 	spec->match_criteria_enable = MLX5_MATCH_MISC_PARAMETERS_2;
 
-	/* Overwrite flow tag with the int port metadata mapping
-	 * instead of the chain mapping.
-	 */
+	 
 	flow_context = &spec->flow_context;
 	flow_context->flags |= FLOW_CONTEXT_HAS_TAG;
 	flow_context->flow_tag = int_port->mapping;
@@ -132,7 +125,7 @@ static int mlx5e_int_port_metadata_alloc(struct mlx5e_tc_int_port_priv *priv,
 	if (err)
 		return err;
 
-	/* Fill upper 4 bits of PFNUM with reserved value */
+	 
 	*id |= 0xf << ESW_VPORT_BITS;
 
 	return 0;
@@ -145,7 +138,7 @@ static void mlx5e_int_port_metadata_free(struct mlx5e_tc_int_port_priv *priv,
 	mapping_remove(priv->metadata_mapping, id);
 }
 
-/* Must be called with priv->int_ports_lock held */
+ 
 static struct mlx5e_tc_int_port *
 mlx5e_int_port_add(struct mlx5e_tc_int_port_priv *priv,
 		   int ifindex,
@@ -178,7 +171,7 @@ mlx5e_int_port_add(struct mlx5e_tc_int_port_priv *priv,
 		goto err_metadata;
 	}
 
-	/* map metadata to reg_c0 object for miss handling */
+	 
 	ctx = esw->offloads.reg_c0_obj_pool;
 	mapped_obj.type = MLX5_MAPPED_OBJ_INT_PORT_METADATA;
 	mapped_obj.int_port_metadata = match_metadata;
@@ -191,7 +184,7 @@ mlx5e_int_port_add(struct mlx5e_tc_int_port_priv *priv,
 	int_port->match_metadata = match_metadata;
 	int_port->mapping = mapping;
 
-	/* Create a match on internal vport metadata in vport table */
+	 
 	uplink_rpriv = mlx5_eswitch_get_uplink_priv(esw, REP_ETH);
 
 	dest.type = MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE;
@@ -222,7 +215,7 @@ err_metadata:
 	return ERR_PTR(err);
 }
 
-/* Must be called with priv->int_ports_lock held */
+ 
 static void
 mlx5e_int_port_remove(struct mlx5e_tc_int_port_priv *priv,
 		      struct mlx5e_tc_int_port *int_port)
@@ -234,10 +227,7 @@ mlx5e_int_port_remove(struct mlx5e_tc_int_port_priv *priv,
 
 	list_del_rcu(&int_port->list);
 
-	/* The following parameters are not used by the
-	 * rcu readers of this int_port object so it is
-	 * safe to release them.
-	 */
+	 
 	if (int_port->rx_rule)
 		mlx5_del_flow_rules(int_port->rx_rule);
 	mapping_remove(ctx, int_port->mapping);
@@ -246,7 +236,7 @@ mlx5e_int_port_remove(struct mlx5e_tc_int_port_priv *priv,
 	priv->num_ports--;
 }
 
-/* Must be called with rcu_read_lock held */
+ 
 static struct mlx5e_tc_int_port *
 mlx5e_int_port_get_from_metadata(struct mlx5e_tc_int_port_priv *priv,
 				 u32 metadata)
@@ -272,7 +262,7 @@ mlx5e_tc_int_port_get(struct mlx5e_tc_int_port_priv *priv,
 
 	mutex_lock(&priv->int_ports_lock);
 
-	/* Reject request if ul rep not ready */
+	 
 	if (!priv->ul_rep_rx_ready) {
 		int_port = ERR_PTR(-EOPNOTSUPP);
 		goto done;
@@ -282,7 +272,7 @@ mlx5e_tc_int_port_get(struct mlx5e_tc_int_port_priv *priv,
 	if (int_port)
 		goto done;
 
-	/* Alloc and add new int port to list */
+	 
 	int_port = mlx5e_int_port_add(priv, ifindex, type);
 
 done:
@@ -350,11 +340,7 @@ mlx5e_tc_int_port_cleanup(struct mlx5e_tc_int_port_priv *priv)
 	kfree(priv);
 }
 
-/* Int port rx rules reside in ul rep rx tables.
- * It is possible the ul rep will go down while there are
- * still int port rules in its rx table so proper cleanup
- * is required to free resources.
- */
+ 
 void mlx5e_tc_int_port_init_rep_rx(struct mlx5e_priv *priv)
 {
 	struct mlx5_eswitch *esw = priv->mdev->priv.eswitch;

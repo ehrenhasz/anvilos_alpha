@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Omnitek Scatter-Gather DMA Controller
- *
- *  Copyright 2012-2015 Cisco Systems, Inc. and/or its affiliates.
- *  All rights reserved.
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/io.h>
@@ -14,7 +9,7 @@
 #include "cobalt-driver.h"
 #include "cobalt-omnitek.h"
 
-/* descriptor */
+ 
 #define END_OF_CHAIN		(1 << 1)
 #define INTERRUPT_ENABLE	(1 << 2)
 #define WRITE_TO_PCI		(1 << 3)
@@ -22,7 +17,7 @@
 #define DESCRIPTOR_FLAG_MSK	(END_OF_CHAIN | INTERRUPT_ENABLE | WRITE_TO_PCI)
 #define NEXT_ADRS_MSK		0xffffffe0
 
-/* control/status register */
+ 
 #define ENABLE                  (1 << 0)
 #define START                   (1 << 1)
 #define ABORT                   (1 << 2)
@@ -158,7 +153,7 @@ int descriptor_list_create(struct cobalt *cobalt,
 	unsigned copied = 0;
 	bool first = true;
 
-	/* Must be 4-byte aligned */
+	 
 	WARN_ON(sg_dma_address(scatter_list) & 3);
 	WARN_ON(size & 3);
 	WARN_ON(next & 3);
@@ -179,17 +174,16 @@ int descriptor_list_create(struct cobalt *cobalt,
 				return -EFAULT;
 		}
 
-		/* PCIe address */
+		 
 		d->pci_l = addr & 0xffffffff;
-		/* If dma_addr_t is 32 bits, then addr >> 32 is actually the
-		   equivalent of addr >> 0 in gcc. So must cast to u64. */
+		 
 		d->pci_h = (u64)addr >> 32;
 
-		/* Sync to start of streaming frame */
+		 
 		d->local = 0;
 		d->reserved0 = 0;
 
-		/* Transfer bytes */
+		 
 		bytes = min(sg_dma_len(scatter_list) - offset,
 				copy_bytes - copied);
 
@@ -198,8 +192,7 @@ int descriptor_list_create(struct cobalt *cobalt,
 				d->local = 0x11111111;
 			first = false;
 			if (sglen == 1) {
-				/* Make sure there are always at least two
-				 * descriptors */
+				 
 				d->bytes = (bytes / 2) & ~3;
 				d->reserved1 = 0;
 				size -= d->bytes;
@@ -212,14 +205,12 @@ int descriptor_list_create(struct cobalt *cobalt,
 					(to_pci ? WRITE_TO_PCI : 0);
 				bytes -= d->bytes;
 				d++;
-				/* PCIe address */
+				 
 				d->pci_l = addr & 0xffffffff;
-				/* If dma_addr_t is 32 bits, then addr >> 32
-				 * is actually the equivalent of addr >> 0 in
-				 * gcc. So must cast to u64. */
+				 
 				d->pci_h = (u64)addr >> 32;
 
-				/* Sync to start of streaming frame */
+				 
 				d->local = 0;
 				d->reserved0 = 0;
 			}
@@ -249,10 +240,10 @@ int descriptor_list_create(struct cobalt *cobalt,
 			scatter_list = sg_next(scatter_list);
 		}
 
-		/* Next descriptor + control bits */
+		 
 		next += sizeof(struct sg_dma_descriptor);
 		if (size == 0) {
-			/* Loopback to the first descriptor */
+			 
 			d->next_h = (u32)((u64)desc->bus >> 32);
 			d->next_l = (u32)desc->bus |
 				(to_pci ? WRITE_TO_PCI : 0) | INTERRUPT_ENABLE;

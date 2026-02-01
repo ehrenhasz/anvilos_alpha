@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_soc_dts_thermal.c
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -20,7 +17,7 @@ module_param(crit_offset, int, 0644);
 MODULE_PARM_DESC(crit_offset,
 	"Critical Temperature offset from tj max in millidegree Celsius.");
 
-/* IRQ 86 is a fixed APIC interrupt for BYT DTS Aux threshold notifications */
+ 
 #define BYT_SOC_DTS_APIC_IRQ	86
 
 static int soc_dts_thres_gsi;
@@ -50,7 +47,7 @@ static int __init intel_soc_thermal_init(void)
 	if (!match_cpu)
 		return -ENODEV;
 
-	/* Create a zone with 2 trips with marked as read only */
+	 
 	soc_dts = intel_soc_dts_iosf_init(INTEL_SOC_DTS_INTERRUPT_APIC, true,
 					  crit_offset);
 	if (IS_ERR(soc_dts)) {
@@ -60,10 +57,7 @@ static int __init intel_soc_thermal_init(void)
 
 	soc_dts_thres_gsi = (int)match_cpu->driver_data;
 	if (soc_dts_thres_gsi) {
-		/*
-		 * Note the flags here MUST match the firmware defaults, rather
-		 * then the request_irq flags, otherwise we get an EBUSY error.
-		 */
+		 
 		soc_dts_thres_irq = acpi_register_gsi(NULL, soc_dts_thres_gsi,
 						      ACPI_LEVEL_SENSITIVE,
 						      ACPI_ACTIVE_LOW);
@@ -80,11 +74,7 @@ static int __init intel_soc_thermal_init(void)
 					   IRQF_TRIGGER_RISING | IRQF_ONESHOT,
 					   "soc_dts", soc_dts);
 		if (err) {
-			/*
-			 * Do not just error out because the user space thermal
-			 * daemon such as DPTF may use polling instead of being
-			 * interrupt driven.
-			 */
+			 
 			pr_warn("request_threaded_irq ret %d\n", err);
 		}
 	}

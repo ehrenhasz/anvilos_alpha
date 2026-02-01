@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car MSTP clocks
- *
- * Copyright (C) 2013 Ideas On Board SPRL
- * Copyright (C) 2015 Glider bvba
- *
- * Contact: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -21,23 +14,11 @@
 #include <linux/pm_domain.h>
 #include <linux/spinlock.h>
 
-/*
- * MSTP clocks. We can't use standard gate clocks as we need to poll on the
- * status register when enabling the clock.
- */
+ 
 
 #define MSTP_MAX_CLOCKS		32
 
-/**
- * struct mstp_clock_group - MSTP gating clocks group
- *
- * @data: clock specifier translation for clocks in this group
- * @smstpcr: module stop control register
- * @mstpsr: module stop status register (optional)
- * @lock: protects writes to SMSTPCR
- * @width_8bit: registers are 8-bit, not 32-bit
- * @clks: clocks in this group
- */
+ 
 struct mstp_clock_group {
 	struct clk_onecell_data data;
 	void __iomem *smstpcr;
@@ -47,12 +28,7 @@ struct mstp_clock_group {
 	struct clk *clks[];
 };
 
-/**
- * struct mstp_clock - MSTP gating clock
- * @hw: handle between common and hardware-specific interfaces
- * @bit_index: control bit index
- * @group: MSTP clocks group
- */
+ 
 struct mstp_clock {
 	struct clk_hw hw;
 	u32 bit_index;
@@ -92,7 +68,7 @@ static int cpg_mstp_clock_endisable(struct clk_hw *hw, bool enable)
 	cpg_mstp_write(group, value, group->smstpcr);
 
 	if (!group->mstpsr) {
-		/* dummy read to ensure write has completed */
+		 
 		cpg_mstp_read(group, group->smstpcr);
 		barrier_data(group->smstpcr);
 	}
@@ -102,7 +78,7 @@ static int cpg_mstp_clock_endisable(struct clk_hw *hw, bool enable)
 	if (!enable || !group->mstpsr)
 		return 0;
 
-	/* group->width_8bit is always false if group->mstpsr is present */
+	 
 	ret = readl_poll_timeout_atomic(group->mstpsr, value,
 					!(value & bitmask), 0, 10);
 	if (ret)
@@ -157,7 +133,7 @@ static struct clk * __init cpg_mstp_clock_register(const char *name,
 	init.name = name;
 	init.ops = &cpg_mstp_clock_ops;
 	init.flags = CLK_SET_RATE_PARENT;
-	/* INTC-SYS is the module clock of the GIC, and must not be disabled */
+	 
 	if (!strcmp(name, "intc-sys")) {
 		pr_debug("MSTP %s setting CLK_IS_CRITICAL\n", name);
 		init.flags |= CLK_IS_CRITICAL;
@@ -218,7 +194,7 @@ static void __init cpg_mstp_clocks_init(struct device_node *np)
 		u32 clkidx;
 		int ret;
 
-		/* Skip clocks with no name. */
+		 
 		ret = of_property_read_string_index(np, "clock-output-names",
 						    i, &name);
 		if (ret < 0 || strlen(name) == 0)
@@ -240,14 +216,7 @@ static void __init cpg_mstp_clocks_init(struct device_node *np)
 		if (!IS_ERR(clks[clkidx])) {
 			group->data.clk_num = max(group->data.clk_num,
 						  clkidx + 1);
-			/*
-			 * Register a clkdev to let board code retrieve the
-			 * clock by name and register aliases for non-DT
-			 * devices.
-			 *
-			 * FIXME: Remove this when all devices that require a
-			 * clock will be instantiated from DT.
-			 */
+			 
 			clk_register_clkdev(clks[clkidx], name, NULL);
 		} else {
 			pr_err("%s: failed to register %pOFn %s clock (%ld)\n",
@@ -273,7 +242,7 @@ int cpg_mstp_attach_dev(struct generic_pm_domain *unused, struct device *dev)
 					    "renesas,cpg-mstp-clocks"))
 			goto found;
 
-		/* BSC on r8a73a4/sh73a0 uses zb_clk instead of an mstp clock */
+		 
 		if (of_node_name_eq(clkspec.np, "zb_clk"))
 			goto found;
 

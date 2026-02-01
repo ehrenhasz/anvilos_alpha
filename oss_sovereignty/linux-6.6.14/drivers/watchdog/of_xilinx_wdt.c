@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog Device Driver for Xilinx axi/xps_timebase_wdt
- *
- * (C) Copyright 2013 - 2014 Xilinx, Inc.
- * (C) Copyright 2011 (Alejandro Cabrera <aldaya@gmail.com>)
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -18,20 +13,20 @@
 #include <linux/io.h>
 #include <linux/of.h>
 
-/* Register offsets for the Wdt device */
-#define XWT_TWCSR0_OFFSET   0x0 /* Control/Status Register0 */
-#define XWT_TWCSR1_OFFSET   0x4 /* Control/Status Register1 */
-#define XWT_TBR_OFFSET      0x8 /* Timebase Register Offset */
+ 
+#define XWT_TWCSR0_OFFSET   0x0  
+#define XWT_TWCSR1_OFFSET   0x4  
+#define XWT_TBR_OFFSET      0x8  
 
-/* Control/Status Register Masks  */
-#define XWT_CSR0_WRS_MASK	BIT(3) /* Reset status */
-#define XWT_CSR0_WDS_MASK	BIT(2) /* Timer state  */
-#define XWT_CSR0_EWDT1_MASK	BIT(1) /* Enable bit 1 */
+ 
+#define XWT_CSR0_WRS_MASK	BIT(3)  
+#define XWT_CSR0_WDS_MASK	BIT(2)  
+#define XWT_CSR0_EWDT1_MASK	BIT(1)  
 
-/* Control/Status Register 0/1 bits  */
-#define XWT_CSRX_EWDT2_MASK	BIT(0) /* Enable bit 2 */
+ 
+#define XWT_CSRX_EWDT2_MASK	BIT(0)  
 
-/* SelfTest constants */
+ 
 #define XWT_MAX_SELFTEST_LOOP_COUNT 0x00010000
 #define XWT_TIMER_FAILED            0xFFFFFFFF
 
@@ -40,7 +35,7 @@
 struct xwdt_device {
 	void __iomem *base;
 	u32 wdt_interval;
-	spinlock_t spinlock; /* spinlock for register handling */
+	spinlock_t spinlock;  
 	struct watchdog_device xilinx_wdt_wdd;
 	struct clk		*clk;
 };
@@ -59,7 +54,7 @@ static int xilinx_wdt_start(struct watchdog_device *wdd)
 
 	spin_lock(&xdev->spinlock);
 
-	/* Clean previous status and enable the watchdog timer */
+	 
 	control_status_reg = ioread32(xdev->base + XWT_TWCSR0_OFFSET);
 	control_status_reg |= (XWT_CSR0_WRS_MASK | XWT_CSR0_WDS_MASK);
 
@@ -192,10 +187,7 @@ static int xwdt_probe(struct platform_device *pdev)
 		if (PTR_ERR(xdev->clk) != -ENOENT)
 			return PTR_ERR(xdev->clk);
 
-		/*
-		 * Clock framework support is optional, continue on
-		 * anyways if we don't find a matching clock.
-		 */
+		 
 		xdev->clk = NULL;
 
 		rc = of_property_read_u32(dev->of_node, "clock-frequency",
@@ -207,10 +199,7 @@ static int xwdt_probe(struct platform_device *pdev)
 		pfreq = clk_get_rate(xdev->clk);
 	}
 
-	/*
-	 * Twice of the 2^wdt_interval / freq  because the first wdt overflow is
-	 * ignored (interrupt), reset is only generated at second wdt overflow
-	 */
+	 
 	if (pfreq && xdev->wdt_interval)
 		xilinx_wdt_wdd->timeout = 2 * ((1 << xdev->wdt_interval) /
 					  pfreq);
@@ -238,12 +227,7 @@ static int xwdt_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/**
- * xwdt_suspend - Suspend the device.
- *
- * @dev: handle to the device structure.
- * Return: 0 always.
- */
+ 
 static int __maybe_unused xwdt_suspend(struct device *dev)
 {
 	struct xwdt_device *xdev = dev_get_drvdata(dev);
@@ -254,12 +238,7 @@ static int __maybe_unused xwdt_suspend(struct device *dev)
 	return 0;
 }
 
-/**
- * xwdt_resume - Resume the device.
- *
- * @dev: handle to the device structure.
- * Return: 0 on success, errno otherwise.
- */
+ 
 static int __maybe_unused xwdt_resume(struct device *dev)
 {
 	struct xwdt_device *xdev = dev_get_drvdata(dev);
@@ -273,7 +252,7 @@ static int __maybe_unused xwdt_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(xwdt_pm_ops, xwdt_suspend, xwdt_resume);
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id xwdt_of_match[] = {
 	{ .compatible = "xlnx,xps-timebase-wdt-1.00.a", },
 	{ .compatible = "xlnx,xps-timebase-wdt-1.01.a", },

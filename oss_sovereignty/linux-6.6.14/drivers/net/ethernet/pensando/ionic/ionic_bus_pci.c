@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -11,11 +11,11 @@
 #include "ionic_lif.h"
 #include "ionic_debugfs.h"
 
-/* Supported devices */
+ 
 static const struct pci_device_id ionic_id_table[] = {
 	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_PF) },
 	{ PCI_VDEVICE(PENSANDO, PCI_DEVICE_ID_PENSANDO_IONIC_ETH_VF) },
-	{ 0, }	/* end of table */
+	{ 0, }	 
 };
 MODULE_DEVICE_TABLE(pci, ionic_id_table);
 
@@ -58,7 +58,7 @@ static int ionic_map_bars(struct ionic *ionic)
 			continue;
 		bars[j].len = pci_resource_len(pdev, i);
 
-		/* only map the whole bar 0 */
+		 
 		if (j > 0) {
 			bars[j].vaddr = NULL;
 		} else {
@@ -167,7 +167,7 @@ static int ionic_vf_alloc(struct ionic *ionic, int num_vfs)
 
 		ionic->num_vfs++;
 
-		/* ignore failures from older FW, we just won't get stats */
+		 
 		vfc.stats_pa = cpu_to_le64(v->stats_pa);
 		ionic_set_vf_config(ionic, i, &vfc);
 	}
@@ -228,7 +228,7 @@ static int ionic_setup_one(struct ionic *ionic)
 
 	ionic_debugfs_add_dev(ionic);
 
-	/* Setup PCI device */
+	 
 	err = pci_enable_device_mem(pdev);
 	if (err) {
 		dev_err(dev, "Cannot enable PCI device: %d, aborting\n", err);
@@ -246,7 +246,7 @@ static int ionic_setup_one(struct ionic *ionic)
 	if (err)
 		goto err_out_clear_pci;
 
-	/* Configure the device */
+	 
 	err = ionic_setup(ionic);
 	if (err) {
 		dev_err(dev, "Cannot setup device: %d, aborting\n", err);
@@ -267,7 +267,7 @@ static int ionic_setup_one(struct ionic *ionic)
 		goto err_out_teardown;
 	}
 
-	/* Configure the port */
+	 
 	err = ionic_port_identify(ionic);
 	if (err) {
 		dev_err(dev, "Cannot identify port: %d, aborting\n", err);
@@ -308,7 +308,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	pci_set_drvdata(pdev, ionic);
 	mutex_init(&ionic->dev_cmd_lock);
 
-	/* Query system for DMA addressing limitation for the device. */
+	 
 	err = dma_set_mask_and_coherent(dev, DMA_BIT_MASK(IONIC_ADDR_LEN));
 	if (err) {
 		dev_err(dev, "Unable to obtain 64-bit DMA for consistent allocations, aborting.  err=%d\n",
@@ -320,7 +320,7 @@ static int ionic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (err)
 		goto err_out;
 
-	/* Allocate and init the LIF */
+	 
 	err = ionic_lif_size(ionic);
 	if (err) {
 		dev_err(dev, "Cannot size LIF: %d, aborting\n", err);
@@ -456,7 +456,7 @@ err_out:
 }
 
 static const struct pci_error_handlers ionic_err_handler = {
-	/* FLR handling */
+	 
 	.reset_prepare      = ionic_reset_prepare,
 	.reset_done         = ionic_reset_done,
 };

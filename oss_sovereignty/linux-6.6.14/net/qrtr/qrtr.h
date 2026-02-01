@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __QRTR_H_
 #define __QRTR_H_
 
@@ -6,20 +6,13 @@
 
 struct sk_buff;
 
-/* endpoint node id auto assignment */
+ 
 #define QRTR_EP_NID_AUTO (-1)
 
-/**
- * struct qrtr_endpoint - endpoint handle
- * @xmit: Callback for outgoing packets
- *
- * The socket buffer passed to the xmit function becomes owned by the endpoint
- * driver.  As such, when the driver is done with the buffer, it should
- * call kfree_skb() on failure, or consume_skb() on success.
- */
+ 
 struct qrtr_endpoint {
 	int (*xmit)(struct qrtr_endpoint *ep, struct sk_buff *skb);
-	/* private: not for endpoint use */
+	 
 	struct qrtr_node *node;
 };
 

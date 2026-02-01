@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/coresight.h>
 #include <linux/kernel.h>

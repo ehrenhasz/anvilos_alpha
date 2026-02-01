@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ISHTP client logic
- *
- * Copyright (c) 2003-2016, Intel Corporation.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/sched.h>
@@ -33,12 +29,7 @@ int ishtp_cl_get_tx_free_rings(struct ishtp_cl *cl)
 }
 EXPORT_SYMBOL(ishtp_cl_get_tx_free_rings);
 
-/**
- * ishtp_read_list_flush() - Flush read queue
- * @cl: ishtp client instance
- *
- * Used to remove all entries from read queue for a client
- */
+ 
 static void ishtp_read_list_flush(struct ishtp_cl *cl)
 {
 	struct ishtp_cl_rb *rb;
@@ -54,15 +45,7 @@ static void ishtp_read_list_flush(struct ishtp_cl *cl)
 	spin_unlock_irqrestore(&cl->dev->read_list_spinlock, flags);
 }
 
-/**
- * ishtp_cl_flush_queues() - Flush all queues for a client
- * @cl: ishtp client instance
- *
- * Used to remove all queues for a client. This is called when a client device
- * needs reset due to error, S3 resume or during module removal
- *
- * Return: 0 on success else -EINVAL if device is NULL
- */
+ 
 int ishtp_cl_flush_queues(struct ishtp_cl *cl)
 {
 	if (WARN_ON(!cl || !cl->dev))
@@ -74,14 +57,7 @@ int ishtp_cl_flush_queues(struct ishtp_cl *cl)
 }
 EXPORT_SYMBOL(ishtp_cl_flush_queues);
 
-/**
- * ishtp_cl_init() - Initialize all fields of a client device
- * @cl: ishtp client instance
- * @dev: ishtp device
- *
- * Initializes a client device fields: Init spinlocks, init queues etc.
- * This function is called during new client creation
- */
+ 
 static void ishtp_cl_init(struct ishtp_cl *cl, struct ishtp_device *dev)
 {
 	memset(cl, 0, sizeof(struct ishtp_cl));
@@ -103,21 +79,14 @@ static void ishtp_cl_init(struct ishtp_cl *cl, struct ishtp_device *dev)
 	cl->tx_ring_size = CL_DEF_TX_RING_SIZE;
 	cl->tx_ring_free_size = cl->tx_ring_size;
 
-	/* dma */
+	 
 	cl->last_tx_path = CL_TX_PATH_IPC;
 	cl->last_dma_acked = 1;
 	cl->last_dma_addr = NULL;
 	cl->last_ipc_acked = 1;
 }
 
-/**
- * ishtp_cl_allocate() - allocates client structure and sets it up.
- * @cl_device: ishtp client device
- *
- * Allocate memory for new client device and call to initialize each field.
- *
- * Return: The allocated client instance or NULL on failure
- */
+ 
 struct ishtp_cl *ishtp_cl_allocate(struct ishtp_cl_device *cl_device)
 {
 	struct ishtp_cl *cl;
@@ -131,12 +100,7 @@ struct ishtp_cl *ishtp_cl_allocate(struct ishtp_cl_device *cl_device)
 }
 EXPORT_SYMBOL(ishtp_cl_allocate);
 
-/**
- * ishtp_cl_free() - Frees a client device
- * @cl: client device instance
- *
- * Frees a client device
- */
+ 
 void	ishtp_cl_free(struct ishtp_cl *cl)
 {
 	struct ishtp_device *dev;
@@ -157,17 +121,7 @@ void	ishtp_cl_free(struct ishtp_cl *cl)
 }
 EXPORT_SYMBOL(ishtp_cl_free);
 
-/**
- * ishtp_cl_link() - Reserve a host id and link the client instance
- * @cl: client device instance
- *
- * This allocates a single bit in the hostmap. This function will make sure
- * that not many client sessions are opened at the same time. Once allocated
- * the client device instance is added to the ishtp device in the current
- * client list
- *
- * Return: 0 or error code on failure
- */
+ 
 int ishtp_cl_link(struct ishtp_cl *cl)
 {
 	struct ishtp_device *dev;
@@ -213,19 +167,14 @@ unlock_dev:
 }
 EXPORT_SYMBOL(ishtp_cl_link);
 
-/**
- * ishtp_cl_unlink() - remove fw_cl from the client device list
- * @cl: client device instance
- *
- * Remove a previously linked device to a ishtp device
- */
+ 
 void ishtp_cl_unlink(struct ishtp_cl *cl)
 {
 	struct ishtp_device *dev;
 	struct ishtp_cl *pos;
 	unsigned long	flags;
 
-	/* don't shout on error exit path */
+	 
 	if (!cl || !cl->dev)
 		return;
 
@@ -238,10 +187,7 @@ void ishtp_cl_unlink(struct ishtp_cl *cl)
 	}
 	spin_unlock_irqrestore(&dev->device_lock, flags);
 
-	/*
-	 * This checks that 'cl' is actually linked into device's structure,
-	 * before attempting 'list_del'
-	 */
+	 
 	spin_lock_irqsave(&dev->cl_list_lock, flags);
 	list_for_each_entry(pos, &dev->cl_list, link)
 		if (cl->host_client_id == pos->host_client_id) {
@@ -252,15 +198,7 @@ void ishtp_cl_unlink(struct ishtp_cl *cl)
 }
 EXPORT_SYMBOL(ishtp_cl_unlink);
 
-/**
- * ishtp_cl_disconnect() - Send disconnect request to firmware
- * @cl: client device instance
- *
- * Send a disconnect request for a client to firmware.
- *
- * Return: 0 if successful disconnect response from the firmware or error
- * code on failure
- */
+ 
 int ishtp_cl_disconnect(struct ishtp_cl *cl)
 {
 	struct ishtp_device *dev;
@@ -288,10 +226,7 @@ int ishtp_cl_disconnect(struct ishtp_cl *cl)
 			cl->state == ISHTP_CL_DISCONNECTED),
 			ishtp_secs_to_jiffies(ISHTP_CL_CONNECT_TIMEOUT));
 
-	/*
-	 * If FW reset arrived, this will happen. Don't check cl->,
-	 * as 'cl' may be freed already
-	 */
+	 
 	if (dev->dev_state != ISHTP_DEV_ENABLED) {
 		dev->print_log(dev, "%s() dev_state != ISHTP_DEV_ENABLED\n",
 			       __func__);
@@ -307,14 +242,7 @@ int ishtp_cl_disconnect(struct ishtp_cl *cl)
 }
 EXPORT_SYMBOL(ishtp_cl_disconnect);
 
-/**
- * ishtp_cl_is_other_connecting() - Check other client is connecting
- * @cl: client device instance
- *
- * Checks if other client with the same fw client id is connecting
- *
- * Return: true if other client is connected else false
- */
+ 
 static bool ishtp_cl_is_other_connecting(struct ishtp_cl *cl)
 {
 	struct ishtp_device *dev;
@@ -338,16 +266,7 @@ static bool ishtp_cl_is_other_connecting(struct ishtp_cl *cl)
 	return false;
 }
 
-/**
- * ishtp_cl_connect() - Send connect request to firmware
- * @cl: client device instance
- *
- * Send a connect request for a client to firmware. If successful it will
- * RX and TX ring buffers
- *
- * Return: 0 if successful connect response from the firmware and able
- * to bind and allocate ring buffers or error code on failure
- */
+ 
 int ishtp_cl_connect(struct ishtp_cl *cl)
 {
 	struct ishtp_device *dev;
@@ -376,10 +295,7 @@ int ishtp_cl_connect(struct ishtp_cl *cl)
 				 cl->state == ISHTP_CL_DISCONNECTED)),
 				ishtp_secs_to_jiffies(
 					ISHTP_CL_CONNECT_TIMEOUT));
-	/*
-	 * If FW reset arrived, this will happen. Don't check cl->,
-	 * as 'cl' may be freed already
-	 */
+	 
 	if (dev->dev_state != ISHTP_DEV_ENABLED) {
 		dev->print_log(dev, "%s() dev_state != ISHTP_DEV_ENABLED\n",
 			       __func__);
@@ -408,7 +324,7 @@ int ishtp_cl_connect(struct ishtp_cl *cl)
 	rets = ishtp_cl_alloc_rx_ring(cl);
 	if (rets) {
 		dev->print_log(dev, "%s() Alloc RX ring failed\n", __func__);
-		/* if failed allocation, disconnect */
+		 
 		ishtp_cl_disconnect(cl);
 		return rets;
 	}
@@ -416,13 +332,13 @@ int ishtp_cl_connect(struct ishtp_cl *cl)
 	rets = ishtp_cl_alloc_tx_ring(cl);
 	if (rets) {
 		dev->print_log(dev, "%s() Alloc TX ring failed\n", __func__);
-		/* if failed allocation, disconnect */
+		 
 		ishtp_cl_free_rx_ring(cl);
 		ishtp_cl_disconnect(cl);
 		return rets;
 	}
 
-	/* Upon successful connection and allocation, emit flow-control */
+	 
 	rets = ishtp_cl_read_start(cl);
 
 	dev->print_log(dev, "%s() successful\n", __func__);
@@ -431,16 +347,7 @@ int ishtp_cl_connect(struct ishtp_cl *cl)
 }
 EXPORT_SYMBOL(ishtp_cl_connect);
 
-/**
- * ishtp_cl_read_start() - Prepare to read client message
- * @cl: client device instance
- *
- * Get a free buffer from pool of free read buffers and add to read buffer
- * pool to add contents. Send a flow control request to firmware to be able
- * send next message.
- *
- * Return: 0 if successful or error code on failure
- */
+ 
 int ishtp_cl_read_start(struct ishtp_cl *cl)
 {
 	struct ishtp_device *dev;
@@ -468,7 +375,7 @@ int ishtp_cl_read_start(struct ishtp_cl *cl)
 		return -ENODEV;
 	}
 
-	/* The current rb is the head of the free rb list */
+	 
 	spin_lock_irqsave(&cl->free_list_spinlock, flags);
 	if (list_empty(&cl->free_rb_list.list)) {
 		dev_warn(&cl->device->dev,
@@ -488,10 +395,7 @@ int ishtp_cl_read_start(struct ishtp_cl *cl)
 	INIT_LIST_HEAD(&rb->list);
 	rets = 0;
 
-	/*
-	 * This must be BEFORE sending flow control -
-	 * response in ISR may come too fast...
-	 */
+	 
 	spin_lock_irqsave(&dev->read_list_spinlock, dev_flags);
 	list_add_tail(&rb->list, &dev->read_list.list);
 	spin_unlock_irqrestore(&dev->read_list_spinlock, dev_flags);
@@ -500,7 +404,7 @@ int ishtp_cl_read_start(struct ishtp_cl *cl)
 		goto out;
 	}
 out:
-	/* if ishtp_hbm_cl_flow_control_req failed, return rb to free list */
+	 
 	if (rets && rb) {
 		spin_lock_irqsave(&dev->read_list_spinlock, dev_flags);
 		list_del(&rb->list);
@@ -513,18 +417,7 @@ out:
 	return rets;
 }
 
-/**
- * ishtp_cl_send() - Send a message to firmware
- * @cl: client device instance
- * @buf: message buffer
- * @length: length of message
- *
- * If the client is correct state to send message, this function gets a buffer
- * from tx ring buffers, copy the message data and call to send the message
- * using ishtp_cl_send_msg()
- *
- * Return: 0 if successful or error code on failure
- */
+ 
 int ishtp_cl_send(struct ishtp_cl *cl, uint8_t *buf, size_t length)
 {
 	struct ishtp_device	*dev;
@@ -548,7 +441,7 @@ int ishtp_cl_send(struct ishtp_cl *cl, uint8_t *buf, size_t length)
 		return -ENODEV;
 	}
 
-	/* Check if we have fw client device */
+	 
 	id = ishtp_fw_cl_by_id(dev, cl->fw_client_id);
 	if (id < 0) {
 		++cl->err_send_msg;
@@ -560,7 +453,7 @@ int ishtp_cl_send(struct ishtp_cl *cl, uint8_t *buf, size_t length)
 		return -EMSGSIZE;
 	}
 
-	/* No free bufs */
+	 
 	spin_lock_irqsave(&cl->tx_free_list_spinlock, tx_free_flags);
 	if (list_empty(&cl->tx_free_list.list)) {
 		spin_unlock_irqrestore(&cl->tx_free_list_spinlock,
@@ -575,12 +468,9 @@ int ishtp_cl_send(struct ishtp_cl *cl, uint8_t *buf, size_t length)
 		spin_unlock_irqrestore(&cl->tx_free_list_spinlock,
 			tx_free_flags);
 		return	-EIO;
-		/* Should not happen, as free list is pre-allocated */
+		 
 	}
-	/*
-	 * This is safe, as 'length' is already checked for not exceeding
-	 * max ISHTP message size per client
-	 */
+	 
 	list_del_init(&cl_msg->list);
 	--cl->tx_ring_free_size;
 
@@ -599,13 +489,7 @@ int ishtp_cl_send(struct ishtp_cl *cl, uint8_t *buf, size_t length)
 }
 EXPORT_SYMBOL(ishtp_cl_send);
 
-/**
- * ishtp_cl_read_complete() - read complete
- * @rb: Pointer to client request block
- *
- * If the message is completely received call ishtp_cl_bus_rx_event()
- * to process message
- */
+ 
 static void ishtp_cl_read_complete(struct ishtp_cl_rb *rb)
 {
 	unsigned long	flags;
@@ -613,10 +497,7 @@ static void ishtp_cl_read_complete(struct ishtp_cl_rb *rb)
 	struct ishtp_cl	*cl = rb->cl;
 
 	spin_lock_irqsave(&cl->in_process_spinlock, flags);
-	/*
-	 * if in-process list is empty, then need to schedule
-	 * the processing thread
-	 */
+	 
 	schedule_work_flag = list_empty(&cl->in_process_list.list);
 	list_add_tail(&rb->list, &cl->in_process_list.list);
 	spin_unlock_irqrestore(&cl->in_process_spinlock, flags);
@@ -625,14 +506,7 @@ static void ishtp_cl_read_complete(struct ishtp_cl_rb *rb)
 		ishtp_cl_bus_rx_event(cl->device);
 }
 
-/**
- * ipc_tx_send() - IPC tx send function
- * @prm: Pointer to client device instance
- *
- * Send message over IPC. Message will be split into fragments
- * if message size is bigger than IPC FIFO size, and all
- * fragments will be sent one by one.
- */
+ 
 static void ipc_tx_send(void *prm)
 {
 	struct ishtp_cl	*cl = prm;
@@ -646,10 +520,7 @@ static void ipc_tx_send(void *prm)
 	if (!dev)
 		return;
 
-	/*
-	 * Other conditions if some critical error has
-	 * occurred before this callback is called
-	 */
+	 
 	if (dev->dev_state != ISHTP_DEV_ENABLED)
 		return;
 
@@ -685,20 +556,20 @@ static void ipc_tx_send(void *prm)
 		pmsg = cl_msg->send_buf.data + cl->tx_offs;
 
 		if (rem <= dev->mtu) {
-			/* Last fragment or only one packet */
+			 
 			ishtp_hdr.length = rem;
 			ishtp_hdr.msg_complete = 1;
-			/* Submit to IPC queue with no callback */
+			 
 			ishtp_write_message(dev, &ishtp_hdr, pmsg);
 			cl->tx_offs = 0;
 			cl->sending = 0;
 
 			break;
 		} else {
-			/* Send ipc fragment */
+			 
 			ishtp_hdr.length = dev->mtu;
 			ishtp_hdr.msg_complete = 0;
-			/* All fregments submitted to IPC queue with no callback */
+			 
 			ishtp_write_message(dev, &ishtp_hdr, pmsg);
 			cl->tx_offs += dev->mtu;
 			rem = cl_msg->send_buf.size - cl->tx_offs;
@@ -715,17 +586,11 @@ static void ipc_tx_send(void *prm)
 		tx_free_flags);
 }
 
-/**
- * ishtp_cl_send_msg_ipc() -Send message using IPC
- * @dev: ISHTP device instance
- * @cl: Pointer to client device instance
- *
- * Send message over IPC not using DMA
- */
+ 
 static void ishtp_cl_send_msg_ipc(struct ishtp_device *dev,
 				  struct ishtp_cl *cl)
 {
-	/* If last DMA message wasn't acked yet, leave this one in Tx queue */
+	 
 	if (cl->last_tx_path == CL_TX_PATH_DMA && cl->last_dma_acked == 0)
 		return;
 
@@ -734,13 +599,7 @@ static void ishtp_cl_send_msg_ipc(struct ishtp_device *dev,
 	++cl->send_msg_cnt_ipc;
 }
 
-/**
- * ishtp_cl_send_msg_dma() -Send message using DMA
- * @dev: ISHTP device instance
- * @cl: Pointer to client device instance
- *
- * Send message using DMA
- */
+ 
 static void ishtp_cl_send_msg_dma(struct ishtp_device *dev,
 	struct ishtp_cl *cl)
 {
@@ -751,7 +610,7 @@ static void ishtp_cl_send_msg_dma(struct ishtp_device *dev,
 	struct ishtp_cl_tx_ring	*cl_msg;
 	unsigned long tx_flags, tx_free_flags;
 
-	/* If last IPC message wasn't acked yet, leave this one in Tx queue */
+	 
 	if (cl->last_tx_path == CL_TX_PATH_IPC && cl->last_ipc_acked == 0)
 		return;
 
@@ -772,7 +631,7 @@ static void ishtp_cl_send_msg_dma(struct ishtp_device *dev,
 		return;
 	}
 
-	list_del_init(&cl_msg->list);	/* Must be before write */
+	list_del_init(&cl_msg->list);	 
 	spin_unlock_irqrestore(&cl->tx_list_spinlock, tx_flags);
 
 	--cl->ishtp_flow_ctrl_creds;
@@ -780,18 +639,15 @@ static void ishtp_cl_send_msg_dma(struct ishtp_device *dev,
 	cl->last_dma_addr = msg_addr;
 	cl->last_tx_path = CL_TX_PATH_DMA;
 
-	/* write msg to dma buf */
+	 
 	memcpy(msg_addr, cl_msg->send_buf.data, cl_msg->send_buf.size);
 
-	/*
-	 * if current fw don't support cache snooping, driver have to
-	 * flush the cache manually.
-	 */
+	 
 	if (dev->ops->dma_no_cache_snooping &&
 		dev->ops->dma_no_cache_snooping(dev))
 		clflush_cache_range(msg_addr, cl_msg->send_buf.size);
 
-	/* send dma_xfer hbm msg */
+	 
 	off = msg_addr - (unsigned char *)dev->ishtp_host_dma_tx_buf;
 	ishtp_hbm_hdr(&hdr, sizeof(struct dma_xfer_hbm));
 	dma_xfer.hbm = DMA_XFER;
@@ -809,13 +665,7 @@ static void ishtp_cl_send_msg_dma(struct ishtp_device *dev,
 	++cl->send_msg_cnt_dma;
 }
 
-/**
- * ishtp_cl_send_msg() -Send message using DMA or IPC
- * @dev: ISHTP device instance
- * @cl: Pointer to client device instance
- *
- * Send message using DMA or IPC based on transfer_path
- */
+ 
 void ishtp_cl_send_msg(struct ishtp_device *dev, struct ishtp_cl *cl)
 {
 	if (dev->transfer_path == CL_TX_PATH_DMA)
@@ -824,14 +674,7 @@ void ishtp_cl_send_msg(struct ishtp_device *dev, struct ishtp_cl *cl)
 		ishtp_cl_send_msg_ipc(dev, cl);
 }
 
-/**
- * recv_ishtp_cl_msg() -Receive client message
- * @dev: ISHTP device instance
- * @ishtp_hdr: Pointer to message header
- *
- * Receive and dispatch ISHTP client messages. This function executes in ISR
- * or work queue context
- */
+ 
 void recv_ishtp_cl_msg(struct ishtp_device *dev,
 		       struct ishtp_msg_hdr *ishtp_hdr)
 {
@@ -861,7 +704,7 @@ void recv_ishtp_cl_msg(struct ishtp_device *dev,
 				!(cl->state == ISHTP_CL_CONNECTED))
 			continue;
 
-		 /* If no Rx buffer is allocated, disband the rb */
+		  
 		if (rb->buffer.size == 0 || rb->buffer.data == NULL) {
 			spin_unlock_irqrestore(&dev->read_list_spinlock, flags);
 			dev_err(&cl->device->dev,
@@ -872,12 +715,7 @@ void recv_ishtp_cl_msg(struct ishtp_device *dev,
 			goto	eoi;
 		}
 
-		/*
-		 * If message buffer overflown (exceeds max. client msg
-		 * size, drop message and return to free buffer.
-		 * Do we need to disconnect such a client? (We don't send
-		 * back FC, so communication will be stuck anyway)
-		 */
+		 
 		if (rb->buffer.size < ishtp_hdr->length + rb->buf_idx) {
 			spin_unlock_irqrestore(&dev->read_list_spinlock, flags);
 			dev_err(&cl->device->dev,
@@ -895,16 +733,13 @@ void recv_ishtp_cl_msg(struct ishtp_device *dev,
 
 		rb->buf_idx += ishtp_hdr->length;
 		if (ishtp_hdr->msg_complete) {
-			/* Last fragment in message - it's complete */
+			 
 			cl->status = 0;
 			list_del(&rb->list);
 			complete_rb = rb;
 
 			--cl->out_flow_ctrl_creds;
-			/*
-			 * the whole msg arrived, send a new FC, and add a new
-			 * rb buffer for the next coming msg
-			 */
+			 
 			spin_lock(&cl->free_list_spinlock);
 
 			if (!list_empty(&cl->free_rb_list.list)) {
@@ -923,18 +758,15 @@ void recv_ishtp_cl_msg(struct ishtp_device *dev,
 				spin_unlock(&cl->free_list_spinlock);
 			}
 		}
-		/* One more fragment in message (even if this was last) */
+		 
 		++cl->recv_msg_num_frags;
 
-		/*
-		 * We can safely break here (and in BH too),
-		 * a single input message can go only to a single request!
-		 */
+		 
 		break;
 	}
 
 	spin_unlock_irqrestore(&dev->read_list_spinlock, flags);
-	/* If it's nobody's message, just read and discard it */
+	 
 	if (!buffer) {
 		uint8_t	rd_msg_buf[ISHTP_RD_MSG_BUF_SIZE];
 
@@ -953,15 +785,7 @@ eoi:
 	return;
 }
 
-/**
- * recv_ishtp_cl_msg_dma() -Receive client message
- * @dev: ISHTP device instance
- * @msg: message pointer
- * @hbm: hbm buffer
- *
- * Receive and dispatch ISHTP client messages using DMA. This function executes
- * in ISR or work queue context
- */
+ 
 void recv_ishtp_cl_msg_dma(struct ishtp_device *dev, void *msg,
 			   struct dma_xfer_hbm *hbm)
 {
@@ -981,9 +805,7 @@ void recv_ishtp_cl_msg_dma(struct ishtp_device *dev, void *msg,
 				!(cl->state == ISHTP_CL_CONNECTED))
 			continue;
 
-		/*
-		 * If no Rx buffer is allocated, disband the rb
-		 */
+		 
 		if (rb->buffer.size == 0 || rb->buffer.data == NULL) {
 			spin_unlock_irqrestore(&dev->read_list_spinlock, flags);
 			dev_err(&cl->device->dev,
@@ -994,12 +816,7 @@ void recv_ishtp_cl_msg_dma(struct ishtp_device *dev, void *msg,
 			goto	eoi;
 		}
 
-		/*
-		 * If message buffer overflown (exceeds max. client msg
-		 * size, drop message and return to free buffer.
-		 * Do we need to disconnect such a client? (We don't send
-		 * back FC, so communication will be stuck anyway)
-		 */
+		 
 		if (rb->buffer.size < hbm->msg_length) {
 			spin_unlock_irqrestore(&dev->read_list_spinlock, flags);
 			dev_err(&cl->device->dev,
@@ -1013,10 +830,7 @@ void recv_ishtp_cl_msg_dma(struct ishtp_device *dev, void *msg,
 
 		buffer = rb->buffer.data;
 
-		/*
-		 * if current fw don't support cache snooping, driver have to
-		 * flush the cache manually.
-		 */
+		 
 		if (dev->ops->dma_no_cache_snooping &&
 			dev->ops->dma_no_cache_snooping(dev))
 			clflush_cache_range(msg, hbm->msg_length);
@@ -1024,16 +838,13 @@ void recv_ishtp_cl_msg_dma(struct ishtp_device *dev, void *msg,
 		memcpy(buffer, msg, hbm->msg_length);
 		rb->buf_idx = hbm->msg_length;
 
-		/* Last fragment in message - it's complete */
+		 
 		cl->status = 0;
 		list_del(&rb->list);
 		complete_rb = rb;
 
 		--cl->out_flow_ctrl_creds;
-		/*
-		 * the whole msg arrived, send a new FC, and add a new
-		 * rb buffer for the next coming msg
-		 */
+		 
 		spin_lock(&cl->free_list_spinlock);
 
 		if (!list_empty(&cl->free_rb_list.list)) {
@@ -1052,18 +863,15 @@ void recv_ishtp_cl_msg_dma(struct ishtp_device *dev, void *msg,
 			spin_unlock(&cl->free_list_spinlock);
 		}
 
-		/* One more fragment in message (this is always last) */
+		 
 		++cl->recv_msg_num_frags;
 
-		/*
-		 * We can safely break here (and in BH too),
-		 * a single input message can go only to a single request!
-		 */
+		 
 		break;
 	}
 
 	spin_unlock_irqrestore(&dev->read_list_spinlock, flags);
-	/* If it's nobody's message, just read and discard it */
+	 
 	if (!buffer) {
 		dev_err(dev->devc, "Dropped Rx (DMA) msg - no request\n");
 		goto	eoi;

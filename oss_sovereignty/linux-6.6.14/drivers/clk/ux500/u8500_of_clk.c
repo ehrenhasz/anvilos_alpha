@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clock definitions for u8500 platform.
- *
- * Copyright (C) 2012 ST-Ericsson SA
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/of_address.h>
@@ -48,26 +43,23 @@ static struct clk *ux500_twocell_get(struct of_phandle_args *clkspec,
 
 static struct clk_hw_onecell_data u8500_prcmu_hw_clks = {
 	.hws = {
-		/*
-		 * This assignment makes sure the dynamic array
-		 * gets the right size.
-		 */
+		 
 		[PRCMU_NUM_CLKS] = NULL,
 	},
 	.num = PRCMU_NUM_CLKS,
 };
 
-/* Essentially names for the first PRCMU_CLKSRC_* defines */
+ 
 static const char * const u8500_clkout_parents[] = {
 	"clk38m_to_clkgen",
 	"aclk",
-	/* Just called "sysclk" in documentation */
+	 
 	"ab8500_sysclk",
 	"lcdclk",
 	"sdmmcclk",
 	"tvclk",
 	"timclk",
-	/* CLK009 is not implemented, add it if you need it */
+	 
 	"clk009",
 };
 
@@ -132,11 +124,7 @@ static void u8500_clk_init(struct device_node *np)
 	struct u8500_prcc_reset *rstc;
 	int i;
 
-	/*
-	 * We allocate the reset controller here so that we can fill in the
-	 * base addresses properly and pass to the reset controller init
-	 * function later on.
-	 */
+	 
 	rstc = kzalloc(sizeof(*rstc), GFP_KERNEL);
 	if (!rstc)
 		return;
@@ -145,14 +133,14 @@ static void u8500_clk_init(struct device_node *np)
 		struct resource r;
 
 		if (of_address_to_resource(np, i, &r))
-			/* Not much choice but to continue */
+			 
 			pr_err("failed to get CLKRST %d base address\n",
 			       i + 1);
 		bases[i] = r.start;
 		rstc->phy_base[i] = r.start;
 	}
 
-	/* Clock sources */
+	 
 	u8500_prcmu_hw_clks.hws[PRCMU_PLLSOC0] =
 		clk_reg_prcmu_gate("soc0_pll", NULL, PRCMU_PLLSOC0,
 				   CLK_IGNORE_UNUSED);
@@ -165,23 +153,19 @@ static void u8500_clk_init(struct device_node *np)
 		clk_reg_prcmu_gate("ddr_pll", NULL, PRCMU_PLLDDR,
 				   CLK_IGNORE_UNUSED);
 
-	/*
-	 * Read-only clocks that only return their current rate, only used
-	 * as parents to other clocks and not visible in the device tree.
-	 * clk38m_to_clkgen is the same as the SYSCLK, i.e. the root clock.
-	 */
+	 
 	clk_reg_prcmu_rate("clk38m_to_clkgen", NULL, PRCMU_SYSCLK,
 			   CLK_IGNORE_UNUSED);
 	clk_reg_prcmu_rate("aclk", NULL, PRCMU_ACLK,
 			   CLK_IGNORE_UNUSED);
 
-	/* TODO: add CLK009 if needed */
+	 
 
 	rtc_clk = clk_register_fixed_rate(NULL, "rtc32k", "NULL",
 				CLK_IGNORE_UNUSED,
 				32768);
 
-	/* PRCMU clocks */
+	 
 	fw_version = prcmu_get_fw_version();
 	if (fw_version != NULL) {
 		switch (fw_version->project) {
@@ -299,7 +283,7 @@ static void u8500_clk_init(struct device_node *np)
 	twd_clk = clk_register_fixed_factor(NULL, "smp_twd", "armss",
 				CLK_IGNORE_UNUSED, 1, 2);
 
-	/* PRCC P-clocks */
+	 
 	clk = clk_reg_prcc_pclk("p1_pclk0", "per1clk", bases[CLKRST1_INDEX],
 				BIT(0), 0);
 	PRCC_PCLK_STORE(clk, 1, 0);
@@ -476,15 +460,9 @@ static void u8500_clk_init(struct device_node *np)
 				BIT(7), 0);
 	PRCC_PCLK_STORE(clk, 6, 7);
 
-	/* PRCC K-clocks
-	 *
-	 * FIXME: Some drivers requires PERPIH[n| to be automatically enabled
-	 * by enabling just the K-clock, even if it is not a valid parent to
-	 * the K-clock. Until drivers get fixed we might need some kind of
-	 * "parent muxed join".
-	 */
+	 
 
-	/* Periph1 */
+	 
 	clk = clk_reg_prcc_kclk("p1_uart0_kclk", "uartclk",
 			bases[CLKRST1_INDEX], BIT(0), CLK_SET_RATE_GATE);
 	PRCC_KCLK_STORE(clk, 1, 0);
@@ -525,7 +503,7 @@ static void u8500_clk_init(struct device_node *np)
 			bases[CLKRST1_INDEX], BIT(10), CLK_SET_RATE_GATE);
 	PRCC_KCLK_STORE(clk, 1, 10);
 
-	/* Periph2 */
+	 
 	clk = clk_reg_prcc_kclk("p2_i2c3_kclk", "i2cclk",
 			bases[CLKRST2_INDEX], BIT(0), CLK_SET_RATE_GATE);
 	PRCC_KCLK_STORE(clk, 2, 0);
@@ -546,7 +524,7 @@ static void u8500_clk_init(struct device_node *np)
 			bases[CLKRST2_INDEX], BIT(5), CLK_SET_RATE_GATE);
 	PRCC_KCLK_STORE(clk, 2, 5);
 
-	/* Note that rate is received from parent. */
+	 
 	clk = clk_reg_prcc_kclk("p2_ssirx_kclk", "hsirxclk",
 			bases[CLKRST2_INDEX], BIT(6),
 			CLK_SET_RATE_GATE|CLK_SET_RATE_PARENT);
@@ -557,7 +535,7 @@ static void u8500_clk_init(struct device_node *np)
 			CLK_SET_RATE_GATE|CLK_SET_RATE_PARENT);
 	PRCC_KCLK_STORE(clk, 2, 7);
 
-	/* Periph3 */
+	 
 	clk = clk_reg_prcc_kclk("p3_ssp0_kclk", "sspclk",
 			bases[CLKRST3_INDEX], BIT(1), CLK_SET_RATE_GATE);
 	PRCC_KCLK_STORE(clk, 3, 1);
@@ -586,7 +564,7 @@ static void u8500_clk_init(struct device_node *np)
 			bases[CLKRST3_INDEX], BIT(7), CLK_SET_RATE_GATE);
 	PRCC_KCLK_STORE(clk, 3, 7);
 
-	/* Periph6 */
+	 
 	clk = clk_reg_prcc_kclk("p3_rng_kclk", "rngclk",
 			bases[CLKRST6_INDEX], BIT(0), CLK_SET_RATE_GATE);
 	PRCC_KCLK_STORE(clk, 6, 0);

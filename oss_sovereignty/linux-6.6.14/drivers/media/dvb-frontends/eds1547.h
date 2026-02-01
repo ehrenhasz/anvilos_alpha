@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* eds1547.h Earda EDS-1547 tuner support
-*
-* Copyright (C) 2008 Igor M. Liplianin (liplianin@me.by)
-*
-* see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
-*/
+ 
+ 
 
 #ifndef EDS1547
 #define EDS1547

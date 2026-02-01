@@ -1,8 +1,4 @@
-/*
- * Copyright (c) 2017 Andreas Färber
- *
- * SPDX-License-Identifier: GPL-2.0+
- */
+ 
 #ifndef SOC_ACTIONS_OWL_SPS_H
 #define SOC_ACTIONS_OWL_SPS_H
 

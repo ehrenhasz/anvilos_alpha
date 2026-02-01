@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* utils.h
- * originally written by: Kirk Reiser.
- *
- ** Copyright (C) 2002  Kirk Reiser.
- *  Copyright (C) 2003  David Borowski.
- */
+ 
+ 
 
 #include <stdio.h>
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ingenic JZ4780 I2C bus driver
- *
- * Copyright (C) 2006 - 2009 Ingenic Semiconductor Inc.
- * Copyright (C) 2015 Imagination Technologies
- * Copyright (C) 2019 周琰杰 (Zhou Yanjie) <zhouyanjie@wanyeetech.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -128,7 +122,7 @@ enum ingenic_i2c_version {
 	ID_X1000,
 };
 
-/* ingenic_i2c_config: SoC specific config data. */
+ 
 struct ingenic_i2c_config {
 	enum ingenic_i2c_version version;
 
@@ -144,10 +138,10 @@ struct jz4780_i2c {
 	struct i2c_adapter	 adap;
 	const struct ingenic_i2c_config *cdata;
 
-	/* lock to protect rbuf and wbuf between xfer_rd/wr and irq handler */
+	 
 	spinlock_t		lock;
 
-	/* beginning of lock scope */
+	 
 	unsigned char		*rbuf;
 	int			rd_total_len;
 	int			rd_data_xfered;
@@ -164,7 +158,7 @@ struct jz4780_i2c {
 	int			cmd_buf[BUFSIZE];
 	int			cmd;
 
-	/* end of lock scope */
+	 
 	struct completion	trans_waitq;
 };
 
@@ -247,9 +241,9 @@ static int jz4780_i2c_set_target(struct jz4780_i2c *i2c, unsigned char address)
 static int jz4780_i2c_set_speed(struct jz4780_i2c *i2c)
 {
 	int dev_clk_khz = clk_get_rate(i2c->clk) / 1000;
-	int cnt_high = 0;	/* HIGH period count of the SCL clock */
-	int cnt_low = 0;	/* LOW period count of the SCL clock */
-	int cnt_period = 0;	/* period count of the SCL clock */
+	int cnt_high = 0;	 
+	int cnt_low = 0;	 
+	int cnt_period = 0;	 
 	int setup_time = 0;
 	int hold_time = 0;
 	unsigned short tmp = 0;
@@ -258,11 +252,7 @@ static int jz4780_i2c_set_speed(struct jz4780_i2c *i2c)
 	if (jz4780_i2c_disable(i2c))
 		dev_dbg(&i2c->adap.dev, "i2c not disabled\n");
 
-	/*
-	 * 1 JZ4780_I2C cycle equals to cnt_period PCLK(i2c_clk)
-	 * standard mode, min LOW and HIGH period are 4700 ns and 4000 ns
-	 * fast mode, min LOW and HIGH period are 1300 ns and 600 ns
-	 */
+	 
 	cnt_period = dev_clk_khz / i2c_clk;
 
 	if (i2c_clk <= 100)
@@ -272,13 +262,7 @@ static int jz4780_i2c_set_speed(struct jz4780_i2c *i2c)
 
 	cnt_low = cnt_period - cnt_high;
 
-	/*
-	 * NOTE: JZ4780_I2C_CTRL_REST can't set when i2c enabled, because
-	 * normal read are 2 messages, we cannot disable i2c controller
-	 * between these two messages, this means that we must always set
-	 * JZ4780_I2C_CTRL_REST when init JZ4780_I2C_CTRL
-	 *
-	 */
+	 
 	if (i2c_clk <= 100) {
 		tmp = JZ4780_I2C_CTRL_SPDS | JZ4780_I2C_CTRL_REST
 		      | JZ4780_I2C_CTRL_SLVDIS | JZ4780_I2C_CTRL_MD;
@@ -299,25 +283,8 @@ static int jz4780_i2c_set_speed(struct jz4780_i2c *i2c)
 				  JZ4780_I2CFLCNT_ADJUST(cnt_low));
 	}
 
-	/*
-	 * a i2c device must internally provide a hold time at least 300ns
-	 * tHD:DAT
-	 *	Standard Mode: min=300ns, max=3450ns
-	 *	Fast Mode: min=0ns, max=900ns
-	 * tSU:DAT
-	 *	Standard Mode: min=250ns, max=infinite
-	 *	Fast Mode: min=100(250ns is recommended), max=infinite
-	 *
-	 * 1i2c_clk = 10^6 / dev_clk_khz
-	 * on FPGA, dev_clk_khz = 12000, so 1i2c_clk = 1000/12 = 83ns
-	 * on Pisces(1008M), dev_clk_khz=126000, so 1i2c_clk = 1000 / 126 = 8ns
-	 *
-	 * The actual hold time is (SDAHD + 1) * (i2c_clk period).
-	 *
-	 * Length of setup time calculated using (SDASU - 1) * (ic_clk_period)
-	 *
-	 */
-	if (i2c_clk <= 100) { /* standard mode */
+	 
+	if (i2c_clk <= 100) {  
 		setup_time = 300;
 		hold_time = 400;
 	} else {
@@ -340,7 +307,7 @@ static int jz4780_i2c_set_speed(struct jz4780_i2c *i2c)
 		hold_time = 255;
 
 	if (hold_time >= 0) {
-		/*i2c hold time enable */
+		 
 		if (i2c->cdata->version >= ID_X1000) {
 			jz4780_i2c_writew(i2c, X1000_I2C_SDAHD, hold_time);
 		} else {
@@ -348,7 +315,7 @@ static int jz4780_i2c_set_speed(struct jz4780_i2c *i2c)
 			jz4780_i2c_writew(i2c, JZ4780_I2C_SDAHD, hold_time);
 		}
 	} else {
-		/* disable hold time */
+		 
 		if (i2c->cdata->version >= ID_X1000)
 			jz4780_i2c_writew(i2c, X1000_I2C_SDAHD, 0);
 		else
@@ -366,21 +333,21 @@ static int jz4780_i2c_cleanup(struct jz4780_i2c *i2c)
 
 	spin_lock_irqsave(&i2c->lock, flags);
 
-	/* can send stop now if need */
+	 
 	if (i2c->cdata->version < ID_X1000) {
 		tmp = jz4780_i2c_readw(i2c, JZ4780_I2C_CTRL);
 		tmp &= ~JZ4780_I2C_CTRL_STPHLD;
 		jz4780_i2c_writew(i2c, JZ4780_I2C_CTRL, tmp);
 	}
 
-	/* disable all interrupts first */
+	 
 	jz4780_i2c_writew(i2c, JZ4780_I2C_INTM, 0);
 
-	/* then clear all interrupts */
+	 
 	jz4780_i2c_readw(i2c, JZ4780_I2C_CTXABRT);
 	jz4780_i2c_readw(i2c, JZ4780_I2C_CINTR);
 
-	/* then disable the controller */
+	 
 	tmp = jz4780_i2c_readw(i2c, JZ4780_I2C_CTRL);
 	tmp &= ~JZ4780_I2C_ENB_I2C;
 	jz4780_i2c_writew(i2c, JZ4780_I2C_CTRL, tmp);
@@ -455,10 +422,7 @@ static irqreturn_t jz4780_i2c_irq(int irqno, void *dev_id)
 		goto done;
 	}
 
-	/*
-	 * When reading, always drain RX FIFO before we send more Read
-	 * Commands to avoid fifo overrun
-	 */
+	 
 	if (i2c->is_write == 0) {
 		int rd_left;
 
@@ -754,7 +718,7 @@ static const struct of_device_id jz4780_i2c_of_matches[] = {
 	{ .compatible = "ingenic,jz4770-i2c", .data = &jz4780_i2c_config },
 	{ .compatible = "ingenic,jz4780-i2c", .data = &jz4780_i2c_config },
 	{ .compatible = "ingenic,x1000-i2c", .data = &x1000_i2c_config },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, jz4780_i2c_of_matches);
 

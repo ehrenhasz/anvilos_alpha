@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SGI IOC3 PS/2 controller driver for linux
- *
- * Copyright (C) 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
- *
- * Based on code Copyright (C) 2005 Stanislaw Skowronek <skylark@unaligned.org>
- *               Copyright (C) 2009 Johannes Dickgreber <tanzy@gmx.de>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -184,7 +177,7 @@ static int ioc3kbd_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* enable ports */
+	 
 	writel(KM_CSR_K_CLAMP_3 | KM_CSR_M_CLAMP_3, &regs->km_csr);
 
 	return 0;

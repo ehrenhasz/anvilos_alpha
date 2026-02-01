@@ -1,17 +1,4 @@
-/*
- * Regulator driver for TPS6524x PMIC
- *
- * Copyright (C) 2010 Texas Instruments
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any kind,
- * whether express or implied; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,7 +10,7 @@
 #include <linux/regulator/machine.h>
 
 #define REG_LDO_SET		0x0
-#define LDO_ILIM_MASK		1	/* 0 = 400-800, 1 = 900-1500 */
+#define LDO_ILIM_MASK		1	 
 #define LDO_VSEL_MASK		0x0f
 #define LDO2_ILIM_SHIFT		12
 #define LDO2_VSEL_SHIFT		4

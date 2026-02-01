@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+
+ 
 
 #include "efct_driver.h"
 #include "efct_unsol.h"
@@ -16,7 +13,7 @@ static const struct scsi_host_template efct_template = {
 	.supported_mode		= MODE_TARGET,
 };
 
-/* globals */
+ 
 static struct fc_function_template efct_xport_functions;
 static struct fc_function_template efct_vport_functions;
 
@@ -39,13 +36,13 @@ efct_xport_alloc(struct efct *efct)
 static int
 efct_xport_init_debugfs(struct efct *efct)
 {
-	/* Setup efct debugfs root directory */
+	 
 	if (!efct_debugfs_root) {
 		efct_debugfs_root = debugfs_create_dir("efct", NULL);
 		atomic_set(&efct_debugfs_count, 0);
 	}
 
-	/* Create a directory for sessions in root */
+	 
 	if (!efct->sess_debugfs_dir) {
 		efct->sess_debugfs_dir = debugfs_create_dir("sessions",
 							efct_debugfs_root);
@@ -65,13 +62,13 @@ debugfs_fail:
 
 static void efct_xport_delete_debugfs(struct efct *efct)
 {
-	/* Remove session debugfs directory */
+	 
 	debugfs_remove(efct->sess_debugfs_dir);
 	efct->sess_debugfs_dir = NULL;
 	atomic_dec(&efct_debugfs_count);
 
 	if (atomic_read(&efct_debugfs_count) == 0) {
-		/* remove root debugfs directory */
+		 
 		debugfs_remove(efct_debugfs_root);
 		efct_debugfs_root = NULL;
 	}
@@ -216,7 +213,7 @@ efct_xport_initialize(struct efct_xport *xport)
 	struct efct *efct = xport->efct;
 	int rc = 0;
 
-	/* Initialize io lists */
+	 
 	spin_lock_init(&xport->io_pending_lock);
 	INIT_LIST_HEAD(&xport->io_pending_list);
 	atomic_set(&xport->io_active_count, 0);
@@ -244,7 +241,7 @@ efct_xport_initialize(struct efct_xport *xport)
 		goto tgt_dev_out;
 	}
 
-	/* Get FC link and host statistics perodically*/
+	 
 	efct_xport_config_stats_timer(efct);
 
 	efct_xport_init_debugfs(efct);
@@ -273,17 +270,14 @@ efct_xport_status(struct efct_xport *xport, enum efct_xport_status cmd,
 	switch (cmd) {
 	case EFCT_XPORT_CONFIG_PORT_STATUS:
 		if (xport->configured_link_state == 0) {
-			/*
-			 * Initial state is offline. configured_link_state is
-			 * set to online explicitly when port is brought online
-			 */
+			 
 			xport->configured_link_state = EFCT_XPORT_PORT_OFFLINE;
 		}
 		result->value = xport->configured_link_state;
 		break;
 
 	case EFCT_XPORT_PORT_STATUS:
-		/* Determine port status based on link speed. */
+		 
 		value.value = efct_hw_get_link_speed(&efct->hw);
 		if (value.value == 0)
 			result->value = EFCT_XPORT_PORT_OFFLINE;
@@ -300,33 +294,33 @@ efct_xport_status(struct efct_xport *xport, enum efct_xport_status cmd,
 		       sizeof(union efct_xport_stats_u));
 		break;
 	case EFCT_XPORT_LINK_STAT_RESET: {
-		/* Create a completion to synchronize the stat reset process */
+		 
 		init_completion(&result->stats.done);
 
-		/* First reset the link stats */
+		 
 		rc = efct_hw_get_link_stats(&efct->hw, 0, 1, 1,
 					    efct_xport_link_stats_cb, result);
 		if (rc)
 			break;
 
-		/* Wait for completion to be signaled when the cmd completes */
+		 
 		if (wait_for_completion_interruptible(&result->stats.done)) {
-			/* Undefined failure */
+			 
 			efc_log_debug(efct, "sem wait failed\n");
 			rc = -EIO;
 			break;
 		}
 
-		/* Next reset the host stats */
+		 
 		rc = efct_hw_get_host_stats(&efct->hw, 1,
 					    efct_xport_host_stats_cb, result);
 
 		if (rc)
 			break;
 
-		/* Wait for completion to be signaled when the cmd completes */
+		 
 		if (wait_for_completion_interruptible(&result->stats.done)) {
-			/* Undefined failure */
+			 
 			efc_log_debug(efct, "sem wait failed\n");
 			rc = -EIO;
 			break;
@@ -362,7 +356,7 @@ efct_get_link_supported_speeds(struct efct *efct)
 
 	link_module_type = sli_get_lmt(&efct->hw.sli);
 
-	/* populate link supported speeds */
+	 
 	for (i = 0; i < ARRAY_SIZE(supported_speed_list); i++) {
 		if (link_module_type & supported_speed_list[i].lmt_speed)
 			supported_speeds |= supported_speed_list[i].speed;
@@ -384,34 +378,27 @@ efct_scsi_new_device(struct efct *efct)
 		return -ENOMEM;
 	}
 
-	/* save shost to initiator-client context */
+	 
 	efct->shost = shost;
 
-	/* save efct information to shost LLD-specific space */
+	 
 	vport = (struct efct_vport *)shost->hostdata;
 	vport->efct = efct;
 
-	/*
-	 * Set initial can_queue value to the max SCSI IOs. This is the maximum
-	 * global queue depth (as opposed to the per-LUN queue depth --
-	 * .cmd_per_lun This may need to be adjusted for I+T mode.
-	 */
+	 
 	shost->can_queue = efct->hw.config.n_io;
-	shost->max_cmd_len = 16; /* 16-byte CDBs */
+	shost->max_cmd_len = 16;  
 	shost->max_id = 0xffff;
 	shost->max_lun = 0xffffffff;
 
-	/*
-	 * can only accept (from mid-layer) as many SGEs as we've
-	 * pre-registered
-	 */
+	 
 	shost->sg_tablesize = sli_get_max_sgl(&efct->hw.sli);
 
-	/* attach FC Transport template to shost */
+	 
 	shost->transportt = efct_xport_fc_tt;
 	efc_log_debug(efct, "transport template=%p\n", efct_xport_fc_tt);
 
-	/* get pci_dev structure and add host to SCSI ML */
+	 
 	error = scsi_add_host_with_dma(shost, &efct->pci->dev,
 				       &efct->pci->dev);
 	if (error) {
@@ -419,13 +406,13 @@ efct_scsi_new_device(struct efct *efct)
 		return -EIO;
 	}
 
-	/* Set symbolic name for host port */
+	 
 	snprintf(fc_host_symbolic_name(shost),
 		 sizeof(fc_host_symbolic_name(shost)),
 		     "Emulex %s FV%s DV%s", efct->model,
 		     efct->hw.sli.fw_name[0], EFCT_DRIVER_VERSION);
 
-	/* Set host port supported classes */
+	 
 	fc_host_supported_classes(shost) = FC_COS_CLASS3;
 
 	fc_host_supported_speeds(shost) = efct_get_link_supported_speeds(efct);
@@ -466,7 +453,7 @@ efct_attach_vport_fc_transport(void)
 int
 efct_scsi_reg_fc_transport(void)
 {
-	/* attach to appropriate scsi_tranport_* module */
+	 
 	efct_xport_fc_tt = efct_attach_fc_transport();
 	if (!efct_xport_fc_tt) {
 		pr_err("%s: failed to attach to scsi_transport_*", __func__);
@@ -487,7 +474,7 @@ efct_scsi_reg_fc_transport(void)
 void
 efct_scsi_release_fc_transport(void)
 {
-	/* detach from scsi_transport_* */
+	 
 	efct_release_fc_transport(efct_xport_fc_tt);
 	efct_xport_fc_tt = NULL;
 	if (efct_vport_fc_tt)
@@ -501,12 +488,12 @@ efct_xport_detach(struct efct_xport *xport)
 {
 	struct efct *efct = xport->efct;
 
-	/* free resources associated with target-server and initiator-client */
+	 
 	efct_scsi_tgt_del_device(efct);
 
 	efct_scsi_del_device(efct);
 
-	/*Shutdown FC Statistics timer*/
+	 
 	if (timer_pending(&xport->stats_timer))
 		del_timer(&xport->stats_timer);
 
@@ -534,7 +521,7 @@ efct_xport_control(struct efct_xport *xport, enum efct_xport_ctrl cmd, ...)
 
 	switch (cmd) {
 	case EFCT_XPORT_PORT_ONLINE: {
-		/* Bring the port on-line */
+		 
 		rc = efct_hw_port_control(&efct->hw, EFCT_HW_PORT_INIT, 0,
 					  NULL, NULL);
 		if (rc)
@@ -557,10 +544,7 @@ efct_xport_control(struct efct_xport *xport, enum efct_xport_ctrl cmd, ...)
 		struct completion done;
 		unsigned long timeout;
 
-		/* if a PHYSDEV reset was performed (e.g. hw dump), will affect
-		 * all PCI functions; orderly shutdown won't work,
-		 * just force free
-		 */
+		 
 		if (sli_reset_required(&efct->hw.sli)) {
 			struct efc_domain *domain = efct->efcport->domain;
 
@@ -588,19 +572,16 @@ efct_xport_control(struct efct_xport *xport, enum efct_xport_ctrl cmd, ...)
 
 		efc_register_domain_free_cb(efct->efcport, NULL, NULL);
 
-		/* Free up any saved virtual ports */
+		 
 		efc_vport_del_all(efct->efcport);
 		break;
 	}
 
-	/*
-	 * Set wwnn for the port. This will be used instead of the default
-	 * provided by FW.
-	 */
+	 
 	case EFCT_XPORT_WWNN_SET: {
 		u64 wwnn;
 
-		/* Retrieve arguments */
+		 
 		va_start(argp, cmd);
 		wwnn = va_arg(argp, uint64_t);
 		va_end(argp);
@@ -610,14 +591,11 @@ efct_xport_control(struct efct_xport *xport, enum efct_xport_ctrl cmd, ...)
 
 		break;
 	}
-	/*
-	 * Set wwpn for the port. This will be used instead of the default
-	 * provided by FW.
-	 */
+	 
 	case EFCT_XPORT_WWPN_SET: {
 		u64 wwpn;
 
-		/* Retrieve arguments */
+		 
 		va_start(argp, cmd);
 		wwpn = va_arg(argp, uint64_t);
 		va_end(argp);
@@ -650,7 +628,7 @@ efct_release_fc_transport(struct scsi_transport_template *transport_template)
 	if (transport_template)
 		pr_err("releasing transport layer\n");
 
-	/* Releasing FC transport */
+	 
 	fc_release_transport(transport_template);
 }
 
@@ -828,10 +806,10 @@ efct_get_stats(struct Scsi_Host *shost)
 		stats.stats.link_stats.invalid_transmission_word_error_count;
 	vport->fc_host_stats.invalid_crc_count =
 		stats.stats.link_stats.crc_error_count;
-	/* mbox returns kbyte count so we need to convert to words */
+	 
 	vport->fc_host_stats.tx_words =
 		stats.stats.host_stats.transmit_kbyte_count * 256;
-	/* mbox returns kbyte count so we need to convert to words */
+	 
 	vport->fc_host_stats.rx_words =
 		stats.stats.host_stats.receive_kbyte_count * 256;
 	vport->fc_host_stats.tx_frames =
@@ -858,7 +836,7 @@ efct_reset_stats(struct Scsi_Host *shost)
 {
 	struct efct_vport *vport = (struct efct_vport *)shost->hostdata;
 	struct efct *efct = vport->efct;
-	/* argument has no purpose for this action */
+	 
 	union efct_xport_stats_u dummy;
 	int rc;
 
@@ -880,11 +858,7 @@ efct_issue_lip(struct Scsi_Host *shost)
 		return -EPERM;
 	}
 
-	/*
-	 * Bring the link down gracefully then re-init the link.
-	 * The firmware will re-initialize the Fibre Channel interface as
-	 * required. It does not issue a LIP.
-	 */
+	 
 
 	if (efct_xport_control(efct->xport, EFCT_XPORT_PORT_OFFLINE))
 		efc_log_debug(efct, "EFCT_XPORT_PORT_OFFLINE failed\n");
@@ -908,38 +882,38 @@ efct_scsi_new_vport(struct efct *efct, struct device *dev)
 		return NULL;
 	}
 
-	/* save efct information to shost LLD-specific space */
+	 
 	vport = (struct efct_vport *)shost->hostdata;
 	vport->efct = efct;
 	vport->is_vport = true;
 
 	shost->can_queue = efct->hw.config.n_io;
-	shost->max_cmd_len = 16; /* 16-byte CDBs */
+	shost->max_cmd_len = 16;  
 	shost->max_id = 0xffff;
 	shost->max_lun = 0xffffffff;
 
-	/* can only accept (from mid-layer) as many SGEs as we've pre-regited*/
+	 
 	shost->sg_tablesize = sli_get_max_sgl(&efct->hw.sli);
 
-	/* attach FC Transport template to shost */
+	 
 	shost->transportt = efct_vport_fc_tt;
 	efc_log_debug(efct, "vport transport template=%p\n",
 		      efct_vport_fc_tt);
 
-	/* get pci_dev structure and add host to SCSI ML */
+	 
 	error = scsi_add_host_with_dma(shost, dev, &efct->pci->dev);
 	if (error) {
 		efc_log_debug(efct, "failed scsi_add_host_with_dma\n");
 		return NULL;
 	}
 
-	/* Set symbolic name for host port */
+	 
 	snprintf(fc_host_symbolic_name(shost),
 		 sizeof(fc_host_symbolic_name(shost)),
 		 "Emulex %s FV%s DV%s", efct->model, efct->hw.sli.fw_name[0],
 		 EFCT_DRIVER_VERSION);
 
-	/* Set host port supported classes */
+	 
 	fc_host_supported_classes(shost) = FC_COS_CLASS3;
 
 	fc_host_supported_speeds(shost) = efct_get_link_supported_speeds(efct);
@@ -1030,21 +1004,21 @@ static struct fc_function_template efct_xport_functions = {
 
 	.vport_disable = efct_vport_disable,
 
-	/* allocation lengths for host-specific data */
+	 
 	.dd_fcrport_size = sizeof(struct efct_rport_data),
-	.dd_fcvport_size = 128, /* should be sizeof(...) */
+	.dd_fcvport_size = 128,  
 
-	/* remote port fixed attributes */
+	 
 	.show_rport_maxframe_size = 1,
 	.show_rport_supported_classes = 1,
 	.show_rport_dev_loss_tmo = 1,
 
-	/* target dynamic attributes */
+	 
 	.show_starget_node_name = 1,
 	.show_starget_port_name = 1,
 	.show_starget_port_id = 1,
 
-	/* host fixed attributes */
+	 
 	.show_host_node_name = 1,
 	.show_host_port_name = 1,
 	.show_host_supported_classes = 1,
@@ -1052,11 +1026,11 @@ static struct fc_function_template efct_xport_functions = {
 	.show_host_supported_speeds = 1,
 	.show_host_maxframe_size = 1,
 
-	/* host dynamic attributes */
+	 
 	.show_host_port_id = 1,
 	.show_host_port_type = 1,
 	.show_host_port_state = 1,
-	/* active_fc4s is shown but doesn't change (thus no get function) */
+	 
 	.show_host_active_fc4s = 1,
 	.show_host_speed = 1,
 	.show_host_fabric_name = 1,
@@ -1077,21 +1051,21 @@ static struct fc_function_template efct_vport_functions = {
 
 	.issue_fc_host_lip = efct_issue_lip,
 
-	/* allocation lengths for host-specific data */
+	 
 	.dd_fcrport_size = sizeof(struct efct_rport_data),
-	.dd_fcvport_size = 128, /* should be sizeof(...) */
+	.dd_fcvport_size = 128,  
 
-	/* remote port fixed attributes */
+	 
 	.show_rport_maxframe_size = 1,
 	.show_rport_supported_classes = 1,
 	.show_rport_dev_loss_tmo = 1,
 
-	/* target dynamic attributes */
+	 
 	.show_starget_node_name = 1,
 	.show_starget_port_name = 1,
 	.show_starget_port_id = 1,
 
-	/* host fixed attributes */
+	 
 	.show_host_node_name = 1,
 	.show_host_port_name = 1,
 	.show_host_supported_classes = 1,
@@ -1099,11 +1073,11 @@ static struct fc_function_template efct_vport_functions = {
 	.show_host_supported_speeds = 1,
 	.show_host_maxframe_size = 1,
 
-	/* host dynamic attributes */
+	 
 	.show_host_port_id = 1,
 	.show_host_port_type = 1,
 	.show_host_port_state = 1,
-	/* active_fc4s is shown but doesn't change (thus no get function) */
+	 
 	.show_host_active_fc4s = 1,
 	.show_host_speed = 1,
 	.show_host_fabric_name = 1,

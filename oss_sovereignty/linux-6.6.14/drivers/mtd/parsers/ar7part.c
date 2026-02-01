@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright © 2007 Eugene Konev <ejka@openwrt.org>
- *
- * TI AR7 flash partition table.
- * Based on ar7 map by Felix Fietkau <nbd@openwrt.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -54,7 +49,7 @@ static int create_mtd_partitions(struct mtd_info *master,
 	ar7_parts[1].size = master->erasesize;
 	ar7_parts[1].mask_flags = 0;
 
-	do { /* Try 10 blocks starting from master->erasesize */
+	do {  
 		offset = pre_size;
 		mtd_read(master, offset, sizeof(header), &len,
 			 (uint8_t *)&header);

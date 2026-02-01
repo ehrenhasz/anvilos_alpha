@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "../../builtin.h"
 #include "../../perf.h"
-#include "../../util/util.h" // perf_exe()
+#include "../../util/util.h" 
 #include "../util.h"
 #include "../../util/hist.h"
 #include "../../util/debug.h"
@@ -15,12 +15,7 @@
 
 #define SCRIPT_NAMELEN	128
 #define SCRIPT_MAX_NO	64
-/*
- * Usually the full path for a script is:
- *	/home/username/libexec/perf-core/scripts/python/xxx.py
- *	/home/username/libexec/perf-core/scripts/perl/xxx.pl
- * So 256 should be long enough to contain the full path.
- */
+ 
 #define SCRIPT_FULLPATH_LEN	256
 
 struct script_config {
@@ -77,11 +72,7 @@ static int scripts_config(const char *var, const char *value, void *data)
 	return 0;
 }
 
-/*
- * When success, will copy the full path of the selected script
- * into  the buffer pointed by script_name, and return 0.
- * Return -1 on failure.
- */
+ 
 static int list_scripts(char *script_name, bool *custom,
 			struct evsel *evsel)
 {
@@ -99,7 +90,7 @@ static int list_scripts(char *script_name, bool *custom,
 
 	script_name[0] = 0;
 
-	/* Preset the script name to SCRIPT_NAMELEN */
+	 
 	buf = malloc(SCRIPT_MAX_NO * (SCRIPT_NAMELEN + SCRIPT_FULLPATH_LEN));
 	if (!buf)
 		return -1;
@@ -159,10 +150,7 @@ void run_script(char *cmd)
 	SLang_reset_tty();
 	if (system(cmd) < 0)
 		pr_warning("Cannot run %s\n", cmd);
-	/*
-	 * SLang doesn't seem to reset the whole terminal, so be more
-	 * forceful to get back to the original state.
-	 */
+	 
 	printf("\033[c\033[H\033[J");
 	fflush(stdout);
 	SLang_init_tty(0, 0, 0);

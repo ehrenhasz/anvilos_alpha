@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2012 ARM Limited
+
+
+
 
 #define DRVNAME "vexpress-regulator"
 #define pr_fmt(fmt) DRVNAME ": " fmt

@@ -1,16 +1,4 @@
-/*
- * edac_mc kernel module
- * (C) 2005-2007 Linux Networx (http://lnxi.com)
- *
- * This file may be distributed under the terms of the
- * GNU General Public License.
- *
- * Written Doug Thompson <norsk5@xmission.com> www.softwarebitmaker.com
- *
- * (c) 2012-2013 - Mauro Carvalho Chehab
- *	The entire API were re-written, and ported to use struct device
- *
- */
+ 
 
 #include <linux/ctype.h>
 #include <linux/slab.h>
@@ -22,13 +10,13 @@
 #include "edac_mc.h"
 #include "edac_module.h"
 
-/* MC EDAC Controls, setable by module parameter, and sysfs */
+ 
 static int edac_mc_log_ue = 1;
 static int edac_mc_log_ce = 1;
 static int edac_mc_panic_on_ue;
 static unsigned int edac_mc_poll_msec = 1000;
 
-/* Getter functions for above */
+ 
 int edac_mc_get_log_ue(void)
 {
 	return edac_mc_log_ue;
@@ -44,7 +32,7 @@ int edac_mc_get_panic_on_ue(void)
 	return edac_mc_panic_on_ue;
 }
 
-/* this is temporary */
+ 
 unsigned int edac_mc_get_poll_msec(void)
 {
 	return edac_mc_poll_msec;
@@ -67,13 +55,13 @@ static int edac_set_poll_msec(const char *val, const struct kernel_param *kp)
 
 	*((unsigned int *)kp->arg) = i;
 
-	/* notify edac_mc engine to reset the poll period */
+	 
 	edac_mc_reset_delay_period(i);
 
 	return 0;
 }
 
-/* Parameter declarations for above */
+ 
 module_param(edac_mc_panic_on_ue, int, 0644);
 MODULE_PARM_DESC(edac_mc_panic_on_ue, "Panic on uncorrected error: 0=off 1=on");
 module_param(edac_mc_log_ue, int, 0644);
@@ -88,9 +76,7 @@ MODULE_PARM_DESC(edac_mc_poll_msec, "Polling period in milliseconds");
 
 static struct device *mci_pdev;
 
-/*
- * various constants for Memory Controllers
- */
+ 
 static const char * const dev_types[] = {
 	[DEV_UNKNOWN] = "Unknown",
 	[DEV_X1] = "x1",
@@ -116,16 +102,11 @@ static const char * const edac_caps[] = {
 };
 
 #ifdef CONFIG_EDAC_LEGACY_SYSFS
-/*
- * EDAC sysfs CSROW data structures and methods
- */
+ 
 
 #define to_csrow(k) container_of(k, struct csrow_info, dev)
 
-/*
- * We need it to avoid namespace conflicts between the legacy API
- * and the per-dimm/per-rank one
- */
+ 
 #define DEVICE_ATTR_LEGACY(_name, _mode, _show, _store) \
 	static struct device_attribute dev_attr_legacy_##_name = __ATTR(_name, _mode, _show, _store)
 
@@ -140,7 +121,7 @@ struct dev_ch_attribute {
 
 #define to_channel(k) (container_of(k, struct dev_ch_attribute, attr)->channel)
 
-/* Set of more default csrow<id> attribute show/store functions */
+ 
 static ssize_t csrow_ue_count_show(struct device *dev,
 				   struct device_attribute *mattr, char *data)
 {
@@ -194,7 +175,7 @@ static ssize_t csrow_edac_mode_show(struct device *dev,
 	return sprintf(data, "%s\n", edac_caps[csrow->channels[0]->dimm->edac_mode]);
 }
 
-/* show/store functions for DIMM Label attributes */
+ 
 static ssize_t channel_dimm_label_show(struct device *dev,
 				       struct device_attribute *mattr,
 				       char *data)
@@ -203,7 +184,7 @@ static ssize_t channel_dimm_label_show(struct device *dev,
 	unsigned int chan = to_channel(mattr);
 	struct rank_info *rank = csrow->channels[chan];
 
-	/* if field has not been initialized, there is nothing to send */
+	 
 	if (!rank->dimm->label[0])
 		return 0;
 
@@ -235,7 +216,7 @@ static ssize_t channel_dimm_label_store(struct device *dev,
 	return count;
 }
 
-/* show function for dynamic chX_ce_count attribute */
+ 
 static ssize_t channel_ce_count_show(struct device *dev,
 				     struct device_attribute *mattr, char *data)
 {
@@ -246,7 +227,7 @@ static ssize_t channel_ce_count_show(struct device *dev,
 	return sprintf(data, "%u\n", rank->ce_count);
 }
 
-/* cwrow<id>/attribute files */
+ 
 DEVICE_ATTR_LEGACY(size_mb, S_IRUGO, csrow_size_show, NULL);
 DEVICE_ATTR_LEGACY(dev_type, S_IRUGO, csrow_dev_type_show, NULL);
 DEVICE_ATTR_LEGACY(mem_type, S_IRUGO, csrow_mem_type_show, NULL);
@@ -254,7 +235,7 @@ DEVICE_ATTR_LEGACY(edac_mode, S_IRUGO, csrow_edac_mode_show, NULL);
 DEVICE_ATTR_LEGACY(ue_count, S_IRUGO, csrow_ue_count_show, NULL);
 DEVICE_ATTR_LEGACY(ce_count, S_IRUGO, csrow_ce_count_show, NULL);
 
-/* default attributes of the CSROW<id> object */
+ 
 static struct attribute *csrow_attrs[] = {
 	&dev_attr_legacy_dev_type.attr,
 	&dev_attr_legacy_mem_type.attr,
@@ -278,10 +259,7 @@ static const struct device_type csrow_attr_type = {
 	.groups		= csrow_attr_groups,
 };
 
-/*
- * possible dynamic channel DIMM Label attribute files
- *
- */
+ 
 DEVICE_CHANNEL(ch0_dimm_label, S_IRUGO | S_IWUSR,
 	channel_dimm_label_show, channel_dimm_label_store, 0);
 DEVICE_CHANNEL(ch1_dimm_label, S_IRUGO | S_IWUSR,
@@ -307,7 +285,7 @@ DEVICE_CHANNEL(ch10_dimm_label, S_IRUGO | S_IWUSR,
 DEVICE_CHANNEL(ch11_dimm_label, S_IRUGO | S_IWUSR,
 	channel_dimm_label_show, channel_dimm_label_store, 11);
 
-/* Total possible dynamic DIMM Label attribute file table */
+ 
 static struct attribute *dynamic_csrow_dimm_attr[] = {
 	&dev_attr_legacy_ch0_dimm_label.attr.attr,
 	&dev_attr_legacy_ch1_dimm_label.attr.attr,
@@ -324,7 +302,7 @@ static struct attribute *dynamic_csrow_dimm_attr[] = {
 	NULL
 };
 
-/* possible dynamic channel ce_count attribute files */
+ 
 DEVICE_CHANNEL(ch0_ce_count, S_IRUGO,
 		   channel_ce_count_show, NULL, 0);
 DEVICE_CHANNEL(ch1_ce_count, S_IRUGO,
@@ -350,7 +328,7 @@ DEVICE_CHANNEL(ch10_ce_count, S_IRUGO,
 DEVICE_CHANNEL(ch11_ce_count, S_IRUGO,
 		   channel_ce_count_show, NULL, 11);
 
-/* Total possible dynamic ce_count attribute file table */
+ 
 static struct attribute *dynamic_csrow_ce_count_attr[] = {
 	&dev_attr_legacy_ch0_ce_count.attr.attr,
 	&dev_attr_legacy_ch1_ce_count.attr.attr,
@@ -381,7 +359,7 @@ static umode_t csrow_dev_is_visible(struct kobject *kobj,
 		return 0;
 	}
 
-	/* Only expose populated DIMMs */
+	 
 	if (!csrow->channels[idx]->dimm->nr_pages)
 		return 0;
 
@@ -407,10 +385,7 @@ static const struct attribute_group *csrow_dev_groups[] = {
 
 static void csrow_release(struct device *dev)
 {
-	/*
-	 * Nothing to do, just unregister sysfs here. The mci
-	 * device owns the data and will also release it.
-	 */
+	 
 }
 
 static inline int nr_pages_per_csrow(struct csrow_info *csrow)
@@ -423,7 +398,7 @@ static inline int nr_pages_per_csrow(struct csrow_info *csrow)
 	return nr_pages;
 }
 
-/* Create a CSROW object under specifed edac_mc_device */
+ 
 static int edac_create_csrow_object(struct mem_ctl_info *mci,
 				    struct csrow_info *csrow, int index)
 {
@@ -450,7 +425,7 @@ static int edac_create_csrow_object(struct mem_ctl_info *mci,
 	return 0;
 }
 
-/* Create a CSROW object under specifed edac_mc_device */
+ 
 static int edac_create_csrow_objects(struct mem_ctl_info *mci)
 {
 	int err, i;
@@ -487,13 +462,11 @@ static void edac_delete_csrow_objects(struct mem_ctl_info *mci)
 
 #endif
 
-/*
- * Per-dimm (or per-rank) devices
- */
+ 
 
 #define to_dimm(k) container_of(k, struct dimm_info, dev)
 
-/* show/store functions for DIMM Label attributes */
+ 
 static ssize_t dimmdev_location_show(struct device *dev,
 				     struct device_attribute *mattr, char *data)
 {
@@ -511,7 +484,7 @@ static ssize_t dimmdev_label_show(struct device *dev,
 {
 	struct dimm_info *dimm = to_dimm(dev);
 
-	/* if field has not been initialized, there is nothing to send */
+	 
 	if (!dimm->label[0])
 		return 0;
 
@@ -592,7 +565,7 @@ static ssize_t dimmdev_ue_count_show(struct device *dev,
 	return sprintf(data, "%u\n", dimm->ue_count);
 }
 
-/* dimm/rank attribute files */
+ 
 static DEVICE_ATTR(dimm_label, S_IRUGO | S_IWUSR,
 		   dimmdev_label_show, dimmdev_label_store);
 static DEVICE_ATTR(dimm_location, S_IRUGO, dimmdev_location_show, NULL);
@@ -603,7 +576,7 @@ static DEVICE_ATTR(dimm_edac_mode, S_IRUGO, dimmdev_edac_mode_show, NULL);
 static DEVICE_ATTR(dimm_ce_count, S_IRUGO, dimmdev_ce_count_show, NULL);
 static DEVICE_ATTR(dimm_ue_count, S_IRUGO, dimmdev_ue_count_show, NULL);
 
-/* attributes of the dimm<id>/rank<id> object */
+ 
 static struct attribute *dimm_attrs[] = {
 	&dev_attr_dimm_label.attr,
 	&dev_attr_dimm_location.attr,
@@ -631,13 +604,10 @@ static const struct device_type dimm_attr_type = {
 
 static void dimm_release(struct device *dev)
 {
-	/*
-	 * Nothing to do, just unregister sysfs here. The mci
-	 * device owns the data and will also release it.
-	 */
+	 
 }
 
-/* Create a DIMM object under specifed memory controller device */
+ 
 static int edac_create_dimm_object(struct mem_ctl_info *mci,
 				   struct dimm_info *dimm)
 {
@@ -674,9 +644,7 @@ static int edac_create_dimm_object(struct mem_ctl_info *mci,
 	return 0;
 }
 
-/*
- * Memory controller device
- */
+ 
 
 #define to_mci(k) container_of(k, struct mem_ctl_info, dev)
 
@@ -712,15 +680,7 @@ static ssize_t mci_reset_counters_store(struct device *dev,
 	return count;
 }
 
-/* Memory scrubbing interface:
- *
- * A MC driver can limit the scrubbing bandwidth based on the CPU type.
- * Therefore, ->set_sdram_scrub_rate should be made to return the actual
- * bandwidth that is accepted or 0 when scrubbing is to be disabled.
- *
- * Negative value still means that an error has occurred while setting
- * the scrub rate.
- */
+ 
 static ssize_t mci_sdram_scrub_rate_store(struct device *dev,
 					  struct device_attribute *mattr,
 					  const char *data, size_t count)
@@ -742,9 +702,7 @@ static ssize_t mci_sdram_scrub_rate_store(struct device *dev,
 	return count;
 }
 
-/*
- * ->get_sdram_scrub_rate() return value semantics same as above.
- */
+ 
 static ssize_t mci_sdram_scrub_rate_show(struct device *dev,
 					 struct device_attribute *mattr,
 					 char *data)
@@ -761,7 +719,7 @@ static ssize_t mci_sdram_scrub_rate_show(struct device *dev,
 	return sprintf(data, "%d\n", bandwidth);
 }
 
-/* default attribute files for the MCI object */
+ 
 static ssize_t mci_ue_count_show(struct device *dev,
 				 struct device_attribute *mattr,
 				 char *data)
@@ -861,10 +819,10 @@ out:
 	return p - data;
 }
 
-/* default Control file */
+ 
 static DEVICE_ATTR(reset_counters, S_IWUSR, NULL, mci_reset_counters_store);
 
-/* default Attribute files */
+ 
 static DEVICE_ATTR(mc_name, S_IRUGO, mci_ctl_name_show, NULL);
 static DEVICE_ATTR(size_mb, S_IRUGO, mci_size_mb_show, NULL);
 static DEVICE_ATTR(seconds_since_reset, S_IRUGO, mci_seconds_show, NULL);
@@ -874,9 +832,9 @@ static DEVICE_ATTR(ue_count, S_IRUGO, mci_ue_count_show, NULL);
 static DEVICE_ATTR(ce_count, S_IRUGO, mci_ce_count_show, NULL);
 static DEVICE_ATTR(max_location, S_IRUGO, mci_max_location_show, NULL);
 
-/* memory scrubber attribute file */
+ 
 static DEVICE_ATTR(sdram_scrub_rate, 0, mci_sdram_scrub_rate_show,
-	    mci_sdram_scrub_rate_store); /* umode set later in is_visible */
+	    mci_sdram_scrub_rate_store);  
 
 static struct attribute *mci_attrs[] = {
 	&dev_attr_reset_counters.attr,
@@ -922,21 +880,14 @@ static const struct device_type mci_attr_type = {
 	.groups		= mci_attr_groups,
 };
 
-/*
- * Create a new Memory Controller kobject instance,
- *	mc<id> under the 'mc' directory
- *
- * Return:
- *	0	Success
- *	!0	Failure
- */
+ 
 int edac_create_sysfs_mci_device(struct mem_ctl_info *mci,
 				 const struct attribute_group **groups)
 {
 	struct dimm_info *dimm;
 	int err;
 
-	/* get the /sys/devices/system/edac subsys reference */
+	 
 	mci->dev.type = &mci_attr_type;
 	mci->dev.parent = mci_pdev;
 	mci->dev.groups = groups;
@@ -947,17 +898,15 @@ int edac_create_sysfs_mci_device(struct mem_ctl_info *mci,
 	err = device_add(&mci->dev);
 	if (err < 0) {
 		edac_dbg(1, "failure: create device %s\n", dev_name(&mci->dev));
-		/* no put_device() here, free mci with _edac_mc_free() */
+		 
 		return err;
 	}
 
 	edac_dbg(0, "device %s created\n", dev_name(&mci->dev));
 
-	/*
-	 * Create the dimm/rank devices
-	 */
+	 
 	mci_for_each_dimm(mci, dimm) {
-		/* Only expose populated DIMMs */
+		 
 		if (!dimm->nr_pages)
 			continue;
 
@@ -981,9 +930,7 @@ fail:
 	return err;
 }
 
-/*
- * remove a Memory Controller instance
- */
+ 
 void edac_remove_sysfs_mci_device(struct mem_ctl_info *mci)
 {
 	struct dimm_info *dimm;
@@ -1007,24 +954,18 @@ void edac_remove_sysfs_mci_device(struct mem_ctl_info *mci)
 		device_unregister(&dimm->dev);
 	}
 
-	/* only remove the device, but keep mci */
+	 
 	device_del(&mci->dev);
 }
 
 static void mc_attr_release(struct device *dev)
 {
-	/*
-	 * There's no container structure here, as this is just the mci
-	 * parent device, used to create the /sys/devices/mc sysfs node.
-	 * So, there are no attributes on it.
-	 */
+	 
 	edac_dbg(1, "device %s released\n", dev_name(dev));
 	kfree(dev);
 }
 
-/*
- * Init/exit code for the module. Basically, creates/removes /sys/class/rc
- */
+ 
 int __init edac_mc_sysfs_init(void)
 {
 	int err;

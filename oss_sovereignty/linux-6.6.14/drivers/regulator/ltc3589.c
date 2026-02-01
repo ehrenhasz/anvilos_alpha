@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Linear Technology LTC3589,LTC3589-1 regulator support
-//
-// Copyright (c) 2014 Philipp Zabel <p.zabel@pengutronix.de>, Pengutronix
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/init.h>
@@ -105,7 +105,7 @@ static int ltc3589_set_suspend_voltage(struct regulator_dev *rdev, int uV)
 	if (sel < 0)
 		return sel;
 
-	/* DTV2 register follows right after the corresponding DTV1 register */
+	 
 	return regmap_update_bits(ltc3589->regmap, rdev->desc->vsel_reg + 1,
 				  rdev->desc->vsel_mask, sel);
 }
@@ -116,18 +116,18 @@ static int ltc3589_set_suspend_mode(struct regulator_dev *rdev,
 	struct ltc3589 *ltc3589 = rdev_get_drvdata(rdev);
 	int mask, bit = 0;
 
-	/* VCCR reference selects are right next to the VCCR go bits */
+	 
 	mask = rdev->desc->apply_bit << 1;
 
 	if (mode == REGULATOR_MODE_STANDBY)
-		bit = mask;	/* Select DTV2 */
+		bit = mask;	 
 
 	mask |= rdev->desc->apply_bit;
 	bit |= rdev->desc->apply_bit;
 	return regmap_update_bits(ltc3589->regmap, LTC3589_VCCR, mask, bit);
 }
 
-/* SW1, SW2, SW3, LDO2 */
+ 
 static const struct regulator_ops ltc3589_linear_regulator_ops = {
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -141,18 +141,18 @@ static const struct regulator_ops ltc3589_linear_regulator_ops = {
 	.set_suspend_mode = ltc3589_set_suspend_mode,
 };
 
-/* BB_OUT, LDO3 */
+ 
 static const struct regulator_ops ltc3589_fixed_regulator_ops = {
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
 	.is_enabled = regulator_is_enabled_regmap,
 };
 
-/* LDO1 */
+ 
 static const struct regulator_ops ltc3589_fixed_standby_regulator_ops = {
 };
 
-/* LDO4 */
+ 
 static const struct regulator_ops ltc3589_table_regulator_ops = {
 	.enable = regulator_enable_regmap,
 	.disable = regulator_disable_regmap,
@@ -183,7 +183,7 @@ static int ltc3589_of_parse_cb(struct device_node *np,
 	u32 r[2];
 	int ret;
 
-	/* Parse feedback voltage dividers. LDO3 and LDO4 don't have them */
+	 
 	if (desc->id >= LTC3589_LDO3)
 		return 0;
 
@@ -371,7 +371,7 @@ static irqreturn_t ltc3589_isr(int irq, void *dev_id)
 						      event, NULL);
 	}
 
-	/* Clear warning condition */
+	 
 	regmap_write(ltc3589->regmap, LTC3589_CLIRQ, 0);
 
 	return IRQ_HANDLED;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IMG I2S output controller driver
- *
- * Copyright (C) 2015 Imagination Technologies Ltd.
- *
- * Author: Damien Horsley <Damien.Horsley@imgtec.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -243,17 +237,13 @@ static int img_i2s_out_hw_params(struct snd_pcm_substream *substream,
 	diff_a = abs((pre_div_a / 256) - rate);
 	diff_b = abs((pre_div_b / 384) - rate);
 
-	/* If diffs are equal, use lower clock rate */
+	 
 	if (diff_a > diff_b)
 		clk_set_rate(i2s->clk_ref, pre_div_b);
 	else
 		clk_set_rate(i2s->clk_ref, pre_div_a);
 
-	/*
-	 * Another driver (eg alsa machine driver) may have rejected the above
-	 * change. Get the current rate and set the register bit according to
-	 * the new minimum diff
-	 */
+	 
 	clk_rate = clk_get_rate(i2s->clk_ref);
 
 	diff_a = abs((clk_rate / 256) - rate);

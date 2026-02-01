@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 Google Inc.
- *
- * Panel driver for the Samsung ATNA33XC20 panel. This panel can't be handled
- * by the DRM_PANEL_SIMPLE driver because its power sequencing is non-standard.
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -19,7 +14,7 @@
 #include <drm/drm_edid.h>
 #include <drm/drm_panel.h>
 
-/* T3 VCC to HPD high is max 200 ms */
+ 
 #define HPD_MAX_MS	200
 #define HPD_MAX_US	(HPD_MAX_MS * 1000)
 
@@ -64,11 +59,7 @@ static int atana33xc20_suspend(struct device *dev)
 	struct atana33xc20_panel *p = dev_get_drvdata(dev);
 	int ret;
 
-	/*
-	 * Note 3 (Example of power off sequence in detail) in spec
-	 * specifies to wait 150 ms after deasserting EL3_ON before
-	 * powering off.
-	 */
+	 
 	if (p->el3_was_on)
 		atana33xc20_wait(p->el_on3_off_time, 150);
 
@@ -87,7 +78,7 @@ static int atana33xc20_resume(struct device *dev)
 	int hpd_asserted;
 	int ret;
 
-	/* T12 (Power off time) is min 500 ms */
+	 
 	atana33xc20_wait(p->powered_off_time, 500);
 
 	ret = regulator_enable(p->supply);
@@ -122,14 +113,7 @@ static int atana33xc20_resume(struct device *dev)
 		return ret;
 	}
 
-	/*
-	 * Note that it's possible that no_hpd is false, hpd_gpio is
-	 * NULL, and wait_hpd_asserted is NULL. This is because
-	 * wait_hpd_asserted() is optional even if HPD is hooked up to
-	 * a dedicated pin on the eDP controller. In this case we just
-	 * assume that the controller driver will wait for HPD at the
-	 * right times.
-	 */
+	 
 	return 0;
 }
 
@@ -137,7 +121,7 @@ static int atana33xc20_disable(struct drm_panel *panel)
 {
 	struct atana33xc20_panel *p = to_atana33xc20(panel);
 
-	/* Disabling when already disabled is a no-op */
+	 
 	if (!p->enabled)
 		return 0;
 
@@ -145,19 +129,10 @@ static int atana33xc20_disable(struct drm_panel *panel)
 	p->el_on3_off_time = ktime_get_boottime();
 	p->enabled = false;
 
-	/*
-	 * Keep track of the fact that EL_ON3 was on but we haven't power
-	 * cycled yet. This lets us know that "el_on3_off_time" is recent (we
-	 * don't need to worry about ktime wraparounds) and also makes it
-	 * obvious if we try to enable again without a power cycle (see the
-	 * warning in atana33xc20_enable()).
-	 */
+	 
 	p->el3_was_on = true;
 
-	/*
-	 * Sleeping 20 ms here (after setting the GPIO) avoids a glitch when
-	 * powering off.
-	 */
+	 
 	msleep(20);
 
 	return 0;
@@ -167,25 +142,15 @@ static int atana33xc20_enable(struct drm_panel *panel)
 {
 	struct atana33xc20_panel *p = to_atana33xc20(panel);
 
-	/* Enabling when already enabled is a no-op */
+	 
 	if (p->enabled)
 		return 0;
 
-	/*
-	 * Once EL_ON3 drops we absolutely need a power cycle before the next
-	 * enable or the backlight will never come on again. The code ensures
-	 * this because disable() is _always_ followed by unprepare() and
-	 * unprepare() forces a suspend with pm_runtime_put_sync_suspend(),
-	 * but let's track just to make sure since the requirement is so
-	 * non-obvious.
-	 */
+	 
 	if (WARN_ON(p->el3_was_on))
 		return -EIO;
 
-	/*
-	 * Note 2 (Example of power on sequence in detail) in spec specifies
-	 * to wait 400 ms after powering on before asserting EL3_on.
-	 */
+	 
 	atana33xc20_wait(p->powered_on_time, 400);
 
 	gpiod_set_value_cansleep(p->el_on3_gpio, 1);
@@ -199,18 +164,11 @@ static int atana33xc20_unprepare(struct drm_panel *panel)
 	struct atana33xc20_panel *p = to_atana33xc20(panel);
 	int ret;
 
-	/* Unpreparing when already unprepared is a no-op */
+	 
 	if (!p->prepared)
 		return 0;
 
-	/*
-	 * Purposely do a put_sync, don't use autosuspend. The panel's tcon
-	 * seems to sometimes crash when you stop giving it data and this is
-	 * the best way to ensure it will come back.
-	 *
-	 * NOTE: we still want autosuspend for cases where we only turn on
-	 * to get the EDID or otherwise send DP AUX commands to the panel.
-	 */
+	 
 	ret = pm_runtime_put_sync_suspend(panel->dev);
 	if (ret < 0)
 		return ret;
@@ -224,7 +182,7 @@ static int atana33xc20_prepare(struct drm_panel *panel)
 	struct atana33xc20_panel *p = to_atana33xc20(panel);
 	int ret;
 
-	/* Preparing when already prepared is a no-op */
+	 
 	if (p->prepared)
 		return 0;
 
@@ -354,7 +312,7 @@ static void atana33xc20_shutdown(struct dp_aux_ep_device *aux_ep)
 
 static const struct of_device_id atana33xc20_dt_match[] = {
 	{ .compatible = "samsung,atna33xc20", },
-	{ /* sentinal */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, atana33xc20_dt_match);
 

@@ -1,32 +1,9 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __AMDGPU_GFX_H__
 #define __AMDGPU_GFX_H__
 
-/*
- * GFX stuff
- */
+ 
 #include "clearstate_defs.h"
 #include "amdgpu_ring.h"
 #include "amdgpu_rlc.h"
@@ -35,7 +12,7 @@
 #include "amdgpu_ras.h"
 #include "amdgpu_ring_mux.h"
 
-/* GFX current status */
+ 
 #define AMDGPU_GFX_NORMAL_MODE			0x00000000L
 #define AMDGPU_GFX_SAFE_MODE			0x00000001L
 #define AMDGPU_GFX_PG_DISABLED_MODE		0x00000002L
@@ -63,7 +40,7 @@ enum amdgpu_gfx_partition {
 	AMDGPU_QPX_PARTITION_MODE = 3,
 	AMDGPU_CPX_PARTITION_MODE = 4,
 	AMDGPU_UNKNOWN_COMPUTE_PARTITION_MODE = -1,
-	/* Automatically choose the right mode */
+	 
 	AMDGPU_AUTO_COMPUTE_PARTITION_MODE = -2,
 };
 
@@ -115,7 +92,7 @@ struct amdgpu_mec {
 };
 
 struct amdgpu_mec_bitmap {
-	/* These are the resources for which amdgpu takes ownership */
+	 
 	DECLARE_BITMAP(queue_bitmap, AMDGPU_MAX_COMPUTE_QUEUES);
 };
 
@@ -127,7 +104,7 @@ enum amdgpu_unmap_queues_action {
 };
 
 struct kiq_pm4_funcs {
-	/* Support ASIC-specific kiq pm4 packets*/
+	 
 	void (*kiq_set_resources)(struct amdgpu_ring *kiq_ring,
 					uint64_t queue_mask);
 	void (*kiq_map_queues)(struct amdgpu_ring *kiq_ring,
@@ -143,7 +120,7 @@ struct kiq_pm4_funcs {
 	void (*kiq_invalidate_tlbs)(struct amdgpu_ring *kiq_ring,
 				uint16_t pasid, uint32_t flush_type,
 				bool all_hub);
-	/* Packet sizes */
+	 
 	int set_resources_size;
 	int map_queues_size;
 	int unmap_queues_size;
@@ -161,9 +138,7 @@ struct amdgpu_kiq {
 	void			*mqd_backup;
 };
 
-/*
- * GFX configurations
- */
+ 
 #define AMDGPU_GFX_MAX_SE 4
 #define AMDGPU_GFX_MAX_SH_PER_SE 2
 
@@ -220,15 +195,15 @@ struct amdgpu_gfx_config {
 	struct gb_addr_config gb_addr_config_fields;
 	struct amdgpu_rb_config rb_config[AMDGPU_GFX_MAX_SE][AMDGPU_GFX_MAX_SH_PER_SE];
 
-	/* gfx configure feature */
+	 
 	uint32_t double_offchip_lds_buf;
-	/* cached value of DB_DEBUG2 */
+	 
 	uint32_t db_debug2;
-	/* gfx10 specific config */
+	 
 	uint32_t num_sc_per_sh;
 	uint32_t num_packer_per_sc;
 	uint32_t pa_sc_tile_steering_override;
-	/* Whether texture coordinate truncation is conformant. */
+	 
 	bool ta_cntl2_truncate_coord_mode;
 	uint64_t tcc_disabled_mask;
 	uint32_t gc_num_tcp_per_sa;
@@ -254,7 +229,7 @@ struct amdgpu_cu_info {
 	uint32_t max_scratch_slots_per_cu;
 	uint32_t lds_size;
 
-	/* total active CU number */
+	 
 	uint32_t number;
 	uint32_t ao_cu_mask;
 	uint32_t ao_cu_bitmap[4][4];
@@ -280,7 +255,7 @@ struct amdgpu_gfx_shadow_info {
 };
 
 struct amdgpu_gfx_funcs {
-	/* get the gpu clock counter */
+	 
 	uint64_t (*get_gpu_clock_counter)(struct amdgpu_device *adev);
 	void (*select_se_sh)(struct amdgpu_device *adev, u32 se_num,
 			     u32 sh_num, u32 instance, int xcc_id);
@@ -340,7 +315,7 @@ struct amdgpu_me {
 	uint32_t			num_queue_per_pipe;
 	void				*mqd_backup[AMDGPU_MAX_GFX_RINGS];
 
-	/* These are the resources for which amdgpu takes ownership */
+	 
 	DECLARE_BITMAP(queue_bitmap, AMDGPU_MAX_GFX_QUEUES);
 };
 
@@ -355,20 +330,20 @@ struct amdgpu_gfx {
 	struct amdgpu_mec_bitmap	mec_bitmap[AMDGPU_MAX_GC_INSTANCES];
 	struct amdgpu_kiq		kiq[AMDGPU_MAX_GC_INSTANCES];
 	struct amdgpu_imu		imu;
-	bool				rs64_enable; /* firmware format */
-	const struct firmware		*me_fw;	/* ME firmware */
+	bool				rs64_enable;  
+	const struct firmware		*me_fw;	 
 	uint32_t			me_fw_version;
-	const struct firmware		*pfp_fw; /* PFP firmware */
+	const struct firmware		*pfp_fw;  
 	uint32_t			pfp_fw_version;
-	const struct firmware		*ce_fw;	/* CE firmware */
+	const struct firmware		*ce_fw;	 
 	uint32_t			ce_fw_version;
-	const struct firmware		*rlc_fw; /* RLC firmware */
+	const struct firmware		*rlc_fw;  
 	uint32_t			rlc_fw_version;
-	const struct firmware		*mec_fw; /* MEC firmware */
+	const struct firmware		*mec_fw;  
 	uint32_t			mec_fw_version;
-	const struct firmware		*mec2_fw; /* MEC2 firmware */
+	const struct firmware		*mec2_fw;  
 	uint32_t			mec2_fw_version;
-	const struct firmware		*imu_fw; /* IMU firmware */
+	const struct firmware		*imu_fw;  
 	uint32_t			imu_fw_version;
 	uint32_t			me_feature_version;
 	uint32_t			ce_feature_version;
@@ -401,30 +376,30 @@ struct amdgpu_gfx {
 	struct amdgpu_irq_src		rlc_gc_fed_irq;
 	struct sq_work			sq_work;
 
-	/* gfx status */
+	 
 	uint32_t			gfx_current_status;
-	/* ce ram size*/
+	 
 	unsigned			ce_ram_size;
 	struct amdgpu_cu_info		cu_info;
 	const struct amdgpu_gfx_funcs	*funcs;
 
-	/* reset mask */
+	 
 	uint32_t                        grbm_soft_reset;
 	uint32_t                        srbm_soft_reset;
 
-	/* gfx off */
-	bool                            gfx_off_state;      /* true: enabled, false: disabled */
-	struct mutex                    gfx_off_mutex;      /* mutex to change gfxoff state */
-	uint32_t                        gfx_off_req_count;  /* default 1, enable gfx off: dec 1, disable gfx off: add 1 */
-	struct delayed_work             gfx_off_delay_work; /* async work to set gfx block off */
-	uint32_t                        gfx_off_residency;  /* last logged residency */
-	uint64_t                        gfx_off_entrycount; /* count of times GPU has get into GFXOFF state */
+	 
+	bool                            gfx_off_state;       
+	struct mutex                    gfx_off_mutex;       
+	uint32_t                        gfx_off_req_count;   
+	struct delayed_work             gfx_off_delay_work;  
+	uint32_t                        gfx_off_residency;   
+	uint64_t                        gfx_off_entrycount;  
 
-	/* pipe reservation */
+	 
 	struct mutex			pipe_reserve_mutex;
 	DECLARE_BITMAP			(pipe_reserve_bitmap, AMDGPU_MAX_COMPUTE_QUEUES);
 
-	/*ras */
+	 
 	struct ras_common_if		*ras_if;
 	struct amdgpu_gfx_ras		*ras;
 
@@ -433,12 +408,12 @@ struct amdgpu_gfx {
 	struct amdgpu_ring		sw_gfx_ring[AMDGPU_MAX_SW_GFX_RINGS];
 	struct amdgpu_ring_mux          muxer;
 
-	bool				cp_gfx_shadow; /* for gfx11 */
+	bool				cp_gfx_shadow;  
 
 	uint16_t 			xcc_mask;
 	uint32_t			num_xcc_per_xcp;
 	struct mutex			partition_mutex;
-	bool				mcbp; /* mid command buffer preemption */
+	bool				mcbp;  
 };
 
 struct amdgpu_gfx_ras_reg_entry {
@@ -460,14 +435,7 @@ struct amdgpu_gfx_ras_mem_id_entry {
 #define amdgpu_gfx_init_spm_golden(adev) (adev)->gfx.funcs->init_spm_golden((adev))
 #define amdgpu_gfx_get_gfx_shadow_info(adev, si) ((adev)->gfx.funcs->get_gfx_shadow_info((adev), (si)))
 
-/**
- * amdgpu_gfx_create_bitmask - create a bitmask
- *
- * @bit_width: length of the mask
- *
- * create a variable length bit mask.
- * Returns the bitmask.
- */
+ 
 static inline u32 amdgpu_gfx_create_bitmask(u32 bit_width)
 {
 	return (u32)((1ULL << bit_width) - 1);

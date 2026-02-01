@@ -1,10 +1,4 @@
-/*
- * Performance events - AMD IBS
- *
- *  Copyright (C) 2011 Advanced Micro Devices, Inc., Robert Richter
- *
- *  For licencing details see kernel-base/COPYING
- */
+ 
 
 #include <linux/perf_event.h>
 #include <linux/init.h>
@@ -32,39 +26,7 @@ static u32 ibs_caps;
 #define IBS_OP_CONFIG_MASK	IBS_OP_MAX_CNT
 
 
-/*
- * IBS states:
- *
- * ENABLED; tracks the pmu::add(), pmu::del() state, when set the counter is taken
- * and any further add()s must fail.
- *
- * STARTED/STOPPING/STOPPED; deal with pmu::start(), pmu::stop() state but are
- * complicated by the fact that the IBS hardware can send late NMIs (ie. after
- * we've cleared the EN bit).
- *
- * In order to consume these late NMIs we have the STOPPED state, any NMI that
- * happens after we've cleared the EN state will clear this bit and report the
- * NMI handled (this is fundamentally racy in the face or multiple NMI sources,
- * someone else can consume our BIT and our NMI will go unhandled).
- *
- * And since we cannot set/clear this separate bit together with the EN bit,
- * there are races; if we cleared STARTED early, an NMI could land in
- * between clearing STARTED and clearing the EN bit (in fact multiple NMIs
- * could happen if the period is small enough), and consume our STOPPED bit
- * and trigger streams of unhandled NMIs.
- *
- * If, however, we clear STARTED late, an NMI can hit between clearing the
- * EN bit and clearing STARTED, still see STARTED set and process the event.
- * If this event will have the VALID bit clear, we bail properly, but this
- * is not a given. With VALID set we can end up calling pmu::stop() again
- * (the throttle logic) and trigger the WARNs in there.
- *
- * So what we do is set STOPPING before clearing EN to avoid the pmu::stop()
- * nesting, and clear STARTED late, so that we have a well defined state over
- * the clearing of the EN bit.
- *
- * XXX: we could probably be using !atomic bitops for all this.
- */
+ 
 
 enum ibs_states {
 	IBS_ENABLED	= 0,
@@ -104,9 +66,7 @@ perf_event_set_period(struct hw_perf_event *hwc, u64 min, u64 max, u64 *hw_perio
 	s64 period = hwc->sample_period;
 	int overflow = 0;
 
-	/*
-	 * If we are way outside a reasonable range then just skip forward:
-	 */
+	 
 	if (unlikely(left <= -period)) {
 		left = period;
 		local64_set(&hwc->period_left, left);
@@ -121,12 +81,7 @@ perf_event_set_period(struct hw_perf_event *hwc, u64 min, u64 max, u64 *hw_perio
 		overflow = 1;
 	}
 
-	/*
-	 * If the hw period that triggers the sw overflow is too short
-	 * we might hit the irq handler. This biases the results.
-	 * Thus we shorten the next-to-last period and set the last
-	 * period to the max period.
-	 */
+	 
 	if (left > max) {
 		left -= max;
 		if (left > max)
@@ -148,26 +103,13 @@ perf_event_try_update(struct perf_event *event, u64 new_raw_count, int width)
 	u64 prev_raw_count;
 	u64 delta;
 
-	/*
-	 * Careful: an NMI might modify the previous event value.
-	 *
-	 * Our tactic to handle this is to first atomically read and
-	 * exchange a new raw count - then add that new-prev delta
-	 * count to the generic event atomically:
-	 */
+	 
 	prev_raw_count = local64_read(&hwc->prev_count);
 	if (!local64_try_cmpxchg(&hwc->prev_count,
 				 &prev_raw_count, new_raw_count))
 		return 0;
 
-	/*
-	 * Now we have the new raw value and have updated the prev
-	 * timestamp already. We can now calculate the elapsed delta
-	 * (event-)time and add that to the generic event.
-	 *
-	 * Careful, not all hw sign-extends above the physical width
-	 * of the count.
-	 */
+	 
 	delta = (new_raw_count << shift) - (prev_raw_count << shift);
 	delta >>= shift;
 
@@ -189,17 +131,7 @@ static struct perf_ibs *get_ibs_pmu(int type)
 	return NULL;
 }
 
-/*
- * core pmu config -> IBS config
- *
- *  perf record -a -e cpu-cycles:p ...    # use ibs op counting cycle count
- *  perf record -a -e r076:p ...          # same as -e cpu-cycles:p
- *  perf record -a -e r0C1:p ...          # use ibs op counting micro-ops
- *
- * IbsOpCntCtl (bit 19) of IBS Execution Control Register (IbsOpCtl,
- * MSRC001_1033) is used to select either cycle or micro-ops counting
- * mode.
- */
+ 
 static int core_pmu_ibs_config(struct perf_event *event, u64 *config)
 {
 	switch (event->attr.type) {
@@ -227,12 +159,7 @@ static int core_pmu_ibs_config(struct perf_event *event, u64 *config)
 	return -EOPNOTSUPP;
 }
 
-/*
- * The rip of IBS samples has skid 0. Thus, IBS supports precise
- * levels 1 and 2 and the PERF_EFLAGS_EXACT is set. In rare cases the
- * rip is invalid when IBS was not able to record the rip correctly.
- * We clear PERF_EFLAGS_EXACT and take the rip from pt_regs then.
- */
+ 
 int forward_event_to_ibs(struct perf_event *event)
 {
 	u64 config = 0;
@@ -247,10 +174,7 @@ int forward_event_to_ibs(struct perf_event *event)
 	return -ENOENT;
 }
 
-/*
- * Grouping of IBS events is not possible since IBS can have only
- * one event active at any point in time.
- */
+ 
 static int validate_group(struct perf_event *event)
 {
 	struct perf_event *sibling;
@@ -293,14 +217,10 @@ static int perf_ibs_init(struct perf_event *event)
 
 	if (hwc->sample_period) {
 		if (config & perf_ibs->cnt_mask)
-			/* raw max_cnt may not be set */
+			 
 			return -EINVAL;
 		if (!event->attr.sample_freq && hwc->sample_period & 0x0f)
-			/*
-			 * lower 4 bits can not be set in ibs max cnt,
-			 * but allowing it in case we adjust the
-			 * sample period to set a frequency.
-			 */
+			 
 			return -EINVAL;
 		hwc->sample_period &= ~0x0FULL;
 		if (!hwc->sample_period)
@@ -315,10 +235,7 @@ static int perf_ibs_init(struct perf_event *event)
 	if (!hwc->sample_period)
 		return -EINVAL;
 
-	/*
-	 * If we modify hwc->sample_period, we also need to update
-	 * hwc->last_period and hwc->period_left.
-	 */
+	 
 	hwc->last_period = hwc->sample_period;
 	local64_set(&hwc->period_left, hwc->sample_period);
 
@@ -333,7 +250,7 @@ static int perf_ibs_set_period(struct perf_ibs *perf_ibs,
 {
 	int overflow;
 
-	/* ignore lower 4 bits in min count: */
+	 
 	overflow = perf_event_set_period(hwc, 1<<4, perf_ibs->max_period, period);
 	local64_set(&hwc->prev_count, 0);
 
@@ -352,11 +269,7 @@ static u64 get_ibs_op_count(u64 config)
 	union ibs_op_ctl op_ctl = (union ibs_op_ctl)config;
 	u64 count = 0;
 
-	/*
-	 * If the internal 27-bit counter rolled over, the count is MaxCnt
-	 * and the lower 7 bits of CurCnt are randomized.
-	 * Otherwise CurCnt has the full 27-bit current counter value.
-	 */
+	 
 	if (op_ctl.op_val) {
 		count = op_ctl.opmaxcnt << 4;
 		if (ibs_caps & IBS_CAPS_OPCNTEXT)
@@ -374,11 +287,7 @@ perf_ibs_event_update(struct perf_ibs *perf_ibs, struct perf_event *event,
 {
 	u64 count = perf_ibs->get_count(*config);
 
-	/*
-	 * Set width to 64 since we do not overflow on max width but
-	 * instead on max count. In perf_ibs_set_period() we clear
-	 * prev count manually on overflow.
-	 */
+	 
 	while (!perf_event_try_update(event, count, 64)) {
 		rdmsrl(event->hw.config_base, *config);
 		count = perf_ibs->get_count(*config);
@@ -396,13 +305,7 @@ static inline void perf_ibs_enable_event(struct perf_ibs *perf_ibs,
 	wrmsrl(hwc->config_base, tmp | perf_ibs->enable_mask);
 }
 
-/*
- * Erratum #420 Instruction-Based Sampling Engine May Generate
- * Interrupt that Cannot Be Cleared:
- *
- * Must clear counter mask first, then clear the enable bit. See
- * Revision Guide for AMD Family 10h Processors, Publication #41322.
- */
+ 
 static inline void perf_ibs_disable_event(struct perf_ibs *perf_ibs,
 					  struct hw_perf_event *hwc, u64 config)
 {
@@ -413,12 +316,7 @@ static inline void perf_ibs_disable_event(struct perf_ibs *perf_ibs,
 	wrmsrl(hwc->config_base, config);
 }
 
-/*
- * We cannot restore the ibs pmu state, so we always needs to update
- * the event while stopping it and then reset the state when starting
- * again. Thus, ignoring PERF_EF_RELOAD and PERF_EF_UPDATE flags in
- * perf_ibs_start()/perf_ibs_stop() and instead always do it.
- */
+ 
 static void perf_ibs_start(struct perf_event *event, int flags)
 {
 	struct hw_perf_event *hwc = &event->hw;
@@ -439,10 +337,7 @@ static void perf_ibs_start(struct perf_event *event, int flags)
 	}
 	config |= period >> 4;
 
-	/*
-	 * Set STARTED before enabling the hardware, such that a subsequent NMI
-	 * must observe it.
-	 */
+	 
 	set_bit(IBS_STARTED,    pcpu->state);
 	clear_bit(IBS_STOPPING, pcpu->state);
 	perf_ibs_enable_event(perf_ibs, hwc, config);
@@ -469,23 +364,10 @@ static void perf_ibs_stop(struct perf_event *event, int flags)
 	rdmsrl(hwc->config_base, config);
 
 	if (stopping) {
-		/*
-		 * Set STOPPED before disabling the hardware, such that it
-		 * must be visible to NMIs the moment we clear the EN bit,
-		 * at which point we can generate an !VALID sample which
-		 * we need to consume.
-		 */
+		 
 		set_bit(IBS_STOPPED, pcpu->state);
 		perf_ibs_disable_event(perf_ibs, hwc, config);
-		/*
-		 * Clear STARTED after disabling the hardware; if it were
-		 * cleared before an NMI hitting after the clear but before
-		 * clearing the EN bit might think it a spurious NMI and not
-		 * handle it.
-		 *
-		 * Clearing it after, however, creates the problem of the NMI
-		 * handler seeing STARTED but not having a valid sample.
-		 */
+		 
 		clear_bit(IBS_STARTED, pcpu->state);
 		WARN_ON_ONCE(hwc->state & PERF_HES_STOPPED);
 		hwc->state |= PERF_HES_STOPPED;
@@ -494,10 +376,7 @@ static void perf_ibs_stop(struct perf_event *event, int flags)
 	if (hwc->state & PERF_HES_UPTODATE)
 		return;
 
-	/*
-	 * Clear valid bit to not count rollovers on update, rollovers
-	 * are only updated in the irq handler.
-	 */
+	 
 	config &= ~perf_ibs->valid_mask;
 
 	perf_ibs_event_update(perf_ibs, event, &config);
@@ -539,10 +418,7 @@ static void perf_ibs_del(struct perf_event *event, int flags)
 
 static void perf_ibs_read(struct perf_event *event) { }
 
-/*
- * We need to initialize with empty group if all attributes in the
- * group are dynamic.
- */
+ 
 static struct attribute *attrs_empty[] = {
 	NULL,
 };
@@ -716,10 +592,7 @@ static void perf_ibs_get_mem_op(union ibs_op_data3 *op_data3,
 		data_src->mem_op = PERF_MEM_OP_STORE;
 }
 
-/*
- * Processors having CPUID_Fn8000001B_EAX[11] aka IBS_CAPS_ZEN4 has
- * more fine granular DataSrc encodings. Others have coarse.
- */
+ 
 static u8 perf_ibs_data_src(union ibs_op_data2 *op_data2)
 {
 	if (ibs_caps & IBS_CAPS_ZEN4)
@@ -768,29 +641,23 @@ static __u64 perf_ibs_get_mem_lvl(union ibs_op_data2 *op_data2,
 	data_src->mem_lvl = 0;
 	data_src->mem_lvl_num = 0;
 
-	/*
-	 * DcMiss, L2Miss, DataSrc, DcMissLat etc. are all invalid for Uncached
-	 * memory accesses. So, check DcUcMemAcc bit early.
-	 */
+	 
 	if (op_data3->dc_uc_mem_acc && ibs_data_src != IBS_DATA_SRC_EXT_IO)
 		return L(UNC) | LN(UNC);
 
-	/* L1 Hit */
+	 
 	if (op_data3->dc_miss == 0)
 		return L(L1) | LN(L1);
 
-	/* L2 Hit */
+	 
 	if (op_data3->l2_miss == 0) {
-		/* Erratum #1293 */
+		 
 		if (boot_cpu_data.x86 != 0x19 || boot_cpu_data.x86_model > 0xF ||
 		    !(op_data3->sw_pf || op_data3->dc_miss_no_mab_alloc))
 			return L(L2) | LN(L2);
 	}
 
-	/*
-	 * OP_DATA2 is valid only for load ops. Skip all checks which
-	 * uses OP_DATA2[DataSrc].
-	 */
+	 
 	if (data_src->mem_op != PERF_MEM_OP_LOAD)
 		goto check_mab;
 
@@ -800,7 +667,7 @@ static __u64 perf_ibs_get_mem_lvl(union ibs_op_data2 *op_data2,
 		if (!val)
 			goto check_mab;
 
-		/* HOPS_1 because IBS doesn't provide remote socket detail */
+		 
 		if (op_data2->rmt_node && ZEN4_RMT_NODE_APPLICABLE(ibs_data_src)) {
 			if (ibs_data_src == IBS_DATA_SRC_EXT_DRAM)
 				val = L(REM_RAM1) | LN(RAM) | REM | HOPS(1);
@@ -815,7 +682,7 @@ static __u64 perf_ibs_get_mem_lvl(union ibs_op_data2 *op_data2,
 		if (!val)
 			goto check_mab;
 
-		/* HOPS_1 because IBS doesn't provide remote socket detail */
+		 
 		if (op_data2->rmt_node && RMT_NODE_APPLICABLE(ibs_data_src)) {
 			if (ibs_data_src == IBS_DATA_SRC_DRAM)
 				val = L(REM_RAM1) | LN(RAM) | REM | HOPS(1);
@@ -827,23 +694,17 @@ static __u64 perf_ibs_get_mem_lvl(union ibs_op_data2 *op_data2,
 	}
 
 check_mab:
-	/*
-	 * MAB (Miss Address Buffer) Hit. MAB keeps track of outstanding
-	 * DC misses. However, such data may come from any level in mem
-	 * hierarchy. IBS provides detail about both MAB as well as actual
-	 * DataSrc simultaneously. Prioritize DataSrc over MAB, i.e. set
-	 * MAB only when IBS fails to provide DataSrc.
-	 */
+	 
 	if (op_data3->dc_miss_no_mab_alloc)
 		return L(LFB) | LN(LFB);
 
-	/* Don't set HIT with NA */
+	 
 	return PERF_MEM_S(LVL, NA) | LN(NA);
 }
 
 static bool perf_ibs_cache_hit_st_valid(void)
 {
-	/* 0: Uninitialized, 1: Valid, -1: Invalid */
+	 
 	static int cache_hit_st_valid;
 
 	if (unlikely(!cache_hit_st_valid)) {
@@ -941,14 +802,10 @@ static __u64 perf_ibs_get_op_data2(struct perf_ibs_data *ibs_data,
 {
 	__u64 val = ibs_data->regs[ibs_op_msr_idx(MSR_AMD64_IBSOPDATA2)];
 
-	/* Erratum #1293 */
+	 
 	if (boot_cpu_data.x86 == 0x19 && boot_cpu_data.x86_model <= 0xF &&
 	    (op_data3->sw_pf || op_data3->dc_miss_no_mab_alloc)) {
-		/*
-		 * OP_DATA2 has only two fields on Zen3: DataSrc and RmtNode.
-		 * DataSrc=0 is 'No valid status' and RmtNode is invalid when
-		 * DataSrc=0.
-		 */
+		 
 		val = 0;
 	}
 	return val;
@@ -1031,12 +888,7 @@ static int perf_ibs_handle_irq(struct perf_ibs *perf_ibs, struct pt_regs *iregs)
 
 	if (!test_bit(IBS_STARTED, pcpu->state)) {
 fail:
-		/*
-		 * Catch spurious interrupts after stopping IBS: After
-		 * disabling IBS there could be still incoming NMIs
-		 * with samples that even have the valid bit cleared.
-		 * Mark all this NMIs as handled.
-		 */
+		 
 		if (test_and_clear_bit(IBS_STOPPED, pcpu->state))
 			return 1;
 
@@ -1057,7 +909,7 @@ fail:
 	perf_ibs_event_update(perf_ibs, event, config);
 	perf_sample_data_init(&data, 0, hwc->last_period);
 	if (!perf_ibs_set_period(perf_ibs, hwc, &period))
-		goto out;	/* no sw counter overflow */
+		goto out;	 
 
 	ibs_data.caps = ibs_caps;
 	size = 1;
@@ -1073,11 +925,7 @@ fail:
 				       perf_ibs->offset_max,
 				       offset + 1);
 	} while (offset < offset_max);
-	/*
-	 * Read IbsBrTarget, IbsOpData4, and IbsExtdCtl separately
-	 * depending on their availability.
-	 * Can't add to offset_max as they are staggered
-	 */
+	 
 	if (event->attr.sample_type & PERF_SAMPLE_RAW) {
 		if (perf_ibs == &perf_ibs_op) {
 			if (ibs_caps & IBS_CAPS_BRNTRGT) {
@@ -1100,7 +948,7 @@ fail:
 	if (check_rip && (ibs_data.regs[2] & IBS_RIP_INVALID)) {
 		regs.flags &= ~PERF_EFLAGS_EXACT;
 	} else {
-		/* Workaround for erratum #1197 */
+		 
 		if (perf_ibs->fetch_ignore_if_zero_rip && !(ibs_data.regs[1]))
 			goto out;
 
@@ -1121,11 +969,7 @@ fail:
 	if (perf_ibs == &perf_ibs_op)
 		perf_ibs_parse_ld_st_data(event->attr.sample_type, &ibs_data, &data);
 
-	/*
-	 * rip recorded by IbsOpRip will not be consistent with rsp and rbp
-	 * recorded as part of interrupt regs. Thus we need to use rip from
-	 * interrupt regs while unwinding call stack.
-	 */
+	 
 	if (event->attr.sample_type & PERF_SAMPLE_CALLCHAIN)
 		perf_sample_save_callchain(&data, event, iregs);
 
@@ -1192,10 +1036,7 @@ static __init int perf_ibs_pmu_init(struct perf_ibs *perf_ibs, char *name)
 
 static __init int perf_ibs_fetch_init(void)
 {
-	/*
-	 * Some chips fail to reset the fetch count when it is written; instead
-	 * they need a 0-1 transition of IbsFetchEn.
-	 */
+	 
 	if (boot_cpu_data.x86 >= 0x16 && boot_cpu_data.x86 <= 0x18)
 		perf_ibs_fetch.fetch_count_reset_broken = 1;
 
@@ -1262,7 +1103,7 @@ err_op:
 	return ret;
 }
 
-#else /* defined(CONFIG_PERF_EVENTS) && defined(CONFIG_CPU_SUP_AMD) */
+#else  
 
 static __init int perf_event_ibs_init(void)
 {
@@ -1271,7 +1112,7 @@ static __init int perf_event_ibs_init(void)
 
 #endif
 
-/* IBS - apic initialization, for perf and oprofile */
+ 
 
 static __init u32 __get_ibs_caps(void)
 {
@@ -1281,14 +1122,14 @@ static __init u32 __get_ibs_caps(void)
 	if (!boot_cpu_has(X86_FEATURE_IBS))
 		return 0;
 
-	/* check IBS cpuid feature flags */
+	 
 	max_level = cpuid_eax(0x80000000);
 	if (max_level < IBS_CPUID_FEATURES)
 		return IBS_CAPS_DEFAULT;
 
 	caps = cpuid_eax(IBS_CPUID_FEATURES);
 	if (!(caps & IBS_CAPS_AVAIL))
-		/* cpuid flags not valid */
+		 
 		return IBS_CAPS_DEFAULT;
 
 	return caps;
@@ -1311,9 +1152,7 @@ static inline int put_eilvt(int offset)
 	return !setup_APIC_eilvt(offset, 0, 0, 1);
 }
 
-/*
- * Check and reserve APIC extended interrupt LVT offset for IBS if available.
- */
+ 
 static inline int ibs_eilvt_valid(void)
 {
 	int offset;
@@ -1378,21 +1217,14 @@ static int setup_ibs_ctl(int ibs_eilvt_off)
 	return 0;
 }
 
-/*
- * This runs only on the current cpu. We try to find an LVT offset and
- * setup the local APIC. For this we must disable preemption. On
- * success we initialize all nodes with this offset. This updates then
- * the offset in the IBS_CTL per-node msr. The per-core APIC setup of
- * the IBS interrupt vector is handled by perf_ibs_cpu_notifier that
- * is using the new offset.
- */
+ 
 static void force_ibs_eilvt_setup(void)
 {
 	int offset;
 	int ret;
 
 	preempt_disable();
-	/* find the next free available EILVT entry, skip offset 0 */
+	 
 	for (offset = 1; offset < APIC_EILVT_NR_MAX; offset++) {
 		if (get_eilvt(offset))
 			break;
@@ -1423,12 +1255,7 @@ out:
 
 static void ibs_eilvt_setup(void)
 {
-	/*
-	 * Force LVT offset assignment for family 10h: The offsets are
-	 * not assigned by the BIOS for this family, so the OS is
-	 * responsible for doing it. If the OS assignment fails, fall
-	 * back to BIOS settings and try to setup this.
-	 */
+	 
 	if (boot_cpu_data.x86 == 0x10)
 		force_ibs_eilvt_setup();
 }
@@ -1516,7 +1343,7 @@ static __init int amd_ibs_init(void)
 
 	caps = __get_ibs_caps();
 	if (!caps)
-		return -ENODEV;	/* ibs not supported by the cpu */
+		return -ENODEV;	 
 
 	ibs_eilvt_setup();
 
@@ -1526,12 +1353,9 @@ static __init int amd_ibs_init(void)
 	perf_ibs_pm_init();
 
 	ibs_caps = caps;
-	/* make ibs_caps visible to other cpus: */
+	 
 	smp_mb();
-	/*
-	 * x86_pmu_amd_ibs_starting_cpu will be called from core on
-	 * all online cpus.
-	 */
+	 
 	cpuhp_setup_state(CPUHP_AP_PERF_X86_AMD_IBS_STARTING,
 			  "perf/x86/amd/ibs:starting",
 			  x86_pmu_amd_ibs_starting_cpu,
@@ -1540,5 +1364,5 @@ static __init int amd_ibs_init(void)
 	return perf_event_ibs_init();
 }
 
-/* Since we need the pci subsystem to init ibs we can't do this earlier: */
+ 
 device_initcall(amd_ibs_init);

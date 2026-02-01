@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2020 Intel Corporation. All rights reserved.
- *
- * Author: Cezary Rojewski <cezary.rojewski@intel.com>
- */
+ 
+ 
 
 #ifndef __SND_SOC_INTEL_CATPT_REGS_H
 #define __SND_SOC_INTEL_CATPT_REGS_H
@@ -17,7 +13,7 @@
 #define CATPT_DMA_COUNT		2
 #define CATPT_SSP_REGS_SIZE	512
 
-/* DSP Shim registers */
+ 
 
 #define CATPT_SHIM_CS1		0x00
 #define CATPT_SHIM_ISC		0x18
@@ -39,7 +35,7 @@
 #define CATPT_CS_SDPM(ssp)	BIT(11 + (ssp))
 #define CATPT_CS_STALL		BIT(10)
 #define CATPT_CS_DCS		GENMASK(6, 4)
-/* b100 DSP core & audio fabric high clock */
+ 
 #define CATPT_CS_DCS_HIGH	(0x4 << 4)
 #define CATPT_CS_SBCS(ssp)	BIT(2 + (ssp))
 #define CATPT_CS_RST		BIT(1)
@@ -65,7 +61,7 @@
 
 #define CATPT_HMDC_HDDA(e, ch)	BIT(8 * (e) + (ch))
 
-/* defaults to reset SHIM registers to after each power cycle */
+ 
 #define CATPT_CS_DEFAULT	0x8480040E
 #define CATPT_ISC_DEFAULT	0x0
 #define CATPT_ISD_DEFAULT	0x0
@@ -78,7 +74,7 @@
 #define CATPT_LTRC_DEFAULT	0x0
 #define CATPT_HMDC_DEFAULT	0x0
 
-/* PCI Configuration registers */
+ 
 
 #define CATPT_PCI_PMCAPID	0x80
 #define CATPT_PCI_PMCS		(CATPT_PCI_PMCAPID + PCI_PM_CTRL)
@@ -89,7 +85,7 @@
 #define CATPT_VDRTCTL2_DCLCGE	BIT(1)
 #define CATPT_VDRTCTL2_CGEALL	0xF7F
 
-/* LPT PCI Configuration bits */
+ 
 
 #define LPT_VDRTCTL0_DSRAMPGE(b)	BIT(16 + (b))
 #define LPT_VDRTCTL0_DSRAMPGE_MASK	GENMASK(31, 16)
@@ -99,7 +95,7 @@
 #define LPT_VDRTCTL0_D3PGD		BIT(1)
 #define LPT_VDRTCTL0_APLLSE		BIT(0)
 
-/* WPT PCI Configuration bits */
+ 
 
 #define WPT_VDRTCTL0_DSRAMPGE(b)	BIT(12 + (b))
 #define WPT_VDRTCTL0_DSRAMPGE_MASK	GENMASK(31, 12)
@@ -110,7 +106,7 @@
 
 #define WPT_VDRTCTL2_APLLSE		BIT(31)
 
-/* defaults to reset SSP registers to after each power cycle */
+ 
 #define CATPT_SSC0_DEFAULT		0x0
 #define CATPT_SSC1_DEFAULT		0x0
 #define CATPT_SSS_DEFAULT		0xF004
@@ -124,7 +120,7 @@
 #define CATPT_SSCR2_DEFAULT		0x0
 #define CATPT_SSPSP2_DEFAULT		0x0
 
-/* Physically the same block, access address differs between host and dsp */
+ 
 #define CATPT_DSP_DRAM_OFFSET		0x400000
 #define catpt_to_host_offset(offset)	((offset) & ~(CATPT_DSP_DRAM_OFFSET))
 #define catpt_to_dsp_offset(offset)	((offset) | CATPT_DSP_DRAM_OFFSET)
@@ -135,7 +131,7 @@
 #define catpt_dram_size(cdev)	(catpt_num_dram(cdev) * CATPT_MEMBLOCK_SIZE)
 #define catpt_iram_size(cdev)	(catpt_num_iram(cdev) * CATPT_MEMBLOCK_SIZE)
 
-/* registry I/O helpers */
+ 
 
 #define catpt_shim_addr(cdev) \
 	((cdev)->lpe_ba + (cdev)->spec->host_shim_offset)

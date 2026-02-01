@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
+ 
 #include <iostream>
 #include <unistd.h>
 #include <linux/bpf.h>
@@ -91,7 +91,7 @@ static void try_skeleton_template()
 
 	skel.detach();
 
-	/* destructor will destroy underlying skeleton */
+	 
 }
 
 int main(int argc, char *argv[])
@@ -103,18 +103,18 @@ int main(int argc, char *argv[])
 
 	try_skeleton_template();
 
-	/* libbpf.h */
+	 
 	libbpf_set_print(NULL);
 
-	/* bpf.h */
+	 
 	bpf_prog_get_fd_by_id(0);
 
-	/* btf.h */
+	 
 	btf = btf__new(NULL, 0);
 	if (!libbpf_get_error(btf))
 		btf_dump__new(btf, dump_printf, nullptr, &opts);
 
-	/* BPF skeleton */
+	 
 	skel = test_core_extern__open_and_load();
 	test_core_extern__destroy(skel);
 

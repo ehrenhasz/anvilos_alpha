@@ -1,36 +1,9 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Copyright (c) 2012 Cyril Plisko. All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
-/*
- * Copyright (c) 2013, 2017 by Delphix. All rights reserved.
- */
+ 
 
-/*
- * Print intent log header and statistics.
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -202,7 +175,7 @@ zil_prt_rec_write(zilog_t *zilog, int txtype, const void *arg)
 		if (error)
 			goto out;
 	} else {
-		/* data is stored after the end of the lr_write record */
+		 
 		data = abd_alloc(lr->lr_length, B_FALSE);
 		abd_copy_from_buf(data, lr + 1, lr->lr_length);
 	}
@@ -368,7 +341,7 @@ print_log_record(zilog_t *zilog, const lr_t *lr, void *arg, uint64_t claim_txg)
 	int txtype;
 	int verbose = MAX(dump_opt['d'], dump_opt['i']);
 
-	/* reduce size of txtype to strip off TX_CI bit */
+	 
 	txtype = lr->lrc_txtype;
 
 	ASSERT(txtype != 0 && (uint_t)txtype < TX_MAX_TYPE);
@@ -471,7 +444,7 @@ dump_intent_log(zilog_t *zilog)
 	for (i = 0; i < TX_MAX_TYPE; i++)
 		zil_rec_info[i].zri_count = 0;
 
-	/* see comment in zil_claim() or zil_check_log_chain() */
+	 
 	if (zilog->zl_spa->spa_uberblock.ub_checkpoint_txg != 0 &&
 	    zh->zh_claim_txg == 0)
 		return;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2020 Western Digital Corporation or its affiliates.
- */
+
+ 
 #include <linux/of.h>
 #include <linux/platform_device.h>
 #include <linux/reset-controller.h>
@@ -117,7 +115,7 @@ static int k210_rst_probe(struct platform_device *pdev)
 
 static const struct of_device_id k210_rst_dt_ids[] = {
 	{ .compatible = "canaan,k210-rst" },
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct platform_driver k210_rst_driver = {

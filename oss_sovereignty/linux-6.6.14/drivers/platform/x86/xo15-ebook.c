@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  OLPC XO-1.5 ebook switch driver
- *  (based on generic ACPI button driver)
- *
- *  Copyright (C) 2009 Paul Fox <pgf@laptop.org>
- *  Copyright (C) 2010 One Laptop per Child
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -37,7 +31,7 @@ MODULE_DEVICE_TABLE(acpi, ebook_device_ids);
 
 struct ebook_switch {
 	struct input_dev *input;
-	char phys[32];			/* for input device */
+	char phys[32];			 
 };
 
 static int ebook_send_state(struct acpi_device *device)
@@ -50,7 +44,7 @@ static int ebook_send_state(struct acpi_device *device)
 	if (ACPI_FAILURE(status))
 		return -EIO;
 
-	/* input layer checks if event is redundant */
+	 
 	input_report_switch(button->input, SW_TABLET_MODE, !state);
 	input_sync(button->input);
 	return 0;
@@ -128,7 +122,7 @@ static int ebook_switch_add(struct acpi_device *device)
 	ebook_send_state(device);
 
 	if (device->wakeup.flags.valid) {
-		/* Button's GPE is run-wake GPE */
+		 
 		acpi_enable_gpe(device->wakeup.gpe_device,
 				device->wakeup.gpe_number);
 		device_set_wakeup_enable(&device->dev, true);

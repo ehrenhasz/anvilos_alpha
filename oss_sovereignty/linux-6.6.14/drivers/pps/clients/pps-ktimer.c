@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pps-ktimer.c -- kernel timer test client
- *
- * Copyright (C) 2005-2006   Rodolfo Giometti <giometti@linux.it>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -14,22 +10,18 @@
 #include <linux/timer.h>
 #include <linux/pps_kernel.h>
 
-/*
- * Global variables
- */
+ 
 
 static struct pps_device *pps;
 static struct timer_list ktimer;
 
-/*
- * The kernel timer
- */
+ 
 
 static void pps_ktimer_event(struct timer_list *unused)
 {
 	struct pps_event_time ts;
 
-	/* First of all we get the time stamp... */
+	 
 	pps_get_ts(&ts);
 
 	pps_event(pps, &ts, PPS_CAPTUREASSERT, NULL);
@@ -37,9 +29,7 @@ static void pps_ktimer_event(struct timer_list *unused)
 	mod_timer(&ktimer, jiffies + HZ);
 }
 
-/*
- * The PPS info struct
- */
+ 
 
 static struct pps_source_info pps_ktimer_info = {
 	.name		= "ktimer",
@@ -50,9 +40,7 @@ static struct pps_source_info pps_ktimer_info = {
 	.owner		= THIS_MODULE,
 };
 
-/*
- * Module staff
- */
+ 
 
 static void __exit pps_ktimer_exit(void)
 {

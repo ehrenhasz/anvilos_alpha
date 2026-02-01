@@ -1,32 +1,4 @@
-/*
- *  Device operations for the pnfs client.
- *
- *  Copyright (c) 2002
- *  The Regents of the University of Michigan
- *  All Rights Reserved
- *
- *  Dean Hildebrand <dhildebz@umich.edu>
- *  Garth Goodson   <Garth.Goodson@netapp.com>
- *
- *  Permission is granted to use, copy, create derivative works, and
- *  redistribute this software and such derivative works for any purpose,
- *  so long as the name of the University of Michigan is not used in
- *  any advertising or publicity pertaining to the use or distribution
- *  of this software without specific, written prior authorization. If
- *  the above copyright notice or any other identification of the
- *  University of Michigan is included in any copy of any portion of
- *  this software, then the disclaimer below must also be included.
- *
- *  This software is provided as is, without representation or warranty
- *  of any kind either express or implied, including without limitation
- *  the implied warranties of merchantability, fitness for a particular
- *  purpose, or noninfringement.  The Regents of the University of
- *  Michigan shall not be liable for any damages, including special,
- *  indirect, incidental, or consequential damages, with respect to any
- *  claim arising out of or in connection with the use of the software,
- *  even if it has been or is hereafter advised of the possibility of
- *  such damages.
- */
+ 
 
 #include <linux/export.h>
 #include <linux/nfs_fs.h>
@@ -38,9 +10,7 @@
 
 #define NFSDBG_FACILITY		NFSDBG_PNFS
 
-/*
- * Device ID RCU cache. A device ID is unique per server and layout type.
- */
+ 
 #define NFS4_DEVICE_ID_HASH_BITS	5
 #define NFS4_DEVICE_ID_HASH_SIZE	(1 << NFS4_DEVICE_ID_HASH_BITS)
 #define NFS4_DEVICE_ID_HASH_MASK	(NFS4_DEVICE_ID_HASH_SIZE - 1)
@@ -105,10 +75,7 @@ nfs4_get_device_info(struct nfs_server *server,
 	int max_pages;
 	int rc, i;
 
-	/*
-	 * Use the session max response size as the basis for setting
-	 * GETDEVICEINFO's maxcount
-	 */
+	 
 	max_resp_sz = server->nfs_client->cl_session->fc_attrs.max_resp_sz;
 	if (server->pnfs_curr_ld->max_deviceinfo_size &&
 	    server->pnfs_curr_ld->max_deviceinfo_size < max_resp_sz)
@@ -144,10 +111,7 @@ nfs4_get_device_info(struct nfs_server *server,
 	if (rc)
 		goto out_free_pages;
 
-	/*
-	 * Found new device, need to decode it and then add it to the
-	 * list of known devices for this mountpoint.
-	 */
+	 
 	d = server->pnfs_curr_ld->alloc_deviceid_node(server, pdev,
 			gfp_flags);
 	if (d && pdev->nocache)
@@ -163,12 +127,7 @@ out_free_pdev:
 	return d;
 }
 
-/*
- * Lookup a deviceid in cache and get a reference count on it if found
- *
- * @clp nfs_client associated with deviceid
- * @id deviceid to look up
- */
+ 
 static struct nfs4_deviceid_node *
 __nfs4_find_get_deviceid(struct nfs_server *server,
 		const struct nfs4_deviceid *id, long hash)
@@ -219,14 +178,7 @@ found:
 }
 EXPORT_SYMBOL_GPL(nfs4_find_get_deviceid);
 
-/*
- * Remove a deviceid from cache
- *
- * @clp nfs_client associated with deviceid
- * @id the deviceid to unhash
- *
- * @ret the unhashed node, if found and dereferenced to zero, NULL otherwise.
- */
+ 
 void
 nfs4_delete_deviceid(const struct pnfs_layoutdriver_type *ld,
 			 const struct nfs_client *clp, const struct nfs4_deviceid *id)
@@ -245,7 +197,7 @@ nfs4_delete_deviceid(const struct pnfs_layoutdriver_type *ld,
 	clear_bit(NFS_DEVICEID_NOCACHE, &d->flags);
 	spin_unlock(&nfs4_deviceid_lock);
 
-	/* balance the initial ref set in pnfs_insert_deviceid */
+	 
 	nfs4_put_deviceid_node(d);
 }
 EXPORT_SYMBOL_GPL(nfs4_delete_deviceid);
@@ -264,16 +216,7 @@ nfs4_init_deviceid_node(struct nfs4_deviceid_node *d, struct nfs_server *server,
 }
 EXPORT_SYMBOL_GPL(nfs4_init_deviceid_node);
 
-/*
- * Dereference a deviceid node and delete it when its reference count drops
- * to zero.
- *
- * @d deviceid node to put
- *
- * return true iff the node was deleted
- * Note that since the test for d->ref == 0 is sufficient to establish
- * that the node is no longer hashed in the global device id cache.
- */
+ 
 bool
 nfs4_put_deviceid_node(struct nfs4_deviceid_node *d)
 {
@@ -365,9 +308,7 @@ nfs4_deviceid_purge_client(const struct nfs_client *clp)
 		_deviceid_purge_client(clp, h);
 }
 
-/*
- * Stop use of all deviceids associated with an nfs_client
- */
+ 
 void
 nfs4_deviceid_mark_client_invalid(struct nfs_client *clp)
 {

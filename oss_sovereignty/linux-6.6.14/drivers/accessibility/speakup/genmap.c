@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* genmap.c
- * originally written by: Kirk Reiser.
- *
- ** Copyright (C) 2002  Kirk Reiser.
- *  Copyright (C) 2003  David Borowski.
- */
+
+ 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -25,10 +20,10 @@ static unsigned char key_data[MAXKEYVAL][16], *kp;
 
 static const char delims[] = "\t\n ";
 static char *cp;
-static int map_ver = 119; /* an arbitrary number so speakup can check */
+static int map_ver = 119;  
 static int shift_table[17];
 static int max_states = 1, flags;
-/* flags reserved for later, maybe for individual console maps */
+ 
 
 static int get_shift_value(int state)
 {
@@ -140,7 +135,7 @@ main(int argc, char *argv[])
 				continue;
 			shift_state = get_shift_value(shift_state+16);
 			kp[shift_state] = kp[i];
-			/* fill in so we can process the key up, as spk bit will be set */
+			 
 		}
 	}
 

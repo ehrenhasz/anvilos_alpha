@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MTMIPS SoCs Clock Driver
- * Author: Sergio Paracuellos <sergio.paracuellos@gmail.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -12,7 +9,7 @@
 #include <linux/reset-controller.h>
 #include <linux/slab.h>
 
-/* Configuration registers */
+ 
 #define SYSC_REG_SYSTEM_CONFIG		0x10
 #define SYSC_REG_CLKCFG0		0x2c
 #define SYSC_REG_RESET_CTRL		0x34
@@ -20,7 +17,7 @@
 #define SYSC_REG_CPLL_CONFIG0		0x54
 #define SYSC_REG_CPLL_CONFIG1		0x58
 
-/* RT2880 SoC */
+ 
 #define RT2880_CONFIG_CPUCLK_SHIFT	20
 #define RT2880_CONFIG_CPUCLK_MASK	0x3
 #define RT2880_CONFIG_CPUCLK_250	0x0
@@ -28,19 +25,19 @@
 #define RT2880_CONFIG_CPUCLK_280	0x2
 #define RT2880_CONFIG_CPUCLK_300	0x3
 
-/* RT305X SoC */
+ 
 #define RT305X_SYSCFG_CPUCLK_SHIFT	18
 #define RT305X_SYSCFG_CPUCLK_MASK	0x1
 #define RT305X_SYSCFG_CPUCLK_LOW	0x0
 #define RT305X_SYSCFG_CPUCLK_HIGH	0x1
 
-/* RT3352 SoC */
+ 
 #define RT3352_SYSCFG0_CPUCLK_SHIFT	8
 #define RT3352_SYSCFG0_CPUCLK_MASK	0x1
 #define RT3352_SYSCFG0_CPUCLK_LOW	0x0
 #define RT3352_SYSCFG0_CPUCLK_HIGH	0x1
 
-/* RT3383 SoC */
+ 
 #define RT3883_SYSCFG0_DRAM_TYPE_DDR2	BIT(17)
 #define RT3883_SYSCFG0_CPUCLK_SHIFT	8
 #define RT3883_SYSCFG0_CPUCLK_MASK	0x3
@@ -49,7 +46,7 @@
 #define RT3883_SYSCFG0_CPUCLK_480	0x2
 #define RT3883_SYSCFG0_CPUCLK_500	0x3
 
-/* RT5350 SoC */
+ 
 #define RT5350_CLKCFG0_XTAL_SEL		BIT(20)
 #define RT5350_SYSCFG0_CPUCLK_SHIFT	8
 #define RT5350_SYSCFG0_CPUCLK_MASK	0x3
@@ -57,7 +54,7 @@
 #define RT5350_SYSCFG0_CPUCLK_320	0x2
 #define RT5350_SYSCFG0_CPUCLK_300	0x3
 
-/* MT7620 and MT76x8 SoCs */
+ 
 #define MT7620_XTAL_FREQ_SEL		BIT(6)
 #define CPLL_CFG0_SW_CFG		BIT(31)
 #define CPLL_CFG0_PLL_MULT_RATIO_SHIFT	16
@@ -71,21 +68,21 @@
 #define CLKCFG0_PERI_CLK_SEL		BIT(4)
 #define CPU_SYS_CLKCFG_OCP_RATIO_SHIFT	16
 #define CPU_SYS_CLKCFG_OCP_RATIO_MASK	0xf
-#define CPU_SYS_CLKCFG_OCP_RATIO_1	0	/* 1:1   (Reserved) */
-#define CPU_SYS_CLKCFG_OCP_RATIO_1_5	1	/* 1:1.5 (Reserved) */
-#define CPU_SYS_CLKCFG_OCP_RATIO_2	2	/* 1:2   */
-#define CPU_SYS_CLKCFG_OCP_RATIO_2_5	3       /* 1:2.5 (Reserved) */
-#define CPU_SYS_CLKCFG_OCP_RATIO_3	4	/* 1:3   */
-#define CPU_SYS_CLKCFG_OCP_RATIO_3_5	5	/* 1:3.5 (Reserved) */
-#define CPU_SYS_CLKCFG_OCP_RATIO_4	6	/* 1:4   */
-#define CPU_SYS_CLKCFG_OCP_RATIO_5	7	/* 1:5   */
-#define CPU_SYS_CLKCFG_OCP_RATIO_10	8	/* 1:10  */
+#define CPU_SYS_CLKCFG_OCP_RATIO_1	0	 
+#define CPU_SYS_CLKCFG_OCP_RATIO_1_5	1	 
+#define CPU_SYS_CLKCFG_OCP_RATIO_2	2	 
+#define CPU_SYS_CLKCFG_OCP_RATIO_2_5	3        
+#define CPU_SYS_CLKCFG_OCP_RATIO_3	4	 
+#define CPU_SYS_CLKCFG_OCP_RATIO_3_5	5	 
+#define CPU_SYS_CLKCFG_OCP_RATIO_4	6	 
+#define CPU_SYS_CLKCFG_OCP_RATIO_5	7	 
+#define CPU_SYS_CLKCFG_OCP_RATIO_10	8	 
 #define CPU_SYS_CLKCFG_CPU_FDIV_SHIFT	8
 #define CPU_SYS_CLKCFG_CPU_FDIV_MASK	0x1f
 #define CPU_SYS_CLKCFG_CPU_FFRAC_SHIFT	0
 #define CPU_SYS_CLKCFG_CPU_FFRAC_MASK	0x1f
 
-/* clock scaling */
+ 
 #define CLKCFG_FDIV_MASK		0x1f00
 #define CLKCFG_FDIV_USB_VAL		0x0300
 #define CLKCFG_FFRAC_MASK		0x001f
@@ -151,13 +148,7 @@ static const struct clk_ops mtmips_periph_clk_ops = {
 			.fw_name = _parent			\
 		},						\
 		.num_parents = 1,				\
-		/*						\
-		 * There are drivers for these SoCs that are	\
-		 * older than clock driver and are not prepared \
-		 * for the clock. We don't want the kernel to   \
-		 * disable anything so we add CLK_IS_CRITICAL	\
-		 * flag here.					\
-		 */						\
+		 						\
 		.flags = CLK_SET_RATE_PARENT | CLK_IS_CRITICAL	\
 	},							\
 }
@@ -872,11 +863,7 @@ static void __init mtmips_clk_regs_init(struct device_node *node,
 	if (!of_device_is_compatible(node, "ralink,mt7620-sysc"))
 		return;
 
-	/*
-	 * When the CPU goes into sleep mode, the BUS
-	 * clock will be too low for USB to function properly.
-	 * Adjust the busses fractional divider to fix this
-	 */
+	 
 	regmap_read(priv->sysc, SYSC_REG_CPU_SYS_CLKCFG, &t);
 	t &= ~(CLKCFG_FDIV_MASK | CLKCFG_FFRAC_MASK);
 	t |= CLKCFG_FDIV_USB_VAL | CLKCFG_FFRAC_USB_VAL;

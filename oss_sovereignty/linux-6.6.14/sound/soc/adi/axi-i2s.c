@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012-2013, Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -34,7 +31,7 @@
 #define AXI_I2S_CTRL_TX_EN	BIT(0)
 #define AXI_I2S_CTRL_RX_EN	BIT(1)
 
-/* The frame size is configurable, but for now we always set it 64 bit */
+ 
 #define AXI_I2S_BITS_PER_FRAME 64
 
 struct axi_i2s {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lenovo-ymc.c - Lenovo Yoga Mode Control driver
- *
- * Copyright © 2022 Gergo Koteles <soyer@irl.hu>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,14 +26,14 @@ MODULE_PARM_DESC(force, "Force loading on boards without a convertible DMI chass
 
 static const struct dmi_system_id ec_trigger_quirk_dmi_table[] = {
 	{
-		/* Lenovo Yoga 7 14ARB7 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "82QF"),
 		},
 	},
 	{
-		/* Lenovo Yoga 7 14ACN6 */
+		 
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "LENOVO"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "82N7"),
@@ -49,12 +45,12 @@ static const struct dmi_system_id ec_trigger_quirk_dmi_table[] = {
 static const struct dmi_system_id allowed_chasis_types_dmi_table[] = {
 	{
 		.matches = {
-			DMI_EXACT_MATCH(DMI_CHASSIS_TYPE, "31" /* Convertible */),
+			DMI_EXACT_MATCH(DMI_CHASSIS_TYPE, "31"  ),
 		},
 	},
 	{
 		.matches = {
-			DMI_EXACT_MATCH(DMI_CHASSIS_TYPE, "32" /* Detachable */),
+			DMI_EXACT_MATCH(DMI_CHASSIS_TYPE, "32"  ),
 		},
 	},
 	{ }
@@ -78,13 +74,13 @@ static void lenovo_ymc_trigger_ec(struct wmi_device *wdev, struct lenovo_ymc_pri
 }
 
 static const struct key_entry lenovo_ymc_keymap[] = {
-	/* Laptop */
+	 
 	{ KE_SW, 0x01, { .sw = { SW_TABLET_MODE, 0 } } },
-	/* Tablet */
+	 
 	{ KE_SW, 0x02, { .sw = { SW_TABLET_MODE, 1 } } },
-	/* Drawing Board */
+	 
 	{ KE_SW, 0x03, { .sw = { SW_TABLET_MODE, 1 } } },
-	/* Tent */
+	 
 	{ KE_SW, 0x04, { .sw = { SW_TABLET_MODE, 1 } } },
 	{ KE_END },
 };
@@ -191,7 +187,7 @@ static int lenovo_ymc_probe(struct wmi_device *wdev, const void *ctx)
 	priv->input_dev = input_dev;
 	dev_set_drvdata(&wdev->dev, priv);
 
-	/* Report the state for the first time on probe */
+	 
 	lenovo_ymc_trigger_ec(wdev, priv);
 	lenovo_ymc_notify(wdev, NULL);
 	return 0;

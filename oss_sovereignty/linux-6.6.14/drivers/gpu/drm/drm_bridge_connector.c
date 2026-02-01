@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -16,82 +14,28 @@
 #include <drm/drm_modeset_helper_vtables.h>
 #include <drm/drm_probe_helper.h>
 
-/**
- * DOC: overview
- *
- * The DRM bridge connector helper object provides a DRM connector
- * implementation that wraps a chain of &struct drm_bridge. The connector
- * operations are fully implemented based on the operations of the bridges in
- * the chain, and don't require any intervention from the display controller
- * driver at runtime.
- *
- * To use the helper, display controller drivers create a bridge connector with
- * a call to drm_bridge_connector_init(). This associates the newly created
- * connector with the chain of bridges passed to the function and registers it
- * with the DRM device. At that point the connector becomes fully usable, no
- * further operation is needed.
- *
- * The DRM bridge connector operations are implemented based on the operations
- * provided by the bridges in the chain. Each connector operation is delegated
- * to the bridge closest to the connector (at the end of the chain) that
- * provides the relevant functionality.
- *
- * To make use of this helper, all bridges in the chain shall report bridge
- * operation flags (&drm_bridge->ops) and bridge output type
- * (&drm_bridge->type), as well as the DRM_BRIDGE_ATTACH_NO_CONNECTOR attach
- * flag (none of the bridges shall create a DRM connector directly).
- */
+ 
 
-/**
- * struct drm_bridge_connector - A connector backed by a chain of bridges
- */
+ 
 struct drm_bridge_connector {
-	/**
-	 * @base: The base DRM connector
-	 */
+	 
 	struct drm_connector base;
-	/**
-	 * @encoder:
-	 *
-	 * The encoder at the start of the bridges chain.
-	 */
+	 
 	struct drm_encoder *encoder;
-	/**
-	 * @bridge_edid:
-	 *
-	 * The last bridge in the chain (closest to the connector) that provides
-	 * EDID read support, if any (see &DRM_BRIDGE_OP_EDID).
-	 */
+	 
 	struct drm_bridge *bridge_edid;
-	/**
-	 * @bridge_hpd:
-	 *
-	 * The last bridge in the chain (closest to the connector) that provides
-	 * hot-plug detection notification, if any (see &DRM_BRIDGE_OP_HPD).
-	 */
+	 
 	struct drm_bridge *bridge_hpd;
-	/**
-	 * @bridge_detect:
-	 *
-	 * The last bridge in the chain (closest to the connector) that provides
-	 * connector detection, if any (see &DRM_BRIDGE_OP_DETECT).
-	 */
+	 
 	struct drm_bridge *bridge_detect;
-	/**
-	 * @bridge_modes:
-	 *
-	 * The last bridge in the chain (closest to the connector) that provides
-	 * connector modes detection, if any (see &DRM_BRIDGE_OP_MODES).
-	 */
+	 
 	struct drm_bridge *bridge_modes;
 };
 
 #define to_drm_bridge_connector(x) \
 	container_of(x, struct drm_bridge_connector, base)
 
-/* -----------------------------------------------------------------------------
- * Bridge Connector Hot-Plug Handling
- */
+ 
 
 static void drm_bridge_connector_hpd_notify(struct drm_connector *connector,
 					    enum drm_connector_status status)
@@ -100,7 +44,7 @@ static void drm_bridge_connector_hpd_notify(struct drm_connector *connector,
 		to_drm_bridge_connector(connector);
 	struct drm_bridge *bridge;
 
-	/* Notify all bridges in the pipeline of hotplug events. */
+	 
 	drm_for_each_bridge_in_chain(bridge_connector->encoder, bridge) {
 		if (bridge->funcs->hpd_notify)
 			bridge->funcs->hpd_notify(bridge, status);
@@ -149,9 +93,7 @@ static void drm_bridge_connector_disable_hpd(struct drm_connector *connector)
 		drm_bridge_hpd_disable(hpd);
 }
 
-/* -----------------------------------------------------------------------------
- * Bridge Connector Functions
- */
+ 
 
 static enum drm_connector_status
 drm_bridge_connector_detect(struct drm_connector *connector, bool force)
@@ -223,9 +165,7 @@ static const struct drm_connector_funcs drm_bridge_connector_funcs = {
 	.debugfs_init = drm_bridge_connector_debugfs_init,
 };
 
-/* -----------------------------------------------------------------------------
- * Bridge Connector Helper Functions
- */
+ 
 
 static int drm_bridge_connector_get_modes_edid(struct drm_connector *connector,
 					       struct drm_bridge *bridge)
@@ -261,55 +201,30 @@ static int drm_bridge_connector_get_modes(struct drm_connector *connector)
 		to_drm_bridge_connector(connector);
 	struct drm_bridge *bridge;
 
-	/*
-	 * If display exposes EDID, then we parse that in the normal way to
-	 * build table of supported modes.
-	 */
+	 
 	bridge = bridge_connector->bridge_edid;
 	if (bridge)
 		return drm_bridge_connector_get_modes_edid(connector, bridge);
 
-	/*
-	 * Otherwise if the display pipeline reports modes (e.g. with a fixed
-	 * resolution panel or an analog TV output), query it.
-	 */
+	 
 	bridge = bridge_connector->bridge_modes;
 	if (bridge)
 		return bridge->funcs->get_modes(bridge, connector);
 
-	/*
-	 * We can't retrieve modes, which can happen for instance for a DVI or
-	 * VGA output with the DDC bus unconnected. The KMS core will add the
-	 * default modes.
-	 */
+	 
 	return 0;
 }
 
 static const struct drm_connector_helper_funcs drm_bridge_connector_helper_funcs = {
 	.get_modes = drm_bridge_connector_get_modes,
-	/* No need for .mode_valid(), the bridges are checked by the core. */
+	 
 	.enable_hpd = drm_bridge_connector_enable_hpd,
 	.disable_hpd = drm_bridge_connector_disable_hpd,
 };
 
-/* -----------------------------------------------------------------------------
- * Bridge Connector Initialisation
- */
+ 
 
-/**
- * drm_bridge_connector_init - Initialise a connector for a chain of bridges
- * @drm: the DRM device
- * @encoder: the encoder where the bridge chain starts
- *
- * Allocate, initialise and register a &drm_bridge_connector with the @drm
- * device. The connector is associated with a chain of bridges that starts at
- * the @encoder. All bridges in the chain shall report bridge operation flags
- * (&drm_bridge->ops) and bridge output type (&drm_bridge->type), and none of
- * them may create a DRM connector directly.
- *
- * Returns a pointer to the new connector on success, or a negative error
- * pointer otherwise.
- */
+ 
 struct drm_connector *drm_bridge_connector_init(struct drm_device *drm,
 						struct drm_encoder *encoder)
 {
@@ -326,20 +241,11 @@ struct drm_connector *drm_bridge_connector_init(struct drm_device *drm,
 
 	bridge_connector->encoder = encoder;
 
-	/*
-	 * TODO: Handle doublescan_allowed, stereo_allowed and
-	 * ycbcr_420_allowed.
-	 */
+	 
 	connector = &bridge_connector->base;
 	connector->interlace_allowed = true;
 
-	/*
-	 * Initialise connector status handling. First locate the furthest
-	 * bridges in the pipeline that support HPD and output detection. Then
-	 * initialise the connector polling mode, using HPD if available and
-	 * falling back to polling if supported. If neither HPD nor output
-	 * detection are available, we don't support hotplug detection at all.
-	 */
+	 
 	connector_type = DRM_MODE_CONNECTOR_Unknown;
 	drm_for_each_bridge_in_chain(encoder, bridge) {
 		if (!bridge->interlace_allowed)

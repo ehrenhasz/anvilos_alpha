@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -28,7 +28,7 @@
 
 #include <bpf/bpf.h>
 #include <bpf/hashmap.h>
-#include <bpf/libbpf.h> /* libbpf_num_possible_cpus */
+#include <bpf/libbpf.h>  
 #include <bpf/btf.h>
 
 #include "main.h"
@@ -78,23 +78,7 @@ static bool is_bpffs(const char *path)
 	return (unsigned long)st_fs.f_type == BPF_FS_MAGIC;
 }
 
-/* Probe whether kernel switched from memlock-based (RLIMIT_MEMLOCK) to
- * memcg-based memory accounting for BPF maps and programs. This was done in
- * commit 97306be45fbe ("Merge branch 'switch to memcg-based memory
- * accounting'"), in Linux 5.11.
- *
- * Libbpf also offers to probe for memcg-based accounting vs rlimit, but does
- * so by checking for the availability of a given BPF helper and this has
- * failed on some kernels with backports in the past, see commit 6b4384ff1088
- * ("Revert "bpftool: Use libbpf 1.0 API mode instead of RLIMIT_MEMLOCK"").
- * Instead, we can probe by lowering the process-based rlimit to 0, trying to
- * load a BPF object, and resetting the rlimit. If the load succeeds then
- * memcg-based accounting is supported.
- *
- * This would be too dangerous to do in the library, because multithreaded
- * applications might attempt to load items while the rlimit is at 0. Given
- * that bpftool is single-threaded, this is fine to do here.
- */
+ 
 static bool known_to_need_rlimit(void)
 {
 	struct rlimit rlim_init, rlim_cur_zero = {};
@@ -115,21 +99,16 @@ static bool known_to_need_rlimit(void)
 	if (getrlimit(RLIMIT_MEMLOCK, &rlim_init))
 		return false;
 
-	/* Drop the soft limit to zero. We maintain the hard limit to its
-	 * current value, because lowering it would be a permanent operation
-	 * for unprivileged users.
-	 */
+	 
 	rlim_cur_zero.rlim_max = rlim_init.rlim_max;
 	if (setrlimit(RLIMIT_MEMLOCK, &rlim_cur_zero))
 		return false;
 
-	/* Do not use bpf_prog_load() from libbpf here, because it calls
-	 * bump_rlimit_memlock(), interfering with the current probe.
-	 */
+	 
 	prog_fd = syscall(__NR_bpf, BPF_PROG_LOAD, &attr, sizeof(attr));
 	err = errno;
 
-	/* reset soft rlimit to its initial value */
+	 
 	setrlimit(RLIMIT_MEMLOCK, &rlim_init);
 
 	if (prog_fd < 0)
@@ -264,7 +243,7 @@ int mount_bpffs_for_pin(const char *name, bool is_dir)
 	dir = dirname(file);
 
 	if (is_bpffs(dir))
-		/* nothing to do if already mounted */
+		 
 		goto out_free;
 
 	if (block_mount) {
@@ -466,7 +445,7 @@ void print_hex_data_json(uint8_t *data, size_t len)
 	jsonw_end_array(json_wtr);
 }
 
-/* extra params for nftw cb */
+ 
 static struct hashmap *build_fn_table;
 static enum bpf_obj_type build_fn_type;
 
@@ -662,8 +641,8 @@ ifindex_to_arch(__u32 ifindex, __u64 ns_dev, __u64 ns_ino, const char **opt)
 			p_info("Unknown NFP device ID, assuming it is NFP-6xxx arch");
 		*opt = "ctx4";
 		return "NFP-6xxx";
-#endif /* HAVE_LIBBFD_SUPPORT */
-	/* No NFP support in LLVM, we have no valid triple to return. */
+#endif  
+	 
 	default:
 		p_err("Can't get arch name for device vendor id 0x%04x",
 		      vendor_id);

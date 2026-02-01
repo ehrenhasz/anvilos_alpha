@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Atom platform clocks driver for BayTrail and CherryTrail SoCs
- *
- * Copyright (C) 2016, Intel Corporation
- * Author: Irina Tirdea <irina.tirdea@intel.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -25,8 +20,8 @@
 #define PMC_CLK_CTL_RESERVED		0x3
 #define PMC_MASK_CLK_CTL		GENMASK(1, 0)
 #define PMC_MASK_CLK_FREQ		BIT(2)
-#define PMC_CLK_FREQ_XTAL		(0 << 2)	/* 25 MHz */
-#define PMC_CLK_FREQ_PLL		(1 << 2)	/* 19.2 MHz */
+#define PMC_CLK_FREQ_XTAL		(0 << 2)	 
+#define PMC_CLK_FREQ_PLL		(1 << 2)	 
 
 struct clk_plt_fixed {
 	struct clk_hw *clk;
@@ -37,7 +32,7 @@ struct clk_plt {
 	struct clk_hw hw;
 	void __iomem *reg;
 	struct clk_lookup *lookup;
-	/* protect access to PMC registers */
+	 
 	spinlock_t lock;
 };
 
@@ -51,7 +46,7 @@ struct clk_plt_data {
 	struct clk_lookup *ether_clk_lookup;
 };
 
-/* Return an index in parent table */
+ 
 static inline int plt_reg_to_parent(int reg)
 {
 	switch (reg & PMC_MASK_CLK_FREQ) {
@@ -63,7 +58,7 @@ static inline int plt_reg_to_parent(int reg)
 	}
 }
 
-/* Return clk index of parent */
+ 
 static inline int plt_parent_to_reg(int index)
 {
 	switch (index) {
@@ -75,17 +70,17 @@ static inline int plt_parent_to_reg(int index)
 	}
 }
 
-/* Abstract status in simpler enabled/disabled value */
+ 
 static inline int plt_reg_to_enabled(int reg)
 {
 	switch (reg & PMC_MASK_CLK_CTL) {
 	case PMC_CLK_CTL_GATED_ON_D3:
 	case PMC_CLK_CTL_FORCE_ON:
-		return 1;	/* enabled */
+		return 1;	 
 	case PMC_CLK_CTL_FORCE_OFF:
 	case PMC_CLK_CTL_RESERVED:
 	default:
-		return 0;	/* disabled */
+		return 0;	 
 	}
 }
 
@@ -180,11 +175,7 @@ static struct clk_plt *plt_clk_register(struct platform_device *pdev, int id,
 	pclk->reg = pmc_data->base + PMC_CLK_CTL_OFFSET + id * PMC_CLK_CTL_SIZE;
 	spin_lock_init(&pclk->lock);
 
-	/*
-	 * On some systems, the pmc_plt_clocks already enabled by the
-	 * firmware are being marked as critical to avoid them being
-	 * gated by the clock framework.
-	 */
+	 
 	if (pmc_data->critical && plt_clk_is_enabled(&pclk->hw))
 		init.flags |= CLK_IS_CRITICAL;
 

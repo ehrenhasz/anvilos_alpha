@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2022 NVIDIA Corporation and Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -412,7 +412,7 @@ static int mlxsw_linecard_device_info_update(struct mlxsw_linecard *linecard)
 						  &info.fw_sub_minor);
 		if (!data_valid)
 			break;
-		if (!flash_owner) /* We care only about flashable ones. */
+		if (!flash_owner)  
 			continue;
 		if (flashable_found) {
 			dev_warn_once(linecard->linecards->bus_info->dev, "linecard %u: More flashable devices present, exposing only the first one\n",
@@ -628,12 +628,7 @@ mlxsw_linecard_provision_set(struct mlxsw_linecard *linecard, u8 card_type,
 	mlxsw_linecard_status_event_done(linecard,
 					 MLXSW_LINECARD_STATUS_EVENT_TYPE_PROVISION);
 	if (!type) {
-		/* It is possible for a line card to be provisioned before
-		 * driver initialization. Due to a missing INI bundle file
-		 * or an outdated one, the queried card's type might not
-		 * be recognized by the driver. In this case, try to query
-		 * the card's name from the device.
-		 */
+		 
 		type = mlxsw_linecard_type_name(linecard);
 		if (IS_ERR(type)) {
 			mlxsw_linecard_provision_fail(linecard);
@@ -790,7 +785,7 @@ static void mlxsw_linecards_irq_event_handler(struct mlxsw_core *mlxsw_core)
 	struct mlxsw_linecards *linecards = mlxsw_core_linecards(mlxsw_core);
 	int i;
 
-	/* Handle change of line card active state. */
+	 
 	for (i = 0; i < linecards->count; i++) {
 		struct mlxsw_linecard *linecard = mlxsw_linecard_get(linecards,
 								     i + 1);
@@ -927,7 +922,7 @@ mlxsw_linecard_ini_erase(struct mlxsw_core *mlxsw_core,
 	case MLXSW_REG_MBCT_STATUS_ERASE_COMPLETE:
 		break;
 	default:
-		/* Should not happen */
+		 
 		fallthrough;
 	case MLXSW_REG_MBCT_STATUS_ERASE_FAILED:
 		NL_SET_ERR_MSG_MOD(extack, "Failed to erase linecard INI");
@@ -1280,7 +1275,7 @@ static void mlxsw_linecard_fini(struct mlxsw_core *mlxsw_core,
 
 	linecard = mlxsw_linecard_get(linecards, slot_index);
 	cancel_delayed_work_sync(&linecard->status_event_to_dw);
-	/* Make sure all scheduled events are processed */
+	 
 	mlxsw_core_flush_owq();
 	if (linecard->active)
 		mlxsw_linecard_active_clear(linecard);
@@ -1325,19 +1320,7 @@ mlxsw_linecard_event_delivery_fini(struct mlxsw_core *mlxsw_core,
 	mlxsw_linecard_event_delivery_set(mlxsw_core, linecard, false);
 }
 
-/*       LINECARDS INI BUNDLE FILE
- *  +----------------------------------+
- *  |        MAGIC ("NVLCINI+")        |
- *  +----------------------------------+     +--------------------+
- *  |  INI 0                           +---> | __le16 size        |
- *  +----------------------------------+     | __be16 hw_revision |
- *  |  INI 1                           |     | __be16 ini_version |
- *  +----------------------------------+     | u8 __dontcare[3]   |
- *  |  ...                             |     | u8 type            |
- *  +----------------------------------+     | u8 name[20]        |
- *  |  INI N                           |     | ...                |
- *  +----------------------------------+     +--------------------+
- */
+ 
 
 #define MLXSW_LINECARDS_INI_BUNDLE_MAGIC "NVLCINI+"
 

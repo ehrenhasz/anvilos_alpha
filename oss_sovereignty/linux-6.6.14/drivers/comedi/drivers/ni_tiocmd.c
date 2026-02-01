@@ -1,34 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Command support for NI general purpose counters
- *
- * Copyright (C) 2006 Frank Mori Hess <fmhess@users.sourceforge.net>
- */
 
-/*
- * Module: ni_tiocmd
- * Description: National Instruments general purpose counters command support
- * Author: J.P. Mellor <jpmellor@rose-hulman.edu>,
- *         Herman.Bruyninckx@mech.kuleuven.ac.be,
- *         Wim.Meeussen@mech.kuleuven.ac.be,
- *         Klaas.Gadeyne@mech.kuleuven.ac.be,
- *         Frank Mori Hess <fmhess@users.sourceforge.net>
- * Updated: Fri, 11 Apr 2008 12:32:35 +0100
- * Status: works
- *
- * This module is not used directly by end-users.  Rather, it
- * is used by other drivers (for example ni_660x and ni_pcimio)
- * to provide command support for NI's general purpose counters.
- * It was originally split out of ni_tio.c to stop the 'ni_tio'
- * module depending on the 'mite' module.
- *
- * References:
- * DAQ 660x Register-Level Programmer Manual  (NI 370505A-01)
- * DAQ 6601/6602 User Manual (NI 322137B-01)
- * 340934b.pdf  DAQ-STC reference manual
- *
- * TODO: Support use of both banks X and Y
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include "ni_tio_internal.h"
@@ -108,7 +81,7 @@ static int ni_tio_input_cmd(struct comedi_subdevice *s)
 	struct comedi_cmd *cmd = &async->cmd;
 	int ret = 0;
 
-	/* write alloc the entire buffer */
+	 
 	comedi_buf_write_alloc(s, async->prealloc_bufsz);
 	counter->mite_chan->dir = COMEDI_INPUT;
 	switch (counter_dev->variant) {
@@ -125,7 +98,7 @@ static int ni_tio_input_cmd(struct comedi_subdevice *s)
 
 	if (cmd->start_src == TRIG_INT) {
 		async->inttrig = &ni_tio_input_inttrig;
-	} else {	/* TRIG_NOW || TRIG_EXT || TRIG_OTHER */
+	} else {	 
 		async->inttrig = NULL;
 		mite_dma_arm(counter->mite_chan);
 
@@ -135,11 +108,11 @@ static int ni_tio_input_cmd(struct comedi_subdevice *s)
 			int reg = CR_CHAN(cmd->start_arg);
 
 			if (reg >= NI_NAMES_BASE) {
-				/* using a device-global name. lookup reg */
+				 
 				reg = ni_get_reg_value(reg,
 						       NI_CtrArmStartTrigger(cidx),
 						       routing_tables);
-				/* mark this as a raw register value */
+				 
 				reg |= NI_GPCT_HW_ARM;
 			}
 			ret = ni_tio_arm(counter, true, reg);
@@ -177,7 +150,7 @@ static int ni_tio_cmd_setup(struct comedi_subdevice *s)
 	}
 	if (set_gate_source) {
 		if (CR_CHAN(gate_source) >= NI_NAMES_BASE) {
-			/* Lookup and use the real register values */
+			 
 			int reg = ni_get_reg_value(CR_CHAN(gate_source),
 						   NI_CtrGate(cidx),
 						   routing_tables);
@@ -185,11 +158,7 @@ static int ni_tio_cmd_setup(struct comedi_subdevice *s)
 				return -EINVAL;
 			retval = ni_tio_set_gate_src_raw(counter, 0, reg);
 		} else {
-			/*
-			 * This function must be used separately since it does
-			 * not expect real register values and attempts to
-			 * convert these to real register values.
-			 */
+			 
 			retval = ni_tio_set_gate_src(counter, 0, gate_source);
 		}
 	}
@@ -241,7 +210,7 @@ int ni_tio_cmdtest(struct comedi_device *dev,
 	int err = 0;
 	unsigned int sources;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	sources = TRIG_NOW | TRIG_INT | TRIG_OTHER;
 	if (ni_tio_counting_mode_registers_present(counter->counter_dev))
@@ -258,13 +227,13 @@ int ni_tio_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
+	 
 
 	err |= comedi_check_trigger_is_unique(cmd->start_src);
 	err |= comedi_check_trigger_is_unique(cmd->scan_begin_src);
 	err |= comedi_check_trigger_is_unique(cmd->convert_src);
 
-	/* Step 2b : and mutually compatible */
+	 
 
 	if (cmd->convert_src != TRIG_NOW && cmd->scan_begin_src != TRIG_FOLLOW)
 		err |= -EINVAL;
@@ -272,7 +241,7 @@ int ni_tio_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 2;
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	switch (cmd->start_src) {
 	case TRIG_NOW:
@@ -281,27 +250,12 @@ int ni_tio_cmdtest(struct comedi_device *dev,
 		err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 		break;
 	case TRIG_EXT:
-		/* start_arg is the start_trigger passed to ni_tio_arm() */
-		/*
-		 * This should be done, but we don't yet know the actual
-		 * register values.  These should be tested and then documented
-		 * in the ni_route_values/ni_*.csv files, with indication of
-		 * who/when/which/how these were tested.
-		 * When at least a e/m/660x series have been tested, this code
-		 * should be uncommented:
-		 *
-		 * err |= ni_check_trigger_arg(CR_CHAN(cmd->start_arg),
-		 *			    NI_CtrArmStartTrigger(cidx),
-		 *			    routing_tables);
-		 */
+		 
+		 
 		break;
 	}
 
-	/*
-	 * It seems that convention is to allow either scan_begin_arg or
-	 * convert_arg to specify the Gate source, with scan_begin_arg taking
-	 * precedence.
-	 */
+	 
 	if (cmd->scan_begin_src != TRIG_EXT)
 		err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
 	else
@@ -321,9 +275,9 @@ int ni_tio_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -355,18 +309,10 @@ static int should_ack_gate(struct ni_gpct *counter)
 	switch (counter->counter_dev->variant) {
 	case ni_gpct_variant_m_series:
 	case ni_gpct_variant_660x:
-		/*
-		 * not sure if 660x really supports gate interrupts
-		 * (the bits are not listed in register-level manual)
-		 */
+		 
 		return 1;
 	case ni_gpct_variant_e_series:
-		/*
-		 * During buffered input counter operation for e-series,
-		 * the gate interrupt is acked automatically by the dma
-		 * controller, due to the Gi_Read/Write_Acknowledges_IRQ
-		 * bits in the input select register.
-		 */
+		 
 		spin_lock_irqsave(&counter->lock, flags);
 		{
 			if (!counter->mite_chan ||
@@ -403,11 +349,7 @@ static void ni_tio_acknowledge_and_confirm(struct ni_gpct *counter,
 	if (gxx_status & GI_GATE_ERROR(cidx)) {
 		ack |= GI_GATE_ERROR_CONFIRM(cidx);
 		if (gate_error) {
-			/*
-			 * 660x don't support automatic acknowledgment
-			 * of gate interrupt via dma read/write
-			 * and report bogus gate errors
-			 */
+			 
 			if (counter->counter_dev->variant !=
 			    ni_gpct_variant_660x)
 				*gate_error = 1;

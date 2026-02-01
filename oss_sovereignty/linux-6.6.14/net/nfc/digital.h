@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NFC Digital Protocol stack
- * Copyright (c) 2013, Intel Corporation.
- */
+ 
+ 
 
 #ifndef __DIGITAL_H
 #define __DIGITAL_H
@@ -168,4 +165,4 @@ static inline int digital_skb_check_crc_none(struct sk_buff *skb)
 	return 0;
 }
 
-#endif /* __DIGITAL_H */
+#endif  

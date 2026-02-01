@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Driver for AMBA serial ports
- *
- *  Based on drivers/char/serial.c, by Linus Torvalds, Theodore Ts'o.
- *
- *  Copyright 1999 ARM Limited
- *  Copyright (C) 2000 Deep Blue Solutions Ltd.
- *
- * This is a generic driver for ARM AMBA-type serial ports.  They
- * have a lot of 16550-like features, but are not register compatible.
- * Note that although they do have CTS, DCD and DSR inputs, they do
- * not have an RI input, nor do they have DTR or RTS outputs.  If
- * required, these have to be supplied via some other means (eg, GPIO)
- * and hooked into this driver.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -45,9 +31,7 @@
 #define UART_DUMMY_RSR_RX	256
 #define UART_PORT_SIZE		64
 
-/*
- * We wrap our port structure around the generic uart_port.
- */
+ 
 struct uart_amba_port {
 	struct uart_port	port;
 	struct clk		*clk;
@@ -122,10 +106,7 @@ static void pl010_rx_chars(struct uart_port *port)
 
 		port->icount.rx++;
 
-		/*
-		 * Note that the error handling code is
-		 * out of the main execution path
-		 */
+		 
 		rsr = readb(port->membase + UART01x_RSR) | UART_DUMMY_RSR_RX;
 		if (unlikely(rsr & UART01x_RSR_ANY)) {
 			writel(0, port->membase + UART01x_ECR);
@@ -286,30 +267,22 @@ static int pl010_startup(struct uart_port *port)
 		container_of(port, struct uart_amba_port, port);
 	int retval;
 
-	/*
-	 * Try to enable the clock producer.
-	 */
+	 
 	retval = clk_prepare_enable(uap->clk);
 	if (retval)
 		goto out;
 
 	port->uartclk = clk_get_rate(uap->clk);
 
-	/*
-	 * Allocate the IRQ
-	 */
+	 
 	retval = request_irq(port->irq, pl010_int, 0, "uart-pl010", uap);
 	if (retval)
 		goto clk_dis;
 
-	/*
-	 * initialise the old status of the modem signals
-	 */
+	 
 	uap->old_status = readb(port->membase + UART01x_FR) & UART01x_FR_MODEM_ANY;
 
-	/*
-	 * Finally, enable interrupts
-	 */
+	 
 	writel(UART01x_CR_UARTEN | UART010_CR_RIE | UART010_CR_RTIE,
 	       port->membase + UART010_CR);
 
@@ -326,24 +299,18 @@ static void pl010_shutdown(struct uart_port *port)
 	struct uart_amba_port *uap =
 		container_of(port, struct uart_amba_port, port);
 
-	/*
-	 * Free the interrupt
-	 */
+	 
 	free_irq(port->irq, uap);
 
-	/*
-	 * disable all interrupts, disable the port
-	 */
+	 
 	writel(0, port->membase + UART010_CR);
 
-	/* disable break condition and fifos */
+	 
 	writel(readb(port->membase + UART010_LCRH) &
 		~(UART01x_LCRH_BRK | UART01x_LCRH_FEN),
 	       port->membase + UART010_LCRH);
 
-	/*
-	 * Shut down the clock producer
-	 */
+	 
 	clk_disable_unprepare(uap->clk);
 }
 
@@ -355,9 +322,7 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
 	unsigned long flags;
 	unsigned int baud, quot;
 
-	/*
-	 * Ask the core to calculate the divisor for us.
-	 */
+	 
 	baud = uart_get_baud_rate(port, termios, old, 0, port->uartclk / 16);
 	quot = uart_get_divisor(port, baud);
 
@@ -371,7 +336,7 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
 	case CS7:
 		lcr_h = UART01x_LCRH_WLEN_7;
 		break;
-	default: // CS8
+	default:  
 		lcr_h = UART01x_LCRH_WLEN_8;
 		break;
 	}
@@ -387,9 +352,7 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/*
-	 * Update the per-port timeout.
-	 */
+	 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
 	port->read_status_mask = UART01x_RSR_OE;
@@ -398,25 +361,18 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		port->read_status_mask |= UART01x_RSR_BE;
 
-	/*
-	 * Characters to ignore
-	 */
+	 
 	port->ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		port->ignore_status_mask |= UART01x_RSR_FE | UART01x_RSR_PE;
 	if (termios->c_iflag & IGNBRK) {
 		port->ignore_status_mask |= UART01x_RSR_BE;
-		/*
-		 * If we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (termios->c_iflag & IGNPAR)
 			port->ignore_status_mask |= UART01x_RSR_OE;
 	}
 
-	/*
-	 * Ignore all characters if CREAD is not set.
-	 */
+	 
 	if ((termios->c_cflag & CREAD) == 0)
 		port->ignore_status_mask |= UART_DUMMY_RSR_RX;
 
@@ -425,16 +381,12 @@ pl010_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (UART_ENABLE_MS(port, termios->c_cflag))
 		old_cr |= UART010_CR_MSIE;
 
-	/* Set baud rate */
+	 
 	quot -= 1;
 	writel((quot & 0xf00) >> 8, port->membase + UART010_LCRM);
 	writel(quot & 0xff, port->membase + UART010_LCRL);
 
-	/*
-	 * ----------v----------v----------v----------v-----
-	 * NOTE: MUST BE WRITTEN AFTER UARTLCR_M & UARTLCR_L
-	 * ----------^----------^----------^----------^-----
-	 */
+	 
 	writel(lcr_h, port->membase + UART010_LCRH);
 	writel(old_cr, port->membase + UART010_CR);
 
@@ -463,26 +415,20 @@ static const char *pl010_type(struct uart_port *port)
 	return port->type == PORT_AMBA ? "AMBA" : NULL;
 }
 
-/*
- * Release the memory region(s) being used by 'port'
- */
+ 
 static void pl010_release_port(struct uart_port *port)
 {
 	release_mem_region(port->mapbase, UART_PORT_SIZE);
 }
 
-/*
- * Request the memory region(s) being used by 'port'
- */
+ 
 static int pl010_request_port(struct uart_port *port)
 {
 	return request_mem_region(port->mapbase, UART_PORT_SIZE, "uart-pl010")
 			!= NULL ? 0 : -EBUSY;
 }
 
-/*
- * Configure/autoconfigure the port.
- */
+ 
 static void pl010_config_port(struct uart_port *port, int flags)
 {
 	if (flags & UART_CONFIG_TYPE) {
@@ -491,9 +437,7 @@ static void pl010_config_port(struct uart_port *port, int flags)
 	}
 }
 
-/*
- * verify the new serial_struct (for TIOCSSERIAL).
- */
+ 
 static int pl010_verify_port(struct uart_port *port, struct serial_struct *ser)
 {
 	int ret = 0;
@@ -550,18 +494,13 @@ pl010_console_write(struct console *co, const char *s, unsigned int count)
 
 	clk_enable(uap->clk);
 
-	/*
-	 *	First save the CR then disable the interrupts
-	 */
+	 
 	old_cr = readb(port->membase + UART010_CR);
 	writel(UART01x_CR_UARTEN, port->membase + UART010_CR);
 
 	uart_console_write(port, s, count, pl010_console_putchar);
 
-	/*
-	 *	Finally, wait for transmitter to become empty
-	 *	and restore the TCR
-	 */
+	 
 	do {
 		status = readb(port->membase + UART01x_FR);
 		barrier();
@@ -607,11 +546,7 @@ static int __init pl010_console_setup(struct console *co, char *options)
 	int flow = 'n';
 	int ret;
 
-	/*
-	 * Check whether an invalid uart number has been specified, and
-	 * if so, search for the first available port that does have
-	 * console support.
-	 */
+	 
 	if (co->index >= UART_NR)
 		co->index = 0;
 	uap = amba_ports[co->index];

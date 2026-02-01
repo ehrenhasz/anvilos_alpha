@@ -1,16 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2016 Broadcom
- */
+ 
+ 
 
-/*
- * This file contains the definition of SPU messages. There are currently two
- * SPU message formats: SPU-M and SPU2. The hardware uses different values to
- * identify the same things in SPU-M vs SPU2. So this file defines values that
- * are hardware independent. Software can use these values for any version of
- * SPU hardware. These values are used in APIs in spu.c. Functions internal to
- * spu.c and spu2.c convert these to hardware-specific values.
- */
+ 
 
 #ifndef _SPU_H
 #define _SPU_H
@@ -46,10 +37,10 @@ enum spu_cipher_type {
 	CIPHER_TYPE_NONE = 0x0,
 	CIPHER_TYPE_DES = 0x0,
 	CIPHER_TYPE_3DES = 0x0,
-	CIPHER_TYPE_INIT = 0x0,	/* used for ARC4 */
+	CIPHER_TYPE_INIT = 0x0,	 
 	CIPHER_TYPE_AES128 = 0x0,
 	CIPHER_TYPE_AES192 = 0x1,
-	CIPHER_TYPE_UPDT = 0x1,	/* used for ARC4 */
+	CIPHER_TYPE_UPDT = 0x1,	 
 	CIPHER_TYPE_AES256 = 0x2,
 };
 
@@ -62,7 +53,7 @@ enum hash_alg {
 	HASH_ALG_AES = 0x5,
 	HASH_ALG_SHA384 = 0x6,
 	HASH_ALG_SHA512 = 0x7,
-	/* Keep SHA3 algorithms at the end always */
+	 
 	HASH_ALG_SHA3_224 = 0x8,
 	HASH_ALG_SHA3_256 = 0x9,
 	HASH_ALG_SHA3_384 = 0xa,
@@ -119,7 +110,7 @@ struct spu_cipher_parms {
 	enum spu_cipher_type type;
 	u8                  *key_buf;
 	u16                  key_len;
-	/* iv_buf and iv_len include salt, if applicable */
+	 
 	u8                  *iv_buf;
 	u16                  iv_len;
 };
@@ -132,49 +123,47 @@ struct spu_hash_parms {
 	u8            *key_buf;
 	u16            key_len;
 	u16            prebuf_len;
-	/* length of hash pad. signed, needs to handle roll-overs */
+	 
 	int            pad_len;
 };
 
 struct spu_aead_parms {
 	u32 assoc_size;
-	u16 iv_len;      /* length of IV field between assoc data and data */
-	u8  aad_pad_len; /* For AES GCM/CCM, length of padding after AAD */
-	u8  data_pad_len;/* For AES GCM/CCM, length of padding after data */
-	bool return_iv;  /* True if SPU should return an IV */
-	u32 ret_iv_len;  /* Length in bytes of returned IV */
-	u32 ret_iv_off;  /* Offset into full IV if partial IV returned */
+	u16 iv_len;       
+	u8  aad_pad_len;  
+	u8  data_pad_len; 
+	bool return_iv;   
+	u32 ret_iv_len;   
+	u32 ret_iv_off;   
 };
 
-/************** SPU sizes ***************/
+ 
 
 #define SPU_RX_STATUS_LEN  4
 
-/* Max length of padding for 4-byte alignment of STATUS field */
+ 
 #define SPU_STAT_PAD_MAX  4
 
-/* Max length of pad fragment. 4 is for 4-byte alignment of STATUS field */
+ 
 #define SPU_PAD_LEN_MAX (SPU_GCM_CCM_ALIGN + MAX_HASH_BLOCK_SIZE + \
 			 SPU_STAT_PAD_MAX)
 
-/* GCM and CCM require 16-byte alignment */
+ 
 #define SPU_GCM_CCM_ALIGN 16
 
-/* Length up SUPDT field in SPU response message for RC4 */
+ 
 #define SPU_SUPDT_LEN 260
 
-/* SPU status error codes. These used as common error codes across all
- * SPU variants.
- */
+ 
 #define SPU_INVALID_ICV  1
 
-/* Indicates no limit to the length of the payload in a SPU message */
+ 
 #define SPU_MAX_PAYLOAD_INF  0xFFFFFFFF
 
-/* Size of XTS tweak ("i" parameter), in bytes */
+ 
 #define SPU_XTS_TWEAK_SIZE 16
 
-/* CCM B_0 field definitions, common for SPU-M and SPU2 */
+ 
 #define CCM_B0_ADATA		0x40
 #define CCM_B0_ADATA_SHIFT	   6
 #define CCM_B0_M_PRIME		0x38
@@ -183,14 +172,7 @@ struct spu_aead_parms {
 #define CCM_B0_L_PRIME_SHIFT	   0
 #define CCM_ESP_L_VALUE		   4
 
-/**
- * spu_req_incl_icv() - Return true if SPU request message should include the
- * ICV as a separate buffer.
- * @cipher_mode:  the cipher mode being requested
- * @is_encrypt:   true if encrypting. false if decrypting.
- *
- * Return:  true if ICV to be included as separate buffer
- */
+ 
 static __always_inline  bool spu_req_incl_icv(enum spu_cipher_mode cipher_mode,
 					      bool is_encrypt)
 {
@@ -214,7 +196,7 @@ static __always_inline u32 spu_real_db_size(u32 assoc_size,
 	    aad_pad_len + gcm_pad_len + hash_pad_len;
 }
 
-/************** SPU Functions Prototypes **************/
+ 
 
 void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len);
 

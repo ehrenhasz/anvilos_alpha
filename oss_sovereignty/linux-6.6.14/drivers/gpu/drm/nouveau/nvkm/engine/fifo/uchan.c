@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #define nvkm_uchan(p) container_of((p), struct nvkm_uchan, object)
 #include "priv.h"
 #include "cgrp.h"
@@ -82,7 +62,7 @@ nvkm_uchan_object_fini_1(struct nvkm_oproxy *oproxy, bool suspend)
 	if (!ectx->object)
 		return 0;
 
-	/* Unbind engine context from channel, if no longer required. */
+	 
 	if (refcount_dec_and_mutex_lock(&cctx->uses, &chan->cgrp->mutex)) {
 		nvkm_chan_cctx_bind(chan, ectx->engn, NULL);
 
@@ -106,7 +86,7 @@ nvkm_uchan_object_init_0(struct nvkm_oproxy *oproxy)
 	if (!ectx->object)
 		return 0;
 
-	/* Bind engine context to channel, if it hasn't been already. */
+	 
 	if (!refcount_inc_not_zero(&cctx->uses)) {
 		mutex_lock(&chan->cgrp->mutex);
 		if (!refcount_inc_not_zero(&cctx->uses)) {
@@ -160,12 +140,12 @@ nvkm_uchan_object_new(const struct nvkm_oclass *oclass, void *argv, u32 argc,
 	struct nvkm_uobj *uobj;
 	int ret;
 
-	/* Lookup host engine state for target engine. */
+	 
 	engn = nvkm_runl_find_engn(engn, cgrp->runl, engn->engine == oclass->engine);
 	if (WARN_ON(!engn))
 		return -EINVAL;
 
-	/* Allocate SW object. */
+	 
 	if (!(uobj = kzalloc(sizeof(*uobj), GFP_KERNEL)))
 		return -ENOMEM;
 
@@ -173,12 +153,12 @@ nvkm_uchan_object_new(const struct nvkm_oclass *oclass, void *argv, u32 argc,
 	uobj->chan = chan;
 	*pobject = &uobj->oproxy.base;
 
-	/* Ref. channel context for target engine.*/
+	 
 	ret = nvkm_chan_cctx_get(chan, engn, &uobj->cctx, oclass->client);
 	if (ret)
 		return ret;
 
-	/* Allocate HW object. */
+	 
 	ret = oclass->base.ctor(&(const struct nvkm_oclass) {
 					.base = oclass->base,
 					.engn = oclass->engn,
@@ -211,7 +191,7 @@ nvkm_uchan_sclass(struct nvkm_object *object, int index, struct nvkm_oclass *ocl
 		struct nvkm_engine *engine = engn->engine;
 		int c = 0;
 
-		/* Each runqueue, on runlists with multiple, has its own LCE. */
+		 
 		if (engn->runl->func->runqs) {
 			if (engine->subdev.type == NVKM_ENGINE_CE) {
 				if (chan->runq != runq++)
@@ -337,7 +317,7 @@ nvkm_uchan_new(struct nvkm_fifo *fifo, struct nvkm_cgrp *cgrp, const struct nvkm
 	if (args->v0.namelen != argc)
 		return -EINVAL;
 
-	/* Lookup objects referenced in args. */
+	 
 	runl = nvkm_runl_get(fifo, args->v0.runlist, 0);
 	if (!runl)
 		return -EINVAL;
@@ -365,7 +345,7 @@ nvkm_uchan_new(struct nvkm_fifo *fifo, struct nvkm_cgrp *cgrp, const struct nvkm
 		}
 	}
 
-	/* Allocate channel. */
+	 
 	if (!(uchan = kzalloc(sizeof(*uchan), GFP_KERNEL))) {
 		ret = -ENOMEM;
 		goto done;
@@ -382,7 +362,7 @@ nvkm_uchan_new(struct nvkm_fifo *fifo, struct nvkm_cgrp *cgrp, const struct nvkm
 
 	chan = uchan->chan;
 
-	/* Return channel info to caller. */
+	 
 	if (chan->func->doorbell_handle)
 		args->v0.token = chan->func->doorbell_handle(chan);
 	else

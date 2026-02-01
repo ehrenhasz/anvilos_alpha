@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "priv.h"
 #include "conn.h"
 #include "dp.h"
@@ -144,9 +122,7 @@ nvkm_disp_init(struct nvkm_engine *engine)
 			return ret;
 	}
 
-	/* Set 'normal' (ie. when it's attached to a head) state for
-	 * each output resource to 'fully enabled'.
-	 */
+	 
 	list_for_each_entry(ior, &disp->iors, head) {
 		ior->func->power(ior, true, true, true, true, true);
 	}
@@ -170,10 +146,10 @@ nvkm_disp_oneinit(struct nvkm_engine *engine)
 	u32 data;
 	int ret, i;
 
-	/* Create output path objects for each VBIOS display path. */
+	 
 	i = -1;
 	while ((data = dcb_outp_parse(bios, ++i, &ver, &hdr, &dcbE))) {
-		if (ver < 0x40) /* No support for chipsets prior to NV50. */
+		if (ver < 0x40)  
 			break;
 		if (dcbE.type == DCB_OUTPUT_UNUSED)
 			continue;
@@ -192,7 +168,7 @@ nvkm_disp_oneinit(struct nvkm_engine *engine)
 			ret = nvkm_dp_new(disp, i, &dcbE, &outp);
 			break;
 		case DCB_OUTPUT_WFD:
-			/* No support for WFD yet. */
+			 
 			ret = -ENODEV;
 			continue;
 		default:
@@ -218,19 +194,15 @@ nvkm_disp_oneinit(struct nvkm_engine *engine)
 		hpd = max(hpd, (u8)(dcbE.connector + 1));
 	}
 
-	/* Create connector objects based on available output paths. */
+	 
 	list_for_each_entry_safe(outp, outt, &disp->outps, head) {
-		/* VBIOS data *should* give us the most useful information. */
+		 
 		data = nvbios_connEp(bios, outp->info.connector, &ver, &hdr,
 				     &connE);
 
-		/* No bios connector data... */
+		 
 		if (!data) {
-			/* Heuristic: anything with the same ccb index is
-			 * considered to be on the same connector, any
-			 * output path without an associated ccb entry will
-			 * be put on its own connector.
-			 */
+			 
 			int ccb_index = outp->info.i2c_index;
 			if (ccb_index != 0xf) {
 				list_for_each_entry(pair, &disp->outps, head) {
@@ -241,7 +213,7 @@ nvkm_disp_oneinit(struct nvkm_engine *engine)
 				}
 			}
 
-			/* Connector shared with another output path. */
+			 
 			if (outp->conn)
 				continue;
 
@@ -252,7 +224,7 @@ nvkm_disp_oneinit(struct nvkm_engine *engine)
 			i = outp->info.connector;
 		}
 
-		/* Check that we haven't already created this connector. */
+		 
 		list_for_each_entry(conn, &disp->conns, head) {
 			if (conn->index == outp->info.connector) {
 				outp->conn = conn;
@@ -263,7 +235,7 @@ nvkm_disp_oneinit(struct nvkm_engine *engine)
 		if (outp->conn)
 			continue;
 
-		/* Apparently we need to create a new one! */
+		 
 		ret = nvkm_conn_new(disp, i, &connE, &outp->conn);
 		if (ret) {
 			nvkm_error(subdev, "failed to create outp %d conn: %d\n", outp->index, ret);
@@ -282,9 +254,7 @@ nvkm_disp_oneinit(struct nvkm_engine *engine)
 			return ret;
 	}
 
-	/* Enforce identity-mapped SOR assignment for panels, which have
-	 * certain bits (ie. backlight controls) wired to a specific SOR.
-	 */
+	 
 	list_for_each_entry(outp, &disp->outps, head) {
 		if (outp->conn->info.type == DCB_CONNECTOR_LVDS ||
 		    outp->conn->info.type == DCB_CONNECTOR_eDP) {

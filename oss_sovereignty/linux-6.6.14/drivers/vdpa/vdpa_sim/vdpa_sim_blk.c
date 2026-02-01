@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VDPA simulator for block device.
- *
- * Copyright (c) 2020, NVIDIA CORPORATION. All rights reserved.
- * Copyright (c) 2021, Red Hat Inc. All rights reserved.
- *
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -38,7 +32,7 @@
 #define VDPASIM_BLK_SEG_MAX	32
 #define VDPASIM_BLK_DWZ_MAX_SECTORS UINT_MAX
 
-/* 1 virtqueue, 1 address space, 1 virtqueue group */
+ 
 #define VDPASIM_BLK_VQ_NUM	1
 #define VDPASIM_BLK_AS_NUM	1
 #define VDPASIM_BLK_GROUP_NUM	1
@@ -61,7 +55,7 @@ module_param(shared_backend, bool, 0444);
 MODULE_PARM_DESC(shared_backend, "Enable the shared backend between virtio-blk devices");
 
 static void *shared_buffer;
-/* mutex to synchronize shared_buffer access */
+ 
 static DEFINE_MUTEX(shared_buffer_mutex);
 
 static void vdpasim_blk_buffer_lock(struct vdpasim_blk *blk)
@@ -102,10 +96,7 @@ static bool vdpasim_blk_check_range(struct vdpasim *vdpasim, u64 start_sector,
 	return true;
 }
 
-/* Returns 'true' if the request is handled (with or without an I/O error)
- * and the status is correctly written in the last byte of the 'in iov',
- * 'false' otherwise.
- */
+ 
 static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
 				   struct vdpasim_virtqueue *vq)
 {
@@ -136,9 +127,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
 		goto err;
 	}
 
-	/* The last byte is the status and we checked if the last iov has
-	 * enough room for it.
-	 */
+	 
 	to_push = vringh_kiov_length(&vq->in_iov) - 1;
 
 	to_pull = vringh_kiov_length(&vq->out_iov);
@@ -226,7 +215,7 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
 		break;
 
 	case VIRTIO_BLK_T_FLUSH:
-		/* nothing to do */
+		 
 		break;
 
 	case VIRTIO_BLK_T_DISCARD:
@@ -297,20 +286,18 @@ static bool vdpasim_blk_handle_req(struct vdpasim *vdpasim,
 	}
 
 err_status:
-	/* If some operations fail, we need to skip the remaining bytes
-	 * to put the status in the last byte
-	 */
+	 
 	if (to_push - pushed > 0)
 		vringh_kiov_advance(&vq->in_iov, to_push - pushed);
 
-	/* Last byte is the status */
+	 
 	bytes = vringh_iov_push_iotlb(&vq->vring, &vq->in_iov, &status, 1);
 	if (bytes != 1)
 		goto err;
 
 	pushed += bytes;
 
-	/* Make sure data is wrote before advancing index */
+	 
 	smp_wmb();
 
 	handled = true;
@@ -342,7 +329,7 @@ static void vdpasim_blk_work(struct vdpasim *vdpasim)
 			continue;
 
 		while (vdpasim_blk_handle_req(vdpasim, vq)) {
-			/* Make sure used is visible before rasing the interrupt. */
+			 
 			smp_wmb();
 
 			local_bh_disable();
@@ -376,13 +363,13 @@ static void vdpasim_blk_get_config(struct vdpasim *vdpasim, void *config)
 	blk_config->min_io_size = cpu_to_vdpasim16(vdpasim, 1);
 	blk_config->opt_io_size = cpu_to_vdpasim32(vdpasim, 1);
 	blk_config->blk_size = cpu_to_vdpasim32(vdpasim, SECTOR_SIZE);
-	/* VIRTIO_BLK_F_DISCARD */
+	 
 	blk_config->discard_sector_alignment =
 		cpu_to_vdpasim32(vdpasim, SECTOR_SIZE);
 	blk_config->max_discard_sectors =
 		cpu_to_vdpasim32(vdpasim, VDPASIM_BLK_DWZ_MAX_SECTORS);
 	blk_config->max_discard_seg = cpu_to_vdpasim32(vdpasim, 1);
-	/* VIRTIO_BLK_F_WRITE_ZEROES */
+	 
 	blk_config->max_write_zeroes_sectors =
 		cpu_to_vdpasim32(vdpasim, VDPASIM_BLK_DWZ_MAX_SECTORS);
 	blk_config->max_write_zeroes_seg = cpu_to_vdpasim32(vdpasim, 1);

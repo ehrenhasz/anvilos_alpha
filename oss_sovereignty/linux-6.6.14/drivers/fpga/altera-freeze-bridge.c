@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FPGA Freeze Bridge Controller
- *
- *  Copyright (C) 2016 Altera Corporation. All rights reserved.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -35,9 +31,7 @@ struct altera_freeze_br_data {
 	bool enable;
 };
 
-/*
- * Poll status until status bit is set or we have a timeout.
- */
+ 
 static int altera_freeze_br_req_ack(struct altera_freeze_br_data *priv,
 				    u32 timeout, u32 req_ack)
 {
@@ -157,10 +151,7 @@ static int altera_freeze_br_do_unfreeze(struct altera_freeze_br_data *priv,
 	return ret;
 }
 
-/*
- * enable = 1 : allow traffic through the bridge
- * enable = 0 : disable traffic through the bridge
- */
+ 
 static int altera_freeze_br_enable_set(struct fpga_bridge *bridge,
 				       bool enable)
 {

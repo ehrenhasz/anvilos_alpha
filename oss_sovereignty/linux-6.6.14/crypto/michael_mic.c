@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cryptographic API
- *
- * Michael MIC (IEEE 802.11i/TKIP) keyed digest
- *
- * Copyright (c) 2004 Jouni Malinen <j@w1.fi>
- */
+
+ 
 #include <crypto/internal/hash.h>
 #include <asm/unaligned.h>
 #include <linux/init.h>
@@ -99,7 +93,7 @@ static int michael_final(struct shash_desc *desc, u8 *out)
 	struct michael_mic_desc_ctx *mctx = shash_desc_ctx(desc);
 	u8 *data = (u8 *)&mctx->pending;
 
-	/* Last block and padding (0x5a, 4..7 x 0) */
+	 
 	switch (mctx->pending_len) {
 	case 0:
 		mctx->l ^= 0x5a;
@@ -116,7 +110,7 @@ static int michael_final(struct shash_desc *desc, u8 *out)
 		break;
 	}
 	michael_block(mctx->l, mctx->r);
-	/* l ^= 0; */
+	 
 	michael_block(mctx->l, mctx->r);
 
 	put_unaligned_le32(mctx->l, out);

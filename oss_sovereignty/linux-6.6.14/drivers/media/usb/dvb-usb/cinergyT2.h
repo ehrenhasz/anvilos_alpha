@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * TerraTec Cinergy T2/qanu USB2 DVB-T adapter.
- *
- * Copyright (C) 2007 Tomi Orava (tomimo@ncircle.nullnet.fi)
- *
- * Based on the dvb-usb-framework code and the
- * original Terratec Cinergy T2 driver by:
- *
- * Copyright (C) 2004 Daniel Mack <daniel@qanu.de> and
- *                  Holger Waechtler <holger@qanu.de>
- *
- *  Protocol Spec published on http://qanu.de/specs/terratec_cinergyT2.pdf
- */
+ 
+ 
 
 #ifndef _DVB_USB_CINERGYT2_H_
 #define _DVB_USB_CINERGYT2_H_
@@ -77,5 +65,5 @@ struct dvbt_set_parameters_msg {
 
 extern struct dvb_frontend *cinergyt2_fe_attach(struct dvb_usb_device *d);
 
-#endif /* _DVB_USB_CINERGYT2_H_ */
+#endif  
 

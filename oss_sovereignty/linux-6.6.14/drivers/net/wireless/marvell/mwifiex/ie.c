@@ -1,17 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: management IE handling- setting and
- * deleting IE.
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "main.h"
 
-/* This function checks if current IE index is used by any on other interface.
- * Return: -1: yes, current IE index is used by someone else.
- *          0: no, current IE index is NOT used by other interface.
- */
+ 
 static int
 mwifiex_ie_index_used_by_other_intf(struct mwifiex_private *priv, u16 idx)
 {
@@ -30,7 +22,7 @@ mwifiex_ie_index_used_by_other_intf(struct mwifiex_private *priv, u16 idx)
 	return 0;
 }
 
-/* Get unused IE index. This index will be used for setting new IE */
+ 
 static int
 mwifiex_ie_get_autoidx(struct mwifiex_private *priv, u16 subtype_mask,
 		       struct mwifiex_ie *ie, u16 *index)
@@ -64,7 +56,7 @@ mwifiex_ie_get_autoidx(struct mwifiex_private *priv, u16 subtype_mask,
 	return -1;
 }
 
-/* This function prepares IE data buffer for command to be sent to FW */
+ 
 static int
 mwifiex_update_autoindex_ies(struct mwifiex_private *priv,
 			     struct mwifiex_ie_list *ie_list)
@@ -90,7 +82,7 @@ mwifiex_update_autoindex_ies(struct mwifiex_private *priv,
 		mask = le16_to_cpu(ie->mgmt_subtype_mask);
 
 		if (index == MWIFIEX_AUTO_IDX_MASK) {
-			/* automatic addition */
+			 
 			if (mwifiex_ie_get_autoidx(priv, mask, ie, &index))
 				return -1;
 			if (index == MWIFIEX_AUTO_IDX_MASK)
@@ -107,10 +99,7 @@ mwifiex_update_autoindex_ies(struct mwifiex_private *priv,
 		} else {
 			if (mask != MWIFIEX_DELETE_MASK)
 				return -1;
-			/*
-			 * Check if this index is being used on any
-			 * other interface.
-			 */
+			 
 			if (mwifiex_ie_index_used_by_other_intf(priv, index))
 				return -1;
 
@@ -134,10 +123,7 @@ mwifiex_update_autoindex_ies(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* Copy individual custom IEs for beacon, probe response and assoc response
- * and prepare single structure for IE setting.
- * This function also updates allocated IE indices from driver.
- */
+ 
 static int
 mwifiex_update_uap_custom_ie(struct mwifiex_private *priv,
 			     struct mwifiex_ie *beacon_ie, u16 *beacon_idx,
@@ -182,34 +168,28 @@ mwifiex_update_uap_custom_ie(struct mwifiex_private *priv,
 
 	pos = (u8 *)(&ap_custom_ie->ie_list[0].ie_index);
 	if (beacon_ie && *beacon_idx == MWIFIEX_AUTO_IDX_MASK) {
-		/* save beacon ie index after auto-indexing */
+		 
 		*beacon_idx = le16_to_cpu(ap_custom_ie->ie_list[0].ie_index);
 		len = sizeof(*beacon_ie) - IEEE_MAX_IE_SIZE +
 		      le16_to_cpu(beacon_ie->ie_length);
 		pos += len;
 	}
 	if (pr_ie && le16_to_cpu(pr_ie->ie_index) == MWIFIEX_AUTO_IDX_MASK) {
-		/* save probe resp ie index after auto-indexing */
+		 
 		*probe_idx = *((u16 *)pos);
 		len = sizeof(*pr_ie) - IEEE_MAX_IE_SIZE +
 		      le16_to_cpu(pr_ie->ie_length);
 		pos += len;
 	}
 	if (ar_ie && le16_to_cpu(ar_ie->ie_index) == MWIFIEX_AUTO_IDX_MASK)
-		/* save assoc resp ie index after auto-indexing */
+		 
 		*assoc_idx = *((u16 *)pos);
 
 	kfree(ap_custom_ie);
 	return ret;
 }
 
-/* This function checks if the vendor specified IE is present in passed buffer
- * and copies it to mwifiex_ie structure.
- * Function takes pointer to struct mwifiex_ie pointer as argument.
- * If the vendor specified IE is present then memory is allocated for
- * mwifiex_ie pointer and filled in with IE. Caller should take care of freeing
- * this memory.
- */
+ 
 static int mwifiex_update_vs_ie(const u8 *ies, int ies_len,
 				struct mwifiex_ie **ie_ptr, u16 mask,
 				unsigned int oui, u8 oui_type)
@@ -243,9 +223,7 @@ static int mwifiex_update_vs_ie(const u8 *ies, int ies_len,
 	return 0;
 }
 
-/* This function parses beacon IEs, probe response IEs, association response IEs
- * from cfg80211_ap_settings->beacon and sets these IE to FW.
- */
+ 
 static int mwifiex_set_mgmt_beacon_data_ies(struct mwifiex_private *priv,
 					    struct cfg80211_beacon_data *data)
 {
@@ -309,9 +287,7 @@ done:
 	return ret;
 }
 
-/* This function parses  head and tail IEs, from cfg80211_beacon_data and sets
- * these IE to FW.
- */
+ 
 static int mwifiex_uap_parse_tail_ies(struct mwifiex_private *priv,
 				      struct cfg80211_beacon_data *info)
 {
@@ -332,9 +308,7 @@ static int mwifiex_uap_parse_tail_ies(struct mwifiex_private *priv,
 
 	left_len = info->tail_len;
 
-	/* Many IEs are generated in FW by parsing bss configuration.
-	 * Let's not add them here; else we may end up duplicating these IEs
-	 */
+	 
 	while (left_len > sizeof(struct ieee_types_header)) {
 		hdr = (void *)(info->tail + parsed_len);
 		token_len = hdr->len + sizeof(struct ieee_types_header);
@@ -356,7 +330,7 @@ static int mwifiex_uap_parse_tail_ies(struct mwifiex_private *priv,
 		case WLAN_EID_VHT_OPERATION:
 			break;
 		case WLAN_EID_VENDOR_SPECIFIC:
-			/* Skip only Microsoft WMM IE */
+			 
 			if (cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
 						    WLAN_OUI_TYPE_MICROSOFT_WMM,
 						    (const u8 *)hdr,
@@ -376,9 +350,7 @@ static int mwifiex_uap_parse_tail_ies(struct mwifiex_private *priv,
 		parsed_len += token_len;
 	}
 
-	/* parse only WPA vendor IE from tail, WMM IE is configured by
-	 * bss_config command
-	 */
+	 
 	vendorhdr = (void *)cfg80211_find_vendor_ie(WLAN_OUI_MICROSOFT,
 						    WLAN_OUI_TYPE_MICROSOFT_WPA,
 						    info->tail, info->tail_len);
@@ -414,10 +386,7 @@ static int mwifiex_uap_parse_tail_ies(struct mwifiex_private *priv,
 	return err;
 }
 
-/* This function parses different IEs-head & tail IEs, beacon IEs,
- * probe response IEs, association response IEs from cfg80211_ap_settings
- * function and sets these IE to FW.
- */
+ 
 int mwifiex_set_mgmt_ies(struct mwifiex_private *priv,
 			 struct cfg80211_beacon_data *info)
 {
@@ -431,7 +400,7 @@ int mwifiex_set_mgmt_ies(struct mwifiex_private *priv,
 	return mwifiex_set_mgmt_beacon_data_ies(priv, info);
 }
 
-/* This function removes management IE set */
+ 
 int mwifiex_del_mgmt_ies(struct mwifiex_private *priv)
 {
 	struct mwifiex_ie *beacon_ie = NULL, *pr_ie = NULL;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Texas Instruments
- * Author: Jyri Sarha <jsarha@ti.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/of_graph.h>
@@ -79,7 +76,7 @@ int tilcdc_add_component_encoder(struct drm_device *ddev)
 	if (!priv->external_connector)
 		return -ENODEV;
 
-	/* Only tda998x is supported at the moment. */
+	 
 	tilcdc_crtc_set_simulate_vesa_sync(priv->crtc, true);
 	tilcdc_crtc_set_panel_info(priv->crtc, &panel_info_tda998x);
 

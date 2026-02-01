@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Generic AC97 sound support for SH7760
-//
-// (c) 2007 Manuel Lauss
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -15,7 +15,7 @@
 #define IPSEL 0xFE400034
 
 SND_SOC_DAILINK_DEFS(ac97,
-	DAILINK_COMP_ARRAY(COMP_CPU("hac-dai.0")),	/* HAC0 */
+	DAILINK_COMP_ARRAY(COMP_CPU("hac-dai.0")),	 
 	DAILINK_COMP_ARRAY(COMP_CODEC("ac97-codec", "ac97-hifi")),
 	DAILINK_COMP_ARRAY(COMP_PLATFORM("sh7760-pcm-audio")));
 
@@ -39,7 +39,7 @@ static int __init sh7760_ac97_init(void)
 	int ret;
 	unsigned short ipsel;
 
-	/* enable both AC97 controllers in pinmux reg */
+	 
 	ipsel = __raw_readw(IPSEL);
 	__raw_writew(ipsel | (3 << 10), IPSEL);
 

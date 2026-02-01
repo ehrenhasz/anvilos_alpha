@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __RECV_OSDEP_H_
 #define __RECV_OSDEP_H_
 
@@ -37,4 +33,4 @@ void rtw_os_recv_indicate_pkt(struct adapter *padapter, struct sk_buff *pkt, str
 void rtw_init_recv_timer(struct recv_reorder_ctrl *preorder_ctrl);
 
 
-#endif /*  */
+#endif  

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only or Apache-2.0 */
-/*
- * WF200 hardware interface definitions
- *
- * Copyright (c) 2018-2020, Silicon Laboratories Inc.
- */
+ 
+ 
 
 #ifndef WFX_HIF_API_GENERAL_H
 #define WFX_HIF_API_GENERAL_H
@@ -184,9 +180,9 @@ struct wfx_hif_rx_stats {
 	__le32 throughput;
 	__le32 nb_rx_by_rate[API_RATE_NUM_ENTRIES];
 	__le16 per[API_RATE_NUM_ENTRIES];
-	__le16 snr[API_RATE_NUM_ENTRIES];  /* signed value */
-	__le16 rssi[API_RATE_NUM_ENTRIES]; /* signed value */
-	__le16 cfo[API_RATE_NUM_ENTRIES];  /* signed value */
+	__le16 snr[API_RATE_NUM_ENTRIES];   
+	__le16 rssi[API_RATE_NUM_ENTRIES];  
+	__le16 cfo[API_RATE_NUM_ENTRIES];   
 	__le32 date;
 	__le32 pwr_clk_freq;
 	u8     is_ext_pwr_clk;
@@ -196,8 +192,8 @@ struct wfx_hif_rx_stats {
 struct wfx_hif_tx_power_loop_info {
 	__le16 tx_gain_dig;
 	__le16 tx_gain_pa;
-	__le16 target_pout; /* signed value */
-	__le16 p_estimation; /* signed value */
+	__le16 target_pout;  
+	__le16 p_estimation;  
 	__le16 vpdet;
 	u8     measurement_index;
 	u8     reserved;

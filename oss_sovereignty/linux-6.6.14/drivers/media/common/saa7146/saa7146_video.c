@@ -6,7 +6,7 @@
 #include <linux/module.h>
 #include <linux/kernel.h>
 
-/* format descriptions for capture and preview */
+ 
 static struct saa7146_format formats[] = {
 	{
 		.pixelformat	= V4L2_PIX_FMT_RGB332,
@@ -62,9 +62,7 @@ static struct saa7146_format formats[] = {
 	}
 };
 
-/* unfortunately, the saa7146 contains a bug which prevents it from doing on-the-fly byte swaps.
-   due to this, it's impossible to provide additional *packed* formats, which are simply byte swapped
-   (like V4L2_PIX_FMT_YUYV) ... 8-( */
+ 
 
 struct saa7146_format* saa7146_format_by_fourcc(struct saa7146_dev *dev, int fourcc)
 {
@@ -80,8 +78,8 @@ struct saa7146_format* saa7146_format_by_fourcc(struct saa7146_dev *dev, int fou
 	return NULL;
 }
 
-/********************************************************************************/
-/* common pagetable functions */
+ 
+ 
 
 static int saa7146_pgtable_build(struct saa7146_dev *dev, struct saa7146_buf *buf)
 {
@@ -108,7 +106,7 @@ static int saa7146_pgtable_build(struct saa7146_dev *dev, struct saa7146_buf *bu
 
 		switch( sfmt->depth ) {
 			case 12: {
-				/* create some offsets inside the page table */
+				 
 				m1 = ((size + PAGE_SIZE) / PAGE_SIZE) - 1;
 				m2 = ((size + (size / 4) + PAGE_SIZE) / PAGE_SIZE) - 1;
 				m3 = ((size + (size / 2) + PAGE_SIZE) / PAGE_SIZE) - 1;
@@ -119,7 +117,7 @@ static int saa7146_pgtable_build(struct saa7146_dev *dev, struct saa7146_buf *bu
 				break;
 			}
 			case 16: {
-				/* create some offsets inside the page table */
+				 
 				m1 = ((size + PAGE_SIZE) / PAGE_SIZE) - 1;
 				m2 = ((size + (size / 2) + PAGE_SIZE) / PAGE_SIZE) - 1;
 				m3 = ((2 * size + PAGE_SIZE) / PAGE_SIZE) - 1;
@@ -141,27 +139,26 @@ static int saa7146_pgtable_build(struct saa7146_dev *dev, struct saa7146_buf *bu
 		for_each_sg_dma_page(list, &dma_iter, length, 0)
 			*ptr1++ = cpu_to_le32(sg_page_iter_dma_address(&dma_iter) - list->offset);
 
-		/* if we have a user buffer, the first page may not be
-		   aligned to a page boundary. */
+		 
 		pt1->offset = sgt->sgl->offset;
 		pt2->offset = pt1->offset + o1;
 		pt3->offset = pt1->offset + o2;
 
-		/* create video-dma2 page table */
+		 
 		ptr1 = pt1->cpu;
 		for (i = m1; i <= m2; i++, ptr2++)
 			*ptr2 = ptr1[i];
 		fill = *(ptr2 - 1);
 		for (; i < 1024; i++, ptr2++)
 			*ptr2 = fill;
-		/* create video-dma3 page table */
+		 
 		ptr1 = pt1->cpu;
 		for (i = m2; i <= m3; i++, ptr3++)
 			*ptr3 = ptr1[i];
 		fill = *(ptr3 - 1);
 		for (; i < 1024; i++, ptr3++)
 			*ptr3 = fill;
-		/* finally: finish up video-dma1 page table */
+		 
 		ptr1 = pt1->cpu + m1;
 		fill = pt1->cpu[m1];
 		for (i = m1; i < 1024; i++, ptr1++)
@@ -176,8 +173,8 @@ static int saa7146_pgtable_build(struct saa7146_dev *dev, struct saa7146_buf *bu
 }
 
 
-/********************************************************************************/
-/* file operations */
+ 
+ 
 
 static int video_begin(struct saa7146_dev *dev)
 {
@@ -189,7 +186,7 @@ static int video_begin(struct saa7146_dev *dev)
 	DEB_EE("dev:%p\n", dev);
 
 	fmt = saa7146_format_by_fourcc(dev, vv->video_fmt.pixelformat);
-	/* we need to have a valid format set here */
+	 
 	if (!fmt)
 		return -EINVAL;
 
@@ -205,10 +202,10 @@ static int video_begin(struct saa7146_dev *dev)
 		return -EBUSY;
 	}
 
-	/* clear out beginning of streaming bit (rps register 0)*/
+	 
 	saa7146_write(dev, MC2, MASK_27 );
 
-	/* enable rps0 irqs */
+	 
 	SAA7146_IER_ENABLE(dev, MASK_27);
 
 	return 0;
@@ -224,7 +221,7 @@ static void video_end(struct saa7146_dev *dev)
 	DEB_EE("dev:%p\n", dev);
 
 	fmt = saa7146_format_by_fourcc(dev, vv->video_fmt.pixelformat);
-	/* we need to have a valid format set here */
+	 
 	if (!fmt)
 		return;
 
@@ -237,13 +234,13 @@ static void video_end(struct saa7146_dev *dev)
 	}
 	spin_lock_irqsave(&dev->slock,flags);
 
-	/* disable rps0  */
+	 
 	saa7146_write(dev, MC1, MASK_28);
 
-	/* disable rps0 irqs */
+	 
 	SAA7146_IER_DISABLE(dev, MASK_27);
 
-	/* shut down all used video dma transfers */
+	 
 	saa7146_write(dev, MC1, dmas);
 
 	spin_unlock_irqrestore(&dev->slock, flags);
@@ -305,7 +302,7 @@ int saa7146_s_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_HFLIP:
-		/* fixme: we can support changing VFLIP and HFLIP here... */
+		 
 		if (vb2_is_busy(&vv->video_dmaq.q))
 			return -EBUSY;
 		vv->hflip = ctrl->val;
@@ -406,7 +403,7 @@ static int vidioc_try_fmt_vid_cap(struct file *file, void *fh, struct v4l2_forma
 	if (f->fmt.pix.bytesperline < calc_bpl)
 		f->fmt.pix.bytesperline = calc_bpl;
 
-	if (f->fmt.pix.bytesperline > (2 * PAGE_SIZE * fmt->depth) / 8) /* arbitrary constraint */
+	if (f->fmt.pix.bytesperline > (2 * PAGE_SIZE * fmt->depth) / 8)  
 		f->fmt.pix.bytesperline = calc_bpl;
 
 	f->fmt.pix.sizeimage = f->fmt.pix.bytesperline * f->fmt.pix.height;
@@ -531,8 +528,8 @@ const struct v4l2_ioctl_ops saa7146_vbi_ioctl_ops = {
 	.vidioc_unsubscribe_event    = v4l2_event_unsubscribe,
 };
 
-/*********************************************************************************/
-/* buffer handling functions                                                  */
+ 
+ 
 
 static int buffer_activate (struct saa7146_dev *dev,
 		     struct saa7146_buf *buf,
@@ -685,8 +682,8 @@ const struct vb2_ops video_qops = {
 	.wait_finish	= vb2_ops_wait_finish,
 };
 
-/********************************************************************************/
-/* file operations */
+ 
+ 
 
 static void video_init(struct saa7146_dev *dev, struct saa7146_vv *vv)
 {
@@ -695,10 +692,10 @@ static void video_init(struct saa7146_dev *dev, struct saa7146_vv *vv)
 	timer_setup(&vv->video_dmaq.timeout, saa7146_buffer_timeout, 0);
 	vv->video_dmaq.dev              = dev;
 
-	/* set some default values */
+	 
 	vv->standard = &dev->ext_vv_data->stds[0];
 
-	/* FIXME: what's this? */
+	 
 	vv->current_hps_source = SAA7146_HPS_SOURCE_PORT_A;
 	vv->current_hps_sync = SAA7146_HPS_SYNC_PORT_A;
 }
@@ -711,7 +708,7 @@ static void video_irq_done(struct saa7146_dev *dev, unsigned long st)
 	spin_lock(&dev->slock);
 	DEB_CAP("called\n");
 
-	/* only finish the buffer if we have one... */
+	 
 	if (q->curr)
 		saa7146_buffer_finish(dev, q, VB2_BUF_STATE_DONE);
 	saa7146_buffer_next(dev,q,0);

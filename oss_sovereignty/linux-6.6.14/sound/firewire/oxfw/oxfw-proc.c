@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * oxfw_proc.c - a part of driver for OXFW970/971 based devices
- *
- * Copyright (c) 2014 Takashi Sakamoto
- */
+
+ 
 
 #include "./oxfw.h"
 
@@ -16,7 +12,7 @@ static void proc_read_formation(struct snd_info_entry *entry,
 	char flag;
 	int i, err;
 
-	/* Show input. */
+	 
 	err = snd_oxfw_stream_get_current_formation(oxfw,
 						    AVC_GENERAL_PLUG_DIR_IN,
 						    &curr);
@@ -46,7 +42,7 @@ static void proc_read_formation(struct snd_info_entry *entry,
 	if (!oxfw->has_output)
 		return;
 
-	/* Show output. */
+	 
 	err = snd_oxfw_stream_get_current_formation(oxfw,
 						    AVC_GENERAL_PLUG_DIR_OUT,
 						    &curr);
@@ -90,10 +86,7 @@ void snd_oxfw_proc_init(struct snd_oxfw *oxfw)
 {
 	struct snd_info_entry *root;
 
-	/*
-	 * All nodes are automatically removed at snd_card_disconnect(),
-	 * by following to link list.
-	 */
+	 
 	root = snd_info_create_card_entry(oxfw->card, "firewire",
 					  oxfw->card->proc_root);
 	if (root == NULL)

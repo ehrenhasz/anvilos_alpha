@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AM33XX Power Management Routines
- *
- * Copyright (C) 2012-2018 Texas Instruments Incorporated - http://www.ti.com/
- *	Vaibhav Bedia, Dave Gerlach
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/cpu.h>
@@ -37,7 +32,7 @@
 
 #define RTC_SCRATCH_RESUME_REG	0
 #define RTC_SCRATCH_MAGIC_REG	1
-#define RTC_REG_BOOT_MAGIC	0x8cd0 /* RTC */
+#define RTC_REG_BOOT_MAGIC	0x8cd0  
 #define GIC_INT_SET_PENDING_BASE 0x200
 #define AM43XX_GIC_DIST_BASE	0x48241000
 
@@ -96,7 +91,7 @@ static int am33xx_push_sram_idle(void)
 		gen_pool_virt_to_phys(sram_pool_data, ocmcram_location_data);
 	ro_sram_data.rtc_base_virt = rtc_base_virt;
 
-	/* Save physical address to calculate resume offset during pm init */
+	 
 	am33xx_do_wfi_sram_phys = gen_pool_virt_to_phys(sram_pool,
 							ocmcram_location);
 
@@ -179,12 +174,7 @@ static int am33xx_rtc_only_idle(unsigned long wfi_flags)
 	return 0;
 }
 
-/*
- * Note that the RTC module clock must be re-enabled only for rtc+ddr suspend.
- * And looks like the module can stay in SYSC_IDLE_SMART_WKUP mode configured
- * by the interconnect code just fine for both rtc+ddr suspend and retention
- * suspend.
- */
+ 
 static int am33xx_pm_suspend(suspend_state_t suspend_state)
 {
 	int i, ret = 0;
@@ -238,7 +228,7 @@ static int am33xx_pm_suspend(suspend_state_t suspend_state)
 			ret = -1;
 		}
 
-		/* print the wakeup reason */
+		 
 		if (rtc_only_idle) {
 			wakeup_src = rtc_wake_src();
 			pr_info("PM: Wakeup source %s\n", wakeup_src.src);
@@ -312,13 +302,7 @@ static void am33xx_pm_end(void)
 	m3_ipc->ops->finish_low_power(m3_ipc);
 	if (rtc_only_idle) {
 		if (retrigger_irq) {
-			/*
-			 * 32 bits of Interrupt Set-Pending correspond to 32
-			 * 32 interrupts. Compute the bit offset of the
-			 * Interrupt and set that particular bit
-			 * Compute the register offset by dividing interrupt
-			 * number by 32 and mutiplying by 4
-			 */
+			 
 			writel_relaxed(1 << (retrigger_irq & 31),
 				       gic_dist_base + GIC_INT_SET_PENDING_BASE
 				       + retrigger_irq / 32 * 4);
@@ -350,7 +334,7 @@ static const struct platform_suspend_ops am33xx_pm_ops = {
 	.enter		= am33xx_pm_enter,
 	.valid		= am33xx_pm_valid,
 };
-#endif /* CONFIG_SUSPEND */
+#endif  
 
 static void am33xx_pm_set_ipc_ops(void)
 {
@@ -364,7 +348,7 @@ static void am33xx_pm_set_ipc_ops(void)
 	}
 	m3_ipc->ops->set_mem_type(m3_ipc, temp);
 
-	/* Physical resume address to be used by ROM code */
+	 
 	resume_address = am33xx_do_wfi_sram_phys +
 			 *pm_sram->resume_offset + 0x4;
 
@@ -378,9 +362,7 @@ static void am33xx_pm_free_sram(void)
 		      sizeof(struct am33xx_pm_ro_sram_data));
 }
 
-/*
- * Push the minimal suspend-resume code to SRAM
- */
+ 
 static int am33xx_pm_alloc_sram(void)
 {
 	struct device_node *np;
@@ -443,7 +425,7 @@ static int am33xx_pm_rtc_setup(void)
 	np = of_find_node_by_name(NULL, "rtc");
 
 	if (of_device_is_available(np)) {
-		/* RTC interconnect target module clock */
+		 
 		rtc_fck = of_clk_get_by_name(np->parent, "fck");
 		if (IS_ERR(rtc_fck))
 			return PTR_ERR(rtc_fck);
@@ -542,17 +524,12 @@ static int am33xx_pm_probe(struct platform_device *pdev)
 #ifdef CONFIG_SUSPEND
 	suspend_set_ops(&am33xx_pm_ops);
 
-	/*
-	 * For a system suspend we must flush the caches, we want
-	 * the DDR in self-refresh, we want to save the context
-	 * of the EMIF, and we want the wkup_m3 to handle low-power
-	 * transition.
-	 */
+	 
 	suspend_wfi_flags |= WFI_FLAG_FLUSH_CACHE;
 	suspend_wfi_flags |= WFI_FLAG_SELF_REFRESH;
 	suspend_wfi_flags |= WFI_FLAG_SAVE_EMIF;
 	suspend_wfi_flags |= WFI_FLAG_WAKE_M3;
-#endif /* CONFIG_SUSPEND */
+#endif  
 
 	pm_runtime_enable(dev);
 	ret = pm_runtime_resume_and_get(dev);

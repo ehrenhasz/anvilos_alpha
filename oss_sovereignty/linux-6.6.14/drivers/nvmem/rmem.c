@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2020 Nicolas Saenz Julienne <nsaenzjulienne@suse.de>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -26,16 +24,7 @@ static int rmem_read(void *context, unsigned int offset,
 	void *addr;
 	int count;
 
-	/*
-	 * Only map the reserved memory at this point to avoid potential rogue
-	 * kernel threads inadvertently modifying it. Based on the current
-	 * uses-cases for this driver, the performance hit isn't a concern.
-	 * Nor is likely to be, given the nature of the subsystem. Most nvmem
-	 * devices operate over slow buses to begin with.
-	 *
-	 * An alternative would be setting the memory as RO, set_memory_ro(),
-	 * but as of Dec 2020 this isn't possible on arm64.
-	 */
+	 
 	addr = memremap(priv->mem->base, available, MEMREMAP_WB);
 	if (!addr) {
 		dev_err(priv->dev, "Failed to remap memory region\n");
@@ -80,7 +69,7 @@ static int rmem_probe(struct platform_device *pdev)
 
 static const struct of_device_id rmem_match[] = {
 	{ .compatible = "nvmem-rmem", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, rmem_match);
 

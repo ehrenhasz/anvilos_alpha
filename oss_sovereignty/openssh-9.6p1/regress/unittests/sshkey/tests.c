@@ -1,9 +1,5 @@
-/* 	$OpenBSD: tests.c,v 1.1 2014/06/24 01:14:18 djm Exp $ */
-/*
- * Regress test for sshbuf.h buffer API
- *
- * Placed in the public domain
- */
+ 
+ 
 
 #include "includes.h"
 

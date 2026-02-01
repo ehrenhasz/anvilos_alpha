@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -127,13 +127,10 @@ static int ionic_get_link_ksettings(struct net_device *netdev,
 		return -EOPNOTSUPP;
 	}
 
-	/* The port_info data is found in a DMA space that the NIC keeps
-	 * up-to-date, so there's no need to request the data from the
-	 * NIC, we already have it in our memory space.
-	 */
+	 
 
 	switch (le16_to_cpu(idev->port_info->status.xcvr.pid)) {
-		/* Copper */
+		 
 	case IONIC_XCVR_PID_QSFP_100G_CR4:
 		ethtool_link_ksettings_add_link_mode(ks, supported,
 						     100000baseCR4_Full);
@@ -158,7 +155,7 @@ static int ionic_get_link_ksettings(struct net_device *netdev,
 		copper_seen++;
 		break;
 
-		/* Fibre */
+		 
 	case IONIC_XCVR_PID_QSFP_100G_SR4:
 	case IONIC_XCVR_PID_QSFP_100G_AOC:
 		ethtool_link_ksettings_add_link_mode(ks, supported,
@@ -214,7 +211,7 @@ static int ionic_get_link_ksettings(struct net_device *netdev,
 						     1000baseT_Full);
 		break;
 	case IONIC_XCVR_PID_UNKNOWN:
-		/* This means there's no module plugged in */
+		 
 		break;
 	default:
 		dev_info(lif->ionic->dev, "unknown xcvr type pid=%d / 0x%x\n",
@@ -274,7 +271,7 @@ static int ionic_set_link_ksettings(struct net_device *netdev,
 	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
 		return -EBUSY;
 
-	/* set autoneg */
+	 
 	if (ks->base.autoneg != idev->port_info->config.an_enable) {
 		mutex_lock(&ionic->dev_cmd_lock);
 		ionic_dev_cmd_port_autoneg(idev, ks->base.autoneg);
@@ -284,7 +281,7 @@ static int ionic_set_link_ksettings(struct net_device *netdev,
 			return err;
 	}
 
-	/* set speed */
+	 
 	if (ks->base.speed != le32_to_cpu(idev->port_info->config.speed)) {
 		mutex_lock(&ionic->dev_cmd_lock);
 		ionic_dev_cmd_port_speed(idev, ks->base.speed);
@@ -326,7 +323,7 @@ static int ionic_set_pauseparam(struct net_device *netdev,
 	if (pause->autoneg)
 		return -EOPNOTSUPP;
 
-	/* change both at the same time */
+	 
 	requested_pause = IONIC_PORT_PAUSE_TYPE_LINK;
 	if (pause->rx_pause)
 		requested_pause |= IONIC_PAUSE_F_RX;
@@ -451,7 +448,7 @@ static int ionic_set_coalesce(struct net_device *netdev,
 		return -EIO;
 	}
 
-	/* Tx normally shares Rx interrupt, so only change Rx if not split */
+	 
 	if (!test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state) &&
 	    (coalesce->tx_coalesce_usecs != lif->rx_coalesce_usecs ||
 	     coalesce->use_adaptive_tx_coalesce)) {
@@ -459,9 +456,7 @@ static int ionic_set_coalesce(struct net_device *netdev,
 		return -EINVAL;
 	}
 
-	/* Convert the usec request to a HW usable value.  If they asked
-	 * for non-zero and it resolved to zero, bump it up
-	 */
+	 
 	rx_coal = ionic_coal_usec_to_hw(lif->ionic, coalesce->rx_coalesce_usecs);
 	if (!rx_coal && coalesce->rx_coalesce_usecs)
 		rx_coal = 1;
@@ -473,7 +468,7 @@ static int ionic_set_coalesce(struct net_device *netdev,
 	    tx_coal > IONIC_INTR_CTRL_COAL_MAX)
 		return -ERANGE;
 
-	/* Save the new values */
+	 
 	lif->rx_coalesce_usecs = coalesce->rx_coalesce_usecs;
 	lif->rx_coalesce_hw = rx_coal;
 
@@ -641,7 +636,7 @@ static int ionic_set_ringparam(struct net_device *netdev,
 		return -EINVAL;
 	}
 
-	/* if nothing to do return success */
+	 
 	if (ring->tx_pending == lif->ntxq_descs &&
 	    ring->rx_pending == lif->nrxq_descs &&
 	    kernel_ring->tx_push == test_bit(IONIC_LIF_F_CMB_TX_RINGS, lif->state) &&
@@ -673,7 +668,7 @@ static int ionic_set_ringparam(struct net_device *netdev,
 		netdev_info(netdev, "Changing Rx ring size from %d to %d\n",
 			    lif->nrxq_descs, ring->rx_pending);
 
-	/* if we're not running, just set the values and return */
+	 
 	if (!netif_running(lif->netdev)) {
 		lif->ntxq_descs = ring->tx_pending;
 		lif->nrxq_descs = ring->rx_pending;
@@ -694,12 +689,12 @@ static void ionic_get_channels(struct net_device *netdev,
 {
 	struct ionic_lif *lif = netdev_priv(netdev);
 
-	/* report maximum channels */
+	 
 	ch->max_combined = lif->ionic->ntxqs_per_lif;
 	ch->max_rx = lif->ionic->ntxqs_per_lif / 2;
 	ch->max_tx = lif->ionic->ntxqs_per_lif / 2;
 
-	/* report current channels */
+	 
 	if (test_bit(IONIC_LIF_F_SPLIT_INTR, lif->state)) {
 		ch->rx_count = lif->nxqs;
 		ch->tx_count = lif->nxqs;
@@ -769,7 +764,7 @@ static int ionic_set_channels(struct net_device *netdev,
 	if (err < 0)
 		return err;
 
-	/* if we're not running, just set the values and return */
+	 
 	if (!netif_running(lif->netdev)) {
 		lif->nxqs = qparam.nxqs;
 
@@ -900,7 +895,7 @@ static int ionic_get_module_info(struct net_device *netdev,
 	xcvr = &idev->port_info->status.xcvr;
 	sfp = (struct sfp_eeprom_base *) xcvr->sprom;
 
-	/* report the module data type and length */
+	 
 	switch (sfp->phys_id) {
 	case SFF8024_ID_SFP:
 		modinfo->type = ETH_MODULE_SFF_8079;
@@ -933,9 +928,7 @@ static int ionic_get_module_eeprom(struct net_device *netdev,
 	int count = 10;
 	u32 len;
 
-	/* The NIC keeps the module prom up-to-date in the DMA space
-	 * so we can simply copy the module bytes into the data buffer.
-	 */
+	 
 	xcvr = &idev->port_info->status.xcvr;
 	len = min_t(u32, sizeof(xcvr->sprom), ee->len);
 
@@ -943,7 +936,7 @@ static int ionic_get_module_eeprom(struct net_device *netdev,
 		memcpy(data, xcvr->sprom, len);
 		memcpy(tbuf, xcvr->sprom, len);
 
-		/* Let's make sure we got a consistent copy */
+		 
 		if (!memcmp(data, tbuf, len))
 			break;
 
@@ -974,7 +967,7 @@ static int ionic_get_ts_info(struct net_device *netdev,
 				SOF_TIMESTAMPING_RX_HARDWARE |
 				SOF_TIMESTAMPING_RAW_HARDWARE;
 
-	/* tx modes */
+	 
 
 	info->tx_types = BIT(HWTSTAMP_TX_OFF) |
 			 BIT(HWTSTAMP_TX_ON);
@@ -987,7 +980,7 @@ static int ionic_get_ts_info(struct net_device *netdev,
 	if (ionic->ident.lif.eth.hwstamp_tx_modes & mask)
 		info->tx_types |= BIT(HWTSTAMP_TX_ONESTEP_P2P);
 
-	/* rx filters */
+	 
 
 	info->rx_filters = BIT(HWTSTAMP_FILTER_NONE) |
 			   BIT(HWTSTAMP_FILTER_ALL);
@@ -1056,7 +1049,7 @@ static int ionic_nway_reset(struct net_device *netdev)
 	if (test_bit(IONIC_LIF_F_FW_RESET, lif->state))
 		return -EBUSY;
 
-	/* flap the link to force auto-negotiation */
+	 
 
 	mutex_lock(&ionic->dev_cmd_lock);
 

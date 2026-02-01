@@ -1,43 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/fs/nfs/direct.c
- *
- * Copyright (C) 2003 by Chuck Lever <cel@netapp.com>
- *
- * High-performance uncached I/O for the Linux NFS client
- *
- * There are important applications whose performance or correctness
- * depends on uncached access to file data.  Database clusters
- * (multiple copies of the same instance running on separate hosts)
- * implement their own cache coherency protocol that subsumes file
- * system cache protocols.  Applications that process datasets
- * considerably larger than the client's memory do not always benefit
- * from a local cache.  A streaming video server, for instance, has no
- * need to cache the contents of a file.
- *
- * When an application requests uncached I/O, all read and write requests
- * are made directly to the server; data stored or fetched via these
- * requests is not cached in the Linux page cache.  The client does not
- * correct unaligned requests from applications.  All requested bytes are
- * held on permanent storage before a direct write system call returns to
- * an application.
- *
- * Solaris implements an uncached I/O facility called directio() that
- * is used for backups and sequential I/O to very large files.  Solaris
- * also supports uncaching whole NFS partitions with "-o forcedirectio,"
- * an undocumented mount option.
- *
- * Designed by Jeff Kimmel, Chuck Lever, and Trond Myklebust, with
- * help from Andrew Morton.
- *
- * 18 Dec 2001	Initial implementation for 2.4  --cel
- * 08 Jul 2002	Version for 2.4.19, with bug fixes --trondmy
- * 08 Jun 2003	Port to 2.5 APIs  --cel
- * 31 Mar 2004	Handle direct I/O without VFS support  --cel
- * 15 Sep 2004	Parallel async reads  --cel
- * 04 May 2005	support O_DIRECT with aio  --cel
- *
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/sched.h>
@@ -130,13 +92,7 @@ static void nfs_direct_truncate_request(struct nfs_direct_req *dreq,
 		dreq->count = req_start;
 }
 
-/**
- * nfs_swap_rw - NFS address space operation for swap I/O
- * @iocb: target I/O control block
- * @iter: I/O buffer
- *
- * Perform IO to the swap-file.  This is much like direct IO.
- */
+ 
 int nfs_swap_rw(struct kiocb *iocb, struct iov_iter *iter)
 {
 	ssize_t ret;
@@ -212,14 +168,12 @@ ssize_t nfs_dreq_bytes_left(struct nfs_direct_req *dreq, loff_t offset)
 }
 EXPORT_SYMBOL_GPL(nfs_dreq_bytes_left);
 
-/*
- * Collects and returns the final error value/byte-count.
- */
+ 
 static ssize_t nfs_direct_wait(struct nfs_direct_req *dreq)
 {
 	ssize_t result = -EIOCBQUEUED;
 
-	/* Async requests don't wait here */
+	 
 	if (dreq->iocb)
 		goto out;
 
@@ -236,10 +190,7 @@ out:
 	return (ssize_t) result;
 }
 
-/*
- * Synchronous I/O uses a stack-allocated iocb.  Thus we can't trust
- * the iocb is still valid here if this is a synchronous request.
- */
+ 
 static void nfs_direct_complete(struct nfs_direct_req *dreq)
 {
 	struct inode *inode = dreq->inode;
@@ -313,13 +264,7 @@ static const struct nfs_pgio_completion_ops nfs_direct_read_completion_ops = {
 	.completion = nfs_direct_read_completion,
 };
 
-/*
- * For each rsize'd chunk of the user's buffer, dispatch an NFS READ
- * operation.  If nfs_readdata_alloc() or get_user_pages() fails,
- * bail and stop sending more reads.  Read length accounting is
- * handled automatically by nfs_direct_read_result().  Otherwise, if
- * no requests have been sent, just return an error.
- */
+ 
 
 static ssize_t nfs_direct_read_schedule_iovec(struct nfs_direct_req *dreq,
 					      struct iov_iter *iter,
@@ -353,7 +298,7 @@ static ssize_t nfs_direct_read_schedule_iovec(struct nfs_direct_req *dreq,
 		for (i = 0; i < npages; i++) {
 			struct nfs_page *req;
 			unsigned int req_len = min_t(size_t, bytes, PAGE_SIZE - pgbase);
-			/* XXX do we need to do the eof zeroing found in async_filler? */
+			 
 			req = nfs_page_create_from_page(dreq->ctx, pagevec[i],
 							pgbase, pos, req_len);
 			if (IS_ERR(req)) {
@@ -379,10 +324,7 @@ static ssize_t nfs_direct_read_schedule_iovec(struct nfs_direct_req *dreq,
 
 	nfs_pageio_complete(&desc);
 
-	/*
-	 * If no bytes were started, return the error, and let the
-	 * generic layer handle the completion.
-	 */
+	 
 	if (requested_bytes == 0) {
 		inode_dio_end(inode);
 		nfs_direct_req_release(dreq);
@@ -394,26 +336,7 @@ static ssize_t nfs_direct_read_schedule_iovec(struct nfs_direct_req *dreq,
 	return requested_bytes;
 }
 
-/**
- * nfs_file_direct_read - file direct read operation for NFS files
- * @iocb: target I/O control block
- * @iter: vector of user buffers into which to read data
- * @swap: flag indicating this is swap IO, not O_DIRECT IO
- *
- * We use this function for direct reads instead of calling
- * generic_file_aio_read() in order to avoid gfar's check to see if
- * the request starts before the end of the file.  For that check
- * to work, we must generate a GETATTR before each direct read, and
- * even then there is a window between the GETATTR and the subsequent
- * READ where the file size could change.  Our preference is simply
- * to do all reads the application wants, and the server will take
- * care of managing the end of file boundary.
- *
- * This function also eliminates unnecessarily updating the file's
- * atime locally, as the NFS server sets the file's atime, and this
- * client must read the updated atime from the server back into its
- * cache.
- */
+ 
 ssize_t nfs_file_direct_read(struct kiocb *iocb, struct iov_iter *iter,
 			     bool swap)
 {
@@ -514,10 +437,7 @@ static void nfs_direct_join_group(struct list_head *list,
 		if (subreq == req)
 			continue;
 		do {
-			/*
-			 * Remove subrequests from this list before freeing
-			 * them in the call to nfs_join_page_group().
-			 */
+			 
 			if (!list_empty(&subreq->wb_list)) {
 				nfs_list_remove_request(subreq);
 				nfs_release_request(subreq);
@@ -559,7 +479,7 @@ static void nfs_direct_write_reschedule(struct nfs_direct_req *dreq)
 
 	while (!list_empty(&reqs)) {
 		req = nfs_list_entry(reqs.next);
-		/* Bump the transmission count */
+		 
 		req->wb_nio++;
 		if (!nfs_pageio_add_request(&desc, req)) {
 			spin_lock(&dreq->lock);
@@ -608,7 +528,7 @@ static void nfs_direct_commit_complete(struct nfs_commit_data *data)
 	trace_nfs_direct_commit_complete(dreq);
 
 	if (status < 0) {
-		/* Errors in commit are fatal */
+		 
 		dreq->error = status;
 		dreq->flags = NFS_ODIRECT_DONE;
 	} else {
@@ -627,10 +547,7 @@ static void nfs_direct_commit_complete(struct nfs_commit_data *data)
 			nfs_release_request(req);
 		} else if (!nfs_write_match_verf(verf, req)) {
 			dreq->flags = NFS_ODIRECT_RESCHED_WRITES;
-			/*
-			 * Despite the reboot, the write was successful,
-			 * so reset wb_nio.
-			 */
+			 
 			req->wb_nio = 0;
 			nfs_mark_request_commit(req, NULL, &cinfo, 0);
 		} else
@@ -670,7 +587,7 @@ static void nfs_direct_commit_schedule(struct nfs_direct_req *dreq)
 	nfs_init_cinfo_from_dreq(&cinfo, dreq);
 	nfs_scan_commit(dreq->inode, &mds_list, &cinfo);
 	res = nfs_generic_commit_list(dreq->inode, &mds_list, 0, &cinfo);
-	if (res < 0) /* res == -ENOMEM */
+	if (res < 0)  
 		nfs_direct_write_reschedule(dreq);
 }
 
@@ -715,7 +632,7 @@ static void nfs_direct_write_schedule_work(struct work_struct *work)
 static void nfs_direct_write_complete(struct nfs_direct_req *dreq)
 {
 	trace_nfs_direct_write_complete(dreq);
-	queue_work(nfsiod_workqueue, &dreq->work); /* Calls nfs_direct_write_schedule_work */
+	queue_work(nfsiod_workqueue, &dreq->work);  
 }
 
 static void nfs_direct_write_completion(struct nfs_pgio_header *hdr)
@@ -808,17 +725,8 @@ static const struct nfs_pgio_completion_ops nfs_direct_write_completion_ops = {
 };
 
 
-/*
- * NB: Return the value of the first error return code.  Subsequent
- *     errors after the first one are ignored.
- */
-/*
- * For each wsize'd chunk of the user's buffer, dispatch an NFS WRITE
- * operation.  If nfs_writedata_alloc() or get_user_pages() fails,
- * bail and stop sending more writes.  Write length accounting is
- * handled automatically by nfs_direct_write_result().  Otherwise, if
- * no requests have been sent, just return an error.
- */
+ 
+ 
 static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
 					       struct iov_iter *iter,
 					       loff_t pos, int ioflags)
@@ -885,14 +793,14 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
 			if (nfs_pageio_add_request(&desc, req))
 				continue;
 
-			/* Exit on hard errors */
+			 
 			if (desc.pg_error < 0 && desc.pg_error != -EAGAIN) {
 				result = desc.pg_error;
 				nfs_unlock_and_release_request(req);
 				break;
 			}
 
-			/* If the error is soft, defer remaining requests */
+			 
 			nfs_init_cinfo_from_dreq(&cinfo, dreq);
 			spin_lock(&dreq->lock);
 			dreq->flags = NFS_ODIRECT_RESCHED_WRITES;
@@ -909,10 +817,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
 	}
 	nfs_pageio_complete(&desc);
 
-	/*
-	 * If no bytes were started, return the error, and let the
-	 * generic layer handle the completion.
-	 */
+	 
 	if (requested_bytes == 0) {
 		inode_dio_end(inode);
 		nfs_direct_req_release(dreq);
@@ -924,27 +829,7 @@ static ssize_t nfs_direct_write_schedule_iovec(struct nfs_direct_req *dreq,
 	return requested_bytes;
 }
 
-/**
- * nfs_file_direct_write - file direct write operation for NFS files
- * @iocb: target I/O control block
- * @iter: vector of user buffers from which to write data
- * @swap: flag indicating this is swap IO, not O_DIRECT IO
- *
- * We use this function for direct writes instead of calling
- * generic_file_aio_write() in order to avoid taking the inode
- * semaphore and updating the i_size.  The NFS server will set
- * the new i_size and this client must read the updated size
- * back into its cache.  We let the server do generic write
- * parameter checking and report problems.
- *
- * We eliminate local atime updates, see direct read above.
- *
- * We avoid unnecessary page cache invalidations for normal cached
- * readers of this file.
- *
- * Note that O_APPEND is not supported for NFS direct writes, as there
- * is no atomic O_APPEND write facility in the NFS protocol.
- */
+ 
 ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
 			      bool swap)
 {
@@ -961,7 +846,7 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
 		file, iov_iter_count(iter), (long long) iocb->ki_pos);
 
 	if (swap)
-		/* bypass generic checks */
+		 
 		result =  iov_iter_count(iter);
 	else
 		result = generic_write_checks(iocb, iter);
@@ -1017,7 +902,7 @@ ssize_t nfs_file_direct_write(struct kiocb *iocb, struct iov_iter *iter,
 		if (result > 0) {
 			requested -= result;
 			iocb->ki_pos = pos + result;
-			/* XXX: should check the generic_write_sync retval */
+			 
 			generic_write_sync(iocb, result);
 		}
 		iov_iter_revert(iter, requested);
@@ -1031,10 +916,7 @@ out:
 	return result;
 }
 
-/**
- * nfs_init_directcache - create a slab cache for nfs_direct_req structures
- *
- */
+ 
 int __init nfs_init_directcache(void)
 {
 	nfs_direct_cachep = kmem_cache_create("nfs_direct_cache",
@@ -1048,10 +930,7 @@ int __init nfs_init_directcache(void)
 	return 0;
 }
 
-/**
- * nfs_destroy_directcache - destroy the slab cache for nfs_direct_req structures
- *
- */
+ 
 void nfs_destroy_directcache(void)
 {
 	kmem_cache_destroy(nfs_direct_cachep);

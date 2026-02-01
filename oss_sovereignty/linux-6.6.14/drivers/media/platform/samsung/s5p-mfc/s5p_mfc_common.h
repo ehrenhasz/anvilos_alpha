@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Samsung S5P Multi Format Codec v 5.0
- *
- * This file contains definitions of enums and structs used by the codec
- * driver.
- *
- * Copyright (C) 2011 Samsung Electronics Co., Ltd.
- * Kamil Debski, <k.debski@samsung.com>
- */
+ 
+ 
 
 #ifndef S5P_MFC_COMMON_H_
 #define S5P_MFC_COMMON_H_
@@ -23,10 +15,9 @@
 
 #define S5P_MFC_NAME		"s5p-mfc"
 
-/* Definitions related to MFC memory */
+ 
 
-/* Offset base used to differentiate between CAPTURE and OUTPUT
-*  while mmaping */
+ 
 #define DST_QUEUE_OFF_BASE	(1 << 30)
 
 #define BANK_L_CTX	0
@@ -41,17 +32,17 @@
 
 #include <media/videobuf2-dma-contig.h>
 
-/* MFC definitions */
+ 
 #define MFC_MAX_EXTRA_DPB       5
 #define MFC_MAX_BUFFERS		32
 #define MFC_NUM_CONTEXTS	4
-/* Interrupt timeout */
+ 
 #define MFC_INT_TIMEOUT		2000
-/* Busy wait timeout */
+ 
 #define MFC_BW_TIMEOUT		500
-/* Watchdog interval */
+ 
 #define MFC_WATCHDOG_INTERVAL   1000
-/* After how many executions watchdog should assume lock up */
+ 
 #define MFC_WATCHDOG_CNT        10
 #define MFC_NO_INSTANCE_SET	-1
 #define MFC_ENC_CAP_PLANE_COUNT	1
@@ -102,27 +93,21 @@
 #define mfc_write(dev, data, offset)	writel((data), dev->regs_base + \
 								(offset))
 
-/*
- * enum s5p_mfc_fmt_type - type of the pixelformat
- */
+ 
 enum s5p_mfc_fmt_type {
 	MFC_FMT_DEC,
 	MFC_FMT_ENC,
 	MFC_FMT_RAW,
 };
 
-/*
- * enum s5p_mfc_inst_type - The type of an MFC instance.
- */
+ 
 enum s5p_mfc_inst_type {
 	MFCINST_INVALID,
 	MFCINST_DECODER,
 	MFCINST_ENCODER,
 };
 
-/*
- * enum s5p_mfc_inst_state - The state of an MFC instance.
- */
+ 
 enum s5p_mfc_inst_state {
 	MFCINST_FREE = 0,
 	MFCINST_INIT = 100,
@@ -142,9 +127,7 @@ enum s5p_mfc_inst_state {
 	MFCINST_RES_CHANGE_END,
 };
 
-/*
- * enum s5p_mfc_queue_state - The state of buffer queue.
- */
+ 
 enum s5p_mfc_queue_state {
 	QUEUE_FREE,
 	QUEUE_BUFS_REQUESTED,
@@ -152,9 +135,7 @@ enum s5p_mfc_queue_state {
 	QUEUE_BUFS_MMAPED,
 };
 
-/*
- * enum s5p_mfc_decode_arg - type of frame decoding
- */
+ 
 enum s5p_mfc_decode_arg {
 	MFC_DEC_FRAME,
 	MFC_DEC_LAST_FRAME,
@@ -171,9 +152,7 @@ enum s5p_mfc_fw_ver {
 
 struct s5p_mfc_ctx;
 
-/*
- * struct s5p_mfc_buf - MFC buffer
- */
+ 
 struct s5p_mfc_buf {
 	struct vb2_v4l2_buffer *b;
 	struct list_head list;
@@ -187,9 +166,7 @@ struct s5p_mfc_buf {
 	int flags;
 };
 
-/*
- * struct s5p_mfc_pm - power management data structure
- */
+ 
 struct s5p_mfc_pm {
 	struct clk	*clock_gate;
 	const char * const *clk_names;
@@ -233,15 +210,7 @@ struct s5p_mfc_variant {
 	bool		use_clock_gating;
 };
 
-/**
- * struct s5p_mfc_priv_buf - represents internal used buffer
- * @ofs:		offset of each buffer, will be used for MFC
- * @virt:		kernel virtual address, only valid when the
- *			buffer accessed by driver
- * @dma:		DMA address, only valid when kernel DMA API used
- * @size:		size of the buffer
- * @ctx:		memory context (bank) used for this allocation
- */
+ 
 struct s5p_mfc_priv_buf {
 	unsigned long	ofs;
 	void		*virt;
@@ -250,55 +219,7 @@ struct s5p_mfc_priv_buf {
 	unsigned int	ctx;
 };
 
-/**
- * struct s5p_mfc_dev - The struct containing driver internal parameters.
- *
- * @v4l2_dev:		v4l2_device
- * @vfd_dec:		video device for decoding
- * @vfd_enc:		video device for encoding
- * @plat_dev:		platform device
- * @mem_dev:		child devices of the memory banks
- * @regs_base:		base address of the MFC hw registers
- * @irq:		irq resource
- * @dec_ctrl_handler:	control framework handler for decoding
- * @enc_ctrl_handler:	control framework handler for encoding
- * @pm:			power management control
- * @variant:		MFC hardware variant information
- * @num_inst:		counter of active MFC instances
- * @irqlock:		lock for operations on videobuf2 queues
- * @condlock:		lock for changing/checking if a context is ready to be
- *			processed
- * @mfc_mutex:		lock for video_device
- * @int_cond:		variable used by the waitqueue
- * @int_type:		type of last interrupt
- * @int_err:		error number for last interrupt
- * @queue:		waitqueue for waiting for completion of device commands
- * @fw_buf:		the firmware buffer data structure
- * @mem_size:		size of the firmware operation memory
- * @mem_base:		base DMA address of the firmware operation memory
- * @mem_bitmap:		bitmap for managing MFC internal buffer allocations
- * @mem_virt:		virtual address of the firmware operation memory
- * @dma_base:		address of the beginning of memory banks
- * @hw_lock:		used for hardware locking
- * @ctx:		array of driver contexts
- * @curr_ctx:		number of the currently running context
- * @ctx_work_bits:	used to mark which contexts are waiting for hardware
- * @watchdog_cnt:	counter for the watchdog
- * @watchdog_timer:	timer for the watchdog
- * @watchdog_workqueue:	workqueue for the watchdog
- * @watchdog_work:	worker for the watchdog
- * @enter_suspend:	flag set when entering suspend
- * @ctx_buf:		common context memory (MFCv6)
- * @warn_start:		hardware error code from which warnings start
- * @mfc_ops:		ops structure holding HW operation function pointers
- * @mfc_cmds:		cmd structure holding HW commands function pointers
- * @mfc_regs:		structure holding MFC registers
- * @fw_ver:		loaded firmware sub-version
- * @fw_get_done:	flag set when request_firmware() is complete and
- *			copied into fw_buf
- * @risc_on:		flag indicates RISC is on or off
- *
- */
+ 
 struct s5p_mfc_dev {
 	struct v4l2_device	v4l2_dev;
 	struct video_device	*vfd_dec;
@@ -312,10 +233,9 @@ struct s5p_mfc_dev {
 	struct s5p_mfc_pm	pm;
 	const struct s5p_mfc_variant	*variant;
 	int num_inst;
-	spinlock_t irqlock;	/* lock when operating on context */
-	spinlock_t condlock;	/* lock when changing/checking if a context is
-					ready to be processed */
-	struct mutex mfc_mutex; /* video_device lock */
+	spinlock_t irqlock;	 
+	spinlock_t condlock;	 
+	struct mutex mfc_mutex;  
 	int int_cond;
 	int int_type;
 	unsigned int int_err;
@@ -343,12 +263,10 @@ struct s5p_mfc_dev {
 	const struct s5p_mfc_regs *mfc_regs;
 	enum s5p_mfc_fw_ver fw_ver;
 	bool fw_get_done;
-	bool risc_on; /* indicates if RISC is on or off */
+	bool risc_on;  
 };
 
-/*
- * struct s5p_mfc_h264_enc_params - encoding parameters for h264
- */
+ 
 struct s5p_mfc_h264_enc_params {
 	enum v4l2_mpeg_video_h264_profile profile;
 	enum v4l2_mpeg_video_h264_loop_filter_mode loop_filter_mode;
@@ -395,14 +313,12 @@ struct s5p_mfc_h264_enc_params {
 	u32 aso_slice_order[8];
 };
 
-/*
- * struct s5p_mfc_mpeg4_enc_params - encoding parameters for h263 and mpeg4
- */
+ 
 struct s5p_mfc_mpeg4_enc_params {
-	/* MPEG4 Only */
+	 
 	enum v4l2_mpeg_video_mpeg4_profile profile;
 	int quarter_pixel;
-	/* Common for MPEG4, H263 */
+	 
 	u16 vop_time_res;
 	u16 vop_frm_delta;
 	u8 rc_frame_qp;
@@ -414,9 +330,7 @@ struct s5p_mfc_mpeg4_enc_params {
 	int level;
 };
 
-/*
- * struct s5p_mfc_vp8_enc_params - encoding parameters for vp8
- */
+ 
 struct s5p_mfc_vp8_enc_params {
 	u8 imd_4x4;
 	enum v4l2_vp8_num_partitions num_partitions;
@@ -483,9 +397,7 @@ struct s5p_mfc_hevc_enc_params {
 	u8 prepend_sps_pps_to_idr;
 };
 
-/*
- * struct s5p_mfc_enc_params - general encoding parameters
- */
+ 
 struct s5p_mfc_enc_params {
 	u16 width;
 	u16 height;
@@ -525,14 +437,12 @@ struct s5p_mfc_enc_params {
 
 };
 
-/*
- * struct s5p_mfc_codec_ops - codec ops, used by encoding
- */
+ 
 struct s5p_mfc_codec_ops {
-	/* initialization routines */
+	 
 	int (*pre_seq_start) (struct s5p_mfc_ctx *ctx);
 	int (*post_seq_start) (struct s5p_mfc_ctx *ctx);
-	/* execution routines */
+	 
 	int (*pre_frame_start) (struct s5p_mfc_ctx *ctx);
 	int (*post_frame_start) (struct s5p_mfc_ctx *ctx);
 };
@@ -541,87 +451,7 @@ struct s5p_mfc_codec_ops {
 	(((c)->c_ops->op) ?					\
 		((c)->c_ops->op(args)) : 0)
 
-/**
- * struct s5p_mfc_ctx - This struct contains the instance context
- *
- * @dev:		pointer to the s5p_mfc_dev of the device
- * @fh:			struct v4l2_fh
- * @num:		number of the context that this structure describes
- * @int_cond:		variable used by the waitqueue
- * @int_type:		type of the last interrupt
- * @int_err:		error number received from MFC hw in the interrupt
- * @queue:		waitqueue that can be used to wait for this context to
- *			finish
- * @src_fmt:		source pixelformat information
- * @dst_fmt:		destination pixelformat information
- * @vq_src:		vb2 queue for source buffers
- * @vq_dst:		vb2 queue for destination buffers
- * @src_queue:		driver internal queue for source buffers
- * @dst_queue:		driver internal queue for destination buffers
- * @src_queue_cnt:	number of buffers queued on the source internal queue
- * @dst_queue_cnt:	number of buffers queued on the dest internal queue
- * @type:		type of the instance - decoder or encoder
- * @state:		state of the context
- * @inst_no:		number of hw instance associated with the context
- * @img_width:		width of the image that is decoded or encoded
- * @img_height:		height of the image that is decoded or encoded
- * @buf_width:		width of the buffer for processed image
- * @buf_height:		height of the buffer for processed image
- * @luma_size:		size of a luma plane
- * @chroma_size:	size of a chroma plane
- * @mv_size:		size of a motion vectors buffer
- * @consumed_stream:	number of bytes that have been used so far from the
- *			decoding buffer
- * @dpb_flush_flag:	flag used to indicate that a DPB buffers are being
- *			flushed
- * @head_processed:	flag mentioning whether the header data is processed
- *			completely or not
- * @bank1:		handle to memory allocated for temporary buffers from
- *			memory bank 1
- * @bank2:		handle to memory allocated for temporary buffers from
- *			memory bank 2
- * @capture_state:	state of the capture buffers queue
- * @output_state:	state of the output buffers queue
- * @src_bufs:		information on allocated source buffers
- * @src_bufs_cnt:	number of allocated source buffers
- * @dst_bufs:		information on allocated destination buffers
- * @dst_bufs_cnt:	number of allocated destination buffers
- * @sequence:		counter for the sequence number for v4l2
- * @dec_dst_flag:	flags for buffers queued in the hardware
- * @dec_src_buf_size:	size of the buffer for source buffers in decoding
- * @codec_mode:		number of codec mode used by MFC hw
- * @slice_interface:	slice interface flag
- * @loop_filter_mpeg4:	loop filter for MPEG4 flag
- * @display_delay:	value of the display delay for H264
- * @display_delay_enable:	display delay for H264 enable flag
- * @after_packed_pb:	flag used to track buffer when stream is in
- *			Packed PB format
- * @sei_fp_parse:	enable/disable parsing of frame packing SEI information
- * @pb_count:		count of the DPB buffers required by MFC hw
- * @total_dpb_count:	count of DPB buffers with additional buffers
- *			requested by the application
- * @ctx:		context buffer information
- * @dsc:		descriptor buffer information
- * @shm:		shared memory buffer information
- * @mv_count:		number of MV buffers allocated for decoding
- * @enc_params:		encoding parameters for MFC
- * @enc_dst_buf_size:	size of the buffers for encoder output
- * @luma_dpb_size:	dpb buffer size for luma
- * @chroma_dpb_size:	dpb buffer size for chroma
- * @me_buffer_size:	size of the motion estimation buffer
- * @tmv_buffer_size:	size of temporal predictor motion vector buffer
- * @frame_type:		used to force the type of the next encoded frame
- * @ref_queue:		list of the reference buffers for encoding
- * @force_frame_type:	encoder's frame type forcing control
- * @ref_queue_cnt:	number of the buffers in the reference list
- * @slice_size:		slice size
- * @slice_mode:		mode of dividing frames into slices
- * @c_ops:		ops for encoding
- * @ctrls:		array of controls, used when adding controls to the
- *			v4l2 control framework
- * @ctrl_handler:	handler for v4l2 framework
- * @scratch_buf_size:	scratch buffer size
- */
+ 
 struct s5p_mfc_ctx {
 	struct s5p_mfc_dev *dev;
 	struct v4l2_fh fh;
@@ -649,7 +479,7 @@ struct s5p_mfc_ctx {
 	enum s5p_mfc_inst_state state;
 	int inst_no;
 
-	/* Image parameters */
+	 
 	int img_width;
 	int img_height;
 	int buf_width;
@@ -679,7 +509,7 @@ struct s5p_mfc_ctx {
 	unsigned long dec_dst_flag;
 	size_t dec_src_buf_size;
 
-	/* Control values */
+	 
 	int codec_mode;
 	int slice_interface;
 	int loop_filter_mpeg4;
@@ -691,7 +521,7 @@ struct s5p_mfc_ctx {
 	int pb_count;
 	int total_dpb_count;
 	int mv_count;
-	/* Buffers */
+	 
 	struct s5p_mfc_priv_buf ctx;
 	struct s5p_mfc_priv_buf dsc;
 	struct s5p_mfc_priv_buf shm;
@@ -722,10 +552,7 @@ struct s5p_mfc_ctx {
 	size_t scratch_buf_size;
 };
 
-/*
- * struct s5p_mfc_fmt -	structure used to store information about pixelformats
- *			used by the MFC
- */
+ 
 struct s5p_mfc_fmt {
 	u32 fourcc;
 	u32 codec_mode;
@@ -735,15 +562,12 @@ struct s5p_mfc_fmt {
 	u32 flags;
 };
 
-/*
- * struct mfc_control -	structure used to store information about MFC controls
- *			it is used to initialize the control framework.
- */
+ 
 struct mfc_control {
 	__u32			id;
 	enum v4l2_ctrl_type	type;
-	__u8			name[32];  /* Whatever */
-	__s32			minimum;   /* Note signedness */
+	__u8			name[32];   
+	__s32			minimum;    
 	__s32			maximum;
 	__s32			step;
 	__u32			menu_skip_mask;
@@ -753,7 +577,7 @@ struct mfc_control {
 	__u8			is_volatile;
 };
 
-/* Macro for making hardware specific calls */
+ 
 #define s5p_mfc_hw_call(f, op, args...) \
 	((f && f->op) ? f->op(args) : (typeof(f->op(args)))(-ENODEV))
 
@@ -789,4 +613,4 @@ void s5p_mfc_cleanup_queue(struct list_head *lh, struct vb2_queue *vq);
 					MFC_V10_BIT)
 #define MFC_V7PLUS_BITS		(MFC_V7_BIT | MFC_V8_BIT | MFC_V10_BIT)
 
-#endif /* S5P_MFC_COMMON_H_ */
+#endif  

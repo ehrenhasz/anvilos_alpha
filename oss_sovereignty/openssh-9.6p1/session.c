@@ -1,37 +1,5 @@
-/* $OpenBSD: session.c,v 1.336 2023/08/10 23:05:48 djm Exp $ */
-/*
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- *
- * SSH2 support by Markus Friedl.
- * Copyright (c) 2000, 2001 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -109,7 +77,7 @@
 	  c[sizeof(INTERNAL_SFTP_NAME) - 1] == ' ' || \
 	  c[sizeof(INTERNAL_SFTP_NAME) - 1] == '\t'))
 
-/* func */
+ 
 
 Session *session_new(void);
 void	session_set_fds(struct ssh *, Session *, int, int, int, int, int);
@@ -128,7 +96,7 @@ static void do_authenticated2(struct ssh *, Authctxt *);
 
 static int session_pty_req(struct ssh *, Session *);
 
-/* import */
+ 
 extern ServerOptions options;
 extern char *__progname;
 extern int debug_flag;
@@ -137,12 +105,12 @@ extern int startup_pipe;
 extern void destroy_sensitive_data(void);
 extern struct sshbuf *loginmsg;
 extern struct sshauthopt *auth_opts;
-extern char *tun_fwd_ifnames; /* serverloop.c */
+extern char *tun_fwd_ifnames;  
 
-/* original command from peer. */
+ 
 const char *original_command = NULL;
 
-/* data */
+ 
 static int sessions_first_unused = -1;
 static int sessions_nalloc = 0;
 static Session *sessions = NULL;
@@ -159,14 +127,14 @@ login_cap_t *lc;
 static int is_child = 0;
 static int in_chroot = 0;
 
-/* File containing userauth info, if ExposeAuthInfo set */
+ 
 static char *auth_info_file = NULL;
 
-/* Name and directory of socket for authentication agent forwarding. */
+ 
 static char *auth_sock_name = NULL;
 static char *auth_sock_dir = NULL;
 
-/* removes the agent forwarding socket */
+ 
 
 static void
 auth_sock_cleanup_proc(struct passwd *pw)
@@ -191,13 +159,13 @@ auth_input_request_forwarding(struct ssh *ssh, struct passwd * pw)
 		return 0;
 	}
 
-	/* Temporarily drop privileged uid for mkdir/bind. */
+	 
 	temporarily_use_uid(pw);
 
-	/* Allocate a buffer for the socket name, and format the name. */
+	 
 	auth_sock_dir = xstrdup("/tmp/ssh-XXXXXXXXXX");
 
-	/* Create private directory for socket */
+	 
 	if (mkdtemp(auth_sock_dir) == NULL) {
 		ssh_packet_send_debug(ssh, "Agent forwarding disabled: "
 		    "mkdtemp() failed: %.100s", strerror(errno));
@@ -210,17 +178,17 @@ auth_input_request_forwarding(struct ssh *ssh, struct passwd * pw)
 	xasprintf(&auth_sock_name, "%s/agent.%ld",
 	    auth_sock_dir, (long) getpid());
 
-	/* Start a Unix listener on auth_sock_name. */
+	 
 	sock = unix_listener(auth_sock_name, SSH_LISTEN_BACKLOG, 0);
 
-	/* Restore the privileged uid. */
+	 
 	restore_uid();
 
-	/* Check for socket/bind/listen failure. */
+	 
 	if (sock < 0)
 		goto authsock_err;
 
-	/* Allocate a channel for the authentication agent socket. */
+	 
 	nc = channel_new(ssh, "auth-listener",
 	    SSH_CHANNEL_AUTH_SOCKET, sock, sock, -1,
 	    CHAN_X11_WINDOW_DEFAULT, CHAN_X11_PACKET_DEFAULT,
@@ -301,7 +269,7 @@ set_fwdpermit_from_authopts(struct ssh *ssh, const struct sshauthopt *opts)
 		channel_clear_permission(ssh, FORWARD_USER, FORWARD_LOCAL);
 		for (i = 0; i < auth_opts->npermitopen; i++) {
 			tmp = cp = xstrdup(auth_opts->permitopen[i]);
-			/* This shouldn't fail as it has already been checked */
+			 
 			if ((host = hpdelim2(&cp, NULL)) == NULL)
 				fatal_f("internal error: hpdelim");
 			host = cleanhostname(host);
@@ -316,7 +284,7 @@ set_fwdpermit_from_authopts(struct ssh *ssh, const struct sshauthopt *opts)
 		channel_clear_permission(ssh, FORWARD_USER, FORWARD_REMOTE);
 		for (i = 0; i < auth_opts->npermitlisten; i++) {
 			tmp = cp = xstrdup(auth_opts->permitlisten[i]);
-			/* This shouldn't fail as it has already been checked */
+			 
 			if ((host = hpdelim(&cp)) == NULL)
 				fatal_f("internal error: hpdelim");
 			host = cleanhostname(host);
@@ -336,8 +304,8 @@ do_authenticated(struct ssh *ssh, Authctxt *authctxt)
 
 	auth_log_authopts("active", auth_opts, 0);
 
-	/* setup the channel layer */
-	/* XXX - streamlocal? */
+	 
+	 
 	set_fwdpermit_from_authopts(ssh, auth_opts);
 
 	if (!auth_opts->permit_port_forwarding_flag ||
@@ -363,7 +331,7 @@ do_authenticated(struct ssh *ssh, Authctxt *authctxt)
 	do_cleanup(ssh, authctxt);
 }
 
-/* Check untrusted xauth strings for metacharacters */
+ 
 static int
 xauth_valid_string(const char *s)
 {
@@ -379,11 +347,7 @@ xauth_valid_string(const char *s)
 }
 
 #define USE_PIPES 1
-/*
- * This is called to fork and execute a command when we have no tty.  This
- * will call do_child from the child, and server_loop from the parent after
- * setting up file descriptors and such.
- */
+ 
 int
 do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 {
@@ -394,7 +358,7 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 	if (s == NULL)
 		fatal("do_exec_no_pty: no session");
 
-	/* Allocate pipes for communicating with the program. */
+	 
 	if (pipe(pin) == -1) {
 		error_f("pipe in: %.100s", strerror(errno));
 		return -1;
@@ -419,7 +383,7 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 	if (s == NULL)
 		fatal("do_exec_no_pty: no session");
 
-	/* Uses socket pairs to communicate with the program. */
+	 
 	if (socketpair(AF_UNIX, SOCK_STREAM, 0, inout) == -1) {
 		error_f("socketpair #1: %.100s", strerror(errno));
 		return -1;
@@ -434,7 +398,7 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 
 	session_proctitle(s);
 
-	/* Fork the child. */
+	 
 	switch ((pid = fork())) {
 	case -1:
 		error_f("fork: %.100s", strerror(errno));
@@ -455,55 +419,45 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 	case 0:
 		is_child = 1;
 
-		/*
-		 * Create a new session and process group since the 4.4BSD
-		 * setlogin() affects the entire process group.
-		 */
+		 
 		if (setsid() == -1)
 			error("setsid failed: %.100s", strerror(errno));
 
 #ifdef USE_PIPES
-		/*
-		 * Redirect stdin.  We close the parent side of the socket
-		 * pair, and make the child side the standard input.
-		 */
+		 
 		close(pin[1]);
 		if (dup2(pin[0], 0) == -1)
 			perror("dup2 stdin");
 		close(pin[0]);
 
-		/* Redirect stdout. */
+		 
 		close(pout[0]);
 		if (dup2(pout[1], 1) == -1)
 			perror("dup2 stdout");
 		close(pout[1]);
 
-		/* Redirect stderr. */
+		 
 		close(perr[0]);
 		if (dup2(perr[1], 2) == -1)
 			perror("dup2 stderr");
 		close(perr[1]);
 #else
-		/*
-		 * Redirect stdin, stdout, and stderr.  Stdin and stdout will
-		 * use the same socket, as some programs (particularly rdist)
-		 * seem to depend on it.
-		 */
+		 
 		close(inout[1]);
 		close(err[1]);
-		if (dup2(inout[0], 0) == -1)	/* stdin */
+		if (dup2(inout[0], 0) == -1)	 
 			perror("dup2 stdin");
-		if (dup2(inout[0], 1) == -1)	/* stdout (same as stdin) */
+		if (dup2(inout[0], 1) == -1)	 
 			perror("dup2 stdout");
 		close(inout[0]);
-		if (dup2(err[0], 2) == -1)	/* stderr */
+		if (dup2(err[0], 2) == -1)	 
 			perror("dup2 stderr");
 		close(err[0]);
 #endif
 
-		/* Do processing for the child (exec command etc). */
+		 
 		do_child(ssh, s, command);
-		/* NOTREACHED */
+		 
 	default:
 		break;
 	}
@@ -513,19 +467,15 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 #endif
 
 	s->pid = pid;
-	/* Set interactive/non-interactive mode. */
+	 
 	ssh_packet_set_interactive(ssh, s->display != NULL,
 	    options.ip_qos_interactive, options.ip_qos_bulk);
 
-	/*
-	 * Clear loginmsg, since it's the child's responsibility to display
-	 * it to the user, otherwise multiple sessions may accumulate
-	 * multiple copies of the login messages.
-	 */
+	 
 	sshbuf_reset(loginmsg);
 
 #ifdef USE_PIPES
-	/* We are the parent.  Close the child sides of the pipes. */
+	 
 	close(pin[0]);
 	close(pout[1]);
 	close(perr[1]);
@@ -533,26 +483,18 @@ do_exec_no_pty(struct ssh *ssh, Session *s, const char *command)
 	session_set_fds(ssh, s, pin[1], pout[0], perr[0],
 	    s->is_subsystem, 0);
 #else
-	/* We are the parent.  Close the child sides of the socket pairs. */
+	 
 	close(inout[0]);
 	close(err[0]);
 
-	/*
-	 * Enter the interactive session.  Note: server_loop must be able to
-	 * handle the case that fdin and fdout are the same.
-	 */
+	 
 	session_set_fds(ssh, s, inout[1], inout[1], err[1],
 	    s->is_subsystem, 0);
 #endif
 	return 0;
 }
 
-/*
- * This is called to fork and execute a command when we have a tty.  This
- * will call do_child from the child, and server_loop from the parent after
- * setting up file descriptors, controlling tty, updating wtmp, utmp,
- * lastlog, and other such operations.
- */
+ 
 int
 do_exec_pty(struct ssh *ssh, Session *s, const char *command)
 {
@@ -564,20 +506,14 @@ do_exec_pty(struct ssh *ssh, Session *s, const char *command)
 	ptyfd = s->ptyfd;
 	ttyfd = s->ttyfd;
 
-	/*
-	 * Create another descriptor of the pty master side for use as the
-	 * standard input.  We could use the original descriptor, but this
-	 * simplifies code in server_loop.  The descriptor is bidirectional.
-	 * Do this before forking (and cleanup in the child) so as to
-	 * detect and gracefully fail out-of-fd conditions.
-	 */
+	 
 	if ((fdout = dup(ptyfd)) == -1) {
 		error_f("dup #1: %s", strerror(errno));
 		close(ttyfd);
 		close(ptyfd);
 		return -1;
 	}
-	/* we keep a reference to the pty master */
+	 
 	if ((ptymaster = dup(ptyfd)) == -1) {
 		error_f("dup #2: %s", strerror(errno));
 		close(ttyfd);
@@ -586,7 +522,7 @@ do_exec_pty(struct ssh *ssh, Session *s, const char *command)
 		return -1;
 	}
 
-	/* Fork the child. */
+	 
 	switch ((pid = fork())) {
 	case -1:
 		error_f("fork: %.100s", strerror(errno));
@@ -601,13 +537,13 @@ do_exec_pty(struct ssh *ssh, Session *s, const char *command)
 		close(fdout);
 		close(ptymaster);
 
-		/* Close the master side of the pseudo tty. */
+		 
 		close(ptyfd);
 
-		/* Make the pseudo tty our controlling tty. */
+		 
 		pty_make_controlling_tty(&ttyfd, s->tty);
 
-		/* Redirect stdin/stdout/stderr from the pseudo tty. */
+		 
 		if (dup2(ttyfd, 0) == -1)
 			error("dup2 stdin: %s", strerror(errno));
 		if (dup2(ttyfd, 1) == -1)
@@ -615,19 +551,16 @@ do_exec_pty(struct ssh *ssh, Session *s, const char *command)
 		if (dup2(ttyfd, 2) == -1)
 			error("dup2 stderr: %s", strerror(errno));
 
-		/* Close the extra descriptor for the pseudo tty. */
+		 
 		close(ttyfd);
 
-		/* record login, etc. similar to login(1) */
+		 
 #ifndef HAVE_OSF_SIA
 		do_login(ssh, s, command);
 #endif
-		/*
-		 * Do common processing for the child, such as execing
-		 * the command.
-		 */
+		 
 		do_child(ssh, s, command);
-		/* NOTREACHED */
+		 
 	default:
 		break;
 	}
@@ -638,10 +571,10 @@ do_exec_pty(struct ssh *ssh, Session *s, const char *command)
 
 	s->pid = pid;
 
-	/* Parent.  Close the slave side of the pseudo tty. */
+	 
 	close(ttyfd);
 
-	/* Enter interactive session. */
+	 
 	s->ptymaster = ptymaster;
 	ssh_packet_set_interactive(ssh, 1,
 	    options.ip_qos_interactive, options.ip_qos_bulk);
@@ -649,10 +582,7 @@ do_exec_pty(struct ssh *ssh, Session *s, const char *command)
 	return 0;
 }
 
-/*
- * This is called to fork and execute a command.  If another command is
- * to be forced, execute that instead.
- */
+ 
 int
 do_exec(struct ssh *ssh, Session *s, const char *command)
 {
@@ -685,7 +615,7 @@ do_exec(struct ssh *ssh, Session *s, const char *command)
 	} else if (command == NULL) {
 		snprintf(session_type, sizeof(session_type), "shell");
 	} else {
-		/* NB. we don't log unforced commands to preserve privacy */
+		 
 		snprintf(session_type, sizeof(session_type), "command");
 	}
 
@@ -710,7 +640,7 @@ do_exec(struct ssh *ssh, Session *s, const char *command)
 	else if (s->ttyfd == -1) {
 		char *shell = s->pw->pw_shell;
 
-		if (shell[0] == '\0')	/* empty shell means /bin/sh */
+		if (shell[0] == '\0')	 
 			shell =_PATH_BSHELL;
 		PRIVSEP(audit_run_command(shell));
 	}
@@ -722,17 +652,13 @@ do_exec(struct ssh *ssh, Session *s, const char *command)
 
 	original_command = NULL;
 
-	/*
-	 * Clear loginmsg: it's the child's responsibility to display
-	 * it to the user, otherwise multiple sessions may accumulate
-	 * multiple copies of the login messages.
-	 */
+	 
 	sshbuf_reset(loginmsg);
 
 	return ret;
 }
 
-/* administrative, login(1)-like work */
+ 
 void
 do_login(struct ssh *ssh, Session *s, const char *command)
 {
@@ -741,10 +667,7 @@ do_login(struct ssh *ssh, Session *s, const char *command)
 	struct passwd * pw = s->pw;
 	pid_t pid = getpid();
 
-	/*
-	 * Get IP address of client. If the connection is not a socket, let
-	 * the address be 0.0.0.0.
-	 */
+	 
 	memset(&from, 0, sizeof(from));
 	fromlen = sizeof(from);
 	if (ssh_packet_connection_is_on_socket(ssh)) {
@@ -755,7 +678,7 @@ do_login(struct ssh *ssh, Session *s, const char *command)
 		}
 	}
 
-	/* Record that there was a login on that tty from the remote host. */
+	 
 	if (!use_privsep)
 		record_login(pid, s->tty, pw->pw_name, pw->pw_uid,
 		    session_get_remote_name_or_ip(ssh, utmp_len,
@@ -763,15 +686,12 @@ do_login(struct ssh *ssh, Session *s, const char *command)
 		    (struct sockaddr *)&from, fromlen);
 
 #ifdef USE_PAM
-	/*
-	 * If password change is needed, do it now.
-	 * This needs to occur before the ~/.hushlogin check.
-	 */
+	 
 	if (options.use_pam && !use_privsep && s->authctxt->force_pwchange) {
 		display_loginmsg();
 		do_pam_chauthtok();
 		s->authctxt->force_pwchange = 0;
-		/* XXX - signal [net] parent to enable forwardings */
+		 
 	}
 #endif
 
@@ -783,9 +703,7 @@ do_login(struct ssh *ssh, Session *s, const char *command)
 	do_motd();
 }
 
-/*
- * Display the message of the day.
- */
+ 
 void
 do_motd(void)
 {
@@ -808,9 +726,7 @@ do_motd(void)
 }
 
 
-/*
- * Check for quiet login, either .hushlogin or command given.
- */
+ 
 int
 check_quietlogin(Session *s, const char *command)
 {
@@ -818,7 +734,7 @@ check_quietlogin(Session *s, const char *command)
 	struct passwd *pw = s->pw;
 	struct stat st;
 
-	/* Return 1 if .hushlogin exists or a command given. */
+	 
 	if (command != NULL)
 		return 1;
 	snprintf(buf, sizeof(buf), "%.200s/.hushlogin", pw->pw_dir);
@@ -832,14 +748,7 @@ check_quietlogin(Session *s, const char *command)
 	return 0;
 }
 
-/*
- * Reads environment variables from the given file and adds/overrides them
- * into the environment.  If the file does not exist, this does nothing.
- * Otherwise, it must consist of empty lines, comments (line starts with '#')
- * and assignments of the form name=value.  No other forms are allowed.
- * If allowlist is not NULL, then it is interpreted as a pattern list and
- * only variable names that match it will be accepted.
- */
+ 
 static void
 read_environment_file(char ***env, u_int *envsize,
 	const char *filename, const char *allowlist)
@@ -869,10 +778,7 @@ read_environment_file(char ***env, u_int *envsize,
 			    filename);
 			continue;
 		}
-		/*
-		 * Replace the equals sign by nul, and advance value to
-		 * the value string.
-		 */
+		 
 		*value = '\0';
 		value++;
 		if (allowlist != NULL &&
@@ -885,9 +791,7 @@ read_environment_file(char ***env, u_int *envsize,
 }
 
 #ifdef HAVE_ETC_DEFAULT_LOGIN
-/*
- * Return named variable from specified environment, or NULL if not present.
- */
+ 
 static char *
 child_get_env(char **env, const char *name)
 {
@@ -901,10 +805,7 @@ child_get_env(char **env, const char *name)
 	return NULL;
 }
 
-/*
- * Read /etc/default/login.
- * We pick up the PATH (or SUPATH for root) and UMASK.
- */
+ 
 static void
 read_etc_default_login(char ***env, u_int *envsize, uid_t uid)
 {
@@ -912,11 +813,7 @@ read_etc_default_login(char ***env, u_int *envsize, uid_t uid)
 	u_int i, tmpenvsize = 0;
 	u_long mask;
 
-	/*
-	 * We don't want to copy the whole file to the child's environment,
-	 * so we use a temporary environment and copy the variables we're
-	 * interested in.
-	 */
+	 
 	read_environment_file(&tmpenv, &tmpenvsize, "/etc/default/login",
 	    options.permit_user_env_allowlist);
 
@@ -938,7 +835,7 @@ read_etc_default_login(char ***env, u_int *envsize, uid_t uid)
 		free(tmpenv[i]);
 	free(tmpenv);
 }
-#endif /* HAVE_ETC_DEFAULT_LOGIN */
+#endif  
 
 #if defined(USE_PAM) || defined(HAVE_CYGWIN)
 static void
@@ -968,7 +865,7 @@ copy_environment_denylist(char **source, char ***env, u_int *envsize,
 		free(var_name);
 	}
 }
-#endif /* defined(USE_PAM) || defined(HAVE_CYGWIN) */
+#endif  
 
 #ifdef HAVE_CYGWIN
 static void
@@ -990,16 +887,13 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 	char *path = NULL;
 #endif
 
-	/* Initialize the environment. */
+	 
 	envsize = 100;
 	env = xcalloc(envsize, sizeof(char *));
 	env[0] = NULL;
 
 #ifdef HAVE_CYGWIN
-	/*
-	 * The Windows environment contains some setting which are
-	 * important for a running system. They must not be dropped.
-	 */
+	 
 	{
 		char **p;
 
@@ -1010,13 +904,11 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 #endif
 
 #ifdef GSSAPI
-	/* Allow any GSSAPI methods that we've used to alter
-	 * the child's environment as they see fit
-	 */
+	 
 	ssh_gssapi_do_child(&env, &envsize);
 #endif
 
-	/* Set basic environment. */
+	 
 	for (i = 0; i < s->num_env; i++)
 		child_set_env(&env, &envsize, s->env[i].name, s->env[i].val);
 
@@ -1031,24 +923,19 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 		child_set_env(&env, &envsize, "PATH", _PATH_STDPATH);
 	else
 		child_set_env(&env, &envsize, "PATH", getenv("PATH"));
-#else /* HAVE_LOGIN_CAP */
+#else  
 # ifndef HAVE_CYGWIN
-	/*
-	 * There's no standard path on Windows. The path contains
-	 * important components pointing to the system directories,
-	 * needed for loading shared libraries. So the path better
-	 * remains intact here.
-	 */
+	 
 #  ifdef HAVE_ETC_DEFAULT_LOGIN
 	read_etc_default_login(&env, &envsize, pw->pw_uid);
 	path = child_get_env(env, "PATH");
-#  endif /* HAVE_ETC_DEFAULT_LOGIN */
+#  endif  
 	if (path == NULL || *path == '\0') {
 		child_set_env(&env, &envsize, "PATH",
 		    s->pw->pw_uid == 0 ?  SUPERUSER_PATH : _PATH_STDPATH);
 	}
-# endif /* HAVE_CYGWIN */
-#endif /* HAVE_LOGIN_CAP */
+# endif  
+#endif  
 
 	if (!options.use_pam) {
 		snprintf(buf, sizeof buf, "%.200s/%.50s",
@@ -1056,7 +943,7 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 		child_set_env(&env, &envsize, "MAIL", buf);
 	}
 
-	/* Normal systems set SHELL by default. */
+	 
 	child_set_env(&env, &envsize, "SHELL", shell);
 
 	if (getenv("TZ"))
@@ -1066,11 +953,7 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 	if (s->display)
 		child_set_env(&env, &envsize, "DISPLAY", s->display);
 
-	/*
-	 * Since we clear KRB5CCNAME at startup, if it's set now then it
-	 * must have been set by a native authentication method (eg AIX or
-	 * SIA), so copy it to the child.
-	 */
+	 
 	{
 		char *cp;
 
@@ -1098,14 +981,14 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 		    auth_sock_name);
 
 
-	/* Set custom environment options from pubkey authentication. */
+	 
 	if (options.permit_user_env) {
 		for (n = 0 ; n < auth_opts->nenv; n++) {
 			ocp = xstrdup(auth_opts->env[n]);
 			cp = strchr(ocp, '=');
 			if (cp != NULL) {
 				*cp = '\0';
-				/* Apply PermitUserEnvironment allowlist */
+				 
 				if (options.permit_user_env_allowlist == NULL ||
 				    match_pattern_list(ocp,
 				    options.permit_user_env_allowlist, 0) == 1)
@@ -1116,7 +999,7 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 		}
 	}
 
-	/* read $HOME/.ssh/environment. */
+	 
 	if (options.permit_user_env) {
 		snprintf(buf, sizeof buf, "%.200s/%s/environment",
 		    pw->pw_dir, _PATH_SSH_USER_DIR);
@@ -1125,17 +1008,11 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 	}
 
 #ifdef USE_PAM
-	/*
-	 * Pull in any environment variables that may have
-	 * been set by PAM.
-	 */
+	 
 	if (options.use_pam) {
 		char **p;
 
-		/*
-		 * Don't allow PAM-internal env vars to leak
-		 * back into the session environment.
-		 */
+		 
 #define PAM_ENV_DENYLIST  "SSH_AUTH_INFO*,SSH_CONNECTION*"
 		p = fetch_pam_child_environment();
 		copy_environment_denylist(p, &env, &envsize,
@@ -1147,13 +1024,13 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 		    PAM_ENV_DENYLIST);
 		free_pam_environment(p);
 	}
-#endif /* USE_PAM */
+#endif  
 
-	/* Environment specified by admin */
+	 
 	for (i = 0; i < options.num_setenv; i++) {
 		cp = xstrdup(options.setenv[i]);
 		if ((value = strchr(cp, '=')) == NULL) {
-			/* shouldn't happen; vars are checked in servconf.c */
+			 
 			fatal("Invalid config SetEnv: %s", options.setenv[i]);
 		}
 		*value++ = '\0';
@@ -1161,7 +1038,7 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 		free(cp);
 	}
 
-	/* SSH_CLIENT deprecated */
+	 
 	snprintf(buf, sizeof buf, "%.50s %d %d",
 	    ssh_remote_ipaddr(ssh), ssh_remote_port(ssh),
 	    ssh_local_port(ssh));
@@ -1185,7 +1062,7 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 		    original_command);
 
 	if (debug_flag) {
-		/* dump the environment */
+		 
 		fprintf(stderr, "Environment:\n");
 		for (i = 0; env[i]; i++)
 			fprintf(stderr, "  %.200s\n", env[i]);
@@ -1193,10 +1070,7 @@ do_setup_env(struct ssh *ssh, Session *s, const char *shell)
 	return env;
 }
 
-/*
- * Run $HOME/.ssh/rc, /etc/ssh/sshrc, or xauth (whichever is found
- * first in this order).
- */
+ 
 static void
 do_rc_files(struct ssh *ssh, Session *s, const char *shell)
 {
@@ -1209,7 +1083,7 @@ do_rc_files(struct ssh *ssh, Session *s, const char *shell)
 	    s->display != NULL && s->auth_proto != NULL && s->auth_data != NULL;
 	xasprintf(&user_rc, "%s/%s", s->pw->pw_dir, _PATH_SSH_USER_RC);
 
-	/* ignore _PATH_SSH_USER_RC for subsystems and admin forced commands */
+	 
 	if (!s->is_subsystem && options.adm_forced_command == NULL &&
 	    auth_opts->permit_user_rc && options.permit_user_rc &&
 	    stat(user_rc, &st) >= 0) {
@@ -1241,7 +1115,7 @@ do_rc_files(struct ssh *ssh, Session *s, const char *shell)
 			fprintf(stderr, "Could not run %s\n",
 			    _PATH_SSH_SYSTEM_RC);
 	} else if (do_xauth && options.xauth_location != NULL) {
-		/* Add authority data to .Xauthority if appropriate. */
+		 
 		if (debug_flag) {
 			fprintf(stderr,
 			    "Running %.500s remove %.100s\n",
@@ -1289,7 +1163,7 @@ do_nologin(struct passwd *pw)
 	if (stat(nl, &sb) == -1)
 		return;
 
-	/* /etc/nologin exists.  Print its contents if we can and exit. */
+	 
 	logit("User %.100s not allowed because %s exists", pw->pw_name, nl);
 	if ((f = fopen(nl, "r")) != NULL) {
 		while (fgets(buf, sizeof(buf), f))
@@ -1299,10 +1173,7 @@ do_nologin(struct passwd *pw)
 	exit(254);
 }
 
-/*
- * Chroot into a directory after checking it for safety: all path components
- * must be root-owned directories with strict permissions.
- */
+ 
 static void
 safely_chroot(const char *path, uid_t uid)
 {
@@ -1315,10 +1186,7 @@ safely_chroot(const char *path, uid_t uid)
 	if (strlen(path) >= sizeof(component))
 		fatal("chroot path too long");
 
-	/*
-	 * Descend the path, checking that each component is a
-	 * root-owned directory with strict permissions.
-	 */
+	 
 	for (cp = path; cp != NULL;) {
 		if ((cp = strchr(cp, '/')) == NULL)
 			strlcpy(component, path, sizeof(component));
@@ -1353,7 +1221,7 @@ safely_chroot(const char *path, uid_t uid)
 	verbose("Changed root directory to \"%s\"", path);
 }
 
-/* Set login name, uid, gid, and groups. */
+ 
 void
 do_setusercontext(struct passwd *pw)
 {
@@ -1375,7 +1243,7 @@ do_setusercontext(struct passwd *pw)
 			perror("setgid");
 			exit(1);
 		}
-		/* Initialize the group list. */
+		 
 		if (initgroups(pw->pw_name, pw->pw_gid) < 0) {
 			perror("initgroups");
 			exit(1);
@@ -1396,7 +1264,7 @@ do_setusercontext(struct passwd *pw)
 			safely_chroot(chroot_path, pw->pw_uid);
 			free(tmp);
 			free(chroot_path);
-			/* Make sure we don't attempt to chroot again */
+			 
 			free(options.chroot_directory);
 			options.chroot_directory = NULL;
 			in_chroot = 1;
@@ -1407,25 +1275,15 @@ do_setusercontext(struct passwd *pw)
 			perror("unable to set user context (setuser)");
 			exit(1);
 		}
-		/* 
-		 * FreeBSD's setusercontext() will not apply the user's
-		 * own umask setting unless running with the user's UID.
-		 */
+		 
 		(void) setusercontext(lc, pw, pw->pw_uid, LOGIN_SETUMASK);
 #else
 # ifdef USE_LIBIAF
-		/*
-		 * In a chroot environment, the set_id() will always fail;
-		 * typically because of the lack of necessary authentication
-		 * services and runtime such as ./usr/lib/libiaf.so,
-		 * ./usr/lib/libpam.so.1, and ./etc/passwd We skip it in the
-		 * internal sftp chroot case.  We'll lose auditing and ACLs but
-		 * permanently_set_uid will take care of the rest.
-		 */
+		 
 		if (!in_chroot && set_id(pw->pw_name) != 0)
 			fatal("set_id(%s) Failed", pw->pw_name);
-# endif /* USE_LIBIAF */
-		/* Permanently switch to the desired uid. */
+# endif  
+		 
 		permanently_set_uid(pw);
 #endif
 	} else if (options.chroot_directory != NULL &&
@@ -1479,36 +1337,21 @@ child_close_fds(struct ssh *ssh)
 		close(ssh_packet_get_connection_in(ssh));
 		close(ssh_packet_get_connection_out(ssh));
 	}
-	/*
-	 * Close all descriptors related to channels.  They will still remain
-	 * open in the parent.
-	 */
-	/* XXX better use close-on-exec? -markus */
+	 
+	 
 	channel_close_all(ssh);
 
-	/*
-	 * Close any extra file descriptors.  Note that there may still be
-	 * descriptors left by system functions.  They will be closed later.
-	 */
+	 
 	endpwent();
 
-	/* Stop directing logs to a high-numbered fd before we close it */
+	 
 	log_redirect_stderr_to(NULL);
 
-	/*
-	 * Close any extra open file descriptors so that we don't have them
-	 * hanging around in clients.  Note that we want to do this after
-	 * initgroups, because at least on Solaris 2.3 it leaves file
-	 * descriptors open.
-	 */
+	 
 	closefrom(STDERR_FILENO + 1);
 }
 
-/*
- * Performs common processing for the child, such as setting up the
- * environment, closing extra file descriptors, setting the user and group
- * ids, and executing the command or shell.
- */
+ 
 #define ARGV_MAX 10
 void
 do_child(struct ssh *ssh, Session *s, const char *command)
@@ -1521,11 +1364,11 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 
 	sshpkt_fmt_connection_id(ssh, remote_id, sizeof(remote_id));
 
-	/* remove hostkey from the child's memory */
+	 
 	destroy_sensitive_data();
 	ssh_packet_clear_keys(ssh);
 
-	/* Force a password change */
+	 
 	if (s->authctxt->force_pwchange) {
 		do_setusercontext(pw);
 		child_close_fds(ssh);
@@ -1533,27 +1376,20 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 		exit(1);
 	}
 
-	/*
-	 * Login(1) does this as well, and it needs uid 0 for the "-h"
-	 * switch, so we let login(1) to this for us.
-	 */
+	 
 #ifdef HAVE_OSF_SIA
 	session_setup_sia(pw, s->ttyfd == -1 ? NULL : s->tty);
 	if (!check_quietlogin(s, command))
 		do_motd();
-#else /* HAVE_OSF_SIA */
-	/* When PAM is enabled we rely on it to do the nologin check */
+#else  
+	 
 	if (!options.use_pam)
 		do_nologin(pw);
 	do_setusercontext(pw);
-	/*
-	 * PAM session modules in do_setusercontext may have
-	 * generated messages, so if this in an interactive
-	 * login then display them too.
-	 */
+	 
 	if (!check_quietlogin(s, command))
 		display_loginmsg();
-#endif /* HAVE_OSF_SIA */
+#endif  
 
 #ifdef USE_PAM
 	if (options.use_pam && !is_pam_session_open()) {
@@ -1563,45 +1399,24 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 	}
 #endif
 
-	/*
-	 * Get the shell from the password data.  An empty shell field is
-	 * legal, and means /bin/sh.
-	 */
+	 
 	shell = (pw->pw_shell[0] == '\0') ? _PATH_BSHELL : pw->pw_shell;
 
-	/*
-	 * Make sure $SHELL points to the shell from the password file,
-	 * even if shell is overridden from login.conf
-	 */
+	 
 	env = do_setup_env(ssh, s, shell);
 
 #ifdef HAVE_LOGIN_CAP
 	shell = login_getcapstr(lc, "shell", (char *)shell, (char *)shell);
 #endif
 
-	/*
-	 * Close the connection descriptors; note that this is the child, and
-	 * the server will still have the socket open, and it is important
-	 * that we do not shutdown it.  Note that the descriptors cannot be
-	 * closed before building the environment, as we call
-	 * ssh_remote_ipaddr there.
-	 */
+	 
 	child_close_fds(ssh);
 
-	/*
-	 * Must take new environment into use so that .ssh/rc,
-	 * /etc/ssh/sshrc and xauth are run in the proper environment.
-	 */
+	 
 	environ = env;
 
 #if defined(KRB5) && defined(USE_AFS)
-	/*
-	 * At this point, we check to see if AFS is active and if we have
-	 * a valid Kerberos 5 TGT. If so, it seems like a good idea to see
-	 * if we can (and need to) extend the ticket into an AFS token. If
-	 * we don't do this, we run into potential problems if the user's
-	 * home directory is in AFS and it's not world-readable.
-	 */
+	 
 
 	if (options.kerberos_get_afs_token && k_hasafs() &&
 	    (s->authctxt->krb5_ctx != NULL)) {
@@ -1620,9 +1435,9 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 	}
 #endif
 
-	/* Change current directory to the user's home directory. */
+	 
 	if (chdir(pw->pw_dir) == -1) {
-		/* Suppress missing homedir warning for chroot case */
+		 
 #ifdef HAVE_LOGIN_CAP
 		r = login_getcapbool(lc, "requirehome", 0);
 #endif
@@ -1639,7 +1454,7 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 
 	do_rc_files(ssh, s, shell);
 
-	/* restore SIGPIPE for child */
+	 
 	ssh_signal(SIGPIPE, SIG_DFL);
 
 	if (s->is_subsystem == SUBSYSTEM_INT_SFTP_ERROR) {
@@ -1669,21 +1484,17 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 
 	fflush(NULL);
 
-	/* Get the last component of the shell name. */
+	 
 	if ((shell0 = strrchr(shell, '/')) != NULL)
 		shell0++;
 	else
 		shell0 = shell;
 
-	/*
-	 * If we have no command, execute the shell.  In this case, the shell
-	 * name to be passed in argv[0] is preceded by '-' to indicate that
-	 * this is a login shell.
-	 */
+	 
 	if (!command) {
 		char argv0[256];
 
-		/* Start the shell.  Set initial character to '-'. */
+		 
 		argv0[0] = '-';
 
 		if (strlcpy(argv0 + 1, shell0, sizeof(argv0) - 1)
@@ -1693,19 +1504,16 @@ do_child(struct ssh *ssh, Session *s, const char *command)
 			exit(1);
 		}
 
-		/* Execute the shell. */
+		 
 		argv[0] = argv0;
 		argv[1] = NULL;
 		execve(shell, argv, env);
 
-		/* Executing the shell failed. */
+		 
 		perror(shell);
 		exit(1);
 	}
-	/*
-	 * Execute the command using the user's shell.  This uses the -c
-	 * option to execute the command.
-	 */
+	 
 	argv[0] = (char *) shell0;
 	argv[1] = "-c";
 	argv[2] = (char *) command;
@@ -1922,7 +1730,7 @@ session_pty_req(struct ssh *ssh, Session *s)
 		s->term = NULL;
 	}
 
-	/* Allocate a pty and open it. */
+	 
 	debug("Allocating pty.");
 	if (!PRIVSEP(pty_allocate(&s->ptyfd, &s->ttyfd, s->tty,
 	    sizeof(s->tty)))) {
@@ -1943,7 +1751,7 @@ session_pty_req(struct ssh *ssh, Session *s)
 	if (!use_privsep)
 		pty_setowner(s->pw, s->tty);
 
-	/* Set window size from the packet. */
+	 
 	pty_change_window_size(s->ptyfd, s->row, s->col, s->xpixel, s->ypixel);
 
 	session_proctitle(s);
@@ -2066,7 +1874,7 @@ session_break_req(struct ssh *ssh, Session *s)
 {
 	int r;
 
-	if ((r = sshpkt_get_u32(ssh, NULL)) != 0 || /* ignore */
+	if ((r = sshpkt_get_u32(ssh, NULL)) != 0 ||  
 	    (r = sshpkt_get_end(ssh)) != 0)
 		sshpkt_fatal(ssh, r, "%s: parse packet", __func__);
 
@@ -2087,7 +1895,7 @@ session_env_req(struct ssh *ssh, Session *s)
 	    (r = sshpkt_get_end(ssh)) != 0)
 		sshpkt_fatal(ssh, r, "%s: parse packet", __func__);
 
-	/* Don't set too many environment variables */
+	 
 	if (s->num_env > 128) {
 		debug2("Ignoring env request %s: too many env vars", name);
 		goto fail;
@@ -2112,11 +1920,7 @@ session_env_req(struct ssh *ssh, Session *s)
 	return (0);
 }
 
-/*
- * Conversion of signals from ssh channel request names.
- * Subset of signals from RFC 4254 section 6.10C, with SIGINFO as
- * local extension.
- */
+ 
 static int
 name2sig(char *name)
 {
@@ -2175,7 +1979,7 @@ session_signal_req(struct ssh *ssh, Session *s)
 		goto out;
 	}
 
-	/* success */
+	 
 	success = 1;
  out:
 	free(signame);
@@ -2215,10 +2019,7 @@ session_input_channel_req(struct ssh *ssh, Channel *c, const char *rtype)
 	}
 	debug_f("session %d req %s", s->self, rtype);
 
-	/*
-	 * a session is in LARVAL state until a shell, a command
-	 * or a subsystem is executed
-	 */
+	 
 	if (c->type == SSH_CHANNEL_LARVAL) {
 		if (strcmp(rtype, "shell") == 0) {
 			success = session_shell_req(ssh, s);
@@ -2251,10 +2052,7 @@ void
 session_set_fds(struct ssh *ssh, Session *s,
     int fdin, int fdout, int fderr, int ignore_fderr, int is_tty)
 {
-	/*
-	 * now that have a child and a pipe to the child,
-	 * we can activate our channel and register the fd's
-	 */
+	 
 	if (s->chanid == -1)
 		fatal("no channel for session %d", s->self);
 	channel_set_fds(ssh, s->chanid,
@@ -2263,10 +2061,7 @@ session_set_fds(struct ssh *ssh, Session *s,
 	    1, is_tty, CHAN_SES_WINDOW_DEFAULT);
 }
 
-/*
- * Function to perform pty cleanup. Also called if we get aborted abnormally
- * (e.g., due to a dropped connection).
- */
+ 
 void
 session_pty_cleanup2(Session *s)
 {
@@ -2279,24 +2074,20 @@ session_pty_cleanup2(Session *s)
 
 	debug_f("session %d release %s", s->self, s->tty);
 
-	/* Record that the user has logged out. */
+	 
 	if (s->pid != 0)
 		record_logout(s->pid, s->tty, s->pw->pw_name);
 
-	/* Release the pseudo-tty. */
+	 
 	if (getuid() == 0)
 		pty_release(s->tty);
 
-	/*
-	 * Close the server side of the socket pairs.  We must do this after
-	 * the pty cleanup, so that another process doesn't get this pty
-	 * while we're still cleaning up.
-	 */
+	 
 	if (s->ptymaster != -1 && close(s->ptymaster) == -1)
 		error("close(s->ptymaster/%d): %s",
 		    s->ptymaster, strerror(errno));
 
-	/* unlink pty from session */
+	 
 	s->ttyfd = -1;
 }
 
@@ -2335,7 +2126,7 @@ session_close_x11(struct ssh *ssh, int id)
 	if ((c = channel_by_id(ssh, id)) == NULL) {
 		debug_f("x11 channel %d missing", id);
 	} else {
-		/* Detach X11 listener */
+		 
 		debug_f("detach x11 channel %d", id);
 		channel_cancel_cleanup(ssh, id);
 		if (c->ostate != CHAN_OUTPUT_CLOSED)
@@ -2356,10 +2147,7 @@ session_close_single_x11(struct ssh *ssh, int id, int force, void *arg)
 	for (i = 0; s->x11_chanids[i] != -1; i++) {
 		debug_f("session %d: closing channel %d",
 		    s->self, s->x11_chanids[i]);
-		/*
-		 * The channel "id" is already closing, but make sure we
-		 * close all of its siblings.
-		 */
+		 
 		if (s->x11_chanids[i] != id)
 			session_close_x11(ssh, s->x11_chanids[i]);
 	}
@@ -2405,7 +2193,7 @@ session_exit_message(struct ssh *ssh, Session *s, int status)
 		xasprintf(&note, "signal %d%s", WTERMSIG(status),
 		    WCOREDUMP(status) ? " core dumped" : "");
 	} else {
-		/* Some weird exit cause.  Just exit. */
+		 
 		ssh_packet_disconnect(ssh, "wait returned status %04x.",
 		    status);
 	}
@@ -2414,22 +2202,13 @@ session_exit_message(struct ssh *ssh, Session *s, int status)
 	    (long)s->pid, note == NULL ? "UNKNOWN" : note);
 	free(note);
 
-	/* disconnect channel */
+	 
 	debug_f("release channel %d", s->chanid);
 
-	/*
-	 * Adjust cleanup callback attachment to send close messages when
-	 * the channel gets EOF. The session will be then be closed
-	 * by session_close_by_channel when the child sessions close their fds.
-	 */
+	 
 	channel_register_cleanup(ssh, c->self, session_close_by_channel, 1);
 
-	/*
-	 * emulate a write failure with 'chan_write_failed', nobody will be
-	 * interested in data we write.
-	 * Note that we must not call 'chan_read_failed', since there could
-	 * be some more data waiting in the pipe.
-	 */
+	 
 	if (c->ostate != CHAN_OUTPUT_CLOSED)
 		chan_write_failed(ssh, c);
 }
@@ -2480,10 +2259,7 @@ session_close_by_pid(struct ssh *ssh, pid_t pid, int status)
 	s->pid = 0;
 }
 
-/*
- * this is called when a channel dies before
- * the session 'child' itself dies
- */
+ 
 void
 session_close_by_channel(struct ssh *ssh, int id, int force, void *arg)
 {
@@ -2497,20 +2273,16 @@ session_close_by_channel(struct ssh *ssh, int id, int force, void *arg)
 	debug_f("channel %d child %ld", id, (long)s->pid);
 	if (s->pid != 0) {
 		debug_f("channel %d: has child, ttyfd %d", id, s->ttyfd);
-		/*
-		 * delay detach of session (unless this is a forced close),
-		 * but release pty, since the fd's to the child are already
-		 * closed
-		 */
+		 
 		if (s->ttyfd != -1)
 			session_pty_cleanup(s);
 		if (!force)
 			return;
 	}
-	/* detach by removing callback */
+	 
 	channel_cancel_cleanup(ssh, s->chanid);
 
-	/* Close any X11 listeners associated with this session */
+	 
 	if (s->x11_chanids != NULL) {
 		for (i = 0; s->x11_chanids[i] != -1; i++) {
 			session_close_x11(ssh, s->x11_chanids[i]);
@@ -2610,14 +2382,10 @@ session_setup_x11fwd(struct ssh *ssh, Session *s)
 		    session_close_single_x11, 0);
 	}
 
-	/* Set up a suitable value for the DISPLAY variable. */
+	 
 	if (gethostname(hostname, sizeof(hostname)) == -1)
 		fatal("gethostname: %.100s", strerror(errno));
-	/*
-	 * auth_display must be used as the displayname when the
-	 * authorization entry is added with xauth(1).  This will be
-	 * different than the DISPLAY string for localhost displays.
-	 */
+	 
 	if (options.x11_use_localhost) {
 		snprintf(display, sizeof display, "localhost:%u.%u",
 		    s->display_number, s->screen);
@@ -2663,11 +2431,11 @@ do_cleanup(struct ssh *ssh, Authctxt *authctxt)
 
 	debug("do_cleanup");
 
-	/* no cleanup if we're in the child for login shell */
+	 
 	if (is_child)
 		return;
 
-	/* avoid double cleanup */
+	 
 	if (called)
 		return;
 	called = 1;
@@ -2696,10 +2464,10 @@ do_cleanup(struct ssh *ssh, Authctxt *authctxt)
 		ssh_gssapi_cleanup_creds();
 #endif
 
-	/* remove agent socket */
+	 
 	auth_sock_cleanup_proc(authctxt->pw);
 
-	/* remove userauth info */
+	 
 	if (auth_info_file != NULL) {
 		temporarily_use_uid(authctxt->pw);
 		unlink(auth_info_file);
@@ -2708,15 +2476,12 @@ do_cleanup(struct ssh *ssh, Authctxt *authctxt)
 		auth_info_file = NULL;
 	}
 
-	/*
-	 * Cleanup ptys/utmp only if privsep is disabled,
-	 * or if running in monitor.
-	 */
+	 
 	if (!use_privsep || mm_is_monitor())
 		session_destroy_all(ssh, session_pty_cleanup2);
 }
 
-/* Return a name for the remote host that fits inside utmp_size */
+ 
 
 const char *
 session_get_remote_name_or_ip(struct ssh *ssh, u_int utmp_size, int use_dns)

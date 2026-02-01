@@ -1,29 +1,13 @@
-/* termcap.c - Work-alike for termcap, plus extra features. */
+ 
 
-/* Copyright (C) 1985, 1986, 1993,1994, 1995, 1998, 2001,2003,2005,2006,2008,2009 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Emacs config.h may rename various library functions such as malloc.  */
+ 
 #ifdef HAVE_CONFIG_H
 
 #include <config.h>
 
-/* Get the O_* definitions for open et al.  */
+ 
 #if !defined (_MINIX) && defined (HAVE_SYS_FILE_H)
 #  include <sys/file.h>
 #endif
@@ -50,7 +34,7 @@ extern char *realloc ();
 #  define bcopy(s, d, n)	memcpy ((d), (s), (n))
 #endif
 
-#else /* not HAVE_CONFIG_H */
+#else  
 
 #ifdef HAVE_STDLIB_H
 #include <stdlib.h>
@@ -64,7 +48,7 @@ char *realloc ();
 #include <string.h>
 #endif
 
-/* Do this after the include, in case string.h prototypes bcopy.  */
+ 
 #if (defined(HAVE_STRING_H) || defined(STDC_HEADERS)) && !defined(bcopy)
 #define bcopy(s, d, n) memcpy ((d), (s), (n))
 #endif
@@ -76,7 +60,7 @@ char *realloc ();
 #include <fcntl.h>
 #endif
 
-#endif /* not HAVE_CONFIG_H */
+#endif  
 
 #ifndef NULL
 #define NULL (char *) 0
@@ -86,12 +70,7 @@ char *realloc ();
 #define O_RDONLY 0
 #endif
 
-/* BUFSIZE is the initial size allocated for the buffer
-   for reading the termcap file.
-   It is not a limit.
-   Make it large normally for speed.
-   Make it variable when debugging, so can exercise
-   increasing the space dynamically.  */
+ 
 
 #ifndef BUFSIZE
 #ifdef DEBUG
@@ -139,19 +118,16 @@ xrealloc (ptr, size)
     memory_out ();
   return tem;
 }
-#endif /* not emacs */
+#endif  
 
-/* Looking up capabilities in the entry already found.  */
+ 
 
-/* The pointer to the data made by tgetent is left here
-   for tgetnum, tgetflag and tgetstr to find.  */
+ 
 static char *term_entry;
 
 static char *tgetst1 ();
 
-/* Search entry BP for capability CAP.
-   Return a pointer to the capability (in BP) if found,
-   0 if not found.  */
+ 
 
 static char *
 find_capability (bp, cap)
@@ -185,10 +161,7 @@ tgetflag (cap)
   return ptr && ptr[-1] == ':';
 }
 
-/* Look up a string-valued capability CAP.
-   If AREA is non-null, it points to a pointer to a block in which
-   to store the string.  That pointer is advanced over the space used.
-   If AREA is null, space is allocated with `malloc'.  */
+ 
 
 __private_extern__
 char *
@@ -202,9 +175,7 @@ tgetstr (cap, area)
   return tgetst1 (ptr, area);
 }
 
-/* Table, indexed by a character in range 0100 to 0140 with 0100 subtracted,
-   gives meaning of character following \, or a space if no special meaning.
-   Eight characters per line within the string.  */
+ 
 
 static char esctab[]
   = " \007\010  \033\014 \
@@ -817,4 +788,4 @@ tprint (cap)
   putchar ('\n');
 }
 
-#endif /* TEST */
+#endif  

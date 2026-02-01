@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/backlight/aat2870_bl.c
- *
- * Copyright (c) 2011, NVIDIA Corporation.
- * Author: Jin Park <jinyoungp@nvidia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -22,7 +17,7 @@ struct aat2870_bl_driver_data {
 
 	int channels;
 	int max_current;
-	int brightness; /* current brightness */
+	int brightness;  
 };
 
 static inline int aat2870_brightness(struct aat2870_bl_driver_data *aat2870_bl,

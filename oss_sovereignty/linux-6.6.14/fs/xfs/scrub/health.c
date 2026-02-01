@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2019-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -17,58 +14,9 @@
 #include "scrub/scrub.h"
 #include "scrub/health.h"
 
-/*
- * Scrub and In-Core Filesystem Health Assessments
- * ===============================================
- *
- * Online scrub and repair have the time and the ability to perform stronger
- * checks than we can do from the metadata verifiers, because they can
- * cross-reference records between data structures.  Therefore, scrub is in a
- * good position to update the online filesystem health assessments to reflect
- * the good/bad state of the data structure.
- *
- * We therefore extend scrub in the following ways to achieve this:
- *
- * 1. Create a "sick_mask" field in the scrub context.  When we're setting up a
- * scrub call, set this to the default XFS_SICK_* flag(s) for the selected
- * scrub type (call it A).  Scrub and repair functions can override the default
- * sick_mask value if they choose.
- *
- * 2. If the scrubber returns a runtime error code, we exit making no changes
- * to the incore sick state.
- *
- * 3. If the scrubber finds that A is clean, use sick_mask to clear the incore
- * sick flags before exiting.
- *
- * 4. If the scrubber finds that A is corrupt, use sick_mask to set the incore
- * sick flags.  If the user didn't want to repair then we exit, leaving the
- * metadata structure unfixed and the sick flag set.
- *
- * 5. Now we know that A is corrupt and the user wants to repair, so run the
- * repairer.  If the repairer returns an error code, we exit with that error
- * code, having made no further changes to the incore sick state.
- *
- * 6. If repair rebuilds A correctly and the subsequent re-scrub of A is clean,
- * use sick_mask to clear the incore sick flags.  This should have the effect
- * that A is no longer marked sick.
- *
- * 7. If repair rebuilds A incorrectly, the re-scrub will find it corrupt and
- * use sick_mask to set the incore sick flags.  This should have no externally
- * visible effect since we already set them in step (4).
- *
- * There are some complications to this story, however.  For certain types of
- * complementary metadata indices (e.g. inobt/finobt), it is easier to rebuild
- * both structures at the same time.  The following principles apply to this
- * type of repair strategy:
- *
- * 8. Any repair function that rebuilds multiple structures should update
- * sick_mask_visible to reflect whatever other structures are rebuilt, and
- * verify that all the rebuilt structures can pass a scrub check.  The outcomes
- * of 5-7 still apply, but with a sick_mask that covers everything being
- * rebuilt.
- */
+ 
 
-/* Map our scrub type to a sick mask and a set of health update functions. */
+ 
 
 enum xchk_health_group {
 	XHG_FS = 1,
@@ -109,7 +57,7 @@ static const struct xchk_health_map type_to_health_flag[XFS_SCRUB_TYPE_NR] = {
 	[XFS_SCRUB_TYPE_FSCOUNTERS]	= { XHG_FS,  XFS_SICK_FS_COUNTERS },
 };
 
-/* Return the health status mask for this scrub type. */
+ 
 unsigned int
 xchk_health_mask_for_scrub_type(
 	__u32			scrub_type)
@@ -117,16 +65,7 @@ xchk_health_mask_for_scrub_type(
 	return type_to_health_flag[scrub_type].sick_mask;
 }
 
-/*
- * Update filesystem health assessments based on what we found and did.
- *
- * If the scrubber finds errors, we mark sick whatever's mentioned in
- * sick_mask, no matter whether this is a first scan or an
- * evaluation of repair effectiveness.
- *
- * Otherwise, no direct corruption was found, so mark whatever's in
- * sick_mask as healthy.
- */
+ 
 void
 xchk_update_health(
 	struct xfs_scrub	*sc)
@@ -174,7 +113,7 @@ xchk_update_health(
 	}
 }
 
-/* Is the given per-AG btree healthy enough for scanning? */
+ 
 bool
 xchk_ag_btree_healthy_enough(
 	struct xfs_scrub	*sc,
@@ -183,13 +122,7 @@ xchk_ag_btree_healthy_enough(
 {
 	unsigned int		mask = 0;
 
-	/*
-	 * We always want the cursor if it's the same type as whatever we're
-	 * scrubbing, even if we already know the structure is corrupt.
-	 *
-	 * Otherwise, we're only interested in the btree for cross-referencing.
-	 * If we know the btree is bad then don't bother, just set XFAIL.
-	 */
+	 
 	switch (btnum) {
 	case XFS_BTNUM_BNO:
 		if (sc->sm->sm_type == XFS_SCRUB_TYPE_BNOBT)
@@ -226,12 +159,7 @@ xchk_ag_btree_healthy_enough(
 		return true;
 	}
 
-	/*
-	 * If we just repaired some AG metadata, sc->sick_mask will reflect all
-	 * the per-AG metadata types that were repaired.  Exclude these from
-	 * the filesystem health query because we have not yet updated the
-	 * health status and we want everything to be scanned.
-	 */
+	 
 	if ((sc->flags & XREP_ALREADY_FIXED) &&
 	    type_to_health_flag[sc->sm->sm_type].group == XHG_AG)
 		mask &= ~sc->sick_mask;

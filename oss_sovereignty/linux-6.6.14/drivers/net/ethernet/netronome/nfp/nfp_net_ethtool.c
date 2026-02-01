@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_net_ethtool.c
- * Netronome network device driver: ethtool support
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Rolf Neugebauer <rolf.neugebauer@netronome.com>
- *          Brad Petrus <brad.petrus@netronome.com>
- */
+ 
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/kernel.h>
@@ -37,7 +30,7 @@ struct nfp_et_stat {
 };
 
 static const struct nfp_et_stat nfp_net_et_stats[] = {
-	/* Stats from the device */
+	 
 	{ "dev_rx_discards",	NFP_NET_CFG_STATS_RX_DISCARDS },
 	{ "dev_rx_errors",	NFP_NET_CFG_STATS_RX_ERRORS },
 	{ "dev_rx_bytes",	NFP_NET_CFG_STATS_RX_OCTETS },
@@ -60,9 +53,7 @@ static const struct nfp_et_stat nfp_net_et_stats[] = {
 
 	{ "bpf_pass_pkts",	NFP_NET_CFG_STATS_APP0_FRAMES },
 	{ "bpf_pass_bytes",	NFP_NET_CFG_STATS_APP0_BYTES },
-	/* see comments in outro functions in nfp_bpf_jit.c to find out
-	 * how different BPF modes use app-specific counters
-	 */
+	 
 	{ "bpf_app1_pkts",	NFP_NET_CFG_STATS_APP1_FRAMES },
 	{ "bpf_app1_bytes",	NFP_NET_CFG_STATS_APP1_BYTES },
 	{ "bpf_app2_pkts",	NFP_NET_CFG_STATS_APP2_FRAMES },
@@ -464,22 +455,12 @@ static void nfp_add_media_link_mode(struct nfp_port *port,
 		}
 	}
 
-	/* We take all speeds as supported when it fails to read
-	 * link modes due to old management firmware that doesn't
-	 * support link modes reading or error occurring, so that
-	 * speed change of this port is allowed.
-	 */
+	 
 	if (bitmap_empty(port->speed_bitmap, NFP_SUP_SPEED_NUMBER))
 		bitmap_fill(port->speed_bitmap, NFP_SUP_SPEED_NUMBER);
 }
 
-/**
- * nfp_net_get_link_ksettings - Get Link Speed settings
- * @netdev:	network interface device structure
- * @cmd:	ethtool command
- *
- * Reports speed settings based on info in the BAR provided by the fw.
- */
+ 
 static int
 nfp_net_get_link_ksettings(struct net_device *netdev,
 			   struct ethtool_link_ksettings *cmd)
@@ -490,7 +471,7 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
 	unsigned int speed;
 	u16 sts;
 
-	/* Init to unknowns */
+	 
 	ethtool_link_ksettings_zero_link_mode(cmd, supported);
 	ethtool_link_ksettings_zero_link_mode(cmd, advertising);
 	ethtool_link_ksettings_add_link_mode(cmd, supported, FIBRE);
@@ -517,7 +498,7 @@ nfp_net_get_link_ksettings(struct net_device *netdev,
 	if (!netif_carrier_ok(netdev))
 		return 0;
 
-	/* Use link speed from ETH table if available, otherwise try the BAR */
+	 
 	if (eth_port) {
 		cmd->base.port = eth_port->port_type;
 		cmd->base.speed = eth_port->speed;
@@ -608,7 +589,7 @@ nfp_net_set_link_ksettings(struct net_device *netdev,
 
 	err = nfp_eth_config_commit_end(nsp);
 	if (err > 0)
-		return 0; /* no change */
+		return 0;  
 
 	nfp_net_refresh_port_table(port);
 
@@ -655,14 +636,14 @@ static int nfp_net_set_ringparam(struct net_device *netdev,
 	u32 tx_dpp, qc_min, qc_max, rxd_cnt, txd_cnt;
 	struct nfp_net *nn = netdev_priv(netdev);
 
-	/* We don't have separate queues/rings for small/large frames. */
+	 
 	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
 		return -EINVAL;
 
 	qc_min = nn->dev_info->min_qc_size;
 	qc_max = nn->dev_info->max_qc_size;
 	tx_dpp = nn->dp.ops->tx_min_desc_per_pkt;
-	/* Round up to supported values */
+	 
 	rxd_cnt = roundup_pow_of_two(ring->rx_pending);
 	txd_cnt = roundup_pow_of_two(ring->tx_pending);
 
@@ -936,10 +917,7 @@ nfp_vnic_get_hw_stats_strings(u8 *data, unsigned int num_vecs, bool repr)
 	int swap_off, i;
 
 	BUILD_BUG_ON(NN_ET_GLOBAL_STATS_LEN < NN_ET_SWITCH_STATS_LEN * 2);
-	/* If repr is true first add SWITCH_STATS_LEN and then subtract it
-	 * effectively swapping the RX and TX statistics (giving us the RX
-	 * and TX from perspective of the switch).
-	 */
+	 
 	swap_off = repr * NN_ET_SWITCH_STATS_LEN;
 
 	for (i = 0; i < NN_ET_SWITCH_STATS_LEN; i++)
@@ -1204,7 +1182,7 @@ static int nfp_port_fec_ethtool_to_nsp(u32 fec)
 	case ETHTOOL_FEC_BASER:
 		return NFP_FEC_BASER_BIT;
 	default:
-		/* NSP only supports a single mode at a time */
+		 
 		return -EOPNOTSUPP;
 	}
 }
@@ -1271,14 +1249,13 @@ nfp_port_set_fecparam(struct net_device *netdev,
 
 	err = nfp_eth_set_fec(port->app->cpp, eth_port->index, fec);
 	if (!err)
-		/* Only refresh if we did something */
+		 
 		nfp_net_refresh_port_table(port);
 
 	return err < 0 ? err : 0;
 }
 
-/* RX network flow classification (RSS, filters, etc)
- */
+ 
 static u32 ethtool_flow_to_nfp_flag(u32 flow_type)
 {
 	static const u32 xlate_ethtool_to_nfp[IPV6_FLOW + 1] = {
@@ -1343,12 +1320,12 @@ static int nfp_net_set_rss_hash_opt(struct nfp_net *nn,
 	if (!(nn->cap & NFP_NET_CFG_CTRL_RSS_ANY))
 		return -EOPNOTSUPP;
 
-	/* RSS only supports IP SA/DA and L4 src/dst ports  */
+	 
 	if (nfc->data & ~(RXH_IP_SRC | RXH_IP_DST |
 			  RXH_L4_B_0_1 | RXH_L4_B_2_3))
 		return -EINVAL;
 
-	/* We need at least the IP SA/DA fields for hashing */
+	 
 	if (!(nfc->data & RXH_IP_SRC) ||
 	    !(nfc->data & RXH_IP_DST))
 		return -EINVAL;
@@ -1469,8 +1446,7 @@ static int nfp_net_set_rxfh(struct net_device *netdev,
 	return nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_RSS);
 }
 
-/* Dump BAR registers
- */
+ 
 static int nfp_net_get_regs_len(struct net_device *netdev)
 {
 	return NFP_NET_CFG_BAR_SZ;
@@ -1510,8 +1486,7 @@ static int nfp_net_get_coalesce(struct net_device *netdev,
 	return 0;
 }
 
-/* Other debug dumps
- */
+ 
 static int
 nfp_dump_nsp_diag(struct nfp_app *app, struct ethtool_dump *dump, void *buffer)
 {
@@ -1551,11 +1526,7 @@ exit_release:
 	return ret;
 }
 
-/* Set the dump flag/level. Calculate the dump length for flag > 0 only (new TLV
- * based dumps), since flag 0 (default) calculates the length in
- * nfp_app_get_dump_flag(), and we need to support triggering a level 0 dump
- * without setting the flag first, for backward compatibility.
- */
+ 
 static int nfp_app_set_dump(struct net_device *netdev, struct ethtool_dump *val)
 {
 	struct nfp_app *app = nfp_app_from_netdev(netdev);
@@ -1634,7 +1605,7 @@ nfp_port_get_module_info(struct net_device *netdev,
 	if (!port)
 		return -EOPNOTSUPP;
 
-	/* update port state to get latest interface */
+	 
 	set_bit(NFP_PORT_CHANGED, &port->flags);
 	eth_port = nfp_port_get_eth_port(port);
 	if (!eth_port)
@@ -1756,29 +1727,15 @@ static int nfp_net_set_coalesce(struct net_device *netdev,
 	struct nfp_net *nn = netdev_priv(netdev);
 	unsigned int factor;
 
-	/* Compute factor used to convert coalesce '_usecs' parameters to
-	 * ME timestamp ticks.  There are 16 ME clock cycles for each timestamp
-	 * count.
-	 */
+	 
 	factor = nn->tlv_caps.me_freq_mhz / 16;
 
-	/* Each pair of (usecs, max_frames) fields specifies that interrupts
-	 * should be coalesced until
-	 *      (usecs > 0 && time_since_first_completion >= usecs) ||
-	 *      (max_frames > 0 && completed_frames >= max_frames)
-	 *
-	 * It is illegal to set both usecs and max_frames to zero as this would
-	 * cause interrupts to never be generated.  To disable coalescing, set
-	 * usecs = 0 and max_frames = 1.
-	 *
-	 * Some implementations ignore the value of max_frames and use the
-	 * condition time_since_first_completion >= usecs
-	 */
+	 
 
 	if (!(nn->cap & NFP_NET_CFG_CTRL_IRQMOD))
 		return -EINVAL;
 
-	/* ensure valid configuration */
+	 
 	if (!ec->rx_coalesce_usecs && !ec->rx_max_coalesced_frames)
 		return -EINVAL;
 
@@ -1793,7 +1750,7 @@ static int nfp_net_set_coalesce(struct net_device *netdev,
 					ec->tx_max_coalesced_frames))
 		return -EINVAL;
 
-	/* configuration is valid */
+	 
 	nn->rx_coalesce_adapt_on = !!ec->use_adaptive_rx_coalesce;
 	nn->tx_coalesce_adapt_on = !!ec->use_adaptive_tx_coalesce;
 
@@ -1802,7 +1759,7 @@ static int nfp_net_set_coalesce(struct net_device *netdev,
 	nn->tx_coalesce_usecs      = ec->tx_coalesce_usecs;
 	nn->tx_coalesce_max_frames = ec->tx_max_coalesced_frames;
 
-	/* write configuration to device */
+	 
 	nfp_net_coalesce_write_cfg(nn);
 	return nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_IRQMOD);
 }
@@ -1838,7 +1795,7 @@ static int nfp_net_set_num_rings(struct nfp_net *nn, unsigned int total_rx,
 
 	dp->num_rx_rings = total_rx;
 	dp->num_tx_rings = total_tx;
-	/* nfp_net_check_config() will catch num_tx_rings > nn->max_tx_rings */
+	 
 	if (dp->xdp_prog)
 		dp->num_tx_rings += total_rx;
 
@@ -1851,7 +1808,7 @@ static int nfp_net_set_channels(struct net_device *netdev,
 	struct nfp_net *nn = netdev_priv(netdev);
 	unsigned int total_rx, total_tx;
 
-	/* Reject unsupported */
+	 
 	if (channel->other_count != NFP_NET_NON_Q_VECTORS ||
 	    (channel->rx_count && channel->tx_count))
 		return -EINVAL;
@@ -1877,7 +1834,7 @@ static void nfp_port_get_pauseparam(struct net_device *netdev,
 	if (!eth_port)
 		return;
 
-	/* Currently pause frame support is fixed */
+	 
 	pause->autoneg = AUTONEG_DISABLE;
 	pause->rx_pause = 1;
 	pause->tx_pause = 1;
@@ -1897,12 +1854,12 @@ static int nfp_net_set_phys_id(struct net_device *netdev,
 
 	switch (state) {
 	case ETHTOOL_ID_ACTIVE:
-		/* Control LED to blink */
+		 
 		err = nfp_eth_set_idmode(port->app->cpp, eth_port->index, 1);
 		break;
 
 	case ETHTOOL_ID_INACTIVE:
-		/* Control LED to normal mode */
+		 
 		err = nfp_eth_set_idmode(port->app->cpp, eth_port->index, 0);
 		break;
 

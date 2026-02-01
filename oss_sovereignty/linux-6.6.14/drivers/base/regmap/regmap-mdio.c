@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/errno.h>
 #include <linux/mdio.h>
@@ -7,7 +7,7 @@
 
 #define REGVAL_MASK		GENMASK(15, 0)
 #define REGNUM_C22_MASK		GENMASK(4, 0)
-/* Clause-45 mask includes the device type (5 bit) and actual register number (16 bit) */
+ 
 #define REGNUM_C45_MASK		GENMASK(20, 0)
 
 static int regmap_mdio_c22_read(void *context, unsigned int reg, unsigned int *val)

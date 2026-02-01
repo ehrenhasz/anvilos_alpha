@@ -1,46 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A driver for the AverMedia MR 800 USB FM radio. This device plugs
- * into both the USB and an analog audio input, so this thing
- * only deals with initialization and frequency setting, the
- * audio data has to be handled by a sound driver.
- *
- * Copyright (c) 2008 Alexey Klimov <klimov.linux@gmail.com>
- */
 
-/*
- * Big thanks to authors and contributors of dsbr100.c and radio-si470x.c
- *
- * When work was looked pretty good, i discover this:
- * http://av-usbradio.sourceforge.net/index.php
- * http://sourceforge.net/projects/av-usbradio/
- * Latest release of theirs project was in 2005.
- * Probably, this driver could be improved through using their
- * achievements (specifications given).
- * Also, Faidon Liambotis <paravoid@debian.org> wrote nice driver for this radio
- * in 2007. He allowed to use his driver to improve current mr800 radio driver.
- * http://www.spinics.net/lists/linux-usb-devel/msg10109.html
- *
- * Version 0.01:	First working version.
- *			It's required to blacklist AverMedia USB Radio
- *			in usbhid/hid-quirks.c
- * Version 0.10:	A lot of cleanups and fixes: unpluging the device,
- *			few mutex locks were added, codinstyle issues, etc.
- *			Added stereo support. Thanks to
- *			Douglas Schilling Landgraf <dougsland@gmail.com> and
- *			David Ellingsworth <david@identd.dyndns.org>
- *			for discussion, help and support.
- * Version 0.11:	Converted to v4l2_device.
- *
- * Many things to do:
- *	- Correct power management of device (suspend & resume)
- *	- Add code for scanning and smooth tuning
- *	- Add code for sensitivity value
- *	- Correct mistakes
- *	- In Japan another FREQ_MIN and FREQ_MAX
- */
+ 
 
-/* kernel includes */
+ 
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/init.h>
@@ -54,7 +17,7 @@
 #include <linux/usb.h>
 #include <linux/mutex.h>
 
-/* driver and module definitions */
+ 
 #define DRIVER_AUTHOR "Alexey Klimov <klimov.linux@gmail.com>"
 #define DRIVER_DESC "AverMedia MR 800 USB FM radio driver"
 #define DRIVER_VERSION "0.1.2"
@@ -67,7 +30,7 @@ MODULE_VERSION(DRIVER_VERSION);
 #define USB_AMRADIO_VENDOR 0x07ca
 #define USB_AMRADIO_PRODUCT 0xb800
 
-/* dev_warn macro with driver name */
+ 
 #define MR800_DRIVER_NAME "radio-mr800"
 #define amradio_dev_warn(dev, fmt, arg...)				\
 		dev_warn(dev, MR800_DRIVER_NAME " - " fmt, ##arg)
@@ -75,20 +38,16 @@ MODULE_VERSION(DRIVER_VERSION);
 #define amradio_dev_err(dev, fmt, arg...) \
 		dev_err(dev, MR800_DRIVER_NAME " - " fmt, ##arg)
 
-/* Probably USB_TIMEOUT should be modified in module parameter */
+ 
 #define BUFFER_LENGTH 8
 #define USB_TIMEOUT 500
 
-/* Frequency limits in MHz -- these are European values.  For Japanese
-devices, that would be 76 and 91.  */
+ 
 #define FREQ_MIN  87.5
 #define FREQ_MAX 108.0
 #define FREQ_MUL 16000
 
-/*
- * Commands that device should understand
- * List isn't full and will be updated with implementation of new functions
- */
+ 
 #define AMRADIO_SET_FREQ	0xa4
 #define AMRADIO_GET_READY_FLAG	0xa5
 #define AMRADIO_GET_SIGNAL	0xa7
@@ -102,18 +61,18 @@ devices, that would be 76 and 91.  */
 #define AMRADIO_SET_SEARCH_LVL	0xb0
 #define AMRADIO_STOP_SEARCH	0xb1
 
-/* Comfortable defines for amradio_set_stereo */
+ 
 #define WANT_STEREO		0x00
 #define WANT_MONO		0x01
 
-/* module parameter */
+ 
 static int radio_nr = -1;
 module_param(radio_nr, int, 0);
 MODULE_PARM_DESC(radio_nr, "Radio Nr");
 
-/* Data for one (physical) device */
+ 
 struct amradio_device {
-	/* reference to USB and video device */
+	 
 	struct usb_device *usbdev;
 	struct usb_interface *intf;
 	struct video_device vdev;
@@ -121,7 +80,7 @@ struct amradio_device {
 	struct v4l2_ctrl_handler hdl;
 
 	u8 *buffer;
-	struct mutex lock;	/* buffer locking */
+	struct mutex lock;	 
 	int curfreq;
 	int stereo;
 	int muted;
@@ -176,7 +135,7 @@ static int amradio_send_cmd(struct amradio_device *radio, u8 cmd, u8 arg,
 	return retval ? retval : -EIO;
 }
 
-/* switch on/off the radio. Send 8 bytes to device */
+ 
 static int amradio_set_mute(struct amradio_device *radio, bool mute)
 {
 	int ret = amradio_send_cmd(radio,
@@ -187,18 +146,18 @@ static int amradio_set_mute(struct amradio_device *radio, bool mute)
 	return ret;
 }
 
-/* set a frequency, freq is defined by v4l's TUNER_LOW, i.e. 1/16th kHz */
+ 
 static int amradio_set_freq(struct amradio_device *radio, int freq)
 {
 	unsigned short freq_send;
 	u8 buf[3];
 	int retval;
 
-	/* we need to be sure that frequency isn't out of range */
+	 
 	freq = clamp_t(unsigned, freq, FREQ_MIN * FREQ_MUL, FREQ_MAX * FREQ_MUL);
 	freq_send = 0x10 + (freq >> 3) / 25;
 
-	/* frequency is calculated from freq_send and placed in first 2 bytes */
+	 
 	buf[0] = (freq_send >> 8) & 0xff;
 	buf[1] = freq_send & 0xff;
 	buf[2] = 0x01;
@@ -233,11 +192,7 @@ static int amradio_get_stat(struct amradio_device *radio, bool *is_stereo, u32 *
 	return 0;
 }
 
-/* Handle unplugging the device.
- * We call video_unregister_device in any case.
- * The last function called in this procedure is
- * usb_amradio_device_release.
- */
+ 
 static void usb_amradio_disconnect(struct usb_interface *intf)
 {
 	struct amradio_device *radio = to_amradio_dev(usb_get_intfdata(intf));
@@ -251,7 +206,7 @@ static void usb_amradio_disconnect(struct usb_interface *intf)
 	v4l2_device_put(&radio->v4l2_dev);
 }
 
-/* vidioc_querycap - query device capabilities */
+ 
 static int vidioc_querycap(struct file *file, void *priv,
 					struct v4l2_capability *v)
 {
@@ -263,7 +218,7 @@ static int vidioc_querycap(struct file *file, void *priv,
 	return 0;
 }
 
-/* vidioc_g_tuner - get tuner attributes */
+ 
 static int vidioc_g_tuner(struct file *file, void *priv,
 				struct v4l2_tuner *v)
 {
@@ -291,7 +246,7 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 	return 0;
 }
 
-/* vidioc_s_tuner - set tuner attributes */
+ 
 static int vidioc_s_tuner(struct file *file, void *priv,
 				const struct v4l2_tuner *v)
 {
@@ -300,7 +255,7 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 	if (v->index > 0)
 		return -EINVAL;
 
-	/* mono/stereo selector */
+	 
 	switch (v->audmode) {
 	case V4L2_TUNER_MODE_MONO:
 		return amradio_set_stereo(radio, WANT_MONO);
@@ -309,7 +264,7 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 	}
 }
 
-/* vidioc_s_frequency - set tuner radio frequency */
+ 
 static int vidioc_s_frequency(struct file *file, void *priv,
 				const struct v4l2_frequency *f)
 {
@@ -320,7 +275,7 @@ static int vidioc_s_frequency(struct file *file, void *priv,
 	return amradio_set_freq(radio, f->frequency);
 }
 
-/* vidioc_g_frequency - get tuner radio frequency */
+ 
 static int vidioc_g_frequency(struct file *file, void *priv,
 				struct v4l2_frequency *f)
 {
@@ -376,7 +331,7 @@ static int vidioc_s_hw_freq_seek(struct file *file, void *priv,
 			continue;
 		amradio_send_cmd(radio, AMRADIO_GET_FREQ, 0, NULL, 0, true);
 		if (radio->buffer[1] || radio->buffer[2]) {
-			/* To check: sometimes radio->curfreq is set to out of range value */
+			 
 			radio->curfreq = (radio->buffer[1] << 8) | radio->buffer[2];
 			radio->curfreq = (radio->curfreq - 0x10) * 200;
 			amradio_send_cmd(radio, AMRADIO_STOP_SEARCH,
@@ -424,7 +379,7 @@ out_err:
 	return retval;
 }
 
-/* Suspend device - stop device. Need to be checked and fixed */
+ 
 static int usb_amradio_suspend(struct usb_interface *intf, pm_message_t message)
 {
 	struct amradio_device *radio = to_amradio_dev(usb_get_intfdata(intf));
@@ -440,7 +395,7 @@ static int usb_amradio_suspend(struct usb_interface *intf, pm_message_t message)
 	return 0;
 }
 
-/* Resume device - start device. Need to be checked and fixed */
+ 
 static int usb_amradio_resume(struct usb_interface *intf)
 {
 	struct amradio_device *radio = to_amradio_dev(usb_get_intfdata(intf));
@@ -462,7 +417,7 @@ static const struct v4l2_ctrl_ops usb_amradio_ctrl_ops = {
 	.s_ctrl = usb_amradio_s_ctrl,
 };
 
-/* File system interface */
+ 
 static const struct v4l2_file_operations usb_amradio_fops = {
 	.owner		= THIS_MODULE,
 	.open		= v4l2_fh_open,
@@ -487,14 +442,14 @@ static void usb_amradio_release(struct v4l2_device *v4l2_dev)
 {
 	struct amradio_device *radio = to_amradio_dev(v4l2_dev);
 
-	/* free rest memory */
+	 
 	v4l2_ctrl_handler_free(&radio->hdl);
 	v4l2_device_unregister(&radio->v4l2_dev);
 	kfree(radio->buffer);
 	kfree(radio);
 }
 
-/* check if the device is present and register with v4l and usb if it is */
+ 
 static int usb_amradio_probe(struct usb_interface *intf,
 				const struct usb_device_id *id)
 {
@@ -576,16 +531,16 @@ err:
 	return retval;
 }
 
-/* USB Device ID List */
+ 
 static const struct usb_device_id usb_amradio_device_table[] = {
 	{ USB_DEVICE_AND_INTERFACE_INFO(USB_AMRADIO_VENDOR, USB_AMRADIO_PRODUCT,
 							USB_CLASS_HID, 0, 0) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 MODULE_DEVICE_TABLE(usb, usb_amradio_device_table);
 
-/* USB subsystem interface */
+ 
 static struct usb_driver usb_amradio_driver = {
 	.name			= MR800_DRIVER_NAME,
 	.probe			= usb_amradio_probe,

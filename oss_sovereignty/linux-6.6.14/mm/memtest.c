@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/init.h>
@@ -9,7 +9,7 @@ static bool early_memtest_done;
 static phys_addr_t early_memtest_bad_size;
 
 static u64 patterns[] __initdata = {
-	/* The first entry has to be 0 to leave memtest with zeroed memory */
+	 
 	0,
 	0xffffffffffffffffULL,
 	0x5555555555555555ULL,
@@ -26,7 +26,7 @@ static u64 patterns[] __initdata = {
 	0xbbbbbbbbbbbbbbbbULL,
 	0xddddddddddddddddULL,
 	0xeeeeeeeeeeeeeeeeULL,
-	0x7a6c7258554e494cULL, /* yeah ;-) */
+	0x7a6c7258554e494cULL,  
 };
 
 static void __init reserve_bad_mem(u64 pattern, phys_addr_t start_bad, phys_addr_t end_bad)
@@ -87,7 +87,7 @@ static void __init do_one_pass(u64 pattern, phys_addr_t start, phys_addr_t end)
 	}
 }
 
-/* default is disabled */
+ 
 static unsigned int memtest_pattern __initdata;
 
 static int __init parse_memtest(char *arg)
@@ -132,6 +132,6 @@ void memtest_report_meminfo(struct seq_file *m)
 	early_memtest_bad_size_kb = early_memtest_bad_size >> 10;
 	if (early_memtest_bad_size && !early_memtest_bad_size_kb)
 		early_memtest_bad_size_kb = 1;
-	/* When 0 is reported, it means there actually was a successful test */
+	 
 	seq_printf(m, "EarlyMemtestBad:   %5lu kB\n", early_memtest_bad_size_kb);
 }

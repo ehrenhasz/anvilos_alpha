@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
@@ -34,11 +34,7 @@ static bool is_frag_v4(struct iphdr *iph)
 
 static bool is_frag_v6(struct ipv6hdr *ip6h)
 {
-	/* Simplifying assumption that there are no extension headers
-	 * between fixed header and fragmentation header. This assumption
-	 * is only valid in this test case. It saves us the hassle of
-	 * searching all potential extension headers.
-	 */
+	 
 	return ip6h->nexthdr == NEXTHDR_FRAGMENT;
 }
 
@@ -55,7 +51,7 @@ static int handle_v4(struct sk_buff *skb)
 	if (!iph)
 		return NF_DROP;
 
-	/* Shootdown any frags */
+	 
 	if (is_frag_v4(iph)) {
 		shootdowns++;
 		return NF_DROP;
@@ -77,7 +73,7 @@ static int handle_v6(struct sk_buff *skb)
 	if (!ip6h)
 		return NF_DROP;
 
-	/* Shootdown any frags */
+	 
 	if (is_frag_v6(ip6h)) {
 		shootdowns++;
 		return NF_DROP;

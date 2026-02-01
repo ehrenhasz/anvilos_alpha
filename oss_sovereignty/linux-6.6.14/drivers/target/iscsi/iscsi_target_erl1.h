@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ISCSI_TARGET_ERL1_H
 #define ISCSI_TARGET_ERL1_H
 
 #include <linux/types.h>
-#include <scsi/iscsi_proto.h> /* itt_t */
+#include <scsi/iscsi_proto.h>  
 
 struct iscsit_cmd;
 struct iscsit_conn;
@@ -35,4 +35,4 @@ extern void iscsit_mod_dataout_timer(struct iscsit_cmd *);
 extern void iscsit_start_dataout_timer(struct iscsit_cmd *, struct iscsit_conn *);
 extern void iscsit_stop_dataout_timer(struct iscsit_cmd *);
 
-#endif /* ISCSI_TARGET_ERL1_H */
+#endif  

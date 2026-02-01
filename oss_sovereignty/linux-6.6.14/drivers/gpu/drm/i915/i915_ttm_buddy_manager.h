@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_TTM_BUDDY_MANAGER_H__
 #define __I915_TTM_BUDDY_MANAGER_H__
@@ -15,19 +13,7 @@ struct ttm_device;
 struct ttm_resource_manager;
 struct drm_buddy;
 
-/**
- * struct i915_ttm_buddy_resource
- *
- * @base: struct ttm_resource base class we extend
- * @blocks: the list of struct i915_buddy_block for this resource/allocation
- * @flags: DRM_BUDDY_*_ALLOCATION flags
- * @used_visible_size: How much of this resource, if any, uses the CPU visible
- * portion, in pages.
- * @mm: the struct i915_buddy_mm for this resource
- *
- * Extends the struct ttm_resource to manage an address space allocation with
- * one or more struct i915_buddy_block.
- */
+ 
 struct i915_ttm_buddy_resource {
 	struct ttm_resource base;
 	struct list_head blocks;
@@ -36,13 +22,7 @@ struct i915_ttm_buddy_resource {
 	struct drm_buddy *mm;
 };
 
-/**
- * to_ttm_buddy_resource
- *
- * @res: the resource to upcast
- *
- * Upcast the struct ttm_resource object into a struct i915_ttm_buddy_resource.
- */
+ 
 static inline struct i915_ttm_buddy_resource *
 to_ttm_buddy_resource(struct ttm_resource *res)
 {

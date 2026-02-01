@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/regulator/aat2870-regulator.c
- *
- * Copyright (c) 2011, NVIDIA Corporation.
- * Author: Jin Park <jinyoungp@nvidia.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

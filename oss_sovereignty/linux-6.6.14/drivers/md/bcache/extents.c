@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2010 Kent Overstreet <kent.overstreet@gmail.com>
- *
- * Uses a block device as cache for other block devices; optimized for SSDs.
- * All allocation is done in buckets, which should match the erase block size
- * of the device.
- *
- * Buckets containing cached data are kept on a heap sorted by priority;
- * bucket priority is increased on cache hit, and periodically all the buckets
- * on the heap have their priority scaled down. This currently is just used as
- * an LRU but in the future should allow for more intelligent heuristics.
- *
- * Buckets have an 8 bit counter; freeing is accomplished by incrementing the
- * counter. Garbage collection is used to remove stale pointers.
- *
- * Indexing is done via a btree; nodes are not necessarily fully sorted, rather
- * as keys are inserted we only sort the pages that have not yet been written.
- * When garbage collection is run, we resort the entire node.
- *
- * All configuration is done via sysfs; see Documentation/admin-guide/bcache.rst.
- */
+
+ 
 
 #include "bcache.h"
 #include "btree.h"
@@ -63,7 +43,7 @@ static bool __ptr_invalid(struct cache_set *c, const struct bkey *k)
 	return false;
 }
 
-/* Common among btree and extent ptrs */
+ 
 
 static const char *bch_ptr_status(struct cache_set *c, const struct bkey *k)
 {
@@ -144,7 +124,7 @@ static void bch_bkey_dump(struct btree_keys *keys, const struct bkey *k)
 	pr_cont(" %s\n", bch_ptr_status(b->c, k));
 }
 
-/* Btree ptrs */
+ 
 
 bool __bch_btree_ptr_invalid(struct cache_set *c, const struct bkey *k)
 {
@@ -246,15 +226,9 @@ const struct btree_keys_ops bch_btree_keys_ops = {
 	.key_dump	= bch_bkey_dump,
 };
 
-/* Extents */
+ 
 
-/*
- * Returns true if l > r - unless l == r, in which case returns true if l is
- * older than r.
- *
- * Necessary for btree_sort_fixup() - if there are multiple keys that compare
- * equal in different sets, we have to process them newest to oldest.
- */
+ 
 static bool bch_extent_sort_cmp(struct btree_iter_set l,
 				struct btree_iter_set r)
 {
@@ -290,7 +264,7 @@ static struct bkey *bch_extent_sort_fixup(struct btree_iter *iter,
 
 			heap_sift(iter, i - top, bch_extent_sort_cmp);
 		} else {
-			/* can't happen because of comparison func */
+			 
 			BUG_ON(!bkey_cmp(&START_KEY(top->k), &START_KEY(i->k)));
 
 			if (bkey_cmp(i->k, top->k) < 0) {
@@ -352,36 +326,27 @@ static bool bch_extent_insert_fixup(struct btree_keys *b,
 		old_offset = KEY_START(k);
 		old_size = KEY_SIZE(k);
 
-		/*
-		 * We might overlap with 0 size extents; we can't skip these
-		 * because if they're in the set we're inserting to we have to
-		 * adjust them so they don't overlap with the key we're
-		 * inserting. But we don't want to check them for replace
-		 * operations.
-		 */
+		 
 
 		if (replace_key && KEY_SIZE(k)) {
-			/*
-			 * k might have been split since we inserted/found the
-			 * key we're replacing
-			 */
+			 
 			unsigned int i;
 			uint64_t offset = KEY_START(k) -
 				KEY_START(replace_key);
 
-			/* But it must be a subset of the replace key */
+			 
 			if (KEY_START(k) < KEY_START(replace_key) ||
 			    KEY_OFFSET(k) > KEY_OFFSET(replace_key))
 				goto check_failed;
 
-			/* We didn't find a key that we were supposed to */
+			 
 			if (KEY_START(k) > KEY_START(insert) + sectors_found)
 				goto check_failed;
 
 			if (!bch_bkey_equal_header(k, replace_key))
 				goto check_failed;
 
-			/* skip past gen */
+			 
 			offset <<= 8;
 
 			BUG_ON(!KEY_PTRS(replace_key));
@@ -395,12 +360,7 @@ static bool bch_extent_insert_fixup(struct btree_keys *b,
 
 		if (bkey_cmp(insert, k) < 0 &&
 		    bkey_cmp(&START_KEY(insert), &START_KEY(k)) > 0) {
-			/*
-			 * We overlapped in the middle of an existing key: that
-			 * means we have to split the old key. But we have to do
-			 * slightly different things depending on whether the
-			 * old key has been written out yet.
-			 */
+			 
 
 			struct bkey *top;
 
@@ -408,18 +368,7 @@ static bool bch_extent_insert_fixup(struct btree_keys *b,
 				       KEY_SIZE(insert));
 
 			if (bkey_written(b, k)) {
-				/*
-				 * We insert a new key to cover the top of the
-				 * old key, and the old key is modified in place
-				 * to represent the bottom split.
-				 *
-				 * It's completely arbitrary whether the new key
-				 * is the top or the bottom, but it has to match
-				 * up with what btree_sort_fixup() does - it
-				 * doesn't check for this kind of overlap, it
-				 * depends on us inserting a new key for the top
-				 * here.
-				 */
+				 
 				top = bch_bset_search(b, bset_tree_last(b),
 						      insert);
 				bch_bset_insert(b, top, k);
@@ -444,10 +393,7 @@ static bool bch_extent_insert_fixup(struct btree_keys *b,
 
 			if (bkey_written(b, k) &&
 			    bkey_cmp(&START_KEY(insert), &START_KEY(k)) <= 0) {
-				/*
-				 * Completely overwrote, so we don't have to
-				 * invalidate the binary search tree
-				 */
+				 
 				bch_cut_front(k, k);
 			} else {
 				__bch_cut_back(&START_KEY(insert), k);
@@ -593,9 +539,7 @@ static bool bch_extent_merge(struct btree_keys *bk,
 		    PTR_BUCKET_NR(b->c, l, i) != PTR_BUCKET_NR(b->c, r, i))
 			return false;
 
-	/* Keys with no pointers aren't restricted to one bucket and could
-	 * overflow KEY_SIZE
-	 */
+	 
 	if (KEY_SIZE(l) + KEY_SIZE(r) > USHRT_MAX) {
 		SET_KEY_OFFSET(l, KEY_OFFSET(l) + USHRT_MAX - KEY_SIZE(l));
 		SET_KEY_SIZE(l, USHRT_MAX);

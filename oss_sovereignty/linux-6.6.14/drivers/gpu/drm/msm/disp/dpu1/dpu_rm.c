@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s] " fmt, __func__
 #include "dpu_kms.h"
@@ -25,11 +22,7 @@ static inline bool reserved_by_other(uint32_t *res_map, int idx,
 	return res_map[idx] && res_map[idx] != enc_id;
 }
 
-/**
- * struct dpu_rm_requirements - Reservation requirements parameter bundle
- * @topology:  selected topology for the display
- * @hw_res:	   Hardware resources required as reported by the encoders
- */
+ 
 struct dpu_rm_requirements {
 	struct msm_display_topology topology;
 };
@@ -111,10 +104,10 @@ int dpu_rm_init(struct dpu_rm *rm,
 		return -EINVAL;
 	}
 
-	/* Clear, setup lists */
+	 
 	memset(rm, 0, sizeof(*rm));
 
-	/* Interrogate HW catalog and create tracking items for hw blocks */
+	 
 	for (i = 0; i < cat->mixer_count; i++) {
 		struct dpu_hw_mixer *hw;
 		const struct dpu_lm_cfg *lm = &cat->mixer[i];
@@ -253,11 +246,7 @@ static bool _dpu_rm_needs_split_display(const struct msm_display_topology *top)
 	return top->num_intf > 1;
 }
 
-/**
- * _dpu_rm_get_lm_peer - get the id of a mixer which is a peer of the primary
- * @rm: dpu resource manager handle
- * @primary_idx: index of primary mixer in rm->mixer_blks[]
- */
+ 
 static int _dpu_rm_get_lm_peer(struct dpu_rm *rm, int primary_idx)
 {
 	const struct dpu_lm_cfg *prim_lm_cfg;
@@ -269,24 +258,7 @@ static int _dpu_rm_get_lm_peer(struct dpu_rm *rm, int primary_idx)
 	return -EINVAL;
 }
 
-/**
- * _dpu_rm_check_lm_and_get_connected_blks - check if proposed layer mixer meets
- *	proposed use case requirements, incl. hardwired dependent blocks like
- *	pingpong
- * @rm: dpu resource manager handle
- * @global_state: resources shared across multiple kms objects
- * @enc_id: encoder id requesting for allocation
- * @lm_idx: index of proposed layer mixer in rm->mixer_blks[], function checks
- *      if lm, and all other hardwired blocks connected to the lm (pp) is
- *      available and appropriate
- * @pp_idx: output parameter, index of pingpong block attached to the layer
- *      mixer in rm->pingpong_blks[].
- * @dspp_idx: output parameter, index of dspp block attached to the layer
- *      mixer in rm->dspp_blks[].
- * @reqs: input parameter, rm requirements for HW blocks needed in the
- *      datapath.
- * Return: true if lm matches all requirements, false otherwise
- */
+ 
 static bool _dpu_rm_check_lm_and_get_connected_blks(struct dpu_rm *rm,
 		struct dpu_global_state *global_state,
 		uint32_t enc_id, int lm_idx, int *pp_idx, int *dspp_idx,
@@ -295,7 +267,7 @@ static bool _dpu_rm_check_lm_and_get_connected_blks(struct dpu_rm *rm,
 	const struct dpu_lm_cfg *lm_cfg;
 	int idx;
 
-	/* Already reserved? */
+	 
 	if (reserved_by_other(global_state->mixer_to_enc_id, lm_idx, enc_id)) {
 		DPU_DEBUG("lm %d already reserved\n", lm_idx + LM_0);
 		return false;
@@ -350,7 +322,7 @@ static int _dpu_rm_reserve_lms(struct dpu_rm *rm,
 		return -EINVAL;
 	}
 
-	/* Find a primary mixer */
+	 
 	for (i = 0; i < ARRAY_SIZE(rm->mixer_blks) &&
 			lm_count < reqs->topology.num_lm; i++) {
 		if (!rm->mixer_blks[i])
@@ -367,11 +339,11 @@ static int _dpu_rm_reserve_lms(struct dpu_rm *rm,
 
 		++lm_count;
 
-		/* Valid primary mixer found, find matching peers */
+		 
 		if (lm_count < reqs->topology.num_lm) {
 			int j = _dpu_rm_get_lm_peer(rm, i);
 
-			/* ignore the peer if there is an error or if the peer was already processed */
+			 
 			if (j < 0 || j < i)
 				continue;
 
@@ -418,7 +390,7 @@ static int _dpu_rm_reserve_ctls(
 	int i = 0, j, num_ctls;
 	bool needs_split_display;
 
-	/* each hw_intf needs its own hw_ctrl to program its control path */
+	 
 	num_ctls = top->num_intf;
 
 	needs_split_display = _dpu_rm_needs_split_display(top);
@@ -469,7 +441,7 @@ static int _dpu_rm_reserve_dsc(struct dpu_rm *rm,
 	int num_dsc = top->num_dsc;
 	int i;
 
-	/* check if DSC required are allocated or not */
+	 
 	for (i = 0; i < num_dsc; i++) {
 		if (!rm->dsc_blks[i]) {
 			DPU_ERROR("DSC %d does not exist\n", i);
@@ -566,7 +538,7 @@ int dpu_rm_reserve(
 	struct dpu_rm_requirements reqs;
 	int ret;
 
-	/* Check if this is just a page-flip */
+	 
 	if (!drm_atomic_crtc_needs_modeset(crtc_state))
 		return 0;
 

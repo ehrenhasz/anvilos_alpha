@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence CDNSP DRD Driver.
- *
- * Copyright (C) 2020 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- */
+
+ 
 
 #include <linux/usb/composite.h>
 #include <linux/usb/gadget.h>
@@ -111,7 +104,7 @@ static int cdnsp_ep0_set_address(struct cdnsp_device *pdev,
 	if (slot_state == SLOT_STATE_ADDRESSED)
 		cdnsp_reset_device(pdev);
 
-	/*set device address*/
+	 
 	ret = cdnsp_setup_device(pdev, SETUP_CONTEXT_ADDRESS);
 	if (ret)
 		return ret;
@@ -163,17 +156,14 @@ static int cdnsp_ep0_handle_status(struct cdnsp_device *pdev,
 		}
 		break;
 	case USB_RECIP_INTERFACE:
-		/*
-		 * Function Remote Wake Capable	D0
-		 * Function Remote Wakeup	D1
-		 */
+		 
 		return cdnsp_ep0_delegate_req(pdev, ctrl);
 	case USB_RECIP_ENDPOINT:
 		ep_sts = cdnsp_w_index_to_ep_index(le16_to_cpu(ctrl->wIndex));
 		pep = &pdev->eps[ep_sts];
 		ep_sts = GET_EP_CTX_STATE(pep->out_ctx);
 
-		/* check if endpoint is stalled */
+		 
 		if (ep_sts == EP_STATE_HALTED)
 			status =  BIT(USB_ENDPOINT_HALT);
 		break;
@@ -247,10 +237,7 @@ static int cdnsp_ep0_handle_feature_device(struct cdnsp_device *pdev,
 
 		pdev->test_mode = tmode;
 
-		/*
-		 * Test mode must be set before Status Stage but controller
-		 * will start testing sequence after Status Stage.
-		 */
+		 
 		cdnsp_enter_test_mode(pdev);
 		break;
 	default:
@@ -276,10 +263,7 @@ static int cdnsp_ep0_handle_feature_intf(struct cdnsp_device *pdev,
 		if (ret)
 			return ret;
 
-		/*
-		 * Remote wakeup is enabled when any function within a device
-		 * is enabled for function remote wakeup.
-		 */
+		 
 		if (wIndex & USB_INTRF_FUNC_SUSPEND_RW)
 			pdev->may_wakeup++;
 		else
@@ -307,7 +291,7 @@ static int cdnsp_ep0_handle_feature_endpoint(struct cdnsp_device *pdev,
 	switch (wValue) {
 	case USB_ENDPOINT_HALT:
 		if (!set && (pep->ep_state & EP_WEDGE)) {
-			/* Resets Sequence Number */
+			 
 			cdnsp_halt_endpoint(pdev, pep, 0);
 			cdnsp_halt_endpoint(pdev, pep, 1);
 			break;
@@ -355,10 +339,7 @@ static int cdnsp_ep0_set_sel(struct cdnsp_device *pdev,
 		return -EINVAL;
 	}
 
-	/*
-	 * To handle Set SEL we need to receive 6 bytes from Host. So let's
-	 * queue a usb_request for 6 bytes.
-	 */
+	 
 	pdev->ep0_preq.request.length = 6;
 	pdev->ep0_preq.request.buf = pdev->setup_buf;
 
@@ -427,16 +408,13 @@ void cdnsp_setup_analyze(struct cdnsp_device *pdev)
 		goto out;
 	}
 
-	/* Restore the ep0 to Stopped/Running state. */
+	 
 	if (pdev->eps[0].ep_state & EP_HALTED) {
 		trace_cdnsp_ep0_halted("Restore to normal state");
 		cdnsp_halt_endpoint(pdev, &pdev->eps[0], 0);
 	}
 
-	/*
-	 * Finishing previous SETUP transfer by removing request from
-	 * list and informing upper layer
-	 */
+	 
 	if (!list_empty(&pdev->eps[0].pending_list)) {
 		struct cdnsp_request	*req;
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_VFN_H__
 #define __NVKM_VFN_H__
 #include <core/subdev.h>

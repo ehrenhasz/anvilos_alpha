@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson AB 2010
- * Author:	Sjur Brendeland
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s(): " fmt, __func__
 
@@ -57,7 +54,7 @@ static int cfvidl_transmit(struct cflayer *layr, struct cfpkt *pkt)
 	}
 
 	cfpkt_add_head(pkt, &videoheader, 4);
-	/* Add info for MUX-layer to route the packet out */
+	 
 	info = cfpkt_info(pkt);
 	info->channel_id = service->layer.id;
 	info->dev_info = &service->dev_info;

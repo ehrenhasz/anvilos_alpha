@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/slab.h>
@@ -106,7 +104,7 @@ int dcss_ss_init(struct dcss_dev *dcss, unsigned long ss_base)
 
 void dcss_ss_exit(struct dcss_ss *ss)
 {
-	/* stop SS */
+	 
 	dcss_writel(0, ss->base_reg + DCSS_SS_SYS_CTRL);
 
 	if (ss->base_reg)

@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/*
- *  include/linux/nfs4.h
- *
- *  NFSv4 protocol definitions.
- *
- *  Copyright (c) 2002 The Regents of the University of Michigan.
- *  All rights reserved.
- *
- *  Kendrick Smith <kmsmith@umich.edu>
- *  Andy Adamson   <andros@umich.edu>
- */
+ 
+ 
 
 #ifndef _UAPI_LINUX_NFS4_H
 #define _UAPI_LINUX_NFS4_H
@@ -56,7 +46,7 @@
 #define NFS4_SHARE_DENY_WRITE	0x0002
 #define NFS4_SHARE_DENY_BOTH	0x0003
 
-/* nfs41 */
+ 
 #define NFS4_SHARE_WANT_MASK		0xFF00
 #define NFS4_SHARE_WANT_NO_PREFERENCE	0x0000
 #define NFS4_SHARE_WANT_READ_DELEG	0x0100
@@ -142,11 +132,7 @@
 #define EXCHGID4_FLAG_CONFIRMED_R		0x80000000
 
 #define EXCHGID4_FLAG_SUPP_FENCE_OPS		0x00000004
-/*
- * Since the validity of these bits depends on whether
- * they're set in the argument or response, have separate
- * invalid flag masks for arg (_A) and resp (_R).
- */
+ 
 #define EXCHGID4_FLAG_MASK_A			0x40070103
 #define EXCHGID4_FLAG_MASK_R			0x80070103
 #define EXCHGID4_2_FLAG_MASK_R			0x80070107
@@ -168,14 +154,10 @@
 
 #define NFS4_MAX_UINT64	(~(__u64)0)
 
-/* An NFS4 sessions server must support at least NFS4_MAX_OPS operations.
- * If a compound requires more operations, adjust NFS4_MAX_OPS accordingly.
- */
+ 
 #define NFS4_MAX_OPS   8
 
-/* Our NFS4 client back channel server only wants the cb_sequene and the
- * actual operation per compound
- */
+ 
 #define NFS4_MAX_BACK_CHANNEL_OPS 2
 
-#endif /* _UAPI_LINUX_NFS4_H */
+#endif  

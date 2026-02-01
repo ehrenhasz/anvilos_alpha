@@ -1,22 +1,6 @@
-/* stringvec.c - functions for managing arrays of strings. */
+ 
 
-/* Copyright (C) 2000-2002 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -32,7 +16,7 @@
 
 #include "shell.h"
 
-/* Allocate an array of strings with room for N members. */
+ 
 char **
 strvec_create (n)
      int n;
@@ -40,7 +24,7 @@ strvec_create (n)
   return ((char **)xmalloc ((n) * sizeof (char *)));
 }
 
-/* Allocate an array of strings with room for N members. */
+ 
 char **
 strvec_mcreate (n)
      int n;
@@ -64,7 +48,7 @@ strvec_mresize (array, nsize)
   return ((char **)realloc (array, nsize * sizeof (char *)));
 }
 
-/* Return the length of ARRAY, a NULL terminated array of char *. */
+ 
 int
 strvec_len (array)
      char **array;
@@ -75,7 +59,7 @@ strvec_len (array)
   return (i);
 }
 
-/* Free the contents of ARRAY, a NULL terminated array of char *. */
+ 
 void
 strvec_flush (array)
      char **array;
@@ -122,8 +106,7 @@ strvec_remove (array, name)
   return 0;
 }
 
-/* Find NAME in ARRAY.  Return the index of NAME, or -1 if not present.
-   ARRAY should be NULL terminated. */
+ 
 int
 strvec_search (array, name)
      char **array, *name;
@@ -137,7 +120,7 @@ strvec_search (array, name)
   return (-1);
 }
 
-/* Allocate and return a new copy of ARRAY and its contents. */
+ 
 char **
 strvec_copy (array)
      char **array;
@@ -156,10 +139,7 @@ strvec_copy (array)
   return (ret);
 }
 
-/* Comparison routine for use by qsort that conforms to the new Posix
-   requirements (http://austingroupbugs.net/view.php?id=1070).
-
-   Perform a bytewise comparison if *S1 and *S2 collate equally. */
+ 
 int
 strvec_posixcmp (s1, s2)
      register char **s1, **s2;
@@ -178,25 +158,24 @@ strvec_posixcmp (s1, s2)
   return (result);
 }
 
-/* Comparison routine for use with qsort() on arrays of strings.  Uses
-   strcoll(3) if available, otherwise it uses strcmp(3). */
+ 
 int
 strvec_strcmp (s1, s2)
      register char **s1, **s2;
 {
 #if defined (HAVE_STRCOLL)
    return (strcoll (*s1, *s2));
-#else /* !HAVE_STRCOLL */
+#else  
   int result;
 
   if ((result = **s1 - **s2) == 0)
     result = strcmp (*s1, *s2);
 
   return (result);
-#endif /* !HAVE_STRCOLL */
+#endif  
 }
 
-/* Sort ARRAY, a null terminated array of pointers to strings. */
+ 
 void
 strvec_sort (array, posix)
      char **array;
@@ -208,13 +187,7 @@ strvec_sort (array, posix)
     qsort (array, strvec_len (array), sizeof (char *), (QSFUNC *)strvec_strcmp);
 }
 
-/* Cons up a new array of words.  The words are taken from LIST,
-   which is a WORD_LIST *.  If ALLOC is true, everything is malloc'ed,
-   so you should free everything in this array when you are done.
-   The array is NULL terminated.  If IP is non-null, it gets the
-   number of words in the returned array.  STARTING_INDEX says where
-   to start filling in the returned array; it can be used to reserve
-   space at the beginning of the array. */
+ 
 
 char **
 strvec_from_word_list (list, alloc, starting_index, ip)
@@ -238,10 +211,7 @@ strvec_from_word_list (list, alloc, starting_index, ip)
   return (array);
 }
 
-/* Convert an array of strings into the form used internally by the shell.
-   ALLOC means to allocate new storage for each WORD_DESC in the returned
-   list rather than copy the values in ARRAY.  STARTING_INDEX says where
-   in ARRAY to begin. */
+ 
 
 WORD_LIST *
 strvec_to_word_list (array, alloc, starting_index)

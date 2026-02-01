@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	w1_ds28e04.c - w1 family 1C (DS28E04) driver
- *
- * Copyright (c) 2012 Markus Franke <franke.m@sebakmt.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,16 +18,11 @@
 
 #define W1_FAMILY_DS28E04	0x1C
 
-/* Allow the strong pullup to be disabled, but default to enabled.
- * If it was disabled a parasite powered device might not get the required
- * current to copy the data from the scratchpad to EEPROM.  If it is enabled
- * parasite powered devices have a better chance of getting the current
- * required.
- */
+ 
 static int w1_strong_pullup = 1;
 module_param_named(strong_pullup, w1_strong_pullup, int, 0);
 
-/* enable/disable CRC checking on DS28E04-100 memory accesses */
+ 
 static bool w1_enable_crccheck = true;
 
 #define W1_EEPROM_SIZE		512
@@ -53,10 +44,7 @@ struct w1_f1C_data {
 	u32	validcrc;
 };
 
-/*
- * Check the file size bounds and adjusts count as needed.
- * This would not be needed if the file size didn't reset to 0 after a write.
- */
+ 
 static inline size_t w1_f1C_fix_count(loff_t off, size_t count, size_t size)
 {
 	if (off > size)
@@ -88,7 +76,7 @@ static int w1_f1C_refresh_block(struct w1_slave *sl, struct w1_f1C_data *data,
 	w1_write_block(sl->master, wrbuf, 3);
 	w1_read_block(sl->master, &data->memory[off], W1_PAGE_SIZE);
 
-	/* cache the block if the CRC is valid */
+	 
 	if (crc16(CRC16_INIT, &data->memory[off], W1_PAGE_SIZE) == CRC16_VALID)
 		data->validcrc |= (1 << block);
 
@@ -99,7 +87,7 @@ static int w1_f1C_read(struct w1_slave *sl, int addr, int len, char *data)
 {
 	u8 wrbuf[3];
 
-	/* read directly from the EEPROM */
+	 
 	if (w1_reset_select_slave(sl))
 		return -EIO;
 
@@ -145,19 +133,7 @@ out_up:
 	return count;
 }
 
-/**
- * w1_f1C_write() - Writes to the scratchpad and reads it back for verification.
- * @sl:		The slave structure
- * @addr:	Address for the write
- * @len:	length must be <= (W1_PAGE_SIZE - (addr & W1_PAGE_MASK))
- * @data:	The data to write
- *
- * Then copies the scratchpad to EEPROM.
- * The data must be on one page.
- * The master must be locked.
- *
- * Return:	0=Success, -1=failure
- */
+ 
 static int w1_f1C_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 {
 	u8 wrbuf[4];
@@ -167,7 +143,7 @@ static int w1_f1C_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 	int i;
 	struct w1_f1C_data *f1C = sl->family_data;
 
-	/* Write the data to the scratchpad */
+	 
 	if (w1_reset_select_slave(sl))
 		return -1;
 
@@ -178,19 +154,19 @@ static int w1_f1C_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 	w1_write_block(sl->master, wrbuf, 3);
 	w1_write_block(sl->master, data, len);
 
-	/* Read the scratchpad and verify */
+	 
 	if (w1_reset_select_slave(sl))
 		return -1;
 
 	w1_write_8(sl->master, W1_F1C_READ_SCRATCH);
 	w1_read_block(sl->master, rdbuf, len + 3);
 
-	/* Compare what was read against the data written */
+	 
 	if ((rdbuf[0] != wrbuf[1]) || (rdbuf[1] != wrbuf[2]) ||
 	    (rdbuf[2] != es) || (memcmp(data, &rdbuf[3], len) != 0))
 		return -1;
 
-	/* Copy the scratchpad to EEPROM */
+	 
 	if (w1_reset_select_slave(sl))
 		return -1;
 
@@ -198,10 +174,7 @@ static int w1_f1C_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 	wrbuf[3] = es;
 
 	for (i = 0; i < sizeof(wrbuf); ++i) {
-		/*
-		 * issue 10ms strong pullup (or delay) on the last byte
-		 * for writing the data from the scratchpad to EEPROM
-		 */
+		 
 		if (w1_strong_pullup && i == sizeof(wrbuf)-1)
 			w1_next_pullup(sl->master, tm);
 
@@ -212,11 +185,11 @@ static int w1_f1C_write(struct w1_slave *sl, int addr, int len, const u8 *data)
 		msleep(tm);
 
 	if (w1_enable_crccheck) {
-		/* invalidate cached data */
+		 
 		f1C->validcrc &= ~(1 << (addr >> W1_PAGE_BITS));
 	}
 
-	/* Reset the bus to wake up the EEPROM (this may not be needed) */
+	 
 	w1_reset_bus(sl->master);
 
 	return 0;
@@ -235,14 +208,14 @@ static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 		return 0;
 
 	if (w1_enable_crccheck) {
-		/* can only write full blocks in cached mode */
+		 
 		if ((off & W1_PAGE_MASK) || (count & W1_PAGE_MASK)) {
 			dev_err(&sl->dev, "invalid offset/count off=%d cnt=%zd\n",
 				(int)off, count);
 			return -EINVAL;
 		}
 
-		/* make sure the block CRCs are valid */
+		 
 		for (idx = 0; idx < count; idx += W1_PAGE_SIZE) {
 			if (crc16(CRC16_INIT, &buf[idx], W1_PAGE_SIZE)
 				!= CRC16_VALID) {
@@ -255,7 +228,7 @@ static ssize_t eeprom_write(struct file *filp, struct kobject *kobj,
 
 	mutex_lock(&sl->master->mutex);
 
-	/* Can only write data to one page at a time */
+	 
 	idx = 0;
 	while (idx < count) {
 		addr = off + idx;
@@ -286,7 +259,7 @@ static ssize_t pio_read(struct file *filp, struct kobject *kobj,
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	int ret;
 
-	/* check arguments */
+	 
 	if (off != 0 || count != 1 || buf == NULL)
 		return -EINVAL;
 
@@ -306,19 +279,19 @@ static ssize_t pio_write(struct file *filp, struct kobject *kobj,
 	u8 wrbuf[3];
 	u8 ack;
 
-	/* check arguments */
+	 
 	if (off != 0 || count != 1 || buf == NULL)
 		return -EINVAL;
 
 	mutex_lock(&sl->master->mutex);
 
-	/* Write the PIO data */
+	 
 	if (w1_reset_select_slave(sl)) {
 		mutex_unlock(&sl->master->mutex);
 		return -1;
 	}
 
-	/* set bit 7..2 to value '1' */
+	 
 	*buf = *buf | 0xFC;
 
 	wrbuf[0] = W1_F1C_ACCESS_WRITE;
@@ -330,7 +303,7 @@ static ssize_t pio_write(struct file *filp, struct kobject *kobj,
 
 	mutex_unlock(&sl->master->mutex);
 
-	/* check for acknowledgement */
+	 
 	if (ack != 0xAA)
 		return -EIO;
 

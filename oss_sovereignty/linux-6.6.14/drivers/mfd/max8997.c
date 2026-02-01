@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max8997.c - mfd core driver for the Maxim 8966 and 8997
-//
-// Copyright (C) 2011 Samsung Electronics
-// MyungJoo Ham <myungjoo.ham@samsung.com>
-//
-// This driver is based on max8998.c
+
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -119,15 +119,7 @@ int max8997_update_reg(struct i2c_client *i2c, u8 reg, u8 val, u8 mask)
 }
 EXPORT_SYMBOL_GPL(max8997_update_reg);
 
-/*
- * Only the common platform data elements for max8997 are parsed here from the
- * device tree. Other sub-modules of max8997 such as pmic, rtc and others have
- * to parse their own platform data elements from device tree.
- *
- * The max8997 platform data structure is instantiated here and the drivers for
- * the sub-modules need not instantiate another instance while parsing their
- * platform data.
- */
+ 
 static struct max8997_platform_data *max8997_i2c_parse_dt_pdata(
 					struct device *dev)
 {
@@ -218,12 +210,9 @@ static int max8997_i2c_probe(struct i2c_client *i2c)
 		goto err_mfd;
 	}
 
-	/*
-	 * TODO: enable others (flash, muic, rtc, battery, ...) and
-	 * check the return value
-	 */
+	 
 
-	/* MAX8997 has a power button input. */
+	 
 	device_init_wakeup(max8997->dev, true);
 
 	return ret;
@@ -485,5 +474,5 @@ static int __init max8997_i2c_init(void)
 {
 	return i2c_add_driver(&max8997_i2c_driver);
 }
-/* init early so consumer devices can complete system boot */
+ 
 subsys_initcall(max8997_i2c_init);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __SH_CLOCK_H
 #define __SH_CLOCK_H
 
@@ -38,14 +38,14 @@ struct sh_clk_ops {
 struct clk {
 	struct list_head	node;
 	struct clk		*parent;
-	struct clk		**parent_table;	/* list of parents to */
-	unsigned short		parent_num;	/* choose between */
-	unsigned char		src_shift;	/* source clock field in the */
-	unsigned char		src_width;	/* configuration register */
+	struct clk		**parent_table;	 
+	unsigned short		parent_num;	 
+	unsigned char		src_shift;	 
+	unsigned char		src_width;	 
 	struct sh_clk_ops	*ops;
 
 	struct list_head	children;
-	struct list_head	sibling;	/* node for children */
+	struct list_head	sibling;	 
 
 	int			usecount;
 
@@ -67,7 +67,7 @@ struct clk {
 
 #define CLK_ENABLE_ON_INIT	BIT(0)
 
-#define CLK_ENABLE_REG_32BIT	BIT(1)	/* default access size */
+#define CLK_ENABLE_REG_32BIT	BIT(1)	 
 #define CLK_ENABLE_REG_16BIT	BIT(2)
 #define CLK_ENABLE_REG_8BIT	BIT(3)
 
@@ -77,7 +77,7 @@ struct clk {
 				 CLK_ENABLE_REG_16BIT | \
 				 CLK_ENABLE_REG_8BIT)
 
-/* drivers/sh/clk.c */
+ 
 unsigned long followparent_recalc(struct clk *);
 void recalculate_root_clocks(void);
 void propagate_rate(struct clk *);
@@ -137,12 +137,7 @@ long clk_rate_mult_range_round(struct clk *clk, unsigned int mult_min,
 
 int sh_clk_mstp_register(struct clk *clks, int nr);
 
-/*
- * MSTP registration never really cared about access size, despite the
- * original enable/disable pairs assuming a 32-bit access. Clocks are
- * responsible for defining their access sizes either directly or via the
- * clock definition wrappers.
- */
+ 
 static inline int __deprecated sh_clk_mstp32_register(struct clk *clks, int nr)
 {
 	return sh_clk_mstp_register(clks, nr);
@@ -176,7 +171,7 @@ int sh_clk_div4_reparent_register(struct clk *clks, int nr,
 			_num_parents, _src_shift, _src_width)	\
 {								\
 	.enable_reg = (void __iomem *)_reg,			\
-	.enable_bit = 0, /* unused */				\
+	.enable_bit = 0,  				\
 	.flags = _flags | CLK_MASK_DIV_ON_DISABLE,		\
 	.div_mask = SH_CLK_DIV6_MSK,				\
 	.parent_table = _parents,				\
@@ -189,7 +184,7 @@ int sh_clk_div4_reparent_register(struct clk *clks, int nr,
 {								\
 	.parent		= _parent,				\
 	.enable_reg	= (void __iomem *)_reg,			\
-	.enable_bit	= 0,	/* unused */			\
+	.enable_bit	= 0,	 			\
 	.div_mask	= SH_CLK_DIV6_MSK,			\
 	.flags		= _flags | CLK_MASK_DIV_ON_DISABLE,	\
 }
@@ -201,7 +196,7 @@ int sh_clk_div6_reparent_register(struct clk *clks, int nr);
 #define CLKDEV_DEV_ID(_id, _clk) { .dev_id = _id, .clk = _clk }
 #define CLKDEV_ICK_ID(_cid, _did, _clk) { .con_id = _cid, .dev_id = _did, .clk = _clk }
 
-/* .enable_reg will be updated to .mapping on sh_clk_fsidiv_register() */
+ 
 #define SH_CLK_FSIDIV(_reg, _parent)		\
 {						\
 	.enable_reg = (void __iomem *)_reg,	\
@@ -210,4 +205,4 @@ int sh_clk_div6_reparent_register(struct clk *clks, int nr);
 
 int sh_clk_fsidiv_register(struct clk *clks, int nr);
 
-#endif /* __SH_CLOCK_H */
+#endif  

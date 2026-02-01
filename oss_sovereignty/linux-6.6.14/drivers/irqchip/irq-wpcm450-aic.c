@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2021 Jonathan Neuschäfer
+
+
 
 #include <linux/irqchip.h>
 #include <linux/of_address.h>
@@ -8,21 +8,21 @@
 
 #include <asm/exception.h>
 
-#define AIC_SCR(x)	((x)*4)	/* Source control registers */
-#define AIC_GEN		0x84	/* Interrupt group enable control register */
-#define AIC_GRSR	0x88	/* Interrupt group raw status register */
-#define AIC_IRSR	0x100	/* Interrupt raw status register */
-#define AIC_IASR	0x104	/* Interrupt active status register */
-#define AIC_ISR		0x108	/* Interrupt status register */
-#define AIC_IPER	0x10c	/* Interrupt priority encoding register */
-#define AIC_ISNR	0x110	/* Interrupt source number register */
-#define AIC_IMR		0x114	/* Interrupt mask register */
-#define AIC_OISR	0x118	/* Output interrupt status register */
-#define AIC_MECR	0x120	/* Mask enable command register */
-#define AIC_MDCR	0x124	/* Mask disable command register */
-#define AIC_SSCR	0x128	/* Source set command register */
-#define AIC_SCCR	0x12c	/* Source clear command register */
-#define AIC_EOSCR	0x130	/* End of service command register */
+#define AIC_SCR(x)	((x)*4)	 
+#define AIC_GEN		0x84	 
+#define AIC_GRSR	0x88	 
+#define AIC_IRSR	0x100	 
+#define AIC_IASR	0x104	 
+#define AIC_ISR		0x108	 
+#define AIC_IPER	0x10c	 
+#define AIC_ISNR	0x110	 
+#define AIC_IMR		0x114	 
+#define AIC_OISR	0x118	 
+#define AIC_MECR	0x120	 
+#define AIC_MDCR	0x124	 
+#define AIC_SSCR	0x128	 
+#define AIC_SCCR	0x12c	 
+#define AIC_EOSCR	0x130	 
 
 #define AIC_SCR_SRCTYPE_LOW_LEVEL	(0 << 6)
 #define AIC_SCR_SRCTYPE_HIGH_LEVEL	(1 << 6)
@@ -44,18 +44,14 @@ static void wpcm450_aic_init_hw(void)
 {
 	int i;
 
-	/* Disable (mask) all interrupts */
+	 
 	writel(0xffffffff, aic->regs + AIC_MDCR);
 
-	/*
-	 * Make sure the interrupt controller is ready to serve new interrupts.
-	 * Reading from IPER indicates that the nIRQ signal may be deasserted,
-	 * and writing to EOSCR indicates that interrupt handling has finished.
-	 */
+	 
 	readl(aic->regs + AIC_IPER);
 	writel(0, aic->regs + AIC_EOSCR);
 
-	/* Initialize trigger mode and priority of each interrupt source */
+	 
 	for (i = 0; i < AIC_NUM_IRQS; i++)
 		writel(AIC_SCR_SRCTYPE_HIGH_LEVEL | AIC_SCR_PRIORITY(7),
 		       aic->regs + AIC_SCR(i));
@@ -65,8 +61,8 @@ static void __exception_irq_entry wpcm450_aic_handle_irq(struct pt_regs *regs)
 {
 	int hwirq;
 
-	/* Determine the interrupt source */
-	/* Read IPER to signal that nIRQ can be de-asserted */
+	 
+	 
 	hwirq = readl(aic->regs + AIC_IPER) / 4;
 
 	generic_handle_domain_irq(aic->domain, hwirq);
@@ -74,7 +70,7 @@ static void __exception_irq_entry wpcm450_aic_handle_irq(struct pt_regs *regs)
 
 static void wpcm450_aic_eoi(struct irq_data *d)
 {
-	/* Signal end-of-service */
+	 
 	writel(0, aic->regs + AIC_EOSCR);
 }
 
@@ -82,7 +78,7 @@ static void wpcm450_aic_mask(struct irq_data *d)
 {
 	unsigned int mask = BIT(d->hwirq);
 
-	/* Disable (mask) the interrupt */
+	 
 	writel(mask, aic->regs + AIC_MDCR);
 }
 
@@ -90,18 +86,13 @@ static void wpcm450_aic_unmask(struct irq_data *d)
 {
 	unsigned int mask = BIT(d->hwirq);
 
-	/* Enable (unmask) the interrupt */
+	 
 	writel(mask, aic->regs + AIC_MECR);
 }
 
 static int wpcm450_aic_set_type(struct irq_data *d, unsigned int flow_type)
 {
-	/*
-	 * The hardware supports high/low level, as well as rising/falling edge
-	 * modes, and the DT binding accommodates for that, but as long as
-	 * other modes than high level mode are not used and can't be tested,
-	 * they are rejected in this driver.
-	 */
+	 
 	if ((flow_type & IRQ_TYPE_SENSE_MASK) != IRQ_TYPE_LEVEL_HIGH)
 		return -EINVAL;
 

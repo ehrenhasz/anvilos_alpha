@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/net/sunrpc/auth_unix.c
- *
- * UNIX-style authentication; no AUTH_SHORT support
- *
- * Copyright (C) 1996, Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -37,9 +31,7 @@ unx_destroy(struct rpc_auth *auth)
 {
 }
 
-/*
- * Lookup AUTH_UNIX creds for current process
- */
+ 
 static struct rpc_cred *unx_lookup_cred(struct rpc_auth *auth,
 					struct auth_cred *acred, int flags)
 {
@@ -73,9 +65,7 @@ unx_destroy_cred(struct rpc_cred *cred)
 	call_rcu(&cred->cr_rcu, unx_free_cred_callback);
 }
 
-/*
- * Match credentials against current the auth_cred.
- */
+ 
 static int
 unx_match(struct auth_cred *acred, struct rpc_cred *cred, int flags)
 {
@@ -103,10 +93,7 @@ unx_match(struct auth_cred *acred, struct rpc_cred *cred, int flags)
 	return 1;
 }
 
-/*
- * Marshal credentials.
- * Maybe we should keep a cached credential for performance reasons.
- */
+ 
 static int
 unx_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 {
@@ -118,14 +105,14 @@ unx_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 	struct user_namespace *userns = clnt->cl_cred ?
 		clnt->cl_cred->user_ns : &init_user_ns;
 
-	/* Credential */
+	 
 
 	p = xdr_reserve_space(xdr, 3 * sizeof(*p));
 	if (!p)
 		goto marshal_failed;
 	*p++ = rpc_auth_unix;
 	cred_len = p++;
-	*p++ = xdr_zero;	/* stamp */
+	*p++ = xdr_zero;	 
 	if (xdr_stream_encode_opaque(xdr, clnt->cl_nodename,
 				     clnt->cl_nodelen) < 0)
 		goto marshal_failed;
@@ -145,7 +132,7 @@ unx_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 	if (!p)
 		goto marshal_failed;
 
-	/* Verifier */
+	 
 
 	p = xdr_reserve_space(xdr, 2 * sizeof(*p));
 	if (!p)
@@ -159,9 +146,7 @@ marshal_failed:
 	return -EMSGSIZE;
 }
 
-/*
- * Refresh credentials. This is a no-op for AUTH_UNIX
- */
+ 
 static int
 unx_refresh(struct rpc_task *task)
 {

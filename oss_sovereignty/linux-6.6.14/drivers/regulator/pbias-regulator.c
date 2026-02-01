@@ -1,18 +1,4 @@
-/*
- * pbias-regulator.c
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Balaji T K <balajitk@ti.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -111,7 +97,7 @@ static struct of_regulator_match pbias_matches[] = {
 };
 #define PBIAS_NUM_REGS	ARRAY_SIZE(pbias_matches)
 
-/* Offset from SCM general area (and syscon) base */
+ 
 
 static const struct pbias_of_data pbias_of_data_omap2 = {
 	.offset = 0x230,

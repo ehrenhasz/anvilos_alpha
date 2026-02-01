@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-record.c
- *
- * Builtin record command: Record the profile of a workload
- * (or a CPU, or a PID) into the perf.data output file - for
- * later analysis via perf report.
- */
+
+ 
 #include "builtin.h"
 
 #include "util/build-id.h"
@@ -173,7 +167,7 @@ struct record {
 	bool			off_cpu;
 	struct switch_output	switch_output;
 	unsigned long long	samples;
-	unsigned long		output_max_size;	/* = 0: unlimited */
+	unsigned long		output_max_size;	 
 	struct perf_debuginfod	debuginfod;
 	int			nr_threads;
 	struct thread_mask	*thread_masks;
@@ -322,19 +316,11 @@ static int record__aio_complete(struct mmap *md, struct aiocb *cblock)
 
 	if (rem_size == 0) {
 		cblock->aio_fildes = -1;
-		/*
-		 * md->refcount is incremented in record__aio_pushfn() for
-		 * every aio write request started in record__aio_push() so
-		 * decrement it because the request is now complete.
-		 */
+		 
 		perf_mmap__put(&md->core);
 		rc = 1;
 	} else {
-		/*
-		 * aio write request may require restart with the
-		 * reminder if the kernel didn't write whole
-		 * chunk at once.
-		 */
+		 
 		rem_off = cblock->aio_offset + written;
 		rem_buf = (void *)(cblock->aio_buf + written);
 		record__aio_write(cblock, cblock->aio_fildes,
@@ -349,7 +335,7 @@ static int record__aio_sync(struct mmap *md, bool sync_all)
 {
 	struct aiocb **aiocb = md->aio.aiocb;
 	struct aiocb *cblocks = md->aio.cblocks;
-	struct timespec timeout = { 0, 1000 * 1000  * 1 }; /* 1ms */
+	struct timespec timeout = { 0, 1000 * 1000  * 1 };  
 	int i, do_suspend;
 
 	do {
@@ -361,11 +347,7 @@ static int record__aio_sync(struct mmap *md, bool sync_all)
 				else
 					return i;
 			} else {
-				/*
-				 * Started aio write is not complete yet
-				 * so it has to be waited before the
-				 * next allocation.
-				 */
+				 
 				aiocb[i] = &cblocks[i];
 				do_suspend = 1;
 			}
@@ -390,19 +372,7 @@ static int record__aio_pushfn(struct mmap *map, void *to, void *buf, size_t size
 {
 	struct record_aio *aio = to;
 
-	/*
-	 * map->core.base data pointed by buf is copied into free map->aio.data[] buffer
-	 * to release space in the kernel buffer as fast as possible, calling
-	 * perf_mmap__consume() from perf_mmap__push() function.
-	 *
-	 * That lets the kernel to proceed with storing more profiling data into
-	 * the kernel buffer earlier than other per-cpu kernel buffers are handled.
-	 *
-	 * Coping can be done in two steps in case the chunk of profiling data
-	 * crosses the upper bound of the kernel buffer. In this case we first move
-	 * part of data from map->start till the upper bound and then the reminder
-	 * from the beginning of the kernel buffer till the end of the data chunk.
-	 */
+	 
 
 	if (record__comp_enabled(aio->rec)) {
 		size = zstd_compress(aio->rec->session, NULL, aio->data + aio->size,
@@ -413,16 +383,7 @@ static int record__aio_pushfn(struct mmap *map, void *to, void *buf, size_t size
 	}
 
 	if (!aio->size) {
-		/*
-		 * Increment map->refcount to guard map->aio.data[] buffer
-		 * from premature deallocation because map object can be
-		 * released earlier than aio write request started on
-		 * map->aio.data[] buffer is complete.
-		 *
-		 * perf_mmap__put() is done at record__aio_complete()
-		 * after started aio request completion or at record__aio_push()
-		 * if the request failed to start.
-		 */
+		 
 		perf_mmap__get(&map->core);
 	}
 
@@ -437,15 +398,12 @@ static int record__aio_push(struct record *rec, struct mmap *map, off_t *off)
 	int trace_fd = rec->session->data->file.fd;
 	struct record_aio aio = { .rec = rec, .size = 0 };
 
-	/*
-	 * Call record__aio_sync() to wait till map->aio.data[] buffer
-	 * becomes available after previous aio write operation.
-	 */
+	 
 
 	idx = record__aio_sync(map, false);
 	aio.data = map->aio.data[idx];
 	ret = perf_mmap__push(map, &aio, record__aio_pushfn);
-	if (ret != 0) /* ret > 0 - no data, ret < 0 - error */
+	if (ret != 0)  
 		return ret;
 
 	rec->samples++;
@@ -456,12 +414,7 @@ static int record__aio_push(struct record *rec, struct mmap *map, off_t *off)
 		if (switch_output_size(rec))
 			trigger_hit(&switch_output_trigger);
 	} else {
-		/*
-		 * Decrement map->refcount incremented in record__aio_pushfn()
-		 * back if record__aio_write() operation failed to start, otherwise
-		 * map->refcount is decremented in record__aio_complete() after
-		 * aio write operation finishes successfully.
-		 */
+		 
 		perf_mmap__put(&map->core);
 	}
 
@@ -515,7 +468,7 @@ static int record__aio_parse(const struct option *opt,
 
 	return 0;
 }
-#else /* HAVE_AIO_SUPPORT */
+#else  
 static int nr_cblocks_max = 0;
 
 static int record__aio_push(struct record *rec __maybe_unused, struct mmap *map __maybe_unused,
@@ -660,21 +613,13 @@ static void sig_handler(int sig)
 		u64 tmp = 1;
 		int orig_errno = errno;
 
-		/*
-		 * It is possible for this signal handler to run after done is
-		 * checked in the main loop, but before the perf counter fds are
-		 * polled. If this happens, the poll() will continue to wait
-		 * even though done is set, and will only break out if either
-		 * another signal is received, or the counters are ready for
-		 * read. To ensure the poll() doesn't sleep when done is set,
-		 * use an eventfd (done_fd) to wake up the poll().
-		 */
+		 
 		if (write(done_fd, &tmp, sizeof(tmp)) < 0)
 			pr_err("failed to signal wakeup fd, error: %m\n");
 
 		errno = orig_errno;
 	}
-#endif // HAVE_EVENTFD_SUPPORT
+#endif 
 }
 
 static void sigsegv_handler(int sig)
@@ -718,7 +663,7 @@ static int record__process_auxtrace(struct perf_tool *tool,
 			return err;
 	}
 
-	/* event.auxtrace.size includes padding, see __auxtrace_mmap__read() */
+	 
 	padding = (len1 + len2) & 7;
 	if (padding)
 		padding = 8 - padding;
@@ -883,7 +828,7 @@ static int record__config_text_poke(struct evlist *evlist)
 {
 	struct evsel *evsel;
 
-	/* Nothing to do if text poke is already configured */
+	 
 	evlist__for_each_entry(evlist, evsel) {
 		if (evsel->core.attr.text_poke)
 			return 0;
@@ -1201,7 +1146,7 @@ static int record__alloc_thread_data(struct record *rec, struct evlist *evlist)
 			if (ret < 0)
 				goto out_free;
 
-			thread_data[t].ctlfd_pos = -1; /* Not used */
+			thread_data[t].ctlfd_pos = -1;  
 		}
 	}
 
@@ -1286,26 +1231,19 @@ static int record__open(struct record *rec)
 	struct record_opts *opts = &rec->opts;
 	int rc = 0;
 
-	/*
-	 * For initial_delay, system wide or a hybrid system, we need to add a
-	 * dummy event so that we can track PERF_RECORD_MMAP to cover the delay
-	 * of waiting or event synthesis.
-	 */
+	 
 	if (opts->target.initial_delay || target__has_cpu(&opts->target) ||
 	    perf_pmus__num_core_pmus() > 1) {
 		pos = evlist__get_tracking_event(evlist);
 		if (!evsel__is_dummy_event(pos)) {
-			/* Set up dummy event. */
+			 
 			if (evlist__add_dummy(evlist))
 				return -ENOMEM;
 			pos = evlist__last(evlist);
 			evlist__set_tracking_event(evlist, pos);
 		}
 
-		/*
-		 * Enable the dummy event when the process is forked for
-		 * initial_delay, immediately for system wide.
-		 */
+		 
 		if (opts->target.initial_delay && !pos->immediate &&
 		    !target__has_cpu(&opts->target))
 			pos->core.attr.enable_on_exec = 1;
@@ -1400,23 +1338,10 @@ static int process_buildids(struct record *rec)
 	if (perf_data__size(&rec->data) == 0)
 		return 0;
 
-	/*
-	 * During this process, it'll load kernel map and replace the
-	 * dso->long_name to a real pathname it found.  In this case
-	 * we prefer the vmlinux path like
-	 *   /lib/modules/3.16.4/build/vmlinux
-	 *
-	 * rather than build-id path (in debug directory).
-	 *   $HOME/.debug/.build-id/f0/6e17aa50adf4d00b88925e03775de107611551
-	 */
+	 
 	symbol_conf.ignore_vmlinux_buildid = true;
 
-	/*
-	 * If --buildid-all is given, it marks all DSO regardless of hits,
-	 * so no need to process samples. But if timestamp_boundary is enabled,
-	 * it still needs to walk on all samples to get the timestamps of
-	 * first/last samples.
-	 */
+	 
 	if (rec->buildid_all && !rec->timestamp_boundary)
 		rec->tool.sample = NULL;
 
@@ -1427,24 +1352,14 @@ static void perf_event__synthesize_guest_os(struct machine *machine, void *data)
 {
 	int err;
 	struct perf_tool *tool = data;
-	/*
-	 *As for guest kernel when processing subcommand record&report,
-	 *we arrange module mmap prior to guest kernel mmap and trigger
-	 *a preload dso because default guest module symbols are loaded
-	 *from guest kallsyms instead of /lib/modules/XXX/XXX. This
-	 *method is used to avoid symbol missing when the first addr is
-	 *in module instead of in guest kernel.
-	 */
+	 
 	err = perf_event__synthesize_modules(tool, process_synthesized_event,
 					     machine);
 	if (err < 0)
 		pr_err("Couldn't record guest kernel [%d]'s reference"
 		       " relocation symbol.\n", machine->pid);
 
-	/*
-	 * We use _stext for guest kernel because guest kernel's /proc/kallsyms
-	 * have no _text sometimes.
-	 */
+	 
 	err = perf_event__synthesize_kernel_mmap(tool, process_synthesized_event,
 						 machine);
 	if (err < 0)
@@ -1586,14 +1501,7 @@ static int record__mmap_read_evlist(struct record *rec, struct evlist *evlist,
 	if (record__aio_enabled(rec))
 		record__aio_set_pos(trace_fd, off);
 
-	/*
-	 * Mark the round finished in case we wrote
-	 * at least one event.
-	 *
-	 * No need for round events in directory mode,
-	 * because per-cpu maps and files have data
-	 * sorted by kernel.
-	 */
+	 
 	if (!record__threads_enabled(rec) && bytes_written != rec->bytes_written)
 		rc = record__write(rec, NULL, &finished_round_event, sizeof(finished_round_event));
 
@@ -1652,10 +1560,7 @@ static void *record__thread(void *arg)
 		if (hits == thread->samples) {
 
 			err = fdarray__poll(pollfd, -1);
-			/*
-			 * Propagate error, only if there's any. Ignore positive
-			 * number of returned events and interrupt error.
-			 */
+			 
 			if (err > 0 || (err < 0 && errno == EINTR))
 				err = 0;
 			thread->waking++;
@@ -1789,7 +1694,7 @@ record__switch_output(struct record *rec, bool at_exit)
 	int fd, err;
 	char *new_filename;
 
-	/* Same Size:      "2015122520103046"*/
+	 
 	char timestamp[] = "InvalidTimestamp";
 
 	record__aio_mmap_read_sync(rec);
@@ -1835,19 +1740,11 @@ record__switch_output(struct record *rec, bool at_exit)
 		free(new_filename);
 	}
 
-	/* Output tracking events */
+	 
 	if (!at_exit) {
 		record__synthesize(rec, false);
 
-		/*
-		 * In 'perf record --switch-output' without -a,
-		 * record__synthesize() in record__switch_output() won't
-		 * generate tracking events because there's no thread_map
-		 * in evlist. Which causes newly created perf.data doesn't
-		 * contain map and comm information.
-		 * Create a fake thread_map and directly call
-		 * perf_event__synthesize_thread_map() for those events.
-		 */
+		 
 		if (target__none(&rec->opts.target))
 			record__synthesize_workload(rec, false);
 		write_finished_init(rec, false);
@@ -1883,7 +1780,7 @@ static void record__read_lost_samples(struct record *rec)
 	struct perf_record_lost_samples *lost;
 	struct evsel *evsel;
 
-	/* there was an error during record__open */
+	 
 	if (session->evlist == NULL)
 		return;
 
@@ -1934,11 +1831,7 @@ out:
 
 static volatile sig_atomic_t workload_exec_errno;
 
-/*
- * evlist__prepare_workload will send a SIGUSR1
- * if the fork fails, since we asked by setting its
- * want_signal to true.
- */
+ 
 static void workload_exec_failed_signal(int signo __maybe_unused,
 					siginfo_t *info,
 					void *ucontext __maybe_unused)
@@ -1997,7 +1890,7 @@ static int record__synthesize(struct record *rec, bool tail)
 	if (err)
 		goto out;
 
-	/* Synthesize id_index before auxtrace_info */
+	 
 	err = perf_event__synthesize_id_index(tool,
 					      process_synthesized_event,
 					      session->evlist, machine);
@@ -2104,11 +1997,7 @@ static int record__setup_sb_evlist(struct record *rec)
 	struct record_opts *opts = &rec->opts;
 
 	if (rec->sb_evlist != NULL) {
-		/*
-		 * We get here if --switch-output-event populated the
-		 * sb_evlist, so associate a callback that will send a SIGUSR2
-		 * to the main thread.
-		 */
+		 
 		evlist__set_cb(rec->sb_evlist, record__process_signal_event, rec);
 		rec->thread_id = pthread_self();
 	}
@@ -2408,7 +2297,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 		status = err;
 		goto out_delete_session;
 	}
-#endif // HAVE_EVENTFD_SUPPORT
+#endif 
 
 	session->header.env.comp_type  = PERF_COMP_ZSTD;
 	session->header.env.comp_level = rec->opts.comp_level;
@@ -2434,24 +2323,19 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 		}
 	}
 
-	/*
-	 * If we have just single event and are sending data
-	 * through pipe, we need to force the ids allocation,
-	 * because we synthesize event name through the pipe
-	 * and need the id for that.
-	 */
+	 
 	if (data->is_pipe && rec->evlist->core.nr_entries == 1)
 		rec->opts.sample_id = true;
 
 	record__uniquify_name(rec);
 
-	/* Debug message used by test scripts */
+	 
 	pr_debug3("perf record opening and mmapping events\n");
 	if (record__open(rec) != 0) {
 		err = -1;
 		goto out_free_threads;
 	}
-	/* Debug message used by test scripts */
+	 
 	pr_debug3("perf record done opening and mmapping events\n");
 	session->header.env.comp_mmap_len = session->evlist->core.mmap_len;
 
@@ -2463,10 +2347,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 		}
 	}
 
-	/*
-	 * Normally perf_session__new would do this, but it doesn't have the
-	 * evlist.
-	 */
+	 
 	if (rec->tool.ordered_events && !evlist__sample_id_all(rec->evlist)) {
 		pr_warning("WARNING: No sample_id_all support, falling back to unordered processing\n");
 		rec->tool.ordered_events = false;
@@ -2515,17 +2396,11 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 	if (record__start_threads(rec))
 		goto out_free_threads;
 
-	/*
-	 * When perf is starting the traced process, all the events
-	 * (apart from group members) have enable_on_exec=1 set,
-	 * so don't spoil it by prematurely enabling them.
-	 */
+	 
 	if (!target__none(&opts->target) && !opts->target.initial_delay)
 		evlist__enable(rec->evlist);
 
-	/*
-	 * Let the child rip
-	 */
+	 
 	if (forks) {
 		struct machine *machine = &session->machines.host;
 		union perf_event *event;
@@ -2537,12 +2412,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 			goto out_child;
 		}
 
-		/*
-		 * Some H/W events are generated before COMM event
-		 * which is emitted during exec(), so perf script
-		 * cannot see a correct process name for those events.
-		 * Synthesize COMM event to prevent it.
-		 */
+		 
 		tgid = perf_event__synthesize_comm(tool, event,
 						   rec->evlist->workload.pid,
 						   process_synthesized_event,
@@ -2560,9 +2430,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 			goto out_child;
 		}
 
-		/*
-		 * Synthesize NAMESPACES event for the command specified.
-		 */
+		 
 		perf_event__synthesize_namespaces(tool, event,
 						  rec->evlist->workload.pid,
 						  tgid, process_synthesized_event,
@@ -2585,7 +2453,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 	if (err)
 		goto out_child;
 
-	/* Debug message used by test scripts */
+	 
 	pr_debug3("perf record has started\n");
 	fflush(stderr);
 
@@ -2593,10 +2461,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 	trigger_ready(&switch_output_trigger);
 	perf_hooks__invoke_record_start();
 
-	/*
-	 * Must write FINISHED_INIT so it will be seen after all other
-	 * synthesized user events, but before any regular events.
-	 */
+	 
 	err = write_finished_init(rec, false);
 	if (err < 0)
 		goto out_child;
@@ -2604,14 +2469,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 	for (;;) {
 		unsigned long long hits = thread->samples;
 
-		/*
-		 * rec->evlist->bkw_mmap_state is possible to be
-		 * BKW_MMAP_EMPTY here: when done == true and
-		 * hits != rec->samples in previous round.
-		 *
-		 * evlist__toggle_bkw_mmap ensure we never
-		 * convert BKW_MMAP_EMPTY to BKW_MMAP_DATA_PENDING.
-		 */
+		 
 		if (trigger_is_hit(&switch_output_trigger) || done || draining)
 			evlist__toggle_bkw_mmap(rec->evlist, BKW_MMAP_DATA_PENDING);
 
@@ -2634,24 +2492,12 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 		}
 
 		if (trigger_is_hit(&switch_output_trigger)) {
-			/*
-			 * If switch_output_trigger is hit, the data in
-			 * overwritable ring buffer should have been collected,
-			 * so bkw_mmap_state should be set to BKW_MMAP_EMPTY.
-			 *
-			 * If SIGUSR2 raise after or during record__mmap_read_all(),
-			 * record__mmap_read_all() didn't collect data from
-			 * overwritable ring buffer. Read again.
-			 */
+			 
 			if (rec->evlist->bkw_mmap_state == BKW_MMAP_RUNNING)
 				continue;
 			trigger_ready(&switch_output_trigger);
 
-			/*
-			 * Reenable events in overwrite ring buffer after
-			 * record__mmap_read_all(): we should have collected
-			 * data from it.
-			 */
+			 
 			evlist__toggle_bkw_mmap(rec->evlist, BKW_MMAP_RUNNING);
 
 			if (!quiet)
@@ -2666,7 +2512,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 				goto out_child;
 			}
 
-			/* re-arm the alarm */
+			 
 			if (rec->switch_output.time)
 				alarm(rec->switch_output.time);
 		}
@@ -2675,10 +2521,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 			if (done || draining)
 				break;
 			err = fdarray__poll(&thread->pollfd, -1);
-			/*
-			 * Propagate error, only if there's any. Ignore positive
-			 * number of returned events and interrupt error.
-			 */
+			 
 			if (err > 0 || (err < 0 && errno == EINTR))
 				err = 0;
 			thread->waking++;
@@ -2720,11 +2563,7 @@ static int __cmd_record(struct record *rec, int argc, const char **argv)
 			done = 1;
 		}
 
-		/*
-		 * When perf is starting the traced process, at the end events
-		 * die with the process and we wait for that. Thus no need to
-		 * disable events in this case.
-		 */
+		 
 		if (done && !disabled && !target__none(&opts->target)) {
 			trigger_off(&auxtrace_snapshot_trigger);
 			evlist__disable(rec->evlist);
@@ -2794,7 +2633,7 @@ out_free_threads:
 
 	record__read_lost_samples(rec);
 	record__synthesize(rec, true);
-	/* this will be recalculated during process_buildids() */
+	 
 	rec->samples = 0;
 
 	if (!err) {
@@ -2868,7 +2707,7 @@ int record_opts__parse_callchain(struct record_opts *record,
 	int ret;
 	callchain->enabled = !unset;
 
-	/* --no-call-graph */
+	 
 	if (unset) {
 		callchain->record_mode = CALLCHAIN_NONE;
 		pr_debug("callchain: disabled\n");
@@ -2877,7 +2716,7 @@ int record_opts__parse_callchain(struct record_opts *record,
 
 	ret = parse_callchain_record_opt(arg, callchain);
 	if (!ret) {
-		/* Enable data address sampling for DWARF unwind. */
+		 
 		if (callchain->record_mode == CALLCHAIN_DWARF)
 			record->sample_address = true;
 		callchain_debug(callchain);
@@ -3159,11 +2998,7 @@ static int switch_output_setup(struct record *rec)
 	};
 	unsigned long val;
 
-	/*
-	 * If we're using --switch-output-events, then we imply its 
-	 * --switch-output=signal, as we'll send a SIGUSR2 from the side band
-	 *  thread to its parent.
-	 */
+	 
 	if (rec->switch_output_event_set) {
 		if (record__threads_enabled(rec)) {
 			pr_warning("WARNING: --switch-output-event option is not available in parallel streaming mode.\n");
@@ -3224,10 +3059,7 @@ const char * const *record_usage = __record_usage;
 static int build_id__process_mmap(struct perf_tool *tool, union perf_event *event,
 				  struct perf_sample *sample, struct machine *machine)
 {
-	/*
-	 * We already have the kernel maps, put in place via perf_session__create_kernel_maps()
-	 * no need to add them twice.
-	 */
+	 
 	if (!(event->header.misc & PERF_RECORD_MISC_USER))
 		return 0;
 	return perf_event__process_mmap(tool, event, sample, machine);
@@ -3236,10 +3068,7 @@ static int build_id__process_mmap(struct perf_tool *tool, union perf_event *even
 static int build_id__process_mmap2(struct perf_tool *tool, union perf_event *event,
 				   struct perf_sample *sample, struct machine *machine)
 {
-	/*
-	 * We already have the kernel maps, put in place via perf_session__create_kernel_maps()
-	 * no need to add them twice.
-	 */
+	 
 	if (!(event->header.misc & PERF_RECORD_MISC_USER))
 		return 0;
 
@@ -3277,16 +3106,7 @@ static int parse_record_synth_option(const struct option *opt,
 	return 0;
 }
 
-/*
- * XXX Ideally would be local to cmd_record() and passed to a record__new
- * because we need to have access to it in record__exit, that is called
- * after cmd_record() exits, but since record_options need to be accessible to
- * builtin-script, leave it here.
- *
- * At least we don't ouch it in all the other functions here directly.
- *
- * Just say no to tons of global variables, sigh.
- */
+ 
 static struct record record = {
 	.opts = {
 		.sample_time	     = true,
@@ -3331,13 +3151,7 @@ static struct parse_events_option_args switch_output_parse_events_option_args = 
 	.evlistp = &record.sb_evlist,
 };
 
-/*
- * XXX Will stay a global variable till we fix builtin-script.c to stop messing
- * with it and switch to use the library functions in perf_evlist that came
- * from builtin-record.c, i.e. use record_opts,
- * evlist__prepare_workload, etc instead of fork+exec'in 'perf record',
- * using pipes, etc.
- */
+ 
 static struct option __record_options[] = {
 	OPT_CALLBACK('e', "event", &parse_events_option_args, "event",
 		     "event selector. use 'perf list' to list available events",
@@ -3551,7 +3365,7 @@ static int record__mmap_cpu_mask_init(struct mmap_cpu_mask *mask, struct perf_cp
 	perf_cpu_map__for_each_cpu(cpu, idx, cpus) {
 		if (cpu.cpu == -1)
 			continue;
-		/* Return ENODEV is input cpu is greater than max cpu */
+		 
 		if ((unsigned long)cpu.cpu > mask->nbits)
 			return -ENODEV;
 		__set_bit(cpu.cpu, mask->bits);
@@ -3684,7 +3498,7 @@ static int record__init_thread_masks_spec(struct record *rec, struct perf_cpu_ma
 			goto out_free;
 		}
 
-		/* ignore invalid CPUs but do not allow empty masks */
+		 
 		if (!bitmap_and(thread_mask.maps.bits, thread_mask.maps.bits,
 				cpus_mask.bits, thread_mask.maps.nbits)) {
 			pr_err("Empty maps mask: %s\n", maps_spec[s]);
@@ -3698,7 +3512,7 @@ static int record__init_thread_masks_spec(struct record *rec, struct perf_cpu_ma
 			goto out_free;
 		}
 
-		/* do not allow intersection with other masks (full_mask) */
+		 
 		if (bitmap_intersects(thread_mask.maps.bits, full_mask.maps.bits,
 				      thread_mask.maps.nbits)) {
 			pr_err("Intersecting maps mask: %s\n", maps_spec[s]);
@@ -3978,7 +3792,7 @@ int cmd_record(int argc, const char **argv)
 
 	perf_debuginfod_setup(&record.debuginfod);
 
-	/* Make system wide (-a) the default target. */
+	 
 	if (!argc && target__none(&rec->opts.target))
 		rec->opts.target.system_wide = true;
 
@@ -3995,11 +3809,11 @@ int cmd_record(int argc, const char **argv)
 			goto out_opts;
 		}
 		pr_debug("Enabling build id in mmap2 events.\n");
-		/* Enable mmap build id synthesizing. */
+		 
 		symbol_conf.buildid_mmap2 = true;
-		/* Enable perf_event_attr::build_id bit. */
+		 
 		rec->opts.build_id = true;
-		/* Disable build id cache. */
+		 
 		rec->no_buildid = true;
 	}
 
@@ -4064,10 +3878,7 @@ int cmd_record(int argc, const char **argv)
 		pr_warning("WARNING: --timestamp-filename option is not available in parallel streaming mode.\n");
 	}
 
-	/*
-	 * Allow aliases to facilitate the lookup of symbols for address
-	 * filters. Refer to auxtrace_parse_filters().
-	 */
+	 
 	symbol_conf.allow_aliases = true;
 
 	symbol__init(NULL);
@@ -4084,21 +3895,7 @@ int cmd_record(int argc, const char **argv)
 	if (rec->no_buildid_cache || rec->no_buildid) {
 		disable_buildid_cache();
 	} else if (rec->switch_output.enabled) {
-		/*
-		 * In 'perf record --switch-output', disable buildid
-		 * generation by default to reduce data file switching
-		 * overhead. Still generate buildid if they are required
-		 * explicitly using
-		 *
-		 *  perf record --switch-output --no-no-buildid \
-		 *              --no-no-buildid-cache
-		 *
-		 * Following code equals to:
-		 *
-		 * if ((rec->no_buildid || !rec->no_buildid_set) &&
-		 *     (rec->no_buildid_cache || !rec->no_buildid_cache_set))
-		 *         disable_buildid_cache();
-		 */
+		 
 		bool disable = true;
 
 		if (rec->no_buildid_set && !rec->no_buildid)
@@ -4143,7 +3940,7 @@ int cmd_record(int argc, const char **argv)
 		goto out;
 	}
 
-	/* Enable ignoring missing threads when -u/-p option is defined. */
+	 
 	rec->opts.ignore_missing_thread = rec->opts.target.uid != UINT_MAX || rec->opts.target.pid;
 
 	evlist__warn_user_requested_cpus(rec->evlist, rec->opts.target.cpu_list);
@@ -4166,11 +3963,7 @@ int cmd_record(int argc, const char **argv)
 	if (err)
 		goto out;
 
-	/*
-	 * We take all buildids when the file contains
-	 * AUX area tracing data because we do not decode the
-	 * trace because it would take too long.
-	 */
+	 
 	if (rec->opts.full_auxtrace)
 		rec->buildid_all = true;
 

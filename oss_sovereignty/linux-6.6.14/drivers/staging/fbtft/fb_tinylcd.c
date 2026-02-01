@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Custom FB driver for tinylcd.com display
- *
- * Copyright (C) 2013 Noralf Tronnes
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>

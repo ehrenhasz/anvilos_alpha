@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 
@@ -23,7 +23,7 @@ static void test_queue_stack_map_by_type(int type)
 		.repeat = 1,
 	);
 
-	/* Fill test values to be used */
+	 
 	for (i = 0; i < MAP_SIZE; i++)
 		vals[i] = rand();
 
@@ -46,16 +46,14 @@ static void test_queue_stack_map_by_type(int type)
 	if (map_out_fd < 0)
 		goto out;
 
-	/* Push 32 elements to the input map */
+	 
 	for (i = 0; i < MAP_SIZE; i++) {
 		err = bpf_map_update_elem(map_in_fd, NULL, &vals[i], 0);
 		if (CHECK_FAIL(err))
 			goto out;
 	}
 
-	/* The eBPF program pushes iph.saddr in the output map,
-	 * pops the input map and saves this value in iph.daddr
-	 */
+	 
 	for (i = 0; i < MAP_SIZE; i++) {
 		if (type == QUEUE) {
 			val = vals[i];
@@ -81,16 +79,16 @@ static void test_queue_stack_map_by_type(int type)
 		  "bpf_map_pop_elem data_size_out");
 	ASSERT_EQ(iph.daddr, val, "bpf_map_pop_elem iph.daddr");
 
-	/* Queue is empty, program should return TC_ACT_SHOT */
+	 
 	topts.data_size_out = sizeof(buf);
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	ASSERT_OK(err, "check-queue-stack-map-empty");
-	ASSERT_EQ(topts.retval, 2  /* TC_ACT_SHOT */,
+	ASSERT_EQ(topts.retval, 2   ,
 		  "check-queue-stack-map-empty test retval");
 	ASSERT_EQ(topts.data_size_out, sizeof(pkt_v4),
 		  "check-queue-stack-map-empty data_size_out");
 
-	/* Check that the program pushed elements correctly */
+	 
 	for (i = 0; i < MAP_SIZE; i++) {
 		err = bpf_map_lookup_and_delete_elem(map_out_fd, NULL, &val);
 		ASSERT_OK(err, "bpf_map_lookup_and_delete_elem");

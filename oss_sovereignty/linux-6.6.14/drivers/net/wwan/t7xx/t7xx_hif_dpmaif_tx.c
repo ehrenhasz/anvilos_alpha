@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/bitfield.h>
@@ -44,7 +30,7 @@
 #define DPMAIF_SKB_TX_BURST_CNT	5
 #define DPMAIF_DRB_LIST_LEN	6144
 
-/* DRB dtype */
+ 
 #define DES_DTYP_PD		0
 #define DES_DTYP_MSG		1
 
@@ -137,7 +123,7 @@ static int t7xx_dpmaif_tx_release(struct dpmaif_ctrl *dpmaif_ctrl,
 	struct dpmaif_tx_queue *txq = &dpmaif_ctrl->txq[q_num];
 	unsigned int rel_cnt, real_rel_cnt;
 
-	/* Update read index from HW */
+	 
 	t7xx_dpmaif_update_drb_rd_idx(dpmaif_ctrl, q_num);
 
 	rel_cnt = t7xx_ring_buf_rd_wr_count(txq->drb_size_cnt, txq->drb_release_rd_idx,
@@ -166,7 +152,7 @@ static void t7xx_dpmaif_tx_done(struct work_struct *work)
 	if (ret < 0 && ret != -EACCES)
 		return;
 
-	/* The device may be in low power state. Disable sleep if needed */
+	 
 	t7xx_pci_disable_sleep(dpmaif_ctrl->t7xx_dev);
 	if (t7xx_pci_sleep_disable_complete(dpmaif_ctrl->t7xx_dev)) {
 		hw_info = &dpmaif_ctrl->hw_info;
@@ -176,7 +162,7 @@ static void t7xx_dpmaif_tx_done(struct work_struct *work)
 		     t7xx_dpmaif_drb_ring_not_empty(txq))) {
 			queue_work(dpmaif_ctrl->txq[txq->index].worker,
 				   &dpmaif_ctrl->txq[txq->index].dpmaif_tx_work);
-			/* Give the device time to enter the low power state */
+			 
 			t7xx_dpmaif_clr_ip_busy_sts(hw_info);
 		} else {
 			t7xx_dpmaif_clr_ip_busy_sts(hw_info);
@@ -255,7 +241,7 @@ static int t7xx_dpmaif_add_skb_to_ring(struct dpmaif_ctrl *dpmaif_ctrl, struct s
 		return -ENODEV;
 
 	atomic_set(&txq->tx_processing, 1);
-	 /* Ensure tx_processing is changed to 1 before actually begin TX flow */
+	  
 	smp_mb();
 
 	shinfo = skb_shinfo(skb);
@@ -263,7 +249,7 @@ static int t7xx_dpmaif_add_skb_to_ring(struct dpmaif_ctrl *dpmaif_ctrl, struct s
 		dev_warn_ratelimited(dpmaif_ctrl->dev, "frag_list not supported\n");
 
 	payload_cnt = shinfo->nr_frags + 1;
-	/* nr_frags: frag cnt, 1: skb->data, 1: msg DRB */
+	 
 	send_cnt = payload_cnt + 1;
 
 	spin_lock_irqsave(&txq->tx_lock, flags);
@@ -343,7 +329,7 @@ static bool t7xx_tx_lists_are_all_empty(const struct dpmaif_ctrl *dpmaif_ctrl)
 	return true;
 }
 
-/* Currently, only the default TX queue is used */
+ 
 static struct dpmaif_tx_queue *t7xx_select_tx_queue(struct dpmaif_ctrl *dpmaif_ctrl)
 {
 	struct dpmaif_tx_queue *txq;
@@ -363,7 +349,7 @@ static unsigned int t7xx_txq_drb_wr_available(struct dpmaif_tx_queue *txq)
 
 static unsigned int t7xx_skb_drb_cnt(struct sk_buff *skb)
 {
-	/* Normal DRB (frags data + skb linear data) + msg DRB */
+	 
 	return skb_shinfo(skb)->nr_frags + 2;
 }
 
@@ -427,7 +413,7 @@ static void t7xx_do_tx_hw_push(struct dpmaif_ctrl *dpmaif_ctrl)
 			continue;
 		}
 
-		/* Wait for the PCIe resource to unlock */
+		 
 		if (wait_disable_sleep) {
 			if (!t7xx_pci_sleep_disable_complete(dpmaif_ctrl->t7xx_dev))
 				return;
@@ -489,21 +475,7 @@ void t7xx_dpmaif_tx_thread_rel(struct dpmaif_ctrl *dpmaif_ctrl)
 		kthread_stop(dpmaif_ctrl->tx_thread);
 }
 
-/**
- * t7xx_dpmaif_tx_send_skb() - Add skb to the transmit queue.
- * @dpmaif_ctrl: Pointer to struct dpmaif_ctrl.
- * @txq_number: Queue number to xmit on.
- * @skb: Pointer to the skb to transmit.
- *
- * Add the skb to the queue of the skbs to be transmit.
- * Wake up the thread that push the skbs from the queue to the HW.
- *
- * Return:
- * * 0		- Success.
- * * -EBUSY	- Tx budget exhausted.
- *		  In normal circumstances t7xx_dpmaif_add_skb_to_ring() must report the txq full
- *		  state to prevent this error condition.
- */
+ 
 int t7xx_dpmaif_tx_send_skb(struct dpmaif_ctrl *dpmaif_ctrl, unsigned int txq_number,
 			    struct sk_buff *skb)
 {
@@ -543,13 +515,13 @@ static int t7xx_dpmaif_tx_drb_buf_init(struct dpmaif_tx_queue *txq)
 
 	txq->drb_size_cnt = DPMAIF_DRB_LIST_LEN;
 
-	/* For HW && AP SW */
+	 
 	txq->drb_base = dma_alloc_coherent(txq->dpmaif_ctrl->dev, brb_pd_size,
 					   &txq->drb_bus_addr, GFP_KERNEL | __GFP_ZERO);
 	if (!txq->drb_base)
 		return -ENOMEM;
 
-	/* For AP SW to record the skb information */
+	 
 	txq->drb_skb_base = devm_kzalloc(txq->dpmaif_ctrl->dev, brb_skb_size, GFP_KERNEL);
 	if (!txq->drb_skb_base) {
 		dma_free_coherent(txq->dpmaif_ctrl->dev, brb_pd_size,
@@ -594,16 +566,7 @@ static void t7xx_dpmaif_tx_drb_buf_rel(struct dpmaif_tx_queue *txq)
 	t7xx_dpmaif_tx_free_drb_skb(txq);
 }
 
-/**
- * t7xx_dpmaif_txq_init() - Initialize TX queue.
- * @txq: Pointer to struct dpmaif_tx_queue.
- *
- * Initialize the TX queue data structure and allocate memory for it to use.
- *
- * Return:
- * * 0		- Success.
- * * -ERROR	- Error code from failure sub-initializations.
- */
+ 
 int t7xx_dpmaif_txq_init(struct dpmaif_tx_queue *txq)
 {
 	int ret;
@@ -649,10 +612,10 @@ void t7xx_dpmaif_tx_stop(struct dpmaif_ctrl *dpmaif_ctrl)
 
 		txq = &dpmaif_ctrl->txq[i];
 		txq->que_started = false;
-		/* Make sure TXQ is disabled */
+		 
 		smp_mb();
 
-		/* Wait for active Tx to be done */
+		 
 		while (atomic_read(&txq->tx_processing)) {
 			if (++count >= DPMAIF_MAX_CHECK_COUNT) {
 				dev_err(dpmaif_ctrl->dev, "TX queue stop failed\n");

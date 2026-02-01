@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+ 
 
 #include <linux/auxiliary_bus.h>
 #include <linux/pci.h>
@@ -47,12 +47,12 @@ static int pds_vdpa_probe(struct auxiliary_device *aux_dev,
 	vdpa_aux->vf_id = pci_iov_vf_id(padev->vf_pdev);
 	auxiliary_set_drvdata(aux_dev, vdpa_aux);
 
-	/* Get device ident info and set up the vdpa_mgmt_dev */
+	 
 	err = pds_vdpa_get_mgmt_info(vdpa_aux);
 	if (err)
 		goto err_free_mem;
 
-	/* Find the virtio configuration */
+	 
 	vdpa_aux->vd_mdev.pci_dev = padev->vf_pdev;
 	vdpa_aux->vd_mdev.device_id_check = pds_vdpa_device_id_check;
 	vdpa_aux->vd_mdev.dma_mask = DMA_BIT_MASK(PDS_CORE_ADDR_LEN);
@@ -63,7 +63,7 @@ static int pds_vdpa_probe(struct auxiliary_device *aux_dev,
 		goto err_free_mgmt_info;
 	}
 
-	/* Let vdpa know that we can provide devices */
+	 
 	err = vdpa_mgmtdev_register(&vdpa_aux->vdpa_mdev);
 	if (err) {
 		dev_err(dev, "%s: Failed to initialize vdpa_mgmt interface: %pe\n",

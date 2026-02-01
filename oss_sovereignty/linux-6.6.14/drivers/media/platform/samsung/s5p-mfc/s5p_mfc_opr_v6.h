@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * drivers/media/platform/samsung/s5p-mfc/s5p_mfc_opr_v6.h
- *
- * Header file for Samsung MFC (Multi Function Codec - FIMV) driver
- * Contains declarations of hw related functions.
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- */
+ 
+ 
 
 #ifndef S5P_MFC_OPR_V6_H_
 #define S5P_MFC_OPR_V6_H_
@@ -29,7 +21,7 @@
 #define s5p_mfc_dec_hevc_mv_size(x, y) \
 	(DIV_ROUND_UP(x, 64) * DIV_ROUND_UP(y, 64) * 256 + 512)
 
-/* Definition */
+ 
 #define ENC_MULTI_SLICE_MB_MAX		((1 << 30) - 1)
 #define ENC_MULTI_SLICE_BIT_MIN		2800
 #define ENC_INTRA_REFRESH_MB_MAX	((1 << 18) - 1)
@@ -54,4 +46,4 @@
 
 struct s5p_mfc_hw_ops *s5p_mfc_init_hw_ops_v6(void);
 const struct s5p_mfc_regs *s5p_mfc_init_regs_v6_plus(struct s5p_mfc_dev *dev);
-#endif /* S5P_MFC_OPR_V6_H_ */
+#endif  

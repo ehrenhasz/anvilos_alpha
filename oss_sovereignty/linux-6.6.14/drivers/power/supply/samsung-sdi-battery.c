@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Battery data and characteristics for Samsung SDI (Samsung Digital Interface)
- * batteries. The data is retrieved automatically into drivers using
- * the power_supply_get_battery_info() call.
- *
- * The BTI (battery type indicator) resistance in the code drops was very
- * unreliable. The resistance listed here was obtained by simply measuring
- * the BTI resistance with a multimeter on the battery.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/power_supply.h>
 #include "samsung-sdi-battery.h"
@@ -19,11 +11,7 @@ struct samsung_sdi_battery {
 	struct power_supply_battery_info info;
 };
 
-/*
- * Voltage to internal resistance tables. The internal resistance varies
- * depending on the VBAT voltage, so look this up from a table. Different
- * tables apply depending on whether we are charging or not.
- */
+ 
 
 static struct power_supply_vbat_ri_table samsung_vbat2res_discharging_eb_l1m7flu[] = {
 	{ .vbat_uv = 4240000, .ri_uohm = 160000 },
@@ -421,16 +409,7 @@ static struct power_supply_vbat_ri_table samsung_vbat2res_charging_eb585157lu[] 
 	{ .vbat_uv = 3600000, .ri_uohm = 565000 },
 };
 
-/*
- * Temperature to internal resistance scaling tables.
- *
- * "resistance" is the percentage of the resistance determined from the voltage
- * so this represents the capacity ratio at different temperatures.
- *
- * FIXME: the proper table is missing: Samsung does not provide the necessary
- * temperature compensation tables so we just state 100% for every temperature.
- * If you have the datasheets, please provide these tables.
- */
+ 
 static struct power_supply_resistance_temp_table samsung_temp2res[] = {
 	{ .temp = 50, .resistance = 100 },
 	{ .temp = 40, .resistance = 100 },
@@ -442,10 +421,7 @@ static struct power_supply_resistance_temp_table samsung_temp2res[] = {
 	{ .temp = -20, .resistance = 100 },
 };
 
-/*
- * Capacity tables for different Open Circuit Voltages (OCV).
- * These must be sorted by falling OCV value.
- */
+ 
 
 static struct power_supply_battery_ocv_table samsung_ocv_cap_eb485159lu[] = {
 	{ .ocv = 4330000, .capacity = 100},
@@ -498,7 +474,7 @@ static struct power_supply_battery_ocv_table samsung_ocv_cap_eb485159lu[] = {
 	{ .ocv = 3300000, .capacity = 0},
 };
 
-/* Same capacity table is used by eb-l1m7flu, eb425161la, eb425161lu */
+ 
 static struct power_supply_battery_ocv_table samsung_ocv_cap_1500mah[] = {
 	{ .ocv = 4328000, .capacity = 100},
 	{ .ocv = 4299000, .capacity = 99},
@@ -615,13 +591,13 @@ static struct power_supply_battery_ocv_table samsung_ocv_cap_eb585157lu[] = {
 
 static struct power_supply_maintenance_charge_table samsung_maint_charge_table[] = {
 	{
-		/* Maintenance charging phase A, 60 hours */
+		 
 		.charge_current_max_ua = 600000,
 		.charge_voltage_max_uv = 4150000,
 		.charge_safety_timer_minutes = 60*60,
 	},
 	{
-		/* Maintenance charging phase B, 200 hours */
+		 
 		.charge_current_max_ua = 600000,
 		.charge_voltage_max_uv = 4100000,
 		.charge_safety_timer_minutes = 200*60,
@@ -630,10 +606,7 @@ static struct power_supply_maintenance_charge_table samsung_maint_charge_table[]
 
 static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 	{
-		/*
-		 * Used in Samsung GT-I8190 "Golden"
-		 * Data from vendor boardfile board-golden-[bm|battery].c
-		 */
+		 
 		.compatible = "samsung,eb-l1m7flu",
 		.name = "EB-L1M7FLU",
 		.info = {
@@ -641,7 +614,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.technology = POWER_SUPPLY_TECHNOLOGY_LION,
 			.factory_internal_resistance_uohm = 100000,
 			.factory_internal_resistance_charging_uohm = 200000,
-			/* If you have data on this fix the min_design_uv */
+			 
 			.voltage_min_design_uv = 3320000,
 			.voltage_max_design_uv = 4340000,
 			.overvoltage_limit_uv = 4500000,
@@ -661,7 +634,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.temp_max = 60,
 			.resist_table = samsung_temp2res,
 			.resist_table_size = ARRAY_SIZE(samsung_temp2res),
-			/* If you have tables for more temperatures, add them */
+			 
 			.ocv_temp[0] = 25,
 			.ocv_table[0] = samsung_ocv_cap_1500mah,
 			.ocv_table_size[0] = ARRAY_SIZE(samsung_ocv_cap_1500mah),
@@ -674,10 +647,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 		},
 	},
 	{
-		/*
-		 * Used in Samsung SGH-T599 "Codina TMO" and SGH-I407 "Kyle"
-		 * Data from vendor boardfile board-kyle-[bm|battery].c
-		 */
+		 
 		.compatible = "samsung,eb425161la",
 		.name = "EB425161LA",
 		.info = {
@@ -685,7 +655,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.technology = POWER_SUPPLY_TECHNOLOGY_LION,
 			.factory_internal_resistance_uohm = 136000,
 			.factory_internal_resistance_charging_uohm = 200000,
-			/* If you have data on this fix the min_design_uv */
+			 
 			.voltage_min_design_uv = 3320000,
 			.voltage_max_design_uv = 4340000,
 			.overvoltage_limit_uv = 4500000,
@@ -705,7 +675,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.temp_max = 47,
 			.resist_table = samsung_temp2res,
 			.resist_table_size = ARRAY_SIZE(samsung_temp2res),
-			/* If you have tables for more temperatures, add them */
+			 
 			.ocv_temp[0] = 25,
 			.ocv_table[0] = samsung_ocv_cap_1500mah,
 			.ocv_table_size[0] = ARRAY_SIZE(samsung_ocv_cap_1500mah),
@@ -718,10 +688,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 		},
 	},
 	{
-		/*
-		 * Used in Samsung GT-I8160 "Codina"
-		 * Data from vendor boardfile board-codina-[bm|battery].c
-		 */
+		 
 		.compatible = "samsung,eb425161lu",
 		.name = "EB425161LU",
 		.info = {
@@ -729,7 +696,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.technology = POWER_SUPPLY_TECHNOLOGY_LION,
 			.factory_internal_resistance_uohm = 100000,
 			.factory_internal_resistance_charging_uohm = 200000,
-			/* If you have data on this fix the min_design_uv */
+			 
 			.voltage_min_design_uv = 3320000,
 			.voltage_max_design_uv = 4350000,
 			.overvoltage_limit_uv = 4500000,
@@ -749,7 +716,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.temp_max = 49,
 			.resist_table = samsung_temp2res,
 			.resist_table_size = ARRAY_SIZE(samsung_temp2res),
-			/* If you have tables for more temperatures, add them */
+			 
 			.ocv_temp[0] = 25,
 			.ocv_table[0] = samsung_ocv_cap_1500mah,
 			.ocv_table_size[0] = ARRAY_SIZE(samsung_ocv_cap_1500mah),
@@ -762,10 +729,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 		},
 	},
 	{
-		/*
-		 * Used in Samsung GT-S7710 "Skomer"
-		 * Data from vendor boardfile board-skomer-[bm|battery].c
-		 */
+		 
 		.compatible = "samsung,eb485159lu",
 		.name = "EB485159LU",
 		.info = {
@@ -792,11 +756,11 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.temp_max = 60,
 			.resist_table = samsung_temp2res,
 			.resist_table_size = ARRAY_SIZE(samsung_temp2res),
-			/* If you have tables for more temperatures, add them */
+			 
 			.ocv_temp[0] = 25,
 			.ocv_table[0] = samsung_ocv_cap_eb485159lu,
 			.ocv_table_size[0] = ARRAY_SIZE(samsung_ocv_cap_eb485159lu),
-			/* CHECKME: vendor uses the 1500 mAh table, check against datasheet */
+			 
 			.vbat2ri_discharging = samsung_vbat2res_discharging_eb485159lu,
 			.vbat2ri_discharging_size = ARRAY_SIZE(samsung_vbat2res_discharging_eb485159lu),
 			.vbat2ri_charging = samsung_vbat2res_charging_eb485159lu,
@@ -806,10 +770,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 		},
 	},
 	{
-		/*
-		 * Used in Samsung GT-I9070 "Janice"
-		 * Data from vendor boardfile board-janice-bm.c
-		 */
+		 
 		.compatible = "samsung,eb535151vu",
 		.name = "EB535151VU",
 		.info = {
@@ -817,7 +778,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.technology = POWER_SUPPLY_TECHNOLOGY_LION,
 			.factory_internal_resistance_uohm = 100000,
 			.factory_internal_resistance_charging_uohm = 200000,
-			/* If you have data on this fix the min_design_uv */
+			 
 			.voltage_min_design_uv = 3300000,
 			.voltage_max_design_uv = 4180000,
 			.overvoltage_limit_uv = 4500000,
@@ -837,7 +798,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.temp_max = 60,
 			.resist_table = samsung_temp2res,
 			.resist_table_size = ARRAY_SIZE(samsung_temp2res),
-			/* If you have tables for more temperatures, add them */
+			 
 			.ocv_temp[0] = 25,
 			.ocv_table[0] = samsung_ocv_cap_eb535151vu,
 			.ocv_table_size[0] = ARRAY_SIZE(samsung_ocv_cap_eb535151vu),
@@ -850,10 +811,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 		},
 	},
 	{
-		/*
-		 * Used in Samsung GT-I8530 "Gavini"
-		 * Data from vendor boardfile board-gavini-bm.c
-		 */
+		 
 		.compatible = "samsung,eb585157lu",
 		.name = "EB585157LU",
 		.info = {
@@ -861,7 +819,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.technology = POWER_SUPPLY_TECHNOLOGY_LION,
 			.factory_internal_resistance_uohm = 105000,
 			.factory_internal_resistance_charging_uohm = 160000,
-			/* If you have data on this fix the min_design_uv */
+			 
 			.voltage_min_design_uv = 3300000,
 			.voltage_max_design_uv = 4320000,
 			.overvoltage_limit_uv = 4500000,
@@ -881,7 +839,7 @@ static struct samsung_sdi_battery samsung_sdi_batteries[] = {
 			.temp_max = 60,
 			.resist_table = samsung_temp2res,
 			.resist_table_size = ARRAY_SIZE(samsung_temp2res),
-			/* If you have tables for more temperatures, add them */
+			 
 			.ocv_temp[0] = 25,
 			.ocv_table[0] = samsung_ocv_cap_eb585157lu,
 			.ocv_table_size[0] = ARRAY_SIZE(samsung_ocv_cap_eb585157lu),

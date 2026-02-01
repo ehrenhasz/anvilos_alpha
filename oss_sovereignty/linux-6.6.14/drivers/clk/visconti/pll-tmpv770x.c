@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toshiba Visconti PLL controller
- *
- * Copyright (c) 2021 TOSHIBA CORPORATION
- * Copyright (c) 2021 Toshiba Electronic Devices & Storage Corporation
- *
- * Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/of_address.h>
@@ -22,13 +15,13 @@ static const struct visconti_pll_rate_table pipll0_rates[] __initconst = {
 	VISCONTI_PLL_RATE(840000000, 0x1, 0x0, 0x1, 0x54, 0x000000, 0x2, 0x1),
 	VISCONTI_PLL_RATE(780000000, 0x1, 0x0, 0x1, 0x4e, 0x000000, 0x2, 0x1),
 	VISCONTI_PLL_RATE(600000000, 0x1, 0x0, 0x1, 0x3c, 0x000000, 0x2, 0x1),
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct visconti_pll_rate_table piddrcpll_rates[] __initconst = {
 	VISCONTI_PLL_RATE(780000000, 0x1, 0x0, 0x1, 0x4e, 0x000000, 0x2, 0x1),
 	VISCONTI_PLL_RATE(760000000, 0x1, 0x0, 0x1, 0x4c, 0x000000, 0x2, 0x1),
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct visconti_pll_rate_table pivoifpll_rates[] __initconst = {
@@ -39,7 +32,7 @@ static const struct visconti_pll_rate_table pivoifpll_rates[] __initconst = {
 	VISCONTI_PLL_RATE(54000000, 0x1, 0x0, 0x1, 0x36, 0x000000, 0x5, 0x4),
 	VISCONTI_PLL_RATE(48000000, 0x1, 0x0, 0x1, 0x30, 0x000000, 0x5, 0x4),
 	VISCONTI_PLL_RATE(35750000, 0x1, 0x1, 0x1, 0x32, 0x0ccccc, 0x7, 0x4),
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct visconti_pll_rate_table piimgerpll_rates[] __initconst = {
@@ -47,7 +40,7 @@ static const struct visconti_pll_rate_table piimgerpll_rates[] __initconst = {
 	VISCONTI_PLL_RATE(96000000, 0x1, 0x0, 0x1, 0x30, 0x000000, 0x5, 0x2),
 	VISCONTI_PLL_RATE(54000000, 0x1, 0x0, 0x1, 0x36, 0x000000, 0x5, 0x4),
 	VISCONTI_PLL_RATE(48000000, 0x1, 0x0, 0x1, 0x30, 0x000000, 0x5, 0x4),
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct visconti_pll_info pll_info[] __initconst = {

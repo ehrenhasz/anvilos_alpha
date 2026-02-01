@@ -1,37 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies.
- * All rights reserved.
- * Copyright (c) 2005, 2006, 2007 Cisco Systems, Inc.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/sched.h>
 #include <linux/pci.h>
@@ -95,13 +62,13 @@ struct res_gid {
 enum res_qp_states {
 	RES_QP_BUSY = RES_ANY_BUSY,
 
-	/* QP number was allocated */
+	 
 	RES_QP_RESERVED,
 
-	/* ICM memory for QP context was mapped */
+	 
 	RES_QP_MAPPED,
 
-	/* QP is in hw ownership */
+	 
 	RES_QP_HW
 };
 
@@ -116,7 +83,7 @@ struct res_qp {
 	int			local_qpn;
 	atomic_t		ref_count;
 	u32			qpc_flags;
-	/* saved qp params before VST enforcement in order to restore on VGT */
+	 
 	u8			sched_queue;
 	__be32			param3;
 	u8			vlan_control;
@@ -223,10 +190,10 @@ enum res_fs_rule_states {
 struct res_fs_rule {
 	struct res_common	com;
 	int			qpn;
-	/* VF DMFS mbox with port flipped */
+	 
 	void			*mirr_mbox;
-	/* > 0 --> apply mirror when getting into HA mode      */
-	/* = 0 --> un-apply mirror when getting out of HA mode */
+	 
+	 
 	u32			mirr_mbox_size;
 	struct list_head	mirr_list;
 	u64			mirr_rule_id;
@@ -254,7 +221,7 @@ static int res_tracker_insert(struct rb_root *root, struct res_common *res)
 {
 	struct rb_node **new = &(root->rb_node), *parent = NULL;
 
-	/* Figure out where to put new node */
+	 
 	while (*new) {
 		struct res_common *this = rb_entry(*new, struct res_common,
 						   node);
@@ -268,7 +235,7 @@ static int res_tracker_insert(struct rb_root *root, struct res_common *res)
 			return -EEXIST;
 	}
 
-	/* Add new node and rebalance tree. */
+	 
 	rb_link_node(&res->node, parent, new);
 	rb_insert_color(&res->node, root);
 
@@ -284,7 +251,7 @@ enum qp_transition {
 	QP_TRANS_SQD2RTS
 };
 
-/* For Debug uses */
+ 
 static const char *resource_str(enum mlx4_resource rt)
 {
 	switch (rt) {
@@ -340,7 +307,7 @@ static inline int mlx4_grant_resource(struct mlx4_dev *dev, int slave,
 		err = 0;
 		from_rsvd = count;
 	} else {
-		/* portion may need to be obtained from free area */
+		 
 		if (guaranteed - allocated > 0)
 			from_free = count - (guaranteed - allocated);
 		else
@@ -357,7 +324,7 @@ static inline int mlx4_grant_resource(struct mlx4_dev *dev, int slave,
 	}
 
 	if (!err) {
-		/* grant the request */
+		 
 		if (port > 0) {
 			res_alloc->allocated[(port - 1) *
 			(dev->persist->num_vfs + 1) + slave] += count;
@@ -398,7 +365,7 @@ static inline void mlx4_release_resource(struct mlx4_dev *dev, int slave,
 	if (allocated - count >= guaranteed) {
 		from_rsvd = 0;
 	} else {
-		/* portion may need to be returned to reserved area */
+		 
 		if (allocated - guaranteed > 0)
 			from_rsvd = count - (allocated - guaranteed);
 		else
@@ -431,7 +398,7 @@ static inline void initialize_res_quotas(struct mlx4_dev *dev,
 	if (vf == mlx4_master_func_num(dev)) {
 		res_alloc->res_free = num_instances;
 		if (res_type == RES_MTT) {
-			/* reserved mtts will be taken out of the PF allocation */
+			 
 			res_alloc->res_free += dev->caps.reserved_mtts;
 			res_alloc->guaranteed[vf] += dev->caps.reserved_mtts;
 			res_alloc->quota[vf] += dev->caps.reserved_mtts;
@@ -444,7 +411,7 @@ void mlx4_init_quotas(struct mlx4_dev *dev)
 	struct mlx4_priv *priv = mlx4_priv(dev);
 	int pf;
 
-	/* quotas for VFs are initialized in mlx4_slave_cap */
+	 
 	if (mlx4_is_slave(dev))
 		return;
 
@@ -479,18 +446,16 @@ mlx4_calc_res_counter_guaranteed(struct mlx4_dev *dev,
 	struct mlx4_active_ports actv_ports;
 	int ports, counters_guaranteed;
 
-	/* For master, only allocate according to the number of phys ports */
+	 
 	if (vf == mlx4_master_func_num(dev))
 		return MLX4_PF_COUNTERS_PER_PORT * dev->caps.num_ports;
 
-	/* calculate real number of ports for the VF */
+	 
 	actv_ports = mlx4_get_active_ports(dev, vf);
 	ports = bitmap_weight(actv_ports.ports, dev->caps.num_ports);
 	counters_guaranteed = ports * MLX4_VF_COUNTERS_PER_PORT;
 
-	/* If we do not have enough counters for this VF, do not
-	 * allocate any for it. '-1' to reduce the sink counter.
-	 */
+	 
 	if ((res_alloc->res_reserved + counters_guaranteed) >
 	    (dev->caps.max_counters - 1))
 		return 0;
@@ -540,7 +505,7 @@ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
 			res_alloc->allocated =
 				kcalloc(dev->persist->num_vfs + 1,
 					sizeof(int), GFP_KERNEL);
-		/* Reduce the sink counter */
+		 
 		if (i == RES_COUNTER)
 			res_alloc->res_free = dev->caps.max_counters - 1;
 
@@ -582,8 +547,8 @@ int mlx4_init_resource_tracker(struct mlx4_dev *dev)
 			case RES_MAC:
 				if (t == mlx4_master_func_num(dev)) {
 					int max_vfs_pport = 0;
-					/* Calculate the max vfs per port for */
-					/* both ports.			      */
+					 
+					 
 					for (j = 0; j < dev->caps.num_ports;
 					     j++) {
 						struct mlx4_slaves_pport slaves_pport =
@@ -665,7 +630,7 @@ void mlx4_free_resource_tracker(struct mlx4_dev *dev,
 				    dev->caps.function != i)
 					mlx4_delete_all_resources_for_slave(dev, i);
 			}
-			/* free master's vlans */
+			 
 			i = dev->caps.function;
 			mlx4_reset_roce_gids(dev, i);
 			mutex_lock(&priv->mfunc.master.res_tracker.slave_list[i].mutex);
@@ -766,13 +731,11 @@ static int update_vport_qp_param(struct mlx4_dev *dev,
 		goto out;
 
 	if (MLX4_VGT != vp_oper->state.default_vlan) {
-		/* the reserved QPs (special, proxy, tunnel)
-		 * do not operate over vlans
-		 */
+		 
 		if (mlx4_is_qp_reserved(dev, qpn))
 			return 0;
 
-		/* force strip vlan by clear vsd, MLX QP refers to Raw Ethernet */
+		 
 		if (qp_type == MLX4_QP_ST_UD ||
 		    (qp_type == MLX4_QP_ST_MLX && mlx4_is_eth(dev, port))) {
 			if (dev->caps.bmme_flags & MLX4_BMME_FLAG_VSD_INIT2RTR) {
@@ -789,7 +752,7 @@ static int update_vport_qp_param(struct mlx4_dev *dev,
 			}
 		}
 
-		/* preserve IF_COUNTER flag */
+		 
 		qpc->pri_path.vlan_control &=
 			MLX4_CTRL_ETH_SRC_CHECK_IF_COUNTER;
 		if (vp_oper->state.link_state == IFLA_VF_LINK_STATE_DISABLE &&
@@ -803,22 +766,19 @@ static int update_vport_qp_param(struct mlx4_dev *dev,
 				MLX4_VLAN_CTRL_ETH_RX_BLOCK_TAGGED;
 		} else if (0 != vp_oper->state.default_vlan) {
 			if (vp_oper->state.vlan_proto == htons(ETH_P_8021AD)) {
-				/* vst QinQ should block untagged on TX,
-				 * but cvlan is in payload and phv is set so
-				 * hw see it as untagged. Block tagged instead.
-				 */
+				 
 				qpc->pri_path.vlan_control |=
 					MLX4_VLAN_CTRL_ETH_TX_BLOCK_PRIO_TAGGED |
 					MLX4_VLAN_CTRL_ETH_TX_BLOCK_TAGGED |
 					MLX4_VLAN_CTRL_ETH_RX_BLOCK_PRIO_TAGGED |
 					MLX4_VLAN_CTRL_ETH_RX_BLOCK_UNTAGGED;
-			} else { /* vst 802.1Q */
+			} else {  
 				qpc->pri_path.vlan_control |=
 					MLX4_VLAN_CTRL_ETH_TX_BLOCK_TAGGED |
 					MLX4_VLAN_CTRL_ETH_RX_BLOCK_PRIO_TAGGED |
 					MLX4_VLAN_CTRL_ETH_RX_BLOCK_UNTAGGED;
 			}
-		} else { /* priority tagged */
+		} else {  
 			qpc->pri_path.vlan_control |=
 				MLX4_VLAN_CTRL_ETH_TX_BLOCK_TAGGED |
 				MLX4_VLAN_CTRL_ETH_RX_BLOCK_TAGGED;
@@ -1019,7 +979,7 @@ static int handle_unexisting_counter(struct mlx4_dev *dev,
 	}
 	spin_unlock_irq(mlx4_tlock(dev));
 
-	/* No existing counter, need to allocate a new counter */
+	 
 	err = counter_alloc_res(dev, slave, RES_OP_RESERVE, 0, 0, &counter_idx,
 				port);
 	if (err == -ENOENT) {
@@ -1796,9 +1756,7 @@ static int qp_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 	switch (op) {
 	case RES_OP_RESERVE:
 		count = get_param_l(&in_param) & 0xffffff;
-		/* Turn off all unsupported QP allocation flags that the
-		 * slave tries to set.
-		 */
+		 
 		flags = (get_param_l(&in_param) >> 24) & dev->caps.alloc_res_qp_mask;
 		align = get_param_h(&in_param);
 		err = mlx4_grant_resource(dev, slave, RES_QP, count, 0);
@@ -2030,7 +1988,7 @@ static int mac_add_to_slave(struct mlx4_dev *dev, int slave, u64 mac, int port, 
 
 	list_for_each_entry_safe(res, tmp, mac_list, list) {
 		if (res->mac == mac && res->port == (u8) port) {
-			/* mac found. update ref count */
+			 
 			++res->ref_count;
 			return 0;
 		}
@@ -2084,7 +2042,7 @@ static void rem_slave_macs(struct mlx4_dev *dev, int slave)
 
 	list_for_each_entry_safe(res, tmp, mac_list, list) {
 		list_del(&res->list);
-		/* dereference the mac the num times the slave referenced it */
+		 
 		for (i = 0; i < res->ref_count; i++)
 			__mlx4_unregister_mac(dev, res->port, res->mac);
 		mlx4_release_resource(dev, slave, RES_MAC, 1, res->port);
@@ -2137,7 +2095,7 @@ static int vlan_add_to_slave(struct mlx4_dev *dev, int slave, u16 vlan,
 
 	list_for_each_entry_safe(res, tmp, vlan_list, list) {
 		if (res->vlan == vlan && res->port == (u8) port) {
-			/* vlan found. update ref count */
+			 
 			++res->ref_count;
 			return 0;
 		}
@@ -2193,7 +2151,7 @@ static void rem_slave_vlans(struct mlx4_dev *dev, int slave)
 
 	list_for_each_entry_safe(res, tmp, vlan_list, list) {
 		list_del(&res->list);
-		/* dereference the vlan the num times the slave referenced it */
+		 
 		for (i = 0; i < res->ref_count; i++)
 			__mlx4_unregister_vlan(dev, res->port, res->vlan);
 		mlx4_release_resource(dev, slave, RES_VLAN, 1, res->port);
@@ -2221,7 +2179,7 @@ static int vlan_alloc_res(struct mlx4_dev *dev, int slave, int op, int cmd,
 
 	if (port < 0)
 		return -EINVAL;
-	/* upstream kernels had NOP for reg/unreg vlan. Continue this. */
+	 
 	if (!in_port && port > 0 && port <= dev->caps.num_ports) {
 		slave_state[slave].old_vlan_api = true;
 		return 0;
@@ -2668,7 +2626,7 @@ int mlx4_FREE_RES_wrapper(struct mlx4_dev *dev, int slave,
 	return err;
 }
 
-/* ugly but other choices are uglier */
+ 
 static int mr_phys_mpt(struct mlx4_mpt_entry *mpt)
 {
 	return (be32_to_cpu(mpt->flags) >> 9) & 1;
@@ -2773,13 +2731,13 @@ int mlx4_SW2HW_MPT_wrapper(struct mlx4_dev *dev, int slave,
 	if (err)
 		return err;
 
-	/* Disable memory windows for VFs. */
+	 
 	if (!mr_is_region(inbox->buf)) {
 		err = -EPERM;
 		goto ex_abort;
 	}
 
-	/* Make sure that the PD bits related to the slave id are zeros. */
+	 
 	pd = mr_get_pd(inbox->buf);
 	pd_slave = (pd >> 17) & 0x7f;
 	if (pd_slave != 0 && --pd_slave != slave) {
@@ -2788,12 +2746,12 @@ int mlx4_SW2HW_MPT_wrapper(struct mlx4_dev *dev, int slave,
 	}
 
 	if (mr_is_fmr(inbox->buf)) {
-		/* FMR and Bind Enable are forbidden in slave devices. */
+		 
 		if (mr_is_bind_enabled(inbox->buf)) {
 			err = -EPERM;
 			goto ex_abort;
 		}
-		/* FMR and Memory Windows are also forbidden. */
+		 
 		if (!mr_is_region(inbox->buf)) {
 			err = -EPERM;
 			goto ex_abort;
@@ -2884,14 +2842,7 @@ int mlx4_QUERY_MPT_wrapper(struct mlx4_dev *dev, int slave,
 		return err;
 
 	if (mpt->com.from_state == RES_MPT_MAPPED) {
-		/* In order to allow rereg in SRIOV, we need to alter the MPT entry. To do
-		 * that, the VF must read the MPT. But since the MPT entry memory is not
-		 * in the VF's virtual memory space, it must use QUERY_MPT to obtain the
-		 * entry contents. To guarantee that the MPT cannot be changed, the driver
-		 * must perform HW2SW_MPT before this query and return the MPT entry to HW
-		 * ownership fofollowing the change. The change here allows the VF to
-		 * perform QUERY_MPT also when the entry is in SW ownership.
-		 */
+		 
 		struct mlx4_mpt_entry *mpt_entry = mlx4_table_find(
 					&mlx4_priv(dev)->mr_table.dmpt_table,
 					mpt->key, NULL);
@@ -2941,7 +2892,7 @@ static void adjust_proxy_tun_qkey(struct mlx4_dev *dev, struct mlx4_vhcr *vhcr,
 	if (mlx4_get_parav_qkey(dev, qpn, &qkey))
 		return;
 
-	/* adjust qkey in qp context */
+	 
 	context->qkey = cpu_to_be32(qkey);
 }
 
@@ -3034,7 +2985,7 @@ int mlx4_RST2INIT_QP_wrapper(struct mlx4_dev *dev, int slave,
 		qp->srq = srq;
 	}
 
-	/* Save param3 for dynamic changes from VST back to VGT */
+	 
 	qp->param3 = qpc->param3;
 	put_res(dev, slave, rcqn, RES_CQ);
 	put_res(dev, slave, mtt_base, RES_MTT);
@@ -3198,7 +3149,7 @@ static int verify_qp_parameters(struct mlx4_dev *dev,
 
 	if (slave != mlx4_master_func_num(dev)) {
 		qp_ctx->params2 &= ~cpu_to_be32(MLX4_QP_BIT_FPP);
-		/* setting QP rate-limit is disallowed for VFs */
+		 
 		if (qp_ctx->rate_limit_params)
 			return -EPERM;
 	}
@@ -3246,7 +3197,7 @@ static int verify_qp_parameters(struct mlx4_dev *dev,
 		    slave != mlx4_master_func_num(dev) &&
 		    mlx4_is_qp_reserved(dev, qpn) &&
 		    !mlx4_vf_smi_enabled(dev, slave, port)) {
-			/* only enabled VFs may create MLX proxy QPs */
+			 
 			mlx4_err(dev, "%s: unprivileged slave %d attempting to create an MLX proxy special QP on port %d\n",
 				 __func__, slave, port);
 			return -EPERM;
@@ -3279,11 +3230,8 @@ int mlx4_WRITE_MTT_wrapper(struct mlx4_dev *dev, int slave,
 	if (err)
 		return err;
 
-	/* Call the SW implementation of write_mtt:
-	 * - Prepare a dummy mtt struct
-	 * - Translate inbox contents to simple addresses in host endianness */
-	mtt.offset = 0;  /* TBD this is broken but I don't handle it since
-			    we don't really use it */
+	 
+	mtt.offset = 0;   
 	mtt.order = 0;
 	mtt.page_shift = 0;
 	for (i = 0; i < npages; ++i)
@@ -3349,7 +3297,7 @@ int mlx4_GEN_EQE(struct mlx4_dev *dev, int slave, struct mlx4_eqe *eqe)
 	if (!priv->mfunc.master.slave_state)
 		return -EINVAL;
 
-	/* check for slave valid, slave not PF, and slave active */
+	 
 	if (slave < 0 || slave > dev->persist->num_vfs ||
 	    slave == dev->caps.function ||
 	    !priv->mfunc.master.slave_state[slave].active)
@@ -3357,7 +3305,7 @@ int mlx4_GEN_EQE(struct mlx4_dev *dev, int slave, struct mlx4_eqe *eqe)
 
 	event_eq = &priv->mfunc.master.slave_state[slave].event_eq[eqe->type];
 
-	/* Create the event only if the slave is registered */
+	 
 	if (event_eq->eqn < 0)
 		return 0;
 
@@ -3863,10 +3811,7 @@ int mlx4_INIT2RTR_QP_wrapper(struct mlx4_dev *dev, int slave,
 
 	err = mlx4_DMA_wrapper(dev, slave, vhcr, inbox, outbox, cmd);
 out:
-	/* if no error, save sched queue value passed in by VF. This is
-	 * essentially the QOS value provided by the VF. This will be useful
-	 * if we allow dynamic changes from VST back to VGT
-	 */
+	 
 	if (!err) {
 		qp->sched_queue = orig_sched_queue;
 		qp->vlan_control = orig_vlan_control;
@@ -4141,7 +4086,7 @@ int mlx4_QP_ATTACH_wrapper(struct mlx4_dev *dev, int slave,
 			       struct mlx4_cmd_mailbox *outbox,
 			       struct mlx4_cmd_info *cmd)
 {
-	struct mlx4_qp qp; /* dummy for calling attach/detach */
+	struct mlx4_qp qp;  
 	u8 *gid = inbox->buf;
 	enum mlx4_protocol prot = (vhcr->in_modifier >> 28) & 0x7;
 	int err;
@@ -4193,17 +4138,14 @@ ex_put:
 	return err;
 }
 
-/*
- * MAC validation for Flow Steering rules.
- * VF can attach rules only with a mac address which is assigned to it.
- */
+ 
 static int validate_eth_header_mac(int slave, struct _rule_hw *eth_header,
 				   struct list_head *rlist)
 {
 	struct mac_res *res, *tmp;
 	__be64 be_mac;
 
-	/* make sure it isn't multicast or broadcast mac*/
+	 
 	if (!is_multicast_ether_addr(eth_header->eth.dst_mac) &&
 	    !is_broadcast_ether_addr(eth_header->eth.dst_mac)) {
 		list_for_each_entry_safe(res, tmp, rlist, list) {
@@ -4218,10 +4160,7 @@ static int validate_eth_header_mac(int slave, struct _rule_hw *eth_header,
 	return 0;
 }
 
-/*
- * In case of missing eth header, append eth header with a MAC address
- * assigned to the VF.
- */
+ 
 static int add_eth_header(struct mlx4_dev *dev, int slave,
 			  struct mlx4_cmd_mailbox *inbox,
 			  struct list_head *rlist, int header_id)
@@ -4239,7 +4178,7 @@ static int add_eth_header(struct mlx4_dev *dev, int slave,
 	port = ctrl->port;
 	eth_header = (struct mlx4_net_trans_rule_hw_eth *)(ctrl + 1);
 
-	/* Clear a space in the inbox for eth header */
+	 
 	switch (header_id) {
 	case MLX4_NET_TRANS_RULE_ID_IPV4:
 		ip_header =
@@ -4312,7 +4251,7 @@ int mlx4_UPDATE_QP_wrapper(struct mlx4_dev *dev, int slave,
 		return -EOPNOTSUPP;
 	}
 
-	/* Just change the smac for the QP */
+	 
 	err = get_res(dev, slave, qpn, RES_QP, &rqp);
 	if (err) {
 		mlx4_err(dev, "Updating qpn 0x%x for slave %d rejected\n", qpn, slave);
@@ -4457,7 +4396,7 @@ int mlx4_QP_FLOW_STEERING_ATTACH_wrapper(struct mlx4_dev *dev, int slave,
 	rrule->mirr_rule_id = 0;
 	memcpy(rrule->mirr_mbox, inbox->buf, mbox_size);
 
-	/* set different port */
+	 
 	ctrl = (struct mlx4_net_trans_rule_hw_ctrl *)rrule->mirr_mbox;
 	if (ctrl->port == 1)
 		ctrl->port = 2;
@@ -4472,7 +4411,7 @@ int mlx4_QP_FLOW_STEERING_ATTACH_wrapper(struct mlx4_dev *dev, int slave,
 err_put_rule:
 	put_res(dev, slave, vhcr->out_param, RES_FS_RULE);
 err_detach:
-	/* detach rule on error */
+	 
 	if (err)
 		mlx4_cmd(dev, vhcr->out_param, 0, 0,
 			 MLX4_QP_FLOW_STEERING_DETACH, MLX4_CMD_TIME_CLASS_A,
@@ -4526,7 +4465,7 @@ int mlx4_QP_FLOW_STEERING_DETACH_wrapper(struct mlx4_dev *dev, int slave,
 	kfree(rrule->mirr_mbox);
 	qpn = rrule->qpn;
 
-	/* Release the rule form busy state before removal */
+	 
 	put_res(dev, slave, vhcr->in_param, RES_FS_RULE);
 	err = get_res(dev, slave, qpn, RES_QP, &rqp);
 	if (err)
@@ -4583,7 +4522,7 @@ static void detach_qp(struct mlx4_dev *dev, int slave, struct res_qp *rqp)
 {
 	struct res_gid *rgid;
 	struct res_gid *tmp;
-	struct mlx4_qp qp; /* dummy for calling attach/detach */
+	struct mlx4_qp qp;  
 
 	list_for_each_entry_safe(rgid, tmp, &rqp->mcg_list, list) {
 		switch (dev->caps.steering_mode) {
@@ -5087,7 +5026,7 @@ static void rem_slave_fs_rule(struct mlx4_dev *dev, int slave)
 			while (state != 0) {
 				switch (state) {
 				case RES_FS_RULE_ALLOCATED:
-					/* detach rule */
+					 
 					err = mlx4_cmd(dev, base, 0, 0,
 						       MLX4_QP_FLOW_STEERING_DETACH,
 						       MLX4_CMD_TIME_CLASS_A,
@@ -5314,7 +5253,7 @@ void mlx4_vf_immed_vlan_work_handler(struct work_struct *_work)
 	mailbox = mlx4_alloc_cmd_mailbox(dev);
 	if (IS_ERR(mailbox))
 		goto out;
-	if (work->flags & MLX4_VF_IMMED_VLAN_FLAG_LINK_DISABLE) /* block all */
+	if (work->flags & MLX4_VF_IMMED_VLAN_FLAG_LINK_DISABLE)  
 		vlan_control = MLX4_VLAN_CTRL_ETH_TX_BLOCK_TAGGED |
 			MLX4_VLAN_CTRL_ETH_TX_BLOCK_PRIO_TAGGED |
 			MLX4_VLAN_CTRL_ETH_TX_BLOCK_UNTAGGED |
@@ -5329,7 +5268,7 @@ void mlx4_vf_immed_vlan_work_handler(struct work_struct *_work)
 			MLX4_VLAN_CTRL_ETH_TX_BLOCK_TAGGED |
 			MLX4_VLAN_CTRL_ETH_RX_BLOCK_PRIO_TAGGED |
 			MLX4_VLAN_CTRL_ETH_RX_BLOCK_UNTAGGED;
-	else  /* vst 802.1Q */
+	else   
 		vlan_control = MLX4_VLAN_CTRL_ETH_TX_BLOCK_TAGGED |
 			MLX4_VLAN_CTRL_ETH_RX_BLOCK_PRIO_TAGGED |
 			MLX4_VLAN_CTRL_ETH_RX_BLOCK_UNTAGGED;
@@ -5342,7 +5281,7 @@ void mlx4_vf_immed_vlan_work_handler(struct work_struct *_work)
 		spin_unlock_irq(mlx4_tlock(dev));
 		if (qp->com.owner == work->slave) {
 			if (qp->com.from_state != RES_QP_HW ||
-			    !qp->sched_queue ||  /* no INIT2RTR trans yet */
+			    !qp->sched_queue ||   
 			    mlx4_is_qp_reserved(dev, qp->local_qpn) ||
 			    qp->qpc_flags & (1 << MLX4_RSS_QPC_FLAG_OFFSET)) {
 				spin_lock_irq(mlx4_tlock(dev));
@@ -5410,9 +5349,7 @@ void mlx4_vf_immed_vlan_work_handler(struct work_struct *_work)
 		mlx4_err(dev, "%d UPDATE_QP failures for slave %d, port %d\n",
 			 errors, work->slave, work->port);
 
-	/* unregister previous vlan_id if needed and we had no errors
-	 * while updating the QPs
-	 */
+	 
 	if (work->flags & MLX4_VF_IMMED_VLAN_FLAG_VLAN && !errors &&
 	    NO_INDX != work->orig_vlan_ix)
 		__mlx4_unregister_vlan(&work->priv->dev, work->port,

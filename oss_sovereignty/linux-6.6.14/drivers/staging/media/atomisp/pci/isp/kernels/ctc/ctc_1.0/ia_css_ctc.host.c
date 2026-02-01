@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "ia_css_types.h"
 #include "sh_css_defs.h"
@@ -21,17 +9,17 @@
 #include "ia_css_ctc.host.h"
 
 const struct ia_css_ctc_config default_ctc_config = {
-	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		/* 0.5 */
-	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		/* 0.5 */
-	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		/* 0.5 */
-	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		/* 0.5 */
-	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		/* 0.5 */
-	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		/* 0.5 */
+	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		 
+	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		 
+	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		 
+	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		 
+	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		 
+	((1 << IA_CSS_CTC_COEF_SHIFT) + 1) / 2,		 
 	1,
-	SH_CSS_BAYER_MAXVAL / 5,	/* To be implemented */
-	SH_CSS_BAYER_MAXVAL * 2 / 5,	/* To be implemented */
-	SH_CSS_BAYER_MAXVAL * 3 / 5,	/* To be implemented */
-	SH_CSS_BAYER_MAXVAL * 4 / 5,	/* To be implemented */
+	SH_CSS_BAYER_MAXVAL / 5,	 
+	SH_CSS_BAYER_MAXVAL * 2 / 5,	 
+	SH_CSS_BAYER_MAXVAL * 3 / 5,	 
+	SH_CSS_BAYER_MAXVAL * 4 / 5,	 
 };
 
 void

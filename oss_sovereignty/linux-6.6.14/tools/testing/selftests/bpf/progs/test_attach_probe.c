@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017 Facebook
+
+
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -52,7 +52,7 @@ int handle_uprobe_byname(struct pt_regs *ctx)
 	return 0;
 }
 
-/* use auto-attach format for section definition. */
+ 
 SEC("uretprobe//proc/self/exe:trigger_func2")
 int handle_uretprobe_byname(struct pt_regs *ctx)
 {
@@ -65,7 +65,7 @@ int BPF_UPROBE(handle_uprobe_byname2, const char *pathname, const char *mode)
 {
 	char mode_buf[2] = {};
 
-	/* verify fopen mode */
+	 
 	bpf_probe_read_user(mode_buf, sizeof(mode_buf), mode);
 	if (mode_buf[0] == 'r' && mode_buf[1] == 0)
 		uprobe_byname2_res = 7;
@@ -95,10 +95,7 @@ int handle_uprobe_byname3_sleepable(struct pt_regs *ctx)
 	return 0;
 }
 
-/**
- * same target as the uprobe.s above to force sleepable and non-sleepable
- * programs in the same bpf_prog_array
- */
+ 
 SEC("uprobe//proc/self/exe:trigger_func3")
 int handle_uprobe_byname3(struct pt_regs *ctx)
 {

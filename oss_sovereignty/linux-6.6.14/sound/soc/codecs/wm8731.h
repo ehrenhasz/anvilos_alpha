@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * wm8731.h  --  WM8731 Soc Audio driver
- *
- * Copyright 2005 Openedhand Ltd.
- *
- * Author: Richard Purdie <richard@openedhand.com>
- *
- * Based on wm8753.h
- */
+ 
+ 
 
 #ifndef _WM8731_H
 #define _WM8731_H
@@ -19,7 +11,7 @@
 struct clk;
 struct snd_pcm_hw_constraint_list;
 
-/* WM8731 register space */
+ 
 
 #define WM8731_LINVOL   0x00
 #define WM8731_RINVOL   0x01
@@ -42,7 +34,7 @@ struct snd_pcm_hw_constraint_list;
 
 #define WM8731_NUM_SUPPLIES 4
 
-/* codec private data */
+ 
 struct wm8731_priv {
 	struct regmap *regmap;
 	struct clk *mclk;

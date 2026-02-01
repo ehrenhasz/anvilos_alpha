@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Xilinx MIPI CSI-2 Rx Subsystem
- *
- * Copyright (C) 2016 - 2020 Xilinx, Inc.
- *
- * Contacts: Vishal Sagar <vishal.sagar@xilinx.com>
- *
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -25,7 +18,7 @@
 #include <media/v4l2-subdev.h>
 #include "xilinx-vip.h"
 
-/* Register register map */
+ 
 #define XCSI_CCR_OFFSET		0x00
 #define XCSI_CCR_SOFTRESET	BIT(1)
 #define XCSI_CCR_ENABLE		BIT(0)
@@ -72,10 +65,7 @@
 
 #define XCSI_ISR_ALLINTR_MASK	(0xc07e3fff)
 
-/*
- * Removed VCXFE mask as it doesn't exist in IER
- * Removed STOP state irq as this will keep driver in irq handler only
- */
+ 
 #define XCSI_IER_INTR_MASK	(XCSI_ISR_ALLINTR_MASK &\
 				 ~(XCSI_ISR_STOP | XCSI_ISR_VCXFE))
 
@@ -108,10 +98,7 @@
 #define XCSI_VCXINF2R_DT	GENMASK(5, 0)
 #define XCSI_MAXVCX_COUNT	16
 
-/*
- * Sink pad connected to sensor source pad.
- * Source pad connected to next module like demosaic.
- */
+ 
 #define XCSI_MEDIA_PADS		2
 #define XCSI_DEFAULT_WIDTH	1920
 #define XCSI_DEFAULT_HEIGHT	1080
@@ -122,14 +109,10 @@
 
 #define XCSI_NEXTREG_OFFSET	4
 
-/* There are 2 events frame sync and frame level error per VC */
+ 
 #define XCSI_VCX_NUM_EVENTS	((XCSI_MAX_VCX - XCSI_MAX_VC) * 2)
 
-/**
- * struct xcsi2rxss_event - Event log structure
- * @mask: Event mask
- * @name: Name of the event
- */
+ 
 struct xcsi2rxss_event {
 	u32 mask;
 	const char *name;
@@ -162,10 +145,7 @@ static const struct xcsi2rxss_event xcsi2rxss_events[] = {
 
 #define XCSI_NUM_EVENTS		ARRAY_SIZE(xcsi2rxss_events)
 
-/*
- * This table provides a mapping between CSI-2 Data type
- * and media bus formats
- */
+ 
 static const u32 xcsi2dt_mbus_lut[][2] = {
 	{ MIPI_CSI2_DT_YUV422_8B, MEDIA_BUS_FMT_UYVY8_1X16 },
 	{ MIPI_CSI2_DT_YUV422_10B, MEDIA_BUS_FMT_UYVY10_1X20 },
@@ -196,28 +176,7 @@ static const u32 xcsi2dt_mbus_lut[][2] = {
 	{ MIPI_CSI2_DT_RAW20, 0 },
 };
 
-/**
- * struct xcsi2rxss_state - CSI-2 Rx Subsystem device structure
- * @subdev: The v4l2 subdev structure
- * @format: Active V4L2 formats on each pad
- * @default_format: Default V4L2 format
- * @events: counter for events
- * @vcx_events: counter for vcx_events
- * @dev: Platform structure
- * @rsubdev: Remote subdev connected to sink pad
- * @rst_gpio: reset to video_aresetn
- * @clks: array of clocks
- * @iomem: Base address of subsystem
- * @max_num_lanes: Maximum number of lanes present
- * @datatype: Data type filter
- * @lock: mutex for accessing this structure
- * @pads: media pads
- * @streaming: Flag for storing streaming state
- * @enable_active_lanes: If number of active lanes can be modified
- * @en_vcx: If more than 4 VC are enabled
- *
- * This structure contains the device driver related parameters
- */
+ 
 struct xcsi2rxss_state {
 	struct v4l2_subdev subdev;
 	struct v4l2_mbus_framefmt format;
@@ -231,7 +190,7 @@ struct xcsi2rxss_state {
 	void __iomem *iomem;
 	u32 max_num_lanes;
 	u32 datatype;
-	/* used to protect access to this struct */
+	 
 	struct mutex lock;
 	struct media_pad pads[XCSI_MEDIA_PADS];
 	bool streaming;
@@ -250,9 +209,7 @@ to_xcsi2rxssstate(struct v4l2_subdev *subdev)
 	return container_of(subdev, struct xcsi2rxss_state, subdev);
 }
 
-/*
- * Register related operations
- */
+ 
 static inline u32 xcsi2rxss_read(struct xcsi2rxss_state *xcsi2rxss, u32 addr)
 {
 	return ioread32(xcsi2rxss->iomem + addr);
@@ -277,10 +234,7 @@ static inline void xcsi2rxss_set(struct xcsi2rxss_state *xcsi2rxss, u32 addr,
 	xcsi2rxss_write(xcsi2rxss, addr, xcsi2rxss_read(xcsi2rxss, addr) | set);
 }
 
-/*
- * This function returns the nth mbus for a data type.
- * In case of error, mbus code returned is 0.
- */
+ 
 static u32 xcsi2rxss_get_nth_mbus(u32 dt, u32 n)
 {
 	unsigned int i;
@@ -295,7 +249,7 @@ static u32 xcsi2rxss_get_nth_mbus(u32 dt, u32 n)
 	return 0;
 }
 
-/* This returns the data type for a media bus format else 0 */
+ 
 static u32 xcsi2rxss_get_dt(u32 mbus)
 {
 	unsigned int i;
@@ -308,18 +262,10 @@ static u32 xcsi2rxss_get_dt(u32 mbus)
 	return 0;
 }
 
-/**
- * xcsi2rxss_soft_reset - Does a soft reset of the MIPI CSI-2 Rx Subsystem
- * @state: Xilinx CSI-2 Rx Subsystem structure pointer
- *
- * Core takes less than 100 video clock cycles to reset.
- * So a larger timeout value is chosen for margin.
- *
- * Return: 0 - on success OR -ETIME if reset times out
- */
+ 
 static int xcsi2rxss_soft_reset(struct xcsi2rxss_state *state)
 {
-	u32 timeout = 1000; /* us */
+	u32 timeout = 1000;  
 
 	xcsi2rxss_set(state, XCSI_CCR_OFFSET, XCSI_CCR_SOFTRESET);
 
@@ -342,7 +288,7 @@ static void xcsi2rxss_hard_reset(struct xcsi2rxss_state *state)
 	if (!state->rst_gpio)
 		return;
 
-	/* minimum of 40 dphy_clk_200M cycles */
+	 
 	gpiod_set_value_cansleep(state->rst_gpio, 1);
 	usleep_range(1, 2);
 	gpiod_set_value_cansleep(state->rst_gpio, 0);
@@ -359,7 +305,7 @@ static void xcsi2rxss_reset_event_counters(struct xcsi2rxss_state *state)
 		state->vcx_events[i] = 0;
 }
 
-/* Print event counters */
+ 
 static void xcsi2rxss_log_counters(struct xcsi2rxss_state *state)
 {
 	struct device *dev = state->dev;
@@ -386,14 +332,7 @@ static void xcsi2rxss_log_counters(struct xcsi2rxss_state *state)
 	}
 }
 
-/**
- * xcsi2rxss_log_status - Logs the status of the CSI-2 Receiver
- * @sd: Pointer to V4L2 subdevice structure
- *
- * This function prints the current status of Xilinx MIPI CSI-2
- *
- * Return: 0 on success
- */
+ 
 static int xcsi2rxss_log_status(struct v4l2_subdev *sd)
 {
 	struct xcsi2rxss_state *xcsi2rxss = to_xcsi2rxssstate(sd);
@@ -416,7 +355,7 @@ static int xcsi2rxss_log_status(struct v4l2_subdev *sd)
 	dev_info(dev, "Soft reset/Core disable in progress = %s\n",
 		 data & XCSI_CSR_RIPCD ? "true" : "false");
 
-	/* Clk & Lane Info  */
+	 
 	dev_info(dev, "******** Clock Lane Info *********\n");
 	data = xcsi2rxss_read(xcsi2rxss, XCSI_CLKINFR_OFFSET);
 	dev_info(dev, "Clock Lane in Stop State = %s\n",
@@ -436,7 +375,7 @@ static int xcsi2rxss_log_status(struct v4l2_subdev *sd)
 		reg += XCSI_NEXTREG_OFFSET;
 	}
 
-	/* Virtual Channel Image Information */
+	 
 	dev_info(dev, "********** Virtual Channel Info ************\n");
 	dev_info(dev, "VC\tLine Count\tByte Count\tData Type\n");
 	if (xcsi2rxss->en_vcx)
@@ -448,13 +387,13 @@ static int xcsi2rxss_log_status(struct v4l2_subdev *sd)
 	for (i = 0; i < max_vc; i++) {
 		u32 line_count, byte_count, data_type;
 
-		/* Get line and byte count from VCXINFR1 Register */
+		 
 		data = xcsi2rxss_read(xcsi2rxss, reg);
 		byte_count = data & XCSI_VCXINF1R_BYTECOUNT;
 		line_count = data & XCSI_VCXINF1R_LINECOUNT;
 		line_count >>= XCSI_VCXINF1R_LINECOUNT_SHIFT;
 
-		/* Get data type from VCXINFR2 Register */
+		 
 		reg += XCSI_NEXTREG_OFFSET;
 		data = xcsi2rxss_read(xcsi2rxss, reg);
 		data_type = data & XCSI_VCXINF2R_DT;
@@ -462,7 +401,7 @@ static int xcsi2rxss_log_status(struct v4l2_subdev *sd)
 		dev_info(dev, "%d\t%d\t\t%d\t\t0x%x\n", i, line_count,
 			 byte_count, data_type);
 
-		/* Move to next pair of VC Info registers */
+		 
 		reg += XCSI_NEXTREG_OFFSET;
 	}
 
@@ -486,7 +425,7 @@ static int xcsi2rxss_start_stream(struct xcsi2rxss_state *state)
 {
 	int ret = 0;
 
-	/* enable core */
+	 
 	xcsi2rxss_set(state, XCSI_CCR_OFFSET, XCSI_CCR_ENABLE);
 
 	ret = xcsi2rxss_soft_reset(state);
@@ -495,7 +434,7 @@ static int xcsi2rxss_start_stream(struct xcsi2rxss_state *state)
 		return ret;
 	}
 
-	/* enable interrupts */
+	 
 	xcsi2rxss_clr(state, XCSI_GIER_OFFSET, XCSI_GIER_GIE);
 	xcsi2rxss_write(state, XCSI_IER_OFFSET, XCSI_IER_INTR_MASK);
 	xcsi2rxss_set(state, XCSI_GIER_OFFSET, XCSI_GIER_GIE);
@@ -507,11 +446,11 @@ static int xcsi2rxss_start_stream(struct xcsi2rxss_state *state)
 
 	ret = v4l2_subdev_call(state->rsubdev, video, s_stream, 1);
 	if (ret) {
-		/* disable interrupts */
+		 
 		xcsi2rxss_clr(state, XCSI_IER_OFFSET, XCSI_IER_INTR_MASK);
 		xcsi2rxss_clr(state, XCSI_GIER_OFFSET, XCSI_GIER_GIE);
 
-		/* disable core */
+		 
 		xcsi2rxss_clr(state, XCSI_CCR_OFFSET, XCSI_CCR_ENABLE);
 		state->streaming = false;
 	}
@@ -523,25 +462,16 @@ static void xcsi2rxss_stop_stream(struct xcsi2rxss_state *state)
 {
 	v4l2_subdev_call(state->rsubdev, video, s_stream, 0);
 
-	/* disable interrupts */
+	 
 	xcsi2rxss_clr(state, XCSI_IER_OFFSET, XCSI_IER_INTR_MASK);
 	xcsi2rxss_clr(state, XCSI_GIER_OFFSET, XCSI_GIER_GIE);
 
-	/* disable core */
+	 
 	xcsi2rxss_clr(state, XCSI_CCR_OFFSET, XCSI_CCR_ENABLE);
 	state->streaming = false;
 }
 
-/**
- * xcsi2rxss_irq_handler - Interrupt handler for CSI-2
- * @irq: IRQ number
- * @data: Pointer to device state
- *
- * In the interrupt handler, a list of event counters are updated for
- * corresponding interrupts. This is useful to get status / debug.
- *
- * Return: IRQ_HANDLED after handling interrupts
- */
+ 
 static irqreturn_t xcsi2rxss_irq_handler(int irq, void *data)
 {
 	struct xcsi2rxss_state *state = (struct xcsi2rxss_state *)data;
@@ -551,14 +481,11 @@ static irqreturn_t xcsi2rxss_irq_handler(int irq, void *data)
 	status = xcsi2rxss_read(state, XCSI_ISR_OFFSET) & XCSI_ISR_ALLINTR_MASK;
 	xcsi2rxss_write(state, XCSI_ISR_OFFSET, status);
 
-	/* Received a short packet */
+	 
 	if (status & XCSI_ISR_SPFIFONE) {
 		u32 count = 0;
 
-		/*
-		 * Drain generic short packet FIFO by reading max 31
-		 * (fifo depth) short packets from fifo or till fifo is empty.
-		 */
+		 
 		for (count = 0; count < XCSI_SPKT_FIFO_DEPTH; ++count) {
 			u32 spfifostat, spkt;
 
@@ -572,36 +499,27 @@ static irqreturn_t xcsi2rxss_irq_handler(int irq, void *data)
 		}
 	}
 
-	/* Short packet FIFO overflow */
+	 
 	if (status & XCSI_ISR_SPFIFOF)
 		dev_dbg_ratelimited(dev, "Short packet FIFO overflowed\n");
 
-	/*
-	 * Stream line buffer full
-	 * This means there is a backpressure from downstream IP
-	 */
+	 
 	if (status & XCSI_ISR_SLBF) {
 		dev_alert_ratelimited(dev, "Stream Line Buffer Full!\n");
 
-		/* disable interrupts */
+		 
 		xcsi2rxss_clr(state, XCSI_IER_OFFSET, XCSI_IER_INTR_MASK);
 		xcsi2rxss_clr(state, XCSI_GIER_OFFSET, XCSI_GIER_GIE);
 
-		/* disable core */
+		 
 		xcsi2rxss_clr(state, XCSI_CCR_OFFSET, XCSI_CCR_ENABLE);
 
-		/*
-		 * The IP needs to be hard reset before it can be used now.
-		 * This will be done in streamoff.
-		 */
+		 
 
-		/*
-		 * TODO: Notify the whole pipeline with v4l2_subdev_notify() to
-		 * inform userspace.
-		 */
+		 
 	}
 
-	/* Increment event counters */
+	 
 	if (status & XCSI_ISR_ALLINTR_MASK) {
 		unsigned int i;
 
@@ -631,16 +549,7 @@ static irqreturn_t xcsi2rxss_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * xcsi2rxss_s_stream - It is used to start/stop the streaming.
- * @sd: V4L2 Sub device
- * @enable: Flag (True / False)
- *
- * This function controls the start or stop of streaming for the
- * Xilinx MIPI CSI-2 Rx Subsystem.
- *
- * Return: 0 on success, errors otherwise
- */
+ 
 static int xcsi2rxss_s_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct xcsi2rxss_state *xcsi2rxss = to_xcsi2rxssstate(sd);
@@ -680,16 +589,7 @@ __xcsi2rxss_get_pad_format(struct xcsi2rxss_state *xcsi2rxss,
 	}
 }
 
-/**
- * xcsi2rxss_init_cfg - Initialise the pad format config to default
- * @sd: Pointer to V4L2 Sub device structure
- * @sd_state: Pointer to sub device state structure
- *
- * This function is used to initialize the pad format with the default
- * values.
- *
- * Return: 0 on success
- */
+ 
 static int xcsi2rxss_init_cfg(struct v4l2_subdev *sd,
 			      struct v4l2_subdev_state *sd_state)
 {
@@ -707,16 +607,7 @@ static int xcsi2rxss_init_cfg(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/**
- * xcsi2rxss_get_format - Get the pad format
- * @sd: Pointer to V4L2 Sub device structure
- * @sd_state: Pointer to sub device state structure
- * @fmt: Pointer to pad level media bus format
- *
- * This function is used to get the pad format information.
- *
- * Return: 0 on success
- */
+ 
 static int xcsi2rxss_get_format(struct v4l2_subdev *sd,
 				struct v4l2_subdev_state *sd_state,
 				struct v4l2_subdev_format *fmt)
@@ -732,19 +623,7 @@ static int xcsi2rxss_get_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/**
- * xcsi2rxss_set_format - This is used to set the pad format
- * @sd: Pointer to V4L2 Sub device structure
- * @sd_state: Pointer to sub device state structure
- * @fmt: Pointer to pad level media bus format
- *
- * This function is used to set the pad format. Since the pad format is fixed
- * in hardware, it can't be modified on run time. So when a format set is
- * requested by application, all parameters except the format type is saved
- * for the pad and the original pad format is sent back to the application.
- *
- * Return: 0 on success
- */
+ 
 static int xcsi2rxss_set_format(struct v4l2_subdev *sd,
 				struct v4l2_subdev_state *sd_state,
 				struct v4l2_subdev_format *fmt)
@@ -755,30 +634,22 @@ static int xcsi2rxss_set_format(struct v4l2_subdev *sd,
 
 	mutex_lock(&xcsi2rxss->lock);
 
-	/*
-	 * Only the format->code parameter matters for CSI as the
-	 * CSI format cannot be changed at runtime.
-	 * Ensure that format to set is copied to over to CSI pad format
-	 */
+	 
 	__format = __xcsi2rxss_get_pad_format(xcsi2rxss, sd_state,
 					      fmt->pad, fmt->which);
 
-	/* only sink pad format can be updated */
+	 
 	if (fmt->pad == XVIP_PAD_SOURCE) {
 		fmt->format = *__format;
 		mutex_unlock(&xcsi2rxss->lock);
 		return 0;
 	}
 
-	/*
-	 * RAW8 is supported in all datatypes. So if requested media bus format
-	 * is of RAW8 type, then allow to be set. In case core is configured to
-	 * other RAW, YUV422 8/10 or RGB888, set appropriate media bus format.
-	 */
+	 
 	dt = xcsi2rxss_get_dt(fmt->format.code);
 	if (dt != xcsi2rxss->datatype && dt != MIPI_CSI2_DT_RAW8) {
 		dev_dbg(xcsi2rxss->dev, "Unsupported media bus format");
-		/* set the default format for the data type */
+		 
 		fmt->format.code = xcsi2rxss_get_nth_mbus(xcsi2rxss->datatype,
 							  0);
 	}
@@ -789,14 +660,7 @@ static int xcsi2rxss_set_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * xcsi2rxss_enum_mbus_code - Handle pixel format enumeration
- * @sd: pointer to v4l2 subdev structure
- * @cfg: V4L2 subdev pad configuration
- * @code: pointer to v4l2_subdev_mbus_code_enum structure
- *
- * Return: -EINVAL or zero on success
- */
+ 
 static int xcsi2rxss_enum_mbus_code(struct v4l2_subdev *sd,
 				    struct v4l2_subdev_state *sd_state,
 				    struct v4l2_subdev_mbus_code_enum *code)
@@ -805,7 +669,7 @@ static int xcsi2rxss_enum_mbus_code(struct v4l2_subdev *sd,
 	u32 dt, n;
 	int ret = 0;
 
-	/* RAW8 dt packets are available in all DT configurations */
+	 
 	if (code->index < 4) {
 		n = code->index;
 		dt = MIPI_CSI2_DT_RAW8;
@@ -823,9 +687,7 @@ static int xcsi2rxss_enum_mbus_code(struct v4l2_subdev *sd,
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Media Operations
- */
+ 
 
 static const struct media_entity_operations xcsi2rxss_media_ops = {
 	.link_validate = v4l2_subdev_link_validate
@@ -973,7 +835,7 @@ static int xcsi2rxss_probe(struct platform_device *pdev)
 	if (!xcsi2rxss->clks)
 		return -ENOMEM;
 
-	/* Reset GPIO */
+	 
 	xcsi2rxss->rst_gpio = devm_gpiod_get_optional(dev, "video-reset",
 						      GPIOD_OUT_HIGH);
 	if (IS_ERR(xcsi2rxss->rst_gpio))
@@ -1004,7 +866,7 @@ static int xcsi2rxss_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* TODO: Enable/disable clocks at stream on/off time. */
+	 
 	ret = clk_bulk_prepare_enable(num_clks, xcsi2rxss->clks);
 	if (ret)
 		goto err_clk_put;
@@ -1014,11 +876,11 @@ static int xcsi2rxss_probe(struct platform_device *pdev)
 	xcsi2rxss_hard_reset(xcsi2rxss);
 	xcsi2rxss_soft_reset(xcsi2rxss);
 
-	/* Initialize V4L2 subdevice and media entity */
+	 
 	xcsi2rxss->pads[XVIP_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
 	xcsi2rxss->pads[XVIP_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE;
 
-	/* Initialize the default format */
+	 
 	xcsi2rxss->default_format.code =
 		xcsi2rxss_get_nth_mbus(xcsi2rxss->datatype, 0);
 	xcsi2rxss->default_format.field = V4L2_FIELD_NONE;
@@ -1027,7 +889,7 @@ static int xcsi2rxss_probe(struct platform_device *pdev)
 	xcsi2rxss->default_format.height = XCSI_DEFAULT_HEIGHT;
 	xcsi2rxss->format = xcsi2rxss->default_format;
 
-	/* Initialize V4L2 subdevice and media entity */
+	 
 	subdev = &xcsi2rxss->subdev;
 	v4l2_subdev_init(subdev, &xcsi2rxss_ops);
 	subdev->dev = dev;

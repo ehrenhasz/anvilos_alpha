@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -12,17 +12,7 @@
 #define MEN_UART_ID_Z057 0x39
 #define MEN_UART_ID_Z125 0x7d
 
-/*
- * IP Cores Z025 and Z057 can have up to 4 UART
- * The UARTs available are stored in a global
- * register saved in physical address + 0x40
- * Is saved as follows:
- *
- * 7                                                              0
- * +------+-------+-------+-------+-------+-------+-------+-------+
- * |UART4 | UART3 | UART2 | UART1 | U4irq | U3irq | U2irq | U1irq |
- * +------+-------+-------+-------+-------+-------+-------+-------+
- */
+ 
 #define MEN_UART1_MASK	0x01
 #define MEN_UART2_MASK	0x02
 #define MEN_UART3_MASK	0x04
@@ -50,15 +40,10 @@ struct serial_8250_men_mcb_data {
 	unsigned int offset[MAX_PORTS];
 };
 
-/*
- * The Z125 16550-compatible UART has no fixed base clock assigned
- * So, depending on the board we're on, we need to adjust the
- * parameter in order to really set the correct baudrate, and
- * do so if possible without user interaction
- */
+ 
 static u32 men_lookup_uartclk(struct mcb_device *mdev)
 {
-	/* use default value if board is not available below */
+	 
 	u32 clkval = 1041666;
 
 	dev_info(&mdev->dev, "%s on board %s\n",
@@ -221,7 +206,7 @@ static int serial_8250_men_mcb_probe(struct mcb_device *mdev,
 		uart.port.mapbase = (unsigned long) mem->start
 					    + data->offset[i];
 
-		/* ok, register the port */
+		 
 		res = serial8250_register_8250_port(&uart);
 		if (res < 0) {
 			dev_err(&mdev->dev, "unable to register UART port\n");

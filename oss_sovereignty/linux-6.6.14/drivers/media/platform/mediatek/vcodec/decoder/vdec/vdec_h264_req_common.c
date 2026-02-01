@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Yunfei Dong <yunfei.dong@mediatek.com>
- */
+
+ 
 
 #include "vdec_h264_req_common.h"
 
-/* get used parameters for sps/pps */
+ 
 #define GET_MTK_VDEC_FLAG(cond, flag) \
 	{ dst_param->cond = ((src_param->flags & flag) ? (1) : (0)); }
 #define GET_MTK_VDEC_PARAM(param) \
@@ -18,18 +15,12 @@ void mtk_vdec_h264_get_ref_list(u8 *ref_list,
 {
 	u32 i;
 
-	/*
-	 * TODO The firmware does not support field decoding. Future
-	 * implementation must use v4l2_ref_list[i].fields to obtain
-	 * the reference field parity.
-	 */
+	 
 
 	for (i = 0; i < num_valid; i++)
 		ref_list[i] = v4l2_ref_list[i].index;
 
-	/*
-	 * The firmware expects unused reflist entries to have the value 0x20.
-	 */
+	 
 	memset(&ref_list[num_valid], 0x20, 32 - num_valid);
 }
 
@@ -70,7 +61,7 @@ void mtk_vdec_h264_fill_dpb_info(struct mtk_vcodec_dec_ctx *ctx,
 			continue;
 		}
 
-		/* 1 for short term reference, 2 for long term reference */
+		 
 		if (!(dpb->flags & V4L2_H264_DPB_ENTRY_FLAG_LONG_TERM))
 			h264_dpb_info[index].reference_flag = 1;
 		else
@@ -214,9 +205,7 @@ mtk_vdec_h264_copy_decode_params(struct slice_api_h264_decode_param *dst_params,
 		dst_entry->flags = src_entry->flags;
 	}
 
-	/* num_slices is a leftover from the old H.264 support and is ignored
-	 * by the firmware.
-	 */
+	 
 	dst_params->num_slices = 0;
 	dst_params->nal_ref_idc = src_params->nal_ref_idc;
 	dst_params->top_field_order_cnt = src_params->top_field_order_cnt;
@@ -231,13 +220,7 @@ static bool mtk_vdec_h264_dpb_entry_match(const struct v4l2_h264_dpb_entry *a,
 	       a->bottom_field_order_cnt == b->bottom_field_order_cnt;
 }
 
-/*
- * Move DPB entries of dec_param that refer to a frame already existing in dpb
- * into the already existing slot in dpb, and move other entries into new slots.
- *
- * This function is an adaptation of the similarly-named function in
- * hantro_h264.c.
- */
+ 
 void mtk_vdec_h264_update_dpb(const struct v4l2_ctrl_h264_decode_params *dec_param,
 			      struct v4l2_h264_dpb_entry *dpb)
 {
@@ -246,24 +229,21 @@ void mtk_vdec_h264_update_dpb(const struct v4l2_ctrl_h264_decode_params *dec_par
 	DECLARE_BITMAP(used, ARRAY_SIZE(dec_param->dpb)) = { 0, };
 	unsigned int i, j;
 
-	/* Disable all entries by default, and mark the ones in use. */
+	 
 	for (i = 0; i < ARRAY_SIZE(dec_param->dpb); i++) {
 		if (dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE)
 			set_bit(i, in_use);
 		dpb[i].flags &= ~V4L2_H264_DPB_ENTRY_FLAG_ACTIVE;
 	}
 
-	/* Try to match new DPB entries with existing ones by their POCs. */
+	 
 	for (i = 0; i < ARRAY_SIZE(dec_param->dpb); i++) {
 		const struct v4l2_h264_dpb_entry *ndpb = &dec_param->dpb[i];
 
 		if (!(ndpb->flags & V4L2_H264_DPB_ENTRY_FLAG_ACTIVE))
 			continue;
 
-		/*
-		 * To cut off some comparisons, iterate only on target DPB
-		 * entries were already used.
-		 */
+		 
 		for_each_set_bit(j, in_use, ARRAY_SIZE(dec_param->dpb)) {
 			struct v4l2_h264_dpb_entry *cdpb;
 
@@ -273,7 +253,7 @@ void mtk_vdec_h264_update_dpb(const struct v4l2_ctrl_h264_decode_params *dec_par
 
 			*cdpb = *ndpb;
 			set_bit(j, used);
-			/* Don't reiterate on this one. */
+			 
 			clear_bit(j, in_use);
 			break;
 		}
@@ -282,16 +262,12 @@ void mtk_vdec_h264_update_dpb(const struct v4l2_ctrl_h264_decode_params *dec_par
 			set_bit(i, new);
 	}
 
-	/* For entries that could not be matched, use remaining free slots. */
+	 
 	for_each_set_bit(i, new, ARRAY_SIZE(dec_param->dpb)) {
 		const struct v4l2_h264_dpb_entry *ndpb = &dec_param->dpb[i];
 		struct v4l2_h264_dpb_entry *cdpb;
 
-		/*
-		 * Both arrays are of the same sizes, so there is no way
-		 * we can end up with no space in target array, unless
-		 * something is buggy.
-		 */
+		 
 		j = find_first_zero_bit(used, ARRAY_SIZE(dec_param->dpb));
 		if (WARN_ON(j >= ARRAY_SIZE(dec_param->dpb)))
 			return;

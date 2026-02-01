@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Battery driver for Acer Iconia Tab A500.
- *
- * Copyright 2020 GRATE-driver project.
- *
- * Based on downstream driver from Acer Inc.
- * Based on NVIDIA Gas Gauge driver for SBS Compliant Batteries.
- *
- * Copyright (c) 2010, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -69,7 +60,7 @@ static bool a500_battery_update_capacity(struct a500_battery *bat)
 	if (err)
 		return false;
 
-	/* capacity can be >100% even if max value is 100% */
+	 
 	capacity = min(capacity, 100u);
 
 	if (bat->capacity != capacity) {
@@ -125,11 +116,7 @@ static int a500_battery_get_ec_data_index(struct device *dev,
 {
 	unsigned int i;
 
-	/*
-	 * DESIGN_CAPACITY register always returns a non-zero value if
-	 * battery is connected and zero if disconnected, hence we'll use
-	 * it for judging the battery presence.
-	 */
+	 
 	if (psp == POWER_SUPPLY_PROP_PRESENT)
 		psp = POWER_SUPPLY_PROP_CHARGE_FULL_DESIGN;
 
@@ -182,14 +169,14 @@ static int a500_battery_get_property(struct power_supply *psy,
 	}
 
 	if (!ret) {
-		/* convert units to match requirements of power supply class */
+		 
 		a500_battery_unit_adjustment(dev, psp, val);
 	}
 
 	dev_dbg(dev, "%s: property = %d, value = %x\n",
 		__func__, psp, val->intval);
 
-	/* return NODATA for properties if battery not presents */
+	 
 	if (ret)
 		return -ENODATA;
 
@@ -207,7 +194,7 @@ static void a500_battery_poll_work(struct work_struct *work)
 	if (capacity_changed)
 		power_supply_changed(bat->psy);
 
-	/* continuously send uevent notification */
+	 
 	schedule_delayed_work(&bat->poll_work, 30 * HZ);
 }
 

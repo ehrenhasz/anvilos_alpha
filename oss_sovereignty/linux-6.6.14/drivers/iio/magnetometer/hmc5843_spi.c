@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI driver for hmc5983
- *
- * Copyright (C) Josef Gajdusek <atx@atx.name>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
@@ -46,7 +42,7 @@ static const struct regmap_config hmc5843_spi_regmap_config = {
 		.wr_table = &hmc5843_writable_table,
 		.volatile_table = &hmc5843_volatile_table,
 
-		/* Autoincrement address pointer */
+		 
 		.read_flag_mask = 0xc0,
 
 		.cache_type = REGCACHE_RBTREE,

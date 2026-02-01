@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Atheros CARL9170 driver
- *
- * firmware parser
- *
- * Copyright 2009, 2010, Christian Lamparter <chunkeey@googlemail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/firmware.h>
@@ -28,7 +22,7 @@ static const void *carl9170_fw_find_desc(struct ar9170 *ar, const u8 descid[4],
 			return (void *)iter;
 	}
 
-	/* needed to find the LAST desc */
+	 
 	if (carl9170fw_desc_cmp(iter, descid, len,
 				compatible_revision))
 		return (void *)iter;
@@ -343,7 +337,7 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 #ifdef CONFIG_MAC80211_MESH
 			if_comb_types |=
 				BIT(NL80211_IFTYPE_MESH_POINT);
-#endif /* CONFIG_MAC80211_MESH */
+#endif  
 		}
 	}
 
@@ -353,7 +347,7 @@ static int carl9170_fw(struct ar9170 *ar, const __u8 *data, size_t len)
 
 	ar->hw->wiphy->flags &= ~WIPHY_FLAG_PS_ON_BY_DEFAULT;
 
-	/* As IBSS Encryption is software-based, IBSS RSN is supported. */
+	 
 	ar->hw->wiphy->flags |= WIPHY_FLAG_HAS_REMAIN_ON_CHANNEL |
 		 WIPHY_FLAG_IBSS_RSN | WIPHY_FLAG_SUPPORTS_TDLS;
 

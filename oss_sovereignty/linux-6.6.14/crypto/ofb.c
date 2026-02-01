@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * OFB: Output FeedBack mode
- *
- * Copyright (C) 2018 ARM Limited or its affiliates.
- * All rights reserved.
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/cipher.h>
@@ -62,13 +57,10 @@ static int crypto_ofb_create(struct crypto_template *tmpl, struct rtattr **tb)
 
 	alg = skcipher_ialg_simple(inst);
 
-	/* OFB mode is a stream cipher. */
+	 
 	inst->alg.base.cra_blocksize = 1;
 
-	/*
-	 * To simplify the implementation, configure the skcipher walk to only
-	 * give a partial block at the very end, never earlier.
-	 */
+	 
 	inst->alg.chunksize = alg->cra_blocksize;
 
 	inst->alg.encrypt = crypto_ofb_crypt;

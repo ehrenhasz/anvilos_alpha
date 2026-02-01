@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor /sys/kernel/security/apparmor interface functions
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/security.h>
@@ -38,34 +31,10 @@
 #include "include/policy_unpack.h"
 #include "include/task.h"
 
-/*
- * The apparmor filesystem interface used for policy load and introspection
- * The interface is split into two main components based on their function
- * a securityfs component:
- *   used for static files that are always available, and which allows
- *   userspace to specificy the location of the security filesystem.
- *
- *   fns and data are prefixed with
- *      aa_sfs_
- *
- * an apparmorfs component:
- *   used loaded policy content and introspection. It is not part of  a
- *   regular mounted filesystem and is available only through the magic
- *   policy symlink in the root of the securityfs apparmor/ directory.
- *   Tasks queries will be magically redirected to the correct portion
- *   of the policy tree based on their confinement.
- *
- *   fns and data are prefixed with
- *      aafs_
- *
- * The aa_fs_ prefix is used to indicate the fn is used by both the
- * securityfs and apparmorfs filesystems.
- */
+ 
 
 
-/*
- * support fns
- */
+ 
 
 struct rawdata_f_data {
 	struct aa_loaddata *loaddata;
@@ -98,13 +67,7 @@ static struct rawdata_f_data *rawdata_f_data_alloc(size_t size)
 }
 #endif
 
-/**
- * mangle_name - mangle a profile name to std profile layout form
- * @name: profile name to mangle  (NOT NULL)
- * @target: buffer to store mangled name, same length as @name (MAYBE NULL)
- *
- * Returns: length of mangled name
- */
+ 
 static int mangle_name(const char *name, char *target)
 {
 	char *t = target;
@@ -138,9 +101,7 @@ static int mangle_name(const char *name, char *target)
 }
 
 
-/*
- * aafs - core fns and data for the policy tree
- */
+ 
 
 #define AAFS_NAME		"apparmorfs"
 static struct vfsmount *aafs_mnt;
@@ -201,16 +162,7 @@ static struct file_system_type aafs_ops = {
 	.kill_sb = kill_anon_super,
 };
 
-/**
- * __aafs_setup_d_inode - basic inode setup for apparmorfs
- * @dir: parent directory for the dentry
- * @dentry: dentry we are seting the inode up for
- * @mode: permissions the file should have
- * @data: data to store on inode.i_private, available in open()
- * @link: if symlink, symlink target string
- * @fops: struct file_operations that should be used
- * @iops: struct of inode_operations that should be used
- */
+ 
 static int __aafs_setup_d_inode(struct inode *dir, struct dentry *dentry,
 			       umode_t mode, void *data, char *link,
 			       const struct file_operations *fops,
@@ -245,22 +197,7 @@ static int __aafs_setup_d_inode(struct inode *dir, struct dentry *dentry,
 	return 0;
 }
 
-/**
- * aafs_create - create a dentry in the apparmorfs filesystem
- *
- * @name: name of dentry to create
- * @mode: permissions the file should have
- * @parent: parent directory for this dentry
- * @data: data to store on inode.i_private, available in open()
- * @link: if symlink, symlink target string
- * @fops: struct file_operations that should be used for
- * @iops: struct of inode_operations that should be used
- *
- * This is the basic "create a xxx" function for apparmorfs.
- *
- * Returns a pointer to a dentry if it succeeds, that must be free with
- * aafs_remove(). Will return ERR_PTR on failure.
- */
+ 
 static struct dentry *aafs_create(const char *name, umode_t mode,
 				  struct dentry *parent, void *data, void *link,
 				  const struct file_operations *fops,
@@ -311,17 +248,7 @@ fail_lock:
 	return ERR_PTR(error);
 }
 
-/**
- * aafs_create_file - create a file in the apparmorfs filesystem
- *
- * @name: name of dentry to create
- * @mode: permissions the file should have
- * @parent: parent directory for this dentry
- * @data: data to store on inode.i_private, available in open()
- * @fops: struct file_operations that should be used for
- *
- * see aafs_create
- */
+ 
 static struct dentry *aafs_create_file(const char *name, umode_t mode,
 				       struct dentry *parent, void *data,
 				       const struct file_operations *fops)
@@ -329,25 +256,14 @@ static struct dentry *aafs_create_file(const char *name, umode_t mode,
 	return aafs_create(name, mode, parent, data, NULL, fops, NULL);
 }
 
-/**
- * aafs_create_dir - create a directory in the apparmorfs filesystem
- *
- * @name: name of dentry to create
- * @parent: parent directory for this dentry
- *
- * see aafs_create
- */
+ 
 static struct dentry *aafs_create_dir(const char *name, struct dentry *parent)
 {
 	return aafs_create(name, S_IFDIR | 0755, parent, NULL, NULL, NULL,
 			   NULL);
 }
 
-/**
- * aafs_remove - removes a file or directory from the apparmorfs filesystem
- *
- * @dentry: dentry of the file/directory/symlink to removed.
- */
+ 
 static void aafs_remove(struct dentry *dentry)
 {
 	struct inode *dir;
@@ -370,20 +286,9 @@ static void aafs_remove(struct dentry *dentry)
 }
 
 
-/*
- * aa_fs - policy load/replace/remove
- */
+ 
 
-/**
- * aa_simple_write_to_buffer - common routine for getting policy from user
- * @userbuf: user buffer to copy data from  (NOT NULL)
- * @alloc_size: size of user buffer (REQUIRES: @alloc_size >= @copy_size)
- * @copy_size: size of data to copy from user buffer
- * @pos: position write is at in the file (NOT NULL)
- *
- * Returns: kernel buffer containing copy of user buffer data or an
- *          ERR_PTR on failure.
- */
+ 
 static struct aa_loaddata *aa_simple_write_to_buffer(const char __user *userbuf,
 						     size_t alloc_size,
 						     size_t copy_size,
@@ -394,10 +299,10 @@ static struct aa_loaddata *aa_simple_write_to_buffer(const char __user *userbuf,
 	AA_BUG(copy_size > alloc_size);
 
 	if (*pos != 0)
-		/* only writes from pos 0, that is complete writes */
+		 
 		return ERR_PTR(-ESPIPE);
 
-	/* freed by caller to simple_write_to_buffer */
+	 
 	data = aa_loaddata_alloc(alloc_size);
 	if (IS_ERR(data))
 		return data;
@@ -420,9 +325,7 @@ static ssize_t policy_update(u32 mask, const char __user *buf, size_t size,
 
 	label = begin_current_label_crit_section();
 
-	/* high level check about policy management - fine grained in
-	 * below after unpack
-	 */
+	 
 	error = aa_may_manage_policy(current_cred(), label, ns, mask);
 	if (error)
 		goto end_section;
@@ -439,7 +342,7 @@ end_section:
 	return error;
 }
 
-/* .load file hook fn to load policy */
+ 
 static ssize_t profile_load(struct file *f, const char __user *buf, size_t size,
 			    loff_t *pos)
 {
@@ -456,7 +359,7 @@ static const struct file_operations aa_fs_profile_load = {
 	.llseek = default_llseek,
 };
 
-/* .replace file hook fn to load and/or replace policy */
+ 
 static ssize_t profile_replace(struct file *f, const char __user *buf,
 			       size_t size, loff_t *pos)
 {
@@ -473,7 +376,7 @@ static const struct file_operations aa_fs_profile_replace = {
 	.llseek = default_llseek,
 };
 
-/* .remove file hook fn to remove loaded policy */
+ 
 static ssize_t profile_remove(struct file *f, const char __user *buf,
 			      size_t size, loff_t *pos)
 {
@@ -483,18 +386,13 @@ static ssize_t profile_remove(struct file *f, const char __user *buf,
 	struct aa_ns *ns = aa_get_ns(f->f_inode->i_private);
 
 	label = begin_current_label_crit_section();
-	/* high level check about policy management - fine grained in
-	 * below after unpack
-	 */
+	 
 	error = aa_may_manage_policy(current_cred(), label, ns,
 				     AA_MAY_REMOVE_POLICY);
 	if (error)
 		goto out;
 
-	/*
-	 * aa_remove_profile needs a null terminated string so 1 extra
-	 * byte is allocated and the copied data is null terminated.
-	 */
+	 
 	data = aa_simple_write_to_buffer(buf, size + 1, size, pos);
 
 	error = PTR_ERR(data);
@@ -519,7 +417,7 @@ struct aa_revision {
 	long last_read;
 };
 
-/* revision file hook fn for policy loads */
+ 
 static int ns_revision_release(struct inode *inode, struct file *file)
 {
 	struct aa_revision *rev = file->private_data;
@@ -630,7 +528,7 @@ static void profile_query_cb(struct aa_profile *profile, struct aa_perms *perms,
 		}
 	} else if (rules->policy.dfa) {
 		if (!RULE_MEDIATES(rules, *match_str))
-			return;	/* no change to current perms */
+			return;	 
 		state = aa_dfa_match_len(rules->policy.dfa,
 					 rules->policy.start[0],
 					 match_str, match_len);
@@ -642,24 +540,7 @@ static void profile_query_cb(struct aa_profile *profile, struct aa_perms *perms,
 }
 
 
-/**
- * query_data - queries a policy and writes its data to buf
- * @buf: the resulting data is stored here (NOT NULL)
- * @buf_len: size of buf
- * @query: query string used to retrieve data
- * @query_len: size of query including second NUL byte
- *
- * The buffers pointed to by buf and query may overlap. The query buffer is
- * parsed before buf is written to.
- *
- * The query should look like "<LABEL>\0<KEY>\0", where <LABEL> is the name of
- * the security confinement context and <KEY> is the name of the data to
- * retrieve. <LABEL> and <KEY> must not be NUL-terminated.
- *
- * Don't expect the contents of buf to be preserved on failure.
- *
- * Returns: number of characters written to buf or -errno on failure
- */
+ 
 static ssize_t query_data(char *buf, size_t buf_len,
 			  char *query, size_t query_len)
 {
@@ -673,16 +554,16 @@ static ssize_t query_data(char *buf, size_t buf_len,
 	__le32 outle32;
 
 	if (!query_len)
-		return -EINVAL; /* need a query */
+		return -EINVAL;  
 
 	key = query + strnlen(query, query_len) + 1;
 	if (key + 1 >= query + query_len)
-		return -EINVAL; /* not enough space for a non-empty key */
+		return -EINVAL;  
 	if (key + strnlen(key, query + query_len - key) >= query + query_len)
-		return -EINVAL; /* must end with NUL */
+		return -EINVAL;  
 
 	if (buf_len < sizeof(bytes) + sizeof(blocks))
-		return -EINVAL; /* not enough space */
+		return -EINVAL;  
 
 	curr = begin_current_label_crit_section();
 	label = aa_label_parse(curr, query, GFP_KERNEL, false, false);
@@ -690,14 +571,7 @@ static ssize_t query_data(char *buf, size_t buf_len,
 	if (IS_ERR(label))
 		return PTR_ERR(label);
 
-	/* We are going to leave space for two numbers. The first is the total
-	 * number of bytes we are writing after the first number. This is so
-	 * users can read the full output without reallocation.
-	 *
-	 * The second number is the number of data blocks we're writing. An
-	 * application might be confined by multiple policies having data in
-	 * the same key.
-	 */
+	 
 	memset(buf, 0, sizeof(bytes) + sizeof(blocks));
 	out = buf + sizeof(bytes) + sizeof(blocks);
 
@@ -713,7 +587,7 @@ static ssize_t query_data(char *buf, size_t buf_len,
 			if (out + sizeof(outle32) + data->size > buf +
 			    buf_len) {
 				aa_put_label(label);
-				return -EINVAL; /* not enough space */
+				return -EINVAL;  
 			}
 			outle32 = __cpu_to_le32(data->size);
 			memcpy(out, &outle32, sizeof(outle32));
@@ -733,26 +607,7 @@ static ssize_t query_data(char *buf, size_t buf_len,
 	return out - buf;
 }
 
-/**
- * query_label - queries a label and writes permissions to buf
- * @buf: the resulting permissions string is stored here (NOT NULL)
- * @buf_len: size of buf
- * @query: binary query string to match against the dfa
- * @query_len: size of query
- * @view_only: only compute for querier's view
- *
- * The buffers pointed to by buf and query may overlap. The query buffer is
- * parsed before buf is written to.
- *
- * The query should look like "LABEL_NAME\0DFA_STRING" where LABEL_NAME is
- * the name of the label, in the current namespace, that is to be queried and
- * DFA_STRING is a binary string to match against the label(s)'s DFA.
- *
- * LABEL_NAME must be NUL terminated. DFA_STRING may contain NUL characters
- * but must *not* be NUL terminated.
- *
- * Returns: number of characters written to buf or -errno on failure
- */
+ 
 static ssize_t query_label(char *buf, size_t buf_len,
 			   char *query, size_t query_len, bool view_only)
 {
@@ -771,12 +626,7 @@ static ssize_t query_label(char *buf, size_t buf_len,
 	if (!label_name_len || label_name_len == query_len)
 		return -EINVAL;
 
-	/**
-	 * The extra byte is to account for the null byte between the
-	 * profile name and dfa string. profile_name_len is greater
-	 * than zero and less than query_len, so a byte can be safely
-	 * added or subtracted.
-	 */
+	 
 	match_str = label_name + label_name_len + 1;
 	match_len = query_len - label_name_len - 1;
 
@@ -803,13 +653,7 @@ static ssize_t query_label(char *buf, size_t buf_len,
 		      perms.allow, perms.deny, perms.audit, perms.quiet);
 }
 
-/*
- * Transaction based IO.
- * The file expects a write which triggers the transaction, and then
- * possibly a read(s) which collects the result - which is stored in a
- * file-local buffer. Once a new write is performed, a new set of results
- * are stored in the file-local buffer.
- */
+ 
 struct multi_transaction {
 	struct kref count;
 	ssize_t size;
@@ -841,7 +685,7 @@ static void put_multi_transaction(struct multi_transaction *t)
 		kref_put(&(t->count), multi_transaction_kref);
 }
 
-/* does not increment @new's count */
+ 
 static void multi_transaction_set(struct file *file,
 				  struct multi_transaction *new, size_t n)
 {
@@ -913,27 +757,7 @@ static int multi_transaction_release(struct inode *inode, struct file *file)
 #define QUERY_CMD_DATA		"data\0"
 #define QUERY_CMD_DATA_LEN	5
 
-/**
- * aa_write_access - generic permissions and data query
- * @file: pointer to open apparmorfs/access file
- * @ubuf: user buffer containing the complete query string (NOT NULL)
- * @count: size of ubuf
- * @ppos: position in the file (MUST BE ZERO)
- *
- * Allows for one permissions or data query per open(), write(), and read()
- * sequence. The only queries currently supported are label-based queries for
- * permissions or data.
- *
- * For permissions queries, ubuf must begin with "label\0", followed by the
- * profile query specific format described in the query_label() function
- * documentation.
- *
- * For data queries, ubuf must have the form "data\0<LABEL>\0<KEY>\0", where
- * <LABEL> is the name of the security confinement context and <KEY> is the
- * name of the data to retrieve.
- *
- * Returns: number of bytes written or -errno on failure
- */
+ 
 static ssize_t aa_write_access(struct file *file, const char __user *ubuf,
 			       size_t count, loff_t *ppos)
 {
@@ -1006,7 +830,7 @@ static int aa_sfs_seq_show(struct seq_file *seq, void *v)
 		seq_printf(seq, "%#08lx\n", fs_file->v.u64);
 		break;
 	default:
-		/* Ignore unpritable entry types. */
+		 
 		break;
 	}
 
@@ -1026,10 +850,7 @@ const struct file_operations aa_sfs_seq_file_ops = {
 	.release	= single_release,
 };
 
-/*
- * profile based file operations
- *     policy/profiles/XXXX/profiles/ *
- */
+ 
 
 #define SEQ_PROFILE_FOPS(NAME)						      \
 static int seq_profile_ ##NAME ##_open(struct inode *inode, struct file *file)\
@@ -1127,11 +948,7 @@ SEQ_PROFILE_FOPS(mode);
 SEQ_PROFILE_FOPS(attach);
 SEQ_PROFILE_FOPS(hash);
 
-/*
- * namespace based files
- *     several root files and
- *     policy/ *
- */
+ 
 
 #define SEQ_NS_FOPS(NAME)						      \
 static int seq_ns_ ##NAME ##_open(struct inode *inode, struct file *file)     \
@@ -1221,7 +1038,7 @@ SEQ_NS_FOPS(compress_min);
 SEQ_NS_FOPS(compress_max);
 
 
-/* policy/raw_data/ * file ops */
+ 
 #ifdef CONFIG_SECURITY_APPARMOR_EXPORT_BINARY
 #define SEQ_RAWDATA_FOPS(NAME)						      \
 static int seq_rawdata_ ##NAME ##_open(struct inode *inode, struct file *file)\
@@ -1244,7 +1061,7 @@ static int seq_rawdata_open(struct inode *inode, struct file *file,
 	int error;
 
 	if (!data)
-		/* lost race this ent is being reaped */
+		 
 		return -ENOENT;
 
 	error = single_open(file, show, data);
@@ -1378,7 +1195,7 @@ static int rawdata_open(struct inode *inode, struct file *file)
 
 	loaddata = __aa_get_loaddata(inode->i_private);
 	if (!loaddata)
-		/* lost race: this entry is being reaped */
+		 
 		return -ENOENT;
 
 	private = rawdata_f_data_alloc(loaddata->size);
@@ -1420,7 +1237,7 @@ static void remove_rawdata_dents(struct aa_loaddata *rawdata)
 
 	for (i = 0; i < AAFS_LOADDATA_NDENTS; i++) {
 		if (!IS_ERR_OR_NULL(rawdata->dents[i])) {
-			/* no refcounts on i_private */
+			 
 			aafs_remove(rawdata->dents[i]);
 			rawdata->dents[i] = NULL;
 		}
@@ -1448,18 +1265,14 @@ int __aa_fs_create_rawdata(struct aa_ns *ns, struct aa_loaddata *rawdata)
 	AA_BUG(!mutex_is_locked(&ns->lock));
 	AA_BUG(!ns_subdata_dir(ns));
 
-	/*
-	 * just use ns revision dir was originally created at. This is
-	 * under ns->lock and if load is successful revision will be
-	 * bumped and is guaranteed to be unique
-	 */
+	 
 	rawdata->name = kasprintf(GFP_KERNEL, "%ld", ns->revision);
 	if (!rawdata->name)
 		return -ENOMEM;
 
 	dir = aafs_create_dir(rawdata->name, ns_subdata_dir(ns));
 	if (IS_ERR(dir))
-		/* ->name freed when rawdata freed */
+		 
 		return PTR_ERR(dir);
 	rawdata->dents[AAFS_LOADDATA_DIR] = dir;
 
@@ -1499,7 +1312,7 @@ int __aa_fs_create_rawdata(struct aa_ns *ns, struct aa_loaddata *rawdata)
 
 	rawdata->ns = aa_get_ns(ns);
 	list_add(&rawdata->list, &ns->rawdata_list);
-	/* no refcount on inode rawdata */
+	 
 
 	return 0;
 
@@ -1508,15 +1321,12 @@ fail:
 
 	return PTR_ERR(dent);
 }
-#endif /* CONFIG_SECURITY_APPARMOR_EXPORT_BINARY */
+#endif  
 
 
-/** fns to setup dynamic per profile/namespace files **/
+ 
 
-/*
- *
- * Requires: @profile->ns->lock held
- */
+ 
 void __aafs_profile_rmdir(struct aa_profile *profile)
 {
 	struct aa_profile *child;
@@ -1540,10 +1350,7 @@ void __aafs_profile_rmdir(struct aa_profile *profile)
 	}
 }
 
-/*
- *
- * Requires: @old->ns->lock held
- */
+ 
 void __aafs_profile_migrate_dents(struct aa_profile *old,
 				  struct aa_profile *new)
 {
@@ -1680,11 +1487,9 @@ static const struct inode_operations rawdata_link_abi_iops = {
 static const struct inode_operations rawdata_link_data_iops = {
 	.get_link	= rawdata_get_link_data,
 };
-#endif /* CONFIG_SECURITY_APPARMOR_EXPORT_BINARY */
+#endif  
 
-/*
- * Requires: @profile->ns->lock held
- */
+ 
 int __aafs_profile_mkdir(struct aa_profile *profile, struct dentry *parent)
 {
 	struct aa_profile *child;
@@ -1698,7 +1503,7 @@ int __aafs_profile_mkdir(struct aa_profile *profile, struct dentry *parent)
 		struct aa_profile *p;
 		p = aa_deref_parent(profile);
 		dent = prof_dir(p);
-		/* adding to parent that previously didn't have children */
+		 
 		dent = aafs_create_dir("profiles", dent);
 		if (IS_ERR(dent))
 			goto fail;
@@ -1778,7 +1583,7 @@ int __aafs_profile_mkdir(struct aa_profile *profile, struct dentry *parent)
 		aa_get_proxy(profile->label.proxy);
 		profile->dents[AAFS_PROF_RAW_DATA] = dent;
 	}
-#endif /*CONFIG_SECURITY_APPARMOR_EXPORT_BINARY */
+#endif  
 
 	list_for_each_entry(child, &profile->base.profiles, base.list) {
 		error = __aafs_profile_mkdir(child, prof_child_dir(profile));
@@ -1801,7 +1606,7 @@ static int ns_mkdir_op(struct mnt_idmap *idmap, struct inode *dir,
 		       struct dentry *dentry, umode_t mode)
 {
 	struct aa_ns *ns, *parent;
-	/* TODO: improve permission check */
+	 
 	struct aa_label *label;
 	int error;
 
@@ -1815,9 +1620,7 @@ static int ns_mkdir_op(struct mnt_idmap *idmap, struct inode *dir,
 	parent = aa_get_ns(dir->i_private);
 	AA_BUG(d_inode(ns_subns_dir(parent)) != dir);
 
-	/* we have to unlock and then relock to get locking order right
-	 * for pin_fs
-	 */
+	 
 	inode_unlock(dir);
 	error = simple_pin_fs(&aafs_ops, &aafs_mnt, &aafs_count);
 	mutex_lock_nested(&parent->lock, parent->level);
@@ -1837,7 +1640,7 @@ static int ns_mkdir_op(struct mnt_idmap *idmap, struct inode *dir,
 		ns = NULL;
 	}
 
-	aa_put_ns(ns);		/* list ref remains */
+	aa_put_ns(ns);		 
 out_pin:
 	if (error)
 		simple_release_fs(&aafs_mnt, &aafs_count);
@@ -1851,7 +1654,7 @@ out:
 static int ns_rmdir_op(struct inode *dir, struct dentry *dentry)
 {
 	struct aa_ns *ns, *parent;
-	/* TODO: improve permission check */
+	 
 	struct aa_label *label;
 	int error;
 
@@ -1863,10 +1666,7 @@ static int ns_rmdir_op(struct inode *dir, struct dentry *dentry)
 		return error;
 
 	parent = aa_get_ns(dir->i_private);
-	/* rmdir calls the generic securityfs functions to remove files
-	 * from the apparmor dir. It is up to the apparmor ns locking
-	 * to avoid races.
-	 */
+	 
 	inode_unlock(dir);
 	inode_unlock(dentry->d_inode);
 
@@ -1907,10 +1707,7 @@ static void __aa_fs_list_remove_rawdata(struct aa_ns *ns)
 		__aa_fs_remove_rawdata(ent);
 }
 
-/*
- *
- * Requires: @ns->lock held
- */
+ 
 void __aafs_ns_rmdir(struct aa_ns *ns)
 {
 	struct aa_ns *sub;
@@ -1959,7 +1756,7 @@ void __aafs_ns_rmdir(struct aa_ns *ns)
 	}
 }
 
-/* assumes cleanup in caller */
+ 
 static int __aafs_ns_mkdir_entries(struct aa_ns *ns, struct dentry *dir)
 {
 	struct dentry *dent;
@@ -2005,7 +1802,7 @@ static int __aafs_ns_mkdir_entries(struct aa_ns *ns, struct dentry *dir)
 	aa_get_ns(ns);
 	ns_subremove(ns) = dent;
 
-	  /* use create_dentry so we can supply private data */
+	   
 	dent = aafs_create("namespaces", S_IFDIR | 0755, dir, ns, NULL, NULL,
 			   &ns_dir_inode_operations);
 	if (IS_ERR(dent))
@@ -2016,9 +1813,7 @@ static int __aafs_ns_mkdir_entries(struct aa_ns *ns, struct dentry *dir)
 	return 0;
 }
 
-/*
- * Requires: @ns->lock held
- */
+ 
 int __aafs_ns_mkdir(struct aa_ns *ns, struct dentry *parent, const char *name,
 		    struct dentry *dent)
 {
@@ -2035,7 +1830,7 @@ int __aafs_ns_mkdir(struct aa_ns *ns, struct dentry *parent, const char *name,
 		name = ns->base.name;
 
 	if (!dent) {
-		/* create ns dir if it doesn't already exist */
+		 
 		dent = aafs_create_dir(name, parent);
 		if (IS_ERR(dent))
 			goto fail;
@@ -2046,14 +1841,14 @@ int __aafs_ns_mkdir(struct aa_ns *ns, struct dentry *parent, const char *name,
 	if (error)
 		goto fail2;
 
-	/* profiles */
+	 
 	list_for_each_entry(child, &ns->base.profiles, base.list) {
 		error = __aafs_profile_mkdir(child, ns_subprofs_dir(ns));
 		if (error)
 			goto fail2;
 	}
 
-	/* subnamespaces */
+	 
 	list_for_each_entry(sub, &ns->sub_ns, base.list) {
 		mutex_lock_nested(&sub->lock, sub->level);
 		error = __aafs_ns_mkdir(sub, ns_subns_dir(ns), NULL, NULL);
@@ -2073,18 +1868,7 @@ fail2:
 	return error;
 }
 
-/**
- * __next_ns - find the next namespace to list
- * @root: root namespace to stop search at (NOT NULL)
- * @ns: current ns position (NOT NULL)
- *
- * Find the next namespace from @ns under @root and handle all locking needed
- * while switching current namespace.
- *
- * Returns: next namespace or NULL if at last namespace under @root
- * Requires: ns->parent->lock to be held
- * NOTE: will not unlock root->lock
- */
+ 
 static struct aa_ns *__next_ns(struct aa_ns *root, struct aa_ns *ns)
 {
 	struct aa_ns *parent, *next;
@@ -2093,14 +1877,14 @@ static struct aa_ns *__next_ns(struct aa_ns *root, struct aa_ns *ns)
 	AA_BUG(!ns);
 	AA_BUG(ns != root && !mutex_is_locked(&ns->parent->lock));
 
-	/* is next namespace a child */
+	 
 	if (!list_empty(&ns->sub_ns)) {
 		next = list_first_entry(&ns->sub_ns, typeof(*ns), base.list);
 		mutex_lock_nested(&next->lock, next->level);
 		return next;
 	}
 
-	/* check if the next ns is a sibling, parent, gp, .. */
+	 
 	parent = ns->parent;
 	while (ns != root) {
 		mutex_unlock(&ns->lock);
@@ -2116,14 +1900,7 @@ static struct aa_ns *__next_ns(struct aa_ns *root, struct aa_ns *ns)
 	return NULL;
 }
 
-/**
- * __first_profile - find the first profile in a namespace
- * @root: namespace that is root of profiles being displayed (NOT NULL)
- * @ns: namespace to start in   (NOT NULL)
- *
- * Returns: unrefcounted profile or NULL if no profile
- * Requires: profile->ns.lock to be held
- */
+ 
 static struct aa_profile *__first_profile(struct aa_ns *root,
 					  struct aa_ns *ns)
 {
@@ -2138,15 +1915,7 @@ static struct aa_profile *__first_profile(struct aa_ns *root,
 	return NULL;
 }
 
-/**
- * __next_profile - step to the next profile in a profile tree
- * @p: current profile in tree (NOT NULL)
- *
- * Perform a depth first traversal on the profile tree in a namespace
- *
- * Returns: next profile or NULL if done
- * Requires: profile->ns.lock to be held
- */
+ 
 static struct aa_profile *__next_profile(struct aa_profile *p)
 {
 	struct aa_profile *parent;
@@ -2154,12 +1923,12 @@ static struct aa_profile *__next_profile(struct aa_profile *p)
 
 	AA_BUG(!mutex_is_locked(&profiles_ns(p)->lock));
 
-	/* is next profile a child */
+	 
 	if (!list_empty(&p->base.profiles))
 		return list_first_entry(&p->base.profiles, typeof(*p),
 					base.list);
 
-	/* is next profile a sibling, parent sibling, gp, sibling, .. */
+	 
 	parent = rcu_dereference_protected(p->parent,
 					   mutex_is_locked(&p->ns->lock));
 	while (parent) {
@@ -2171,7 +1940,7 @@ static struct aa_profile *__next_profile(struct aa_profile *p)
 					    mutex_is_locked(&parent->ns->lock));
 	}
 
-	/* is next another profile in the namespace */
+	 
 	p = list_next_entry(p, base.list);
 	if (!list_entry_is_head(p, &ns->base.profiles, base.list))
 		return p;
@@ -2179,13 +1948,7 @@ static struct aa_profile *__next_profile(struct aa_profile *p)
 	return NULL;
 }
 
-/**
- * next_profile - step to the next profile in where ever it may be
- * @root: root namespace  (NOT NULL)
- * @profile: current profile  (NOT NULL)
- *
- * Returns: next profile or NULL if there isn't one
- */
+ 
 static struct aa_profile *next_profile(struct aa_ns *root,
 				       struct aa_profile *profile)
 {
@@ -2193,19 +1956,11 @@ static struct aa_profile *next_profile(struct aa_ns *root,
 	if (next)
 		return next;
 
-	/* finished all profiles in namespace move to next namespace */
+	 
 	return __first_profile(root, __next_ns(root, profile->ns));
 }
 
-/**
- * p_start - start a depth first traversal of profile tree
- * @f: seq_file to fill
- * @pos: current position
- *
- * Returns: first profile under current namespace or NULL if none found
- *
- * acquires first ns->lock
- */
+ 
 static void *p_start(struct seq_file *f, loff_t *pos)
 {
 	struct aa_profile *profile = NULL;
@@ -2213,27 +1968,18 @@ static void *p_start(struct seq_file *f, loff_t *pos)
 	loff_t l = *pos;
 	f->private = root;
 
-	/* find the first profile */
+	 
 	mutex_lock_nested(&root->lock, root->level);
 	profile = __first_profile(root, root);
 
-	/* skip to position */
+	 
 	for (; profile && l > 0; l--)
 		profile = next_profile(root, profile);
 
 	return profile;
 }
 
-/**
- * p_next - read the next profile entry
- * @f: seq_file to fill
- * @p: profile previously returned
- * @pos: current position
- *
- * Returns: next profile after @p or NULL if none
- *
- * may acquire/release locks in namespace tree as necessary
- */
+ 
 static void *p_next(struct seq_file *f, void *p, loff_t *pos)
 {
 	struct aa_profile *profile = p;
@@ -2243,13 +1989,7 @@ static void *p_next(struct seq_file *f, void *p, loff_t *pos)
 	return next_profile(ns, profile);
 }
 
-/**
- * p_stop - stop depth first traversal
- * @f: seq_file we are filling
- * @p: the last profile writen
- *
- * Release all locking done by p_start/p_next on namespace tree
- */
+ 
 static void p_stop(struct seq_file *f, void *p)
 {
 	struct aa_profile *profile = p;
@@ -2263,13 +2003,7 @@ static void p_stop(struct seq_file *f, void *p)
 	aa_put_ns(root);
 }
 
-/**
- * seq_show_profile - show a profile entry
- * @f: seq_file to file
- * @p: current position (profile)    (NOT NULL)
- *
- * Returns: error on failure
- */
+ 
 static int seq_show_profile(struct seq_file *f, void *p)
 {
 	struct aa_profile *profile = (struct aa_profile *)p;
@@ -2310,7 +2044,7 @@ static const struct file_operations aa_sfs_profiles_fops = {
 };
 
 
-/** Base file system setup **/
+ 
 static struct aa_sfs_entry aa_sfs_entry_file[] = {
 	AA_SFS_FILE_STRING("mask",
 			   "create read write exec append mmap_exec link lock"),
@@ -2357,7 +2091,7 @@ static struct aa_sfs_entry aa_sfs_entry_versions[] = {
 static struct aa_sfs_entry aa_sfs_entry_policy[] = {
 	AA_SFS_DIR("versions",			aa_sfs_entry_versions),
 	AA_SFS_FILE_BOOLEAN("set_load",		1),
-	/* number of out of band transitions supported */
+	 
 	AA_SFS_FILE_U64("outofband",		MAX_OOB_SUPPORTED),
 	{ }
 };
@@ -2417,13 +2151,7 @@ static struct aa_sfs_entry aa_sfs_entry_apparmor[] = {
 static struct aa_sfs_entry aa_sfs_entry =
 	AA_SFS_DIR("apparmor", aa_sfs_entry_apparmor);
 
-/**
- * entry_create_file - create a file entry in the apparmor securityfs
- * @fs_file: aa_sfs_entry to build an entry for (NOT NULL)
- * @parent: the parent dentry in the securityfs
- *
- * Use entry_remove_file to remove entries created with this fn.
- */
+ 
 static int __init entry_create_file(struct aa_sfs_entry *fs_file,
 				    struct dentry *parent)
 {
@@ -2441,13 +2169,7 @@ static int __init entry_create_file(struct aa_sfs_entry *fs_file,
 }
 
 static void __init entry_remove_dir(struct aa_sfs_entry *fs_dir);
-/**
- * entry_create_dir - recursively create a directory entry in the securityfs
- * @fs_dir: aa_sfs_entry (and all child entries) to build (NOT NULL)
- * @parent: the parent dentry in the securityfs
- *
- * Use entry_remove_dir to remove entries created with this fn.
- */
+ 
 static int __init entry_create_dir(struct aa_sfs_entry *fs_dir,
 				   struct dentry *parent)
 {
@@ -2477,10 +2199,7 @@ failed:
 	return error;
 }
 
-/**
- * entry_remove_file - drop a single file entry in the apparmor securityfs
- * @fs_file: aa_sfs_entry to detach from the securityfs (NOT NULL)
- */
+ 
 static void __init entry_remove_file(struct aa_sfs_entry *fs_file)
 {
 	if (!fs_file->dentry)
@@ -2490,10 +2209,7 @@ static void __init entry_remove_file(struct aa_sfs_entry *fs_file)
 	fs_file->dentry = NULL;
 }
 
-/**
- * entry_remove_dir - recursively drop a directory entry from the securityfs
- * @fs_dir: aa_sfs_entry (and all child entries) to detach (NOT NULL)
- */
+ 
 static void __init entry_remove_dir(struct aa_sfs_entry *fs_dir)
 {
 	struct aa_sfs_entry *fs_file;
@@ -2508,11 +2224,7 @@ static void __init entry_remove_dir(struct aa_sfs_entry *fs_dir)
 	entry_remove_file(fs_dir);
 }
 
-/**
- * aa_destroy_aafs - cleanup and free aafs
- *
- * releases dentries allocated by aa_create_aafs
- */
+ 
 void __init aa_destroy_aafs(void)
 {
 	entry_remove_dir(&aa_sfs_entry);
@@ -2608,13 +2320,7 @@ static const struct inode_operations policy_link_iops = {
 };
 
 
-/**
- * aa_create_aafs - create the apparmor security filesystem
- *
- * dentries created here are released by aa_destroy_aafs
- *
- * Returns: error on failure
- */
+ 
 static int __init aa_create_aafs(void)
 {
 	struct dentry *dent;
@@ -2628,13 +2334,13 @@ static int __init aa_create_aafs(void)
 		return -EEXIST;
 	}
 
-	/* setup apparmorfs used to virtualize policy/ */
+	 
 	aafs_mnt = kern_mount(&aafs_ops);
 	if (IS_ERR(aafs_mnt))
 		panic("can't set apparmorfs up\n");
 	aafs_mnt->mnt_sb->s_flags &= ~SB_NOUSER;
 
-	/* Populate fs tree. */
+	 
 	error = entry_create_dir(&aa_sfs_entry, NULL);
 	if (error)
 		goto error;
@@ -2663,7 +2369,7 @@ static int __init aa_create_aafs(void)
 		goto dent_error;
 	ns_subrevision(root_ns) = dent;
 
-	/* policy tree referenced by magic policy symlink */
+	 
 	mutex_lock_nested(&root_ns->lock, root_ns->level);
 	error = __aafs_ns_mkdir(root_ns, aafs_mnt->mnt_root, ".policy",
 				aafs_mnt->mnt_root);
@@ -2671,7 +2377,7 @@ static int __init aa_create_aafs(void)
 	if (error)
 		goto error;
 
-	/* magic symlink similar to nsfs redirects based on task policy */
+	 
 	dent = securityfs_create_symlink("policy", aa_sfs_entry.dentry,
 					 NULL, &policy_link_iops);
 	if (IS_ERR(dent))
@@ -2681,9 +2387,9 @@ static int __init aa_create_aafs(void)
 	if (error)
 		goto error;
 
-	/* TODO: add default profile to apparmorfs */
+	 
 
-	/* Report that AppArmor fs is enabled */
+	 
 	aa_info_message("AppArmor Filesystem Enabled");
 	return 0;
 

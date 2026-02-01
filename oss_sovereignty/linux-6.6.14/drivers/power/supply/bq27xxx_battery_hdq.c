@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BQ27xxx battery monitor HDQ/1-wire driver
- *
- * Copyright (C) 2007-2017 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -46,10 +41,7 @@ static int bq27xxx_battery_hdq_read(struct bq27xxx_device_info *di, u8 reg,
 	int temp;
 
 	if (!single) {
-		/*
-		 * Make sure the value has not changed in between reading the
-		 * lower and the upper part
-		 */
+		 
 		upper = w1_bq27000_read(sl, reg + 1);
 		do {
 			temp = upper;

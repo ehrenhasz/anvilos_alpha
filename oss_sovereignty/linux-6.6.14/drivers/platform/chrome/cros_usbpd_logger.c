@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Logging driver for ChromeOS EC based USBPD Charger.
- *
- * Copyright 2018 Google LLC.
- */
+
+ 
 
 #include <linux/ktime.h>
 #include <linux/math64.h>
@@ -22,7 +18,7 @@
 					 CROS_USBPD_DATA_SIZE)
 #define CROS_USBPD_BUFFER_SIZE		(sizeof(struct cros_ec_command) + \
 					 CROS_USBPD_LOG_RESP_SIZE)
-/* Buffer for building the PDLOG string */
+ 
 #define BUF_SIZE	80
 
 struct logger_data {
@@ -90,7 +86,7 @@ static void cros_usbpd_print_log_entry(struct ec_response_pd_log *r,
 	s32 rem;
 	int i;
 
-	/* The timestamp is the number of 1024th of seconds in the past */
+	 
 	tstamp = ktime_sub_us(tstamp, r->timestamp << PD_LOG_TIMESTAMP_SHIFT);
 	rt = rtc_ktime_to_tm(tstamp);
 
@@ -207,7 +203,7 @@ static int cros_usbpd_logger_probe(struct platform_device *pd)
 
 	platform_set_drvdata(pd, logger);
 
-	/* Retrieve PD event logs periodically */
+	 
 	INIT_DELAYED_WORK(&logger->log_work, cros_usbpd_log_check);
 	logger->log_workqueue =	create_singlethread_workqueue("cros_usbpd_log");
 	if (!logger->log_workqueue)

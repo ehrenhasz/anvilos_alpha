@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Maxim Integrated MAX5432-MAX5435 digital potentiometer driver
- * Copyright (C) 2019 Martin Kaiser <martin@kaiser.cx>
- *
- * Datasheet:
- * https://datasheets.maximintegrated.com/en/ds/MAX5432-MAX5435.pdf
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/iio/iio.h>
@@ -14,13 +8,13 @@
 #include <linux/mod_devicetable.h>
 #include <linux/property.h>
 
-/* All chip variants have 32 wiper positions. */
+ 
 #define MAX5432_MAX_POS 31
 
 #define MAX5432_OHM_50K   (50  * 1000)
 #define MAX5432_OHM_100K  (100 * 1000)
 
-/* Update the volatile (currently active) setting. */
+ 
 #define MAX5432_CMD_VREG  0x11
 
 struct max5432_data {
@@ -74,7 +68,7 @@ static int max5432_write_raw(struct iio_dev *indio_dev,
 	if (val2 != 0)
 		return -EINVAL;
 
-	/* Wiper position is in bits D7-D3. (D2-D0 are don't care bits.) */
+	 
 	data_byte = val << 3;
 	return i2c_smbus_write_byte_data(data->client, chan->address,
 			data_byte);
@@ -114,7 +108,7 @@ static const struct of_device_id max5432_dt_ids[] = {
 	{ .compatible = "maxim,max5433", .data = (void *)MAX5432_OHM_100K },
 	{ .compatible = "maxim,max5434", .data = (void *)MAX5432_OHM_50K  },
 	{ .compatible = "maxim,max5435", .data = (void *)MAX5432_OHM_100K },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, max5432_dt_ids);
 

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register map access API - SPI support
-//
-// Copyright 2011 Wolfson Microelectronics plc
-//
-// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <linux/spi/spi.h>

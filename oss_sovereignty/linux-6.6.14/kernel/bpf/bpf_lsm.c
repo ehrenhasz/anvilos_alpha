@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2020 Google LLC.
- */
+
+ 
 
 #include <linux/filter.h>
 #include <linux/bpf.h>
@@ -18,9 +16,7 @@
 #include <linux/ima.h>
 #include <linux/bpf-cgroup.h>
 
-/* For every LSM hook that allows attachment of BPF programs, declare a nop
- * function where a BPF program can be attached.
- */
+ 
 #define LSM_HOOK(RET, DEFAULT, NAME, ...)	\
 noinline RET bpf_lsm_##NAME(__VA_ARGS__)	\
 {						\
@@ -36,19 +32,16 @@ BTF_SET_START(bpf_lsm_hooks)
 #undef LSM_HOOK
 BTF_SET_END(bpf_lsm_hooks)
 
-/* List of LSM hooks that should operate on 'current' cgroup regardless
- * of function signature.
- */
+ 
 BTF_SET_START(bpf_lsm_current_hooks)
-/* operate on freshly allocated sk without any cgroup association */
+ 
 #ifdef CONFIG_SECURITY_NETWORK
 BTF_ID(func, bpf_lsm_sk_alloc_security)
 BTF_ID(func, bpf_lsm_sk_free_security)
 #endif
 BTF_SET_END(bpf_lsm_current_hooks)
 
-/* List of LSM hooks that trigger while the socket is properly locked.
- */
+ 
 BTF_SET_START(bpf_lsm_locked_sockopt_hooks)
 #ifdef CONFIG_SECURITY_NETWORK
 BTF_ID(func, bpf_lsm_sock_graft)
@@ -57,10 +50,7 @@ BTF_ID(func, bpf_lsm_inet_conn_established)
 #endif
 BTF_SET_END(bpf_lsm_locked_sockopt_hooks)
 
-/* List of LSM hooks that trigger while the socket is _not_ locked,
- * but it's ok to call bpf_{g,s}etsockopt because the socket is still
- * in the early init phase.
- */
+ 
 BTF_SET_START(bpf_lsm_unlocked_sockopt_hooks)
 #ifdef CONFIG_SECURITY_NETWORK
 BTF_ID(func, bpf_lsm_socket_post_create)
@@ -112,7 +102,7 @@ int bpf_lsm_verify_prog(struct bpf_verifier_log *vlog,
 	return 0;
 }
 
-/* Mask for all the currently supported BPRM option flags */
+ 
 #define BPF_F_BRPM_OPTS_MASK	BPF_F_BPRM_SECUREEXEC
 
 BPF_CALL_2(bpf_bprm_opts_set, struct linux_binprm *, bprm, u64, flags)
@@ -214,7 +204,7 @@ bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
 		return &bpf_sk_storage_get_proto;
 	case BPF_FUNC_sk_storage_delete:
 		return &bpf_sk_storage_delete_proto;
-#endif /* CONFIG_NET */
+#endif  
 	case BPF_FUNC_spin_lock:
 		return &bpf_spin_lock_proto;
 	case BPF_FUNC_spin_unlock:
@@ -254,9 +244,7 @@ bpf_lsm_func_proto(enum bpf_func_id func_id, const struct bpf_prog *prog)
 	}
 }
 
-/* The set of hooks which are called without pagefaults disabled and are allowed
- * to "sleep" and thus can be used for sleepable BPF programs.
- */
+ 
 BTF_SET_START(sleepable_lsm_hooks)
 BTF_ID(func, bpf_lsm_bpf)
 BTF_ID(func, bpf_lsm_bpf_map)
@@ -278,7 +266,7 @@ BTF_ID(func, bpf_lsm_file_receive)
 
 #ifdef CONFIG_SECURITY_NETWORK
 BTF_ID(func, bpf_lsm_inet_conn_established)
-#endif /* CONFIG_SECURITY_NETWORK */
+#endif  
 
 BTF_ID(func, bpf_lsm_inode_create)
 BTF_ID(func, bpf_lsm_inode_free_security)
@@ -300,7 +288,7 @@ BTF_ID(func, bpf_lsm_kernfs_init_security)
 
 #ifdef CONFIG_KEYS
 BTF_ID(func, bpf_lsm_key_free)
-#endif /* CONFIG_KEYS */
+#endif  
 
 BTF_ID(func, bpf_lsm_mmap_file)
 BTF_ID(func, bpf_lsm_netlink_send)
@@ -332,7 +320,7 @@ BTF_ID(func, bpf_lsm_socket_recvmsg)
 BTF_ID(func, bpf_lsm_socket_sendmsg)
 BTF_ID(func, bpf_lsm_socket_shutdown)
 BTF_ID(func, bpf_lsm_socket_socketpair)
-#endif /* CONFIG_SECURITY_NETWORK */
+#endif  
 
 BTF_ID(func, bpf_lsm_syslog)
 BTF_ID(func, bpf_lsm_task_alloc)
@@ -353,7 +341,7 @@ BTF_ID(func, bpf_lsm_file_free_security)
 #ifdef CONFIG_SECURITY_NETWORK
 BTF_ID(func, bpf_lsm_sk_alloc_security)
 BTF_ID(func, bpf_lsm_sk_free_security)
-#endif /* CONFIG_SECURITY_NETWORK */
+#endif  
 BTF_ID(func, bpf_lsm_task_free)
 BTF_SET_END(untrusted_lsm_hooks)
 

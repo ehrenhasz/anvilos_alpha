@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011 Marvell International Ltd. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/dma-mapping.h>
@@ -37,7 +35,7 @@ static void mv_u3d_nuke(struct mv_u3d_ep *ep, int status);
 static void mv_u3d_stop_activity(struct mv_u3d *u3d,
 			struct usb_gadget_driver *driver);
 
-/* for endpoint 0 operations */
+ 
 static const struct usb_endpoint_descriptor mv_u3d_ep0_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
@@ -56,12 +54,12 @@ static void mv_u3d_ep0_reset(struct mv_u3d *u3d)
 		ep = &u3d->eps[i];
 		ep->u3d = u3d;
 
-		/* ep0 ep context, ep0 in and out share the same ep context */
+		 
 		ep->ep_context = &u3d->ep_context[1];
 	}
 
-	/* reset ep state machine */
-	/* reset ep0 out */
+	 
+	 
 	epxcr = ioread32(&u3d->vuc_regs->epcr[0].epxoutcr0);
 	epxcr |= MV_U3D_EPXCR_EP_INIT;
 	iowrite32(epxcr, &u3d->vuc_regs->epcr[0].epxoutcr0);
@@ -76,7 +74,7 @@ static void mv_u3d_ep0_reset(struct mv_u3d *u3d)
 		| MV_U3D_EPXCR_EP_TYPE_CONTROL);
 	iowrite32(epxcr, &u3d->vuc_regs->epcr[0].epxoutcr1);
 
-	/* reset ep0 in */
+	 
 	epxcr = ioread32(&u3d->vuc_regs->epcr[0].epxincr0);
 	epxcr |= MV_U3D_EPXCR_EP_INIT;
 	iowrite32(epxcr, &u3d->vuc_regs->epcr[0].epxincr0);
@@ -97,7 +95,7 @@ static void mv_u3d_ep0_stall(struct mv_u3d *u3d)
 	u32 tmp;
 	dev_dbg(u3d->dev, "%s\n", __func__);
 
-	/* set TX and RX to stall */
+	 
 	tmp = ioread32(&u3d->vuc_regs->epcr[0].epxoutcr0);
 	tmp |= MV_U3D_EPXCR_EP_HALT;
 	iowrite32(tmp, &u3d->vuc_regs->epcr[0].epxoutcr0);
@@ -106,7 +104,7 @@ static void mv_u3d_ep0_stall(struct mv_u3d *u3d)
 	tmp |= MV_U3D_EPXCR_EP_HALT;
 	iowrite32(tmp, &u3d->vuc_regs->epcr[0].epxincr0);
 
-	/* update ep0 state */
+	 
 	u3d->ep0_state = MV_U3D_WAIT_FOR_SETUP;
 	u3d->ep0_dir = MV_U3D_EP_DIR_OUT;
 }
@@ -165,11 +163,7 @@ static int mv_u3d_process_ep_req(struct mv_u3d *u3d, int index,
 	return 0;
 }
 
-/*
- * mv_u3d_done() - retire a request; caller blocked irqs
- * @status : request status to be set, only works when
- * request is still in progress.
- */
+ 
 static
 void mv_u3d_done(struct mv_u3d_ep *ep, struct mv_u3d_req *req, int status)
 	__releases(&ep->udc->lock)
@@ -178,16 +172,16 @@ void mv_u3d_done(struct mv_u3d_ep *ep, struct mv_u3d_req *req, int status)
 	struct mv_u3d *u3d = (struct mv_u3d *)ep->u3d;
 
 	dev_dbg(u3d->dev, "mv_u3d_done: remove req->queue\n");
-	/* Removed the req from ep queue */
+	 
 	list_del_init(&req->queue);
 
-	/* req.status should be set as -EINPROGRESS in ep_queue() */
+	 
 	if (req->req.status == -EINPROGRESS)
 		req->req.status = status;
 	else
 		status = req->req.status;
 
-	/* Free trb for the request */
+	 
 	if (!req->chain)
 		dma_pool_free(u3d->trb_pool,
 			req->trb_head->trb_hw, req->trb_head->trb_dma);
@@ -225,13 +219,13 @@ static int mv_u3d_queue_trb(struct mv_u3d_ep *ep, struct mv_u3d_req *req)
 	u3d = ep->u3d;
 	direction = mv_u3d_ep_dir(ep);
 
-	/* ep0 in and out share the same ep context slot 1*/
+	 
 	if (ep->ep_num == 0)
 		ep_context = &(u3d->ep_context[1]);
 	else
 		ep_context = &(u3d->ep_context[ep->ep_num * 2 + direction]);
 
-	/* check if the pipe is empty or not */
+	 
 	if (!list_empty(&ep->queue)) {
 		dev_err(u3d->dev, "add trb to non-empty queue!\n");
 		retval = -ENOMEM;
@@ -240,19 +234,15 @@ static int mv_u3d_queue_trb(struct mv_u3d_ep *ep, struct mv_u3d_req *req)
 		ep_context->rsvd0 = cpu_to_le32(1);
 		ep_context->rsvd1 = 0;
 
-		/* Configure the trb address and set the DCS bit.
-		 * Both DCS bit and own bit in trb should be set.
-		 */
+		 
 		ep_context->trb_addr_lo =
 			cpu_to_le32(req->trb_head->trb_dma | DCS_ENABLE);
 		ep_context->trb_addr_hi = 0;
 
-		/* Ensure that updates to the EP Context will
-		 * occure before Ring Bell.
-		 */
+		 
 		wmb();
 
-		/* ring bell the ep */
+		 
 		if (ep->ep_num == 0)
 			tmp = 0x1;
 		else
@@ -273,7 +263,7 @@ static struct mv_u3d_trb *mv_u3d_build_trb_one(struct mv_u3d_req *req,
 	struct mv_u3d_trb_hw *trb_hw;
 	struct mv_u3d *u3d;
 
-	/* how big will this transfer be? */
+	 
 	*length = req->req.length - req->req.actual;
 	BUG_ON(*length > (unsigned)MV_U3D_EP_MAX_LENGTH_TRANSFER);
 
@@ -283,11 +273,7 @@ static struct mv_u3d_trb *mv_u3d_build_trb_one(struct mv_u3d_req *req,
 	if (!trb)
 		return NULL;
 
-	/*
-	 * Be careful that no _GFP_HIGHMEM is set,
-	 * or we can not use dma_to_virt
-	 * cannot use GFP_KERNEL in spin lock
-	 */
+	 
 	trb_hw = dma_pool_alloc(u3d->trb_pool, GFP_ATOMIC, dma);
 	if (!trb_hw) {
 		kfree(trb);
@@ -298,7 +284,7 @@ static struct mv_u3d_trb *mv_u3d_build_trb_one(struct mv_u3d_req *req,
 	trb->trb_dma = *dma;
 	trb->trb_hw = trb_hw;
 
-	/* initialize buffer page pointers */
+	 
 	temp = (u32)(req->req.dma + req->req.actual);
 
 	trb_hw->buf_addr_lo = cpu_to_le32(temp);
@@ -319,7 +305,7 @@ static struct mv_u3d_trb *mv_u3d_build_trb_one(struct mv_u3d_req *req,
 	else
 		trb_hw->ctrl.dir = 0;
 
-	/* Enable interrupt for the last trb of a request */
+	 
 	if (!req->req.no_interrupt)
 		trb_hw->ctrl.ioc = 1;
 
@@ -336,7 +322,7 @@ static int mv_u3d_build_trb_chain(struct mv_u3d_req *req, unsigned *length,
 	unsigned int direction;
 	struct mv_u3d *u3d;
 
-	/* how big will this transfer be? */
+	 
 	*length = min(req->req.length - req->req.actual,
 			(unsigned)MV_U3D_EP_MAX_LENGTH_TRANSFER);
 
@@ -344,7 +330,7 @@ static int mv_u3d_build_trb_chain(struct mv_u3d_req *req, unsigned *length,
 
 	trb->trb_dma = 0;
 
-	/* initialize buffer page pointers */
+	 
 	temp = (u32)(req->req.dma + req->req.actual);
 
 	trb->trb_hw->buf_addr_lo = cpu_to_le32(temp);
@@ -365,7 +351,7 @@ static int mv_u3d_build_trb_chain(struct mv_u3d_req *req, unsigned *length,
 	else
 		trb->trb_hw->ctrl.dir = 0;
 
-	/* zlp is needed if req->req.zero is set */
+	 
 	if (req->req.zero) {
 		if (*length == 0 || (*length % req->ep->ep.maxpacket) != 0)
 			*is_last = 1;
@@ -376,7 +362,7 @@ static int mv_u3d_build_trb_chain(struct mv_u3d_req *req, unsigned *length,
 	else
 		*is_last = 0;
 
-	/* Enable interrupt for the last trb of a request */
+	 
 	if (*is_last && !req->req.no_interrupt)
 		trb->trb_hw->ctrl.ioc = 1;
 
@@ -392,10 +378,7 @@ static int mv_u3d_build_trb_chain(struct mv_u3d_req *req, unsigned *length,
 	return 0;
 }
 
-/* generate TRB linked list for a request
- * usb controller only supports continous trb chain,
- * that trb structure physical address should be continous.
- */
+ 
 static int mv_u3d_req_to_trb(struct mv_u3d_req *req)
 {
 	unsigned count;
@@ -412,9 +395,7 @@ static int mv_u3d_req_to_trb(struct mv_u3d_req *req)
 	INIT_LIST_HEAD(&req->trb_list);
 
 	length = req->req.length - req->req.actual;
-	/* normally the request transfer length is less than 16KB.
-	 * we use buil_trb_one() to optimize it.
-	 */
+	 
 	if (length <= (unsigned)MV_U3D_EP_MAX_LENGTH_TRANSFER) {
 		trb = mv_u3d_build_trb_one(req, &count, &dma);
 		list_add_tail(&trb->trb_list, &req->trb_list);
@@ -485,7 +466,7 @@ mv_u3d_start_queue(struct mv_u3d_ep *ep)
 
 	ep->processing = 1;
 
-	/* set up dma mapping */
+	 
 	ret = usb_gadget_map_request(&u3d->gadget, &req->req,
 					mv_u3d_ep_dir(ep));
 	if (ret)
@@ -495,19 +476,19 @@ mv_u3d_start_queue(struct mv_u3d_ep *ep)
 	req->req.actual = 0;
 	req->trb_count = 0;
 
-	/* build trbs */
+	 
 	ret = mv_u3d_req_to_trb(req);
 	if (ret) {
 		dev_err(u3d->dev, "%s, mv_u3d_req_to_trb fail\n", __func__);
 		goto break_processing;
 	}
 
-	/* and push them to device queue */
+	 
 	ret = mv_u3d_queue_trb(ep, req);
 	if (ret)
 		goto break_processing;
 
-	/* irq handler advances the queue */
+	 
 	list_add_tail(&req->queue, &ep->queue);
 
 	return 0;
@@ -542,7 +523,7 @@ static int mv_u3d_ep_enable(struct usb_ep *_ep,
 		_ep->maxburst = 1;
 	maxburst = _ep->maxburst;
 
-	/* Set the max burst size */
+	 
 	switch (desc->bmAttributes & USB_ENDPOINT_XFERTYPE_MASK) {
 	case USB_ENDPOINT_XFER_BULK:
 		if (maxburst > 16) {
@@ -556,7 +537,7 @@ static int mv_u3d_ep_enable(struct usb_ep *_ep,
 			"maxburst: %d on bulk %s\n", maxburst, ep->name);
 		break;
 	case USB_ENDPOINT_XFER_CONTROL:
-		/* control transfer only supports maxburst as one */
+		 
 		maxburst = 1;
 		_ep->maxburst = maxburst;
 		break;
@@ -586,7 +567,7 @@ static int mv_u3d_ep_enable(struct usb_ep *_ep,
 	ep->ep.desc = desc;
 	ep->enabled = 1;
 
-	/* Enable the endpoint for Rx or Tx and set the endpoint type */
+	 
 	if (direction == MV_U3D_EP_DIR_OUT) {
 		epxcr = ioread32(&u3d->vuc_regs->epcr[ep->ep_num].epxoutcr0);
 		epxcr |= MV_U3D_EPXCR_EP_INIT;
@@ -638,12 +619,12 @@ static int  mv_u3d_ep_disable(struct usb_ep *_ep)
 
 	direction = mv_u3d_ep_dir(ep);
 
-	/* nuke all pending requests (does flush) */
+	 
 	spin_lock_irqsave(&u3d->lock, flags);
 	mv_u3d_nuke(ep, -ESHUTDOWN);
 	spin_unlock_irqrestore(&u3d->lock, flags);
 
-	/* Disable the endpoint for Rx or Tx and reset the endpoint type */
+	 
 	if (direction == MV_U3D_EP_DIR_OUT) {
 		epxcr = ioread32(&u3d->vuc_regs->epcr[ep->ep_num].epxoutcr1);
 		epxcr &= ~((1 << MV_U3D_EPXCR_EP_ENABLE_SHIFT)
@@ -691,14 +672,14 @@ static void mv_u3d_ep_fifo_flush(struct usb_ep *_ep)
 	unsigned int loops;
 	u32 tmp;
 
-	/* if endpoint is not enabled, cannot flush endpoint */
+	 
 	if (!ep->enabled)
 		return;
 
 	u3d = ep->u3d;
 	direction = mv_u3d_ep_dir(ep);
 
-	/* ep0 need clear bit after flushing fifo. */
+	 
 	if (!ep->ep_num) {
 		if (direction == MV_U3D_EP_DIR_OUT) {
 			tmp = ioread32(&u3d->vuc_regs->epcr[0].epxoutcr0);
@@ -723,14 +704,11 @@ static void mv_u3d_ep_fifo_flush(struct usb_ep *_ep)
 		tmp |= MV_U3D_EPXCR_EP_FLUSH;
 		iowrite32(tmp, &u3d->vuc_regs->epcr[ep->ep_num].epxoutcr0);
 
-		/* Wait until flushing completed */
+		 
 		loops = LOOPS(MV_U3D_FLUSH_TIMEOUT);
 		while (ioread32(&u3d->vuc_regs->epcr[ep->ep_num].epxoutcr0) &
 			MV_U3D_EPXCR_EP_FLUSH) {
-			/*
-			 * EP_FLUSH bit should be cleared to indicate this
-			 * operation is complete
-			 */
+			 
 			if (loops == 0) {
 				dev_dbg(u3d->dev,
 				    "EP FLUSH TIMEOUT for ep%d%s\n", ep->ep_num,
@@ -740,19 +718,16 @@ static void mv_u3d_ep_fifo_flush(struct usb_ep *_ep)
 			loops--;
 			udelay(LOOPS_USEC);
 		}
-	} else {	/* EP_DIR_IN */
+	} else {	 
 		tmp = ioread32(&u3d->vuc_regs->epcr[ep->ep_num].epxincr0);
 		tmp |= MV_U3D_EPXCR_EP_FLUSH;
 		iowrite32(tmp, &u3d->vuc_regs->epcr[ep->ep_num].epxincr0);
 
-		/* Wait until flushing completed */
+		 
 		loops = LOOPS(MV_U3D_FLUSH_TIMEOUT);
 		while (ioread32(&u3d->vuc_regs->epcr[ep->ep_num].epxincr0) &
 			MV_U3D_EPXCR_EP_FLUSH) {
-			/*
-			* EP_FLUSH bit should be cleared to indicate this
-			* operation is complete
-			*/
+			 
 			if (loops == 0) {
 				dev_dbg(u3d->dev,
 				    "EP FLUSH TIMEOUT for ep%d%s\n", ep->ep_num,
@@ -765,7 +740,7 @@ static void mv_u3d_ep_fifo_flush(struct usb_ep *_ep)
 	}
 }
 
-/* queues (submits) an I/O request to an endpoint */
+ 
 static int
 mv_u3d_ep_queue(struct usb_ep *_ep, struct usb_request *_req, gfp_t gfp_flags)
 {
@@ -794,7 +769,7 @@ mv_u3d_ep_queue(struct usb_ep *_ep, struct usb_request *_req, gfp_t gfp_flags)
 	dev_dbg(u3d->dev, "%s: %s, req: 0x%p\n",
 			__func__, _ep->name, req);
 
-	/* catch various bogus parameters */
+	 
 	if (!req->req.complete || !req->req.buf
 			|| !list_empty(&req->queue)) {
 		dev_err(u3d->dev,
@@ -823,7 +798,7 @@ mv_u3d_ep_queue(struct usb_ep *_ep, struct usb_request *_req, gfp_t gfp_flags)
 
 	req->ep = ep;
 
-	/* Software list handles usb request. */
+	 
 	spin_lock_irqsave(&ep->req_lock, flags);
 	is_first_req = list_empty(&ep->req_list);
 	list_add_tail(&req->list, &ep->req_list);
@@ -840,7 +815,7 @@ mv_u3d_ep_queue(struct usb_ep *_ep, struct usb_request *_req, gfp_t gfp_flags)
 	return 0;
 }
 
-/* dequeues (cancels, unlinks) an I/O request from an endpoint */
+ 
 static int mv_u3d_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 {
 	struct mv_u3d_ep *ep;
@@ -860,7 +835,7 @@ static int mv_u3d_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 
 	spin_lock_irqsave(&ep->u3d->lock, flags);
 
-	/* make sure it's actually queued on this endpoint */
+	 
 	list_for_each_entry(iter, &ep->queue, queue) {
 		if (&iter->req != _req)
 			continue;
@@ -872,12 +847,12 @@ static int mv_u3d_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 		goto out;
 	}
 
-	/* The request is in progress, or completed but not dequeued */
+	 
 	if (ep->queue.next == &req->queue) {
 		_req->status = -ECONNRESET;
 		mv_u3d_ep_fifo_flush(_ep);
 
-		/* The request isn't the last request in this ep queue */
+		 
 		if (req->queue.next != &ep->queue) {
 			dev_dbg(u3d->dev,
 				"it is the last request in this ep queue\n");
@@ -885,7 +860,7 @@ static int mv_u3d_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 			next_req = list_entry(req->queue.next,
 					struct mv_u3d_req, queue);
 
-			/* Point first TRB of next request to the EP context. */
+			 
 			iowrite32((unsigned long) next_req->trb_head,
 					&ep_context->trb_addr_lo);
 		} else {
@@ -900,7 +875,7 @@ static int mv_u3d_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 
 	mv_u3d_done(ep, req, -ECONNRESET);
 
-	/* remove the req from the ep req list */
+	 
 	if (!list_empty(&ep->req_list)) {
 		struct mv_u3d_req *curr_req;
 		curr_req = list_entry(ep->req_list.next,
@@ -959,10 +934,7 @@ static int mv_u3d_ep_set_halt_wedge(struct usb_ep *_ep, int halt, int wedge)
 		goto out;
 	}
 
-	/*
-	 * Attempt to halt IN ep will fail if any transfer requests
-	 * are still queue
-	 */
+	 
 	if (halt && (mv_u3d_ep_dir(ep) == MV_U3D_EP_DIR_IN)
 			&& !list_empty(&ep->queue)) {
 		status = -EAGAIN;
@@ -1023,7 +995,7 @@ static void mv_u3d_controller_stop(struct mv_u3d *u3d)
 	iowrite32(~0x0, &u3d->vuc_regs->linkchange);
 	iowrite32(0x1, &u3d->vuc_regs->setuplock);
 
-	/* Reset the RUN bit in the command register to stop USB */
+	 
 	tmp = ioread32(&u3d->op_regs->usbcmd);
 	tmp &= ~MV_U3D_CMD_RUN_STOP;
 	iowrite32(tmp, &u3d->op_regs->usbcmd);
@@ -1036,22 +1008,22 @@ static void mv_u3d_controller_start(struct mv_u3d *u3d)
 	u32 usbintr;
 	u32 temp;
 
-	/* enable link LTSSM state machine */
+	 
 	temp = ioread32(&u3d->vuc_regs->ltssm);
 	temp |= MV_U3D_LTSSM_PHY_INIT_DONE;
 	iowrite32(temp, &u3d->vuc_regs->ltssm);
 
-	/* Enable interrupts */
+	 
 	usbintr = MV_U3D_INTR_ENABLE_LINK_CHG | MV_U3D_INTR_ENABLE_TXDESC_ERR |
 		MV_U3D_INTR_ENABLE_RXDESC_ERR | MV_U3D_INTR_ENABLE_TX_COMPLETE |
 		MV_U3D_INTR_ENABLE_RX_COMPLETE | MV_U3D_INTR_ENABLE_SETUP |
 		(u3d->vbus_valid_detect ? MV_U3D_INTR_ENABLE_VBUS_VALID : 0);
 	iowrite32(usbintr, &u3d->vuc_regs->intrenable);
 
-	/* Enable ctrl ep */
+	 
 	iowrite32(0x1, &u3d->vuc_regs->ctrlepenable);
 
-	/* Set the Run bit in the command register */
+	 
 	iowrite32(MV_U3D_CMD_RUN_STOP, &u3d->op_regs->usbcmd);
 	dev_dbg(u3d->dev, "after u3d_start, USBCMD 0x%x\n",
 		ioread32(&u3d->op_regs->usbcmd));
@@ -1062,15 +1034,15 @@ static int mv_u3d_controller_reset(struct mv_u3d *u3d)
 	unsigned int loops;
 	u32 tmp;
 
-	/* Stop the controller */
+	 
 	tmp = ioread32(&u3d->op_regs->usbcmd);
 	tmp &= ~MV_U3D_CMD_RUN_STOP;
 	iowrite32(tmp, &u3d->op_regs->usbcmd);
 
-	/* Reset the controller to get default values */
+	 
 	iowrite32(MV_U3D_CMD_CTRL_RESET, &u3d->op_regs->usbcmd);
 
-	/* wait for reset to complete */
+	 
 	loops = LOOPS(MV_U3D_RESET_TIMEOUT);
 	while (ioread32(&u3d->op_regs->usbcmd) & MV_U3D_CMD_CTRL_RESET) {
 		if (loops == 0) {
@@ -1082,7 +1054,7 @@ static int mv_u3d_controller_reset(struct mv_u3d *u3d)
 		udelay(LOOPS_USEC);
 	}
 
-	/* Configure the Endpoint Context Address */
+	 
 	iowrite32(u3d->ep_context_dma, &u3d->op_regs->dcbaapl);
 	iowrite32(0, &u3d->op_regs->dcbaaph);
 
@@ -1143,18 +1115,11 @@ static int mv_u3d_vbus_session(struct usb_gadget *gadget, int is_active)
 	u3d->vbus_active = (is_active != 0);
 	dev_dbg(u3d->dev, "%s: softconnect %d, vbus_active %d\n",
 		__func__, u3d->softconnect, u3d->vbus_active);
-	/*
-	 * 1. external VBUS detect: we can disable/enable clock on demand.
-	 * 2. UDC VBUS detect: we have to enable clock all the time.
-	 * 3. No VBUS detect: we have to enable clock all the time.
-	 */
+	 
 	if (u3d->driver && u3d->softconnect && u3d->vbus_active) {
 		retval = mv_u3d_enable(u3d);
 		if (retval == 0) {
-			/*
-			 * after clock is disabled, we lost all the register
-			 *  context. We have to re-init registers
-			 */
+			 
 			mv_u3d_controller_reset(u3d);
 			mv_u3d_ep0_reset(u3d);
 			mv_u3d_controller_start(u3d);
@@ -1163,7 +1128,7 @@ static int mv_u3d_vbus_session(struct usb_gadget *gadget, int is_active)
 		if (!u3d->active)
 			goto out;
 
-		/* stop all the transfer in queue*/
+		 
 		mv_u3d_stop_activity(u3d, u3d->driver);
 		mv_u3d_controller_stop(u3d);
 		mv_u3d_disable(u3d);
@@ -1174,13 +1139,7 @@ out:
 	return retval;
 }
 
-/* constrain controller's VBUS power usage
- * This call is used by gadget drivers during SET_CONFIGURATION calls,
- * reporting how much power the device may consume.  For example, this
- * could affect how quickly batteries are recharged.
- *
- * Returns zero on success, else negative errno.
- */
+ 
 static int mv_u3d_vbus_draw(struct usb_gadget *gadget, unsigned mA)
 {
 	struct mv_u3d *u3d = container_of(gadget, struct mv_u3d, gadget);
@@ -1204,16 +1163,13 @@ static int mv_u3d_pullup(struct usb_gadget *gadget, int is_on)
 	if (u3d->driver && u3d->softconnect && u3d->vbus_active) {
 		retval = mv_u3d_enable(u3d);
 		if (retval == 0) {
-			/*
-			 * after clock is disabled, we lost all the register
-			 *  context. We have to re-init registers
-			 */
+			 
 			mv_u3d_controller_reset(u3d);
 			mv_u3d_ep0_reset(u3d);
 			mv_u3d_controller_start(u3d);
 		}
 	} else if (u3d->driver && u3d->vbus_active) {
-		/* stop all the transfer in queue*/
+		 
 		mv_u3d_stop_activity(u3d, u3d->driver);
 		mv_u3d_controller_stop(u3d);
 		mv_u3d_disable(u3d);
@@ -1242,7 +1198,7 @@ static int mv_u3d_start(struct usb_gadget *g,
 			pdata->phy_init(u3d->phy_regs);
 	}
 
-	/* hook up the driver ... */
+	 
 	u3d->driver = driver;
 
 	u3d->ep0_dir = USB_DIR_OUT;
@@ -1263,13 +1219,13 @@ static int mv_u3d_stop(struct usb_gadget *g)
 	u3d->vbus_valid_detect = 0;
 	spin_lock_irqsave(&u3d->lock, flags);
 
-	/* enable clock to access controller register */
+	 
 	clk_enable(u3d->clk);
 	if (pdata->phy_init)
 		pdata->phy_init(u3d->phy_regs);
 
 	mv_u3d_controller_stop(u3d);
-	/* stop all usb activities */
+	 
 	u3d->gadget.speed = USB_SPEED_UNKNOWN;
 	mv_u3d_stop_activity(u3d, NULL);
 	mv_u3d_disable(u3d);
@@ -1285,12 +1241,12 @@ static int mv_u3d_stop(struct usb_gadget *g)
 	return 0;
 }
 
-/* device controller usb_gadget_ops structure */
+ 
 static const struct usb_gadget_ops mv_u3d_ops = {
-	/* notify controller that VBUS is powered or not */
+	 
 	.vbus_session	= mv_u3d_vbus_session,
 
-	/* constrain controller's VBUS power usage */
+	 
 	.vbus_draw	= mv_u3d_vbus_draw,
 
 	.pullup		= mv_u3d_pullup,
@@ -1304,7 +1260,7 @@ static int mv_u3d_eps_init(struct mv_u3d *u3d)
 	char name[14];
 	int i;
 
-	/* initialize ep0, ep0 in/out use eps[1] */
+	 
 	ep = &u3d->eps[1];
 	ep->u3d = u3d;
 	strncpy(ep->name, "ep0", sizeof(ep->name));
@@ -1321,10 +1277,10 @@ static int mv_u3d_eps_init(struct mv_u3d *u3d)
 	INIT_LIST_HEAD(&ep->req_list);
 	ep->ep_type = USB_ENDPOINT_XFER_CONTROL;
 
-	/* add ep0 ep_context */
+	 
 	ep->ep_context = &u3d->ep_context[1];
 
-	/* initialize other endpoints */
+	 
 	for (i = 2; i < u3d->max_eps * 2; i++) {
 		ep = &u3d->eps[i];
 		if (i & 1) {
@@ -1359,10 +1315,10 @@ static int mv_u3d_eps_init(struct mv_u3d *u3d)
 	return 0;
 }
 
-/* delete all endpoint requests, called with spinlock held */
+ 
 static void mv_u3d_nuke(struct mv_u3d_ep *ep, int status)
 {
-	/* endpoint fifo flush */
+	 
 	mv_u3d_ep_fifo_flush(&ep->ep);
 
 	while (!list_empty(&ep->queue)) {
@@ -1372,7 +1328,7 @@ static void mv_u3d_nuke(struct mv_u3d_ep *ep, int status)
 	}
 }
 
-/* stop all USB activities */
+ 
 static
 void mv_u3d_stop_activity(struct mv_u3d *u3d, struct usb_gadget_driver *driver)
 {
@@ -1384,7 +1340,7 @@ void mv_u3d_stop_activity(struct mv_u3d *u3d, struct usb_gadget_driver *driver)
 		mv_u3d_nuke(ep, -ESHUTDOWN);
 	}
 
-	/* report disconnect; the driver is already quiesced */
+	 
 	if (driver) {
 		spin_unlock(&u3d->lock);
 		driver->disconnect(&u3d->gadget);
@@ -1394,7 +1350,7 @@ void mv_u3d_stop_activity(struct mv_u3d *u3d, struct usb_gadget_driver *driver)
 
 static void mv_u3d_irq_process_error(struct mv_u3d *u3d)
 {
-	/* Increment the error count */
+	 
 	u3d->errors++;
 	dev_err(u3d->dev, "%s\n", __func__);
 }
@@ -1416,7 +1372,7 @@ static void mv_u3d_irq_process_link_change(struct mv_u3d *u3d)
 		u3d->ep0_dir = MV_U3D_EP_DIR_OUT;
 		u3d->ep0_state = MV_U3D_WAIT_FOR_SETUP;
 
-		/* set speed */
+		 
 		u3d->gadget.speed = USB_SPEED_SUPER;
 	}
 
@@ -1452,9 +1408,7 @@ static void mv_u3d_irq_process_link_change(struct mv_u3d *u3d)
 		dev_dbg(u3d->dev, "vbus invalid\n");
 		u3d->usb_state = USB_STATE_ATTACHED;
 		u3d->vbus_valid_detect = 1;
-		/* if external vbus detect is not supported,
-		 * we handle it here.
-		 */
+		 
 		if (!u3d->vbus) {
 			spin_unlock(&u3d->lock);
 			mv_u3d_vbus_session(&u3d->gadget, 0);
@@ -1486,10 +1440,10 @@ static void mv_u3d_ch9setaddress(struct mv_u3d *u3d,
 		goto err;
 	}
 
-	/* update usb state */
+	 
 	u3d->usb_state = USB_STATE_ADDRESS;
 
-	/* set the new address */
+	 
 	tmp = ioread32(&u3d->vuc_regs->devaddrtiebrkr);
 	tmp &= ~0x7F;
 	tmp |= (u32)u3d->dev_addr;
@@ -1522,7 +1476,7 @@ static void mv_u3d_handle_setup_packet(struct mv_u3d *u3d, u8 ep_num,
 			setup->bRequestType, setup->bRequest,
 			setup->wValue, setup->wIndex, setup->wLength);
 
-	/* We process some stardard setup requests here */
+	 
 	if ((setup->bRequestType & USB_TYPE_MASK) == USB_TYPE_STANDARD) {
 		switch (setup->bRequest) {
 		case USB_REQ_GET_STATUS:
@@ -1547,11 +1501,11 @@ static void mv_u3d_handle_setup_packet(struct mv_u3d *u3d, u8 ep_num,
 	} else
 		delegate = true;
 
-	/* delegate USB standard requests to the gadget driver */
+	 
 	if (delegate) {
-		/* USB requests handled by gadget */
+		 
 		if (setup->wLength) {
-			/* DATA phase from gadget, STATUS phase from u3d */
+			 
 			u3d->ep0_dir = (setup->bRequestType & USB_DIR_IN)
 					? MV_U3D_EP_DIR_IN : MV_U3D_EP_DIR_OUT;
 			spin_unlock(&u3d->lock);
@@ -1562,7 +1516,7 @@ static void mv_u3d_handle_setup_packet(struct mv_u3d *u3d, u8 ep_num,
 			}
 			spin_lock(&u3d->lock);
 		} else {
-			/* no DATA phase, STATUS phase from gadget */
+			 
 			u3d->ep0_dir = MV_U3D_EP_DIR_IN;
 			u3d->ep0_state = MV_U3D_STATUS_STAGE;
 			spin_unlock(&u3d->lock);
@@ -1585,14 +1539,14 @@ static void mv_u3d_get_setup_data(struct mv_u3d *u3d, u8 ep_num, u8 *buffer_ptr)
 
 	epcontext = &u3d->ep_context[ep_num * 2 + MV_U3D_EP_DIR_IN];
 
-	/* Copy the setup packet to local buffer */
+	 
 	memcpy(buffer_ptr, (u8 *) &epcontext->setup_buffer, 8);
 }
 
 static void mv_u3d_irq_process_setup(struct mv_u3d *u3d)
 {
 	u32 tmp, i;
-	/* Process all Setup packet received interrupts */
+	 
 	tmp = ioread32(&u3d->vuc_regs->setuplock);
 	if (tmp) {
 		for (i = 0; i < u3d->max_eps; i++) {
@@ -1637,7 +1591,7 @@ static void mv_u3d_irq_process_tr_complete(struct mv_u3d *u3d)
 		else
 			curr_ep = &u3d->eps[i];
 
-		/* remove req out of ep request list after completion */
+		 
 		dev_dbg(u3d->dev, "tr comp: check req_list\n");
 		spin_lock(&curr_ep->req_lock);
 		if (!list_empty(&curr_ep->req_list)) {
@@ -1649,16 +1603,16 @@ static void mv_u3d_irq_process_tr_complete(struct mv_u3d *u3d)
 		}
 		spin_unlock(&curr_ep->req_lock);
 
-		/* process the req queue until an uncomplete request */
+		 
 		list_for_each_entry_safe(curr_req, temp_req,
 			&curr_ep->queue, queue) {
 			status = mv_u3d_process_ep_req(u3d, i, curr_req);
 			if (status)
 				break;
-			/* write back status to req */
+			 
 			curr_req->req.status = status;
 
-			/* ep0 request completion */
+			 
 			if (ep_num == 0) {
 				mv_u3d_done(curr_ep, curr_req, 0);
 				break;
@@ -1694,16 +1648,14 @@ static irqreturn_t mv_u3d_irq(int irq, void *dev)
 	if (status & MV_U3D_USBINT_VBUS_VALID) {
 		bridgesetting = ioread32(&u3d->vuc_regs->bridgesetting);
 		if (bridgesetting & MV_U3D_BRIDGE_SETTING_VBUS_VALID) {
-			/* write vbus valid bit of bridge setting to clear */
+			 
 			bridgesetting = MV_U3D_BRIDGE_SETTING_VBUS_VALID;
 			iowrite32(bridgesetting, &u3d->vuc_regs->bridgesetting);
 			dev_dbg(u3d->dev, "vbus valid\n");
 
 			u3d->usb_state = USB_STATE_POWERED;
 			u3d->vbus_valid_detect = 0;
-			/* if external vbus detect is not supported,
-			 * we handle it here.
-			 */
+			 
 			if (!u3d->vbus) {
 				spin_unlock(&u3d->lock);
 				mv_u3d_vbus_session(&u3d->gadget, 1);
@@ -1713,7 +1665,7 @@ static irqreturn_t mv_u3d_irq(int irq, void *dev)
 			dev_err(u3d->dev, "vbus bit is not set\n");
 	}
 
-	/* RX data is already in the 16KB FIFO.*/
+	 
 	if (status & MV_U3D_USBINT_UNDER_RUN) {
 		trbunderrun = ioread32(&u3d->vuc_regs->trbunderrun);
 		dev_err(u3d->dev, "under run, ep%d\n", trbunderrun);
@@ -1722,7 +1674,7 @@ static irqreturn_t mv_u3d_irq(int irq, void *dev)
 	}
 
 	if (status & (MV_U3D_USBINT_RXDESC_ERR | MV_U3D_USBINT_TXDESC_ERR)) {
-		/* write one to clear */
+		 
 		iowrite32(status & (MV_U3D_USBINT_RXDESC_ERR
 			| MV_U3D_USBINT_TXDESC_ERR),
 			&u3d->vuc_regs->intrcause);
@@ -1754,7 +1706,7 @@ static void mv_u3d_remove(struct platform_device *dev)
 
 	usb_del_gadget_udc(&u3d->gadget);
 
-	/* free memory allocated in probe */
+	 
 	dma_pool_destroy(u3d->trb_pool);
 
 	if (u3d->ep_context)
@@ -1829,7 +1781,7 @@ static int mv_u3d_probe(struct platform_device *dev)
 			(unsigned long) u3d->cap_regs);
 	}
 
-	/* we will access controller register, so enable the u3d controller */
+	 
 	retval = clk_enable(u3d->clk);
 	if (retval) {
 		dev_err(&dev->dev, "clk_enable error %d\n", retval);
@@ -1853,10 +1805,7 @@ static int mv_u3d_probe(struct platform_device *dev)
 
 	u3d->max_eps = 16;
 
-	/*
-	 * some platform will use usb to download image, it may not disconnect
-	 * usb gadget before loading kernel. So first stop u3d here.
-	 */
+	 
 	mv_u3d_controller_stop(u3d);
 	iowrite32(0xFFFFFFFF, &u3d->vuc_regs->intrcause);
 
@@ -1876,7 +1825,7 @@ static int mv_u3d_probe(struct platform_device *dev)
 	}
 	u3d->ep_context_size = size;
 
-	/* create TRB dma_pool resource */
+	 
 	u3d->trb_pool = dma_pool_create("u3d_trb",
 			&dev->dev,
 			sizeof(struct mv_u3d_trb_hw),
@@ -1895,7 +1844,7 @@ static int mv_u3d_probe(struct platform_device *dev)
 		goto err_alloc_eps;
 	}
 
-	/* initialize ep0 status request structure */
+	 
 	u3d->status_req = kzalloc(sizeof(struct mv_u3d_req) + 8, GFP_KERNEL);
 	if (!u3d->status_req) {
 		retval = -ENOMEM;
@@ -1903,7 +1852,7 @@ static int mv_u3d_probe(struct platform_device *dev)
 	}
 	INIT_LIST_HEAD(&u3d->status_req->queue);
 
-	/* allocate a small amount of memory to get valid address */
+	 
 	u3d->status_req->req.buf = (char *)u3d->status_req
 					+ sizeof(struct mv_u3d_req);
 	u3d->status_req->req.dma = virt_to_phys(u3d->status_req->req.buf);
@@ -1921,14 +1870,14 @@ static int mv_u3d_probe(struct platform_device *dev)
 	}
 	u3d->irq = r->start;
 
-	/* initialize gadget structure */
-	u3d->gadget.ops = &mv_u3d_ops;	/* usb_gadget_ops */
-	u3d->gadget.ep0 = &u3d->eps[1].ep;	/* gadget ep0 */
-	INIT_LIST_HEAD(&u3d->gadget.ep_list);	/* ep_list */
-	u3d->gadget.speed = USB_SPEED_UNKNOWN;	/* speed */
+	 
+	u3d->gadget.ops = &mv_u3d_ops;	 
+	u3d->gadget.ep0 = &u3d->eps[1].ep;	 
+	INIT_LIST_HEAD(&u3d->gadget.ep_list);	 
+	u3d->gadget.speed = USB_SPEED_UNKNOWN;	 
 
-	/* the "gadget" abstracts/virtualizes the controller */
-	u3d->gadget.name = driver_name;		/* gadget name */
+	 
+	u3d->gadget.name = driver_name;		 
 
 	mv_u3d_eps_init(u3d);
 
@@ -1941,7 +1890,7 @@ static int mv_u3d_probe(struct platform_device *dev)
 		goto err_request_irq;
 	}
 
-	/* external vbus detection */
+	 
 	if (u3d->vbus) {
 		u3d->clock_gating = 1;
 		dev_err(&dev->dev, "external vbus detection\n");
@@ -1950,7 +1899,7 @@ static int mv_u3d_probe(struct platform_device *dev)
 	if (!u3d->clock_gating)
 		u3d->vbus_active = 1;
 
-	/* enable usb3 controller vbus detection */
+	 
 	u3d->vbus_valid_detect = 1;
 
 	retval = usb_add_gadget_udc(&dev->dev, &u3d->gadget);
@@ -1993,16 +1942,12 @@ static int mv_u3d_suspend(struct device *dev)
 {
 	struct mv_u3d *u3d = dev_get_drvdata(dev);
 
-	/*
-	 * only cable is unplugged, usb can suspend.
-	 * So do not care about clock_gating == 1, it is handled by
-	 * vbus session.
-	 */
+	 
 	if (!u3d->clock_gating) {
 		mv_u3d_controller_stop(u3d);
 
 		spin_lock_irq(&u3d->lock);
-		/* stop all usb activities */
+		 
 		mv_u3d_stop_activity(u3d, u3d->driver);
 		spin_unlock_irq(&u3d->lock);
 

@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max77693.c - Regulator driver for the Maxim 77693 and 77843
-//
-// Copyright (C) 2013-2015 Samsung Electronics
-// Jonghwa Lee <jonghwa3.lee@samsung.com>
-// Krzysztof Kozlowski <krzk@kernel.org>
-//
-// This driver is based on max77686.c
+
+
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -22,10 +22,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/regmap.h>
 
-/*
- * ID for MAX77843 regulators.
- * There is no need for such for MAX77693.
- */
+ 
 enum max77843_regulator_type {
 	MAX77843_SAFEOUT1 = 0,
 	MAX77843_SAFEOUT2,
@@ -34,7 +31,7 @@ enum max77843_regulator_type {
 	MAX77843_NUM,
 };
 
-/* Register differences between chargers: MAX77693 and MAX77843 */
+ 
 struct chg_reg_data {
 	unsigned int linear_reg;
 	unsigned int linear_mask;
@@ -42,16 +39,7 @@ struct chg_reg_data {
 	unsigned int min_sel;
 };
 
-/*
- * MAX77693 CHARGER regulator - Min : 20mA, Max : 2580mA, step : 20mA
- * 0x00, 0x01, 0x2, 0x03	= 60 mA
- * 0x04 ~ 0x7E			= (60 + (X - 3) * 20) mA
- * Actually for MAX77693 the driver manipulates the maximum input current,
- * not the fast charge current (output). This should be fixed.
- *
- * On MAX77843 the calculation formula is the same (except values).
- * Fortunately it properly manipulates the fast charge current.
- */
+ 
 static int max77693_chg_get_current_limit(struct regulator_dev *rdev)
 {
 	const struct chg_reg_data *reg_data = rdev_get_drvdata(rdev);
@@ -67,7 +55,7 @@ static int max77693_chg_get_current_limit(struct regulator_dev *rdev)
 
 	sel = reg & reg_data->linear_mask;
 
-	/* the first four codes for charger current are all 60mA */
+	 
 	if (sel <= reg_data->min_sel)
 		sel = 0;
 	else
@@ -93,14 +81,14 @@ static int max77693_chg_set_current_limit(struct regulator_dev *rdev,
 	if (chg_min_uA + reg_data->uA_step * sel > max_uA)
 		return -EINVAL;
 
-	/* the first four codes for charger current are all 60mA */
+	 
 	sel += reg_data->min_sel;
 
 	return regmap_write(rdev->regmap, reg_data->linear_reg, sel);
 }
-/* end of CHARGER regulator ops */
+ 
 
-/* Returns regmap suitable for given regulator on chosen device */
+ 
 static struct regmap *max77693_get_regmap(enum max77693_types type,
 					  struct max77693_dev *max77693,
 					  int reg_id)
@@ -108,7 +96,7 @@ static struct regmap *max77693_get_regmap(enum max77693_types type,
 	if (type == TYPE_MAX77693)
 		return max77693->regmap;
 
-	/* Else: TYPE_MAX77843 */
+	 
 	switch (reg_id) {
 	case MAX77843_SAFEOUT1:
 	case MAX77843_SAFEOUT2:

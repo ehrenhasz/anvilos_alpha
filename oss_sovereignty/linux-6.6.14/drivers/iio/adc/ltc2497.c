@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ltc2497.c - Driver for Analog Devices/Linear Technology LTC2497 ADC
- *
- * Copyright (C) 2017 Analog Devices Inc.
- *
- * Datasheet: http://cds.linear.com/docs/en/datasheet/2497fd.pdf
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/iio/iio.h>
@@ -24,14 +18,11 @@ enum ltc2497_chip_type {
 };
 
 struct ltc2497_driverdata {
-	/* this must be the first member */
+	 
 	struct ltc2497core_driverdata common_ddata;
 	struct i2c_client *client;
 	u32 recv_size;
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	union {
 		__be32 d32;
 		u8 d8[3];
@@ -57,12 +48,7 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
 			return ret;
 		}
 
-		/*
-		 * The data format is 16/24 bit 2s complement, but with an upper sign bit on the
-		 * resolution + 1 position, which is set for positive values only. Given this
-		 * bit's value, subtracting BIT(resolution + 1) from the ADC's result is
-		 * equivalent to a sign extension.
-		 */
+		 
 		if (st->recv_size == 3) {
 			*val = (get_unaligned_be24(st->data.d8) >> 6)
 				- BIT(ddata->chip_info->resolution + 1);
@@ -71,16 +57,7 @@ static int ltc2497_result_and_measure(struct ltc2497core_driverdata *ddata,
 				- BIT(ddata->chip_info->resolution + 1);
 		}
 
-		/*
-		 * The part started a new conversion at the end of the above i2c
-		 * transfer, so if the address didn't change since the last call
-		 * everything is fine and we can return early.
-		 * If not (which should only happen when some sort of bulk
-		 * conversion is implemented) we have to program the new
-		 * address. Note that this probably fails as the conversion that
-		 * was triggered above is like not complete yet and the two
-		 * operations have to be done in a single transfer.
-		 */
+		 
 		if (ddata->addr_prev == address)
 			return 0;
 	}

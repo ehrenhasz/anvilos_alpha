@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Input driver for joysticks connected over ADC.
- * Copyright (c) 2019-2020 Artur Rojek <contact@artur-rojek.eu>
- */
+
+ 
 #include <linux/ctype.h>
 #include <linux/input.h>
 #include <linux/iio/iio.h>
@@ -66,15 +63,12 @@ static int adc_joystick_handle(const void *data, void *private)
 		case 2:
 			data_u16 = (const u16 *)data + idx;
 
-			/*
-			 * Data is aligned to the sample size by IIO core.
-			 * Call `get_unaligned_xe16` to hide type casting.
-			 */
+			 
 			if (endianness == IIO_BE)
 				val = get_unaligned_be16(data_u16);
 			else if (endianness == IIO_LE)
 				val = get_unaligned_le16(data_u16);
-			else /* IIO_CPU */
+			else  
 				val = *data_u16;
 			break;
 		default:
@@ -210,7 +204,7 @@ static int adc_joystick_probe(struct platform_device *pdev)
 
 	error = device_property_read_u32(dev, "poll-interval", &poll_interval);
 	if (error) {
-		/* -EINVAL means the property is absent. */
+		 
 		if (error != -EINVAL)
 			return error;
 	} else if (poll_interval == 0) {
@@ -220,10 +214,7 @@ static int adc_joystick_probe(struct platform_device *pdev)
 		joy->polled = true;
 	}
 
-	/*
-	 * Count how many channels we got. NULL terminated.
-	 * Do not check the storage size if using polling.
-	 */
+	 
 	for (i = 0; joy->chans[i].indio_dev; i++) {
 		if (joy->polled)
 			continue;

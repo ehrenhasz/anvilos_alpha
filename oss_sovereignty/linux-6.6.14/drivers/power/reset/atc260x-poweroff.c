@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Poweroff & reset driver for Actions Semi ATC260x PMICs
- *
- * Copyright (c) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/mfd/atc260x/core.h>
@@ -20,7 +16,7 @@ struct atc260x_pwrc {
 	int (*do_poweroff)(const struct atc260x_pwrc *pwrc, bool restart);
 };
 
-/* Global variable needed only for pm_power_off */
+ 
 static struct atc260x_pwrc *atc260x_pwrc_data;
 
 static int atc2603c_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
@@ -28,13 +24,13 @@ static int atc2603c_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
 	int ret, deep_sleep = 0;
 	uint reg_mask, reg_val;
 
-	/* S4-Deep Sleep Mode is NOT available for WALL/USB power */
+	 
 	if (!restart && !power_supply_is_system_supplied()) {
 		deep_sleep = 1;
 		dev_info(pwrc->dev, "Enabling S4-Deep Sleep Mode");
 	}
 
-	/* Update wakeup sources */
+	 
 	reg_val = ATC2603C_PMU_SYS_CTL0_ONOFF_LONG_WK_EN |
 		  (restart ? ATC2603C_PMU_SYS_CTL0_RESET_WK_EN
 			   : ATC2603C_PMU_SYS_CTL0_ONOFF_SHORT_WK_EN);
@@ -44,7 +40,7 @@ static int atc2603c_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
 	if (ret)
 		dev_warn(pwrc->dev, "failed to write SYS_CTL0: %d\n", ret);
 
-	/* Update power mode */
+	 
 	reg_mask = ATC2603C_PMU_SYS_CTL3_EN_S2 | ATC2603C_PMU_SYS_CTL3_EN_S3;
 
 	ret = regmap_update_bits(pwrc->regmap, ATC2603C_PMU_SYS_CTL3, reg_mask,
@@ -54,7 +50,7 @@ static int atc2603c_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
 		return ret;
 	}
 
-	/* Trigger poweroff / restart sequence */
+	 
 	reg_mask = restart ? ATC2603C_PMU_SYS_CTL0_RESTART_EN
 			   : ATC2603C_PMU_SYS_CTL1_EN_S1;
 	reg_val = restart ? ATC2603C_PMU_SYS_CTL0_RESTART_EN : 0;
@@ -68,7 +64,7 @@ static int atc2603c_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
 		return ret;
 	}
 
-	/* Wait for trigger completion */
+	 
 	mdelay(200);
 
 	return 0;
@@ -79,13 +75,13 @@ static int atc2609a_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
 	int ret, deep_sleep = 0;
 	uint reg_mask, reg_val;
 
-	/* S4-Deep Sleep Mode is NOT available for WALL/USB power */
+	 
 	if (!restart && !power_supply_is_system_supplied()) {
 		deep_sleep = 1;
 		dev_info(pwrc->dev, "Enabling S4-Deep Sleep Mode");
 	}
 
-	/* Update wakeup sources */
+	 
 	reg_val = ATC2609A_PMU_SYS_CTL0_ONOFF_LONG_WK_EN |
 		  (restart ? ATC2609A_PMU_SYS_CTL0_RESET_WK_EN
 			   : ATC2609A_PMU_SYS_CTL0_ONOFF_SHORT_WK_EN);
@@ -95,7 +91,7 @@ static int atc2609a_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
 	if (ret)
 		dev_warn(pwrc->dev, "failed to write SYS_CTL0: %d\n", ret);
 
-	/* Update power mode */
+	 
 	reg_mask = ATC2609A_PMU_SYS_CTL3_EN_S2 | ATC2609A_PMU_SYS_CTL3_EN_S3;
 
 	ret = regmap_update_bits(pwrc->regmap, ATC2609A_PMU_SYS_CTL3, reg_mask,
@@ -105,7 +101,7 @@ static int atc2609a_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
 		return ret;
 	}
 
-	/* Trigger poweroff / restart sequence */
+	 
 	reg_mask = restart ? ATC2609A_PMU_SYS_CTL0_RESTART_EN
 			   : ATC2609A_PMU_SYS_CTL1_EN_S1;
 	reg_val = restart ? ATC2609A_PMU_SYS_CTL0_RESTART_EN : 0;
@@ -119,7 +115,7 @@ static int atc2609a_do_poweroff(const struct atc260x_pwrc *pwrc, bool restart)
 		return ret;
 	}
 
-	/* Wait for trigger completion */
+	 
 	mdelay(200);
 
 	return 0;
@@ -129,17 +125,14 @@ static int atc2603c_init(const struct atc260x_pwrc *pwrc)
 {
 	int ret;
 
-	/*
-	 * Delay transition from S2/S3 to S1 in order to avoid
-	 * DDR init failure in Bootloader.
-	 */
+	 
 	ret = regmap_update_bits(pwrc->regmap, ATC2603C_PMU_SYS_CTL3,
 				 ATC2603C_PMU_SYS_CTL3_S2S3TOS1_TIMER_EN,
 				 ATC2603C_PMU_SYS_CTL3_S2S3TOS1_TIMER_EN);
 	if (ret)
 		dev_warn(pwrc->dev, "failed to write SYS_CTL3: %d\n", ret);
 
-	/* Set wakeup sources */
+	 
 	ret = regmap_update_bits(pwrc->regmap, ATC2603C_PMU_SYS_CTL0,
 				 ATC2603C_PMU_SYS_CTL0_WK_ALL,
 				 ATC2603C_PMU_SYS_CTL0_HDSW_WK_EN |
@@ -154,7 +147,7 @@ static int atc2609a_init(const struct atc260x_pwrc *pwrc)
 {
 	int ret;
 
-	/* Set wakeup sources */
+	 
 	ret = regmap_update_bits(pwrc->regmap, ATC2609A_PMU_SYS_CTL0,
 				 ATC2609A_PMU_SYS_CTL0_WK_ALL,
 				 ATC2609A_PMU_SYS_CTL0_HDSW_WK_EN |

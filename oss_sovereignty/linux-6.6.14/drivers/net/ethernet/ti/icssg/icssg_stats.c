@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Texas Instruments ICSSG Ethernet driver
- *
- * Copyright (C) 2018-2021 Texas Instruments Incorporated - https://www.ti.com/
- *
- */
+
+ 
 
 #include "icssg_prueth.h"
 #include "icssg_stats.h"
@@ -12,8 +8,8 @@
 #define ICSSG_TX_PACKET_OFFSET	0xA0
 #define ICSSG_TX_BYTE_OFFSET	0xEC
 
-static u32 stats_base[] = {	0x54c,	/* Slice 0 stats start */
-				0xb18,	/* Slice 1 stats start */
+static u32 stats_base[] = {	0x54c,	 
+				0xb18,	 
 };
 
 void emac_update_hardware_stats(struct prueth_emac *emac)

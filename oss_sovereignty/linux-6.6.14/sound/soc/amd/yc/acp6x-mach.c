@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Machine driver for AMD Yellow Carp platform using DMIC
- *
- * Copyright 2021 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
@@ -413,7 +409,7 @@ static int acp6x_probe(struct platform_device *pdev)
 	struct acpi_device *adev;
 	int ret;
 
-	/* check the parent device's firmware node has _DSD or not */
+	 
 	adev = ACPI_COMPANION(pdev->dev.parent);
 	if (adev) {
 		const union acpi_object *obj;
@@ -423,7 +419,7 @@ static int acp6x_probe(struct platform_device *pdev)
 			platform_set_drvdata(pdev, &acp6x_card);
 	}
 
-	/* check for any DMI overrides */
+	 
 	dmi_id = dmi_first_match(yc_acp_quirk_table);
 	if (dmi_id)
 		platform_set_drvdata(pdev, dmi_id->driver_data);

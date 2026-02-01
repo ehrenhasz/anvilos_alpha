@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * A V4L2 driver for OmniVision OV5647 cameras.
- *
- * Based on Samsung S5K6AAFX SXGA 1/6" 1.3M CMOS Image Sensor driver
- * Copyright (C) 2011 Sylwester Nawrocki <s.nawrocki@samsung.com>
- *
- * Based on Omnivision OV7670 Camera Driver
- * Copyright (C) 2006-7 Jonathan Corbet <corbet@lwn.net>
- *
- * Copyright (C) 2016, Synopsys, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -29,11 +19,7 @@
 #include <media/v4l2-image-sizes.h>
 #include <media/v4l2-mediabus.h>
 
-/*
- * From the datasheet, "20ms after PWDN goes low or 20ms after RESETB goes
- * high if reset is inserted after PWDN goes high, host can access sensor's
- * SCCB to initialize sensor."
- */
+ 
 #define PWDN_ACTIVE_DELAY_MS	20
 
 #define MIPI_CTRL00_CLOCK_LANE_GATE		BIT(5)
@@ -64,7 +50,7 @@
 #define VAL_TERM 0xfe
 #define REG_DLY  0xffff
 
-/* OV5647 native and active pixel array size */
+ 
 #define OV5647_NATIVE_WIDTH		2624U
 #define OV5647_NATIVE_HEIGHT		1956U
 
@@ -125,10 +111,10 @@ static const char * const ov5647_test_pattern_menu[] = {
 };
 
 static const u8 ov5647_test_pattern_val[] = {
-	0x00,	/* Disabled */
-	0x80,	/* Color Bars */
-	0x82,	/* Color Squares */
-	0x81,	/* Random Data */
+	0x00,	 
+	0x80,	 
+	0x82,	 
+	0x81,	 
 };
 
 static const struct regval_list sensor_oe_disable_regs[] = {
@@ -505,7 +491,7 @@ static struct regval_list ov5647_640x480_10bpp[] = {
 };
 
 static const struct ov5647_mode ov5647_modes[] = {
-	/* 2592x1944 full resolution full FOV 10-bit mode. */
+	 
 	{
 		.format = {
 			.code		= MEDIA_BUS_FMT_SBGGR10_1X10,
@@ -526,7 +512,7 @@ static const struct ov5647_mode ov5647_modes[] = {
 		.reg_list	= ov5647_2592x1944_10bpp,
 		.num_regs	= ARRAY_SIZE(ov5647_2592x1944_10bpp)
 	},
-	/* 1080p30 10-bit mode. Full resolution centre-cropped down to 1080p. */
+	 
 	{
 		.format = {
 			.code		= MEDIA_BUS_FMT_SBGGR10_1X10,
@@ -547,7 +533,7 @@ static const struct ov5647_mode ov5647_modes[] = {
 		.reg_list	= ov5647_1080p30_10bpp,
 		.num_regs	= ARRAY_SIZE(ov5647_1080p30_10bpp)
 	},
-	/* 2x2 binned full FOV 10-bit mode. */
+	 
 	{
 		.format = {
 			.code		= MEDIA_BUS_FMT_SBGGR10_1X10,
@@ -568,7 +554,7 @@ static const struct ov5647_mode ov5647_modes[] = {
 		.reg_list	= ov5647_2x2binned_10bpp,
 		.num_regs	= ARRAY_SIZE(ov5647_2x2binned_10bpp)
 	},
-	/* 10-bit VGA full FOV 60fps. 2x2 binned and subsampled down to VGA. */
+	 
 	{
 		.format = {
 			.code		= MEDIA_BUS_FMT_SBGGR10_1X10,
@@ -591,7 +577,7 @@ static const struct ov5647_mode ov5647_modes[] = {
 	},
 };
 
-/* Default sensor mode is 2x2 binned 640x480 SBGGR10_1X10. */
+ 
 #define OV5647_DEFAULT_MODE	(&ov5647_modes[3])
 #define OV5647_DEFAULT_FORMAT	(ov5647_modes[3].format)
 
@@ -734,7 +720,7 @@ static int ov5647_stream_on(struct v4l2_subdev *sd)
 		return ret;
 	}
 
-	/* Apply customized values from user when stream starts. */
+	 
 	ret =  __v4l2_ctrl_handler_setup(sd->ctrl_handler);
 	if (ret)
 		return ret;
@@ -796,7 +782,7 @@ static int ov5647_power_on(struct device *dev)
 		goto error_clk_disable;
 	}
 
-	/* Stream off to coax lanes into LP-11 state. */
+	 
 	ret = ov5647_stream_off(&sensor->sd);
 	if (ret < 0) {
 		dev_err(dev, "camera not available, check power\n");
@@ -826,7 +812,7 @@ static int ov5647_power_off(struct device *dev)
 	if (ret < 0)
 		dev_dbg(dev, "disable oe failed\n");
 
-	/* Enter software standby */
+	 
 	ret = ov5647_read(&sensor->sd, OV5647_SW_STANDBY, &rdval);
 	if (ret < 0)
 		dev_dbg(dev, "software standby failed\n");
@@ -866,7 +852,7 @@ static int ov5647_sensor_set_register(struct v4l2_subdev *sd,
 }
 #endif
 
-/* Subdev core operations registration */
+ 
 static const struct v4l2_subdev_core_ops ov5647_subdev_core_ops = {
 	.subscribe_event	= v4l2_ctrl_subdev_subscribe_event,
 	.unsubscribe_event	= v4l2_event_subdev_unsubscribe,
@@ -1007,7 +993,7 @@ static int ov5647_set_pad_fmt(struct v4l2_subdev *sd,
 				      format.width, format.height,
 				      fmt->width, fmt->height);
 
-	/* Update the sensor mode and apply at it at streamon time. */
+	 
 	mutex_lock(&sensor->lock);
 	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
 		*v4l2_subdev_get_try_format(sd, sd_state, format->pad) = mode->format;
@@ -1154,7 +1140,7 @@ static int ov5647_s_autogain(struct v4l2_subdev *sd, u32 val)
 	int ret;
 	u8 reg;
 
-	/* Non-zero turns on AGC by clearing bit 1.*/
+	 
 	ret = ov5647_read(sd, OV5647_REG_AEC_AGC, &reg);
 	if (ret)
 		return ret;
@@ -1168,10 +1154,7 @@ static int ov5647_s_exposure_auto(struct v4l2_subdev *sd, u32 val)
 	int ret;
 	u8 reg;
 
-	/*
-	 * Everything except V4L2_EXPOSURE_MANUAL turns on AEC by
-	 * clearing bit 0.
-	 */
+	 
 	ret = ov5647_read(sd, OV5647_REG_AEC_AGC, &reg);
 	if (ret)
 		return ret;
@@ -1185,7 +1168,7 @@ static int ov5647_s_analogue_gain(struct v4l2_subdev *sd, u32 val)
 {
 	int ret;
 
-	/* 10 bits of gain, 2 in the high register. */
+	 
 	ret = ov5647_write(sd, OV5647_REG_GAIN_HI, (val >> 8) & 3);
 	if (ret)
 		return ret;
@@ -1197,10 +1180,7 @@ static int ov5647_s_exposure(struct v4l2_subdev *sd, u32 val)
 {
 	int ret;
 
-	/*
-	 * Sensor has 20 bits, but the bottom 4 bits are fractions of a line
-	 * which we leave as zero (and don't receive in "val").
-	 */
+	 
 	ret = ov5647_write(sd, OV5647_REG_EXP_HI, (val >> 12) & 0xf);
 	if (ret)
 		return ret;
@@ -1221,12 +1201,12 @@ static int ov5647_s_ctrl(struct v4l2_ctrl *ctrl)
 	int ret = 0;
 
 
-	/* v4l2_ctrl_lock() locks our own mutex */
+	 
 
 	if (ctrl->id == V4L2_CID_VBLANK) {
 		int exposure_max, exposure_def;
 
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = sensor->mode->format.height + ctrl->val - 4;
 		exposure_def = min(exposure_max, OV5647_EXPOSURE_DEFAULT);
 		__v4l2_ctrl_modify_range(sensor->exposure,
@@ -1235,11 +1215,7 @@ static int ov5647_s_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_def);
 	}
 
-	/*
-	 * If the device is not powered up do not apply any controls
-	 * to H/W at this time. Instead the controls will be restored
-	 * at s_stream(1) time.
-	 */
+	 
 	if (pm_runtime_get_if_in_use(&client->dev) == 0)
 		return 0;
 
@@ -1268,10 +1244,10 @@ static int ov5647_s_ctrl(struct v4l2_ctrl *ctrl)
 				   ov5647_test_pattern_val[ctrl->val]);
 		break;
 
-	/* Read-only, but we adjust it based on mode. */
+	 
 	case V4L2_CID_PIXEL_RATE:
 	case V4L2_CID_HBLANK:
-		/* Read-only, but we adjust it based on mode. */
+		 
 		break;
 
 	default:
@@ -1315,18 +1291,18 @@ static int ov5647_init_controls(struct ov5647 *sensor)
 					     exposure_max, OV5647_EXPOSURE_STEP,
 					     exposure_def);
 
-	/* min: 16 = 1.0x; max (10 bits); default: 32 = 2.0x. */
+	 
 	v4l2_ctrl_new_std(&sensor->ctrls, &ov5647_ctrl_ops,
 			  V4L2_CID_ANALOGUE_GAIN, 16, 1023, 1, 32);
 
-	/* By default, PIXEL_RATE is read only, but it does change per mode */
+	 
 	sensor->pixel_rate = v4l2_ctrl_new_std(&sensor->ctrls, &ov5647_ctrl_ops,
 					       V4L2_CID_PIXEL_RATE,
 					       sensor->mode->pixel_rate,
 					       sensor->mode->pixel_rate, 1,
 					       sensor->mode->pixel_rate);
 
-	/* By default, HBLANK is read only, but it does change per mode. */
+	 
 	hblank = sensor->mode->hts - sensor->mode->format.width;
 	sensor->hblank = v4l2_ctrl_new_std(&sensor->ctrls, &ov5647_ctrl_ops,
 					   V4L2_CID_HBLANK, hblank, hblank, 1,
@@ -1419,7 +1395,7 @@ static int ov5647_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* Request the power down GPIO asserted. */
+	 
 	sensor->pwdn = devm_gpiod_get_optional(dev, "pwdn", GPIOD_OUT_HIGH);
 	if (IS_ERR(sensor->pwdn)) {
 		dev_err(dev, "Failed to get 'pwdn' gpio\n");
@@ -1457,7 +1433,7 @@ static int ov5647_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto power_off;
 
-	/* Enable runtime PM and turn off the device */
+	 
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
 	pm_runtime_idle(dev);
@@ -1497,14 +1473,14 @@ static const struct dev_pm_ops ov5647_pm_ops = {
 
 static const struct i2c_device_id ov5647_id[] = {
 	{ "ov5647", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, ov5647_id);
 
 #if IS_ENABLED(CONFIG_OF)
 static const struct of_device_id ov5647_of_match[] = {
 	{ .compatible = "ovti,ov5647" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ov5647_of_match);
 #endif

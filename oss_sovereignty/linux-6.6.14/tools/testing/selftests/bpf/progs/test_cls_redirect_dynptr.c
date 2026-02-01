@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-// Copyright (c) 2019, 2020 Cloudflare
+
+
 
 #include <stdbool.h>
 #include <stddef.h>
@@ -31,9 +31,7 @@
 
 char _license[] SEC("license") = "Dual BSD/GPL";
 
-/**
- * Destination port and IP used for UDP encapsulation.
- */
+ 
 volatile const __be16 ENCAPSULATION_PORT;
 volatile const __be32 ENCAPSULATION_IP;
 
@@ -99,14 +97,10 @@ struct iphdr_info {
 
 typedef int ret_t;
 
-/* This is a bit of a hack. We need a return value which allows us to
- * indicate that the regular flow of the program should continue,
- * while allowing functions to use XDP_PASS and XDP_DROP, etc.
- */
+ 
 static const ret_t CONTINUE_PROCESSING = -1;
 
-/* Convenience macro to call functions which return ret_t.
- */
+ 
 #define MAYBE_RETURN(x)                           \
 	do {                                      \
 		ret_t __ret = x;                  \
@@ -130,13 +124,13 @@ static int pkt_parse_ipv4(struct bpf_dynptr *dynptr, __u64 *offset, struct iphdr
 	if (iphdr->ihl < 5)
 		return -1;
 
-	/* skip ipv4 options */
+	 
 	*offset += (iphdr->ihl - 5) * 4;
 
 	return 0;
 }
 
-/* Parse the L4 ports from a packet, assuming a layout like TCP or UDP. */
+ 
 static bool pkt_parse_icmp_l4_ports(struct bpf_dynptr *dynptr, __u64 *offset, flow_ports_t *ports)
 {
 	if (bpf_dynptr_read(ports, sizeof(*ports), dynptr, *offset, 0))
@@ -144,9 +138,7 @@ static bool pkt_parse_icmp_l4_ports(struct bpf_dynptr *dynptr, __u64 *offset, fl
 
 	*offset += sizeof(*ports);
 
-	/* Ports in the L4 headers are reversed, since we are parsing an ICMP
-	 * payload which is going towards the eyeball.
-	 */
+	 
 	uint16_t dst = ports->src;
 	ports->src = ports->dst;
 	ports->dst = dst;
@@ -155,9 +147,7 @@ static bool pkt_parse_icmp_l4_ports(struct bpf_dynptr *dynptr, __u64 *offset, fl
 
 static uint16_t pkt_checksum_fold(uint32_t csum)
 {
-	/* The highest reasonable value for an IPv4 header
-	 * checksum requires two folds, so we just do that always.
-	 */
+	 
 	csum = (csum & 0xffff) + (csum >> 16);
 	csum = (csum & 0xffff) + (csum >> 16);
 	return (uint16_t)~csum;
@@ -167,11 +157,7 @@ static void pkt_ipv4_checksum(struct iphdr *iph)
 {
 	iph->check = 0;
 
-	/* An IP header without options is 20 bytes. Two of those
-	 * are the checksum, which we always set to zero. Hence,
-	 * the maximum accumulated value is 18 / 2 * 0xffff = 0x8fff7,
-	 * which fits in 32 bit.
-	 */
+	 
 	_Static_assert(sizeof(struct iphdr) == 20, "iphdr must be 20 bytes");
 	uint32_t acc = 0;
 	uint16_t *ipw = (uint16_t *)iph;
@@ -186,11 +172,7 @@ static bool pkt_skip_ipv6_extension_headers(struct bpf_dynptr *dynptr, __u64 *of
 					    const struct ipv6hdr *ipv6, uint8_t *upper_proto,
 					    bool *is_fragment)
 {
-	/* We understand five extension headers.
-	 * https://tools.ietf.org/html/rfc8200#section-4.1 states that all
-	 * headers should occur once, except Destination Options, which may
-	 * occur twice. Hence we give up after 6 headers.
-	 */
+	 
 	struct {
 		uint8_t next;
 		uint8_t len;
@@ -203,8 +185,8 @@ static bool pkt_skip_ipv6_extension_headers(struct bpf_dynptr *dynptr, __u64 *of
 		switch (exthdr.next) {
 		case IPPROTO_FRAGMENT:
 			*is_fragment = true;
-			/* NB: We don't check that hdrlen == 0 as per spec. */
-			/* fallthrough; */
+			 
+			 
 
 		case IPPROTO_HOPOPTS:
 		case IPPROTO_ROUTING:
@@ -213,29 +195,20 @@ static bool pkt_skip_ipv6_extension_headers(struct bpf_dynptr *dynptr, __u64 *of
 			if (bpf_dynptr_read(&exthdr, sizeof(exthdr), dynptr, *offset, 0))
 				return false;
 
-			/* hdrlen is in 8-octet units, and excludes the first 8 octets. */
+			 
 			*offset += (exthdr.len + 1) * 8;
 
-			/* Decode next header */
+			 
 			break;
 
 		default:
-			/* The next header is not one of the known extension
-			 * headers, treat it as the upper layer header.
-			 *
-			 * This handles IPPROTO_NONE.
-			 *
-			 * Encapsulating Security Payload (50) and Authentication
-			 * Header (51) also end up here (and will trigger an
-			 * unknown proto error later). They have a custom header
-			 * format and seem too esoteric to care about.
-			 */
+			 
 			*upper_proto = exthdr.next;
 			return true;
 		}
 	}
 
-	/* We never found an upper layer header. */
+	 
 	return false;
 }
 
@@ -253,8 +226,7 @@ static int pkt_parse_ipv6(struct bpf_dynptr *dynptr, __u64 *offset, struct ipv6h
 	return 0;
 }
 
-/* Global metrics, per CPU
- */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
 	__uint(max_entries, 1);
@@ -275,7 +247,7 @@ static ret_t accept_locally(struct __sk_buff *skb, encap_headers_t *encap)
 		sizeof(struct in_addr) * encap->unigue.hop_count;
 	int32_t encap_overhead = payload_off - sizeof(struct ethhdr);
 
-	/* Changing the ethertype if the encapsulated packet is ipv6 */
+	 
 	if (encap->gue.proto_ctype == IPPROTO_IPV6)
 		encap->eth.h_proto = bpf_htons(ETH_P_IPV6);
 
@@ -305,12 +277,7 @@ static ret_t forward_with_gre(struct __sk_buff *skb, struct bpf_dynptr *dynptr,
 
 	metrics->forwarded_packets_total_gre++;
 
-	/* Loop protection: the inner packet's TTL is decremented as a safeguard
-	 * against any forwarding loop. As the only interesting field is the TTL
-	 * hop limit for IPv6, it is easier to use bpf_skb_load_bytes/bpf_skb_store_bytes
-	 * as they handle the split packets if needed (no need for the data to be
-	 * in the linear section).
-	 */
+	 
 	if (encap->gue.proto_ctype == IPPROTO_IPV6) {
 		proto = ETH_P_IPV6;
 		uint8_t ttl;
@@ -354,10 +321,7 @@ static ret_t forward_with_gre(struct __sk_buff *skb, struct bpf_dynptr *dynptr,
 			return TC_ACT_SHOT;
 		}
 
-		/* IPv4 also has a checksum to patch. While the TTL is only one byte,
-		 * this function only works for 2 and 4 bytes arguments (the result is
-		 * the same).
-		 */
+		 
 		rc = bpf_l3_csum_replace(
 			skb, payload_off + offsetof(struct iphdr, check), ttl,
 			ttl - 1, 2);
@@ -419,11 +383,8 @@ static ret_t forward_to_next_hop(struct __sk_buff *skb, struct bpf_dynptr *dynpt
 				 encap_headers_t *encap, struct in_addr *next_hop,
 				 metrics_t *metrics)
 {
-	/* swap L2 addresses */
-	/* This assumes that packets are received from a router.
-	 * So just swapping the MAC addresses here will make the packet go back to
-	 * the router, which will send it to the appropriate machine.
-	 */
+	 
+	 
 	unsigned char temp[ETH_ALEN];
 	memcpy(temp, encap->eth.h_dest, sizeof(temp));
 	memcpy(encap->eth.h_dest, encap->eth.h_source,
@@ -443,7 +404,7 @@ static ret_t forward_to_next_hop(struct __sk_buff *skb, struct bpf_dynptr *dynpt
 		encap->unigue.next_hop++;
 	}
 
-	/* Remove ip->saddr, add next_hop->s_addr */
+	 
 	const uint64_t off = offsetof(typeof(*encap), ip.check);
 	int ret = bpf_l3_csum_replace(skb, off, old_saddr, next_hop->s_addr, 4);
 	if (ret < 0) {
@@ -466,23 +427,18 @@ static ret_t skip_next_hops(__u64 *offset, int n)
 	}
 }
 
-/* Get the next hop from the GLB header.
- *
- * Sets next_hop->s_addr to 0 if there are no more hops left.
- * pkt is positioned just after the variable length GLB header
- * iff the call is successful.
- */
+ 
 static ret_t get_next_hop(struct bpf_dynptr *dynptr, __u64 *offset, encap_headers_t *encap,
 			  struct in_addr *next_hop)
 {
 	if (encap->unigue.next_hop > encap->unigue.hop_count)
 		return TC_ACT_SHOT;
 
-	/* Skip "used" next hops. */
+	 
 	MAYBE_RETURN(skip_next_hops(offset, encap->unigue.next_hop));
 
 	if (encap->unigue.next_hop == encap->unigue.hop_count) {
-		/* No more next hops, we are at the end of the GLB header. */
+		 
 		next_hop->s_addr = 0;
 		return CONTINUE_PROCESSING;
 	}
@@ -492,20 +448,11 @@ static ret_t get_next_hop(struct bpf_dynptr *dynptr, __u64 *offset, encap_header
 
 	*offset += sizeof(*next_hop);
 
-	/* Skip the remainig next hops (may be zero). */
+	 
 	return skip_next_hops(offset, encap->unigue.hop_count - encap->unigue.next_hop - 1);
 }
 
-/* Fill a bpf_sock_tuple to be used with the socket lookup functions.
- * This is a kludge that let's us work around verifier limitations:
- *
- *    fill_tuple(&t, foo, sizeof(struct iphdr), 123, 321)
- *
- * clang will substitue a costant for sizeof, which allows the verifier
- * to track it's value. Based on this, it can figure out the constant
- * return value, and calling code works while still being "generic" to
- * IPv4 and IPv6.
- */
+ 
 static uint64_t fill_tuple(struct bpf_sock_tuple *tuple, void *iph,
 				    uint64_t iphlen, uint16_t sport, uint16_t dport)
 {
@@ -550,7 +497,7 @@ static verdict_t classify_tcp(struct __sk_buff *skb, struct bpf_sock_tuple *tupl
 	}
 
 	if (iph != NULL && tcp != NULL) {
-		/* Kludge: we've run out of arguments, but need the length of the ip header. */
+		 
 		uint64_t iphlen = sizeof(struct iphdr);
 
 		if (tuplen == sizeof(tuple->ipv6))
@@ -613,7 +560,7 @@ static verdict_t process_icmpv4(struct __sk_buff *skb, struct bpf_dynptr *dynptr
 
 	*offset += sizeof(icmp);
 
-	/* We should never receive encapsulated echo replies. */
+	 
 	if (icmp.type == ICMP_ECHOREPLY) {
 		metrics->errors_total_icmp_echo_replies++;
 		return INVALID;
@@ -632,10 +579,7 @@ static verdict_t process_icmpv4(struct __sk_buff *skb, struct bpf_dynptr *dynptr
 		return INVALID;
 	}
 
-	/* The source address in the outer IP header is from the entity that
-	 * originated the ICMP message. Use the original IP header to restore
-	 * the correct flow tuple.
-	 */
+	 
 	struct bpf_sock_tuple tuple;
 	tuple.ipv4.saddr = ipv4.daddr;
 	tuple.ipv4.daddr = ipv4.saddr;
@@ -663,7 +607,7 @@ static verdict_t process_icmpv6(struct bpf_dynptr *dynptr, __u64 *offset, struct
 		return INVALID;
 	}
 
-	/* We should never receive encapsulated echo replies. */
+	 
 	if (icmp6.icmp6_type == ICMPV6_ECHO_REPLY) {
 		metrics->errors_total_icmp_echo_replies++;
 		return INVALID;
@@ -688,7 +632,7 @@ static verdict_t process_icmpv6(struct bpf_dynptr *dynptr, __u64 *offset, struct
 		return INVALID;
 	}
 
-	/* Swap source and dest addresses. */
+	 
 	memcpy(&tuple.ipv6.saddr, &ipv6.daddr, sizeof(tuple.ipv6.saddr));
 	memcpy(&tuple.ipv6.daddr, &ipv6.saddr, sizeof(tuple.ipv6.daddr));
 
@@ -835,9 +779,7 @@ int cls_redirect(struct __sk_buff *skb)
 	__u8 encap_buffer[sizeof(encap_headers_t)] = {};
 	struct bpf_dynptr dynptr;
 	struct in_addr next_hop;
-	/* Tracks offset of the dynptr. This will be unnecessary once
-	 * bpf_dynptr_advance() is available.
-	 */
+	 
 	__u64 off = 0;
 	ret_t ret;
 
@@ -849,17 +791,13 @@ int cls_redirect(struct __sk_buff *skb)
 
 	metrics->processed_packets_total++;
 
-	/* Pass bogus packets as long as we're not sure they're
-	 * destined for us.
-	 */
+	 
 	if (skb->protocol != bpf_htons(ETH_P_IP))
 		return TC_ACT_OK;
 
 	encap_headers_t *encap;
 
-	/* Make sure that all encapsulation headers are available in
-	 * the linear portion of the skb. This makes it easy to manipulate them.
-	 */
+	 
 	if (bpf_skb_pull_data(skb, sizeof(*encap)))
 		return TC_ACT_OK;
 
@@ -870,20 +808,18 @@ int cls_redirect(struct __sk_buff *skb)
 	off += sizeof(*encap);
 
 	if (encap->ip.ihl != 5)
-		/* We never have any options. */
+		 
 		return TC_ACT_OK;
 
 	if (encap->ip.daddr != ENCAPSULATION_IP ||
 	    encap->ip.protocol != IPPROTO_UDP)
 		return TC_ACT_OK;
 
-	/* TODO Check UDP length? */
+	 
 	if (encap->udp.dest != ENCAPSULATION_PORT)
 		return TC_ACT_OK;
 
-	/* We now know that the packet is destined to us, we can
-	 * drop bogus ones.
-	 */
+	 
 	if (ipv4_is_fragment((void *)&encap->ip)) {
 		metrics->errors_total_fragmented_ip++;
 		return TC_ACT_SHOT;
@@ -942,7 +878,7 @@ int cls_redirect(struct __sk_buff *skb)
 
 	switch (verdict) {
 	case INVALID:
-		/* metrics have already been bumped */
+		 
 		return TC_ACT_SHOT;
 
 	case UNKNOWN:

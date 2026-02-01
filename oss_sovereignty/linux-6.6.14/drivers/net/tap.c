@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/etherdevice.h>
 #include <linux/if_tap.h>
 #include <linux/if_vlan.h>
@@ -77,7 +77,7 @@ static long tap_set_vnet_be(struct tap_queue *q, int __user *argp)
 {
 	return -EINVAL;
 }
-#endif /* CONFIG_TUN_VNET_CROSS_LE */
+#endif  
 
 static inline bool tap_is_little_endian(struct tap_queue *q)
 {
@@ -126,22 +126,7 @@ static struct tap_dev *tap_dev_get_rcu(const struct net_device *dev)
 	return rcu_dereference(dev->rx_handler_data);
 }
 
-/*
- * RCU usage:
- * The tap_queue and the macvlan_dev are loosely coupled, the
- * pointers from one to the other can only be read while rcu_read_lock
- * or rtnl is held.
- *
- * Both the file and the macvlan_dev hold a reference on the tap_queue
- * through sock_hold(&q->sk). When the macvlan_dev goes away first,
- * q->vlan becomes inaccessible. When the files gets closed,
- * tap_get_queue() fails.
- *
- * There may still be references to the struct sock inside of the
- * queue from outbound SKBs, but these never reference back to the
- * file or the dev. The data structure is freed through __sk_free
- * when both our references and any pending SKBs are gone.
- */
+ 
 
 static int tap_enable_queue(struct tap_dev *tap, struct file *file,
 			    struct tap_queue *q)
@@ -163,7 +148,7 @@ out:
 	return err;
 }
 
-/* Requires RTNL */
+ 
 static int tap_set_queue(struct tap_dev *tap, struct file *file,
 			 struct tap_queue *q)
 {
@@ -213,14 +198,7 @@ static int tap_disable_queue(struct tap_queue *q)
 	return 0;
 }
 
-/*
- * The file owning the queue got closed, give up both
- * the reference that the files holds as well as the
- * one from the macvlan_dev if that still exists.
- *
- * Using the spinlock makes sure that we don't get
- * to the queue again after destroying it.
- */
+ 
 static void tap_put_queue(struct tap_queue *q)
 {
 	struct tap_dev *tap;
@@ -244,22 +222,12 @@ static void tap_put_queue(struct tap_queue *q)
 	sock_put(&q->sk);
 }
 
-/*
- * Select a queue based on the rxq of the device on which this packet
- * arrived. If the incoming device is not mq, calculate a flow hash
- * to select a queue. If all fails, find the first available queue.
- * Cache vlan->numvtaps since it can become zero during the execution
- * of this function.
- */
+ 
 static struct tap_queue *tap_get_queue(struct tap_dev *tap,
 				       struct sk_buff *skb)
 {
 	struct tap_queue *queue = NULL;
-	/* Access to taps array is protected by rcu, but access to numvtaps
-	 * isn't. Below we use it to lookup a queue, but treat it as a hint
-	 * and validate that the result isn't NULL - in case we are
-	 * racing against queue removal.
-	 */
+	 
 	int numvtaps = READ_ONCE(tap->numvtaps);
 	__u32 rxq;
 
@@ -269,7 +237,7 @@ static struct tap_queue *tap_get_queue(struct tap_dev *tap,
 	if (numvtaps == 1)
 		goto single;
 
-	/* Check if we can use flow to select a queue */
+	 
 	rxq = skb_get_hash(skb);
 	if (rxq) {
 		queue = rcu_dereference(tap->taps[rxq % numvtaps]);
@@ -292,11 +260,7 @@ out:
 	return queue;
 }
 
-/*
- * The net_device is going away, give up the reference
- * that it holds on all queues and safely set the pointer
- * from the queues to NULL.
- */
+ 
 void tap_del_queues(struct tap_dev *tap)
 {
 	struct tap_queue *q, *tmp;
@@ -312,7 +276,7 @@ void tap_del_queues(struct tap_dev *tap)
 	}
 	BUG_ON(tap->numvtaps);
 	BUG_ON(tap->numqueues);
-	/* guarantee that any future tap_set_queue will fail */
+	 
 	tap->numvtaps = MAX_TAP_QUEUES;
 }
 EXPORT_SYMBOL_GPL(tap_del_queues);
@@ -336,10 +300,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
 
 	skb_push(skb, ETH_HLEN);
 
-	/* Apply the forward feature mask so that we perform segmentation
-	 * according to users wishes.  This only works if VNET_HDR is
-	 * enabled.
-	 */
+	 
 	if (q->flags & IFF_VNET_HDR)
 		features |= tap->tap_features;
 	if (netif_needs_gso(skb, features)) {
@@ -370,11 +331,7 @@ rx_handler_result_t tap_handle_frame(struct sk_buff **pskb)
 			}
 		}
 	} else {
-		/* If we receive a partial checksum and the tap side
-		 * doesn't support checksum offload, compute the checksum.
-		 * Note: it doesn't matter which checksum feature to
-		 *	  check, we either support them all or none.
-		 */
+		 
 		if (skb->ip_summed == CHECKSUM_PARTIAL &&
 		    !(features & NETIF_F_CSUM_MASK) &&
 		    skb_checksum_help(skb)) {
@@ -392,7 +349,7 @@ wake_up:
 	return RX_HANDLER_CONSUMED;
 
 drop:
-	/* Count errors/drops only here, thus don't care about args. */
+	 
 	if (tap->count_rx_dropped)
 		tap->count_rx_dropped(tap);
 	kfree_skb_reason(skb, drop_reason);
@@ -541,23 +498,17 @@ static int tap_open(struct inode *inode, struct file *file)
 	q->flags = IFF_VNET_HDR | IFF_NO_PI | IFF_TAP;
 	q->vnet_hdr_sz = sizeof(struct virtio_net_hdr);
 
-	/*
-	 * so far only KVM virtio_net uses tap, enable zero copy between
-	 * guest kernel and host kernel when lower device supports zerocopy
-	 *
-	 * The macvlan supports zerocopy iff the lower device supports zero
-	 * copy so we don't have to look at the lower device directly.
-	 */
+	 
 	if ((tap->dev->features & NETIF_F_HIGHDMA) && (tap->dev->features & NETIF_F_SG))
 		sock_set_flag(&q->sk, SOCK_ZEROCOPY);
 
 	err = tap_set_queue(tap, file, q);
 	if (err) {
-		/* tap_sock_destruct() will take care of freeing ptr_ring */
+		 
 		goto err_put;
 	}
 
-	/* tap groks IOCB_NOWAIT just fine, mark it as such */
+	 
 	file->f_mode |= FMODE_NOWAIT;
 
 	dev_put(tap->dev);
@@ -611,7 +562,7 @@ static inline struct sk_buff *tap_alloc_skb(struct sock *sk, size_t prepad,
 {
 	struct sk_buff *skb;
 
-	/* Under a page?  Don't bother with paged skb. */
+	 
 	if (prepad + len < PAGE_SIZE || !linear)
 		linear = len;
 
@@ -630,10 +581,10 @@ static inline struct sk_buff *tap_alloc_skb(struct sock *sk, size_t prepad,
 	return skb;
 }
 
-/* Neighbour code has some assumptions on HH_DATA_MOD alignment */
+ 
 #define TAP_RESERVE HH_DATA_OFF(ETH_HLEN)
 
-/* Get packet from user space buffer */
+ 
 static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
 			    struct iov_iter *from, int noblock)
 {
@@ -744,12 +695,12 @@ static ssize_t tap_get_user(struct tap_queue *q, void *msg_control,
 
 	skb_probe_transport_header(skb);
 
-	/* Move network header to the right position for VLAN tagged packets */
+	 
 	if (eth_type_vlan(skb->protocol) &&
 	    vlan_get_protocol_and_depth(skb, skb->protocol, &depth) != 0)
 		skb_set_network_header(skb, depth);
 
-	/* copy skb_ubuf_info for callback when skb has no error */
+	 
 	if (zerocopy) {
 		skb_zcopy_init(skb, msg_control);
 	} else if (msg_control) {
@@ -786,7 +737,7 @@ static ssize_t tap_write_iter(struct kiocb *iocb, struct iov_iter *from)
 	return tap_get_user(q, NULL, from, noblock);
 }
 
-/* Put packet to the user space buffer */
+ 
 static ssize_t tap_put_user(struct tap_queue *q,
 			    const struct sk_buff *skb,
 			    struct iov_iter *iter)
@@ -865,7 +816,7 @@ static ssize_t tap_do_read(struct tap_queue *q,
 			prepare_to_wait(sk_sleep(&q->sk), &wait,
 					TASK_INTERRUPTIBLE);
 
-		/* Read frames from the queue */
+		 
 		skb = ptr_ring_consume(&q->ring);
 		if (skb)
 			break;
@@ -877,7 +828,7 @@ static ssize_t tap_do_read(struct tap_queue *q,
 			ret = -ERESTARTSYS;
 			break;
 		}
-		/* Nothing to read, let's sleep */
+		 
 		schedule();
 	}
 	if (!noblock)
@@ -973,28 +924,19 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
 				feature_mask |= NETIF_F_TSO6;
 		}
 
-		/* TODO: for now USO4 and USO6 should work simultaneously */
+		 
 		if ((arg & (TUN_F_USO4 | TUN_F_USO6)) == (TUN_F_USO4 | TUN_F_USO6))
 			features |= NETIF_F_GSO_UDP_L4;
 	}
 
-	/* tun/tap driver inverts the usage for TSO offloads, where
-	 * setting the TSO bit means that the userspace wants to
-	 * accept TSO frames and turning it off means that user space
-	 * does not support TSO.
-	 * For tap, we have to invert it to mean the same thing.
-	 * When user space turns off TSO, we turn off GSO/LRO so that
-	 * user-space will not receive TSO frames.
-	 */
+	 
 	if (feature_mask & (NETIF_F_TSO | NETIF_F_TSO6) ||
 	    (feature_mask & (TUN_F_USO4 | TUN_F_USO6)) == (TUN_F_USO4 | TUN_F_USO6))
 		features |= RX_OFFLOADS;
 	else
 		features &= ~RX_OFFLOADS;
 
-	/* tap_features are the same as features on tun/tap and
-	 * reflect user expectations.
-	 */
+	 
 	tap->tap_features = feature_mask;
 	if (tap->update_features)
 		tap->update_features(tap, features);
@@ -1002,9 +944,7 @@ static int set_offload(struct tap_queue *q, unsigned long arg)
 	return 0;
 }
 
-/*
- * provide compatibility with generic tun/tap interface
- */
+ 
 static long tap_ioctl(struct file *file, unsigned int cmd,
 		      unsigned long arg)
 {
@@ -1021,7 +961,7 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case TUNSETIFF:
-		/* ignore the name, just look at flags */
+		 
 		if (get_user(u, &ifr->ifr_flags))
 			return -EFAULT;
 
@@ -1109,7 +1049,7 @@ static long tap_ioctl(struct file *file, unsigned int cmd,
 		return tap_set_vnet_be(q, sp);
 
 	case TUNSETOFFLOAD:
-		/* let the user check for future flags */
+		 
 		if (arg & ~(TUN_F_CSUM | TUN_F_TSO4 | TUN_F_TSO6 |
 			    TUN_F_TSO_ECN | TUN_F_UFO |
 			    TUN_F_USO4 | TUN_F_USO6))
@@ -1199,7 +1139,7 @@ static int tap_get_user_xdp(struct tap_queue *q, struct xdp_buff *xdp)
 			goto err_kfree;
 	}
 
-	/* Move network header to the right position for VLAN tagged packets */
+	 
 	if (eth_type_vlan(skb->protocol) &&
 	    vlan_get_protocol_and_depth(skb, skb->protocol, &depth) != 0)
 		skb_set_network_header(skb, depth);
@@ -1274,17 +1214,14 @@ static int tap_peek_len(struct socket *sock)
 	return PTR_RING_PEEK_CALL(&q->ring, __skb_array_len_with_tag);
 }
 
-/* Ops structure to mimic raw sockets with tun */
+ 
 static const struct proto_ops tap_socket_ops = {
 	.sendmsg = tap_sendmsg,
 	.recvmsg = tap_recvmsg,
 	.peek_len = tap_peek_len,
 };
 
-/* Get an underlying socket object from tun file.  Returns error unless file is
- * attached to a device.  The returned object works like a packet socket, it
- * can be used for sock_sendmsg/sock_recvmsg.  The caller is responsible for
- * holding a reference to the file for as long as the socket is in use. */
+ 
 struct socket *tap_get_socket(struct file *file)
 {
 	struct tap_queue *q;

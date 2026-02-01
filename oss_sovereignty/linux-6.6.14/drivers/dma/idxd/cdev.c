@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2019 Intel Corporation. All rights rsvd. */
+
+ 
 #include <linux/init.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,17 +23,11 @@ struct idxd_cdev_context {
 	struct ida minor_ida;
 };
 
-/*
- * Since user file names are global in DSA devices, define their ida's as
- * global to avoid conflict file names.
- */
+ 
 static DEFINE_IDA(file_ida);
 static DEFINE_MUTEX(ida_lock);
 
-/*
- * ictx is an array based off of accelerator types. enum idxd_type
- * is used as index
- */
+ 
 static struct idxd_cdev_context ictx[IDXD_TYPE_MAX] = {
 	{ .name = "dsa" },
 	{ .name = "iax" }
@@ -127,12 +121,12 @@ static void idxd_file_dev_release(struct device *dev)
 	ida_free(&file_ida, ctx->id);
 	mutex_unlock(&ida_lock);
 
-	/* Wait for in-flight operations to complete. */
+	 
 	if (wq_shared(wq)) {
 		idxd_device_drain_pasid(idxd, ctx->pasid);
 	} else {
 		if (device_user_pasid_enabled(idxd)) {
-			/* The wq disable in the disable pasid function will drain the wq */
+			 
 			rc = idxd_wq_disable_pasid(wq);
 			if (rc < 0)
 				dev_err(dev, "wq disable pasid failed.\n");
@@ -516,16 +510,7 @@ static int idxd_user_drv_probe(struct idxd_dev *idxd_dev)
 	if (idxd->state != IDXD_DEV_ENABLED)
 		return -ENXIO;
 
-	/*
-	 * User type WQ is enabled only when SVA is enabled for two reasons:
-	 *   - If no IOMMU or IOMMU Passthrough without SVA, userspace
-	 *     can directly access physical address through the WQ.
-	 *   - The IDXD cdev driver does not provide any ways to pin
-	 *     user pages and translate the address from user VA to IOVA or
-	 *     PA without IOMMU SVA. Therefore the application has no way
-	 *     to instruct the device to perform DMA function. This makes
-	 *     the cdev not usable for normal application usage.
-	 */
+	 
 	if (!device_user_pasid_enabled(idxd)) {
 		idxd->cmd_status = IDXD_SCMD_WQ_USER_NO_IOMMU;
 		dev_dbg(&idxd->pdev->dev,
@@ -624,19 +609,7 @@ void idxd_cdev_remove(void)
 	}
 }
 
-/**
- * idxd_copy_cr - copy completion record to user address space found by wq and
- *		  PASID
- * @wq:		work queue
- * @pasid:	PASID
- * @addr:	user fault address to write
- * @cr:		completion record
- * @len:	number of bytes to copy
- *
- * This is called by a work that handles completion record fault.
- *
- * Return: number of bytes copied.
- */
+ 
 int idxd_copy_cr(struct idxd_wq *wq, ioasid_t pasid, unsigned long addr,
 		 void *cr, int len)
 {
@@ -654,28 +627,15 @@ int idxd_copy_cr(struct idxd_wq *wq, ioasid_t pasid, unsigned long addr,
 	}
 
 	mm = ctx->mm;
-	/*
-	 * The completion record fault handling work is running in kernel
-	 * thread context. It temporarily switches to the mm to copy cr
-	 * to addr in the mm.
-	 */
+	 
 	kthread_use_mm(mm);
 	left = copy_to_user((void __user *)addr + status_size, cr + status_size,
 			    len - status_size);
-	/*
-	 * Copy status only after the rest of completion record is copied
-	 * successfully so that the user gets the complete completion record
-	 * when a non-zero status is polled.
-	 */
+	 
 	if (!left) {
 		u8 status;
 
-		/*
-		 * Ensure that the completion record's status field is written
-		 * after the rest of the completion record has been written.
-		 * This ensures that the user receives the correct completion
-		 * record information once polling for a non-zero status.
-		 */
+		 
 		wmb();
 		status = *(u8 *)cr;
 		if (put_user(status, (u8 __user *)addr))

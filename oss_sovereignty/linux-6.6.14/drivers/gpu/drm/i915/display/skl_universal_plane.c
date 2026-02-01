@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_blend.h>
@@ -263,7 +261,7 @@ static int icl_plane_min_cdclk(const struct intel_crtc_state *crtc_state,
 {
 	unsigned int pixel_rate = intel_plane_pixel_rate(crtc_state, plane_state);
 
-	/* two pixels per clock */
+	 
 	return DIV_ROUND_UP(pixel_rate, 2);
 }
 
@@ -290,7 +288,7 @@ static int glk_plane_min_cdclk(const struct intel_crtc_state *crtc_state,
 
 	glk_plane_ratio(plane_state, &num, &den);
 
-	/* two pixels per clock */
+	 
 	return DIV_ROUND_UP(pixel_rate * num, 2 * den);
 }
 
@@ -329,16 +327,7 @@ static int skl_plane_max_width(const struct drm_framebuffer *fb,
 	switch (fb->modifier) {
 	case DRM_FORMAT_MOD_LINEAR:
 	case I915_FORMAT_MOD_X_TILED:
-		/*
-		 * Validated limit is 4k, but has 5k should
-		 * work apart from the following features:
-		 * - Ytile (already limited to 4k)
-		 * - FP16 (already limited to 4k)
-		 * - render compression (already limited to 4k)
-		 * - KVMR sprite and cursor (don't care)
-		 * - horizontal panning (TODO verify this)
-		 * - pipe and plane scaling (TODO verify this)
-		 */
+		 
 		if (cpp == 8)
 			return 4096;
 		else
@@ -346,7 +335,7 @@ static int skl_plane_max_width(const struct drm_framebuffer *fb,
 	case I915_FORMAT_MOD_Y_TILED_CCS:
 	case I915_FORMAT_MOD_Yf_TILED_CCS:
 	case I915_FORMAT_MOD_Y_TILED_GEN12_MC_CCS:
-		/* FIXME AUX plane? */
+		 
 	case I915_FORMAT_MOD_Y_TILED:
 	case I915_FORMAT_MOD_Yf_TILED:
 		if (cpp == 8)
@@ -374,7 +363,7 @@ static int glk_plane_max_width(const struct drm_framebuffer *fb,
 			return 5120;
 	case I915_FORMAT_MOD_Y_TILED_CCS:
 	case I915_FORMAT_MOD_Yf_TILED_CCS:
-		/* FIXME AUX plane? */
+		 
 	case I915_FORMAT_MOD_Y_TILED:
 	case I915_FORMAT_MOD_Yf_TILED:
 		if (cpp == 8)
@@ -391,7 +380,7 @@ static int icl_plane_min_width(const struct drm_framebuffer *fb,
 			       int color_plane,
 			       unsigned int rotation)
 {
-	/* Wa_14011264657, Wa_14011050563: gen11+ */
+	 
 	switch (fb->format->format) {
 	case DRM_FORMAT_C8:
 		return 18;
@@ -470,21 +459,14 @@ skl_plane_max_stride(struct intel_plane *plane,
 	int max_stride_bytes;
 
 	if (DISPLAY_VER(i915) >= 13) {
-		/*
-		 * The stride in bytes must not exceed of the size
-		 * of 128K bytes. For pixel formats of 64bpp will allow
-		 * for a 16K pixel surface.
-		 */
+		 
 		max_stride_bytes = 131072;
 		if (cpp == 8)
 			max_horizontal_pixels = 16384;
 		else
 			max_horizontal_pixels = 65536;
 	} else {
-		/*
-		 * "The stride in bytes must not exceed the
-		 * of the size of 8K pixels and 32K bytes."
-		 */
+		 
 		max_stride_bytes = 32768;
 	}
 
@@ -495,7 +477,7 @@ skl_plane_max_stride(struct intel_plane *plane,
 }
 
 
-/* Preoffset values for YUV to RGB Conversion */
+ 
 #define PREOFF_YUV_TO_RGB_HI		0x1800
 #define PREOFF_YUV_TO_RGB_ME		0x0000
 #define PREOFF_YUV_TO_RGB_LO		0x1800
@@ -504,12 +486,7 @@ skl_plane_max_stride(struct intel_plane *plane,
 #define  GOFF(x)          (((x) & 0xffff) << 0)
 #define  BOFF(x)          (((x) & 0xffff) << 16)
 
-/*
- * Programs the input color space conversion stage for ICL HDR planes.
- * Note that it is assumed that this stage always happens after YUV
- * range correction. Thus, the input to this stage is assumed to be
- * in full-range YCbCr.
- */
+ 
 static void
 icl_program_input_csc(struct intel_plane *plane,
 		      const struct intel_crtc_state *crtc_state,
@@ -520,37 +497,19 @@ icl_program_input_csc(struct intel_plane *plane,
 	enum plane_id plane_id = plane->id;
 
 	static const u16 input_csc_matrix[][9] = {
-		/*
-		 * BT.601 full range YCbCr -> full range RGB
-		 * The matrix required is :
-		 * [1.000, 0.000, 1.371,
-		 *  1.000, -0.336, -0.698,
-		 *  1.000, 1.732, 0.0000]
-		 */
+		 
 		[DRM_COLOR_YCBCR_BT601] = {
 			0x7AF8, 0x7800, 0x0,
 			0x8B28, 0x7800, 0x9AC0,
 			0x0, 0x7800, 0x7DD8,
 		},
-		/*
-		 * BT.709 full range YCbCr -> full range RGB
-		 * The matrix required is :
-		 * [1.000, 0.000, 1.574,
-		 *  1.000, -0.187, -0.468,
-		 *  1.000, 1.855, 0.0000]
-		 */
+		 
 		[DRM_COLOR_YCBCR_BT709] = {
 			0x7C98, 0x7800, 0x0,
 			0x9EF8, 0x7800, 0xAC00,
 			0x0, 0x7800,  0x7ED8,
 		},
-		/*
-		 * BT.2020 full range YCbCr -> full range RGB
-		 * The matrix required is :
-		 * [1.000, 0.000, 1.474,
-		 *  1.000, -0.1645, -0.5713,
-		 *  1.000, 1.8814, 0.0000]
-		 */
+		 
 		[DRM_COLOR_YCBCR_BT2020] = {
 			0x7BC8, 0x7800, 0x0,
 			0x8928, 0x7800, 0xAA88,
@@ -589,10 +548,7 @@ icl_program_input_csc(struct intel_plane *plane,
 static unsigned int skl_plane_stride_mult(const struct drm_framebuffer *fb,
 					  int color_plane, unsigned int rotation)
 {
-	/*
-	 * The stride is either expressed as a multiple of 64 bytes chunks for
-	 * linear buffers or in number of tiles for tiled buffers.
-	 */
+	 
 	if (is_surface_linear(fb, color_plane))
 		return 64;
 	else if (drm_rotation_90_or_270(rotation))
@@ -822,10 +778,7 @@ static u32 skl_plane_ctl_rotate(unsigned int rotate)
 	switch (rotate) {
 	case DRM_MODE_ROTATE_0:
 		break;
-	/*
-	 * DRM_MODE_ROTATE_ is counter clockwise to stay compatible with Xrandr
-	 * while i915 HW rotation is clockwise, thats why this swapping.
-	 */
+	 
 	case DRM_MODE_ROTATE_90:
 		return PLANE_CTL_ROTATE_270;
 	case DRM_MODE_ROTATE_180:
@@ -930,7 +883,7 @@ static u32 skl_plane_ctl(const struct intel_crtc_state *crtc_state,
 	else if (key->flags & I915_SET_COLORKEY_SOURCE)
 		plane_ctl |= PLANE_CTL_KEY_ENABLE_SOURCE;
 
-	/* Wa_22012358565:adl-p */
+	 
 	if (DISPLAY_VER(dev_priv) == 13)
 		plane_ctl |= adlp_plane_ctl_arb_slots(plane_state);
 
@@ -1001,10 +954,7 @@ static u32 skl_surf_address(const struct intel_plane_state *plane_state,
 	u32 offset = plane_state->view.color_plane[color_plane].offset;
 
 	if (intel_fb_uses_dpt(fb)) {
-		/*
-		 * The DPT object contains only one vma, so the VMA's offset
-		 * within the DPT is always 0.
-		 */
+		 
 		drm_WARN_ON(&i915->drm, plane_state->dpt_vma->node.start);
 		drm_WARN_ON(&i915->drm, offset & 0x1fffff);
 		return offset >> 9;
@@ -1102,7 +1052,7 @@ static void icl_plane_csc_load_black(struct intel_plane *plane)
 
 static int icl_plane_color_plane(const struct intel_plane_state *plane_state)
 {
-	/* Program the UV plane on planar master */
+	 
 	if (plane_state->planar_linked_plane && !plane_state->planar_slave)
 		return 1;
 	else
@@ -1123,7 +1073,7 @@ skl_plane_update_noarm(struct intel_plane *plane,
 	u32 src_w = drm_rect_width(&plane_state->uapi.src) >> 16;
 	u32 src_h = drm_rect_height(&plane_state->uapi.src) >> 16;
 
-	/* The scaler will handle the output position */
+	 
 	if (plane_state->scaler_id >= 0) {
 		crtc_x = 0;
 		crtc_y = 0;
@@ -1175,21 +1125,11 @@ skl_plane_update_arm(struct intel_plane *plane,
 	if (DISPLAY_VER(dev_priv) >= 10)
 		intel_de_write_fw(dev_priv, PLANE_COLOR_CTL(pipe, plane_id), plane_color_ctl);
 
-	/*
-	 * Enable the scaler before the plane so that we don't
-	 * get a catastrophic underrun even if the two operations
-	 * end up happening in two different frames.
-	 *
-	 * TODO: split into noarm+arm pair
-	 */
+	 
 	if (plane_state->scaler_id >= 0)
 		skl_program_plane_scaler(plane, crtc_state, plane_state);
 
-	/*
-	 * The control register self-arms if the plane was previously
-	 * disabled. Try to make the plane enable atomic by writing
-	 * the control register just before the surface register.
-	 */
+	 
 	intel_de_write_fw(dev_priv, PLANE_CTL(pipe, plane_id), plane_ctl);
 	intel_de_write_fw(dev_priv, PLANE_SURF(pipe, plane_id),
 			  skl_plane_surf(plane_state, 0));
@@ -1217,7 +1157,7 @@ icl_plane_update_noarm(struct intel_plane *plane,
 	plane_color_ctl = plane_state->color_ctl |
 		glk_plane_color_ctl_crtc(crtc_state);
 
-	/* The scaler will handle the output position */
+	 
 	if (plane_state->scaler_id >= 0) {
 		crtc_x = 0;
 		crtc_y = 0;
@@ -1244,7 +1184,7 @@ icl_plane_update_noarm(struct intel_plane *plane,
 				  upper_32_bits(plane_state->ccval));
 	}
 
-	/* FLAT CCS doesn't need to program AUX_DIST */
+	 
 	if (!HAS_FLAT_CCS(dev_priv))
 		intel_de_write_fw(dev_priv, PLANE_AUX_DIST(pipe, plane_id),
 				  skl_plane_aux_dist(plane_state, color_plane));
@@ -1260,10 +1200,7 @@ icl_plane_update_noarm(struct intel_plane *plane,
 
 	skl_write_plane_wm(plane, crtc_state);
 
-	/*
-	 * FIXME: pxp session invalidation can hit any time even at time of commit
-	 * or after the commit, display content will be garbage.
-	 */
+	 
 	if (plane_state->force_black)
 		icl_plane_csc_load_black(plane);
 
@@ -1284,23 +1221,13 @@ icl_plane_update_arm(struct intel_plane *plane,
 	plane_ctl = plane_state->ctl |
 		skl_plane_ctl_crtc(crtc_state);
 
-	/*
-	 * Enable the scaler before the plane so that we don't
-	 * get a catastrophic underrun even if the two operations
-	 * end up happening in two different frames.
-	 *
-	 * TODO: split into noarm+arm pair
-	 */
+	 
 	if (plane_state->scaler_id >= 0)
 		skl_program_plane_scaler(plane, crtc_state, plane_state);
 
 	intel_psr2_program_plane_sel_fetch_arm(plane, crtc_state, plane_state);
 
-	/*
-	 * The control register self-arms if the plane was previously
-	 * disabled. Try to make the plane enable atomic by writing
-	 * the control register just before the surface register.
-	 */
+	 
 	intel_de_write_fw(dev_priv, PLANE_CTL(pipe, plane_id), plane_ctl);
 	intel_de_write_fw(dev_priv, PLANE_SURF(pipe, plane_id),
 			  skl_plane_surf(plane_state, color_plane));
@@ -1372,10 +1299,7 @@ static int skl_plane_check_fb(const struct intel_crtc_state *crtc_state,
 			return -EINVAL;
 		}
 
-		/*
-		 * 90/270 is not allowed with RGB64 16:16:16:16 and
-		 * Indexed 8-bit. RGB 16-bit 5:6:5 is allowed gen11 onwards.
-		 */
+		 
 		switch (fb->format->format) {
 		case DRM_FORMAT_RGB565:
 			if (DISPLAY_VER(dev_priv) >= 11)
@@ -1400,7 +1324,7 @@ static int skl_plane_check_fb(const struct intel_crtc_state *crtc_state,
 		}
 	}
 
-	/* Y-tiling is not supported in IF-ID Interlace mode */
+	 
 	if (crtc_state->hw.enable &&
 	    crtc_state->hw.adjusted_mode.flags & DRM_MODE_FLAG_INTERLACE &&
 	    fb->modifier != DRM_FORMAT_MOD_LINEAR &&
@@ -1410,7 +1334,7 @@ static int skl_plane_check_fb(const struct intel_crtc_state *crtc_state,
 		return -EINVAL;
 	}
 
-	/* Wa_1606054188:tgl,adl-s */
+	 
 	if ((IS_ALDERLAKE_S(dev_priv) || IS_TIGERLAKE(dev_priv)) &&
 	    plane_state->ckey.flags & I915_SET_COLORKEY_SOURCE &&
 	    intel_format_is_p01x(fb->format->format)) {
@@ -1431,15 +1355,7 @@ static int skl_plane_check_dst_coordinates(const struct intel_crtc_state *crtc_s
 	int crtc_w = drm_rect_width(&plane_state->uapi.dst);
 	int pipe_src_w = drm_rect_width(&crtc_state->pipe_src);
 
-	/*
-	 * Display WA #1175: glk
-	 * Planes other than the cursor may cause FIFO underflow and display
-	 * corruption if starting less than 4 pixels from the right edge of
-	 * the screen.
-	 * Besides the above WA fix the similar problem, where planes other
-	 * than the cursor ending less than 4 pixels from the left edge of the
-	 * screen may cause FIFO underflow and display corruption.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) == 10 &&
 	    (crtc_x + crtc_w < 4 || crtc_x > pipe_src_w - 4)) {
 		drm_dbg_kms(&dev_priv->drm,
@@ -1460,7 +1376,7 @@ static int skl_plane_check_nv12_rotation(const struct intel_plane_state *plane_s
 	unsigned int rotation = plane_state->hw.rotation;
 	int src_w = drm_rect_width(&plane_state->uapi.src) >> 16;
 
-	/* Display WA #1106 */
+	 
 	if (intel_format_info_is_yuv_semiplanar(fb->format, fb->modifier) &&
 	    src_w & 3 &&
 	    (rotation == DRM_MODE_ROTATE_270 ||
@@ -1475,12 +1391,7 @@ static int skl_plane_check_nv12_rotation(const struct intel_plane_state *plane_s
 static int skl_plane_max_scale(struct drm_i915_private *dev_priv,
 			       const struct drm_framebuffer *fb)
 {
-	/*
-	 * We don't yet know the final source width nor
-	 * whether we can use the HQ scaler mode. Assume
-	 * the best case.
-	 * FIXME need to properly check this later.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 10 ||
 	    !intel_format_info_is_yuv_semiplanar(fb->format, fb->modifier))
 		return 0x30000 - 1;
@@ -1583,22 +1494,13 @@ int skl_calc_main_surface_offset(const struct intel_plane_state *plane_state,
 	if (drm_WARN_ON(&dev_priv->drm, alignment && !is_power_of_2(alignment)))
 		return -EINVAL;
 
-	/*
-	 * AUX surface offset is specified as the distance from the
-	 * main surface offset, and it must be non-negative. Make
-	 * sure that is what we will get.
-	 */
+	 
 	if (aux_plane && *offset > aux_offset)
 		*offset = intel_plane_adjust_aligned_offset(x, y, plane_state, 0,
 							    *offset,
 							    aux_offset & ~(alignment - 1));
 
-	/*
-	 * When using an X-tiled surface, the plane blows up
-	 * if the x offset + width exceed the stride.
-	 *
-	 * TODO: linear and Y-tiled seem fine, Yf untested,
-	 */
+	 
 	if (fb->modifier == I915_FORMAT_MOD_X_TILED) {
 		int cpp = fb->format->cpp[0];
 
@@ -1647,11 +1549,7 @@ static int skl_check_main_surface(struct intel_plane_state *plane_state)
 	if (ret)
 		return ret;
 
-	/*
-	 * CCS AUX surface doesn't have its own x/y offsets, we must make sure
-	 * they match with the main surface x/y offsets. On DG2
-	 * there's no aux plane on fb so skip this checking.
-	 */
+	 
 	if (intel_fb_is_ccs_modifier(fb->modifier) && aux_plane) {
 		while (!skl_check_main_ccs_coordinates(plane_state, x, y,
 						       offset, aux_plane)) {
@@ -1679,10 +1577,7 @@ static int skl_check_main_surface(struct intel_plane_state *plane_state)
 	plane_state->view.color_plane[0].x = x;
 	plane_state->view.color_plane[0].y = y;
 
-	/*
-	 * Put the final coordinates back so that the src
-	 * coordinate checks will see the right values.
-	 */
+	 
 	drm_rect_translate_to(&plane_state->uapi.src,
 			      x << 16, y << 16);
 
@@ -1706,7 +1601,7 @@ static int skl_check_nv12_aux_surface(struct intel_plane_state *plane_state)
 	int h = drm_rect_height(&plane_state->uapi.src) >> 17;
 	u32 offset;
 
-	/* FIXME not quite sure how/if these apply to the chroma plane */
+	 
 	if (w > max_width || h > max_height) {
 		drm_dbg_kms(&i915->drm,
 			    "CbCr source size %dx%d too big (limit %dx%d)\n",
@@ -1811,10 +1706,7 @@ static int skl_check_plane_surface(struct intel_plane_state *plane_state)
 	if (!plane_state->uapi.visible)
 		return 0;
 
-	/*
-	 * Handle the AUX surface first since the main surface setup depends on
-	 * it.
-	 */
+	 
 	if (intel_fb_is_ccs_modifier(fb->modifier)) {
 		ret = skl_check_ccs_aux_surface(plane_state);
 		if (ret)
@@ -1879,7 +1771,7 @@ static int skl_plane_check(struct intel_crtc_state *crtc_state,
 	if (ret)
 		return ret;
 
-	/* use scaler when colorkey is not required */
+	 
 	if (!plane_state->ckey.flags && skl_fb_scalable(fb)) {
 		min_scale = 1;
 		max_scale = skl_plane_max_scale(dev_priv, fb);
@@ -1914,7 +1806,7 @@ static int skl_plane_check(struct intel_crtc_state *crtc_state,
 		plane_state->force_black = pxp_is_borked(intel_fb_obj(fb));
 	}
 
-	/* HW only has 8 bits pixel precision, disable plane if invisible */
+	 
 	if (!(plane_state->hw.alpha >> 8))
 		plane_state->uapi.visible = false;
 
@@ -1926,7 +1818,7 @@ static int skl_plane_check(struct intel_crtc_state *crtc_state,
 
 	if (intel_format_info_is_yuv_semiplanar(fb->format, fb->modifier) &&
 	    icl_is_hdr_plane(dev_priv, plane->id))
-		/* Enable and use MPEG-2 chroma siting */
+		 
 		plane_state->cus_ctl = PLANE_CUS_ENABLE |
 			PLANE_CUS_HPHASE_0 |
 			PLANE_CUS_VPHASE_SIGN_NEGATIVE | PLANE_CUS_VPHASE_0_25;
@@ -1964,7 +1856,7 @@ static struct intel_fbc *skl_plane_fbc(struct drm_i915_private *dev_priv,
 static bool skl_plane_has_planar(struct drm_i915_private *dev_priv,
 				 enum pipe pipe, enum plane_id plane_id)
 {
-	/* Display WA #0870: skl, bxt */
+	 
 	if (IS_SKYLAKE(dev_priv) || IS_BROXTON(dev_priv))
 		return false;
 
@@ -2168,12 +2060,12 @@ skl_plane_disable_flip_done(struct intel_plane *plane)
 static bool skl_plane_has_rc_ccs(struct drm_i915_private *i915,
 				 enum pipe pipe, enum plane_id plane_id)
 {
-	/* Wa_14017240301 */
+	 
 	if (IS_MTL_GRAPHICS_STEP(i915, M, STEP_A0, STEP_B0) ||
 	    IS_MTL_GRAPHICS_STEP(i915, P, STEP_A0, STEP_B0))
 		return false;
 
-	/* Wa_22011186057 */
+	 
 	if (IS_ALDERLAKE_P(i915) && IS_DISPLAY_STEP(i915, STEP_A0, STEP_B0))
 		return false;
 
@@ -2194,16 +2086,16 @@ static bool gen12_plane_has_mc_ccs(struct drm_i915_private *i915,
 	if (DISPLAY_VER(i915) < 12)
 		return false;
 
-	/* Wa_14010477008 */
+	 
 	if (IS_DG1(i915) || IS_ROCKETLAKE(i915) ||
 		(IS_TIGERLAKE(i915) && IS_DISPLAY_STEP(i915, STEP_A0, STEP_D0)))
 		return false;
 
-	/* Wa_22011186057 */
+	 
 	if (IS_ALDERLAKE_P(i915) && IS_DISPLAY_STEP(i915, STEP_A0, STEP_B0))
 		return false;
 
-	/* Wa_14013215631 */
+	 
 	if (IS_DG2_DISPLAY_STEP(i915, STEP_A0, STEP_C0))
 		return false;
 
@@ -2468,7 +2360,7 @@ skl_get_initial_plane_config(struct intel_crtc *crtc,
 		else
 			fb->modifier = I915_FORMAT_MOD_Y_TILED;
 		break;
-	case PLANE_CTL_TILED_YF: /* aka PLANE_CTL_TILED_4 on XE_LPD+ */
+	case PLANE_CTL_TILED_YF:  
 		if (HAS_4TILE(dev_priv)) {
 			u32 rc_mask = PLANE_CTL_RENDER_DECOMPRESSION_ENABLE |
 				      PLANE_CTL_CLEAR_COLOR_DISABLE;
@@ -2499,10 +2391,7 @@ skl_get_initial_plane_config(struct intel_crtc *crtc,
 		goto error;
 	}
 
-	/*
-	 * DRM_MODE_ROTATE_ is counter clockwise to stay compatible with Xrandr
-	 * while i915 HW rotation is clockwise, thats why this swapping.
-	 */
+	 
 	switch (val & PLANE_CTL_ROTATE_MASK) {
 	case PLANE_CTL_ROTATE_0:
 		plane_config->rotation = DRM_MODE_ROTATE_0;
@@ -2521,7 +2410,7 @@ skl_get_initial_plane_config(struct intel_crtc *crtc,
 	if (DISPLAY_VER(dev_priv) >= 11 && val & PLANE_CTL_FLIP_HORIZONTAL)
 		plane_config->rotation |= DRM_MODE_REFLECT_X;
 
-	/* 90/270 degree rotation would require extra work */
+	 
 	if (drm_rotation_90_or_270(plane_config->rotation))
 		goto error;
 

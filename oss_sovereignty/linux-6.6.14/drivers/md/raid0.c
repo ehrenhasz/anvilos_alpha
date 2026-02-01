@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-   raid0.c : Multiple Devices driver for Linux
-	     Copyright (C) 1994-96 Marc ZYNGIER
-	     <zyngier@ufr-info-p7.ibp.fr> or
-	     <maz@gloups.fdn.fr>
-	     Copyright (C) 1999, 2000 Ingo Molnar, Red Hat
 
-   RAID-0 management functions.
-
-*/
+ 
 
 #include <linux/blkdev.h>
 #include <linux/seq_file.h>
@@ -29,9 +20,7 @@ module_param(default_layout, int, 0644);
 	 (1L << MD_HAS_PPL) |		\
 	 (1L << MD_HAS_MULTIPLE_PPLS))
 
-/*
- * inform the user of the raid configuration
-*/
+ 
 static void dump_zones(struct mddev *mddev)
 {
 	int j, k;
@@ -79,7 +68,7 @@ static int create_strip_zones(struct mddev *mddev, struct r0conf **private_conf)
 			 rdev1->bdev);
 		c = 0;
 
-		/* round size to chunk_size */
+		 
 		sectors = rdev1->sectors;
 		sector_div(sectors, mddev->chunk_sectors);
 		rdev1->sectors = sectors * mddev->chunk_sectors;
@@ -101,10 +90,7 @@ static int create_strip_zones(struct mddev *mddev, struct r0conf **private_conf)
 				break;
 			}
 			if (rdev2->sectors == rdev1->sectors) {
-				/*
-				 * Not unique, don't count it as a new
-				 * group
-				 */
+				 
 				pr_debug("md/raid0:%s:   EQUAL\n",
 					 mdname(mddev));
 				c = 1;
@@ -124,10 +110,7 @@ static int create_strip_zones(struct mddev *mddev, struct r0conf **private_conf)
 	pr_debug("md/raid0:%s: FINAL %d zones\n",
 		 mdname(mddev), conf->nr_strip_zones);
 
-	/*
-	 * now since we have the hard sector sizes, we can make sure
-	 * chunk size is a multiple of that sector size
-	 */
+	 
 	if ((mddev->chunk_sectors << 9) % blksize) {
 		pr_warn("md/raid0:%s: chunk_size of %d not multiple of block size %d\n",
 			mdname(mddev),
@@ -149,9 +132,7 @@ static int create_strip_zones(struct mddev *mddev, struct r0conf **private_conf)
 	if (!conf->devlist)
 		goto abort;
 
-	/* The first zone must contain all devices, so here we check that
-	 * there is a proper alignment of slots to devices and find them all
-	 */
+	 
 	zone = &conf->strip_zone[0];
 	cnt = 0;
 	smallest = NULL;
@@ -161,15 +142,13 @@ static int create_strip_zones(struct mddev *mddev, struct r0conf **private_conf)
 		int j = rdev1->raid_disk;
 
 		if (mddev->level == 10) {
-			/* taking over a raid10-n2 array */
+			 
 			j /= 2;
 			rdev1->new_raid_disk = j;
 		}
 
 		if (mddev->level == 1) {
-			/* taiking over a raid1 array-
-			 * we have only one active disk
-			 */
+			 
 			j = 0;
 			rdev1->new_raid_disk = j;
 		}
@@ -205,7 +184,7 @@ static int create_strip_zones(struct mddev *mddev, struct r0conf **private_conf)
 
 	curr_zone_end = zone->zone_end;
 
-	/* now do the other zones */
+	 
 	for (i = 1; i < conf->nr_strip_zones; i++)
 	{
 		int j;
@@ -276,7 +255,7 @@ static int create_strip_zones(struct mddev *mddev, struct r0conf **private_conf)
 
 			sector_div(first_sector, mddev->chunk_sectors);
 			zone = conf->strip_zone + i;
-			/* disk_shift is first disk index used in the zone */
+			 
 			zone->disk_shift = sector_div(first_sector,
 						      zone->nb_dev);
 		}
@@ -294,9 +273,7 @@ abort:
 	return err;
 }
 
-/* Find the zone which holds a particular offset
- * Update *sectorp to be an offset in that zone
- */
+ 
 static struct strip_zone *find_zone(struct r0conf *conf,
 				    sector_t *sectorp)
 {
@@ -313,10 +290,7 @@ static struct strip_zone *find_zone(struct r0conf *conf,
 	BUG();
 }
 
-/*
- * remaps the bio to the target device. we separate two flows.
- * power 2 flow and a general flow for the sake of performance
-*/
+ 
 static struct md_rdev *map_sector(struct mddev *mddev, struct strip_zone *zone,
 				sector_t sector, sector_t *sector_offset)
 {
@@ -328,23 +302,19 @@ static struct md_rdev *map_sector(struct mddev *mddev, struct strip_zone *zone,
 
 	if (is_power_of_2(chunk_sects)) {
 		int chunksect_bits = ffz(~chunk_sects);
-		/* find the sector offset inside the chunk */
+		 
 		sect_in_chunk  = sector & (chunk_sects - 1);
 		sector >>= chunksect_bits;
-		/* chunk in zone */
+		 
 		chunk = *sector_offset;
-		/* quotient is the chunk in real device*/
+		 
 		sector_div(chunk, zone->nb_dev << chunksect_bits);
 	} else{
 		sect_in_chunk = sector_div(sector, chunk_sects);
 		chunk = *sector_offset;
 		sector_div(chunk, chunk_sects * zone->nb_dev);
 	}
-	/*
-	*  position the bio over the real device
-	*  real sector = chunk in device + starting of zone
-	*	+ the position in the chunk
-	*/
+	 
 	*sector_offset = (chunk * chunk_sects) + sect_in_chunk;
 	return conf->devlist[(zone - conf->strip_zone)*raid_disks
 			     + sector_div(sector, zone->nb_dev)];
@@ -391,7 +361,7 @@ static int raid0_run(struct mddev *mddev)
 	if (md_check_no_bitmap(mddev))
 		return -EINVAL;
 
-	/* if private is not null, we are here after takeover */
+	 
 	if (mddev->private == NULL) {
 		ret = create_strip_zones(mddev, &conf);
 		if (ret < 0)
@@ -415,7 +385,7 @@ static int raid0_run(struct mddev *mddev)
 		}
 	}
 
-	/* calculate array device size */
+	 
 	md_set_array_sectors(mddev, raid0_size(mddev, 0, 0));
 
 	pr_debug("md/raid0:%s: md_size is %llu sectors.\n",
@@ -431,15 +401,7 @@ static int raid0_run(struct mddev *mddev)
 	return ret;
 }
 
-/*
- * Convert disk_index to the disk order in which it is read/written.
- *  For example, if we have 4 disks, they are numbered 0,1,2,3. If we
- *  write the disks starting at disk 3, then the read/write order would
- *  be disk 3, then 0, then 1, and then disk 2 and we want map_disk_shift()
- *  to map the disks as follows 0,1,2,3 => 1,2,3,0. So disk 0 would map
- *  to 1, 1 to 2, 2 to 3, and 3 to 0. That way we can compare disks in
- *  that 'output' space to understand the read/write disk ordering.
- */
+ 
 static int map_disk_shift(int disk_index, int num_disks, int disk_shift)
 {
 	return ((disk_index + num_disks - disk_shift) % num_disks);
@@ -478,7 +440,7 @@ static void raid0_handle_discard(struct mddev *mddev, struct bio *bio)
 	if (zone != conf->strip_zone)
 		end = end - zone[-1].zone_end;
 
-	/* Now start and end is the offset in zone */
+	 
 	stripe_size = zone->nb_dev * mddev->chunk_sectors;
 
 	first_stripe_index = start;
@@ -486,7 +448,7 @@ static void raid0_handle_discard(struct mddev *mddev, struct bio *bio)
 	last_stripe_index = end;
 	sector_div(last_stripe_index, stripe_size);
 
-	/* In the first zone the original and alternate layouts are the same */
+	 
 	if ((conf->layout == RAID0_ORIG_LAYOUT) && (zone != conf->strip_zone)) {
 		sector_div(orig_start, mddev->chunk_sectors);
 		start_disk_index = sector_div(orig_start, zone->nb_dev);
@@ -650,7 +612,7 @@ static void *raid0_takeover_raid45(struct mddev *mddev)
 	}
 
 	rdev_for_each(rdev, mddev) {
-		/* check slot number for a disk */
+		 
 		if (rdev->raid_disk == mddev->raid_disks-1) {
 			pr_warn("md/raid0:%s: raid5 must have missing parity disk!\n",
 				mdname(mddev));
@@ -659,13 +621,13 @@ static void *raid0_takeover_raid45(struct mddev *mddev)
 		rdev->sectors = mddev->dev_sectors;
 	}
 
-	/* Set new parameters */
+	 
 	mddev->new_level = 0;
 	mddev->new_layout = 0;
 	mddev->new_chunk_sectors = mddev->chunk_sectors;
 	mddev->raid_disks--;
 	mddev->delta_disks = -1;
-	/* make sure it will be not marked as dirty */
+	 
 	mddev->recovery_cp = MaxSector;
 	mddev_clear_unsupported_flags(mddev, UNSUPPORTED_MDDEV_FLAGS);
 
@@ -678,12 +640,7 @@ static void *raid0_takeover_raid10(struct mddev *mddev)
 {
 	struct r0conf *priv_conf;
 
-	/* Check layout:
-	 *  - far_copies must be 1
-	 *  - near_copies must be 2
-	 *  - disks number must be even
-	 *  - all mirrors must be already degraded
-	 */
+	 
 	if (mddev->layout != ((1 << 8) + 2)) {
 		pr_warn("md/raid0:%s:: Raid0 cannot takeover layout: 0x%x\n",
 			mdname(mddev),
@@ -701,14 +658,14 @@ static void *raid0_takeover_raid10(struct mddev *mddev)
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* Set new parameters */
+	 
 	mddev->new_level = 0;
 	mddev->new_layout = 0;
 	mddev->new_chunk_sectors = mddev->chunk_sectors;
 	mddev->delta_disks = - mddev->raid_disks / 2;
 	mddev->raid_disks += mddev->delta_disks;
 	mddev->degraded = 0;
-	/* make sure it will be not marked as dirty */
+	 
 	mddev->recovery_cp = MaxSector;
 	mddev_clear_unsupported_flags(mddev, UNSUPPORTED_MDDEV_FLAGS);
 
@@ -721,37 +678,32 @@ static void *raid0_takeover_raid1(struct mddev *mddev)
 	struct r0conf *priv_conf;
 	int chunksect;
 
-	/* Check layout:
-	 *  - (N - 1) mirror drives must be already faulty
-	 */
+	 
 	if ((mddev->raid_disks - 1) != mddev->degraded) {
 		pr_err("md/raid0:%s: (N - 1) mirrors drives must be already faulty!\n",
 		       mdname(mddev));
 		return ERR_PTR(-EINVAL);
 	}
 
-	/*
-	 * a raid1 doesn't have the notion of chunk size, so
-	 * figure out the largest suitable size we can use.
-	 */
-	chunksect = 64 * 2; /* 64K by default */
+	 
+	chunksect = 64 * 2;  
 
-	/* The array must be an exact multiple of chunksize */
+	 
 	while (chunksect && (mddev->array_sectors & (chunksect - 1)))
 		chunksect >>= 1;
 
 	if ((chunksect << 9) < PAGE_SIZE)
-		/* array size does not allow a suitable chunk size */
+		 
 		return ERR_PTR(-EINVAL);
 
-	/* Set new parameters */
+	 
 	mddev->new_level = 0;
 	mddev->new_layout = 0;
 	mddev->new_chunk_sectors = chunksect;
 	mddev->chunk_sectors = chunksect;
 	mddev->delta_disks = 1 - mddev->raid_disks;
 	mddev->raid_disks = 1;
-	/* make sure it will be not marked as dirty */
+	 
 	mddev->recovery_cp = MaxSector;
 	mddev_clear_unsupported_flags(mddev, UNSUPPORTED_MDDEV_FLAGS);
 
@@ -761,12 +713,7 @@ static void *raid0_takeover_raid1(struct mddev *mddev)
 
 static void *raid0_takeover(struct mddev *mddev)
 {
-	/* raid0 can take over:
-	 *  raid4 - if all data disks are active.
-	 *  raid5 - providing it is Raid4 layout and one disk is faulty
-	 *  raid10 - assuming we have all necessary active disks
-	 *  raid1 - with (N -1) mirror drives faulty
-	 */
+	 
 
 	if (mddev->bitmap) {
 		pr_warn("md/raid0: %s: cannot takeover array with bitmap\n",
@@ -829,6 +776,6 @@ module_init(raid0_init);
 module_exit(raid0_exit);
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("RAID0 (striping) personality for MD");
-MODULE_ALIAS("md-personality-2"); /* RAID0 */
+MODULE_ALIAS("md-personality-2");  
 MODULE_ALIAS("md-raid0");
 MODULE_ALIAS("md-level-0");

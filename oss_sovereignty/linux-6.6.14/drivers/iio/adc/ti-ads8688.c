@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Prevas A/S
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -40,14 +38,7 @@
 #define ADS8688_REALBITS		16
 #define ADS8688_MAX_CHANNELS		8
 
-/*
- * enum ads8688_range - ADS8688 reference voltage range
- * @ADS8688_PLUSMINUS25VREF: Device is configured for input range ±2.5 * VREF
- * @ADS8688_PLUSMINUS125VREF: Device is configured for input range ±1.25 * VREF
- * @ADS8688_PLUSMINUS0625VREF: Device is configured for input range ±0.625 * VREF
- * @ADS8688_PLUS25VREF: Device is configured for input range 0 - 2.5 * VREF
- * @ADS8688_PLUS125VREF: Device is configured for input range 0 - 1.25 * VREF
- */
+ 
 enum ads8688_range {
 	ADS8688_PLUSMINUS25VREF,
 	ADS8688_PLUSMINUS125VREF,
@@ -298,14 +289,14 @@ static int ads8688_write_raw(struct iio_dev *indio_dev,
 	mutex_lock(&st->lock);
 	switch (mask) {
 	case IIO_CHAN_INFO_SCALE:
-		/* If the offset is 0 the ±2.5 * VREF mode is not available */
+		 
 		offset = ads8688_range_def[st->range[chan->channel]].offset;
 		if (offset == 0 && val2 == ads8688_range_def[0].scale * st->vref_mv) {
 			mutex_unlock(&st->lock);
 			return -EINVAL;
 		}
 
-		/* Lookup new mode */
+		 
 		for (i = 0; i < ARRAY_SIZE(ads8688_range_def); i++)
 			if (val2 == ads8688_range_def[i].scale * st->vref_mv &&
 			    offset == ads8688_range_def[i].offset) {
@@ -315,20 +306,14 @@ static int ads8688_write_raw(struct iio_dev *indio_dev,
 			}
 		break;
 	case IIO_CHAN_INFO_OFFSET:
-		/*
-		 * There are only two available offsets:
-		 * 0 and -(1 << (ADS8688_REALBITS - 1))
-		 */
+		 
 		if (!(ads8688_range_def[0].offset == val ||
 		    ads8688_range_def[3].offset == val)) {
 			mutex_unlock(&st->lock);
 			return -EINVAL;
 		}
 
-		/*
-		 * If the device are in ±2.5 * VREF mode, it's not allowed to
-		 * switch to a mode where the offset is 0
-		 */
+		 
 		if (val == 0 &&
 		    st->range[chan->channel] == ADS8688_PLUSMINUS25VREF) {
 			mutex_unlock(&st->lock);
@@ -337,7 +322,7 @@ static int ads8688_write_raw(struct iio_dev *indio_dev,
 
 		scale = ads8688_range_def[st->range[chan->channel]].scale;
 
-		/* Lookup new mode */
+		 
 		for (i = 0; i < ARRAY_SIZE(ads8688_range_def); i++)
 			if (val == ads8688_range_def[i].offset &&
 			    scale == ads8688_range_def[i].scale) {
@@ -381,7 +366,7 @@ static irqreturn_t ads8688_trigger_handler(int irq, void *p)
 {
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
-	/* Ensure naturally aligned timestamp */
+	 
 	u16 buffer[ADS8688_MAX_CHANNELS + sizeof(s64)/sizeof(u16)] __aligned(8);
 	int i, j = 0;
 
@@ -435,7 +420,7 @@ static int ads8688_probe(struct spi_device *spi)
 
 		st->vref_mv = ret / 1000;
 	} else {
-		/* Use internal reference */
+		 
 		st->vref_mv = ADS8688_VREF_MV;
 	}
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car H3 System Controller
- *
- * Copyright (C) 2016-2017 Glider bvba
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/kernel.h>
@@ -48,18 +44,16 @@ static struct rcar_sysc_area r8a7795_areas[] __initdata = {
 };
 
 
-	/*
-	 * Fixups for R-Car H3 revisions
-	 */
+	 
 
-#define NO_EXTMASK	BIT(1)		/* Missing SYSCEXTMASK register */
+#define NO_EXTMASK	BIT(1)		 
 
 static const struct soc_device_attribute r8a7795_quirks_match[] __initconst = {
 	{
 		.soc_id = "r8a7795", .revision = "ES2.*",
 		.data = (void *)(NO_EXTMASK),
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init r8a7795_sysc_init(void)

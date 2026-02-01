@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2011-2013
- *
- * Author: Mathieu Poirier <mathieu.poirier@linaro.org> for ST-Ericsson
- * Author: Jonas Aaberg <jonas.aberg@stericsson.com> for ST-Ericsson
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -18,10 +13,10 @@
 
 #include <linux/mfd/dbx500-prcmu.h>
 
-#define WATCHDOG_TIMEOUT 600 /* 10 minutes */
+#define WATCHDOG_TIMEOUT 600  
 
 #define WATCHDOG_MIN	0
-#define WATCHDOG_MAX28	268435  /* 28 bit resolution in ms == 268435.455 s */
+#define WATCHDOG_MAX28	268435   
 
 static unsigned int timeout = WATCHDOG_TIMEOUT;
 module_param(timeout, uint, 0);
@@ -86,14 +81,14 @@ static int db8500_wdt_probe(struct platform_device *pdev)
 	struct device *dev = &pdev->dev;
 	int ret;
 
-	timeout = 600; /* Default to 10 minutes */
+	timeout = 600;  
 	db8500_wdt.parent = dev;
 	watchdog_set_nowayout(&db8500_wdt, nowayout);
 
-	/* disable auto off on sleep */
+	 
 	prcmu_config_a9wdog(PRCMU_WDOG_CPU1, false);
 
-	/* set HW initial value */
+	 
 	prcmu_load_a9wdog(PRCMU_WDOG_ALL, timeout * 1000);
 
 	ret = devm_watchdog_register_device(dev, &db8500_wdt);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Type-C Connector Class Port Mapping Utility
- *
- * Copyright (C) 2021, Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/component.h>
@@ -63,17 +58,7 @@ int typec_link_ports(struct typec_port *con)
 	if (!arg.match)
 		return 0;
 
-	/*
-	 * REVISIT: Now each connector can have only a single component master.
-	 * So far only the USB ports connected to the USB Type-C connector share
-	 * the _PLD with it, but if there one day is something else (like maybe
-	 * the DisplayPort ACPI device object) that also shares the _PLD with
-	 * the connector, every one of those needs to have its own component
-	 * master, because each different type of component needs to be bind to
-	 * the connector independently of the other components. That requires
-	 * improvements to the component framework. Right now you can only have
-	 * one master per device.
-	 */
+	 
 	return component_master_add_with_match(&con->dev, &typec_aggregate_ops, arg.match);
 }
 

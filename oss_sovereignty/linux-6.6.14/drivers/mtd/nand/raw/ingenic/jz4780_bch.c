@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ4780 BCH controller driver
- *
- * Copyright (c) 2015 Imagination Technologies
- * Author: Alex Smith <alex.smith@imgtec.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -56,7 +51,7 @@
 
 #define BCH_CLK_RATE			(200 * 1000 * 1000)
 
-/* Timeout for BCH calculation/correction. */
+ 
 #define BCH_TIMEOUT_US			100000
 
 static void jz4780_bch_reset(struct ingenic_ecc *bch,
@@ -64,15 +59,15 @@ static void jz4780_bch_reset(struct ingenic_ecc *bch,
 {
 	u32 reg;
 
-	/* Clear interrupt status. */
+	 
 	writel(readl(bch->base + BCH_BHINT), bch->base + BCH_BHINT);
 
-	/* Set up BCH count register. */
+	 
 	reg = params->size << BCH_BHCNT_BLOCKSIZE_SHIFT;
 	reg |= params->bytes << BCH_BHCNT_PARITYSIZE_SHIFT;
 	writel(reg, bch->base + BCH_BHCNT);
 
-	/* Initialise and enable BCH. */
+	 
 	reg = BCH_BHCR_BCHE | BCH_BHCR_INIT;
 	reg |= params->strength << BCH_BHCR_BSEL_SHIFT;
 	if (encode)
@@ -139,12 +134,7 @@ static bool jz4780_bch_wait_complete(struct ingenic_ecc *bch, unsigned int irq,
 	u32 reg;
 	int ret;
 
-	/*
-	 * While we could use interrupts here and sleep until the operation
-	 * completes, the controller works fairly quickly (usually a few
-	 * microseconds) and so the overhead of sleeping until we get an
-	 * interrupt quite noticeably decreases performance.
-	 */
+	 
 	ret = readl_poll_timeout(bch->base + BCH_BHINT, reg,
 				 (reg & irq) == irq, 0, BCH_TIMEOUT_US);
 	if (ret)
@@ -205,7 +195,7 @@ static int jz4780_correct(struct ingenic_ecc *bch,
 		goto out;
 	}
 
-	/* Correct any detected errors. */
+	 
 	if (reg & BCH_BHINT_ERR) {
 		count = (reg & BCH_BHINT_ERRC_MASK) >> BCH_BHINT_ERRC_SHIFT;
 		ret = (reg & BCH_BHINT_TERRC_MASK) >> BCH_BHINT_TERRC_SHIFT;

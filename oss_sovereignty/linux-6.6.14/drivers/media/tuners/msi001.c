@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Mirics MSi001 silicon tuner driver
- *
- * Copyright (C) 2013 Antti Palosaari <crope@iki.fi>
- * Copyright (C) 2014 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/gcd.h>
@@ -31,7 +26,7 @@ struct msi001_dev {
 	struct spi_device *spi;
 	struct v4l2_subdev sd;
 
-	/* Controls */
+	 
 	struct v4l2_ctrl_handler hdl;
 	struct v4l2_ctrl *bandwidth_auto;
 	struct v4l2_ctrl *bandwidth;
@@ -49,7 +44,7 @@ static inline struct msi001_dev *sd_to_msi001_dev(struct v4l2_subdev *sd)
 
 static int msi001_wreg(struct msi001_dev *dev, u32 data)
 {
-	/* Register format: 4 bits addr + 20 bits value */
+	 
 	return spi_write(dev->spi, &data, 3);
 };
 
@@ -94,47 +89,41 @@ static int msi001_set_tuner(struct msi001_dev *dev)
 		u8 mode;
 		u8 div_lo;
 	} band_lut[] = {
-		{ 50000000, 0xe1, 16}, /* AM_MODE2, antenna 2 */
-		{108000000, 0x42, 32}, /* VHF_MODE */
-		{330000000, 0x44, 16}, /* B3_MODE */
-		{960000000, 0x48,  4}, /* B45_MODE */
-		{      ~0U, 0x50,  2}, /* BL_MODE */
+		{ 50000000, 0xe1, 16},  
+		{108000000, 0x42, 32},  
+		{330000000, 0x44, 16},  
+		{960000000, 0x48,  4},  
+		{      ~0U, 0x50,  2},  
 	};
 	static const struct {
 		u32 freq;
 		u8 filter_mode;
 	} if_freq_lut[] = {
-		{      0, 0x03}, /* Zero IF */
-		{ 450000, 0x02}, /* 450 kHz IF */
-		{1620000, 0x01}, /* 1.62 MHz IF */
-		{2048000, 0x00}, /* 2.048 MHz IF */
+		{      0, 0x03},  
+		{ 450000, 0x02},  
+		{1620000, 0x01},  
+		{2048000, 0x00},  
 	};
 	static const struct {
 		u32 freq;
 		u8 val;
 	} bandwidth_lut[] = {
-		{ 200000, 0x00}, /* 200 kHz */
-		{ 300000, 0x01}, /* 300 kHz */
-		{ 600000, 0x02}, /* 600 kHz */
-		{1536000, 0x03}, /* 1.536 MHz */
-		{5000000, 0x04}, /* 5 MHz */
-		{6000000, 0x05}, /* 6 MHz */
-		{7000000, 0x06}, /* 7 MHz */
-		{8000000, 0x07}, /* 8 MHz */
+		{ 200000, 0x00},  
+		{ 300000, 0x01},  
+		{ 600000, 0x02},  
+		{1536000, 0x03},  
+		{5000000, 0x04},  
+		{6000000, 0x05},  
+		{7000000, 0x06},  
+		{8000000, 0x07},  
 	};
 
 	unsigned int f_rf = dev->f_tuner;
 
-	/*
-	 * bandwidth (Hz)
-	 * 200000, 300000, 600000, 1536000, 5000000, 6000000, 7000000, 8000000
-	 */
+	 
 	unsigned int bandwidth;
 
-	/*
-	 * intermediate frequency (Hz)
-	 * 0, 450000, 1620000, 2048000
-	 */
+	 
 	unsigned int f_if = 0;
 	#define F_REF 24000000
 	#define DIV_PRE_N 4
@@ -154,7 +143,7 @@ static int msi001_set_tuner(struct msi001_dev *dev)
 		goto err;
 	}
 
-	/* AM_MODE is upconverted */
+	 
 	if ((mode >> 0) & 0x1)
 		f_if1 =  5 * F_REF;
 	else
@@ -171,7 +160,7 @@ static int msi001_set_tuner(struct msi001_dev *dev)
 		goto err;
 	}
 
-	/* filters */
+	 
 	bandwidth = dev->bandwidth->val;
 	bandwidth = clamp(bandwidth, 200000U, 8000000U);
 
@@ -190,39 +179,25 @@ static int msi001_set_tuner(struct msi001_dev *dev)
 
 	dev_dbg(&spi->dev, "bandwidth selected=%d\n", bandwidth_lut[i].freq);
 
-	/*
-	 * Fractional-N synthesizer
-	 *
-	 *           +---------------------------------------+
-	 *           v                                       |
-	 *  Fref   +----+     +-------+         +----+     +------+     +---+
-	 * ------> | PD | --> |  VCO  | ------> | /4 | --> | /N.F | <-- | K |
-	 *         +----+     +-------+         +----+     +------+     +---+
-	 *                      |
-	 *                      |
-	 *                      v
-	 *                    +-------+  Fout
-	 *                    | /Rout | ------>
-	 *                    +-------+
-	 */
+	 
 
-	/* Calculate PLL integer and fractional control word. */
+	 
 	f_vco = (u64) (f_rf + f_if + f_if1) * div_lo;
 	div_n = div_u64_rem(f_vco, DIV_PRE_N * F_REF, &k);
 	k_thresh = (DIV_PRE_N * F_REF) / F_VCO_STEP;
 	k_frac = div_u64((u64) k * k_thresh, (DIV_PRE_N * F_REF));
 
-	/* Find out greatest common divisor and divide to smaller. */
+	 
 	uitmp = gcd(k_thresh, k_frac);
 	k_thresh /= uitmp;
 	k_frac /= uitmp;
 
-	/* Force divide to reg max. Resolution will be reduced. */
+	 
 	uitmp = DIV_ROUND_UP(k_thresh, 4095);
 	k_thresh = DIV_ROUND_CLOSEST(k_thresh, uitmp);
 	k_frac = DIV_ROUND_CLOSEST(k_frac, uitmp);
 
-	/* Calculate real RF set. */
+	 
 	uitmp = (unsigned int) F_REF * DIV_PRE_N * div_n;
 	uitmp += (unsigned int) F_REF * DIV_PRE_N * k_frac / k_thresh;
 	uitmp /= div_lo;
@@ -436,7 +411,7 @@ static int msi001_probe(struct spi_device *spi)
 	dev->f_tuner = bands[0].rangelow;
 	v4l2_spi_subdev_init(&dev->sd, spi, &msi001_ops);
 
-	/* Register controls */
+	 
 	v4l2_ctrl_handler_init(&dev->hdl, 5);
 	dev->bandwidth_auto = v4l2_ctrl_new_std(&dev->hdl, &msi001_ctrl_ops,
 			V4L2_CID_RF_TUNER_BANDWIDTH_AUTO, 0, 1, 1, 1);
@@ -445,7 +420,7 @@ static int msi001_probe(struct spi_device *spi)
 	if (dev->hdl.error) {
 		ret = dev->hdl.error;
 		dev_err(&spi->dev, "Could not initialize controls\n");
-		/* control init failed, free handler */
+		 
 		goto err_ctrl_handler_free;
 	}
 
@@ -459,7 +434,7 @@ static int msi001_probe(struct spi_device *spi)
 	if (dev->hdl.error) {
 		ret = dev->hdl.error;
 		dev_err(&spi->dev, "Could not initialize controls\n");
-		/* control init failed, free handler */
+		 
 		goto err_ctrl_handler_free;
 	}
 
@@ -479,10 +454,7 @@ static void msi001_remove(struct spi_device *spi)
 
 	dev_dbg(&spi->dev, "\n");
 
-	/*
-	 * Registered by v4l2_spi_new_subdev() from master driver, but we must
-	 * unregister it from here. Weird.
-	 */
+	 
 	v4l2_device_unregister_subdev(&dev->sd);
 	v4l2_ctrl_handler_free(&dev->hdl);
 	kfree(dev);

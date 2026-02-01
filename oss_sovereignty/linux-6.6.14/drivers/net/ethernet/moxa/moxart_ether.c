@@ -1,16 +1,4 @@
-/* MOXA ART Ethernet (RTL8201CP) driver.
- *
- * Copyright (C) 2013 Jonas Jensen
- *
- * Jonas Jensen <jonas.jensen@gmail.com>
- *
- * Based on code from
- * Moxa Technology Co., Ltd. <www.moxa.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -155,7 +143,7 @@ static void moxart_mac_setup_desc_ring(struct net_device *ndev)
 
 	priv->rx_head = 0;
 
-	/* reset the MAC controller TX/RX descriptor base address */
+	 
 	writel(priv->tx_base, priv->base + REG_TXR_BASE_ADDRESS);
 	writel(priv->rx_base, priv->base + REG_RXR_BASE_ADDRESS);
 }
@@ -188,13 +176,13 @@ static int moxart_mac_stop(struct net_device *ndev)
 
 	netif_stop_queue(ndev);
 
-	/* disable all interrupts */
+	 
 	writel(0, priv->base + REG_INTERRUPT_MASK);
 
-	/* disable all functions */
+	 
 	writel(0, priv->base + REG_MAC_CTRL);
 
-	/* unmap areas mapped in moxart_mac_setup_desc_ring() */
+	 
 	for (i = 0; i < RX_DESC_NUM; i++)
 		dma_unmap_single(&priv->pdev->dev, priv->rx_mapping[i],
 				 priv->rx_buf_size, DMA_FROM_DEVICE);
@@ -217,7 +205,7 @@ static int moxart_rx_poll(struct napi_struct *napi, int budget)
 	while (rx < budget) {
 		desc = priv->rx_desc_base + (RX_REG_DESC_SIZE * rx_head);
 		desc0 = moxart_desc_read(desc + RX_REG_OFFSET_DESC0);
-		rmb(); /* ensure desc0 is up to date */
+		rmb();  
 
 		if (desc0 & RX_DESC0_DMA_OWN)
 			break;
@@ -259,7 +247,7 @@ static int moxart_rx_poll(struct napi_struct *napi, int budget)
 			ndev->stats.multicast++;
 
 rx_next:
-		wmb(); /* prevent setting ownership back too early */
+		wmb();  
 		moxart_desc_write(RX_DESC0_DMA_OWN, desc + RX_REG_OFFSET_DESC0);
 
 		rx_head = RX_NEXT(rx_head);
@@ -349,7 +337,7 @@ static netdev_tx_t moxart_mac_start_xmit(struct sk_buff *skb,
 		ndev->stats.tx_dropped++;
 		goto out_unlock;
 	}
-	rmb(); /* ensure data is only read that had TX_DESC0_DMA_OWN cleared */
+	rmb();  
 
 	len = skb->len > TX_BUF_SIZE ? TX_BUF_SIZE : skb->len;
 
@@ -381,10 +369,10 @@ static netdev_tx_t moxart_mac_start_xmit(struct sk_buff *skb,
 	if (tx_head == TX_DESC_NUM_MASK)
 		txdes1 |= TX_DESC1_END;
 	moxart_desc_write(txdes1, desc + TX_REG_OFFSET_DESC1);
-	wmb(); /* flush descriptor before transferring ownership */
+	wmb();  
 	moxart_desc_write(TX_DESC0_DMA_OWN, desc + TX_REG_OFFSET_DESC0);
 
-	/* start to send packet */
+	 
 	writel(0xffffffff, priv->base + REG_TX_POLL_DEMAND);
 
 	priv->tx_head = TX_NEXT(tx_head);

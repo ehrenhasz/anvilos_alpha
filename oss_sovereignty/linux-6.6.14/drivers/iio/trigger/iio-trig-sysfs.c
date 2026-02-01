@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -78,7 +76,7 @@ static const struct attribute_group *iio_sysfs_trig_groups[] = {
 };
 
 
-/* Nothing to actually do upon release */
+ 
 static void iio_trigger_sysfs_release(struct device *dev)
 {
 }

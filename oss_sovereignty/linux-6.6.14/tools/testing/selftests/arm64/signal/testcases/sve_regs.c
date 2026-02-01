@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 ARM Limited
- *
- * Verify that the SVE register context in signal frames is set up as
- * expected.
- */
+
+ 
 
 #include <signal.h>
 #include <ucontext.h>
@@ -24,9 +19,7 @@ static bool sve_get_vls(struct tdescr *td)
 {
 	int vq, vl;
 
-	/*
-	 * Enumerate up to SVE_VQ_MAX vector lengths
-	 */
+	 
 	for (vq = SVE_VQ_MAX; vq > 0; --vq) {
 		vl = prctl(PR_SVE_SET_VL, vq * 16);
 		if (vl == -1)
@@ -34,13 +27,13 @@ static bool sve_get_vls(struct tdescr *td)
 
 		vl &= PR_SVE_VL_LEN_MASK;
 
-		/* Skip missing VLs */
+		 
 		vq = sve_vq_from_vl(vl);
 
 		vls[nvls++] = vl;
 	}
 
-	/* We need at least one VL */
+	 
 	if (nvls < 1) {
 		fprintf(stderr, "Only %d VL supported\n", nvls);
 		return false;
@@ -51,7 +44,7 @@ static bool sve_get_vls(struct tdescr *td)
 
 static void setup_sve_regs(void)
 {
-	/* RDVL x16, #1 so we should have SVE regs; real data is TODO */
+	 
 	asm volatile(".inst 0x04bf5030" : : : "x16" );
 }
 
@@ -69,10 +62,7 @@ static int do_one_sve_vl(struct tdescr *td, siginfo_t *si, ucontext_t *uc,
 		return 1;
 	}
 
-	/*
-	 * Get a signal context which should have a SVE frame and registers
-	 * in it.
-	 */
+	 
 	setup_sve_regs();
 	if (!get_current_context(td, &context.uc, sizeof(context)))
 		return 1;
@@ -90,7 +80,7 @@ static int do_one_sve_vl(struct tdescr *td, siginfo_t *si, ucontext_t *uc,
 		return 1;
 	}
 
-	/* The actual size validation is done in get_current_context() */
+	 
 	fprintf(stderr, "Got expected size %u and VL %d\n",
 		head->size, sve->vl);
 

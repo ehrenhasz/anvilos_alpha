@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * EZ-USB specific functions used by some of the USB to Serial drivers.
- *
- * Copyright (C) 1999 - 2002 Greg Kroah-Hartman (greg@kroah.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -14,7 +10,7 @@
 #include <linux/usb/ezusb.h>
 
 struct ezusb_fx_type {
-	/* EZ-USB Control and Status Register.  Bit 0 controls 8051 reset */
+	 
 	unsigned short cpucs_reg;
 	unsigned short max_internal_adress;
 };
@@ -24,7 +20,7 @@ static const struct ezusb_fx_type ezusb_fx1 = {
 	.max_internal_adress = 0x1B3F,
 };
 
-/* Commands for writing to memory */
+ 
 #define WRITE_INT_RAM 0xA0
 #define WRITE_EXT_RAM 0xA3
 
@@ -125,10 +121,7 @@ int ezusb_fx1_ihex_firmware_download(struct usb_device *dev,
 EXPORT_SYMBOL_GPL(ezusb_fx1_ihex_firmware_download);
 
 #if 0
-/*
- * Once someone one needs these fx2 functions, uncomment them
- * and add them to ezusb.h and all should be good.
- */
+ 
 static struct ezusb_fx_type ezusb_fx2 = {
 	.cpucs_reg = 0xE600,
 	.max_internal_adress = 0x3FFF,

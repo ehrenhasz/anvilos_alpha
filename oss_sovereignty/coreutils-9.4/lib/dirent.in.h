@@ -1,27 +1,4 @@
-/* A GNU-like <dirent.h>.
-   Copyright (C) 2006-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifndef _@GUARD_PREFIX@_DIRENT_H
-
-#if __GNUC__ >= 3
-@PRAGMA_SYSTEM_HEADER@
-#endif
-@PRAGMA_COLUMNS@
-
-/* The include_next requires a split double-inclusion guard.  */
+ 
 #if @HAVE_DIRENT_H@
 # @INCLUDE_NEXT@ @NEXT_DIRENT_H@
 #endif
@@ -29,41 +6,39 @@
 #ifndef _@GUARD_PREFIX@_DIRENT_H
 #define _@GUARD_PREFIX@_DIRENT_H
 
-/* This file uses _GL_ATTRIBUTE_DEALLOC, _GL_ATTRIBUTE_MALLOC,
-   _GL_ATTRIBUTE_PURE, GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* Get ino_t.  Needed on some systems, including glibc 2.8.  */
+ 
 #include <sys/types.h>
 
 #if !@HAVE_DIRENT_H@
-/* Define types DIR and 'struct dirent'.  */
+ 
 # if !GNULIB_defined_struct_dirent
 struct dirent
 {
   char d_type;
   char d_name[1];
 };
-/* Possible values for 'd_type'.  */
+ 
 #  define DT_UNKNOWN 0
-#  define DT_FIFO    1          /* FIFO */
-#  define DT_CHR     2          /* character device */
-#  define DT_DIR     4          /* directory */
-#  define DT_BLK     6          /* block device */
-#  define DT_REG     8          /* regular file */
-#  define DT_LNK    10          /* symbolic link */
-#  define DT_SOCK   12          /* socket */
-#  define DT_WHT    14          /* whiteout */
+#  define DT_FIFO    1           
+#  define DT_CHR     2           
+#  define DT_DIR     4           
+#  define DT_BLK     6           
+#  define DT_REG     8           
+#  define DT_LNK    10           
+#  define DT_SOCK   12           
+#  define DT_WHT    14           
 #  define GNULIB_defined_struct_dirent 1
 # endif
 #endif
 
 #if !@DIR_HAS_FD_MEMBER@
 # if !GNULIB_defined_DIR
-/* struct gl_directory is a type with a field 'int fd_to_close'.
-   It is needed for implementing fdopendir().  */
+ 
 struct gl_directory;
 #  if @HAVE_DIRENT_H@
 #   define DIR struct gl_directory
@@ -74,9 +49,7 @@ typedef struct gl_directory DIR;
 # endif
 #endif
 
-/* _GL_ATTRIBUTE_DEALLOC (F, I) declares that the function returns pointers
-   that can be freed by passing them as the Ith argument to the
-   function F.  */
+ 
 #ifndef _GL_ATTRIBUTE_DEALLOC
 # if __GNUC__ >= 11
 #  define _GL_ATTRIBUTE_DEALLOC(f, i) __attribute__ ((__malloc__ (f, i)))
@@ -85,9 +58,8 @@ typedef struct gl_directory DIR;
 # endif
 #endif
 
-/* _GL_ATTRIBUTE_MALLOC declares that the function returns a pointer to freshly
-   allocated memory.  */
-/* Applies to: functions.  */
+ 
+ 
 #ifndef _GL_ATTRIBUTE_MALLOC
 # if __GNUC__ >= 3 || defined __clang__
 #  define _GL_ATTRIBUTE_MALLOC __attribute__ ((__malloc__))
@@ -96,24 +68,23 @@ typedef struct gl_directory DIR;
 # endif
 #endif
 
-/* The __attribute__ feature is available in gcc versions 2.5 and later.
-   The attribute __pure__ was added in gcc 2.96.  */
+ 
 #ifndef _GL_ATTRIBUTE_PURE
 # if __GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ >= 96) || defined __clang__
 #  define _GL_ATTRIBUTE_PURE __attribute__ ((__pure__))
 # else
-#  define _GL_ATTRIBUTE_PURE /* empty */
+#  define _GL_ATTRIBUTE_PURE  
 # endif
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_ARG_NONNULL is copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
 
-/* Declare overridden functions.  */
+ 
 
 #if @GNULIB_CLOSEDIR@
 # if @REPLACE_CLOSEDIR@
@@ -163,8 +134,7 @@ _GL_CXXALIAS_SYS (opendir, DIR *, (const char *dir_name));
 _GL_CXXALIASWARN (opendir);
 #else
 # if @GNULIB_CLOSEDIR@ && !GNULIB_defined_DIR && __GNUC__ >= 11 && !defined opendir
-/* For -Wmismatched-dealloc: Associate opendir with closedir or
-   rpl_closedir.  */
+ 
 _GL_FUNCDECL_SYS (opendir, DIR *,
                   (const char *dir_name)
                   _GL_ARG_NONNULL ((1))
@@ -226,10 +196,9 @@ _GL_WARN_ON_USE (rewinddir, "rewinddir is not portable - "
 #endif
 
 #if @GNULIB_DIRFD@
-/* Return the file descriptor associated with the given directory stream,
-   or -1 if none exists.  */
+ 
 # if @REPLACE_DIRFD@
-/* On kLIBC, dirfd() is a macro that does not work.  Undefine it.  */
+ 
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE) || defined dirfd
 #   undef dirfd
 #   define dirfd rpl_dirfd
@@ -238,15 +207,14 @@ _GL_FUNCDECL_RPL (dirfd, int, (DIR *) _GL_ARG_NONNULL ((1)));
 _GL_CXXALIAS_RPL (dirfd, int, (DIR *));
 
 #  ifdef __KLIBC__
-/* Gnulib internal hooks needed to maintain the dirfd metadata.  */
+ 
 _GL_EXTERN_C int _gl_register_dirp_fd (int fd, DIR *dirp)
      _GL_ARG_NONNULL ((2));
 _GL_EXTERN_C void _gl_unregister_dirp_fd (int fd);
 #  endif
 # else
 #  if defined __cplusplus && defined GNULIB_NAMESPACE && defined dirfd
-    /* dirfd is defined as a macro and not as a function.
-       Turn it into a function and get rid of the macro.  */
+     
 static inline int (dirfd) (DIR *dp) { return dirfd (dp); }
 #   undef dirfd
 #  endif
@@ -265,11 +233,7 @@ _GL_WARN_ON_USE (dirfd, "dirfd is unportable - "
 #endif
 
 #if @GNULIB_FDOPENDIR@
-/* Open a directory stream visiting the given directory file
-   descriptor.  Return NULL and set errno if fd is not visiting a
-   directory.  On success, this function consumes fd (it will be
-   implicitly closed either by this function or by a subsequent
-   closedir).  */
+ 
 # if @REPLACE_FDOPENDIR@
 #  if !(defined __cplusplus && defined GNULIB_NAMESPACE)
 #   undef fdopendir
@@ -290,8 +254,7 @@ _GL_CXXALIAS_SYS (fdopendir, DIR *, (int fd));
 _GL_CXXALIASWARN (fdopendir);
 #else
 # if @GNULIB_CLOSEDIR@ && __GNUC__ >= 11 && !defined fdopendir
-/* For -Wmismatched-dealloc: Associate fdopendir with closedir or
-   rpl_closedir.  */
+ 
 _GL_FUNCDECL_SYS (fdopendir, DIR *,
                   (int fd)
                   _GL_ATTRIBUTE_MALLOC _GL_ATTRIBUTE_DEALLOC (closedir, 1));
@@ -306,10 +269,7 @@ _GL_WARN_ON_USE (fdopendir, "fdopendir is unportable - "
 #endif
 
 #if @GNULIB_SCANDIR@
-/* Scan the directory DIR, calling FILTER on each directory entry.
-   Entries for which FILTER returns nonzero are individually malloc'd,
-   sorted using qsort with CMP, and collected in a malloc'd array in
-   *NAMELIST.  Returns the number of entries selected, or -1 on error.  */
+ 
 # if !@HAVE_SCANDIR@
 _GL_FUNCDECL_SYS (scandir, int,
                   (const char *dir, struct dirent ***namelist,
@@ -317,8 +277,7 @@ _GL_FUNCDECL_SYS (scandir, int,
                    int (*cmp) (const struct dirent **, const struct dirent **))
                   _GL_ARG_NONNULL ((1, 2, 4)));
 # endif
-/* Need to cast, because on glibc systems, the fourth parameter is
-                        int (*cmp) (const void *, const void *).  */
+ 
 _GL_CXXALIAS_SYS_CAST (scandir, int,
                        (const char *dir, struct dirent ***namelist,
                         int (*filter) (const struct dirent *),
@@ -333,15 +292,14 @@ _GL_WARN_ON_USE (scandir, "scandir is unportable - "
 #endif
 
 #if @GNULIB_ALPHASORT@
-/* Compare two 'struct dirent' entries alphabetically.  */
+ 
 # if !@HAVE_ALPHASORT@
 _GL_FUNCDECL_SYS (alphasort, int,
                   (const struct dirent **, const struct dirent **)
                   _GL_ATTRIBUTE_PURE
                   _GL_ARG_NONNULL ((1, 2)));
 # endif
-/* Need to cast, because on glibc systems, the parameters are
-                       (const void *, const void *).  */
+ 
 _GL_CXXALIAS_SYS_CAST (alphasort, int,
                        (const struct dirent **, const struct dirent **));
 _GL_CXXALIASWARN (alphasort);
@@ -354,5 +312,5 @@ _GL_WARN_ON_USE (alphasort, "alphasort is unportable - "
 #endif
 
 
-#endif /* _@GUARD_PREFIX@_DIRENT_H */
-#endif /* _@GUARD_PREFIX@_DIRENT_H */
+#endif  
+#endif  

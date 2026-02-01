@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/module.h>
@@ -9,19 +9,17 @@
 
 #include "nf_internals.h"
 
-/* Sockopts only registered and called from user context, so
-   net locking would be overkill.  Also, [gs]etsockopt calls may
-   sleep. */
+ 
 static DEFINE_MUTEX(nf_sockopt_mutex);
 static LIST_HEAD(nf_sockopts);
 
-/* Do exclusive ranges overlap? */
+ 
 static inline int overlap(int min1, int max1, int min2, int max2)
 {
 	return max1 > min2 && min1 < max2;
 }
 
-/* Functions to register sockopt ranges (exclusive). */
+ 
 int nf_register_sockopt(struct nf_sockopt_ops *reg)
 {
 	struct nf_sockopt_ops *ops;

@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Check if we can fully utilize 4-tuples for connect().
- *
- * Rules to bind sockets to the same port when all ephemeral ports are
- * exhausted.
- *
- *   1. if there are TCP_LISTEN sockets on the port, fail to bind.
- *   2. if there are sockets without SO_REUSEADDR, fail to bind.
- *   3. if SO_REUSEADDR is disabled, fail to bind.
- *   4. if SO_REUSEADDR is enabled and SO_REUSEPORT is disabled,
- *        succeed to bind.
- *   5. if SO_REUSEADDR and SO_REUSEPORT are enabled and
- *        there is no socket having the both options and the same EUID,
- *        succeed to bind.
- *   6. fail to bind.
- *
- * Author: Kuniyuki Iwashima <kuniyu@amazon.co.jp>
- */
+
+ 
 #include <arpa/inet.h>
 #include <netinet/in.h>
 #include <sys/socket.h>

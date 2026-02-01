@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * A hack to create a platform device from a DMI entry.  This will
- * allow autoloading of the IPMI drive based on SMBIOS entries.
- */
+
+ 
 
 #define pr_fmt(fmt) "%s" fmt, "ipmi:dmi: "
 #define dev_fmt pr_fmt
@@ -22,7 +19,7 @@
 
 struct ipmi_dmi_info {
 	enum si_type si_type;
-	unsigned int space; /* addr space for si, intf# for ssif */
+	unsigned int space;  
 	unsigned long addr;
 	u8 slave_addr;
 	struct ipmi_dmi_info *next;
@@ -90,13 +87,7 @@ static void __init dmi_add_platform_ipmi(unsigned long base_addr,
 		ipmi_dmi_nr++;
 }
 
-/*
- * Look up the slave address for a given interface.  This is here
- * because ACPI doesn't have a slave address while SMBIOS does, but we
- * prefer using ACPI so the ACPI code can use the IPMI namespace.
- * This function allows an ACPI-specified IPMI device to look up the
- * slave address from the DMI table.
- */
+ 
 int ipmi_dmi_get_slave_addr(enum si_type si_type, unsigned int space,
 			    unsigned long base_addr)
 {
@@ -146,46 +137,36 @@ static void __init dmi_decode_ipmi(const struct dmi_header *dm)
 	}
 	if (len >= DMI_IPMI_VER2_LENGTH) {
 		if (type == IPMI_DMI_TYPE_SSIF) {
-			space = 0; /* Match I2C interface 0. */
+			space = 0;  
 			base_addr = data[DMI_IPMI_ADDR] >> 1;
 			if (base_addr == 0) {
-				/*
-				 * Some broken systems put the I2C address in
-				 * the slave address field.  We try to
-				 * accommodate them here.
-				 */
+				 
 				base_addr = data[DMI_IPMI_SLAVEADDR] >> 1;
 				slave_addr = 0;
 			}
 		} else {
 			if (base_addr & 1) {
-				/* I/O */
+				 
 				base_addr &= DMI_IPMI_IO_MASK;
 			} else {
-				/* Memory */
+				 
 				space = IPMI_MEM_ADDR_SPACE;
 			}
 
-			/*
-			 * If bit 4 of byte 0x10 is set, then the lsb
-			 * for the address is odd.
-			 */
+			 
 			base_addr |= (data[DMI_IPMI_ACCESS] >> 4) & 1;
 
 			irq = data[DMI_IPMI_IRQ];
 
-			/*
-			 * The top two bits of byte 0x10 hold the
-			 * register spacing.
-			 */
+			 
 			switch ((data[DMI_IPMI_ACCESS] >> 6) & 3) {
-			case 0: /* Byte boundaries */
+			case 0:  
 				offset = 1;
 				break;
-			case 1: /* 32-bit boundaries */
+			case 1:  
 				offset = 4;
 				break;
-			case 2: /* 16-byte boundaries */
+			case 2:  
 				offset = 16;
 				break;
 			default:
@@ -194,15 +175,8 @@ static void __init dmi_decode_ipmi(const struct dmi_header *dm)
 			}
 		}
 	} else {
-		/* Old DMI spec. */
-		/*
-		 * Note that technically, the lower bit of the base
-		 * address should be 1 if the address is I/O and 0 if
-		 * the address is in memory.  So many systems get that
-		 * wrong (and all that I have seen are I/O) so we just
-		 * ignore that bit and assume I/O.  Systems that use
-		 * memory should use the newer spec, anyway.
-		 */
+		 
+		 
 		base_addr = base_addr & DMI_IPMI_IO_MASK;
 		offset = 1;
 	}

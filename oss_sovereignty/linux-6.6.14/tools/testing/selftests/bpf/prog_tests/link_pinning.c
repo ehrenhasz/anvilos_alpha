@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <sys/stat.h>
@@ -24,7 +24,7 @@ void test_link_pinning_subtest(struct bpf_program *prog,
 	usleep(1);
 	CHECK(bss->out != 1, "res_check1", "exp %d, got %d\n", 1, bss->out);
 
-	/* pin link */
+	 
 	err = bpf_link__pin(link, link_pin_path);
 	if (CHECK(err, "link_pin", "err: %d\n", err))
 		goto cleanup;
@@ -32,7 +32,7 @@ void test_link_pinning_subtest(struct bpf_program *prog,
 	CHECK(strcmp(link_pin_path, bpf_link__pin_path(link)), "pin_path1",
 	      "exp %s, got %s\n", link_pin_path, bpf_link__pin_path(link));
 
-	/* check that link was pinned */
+	 
 	err = stat(link_pin_path, &statbuf);
 	if (CHECK(err, "stat_link", "err %d errno %d\n", err, errno))
 		goto cleanup;
@@ -41,7 +41,7 @@ void test_link_pinning_subtest(struct bpf_program *prog,
 	usleep(1);
 	CHECK(bss->out != 2, "res_check2", "exp %d, got %d\n", 2, bss->out);
 
-	/* destroy link, pinned link should keep program attached */
+	 
 	bpf_link__destroy(link);
 	link = NULL;
 
@@ -49,7 +49,7 @@ void test_link_pinning_subtest(struct bpf_program *prog,
 	usleep(1);
 	CHECK(bss->out != 3, "res_check3", "exp %d, got %d\n", 3, bss->out);
 
-	/* re-open link from BPFFS */
+	 
 	link = bpf_link__open(link_pin_path);
 	if (!ASSERT_OK_PTR(link, "link_open"))
 		goto cleanup;
@@ -57,12 +57,12 @@ void test_link_pinning_subtest(struct bpf_program *prog,
 	CHECK(strcmp(link_pin_path, bpf_link__pin_path(link)), "pin_path2",
 	      "exp %s, got %s\n", link_pin_path, bpf_link__pin_path(link));
 
-	/* unpin link from BPFFS, program still attached */
+	 
 	err = bpf_link__unpin(link);
 	if (CHECK(err, "link_unpin", "err: %d\n", err))
 		goto cleanup;
 
-	/* still active, as we have FD open now */
+	 
 	bss->in = 4;
 	usleep(1);
 	CHECK(bss->out != 4, "res_check4", "exp %d, got %d\n", 4, bss->out);
@@ -70,11 +70,7 @@ void test_link_pinning_subtest(struct bpf_program *prog,
 	bpf_link__destroy(link);
 	link = NULL;
 
-	/* Validate it's finally detached.
-	 * Actual detachment might get delayed a bit, so there is no reliable
-	 * way to validate it immediately here, let's count up for long enough
-	 * and see if eventually output stops being updated
-	 */
+	 
 	for (i = 5; i < 10000; i++) {
 		bss->in = i;
 		usleep(1);

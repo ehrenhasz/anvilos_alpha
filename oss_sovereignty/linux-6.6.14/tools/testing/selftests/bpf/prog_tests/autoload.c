@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <time.h>
@@ -11,7 +11,7 @@ void test_autoload(void)
 	struct test_autoload* skel;
 
 	skel = test_autoload__open_and_load();
-	/* prog3 should be broken */
+	 
 	if (CHECK(skel, "skel_open_and_load", "unexpected success\n"))
 		goto cleanup;
 
@@ -19,7 +19,7 @@ void test_autoload(void)
 	if (CHECK(!skel, "skel_open", "failed to open skeleton\n"))
 		goto cleanup;
 
-	/* don't load prog3 */
+	 
 	bpf_program__set_autoload(skel->progs.prog3, false);
 
 	err = test_autoload__load(skel);

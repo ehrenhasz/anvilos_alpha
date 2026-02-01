@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright 2011-2012 Calxeda, Inc.
- *  Copyright (C) 2012-2013 Altera Corporation <www.altera.com>
- *
- * Based from clk-highbank.c
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -23,7 +18,7 @@
 
 #define to_socfpga_gate_clk(p) container_of(p, struct socfpga_gate_clk, hw.hw)
 
-/* SDMMC Group for System Manager defines */
+ 
 #define SYSMGR_SDMMCGRP_CTRL_OFFSET    0x108
 
 static u8 socfpga_clk_get_parent(struct clk_hw *hwclk)
@@ -48,7 +43,7 @@ static u8 socfpga_clk_get_parent(struct clk_hw *hwclk)
 	    streq(name, SOCFPGA_NAND_X_CLK))
 		return (perpll_src >> 2) & 3;
 
-	/* QSPI clock */
+	 
 	return (perpll_src >> 4) & 3;
 
 }
@@ -77,7 +72,7 @@ static int socfpga_clk_set_parent(struct clk_hw *hwclk, u8 parent)
 			streq(name, SOCFPGA_NAND_X_CLK)) {
 			src_reg &= ~0xC;
 			src_reg |= (parent << 2);
-		} else {/* QSPI clock */
+		} else { 
 			src_reg &= ~0x30;
 			src_reg |= (parent << 4);
 		}
@@ -96,7 +91,7 @@ static u32 socfpga_clk_get_div(struct socfpga_gate_clk *socfpgaclk)
 	else if (socfpgaclk->div_reg) {
 		val = readl(socfpgaclk->div_reg) >> socfpgaclk->shift;
 		val &= GENMASK(socfpgaclk->width - 1, 0);
-		/* Check for GPIO_DB_CLK by its offset */
+		 
 		if ((uintptr_t) socfpgaclk->div_reg & SOCFPGA_GPIO_DB_CLK_OFFSET)
 			div = val + 1;
 		else

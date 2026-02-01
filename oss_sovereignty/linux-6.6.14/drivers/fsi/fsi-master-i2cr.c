@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) IBM Corporation 2023 */
+
+ 
 
 #include <linux/device.h>
 #include <linux/fsi.h>
@@ -195,12 +195,7 @@ static int i2cr_read(struct fsi_master *master, int link, uint8_t id, uint32_t a
 	if (link || id || (addr & 0xffff0000) || !(size == 1 || size == 2 || size == 4))
 		return -EINVAL;
 
-	/*
-	 * The I2CR doesn't have CFAM or FSI slave address space - only the
-	 * engines. In order for this to work with the FSI core, we need to
-	 * emulate at minimum the CFAM config table so that the appropriate
-	 * engines are discovered.
-	 */
+	 
 	if (addr < 0xc00) {
 		if (addr > sizeof(i2cr_cfam) - 4)
 			addr = (addr & 0x3) + (sizeof(i2cr_cfam) - 4);
@@ -213,10 +208,7 @@ static int i2cr_read(struct fsi_master *master, int link, uint8_t id, uint32_t a
 	if (ret)
 		return ret;
 
-	/*
-	 * FSI core expects up to 4 bytes BE back, while I2CR replied with LE
-	 * bytes on the wire.
-	 */
+	 
 	for (i = 0; i < size; ++i)
 		((u8 *)val)[i] = ((u8 *)&data)[7 - i];
 
@@ -233,14 +225,11 @@ static int i2cr_write(struct fsi_master *master, int link, uint8_t id, uint32_t 
 	if (link || id || (addr & 0xffff0000) || !(size == 1 || size == 2 || size == 4))
 		return -EINVAL;
 
-	/* I2CR writes to CFAM or FSI slave address are a successful no-op. */
+	 
 	if (addr < 0xc00)
 		return 0;
 
-	/*
-	 * FSI core passes up to 4 bytes BE, while the I2CR expects LE bytes on
-	 * the wire.
-	 */
+	 
 	for (i = 0; i < size; ++i)
 		((u8 *)&data)[7 - i] = ((u8 *)val)[i];
 
@@ -265,7 +254,7 @@ static int i2cr_probe(struct i2c_client *client)
 	if (!i2cr)
 		return -ENOMEM;
 
-	/* Only one I2CR on any given I2C bus (fixed I2C device address) */
+	 
 	i2cr->master.idx = client->adapter->nr;
 	dev_set_name(&i2cr->master.dev, "i2cr%d", i2cr->master.idx);
 	i2cr->master.dev.parent = &client->dev;

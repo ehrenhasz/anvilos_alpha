@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * trace event based perf event profiling/tracing
- *
- * Copyright (C) 2009 Red Hat Inc, Peter Zijlstra
- * Copyright (C) 2009-2010 Frederic Weisbecker <fweisbec@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kprobes.h>
@@ -14,14 +9,11 @@
 
 static char __percpu *perf_trace_buf[PERF_NR_CONTEXTS];
 
-/*
- * Force it to be aligned to unsigned long to avoid misaligned accesses
- * surprises
- */
+ 
 typedef typeof(unsigned long [PERF_MAX_TRACE_SIZE / sizeof(unsigned long)])
 	perf_trace_t;
 
-/* Count the events in use (per event id, not per instance) */
+ 
 static int	total_ref_count;
 
 static int perf_trace_event_perm(struct trace_event_call *tp_event,
@@ -35,19 +27,13 @@ static int perf_trace_event_perm(struct trace_event_call *tp_event,
 			return ret;
 	}
 
-	/*
-	 * We checked and allowed to create parent,
-	 * allow children without checking.
-	 */
+	 
 	if (p_event->parent)
 		return 0;
 
-	/*
-	 * It's ok to check current process (owner) permissions in here,
-	 * because code below is called only via perf_event_open syscall.
-	 */
+	 
 
-	/* The ftrace function trace is allowed only for root. */
+	 
 	if (ftrace_event_is_function(tp_event)) {
 		ret = perf_allow_tracepoint(&p_event->attr);
 		if (ret)
@@ -56,36 +42,26 @@ static int perf_trace_event_perm(struct trace_event_call *tp_event,
 		if (!is_sampling_event(p_event))
 			return 0;
 
-		/*
-		 * We don't allow user space callchains for  function trace
-		 * event, due to issues with page faults while tracing page
-		 * fault handler and its overall trickiness nature.
-		 */
+		 
 		if (!p_event->attr.exclude_callchain_user)
 			return -EINVAL;
 
-		/*
-		 * Same reason to disable user stack dump as for user space
-		 * callchains above.
-		 */
+		 
 		if (p_event->attr.sample_type & PERF_SAMPLE_STACK_USER)
 			return -EINVAL;
 	}
 
-	/* No tracing, just counting, so no obvious leak */
+	 
 	if (!(p_event->attr.sample_type & PERF_SAMPLE_RAW))
 		return 0;
 
-	/* Some events are ok to be traced by non-root users... */
+	 
 	if (p_event->attach_state == PERF_ATTACH_TASK) {
 		if (tp_event->flags & TRACE_EVENT_FL_CAP_ANY)
 			return 0;
 	}
 
-	/*
-	 * ...otherwise raw tracepoint data can be a severe data leak,
-	 * only allow root to have these.
-	 */
+	 
 	ret = perf_allow_tracepoint(&p_event->attr);
 	if (ret)
 		return ret;
@@ -161,10 +137,7 @@ static void perf_trace_event_unreg(struct perf_event *p_event)
 
 	tp_event->class->reg(tp_event, TRACE_REG_PERF_UNREGISTER, NULL);
 
-	/*
-	 * Ensure our callback won't be called anymore. The buffers
-	 * will be freed after that.
-	 */
+	 
 	tracepoint_synchronize_unregister();
 
 	free_percpu(tp_event->perf_events);
@@ -292,7 +265,7 @@ void perf_kprobe_destroy(struct perf_event *p_event)
 
 	destroy_local_trace_kprobe(p_event->tp_event);
 }
-#endif /* CONFIG_KPROBE_EVENTS */
+#endif  
 
 #ifdef CONFIG_UPROBE_EVENTS
 int perf_uprobe_init(struct perf_event *p_event,
@@ -323,11 +296,7 @@ int perf_uprobe_init(struct perf_event *p_event,
 		goto out;
 	}
 
-	/*
-	 * local trace_uprobe need to hold event_mutex to call
-	 * uprobe_buffer_enable() and uprobe_buffer_disable().
-	 * event_mutex is not required for local trace_kprobes.
-	 */
+	 
 	mutex_lock(&event_mutex);
 	ret = perf_trace_event_init(tp_event, p_event);
 	if (ret)
@@ -347,7 +316,7 @@ void perf_uprobe_destroy(struct perf_event *p_event)
 	mutex_unlock(&event_mutex);
 	destroy_local_trace_uprobe(p_event->tp_event);
 }
-#endif /* CONFIG_UPROBE_EVENTS */
+#endif  
 
 int perf_trace_add(struct perf_event *p_event, int flags)
 {
@@ -356,11 +325,7 @@ int perf_trace_add(struct perf_event *p_event, int flags)
 	if (!(flags & PERF_EF_START))
 		p_event->hw.state = PERF_HES_STOPPED;
 
-	/*
-	 * If TRACE_REG_PERF_ADD returns false; no custom action was performed
-	 * and we need to take the default action of enqueueing our event on
-	 * the right per-cpu hlist.
-	 */
+	 
 	if (!tp_event->class->reg(tp_event, TRACE_REG_PERF_ADD, p_event)) {
 		struct hlist_head __percpu *pcpu_list;
 		struct hlist_head *list;
@@ -380,11 +345,7 @@ void perf_trace_del(struct perf_event *p_event, int flags)
 {
 	struct trace_event_call *tp_event = p_event->tp_event;
 
-	/*
-	 * If TRACE_REG_PERF_DEL returns false; no custom action was performed
-	 * and we need to take the default action of dequeueing our event from
-	 * the right per-cpu hlist.
-	 */
+	 
 	if (!tp_event->class->reg(tp_event, TRACE_REG_PERF_DEL, p_event))
 		hlist_del_rcu(&p_event->hlist_entry);
 }
@@ -409,7 +370,7 @@ void *perf_trace_buf_alloc(int size, struct pt_regs **regs, int *rctxp)
 		*regs = this_cpu_ptr(&__perf_regs[rctx]);
 	raw_data = this_cpu_ptr(perf_trace_buf[rctx]);
 
-	/* zero the dead bytes from align to not leak stack to user */
+	 
 	memset(&raw_data[size - sizeof(u64)], 0, sizeof(u64));
 	return raw_data;
 }
@@ -448,12 +409,7 @@ perf_ftrace_function_call(unsigned long ip, unsigned long parent_ip,
 
 	event = container_of(ops, struct perf_event, ftrace_ops);
 
-	/*
-	 * @event->hlist entry is NULL (per INIT_HLIST_NODE), and all
-	 * the perf code does is hlist_for_each_entry_rcu(), so we can
-	 * get away with simply setting the @head.first pointer in order
-	 * to create a singular list.
-	 */
+	 
 	head.first = &event->hlist_entry;
 
 #define ENTRY_SIZE (ALIGN(sizeof(struct ftrace_entry) + sizeof(u32), \
@@ -522,4 +478,4 @@ int perf_ftrace_event_register(struct trace_event_call *call,
 
 	return -EINVAL;
 }
-#endif /* CONFIG_FUNCTION_TRACER */
+#endif  

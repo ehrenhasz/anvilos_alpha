@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
 
-#define _GNU_SOURCE	/* For CPU_ZERO etc. */
+ 
+
+#define _GNU_SOURCE	 
 
 #include <errno.h>
 #include <sched.h>
@@ -23,7 +21,7 @@ int sync_with_child(union pipe read_pipe, union pipe write_pipe)
 
 	FAIL_IF(write(write_pipe.write_fd, &c, 1) != 1);
 	FAIL_IF(read(read_pipe.read_fd, &c, 1) != 1);
-	if (c != CHILD_TOKEN) /* sometimes expected */
+	if (c != CHILD_TOKEN)  
 		return 1;
 
 	return 0;
@@ -69,7 +67,7 @@ int wait_for_child(pid_t child_pid)
 	if (WIFEXITED(rc))
 		rc = WEXITSTATUS(rc);
 	else
-		rc = 1; /* Signal or other */
+		rc = 1;  
 
 	return rc;
 }
@@ -85,16 +83,13 @@ static int eat_cpu_child(union pipe read_pipe, union pipe write_pipe)
 {
 	volatile int i = 0;
 
-	/*
-	 * We are just here to eat cpu and die. So make sure we can be killed,
-	 * and also don't do any custom SIGTERM handling.
-	 */
+	 
 	signal(SIGTERM, SIG_DFL);
 
 	notify_parent(write_pipe);
 	wait_for_parent(read_pipe);
 
-	/* Soak up cpu forever */
+	 
 	while (1) i++;
 
 	return 0;
@@ -148,7 +143,7 @@ int parse_proc_maps(void)
 	}
 
 	do {
-		/* This skips line with no executable which is what we want */
+		 
 		rc = fscanf(f, "%lx-%lx %*c%*c%c%*c %*x %*d:%*d %*d %127s\n",
 			    &start, &end, &execute, name);
 		if (rc <= 0)

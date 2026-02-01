@@ -1,20 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
 
-#include "gdc_device.h"		/* gdc_lut_store(), ... */
-#include "isp.h"			/* ISP_VEC_ELEMBITS */
+ 
+
+#include "gdc_device.h"		 
+#include "isp.h"			 
 #include "vamem.h"
 #ifndef __INLINE_HMEM__
 #define __INLINE_HMEM__
@@ -26,12 +14,12 @@
 #include "hmm.h"
 #include "sh_css_params.h"
 #include "ia_css_queue.h"
-#include "sw_event_global.h"		/* Event IDs */
+#include "sw_event_global.h"		 
 
 #include "platform_support.h"
 #include "assert_support.h"
-#include "misc_support.h"	/* NOT_USED */
-#include "math_support.h"	/* max(), min()  EVEN_FLOOR()*/
+#include "misc_support.h"	 
+#include "math_support.h"	 
 
 #include "ia_css_stream.h"
 #include "sh_css_params_internal.h"
@@ -54,7 +42,7 @@
 #include "ia_css_pipe.h"
 #include "ia_css_pipe_binarydesc.h"
 
-/* Include all kernel host interfaces for ISP1 */
+ 
 
 #include "anr/anr_1.0/ia_css_anr.host.h"
 #include "cnr/cnr_1.0/ia_css_cnr.host.h"
@@ -79,7 +67,7 @@
 #include "ynr/ynr_1.0/ia_css_ynr.host.h"
 #include "xnr/xnr_1.0/ia_css_xnr.host.h"
 
-/* Include additional kernel host interfaces for ISP2 */
+ 
 
 #include "aa/aa_2/ia_css_aa2.host.h"
 #include "anr/anr_2/ia_css_anr2.host.h"
@@ -120,11 +108,10 @@ static size_t morph_plane_bytes(const struct ia_css_binary *binary)
 			   binary->morph_tbl_height);
 }
 
-/* We keep a second copy of the ptr struct for the SP to access.
-   Again, this would not be necessary on the chip. */
+ 
 static ia_css_ptr sp_ddr_ptrs;
 
-/* sp group address on DDR */
+ 
 static ia_css_ptr xmem_sp_group_ptrs;
 
 static ia_css_ptr xmem_sp_stage_ptrs[IA_CSS_PIPE_ID_NUM]
@@ -135,11 +122,9 @@ static ia_css_ptr xmem_isp_stage_ptrs[IA_CSS_PIPE_ID_NUM]
 static ia_css_ptr default_gdc_lut;
 static int interleaved_lut_temp[4][HRT_GDC_N];
 
-/* END DO NOT MOVE INTO VIMALS_WORLD */
+ 
 
-/* Digital Zoom lookup table. See documentation for more details about the
- * contents of this table.
- */
+ 
 static const int zoom_table[4][HRT_GDC_N] = {
 	{
 		0 << 4,   0 << 4,   0 << 4,   0 << 4,   0 << 4,   0 << 4,   0 << 4,   0 << 4,
@@ -678,13 +663,12 @@ static const struct ia_css_vector default_motion_config = {
 	0
 };
 
-/* ------ deprecated(bz675) : from ------ */
+ 
 static const struct ia_css_shading_settings default_shading_settings = {
-	1	/* enable shading table conversion in the css
-		(This matches the legacy way.) */
+	1	 
 };
 
-/* ------ deprecated(bz675) : to ------ */
+ 
 
 struct ia_css_isp_skc_dvs_statistics {
 	ia_css_ptr p_data;
@@ -748,8 +732,8 @@ sh_css_update_uds_and_crop_info_based_on_zoom_region(
     const struct ia_css_resolution *dvs_env,
     const struct ia_css_dz_config *zoom,
     const struct ia_css_vector *motion_vector,
-    struct sh_css_uds_info *uds,		/* out */
-    struct sh_css_crop_pos *sp_out_crop_pos,	/* out */
+    struct sh_css_uds_info *uds,		 
+    struct sh_css_crop_pos *sp_out_crop_pos,	 
     struct ia_css_resolution pipe_in_res,
     bool enable_zoom);
 
@@ -759,21 +743,7 @@ sh_css_params_ddr_address_map(void)
 	return sp_ddr_ptrs;
 }
 
-/* ****************************************************
- * Each coefficient is stored as 7bits to fit 2 of them into one
- * ISP vector element, so we will store 4 coefficents on every
- * memory word (32bits)
- *
- * 0: Coefficient 0 used bits
- * 1: Coefficient 1 used bits
- * 2: Coefficient 2 used bits
- * 3: Coefficient 3 used bits
- * x: not used
- *
- * xx33333332222222 | xx11111110000000
- *
- * ***************************************************
- */
+ 
 static struct ia_css_host_data *
 convert_allocate_fpntbl(struct ia_css_isp_parameters *params)
 {
@@ -837,33 +807,28 @@ convert_raw_to_fpn(struct ia_css_isp_parameters *params)
 
 	assert(params);
 
-	/* Find the maximum value in the table */
+	 
 	for (i = 0; i < params->fpn_config.height * params->fpn_config.width; i++) {
 		int val = params->fpn_config.data[i];
-		/* Make sure FPN value can be represented in 13-bit unsigned
-		 * number (ISP precision - 1), but note that actual input range
-		 * depends on precision of input frame data.
-		 */
+		 
 		if (val < 0) {
-			/* Checkpatch patch */
+			 
 			val = 0;
 		} else if (val >= (1 << 13)) {
-			/* Checkpatch patch */
-			/* MW: BUG, is "13" a system or application property */
+			 
+			 
 			val = (1 << 13) - 1;
 		}
 		maxval = max(maxval, val);
 	}
-	/* Find the lowest shift value to remap the values in the range
-	 * 0..maxval to 0..2^shiftval*63.
-	 */
+	 
 	params->fpn_config.shift = 0;
 	while (maxval > 63) {
-		/* MW: BUG, is "63" a system or application property */
+		 
 		maxval >>= 1;
 		params->fpn_config.shift++;
 	}
-	/* Adjust the values in the table for the shift value */
+	 
 	for (i = 0; i < params->fpn_config.height * params->fpn_config.width; i++)
 		((unsigned short *)params->fpn_config.data)[i] >>= params->fpn_config.shift;
 }
@@ -882,7 +847,7 @@ ia_css_process_kernel(struct ia_css_stream *stream,
 		struct ia_css_pipeline *pipeline = ia_css_pipe_get_pipeline(pipe);
 		struct ia_css_pipeline_stage *stage;
 
-		/* update the other buffers to the pipe specific copies */
+		 
 		for (stage = pipeline->stages; stage; stage = stage->next) {
 			if (!stage || !stage->binary) continue;
 			process(pipeline->pipe_id, stage, params);
@@ -895,22 +860,16 @@ sh_css_select_dp_10bpp_config(const struct ia_css_pipe *pipe,
 			      bool *is_dp_10bpp)
 {
 	int err = 0;
-	/* Currently we check if 10bpp DPC configuration is required based
-	 * on the use case,i.e. if BDS and DPC is both enabled. The more cleaner
-	 * design choice would be to expose the type of DPC (either 10bpp or 13bpp)
-	 * using the binary info, but the current control flow does not allow this
-	 * implementation. (This is because the configuration is set before a
-	 * binary is selected, and the binary info is not available)
-	 */
+	 
 	if ((!pipe) || (!is_dp_10bpp)) {
 		IA_CSS_LEAVE_ERR_PRIVATE(-EINVAL);
 		err = -EINVAL;
 	} else {
 		*is_dp_10bpp = false;
 
-		/* check if DPC is enabled from the host */
+		 
 		if (pipe->config.enable_dpc) {
-			/*check if BDS is enabled*/
+			 
 			unsigned int required_bds_factor = SH_CSS_BDS_FACTOR_1_00;
 
 			if ((pipe->config.bayer_ds_out_res.width != 0) &&
@@ -920,7 +879,7 @@ sh_css_select_dp_10bpp_config(const struct ia_css_pipe *pipe,
 					pipe->config.bayer_ds_out_res,
 					&required_bds_factor)) {
 					if (required_bds_factor != SH_CSS_BDS_FACTOR_1_00) {
-						/*we use 10bpp BDS configuration*/
+						 
 						*is_dp_10bpp = true;
 					}
 				}
@@ -936,9 +895,7 @@ sh_css_set_black_frame(struct ia_css_stream *stream,
 		       const struct ia_css_frame *raw_black_frame)
 {
 	struct ia_css_isp_parameters *params;
-	/* this function desperately needs to be moved to the ISP or SP such
-	 * that it can use the DMA.
-	 */
+	 
 	unsigned int height, width, y, x, k, data;
 	ia_css_ptr ptr;
 
@@ -972,7 +929,7 @@ sh_css_set_black_frame(struct ia_css_stream *stream,
 		params->fpn_config.shift = 0;
 	}
 
-	/* store raw to fpntbl */
+	 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x += (ISP_VEC_NELEMS * 2)) {
 			int ofs = y * width + x;
@@ -983,7 +940,7 @@ sh_css_set_black_frame(struct ia_css_stream *stream,
 				    (short)(data & 0xFFFF);
 				params->fpn_config.data[ofs + 2 * k + 2] =
 				    (short)((data >> 16) & 0xFFFF);
-				ptr += sizeof(int);	/* byte system address */
+				ptr += sizeof(int);	 
 			}
 			for (k = 0; k < ISP_VEC_NELEMS; k += 2) {
 				hmm_load(ptr, (void *)(&data), sizeof(int));
@@ -991,15 +948,15 @@ sh_css_set_black_frame(struct ia_css_stream *stream,
 				    (short)(data & 0xFFFF);
 				params->fpn_config.data[ofs + 2 * k + 3] =
 				    (short)((data >> 16) & 0xFFFF);
-				ptr += sizeof(int);	/* byte system address */
+				ptr += sizeof(int);	 
 			}
 		}
 	}
 
-	/* raw -> fpn */
+	 
 	convert_raw_to_fpn(params);
 
-	/* overwrite isp parameter */
+	 
 	ia_css_process_kernel(stream, params, ia_css_kernel_process_param[IA_CSS_FPN_ID]);
 
 	IA_CSS_LEAVE_ERR_PRIVATE(0);
@@ -1044,10 +1001,7 @@ sh_css_set_shading_table(struct ia_css_stream *stream,
 	if (table != params->sc_table) {
 		params->sc_table = table;
 		params->sc_table_changed = true;
-		/* Not very clean, this goes to sh_css.c to invalidate the
-		 * shading table for all pipes. Should replaced by a loop
-		 * and a pipe-specific call.
-		 */
+		 
 		if (!params->output_frame)
 			sh_css_invalidate_shading_tables(stream);
 	}
@@ -1140,7 +1094,7 @@ int ia_css_params_store_sctbl(
 		IA_CSS_LEAVE_ERR_PRIVATE(-ENOMEM);
 		return -ENOMEM;
 	}
-	/* store the shading table to ddr */
+	 
 	ia_css_params_store_ia_css_host_data(sc_tbl, isp_sc_tbl);
 	ia_css_host_data_free(isp_sc_tbl);
 
@@ -1167,7 +1121,7 @@ ia_css_process_zoom_and_motion(
     struct ia_css_isp_parameters *params,
     const struct ia_css_pipeline_stage *first_stage)
 {
-	/* first_stage can be  NULL */
+	 
 	const struct ia_css_pipeline_stage *stage;
 	int err = 0;
 	struct ia_css_resolution pipe_in_res;
@@ -1179,13 +1133,10 @@ ia_css_process_zoom_and_motion(
 
 	IA_CSS_ENTER_PRIVATE("");
 
-	/* Go through all stages to udate uds and cropping */
+	 
 	for (stage = first_stage; stage; stage = stage->next) {
 		struct ia_css_binary *binary;
-		/* note: the var below is made static as it is quite large;
-		   if it is not static it ends up on the stack which could
-		   cause issues for drivers
-		*/
+		 
 		static struct ia_css_binary tmp_binary;
 
 		const struct ia_css_binary_xinfo *info = NULL;
@@ -1214,7 +1165,7 @@ ia_css_process_zoom_and_motion(
 		}
 
 		if (stage == first_stage) {
-			/* we will use pipe_in_res to scale the zoom crop region if needed */
+			 
 			pipe_in_res = binary->effective_in_frame_res;
 		}
 
@@ -1414,7 +1365,7 @@ static int sh_css_params_default_morph_table(
     struct ia_css_morph_table **table,
     const struct ia_css_binary *binary)
 {
-	/* MW 2400 advanced requires different scaling */
+	 
 	unsigned int i, j, k, step, width, height;
 	short start_x[IA_CSS_MORPH_TABLE_NUM_PLANES] = { -8, 0, -8, 0, 0, -8 },
 		start_y[IA_CSS_MORPH_TABLE_NUM_PLANES] = { 0, 0, -8, -8, -8, 0 };
@@ -1521,8 +1472,7 @@ ia_css_isp_3a_statistics_map_allocate(
     void *data_ptr)
 {
 	struct ia_css_isp_3a_statistics_map *me;
-	/* Windows compiler does not like adding sizes to a void *
-	 * so we use a local char * instead. */
+	 
 	char *base_ptr;
 
 	me = kvmalloc(sizeof(*me), GFP_KERNEL);
@@ -1543,8 +1493,7 @@ ia_css_isp_3a_statistics_map_allocate(
 	base_ptr = me->data_ptr;
 
 	me->size = isp_stats->size;
-	/* GCC complains when we assign a char * to a void *, so these
-	 * casts are necessary unfortunately. */
+	 
 	me->dmem_stats    = (void *)base_ptr;
 	me->vmem_stats_hi = (void *)(base_ptr + isp_stats->dmem_size);
 	me->vmem_stats_lo = (void *)(base_ptr + isp_stats->dmem_size +
@@ -1586,16 +1535,14 @@ ia_css_get_3a_statistics(struct ia_css_3a_statistics           *host_stats,
 	return ret;
 }
 
-/* Parameter encoding is not yet orthogonal.
-   This function hnadles some of the exceptions.
-*/
+ 
 static void
 ia_css_set_param_exceptions(const struct ia_css_pipe *pipe,
 			    struct ia_css_isp_parameters *params)
 {
 	assert(params);
 
-	/* Copy also to DP. Should be done by the driver. */
+	 
 	params->dp_config.gr = params->wb_config.gr;
 	params->dp_config.r  = params->wb_config.r;
 	params->dp_config.b  = params->wb_config.b;
@@ -1754,7 +1701,7 @@ sh_css_set_dz_config(struct ia_css_isp_parameters *params,
 
 	params->dz_config = *config;
 	params->dz_config_changed = true;
-	/* JK: Why isp params changed?? */
+	 
 	params->isp_params_changed = true;
 
 	IA_CSS_LEAVE_PRIVATE("void");
@@ -1786,7 +1733,7 @@ sh_css_set_motion_vector(struct ia_css_isp_parameters *params,
 	IA_CSS_ENTER_PRIVATE("x=%d, y=%d", motion->x, motion->y);
 
 	params->motion_config = *motion;
-	/* JK: Why do isp params change? */
+	 
 	params->motion_config_changed = true;
 	params->isp_params_changed = true;
 
@@ -1884,14 +1831,10 @@ sh_css_set_global_isp_config_on_pipe(
 
 	err1 = sh_css_init_isp_params_from_config(curr_pipe, curr_pipe->stream->isp_params_configs, config, pipe);
 
-	/* Now commit all changes to the SP */
+	 
 	err2 = sh_css_param_update_isp_params(curr_pipe, curr_pipe->stream->isp_params_configs, sh_css_sp_is_running(), pipe);
 
-	/* The following code is intentional. The sh_css_init_isp_params_from_config interface
-	 * throws an error when both DPC and BDS is enabled. The CSS API must pass this error
-	 * information to the caller, ie. the host. We do not return this error immediately,
-	 * but instead continue with updating the ISP params to enable testing of features
-	 * which are currently in TR phase. */
+	 
 
 	err = (err1 != 0) ? err1 : ((err2 != 0) ? err2 : err);
 
@@ -1923,9 +1866,7 @@ sh_css_set_per_frame_isp_config_on_pipe(
 		goto exit;
 	}
 
-	/* create per-frame ISP params object with default values
-	 * from stream->isp_params_configs if one doesn't already exist
-	*/
+	 
 	if (!stream->per_frame_isp_params_configs) {
 		err = sh_css_create_isp_params(stream,
 					       &stream->per_frame_isp_params_configs);
@@ -1936,7 +1877,7 @@ sh_css_set_per_frame_isp_config_on_pipe(
 
 	params = stream->per_frame_isp_params_configs;
 
-	/* update new ISP params object with the new config */
+	 
 	if (!sh_css_init_isp_params_from_global(stream, params, false, pipe)) {
 		err1 = -EINVAL;
 	}
@@ -1946,21 +1887,17 @@ sh_css_set_per_frame_isp_config_on_pipe(
 	if (per_frame_config_created) {
 		ddr_ptrs = &params->ddr_ptrs;
 		ddr_ptrs_size = &params->ddr_ptrs_size;
-		/* create per pipe reference to general ddr_ptrs */
+		 
 		for (i = 0; i < IA_CSS_PIPE_ID_NUM; i++) {
 			ref_sh_css_ddr_address_map(ddr_ptrs, &params->pipe_ddr_ptrs[i]);
 			params->pipe_ddr_ptrs_size[i] = *ddr_ptrs_size;
 		}
 	}
 
-	/* now commit to ddr */
+	 
 	err3 = sh_css_param_update_isp_params(stream->pipes[0], params, sh_css_sp_is_running(), pipe);
 
-	/* The following code is intentional. The sh_css_init_sp_params_from_config and
-	 * sh_css_init_isp_params_from_config throws an error when both DPC and BDS is enabled.
-	 * The CSS API must pass this error information to the caller, ie. the host.
-	 * We do not return this error immediately, but instead continue with updating the ISP params
-	 *  to enable testing of features which are currently in TR phase. */
+	 
 	err = (err1 != 0) ? err1 :
 	      (err2 != 0) ? err2 :
 	      (err3 != 0) ? err3 : err;
@@ -1997,9 +1934,9 @@ sh_css_init_isp_params_from_config(struct ia_css_pipe *pipe,
 	sh_css_set_macc_table(params, config->macc_table);
 	sh_css_set_gamma_table(params, config->gamma_table);
 	sh_css_set_ctc_table(params, config->ctc_table);
-	/* ------ deprecated(bz675) : from ------ */
+	 
 	sh_css_set_shading_settings(params, config->shading_settings);
-	/* ------ deprecated(bz675) : to ------ */
+	 
 
 	params->dis_coef_table_changed = (config->dvs_coefs);
 	params->dvs2_coef_table_changed = (config->dvs2_coefs);
@@ -2009,10 +1946,8 @@ sh_css_init_isp_params_from_config(struct ia_css_pipe *pipe,
 
 	if (0 ==
 	    sh_css_select_dp_10bpp_config(pipe, &is_dp_10bpp)) {
-		/* return an error when both DPC and BDS is enabled by the
-		 * user. */
-		/* we do not exit from this point immediately to allow internal
-		 * firmware feature testing. */
+		 
+		 
 		if (is_dp_10bpp) {
 			err = -EINVAL;
 		}
@@ -2061,9 +1996,9 @@ ia_css_pipe_get_isp_config(struct ia_css_pipe *pipe,
 	sh_css_get_ctc_table(params, config->ctc_table);
 	sh_css_get_dz_config(params, config->dz_config);
 	sh_css_get_motion_vector(params, config->motion_vector);
-	/* ------ deprecated(bz675) : from ------ */
+	 
 	sh_css_get_shading_settings(params, config->shading_settings);
-	/* ------ deprecated(bz675) : to ------ */
+	 
 
 	config->output_frame = params->output_frame;
 	config->isp_config_id = params->isp_parameters_id;
@@ -2071,11 +2006,7 @@ ia_css_pipe_get_isp_config(struct ia_css_pipe *pipe,
 	IA_CSS_LEAVE("void");
 }
 
-/*
- * coding style says the return of "mmgr_NULL" is the error signal
- *
- * Deprecated: Implement mmgr_realloc()
- */
+ 
 static bool realloc_isp_css_mm_buf(
     ia_css_ptr *curr_buf,
     size_t *curr_size,
@@ -2086,8 +2017,7 @@ static bool realloc_isp_css_mm_buf(
 	s32 id;
 
 	*err = 0;
-	/* Possible optimization: add a function sh_css_isp_css_mm_realloc()
-	 * and implement on top of hmm. */
+	 
 
 	IA_CSS_ENTER_PRIVATE("void");
 
@@ -2095,7 +2025,7 @@ static bool realloc_isp_css_mm_buf(
 		IA_CSS_LEAVE_PRIVATE("false");
 		return false;
 	}
-	/* don't reallocate if single ref to buffer and same size */
+	 
 	if (*curr_size == needed_size && ia_css_refcount_is_single(*curr_buf)) {
 		IA_CSS_LEAVE_PRIVATE("false");
 		return false;
@@ -2141,7 +2071,7 @@ ia_css_isp_3a_statistics_allocate(const struct ia_css_3a_grid_info *grid)
 
 	assert(grid);
 
-	/* MW: Does "grid->enable" also control the histogram output ?? */
+	 
 	if (!grid->enable)
 		return NULL;
 
@@ -2159,7 +2089,7 @@ ia_css_isp_3a_statistics_allocate(const struct ia_css_3a_grid_info *grid)
 	}
 	me->hmem_size = sizeof_hmem(HMEM0_ID);
 
-	/* All subsections need to be aligned to the system bus width */
+	 
 	me->dmem_size = CEIL_MUL(me->dmem_size, HIVE_ISP_DDR_WORD_BYTES);
 	me->vmem_size = CEIL_MUL(me->vmem_size, HIVE_ISP_DDR_WORD_BYTES);
 	me->hmem_size = CEIL_MUL(me->hmem_size, HIVE_ISP_DDR_WORD_BYTES);
@@ -2232,11 +2162,7 @@ void
 ia_css_metadata_free(struct ia_css_metadata *me)
 {
 	if (me) {
-		/* The enter and leave macros are placed inside
-		 * the condition to avoid false logging of metadata
-		 * free events when metadata is disabled.
-		 * We found this to be confusing during development
-		 * and debugging. */
+		 
 		IA_CSS_ENTER("me=%p", me);
 		hmm_free(me->address);
 		kvfree(me);
@@ -2275,7 +2201,7 @@ ia_css_stream_isp_parameters_init(struct ia_css_stream *stream)
 		IA_CSS_LEAVE_ERR_PRIVATE(-EINVAL);
 		return -EINVAL;
 	}
-	/* TMP: tracking of paramsets */
+	 
 	g_param_buffer_dequeue_count = 0;
 	g_param_buffer_enqueue_count = 0;
 
@@ -2287,15 +2213,14 @@ ia_css_stream_isp_parameters_init(struct ia_css_stream *stream)
 
 	params = stream->isp_params_configs;
 	if (!sh_css_init_isp_params_from_global(stream, params, true, NULL)) {
-		/* we do not return the error immediately to enable internal
-		 * firmware feature testing */
+		 
 		err = -EINVAL;
 	}
 
 	ddr_ptrs = &params->ddr_ptrs;
 	ddr_ptrs_size = &params->ddr_ptrs_size;
 
-	/* create per pipe reference to general ddr_ptrs */
+	 
 	for (i = 0; i < IA_CSS_PIPE_ID_NUM; i++) {
 		ref_sh_css_ddr_address_map(ddr_ptrs, &params->pipe_ddr_ptrs[i]);
 		params->pipe_ddr_ptrs_size[i] = *ddr_ptrs_size;
@@ -2419,9 +2344,9 @@ sh_css_init_isp_params_from_global(struct ia_css_stream *stream,
 		sh_css_set_ctc_table(params, &default_ctc_table);
 		sh_css_set_baa_config(params, &default_baa_config);
 		sh_css_set_dz_config(params, &default_dz_config);
-		/* ------ deprecated(bz675) : from ------ */
+		 
 		sh_css_set_shading_settings(params, &default_shading_settings);
-		/* ------ deprecated(bz675) : to ------ */
+		 
 
 		ia_css_set_s3a_config(params, &default_3a_config);
 		ia_css_set_wb_config(params, &default_wb_config);
@@ -2486,9 +2411,9 @@ sh_css_init_isp_params_from_global(struct ia_css_stream *stream,
 		sh_css_set_ctc_table(params, &stream_params->ctc_table);
 		sh_css_set_baa_config(params, &stream_params->bds_config);
 		sh_css_set_dz_config(params, &stream_params->dz_config);
-		/* ------ deprecated(bz675) : from ------ */
+		 
 		sh_css_set_shading_settings(params, &stream_params->shading_settings);
-		/* ------ deprecated(bz675) : to ------ */
+		 
 
 		ia_css_set_s3a_config(params, &stream_params->s3a_config);
 		ia_css_set_wb_config(params, &stream_params->wb_config);
@@ -2520,12 +2445,9 @@ sh_css_init_isp_params_from_global(struct ia_css_stream *stream,
 		for (i = 0; i < stream->num_pipes; i++) {
 			if (0 ==
 			    sh_css_select_dp_10bpp_config(stream->pipes[i], &is_dp_10bpp)) {
-				/* set the return value as false if both DPC and
-				 * BDS is enabled by the user. But we do not return
-				 * the value immediately to enable internal firmware
-				 * feature testing. */
+				 
 				retval = !is_dp_10bpp;
-				/* FIXME: should it ignore this error? */
+				 
 			} else {
 				retval = false;
 				goto exit;
@@ -2549,7 +2471,7 @@ sh_css_init_isp_params_from_global(struct ia_css_stream *stream,
 			params->sc_table_changed = true;
 		}
 
-		/* Only IA_CSS_PIPE_ID_VIDEO & IA_CSS_PIPE_ID_CAPTURE will support dvs_6axis_config*/
+		 
 		for (i = 0; i < IA_CSS_PIPE_ID_NUM; i++) {
 			if (stream_params->pipe_dvs_6axis_config[i]) {
 				if (params->pipe_dvs_6axis_config[i]) {
@@ -2580,7 +2502,7 @@ sh_css_params_init(void)
 
 	IA_CSS_ENTER_PRIVATE("void");
 
-	/* TMP: tracking of paramsets */
+	 
 	g_param_buffer_dequeue_count = 0;
 	g_param_buffer_enqueue_count = 0;
 
@@ -2651,10 +2573,7 @@ int ia_css_pipe_set_bci_scaler_lut(struct ia_css_pipe *pipe,
 		return err;
 	}
 
-	/* If the pipe belongs to a stream and the stream has started, it is not
-	 * safe to store lut to gdc HW. If pipe->stream is NULL, then no stream is
-	 * created with this pipe, so it is safe to do this operation as long as
-	 * ia_css_init() has been called. */
+	 
 	if (pipe->stream && pipe->stream->started) {
 		ia_css_debug_dtrace(IA_CSS_DEBUG_ERROR,
 				    "unable to set scaler lut since stream has started\n");
@@ -2662,7 +2581,7 @@ int ia_css_pipe_set_bci_scaler_lut(struct ia_css_pipe *pipe,
 		err = -ENOTSUPP;
 	}
 
-	/* Free any existing tables. */
+	 
 	if (pipe->scaler_pp_lut != mmgr_NULL) {
 		hmm_free(pipe->scaler_pp_lut);
 		pipe->scaler_pp_lut = mmgr_NULL;
@@ -2688,7 +2607,7 @@ int ia_css_pipe_set_bci_scaler_lut(struct ia_css_pipe *pipe,
 	return err;
 }
 
-/* if pipe is NULL, returns default lut addr. */
+ 
 ia_css_ptr sh_css_pipe_get_pp_gdc_lut(const struct ia_css_pipe *pipe)
 {
 	assert(pipe);
@@ -2705,7 +2624,7 @@ int sh_css_params_map_and_store_default_gdc_lut(void)
 
 	IA_CSS_ENTER_PRIVATE("void");
 
-	/* Is table already mapped? Nothing to do if it is mapped. */
+	 
 	if (default_gdc_lut != mmgr_NULL)
 		return err;
 
@@ -2772,10 +2691,7 @@ sh_css_param_clear_param_sets(void)
 	IA_CSS_LEAVE_PRIVATE("void");
 }
 
-/*
- * MW: we can define hmm_free() to return a NULL
- * then you can write ptr = hmm_free(ptr);
- */
+ 
 #define safe_free(id, x)      \
 	do {                  \
 		ia_css_refcount_decrement(id, x);     \
@@ -2790,7 +2706,7 @@ static void free_map(struct sh_css_ddr_address_map *map)
 
 	IA_CSS_ENTER_PRIVATE("void");
 
-	/* free buffers */
+	 
 	for (i = 0; i < (sizeof(struct sh_css_ddr_address_map_size) /
 			 sizeof(size_t)); i++) {
 		if (addrs[i] == mmgr_NULL)
@@ -2815,12 +2731,12 @@ ia_css_stream_isp_parameters_uninit(struct ia_css_stream *stream)
 		return;
 	}
 
-	/* free existing ddr_ptr maps */
+	 
 	for (i = 0; i < IA_CSS_PIPE_ID_NUM; i++) {
 		free_map(&params->pipe_ddr_ptrs[i]);
 		if (per_frame_params)
 			free_map(&per_frame_params->pipe_ddr_ptrs[i]);
-		/* Free up theDVS table memory blocks before recomputing new table */
+		 
 		if (params->pipe_dvs_6axis_config[i])
 			free_dvs_6axis_table(&params->pipe_dvs_6axis_config[i]);
 		if (per_frame_params && per_frame_params->pipe_dvs_6axis_config[i])
@@ -2835,7 +2751,7 @@ ia_css_stream_isp_parameters_uninit(struct ia_css_stream *stream)
 		params->fpn_config.data = NULL;
 	}
 
-	/* Free up sc_config (temporal shading table) if it is allocated. */
+	 
 	if (params->sc_config) {
 		ia_css_shading_table_free(params->sc_config);
 		params->sc_config = NULL;
@@ -2875,7 +2791,7 @@ sh_css_params_uninit(void)
 			xmem_isp_stage_ptrs[p][i] = mmgr_NULL;
 		}
 
-	/* go through the pools to clear references */
+	 
 	ia_css_refcount_clear(IA_CSS_REFCOUNT_PARAM_SET_POOL, &free_param_set_callback);
 	ia_css_refcount_clear(IA_CSS_REFCOUNT_PARAM_BUFFER, &free_buffer_callback);
 	ia_css_refcount_clear(-1, &free_buffer_callback);
@@ -2897,9 +2813,7 @@ convert_allocate_morph_plane(
 
 	IA_CSS_ENTER_PRIVATE("void");
 
-	/* currently we don't have morph table interpolation yet,
-	 * so we allow a wider table to be used. This will be removed
-	 * in the future. */
+	 
 	if (width > aligned_width) {
 		padding = 0;
 		w = aligned_width;
@@ -2985,7 +2899,7 @@ static void sh_css_update_isp_mem_params_to_ddr(
 	IA_CSS_LEAVE_PRIVATE("void");
 }
 
-void ia_css_dequeue_param_buffers(/*unsigned int pipe_num*/ void)
+void ia_css_dequeue_param_buffers(  void)
 {
 	unsigned int i;
 	ia_css_ptr cpy;
@@ -2998,17 +2912,16 @@ void ia_css_dequeue_param_buffers(/*unsigned int pipe_num*/ void)
 
 	if (!sh_css_sp_is_running()) {
 		IA_CSS_LEAVE_PRIVATE("sp is not running");
-		/* SP is not running. The queues are not valid */
+		 
 		return;
 	}
 
 	for (i = 0; SH_CSS_INVALID_QUEUE_ID != param_queue_ids[i]; i++) {
 		cpy = (ia_css_ptr)0;
-		/* clean-up old copy */
+		 
 		while (ia_css_bufq_dequeue_buffer(param_queue_ids[i],
 						  (uint32_t *)&cpy) == 0) {
-			/* TMP: keep track of dequeued param set count
-			 */
+			 
 			g_param_buffer_dequeue_count++;
 			ia_css_bufq_enqueue_psys_event(
 			    IA_CSS_PSYS_SW_EVENT_BUFFER_DEQUEUED,
@@ -3046,13 +2959,12 @@ process_kernel_parameters(unsigned int pipe_id,
 	if (params->config_changed[IA_CSS_S3A_ID]) {
 		ia_css_s3a_configure(raw_bit_depth);
 	}
-	/* Copy stage uds parameters to config, since they can differ per stage.
-	 */
+	 
 	params->crop_config.crop_pos = params->uds[stage->stage_num].crop_pos;
 	params->uds_config.crop_pos  = params->uds[stage->stage_num].crop_pos;
 	params->uds_config.uds       = params->uds[stage->stage_num].uds;
-	/* Call parameter process functions for all kernels */
-	/* Skip SC, since that is called on a temp sc table */
+	 
+	 
 	for (param_id = 0; param_id < IA_CSS_NUM_PARAMETER_IDS; param_id++) {
 		if (param_id == IA_CSS_SC_ID) continue;
 		if (params->config_changed[param_id])
@@ -3081,13 +2993,12 @@ sh_css_param_update_isp_params(struct ia_css_pipe *curr_pipe,
 	IA_CSS_ENTER_PRIVATE("pipe=%p, isp_parameters_id=%d", pipe_in, params->isp_parameters_id);
 	raw_bit_depth = ia_css_stream_input_format_bits_per_pixel(curr_pipe->stream);
 
-	/* now make the map available to the sp */
+	 
 	if (!commit) {
 		IA_CSS_LEAVE_ERR_PRIVATE(err);
 		return err;
 	}
-	/* enqueue a copies of the mem_map to
-	   the designated pipelines */
+	 
 	for (i = 0; i < curr_pipe->stream->num_pipes; i++) {
 		struct ia_css_pipe *pipe;
 		struct sh_css_ddr_address_map *cur_map;
@@ -3109,36 +3020,31 @@ sh_css_param_update_isp_params(struct ia_css_pipe *curr_pipe,
 					       : IA_CSS_BUFFER_TYPE_PARAMETER_SET,
 					       thread_id, &queue_id);
 		if (!sh_css_sp_is_running()) {
-			/* SP is not running. The queues are not valid */
+			 
 			err = -EBUSY;
 			break;
 		}
 		cur_map = &params->pipe_ddr_ptrs[pipeline->pipe_id];
 		cur_map_size = &params->pipe_ddr_ptrs_size[pipeline->pipe_id];
 
-		/* TODO: Normally, zoom and motion parameters shouldn't
-		 * be part of "isp_params" as it is resolution/pipe dependent
-		 * Therefore, move the zoom config elsewhere (e.g. shading
-		 * table can be taken as an example! @GC
-		 * */
+		 
 		{
-			/* we have to do this per pipeline because */
-			/* the processing is a.o. resolution dependent */
+			 
+			 
 			err = ia_css_process_zoom_and_motion(params,
 							     pipeline->stages);
 			if (err)
 				return err;
 		}
-		/* check if to actually update the parameters for this pipe */
-		/* When API change is implemented making good distinction between
-		* stream config and pipe config this skipping code can be moved out of the #ifdef */
+		 
+		 
 		if (pipe_in && (pipe != pipe_in)) {
 			IA_CSS_LOG("skipping pipe %p", pipe);
 			continue;
 		}
 
-		/* BZ 125915, should be moved till after "update other buff" */
-		/* update the other buffers to the pipe specific copies */
+		 
+		 
 		for (stage = pipeline->stages; stage; stage = stage->next) {
 			unsigned int mem;
 
@@ -3163,10 +3069,10 @@ sh_css_param_update_isp_params(struct ia_css_pipe *curr_pipe,
 				params->isp_mem_params_changed
 				[pipeline->pipe_id][stage->stage_num][mem] = false;
 			}
-		} /* for */
+		}  
 		if (err)
 			break;
-		/* update isp_params to pipe specific copies */
+		 
 		if (params->isp_params_changed) {
 			reallocate_buffer(&cur_map->isp_param,
 					  &cur_map_size->isp_param,
@@ -3178,26 +3084,26 @@ sh_css_param_update_isp_params(struct ia_css_pipe *curr_pipe,
 			sh_css_update_isp_params_to_ddr(params, cur_map->isp_param);
 		}
 
-		/* last make referenced copy */
+		 
 		err = ref_sh_css_ddr_address_map(
 			  cur_map,
 			  &isp_params_info.mem_map);
 		if (err)
 			break;
 
-		/* Update Parameters ID */
+		 
 		isp_params_info.isp_parameters_id = params->isp_parameters_id;
 
-		/* Update output frame pointer */
+		 
 		isp_params_info.output_frame_ptr =
 		    (params->output_frame) ? params->output_frame->data : mmgr_NULL;
 
-		/* now write the copy to ddr */
+		 
 		err = write_ia_css_isp_parameter_set_info_to_ddr(&isp_params_info, &cpy);
 		if (err)
 			break;
 
-		/* enqueue the set to sp */
+		 
 		IA_CSS_LOG("queue param set %x to %d", cpy, thread_id);
 
 		err = ia_css_bufq_enqueue_buffer(thread_id, queue_id, (uint32_t)cpy);
@@ -3209,17 +3115,12 @@ sh_css_param_update_isp_params(struct ia_css_pipe *curr_pipe,
 				   queue_id, thread_id);
 			break;
 		} else {
-			/* TMP: check discrepancy between nr of enqueued
-			 * parameter sets and dequeued sets
-			 */
+			 
 			g_param_buffer_enqueue_count++;
 			assert(g_param_buffer_enqueue_count < g_param_buffer_dequeue_count + 50);
-			/*
-			 * Tell the SP which queues are not empty,
-			 * by sending the software event.
-			 */
+			 
 			if (!sh_css_sp_is_running()) {
-				/* SP is not running. The queues are not valid */
+				 
 				IA_CSS_LEAVE_ERR_PRIVATE(-EBUSY);
 				return -EBUSY;
 			}
@@ -3233,12 +3134,11 @@ sh_css_param_update_isp_params(struct ia_css_pipe *curr_pipe,
 				   isp_params_info.output_frame_ptr,
 				   queue_id, thread_id);
 		}
-		/* clean-up old copy */
-		ia_css_dequeue_param_buffers(/*pipe_num*/);
+		 
+		ia_css_dequeue_param_buffers( );
 		params->pipe_dvs_6axis_config_changed[pipeline->pipe_id] = false;
-	} /* end for each 'active' pipeline */
-	/* clear the changed flags after all params
-	for all pipelines have been updated */
+	}  
+	 
 	params->isp_params_changed = false;
 	params->sc_table_changed = false;
 	params->dis_coef_table_changed = false;
@@ -3246,9 +3146,9 @@ sh_css_param_update_isp_params(struct ia_css_pipe *curr_pipe,
 	params->morph_table_changed = false;
 	params->dz_config_changed = false;
 	params->motion_config_changed = false;
-	/* ------ deprecated(bz675) : from ------ */
+	 
 	params->shading_settings_changed = false;
-	/* ------ deprecated(bz675) : to ------ */
+	 
 
 	memset(&params->config_changed[0], 0, sizeof(params->config_changed));
 
@@ -3272,7 +3172,7 @@ sh_css_params_write_to_ddr_internal(
 	unsigned int mem;
 	bool buff_realloced;
 
-	/* struct is > 128 bytes so it should not be on stack (see checkpatch) */
+	 
 	static struct ia_css_macc_table converted_macc_table;
 
 	IA_CSS_ENTER_PRIVATE("void");
@@ -3326,18 +3226,18 @@ sh_css_params_write_to_ddr_internal(
 		    params->sc_table_changed || buff_realloced) {
 			if (enable_conv == 0) {
 				if (params->sc_table) {
-					/* store the shading table to ddr */
+					 
 					err = ia_css_params_store_sctbl(stage, ddr_map->sc_tbl, params->sc_table);
 					if (err) {
 						IA_CSS_LEAVE_ERR_PRIVATE(err);
 						return err;
 					}
-					/* set sc_config to isp */
+					 
 					params->sc_config = (struct ia_css_shading_table *)params->sc_table;
 					ia_css_kernel_process_param[IA_CSS_SC_ID](pipe_id, stage, params);
 					params->sc_config = NULL;
 				} else {
-					/* generate the identical shading table */
+					 
 					if (params->sc_config) {
 						ia_css_shading_table_free(params->sc_config);
 						params->sc_config = NULL;
@@ -3350,23 +3250,23 @@ sh_css_params_write_to_ddr_internal(
 						return -ENOMEM;
 					}
 
-					/* store the shading table to ddr */
+					 
 					err = ia_css_params_store_sctbl(stage, ddr_map->sc_tbl, params->sc_config);
 					if (err) {
 						IA_CSS_LEAVE_ERR_PRIVATE(err);
 						return err;
 					}
 
-					/* set sc_config to isp */
+					 
 					ia_css_kernel_process_param[IA_CSS_SC_ID](pipe_id, stage, params);
 
-					/* free the shading table */
+					 
 					ia_css_shading_table_free(params->sc_config);
 					params->sc_config = NULL;
 				}
-			} else { /* legacy */
-				/* ------ deprecated(bz675) : from ------ */
-				/* shading table is full resolution, reduce */
+			} else {  
+				 
+				 
 				if (params->sc_config) {
 					ia_css_shading_table_free(params->sc_config);
 					params->sc_config = NULL;
@@ -3381,20 +3281,20 @@ sh_css_params_write_to_ddr_internal(
 					return -ENOMEM;
 				}
 
-				/* store the shading table to ddr */
+				 
 				err = ia_css_params_store_sctbl(stage, ddr_map->sc_tbl, params->sc_config);
 				if (err) {
 					IA_CSS_LEAVE_ERR_PRIVATE(err);
 					return err;
 				}
 
-				/* set sc_config to isp */
+				 
 				ia_css_kernel_process_param[IA_CSS_SC_ID](pipe_id, stage, params);
 
-				/* free the shading table */
+				 
 				ia_css_shading_table_free(params->sc_config);
 				params->sc_config = NULL;
-				/* ------ deprecated(bz675) : to ------ */
+				 
 			}
 		}
 	}
@@ -3449,10 +3349,7 @@ sh_css_params_write_to_ddr_internal(
 	}
 
 	if (binary->info->sp.enable.dvs_6axis) {
-		/* because UV is packed into the Y plane, calc total
-		 * YYU size = /2 gives size of UV-only,
-		 * total YYU size = UV-only * 3.
-		 */
+		 
 		buff_realloced = reallocate_buffer(
 				     &ddr_map->dvs_6axis_params_y,
 				     &ddr_map_size->dvs_6axis_params_y,
@@ -3468,15 +3365,14 @@ sh_css_params_write_to_ddr_internal(
 			const struct ia_css_frame_info *dvs_in_frame_info;
 
 			if (stage->args.delay_frames[0]) {
-				/*When delay frames are present(as in case of video),
-				they are used for dvs. Configure DVS using those params*/
+				 
 				dvs_in_frame_info = &stage->args.delay_frames[0]->frame_info;
 			} else {
-				/*Otherwise, use input frame to configure DVS*/
+				 
 				dvs_in_frame_info = &stage->args.in_frame->frame_info;
 			}
 
-			/* Generate default DVS unity table on start up*/
+			 
 			if (!params->pipe_dvs_6axis_config[pipe_id]) {
 				struct ia_css_resolution dvs_offset = {0};
 
@@ -3602,7 +3498,7 @@ sh_css_params_write_to_ddr_internal(
 		}
 	}
 
-	/* After special cases like SC, FPN since they may change parameters */
+	 
 	for (mem = 0; mem < N_IA_CSS_MEMORIES; mem++) {
 		const struct ia_css_isp_data *isp_data =
 		    ia_css_isp_param_get_isp_mem_init(&binary->info->sp.mem_initializers,
@@ -3664,7 +3560,7 @@ struct ia_css_shading_table *ia_css_get_shading_table(struct ia_css_stream
 			const struct ia_css_binary *binary
 			    = ia_css_stream_get_shading_correction_binary(stream);
 			if (binary) {
-				/* generate the identical shading table */
+				 
 				if (params->sc_config) {
 					ia_css_shading_table_free(params->sc_config);
 					params->sc_config = NULL;
@@ -3673,19 +3569,17 @@ struct ia_css_shading_table *ia_css_get_shading_table(struct ia_css_stream
 									binary->sctbl_width_per_color,
 									binary->sctbl_height);
 				table = params->sc_config;
-				/* The sc_config will be freed in the
-				 * ia_css_stream_isp_parameters_uninit function. */
+				 
 			}
 		}
 	} else {
-		/* ------ deprecated(bz675) : from ------ */
+		 
 		const struct ia_css_binary *binary
 		    = ia_css_stream_get_shading_correction_binary(stream);
 		struct ia_css_pipe *pipe;
 
-		/**********************************************************************/
-		/* following code is copied from function ia_css_stream_get_shading_correction_binary()
-		 * to match with the binary */
+		 
+		 
 		pipe = stream->pipes[0];
 
 		if (stream->num_pipes == 2) {
@@ -3694,7 +3588,7 @@ struct ia_css_shading_table *ia_css_get_shading_table(struct ia_css_stream
 			    stream->pipes[1]->config.mode == IA_CSS_PIPE_MODE_PREVIEW)
 				pipe = stream->pipes[1];
 		}
-		/**********************************************************************/
+		 
 		if (binary) {
 			if (params->sc_config) {
 				ia_css_shading_table_free(params->sc_config);
@@ -3707,10 +3601,9 @@ struct ia_css_shading_table *ia_css_get_shading_table(struct ia_css_stream
 			    binary, pipe->required_bds_factor);
 
 			table = params->sc_config;
-			/* The sc_config will be freed in the
-			 * ia_css_stream_isp_parameters_uninit function. */
+			 
 		}
-		/* ------ deprecated(bz675) : to ------ */
+		 
 	}
 
 	IA_CSS_LEAVE("table=%p", table);
@@ -3756,10 +3649,7 @@ static int ref_sh_css_ddr_address_map(
 	int err = 0;
 	unsigned int i;
 
-	/* we will use a union to copy things; overlaying an array
-	   with the struct; that way adding fields in the struct
-	   will keep things working, and we will not get type errors.
-	*/
+	 
 	union {
 		struct sh_css_ddr_address_map *map;
 		ia_css_ptr *addrs;
@@ -3775,7 +3665,7 @@ static int ref_sh_css_ddr_address_map(
 	assert(sizeof(struct sh_css_ddr_address_map_size) / sizeof(size_t) ==
 	       sizeof(struct sh_css_ddr_address_map) / sizeof(ia_css_ptr));
 
-	/* copy map using size info */
+	 
 	for (i = 0; i < (sizeof(struct sh_css_ddr_address_map_size) /
 			 sizeof(size_t)); i++) {
 		if (in_addrs.addrs[i] == mmgr_NULL)
@@ -3825,7 +3715,7 @@ free_ia_css_isp_parameter_set_info(
 
 	IA_CSS_ENTER_PRIVATE("ptr = %u", ptr);
 
-	/* sanity check - ptr must be valid */
+	 
 	if (!ia_css_refcount_is_valid(ptr)) {
 		IA_CSS_ERROR("%s: IA_CSS_REFCOUNT_PARAM_SET_POOL(0x%x) invalid arg", __func__,
 			     ptr);
@@ -3835,13 +3725,13 @@ free_ia_css_isp_parameter_set_info(
 	}
 
 	hmm_load(ptr, &isp_params_info.mem_map, sizeof(struct sh_css_ddr_address_map));
-	/* copy map using size info */
+	 
 	for (i = 0; i < (sizeof(struct sh_css_ddr_address_map_size) /
 			 sizeof(size_t)); i++) {
 		if (addrs[i] == mmgr_NULL)
 			continue;
 
-		/* sanity check - ptr must be valid */
+		 
 		if (!ia_css_refcount_is_valid(addrs[i])) {
 			IA_CSS_ERROR("%s: IA_CSS_REFCOUNT_PARAM_BUFFER(0x%x) invalid arg", __func__,
 				     ptr);
@@ -3857,7 +3747,7 @@ free_ia_css_isp_parameter_set_info(
 	return err;
 }
 
-/* Mark all parameters as changed to force recomputing the derived ISP parameters */
+ 
 void
 sh_css_invalidate_params(struct ia_css_stream *stream)
 {
@@ -3885,7 +3775,7 @@ sh_css_invalidate_params(struct ia_css_stream *stream)
 	params->dz_config_changed = true;
 	params->motion_config_changed = true;
 
-	/*Free up theDVS table memory blocks before recomputing new table  */
+	 
 	for (i = 0; i < IA_CSS_PIPE_ID_NUM; i++) {
 		if (params->pipe_dvs_6axis_config[i]) {
 			free_dvs_6axis_table(&params->pipe_dvs_6axis_config[i]);
@@ -3904,8 +3794,8 @@ sh_css_update_uds_and_crop_info(
     const struct ia_css_resolution *dvs_env,
     const struct ia_css_dz_config *zoom,
     const struct ia_css_vector *motion_vector,
-    struct sh_css_uds_info *uds,		/* out */
-    struct sh_css_crop_pos *sp_out_crop_pos,	/* out */
+    struct sh_css_uds_info *uds,		 
+    struct sh_css_crop_pos *sp_out_crop_pos,	 
 
     bool enable_zoom)
 {
@@ -3936,22 +3826,14 @@ sh_css_update_uds_and_crop_info(
 		bool upscale_y = in_frame_info->res.height < out_frame_info->res.height;
 
 		if (info->enable.uds && !info->enable.ds) {
-			/**
-			 * we calculate with the envelope that we can actually
-			 * use, the min dvs envelope is for the filter
-			 * initialization.
-			 */
+			 
 			env_width  = dvs_env->width -
 				     SH_CSS_MIN_DVS_ENVELOPE;
 			env_height = dvs_env->height -
 				     SH_CSS_MIN_DVS_ENVELOPE;
 			half_env_x = env_width / 2;
 			half_env_y = env_height / 2;
-			/**
-			 * for digital zoom, we use the dvs envelope and make
-			 * sure that we don't include the 8 leftmost pixels or
-			 * 8 topmost rows.
-			 */
+			 
 			if (upscale_x) {
 				uds_xc = (in_frame_info->res.width
 					  + env_width
@@ -3970,35 +3852,32 @@ sh_css_update_uds_and_crop_info(
 					  + env_height) / 2
 					 + SH_CSS_MIN_DVS_ENVELOPE;
 			}
-			/* clip the motion vector to +/- half the envelope */
+			 
 			motion_x = clamp(motion_x, -half_env_x, half_env_x);
 			motion_y = clamp(motion_y, -half_env_y, half_env_y);
 			uds_xc += motion_x;
 			uds_yc += motion_y;
-			/* uds can be pipelined, remove top lines */
+			 
 			crop_y = 2;
 		} else if (info->enable.ds) {
 			env_width  = dvs_env->width;
 			env_height = dvs_env->height;
 			half_env_x = env_width / 2;
 			half_env_y = env_height / 2;
-			/* clip the motion vector to +/- half the envelope */
+			 
 			motion_x = clamp(motion_x, -half_env_x, half_env_x);
 			motion_y = clamp(motion_y, -half_env_y, half_env_y);
-			/* for video with downscaling, the envelope is included
-			    in the input resolution. */
+			 
 			uds_xc = in_frame_info->res.width / 2 + motion_x;
 			uds_yc = in_frame_info->res.height / 2 + motion_y;
 			crop_x = info->pipeline.left_cropping;
-			/* ds == 2 (yuv_ds) can be pipelined, remove top
-			   lines */
+			 
 			if (info->enable.ds & 1)
 				crop_y = info->pipeline.top_cropping;
 			else
 				crop_y = 2;
 		} else {
-			/* video nodz: here we can only crop. We make sure we
-			   crop at least the first 8x8 pixels away. */
+			 
 			env_width  = dvs_env->width -
 				     SH_CSS_MIN_DVS_ENVELOPE;
 			env_height = dvs_env->height -
@@ -4013,7 +3892,7 @@ sh_css_update_uds_and_crop_info(
 				 + half_env_y + motion_y;
 		}
 
-		/* Must enforce that the crop position is even */
+		 
 		crop_x = EVEN_FLOOR(crop_x);
 		crop_y = EVEN_FLOOR(crop_y);
 		uds_xc = EVEN_FLOOR(uds_xc);
@@ -4024,7 +3903,7 @@ sh_css_update_uds_and_crop_info(
 		sp_out_crop_pos->x = (uint16_t)crop_x;
 		sp_out_crop_pos->y = (uint16_t)crop_y;
 	} else {
-		/* for down scaling, we always use the center of the image */
+		 
 		uds->xc = (uint16_t)in_frame_info->res.width / 2;
 		uds->yc = (uint16_t)in_frame_info->res.height / 2;
 		sp_out_crop_pos->x = (uint16_t)info->pipeline.left_cropping;
@@ -4041,21 +3920,14 @@ sh_css_update_uds_and_crop_info_based_on_zoom_region(
     const struct ia_css_resolution *dvs_env,
     const struct ia_css_dz_config *zoom,
     const struct ia_css_vector *motion_vector,
-    struct sh_css_uds_info *uds,		/* out */
-    struct sh_css_crop_pos *sp_out_crop_pos,	/* out */
+    struct sh_css_uds_info *uds,		 
+    struct sh_css_crop_pos *sp_out_crop_pos,	 
     struct ia_css_resolution pipe_in_res,
     bool enable_zoom)
 {
 	unsigned int x0 = 0, y0 = 0, x1 = 0, y1 = 0;
 	int err = 0;
-	/* Note:
-	* Filter_Envelope = 0 for NND/LUT
-	* Filter_Envelope = 1 for BCI
-	* Filter_Envelope = 3 for BLI
-	* Currently, not considering this filter envelope because, In uds.sp.c is recalculating
-	* the dx/dy based on filter envelope and other information (ia_css_uds_sp_scale_params)
-	* Ideally, That should be done on host side not on sp side.
-	*/
+	 
 	unsigned int filter_envelope = 0;
 
 	IA_CSS_ENTER_PRIVATE("void");
@@ -4082,15 +3954,11 @@ sh_css_update_uds_and_crop_info_based_on_zoom_region(
 	}
 
 	if (info->enable.dvs_envelope) {
-		/* Zoom region is only supported by the UDS module on ISP
-		 * 2 and higher. It is not supported in video mode on ISP 1 */
+		 
 		return -EINVAL;
 	} else {
 		if (enable_zoom) {
-			/* A. Calculate dx/dy based on crop region using in_frame_info
-			* Scale the crop region if in_frame_info to the stage is not same as
-			* actual effective input of the pipeline
-			*/
+			 
 			if (in_frame_info->res.width != pipe_in_res.width ||
 			    in_frame_info->res.height != pipe_in_res.height) {
 				x0 = (x0 * in_frame_info->res.width) / (pipe_in_res.width);
@@ -4103,7 +3971,7 @@ sh_css_update_uds_and_crop_info_based_on_zoom_region(
 			uds->curr_dy =
 			    ((y1 - y0 - filter_envelope) * HRT_GDC_N) / in_frame_info->res.height;
 
-			/* B. Calculate xc/yc based on crop region */
+			 
 			uds->xc = (uint16_t)x0 + (((x1) - (x0)) / 2);
 			uds->yc = (uint16_t)y0 + (((y1) - (y0)) / 2);
 		} else {
@@ -4142,7 +4010,7 @@ ia_css_3a_statistics_allocate(const struct ia_css_3a_grid_info *grid)
 	me->data = kvmalloc(grid_size * sizeof(*me->data), GFP_KERNEL);
 	if (!me->data)
 		goto err;
-	/* No weighted histogram, no structure, treat the histogram data as a byte dump in a byte array */
+	 
 	me->rgby_data = kvmalloc(sizeof_hmem(HMEM0_ID), GFP_KERNEL);
 
 	IA_CSS_LEAVE("return=%p", me);
@@ -4430,7 +4298,7 @@ ia_css_dvs2_6axis_config_allocate(const struct ia_css_stream *stream)
 	assert(stream);
 	params = stream->isp_params_configs;
 
-	/* Backward compatibility by default consider pipe as Video*/
+	 
 	if (!params || !params->pipe_dvs_6axis_config[IA_CSS_PIPE_ID_VIDEO])
 		goto err;
 

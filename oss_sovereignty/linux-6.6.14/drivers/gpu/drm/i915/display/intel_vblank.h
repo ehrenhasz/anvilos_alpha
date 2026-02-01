@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022-2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_VBLANK_H__
 #define __INTEL_VBLANK_H__
@@ -23,4 +21,4 @@ void intel_wait_for_pipe_scanline_moving(struct intel_crtc *crtc);
 void intel_crtc_update_active_timings(const struct intel_crtc_state *crtc_state,
 				      bool vrr_enable);
 
-#endif /* __INTEL_VBLANK_H__ */
+#endif  

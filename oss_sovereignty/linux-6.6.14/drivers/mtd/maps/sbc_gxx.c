@@ -1,36 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* sbc_gxx.c -- MTD map driver for Arcom Control Systems SBC-MediaGX,
-                SBC-GXm and SBC-GX1 series boards.
 
-   Copyright (C) 2001 Arcom Control System Ltd
+ 
 
 
-The SBC-MediaGX / SBC-GXx has up to 16 MiB of
-Intel StrataFlash (28F320/28F640) in x8 mode.
-
-This driver uses the CFI probe and Intel Extended Command Set drivers.
-
-The flash is accessed as follows:
-
-   16 KiB memory window at 0xdc000-0xdffff
-
-   Two IO address locations for paging
-
-   0x258
-       bit 0-7: address bit 14-21
-   0x259
-       bit 0-1: address bit 22-23
-       bit 7:   0 - reset/powered down
-                1 - device enabled
-
-The single flash device is divided into 3 partition which appear as
-separate MTD devices.
-
-25/04/2001 AJL (Arcom)  Modified signon strings and partition sizes
-                        (to support bzImages up to 638KiB-ish)
-*/
-
-// Includes
 
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -41,40 +12,38 @@ separate MTD devices.
 #include <linux/mtd/map.h>
 #include <linux/mtd/partitions.h>
 
-// Defines
 
-// - Hardware specific
+
+
 
 #define WINDOW_START 0xdc000
 
-/* Number of bits in offset. */
+ 
 #define WINDOW_SHIFT 14
 #define WINDOW_LENGTH (1 << WINDOW_SHIFT)
 
-/* The bits for the offset into the window. */
+ 
 #define WINDOW_MASK (WINDOW_LENGTH-1)
 #define PAGE_IO 0x258
 #define PAGE_IO_SIZE 2
 
-/* bit 7 of 0x259 must be 1 to enable device. */
+ 
 #define DEVICE_ENABLE 0x8000
 
-// - Flash / Partition sizing
+
 
 #define MAX_SIZE_KiB             16384
 #define BOOT_PARTITION_SIZE_KiB  768
 #define DATA_PARTITION_SIZE_KiB  1280
 #define APP_PARTITION_SIZE_KiB   6144
 
-// Globals
 
-static volatile int page_in_window = -1; // Current page in window.
+
+static volatile int page_in_window = -1; 
 static void __iomem *iomapadr;
 static DEFINE_SPINLOCK(sbc_gxx_spin);
 
-/* partition_info gives details on the logical partitions that the split the
- * single flash device into. If the size if zero we use up to the end of the
- * device. */
+ 
 static const struct mtd_partition partition_info[] = {
     { .name = "SBC-GXx flash boot partition",
       .offset = 0,
@@ -154,9 +123,7 @@ static void sbc_gxx_copy_to(struct map_info *map, unsigned long to, const void *
 static struct map_info sbc_gxx_map = {
 	.name = "SBC-GXx flash",
 	.phys = NO_XIP,
-	.size = MAX_SIZE_KiB*1024, /* this must be set to a maximum possible amount
-			 of flash so the cfi probe routines find all
-			 the chips */
+	.size = MAX_SIZE_KiB*1024,  
 	.bankwidth = 1,
 	.read = sbc_gxx_read8,
 	.copy_from = sbc_gxx_copy_from,
@@ -164,7 +131,7 @@ static struct map_info sbc_gxx_map = {
 	.copy_to = sbc_gxx_copy_to
 };
 
-/* MTD device for all of the flash. */
+ 
 static struct mtd_info *all_mtd;
 
 static void cleanup_sbc_gxx(void)
@@ -201,7 +168,7 @@ static int __init init_sbc_gxx(void)
 		PAGE_IO, PAGE_IO+PAGE_IO_SIZE-1,
 		WINDOW_START, WINDOW_START+WINDOW_LENGTH-1 );
 
-	/* Probe for chip. */
+	 
 	all_mtd = do_map_probe( "cfi_probe", &sbc_gxx_map );
 	if( !all_mtd ) {
 		cleanup_sbc_gxx();
@@ -210,7 +177,7 @@ static int __init init_sbc_gxx(void)
 
 	all_mtd->owner = THIS_MODULE;
 
-	/* Create MTD devices for each partition. */
+	 
 	mtd_device_register(all_mtd, partition_info, NUM_PARTITIONS);
 
 	return 0;

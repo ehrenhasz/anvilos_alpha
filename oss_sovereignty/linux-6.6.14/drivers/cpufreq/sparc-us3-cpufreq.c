@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* us3_cpufreq.c: UltraSPARC-III cpu frequency support
- *
- * Copyright (C) 2003 David S. Miller (davem@redhat.com)
- *
- * Many thanks to Dominik Brodowski for fixing up the cpufreq
- * infrastructure in order to make this driver easier to implement.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,12 +17,10 @@ struct us3_freq_percpu_info {
 	struct cpufreq_frequency_table table[4];
 };
 
-/* Indexed by cpu number. */
+ 
 static struct us3_freq_percpu_info *us3_freq_table;
 
-/* UltraSPARC-III has three dividers: 1, 2, and 32.  These are controlled
- * in the Safari config register.
- */
+ 
 #define SAFARI_CFG_DIV_1	0x0000000000000000UL
 #define SAFARI_CFG_DIV_2	0x0000000040000000UL
 #define SAFARI_CFG_DIV_32	0x0000000080000000UL
@@ -54,7 +46,7 @@ static void update_safari_cfg(void *arg)
 
 	__asm__ __volatile__("stxa	%0, [%%g0] %1\n\t"
 			     "membar	#Sync"
-			     : /* no outputs */
+			     :  
 			     : "r" (reg), "i" (ASI_SAFARI_CONFIG)
 			     : "memory");
 }

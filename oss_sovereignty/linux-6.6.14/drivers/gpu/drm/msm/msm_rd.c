@@ -1,33 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
 
-/* For debugging crashes, userspace can:
- *
- *   tail -f /sys/kernel/debug/dri/<minor>/rd > logfile.rd
- *
- * to log the cmdstream in a format that is understood by freedreno/cffdump
- * utility.  By comparing the last successfully completed fence #, to the
- * cmdstream for the next fence, you can narrow down which process and submit
- * caused the gpu crash/lockup.
- *
- * Additionally:
- *
- *   tail -f /sys/kernel/debug/dri/<minor>/hangrd > logfile.rd
- *
- * will capture just the cmdstream from submits which triggered a GPU hang.
- *
- * This bypasses drm_debugfs_create_files() mainly because we need to use
- * our own fops for a bit more control.  In particular, we don't want to
- * do anything if userspace doesn't have the debugfs file open.
- *
- * The module-param "rd_full", which defaults to false, enables snapshotting
- * all (non-written) buffers in the submit, rather than just cmdstream bo's.
- * This is useful to capture the contents of (for example) vbo's or textures,
- * or shader programs (if not emitted inline in cmdstream).
- */
+ 
+
+ 
 
 #include <linux/circ_buf.h>
 #include <linux/debugfs.h>
@@ -49,15 +23,15 @@ module_param_named(rd_full, rd_full, bool, 0600);
 
 enum rd_sect_type {
 	RD_NONE,
-	RD_TEST,       /* ascii text */
-	RD_CMD,        /* ascii text */
-	RD_GPUADDR,    /* u32 gpuaddr, u32 size */
-	RD_CONTEXT,    /* raw dump */
-	RD_CMDSTREAM,  /* raw dump */
-	RD_CMDSTREAM_ADDR, /* gpu addr of cmdstream */
-	RD_PARAM,      /* u32 param_type, u32 param_val, u32 bitlen */
-	RD_FLUSH,      /* empty, clear previous params */
-	RD_PROGRAM,    /* shader program, raw dump */
+	RD_TEST,        
+	RD_CMD,         
+	RD_GPUADDR,     
+	RD_CONTEXT,     
+	RD_CMDSTREAM,   
+	RD_CMDSTREAM_ADDR,  
+	RD_PARAM,       
+	RD_FLUSH,       
+	RD_PROGRAM,     
 	RD_VERT_SHADER,
 	RD_FRAG_SHADER,
 	RD_BUFFER_CONTENTS,
@@ -65,14 +39,14 @@ enum rd_sect_type {
 	RD_CHIP_ID,
 };
 
-#define BUF_SZ 512  /* should be power of 2 */
+#define BUF_SZ 512   
 
-/* space used: */
+ 
 #define circ_count(circ) \
 	(CIRC_CNT((circ)->head, (circ)->tail, BUF_SZ))
 #define circ_count_to_end(circ) \
 	(CIRC_CNT_TO_END((circ)->head, (circ)->tail, BUF_SZ))
-/* space available: */
+ 
 #define circ_space(circ) \
 	(CIRC_SPACE((circ)->head, (circ)->tail, BUF_SZ))
 #define circ_space_to_end(circ) \
@@ -83,9 +57,7 @@ struct msm_rd_state {
 
 	bool open;
 
-	/* fifo access is synchronized on the producer side by
-	 * write_lock.  And read_lock synchronizes the reads
-	 */
+	 
 	struct mutex read_lock, write_lock;
 
 	wait_queue_head_t fifo_event;
@@ -107,10 +79,7 @@ static void rd_write(struct msm_rd_state *rd, const void *buf, int sz)
 		if (!rd->open)
 			return;
 
-		/* Note that smp_load_acquire() is not strictly required
-		 * as CIRC_SPACE_TO_END() does not access the tail more
-		 * than once.
-		 */
+		 
 		n = min(sz, circ_space_to_end(&rd->fifo));
 		memcpy(fptr, ptr, n);
 
@@ -145,10 +114,7 @@ static ssize_t rd_read(struct file *file, char __user *buf,
 	if (ret)
 		goto out;
 
-	/* Note that smp_load_acquire() is not strictly required
-	 * as CIRC_CNT_TO_END() does not access the head more than
-	 * once.
-	 */
+	 
 	n = min_t(int, sz, circ_count_to_end(&rd->fifo));
 	if (copy_to_user(buf, fptr, n)) {
 		ret = -EFAULT;
@@ -191,14 +157,10 @@ static int rd_open(struct inode *inode, struct file *file)
 	file->private_data = rd;
 	rd->open = true;
 
-	/* Reset fifo to clear any previously unread data: */
+	 
 	rd->fifo.head = rd->fifo.tail = 0;
 
-	/* the parsing tools need to know gpu-id to know which
-	 * register database to load.
-	 *
-	 * Note: These particular params do not require a context
-	 */
+	 
 	gpu->funcs->get_param(gpu, NULL, MSM_PARAM_GPU_ID, &val, &zero);
 	gpu_id = val;
 
@@ -270,7 +232,7 @@ int msm_rd_debugfs_init(struct drm_minor *minor)
 	struct msm_rd_state *rd;
 	int ret;
 
-	/* only create on first minor: */
+	 
 	if (priv->rd)
 		return 0;
 
@@ -321,17 +283,14 @@ static void snapshot_buf(struct msm_rd_state *rd,
 		size = obj->size;
 	}
 
-	/*
-	 * Always write the GPUADDR header so can get a complete list of all the
-	 * buffers in the cmd
-	 */
+	 
 	rd_write_section(rd, RD_GPUADDR,
 			(uint32_t[3]){ iova, size, iova >> 32 }, 12);
 
 	if (!full)
 		return;
 
-	/* But only dump the contents of buffers marked READ */
+	 
 	if (!(submit->bos[idx].flags & MSM_SUBMIT_BO_READ))
 		return;
 
@@ -346,7 +305,7 @@ static void snapshot_buf(struct msm_rd_state *rd,
 	msm_gem_put_vaddr_locked(obj);
 }
 
-/* called under gpu->lock */
+ 
 void msm_rd_dump_submit(struct msm_rd_state *rd, struct msm_gem_submit *submit,
 		const char *fmt, ...)
 {
@@ -387,9 +346,9 @@ void msm_rd_dump_submit(struct msm_rd_state *rd, struct msm_gem_submit *submit,
 		snapshot_buf(rd, submit, i, 0, 0, should_dump(submit, i));
 
 	for (i = 0; i < submit->nr_cmds; i++) {
-		uint32_t szd  = submit->cmd[i].size; /* in dwords */
+		uint32_t szd  = submit->cmd[i].size;  
 
-		/* snapshot cmdstream bo's (if we haven't already): */
+		 
 		if (!should_dump(submit, i)) {
 			snapshot_buf(rd, submit, submit->cmd[i].idx,
 					submit->cmd[i].iova, szd * 4, true);
@@ -398,14 +357,11 @@ void msm_rd_dump_submit(struct msm_rd_state *rd, struct msm_gem_submit *submit,
 
 	for (i = 0; i < submit->nr_cmds; i++) {
 		uint64_t iova = submit->cmd[i].iova;
-		uint32_t szd  = submit->cmd[i].size; /* in dwords */
+		uint32_t szd  = submit->cmd[i].size;  
 
 		switch (submit->cmd[i].type) {
 		case MSM_SUBMIT_CMD_IB_TARGET_BUF:
-			/* ignore IB-targets, we've logged the buffer, the
-			 * parser tool will follow the IB based on the logged
-			 * buffer/gpuaddr, so nothing more to do.
-			 */
+			 
 			break;
 		case MSM_SUBMIT_CMD_CTX_RESTORE_BUF:
 		case MSM_SUBMIT_CMD_BUF:

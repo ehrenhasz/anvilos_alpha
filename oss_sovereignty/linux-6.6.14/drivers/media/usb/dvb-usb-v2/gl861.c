@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB compliant linux driver for GL861 USB2.0 devices.
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include <linux/string.h>
 
 #include "dvb_usb.h"
@@ -15,7 +12,7 @@
 DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
 struct gl861 {
-	/* USB control message buffer */
+	 
 	u8 buf[16];
 
 	struct i2c_adapter *demod_sub_i2c;
@@ -66,7 +63,7 @@ static int gl861_ctrl_msg(struct dvb_usb_device *d, u8 request, u16 value,
 	if (request == CMD_READ)
 		memcpy(data, ctx->buf, size);
 
-	usleep_range(1000, 2000); /* Avoid I2C errors */
+	usleep_range(1000, 2000);  
 
 	mutex_unlock(&d->usb_mutex);
 
@@ -94,9 +91,9 @@ static int gl861_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 	u8 request, *data;
 	u16 value, index, size;
 
-	/* XXX: I2C adapter maximum data lengths are not tested */
+	 
 	if (num == 1 && !(msg[0].flags & I2C_M_RD)) {
-		/* I2C write */
+		 
 		if (msg[0].len < 2 || msg[0].len > sizeof(ctx->buf)) {
 			ret = -EOPNOTSUPP;
 			goto err;
@@ -119,7 +116,7 @@ static int gl861_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 		ret = gl861_ctrl_msg(d, request, value, index, data, size);
 	} else if (num == 2 && !(msg[0].flags & I2C_M_RD) &&
 		   (msg[1].flags & I2C_M_RD)) {
-		/* I2C write + read */
+		 
 		if (msg[0].len != 1 || msg[1].len > sizeof(ctx->buf)) {
 			ret = -EOPNOTSUPP;
 			goto err;
@@ -132,7 +129,7 @@ static int gl861_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 		ret = gl861_ctrl_msg(d, request, value, index,
 				     msg[1].buf, msg[1].len);
 	} else if (num == 1 && (msg[0].flags & I2C_M_RD)) {
-		/* I2C read */
+		 
 		if (msg[0].len > sizeof(ctx->buf)) {
 			ret = -EOPNOTSUPP;
 			goto err;
@@ -144,7 +141,7 @@ static int gl861_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 		ret = gl861_ctrl_msg(d, request, value, index,
 				     msg[0].buf, msg[0].len);
 	} else {
-		/* Unsupported I2C message */
+		 
 		dev_dbg(&intf->dev, "unknown i2c msg, num %u\n", num);
 		ret = -EOPNOTSUPP;
 	}
@@ -167,7 +164,7 @@ static struct i2c_algorithm gl861_i2c_algo = {
 	.functionality = gl861_i2c_functionality,
 };
 
-/* Callbacks for DVB USB */
+ 
 static struct zl10353_config gl861_zl10353_config = {
 	.demod_address = 0x0f,
 	.no_tuner = 1,
@@ -198,16 +195,11 @@ static int gl861_tuner_attach(struct dvb_usb_adapter *adap)
 
 static int gl861_init(struct dvb_usb_device *d)
 {
-	/*
-	 * There is 2 interfaces. Interface 0 is for TV and interface 1 is
-	 * for HID remote controller. Interface 0 has 2 alternate settings.
-	 * For some reason we need to set interface explicitly, defaulted
-	 * as alternate setting 1?
-	 */
+	 
 	return usb_set_interface(d->udev, 0, 0);
 }
 
-/* DVB USB Driver stuff */
+ 
 static struct dvb_usb_device_properties gl861_props = {
 	.driver_name = KBUILD_MODNAME,
 	.owner = THIS_MODULE,
@@ -229,9 +221,7 @@ static struct dvb_usb_device_properties gl861_props = {
 };
 
 
-/*
- * For Friio
- */
+ 
 struct friio_config {
 	struct i2c_board_info demod_info;
 	struct tc90522_config demod_cfg;
@@ -247,7 +237,7 @@ static const struct friio_config friio_config = {
 };
 
 
-/* GPIO control in Friio */
+ 
 
 #define FRIIO_CTL_LNB (1 << 0)
 #define FRIIO_CTL_STROBE (1 << 1)
@@ -257,7 +247,7 @@ static const struct friio_config friio_config = {
 #define FRIIO_LED_RUNNING 0x6400ff64
 #define FRIIO_LED_STOPPED 0x96ff00ff
 
-/* control PIC16F676 attached to Friio */
+ 
 static int friio_ext_ctl(struct dvb_usb_device *d,
 			    u32 sat_color, int power_on)
 {
@@ -277,7 +267,7 @@ static int friio_ext_ctl(struct dvb_usb_device *d,
 	msg.buf = buf;
 	buf[0] = 0x00;
 
-	/* send 2bit header (&B10) */
+	 
 	buf[1] = power | FRIIO_CTL_LED | FRIIO_CTL_STROBE;
 	ret = i2c_transfer(&d->i2c_adap, &msg, 1);
 	buf[1] |= FRIIO_CTL_CLK;
@@ -288,7 +278,7 @@ static int friio_ext_ctl(struct dvb_usb_device *d,
 	buf[1] |= FRIIO_CTL_CLK;
 	ret += i2c_transfer(&d->i2c_adap, &msg, 1);
 
-	/* send 32bit(satur, R, G, B) data in serial */
+	 
 	mask = 1UL << 31;
 	for (i = 0; i < 32; i++) {
 		buf[1] = power | FRIIO_CTL_STROBE;
@@ -300,7 +290,7 @@ static int friio_ext_ctl(struct dvb_usb_device *d,
 		mask >>= 1;
 	}
 
-	/* set the strobe off */
+	 
 	buf[1] = power;
 	ret += i2c_transfer(&d->i2c_adap, &msg, 1);
 	buf[1] |= FRIIO_CTL_CLK;
@@ -310,20 +300,8 @@ static int friio_ext_ctl(struct dvb_usb_device *d,
 	return (ret == 70) ? 0 : -EREMOTEIO;
 }
 
-/* init/config of gl861 for Friio */
-/* NOTE:
- * This function cannot be moved to friio_init()/dvb_usbv2_init(),
- * because the init defined here includes a whole device reset,
- * it must be run early before any activities like I2C,
- * but friio_init() is called by dvb-usbv2 after {_frontend, _tuner}_attach(),
- * where I2C communication is used.
- * In addition, this reset is required in reset_resume() as well.
- * Thus this function is set to be called from _power_ctl().
- *
- * Since it will be called on the early init stage
- * where the i2c adapter is not initialized yet,
- * we cannot use i2c_transfer() here.
- */
+ 
+ 
 static int friio_reset(struct dvb_usb_device *d)
 {
 	int i, ret;
@@ -348,10 +326,7 @@ static int friio_reset(struct dvb_usb_device *d)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Check if the dev is really a Friio White, since it might be
-	 * another device, Friio Black, with the same VID/PID.
-	 */
+	 
 
 	usleep_range(1000, 2000);
 	wbuf[0] = 0x80;
@@ -401,9 +376,7 @@ static int friio_reset(struct dvb_usb_device *d)
 	return 0;
 }
 
-/*
- * DVB callbacks for Friio
- */
+ 
 
 static int friio_power_ctrl(struct dvb_usb_device *d, int onoff)
 {
@@ -489,13 +462,13 @@ static int friio_init(struct dvb_usb_device *d)
 		{0x77, 0x00}, {0x71, 0x00}, {0x71, 0x00}, {0x76, 0x0c},
 	};
 
-	/* power on LNA? */
+	 
 	ret = friio_ext_ctl(d, FRIIO_LED_STOPPED, true);
 	if (ret < 0)
 		return ret;
 	msleep(20);
 
-	/* init/config demod */
+	 
 	priv = d_to_priv(d);
 	for (i = 0; i < ARRAY_SIZE(demod_init); i++) {
 		int ret;

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Support for AMS AS73211 JENCOLOR(R) Digital XYZ Sensor
- *
- * Author: Christian Eggers <ceggers@arri.de>
- *
- * Copyright (c) 2020 ARRI Lighting
- *
- * Color light sensor with 16-bit channels for x, y, z and temperature);
- * 7-bit I2C slave address 0x74 .. 0x77.
- *
- * Datasheet: https://ams.com/documents/20143/36005/AS73211_DS000556_3-01.pdf
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/completion.h>
@@ -28,14 +17,14 @@
 
 #define AS73211_DRV_NAME "as73211"
 
-/* AS73211 configuration registers */
+ 
 #define AS73211_REG_OSR    0x0
 #define AS73211_REG_AGEN   0x2
 #define AS73211_REG_CREG1  0x6
 #define AS73211_REG_CREG2  0x7
 #define AS73211_REG_CREG3  0x8
 
-/* AS73211 output register bank */
+ 
 #define AS73211_OUT_OSR_STATUS    0
 #define AS73211_OUT_TEMP          1
 #define AS73211_OUT_MRES1         2
@@ -72,7 +61,7 @@
 #define AS73211_SAMPLE_TIME_NUM       15
 #define AS73211_SAMPLE_TIME_MAX_MS    BIT(AS73211_SAMPLE_TIME_NUM - 1)
 
-/* Available sample frequencies are 1.024MHz multiplied by powers of two. */
+ 
 static const int as73211_samp_freq_avail[] = {
 	AS73211_SAMPLE_FREQ_BASE * 1,
 	AS73211_SAMPLE_FREQ_BASE * 2,
@@ -84,17 +73,7 @@ static const int as73211_hardwaregain_avail[] = {
 	1, 2, 4, 8, 16, 32, 64, 128, 256, 512, 1024, 2048,
 };
 
-/**
- * struct as73211_data - Instance data for one AS73211
- * @client: I2C client.
- * @osr:    Cached Operational State Register.
- * @creg1:  Cached Configuration Register 1.
- * @creg2:  Cached Configuration Register 2.
- * @creg3:  Cached Configuration Register 3.
- * @mutex:  Keeps cached registers in sync with the device.
- * @completion: Completion to wait for interrupt.
- * @int_time_avail: Available integration times (depend on sampling frequency).
- */
+ 
 struct as73211_data {
 	struct i2c_client *client;
 	u8 osr;
@@ -134,11 +113,11 @@ struct as73211_data {
 #define AS73211_SCALE_TEMP_INT     0
 #define AS73211_SCALE_TEMP_MICRO   50000
 
-#define AS73211_SCALE_X 277071108  /* nW/m^2 */
-#define AS73211_SCALE_Y 298384270  /* nW/m^2 */
-#define AS73211_SCALE_Z 160241927  /* nW/m^2 */
+#define AS73211_SCALE_X 277071108   
+#define AS73211_SCALE_Y 298384270   
+#define AS73211_SCALE_Z 160241927   
 
-/* Channel order MUST match devices result register order */
+ 
 #define AS73211_SCAN_INDEX_TEMP 0
 #define AS73211_SCAN_INDEX_X    1
 #define AS73211_SCAN_INDEX_Y    2
@@ -178,26 +157,14 @@ static const struct iio_chan_spec as73211_channels[] = {
 
 static unsigned int as73211_integration_time_1024cyc(struct as73211_data *data)
 {
-	/*
-	 * Return integration time in units of 1024 clock cycles. Integration time
-	 * in CREG1 is in powers of 2 (x 1024 cycles).
-	 */
+	 
 	return BIT(FIELD_GET(AS73211_CREG1_TIME_MASK, data->creg1));
 }
 
 static unsigned int as73211_integration_time_us(struct as73211_data *data,
 						 unsigned int integration_time_1024cyc)
 {
-	/*
-	 * f_samp is configured in CREG3 in powers of 2 (x 1.024 MHz)
-	 * t_cycl is configured in CREG1 in powers of 2 (x 1024 cycles)
-	 * t_int_us = 1 / (f_samp) * t_cycl * US_PER_SEC
-	 *          = 1 / (2^CREG3_CCLK * 1,024,000) * 2^CREG1_CYCLES * 1,024 * US_PER_SEC
-	 *          = 2^(-CREG3_CCLK) * 2^CREG1_CYCLES * 1,000
-	 * In order to get rid of negative exponents, we extend the "fraction"
-	 * by 2^3 (CREG3_CCLK,max = 3)
-	 * t_int_us = 2^(3-CREG3_CCLK) * 2^CREG1_CYCLES * 125
-	 */
+	 
 	return BIT(3 - FIELD_GET(AS73211_CREG3_CCLK_MASK, data->creg3)) *
 		integration_time_1024cyc * 125;
 }
@@ -216,11 +183,11 @@ static void as73211_integration_time_calc_avail(struct as73211_data *data)
 
 static unsigned int as73211_gain(struct as73211_data *data)
 {
-	/* gain can be calculated from CREG1 as 2^(11 - CREG1_GAIN) */
+	 
 	return BIT(AS73211_CREG1_GAIN_1 - FIELD_GET(AS73211_CREG1_GAIN_MASK, data->creg1));
 }
 
-/* must be called with as73211_data::mutex held. */
+ 
 static int as73211_req_data(struct as73211_data *data)
 {
 	unsigned int time_us = as73211_integration_time_us(data,
@@ -233,10 +200,7 @@ static int as73211_req_data(struct as73211_data *data)
 	if (data->client->irq)
 		reinit_completion(&data->completion);
 
-	/*
-	 * During measurement, there should be no traffic on the i2c bus as the
-	 * electrical noise would disturb the measurement process.
-	 */
+	 
 	i2c_lock_bus(data->client->adapter, I2C_LOCK_SEGMENT);
 
 	data->osr &= ~AS73211_OSR_DOS_MASK;
@@ -251,15 +215,10 @@ static int as73211_req_data(struct as73211_data *data)
 		return ret;
 	}
 
-	/*
-	 * Reset AS73211_OSR_SS (is self clearing) in order to avoid unintentional
-	 * triggering of further measurements later.
-	 */
+	 
 	data->osr &= ~AS73211_OSR_SS;
 
-	/*
-	 * Add 33% extra margin for the timeout. fclk,min = fclk,typ - 27%.
-	 */
+	 
 	time_us += time_us / 3;
 	if (data->client->irq) {
 		ret = wait_for_completion_timeout(&data->completion, usecs_to_jiffies(time_us));
@@ -269,7 +228,7 @@ static int as73211_req_data(struct as73211_data *data)
 			return -ETIMEDOUT;
 		}
 	} else {
-		/* Wait integration time */
+		 
 		usleep_range(time_us, 2 * time_us);
 	}
 
@@ -381,7 +340,7 @@ static int as73211_read_raw(struct iio_dev *indio_dev, struct iio_chan_spec cons
 		}}
 
 	case IIO_CHAN_INFO_SAMP_FREQ:
-		/* f_samp is configured in CREG3 in powers of 2 (x 1.024 MHz) */
+		 
 		*val = BIT(FIELD_GET(AS73211_CREG3_CCLK_MASK, data->creg3)) *
 			AS73211_SAMPLE_FREQ_BASE;
 		return IIO_VAL_INT;
@@ -443,14 +402,14 @@ static int _as73211_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_SAMP_FREQ: {
-		int reg_bits, freq_kHz = val / HZ_PER_KHZ;  /* 1024, 2048, ... */
+		int reg_bits, freq_kHz = val / HZ_PER_KHZ;   
 
-		/* val must be 1024 * 2^x */
+		 
 		if (val < 0 || (freq_kHz * HZ_PER_KHZ) != val ||
 				!is_power_of_2(freq_kHz) || val2)
 			return -EINVAL;
 
-		/* f_samp is configured in CREG3 in powers of 2 (x 1.024 MHz (=2^10)) */
+		 
 		reg_bits = ilog2(freq_kHz) - 10;
 		if (!FIELD_FIT(AS73211_CREG3_CCLK_MASK, reg_bits))
 			return -EINVAL;
@@ -471,7 +430,7 @@ static int _as73211_write_raw(struct iio_dev *indio_dev,
 		if (val < 0 || !is_power_of_2(val) || val2)
 			return -EINVAL;
 
-		/* gain can be calculated from CREG1 as 2^(11 - CREG1_GAIN) */
+		 
 		reg_bits = AS73211_CREG1_GAIN_1 - ilog2(val);
 		if (!FIELD_FIT(AS73211_CREG1_GAIN_MASK, reg_bits))
 			return -EINVAL;
@@ -490,20 +449,17 @@ static int _as73211_write_raw(struct iio_dev *indio_dev,
 		int time_ms;
 		int reg_bits;
 
-		/* f_samp is configured in CREG3 in powers of 2 (x 1.024 MHz) */
+		 
 		int f_samp_1_024mhz = BIT(FIELD_GET(AS73211_CREG3_CCLK_MASK, data->creg3));
 
-		/*
-		 * time_ms = time_us * US_PER_MS * f_samp_1_024mhz / MHZ_PER_HZ
-		 *         = time_us * f_samp_1_024mhz / 1000
-		 */
-		time_ms = (val_us * f_samp_1_024mhz) / 1000;  /* 1 ms, 2 ms, ... (power of two) */
+		 
+		time_ms = (val_us * f_samp_1_024mhz) / 1000;   
 		if (time_ms < 0 || !is_power_of_2(time_ms) || time_ms > AS73211_SAMPLE_TIME_MAX_MS)
 			return -EINVAL;
 
 		reg_bits = ilog2(time_ms);
 		if (!FIELD_FIT(AS73211_CREG1_TIME_MASK, reg_bits))
-			return -EINVAL;  /* not possible due to previous tests */
+			return -EINVAL;   
 
 		data->creg1 &= ~AS73211_CREG1_TIME_MASK;
 		data->creg1 |= FIELD_PREP(AS73211_CREG1_TIME_MASK, reg_bits);
@@ -531,7 +487,7 @@ static int as73211_write_raw(struct iio_dev *indio_dev, struct iio_chan_spec con
 	if (ret < 0)
 		goto error_unlock;
 
-	/* Need to switch to config mode ... */
+	 
 	if ((data->osr & AS73211_OSR_DOS_MASK) != AS73211_OSR_DOS_CONFIG) {
 		data->osr &= ~AS73211_OSR_DOS_MASK;
 		data->osr |= AS73211_OSR_DOS_CONFIG;
@@ -574,10 +530,10 @@ static irqreturn_t as73211_trigger_handler(int irq __always_unused, void *p)
 
 	data_result = as73211_req_data(data);
 	if (data_result < 0 && data_result != -EOVERFLOW)
-		goto done;  /* don't push any data for errors other than EOVERFLOW */
+		goto done;   
 
 	if (*indio_dev->active_scan_mask == AS73211_SCAN_MASK_ALL) {
-		/* Optimization for reading all (color + temperature) channels */
+		 
 		u8 addr = as73211_channels[0].address;
 		struct i2c_msg msgs[] = {
 			{
@@ -598,9 +554,9 @@ static irqreturn_t as73211_trigger_handler(int irq __always_unused, void *p)
 		if (ret < 0)
 			goto done;
 	} else {
-		/* Optimization for reading only color channels */
+		 
 
-		/* AS73211 starts reading at address 2 */
+		 
 		ret = i2c_master_recv(data->client,
 				(char *)&scan.chan[1], 3 * sizeof(scan.chan[1]));
 		if (ret < 0)
@@ -608,10 +564,7 @@ static irqreturn_t as73211_trigger_handler(int irq __always_unused, void *p)
 	}
 
 	if (data_result) {
-		/*
-		 * Saturate all channels (in case of overflows). Temperature channel
-		 * is not affected by overflows.
-		 */
+		 
 		scan.chan[1] = cpu_to_le16(U16_MAX);
 		scan.chan[2] = cpu_to_le16(U16_MAX);
 		scan.chan[3] = cpu_to_le16(U16_MAX);
@@ -690,7 +643,7 @@ static int as73211_probe(struct i2c_client *client)
 		return ret;
 	data->osr = ret;
 
-	/* reset device */
+	 
 	data->osr |= AS73211_OSR_SW_RES;
 	ret = i2c_smbus_write_byte_data(data->client, AS73211_REG_OSR, data->osr);
 	if (ret < 0)
@@ -701,15 +654,12 @@ static int as73211_probe(struct i2c_client *client)
 		return ret;
 	data->osr = ret;
 
-	/*
-	 * Reading AGEN is only possible after reset (AGEN is not available if
-	 * device is in measurement mode).
-	 */
+	 
 	ret = i2c_smbus_read_byte_data(data->client, AS73211_REG_AGEN);
 	if (ret < 0)
 		return ret;
 
-	/* At the time of writing this driver, only DEVID 2 and MUT 1 are known. */
+	 
 	if ((ret & AS73211_AGEN_DEVID_MASK) != AS73211_AGEN_DEVID(2) ||
 	    (ret & AS73211_AGEN_MUT_MASK) != AS73211_AGEN_MUT(1))
 		return -ENODEV;

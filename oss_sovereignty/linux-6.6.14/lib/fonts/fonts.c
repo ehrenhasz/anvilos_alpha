@@ -1,16 +1,4 @@
-/*
- * `Soft' font definitions
- *
- *    Created 1995 by Geert Uytterhoeven
- *    Rewritten 1998 by Martin Mares <mj@ucw.cz>
- *
- *	2001 - Documented with DocBook
- *	- Brad Douglas <brad@neruo.com>
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file COPYING in the main directory of this archive
- * for more details.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -69,16 +57,7 @@ static const struct font_desc *fonts[] = {
 #endif
 
 
-/**
- *	find_font - find a font
- *	@name: string name of a font
- *
- *	Find a specified font with string name @name.
- *
- *	Returns %NULL if no font found, or a pointer to the
- *	specified font.
- *
- */
+ 
 const struct font_desc *find_font(const char *name)
 {
 	unsigned int i;
@@ -92,20 +71,7 @@ const struct font_desc *find_font(const char *name)
 EXPORT_SYMBOL(find_font);
 
 
-/**
- *	get_default_font - get default font
- *	@xres: screen size of X
- *	@yres: screen size of Y
- *      @font_w: bit array of supported widths (1 - 32)
- *      @font_h: bit array of supported heights (1 - 32)
- *
- *	Get the default font for a specified screen size.
- *	Dimensions are in pixels.
- *
- *	Returns %NULL if no font is found, or a pointer to the
- *	chosen font.
- *
- */
+ 
 const struct font_desc *get_default_font(int xres, int yres, u32 font_w,
 					 u32 font_h)
 {
@@ -130,7 +96,7 @@ const struct font_desc *get_default_font(int xres, int yres, u32 font_w,
 		if ((yres < 400) == (f->height <= 8))
 			c += 1000;
 
-		/* prefer a bigger font for high resolution */
+		 
 		res = (xres / f->width) * (yres / f->height) / 1000;
 		if (res > 20)
 			c += 20 - res;

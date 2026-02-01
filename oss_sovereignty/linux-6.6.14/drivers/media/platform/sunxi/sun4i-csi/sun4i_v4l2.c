@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 NextThing Co
- * Copyright (C) 2016-2019 Bootlin
- *
- * Author: Maxime Ripard <maxime.ripard@bootlin.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/pm_runtime.h>
@@ -19,7 +14,7 @@
 #define CSI_DEFAULT_HEIGHT	480
 
 static const struct sun4i_csi_format sun4i_csi_formats[] = {
-	/* YUV422 inputs */
+	 
 	{
 		.mbus		= MEDIA_BUS_FMT_YUYV8_2X8,
 		.fourcc		= V4L2_PIX_FMT_YUV420M,
@@ -109,11 +104,11 @@ static void _sun4i_csi_try_fmt(struct sun4i_csi *csi,
 	pix->num_planes = _fmt->num_planes;
 	pix->pixelformat = _fmt->fourcc;
 
-	/* Align the width and height on the subsampling */
+	 
 	width = ALIGN(pix->width, _fmt->hsub);
 	height = ALIGN(pix->height, _fmt->vsub);
 
-	/* Clamp the width and height to our capabilities */
+	 
 	pix->width = clamp(width, _fmt->hsub, CSI_MAX_WIDTH);
 	pix->height = clamp(height, _fmt->vsub, CSI_MAX_HEIGHT);
 
@@ -308,9 +303,9 @@ static int sun4i_csi_subdev_set_fmt(struct v4l2_subdev *subdev,
 	else
 		subdev_fmt = &csi->subdev_fmt;
 
-	/* We can only set the format on the sink pad */
+	 
 	if (fmt->pad == CSI_SUBDEV_SINK) {
-		/* It's the sink, only allow changing the frame size */
+		 
 		subdev_fmt->width = fmt->format.width;
 		subdev_fmt->height = fmt->format.height;
 		subdev_fmt->code = fmt->format.code;
@@ -358,7 +353,7 @@ int sun4i_csi_v4l2_register(struct sun4i_csi *csi)
 	vdev->release = video_device_release_empty;
 	vdev->lock = &csi->lock;
 
-	/* Set a default format */
+	 
 	csi->fmt.pixelformat = sun4i_csi_formats[0].fourcc;
 	csi->fmt.width = CSI_DEFAULT_WIDTH;
 	csi->fmt.height = CSI_DEFAULT_HEIGHT;

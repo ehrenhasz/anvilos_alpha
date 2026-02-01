@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Simple pointer stack
- *
- * (c) 2010 Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 
 #include "pstack.h"
 #include "debug.h"

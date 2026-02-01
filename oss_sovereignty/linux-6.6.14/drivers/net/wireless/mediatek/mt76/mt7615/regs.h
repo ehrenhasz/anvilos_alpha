@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2019 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7615_REGS_H
 #define __MT7615_REGS_H
@@ -123,7 +123,7 @@ enum mt7615_reg_base {
 #define MT_WPDMA_GLO_CFG_TX_WRITEBACK_DONE	BIT(6)
 #define MT_WPDMA_GLO_CFG_BIG_ENDIAN	BIT(7)
 #define MT_WPDMA_GLO_CFG_TX_BT_SIZE_BIT0	BIT(9)
-#define MT_WPDMA_GLO_CFG_BYPASS_TX_SCH		BIT(9) /* MT7622 */
+#define MT_WPDMA_GLO_CFG_BYPASS_TX_SCH		BIT(9)  
 #define MT_WPDMA_GLO_CFG_MULTI_DMA_EN	GENMASK(11, 10)
 #define MT_WPDMA_GLO_CFG_FIFO_LITTLE_ENDIAN	BIT(12)
 #define MT_WPDMA_GLO_CFG_TX_BT_SIZE_BIT21	GENMASK(23, 22)
@@ -584,7 +584,7 @@ enum mt7615_reg_base {
 #define MT_EFUSE_WDATA(_i)		(0x010 + ((_i) * 4))
 #define MT_EFUSE_RDATA(_i)		(0x030 + ((_i) * 4))
 
-/* INFRACFG host register range on MT7622 */
+ 
 #define MT_INFRACFG_MISC		0x700
 #define MT_INFRACFG_MISC_AP2CONN_WAKE	BIT(1)
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Analog Devices ADAU1373 Audio Codec drive
- *
- * Copyright 2011 Analog Devices Inc.
- * Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -681,8 +676,7 @@ static DECLARE_ADAU1373_DSP_OUTPUT_MIXER_CTRLS(adau1373_dac2_mixer_controls,
 	ADAU1373_DOUT_MIX_CTRL(4));
 
 static const struct snd_soc_dapm_widget adau1373_dapm_widgets[] = {
-	/* Datasheet claims Left ADC is bit 6 and Right ADC is bit 7, but that
-	 * doesn't seem to be the case. */
+	 
 	SND_SOC_DAPM_ADC("Left ADC", NULL, ADAU1373_PWDN_CTRL1, 7, 0),
 	SND_SOC_DAPM_ADC("Right ADC", NULL, ADAU1373_PWDN_CTRL1, 6, 0),
 
@@ -1042,25 +1036,25 @@ static int adau1373_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 
 	switch (freq / params_rate(params)) {
-	case 1024: /* sysclk / 256 */
+	case 1024:  
 		div = 0;
 		break;
-	case 1536: /* 2/3 sysclk / 256 */
+	case 1536:  
 		div = 1;
 		break;
-	case 2048: /* 1/2 sysclk / 256 */
+	case 2048:  
 		div = 2;
 		break;
-	case 3072: /* 1/3 sysclk / 256 */
+	case 3072:  
 		div = 3;
 		break;
-	case 4096: /* 1/4 sysclk / 256 */
+	case 4096:  
 		div = 4;
 		break;
-	case 6144: /* 1/6 sysclk / 256 */
+	case 6144:  
 		div = 5;
 		break;
-	case 5632: /* 2/11 sysclk / 256 */
+	case 5632:  
 		div = 6;
 		break;
 	default:
@@ -1288,8 +1282,7 @@ static int adau1373_set_pll(struct snd_soc_component *component, int pll_id,
 	if (freq_out < 45158000 || freq_out > 49152000)
 		return -EINVAL;
 
-	/* APLL input needs to be >= 8Mhz, so in case freq_in is less we use the
-	 * DPLL to get it there. DPLL_out = (DPLL_in / div) * 1024 */
+	 
 	while (freq_in < 8000000) {
 		freq_in *= 2;
 		dpll_div++;
@@ -1317,7 +1310,7 @@ static int adau1373_set_pll(struct snd_soc_component *component, int pll_id,
 	regmap_write(adau1373->regmap, ADAU1373_PLL_CTRL4(pll_id), pll_regs[3]);
 	regmap_write(adau1373->regmap, ADAU1373_PLL_CTRL5(pll_id), pll_regs[4]);
 
-	/* Set sysclk to pll_rate / 4 */
+	 
 	regmap_update_bits(adau1373->regmap, ADAU1373_CLK_SRC_DIV(pll_id), 0x3f, 0x09);
 
 	return 0;

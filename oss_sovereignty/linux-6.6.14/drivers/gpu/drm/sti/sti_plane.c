@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/types.h>
 
@@ -50,13 +45,13 @@ void sti_plane_update_fps(struct sti_plane *plane,
 
 	now = ktime_get();
 
-	/* Compute number of frame updates */
+	 
 	fps = &plane->fps_info;
 
 	if (new_field)
 		fps->curr_field_counter++;
 
-	/* do not perform fps calcul if new_frame is false */
+	 
 	if (!new_frame)
 		return;
 
@@ -83,7 +78,7 @@ void sti_plane_update_fps(struct sti_plane *plane,
 	}
 
 	if (fps->curr_field_counter) {
-		/* Compute number of field updates */
+		 
 		num_fields = fps->curr_field_counter - fps->last_field_counter;
 		fps->last_field_counter = fps->curr_field_counter;
 		fipks = (num_fields * 1000000) / ms_since_last;

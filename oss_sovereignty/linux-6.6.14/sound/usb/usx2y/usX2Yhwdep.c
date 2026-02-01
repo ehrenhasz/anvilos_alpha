@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Tascam US-X2Y USB soundcards
- *
- * FPGA Loader + ALSA Startup
- *
- * Copyright (c) 2003 by Karsten Wiese <annabellesgarden@yahoo.de>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/slab.h>
@@ -49,12 +43,12 @@ static int snd_us428ctls_mmap(struct snd_hwdep *hw, struct file *filp, struct vm
 	unsigned long	size = (unsigned long)(area->vm_end - area->vm_start);
 	struct usx2ydev	*us428 = hw->private_data;
 
-	// FIXME this hwdep interface is used twice: fpga download and mmap for controlling Lights etc. Maybe better using 2 hwdep devs?
-	// so as long as the device isn't fully initialised yet we return -EBUSY here.
+	
+	
 	if (!(us428->chip_status & USX2Y_STAT_CHIP_INIT))
 		return -EBUSY;
 
-	/* if userspace tries to mmap beyond end of our buffer, fail */
+	 
 	if (size > US428_SHAREDMEM_PAGES) {
 		snd_printd("%lu > %lu\n", size, (unsigned long)US428_SHAREDMEM_PAGES);
 		return -EINVAL;
@@ -109,7 +103,7 @@ static int snd_usx2y_hwdep_dsp_status(struct snd_hwdep *hw,
 	if (id < 0)
 		return -ENODEV;
 	strcpy(info->id, type_ids[id]);
-	info->num_dsps = 2;		// 0: Prepad Data, 1: FPGA Code
+	info->num_dsps = 2;		
 	if (us428->chip_status & USX2Y_STAT_CHIP_INIT)
 		info->chip_ready = 1;
 	info->version = USX2Y_DRIVER_VERSION;
@@ -198,7 +192,7 @@ static int snd_usx2y_hwdep_dsp_load(struct snd_hwdep *hw,
 	if (err)
 		return err;
 	if (dsp->index == 1) {
-		msleep(250);				// give the device some time
+		msleep(250);				
 		err = usx2y_async_seq04_init(priv);
 		if (err) {
 			snd_printk(KERN_ERR "usx2y_async_seq04_init error\n");

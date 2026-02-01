@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013
- * Phillip Lougher <phillip@squashfs.org.uk>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/vfs.h>
@@ -18,7 +15,7 @@
 #include "squashfs.h"
 #include "page_actor.h"
 
-/* Read separately compressed datablock directly into page cache */
+ 
 int squashfs_readpage_block(struct page *target_page, u64 block, int bsize,
 	int expected)
 
@@ -44,7 +41,7 @@ int squashfs_readpage_block(struct page *target_page, u64 block, int bsize,
 	if (page == NULL)
 		return res;
 
-	/* Try to grab all the pages covered by the Squashfs block */
+	 
 	for (i = 0, n = start_index; n <= end_index; n++) {
 		page[i] = (n == target_page->index) ? target_page :
 			grab_cache_page_nowait(target_page->mapping, n);
@@ -63,15 +60,12 @@ int squashfs_readpage_block(struct page *target_page, u64 block, int bsize,
 
 	pages = i;
 
-	/*
-	 * Create a "page actor" which will kmap and kunmap the
-	 * page cache pages appropriately within the decompressor
-	 */
+	 
 	actor = squashfs_page_actor_init_special(msblk, page, pages, expected);
 	if (actor == NULL)
 		goto out;
 
-	/* Decompress directly into the page cache buffers */
+	 
 	res = squashfs_read_data(inode->i_sb, block, bsize, NULL, actor);
 
 	squashfs_page_actor_free(actor);
@@ -84,7 +78,7 @@ int squashfs_readpage_block(struct page *target_page, u64 block, int bsize,
 		goto mark_errored;
 	}
 
-	/* Last page (if present) may have trailing bytes not filled */
+	 
 	bytes = res % PAGE_SIZE;
 	if (page[pages - 1]->index == end_index && bytes) {
 		pageaddr = kmap_local_page(page[pages - 1]);
@@ -92,7 +86,7 @@ int squashfs_readpage_block(struct page *target_page, u64 block, int bsize,
 		kunmap_local(pageaddr);
 	}
 
-	/* Mark pages as uptodate, unlock and release */
+	 
 	for (i = 0; i < pages; i++) {
 		flush_dcache_page(page[i]);
 		SetPageUptodate(page[i]);
@@ -106,9 +100,7 @@ int squashfs_readpage_block(struct page *target_page, u64 block, int bsize,
 	return 0;
 
 mark_errored:
-	/* Decompression failed, mark pages as errored.  Target_page is
-	 * dealt with by the caller
-	 */
+	 
 	for (i = 0; i < pages; i++) {
 		if (page[i] == NULL || page[i] == target_page)
 			continue;

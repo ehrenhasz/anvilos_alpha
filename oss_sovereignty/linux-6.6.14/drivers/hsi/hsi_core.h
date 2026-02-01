@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * HSI framework internal interfaces,
- *
- * Copyright (C) 2010 Nokia Corporation. All rights reserved.
- *
- * Contact: Carlos Chinea <carlos.chinea@nokia.com>
- */
+ 
+ 
 
 #ifndef __LINUX_HSI_CORE_H__
 #define __LINUX_HSI_CORE_H__
@@ -19,4 +13,4 @@ struct hsi_cl_info {
 
 extern struct list_head hsi_board_list;
 
-#endif /* __LINUX_HSI_CORE_H__ */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011 Florian Westphal <fw@strlen.de>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -100,7 +98,7 @@ static bool rpfilter_mt(const struct sk_buff *skb, struct xt_action_param *par)
 	iph = ipv6_hdr(skb);
 	saddrtype = ipv6_addr_type(&iph->saddr);
 	if (unlikely(saddrtype == IPV6_ADDR_ANY))
-		return true ^ invert; /* not routable: forward path will drop it */
+		return true ^ invert;  
 
 	return rpfilter_lookup_reverse6(xt_net(par), skb, xt_in(par),
 					info->flags) ^ invert;

@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Samsung LSI S5C73M3 8M pixel camera driver
- *
- * Copyright (C) 2012, Samsung Electronics, Co., Ltd.
- * Sylwester Nawrocki <s.nawrocki@samsung.com>
- * Andrzej Hajda <a.hajda@samsung.com>
- */
+ 
+ 
 #ifndef S5C73M3_H_
 #define S5C73M3_H_
 
@@ -22,7 +16,7 @@
 #define S5C73M3_ISP_FMT			MEDIA_BUS_FMT_VYUY8_2X8
 #define S5C73M3_JPEG_FMT		MEDIA_BUS_FMT_S5C_UYVY_JPEG_1X8
 
-/* Subdevs pad index definitions */
+ 
 enum s5c73m3_pads {
 	S5C73M3_ISP_PAD,
 	S5C73M3_JPEG_PAD,
@@ -173,8 +167,8 @@ enum s5c73m3_oif_pads {
 
 #define COMM_AF_CON				0x0e00
 #define  COMM_AF_CON_STOP			0x0000
-#define  COMM_AF_CON_SCAN			0x0001 /* Full Search */
-#define  COMM_AF_CON_START			0x0002 /* Fast Search */
+#define  COMM_AF_CON_SCAN			0x0001  
+#define  COMM_AF_CON_START			0x0002  
 
 #define COMM_AF_CAL				0x0e06
 #define COMM_AF_TOUCH_AF			0x0e0a
@@ -213,8 +207,8 @@ enum s5c73m3_oif_pads {
 #define  COMM_FACE_DET_OSD_ON			0x0001
 
 #define COMM_AE_CON				0x0c00
-#define  COMM_AE_STOP				0x0000 /* lock */
-#define  COMM_AE_START				0x0001 /* unlock */
+#define  COMM_AE_STOP				0x0000  
+#define  COMM_AE_START				0x0001  
 
 #define COMM_ISO				0x0c02
 #define  COMM_ISO_AUTO				0x0000
@@ -226,7 +220,7 @@ enum s5c73m3_oif_pads {
 #define  COMM_ISO_NIGHT				0x0006
 #define  COMM_ISO_INDOOR			0x0007
 
-/* 0x00000 (-2.0 EV)...0x0008 (2.0 EV), 0.5EV step */
+ 
 #define COMM_EV					0x0c04
 
 #define COMM_METERING				0x0c06
@@ -259,13 +253,13 @@ enum s5c73m3_oif_pads {
 #define  COMM_FRAME_RATE_FIXED_90FPS		0x000b
 #define  COMM_FRAME_RATE_ANTI_SHAKE		0x0013
 
-/* 0x0000...0x0004 -> sharpness: 0, 1, 2, -1, -2 */
+ 
 #define COMM_SHARPNESS				0x0c14
 
-/* 0x0000...0x0004 -> saturation: 0, 1, 2, -1, -2 */
+ 
 #define COMM_SATURATION				0x0c16
 
-/* 0x0000...0x0004 -> contrast: 0, 1, 2, -1, -2 */
+ 
 #define COMM_CONTRAST				0x0c18
 
 #define COMM_SCENE_MODE				0x0c1a
@@ -303,8 +297,8 @@ enum s5c73m3_oif_pads {
 #define  COMM_AWB_MODE_AUTO			0x0005
 
 #define COMM_AWB_CON				0x0d00
-#define  COMM_AWB_STOP				0x0000 /* lock */
-#define  COMM_AWB_START				0x0001 /* unlock */
+#define  COMM_AWB_STOP				0x0000  
+#define  COMM_AWB_START				0x0001  
 
 #define COMM_FW_UPDATE				0x0906
 #define  COMM_FW_UPDATE_NOT_READY		0x0000
@@ -319,19 +313,19 @@ enum s5c73m3_oif_pads {
 struct s5c73m3_ctrls {
 	struct v4l2_ctrl_handler handler;
 	struct {
-		/* exposure/exposure bias cluster */
+		 
 		struct v4l2_ctrl *auto_exposure;
 		struct v4l2_ctrl *exposure_bias;
 		struct v4l2_ctrl *exposure_metering;
 	};
 	struct {
-		/* iso/auto iso cluster */
+		 
 		struct v4l2_ctrl *auto_iso;
 		struct v4l2_ctrl *iso;
 	};
 	struct v4l2_ctrl *auto_wb;
 	struct {
-		/* continuous auto focus/auto focus cluster */
+		 
 		struct v4l2_ctrl *focus_auto;
 		struct v4l2_ctrl *af_start;
 		struct v4l2_ctrl *af_stop;
@@ -359,7 +353,7 @@ enum s5c73m3_resolution_types {
 struct s5c73m3_interval {
 	u16 fps_reg;
 	struct v4l2_fract interval;
-	/* Maximum rectangle for the interval */
+	 
 	struct v4l2_frmsize_discrete size;
 };
 
@@ -382,9 +376,9 @@ struct s5c73m3 {
 
 	struct clk *clock;
 
-	/* External master clock frequency */
+	 
 	u32 mclk_frequency;
-	/* Video bus type - MIPI-CSI2/parallel */
+	 
 	enum v4l2_mbus_type bus_type;
 
 	const struct s5c73m3_frame_size *sensor_pix_size[2];
@@ -394,7 +388,7 @@ struct s5c73m3 {
 	const struct s5c73m3_interval *fiv;
 
 	struct v4l2_mbus_frame_desc frame_desc;
-	/* protects the struct members below */
+	 
 	struct mutex lock;
 
 	struct s5c73m3_ctrls ctrls;
@@ -447,4 +441,4 @@ static inline struct s5c73m3 *oif_sd_to_s5c73m3(struct v4l2_subdev *sd)
 {
 	return container_of(sd, struct s5c73m3, oif_sd);
 }
-#endif	/* S5C73M3_H_ */
+#endif	 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _SPS30_H
 #define _SPS30_H
 
@@ -17,15 +17,11 @@ struct sps30_ops {
 };
 
 struct sps30_state {
-	/* serialize access to the device */
+	 
 	struct mutex lock;
 	struct device *dev;
 	int state;
-	/*
-	 * priv pointer is solely for serdev driver private data. We keep it
-	 * here because driver_data inside dev has been already used for iio and
-	 * struct serdev_device doesn't have one.
-	 */
+	 
 	void *priv;
 	const struct sps30_ops *ops;
 };

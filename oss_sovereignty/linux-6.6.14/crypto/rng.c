@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * RNG operations.
- *
- * Copyright (c) 2008 Neil Horman <nhorman@tuxdriver.com>
- * Copyright (c) 2015 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/internal/rng.h>
 #include <linux/atomic.h>

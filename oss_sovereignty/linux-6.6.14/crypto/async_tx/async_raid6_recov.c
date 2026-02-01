@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Asynchronous RAID-6 recovery calculations ASYNC_TX API.
- * Copyright(c) 2009 Intel Corporation
- *
- * based on raid6recov.c:
- *   Copyright 2002 H. Peter Anvin
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -47,7 +41,7 @@ async_sum_product(struct page *dest, unsigned int d_off,
 		unmap->addr[2] = dma_map_page(dev, dest, d_off,
 						len, DMA_BIDIRECTIONAL);
 		unmap->bidi_cnt = 1;
-		/* engine only looks at Q, but expects it to follow P */
+		 
 		pq[1] = unmap->addr[2];
 
 		unmap->len = len;
@@ -60,13 +54,11 @@ async_sum_product(struct page *dest, unsigned int d_off,
 			return tx;
 		}
 
-		/* could not get a descriptor, unmap and fall through to
-		 * the synchronous path
-		 */
+		 
 		dmaengine_unmap_put(unmap);
 	}
 
-	/* run the operation synchronously */
+	 
 	async_tx_quiesce(&submit->depend_tx);
 	amul = raid6_gfmul[coef[0]];
 	bmul = raid6_gfmul[coef[1]];
@@ -92,7 +84,7 @@ async_mult(struct page *dest, unsigned int d_off, struct page *src,
 						      &dest, 1, &src, 1, len);
 	struct dma_device *dma = chan ? chan->device : NULL;
 	struct dmaengine_unmap_data *unmap = NULL;
-	const u8 *qmul; /* Q multiplier table */
+	const u8 *qmul;  
 	u8 *d, *s;
 
 	if (dma)
@@ -115,10 +107,7 @@ async_mult(struct page *dest, unsigned int d_off, struct page *src,
 		unmap->bidi_cnt++;
 		unmap->len = len;
 
-		/* this looks funny, but the engine looks for Q at
-		 * dma_dest[1] and ignores dma_dest[0] as a dest
-		 * due to DMA_PREP_PQ_DISABLE_P
-		 */
+		 
 		tx = dma->device_prep_dma_pq(chan, dma_dest, unmap->addr,
 					     1, &coef, len, dma_flags);
 
@@ -129,15 +118,11 @@ async_mult(struct page *dest, unsigned int d_off, struct page *src,
 			return tx;
 		}
 
-		/* could not get a descriptor, unmap and fall through to
-		 * the synchronous path
-		 */
+		 
 		dmaengine_unmap_put(unmap);
 	}
 
-	/* no channel available, or failed to allocate a descriptor, so
-	 * perform the operation synchronously
-	 */
+	 
 	async_tx_quiesce(&submit->depend_tx);
 	qmul  = raid6_gfmul[coef];
 	d = page_address(dest) + d_off;
@@ -175,8 +160,8 @@ __2data_recov_4(int disks, size_t bytes, int faila, int failb,
 	b = blocks[failb];
 	b_off = offs[failb];
 
-	/* in the 4 disk case P + Pxy == P and Q + Qxy == Q */
-	/* Dx = A*(P+Pxy) + B*(Q+Qxy) */
+	 
+	 
 	srcs[0] = p;
 	src_offs[0] = p_off;
 	srcs[1] = q;
@@ -186,7 +171,7 @@ __2data_recov_4(int disks, size_t bytes, int faila, int failb,
 	init_async_submit(submit, ASYNC_TX_FENCE, tx, NULL, NULL, scribble);
 	tx = async_sum_product(b, b_off, srcs, src_offs, coef, bytes, submit);
 
-	/* Dy = P+Pxy+Dx */
+	 
 	srcs[0] = p;
 	src_offs[0] = p_off;
 	srcs[1] = b;
@@ -235,10 +220,7 @@ __2data_recov_5(int disks, size_t bytes, int faila, int failb,
 	g = blocks[good];
 	g_off = offs[good];
 
-	/* Compute syndrome with zero for the missing data pages
-	 * Use the dead data pages as temporary storage for delta p and
-	 * delta q
-	 */
+	 
 	dp = blocks[faila];
 	dp_off = offs[faila];
 	dq = blocks[failb];
@@ -250,7 +232,7 @@ __2data_recov_5(int disks, size_t bytes, int faila, int failb,
 	tx = async_mult(dq, dq_off, g, g_off,
 			raid6_gfexp[good], bytes, submit);
 
-	/* compute P + Pxy */
+	 
 	srcs[0] = dp;
 	src_offs[0] = dp_off;
 	srcs[1] = p;
@@ -259,7 +241,7 @@ __2data_recov_5(int disks, size_t bytes, int faila, int failb,
 			  NULL, NULL, scribble);
 	tx = async_xor_offs(dp, dp_off, srcs, src_offs, 2, bytes, submit);
 
-	/* compute Q + Qxy */
+	 
 	srcs[0] = dq;
 	src_offs[0] = dq_off;
 	srcs[1] = q;
@@ -268,7 +250,7 @@ __2data_recov_5(int disks, size_t bytes, int faila, int failb,
 			  NULL, NULL, scribble);
 	tx = async_xor_offs(dq, dq_off, srcs, src_offs, 2, bytes, submit);
 
-	/* Dx = A*(P+Pxy) + B*(Q+Qxy) */
+	 
 	srcs[0] = dp;
 	src_offs[0] = dp_off;
 	srcs[1] = dq;
@@ -278,7 +260,7 @@ __2data_recov_5(int disks, size_t bytes, int faila, int failb,
 	init_async_submit(submit, ASYNC_TX_FENCE, tx, NULL, NULL, scribble);
 	tx = async_sum_product(dq, dq_off, srcs, src_offs, coef, bytes, submit);
 
-	/* Dy = P+Pxy+Dx */
+	 
 	srcs[0] = dp;
 	src_offs[0] = dp_off;
 	srcs[1] = dq;
@@ -311,10 +293,7 @@ __2data_recov_n(int disks, size_t bytes, int faila, int failb,
 	q = blocks[disks-1];
 	q_off = offs[disks-1];
 
-	/* Compute syndrome with zero for the missing data pages
-	 * Use the dead data pages as temporary storage for
-	 * delta p and delta q
-	 */
+	 
 	dp = blocks[faila];
 	dp_off = offs[faila];
 	blocks[faila] = NULL;
@@ -329,7 +308,7 @@ __2data_recov_n(int disks, size_t bytes, int faila, int failb,
 	init_async_submit(submit, ASYNC_TX_FENCE, tx, NULL, NULL, scribble);
 	tx = async_gen_syndrome(blocks, offs, disks, bytes, submit);
 
-	/* Restore pointer table */
+	 
 	blocks[faila]   = dp;
 	offs[faila] = dp_off;
 	blocks[failb]   = dq;
@@ -339,7 +318,7 @@ __2data_recov_n(int disks, size_t bytes, int faila, int failb,
 	blocks[disks-1] = q;
 	offs[disks-1] = q_off;
 
-	/* compute P + Pxy */
+	 
 	srcs[0] = dp;
 	src_offs[0] = dp_off;
 	srcs[1] = p;
@@ -348,7 +327,7 @@ __2data_recov_n(int disks, size_t bytes, int faila, int failb,
 			  NULL, NULL, scribble);
 	tx = async_xor_offs(dp, dp_off, srcs, src_offs, 2, bytes, submit);
 
-	/* compute Q + Qxy */
+	 
 	srcs[0] = dq;
 	src_offs[0] = dq_off;
 	srcs[1] = q;
@@ -357,7 +336,7 @@ __2data_recov_n(int disks, size_t bytes, int faila, int failb,
 			  NULL, NULL, scribble);
 	tx = async_xor_offs(dq, dq_off, srcs, src_offs, 2, bytes, submit);
 
-	/* Dx = A*(P+Pxy) + B*(Q+Qxy) */
+	 
 	srcs[0] = dp;
 	src_offs[0] = dp_off;
 	srcs[1] = dq;
@@ -367,7 +346,7 @@ __2data_recov_n(int disks, size_t bytes, int faila, int failb,
 	init_async_submit(submit, ASYNC_TX_FENCE, tx, NULL, NULL, scribble);
 	tx = async_sum_product(dq, dq_off, srcs, src_offs, coef, bytes, submit);
 
-	/* Dy = P+Pxy+Dx */
+	 
 	srcs[0] = dp;
 	src_offs[0] = dp_off;
 	srcs[1] = dq;
@@ -379,16 +358,7 @@ __2data_recov_n(int disks, size_t bytes, int faila, int failb,
 	return tx;
 }
 
-/**
- * async_raid6_2data_recov - asynchronously calculate two missing data blocks
- * @disks: number of disks in the RAID-6 array
- * @bytes: block size
- * @faila: first failed drive index
- * @failb: second failed drive index
- * @blocks: array of source pointers where the last two entries are p and q
- * @offs: array of offset for pages in blocks
- * @submit: submission/completion modifiers
- */
+ 
 struct dma_async_tx_descriptor *
 async_raid6_2data_recov(int disks, size_t bytes, int faila, int failb,
 			struct page **blocks, unsigned int *offs,
@@ -403,11 +373,7 @@ async_raid6_2data_recov(int disks, size_t bytes, int faila, int failb,
 
 	pr_debug("%s: disks: %d len: %zu\n", __func__, disks, bytes);
 
-	/* if a dma resource is not available or a scribble buffer is not
-	 * available punt to the synchronous path.  In the 'dma not
-	 * available' case be sure to use the scribble buffer to
-	 * preserve the content of 'blocks' as the caller intended.
-	 */
+	 
 	if (!async_dma_find_channel(DMA_PQ) || !scribble) {
 		void **ptrs = scribble ? scribble : (void **) blocks;
 
@@ -432,23 +398,15 @@ async_raid6_2data_recov(int disks, size_t bytes, int faila, int failb,
 	switch (non_zero_srcs) {
 	case 0:
 	case 1:
-		/* There must be at least 2 sources - the failed devices. */
+		 
 		BUG();
 
 	case 2:
-		/* dma devices do not uniformly understand a zero source pq
-		 * operation (in contrast to the synchronous case), so
-		 * explicitly handle the special case of a 4 disk array with
-		 * both data disks missing.
-		 */
+		 
 		return __2data_recov_4(disks, bytes, faila, failb,
 				blocks, offs, submit);
 	case 3:
-		/* dma devices do not uniformly understand a single
-		 * source pq operation (in contrast to the synchronous
-		 * case), so explicitly handle the special case of a 5 disk
-		 * array with 2 of 3 data disks missing.
-		 */
+		 
 		return __2data_recov_5(disks, bytes, faila, failb,
 				blocks, offs, submit);
 	default:
@@ -458,15 +416,7 @@ async_raid6_2data_recov(int disks, size_t bytes, int faila, int failb,
 }
 EXPORT_SYMBOL_GPL(async_raid6_2data_recov);
 
-/**
- * async_raid6_datap_recov - asynchronously calculate a data and the 'p' block
- * @disks: number of disks in the RAID-6 array
- * @bytes: block size
- * @faila: failed drive index
- * @blocks: array of source pointers where the last two entries are p and q
- * @offs: array of offset for pages in blocks
- * @submit: submission/completion modifiers
- */
+ 
 struct dma_async_tx_descriptor *
 async_raid6_datap_recov(int disks, size_t bytes, int faila,
 			struct page **blocks, unsigned int *offs,
@@ -486,11 +436,7 @@ async_raid6_datap_recov(int disks, size_t bytes, int faila,
 
 	pr_debug("%s: disks: %d len: %zu\n", __func__, disks, bytes);
 
-	/* if a dma resource is not available or a scribble buffer is not
-	 * available punt to the synchronous path.  In the 'dma not
-	 * available' case be sure to use the scribble buffer to
-	 * preserve the content of 'blocks' as the caller intended.
-	 */
+	 
 	if (!async_dma_find_channel(DMA_PQ) || !scribble) {
 		void **ptrs = scribble ? scribble : (void **) blocks;
 
@@ -527,18 +473,14 @@ async_raid6_datap_recov(int disks, size_t bytes, int faila,
 	q = blocks[disks-1];
 	q_off = offs[disks-1];
 
-	/* Compute syndrome with zero for the missing data page
-	 * Use the dead data page as temporary storage for delta q
-	 */
+	 
 	dq = blocks[faila];
 	dq_off = offs[faila];
 	blocks[faila] = NULL;
 	blocks[disks-1] = dq;
 	offs[disks-1] = dq_off;
 
-	/* in the 4-disk case we only need to perform a single source
-	 * multiplication with the one good data block.
-	 */
+	 
 	if (good_srcs == 1) {
 		struct page *g = blocks[good];
 		unsigned int g_off = offs[good];
@@ -557,13 +499,13 @@ async_raid6_datap_recov(int disks, size_t bytes, int faila,
 		tx = async_gen_syndrome(blocks, offs, disks, bytes, submit);
 	}
 
-	/* Restore pointer table */
+	 
 	blocks[faila]   = dq;
 	offs[faila] = dq_off;
 	blocks[disks-1] = q;
 	offs[disks-1] = q_off;
 
-	/* calculate g^{-faila} */
+	 
 	coef = raid6_gfinv[raid6_gfexp[faila]];
 
 	srcs[0] = dq;

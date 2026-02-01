@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A hwmon driver for the IBM PowerExecutive temperature/power sensors
- * Copyright (C) 2007 IBM
- *
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+
+ 
 
 #include <linux/ipmi.h>
 #include <linux/module.h>
@@ -67,7 +62,7 @@ struct ibmpex_bmc_data {
 	struct device		*bmc_device;
 	struct mutex		lock;
 	bool			valid;
-	unsigned long		last_updated;	/* In jiffies */
+	unsigned long		last_updated;	 
 
 	struct ipmi_addr	address;
 	struct completion	read_complete;
@@ -401,7 +396,7 @@ static int ibmpex_find_sensors(struct ibmpex_bmc_data *data)
 
 		data->sensors[i].in_use = 1;
 
-		/* Create attributes */
+		 
 		for (j = 0; j < PEX_NUM_SENSOR_FUNCS; j++) {
 			err = create_sensor(data, sensor_type, sensor_counter,
 					    i, j);
@@ -454,7 +449,7 @@ static void ibmpex_register_bmc(int iface, struct device *dev)
 	data->interface = iface;
 	data->bmc_device = dev;
 
-	/* Create IPMI messaging interface user */
+	 
 	err = ipmi_create_user(data->interface, &driver_data.ipmi_hndlrs,
 			       data, &data->user);
 	if (err < 0) {
@@ -466,19 +461,19 @@ static void ibmpex_register_bmc(int iface, struct device *dev)
 
 	mutex_init(&data->lock);
 
-	/* Initialize message */
+	 
 	data->tx_msgid = 0;
 	init_completion(&data->read_complete);
 	data->tx_message.netfn = PEX_NET_FUNCTION;
 	data->tx_message.cmd = PEX_COMMAND;
 	data->tx_message.data = data->tx_msg_data;
 
-	/* Does this BMC support PowerExecutive? */
+	 
 	err = ibmpex_ver_check(data);
 	if (err)
 		goto out_user;
 
-	/* Register the BMC as a HWMON class device */
+	 
 	data->hwmon_dev = hwmon_device_register(data->bmc_device);
 
 	if (IS_ERR(data->hwmon_dev)) {
@@ -488,11 +483,11 @@ static void ibmpex_register_bmc(int iface, struct device *dev)
 		goto out_user;
 	}
 
-	/* finally add the new bmc data to the bmc data list */
+	 
 	dev_set_drvdata(dev, data);
 	list_add_tail(&data->list, &driver_data.bmc_data);
 
-	/* Now go find all the sensors */
+	 
 	err = ibmpex_find_sensors(data);
 	if (err) {
 		dev_err(data->bmc_device, "Error %d finding sensors\n", err);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *   CIFS filesystem cache interface
- *
- *   Copyright (c) 2010 Novell, Inc.
- *   Author(s): Suresh Jayaraman <sjayaraman@suse.de>
- *
- */
+
+ 
 #include "fscache.h"
 #include "cifsglob.h"
 #include "cifs_debug.h"
@@ -62,7 +56,7 @@ int cifs_fscache_get_super_cookie(struct cifs_tcon *tcon)
 
 	cifs_fscache_fill_volume_coherency(tcon, &cd);
 	vcookie = fscache_acquire_volume(key,
-					 NULL, /* preferred_cache */
+					 NULL,  
 					 &cd, sizeof(cd));
 	cifs_dbg(FYI, "%s: (%s/0x%p)\n", __func__, key, vcookie);
 	if (IS_ERR(vcookie)) {
@@ -137,9 +131,7 @@ void cifs_fscache_release_inode_cookie(struct inode *inode)
 	}
 }
 
-/*
- * Fallback page reading interface.
- */
+ 
 static int fscache_fallback_read_page(struct inode *inode, struct page *page)
 {
 	struct netfs_cache_resources cres;
@@ -162,9 +154,7 @@ static int fscache_fallback_read_page(struct inode *inode, struct page *page)
 	return ret;
 }
 
-/*
- * Fallback page writing interface.
- */
+ 
 static int fscache_fallback_write_pages(struct inode *inode, loff_t start, size_t len,
 					bool no_space_allocated_yet)
 {
@@ -188,9 +178,7 @@ static int fscache_fallback_write_pages(struct inode *inode, loff_t start, size_
 	return ret;
 }
 
-/*
- * Retrieve a page from FS-Cache
- */
+ 
 int __cifs_readpage_from_fscache(struct inode *inode, struct page *page)
 {
 	int ret;
@@ -202,7 +190,7 @@ int __cifs_readpage_from_fscache(struct inode *inode, struct page *page)
 	if (ret < 0)
 		return ret;
 
-	/* Read completed synchronously */
+	 
 	SetPageUptodate(page);
 	return 0;
 }
@@ -215,9 +203,7 @@ void __cifs_readahead_to_fscache(struct inode *inode, loff_t pos, size_t len)
 	fscache_fallback_write_pages(inode, pos, len, true);
 }
 
-/*
- * Query the cache occupancy.
- */
+ 
 int __cifs_fscache_query_occupancy(struct inode *inode,
 				   pgoff_t first, unsigned int nr_pages,
 				   pgoff_t *_data_first,

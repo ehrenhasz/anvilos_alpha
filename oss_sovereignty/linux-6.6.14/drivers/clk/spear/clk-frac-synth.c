@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * Fractional Synthesizer clock implementation
- */
+
+ 
 
 #define pr_fmt(fmt) "clk-frac-synth: " fmt
 
@@ -16,25 +11,7 @@
 
 #define DIV_FACTOR_MASK		0x1FFFF
 
-/*
- * DOC: Fractional Synthesizer clock
- *
- * Fout from synthesizer can be given from below equation:
- *
- * Fout= Fin/2*div (division factor)
- * div is 17 bits:-
- *	0-13 (fractional part)
- *	14-16 (integer part)
- *	div is (16-14 bits).(13-0 bits) (in binary)
- *
- *	Fout = Fin/(2 * div)
- *	Fout = ((Fin / 10000)/(2 * div)) * 10000
- *	Fout = (2^14 * (Fin / 10000)/(2^14 * (2 * div))) * 10000
- *	Fout = (((Fin / 10000) << 14)/(2 * (div << 14))) * 10000
- *
- * div << 14 simply 17 bit value written at register.
- * Max error due to scaling down by 10000 is 10 KHz
- */
+ 
 
 #define to_clk_frac(_hw) container_of(_hw, struct clk_frac, hw)
 
@@ -88,7 +65,7 @@ static unsigned long clk_frac_recalc_rate(struct clk_hw *hw,
 	return parent_rate * 10000;
 }
 
-/* Configures new clock rate of frac */
+ 
 static int clk_frac_set_rate(struct clk_hw *hw, unsigned long drate,
 				unsigned long prate)
 {
@@ -136,7 +113,7 @@ struct clk *clk_register_frac(const char *name, const char *parent_name,
 	if (!frac)
 		return ERR_PTR(-ENOMEM);
 
-	/* struct clk_frac assignments */
+	 
 	frac->reg = reg;
 	frac->rtbl = rtbl;
 	frac->rtbl_cnt = rtbl_cnt;

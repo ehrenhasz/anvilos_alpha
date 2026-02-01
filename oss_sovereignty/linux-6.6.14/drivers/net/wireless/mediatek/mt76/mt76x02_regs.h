@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+ 
+ 
 
 #ifndef __MT76X02_REGS_H
 #define __MT76X02_REGS_H
@@ -40,22 +38,22 @@
 #define	MT_LDO_CTRL_0			0x006c
 #define	MT_LDO_CTRL_1			0x0070
 
-#define MT_WLAN_FUN_CTRL_WLAN_RESET	BIT(3) /* MT76x0 */
-#define MT_WLAN_FUN_CTRL_CSR_F20M_CKEN	BIT(3) /* MT76x2 */
+#define MT_WLAN_FUN_CTRL_WLAN_RESET	BIT(3)  
+#define MT_WLAN_FUN_CTRL_CSR_F20M_CKEN	BIT(3)  
 
 #define MT_WLAN_FUN_CTRL_PCIE_CLK_REQ	BIT(4)
 #define MT_WLAN_FUN_CTRL_FRC_WL_ANT_SEL	BIT(5)
 #define MT_WLAN_FUN_CTRL_INV_ANT_SEL	BIT(6)
 #define MT_WLAN_FUN_CTRL_WAKE_HOST	BIT(7)
 
-#define MT_WLAN_FUN_CTRL_THERM_RST	BIT(8) /* MT76x2 */
-#define MT_WLAN_FUN_CTRL_THERM_CKEN	BIT(9) /* MT76x2 */
+#define MT_WLAN_FUN_CTRL_THERM_RST	BIT(8)  
+#define MT_WLAN_FUN_CTRL_THERM_CKEN	BIT(9)  
 
-#define MT_WLAN_FUN_CTRL_GPIO_IN	GENMASK(15, 8) /* MT76x0 */
-#define MT_WLAN_FUN_CTRL_GPIO_OUT	GENMASK(23, 16) /* MT76x0 */
-#define MT_WLAN_FUN_CTRL_GPIO_OUT_EN	GENMASK(31, 24) /* MT76x0 */
+#define MT_WLAN_FUN_CTRL_GPIO_IN	GENMASK(15, 8)  
+#define MT_WLAN_FUN_CTRL_GPIO_OUT	GENMASK(23, 16)  
+#define MT_WLAN_FUN_CTRL_GPIO_OUT_EN	GENMASK(31, 24)  
 
-/* MT76x0 */
+ 
 #define MT_CSR_EE_CFG1			0x0104
 
 #define MT_XO_CTRL0			0x0100
@@ -155,7 +153,7 @@
 #define MT_WMM_TXOP_SHIFT(_n)		(((_n) & 1) * 16)
 #define MT_WMM_TXOP_MASK		GENMASK(15, 0)
 
-#define MT_WMM_CTRL			0x0230 /* MT76x0 */
+#define MT_WMM_CTRL			0x0230  
 #define MT_FCE_DMA_ADDR			0x0230
 #define MT_FCE_DMA_LEN			0x0234
 #define MT_USB_DMA_CFG			0x0238
@@ -482,7 +480,7 @@
 #define MT_TX0_RF_GAIN_CORR		0x13a0
 #define MT_TX1_RF_GAIN_CORR		0x13a4
 #define MT_TX0_RF_GAIN_ATTEN		0x13a8
-#define MT_TX0_RF_GAIN_ATTEN		0x13a8 /* MT76x0 */
+#define MT_TX0_RF_GAIN_ATTEN		0x13a8  
 
 #define MT_TX_ALC_CFG_0			0x13b0
 #define MT_TX_ALC_CFG_0_CH_INIT_0	GENMASK(5, 0)
@@ -499,7 +497,7 @@
 #define MT_TX_ALC_CFG_3			0x13ac
 #define MT_TX_ALC_CFG_4			0x13c0
 #define MT_TX_ALC_CFG_4_LOWGAIN_CH_EN	BIT(31)
-#define MT_TX0_BB_GAIN_ATTEN		0x13c0 /* MT76x0 */
+#define MT_TX0_BB_GAIN_ATTEN		0x13c0  
 
 #define MT_TX_ALC_VGA3			0x13c8
 
@@ -623,15 +621,15 @@
 #define MT_BBP_AGC_R0_CTRL_CHAN		GENMASK(9, 8)
 #define MT_BBP_AGC_R0_BW		GENMASK(14, 12)
 
-/* AGC, R4/R5 */
+ 
 #define MT_BBP_AGC_LNA_HIGH_GAIN	GENMASK(21, 16)
 #define MT_BBP_AGC_LNA_MID_GAIN		GENMASK(13, 8)
 #define MT_BBP_AGC_LNA_LOW_GAIN		GENMASK(5, 0)
 
-/* AGC, R6/R7 */
+ 
 #define MT_BBP_AGC_LNA_ULOW_GAIN	GENMASK(5, 0)
 
-/* AGC, R8/R9 */
+ 
 #define MT_BBP_AGC_LNA_GAIN_MODE	GENMASK(7, 6)
 #define MT_BBP_AGC_GAIN			GENMASK(14, 8)
 

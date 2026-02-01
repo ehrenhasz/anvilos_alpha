@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdint.h>
 #include <linux/bpf.h>
 #include <linux/if_ether.h>
@@ -10,13 +10,13 @@
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_endian.h>
 
-/* the maximum delay we are willing to add (drop packets beyond that) */
+ 
 #define TIME_HORIZON_NS (2000 * 1000 * 1000)
 #define NS_PER_SEC 1000000000
 #define ECN_HORIZON_NS 5000000
 #define THROTTLE_RATE_BPS (5 * 1000 * 1000)
 
-/* flow_key => last_tstamp timestamp used */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__type(key, uint32_t);
@@ -40,18 +40,18 @@ static inline int throttle_flow(struct __sk_buff *skb)
 	if (tstamp < now)
 		tstamp = now;
 
-	/* should we throttle? */
+	 
 	if (next_tstamp <= tstamp) {
 		if (bpf_map_update_elem(&flow_map, &key, &tstamp, BPF_ANY))
 			return TC_ACT_SHOT;
 		return TC_ACT_OK;
 	}
 
-	/* do not queue past the time horizon */
+	 
 	if (next_tstamp - now >= TIME_HORIZON_NS)
 		return TC_ACT_SHOT;
 
-	/* set ecn bit, if needed */
+	 
 	if (next_tstamp - now >= ECN_HORIZON_NS)
 		bpf_skb_ecn_set_ce(skb);
 
@@ -66,7 +66,7 @@ static inline int handle_tcp(struct __sk_buff *skb, struct tcphdr *tcp)
 {
 	void *data_end = (void *)(long)skb->data_end;
 
-	/* drop malformed packets */
+	 
 	if ((void *)(tcp + 1) > data_end)
 		return TC_ACT_SHOT;
 
@@ -83,7 +83,7 @@ static inline int handle_ipv4(struct __sk_buff *skb)
 	struct iphdr *iph;
 	uint32_t ihl;
 
-	/* drop malformed packets */
+	 
 	if (data + sizeof(struct ethhdr) > data_end)
 		return TC_ACT_SHOT;
 	iph = (struct iphdr *)(data + sizeof(struct ethhdr));

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- */
+ 
+ 
 #ifndef __PVRUSB2_SYSFS_H
 #define __PVRUSB2_SYSFS_H
 
@@ -21,4 +18,4 @@ static inline void pvr2_sysfs_create(struct pvr2_context *mp) { }
 #endif
 
 
-#endif /* __PVRUSB2_SYSFS_H */
+#endif  

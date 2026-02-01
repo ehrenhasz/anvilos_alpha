@@ -1,14 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ----------------------------------------------------------------------------
- * drivers/nfc/st95hf/spi.c function definitions for SPI communication
- * ----------------------------------------------------------------------------
- * Copyright (C) 2015 STMicroelectronics Pvt. Ltd. All rights reserved.
- */
+
+ 
 
 #include "spi.h"
 
-/* Function to send user provided buffer to ST95HF through SPI */
+ 
 int st95hf_spi_send(struct st95hf_spi_context *spicontext,
 		    unsigned char *buffertx,
 		    int datalen,
@@ -42,7 +37,7 @@ int st95hf_spi_send(struct st95hf_spi_context *spicontext,
 		return result;
 	}
 
-	/* return for asynchronous or no-wait case */
+	 
 	if (reqtype == ASYNC) {
 		mutex_unlock(&spicontext->spi_lock);
 		return 0;
@@ -50,7 +45,7 @@ int st95hf_spi_send(struct st95hf_spi_context *spicontext,
 
 	result = wait_for_completion_timeout(&spicontext->done,
 					     msecs_to_jiffies(1000));
-	/* check for timeout or success */
+	 
 	if (!result) {
 		dev_err(&spidev->dev, "error: response not ready timeout\n");
 		result = -ETIMEDOUT;
@@ -64,7 +59,7 @@ int st95hf_spi_send(struct st95hf_spi_context *spicontext,
 }
 EXPORT_SYMBOL_GPL(st95hf_spi_send);
 
-/* Function to Receive command Response */
+ 
 int st95hf_spi_recv_response(struct st95hf_spi_context *spicontext,
 			     unsigned char *receivebuff)
 {
@@ -84,7 +79,7 @@ int st95hf_spi_recv_response(struct st95hf_spi_context *spicontext,
 
 	mutex_lock(&spicontext->spi_lock);
 
-	/* First spi transfer to know the length of valid data */
+	 
 	spi_message_init(&m);
 	spi_message_add_tail(&t[0], &m);
 	spi_message_add_tail(&t[1], &m);
@@ -97,16 +92,16 @@ int st95hf_spi_recv_response(struct st95hf_spi_context *spicontext,
 		return ret;
 	}
 
-	/* As 2 bytes are already read */
+	 
 	len = 2;
 
-	/* Support of long frame */
+	 
 	if (receivebuff[0] & 0x60)
 		len += (((receivebuff[0] & 0x60) >> 5) << 8) | receivebuff[1];
 	else
 		len += receivebuff[1];
 
-	/* Now make a transfer to read only relevant bytes */
+	 
 	tx_takedata.rx_buf = &receivebuff[2];
 	tx_takedata.len = len - 2;
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 MediaTek Inc.
- *
- * Author: Gene Chen <gene_chen@richtek.com>
- */
+
+ 
 
 #include <linux/crc8.h>
 #include <linux/i2c.h>
@@ -65,9 +61,9 @@ struct mt6360_ddata {
 
 #define MT6360_CRC_I2C_ADDR_SIZE	1
 #define MT6360_CRC_REG_ADDR_SIZE	1
-/* prealloca read size = i2c device addr + i2c reg addr + val ... + crc8 */
+ 
 #define MT6360_ALLOC_READ_SIZE(_size)	(_size + 3)
-/* prealloca write size = i2c device addr + i2c reg addr + val ... + crc8 + dummy byte */
+ 
 #define MT6360_ALLOC_WRITE_SIZE(_size)	(_size + 4)
 #define MT6360_CRC_PREDATA_OFFSET	(MT6360_CRC_I2C_ADDR_SIZE + MT6360_CRC_REG_ADDR_SIZE)
 #define MT6360_CRC_CRC8_SIZE		1
@@ -75,27 +71,27 @@ struct mt6360_ddata {
 #define MT6360_REGMAP_REG_BYTE_SIZE	2
 #define I2C_ADDR_XLATE_8BIT(_addr, _rw)	(((_addr & 0x7F) << 1) + _rw)
 
-/* reg 0 -> 0 ~ 7 */
+ 
 #define MT6360_CHG_TREG_EVT		4
 #define MT6360_CHG_AICR_EVT		5
 #define MT6360_CHG_MIVR_EVT		6
 #define MT6360_PWR_RDY_EVT		7
-/* REG 1 -> 8 ~ 15 */
+ 
 #define MT6360_CHG_BATSYSUV_EVT		9
 #define MT6360_FLED_CHG_VINOVP_EVT	11
 #define MT6360_CHG_VSYSUV_EVT		12
 #define MT6360_CHG_VSYSOV_EVT		13
 #define MT6360_CHG_VBATOV_EVT		14
 #define MT6360_CHG_VBUSOV_EVT		15
-/* REG 2 -> 16 ~ 23 */
-/* REG 3 -> 24 ~ 31 */
+ 
+ 
 #define MT6360_WD_PMU_DET		25
 #define MT6360_WD_PMU_DONE		26
 #define MT6360_CHG_TMRI			27
 #define MT6360_CHG_ADPBADI		29
 #define MT6360_CHG_RVPI			30
 #define MT6360_OTPI			31
-/* REG 4 -> 32 ~ 39 */
+ 
 #define MT6360_CHG_AICCMEASL		32
 #define MT6360_CHGDET_DONEI		34
 #define MT6360_WDTMRI			35
@@ -103,7 +99,7 @@ struct mt6360_ddata {
 #define MT6360_CHG_RECHGI		37
 #define MT6360_CHG_TERMI		38
 #define MT6360_CHG_IEOCI		39
-/* REG 5 -> 40 ~ 47 */
+ 
 #define MT6360_PUMPX_DONEI		40
 #define MT6360_BAT_OVP_ADC_EVT		41
 #define MT6360_TYPEC_OTP_EVT		42
@@ -112,7 +108,7 @@ struct mt6360_ddata {
 #define MT6360_BST_BATUVI		45
 #define MT6360_BST_VBUSOVI		46
 #define MT6360_BST_OLPI			47
-/* REG 6 -> 48 ~ 55 */
+ 
 #define MT6360_ATTACH_I			48
 #define MT6360_DETACH_I			49
 #define MT6360_QC30_STPDONE		51
@@ -120,7 +116,7 @@ struct mt6360_ddata {
 #define MT6360_HVDCP_DET		53
 #define MT6360_CHGDETI			54
 #define MT6360_DCDTI			55
-/* REG 7 -> 56 ~ 63 */
+ 
 #define MT6360_FOD_DONE_EVT		56
 #define MT6360_FOD_OV_EVT		57
 #define MT6360_CHRDET_UVP_EVT		58
@@ -129,7 +125,7 @@ struct mt6360_ddata {
 #define MT6360_FOD_LR_EVT		61
 #define MT6360_FOD_HR_EVT		62
 #define MT6360_FOD_DISCHG_FAIL_EVT	63
-/* REG 8 -> 64 ~ 71 */
+ 
 #define MT6360_USBID_EVT		64
 #define MT6360_APWDTRST_EVT		65
 #define MT6360_EN_EVT			66
@@ -138,39 +134,39 @@ struct mt6360_ddata {
 #define MT6360_OTP_EVT			69
 #define MT6360_VDDAOV_EVT		70
 #define MT6360_SYSUV_EVT		71
-/* REG 9 -> 72 ~ 79 */
+ 
 #define MT6360_FLED_STRBPIN_EVT		72
 #define MT6360_FLED_TORPIN_EVT		73
 #define MT6360_FLED_TX_EVT		74
 #define MT6360_FLED_LVF_EVT		75
 #define MT6360_FLED2_SHORT_EVT		78
 #define MT6360_FLED1_SHORT_EVT		79
-/* REG 10 -> 80 ~ 87 */
+ 
 #define MT6360_FLED2_STRB_EVT		80
 #define MT6360_FLED1_STRB_EVT		81
 #define MT6360_FLED2_STRB_TO_EVT	82
 #define MT6360_FLED1_STRB_TO_EVT	83
 #define MT6360_FLED2_TOR_EVT		84
 #define MT6360_FLED1_TOR_EVT		85
-/* REG 11 -> 88 ~ 95 */
-/* REG 12 -> 96 ~ 103 */
+ 
+ 
 #define MT6360_BUCK1_PGB_EVT		96
 #define MT6360_BUCK1_OC_EVT		100
 #define MT6360_BUCK1_OV_EVT		101
 #define MT6360_BUCK1_UV_EVT		102
-/* REG 13 -> 104 ~ 111 */
+ 
 #define MT6360_BUCK2_PGB_EVT		104
 #define MT6360_BUCK2_OC_EVT		108
 #define MT6360_BUCK2_OV_EVT		109
 #define MT6360_BUCK2_UV_EVT		110
-/* REG 14 -> 112 ~ 119 */
+ 
 #define MT6360_LDO1_OC_EVT		113
 #define MT6360_LDO2_OC_EVT		114
 #define MT6360_LDO3_OC_EVT		115
 #define MT6360_LDO5_OC_EVT		117
 #define MT6360_LDO6_OC_EVT		118
 #define MT6360_LDO7_OC_EVT		119
-/* REG 15 -> 120 ~ 127 */
+ 
 #define MT6360_LDO1_PGB_EVT		121
 #define MT6360_LDO2_PGB_EVT		122
 #define MT6360_LDO3_PGB_EVT		123
@@ -373,7 +369,7 @@ static const unsigned short mt6360_slave_addr[MT6360_SLAVE_MAX] = {
 
 static int mt6360_xlate_pmicldo_addr(u8 *addr, int rw_size)
 {
-	/* Address is already in encoded [5:0] */
+	 
 	*addr &= MT6360_ADDRESS_MASK;
 
 	switch (rw_size) {
@@ -501,7 +497,7 @@ static const struct regmap_bus mt6360_regmap_bus = {
 	.read		= mt6360_regmap_read,
 	.write		= mt6360_regmap_write,
 
-	/* Due to PMIC and LDO CRC access size limit */
+	 
 	.max_raw_read	= 4,
 	.max_raw_write	= 4,
 };

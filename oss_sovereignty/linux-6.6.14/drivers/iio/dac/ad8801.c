@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IIO DAC driver for Analog Devices AD8801 DAC
- *
- * Copyright (C) 2016 Gwenhael Goavec-Merou
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/module.h>
@@ -20,7 +16,7 @@ enum ad8801_device_ids {
 
 struct ad8801_state {
 	struct spi_device *spi;
-	unsigned char dac_cache[8]; /* Value write on each channel */
+	unsigned char dac_cache[8];  
 	unsigned int vrefh_mv;
 	unsigned int vrefl_mv;
 	struct regulator *vrefh_reg;

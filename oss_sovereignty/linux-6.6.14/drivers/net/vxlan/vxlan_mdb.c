@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/if_bridge.h>
 #include <linux/in.h>
@@ -505,9 +505,7 @@ static int vxlan_mdb_config_attrs_init(struct vxlan_mdb_config *cfg,
 
 	vxlan_mdb_config_group_set(cfg, entry, mdbe_attrs[MDBE_ATTR_SOURCE]);
 
-	/* rtnetlink code only validates that IPv4 group address is
-	 * multicast.
-	 */
+	 
 	if (!vxlan_addr_is_multicast(&cfg->group.dst) &&
 	    !vxlan_addr_any(&cfg->group.dst)) {
 		NL_SET_ERR_MSG_MOD(extack, "Group address is not multicast");
@@ -614,9 +612,7 @@ static int vxlan_mdb_config_init(struct vxlan_mdb_config *cfg,
 		return -EINVAL;
 	}
 
-	/* State is not part of the entry key and can be ignored on deletion
-	 * requests.
-	 */
+	 
 	if ((nlmsg_flags & (NLM_F_CREATE | NLM_F_REPLACE)) &&
 	    entry->state != MDB_PERMANENT) {
 		NL_SET_ERR_MSG_MOD(extack, "MDB entry must be permanent");
@@ -847,9 +843,7 @@ vxlan_mdb_remote_src_add(const struct vxlan_mdb_config *cfg,
 	if (err)
 		goto err_src_del;
 
-	/* Clear flags in case source entry was marked for deletion as part of
-	 * replace flow.
-	 */
+	 
 	ent->flags = 0;
 
 	return 0;
@@ -912,15 +906,15 @@ vxlan_mdb_nlmsg_src_list_size(const struct vxlan_mdb_entry_key *group,
 	if (hlist_empty(&remote->src_list))
 		return 0;
 
-	/* MDBA_MDB_EATTR_SRC_LIST */
+	 
 	nlmsg_size = nla_total_size(0);
 
 	hlist_for_each_entry(ent, &remote->src_list, node) {
-			      /* MDBA_MDB_SRCLIST_ENTRY */
+			       
 		nlmsg_size += nla_total_size(0) +
-			      /* MDBA_MDB_SRCATTR_ADDRESS */
+			       
 			      nla_total_size(vxlan_addr_size(&group->dst)) +
-			      /* MDBA_MDB_SRCATTR_TIMER */
+			       
 			      nla_total_size(sizeof(u8));
 	}
 
@@ -936,35 +930,35 @@ static size_t vxlan_mdb_nlmsg_size(const struct vxlan_dev *vxlan,
 	size_t nlmsg_size;
 
 	nlmsg_size = NLMSG_ALIGN(sizeof(struct br_port_msg)) +
-		     /* MDBA_MDB */
+		      
 		     nla_total_size(0) +
-		     /* MDBA_MDB_ENTRY */
+		      
 		     nla_total_size(0) +
-		     /* MDBA_MDB_ENTRY_INFO */
+		      
 		     nla_total_size(sizeof(struct br_mdb_entry)) +
-		     /* MDBA_MDB_EATTR_TIMER */
+		      
 		     nla_total_size(sizeof(u32));
-	/* MDBA_MDB_EATTR_SOURCE */
+	 
 	if (vxlan_mdb_is_sg(group))
 		nlmsg_size += nla_total_size(vxlan_addr_size(&group->dst));
-	/* MDBA_MDB_EATTR_RTPROT */
+	 
 	nlmsg_size += nla_total_size(sizeof(u8));
-	/* MDBA_MDB_EATTR_SRC_LIST */
+	 
 	nlmsg_size += vxlan_mdb_nlmsg_src_list_size(group, remote);
-	/* MDBA_MDB_EATTR_GROUP_MODE */
+	 
 	nlmsg_size += nla_total_size(sizeof(u8));
-	/* MDBA_MDB_EATTR_DST */
+	 
 	nlmsg_size += nla_total_size(vxlan_addr_size(&rd->remote_ip));
-	/* MDBA_MDB_EATTR_DST_PORT */
+	 
 	if (rd->remote_port && rd->remote_port != vxlan->cfg.dst_port)
 		nlmsg_size += nla_total_size(sizeof(u16));
-	/* MDBA_MDB_EATTR_VNI */
+	 
 	if (rd->remote_vni != vxlan->default_dst.remote_vni)
 		nlmsg_size += nla_total_size(sizeof(u32));
-	/* MDBA_MDB_EATTR_IFINDEX */
+	 
 	if (rd->remote_ifindex)
 		nlmsg_size += nla_total_size(sizeof(u32));
-	/* MDBA_MDB_EATTR_SRC_VNI */
+	 
 	if ((vxlan->cfg.flags & VXLAN_F_COLLECT_METADATA) && group->vni)
 		nlmsg_size += nla_total_size(sizeof(u32));
 
@@ -1309,9 +1303,7 @@ struct vxlan_mdb_entry *vxlan_mdb_entry_skb_get(struct vxlan_dev *vxlan,
 	    is_broadcast_ether_addr(eth_hdr(skb)->h_dest))
 		return NULL;
 
-	/* When not in collect metadata mode, 'src_vni' is zero, but MDB
-	 * entries are stored with the VNI of the VXLAN device.
-	 */
+	 
 	if (!(vxlan->cfg.flags & VXLAN_F_COLLECT_METADATA))
 		src_vni = vxlan->default_dst.remote_vni;
 
@@ -1350,11 +1342,7 @@ struct vxlan_mdb_entry *vxlan_mdb_entry_skb_get(struct vxlan_dev *vxlan,
 	if (mdb_entry)
 		return mdb_entry;
 
-	/* No (S, G) or (*, G) found. Look up the all-zeros entry, but only if
-	 * the destination IP address is not link-local multicast since we want
-	 * to transmit such traffic together with broadcast and unknown unicast
-	 * traffic.
-	 */
+	 
 	switch (skb->protocol) {
 	case htons(ETH_P_IP):
 		if (ipv4_is_local_multicast(group.dst.sin.sin_addr.s_addr))
@@ -1431,9 +1419,7 @@ static void vxlan_mdb_entries_flush(struct vxlan_dev *vxlan)
 	struct vxlan_mdb_entry *mdb_entry;
 	struct hlist_node *tmp;
 
-	/* The removal of an entry cannot trigger the removal of another entry
-	 * since entries are always added to the head of the list.
-	 */
+	 
 	hlist_for_each_entry_safe(mdb_entry, tmp, &vxlan->mdb_list, mdb_node) {
 		vxlan_mdb_remotes_flush(vxlan, mdb_entry);
 		vxlan_mdb_entry_put(vxlan, mdb_entry);

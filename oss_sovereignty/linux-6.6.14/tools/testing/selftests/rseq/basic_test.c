@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * Basic test coverage for critical regions and rseq_current_cpu().
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <assert.h>

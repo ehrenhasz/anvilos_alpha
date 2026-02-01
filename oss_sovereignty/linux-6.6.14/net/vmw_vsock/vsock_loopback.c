@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* loopback transport for vsock using virtio_transport_common APIs
- *
- * Copyright (C) 2013-2019 Red Hat, Inc.
- * Authors: Asias He <asias@redhat.com>
- *          Stefan Hajnoczi <stefanha@redhat.com>
- *          Stefano Garzarella <sgarzare@redhat.com>
- *
- */
+
+ 
 #include <linux/spinlock.h>
 #include <linux/module.h>
 #include <linux/list.h>

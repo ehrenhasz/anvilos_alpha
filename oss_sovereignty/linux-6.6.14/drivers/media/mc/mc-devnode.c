@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Media device node
- *
- * Copyright (C) 2010 Nokia Corporation
- *
- * Based on drivers/media/video/v4l2_dev.c code authored by
- *	Mauro Carvalho Chehab <mchehab@kernel.org> (version 2)
- *	Alan Cox, <alan@lxorguk.ukuu.org.uk> (version 1)
- *
- * Contacts: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *	     Sakari Ailus <sakari.ailus@iki.fi>
- *
- * --
- *
- * Generic media device node infrastructure to register and unregister
- * character devices using a dynamic major number and proper reference
- * counting.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -39,23 +22,21 @@
 
 static dev_t media_dev_t;
 
-/*
- *	Active devices
- */
+ 
 static DEFINE_MUTEX(media_devnode_lock);
 static DECLARE_BITMAP(media_devnode_nums, MEDIA_NUM_DEVICES);
 
-/* Called when the last user of the media device exits. */
+ 
 static void media_devnode_release(struct device *cd)
 {
 	struct media_devnode *devnode = to_media_devnode(cd);
 
 	mutex_lock(&media_devnode_lock);
-	/* Mark device node number as free */
+	 
 	clear_bit(devnode->minor, media_devnode_nums);
 	mutex_unlock(&media_devnode_lock);
 
-	/* Release media_devnode and perform other cleanups as needed. */
+	 
 	if (devnode->release)
 		devnode->release(devnode);
 
@@ -136,29 +117,23 @@ static long media_compat_ioctl(struct file *filp, unsigned int cmd,
 	return __media_ioctl(filp, cmd, arg, devnode->fops->compat_ioctl);
 }
 
-#endif /* CONFIG_COMPAT */
+#endif  
 
-/* Override for the open function */
+ 
 static int media_open(struct inode *inode, struct file *filp)
 {
 	struct media_devnode *devnode;
 	int ret;
 
-	/* Check if the media device is available. This needs to be done with
-	 * the media_devnode_lock held to prevent an open/unregister race:
-	 * without the lock, the device could be unregistered and freed between
-	 * the media_devnode_is_registered() and get_device() calls, leading to
-	 * a crash.
-	 */
+	 
 	mutex_lock(&media_devnode_lock);
 	devnode = container_of(inode->i_cdev, struct media_devnode, cdev);
-	/* return ENXIO if the media device has been removed
-	   already or if it is not registered anymore. */
+	 
 	if (!media_devnode_is_registered(devnode)) {
 		mutex_unlock(&media_devnode_lock);
 		return -ENXIO;
 	}
-	/* and increase the device refcount */
+	 
 	get_device(&devnode->dev);
 	mutex_unlock(&media_devnode_lock);
 
@@ -176,7 +151,7 @@ static int media_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/* Override for the release function */
+ 
 static int media_release(struct inode *inode, struct file *filp)
 {
 	struct media_devnode *devnode = media_devnode_data(filp);
@@ -186,8 +161,7 @@ static int media_release(struct inode *inode, struct file *filp)
 
 	filp->private_data = NULL;
 
-	/* decrease the refcount unconditionally since the release()
-	   return value is ignored. */
+	 
 	put_device(&devnode->dev);
 
 	pr_debug("%s: Media Release\n", __func__);
@@ -202,7 +176,7 @@ static const struct file_operations media_devnode_fops = {
 	.unlocked_ioctl = media_ioctl,
 #ifdef CONFIG_COMPAT
 	.compat_ioctl = media_compat_ioctl,
-#endif /* CONFIG_COMPAT */
+#endif  
 	.release = media_release,
 	.poll = media_poll,
 	.llseek = no_llseek,
@@ -215,7 +189,7 @@ int __must_check media_devnode_register(struct media_device *mdev,
 	int minor;
 	int ret;
 
-	/* Part 1: Find a free minor number */
+	 
 	mutex_lock(&media_devnode_lock);
 	minor = find_first_zero_bit(media_devnode_nums, MEDIA_NUM_DEVICES);
 	if (minor == MEDIA_NUM_DEVICES) {
@@ -231,7 +205,7 @@ int __must_check media_devnode_register(struct media_device *mdev,
 	devnode->minor = minor;
 	devnode->media_dev = mdev;
 
-	/* Part 1: Initialize dev now to use dev.kobj for cdev.kobj.parent */
+	 
 	devnode->dev.bus = &media_bus_type;
 	devnode->dev.devt = MKDEV(MAJOR(media_dev_t), devnode->minor);
 	devnode->dev.release = media_devnode_release;
@@ -240,19 +214,19 @@ int __must_check media_devnode_register(struct media_device *mdev,
 	dev_set_name(&devnode->dev, "media%d", devnode->minor);
 	device_initialize(&devnode->dev);
 
-	/* Part 2: Initialize the character device */
+	 
 	cdev_init(&devnode->cdev, &media_devnode_fops);
 	devnode->cdev.owner = owner;
 	kobject_set_name(&devnode->cdev.kobj, "media%d", devnode->minor);
 
-	/* Part 3: Add the media and char device */
+	 
 	ret = cdev_device_add(&devnode->cdev, &devnode->dev);
 	if (ret < 0) {
 		pr_err("%s: cdev_device_add failed\n", __func__);
 		goto cdev_add_error;
 	}
 
-	/* Part 4: Activate this minor. The char device can now be used. */
+	 
 	set_bit(MEDIA_FLAG_REGISTERED, &devnode->flags);
 
 	return 0;
@@ -269,7 +243,7 @@ cdev_add_error:
 
 void media_devnode_unregister_prepare(struct media_devnode *devnode)
 {
-	/* Check if devnode was ever registered at all */
+	 
 	if (!media_devnode_is_registered(devnode))
 		return;
 
@@ -281,7 +255,7 @@ void media_devnode_unregister_prepare(struct media_devnode *devnode)
 void media_devnode_unregister(struct media_devnode *devnode)
 {
 	mutex_lock(&media_devnode_lock);
-	/* Delete the cdev on this minor as well */
+	 
 	cdev_device_del(&devnode->cdev, &devnode->dev);
 	devnode->media_dev = NULL;
 	mutex_unlock(&media_devnode_lock);
@@ -289,9 +263,7 @@ void media_devnode_unregister(struct media_devnode *devnode)
 	put_device(&devnode->dev);
 }
 
-/*
- *	Initialise media for linux
- */
+ 
 static int __init media_devnode_init(void)
 {
 	int ret;

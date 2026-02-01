@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung EXYNOS4x12 FIMC-IS (Imaging Subsystem) driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include "fimc-is-sensor.h"
 

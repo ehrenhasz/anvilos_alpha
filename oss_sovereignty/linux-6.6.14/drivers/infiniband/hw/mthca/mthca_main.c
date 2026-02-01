@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -56,7 +24,7 @@ int mthca_debug_level = 0;
 module_param_named(debug_level, mthca_debug_level, int, 0644);
 MODULE_PARM_DESC(debug_level, "Enable debug tracing if > 0");
 
-#endif /* CONFIG_INFINIBAND_MTHCA_DEBUG */
+#endif  
 
 #ifdef CONFIG_PCI_MSI
 
@@ -64,11 +32,11 @@ static int msi_x = 1;
 module_param(msi_x, int, 0444);
 MODULE_PARM_DESC(msi_x, "attempt to use MSI-X if nonzero");
 
-#else /* CONFIG_PCI_MSI */
+#else  
 
 #define msi_x (0)
 
-#endif /* CONFIG_PCI_MSI */
+#endif  
 
 static int tune_pci = 0;
 module_param(tune_pci, int, 0444);
@@ -93,9 +61,9 @@ static struct mthca_profile hca_profile = {
 	.num_mcg            = MTHCA_DEFAULT_NUM_MCG,
 	.num_mpt            = MTHCA_DEFAULT_NUM_MPT,
 	.num_mtt            = MTHCA_DEFAULT_NUM_MTT,
-	.num_udav           = MTHCA_DEFAULT_NUM_UDAV,          /* Tavor only */
-	.fmr_reserved_mtts  = MTHCA_DEFAULT_NUM_RESERVED_MTTS, /* Tavor only */
-	.uarc_size          = MTHCA_DEFAULT_NUM_UARC_SIZE,     /* Arbel only */
+	.num_udav           = MTHCA_DEFAULT_NUM_UDAV,           
+	.fmr_reserved_mtts  = MTHCA_DEFAULT_NUM_RESERVED_MTTS,  
+	.uarc_size          = MTHCA_DEFAULT_NUM_UARC_SIZE,      
 };
 
 module_param_named(num_qp, hca_profile.num_qp, int, 0444);
@@ -138,7 +106,7 @@ static int mthca_tune_pci(struct mthca_dev *mdev)
 	if (!tune_pci)
 		return 0;
 
-	/* First try to max out Read Byte Count */
+	 
 	if (pci_find_capability(mdev->pdev, PCI_CAP_ID_PCIX)) {
 		if (pcix_set_mmrbc(mdev->pdev, pcix_get_max_mmrbc(mdev->pdev))) {
 			mthca_err(mdev, "Couldn't set PCI-X max read count, "
@@ -199,11 +167,7 @@ static int mthca_dev_lim(struct mthca_dev *mdev, struct mthca_dev_lim *dev_lim)
 	mdev->limits.gid_table_len  	= dev_lim->max_gids;
 	mdev->limits.pkey_table_len 	= dev_lim->max_pkeys;
 	mdev->limits.local_ca_ack_delay = dev_lim->local_ca_ack_delay;
-	/*
-	 * Need to allow for worst case send WQE overhead and check
-	 * whether max_desc_sz imposes a lower limit than max_sg; UD
-	 * send has the biggest overhead.
-	 */
+	 
 	mdev->limits.max_sg		= min_t(int, dev_lim->max_sg,
 					      (dev_lim->max_desc_sz -
 					       sizeof (struct mthca_next_seg) -
@@ -219,11 +183,7 @@ static int mthca_dev_lim(struct mthca_dev *mdev, struct mthca_dev_lim *dev_lim)
 	mdev->limits.reserved_eecs      = dev_lim->reserved_eecs;
 	mdev->limits.max_desc_sz        = dev_lim->max_desc_sz;
 	mdev->limits.max_srq_sge	= mthca_max_srq_sge(mdev);
-	/*
-	 * Subtract 1 from the limit because we need to allocate a
-	 * spare CQE so the HCA HW can tell the difference between an
-	 * empty CQ and a full CQ.
-	 */
+	 
 	mdev->limits.max_cqes           = dev_lim->max_cq_sz - 1;
 	mdev->limits.reserved_cqs       = dev_lim->reserved_cqs;
 	mdev->limits.reserved_eqs       = dev_lim->reserved_eqs;
@@ -234,12 +194,7 @@ static int mthca_dev_lim(struct mthca_dev *mdev, struct mthca_dev_lim *dev_lim)
 	mdev->limits.port_width_cap     = dev_lim->max_port_width;
 	mdev->limits.page_size_cap      = ~(u32) (dev_lim->min_page_sz - 1);
 	mdev->limits.flags              = dev_lim->flags;
-	/*
-	 * For old FW that doesn't return static rate support, use a
-	 * value of 0x3 (only static rate values of 0 or 1 are handled),
-	 * except on Sinai, where even old FW can handle static rate
-	 * values of 2 and 3.
-	 */
+	 
 	if (dev_lim->stat_rate_support)
 		mdev->limits.stat_rate_support = dev_lim->stat_rate_support;
 	else if (mdev->mthca_flags & MTHCA_FLAG_SINAI_OPT)
@@ -247,13 +202,7 @@ static int mthca_dev_lim(struct mthca_dev *mdev, struct mthca_dev_lim *dev_lim)
 	else
 		mdev->limits.stat_rate_support = 0x3;
 
-	/* IB_DEVICE_RESIZE_MAX_WR not supported by driver.
-	   May be doable since hardware supports it for SRQ.
-
-	   IB_DEVICE_N_NOTIFY_CQ is supported by hardware but not by driver.
-
-	   IB_DEVICE_SRQ_RESIZE is supported by hardware but SRQ is not
-	   supported by driver. */
+	 
 	mdev->device_cap_flags = IB_DEVICE_CHANGE_PHY_PORT |
 		IB_DEVICE_PORT_ACTIVE_EVENT |
 		IB_DEVICE_SYS_IMAGE_GUID |
@@ -346,7 +295,7 @@ static int mthca_load_fw(struct mthca_dev *mdev)
 {
 	int err;
 
-	/* FIXME: use HCA-attached memory for FW if present */
+	 
 
 	mdev->fw.arbel.fw_icm =
 		mthca_alloc_icm(mdev, mdev->fw.arbel.fw_pages,
@@ -414,7 +363,7 @@ static int mthca_init_icm(struct mthca_dev *mdev,
 		goto err_unmap_aux;
 	}
 
-	/* CPU writes to non-reserved MTTs, while HCA might DMA to reserved mtts */
+	 
 	mdev->limits.reserved_mtts = ALIGN(mdev->limits.reserved_mtts * mdev->limits.mtt_seg_size,
 					   dma_get_cache_alignment()) / mdev->limits.mtt_seg_size;
 
@@ -499,11 +448,7 @@ static int mthca_init_icm(struct mthca_dev *mdev,
 		}
 	}
 
-	/*
-	 * It's not strictly required, but for simplicity just map the
-	 * whole multicast group table now.  The table isn't very big
-	 * and it's a lot easier than trying to track ref counts.
-	 */
+	 
 	mdev->mcg_table.table = mthca_alloc_icm_table(mdev, init_hca->mc_base,
 						      MTHCA_MGM_ENTRY_SIZE,
 						      mdev->limits.num_mgms +
@@ -866,12 +811,12 @@ static int mthca_enable_msi_x(struct mthca_dev *mdev)
 	return 0;
 }
 
-/* Types of supported HCA */
+ 
 enum {
-	TAVOR,			/* MT23108                        */
-	ARBEL_COMPAT,		/* MT25208 in Tavor compat mode   */
-	ARBEL_NATIVE,		/* MT25208 with extended features */
-	SINAI			/* MT25204 */
+	TAVOR,			 
+	ARBEL_COMPAT,		 
+	ARBEL_NATIVE,		 
+	SINAI			 
 };
 
 #define MTHCA_FW_VER(major, minor, subminor) \
@@ -910,10 +855,7 @@ static int __mthca_init_one(struct pci_dev *pdev, int hca_type)
 		return err;
 	}
 
-	/*
-	 * Check for BARs.  We expect 0: 1MB, 2: 8MB, 4: DDR (may not
-	 * be present)
-	 */
+	 
 	if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM) ||
 	    pci_resource_len(pdev, 0) != 1 << 20) {
 		dev_err(&pdev->dev, "Missing DCS, aborting.\n");
@@ -943,7 +885,7 @@ static int __mthca_init_one(struct pci_dev *pdev, int hca_type)
 		goto err_free_res;
 	}
 
-	/* We can handle large RDMA requests, so allow larger segments. */
+	 
 	dma_set_max_seg_size(&pdev->dev, 1024 * 1024 * 1024);
 
 	mdev = ib_alloc_device(mthca_dev, ib_dev);
@@ -960,11 +902,7 @@ static int __mthca_init_one(struct pci_dev *pdev, int hca_type)
 	if (ddr_hidden)
 		mdev->mthca_flags |= MTHCA_FLAG_DDR_HIDDEN;
 
-	/*
-	 * Now reset the HCA before we touch the PCI capabilities or
-	 * attempt a firmware command, since a boot ROM may have left
-	 * the HCA in an undefined state.
-	 */
+	 
 	err = mthca_reset(mdev);
 	if (err) {
 		mthca_err(mdev, "Failed to reset HCA, aborting.\n");
@@ -1182,7 +1120,7 @@ static struct pci_driver mthca_driver = {
 static void __init __mthca_check_profile_val(const char *name, int *pval,
 					     int pval_default)
 {
-	/* value must be positive and power of 2 */
+	 
 	int old_pval = *pval;
 
 	if (old_pval <= 0)

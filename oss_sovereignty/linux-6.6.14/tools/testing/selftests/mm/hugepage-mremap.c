@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * hugepage-mremap:
- *
- * Example of remapping huge page memory in a user application using the
- * mremap system call.  The path to a file in a hugetlbfs filesystem must
- * be passed as the last argument to this test.  The amount of memory used
- * by this test in MBs can optionally be passed as an argument.  If no memory
- * amount is passed, the default amount is 10MB.
- *
- * To make sure the test triggers pmd sharing and goes through the 'unshare'
- * path in the mremap code use 1GB (1024) or more.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdlib.h>
@@ -18,8 +7,8 @@
 #include <unistd.h>
 #include <sys/mman.h>
 #include <errno.h>
-#include <fcntl.h> /* Definition of O_* constants */
-#include <sys/syscall.h> /* Definition of SYS_* constants */
+#include <fcntl.h>  
+#include <sys/syscall.h>  
 #include <linux/userfaultfd.h>
 #include <sys/ioctl.h>
 #include <string.h>
@@ -60,10 +49,10 @@ static int read_bytes(char *addr, size_t len)
 
 static void register_region_with_uffd(char *addr, size_t len)
 {
-	long uffd; /* userfaultfd file descriptor */
+	long uffd;  
 	struct uffdio_api uffdio_api;
 
-	/* Create and enable userfaultfd object. */
+	 
 
 	uffd = syscall(__NR_userfaultfd, O_CLOEXEC | O_NONBLOCK);
 	if (uffd == -1) {
@@ -78,11 +67,7 @@ static void register_region_with_uffd(char *addr, size_t len)
 		exit(1);
 	}
 
-	/* Create a private anonymous mapping. The memory will be
-	 * demand-zero paged--that is, not yet allocated. When we
-	 * actually touch the memory, it will be allocated via
-	 * the userfaultfd.
-	 */
+	 
 
 	addr = mmap(NULL, len, PROT_READ | PROT_WRITE,
 		    MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -93,10 +78,7 @@ static void register_region_with_uffd(char *addr, size_t len)
 
 	printf("Address returned by mmap() = %p\n", addr);
 
-	/* Register the memory range of the mapping we just created for
-	 * handling by the userfaultfd object. In mode, we request to track
-	 * missing pages (i.e., pages that have not yet been faulted in).
-	 */
+	 
 	if (uffd_register(uffd, addr, len, true, false, false)) {
 		perror("ioctl-UFFDIO_REGISTER");
 		exit(1);
@@ -113,9 +95,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* Read memory length as the first arg if valid, otherwise fallback to
-	 * the default length.
-	 */
+	 
 	if (argc >= 2)
 		length = (size_t)atoi(argv[1]);
 	else
@@ -128,7 +108,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* mmap to a PUD aligned address to hopefully trigger pmd sharing. */
+	 
 	unsigned long suggested_addr = 0x7eaa40000000;
 	void *haddr = mmap((void *)suggested_addr, length, PROTECTION,
 			   MAP_HUGETLB | MAP_SHARED | MAP_POPULATE, fd, 0);
@@ -138,7 +118,7 @@ int main(int argc, char *argv[])
 		exit(1);
 	}
 
-	/* mmap again to a dummy address to hopefully trigger pmd sharing. */
+	 
 	suggested_addr = 0x7daa40000000;
 	void *daddr = mmap((void *)suggested_addr, length, PROTECTION,
 			   MAP_HUGETLB | MAP_SHARED | MAP_POPULATE, fd, 0);

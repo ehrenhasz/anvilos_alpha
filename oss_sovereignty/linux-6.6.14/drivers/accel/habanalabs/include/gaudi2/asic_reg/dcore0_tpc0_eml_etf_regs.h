@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_DCORE0_TPC0_EML_ETF_REGS_H_
 #define ASIC_REG_DCORE0_TPC0_EML_ETF_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_TPC0_EML_ETF
- *   (Prototype: ETF_1KB)
- *****************************************
- */
+ 
 
 #define mmDCORE0_TPC0_EML_ETF_RSZ 0x2004
 
@@ -110,4 +97,4 @@
 
 #define mmDCORE0_TPC0_EML_ETF_COMPID3 0x2FFC
 
-#endif /* ASIC_REG_DCORE0_TPC0_EML_ETF_REGS_H_ */
+#endif  

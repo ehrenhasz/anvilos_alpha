@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Dummy soundcard
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/err.h>
@@ -30,7 +27,7 @@ MODULE_LICENSE("GPL");
 #define MAX_PCM_SUBSTREAMS	128
 #define MAX_MIDI_DEVICES	2
 
-/* defaults */
+ 
 #define MAX_BUFFER_SIZE		(64*1024)
 #define MIN_PERIOD_SIZE		64
 #define MAX_PERIOD_SIZE		MAX_BUFFER_SIZE
@@ -45,13 +42,13 @@ MODULE_LICENSE("GPL");
 #define USE_MIXER_VOLUME_LEVEL_MIN	-50
 #define USE_MIXER_VOLUME_LEVEL_MAX	100
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
 static bool enable[SNDRV_CARDS] = {1, [1 ... (SNDRV_CARDS - 1)] = 0};
 static char *model[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = NULL};
 static int pcm_devs[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 1};
 static int pcm_substreams[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 8};
-//static int midi_devs[SNDRV_CARDS] = {[0 ... (SNDRV_CARDS - 1)] = 2};
+
 static int mixer_volume_level_min = USE_MIXER_VOLUME_LEVEL_MIN;
 static int mixer_volume_level_max = USE_MIXER_VOLUME_LEVEL_MAX;
 #ifdef CONFIG_HIGH_RES_TIMERS
@@ -71,8 +68,8 @@ module_param_array(pcm_devs, int, NULL, 0444);
 MODULE_PARM_DESC(pcm_devs, "PCM devices # (0-4) for dummy driver.");
 module_param_array(pcm_substreams, int, NULL, 0444);
 MODULE_PARM_DESC(pcm_substreams, "PCM substreams # (1-128) for dummy driver.");
-//module_param_array(midi_devs, int, NULL, 0444);
-//MODULE_PARM_DESC(midi_devs, "MIDI devices # (0-2) for dummy driver.");
+
+
 module_param(mixer_volume_level_min, int, 0444);
 MODULE_PARM_DESC(mixer_volume_level_min, "Minimum mixer volume level for dummy driver. Default: -50");
 module_param(mixer_volume_level_max, int, 0444);
@@ -135,9 +132,7 @@ struct snd_dummy {
 	struct snd_kcontrol *cd_switch_ctl;
 };
 
-/*
- * card models
- */
+ 
 
 static int emu10k1_playback_constraints(struct snd_pcm_runtime *runtime)
 {
@@ -221,20 +216,18 @@ static const struct dummy_model *dummy_models[] = {
 	NULL
 };
 
-/*
- * system timer interface
- */
+ 
 
 struct dummy_systimer_pcm {
-	/* ops must be the first item */
+	 
 	const struct dummy_timer_ops *timer_ops;
 	spinlock_t lock;
 	struct timer_list timer;
 	unsigned long base_time;
-	unsigned int frac_pos;	/* fractional sample position (based HZ) */
+	unsigned int frac_pos;	 
 	unsigned int frac_period_rest;
-	unsigned int frac_buffer_size;	/* buffer_size * HZ */
-	unsigned int frac_period_size;	/* period_size * HZ */
+	unsigned int frac_buffer_size;	 
+	unsigned int frac_period_size;	 
 	unsigned int rate;
 	int elapsed;
 	struct snd_pcm_substream *substream;
@@ -357,12 +350,10 @@ static const struct dummy_timer_ops dummy_systimer_ops = {
 };
 
 #ifdef CONFIG_HIGH_RES_TIMERS
-/*
- * hrtimer interface
- */
+ 
 
 struct dummy_hrtimer_pcm {
-	/* ops must be the first item */
+	 
 	const struct dummy_timer_ops *timer_ops;
 	ktime_t base_time;
 	ktime_t period_time;
@@ -378,10 +369,7 @@ static enum hrtimer_restart dummy_hrtimer_callback(struct hrtimer *timer)
 	dpcm = container_of(timer, struct dummy_hrtimer_pcm, timer);
 	if (!atomic_read(&dpcm->running))
 		return HRTIMER_NORESTART;
-	/*
-	 * In cases of XRUN and draining, this calls .trigger to stop PCM
-	 * substream.
-	 */
+	 
 	snd_pcm_period_elapsed(dpcm->substream);
 	if (!atomic_read(&dpcm->running))
 		return HRTIMER_NORESTART;
@@ -480,11 +468,9 @@ static const struct dummy_timer_ops dummy_hrtimer_ops = {
 	.pointer =	dummy_hrtimer_pointer,
 };
 
-#endif /* CONFIG_HIGH_RES_TIMERS */
+#endif  
 
-/*
- * PCM interface
- */
+ 
 
 static int dummy_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 {
@@ -532,7 +518,7 @@ static int dummy_pcm_hw_params(struct snd_pcm_substream *substream,
 			       struct snd_pcm_hw_params *hw_params)
 {
 	if (fake_buffer) {
-		/* runtime->dma_bytes has to be set manually to allow mmap */
+		 
 		substream->runtime->dma_bytes = params_buffer_bytes(hw_params);
 		return 0;
 	}
@@ -590,9 +576,7 @@ static int dummy_pcm_close(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/*
- * dummy buffer handling
- */
+ 
 
 static void *dummy_page[2];
 
@@ -628,20 +612,20 @@ static int dummy_pcm_copy(struct snd_pcm_substream *substream,
 			  int channel, unsigned long pos,
 			  struct iov_iter *iter, unsigned long bytes)
 {
-	return 0; /* do nothing */
+	return 0;  
 }
 
 static int dummy_pcm_silence(struct snd_pcm_substream *substream,
 			     int channel, unsigned long pos,
 			     unsigned long bytes)
 {
-	return 0; /* do nothing */
+	return 0;  
 }
 
 static struct page *dummy_pcm_page(struct snd_pcm_substream *substream,
 				   unsigned long offset)
 {
-	return virt_to_page(dummy_page[substream->stream]); /* the same page */
+	return virt_to_page(dummy_page[substream->stream]);  
 }
 
 static const struct snd_pcm_ops dummy_pcm_ops = {
@@ -695,9 +679,7 @@ static int snd_card_dummy_pcm(struct snd_dummy *dummy, int device,
 	return 0;
 }
 
-/*
- * mixer interface
- */
+ 
 
 #define DUMMY_VOLUME(xname, xindex, addr) \
 { .iface = SNDRV_CTL_ELEM_IFACE_MIXER, \
@@ -894,9 +876,7 @@ static int snd_card_dummy_new_mixer(struct snd_dummy *dummy)
 }
 
 #if defined(CONFIG_SND_DEBUG) && defined(CONFIG_SND_PROC_FS)
-/*
- * proc interface
- */
+ 
 static void print_formats(struct snd_dummy *dummy,
 			  struct snd_info_buffer *buffer)
 {
@@ -1015,7 +995,7 @@ static void dummy_proc_init(struct snd_dummy *chip)
 }
 #else
 #define dummy_proc_init(x)
-#endif /* CONFIG_SND_DEBUG && CONFIG_SND_PROC_FS */
+#endif  
 
 static int snd_dummy_probe(struct platform_device *devptr)
 {

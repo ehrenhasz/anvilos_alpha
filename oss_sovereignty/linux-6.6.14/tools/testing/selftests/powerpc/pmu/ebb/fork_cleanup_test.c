@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <signal.h>
 #include <stdio.h>
@@ -15,30 +13,26 @@
 #include "ebb.h"
 
 
-/*
- * Test that a fork clears the PMU state of the child. eg. BESCR/EBBHR/EBBRR
- * are cleared, and MMCR0_PMCC is reset, preventing the child from accessing
- * the PMU.
- */
+ 
 
 static struct event event;
 
 static int child(void)
 {
-	/* Even though we have EBE=0 we can still see the EBB regs */
+	 
 	FAIL_IF(mfspr(SPRN_BESCR) != 0);
 	FAIL_IF(mfspr(SPRN_EBBHR) != 0);
 	FAIL_IF(mfspr(SPRN_EBBRR) != 0);
 
 	FAIL_IF(catch_sigill(write_pmc1));
 
-	/* We can still read from the event, though it is on our parent */
+	 
 	FAIL_IF(event_read(&event));
 
 	return 0;
 }
 
-/* Tests that fork clears EBB state */
+ 
 int fork_cleanup(void)
 {
 	pid_t pid;
@@ -59,16 +53,16 @@ int fork_cleanup(void)
 	mtspr(SPRN_MMCR0, MMCR0_FC);
 	mtspr(SPRN_PMC1, pmc_sample_period(sample_period));
 
-	/* Don't need to actually take any EBBs */
+	 
 
 	pid = fork();
 	if (pid == 0)
 		exit(child());
 
-	/* Child does the actual testing */
+	 
 	FAIL_IF(wait_for_child(pid));
 
-	/* After fork */
+	 
 	event_close(&event);
 
 	return 0;

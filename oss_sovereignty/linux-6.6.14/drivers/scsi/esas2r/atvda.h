@@ -1,45 +1,7 @@
-/*  linux/drivers/scsi/esas2r/atvda.h
- *       ATTO VDA interface definitions
- *
- *  Copyright (c) 2001-2013 ATTO Technology, Inc.
- *  (mailto:linuxdrivers@attotech.com)
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
-/*
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  NO WARRANTY
- *  THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
- *  CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
- *  LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
- *  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
- *  solely responsible for determining the appropriateness of using and
- *  distributing the Program and assumes all risks associated with its
- *  exercise of rights under this Agreement, including but not limited to
- *  the risks and costs of program errors, damage to or loss of data,
- *  programs or equipment, and unavailability or interruption of operations.
- *
- *  DISCLAIMER OF LIABILITY
- *  NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- *  DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- *  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- *  USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
- *  HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+ 
+ 
+ 
+ 
 
 
 #ifndef ATVDA_H
@@ -52,11 +14,11 @@ struct __packed atto_dev_addr {
 	u8 flags;
 	   #define VDA_DEVADDRF_SATA   0x01
 	   #define VDA_DEVADDRF_SSD    0x02
-	u8 link_speed; /* VDALINKSPEED_xxx */
+	u8 link_speed;  
 	u8 pad[1];
 };
 
-/* dev_addr2 was added for 64-bit alignment */
+ 
 
 struct __packed atto_dev_addr2 {
 	u64 dev_port;
@@ -73,7 +35,7 @@ struct __packed atto_vda_sge {
 };
 
 
-/* VDA request function codes */
+ 
 
 #define VDA_FUNC_SCSI     0x00
 #define VDA_FUNC_FLASH    0x01
@@ -86,28 +48,27 @@ struct __packed atto_vda_sge {
 #define VDA_FUNC_GSV      0x08
 
 
-/* VDA request status values.  for host driver considerations, values for
- * SCSI requests start at zero.  other requests may use these values as well. */
+ 
 
-#define RS_SUCCESS          0x00        /*! successful completion            */
-#define RS_INV_FUNC         0x01        /*! invalid command function         */
-#define RS_BUSY             0x02        /*! insufficient resources           */
-#define RS_SEL              0x03        /*! no target at target_id           */
-#define RS_NO_LUN           0x04        /*! invalid LUN                      */
-#define RS_TIMEOUT          0x05        /*! request timeout                  */
-#define RS_OVERRUN          0x06        /*! data overrun                     */
-#define RS_UNDERRUN         0x07        /*! data underrun                    */
-#define RS_SCSI_ERROR       0x08        /*! SCSI error occurred              */
-#define RS_ABORTED          0x0A        /*! command aborted                  */
-#define RS_RESID_MISM       0x0B        /*! residual length incorrect        */
-#define RS_TM_FAILED        0x0C        /*! task management failed           */
-#define RS_RESET            0x0D        /*! aborted due to bus reset         */
-#define RS_ERR_DMA_SG       0x0E        /*! error reading SG list            */
-#define RS_ERR_DMA_DATA     0x0F        /*! error transferring data          */
-#define RS_UNSUPPORTED      0x10        /*! unsupported request              */
-#define RS_SEL2             0x70        /*! internal generated RS_SEL        */
-#define RS_VDA_BASE         0x80        /*! base of VDA-specific errors      */
-#define RS_MGT_BASE         0x80        /*! base of VDA management errors    */
+#define RS_SUCCESS          0x00         
+#define RS_INV_FUNC         0x01         
+#define RS_BUSY             0x02         
+#define RS_SEL              0x03         
+#define RS_NO_LUN           0x04         
+#define RS_TIMEOUT          0x05         
+#define RS_OVERRUN          0x06         
+#define RS_UNDERRUN         0x07         
+#define RS_SCSI_ERROR       0x08         
+#define RS_ABORTED          0x0A         
+#define RS_RESID_MISM       0x0B         
+#define RS_TM_FAILED        0x0C         
+#define RS_RESET            0x0D         
+#define RS_ERR_DMA_SG       0x0E         
+#define RS_ERR_DMA_DATA     0x0F         
+#define RS_UNSUPPORTED      0x10         
+#define RS_SEL2             0x70         
+#define RS_VDA_BASE         0x80         
+#define RS_MGT_BASE         0x80         
 #define RS_SCAN_FAIL        (RS_MGT_BASE + 0x00)
 #define RS_DEV_INVALID      (RS_MGT_BASE + 0x01)
 #define RS_DEV_ASSIGNED     (RS_MGT_BASE + 0x02)
@@ -142,7 +103,7 @@ struct __packed atto_vda_sge {
 #define RS_NO_METRICS_TEST  (RS_MGT_BASE + 0x25)
 #define RS_BAD_PARAM        (RS_MGT_BASE + 0x26)
 #define RS_GRP_MEMBER_SIZE  (RS_MGT_BASE + 0x27)
-#define RS_FLS_BASE         0xB0        /*! base of VDA errors               */
+#define RS_FLS_BASE         0xB0         
 #define RS_FLS_ERR_AREA     (RS_FLS_BASE + 0x00)
 #define RS_FLS_ERR_BUSY     (RS_FLS_BASE + 0x01)
 #define RS_FLS_ERR_RANGE    (RS_FLS_BASE + 0x02)
@@ -152,20 +113,19 @@ struct __packed atto_vda_sge {
 #define RS_FLS_ERR_RSRC     (RS_FLS_BASE + 0x06)
 #define RS_FLS_ERR_NOFILE   (RS_FLS_BASE + 0x07)
 #define RS_FLS_ERR_FSIZE    (RS_FLS_BASE + 0x08)
-#define RS_CFG_BASE         0xC0        /*! base of VDA configuration errors */
+#define RS_CFG_BASE         0xC0         
 #define RS_CFG_ERR_BUSY     (RS_CFG_BASE + 0)
 #define RS_CFG_ERR_SGE      (RS_CFG_BASE + 1)
 #define RS_CFG_ERR_DATE     (RS_CFG_BASE + 2)
 #define RS_CFG_ERR_TIME     (RS_CFG_BASE + 3)
-#define RS_DEGRADED         0xFB        /*! degraded mode                    */
-#define RS_CLI_INTERNAL     0xFC        /*! VDA CLI internal error           */
-#define RS_VDA_INTERNAL     0xFD        /*! catch-all                        */
-#define RS_PENDING          0xFE        /*! pending, not started             */
-#define RS_STARTED          0xFF        /*! started                          */
+#define RS_DEGRADED         0xFB         
+#define RS_CLI_INTERNAL     0xFC         
+#define RS_VDA_INTERNAL     0xFD         
+#define RS_PENDING          0xFE         
+#define RS_STARTED          0xFF         
 
 
-/* flash request subfunctions.  these are used in both the IOCTL and the
- * driver-firmware interface (VDA_FUNC_FLASH). */
+ 
 
 #define VDA_FLASH_BEGINW  0x00
 #define VDA_FLASH_READ    0x01
@@ -178,9 +138,7 @@ struct __packed atto_vda_sge {
 #define VDA_FLASH_FINFO   0x08
 
 
-/* IOCTL request subfunctions.  these identify the payload type for
- * VDA_FUNC_IOCTL.
- */
+ 
 
 #define VDA_IOCTL_HBA     0x00
 #define VDA_IOCTL_CSMI    0x01
@@ -241,7 +199,7 @@ struct __packed atto_vda_devinfo {
 	#define VDAOPSTAT_HALTED     0x02
 	#define VDAOPSTAT_INT        0x03
 
-	u8 progress; /* 0 - 100% */
+	u8 progress;  
 	u16 ses_dev_index;
 	#define VDASESDI_INVALID     0xFFFF
 
@@ -277,11 +235,7 @@ struct __packed atto_vda_devinfo {
 };
 
 
-/*! struct atto_vda_devinfo2 is a replacement for atto_vda_devinfo.  it
- * extends beyond the 0x70 bytes allowed in atto_vda_mgmt_req; therefore,
- * the entire structure is DMaed between the firmware and host buffer and
- * the data will always be in little endian format.
- */
+ 
 
 struct __packed atto_vda_devinfo2 {
 	struct atto_dev_addr dev_addr;
@@ -310,10 +264,7 @@ struct __packed atto_vda_devinfo2 {
 	u16 phys_target_id;
 	u8 reserved[2];
 
-/* This is where fields specific to struct atto_vda_devinfo2 begin.  Note
- * that the structure version started at one so applications that unionize this
- * structure with atto_vda_dev_info can differentiate them if desired.
- */
+ 
 
 	u8 version;
 	#define VDADEVINFO_VERSION0         0x00
@@ -324,7 +275,7 @@ struct __packed atto_vda_devinfo2 {
 
 	u8 reserved2[3];
 
-	/* sector scanning fields */
+	 
 
 	u32 ss_curr_errors;
 	u64 ss_curr_scanned;
@@ -334,12 +285,12 @@ struct __packed atto_vda_devinfo2 {
 	u32 ss_total_recvrd;
 	u32 ss_num_scans;
 
-	/* grp_name was added in version 2 of this structure. */
+	 
 
 	char grp_name[15];
 	u8 reserved3[4];
 
-	/* dev_addr_list was added in version 3 of this structure. */
+	 
 
 	u8 num_dev_addr;
 	struct atto_dev_addr2 dev_addr_list[8];
@@ -434,11 +385,7 @@ struct __packed atto_vda_grp_info {
 	#define VDA_GRP_FEAT_SSD          0x0400
 	#define VDA_GRP_FEAT_BOOT_DEV     0x0800
 
-	/*
-	 * for backward compatibility, a prefetch value of zero means the
-	 * setting is ignored/unsupported.  therefore, the firmware supported
-	 * 0-6 values are incremented to 1-7.
-	 */
+	 
 
 	u8 prefetch;
 	u8 op_status;
@@ -710,7 +657,7 @@ struct __packed atto_vda_fan_info {
 };
 
 
-/* VDA management commands */
+ 
 
 #define VDAMGT_DEV_SCAN         0x00
 #define VDAMGT_DEV_INFO         0x01
@@ -957,13 +904,13 @@ struct __packed atto_vda_date_and_time {
 	u16 year;
 };
 
-#define SGE_LEN_LIMIT   0x003FFFFF      /*! mask of segment length            */
-#define SGE_LEN_MAX     0x003FF000      /*! maximum segment length            */
-#define SGE_LAST        0x01000000      /*! last entry                        */
-#define SGE_ADDR_64     0x04000000      /*! 64-bit addressing flag            */
-#define SGE_CHAIN       0x80000000      /*! chain descriptor flag             */
-#define SGE_CHAIN_LEN   0x0000FFFF      /*! mask of length in chain entries   */
-#define SGE_CHAIN_SZ    0x00FF0000      /*! mask of size of chained buffer    */
+#define SGE_LEN_LIMIT   0x003FFFFF       
+#define SGE_LEN_MAX     0x003FF000       
+#define SGE_LAST        0x01000000       
+#define SGE_ADDR_64     0x04000000       
+#define SGE_CHAIN       0x80000000       
+#define SGE_CHAIN_LEN   0x0000FFFF       
+#define SGE_CHAIN_SZ    0x00FF0000       
 
 
 struct __packed atto_vda_cfg_init {
@@ -988,14 +935,14 @@ struct __packed atto_vda_cfg_init {
 };
 
 
-/* configuration commands */
+ 
 
 #define VDA_CFG_INIT          0x00
 #define VDA_CFG_GET_INIT      0x01
 #define VDA_CFG_GET_INIT2     0x02
 
 
-/*! physical region descriptor (PRD) aka scatter/gather entry */
+ 
 
 struct __packed atto_physical_region_description {
 	u64 address;
@@ -1015,9 +962,7 @@ struct __packed atto_physical_region_description {
 
 };
 
-/* Request types. NOTE that ALL requests have the same layout for the first
- * few bytes.
- */
+ 
 struct __packed atto_vda_req_header {
 	u32 length;
 	u8 function;
@@ -1032,7 +977,7 @@ struct __packed atto_vda_req_header {
 
 struct __packed atto_vda_scsi_req {
 	u32 length;
-	u8 function;  /* VDA_FUNC_SCSI */
+	u8 function;   
 	u8 sense_len;
 	u8 chain_offset;
 	u8 sg_list_offset;
@@ -1080,7 +1025,7 @@ struct __packed atto_vda_scsi_req {
 
 struct __packed atto_vda_flash_req {
 	u32 length;
-	u8 function; /* VDA_FUNC_FLASH */
+	u8 function;  
 	u8 sub_func;
 	u8 chain_offset;
 	u8 sg_list_offset;
@@ -1091,7 +1036,7 @@ struct __packed atto_vda_flash_req {
 
 	union {
 		struct {
-			char file_name[16]; /* 8.3 fname, NULL term, wc=* */
+			char file_name[16];  
 			struct atto_vda_sge sge[1];
 		} file;
 
@@ -1103,7 +1048,7 @@ struct __packed atto_vda_flash_req {
 
 struct __packed atto_vda_diag_req {
 	u32 length;
-	u8 function; /* VDA_FUNC_DIAG */
+	u8 function;  
 	u8 sub_func;
 	#define VDA_DIAG_STATUS   0x00
 	#define VDA_DIAG_RESET    0x01
@@ -1123,7 +1068,7 @@ struct __packed atto_vda_diag_req {
 
 struct __packed atto_vda_ae_req {
 	u32 length;
-	u8 function; /* VDA_FUNC_AE */
+	u8 function;  
 	u8 reserved1;
 	u8 chain_offset;
 	u8 sg_list_offset;
@@ -1138,7 +1083,7 @@ struct __packed atto_vda_ae_req {
 
 struct __packed atto_vda_cli_req {
 	u32 length;
-	u8 function; /* VDA_FUNC_CLI */
+	u8 function;  
 	u8 reserved1;
 	u8 chain_offset;
 	u8 sg_list_offset;
@@ -1150,7 +1095,7 @@ struct __packed atto_vda_cli_req {
 
 struct __packed atto_vda_ioctl_req {
 	u32 length;
-	u8 function; /* VDA_FUNC_IOCTL */
+	u8 function;  
 	u8 sub_func;
 	u8 chain_offset;
 	u8 sg_list_offset;
@@ -1179,7 +1124,7 @@ struct __packed atto_vda_ioctl_req {
 
 struct __packed atto_vda_cfg_req {
 	u32 length;
-	u8 function; /* VDA_FUNC_CFG */
+	u8 function;  
 	u8 sub_func;
 	u8 rsvd1;
 	u8 sg_list_offset;
@@ -1196,7 +1141,7 @@ struct __packed atto_vda_cfg_req {
 
 struct __packed atto_vda_mgmt_req {
 	u32 length;
-	u8 function; /* VDA_FUNC_MGT */
+	u8 function;  
 	u8 mgt_func;
 	u8 chain_offset;
 	u8 sg_list_offset;
@@ -1226,7 +1171,7 @@ union atto_vda_req {
 	u8 bytes[1024];
 };
 
-/* Outbound response structures */
+ 
 
 struct __packed atto_vda_scsi_rsp {
 	u8 scsi_stat;

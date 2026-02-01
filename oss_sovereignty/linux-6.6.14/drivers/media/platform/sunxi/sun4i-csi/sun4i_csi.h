@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2016 NextThing Co
- * Copyright (C) 2016-2019 Bootlin
- *
- * Author: Maxime Ripard <maxime.ripard@bootlin.com>
- */
+ 
+ 
 
 #ifndef _SUN4I_CSI_H_
 #define _SUN4I_CSI_H_
@@ -105,7 +100,7 @@ const struct sun4i_csi_format *sun4i_csi_find_format(const u32 *fourcc,
 						     const u32 *mbus);
 
 struct sun4i_csi {
-	/* Device resources */
+	 
 	struct device			*dev;
 
 	const struct sun4i_csi_traits	*traits;
@@ -126,27 +121,27 @@ struct sun4i_csi {
 
 	struct v4l2_mbus_config_parallel	bus;
 
-	/* Main Device */
+	 
 	struct v4l2_device		v4l;
 	struct media_device		mdev;
 	struct video_device		vdev;
 	struct media_pad		vdev_pad;
 	struct v4l2_pix_format_mplane	fmt;
 
-	/* Local subdev */
+	 
 	struct v4l2_subdev		subdev;
 	struct media_pad		subdev_pads[CSI_SUBDEV_PADS];
 	struct v4l2_mbus_framefmt	subdev_fmt;
 
-	/* V4L2 Async variables */
+	 
 	struct v4l2_async_notifier	notifier;
 	struct v4l2_subdev		*src_subdev;
 	int				src_pad;
 
-	/* V4L2 variables */
+	 
 	struct mutex			lock;
 
-	/* Videobuf2 */
+	 
 	struct vb2_queue		queue;
 	struct list_head		buf_list;
 	spinlock_t			qlock;
@@ -158,4 +153,4 @@ void sun4i_csi_dma_unregister(struct sun4i_csi *csi);
 
 int sun4i_csi_v4l2_register(struct sun4i_csi *csi);
 
-#endif /* _SUN4I_CSI_H_ */
+#endif  

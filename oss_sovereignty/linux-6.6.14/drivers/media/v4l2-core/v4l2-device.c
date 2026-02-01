@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    V4L2 device support.
 
-    Copyright (C) 2008  Hans Verkuil <hverkuil@xs4all.nl>
-
- */
+ 
 
 #include <linux/types.h>
 #include <linux/ioctl.h>
@@ -26,13 +21,13 @@ int v4l2_device_register(struct device *dev, struct v4l2_device *v4l2_dev)
 	get_device(dev);
 	v4l2_dev->dev = dev;
 	if (dev == NULL) {
-		/* If dev == NULL, then name must be filled in by the caller */
+		 
 		if (WARN_ON(!v4l2_dev->name[0]))
 			return -EINVAL;
 		return 0;
 	}
 
-	/* Set name to driver name + device name if it is empty. */
+	 
 	if (!v4l2_dev->name[0])
 		snprintf(v4l2_dev->name, sizeof(v4l2_dev->name), "%s %s",
 			dev->driver->name, dev_name(dev));
@@ -89,13 +84,12 @@ void v4l2_device_unregister(struct v4l2_device *v4l2_dev)
 {
 	struct v4l2_subdev *sd, *next;
 
-	/* Just return if v4l2_dev is NULL or if it was already
-	 * unregistered before. */
+	 
 	if (v4l2_dev == NULL || !v4l2_dev->name[0])
 		return;
 	v4l2_device_disconnect(v4l2_dev);
 
-	/* Unregister subdevs */
+	 
 	list_for_each_entry_safe(sd, next, &v4l2_dev->subdevs, list) {
 		v4l2_device_unregister_subdev(sd);
 		if (sd->flags & V4L2_SUBDEV_FL_IS_I2C)
@@ -103,7 +97,7 @@ void v4l2_device_unregister(struct v4l2_device *v4l2_dev)
 		else if (sd->flags & V4L2_SUBDEV_FL_IS_SPI)
 			v4l2_spi_subdev_unregister(sd);
 	}
-	/* Mark as unregistered, thus preventing duplicate unregistrations */
+	 
 	v4l2_dev->name[0] = '\0';
 }
 EXPORT_SYMBOL_GPL(v4l2_device_unregister);
@@ -113,17 +107,11 @@ int v4l2_device_register_subdev(struct v4l2_device *v4l2_dev,
 {
 	int err;
 
-	/* Check for valid input */
+	 
 	if (!v4l2_dev || !sd || sd->v4l2_dev || !sd->name[0])
 		return -EINVAL;
 
-	/*
-	 * The reason to acquire the module here is to avoid unloading
-	 * a module of sub-device which is registered to a media
-	 * device. To make it possible to unload modules for media
-	 * devices that also register sub-devices, do not
-	 * try_module_get() such sub-device owners.
-	 */
+	 
 	sd->owner_v4l2_dev = v4l2_dev->dev && v4l2_dev->dev->driver &&
 		sd->owner == v4l2_dev->dev->driver->owner;
 
@@ -131,14 +119,14 @@ int v4l2_device_register_subdev(struct v4l2_device *v4l2_dev,
 		return -ENODEV;
 
 	sd->v4l2_dev = v4l2_dev;
-	/* This just returns 0 if either of the two args is NULL */
+	 
 	err = v4l2_ctrl_add_handler(v4l2_dev->ctrl_handler, sd->ctrl_handler,
 				    NULL, true);
 	if (err)
 		goto error_module;
 
 #if defined(CONFIG_MEDIA_CONTROLLER)
-	/* Register the entity. */
+	 
 	if (v4l2_dev->mdev) {
 		err = media_device_register_entity(v4l2_dev->mdev, &sd->entity);
 		if (err < 0)
@@ -193,9 +181,7 @@ int __v4l2_device_register_subdev_nodes(struct v4l2_device *v4l2_dev,
 	struct v4l2_subdev *sd;
 	int err;
 
-	/* Register a device node for every subdev marked with the
-	 * V4L2_SUBDEV_FL_HAS_DEVNODE flag.
-	 */
+	 
 	list_for_each_entry(sd, &v4l2_dev->subdevs, list) {
 		if (!(sd->flags & V4L2_SUBDEV_FL_HAS_DEVNODE))
 			continue;
@@ -230,7 +216,7 @@ int __v4l2_device_register_subdev_nodes(struct v4l2_device *v4l2_dev,
 		sd->entity.info.dev.major = VIDEO_MAJOR;
 		sd->entity.info.dev.minor = vdev->minor;
 
-		/* Interface is created by __video_register_device() */
+		 
 		if (vdev->v4l2_dev->mdev) {
 			struct media_link *link;
 
@@ -262,7 +248,7 @@ void v4l2_device_unregister_subdev(struct v4l2_subdev *sd)
 {
 	struct v4l2_device *v4l2_dev;
 
-	/* return if it isn't registered */
+	 
 	if (sd == NULL || sd->v4l2_dev == NULL)
 		return;
 
@@ -278,10 +264,7 @@ void v4l2_device_unregister_subdev(struct v4l2_subdev *sd)
 
 #if defined(CONFIG_MEDIA_CONTROLLER)
 	if (v4l2_dev->mdev) {
-		/*
-		 * No need to explicitly remove links, as both pads and
-		 * links are removed by the function below, in the right order
-		 */
+		 
 		media_device_unregister_entity(&sd->entity);
 	}
 #endif

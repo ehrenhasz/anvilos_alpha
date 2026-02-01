@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// General Purpose SPI multiplexer
+
+
+
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -11,30 +11,9 @@
 
 #define SPI_MUX_NO_CS	((unsigned int)-1)
 
-/**
- * DOC: Driver description
- *
- * This driver supports a MUX on an SPI bus. This can be useful when you need
- * more chip selects than the hardware peripherals support, or than are
- * available in a particular board setup.
- *
- * The driver will create an additional SPI controller. Devices added under the
- * mux will be handled as 'chip selects' on this controller.
- */
+ 
 
-/**
- * struct spi_mux_priv - the basic spi_mux structure
- * @spi:		pointer to the device struct attached to the parent
- *			spi controller
- * @current_cs:		The current chip select set in the mux
- * @child_msg_complete: The mux replaces the complete callback in the child's
- *			message to its own callback; this field is used by the
- *			driver to store the child's callback during a transfer
- * @child_msg_context:	Used to store the child's context to the callback
- * @child_msg_dev:	Used to store the spi_device pointer to the child
- * @mux:		mux_control structure used to provide chip selects for
- *			downstream spi devices
- */
+ 
 struct spi_mux_priv {
 	struct spi_device	*spi;
 	unsigned int		current_cs;
@@ -45,7 +24,7 @@ struct spi_mux_priv {
 	struct mux_control	*mux;
 };
 
-/* should not get called when the parent controller is doing a transfer */
+ 
 static int spi_mux_select(struct spi_device *spi)
 {
 	struct spi_mux_priv *priv = spi_controller_get_devdata(spi->controller);
@@ -61,7 +40,7 @@ static int spi_mux_select(struct spi_device *spi)
 	dev_dbg(&priv->spi->dev, "setting up the mux for cs %d\n",
 		spi_get_chipselect(spi, 0));
 
-	/* copy the child device's settings except for the cs */
+	 
 	priv->spi->max_speed_hz = spi->max_speed_hz;
 	priv->spi->mode = spi->mode;
 	priv->spi->bits_per_word = spi->bits_per_word;
@@ -75,11 +54,7 @@ static int spi_mux_setup(struct spi_device *spi)
 {
 	struct spi_mux_priv *priv = spi_controller_get_devdata(spi->controller);
 
-	/*
-	 * can be called multiple times, won't do a valid setup now but we will
-	 * change the settings when we do a transfer (necessary because we
-	 * can't predict from which device it will be anyway)
-	 */
+	 
 	return spi_setup(priv->spi);
 }
 
@@ -107,10 +82,7 @@ static int spi_mux_transfer_one_message(struct spi_controller *ctlr,
 	if (ret)
 		return ret;
 
-	/*
-	 * Replace the complete callback, context and spi_device with our own
-	 * pointers. Save originals
-	 */
+	 
 	priv->child_msg_complete = m->complete;
 	priv->child_msg_context = m->context;
 	priv->child_msg_dev = m->spi;
@@ -119,7 +91,7 @@ static int spi_mux_transfer_one_message(struct spi_controller *ctlr,
 	m->context = priv;
 	m->spi = priv->spi;
 
-	/* do the transfer */
+	 
 	return spi_async(priv->spi, m);
 }
 
@@ -137,10 +109,7 @@ static int spi_mux_probe(struct spi_device *spi)
 	priv = spi_controller_get_devdata(ctlr);
 	priv->spi = spi;
 
-	/*
-	 * Increase lockdep class as these lock are taken while the parent bus
-	 * already holds their instance's lock.
-	 */
+	 
 	lockdep_set_subclass(&ctlr->io_mutex, 1);
 	lockdep_set_subclass(&ctlr->add_lock, 1);
 
@@ -153,7 +122,7 @@ static int spi_mux_probe(struct spi_device *spi)
 
 	priv->current_cs = SPI_MUX_NO_CS;
 
-	/* supported modes are the same as our parent's */
+	 
 	ctlr->mode_bits = spi->controller->mode_bits;
 	ctlr->flags = spi->controller->flags;
 	ctlr->transfer_one_message = spi_mux_transfer_one_message;

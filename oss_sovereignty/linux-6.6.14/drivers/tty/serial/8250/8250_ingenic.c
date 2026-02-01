@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2010 Lars-Peter Clausen <lars@metafoo.de>
- * Copyright (C) 2015 Imagination Technologies
- *
- * Ingenic SoC UART support
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/console.h>
@@ -20,7 +15,7 @@
 
 #include "8250.h"
 
-/** ingenic_uart_config: SOC specific config data. */
+ 
 struct ingenic_uart_config {
 	int tx_loadsz;
 	int fifosize;
@@ -97,7 +92,7 @@ static int __init ingenic_earlycon_setup_tail(struct earlycon_device *dev,
 		return -ENODEV;
 
 	if (opt) {
-		unsigned int parity, bits, flow; /* unused for now */
+		unsigned int parity, bits, flow;  
 
 		uart_parse_options(opt, &baud, &parity, &bits, &flow);
 	}
@@ -137,12 +132,7 @@ static int __init ingenic_early_console_setup(struct earlycon_device *dev,
 static int __init jz4750_early_console_setup(struct earlycon_device *dev,
 					     const char *opt)
 {
-	/*
-	 * JZ4750/55/60 have an optional /2 divider between the EXT
-	 * oscillator and some peripherals including UART, which will
-	 * be enabled if using a 24 MHz oscillator, and disabled when
-	 * using a 12 MHz oscillator.
-	 */
+	 
 	ingenic_early_console_setup_clock(dev);
 	if (dev->port.uartclk >= 16000000)
 		dev->port.uartclk /= 2;
@@ -174,23 +164,17 @@ static void ingenic_uart_serial_out(struct uart_port *p, int offset, int value)
 
 	switch (offset) {
 	case UART_FCR:
-		/* UART module enable */
+		 
 		value |= UART_FCR_UME;
 		break;
 
 	case UART_IER:
-		/*
-		 * Enable receive timeout interrupt with the receive line
-		 * status interrupt.
-		 */
+		 
 		value |= (value & 0x4) << 2;
 		break;
 
 	case UART_MCR:
-		/*
-		 * If we have enabled modem status IRQs we should enable
-		 * modem mode.
-		 */
+		 
 		ier = p->serial_in(p, UART_IER);
 
 		if (ier & UART_IER_MSI)
@@ -212,7 +196,7 @@ static unsigned int ingenic_uart_serial_in(struct uart_port *p, int offset)
 
 	value = readb(p->membase + (offset << p->regshift));
 
-	/* Hide non-16550 compliant bits from higher levels */
+	 
 	switch (offset) {
 	case UART_FCR:
 		value &= ~UART_FCR_UME;
@@ -270,7 +254,7 @@ static int ingenic_uart_probe(struct platform_device *pdev)
 	uart.tx_loadsz = cdata->tx_loadsz;
 	uart.capabilities = UART_CAP_FIFO | UART_CAP_RTOIE;
 
-	/* Check for a fixed line number */
+	 
 	line = of_alias_get_id(pdev->dev.of_node, "serial");
 	if (line >= 0)
 		uart.port.line = line;
@@ -358,7 +342,7 @@ static const struct of_device_id of_match[] = {
 	{ .compatible = "ingenic,jz4775-uart", .data = &jz4760_uart_config },
 	{ .compatible = "ingenic,jz4780-uart", .data = &jz4780_uart_config },
 	{ .compatible = "ingenic,x1000-uart", .data = &x1000_uart_config },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match);
 

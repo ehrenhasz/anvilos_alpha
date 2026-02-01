@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 
@@ -59,10 +59,10 @@ struct mptcp_info {
 };
 
 struct mptcp_subflow_data {
-	__u32		size_subflow_data;		/* size of this structure in userspace */
-	__u32		num_subflows;			/* must be 0, set by kernel */
-	__u32		size_kernel;			/* must be 0, set by kernel */
-	__u32		size_user;			/* size of one element in data[] */
+	__u32		size_subflow_data;		 
+	__u32		num_subflows;			 
+	__u32		size_kernel;			 
+	__u32		size_user;			 
 } __attribute__((aligned(8)));
 
 struct mptcp_subflow_addrs {
@@ -93,18 +93,12 @@ struct mptcp_subflow_info {
 };
 
 struct mptcp_full_info {
-	__u32		size_tcpinfo_kernel;	/* must be 0, set by kernel */
+	__u32		size_tcpinfo_kernel;	 
 	__u32		size_tcpinfo_user;
-	__u32		size_sfinfo_kernel;	/* must be 0, set by kernel */
+	__u32		size_sfinfo_kernel;	 
 	__u32		size_sfinfo_user;
-	__u32		num_subflows;		/* must be 0, set by kernel (real subflow count) */
-	__u32		size_arrays_user;	/* max subflows that userspace is interested in;
-						 * the buffers at subflow_info/tcp_info
-						 * are respectively at least:
-						 *  size_arrays * size_sfinfo_user
-						 *  size_arrays * size_tcpinfo_user
-						 * bytes wide
-						 */
+	__u32		num_subflows;		 
+	__u32		size_arrays_user;	 
 	__aligned_u64		subflow_info;
 	__aligned_u64		tcp_info;
 	struct mptcp_info	mptcp_info;
@@ -201,7 +195,7 @@ static int sock_listen_mptcp(const char * const listenaddr,
 			perror("setsockopt");
 
 		if (bind(sock, a->ai_addr, a->ai_addrlen) == 0)
-			break; /* success */
+			break;  
 
 		perror("bind");
 		close(sock);
@@ -238,7 +232,7 @@ static int sock_connect_mptcp(const char * const remoteaddr,
 			continue;
 
 		if (connect(sock, a->ai_addr, a->ai_addrlen) == 0)
-			break; /* success */
+			break;  
 
 		die_perror("connect");
 	}
@@ -286,7 +280,7 @@ static void do_getsockopt_bogus_sf_data(int fd, int optname)
 	good_data.size_subflow_data = olen;
 
 	ret = getsockopt(fd, SOL_MPTCP, optname, &bd, &olen);
-	assert(ret < 0); /* 0 size_subflow_data */
+	assert(ret < 0);  
 	assert(olen == sizeof(good_data));
 
 	bd.d = good_data;
@@ -302,22 +296,22 @@ static void do_getsockopt_bogus_sf_data(int fd, int optname)
 	_olen = rand() % olen;
 	olen = _olen;
 	ret = getsockopt(fd, SOL_MPTCP, optname, &bd, &olen);
-	assert(ret < 0);	/* bogus olen */
-	assert(olen == _olen);	/* must be unchanged */
+	assert(ret < 0);	 
+	assert(olen == _olen);	 
 
 	bd.d = good_data;
 	olen = sizeof(good_data);
 	bd.d.size_kernel = 1;
 	ret = getsockopt(fd, SOL_MPTCP, optname, &bd, &olen);
-	assert(ret < 0); /* size_kernel not 0 */
+	assert(ret < 0);  
 
 	bd.d = good_data;
 	olen = sizeof(good_data);
 	bd.d.num_subflows = 1;
 	ret = getsockopt(fd, SOL_MPTCP, optname, &bd, &olen);
-	assert(ret < 0); /* num_subflows not 0 */
+	assert(ret < 0);  
 
-	/* forward compat check: larger struct mptcp_subflow_data on 'old' kernel */
+	 
 	bd.d = good_data;
 	olen = sizeof(bd);
 	bd.d.size_subflow_data = sizeof(bd);
@@ -325,7 +319,7 @@ static void do_getsockopt_bogus_sf_data(int fd, int optname)
 	ret = getsockopt(fd, SOL_MPTCP, optname, &bd, &olen);
 	assert(ret == 0);
 
-	/* olen must be truncated to real data size filled by kernel: */
+	 
 	assert(olen == sizeof(good_data));
 
 	assert(bd.d.size_subflow_data == sizeof(bd));
@@ -339,7 +333,7 @@ static void do_getsockopt_bogus_sf_data(int fd, int optname)
 	ret = getsockopt(fd, SOL_MPTCP, optname, &bd, &_olen);
 	assert(ret == 0);
 
-	/* no truncation, kernel should have filled 1 byte of optname payload in buf[1]: */
+	 
 	assert(olen == _olen);
 
 	assert(bd.d.size_subflow_data == sizeof(good_data) + 1);
@@ -411,7 +405,7 @@ static void do_getsockopt_tcp_info(struct so_state *s, int fd, size_t r, size_t 
 			goto done;
 		}
 
-		/* wait and repeat, might be that tx is still ongoing */
+		 
 		sleep(1);
 	} while (tries-- > 0);
 
@@ -529,11 +523,7 @@ static void do_getsockopt_mptcp_full_info(struct so_state *s, int fd)
 	       MIN(mfi.size_sfinfo_kernel, sizeof(struct mptcp_subflow_info)));
 	assert(mfi.num_subflows == 1);
 
-	/* Tolerate future extension to mptcp_info struct and running newer
-	 * test on top of older kernel.
-	 * Anyway any kernel supporting MPTCP_FULL_INFO must at least include
-	 * the following in mptcp_info.
-	 */
+	 
 	assert(olen > (socklen_t)__builtin_offsetof(struct mptcp_full_info, tcp_info));
 	assert(mfi.mptcp_info.mptcpi_subflows == 0);
 	assert(mfi.mptcp_info.mptcpi_bytes_sent == s->last_sample.mptcpi_bytes_sent);
@@ -581,7 +571,7 @@ static void connect_one_server(int fd, int pipefd)
 
 	do_getsockopts(&s, fd, 0, 0);
 
-	/* un-block server */
+	 
 	ret = read(pipefd, buf2, 4);
 	assert(ret == 4);
 	close(pipefd);
@@ -620,7 +610,7 @@ static void connect_one_server(int fd, int pipefd)
 	do_getsockopts(&s, fd, ret, ret);
 
 	if (eof)
-		total += 1; /* sequence advances due to FIN */
+		total += 1;  
 
 	assert(s.mptcpi_rcv_delta == (uint64_t)total);
 	close(fd);
@@ -651,7 +641,7 @@ static void process_one_client(int fd, int pipefd)
 	if (ret2 < 0)
 		die_perror("write");
 
-	/* wait for hangup */
+	 
 	ret3 = read(fd, buf, 1);
 	if (ret3 != 0)
 		xerror("expected EOF, got %lu", ret3);
@@ -660,7 +650,7 @@ static void process_one_client(int fd, int pipefd)
 	if (s.mptcpi_rcv_delta != (uint64_t)ret + 1)
 		xerror("mptcpi_rcv_delta %" PRIu64 ", expect %" PRIu64, s.mptcpi_rcv_delta, ret + 1, s.mptcpi_rcv_delta - ret);
 
-	/* be nice when running on top of older kernel */
+	 
 	if (s.pkt_stats_avail) {
 		if (s.last_sample.mptcpi_bytes_sent != ret2)
 			xerror("mptcpi_bytes_sent %" PRIu64 ", expect %" PRIu64,
@@ -812,7 +802,7 @@ static void init_rng(void)
 		unsigned int foo;
 		ssize_t ret;
 
-		/* can't fail */
+		 
 		ret = read(fd, &foo, sizeof(foo));
 		assert(ret == sizeof(foo));
 
@@ -843,7 +833,7 @@ int main(int argc, char *argv[])
 
 	close(pipefds[1]);
 
-	/* wait until server bound a socket */
+	 
 	e1 = read(pipefds[0], &e1, 4);
 	assert(e1 == 4);
 

@@ -1,50 +1,18 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/dma-mapping.h>
 
 #include "amdgpu.h"
 #include "amdgpu_ih.h"
 
-/**
- * amdgpu_ih_ring_init - initialize the IH state
- *
- * @adev: amdgpu_device pointer
- * @ih: ih ring to initialize
- * @ring_size: ring size to allocate
- * @use_bus_addr: true when we can use dma_alloc_coherent
- *
- * Initializes the IH state and allocates a buffer
- * for the IH ring buffer.
- * Returns 0 for success, errors for failure.
- */
+ 
 int amdgpu_ih_ring_init(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih,
 			unsigned ring_size, bool use_bus_addr)
 {
 	u32 rb_bufsz;
 	int r;
 
-	/* Align ring size */
+	 
 	rb_bufsz = order_base_2(ring_size / 4);
 	ring_size = (1 << rb_bufsz) * 4;
 	ih->ring_size = ring_size;
@@ -58,9 +26,7 @@ int amdgpu_ih_ring_init(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih,
 		if (ih->ring)
 			return 0;
 
-		/* add 8 bytes for the rptr/wptr shadows and
-		 * add them to the end of the ring allocation.
-		 */
+		 
 		ih->ring = dma_alloc_coherent(adev->dev, ih->ring_size + 8,
 					      &dma_addr, GFP_KERNEL);
 		if (ih->ring == NULL)
@@ -104,15 +70,7 @@ int amdgpu_ih_ring_init(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih,
 	return 0;
 }
 
-/**
- * amdgpu_ih_ring_fini - tear down the IH state
- *
- * @adev: amdgpu_device pointer
- * @ih: ih ring to tear down
- *
- * Tears down the IH state and frees buffer
- * used for the IH ring buffer.
- */
+ 
 void amdgpu_ih_ring_fini(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih)
 {
 
@@ -121,9 +79,7 @@ void amdgpu_ih_ring_fini(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih)
 
 	if (ih->use_bus_addr) {
 
-		/* add 8 bytes for the rptr/wptr shadows and
-		 * add them to the end of the ring allocation.
-		 */
+		 
 		dma_free_coherent(adev->dev, ih->ring_size + 8,
 				  (void *)ih->ring, ih->gpu_addr);
 		ih->ring = NULL;
@@ -135,17 +91,7 @@ void amdgpu_ih_ring_fini(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih)
 	}
 }
 
-/**
- * amdgpu_ih_ring_write - write IV to the ring buffer
- *
- * @adev: amdgpu_device pointer
- * @ih: ih ring to write to
- * @iv: the iv to write
- * @num_dw: size of the iv in dw
- *
- * Writes an IV to the ring buffer using the CPU and increment the wptr.
- * Used for testing and delegating IVs to a software ring.
- */
+ 
 void amdgpu_ih_ring_write(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih,
 			  const uint32_t *iv, unsigned int num_dw)
 {
@@ -158,7 +104,7 @@ void amdgpu_ih_ring_write(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih,
 	wptr <<= 2;
 	wptr &= ih->ptr_mask;
 
-	/* Only commit the new wptr if we don't overflow */
+	 
 	if (wptr != READ_ONCE(ih->rptr)) {
 		wmb();
 		WRITE_ONCE(*ih->wptr_cpu, cpu_to_le32(wptr));
@@ -168,14 +114,7 @@ void amdgpu_ih_ring_write(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih,
 	}
 }
 
-/**
- * amdgpu_ih_wait_on_checkpoint_process_ts - wait to process IVs up to checkpoint
- *
- * @adev: amdgpu_device pointer
- * @ih: ih ring to process
- *
- * Used to ensure ring has processed IVs up to the checkpoint write pointer.
- */
+ 
 int amdgpu_ih_wait_on_checkpoint_process_ts(struct amdgpu_device *adev,
 					struct amdgpu_ih_ring *ih)
 {
@@ -187,7 +126,7 @@ int amdgpu_ih_wait_on_checkpoint_process_ts(struct amdgpu_device *adev,
 		return -ENODEV;
 
 	checkpoint_wptr = amdgpu_ih_get_wptr(adev, ih);
-	/* Order wptr with ring data. */
+	 
 	rmb();
 	checkpoint_ts = amdgpu_ih_decode_iv_ts(adev, ih, checkpoint_wptr, -1);
 
@@ -196,15 +135,7 @@ int amdgpu_ih_wait_on_checkpoint_process_ts(struct amdgpu_device *adev,
 		    ih->rptr == amdgpu_ih_get_wptr(adev, ih), timeout);
 }
 
-/**
- * amdgpu_ih_process - interrupt handler
- *
- * @adev: amdgpu_device pointer
- * @ih: ih ring to process
- *
- * Interrupt hander (VI), walk the IH ring.
- * Returns irq process return code.
- */
+ 
 int amdgpu_ih_process(struct amdgpu_device *adev, struct amdgpu_ih_ring *ih)
 {
 	unsigned int count;
@@ -219,7 +150,7 @@ restart_ih:
 	count  = AMDGPU_IH_MAX_NUM_IVS;
 	DRM_DEBUG("%s: rptr %d, wptr %d\n", __func__, ih->rptr, wptr);
 
-	/* Order reading of wptr vs. reading of IH ring data */
+	 
 	rmb();
 
 	while (ih->rptr != wptr && --count) {
@@ -230,7 +161,7 @@ restart_ih:
 	amdgpu_ih_set_rptr(adev, ih);
 	wake_up_all(&ih->wait_process);
 
-	/* make sure wptr hasn't changed while processing */
+	 
 	wptr = amdgpu_ih_get_wptr(adev, ih);
 	if (wptr != ih->rptr)
 		goto restart_ih;
@@ -238,22 +169,12 @@ restart_ih:
 	return IRQ_HANDLED;
 }
 
-/**
- * amdgpu_ih_decode_iv_helper - decode an interrupt vector
- *
- * @adev: amdgpu_device pointer
- * @ih: ih ring to process
- * @entry: IV entry
- *
- * Decodes the interrupt vector at the current rptr
- * position and also advance the position for Vega10
- * and later GPUs.
- */
+ 
 void amdgpu_ih_decode_iv_helper(struct amdgpu_device *adev,
 				struct amdgpu_ih_ring *ih,
 				struct amdgpu_iv_entry *entry)
 {
-	/* wptr/rptr are in bytes! */
+	 
 	u32 ring_index = ih->rptr >> 2;
 	uint32_t dw[8];
 
@@ -280,7 +201,7 @@ void amdgpu_ih_decode_iv_helper(struct amdgpu_device *adev,
 	entry->src_data[2] = dw[6];
 	entry->src_data[3] = dw[7];
 
-	/* wptr/rptr are in bytes! */
+	 
 	ih->rptr += 32;
 }
 

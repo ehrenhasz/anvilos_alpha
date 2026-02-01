@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016-2017 Micron Technology, Inc.
- *
- * Authors:
- *	Peter Pan <peterpandong@micron.com>
- *	Boris Brezillon <boris.brezillon@bootlin.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"spi-nand: " fmt
 
@@ -80,16 +74,7 @@ static int spinand_set_cfg(struct spinand_device *spinand, u8 cfg)
 	return 0;
 }
 
-/**
- * spinand_upd_cfg() - Update the configuration register
- * @spinand: the spinand device
- * @mask: the mask encoding the bits to update in the config reg
- * @val: the new value to apply
- *
- * Update the configuration register.
- *
- * Return: 0 on success, a negative error code otherwise.
- */
+ 
 int spinand_upd_cfg(struct spinand_device *spinand, u8 mask, u8 val)
 {
 	int ret;
@@ -105,15 +90,7 @@ int spinand_upd_cfg(struct spinand_device *spinand, u8 mask, u8 val)
 	return spinand_set_cfg(spinand, cfg);
 }
 
-/**
- * spinand_select_target() - Select a specific NAND target/die
- * @spinand: the spinand device
- * @target: the target/die to select
- *
- * Select a new target/die. If chip only has one die, this function is a NOOP.
- *
- * Return: 0 on success, a negative error code otherwise.
- */
+ 
 int spinand_select_target(struct spinand_device *spinand, unsigned int target)
 {
 	struct nand_device *nand = spinand_to_nand(spinand);
@@ -149,10 +126,7 @@ static int spinand_read_cfg(struct spinand_device *spinand)
 		if (ret)
 			return ret;
 
-		/*
-		 * We use spinand_read_reg_op() instead of spinand_get_cfg()
-		 * here to bypass the config cache.
-		 */
+		 
 		ret = spinand_read_reg_op(spinand, REG_CFG,
 					  &spinand->cfg_cache[target]);
 		if (ret)
@@ -212,11 +186,7 @@ static int spinand_check_ecc_status(struct spinand_device *spinand, u8 status)
 		return 0;
 
 	case STATUS_ECC_HAS_BITFLIPS:
-		/*
-		 * We have no way to know exactly how many bitflips have been
-		 * fixed, so let's return the maximum possible value so that
-		 * wear-leveling layers move the data immediately.
-		 */
+		 
 		return nanddev_get_ecc_conf(nand)->strength;
 
 	case STATUS_ECC_UNCOR_ERROR:
@@ -241,7 +211,7 @@ static int spinand_noecc_ooblayout_free(struct mtd_info *mtd, int section,
 	if (section)
 		return -ERANGE;
 
-	/* Reserve 2 bytes for the BBM. */
+	 
 	region->offset = 2;
 	region->length = 62;
 
@@ -290,7 +260,7 @@ static int spinand_ondie_ecc_prepare_io_req(struct nand_device *nand,
 
 	memset(spinand->oobbuf, 0xff, nanddev_per_page_oobsize(nand));
 
-	/* Only enable or disable the engine */
+	 
 	return spinand_ecc_enable(spinand, enable);
 }
 
@@ -305,11 +275,11 @@ static int spinand_ondie_ecc_finish_io_req(struct nand_device *nand,
 	if (req->mode == MTD_OPS_RAW)
 		return 0;
 
-	/* Nothing to do when finishing a page write */
+	 
 	if (req->type == NAND_PAGE_WRITE)
 		return 0;
 
-	/* Finish a page read: check the status, report errors/bitflips */
+	 
 	ret = spinand_check_ecc_status(spinand, engine_conf->status);
 	if (ret == -EBADMSG)
 		mtd->ecc_stats.failed++;
@@ -427,16 +397,7 @@ static int spinand_write_to_cache_op(struct spinand_device *spinand,
 	void *buf = spinand->databuf;
 	ssize_t ret;
 
-	/*
-	 * Looks like PROGRAM LOAD (AKA write cache) does not necessarily reset
-	 * the cache content to 0xFF (depends on vendor implementation), so we
-	 * must fill the page cache entirely even if we only want to program
-	 * the data portion of the page, otherwise we might corrupt the BBM or
-	 * user data previously programmed in OOB area.
-	 *
-	 * Only reset the data buffer manually, the OOB buffer is prepared by
-	 * ECC engines ->prepare_io_req() callback.
-	 */
+	 
 	nbytes = nanddev_page_size(nand) + nanddev_per_page_oobsize(nand);
 	memset(spinand->databuf, 0xff, nanddev_page_size(nand));
 
@@ -517,10 +478,7 @@ static int spinand_wait(struct spinand_device *spinand,
 	if (!(status & STATUS_BUSY))
 		goto out;
 
-	/*
-	 * Extra read, just in case the STATUS_READY bit has changed
-	 * since our last check
-	 */
+	 
 	ret = spinand_read_status(spinand, &status);
 	if (ret)
 		return ret;
@@ -862,7 +820,7 @@ static int spinand_create_dirmap(struct spinand_device *spinand,
 	};
 	struct spi_mem_dirmap_desc *desc;
 
-	/* The plane number is passed in MSB just above the column address */
+	 
 	info.offset = plane << fls(nand->memorg.pagesize);
 
 	info.op_tmpl = *spinand->op_templates.update_cache;
@@ -1015,7 +973,7 @@ static int spinand_manufacturer_init(struct spinand_device *spinand)
 
 static void spinand_manufacturer_cleanup(struct spinand_device *spinand)
 {
-	/* Release manufacturer private data */
+	 
 	if (spinand->manufacturer->ops->cleanup)
 		return spinand->manufacturer->ops->cleanup(spinand);
 }
@@ -1054,21 +1012,7 @@ spinand_select_op_variant(struct spinand_device *spinand,
 	return NULL;
 }
 
-/**
- * spinand_match_and_init() - Try to find a match between a device ID and an
- *			      entry in a spinand_info table
- * @spinand: SPI NAND object
- * @table: SPI NAND device description table
- * @table_size: size of the device description table
- * @rdid_method: read id method to match
- *
- * Match between a device ID retrieved through the READ_ID command and an
- * entry in the SPI NAND description table. If a match is found, the spinand
- * object will be initialized with information provided by the matching
- * spinand_info entry.
- *
- * Return: 0 on success, a negative error code otherwise.
- */
+ 
 int spinand_match_and_init(struct spinand_device *spinand,
 			   const struct spinand_info *table,
 			   unsigned int table_size,
@@ -1178,7 +1122,7 @@ static int spinand_init_flash(struct spinand_device *spinand)
 		return ret;
 	}
 
-	/* After power up, all blocks are locked, so unlock them here. */
+	 
 	for (i = 0; i < nand->memorg.ntargets; i++) {
 		ret = spinand_select_target(spinand, i);
 		if (ret)
@@ -1218,10 +1162,7 @@ static int spinand_init(struct spinand_device *spinand)
 	struct nand_device *nand = mtd_to_nanddev(mtd);
 	int ret;
 
-	/*
-	 * We need a scratch buffer because the spi_mem interface requires that
-	 * buf passed in spi_mem_op->data.buf be DMA-able.
-	 */
+	 
 	spinand->scratchbuf = kzalloc(SPINAND_MAX_ID_LEN, GFP_KERNEL);
 	if (!spinand->scratchbuf)
 		return -ENOMEM;
@@ -1230,11 +1171,7 @@ static int spinand_init(struct spinand_device *spinand)
 	if (ret)
 		goto err_free_bufs;
 
-	/*
-	 * Use kzalloc() instead of devm_kzalloc() here, because some drivers
-	 * may use this buffer for DMA access.
-	 * Memory allocated by devm_ does not guarantee DMA-safe alignment.
-	 */
+	 
 	spinand->databuf = kzalloc(nanddev_page_size(nand) +
 			       nanddev_per_page_oobsize(nand),
 			       GFP_KERNEL);
@@ -1257,7 +1194,7 @@ static int spinand_init(struct spinand_device *spinand)
 	if (ret)
 		goto err_manuf_cleanup;
 
-	/* SPI-NAND default ECC engine is on-die */
+	 
 	nand->ecc.defaults.engine_type = NAND_ECC_ENGINE_TYPE_ON_DIE;
 	nand->ecc.ondie_engine = &spinand_ondie_ecc_engine;
 
@@ -1283,7 +1220,7 @@ static int spinand_init(struct spinand_device *spinand)
 
 	mtd->oobavail = ret;
 
-	/* Propagate ECC information to mtd_info */
+	 
 	mtd->ecc_strength = nanddev_get_ecc_conf(nand)->strength;
 	mtd->ecc_step_size = nanddev_get_ecc_conf(nand)->step_size;
 
@@ -1376,14 +1313,14 @@ static int spinand_remove(struct spi_mem *mem)
 
 static const struct spi_device_id spinand_ids[] = {
 	{ .name = "spi-nand" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(spi, spinand_ids);
 
 #ifdef CONFIG_OF
 static const struct of_device_id spinand_of_ids[] = {
 	{ .compatible = "spi-nand" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, spinand_of_ids);
 #endif

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2020 NXP
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/media-bus-format.h>
@@ -172,16 +170,13 @@ imx8qxp_ldb_bridge_mode_set(struct drm_bridge *bridge,
 	else
 		ldb->ldb_ctrl |= LDB_CH_SEL;
 
-	/* input VSYNC signal from pixel link is active low */
+	 
 	if (imx8qxp_ldb_ch->di_id == 0)
 		ldb->ldb_ctrl |= LDB_DI0_VS_POL_ACT_LOW;
 	else
 		ldb->ldb_ctrl |= LDB_DI1_VS_POL_ACT_LOW;
 
-	/*
-	 * For split mode, settle input VSYNC signal polarity and
-	 * channel selection down early.
-	 */
+	 
 	if (is_split)
 		regmap_write(ldb->regmap, ldb->ctrl_reg, ldb->ldb_ctrl);
 
@@ -334,10 +329,7 @@ imx8qxp_ldb_bridge_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 	case MEDIA_BUS_FMT_FIXED:
 		di = &conn_state->connector->display_info;
 
-		/*
-		 * Look at the first bus format to determine input format.
-		 * Default to MEDIA_BUS_FMT_RGB888_1X24, if no match.
-		 */
+		 
 		if (di->num_bus_formats) {
 			finfo = drm_format_info(di->bus_formats[0]);
 
@@ -472,7 +464,7 @@ static int imx8qxp_ldb_parse_dt_companion(struct imx8qxp_ldb *imx8qxp_ldb)
 	int dual_link;
 	int ret;
 
-	/* Locate the companion LDB for dual-link operation, if any. */
+	 
 	companion = of_parse_phandle(dev->of_node, "fsl,companion-ldb", 0);
 	if (!companion)
 		return 0;
@@ -483,10 +475,7 @@ static int imx8qxp_ldb_parse_dt_companion(struct imx8qxp_ldb *imx8qxp_ldb)
 		goto out;
 	}
 
-	/*
-	 * Sanity check: the companion bridge must have the same compatible
-	 * string.
-	 */
+	 
 	match = of_match_device(dev->driver->of_match_table, dev);
 	if (!of_device_is_compatible(companion, match->compatible)) {
 		DRM_DEV_ERROR(dev, "companion LDB is incompatible\n");
@@ -504,10 +493,7 @@ static int imx8qxp_ldb_parse_dt_companion(struct imx8qxp_ldb *imx8qxp_ldb)
 			goto out;
 		}
 
-		/*
-		 * Channel numbers have to be different, because channel0
-		 * transmits odd pixels and channel1 transmits even pixels.
-		 */
+		 
 		if (i == (ldb_ch->chno ^ 0x1)) {
 			companion_port = child;
 			break;
@@ -521,12 +507,7 @@ static int imx8qxp_ldb_parse_dt_companion(struct imx8qxp_ldb *imx8qxp_ldb)
 		goto out;
 	}
 
-	/*
-	 * We need to work out if the sink is expecting us to function in
-	 * dual-link mode.  We do this by looking at the DT port nodes we are
-	 * connected to.  If they are marked as expecting odd pixels and
-	 * even pixels than we need to enable LDB split mode.
-	 */
+	 
 	port1 = of_graph_get_port_by_id(ldb_ch->np, 1);
 	port2 = of_graph_get_port_by_id(companion_port, 1);
 	dual_link = drm_of_lvds_get_dual_link_pixel_order(port1, port2);
@@ -688,7 +669,7 @@ static int __maybe_unused imx8qxp_ldb_runtime_resume(struct device *dev)
 	struct imx8qxp_ldb *imx8qxp_ldb = dev_get_drvdata(dev);
 	struct ldb *ldb = &imx8qxp_ldb->base;
 
-	/* disable LDB by resetting the control register to POR default */
+	 
 	regmap_write(ldb->regmap, ldb->ctrl_reg, 0);
 
 	return 0;
@@ -701,7 +682,7 @@ static const struct dev_pm_ops imx8qxp_ldb_pm_ops = {
 
 static const struct of_device_id imx8qxp_ldb_dt_ids[] = {
 	{ .compatible = "fsl,imx8qxp-ldb" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8qxp_ldb_dt_ids);
 

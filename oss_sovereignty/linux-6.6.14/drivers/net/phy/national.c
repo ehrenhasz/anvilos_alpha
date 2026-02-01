@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/net/phy/national.c
- *
- * Driver for National Semiconductor PHYs
- *
- * Author: Stuart Menefy <stuart.menefy@st.com>
- * Maintainer: Giuseppe Cavallaro <peppe.cavallaro@st.com>
- *
- * Copyright (c) 2008 STMicroelectronics Limited
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,7 +10,7 @@
 #include <linux/phy.h>
 #include <linux/netdevice.h>
 
-/* DP83865 phy identifier values */
+ 
 #define DP83865_PHY_ID	0x20005c7a
 
 #define DP83865_INT_STATUS	0x14
@@ -33,7 +24,7 @@
 				DP83865_INT_ANE_COMPLETED | \
 				DP83865_INT_LINK_CHANGE)
 
-/* Advanced proprietary configuration */
+ 
 #define NS_EXP_MEM_CTL	0x16
 #define NS_EXP_MEM_DATA	0x1d
 #define NS_EXP_MEM_ADD	0x1e
@@ -67,9 +58,7 @@ static int ns_ack_interrupt(struct phy_device *phydev)
 	if (ret < 0)
 		return ret;
 
-	/* Clear the interrupt status bit by writing a “1”
-	 * to the corresponding bit in INT_CLEAR (2:0 are reserved)
-	 */
+	 
 	ret = phy_write(phydev, DP83865_INT_CLEAR, ret & ~0x7);
 
 	return ret;
@@ -88,7 +77,7 @@ static irqreturn_t ns_handle_interrupt(struct phy_device *phydev)
 	if (!(irq_status & DP83865_INT_MASK_DEFAULT))
 		return IRQ_NONE;
 
-	/* clear the interrupt */
+	 
 	phy_write(phydev, DP83865_INT_CLEAR, irq_status & ~0x7);
 
 	phy_trigger_machine(phydev);
@@ -124,7 +113,7 @@ static void ns_giga_speed_fallback(struct phy_device *phydev, int mode)
 
 	phy_write(phydev, MII_BMCR, (bmcr | BMCR_PDOWN));
 
-	/* Enable 8 bit expended memory read/write (no auto increment) */
+	 
 	phy_write(phydev, NS_EXP_MEM_CTL, 0);
 	phy_write(phydev, NS_EXP_MEM_ADD, 0x1C0);
 	phy_write(phydev, NS_EXP_MEM_DATA, 0x0008);
@@ -150,9 +139,7 @@ static void ns_10_base_t_hdx_loopack(struct phy_device *phydev, int disable)
 static int ns_config_init(struct phy_device *phydev)
 {
 	ns_giga_speed_fallback(phydev, ALL_FALLBACK_ON);
-	/* In the latest MAC or switches design, the 10 Mbps loopback
-	 * is desired to be turned off.
-	 */
+	 
 	ns_10_base_t_hdx_loopack(phydev, hdx_loopback_off);
 	return ns_ack_interrupt(phydev);
 }
@@ -161,7 +148,7 @@ static struct phy_driver dp83865_driver[] = { {
 	.phy_id = DP83865_PHY_ID,
 	.phy_id_mask = 0xfffffff0,
 	.name = "NatSemi DP83865",
-	/* PHY_GBIT_FEATURES */
+	 
 	.config_init = ns_config_init,
 	.config_intr = ns_config_intr,
 	.handle_interrupt = ns_handle_interrupt,

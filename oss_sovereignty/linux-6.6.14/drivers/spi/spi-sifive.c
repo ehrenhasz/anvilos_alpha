@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright 2018 SiFive, Inc.
-//
-// SiFive SPI controller driver (master mode only)
-//
-// Author: SiFive, Inc.
-// sifive@sifive.com
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -22,51 +22,51 @@
 #define SIFIVE_SPI_DEFAULT_DEPTH         8
 #define SIFIVE_SPI_DEFAULT_MAX_BITS      8
 
-/* register offsets */
-#define SIFIVE_SPI_REG_SCKDIV            0x00 /* Serial clock divisor */
-#define SIFIVE_SPI_REG_SCKMODE           0x04 /* Serial clock mode */
-#define SIFIVE_SPI_REG_CSID              0x10 /* Chip select ID */
-#define SIFIVE_SPI_REG_CSDEF             0x14 /* Chip select default */
-#define SIFIVE_SPI_REG_CSMODE            0x18 /* Chip select mode */
-#define SIFIVE_SPI_REG_DELAY0            0x28 /* Delay control 0 */
-#define SIFIVE_SPI_REG_DELAY1            0x2c /* Delay control 1 */
-#define SIFIVE_SPI_REG_FMT               0x40 /* Frame format */
-#define SIFIVE_SPI_REG_TXDATA            0x48 /* Tx FIFO data */
-#define SIFIVE_SPI_REG_RXDATA            0x4c /* Rx FIFO data */
-#define SIFIVE_SPI_REG_TXMARK            0x50 /* Tx FIFO watermark */
-#define SIFIVE_SPI_REG_RXMARK            0x54 /* Rx FIFO watermark */
-#define SIFIVE_SPI_REG_FCTRL             0x60 /* SPI flash interface control */
-#define SIFIVE_SPI_REG_FFMT              0x64 /* SPI flash instruction format */
-#define SIFIVE_SPI_REG_IE                0x70 /* Interrupt Enable Register */
-#define SIFIVE_SPI_REG_IP                0x74 /* Interrupt Pendings Register */
+ 
+#define SIFIVE_SPI_REG_SCKDIV            0x00  
+#define SIFIVE_SPI_REG_SCKMODE           0x04  
+#define SIFIVE_SPI_REG_CSID              0x10  
+#define SIFIVE_SPI_REG_CSDEF             0x14  
+#define SIFIVE_SPI_REG_CSMODE            0x18  
+#define SIFIVE_SPI_REG_DELAY0            0x28  
+#define SIFIVE_SPI_REG_DELAY1            0x2c  
+#define SIFIVE_SPI_REG_FMT               0x40  
+#define SIFIVE_SPI_REG_TXDATA            0x48  
+#define SIFIVE_SPI_REG_RXDATA            0x4c  
+#define SIFIVE_SPI_REG_TXMARK            0x50  
+#define SIFIVE_SPI_REG_RXMARK            0x54  
+#define SIFIVE_SPI_REG_FCTRL             0x60  
+#define SIFIVE_SPI_REG_FFMT              0x64  
+#define SIFIVE_SPI_REG_IE                0x70  
+#define SIFIVE_SPI_REG_IP                0x74  
 
-/* sckdiv bits */
+ 
 #define SIFIVE_SPI_SCKDIV_DIV_MASK       0xfffU
 
-/* sckmode bits */
+ 
 #define SIFIVE_SPI_SCKMODE_PHA           BIT(0)
 #define SIFIVE_SPI_SCKMODE_POL           BIT(1)
 #define SIFIVE_SPI_SCKMODE_MODE_MASK     (SIFIVE_SPI_SCKMODE_PHA | \
 					  SIFIVE_SPI_SCKMODE_POL)
 
-/* csmode bits */
+ 
 #define SIFIVE_SPI_CSMODE_MODE_AUTO      0U
 #define SIFIVE_SPI_CSMODE_MODE_HOLD      2U
 #define SIFIVE_SPI_CSMODE_MODE_OFF       3U
 
-/* delay0 bits */
+ 
 #define SIFIVE_SPI_DELAY0_CSSCK(x)       ((u32)(x))
 #define SIFIVE_SPI_DELAY0_CSSCK_MASK     0xffU
 #define SIFIVE_SPI_DELAY0_SCKCS(x)       ((u32)(x) << 16)
 #define SIFIVE_SPI_DELAY0_SCKCS_MASK     (0xffU << 16)
 
-/* delay1 bits */
+ 
 #define SIFIVE_SPI_DELAY1_INTERCS(x)     ((u32)(x))
 #define SIFIVE_SPI_DELAY1_INTERCS_MASK   0xffU
 #define SIFIVE_SPI_DELAY1_INTERXFR(x)    ((u32)(x) << 16)
 #define SIFIVE_SPI_DELAY1_INTERXFR_MASK  (0xffU << 16)
 
-/* fmt bits */
+ 
 #define SIFIVE_SPI_FMT_PROTO_SINGLE      0U
 #define SIFIVE_SPI_FMT_PROTO_DUAL        1U
 #define SIFIVE_SPI_FMT_PROTO_QUAD        2U
@@ -76,24 +76,24 @@
 #define SIFIVE_SPI_FMT_LEN(x)            ((u32)(x) << 16)
 #define SIFIVE_SPI_FMT_LEN_MASK          (0xfU << 16)
 
-/* txdata bits */
+ 
 #define SIFIVE_SPI_TXDATA_DATA_MASK      0xffU
 #define SIFIVE_SPI_TXDATA_FULL           BIT(31)
 
-/* rxdata bits */
+ 
 #define SIFIVE_SPI_RXDATA_DATA_MASK      0xffU
 #define SIFIVE_SPI_RXDATA_EMPTY          BIT(31)
 
-/* ie and ip bits */
+ 
 #define SIFIVE_SPI_IP_TXWM               BIT(0)
 #define SIFIVE_SPI_IP_RXWM               BIT(1)
 
 struct sifive_spi {
-	void __iomem      *regs;        /* virt. address of control registers */
-	struct clk        *clk;         /* bus clock */
-	unsigned int      fifo_depth;   /* fifo depth in words */
-	u32               cs_inactive;  /* level of the CS pins when inactive */
-	struct completion done;         /* wake-up from interrupt */
+	void __iomem      *regs;         
+	struct clk        *clk;          
+	unsigned int      fifo_depth;    
+	u32               cs_inactive;   
+	struct completion done;          
 };
 
 static void sifive_spi_write(struct sifive_spi *spi, int offset, u32 value)
@@ -108,14 +108,14 @@ static u32 sifive_spi_read(struct sifive_spi *spi, int offset)
 
 static void sifive_spi_init(struct sifive_spi *spi)
 {
-	/* Watermark interrupts are disabled by default */
+	 
 	sifive_spi_write(spi, SIFIVE_SPI_REG_IE, 0);
 
-	/* Default watermark FIFO threshold values */
+	 
 	sifive_spi_write(spi, SIFIVE_SPI_REG_TXMARK, 1);
 	sifive_spi_write(spi, SIFIVE_SPI_REG_RXMARK, 0);
 
-	/* Set CS/SCK Delays and Inactive Time to defaults */
+	 
 	sifive_spi_write(spi, SIFIVE_SPI_REG_DELAY0,
 			 SIFIVE_SPI_DELAY0_CSSCK(1) |
 			 SIFIVE_SPI_DELAY0_SCKCS(1));
@@ -123,7 +123,7 @@ static void sifive_spi_init(struct sifive_spi *spi)
 			 SIFIVE_SPI_DELAY1_INTERCS(1) |
 			 SIFIVE_SPI_DELAY1_INTERXFR(0));
 
-	/* Exit specialized memory-mapped SPI flash mode */
+	 
 	sifive_spi_write(spi, SIFIVE_SPI_REG_FCTRL, 0);
 }
 
@@ -133,17 +133,17 @@ sifive_spi_prepare_message(struct spi_controller *host, struct spi_message *msg)
 	struct sifive_spi *spi = spi_controller_get_devdata(host);
 	struct spi_device *device = msg->spi;
 
-	/* Update the chip select polarity */
+	 
 	if (device->mode & SPI_CS_HIGH)
 		spi->cs_inactive &= ~BIT(spi_get_chipselect(device, 0));
 	else
 		spi->cs_inactive |= BIT(spi_get_chipselect(device, 0));
 	sifive_spi_write(spi, SIFIVE_SPI_REG_CSDEF, spi->cs_inactive);
 
-	/* Select the correct device */
+	 
 	sifive_spi_write(spi, SIFIVE_SPI_REG_CSID, spi_get_chipselect(device, 0));
 
-	/* Set clock mode */
+	 
 	sifive_spi_write(spi, SIFIVE_SPI_REG_SCKMODE,
 			 device->mode & SIFIVE_SPI_SCKMODE_MODE_MASK);
 
@@ -154,7 +154,7 @@ static void sifive_spi_set_cs(struct spi_device *device, bool is_high)
 {
 	struct sifive_spi *spi = spi_controller_get_devdata(device->controller);
 
-	/* Reverse polarity is handled by SCMR/CPOL. Not inverted CS. */
+	 
 	if (device->mode & SPI_CS_HIGH)
 		is_high = !is_high;
 
@@ -170,14 +170,14 @@ sifive_spi_prep_transfer(struct sifive_spi *spi, struct spi_device *device,
 	u32 cr;
 	unsigned int mode;
 
-	/* Calculate and program the clock rate */
+	 
 	cr = DIV_ROUND_UP(clk_get_rate(spi->clk) >> 1, t->speed_hz) - 1;
 	cr &= SIFIVE_SPI_SCKDIV_DIV_MASK;
 	sifive_spi_write(spi, SIFIVE_SPI_REG_SCKDIV, cr);
 
 	mode = max_t(unsigned int, t->rx_nbits, t->tx_nbits);
 
-	/* Set frame format */
+	 
 	cr = SIFIVE_SPI_FMT_LEN(t->bits_per_word);
 	switch (mode) {
 	case SPI_NBITS_QUAD:
@@ -196,12 +196,7 @@ sifive_spi_prep_transfer(struct sifive_spi *spi, struct spi_device *device,
 		cr |= SIFIVE_SPI_FMT_DIR;
 	sifive_spi_write(spi, SIFIVE_SPI_REG_FMT, cr);
 
-	/* We will want to poll if the time we need to wait is
-	 * less than the context switching time.
-	 * Let's call that threshold 5us. The operation will take:
-	 *    (8/mode) * fifo_depth / hz <= 5 * 10^-6
-	 *    1600000 * fifo_depth <= hz * mode
-	 */
+	 
 	return 1600000 * spi->fifo_depth <= t->speed_hz * mode;
 }
 
@@ -211,7 +206,7 @@ static irqreturn_t sifive_spi_irq(int irq, void *dev_id)
 	u32 ip = sifive_spi_read(spi, SIFIVE_SPI_REG_IP);
 
 	if (ip & (SIFIVE_SPI_IP_TXWM | SIFIVE_SPI_IP_RXWM)) {
-		/* Disable interrupts until next transfer */
+		 
 		sifive_spi_write(spi, SIFIVE_SPI_REG_IE, 0);
 		complete(&spi->done);
 		return IRQ_HANDLED;
@@ -265,21 +260,21 @@ sifive_spi_transfer_one(struct spi_controller *host, struct spi_device *device,
 		unsigned int n_words = min(remaining_words, spi->fifo_depth);
 		unsigned int i;
 
-		/* Enqueue n_words for transmission */
+		 
 		for (i = 0; i < n_words; i++)
 			sifive_spi_tx(spi, tx_ptr++);
 
 		if (rx_ptr) {
-			/* Wait for transmission + reception to complete */
+			 
 			sifive_spi_write(spi, SIFIVE_SPI_REG_RXMARK,
 					 n_words - 1);
 			sifive_spi_wait(spi, SIFIVE_SPI_IP_RXWM, poll);
 
-			/* Read out all the data from the RX FIFO */
+			 
 			for (i = 0; i < n_words; i++)
 				sifive_spi_rx(spi, rx_ptr++);
 		} else {
-			/* Wait for transmission to complete */
+			 
 			sifive_spi_wait(spi, SIFIVE_SPI_IP_TXWM, poll);
 		}
 
@@ -325,7 +320,7 @@ static int sifive_spi_probe(struct platform_device *pdev)
 		goto put_host;
 	}
 
-	/* Optional parameters */
+	 
 	ret =
 	  of_property_read_u32(pdev->dev.of_node, "sifive,fifo-depth",
 			       &spi->fifo_depth);
@@ -342,14 +337,14 @@ static int sifive_spi_probe(struct platform_device *pdev)
 		goto put_host;
 	}
 
-	/* Spin up the bus clock before hitting registers */
+	 
 	ret = clk_prepare_enable(spi->clk);
 	if (ret) {
 		dev_err(&pdev->dev, "Unable to enable bus clock\n");
 		goto put_host;
 	}
 
-	/* probe the number of CS lines */
+	 
 	spi->cs_inactive = sifive_spi_read(spi, SIFIVE_SPI_REG_CSDEF);
 	sifive_spi_write(spi, SIFIVE_SPI_REG_CSDEF, 0xffffffffU);
 	cs_bits = sifive_spi_read(spi, SIFIVE_SPI_REG_CSDEF);
@@ -367,7 +362,7 @@ static int sifive_spi_probe(struct platform_device *pdev)
 		goto disable_clk;
 	}
 
-	/* Define our host */
+	 
 	host->dev.of_node = pdev->dev.of_node;
 	host->bus_num = pdev->id;
 	host->num_chipselect = num_cs;
@@ -375,9 +370,7 @@ static int sifive_spi_probe(struct platform_device *pdev)
 			  | SPI_CS_HIGH | SPI_LSB_FIRST
 			  | SPI_TX_DUAL | SPI_TX_QUAD
 			  | SPI_RX_DUAL | SPI_RX_QUAD;
-	/* TODO: add driver support for bits_per_word < 8
-	 * we need to "left-align" the bits (unless SPI_LSB_FIRST)
-	 */
+	 
 	host->bits_per_word_mask = SPI_BPW_MASK(8);
 	host->flags = SPI_CONTROLLER_MUST_TX | SPI_CONTROLLER_GPIO_SS;
 	host->prepare_message = sifive_spi_prepare_message;
@@ -385,10 +378,10 @@ static int sifive_spi_probe(struct platform_device *pdev)
 	host->transfer_one = sifive_spi_transfer_one;
 
 	pdev->dev.dma_mask = NULL;
-	/* Configure the SPI host hardware */
+	 
 	sifive_spi_init(spi);
 
-	/* Register for SPI Interrupt */
+	 
 	ret = devm_request_irq(&pdev->dev, irq, sifive_spi_irq, 0,
 			       dev_name(&pdev->dev), spi);
 	if (ret) {
@@ -420,7 +413,7 @@ static void sifive_spi_remove(struct platform_device *pdev)
 	struct spi_controller *host = platform_get_drvdata(pdev);
 	struct sifive_spi *spi = spi_controller_get_devdata(host);
 
-	/* Disable all the interrupts just in case */
+	 
 	sifive_spi_write(spi, SIFIVE_SPI_REG_IE, 0);
 	clk_disable_unprepare(spi->clk);
 }
@@ -435,7 +428,7 @@ static int sifive_spi_suspend(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Disable all the interrupts just in case */
+	 
 	sifive_spi_write(spi, SIFIVE_SPI_REG_IE, 0);
 
 	clk_disable_unprepare(spi->clk);

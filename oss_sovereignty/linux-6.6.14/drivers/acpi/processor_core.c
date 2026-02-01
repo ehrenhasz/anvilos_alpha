@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005 Intel Corporation
- * Copyright (C) 2009 Hewlett-Packard Development Company, L.P.
- *
- *	Alex Chiang <achiang@hp.com>
- *	- Unified x86/ia64 implementations
- *
- * I/O APIC hotplug support
- *	Yinghai Lu <yinghai@kernel.org>
- *	Jiang Liu <jiang.liu@intel.com>
- */
+
+ 
 #include <linux/export.h>
 #include <linux/acpi.h>
 #include <acpi/processor.h>
@@ -81,9 +71,7 @@ static int map_lsapic_id(struct acpi_subtable_header *entry,
 	return 0;
 }
 
-/*
- * Retrieve the ARM CPU physical identifier (MPIDR)
- */
+ 
 static int map_gicc_mpidr(struct acpi_subtable_header *entry,
 		int device_declaration, u32 acpi_id, phys_cpuid_t *mpidr)
 {
@@ -93,11 +81,7 @@ static int map_gicc_mpidr(struct acpi_subtable_header *entry,
 	if (!(gicc->flags & ACPI_MADT_ENABLED))
 		return -ENODEV;
 
-	/* device_declaration means Device object in DSDT, in the
-	 * GIC interrupt model, logical processors are required to
-	 * have a Processor Device object in the DSDT, so we should
-	 * check device_declaration here
-	 */
+	 
 	if (device_declaration && (gicc->uid == acpi_id)) {
 		*mpidr = gicc->arm_mpidr;
 		return 0;
@@ -106,9 +90,7 @@ static int map_gicc_mpidr(struct acpi_subtable_header *entry,
 	return -EINVAL;
 }
 
-/*
- * Retrieve the RISC-V hartid for the processor
- */
+ 
 static int map_rintc_hartid(struct acpi_subtable_header *entry,
 			    int device_declaration, u32 acpi_id,
 			    phys_cpuid_t *hartid)
@@ -119,11 +101,7 @@ static int map_rintc_hartid(struct acpi_subtable_header *entry,
 	if (!(rintc->flags & ACPI_MADT_ENABLED))
 		return -ENODEV;
 
-	/* device_declaration means Device object in DSDT, in the
-	 * RISC-V, logical processors are required to
-	 * have a Processor Device object in the DSDT, so we should
-	 * check device_declaration here
-	 */
+	 
 	if (device_declaration && rintc->uid == acpi_id) {
 		*hartid = rintc->hart_id;
 		return 0;
@@ -132,9 +110,7 @@ static int map_rintc_hartid(struct acpi_subtable_header *entry,
 	return -EINVAL;
 }
 
-/*
- * Retrieve LoongArch CPU physical id
- */
+ 
 static int map_core_pic_id(struct acpi_subtable_header *entry,
 		int device_declaration, u32 acpi_id, phys_cpuid_t *phys_id)
 {
@@ -144,10 +120,7 @@ static int map_core_pic_id(struct acpi_subtable_header *entry,
 	if (!(core_pic->flags & ACPI_MADT_ENABLED))
 		return -ENODEV;
 
-	/* device_declaration means Device object in DSDT, in LoongArch
-	 * system, logical processor acpi_id is required in _UID property
-	 * of DSDT table, so we should check device_declaration here
-	 */
+	 
 	if (device_declaration && (core_pic->processor_id == acpi_id)) {
 		*phys_id = core_pic->core_id;
 		return 0;
@@ -160,7 +133,7 @@ static phys_cpuid_t map_madt_entry(struct acpi_table_madt *madt,
 				   int type, u32 acpi_id)
 {
 	unsigned long madt_end, entry;
-	phys_cpuid_t phys_id = PHYS_CPUID_INVALID;	/* CPU hardware ID */
+	phys_cpuid_t phys_id = PHYS_CPUID_INVALID;	 
 
 	if (!madt)
 		return phys_id;
@@ -168,7 +141,7 @@ static phys_cpuid_t map_madt_entry(struct acpi_table_madt *madt,
 	entry = (unsigned long)madt;
 	madt_end = entry + madt->header.length;
 
-	/* Parse all entries looking for a match. */
+	 
 
 	entry += sizeof(struct acpi_table_madt);
 	while (entry + sizeof(struct acpi_subtable_header) < madt_end) {
@@ -270,26 +243,7 @@ int acpi_map_cpuid(phys_cpuid_t phys_id, u32 acpi_id)
 #endif
 
 	if (invalid_phys_cpuid(phys_id)) {
-		/*
-		 * On UP processor, there is no _MAT or MADT table.
-		 * So above phys_id is always set to PHYS_CPUID_INVALID.
-		 *
-		 * BIOS may define multiple CPU handles even for UP processor.
-		 * For example,
-		 *
-		 * Scope (_PR)
-		 * {
-		 *     Processor (CPU0, 0x00, 0x00000410, 0x06) {}
-		 *     Processor (CPU1, 0x01, 0x00000410, 0x06) {}
-		 *     Processor (CPU2, 0x02, 0x00000410, 0x06) {}
-		 *     Processor (CPU3, 0x03, 0x00000410, 0x06) {}
-		 * }
-		 *
-		 * Ignores phys_id and always returns 0 for the processor
-		 * handle with acpi id 0 if nr_cpu_ids is 1.
-		 * This should be the case if SMP tables are not found.
-		 * Return -EINVAL for other CPU's handle.
-		 */
+		 
 		if (nr_cpu_ids <= 1 && acpi_id == 0)
 			return acpi_id;
 		else
@@ -302,7 +256,7 @@ int acpi_map_cpuid(phys_cpuid_t phys_id, u32 acpi_id)
 			return i;
 	}
 #else
-	/* In UP kernel, only processor 0 is valid */
+	 
 	if (phys_id == 0)
 		return phys_id;
 #endif
@@ -347,7 +301,7 @@ static int parse_madt_ioapic_entry(u32 gsi_base, u64 *phys_addr)
 	entry = (unsigned long)madt;
 	madt_end = entry + madt->header.length;
 
-	/* Parse all entries looking for a match. */
+	 
 	entry += sizeof(struct acpi_table_madt);
 	while (entry + sizeof(struct acpi_subtable_header) < madt_end) {
 		hdr = (struct acpi_subtable_header *)entry;
@@ -389,17 +343,7 @@ exit:
 	return apic_id;
 }
 
-/**
- * acpi_get_ioapic_id - Get IOAPIC ID and physical address matching @gsi_base
- * @handle:	ACPI object for IOAPIC device
- * @gsi_base:	GSI base to match with
- * @phys_addr:	Pointer to store physical address of matching IOAPIC record
- *
- * Walk resources returned by ACPI_MAT method, then ACPI MADT table, to search
- * for an ACPI IOAPIC record matching @gsi_base.
- * Return IOAPIC id and store physical address in @phys_addr if found a match,
- * otherwise return <0.
- */
+ 
 int acpi_get_ioapic_id(acpi_handle handle, u32 gsi_base, u64 *phys_addr)
 {
 	int apic_id;
@@ -410,4 +354,4 @@ int acpi_get_ioapic_id(acpi_handle handle, u32 gsi_base, u64 *phys_addr)
 
 	return apic_id;
 }
-#endif /* CONFIG_ACPI_HOTPLUG_IOAPIC */
+#endif  

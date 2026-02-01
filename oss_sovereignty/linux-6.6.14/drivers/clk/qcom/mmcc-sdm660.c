@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2020, Martin Botka <martin.botka@somainline.org>
- * Copyright (c) 2020, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -60,7 +56,7 @@ static const struct parent_map mmcc_xo_mmpll0_mmpll4_mmpll7_mmpll8_gpll0_gpll0_d
 	{ P_GPLL0_DIV, 6 },
 };
 
-/* Voteable PLL */
+ 
 static struct clk_alpha_pll mmpll0 = {
 	.offset = 0xc000,
 	.regs = clk_alpha_pll_regs[CLK_ALPHA_PLL_TYPE_DEFAULT],
@@ -95,7 +91,7 @@ static struct clk_alpha_pll mmpll6 =  {
 	},
 };
 
-/* APSS controlled PLLs */
+ 
 static struct pll_vco vco[] = {
 	{ 1000000000, 2000000000, 0 },
 	{ 750000000, 1500000000, 1 },
@@ -2046,7 +2042,7 @@ static const struct freq_tbl ftbl_axi_clk_src[] = {
 		{ }
 };
 
-/* RO to linux */
+ 
 static struct clk_rcg2 axi_clk_src = {
 	.cmd_rcgr = 0xd000,
 	.hid_width = 5,
@@ -2109,10 +2105,7 @@ static struct clk_regmap_div mdss_byte0_intf_div_clk = {
 	.reg = 0x237c,
 	.shift = 0,
 	.width = 2,
-	/*
-	 * NOTE: Op does not work for div-3. Current assumption is that div-3
-	 * is not a recommended setting for this divider.
-	 */
+	 
 	.clkr = {
 		.hw.init = &(struct clk_init_data){
 			.name = "mdss_byte0_intf_div_clk",
@@ -2160,10 +2153,7 @@ static struct clk_regmap_div mdss_byte1_intf_div_clk = {
 	.reg = 0x2380,
 	.shift = 0,
 	.width = 2,
-	/*
-	 * NOTE: Op does not work for div-3. Current assumption is that div-3
-	 * is not a recommended setting for this divider.
-	 */
+	 
 	.clkr = {
 		.hw.init = &(struct clk_init_data){
 			.name = "mdss_byte1_intf_div_clk",
@@ -2255,7 +2245,7 @@ static struct clk_branch mdss_dp_link_clk = {
 	},
 };
 
-/* Reset state of MDSS_DP_LINK_INTF_DIV is 0x3 (div-4) */
+ 
 static struct clk_branch mdss_dp_link_intf_clk = {
 	.halt_reg = 0x2358,
 	.halt_check = BRANCH_HALT,
@@ -2440,10 +2430,7 @@ static struct clk_branch misc_ahb_clk = {
 		.enable_mask = BIT(0),
 		.hw.init = &(struct clk_init_data){
 			.name = "misc_ahb_clk",
-			/*
-			 * Dependency to be enabled before the branch is
-			 * enabled.
-			 */
+			 
 			.parent_hws = (const struct clk_hw *[]){ &mnoc_ahb_clk.clkr.hw },
 			.num_parents = 1,
 			.ops = &clk_branch2_ops,
@@ -2623,18 +2610,7 @@ static struct gdsc camss_cpp_gdsc = {
 	.pwrsts = PWRSTS_OFF_ON,
 };
 
-/* This GDSC seems to hang the whole multimedia subsystem.
-static struct gdsc bimc_smmu_gdsc = {
-	.gdscr = 0xe020,
-	.gds_hw_ctrl = 0xe024,
-	.pd = {
-		.name = "bimc_smmu",
-	},
-	.pwrsts = PWRSTS_OFF_ON,
-	.parent = &bimc_smmu_gdsc.pd,
-	.flags = HW_CTRL,
-};
-*/
+ 
 
 static struct clk_regmap *mmcc_660_clocks[] = {
 	[AHB_CLK_SRC] = &ahb_clk_src.clkr,
@@ -2815,7 +2791,7 @@ MODULE_DEVICE_TABLE(of, mmcc_660_match_table);
 
 static void sdm630_clock_override(void)
 {
-	/* SDM630 has only one DSI */
+	 
 	mmcc_660_desc.clks[BYTE1_CLK_SRC] = NULL;
 	mmcc_660_desc.clks[MDSS_BYTE1_CLK] = NULL;
 	mmcc_660_desc.clks[MDSS_BYTE1_INTF_DIV_CLK] = NULL;

@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2007 Cisco Systems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/ib_mad.h>
 #include <rdma/ib_smi.h>
@@ -58,12 +28,12 @@ enum {
 #define MLX4_TUN_IS_RECV(a)  (((a) >>  MLX4_TUN_SEND_WRID_SHIFT) & 0x1)
 #define MLX4_TUN_WRID_QPN(a) (((a) >> MLX4_TUN_QPN_SHIFT) & 0x3)
 
- /* Port mgmt change event handling */
+  
 
 #define GET_BLK_PTR_FROM_EQE(eqe) be32_to_cpu(eqe->event.port_mgmt_change.params.tbl_change_info.block_ptr)
 #define GET_MASK_FROM_EQE(eqe) be32_to_cpu(eqe->event.port_mgmt_change.params.tbl_change_info.tbl_entries_mask)
 #define NUM_IDX_IN_PKEY_TBL_BLK 32
-#define GUID_TBL_ENTRY_SIZE 8	   /* size in bytes */
+#define GUID_TBL_ENTRY_SIZE 8	    
 #define GUID_TBL_BLK_NUM_ENTRIES 8
 #define GUID_TBL_BLK_SIZE (GUID_TBL_ENTRY_SIZE * GUID_TBL_BLK_NUM_ENTRIES)
 
@@ -129,10 +99,7 @@ int mlx4_MAD_IFC(struct mlx4_ib_dev *dev, int mad_ifc_flags,
 
 	memcpy(inbox, in_mad, 256);
 
-	/*
-	 * Key check traps can't be generated unless we have in_wc to
-	 * tell us where to send the trap.
-	 */
+	 
 	if ((mad_ifc_flags & MLX4_MAD_IFC_IGNORE_MKEY) || !in_wc)
 		op_modifier |= 0x1;
 	if ((mad_ifc_flags & MLX4_MAD_IFC_IGNORE_BKEY) || !in_wc)
@@ -213,10 +180,7 @@ static void update_sm_ah(struct mlx4_ib_dev *dev, u32 port_num, u16 lid, u8 sl)
 	spin_unlock_irqrestore(&dev->sm_lock, flags);
 }
 
-/*
- * Snoop SM MADs for port info, GUID info, and  P_Key table sets, so we can
- * synthesize LID change, Client-Rereg, GID change, and P_Key change events.
- */
+ 
 static void smp_snoop(struct ib_device *ibdev, u32 port_num,
 		      const struct ib_mad *mad, u16 prev_lid)
 {
@@ -258,9 +222,7 @@ static void smp_snoop(struct ib_device *ibdev, u32 port_num,
 				break;
 			}
 
-			/* at this point, we are running in the master.
-			 * Slaves do not receive SMPs.
-			 */
+			 
 			bn  = be32_to_cpu(((struct ib_smp *)mad)->attr_mod) & 0xFFFF;
 			base = (__be16 *) &(((struct ib_smp *)mad)->data[0]);
 			pkey_change_bitmap = 0;
@@ -290,11 +252,11 @@ static void smp_snoop(struct ib_device *ibdev, u32 port_num,
 		case IB_SMP_ATTR_GUID_INFO:
 			if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_PORT_MNG_CHG_EV)
 				return;
-			/* paravirtualized master's guid is guid 0 -- does not change */
+			 
 			if (!mlx4_is_master(dev->dev))
 				mlx4_ib_dispatch_event(dev, port_num,
 						       IB_EVENT_GID_CHANGE);
-			/*if master, notify relevant slaves*/
+			 
 			if (mlx4_is_master(dev->dev) &&
 			    !dev->sriov.is_going_down) {
 				bn = be32_to_cpu(((struct ib_smp *)mad)->attr_mod);
@@ -306,9 +268,7 @@ static void smp_snoop(struct ib_device *ibdev, u32 port_num,
 			break;
 
 		case IB_SMP_ATTR_SL_TO_VL_TABLE:
-			/* cache sl to vl mapping changes for use in
-			 * filling QP1 LRH VL field when sending packets
-			 */
+			 
 			if (dev->dev->caps.flags & MLX4_DEV_CAP_FLAG_PORT_MNG_CHG_EV &&
 			    dev->dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_SL_TO_VL_CHANGE_EVENT)
 				return;
@@ -395,12 +355,7 @@ static void forward_trap(struct mlx4_ib_dev *dev, u32 port_num,
 					      IB_MGMT_BASE_VERSION);
 		if (IS_ERR(send_buf))
 			return;
-		/*
-		 * We rely here on the fact that MLX QPs don't use the
-		 * address handle after the send is posted (this is
-		 * wrong following the IB spec strictly, but we know
-		 * it's OK for our devices).
-		 */
+		 
 		spin_lock_irqsave(&dev->sm_lock, flags);
 		memcpy(send_buf->mad, mad, sizeof *mad);
 		if ((send_buf->ah = dev->sm_ah[port_num - 1]))
@@ -419,7 +374,7 @@ static int mlx4_ib_demux_sa_handler(struct ib_device *ibdev, int port, int slave
 {
 	int ret = 0;
 
-	/* dispatch to different sa handlers */
+	 
 	switch (be16_to_cpu(sa_mad->mad_hdr.attr_id)) {
 	case IB_SA_ATTR_MC_MEMBER_REC:
 		ret = mlx4_ib_mcg_demux_handler(ibdev, port, slave, sa_mad);
@@ -469,7 +424,7 @@ static int find_slave_port_pkey_ix(struct mlx4_ib_dev *dev, int slave,
 				*ix = (u16) pkey_ix;
 				return 0;
 			} else {
-				/* take first partial pkey index found */
+				 
 				if (partial_ix == 0xFF)
 					partial_ix = pkey_ix;
 			}
@@ -535,7 +490,7 @@ int mlx4_ib_send_to_slave(struct mlx4_ib_dev *dev, int slave, u32 port,
 
 	tun_ctx = dev->sriov.demux[port-1].tun[slave];
 
-	/* check if proxy qp created */
+	 
 	if (!tun_ctx || tun_ctx->state != DEMUX_PV_STATE_ACTIVE)
 		return -EAGAIN;
 
@@ -544,7 +499,7 @@ int mlx4_ib_send_to_slave(struct mlx4_ib_dev *dev, int slave, u32 port,
 	else
 		tun_qp = &tun_ctx->qp[1];
 
-	/* compute P_Key index to put in tunnel header for slave */
+	 
 	if (dest_qpt) {
 		u16 pkey_ix;
 		ret = ib_get_cached_pkey(&dev->ib_dev, port, wc->pkey_index, &cached_pkey);
@@ -568,11 +523,10 @@ int mlx4_ib_send_to_slave(struct mlx4_ib_dev *dev, int slave, u32 port,
 
 	dqpn = dev->dev->phys_caps.base_proxy_sqpn + 8 * slave + port + (dest_qpt * 2) - 1;
 
-	/* get tunnel tx data buf for slave */
+	 
 	src_qp = tun_qp->qp;
 
-	/* create ah. Just need an empty one with the port num for the post send.
-	 * The driver will set the force loopback bit in post_send */
+	 
 	memset(&attr, 0, sizeof attr);
 	attr.type = rdma_ah_find_type(&dev->ib_dev, port);
 
@@ -589,7 +543,7 @@ int mlx4_ib_send_to_slave(struct mlx4_ib_dev *dev, int slave, u32 port,
 	if (IS_ERR(ah))
 		return -ENOMEM;
 
-	/* allocate tunnel tx buf after pass failure returns */
+	 
 	spin_lock(&tun_qp->tx_lock);
 	if (tun_qp->tx_ix_head - tun_qp->tx_ix_tail >=
 	    (MLX4_NUM_TUNNEL_BUFS - 1))
@@ -609,12 +563,12 @@ int mlx4_ib_send_to_slave(struct mlx4_ib_dev *dev, int slave, u32 port,
 				   sizeof (struct mlx4_rcv_tunnel_mad),
 				   DMA_TO_DEVICE);
 
-	/* copy over to tunnel buffer */
+	 
 	if (grh)
 		memcpy(&tun_mad->grh, grh, sizeof *grh);
 	memcpy(&tun_mad->mad, mad, sizeof *mad);
 
-	/* adjust tunnel data */
+	 
 	tun_mad->hdr.pkey_index = cpu_to_be16(tun_pkey_ix);
 	tun_mad->hdr.flags_src_qp = cpu_to_be32(wc->src_qp & 0xFFFFFF);
 	tun_mad->hdr.g_ml_path = (grh && (wc->wc_flags & IB_WC_GRH)) ? 0x80 : 0;
@@ -623,16 +577,12 @@ int mlx4_ib_send_to_slave(struct mlx4_ib_dev *dev, int slave, u32 port,
 		u16 vlan = 0;
 		if (mlx4_get_slave_default_vlan(dev->dev, port, slave, &vlan,
 						NULL)) {
-			/* VST mode */
+			 
 			if (vlan != wc->vlan_id)
-				/* Packet vlan is not the VST-assigned vlan.
-				 * Drop the packet.
-				 */
+				 
 				goto out;
 			 else
-				/* Remove the vlan tag before forwarding
-				 * the packet to the VF.
-				 */
+				 
 				vlan = 0xffff;
 		} else {
 			vlan = wc->vlan_id;
@@ -739,18 +689,18 @@ static int mlx4_ib_demux_mad(struct ib_device *ibdev, u32 port,
 		return 0;
 	}
 
-	/* Initially assume that this mad is for us */
+	 
 	slave = mlx4_master_func_num(dev->dev);
 
-	/* See if the slave id is encoded in a response mad */
+	 
 	if (mad->mad_hdr.method & 0x80) {
 		slave_id = (u8 *) &mad->mad_hdr.tid;
 		slave = *slave_id;
-		if (slave != 255) /*255 indicates the dom0*/
-			*slave_id = 0; /* remap tid */
+		if (slave != 255)  
+			*slave_id = 0;  
 	}
 
-	/* If a grh is present, we demux according to it */
+	 
 	if (wc->wc_flags & IB_WC_GRH) {
 		if (grh->dgid.global.interface_id ==
 			cpu_to_be64(IB_SA_WELL_KNOWN_GUID) &&
@@ -766,15 +716,15 @@ static int mlx4_ib_demux_mad(struct ib_device *ibdev, u32 port,
 			}
 		}
 	}
-	/* Class-specific handling */
+	 
 	switch (mad->mad_hdr.mgmt_class) {
 	case IB_MGMT_CLASS_SUBN_LID_ROUTED:
 	case IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE:
-		/* 255 indicates the dom0 */
+		 
 		if (slave != 255 && slave != mlx4_master_func_num(dev->dev)) {
 			if (!mlx4_vf_smi_enabled(dev->dev, slave, port))
 				return -EPERM;
-			/* for a VF. drop unsolicited MADs */
+			 
 			if (!(mad->mad_hdr.method & IB_MGMT_METHOD_RESP)) {
 				mlx4_ib_warn(ibdev, "demux QP0. rejecting unsolicited mad for slave %d class 0x%x, method 0x%x\n",
 					     slave, mad->mad_hdr.mgmt_class,
@@ -797,14 +747,14 @@ static int mlx4_ib_demux_mad(struct ib_device *ibdev, u32 port,
 			return 0;
 		break;
 	default:
-		/* Drop unsupported classes for slaves in tunnel mode */
+		 
 		if (slave != mlx4_master_func_num(dev->dev)) {
 			pr_debug("dropping unsupported ingress mad from class:%d "
 				 "for slave:%d\n", mad->mad_hdr.mgmt_class, slave);
 			return 0;
 		}
 	}
-	/*make sure that no slave==255 was not handled yet.*/
+	 
 	if (slave >= dev->dev->caps.sqp_demux) {
 		mlx4_ib_warn(ibdev, "slave id: %d is bigger than allowed:%d\n",
 			     slave, dev->dev->caps.sqp_demux);
@@ -841,9 +791,7 @@ static int ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 		    in_mad->mad_hdr.method   != IB_MGMT_METHOD_TRAP_REPRESS)
 			return IB_MAD_RESULT_SUCCESS;
 
-		/*
-		 * Don't process SMInfo queries -- the SMA can't handle them.
-		 */
+		 
 		if (in_mad->mad_hdr.attr_id == IB_SMP_ATTR_SM_INFO)
 			return IB_MAD_RESULT_SUCCESS;
 	} else if (in_mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_PERF_MGMT ||
@@ -873,17 +821,17 @@ static int ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 
 	if (!out_mad->mad_hdr.status) {
 		smp_snoop(ibdev, port_num, in_mad, prev_lid);
-		/* slaves get node desc from FW */
+		 
 		if (!mlx4_is_slave(to_mdev(ibdev)->dev))
 			node_desc_override(ibdev, out_mad);
 	}
 
-	/* set return bit in status of directed route responses */
+	 
 	if (in_mad->mad_hdr.mgmt_class == IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE)
 		out_mad->mad_hdr.status |= cpu_to_be16(1 << 15);
 
 	if (in_mad->mad_hdr.method == IB_MGMT_METHOD_TRAP_REPRESS)
-		/* no response for trap repress */
+		 
 		return IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_CONSUMED;
 
 	return IB_MAD_RESULT_SUCCESS | IB_MAD_RESULT_REPLY;
@@ -989,9 +937,7 @@ int mlx4_ib_process_mad(struct ib_device *ibdev, int mad_flags, u32 port_num,
 	struct mlx4_ib_dev *dev = to_mdev(ibdev);
 	enum rdma_link_layer link = rdma_port_get_link_layer(ibdev, port_num);
 
-	/* iboe_process_mad() which uses the HCA flow-counters to implement IB PMA
-	 * queries, should be called only by VFs and for that specific purpose
-	 */
+	 
 	if (link == IB_LINK_LAYER_INFINIBAND) {
 		if (mlx4_is_slave(dev->dev) &&
 		    (in->mad_hdr.mgmt_class == IB_MGMT_CLASS_PERF_MGMT &&
@@ -1086,7 +1032,7 @@ static void handle_lid_change_event(struct mlx4_ib_dev *dev, u32 port_num)
 
 static void handle_client_rereg_event(struct mlx4_ib_dev *dev, u32 port_num)
 {
-	/* re-configure the alias-guid and mcg's */
+	 
 	if (mlx4_is_master(dev->dev)) {
 		mlx4_ib_invalidate_all_guid_record(dev, port_num);
 
@@ -1097,18 +1043,12 @@ static void handle_client_rereg_event(struct mlx4_ib_dev *dev, u32 port_num)
 		}
 	}
 
-	/* Update the sl to vl table from inside client rereg
-	 * only if in secure-host mode (snooping is not possible)
-	 * and the sl-to-vl change event is not generated by FW.
-	 */
+	 
 	if (!mlx4_is_slave(dev->dev) &&
 	    dev->dev->flags & MLX4_FLAG_SECURE_HOST &&
 	    !(dev->dev->caps.flags2 & MLX4_DEV_CAP_FLAG2_SL_TO_VL_CHANGE_EVENT)) {
 		if (mlx4_is_master(dev->dev))
-			/* already in work queue from mlx4_ib_event queueing
-			 * mlx4_handle_port_mgmt_change_event, which calls
-			 * this procedure. Therefore, call sl2vl_update directly.
-			 */
+			 
 			mlx4_ib_sl2vl_update(dev, port_num);
 		else
 			mlx4_sched_ib_sl2vl_update_work(dev, port_num);
@@ -1188,19 +1128,18 @@ void handle_port_mgmt_change_event(struct work_struct *work)
 	case MLX4_DEV_PMC_SUBTYPE_PORT_INFO:
 		changed_attr = be32_to_cpu(eqe->event.port_mgmt_change.params.port_info.changed_attr);
 
-		/* Update the SM ah - This should be done before handling
-		   the other changed attributes so that MADs can be sent to the SM */
+		 
 		if (changed_attr & MSTR_SM_CHANGE_MASK) {
 			u16 lid = be16_to_cpu(eqe->event.port_mgmt_change.params.port_info.mstr_sm_lid);
 			u8 sl = eqe->event.port_mgmt_change.params.port_info.mstr_sm_sl & 0xf;
 			update_sm_ah(dev, port, lid, sl);
 		}
 
-		/* Check if it is a lid change event */
+		 
 		if (changed_attr & MLX4_EQ_PORT_INFO_LID_CHANGE_MASK)
 			handle_lid_change_event(dev, port);
 
-		/* Generate GUID changed event */
+		 
 		if (changed_attr & MLX4_EQ_PORT_INFO_GID_PFX_CHANGE_MASK) {
 			if (mlx4_is_master(dev->dev)) {
 				union ib_gid gid;
@@ -1224,7 +1163,7 @@ void handle_port_mgmt_change_event(struct work_struct *work)
 				}
 			}
 			mlx4_ib_dispatch_event(dev, port, IB_EVENT_GID_CHANGE);
-			/*if master, notify all slaves*/
+			 
 			if (mlx4_is_master(dev->dev))
 				mlx4_gen_slaves_port_mgt_ev(dev->dev, port,
 							    MLX4_EQ_PORT_INFO_GID_PFX_CHANGE_MASK);
@@ -1240,10 +1179,10 @@ void handle_port_mgmt_change_event(struct work_struct *work)
 			propagate_pkey_ev(dev, port, eqe);
 		break;
 	case MLX4_DEV_PMC_SUBTYPE_GUID_INFO:
-		/* paravirtualized master's guid is guid 0 -- does not change */
+		 
 		if (!mlx4_is_master(dev->dev))
 			mlx4_ib_dispatch_event(dev, port, IB_EVENT_GID_CHANGE);
-		/*if master, notify relevant slaves*/
+		 
 		else if (!dev->sriov.is_going_down) {
 			tbl_block = GET_BLK_PTR_FROM_EQE(eqe);
 			change_bitmap = GET_MASK_FROM_EQE(eqe);
@@ -1252,9 +1191,7 @@ void handle_port_mgmt_change_event(struct work_struct *work)
 		break;
 
 	case MLX4_DEV_PMC_SUBTYPE_SL_TO_VL_MAP:
-		/* cache sl to vl mapping changes for use in
-		 * filling QP1 LRH VL field when sending packets
-		 */
+		 
 		if (!mlx4_is_slave(dev->dev)) {
 			union sl2vl_tbl_to_u64 sl2vl64;
 			int jj;
@@ -1342,7 +1279,7 @@ static int mlx4_ib_multiplex_sa_handler(struct ib_device *ibdev, int port,
 {
 	int ret = 0;
 
-	/* dispatch to different sa handlers */
+	 
 	switch (be16_to_cpu(sa_mad->mad_hdr.attr_id)) {
 	case IB_SA_ATTR_MC_MEMBER_REC:
 		ret = mlx4_ib_mcg_multiplex_handler(ibdev, port, slave, sa_mad);
@@ -1373,7 +1310,7 @@ int mlx4_ib_send_to_wire(struct mlx4_ib_dev *dev, int slave, u32 port,
 
 	sqp_ctx = dev->sriov.sqps[port-1];
 
-	/* check if proxy qp created */
+	 
 	if (!sqp_ctx || sqp_ctx->state != DEMUX_PV_STATE_ACTIVE)
 		return -EAGAIN;
 
@@ -1396,7 +1333,7 @@ int mlx4_ib_send_to_wire(struct mlx4_ib_dev *dev, int slave, u32 port,
 	ah->device = sqp_ctx->pd->device;
 	ah->pd = sqp_ctx->pd;
 
-	/* create ah */
+	 
 	ret = mlx4_ib_create_ah_slave(ah, attr,
 				      rdma_ah_retrieve_grh(attr)->sgid_index,
 				      s_mac, vlan_id);
@@ -1490,7 +1427,7 @@ static void mlx4_ib_multiplex_mad(struct mlx4_ib_demux_pv_ctx *ctx, struct ib_wc
 	u8 *dmac;
 	int sts;
 
-	/* Get slave that sent this packet */
+	 
 	if (wc->src_qp < dev->dev->phys_caps.base_proxy_sqpn ||
 	    wc->src_qp >= dev->dev->phys_caps.base_proxy_sqpn + 8 * MLX4_MFUNC_MAX ||
 	    (wc->src_qp & 0x1) != ctx->port - 1 ||
@@ -1505,7 +1442,7 @@ static void mlx4_ib_multiplex_mad(struct mlx4_ib_demux_pv_ctx *ctx, struct ib_wc
 		return;
 	}
 
-	/* Map transaction ID */
+	 
 	ib_dma_sync_single_for_cpu(ctx->ib_dev, tun_qp->ring[wr_ix].map,
 				   sizeof (struct mlx4_tunnel_mad),
 				   DMA_FROM_DEVICE);
@@ -1527,10 +1464,10 @@ static void mlx4_ib_multiplex_mad(struct mlx4_ib_demux_pv_ctx *ctx, struct ib_wc
 			*slave_id = slave;
 		break;
 	default:
-		/* nothing */;
+		 ;
 	}
 
-	/* Class-specific handling */
+	 
 	switch (tunnel->mad.mad_hdr.mgmt_class) {
 	case IB_MGMT_CLASS_SUBN_LID_ROUTED:
 	case IB_MGMT_CLASS_SUBN_DIRECTED_ROUTE:
@@ -1554,7 +1491,7 @@ static void mlx4_ib_multiplex_mad(struct mlx4_ib_demux_pv_ctx *ctx, struct ib_wc
 			return;
 		break;
 	default:
-		/* Drop unsupported classes for slaves in tunnel mode */
+		 
 		if (slave != mlx4_master_func_num(dev->dev)) {
 			mlx4_ib_warn(ctx->ib_dev, "dropping unsupported egress mad from class:%d "
 				     "for slave:%d\n", tunnel->mad.mad_hdr.mgmt_class, slave);
@@ -1562,8 +1499,7 @@ static void mlx4_ib_multiplex_mad(struct mlx4_ib_demux_pv_ctx *ctx, struct ib_wc
 		}
 	}
 
-	/* We are using standard ib_core services to send the mad, so generate a
-	 * stadard address handle by decoding the tunnelled mlx4_ah fields */
+	 
 	memcpy(&ah.av, &tunnel->hdr.av, sizeof (struct mlx4_av));
 	ah.ibah.device = ctx->ib_dev;
 
@@ -1581,7 +1517,7 @@ static void mlx4_ib_multiplex_mad(struct mlx4_ib_demux_pv_ctx *ctx, struct ib_wc
 	if (dmac)
 		memcpy(dmac, tunnel->hdr.mac, ETH_ALEN);
 	vlan_id = be16_to_cpu(tunnel->hdr.vlan);
-	/* if slave have default vlan use it */
+	 
 	if (mlx4_get_slave_default_vlan(dev->dev, ctx->port, slave,
 					&vlan_id, &qos))
 		rdma_ah_set_sl(&ah_attr, qos);
@@ -1789,7 +1725,7 @@ static void pv_qp_event_handler(struct ib_event *event, void *qp_context)
 {
 	struct mlx4_ib_demux_pv_ctx *sqp = qp_context;
 
-	/* It's worse than that! He's dead, Jim! */
+	 
 	pr_err("Fatal error (%d) on a MAD QP on port %d\n",
 	       event->event, sqp->port);
 }
@@ -1892,9 +1828,7 @@ err_qp:
 	return ret;
 }
 
-/*
- * IB MAD completion callback for real SQPs
- */
+ 
 static void mlx4_ib_sqp_comp_worker(struct work_struct *work)
 {
 	struct mlx4_ib_demux_pv_ctx *ctx;
@@ -1988,7 +1922,7 @@ static int create_pv_resources(struct ib_device *ibdev, int slave, int port,
 		return -EEXIST;
 
 	ctx->state = DEMUX_PV_STATE_STARTING;
-	/* have QP0 only if link layer is IB */
+	 
 	if (rdma_port_get_link_layer(ibdev, ctx->port) ==
 	    IB_LINK_LAYER_INFINIBAND)
 		ctx->has_smi = 1;
@@ -2122,21 +2056,21 @@ static int mlx4_ib_tunnels_update(struct mlx4_ib_dev *dev, int slave,
 
 	if (!do_init) {
 		clean_vf_mcast(&dev->sriov.demux[port - 1], slave);
-		/* for master, destroy real sqp resources */
+		 
 		if (slave == mlx4_master_func_num(dev->dev))
 			destroy_pv_resources(dev, slave, port,
 					     dev->sriov.sqps[port - 1], 1);
-		/* destroy the tunnel qp resources */
+		 
 		destroy_pv_resources(dev, slave, port,
 				     dev->sriov.demux[port - 1].tun[slave], 1);
 		return 0;
 	}
 
-	/* create the tunnel qp resources */
+	 
 	ret = create_pv_resources(&dev->ib_dev, slave, port, 1,
 				  dev->sriov.demux[port - 1].tun[slave]);
 
-	/* for master, create the real sqp resources */
+	 
 	if (!ret && slave == mlx4_master_func_num(dev->dev))
 		ret = create_pv_resources(&dev->ib_dev, slave, port, 0,
 					  dev->sriov.sqps[port - 1]);
@@ -2290,7 +2224,7 @@ static void mlx4_ib_master_tunnels(struct mlx4_ib_dev *dev, int do_init)
 
 	if (!mlx4_is_master(dev->dev))
 		return;
-	/* initialize or tear down tunnel QPs for the master */
+	 
 	for (i = 0; i < dev->dev->caps.num_ports; i++)
 		mlx4_ib_tunnels_update(dev, mlx4_master_func_num(dev->dev), i + 1, do_init);
 	return;

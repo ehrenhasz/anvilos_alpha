@@ -1,52 +1,13 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "hif.h"
 #include "ce.h"
 #include "debug.h"
 
-/*
- * Support for Copy Engine hardware, which is mainly used for
- * communication between Host and Target over a PCIe interconnect.
- */
+ 
 
-/*
- * A single CopyEngine (CE) comprises two "rings":
- *   a source ring
- *   a destination ring
- *
- * Each ring consists of a number of descriptors which specify
- * an address, length, and meta-data.
- *
- * Typically, one side of the PCIe/AHB/SNOC interconnect (Host or Target)
- * controls one ring and the other side controls the other ring.
- * The source side chooses when to initiate a transfer and it
- * chooses what to send (buffer address, length). The destination
- * side keeps a supply of "anonymous receive buffers" available and
- * it handles incoming data as it arrives (when the destination
- * receives an interrupt).
- *
- * The sender may send a simple buffer (address/length) or it may
- * send a small list of buffers.  When a small list is sent, hardware
- * "gathers" these and they end up in a single destination buffer
- * with a single interrupt.
- *
- * There are several "contexts" managed by this layer -- more, it
- * may seem -- than should be needed. These are provided mainly for
- * maximum flexibility and especially to facilitate a simpler HIF
- * implementation. There are per-CopyEngine recv, send, and watermark
- * contexts. These are supplied by the caller when a recv, send,
- * or watermark handler is established and they are echoed back to
- * the caller when the respective callbacks are invoked. There is
- * also a per-transfer context supplied by the caller when a buffer
- * (or sendlist) is sent and when a buffer is enqueued for recv.
- * These per-transfer contexts are echoed back to the caller when
- * the buffer is sent/received.
- */
+ 
 
 static inline u32 shadow_sr_wr_ind_addr(struct ath10k *ar,
 					struct ath10k_ce_pipe *ce_state)
@@ -414,10 +375,7 @@ static inline void ath10k_ce_engine_int_status_clear(struct ath10k *ar,
 	ath10k_ce_write32(ar, ce_ctrl_addr + wm_regs->addr, mask);
 }
 
-/*
- * Guts of ath10k_ce_send.
- * The caller takes responsibility for any needed locking.
- */
+ 
 static int _ath10k_ce_send_nolock(struct ath10k_ce_pipe *ce_state,
 				  void *per_transfer_context,
 				  dma_addr_t buffer,
@@ -463,10 +421,10 @@ static int _ath10k_ce_send_nolock(struct ath10k_ce_pipe *ce_state,
 
 	src_ring->per_transfer_context[write_index] = per_transfer_context;
 
-	/* Update Source Ring Write Index */
+	 
 	write_index = CE_RING_IDX_INCR(nentries_mask, write_index);
 
-	/* WORKAROUND */
+	 
 	if (!(flags & CE_SEND_FLAG_GATHER))
 		ath10k_ce_src_ring_write_index_set(ar, ctrl_addr, write_index);
 
@@ -539,7 +497,7 @@ static int _ath10k_ce_send_nolock_64(struct ath10k_ce_pipe *ce_state,
 
 	src_ring->per_transfer_context[write_index] = per_transfer_context;
 
-	/* Update Source Ring Write Index */
+	 
 	write_index = CE_RING_IDX_INCR(nentries_mask, write_index);
 
 	if (!(flags & CE_SEND_FLAG_GATHER)) {
@@ -577,11 +535,7 @@ void __ath10k_ce_send_revert(struct ath10k_ce_pipe *pipe)
 
 	lockdep_assert_held(&ce->ce_lock);
 
-	/*
-	 * This function must be called only if there is an incomplete
-	 * scatter-gather transfer (before index register is updated)
-	 * that needs to be cleaned up.
-	 */
+	 
 	if (WARN_ON_ONCE(src_ring->write_index == src_ring->sw_index))
 		return;
 
@@ -719,9 +673,7 @@ void ath10k_ce_rx_update_write_idx(struct ath10k_ce_pipe *pipe, u32 nentries)
 	u32 ctrl_addr = pipe->ctrl_addr;
 	u32 cur_write_idx = ath10k_ce_dest_ring_write_index_get(ar, ctrl_addr);
 
-	/* Prevent CE ring stuck issue that will occur when ring is full.
-	 * Make sure that write index is 1 less than read index.
-	 */
+	 
 	if (((cur_write_idx + nentries) & nentries_mask) == dest_ring->sw_index)
 		nentries -= 1;
 
@@ -746,10 +698,7 @@ int ath10k_ce_rx_post_buf(struct ath10k_ce_pipe *pipe, void *ctx,
 }
 EXPORT_SYMBOL(ath10k_ce_rx_post_buf);
 
-/*
- * Guts of ath10k_ce_completed_recv_next.
- * The caller takes responsibility for any necessary locking.
- */
+ 
 static int
 	 _ath10k_ce_completed_recv_next_nolock(struct ath10k_ce_pipe *ce_state,
 					       void **per_transfer_contextp,
@@ -764,36 +713,29 @@ static int
 	struct ce_desc sdesc;
 	u16 nbytes;
 
-	/* Copy in one go for performance reasons */
+	 
 	sdesc = *desc;
 
 	nbytes = __le16_to_cpu(sdesc.nbytes);
 	if (nbytes == 0) {
-		/*
-		 * This closes a relatively unusual race where the Host
-		 * sees the updated DRRI before the update to the
-		 * corresponding descriptor has completed. We treat this
-		 * as a descriptor that is not yet done.
-		 */
+		 
 		return -EIO;
 	}
 
 	desc->nbytes = 0;
 
-	/* Return data from completed destination descriptor */
+	 
 	*nbytesp = nbytes;
 
 	if (per_transfer_contextp)
 		*per_transfer_contextp =
 			dest_ring->per_transfer_context[sw_index];
 
-	/* Copy engine 5 (HTT Rx) will reuse the same transfer context.
-	 * So update transfer context all CEs except CE5.
-	 */
+	 
 	if (ce_state->id != 5)
 		dest_ring->per_transfer_context[sw_index] = NULL;
 
-	/* Update sw_index */
+	 
 	sw_index = CE_RING_IDX_INCR(nentries_mask, sw_index);
 	dest_ring->sw_index = sw_index;
 
@@ -814,35 +756,29 @@ _ath10k_ce_completed_recv_next_nolock_64(struct ath10k_ce_pipe *ce_state,
 	struct ce_desc_64 sdesc;
 	u16 nbytes;
 
-	/* Copy in one go for performance reasons */
+	 
 	sdesc = *desc;
 
 	nbytes = __le16_to_cpu(sdesc.nbytes);
 	if (nbytes == 0) {
-		/* This closes a relatively unusual race where the Host
-		 * sees the updated DRRI before the update to the
-		 * corresponding descriptor has completed. We treat this
-		 * as a descriptor that is not yet done.
-		 */
+		 
 		return -EIO;
 	}
 
 	desc->nbytes = 0;
 
-	/* Return data from completed destination descriptor */
+	 
 	*nbytesp = nbytes;
 
 	if (per_transfer_contextp)
 		*per_transfer_contextp =
 			dest_ring->per_transfer_context[sw_index];
 
-	/* Copy engine 5 (HTT Rx) will reuse the same transfer context.
-	 * So update transfer context all CEs except CE5.
-	 */
+	 
 	if (ce_state->id != 5)
 		dest_ring->per_transfer_context[sw_index] = NULL;
 
-	/* Update sw_index */
+	 
 	sw_index = CE_RING_IDX_INCR(nentries_mask, sw_index);
 	dest_ring->sw_index = sw_index;
 
@@ -907,18 +843,18 @@ static int _ath10k_ce_revoke_recv_next(struct ath10k_ce_pipe *ce_state,
 		struct ce_desc *base = dest_ring->base_addr_owner_space;
 		struct ce_desc *desc = CE_DEST_RING_TO_DESC(base, sw_index);
 
-		/* Return data from completed destination descriptor */
+		 
 		*bufferp = __le32_to_cpu(desc->addr);
 
 		if (per_transfer_contextp)
 			*per_transfer_contextp =
 				dest_ring->per_transfer_context[sw_index];
 
-		/* sanity */
+		 
 		dest_ring->per_transfer_context[sw_index] = NULL;
 		desc->nbytes = 0;
 
-		/* Update sw_index */
+		 
 		sw_index = CE_RING_IDX_INCR(nentries_mask, sw_index);
 		dest_ring->sw_index = sw_index;
 		ret = 0;
@@ -961,18 +897,18 @@ static int _ath10k_ce_revoke_recv_next_64(struct ath10k_ce_pipe *ce_state,
 		struct ce_desc_64 *desc =
 			CE_DEST_RING_TO_DESC_64(base, sw_index);
 
-		/* Return data from completed destination descriptor */
+		 
 		*bufferp = __le64_to_cpu(desc->addr);
 
 		if (per_transfer_contextp)
 			*per_transfer_contextp =
 				dest_ring->per_transfer_context[sw_index];
 
-		/* sanity */
+		 
 		dest_ring->per_transfer_context[sw_index] = NULL;
 		desc->nbytes = 0;
 
-		/* Update sw_index */
+		 
 		sw_index = CE_RING_IDX_INCR(nentries_mask, sw_index);
 		dest_ring->sw_index = sw_index;
 		ret = 0;
@@ -995,10 +931,7 @@ int ath10k_ce_revoke_recv_next(struct ath10k_ce_pipe *ce_state,
 }
 EXPORT_SYMBOL(ath10k_ce_revoke_recv_next);
 
-/*
- * Guts of ath10k_ce_completed_send_next.
- * The caller takes responsibility for any necessary locking.
- */
+ 
 static int _ath10k_ce_completed_send_next_nolock(struct ath10k_ce_pipe *ce_state,
 						 void **per_transfer_contextp)
 {
@@ -1011,13 +944,7 @@ static int _ath10k_ce_completed_send_next_nolock(struct ath10k_ce_pipe *ce_state
 	struct ce_desc *desc;
 
 	if (src_ring->hw_index == sw_index) {
-		/*
-		 * The SW completion index has caught up with the cached
-		 * version of the HW completion index.
-		 * Update the cached HW completion index to see whether
-		 * the SW has really caught up to the HW, or if the cached
-		 * value of the HW index has become stale.
-		 */
+		 
 
 		read_index = ath10k_ce_src_ring_read_index_get(ar, ctrl_addr);
 		if (read_index == 0xffffffff)
@@ -1039,13 +966,13 @@ static int _ath10k_ce_completed_send_next_nolock(struct ath10k_ce_pipe *ce_state
 		*per_transfer_contextp =
 			src_ring->per_transfer_context[sw_index];
 
-	/* sanity */
+	 
 	src_ring->per_transfer_context[sw_index] = NULL;
 	desc = CE_SRC_RING_TO_DESC(src_ring->base_addr_owner_space,
 				   sw_index);
 	desc->nbytes = 0;
 
-	/* Update sw_index */
+	 
 	sw_index = CE_RING_IDX_INCR(nentries_mask, sw_index);
 	src_ring->sw_index = sw_index;
 
@@ -1064,13 +991,7 @@ static int _ath10k_ce_completed_send_next_nolock_64(struct ath10k_ce_pipe *ce_st
 	struct ce_desc_64 *desc;
 
 	if (src_ring->hw_index == sw_index) {
-		/*
-		 * The SW completion index has caught up with the cached
-		 * version of the HW completion index.
-		 * Update the cached HW completion index to see whether
-		 * the SW has really caught up to the HW, or if the cached
-		 * value of the HW index has become stale.
-		 */
+		 
 
 		read_index = ath10k_ce_src_ring_read_index_get(ar, ctrl_addr);
 		if (read_index == 0xffffffff)
@@ -1092,13 +1013,13 @@ static int _ath10k_ce_completed_send_next_nolock_64(struct ath10k_ce_pipe *ce_st
 		*per_transfer_contextp =
 			src_ring->per_transfer_context[sw_index];
 
-	/* sanity */
+	 
 	src_ring->per_transfer_context[sw_index] = NULL;
 	desc = CE_SRC_RING_TO_DESC_64(src_ring->base_addr_owner_space,
 				      sw_index);
 	desc->nbytes = 0;
 
-	/* Update sw_index */
+	 
 	sw_index = CE_RING_IDX_INCR(nentries_mask, sw_index);
 	src_ring->sw_index = sw_index;
 
@@ -1123,7 +1044,7 @@ static void ath10k_ce_extract_desc_data(struct ath10k *ar,
 		struct ce_desc *base = src_ring->base_addr_owner_space;
 		struct ce_desc *desc = CE_SRC_RING_TO_DESC(base, sw_index);
 
-		/* Return data from completed source descriptor */
+		 
 		*bufferp = __le32_to_cpu(desc->addr);
 		*nbytesp = __le16_to_cpu(desc->nbytes);
 		*transfer_idp = MS(__le16_to_cpu(desc->flags),
@@ -1141,14 +1062,14 @@ static void ath10k_ce_extract_desc_data_64(struct ath10k *ar,
 		struct ce_desc_64 *desc =
 			CE_SRC_RING_TO_DESC_64(base, sw_index);
 
-		/* Return data from completed source descriptor */
+		 
 		*bufferp = __le64_to_cpu(desc->addr);
 		*nbytesp = __le16_to_cpu(desc->nbytes);
 		*transfer_idp = MS(__le16_to_cpu(desc->flags),
 				   CE_DESC_FLAGS_META_DATA);
 }
 
-/* NB: Modeled after ath10k_ce_completed_send_next */
+ 
 int ath10k_ce_cancel_send_next(struct ath10k_ce_pipe *ce_state,
 			       void **per_transfer_contextp,
 			       dma_addr_t *bufferp,
@@ -1186,10 +1107,10 @@ int ath10k_ce_cancel_send_next(struct ath10k_ce_pipe *ce_state,
 			*per_transfer_contextp =
 				src_ring->per_transfer_context[sw_index];
 
-		/* sanity */
+		 
 		src_ring->per_transfer_context[sw_index] = NULL;
 
-		/* Update sw_index */
+		 
 		sw_index = CE_RING_IDX_INCR(nentries_mask, sw_index);
 		src_ring->sw_index = sw_index;
 		ret = 0;
@@ -1219,12 +1140,7 @@ int ath10k_ce_completed_send_next(struct ath10k_ce_pipe *ce_state,
 }
 EXPORT_SYMBOL(ath10k_ce_completed_send_next);
 
-/*
- * Guts of interrupt handler for per-engine interrupts on a particular CE.
- *
- * Invokes registered callbacks for recv_complete,
- * send_complete, and watermarks.
- */
+ 
 void ath10k_ce_per_engine_service(struct ath10k *ar, unsigned int ce_id)
 {
 	struct ath10k_ce *ce = ath10k_ce_priv(ar);
@@ -1232,16 +1148,7 @@ void ath10k_ce_per_engine_service(struct ath10k *ar, unsigned int ce_id)
 	struct ath10k_hw_ce_host_wm_regs *wm_regs = ar->hw_ce_regs->wm_regs;
 	u32 ctrl_addr = ce_state->ctrl_addr;
 
-	/*
-	 * Clear before handling
-	 *
-	 * Misc CE interrupts are not being handled, but still need
-	 * to be cleared.
-	 *
-	 * NOTE: When the last copy engine interrupt is cleared the
-	 * hardware will go to sleep.  Once this happens any access to
-	 * the CE registers can cause a hardware fault.
-	 */
+	 
 	ath10k_ce_engine_int_status_clear(ar, ctrl_addr,
 					  wm_regs->cc_mask | wm_regs->wm_mask);
 
@@ -1253,11 +1160,7 @@ void ath10k_ce_per_engine_service(struct ath10k *ar, unsigned int ce_id)
 }
 EXPORT_SYMBOL(ath10k_ce_per_engine_service);
 
-/*
- * Handler for per-engine interrupts on ALL active CEs.
- * This is used in cases where the system is sharing a
- * single interrupt for all CEs
- */
+ 
 
 void ath10k_ce_per_engine_service_any(struct ath10k *ar)
 {
@@ -1270,7 +1173,7 @@ void ath10k_ce_per_engine_service_any(struct ath10k *ar)
 		if (intr_summary & (1 << ce_id))
 			intr_summary &= ~(1 << ce_id);
 		else
-			/* no intr pending on this CE */
+			 
 			continue;
 
 		ath10k_ce_per_engine_service(ar, ce_id);
@@ -1278,13 +1181,7 @@ void ath10k_ce_per_engine_service_any(struct ath10k *ar)
 }
 EXPORT_SYMBOL(ath10k_ce_per_engine_service_any);
 
-/*
- * Adjust interrupts for the copy complete handler.
- * If it's needed for either send or recv, then unmask
- * this interrupt; otherwise, mask it.
- *
- * Called with ce_lock held.
- */
+ 
 static void ath10k_ce_per_engine_handler_adjust(struct ath10k_ce_pipe *ce_state)
 {
 	u32 ctrl_addr = ce_state->ctrl_addr;
@@ -1344,9 +1241,7 @@ void ath10k_ce_enable_interrupts(struct ath10k *ar)
 {
 	int ce_id;
 
-	/* Enable interrupts for copy engine that
-	 * are not using polling mode.
-	 */
+	 
 	for (ce_id = 0; ce_id < CE_COUNT; ce_id++)
 		ath10k_ce_enable_interrupt(ar, ce_id);
 }
@@ -1466,10 +1361,7 @@ ath10k_ce_alloc_src_ring(struct ath10k *ar, unsigned int ce_id,
 	src_ring->nentries = nentries;
 	src_ring->nentries_mask = nentries - 1;
 
-	/*
-	 * Legacy platforms that do not support cache
-	 * coherent DMA are unsupported
-	 */
+	 
 	src_ring->base_addr_owner_space_unaligned =
 		dma_alloc_coherent(ar->dev,
 				   (nentries * sizeof(struct ce_desc) +
@@ -1524,9 +1416,7 @@ ath10k_ce_alloc_src_ring_64(struct ath10k *ar, unsigned int ce_id,
 	src_ring->nentries = nentries;
 	src_ring->nentries_mask = nentries - 1;
 
-	/* Legacy platforms that do not support cache
-	 * coherent DMA are unsupported
-	 */
+	 
 	src_ring->base_addr_owner_space_unaligned =
 		dma_alloc_coherent(ar->dev,
 				   (nentries * sizeof(struct ce_desc_64) +
@@ -1580,10 +1470,7 @@ ath10k_ce_alloc_dest_ring(struct ath10k *ar, unsigned int ce_id,
 	dest_ring->nentries = nentries;
 	dest_ring->nentries_mask = nentries - 1;
 
-	/*
-	 * Legacy platforms that do not support cache
-	 * coherent DMA are unsupported
-	 */
+	 
 	dest_ring->base_addr_owner_space_unaligned =
 		dma_alloc_coherent(ar->dev,
 				   (nentries * sizeof(struct ce_desc) +
@@ -1624,9 +1511,7 @@ ath10k_ce_alloc_dest_ring_64(struct ath10k *ar, unsigned int ce_id,
 	dest_ring->nentries = nentries;
 	dest_ring->nentries_mask = nentries - 1;
 
-	/* Legacy platforms that do not support cache
-	 * coherent DMA are unsupported
-	 */
+	 
 	dest_ring->base_addr_owner_space_unaligned =
 		dma_alloc_coherent(ar->dev,
 				   (nentries * sizeof(struct ce_desc_64) +
@@ -1639,9 +1524,7 @@ ath10k_ce_alloc_dest_ring_64(struct ath10k *ar, unsigned int ce_id,
 
 	dest_ring->base_addr_ce_space_unaligned = base_addr;
 
-	/* Correctly initialize memory to 0 to prevent garbage
-	 * data crashing system when download firmware
-	 */
+	 
 	dest_ring->base_addr_owner_space =
 			PTR_ALIGN(dest_ring->base_addr_owner_space_unaligned,
 				  CE_DESC_RING_ALIGN);
@@ -1652,13 +1535,7 @@ ath10k_ce_alloc_dest_ring_64(struct ath10k *ar, unsigned int ce_id,
 	return dest_ring;
 }
 
-/*
- * Initialize a Copy Engine based on caller-supplied attributes.
- * This may be called once to initialize both source and destination
- * rings or it may be called twice for separate source and destination
- * initialization. It may be that only one side or the other is
- * initialized by software/firmware.
- */
+ 
 int ath10k_ce_init_pipe(struct ath10k *ar, unsigned int ce_id,
 			const struct ce_attr *attr)
 {
@@ -1873,11 +1750,7 @@ int ath10k_ce_alloc_pipe(struct ath10k *ar, int ce_id,
 	int ret;
 
 	ath10k_ce_set_ops(ar, ce_state);
-	/* Make sure there's enough CE ringbuffer entries for HTT TX to avoid
-	 * additional TX locking checks.
-	 *
-	 * For the lack of a better place do the check here.
-	 */
+	 
 	BUILD_BUG_ON(2 * TARGET_NUM_MSDU_DESC >
 		     (CE_HTT_H2T_MSG_SRC_NENTRIES - 1));
 	BUILD_BUG_ON(2 * TARGET_10_4_NUM_MSDU_DESC_PFC >

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_SESSION_H
 #define __PERF_SESSION_H
 
@@ -161,4 +161,4 @@ int perf_event__process_finished_round(struct perf_tool *tool,
 				       union perf_event *event,
 				       struct ordered_events *oe);
 
-#endif /* __PERF_SESSION_H */
+#endif  

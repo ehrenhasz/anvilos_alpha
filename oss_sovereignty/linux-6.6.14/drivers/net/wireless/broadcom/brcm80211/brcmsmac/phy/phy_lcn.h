@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #ifndef _BRCM_PHY_LCN_H_
 #define _BRCM_PHY_LCN_H_
@@ -107,4 +105,4 @@ struct brcms_phy_lcnphy {
 	uint lcnphy_aci_start_time;
 	s8 lcnphy_tx_power_offset[TXP_NUM_RATES];
 };
-#endif				/* _BRCM_PHY_LCN_H_ */
+#endif				 

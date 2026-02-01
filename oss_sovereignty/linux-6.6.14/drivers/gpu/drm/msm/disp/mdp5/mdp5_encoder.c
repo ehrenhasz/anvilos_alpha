@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_probe_helper.h>
@@ -48,18 +44,18 @@ static void mdp5_vid_encoder_mode_set(struct drm_encoder *encoder,
 
 	ctrl_pol = 0;
 
-	/* DSI controller cannot handle active-low sync signals. */
+	 
 	if (mdp5_encoder->intf->type != INTF_DSI) {
 		if (mode->flags & DRM_MODE_FLAG_NHSYNC)
 			ctrl_pol |= MDP5_INTF_POLARITY_CTL_HSYNC_LOW;
 		if (mode->flags & DRM_MODE_FLAG_NVSYNC)
 			ctrl_pol |= MDP5_INTF_POLARITY_CTL_VSYNC_LOW;
 	}
-	/* probably need to get DATA_EN polarity from panel.. */
+	 
 
-	dtv_hsync_skew = 0;  /* get this from panel? */
+	dtv_hsync_skew = 0;   
 
-	/* Get color format from panel, default is 8bpc */
+	 
 	list_for_each_entry(connector, &dev->mode_config.connector_list, head) {
 		if (connector->encoder == encoder) {
 			switch (connector->display_info.bpc) {
@@ -89,11 +85,7 @@ static void mdp5_vid_encoder_mode_set(struct drm_encoder *encoder,
 	display_v_start = (mode->vtotal - mode->vsync_start) * mode->htotal + dtv_hsync_skew;
 	display_v_end = vsync_period - ((mode->vsync_start - mode->vdisplay) * mode->htotal) + dtv_hsync_skew - 1;
 
-	/*
-	 * For edp only:
-	 * DISPLAY_V_START = (VBP * HCYCLE) + HBP
-	 * DISPLAY_V_END = (VBP + VACTIVE) * HCYCLE - 1 - HFP
-	 */
+	 
 	if (mdp5_encoder->intf->type == INTF_eDP) {
 		display_v_start += mode->htotal - mode->hsync_start;
 		display_v_end -= mode->hsync_start - mode->hdisplay;
@@ -121,7 +113,7 @@ static void mdp5_vid_encoder_mode_set(struct drm_encoder *encoder,
 	mdp5_write(mdp5_kms, REG_MDP5_INTF_ACTIVE_VSTART_F0(intf), 0);
 	mdp5_write(mdp5_kms, REG_MDP5_INTF_ACTIVE_VEND_F0(intf), 0);
 	mdp5_write(mdp5_kms, REG_MDP5_INTF_PANEL_FORMAT(intf), format);
-	mdp5_write(mdp5_kms, REG_MDP5_INTF_FRAME_LINE_COUNT_EN(intf), 0x3);  /* frame+line? */
+	mdp5_write(mdp5_kms, REG_MDP5_INTF_FRAME_LINE_COUNT_EN(intf), 0x3);   
 
 	spin_unlock_irqrestore(&mdp5_encoder->intf_lock, flags);
 
@@ -149,14 +141,7 @@ static void mdp5_vid_encoder_disable(struct drm_encoder *encoder)
 	spin_unlock_irqrestore(&mdp5_encoder->intf_lock, flags);
 	mdp5_ctl_commit(ctl, pipeline, mdp_ctl_flush_mask_encoder(intf), true);
 
-	/*
-	 * Wait for a vsync so we know the ENABLE=0 latched before
-	 * the (connector) source of the vsync's gets disabled,
-	 * otherwise we end up in a funny state if we re-enable
-	 * before the disable latches, which results that some of
-	 * the settings changes for the new modeset (like new
-	 * scanout buffer) don't latch properly..
-	 */
+	 
 	mdp_irq_wait(&mdp5_kms->base, intf2vblank(mixer, intf));
 
 	mdp5_encoder->enabled = false;
@@ -213,7 +198,7 @@ static void mdp5_encoder_enable(struct drm_encoder *encoder)
 {
 	struct mdp5_encoder *mdp5_encoder = to_mdp5_encoder(encoder);
 	struct mdp5_interface *intf = mdp5_encoder->intf;
-	/* this isn't right I think */
+	 
 	struct drm_crtc_state *cstate = encoder->crtc->state;
 
 	mdp5_encoder_mode_set(encoder, &cstate->mode, &cstate->adjusted_mode);
@@ -236,14 +221,7 @@ static int mdp5_encoder_atomic_check(struct drm_encoder *encoder,
 	mdp5_cstate->ctl = ctl;
 	mdp5_cstate->pipeline.intf = intf;
 
-	/*
-	 * This is a bit awkward, but we want to flush the CTL and hit the
-	 * START bit at most once for an atomic update.  In the non-full-
-	 * modeset case, this is done from crtc->atomic_flush(), but that
-	 * is too early in the case of full modeset, in which case we
-	 * defer to encoder->enable().  But we need to *know* whether
-	 * encoder->enable() will be called to do this:
-	 */
+	 
 	if (drm_atomic_crtc_needs_modeset(crtc_state))
 		mdp5_cstate->defer_start = true;
 
@@ -290,9 +268,7 @@ int mdp5_vid_encoder_set_split_display(struct drm_encoder *encoder,
 	mdp5_kms = get_kms(encoder);
 	intf_num = mdp5_encoder->intf->num;
 
-	/* Switch slave encoder's TimingGen Sync mode,
-	 * to use the master's enable signal for the slave encoder.
-	 */
+	 
 	if (intf_num == 1)
 		data |= MDP5_SPLIT_DPL_LOWER_INTF2_TG_SYNC;
 	else if (intf_num == 2)
@@ -301,10 +277,10 @@ int mdp5_vid_encoder_set_split_display(struct drm_encoder *encoder,
 		return -EINVAL;
 
 	dev = &mdp5_kms->pdev->dev;
-	/* Make sure clocks are on when connectors calling this function. */
+	 
 	pm_runtime_get_sync(dev);
 
-	/* Dumb Panel, Sync mode */
+	 
 	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_UPPER, 0);
 	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_LOWER, data);
 	mdp5_write(mdp5_kms, REG_MDP5_SPLIT_DPL_EN, 1);
@@ -321,7 +297,7 @@ void mdp5_encoder_set_intf_mode(struct drm_encoder *encoder, bool cmd_mode)
 	struct mdp5_encoder *mdp5_encoder = to_mdp5_encoder(encoder);
 	struct mdp5_interface *intf = mdp5_encoder->intf;
 
-	/* TODO: Expand this to set writeback modes too */
+	 
 	if (cmd_mode) {
 		WARN_ON(intf->type != INTF_DSI);
 		intf->mode = MDP5_INTF_DSI_MODE_COMMAND;
@@ -333,7 +309,7 @@ void mdp5_encoder_set_intf_mode(struct drm_encoder *encoder, bool cmd_mode)
 	}
 }
 
-/* initialize encoder */
+ 
 struct drm_encoder *mdp5_encoder_init(struct drm_device *dev,
 				      struct mdp5_interface *intf,
 				      struct mdp5_ctl *ctl)

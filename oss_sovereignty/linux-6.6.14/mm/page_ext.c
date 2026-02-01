@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/mm.h>
 #include <linux/mmzone.h>
 #include <linux/memblock.h>
@@ -11,54 +11,7 @@
 #include <linux/page_table_check.h>
 #include <linux/rcupdate.h>
 
-/*
- * struct page extension
- *
- * This is the feature to manage memory for extended data per page.
- *
- * Until now, we must modify struct page itself to store extra data per page.
- * This requires rebuilding the kernel and it is really time consuming process.
- * And, sometimes, rebuild is impossible due to third party module dependency.
- * At last, enlarging struct page could cause un-wanted system behaviour change.
- *
- * This feature is intended to overcome above mentioned problems. This feature
- * allocates memory for extended data per page in certain place rather than
- * the struct page itself. This memory can be accessed by the accessor
- * functions provided by this code. During the boot process, it checks whether
- * allocation of huge chunk of memory is needed or not. If not, it avoids
- * allocating memory at all. With this advantage, we can include this feature
- * into the kernel in default and can avoid rebuild and solve related problems.
- *
- * To help these things to work well, there are two callbacks for clients. One
- * is the need callback which is mandatory if user wants to avoid useless
- * memory allocation at boot-time. The other is optional, init callback, which
- * is used to do proper initialization after memory is allocated.
- *
- * The need callback is used to decide whether extended memory allocation is
- * needed or not. Sometimes users want to deactivate some features in this
- * boot and extra memory would be unnecessary. In this case, to avoid
- * allocating huge chunk of memory, each clients represent their need of
- * extra memory through the need callback. If one of the need callbacks
- * returns true, it means that someone needs extra memory so that
- * page extension core should allocates memory for page extension. If
- * none of need callbacks return true, memory isn't needed at all in this boot
- * and page extension core can skip to allocate memory. As result,
- * none of memory is wasted.
- *
- * When need callback returns true, page_ext checks if there is a request for
- * extra memory through size in struct page_ext_operations. If it is non-zero,
- * extra space is allocated for each page_ext entry and offset is returned to
- * user through offset in struct page_ext_operations.
- *
- * The init callback is used to do proper initialization after page extension
- * is completely initialized. In sparse memory system, extra memory is
- * allocated some time later than memmap is allocated. In other words, lifetime
- * of memory for page extension isn't same with memmap for struct page.
- * Therefore, clients can't store extra data until page extension is
- * initialized, even if pages are allocated and used freely. This could
- * cause inadequate state of extra data per page, so, to prevent it, client
- * can utilize this callback to initialize the state of it correctly.
- */
+ 
 
 #ifdef CONFIG_SPARSEMEM
 #define PAGE_EXT_INVALID       (0x1)
@@ -160,12 +113,7 @@ static struct page_ext *lookup_page_ext(const struct page *page)
 
 	WARN_ON_ONCE(!rcu_read_lock_held());
 	base = NODE_DATA(page_to_nid(page))->node_page_ext;
-	/*
-	 * The sanity checks the page allocator does upon freeing a
-	 * page can reach here before the page_ext arrays are
-	 * allocated when feeding a range of pages to the allocator
-	 * for the first time during bootup or memory hotplug.
-	 */
+	 
 	if (unlikely(!base))
 		return NULL;
 	index = pfn - round_down(node_start_pfn(page_to_nid(page)),
@@ -183,11 +131,7 @@ static int __init alloc_node_page_ext(int nid)
 	if (!nr_pages)
 		return 0;
 
-	/*
-	 * Need extra space if node range is not aligned with
-	 * MAX_ORDER_NR_PAGES. When page allocator's buddy algorithm
-	 * checks buddy's status, range could be out of exact node range.
-	 */
+	 
 	if (!IS_ALIGNED(node_start_pfn(nid), MAX_ORDER_NR_PAGES) ||
 		!IS_ALIGNED(node_end_pfn(nid), MAX_ORDER_NR_PAGES))
 		nr_pages += MAX_ORDER_NR_PAGES;
@@ -225,7 +169,7 @@ fail:
 	panic("Out of memory");
 }
 
-#else /* CONFIG_SPARSEMEM */
+#else  
 static bool page_ext_invalid(struct page_ext *page_ext)
 {
 	return !page_ext || (((unsigned long)page_ext & PAGE_EXT_INVALID) == PAGE_EXT_INVALID);
@@ -238,12 +182,7 @@ static struct page_ext *lookup_page_ext(const struct page *page)
 	struct page_ext *page_ext = READ_ONCE(section->page_ext);
 
 	WARN_ON_ONCE(!rcu_read_lock_held());
-	/*
-	 * The sanity checks the page allocator does upon freeing a
-	 * page can reach here before the page_ext arrays are
-	 * allocated when feeding a range of pages to the allocator
-	 * for the first time during bootup or memory hotplug.
-	 */
+	 
 	if (page_ext_invalid(page_ext))
 		return NULL;
 	return get_entry(page_ext, pfn);
@@ -279,11 +218,7 @@ static int __meminit init_section_page_ext(unsigned long pfn, int nid)
 	table_size = page_ext_size * PAGES_PER_SECTION;
 	base = alloc_page_ext(table_size, nid);
 
-	/*
-	 * The value stored in section->page_ext is (base - pfn)
-	 * and it does not point to the memory block allocated above,
-	 * causing kmemleak false positives.
-	 */
+	 
 	kmemleak_not_leak(base);
 
 	if (!base) {
@@ -291,10 +226,7 @@ static int __meminit init_section_page_ext(unsigned long pfn, int nid)
 		return -ENOMEM;
 	}
 
-	/*
-	 * The passed "pfn" may not be aligned to SECTION.  For the calculation
-	 * we need to apply a mask.
-	 */
+	 
 	pfn &= PAGE_SECTION_MASK;
 	section->page_ext = (void *)base - page_ext_size * pfn;
 	total_usage += table_size;
@@ -327,10 +259,7 @@ static void __free_page_ext(unsigned long pfn)
 		return;
 
 	base = READ_ONCE(ms->page_ext);
-	/*
-	 * page_ext here can be valid while doing the roll back
-	 * operation in online_page_ext().
-	 */
+	 
 	if (page_ext_invalid(base))
 		base = (void *)base - PAGE_EXT_INVALID;
 	WRITE_ONCE(ms->page_ext, NULL);
@@ -362,11 +291,7 @@ static int __meminit online_page_ext(unsigned long start_pfn,
 	end = SECTION_ALIGN_UP(start_pfn + nr_pages);
 
 	if (nid == NUMA_NO_NODE) {
-		/*
-		 * In this case, "nid" already exists and contains valid memory.
-		 * "start_pfn" passed to us is a pfn which is an arg for
-		 * online__pages(), and start_pfn should exist.
-		 */
+		 
 		nid = pfn_to_nid(start_pfn);
 		VM_BUG_ON(!node_online(nid));
 	}
@@ -376,7 +301,7 @@ static int __meminit online_page_ext(unsigned long start_pfn,
 	if (!fail)
 		return 0;
 
-	/* rollback */
+	 
 	end = pfn - PAGES_PER_SECTION;
 	for (pfn = start; pfn < end; pfn += PAGES_PER_SECTION)
 		__free_page_ext(pfn);
@@ -392,15 +317,7 @@ static void __meminit offline_page_ext(unsigned long start_pfn,
 	start = SECTION_ALIGN_DOWN(start_pfn);
 	end = SECTION_ALIGN_UP(start_pfn + nr_pages);
 
-	/*
-	 * Freeing of page_ext is done in 3 steps to avoid
-	 * use-after-free of it:
-	 * 1) Traverse all the sections and mark their page_ext
-	 *    as invalid.
-	 * 2) Wait for all the existing users of page_ext who
-	 *    started before invalidation to finish.
-	 * 3) Free the page_ext.
-	 */
+	 
 	for (pfn = start; pfn < end; pfn += PAGES_PER_SECTION)
 		__invalidate_page_ext(pfn);
 
@@ -452,22 +369,13 @@ void __init page_ext_init(void)
 
 		start_pfn = node_start_pfn(nid);
 		end_pfn = node_end_pfn(nid);
-		/*
-		 * start_pfn and end_pfn may not be aligned to SECTION and the
-		 * page->flags of out of node pages are not initialized.  So we
-		 * scan [start_pfn, the biggest section's pfn < end_pfn) here.
-		 */
+		 
 		for (pfn = start_pfn; pfn < end_pfn;
 			pfn = ALIGN(pfn + 1, PAGES_PER_SECTION)) {
 
 			if (!pfn_valid(pfn))
 				continue;
-			/*
-			 * Nodes's pfns can be overlapping.
-			 * We know some arch can have a nodes layout such as
-			 * -------------pfn-------------->
-			 * N0 | N1 | N2 | N0 | N1 | N2|....
-			 */
+			 
 			if (pfn_to_nid(pfn) != nid)
 				continue;
 			if (init_section_page_ext(pfn, nid))
@@ -490,17 +398,7 @@ void __meminit pgdat_page_ext_init(struct pglist_data *pgdat)
 
 #endif
 
-/**
- * page_ext_get() - Get the extended information for a page.
- * @page: The page we're interested in.
- *
- * Ensures that the page_ext will remain valid until page_ext_put()
- * is called.
- *
- * Return: NULL if no page_ext exists for this page.
- * Context: Any context.  Caller may not sleep until they have called
- * page_ext_put().
- */
+ 
 struct page_ext *page_ext_get(struct page *page)
 {
 	struct page_ext *page_ext;
@@ -515,16 +413,7 @@ struct page_ext *page_ext_get(struct page *page)
 	return page_ext;
 }
 
-/**
- * page_ext_put() - Working with page extended information is done.
- * @page_ext: Page extended information received from page_ext_get().
- *
- * The page extended information of the page may not be valid after this
- * function is called.
- *
- * Return: None.
- * Context: Any context with corresponding page_ext_get() is called.
- */
+ 
 void page_ext_put(struct page_ext *page_ext)
 {
 	if (unlikely(!page_ext))

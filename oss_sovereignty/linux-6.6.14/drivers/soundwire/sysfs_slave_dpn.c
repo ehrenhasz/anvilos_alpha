@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2015-2020 Intel Corporation.
+
+
 
 #include <linux/device.h>
 #include <linux/mod_devicetable.h>
@@ -17,11 +17,7 @@ struct dpn_attribute {
 	const char *format_string;
 };
 
-/*
- * Since we can't use ARRAY_SIZE, hard-code number of dpN attributes.
- * This needs to be updated when adding new attributes - an error will be
- * flagged on a mismatch.
- */
+ 
 #define SDW_DPN_ATTRIBUTES 15
 
 #define sdw_dpn_attribute_alloc(field)					\
@@ -171,7 +167,7 @@ static int add_all_attributes(struct device *dev, int N, int dir)
 	int i = 0;
 	int ret;
 
-	/* allocate attributes, last one is NULL */
+	 
 	dpn_attrs = devm_kcalloc(dev, SDW_DPN_ATTRIBUTES + 1,
 				 sizeof(struct attribute *),
 				 GFP_KERNEL);
@@ -253,7 +249,7 @@ static int add_all_attributes(struct device *dev, int N, int dir)
 	if (ret < 0)
 		return ret;
 
-	/* paranoia check for editing mistakes */
+	 
 	if (i != SDW_DPN_ATTRIBUTES) {
 		dev_err(dev, "mismatch in attributes, allocated %d got %d\n",
 			SDW_DPN_ATTRIBUTES, i);

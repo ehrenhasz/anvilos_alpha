@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * Renesas USB driver
- *
- * Copyright (C) 2011 Renesas Solutions Corp.
- * Copyright (C) 2019 Renesas Electronics Corporation
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -21,43 +15,15 @@
 #include "rcar3.h"
 #include "rza.h"
 
-/*
- *		image of renesas_usbhs
- *
- * ex) gadget case
+ 
 
- * mod.c
- * mod_gadget.c
- * mod_host.c		pipe.c		fifo.c
- *
- *			+-------+	+-----------+
- *			| pipe0 |------>| fifo pio  |
- * +------------+	+-------+	+-----------+
- * | mod_gadget |=====> | pipe1 |--+
- * +------------+	+-------+  |	+-----------+
- *			| pipe2 |  |  +-| fifo dma0 |
- * +------------+	+-------+  |  |	+-----------+
- * | mod_host   |	| pipe3 |<-|--+
- * +------------+	+-------+  |	+-----------+
- *			| ....  |  +--->| fifo dma1 |
- *			| ....  |	+-----------+
- */
-
-/*
- * platform call back
- *
- * renesas usb support platform callback function.
- * Below macro call it.
- * if platform doesn't have callback, it return 0 (no error)
- */
+ 
 #define usbhs_platform_call(priv, func, args...)\
 	(!(priv) ? -ENODEV :			\
 	 !((priv)->pfunc->func) ? 0 :		\
 	 (priv)->pfunc->func(args))
 
-/*
- *		common functions
- */
+ 
 u16 usbhs_read(struct usbhs_priv *priv, u32 reg)
 {
 	return ioread16(priv->base + reg);
@@ -88,9 +54,7 @@ int usbhs_get_id_as_gadget(struct platform_device *pdev)
 	return USBHS_GADGET;
 }
 
-/*
- *		syscfg functions
- */
+ 
 static void usbhs_sys_clock_ctrl(struct usbhs_priv *priv, int enable)
 {
 	usbhs_bset(priv, SYSCFG, SCKE, enable ? SCKE : 0);
@@ -101,12 +65,7 @@ void usbhs_sys_host_ctrl(struct usbhs_priv *priv, int enable)
 	u16 mask = DCFM | DRPD | DPRPU | HSE | USBE;
 	u16 val  = DCFM | DRPD | HSE | USBE;
 
-	/*
-	 * if enable
-	 *
-	 * - select Host mode
-	 * - D+ Line/D- Line Pull-down
-	 */
+	 
 	usbhs_bset(priv, SYSCFG, mask, enable ? val : 0);
 }
 
@@ -115,20 +74,13 @@ void usbhs_sys_function_ctrl(struct usbhs_priv *priv, int enable)
 	u16 mask = DCFM | DRPD | DPRPU | HSE | USBE;
 	u16 val  = HSE | USBE;
 
-	/* CNEN bit is required for function operation */
+	 
 	if (usbhs_get_dparam(priv, has_cnen)) {
 		mask |= CNEN;
 		val  |= CNEN;
 	}
 
-	/*
-	 * if enable
-	 *
-	 * - select Function mode
-	 * - D+ Line Pull-up is disabled
-	 *      When D+ Line Pull-up is enabled,
-	 *      calling usbhs_sys_function_pullup(,1)
-	 */
+	 
 	usbhs_bset(priv, SYSCFG, mask, enable ? val : 0);
 }
 
@@ -142,17 +94,13 @@ void usbhs_sys_set_test_mode(struct usbhs_priv *priv, u16 mode)
 	usbhs_write(priv, TESTMODE, mode);
 }
 
-/*
- *		frame functions
- */
+ 
 int usbhs_frame_get_num(struct usbhs_priv *priv)
 {
 	return usbhs_read(priv, FRMNUM) & FRNM_MASK;
 }
 
-/*
- *		usb request functions
- */
+ 
 void usbhs_usbreq_get_val(struct usbhs_priv *priv, struct usb_ctrlrequest *req)
 {
 	u16 val;
@@ -176,9 +124,7 @@ void usbhs_usbreq_set_val(struct usbhs_priv *priv, struct usb_ctrlrequest *req)
 	usbhs_bset(priv, DCPCTR, SUREQ, SUREQ);
 }
 
-/*
- *		bus/vbus functions
- */
+ 
 void usbhs_bus_send_sof_enable(struct usbhs_priv *priv)
 {
 	u16 status = usbhs_read(priv, DVSTCTR) & (USBRST | UACT);
@@ -226,9 +172,7 @@ static void usbhsc_bus_init(struct usbhs_priv *priv)
 	usbhs_vbus_ctrl(priv, 0);
 }
 
-/*
- *		device configuration
- */
+ 
 int usbhs_set_device_config(struct usbhs_priv *priv, int devnum,
 			   u16 upphub, u16 hubport, u16 speed)
 {
@@ -268,9 +212,7 @@ int usbhs_set_device_config(struct usbhs_priv *priv, int devnum,
 	return 0;
 }
 
-/*
- *		interrupt functions
- */
+ 
 void usbhs_xxxsts_clear(struct usbhs_priv *priv, u16 sts_reg, u16 bit)
 {
 	u16 pipe_mask = (u16)GENMASK(usbhs_get_dparam(priv, pipe_size), 0);
@@ -278,14 +220,12 @@ void usbhs_xxxsts_clear(struct usbhs_priv *priv, u16 sts_reg, u16 bit)
 	usbhs_write(priv, sts_reg, ~(1 << bit) & pipe_mask);
 }
 
-/*
- *		local functions
- */
+ 
 static void usbhsc_set_buswait(struct usbhs_priv *priv)
 {
 	int wait = usbhs_get_dparam(priv, buswait_bwait);
 
-	/* set bus wait if platform have */
+	 
 	if (wait)
 		usbhs_bset(priv, BUSWAIT, 0x000F, wait);
 }
@@ -300,15 +240,12 @@ static int usbhsc_clk_get(struct device *dev, struct usbhs_priv *priv)
 	if (!usbhsc_is_multi_clks(priv))
 		return 0;
 
-	/* The first clock should exist */
+	 
 	priv->clks[0] = of_clk_get(dev_of_node(dev), 0);
 	if (IS_ERR(priv->clks[0]))
 		return PTR_ERR(priv->clks[0]);
 
-	/*
-	 * To backward compatibility with old DT, this driver checks the return
-	 * value if it's -ENOENT or not.
-	 */
+	 
 	priv->clks[1] = of_clk_get(dev_of_node(dev), 1);
 	if (PTR_ERR(priv->clks[1]) == -ENOENT)
 		priv->clks[1] = NULL;
@@ -359,11 +296,9 @@ static void usbhsc_clk_disable_unprepare(struct usbhs_priv *priv)
 		clk_disable_unprepare(priv->clks[i]);
 }
 
-/*
- *		platform default param
- */
+ 
 
-/* commonly used on old SH-Mobile SoCs */
+ 
 static struct renesas_usbhs_driver_pipe_config usbhsc_default_pipe[] = {
 	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_CONTROL, 64, 0x00, false),
 	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_ISOC, 1024, 0x08, false),
@@ -377,7 +312,7 @@ static struct renesas_usbhs_driver_pipe_config usbhsc_default_pipe[] = {
 	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_INT, 64, 0x07, false),
 };
 
-/* commonly used on newer SH-Mobile and R-Car SoCs */
+ 
 static struct renesas_usbhs_driver_pipe_config usbhsc_new_pipe[] = {
 	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_CONTROL, 64, 0x00, false),
 	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_ISOC, 1024, 0x08, true),
@@ -397,45 +332,41 @@ static struct renesas_usbhs_driver_pipe_config usbhsc_new_pipe[] = {
 	RENESAS_USBHS_PIPE(USB_ENDPOINT_XFER_BULK, 512, 0xd8, true),
 };
 
-/*
- *		power control
- */
+ 
 static void usbhsc_power_ctrl(struct usbhs_priv *priv, int enable)
 {
 	struct platform_device *pdev = usbhs_priv_to_pdev(priv);
 	struct device *dev = usbhs_priv_to_dev(priv);
 
 	if (enable) {
-		/* enable PM */
+		 
 		pm_runtime_get_sync(dev);
 
-		/* enable clks */
+		 
 		if (usbhsc_clk_prepare_enable(priv))
 			return;
 
-		/* enable platform power */
+		 
 		usbhs_platform_call(priv, power_ctrl, pdev, priv->base, enable);
 
-		/* USB on */
+		 
 		usbhs_sys_clock_ctrl(priv, enable);
 	} else {
-		/* USB off */
+		 
 		usbhs_sys_clock_ctrl(priv, enable);
 
-		/* disable platform power */
+		 
 		usbhs_platform_call(priv, power_ctrl, pdev, priv->base, enable);
 
-		/* disable clks */
+		 
 		usbhsc_clk_disable_unprepare(priv);
 
-		/* disable PM */
+		 
 		pm_runtime_put_sync(dev);
 	}
 }
 
-/*
- *		hotplug
- */
+ 
 static void usbhsc_hotplug(struct usbhs_priv *priv)
 {
 	struct platform_device *pdev = usbhs_priv_to_pdev(priv);
@@ -445,14 +376,10 @@ static void usbhsc_hotplug(struct usbhs_priv *priv)
 	int cable;
 	int ret;
 
-	/*
-	 * get vbus status from platform
-	 */
+	 
 	enable = usbhs_mod_info_call(priv, get_vbus, pdev);
 
-	/*
-	 * get id from platform
-	 */
+	 
 	id = usbhs_platform_call(priv, get_id, pdev);
 
 	if (enable && !mod) {
@@ -472,40 +399,38 @@ static void usbhsc_hotplug(struct usbhs_priv *priv)
 
 		dev_dbg(&pdev->dev, "%s enable\n", __func__);
 
-		/* power on */
+		 
 		if (usbhs_get_dparam(priv, runtime_pwctrl))
 			usbhsc_power_ctrl(priv, enable);
 
-		/* bus init */
+		 
 		usbhsc_set_buswait(priv);
 		usbhsc_bus_init(priv);
 
-		/* module start */
+		 
 		usbhs_mod_call(priv, start, priv);
 
 	} else if (!enable && mod) {
 		dev_dbg(&pdev->dev, "%s disable\n", __func__);
 
-		/* module stop */
+		 
 		usbhs_mod_call(priv, stop, priv);
 
-		/* bus init */
+		 
 		usbhsc_bus_init(priv);
 
-		/* power off */
+		 
 		if (usbhs_get_dparam(priv, runtime_pwctrl))
 			usbhsc_power_ctrl(priv, enable);
 
 		usbhs_mod_change(priv, -1);
 
-		/* reset phy for next connection */
+		 
 		usbhs_platform_call(priv, phy_reset, pdev);
 	}
 }
 
-/*
- *		notify hotplug
- */
+ 
 static void usbhsc_notify_hotplug(struct work_struct *work)
 {
 	struct usbhs_priv *priv = container_of(work,
@@ -519,19 +444,13 @@ int usbhsc_schedule_notify_hotplug(struct platform_device *pdev)
 	struct usbhs_priv *priv = usbhs_pdev_to_priv(pdev);
 	int delay = usbhs_get_dparam(priv, detection_delay);
 
-	/*
-	 * This functions will be called in interrupt.
-	 * To make sure safety context,
-	 * use workqueue for usbhs_notify_hotplug
-	 */
+	 
 	schedule_delayed_work(&priv->notify_hotplug_work,
 			      msecs_to_jiffies(delay));
 	return 0;
 }
 
-/*
- *		platform functions
- */
+ 
 static const struct of_device_id usbhs_of_match[] = {
 	{
 		.compatible = "renesas,usbhs-r8a774c0",
@@ -595,24 +514,24 @@ static int usbhs_probe(struct platform_device *pdev)
 	u32 tmp;
 	int irq;
 
-	/* check device node */
+	 
 	if (dev_of_node(dev))
 		info = of_device_get_match_data(dev);
 	else
 		info = renesas_usbhs_get_info(pdev);
 
-	/* check platform information */
+	 
 	if (!info) {
 		dev_err(dev, "no platform information\n");
 		return -EINVAL;
 	}
 
-	/* platform data */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
 
-	/* usb private data */
+	 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -631,9 +550,7 @@ static int usbhs_probe(struct platform_device *pdev)
 	if (IS_ERR(priv->rsts))
 		return PTR_ERR(priv->rsts);
 
-	/*
-	 * care platform info
-	 */
+	 
 
 	priv->dparam = info->driver_param;
 
@@ -643,7 +560,7 @@ static int usbhs_probe(struct platform_device *pdev)
 	}
 	priv->pfunc = &info->platform_callback;
 
-	/* set default param if platform doesn't have */
+	 
 	if (usbhs_get_dparam(priv, has_new_pipe_configs)) {
 		priv->dparam.pipe_configs = usbhsc_new_pipe;
 		priv->dparam.pipe_size = ARRAY_SIZE(usbhsc_new_pipe);
@@ -652,27 +569,25 @@ static int usbhs_probe(struct platform_device *pdev)
 		priv->dparam.pipe_size = ARRAY_SIZE(usbhsc_default_pipe);
 	}
 	if (!priv->dparam.pio_dma_border)
-		priv->dparam.pio_dma_border = 64; /* 64byte */
+		priv->dparam.pio_dma_border = 64;  
 	if (!of_property_read_u32(dev_of_node(dev), "renesas,buswait", &tmp))
 		priv->dparam.buswait_bwait = tmp;
 	gpiod = devm_gpiod_get_optional(dev, "renesas,enable", GPIOD_IN);
 	if (IS_ERR(gpiod))
 		return PTR_ERR(gpiod);
 
-	/* FIXME */
-	/* runtime power control ? */
+	 
+	 
 	if (priv->pfunc->get_vbus)
 		usbhs_get_dparam(priv, runtime_pwctrl) = 1;
 
-	/*
-	 * priv settings
-	 */
+	 
 	priv->irq = irq;
 	priv->pdev	= pdev;
 	INIT_DELAYED_WORK(&priv->notify_hotplug_work, usbhsc_notify_hotplug);
 	spin_lock_init(usbhs_priv_to_lock(priv));
 
-	/* call pipe and module init */
+	 
 	ret = usbhs_pipe_probe(priv);
 	if (ret < 0)
 		return ret;
@@ -685,7 +600,7 @@ static int usbhs_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto probe_end_fifo_exit;
 
-	/* dev_set_drvdata should be called after usbhs_mod_init */
+	 
 	platform_set_drvdata(pdev, priv);
 
 	ret = reset_control_deassert(priv->rsts);
@@ -696,13 +611,10 @@ static int usbhs_probe(struct platform_device *pdev)
 	if (ret)
 		goto probe_fail_clks;
 
-	/*
-	 * deviece reset here because
-	 * USB device might be used in boot loader.
-	 */
+	 
 	usbhs_sys_clock_ctrl(priv, 0);
 
-	/* check GPIO determining if USB function should be enabled */
+	 
 	if (gpiod) {
 		ret = !gpiod_get_value(gpiod);
 		if (ret) {
@@ -712,23 +624,17 @@ static int usbhs_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * platform call
-	 *
-	 * USB phy setup might depend on CPU/Board.
-	 * If platform has its callback functions,
-	 * call it here.
-	 */
+	 
 	ret = usbhs_platform_call(priv, hardware_init, pdev);
 	if (ret < 0) {
 		dev_err(dev, "platform init failed.\n");
 		goto probe_end_mod_exit;
 	}
 
-	/* reset phy for connection */
+	 
 	usbhs_platform_call(priv, phy_reset, pdev);
 
-	/* power control */
+	 
 	pm_runtime_enable(dev);
 	if (!usbhs_get_dparam(priv, runtime_pwctrl)) {
 		usbhsc_power_ctrl(priv, 1);
@@ -737,9 +643,7 @@ static int usbhs_probe(struct platform_device *pdev)
 		usbhs_mod_non_autonomy_mode(priv);
 	}
 
-	/*
-	 * manual call notify_hotplug for cold plug
-	 */
+	 
 	usbhsc_schedule_notify_hotplug(pdev);
 
 	dev_info(dev, "probed\n");
@@ -768,7 +672,7 @@ static void usbhs_remove(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "usb remove\n");
 
-	/* power off */
+	 
 	if (!usbhs_get_dparam(priv, runtime_pwctrl))
 		usbhsc_power_ctrl(priv, 0);
 

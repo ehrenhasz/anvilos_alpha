@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -29,14 +27,14 @@
 
 #include "phy-qcom-qmp-qserdes-txrx-ufs-v6.h"
 
-/* QPHY_SW_RESET bit */
+ 
 #define SW_RESET				BIT(0)
-/* QPHY_POWER_DOWN_CONTROL */
+ 
 #define SW_PWRDN				BIT(0)
-/* QPHY_START_CONTROL bits */
+ 
 #define SERDES_START				BIT(0)
 #define PCS_START				BIT(1)
-/* QPHY_PCS_READY_STATUS bit */
+ 
 #define PCS_READY				BIT(0)
 
 #define PHY_INIT_COMPLETE_TIMEOUT		10000
@@ -44,10 +42,7 @@
 struct qmp_phy_init_tbl {
 	unsigned int offset;
 	unsigned int val;
-	/*
-	 * mask of lanes for which this register is written
-	 * for cases when second lane needs different values
-	 */
+	 
 	u8 lane_mask;
 };
 
@@ -65,14 +60,14 @@ struct qmp_phy_init_tbl {
 		.lane_mask = l,		\
 	}
 
-/* set of registers with offsets different per-PHY */
+ 
 enum qphy_reg_layout {
-	/* PCS registers */
+	 
 	QPHY_SW_RESET,
 	QPHY_START_CTRL,
 	QPHY_PCS_READY_STATUS,
 	QPHY_PCS_POWER_DOWN_CONTROL,
-	/* Keep last to ensure regs_layout arrays are properly initialized */
+	 
 	QPHY_LAYOUT_SIZE
 };
 
@@ -266,7 +261,7 @@ static const struct qmp_phy_init_tbl sm6115_ufsphy_pcs[] = {
 	QMP_PHY_INIT_CFG(QPHY_V2_PCS_UFS_RX_SYM_RESYNC_CTRL, 0x03),
 	QMP_PHY_INIT_CFG(QPHY_V2_PCS_UFS_TX_LARGE_AMP_POST_EMP_LVL, 0x12),
 	QMP_PHY_INIT_CFG(QPHY_V2_PCS_UFS_TX_SMALL_AMP_POST_EMP_LVL, 0x0f),
-	QMP_PHY_INIT_CFG(QPHY_V2_PCS_UFS_RX_MIN_HIBERN8_TIME, 0x9a), /* 8 us */
+	QMP_PHY_INIT_CFG(QPHY_V2_PCS_UFS_RX_MIN_HIBERN8_TIME, 0x9a),  
 };
 
 static const struct qmp_phy_init_tbl sdm845_ufsphy_serdes[] = {
@@ -708,7 +703,7 @@ struct qmp_ufs_offsets {
 };
 
 struct qmp_phy_cfg_tbls {
-	/* Init sequence for PHY blocks - serdes, tx, rx, pcs */
+	 
 	const struct qmp_phy_init_tbl *serdes;
 	int serdes_num;
 	const struct qmp_phy_init_tbl *tx;
@@ -719,30 +714,30 @@ struct qmp_phy_cfg_tbls {
 	int pcs_num;
 };
 
-/* struct qmp_phy_cfg - per-PHY initialization config */
+ 
 struct qmp_phy_cfg {
 	int lanes;
 
 	const struct qmp_ufs_offsets *offsets;
 
-	/* Main init sequence for PHY blocks - serdes, tx, rx, pcs */
+	 
 	const struct qmp_phy_cfg_tbls tbls;
-	/* Additional sequence for HS Series B */
+	 
 	const struct qmp_phy_cfg_tbls tbls_hs_b;
-	/* Additional sequence for HS G4 */
+	 
 	const struct qmp_phy_cfg_tbls tbls_hs_g4;
 
-	/* clock ids to be requested */
+	 
 	const char * const *clk_list;
 	int num_clks;
-	/* regulators to be requested */
+	 
 	const char * const *vreg_list;
 	int num_vregs;
 
-	/* array of registers with different offsets */
+	 
 	const unsigned int *regs;
 
-	/* true, if PCS block has no separate SW_RESET register */
+	 
 	bool no_pcs_sw_reset;
 };
 
@@ -776,7 +771,7 @@ static inline void qphy_setbits(void __iomem *base, u32 offset, u32 val)
 	reg |= val;
 	writel(reg, base + offset);
 
-	/* ensure that above write is through */
+	 
 	readl(base + offset);
 }
 
@@ -788,16 +783,16 @@ static inline void qphy_clrbits(void __iomem *base, u32 offset, u32 val)
 	reg &= ~val;
 	writel(reg, base + offset);
 
-	/* ensure that above write is through */
+	 
 	readl(base + offset);
 }
 
-/* list of clocks required by phy */
+ 
 static const char * const msm8996_ufs_phy_clk_l[] = {
 	"ref",
 };
 
-/* the primary usb3 phy on sm8250 doesn't have a ref clock */
+ 
 static const char * const sm8450_ufs_phy_clk_l[] = {
 	"qref", "ref", "ref_aux",
 };
@@ -806,7 +801,7 @@ static const char * const sdm845_ufs_phy_clk_l[] = {
 	"ref", "ref_aux",
 };
 
-/* list of regulators */
+ 
 static const char * const qmp_phy_vreg_l[] = {
 	"vdda-phy", "vdda-pll",
 };
@@ -1279,11 +1274,7 @@ static int qmp_ufs_init(struct phy *phy)
 	dev_vdbg(qmp->dev, "Initializing QMP phy\n");
 
 	if (cfg->no_pcs_sw_reset) {
-		/*
-		 * Get UFS reset, which is delayed until now to avoid a
-		 * circular dependency where UFS needs its PHY, but the PHY
-		 * needs this UFS reset.
-		 */
+		 
 		if (!qmp->ufs_reset) {
 			qmp->ufs_reset =
 				devm_reset_control_get_exclusive(qmp->dev,
@@ -1327,11 +1318,11 @@ static int qmp_ufs_power_on(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* Pull PHY out of reset state */
+	 
 	if (!cfg->no_pcs_sw_reset)
 		qphy_clrbits(pcs, cfg->regs[QPHY_SW_RESET], SW_RESET);
 
-	/* start SerDes */
+	 
 	qphy_setbits(pcs, cfg->regs[QPHY_START_CTRL], SERDES_START);
 
 	status = pcs + cfg->regs[QPHY_PCS_READY_STATUS];
@@ -1350,14 +1341,14 @@ static int qmp_ufs_power_off(struct phy *phy)
 	struct qmp_ufs *qmp = phy_get_drvdata(phy);
 	const struct qmp_phy_cfg *cfg = qmp->cfg;
 
-	/* PHY reset */
+	 
 	if (!cfg->no_pcs_sw_reset)
 		qphy_setbits(qmp->pcs, cfg->regs[QPHY_SW_RESET], SW_RESET);
 
-	/* stop SerDes */
+	 
 	qphy_clrbits(qmp->pcs, cfg->regs[QPHY_START_CTRL], SERDES_START);
 
-	/* Put PHY into POWER DOWN state: active low */
+	 
 	qphy_clrbits(qmp->pcs, cfg->regs[QPHY_PCS_POWER_DOWN_CONTROL],
 			SW_PWRDN);
 
@@ -1496,9 +1487,7 @@ static int qmp_ufs_register_clocks(struct qmp_ufs *qmp, struct device_node *np)
 	if (ret)
 		return ret;
 
-	/*
-	 * Roll a devm action because the clock provider can be a child node.
-	 */
+	 
 	return devm_add_action_or_reset(qmp->dev, qmp_ufs_clk_release_provider, np);
 }
 
@@ -1512,12 +1501,7 @@ static int qmp_ufs_parse_dt_legacy(struct qmp_ufs *qmp, struct device_node *np)
 	if (IS_ERR(qmp->serdes))
 		return PTR_ERR(qmp->serdes);
 
-	/*
-	 * Get memory resources for the PHY:
-	 * Resources are indexed as: tx -> 0; rx -> 1; pcs -> 2.
-	 * For dual lane PHYs: tx2 -> 3, rx2 -> 4, pcs_misc (optional) -> 5
-	 * For single lane PHYs: pcs_misc (optional) -> 3.
-	 */
+	 
 	qmp->tx = devm_of_iomap(dev, np, 0, NULL);
 	if (IS_ERR(qmp->tx))
 		return PTR_ERR(qmp->tx);
@@ -1603,7 +1587,7 @@ static int qmp_ufs_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Check for legacy binding with child node. */
+	 
 	np = of_get_next_available_child(dev->of_node, NULL);
 	if (np) {
 		ret = qmp_ufs_parse_dt_legacy(qmp, np);

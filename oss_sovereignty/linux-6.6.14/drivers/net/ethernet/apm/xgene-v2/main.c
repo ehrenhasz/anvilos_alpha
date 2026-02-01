@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Applied Micro X-Gene SoC Ethernet v2 Driver
- *
- * Copyright (c) 2017, Applied Micro Circuits Corporation
- * Author(s): Iyappan Subramanian <isubramanian@apm.com>
- *	      Keyur Chudgar <kchudgar@apm.com>
- */
+
+ 
 
 #include "main.h"
 
@@ -191,7 +185,7 @@ static netdev_tx_t xge_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 		return NETDEV_TX_BUSY;
 	}
 
-	/* Packet buffers should be 64B aligned */
+	 
 	pkt_buf = dma_alloc_coherent(dev, XGENE_ENET_STD_MTU, &dma_addr,
 				     GFP_ATOMIC);
 	if (unlikely(!pkt_buf)) {
@@ -268,7 +262,7 @@ static void xge_txc_poll(struct net_device *ndev)
 		dma_free_coherent(dev, XGENE_ENET_STD_MTU, pkt_buf, dma_addr);
 		dev_kfree_skb_any(skb);
 
-		/* clear pktstart address and pktsize */
+		 
 		raw_desc->m0 = cpu_to_le64(SET_BITS(E, 1) |
 					   SET_BITS(PKT_SIZE, SLOT_EMPTY));
 		xge_wr_csr(pdata, DMATXSTATUS, 1);
@@ -440,7 +434,7 @@ static int xge_create_desc_rings(struct net_device *ndev)
 	struct xge_desc_ring *ring;
 	int ret;
 
-	/* create tx ring */
+	 
 	ring = xge_create_desc_ring(ndev);
 	if (!ring)
 		goto err;
@@ -448,7 +442,7 @@ static int xge_create_desc_rings(struct net_device *ndev)
 	pdata->tx_ring = ring;
 	xge_update_tx_desc_addr(pdata);
 
-	/* create rx ring */
+	 
 	ring = xge_create_desc_ring(ndev);
 	if (!ring)
 		goto err;

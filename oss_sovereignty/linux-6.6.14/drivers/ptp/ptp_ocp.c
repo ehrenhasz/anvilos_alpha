@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/err.h>
@@ -336,7 +336,7 @@ struct ptp_ocp {
 	int			n_irqs;
 	struct ptp_ocp_serial_port	gnss_port;
 	struct ptp_ocp_serial_port	gnss2_port;
-	struct ptp_ocp_serial_port	mac_port;   /* miniature atomic clock */
+	struct ptp_ocp_serial_port	mac_port;    
 	struct ptp_ocp_serial_port	nmea_port;
 	bool			fw_loader;
 	u8			fw_tag;
@@ -438,32 +438,7 @@ static struct ptp_ocp_eeprom_map art_eeprom_map[] = {
 #define OCP_EXT_RESOURCE(member) \
 	OCP_RES_LOCATION(member), .setup = ptp_ocp_register_ext
 
-/* This is the MSI vector mapping used.
- * 0: PPS (TS5)
- * 1: TS0
- * 2: TS1
- * 3: GNSS1
- * 4: GNSS2
- * 5: MAC
- * 6: TS2
- * 7: I2C controller
- * 8: HWICAP (notused)
- * 9: SPI Flash
- * 10: NMEA
- * 11: Signal Generator 1
- * 12: Signal Generator 2
- * 13: Signal Generator 3
- * 14: Signal Generator 4
- * 15: TS3
- * 16: TS4
- --
- * 8: Orolia TS1
- * 10: Orolia TS2
- * 11: Orolia TS0 (GNSS)
- * 12: Orolia PPS
- * 14: Orolia TS3
- * 15: Orolia TS4
- */
+ 
 
 static struct ocp_resource ocp_fb_resource[] = {
 	{
@@ -515,7 +490,7 @@ static struct ocp_resource ocp_fb_resource[] = {
 			.enable = ptp_ocp_ts_enable,
 		},
 	},
-	/* Timestamp for PHC and/or PPS generator */
+	 
 	{
 		OCP_EXT_RESOURCE(pps),
 		.offset = 0x010C0000, .size = 0x10000, .irq_vec = 0,
@@ -716,7 +691,7 @@ static struct ocp_resource ocp_art_resource[] = {
 		OCP_MEM_RESOURCE(art_sma),
 		.offset = 0x003C0000, .size = 0x1000,
 	},
-	/* Timestamp associated with GNSS1 receiver PPS */
+	 
 	{
 		OCP_EXT_RESOURCE(ts0),
 		.offset = 0x360000, .size = 0x20, .irq_vec = 12,
@@ -762,7 +737,7 @@ static struct ocp_resource ocp_art_resource[] = {
 			.enable = ptp_ocp_ts_enable,
 		},
 	},
-	/* Timestamp associated with Internal PPS of the card */
+	 
 	{
 		OCP_EXT_RESOURCE(pps),
 		.offset = 0x00330000, .size = 0x20, .irq_vec = 11,
@@ -1041,7 +1016,7 @@ __ptp_ocp_settime_locked(struct ptp_ocp *bp, const struct timespec64 *ts)
 	ctrl = OCP_CTRL_ADJUST_TIME | OCP_CTRL_ENABLE;
 	iowrite32(ctrl, &bp->reg->ctrl);
 
-	/* restore clock selection */
+	 
 	iowrite32(select >> 16, &bp->reg->select);
 }
 
@@ -1072,7 +1047,7 @@ __ptp_ocp_adjtime_locked(struct ptp_ocp *bp, u32 adj_val)
 	ctrl = OCP_CTRL_ADJUST_OFFSET | OCP_CTRL_ENABLE;
 	iowrite32(ctrl, &bp->reg->ctrl);
 
-	/* restore clock selection */
+	 
 	iowrite32(select >> 16, &bp->reg->select);
 }
 
@@ -1176,9 +1151,7 @@ ptp_ocp_enable(struct ptp_clock_info *ptp_info, struct ptp_clock_request *rq,
 	case PTP_CLK_REQ_PEROUT:
 		switch (rq->perout.index) {
 		case 0:
-			/* This is a request for 1PPS on an output SMA.
-			 * Allow, but assume manual configuration.
-			 */
+			 
 			if (on && (rq->perout.period.sec != 1 ||
 				   rq->perout.period.nsec != 0))
 				return -EINVAL;
@@ -1218,12 +1191,10 @@ ptp_ocp_verify(struct ptp_clock_info *ptp_info, unsigned pin,
 		snprintf(buf, sizeof(buf), "IN: None");
 		break;
 	case PTP_PF_EXTTS:
-		/* Allow timestamps, but require sysfs configuration. */
+		 
 		return 0;
 	case PTP_PF_PEROUT:
-		/* channel 0 is 1PPS from PHC.
-		 * channels 1..4 are the frequency generators.
-		 */
+		 
 		if (chan)
 			snprintf(buf, sizeof(buf), "OUT: GEN%d", chan);
 		else
@@ -1266,7 +1237,7 @@ __ptp_ocp_clear_drift_locked(struct ptp_ocp *bp)
 	ctrl = OCP_CTRL_ADJUST_DRIFT | OCP_CTRL_ENABLE;
 	iowrite32(ctrl, &bp->reg->ctrl);
 
-	/* restore clock selection */
+	 
 	iowrite32(select >> 16, &bp->reg->select);
 }
 
@@ -1311,9 +1282,7 @@ ptp_ocp_watchdog(struct timer_list *t)
 		bp->gnss_lost = 0;
 	}
 
-	/* if GNSS provides correct data we can rely on
-	 * it to get leap second information
-	 */
+	 
 	if (bp->tod) {
 		status = ioread32(&bp->tod->utc_status);
 		utc_offset = status & TOD_STATUS_UTC_MASK;
@@ -1357,14 +1326,14 @@ ptp_ocp_init_clock(struct ptp_ocp *bp)
 	ctrl = OCP_CTRL_ENABLE;
 	iowrite32(ctrl, &bp->reg->ctrl);
 
-	/* NO DRIFT Correction */
-	/* offset_p:i 1/8, offset_i: 1/16, drift_p: 0, drift_i: 0 */
+	 
+	 
 	iowrite32(0x2000, &bp->reg->servo_offset_p);
 	iowrite32(0x1000, &bp->reg->servo_offset_i);
 	iowrite32(0,	  &bp->reg->servo_drift_p);
 	iowrite32(0,	  &bp->reg->servo_drift_i);
 
-	/* latch servo values */
+	 
 	ctrl |= OCP_CTRL_ADJUST_SERVO;
 	iowrite32(ctrl, &bp->reg->ctrl);
 
@@ -1381,7 +1350,7 @@ ptp_ocp_init_clock(struct ptp_ocp *bp)
 		ptp_ocp_settime(&bp->ptp_info, &ts);
 	}
 
-	/* If there is a clock supervisor, then enable the watchdog */
+	 
 	if (bp->pps_to_clk) {
 		timer_setup(&bp->watchdog, ptp_ocp_watchdog, 0);
 		mod_timer(&bp->watchdog, jiffies + HZ);
@@ -1793,7 +1762,7 @@ ptp_ocp_register_i2c(struct ptp_ocp *bp, struct ocp_resource *r)
 	return 0;
 }
 
-/* The expectation is that this is triggered only on error. */
+ 
 static irqreturn_t
 ptp_ocp_signal_irq(int irq, void *priv)
 {
@@ -1808,14 +1777,14 @@ ptp_ocp_signal_irq(int irq, void *priv)
 	enable = ioread32(&reg->enable);
 	status = ioread32(&reg->status);
 
-	/* disable generator on error */
+	 
 	if (status || !enable) {
 		iowrite32(0, &reg->intr_mask);
 		iowrite32(0, &reg->enable);
 		bp->signal[gen].running = false;
 	}
 
-	iowrite32(0, &reg->intr);	/* ack interrupt */
+	iowrite32(0, &reg->intr);	 
 
 	return IRQ_HANDLED;
 }
@@ -1840,7 +1809,7 @@ ptp_ocp_signal_set(struct ptp_ocp *bp, int gen, struct ptp_ocp_signal *s)
 
 	start_ns = ktime_set(ts.tv_sec, ts.tv_nsec) + NSEC_PER_MSEC;
 	if (!s->start) {
-		/* roundup() does not work on 32-bit systems */
+		 
 		s->start = DIV64_U64_ROUND_UP(start_ns, s->period);
 		s->start = ktime_add(s->start, s->phase);
 	}
@@ -1915,9 +1884,9 @@ ptp_ocp_signal_enable(void *priv, u32 req, bool enable)
 	iowrite32(bp->signal[gen].polarity, &reg->polarity);
 	iowrite32(0, &reg->repeat_count);
 
-	iowrite32(0, &reg->intr);		/* clear interrupt state */
-	iowrite32(1, &reg->intr_mask);		/* enable interrupt */
-	iowrite32(3, &reg->enable);		/* valid & enable */
+	iowrite32(0, &reg->intr);		 
+	iowrite32(1, &reg->intr_mask);		 
+	iowrite32(3, &reg->enable);		 
 
 	bp->signal[gen].running = true;
 
@@ -1942,7 +1911,7 @@ ptp_ocp_ts_irq(int irq, void *priv)
 			goto out;
 	}
 
-	/* XXX should fix API - this converts s/ns -> ts -> s/ns */
+	 
 	sec = ioread32(&reg->time_sec);
 	nsec = ioread32(&reg->time_ns);
 
@@ -1953,7 +1922,7 @@ ptp_ocp_ts_irq(int irq, void *priv)
 	ptp_clock_event(ext->bp->ptp, &ev);
 
 out:
-	iowrite32(1, &reg->intr);	/* write 1 to ack */
+	iowrite32(1, &reg->intr);	 
 
 	return IRQ_HANDLED;
 }
@@ -1973,7 +1942,7 @@ ptp_ocp_ts_enable(void *priv, u32 req, bool enable)
 		else
 			bp->pps_req_map &= ~req;
 
-		/* if no state change, just return */
+		 
 		if ((!!old_map ^ !!bp->pps_req_map) == 0)
 			return 0;
 	}
@@ -2041,9 +2010,7 @@ ptp_ocp_serial_line(struct ptp_ocp *bp, struct ocp_resource *r)
 	struct pci_dev *pdev = bp->pdev;
 	struct uart_8250_port uart;
 
-	/* Setting UPF_IOREMAP and leaving port.membase unspecified lets
-	 * the serial port device claim and release the pci resource.
-	 */
+	 
 	memset(&uart, 0, sizeof(uart));
 	uart.port.dev = &pdev->dev;
 	uart.port.iotype = UPIO_MEM;
@@ -2095,9 +2062,9 @@ ptp_ocp_nmea_out_init(struct ptp_ocp *bp)
 	if (!bp->nmea_out)
 		return;
 
-	iowrite32(0, &bp->nmea_out->ctrl);		/* disable */
-	iowrite32(7, &bp->nmea_out->uart_baud);		/* 115200 */
-	iowrite32(1, &bp->nmea_out->ctrl);		/* enable */
+	iowrite32(0, &bp->nmea_out->ctrl);		 
+	iowrite32(7, &bp->nmea_out->uart_baud);		 
+	iowrite32(1, &bp->nmea_out->ctrl);		 
 }
 
 static void
@@ -2105,7 +2072,7 @@ _ptp_ocp_signal_init(struct ptp_ocp_signal *s, struct signal_reg __iomem *reg)
 {
 	u32 val;
 
-	iowrite32(0, &reg->enable);		/* disable */
+	iowrite32(0, &reg->enable);		 
 
 	val = ioread32(&reg->polarity);
 	s->polarity = val ? true : false;
@@ -2292,7 +2259,7 @@ ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
 	u32 reg;
 	int i;
 
-	/* defaults */
+	 
 	bp->sma[0].mode = SMA_MODE_IN;
 	bp->sma[1].mode = SMA_MODE_IN;
 	bp->sma[2].mode = SMA_MODE_OUT;
@@ -2300,7 +2267,7 @@ ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
 	for (i = 0; i < 4; i++)
 		bp->sma[i].default_fcn = i & 1;
 
-	/* If no SMA1 map, the pin functions and directions are fixed. */
+	 
 	if (!bp->sma_map1) {
 		for (i = 0; i < 4; i++) {
 			bp->sma[i].fixed_fcn = true;
@@ -2309,9 +2276,7 @@ ptp_ocp_sma_fb_init(struct ptp_ocp *bp)
 		return;
 	}
 
-	/* If SMA2 GPIO output map is all 1, it is not present.
-	 * This indicates the firmware has fixed direction SMA pins.
-	 */
+	 
 	reg = ioread32(&bp->sma_map2->gpio2);
 	if (reg == 0xffffffff) {
 		for (i = 0; i < 4; i++)
@@ -2364,7 +2329,7 @@ ptp_ocp_fb_set_version(struct ptp_ocp *bp)
 
 	version = ioread32(&bp->image->version);
 
-	/* if lower 16 bits are empty, this is the fw loader. */
+	 
 	if ((version & 0xffff) == 0) {
 		version = version >> 16;
 		bp->fw_loader = true;
@@ -2374,11 +2339,11 @@ ptp_ocp_fb_set_version(struct ptp_ocp *bp)
 	bp->fw_version = version & 0x7fff;
 
 	if (bp->fw_tag) {
-		/* FPGA firmware */
+		 
 		if (version >= 5)
 			cap |= OCP_CAP_SIGNAL | OCP_CAP_FREQ;
 	} else {
-		/* SOM firmware */
+		 
 		if (version >= 19)
 			cap |= OCP_CAP_SIGNAL;
 		if (version >= 20)
@@ -2388,7 +2353,7 @@ ptp_ocp_fb_set_version(struct ptp_ocp *bp)
 	bp->fw_cap = cap;
 }
 
-/* FB specific board initializers; last "resource" registered. */
+ 
 static int
 ptp_ocp_fb_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
 {
@@ -2455,18 +2420,18 @@ ptp_ocp_art_sma_init(struct ptp_ocp *bp)
 	u32 reg;
 	int i;
 
-	/* defaults */
+	 
 	bp->sma[0].mode = SMA_MODE_IN;
 	bp->sma[1].mode = SMA_MODE_IN;
 	bp->sma[2].mode = SMA_MODE_OUT;
 	bp->sma[3].mode = SMA_MODE_OUT;
 
-	bp->sma[0].default_fcn = 0x08;	/* IN: 10Mhz */
-	bp->sma[1].default_fcn = 0x01;	/* IN: PPS1 */
-	bp->sma[2].default_fcn = 0x10;	/* OUT: 10Mhz */
-	bp->sma[3].default_fcn = 0x02;	/* OUT: PHC */
+	bp->sma[0].default_fcn = 0x08;	 
+	bp->sma[1].default_fcn = 0x01;	 
+	bp->sma[2].default_fcn = 0x10;	 
+	bp->sma[3].default_fcn = 0x02;	 
 
-	/* If no SMA map, the pin functions and directions are fixed. */
+	 
 	if (!bp->art_sma) {
 		for (i = 0; i < 4; i++) {
 			bp->sma[i].fixed_fcn = true;
@@ -2503,7 +2468,7 @@ ptp_ocp_art_sma_get(struct ptp_ocp *bp, int sma_nr)
 	return ioread32(&bp->art_sma->map[sma_nr - 1].gpio) & 0xff;
 }
 
-/* note: store 0 is considered invalid. */
+ 
 static int
 ptp_ocp_art_sma_set(struct ptp_ocp *bp, int sma_nr, u32 val)
 {
@@ -2539,7 +2504,7 @@ static const struct ocp_sma_op ocp_art_sma_op = {
 	.set_output	= ptp_ocp_art_sma_set,
 };
 
-/* ART specific board initializers; last "resource" registered. */
+ 
 static int
 ptp_ocp_art_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
 {
@@ -2552,7 +2517,7 @@ ptp_ocp_art_board_init(struct ptp_ocp *bp, struct ocp_resource *r)
 	bp->fw_tag = 2;
 	bp->sma_op = &ocp_art_sma_op;
 
-	/* Enable MAC serial port during initialisation */
+	 
 	iowrite32(1, &bp->board_config->mro50_serial_activate);
 
 	ptp_ocp_sma_init(bp);
@@ -2727,7 +2692,7 @@ ptp_ocp_sma_store(struct ptp_ocp *bp, const char *buf, int sma_nr)
 	}
 
 	if (!sma->fixed_dir)
-		val |= SMA_ENABLE;		/* add enable bit */
+		val |= SMA_ENABLE;		 
 
 	if (sma->disabled)
 		val = 0;
@@ -2816,7 +2781,7 @@ static DEVICE_ATTR_RO(available_sma_outputs);
 		{ __ATTR_RW(_name), (void *)_val }
 #define to_ext_attr(x) container_of(x, struct dev_ext_attribute, attr)
 
-/* period [duty [phase [polarity]]] */
+ 
 static ssize_t
 signal_store(struct device *dev, struct device_attribute *attr,
 	     const char *buf, size_t count)
@@ -3172,8 +3137,8 @@ irig_b_mode_store(struct device *dev,
 	reg = ((val & 0x7) << 16);
 
 	spin_lock_irqsave(&bp->lock, flags);
-	iowrite32(0, &bp->irig_out->ctrl);		/* disable */
-	iowrite32(reg, &bp->irig_out->ctrl);		/* change mode */
+	iowrite32(0, &bp->irig_out->ctrl);		 
+	iowrite32(reg, &bp->irig_out->ctrl);		 
 	iowrite32(reg | IRIG_M_CTRL_ENABLE, &bp->irig_out->ctrl);
 	spin_unlock_irqrestore(&bp->lock, flags);
 
@@ -3359,7 +3324,7 @@ disciplining_config_read(struct file *filp, struct kobject *kobj,
 	if (off + count > size)
 		count = size - off;
 
-	// the configuration is in the very beginning of the EEPROM
+	
 	err = nvmem_device_read(nvmem, off, count, buf);
 	if (err != count) {
 		err = -EFAULT;
@@ -3381,7 +3346,7 @@ disciplining_config_write(struct file *filp, struct kobject *kobj,
 	struct nvmem_device *nvmem;
 	ssize_t err;
 
-	/* Allow write of the whole area only */
+	 
 	if (off || count != OCP_ART_CONFIG_SIZE)
 		return -EFAULT;
 
@@ -3421,7 +3386,7 @@ temperature_table_read(struct file *filp, struct kobject *kobj,
 	if (off + count > size)
 		count = size - off;
 
-	// the configuration is in the very beginning of the EEPROM
+	
 	err = nvmem_device_read(nvmem, 0x90 + off, count, buf);
 	if (err != count) {
 		err = -EFAULT;
@@ -3443,7 +3408,7 @@ temperature_table_write(struct file *filp, struct kobject *kobj,
 	struct nvmem_device *nvmem;
 	ssize_t err;
 
-	/* Allow write of the whole area only */
+	 
 	if (off || count != OCP_ART_TEMP_TABLE_SIZE)
 		return -EFAULT;
 
@@ -3790,7 +3755,7 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
 			   on ? " ON" : "OFF", val);
 	}
 
-	/* compute src for PPS1, used below. */
+	 
 	if (bp->pps_select) {
 		val = ioread32(&bp->pps_select->gpio1);
 		src = &buf[80];
@@ -3815,7 +3780,7 @@ ptp_ocp_summary_show(struct seq_file *s, void *data)
 	gpio_input_map(buf, bp, sma_val, 1, "GNSS2");
 	seq_printf(s, "MAC PPS2 src: %s\n", buf);
 
-	/* assumes automatic switchover/selection */
+	 
 	val = ioread32(&bp->reg->select);
 	switch (val >> 16) {
 	case 0:
@@ -4201,11 +4166,7 @@ ptp_ocp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (err)
 		goto out_disable;
 
-	/* compat mode.
-	 * Older FPGA firmware only returns 2 irq's.
-	 * allow this - if not all of the IRQ's are returned, skip the
-	 * extra devices and just register the clock.
-	 */
+	 
 	err = pci_alloc_irq_vectors(pdev, 1, 17, PCI_IRQ_MSI | PCI_IRQ_MSIX);
 	if (err < 0) {
 		dev_err(&pdev->dev, "alloc_irq_vectors err: %d\n", err);

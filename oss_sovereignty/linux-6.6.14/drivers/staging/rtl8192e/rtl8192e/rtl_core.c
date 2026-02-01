@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Based on the r8180 driver, which is:
- * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include <linux/uaccess.h>
 #include <linux/pci.h>
 #include <linux/vmalloc.h>
@@ -42,10 +35,10 @@ static irqreturn_t _rtl92e_irq(int irq, void *netdev);
 static SIMPLE_DEV_PM_OPS(rtl92e_pm_ops, rtl92e_suspend, rtl92e_resume);
 
 static struct pci_driver rtl8192_pci_driver = {
-	.name = DRV_NAME,	/* Driver name   */
-	.id_table = rtl8192_pci_id_tbl,	/* PCI_ID table  */
-	.probe	= _rtl92e_pci_probe,	/* probe fn      */
-	.remove	 = _rtl92e_pci_disconnect,	/* remove fn */
+	.name = DRV_NAME,	 
+	.id_table = rtl8192_pci_id_tbl,	 
+	.probe	= _rtl92e_pci_probe,	 
+	.remove	 = _rtl92e_pci_disconnect,	 
 	.driver.pm = &rtl92e_pm_ops,
 };
 
@@ -66,9 +59,7 @@ static int _rtl92e_try_up(struct net_device *dev);
 static int _rtl92e_down(struct net_device *dev, bool shutdownrf);
 static void _rtl92e_restart(void *data);
 
-/****************************************************************************
- *  -----------------------------IO STUFF-------------------------
- ****************************************************************************/
+ 
 
 u8 rtl92e_readb(struct net_device *dev, int x)
 {
@@ -106,9 +97,7 @@ void rtl92e_writew(struct net_device *dev, int x, u16 y)
 	udelay(20);
 }
 
-/****************************************************************************
- *  -----------------------------GENERAL FUNCTION-------------------------
- ****************************************************************************/
+ 
 bool rtl92e_set_rf_state(struct net_device *dev,
 			 enum rt_rf_power_state state_to_set,
 			 RT_RF_CHANGE_SOURCE change_source)
@@ -903,9 +892,7 @@ static short _rtl92e_init(struct net_device *dev)
 	return 0;
 }
 
-/***************************************************************************
- * -------------------------------WATCHDOG STUFF---------------------------
- **************************************************************************/
+ 
 static short _rtl92e_is_tx_queue_empty(struct net_device *dev)
 {
 	int i = 0;
@@ -1300,9 +1287,7 @@ static void _rtl92e_watchdog_timer_cb(struct timer_list *t)
 		  msecs_to_jiffies(RTLLIB_WATCH_DOG_TIME));
 }
 
-/****************************************************************************
- * ---------------------------- NIC TX/RX STUFF---------------------------
- ****************************************************************************/
+ 
 void rtl92e_rx_enable(struct net_device *dev)
 {
 	rtl92e_enable_rx(dev);
@@ -1721,7 +1706,7 @@ u8 rtl92e_rx_db_to_percent(s8 antpower)
 	else
 		return	100 + antpower;
 
-}	/* QueryRxPwrPercentage */
+}	 
 
 u8 rtl92e_evm_db_to_percent(s8 value)
 {
@@ -1769,9 +1754,7 @@ static void _rtl92e_rx_normal(struct net_device *dev)
 		if (!rtl92e_get_rx_stats(dev, &stats, pdesc, skb))
 			goto done;
 		new_skb = dev_alloc_skb(priv->rxbuffersize);
-		/* if allocation of new skb failed - drop current packet
-		 * and reuse skb
-		 */
+		 
 		if (unlikely(!new_skb))
 			goto done;
 
@@ -1784,7 +1767,7 @@ static void _rtl92e_rx_normal(struct net_device *dev)
 		skb_trim(skb, skb->len - S_CRC_LEN);
 		rtllib_hdr = (struct rtllib_hdr_1addr *)skb->data;
 		if (!is_multicast_ether_addr(rtllib_hdr->addr1)) {
-			/* unicast packet */
+			 
 			unicast_packet = true;
 		}
 		skb_len = skb->len;
@@ -1853,9 +1836,7 @@ static void _rtl92e_irq_rx_tasklet(struct tasklet_struct *t)
 		      rtl92e_readl(priv->rtllib->dev, INTA_MASK) | IMR_RDU);
 }
 
-/****************************************************************************
- * ---------------------------- NIC START/CLOSE STUFF---------------------------
- ****************************************************************************/
+ 
 static void _rtl92e_cancel_deferred_work(struct r8192_priv *priv)
 {
 	cancel_delayed_work_sync(&priv->watch_dog_wq);
@@ -2056,9 +2037,7 @@ done:
 	return IRQ_HANDLED;
 }
 
-/****************************************************************************
- * ---------------------------- PCI_STUFF---------------------------
- ****************************************************************************/
+ 
 static const struct net_device_ops rtl8192_netdev_ops = {
 	.ndo_open = _rtl92e_open,
 	.ndo_stop = _rtl92e_close,
@@ -2259,9 +2238,7 @@ void rtl92e_check_rfctrl_gpio_timer(struct timer_list *t)
 		  msecs_to_jiffies(RTLLIB_WATCH_DOG_TIME));
 }
 
-/***************************************************************************
- * ------------------- module init / exit stubs ----------------
- ***************************************************************************/
+ 
 MODULE_DESCRIPTION("Linux driver for Realtek RTL819x WiFi cards");
 MODULE_AUTHOR(DRV_COPYRIGHT " " DRV_AUTHOR);
 MODULE_VERSION(DRV_VERSION);

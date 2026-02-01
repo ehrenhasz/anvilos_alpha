@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * R-Car Display Unit Planes and CRTCs Group
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __RCAR_DU_GROUP_H__
 #define __RCAR_DU_GROUP_H__
@@ -16,22 +10,7 @@
 
 struct rcar_du_device;
 
-/*
- * struct rcar_du_group - CRTCs and planes group
- * @dev: the DU device
- * @mmio_offset: registers offset in the device memory map
- * @index: group index
- * @channels_mask: bitmask of populated DU channels in this group
- * @cmms_mask: bitmask of available CMMs in this group
- * @num_crtcs: number of CRTCs in this group (1 or 2)
- * @use_count: number of users of the group (rcar_du_group_(get|put))
- * @used_crtcs: number of CRTCs currently in use
- * @lock: protects the dptsr_planes field and the DPTSR register
- * @dptsr_planes: bitmask of planes driven by dot-clock and timing generator 1
- * @num_planes: number of planes in the group
- * @planes: planes handled by the group
- * @need_restart: the group needs to be restarted due to a configuration change
- */
+ 
 struct rcar_du_group {
 	struct rcar_du_device *dev;
 	unsigned int mmio_offset;
@@ -62,4 +41,4 @@ int rcar_du_group_set_routing(struct rcar_du_group *rgrp);
 
 int rcar_du_set_dpad0_vsp1_routing(struct rcar_du_device *rcdu);
 
-#endif /* __RCAR_DU_GROUP_H__ */
+#endif  

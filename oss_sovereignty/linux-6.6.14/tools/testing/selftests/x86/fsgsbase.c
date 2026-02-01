@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * fsgsbase.c, an fsgsbase test
- * Copyright (c) 2014-2016 Andy Lutomirski
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdio.h>
@@ -67,13 +64,13 @@ static void sigsegv(int sig, siginfo_t *si, void *ctx_void)
 
 	if (!want_segv) {
 		clearhandler(SIGSEGV);
-		return;  /* Crash cleanly. */
+		return;   
 	}
 
 	want_segv = false;
 	segv_addr = (unsigned long)si->si_addr;
 
-	ctx->uc_mcontext.gregs[REG_RIP] += 4;	/* Skip the faulting mov */
+	ctx->uc_mcontext.gregs[REG_RIP] += 4;	 
 
 }
 
@@ -119,16 +116,13 @@ enum which_base { FS, GS };
 static unsigned long read_base(enum which_base which)
 {
 	unsigned long offset;
-	/*
-	 * Unless we have FSGSBASE, there's no direct way to do this from
-	 * user mode.  We can get at it indirectly using signals, though.
-	 */
+	 
 
 	want_segv = true;
 
 	offset = 0;
 	if (which == FS) {
-		/* Use a constant-length instruction here. */
+		 
 		asm volatile ("mov %%fs:(%%rcx), %%rax" : : "c" (offset) : "rax");
 	} else {
 		asm volatile ("mov %%gs:(%%rcx), %%rax" : : "c" (offset) : "rax");
@@ -136,11 +130,7 @@ static unsigned long read_base(enum which_base which)
 	if (!want_segv)
 		return segv_addr + offset;
 
-	/*
-	 * If that didn't segfault, try the other end of the address space.
-	 * Unless we get really unlucky and run into the vsyscall page, this
-	 * is guaranteed to segfault.
-	 */
+	 
 
 	offset = (ULONG_MAX >> 1) + 1;
 	if (which == FS) {
@@ -215,10 +205,7 @@ static volatile unsigned long remote_base;
 static volatile bool remote_hard_zero;
 static volatile unsigned int ftx;
 
-/*
- * ARCH_SET_FS/GS(0) may or may not program a selector of zero.  HARD_ZERO
- * means to force the selector to zero to improve test coverage.
- */
+ 
 #define HARD_ZERO 0xa1fa5f343cb85fa4
 
 static void do_remote_base()
@@ -246,22 +233,19 @@ static __thread int set_thread_area_entry_number = -1;
 
 static unsigned short load_gs(void)
 {
-	/*
-	 * Sets GS != 0 and GSBASE != 0 but arranges for the kernel to think
-	 * that GSBASE == 0 (i.e. thread.gsbase == 0).
-	 */
+	 
 
-	/* Step 1: tell the kernel that we have GSBASE == 0. */
+	 
 	if (syscall(SYS_arch_prctl, ARCH_SET_GS, 0) != 0)
 		err(1, "ARCH_SET_GS");
 
-	/* Step 2: change GSBASE without telling the kernel. */
+	 
 	struct user_desc desc = {
 		.entry_number    = 0,
 		.base_addr       = 0xBAADF00D,
 		.limit           = 0xfffff,
 		.seg_32bit       = 1,
-		.contents        = 0, /* Data, grow-up */
+		.contents        = 0,  
 		.read_exec_only  = 0,
 		.limit_in_pages  = 1,
 		.seg_not_present = 0,
@@ -272,7 +256,7 @@ static unsigned short load_gs(void)
 		asm volatile ("mov %0, %%gs" : : "rm" ((unsigned short)0x7));
 		return 0x7;
 	} else {
-		/* No modify_ldt for us (configured out, perhaps) */
+		 
 
 		struct user_desc *low_desc = mmap(
 			NULL, sizeof(desc),
@@ -282,7 +266,7 @@ static unsigned short load_gs(void)
 
 		low_desc->entry_number = set_thread_area_entry_number;
 
-		/* 32-bit set_thread_area */
+		 
 		long ret;
 		asm volatile ("int $0x80"
 			      : "=a" (ret), "+m" (*low_desc)
@@ -343,10 +327,7 @@ static void *threadproc(void *ctx)
 		if (ftx == 1) {
 			do_remote_base();
 		} else if (ftx == 2) {
-			/*
-			 * On AMD chips, this causes GSBASE != 0, GS == 0, and
-			 * thread.gsbase == 0.
-			 */
+			 
 
 			load_gs();
 			asm volatile ("mov %0, %%gs" : : "rm" ((unsigned short)0));
@@ -391,10 +372,7 @@ static void set_gs_and_switch_to(unsigned long local,
 		sel_pre_sched = force_sel;
 		local = read_base(GS);
 
-		/*
-		 * Signal delivery is quite likely to change a selector
-		 * of 1, 2, or 3 back to 0 due to IRET being defective.
-		 */
+		 
 		asm volatile ("mov %0, %%gs" : : "rm" (force_sel));
 	} else {
 		asm volatile ("mov %%gs, %0" : "=rm" (sel_pre_sched));
@@ -413,10 +391,7 @@ static void set_gs_and_switch_to(unsigned long local,
 		       sel_pre_sched, local);
 	} else if (base == local && sel_pre_sched >= 1 && sel_pre_sched <= 3 &&
 		   sel_post_sched == 0) {
-		/*
-		 * IRET is misdesigned and will squash selectors 1, 2, or 3
-		 * to zero.  Don't fail the test just because this happened.
-		 */
+		 
 		printf("[OK]\tGS/BASE changed from 0x%hx/0x%lx to 0x%hx/0x%lx because IRET is defective\n",
 		       sel_pre_sched, local, sel_post_sched, base);
 	} else {
@@ -480,7 +455,7 @@ static void test_ptrace_write_gs_read_base(void)
 		unsigned long gs_offset = USER_REGS_OFFSET(gs);
 		unsigned long base_offset = USER_REGS_OFFSET(gs_base);
 
-		/* Read the initial base.  It should be 1. */
+		 
 		base = ptrace(PTRACE_PEEKUSER, child, base_offset, NULL);
 		if (base == 1) {
 			printf("[OK]\tGSBASE started at 1\n");
@@ -491,11 +466,11 @@ static void test_ptrace_write_gs_read_base(void)
 
 		printf("[RUN]\tSet GS = 0x7, read GSBASE\n");
 
-		/* Poke an LDT selector into GS. */
+		 
 		if (ptrace(PTRACE_POKEUSER, child, gs_offset, 0x7) != 0)
 			err(1, "PTRACE_POKEUSER");
 
-		/* And read the base. */
+		 
 		base = ptrace(PTRACE_PEEKUSER, child, base_offset, NULL);
 
 		if (base == 0 || base == 1) {
@@ -554,24 +529,12 @@ static void test_ptrace_write_gsbase(void)
 		gs = ptrace(PTRACE_PEEKUSER, child, gs_offset, NULL);
 		base = ptrace(PTRACE_PEEKUSER, child, base_offset, NULL);
 
-		/*
-		 * In a non-FSGSBASE system, the nonzero selector will load
-		 * GSBASE (again). But what is tested here is whether the
-		 * selector value is changed or not by the GSBASE write in
-		 * a ptracer.
-		 */
+		 
 		if (gs != *shared_scratch) {
 			nerrs++;
 			printf("[FAIL]\tGS changed to %lx\n", gs);
 
-			/*
-			 * On older kernels, poking a nonzero value into the
-			 * base would zero the selector.  On newer kernels,
-			 * this behavior has changed -- poking the base
-			 * changes only the base and, if FSGSBASE is not
-			 * available, this may have no effect once the tracee
-			 * is resumed.
-			 */
+			 
 			if (gs == 0)
 				printf("\tNote: this is expected behavior on older kernels.\n");
 		} else if (have_fsgsbase && (base != 0xFF)) {
@@ -599,10 +562,10 @@ int main()
 	shared_scratch = mmap(NULL, 4096, PROT_READ | PROT_WRITE,
 			      MAP_ANONYMOUS | MAP_SHARED, -1, 0);
 
-	/* Do these tests before we have an LDT. */
+	 
 	test_ptrace_write_gs_read_base();
 
-	/* Probe FSGSBASE */
+	 
 	sethandler(SIGILL, sigill, 0);
 	if (sigsetjmp(jmpbuf, 1) == 0) {
 		rdfsbase();
@@ -628,13 +591,13 @@ int main()
 		mov_0_gs(0x200000000, !!sched);
 	}
 
-	/* Set up for multithreading. */
+	 
 
 	cpu_set_t cpuset;
 	CPU_ZERO(&cpuset);
 	CPU_SET(0, &cpuset);
 	if (sched_setaffinity(0, sizeof(cpuset), &cpuset) != 0)
-		err(1, "sched_setaffinity to CPU 0");	/* should never fail */
+		err(1, "sched_setaffinity to CPU 0");	 
 
 	if (pthread_create(&thread, 0, threadproc, 0) != 0)
 		err(1, "pthread_create");
@@ -674,7 +637,7 @@ int main()
 		test_wrbase(ss, 0xffffffffffffffff);
 	}
 
-	ftx = 3;  /* Kill the thread. */
+	ftx = 3;   
 	syscall(SYS_futex, &ftx, FUTEX_WAKE, 0, NULL, NULL, 0);
 
 	if (pthread_join(thread, NULL) != 0)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/iopoll.h>
 #include <linux/device.h>
@@ -70,7 +70,7 @@ int lima_l2_cache_init(struct lima_ip *ip)
 	u32 size;
 	struct lima_device *dev = ip->dev;
 
-	/* l2_cache2 only exists when one of PP4-7 present */
+	 
 	if (ip->id == lima_ip_l2_cache2) {
 		for (i = lima_ip_pp4; i <= lima_ip_pp7; i++) {
 			if (dev->ip[i].present)

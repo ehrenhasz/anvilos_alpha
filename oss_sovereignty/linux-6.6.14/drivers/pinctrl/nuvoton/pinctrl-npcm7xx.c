@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2016-2018 Nuvoton Technology corporation.
-// Copyright (c) 2016, Dell Inc
+
+
+
 
 #include <linux/device.h>
 #include <linux/gpio/driver.h>
@@ -23,7 +23,7 @@
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/pinctrl/pinmux.h>
 
-/* GCR registers */
+ 
 #define NPCM7XX_GCR_PDID	0x00
 #define NPCM7XX_GCR_MFSEL1	0x0C
 #define NPCM7XX_GCR_MFSEL2	0x10
@@ -40,43 +40,43 @@
 
 #define SRCNT_ESPI		BIT(3)
 
-/* GPIO registers */
+ 
 #define NPCM7XX_GP_N_TLOCK1	0x00
-#define NPCM7XX_GP_N_DIN	0x04 /* Data IN */
-#define NPCM7XX_GP_N_POL	0x08 /* Polarity */
-#define NPCM7XX_GP_N_DOUT	0x0c /* Data OUT */
-#define NPCM7XX_GP_N_OE		0x10 /* Output Enable */
+#define NPCM7XX_GP_N_DIN	0x04  
+#define NPCM7XX_GP_N_POL	0x08  
+#define NPCM7XX_GP_N_DOUT	0x0c  
+#define NPCM7XX_GP_N_OE		0x10  
 #define NPCM7XX_GP_N_OTYP	0x14
 #define NPCM7XX_GP_N_MP		0x18
-#define NPCM7XX_GP_N_PU		0x1c /* Pull-up */
-#define NPCM7XX_GP_N_PD		0x20 /* Pull-down */
-#define NPCM7XX_GP_N_DBNC	0x24 /* Debounce */
-#define NPCM7XX_GP_N_EVTYP	0x28 /* Event Type */
-#define NPCM7XX_GP_N_EVBE	0x2c /* Event Both Edge */
+#define NPCM7XX_GP_N_PU		0x1c  
+#define NPCM7XX_GP_N_PD		0x20  
+#define NPCM7XX_GP_N_DBNC	0x24  
+#define NPCM7XX_GP_N_EVTYP	0x28  
+#define NPCM7XX_GP_N_EVBE	0x2c  
 #define NPCM7XX_GP_N_OBL0	0x30
 #define NPCM7XX_GP_N_OBL1	0x34
 #define NPCM7XX_GP_N_OBL2	0x38
 #define NPCM7XX_GP_N_OBL3	0x3c
-#define NPCM7XX_GP_N_EVEN	0x40 /* Event Enable */
-#define NPCM7XX_GP_N_EVENS	0x44 /* Event Set (enable) */
-#define NPCM7XX_GP_N_EVENC	0x48 /* Event Clear (disable) */
-#define NPCM7XX_GP_N_EVST	0x4c /* Event Status */
+#define NPCM7XX_GP_N_EVEN	0x40  
+#define NPCM7XX_GP_N_EVENS	0x44  
+#define NPCM7XX_GP_N_EVENC	0x48  
+#define NPCM7XX_GP_N_EVST	0x4c  
 #define NPCM7XX_GP_N_SPLCK	0x50
 #define NPCM7XX_GP_N_MPLCK	0x54
-#define NPCM7XX_GP_N_IEM	0x58 /* Input Enable */
+#define NPCM7XX_GP_N_IEM	0x58  
 #define NPCM7XX_GP_N_OSRC	0x5c
 #define NPCM7XX_GP_N_ODSC	0x60
-#define NPCM7XX_GP_N_DOS	0x68 /* Data OUT Set */
-#define NPCM7XX_GP_N_DOC	0x6c /* Data OUT Clear */
-#define NPCM7XX_GP_N_OES	0x70 /* Output Enable Set */
-#define NPCM7XX_GP_N_OEC	0x74 /* Output Enable Clear */
+#define NPCM7XX_GP_N_DOS	0x68  
+#define NPCM7XX_GP_N_DOC	0x6c  
+#define NPCM7XX_GP_N_OES	0x70  
+#define NPCM7XX_GP_N_OEC	0x74  
 #define NPCM7XX_GP_N_TLOCK2	0x7c
 
 #define NPCM7XX_GPIO_PER_BANK	32
 #define NPCM7XX_GPIO_BANK_NUM	8
 #define NPCM7XX_GCR_NONE	0
 
-/* Structure for register banks */
+ 
 struct npcm7xx_gpio {
 	void __iomem		*base;
 	struct gpio_chip	gc;
@@ -100,7 +100,7 @@ struct npcm7xx_pinctrl {
 	u32			bank_num;
 };
 
-/* GPIO handling in the pinctrl driver */
+ 
 static void npcm_gpio_set(struct gpio_chip *gc, void __iomem *reg,
 			  unsigned int pinmask)
 {
@@ -178,7 +178,7 @@ static int npcmgpio_direction_input(struct gpio_chip *chip, unsigned int offset)
 	return bank->direction_input(chip, offset);
 }
 
-/* Set GPIO to Output with initial value */
+ 
 static int npcmgpio_direction_output(struct gpio_chip *chip,
 				     unsigned int offset, int value)
 {
@@ -295,27 +295,27 @@ static void npcmgpio_irq_ack(struct irq_data *d)
 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVST);
 }
 
-/* Disable GPIO interrupt */
+ 
 static void npcmgpio_irq_mask(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	struct npcm7xx_gpio *bank = gpiochip_get_data(gc);
 	unsigned int gpio = irqd_to_hwirq(d);
 
-	/* Clear events */
+	 
 	dev_dbg(bank->gc.parent, "irq_mask: %u.%u\n", gpio, d->irq);
 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENC);
 	gpiochip_disable_irq(gc, gpio);
 }
 
-/* Enable GPIO interrupt */
+ 
 static void npcmgpio_irq_unmask(struct irq_data *d)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	struct npcm7xx_gpio *bank = gpiochip_get_data(gc);
 	unsigned int gpio = irqd_to_hwirq(d);
 
-	/* Enable events */
+	 
 	gpiochip_enable_irq(gc, gpio);
 	dev_dbg(bank->gc.parent, "irq_unmask: %u.%u\n", gpio, d->irq);
 	iowrite32(BIT(gpio), bank->base + NPCM7XX_GP_N_EVENS);
@@ -326,7 +326,7 @@ static unsigned int npcmgpio_irq_startup(struct irq_data *d)
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
 	unsigned int gpio = irqd_to_hwirq(d);
 
-	/* active-high, input, clear interrupt, enable interrupt */
+	 
 	dev_dbg(gc->parent, "startup: %u.%u\n", gpio, d->irq);
 	npcmgpio_direction_input(gc, gpio);
 	npcmgpio_irq_ack(d);
@@ -346,7 +346,7 @@ static const struct irq_chip npcmgpio_irqchip = {
 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
 
-/* pinmux handing in the pinctrl driver*/
+ 
 static const int smb0_pins[]  = { 115, 114 };
 static const int smb0b_pins[] = { 195, 194 };
 static const int smb0c_pins[] = { 202, 196 };
@@ -421,25 +421,25 @@ static const int pwm7_pins[] = { 147 };
 static const int uart1_pins[] = { 43, 44, 45, 46, 47, 61, 62, 63 };
 static const int uart2_pins[] = { 48, 49, 50, 51, 52, 53, 54, 55 };
 
-/* RGMII 1 pin group */
+ 
 static const int rg1_pins[] = { 96, 97, 98, 99, 100, 101, 102, 103, 104, 105,
 	106, 107 };
-/* RGMII 1 MD interface pin group */
+ 
 static const int rg1mdio_pins[] = { 108, 109 };
 
-/* RGMII 2 pin group */
+ 
 static const int rg2_pins[] = { 110, 111, 112, 113, 208, 209, 210, 211, 212,
 	213, 214, 215 };
-/* RGMII 2 MD interface pin group */
+ 
 static const int rg2mdio_pins[] = { 216, 217 };
 
 static const int ddr_pins[] = { 110, 111, 112, 113, 208, 209, 210, 211, 212,
 	213, 214, 215, 216, 217 };
-/* Serial I/O Expander 1 */
+ 
 static const int iox1_pins[] = { 0, 1, 2, 3 };
-/* Serial I/O Expander 2 */
+ 
 static const int iox2_pins[] = { 4, 5, 6, 7 };
-/* Host Serial I/O Expander 2 */
+ 
 static const int ioxh_pins[] = { 10, 11, 24, 25 };
 
 static const int mmc_pins[] = { 152, 154, 156, 157, 158, 159 };
@@ -448,12 +448,12 @@ static const int mmccd_pins[] = { 155 };
 static const int mmcrst_pins[] = { 155 };
 static const int mmc8_pins[] = { 148, 149, 150, 151 };
 
-/* RMII 1 pin groups */
+ 
 static const int r1_pins[] = { 178, 179, 180, 181, 182, 193, 201 };
 static const int r1err_pins[] = { 56 };
 static const int r1md_pins[] = { 57, 58 };
 
-/* RMII 2 pin groups */
+ 
 static const int r2_pins[] = { 84, 85, 86, 87, 88, 89, 200 };
 static const int r2err_pins[] = { 90 };
 static const int r2md_pins[] = { 91, 92 };
@@ -464,24 +464,24 @@ static const int sd1pwr_pins[] = { 143 };
 static const int wdog1_pins[] = { 218 };
 static const int wdog2_pins[] = { 219 };
 
-/* BMC serial port 0 */
+ 
 static const int bmcuart0a_pins[] = { 41, 42 };
 static const int bmcuart0b_pins[] = { 48, 49 };
 
 static const int bmcuart1_pins[] = { 43, 44, 62, 63 };
 
-/* System Control Interrupt and Power Management Event pin group */
+ 
 static const int scipme_pins[] = { 169 };
-/* System Management Interrupt pin group */
+ 
 static const int sci_pins[] = { 170 };
-/* Serial Interrupt Line pin group */
+ 
 static const int serirq_pins[] = { 162 };
 
 static const int clkout_pins[] = { 160 };
 static const int clkreq_pins[] = { 231 };
 
 static const int jtag2_pins[] = { 43, 44, 45, 46, 47 };
-/* Graphics SPI Clock pin group */
+ 
 static const int gspi_pins[] = { 12, 13, 14, 15 };
 
 static const int spix_pins[] = { 224, 225, 226, 227, 229, 230 };
@@ -510,11 +510,7 @@ static const int lkgpo2_pins[] = { 9 };
 
 static const int nprd_smi_pins[] = { 190 };
 
-/*
- * pin:	     name, number
- * group:    name, npins,   pins
- * function: name, ngroups, groups
- */
+ 
 struct npcm7xx_group {
 	const char *name;
 	const unsigned int *pins;
@@ -642,7 +638,7 @@ struct npcm7xx_group {
 enum {
 #define NPCM7XX_GRP(x) fn_ ## x
 	NPCM7XX_GRPS
-	/* add placeholder for none/gpio */
+	 
 	NPCM7XX_GRP(none),
 	NPCM7XX_GRP(gpio),
 #undef NPCM7XX_GRP
@@ -781,7 +777,7 @@ NPCM7XX_SFUNC(lkgpo1);
 NPCM7XX_SFUNC(lkgpo2);
 NPCM7XX_SFUNC(nprd_smi);
 
-/* Function names */
+ 
 static struct npcm7xx_func npcm7xx_funcs[] = {
 	NPCM7XX_MKFUNC(smb0),
 	NPCM7XX_MKFUNC(smb0b),
@@ -906,7 +902,7 @@ static struct npcm7xx_func npcm7xx_funcs[] = {
 			.fn2 = fn_ ## h, .reg2 = NPCM7XX_GCR_ ## i, .bit2 = j, \
 			.flag = k }
 
-/* Drive strength controlled by NPCM7XX_GP_N_ODSC */
+ 
 #define DRIVE_STRENGTH_LO_SHIFT		8
 #define DRIVE_STRENGTH_HI_SHIFT		12
 #define DRIVE_STRENGTH_MASK		0x0000FF00
@@ -916,10 +912,10 @@ static struct npcm7xx_func npcm7xx_funcs[] = {
 #define DSLO(x)		(((x) >> DRIVE_STRENGTH_LO_SHIFT) & 0xF)
 #define DSHI(x)		(((x) >> DRIVE_STRENGTH_HI_SHIFT) & 0xF)
 
-#define GPI		0x1 /* Not GPO */
-#define GPO		0x2 /* Not GPI */
-#define SLEW		0x4 /* Has Slew Control, NPCM7XX_GP_N_OSRC */
-#define SLEWLPC		0x8 /* Has Slew Control, SRCNT.3 */
+#define GPI		0x1  
+#define GPO		0x2  
+#define SLEW		0x4  
+#define SLEWLPC		0x8  
 
 struct npcm7xx_pincfg {
 	int flag;
@@ -929,7 +925,7 @@ struct npcm7xx_pincfg {
 };
 
 static const struct npcm7xx_pincfg pincfg[] = {
-	/*		PIN	  FUNCTION 1		   FUNCTION 2		  FUNCTION 3	    FLAGS */
+	 
 	NPCM7XX_PINCFG(0,	 iox1, MFSEL1, 30,	  none, NONE, 0,	none, NONE, 0,	     0),
 	NPCM7XX_PINCFG(1,	 iox1, MFSEL1, 30,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12)),
 	NPCM7XX_PINCFG(2,	 iox1, MFSEL1, 30,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12)),
@@ -1085,9 +1081,9 @@ static const struct npcm7xx_pincfg pincfg[] = {
 	NPCM7XX_PINCFG(150,	 mmc8, MFSEL3, 11,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
 	NPCM7XX_PINCFG(151,	 mmc8, MFSEL3, 11,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
 	NPCM7XX_PINCFG(152,	  mmc, MFSEL3, 10,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
-	NPCM7XX_PINCFG(153,     mmcwp, FLOCKR1, 24,       none, NONE, 0,	none, NONE, 0,	     0),  /* Z1/A1 */
+	NPCM7XX_PINCFG(153,     mmcwp, FLOCKR1, 24,       none, NONE, 0,	none, NONE, 0,	     0),   
 	NPCM7XX_PINCFG(154,	  mmc, MFSEL3, 10,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
-	NPCM7XX_PINCFG(155,     mmccd, MFSEL3, 25,      mmcrst, MFSEL4, 6,      none, NONE, 0,       0),  /* Z1/A1 */
+	NPCM7XX_PINCFG(155,     mmccd, MFSEL3, 25,      mmcrst, MFSEL4, 6,      none, NONE, 0,       0),   
 	NPCM7XX_PINCFG(156,	  mmc, MFSEL3, 10,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
 	NPCM7XX_PINCFG(157,	  mmc, MFSEL3, 10,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
 	NPCM7XX_PINCFG(158,	  mmc, MFSEL3, 10,	  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
@@ -1124,9 +1120,9 @@ static const struct npcm7xx_pincfg pincfg[] = {
 	NPCM7XX_PINCFG(188,  spi3quad, MFSEL4, 20,     spi3cs2, MFSEL4, 18,     none, NONE, 0,    DSTR(8, 12) | SLEW),
 	NPCM7XX_PINCFG(189,  spi3quad, MFSEL4, 20,     spi3cs3, MFSEL4, 19,     none, NONE, 0,    DSTR(8, 12) | SLEW),
 	NPCM7XX_PINCFG(190,      gpio, FLOCKR1, 20,   nprd_smi, NONE, 0,	none, NONE, 0,	     DSTR(2, 4)),
-	NPCM7XX_PINCFG(191,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12)),  /* XX */
+	NPCM7XX_PINCFG(191,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12)),   
 
-	NPCM7XX_PINCFG(192,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12)),  /* XX */
+	NPCM7XX_PINCFG(192,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12)),   
 	NPCM7XX_PINCFG(193,	   r1, MFSEL3, 9,	  none, NONE, 0,	none, NONE, 0,	     0),
 	NPCM7XX_PINCFG(194,	smb0b, I2CSEGSEL, 0,	  none, NONE, 0,	none, NONE, 0,	     0),
 	NPCM7XX_PINCFG(195,	smb0b, I2CSEGSEL, 0,	  none, NONE, 0,	none, NONE, 0,	     0),
@@ -1167,12 +1163,12 @@ static const struct npcm7xx_pincfg pincfg[] = {
 	NPCM7XX_PINCFG(229,	 spix, MFSEL4, 27,        none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
 	NPCM7XX_PINCFG(230,	 spix, MFSEL4, 27,        none, NONE, 0,	none, NONE, 0,	     DSTR(8, 12) | SLEW),
 	NPCM7XX_PINCFG(231,    clkreq, MFSEL4, 9,         none, NONE, 0,        none, NONE, 0,	     DSTR(8, 12)),
-	NPCM7XX_PINCFG(253,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     GPI), /* SDHC1 power */
-	NPCM7XX_PINCFG(254,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     GPI), /* SDHC2 power */
-	NPCM7XX_PINCFG(255,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     GPI), /* DACOSEL */
+	NPCM7XX_PINCFG(253,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     GPI),  
+	NPCM7XX_PINCFG(254,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     GPI),  
+	NPCM7XX_PINCFG(255,	 none, NONE, 0,		  none, NONE, 0,	none, NONE, 0,	     GPI),  
 };
 
-/* number, name, drv_data */
+ 
 static const struct pinctrl_pin_desc npcm7xx_pins[] = {
 	PINCTRL_PIN(0,	"GPIO0/IOX1DI"),
 	PINCTRL_PIN(1,	"GPIO1/IOX1LD"),
@@ -1341,10 +1337,10 @@ static const struct pinctrl_pin_desc npcm7xx_pins[] = {
 	PINCTRL_PIN(161, "GPIO161/nLFRAME/nESPICS"),
 	PINCTRL_PIN(162, "GPIO162/SERIRQ"),
 	PINCTRL_PIN(163, "GPIO163/LCLK/ESPICLK"),
-	PINCTRL_PIN(164, "GPIO164/LAD0/ESPI_IO0"/*dscnt6*/),
-	PINCTRL_PIN(165, "GPIO165/LAD1/ESPI_IO1"/*dscnt6*/),
-	PINCTRL_PIN(166, "GPIO166/LAD2/ESPI_IO2"/*dscnt6*/),
-	PINCTRL_PIN(167, "GPIO167/LAD3/ESPI_IO3"/*dscnt6*/),
+	PINCTRL_PIN(164, "GPIO164/LAD0/ESPI_IO0" ),
+	PINCTRL_PIN(165, "GPIO165/LAD1/ESPI_IO1" ),
+	PINCTRL_PIN(166, "GPIO166/LAD2/ESPI_IO2" ),
+	PINCTRL_PIN(167, "GPIO167/LAD3/ESPI_IO3" ),
 	PINCTRL_PIN(168, "GPIO168/nCLKRUN/nESPIALERT"),
 	PINCTRL_PIN(169, "GPIO169/nSCIPME"),
 	PINCTRL_PIN(170, "GPIO170/nSMI"),
@@ -1414,7 +1410,7 @@ static const struct pinctrl_pin_desc npcm7xx_pins[] = {
 	PINCTRL_PIN(255, "GPI255/DACOSEL"),
 };
 
-/* Enable mode in pin group */
+ 
 static void npcm7xx_setfunc(struct regmap *gcr_regmap, const unsigned int *pin,
 			    int pin_number, int mode)
 {
@@ -1443,7 +1439,7 @@ static void npcm7xx_setfunc(struct regmap *gcr_regmap, const unsigned int *pin,
 	}
 }
 
-/* Get slew rate of pin (high/low) */
+ 
 static int npcm7xx_get_slew_rate(struct npcm7xx_gpio *bank,
 				 struct regmap *gcr_regmap, unsigned int pin)
 {
@@ -1454,7 +1450,7 @@ static int npcm7xx_get_slew_rate(struct npcm7xx_gpio *bank,
 	if (pincfg[pin].flag & SLEW)
 		return ioread32(bank->base + NPCM7XX_GP_N_OSRC)
 		& pinmask;
-	/* LPC Slew rate in SRCNT register */
+	 
 	if (pincfg[pin].flag & SLEWLPC) {
 		regmap_read(gcr_regmap, NPCM7XX_GCR_SRCNT, &val);
 		return !!(val & SRCNT_ESPI);
@@ -1463,7 +1459,7 @@ static int npcm7xx_get_slew_rate(struct npcm7xx_gpio *bank,
 	return -EINVAL;
 }
 
-/* Set slew rate of pin (high/low) */
+ 
 static int npcm7xx_set_slew_rate(struct npcm7xx_gpio *bank,
 				 struct regmap *gcr_regmap, unsigned int pin,
 				 int arg)
@@ -1484,7 +1480,7 @@ static int npcm7xx_set_slew_rate(struct npcm7xx_gpio *bank,
 			return -EINVAL;
 		}
 	}
-	/* LPC Slew rate in SRCNT register */
+	 
 	if (pincfg[pin].flag & SLEWLPC) {
 		switch (arg) {
 		case 0:
@@ -1503,7 +1499,7 @@ static int npcm7xx_set_slew_rate(struct npcm7xx_gpio *bank,
 	return -EINVAL;
 }
 
-/* Get drive strength for a pin, if supported */
+ 
 static int npcm7xx_get_drive_strength(struct pinctrl_dev *pctldev,
 				      unsigned int pin)
 {
@@ -1517,7 +1513,7 @@ static int npcm7xx_get_drive_strength(struct pinctrl_dev *pctldev,
 
 	flg = pincfg[pin].flag;
 	if (flg & DRIVE_STRENGTH_MASK) {
-		/* Get standard reading */
+		 
 		val = ioread32(bank->base + NPCM7XX_GP_N_ODSC)
 		& pinmask;
 		ds = val ? DSHI(flg) : DSLO(flg);
@@ -1529,7 +1525,7 @@ static int npcm7xx_get_drive_strength(struct pinctrl_dev *pctldev,
 	return -EINVAL;
 }
 
-/* Set drive strength for a pin, if supported */
+ 
 static int npcm7xx_set_drive_strength(struct npcm7xx_pinctrl *npcm,
 				      unsigned int pin, int nval)
 {
@@ -1556,7 +1552,7 @@ static int npcm7xx_set_drive_strength(struct npcm7xx_pinctrl *npcm,
 	return -ENOTSUPP;
 }
 
-/* pinctrl_ops */
+ 
 static void npcm7xx_pin_dbg_show(struct pinctrl_dev *pctldev,
 				 struct seq_file *s, unsigned int offset)
 {
@@ -1616,7 +1612,7 @@ static const struct pinctrl_ops npcm7xx_pinctrl_ops = {
 	.dt_free_map = npcm7xx_dt_free_map,
 };
 
-/* pinmux_ops  */
+ 
 static int npcm7xx_get_functions_count(struct pinctrl_dev *pctldev)
 {
 	return ARRAY_SIZE(npcm7xx_funcs);
@@ -1674,7 +1670,7 @@ static int npcm7xx_gpio_request_enable(struct pinctrl_dev *pctldev,
 	return 0;
 }
 
-/* Release GPIO back to pinctrl mode */
+ 
 static void npcm7xx_gpio_request_free(struct pinctrl_dev *pctldev,
 				      struct pinctrl_gpio_range *range,
 				      unsigned int offset)
@@ -1687,7 +1683,7 @@ static void npcm7xx_gpio_request_free(struct pinctrl_dev *pctldev,
 		irq_dispose_mapping(virq);
 }
 
-/* Set GPIO direction */
+ 
 static int npcm_gpio_set_direction(struct pinctrl_dev *pctldev,
 				   struct pinctrl_gpio_range *range,
 				   unsigned int offset, bool input)
@@ -1717,7 +1713,7 @@ static const struct pinmux_ops npcm7xx_pinmux_ops = {
 	.gpio_set_direction = npcm_gpio_set_direction,
 };
 
-/* pinconf_ops */
+ 
 static int npcm7xx_config_get(struct pinctrl_dev *pctldev, unsigned int pin,
 			      unsigned long *config)
 {
@@ -1832,7 +1828,7 @@ static int npcm7xx_config_set_one(struct npcm7xx_pinctrl *npcm,
 	return 0;
 }
 
-/* Set multiple configuration settings for a pin */
+ 
 static int npcm7xx_config_set(struct pinctrl_dev *pctldev, unsigned int pin,
 			      unsigned long *configs, unsigned int num_configs)
 {
@@ -1854,7 +1850,7 @@ static const struct pinconf_ops npcm7xx_pinconf_ops = {
 	.pin_config_set = npcm7xx_config_set,
 };
 
-/* pinctrl_desc */
+ 
 static struct pinctrl_desc npcm7xx_pinctrl_desc = {
 	.name = "npcm7xx-pinctrl",
 	.pins = npcm7xx_pins,

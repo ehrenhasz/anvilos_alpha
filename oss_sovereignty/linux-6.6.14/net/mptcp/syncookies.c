@@ -1,24 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/skbuff.h>
 
 #include "protocol.h"
 
-/* Syncookies do not work for JOIN requests.
- *
- * Unlike MP_CAPABLE, where the ACK cookie contains the needed MPTCP
- * options to reconstruct the initial syn state, MP_JOIN does not contain
- * the token to obtain the mptcp socket nor the server-generated nonce
- * that was used in the cookie SYN/ACK response.
- *
- * Keep a small best effort state table to store the syn/synack data,
- * indexed by skb hash.
- *
- * A MP_JOIN SYN packet handled by syn cookies is only stored if the 32bit
- * token matches a known mptcp connection that can still accept more subflows.
- *
- * There is no timeout handling -- state is only re-constructed
- * when the TCP ACK passed the cookie validation check.
- */
+ 
 
 struct join_entry {
 	u32 token;
@@ -74,21 +59,13 @@ void subflow_init_req_cookie_join_save(const struct mptcp_subflow_request_sock *
 	struct net *net = read_pnet(&subflow_req->sk.req.ireq_net);
 	u32 i = mptcp_join_entry_hash(skb, net);
 
-	/* No use in waiting if other cpu is already using this slot --
-	 * would overwrite the data that got stored.
-	 */
+	 
 	spin_lock_bh(&join_entry_locks[i]);
 	mptcp_join_store_state(&join_entries[i], subflow_req);
 	spin_unlock_bh(&join_entry_locks[i]);
 }
 
-/* Called for a cookie-ack with MP_JOIN option present.
- * Look up the saved state based on skb hash & check token matches msk
- * in same netns.
- *
- * Caller will check msk can still accept another subflow.  The hmac
- * present in the cookie ACK mptcp option space will be checked later.
- */
+ 
 bool mptcp_token_join_cookie_init_state(struct mptcp_subflow_request_sock *subflow_req,
 					struct sk_buff *skb)
 {

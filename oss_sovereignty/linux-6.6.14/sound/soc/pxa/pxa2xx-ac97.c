@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/sound/pxa2xx-ac97.c -- AC97 support for the Intel PXA2xx chip.
- *
- * Author:	Nicolas Pitre
- * Created:	Dec 02, 2004
- * Copyright:	MontaVista Software Inc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/io.h>
@@ -23,9 +17,9 @@
 
 #include <linux/platform_data/asoc-pxa.h>
 
-#define PCDR	0x0040  /* PCM FIFO Data Register */
-#define MODR	0x0140  /* Modem FIFO Data Register */
-#define MCDR	0x0060  /* Mic-in FIFO Data Register */
+#define PCDR	0x0040   
+#define MODR	0x0140   
+#define MCDR	0x0060   
 
 static void pxa2xx_ac97_warm_reset(struct ac97_controller *adrv)
 {
@@ -147,10 +141,7 @@ static const struct snd_soc_dai_ops pxa_ac97_mic_dai_ops = {
 	.startup	= pxa2xx_ac97_mic_startup,
 };
 
-/*
- * There is only 1 physical AC97 interface for pxa2xx, but it
- * has extra fifo's that can be used for aux DACs and ADCs.
- */
+ 
 static struct snd_soc_dai_driver pxa_ac97_dai_driver[] = {
 {
 	.name = "pxa2xx-ac97",
@@ -255,10 +246,7 @@ static int pxa2xx_ac97_dev_probe(struct platform_device *pdev)
 		return PTR_ERR(ctrl);
 
 	platform_set_drvdata(pdev, ctrl);
-	/* Punt most of the init to the SoC probe; we may need the machine
-	 * driver to do interesting things with the clocking to get us up
-	 * and running.
-	 */
+	 
 	return devm_snd_soc_register_component(&pdev->dev, &pxa_ac97_component,
 					  pxa_ac97_dai_driver, ARRAY_SIZE(pxa_ac97_dai_driver));
 }

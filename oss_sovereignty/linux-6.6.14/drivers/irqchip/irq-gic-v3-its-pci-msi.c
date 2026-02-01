@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013-2015 ARM Limited, All Rights Reserved.
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- */
+
+ 
 
 #include <linux/acpi_iort.h>
 #include <linux/pci.h>
@@ -63,12 +60,7 @@ static int its_pci_msi_prepare(struct irq_domain *domain, struct device *dev,
 	msi_info = msi_get_domain_info(domain->parent);
 
 	pdev = to_pci_dev(dev);
-	/*
-	 * If pdev is downstream of any aliasing bridges, take an upper
-	 * bound of how many other vectors could map to the same DevID.
-	 * Also tell the ITS that the signalling will come from a proxy
-	 * device, and that special allocation rules apply.
-	 */
+	 
 	pci_for_each_dma_alias(pdev, its_get_pci_alias, &alias_dev);
 	if (alias_dev != pdev) {
 		if (alias_dev->subordinate)
@@ -77,16 +69,10 @@ static int its_pci_msi_prepare(struct irq_domain *domain, struct device *dev,
 		info->flags |= MSI_ALLOC_FLAGS_PROXY_DEVICE;
 	}
 
-	/* ITS specific DeviceID, as the core ITS ignores dev. */
+	 
 	info->scratchpad[0].ul = pci_msi_domain_get_msi_rid(domain, pdev);
 
-	/*
-	 * Always allocate a power of 2, and special case device 0 for
-	 * broken systems where the DevID is not wired (and all devices
-	 * appear as DevID 0). For that reason, we generously allocate a
-	 * minimum of 32 MSIs for DevID 0. If you want more because all
-	 * your devices are aliasing to DevID 0, consider fixing your HW.
-	 */
+	 
 	nvec = max(nvec, alias_count);
 	if (!info->scratchpad[0].ul)
 		minnvec = 32;

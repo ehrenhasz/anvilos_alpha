@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas INTC External IRQ Pin Driver
- *
- *  Copyright (C) 2013 Magnus Damm
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of.h>
@@ -19,29 +15,18 @@
 #include <linux/module.h>
 #include <linux/pm_runtime.h>
 
-#define INTC_IRQPIN_MAX 8 /* maximum 8 interrupts per driver instance */
+#define INTC_IRQPIN_MAX 8  
 
-#define INTC_IRQPIN_REG_SENSE 0 /* ICRn */
-#define INTC_IRQPIN_REG_PRIO 1 /* INTPRInn */
-#define INTC_IRQPIN_REG_SOURCE 2 /* INTREQnn */
-#define INTC_IRQPIN_REG_MASK 3 /* INTMSKnn */
-#define INTC_IRQPIN_REG_CLEAR 4 /* INTMSKCLRnn */
+#define INTC_IRQPIN_REG_SENSE 0  
+#define INTC_IRQPIN_REG_PRIO 1  
+#define INTC_IRQPIN_REG_SOURCE 2  
+#define INTC_IRQPIN_REG_MASK 3  
+#define INTC_IRQPIN_REG_CLEAR 4  
 #define INTC_IRQPIN_REG_NR_MANDATORY 5
-#define INTC_IRQPIN_REG_IRLM 5 /* ICR0 with IRLM bit (optional) */
+#define INTC_IRQPIN_REG_IRLM 5  
 #define INTC_IRQPIN_REG_NR 6
 
-/* INTC external IRQ PIN hardware register access:
- *
- * SENSE is read-write 32-bit with 2-bits or 4-bits per IRQ (*)
- * PRIO is read-write 32-bit with 4-bits per IRQ (**)
- * SOURCE is read-only 32-bit or 8-bit with 1-bit per IRQ (***)
- * MASK is write-only 32-bit or 8-bit with 1-bit per IRQ (***)
- * CLEAR is write-only 32-bit or 8-bit with 1-bit per IRQ (***)
- *
- * (*) May be accessed by more than one driver instance - lock needed
- * (**) Read-modify-write access by one driver instance - lock needed
- * (***) Accessed by one driver instance only - no locking needed
- */
+ 
 
 struct intc_irqpin_iomem {
 	void __iomem *iomem;
@@ -70,7 +55,7 @@ struct intc_irqpin_priv {
 };
 
 struct intc_irqpin_config {
-	int irlm_bit;		/* -1 if non-existent */
+	int irlm_bit;		 
 };
 
 static unsigned long intc_irqpin_read32(void __iomem *iomem)
@@ -121,7 +106,7 @@ static inline void intc_irqpin_irq_write_hwirq(struct intc_irqpin_priv *p,
 	intc_irqpin_write(p, reg, intc_irqpin_hwirq_mask(p, reg, hw_irq));
 }
 
-static DEFINE_RAW_SPINLOCK(intc_irqpin_lock); /* only used by slow path */
+static DEFINE_RAW_SPINLOCK(intc_irqpin_lock);  
 
 static void intc_irqpin_read_modify_write(struct intc_irqpin_priv *p,
 					  int reg, int shift,
@@ -143,7 +128,7 @@ static void intc_irqpin_read_modify_write(struct intc_irqpin_priv *p,
 static void intc_irqpin_mask_unmask_prio(struct intc_irqpin_priv *p,
 					 int irq, int do_mask)
 {
-	/* The PRIO register is assumed to be 32-bit with fixed 4-bit fields. */
+	 
 	int bitfield_width = 4;
 	int shift = 32 - (irq + 1) * bitfield_width;
 
@@ -154,7 +139,7 @@ static void intc_irqpin_mask_unmask_prio(struct intc_irqpin_priv *p,
 
 static int intc_irqpin_set_sense(struct intc_irqpin_priv *p, int irq, int value)
 {
-	/* The SENSE register is assumed to be 32-bit. */
+	 
 	int bitfield_width = p->sense_bitfield_width;
 	int shift = 32 - (irq + 1) * bitfield_width;
 
@@ -221,10 +206,7 @@ static void intc_irqpin_irq_enable_force(struct irq_data *d)
 
 	intc_irqpin_irq_enable(d);
 
-	/* enable interrupt through parent interrupt controller,
-	 * assumes non-shared interrupt with 1:1 mapping
-	 * needed for busted IRQs on some SoCs like sh73a0
-	 */
+	 
 	irq_get_chip(irq)->irq_unmask(irq_get_irq_data(irq));
 }
 
@@ -233,10 +215,7 @@ static void intc_irqpin_irq_disable_force(struct irq_data *d)
 	struct intc_irqpin_priv *p = irq_data_get_irq_chip_data(d);
 	int irq = p->irq[irqd_to_hwirq(d)].requested_irq;
 
-	/* disable interrupt through parent interrupt controller,
-	 * assumes non-shared interrupt with 1:1 mapping
-	 * needed for busted IRQs on some SoCs like sh73a0
-	 */
+	 
 	irq_get_chip(irq)->irq_mask(irq_get_irq_data(irq));
 	intc_irqpin_irq_disable(d);
 }
@@ -315,13 +294,10 @@ static irqreturn_t intc_irqpin_shared_irq_handler(int irq, void *dev_id)
 	return status;
 }
 
-/*
- * This lock class tells lockdep that INTC External IRQ Pin irqs are in a
- * different category than their parents, so it won't report false recursion.
- */
+ 
 static struct lock_class_key intc_irqpin_irq_lock_class;
 
-/* And this is for the request mutex */
+ 
 static struct lock_class_key intc_irqpin_irq_request_class;
 
 static int intc_irqpin_irq_domain_map(struct irq_domain *h, unsigned int virq,
@@ -346,7 +322,7 @@ static const struct irq_domain_ops intc_irqpin_irq_domain_ops = {
 };
 
 static const struct intc_irqpin_config intc_irqpin_irlm_r8a777x = {
-	.irlm_bit = 23, /* ICR0.IRLM0 */
+	.irlm_bit = 23,  
 };
 
 static const struct intc_irqpin_config intc_irqpin_rmobile = {
@@ -388,12 +364,12 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 	if (!p)
 		return -ENOMEM;
 
-	/* deal with driver instance configuration */
+	 
 	of_property_read_u32(dev->of_node, "sense-bitfield-width",
 			     &p->sense_bitfield_width);
 	control_parent = of_property_read_bool(dev->of_node, "control-parent");
 	if (!p->sense_bitfield_width)
-		p->sense_bitfield_width = 4; /* default to 4 bits */
+		p->sense_bitfield_width = 4;  
 
 	p->pdev = pdev;
 	platform_set_drvdata(pdev, p);
@@ -403,7 +379,7 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 	pm_runtime_enable(dev);
 	pm_runtime_get_sync(dev);
 
-	/* get hold of register banks */
+	 
 	memset(io, 0, sizeof(io));
 	for (k = 0; k < INTC_IRQPIN_REG_NR; k++) {
 		io[k] = platform_get_resource(pdev, IORESOURCE_MEM, k);
@@ -414,7 +390,7 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* allow any number of IRQs between 1 and INTC_IRQPIN_MAX */
+	 
 	for (k = 0; k < INTC_IRQPIN_MAX; k++) {
 		ret = platform_get_irq_optional(pdev, k);
 		if (ret == -ENXIO)
@@ -433,11 +409,11 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 		goto err0;
 	}
 
-	/* ioremap IOMEM and setup read/write callbacks */
+	 
 	for (k = 0; k < INTC_IRQPIN_REG_NR; k++) {
 		i = &p->iomem[k];
 
-		/* handle optional registers */
+		 
 		if (!io[k])
 			continue;
 
@@ -467,7 +443,7 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* configure "individual IRQ mode" where needed */
+	 
 	if (config && config->irlm_bit >= 0) {
 		if (io[INTC_IRQPIN_REG_IRLM])
 			intc_irqpin_read_modify_write(p, INTC_IRQPIN_REG_IRLM,
@@ -476,14 +452,14 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 			dev_warn(dev, "unable to select IRLM mode\n");
 	}
 
-	/* mask all interrupts using priority */
+	 
 	for (k = 0; k < nirqs; k++)
 		intc_irqpin_mask_unmask_prio(p, k, 1);
 
-	/* clear all pending interrupts */
+	 
 	intc_irqpin_write(p, INTC_IRQPIN_REG_SOURCE, 0x0);
 
-	/* scan for shared interrupt lines */
+	 
 	ref_irq = p->irq[0].requested_irq;
 	p->shared_irqs = 1;
 	for (k = 1; k < nirqs; k++) {
@@ -493,7 +469,7 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* use more severe masking method if requested */
+	 
 	if (control_parent) {
 		enable_fn = intc_irqpin_irq_enable_force;
 		disable_fn = intc_irqpin_irq_disable_force;
@@ -524,7 +500,7 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 	irq_domain_set_pm_device(p->irq_domain, dev);
 
 	if (p->shared_irqs) {
-		/* request one shared interrupt */
+		 
 		if (devm_request_irq(dev, p->irq[0].requested_irq,
 				intc_irqpin_shared_irq_handler,
 				IRQF_SHARED, name, p)) {
@@ -533,7 +509,7 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 			goto err1;
 		}
 	} else {
-		/* request interrupts one by one */
+		 
 		for (k = 0; k < nirqs; k++) {
 			if (devm_request_irq(dev, p->irq[k].requested_irq,
 					     intc_irqpin_irq_handler, 0, name,
@@ -545,7 +521,7 @@ static int intc_irqpin_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* unmask all interrupts on prio level */
+	 
 	for (k = 0; k < nirqs; k++)
 		intc_irqpin_mask_unmask_prio(p, k, 0);
 

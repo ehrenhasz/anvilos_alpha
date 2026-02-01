@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Amlogic Meson8b, Meson8m2 and GXBB DWMAC glue layer
- *
- * Copyright (C) 2016 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -29,16 +25,13 @@
 #define PRG_ETH0_EXT_RGMII_MODE		1
 #define PRG_ETH0_EXT_RMII_MODE		4
 
-/* mux to choose between fclk_div2 (bit unset) and mpll2 (bit set) */
+ 
 #define PRG_ETH0_CLK_M250_SEL_MASK	GENMASK(4, 4)
 
-/* TX clock delay in ns = "8ns / 4 * tx_dly_val" (where 8ns are exactly one
- * cycle of the 125MHz RGMII TX clock):
- * 0ns = 0x0, 2ns = 0x1, 4ns = 0x2, 6ns = 0x3
- */
+ 
 #define PRG_ETH0_TXDLY_MASK		GENMASK(6, 5)
 
-/* divider for the result of m250_sel */
+ 
 #define PRG_ETH0_CLK_M250_DIV_SHIFT	7
 #define PRG_ETH0_CLK_M250_DIV_WIDTH	3
 
@@ -47,35 +40,18 @@
 #define PRG_ETH0_INVERTED_RMII_CLK	BIT(11)
 #define PRG_ETH0_TX_AND_PHY_REF_CLK	BIT(12)
 
-/* Bypass (= 0, the signal from the GPIO input directly connects to the
- * internal sampling) or enable (= 1) the internal logic for RXEN and RXD[3:0]
- * timing tuning.
- */
+ 
 #define PRG_ETH0_ADJ_ENABLE		BIT(13)
-/* Controls whether the RXEN and RXD[3:0] signals should be aligned with the
- * input RX rising/falling edge and sent to the Ethernet internals. This sets
- * the automatically delay and skew automatically (internally).
- */
+ 
 #define PRG_ETH0_ADJ_SETUP		BIT(14)
-/* An internal counter based on the "timing-adjustment" clock. The counter is
- * cleared on both, the falling and rising edge of the RX_CLK. This selects the
- * delay (= the counter value) when to start sampling RXEN and RXD[3:0].
- */
+ 
 #define PRG_ETH0_ADJ_DELAY		GENMASK(19, 15)
-/* Adjusts the skew between each bit of RXEN and RXD[3:0]. If a signal has a
- * large input delay, the bit for that signal (RXEN = bit 0, RXD[3] = bit 1,
- * ...) can be configured to be 1 to compensate for a delay of about 1ns.
- */
+ 
 #define PRG_ETH0_ADJ_SKEW		GENMASK(24, 20)
 
 #define PRG_ETH1			0x4
 
-/* Defined for adding a delay to the input RX_CLK for better timing.
- * Each step is 200ps. These bits are used with external RGMII PHYs
- * because RGMII RX only has the small window. cfg_rxclk_dly can
- * adjust the window between RX_CLK and RX_DATA and improve the stability
- * of "rx data valid".
- */
+ 
 #define PRG_ETH1_CFG_RXCLK_DLY		GENMASK(19, 16)
 
 struct meson8b_dwmac;
@@ -155,7 +131,7 @@ static int meson8b_init_rgmii_tx_clk(struct meson8b_dwmac *dwmac)
 		{ .div = 5, .val = 5, },
 		{ .div = 6, .val = 6, },
 		{ .div = 7, .val = 7, },
-		{ /* end of array */ }
+		{   }
 	};
 	struct meson8b_dwmac_clk_configs *clk_configs;
 	struct clk_parent_data parent_data = { };
@@ -217,13 +193,13 @@ static int meson8b_set_phy_mode(struct meson8b_dwmac *dwmac)
 	case PHY_INTERFACE_MODE_RGMII_RXID:
 	case PHY_INTERFACE_MODE_RGMII_ID:
 	case PHY_INTERFACE_MODE_RGMII_TXID:
-		/* enable RGMII mode */
+		 
 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
 					PRG_ETH0_RGMII_MODE,
 					PRG_ETH0_RGMII_MODE);
 		break;
 	case PHY_INTERFACE_MODE_RMII:
-		/* disable RGMII mode -> enables RMII mode */
+		 
 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
 					PRG_ETH0_RGMII_MODE, 0);
 		break;
@@ -243,13 +219,13 @@ static int meson_axg_set_phy_mode(struct meson8b_dwmac *dwmac)
 	case PHY_INTERFACE_MODE_RGMII_RXID:
 	case PHY_INTERFACE_MODE_RGMII_ID:
 	case PHY_INTERFACE_MODE_RGMII_TXID:
-		/* enable RGMII mode */
+		 
 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
 					PRG_ETH0_EXT_PHY_MODE_MASK,
 					PRG_ETH0_EXT_RGMII_MODE);
 		break;
 	case PHY_INTERFACE_MODE_RMII:
-		/* disable RGMII mode -> enables RMII mode */
+		 
 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
 					PRG_ETH0_EXT_PHY_MODE_MASK,
 					PRG_ETH0_EXT_RMII_MODE);
@@ -326,7 +302,7 @@ static int meson8b_init_rgmii_delays(struct meson8b_dwmac *dwmac)
 			return -EINVAL;
 		}
 
-		/* The timing adjustment logic is driven by a separate clock */
+		 
 		ret = meson8b_devm_clk_prepare_enable(dwmac,
 						      dwmac->timing_adj_clk);
 		if (ret) {
@@ -352,15 +328,11 @@ static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
 	int ret;
 
 	if (phy_interface_mode_is_rgmii(dwmac->phy_mode)) {
-		/* only relevant for RMII mode -> disable in RGMII mode */
+		 
 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
 					PRG_ETH0_INVERTED_RMII_CLK, 0);
 
-		/* Configure the 125MHz RGMII TX clock, the IP block changes
-		 * the output automatically (= without us having to configure
-		 * a register) based on the line-speed (125MHz for Gbit speeds,
-		 * 25MHz for 100Mbit/s and 2.5MHz for 10Mbit/s).
-		 */
+		 
 		ret = clk_set_rate(dwmac->rgmii_tx_clk, 125 * 1000 * 1000);
 		if (ret) {
 			dev_err(dwmac->dev,
@@ -376,13 +348,13 @@ static int meson8b_init_prg_eth(struct meson8b_dwmac *dwmac)
 			return ret;
 		}
 	} else {
-		/* invert internal clk_rmii_i to generate 25/2.5 tx_rx_clk */
+		 
 		meson8b_dwmac_mask_bits(dwmac, PRG_ETH0,
 					PRG_ETH0_INVERTED_RMII_CLK,
 					PRG_ETH0_INVERTED_RMII_CLK);
 	}
 
-	/* enable TX_CLK and PHY_REF_CLK generator */
+	 
 	meson8b_dwmac_mask_bits(dwmac, PRG_ETH0, PRG_ETH0_TX_AND_PHY_REF_CLK,
 				PRG_ETH0_TX_AND_PHY_REF_CLK);
 
@@ -429,18 +401,18 @@ static int meson8b_dwmac_probe(struct platform_device *pdev)
 		goto err_remove_config_dt;
 	}
 
-	/* use 2ns as fallback since this value was previously hardcoded */
+	 
 	if (of_property_read_u32(pdev->dev.of_node, "amlogic,tx-delay-ns",
 				 &dwmac->tx_delay_ns))
 		dwmac->tx_delay_ns = 2;
 
-	/* RX delay defaults to 0ps since this is what many boards use */
+	 
 	if (of_property_read_u32(pdev->dev.of_node, "rx-internal-delay-ps",
 				 &dwmac->rx_delay_ps)) {
 		if (!of_property_read_u32(pdev->dev.of_node,
 					  "amlogic,rx-delay-ns",
 					  &dwmac->rx_delay_ps))
-			/* convert ns to ps */
+			 
 			dwmac->rx_delay_ps *= 1000;
 	}
 

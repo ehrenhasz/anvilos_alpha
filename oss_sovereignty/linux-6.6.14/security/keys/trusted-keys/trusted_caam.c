@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Pengutronix, Ahmad Fatoum <kernel@pengutronix.de>
- */
+
+ 
 
 #include <keys/trusted_caam.h>
 #include <keys/trusted-type.h>
@@ -72,7 +70,7 @@ static void trusted_caam_exit(void)
 }
 
 struct trusted_key_ops trusted_key_caam_ops = {
-	.migratable = 0, /* non-migratable */
+	.migratable = 0,  
 	.init = trusted_caam_init,
 	.seal = trusted_caam_seal,
 	.unseal = trusted_caam_unseal,

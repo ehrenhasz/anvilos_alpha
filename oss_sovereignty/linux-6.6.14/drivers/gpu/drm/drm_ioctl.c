@@ -1,32 +1,4 @@
-/*
- * Created: Fri Jan  8 09:01:26 1999 by faith@valinux.com
- *
- * Copyright 1999 Precision Insight, Inc., Cedar Park, Texas.
- * Copyright 2000 VA Linux Systems, Inc., Sunnyvale, California.
- * All Rights Reserved.
- *
- * Author Rickard E. (Rik) Faith <faith@valinux.com>
- * Author Gareth Hughes <gareth@valinux.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * VA LINUX SYSTEMS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/export.h>
 #include <linux/nospec.h>
@@ -44,75 +16,9 @@
 #include "drm_internal.h"
 #include "drm_legacy.h"
 
-/**
- * DOC: getunique and setversion story
- *
- * BEWARE THE DRAGONS! MIND THE TRAPDOORS!
- *
- * In an attempt to warn anyone else who's trying to figure out what's going
- * on here, I'll try to summarize the story. First things first, let's clear up
- * the names, because the kernel internals, libdrm and the ioctls are all named
- * differently:
- *
- *  - GET_UNIQUE ioctl, implemented by drm_getunique is wrapped up in libdrm
- *    through the drmGetBusid function.
- *  - The libdrm drmSetBusid function is backed by the SET_UNIQUE ioctl. All
- *    that code is nerved in the kernel with drm_invalid_op().
- *  - The internal set_busid kernel functions and driver callbacks are
- *    exclusively use by the SET_VERSION ioctl, because only drm 1.0 (which is
- *    nerved) allowed userspace to set the busid through the above ioctl.
- *  - Other ioctls and functions involved are named consistently.
- *
- * For anyone wondering what's the difference between drm 1.1 and 1.4: Correctly
- * handling pci domains in the busid on ppc. Doing this correctly was only
- * implemented in libdrm in 2010, hence can't be nerved yet. No one knows what's
- * special with drm 1.2 and 1.3.
- *
- * Now the actual horror story of how device lookup in drm works. At large,
- * there's 2 different ways, either by busid, or by device driver name.
- *
- * Opening by busid is fairly simple:
- *
- * 1. First call SET_VERSION to make sure pci domains are handled properly. As a
- *    side-effect this fills out the unique name in the master structure.
- * 2. Call GET_UNIQUE to read out the unique name from the master structure,
- *    which matches the busid thanks to step 1. If it doesn't, proceed to try
- *    the next device node.
- *
- * Opening by name is slightly different:
- *
- * 1. Directly call VERSION to get the version and to match against the driver
- *    name returned by that ioctl. Note that SET_VERSION is not called, which
- *    means the unique name for the master node just opening is _not_ filled
- *    out. This despite that with current drm device nodes are always bound to
- *    one device, and can't be runtime assigned like with drm 1.0.
- * 2. Match driver name. If it mismatches, proceed to the next device node.
- * 3. Call GET_UNIQUE, and check whether the unique name has length zero (by
- *    checking that the first byte in the string is 0). If that's not the case
- *    libdrm skips and proceeds to the next device node. Probably this is just
- *    copypasta from drm 1.0 times where a set unique name meant that the driver
- *    was in use already, but that's just conjecture.
- *
- * Long story short: To keep the open by name logic working, GET_UNIQUE must
- * _not_ return a unique string when SET_VERSION hasn't been called yet,
- * otherwise libdrm breaks. Even when that unique string can't ever change, and
- * is totally irrelevant for actually opening the device because runtime
- * assignable device instances were only support in drm 1.0, which is long dead.
- * But the libdrm code in drmOpenByName somehow survived, hence this can't be
- * broken.
- */
+ 
 
-/*
- * Get the bus id.
- *
- * \param inode device inode.
- * \param file_priv DRM file private.
- * \param cmd command.
- * \param arg user argument, pointing to a drm_unique structure.
- * \return zero on success or a negative number on failure.
- *
- * Copies the bus id from drm_device::unique into user space.
- */
+ 
 int drm_getunique(struct drm_device *dev, void *data,
 		  struct drm_file *file_priv)
 {
@@ -166,35 +72,13 @@ static int drm_set_busid(struct drm_device *dev, struct drm_file *file_priv)
 	return 0;
 }
 
-/*
- * Get client information.
- *
- * \param inode device inode.
- * \param file_priv DRM file private.
- * \param cmd command.
- * \param arg user argument, pointing to a drm_client structure.
- *
- * \return zero on success or a negative number on failure.
- *
- * Searches for the client with the specified index and copies its information
- * into userspace
- */
+ 
 int drm_getclient(struct drm_device *dev, void *data,
 		  struct drm_file *file_priv)
 {
 	struct drm_client *client = data;
 
-	/*
-	 * Hollowed-out getclient ioctl to keep some dead old drm tests/tools
-	 * not breaking completely. Userspace tools stop enumerating one they
-	 * get -EINVAL, hence this is the return value we need to hand back for
-	 * no clients tracked.
-	 *
-	 * Unfortunately some clients (*cough* libva *cough*) use this in a fun
-	 * attempt to figure out whether they're authenticated or not. Since
-	 * that's the only thing they care about, give it to the directly
-	 * instead of walking one giant list.
-	 */
+	 
 	if (client->idx == 0) {
 		client->auth = file_priv->authenticated;
 		client->pid = task_pid_vnr(current);
@@ -208,30 +92,19 @@ int drm_getclient(struct drm_device *dev, void *data,
 	}
 }
 
-/*
- * Get statistics information.
- *
- * \param inode device inode.
- * \param file_priv DRM file private.
- * \param cmd command.
- * \param arg user argument, pointing to a drm_stats structure.
- *
- * \return zero on success or a negative number on failure.
- */
+ 
 static int drm_getstats(struct drm_device *dev, void *data,
 		 struct drm_file *file_priv)
 {
 	struct drm_stats *stats = data;
 
-	/* Clear stats to prevent userspace from eating its stack garbage. */
+	 
 	memset(stats, 0, sizeof(*stats));
 
 	return 0;
 }
 
-/*
- * Get device/driver capabilities
- */
+ 
 static int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_priv)
 {
 	struct drm_get_cap *req = data;
@@ -239,7 +112,7 @@ static int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_
 
 	req->value = 0;
 
-	/* Only some caps make sense with UMS/render-only drivers. */
+	 
 	switch (req->capability) {
 	case DRM_CAP_TIMESTAMP_MONOTONIC:
 		req->value = 1;
@@ -255,7 +128,7 @@ static int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_
 		return 0;
 	}
 
-	/* Other caps only work with KMS drivers */
+	 
 	if (!drm_core_check_feature(dev, DRIVER_MODESET))
 		return -EOPNOTSUPP;
 
@@ -307,17 +180,15 @@ static int drm_getcap(struct drm_device *dev, void *data, struct drm_file *file_
 	return 0;
 }
 
-/*
- * Set device/driver capabilities
- */
+ 
 static int
 drm_setclientcap(struct drm_device *dev, void *data, struct drm_file *file_priv)
 {
 	struct drm_set_client_cap *req = data;
 
-	/* No render-only settable capabilities for now */
+	 
 
-	/* Below caps that only works with KMS drivers */
+	 
 	if (!drm_core_check_feature(dev, DRIVER_MODESET))
 		return -EOPNOTSUPP;
 
@@ -335,7 +206,7 @@ drm_setclientcap(struct drm_device *dev, void *data, struct drm_file *file_priv)
 	case DRM_CLIENT_CAP_ATOMIC:
 		if (!drm_core_check_feature(dev, DRIVER_ATOMIC))
 			return -EOPNOTSUPP;
-		/* The modesetting DDX has a totally broken idea of atomic. */
+		 
 		if (current->comm[0] == 'X' && req->value == 1) {
 			pr_info("broken atomic modeset userspace detected, disabling atomic\n");
 			return -EOPNOTSUPP;
@@ -344,9 +215,7 @@ drm_setclientcap(struct drm_device *dev, void *data, struct drm_file *file_priv)
 			return -EINVAL;
 		file_priv->atomic = req->value;
 		file_priv->universal_planes = req->value;
-		/*
-		 * No atomic user-space blows up on aspect ratio mode bits.
-		 */
+		 
 		file_priv->aspect_ratio_allowed = req->value;
 		break;
 	case DRM_CLIENT_CAP_ASPECT_RATIO:
@@ -368,17 +237,7 @@ drm_setclientcap(struct drm_device *dev, void *data, struct drm_file *file_priv)
 	return 0;
 }
 
-/*
- * Setversion ioctl.
- *
- * \param inode device inode.
- * \param file_priv DRM file private.
- * \param cmd command.
- * \param arg user argument, pointing to a drm_lock structure.
- * \return zero on success or negative number on failure.
- *
- * Sets the requested interface version
- */
+ 
 static int drm_setversion(struct drm_device *dev, void *data, struct drm_file *file_priv)
 {
 	struct drm_set_version *sv = data;
@@ -395,10 +254,7 @@ static int drm_setversion(struct drm_device *dev, void *data, struct drm_file *f
 					    sv->drm_di_minor);
 		dev->if_version = max(if_version, dev->if_version);
 		if (sv->drm_di_minor >= 1) {
-			/*
-			 * Version 1.1 includes tying of DRM to specific device
-			 * Version 1.4 has proper PCI domain support
-			 */
+			 
 			retcode = drm_set_busid(dev, file_priv);
 			if (retcode)
 				goto done;
@@ -424,18 +280,7 @@ done:
 	return retcode;
 }
 
-/**
- * drm_noop - DRM no-op ioctl implementation
- * @dev: DRM device for the ioctl
- * @data: data pointer for the ioctl
- * @file_priv: DRM file for the ioctl call
- *
- * This no-op implementation for drm ioctls is useful for deprecated
- * functionality where we can't return a failure code because existing userspace
- * checks the result of the ioctl, but doesn't care about the action.
- *
- * Always returns successfully with 0.
- */
+ 
 int drm_noop(struct drm_device *dev, void *data,
 	     struct drm_file *file_priv)
 {
@@ -444,21 +289,7 @@ int drm_noop(struct drm_device *dev, void *data,
 }
 EXPORT_SYMBOL(drm_noop);
 
-/**
- * drm_invalid_op - DRM invalid ioctl implementation
- * @dev: DRM device for the ioctl
- * @data: data pointer for the ioctl
- * @file_priv: DRM file for the ioctl call
- *
- * This no-op implementation for drm ioctls is useful for deprecated
- * functionality where we really don't want to allow userspace to call the ioctl
- * any more. This is the case for old ums interfaces for drivers that
- * transitioned to kms gradually and so kept the old legacy tables around. This
- * only applies to radeon and i915 kms drivers, other drivers shouldn't need to
- * use this function.
- *
- * Always fails with a return value of -EINVAL.
- */
+ 
 int drm_invalid_op(struct drm_device *dev, void *data,
 		   struct drm_file *file_priv)
 {
@@ -466,46 +297,33 @@ int drm_invalid_op(struct drm_device *dev, void *data,
 }
 EXPORT_SYMBOL(drm_invalid_op);
 
-/*
- * Copy and IOCTL return string to user space
- */
+ 
 static int drm_copy_field(char __user *buf, size_t *buf_len, const char *value)
 {
 	size_t len;
 
-	/* don't attempt to copy a NULL pointer */
+	 
 	if (WARN_ONCE(!value, "BUG: the value to copy was not set!")) {
 		*buf_len = 0;
 		return 0;
 	}
 
-	/* don't overflow userbuf */
+	 
 	len = strlen(value);
 	if (len > *buf_len)
 		len = *buf_len;
 
-	/* let userspace know exact length of driver value (which could be
-	 * larger than the userspace-supplied buffer) */
+	 
 	*buf_len = strlen(value);
 
-	/* finally, try filling in the userbuf */
+	 
 	if (len && buf)
 		if (copy_to_user(buf, value, len))
 			return -EFAULT;
 	return 0;
 }
 
-/*
- * Get version information
- *
- * \param inode device inode.
- * \param filp file pointer.
- * \param cmd command.
- * \param arg user argument, pointing to a drm_version structure.
- * \return zero on success or negative number on failure.
- *
- * Fills in the version information in \p arg.
- */
+ 
 int drm_version(struct drm_device *dev, void *data,
 		       struct drm_file *file_priv)
 {
@@ -529,21 +347,21 @@ int drm_version(struct drm_device *dev, void *data,
 
 static int drm_ioctl_permit(u32 flags, struct drm_file *file_priv)
 {
-	/* ROOT_ONLY is only for CAP_SYS_ADMIN */
+	 
 	if (unlikely((flags & DRM_ROOT_ONLY) && !capable(CAP_SYS_ADMIN)))
 		return -EACCES;
 
-	/* AUTH is only for authenticated or render client */
+	 
 	if (unlikely((flags & DRM_AUTH) && !drm_is_render_client(file_priv) &&
 		     !file_priv->authenticated))
 		return -EACCES;
 
-	/* MASTER is only for master or control clients */
+	 
 	if (unlikely((flags & DRM_MASTER) &&
 		     !drm_is_current_master(file_priv)))
 		return -EACCES;
 
-	/* Render clients must be explicitly allowed */
+	 
 	if (unlikely(!(flags & DRM_RENDER_ALLOW) &&
 		     drm_is_render_client(file_priv)))
 		return -EACCES;
@@ -565,7 +383,7 @@ static int drm_ioctl_permit(u32 flags, struct drm_file *file_priv)
 #define DRM_LEGACY_IOCTL_DEF(ioctl, _func, _flags) DRM_IOCTL_DEF(ioctl, drm_invalid_op, _flags)
 #endif
 
-/* Ioctl table */
+ 
 static const struct drm_ioctl_desc drm_ioctls[] = {
 	DRM_IOCTL_DEF(DRM_IOCTL_VERSION, drm_version, DRM_RENDER_ALLOW),
 	DRM_IOCTL_DEF(DRM_IOCTL_GET_UNIQUE, drm_getunique, 0),
@@ -721,53 +539,7 @@ static const struct drm_ioctl_desc drm_ioctls[] = {
 
 #define DRM_CORE_IOCTL_COUNT	ARRAY_SIZE(drm_ioctls)
 
-/**
- * DOC: driver specific ioctls
- *
- * First things first, driver private IOCTLs should only be needed for drivers
- * supporting rendering. Kernel modesetting is all standardized, and extended
- * through properties. There are a few exceptions in some existing drivers,
- * which define IOCTL for use by the display DRM master, but they all predate
- * properties.
- *
- * Now if you do have a render driver you always have to support it through
- * driver private properties. There's a few steps needed to wire all the things
- * up.
- *
- * First you need to define the structure for your IOCTL in your driver private
- * UAPI header in ``include/uapi/drm/my_driver_drm.h``::
- *
- *     struct my_driver_operation {
- *             u32 some_thing;
- *             u32 another_thing;
- *     };
- *
- * Please make sure that you follow all the best practices from
- * ``Documentation/process/botching-up-ioctls.rst``. Note that drm_ioctl()
- * automatically zero-extends structures, hence make sure you can add more stuff
- * at the end, i.e. don't put a variable sized array there.
- *
- * Then you need to define your IOCTL number, using one of DRM_IO(), DRM_IOR(),
- * DRM_IOW() or DRM_IOWR(). It must start with the DRM_IOCTL\_ prefix::
- *
- *     ##define DRM_IOCTL_MY_DRIVER_OPERATION \
- *         DRM_IOW(DRM_COMMAND_BASE, struct my_driver_operation)
- *
- * DRM driver private IOCTL must be in the range from DRM_COMMAND_BASE to
- * DRM_COMMAND_END. Finally you need an array of &struct drm_ioctl_desc to wire
- * up the handlers and set the access rights::
- *
- *     static const struct drm_ioctl_desc my_driver_ioctls[] = {
- *         DRM_IOCTL_DEF_DRV(MY_DRIVER_OPERATION, my_driver_operation,
- *                 DRM_AUTH|DRM_RENDER_ALLOW),
- *     };
- *
- * And then assign this to the &drm_driver.ioctls field in your driver
- * structure.
- *
- * See the separate chapter on :ref:`file operations<drm_driver_fops>` for how
- * the driver-specific IOCTLs are wired up.
- */
+ 
 
 long drm_ioctl_kernel(struct file *file, drm_ioctl_t *func, void *kdata,
 		      u32 flags)
@@ -776,7 +548,7 @@ long drm_ioctl_kernel(struct file *file, drm_ioctl_t *func, void *kdata,
 	struct drm_device *dev = file_priv->minor->dev;
 	int retcode;
 
-	/* Update drm_file owner if fd was passed along. */
+	 
 	drm_file_update_pid(file_priv);
 
 	if (drm_dev_is_unplugged(dev))
@@ -786,7 +558,7 @@ long drm_ioctl_kernel(struct file *file, drm_ioctl_t *func, void *kdata,
 	if (unlikely(retcode))
 		return retcode;
 
-	/* Enforce sane locking for modern driver ioctls. */
+	 
 	if (likely(!drm_core_check_feature(dev, DRIVER_LEGACY)) ||
 	    (flags & DRM_UNLOCKED))
 		retcode = func(dev, kdata, file_priv);
@@ -799,19 +571,7 @@ long drm_ioctl_kernel(struct file *file, drm_ioctl_t *func, void *kdata,
 }
 EXPORT_SYMBOL(drm_ioctl_kernel);
 
-/**
- * drm_ioctl - ioctl callback implementation for DRM drivers
- * @filp: file this ioctl is called on
- * @cmd: ioctl cmd number
- * @arg: user argument
- *
- * Looks up the ioctl function in the DRM core and the driver dispatch table,
- * stored in &drm_driver.ioctls. It checks for necessary permission by calling
- * drm_ioctl_permit(), and dispatches to the respective function.
- *
- * Returns:
- * Zero on success, negative error code on failure.
- */
+ 
 long drm_ioctl(struct file *filp,
 	      unsigned int cmd, unsigned long arg)
 {
@@ -837,7 +597,7 @@ long drm_ioctl(struct file *filp,
 	is_driver_ioctl = nr >= DRM_COMMAND_BASE && nr < DRM_COMMAND_END;
 
 	if (is_driver_ioctl) {
-		/* driver ioctl */
+		 
 		unsigned int index = nr - DRM_COMMAND_BASE;
 
 		if (index >= dev->driver->num_ioctls)
@@ -845,7 +605,7 @@ long drm_ioctl(struct file *filp,
 		index = array_index_nospec(index, dev->driver->num_ioctls);
 		ioctl = &dev->driver->ioctls[index];
 	} else {
-		/* core ioctl */
+		 
 		if (nr >= DRM_CORE_IOCTL_COUNT)
 			goto err_i1;
 		nr = array_index_nospec(nr, DRM_CORE_IOCTL_COUNT);
@@ -865,7 +625,7 @@ long drm_ioctl(struct file *filp,
 		     (long)old_encode_dev(file_priv->minor->kdev->devt),
 		     file_priv->authenticated, ioctl->name);
 
-	/* Do not trust userspace, use our own definition */
+	 
 	func = ioctl->func;
 
 	if (unlikely(!func)) {
@@ -913,18 +673,7 @@ long drm_ioctl(struct file *filp,
 }
 EXPORT_SYMBOL(drm_ioctl);
 
-/**
- * drm_ioctl_flags - Check for core ioctl and return ioctl permission flags
- * @nr: ioctl number
- * @flags: where to return the ioctl permission flags
- *
- * This ioctl is only used by the vmwgfx driver to augment the access checks
- * done by the drm core and insofar a pretty decent layering violation. This
- * shouldn't be used by any drivers.
- *
- * Returns:
- * True if the @nr corresponds to a DRM core ioctl number, false otherwise.
- */
+ 
 bool drm_ioctl_flags(unsigned int nr, unsigned int *flags)
 {
 	if (nr >= DRM_COMMAND_BASE && nr < DRM_COMMAND_END)

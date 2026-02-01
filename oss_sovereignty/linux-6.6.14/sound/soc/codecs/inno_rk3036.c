@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver of Inno codec for rk3036 by Rockchip Inc.
- *
- * Author: Rockchip Inc.
- * Author: Zheng ShunQian<zhengsq@rock-chips.com>
- */
+
+ 
 
 #include <sound/soc.h>
 #include <sound/tlv.h>
@@ -353,17 +348,17 @@ static int rk3036_codec_set_bias_level(struct snd_soc_component *component,
 {
 	switch (level) {
 	case SND_SOC_BIAS_STANDBY:
-		/* set a big current for capacitor charging. */
+		 
 		snd_soc_component_write(component, INNO_R10, INNO_R10_MAX_CUR);
-		/* start precharge */
+		 
 		snd_soc_component_write(component, INNO_R06, INNO_R06_DAC_PRECHARGE);
 
 		break;
 
 	case SND_SOC_BIAS_OFF:
-		/* set a big current for capacitor discharging. */
+		 
 		snd_soc_component_write(component, INNO_R10, INNO_R10_MAX_CUR);
-		/* start discharge. */
+		 
 		snd_soc_component_write(component, INNO_R06, INNO_R06_DAC_DISCHARGE);
 
 		break;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * Copyright 2013-2016 Freescale Semiconductor Inc.
- * Copyright 2016-2017,2019-2020 NXP
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iommu.h>
@@ -39,10 +36,7 @@ static int vfio_fsl_mc_open_device(struct vfio_device *core_vdev)
 		vdev->regions[i].addr = res->start;
 		vdev->regions[i].size = resource_size(res);
 		vdev->regions[i].type = mc_dev->regions[i].flags & IORESOURCE_BITS;
-		/*
-		 * Only regions addressed with PAGE granularity may be
-		 * MMAPed securely.
-		 */
+		 
 		if (!no_mmap && !(vdev->regions[i].addr & ~PAGE_MASK) &&
 				!(vdev->regions[i].size & ~PAGE_MASK))
 			vdev->regions[i].flags |=
@@ -105,7 +99,7 @@ static void vfio_fsl_mc_close_device(struct vfio_device *core_vdev)
 
 	vfio_fsl_mc_regions_cleanup(vdev);
 
-	/* reset the device before cleaning up the interrupts */
+	 
 	ret = vfio_fsl_mc_reset_device(vdev);
 
 	if (ret)
@@ -164,7 +158,7 @@ static long vfio_fsl_mc_ioctl(struct vfio_device *core_vdev,
 		if (info.index >= mc_dev->obj_desc.region_count)
 			return -EINVAL;
 
-		/* map offset to the physical address  */
+		 
 		info.offset = VFIO_FSL_MC_INDEX_TO_OFFSET(info.index);
 		info.size = vdev->regions[info.index].size;
 		info.flags = vdev->regions[info.index].flags;
@@ -284,17 +278,14 @@ static int vfio_fsl_mc_send_command(void __iomem *ioaddr, uint64_t *cmd_data)
 	enum mc_cmd_status status;
 	unsigned long timeout_usecs = MC_CMD_COMPLETION_TIMEOUT_MS * 1000;
 
-	/* Write at command parameter into portal */
+	 
 	for (i = 7; i >= 1; i--)
 		writeq_relaxed(cmd_data[i], ioaddr + i * sizeof(uint64_t));
 
-	/* Write command header in the end */
+	 
 	writeq(cmd_data[0], ioaddr);
 
-	/* Wait for response before returning to user-space
-	 * This can be optimized in future to even prepare response
-	 * before returning to user-space and avoid read ioctl.
-	 */
+	 
 	for (;;) {
 		u64 header;
 		struct mc_cmd_header *resp_hdr;
@@ -455,7 +446,7 @@ static int vfio_fsl_mc_init_device(struct vfio_fsl_mc_device *vdev)
 	struct fsl_mc_device *mc_dev = vdev->mc_dev;
 	int ret;
 
-	/* Non-dprc devices share mc_io from parent */
+	 
 	if (!is_fsl_mc_bus_dprc(mc_dev)) {
 		struct fsl_mc_device *mc_cont = to_fsl_mc_device(mc_dev->dev.parent);
 
@@ -468,7 +459,7 @@ static int vfio_fsl_mc_init_device(struct vfio_fsl_mc_device *vdev)
 	if (ret)
 		return ret;
 
-	/* open DPRC, allocate a MC portal */
+	 
 	ret = dprc_setup(mc_dev);
 	if (ret) {
 		dev_err(&mc_dev->dev, "VFIO_FSL_MC: Failed to setup DPRC (%d)\n", ret);
@@ -485,7 +476,7 @@ static int vfio_fsl_mc_scan_container(struct fsl_mc_device *mc_dev)
 {
 	int ret;
 
-	/* non dprc devices do not scan for other devices */
+	 
 	if (!is_fsl_mc_bus_dprc(mc_dev))
 		return 0;
 	ret = dprc_scan_container(mc_dev, false);
@@ -527,7 +518,7 @@ static int vfio_fsl_mc_init_dev(struct vfio_device *core_vdev)
 	if (ret)
 		return ret;
 
-	/* device_set is released by vfio core if @init fails */
+	 
 	return vfio_fsl_mc_init_device(vdev);
 }
 

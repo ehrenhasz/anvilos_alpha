@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021 Rafał Miłecki <rafal@milecki.pl> */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -32,9 +32,7 @@ struct bcm4908_pinctrl {
 	struct pinctrl_desc pctldesc;
 };
 
-/*
- * Groups
- */
+ 
 
 struct bcm4908_pinctrl_pin_setup {
 	unsigned int number;
@@ -190,27 +188,27 @@ static const struct bcm4908_pinctrl_pin_setup led_31_pins_b[] = {
 };
 
 static const struct bcm4908_pinctrl_pin_setup hs_uart_pins[] = {
-	{ 10, 0 },	/* CTS */
-	{ 11, 0 },	/* RTS */
-	{ 12, 0 },	/* RXD */
-	{ 13, 0 },	/* TXD */
+	{ 10, 0 },	 
+	{ 11, 0 },	 
+	{ 12, 0 },	 
+	{ 13, 0 },	 
 };
 
 static const struct bcm4908_pinctrl_pin_setup i2c_pins_a[] = {
-	{ 18, 0 },	/* SDA */
-	{ 19, 0 },	/* SCL */
+	{ 18, 0 },	 
+	{ 19, 0 },	 
 };
 
 static const struct bcm4908_pinctrl_pin_setup i2c_pins_b[] = {
-	{ 22, 0 },	/* SDA */
-	{ 23, 0 },	/* SCL */
+	{ 22, 0 },	 
+	{ 23, 0 },	 
 };
 
 static const struct bcm4908_pinctrl_pin_setup i2s_pins[] = {
-	{ 27, 0 },	/* MCLK */
-	{ 28, 0 },	/* LRCK */
-	{ 29, 0 },	/* SDATA */
-	{ 30, 0 },	/* SCLK */
+	{ 27, 0 },	 
+	{ 28, 0 },	 
+	{ 29, 0 },	 
+	{ 30, 0 },	 
 };
 
 static const struct bcm4908_pinctrl_pin_setup nand_ctrl_pins[] = {
@@ -304,9 +302,7 @@ static const struct bcm4908_pinctrl_grp bcm4908_pinctrl_grps[] = {
 	{ "usb1_pwr_grp", usb1_pwr_pins, ARRAY_SIZE(usb1_pwr_pins) },
 };
 
-/*
- * Functions
- */
+ 
 
 struct bcm4908_pinctrl_function {
 	const char *name;
@@ -398,9 +394,7 @@ static const struct bcm4908_pinctrl_function bcm4908_pinctrl_functions[] = {
 	{ "usb1_pwr", usb1_pwr_groups, ARRAY_SIZE(usb1_pwr_groups) },
 };
 
-/*
- * Groups code
- */
+ 
 
 static const struct pinctrl_ops bcm4908_pinctrl_ops = {
 	.get_groups_count = pinctrl_generic_get_group_count,
@@ -410,9 +404,7 @@ static const struct pinctrl_ops bcm4908_pinctrl_ops = {
 	.dt_free_map = pinconf_generic_dt_free_map,
 };
 
-/*
- * Functions code
- */
+ 
 
 static int bcm4908_pinctrl_set_mux(struct pinctrl_dev *pctrl_dev,
 			      unsigned int func_selector,
@@ -452,9 +444,7 @@ static const struct pinmux_ops bcm4908_pinctrl_pmxops = {
 	.set_mux = bcm4908_pinctrl_set_mux,
 };
 
-/*
- * Controller code
- */
+ 
 
 static struct pinctrl_desc bcm4908_pinctrl_desc = {
 	.name = "bcm4908-pinctrl",
@@ -482,7 +472,7 @@ static int bcm4908_pinctrl_probe(struct platform_device *pdev)
 	pctldesc = &bcm4908_pinctrl->pctldesc;
 	platform_set_drvdata(pdev, bcm4908_pinctrl);
 
-	/* Set basic properties */
+	 
 
 	bcm4908_pinctrl->dev = dev;
 
@@ -494,7 +484,7 @@ static int bcm4908_pinctrl_probe(struct platform_device *pdev)
 
 	memcpy(pctldesc, &bcm4908_pinctrl_desc, sizeof(*pctldesc));
 
-	/* Set pinctrl properties */
+	 
 
 	pin_names = devm_kasprintf_strarray(dev, "pin", BCM4908_NUM_PINS);
 	if (IS_ERR(pin_names))
@@ -510,14 +500,14 @@ static int bcm4908_pinctrl_probe(struct platform_device *pdev)
 	pctldesc->pins = pins;
 	pctldesc->npins = BCM4908_NUM_PINS;
 
-	/* Register */
+	 
 
 	bcm4908_pinctrl->pctldev = devm_pinctrl_register(dev, pctldesc, bcm4908_pinctrl);
 	if (IS_ERR(bcm4908_pinctrl->pctldev))
 		return dev_err_probe(dev, PTR_ERR(bcm4908_pinctrl->pctldev),
 				     "Failed to register pinctrl\n");
 
-	/* Groups */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(bcm4908_pinctrl_grps); i++) {
 		const struct bcm4908_pinctrl_grp *group = &bcm4908_pinctrl_grps[i];
@@ -534,7 +524,7 @@ static int bcm4908_pinctrl_probe(struct platform_device *pdev)
 					  pins, group->num_pins, (void *)group);
 	}
 
-	/* Functions */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(bcm4908_pinctrl_functions); i++) {
 		const struct bcm4908_pinctrl_function *function = &bcm4908_pinctrl_functions[i];

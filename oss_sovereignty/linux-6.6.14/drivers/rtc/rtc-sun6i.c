@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * An RTC driver for Allwinner A31/A23
- *
- * Copyright (c) 2014, Chen-Yu Tsai <wens@csie.org>
- *
- * based on rtc-sunxi.c
- *
- * An RTC driver for Allwinner A10/A20
- *
- * Copyright (c) 2013, Carlo Caione <carlo.caione@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -29,7 +19,7 @@
 #include <linux/slab.h>
 #include <linux/types.h>
 
-/* Control register */
+ 
 #define SUN6I_LOSC_CTRL				0x0000
 #define SUN6I_LOSC_CTRL_KEY			(0x16aa << 16)
 #define SUN6I_LOSC_CTRL_AUTO_SWT_BYPASS		BIT(15)
@@ -42,13 +32,13 @@
 
 #define SUN6I_LOSC_CLK_PRESCAL			0x0008
 
-/* RTC */
+ 
 #define SUN6I_RTC_YMD				0x0010
 #define SUN6I_RTC_HMS				0x0014
 
-/* Alarm 0 (counter) */
+ 
 #define SUN6I_ALRM_COUNTER			0x0020
-/* This holds the remaining alarm seconds on older SoCs (current value) */
+ 
 #define SUN6I_ALRM_COUNTER_HMS			0x0024
 #define SUN6I_ALRM_EN				0x0028
 #define SUN6I_ALRM_EN_CNT_EN			BIT(0)
@@ -57,79 +47,52 @@
 #define SUN6I_ALRM_IRQ_STA			0x0030
 #define SUN6I_ALRM_IRQ_STA_CNT_IRQ_PEND		BIT(0)
 
-/* Alarm 1 (wall clock) */
+ 
 #define SUN6I_ALRM1_EN				0x0044
 #define SUN6I_ALRM1_IRQ_EN			0x0048
 #define SUN6I_ALRM1_IRQ_STA			0x004c
 #define SUN6I_ALRM1_IRQ_STA_WEEK_IRQ_PEND	BIT(0)
 
-/* Alarm config */
+ 
 #define SUN6I_ALARM_CONFIG			0x0050
 #define SUN6I_ALARM_CONFIG_WAKEUP		BIT(0)
 
 #define SUN6I_LOSC_OUT_GATING			0x0060
 #define SUN6I_LOSC_OUT_GATING_EN_OFFSET		0
 
-/* General-purpose data */
+ 
 #define SUN6I_GP_DATA				0x0100
 #define SUN6I_GP_DATA_SIZE			0x20
 
-/*
- * Get date values
- */
+ 
 #define SUN6I_DATE_GET_DAY_VALUE(x)		((x)  & 0x0000001f)
 #define SUN6I_DATE_GET_MON_VALUE(x)		(((x) & 0x00000f00) >> 8)
 #define SUN6I_DATE_GET_YEAR_VALUE(x)		(((x) & 0x003f0000) >> 16)
 #define SUN6I_LEAP_GET_VALUE(x)			(((x) & 0x00400000) >> 22)
 
-/*
- * Get time values
- */
+ 
 #define SUN6I_TIME_GET_SEC_VALUE(x)		((x)  & 0x0000003f)
 #define SUN6I_TIME_GET_MIN_VALUE(x)		(((x) & 0x00003f00) >> 8)
 #define SUN6I_TIME_GET_HOUR_VALUE(x)		(((x) & 0x001f0000) >> 16)
 
-/*
- * Set date values
- */
+ 
 #define SUN6I_DATE_SET_DAY_VALUE(x)		((x)       & 0x0000001f)
 #define SUN6I_DATE_SET_MON_VALUE(x)		((x) <<  8 & 0x00000f00)
 #define SUN6I_DATE_SET_YEAR_VALUE(x)		((x) << 16 & 0x003f0000)
 #define SUN6I_LEAP_SET_VALUE(x)			((x) << 22 & 0x00400000)
 
-/*
- * Set time values
- */
+ 
 #define SUN6I_TIME_SET_SEC_VALUE(x)		((x)       & 0x0000003f)
 #define SUN6I_TIME_SET_MIN_VALUE(x)		((x) <<  8 & 0x00003f00)
 #define SUN6I_TIME_SET_HOUR_VALUE(x)		((x) << 16 & 0x001f0000)
 
-/*
- * The year parameter passed to the driver is usually an offset relative to
- * the year 1900. This macro is used to convert this offset to another one
- * relative to the minimum year allowed by the hardware.
- *
- * The year range is 1970 - 2033. This range is selected to match Allwinner's
- * driver, even though it is somewhat limited.
- */
+ 
 #define SUN6I_YEAR_MIN				1970
 #define SUN6I_YEAR_OFF				(SUN6I_YEAR_MIN - 1900)
 
 #define SECS_PER_DAY				(24 * 3600ULL)
 
-/*
- * There are other differences between models, including:
- *
- *   - number of GPIO pins that can be configured to hold a certain level
- *   - crypto-key related registers (H5, H6)
- *   - boot process related (super standby, secondary processor entry address)
- *     registers (R40, H6)
- *   - SYS power domain controls (R40)
- *   - DCXO controls (H6)
- *   - RC oscillator calibration (H6)
- *
- * These functions are not covered by this driver.
- */
+ 
 struct sun6i_rtc_clk_data {
 	unsigned long rc_osc_rate;
 	unsigned int fixed_prescaler : 16;
@@ -254,12 +217,12 @@ static void __init sun6i_rtc_clk_init(struct device_node *node,
 
 	reg = SUN6I_LOSC_CTRL_KEY;
 	if (rtc->data->has_auto_swt) {
-		/* Bypass auto-switch to int osc, on ext losc failure */
+		 
 		reg |= SUN6I_LOSC_CTRL_AUTO_SWT_BYPASS;
 		writel(reg, rtc->base + SUN6I_LOSC_CTRL);
 	}
 
-	/* Switch to the external, more precise, oscillator, if present */
+	 
 	if (of_property_present(node, "clocks")) {
 		reg |= SUN6I_LOSC_CTRL_EXT_OSC;
 		if (rtc->data->has_losc_en)
@@ -267,7 +230,7 @@ static void __init sun6i_rtc_clk_init(struct device_node *node,
 	}
 	writel(reg, rtc->base + SUN6I_LOSC_CTRL);
 
-	/* Yes, I know, this is ugly. */
+	 
 	sun6i_rtc = rtc;
 
 	of_property_read_string_index(node, "clock-output-names", 2,
@@ -284,13 +247,13 @@ static void __init sun6i_rtc_clk_init(struct device_node *node,
 	}
 
 	parents[0] = clk_hw_get_name(rtc->int_osc);
-	/* If there is no external oscillator, this will be NULL and ... */
+	 
 	parents[1] = of_clk_get_parent_name(node, 0);
 
 	rtc->hw.init = &init;
 
 	init.parent_names = parents;
-	/* ... number of clock parents will be 1. */
+	 
 	init.num_parents = of_clk_get_parent_count(node) + 1;
 	of_property_read_string_index(node, "clock-output-names", 0,
 				      &init.name);
@@ -326,7 +289,7 @@ err:
 }
 
 static const struct sun6i_rtc_clk_data sun6i_a31_rtc_data = {
-	.rc_osc_rate = 667000, /* datasheet says 600 ~ 700 KHz */
+	.rc_osc_rate = 667000,  
 	.has_prescaler = 1,
 };
 
@@ -338,7 +301,7 @@ CLK_OF_DECLARE_DRIVER(sun6i_a31_rtc_clk, "allwinner,sun6i-a31-rtc",
 		      sun6i_a31_rtc_clk_init);
 
 static const struct sun6i_rtc_clk_data sun8i_a23_rtc_data = {
-	.rc_osc_rate = 667000, /* datasheet says 600 ~ 700 KHz */
+	.rc_osc_rate = 667000,  
 	.has_prescaler = 1,
 	.has_out_clk = 1,
 };
@@ -363,7 +326,7 @@ static void __init sun8i_h3_rtc_clk_init(struct device_node *node)
 }
 CLK_OF_DECLARE_DRIVER(sun8i_h3_rtc_clk, "allwinner,sun8i-h3-rtc",
 		      sun8i_h3_rtc_clk_init);
-/* As far as we are concerned, clocks for H5 are the same as H3 */
+ 
 CLK_OF_DECLARE_DRIVER(sun50i_h5_rtc_clk, "allwinner,sun50i-h5-rtc",
 		      sun8i_h3_rtc_clk_init);
 
@@ -383,11 +346,7 @@ static void __init sun50i_h6_rtc_clk_init(struct device_node *node)
 CLK_OF_DECLARE_DRIVER(sun50i_h6_rtc_clk, "allwinner,sun50i-h6-rtc",
 		      sun50i_h6_rtc_clk_init);
 
-/*
- * The R40 user manual is self-conflicting on whether the prescaler is
- * fixed or configurable. The clock diagram shows it as fixed, but there
- * is also a configurable divider in the RTC block.
- */
+ 
 static const struct sun6i_rtc_clk_data sun8i_r40_rtc_data = {
 	.rc_osc_rate = 16000000,
 	.fixed_prescaler = 512,
@@ -461,9 +420,7 @@ static int sun6i_rtc_gettime(struct device *dev, struct rtc_time *rtc_tm)
 	struct sun6i_rtc_dev *chip = dev_get_drvdata(dev);
 	u32 date, time;
 
-	/*
-	 * read again in case it changes
-	 */
+	 
 	do {
 		date = readl(chip->base + SUN6I_RTC_YMD);
 		time = readl(chip->base + SUN6I_RTC_HMS);
@@ -471,22 +428,14 @@ static int sun6i_rtc_gettime(struct device *dev, struct rtc_time *rtc_tm)
 		 (time != readl(chip->base + SUN6I_RTC_HMS)));
 
 	if (chip->flags & RTC_LINEAR_DAY) {
-		/*
-		 * Newer chips store a linear day number, the manual
-		 * does not mandate any epoch base. The BSP driver uses
-		 * the UNIX epoch, let's just copy that, as it's the
-		 * easiest anyway.
-		 */
+		 
 		rtc_time64_to_tm((date & 0xffff) * SECS_PER_DAY, rtc_tm);
 	} else {
 		rtc_tm->tm_mday = SUN6I_DATE_GET_DAY_VALUE(date);
 		rtc_tm->tm_mon  = SUN6I_DATE_GET_MON_VALUE(date) - 1;
 		rtc_tm->tm_year = SUN6I_DATE_GET_YEAR_VALUE(date);
 
-		/*
-		 * switch from (data_year->min)-relative offset to
-		 * a (1900)-relative one
-		 */
+		 
 		rtc_tm->tm_year += SUN6I_YEAR_OFF;
 	}
 
@@ -528,17 +477,14 @@ static int sun6i_rtc_setalarm(struct device *dev, struct rtc_wkalrm *wkalrm)
 	time_set = rtc_tm_to_time64(alrm_tm);
 
 	if (chip->flags & RTC_LINEAR_DAY) {
-		/*
-		 * The alarm registers hold the actual alarm time, encoded
-		 * in the same way (linear day + HMS) as the current time.
-		 */
+		 
 		counter_val_hms = SUN6I_TIME_SET_SEC_VALUE(alrm_tm->tm_sec)  |
 				  SUN6I_TIME_SET_MIN_VALUE(alrm_tm->tm_min)  |
 				  SUN6I_TIME_SET_HOUR_VALUE(alrm_tm->tm_hour);
-		/* The division will cut off the H:M:S part of alrm_tm. */
+		 
 		counter_val = div_u64(rtc_tm_to_time64(alrm_tm), SECS_PER_DAY);
 	} else {
-		/* The alarm register holds the number of seconds left. */
+		 
 		time64_t time_now;
 
 		ret = sun6i_rtc_gettime(dev, &tm_now);
@@ -605,7 +551,7 @@ static int sun6i_rtc_settime(struct device *dev, struct rtc_time *rtc_tm)
 		SUN6I_TIME_SET_HOUR_VALUE(rtc_tm->tm_hour);
 
 	if (chip->flags & RTC_LINEAR_DAY) {
-		/* The division will cut off the H:M:S part of rtc_tm. */
+		 
 		date = div_u64(rtc_tm_to_time64(rtc_tm), SECS_PER_DAY);
 	} else {
 		rtc_tm->tm_year -= SUN6I_YEAR_OFF;
@@ -619,7 +565,7 @@ static int sun6i_rtc_settime(struct device *dev, struct rtc_time *rtc_tm)
 			date |= SUN6I_LEAP_SET_VALUE(1);
 	}
 
-	/* Check whether registers are writable */
+	 
 	if (sun6i_rtc_wait(chip, SUN6I_LOSC_CTRL,
 			   SUN6I_LOSC_CTRL_ACC_MASK, 50)) {
 		dev_err(dev, "rtc is still busy.\n");
@@ -628,11 +574,7 @@ static int sun6i_rtc_settime(struct device *dev, struct rtc_time *rtc_tm)
 
 	writel(time, chip->base + SUN6I_RTC_HMS);
 
-	/*
-	 * After writing the RTC HH-MM-SS register, the
-	 * SUN6I_LOSC_CTRL_RTC_HMS_ACC bit is set and it will not
-	 * be cleared until the real writing operation is finished
-	 */
+	 
 
 	if (sun6i_rtc_wait(chip, SUN6I_LOSC_CTRL,
 			   SUN6I_LOSC_CTRL_RTC_HMS_ACC, 50)) {
@@ -642,11 +584,7 @@ static int sun6i_rtc_settime(struct device *dev, struct rtc_time *rtc_tm)
 
 	writel(date, chip->base + SUN6I_RTC_YMD);
 
-	/*
-	 * After writing the RTC YY-MM-DD register, the
-	 * SUN6I_LOSC_CTRL_RTC_YMD_ACC bit is set and it will not
-	 * be cleared until the real writing operation is finished
-	 */
+	 
 
 	if (sun6i_rtc_wait(chip, SUN6I_LOSC_CTRL,
 			   SUN6I_LOSC_CTRL_RTC_YMD_ACC, 50)) {
@@ -709,7 +647,7 @@ static struct nvmem_config sun6i_rtc_nvmem_cfg = {
 };
 
 #ifdef CONFIG_PM_SLEEP
-/* Enable IRQ wake on suspend, to wake up from RTC. */
+ 
 static int sun6i_rtc_suspend(struct device *dev)
 {
 	struct sun6i_rtc_dev *chip = dev_get_drvdata(dev);
@@ -720,7 +658,7 @@ static int sun6i_rtc_suspend(struct device *dev)
 	return 0;
 }
 
-/* Disable IRQ wake on resume. */
+ 
 static int sun6i_rtc_resume(struct device *dev)
 {
 	struct sun6i_rtc_dev *chip = dev_get_drvdata(dev);
@@ -797,30 +735,30 @@ static int sun6i_rtc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* clear the alarm counter value */
+	 
 	writel(0, chip->base + SUN6I_ALRM_COUNTER);
 
-	/* disable counter alarm */
+	 
 	writel(0, chip->base + SUN6I_ALRM_EN);
 
-	/* disable counter alarm interrupt */
+	 
 	writel(0, chip->base + SUN6I_ALRM_IRQ_EN);
 
-	/* disable week alarm */
+	 
 	writel(0, chip->base + SUN6I_ALRM1_EN);
 
-	/* disable week alarm interrupt */
+	 
 	writel(0, chip->base + SUN6I_ALRM1_IRQ_EN);
 
-	/* clear counter alarm pending interrupts */
+	 
 	writel(SUN6I_ALRM_IRQ_STA_CNT_IRQ_PEND,
 	       chip->base + SUN6I_ALRM_IRQ_STA);
 
-	/* clear week alarm pending interrupts */
+	 
 	writel(SUN6I_ALRM1_IRQ_STA_WEEK_IRQ_PEND,
 	       chip->base + SUN6I_ALRM1_IRQ_STA);
 
-	/* disable alarm wakeup */
+	 
 	writel(0, chip->base + SUN6I_ALARM_CONFIG);
 
 	clk_prepare_enable(chip->losc);
@@ -835,7 +773,7 @@ static int sun6i_rtc_probe(struct platform_device *pdev)
 	if (chip->flags & RTC_LINEAR_DAY)
 		chip->rtc->range_max = (65536 * SECS_PER_DAY) - 1;
 	else
-		chip->rtc->range_max = 2019686399LL; /* 2033-12-31 23:59:59 */
+		chip->rtc->range_max = 2019686399LL;  
 
 	ret = devm_rtc_register_device(chip->rtc);
 	if (ret)
@@ -849,12 +787,7 @@ static int sun6i_rtc_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/*
- * As far as RTC functionality goes, all models are the same. The
- * datasheets claim that different models have different number of
- * registers available for non-volatile storage, but experiments show
- * that all SoCs have 16 registers available for this purpose.
- */
+ 
 static const struct of_device_id sun6i_rtc_dt_ids[] = {
 	{ .compatible = "allwinner,sun6i-a31-rtc" },
 	{ .compatible = "allwinner,sun8i-a23-rtc" },
@@ -867,7 +800,7 @@ static const struct of_device_id sun6i_rtc_dt_ids[] = {
 		.data = (void *)RTC_LINEAR_DAY },
 	{ .compatible = "allwinner,sun50i-r329-rtc",
 		.data = (void *)RTC_LINEAR_DAY },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, sun6i_rtc_dt_ids);
 

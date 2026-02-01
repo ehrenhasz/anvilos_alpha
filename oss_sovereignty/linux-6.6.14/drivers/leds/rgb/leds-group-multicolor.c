@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Multi-color LED built with monochromatic LED devices
- *
- * This driver groups several monochromatic LED devices in a single multicolor LED device.
- *
- * Compared to handling this grouping in user-space, the benefits are:
- * - The state of the monochromatic LED relative to each other is always consistent.
- * - The sysfs interface of the LEDs can be used for the group as a whole.
- *
- * Copyright 2023 Jean-Jacques Hiblot <jjhiblot@traphandler.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/leds.h>
@@ -38,10 +28,7 @@ static int leds_gmc_set(struct led_classdev *cdev, enum led_brightness brightnes
 		unsigned int intensity = mc_cdev->subled_info[i].intensity;
 		int mono_brightness;
 
-		/*
-		 * Scale the brightness according to relative intensity of the
-		 * color AND the max brightness of the monochromatic LED.
-		 */
+		 
 		mono_brightness = DIV_ROUND_CLOSEST(brightness * intensity * mono_max_brightness,
 						    group_max_brightness * group_max_brightness);
 
@@ -55,7 +42,7 @@ static void restore_sysfs_write_access(void *data)
 {
 	struct led_classdev *led_cdev = data;
 
-	/* Restore the write acccess to the LED */
+	 
 	mutex_lock(&led_cdev->led_access);
 	led_sysfs_enable(led_cdev);
 	mutex_unlock(&led_cdev->led_access);
@@ -108,11 +95,11 @@ static int leds_gmc_probe(struct platform_device *pdev)
 
 		subled[i].color_index = led_cdev->color;
 
-		/* Configure the LED intensity to its maximum */
+		 
 		subled[i].intensity = max_brightness;
 	}
 
-	/* Initialise the multicolor's LED class device */
+	 
 	cdev = &priv->mc_cdev.led_cdev;
 	cdev->flags = LED_CORE_SUSPENDRESUME;
 	cdev->brightness_set_blocking = leds_gmc_set;
@@ -133,15 +120,12 @@ static int leds_gmc_probe(struct platform_device *pdev)
 	for (i = 0; i < count; i++) {
 		struct led_classdev *led_cdev = priv->monochromatics[i];
 
-		/*
-		 * Make the individual LED sysfs interface read-only to prevent the user
-		 * to change the brightness of the individual LEDs of the group.
-		 */
+		 
 		mutex_lock(&led_cdev->led_access);
 		led_sysfs_disable(led_cdev);
 		mutex_unlock(&led_cdev->led_access);
 
-		/* Restore the write access to the LED sysfs when the group is destroyed */
+		 
 		devm_add_action_or_reset(dev, restore_sysfs_write_access, led_cdev);
 	}
 

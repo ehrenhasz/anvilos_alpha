@@ -1,25 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2017, Oracle and/or its affiliates. All rights reserved.
- */
 
-/*
- * Oracle Data Analytics Accelerator (DAX)
- *
- * DAX is a coprocessor which resides on the SPARC M7 (DAX1) and M8
- * (DAX2) processor chips, and has direct access to the CPU's L3
- * caches as well as physical memory. It can perform several
- * operations on data streams with various input and output formats.
- * The driver provides a transport mechanism only and has limited
- * knowledge of the various opcodes and data formats. A user space
- * library provides high level services and translates these into low
- * level commands which are then passed into the driver and
- * subsequently the hypervisor and the coprocessor.  The library is
- * the recommended way for applications to use the coprocessor, and
- * the driver interface is not intended for general use.
- *
- * See Documentation/arch/sparc/oradax/oracle-dax.rst for more details.
- */
+ 
+
+ 
 
 #include <linux/uaccess.h>
 #include <linux/module.h>
@@ -69,7 +51,7 @@ MODULE_DESCRIPTION("Driver for Oracle Data Analytics Accelerator");
 #define	DAX_CCB_USEC		100
 #define	DAX_CCB_RETRIES		10000
 
-/* stream types */
+ 
 enum {
 	OUT,
 	PRI,
@@ -78,7 +60,7 @@ enum {
 	NUM_STREAM_TYPES
 };
 
-/* completion status */
+ 
 #define	CCA_STAT_NOT_COMPLETED	0
 #define	CCA_STAT_COMPLETED	1
 #define	CCA_STAT_FAILED		2
@@ -88,121 +70,121 @@ enum {
 #define	CCA_STAT_PIPE_SRC	6
 #define	CCA_STAT_PIPE_DST	7
 
-/* completion err */
-#define	CCA_ERR_SUCCESS		0x0	/* no error */
-#define	CCA_ERR_OVERFLOW	0x1	/* buffer overflow */
-#define	CCA_ERR_DECODE		0x2	/* CCB decode error */
-#define	CCA_ERR_PAGE_OVERFLOW	0x3	/* page overflow */
-#define	CCA_ERR_KILLED		0x7	/* command was killed */
-#define	CCA_ERR_TIMEOUT		0x8	/* Timeout */
-#define	CCA_ERR_ADI		0x9	/* ADI error */
-#define	CCA_ERR_DATA_FMT	0xA	/* data format error */
-#define	CCA_ERR_OTHER_NO_RETRY	0xE	/* Other error, do not retry */
-#define	CCA_ERR_OTHER_RETRY	0xF	/* Other error, retry */
-#define	CCA_ERR_PARTIAL_SYMBOL	0x80	/* QP partial symbol warning */
+ 
+#define	CCA_ERR_SUCCESS		0x0	 
+#define	CCA_ERR_OVERFLOW	0x1	 
+#define	CCA_ERR_DECODE		0x2	 
+#define	CCA_ERR_PAGE_OVERFLOW	0x3	 
+#define	CCA_ERR_KILLED		0x7	 
+#define	CCA_ERR_TIMEOUT		0x8	 
+#define	CCA_ERR_ADI		0x9	 
+#define	CCA_ERR_DATA_FMT	0xA	 
+#define	CCA_ERR_OTHER_NO_RETRY	0xE	 
+#define	CCA_ERR_OTHER_RETRY	0xF	 
+#define	CCA_ERR_PARTIAL_SYMBOL	0x80	 
 
-/* CCB address types */
+ 
 #define	DAX_ADDR_TYPE_NONE	0
-#define	DAX_ADDR_TYPE_VA_ALT	1	/* secondary context */
-#define	DAX_ADDR_TYPE_RA	2	/* real address */
-#define	DAX_ADDR_TYPE_VA	3	/* virtual address */
+#define	DAX_ADDR_TYPE_VA_ALT	1	 
+#define	DAX_ADDR_TYPE_RA	2	 
+#define	DAX_ADDR_TYPE_VA	3	 
 
-/* dax_header_t opcode */
+ 
 #define	DAX_OP_SYNC_NOP		0x0
 #define	DAX_OP_EXTRACT		0x1
 #define	DAX_OP_SCAN_VALUE	0x2
 #define	DAX_OP_SCAN_RANGE	0x3
 #define	DAX_OP_TRANSLATE	0x4
 #define	DAX_OP_SELECT		0x5
-#define	DAX_OP_INVERT		0x10	/* OR with translate, scan opcodes */
+#define	DAX_OP_INVERT		0x10	 
 
 struct dax_header {
-	u32 ccb_version:4;	/* 31:28 CCB Version */
-				/* 27:24 Sync Flags */
-	u32 pipe:1;		/* Pipeline */
-	u32 longccb:1;		/* Longccb. Set for scan with lu2, lu3, lu4. */
-	u32 cond:1;		/* Conditional */
-	u32 serial:1;		/* Serial */
-	u32 opcode:8;		/* 23:16 Opcode */
-				/* 15:0 Address Type. */
-	u32 reserved:3;		/* 15:13 reserved */
-	u32 table_addr_type:2;	/* 12:11 Huffman Table Address Type */
-	u32 out_addr_type:3;	/* 10:8 Destination Address Type */
-	u32 sec_addr_type:3;	/* 7:5 Secondary Source Address Type */
-	u32 pri_addr_type:3;	/* 4:2 Primary Source Address Type */
-	u32 cca_addr_type:2;	/* 1:0 Completion Address Type */
+	u32 ccb_version:4;	 
+				 
+	u32 pipe:1;		 
+	u32 longccb:1;		 
+	u32 cond:1;		 
+	u32 serial:1;		 
+	u32 opcode:8;		 
+				 
+	u32 reserved:3;		 
+	u32 table_addr_type:2;	 
+	u32 out_addr_type:3;	 
+	u32 sec_addr_type:3;	 
+	u32 pri_addr_type:3;	 
+	u32 cca_addr_type:2;	 
 };
 
 struct dax_control {
-	u32 pri_fmt:4;		/* 31:28 Primary Input Format */
-	u32 pri_elem_size:5;	/* 27:23 Primary Input Element Size(less1) */
-	u32 pri_offset:3;	/* 22:20 Primary Input Starting Offset */
-	u32 sec_encoding:1;	/* 19    Secondary Input Encoding */
-				/*	 (must be 0 for Select) */
-	u32 sec_offset:3;	/* 18:16 Secondary Input Starting Offset */
-	u32 sec_elem_size:2;	/* 15:14 Secondary Input Element Size */
-				/*	 (must be 0 for Select) */
-	u32 out_fmt:2;		/* 13:12 Output Format */
-	u32 out_elem_size:2;	/* 11:10 Output Element Size */
-	u32 misc:10;		/* 9:0 Opcode specific info */
+	u32 pri_fmt:4;		 
+	u32 pri_elem_size:5;	 
+	u32 pri_offset:3;	 
+	u32 sec_encoding:1;	 
+				 
+	u32 sec_offset:3;	 
+	u32 sec_elem_size:2;	 
+				 
+	u32 out_fmt:2;		 
+	u32 out_elem_size:2;	 
+	u32 misc:10;		 
 };
 
 struct dax_data_access {
-	u64 flow_ctrl:2;	/* 63:62 Flow Control Type */
-	u64 pipe_target:2;	/* 61:60 Pipeline Target */
-	u64 out_buf_size:20;	/* 59:40 Output Buffer Size */
-				/*	 (cachelines less 1) */
-	u64 unused1:8;		/* 39:32 Reserved, Set to 0 */
-	u64 out_alloc:5;	/* 31:27 Output Allocation */
-	u64 unused2:1;		/* 26	 Reserved */
-	u64 pri_len_fmt:2;	/* 25:24 Input Length Format */
-	u64 pri_len:24;		/* 23:0  Input Element/Byte/Bit Count */
-				/*	 (less 1) */
+	u64 flow_ctrl:2;	 
+	u64 pipe_target:2;	 
+	u64 out_buf_size:20;	 
+				 
+	u64 unused1:8;		 
+	u64 out_alloc:5;	 
+	u64 unused2:1;		 
+	u64 pri_len_fmt:2;	 
+	u64 pri_len:24;		 
+				 
 };
 
 struct dax_ccb {
-	struct dax_header hdr;	/* CCB Header */
-	struct dax_control ctrl;/* Control Word */
-	void *ca;		/* Completion Address */
-	void *pri;		/* Primary Input Address */
-	struct dax_data_access dac; /* Data Access Control */
-	void *sec;		/* Secondary Input Address */
-	u64 dword5;		/* depends on opcode */
-	void *out;		/* Output Address */
-	void *tbl;		/* Table Address or bitmap */
+	struct dax_header hdr;	 
+	struct dax_control ctrl; 
+	void *ca;		 
+	void *pri;		 
+	struct dax_data_access dac;  
+	void *sec;		 
+	u64 dword5;		 
+	void *out;		 
+	void *tbl;		 
 };
 
 struct dax_cca {
-	u8	status;		/* user may mwait on this address */
-	u8	err;		/* user visible error notification */
-	u8	rsvd[2];	/* reserved */
-	u32	n_remaining;	/* for QP partial symbol warning */
-	u32	output_sz;	/* output in bytes */
-	u32	rsvd2;		/* reserved */
-	u64	run_cycles;	/* run time in OCND2 cycles */
-	u64	run_stats;	/* nothing reported in version 1.0 */
-	u32	n_processed;	/* number input elements */
-	u32	rsvd3[5];	/* reserved */
-	u64	retval;		/* command return value */
-	u64	rsvd4[8];	/* reserved */
+	u8	status;		 
+	u8	err;		 
+	u8	rsvd[2];	 
+	u32	n_remaining;	 
+	u32	output_sz;	 
+	u32	rsvd2;		 
+	u64	run_cycles;	 
+	u64	run_stats;	 
+	u32	n_processed;	 
+	u32	rsvd3[5];	 
+	u64	retval;		 
+	u64	rsvd4[8];	 
 };
 
-/* per thread CCB context */
+ 
 struct dax_ctx {
 	struct dax_ccb		*ccb_buf;
-	u64			ccb_buf_ra;	/* cached RA of ccb_buf  */
+	u64			ccb_buf_ra;	 
 	struct dax_cca		*ca_buf;
-	u64			ca_buf_ra;	/* cached RA of ca_buf   */
+	u64			ca_buf_ra;	 
 	struct page		*pages[DAX_CA_ELEMS][NUM_STREAM_TYPES];
-						/* array of locked pages */
-	struct task_struct	*owner;		/* thread that owns ctx  */
-	struct task_struct	*client;	/* requesting thread     */
+						 
+	struct task_struct	*owner;		 
+	struct task_struct	*client;	 
 	union ccb_result	result;
 	u32			ccb_count;
 	u32			fail_count;
 };
 
-/* driver public entry points */
+ 
 static int dax_open(struct inode *inode, struct file *file);
 static ssize_t dax_read(struct file *filp, char __user *buf,
 			size_t count, loff_t *ppos);
@@ -304,7 +286,7 @@ static int __init dax_attach(void)
 		dax_dbg("registered DAX major %ld minor %ld", major, minor);
 	}
 
-	/* submit a zero length ccb array to query coprocessor queue size */
+	 
 	hv_rv = sun4v_ccb_submit(0, 0, HV_CCB_QUERY_CMD, 0, &max_ccbs, &dummy);
 	if (hv_rv != 0) {
 		dax_err("get_hwqueue_size failed with status=%ld and max_ccbs=%ld",
@@ -367,7 +349,7 @@ static void __exit dax_detach(void)
 }
 module_exit(dax_detach);
 
-/* map completion area */
+ 
 static int dax_devmap(struct file *f, struct vm_area_struct *vma)
 {
 	struct dax_ctx *ctx = (struct dax_ctx *)f->private_data;
@@ -385,7 +367,7 @@ static int dax_devmap(struct file *f, struct vm_area_struct *vma)
 		return -EINVAL;
 	}
 
-	/* completion area is mapped read-only for user */
+	 
 	if (vma->vm_flags & VM_WRITE)
 		return -EPERM;
 	vm_flags_clear(vma, VM_MAYWRITE);
@@ -398,7 +380,7 @@ static int dax_devmap(struct file *f, struct vm_area_struct *vma)
 	return 0;
 }
 
-/* Unlock user pages. Called during dequeue or device close */
+ 
 static void dax_unlock_pages(struct dax_ctx *ctx, int ccb_index, int nelem)
 {
 	int i, j;
@@ -440,12 +422,7 @@ static int dax_lock_pages(struct dax_ctx *ctx, int idx,
 	for (i = 0; i < nelem; i++) {
 		struct dax_ccb *ccbp = &ctx->ccb_buf[i];
 
-		/*
-		 * For each address in the CCB whose type is virtual,
-		 * lock the page and change the type to virtual alternate
-		 * context. On error, return the offending address in
-		 * err_va.
-		 */
+		 
 		if (ccbp->hdr.out_addr_type == DAX_ADDR_TYPE_VA) {
 			dax_dbg("output");
 			if (dax_lock_page(ccbp->out,
@@ -486,7 +463,7 @@ static int dax_lock_pages(struct dax_ctx *ctx, int idx,
 			ccbp->hdr.table_addr_type = DAX_ADDR_TYPE_VA_ALT;
 		}
 
-		/* skip over 2nd 64 bytes of long CCB */
+		 
 		if (ccbp->hdr.longccb)
 			i++;
 	}
@@ -573,12 +550,12 @@ static ssize_t dax_write(struct file *f, const char __user *buf,
 		return -EINVAL;
 
 	if (count % sizeof(struct dax_ccb) == 0)
-		return dax_ccb_exec(ctx, buf, count, ppos); /* CCB EXEC */
+		return dax_ccb_exec(ctx, buf, count, ppos);  
 
 	if (count != sizeof(struct dax_command))
 		return -EINVAL;
 
-	/* immediate command */
+	 
 	if (ctx->owner != current)
 		return -EUSERS;
 
@@ -656,7 +633,7 @@ static int dax_open(struct inode *inode, struct file *f)
 	dax_dbg("ctx->ccb_buf=0x%p, ccb_buf_ra=0x%llx",
 		(void *)ctx->ccb_buf, ctx->ccb_buf_ra);
 
-	/* allocate CCB completion area buffer */
+	 
 	ctx->ca_buf = kzalloc(DAX_MMAP_LEN, GFP_KERNEL);
 	if (ctx->ca_buf == NULL)
 		goto alloc_error;
@@ -769,20 +746,12 @@ static void dax_prt_ccbs(struct dax_ccb *ccb, int nelem)
 	}
 }
 
-/*
- * Validates user CCB content.  Also sets completion address and address types
- * for all addresses contained in CCB.
- */
+ 
 static int dax_preprocess_usr_ccbs(struct dax_ctx *ctx, int idx, int nelem)
 {
 	int i;
 
-	/*
-	 * The user is not allowed to specify real address types in
-	 * the CCB header.  This must be enforced by the kernel before
-	 * submitting the CCBs to HV.  The only allowed values for all
-	 * address fields are VA or IMM
-	 */
+	 
 	for (i = 0; i < nelem; i++) {
 		struct dax_ccb *ccbp = &ctx->ccb_buf[i];
 		unsigned long ca_offset;
@@ -829,7 +798,7 @@ static int dax_preprocess_usr_ccbs(struct dax_ctx *ctx, int idx, int nelem)
 			return DAX_SUBMIT_ERR_CCB_INVAL;
 		}
 
-		/* set completion (real) address and address type */
+		 
 		ccbp->hdr.cca_addr_type = DAX_ADDR_TYPE_RA;
 		ca_offset = (idx + i) * sizeof(struct dax_cca);
 		ccbp->ca = (void *)ctx->ca_buf_ra + ca_offset;
@@ -838,7 +807,7 @@ static int dax_preprocess_usr_ccbs(struct dax_ctx *ctx, int idx, int nelem)
 		dax_dbg("ccb[%d]=%p, ca_offset=0x%lx, compl RA=0x%llx",
 			i, ccbp, ca_offset, ctx->ca_buf_ra + ca_offset);
 
-		/* skip over 2nd 64 bytes of long CCB */
+		 
 		if (ccbp->hdr.longccb)
 			i++;
 	}
@@ -863,23 +832,20 @@ static int dax_ccb_exec(struct dax_ctx *ctx, const char __user *buf,
 	}
 	dax_dbg("args: ccb_buf_len=%ld, idx=%d", count, idx);
 
-	/* for given index and length, verify ca_buf range exists */
+	 
 	if (idx < 0 || idx > (DAX_CA_ELEMS - nccbs)) {
 		ctx->result.exec.status = DAX_SUBMIT_ERR_NO_CA_AVAIL;
 		return 0;
 	}
 
-	/*
-	 * Copy CCBs into kernel buffer to prevent modification by the
-	 * user in between validation and submission.
-	 */
+	 
 	if (copy_from_user(ctx->ccb_buf, buf, count)) {
 		dax_dbg("copyin of user CCB buffer failed");
 		ctx->result.exec.status = DAX_SUBMIT_ERR_CCB_ARR_MMU_MISS;
 		return 0;
 	}
 
-	/* check to see if ca_buf[idx] .. ca_buf[idx + nccbs] are available */
+	 
 	for (i = idx; i < idx + nccbs; i++) {
 		if (ctx->ca_buf[i].status == CCA_STAT_NOT_COMPLETED) {
 			dax_dbg("CA range not available, dequeue needed");
@@ -907,58 +873,31 @@ static int dax_ccb_exec(struct dax_ctx *ctx, const char __user *buf,
 
 	switch (hv_rv) {
 	case HV_EOK:
-		/*
-		 * Hcall succeeded with no errors but the accepted
-		 * length may be less than the requested length.  The
-		 * only way the driver can resubmit the remainder is
-		 * to wait for completion of the submitted CCBs since
-		 * there is no way to guarantee the ordering semantics
-		 * required by the client applications.  Therefore we
-		 * let the user library deal with resubmissions.
-		 */
+		 
 		ctx->result.exec.status = DAX_SUBMIT_OK;
 		break;
 	case HV_EWOULDBLOCK:
-		/*
-		 * This is a transient HV API error. The user library
-		 * can retry.
-		 */
+		 
 		dax_dbg("hcall returned HV_EWOULDBLOCK");
 		ctx->result.exec.status = DAX_SUBMIT_ERR_WOULDBLOCK;
 		break;
 	case HV_ENOMAP:
-		/*
-		 * HV was unable to translate a VA. The VA it could
-		 * not translate is returned in the status_data param.
-		 */
+		 
 		dax_dbg("hcall returned HV_ENOMAP");
 		ctx->result.exec.status = DAX_SUBMIT_ERR_NOMAP;
 		break;
 	case HV_EINVAL:
-		/*
-		 * This is the result of an invalid user CCB as HV is
-		 * validating some of the user CCB fields.  Pass this
-		 * error back to the user. There is no supporting info
-		 * to isolate the invalid field.
-		 */
+		 
 		dax_dbg("hcall returned HV_EINVAL");
 		ctx->result.exec.status = DAX_SUBMIT_ERR_CCB_INVAL;
 		break;
 	case HV_ENOACCESS:
-		/*
-		 * HV found a VA that did not have the appropriate
-		 * permissions (such as the w bit). The VA in question
-		 * is returned in status_data param.
-		 */
+		 
 		dax_dbg("hcall returned HV_ENOACCESS");
 		ctx->result.exec.status = DAX_SUBMIT_ERR_NOACCESS;
 		break;
 	case HV_EUNAVAILABLE:
-		/*
-		 * The requested CCB operation could not be performed
-		 * at this time. Return the specific unavailable code
-		 * in the status_data field.
-		 */
+		 
 		dax_dbg("hcall returned HV_EUNAVAILABLE");
 		ctx->result.exec.status = DAX_SUBMIT_ERR_UNAVAIL;
 		break;
@@ -968,11 +907,11 @@ static int dax_ccb_exec(struct dax_ctx *ctx, const char __user *buf,
 		break;
 	}
 
-	/* unlock pages associated with the unaccepted CCBs */
+	 
 	naccepted = accepted_len / sizeof(struct dax_ccb);
 	dax_unlock_pages(ctx, idx + naccepted, nccbs - naccepted);
 
-	/* mark unaccepted CCBs as not completed */
+	 
 	for (i = idx + naccepted; i < idx + nccbs; i++)
 		ctx->ca_buf[i].status = CCA_STAT_COMPLETED;
 
@@ -984,6 +923,6 @@ static int dax_ccb_exec(struct dax_ctx *ctx, const char __user *buf,
 		ctx->result.exec.status);
 
 	if (count == accepted_len)
-		ctx->client = NULL; /* no read needed to complete protocol */
+		ctx->client = NULL;  
 	return accepted_len;
 }

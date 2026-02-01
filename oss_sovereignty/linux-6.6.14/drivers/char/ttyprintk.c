@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/char/ttyprintk.c
- *
- *  Copyright (C) 2010  Samo Pogacnik
- */
 
-/*
- * This pseudo device allows user to make printk messages. It is possible
- * to store "console" messages inline with kernel messages for better analyses
- * of the boot process, for example.
- */
+ 
+
+ 
 
 #include <linux/console.h>
 #include <linux/device.h>
@@ -25,17 +17,9 @@ struct ttyprintk_port {
 
 static struct ttyprintk_port tpk_port;
 
-/*
- * Our simple preformatting supports transparent output of (time-stamped)
- * printk messages (also suitable for logging service):
- * - any cr is replaced by nl
- * - adds a ttyprintk source tag in front of each line
- * - too long message is fragmented, with '\'nl between fragments
- * - TPK_STR_SIZE isn't really the write_room limiting factor, because
- *   it is emptied on the fly during preformatting.
- */
-#define TPK_STR_SIZE 508 /* should be bigger then max expected line length */
-#define TPK_MAX_ROOM 4096 /* we could assume 4K for instance */
+ 
+#define TPK_STR_SIZE 508  
+#define TPK_MAX_ROOM 4096  
 #define TPK_PREFIX KERN_SOH __stringify(CONFIG_TTY_PRINTK_LEVEL)
 
 static int tpk_curr;
@@ -57,7 +41,7 @@ static int tpk_printk(const u8 *buf, int count)
 
 	for (i = 0; i < count; i++) {
 		if (tpk_curr >= TPK_STR_SIZE) {
-			/* end of tmp buffer reached: cut the message in two */
+			 
 			tpk_buffer[tpk_curr++] = '\\';
 			tpk_flush();
 		}
@@ -80,9 +64,7 @@ static int tpk_printk(const u8 *buf, int count)
 	return count;
 }
 
-/*
- * TTY operations open function.
- */
+ 
 static int tpk_open(struct tty_struct *tty, struct file *filp)
 {
 	tty->driver_data = &tpk_port;
@@ -90,9 +72,7 @@ static int tpk_open(struct tty_struct *tty, struct file *filp)
 	return tty_port_open(&tpk_port.port, tty, filp);
 }
 
-/*
- * TTY operations close function.
- */
+ 
 static void tpk_close(struct tty_struct *tty, struct file *filp)
 {
 	struct ttyprintk_port *tpkp = tty->driver_data;
@@ -100,16 +80,14 @@ static void tpk_close(struct tty_struct *tty, struct file *filp)
 	tty_port_close(&tpkp->port, tty, filp);
 }
 
-/*
- * TTY operations write function.
- */
+ 
 static ssize_t tpk_write(struct tty_struct *tty, const u8 *buf, size_t count)
 {
 	struct ttyprintk_port *tpkp = tty->driver_data;
 	unsigned long flags;
 	int ret;
 
-	/* exclusive use of tpk_printk within this tty */
+	 
 	spin_lock_irqsave(&tpkp->spinlock, flags);
 	ret = tpk_printk(buf, count);
 	spin_unlock_irqrestore(&tpkp->spinlock, flags);
@@ -117,17 +95,13 @@ static ssize_t tpk_write(struct tty_struct *tty, const u8 *buf, size_t count)
 	return ret;
 }
 
-/*
- * TTY operations write_room function.
- */
+ 
 static unsigned int tpk_write_room(struct tty_struct *tty)
 {
 	return TPK_MAX_ROOM;
 }
 
-/*
- * TTY operations hangup function.
- */
+ 
 static void tpk_hangup(struct tty_struct *tty)
 {
 	struct ttyprintk_port *tpkp = tty->driver_data;
@@ -135,9 +109,7 @@ static void tpk_hangup(struct tty_struct *tty)
 	tty_port_hangup(&tpkp->port);
 }
 
-/*
- * TTY port operations shutdown function.
- */
+ 
 static void tpk_port_shutdown(struct tty_port *tport)
 {
 	struct ttyprintk_port *tpkp =

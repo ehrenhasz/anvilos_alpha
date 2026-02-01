@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2019 HUAWEI, Inc.
- *             https://www.huawei.com/
- */
+
+ 
 #include "compress.h"
 #include <linux/module.h>
 #include <linux/lz4.h>
 
-#ifndef LZ4_DISTANCE_MAX	/* history window size */
-#define LZ4_DISTANCE_MAX 65535	/* set to maximum value by default */
+#ifndef LZ4_DISTANCE_MAX	 
+#define LZ4_DISTANCE_MAX 65535	 
 #endif
 
 #define LZ4_MAX_DISTANCE_PAGES	(DIV_ROUND_UP(LZ4_DISTANCE_MAX, PAGE_SIZE) + 1)
@@ -18,9 +15,9 @@
 
 struct z_erofs_lz4_decompress_ctx {
 	struct z_erofs_decompress_req *rq;
-	/* # of encoded, decoded pages */
+	 
 	unsigned int inpages, outpages;
-	/* decoded block total length (used for in-place decompression) */
+	 
 	unsigned int oend;
 };
 
@@ -40,7 +37,7 @@ static int z_erofs_load_lz4_config(struct super_block *sb,
 
 		sbi->lz4.max_pclusterblks = le16_to_cpu(lz4->max_pclusterblks);
 		if (!sbi->lz4.max_pclusterblks) {
-			sbi->lz4.max_pclusterblks = 1;	/* reserved case */
+			sbi->lz4.max_pclusterblks = 1;	 
 		} else if (sbi->lz4.max_pclusterblks >
 			   erofs_blknr(sb, Z_EROFS_PCLUSTER_MAX_SIZE)) {
 			erofs_err(sb, "too large lz4 pclusterblks %u",
@@ -58,10 +55,7 @@ static int z_erofs_load_lz4_config(struct super_block *sb,
 	return erofs_pcpubuf_growsize(sbi->lz4.max_pclusterblks);
 }
 
-/*
- * Fill all gaps with bounce pages if it's a sparse page list. Also check if
- * all physical pages are consecutive, which can be seen for moderate CR.
- */
+ 
 static int z_erofs_lz4_prepare_dstpages(struct z_erofs_lz4_decompress_ctx *ctx,
 					struct page **pagepool)
 {
@@ -82,7 +76,7 @@ static int z_erofs_lz4_prepare_dstpages(struct z_erofs_lz4_decompress_ctx *ctx,
 		if (j >= lz4_max_distance_pages)
 			j = 0;
 
-		/* 'valid' bounced can only be tested after a complete round */
+		 
 		if (!rq->fillgaps && test_bit(j, bounced)) {
 			DBG_BUGON(i < lz4_max_distance_pages);
 			DBG_BUGON(top >= lz4_max_distance_pages);
@@ -157,7 +151,7 @@ static void *z_erofs_lz4_handle_overlap(struct z_erofs_lz4_decompress_ctx *ctx,
 	return src;
 
 docopy:
-	/* Or copy compressed data which can be overlapped to per-CPU buffer */
+	 
 	in = rq->in;
 	src = erofs_get_pcpubuf(ctx->inpages);
 	if (!src) {
@@ -186,11 +180,7 @@ docopy:
 	return src;
 }
 
-/*
- * Get the exact inputsize with zero_padding feature.
- *  - For LZ4, it should work if zero_padding feature is on (5.3+);
- *  - For MicroLZMA, it'd be enabled all the time.
- */
+ 
 int z_erofs_fixup_insize(struct z_erofs_decompress_req *rq, const char *padbuf,
 			 unsigned int padbufsize)
 {
@@ -216,7 +206,7 @@ static int z_erofs_lz4_decompress_mem(struct z_erofs_lz4_decompress_ctx *ctx,
 	DBG_BUGON(*rq->in == NULL);
 	headpage = kmap_local_page(*rq->in);
 
-	/* LZ4 decompression inplace is only safe if zero_padding is enabled */
+	 
 	if (erofs_sb_has_zero_padding(EROFS_SB(rq->sb))) {
 		support_0padding = true;
 		ret = z_erofs_fixup_insize(rq, headpage + rq->pageofs_in,
@@ -236,7 +226,7 @@ static int z_erofs_lz4_decompress_mem(struct z_erofs_lz4_decompress_ctx *ctx,
 	if (IS_ERR(src))
 		return PTR_ERR(src);
 
-	/* legacy format could compress extra data in a pcluster. */
+	 
 	if (rq->partial_decoding || !support_0padding)
 		ret = LZ4_decompress_safe_partial(src + inputmargin, out,
 				rq->inputsize, rq->outputsize, rq->outputsize);
@@ -286,7 +276,7 @@ static int z_erofs_lz4_decompress(struct z_erofs_decompress_req *rq,
 	ctx.outpages = PAGE_ALIGN(ctx.oend) >> PAGE_SHIFT;
 	ctx.inpages = PAGE_ALIGN(rq->inputsize) >> PAGE_SHIFT;
 
-	/* one optimized fast path only for non bigpcluster cases yet */
+	 
 	if (ctx.inpages == 1 && ctx.outpages == 1 && !rq->inplace_io) {
 		DBG_BUGON(!*rq->out);
 		dst = kmap_local_page(*rq->out);
@@ -294,7 +284,7 @@ static int z_erofs_lz4_decompress(struct z_erofs_decompress_req *rq,
 		goto dstmap_out;
 	}
 
-	/* general decoding path which can be used for all cases */
+	 
 	ret = z_erofs_lz4_prepare_dstpages(&ctx, pagepool);
 	if (ret < 0) {
 		return ret;

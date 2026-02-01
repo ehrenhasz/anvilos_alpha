@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* MCP23S08 SPI/I2C GPIO driver */
+ 
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/irq.h>
@@ -7,9 +7,7 @@
 #include <linux/pinctrl/pinctrl.h>
 #include <linux/types.h>
 
-/*
- * MCP types supported by driver
- */
+ 
 #define MCP_TYPE_S08	1
 #define MCP_TYPE_S17	2
 #define MCP_TYPE_008	3
@@ -32,7 +30,7 @@ struct mcp23s08 {
 	int			irq;
 	bool			irq_controller;
 	int			cached_gpio;
-	/* lock protects regmap access with bypass/cache flags */
+	 
 	struct mutex		lock;
 
 	struct gpio_chip	chip;

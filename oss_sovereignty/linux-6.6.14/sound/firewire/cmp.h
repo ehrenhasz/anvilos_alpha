@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef SOUND_FIREWIRE_CMP_H_INCLUDED
 #define SOUND_FIREWIRE_CMP_H_INCLUDED
 
@@ -13,19 +13,10 @@ enum cmp_direction {
 	CMP_OUTPUT,
 };
 
-/**
- * struct cmp_connection - manages an isochronous connection to a device
- * @speed: the connection's actual speed
- *
- * This structure manages (using CMP) an isochronous stream between the local
- * computer and a device's input plug (iPCR) and output plug (oPCR).
- *
- * There is no corresponding oPCR created on the local computer, so it is not
- * possible to overlay connections on top of this one.
- */
+ 
 struct cmp_connection {
 	int speed;
-	/* private: */
+	 
 	bool connected;
 	struct mutex mutex;
 	struct fw_iso_resources resources;

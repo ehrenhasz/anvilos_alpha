@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Tomasz Figa <t.figa@samsung.com>
- *
- * Clock driver for Exynos clock output
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/clk.h>
@@ -77,10 +72,7 @@ static const struct of_device_id exynos_clkout_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, exynos_clkout_ids);
 
-/*
- * Device will be instantiated as child of PMU device without its own
- * device node.  Therefore match compatibles against parent.
- */
+ 
 static int exynos_clkout_match_parent_dev(struct device *dev, u32 *mux_mask)
 {
 	const struct exynos_clkout_variant *variant;
@@ -123,10 +115,7 @@ static int exynos_clkout_probe(struct platform_device *pdev)
 
 	clkout->np = pdev->dev.of_node;
 	if (!clkout->np) {
-		/*
-		 * pdev->dev.parent was checked by exynos_clkout_match_parent_dev()
-		 * so it is not NULL.
-		 */
+		 
 		clkout->np = pdev->dev.parent->of_node;
 	}
 

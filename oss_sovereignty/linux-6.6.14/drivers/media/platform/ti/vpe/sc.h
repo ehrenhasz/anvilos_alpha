@@ -1,15 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013 Texas Instruments Inc.
- *
- * David Griego, <dagriego@biglakesoftware.com>
- * Dale Farnsworth, <dale@farnsworth.org>
- * Archit Taneja, <archit@ti.com>
- */
+ 
+ 
 #ifndef TI_SC_H
 #define TI_SC_H
 
-/* Scaler regs */
+ 
 #define CFG_SC0				0x0
 #define CFG_INTERLACE_O			(1 << 0)
 #define CFG_LINEAR			(1 << 1)
@@ -158,39 +152,36 @@
 #define CFG_OFF_W_MASK			0x07ff
 #define CFG_OFF_W_SHIFT			16
 
-/* number of phases supported by the polyphase scalers */
+ 
 #define SC_NUM_PHASES			32
 
-/* number of taps used by horizontal polyphase scaler */
+ 
 #define SC_H_NUM_TAPS			7
 
-/* number of taps used by vertical polyphase scaler */
+ 
 #define SC_V_NUM_TAPS			5
 
-/* number of taps expected by the scaler in it's coefficient memory */
+ 
 #define SC_NUM_TAPS_MEM_ALIGN		8
 
-/* Maximum frame width the scaler can handle (in pixels) */
+ 
 #define SC_MAX_PIXEL_WIDTH		2047
 
-/* Maximum frame height the scaler can handle (in lines) */
+ 
 #define SC_MAX_PIXEL_HEIGHT		2047
 
-/*
- * coefficient memory size in bytes:
- * num phases x num sets(luma and chroma) x num taps(aligned) x coeff size
- */
+ 
 #define SC_COEF_SRAM_SIZE	(SC_NUM_PHASES * 2 * SC_NUM_TAPS_MEM_ALIGN * 2)
 
 struct sc_data {
 	void __iomem		*base;
 	struct resource		*res;
 
-	dma_addr_t		loaded_coeff_h; /* loaded h coeffs in SC */
-	dma_addr_t		loaded_coeff_v; /* loaded v coeffs in SC */
+	dma_addr_t		loaded_coeff_h;  
+	dma_addr_t		loaded_coeff_v;  
 
-	bool			load_coeff_h;	/* have new h SC coeffs */
-	bool			load_coeff_v;	/* have new v SC coeffs */
+	bool			load_coeff_h;	 
+	bool			load_coeff_v;	 
 
 	struct platform_device *pdev;
 };

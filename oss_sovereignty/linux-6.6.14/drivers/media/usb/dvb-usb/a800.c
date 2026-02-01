@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB framework compliant Linux driver for the AVerMedia AverTV DVB-T
- * USB2.0 (A800) DVB-T receiver.
- *
- * Copyright (C) 2005 Patrick Boettcher (patrick.boettcher@posteo.de)
- *
- * Thanks to
- *   - AVerMedia who kindly provided information and
- *   - Glen Harris who suffered from my mistakes during development.
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #include "dibusb.h"
 
 static int debug;
@@ -22,11 +12,11 @@ DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
 static int a800_power_ctrl(struct dvb_usb_device *d, int onoff)
 {
-	/* do nothing for the AVerMedia */
+	 
 	return 0;
 }
 
-/* assure to put cold to 0 for iManufacturer == 1 */
+ 
 static int a800_identify_state(struct usb_device *udev,
 			       const struct dvb_usb_device_properties *props,
 			       const struct dvb_usb_device_description **desc,
@@ -50,7 +40,7 @@ static int a800_rc_query(struct dvb_usb_device *d)
 		goto out;
 	}
 
-	/* Note that extended nec and nec32 are dropped */
+	 
 	if (key[0] == 1)
 		rc_keydown(d->rc_dev, RC_PROTO_NEC,
 			   RC_SCANCODE_NEC(key[1], key[3]), 0);
@@ -61,7 +51,7 @@ out:
 	return ret;
 }
 
-/* USB Driver stuff */
+ 
 static struct dvb_usb_device_properties a800_properties;
 
 static int a800_probe(struct usb_interface *intf,
@@ -71,7 +61,7 @@ static int a800_probe(struct usb_interface *intf,
 				   THIS_MODULE, NULL, adapter_nr);
 }
 
-/* do not change the order of the ID table */
+ 
 enum {
 	AVERMEDIA_DVBT_USB2_COLD,
 	AVERMEDIA_DVBT_USB2_WARM,
@@ -105,7 +95,7 @@ static struct dvb_usb_device_properties a800_properties = {
 			.frontend_attach  = dibusb_dib3000mc_frontend_attach,
 			.tuner_attach     = dibusb_dib3000mc_tuner_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 					.stream = {
 						.type = USB_BULK,
 				.count = 7,

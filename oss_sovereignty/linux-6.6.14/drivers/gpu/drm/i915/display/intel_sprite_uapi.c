@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "intel_crtc.h"
@@ -22,18 +20,12 @@ static void intel_plane_set_ckey(struct intel_plane_state *plane_state,
 
 	*key = *set;
 
-	/*
-	 * We want src key enabled on the
-	 * sprite and not on the primary.
-	 */
+	 
 	if (plane->id == PLANE_PRIMARY &&
 	    set->flags & I915_SET_COLORKEY_SOURCE)
 		key->flags = 0;
 
-	/*
-	 * On SKL+ we want dst key enabled on
-	 * the primary and not on the sprite.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 9 && plane->id != PLANE_PRIMARY &&
 	    set->flags & I915_SET_COLORKEY_DESTINATION)
 		key->flags = 0;
@@ -50,13 +42,13 @@ int intel_sprite_set_colorkey_ioctl(struct drm_device *dev, void *data,
 	struct drm_modeset_acquire_ctx ctx;
 	int ret = 0;
 
-	/* ignore the pointless "none" flag */
+	 
 	set->flags &= ~I915_SET_COLORKEY_NONE;
 
 	if (set->flags & ~(I915_SET_COLORKEY_DESTINATION | I915_SET_COLORKEY_SOURCE))
 		return -EINVAL;
 
-	/* Make sure we don't try to enable both src & dest simultaneously */
+	 
 	if ((set->flags & (I915_SET_COLORKEY_DESTINATION | I915_SET_COLORKEY_SOURCE)) == (I915_SET_COLORKEY_DESTINATION | I915_SET_COLORKEY_SOURCE))
 		return -EINVAL;
 
@@ -68,11 +60,7 @@ int intel_sprite_set_colorkey_ioctl(struct drm_device *dev, void *data,
 	if (!plane || plane->type != DRM_PLANE_TYPE_OVERLAY)
 		return -ENOENT;
 
-	/*
-	 * SKL+ only plane 2 can do destination keying against plane 1.
-	 * Also multiple planes can't do destination keying on the same
-	 * pipe simultaneously.
-	 */
+	 
 	if (DISPLAY_VER(dev_priv) >= 9 &&
 	    to_intel_plane(plane)->id >= PLANE_SPRITE1 &&
 	    set->flags & I915_SET_COLORKEY_DESTINATION)
@@ -94,10 +82,7 @@ int intel_sprite_set_colorkey_ioctl(struct drm_device *dev, void *data,
 		if (!ret)
 			intel_plane_set_ckey(to_intel_plane_state(plane_state), set);
 
-		/*
-		 * On some platforms we have to configure
-		 * the dst colorkey on the primary plane.
-		 */
+		 
 		if (!ret && has_dst_key_in_primary_plane(dev_priv)) {
 			struct intel_crtc *crtc =
 				intel_crtc_for_pipe(dev_priv,

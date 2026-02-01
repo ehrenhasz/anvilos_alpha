@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI NOR driver for NXP SPI Flash Interface (SPIFI)
- *
- * Copyright (C) 2015 Joachim Eastwood <manabian@gmail.com>
- *
- * Based on Freescale QuadSPI driver:
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -20,7 +13,7 @@
 #include <linux/platform_device.h>
 #include <linux/spi/spi.h>
 
-/* NXP SPIFI registers, bits and macros */
+ 
 #define SPIFI_CTRL				0x000
 #define  SPIFI_CTRL_TIMEOUT(timeout)		(timeout)
 #define  SPIFI_CTRL_CSHIGH(cshigh)		((cshigh) << 16)
@@ -250,7 +243,7 @@ static int nxp_spifi_setup_memory_cmd(struct nxp_spifi *spifi)
 		return -EINVAL;
 	}
 
-	/* Memory mode supports address length between 1 and 4 */
+	 
 	if (spifi->nor.addr_nbytes < 1 || spifi->nor.addr_nbytes > 4)
 		return -EINVAL;
 
@@ -310,7 +303,7 @@ static int nxp_spifi_setup_flash(struct nxp_spifi *spifi,
 	if (of_property_read_bool(np, "spi-cpol"))
 		mode |= SPI_CPOL;
 
-	/* Setup control register defaults */
+	 
 	ctrl = SPIFI_CTRL_TIMEOUT(1000) |
 	       SPIFI_CTRL_CSHIGH(15) |
 	       SPIFI_CTRL_FBCLK;
@@ -344,15 +337,7 @@ static int nxp_spifi_setup_flash(struct nxp_spifi *spifi,
 	spifi->nor.priv  = spifi;
 	spifi->nor.controller_ops = &nxp_spifi_controller_ops;
 
-	/*
-	 * The first read on a hard reset isn't reliable so do a
-	 * dummy read of the id before calling spi_nor_scan().
-	 * The reason for this problem is unknown.
-	 *
-	 * The official NXP spifilib uses more or less the same
-	 * workaround that is applied here by reading the device
-	 * id multiple times.
-	 */
+	 
 	nxp_spifi_dummy_id_read(&spifi->nor);
 
 	ret = spi_nor_scan(&spifi->nor, NULL, &hwcaps);
@@ -409,7 +394,7 @@ static int nxp_spifi_probe(struct platform_device *pdev)
 	spifi->dev = &pdev->dev;
 	platform_set_drvdata(pdev, spifi);
 
-	/* Initialize and reset device */
+	 
 	nxp_spifi_reset(spifi);
 	writel(0, spifi->io_base + SPIFI_IDATA);
 	writel(0, spifi->io_base + SPIFI_MCMD);
@@ -442,7 +427,7 @@ static int nxp_spifi_remove(struct platform_device *pdev)
 
 static const struct of_device_id nxp_spifi_match[] = {
 	{.compatible = "nxp,lpc1773-spifi"},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, nxp_spifi_match);
 

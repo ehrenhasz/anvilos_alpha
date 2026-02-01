@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Raspberry Pi Sense HAT joystick driver
- * http://raspberrypi.org
- *
- * Copyright (C) 2015 Raspberry Pi
- * Copyright (C) 2021 Charles Mirabile, Mwesigwa Guma, Joel Savitz
- *
- * Original Author: Serge Schneider
- * Revised for upstream Linux by: Charles Mirabile, Mwesigwa Guma, Joel Savitz
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/input.h>

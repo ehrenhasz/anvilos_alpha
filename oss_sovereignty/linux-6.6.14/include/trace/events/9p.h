@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM 9p
 
@@ -84,7 +84,7 @@
 		EM( P9_FID_REF_PUT,	"put    " )			\
 		EMe(P9_FID_REF_DESTROY,	"destroy" )
 
-/* Define EM() to export the enums to userspace via TRACE_DEFINE_ENUM() */
+ 
 #undef EM
 #undef EMe
 #define EM(a, b)	TRACE_DEFINE_ENUM(a);
@@ -93,7 +93,7 @@
 P9_MSG_T
 P9_FID_REFTYPE
 
-/* And also use EM/EMe to define helper enums -- once */
+ 
 #ifndef __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
 #define __9P_DECLARE_TRACE_ENUMS_ONLY_ONCE
 #undef EM
@@ -107,10 +107,7 @@ enum p9_fid_reftype {
 
 #endif
 
-/*
- * Now redefine the EM() and EMe() macros to map the enums to the strings
- * that will be printed in the output.
- */
+ 
 #undef EM
 #undef EMe
 #define EM(a, b)	{ a, b },
@@ -167,7 +164,7 @@ TRACE_EVENT(9p_client_res,
 		      __entry->tag, __entry->err)
 );
 
-/* dump 32 bytes of protocol data */
+ 
 #define P9_PROTO_DUMP_SZ 32
 TRACE_EVENT(9p_protocol_dump,
 	    TP_PROTO(struct p9_client *clnt, struct p9_fcall *pdu),
@@ -219,7 +216,7 @@ TRACE_EVENT(9p_fid_ref,
 );
 
 
-#endif /* _TRACE_9P_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

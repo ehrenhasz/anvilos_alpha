@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Some low level IO code, and hacks for various block layer limitations
- *
- * Copyright 2010, 2011 Kent Overstreet <kent.overstreet@gmail.com>
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #include "bcache.h"
 #include "bset.h"
@@ -12,7 +7,7 @@
 
 #include <linux/blkdev.h>
 
-/* Bios with headers */
+ 
 
 void bch_bbio_free(struct bio *bio, struct cache_set *c)
 {
@@ -52,19 +47,14 @@ void bch_submit_bbio(struct bio *bio, struct cache_set *c,
 	__bch_submit_bbio(bio, c);
 }
 
-/* IO errors */
+ 
 void bch_count_backing_io_errors(struct cached_dev *dc, struct bio *bio)
 {
 	unsigned int errors;
 
 	WARN_ONCE(!dc, "NULL pointer of struct cached_dev");
 
-	/*
-	 * Read-ahead requests on a degrading and recovering md raid
-	 * (e.g. raid6) device might be failured immediately by md
-	 * raid code, which is not a real hardware media failure. So
-	 * we shouldn't count failed REQ_RAHEAD bio to dc->io_errors.
-	 */
+	 
 	if (bio->bi_opf & REQ_RAHEAD) {
 		pr_warn_ratelimited("%pg: Read-ahead I/O failed on backing device, ignore\n",
 				    dc->bdev);
@@ -84,10 +74,7 @@ void bch_count_io_errors(struct cache *ca,
 			 int is_read,
 			 const char *m)
 {
-	/*
-	 * The halflife of an error is:
-	 * log2(1/2)/log2(127/128) * refresh ~= 88 * refresh
-	 */
+	 
 
 	if (ca->set->error_decay) {
 		unsigned int count = atomic_inc_return(&ca->io_count);
@@ -97,10 +84,7 @@ void bch_count_io_errors(struct cache *ca,
 			unsigned int old = count;
 			unsigned int new = count - ca->set->error_decay;
 
-			/*
-			 * First we subtract refresh from count; each time we
-			 * successfully do so, we rescale the errors once:
-			 */
+			 
 
 			count = atomic_cmpxchg(&ca->io_count, old, new);
 

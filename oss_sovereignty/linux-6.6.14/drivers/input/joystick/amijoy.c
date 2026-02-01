@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 1998-2001 Vojtech Pavlik
- */
 
-/*
- * Driver for Amiga joysticks for Linux/m68k
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>

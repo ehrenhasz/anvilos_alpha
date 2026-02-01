@@ -1,10 +1,4 @@
-/*
- * FUSE: Filesystem in Userspace
- * Copyright (C) 2001-2016  Miklos Szeredi <miklos@szeredi.hu>
- *
- * This program can be distributed under the terms of the GNU GPL.
- * See the file COPYING.
- */
+ 
 
 #include "fuse_i.h"
 
@@ -69,7 +63,7 @@ ssize_t fuse_getxattr(struct inode *inode, const char *name, void *value,
 	args.in_args[0].value = &inarg;
 	args.in_args[1].size = strlen(name) + 1;
 	args.in_args[1].value = name;
-	/* This is really two different operations rolled into one */
+	 
 	args.out_numargs = 1;
 	if (size) {
 		args.out_argvar = true;
@@ -131,7 +125,7 @@ ssize_t fuse_listxattr(struct dentry *entry, char *list, size_t size)
 	args.in_numargs = 1;
 	args.in_args[0].size = sizeof(inarg);
 	args.in_args[0].value = &inarg;
-	/* This is really two different operations rolled into one */
+	 
 	args.out_numargs = 1;
 	if (size) {
 		args.out_argvar = true;

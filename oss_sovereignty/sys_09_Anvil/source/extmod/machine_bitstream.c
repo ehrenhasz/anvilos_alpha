@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2021 Jim Mussared
- * Copyright (c) 2021 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 #include "py/mphal.h"
@@ -31,11 +6,11 @@
 
 #if MICROPY_PY_MACHINE_BITSTREAM
 
-// Timing is a 4-tuple of (high_time_0, low_time_0, high_time_1, low_time_1)
-// suitable for driving WS2812.
+
+
 #define MICROPY_MACHINE_BITSTREAM_TYPE_HIGH_LOW (0)
 
-// machine.bitstream(pin, encoding, (timing), bytes)
+
 static mp_obj_t machine_bitstream_(size_t n_args, const mp_obj_t *args) {
     mp_hal_pin_obj_t pin = mp_hal_get_pin_obj(args[0]);
     int encoding = mp_obj_get_int(args[1]);
@@ -62,4 +37,4 @@ static mp_obj_t machine_bitstream_(size_t n_args, const mp_obj_t *args) {
 }
 MP_DEFINE_CONST_FUN_OBJ_VAR_BETWEEN(machine_bitstream_obj, 4, 4, machine_bitstream_);
 
-#endif // MICROPY_PY_MACHINE_BITSTREAM
+#endif 

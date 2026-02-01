@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015-2020, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -66,16 +64,7 @@ static unsigned long tegra210_clk_emc_recalc_rate(struct clk_hw *hw,
 	struct tegra210_clk_emc *emc = to_tegra210_clk_emc(hw);
 	u32 value, div;
 
-	/*
-	 * CCF assumes that neither the parent nor its rate will change during
-	 * ->set_rate(), so the parent rate passed in here was cached from the
-	 * parent before the ->set_rate() call.
-	 *
-	 * This can lead to wrong results being reported for the EMC clock if
-	 * the parent and/or parent rate have changed as part of the EMC rate
-	 * change sequence. Fix this by overriding the parent clock with what
-	 * we know to be the correct value after the rate change.
-	 */
+	 
 	parent_rate = clk_hw_get_rate(clk_hw_get_parent(hw));
 
 	value = readl_relaxed(emc->regs + CLK_SOURCE_EMC);
@@ -110,7 +99,7 @@ static struct clk *tegra210_clk_emc_find_parent(struct tegra210_clk_emc *emc,
 	struct clk_hw *parent = clk_hw_get_parent_by_index(&emc->hw, index);
 	const char *name = clk_hw_get_name(parent);
 
-	/* XXX implement cache? */
+	 
 
 	return __clk_lookup(name);
 }
@@ -147,11 +136,11 @@ static int tegra210_clk_emc_set_rate(struct clk_hw *hw, unsigned long rate,
 	old = clk_hw_get_parent_by_index(hw, old_idx);
 	new = clk_hw_get_parent_by_index(hw, new_idx);
 
-	/* if the rate has changed... */
+	 
 	if (config->parent_rate != clk_hw_get_rate(old)) {
-		/* ... but the clock source remains the same ... */
+		 
 		if (new_idx == old_idx) {
-			/* ... switch to the alternative clock source. */
+			 
 			switch (new_idx) {
 			case CLK_SRC_PLLM:
 				new_idx = CLK_SRC_PLLMB;
@@ -170,10 +159,7 @@ static int tegra210_clk_emc_set_rate(struct clk_hw *hw, unsigned long rate,
 				break;
 			}
 
-			/*
-			 * This should never happen because we can't deal with
-			 * it.
-			 */
+			 
 			if (WARN_ON(new_idx == old_idx))
 				return -EINVAL;
 
@@ -195,7 +181,7 @@ static int tegra210_clk_emc_set_rate(struct clk_hw *hw, unsigned long rate,
 		return err;
 	}
 
-	/* set the new parent clock to the required rate */
+	 
 	if (clk_get_rate(clk) != config->parent_rate) {
 		err = clk_set_rate(clk, config->parent_rate);
 		if (err < 0) {
@@ -205,7 +191,7 @@ static int tegra210_clk_emc_set_rate(struct clk_hw *hw, unsigned long rate,
 		}
 	}
 
-	/* enable the new parent clock */
+	 
 	if (parent != old) {
 		err = clk_prepare_enable(clk);
 		if (err < 0) {
@@ -215,30 +201,24 @@ static int tegra210_clk_emc_set_rate(struct clk_hw *hw, unsigned long rate,
 		}
 	}
 
-	/* update the EMC source configuration to reflect the new parent */
+	 
 	config->value &= ~CLK_SOURCE_EMC_2X_CLK_SRC;
 	config->value |= FIELD_PREP(CLK_SOURCE_EMC_2X_CLK_SRC, index);
 
-	/*
-	 * Finally, switch the EMC programming with both old and new parent
-	 * clocks enabled.
-	 */
+	 
 	err = provider->set_rate(dev, config);
 	if (err < 0) {
 		dev_err(dev, "failed to set EMC rate to %lu Hz: %d\n", rate,
 			err);
 
-		/*
-		 * If we're unable to switch to the new EMC frequency, we no
-		 * longer need the new parent to be enabled.
-		 */
+		 
 		if (parent != old)
 			clk_disable_unprepare(clk);
 
 		return err;
 	}
 
-	/* reparent to new parent clock and disable the old parent clock */
+	 
 	if (parent != old) {
 		clk = tegra210_clk_emc_find_parent(emc, old_idx);
 		if (IS_ERR(clk)) {
@@ -313,7 +293,7 @@ int tegra210_clk_emc_attach(struct clk *clk,
 		div = FIELD_GET(CLK_SOURCE_EMC_2X_CLK_DIVISOR, config->value);
 		src = FIELD_GET(CLK_SOURCE_EMC_2X_CLK_SRC, config->value);
 
-		/* do basic sanity checking on the EMC timings */
+		 
 		if (div & 0x1) {
 			dev_err(dev, "invalid odd divider %u for rate %lu Hz\n",
 				div, config->rate);

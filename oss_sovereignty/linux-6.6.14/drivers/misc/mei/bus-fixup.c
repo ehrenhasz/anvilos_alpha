@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013-2023, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/sched.h>
@@ -45,36 +42,20 @@ static const uuid_le mei_nfc_info_guid = MEI_UUID_NFC_INFO;
 
 #define MEI_UUID_ANY NULL_UUID_LE
 
-/**
- * number_of_connections - determine whether an client be on the bus
- *    according number of connections
- *    We support only clients:
- *       1. with single connection
- *       2. and fixed clients (max_number_of_connections == 0)
- *
- * @cldev: me clients device
- */
+ 
 static void number_of_connections(struct mei_cl_device *cldev)
 {
 	if (cldev->me_cl->props.max_number_of_connections > 1)
 		cldev->do_match = 0;
 }
 
-/**
- * blacklist - blacklist a client from the bus
- *
- * @cldev: me clients device
- */
+ 
 static void blacklist(struct mei_cl_device *cldev)
 {
 	cldev->do_match = 0;
 }
 
-/**
- * whitelist - forcefully whitelist client
- *
- * @cldev: me clients device
- */
+ 
 static void whitelist(struct mei_cl_device *cldev)
 {
 	cldev->do_match = 1;
@@ -159,10 +140,7 @@ static int mei_fwver(struct mei_cl_device *cldev)
 	bytes_recv = __mei_cl_recv(cldev->cl, buf, sizeof(buf), NULL, 0,
 				   cldev->bus->timeouts.mkhi_recv);
 	if (bytes_recv < 0 || (size_t)bytes_recv < MKHI_FWVER_LEN(1)) {
-		/*
-		 * Should be at least one version block,
-		 * error out if nothing found
-		 */
+		 
 		dev_info(&cldev->dev, "Could not read FW version ret = %d\n", bytes_recv);
 		return -EIO;
 	}
@@ -189,7 +167,7 @@ static int mei_fwver(struct mei_cl_device *cldev)
 	return ret;
 }
 
-#define GFX_MEMORY_READY_TIMEOUT 200 /* timeout in milliseconds */
+#define GFX_MEMORY_READY_TIMEOUT 200  
 
 static int mei_gfx_memory_ready(struct mei_cl_device *cldev)
 {
@@ -209,7 +187,7 @@ static void mei_mkhi_fix(struct mei_cl_device *cldev)
 {
 	int ret;
 
-	/* No need to enable the client if nothing is needed from it */
+	 
 	if (!cldev->bus->fw_f_fw_ver_supported &&
 	    !cldev->bus->hbm_f_os_supported)
 		return;
@@ -238,10 +216,7 @@ static void mei_gsc_mkhi_ver(struct mei_cl_device *cldev)
 {
 	int ret;
 
-	/*
-	 * No need to enable the client if nothing is needed from it.
-	 * No need to fill in version if it is already filled in by the fix address client.
-	 */
+	 
 	if (!cldev->bus->fw_f_fw_ver_supported || cldev->bus->fw_ver_received)
 		return;
 
@@ -259,7 +234,7 @@ static void mei_gsc_mkhi_fix_ver(struct mei_cl_device *cldev)
 {
 	int ret;
 
-	/* No need to enable the client if nothing is needed from it */
+	 
 	if (!cldev->bus->fw_f_fw_ver_supported &&
 	    cldev->bus->pxp_mode != MEI_DEV_PXP_INIT)
 		return;
@@ -276,7 +251,7 @@ static void mei_gsc_mkhi_fix_ver(struct mei_cl_device *cldev)
 			dev_dbg(&cldev->dev, "memory ready command sent\n");
 			cldev->bus->pxp_mode = MEI_DEV_PXP_SETUP;
 		}
-		/* we go to reset after that */
+		 
 		goto out;
 	}
 
@@ -288,12 +263,7 @@ out:
 	mei_cldev_disable(cldev);
 }
 
-/**
- * mei_wd - wd client on the bus, change protocol version
- *   as the API has changed.
- *
- * @cldev: me clients device
- */
+ 
 #if IS_ENABLED(CONFIG_INTEL_MEI_ME)
 #include <linux/pci.h>
 #include "hw-me-regs.h"
@@ -310,7 +280,7 @@ static void mei_wd(struct mei_cl_device *cldev)
 }
 #else
 static inline void mei_wd(struct mei_cl_device *cldev) {}
-#endif /* CONFIG_INTEL_MEI_ME */
+#endif  
 
 struct mei_nfc_cmd {
 	u8 command;
@@ -347,22 +317,15 @@ struct mei_nfc_if_version {
 #define MEI_NFC_CMD_MAINTENANCE 0x00
 #define MEI_NFC_SUBCMD_IF_VERSION 0x01
 
-/* Vendors */
+ 
 #define MEI_NFC_VENDOR_INSIDE 0x00
 #define MEI_NFC_VENDOR_NXP    0x01
 
-/* Radio types */
+ 
 #define MEI_NFC_VENDOR_INSIDE_UREAD 0x00
 #define MEI_NFC_VENDOR_NXP_PN544    0x01
 
-/**
- * mei_nfc_if_version - get NFC interface version
- *
- * @cl: host client (nfc info)
- * @ver: NFC interface version to be filled in
- *
- * Return: 0 on success; < 0 otherwise
- */
+ 
 static int mei_nfc_if_version(struct mei_cl *cl,
 			      struct mei_nfc_if_version *ver)
 {
@@ -388,7 +351,7 @@ static int mei_nfc_if_version(struct mei_cl *cl,
 		return ret;
 	}
 
-	/* to be sure on the stack we alloc memory */
+	 
 	if_version_length = sizeof(*reply) + sizeof(*ver);
 
 	reply = kzalloc(if_version_length, GFP_KERNEL);
@@ -414,13 +377,7 @@ err:
 	return ret;
 }
 
-/**
- * mei_nfc_radio_name - derive nfc radio name from the interface version
- *
- * @ver: NFC radio version
- *
- * Return: radio name string
- */
+ 
 static const char *mei_nfc_radio_name(struct mei_nfc_if_version *ver)
 {
 
@@ -437,13 +394,7 @@ static const char *mei_nfc_radio_name(struct mei_nfc_if_version *ver)
 	return NULL;
 }
 
-/**
- * mei_nfc - The nfc fixup function. The function retrieves nfc radio
- *    name and set is as device attribute so we can load
- *    the proper device driver for it
- *
- * @cldev: me client device (nfc)
- */
+ 
 static void mei_nfc(struct mei_cl_device *cldev)
 {
 	struct mei_device *bus;
@@ -456,7 +407,7 @@ static void mei_nfc(struct mei_cl_device *cldev)
 	bus = cldev->bus;
 
 	mutex_lock(&bus->device_lock);
-	/* we need to connect to INFO GUID */
+	 
 	cl = mei_cl_alloc_linked(bus);
 	if (IS_ERR(cl)) {
 		ret = PTR_ERR(cl);
@@ -516,22 +467,14 @@ out:
 	dev_dbg(bus->dev, "end of fixup match = %d\n", cldev->do_match);
 }
 
-/**
- * vt_support - enable on bus clients with vtag support
- *
- * @cldev: me clients device
- */
+ 
 static void vt_support(struct mei_cl_device *cldev)
 {
 	if (cldev->me_cl->props.vt_supported == 1)
 		cldev->do_match = 1;
 }
 
-/**
- * pxp_is_ready - enable bus client if pxp is ready
- *
- * @cldev: me clients device
- */
+ 
 static void pxp_is_ready(struct mei_cl_device *cldev)
 {
 	struct mei_device *bus = cldev->bus;
@@ -566,11 +509,7 @@ static struct mei_fixup {
 	MEI_FIXUP(MEI_UUID_PAVP, pxp_is_ready),
 };
 
-/**
- * mei_cl_bus_dev_fixup - run fixup handlers
- *
- * @cldev: me client device
- */
+ 
 void mei_cl_bus_dev_fixup(struct mei_cl_device *cldev)
 {
 	struct mei_fixup *f;

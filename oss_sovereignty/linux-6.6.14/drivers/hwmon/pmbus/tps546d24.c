@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for TEXAS TPS546D24 buck converter
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -53,7 +51,7 @@ static const struct of_device_id __maybe_unused tps546d24_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, tps546d24_of_match);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver tps546d24_driver = {
 	.driver = {
 		   .name = "tps546d24",

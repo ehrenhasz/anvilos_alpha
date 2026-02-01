@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/clk/at91/pmc.h
- *
- *  Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
- */
+ 
+ 
 
 #ifndef __PMC_H_
 #define __PMC_H_
@@ -100,13 +96,7 @@ struct clk_pcr_layout {
 	u32 pid_mask;
 };
 
-/**
- * struct at91_clk_pms - Power management state for AT91 clock
- * @rate: clock rate
- * @parent_rate: clock parent rate
- * @status: clock status (enabled or disabled)
- * @parent: clock parent index
- */
+ 
 struct at91_clk_pms {
 	unsigned long rate;
 	unsigned long parent_rate;
@@ -277,4 +267,4 @@ struct clk_hw * __init
 at91_clk_sama7g5_register_utmi(struct regmap *regmap, const char *name,
 			       const char *parent_name, struct clk_hw *parent_hw);
 
-#endif /* __PMC_H_ */
+#endif  

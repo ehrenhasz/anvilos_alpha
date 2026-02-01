@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_EVENT_H__
 #define __NVKM_EVENT_H__
 #include <core/os.h>
@@ -28,11 +28,7 @@ struct nvkm_event_func {
 int  __nvkm_event_init(const struct nvkm_event_func *func, struct nvkm_subdev *, int types_nr,
 		       int index_nr, struct nvkm_event *);
 
-/* Each nvkm_event needs its own lockdep class due to inter-dependencies, to
- * prevent lockdep false-positives.
- *
- * Inlining the spinlock initialisation ensures each is unique.
- */
+ 
 static __always_inline int
 nvkm_event_init(const struct nvkm_event_func *func, struct nvkm_subdev *subdev,
 		int types_nr, int index_nr, struct nvkm_event *event)

@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2004, 2005, 2007 Darren Tucker (dtucker at zip com au).
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 #if !defined(HAVE_PPOLL) || !defined(HAVE_POLL) || defined(BROKEN_POLL)
@@ -33,14 +19,7 @@
 #include "bsd-poll.h"
 
 #if !defined(HAVE_PPOLL) || defined(BROKEN_POLL)
-/*
- * A minimal implementation of ppoll(2), built on top of pselect(2).
- *
- * Only supports POLLIN, POLLOUT and POLLPRI flags in pfd.events and
- * revents. Notably POLLERR, POLLHUP and POLLNVAL are not supported.
- *
- * Supports pfd.fd = -1 meaning "unused" although it's not standard.
- */
+ 
 
 int
 ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *tmoutp,
@@ -59,7 +38,7 @@ ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *tmoutp,
 		maxfd = MAX(maxfd, fd);
 	}
 
-	/* populate event bit vectors for the events we're interested in */
+	 
 	FD_ZERO(&readfds);
 	FD_ZERO(&writefds);
 	FD_ZERO(&exceptfds);
@@ -77,7 +56,7 @@ ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *tmoutp,
 
 	ret = pselect(maxfd + 1, &readfds, &writefds, &exceptfds, tmoutp, sigmask);
 
-	/* scan through select results and set poll() flags */
+	 
 	for (i = 0; i < nfds; i++) {
 		fd = fds[i].fd;
 		fds[i].revents = 0;
@@ -93,7 +72,7 @@ ppoll(struct pollfd *fds, nfds_t nfds, const struct timespec *tmoutp,
 
 	return ret;
 }
-#endif /* !HAVE_PPOLL || BROKEN_POLL */
+#endif  
 
 #if !defined(HAVE_POLL) || defined(BROKEN_POLL)
 int
@@ -101,7 +80,7 @@ poll(struct pollfd *fds, nfds_t nfds, int timeout)
 {
 	struct timespec ts, *tsp = NULL;
 
-	/* poll timeout is msec, ppoll is timespec (sec + nsec) */
+	 
 	if (timeout >= 0) {
 		ts.tv_sec = timeout / 1000;
 		ts.tv_nsec = (timeout % 1000) * 1000000;
@@ -110,6 +89,6 @@ poll(struct pollfd *fds, nfds_t nfds, int timeout)
 
 	return ppoll(fds, nfds, tsp, NULL);
 }
-#endif /* !HAVE_POLL || BROKEN_POLL */
+#endif  
 
-#endif /* !HAVE_PPOLL || !HAVE_POLL || BROKEN_POLL */
+#endif  

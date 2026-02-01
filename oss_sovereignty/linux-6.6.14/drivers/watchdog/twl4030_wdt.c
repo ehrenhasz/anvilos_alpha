@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) Nokia Corporation
- *
- * Written by Timo Kokkonen <timo.t.kokkonen at nokia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>

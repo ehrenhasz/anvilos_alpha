@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright 2019 NXP
- *
- * Header file for the DSP IPC implementation
- */
+ 
+ 
 
 #ifndef _IMX_DSP_IPC_H
 #define _IMX_DSP_IPC_H
@@ -28,7 +24,7 @@ struct imx_dsp_ops {
 };
 
 struct imx_dsp_ipc {
-	/* Host <-> DSP communication uses 2 txdb and 2 rxdb channels */
+	 
 	struct imx_dsp_chan chans[DSP_MU_CHAN_NUM];
 	struct device *dev;
 	struct imx_dsp_ops *ops;
@@ -68,4 +64,4 @@ struct mbox_chan *imx_dsp_request_channel(struct imx_dsp_ipc *ipc, int idx)
 void imx_dsp_free_channel(struct imx_dsp_ipc *ipc, int idx) { }
 
 #endif
-#endif /* _IMX_DSP_IPC_H */
+#endif  

@@ -1,33 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Amplicon PC263 relay board.
- *
- * Copyright (C) 2002 MEV Ltd. <https://www.mev.co.uk/>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: amplc_pc263
- * Description: Amplicon PC263
- * Author: Ian Abbott <abbotti@mev.co.uk>
- * Devices: [Amplicon] PC263 (pc263)
- * Updated: Fri, 12 Apr 2013 15:19:36 +0100
- * Status: works
- *
- * Configuration options:
- *   [0] - I/O port base address
- *
- * The board appears as one subdevice, with 16 digital outputs, each
- * connected to a reed-relay. Relay contacts are closed when output is 1.
- * The state of the outputs can be read.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
 
-/* PC263 registers */
+ 
 #define PC263_DO_0_7_REG	0x00
 #define PC263_DO_8_15_REG	0x01
 
@@ -69,7 +48,7 @@ static int pc263_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	if (ret)
 		return ret;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -78,7 +57,7 @@ static int pc263_attach(struct comedi_device *dev, struct comedi_devconfig *it)
 	s->range_table	= &range_digital;
 	s->insn_bits	= pc263_do_insn_bits;
 
-	/* read initial relay state */
+	 
 	s->state = inb(dev->iobase + PC263_DO_0_7_REG) |
 		   (inb(dev->iobase + PC263_DO_8_15_REG) << 8);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MEN 16z188 Analog to Digial Converter
- *
- * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
- * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

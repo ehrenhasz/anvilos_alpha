@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is a module which is used for setting the MSS option in TCP packets.
- *
- * Copyright (C) 2000 Marc Boucher <marc@mbsi.ca>
- * Copyright (C) 2007 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -33,7 +28,7 @@ MODULE_ALIAS("ip6t_TCPMSS");
 static inline unsigned int
 optlen(const u_int8_t *opt, unsigned int offset)
 {
-	/* Beware zero-length options: make finite progress */
+	 
 	if (opt[offset] <= TCPOPT_NOP || opt[offset+1] == 0)
 		return 1;
 	else
@@ -82,7 +77,7 @@ tcpmss_mangle_packet(struct sk_buff *skb,
 	u16 newmss;
 	u8 *opt;
 
-	/* This is a fragment, no TCP header is available */
+	 
 	if (par->fragoff != 0)
 		return 0;
 
@@ -120,10 +115,7 @@ tcpmss_mangle_packet(struct sk_buff *skb,
 
 			oldmss = (opt[i+2] << 8) | opt[i+3];
 
-			/* Never increase MSS, even when setting it, as
-			 * doing so results in problems for hosts that rely
-			 * on MSS being set correctly.
-			 */
+			 
 			if (oldmss <= newmss)
 				return 0;
 
@@ -137,20 +129,15 @@ tcpmss_mangle_packet(struct sk_buff *skb,
 		}
 	}
 
-	/* There is data after the header so the option can't be added
-	 * without moving it, and doing so may make the SYN packet
-	 * itself too large. Accept the packet unmodified instead.
-	 */
+	 
 	if (len > tcp_hdrlen)
 		return 0;
 
-	/* tcph->doff has 4 bits, do not wrap it to 0 */
+	 
 	if (tcp_hdrlen >= 15 * 4)
 		return 0;
 
-	/*
-	 * MSS Option not found ?! add it..
-	 */
+	 
 	if (skb_tailroom(skb) < TCPOLEN_MSS) {
 		if (pskb_expand_head(skb, 0,
 				     TCPOLEN_MSS - skb_tailroom(skb),
@@ -161,13 +148,7 @@ tcpmss_mangle_packet(struct sk_buff *skb,
 
 	skb_put(skb, TCPOLEN_MSS);
 
-	/*
-	 * IPv4: RFC 1122 states "If an MSS option is not received at
-	 * connection setup, TCP MUST assume a default send MSS of 536".
-	 * IPv6: RFC 2460 states IPv6 has a minimum MTU of 1280 and a minimum
-	 * length IPv6 header of 60, ergo the default MSS value is 1220
-	 * Since no MSS was provided, we must use the default values
-	 */
+	 
 	if (xt_family(par) == NFPROTO_IPV4)
 		newmss = min(newmss, (u16)536);
 	else
@@ -247,7 +228,7 @@ tcpmss_tg6(struct sk_buff *skb, const struct xt_action_param *par)
 }
 #endif
 
-/* Must specify -p tcp --syn */
+ 
 static inline bool find_syn_match(const struct xt_entry_match *m)
 {
 	const struct xt_tcp *tcpinfo = (const struct xt_tcp *)m->data;

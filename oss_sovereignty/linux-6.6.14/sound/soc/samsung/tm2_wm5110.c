@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2015 - 2016 Samsung Electronics Co., Ltd.
-//
-// Authors: Inha Song <ideal.song@samsung.com>
-//          Sylwester Nawrocki <s.nawrocki@samsung.com>
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/gpio.h>
@@ -16,10 +16,7 @@
 #include "i2s.h"
 #include "../codecs/wm5110.h"
 
-/*
- * The source clock is XCLKOUT with its mux set to the external fixed rate
- * oscillator (XXTI).
- */
+ 
 #define MCLK_RATE	24000000U
 
 #define TM2_DAI_AIF1	0
@@ -106,7 +103,7 @@ static int tm2_aif1_hw_params(struct snd_pcm_substream *substream,
 	case 48000:
 	case 96000:
 	case 192000:
-		/* Highest possible SYSCLK frequency: 147.456MHz */
+		 
 		priv->sysclk_rate = 147456000U;
 		break;
 	case 11025:
@@ -114,7 +111,7 @@ static int tm2_aif1_hw_params(struct snd_pcm_substream *substream,
 	case 44100:
 	case 88200:
 	case 176400:
-		/* Highest possible SYSCLK frequency: 135.4752 MHz */
+		 
 		priv->sysclk_rate = 135475200U;
 		break;
 	default:
@@ -142,11 +139,11 @@ static int tm2_aif2_hw_params(struct snd_pcm_substream *substream,
 	case 8000:
 	case 12000:
 	case 16000:
-		/* Highest possible ASYNCCLK frequency: 49.152MHz */
+		 
 		asyncclk_rate = 49152000U;
 		break;
 	case 11025:
-		/* Highest possible ASYNCCLK frequency: 45.1584 MHz */
+		 
 		asyncclk_rate = 45158400U;
 		break;
 	default:
@@ -191,7 +188,7 @@ static int tm2_aif2_hw_free(struct snd_pcm_substream *substream)
 	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
 	int ret;
 
-	/* disable FLL2 */
+	 
 	ret = snd_soc_component_set_pll(component, WM5110_FLL2, ARIZONA_FLL_SRC_MCLK1,
 				    0, 0);
 	if (ret < 0)
@@ -337,7 +334,7 @@ static int tm2_late_probe(struct snd_soc_card *card)
 	if (!amp_pdm_dai)
 		return -ENODEV;
 
-	/* Set the MAX98504 V/I sense PDM Tx DAI channel mapping */
+	 
 	ret = snd_soc_dai_set_channel_map(amp_pdm_dai, ARRAY_SIZE(ch_map),
 					  ch_map, 0, NULL);
 	if (ret < 0)
@@ -525,7 +522,7 @@ static int tm2_probe(struct platform_device *pdev)
 
 	ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
 	if (ret < 0) {
-		/* Backwards compatible way */
+		 
 		ret = snd_soc_of_parse_audio_routing(card, "samsung,audio-routing");
 		if (ret < 0) {
 			dev_err(dev, "Audio routing is not specified or invalid\n");
@@ -543,7 +540,7 @@ static int tm2_probe(struct platform_device *pdev)
 	num_codecs = of_count_phandle_with_args(dev->of_node, "audio-codec",
 						 NULL);
 
-	/* Skip the HDMI link if not specified in DT */
+	 
 	if (num_codecs > 1) {
 		card->num_links = ARRAY_SIZE(tm2_dai_links);
 		cells_name = "#sound-dai-cells";
@@ -572,15 +569,15 @@ static int tm2_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Initialize WM5110 - I2S and HDMI - I2S1 DAI links */
+	 
 	for_each_card_prelinks(card, i, dai_link) {
-		unsigned int dai_index = 0; /* WM5110 */
+		unsigned int dai_index = 0;  
 
 		dai_link->cpus->name = NULL;
 		dai_link->platforms->name = NULL;
 
 		if (num_codecs > 1 && i == card->num_links - 1)
-			dai_index = 1; /* HDMI */
+			dai_index = 1;  
 
 		dai_link->codecs->of_node = codec_dai_node[dai_index];
 		dai_link->cpus->of_node = cpu_dai_node[dai_index];
@@ -590,7 +587,7 @@ static int tm2_probe(struct platform_device *pdev)
 	if (num_codecs > 1) {
 		struct of_phandle_args args;
 
-		/* HDMI DAI link (I2S1) */
+		 
 		i = card->num_links - 1;
 
 		ret = of_parse_phandle_with_fixed_args(dev->of_node,

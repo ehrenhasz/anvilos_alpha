@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <stddef.h>
 #include <errno.h>
@@ -54,19 +54,19 @@ static bool skops_current_mss(const struct bpf_sock_ops *skops)
 
 static __u8 option_total_len(__u8 flags)
 {
-	__u8 i, len = 1; /* +1 for flags */
+	__u8 i, len = 1;  
 
 	if (!flags)
 		return 0;
 
-	/* RESEND bit does not use a byte */
+	 
 	for (i = OPTION_RESEND + 1; i < __NR_OPTION_FLAGS; i++)
 		len += !!TEST_OPTION_FLAGS(flags, i);
 
 	if (test_kind == TCPOPT_EXP)
 		return len + TCP_BPF_EXPOPT_BASE_LEN;
 	else
-		return len + 2; /* +1 kind, +1 kind-len */
+		return len + 2;  
 }
 
 static void write_test_option(const struct bpf_test_option *test_opt,
@@ -169,7 +169,7 @@ static int synack_opt_len(struct bpf_sock_ops *skops)
 
 	err = load_option(skops, &test_opt, true);
 
-	/* bpf_test_option is not found */
+	 
 	if (err == -ENOMSG)
 		return CG_OK;
 
@@ -191,9 +191,7 @@ static int write_synack_opt(struct bpf_sock_ops *skops)
 	struct bpf_test_option opt;
 
 	if (!passive_synack_out.flags)
-		/* We should not even be called since no header
-		 * space has been reserved.
-		 */
+		 
 		RET_CG_ERR(0);
 
 	opt = passive_synack_out;
@@ -325,9 +323,7 @@ static int write_nodata_opt(struct bpf_sock_ops *skops)
 
 static int data_opt_len(struct bpf_sock_ops *skops)
 {
-	/* Same as the nodata version.  Mostly to show
-	 * an example usage on skops->skb_len.
-	 */
+	 
 	return nodata_opt_len(skops);
 }
 
@@ -338,7 +334,7 @@ static int write_data_opt(struct bpf_sock_ops *skops)
 
 static int current_mss_opt_len(struct bpf_sock_ops *skops)
 {
-	/* Reserve maximum that may be needed */
+	 
 	int err;
 
 	err = bpf_reserve_hdr_opt(skops, option_total_len(OPTION_MASK), 0);
@@ -362,7 +358,7 @@ static int handle_hdr_opt_len(struct bpf_sock_ops *skops)
 		return fin_opt_len(skops);
 
 	if (skops_current_mss(skops))
-		/* The kernel is calculating the MSS */
+		 
 		return current_mss_opt_len(skops);
 
 	if (skops->skb_len)
@@ -430,21 +426,10 @@ static int handle_active_estab(struct bpf_sock_ops *skops)
 		RET_CG_ERR(0);
 
 	if (init_stg.resend_syn)
-		/* Don't clear the write_hdr cb now because
-		 * the ACK may get lost and retransmit may
-		 * be needed.
-		 *
-		 * PARSE_ALL_HDR cb flag is set to learn if this
-		 * resend_syn option has received by the peer.
-		 *
-		 * The header option will be resent until a valid
-		 * packet is received at handle_parse_hdr()
-		 * and all hdr cb flags will be cleared in
-		 * handle_parse_hdr().
-		 */
+		 
 		set_parse_all_hdr_cb_flags(skops);
 	else if (!active_fin_out.flags)
-		/* No options will be written from now */
+		 
 		clear_hdr_cb_flags(skops);
 
 	if (active_syn_out.max_delack_ms) {
@@ -472,17 +457,12 @@ static int handle_passive_estab(struct bpf_sock_ops *skops)
 
 	err = load_option(skops, &passive_estab_in, true);
 	if (err == -ENOENT) {
-		/* saved_syn is not found. It was in syncookie mode.
-		 * We have asked the active side to resend the options
-		 * in ACK, so try to find the bpf_test_option from ACK now.
-		 */
+		 
 		err = load_option(skops, &passive_estab_in, false);
 		init_stg.syncookie = true;
 	}
 
-	/* ENOMSG: The bpf_test_option is not found which is fine.
-	 * Bail out now for all other errors.
-	 */
+	 
 	if (err && err != -ENOMSG)
 		RET_CG_ERR(err);
 
@@ -491,20 +471,13 @@ static int handle_passive_estab(struct bpf_sock_ops *skops)
 		RET_CG_ERR(0);
 
 	if (th->syn) {
-		/* Fastopen */
+		 
 
-		/* Cannot clear cb_flags to stop write_hdr cb.
-		 * synack is not sent yet for fast open.
-		 * Even it was, the synack may need to be retransmitted.
-		 *
-		 * PARSE_ALL_HDR cb flag is set to learn
-		 * if synack has reached the peer.
-		 * All cb_flags will be cleared in handle_parse_hdr().
-		 */
+		 
 		set_parse_all_hdr_cb_flags(skops);
 		init_stg.fastopen = true;
 	} else if (!passive_fin_out.flags) {
-		/* No options will be written from now */
+		 
 		clear_hdr_cb_flags(skops);
 	}
 
@@ -545,36 +518,15 @@ static int handle_parse_hdr(struct bpf_sock_ops *skops)
 		RET_CG_ERR(0);
 
 	if (hdr_stg->resend_syn || hdr_stg->fastopen)
-		/* The PARSE_ALL_HDR cb flag was turned on
-		 * to ensure that the previously written
-		 * options have reached the peer.
-		 * Those previously written option includes:
-		 *     - Active side: resend_syn in ACK during syncookie
-		 *      or
-		 *     - Passive side: SYNACK during fastopen
-		 *
-		 * A valid packet has been received here after
-		 * the 3WHS, so the PARSE_ALL_HDR cb flag
-		 * can be cleared now.
-		 */
+		 
 		clear_parse_all_hdr_cb_flags(skops);
 
 	if (hdr_stg->resend_syn && !active_fin_out.flags)
-		/* Active side resent the syn option in ACK
-		 * because the server was in syncookie mode.
-		 * A valid packet has been received, so
-		 * clear header cb flags if there is no
-		 * more option to send.
-		 */
+		 
 		clear_hdr_cb_flags(skops);
 
 	if (hdr_stg->fastopen && !passive_fin_out.flags)
-		/* Passive side was in fastopen.
-		 * A valid packet has been received, so
-		 * the SYNACK has reached the peer.
-		 * Clear header cb flags if there is no more
-		 * option to send.
-		 */
+		 
 		clear_hdr_cb_flags(skops);
 
 	if (th->fin) {

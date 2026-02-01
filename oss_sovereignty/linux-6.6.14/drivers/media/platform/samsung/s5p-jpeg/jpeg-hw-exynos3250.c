@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* linux/drivers/media/platform/exynos3250-jpeg/jpeg-hw.h
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Jacek Anaszewski <j.anaszewski@samsung.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/videodev2.h>
@@ -21,7 +15,7 @@ void exynos3250_jpeg_reset(void __iomem *regs)
 	int count = 1000;
 
 	writel(1, regs + EXYNOS3250_SW_RESET);
-	/* no other way but polling for when JPEG IP becomes operational */
+	 
 	while (reg != 0 && --count > 0) {
 		udelay(1);
 		cpu_relax();
@@ -196,7 +190,7 @@ void exynos3250_jpeg_htbl_ac(void __iomem *regs, unsigned int t)
 
 	reg = readl(regs + EXYNOS3250_QHTBL);
 	reg &= ~EXYNOS3250_HT_NUM_AC_MASK(t);
-	/* this driver uses table 0 for all color components */
+	 
 	reg |= (0 << EXYNOS3250_HT_NUM_AC_SHIFT(t)) &
 					EXYNOS3250_HT_NUM_AC_MASK(t);
 	writel(reg, regs + EXYNOS3250_QHTBL);
@@ -208,7 +202,7 @@ void exynos3250_jpeg_htbl_dc(void __iomem *regs, unsigned int t)
 
 	reg = readl(regs + EXYNOS3250_QHTBL);
 	reg &= ~EXYNOS3250_HT_NUM_DC_MASK(t);
-	/* this driver uses table 0 for all color components */
+	 
 	reg |= (0 << EXYNOS3250_HT_NUM_DC_SHIFT(t)) &
 					EXYNOS3250_HT_NUM_DC_MASK(t);
 	writel(reg, regs + EXYNOS3250_QHTBL);
@@ -230,7 +224,7 @@ void exynos3250_jpeg_set_x(void __iomem *regs, unsigned int x)
 	writel(reg, regs + EXYNOS3250_JPGX);
 }
 
-#if 0	/* Currently unused */
+#if 0	 
 unsigned int exynos3250_jpeg_get_y(void __iomem *regs)
 {
 	return readl(regs + EXYNOS3250_JPGY);

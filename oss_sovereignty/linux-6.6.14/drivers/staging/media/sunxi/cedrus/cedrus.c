@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cedrus VPU driver
- *
- * Copyright (C) 2016 Florent Revest <florent.revest@free-electrons.com>
- * Copyright (C) 2018 Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- * Copyright (C) 2018 Bootlin
- *
- * Based on the vim2m driver, that is:
- *
- * Copyright (c) 2009-2010 Samsung Electronics Co., Ltd.
- * Pawel Osciak, <pawel@osciak.com>
- * Marek Szyprowski, <m.szyprowski@samsung.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -34,13 +22,13 @@ static int cedrus_try_ctrl(struct v4l2_ctrl *ctrl)
 		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
 
 		if (sps->chroma_format_idc != 1)
-			/* Only 4:2:0 is supported */
+			 
 			return -EINVAL;
 		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
-			/* Luma and chroma bit depth mismatch */
+			 
 			return -EINVAL;
 		if (sps->bit_depth_luma_minus8 != 0)
-			/* Only 8-bit is supported */
+			 
 			return -EINVAL;
 	} else if (ctrl->id == V4L2_CID_STATELESS_HEVC_SPS) {
 		const struct v4l2_ctrl_hevc_sps *sps = ctrl->p_new.p_hevc_sps;
@@ -49,7 +37,7 @@ static int cedrus_try_ctrl(struct v4l2_ctrl *ctrl)
 		struct vb2_queue *vq;
 
 		if (sps->chroma_format_idc != 1)
-			/* Only 4:2:0 is supported */
+			 
 			return -EINVAL;
 
 		bit_depth = max(sps->bit_depth_luma_minus8,
@@ -66,10 +54,7 @@ static int cedrus_try_ctrl(struct v4l2_ctrl *ctrl)
 		vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
 				     V4L2_BUF_TYPE_VIDEO_CAPTURE);
 
-		/*
-		 * Bit depth can't be higher than currently set once
-		 * buffers are allocated.
-		 */
+		 
 		if (vb2_is_busy(vq)) {
 			if (ctx->bit_depth < bit_depth)
 				return -EINVAL;
@@ -158,13 +143,7 @@ static const struct cedrus_control cedrus_controls[] = {
 		},
 		.capabilities	= CEDRUS_CAPABILITY_H264_DEC,
 	},
-	/*
-	 * We only expose supported profiles information,
-	 * and not levels as it's not clear what is supported
-	 * for each hardware/core version.
-	 * In any case, TRY/S_FMT will clamp the format resolution
-	 * to the maximum supported.
-	 */
+	 
 	{
 		.cfg = {
 			.id	= V4L2_CID_MPEG_VIDEO_H264_PROFILE,
@@ -192,7 +171,7 @@ static const struct cedrus_control cedrus_controls[] = {
 	{
 		.cfg = {
 			.id	= V4L2_CID_STATELESS_HEVC_SLICE_PARAMS,
-			/* The driver can only handle 1 entry per slice for now */
+			 
 			.dims   = { 1 },
 		},
 		.capabilities	= CEDRUS_CAPABILITY_H265_DEC,
@@ -206,7 +185,7 @@ static const struct cedrus_control cedrus_controls[] = {
 	{
 		.cfg = {
 			.id	= V4L2_CID_STATELESS_HEVC_ENTRY_POINT_OFFSETS,
-			/* maximum 256 entry point offsets per slice */
+			 
 			.dims	= { 256 },
 			.max = 0xffffffff,
 			.step = 1,
@@ -694,7 +673,7 @@ static const struct of_device_id cedrus_dt_match[] = {
 		.compatible = "allwinner,sun50i-h6-video-engine",
 		.data = &sun50i_h6_cedrus_variant,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cedrus_dt_match);
 

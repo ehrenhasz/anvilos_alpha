@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 Nicira, Inc.
- */
+ 
+ 
 
 #ifndef _NET_MPLS_H
 #define _NET_MPLS_H 1

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023, Linaro Ltd. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -34,7 +32,7 @@ struct pmic_typec_pdphy {
 	struct work_struct		reset_work;
 	struct work_struct		receive_work;
 	struct regulator		*vdd_pdphy;
-	spinlock_t			lock;		/* Register atomicity */
+	spinlock_t			lock;		 
 };
 
 static void qcom_pmic_typec_pdphy_reset_on(struct pmic_typec_pdphy *pmic_typec_pdphy)
@@ -42,7 +40,7 @@ static void qcom_pmic_typec_pdphy_reset_on(struct pmic_typec_pdphy *pmic_typec_p
 	struct device *dev = pmic_typec_pdphy->dev;
 	int ret;
 
-	/* Terminate TX */
+	 
 	ret = regmap_write(pmic_typec_pdphy->regmap,
 			   pmic_typec_pdphy->base + USB_PDPHY_TX_CONTROL_REG, 0);
 	if (ret)
@@ -93,13 +91,13 @@ qcom_pmic_typec_pdphy_clear_tx_control_reg(struct pmic_typec_pdphy *pmic_typec_p
 	unsigned int val;
 	int ret;
 
-	/* Clear TX control register */
+	 
 	ret = regmap_write(pmic_typec_pdphy->regmap,
 			   pmic_typec_pdphy->base + USB_PDPHY_TX_CONTROL_REG, 0);
 	if (ret)
 		goto done;
 
-	/* Perform readback to ensure sufficient delay for command to latch */
+	 
 	ret = regmap_read(pmic_typec_pdphy->regmap,
 			  pmic_typec_pdphy->base + USB_PDPHY_TX_CONTROL_REG, &val);
 
@@ -122,7 +120,7 @@ qcom_pmic_typec_pdphy_pd_transmit_signal(struct pmic_typec_pdphy *pmic_typec_pdp
 
 	spin_lock_irqsave(&pmic_typec_pdphy->lock, flags);
 
-	/* Clear TX control register */
+	 
 	ret = qcom_pmic_typec_pdphy_clear_tx_control_reg(pmic_typec_pdphy);
 	if (ret)
 		goto done;
@@ -173,7 +171,7 @@ qcom_pmic_typec_pdphy_pd_transmit_payload(struct pmic_typec_pdphy *pmic_typec_pd
 		goto done;
 	}
 
-	/* Clear TX control register */
+	 
 	ret = qcom_pmic_typec_pdphy_clear_tx_control_reg(pmic_typec_pdphy);
 	if (ret)
 		goto done;
@@ -182,14 +180,14 @@ qcom_pmic_typec_pdphy_pd_transmit_payload(struct pmic_typec_pdphy *pmic_typec_pd
 	txbuf_len = pd_header_cnt_le(msg->header) * 4;
 	txsize_len = hdr_len + txbuf_len - 1;
 
-	/* Write message header sizeof(u16) to USB_PDPHY_TX_BUFFER_HDR_REG */
+	 
 	ret = regmap_bulk_write(pmic_typec_pdphy->regmap,
 				pmic_typec_pdphy->base + USB_PDPHY_TX_BUFFER_HDR_REG,
 				&msg->header, hdr_len);
 	if (ret)
 		goto done;
 
-	/* Write payload to USB_PDPHY_TX_BUFFER_DATA_REG for txbuf_len */
+	 
 	if (txbuf_len) {
 		ret = regmap_bulk_write(pmic_typec_pdphy->regmap,
 					pmic_typec_pdphy->base + USB_PDPHY_TX_BUFFER_DATA_REG,
@@ -198,19 +196,19 @@ qcom_pmic_typec_pdphy_pd_transmit_payload(struct pmic_typec_pdphy *pmic_typec_pd
 			goto done;
 	}
 
-	/* Write total length ((header + data) - 1) to USB_PDPHY_TX_SIZE_REG */
+	 
 	ret = regmap_write(pmic_typec_pdphy->regmap,
 			   pmic_typec_pdphy->base + USB_PDPHY_TX_SIZE_REG,
 			   txsize_len);
 	if (ret)
 		goto done;
 
-	/* Clear TX control register */
+	 
 	ret = qcom_pmic_typec_pdphy_clear_tx_control_reg(pmic_typec_pdphy);
 	if (ret)
 		goto done;
 
-	/* Initiate transmit with retry count as indicated by PD revision */
+	 
 	val = TX_CONTROL_FRAME_TYPE(type) | TX_CONTROL_SEND_MSG;
 	if (pd_header_rev(msg->header) == PD_REV30)
 		val |= TX_CONTROL_RETRY_COUNT(2);
@@ -270,7 +268,7 @@ static void qcom_pmic_typec_pdphy_pd_receive(struct pmic_typec_pdphy *pmic_typec
 	if (ret)
 		goto done;
 
-	/* Hardware requires +1 of the real read value to be passed */
+	 
 	if (size < 1 || size > sizeof(msg.payload) + 1) {
 		dev_dbg(dev, "pd_receive: invalid size %d\n", size);
 		goto done;
@@ -290,7 +288,7 @@ static void qcom_pmic_typec_pdphy_pd_receive(struct pmic_typec_pdphy *pmic_typec
 	if (ret)
 		goto done;
 
-	/* Return ownership of RX buffer to hardware */
+	 
 	ret = regmap_write(pmic_typec_pdphy->regmap,
 			   pmic_typec_pdphy->base + USB_PDPHY_RX_ACKNOWLEDGE_REG, 0);
 
@@ -381,7 +379,7 @@ static int qcom_pmic_typec_pdphy_enable(struct pmic_typec_pdphy *pmic_typec_pdph
 	struct device *dev = pmic_typec_pdphy->dev;
 	int ret;
 
-	/* PD 2.0, DR=TYPEC_DEVICE, PR=TYPEC_SINK */
+	 
 	ret = regmap_update_bits(pmic_typec_pdphy->regmap,
 				 pmic_typec_pdphy->base + USB_PDPHY_MSG_CONFIG_REG,
 				 MSG_CONFIG_SPEC_REV_MASK, PD_REV20);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Free Electrons
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -355,10 +353,7 @@ static int st7789v_get_modes(struct drm_panel *panel,
 	drm_display_info_set_bus_formats(&connector->display_info,
 					 &ctx->info->bus_format, 1);
 
-	/*
-	 * TODO: Remove once all drm drivers call
-	 * drm_connector_set_orientation_from_panel()
-	 */
+	 
 	drm_connector_set_panel_orientation(connector, ctx->orientation);
 
 	return 1;
@@ -416,17 +411,14 @@ static int st7789v_prepare(struct drm_panel *panel)
 	gpiod_set_value(ctx->reset, 0);
 	msleep(120);
 
-	/*
-	 * Avoid failing if the IDs are invalid in case the Rx bus width
-	 * description is missing.
-	 */
+	 
 	ret = st7789v_check_id(panel);
 	if (ret)
 		dev_warn(panel->dev, "Unrecognized panel IDs");
 
 	ST7789V_TEST(ret, st7789v_write_command(ctx, MIPI_DCS_EXIT_SLEEP_MODE));
 
-	/* We need to wait 120ms after a sleep out command */
+	 
 	msleep(120);
 
 	ST7789V_TEST(ret, st7789v_write_command(ctx,
@@ -529,10 +521,7 @@ static int st7789v_prepare(struct drm_panel *panel)
 			((ctx->info->partial_end - 1) >> 0) & 0xff,
 		};
 
-		/* Caution: if userspace ever pushes a mode different from the
-		 * expected one (i.e., the one advertised by get_modes), we'll
-		 * add margins.
-		 */
+		 
 
 		ST7789V_TEST(ret, st7789v_write_command(
 					  ctx, MIPI_DCS_ENTER_PARTIAL_MODE));

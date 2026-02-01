@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TTUSB DEC Driver
- *
- * Copyright (C) 2003-2004 Alex Woods <linux-dvb@giblets.org>
- * IR support by Peter Beutner <p.beutner@gmx.net>
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/module.h>
@@ -92,7 +87,7 @@ struct ttusb_dec {
 	char				*firmware_name;
 	int				can_playback;
 
-	/* DVB bits */
+	 
 	struct dvb_adapter		adapter;
 	struct dmxdev			dmxdev;
 	struct dvb_demux		demux;
@@ -102,7 +97,7 @@ struct ttusb_dec {
 
 	u16			pid[DMX_PES_OTHER];
 
-	/* USB bits */
+	 
 	struct usb_device		*udev;
 	u8				trans_count;
 	unsigned int			command_pipe;
@@ -150,7 +145,7 @@ struct ttusb_dec {
 	struct input_dev	*rc_input_dev;
 	char			rc_phys[64];
 
-	int			active; /* Loaded successfully */
+	int			active;  
 };
 
 struct urb_frame {
@@ -214,7 +209,7 @@ static int dvb_filter_pes2ts(struct dvb_filter_pes2ts *p2ts,
 	unsigned char *buf=p2ts->buf;
 	int ret=0, rest;
 
-	//len=6+((pes[4]<<8)|pes[5]);
+	
 
 	if (payload_start)
 		buf[1]|=0x40;
@@ -253,13 +248,13 @@ static void ttusb_dec_handle_irq( struct urb *urb)
 	int index = buffer[4];
 
 	switch(urb->status) {
-		case 0: /*success*/
+		case 0:  
 			break;
 		case -ECONNRESET:
 		case -ENOENT:
 		case -ESHUTDOWN:
 		case -ETIME:
-			/* this urb is dead, cleanup */
+			 
 			dprintk("%s:urb shutting down with status: %d\n",
 					__func__, urb->status);
 			return;
@@ -270,18 +265,7 @@ static void ttusb_dec_handle_irq( struct urb *urb)
 	}
 
 	if ((buffer[0] == 0x1) && (buffer[2] == 0x15))  {
-		/*
-		 * IR - Event
-		 *
-		 * this is an fact a bit too simple implementation;
-		 * the box also reports a keyrepeat signal
-		 * (with buffer[3] == 0x40) in an interval of ~100ms.
-		 * But to handle this correctly we had to imlemenent some
-		 * kind of timer which signals a 'key up' event if no
-		 * keyrepeat signal is received for lets say 200ms.
-		 * this should/could be added later ...
-		 * for now lets report each signal as a key down and up
-		 */
+		 
 		if (index - 1 < ARRAY_SIZE(rc_keys)) {
 			dprintk("%s:rc signal:%d\n", __func__, index);
 			input_report_key(dec->rc_input_dev, rc_keys[index - 1], 1);
@@ -471,7 +455,7 @@ static void ttusb_dec_process_pva(struct ttusb_dec *dec, u8 *pva, int length)
 
 	switch (pva[2]) {
 
-	case 0x01: {		/* VideoStream */
+	case 0x01: {		 
 		int prebytes = pva[5] & 0x03;
 		int postbytes = (pva[5] & 0x0c) >> 2;
 		__be16 v_pes_payload_length;
@@ -536,7 +520,7 @@ static void ttusb_dec_process_pva(struct ttusb_dec *dec, u8 *pva, int length)
 		break;
 	}
 
-	case 0x02:		/* MainAudioStream */
+	case 0x02:		 
 		if (output_pva) {
 			dec->audio_filter->feed->cb.ts(pva, length, NULL, 0,
 				&dec->audio_filter->feed->feed.ts, NULL);
@@ -826,7 +810,7 @@ static void ttusb_dec_process_urb(struct urb *urb)
 			}
 		}
 	} else {
-		 /* -ENOENT is expected when unlinking urbs */
+		  
 		if (urb->status != -ENOENT)
 			dprintk("%s: urb error: %d\n", __func__,
 				urb->status);
@@ -885,10 +869,7 @@ static void ttusb_dec_stop_iso_xfer(struct ttusb_dec *dec)
 	mutex_unlock(&dec->iso_mutex);
 }
 
-/* Setting the interface of the DEC tends to take down the USB communications
- * for a short period, so it's important not to call this function just before
- * trying to talk to it.
- */
+ 
 static int ttusb_dec_set_interface(struct ttusb_dec *dec,
 				   enum ttusb_dec_interface interface)
 {
@@ -1238,7 +1219,7 @@ static int ttusb_init_rc( struct ttusb_dec *dec)
 	dec->rc_input_dev = input_dev;
 	if (usb_submit_urb(dec->irq_urb, GFP_KERNEL))
 		printk("%s: usb_submit_urb failed\n",__func__);
-	/* enable irq pipe */
+	 
 	ttusb_dec_send_command(dec,0xb0,sizeof(b),b,NULL,NULL);
 
 	return 0;
@@ -1333,9 +1314,7 @@ static int ttusb_dec_boot_dsp(struct ttusb_dec *dec)
 		return -ENOENT;
 	}
 
-	/* a 32 bit checksum over the first 56 bytes of the DSP Code is stored
-	   at offset 56 of file, so use it to check if the firmware file is
-	   valid. */
+	 
 	crc32_csum = crc32(~0L, firmware, 56) ^ ~0L;
 	memcpy(&tmp, &firmware[56], 4);
 	crc32_check = ntohl(tmp);
@@ -1427,8 +1406,7 @@ static int ttusb_dec_init_stb(struct ttusb_dec *dec)
 		if (result)
 			return result;
 	} else {
-		/* We can't trust the USB IDs that some firmwares
-		   give the box */
+		 
 		switch (model) {
 		case 0x00070001:
 		case 0x00070008:
@@ -1567,10 +1545,7 @@ static void ttusb_dec_exit_usb(struct ttusb_dec *dec)
 	dprintk("%s\n", __func__);
 
 	if (enable_rc) {
-		/* we have to check whether the irq URB is already submitted.
-		 * As the irq is submitted after the interface is changed,
-		 * this is the best method i figured out.
-		 * Any others?*/
+		 
 		if (dec->interface == TTUSB_DEC_INTERFACE_IN)
 			usb_kill_urb(dec->irq_urb);
 
@@ -1764,10 +1739,10 @@ static void ttusb_dec_set_model(struct ttusb_dec *dec,
 }
 
 static const struct usb_device_id ttusb_dec_table[] = {
-	{USB_DEVICE(0x0b48, 0x1006)},	/* DEC3000-s */
-	/*{USB_DEVICE(0x0b48, 0x1007)},	   Unconfirmed */
-	{USB_DEVICE(0x0b48, 0x1008)},	/* DEC2000-t */
-	{USB_DEVICE(0x0b48, 0x1009)},	/* DEC2540-t */
+	{USB_DEVICE(0x0b48, 0x1006)},	 
+	 
+	{USB_DEVICE(0x0b48, 0x1008)},	 
+	{USB_DEVICE(0x0b48, 0x1009)},	 
 	{}
 };
 

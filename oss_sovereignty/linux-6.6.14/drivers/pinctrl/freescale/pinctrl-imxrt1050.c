@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020
- * Author(s): Giulio Benetti <giulio.benetti@benettiengineering.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -144,7 +141,7 @@ enum imxrt1050_pads {
 	IMXRT1050_PAD_SD_B1_11,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imxrt1050_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(IMXRT1050_PAD_RESERVE0),
 	IMX_PINCTRL_PIN(IMXRT1050_PAD_RESERVE1),
@@ -285,7 +282,7 @@ static const struct imx_pinctrl_soc_info imxrt1050_pinctrl_info = {
 
 static const struct of_device_id imxrt1050_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imxrt1050-iomuxc", .data = &imxrt1050_pinctrl_info, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imxrt1050_pinctrl_probe(struct platform_device *pdev)

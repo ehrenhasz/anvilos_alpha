@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * LCD-OLinuXino support for panel driver
- *
- * Copyright (C) 2018 Olimex Ltd.
- *   Author: Stefan Mavrodiev <stefan@olimex.com>
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/gpio/consumer.h>
@@ -171,7 +166,7 @@ static int lcd_olinuxino_get_modes(struct drm_panel *panel,
 		mode->vtotal = lcd_mode->vactive + lcd_mode->vfp +
 			       lcd_mode->vpw + lcd_mode->vbp;
 
-		/* Always make the first mode preferred */
+		 
 		if (i == 0)
 			mode->type |= DRM_MODE_TYPE_PREFERRED;
 		mode->type |= DRM_MODE_TYPE_DRIVER;
@@ -223,7 +218,7 @@ static int lcd_olinuxino_probe(struct i2c_client *client)
 
 	mutex_init(&lcd->mutex);
 
-	/* Copy data into buffer */
+	 
 	for (i = 0; i < LCD_OLINUXINO_DATA_LEN; i += I2C_SMBUS_BLOCK_MAX) {
 		mutex_lock(&lcd->mutex);
 		ret = i2c_smbus_read_i2c_block_data(client,
@@ -237,14 +232,14 @@ static int lcd_olinuxino_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Check configuration checksum */
+	 
 	checksum = ~crc32(~0, (u8 *)&lcd->eeprom, 252);
 	if (checksum != lcd->eeprom.checksum) {
 		dev_err(dev, "configuration checksum does not match!\n");
 		return -EINVAL;
 	}
 
-	/* Check magic header */
+	 
 	if (lcd->eeprom.header != LCD_OLINUXINO_HEADER_MAGIC) {
 		dev_err(dev, "magic header does not match\n");
 		return -EINVAL;
@@ -255,10 +250,7 @@ static int lcd_olinuxino_probe(struct i2c_client *client)
 		 lcd->eeprom.revision,
 		 lcd->eeprom.serial);
 
-	/*
-	 * The eeprom can hold up to 4 modes.
-	 * If the stored value is bigger, overwrite it.
-	 */
+	 
 	if (lcd->eeprom.num_modes > 4) {
 		dev_warn(dev, "invalid number of modes, falling back to 4\n");
 		lcd->eeprom.num_modes = 4;

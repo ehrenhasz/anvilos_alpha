@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI I2S Control
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/regmap.h>
@@ -40,7 +40,7 @@ enum {
 
 struct mtk_afe_i2s_priv {
 	int id;
-	int rate; /* for determine which apll to use */
+	int rate;  
 	int low_jitter_en;
 
 	int share_i2s_id;
@@ -105,7 +105,7 @@ static struct mtk_afe_i2s_priv *get_i2s_priv_by_name(struct mtk_base_afe *afe,
 	return afe_priv->dai_priv[dai_id];
 }
 
-/* low jitter control */
+ 
 static const char * const mt8183_i2s_hd_str[] = {
 	"Normal", "Low_Jitter"
 };
@@ -174,8 +174,8 @@ static const struct snd_kcontrol_new mtk_dai_i2s_controls[] = {
 		     mt8183_i2s_hd_get, mt8183_i2s_hd_set),
 };
 
-/* dai component */
-/* interconnection */
+ 
+ 
 static const struct snd_kcontrol_new mtk_i2s3_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH1", AFE_CONN0, I_DL1_CH1, 1, 0),
 	SOC_DAPM_SINGLE_AUTODISABLE("DL2_CH1", AFE_CONN0, I_DL2_CH1, 1, 0),
@@ -346,7 +346,7 @@ static const struct snd_soc_dapm_widget mtk_dai_i2s_widgets[] = {
 			   mtk_i2s5_ch2_mix,
 			   ARRAY_SIZE(mtk_i2s5_ch2_mix)),
 
-	/* i2s en*/
+	 
 	SND_SOC_DAPM_SUPPLY_S("I2S0_EN", SUPPLY_SEQ_I2S_EN,
 			      AFE_I2S_CON, I2S_EN_SFT, 0,
 			      NULL, 0),
@@ -362,7 +362,7 @@ static const struct snd_soc_dapm_widget mtk_dai_i2s_widgets[] = {
 	SND_SOC_DAPM_SUPPLY_S("I2S5_EN", SUPPLY_SEQ_I2S_EN,
 			      AFE_I2S_CON4, I2S5_EN_SFT, 0,
 			      NULL, 0),
-	/* i2s hd en */
+	 
 	SND_SOC_DAPM_SUPPLY_S(I2S0_HD_EN_W_NAME, SUPPLY_SEQ_I2S_HD_EN,
 			      AFE_I2S_CON, I2S1_HD_EN_SFT, 0,
 			      NULL, 0),
@@ -379,7 +379,7 @@ static const struct snd_soc_dapm_widget mtk_dai_i2s_widgets[] = {
 			      AFE_I2S_CON4, I2S5_HD_EN_SFT, 0,
 			      NULL, 0),
 
-	/* i2s mclk en */
+	 
 	SND_SOC_DAPM_SUPPLY_S(I2S0_MCLK_EN_W_NAME, SUPPLY_SEQ_I2S_MCLK_EN,
 			      SND_SOC_NOPM, 0, 0,
 			      mtk_mclk_en_event,
@@ -401,7 +401,7 @@ static const struct snd_soc_dapm_widget mtk_dai_i2s_widgets[] = {
 			      mtk_mclk_en_event,
 			      SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* apll */
+	 
 	SND_SOC_DAPM_SUPPLY_S(APLL1_W_NAME, SUPPLY_SEQ_APLL,
 			      SND_SOC_NOPM, 0, 0,
 			      mtk_apll_event,
@@ -452,7 +452,7 @@ static int mtk_afe_i2s_hd_connect(struct snd_soc_dapm_widget *source,
 	    get_i2s_id_by_name(afe, source->name))
 		return i2s_priv->low_jitter_en;
 
-	/* check if share i2s need hd en */
+	 
 	if (i2s_priv->share_i2s_id < 0)
 		return 0;
 
@@ -479,10 +479,10 @@ static int mtk_afe_i2s_apll_connect(struct snd_soc_dapm_widget *source,
 		return 0;
 	}
 
-	/* which apll */
+	 
 	cur_apll = mt8183_get_apll_by_name(afe, source->name);
 
-	/* choose APLL from i2s rate */
+	 
 	i2s_need_apll = mt8183_get_apll_by_rate(afe, i2s_priv->rate);
 
 	return (i2s_need_apll == cur_apll) ? 1 : 0;
@@ -507,7 +507,7 @@ static int mtk_afe_i2s_mclk_connect(struct snd_soc_dapm_widget *source,
 	    get_i2s_id_by_name(afe, source->name))
 		return (i2s_priv->mclk_rate > 0) ? 1 : 0;
 
-	/* check if share i2s need mclk */
+	 
 	if (i2s_priv->share_i2s_id < 0)
 		return 0;
 
@@ -533,14 +533,14 @@ static int mtk_afe_mclk_apll_connect(struct snd_soc_dapm_widget *source,
 		return 0;
 	}
 
-	/* which apll */
+	 
 	cur_apll = mt8183_get_apll_by_name(afe, source->name);
 
 	return (i2s_priv->mclk_apll == cur_apll) ? 1 : 0;
 }
 
 static const struct snd_soc_dapm_route mtk_dai_i2s_routes[] = {
-	/* i2s0 */
+	 
 	{"I2S0", NULL, "I2S0_EN"},
 	{"I2S0", NULL, "I2S1_EN", mtk_afe_i2s_share_connect},
 	{"I2S0", NULL, "I2S2_EN", mtk_afe_i2s_share_connect},
@@ -563,7 +563,7 @@ static const struct snd_soc_dapm_route mtk_dai_i2s_routes[] = {
 	{I2S0_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
 	{I2S0_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
 
-	/* i2s1 */
+	 
 	{"I2S1_CH1", "DL1_CH1", "DL1"},
 	{"I2S1_CH2", "DL1_CH2", "DL1"},
 
@@ -598,7 +598,7 @@ static const struct snd_soc_dapm_route mtk_dai_i2s_routes[] = {
 	{I2S1_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
 	{I2S1_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
 
-	/* i2s2 */
+	 
 	{"I2S2", NULL, "I2S0_EN", mtk_afe_i2s_share_connect},
 	{"I2S2", NULL, "I2S1_EN", mtk_afe_i2s_share_connect},
 	{"I2S2", NULL, "I2S2_EN"},
@@ -621,7 +621,7 @@ static const struct snd_soc_dapm_route mtk_dai_i2s_routes[] = {
 	{I2S2_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
 	{I2S2_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
 
-	/* i2s3 */
+	 
 	{"I2S3_CH1", "DL1_CH1", "DL1"},
 	{"I2S3_CH2", "DL1_CH2", "DL1"},
 
@@ -656,7 +656,7 @@ static const struct snd_soc_dapm_route mtk_dai_i2s_routes[] = {
 	{I2S3_MCLK_EN_W_NAME, NULL, APLL1_W_NAME, mtk_afe_mclk_apll_connect},
 	{I2S3_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
 
-	/* i2s5 */
+	 
 	{"I2S5_CH1", "DL1_CH1", "DL1"},
 	{"I2S5_CH2", "DL1_CH2", "DL1"},
 
@@ -692,7 +692,7 @@ static const struct snd_soc_dapm_route mtk_dai_i2s_routes[] = {
 	{I2S5_MCLK_EN_W_NAME, NULL, APLL2_W_NAME, mtk_afe_mclk_apll_connect},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_i2s_config(struct mtk_base_afe *afe,
 			      struct snd_pcm_hw_params *params,
 			      int i2s_id)
@@ -762,7 +762,7 @@ static int mtk_dai_i2s_config(struct mtk_base_afe *afe,
 		return -EINVAL;
 	}
 
-	/* set share i2s */
+	 
 	if (i2s_priv && i2s_priv->share_i2s_id >= 0)
 		ret = mtk_dai_i2s_config(afe, params, i2s_priv->share_i2s_id);
 
@@ -873,7 +873,7 @@ static const struct snd_soc_dai_ops mtk_dai_i2s_ops = {
 	.set_fmt = mtk_dai_i2s_set_fmt,
 };
 
-/* dai driver */
+ 
 #define MTK_I2S_RATES (SNDRV_PCM_RATE_8000_48000 |\
 		       SNDRV_PCM_RATE_88200 |\
 		       SNDRV_PCM_RATE_96000 |\
@@ -947,7 +947,7 @@ static struct snd_soc_dai_driver mtk_dai_i2s_driver[] = {
 	},
 };
 
-/* this enum is merely for mtk_afe_i2s_priv declare */
+ 
 enum {
 	DAI_I2S0 = 0,
 	DAI_I2S1,
@@ -985,12 +985,7 @@ static const struct mtk_afe_i2s_priv mt8183_i2s_priv[DAI_I2S_NUM] = {
 	},
 };
 
-/**
- * mt8183_dai_i2s_set_share() - Set up I2S ports to share a single clock.
- * @afe: Pointer to &struct mtk_base_afe
- * @main_i2s_name: The name of the I2S port that will provide the clock
- * @secondary_i2s_name: The name of the I2S port that will use this clock
- */
+ 
 int mt8183_dai_i2s_set_share(struct mtk_base_afe *afe, const char *main_i2s_name,
 			     const char *secondary_i2s_name)
 {
@@ -1054,7 +1049,7 @@ int mt8183_dai_i2s_register(struct mtk_base_afe *afe)
 	dai->dapm_routes = mtk_dai_i2s_routes;
 	dai->num_dapm_routes = ARRAY_SIZE(mtk_dai_i2s_routes);
 
-	/* set all dai i2s private data */
+	 
 	ret = mt8183_dai_i2s_set_priv(afe);
 	if (ret)
 		return ret;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_CEPH_CLS_LOCK_CLIENT_H
 #define _LINUX_CEPH_CLS_LOCK_CLIENT_H
 
@@ -11,12 +11,12 @@ enum ceph_cls_lock_type {
 };
 
 struct ceph_locker_id {
-	struct ceph_entity_name name;	/* locker's client name */
-	char *cookie;			/* locker's cookie */
+	struct ceph_entity_name name;	 
+	char *cookie;			 
 };
 
 struct ceph_locker_info {
-	struct ceph_entity_addr addr;	/* locker's address */
+	struct ceph_entity_addr addr;	 
 };
 
 struct ceph_locker {

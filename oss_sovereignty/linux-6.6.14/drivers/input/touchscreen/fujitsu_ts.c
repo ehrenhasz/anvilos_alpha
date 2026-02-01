@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Fujitsu serial touchscreen driver
- *
- * Copyright (c) Dmitry Torokhov <dtor@mail.ru>
- */
+
+ 
 
 
 #include <linux/errno.h>
@@ -21,9 +17,7 @@ MODULE_LICENSE("GPL");
 
 #define FUJITSU_LENGTH 5
 
-/*
- * Per-touchscreen data.
- */
+ 
 struct fujitsu {
 	struct input_dev *dev;
 	struct serio *serio;
@@ -32,14 +26,7 @@ struct fujitsu {
 	char phys[32];
 };
 
-/*
- * Decode serial data (5 bytes per packet)
- * First byte
- * 1 C 0 0 R S S S
- * Where C is 1 while in calibration mode (which we don't use)
- * R is 1 when no coordinate corection was done.
- * S are button state
- */
+ 
 static irqreturn_t fujitsu_interrupt(struct serio *serio,
 				     unsigned char data, unsigned int flags)
 {
@@ -47,11 +34,11 @@ static irqreturn_t fujitsu_interrupt(struct serio *serio,
 	struct input_dev *dev = fujitsu->dev;
 
 	if (fujitsu->idx == 0) {
-		/* resync skip until start of frame */
+		 
 		if ((data & 0xf0) != 0x80)
 			return IRQ_HANDLED;
 	} else {
-		/* resync skip garbage */
+		 
 		if (data & 0x80) {
 			fujitsu->idx = 0;
 			return IRQ_HANDLED;
@@ -73,9 +60,7 @@ static irqreturn_t fujitsu_interrupt(struct serio *serio,
 	return IRQ_HANDLED;
 }
 
-/*
- * fujitsu_disconnect() is the opposite of fujitsu_connect()
- */
+ 
 static void fujitsu_disconnect(struct serio *serio)
 {
 	struct fujitsu *fujitsu = serio_get_drvdata(serio);
@@ -88,11 +73,7 @@ static void fujitsu_disconnect(struct serio *serio)
 	kfree(fujitsu);
 }
 
-/*
- * fujitsu_connect() is the routine that is called when someone adds a
- * new serio device that supports the Fujitsu protocol and registers it
- * as input device.
- */
+ 
 static int fujitsu_connect(struct serio *serio, struct serio_driver *drv)
 {
 	struct fujitsu *fujitsu;
@@ -144,9 +125,7 @@ static int fujitsu_connect(struct serio *serio, struct serio_driver *drv)
 	return err;
 }
 
-/*
- * The serio driver structure.
- */
+ 
 static const struct serio_device_id fujitsu_serio_ids[] = {
 	{
 		.type	= SERIO_RS232,

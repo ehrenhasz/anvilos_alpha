@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pinctrl for Cirrus Logic Madera codecs
- *
- * Copyright (C) 2016-2018 Cirrus Logic
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -26,10 +22,7 @@
 
 #include "pinctrl-madera.h"
 
-/*
- * Use pin GPIO names for consistency
- * NOTE: IDs are zero-indexed for coding convenience
- */
+ 
 static const struct pinctrl_pin_desc madera_pins[] = {
 	PINCTRL_PIN(0, "gpio1"),
 	PINCTRL_PIN(1, "gpio2"),
@@ -73,15 +66,7 @@ static const struct pinctrl_pin_desc madera_pins[] = {
 	PINCTRL_PIN(39, "gpio40"),
 };
 
-/*
- * All single-pin functions can be mapped to any GPIO, however pinmux applies
- * functions to pin groups and only those groups declared as supporting that
- * function. To make this work we must put each pin in its own dummy group so
- * that the functions can be described as applying to all pins.
- * Since these do not correspond to anything in the actual hardware - they are
- * merely an adaptation to pinctrl's view of the world - we use the same name
- * as the pin to avoid confusion when comparing with datasheet instructions
- */
+ 
 static const char * const madera_pin_single_group_names[] = {
 	"gpio1",  "gpio2",  "gpio3",  "gpio4",  "gpio5",  "gpio6",  "gpio7",
 	"gpio8",  "gpio9",  "gpio10", "gpio11", "gpio12", "gpio13", "gpio14",
@@ -91,7 +76,7 @@ static const char * const madera_pin_single_group_names[] = {
 	"gpio36", "gpio37", "gpio38", "gpio39", "gpio40",
 };
 
-/* set of pin numbers for single-pin groups, zero-indexed */
+ 
 static const unsigned int madera_pin_single_group_pins[] = {
 	  0,  1,  2,  3,  4,  5,  6,
 	  7,  8,  9, 10, 11, 12, 13,
@@ -115,10 +100,7 @@ static const char * const madera_dmic6_group_names[] = { "dmic6" };
 static const char * const madera_spk1_group_names[] = { "pdmspk1" };
 static const char * const madera_spk2_group_names[] = { "pdmspk2" };
 
-/*
- * alt-functions always apply to a single pin group, other functions always
- * apply to all pins
- */
+ 
 static const struct {
 	const char *name;
 	const char * const *group_names;
@@ -447,7 +429,7 @@ static int madera_get_groups_count(struct pinctrl_dev *pctldev)
 {
 	struct madera_pin_private *priv = pinctrl_dev_get_drvdata(pctldev);
 
-	/* Number of alt function groups plus number of single-pin groups */
+	 
 	return priv->chip->n_pin_groups + priv->chip->n_pins;
 }
 
@@ -474,7 +456,7 @@ static int madera_get_group_pins(struct pinctrl_dev *pctldev,
 		*pins = priv->chip->pin_groups[selector].pins;
 		*num_pins = priv->chip->pin_groups[selector].n_pins;
 	} else {
-		/* return the dummy group for a single pin */
+		 
 		selector -= priv->chip->n_pin_groups;
 		*pins = &madera_pin_single_group_pins[selector];
 		*num_pins = 1;
@@ -497,10 +479,10 @@ static void madera_pin_dbg_show_fn(struct madera_pin_private *priv,
 				return;
 			}
 		}
-		return;	/* ignore unknown function values */
+		return;	 
 	}
 
-	/* alt function */
+	 
 	for (i = 0; i < chip->n_pin_groups; ++i) {
 		for (g_pin = 0; g_pin < chip->pin_groups[i].n_pins; ++g_pin) {
 			if (chip->pin_groups[i].pins[g_pin] == pin) {
@@ -535,7 +517,7 @@ static void __maybe_unused madera_pin_dbg_show(struct pinctrl_dev *pctldev,
 	fn = (conf[0] & MADERA_GP1_FN_MASK) >> MADERA_GP1_FN_SHIFT;
 	madera_pin_dbg_show_fn(priv, s, pin, fn);
 
-	/* State of direction bit is only relevant if function==1 */
+	 
 	if (fn == 1) {
 		if (conf[1] & MADERA_GP1_DIR_MASK)
 			seq_puts(s, " IN");
@@ -597,10 +579,10 @@ static int madera_mux_get_groups(struct pinctrl_dev *pctldev,
 	*groups = madera_mux_funcs[selector].group_names;
 
 	if (madera_mux_funcs[selector].func == 0) {
-		/* alt func always maps to a single group */
+		 
 		*num_groups = 1;
 	} else {
-		/* other funcs map to all available gpio pins */
+		 
 		*num_groups = priv->chip->n_pins;
 	}
 
@@ -624,7 +606,7 @@ static int madera_mux_set_mux(struct pinctrl_dev *pctldev,
 		madera_get_group_name(pctldev, group));
 
 	if (madera_mux_funcs[selector].func == 0) {
-		/* alt func pin assignments are codec-specific */
+		 
 		for (i = 0; i < n_chip_groups; ++i) {
 			if (strcmp(func_name, pin_group->name) == 0)
 				break;
@@ -648,11 +630,7 @@ static int madera_mux_set_mux(struct pinctrl_dev *pctldev,
 
 		}
 	} else {
-		/*
-		 * for other funcs the group will be the gpio number and will
-		 * be offset by the number of chip-specific functions at the
-		 * start of the group list
-		 */
+		 
 		group -= n_chip_groups;
 		reg = MADERA_GPIO1_CTRL_1 + (2 * group);
 
@@ -703,7 +681,7 @@ static int madera_gpio_request_enable(struct pinctrl_dev *pctldev,
 	unsigned int reg = MADERA_GPIO1_CTRL_1 + (2 * offset);
 	int ret;
 
-	/* put the pin into GPIO mode */
+	 
 	ret = regmap_update_bits(madera->regmap, reg, MADERA_GP1_FN_MASK, 1);
 	if (ret)
 		dev_err(priv->dev, "Failed to write to 0x%x (%d)\n", reg, ret);
@@ -720,7 +698,7 @@ static void madera_gpio_disable_free(struct pinctrl_dev *pctldev,
 	unsigned int reg = MADERA_GPIO1_CTRL_1 + (2 * offset);
 	int ret;
 
-	/* disable GPIO by setting to GPIO IN */
+	 
 	madera_gpio_set_direction(pctldev, range, offset, true);
 
 	ret = regmap_update_bits(madera->regmap, reg, MADERA_GP1_FN_MASK, 1);
@@ -736,7 +714,7 @@ static const struct pinmux_ops madera_pin_mux_ops = {
 	.gpio_request_enable = madera_gpio_request_enable,
 	.gpio_disable_free = madera_gpio_disable_free,
 	.gpio_set_direction = madera_gpio_set_direction,
-	.strict = true, /* GPIO and other functions are exclusive */
+	.strict = true,  
 };
 
 static int madera_pin_conf_get(struct pinctrl_dev *pctldev, unsigned int pin,
@@ -867,10 +845,7 @@ static int madera_pin_conf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 		case PIN_CONFIG_INPUT_DEBOUNCE:
 			mask[0] |= MADERA_GP1_DB_MASK;
 
-			/*
-			 * we can't configure debounce time per-pin so value
-			 * is just a flag
-			 */
+			 
 			val = pinconf_to_config_argument(*configs);
 			if (val)
 				conf[0] |= MADERA_GP1_DB;
@@ -958,7 +933,7 @@ static int madera_pin_conf_group_set(struct pinctrl_dev *pctldev,
 		madera_get_group_name(pctldev, selector));
 
 	if (selector >= n_groups) {
-		/* group is a single pin, convert to pin number and set */
+		 
 		return madera_pin_conf_set(pctldev,
 					   selector - n_groups,
 					   configs,
@@ -1059,7 +1034,7 @@ static int madera_pin_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* if the configuration is provided through pdata, apply it */
+	 
 	if (pdata->gpio_configs) {
 		ret = pinctrl_register_mappings(pdata->gpio_configs,
 						pdata->n_gpio_configs);

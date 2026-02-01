@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI TPS68470 PMIC operation region driver
- *
- * Copyright (C) 2017 Intel Corporation. All rights reserved.
- *
- * Author: Rajmohan Mani <rajmohan.mani@intel.com>
- *
- * Based on drivers/acpi/pmic/intel_pmic* drivers
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/init.h>
@@ -16,9 +8,9 @@
 #include <linux/regmap.h>
 
 struct tps68470_pmic_table {
-	u32 address;		/* operation region address */
-	u32 reg;		/* corresponding register */
-	u32 bitmask;		/* bit mask for power, clock */
+	u32 address;		 
+	u32 reg;		 
+	u32 bitmask;		 
 };
 
 #define TI_PMIC_POWER_OPREGION_ID		0xB0
@@ -38,159 +30,159 @@ static const struct tps68470_pmic_table power_table[] = {
 		.address = 0x00,
 		.reg = TPS68470_REG_S_I2C_CTL,
 		.bitmask = S_IO_I2C_EN,
-		/* S_I2C_CTL */
+		 
 	},
 	{
 		.address = 0x04,
 		.reg = TPS68470_REG_VCMCTL,
 		.bitmask = BIT(0),
-		/* VCMCTL */
+		 
 	},
 	{
 		.address = 0x08,
 		.reg = TPS68470_REG_VAUX1CTL,
 		.bitmask = BIT(0),
-		/* VAUX1_CTL */
+		 
 	},
 	{
 		.address = 0x0C,
 		.reg = TPS68470_REG_VAUX2CTL,
 		.bitmask = BIT(0),
-		/* VAUX2CTL */
+		 
 	},
 	{
 		.address = 0x10,
 		.reg = TPS68470_REG_VACTL,
 		.bitmask = BIT(0),
-		/* VACTL */
+		 
 	},
 	{
 		.address = 0x14,
 		.reg = TPS68470_REG_VDCTL,
 		.bitmask = BIT(0),
-		/* VDCTL */
+		 
 	},
 };
 
-/* Table to set voltage regulator value */
+ 
 static const struct tps68470_pmic_table vr_val_table[] = {
 	{
 		.address = 0x00,
 		.reg = TPS68470_REG_VSIOVAL,
 		.bitmask = TPS68470_VSIOVAL_IOVOLT_MASK,
-		/* TPS68470_REG_VSIOVAL */
+		 
 	},
 	{
 		.address = 0x04,
 		.reg = TPS68470_REG_VIOVAL,
 		.bitmask = TPS68470_VIOVAL_IOVOLT_MASK,
-		/* TPS68470_REG_VIOVAL */
+		 
 	},
 	{
 		.address = 0x08,
 		.reg = TPS68470_REG_VCMVAL,
 		.bitmask = TPS68470_VCMVAL_VCVOLT_MASK,
-		/* TPS68470_REG_VCMVAL */
+		 
 	},
 	{
 		.address = 0x0C,
 		.reg = TPS68470_REG_VAUX1VAL,
 		.bitmask = TPS68470_VAUX1VAL_AUX1VOLT_MASK,
-		/* TPS68470_REG_VAUX1VAL */
+		 
 	},
 	{
 		.address = 0x10,
 		.reg = TPS68470_REG_VAUX2VAL,
 		.bitmask = TPS68470_VAUX2VAL_AUX2VOLT_MASK,
-		/* TPS68470_REG_VAUX2VAL */
+		 
 	},
 	{
 		.address = 0x14,
 		.reg = TPS68470_REG_VAVAL,
 		.bitmask = TPS68470_VAVAL_AVOLT_MASK,
-		/* TPS68470_REG_VAVAL */
+		 
 	},
 	{
 		.address = 0x18,
 		.reg = TPS68470_REG_VDVAL,
 		.bitmask = TPS68470_VDVAL_DVOLT_MASK,
-		/* TPS68470_REG_VDVAL */
+		 
 	},
 };
 
-/* Table to configure clock frequency */
+ 
 static const struct tps68470_pmic_table clk_freq_table[] = {
 	{
 		.address = 0x00,
 		.reg = TPS68470_REG_POSTDIV2,
 		.bitmask = BIT(0) | BIT(1),
-		/* TPS68470_REG_POSTDIV2 */
+		 
 	},
 	{
 		.address = 0x04,
 		.reg = TPS68470_REG_BOOSTDIV,
 		.bitmask = 0x1F,
-		/* TPS68470_REG_BOOSTDIV */
+		 
 	},
 	{
 		.address = 0x08,
 		.reg = TPS68470_REG_BUCKDIV,
 		.bitmask = 0x0F,
-		/* TPS68470_REG_BUCKDIV */
+		 
 	},
 	{
 		.address = 0x0C,
 		.reg = TPS68470_REG_PLLSWR,
 		.bitmask = 0x13,
-		/* TPS68470_REG_PLLSWR */
+		 
 	},
 	{
 		.address = 0x10,
 		.reg = TPS68470_REG_XTALDIV,
 		.bitmask = 0xFF,
-		/* TPS68470_REG_XTALDIV */
+		 
 	},
 	{
 		.address = 0x14,
 		.reg = TPS68470_REG_PLLDIV,
 		.bitmask = 0xFF,
-		/* TPS68470_REG_PLLDIV */
+		 
 	},
 	{
 		.address = 0x18,
 		.reg = TPS68470_REG_POSTDIV,
 		.bitmask = 0x83,
-		/* TPS68470_REG_POSTDIV */
+		 
 	},
 };
 
-/* Table to configure and enable clocks */
+ 
 static const struct tps68470_pmic_table clk_table[] = {
 	{
 		.address = 0x00,
 		.reg = TPS68470_REG_PLLCTL,
 		.bitmask = 0xF5,
-		/* TPS68470_REG_PLLCTL */
+		 
 	},
 	{
 		.address = 0x04,
 		.reg = TPS68470_REG_PLLCTL2,
 		.bitmask = BIT(0),
-		/* TPS68470_REG_PLLCTL2 */
+		 
 	},
 	{
 		.address = 0x08,
 		.reg = TPS68470_REG_CLKCFG1,
 		.bitmask = TPS68470_CLKCFG1_MODE_A_MASK |
 			TPS68470_CLKCFG1_MODE_B_MASK,
-		/* TPS68470_REG_CLKCFG1 */
+		 
 	},
 	{
 		.address = 0x0C,
 		.reg = TPS68470_REG_CLKCFG2,
 		.bitmask = TPS68470_CLKCFG1_MODE_A_MASK |
 			TPS68470_CLKCFG1_MODE_B_MASK,
-		/* TPS68470_REG_CLKCFG2 */
+		 
 	},
 };
 
@@ -354,7 +346,7 @@ static acpi_status tps68470_pmic_pwr_handler(u32 function,
 	if (bits != 32)
 		return AE_BAD_PARAMETER;
 
-	/* set/clear for bit 0, bits 0 and 1 together */
+	 
 	if (function == ACPI_WRITE &&
 	    !(*value == 0 || *value == 1 || *value == 3)) {
 		return AE_BAD_PARAMETER;

@@ -1,45 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MacBook (Pro) SPI keyboard and touchpad driver
- *
- * Copyright (c) 2015-2018 Federico Lorenzi
- * Copyright (c) 2017-2018 Ronald Tschalär
- */
 
-/*
- * The keyboard and touchpad controller on the MacBookAir6, MacBookPro12,
- * MacBook8 and newer can be driven either by USB or SPI. However the USB
- * pins are only connected on the MacBookAir6 and 7 and the MacBookPro12.
- * All others need this driver. The interface is selected using ACPI methods:
- *
- * * UIEN ("USB Interface Enable"): If invoked with argument 1, disables SPI
- *   and enables USB. If invoked with argument 0, disables USB.
- * * UIST ("USB Interface Status"): Returns 1 if USB is enabled, 0 otherwise.
- * * SIEN ("SPI Interface Enable"): If invoked with argument 1, disables USB
- *   and enables SPI. If invoked with argument 0, disables SPI.
- * * SIST ("SPI Interface Status"): Returns 1 if SPI is enabled, 0 otherwise.
- * * ISOL: Resets the four GPIO pins used for SPI. Intended to be invoked with
- *   argument 1, then once more with argument 0.
- *
- * UIEN and UIST are only provided on models where the USB pins are connected.
- *
- * SPI-based Protocol
- * ------------------
- *
- * The device and driver exchange messages (struct message); each message is
- * encapsulated in one or more packets (struct spi_packet). There are two types
- * of exchanges: reads, and writes. A read is signaled by a GPE, upon which one
- * message can be read from the device. A write exchange consists of writing a
- * command message, immediately reading a short status packet, and then, upon
- * receiving a GPE, reading the response message. Write exchanges cannot be
- * interleaved, i.e. a new write exchange must not be started till the previous
- * write exchange is complete. Whether a received message is part of a read or
- * write exchange is indicated in the encapsulating packet's flags field.
- *
- * A single message may be too large to fit in a single packet (which has a
- * fixed, 256-byte size). In that case it will be split over multiple,
- * consecutive packets.
- */
+ 
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/crc16.h>
@@ -89,7 +51,7 @@
 
 #define APPLE_FLAG_FKEY		0x01
 
-#define SPI_RW_CHG_DELAY_US	100	/* from experimentation, in µs */
+#define SPI_RW_CHG_DELAY_US	100	 
 
 #define SYNAPTICS_VENDOR_ID	0x06cb
 
@@ -110,18 +72,7 @@ module_param_string(touchpad_dimensions, touchpad_dimensions,
 		    sizeof(touchpad_dimensions), 0444);
 MODULE_PARM_DESC(touchpad_dimensions, "The pixel dimensions of the touchpad, as XxY+W+H .");
 
-/**
- * struct keyboard_protocol - keyboard message.
- * message.type = 0x0110, message.length = 0x000a
- *
- * @unknown1:		unknown
- * @modifiers:		bit-set of modifier/control keys pressed
- * @unknown2:		unknown
- * @keys_pressed:	the (non-modifier) keys currently pressed
- * @fn_pressed:		whether the fn key is currently pressed
- * @crc16:		crc over the whole message struct (message header +
- *			this struct) minus this @crc16 field
- */
+ 
 struct keyboard_protocol {
 	u8			unknown1;
 	u8			modifiers;
@@ -131,26 +82,7 @@ struct keyboard_protocol {
 	__le16			crc16;
 };
 
-/**
- * struct tp_finger - single trackpad finger structure, le16-aligned
- *
- * @origin:		zero when switching track finger
- * @abs_x:		absolute x coordinate
- * @abs_y:		absolute y coordinate
- * @rel_x:		relative x coordinate
- * @rel_y:		relative y coordinate
- * @tool_major:		tool area, major axis
- * @tool_minor:		tool area, minor axis
- * @orientation:	16384 when point, else 15 bit angle
- * @touch_major:	touch area, major axis
- * @touch_minor:	touch area, minor axis
- * @unused:		zeros
- * @pressure:		pressure on forcetouch touchpad
- * @multi:		one finger: varies, more fingers: constant
- * @crc16:		on last finger: crc over the whole message struct
- *			(i.e. message header + this struct) minus the last
- *			@crc16 field; unknown on all other fingers.
- */
+ 
 struct tp_finger {
 	__le16 origin;
 	__le16 abs_x;
@@ -168,18 +100,7 @@ struct tp_finger {
 	__le16 crc16;
 };
 
-/**
- * struct touchpad_protocol - touchpad message.
- * message.type = 0x0210
- *
- * @unknown1:		unknown
- * @clicked:		1 if a button-click was detected, 0 otherwise
- * @unknown2:		unknown
- * @number_of_fingers:	the number of fingers being reported in @fingers
- * @clicked2:		same as @clicked
- * @unknown3:		unknown
- * @fingers:		the data for each finger
- */
+ 
 struct touchpad_protocol {
 	u8			unknown1[1];
 	u8			clicked;
@@ -190,29 +111,12 @@ struct touchpad_protocol {
 	struct tp_finger	fingers[];
 };
 
-/**
- * struct command_protocol_tp_info - get touchpad info.
- * message.type = 0x1020, message.length = 0x0000
- *
- * @crc16:		crc over the whole message struct (message header +
- *			this struct) minus this @crc16 field
- */
+ 
 struct command_protocol_tp_info {
 	__le16			crc16;
 };
 
-/**
- * struct touchpad_info_protocol - touchpad info response.
- * message.type = 0x1020, message.length = 0x006e
- *
- * @unknown1:		unknown
- * @model_flags:	flags (vary by model number, but significance otherwise
- *			unknown)
- * @model_no:		the touchpad model number
- * @unknown2:		unknown
- * @crc16:		crc over the whole message struct (message header +
- *			this struct) minus this @crc16 field
- */
+ 
 struct touchpad_info_protocol {
 	u8			unknown1[105];
 	u8			model_flags;
@@ -221,44 +125,20 @@ struct touchpad_info_protocol {
 	__le16			crc16;
 };
 
-/**
- * struct command_protocol_mt_init - initialize multitouch.
- * message.type = 0x0252, message.length = 0x0002
- *
- * @cmd:		value: 0x0102
- * @crc16:		crc over the whole message struct (message header +
- *			this struct) minus this @crc16 field
- */
+ 
 struct command_protocol_mt_init {
 	__le16			cmd;
 	__le16			crc16;
 };
 
-/**
- * struct command_protocol_capsl - toggle caps-lock led
- * message.type = 0x0151, message.length = 0x0002
- *
- * @unknown:		value: 0x01 (length?)
- * @led:		0 off, 2 on
- * @crc16:		crc over the whole message struct (message header +
- *			this struct) minus this @crc16 field
- */
+ 
 struct command_protocol_capsl {
 	u8			unknown;
 	u8			led;
 	__le16			crc16;
 };
 
-/**
- * struct command_protocol_bl - set keyboard backlight brightness
- * message.type = 0xB051, message.length = 0x0006
- *
- * @const1:		value: 0x01B0
- * @level:		the brightness level to set
- * @const2:		value: 0x0001 (backlight off), 0x01F4 (backlight on)
- * @crc16:		crc over the whole message struct (message header +
- *			this struct) minus this @crc16 field
- */
+ 
 struct command_protocol_bl {
 	__le16			const1;
 	__le16			level;
@@ -266,37 +146,7 @@ struct command_protocol_bl {
 	__le16			crc16;
 };
 
-/**
- * struct message - a complete spi message.
- *
- * Each message begins with fixed header, followed by a message-type specific
- * payload, and ends with a 16-bit crc. Because of the varying lengths of the
- * payload, the crc is defined at the end of each payload struct, rather than
- * in this struct.
- *
- * @type:	the message type
- * @zero:	always 0
- * @counter:	incremented on each message, rolls over after 255; there is a
- *		separate counter for each message type.
- * @rsp_buf_len:response buffer length (the exact nature of this field is quite
- *		speculative). On a request/write this is often the same as
- *		@length, though in some cases it has been seen to be much larger
- *		(e.g. 0x400); on a response/read this the same as on the
- *		request; for reads that are not responses it is 0.
- * @length:	length of the remainder of the data in the whole message
- *		structure (after re-assembly in case of being split over
- *		multiple spi-packets), minus the trailing crc. The total size
- *		of the message struct is therefore @length + 10.
- *
- * @keyboard:		Keyboard message
- * @touchpad:		Touchpad message
- * @tp_info:		Touchpad info (response)
- * @tp_info_command:	Touchpad info (CRC)
- * @init_mt_command:	Initialise Multitouch
- * @capsl_command:	Toggle caps-lock LED
- * @bl_command:		Keyboard brightness
- * @data:		Buffer data
- */
+ 
 struct message {
 	__le16		type;
 	u8		zero;
@@ -315,34 +165,10 @@ struct message {
 	};
 };
 
-/* type + zero + counter + rsp_buf_len + length */
+ 
 #define MSG_HEADER_SIZE		8
 
-/**
- * struct spi_packet - a complete spi packet; always 256 bytes. This carries
- * the (parts of the) message in the data. But note that this does not
- * necessarily contain a complete message, as in some cases (e.g. many
- * fingers pressed) the message is split over multiple packets (see the
- * @offset, @remaining, and @length fields). In general the data parts in
- * spi_packet's are concatenated until @remaining is 0, and the result is an
- * message.
- *
- * @flags:	0x40 = write (to device), 0x20 = read (from device); note that
- *		the response to a write still has 0x40.
- * @device:	1 = keyboard, 2 = touchpad
- * @offset:	specifies the offset of this packet's data in the complete
- *		message; i.e. > 0 indicates this is a continuation packet (in
- *		the second packet for a message split over multiple packets
- *		this would then be the same as the @length in the first packet)
- * @remaining:	number of message bytes remaining in subsequents packets (in
- *		the first packet of a message split over two packets this would
- *		then be the same as the @length in the second packet)
- * @length:	length of the valid data in the @data in this packet
- * @data:	all or part of a message
- * @crc16:	crc over this whole structure minus this @crc16 field. This
- *		covers just this packet, even on multi-packet messages (in
- *		contrast to the crc in the message).
- */
+ 
 struct spi_packet {
 	u8			flags;
 	u8			device;
@@ -354,12 +180,12 @@ struct spi_packet {
 };
 
 struct spi_settings {
-	u64	spi_cs_delay;		/* cs-to-clk delay in us */
-	u64	reset_a2r_usec;		/* active-to-receive delay? */
-	u64	reset_rec_usec;		/* ? (cur val: 10) */
+	u64	spi_cs_delay;		 
+	u64	reset_a2r_usec;		 
+	u64	reset_rec_usec;		 
 };
 
-/* this mimics struct drm_rect */
+ 
 struct applespi_tp_info {
 	int	x_min;
 	int	y_min;
@@ -408,7 +234,7 @@ struct applespi_data {
 	unsigned int			want_bl_level;
 	unsigned int			have_bl_level;
 	unsigned int			cmd_msg_cntr;
-	/* lock to protect the above parameters and flags below */
+	 
 	spinlock_t			cmd_msg_lock;
 	ktime_t				cmd_msg_queued;
 	enum applespi_evt_type		cmd_evt_type;
@@ -452,10 +278,7 @@ static const unsigned char applespi_scancodes[] = {
 	0, KEY_KATAKANAHIRAGANA, KEY_MUHENKAN
 };
 
-/*
- * This must have exactly as many entries as there are bits in
- * struct keyboard_protocol.modifiers .
- */
+ 
 static const unsigned char applespi_controlcodes[] = {
 	KEY_LEFTCTRL,
 	KEY_LEFTSHIFT,
@@ -508,15 +331,15 @@ struct applespi_tp_model_info {
 
 static const struct applespi_tp_model_info applespi_tp_models[] = {
 	{
-		.model = 0x04,	/* MB8 MB9 MB10 */
+		.model = 0x04,	 
 		.tp_info = { -5087, -182, 5579, 6089 },
 	},
 	{
-		.model = 0x05,	/* MBP13,1 MBP13,2 MBP14,1 MBP14,2 */
+		.model = 0x05,	 
 		.tp_info = { -6243, -170, 6749, 7685 },
 	},
 	{
-		.model = 0x06,	/* MBP13,3 MBP14,3 */
+		.model = 0x06,	 
 		.tp_info = { -7456, -163, 7976, 9283 },
 	},
 	{}
@@ -579,12 +402,7 @@ static void applespi_setup_write_txfrs(struct applespi_data *applespi)
 	memset(wr_t, 0, sizeof(*wr_t));
 	memset(st_t, 0, sizeof(*st_t));
 
-	/*
-	 * All we need here is a delay at the beginning of the message before
-	 * asserting cs. But the current spi API doesn't support this, so we
-	 * end up with an extra unnecessary (but harmless) cs assertion and
-	 * deassertion.
-	 */
+	 
 	wt_t->delay.value = SPI_RW_CHG_DELAY_US;
 	wt_t->delay.unit = SPI_DELAY_UNIT_USECS;
 	wt_t->cs_change = 1;
@@ -687,13 +505,13 @@ static int applespi_enable_spi(struct applespi_data *applespi)
 	acpi_status acpi_sts;
 	unsigned long long spi_status;
 
-	/* check if SPI is already enabled, so we can skip the delay below */
+	 
 	acpi_sts = acpi_evaluate_integer(applespi->sist, NULL, NULL,
 					 &spi_status);
 	if (ACPI_SUCCESS(acpi_sts) && spi_status)
 		return 0;
 
-	/* SIEN(1) will enable SPI communication */
+	 
 	acpi_sts = acpi_execute_simple_method(applespi->sien, NULL, 1);
 	if (ACPI_FAILURE(acpi_sts)) {
 		dev_err(&applespi->spi->dev, "SIEN failed: %s\n",
@@ -701,12 +519,7 @@ static int applespi_enable_spi(struct applespi_data *applespi)
 		return -ENODEV;
 	}
 
-	/*
-	 * Allow the SPI interface to come up before returning. Without this
-	 * delay, the SPI commands to enable multitouch mode may not reach
-	 * the trackpad controller, causing pointer movement to break upon
-	 * resume from sleep.
-	 */
+	 
 	msleep(50);
 
 	return 0;
@@ -752,10 +565,7 @@ static void applespi_async_write_complete(void *context)
 	udelay(SPI_RW_CHG_DELAY_US);
 
 	if (!applespi_check_write_status(applespi, applespi->wr_m.status)) {
-		/*
-		 * If we got an error, we presumably won't get the expected
-		 * response message either.
-		 */
+		 
 		applespi_msg_complete(applespi, true, false);
 	}
 }
@@ -769,11 +579,11 @@ static int applespi_send_cmd_msg(struct applespi_data *applespi)
 	u16 msg_len;
 	u8 device;
 
-	/* check if draining */
+	 
 	if (applespi->drain)
 		return 0;
 
-	/* check whether send is in progress */
+	 
 	if (applespi->cmd_msg_queued) {
 		if (ktime_ms_delta(ktime_get(), applespi->cmd_msg_queued) < 1000)
 			return 0;
@@ -785,16 +595,16 @@ static int applespi_send_cmd_msg(struct applespi_data *applespi)
 		applespi->write_active = false;
 	}
 
-	/* set up packet */
+	 
 	memset(packet, 0, APPLESPI_PACKET_SIZE);
 
-	/* are we processing init commands? */
+	 
 	if (applespi->want_tp_info_cmd) {
 		applespi->want_tp_info_cmd = false;
 		applespi->want_mt_init_cmd = true;
 		applespi->cmd_evt_type = ET_CMD_TP_INI;
 
-		/* build init command */
+		 
 		device = PACKET_DEV_INFO;
 
 		message->type = cpu_to_le16(0x1020);
@@ -807,7 +617,7 @@ static int applespi_send_cmd_msg(struct applespi_data *applespi)
 		applespi->want_mt_init_cmd = false;
 		applespi->cmd_evt_type = ET_CMD_TP_INI;
 
-		/* build init command */
+		 
 		device = PACKET_DEV_TPAD;
 
 		message->type = cpu_to_le16(0x0252);
@@ -815,12 +625,12 @@ static int applespi_send_cmd_msg(struct applespi_data *applespi)
 
 		message->init_mt_command.cmd = cpu_to_le16(0x0102);
 
-	/* do we need caps-lock command? */
+	 
 	} else if (applespi->want_cl_led_on != applespi->have_cl_led_on) {
 		applespi->have_cl_led_on = applespi->want_cl_led_on;
 		applespi->cmd_evt_type = ET_CMD_CL;
 
-		/* build led command */
+		 
 		device = PACKET_DEV_KEYB;
 
 		message->type = cpu_to_le16(0x0151);
@@ -829,12 +639,12 @@ static int applespi_send_cmd_msg(struct applespi_data *applespi)
 		message->capsl_command.unknown = 0x01;
 		message->capsl_command.led = applespi->have_cl_led_on ? 2 : 0;
 
-	/* do we need backlight command? */
+	 
 	} else if (applespi->want_bl_level != applespi->have_bl_level) {
 		applespi->have_bl_level = applespi->want_bl_level;
 		applespi->cmd_evt_type = ET_CMD_BL;
 
-		/* build command buffer */
+		 
 		device = PACKET_DEV_KEYB;
 
 		message->type = cpu_to_le16(0xB051);
@@ -849,12 +659,12 @@ static int applespi_send_cmd_msg(struct applespi_data *applespi)
 		else
 			message->bl_command.const2 = cpu_to_le16(0x0001);
 
-	/* everything's up-to-date */
+	 
 	} else {
 		return 0;
 	}
 
-	/* finalize packet */
+	 
 	packet->flags = PACKET_TYPE_WRITE;
 	packet->device = device;
 	packet->length = cpu_to_le16(MSG_HEADER_SIZE + msg_len);
@@ -871,7 +681,7 @@ static int applespi_send_cmd_msg(struct applespi_data *applespi)
 	crc = crc16(0, (u8 *)packet, sizeof(*packet) - 2);
 	packet->crc16 = cpu_to_le16(crc);
 
-	/* send command */
+	 
 	sts = applespi_async(applespi, &applespi->wr_m,
 			     applespi_async_write_complete);
 	if (sts) {
@@ -929,11 +739,7 @@ static void applespi_set_bl_level(struct led_classdev *led_cdev,
 	if (value == 0) {
 		applespi->want_bl_level = value;
 	} else {
-		/*
-		 * The backlight does not turn on till level 32, so we scale
-		 * the range here so that from a user's perspective it turns
-		 * on at 1.
-		 */
+		 
 		applespi->want_bl_level =
 			((value * KBD_BL_LEVEL_ADJ) / KBD_BL_LEVEL_SCALE +
 			 KBD_BL_LEVEL_MIN);
@@ -958,8 +764,8 @@ static int applespi_event(struct input_dev *dev, unsigned int type,
 	return -EINVAL;
 }
 
-/* lifted from the BCM5974 driver and renamed from raw2int */
-/* convert 16-bit little endian to signed integer */
+ 
+ 
 static inline int le16_to_int(__le16 x)
 {
 	return (signed short)le16_to_cpu(x);
@@ -1039,10 +845,10 @@ static void report_tp_state(struct applespi_data *applespi,
 	const struct applespi_tp_info *tp_info = &applespi->tp_info;
 	int i, n;
 
-	/* touchpad_input_dev is set async in worker */
+	 
 	input = smp_load_acquire(&applespi->touchpad_input_dev);
 	if (!input)
-		return;	/* touchpad isn't initialized yet */
+		return;	 
 
 	n = 0;
 
@@ -1154,18 +960,18 @@ applespi_handle_keyboard_event(struct applespi_data *applespi,
 			   sizeof_field(struct keyboard_protocol, modifiers) * 8,
 			   "applespi_controlcodes has wrong number of entries");
 
-	/* check for rollover overflow, which is signalled by all keys == 1 */
+	 
 	if (!memchr_inv(keyboard_protocol->keys_pressed, 1, MAX_ROLLOVER))
 		return;
 
-	/* remap fn key if desired */
+	 
 	applespi_remap_fn_key(keyboard_protocol);
 
-	/* check released keys */
+	 
 	for (i = 0; i < MAX_ROLLOVER; i++) {
 		if (memchr(keyboard_protocol->keys_pressed,
 			   applespi->last_keys_pressed[i], MAX_ROLLOVER))
-			continue;	/* key is still pressed */
+			continue;	 
 
 		key = applespi_code_to_key(applespi->last_keys_pressed[i],
 					   applespi->last_keys_fn_pressed[i]);
@@ -1173,7 +979,7 @@ applespi_handle_keyboard_event(struct applespi_data *applespi,
 		applespi->last_keys_fn_pressed[i] = 0;
 	}
 
-	/* check pressed keys */
+	 
 	for (i = 0; i < MAX_ROLLOVER; i++) {
 		if (keyboard_protocol->keys_pressed[i] <
 				ARRAY_SIZE(applespi_scancodes) &&
@@ -1187,7 +993,7 @@ applespi_handle_keyboard_event(struct applespi_data *applespi,
 		}
 	}
 
-	/* check control keys */
+	 
 	for (i = 0; i < ARRAY_SIZE(applespi_controlcodes); i++) {
 		if (keyboard_protocol->modifiers & BIT(i))
 			input_report_key(applespi->keyboard_input_dev,
@@ -1197,14 +1003,14 @@ applespi_handle_keyboard_event(struct applespi_data *applespi,
 					 applespi_controlcodes[i], 0);
 	}
 
-	/* check function key */
+	 
 	if (keyboard_protocol->fn_pressed && !applespi->last_fn_pressed)
 		input_report_key(applespi->keyboard_input_dev, KEY_FN, 1);
 	else if (!keyboard_protocol->fn_pressed && applespi->last_fn_pressed)
 		input_report_key(applespi->keyboard_input_dev, KEY_FN, 0);
 	applespi->last_fn_pressed = keyboard_protocol->fn_pressed;
 
-	/* done */
+	 
 	input_sync(applespi->keyboard_input_dev);
 	memcpy(&applespi->last_keys_pressed, keyboard_protocol->keys_pressed,
 	       sizeof(applespi->last_keys_pressed));
@@ -1230,7 +1036,7 @@ applespi_register_touchpad_device(struct applespi_data *applespi,
 	struct input_dev *touchpad_input_dev;
 	int sts;
 
-	/* set up touchpad dimensions */
+	 
 	tp_info = applespi_find_touchpad_info(rcvd_tp_info->model_no);
 	if (!tp_info) {
 		dev_warn(&applespi->spi->dev,
@@ -1268,7 +1074,7 @@ applespi_register_touchpad_device(struct applespi_data *applespi,
 			 applespi->tp_info.y_max - applespi->tp_info.y_min);
 	}
 
-	/* create touchpad input device */
+	 
 	touchpad_input_dev = devm_input_allocate_device(&applespi->spi->dev);
 	if (!touchpad_input_dev) {
 		dev_err(&applespi->spi->dev,
@@ -1284,31 +1090,31 @@ applespi_register_touchpad_device(struct applespi_data *applespi,
 	touchpad_input_dev->id.product =
 			rcvd_tp_info->model_no << 8 | rcvd_tp_info->model_flags;
 
-	/* basic properties */
+	 
 	input_set_capability(touchpad_input_dev, EV_REL, REL_X);
 	input_set_capability(touchpad_input_dev, EV_REL, REL_Y);
 
 	__set_bit(INPUT_PROP_POINTER, touchpad_input_dev->propbit);
 	__set_bit(INPUT_PROP_BUTTONPAD, touchpad_input_dev->propbit);
 
-	/* finger touch area */
+	 
 	input_set_abs_params(touchpad_input_dev, ABS_MT_TOUCH_MAJOR,
 			     0, 5000, 0, 0);
 	input_set_abs_params(touchpad_input_dev, ABS_MT_TOUCH_MINOR,
 			     0, 5000, 0, 0);
 
-	/* finger approach area */
+	 
 	input_set_abs_params(touchpad_input_dev, ABS_MT_WIDTH_MAJOR,
 			     0, 5000, 0, 0);
 	input_set_abs_params(touchpad_input_dev, ABS_MT_WIDTH_MINOR,
 			     0, 5000, 0, 0);
 
-	/* finger orientation */
+	 
 	input_set_abs_params(touchpad_input_dev, ABS_MT_ORIENTATION,
 			     -MAX_FINGER_ORIENTATION, MAX_FINGER_ORIENTATION,
 			     0, 0);
 
-	/* finger position */
+	 
 	input_set_abs_params(touchpad_input_dev, ABS_MT_POSITION_X,
 			     applespi->tp_info.x_min, applespi->tp_info.x_max,
 			     0, 0);
@@ -1316,10 +1122,10 @@ applespi_register_touchpad_device(struct applespi_data *applespi,
 			     applespi->tp_info.y_min, applespi->tp_info.y_max,
 			     0, 0);
 
-	/* touchpad button */
+	 
 	input_set_capability(touchpad_input_dev, EV_KEY, BTN_LEFT);
 
-	/* multitouch */
+	 
 	sts = input_mt_init_slots(touchpad_input_dev, MAX_FINGERS,
 				  INPUT_MT_POINTER | INPUT_MT_DROP_UNUSED |
 					INPUT_MT_TRACK);
@@ -1329,7 +1135,7 @@ applespi_register_touchpad_device(struct applespi_data *applespi,
 		return sts;
 	}
 
-	/* register input device */
+	 
 	sts = input_register_device(touchpad_input_dev);
 	if (sts) {
 		dev_err(&applespi->spi->dev,
@@ -1337,7 +1143,7 @@ applespi_register_touchpad_device(struct applespi_data *applespi,
 		return sts;
 	}
 
-	/* touchpad_input_dev is read async in spi callback */
+	 
 	smp_store_release(&applespi->touchpad_input_dev, touchpad_input_dev);
 
 	return 0;
@@ -1357,10 +1163,7 @@ static void applespi_handle_cmd_response(struct applespi_data *applespi,
 {
 	if (packet->device == PACKET_DEV_INFO &&
 	    le16_to_cpu(message->type) == 0x1020) {
-		/*
-		 * We're not allowed to sleep here, but registering an input
-		 * device can sleep.
-		 */
+		 
 		applespi->rcvd_tp_info = message->tp_info;
 		schedule_work(&applespi->work);
 		return;
@@ -1425,7 +1228,7 @@ static void applespi_got_data(struct applespi_data *applespi)
 	unsigned int rem;
 	unsigned int len;
 
-	/* process packet header */
+	 
 	if (!applespi_verify_crc(applespi, applespi->rx_buffer,
 				 APPLESPI_PACKET_SIZE)) {
 		unsigned long flags;
@@ -1459,7 +1262,7 @@ static void applespi_got_data(struct applespi_data *applespi)
 		goto msg_complete;
 	}
 
-	/* handle multi-packet messages */
+	 
 	if (rem > 0 || off > 0) {
 		if (off != applespi->saved_msg_len) {
 			dev_warn_ratelimited(&applespi->spi->dev,
@@ -1495,7 +1298,7 @@ static void applespi_got_data(struct applespi_data *applespi)
 		msg_len = len;
 	}
 
-	/* got complete message - verify */
+	 
 	if (!applespi_verify_crc(applespi, (u8 *)message, msg_len))
 		goto msg_complete;
 
@@ -1507,7 +1310,7 @@ static void applespi_got_data(struct applespi_data *applespi)
 		goto msg_complete;
 	}
 
-	/* handle message */
+	 
 	if (packet->flags == PACKET_TYPE_READ &&
 	    packet->device == PACKET_DEV_KEYB) {
 		applespi_handle_keyboard_event(applespi, &message->keyboard);
@@ -1556,11 +1359,7 @@ static void applespi_async_read_complete(void *context)
 	if (applespi->rd_m.status < 0) {
 		dev_warn(&applespi->spi->dev, "Error reading from device: %d\n",
 			 applespi->rd_m.status);
-		/*
-		 * We don't actually know if this was a pure read, or a response
-		 * to a write. But this is a rare error condition that should
-		 * never occur, so clearing both flags to avoid deadlock.
-		 */
+		 
 		applespi_msg_complete(applespi, true, true);
 	} else {
 		applespi_got_data(applespi);
@@ -1639,15 +1438,15 @@ static int applespi_probe(struct spi_device *spi)
 	int sts, i;
 	unsigned long long gpe, usb_status;
 
-	/* check if the USB interface is present and enabled already */
+	 
 	acpi_sts = acpi_evaluate_integer(spi_handle, "UIST", NULL, &usb_status);
 	if (ACPI_SUCCESS(acpi_sts) && usb_status) {
-		/* let the USB driver take over instead */
+		 
 		dev_info(&spi->dev, "USB interface already enabled\n");
 		return -ENODEV;
 	}
 
-	/* allocate driver data */
+	 
 	applespi = devm_kzalloc(&spi->dev, sizeof(*applespi), GFP_KERNEL);
 	if (!applespi)
 		return -ENOMEM;
@@ -1656,10 +1455,10 @@ static int applespi_probe(struct spi_device *spi)
 
 	INIT_WORK(&applespi->work, applespi_worker);
 
-	/* store the driver data */
+	 
 	spi_set_drvdata(spi, applespi);
 
-	/* create our buffers */
+	 
 	applespi->tx_buffer = devm_kmalloc(&spi->dev, APPLESPI_PACKET_SIZE,
 					   GFP_KERNEL);
 	applespi->tx_status = devm_kmalloc(&spi->dev, APPLESPI_STATUS_SIZE,
@@ -1674,11 +1473,11 @@ static int applespi_probe(struct spi_device *spi)
 	    !applespi->rx_buffer || !applespi->msg_buf)
 		return -ENOMEM;
 
-	/* set up our spi messages */
+	 
 	applespi_setup_read_txfrs(applespi);
 	applespi_setup_write_txfrs(applespi);
 
-	/* cache ACPI method handles */
+	 
 	acpi_sts = acpi_get_handle(spi_handle, "SIEN", &applespi->sien);
 	if (ACPI_FAILURE(acpi_sts)) {
 		dev_err(&applespi->spi->dev,
@@ -1695,7 +1494,7 @@ static int applespi_probe(struct spi_device *spi)
 		return -ENODEV;
 	}
 
-	/* switch on the SPI interface */
+	 
 	sts = applespi_setup_spi(applespi);
 	if (sts)
 		return sts;
@@ -1704,7 +1503,7 @@ static int applespi_probe(struct spi_device *spi)
 	if (sts)
 		return sts;
 
-	/* setup the keyboard input dev */
+	 
 	applespi->keyboard_input_dev = devm_input_allocate_device(&spi->dev);
 
 	if (!applespi->keyboard_input_dev)
@@ -1746,10 +1545,7 @@ static int applespi_probe(struct spi_device *spi)
 		return -ENODEV;
 	}
 
-	/*
-	 * The applespi device doesn't send interrupts normally (as is described
-	 * in its DSDT), but rather seems to use ACPI GPEs.
-	 */
+	 
 	acpi_sts = acpi_evaluate_integer(spi_handle, "_GPE", NULL, &gpe);
 	if (ACPI_FAILURE(acpi_sts)) {
 		dev_err(&applespi->spi->dev,
@@ -1780,17 +1576,13 @@ static int applespi_probe(struct spi_device *spi)
 		return -ENODEV;
 	}
 
-	/* trigger touchpad setup */
+	 
 	applespi_init(applespi, false);
 
-	/*
-	 * By default this device is not enabled for wakeup; but USB keyboards
-	 * generally are, so the expectation is that by default the keyboard
-	 * will wake the system.
-	 */
+	 
 	device_wakeup_enable(&spi->dev);
 
-	/* set up keyboard-backlight */
+	 
 	sts = applespi_get_saved_bl_level(applespi);
 	if (sts >= 0)
 		applespi_set_bl_level(&applespi->backlight_info, sts);
@@ -1805,7 +1597,7 @@ static int applespi_probe(struct spi_device *spi)
 			 "Unable to register keyboard backlight class dev (%d)\n",
 			 sts);
 
-	/* set up debugfs entries for touchpad dimensions logging */
+	 
 	applespi->debugfs_root = debugfs_create_dir("applespi", NULL);
 
 	debugfs_create_bool("enable_tp_dim", 0600, applespi->debugfs_root,
@@ -1883,7 +1675,7 @@ static int applespi_suspend(struct device *dev)
 	acpi_status acpi_sts;
 	int sts;
 
-	/* turn off caps-lock - it'll stay on otherwise */
+	 
 	sts = applespi_set_capsl_led(applespi, false);
 	if (sts)
 		dev_warn(&applespi->spi->dev,
@@ -1891,7 +1683,7 @@ static int applespi_suspend(struct device *dev)
 
 	applespi_drain_writes(applespi);
 
-	/* disable the interrupt */
+	 
 	acpi_sts = acpi_disable_gpe(NULL, applespi->gpe);
 	if (ACPI_FAILURE(acpi_sts))
 		dev_err(&applespi->spi->dev,
@@ -1910,7 +1702,7 @@ static int applespi_resume(struct device *dev)
 	acpi_status acpi_sts;
 	unsigned long flags;
 
-	/* ensure our flags and state reflect a newly resumed device */
+	 
 	spin_lock_irqsave(&applespi->cmd_msg_lock, flags);
 
 	applespi->drain = false;
@@ -1924,17 +1716,17 @@ static int applespi_resume(struct device *dev)
 
 	spin_unlock_irqrestore(&applespi->cmd_msg_lock, flags);
 
-	/* switch on the SPI interface */
+	 
 	applespi_enable_spi(applespi);
 
-	/* re-enable the interrupt */
+	 
 	acpi_sts = acpi_enable_gpe(NULL, applespi->gpe);
 	if (ACPI_FAILURE(acpi_sts))
 		dev_err(&applespi->spi->dev,
 			"Failed to re-enable GPE handler for GPE %d: %s\n",
 			applespi->gpe, acpi_format_exception(acpi_sts));
 
-	/* switch the touchpad into multitouch mode */
+	 
 	applespi_init(applespi, true);
 
 	return 0;

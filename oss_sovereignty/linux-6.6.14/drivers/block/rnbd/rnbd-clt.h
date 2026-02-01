@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * RDMA Network Block Driver
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+ 
+ 
 
 #ifndef RNBD_CLT_H
 #define RNBD_CLT_H
@@ -20,12 +14,9 @@
 #include "rnbd-proto.h"
 #include "rnbd-log.h"
 
-/*  time in seconds between reconnect tries, default to 30 s */
+ 
 #define RECONNECT_DELAY 30
-/*
- * Number of times to reconnect on error before giving up, 0 for * disabled,
- * -1 for forever
- */
+ 
 #define MAX_RECONNECTS -1
 
 enum rnbd_clt_dev_state {
@@ -49,14 +40,14 @@ struct rnbd_iu_comp {
 
 struct rnbd_iu {
 	union {
-		struct request *rq; /* for block io */
-		void *buf; /* for user messages */
+		struct request *rq;  
+		void *buf;  
 	};
 	struct rtrs_permit	*permit;
 	union {
-		/* use to send msg associated with a dev */
+		 
 		struct rnbd_clt_dev *dev;
-		/* use to send msg associated with a sess */
+		 
 		struct rnbd_clt_session *sess;
 	};
 	struct sg_table		sgt;
@@ -64,7 +55,7 @@ struct rnbd_iu {
 	int			errno;
 	struct rnbd_iu_comp	comp;
 	atomic_t		refcount;
-	struct scatterlist	first_sgl[]; /* must be the last one */
+	struct scatterlist	first_sgl[];  
 };
 
 struct rnbd_cpu_qlist {
@@ -81,23 +72,21 @@ struct rnbd_clt_session {
 	struct rnbd_cpu_qlist	__percpu
 				*cpu_queues;
 	DECLARE_BITMAP(cpu_queues_bm, NR_CPUS);
-	int	__percpu	*cpu_rr; /* per-cpu var for CPU round-robin */
+	int	__percpu	*cpu_rr;  
 	atomic_t		busy;
 	size_t			queue_depth;
 	u32			max_io_size;
 	u32			max_segments;
 	struct blk_mq_tag_set	tag_set;
 	u32			nr_poll_queues;
-	struct mutex		lock; /* protects state and devs_list */
-	struct list_head        devs_list; /* list of struct rnbd_clt_dev */
+	struct mutex		lock;  
+	struct list_head        devs_list;  
 	refcount_t		refcount;
 	char			sessname[NAME_MAX];
-	u8			ver; /* protocol version */
+	u8			ver;  
 };
 
-/**
- * Submission queues.
- */
+ 
 struct rnbd_queue {
 	struct list_head	requeue_list;
 	unsigned long		in_list;
@@ -111,7 +100,7 @@ struct rnbd_clt_dev {
 	struct request_queue	*queue;
 	struct rnbd_queue	*hw_queues;
 	u32			device_id;
-	/* local Idr index - used to track minor number allocations. */
+	 
 	u32			clt_device_id;
 	struct mutex		lock;
 	enum rnbd_clt_dev_state	dev_state;
@@ -119,14 +108,14 @@ struct rnbd_clt_dev {
 	char			*pathname;
 	enum rnbd_access_mode	access_mode;
 	u32			nr_poll_queues;
-	u64			size;		/* device size in bytes */
+	u64			size;		 
 	struct list_head        list;
 	struct gendisk		*gd;
 	char			*blk_symlink_name;
 	struct work_struct	unmap_on_rmmod_work;
 };
 
-/* rnbd-clt.c */
+ 
 
 struct rnbd_clt_dev *rnbd_clt_map_device(const char *sessname,
 					   struct rtrs_addr *paths,
@@ -140,7 +129,7 @@ int rnbd_clt_unmap_device(struct rnbd_clt_dev *dev, bool force,
 int rnbd_clt_remap_device(struct rnbd_clt_dev *dev);
 int rnbd_clt_resize_disk(struct rnbd_clt_dev *dev, sector_t newsize);
 
-/* rnbd-clt-sysfs.c */
+ 
 
 int rnbd_clt_create_sysfs_files(void);
 
@@ -148,4 +137,4 @@ void rnbd_clt_destroy_sysfs_files(void);
 
 void rnbd_clt_remove_dev_symlink(struct rnbd_clt_dev *dev);
 
-#endif /* RNBD_CLT_H */
+#endif  

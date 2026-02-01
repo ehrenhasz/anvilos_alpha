@@ -1,55 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2004, 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
-/*
- * Fault Management Architecture (FMA) Resource and Protocol Support
- *
- * The routines contained herein provide services to support kernel subsystems
- * in publishing fault management telemetry (see PSARC 2002/412 and 2003/089).
- *
- * Name-Value Pair Lists
- *
- * The embodiment of an FMA protocol element (event, fmri or authority) is a
- * name-value pair list (nvlist_t).  FMA-specific nvlist constructor and
- * destructor functions, fm_nvlist_create() and fm_nvlist_destroy(), are used
- * to create an nvpair list using custom allocators.  Callers may choose to
- * allocate either from the kernel memory allocator, or from a preallocated
- * buffer, useful in constrained contexts like high-level interrupt routines.
- *
- * Protocol Event and FMRI Construction
- *
- * Convenience routines are provided to construct nvlist events according to
- * the FMA Event Protocol and Naming Schema specification for ereports and
- * FMRIs for the dev, cpu, hc, mem, legacy hc and de schemes.
- *
- * ENA Manipulation
- *
- * Routines to generate ENA formats 0, 1 and 2 are available as well as
- * routines to increment formats 1 and 2.  Individual fields within the
- * ENA are extractable via fm_ena_time_get(), fm_ena_id_get(),
- * fm_ena_format_get() and fm_ena_gen_get().
- */
+ 
 
 #include <sys/types.h>
 #include <sys/time.h>
@@ -74,33 +26,26 @@ static uint_t zevent_len_cur = 0;
 static int zevent_waiters = 0;
 static int zevent_flags = 0;
 
-/* Num events rate limited since the last time zfs_zevent_next() was called */
+ 
 static uint64_t ratelimit_dropped = 0;
 
-/*
- * The EID (Event IDentifier) is used to uniquely tag a zevent when it is
- * posted.  The posted EIDs are monotonically increasing but not persistent.
- * They will be reset to the initial value (1) each time the kernel module is
- * loaded.
- */
+ 
 static uint64_t zevent_eid = 0;
 
 static kmutex_t zevent_lock;
 static list_t zevent_list;
 static kcondvar_t zevent_cv;
-#endif /* _KERNEL */
+#endif  
 
 
-/*
- * Common fault management kstats to record event generation failures
- */
+ 
 
 struct erpt_kstat {
-	kstat_named_t	erpt_dropped;		/* num erpts dropped on post */
-	kstat_named_t	erpt_set_failed;	/* num erpt set failures */
-	kstat_named_t	fmri_set_failed;	/* num fmri set failures */
-	kstat_named_t	payload_set_failed;	/* num payload set failures */
-	kstat_named_t	erpt_duplicates;	/* num duplicate erpts */
+	kstat_named_t	erpt_dropped;		 
+	kstat_named_t	erpt_set_failed;	 
+	kstat_named_t	fmri_set_failed;	 
+	kstat_named_t	payload_set_failed;	 
+	kstat_named_t	erpt_duplicates;	 
 };
 
 static struct erpt_kstat erpt_kstat_data = {
@@ -132,7 +77,7 @@ zfs_zevent_alloc(void)
 static void
 zfs_zevent_free(zevent_t *ev)
 {
-	/* Run provided cleanup callback */
+	 
 	ev->ev_cb(ev->ev_nvl, ev->ev_detector);
 
 	list_destroy(&ev->ev_ze_list);
@@ -147,7 +92,7 @@ zfs_zevent_drain(zevent_t *ev)
 	ASSERT(MUTEX_HELD(&zevent_lock));
 	list_remove(&zevent_list, ev);
 
-	/* Remove references to this event in all private file data */
+	 
 	while ((ze = list_remove_head(&ev->ev_ze_list)) != NULL) {
 		ze->ze_zevent = NULL;
 		ze->ze_dropped++;
@@ -170,13 +115,7 @@ zfs_zevent_drain_all(uint_t *count)
 	mutex_exit(&zevent_lock);
 }
 
-/*
- * New zevents are inserted at the head.  If the maximum queue
- * length is exceeded a zevent will be drained from the tail.
- * As part of this any user space processes which currently have
- * a reference to this zevent_t in their private data will have
- * this reference set to NULL.
- */
+ 
 static void
 zfs_zevent_insert(zevent_t *ev)
 {
@@ -189,13 +128,7 @@ zfs_zevent_insert(zevent_t *ev)
 		zevent_len_cur++;
 }
 
-/*
- * Post a zevent. The cb will be called when nvl and detector are no longer
- * needed, i.e.:
- * - An error happened and a zevent can't be posted. In this case, cb is called
- *   before zfs_zevent_post() returns.
- * - The event is being drained and freed.
- */
+ 
 int
 zfs_zevent_post(nvlist_t *nvl, nvlist_t *detector, zevent_cb_t *cb)
 {
@@ -302,12 +235,7 @@ zfs_zevent_fd_rele(zfs_file_t *fp)
 	zfs_file_put(fp);
 }
 
-/*
- * Get the next zevent in the stream and place a copy in 'event'.  This
- * may fail with ENOMEM if the encoded nvlist size exceeds the passed
- * 'event_size'.  In this case the stream pointer is not advanced and
- * and 'event_size' is set to the minimum required buffer size.
- */
+ 
 int
 zfs_zevent_next(zfs_zevent_t *ze, nvlist_t **event, uint64_t *event_size,
     uint64_t *dropped)
@@ -318,17 +246,14 @@ zfs_zevent_next(zfs_zevent_t *ze, nvlist_t **event, uint64_t *event_size,
 
 	mutex_enter(&zevent_lock);
 	if (ze->ze_zevent == NULL) {
-		/* New stream start at the beginning/tail */
+		 
 		ev = list_tail(&zevent_list);
 		if (ev == NULL) {
 			error = ENOENT;
 			goto out;
 		}
 	} else {
-		/*
-		 * Existing stream continue with the next element and remove
-		 * ourselves from the wait queue for the previous element
-		 */
+		 
 		ev = list_prev(&zevent_list, ze->ze_zevent);
 		if (ev == NULL) {
 			error = ENOENT;
@@ -352,7 +277,7 @@ zfs_zevent_next(zfs_zevent_t *ze, nvlist_t **event, uint64_t *event_size,
 	*dropped = ze->ze_dropped;
 
 #ifdef _KERNEL
-	/* Include events dropped due to rate limiting */
+	 
 	*dropped += atomic_swap_64(&ratelimit_dropped, 0);
 #endif
 	ze->ze_dropped = 0;
@@ -362,9 +287,7 @@ out:
 	return (error);
 }
 
-/*
- * Wait in an interruptible state for any new events.
- */
+ 
 int
 zfs_zevent_wait(zfs_zevent_t *ze)
 {
@@ -396,15 +319,7 @@ zfs_zevent_wait(zfs_zevent_t *ze)
 	return (error);
 }
 
-/*
- * The caller may seek to a specific EID by passing that EID.  If the EID
- * is still available in the posted list of events the cursor is positioned
- * there.  Otherwise ENOENT is returned and the cursor is not moved.
- *
- * There are two reserved EIDs which may be passed and will never fail.
- * ZEVENT_SEEK_START positions the cursor at the start of the list, and
- * ZEVENT_SEEK_END positions the cursor at the end of the list.
- */
+ 
 int
 zfs_zevent_seek(zfs_zevent_t *ze, uint64_t eid)
 {
@@ -476,11 +391,9 @@ zfs_zevent_destroy(zfs_zevent_t *ze)
 
 	kmem_free(ze, sizeof (zfs_zevent_t));
 }
-#endif /* _KERNEL */
+#endif  
 
-/*
- * Wrappers for FM nvlist allocators
- */
+ 
 static void *
 i_fm_alloc(nv_alloc_t *nva, size_t size)
 {
@@ -503,11 +416,7 @@ static const nv_alloc_ops_t fm_mem_alloc_ops = {
 	.nv_ao_reset = NULL
 };
 
-/*
- * Create and initialize a new nv_alloc_t for a fixed buffer, buf.  A pointer
- * to the newly allocated nv_alloc_t structure is returned upon success or NULL
- * is returned to indicate that the nv_alloc structure could not be created.
- */
+ 
 nv_alloc_t *
 fm_nva_xcreate(char *buf, size_t bufsz)
 {
@@ -521,10 +430,7 @@ fm_nva_xcreate(char *buf, size_t bufsz)
 	return (nvhdl);
 }
 
-/*
- * Destroy a previously allocated nv_alloc structure.  The fixed buffer
- * associated with nva must be freed by the caller.
- */
+ 
 void
 fm_nva_xdestroy(nv_alloc_t *nva)
 {
@@ -532,19 +438,7 @@ fm_nva_xdestroy(nv_alloc_t *nva)
 	kmem_free(nva, sizeof (nv_alloc_t));
 }
 
-/*
- * Create a new nv list.  A pointer to a new nv list structure is returned
- * upon success or NULL is returned to indicate that the structure could
- * not be created.  The newly created nv list is created and managed by the
- * operations installed in nva.   If nva is NULL, the default FMA nva
- * operations are installed and used.
- *
- * When called from the kernel and nva == NULL, this function must be called
- * from passive kernel context with no locks held that can prevent a
- * sleeping memory allocation from occurring.  Otherwise, this function may
- * be called from other kernel contexts as long a valid nva created via
- * fm_nva_create() is supplied.
- */
+ 
 nvlist_t *
 fm_nvlist_create(nv_alloc_t *nva)
 {
@@ -575,12 +469,7 @@ fm_nvlist_create(nv_alloc_t *nva)
 	return (nvl);
 }
 
-/*
- * Destroy a previously allocated nvlist structure.  flag indicates whether
- * or not the associated nva structure should be freed (FM_NVA_FREE) or
- * retained (FM_NVA_RETAIN).  Retaining the nv alloc structure allows
- * it to be re-used for future nvlist creation operations.
- */
+ 
 void
 fm_nvlist_destroy(nvlist_t *nvl, int flag)
 {
@@ -736,26 +625,7 @@ fm_payload_set(nvlist_t *payload, ...)
 		atomic_inc_64(&erpt_kstat_data.payload_set_failed.value.ui64);
 }
 
-/*
- * Set-up and validate the members of an ereport event according to:
- *
- *	Member name		Type		Value
- *	====================================================
- *	class			string		ereport
- *	version			uint8_t		0
- *	ena			uint64_t	<ena>
- *	detector		nvlist_t	<detector>
- *	ereport-payload		nvlist_t	<var args>
- *
- * We don't actually add a 'version' member to the payload.  Really,
- * the version quoted to us by our caller is that of the category 1
- * "ereport" event class (and we require FM_EREPORT_VERS0) but
- * the payload version of the actual leaf class event under construction
- * may be something else.  Callers should supply a version in the varargs,
- * or (better) we could take two version arguments - one for the
- * ereport category 1 classification (expect FM_EREPORT_VERS0) and one
- * for the leaf class.
- */
+ 
 void
 fm_ereport_set(nvlist_t *ereport, int version, const char *erpt_class,
     uint64_t ena, const nvlist_t *detector, ...)
@@ -795,18 +665,7 @@ fm_ereport_set(nvlist_t *ereport, int version, const char *erpt_class,
 		atomic_inc_64(&erpt_kstat_data.erpt_set_failed.value.ui64);
 }
 
-/*
- * Set-up and validate the members of an hc fmri according to;
- *
- *	Member name		Type		Value
- *	===================================================
- *	version			uint8_t		0
- *	auth			nvlist_t	<auth>
- *	hc-name			string		<name>
- *	hc-id			string		<id>
- *
- * Note that auth and hc-id are optional members.
- */
+ 
 
 #define	HC_MAXPAIRS	20
 #define	HC_MAXNAMELEN	50
@@ -896,9 +755,7 @@ fm_fmri_hc_create(nvlist_t *fmri, int version, const nvlist_t *auth,
 	if (!fm_fmri_hc_set_common(fmri, version, auth))
 		return;
 
-	/*
-	 * copy the bboard nvpairs to the pairs array
-	 */
+	 
 	if (nvlist_lookup_nvlist_array(bboard, FM_FMRI_HC_LIST, &hcl, &n)
 	    != 0) {
 		atomic_inc_64(&erpt_kstat_data.fmri_set_failed.value.ui64);
@@ -932,9 +789,7 @@ fm_fmri_hc_create(nvlist_t *fmri, int version, const nvlist_t *auth,
 		}
 	}
 
-	/*
-	 * create the pairs from passed in pairs
-	 */
+	 
 	npairs = MIN(npairs, HC_MAXPAIRS);
 
 	va_start(ap, npairs);
@@ -959,9 +814,7 @@ fm_fmri_hc_create(nvlist_t *fmri, int version, const nvlist_t *auth,
 	}
 	va_end(ap);
 
-	/*
-	 * Create the fmri hc list
-	 */
+	 
 	if (nvlist_add_nvlist_array(fmri, FM_FMRI_HC_LIST,
 	    (const nvlist_t **)pairs, npairs + n) != 0) {
 		atomic_inc_64(&erpt_kstat_data.fmri_set_failed.value.ui64);
@@ -981,19 +834,7 @@ fm_fmri_hc_create(nvlist_t *fmri, int version, const nvlist_t *auth,
 	}
 }
 
-/*
- * Set-up and validate the members of an dev fmri according to:
- *
- *	Member name		Type		Value
- *	====================================================
- *	version			uint8_t		0
- *	auth			nvlist_t	<auth>
- *	devpath			string		<devpath>
- *	[devid]			string		<devid>
- *	[target-port-l0id]	string		<target-port-lun0-id>
- *
- * Note that auth and devid are optional members.
- */
+ 
 void
 fm_fmri_dev_set(nvlist_t *fmri_dev, int version, const nvlist_t *auth,
     const char *devpath, const char *devid, const char *tpl0)
@@ -1026,20 +867,7 @@ fm_fmri_dev_set(nvlist_t *fmri_dev, int version, const nvlist_t *auth,
 
 }
 
-/*
- * Set-up and validate the members of an cpu fmri according to:
- *
- *	Member name		Type		Value
- *	====================================================
- *	version			uint8_t		0
- *	auth			nvlist_t	<auth>
- *	cpuid			uint32_t	<cpu_id>
- *	cpumask			uint8_t		<cpu_mask>
- *	serial			uint64_t	<serial_id>
- *
- * Note that auth, cpumask, serial are optional members.
- *
- */
+ 
 void
 fm_fmri_cpu_set(nvlist_t *fmri_cpu, int version, const nvlist_t *auth,
     uint32_t cpu_id, uint8_t *cpu_maskp, const char *serial_idp)
@@ -1078,19 +906,7 @@ fm_fmri_cpu_set(nvlist_t *fmri_cpu, int version, const nvlist_t *auth,
 			atomic_inc_64(failedp);
 }
 
-/*
- * Set-up and validate the members of a mem according to:
- *
- *	Member name		Type		Value
- *	====================================================
- *	version			uint8_t		0
- *	auth			nvlist_t	<auth>		[optional]
- *	unum			string		<unum>
- *	serial			string		<serial>	[optional*]
- *	offset			uint64_t	<offset>	[optional]
- *
- *	* serial is required if offset is present
- */
+ 
 void
 fm_fmri_mem_set(nvlist_t *fmri, int version, const nvlist_t *auth,
     const char *unum, const char *serial, uint64_t offset)
@@ -1301,11 +1117,7 @@ fm_ena_time_get(uint64_t ena)
 }
 
 #ifdef _KERNEL
-/*
- * Helper function to increment ereport dropped count.  Used by the event
- * rate limiting code to give feedback to the user about how many events were
- * rate limited by including them in the 'dropped' count.
- */
+ 
 void
 fm_erpt_dropped_increment(void)
 {
@@ -1318,7 +1130,7 @@ fm_init(void)
 	zevent_len_cur = 0;
 	zevent_flags = 0;
 
-	/* Initialize zevent allocation and generation kstats */
+	 
 	fm_ksp = kstat_create("zfs", 0, "fm", "misc", KSTAT_TYPE_NAMED,
 	    sizeof (struct erpt_kstat) / sizeof (kstat_named_t),
 	    KSTAT_FLAG_VIRTUAL);
@@ -1367,7 +1179,7 @@ fm_fini(void)
 		fm_ksp = NULL;
 	}
 }
-#endif /* _KERNEL */
+#endif  
 
 ZFS_MODULE_PARAM(zfs_zevent, zfs_zevent_, len_max, UINT, ZMOD_RW,
 	"Max event queue length");

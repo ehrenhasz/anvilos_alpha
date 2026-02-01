@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Amlogic G12A USB3 + PCIE Combo PHY driver
- *
- * Copyright (C) 2017 Amlogic, Inc. All rights reserved
- * Copyright (C) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -202,19 +196,13 @@ static int phy_g12a_usb3_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* Switch PHY to USB3 */
-	/* TODO figure out how to handle when PCIe was set in the bootloader */
+	 
+	 
 	regmap_update_bits(priv->regmap, PHY_R0,
 			   PHY_R0_PCIE_USB3_SWITCH,
 			   PHY_R0_PCIE_USB3_SWITCH);
 
-	/*
-	 * WORKAROUND: There is SSPHY suspend bug due to
-	 * which USB enumerates
-	 * in HS mode instead of SS mode. Workaround it by asserting
-	 * LANE0.TX_ALT_BLOCK.EN_ALT_BUS to enable TX to use alt bus
-	 * mode
-	 */
+	 
 	ret = regmap_update_bits(priv->regmap_cr, 0x102d, BIT(7), BIT(7));
 	if (ret)
 		return ret;
@@ -223,13 +211,7 @@ static int phy_g12a_usb3_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/*
-	 * Fix RX Equalization setting as follows
-	 * LANE0.RX_OVRD_IN_HI. RX_EQ_EN set to 0
-	 * LANE0.RX_OVRD_IN_HI.RX_EQ_EN_OVRD set to 1
-	 * LANE0.RX_OVRD_IN_HI.RX_EQ set to 3
-	 * LANE0.RX_OVRD_IN_HI.RX_EQ_OVRD set to 1
-	 */
+	 
 	ret = regmap_read(priv->regmap_cr, 0x1006, &data);
 	if (ret)
 		return ret;
@@ -243,12 +225,7 @@ static int phy_g12a_usb3_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/*
-	 * Set EQ and TX launch amplitudes as follows
-	 * LANE0.TX_OVRD_DRV_LO.PREEMPH set to 22
-	 * LANE0.TX_OVRD_DRV_LO.AMPLITUDE set to 127
-	 * LANE0.TX_OVRD_DRV_LO.EN set to 1.
-	 */
+	 
 	ret = regmap_read(priv->regmap_cr, 0x1002, &data);
 	if (ret)
 		return ret;
@@ -261,7 +238,7 @@ static int phy_g12a_usb3_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* MPLL_LOOP_CTL.PROP_CNTRL = 8 */
+	 
 	ret = regmap_update_bits(priv->regmap_cr, 0x30, 0xf << 4, 8 << 4);
 	if (ret)
 		return ret;

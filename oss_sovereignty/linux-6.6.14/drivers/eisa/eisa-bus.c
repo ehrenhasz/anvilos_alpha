@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * EISA bus support functions for sysfs.
- *
- * (C) 2002, 2003 Marc Zyngier <maz@wild-wind.fr.eu.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -67,7 +63,7 @@ static void __init eisa_name_device(struct eisa_device *edev)
 		}
 	}
 
-	/* No name was found */
+	 
 	sprintf(edev->pretty_name, "EISA device %.7s", edev->id.sig);
 #endif
 }
@@ -81,13 +77,7 @@ static char __init *decode_eisa_sig(unsigned long addr)
 
 	for (i = 0; i < 4; i++) {
 #ifdef CONFIG_EISA_VLB_PRIMING
-		/*
-		 * This ugly stuff is used to wake up VL-bus cards
-		 * (AHA-284x is the only known example), so we can
-		 * read the EISA id.
-		 *
-		 * Thankfully, this only exists on x86...
-		 */
+		 
 		outb(0x80 + i, addr);
 #endif
 		sig[i] = inb(addr + i);
@@ -191,14 +181,14 @@ static int __init eisa_init_device(struct eisa_root_device *root,
 
 	sig = decode_eisa_sig(sig_addr);
 	if (!sig)
-		return -1;	/* No EISA device here */
+		return -1;	 
 
 	memcpy(edev->id.sig, sig, EISA_SIG_LEN);
 	edev->slot = slot;
 	edev->state = inb(SLOT_ADDRESS(root, slot) + EISA_CONFIG_OFFSET)
 		      & EISA_CONFIG_ENABLED;
 	edev->base_addr = SLOT_ADDRESS(root, slot);
-	edev->dma_mask = root->dma_mask; /* Default DMA mask */
+	edev->dma_mask = root->dma_mask;  
 	eisa_name_device(edev);
 	edev->dev.parent = root->dev;
 	edev->dev.bus = &eisa_bus_type;
@@ -259,12 +249,9 @@ static int __init eisa_request_resources(struct eisa_root_device *root,
 	int i;
 
 	for (i = 0; i < EISA_MAX_RESOURCES; i++) {
-		/* Don't register resource for slot 0, since this is
-		 * very likely to fail... :-( Instead, grab the EISA
-		 * id, now we can display something in /proc/ioports.
-		 */
+		 
 
-		/* Only one region for mainboard */
+		 
 		if (!slot && i > 0) {
 			edev->res[i].start = edev->res[i].end = 0;
 			continue;
@@ -314,8 +301,7 @@ static int __init eisa_probe(struct eisa_root_device *root)
 
 	dev_info(root->dev, "Probing EISA bus %d\n", root->bus_nr);
 
-	/* First try to get hold of slot 0. If there is no device
-	 * here, simply fail, unless root->force_probe is set. */
+	 
 
 	edev = kzalloc(sizeof(*edev), GFP_KERNEL);
 	if (!edev)
@@ -410,10 +396,7 @@ int __init eisa_root_register(struct eisa_root_device *root)
 {
 	int err;
 
-	/* Use our own resources to check if this bus base address has
-	 * been already registered. This prevents the virtual root
-	 * device from registering after the real one has, for
-	 * example... */
+	 
 
 	root->eisa_root_res.name  = eisa_root_res.name;
 	root->eisa_root_res.start = root->res->start;
@@ -450,5 +433,5 @@ module_param_array(disable_dev, int, &disable_dev_count, 0444);
 
 postcore_initcall(eisa_init);
 
-int EISA_bus;		/* for legacy drivers */
+int EISA_bus;		 
 EXPORT_SYMBOL(EISA_bus);

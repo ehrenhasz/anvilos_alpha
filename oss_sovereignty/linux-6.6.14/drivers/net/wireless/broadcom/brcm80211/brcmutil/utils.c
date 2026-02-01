@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2010 Broadcom Corporation
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,7 +26,7 @@ struct sk_buff *brcmu_pkt_buf_get_skb(uint len)
 }
 EXPORT_SYMBOL(brcmu_pkt_buf_get_skb);
 
-/* Free the driver packet. Free the tag if present */
+ 
 void brcmu_pkt_buf_free_skb(struct sk_buff *skb)
 {
 	if (!skb)
@@ -39,10 +37,7 @@ void brcmu_pkt_buf_free_skb(struct sk_buff *skb)
 }
 EXPORT_SYMBOL(brcmu_pkt_buf_free_skb);
 
-/*
- * osl multiple-precedence packet queue
- * hi_prec is always >= the number of the highest non-empty precedence
- */
+ 
 struct sk_buff *brcmu_pktq_penq(struct pktq *pq, int prec,
 				      struct sk_buff *p)
 {
@@ -96,12 +91,7 @@ struct sk_buff *brcmu_pktq_pdeq(struct pktq *pq, int prec)
 }
 EXPORT_SYMBOL(brcmu_pktq_pdeq);
 
-/*
- * precedence based dequeue with match function. Passing a NULL pointer
- * for the match function parameter is considered to be a wildcard so
- * any packet on the queue is returned. In that case it is no different
- * from brcmu_pktq_pdeq() above.
- */
+ 
 struct sk_buff *brcmu_pktq_pdeq_match(struct pktq *pq, int prec,
 				      bool (*match_fn)(struct sk_buff *skb,
 						       void *arg), void *arg)
@@ -167,7 +157,7 @@ void brcmu_pktq_init(struct pktq *pq, int num_prec, int max_len)
 {
 	int prec;
 
-	/* pq is variable size; only zero out what's requested */
+	 
 	memset(pq, 0,
 	      offsetof(struct pktq, q) + (sizeof(struct pktq_prec) * num_prec));
 
@@ -200,7 +190,7 @@ struct sk_buff *brcmu_pktq_peek_tail(struct pktq *pq, int *prec_out)
 }
 EXPORT_SYMBOL(brcmu_pktq_peek_tail);
 
-/* Return sum of lengths of a specific set of precedences */
+ 
 int brcmu_pktq_mlen(struct pktq *pq, uint prec_bmp)
 {
 	int prec, len;
@@ -215,7 +205,7 @@ int brcmu_pktq_mlen(struct pktq *pq, uint prec_bmp)
 }
 EXPORT_SYMBOL(brcmu_pktq_mlen);
 
-/* Priority dequeue from a specific set of precedences */
+ 
 struct sk_buff *brcmu_pktq_mdeq(struct pktq *pq, uint prec_bmp,
 				      int *prec_out)
 {
@@ -249,7 +239,7 @@ struct sk_buff *brcmu_pktq_mdeq(struct pktq *pq, uint prec_bmp,
 }
 EXPORT_SYMBOL(brcmu_pktq_mdeq);
 
-/* Produce a human-readable string for boardrev */
+ 
 char *brcmu_boardrev_str(u32 brev, char *buf)
 {
 	char c;
@@ -293,7 +283,7 @@ char *brcmu_dotrev_str(u32 dotrev, char *buf)
 EXPORT_SYMBOL(brcmu_dotrev_str);
 
 #if defined(DEBUG)
-/* pretty hex print a pkt buffer chain */
+ 
 void brcmu_prpkt(const char *msg, struct sk_buff *p0)
 {
 	struct sk_buff *p;
@@ -324,4 +314,4 @@ void brcmu_dbg_hex_dump(const void *data, size_t size, const char *fmt, ...)
 }
 EXPORT_SYMBOL(brcmu_dbg_hex_dump);
 
-#endif				/* defined(DEBUG) */
+#endif				 

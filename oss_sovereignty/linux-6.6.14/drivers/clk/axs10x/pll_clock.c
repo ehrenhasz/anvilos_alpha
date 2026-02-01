@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Synopsys AXS10X SDP Generic PLL clock driver
- *
- * Copyright (C) 2017 Synopsys
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -16,22 +12,12 @@
 #include <linux/of_address.h>
 #include <linux/slab.h>
 
-/* PLL registers addresses */
+ 
 #define PLL_REG_IDIV	0x0
 #define PLL_REG_FBDIV	0x4
 #define PLL_REG_ODIV	0x8
 
-/*
- * Bit fields of the PLL IDIV/FBDIV/ODIV registers:
- *  ________________________________________________________________________
- * |31                15|    14    |   13   |  12  |11         6|5         0|
- * |-------RESRVED------|-NOUPDATE-|-BYPASS-|-EDGE-|--HIGHTIME--|--LOWTIME--|
- * |____________________|__________|________|______|____________|___________|
- *
- * Following macros determine the way of access to these registers
- * They should be set up only using the macros.
- * reg should be an u32 variable.
- */
+ 
 
 #define PLL_REG_GET_LOW(reg)			\
 	(((reg) & (0x3F << 0)) >> 0)
@@ -61,7 +47,7 @@
 
 #define PLL_LOCK	BIT(0)
 #define PLL_ERROR	BIT(1)
-#define PLL_MAX_LOCK_TIME 100 /* 100 us */
+#define PLL_MAX_LOCK_TIME 100  
 
 struct axs10x_pll_cfg {
 	u32 rate;
@@ -186,10 +172,7 @@ static int axs10x_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 			axs10x_pll_write(clk, PLL_REG_ODIV,
 					 axs10x_encode_div(pll_cfg[i].odiv, 1));
 
-			/*
-			 * Wait until CGU relocks and check error status.
-			 * If after timeout CGU is unlocked yet return error
-			 */
+			 
 			udelay(PLL_MAX_LOCK_TIME);
 			if (!(ioread32(clk->lock) & PLL_LOCK))
 				return -ETIMEDOUT;

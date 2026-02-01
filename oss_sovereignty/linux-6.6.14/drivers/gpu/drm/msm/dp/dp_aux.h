@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DP_AUX_H_
 #define _DP_AUX_H_
@@ -20,4 +18,4 @@ struct drm_dp_aux *dp_aux_get(struct device *dev, struct dp_catalog *catalog,
 			      bool is_edp);
 void dp_aux_put(struct drm_dp_aux *aux);
 
-#endif /*__DP_AUX_H_*/
+#endif  

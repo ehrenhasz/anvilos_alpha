@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Intel Corporation
- *
- * Authors:
- * Jarkko Sakkinen <jarkko.sakkinen@linux.intel.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * This file contains TPM2 protocol implementations of the commands
- * used by the kernel internally.
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <asm/unaligned.h>
@@ -47,7 +37,7 @@ int tpm2_init_space(struct tpm_space *space, unsigned int buf_size)
 	space->session_buf = kzalloc(buf_size, GFP_KERNEL);
 	if (space->session_buf == NULL) {
 		kfree(space->context_buf);
-		/* Prevent caller getting a dangling pointer. */
+		 
 		space->context_buf = NULL;
 		return -ENOMEM;
 	}
@@ -92,16 +82,7 @@ static int tpm2_load_context(struct tpm_chip *chip, u8 *buf,
 		return -EFAULT;
 	} else if (tpm2_rc_value(rc) == TPM2_RC_HANDLE ||
 		   rc == TPM2_RC_REFERENCE_H0) {
-		/*
-		 * TPM_RC_HANDLE means that the session context can't
-		 * be loaded because of an internal counter mismatch
-		 * that makes the TPM think there might have been a
-		 * replay.  This might happen if the context was saved
-		 * and loaded outside the space.
-		 *
-		 * TPM_RC_REFERENCE_H0 means the session has been
-		 * flushed outside the space
-		 */
+		 
 		*handle = 0;
 		tpm_buf_destroy(&tbuf);
 		return -ENOENT;
@@ -184,7 +165,7 @@ static int tpm2_load_space(struct tpm_chip *chip)
 		if (!space->context_tbl[i])
 			continue;
 
-		/* sanity check, should never happen */
+		 
 		if (~space->context_tbl[i]) {
 			dev_err(&chip->dev, "context table is inconsistent");
 			return -EFAULT;
@@ -205,7 +186,7 @@ static int tpm2_load_space(struct tpm_chip *chip)
 		rc = tpm2_load_context(chip, space->session_buf,
 				       &offset, &handle);
 		if (rc == -ENOENT) {
-			/* load failed, just forget session */
+			 
 			space->session_tbl[i] = 0;
 		} else if (rc) {
 			tpm2_flush_space(chip);
@@ -386,7 +367,7 @@ static int tpm2_map_response_header(struct tpm_chip *chip, u32 cc, u8 *rsp,
 		return 0;
 
 	i = tpm2_find_cc(chip, cc);
-	/* sanity check, should never happen */
+	 
 	if (i < 0)
 		return -EFAULT;
 
@@ -520,7 +501,7 @@ static int tpm2_save_space(struct tpm_chip *chip)
 				       space->session_buf, space->buf_size,
 				       &offset);
 		if (rc == -ENOENT) {
-			/* handle error saving session, just forget it */
+			 
 			space->session_tbl[i] = 0;
 		} else if (rc < 0) {
 			tpm2_flush_space(chip);
@@ -575,31 +556,23 @@ out:
 	return rc;
 }
 
-/*
- * Put the reference to the main device.
- */
+ 
 static void tpm_devs_release(struct device *dev)
 {
 	struct tpm_chip *chip = container_of(dev, struct tpm_chip, devs);
 
-	/* release the master device reference */
+	 
 	put_device(&chip->dev);
 }
 
-/*
- * Remove the device file for exposed TPM spaces and release the device
- * reference. This may also release the reference to the master device.
- */
+ 
 void tpm_devs_remove(struct tpm_chip *chip)
 {
 	cdev_device_del(&chip->cdevs, &chip->devs);
 	put_device(&chip->devs);
 }
 
-/*
- * Add a device file to expose TPM spaces. Also take a reference to the
- * main device.
- */
+ 
 int tpm_devs_add(struct tpm_chip *chip)
 {
 	int rc;
@@ -608,11 +581,7 @@ int tpm_devs_add(struct tpm_chip *chip)
 	chip->devs.parent = chip->dev.parent;
 	chip->devs.class = &tpmrm_class;
 
-	/*
-	 * Get extra reference on main device to hold on behalf of devs.
-	 * This holds the chip structure while cdevs is in use. The
-	 * corresponding put is in the tpm_devs_release.
-	 */
+	 
 	get_device(&chip->dev);
 	chip->devs.release = tpm_devs_release;
 	chip->devs.devt = MKDEV(MAJOR(tpm_devt), chip->dev_num + TPM_NUM_DEVICES);

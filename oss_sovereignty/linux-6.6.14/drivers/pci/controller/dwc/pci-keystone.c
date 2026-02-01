@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Texas Instruments Keystone SoCs
- *
- * Copyright (C) 2013-2014 Texas Instruments., Ltd.
- *		https://www.ti.com
- *
- * Author: Murali Karicheri <m-karicheri2@ti.com>
- * Implementation based on pci-exynos.c and pcie-designware.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -33,7 +25,7 @@
 #define PCIE_VENDORID_MASK	0xffff
 #define PCIE_DEVICEID_SHIFT	16
 
-/* Application registers */
+ 
 #define CMD_STATUS			0x004
 #define LTSSM_EN_VAL		        BIT(0)
 #define OB_XLAT_EN_VAL		        BIT(1)
@@ -49,7 +41,7 @@
 #define OB_OFFSET_INDEX(n)		(0x200 + (8 * (n)))
 #define OB_OFFSET_HI(n)			(0x204 + (8 * (n)))
 #define OB_ENABLEN			BIT(0)
-#define OB_WIN_SIZE			8	/* 8MB */
+#define OB_WIN_SIZE			8	 
 
 #define PCIE_LEGACY_IRQ_ENABLE_SET(n)	(0x188 + (0x10 * ((n) - 1)))
 #define PCIE_LEGACY_IRQ_ENABLE_CLR(n)	(0x18c + (0x10 * ((n) - 1)))
@@ -57,7 +49,7 @@
 #define PCIE_EP_IRQ_CLR			0x68
 #define INT_ENABLE			BIT(0)
 
-/* IRQ register defines */
+ 
 #define IRQ_EOI				0x050
 
 #define MSI_IRQ				0x054
@@ -72,17 +64,17 @@
 
 #define ERR_IRQ_STATUS			0x1c4
 #define ERR_IRQ_ENABLE_SET		0x1c8
-#define ERR_AER				BIT(5)	/* ECRC error */
-#define AM6_ERR_AER			BIT(4)	/* AM6 ECRC error */
-#define ERR_AXI				BIT(4)	/* AXI tag lookup fatal error */
-#define ERR_CORR			BIT(3)	/* Correctable error */
-#define ERR_NONFATAL			BIT(2)	/* Non-fatal error */
-#define ERR_FATAL			BIT(1)	/* Fatal error */
-#define ERR_SYS				BIT(0)	/* System error */
+#define ERR_AER				BIT(5)	 
+#define AM6_ERR_AER			BIT(4)	 
+#define ERR_AXI				BIT(4)	 
+#define ERR_CORR			BIT(3)	 
+#define ERR_NONFATAL			BIT(2)	 
+#define ERR_FATAL			BIT(1)	 
+#define ERR_SYS				BIT(0)	 
 #define ERR_IRQ_ALL			(ERR_AER | ERR_AXI | ERR_CORR | \
 					 ERR_NONFATAL | ERR_FATAL | ERR_SYS)
 
-/* PCIE controller device IDs */
+ 
 #define PCIE_RC_K2HK			0xb008
 #define PCIE_RC_K2E			0xb009
 #define PCIE_RC_K2L			0xb00a
@@ -113,7 +105,7 @@ struct ks_pcie_of_data {
 
 struct keystone_pcie {
 	struct dw_pcie		*pci;
-	/* PCI Device ID */
+	 
 	u32			device_id;
 	int			legacy_host_irqs[PCI_NUM_INTX];
 	struct			device_node *legacy_intc_np;
@@ -127,8 +119,8 @@ struct keystone_pcie {
 	struct irq_domain	*legacy_irq_domain;
 	struct device_node	*np;
 
-	/* Application register space */
-	void __iomem		*va_app_base;	/* DT 1st resource */
+	 
+	void __iomem		*va_app_base;	 
 	struct resource		app;
 	bool			is_am6;
 };
@@ -266,7 +258,7 @@ static void ks_pcie_handle_legacy_irq(struct keystone_pcie *ks_pcie,
 		generic_handle_domain_irq(ks_pcie->legacy_irq_domain, offset);
 	}
 
-	/* EOI the INTx interrupt */
+	 
 	ks_pcie_app_writel(ks_pcie, IRQ_EOI, offset);
 }
 
@@ -342,14 +334,7 @@ static const struct irq_domain_ops ks_pcie_legacy_irq_domain_ops = {
 	.xlate = irq_domain_xlate_onetwocell,
 };
 
-/**
- * ks_pcie_set_dbi_mode() - Set DBI mode to access overlaid BAR mask registers
- * @ks_pcie: A pointer to the keystone_pcie structure which holds the KeyStone
- *	     PCIe host controller driver information.
- *
- * Since modification of dbi_cs2 involves different clock domain, read the
- * status back to ensure the transition is complete.
- */
+ 
 static void ks_pcie_set_dbi_mode(struct keystone_pcie *ks_pcie)
 {
 	u32 val;
@@ -363,14 +348,7 @@ static void ks_pcie_set_dbi_mode(struct keystone_pcie *ks_pcie)
 	} while (!(val & DBI_CS2));
 }
 
-/**
- * ks_pcie_clear_dbi_mode() - Disable DBI mode
- * @ks_pcie: A pointer to the keystone_pcie structure which holds the KeyStone
- *	     PCIe host controller driver information.
- *
- * Since modification of dbi_cs2 involves different clock domain, read the
- * status back to ensure the transition is complete.
- */
+ 
 static void ks_pcie_clear_dbi_mode(struct keystone_pcie *ks_pcie)
 {
 	u32 val;
@@ -398,7 +376,7 @@ static void ks_pcie_setup_rc_app_regs(struct keystone_pcie *ks_pcie)
 	start = mem->start;
 	end = mem->end;
 
-	/* Disable BARs for inbound access */
+	 
 	ks_pcie_set_dbi_mode(ks_pcie);
 	dw_pcie_writel_dbi(pci, PCI_BASE_ADDRESS_0, 0);
 	dw_pcie_writel_dbi(pci, PCI_BASE_ADDRESS_1, 0);
@@ -410,7 +388,7 @@ static void ks_pcie_setup_rc_app_regs(struct keystone_pcie *ks_pcie)
 	val = ilog2(OB_WIN_SIZE);
 	ks_pcie_app_writel(ks_pcie, OB_SIZE, val);
 
-	/* Using Direct 1:1 mapping of RC <-> PCI memory space */
+	 
 	for (i = 0; i < num_viewport && (start < end); i++) {
 		ks_pcie_app_writel(ks_pcie, OB_OFFSET_INDEX(i),
 				   lower_32_bits(start) | OB_ENABLEN);
@@ -447,12 +425,7 @@ static struct pci_ops ks_child_pcie_ops = {
 	.write = pci_generic_config_write,
 };
 
-/**
- * ks_pcie_v3_65_add_bus() - keystone add_bus post initialization
- * @bus: A pointer to the PCI bus structure.
- *
- * This sets BAR0 to enable inbound access for MSI_IRQ register
- */
+ 
 static int ks_pcie_v3_65_add_bus(struct pci_bus *bus)
 {
 	struct dw_pcie_rp *pp = bus->sysdata;
@@ -462,19 +435,16 @@ static int ks_pcie_v3_65_add_bus(struct pci_bus *bus)
 	if (!pci_is_root_bus(bus))
 		return 0;
 
-	/* Configure and set up BAR0 */
+	 
 	ks_pcie_set_dbi_mode(ks_pcie);
 
-	/* Enable BAR0 */
+	 
 	dw_pcie_writel_dbi(pci, PCI_BASE_ADDRESS_0, 1);
 	dw_pcie_writel_dbi(pci, PCI_BASE_ADDRESS_0, SZ_4K - 1);
 
 	ks_pcie_clear_dbi_mode(ks_pcie);
 
-	 /*
-	  * For BAR0, just setting bus address for inbound writes (MSI) should
-	  * be sufficient.  Use physical address to avoid any conflicts.
-	  */
+	  
 	dw_pcie_writel_dbi(pci, PCI_BASE_ADDRESS_0, ks_pcie->app.start);
 
 	return 0;
@@ -487,11 +457,7 @@ static struct pci_ops ks_pcie_ops = {
 	.add_bus = ks_pcie_v3_65_add_bus,
 };
 
-/**
- * ks_pcie_link_up() - Check if link up
- * @pci: A pointer to the dw_pcie structure which holds the DesignWare PCIe host
- *	 controller driver information.
- */
+ 
 static int ks_pcie_link_up(struct dw_pcie *pci)
 {
 	u32 val;
@@ -506,7 +472,7 @@ static void ks_pcie_stop_link(struct dw_pcie *pci)
 	struct keystone_pcie *ks_pcie = to_keystone_pcie(pci);
 	u32 val;
 
-	/* Disable Link training */
+	 
 	val = ks_pcie_app_readl(ks_pcie, CMD_STATUS);
 	val &= ~LTSSM_EN_VAL;
 	ks_pcie_app_writel(ks_pcie, CMD_STATUS, val);
@@ -517,7 +483,7 @@ static int ks_pcie_start_link(struct dw_pcie *pci)
 	struct keystone_pcie *ks_pcie = to_keystone_pcie(pci);
 	u32 val;
 
-	/* Initiate Link Training */
+	 
 	val = ks_pcie_app_readl(ks_pcie, CMD_STATUS);
 	ks_pcie_app_writel(ks_pcie, CMD_STATUS, LTSSM_EN_VAL | val);
 
@@ -543,7 +509,7 @@ static void ks_pcie_quirk(struct pci_dev *dev)
 	if (pci_is_root_bus(bus))
 		bridge = dev;
 
-	/* look for the host bridge */
+	 
 	while (!pci_is_root_bus(bus)) {
 		bridge = bus->self;
 		bus = bus->parent;
@@ -552,12 +518,7 @@ static void ks_pcie_quirk(struct pci_dev *dev)
 	if (!bridge)
 		return;
 
-	/*
-	 * Keystone PCI controller has a h/w limitation of
-	 * 256 bytes maximum read request size.  It can't handle
-	 * anything higher than this.  So force this limit on
-	 * all downstream devices.
-	 */
+	 
 	if (pci_match_id(rc_pci_devids, bridge)) {
 		if (pcie_get_readrq(dev) > 256) {
 			dev_info(&dev->dev, "limiting MRRS to 256\n");
@@ -580,18 +541,11 @@ static void ks_pcie_msi_irq_handler(struct irq_desc *desc)
 
 	dev_dbg(dev, "%s, irq %d\n", __func__, irq);
 
-	/*
-	 * The chained irq handler installation would have replaced normal
-	 * interrupt driver handler so we need to take care of mask/unmask and
-	 * ack operation.
-	 */
+	 
 	chained_irq_enter(chip, desc);
 
 	reg = ks_pcie_app_readl(ks_pcie, MSI_IRQ_STATUS(offset));
-	/*
-	 * MSI0 status bit 0-3 shows vectors 0, 8, 16, 24, MSI1 status bit
-	 * shows 1, 9, 17, 25 and so forth
-	 */
+	 
 	for (pos = 0; pos < 4; pos++) {
 		if (!(reg & BIT(pos)))
 			continue;
@@ -604,13 +558,7 @@ static void ks_pcie_msi_irq_handler(struct irq_desc *desc)
 	chained_irq_exit(chip, desc);
 }
 
-/**
- * ks_pcie_legacy_irq_handler() - Handle legacy interrupt
- * @desc: Pointer to irq descriptor
- *
- * Traverse through pending legacy interrupts and invoke handler for each. Also
- * takes care of interrupt controller level mask/ack operation.
- */
+ 
 static void ks_pcie_legacy_irq_handler(struct irq_desc *desc)
 {
 	unsigned int irq = irq_desc_get_irq(desc);
@@ -622,11 +570,7 @@ static void ks_pcie_legacy_irq_handler(struct irq_desc *desc)
 
 	dev_dbg(dev, ": Handling legacy irq %d\n", irq);
 
-	/*
-	 * The chained irq handler installation would have replaced normal
-	 * interrupt driver handler so we need to take care of mask/unmask and
-	 * ack operation.
-	 */
+	 
 	chained_irq_enter(chip, desc);
 	ks_pcie_handle_legacy_irq(ks_pcie, irq_offset);
 	chained_irq_exit(chip, desc);
@@ -696,10 +640,7 @@ static int ks_pcie_config_legacy_irq(struct keystone_pcie *ks_pcie)
 
 	intc_np = of_get_child_by_name(np, "legacy-interrupt-controller");
 	if (!intc_np) {
-		/*
-		 * Since legacy interrupts are modeled as edge-interrupts in
-		 * AM6, keep it disabled for now.
-		 */
+		 
 		if (ks_pcie->is_am6)
 			return 0;
 		dev_warn(dev, "legacy-interrupt-controller node is absent\n");
@@ -745,11 +686,7 @@ err:
 }
 
 #ifdef CONFIG_ARM
-/*
- * When a PCI device does not exist during config cycles, keystone host
- * gets a bus error instead of returning 0xffffffff (PCI_ERROR_RESPONSE).
- * This handler always returns 0 for this kind of fault.
- */
+ 
 static int ks_pcie_fault(unsigned long addr, unsigned int fsr,
 			 struct pt_regs *regs)
 {
@@ -781,7 +718,7 @@ static int __init ks_pcie_init_id(struct keystone_pcie *ks_pcie)
 	if (IS_ERR(devctrl_regs))
 		return PTR_ERR(devctrl_regs);
 
-	/* Do not error out to maintain old DT compatibility */
+	 
 	ret = of_parse_phandle_with_fixed_args(np, "ti,syscon-pcie-id", 1, 0, &args);
 	if (!ret)
 		offset = args.args[0];
@@ -826,10 +763,7 @@ static int __init ks_pcie_host_init(struct dw_pcie_rp *pp)
 		return ret;
 
 #ifdef CONFIG_ARM
-	/*
-	 * PCIe access errors that result into OCP errors are caught by ARM as
-	 * "External aborts"
-	 */
+	 
 	hook_fault_code(17, ks_pcie_fault, SIGBUS, 0,
 			"Asynchronous external abort");
 #endif
@@ -1006,7 +940,7 @@ static int ks_pcie_set_mode(struct device *dev)
 	if (IS_ERR(syscon))
 		return 0;
 
-	/* Do not error out to maintain old DT compatibility */
+	 
 	ret = of_parse_phandle_with_fixed_args(np, "ti,syscon-pcie-mode", 1, 0, &args);
 	if (!ret)
 		offset = args.args[0];
@@ -1038,7 +972,7 @@ static int ks_pcie_am654_set_mode(struct device *dev,
 	if (IS_ERR(syscon))
 		return 0;
 
-	/* Do not error out to maintain old DT compatibility */
+	 
 	ret = of_parse_phandle_with_fixed_args(np, "ti,syscon-pcie-mode", 1, 0, &args);
 	if (!ret)
 		offset = args.args[0];
@@ -1218,13 +1152,13 @@ static int ks_pcie_probe(struct platform_device *pdev)
 		goto err_link;
 	}
 
-	/* Obtain references to the PHYs */
+	 
 	for (i = 0; i < num_lanes; i++)
 		phy_pm_runtime_get_sync(ks_pcie->phy[i]);
 
 	ret = ks_pcie_enable_phy(ks_pcie);
 
-	/* Release references to the PHYs */
+	 
 	for (i = 0; i < num_lanes; i++)
 		phy_pm_runtime_put_sync(ks_pcie->phy[i]);
 
@@ -1261,14 +1195,7 @@ static int ks_pcie_probe(struct platform_device *pdev)
 			goto err_get_sync;
 		}
 
-		/*
-		 * "Power Sequencing and Reset Signal Timings" table in
-		 * PCI EXPRESS CARD ELECTROMECHANICAL SPECIFICATION, REV. 2.0
-		 * indicates PERST# should be deasserted after minimum of 100us
-		 * once REFCLK is stable. The REFCLK to the connector in RC
-		 * mode is selected while enabling the PHY. So deassert PERST#
-		 * after 100 us.
-		 */
+		 
 		if (gpiod) {
 			usleep_range(100, 200);
 			gpiod_set_value_cansleep(gpiod, 1);

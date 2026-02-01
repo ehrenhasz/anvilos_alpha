@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// pv88080-regulator.c - Regulator device driver for PV88080
-// Copyright (C) 2016  Powerventure Semiconductor Ltd.
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -19,9 +19,9 @@
 
 #define PV88080_MAX_REGULATORS	4
 
-/* PV88080 REGULATOR IDs */
+ 
 enum {
-	/* BUCKs */
+	 
 	PV88080_ID_BUCK1,
 	PV88080_ID_BUCK2,
 	PV88080_ID_BUCK3,
@@ -55,23 +55,23 @@ struct pv88080_buck_voltage {
 };
 
 struct pv88080_buck_regmap {
-	/* REGS */
+	 
 	int buck_enable_reg;
 	int buck_vsel_reg;
 	int buck_mode_reg;
 	int buck_limit_reg;
 	int buck_vdac_range_reg;
 	int buck_vrange_gain_reg;
-	/* MASKS */
+	 
 	int buck_enable_mask;
 	int buck_vsel_mask;
 	int buck_limit_mask;
 };
 
 struct pv88080_compatible_regmap {
-	/* BUCK1, 2, 3 */
+	 
 	struct pv88080_buck_regmap buck_regmap[PV88080_MAX_REGULATORS-1];
-	/* HVBUCK */
+	 
 	int hvbuck_enable_reg;
 	int hvbuck_vsel_reg;
 	int hvbuck_enable_mask;
@@ -83,9 +83,7 @@ static const struct regmap_config pv88080_regmap_config = {
 	.val_bits = 8,
 };
 
-/* Current limits array (in uA) for BUCK1, BUCK2, BUCK3.
- * Entry indexes corresponds to register values.
- */
+ 
 
 static const unsigned int pv88080_buck1_limits[] = {
 	3230000, 5130000, 6960000, 8790000
@@ -109,7 +107,7 @@ static const struct pv88080_buck_voltage pv88080_buck_vol[2] = {
 };
 
 static const struct pv88080_compatible_regmap pv88080_aa_regs = {
-	/* BUCK1 */
+	 
 	.buck_regmap[0] = {
 		.buck_enable_reg      = PV88080AA_REG_BUCK1_CONF0,
 		.buck_vsel_reg        = PV88080AA_REG_BUCK1_CONF0,
@@ -121,7 +119,7 @@ static const struct pv88080_compatible_regmap pv88080_aa_regs = {
 		.buck_vsel_mask       = PV88080_VBUCK1_MASK,
 		.buck_limit_mask      = PV88080_BUCK1_ILIM_MASK,
 	},
-	/* BUCK2 */
+	 
 	.buck_regmap[1] = {
 		.buck_enable_reg      = PV88080AA_REG_BUCK2_CONF0,
 		.buck_vsel_reg        = PV88080AA_REG_BUCK2_CONF0,
@@ -133,7 +131,7 @@ static const struct pv88080_compatible_regmap pv88080_aa_regs = {
 		.buck_vsel_mask       = PV88080_VBUCK2_MASK,
 		.buck_limit_mask      = PV88080_BUCK2_ILIM_MASK,
 	},
-	/* BUCK3 */
+	 
 	.buck_regmap[2] = {
 		.buck_enable_reg	  = PV88080AA_REG_BUCK3_CONF0,
 		.buck_vsel_reg        = PV88080AA_REG_BUCK3_CONF0,
@@ -145,7 +143,7 @@ static const struct pv88080_compatible_regmap pv88080_aa_regs = {
 		.buck_vsel_mask       = PV88080_VBUCK3_MASK,
 		.buck_limit_mask      = PV88080_BUCK3_ILIM_MASK,
 	},
-	/* HVBUCK */
+	 
 	.hvbuck_enable_reg	      = PV88080AA_REG_HVBUCK_CONF2,
 	.hvbuck_vsel_reg          = PV88080AA_REG_HVBUCK_CONF1,
 	.hvbuck_enable_mask       = PV88080_HVBUCK_EN,
@@ -153,7 +151,7 @@ static const struct pv88080_compatible_regmap pv88080_aa_regs = {
 };
 
 static const struct pv88080_compatible_regmap pv88080_ba_regs = {
-	/* BUCK1 */
+	 
 	.buck_regmap[0] = {
 		.buck_enable_reg	  = PV88080BA_REG_BUCK1_CONF0,
 		.buck_vsel_reg        = PV88080BA_REG_BUCK1_CONF0,
@@ -165,7 +163,7 @@ static const struct pv88080_compatible_regmap pv88080_ba_regs = {
 		.buck_vsel_mask       = PV88080_VBUCK1_MASK,
 		.buck_limit_mask	  = PV88080_BUCK1_ILIM_MASK,
 	},
-	/* BUCK2 */
+	 
 	.buck_regmap[1] = {
 		.buck_enable_reg	  = PV88080BA_REG_BUCK2_CONF0,
 		.buck_vsel_reg        = PV88080BA_REG_BUCK2_CONF0,
@@ -177,7 +175,7 @@ static const struct pv88080_compatible_regmap pv88080_ba_regs = {
 		.buck_vsel_mask       = PV88080_VBUCK2_MASK,
 		.buck_limit_mask	  = PV88080_BUCK2_ILIM_MASK,
 	},
-	/* BUCK3 */
+	 
 	.buck_regmap[2] = {
 		.buck_enable_reg	  = PV88080BA_REG_BUCK3_CONF0,
 		.buck_vsel_reg        = PV88080BA_REG_BUCK3_CONF0,
@@ -189,7 +187,7 @@ static const struct pv88080_compatible_regmap pv88080_ba_regs = {
 		.buck_vsel_mask       = PV88080_VBUCK3_MASK,
 		.buck_limit_mask	  = PV88080_BUCK3_ILIM_MASK,
 	},
-	/* HVBUCK */
+	 
 	.hvbuck_enable_reg	      = PV88080BA_REG_HVBUCK_CONF2,
 	.hvbuck_vsel_reg          = PV88080BA_REG_HVBUCK_CONF1,
 	.hvbuck_enable_mask       = PV88080_HVBUCK_EN,
@@ -371,9 +369,7 @@ error_i2c:
 	return IRQ_NONE;
 }
 
-/*
- * I2C driver interface functions
- */
+ 
 static int pv88080_i2c_probe(struct i2c_client *i2c)
 {
 	const struct i2c_device_id *id = i2c_client_get_device_id(i2c);
@@ -465,7 +461,7 @@ static int pv88080_i2c_probe(struct i2c_client *i2c)
 	config.dev = chip->dev;
 	config.regmap = chip->regmap;
 
-	/* Registeration for BUCK1, 2, 3 */
+	 
 	for (i = 0; i < PV88080_MAX_REGULATORS-1; i++) {
 		if (init_data)
 			config.init_data = &init_data[i];
@@ -531,7 +527,7 @@ static int pv88080_i2c_probe(struct i2c_client *i2c)
 	pv88080_regulator_info[PV88080_ID_HVBUCK].desc.vsel_mask
 		= regmap_config->hvbuck_vsel_mask;
 
-	/* Registeration for HVBUCK */
+	 
 	if (init_data)
 		config.init_data = &init_data[PV88080_ID_HVBUCK];
 

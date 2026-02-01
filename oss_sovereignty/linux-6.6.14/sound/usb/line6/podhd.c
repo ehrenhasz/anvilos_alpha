@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Line 6 Pod HD
- *
- * Copyright (C) 2011 Stefan Hajnoczi <stefanha@gmail.com>
- * Copyright (C) 2015 Andrej Krutak <dev@andree.sk>
- * Copyright (C) 2017 Hans P. Moller <hmoller@uc.cl>
- */
+
+ 
 
 #include <linux/usb.h>
 #include <linux/slab.h>
@@ -30,16 +24,16 @@ enum {
 };
 
 struct usb_line6_podhd {
-	/* Generic Line 6 USB data */
+	 
 	struct usb_line6 line6;
 
-	/* Serial number of device */
+	 
 	u32 serial_number;
 
-	/* Firmware version */
+	 
 	int firmware_version;
 
-	/* Monitor level */
+	 
 	int monitor_level;
 };
 
@@ -91,7 +85,7 @@ static struct line6_pcm_properties podhd_pcm_properties = {
 	.rates = {
 			    .nrats = 1,
 			    .rats = &podhd_ratden},
-	.bytes_per_channel = 3 /* SNDRV_PCM_FMTBIT_S24_3LE */
+	.bytes_per_channel = 3  
 };
 
 static struct line6_pcm_properties podx3_pcm_properties = {
@@ -123,9 +117,7 @@ static struct line6_pcm_properties podx3_pcm_properties = {
 				 .rates = SNDRV_PCM_RATE_48000,
 				 .rate_min = 48000,
 				 .rate_max = 48000,
-				 /* 1+2: Main signal (out), 3+4: Tone 1,
-				  * 5+6: Tone 2, 7+8: raw
-				  */
+				  
 				 .channels_min = 8,
 				 .channels_max = 8,
 				 .buffer_bytes_max = 60000,
@@ -136,7 +128,7 @@ static struct line6_pcm_properties podx3_pcm_properties = {
 	.rates = {
 			    .nrats = 1,
 			    .rats = &podhd_ratden},
-	.bytes_per_channel = 3 /* SNDRV_PCM_FMTBIT_S24_3LE */
+	.bytes_per_channel = 3  
 };
 static struct usb_driver podhd_driver;
 
@@ -172,13 +164,7 @@ static const struct attribute_group podhd_dev_attr_group = {
 	.attrs = podhd_dev_attrs,
 };
 
-/*
- * POD X3 startup procedure.
- *
- * May be compatible with other POD HD's, since it's also similar to the
- * previous POD setup. In any case, it doesn't seem to be required for the
- * audio nor bulk interfaces to work.
- */
+ 
 
 static int podhd_dev_start(struct usb_line6_podhd *pod)
 {
@@ -196,7 +182,7 @@ static int podhd_dev_start(struct usb_line6_podhd *pod)
 		goto exit;
 	}
 
-	/* NOTE: looks like some kind of ping message */
+	 
 	ret = usb_control_msg_recv(usbdev, 0, 0x67,
 					USB_TYPE_VENDOR | USB_RECIP_DEVICE | USB_DIR_IN,
 					0x11, 0x0,
@@ -273,17 +259,17 @@ static void podhd_set_monitor_level(struct usb_line6_podhd *podhd, int value)
 {
 	unsigned int fl;
 	static const unsigned char msg[16] = {
-		/* Chunk is 0xc bytes (without first word) */
+		 
 		0x0c, 0x00,
-		/* First chunk in the message */
+		 
 		0x01, 0x00,
-		/* Message size is 2 4-byte words */
+		 
 		0x02, 0x00,
-		/* Unknown */
+		 
 		0x04, 0x41,
-		/* Unknown */
+		 
 		0x04, 0x00, 0x13, 0x00,
-		/* Volume, LE float32, 0.0 - 1.0 */
+		 
 		0x00, 0x00, 0x00, 0x00
 	};
 	unsigned char *buf;
@@ -311,7 +297,7 @@ static void podhd_set_monitor_level(struct usb_line6_podhd *podhd, int value)
 	podhd->monitor_level = value;
 }
 
-/* control info callback */
+ 
 static int snd_podhd_control_monitor_info(struct snd_kcontrol *kcontrol,
 					struct snd_ctl_elem_info *uinfo)
 {
@@ -323,7 +309,7 @@ static int snd_podhd_control_monitor_info(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* control get callback */
+ 
 static int snd_podhd_control_monitor_get(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
@@ -334,7 +320,7 @@ static int snd_podhd_control_monitor_get(struct snd_kcontrol *kcontrol,
 	return 0;
 }
 
-/* control put callback */
+ 
 static int snd_podhd_control_monitor_put(struct snd_kcontrol *kcontrol,
 				       struct snd_ctl_elem_value *ucontrol)
 {
@@ -348,7 +334,7 @@ static int snd_podhd_control_monitor_put(struct snd_kcontrol *kcontrol,
 	return 1;
 }
 
-/* control definition */
+ 
 static const struct snd_kcontrol_new podhd_control_monitor = {
 	.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
 	.name = "Monitor Playback Volume",
@@ -359,9 +345,7 @@ static const struct snd_kcontrol_new podhd_control_monitor = {
 	.put = snd_podhd_control_monitor_put
 };
 
-/*
-	Try to init POD HD device.
-*/
+ 
 static int podhd_init(struct usb_line6 *line6,
 		      const struct usb_device_id *id)
 {
@@ -373,7 +357,7 @@ static int podhd_init(struct usb_line6 *line6,
 	line6->startup = podhd_startup;
 
 	if (pod->line6.properties->capabilities & LINE6_CAP_CONTROL) {
-		/* claim the data interface */
+		 
 		intf = usb_ifnum_to_if(line6->usbdev,
 					pod->line6.properties->ctrl_if);
 		if (!intf) {
@@ -391,14 +375,14 @@ static int podhd_init(struct usb_line6 *line6,
 	}
 
 	if (pod->line6.properties->capabilities & LINE6_CAP_CONTROL_INFO) {
-		/* create sysfs entries: */
+		 
 		err = snd_card_add_dev_attr(line6->card, &podhd_dev_attr_group);
 		if (err < 0)
 			return err;
 	}
 
 	if (pod->line6.properties->capabilities & LINE6_CAP_PCM) {
-		/* initialize PCM subsystem: */
+		 
 		err = line6_init_pcm(line6,
 			(id->driver_info == LINE6_PODX3 ||
 			id->driver_info == LINE6_PODX3LIVE) ? &podx3_pcm_properties :
@@ -417,11 +401,11 @@ static int podhd_init(struct usb_line6 *line6,
 	}
 
 	if (!(pod->line6.properties->capabilities & LINE6_CAP_CONTROL_INFO)) {
-		/* register USB audio system directly */
+		 
 		return snd_card_register(line6->card);
 	}
 
-	/* init device and delay registering */
+	 
 	schedule_delayed_work(&line6->startup_work,
 			      msecs_to_jiffies(PODHD_STARTUP_DELAY));
 	return 0;
@@ -430,9 +414,9 @@ static int podhd_init(struct usb_line6 *line6,
 #define LINE6_DEVICE(prod) USB_DEVICE(0x0e41, prod)
 #define LINE6_IF_NUM(prod, n) USB_DEVICE_INTERFACE_NUMBER(0x0e41, prod, n)
 
-/* table of devices that work with this driver */
+ 
 static const struct usb_device_id podhd_id_table[] = {
-	/* TODO: no need to alloc data interfaces when only audio is used */
+	 
 	{ LINE6_DEVICE(0x5057),    .driver_info = LINE6_PODHD300 },
 	{ LINE6_DEVICE(0x5058),    .driver_info = LINE6_PODHD400 },
 	{ LINE6_IF_NUM(0x414D, 0), .driver_info = LINE6_PODHD500 },
@@ -530,9 +514,7 @@ static const struct line6_properties podhd_properties_table[] = {
 	},
 };
 
-/*
-	Probe USB device.
-*/
+ 
 static int podhd_probe(struct usb_interface *interface,
 		       const struct usb_device_id *id)
 {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/slab.h>
@@ -98,11 +96,7 @@ out_error:
 
 void ksmbd_tree_connect_put(struct ksmbd_tree_connect *tcon)
 {
-	/*
-	 * Checking waitqueue to releasing tree connect on
-	 * tree disconnect. waitqueue_active is safe because it
-	 * uses atomic operation for condition.
-	 */
+	 
 	if (!atomic_dec_return(&tcon->refcount) &&
 	    waitqueue_active(&tcon->refcount_q))
 		wake_up(&tcon->refcount_q);

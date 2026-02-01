@@ -1,12 +1,4 @@
-/*
- * Sonics Silicon Backplane SoC host related functions.
- * Subsystem core
- *
- * Copyright 2005, Broadcom Corporation
- * Copyright 2006, 2007, Michael Buesch <m@bues.ch>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "ssb_private.h"
 
@@ -84,7 +76,7 @@ static void ssb_host_soc_block_read(struct ssb_device *dev, void *buffer,
 		WARN_ON(1);
 	}
 }
-#endif /* CONFIG_SSB_BLOCKIO */
+#endif  
 
 static void ssb_host_soc_write8(struct ssb_device *dev, u16 offset, u8 value)
 {
@@ -157,9 +149,9 @@ static void ssb_host_soc_block_write(struct ssb_device *dev, const void *buffer,
 		WARN_ON(1);
 	}
 }
-#endif /* CONFIG_SSB_BLOCKIO */
+#endif  
 
-/* Ops for the plain SSB bus without a host-device (no PCI or PCMCIA). */
+ 
 const struct ssb_bus_ops ssb_host_soc_ops = {
 	.read8		= ssb_host_soc_read8,
 	.read16		= ssb_host_soc_read16,
@@ -179,7 +171,7 @@ int ssb_host_soc_get_invariants(struct ssb_bus *bus,
 	char buf[20];
 	int len, err;
 
-	/* Fill boardinfo structure */
+	 
 	memset(&iv->boardinfo, 0, sizeof(struct ssb_boardinfo));
 
 	len = bcm47xx_nvram_getenv("boardvendor", buf, sizeof(buf));

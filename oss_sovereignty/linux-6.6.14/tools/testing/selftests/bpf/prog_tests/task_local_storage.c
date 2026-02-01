@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
 
-#define _GNU_SOURCE         /* See feature_test_macros(7) */
+ 
+
+#define _GNU_SOURCE          
 #include <unistd.h>
 #include <sched.h>
 #include <pthread.h>
-#include <sys/syscall.h>   /* For SYS_xxx definitions */
+#include <sys/syscall.h>    
 #include <sys/types.h>
 #include <test_progs.h>
 #include "task_local_storage_helpers.h"
@@ -32,7 +32,7 @@ static void test_sys_enter_exit(void)
 	syscall(SYS_gettid);
 	syscall(SYS_gettid);
 
-	/* 3x syscalls: 1x attach and 2x gettid */
+	 
 	ASSERT_EQ(skel->bss->enter_cnt, 3, "enter_cnt");
 	ASSERT_EQ(skel->bss->exit_cnt, 3, "exit_cnt");
 	ASSERT_EQ(skel->bss->mismatch_cnt, 0, "mismatch_cnt");
@@ -54,15 +54,11 @@ static void test_exit_creds(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto out;
 
-	/* trigger at least one exit_creds() */
+	 
 	if (CHECK_FAIL(system("ls > /dev/null")))
 		goto out;
 
-	/* kern_sync_rcu is not enough on its own as the read section we want
-	 * to wait for may start after we enter synchronize_rcu, so our call
-	 * won't wait for the section to finish. Loop on the run counter
-	 * as well to ensure the program has run.
-	 */
+	 
 	do {
 		kern_sync_rcu();
 		run_count = __atomic_load_n(&skel->bss->run_count, __ATOMIC_SEQ_CST);
@@ -97,15 +93,13 @@ static void test_recursion(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto out;
 
-	/* trigger sys_enter, make sure it does not cause deadlock */
+	 
 	skel->bss->test_pid = getpid();
 	syscall(SYS_gettid);
 	skel->bss->test_pid = 0;
 	task_ls_recursion__detach(skel);
 
-	/* Refer to the comment in BPF_PROG(on_update) for
-	 * the explanation on the value 201 and 100.
-	 */
+	 
 	map_fd = bpf_map__fd(skel->maps.map_a);
 	err = bpf_map_lookup_elem(map_fd, &task_fd, &value);
 	ASSERT_OK(err, "lookup map_a");
@@ -176,9 +170,7 @@ static void test_nodeadlock(void)
 	int i, prog_fd, err;
 	cpu_set_t old, new;
 
-	/* Pin all threads to one cpu to increase the chance of preemption
-	 * in a sleepable bpf prog.
-	 */
+	 
 	CPU_ZERO(&new);
 	CPU_SET(0, &new);
 	err = sched_getaffinity(getpid(), sizeof(old), &old);
@@ -192,9 +184,7 @@ static void test_nodeadlock(void)
 	if (!ASSERT_OK_PTR(skel, "open_and_load"))
 		goto done;
 
-	/* Unnecessary recursion and deadlock detection are reproducible
-	 * in the preemptible kernel.
-	 */
+	 
 	if (!skel->kconfig->CONFIG_PREEMPT) {
 		test__skip();
 		goto done;
@@ -206,16 +196,14 @@ static void test_nodeadlock(void)
 	for (i = 0; i < nr_threads; i++) {
 		err = pthread_create(&tids[i], NULL, sock_create_loop, skel);
 		if (err) {
-			/* Only assert once here to avoid excessive
-			 * PASS printing during test failure.
-			 */
+			 
 			ASSERT_OK(err, "pthread_create");
 			waitall(tids, i);
 			goto done;
 		}
 	}
 
-	/* With 32 threads, 1s is enough to reproduce the issue */
+	 
 	sleep(1);
 	waitall(tids, nr_threads);
 

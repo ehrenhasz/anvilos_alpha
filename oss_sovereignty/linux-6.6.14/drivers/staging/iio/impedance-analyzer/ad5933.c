@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD5933 AD5934 Impedance Converter, Network Analyzer
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -22,19 +18,19 @@
 #include <linux/iio/kfifo_buf.h>
 #include <linux/iio/sysfs.h>
 
-/* AD5933/AD5934 Registers */
-#define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
-#define AD5933_REG_CONTROL_LB		0x81	/* R/W, 1 byte */
-#define AD5933_REG_FREQ_START		0x82	/* R/W, 3 bytes */
-#define AD5933_REG_FREQ_INC		0x85	/* R/W, 3 bytes */
-#define AD5933_REG_INC_NUM		0x88	/* R/W, 2 bytes, 9 bit */
-#define AD5933_REG_SETTLING_CYCLES	0x8A	/* R/W, 2 bytes */
-#define AD5933_REG_STATUS		0x8F	/* R, 1 byte */
-#define AD5933_REG_TEMP_DATA		0x92	/* R, 2 bytes*/
-#define AD5933_REG_REAL_DATA		0x94	/* R, 2 bytes*/
-#define AD5933_REG_IMAG_DATA		0x96	/* R, 2 bytes*/
+ 
+#define AD5933_REG_CONTROL_HB		0x80	 
+#define AD5933_REG_CONTROL_LB		0x81	 
+#define AD5933_REG_FREQ_START		0x82	 
+#define AD5933_REG_FREQ_INC		0x85	 
+#define AD5933_REG_INC_NUM		0x88	 
+#define AD5933_REG_SETTLING_CYCLES	0x8A	 
+#define AD5933_REG_STATUS		0x8F	 
+#define AD5933_REG_TEMP_DATA		0x92	 
+#define AD5933_REG_REAL_DATA		0x94	 
+#define AD5933_REG_IMAG_DATA		0x96	 
 
-/* AD5933_REG_CONTROL_HB Bits */
+ 
 #define AD5933_CTRL_INIT_START_FREQ	(0x1 << 4)
 #define AD5933_CTRL_START_SWEEP		(0x2 << 4)
 #define AD5933_CTRL_INC_FREQ		(0x3 << 4)
@@ -52,22 +48,22 @@
 #define AD5933_CTRL_PGA_GAIN_1		(0x1 << 0)
 #define AD5933_CTRL_PGA_GAIN_5		(0x0 << 0)
 
-/* AD5933_REG_CONTROL_LB Bits */
+ 
 #define AD5933_CTRL_RESET		(0x1 << 4)
 #define AD5933_CTRL_INT_SYSCLK		(0x0 << 3)
 #define AD5933_CTRL_EXT_SYSCLK		(0x1 << 3)
 
-/* AD5933_REG_STATUS Bits */
+ 
 #define AD5933_STAT_TEMP_VALID		(0x1 << 0)
 #define AD5933_STAT_DATA_VALID		(0x1 << 1)
 #define AD5933_STAT_SWEEP_DONE		(0x1 << 2)
 
-/* I2C Block Commands */
+ 
 #define AD5933_I2C_BLOCK_WRITE		0xA0
 #define AD5933_I2C_BLOCK_READ		0xA1
 #define AD5933_I2C_ADDR_POINTER		0xB0
 
-/* Device Specs */
+ 
 #define AD5933_INT_OSC_FREQ_Hz		16776000
 #define AD5933_MAX_OUTPUT_FREQ_Hz	100000
 #define AD5933_MAX_RETRIES		100
@@ -87,7 +83,7 @@ struct ad5933_state {
 	struct regulator		*reg;
 	struct clk			*mclk;
 	struct delayed_work		work;
-	struct mutex			lock; /* Protect sensor state */
+	struct mutex			lock;  
 	unsigned long			mclk_hz;
 	unsigned char			ctrl_hb;
 	unsigned char			ctrl_lb;
@@ -118,7 +114,7 @@ struct ad5933_state {
 static const struct iio_chan_spec ad5933_channels[] = {
 	AD5933_CHANNEL(IIO_TEMP, NULL, BIT(IIO_CHAN_INFO_RAW) |
 		BIT(IIO_CHAN_INFO_SCALE), AD5933_REG_TEMP_DATA, -1, 14),
-	/* Ring Channels */
+	 
 	AD5933_CHANNEL(IIO_VOLTAGE, "real", 0, AD5933_REG_REAL_DATA, 0, 16),
 	AD5933_CHANNEL(IIO_VOLTAGE, "imag", 0, AD5933_REG_IMAG_DATA, 1, 16),
 };
@@ -254,9 +250,7 @@ static void ad5933_calc_out_ranges(struct ad5933_state *st)
 		st->range_avail[i] = normalized_3v3[i] * st->vref_mv / 3300;
 }
 
-/*
- * handles: AD5933_REG_FREQ_START and AD5933_REG_FREQ_INC
- */
+ 
 
 static ssize_t ad5933_show_frequency(struct device *dev,
 				     struct device_attribute *attr,
@@ -415,7 +409,7 @@ static ssize_t ad5933_store(struct device *dev,
 		val = clamp(val, (u16)0, (u16)0x7FF);
 		st->settling_cycles = val;
 
-		/* 2x, 4x handling, see datasheet */
+		 
 		if (val > 1022)
 			val = (val >> 2) | (3 << 9);
 		else if (val > 511)
@@ -473,12 +467,7 @@ static IIO_DEVICE_ATTR(out_altvoltage0_settling_cycles, 0644,
 			ad5933_store,
 			AD5933_OUT_SETTLING_CYCLES);
 
-/*
- * note:
- * ideally we would handle the scale attributes via the iio_info
- * (read|write)_raw methods, however this part is a untypical since we
- * don't create dedicated sysfs channel attributes for out0 and in0.
- */
+ 
 static struct attribute *ad5933_attributes[] = {
 	&iio_dev_attr_out_altvoltage0_raw.dev_attr.attr,
 	&iio_dev_attr_out_altvoltage0_scale_available.dev_attr.attr,
@@ -572,16 +561,7 @@ static int ad5933_ring_postenable(struct iio_dev *indio_dev)
 {
 	struct ad5933_state *st = iio_priv(indio_dev);
 
-	/*
-	 * AD5933_CTRL_INIT_START_FREQ:
-	 * High Q complex circuits require a long time to reach steady state.
-	 * To facilitate the measurement of such impedances, this mode allows
-	 * the user full control of the settling time requirement before
-	 * entering start frequency sweep mode where the impedance measurement
-	 * takes place. In this mode the impedance is excited with the
-	 * programmed start frequency (ad5933_ring_preenable),
-	 * but no measurement takes place.
-	 */
+	 
 
 	schedule_delayed_work(&st->work,
 			      msecs_to_jiffies(AD5933_INIT_EXCITATION_TIME_ms));
@@ -613,7 +593,7 @@ static void ad5933_work(struct work_struct *work)
 	int ret;
 
 	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
-		/* start sweep */
+		 
 		ad5933_cmd(st, AD5933_CTRL_START_SWEEP);
 		st->state = AD5933_CTRL_START_SWEEP;
 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
@@ -642,19 +622,16 @@ static void ad5933_work(struct work_struct *work)
 		}
 		iio_push_to_buffers(indio_dev, val);
 	} else {
-		/* no data available - try again later */
+		 
 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
 		return;
 	}
 
 	if (status & AD5933_STAT_SWEEP_DONE) {
-		/*
-		 * last sample received - power down do
-		 * nothing until the ring enable is toggled
-		 */
+		 
 		ad5933_cmd(st, AD5933_CTRL_POWER_DOWN);
 	} else {
-		/* we just received a valid datum, move on to the next */
+		 
 		ad5933_cmd(st, AD5933_CTRL_INC_FREQ);
 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
 	}

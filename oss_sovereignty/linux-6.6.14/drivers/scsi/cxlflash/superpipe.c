@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * CXL Flash Device Driver
- *
- * Written by: Manoj N. Kumar <manoj@linux.vnet.ibm.com>, IBM Corporation
- *             Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2015 IBM Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/file.h>
@@ -28,11 +21,7 @@
 
 struct cxlflash_global global;
 
-/**
- * marshal_rele_to_resize() - translate release to resize structure
- * @release:	Source structure from which to translate/copy.
- * @resize:	Destination structure for the translate/copy.
- */
+ 
 static void marshal_rele_to_resize(struct dk_cxlflash_release *release,
 				   struct dk_cxlflash_resize *resize)
 {
@@ -41,11 +30,7 @@ static void marshal_rele_to_resize(struct dk_cxlflash_release *release,
 	resize->rsrc_handle = release->rsrc_handle;
 }
 
-/**
- * marshal_det_to_rele() - translate detach to release structure
- * @detach:	Destination structure for the translate/copy.
- * @release:	Source structure from which to translate/copy.
- */
+ 
 static void marshal_det_to_rele(struct dk_cxlflash_detach *detach,
 				struct dk_cxlflash_release *release)
 {
@@ -53,11 +38,7 @@ static void marshal_det_to_rele(struct dk_cxlflash_detach *detach,
 	release->context_id = detach->context_id;
 }
 
-/**
- * marshal_udir_to_rele() - translate udirect to release structure
- * @udirect:	Source structure from which to translate/copy.
- * @release:	Destination structure for the translate/copy.
- */
+ 
 static void marshal_udir_to_rele(struct dk_cxlflash_udirect *udirect,
 				 struct dk_cxlflash_release *release)
 {
@@ -66,9 +47,7 @@ static void marshal_udir_to_rele(struct dk_cxlflash_udirect *udirect,
 	release->rsrc_handle = udirect->rsrc_handle;
 }
 
-/**
- * cxlflash_free_errpage() - frees resources associated with global error page
- */
+ 
 void cxlflash_free_errpage(void)
 {
 
@@ -80,18 +59,7 @@ void cxlflash_free_errpage(void)
 	mutex_unlock(&global.mutex);
 }
 
-/**
- * cxlflash_stop_term_user_contexts() - stops/terminates known user contexts
- * @cfg:	Internal structure associated with the host.
- *
- * When the host needs to go down, all users must be quiesced and their
- * memory freed. This is accomplished by putting the contexts in error
- * state which will notify the user and let them 'drive' the tear down.
- * Meanwhile, this routine camps until all user contexts have been removed.
- *
- * Note that the main loop in this routine will always execute at least once
- * to flush the reset_waitq.
- */
+ 
 void cxlflash_stop_term_user_contexts(struct cxlflash_cfg *cfg)
 {
 	struct device *dev = &cfg->dev->dev;
@@ -117,14 +85,7 @@ void cxlflash_stop_term_user_contexts(struct cxlflash_cfg *cfg)
 	}
 }
 
-/**
- * find_error_context() - locates a context by cookie on the error recovery list
- * @cfg:	Internal structure associated with the host.
- * @rctxid:	Desired context by id.
- * @file:	Desired context by file.
- *
- * Return: Found context on success, NULL on failure
- */
+ 
 static struct ctx_info *find_error_context(struct cxlflash_cfg *cfg, u64 rctxid,
 					   struct file *file)
 {
@@ -137,21 +98,7 @@ static struct ctx_info *find_error_context(struct cxlflash_cfg *cfg, u64 rctxid,
 	return NULL;
 }
 
-/**
- * get_context() - obtains a validated and locked context reference
- * @cfg:	Internal structure associated with the host.
- * @rctxid:	Desired context (raw, un-decoded format).
- * @arg:	LUN information or file associated with request.
- * @ctx_ctrl:	Control information to 'steer' desired lookup.
- *
- * NOTE: despite the name pid, in linux, current->pid actually refers
- * to the lightweight process id (tid) and can change if the process is
- * multi threaded. The tgid remains constant for the process and only changes
- * when the process of fork. For all intents and purposes, think of tgid
- * as a pid in the traditional sense.
- *
- * Return: Validated context on success, NULL on failure
- */
+ 
 struct ctx_info *get_context(struct cxlflash_cfg *cfg, u64 rctxid,
 			     void *arg, enum ctx_ctrl ctx_ctrl)
 {
@@ -189,22 +136,11 @@ struct ctx_info *get_context(struct cxlflash_cfg *cfg, u64 rctxid,
 				goto out;
 			}
 
-			/*
-			 * Need to acquire ownership of the context while still
-			 * under the table/list lock to serialize with a remove
-			 * thread. Use the 'try' to avoid stalling the
-			 * table/list lock for a single context.
-			 *
-			 * Note that the lock order is:
-			 *
-			 *	cfg->ctx_tbl_list_mutex -> ctxi->mutex
-			 *
-			 * Therefore release ctx_tbl_list_mutex before retrying.
-			 */
+			 
 			rc = mutex_trylock(&ctxi->mutex);
 			mutex_unlock(&cfg->ctx_tbl_list_mutex);
 			if (rc)
-				break; /* got the context's lock! */
+				break;  
 		}
 
 		if (ctxi->unavail)
@@ -236,28 +172,13 @@ denied:
 	goto out;
 }
 
-/**
- * put_context() - release a context that was retrieved from get_context()
- * @ctxi:	Context to release.
- *
- * For now, releasing the context equates to unlocking it's mutex.
- */
+ 
 void put_context(struct ctx_info *ctxi)
 {
 	mutex_unlock(&ctxi->mutex);
 }
 
-/**
- * afu_attach() - attach a context to the AFU
- * @cfg:	Internal structure associated with the host.
- * @ctxi:	Context to attach.
- *
- * Upon setting the context capabilities, they must be confirmed with
- * a read back operation as the context might have been closed since
- * the mailbox was unlocked. When this occurs, registration is failed.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int afu_attach(struct cxlflash_cfg *cfg, struct ctx_info *ctxi)
 {
 	struct device *dev = &cfg->dev->dev;
@@ -268,7 +189,7 @@ static int afu_attach(struct cxlflash_cfg *cfg, struct ctx_info *ctxi)
 	u64 val;
 	int i;
 
-	/* Unlock cap and restrict user to read/write cmds in translated mode */
+	 
 	readq_be(&ctrl_map->mbox_r);
 	val = (SISL_CTX_CAP_READ_CMD | SISL_CTX_CAP_WRITE_CMD);
 	writeq_be(val, &ctrl_map->ctx_cap);
@@ -281,19 +202,19 @@ static int afu_attach(struct cxlflash_cfg *cfg, struct ctx_info *ctxi)
 	}
 
 	if (afu_is_ocxl_lisn(afu)) {
-		/* Set up the LISN effective address for each interrupt */
+		 
 		for (i = 0; i < ctxi->irqs; i++) {
 			val = cfg->ops->get_irq_objhndl(ctxi->ctx, i);
 			writeq_be(val, &ctrl_map->lisn_ea[i]);
 		}
 
-		/* Use primary HWQ PASID as identifier for all interrupts */
+		 
 		val = hwq->ctx_hndl;
 		writeq_be(SISL_LISN_PASID(val, val), &ctrl_map->lisn_pasid[0]);
 		writeq_be(SISL_LISN_PASID(0UL, val), &ctrl_map->lisn_pasid[1]);
 	}
 
-	/* Set up MMIO registers pointing to the RHT */
+	 
 	writeq_be((u64)ctxi->rht_start, &ctrl_map->rht_start);
 	val = SISL_RHT_CNT_ID((u64)MAX_RHT_PER_CONTEXT, (u64)(hwq->ctx_hndl));
 	writeq_be(val, &ctrl_map->rht_cnt_id);
@@ -302,31 +223,7 @@ out:
 	return rc;
 }
 
-/**
- * read_cap16() - issues a SCSI READ_CAP16 command
- * @sdev:	SCSI device associated with LUN.
- * @lli:	LUN destined for capacity request.
- *
- * The READ_CAP16 can take quite a while to complete. Should an EEH occur while
- * in scsi_execute_cmd(), the EEH handler will attempt to recover. As part of
- * the recovery, the handler drains all currently running ioctls, waiting until
- * they have completed before proceeding with a reset. As this routine is used
- * on the ioctl path, this can create a condition where the EEH handler becomes
- * stuck, infinitely waiting for this ioctl thread. To avoid this behavior,
- * temporarily unmark this thread as an ioctl thread by releasing the ioctl
- * read semaphore. This will allow the EEH handler to proceed with a recovery
- * while this thread is still running. Once the scsi_execute_cmd() returns,
- * reacquire the ioctl read semaphore and check the adapter state in case it
- * changed while inside of scsi_execute_cmd(). The state check will wait if the
- * adapter is still being recovered or return a failure if the recovery failed.
- * In the event that the adapter reset failed, simply return the failure as the
- * ioctl would be unable to continue.
- *
- * Note that the above puts a requirement on this routine to only be called on
- * an ioctl thread.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int read_cap16(struct scsi_device *sdev, struct llun_info *lli)
 {
 	struct cxlflash_cfg *cfg = shost_priv(sdev->host);
@@ -351,14 +248,14 @@ retry:
 		goto out;
 	}
 
-	scsi_cmd[0] = SERVICE_ACTION_IN_16;	/* read cap(16) */
-	scsi_cmd[1] = SAI_READ_CAPACITY_16;	/* service action */
+	scsi_cmd[0] = SERVICE_ACTION_IN_16;	 
+	scsi_cmd[1] = SAI_READ_CAPACITY_16;	 
 	put_unaligned_be32(CMD_BUFSIZE, &scsi_cmd[10]);
 
 	dev_dbg(dev, "%s: %ssending cmd(%02x)\n", __func__,
 		retry_cnt ? "re" : "", scsi_cmd[0]);
 
-	/* Drop the ioctl read semaphore across lengthy call */
+	 
 	up_read(&cfg->ioctl_rwsem);
 	result = scsi_execute_cmd(sdev, scsi_cmd, REQ_OP_DRV_IN, cmd_buf,
 				  CMD_BUFSIZE, to, CMD_RETRIES, &exec_args);
@@ -381,11 +278,11 @@ retry:
 				break;
 			case UNIT_ATTENTION:
 				switch (sshdr.asc) {
-				case 0x29: /* Power on Reset or Device Reset */
+				case 0x29:  
 					fallthrough;
-				case 0x2A: /* Device capacity changed */
-				case 0x3F: /* Report LUNs changed */
-					/* Retry the command once more */
+				case 0x2A:  
+				case 0x3F:  
+					 
 					if (retry_cnt++ < 1) {
 						kfree(cmd_buf);
 						kfree(scsi_cmd);
@@ -406,11 +303,7 @@ retry:
 		goto out;
 	}
 
-	/*
-	 * Read cap was successful, grab values from the buffer;
-	 * note that we don't need to worry about unaligned access
-	 * as the buffer is allocated on an aligned boundary.
-	 */
+	 
 	mutex_lock(&gli->mutex);
 	gli->max_lba = be64_to_cpu(*((__be64 *)&cmd_buf[0]));
 	gli->blk_len = be32_to_cpu(*((__be32 *)&cmd_buf[8]));
@@ -425,14 +318,7 @@ out:
 	return rc;
 }
 
-/**
- * get_rhte() - obtains validated resource handle table entry reference
- * @ctxi:	Context owning the resource handle.
- * @rhndl:	Resource handle associated with entry.
- * @lli:	LUN associated with request.
- *
- * Return: Validated RHTE on success, NULL on failure
- */
+ 
 struct sisl_rht_entry *get_rhte(struct ctx_info *ctxi, res_hndl_t rhndl,
 				struct llun_info *lli)
 {
@@ -470,13 +356,7 @@ out:
 	return rhte;
 }
 
-/**
- * rhte_checkout() - obtains free/empty resource handle table entry
- * @ctxi:	Context owning the resource handle.
- * @lli:	LUN associated with request.
- *
- * Return: Free RHTE on success, NULL on failure
- */
+ 
 struct sisl_rht_entry *rhte_checkout(struct ctx_info *ctxi,
 				     struct llun_info *lli)
 {
@@ -485,7 +365,7 @@ struct sisl_rht_entry *rhte_checkout(struct ctx_info *ctxi,
 	struct sisl_rht_entry *rhte = NULL;
 	int i;
 
-	/* Find a free RHT entry */
+	 
 	for (i = 0; i < MAX_RHT_PER_CONTEXT; i++)
 		if (ctxi->rht_start[i].nmask == 0) {
 			rhte = &ctxi->rht_start[i];
@@ -500,11 +380,7 @@ struct sisl_rht_entry *rhte_checkout(struct ctx_info *ctxi,
 	return rhte;
 }
 
-/**
- * rhte_checkin() - releases a resource handle table entry
- * @ctxi:	Context owning the resource handle.
- * @rhte:	RHTE to release.
- */
+ 
 void rhte_checkin(struct ctx_info *ctxi,
 		  struct sisl_rht_entry *rhte)
 {
@@ -517,52 +393,31 @@ void rhte_checkin(struct ctx_info *ctxi,
 	ctxi->rht_needs_ws[rsrc_handle] = false;
 }
 
-/**
- * rht_format1() - populates a RHTE for format 1
- * @rhte:	RHTE to populate.
- * @lun_id:	LUN ID of LUN associated with RHTE.
- * @perm:	Desired permissions for RHTE.
- * @port_sel:	Port selection mask
- */
+ 
 static void rht_format1(struct sisl_rht_entry *rhte, u64 lun_id, u32 perm,
 			u32 port_sel)
 {
-	/*
-	 * Populate the Format 1 RHT entry for direct access (physical
-	 * LUN) using the synchronization sequence defined in the
-	 * SISLite specification.
-	 */
+	 
 	struct sisl_rht_entry_f1 dummy = { 0 };
 	struct sisl_rht_entry_f1 *rhte_f1 = (struct sisl_rht_entry_f1 *)rhte;
 
 	memset(rhte_f1, 0, sizeof(*rhte_f1));
 	rhte_f1->fp = SISL_RHT_FP(1U, 0);
-	dma_wmb(); /* Make setting of format bit visible */
+	dma_wmb();  
 
 	rhte_f1->lun_id = lun_id;
-	dma_wmb(); /* Make setting of LUN id visible */
+	dma_wmb();  
 
-	/*
-	 * Use a dummy RHT Format 1 entry to build the second dword
-	 * of the entry that must be populated in a single write when
-	 * enabled (valid bit set to TRUE).
-	 */
+	 
 	dummy.valid = 0x80;
 	dummy.fp = SISL_RHT_FP(1U, perm);
 	dummy.port_sel = port_sel;
 	rhte_f1->dw = dummy.dw;
 
-	dma_wmb(); /* Make remaining RHT entry fields visible */
+	dma_wmb();  
 }
 
-/**
- * cxlflash_lun_attach() - attaches a user to a LUN and manages the LUN's mode
- * @gli:	LUN to attach.
- * @mode:	Desired mode of the LUN.
- * @locked:	Mutex status on current thread.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 int cxlflash_lun_attach(struct glun_info *gli, enum lun_mode mode, bool locked)
 {
 	int rc = 0;
@@ -589,16 +444,7 @@ out:
 	return rc;
 }
 
-/**
- * cxlflash_lun_detach() - detaches a user from a LUN and resets the LUN's mode
- * @gli:	LUN to detach.
- *
- * When resetting the mode, terminate block allocation resources as they
- * are no longer required (service is safe to call even when block allocation
- * resources were not present - such as when transitioning from physical mode).
- * These resources will be reallocated when needed (subsequent transition to
- * virtual mode).
- */
+ 
 void cxlflash_lun_detach(struct glun_info *gli)
 {
 	mutex_lock(&gli->mutex);
@@ -612,21 +458,7 @@ void cxlflash_lun_detach(struct glun_info *gli)
 	mutex_unlock(&gli->mutex);
 }
 
-/**
- * _cxlflash_disk_release() - releases the specified resource entry
- * @sdev:	SCSI device associated with LUN.
- * @ctxi:	Context owning resources.
- * @release:	Release ioctl data structure.
- *
- * For LUNs in virtual mode, the virtual LUN associated with the specified
- * resource handle is resized to 0 prior to releasing the RHTE. Note that the
- * AFU sync should _not_ be performed when the context is sitting on the error
- * recovery list. A context on the error recovery list is not known to the AFU
- * due to reset. When the context is recovered, it will be reattached and made
- * known again to the AFU.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 int _cxlflash_disk_release(struct scsi_device *sdev,
 			   struct ctx_info *ctxi,
 			   struct dk_cxlflash_release *release)
@@ -672,13 +504,7 @@ int _cxlflash_disk_release(struct scsi_device *sdev,
 		goto out;
 	}
 
-	/*
-	 * Resize to 0 for virtual LUNS by setting the size
-	 * to 0. This will clear LXT_START and LXT_CNT fields
-	 * in the RHT entry and properly sync with the AFU.
-	 *
-	 * Afterwards we clear the remaining fields.
-	 */
+	 
 	switch (gli->mode) {
 	case MODE_VIRTUAL:
 		marshal_rele_to_resize(release, &size);
@@ -691,21 +517,17 @@ int _cxlflash_disk_release(struct scsi_device *sdev,
 
 		break;
 	case MODE_PHYSICAL:
-		/*
-		 * Clear the Format 1 RHT entry for direct access
-		 * (physical LUN) using the synchronization sequence
-		 * defined in the SISLite specification.
-		 */
+		 
 		rhte_f1 = (struct sisl_rht_entry_f1 *)rhte;
 
 		rhte_f1->valid = 0;
-		dma_wmb(); /* Make revocation of RHT entry visible */
+		dma_wmb();  
 
 		rhte_f1->lun_id = 0;
-		dma_wmb(); /* Make clearing of LUN id visible */
+		dma_wmb();  
 
 		rhte_f1->dw = 0;
-		dma_wmb(); /* Make RHT entry bottom-half clearing visible */
+		dma_wmb();  
 
 		if (!ctxi->err_recovery_active) {
 			rcr = cxlflash_afu_sync(afu, ctxid, rhndl, AFU_HW_SYNC);
@@ -735,19 +557,7 @@ int cxlflash_disk_release(struct scsi_device *sdev,
 	return _cxlflash_disk_release(sdev, NULL, release);
 }
 
-/**
- * destroy_context() - releases a context
- * @cfg:	Internal structure associated with the host.
- * @ctxi:	Context to release.
- *
- * This routine is safe to be called with a a non-initialized context.
- * Also note that the routine conditionally checks for the existence
- * of the context control map before clearing the RHT registers and
- * context capabilities because it is possible to destroy a context
- * while the context is in the error state (previous mapping was
- * removed [so there is no need to worry about clearing] and context
- * is waiting for a new mapping).
- */
+ 
 static void destroy_context(struct cxlflash_cfg *cfg,
 			    struct ctx_info *ctxi)
 {
@@ -756,7 +566,7 @@ static void destroy_context(struct cxlflash_cfg *cfg,
 	if (ctxi->initialized) {
 		WARN_ON(!list_empty(&ctxi->luns));
 
-		/* Clear RHT registers and drop all capabilities for context */
+		 
 		if (afu->afu_map && ctxi->ctrl_map) {
 			writeq_be(0, &ctxi->ctrl_map->rht_start);
 			writeq_be(0, &ctxi->ctrl_map->rht_cnt_id);
@@ -764,19 +574,14 @@ static void destroy_context(struct cxlflash_cfg *cfg,
 		}
 	}
 
-	/* Free memory associated with context */
+	 
 	free_page((ulong)ctxi->rht_start);
 	kfree(ctxi->rht_needs_ws);
 	kfree(ctxi->rht_lun);
 	kfree(ctxi);
 }
 
-/**
- * create_context() - allocates and initializes a context
- * @cfg:	Internal structure associated with the host.
- *
- * Return: Allocated context on success, NULL on failure
- */
+ 
 static struct ctx_info *create_context(struct cxlflash_cfg *cfg)
 {
 	struct device *dev = &cfg->dev->dev;
@@ -813,16 +618,7 @@ err:
 	goto out;
 }
 
-/**
- * init_context() - initializes a previously allocated context
- * @ctxi:	Previously allocated context
- * @cfg:	Internal structure associated with the host.
- * @ctx:	Previously obtained context cookie.
- * @ctxid:	Previously obtained process element associated with CXL context.
- * @file:	Previously obtained file associated with CXL context.
- * @perms:	User-specified permissions.
- * @irqs:	User-specified number of interrupts.
- */
+ 
 static void init_context(struct ctx_info *ctxi, struct cxlflash_cfg *cfg,
 			 void *ctx, int ctxid, struct file *file, u32 perms,
 			 u64 irqs)
@@ -833,7 +629,7 @@ static void init_context(struct ctx_info *ctxi, struct cxlflash_cfg *cfg,
 	ctxi->ctrl_map = &afu->afu_map->ctrls[ctxid].ctrl;
 	ctxi->ctxid = ENCODE_CTXID(ctxi, ctxid);
 	ctxi->irqs = irqs;
-	ctxi->pid = task_tgid_nr(current); /* tgid = pid */
+	ctxi->pid = task_tgid_nr(current);  
 	ctxi->ctx = ctx;
 	ctxi->cfg = cfg;
 	ctxi->file = file;
@@ -841,24 +637,17 @@ static void init_context(struct ctx_info *ctxi, struct cxlflash_cfg *cfg,
 	mutex_init(&ctxi->mutex);
 	kref_init(&ctxi->kref);
 	INIT_LIST_HEAD(&ctxi->luns);
-	INIT_LIST_HEAD(&ctxi->list); /* initialize for list_empty() */
+	INIT_LIST_HEAD(&ctxi->list);  
 }
 
-/**
- * remove_context() - context kref release handler
- * @kref:	Kernel reference associated with context to be removed.
- *
- * When a context no longer has any references it can safely be removed
- * from global access and destroyed. Note that it is assumed the thread
- * relinquishing access to the context holds its mutex.
- */
+ 
 static void remove_context(struct kref *kref)
 {
 	struct ctx_info *ctxi = container_of(kref, struct ctx_info, kref);
 	struct cxlflash_cfg *cfg = ctxi->cfg;
 	u64 ctxid = DECODE_CTXID(ctxi->ctxid);
 
-	/* Remove context from table/error list */
+	 
 	WARN_ON(!mutex_is_locked(&ctxi->mutex));
 	ctxi->unavail = true;
 	mutex_unlock(&ctxi->mutex);
@@ -871,22 +660,11 @@ static void remove_context(struct kref *kref)
 	mutex_unlock(&cfg->ctx_tbl_list_mutex);
 	mutex_unlock(&ctxi->mutex);
 
-	/* Context now completely uncoupled/unreachable */
+	 
 	destroy_context(cfg, ctxi);
 }
 
-/**
- * _cxlflash_disk_detach() - detaches a LUN from a context
- * @sdev:	SCSI device associated with LUN.
- * @ctxi:	Context owning resources.
- * @detach:	Detach ioctl data structure.
- *
- * As part of the detach, all per-context resources associated with the LUN
- * are cleaned up. When detaching the last LUN for a context, the context
- * itself is cleaned up and released.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int _cxlflash_disk_detach(struct scsi_device *sdev,
 				 struct ctx_info *ctxi,
 				 struct dk_cxlflash_detach *detach)
@@ -917,7 +695,7 @@ static int _cxlflash_disk_detach(struct scsi_device *sdev,
 		put_ctx = true;
 	}
 
-	/* Cleanup outstanding resources tied to this LUN */
+	 
 	if (ctxi->rht_out) {
 		marshal_det_to_rele(detach, &rel);
 		for (i = 0; i < MAX_RHT_PER_CONTEXT; i++) {
@@ -926,13 +704,13 @@ static int _cxlflash_disk_detach(struct scsi_device *sdev,
 				_cxlflash_disk_release(sdev, ctxi, &rel);
 			}
 
-			/* No need to loop further if we're done */
+			 
 			if (ctxi->rht_out == 0)
 				break;
 		}
 	}
 
-	/* Take our LUN out of context, free the node */
+	 
 	list_for_each_entry_safe(lun_access, t, &ctxi->luns, list)
 		if (lun_access->lli == lli) {
 			list_del(&lun_access->list);
@@ -941,10 +719,7 @@ static int _cxlflash_disk_detach(struct scsi_device *sdev,
 			break;
 		}
 
-	/*
-	 * Release the context reference and the sdev reference that
-	 * bound this LUN to the context.
-	 */
+	 
 	if (kref_put(&ctxi->kref, remove_context))
 		put_ctx = false;
 	scsi_device_put(sdev);
@@ -961,32 +736,7 @@ static int cxlflash_disk_detach(struct scsi_device *sdev,
 	return _cxlflash_disk_detach(sdev, NULL, detach);
 }
 
-/**
- * cxlflash_cxl_release() - release handler for adapter file descriptor
- * @inode:	File-system inode associated with fd.
- * @file:	File installed with adapter file descriptor.
- *
- * This routine is the release handler for the fops registered with
- * the CXL services on an initial attach for a context. It is called
- * when a close (explicity by the user or as part of a process tear
- * down) is performed on the adapter file descriptor returned to the
- * user. The user should be aware that explicitly performing a close
- * considered catastrophic and subsequent usage of the superpipe API
- * with previously saved off tokens will fail.
- *
- * This routine derives the context reference and calls detach for
- * each LUN associated with the context.The final detach operation
- * causes the context itself to be freed. With exception to when the
- * CXL process element (context id) lookup fails (a case that should
- * theoretically never occur), every call into this routine results
- * in a complete freeing of a context.
- *
- * Detaching the LUN is typically an ioctl() operation and the underlying
- * code assumes that ioctl_rwsem has been acquired as a reader. To support
- * that design point, the semaphore is acquired and released around detach.
- *
- * Return: 0 on success
- */
+ 
 static int cxlflash_cxl_release(struct inode *inode, struct file *file)
 {
 	struct cxlflash_cfg *cfg = container_of(file->f_op, struct cxlflash_cfg,
@@ -1035,25 +785,13 @@ out:
 	return 0;
 }
 
-/**
- * unmap_context() - clears a previously established mapping
- * @ctxi:	Context owning the mapping.
- *
- * This routine is used to switch between the error notification page
- * (dummy page of all 1's) and the real mapping (established by the CXL
- * fault handler).
- */
+ 
 static void unmap_context(struct ctx_info *ctxi)
 {
 	unmap_mapping_range(ctxi->file->f_mapping, 0, 0, 1);
 }
 
-/**
- * get_err_page() - obtains and allocates the error notification page
- * @cfg:	Internal structure associated with the host.
- *
- * Return: error notification page on success, NULL on failure
- */
+ 
 static struct page *get_err_page(struct cxlflash_cfg *cfg)
 {
 	struct page *err_page = global.err_page;
@@ -1069,7 +807,7 @@ static struct page *get_err_page(struct cxlflash_cfg *cfg)
 
 		memset(page_address(err_page), -1, PAGE_SIZE);
 
-		/* Serialize update w/ other threads to avoid a leak */
+		 
 		mutex_lock(&global.mutex);
 		if (likely(!global.err_page))
 			global.err_page = err_page;
@@ -1085,21 +823,7 @@ out:
 	return err_page;
 }
 
-/**
- * cxlflash_mmap_fault() - mmap fault handler for adapter file descriptor
- * @vmf:	VM fault associated with current fault.
- *
- * To support error notification via MMIO, faults are 'caught' by this routine
- * that was inserted before passing back the adapter file descriptor on attach.
- * When a fault occurs, this routine evaluates if error recovery is active and
- * if so, installs the error page to 'notify' the user about the error state.
- * During normal operation, the fault is simply handled by the original fault
- * handler that was installed by CXL services as part of initializing the
- * adapter file descriptor. The VMA's page protection bits are toggled to
- * indicate cached/not-cached depending on the memory backing the fault.
- *
- * Return: 0 on success, VM_FAULT_SIGBUS on failure
- */
+ 
 static vm_fault_t cxlflash_mmap_fault(struct vm_fault *vmf)
 {
 	struct vm_area_struct *vma = vmf->vma;
@@ -1159,22 +883,12 @@ err:
 	goto out;
 }
 
-/*
- * Local MMAP vmops to 'catch' faults
- */
+ 
 static const struct vm_operations_struct cxlflash_mmap_vmops = {
 	.fault = cxlflash_mmap_fault,
 };
 
-/**
- * cxlflash_cxl_mmap() - mmap handler for adapter file descriptor
- * @file:	File installed with adapter file descriptor.
- * @vma:	VM area associated with mapping.
- *
- * Installs local mmap vmops to 'catch' faults for error notification support.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int cxlflash_cxl_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct cxlflash_cfg *cfg = container_of(file->f_op, struct cxlflash_cfg,
@@ -1205,7 +919,7 @@ static int cxlflash_cxl_mmap(struct file *file, struct vm_area_struct *vma)
 
 	rc = cfg->ops->fd_mmap(file, vma);
 	if (likely(!rc)) {
-		/* Insert ourself in the mmap fault handler path */
+		 
 		ctxi->cxl_mmap_vmops = vma->vm_ops;
 		vma->vm_ops = &cxlflash_mmap_vmops;
 	}
@@ -1222,15 +936,7 @@ const struct file_operations cxlflash_cxl_fops = {
 	.release = cxlflash_cxl_release,
 };
 
-/**
- * cxlflash_mark_contexts_error() - move contexts to error state and list
- * @cfg:	Internal structure associated with the host.
- *
- * A context is only moved over to the error list when there are no outstanding
- * references to it. This ensures that a running operation has completed.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 int cxlflash_mark_contexts_error(struct cxlflash_cfg *cfg)
 {
 	int i, rc = 0;
@@ -1255,26 +961,12 @@ int cxlflash_mark_contexts_error(struct cxlflash_cfg *cfg)
 	return rc;
 }
 
-/*
- * Dummy NULL fops
- */
+ 
 static const struct file_operations null_fops = {
 	.owner = THIS_MODULE,
 };
 
-/**
- * check_state() - checks and responds to the current adapter state
- * @cfg:	Internal structure associated with the host.
- *
- * This routine can block and should only be used on process context.
- * It assumes that the caller is an ioctl thread and holding the ioctl
- * read semaphore. This is temporarily let up across the wait to allow
- * for draining actively running ioctls. Also note that when waking up
- * from waiting in reset, the state is unknown and must be checked again
- * before proceeding.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 int check_state(struct cxlflash_cfg *cfg)
 {
 	struct device *dev = &cfg->dev->dev;
@@ -1302,18 +994,7 @@ retry:
 	return rc;
 }
 
-/**
- * cxlflash_disk_attach() - attach a LUN to a context
- * @sdev:	SCSI device associated with LUN.
- * @attach:	Attach ioctl data structure.
- *
- * Creates a context and attaches LUN to it. A LUN can only be attached
- * one time to a context (subsequent attaches for the same context/LUN pair
- * are not supported). Additional LUNs can be attached to a context by
- * specifying the 'reuse' flag defined in the cxlflash_ioctl.h header.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int cxlflash_disk_attach(struct scsi_device *sdev,
 				struct dk_cxlflash_attach *attach)
 {
@@ -1392,7 +1073,7 @@ static int cxlflash_disk_attach(struct scsi_device *sdev,
 	lun_access->lli = lli;
 	lun_access->sdev = sdev;
 
-	/* Non-NULL context indicates reuse (another context reference) */
+	 
 	if (ctxi) {
 		dev_dbg(dev, "%s: Reusing context for LUN rctxid=%016llx\n",
 			__func__, rctxid);
@@ -1438,10 +1119,10 @@ static int cxlflash_disk_attach(struct scsi_device *sdev,
 		goto err;
 	}
 
-	/* Translate read/write O_* flags from fcntl.h to AFU permission bits */
+	 
 	perms = SISL_RHT_PERM(attach->hdr.flags + 1);
 
-	/* Context mutex is locked upon return */
+	 
 	init_context(ctxi, cfg, ctx, ctxid, file, perms, irqs);
 
 	rc = afu_attach(cfg, ctxi);
@@ -1450,12 +1131,7 @@ static int cxlflash_disk_attach(struct scsi_device *sdev,
 		goto err;
 	}
 
-	/*
-	 * No error paths after this point. Once the fd is installed it's
-	 * visible to user space and can't be undone safely on this thread.
-	 * There is no need to worry about a deadlock here because no one
-	 * knows about us yet; we can be the only one holding our mutex.
-	 */
+	 
 	list_add(&lun_access->list, &ctxi->luns);
 	mutex_lock(&cfg->ctx_tbl_list_mutex);
 	mutex_lock(&ctxi->mutex);
@@ -1488,20 +1164,14 @@ out:
 	return rc;
 
 err:
-	/* Cleanup CXL context; okay to 'stop' even if it was not started */
+	 
 	if (!IS_ERR_OR_NULL(ctx)) {
 		cfg->ops->stop_context(ctx);
 		cfg->ops->release_context(ctx);
 		ctx = NULL;
 	}
 
-	/*
-	 * Here, we're overriding the fops with a dummy all-NULL fops because
-	 * fput() calls the release fop, which will cause us to mistakenly
-	 * call into the CXL code. Rather than try to add yet more complexity
-	 * to that routine (cxlflash_cxl_release) we should try to fix the
-	 * issue here.
-	 */
+	 
 	if (fd > 0) {
 		file->f_op = &null_fops;
 		fput(file);
@@ -1510,7 +1180,7 @@ err:
 		file = NULL;
 	}
 
-	/* Cleanup our context */
+	 
 	if (ctxi) {
 		destroy_context(cfg, ctxi);
 		ctxi = NULL;
@@ -1521,16 +1191,7 @@ err:
 	goto out;
 }
 
-/**
- * recover_context() - recovers a context in error
- * @cfg:	Internal structure associated with the host.
- * @ctxi:	Context to release.
- * @adap_fd:	Adapter file descriptor associated with new/recovered context.
- *
- * Restablishes the state for a context-in-error.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int recover_context(struct cxlflash_cfg *cfg,
 			   struct ctx_info *ctxi,
 			   int *adap_fd)
@@ -1572,7 +1233,7 @@ static int recover_context(struct cxlflash_cfg *cfg,
 		goto err2;
 	}
 
-	/* Update with new MMIO area based on updated context id */
+	 
 	ctxi->ctrl_map = &afu->afu_map->ctrls[ctxid].ctrl;
 
 	rc = afu_attach(cfg, ctxi);
@@ -1581,20 +1242,12 @@ static int recover_context(struct cxlflash_cfg *cfg,
 		goto err3;
 	}
 
-	/*
-	 * No error paths after this point. Once the fd is installed it's
-	 * visible to user space and can't be undone safely on this thread.
-	 */
+	 
 	ctxi->ctxid = ENCODE_CTXID(ctxi, ctxid);
 	ctxi->ctx = ctx;
 	ctxi->file = file;
 
-	/*
-	 * Put context back in table (note the reinit of the context list);
-	 * we must first drop the context's mutex and then acquire it in
-	 * order with the table/list mutex to avoid a deadlock - safe to do
-	 * here because no one can find us at this moment in time.
-	 */
+	 
 	mutex_unlock(&ctxi->mutex);
 	mutex_lock(&cfg->ctx_tbl_list_mutex);
 	mutex_lock(&ctxi->mutex);
@@ -1618,36 +1271,7 @@ err1:
 	goto out;
 }
 
-/**
- * cxlflash_afu_recover() - initiates AFU recovery
- * @sdev:	SCSI device associated with LUN.
- * @recover:	Recover ioctl data structure.
- *
- * Only a single recovery is allowed at a time to avoid exhausting CXL
- * resources (leading to recovery failure) in the event that we're up
- * against the maximum number of contexts limit. For similar reasons,
- * a context recovery is retried if there are multiple recoveries taking
- * place at the same time and the failure was due to CXL services being
- * unable to keep up.
- *
- * As this routine is called on ioctl context, it holds the ioctl r/w
- * semaphore that is used to drain ioctls in recovery scenarios. The
- * implementation to achieve the pacing described above (a local mutex)
- * requires that the ioctl r/w semaphore be dropped and reacquired to
- * avoid a 3-way deadlock when multiple process recoveries operate in
- * parallel.
- *
- * Because a user can detect an error condition before the kernel, it is
- * quite possible for this routine to act as the kernel's EEH detection
- * source (MMIO read of mbox_r). Because of this, there is a window of
- * time where an EEH might have been detected but not yet 'serviced'
- * (callback invoked, causing the device to enter reset state). To avoid
- * looping in this routine during that window, a 1 second sleep is in place
- * between the time the MMIO failure is detected and the time a wait on the
- * reset wait queue is attempted via check_state().
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int cxlflash_afu_recover(struct scsi_device *sdev,
 				struct dk_cxlflash_recover_afu *recover)
 {
@@ -1663,7 +1287,7 @@ static int cxlflash_afu_recover(struct scsi_device *sdev,
 	    rctxid = recover->context_id;
 	long reg;
 	bool locked = true;
-	int lretry = 20; /* up to 2 seconds */
+	int lretry = 20;  
 	int new_adap_fd = -1;
 	int rc = 0;
 
@@ -1687,7 +1311,7 @@ static int cxlflash_afu_recover(struct scsi_device *sdev,
 		__func__, recover->reason, rctxid);
 
 retry:
-	/* Ensure that this process is attached to the context */
+	 
 	ctxi = get_context(cfg, rctxid, lli, CTX_CTRL_ERR_FALLBACK);
 	if (unlikely(!ctxi)) {
 		dev_dbg(dev, "%s: Bad context ctxid=%llu\n", __func__, ctxid);
@@ -1733,16 +1357,12 @@ retry_recover:
 		goto out;
 	}
 
-	/* Test if in error state */
+	 
 	reg = readq_be(&hwq->ctrl_map->mbox_r);
 	if (reg == -1) {
 		dev_dbg(dev, "%s: MMIO fail, wait for recovery.\n", __func__);
 
-		/*
-		 * Before checking the state, put back the context obtained with
-		 * get_context() as it is no longer needed and sleep for a short
-		 * period of time (see prolog notes).
-		 */
+		 
 		put_context(ctxi);
 		ctxi = NULL;
 		ssleep(1);
@@ -1762,13 +1382,7 @@ out:
 	return rc;
 }
 
-/**
- * process_sense() - evaluates and processes sense data
- * @sdev:	SCSI device associated with LUN.
- * @verify:	Verify ioctl data structure.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int process_sense(struct scsi_device *sdev,
 			 struct dk_cxlflash_verify *verify)
 {
@@ -1795,9 +1409,9 @@ static int process_sense(struct scsi_device *sdev,
 		break;
 	case UNIT_ATTENTION:
 		switch (sshdr.asc) {
-		case 0x29: /* Power on Reset or Device Reset */
+		case 0x29:  
 			fallthrough;
-		case 0x2A: /* Device settings/capacity changed */
+		case 0x2A:  
 			rc = read_cap16(sdev, lli);
 			if (rc) {
 				rc = -ENODEV;
@@ -1808,7 +1422,7 @@ static int process_sense(struct scsi_device *sdev,
 					"new=%lld\n", __func__, prev_lba,
 					gli->max_lba);
 			break;
-		case 0x3F: /* Report LUNs changed, Rescan. */
+		case 0x3F:  
 			scsi_scan_host(cfg->host);
 			break;
 		default:
@@ -1826,13 +1440,7 @@ out:
 	return rc;
 }
 
-/**
- * cxlflash_disk_verify() - verifies a LUN is the same and handle size changes
- * @sdev:	SCSI device associated with LUN.
- * @verify:	Verify ioctl data structure.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int cxlflash_disk_verify(struct scsi_device *sdev,
 				struct dk_cxlflash_verify *verify)
 {
@@ -1867,14 +1475,9 @@ static int cxlflash_disk_verify(struct scsi_device *sdev,
 		goto out;
 	}
 
-	/*
-	 * Look at the hint/sense to see if it requires us to redrive
-	 * inquiry (i.e. the Unit attention is due to the WWN changing).
-	 */
+	 
 	if (verify->hint & DK_CXLFLASH_VERIFY_HINT_SENSE) {
-		/* Can't hold mutex across process_sense/read_cap16,
-		 * since we could have an intervening EEH event.
-		 */
+		 
 		ctxi->unavail = true;
 		mutex_unlock(&ctxi->mutex);
 		rc = process_sense(sdev, verify);
@@ -1894,7 +1497,7 @@ static int cxlflash_disk_verify(struct scsi_device *sdev,
 		last_lba = gli->max_lba;
 		break;
 	case MODE_VIRTUAL:
-		/* Cast lxt_cnt to u64 for multiply to be treated as 64bit op */
+		 
 		last_lba = ((u64)rhte->lxt_cnt * MC_CHUNK_SIZE * gli->blk_len);
 		last_lba /= CXLFLASH_BLOCK_SIZE;
 		last_lba--;
@@ -1913,12 +1516,7 @@ out:
 	return rc;
 }
 
-/**
- * decode_ioctl() - translates an encoded ioctl to an easily identifiable string
- * @cmd:	The ioctl command to decode.
- *
- * Return: A string identifying the decoded ioctl.
- */
+ 
 static char *decode_ioctl(unsigned int cmd)
 {
 	switch (cmd) {
@@ -1947,17 +1545,7 @@ static char *decode_ioctl(unsigned int cmd)
 	return "UNKNOWN";
 }
 
-/**
- * cxlflash_disk_direct_open() - opens a direct (physical) disk
- * @sdev:	SCSI device associated with LUN.
- * @arg:	UDirect ioctl data structure.
- *
- * On successful return, the user is informed of the resource handle
- * to be used to identify the direct lun and the size (in blocks) of
- * the direct lun in last LBA format.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int cxlflash_disk_direct_open(struct scsi_device *sdev, void *arg)
 {
 	struct cxlflash_cfg *cfg = shost_priv(sdev->host);
@@ -2000,7 +1588,7 @@ static int cxlflash_disk_direct_open(struct scsi_device *sdev, void *arg)
 	if (unlikely(!rhte)) {
 		dev_dbg(dev, "%s: Too many opens ctxid=%lld\n",
 			__func__, ctxid);
-		rc = -EMFILE;	/* too many opens  */
+		rc = -EMFILE;	 
 		goto err1;
 	}
 
@@ -2035,17 +1623,7 @@ err1:
 	goto out;
 }
 
-/**
- * ioctl_common() - common IOCTL handler for driver
- * @sdev:	SCSI device associated with LUN.
- * @cmd:	IOCTL command.
- *
- * Handles common fencing operations that are valid for multiple ioctls. Always
- * allow through ioctls that are cleanup oriented in nature, even when operating
- * in a failed/terminating state.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 static int ioctl_common(struct scsi_device *sdev, unsigned int cmd)
 {
 	struct cxlflash_cfg *cfg = shost_priv(sdev->host);
@@ -2075,22 +1653,7 @@ out:
 	return rc;
 }
 
-/**
- * cxlflash_ioctl() - IOCTL handler for driver
- * @sdev:	SCSI device associated with LUN.
- * @cmd:	IOCTL command.
- * @arg:	Userspace ioctl data structure.
- *
- * A read/write semaphore is used to implement a 'drain' of currently
- * running ioctls. The read semaphore is taken at the beginning of each
- * ioctl thread and released upon concluding execution. Additionally the
- * semaphore should be released and then reacquired in any ioctl execution
- * path which will wait for an event to occur that is outside the scope of
- * the ioctl (i.e. an adapter reset). To drain the ioctls currently running,
- * a thread simply needs to acquire the write semaphore.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 int cxlflash_ioctl(struct scsi_device *sdev, unsigned int cmd, void __user *arg)
 {
 	typedef int (*sioctl) (struct scsi_device *, void *);
@@ -2110,7 +1673,7 @@ int cxlflash_ioctl(struct scsi_device *sdev, unsigned int cmd, void __user *arg)
 	static const struct {
 		size_t size;
 		sioctl ioctl;
-	} ioctl_tbl[] = {	/* NOTE: order matters here */
+	} ioctl_tbl[] = {	 
 	{sizeof(struct dk_cxlflash_attach), (sioctl)cxlflash_disk_attach},
 	{sizeof(struct dk_cxlflash_udirect), cxlflash_disk_direct_open},
 	{sizeof(struct dk_cxlflash_release), (sioctl)cxlflash_disk_release},
@@ -2123,10 +1686,10 @@ int cxlflash_ioctl(struct scsi_device *sdev, unsigned int cmd, void __user *arg)
 	{sizeof(struct dk_cxlflash_clone), (sioctl)cxlflash_disk_clone},
 	};
 
-	/* Hold read semaphore so we can drain if needed */
+	 
 	down_read(&cfg->ioctl_rwsem);
 
-	/* Restrict command set to physical support only for internal LUN */
+	 
 	if (afu->internal_lun)
 		switch (cmd) {
 		case DK_CXLFLASH_RELEASE:
@@ -2202,7 +1765,7 @@ int cxlflash_ioctl(struct scsi_device *sdev, unsigned int cmd, void __user *arg)
 			rc = -EFAULT;
 		}
 
-	/* fall through to exit */
+	 
 
 cxlflash_ioctl_exit:
 	up_read(&cfg->ioctl_rwsem);

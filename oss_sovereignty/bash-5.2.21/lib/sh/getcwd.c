@@ -1,22 +1,6 @@
-/* getcwd.c -- get pathname of current directory */
+ 
 
-/* Copyright (C) 1991 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -24,7 +8,7 @@
 
 #if !defined (__GNUC__) && !defined (HAVE_ALLOCA_H) && defined (_AIX)
   #pragma alloca
-#endif /* _AIX && RISC6000 && !__GNUC__ */
+#endif  
 
 #if defined (__QNX__)
 #  undef HAVE_LSTAT
@@ -58,7 +42,7 @@
 
 #if !defined (errno)
 extern int errno;
-#endif /* !errno */
+#endif  
 
 #if !defined (HAVE_LSTAT)
 #  define lstat stat
@@ -68,9 +52,7 @@ extern int errno;
 #  define NULL 0
 #endif
 
-/* If the d_fileno member of a struct dirent doesn't return anything useful,
-   we need to check inode number equivalence the hard way.  Return 1 if
-   the inode corresponding to PATH/DIR is identical to THISINO. */
+ 
 #if !defined (D_FILENO_AVAILABLE)
 static int
 _path_checkino (dotp, name, thisino)
@@ -95,22 +77,16 @@ _path_checkino (dotp, name, thisino)
 }
 #endif
     
-/* Get the pathname of the current working directory,
-   and put it in SIZE bytes of BUF.  Returns NULL if the
-   directory couldn't be determined or SIZE was too small.
-   If successful, returns BUF.  In GNU, if BUF is NULL,
-   an array is allocated with `malloc'; the array is SIZE
-   bytes long, unless SIZE <= 0, in which case it is as
-   big as necessary.  */
+ 
 #if defined (__STDC__)
 char *
 getcwd (char *buf, size_t size)
-#else /* !__STDC__ */
+#else  
 char *
 getcwd (buf, size)
      char *buf;
      size_t size;
-#endif /* !__STDC__ */
+#endif  
 {
   static const char dots[]
     = "../../../../../../../../../../../../../../../../../../../../../../../\
@@ -352,5 +328,5 @@ main (argc, argv)
       exit (1);
     }
 }
-#endif /* TEST */
-#endif /* !HAVE_GETCWD */
+#endif  
+#endif  

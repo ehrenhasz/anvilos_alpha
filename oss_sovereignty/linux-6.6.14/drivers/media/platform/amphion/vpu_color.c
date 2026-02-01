@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/device.h>
@@ -18,52 +16,52 @@
 
 static const u8 colorprimaries[] = {
 	V4L2_COLORSPACE_LAST,
-	V4L2_COLORSPACE_REC709,         /*Rec. ITU-R BT.709-6*/
+	V4L2_COLORSPACE_REC709,          
 	0,
 	0,
-	V4L2_COLORSPACE_470_SYSTEM_M,   /*Rec. ITU-R BT.470-6 System M*/
-	V4L2_COLORSPACE_470_SYSTEM_BG,  /*Rec. ITU-R BT.470-6 System B, G*/
-	V4L2_COLORSPACE_SMPTE170M,      /*SMPTE170M*/
-	V4L2_COLORSPACE_SMPTE240M,      /*SMPTE240M*/
-	0,                              /*Generic film*/
-	V4L2_COLORSPACE_BT2020,         /*Rec. ITU-R BT.2020-2*/
-	0,                              /*SMPTE ST 428-1*/
+	V4L2_COLORSPACE_470_SYSTEM_M,    
+	V4L2_COLORSPACE_470_SYSTEM_BG,   
+	V4L2_COLORSPACE_SMPTE170M,       
+	V4L2_COLORSPACE_SMPTE240M,       
+	0,                               
+	V4L2_COLORSPACE_BT2020,          
+	0,                               
 };
 
 static const u8 colortransfers[] = {
 	V4L2_XFER_FUNC_LAST,
-	V4L2_XFER_FUNC_709,             /*Rec. ITU-R BT.709-6*/
+	V4L2_XFER_FUNC_709,              
 	0,
 	0,
-	0,                              /*Rec. ITU-R BT.470-6 System M*/
-	0,                              /*Rec. ITU-R BT.470-6 System B, G*/
-	V4L2_XFER_FUNC_709,             /*SMPTE170M*/
-	V4L2_XFER_FUNC_SMPTE240M,       /*SMPTE240M*/
-	V4L2_XFER_FUNC_NONE,            /*Linear transfer characteristics*/
+	0,                               
+	0,                               
+	V4L2_XFER_FUNC_709,              
+	V4L2_XFER_FUNC_SMPTE240M,        
+	V4L2_XFER_FUNC_NONE,             
 	0,
 	0,
-	0,                              /*IEC 61966-2-4*/
-	0,                              /*Rec. ITU-R BT.1361-0 extended colour gamut*/
-	V4L2_XFER_FUNC_SRGB,            /*IEC 61966-2-1 sRGB or sYCC*/
-	V4L2_XFER_FUNC_709,             /*Rec. ITU-R BT.2020-2 (10 bit system)*/
-	V4L2_XFER_FUNC_709,             /*Rec. ITU-R BT.2020-2 (12 bit system)*/
-	V4L2_XFER_FUNC_SMPTE2084,       /*SMPTE ST 2084*/
-	0,                              /*SMPTE ST 428-1*/
-	0                               /*Rec. ITU-R BT.2100-0 hybrid log-gamma (HLG)*/
+	0,                               
+	0,                               
+	V4L2_XFER_FUNC_SRGB,             
+	V4L2_XFER_FUNC_709,              
+	V4L2_XFER_FUNC_709,              
+	V4L2_XFER_FUNC_SMPTE2084,        
+	0,                               
+	0                                
 };
 
 static const u8 colormatrixcoefs[] = {
 	V4L2_YCBCR_ENC_LAST,
-	V4L2_YCBCR_ENC_709,              /*Rec. ITU-R BT.709-6*/
+	V4L2_YCBCR_ENC_709,               
 	0,
 	0,
-	0,                               /*Title 47 Code of Federal Regulations*/
-	V4L2_YCBCR_ENC_601,              /*Rec. ITU-R BT.601-7 625*/
-	V4L2_YCBCR_ENC_601,              /*Rec. ITU-R BT.601-7 525*/
-	V4L2_YCBCR_ENC_SMPTE240M,        /*SMPTE240M*/
+	0,                                
+	V4L2_YCBCR_ENC_601,               
+	V4L2_YCBCR_ENC_601,               
+	V4L2_YCBCR_ENC_SMPTE240M,         
 	0,
-	V4L2_YCBCR_ENC_BT2020,           /*Rec. ITU-R BT.2020-2*/
-	V4L2_YCBCR_ENC_BT2020_CONST_LUM  /*Rec. ITU-R BT.2020-2 constant*/
+	V4L2_YCBCR_ENC_BT2020,            
+	V4L2_YCBCR_ENC_BT2020_CONST_LUM   
 };
 
 u32 vpu_color_cvrt_primaries_v2i(u32 primaries)

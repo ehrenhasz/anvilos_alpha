@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Usage: to be run via nx_huge_page_test.sh, which does the necessary
- * environment setup and teardown
- *
- * Copyright (C) 2022, Google LLC.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -17,36 +12,24 @@
 #include "processor.h"
 
 #define HPAGE_SLOT		10
-#define HPAGE_GPA		(4UL << 30) /* 4G prevents collision w/ slot 0 */
-#define HPAGE_GVA		HPAGE_GPA /* GVA is arbitrary, so use GPA. */
+#define HPAGE_GPA		(4UL << 30)  
+#define HPAGE_GVA		HPAGE_GPA  
 #define PAGES_PER_2MB_HUGE_PAGE 512
 #define HPAGE_SLOT_NPAGES	(3 * PAGES_PER_2MB_HUGE_PAGE)
 
-/*
- * Passed by nx_huge_pages_test.sh to provide an easy warning if this test is
- * being run without it.
- */
+ 
 #define MAGIC_TOKEN 887563923
 
-/*
- * x86 opcode for the return instruction. Used to call into, and then
- * immediately return from, memory backed with hugepages.
- */
+ 
 #define RETURN_OPCODE 0xC3
 
-/* Call the specified memory address. */
+ 
 static void guest_do_CALL(uint64_t target)
 {
 	((void (*)(void)) target)();
 }
 
-/*
- * Exit the VM after each memory access so that the userspace component of the
- * test can make assertions about the pages backing the VM.
- *
- * See the below for an explanation of how each access should affect the
- * backing mappings.
- */
+ 
 void guest_code(void)
 {
 	uint64_t hpage_1 = HPAGE_GVA;
@@ -135,15 +118,7 @@ void run_test(int reclaim_period_ms, bool disable_nx_huge_pages,
 
 	nr_bytes = HPAGE_SLOT_NPAGES * vm->page_size;
 
-	/*
-	 * Ensure that KVM can map HPAGE_SLOT with huge pages by mapping the
-	 * region into the guest with 2MiB pages whenever TDP is disabled (i.e.
-	 * whenever KVM is shadowing the guest page tables).
-	 *
-	 * When TDP is enabled, KVM should be able to map HPAGE_SLOT with huge
-	 * pages irrespective of the guest page size, so map with 4KiB pages
-	 * to test that that is the case.
-	 */
+	 
 	if (kvm_is_tdp_enabled())
 		virt_map_level(vm, HPAGE_GVA, HPAGE_GPA, nr_bytes, PG_LEVEL_4K);
 	else
@@ -155,63 +130,39 @@ void run_test(int reclaim_period_ms, bool disable_nx_huge_pages,
 	check_2m_page_count(vm, 0);
 	check_split_count(vm, 0);
 
-	/*
-	 * The guest code will first read from the first hugepage, resulting
-	 * in a huge page mapping being created.
-	 */
+	 
 	vcpu_run(vcpu);
 	check_2m_page_count(vm, 1);
 	check_split_count(vm, 0);
 
-	/*
-	 * Then the guest code will read from the second hugepage, resulting
-	 * in another huge page mapping being created.
-	 */
+	 
 	vcpu_run(vcpu);
 	check_2m_page_count(vm, 2);
 	check_split_count(vm, 0);
 
-	/*
-	 * Next, the guest will execute from the first huge page, causing it
-	 * to be remapped at 4k.
-	 *
-	 * If NX huge pages are disabled, this should have no effect.
-	 */
+	 
 	vcpu_run(vcpu);
 	check_2m_page_count(vm, disable_nx_huge_pages ? 2 : 1);
 	check_split_count(vm, disable_nx_huge_pages ? 0 : 1);
 
-	/*
-	 * Executing from the third huge page (previously unaccessed) will
-	 * cause part to be mapped at 4k.
-	 *
-	 * If NX huge pages are disabled, it should be mapped at 2M.
-	 */
+	 
 	vcpu_run(vcpu);
 	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
 	check_split_count(vm, disable_nx_huge_pages ? 0 : 2);
 
-	/* Reading from the first huge page again should have no effect. */
+	 
 	vcpu_run(vcpu);
 	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
 	check_split_count(vm, disable_nx_huge_pages ? 0 : 2);
 
-	/* Give recovery thread time to run. */
+	 
 	wait_for_reclaim(reclaim_period_ms);
 
-	/*
-	 * Now that the reclaimer has run, all the split pages should be gone.
-	 *
-	 * If NX huge pages are disabled, the relaimer will not run, so
-	 * nothing should change from here on.
-	 */
+	 
 	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 1);
 	check_split_count(vm, 0);
 
-	/*
-	 * The 4k mapping on hpage 3 should have been removed, so check that
-	 * reading from it causes a huge page mapping to be installed.
-	 */
+	 
 	vcpu_run(vcpu);
 	check_2m_page_count(vm, disable_nx_huge_pages ? 3 : 2);
 	check_split_count(vm, 0);

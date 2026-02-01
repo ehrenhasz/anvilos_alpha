@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STM32 Low-Power Timer parent driver.
- * Copyright (C) STMicroelectronics 2017
- * Author: Fabrice Gasnier <fabrice.gasnier@st.com>
- * Inspired by Benjamin Gaignard's stm32-timers driver
- */
+
+ 
 
 #include <linux/mfd/stm32-lptimer.h>
 #include <linux/module.h>
@@ -26,10 +21,7 @@ static int stm32_lptimer_detect_encoder(struct stm32_lptimer *ddata)
 	u32 val;
 	int ret;
 
-	/*
-	 * Quadrature encoder mode bit can only be written and read back when
-	 * Low-Power Timer supports it.
-	 */
+	 
 	ret = regmap_update_bits(ddata->regmap, STM32_LPTIM_CFGR,
 				 STM32_LPTIM_ENC, STM32_LPTIM_ENC);
 	if (ret)

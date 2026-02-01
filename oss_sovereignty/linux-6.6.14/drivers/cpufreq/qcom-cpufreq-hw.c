@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk-provider.h>
@@ -45,10 +43,7 @@ struct qcom_cpufreq_soc_data {
 struct qcom_cpufreq_data {
 	void __iomem *base;
 
-	/*
-	 * Mutex to synchronize between de-init sequence and re-starting LMh
-	 * polling/interrupts
-	 */
+	 
 	struct mutex throttle_lock;
 	int throttle_irq;
 	char irq_name[15];
@@ -96,7 +91,7 @@ static int qcom_cpufreq_update_opp(struct device *cpu_dev,
 	unsigned long freq_hz = freq_khz * 1000;
 	int ret;
 
-	/* Skip voltage update if the opp table is not available */
+	 
 	if (!icc_scaling_enabled)
 		return dev_pm_opp_add(cpu_dev, freq_hz, volt);
 
@@ -141,7 +136,7 @@ static unsigned long qcom_lmh_get_throttle_freq(struct qcom_cpufreq_data *data)
 	return lval * xo_rate;
 }
 
-/* Get the frequency requested by the cpufreq core for the CPU */
+ 
 static unsigned int qcom_cpufreq_get_freq(unsigned int cpu)
 {
 	struct qcom_cpufreq_data *data;
@@ -215,7 +210,7 @@ static int qcom_cpufreq_hw_read_lut(struct device *cpu_dev,
 
 	ret = dev_pm_opp_of_add_table(cpu_dev);
 	if (!ret) {
-		/* Disable all opps and cross-validate against LUT later */
+		 
 		icc_scaling_enabled = true;
 		for (rate = 0; ; rate++) {
 			opp = dev_pm_opp_find_freq_ceil(cpu_dev, &rate);
@@ -264,17 +259,11 @@ static int qcom_cpufreq_hw_read_lut(struct device *cpu_dev,
 			table[i].frequency = CPUFREQ_ENTRY_INVALID;
 		}
 
-		/*
-		 * Two of the same frequencies with the same core counts means
-		 * end of table
-		 */
+		 
 		if (i > 0 && prev_freq == freq) {
 			struct cpufreq_frequency_table *prev = &table[i - 1];
 
-			/*
-			 * Only treat the last frequency that might be a boost
-			 * as the boost frequency
-			 */
+			 
 			if (prev->frequency == CPUFREQ_ENTRY_INVALID) {
 				if (!qcom_cpufreq_update_opp(cpu_dev, prev_freq, volt)) {
 					prev->frequency = prev_freq;
@@ -329,10 +318,7 @@ static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
 	unsigned long freq_hz, throttled_freq;
 	struct dev_pm_opp *opp;
 
-	/*
-	 * Get the h/w throttled frequency, normalize it using the
-	 * registered opp table and use it to calculate thermal pressure.
-	 */
+	 
 	freq_hz = qcom_lmh_get_throttle_freq(data);
 
 	opp = dev_pm_opp_find_freq_floor(dev, &freq_hz);
@@ -347,21 +333,15 @@ static void qcom_lmh_dcvs_notify(struct qcom_cpufreq_data *data)
 
 	throttled_freq = freq_hz / HZ_PER_KHZ;
 
-	/* Update thermal pressure (the boost frequencies are accepted) */
+	 
 	arch_update_thermal_pressure(policy->related_cpus, throttled_freq);
 
-	/*
-	 * In the unlikely case policy is unregistered do not enable
-	 * polling or h/w interrupt
-	 */
+	 
 	mutex_lock(&data->throttle_lock);
 	if (data->cancel_throttle)
 		goto out;
 
-	/*
-	 * If h/w throttled frequency is higher than what cpufreq has requested
-	 * for, then stop polling and switch back to interrupt mechanism.
-	 */
+	 
 	if (throttled_freq >= qcom_cpufreq_get_freq(cpu))
 		enable_irq(data->throttle_irq);
 	else
@@ -384,7 +364,7 @@ static irqreturn_t qcom_lmh_dcvs_handle_irq(int irq, void *data)
 {
 	struct qcom_cpufreq_data *c_data = data;
 
-	/* Disable interrupt and enable polling */
+	 
 	disable_irq_nosync(c_data->throttle_irq);
 	schedule_delayed_work(&c_data->throttle_work, 0);
 
@@ -429,10 +409,7 @@ static int qcom_cpufreq_hw_lmh_init(struct cpufreq_policy *policy, int index)
 	struct platform_device *pdev = cpufreq_get_driver_data();
 	int ret;
 
-	/*
-	 * Look for LMh interrupt. If no interrupt line is specified /
-	 * if there is an error, allow cpufreq to be enabled as usual.
-	 */
+	 
 	data->throttle_irq = platform_get_irq_optional(pdev, index);
 	if (data->throttle_irq == -ENXIO)
 		return 0;
@@ -538,7 +515,7 @@ static int qcom_cpufreq_hw_cpu_init(struct cpufreq_policy *policy)
 	index = args.args[0];
 	data = &qcom_cpufreq.data[index];
 
-	/* HW should be in enabled state to proceed */
+	 
 	if (!(readl_relaxed(data->base + qcom_cpufreq.soc_data->reg_enable) & 0x1)) {
 		dev_err(dev, "Domain-%d cpufreq hardware not enabled\n", index);
 		return -ENODEV;
@@ -654,7 +631,7 @@ static int qcom_cpufreq_hw_driver_probe(struct platform_device *pdev)
 
 	cpufreq_qcom_hw_driver.driver_data = pdev;
 
-	/* Check for optional interconnect paths on CPU0 */
+	 
 	cpu_dev = get_cpu_device(0);
 	if (!cpu_dev)
 		return -EPROBE_DEFER;
@@ -695,7 +672,7 @@ static int qcom_cpufreq_hw_driver_probe(struct platform_device *pdev)
 
 		data->base = base;
 
-		/* Register CPU clock for each frequency domain */
+		 
 		clk_init.name = kasprintf(GFP_KERNEL, "qcom_cpufreq%d", i);
 		if (!clk_init.name)
 			return -ENOMEM;

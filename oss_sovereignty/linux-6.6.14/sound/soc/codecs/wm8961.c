@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8961.c  --  WM8961 ALSA SoC Audio driver
- *
- * Copyright 2009-10 Wolfson Microelectronics, plc
- *
- * Author: Mark Brown
- *
- * Currently unimplemented features:
- *  - ALC
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -30,76 +21,76 @@
 #define WM8961_MAX_REGISTER                     0xFC
 
 static const struct reg_default wm8961_reg_defaults[] = {
-	{  0, 0x009F },     /* R0   - Left Input volume */
-	{  1, 0x009F },     /* R1   - Right Input volume */
-	{  2, 0x0000 },     /* R2   - LOUT1 volume */
-	{  3, 0x0000 },     /* R3   - ROUT1 volume */
-	{  4, 0x0020 },     /* R4   - Clocking1 */
-	{  5, 0x0008 },     /* R5   - ADC & DAC Control 1 */
-	{  6, 0x0000 },     /* R6   - ADC & DAC Control 2 */
-	{  7, 0x000A },     /* R7   - Audio Interface 0 */
-	{  8, 0x01F4 },     /* R8   - Clocking2 */
-	{  9, 0x0000 },     /* R9   - Audio Interface 1 */
-	{ 10, 0x00FF },     /* R10  - Left DAC volume */
-	{ 11, 0x00FF },     /* R11  - Right DAC volume */
+	{  0, 0x009F },      
+	{  1, 0x009F },      
+	{  2, 0x0000 },      
+	{  3, 0x0000 },      
+	{  4, 0x0020 },      
+	{  5, 0x0008 },      
+	{  6, 0x0000 },      
+	{  7, 0x000A },      
+	{  8, 0x01F4 },      
+	{  9, 0x0000 },      
+	{ 10, 0x00FF },      
+	{ 11, 0x00FF },      
 
-	{ 14, 0x0040 },     /* R14  - Audio Interface 2 */
+	{ 14, 0x0040 },      
 
-	{ 17, 0x007B },     /* R17  - ALC1 */
-	{ 18, 0x0000 },     /* R18  - ALC2 */
-	{ 19, 0x0032 },     /* R19  - ALC3 */
-	{ 20, 0x0000 },     /* R20  - Noise Gate */
-	{ 21, 0x00C0 },     /* R21  - Left ADC volume */
-	{ 22, 0x00C0 },     /* R22  - Right ADC volume */
-	{ 23, 0x0120 },     /* R23  - Additional control(1) */
-	{ 24, 0x0000 },     /* R24  - Additional control(2) */
-	{ 25, 0x0000 },     /* R25  - Pwr Mgmt (1) */
-	{ 26, 0x0000 },     /* R26  - Pwr Mgmt (2) */
-	{ 27, 0x0000 },     /* R27  - Additional Control (3) */
-	{ 28, 0x0000 },     /* R28  - Anti-pop */
+	{ 17, 0x007B },      
+	{ 18, 0x0000 },      
+	{ 19, 0x0032 },      
+	{ 20, 0x0000 },      
+	{ 21, 0x00C0 },      
+	{ 22, 0x00C0 },      
+	{ 23, 0x0120 },      
+	{ 24, 0x0000 },      
+	{ 25, 0x0000 },      
+	{ 26, 0x0000 },      
+	{ 27, 0x0000 },      
+	{ 28, 0x0000 },      
 
-	{ 30, 0x005F },     /* R30  - Clocking 3 */
+	{ 30, 0x005F },      
 
-	{ 32, 0x0000 },     /* R32  - ADCL signal path */
-	{ 33, 0x0000 },     /* R33  - ADCR signal path */
+	{ 32, 0x0000 },      
+	{ 33, 0x0000 },      
 
-	{ 40, 0x0000 },     /* R40  - LOUT2 volume */
-	{ 41, 0x0000 },     /* R41  - ROUT2 volume */
+	{ 40, 0x0000 },      
+	{ 41, 0x0000 },      
 
-	{ 47, 0x0000 },     /* R47  - Pwr Mgmt (3) */
-	{ 48, 0x0023 },     /* R48  - Additional Control (4) */
-	{ 49, 0x0000 },     /* R49  - Class D Control 1 */
+	{ 47, 0x0000 },      
+	{ 48, 0x0023 },      
+	{ 49, 0x0000 },      
 
-	{ 51, 0x0003 },     /* R51  - Class D Control 2 */
+	{ 51, 0x0003 },      
 
-	{ 56, 0x0106 },     /* R56  - Clocking 4 */
-	{ 57, 0x0000 },     /* R57  - DSP Sidetone 0 */
-	{ 58, 0x0000 },     /* R58  - DSP Sidetone 1 */
+	{ 56, 0x0106 },      
+	{ 57, 0x0000 },      
+	{ 58, 0x0000 },      
 
-	{ 60, 0x0000 },     /* R60  - DC Servo 0 */
-	{ 61, 0x0000 },     /* R61  - DC Servo 1 */
+	{ 60, 0x0000 },      
+	{ 61, 0x0000 },      
 
-	{ 63, 0x015E },     /* R63  - DC Servo 3 */
+	{ 63, 0x015E },      
 
-	{ 65, 0x0010 },     /* R65  - DC Servo 5 */
+	{ 65, 0x0010 },      
 
-	{ 68, 0x0003 },     /* R68  - Analogue PGA Bias */
-	{ 69, 0x0000 },     /* R69  - Analogue HP 0 */
+	{ 68, 0x0003 },      
+	{ 69, 0x0000 },      
 
-	{ 71, 0x01FB },     /* R71  - Analogue HP 2 */
-	{ 72, 0x0000 },     /* R72  - Charge Pump 1 */
+	{ 71, 0x01FB },      
+	{ 72, 0x0000 },      
 
-	{ 82, 0x0000 },     /* R82  - Charge Pump B */
+	{ 82, 0x0000 },      
 
-	{ 87, 0x0000 },     /* R87  - Write Sequencer 1 */
-	{ 88, 0x0000 },     /* R88  - Write Sequencer 2 */
-	{ 89, 0x0000 },     /* R89  - Write Sequencer 3 */
-	{ 90, 0x0000 },     /* R90  - Write Sequencer 4 */
-	{ 91, 0x0000 },     /* R91  - Write Sequencer 5 */
-	{ 92, 0x0000 },     /* R92  - Write Sequencer 6 */
-	{ 93, 0x0000 },     /* R93  - Write Sequencer 7 */
+	{ 87, 0x0000 },      
+	{ 88, 0x0000 },      
+	{ 89, 0x0000 },      
+	{ 90, 0x0000 },      
+	{ 91, 0x0000 },      
+	{ 92, 0x0000 },      
+	{ 93, 0x0000 },      
 
-	{ 252, 0x0001 },     /* R252 - General test 1 */
+	{ 252, 0x0001 },      
 };
 
 struct wm8961_priv {
@@ -184,10 +175,7 @@ static bool wm8961_readable(struct device *dev, unsigned int reg)
 	}
 }
 
-/*
- * The headphone output supports special anti-pop sequences giving
- * silent power up and power down.
- */
+ 
 static int wm8961_hp_event(struct snd_soc_dapm_widget *w,
 			   struct snd_kcontrol *kcontrol, int event)
 {
@@ -199,28 +187,28 @@ static int wm8961_hp_event(struct snd_soc_dapm_widget *w,
 	int timeout = 500;
 
 	if (event & SND_SOC_DAPM_POST_PMU) {
-		/* Make sure the output is shorted */
+		 
 		hp_reg &= ~(WM8961_HPR_RMV_SHORT | WM8961_HPL_RMV_SHORT);
 		snd_soc_component_write(component, WM8961_ANALOGUE_HP_0, hp_reg);
 
-		/* Enable the charge pump */
+		 
 		cp_reg |= WM8961_CP_ENA;
 		snd_soc_component_write(component, WM8961_CHARGE_PUMP_1, cp_reg);
 		mdelay(5);
 
-		/* Enable the PGA */
+		 
 		pwr_reg |= WM8961_LOUT1_PGA | WM8961_ROUT1_PGA;
 		snd_soc_component_write(component, WM8961_PWR_MGMT_2, pwr_reg);
 
-		/* Enable the amplifier */
+		 
 		hp_reg |= WM8961_HPR_ENA | WM8961_HPL_ENA;
 		snd_soc_component_write(component, WM8961_ANALOGUE_HP_0, hp_reg);
 
-		/* Second stage enable */
+		 
 		hp_reg |= WM8961_HPR_ENA_DLY | WM8961_HPL_ENA_DLY;
 		snd_soc_component_write(component, WM8961_ANALOGUE_HP_0, hp_reg);
 
-		/* Enable the DC servo & trigger startup */
+		 
 		dcs_reg |=
 			WM8961_DCS_ENA_CHAN_HPR | WM8961_DCS_TRIG_STARTUP_HPR |
 			WM8961_DCS_ENA_CHAN_HPL | WM8961_DCS_TRIG_STARTUP_HPL;
@@ -239,39 +227,39 @@ static int wm8961_hp_event(struct snd_soc_dapm_widget *w,
 		else
 			dev_dbg(component->dev, "DC servo startup complete\n");
 
-		/* Enable the output stage */
+		 
 		hp_reg |= WM8961_HPR_ENA_OUTP | WM8961_HPL_ENA_OUTP;
 		snd_soc_component_write(component, WM8961_ANALOGUE_HP_0, hp_reg);
 
-		/* Remove the short on the output stage */
+		 
 		hp_reg |= WM8961_HPR_RMV_SHORT | WM8961_HPL_RMV_SHORT;
 		snd_soc_component_write(component, WM8961_ANALOGUE_HP_0, hp_reg);
 	}
 
 	if (event & SND_SOC_DAPM_PRE_PMD) {
-		/* Short the output */
+		 
 		hp_reg &= ~(WM8961_HPR_RMV_SHORT | WM8961_HPL_RMV_SHORT);
 		snd_soc_component_write(component, WM8961_ANALOGUE_HP_0, hp_reg);
 
-		/* Disable the output stage */
+		 
 		hp_reg &= ~(WM8961_HPR_ENA_OUTP | WM8961_HPL_ENA_OUTP);
 		snd_soc_component_write(component, WM8961_ANALOGUE_HP_0, hp_reg);
 
-		/* Disable DC offset cancellation */
+		 
 		dcs_reg &= ~(WM8961_DCS_ENA_CHAN_HPR |
 			     WM8961_DCS_ENA_CHAN_HPL);
 		snd_soc_component_write(component, WM8961_DC_SERVO_1, dcs_reg);
 
-		/* Finish up */
+		 
 		hp_reg &= ~(WM8961_HPR_ENA_DLY | WM8961_HPR_ENA |
 			    WM8961_HPL_ENA_DLY | WM8961_HPL_ENA);
 		snd_soc_component_write(component, WM8961_ANALOGUE_HP_0, hp_reg);
 
-		/* Disable the PGA */
+		 
 		pwr_reg &= ~(WM8961_LOUT1_PGA | WM8961_ROUT1_PGA);
 		snd_soc_component_write(component, WM8961_PWR_MGMT_2, pwr_reg);
 
-		/* Disable the charge pump */
+		 
 		dev_dbg(component->dev, "Disabling charge pump\n");
 		snd_soc_component_write(component, WM8961_CHARGE_PUMP_1,
 			     cp_reg & ~WM8961_CP_ENA);
@@ -288,21 +276,21 @@ static int wm8961_spk_event(struct snd_soc_dapm_widget *w,
 	u16 spk_reg = snd_soc_component_read(component, WM8961_CLASS_D_CONTROL_1);
 
 	if (event & SND_SOC_DAPM_POST_PMU) {
-		/* Enable the PGA */
+		 
 		pwr_reg |= WM8961_SPKL_PGA | WM8961_SPKR_PGA;
 		snd_soc_component_write(component, WM8961_PWR_MGMT_2, pwr_reg);
 
-		/* Enable the amplifier */
+		 
 		spk_reg |= WM8961_SPKL_ENA | WM8961_SPKR_ENA;
 		snd_soc_component_write(component, WM8961_CLASS_D_CONTROL_1, spk_reg);
 	}
 
 	if (event & SND_SOC_DAPM_PRE_PMD) {
-		/* Disable the amplifier */
+		 
 		spk_reg &= ~(WM8961_SPKL_ENA | WM8961_SPKR_ENA);
 		snd_soc_component_write(component, WM8961_CLASS_D_CONTROL_1, spk_reg);
 
-		/* Disable the PGA */
+		 
 		pwr_reg &= ~(WM8961_SPKL_PGA | WM8961_SPKR_PGA);
 		snd_soc_component_write(component, WM8961_PWR_MGMT_2, pwr_reg);
 	}
@@ -413,7 +401,7 @@ SND_SOC_DAPM_MUX("DACR Sidetone", SND_SOC_NOPM, 0, 0, &dacr_mux),
 SND_SOC_DAPM_DAC("DACL", "HiFi Playback", WM8961_PWR_MGMT_2, 8, 0),
 SND_SOC_DAPM_DAC("DACR", "HiFi Playback", WM8961_PWR_MGMT_2, 7, 0),
 
-/* Handle as a mono path for DCS */
+ 
 SND_SOC_DAPM_PGA_E("Headphone Output", SND_SOC_NOPM,
 		   4, 0, NULL, 0, wm8961_hp_event,
 		   SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
@@ -465,7 +453,7 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 
 };
 
-/* Values for CLK_SYS_RATE */
+ 
 static struct {
 	int ratio;
 	u16 val;
@@ -482,7 +470,7 @@ static struct {
 	{ 1536, 9 },
 };
 
-/* Values for SAMPLE_RATE */
+ 
 static struct {
 	int rate;
 	u16 val;
@@ -514,7 +502,7 @@ static int wm8961_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Find the closest sample rate for the filters */
+	 
 	best = 0;
 	for (i = 0; i < ARRAY_SIZE(wm8961_srate); i++) {
 		if (abs(wm8961_srate[i].rate - fs) <
@@ -528,7 +516,7 @@ static int wm8961_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(component->dev, "Selected SRATE %dHz for %dHz\n",
 		wm8961_srate[best].rate, fs);
 
-	/* Select a CLK_SYS/fs ratio equal to or higher than required */
+	 
 	target = wm8961->sysclk / fs;
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK && target < 64) {
@@ -578,7 +566,7 @@ static int wm8961_hw_params(struct snd_pcm_substream *substream,
 	}
 	snd_soc_component_write(component, WM8961_AUDIO_INTERFACE_0, reg);
 
-	/* Sloping stop-band filter is recommended for <= 24kHz */
+	 
 	reg = snd_soc_component_read(component, WM8961_ADC_DAC_CONTROL_2);
 	if (fs <= 24000)
 		reg |= WM8961_DACSLOPE;
@@ -745,23 +733,19 @@ static int wm8961_set_bias_level(struct snd_soc_component *component,
 {
 	u16 reg;
 
-	/* This is all slightly unusual since we have no bypass paths
-	 * and the output amplifier structure means we can just slam
-	 * the biases straight up rather than having to ramp them
-	 * slowly.
-	 */
+	 
 	switch (level) {
 	case SND_SOC_BIAS_ON:
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_STANDBY) {
-			/* Enable bias generation */
+			 
 			reg = snd_soc_component_read(component, WM8961_ANTI_POP);
 			reg |= WM8961_BUFIOEN | WM8961_BUFDCOPEN;
 			snd_soc_component_write(component, WM8961_ANTI_POP, reg);
 
-			/* VMID=2*50k, VREF */
+			 
 			reg = snd_soc_component_read(component, WM8961_PWR_MGMT_1);
 			reg &= ~WM8961_VMIDSEL_MASK;
 			reg |= (1 << WM8961_VMIDSEL_SHIFT) | WM8961_VREF;
@@ -771,17 +755,17 @@ static int wm8961_set_bias_level(struct snd_soc_component *component,
 
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_PREPARE) {
-			/* VREF off */
+			 
 			reg = snd_soc_component_read(component, WM8961_PWR_MGMT_1);
 			reg &= ~WM8961_VREF;
 			snd_soc_component_write(component, WM8961_PWR_MGMT_1, reg);
 
-			/* Bias generation off */
+			 
 			reg = snd_soc_component_read(component, WM8961_ANTI_POP);
 			reg &= ~(WM8961_BUFIOEN | WM8961_BUFDCOPEN);
 			snd_soc_component_write(component, WM8961_ANTI_POP, reg);
 
-			/* VMID off */
+			 
 			reg = snd_soc_component_read(component, WM8961_PWR_MGMT_1);
 			reg &= ~WM8961_VMIDSEL_MASK;
 			snd_soc_component_write(component, WM8961_PWR_MGMT_1, reg);
@@ -833,13 +817,12 @@ static int wm8961_probe(struct snd_soc_component *component)
 {
 	u16 reg;
 
-	/* Enable class W */
+	 
 	reg = snd_soc_component_read(component, WM8961_CHARGE_PUMP_B);
 	reg |= WM8961_CP_DYN_PWR_MASK;
 	snd_soc_component_write(component, WM8961_CHARGE_PUMP_B, reg);
 
-	/* Latch volume update bits (right channel only, we always
-	 * write both out) and default ZC on. */
+	 
 	reg = snd_soc_component_read(component, WM8961_ROUT1_VOLUME);
 	snd_soc_component_write(component, WM8961_ROUT1_VOLUME,
 		     reg | WM8961_LO1ZC | WM8961_OUT1VU);
@@ -854,14 +837,12 @@ static int wm8961_probe(struct snd_soc_component *component)
 	reg = snd_soc_component_read(component, WM8961_RIGHT_INPUT_VOLUME);
 	snd_soc_component_write(component, WM8961_RIGHT_INPUT_VOLUME, reg | WM8961_IPVU);
 
-	/* Use soft mute by default */
+	 
 	reg = snd_soc_component_read(component, WM8961_ADC_DAC_CONTROL_2);
 	reg |= WM8961_DACSMM;
 	snd_soc_component_write(component, WM8961_ADC_DAC_CONTROL_2, reg);
 
-	/* Use automatic clocking mode by default; for now this is all
-	 * we support.
-	 */
+	 
 	reg = snd_soc_component_read(component, WM8961_CLOCKING_3);
 	reg &= ~WM8961_MANUAL_MODE;
 	snd_soc_component_write(component, WM8961_CLOCKING_3, reg);
@@ -936,7 +917,7 @@ static int wm8961_i2c_probe(struct i2c_client *i2c)
 		return -EINVAL;
 	}
 
-	/* This isn't volatile - readback doesn't correspond to write */
+	 
 	regcache_cache_bypass(wm8961->regmap, true);
 	ret = regmap_read(wm8961->regmap, WM8961_RIGHT_INPUT_VOLUME, &val);
 	regcache_cache_bypass(wm8961->regmap, false);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AD7280A Lithium Ion Battery Monitoring System
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -23,23 +19,23 @@
 #include <linux/iio/events.h>
 #include <linux/iio/iio.h>
 
-/* Registers */
+ 
 
-#define AD7280A_CELL_VOLTAGE_1_REG		0x0  /* D11 to D0, Read only */
-#define AD7280A_CELL_VOLTAGE_2_REG		0x1  /* D11 to D0, Read only */
-#define AD7280A_CELL_VOLTAGE_3_REG		0x2  /* D11 to D0, Read only */
-#define AD7280A_CELL_VOLTAGE_4_REG		0x3  /* D11 to D0, Read only */
-#define AD7280A_CELL_VOLTAGE_5_REG		0x4  /* D11 to D0, Read only */
-#define AD7280A_CELL_VOLTAGE_6_REG		0x5  /* D11 to D0, Read only */
-#define AD7280A_AUX_ADC_1_REG			0x6  /* D11 to D0, Read only */
-#define AD7280A_AUX_ADC_2_REG			0x7  /* D11 to D0, Read only */
-#define AD7280A_AUX_ADC_3_REG			0x8  /* D11 to D0, Read only */
-#define AD7280A_AUX_ADC_4_REG			0x9  /* D11 to D0, Read only */
-#define AD7280A_AUX_ADC_5_REG			0xA  /* D11 to D0, Read only */
-#define AD7280A_AUX_ADC_6_REG			0xB  /* D11 to D0, Read only */
-#define AD7280A_SELF_TEST_REG			0xC  /* D11 to D0, Read only */
+#define AD7280A_CELL_VOLTAGE_1_REG		0x0   
+#define AD7280A_CELL_VOLTAGE_2_REG		0x1   
+#define AD7280A_CELL_VOLTAGE_3_REG		0x2   
+#define AD7280A_CELL_VOLTAGE_4_REG		0x3   
+#define AD7280A_CELL_VOLTAGE_5_REG		0x4   
+#define AD7280A_CELL_VOLTAGE_6_REG		0x5   
+#define AD7280A_AUX_ADC_1_REG			0x6   
+#define AD7280A_AUX_ADC_2_REG			0x7   
+#define AD7280A_AUX_ADC_3_REG			0x8   
+#define AD7280A_AUX_ADC_4_REG			0x9   
+#define AD7280A_AUX_ADC_5_REG			0xA   
+#define AD7280A_AUX_ADC_6_REG			0xB   
+#define AD7280A_SELF_TEST_REG			0xC   
 
-#define AD7280A_CTRL_HB_REG			0xD  /* D15 to D8, Read/write */
+#define AD7280A_CTRL_HB_REG			0xD   
 #define   AD7280A_CTRL_HB_CONV_INPUT_MSK		GENMASK(7, 6)
 #define     AD7280A_CTRL_HB_CONV_INPUT_ALL			0
 #define     AD7280A_CTRL_HB_CONV_INPUT_6CELL_AUX1_3_5		1
@@ -60,7 +56,7 @@
 #define     AD7280A_CTRL_HB_CONV_AVG_8			        3
 #define   AD7280A_CTRL_HB_PWRDN_SW			BIT(0)
 
-#define AD7280A_CTRL_LB_REG			0xE  /* D7 to D0, Read/write */
+#define AD7280A_CTRL_LB_REG			0xE   
 #define   AD7280A_CTRL_LB_SWRST_MSK			BIT(7)
 #define   AD7280A_CTRL_LB_ACQ_TIME_MSK			GENMASK(6, 5)
 #define     AD7280A_CTRL_LB_ACQ_TIME_400ns			0
@@ -73,12 +69,12 @@
 #define   AD7280A_CTRL_LB_INC_DEV_ADDR_MSK		BIT(1)
 #define   AD7280A_CTRL_LB_DAISY_CHAIN_RB_MSK		BIT(0)
 
-#define AD7280A_CELL_OVERVOLTAGE_REG		0xF  /* D7 to D0, Read/write */
-#define AD7280A_CELL_UNDERVOLTAGE_REG		0x10 /* D7 to D0, Read/write */
-#define AD7280A_AUX_ADC_OVERVOLTAGE_REG		0x11 /* D7 to D0, Read/write */
-#define AD7280A_AUX_ADC_UNDERVOLTAGE_REG	0x12 /* D7 to D0, Read/write */
+#define AD7280A_CELL_OVERVOLTAGE_REG		0xF   
+#define AD7280A_CELL_UNDERVOLTAGE_REG		0x10  
+#define AD7280A_AUX_ADC_OVERVOLTAGE_REG		0x11  
+#define AD7280A_AUX_ADC_UNDERVOLTAGE_REG	0x12  
 
-#define AD7280A_ALERT_REG			0x13 /* D7 to D0, Read/write */
+#define AD7280A_ALERT_REG			0x13  
 #define   AD7280A_ALERT_REMOVE_MSK			GENMASK(3, 0)
 #define     AD7280A_ALERT_REMOVE_AUX5			BIT(0)
 #define     AD7280A_ALERT_REMOVE_AUX3_AUX5		BIT(1)
@@ -87,21 +83,21 @@
 #define   AD7280A_ALERT_GEN_STATIC_HIGH			BIT(6)
 #define   AD7280A_ALERT_RELAY_SIG_CHAIN_DOWN		(BIT(7) | BIT(6))
 
-#define AD7280A_CELL_BALANCE_REG		0x14 /* D7 to D0, Read/write */
+#define AD7280A_CELL_BALANCE_REG		0x14  
 #define  AD7280A_CELL_BALANCE_CHAN_BITMAP_MSK		GENMASK(7, 2)
-#define AD7280A_CB1_TIMER_REG			0x15 /* D7 to D0, Read/write */
+#define AD7280A_CB1_TIMER_REG			0x15  
 #define  AD7280A_CB_TIMER_VAL_MSK			GENMASK(7, 3)
-#define AD7280A_CB2_TIMER_REG			0x16 /* D7 to D0, Read/write */
-#define AD7280A_CB3_TIMER_REG			0x17 /* D7 to D0, Read/write */
-#define AD7280A_CB4_TIMER_REG			0x18 /* D7 to D0, Read/write */
-#define AD7280A_CB5_TIMER_REG			0x19 /* D7 to D0, Read/write */
-#define AD7280A_CB6_TIMER_REG			0x1A /* D7 to D0, Read/write */
-#define AD7280A_PD_TIMER_REG			0x1B /* D7 to D0, Read/write */
-#define AD7280A_READ_REG			0x1C /* D7 to D0, Read/write */
+#define AD7280A_CB2_TIMER_REG			0x16  
+#define AD7280A_CB3_TIMER_REG			0x17  
+#define AD7280A_CB4_TIMER_REG			0x18  
+#define AD7280A_CB5_TIMER_REG			0x19  
+#define AD7280A_CB6_TIMER_REG			0x1A  
+#define AD7280A_PD_TIMER_REG			0x1B  
+#define AD7280A_READ_REG			0x1C  
 #define   AD7280A_READ_ADDR_MSK				GENMASK(7, 2)
-#define AD7280A_CNVST_CTRL_REG			0x1D /* D7 to D0, Read/write */
+#define AD7280A_CNVST_CTRL_REG			0x1D  
 
-/* Transfer fields */
+ 
 #define AD7280A_TRANS_WRITE_DEVADDR_MSK		GENMASK(31, 27)
 #define AD7280A_TRANS_WRITE_ADDR_MSK		GENMASK(26, 21)
 #define AD7280A_TRANS_WRITE_VAL_MSK		GENMASK(20, 13)
@@ -109,7 +105,7 @@
 #define AD7280A_TRANS_WRITE_CRC_MSK		GENMASK(10, 3)
 #define AD7280A_TRANS_WRITE_RES_PATTERN		0x2
 
-/* Layouts differ for channel vs other registers */
+ 
 #define AD7280A_TRANS_READ_DEVADDR_MSK		GENMASK(31, 27)
 #define AD7280A_TRANS_READ_CONV_CHANADDR_MSK	GENMASK(26, 23)
 #define AD7280A_TRANS_READ_CONV_DATA_MSK	GENMASK(22, 11)
@@ -118,10 +114,10 @@
 #define AD7280A_TRANS_READ_WRITE_ACK_MSK	BIT(10)
 #define AD7280A_TRANS_READ_CRC_MSK		GENMASK(9, 2)
 
-/* Magic value used to indicate this special case */
+ 
 #define AD7280A_ALL_CELLS				(0xAD << 16)
 
-#define AD7280A_MAX_SPI_CLK_HZ		700000 /* < 1MHz */
+#define AD7280A_MAX_SPI_CLK_HZ		700000  
 #define AD7280A_MAX_CHAIN		8
 #define AD7280A_CELLS_PER_DEV		6
 #define AD7280A_BITS			12
@@ -139,7 +135,7 @@
 static const unsigned short ad7280a_n_avg[4] = {1, 2, 4, 8};
 static const unsigned short ad7280a_t_acq_ns[4] = {470, 1030, 1510, 1945};
 
-/* 5-bit device address is sent LSB first */
+ 
 static unsigned int ad7280a_devaddr(unsigned int addr)
 {
 	return ((addr & 0x1) << 4) |
@@ -149,19 +145,10 @@ static unsigned int ad7280a_devaddr(unsigned int addr)
 	       ((addr & 0x10) >> 4);
 }
 
-/*
- * During a read a valid write is mandatory.
- * So writing to the highest available address (Address 0x1F) and setting the
- * address all parts bit to 0 is recommended.
- * So the TXVAL is AD7280A_DEVADDR_ALL + CRC
- */
+ 
 #define AD7280A_READ_TXVAL	0xF800030A
 
-/*
- * AD7280 CRC
- *
- * P(x) = x^8 + x^5 + x^3 + x^2 + x^1 + x^0 = 0b100101111 => 0x2F
- */
+ 
 #define POLYNOM		0x2F
 
 struct ad7280_state {
@@ -181,7 +168,7 @@ struct ad7280_state {
 	unsigned char			aux_threshhigh;
 	unsigned char			aux_threshlow;
 	unsigned char			cb_mask[AD7280A_MAX_CHAIN];
-	struct mutex			lock; /* protect sensor state */
+	struct mutex			lock;  
 
 	__be32				tx __aligned(IIO_DMA_MINALIGN);
 	__be32				rx;
@@ -207,13 +194,7 @@ static int ad7280_check_crc(struct ad7280_state *st, unsigned int val)
 	return 0;
 }
 
-/*
- * After initiating a conversion sequence we need to wait until the conversion
- * is done. The delay is typically in the range of 15..30us however depending on
- * the number of devices in the daisy chain, the number of averages taken,
- * conversion delays and acquisition time options it may take up to 250us, in
- * this case we better sleep instead of busy wait.
- */
+ 
 
 static void ad7280_delay(struct ad7280_state *st)
 {
@@ -253,7 +234,7 @@ static int ad7280_write(struct ad7280_state *st, unsigned int devaddr,
 
 	reg |= FIELD_PREP(AD7280A_TRANS_WRITE_CRC_MSK,
 			ad7280_calc_crc8(st->crc_tab, reg >> 11));
-	/* Reserved b010 pattern not included crc calc */
+	 
 	reg |= AD7280A_TRANS_WRITE_RES_PATTERN;
 
 	st->tx = cpu_to_be32(reg);
@@ -267,7 +248,7 @@ static int ad7280_read_reg(struct ad7280_state *st, unsigned int devaddr,
 	int ret;
 	unsigned int tmp;
 
-	/* turns off the read operation on all parts */
+	 
 	ret = ad7280_write(st, AD7280A_DEVADDR_MASTER, AD7280A_CTRL_HB_REG, 1,
 			   FIELD_PREP(AD7280A_CTRL_HB_CONV_INPUT_MSK,
 				      AD7280A_CTRL_HB_CONV_INPUT_ALL) |
@@ -278,7 +259,7 @@ static int ad7280_read_reg(struct ad7280_state *st, unsigned int devaddr,
 	if (ret)
 		return ret;
 
-	/* turns on the read operation on the addressed part */
+	 
 	ret = ad7280_write(st, devaddr, AD7280A_CTRL_HB_REG, 0,
 			   FIELD_PREP(AD7280A_CTRL_HB_CONV_INPUT_MSK,
 				      AD7280A_CTRL_HB_CONV_INPUT_ALL) |
@@ -289,7 +270,7 @@ static int ad7280_read_reg(struct ad7280_state *st, unsigned int devaddr,
 	if (ret)
 		return ret;
 
-	/* Set register address on the part to be read from */
+	 
 	ret = ad7280_write(st, devaddr, AD7280A_READ_REG, 0,
 			   FIELD_PREP(AD7280A_READ_ADDR_MSK, addr));
 	if (ret)
@@ -393,7 +374,7 @@ static int ad7280_read_all_channels(struct ad7280_state *st, unsigned int cnt,
 
 		if (array)
 			array[i] = tmp;
-		/* only sum cell voltages */
+		 
 		if (FIELD_GET(AD7280A_TRANS_READ_CONV_CHANADDR_MSK, tmp) <=
 		    AD7280A_CELL_VOLTAGE_6_REG)
 			sum += FIELD_GET(AD7280A_TRANS_READ_CONV_DATA_MSK, tmp);
@@ -739,7 +720,7 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
 	mutex_lock(&st->lock);
 	switch (chan->type) {
 	case IIO_VOLTAGE:
-		value = ((val - 1000) * 100) / 1568; /* LSB 15.68mV */
+		value = ((val - 1000) * 100) / 1568;  
 		value = clamp(value, 0L, 0xFFL);
 		switch (dir) {
 		case IIO_EV_DIR_RISING:
@@ -764,7 +745,7 @@ static int ad7280a_write_thresh(struct iio_dev *indio_dev,
 		}
 		break;
 	case IIO_TEMP:
-		value = (val * 10) / 196; /* LSB 19.6mV */
+		value = (val * 10) / 196;  
 		value = clamp(value, 0L, 0xFFL);
 		switch (dir) {
 		case IIO_EV_DIR_RISING:
@@ -860,22 +841,16 @@ out:
 
 static void ad7280_update_delay(struct ad7280_state *st)
 {
-	/*
-	 * Total Conversion Time = ((tACQ + tCONV) *
-	 *			   (Number of Conversions per Part)) −
-	 *			   tACQ + ((N - 1) * tDELAY)
-	 *
-	 * Readback Delay = Total Conversion Time + tWAIT
-	 */
+	 
 
 	st->readback_delay_us =
 		((ad7280a_t_acq_ns[st->acquisition_time & 0x3] + 720) *
 			(AD7280A_NUM_CH * ad7280a_n_avg[st->oversampling_ratio & 0x3])) -
 		ad7280a_t_acq_ns[st->acquisition_time & 0x3] + st->slave_num * 250;
 
-	/* Convert to usecs */
+	 
 	st->readback_delay_us = DIV_ROUND_UP(st->readback_delay_us, 1000);
-	st->readback_delay_us += 5; /* Add tWAIT */
+	st->readback_delay_us += 5;  
 }
 
 static int ad7280_read_raw(struct iio_dev *indio_dev,
@@ -1001,7 +976,7 @@ static int ad7280_probe(struct spi_device *spi)
 		st->acquisition_time = AD7280A_CTRL_LB_ACQ_TIME_400ns;
 	}
 
-	/* Alert masks are intended for when particular inputs are not wired up */
+	 
 	if (device_property_present(dev, "adi,voltage-alert-last-chan")) {
 		u32 val;
 
@@ -1032,7 +1007,7 @@ static int ad7280_probe(struct spi_device *spi)
 
 	st->ctrl_lb = FIELD_PREP(AD7280A_CTRL_LB_ACQ_TIME_MSK, st->acquisition_time) |
 		FIELD_PREP(AD7280A_CTRL_LB_THERMISTOR_MSK, st->thermistor_term_en);
-	st->oversampling_ratio = 0; /* No oversampling */
+	st->oversampling_ratio = 0;  
 
 	ret = ad7280_chain_setup(st);
 	if (ret < 0)

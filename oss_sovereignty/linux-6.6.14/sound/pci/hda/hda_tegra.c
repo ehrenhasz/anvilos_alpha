@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Implementation of primary ALSA driver code base for NVIDIA Tegra HDA.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clocksource.h>
@@ -30,7 +27,7 @@
 #include <sound/hda_codec.h>
 #include "hda_controller.h"
 
-/* Defines for Nvidia Tegra HDA support */
+ 
 #define HDA_BAR0           0x8000
 
 #define HDA_CFG_CMD        0x1004
@@ -44,7 +41,7 @@
 #define HDA_BAR0_INIT_PROGRAM     0xFFFFFFFF
 #define HDA_BAR0_FINAL_PROGRAM    (1 << 14)
 
-/* IPFS */
+ 
 #define HDA_IPFS_CONFIG           0x180
 #define HDA_IPFS_EN_FPCI          0x1
 
@@ -54,19 +51,16 @@
 #define HDA_IPFS_INTR_MASK        0x188
 #define HDA_IPFS_EN_INTR          (1 << 16)
 
-/* FPCI */
+ 
 #define FPCI_DBG_CFG_2		  0x10F4
 #define FPCI_GCAP_NSDO_SHIFT	  18
 #define FPCI_GCAP_NSDO_MASK	  (0x3 << FPCI_GCAP_NSDO_SHIFT)
 
-/* max number of SDs */
+ 
 #define NUM_CAPTURE_SD 1
 #define NUM_PLAYBACK_SD 1
 
-/*
- * Tegra194 does not reflect correct number of SDO lines. Below macro
- * is used to update the GCAP register to workaround the issue.
- */
+ 
 #define TEGRA194_NUM_SDO_LINES	  4
 
 struct hda_tegra_soc {
@@ -95,18 +89,18 @@ MODULE_PARM_DESC(power_save,
 #define power_save	0
 #endif
 
-static const struct hda_controller_ops hda_tegra_ops; /* nothing special */
+static const struct hda_controller_ops hda_tegra_ops;  
 
 static void hda_tegra_init(struct hda_tegra *hda)
 {
 	u32 v;
 
-	/* Enable PCI access */
+	 
 	v = readl(hda->regs + HDA_IPFS_CONFIG);
 	v |= HDA_IPFS_EN_FPCI;
 	writel(v, hda->regs + HDA_IPFS_CONFIG);
 
-	/* Enable MEM/IO space and bus master */
+	 
 	v = readl(hda->regs + HDA_CFG_CMD);
 	v &= ~HDA_DISABLE_INTR;
 	v |= HDA_ENABLE_MEM_SPACE | HDA_ENABLE_IO_SPACE |
@@ -122,9 +116,7 @@ static void hda_tegra_init(struct hda_tegra *hda)
 	writel(v, hda->regs + HDA_IPFS_INTR_MASK);
 }
 
-/*
- * power management
- */
+ 
 static int __maybe_unused hda_tegra_suspend(struct device *dev)
 {
 	struct snd_card *card = dev_get_drvdata(dev);
@@ -158,7 +150,7 @@ static int __maybe_unused hda_tegra_runtime_suspend(struct device *dev)
 	struct hda_tegra *hda = container_of(chip, struct hda_tegra, chip);
 
 	if (chip && chip->running) {
-		/* enable controller wake up event */
+		 
 		azx_writew(chip, WAKEEN, azx_readw(chip, WAKEEN) |
 			   STATESTS_INT_MASK);
 
@@ -189,7 +181,7 @@ static int __maybe_unused hda_tegra_runtime_resume(struct device *dev)
 	if (chip->running) {
 		hda_tegra_init(hda);
 		azx_init_chip(chip, 1);
-		/* disable controller wake up event*/
+		 
 		azx_writew(chip, WAKEEN, azx_readw(chip, WAKEEN) &
 			   ~STATESTS_INT_MASK);
 	} else {
@@ -218,9 +210,7 @@ static int hda_tegra_dev_disconnect(struct snd_device *device)
 	return 0;
 }
 
-/*
- * destructor
- */
+ 
 static int hda_tegra_dev_free(struct snd_device *device)
 {
 	struct azx *chip = device->device_data;
@@ -287,15 +277,7 @@ static int hda_tegra_first_init(struct azx *chip, struct platform_device *pdev)
 	bus->dma_stop_delay = 100;
 	card->sync_irq = bus->irq;
 
-	/*
-	 * Tegra194 has 4 SDO lines and the STRIPE can be used to
-	 * indicate how many of the SDO lines the stream should be
-	 * striped. But GCAP register does not reflect the true
-	 * capability of HW. Below workaround helps to fix this.
-	 *
-	 * GCAP_NSDO is bits 19:18 in T_AZA_DBG_CFG_2,
-	 * 0 for 1 SDO, 1 for 2 SDO, 2 for 4 SDO lines.
-	 */
+	 
 	if (of_device_is_compatible(np, "nvidia,tegra194-hda")) {
 		u32 val;
 
@@ -312,25 +294,16 @@ static int hda_tegra_first_init(struct azx *chip, struct platform_device *pdev)
 
 	chip->align_buffer_size = 1;
 
-	/* read number of streams from GCAP register instead of using
-	 * hardcoded value
-	 */
+	 
 	chip->capture_streams = (gcap >> 8) & 0x0f;
 
-	/* The GCAP register on Tegra234 implies no Input Streams(ISS) support,
-	 * but the HW output stream descriptor programming should start with
-	 * offset 0x20*4 from base stream descriptor address. This will be a
-	 * problem while calculating the offset for output stream descriptor
-	 * which will be considering input stream also. So here output stream
-	 * starts with offset 0 which is wrong as HW register for output stream
-	 * offset starts with 4.
-	 */
+	 
 	if (of_device_is_compatible(np, "nvidia,tegra234-hda"))
 		chip->capture_streams = 4;
 
 	chip->playback_streams = (gcap >> 12) & 0x0f;
 	if (!chip->playback_streams && !chip->capture_streams) {
-		/* gcap didn't give any info, switching to old method */
+		 
 		chip->playback_streams = NUM_PLAYBACK_SD;
 		chip->capture_streams = NUM_CAPTURE_SD;
 	}
@@ -338,7 +311,7 @@ static int hda_tegra_first_init(struct azx *chip, struct platform_device *pdev)
 	chip->playback_index_offset = chip->capture_streams;
 	chip->num_streams = chip->playback_streams + chip->capture_streams;
 
-	/* initialize streams */
+	 
 	err = azx_init_streams(chip);
 	if (err < 0) {
 		dev_err(card->dev, "failed to initialize streams: %d\n", err);
@@ -352,35 +325,22 @@ static int hda_tegra_first_init(struct azx *chip, struct platform_device *pdev)
 		return err;
 	}
 
-	/* initialize chip */
+	 
 	azx_init_chip(chip, 1);
 
-	/*
-	 * Playback (for 44.1K/48K, 2-channel, 16-bps) fails with
-	 * 4 SDO lines due to legacy design limitation. Following
-	 * is, from HD Audio Specification (Revision 1.0a), used to
-	 * control striping of the stream across multiple SDO lines
-	 * for sample rates <= 48K.
-	 *
-	 * { ((num_channels * bits_per_sample) / number of SDOs) >= 8 }
-	 *
-	 * Due to legacy design issue it is recommended that above
-	 * ratio must be greater than 8. Since number of SDO lines is
-	 * in powers of 2, next available ratio is 16 which can be
-	 * used as a limiting factor here.
-	 */
+	 
 	if (of_device_is_compatible(np, "nvidia,tegra30-hda"))
 		chip->bus.core.sdo_limit = 16;
 
-	/* codec detection */
+	 
 	if (!bus->codec_mask) {
 		dev_err(card->dev, "no codecs found!\n");
 		return -ENODEV;
 	}
 
-	/* driver name */
+	 
 	strscpy(card->driver, drv_name, sizeof(card->driver));
-	/* shortname for card */
+	 
 	sname = of_get_property(np, "nvidia,model", NULL);
 	if (!sname)
 		sname = drv_name;
@@ -388,7 +348,7 @@ static int hda_tegra_first_init(struct azx *chip, struct platform_device *pdev)
 		dev_info(card->dev, "truncating shortname for card\n");
 	strscpy(card->shortname, sname, sizeof(card->shortname));
 
-	/* longname for card */
+	 
 	snprintf(card->longname, sizeof(card->longname),
 		 "%s at 0x%lx irq %i",
 		 card->shortname, bus->addr, bus->irq);
@@ -396,9 +356,7 @@ static int hda_tegra_first_init(struct azx *chip, struct platform_device *pdev)
 	return 0;
 }
 
-/*
- * constructor
- */
+ 
 
 static void hda_tegra_probe_work(struct work_struct *work);
 
@@ -499,18 +457,11 @@ static int hda_tegra_probe(struct platform_device *pdev)
 
 	hda->resets[hda->nresets++].id = "hda";
 
-	/*
-	 * "hda2hdmi" is not applicable for Tegra234. This is because the
-	 * codec is separate IP and not under display SOR partition now.
-	 */
+	 
 	if (hda->soc->has_hda2hdmi)
 		hda->resets[hda->nresets++].id = "hda2hdmi";
 
-	/*
-	 * "hda2codec_2x" reset is not present on Tegra194. Though DT would
-	 * be updated to reflect this, but to have backward compatibility
-	 * below is necessary.
-	 */
+	 
 	if (hda->soc->has_hda2codec_2x_reset)
 		hda->resets[hda->nresets++].id = "hda2codec_2x";
 
@@ -560,7 +511,7 @@ static void hda_tegra_probe_work(struct work_struct *work)
 	if (err < 0)
 		goto out_free;
 
-	/* create codec instances */
+	 
 	err = azx_probe_codecs(chip, 8);
 	if (err < 0)
 		goto out_free;
@@ -578,7 +529,7 @@ static void hda_tegra_probe_work(struct work_struct *work)
 
  out_free:
 	pm_runtime_put(hda->dev);
-	return; /* no error return from async probe */
+	return;  
 }
 
 static void hda_tegra_remove(struct platform_device *pdev)

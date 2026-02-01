@@ -1,11 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "blk-rq-qos.h"
 
-/*
- * Increment 'v', if 'v' is below 'below'. Returns true if we succeeded,
- * false if 'v' + 1 would be bigger than 'below'.
- */
+ 
 static bool atomic_inc_below(atomic_t *v, unsigned int below)
 {
 	unsigned int cur = atomic_read(v);
@@ -104,21 +101,13 @@ void __rq_qos_queue_depth_changed(struct rq_qos *rqos)
 	} while (rqos);
 }
 
-/*
- * Return true, if we can't increase the depth further by scaling
- */
+ 
 bool rq_depth_calc_max_depth(struct rq_depth *rqd)
 {
 	unsigned int depth;
 	bool ret = false;
 
-	/*
-	 * For QD=1 devices, this is a special case. It's important for those
-	 * to have one request ready when one completes, so force a depth of
-	 * 2 for those devices. On the backend, it'll be a depth of 1 anyway,
-	 * since the device can't have more than that in flight. If we're
-	 * scaling down, then keep a setting of 1/1/1.
-	 */
+	 
 	if (rqd->queue_depth == 1) {
 		if (rqd->scale_step > 0)
 			rqd->max_depth = 1;
@@ -127,13 +116,7 @@ bool rq_depth_calc_max_depth(struct rq_depth *rqd)
 			ret = true;
 		}
 	} else {
-		/*
-		 * scale_step == 0 is our default state. If we have suffered
-		 * latency spikes, step will be > 0, and we shrink the
-		 * allowed write depths. If step is < 0, we're only doing
-		 * writes, and we allow a temporarily higher depth to
-		 * increase performance.
-		 */
+		 
 		depth = min_t(unsigned int, rqd->default_depth,
 			      rqd->queue_depth);
 		if (rqd->scale_step > 0)
@@ -154,12 +137,10 @@ bool rq_depth_calc_max_depth(struct rq_depth *rqd)
 	return ret;
 }
 
-/* Returns true on success and false if scaling up wasn't possible */
+ 
 bool rq_depth_scale_up(struct rq_depth *rqd)
 {
-	/*
-	 * Hit max in previous round, stop here
-	 */
+	 
 	if (rqd->scaled_max)
 		return false;
 
@@ -169,18 +150,10 @@ bool rq_depth_scale_up(struct rq_depth *rqd)
 	return true;
 }
 
-/*
- * Scale rwb down. If 'hard_throttle' is set, do it quicker, since we
- * had a latency violation. Returns true on success and returns false if
- * scaling down wasn't possible.
- */
+ 
 bool rq_depth_scale_down(struct rq_depth *rqd, bool hard_throttle)
 {
-	/*
-	 * Stop scaling down when we've hit the limit. This also prevents
-	 * ->scale_step from going to crazy values, if the device can't
-	 * keep up.
-	 */
+	 
 	if (rqd->max_depth == 1)
 		return false;
 
@@ -210,10 +183,7 @@ static int rq_qos_wake_function(struct wait_queue_entry *curr,
 						     struct rq_qos_wait_data,
 						     wq);
 
-	/*
-	 * If we fail to get a budget, return -1 to interrupt the wake up loop
-	 * in __wake_up_common.
-	 */
+	 
 	if (!data->cb(data->rqw, data->private_data))
 		return -1;
 
@@ -224,22 +194,7 @@ static int rq_qos_wake_function(struct wait_queue_entry *curr,
 	return 1;
 }
 
-/**
- * rq_qos_wait - throttle on a rqw if we need to
- * @rqw: rqw to throttle on
- * @private_data: caller provided specific data
- * @acquire_inflight_cb: inc the rqw->inflight counter if we can
- * @cleanup_cb: the callback to cleanup in case we race with a waker
- *
- * This provides a uniform place for the rq_qos users to do their throttling.
- * Since you can end up with a lot of things sleeping at once, this manages the
- * waking up based on the resources available.  The acquire_inflight_cb should
- * inc the rqw->inflight if we have the ability to do so, or return false if not
- * and then we will sleep until the room becomes available.
- *
- * cleanup_cb is in case that we race with a waker and need to cleanup the
- * inflight count accordingly.
- */
+ 
 void rq_qos_wait(struct rq_wait *rqw, void *private_data,
 		 acquire_inflight_cb_t *acquire_inflight_cb,
 		 cleanup_cb_t *cleanup_cb)
@@ -263,17 +218,13 @@ void rq_qos_wait(struct rq_wait *rqw, void *private_data,
 	has_sleeper = !prepare_to_wait_exclusive(&rqw->wait, &data.wq,
 						 TASK_UNINTERRUPTIBLE);
 	do {
-		/* The memory barrier in set_task_state saves us here. */
+		 
 		if (data.got_token)
 			break;
 		if (!has_sleeper && acquire_inflight_cb(rqw, private_data)) {
 			finish_wait(&rqw->wait, &data.wq);
 
-			/*
-			 * We raced with rq_qos_wake_function() getting a token,
-			 * which means we now have two. Put our local token
-			 * and wake anyone else potentially waiting for one.
-			 */
+			 
 			smp_rmb();
 			if (data.got_token)
 				cleanup_cb(rqw, private_data);
@@ -308,10 +259,7 @@ int rq_qos_add(struct rq_qos *rqos, struct gendisk *disk, enum rq_qos_id id,
 	rqos->id = id;
 	rqos->ops = ops;
 
-	/*
-	 * No IO can be in-flight when adding rqos, so freeze queue, which
-	 * is fine since we only support rq_qos for blk-mq queue.
-	 */
+	 
 	blk_mq_freeze_queue(q);
 
 	if (rq_qos_id(q, rqos->id))

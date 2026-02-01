@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * leds-lm3533.c -- LM3533 LED driver
- *
- * Copyright (C) 2011-2012 Texas Instruments
- *
- * Author: Johan Hovold <jhovold@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/leds.h>
@@ -123,7 +117,7 @@ static int lm3533_led_set(struct led_classdev *cdev,
 	dev_dbg(led->cdev.dev, "%s - %d\n", __func__, value);
 
 	if (value == 0)
-		lm3533_led_pattern_enable(led, 0);	/* disable blink */
+		lm3533_led_pattern_enable(led, 0);	 
 
 	return lm3533_ctrlbank_set_brightness(&led->cb, value);
 }
@@ -143,7 +137,7 @@ static enum led_brightness lm3533_led_get(struct led_classdev *cdev)
 	return val;
 }
 
-/* Pattern generator defines (delays in us). */
+ 
 #define LM3533_LED_DELAY1_VMIN	0x00
 #define LM3533_LED_DELAY2_VMIN	0x3d
 #define LM3533_LED_DELAY3_VMIN	0x80
@@ -160,25 +154,18 @@ static enum led_brightness lm3533_led_get(struct led_classdev *cdev)
 #define LM3533_LED_DELAY2_TMAX	9781248U
 #define LM3533_LED_DELAY3_TMAX	76890112U
 
-/* t_step = (t_max - t_min) / (v_max - v_min) */
+ 
 #define LM3533_LED_DELAY1_TSTEP	16384
 #define LM3533_LED_DELAY2_TSTEP	131072
 #define LM3533_LED_DELAY3_TSTEP	524288
 
-/* Delay limits for hardware accelerated blinking (in ms). */
+ 
 #define LM3533_LED_DELAY_ON_MAX \
 	((LM3533_LED_DELAY2_TMAX + LM3533_LED_DELAY2_TSTEP / 2) / 1000)
 #define LM3533_LED_DELAY_OFF_MAX \
 	((LM3533_LED_DELAY3_TMAX + LM3533_LED_DELAY3_TSTEP / 2) / 1000)
 
-/*
- * Returns linear map of *t from [t_min,t_max] to [v_min,v_max] with a step
- * size of t_step, where
- *
- *	t_step = (t_max - t_min) / (v_max - v_min)
- *
- * and updates *t to reflect the mapped value.
- */
+ 
 static u8 time_to_val(unsigned *t, unsigned t_min, unsigned t_step,
 							u8 v_min, u8 v_max)
 {
@@ -191,19 +178,7 @@ static u8 time_to_val(unsigned *t, unsigned t_min, unsigned t_step,
 	return (u8)val;
 }
 
-/*
- * Returns time code corresponding to *delay (in ms) and updates *delay to
- * reflect actual hardware delay.
- *
- * Hardware supports 256 discrete delay times, divided into three groups with
- * the following ranges and step-sizes:
- *
- *	[   16,   999]	[0x00, 0x3e]	step  16 ms
- *	[ 1130,  9781]	[0x3d, 0x7f]	step 131 ms
- *	[10306, 76890]	[0x80, 0xff]	step 524 ms
- *
- * Note that delay group 3 is only available for delay_off.
- */
+ 
 static u8 lm3533_led_get_hw_delay(unsigned *delay)
 {
 	unsigned t;
@@ -236,10 +211,7 @@ static u8 lm3533_led_get_hw_delay(unsigned *delay)
 	return val;
 }
 
-/*
- * Set delay register base to *delay (in ms) and update *delay to reflect
- * actual hardware delay used.
- */
+ 
 static u8 lm3533_led_delay_set(struct lm3533_led *led, u8 base,
 							unsigned long *delay)
 {
@@ -250,7 +222,7 @@ static u8 lm3533_led_delay_set(struct lm3533_led *led, u8 base,
 
 	t = (unsigned)*delay;
 
-	/* Delay group 3 is only available for low time (delay off). */
+	 
 	if (base != LM3533_REG_PATTERN_LOW_TIME_BASE)
 		t = min(t, LM3533_LED_DELAY2_TMAX / 1000);
 
@@ -317,18 +289,7 @@ static ssize_t show_id(struct device *dev,
 	return sysfs_emit(buf, "%d\n", led->id);
 }
 
-/*
- * Pattern generator rise/fall times:
- *
- *   0 - 2048 us (default)
- *   1 - 262 ms
- *   2 - 524 ms
- *   3 - 1.049 s
- *   4 - 2.097 s
- *   5 - 4.194 s
- *   6 - 8.389 s
- *   7 - 16.78 s
- */
+ 
 static ssize_t show_risefalltime(struct device *dev,
 					struct device_attribute *attr,
 					char *buf, u8 base)
@@ -684,10 +645,7 @@ static int lm3533_led_probe(struct platform_device *pdev)
 
 	mutex_init(&led->mutex);
 
-	/* The class framework makes a callback to get brightness during
-	 * registration so use parent device (for error reporting) until
-	 * registered.
-	 */
+	 
 	led->cb.lm3533 = lm3533;
 	led->cb.id = lm3533_led_get_ctrlbank_id(led);
 	led->cb.dev = lm3533->dev;
@@ -738,7 +696,7 @@ static void lm3533_led_shutdown(struct platform_device *pdev)
 	dev_dbg(&pdev->dev, "%s\n", __func__);
 
 	lm3533_ctrlbank_disable(&led->cb);
-	lm3533_led_set(&led->cdev, LED_OFF);		/* disable blink */
+	lm3533_led_set(&led->cdev, LED_OFF);		 
 }
 
 static struct platform_driver lm3533_led_driver = {

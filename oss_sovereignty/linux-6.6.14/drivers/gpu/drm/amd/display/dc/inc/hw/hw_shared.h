@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DAL_HW_SHARED_H__
 #define __DAL_HW_SHARED_H__
@@ -30,18 +7,11 @@
 #include "fixed31_32.h"
 #include "dc_hw_types.h"
 
-/******************************************************************************
- * Data types shared between different Virtual HW blocks
- ******************************************************************************/
+ 
 
 #define MAX_AUDIOS 7
 
-/**
- * @MAX_PIPES:
- *
- * Every ASIC support a fixed number of pipes; MAX_PIPES defines a large number
- * to be used inside loops and for determining array sizes.
- */
+ 
 #define MAX_PIPES 6
 #define MAX_DIG_LINK_ENCODERS 7
 #define MAX_DWB_PIPES	1
@@ -118,11 +88,7 @@ struct tetrahedral_params {
 
 };
 
-/* arr_curve_points - regamma regions/segments specification
- * arr_points - beginning and end point specified separately (only one on DCE)
- * corner_points - beginning and end point for all 3 colors (DCN)
- * rgb_resulted - final curve
- */
+ 
 struct pwl_params {
 	struct gamma_curve arr_curve_points[34];
 	union {
@@ -133,14 +99,10 @@ struct pwl_params {
 	uint32_t hw_points_num;
 };
 
-/* move to dpp
- * while we are moving functionality out of opp to dpp to align
- * HW programming to HW IP, we define these struct in hw_shared
- * so we can still compile while refactoring
- */
+ 
 
 enum lb_pixel_depth {
-	/* do not change the values because it is used as bit vector */
+	 
 	LB_PIXEL_DEPTH_18BPP = 1,
 	LB_PIXEL_DEPTH_24BPP = 2,
 	LB_PIXEL_DEPTH_30BPP = 4,
@@ -149,8 +111,8 @@ enum lb_pixel_depth {
 
 enum graphics_csc_adjust_type {
 	GRAPHICS_CSC_ADJUST_TYPE_BYPASS = 0,
-	GRAPHICS_CSC_ADJUST_TYPE_HW, /* without adjustments */
-	GRAPHICS_CSC_ADJUST_TYPE_SW  /*use adjustments */
+	GRAPHICS_CSC_ADJUST_TYPE_HW,  
+	GRAPHICS_CSC_ADJUST_TYPE_SW   
 };
 
 enum ipp_degamma_mode {
@@ -210,8 +172,8 @@ enum opp_regamma {
 
 enum optc_dsc_mode {
 	OPTC_DSC_DISABLED = 0,
-	OPTC_DSC_ENABLED_444 = 1, /* 'RGB 444' or 'Simple YCbCr 4:2:2' (4:2:2 upsampled to 4:4:4) */
-	OPTC_DSC_ENABLED_NATIVE_SUBSAMPLED = 2 /* Native 4:2:2 or 4:2:0 */
+	OPTC_DSC_ENABLED_444 = 1,  
+	OPTC_DSC_ENABLED_NATIVE_SUBSAMPLED = 2  
 };
 
 struct dc_bias_and_scale {
@@ -275,74 +237,8 @@ enum dc_lut_mode {
 	LUT_RAM_B
 };
 
-/**
- * speakersToChannels
- *
- * @brief
- *  translate speakers to channels
- *
- *  FL  - Front Left
- *  FR  - Front Right
- *  RL  - Rear Left
- *  RR  - Rear Right
- *  RC  - Rear Center
- *  FC  - Front Center
- *  FLC - Front Left Center
- *  FRC - Front Right Center
- *  RLC - Rear Left Center
- *  RRC - Rear Right Center
- *  LFE - Low Freq Effect
- *
- *               FC
- *          FLC      FRC
- *    FL                    FR
- *
- *                    LFE
- *              ()
- *
- *
- *    RL                    RR
- *          RLC      RRC
- *               RC
- *
- *             ch  8   7   6   5   4   3   2   1
- * 0b00000011      -   -   -   -   -   -   FR  FL
- * 0b00000111      -   -   -   -   -   LFE FR  FL
- * 0b00001011      -   -   -   -   FC  -   FR  FL
- * 0b00001111      -   -   -   -   FC  LFE FR  FL
- * 0b00010011      -   -   -   RC  -   -   FR  FL
- * 0b00010111      -   -   -   RC  -   LFE FR  FL
- * 0b00011011      -   -   -   RC  FC  -   FR  FL
- * 0b00011111      -   -   -   RC  FC  LFE FR  FL
- * 0b00110011      -   -   RR  RL  -   -   FR  FL
- * 0b00110111      -   -   RR  RL  -   LFE FR  FL
- * 0b00111011      -   -   RR  RL  FC  -   FR  FL
- * 0b00111111      -   -   RR  RL  FC  LFE FR  FL
- * 0b01110011      -   RC  RR  RL  -   -   FR  FL
- * 0b01110111      -   RC  RR  RL  -   LFE FR  FL
- * 0b01111011      -   RC  RR  RL  FC  -   FR  FL
- * 0b01111111      -   RC  RR  RL  FC  LFE FR  FL
- * 0b11110011      RRC RLC RR  RL  -   -   FR  FL
- * 0b11110111      RRC RLC RR  RL  -   LFE FR  FL
- * 0b11111011      RRC RLC RR  RL  FC  -   FR  FL
- * 0b11111111      RRC RLC RR  RL  FC  LFE FR  FL
- * 0b11000011      FRC FLC -   -   -   -   FR  FL
- * 0b11000111      FRC FLC -   -   -   LFE FR  FL
- * 0b11001011      FRC FLC -   -   FC  -   FR  FL
- * 0b11001111      FRC FLC -   -   FC  LFE FR  FL
- * 0b11010011      FRC FLC -   RC  -   -   FR  FL
- * 0b11010111      FRC FLC -   RC  -   LFE FR  FL
- * 0b11011011      FRC FLC -   RC  FC  -   FR  FL
- * 0b11011111      FRC FLC -   RC  FC  LFE FR  FL
- * 0b11110011      FRC FLC RR  RL  -   -   FR  FL
- * 0b11110111      FRC FLC RR  RL  -   LFE FR  FL
- * 0b11111011      FRC FLC RR  RL  FC  -   FR  FL
- * 0b11111111      FRC FLC RR  RL  FC  LFE FR  FL
- *
- * @param
- *  speakers - speaker information as it comes from CEA audio block
- */
-/* translate speakers to channels */
+ 
+ 
 
 union audio_cea_channels {
 	uint8_t all;
@@ -358,4 +254,4 @@ union audio_cea_channels {
 	} channels;
 };
 
-#endif /* __DAL_HW_SHARED_H__ */
+#endif  

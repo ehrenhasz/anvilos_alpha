@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <argp.h>
 
@@ -233,24 +233,7 @@ static void report_final(struct bench_res res[], int res_cnt)
 	printf("\tavg %.3lf\tstddev %.3lf\n", gp_stat.mean, gp_stat.stddev);
 }
 
-/* local-storage-tasks-trace: Benchmark performance of BPF local_storage's use
- * of RCU Tasks-Trace.
- *
- * Stress RCU Tasks Trace by forking many tasks, all of which do no work aside
- * from sleep() loop, and creating/destroying BPF task-local storage on wakeup.
- * The number of forked tasks is configurable.
- *
- * exercising code paths which call call_rcu_tasks_trace while there are many
- * thousands of tasks on the system should result in RCU Tasks-Trace having to
- * do a noticeable amount of work.
- *
- * This should be observable by measuring rcu_tasks_trace_kthread CPU usage
- * after the grace period has ended, or by measuring grace period latency.
- *
- * This benchmark uses both approaches, attaching to rcu_tasks_trace_pregp_step
- * and rcu_tasks_trace_postgp functions to measure grace period latency and
- * using /proc/PID/stat to measure rcu_tasks_trace_kthread kernel ticks
- */
+ 
 const struct bench bench_local_storage_tasks_trace = {
 	.name = "local-storage-tasks-trace",
 	.argp = &bench_local_storage_rcu_tasks_trace_argp,

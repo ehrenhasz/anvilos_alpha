@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/mm.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -29,12 +29,7 @@
 #include "internal.h"
 #include "swap.h"
 
-/**
- * kfree_const - conditionally free memory
- * @x: pointer to the memory
- *
- * Function calls kfree only if @x is not in .rodata section.
- */
+ 
 void kfree_const(const void *x)
 {
 	if (!is_kernel_rodata((unsigned long)x))
@@ -42,13 +37,7 @@ void kfree_const(const void *x)
 }
 EXPORT_SYMBOL(kfree_const);
 
-/**
- * kstrdup - allocate space for and copy an existing string
- * @s: the string to duplicate
- * @gfp: the GFP mask used in the kmalloc() call when allocating memory
- *
- * Return: newly allocated copy of @s or %NULL in case of error
- */
+ 
 noinline
 char *kstrdup(const char *s, gfp_t gfp)
 {
@@ -66,17 +55,7 @@ char *kstrdup(const char *s, gfp_t gfp)
 }
 EXPORT_SYMBOL(kstrdup);
 
-/**
- * kstrdup_const - conditionally duplicate an existing const string
- * @s: the string to duplicate
- * @gfp: the GFP mask used in the kmalloc() call when allocating memory
- *
- * Note: Strings allocated by kstrdup_const should be freed by kfree_const and
- * must not be passed to krealloc().
- *
- * Return: source string if it is in .rodata section otherwise
- * fallback to kstrdup.
- */
+ 
 const char *kstrdup_const(const char *s, gfp_t gfp)
 {
 	if (is_kernel_rodata((unsigned long)s))
@@ -86,16 +65,7 @@ const char *kstrdup_const(const char *s, gfp_t gfp)
 }
 EXPORT_SYMBOL(kstrdup_const);
 
-/**
- * kstrndup - allocate space for and copy an existing string
- * @s: the string to duplicate
- * @max: read at most @max chars from @s
- * @gfp: the GFP mask used in the kmalloc() call when allocating memory
- *
- * Note: Use kmemdup_nul() instead if the size is known exactly.
- *
- * Return: newly allocated copy of @s or %NULL in case of error
- */
+ 
 char *kstrndup(const char *s, size_t max, gfp_t gfp)
 {
 	size_t len;
@@ -114,16 +84,7 @@ char *kstrndup(const char *s, size_t max, gfp_t gfp)
 }
 EXPORT_SYMBOL(kstrndup);
 
-/**
- * kmemdup - duplicate region of memory
- *
- * @src: memory region to duplicate
- * @len: memory region length
- * @gfp: GFP mask to use
- *
- * Return: newly allocated copy of @src or %NULL in case of error,
- * result is physically contiguous. Use kfree() to free.
- */
+ 
 void *kmemdup(const void *src, size_t len, gfp_t gfp)
 {
 	void *p;
@@ -135,16 +96,7 @@ void *kmemdup(const void *src, size_t len, gfp_t gfp)
 }
 EXPORT_SYMBOL(kmemdup);
 
-/**
- * kvmemdup - duplicate region of memory
- *
- * @src: memory region to duplicate
- * @len: memory region length
- * @gfp: GFP mask to use
- *
- * Return: newly allocated copy of @src or %NULL in case of error,
- * result may be not physically contiguous. Use kvfree() to free.
- */
+ 
 void *kvmemdup(const void *src, size_t len, gfp_t gfp)
 {
 	void *p;
@@ -156,15 +108,7 @@ void *kvmemdup(const void *src, size_t len, gfp_t gfp)
 }
 EXPORT_SYMBOL(kvmemdup);
 
-/**
- * kmemdup_nul - Create a NUL-terminated string from unterminated data
- * @s: The data to stringify
- * @len: The size of the data
- * @gfp: the GFP mask used in the kmalloc() call when allocating memory
- *
- * Return: newly allocated copy of @s with NUL-termination or %NULL in
- * case of error
- */
+ 
 char *kmemdup_nul(const char *s, size_t len, gfp_t gfp)
 {
 	char *buf;
@@ -181,15 +125,7 @@ char *kmemdup_nul(const char *s, size_t len, gfp_t gfp)
 }
 EXPORT_SYMBOL(kmemdup_nul);
 
-/**
- * memdup_user - duplicate memory region from user space
- *
- * @src: source address in user space
- * @len: number of bytes to copy
- *
- * Return: an ERR_PTR() on failure.  Result is physically
- * contiguous, to be freed by kfree().
- */
+ 
 void *memdup_user(const void __user *src, size_t len)
 {
 	void *p;
@@ -207,15 +143,7 @@ void *memdup_user(const void __user *src, size_t len)
 }
 EXPORT_SYMBOL(memdup_user);
 
-/**
- * vmemdup_user - duplicate memory region from user space
- *
- * @src: source address in user space
- * @len: number of bytes to copy
- *
- * Return: an ERR_PTR() on failure.  Result may be not
- * physically contiguous.  Use kvfree() to free.
- */
+ 
 void *vmemdup_user(const void __user *src, size_t len)
 {
 	void *p;
@@ -233,13 +161,7 @@ void *vmemdup_user(const void __user *src, size_t len)
 }
 EXPORT_SYMBOL(vmemdup_user);
 
-/**
- * strndup_user - duplicate an existing string from user space
- * @s: The string to duplicate
- * @n: Maximum number of bytes to copy, including the trailing NUL.
- *
- * Return: newly allocated copy of @s or an ERR_PTR() in case of error
- */
+ 
 char *strndup_user(const char __user *s, long n)
 {
 	char *p;
@@ -264,23 +186,12 @@ char *strndup_user(const char __user *s, long n)
 }
 EXPORT_SYMBOL(strndup_user);
 
-/**
- * memdup_user_nul - duplicate memory region from user space and NUL-terminate
- *
- * @src: source address in user space
- * @len: number of bytes to copy
- *
- * Return: an ERR_PTR() on failure.
- */
+ 
 void *memdup_user_nul(const void __user *src, size_t len)
 {
 	char *p;
 
-	/*
-	 * Always use GFP_KERNEL, since copy_from_user() can sleep and
-	 * cause pagefault, which makes it pointless to use GFP_NOFS
-	 * or GFP_ATOMIC.
-	 */
+	 
 	p = kmalloc_track_caller(len + 1, GFP_KERNEL);
 	if (!p)
 		return ERR_PTR(-ENOMEM);
@@ -295,7 +206,7 @@ void *memdup_user_nul(const void __user *src, size_t len)
 }
 EXPORT_SYMBOL(memdup_user_nul);
 
-/* Check if the vma is being used as a stack by this task */
+ 
 int vma_is_stack_for_current(struct vm_area_struct *vma)
 {
 	struct task_struct * __maybe_unused t = current;
@@ -303,12 +214,10 @@ int vma_is_stack_for_current(struct vm_area_struct *vma)
 	return (vma->vm_start <= KSTK_ESP(t) && vma->vm_end >= KSTK_ESP(t));
 }
 
-/*
- * Change backing file, only valid to use during initial VMA setup.
- */
+ 
 void vma_set_file(struct vm_area_struct *vma, struct file *file)
 {
-	/* Changing an anonymous vma with this is illegal */
+	 
 	get_file(file);
 	swap(vma->vm_file, file);
 	fput(file);
@@ -316,7 +225,7 @@ void vma_set_file(struct vm_area_struct *vma, struct file *file)
 EXPORT_SYMBOL(vma_set_file);
 
 #ifndef STACK_RND_MASK
-#define STACK_RND_MASK (0x7ff >> (PAGE_SHIFT - 12))     /* 8MB of VA */
+#define STACK_RND_MASK (0x7ff >> (PAGE_SHIFT - 12))      
 #endif
 
 unsigned long randomize_stack_top(unsigned long stack_top)
@@ -335,20 +244,7 @@ unsigned long randomize_stack_top(unsigned long stack_top)
 #endif
 }
 
-/**
- * randomize_page - Generate a random, page aligned address
- * @start:	The smallest acceptable address the caller will take.
- * @range:	The size of the area, starting at @start, within which the
- *		random address must fall.
- *
- * If @start + @range would overflow, @range is capped.
- *
- * NOTE: Historical use of randomize_range, which this replaces, presumed that
- * @start was already page aligned.  We now align it regardless.
- *
- * Return: A page aligned address within [start, start + range).  On error,
- * @start is returned.
- */
+ 
 unsigned long randomize_page(unsigned long start, unsigned long range)
 {
 	if (!PAGE_ALIGNED(start)) {
@@ -370,7 +266,7 @@ unsigned long randomize_page(unsigned long start, unsigned long range)
 #ifdef CONFIG_ARCH_WANT_DEFAULT_TOPDOWN_MMAP_LAYOUT
 unsigned long __weak arch_randomize_brk(struct mm_struct *mm)
 {
-	/* Is the current task 32bit ? */
+	 
 	if (!IS_ENABLED(CONFIG_64BIT) || is_compat_task())
 		return randomize_page(mm->brk, SZ_32M);
 
@@ -385,7 +281,7 @@ unsigned long arch_mmap_rnd(void)
 	if (is_compat_task())
 		rnd = get_random_long() & ((1UL << mmap_rnd_compat_bits) - 1);
 	else
-#endif /* CONFIG_HAVE_ARCH_MMAP_RND_COMPAT_BITS */
+#endif  
 		rnd = get_random_long() & ((1UL << mmap_rnd_bits) - 1);
 
 	return rnd << PAGE_SHIFT;
@@ -396,8 +292,7 @@ static int mmap_is_legacy(struct rlimit *rlim_stack)
 	if (current->personality & ADDR_COMPAT_LAYOUT)
 		return 1;
 
-	/* On parisc the stack always grows up - so a unlimited stack should
-	 * not be an indicator to use the legacy memory layout. */
+	 
 	if (rlim_stack->rlim_cur == RLIM_INFINITY &&
 		!IS_ENABLED(CONFIG_STACK_GROWSUP))
 		return 1;
@@ -405,32 +300,24 @@ static int mmap_is_legacy(struct rlimit *rlim_stack)
 	return sysctl_legacy_va_layout;
 }
 
-/*
- * Leave enough space between the mmap area and the stack to honour ulimit in
- * the face of randomisation.
- */
+ 
 #define MIN_GAP		(SZ_128M)
 #define MAX_GAP		(STACK_TOP / 6 * 5)
 
 static unsigned long mmap_base(unsigned long rnd, struct rlimit *rlim_stack)
 {
 #ifdef CONFIG_STACK_GROWSUP
-	/*
-	 * For an upwards growing stack the calculation is much simpler.
-	 * Memory for the maximum stack size is reserved at the top of the
-	 * task. mmap_base starts directly below the stack and grows
-	 * downwards.
-	 */
+	 
 	return PAGE_ALIGN_DOWN(mmap_upper_limit(rlim_stack) - rnd);
 #else
 	unsigned long gap = rlim_stack->rlim_cur;
 	unsigned long pad = stack_guard_gap;
 
-	/* Account for stack randomization if necessary */
+	 
 	if (current->flags & PF_RANDOMIZE)
 		pad += (STACK_RND_MASK << PAGE_SHIFT);
 
-	/* Values close to RLIM_INFINITY can overflow. */
+	 
 	if (gap + pad > gap)
 		gap += pad;
 
@@ -466,21 +353,7 @@ void arch_pick_mmap_layout(struct mm_struct *mm, struct rlimit *rlim_stack)
 }
 #endif
 
-/**
- * __account_locked_vm - account locked pages to an mm's locked_vm
- * @mm:          mm to account against
- * @pages:       number of pages to account
- * @inc:         %true if @pages should be considered positive, %false if not
- * @task:        task used to check RLIMIT_MEMLOCK
- * @bypass_rlim: %true if checking RLIMIT_MEMLOCK should be skipped
- *
- * Assumes @task and @mm are valid (i.e. at least one reference on each), and
- * that mmap_lock is held as writer.
- *
- * Return:
- * * 0       on success
- * * -ENOMEM if RLIMIT_MEMLOCK would be exceeded.
- */
+ 
 int __account_locked_vm(struct mm_struct *mm, unsigned long pages, bool inc,
 			struct task_struct *task, bool bypass_rlim)
 {
@@ -512,18 +385,7 @@ int __account_locked_vm(struct mm_struct *mm, unsigned long pages, bool inc,
 }
 EXPORT_SYMBOL_GPL(__account_locked_vm);
 
-/**
- * account_locked_vm - account locked pages to an mm's locked_vm
- * @mm:          mm to account against, may be NULL
- * @pages:       number of pages to account
- * @inc:         %true if @pages should be considered positive, %false if not
- *
- * Assumes a non-NULL @mm is valid (i.e. at least one reference on it).
- *
- * Return:
- * * 0       on success, or if mm is NULL
- * * -ENOMEM if RLIMIT_MEMLOCK would be exceeded.
- */
+ 
 int account_locked_vm(struct mm_struct *mm, unsigned long pages, bool inc)
 {
 	int ret;
@@ -576,85 +438,47 @@ unsigned long vm_mmap(struct file *file, unsigned long addr,
 }
 EXPORT_SYMBOL(vm_mmap);
 
-/**
- * kvmalloc_node - attempt to allocate physically contiguous memory, but upon
- * failure, fall back to non-contiguous (vmalloc) allocation.
- * @size: size of the request.
- * @flags: gfp mask for the allocation - must be compatible (superset) with GFP_KERNEL.
- * @node: numa node to allocate from
- *
- * Uses kmalloc to get the memory but if the allocation fails then falls back
- * to the vmalloc allocator. Use kvfree for freeing the memory.
- *
- * GFP_NOWAIT and GFP_ATOMIC are not supported, neither is the __GFP_NORETRY modifier.
- * __GFP_RETRY_MAYFAIL is supported, and it should be used only if kmalloc is
- * preferable to the vmalloc fallback, due to visible performance drawbacks.
- *
- * Return: pointer to the allocated memory of %NULL in case of failure
- */
+ 
 void *kvmalloc_node(size_t size, gfp_t flags, int node)
 {
 	gfp_t kmalloc_flags = flags;
 	void *ret;
 
-	/*
-	 * We want to attempt a large physically contiguous block first because
-	 * it is less likely to fragment multiple larger blocks and therefore
-	 * contribute to a long term fragmentation less than vmalloc fallback.
-	 * However make sure that larger requests are not too disruptive - no
-	 * OOM killer and no allocation failure warnings as we have a fallback.
-	 */
+	 
 	if (size > PAGE_SIZE) {
 		kmalloc_flags |= __GFP_NOWARN;
 
 		if (!(kmalloc_flags & __GFP_RETRY_MAYFAIL))
 			kmalloc_flags |= __GFP_NORETRY;
 
-		/* nofail semantic is implemented by the vmalloc fallback */
+		 
 		kmalloc_flags &= ~__GFP_NOFAIL;
 	}
 
 	ret = kmalloc_node(size, kmalloc_flags, node);
 
-	/*
-	 * It doesn't really make sense to fallback to vmalloc for sub page
-	 * requests
-	 */
+	 
 	if (ret || size <= PAGE_SIZE)
 		return ret;
 
-	/* non-sleeping allocations are not supported by vmalloc */
+	 
 	if (!gfpflags_allow_blocking(flags))
 		return NULL;
 
-	/* Don't even allow crazy sizes */
+	 
 	if (unlikely(size > INT_MAX)) {
 		WARN_ON_ONCE(!(flags & __GFP_NOWARN));
 		return NULL;
 	}
 
-	/*
-	 * kvmalloc() can always use VM_ALLOW_HUGE_VMAP,
-	 * since the callers already cannot assume anything
-	 * about the resulting pointer, and cannot play
-	 * protection games.
-	 */
+	 
 	return __vmalloc_node_range(size, 1, VMALLOC_START, VMALLOC_END,
 			flags, PAGE_KERNEL, VM_ALLOW_HUGE_VMAP,
 			node, __builtin_return_address(0));
 }
 EXPORT_SYMBOL(kvmalloc_node);
 
-/**
- * kvfree() - Free memory.
- * @addr: Pointer to allocated memory.
- *
- * kvfree frees memory allocated by any of vmalloc(), kmalloc() or kvmalloc().
- * It is slightly more efficient to use kfree() or vfree() if you are certain
- * that you know which one to use.
- *
- * Context: Either preemptible task context or not-NMI interrupt.
- */
+ 
 void kvfree(const void *addr)
 {
 	if (is_vmalloc_addr(addr))
@@ -664,15 +488,7 @@ void kvfree(const void *addr)
 }
 EXPORT_SYMBOL(kvfree);
 
-/**
- * kvfree_sensitive - Free a data object containing sensitive information.
- * @addr: address of the data object to be freed.
- * @len: length of the data object.
- *
- * Use the special memzero_explicit() function to clear the content of a
- * kvmalloc'ed object containing sensitive data to make sure that the
- * compiler won't optimize out the data clearing.
- */
+ 
 void kvfree_sensitive(const void *addr, size_t len)
 {
 	if (likely(!ZERO_OR_NULL_PTR(addr))) {
@@ -697,12 +513,7 @@ void *kvrealloc(const void *p, size_t oldsize, size_t newsize, gfp_t flags)
 }
 EXPORT_SYMBOL(kvrealloc);
 
-/**
- * __vmalloc_array - allocate memory for a virtually contiguous array.
- * @n: number of elements.
- * @size: element size.
- * @flags: the type of memory to allocate (see kmalloc).
- */
+ 
 void *__vmalloc_array(size_t n, size_t size, gfp_t flags)
 {
 	size_t bytes;
@@ -713,34 +524,21 @@ void *__vmalloc_array(size_t n, size_t size, gfp_t flags)
 }
 EXPORT_SYMBOL(__vmalloc_array);
 
-/**
- * vmalloc_array - allocate memory for a virtually contiguous array.
- * @n: number of elements.
- * @size: element size.
- */
+ 
 void *vmalloc_array(size_t n, size_t size)
 {
 	return __vmalloc_array(n, size, GFP_KERNEL);
 }
 EXPORT_SYMBOL(vmalloc_array);
 
-/**
- * __vcalloc - allocate and zero memory for a virtually contiguous array.
- * @n: number of elements.
- * @size: element size.
- * @flags: the type of memory to allocate (see kmalloc).
- */
+ 
 void *__vcalloc(size_t n, size_t size, gfp_t flags)
 {
 	return __vmalloc_array(n, size, flags | __GFP_ZERO);
 }
 EXPORT_SYMBOL(__vcalloc);
 
-/**
- * vcalloc - allocate and zero memory for a virtually contiguous array.
- * @n: number of elements.
- * @size: element size.
- */
+ 
 void *vcalloc(size_t n, size_t size)
 {
 	return __vmalloc_array(n, size, GFP_KERNEL | __GFP_ZERO);
@@ -756,23 +554,12 @@ struct anon_vma *folio_anon_vma(struct folio *folio)
 	return (void *)(mapping - PAGE_MAPPING_ANON);
 }
 
-/**
- * folio_mapping - Find the mapping where this folio is stored.
- * @folio: The folio.
- *
- * For folios which are in the page cache, return the mapping that this
- * page belongs to.  Folios in the swap cache return the swap mapping
- * this page is stored in (which is different from the mapping for the
- * swap file or swap device where the data is stored).
- *
- * You can call this for folios which aren't in the swap cache or page
- * cache and it will return NULL.
- */
+ 
 struct address_space *folio_mapping(struct folio *folio)
 {
 	struct address_space *mapping;
 
-	/* This happens if someone calls flush_dcache_page on slab page */
+	 
 	if (unlikely(folio_test_slab(folio)))
 		return NULL;
 
@@ -787,16 +574,7 @@ struct address_space *folio_mapping(struct folio *folio)
 }
 EXPORT_SYMBOL(folio_mapping);
 
-/**
- * folio_copy - Copy the contents of one folio to another.
- * @dst: Folio to copy to.
- * @src: Folio to copy from.
- *
- * The bytes in the folio represented by @src are copied to @dst.
- * Assumes the caller has validated that @dst is at least as large as @src.
- * Can be called in atomic context for order-0 folios, but if the folio is
- * larger, it may sleep.
- */
+ 
 void folio_copy(struct folio *dst, struct folio *src)
 {
 	long i = 0;
@@ -814,8 +592,8 @@ int sysctl_overcommit_memory __read_mostly = OVERCOMMIT_GUESS;
 int sysctl_overcommit_ratio __read_mostly = 50;
 unsigned long sysctl_overcommit_kbytes __read_mostly;
 int sysctl_max_map_count __read_mostly = DEFAULT_MAX_MAP_COUNT;
-unsigned long sysctl_user_reserve_kbytes __read_mostly = 1UL << 17; /* 128MB */
-unsigned long sysctl_admin_reserve_kbytes __read_mostly = 1UL << 13; /* 8MB */
+unsigned long sysctl_user_reserve_kbytes __read_mostly = 1UL << 17;  
+unsigned long sysctl_admin_reserve_kbytes __read_mostly = 1UL << 13;  
 
 int overcommit_ratio_handler(struct ctl_table *table, int write, void *buffer,
 		size_t *lenp, loff_t *ppos)
@@ -840,17 +618,7 @@ int overcommit_policy_handler(struct ctl_table *table, int write, void *buffer,
 	int new_policy = -1;
 	int ret;
 
-	/*
-	 * The deviation of sync_overcommit_as could be big with loose policy
-	 * like OVERCOMMIT_ALWAYS/OVERCOMMIT_GUESS. When changing policy to
-	 * strict OVERCOMMIT_NEVER, we need to reduce the deviation to comply
-	 * with the strict "NEVER", and to avoid possible race condition (even
-	 * though user usually won't too frequently do the switching to policy
-	 * OVERCOMMIT_NEVER), the switch is done in the following order:
-	 *	1. changing the batch
-	 *	2. sync percpu count on each CPU
-	 *	3. switch the policy
-	 */
+	 
 	if (write) {
 		t = *table;
 		t.data = &new_policy;
@@ -880,9 +648,7 @@ int overcommit_kbytes_handler(struct ctl_table *table, int write, void *buffer,
 	return ret;
 }
 
-/*
- * Committed memory limit enforced when OVERCOMMIT_NEVER policy is used
- */
+ 
 unsigned long vm_commit_limit(void)
 {
 	unsigned long allowed;
@@ -897,56 +663,24 @@ unsigned long vm_commit_limit(void)
 	return allowed;
 }
 
-/*
- * Make sure vm_committed_as in one cacheline and not cacheline shared with
- * other variables. It can be updated by several CPUs frequently.
- */
+ 
 struct percpu_counter vm_committed_as ____cacheline_aligned_in_smp;
 
-/*
- * The global memory commitment made in the system can be a metric
- * that can be used to drive ballooning decisions when Linux is hosted
- * as a guest. On Hyper-V, the host implements a policy engine for dynamically
- * balancing memory across competing virtual machines that are hosted.
- * Several metrics drive this policy engine including the guest reported
- * memory commitment.
- *
- * The time cost of this is very low for small platforms, and for big
- * platform like a 2S/36C/72T Skylake server, in worst case where
- * vm_committed_as's spinlock is under severe contention, the time cost
- * could be about 30~40 microseconds.
- */
+ 
 unsigned long vm_memory_committed(void)
 {
 	return percpu_counter_sum_positive(&vm_committed_as);
 }
 EXPORT_SYMBOL_GPL(vm_memory_committed);
 
-/*
- * Check that a process has enough memory to allocate a new virtual
- * mapping. 0 means there is enough memory for the allocation to
- * succeed and -ENOMEM implies there is not.
- *
- * We currently support three overcommit policies, which are set via the
- * vm.overcommit_memory sysctl.  See Documentation/mm/overcommit-accounting.rst
- *
- * Strict overcommit modes added 2002 Feb 26 by Alan Cox.
- * Additional code 2002 Jul 20 by Robert Love.
- *
- * cap_sys_admin is 1 if the process has admin privileges, 0 otherwise.
- *
- * Note this is a helper function intended to be used by LSMs which
- * wish to use this logic.
- */
+ 
 int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
 {
 	long allowed;
 
 	vm_acct_memory(pages);
 
-	/*
-	 * Sometimes we want to use more memory than we have
-	 */
+	 
 	if (sysctl_overcommit_memory == OVERCOMMIT_ALWAYS)
 		return 0;
 
@@ -957,15 +691,11 @@ int __vm_enough_memory(struct mm_struct *mm, long pages, int cap_sys_admin)
 	}
 
 	allowed = vm_commit_limit();
-	/*
-	 * Reserve some for root
-	 */
+	 
 	if (!cap_sys_admin)
 		allowed -= sysctl_admin_reserve_kbytes >> (PAGE_SHIFT - 10);
 
-	/*
-	 * Don't let a single process grow so big a user can't recover
-	 */
+	 
 	if (mm) {
 		long reserve = sysctl_user_reserve_kbytes >> (PAGE_SHIFT - 10);
 
@@ -982,16 +712,7 @@ error:
 	return -ENOMEM;
 }
 
-/**
- * get_cmdline() - copy the cmdline value to a buffer.
- * @task:     the task whose cmdline value to copy.
- * @buffer:   the buffer to copy to.
- * @buflen:   the length of the buffer. Larger cmdline values are truncated
- *            to this length.
- *
- * Return: the size of the cmdline field copied. Note that the copy does
- * not guarantee an ending NULL byte.
- */
+ 
 int get_cmdline(struct task_struct *task, char *buffer, int buflen)
 {
 	int res = 0;
@@ -1001,7 +722,7 @@ int get_cmdline(struct task_struct *task, char *buffer, int buflen)
 	if (!mm)
 		goto out;
 	if (!mm->arg_end)
-		goto out_mm;	/* Shh! No looking before we're done */
+		goto out_mm;	 
 
 	spin_lock(&mm->arg_lock);
 	arg_start = mm->arg_start;
@@ -1017,10 +738,7 @@ int get_cmdline(struct task_struct *task, char *buffer, int buflen)
 
 	res = access_process_vm(task, arg_start, buffer, len, FOLL_FORCE);
 
-	/*
-	 * If the nul at the end of args has been overwritten, then
-	 * assume application is using setproctitle(3).
-	 */
+	 
 	if (res > 0 && buffer[res-1] != '\0' && len < buflen) {
 		len = strnlen(buffer, res);
 		if (len < res) {
@@ -1055,17 +773,7 @@ int __weak memcmp_pages(struct page *page1, struct page *page2)
 }
 
 #ifdef CONFIG_PRINTK
-/**
- * mem_dump_obj - Print available provenance information
- * @object: object for which to find provenance information.
- *
- * This function uses pr_cont(), so that the caller is expected to have
- * printed out whatever preamble is appropriate.  The provenance information
- * depends on the type of object and on how much debugging is enabled.
- * For example, for a slab-cache object, the slab name is printed, and,
- * if available, the return address and stack trace from the allocation
- * and last free path of that object.
- */
+ 
 void mem_dump_obj(void *object)
 {
 	const char *type;
@@ -1094,22 +802,7 @@ void mem_dump_obj(void *object)
 EXPORT_SYMBOL_GPL(mem_dump_obj);
 #endif
 
-/*
- * A driver might set a page logically offline -- PageOffline() -- and
- * turn the page inaccessible in the hypervisor; after that, access to page
- * content can be fatal.
- *
- * Some special PFN walkers -- i.e., /proc/kcore -- read content of random
- * pages after checking PageOffline(); however, these PFN walkers can race
- * with drivers that set PageOffline().
- *
- * page_offline_freeze()/page_offline_thaw() allows for a subsystem to
- * synchronize with such drivers, achieving that a page cannot be set
- * PageOffline() while frozen.
- *
- * page_offline_begin()/page_offline_end() is used by drivers that care about
- * such races when setting a page PageOffline().
- */
+ 
 static DECLARE_RWSEM(page_offline_rwsem);
 
 void page_offline_freeze(void)

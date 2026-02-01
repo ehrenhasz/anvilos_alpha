@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2021, Athira Rajeev, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,11 +9,7 @@
 #include "ebb.h"
 
 
-/*
- * Test that closing the EBB event clears MMCR0_PMCC and
- * sets MMCR0_PMCCEXT preventing further read access to the
- * group B PMU registers.
- */
+ 
 
 static int regs_access_pmccext(void)
 {
@@ -43,12 +37,7 @@ static int regs_access_pmccext(void)
 
 	FAIL_IF(ebb_state.stats.ebb_count == 0);
 
-	/*
-	 * For ISA v3.1, verify the test takes a SIGILL when reading
-	 * PMU regs after the event is closed. With the control bit
-	 * in MMCR0 (PMCCEXT) restricting access to group B PMU regs,
-	 * sigill is expected.
-	 */
+	 
 	if (have_hwcap2(PPC_FEATURE2_ARCH_3_1))
 		FAIL_IF(catch_sigill(dump_ebb_state));
 	else

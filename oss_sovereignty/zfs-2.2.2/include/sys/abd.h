@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2014 by Chunwei Chen. All rights reserved.
- * Copyright (c) 2016, 2019 by Delphix. All rights reserved.
- */
+ 
+ 
 
 #ifndef _ABD_H
 #define	_ABD_H
@@ -36,21 +14,21 @@ extern "C" {
 #endif
 
 typedef enum abd_flags {
-	ABD_FLAG_LINEAR		= 1 << 0, /* is buffer linear (or scattered)? */
-	ABD_FLAG_OWNER		= 1 << 1, /* does it own its data buffers? */
-	ABD_FLAG_META		= 1 << 2, /* does this represent FS metadata? */
-	ABD_FLAG_MULTI_ZONE  	= 1 << 3, /* pages split over memory zones */
-	ABD_FLAG_MULTI_CHUNK 	= 1 << 4, /* pages split over multiple chunks */
-	ABD_FLAG_LINEAR_PAGE 	= 1 << 5, /* linear but allocd from page */
-	ABD_FLAG_GANG		= 1 << 6, /* mult ABDs chained together */
-	ABD_FLAG_GANG_FREE	= 1 << 7, /* gang ABD is responsible for mem */
-	ABD_FLAG_ZEROS		= 1 << 8, /* ABD for zero-filled buffer */
-	ABD_FLAG_ALLOCD		= 1 << 9, /* we allocated the abd_t */
+	ABD_FLAG_LINEAR		= 1 << 0,  
+	ABD_FLAG_OWNER		= 1 << 1,  
+	ABD_FLAG_META		= 1 << 2,  
+	ABD_FLAG_MULTI_ZONE  	= 1 << 3,  
+	ABD_FLAG_MULTI_CHUNK 	= 1 << 4,  
+	ABD_FLAG_LINEAR_PAGE 	= 1 << 5,  
+	ABD_FLAG_GANG		= 1 << 6,  
+	ABD_FLAG_GANG_FREE	= 1 << 7,  
+	ABD_FLAG_ZEROS		= 1 << 8,  
+	ABD_FLAG_ALLOCD		= 1 << 9,  
 } abd_flags_t;
 
 typedef struct abd {
 	abd_flags_t	abd_flags;
-	uint_t		abd_size;	/* excludes scattered abd_offset */
+	uint_t		abd_size;	 
 	list_node_t	abd_gang_link;
 #ifdef ZFS_DEBUG
 	struct abd	*abd_parent;
@@ -61,7 +39,7 @@ typedef struct abd {
 		struct abd_scatter {
 			uint_t		abd_offset;
 #if defined(__FreeBSD__) && defined(_KERNEL)
-			void    *abd_chunks[1]; /* actually variable-length */
+			void    *abd_chunks[1];  
 #else
 			uint_t		abd_nents;
 			struct scatterlist *abd_sgl;
@@ -69,7 +47,7 @@ typedef struct abd {
 		} abd_scatter;
 		struct abd_linear {
 			void		*abd_buf;
-			struct scatterlist *abd_sgl; /* for LINEAR_PAGE */
+			struct scatterlist *abd_sgl;  
 		} abd_linear;
 		struct abd_gang {
 			list_t abd_gang_chain;
@@ -82,9 +60,7 @@ typedef int abd_iter_func2_t(void *bufa, void *bufb, size_t len, void *priv);
 
 extern int zfs_abd_scatter_enabled;
 
-/*
- * Allocations and deallocations
- */
+ 
 
 __attribute__((malloc))
 abd_t *abd_alloc(size_t, boolean_t);
@@ -106,9 +82,7 @@ abd_t *abd_get_zeros(size_t);
 abd_t *abd_get_from_buf(void *, size_t);
 void abd_cache_reap_now(void);
 
-/*
- * Conversion to and from a normal buffer
- */
+ 
 
 void *abd_to_buf(abd_t *);
 void *abd_borrow_buf(abd_t *, size_t);
@@ -118,9 +92,7 @@ void abd_return_buf_copy(abd_t *, void *, size_t);
 void abd_take_ownership_of_buf(abd_t *, boolean_t);
 void abd_release_ownership_of_buf(abd_t *);
 
-/*
- * ABD operations
- */
+ 
 
 int abd_iterate_func(abd_t *, size_t, size_t, abd_iter_func_t *, void *);
 int abd_iterate_func2(abd_t *, abd_t *, size_t, size_t, size_t,
@@ -142,9 +114,7 @@ void abd_raidz_rec_iterate(abd_t **cabds, abd_t **tabds,
 	const unsigned *mul),
 	const unsigned *mul);
 
-/*
- * Wrappers for calls with offsets of 0
- */
+ 
 
 static inline void
 abd_copy(abd_t *dabd, abd_t *sabd, size_t size)
@@ -176,9 +146,7 @@ abd_zero(abd_t *abd, size_t size)
 	abd_zero_off(abd, 0, size);
 }
 
-/*
- * ABD type check functions
- */
+ 
 static inline boolean_t
 abd_is_linear(abd_t *abd)
 {
@@ -203,17 +171,12 @@ abd_get_size(abd_t *abd)
 	return (abd->abd_size);
 }
 
-/*
- * Module lifecycle
- * Defined in each specific OS's abd_os.c
- */
+ 
 
 void abd_init(void);
 void abd_fini(void);
 
-/*
- * Linux ABD bio functions
- */
+ 
 #if defined(__linux__) && defined(_KERNEL)
 unsigned int abd_bio_map_off(struct bio *, abd_t *, unsigned int, size_t);
 unsigned long abd_nr_pages_off(abd_t *, unsigned int, size_t);
@@ -223,4 +186,4 @@ unsigned long abd_nr_pages_off(abd_t *, unsigned int, size_t);
 }
 #endif
 
-#endif	/* _ABD_H */
+#endif	 

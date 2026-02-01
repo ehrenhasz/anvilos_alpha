@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021-2022, NVIDIA CORPORATION & AFFILIATES
- */
+
+ 
 #include <linux/iommu.h>
 #include <uapi/linux/iommufd.h>
 
@@ -31,7 +29,7 @@ void iommufd_hw_pagetable_abort(struct iommufd_object *obj)
 	struct iommufd_hw_pagetable *hwpt =
 		container_of(obj, struct iommufd_hw_pagetable, obj);
 
-	/* The ioas->mutex must be held until finalize is called. */
+	 
 	lockdep_assert_held(&hwpt->ioas->mutex);
 
 	if (!list_empty(&hwpt->hwpt_item)) {
@@ -55,21 +53,7 @@ int iommufd_hw_pagetable_enforce_cc(struct iommufd_hw_pagetable *hwpt)
 	return 0;
 }
 
-/**
- * iommufd_hw_pagetable_alloc() - Get an iommu_domain for a device
- * @ictx: iommufd context
- * @ioas: IOAS to associate the domain with
- * @idev: Device to get an iommu_domain for
- * @immediate_attach: True if idev should be attached to the hwpt
- *
- * Allocate a new iommu_domain and return it as a hw_pagetable. The HWPT
- * will be linked to the given ioas and upon return the underlying iommu_domain
- * is fully popoulated.
- *
- * The caller must hold the ioas->mutex until after
- * iommufd_object_abort_and_destroy() or iommufd_object_finalize() is called on
- * the returned hwpt.
- */
+ 
 struct iommufd_hw_pagetable *
 iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
 			   struct iommufd_device *idev, bool immediate_attach)
@@ -84,7 +68,7 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
 		return hwpt;
 
 	INIT_LIST_HEAD(&hwpt->hwpt_item);
-	/* Pairs with iommufd_hw_pagetable_destroy() */
+	 
 	refcount_inc(&ioas->obj.users);
 	hwpt->ioas = ioas;
 
@@ -94,25 +78,14 @@ iommufd_hw_pagetable_alloc(struct iommufd_ctx *ictx, struct iommufd_ioas *ioas,
 		goto out_abort;
 	}
 
-	/*
-	 * Set the coherency mode before we do iopt_table_add_domain() as some
-	 * iommus have a per-PTE bit that controls it and need to decide before
-	 * doing any maps. It is an iommu driver bug to report
-	 * IOMMU_CAP_ENFORCE_CACHE_COHERENCY but fail enforce_cache_coherency on
-	 * a new domain.
-	 */
+	 
 	if (idev->enforce_cache_coherency) {
 		rc = iommufd_hw_pagetable_enforce_cc(hwpt);
 		if (WARN_ON(rc))
 			goto out_abort;
 	}
 
-	/*
-	 * immediate_attach exists only to accommodate iommu drivers that cannot
-	 * directly allocate a domain. These drivers do not finish creating the
-	 * domain until attach is completed. Thus we must have this call
-	 * sequence. Once those drivers are fixed this should be removed.
-	 */
+	 
 	if (immediate_attach) {
 		rc = iommufd_hw_pagetable_attach(hwpt, idev);
 		if (rc)

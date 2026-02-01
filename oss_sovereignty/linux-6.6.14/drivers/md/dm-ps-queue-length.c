@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2004-2005 IBM Corp.  All Rights Reserved.
- * Copyright (C) 2006-2009 NEC Corporation.
- *
- * dm-queue-length.c
- *
- * Module Author: Stefan Bader, IBM
- * Modified by: Kiyoshi Ueda, NEC
- *
- * This file is released under the GPL.
- *
- * queue-length path selector - choose a path with the least number of
- * in-flight I/Os.
- */
+
+ 
 
 #include "dm.h"
 #include "dm-path-selector.h"
@@ -37,7 +24,7 @@ struct path_info {
 	struct list_head	list;
 	struct dm_path		*path;
 	unsigned int		repeat_count;
-	atomic_t		qlen;	/* the number of in-flight I/Os */
+	atomic_t		qlen;	 
 };
 
 static struct selector *alloc_selector(void)
@@ -90,7 +77,7 @@ static int ql_status(struct path_selector *ps, struct dm_path *path,
 	unsigned int sz = 0;
 	struct path_info *pi;
 
-	/* When called with NULL path, return selector status/args. */
+	 
 	if (!path)
 		DMEMIT("0 ");
 	else {
@@ -121,11 +108,7 @@ static int ql_add_path(struct path_selector *ps, struct dm_path *path,
 	char dummy;
 	unsigned long flags;
 
-	/*
-	 * Arguments: [<repeat_count>]
-	 *	<repeat_count>: The number of I/Os before switching path.
-	 *			If not given, default (QL_MIN_IO) is used.
-	 */
+	 
 	if (argc > 1) {
 		*error = "queue-length ps: incorrect number of arguments";
 		return -EINVAL;
@@ -141,7 +124,7 @@ static int ql_add_path(struct path_selector *ps, struct dm_path *path,
 		repeat_count = 1;
 	}
 
-	/* Allocate the path information structure */
+	 
 	pi = kmalloc(sizeof(*pi), GFP_KERNEL);
 	if (!pi) {
 		*error = "queue-length ps: Error allocating path information";
@@ -185,9 +168,7 @@ static int ql_reinstate_path(struct path_selector *ps, struct dm_path *path)
 	return 0;
 }
 
-/*
- * Select a path having the minimum number of in-flight I/Os
- */
+ 
 static struct dm_path *ql_select_path(struct path_selector *ps, size_t nr_bytes)
 {
 	struct selector *s = ps->context;
@@ -211,7 +192,7 @@ static struct dm_path *ql_select_path(struct path_selector *ps, size_t nr_bytes)
 	if (!best)
 		goto out;
 
-	/* Move most recently used to least preferred to evenly balance. */
+	 
 	list_move_tail(&best->list, &s->valid_paths);
 
 	ret = best->path;

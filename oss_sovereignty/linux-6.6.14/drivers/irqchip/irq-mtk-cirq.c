@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Youlin.Pei <youlin.pei@mediatek.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/io.h>
@@ -150,11 +147,11 @@ static int mtk_cirq_domain_translate(struct irq_domain *d,
 		if (fwspec->param_count != 3)
 			return -EINVAL;
 
-		/* No PPI should point to this domain */
+		 
 		if (fwspec->param[0] != 0)
 			return -EINVAL;
 
-		/* cirq support irq number check */
+		 
 		if (fwspec->param[1] < cirq_data->ext_irq_start ||
 		    fwspec->param[1] > cirq_data->ext_irq_end)
 			return -EINVAL;
@@ -207,24 +204,7 @@ static int mtk_cirq_suspend(void)
 	bool pending, masked;
 	int i, pendret, maskret;
 
-	/*
-	 * When external interrupts happened, CIRQ will record the status
-	 * even CIRQ is not enabled. When execute flush command, CIRQ will
-	 * resend the signals according to the status. So if don't clear the
-	 * status, CIRQ will resend the wrong signals.
-	 *
-	 * arch_suspend_disable_irqs() will be called before CIRQ suspend
-	 * callback. If clear all the status simply, the external interrupts
-	 * which happened between arch_suspend_disable_irqs and CIRQ suspend
-	 * callback will be lost. Using following steps to avoid this issue;
-	 *
-	 * - Iterate over all the CIRQ supported interrupts;
-	 * - For each interrupt, inspect its pending and masked status at GIC
-	 *   level;
-	 * - If pending and unmasked, it happened between
-	 *   arch_suspend_disable_irqs and CIRQ suspend callback, don't ACK
-	 *   it. Otherwise, ACK it.
-	 */
+	 
 	hwirq_num = cirq_data->ext_irq_end - cirq_data->ext_irq_start + 1;
 	for (i = 0; i < hwirq_num; i++) {
 		irq = irq_find_mapping(cirq_data->domain, i);
@@ -247,8 +227,8 @@ static int mtk_cirq_suspend(void)
 		writel_relaxed(mask, reg);
 	}
 
-	/* set edge_only mode, record edge-triggerd interrupts */
-	/* enable cirq */
+	 
+	 
 	reg = mtk_cirq_reg(cirq_data, CIRQ_CONTROL);
 	value = readl_relaxed(reg);
 	value |= (CIRQ_EDGE | CIRQ_EN);
@@ -262,11 +242,11 @@ static void mtk_cirq_resume(void)
 	void __iomem *reg = mtk_cirq_reg(cirq_data, CIRQ_CONTROL);
 	u32 value;
 
-	/* flush recorded interrupts, will send signals to parent controller */
+	 
 	value = readl_relaxed(reg);
 	writel_relaxed(value | CIRQ_FLUSH, reg);
 
-	/* disable cirq */
+	 
 	value = readl_relaxed(reg);
 	value &= ~(CIRQ_EDGE | CIRQ_EN);
 	writel_relaxed(value, reg);
@@ -290,7 +270,7 @@ static const struct of_device_id mtk_cirq_of_match[] = {
 	{ .compatible = "mediatek,mt8135-cirq", .data = &mtk_cirq_regoffs_v1 },
 	{ .compatible = "mediatek,mt8173-cirq", .data = &mtk_cirq_regoffs_v1 },
 	{ .compatible = "mediatek,mt8192-cirq", .data = &mtk_cirq_regoffs_v2 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init mtk_cirq_of_init(struct device_node *node,

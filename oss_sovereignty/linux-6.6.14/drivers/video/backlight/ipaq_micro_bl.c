@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * iPAQ microcontroller backlight support
- * Author : Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/err.h>
@@ -22,12 +18,7 @@ static int micro_bl_update_status(struct backlight_device *bd)
 		.tx_len = 3,
 	};
 
-	/*
-	 * Message format:
-	 * Byte 0: backlight instance (usually 1)
-	 * Byte 1: on/off
-	 * Byte 2: intensity, 0-255
-	 */
+	 
 	msg.tx_data[0] = 0x01;
 	msg.tx_data[1] = intensity > 0 ? 1 : 0;
 	msg.tx_data[2] = intensity;

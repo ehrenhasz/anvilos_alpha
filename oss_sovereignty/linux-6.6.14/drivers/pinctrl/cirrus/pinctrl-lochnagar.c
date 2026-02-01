@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lochnagar pin and GPIO control
- *
- * Copyright (c) 2017-2018 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- *
- * Author: Charles Keepax <ckeepax@opensource.cirrus.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/errno.h>
@@ -965,7 +958,7 @@ static int lochnagar_gpio_set_direction(struct pinctrl_dev *pctldev,
 					unsigned int offset,
 					bool input)
 {
-	/* The GPIOs only support output */
+	 
 	if (input)
 		return -EINVAL;
 

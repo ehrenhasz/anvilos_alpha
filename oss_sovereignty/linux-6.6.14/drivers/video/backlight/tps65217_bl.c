@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tps65217_bl.c
- *
- * TPS65217 backlight driver
- *
- * Copyright (C) 2012 Matthias Kaehlcke
- * Author: Matthias Kaehlcke <matthias@kaehlcke.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/backlight.h>
@@ -109,7 +102,7 @@ static int tps65217_bl_hw_init(struct tps65217_bl *tps65217_bl,
 
 	switch (pdata->isel) {
 	case TPS65217_BL_ISET1:
-		/* select ISET_1 current level */
+		 
 		rc = tps65217_clear_bits(tps65217_bl->tps,
 					TPS65217_REG_WLEDCTRL1,
 					TPS65217_WLEDCTRL1_ISEL,
@@ -126,7 +119,7 @@ static int tps65217_bl_hw_init(struct tps65217_bl *tps65217_bl,
 		break;
 
 	case TPS65217_BL_ISET2:
-		/* select ISET2 current level */
+		 
 		rc = tps65217_set_bits(tps65217_bl->tps, TPS65217_REG_WLEDCTRL1,
 				TPS65217_WLEDCTRL1_ISEL,
 				TPS65217_WLEDCTRL1_ISEL, TPS65217_PROTECT_NONE);
@@ -147,7 +140,7 @@ static int tps65217_bl_hw_init(struct tps65217_bl *tps65217_bl,
 		return -EINVAL;
 	}
 
-	/* set PWM frequency */
+	 
 	rc = tps65217_set_bits(tps65217_bl->tps,
 			TPS65217_REG_WLEDCTRL1,
 			TPS65217_WLEDCTRL1_FDIM_MASK,
@@ -298,7 +291,7 @@ static int tps65217_bl_probe(struct platform_device *pdev)
 #ifdef CONFIG_OF
 static const struct of_device_id tps65217_bl_of_match[] = {
 	{ .compatible = "ti,tps65217-bl", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, tps65217_bl_of_match);
 #endif

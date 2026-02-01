@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 Microsoft Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _MANA_IB_H_
 #define _MANA_IB_H_
@@ -18,13 +16,10 @@
 	(SZ_4K | SZ_8K | SZ_16K | SZ_32K | SZ_64K | SZ_128K | SZ_256K |        \
 	 SZ_512K | SZ_1M | SZ_2M)
 
-/* MANA doesn't have any limit for MR size */
+ 
 #define MANA_IB_MAX_MR_SIZE	U64_MAX
 
-/*
- * The hardware limit of number of MRs is greater than maximum number of MRs
- * that can possibly represent in 24 bits
- */
+ 
 #define MANA_IB_MAX_MR		0xFFFFFFu
 
 struct mana_ib_dev {
@@ -47,7 +42,7 @@ struct mana_ib_pd {
 	u32 pdn;
 	mana_handle_t pd_handle;
 
-	/* Mutex for sharing access to vport_use_count */
+	 
 	struct mutex vport_mutex;
 	int vport_use_count;
 
@@ -72,14 +67,14 @@ struct mana_ib_cq {
 struct mana_ib_qp {
 	struct ib_qp ibqp;
 
-	/* Work queue info */
+	 
 	struct ib_umem *sq_umem;
 	int sqe;
 	u64 sq_gdma_region;
 	u64 sq_id;
 	mana_handle_t tx_object;
 
-	/* The port on the IB device, starting with 1 */
+	 
 	u32 port;
 };
 

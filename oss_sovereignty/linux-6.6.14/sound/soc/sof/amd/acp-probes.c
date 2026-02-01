@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2023 Advanced Micro Devices, Inc.
-//
-// Authors: V Sujith Kumar Reddy <Vsujithkumar.Reddy@amd.com>
 
-/*
- * Probe interface for generic AMD audio ACP DSP block
- */
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -86,7 +84,7 @@ static int acp_probes_compr_set_params(struct sof_client_dev *cdev,
 		return ret;
 	}
 
-	/* write buffer size of stream in scratch memory */
+	 
 
 	buf_offset = sdev->debug_box.offset +
 		     offsetof(struct scratch_reg_conf, buf_size);
@@ -102,7 +100,7 @@ static int acp_probes_compr_trigger(struct sof_client_dev *cdev,
 				    struct snd_compr_stream *cstream,
 				    int cmd, struct snd_soc_dai *dai)
 {
-	/* Nothing to do here, as it is a mandatory callback just defined */
+	 
 	return 0;
 }
 
@@ -121,7 +119,7 @@ static int acp_probes_compr_pointer(struct sof_client_dev *cdev,
 	return 0;
 }
 
-/* SOF client implementation */
+ 
 static const struct sof_probes_host_ops acp_probes_ops = {
 	.startup = acp_probes_compr_startup,
 	.shutdown = acp_probes_compr_shutdown,

@@ -1,24 +1,6 @@
-/* Test whether a file has a nontrivial ACL.  -*- coding: utf-8 -*-
+ 
 
-   Copyright (C) 2002-2003, 2005-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.
-
-   Written by Paul Eggert, Andreas Grünbacher, and Bruno Haible.  */
-
-/* Without this pragma, gcc 4.7.0 20120126 may suggest that the
-   file_has_acl function might be candidate for attribute 'const'  */
+ 
 #if (__GNUC__ == 4 && 6 <= __GNUC_MINOR__) || 4 < __GNUC__
 # pragma GCC diagnostic ignored "-Wsuggest-attribute=const"
 #endif
@@ -48,13 +30,12 @@
 # endif
 
 enum {
-  /* ACE4_ACCESS_ALLOWED_ACE_TYPE = 0x00000000, */
+   
   ACE4_ACCESS_DENIED_ACE_TYPE  = 0x00000001,
   ACE4_IDENTIFIER_GROUP        = 0x00000040
 };
 
-/* Return true if ATTR is in the set represented by the NUL-terminated
-   strings in LISTBUF, which is of size LISTSIZE.  */
+ 
 
 ATTRIBUTE_PURE static bool
 have_xattr (char const *attr, char const *listbuf, ssize_t listsize)
@@ -67,24 +48,14 @@ have_xattr (char const *attr, char const *listbuf, ssize_t listsize)
   return false;
 }
 
-/* Return 1 if given ACL in XDR format is non-trivial, 0 if it is trivial.
-   -1 upon failure to determine it.  Possibly change errno.  Assume that
-   the ACL is valid, except avoid undefined behavior even if invalid.
-
-   See <https://linux.die.net/man/5/nfs4_acl>.  The NFSv4 acls are
-   defined in Internet RFC 7530 and as such, every NFSv4 server
-   supporting ACLs should support NFSv4 ACLs (they differ from from
-   POSIX draft ACLs).  The ACLs can be obtained via the
-   nfsv4-acl-tools, e.g., the nfs4_getfacl command.  Gnulib provides
-   only basic support of NFSv4 ACLs, i.e., recognize trivial vs
-   nontrivial ACLs.  */
+ 
 
 static int
 acl_nfs4_nontrivial (uint32_t *xattr, ssize_t nbytes)
 {
   enum { BYTES_PER_NETWORK_UINT = 4};
 
-  /* Grab the number of aces in the acl.  */
+   
   nbytes -= BYTES_PER_NETWORK_UINT;
   if (nbytes < 0)
     return -1;
@@ -95,8 +66,7 @@ acl_nfs4_nontrivial (uint32_t *xattr, ssize_t nbytes)
 
   for (int ace_n = 0; ace_n < num_aces; ace_n++)
     {
-      /* Get the acl type and flag.  Skip the mask; it's too risky to
-         test it and it does not seem to be needed.  Get the wholen.  */
+       
       nbytes -= 4 * BYTES_PER_NETWORK_UINT;
       if (nbytes < 0)
         return -1;
@@ -109,24 +79,20 @@ acl_nfs4_nontrivial (uint32_t *xattr, ssize_t nbytes)
       int64_t wholen4 = whowords;
       wholen4 *= BYTES_PER_NETWORK_UINT;
 
-      /* Trivial ACLs have only ACE4_ACCESS_ALLOWED_ACE_TYPE or
-         ACE4_ACCESS_DENIED_ACE_TYPE.  */
+       
       if (ACE4_ACCESS_DENIED_ACE_TYPE < type)
         return 1;
 
-      /* RFC 7530 says FLAG should be 0, but be generous to NetApp and
-         also accept the group flag.  */
+       
       if (flag & ~ACE4_IDENTIFIER_GROUP)
         return 1;
 
-      /* Get the who string.  Check NBYTES - WHOLEN4 before storing
-         into NBYTES, to avoid truncation on conversion.  */
+       
       if (nbytes - wholen4 < 0)
         return -1;
       nbytes -= wholen4;
 
-      /* For a trivial ACL, max 6 (typically 3) ACEs, 3 allow, 3 deny.
-         Check that there is at most one ACE of each TYPE and WHO.  */
+       
       int who2
         = (wholen == 6 && memcmp (xattr, "OWNER@", 6) == 0 ? 0
            : wholen == 6 && memcmp (xattr, "GROUP@", 6) == 0 ? 2
@@ -146,12 +112,7 @@ acl_nfs4_nontrivial (uint32_t *xattr, ssize_t nbytes)
 }
 #endif
 
-/* Return 1 if NAME has a nontrivial access control list,
-   0 if ACLs are not supported, or if NAME has no or only a base ACL,
-   and -1 (setting errno) on error.  Note callers can determine
-   if ACLs are not supported as errno is set in that case also.
-   SB must be set to the stat buffer of NAME,
-   obtained through stat() or lstat().  */
+ 
 
 int
 file_has_acl (char const *name, struct stat const *sb)
@@ -163,16 +124,10 @@ file_has_acl (char const *name, struct stat const *sb)
 # if HAVE_LINUX_XATTR_H && HAVE_LISTXATTR
       int initial_errno = errno;
 
-      /* The max length of a trivial NFSv4 ACL is 6 words for owner,
-         6 for group, 7 for everyone, all times 2 because there are
-         both allow and deny ACEs.  There are 6 words for owner
-         because of type, flag, mask, wholen, "OWNER@"+pad and
-         similarly for group; everyone is another word to hold
-         "EVERYONE@".  */
+       
       typedef uint32_t trivial_NFSv4_xattr_buf[2 * (6 + 6 + 7)];
 
-      /* A buffer large enough to hold any trivial NFSv4 ACL,
-         and also useful as a small array of char.  */
+       
       union {
         trivial_NFSv4_xattr_buf xattr;
         char ch[sizeof (trivial_NFSv4_xattr_buf)];
@@ -183,9 +138,7 @@ file_has_acl (char const *name, struct stat const *sb)
       char *heapbuf = NULL;
       ssize_t listsize;
 
-      /* Use listxattr first, as this means just one syscall in the
-         typical case where the file lacks an ACL.  Try stackbuf
-         first, falling back on malloc if stackbuf is too small.  */
+       
       while ((listsize = listxattr (name, listbuf, listbufsize)) < 0
              && errno == ERANGE)
         {
@@ -194,9 +147,7 @@ file_has_acl (char const *name, struct stat const *sb)
           if (newsize <= 0)
             return newsize;
 
-          /* Grow LISTBUFSIZE to at least NEWSIZE.  Grow it by a
-             nontrivial amount too, to defend against denial of
-             service by an adversary that fiddles with ACLs.  */
+           
           bool overflow = ckd_add (&listbufsize, listbufsize, listbufsize >> 1);
           listbufsize = MAX (listbufsize, newsize);
           if (overflow || SIZE_MAX < listbufsize)
@@ -210,10 +161,7 @@ file_has_acl (char const *name, struct stat const *sb)
             return -1;
         }
 
-      /* In Fedora 39, a file can have both NFSv4 and POSIX ACLs,
-         but if it has an NFSv4 ACL that's the one that matters.
-         In earlier Fedora the two types of ACLs were mutually exclusive.
-         Attempt to work correctly on both kinds of systems.  */
+       
       bool nfsv4_acl
         = 0 < listsize && have_xattr (XATTR_NAME_NFSV4_ACL, listbuf, listsize);
       int ret
@@ -225,8 +173,7 @@ file_has_acl (char const *name, struct stat const *sb)
                                  listbuf, listsize))));
       free (heapbuf);
 
-      /* If there is an NFSv4 ACL, follow up with a getxattr syscall
-         to see whether the NFSv4 ACL is nontrivial.  */
+       
       if (nfsv4_acl)
         {
           ret = getxattr (name, XATTR_NAME_NFSV4_ACL,
@@ -235,11 +182,11 @@ file_has_acl (char const *name, struct stat const *sb)
             switch (errno)
               {
               case ENODATA: return 0;
-              case ERANGE : return 1; /* ACL must be nontrivial.  */
+              case ERANGE : return 1;  
               }
           else
             {
-              /* It looks like a trivial ACL, but investigate further.  */
+               
               ret = acl_nfs4_nontrivial (stackbuf.xattr, ret);
               if (ret < 0)
                 {
@@ -255,25 +202,19 @@ file_has_acl (char const *name, struct stat const *sb)
 
 # elif HAVE_ACL_GET_FILE
 
-      /* POSIX 1003.1e (draft 17 -- abandoned) specific version.  */
-      /* Linux, FreeBSD, Mac OS X, IRIX, Tru64, Cygwin >= 2.5 */
+       
+       
       int ret;
 
-      if (HAVE_ACL_EXTENDED_FILE) /* Linux */
+      if (HAVE_ACL_EXTENDED_FILE)  
         {
-          /* On Linux, acl_extended_file is an optimized function: It only
-             makes two calls to getxattr(), one for ACL_TYPE_ACCESS, one for
-             ACL_TYPE_DEFAULT.  */
+           
           ret = acl_extended_file (name);
         }
-      else /* FreeBSD, Mac OS X, IRIX, Tru64, Cygwin >= 2.5 */
+      else  
         {
-#  if HAVE_ACL_TYPE_EXTENDED /* Mac OS X */
-          /* On Mac OS X, acl_get_file (name, ACL_TYPE_ACCESS)
-             and acl_get_file (name, ACL_TYPE_DEFAULT)
-             always return NULL / EINVAL.  There is no point in making
-             these two useless calls.  The real ACL is retrieved through
-             acl_get_file (name, ACL_TYPE_EXTENDED).  */
+#  if HAVE_ACL_TYPE_EXTENDED  
+           
           acl_t acl = acl_get_file (name, ACL_TYPE_EXTENDED);
           if (acl)
             {
@@ -282,7 +223,7 @@ file_has_acl (char const *name, struct stat const *sb)
             }
           else
             ret = -1;
-#  else /* FreeBSD, IRIX, Tru64, Cygwin >= 2.5 */
+#  else  
           acl_t acl = acl_get_file (name, ACL_TYPE_ACCESS);
           if (acl)
             {
@@ -292,22 +233,16 @@ file_has_acl (char const *name, struct stat const *sb)
               saved_errno = errno;
               acl_free (acl);
               errno = saved_errno;
-#   if HAVE_ACL_FREE_TEXT /* Tru64 */
-              /* On OSF/1, acl_get_file (name, ACL_TYPE_DEFAULT) always
-                 returns NULL with errno not set.  There is no point in
-                 making this call.  */
-#   else /* FreeBSD, IRIX, Cygwin >= 2.5 */
-              /* On Linux, FreeBSD, IRIX, acl_get_file (name, ACL_TYPE_ACCESS)
-                 and acl_get_file (name, ACL_TYPE_DEFAULT) on a directory
-                 either both succeed or both fail; it depends on the
-                 file system.  Therefore there is no point in making the second
-                 call if the first one already failed.  */
+#   if HAVE_ACL_FREE_TEXT  
+               
+#   else  
+               
               if (ret == 0 && S_ISDIR (sb->st_mode))
                 {
                   acl = acl_get_file (name, ACL_TYPE_DEFAULT);
                   if (acl)
                     {
-#    ifdef __CYGWIN__ /* Cygwin >= 2.5 */
+#    ifdef __CYGWIN__  
                       ret = acl_access_nontrivial (acl);
                       saved_errno = errno;
                       acl_free (acl);
@@ -330,26 +265,21 @@ file_has_acl (char const *name, struct stat const *sb)
         return - acl_errno_valid (errno);
       return ret;
 
-# elif HAVE_FACL && defined GETACL /* Solaris, Cygwin < 2.5, not HP-UX */
+# elif HAVE_FACL && defined GETACL  
 
 #  if defined ACL_NO_TRIVIAL
 
-      /* Solaris 10 (newer version), which has additional API declared in
-         <sys/acl.h> (acl_t) and implemented in libsec (acl_set, acl_trivial,
-         acl_fromtext, ...).  */
+       
       return acl_trivial (name);
 
-#  else /* Solaris, Cygwin, general case */
+#  else  
 
-      /* Solaris 2.5 through Solaris 10, Cygwin, and contemporaneous versions
-         of Unixware.  The acl() call returns the access and default ACL both
-         at once.  */
+       
       {
-        /* Initially, try to read the entries into a stack-allocated buffer.
-           Use malloc if it does not fit.  */
+         
         enum
           {
-            alloc_init = 4000 / sizeof (aclent_t), /* >= 3 */
+            alloc_init = 4000 / sizeof (aclent_t),  
             alloc_max = MIN (INT_MAX, SIZE_MAX / sizeof (aclent_t))
           };
         aclent_t buf[alloc_init];
@@ -363,14 +293,14 @@ file_has_acl (char const *name, struct stat const *sb)
             count = acl (name, GETACL, alloc, entries);
             if (count < 0 && errno == ENOSPC)
               {
-                /* Increase the size of the buffer.  */
+                 
                 free (malloced);
                 if (alloc > alloc_max / 2)
                   {
                     errno = ENOMEM;
                     return -1;
                   }
-                alloc = 2 * alloc; /* <= alloc_max */
+                alloc = 2 * alloc;  
                 entries = malloced =
                   (aclent_t *) malloc (alloc * sizeof (aclent_t));
                 if (entries == NULL)
@@ -396,10 +326,7 @@ file_has_acl (char const *name, struct stat const *sb)
           ;
         else
           {
-            /* Don't use MIN_ACL_ENTRIES:  It's set to 4 on Cygwin, but Cygwin
-               returns only 3 entries for files with no ACL.  But this is safe:
-               If there are more than 4 entries, there cannot be only the
-               "user::", "group::", "other:", and "mask:" entries.  */
+             
             if (count > 4)
               {
                 free (malloced);
@@ -416,14 +343,12 @@ file_has_acl (char const *name, struct stat const *sb)
       }
 
 #   ifdef ACE_GETACL
-      /* Solaris also has a different variant of ACLs, used in ZFS and NFSv4
-         file systems (whereas the other ones are used in UFS file systems).  */
+       
       {
-        /* Initially, try to read the entries into a stack-allocated buffer.
-           Use malloc if it does not fit.  */
+         
         enum
           {
-            alloc_init = 4000 / sizeof (ace_t), /* >= 3 */
+            alloc_init = 4000 / sizeof (ace_t),  
             alloc_max = MIN (INT_MAX, SIZE_MAX / sizeof (ace_t))
           };
         ace_t buf[alloc_init];
@@ -437,14 +362,14 @@ file_has_acl (char const *name, struct stat const *sb)
             count = acl (name, ACE_GETACL, alloc, entries);
             if (count < 0 && errno == ENOSPC)
               {
-                /* Increase the size of the buffer.  */
+                 
                 free (malloced);
                 if (alloc > alloc_max / 2)
                   {
                     errno = ENOMEM;
                     return -1;
                   }
-                alloc = 2 * alloc; /* <= alloc_max */
+                alloc = 2 * alloc;  
                 entries = malloced = (ace_t *) malloc (alloc * sizeof (ace_t));
                 if (entries == NULL)
                   {
@@ -469,14 +394,7 @@ file_has_acl (char const *name, struct stat const *sb)
           ;
         else
           {
-            /* In the old (original Solaris 10) convention:
-               If there are more than 3 entries, there cannot be only the
-               ACE_OWNER, ACE_GROUP, ACE_OTHER entries.
-               In the newer Solaris 10 and Solaris 11 convention:
-               If there are more than 6 entries, there cannot be only the
-               ACE_OWNER, ACE_GROUP, ACE_EVERYONE entries, each once with
-               NEW_ACE_ACCESS_ALLOWED_ACE_TYPE and once with
-               NEW_ACE_ACCESS_DENIED_ACE_TYPE.  */
+             
             if (count > 6)
               {
                 free (malloced);
@@ -496,7 +414,7 @@ file_has_acl (char const *name, struct stat const *sb)
       return 0;
 #  endif
 
-# elif HAVE_GETACL /* HP-UX */
+# elif HAVE_GETACL  
 
       {
         struct acl_entry entries[NACLENTRIES];
@@ -506,9 +424,7 @@ file_has_acl (char const *name, struct stat const *sb)
 
         if (count < 0)
           {
-            /* ENOSYS is seen on newer HP-UX versions.
-               EOPNOTSUPP is typically seen on NFS mounts.
-               ENOTSUP was seen on Quantum StorNext file systems (cvfs).  */
+             
             if (errno == ENOSYS || errno == EOPNOTSUPP || errno == ENOTSUP)
               ;
             else
@@ -516,15 +432,13 @@ file_has_acl (char const *name, struct stat const *sb)
           }
         else if (count == 0)
           return 0;
-        else /* count > 0 */
+        else  
           {
             if (count > NACLENTRIES)
-              /* If NACLENTRIES cannot be trusted, use dynamic memory
-                 allocation.  */
+               
               abort ();
 
-            /* If there are more than 3 entries, there cannot be only the
-               (uid,%), (%,gid), (%,%) entries.  */
+             
             if (count > 3)
               return 1;
 
@@ -539,7 +453,7 @@ file_has_acl (char const *name, struct stat const *sb)
           }
       }
 
-#  if HAVE_ACLV_H /* HP-UX >= 11.11 */
+#  if HAVE_ACLV_H  
 
       {
         struct acl entries[NACLVENTRIES];
@@ -549,8 +463,7 @@ file_has_acl (char const *name, struct stat const *sb)
 
         if (count < 0)
           {
-            /* EOPNOTSUPP is seen on NFS in HP-UX 11.11, 11.23.
-               EINVAL is seen on NFS in HP-UX 11.31.  */
+             
             if (errno == ENOSYS || errno == EOPNOTSUPP || errno == EINVAL)
               ;
             else
@@ -558,15 +471,13 @@ file_has_acl (char const *name, struct stat const *sb)
           }
         else if (count == 0)
           return 0;
-        else /* count > 0 */
+        else  
           {
             if (count > NACLVENTRIES)
-              /* If NACLVENTRIES cannot be trusted, use dynamic memory
-                 allocation.  */
+               
               abort ();
 
-            /* If there are more than 4 entries, there cannot be only the
-               four base ACL entries.  */
+             
             if (count > 4)
               return 1;
 
@@ -576,7 +487,7 @@ file_has_acl (char const *name, struct stat const *sb)
 
 #  endif
 
-# elif HAVE_ACLX_GET && defined ACL_AIX_WIP /* AIX */
+# elif HAVE_ACLX_GET && defined ACL_AIX_WIP  
 
       acl_type_t type;
       char aclbuf[1024];
@@ -586,8 +497,7 @@ file_has_acl (char const *name, struct stat const *sb)
 
       for (;;)
         {
-          /* The docs say that type being 0 is equivalent to ACL_ANY, but it
-             is not true, in AIX 5.3.  */
+           
           type.u64 = ACL_ANY;
           if (aclx_get (name, 0, &type, aclbuf, &aclsize, &mode) >= 0)
             break;
@@ -626,15 +536,14 @@ file_has_acl (char const *name, struct stat const *sb)
         }
       else
         {
-          /* A newer type of ACL has been introduced in the system.
-             We should better support it.  */
+           
           if (acl != aclbuf)
             free (acl);
           errno = EINVAL;
           return -1;
         }
 
-# elif HAVE_STATACL /* older AIX */
+# elif HAVE_STATACL  
 
       union { struct acl a; char room[4096]; } u;
 
@@ -643,7 +552,7 @@ file_has_acl (char const *name, struct stat const *sb)
 
       return acl_nontrivial (&u.a);
 
-# elif HAVE_ACLSORT /* NonStop Kernel */
+# elif HAVE_ACLSORT  
 
       {
         struct acl entries[NACLENTRIES];
@@ -660,15 +569,13 @@ file_has_acl (char const *name, struct stat const *sb)
           }
         else if (count == 0)
           return 0;
-        else /* count > 0 */
+        else  
           {
             if (count > NACLENTRIES)
-              /* If NACLENTRIES cannot be trusted, use dynamic memory
-                 allocation.  */
+               
               abort ();
 
-            /* If there are more than 4 entries, there cannot be only the
-               four base ACL entries.  */
+             
             if (count > 4)
               return 1;
 

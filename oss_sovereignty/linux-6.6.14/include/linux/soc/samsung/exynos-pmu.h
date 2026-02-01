@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Header for Exynos PMU Driver support
- */
+ 
+ 
 
 #ifndef __LINUX_SOC_EXYNOS_PMU_H
 #define __LINUX_SOC_EXYNOS_PMU_H
@@ -28,4 +23,4 @@ static inline struct regmap *exynos_get_pmu_regmap(void)
 }
 #endif
 
-#endif /* __LINUX_SOC_EXYNOS_PMU_H */
+#endif  

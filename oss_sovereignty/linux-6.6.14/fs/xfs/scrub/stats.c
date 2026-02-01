@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -17,9 +14,9 @@
 #include "scrub/trace.h"
 
 struct xchk_scrub_stats {
-	/* all 32-bit counters here */
+	 
 
-	/* checking stats */
+	 
 	uint32_t		invocations;
 	uint32_t		clean;
 	uint32_t		corrupt;
@@ -30,17 +27,17 @@ struct xchk_scrub_stats {
 	uint32_t		warning;
 	uint32_t		retries;
 
-	/* repair stats */
+	 
 	uint32_t		repair_invocations;
 	uint32_t		repair_success;
 
-	/* all 64-bit items here */
+	 
 
-	/* runtimes */
+	 
 	uint64_t		checktime_us;
 	uint64_t		repairtime_us;
 
-	/* non-counter state must go at the end for clearall */
+	 
 	spinlock_t		css_lock;
 };
 
@@ -79,7 +76,7 @@ static const char *name_map[XFS_SCRUB_TYPE_NR] = {
 	[XFS_SCRUB_TYPE_FSCOUNTERS]	= "fscounters",
 };
 
-/* Format the scrub stats into a text buffer, similar to pcp style. */
+ 
 STATIC ssize_t
 xchk_stats_format(
 	struct xchk_stats	*cs,
@@ -122,7 +119,7 @@ xchk_stats_format(
 	return copied > 0 ? copied : ret;
 }
 
-/* Estimate the worst case buffer size required to hold the whole report. */
+ 
 STATIC size_t
 xchk_stats_estimate_bufsize(
 	struct xchk_stats	*cs)
@@ -132,11 +129,11 @@ xchk_stats_estimate_bufsize(
 	size_t			field_width;
 	size_t			ret = 0;
 
-	/* 4294967296 plus one space for each u32 field */
+	 
 	field_width = 11 * (offsetof(struct xchk_scrub_stats, checktime_us) /
 			    sizeof(uint32_t));
 
-	/* 18446744073709551615 plus one space for each u64 field */
+	 
 	field_width += 21 * ((offsetof(struct xchk_scrub_stats, css_lock) -
 			      offsetof(struct xchk_scrub_stats, checktime_us)) /
 			     sizeof(uint64_t));
@@ -145,17 +142,17 @@ xchk_stats_estimate_bufsize(
 		if (!name_map[i])
 			continue;
 
-		/* name plus one space */
+		 
 		ret += 1 + strlen(name_map[i]);
 
-		/* all fields, plus newline */
+		 
 		ret += field_width + 1;
 	}
 
 	return ret;
 }
 
-/* Clear all counters. */
+ 
 STATIC void
 xchk_stats_clearall(
 	struct xchk_stats	*cs)
@@ -218,7 +215,7 @@ xchk_stats_merge_one(
 	spin_unlock(&css->css_lock);
 }
 
-/* Merge these scrub-run stats into the global and mount stat data. */
+ 
 void
 xchk_stats_merge(
 	struct xfs_mount		*mp,
@@ -229,7 +226,7 @@ xchk_stats_merge(
 	xchk_stats_merge_one(mp->m_scrub_stats, sm, run);
 }
 
-/* debugfs boilerplate */
+ 
 
 static ssize_t
 xchk_scrub_stats_read(
@@ -243,11 +240,7 @@ xchk_scrub_stats_read(
 	size_t			bufsize;
 	ssize_t			avail, ret;
 
-	/*
-	 * This generates stringly snapshot of all the scrub counters, so we
-	 * do not want userspace to receive garbled text from multiple calls.
-	 * If the file position is greater than 0, return a short read.
-	 */
+	 
 	if (*ppos > 0)
 		return 0;
 
@@ -301,7 +294,7 @@ static const struct file_operations clear_scrub_stats_fops = {
 	.write			= xchk_clear_scrub_stats_write,
 };
 
-/* Initialize the stats object. */
+ 
 STATIC int
 xchk_stats_init(
 	struct xchk_stats	*cs,
@@ -316,7 +309,7 @@ xchk_stats_init(
 	return 0;
 }
 
-/* Connect the stats object to debugfs. */
+ 
 void
 xchk_stats_register(
 	struct xchk_stats	*cs,
@@ -335,7 +328,7 @@ xchk_stats_register(
 			&clear_scrub_stats_fops);
 }
 
-/* Free all resources related to the stats object. */
+ 
 STATIC int
 xchk_stats_teardown(
 	struct xchk_stats	*cs)
@@ -343,7 +336,7 @@ xchk_stats_teardown(
 	return 0;
 }
 
-/* Disconnect the stats object from debugfs. */
+ 
 void
 xchk_stats_unregister(
 	struct xchk_stats	*cs)
@@ -351,7 +344,7 @@ xchk_stats_unregister(
 	debugfs_remove(cs->cs_debugfs);
 }
 
-/* Initialize global stats and register them */
+ 
 int __init
 xchk_global_stats_setup(
 	struct dentry		*parent)
@@ -366,7 +359,7 @@ xchk_global_stats_setup(
 	return 0;
 }
 
-/* Unregister global stats and tear them down */
+ 
 void
 xchk_global_stats_teardown(void)
 {
@@ -374,7 +367,7 @@ xchk_global_stats_teardown(void)
 	xchk_stats_teardown(&global_stats);
 }
 
-/* Allocate per-mount stats */
+ 
 int
 xchk_mount_stats_alloc(
 	struct xfs_mount	*mp)
@@ -397,7 +390,7 @@ out_free:
 	return error;
 }
 
-/* Free per-mount stats */
+ 
 void
 xchk_mount_stats_free(
 	struct xfs_mount	*mp)

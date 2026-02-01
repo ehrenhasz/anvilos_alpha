@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <pthread.h>
 #include <sched.h>
@@ -19,12 +19,7 @@ static void check_good_sample(struct test_perf_branches *skel)
 		 "no valid sample from prog"))
 		return;
 
-	/*
-	 * It's hard to validate the contents of the branch entries b/c it
-	 * would require some kind of disassembler and also encoding the
-	 * valid jump instructions for supported architectures. So just check
-	 * the easy stuff for now.
-	 */
+	 
 	CHECK(required_size <= 0, "read_branches_size", "err %d\n", required_size);
 	CHECK(written_stack < 0, "read_branches_stack", "err %d\n", written_stack);
 	CHECK(written_stack % pbe_size != 0, "read_branches_stack",
@@ -72,18 +67,18 @@ static void test_perf_branches_common(int perf_fd,
 		  "perf_branches skeleton failed\n"))
 		return;
 
-	/* attach perf_event */
+	 
 	link = bpf_program__attach_perf_event(skel->progs.perf_branches, perf_fd);
 	if (!ASSERT_OK_PTR(link, "attach_perf_event"))
 		goto out_destroy_skel;
 
-	/* generate some branches on cpu 0 */
+	 
 	CPU_ZERO(&cpu_set);
 	CPU_SET(0, &cpu_set);
 	err = pthread_setaffinity_np(pthread_self(), sizeof(cpu_set), &cpu_set);
 	if (CHECK(err, "set_affinity", "cpu #0, err %d\n", err))
 		goto out_destroy;
-	/* spin the loop for a while (random high number) */
+	 
 	for (i = 0; i < 1000000; ++i)
 		++j;
 
@@ -105,7 +100,7 @@ static void test_perf_branches_hw(void)
 	int duration = 0;
 	int pfd;
 
-	/* create perf event */
+	 
 	attr.size = sizeof(attr);
 	attr.type = PERF_TYPE_HARDWARE;
 	attr.config = PERF_COUNT_HW_CPU_CYCLES;
@@ -115,10 +110,7 @@ static void test_perf_branches_hw(void)
 	attr.branch_sample_type = PERF_SAMPLE_BRANCH_USER | PERF_SAMPLE_BRANCH_ANY;
 	pfd = syscall(__NR_perf_event_open, &attr, -1, 0, -1, PERF_FLAG_FD_CLOEXEC);
 
-	/*
-	 * Some setups don't support branch records (virtual machines, !x86),
-	 * so skip test in this case.
-	 */
+	 
 	if (pfd < 0) {
 		if (errno == ENOENT || errno == EOPNOTSUPP) {
 			printf("%s:SKIP:no PERF_SAMPLE_BRANCH_STACK\n",
@@ -136,17 +128,14 @@ static void test_perf_branches_hw(void)
 	close(pfd);
 }
 
-/*
- * Tests negative case -- run bpf_read_branch_records() on improperly configured
- * perf event.
- */
+ 
 static void test_perf_branches_no_hw(void)
 {
 	struct perf_event_attr attr = {0};
 	int duration = 0;
 	int pfd;
 
-	/* create perf event */
+	 
 	attr.size = sizeof(attr);
 	attr.type = PERF_TYPE_SOFTWARE;
 	attr.config = PERF_COUNT_SW_CPU_CLOCK;

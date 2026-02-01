@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/ethtool_netlink.h>
 
@@ -315,9 +285,7 @@ void mlx5e_ethtool_get_ringparam(struct mlx5e_priv *priv,
 				 struct ethtool_ringparam *param,
 				 struct kernel_ethtool_ringparam *kernel_param)
 {
-	/* Limitation for regular RQ. XSK RQ may clamp the queue length in
-	 * mlx5e_mpwqe_get_log_rq_size.
-	 */
+	 
 	u8 max_log_mpwrq_pkts = mlx5e_mpwrq_max_log_rq_pkts(priv->mdev,
 							    PAGE_SHIFT,
 							    MLX5E_MPWRQ_UMR_MODE_ALIGNED);
@@ -451,10 +419,7 @@ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
 
 	mutex_lock(&priv->state_lock);
 
-	/* Don't allow changing the number of channels if HTB offload is active,
-	 * because the numeration of the QoS SQs will change, while per-queue
-	 * qdiscs are attached.
-	 */
+	 
 	if (mlx5e_selq_is_htb_enabled(&priv->selq)) {
 		err = -EINVAL;
 		netdev_err(priv->netdev, "%s: HTB offload is active, cannot change the number of channels\n",
@@ -462,9 +427,7 @@ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
 		goto out;
 	}
 
-	/* Don't allow changing the number of channels if non-default RSS contexts exist,
-	 * the kernel doesn't protect against set_channels operations that break them.
-	 */
+	 
 	rss_cnt = mlx5e_rx_res_rss_cnt(priv->rx_res) - 1;
 	if (rss_cnt) {
 		err = -EINVAL;
@@ -473,9 +436,7 @@ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
 		goto out;
 	}
 
-	/* Don't allow changing the number of channels if MQPRIO mode channel offload is active,
-	 * because it defines a partition over the channels queues.
-	 */
+	 
 	if (cur_params->mqprio.mode == TC_MQPRIO_MODE_CHANNEL) {
 		err = -EINVAL;
 		netdev_err(priv->netdev, "%s: MQPRIO mode channel offload is active, cannot change the number of channels\n",
@@ -492,7 +453,7 @@ int mlx5e_ethtool_set_channels(struct mlx5e_priv *priv,
 	if (arfs_enabled)
 		mlx5e_arfs_disable(priv->fs);
 
-	/* Switch to new channels, set new parameters and close old ones */
+	 
 	err = mlx5e_safe_switch_params(priv, &new_params,
 				       mlx5e_num_channels_changed_ctx, NULL, true);
 
@@ -592,10 +553,7 @@ mlx5e_set_priv_channels_rx_coalesce(struct mlx5e_priv *priv, struct ethtool_coal
 	}
 }
 
-/* convert a boolean value of cq_mode to mlx5 period mode
- * true  : MLX5_CQ_PERIOD_MODE_START_FROM_CQE
- * false : MLX5_CQ_PERIOD_MODE_START_FROM_EQE
- */
+ 
 static int cqe_mode_to_period_mode(bool val)
 {
 	return val ? MLX5_CQ_PERIOD_MODE_START_FROM_CQE : MLX5_CQ_PERIOD_MODE_START_FROM_EQE;
@@ -678,9 +636,7 @@ int mlx5e_ethtool_set_coalesce(struct mlx5e_priv *priv,
 		mlx5e_reset_tx_moderation(&new_params, mode);
 	}
 
-	/* If DIM state hasn't changed, it's possible to modify interrupt
-	 * moderation parameters on the fly, even if the channels are open.
-	 */
+	 
 	if (!reset_rx && !reset_tx && test_bit(MLX5E_STATE_OPENED, &priv->state)) {
 		if (!coal->use_adaptive_rx_coalesce)
 			mlx5e_set_priv_channels_rx_coalesce(priv, coal);
@@ -799,9 +755,7 @@ static int get_fec_supported_advertised(struct mlx5_core_dev *dev,
 				      ETHTOOL_LINK_MODE_FEC_LLRS_BIT);
 
 	active_fec_long = active_fec;
-	/* active fec is a bit set, find out which bit is set and
-	 * advertise the corresponding ethtool bit
-	 */
+	 
 	bitn = find_first_bit(&active_fec_long, sizeof(active_fec_long) * BITS_PER_BYTE);
 	if (bitn < ARRAY_SIZE(pplm_fec_2_ethtool_linkmodes))
 		__set_bit(pplm_fec_2_ethtool_linkmodes[bitn],
@@ -1020,12 +974,7 @@ int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
 					      eth_proto_capability);
 	eth_proto_admin  = MLX5_GET_ETH_PROTO(ptys_reg, out, ext,
 					      eth_proto_admin);
-	/* Fields: eth_proto_admin and ext_eth_proto_admin  are
-	 * mutually exclusive. Hence try reading legacy advertising
-	 * when extended advertising is zero.
-	 * admin_ext indicates which proto_admin (ext vs. legacy)
-	 * should be read and interpreted
-	 */
+	 
 	admin_ext = ext;
 	if (ext && !eth_proto_admin) {
 		eth_proto_admin  = MLX5_GET_ETH_PROTO(ptys_reg, out, false,
@@ -1073,7 +1022,7 @@ int mlx5e_ethtool_get_link_ksettings(struct mlx5e_priv *priv,
 	if (err) {
 		netdev_dbg(priv->netdev, "%s: FEC caps query failed: %d\n",
 			   __func__, err);
-		err = 0; /* don't fail caps query because of FEC error */
+		err = 0;  
 	}
 
 	if (!an_disable_admin)
@@ -1095,7 +1044,7 @@ static int mlx5e_get_link_ksettings(struct net_device *netdev,
 static int mlx5e_speed_validate(struct net_device *netdev, bool ext,
 				const unsigned long link_modes, u8 autoneg)
 {
-	/* Extended link-mode has no speed limitations. */
+	 
 	if (ext)
 		return 0;
 
@@ -1730,7 +1679,7 @@ static int mlx5e_get_module_info(struct net_device *netdev,
 	if (size_read < 2)
 		return -EIO;
 
-	/* data[0] = identifier byte */
+	 
 	switch (data[0]) {
 	case MLX5_MODULE_ID_QSFP:
 		modinfo->type       = ETH_MODULE_SFF_8436;
@@ -1738,7 +1687,7 @@ static int mlx5e_get_module_info(struct net_device *netdev,
 		break;
 	case MLX5_MODULE_ID_QSFP_PLUS:
 	case MLX5_MODULE_ID_QSFP28:
-		/* data[1] = revision id */
+		 
 		if (data[0] == MLX5_MODULE_ID_QSFP28 || data[1] >= 0x3) {
 			modinfo->type       = ETH_MODULE_SFF_8636;
 			modinfo->eeprom_len = ETH_MODULE_SFF_8636_MAX_LEN;
@@ -1780,7 +1729,7 @@ static int mlx5e_get_module_eeprom(struct net_device *netdev,
 						     data + i);
 
 		if (!size_read)
-			/* Done reading */
+			 
 			return 0;
 
 		if (size_read < 0) {
@@ -1820,7 +1769,7 @@ static int mlx5e_get_module_eeprom_by_page(struct net_device *netdev,
 		query.size = page_data->length - i;
 		size_read = mlx5_query_module_eeprom_by_page(mdev, &query, data + i);
 
-		/* Done reading, return how many bytes was read */
+		 
 		if (!size_read)
 			return i;
 
@@ -1983,10 +1932,7 @@ static int set_pflag_rx_striding_rq(struct net_device *netdev, bool enable)
 	int err;
 
 	if (enable) {
-		/* Checking the regular RQ here; mlx5e_validate_xsk_param called
-		 * from mlx5e_open_xsk will check for each XSK queue, and
-		 * mlx5e_safe_switch_params will be reverted if any check fails.
-		 */
+		 
 		int err = mlx5e_mpwrq_validate_regular(mdev, &priv->channels.params);
 
 		if (err)
@@ -2005,7 +1951,7 @@ static int set_pflag_rx_striding_rq(struct net_device *netdev, bool enable)
 	if (err)
 		return err;
 
-	/* update XDP supported features */
+	 
 	mlx5e_set_xdp_feature(netdev);
 
 	return 0;
@@ -2070,10 +2016,7 @@ static int set_pflag_tx_port_ts(struct net_device *netdev, bool enable)
 	    !MLX5_CAP_GEN_2(mdev, ts_cqe_metadata_size2wqe_counter))
 		return -EOPNOTSUPP;
 
-	/* Don't allow changing the PTP state if HTB offload is active, because
-	 * the numeration of the QoS SQs will change, while per-queue qdiscs are
-	 * attached.
-	 */
+	 
 	if (mlx5e_selq_is_htb_enabled(&priv->selq)) {
 		netdev_err(priv->netdev, "%s: HTB offload is active, cannot change the PTP state\n",
 			   __func__);
@@ -2081,11 +2024,7 @@ static int set_pflag_tx_port_ts(struct net_device *netdev, bool enable)
 	}
 
 	new_params = priv->channels.params;
-	/* Don't allow enabling TX-port-TS if MQPRIO mode channel  offload is
-	 * active, since it defines explicitly which TC accepts the packet.
-	 * This conflicts with TX-port-TS hijacking the PTP traffic to a specific
-	 * HW TX-queue.
-	 */
+	 
 	if (enable && new_params.mqprio.mode == TC_MQPRIO_MODE_CHANNEL) {
 		netdev_err(priv->netdev,
 			   "%s: MQPRIO mode channel offload is active, cannot set the TX-port-TS\n",
@@ -2093,10 +2032,7 @@ static int set_pflag_tx_port_ts(struct net_device *netdev, bool enable)
 		return -EINVAL;
 	}
 	MLX5E_SET_PFLAG(&new_params, MLX5E_PFLAG_TX_PORT_TS, enable);
-	/* No need to verify SQ stop room as
-	 * ptpsq.txqsq.stop_room <= generic_sq->stop_room, and both
-	 * has the same log_sq_size.
-	 */
+	 
 
 	err = mlx5e_safe_switch_params(priv, &new_params,
 				       mlx5e_num_channels_changed_ctx, NULL, true);
@@ -2156,7 +2092,7 @@ static int mlx5e_set_priv_flags(struct net_device *netdev, u32 pflags)
 
 	mutex_unlock(&priv->state_lock);
 
-	/* Need to fix some features.. */
+	 
 	netdev_update_features(netdev);
 
 	return err;
@@ -2174,11 +2110,7 @@ static int mlx5e_get_rxnfc(struct net_device *dev, struct ethtool_rxnfc *info,
 {
 	struct mlx5e_priv *priv = netdev_priv(dev);
 
-	/* ETHTOOL_GRXRINGS is needed by ethtool -x which is not part
-	 * of rxnfc. We keep this logic out of mlx5e_ethtool_get_rxnfc,
-	 * to avoid breaking "ethtool -x" when mlx5e_ethtool_get_rxnfc
-	 * is compiled out via CONFIG_MLX5_EN_RXNFC=n.
-	 */
+	 
 	if (info->cmd == ETHTOOL_GRXRINGS) {
 		info->data = priv->channels.params.num_channels;
 		return 0;
@@ -2227,7 +2159,7 @@ struct mlx5e_ethtool_link_ext_state_opcode_mapping {
 
 static const struct mlx5e_ethtool_link_ext_state_opcode_mapping
 mlx5e_link_ext_state_opcode_map[] = {
-	/* States relating to the autonegotiation or issues therein */
+	 
 	{2, ETHTOOL_LINK_EXT_STATE_AUTONEG,
 		ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_PARTNER_DETECTED},
 	{3, ETHTOOL_LINK_EXT_STATE_AUTONEG,
@@ -2241,7 +2173,7 @@ mlx5e_link_ext_state_opcode_map[] = {
 	{39, ETHTOOL_LINK_EXT_STATE_AUTONEG,
 		ETHTOOL_LINK_EXT_SUBSTATE_AN_NO_HCD},
 
-	/* Failure during link training */
+	 
 	{5, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
 		ETHTOOL_LINK_EXT_SUBSTATE_LT_KR_FRAME_LOCK_NOT_ACQUIRED},
 	{6, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
@@ -2252,7 +2184,7 @@ mlx5e_link_ext_state_opcode_map[] = {
 	{14, ETHTOOL_LINK_EXT_STATE_LINK_TRAINING_FAILURE,
 		ETHTOOL_LINK_EXT_SUBSTATE_LT_REMOTE_FAULT},
 
-	/* Logical mismatch in physical coding sublayer or forward error correction sublayer */
+	 
 	{9, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
 		ETHTOOL_LINK_EXT_SUBSTATE_LLM_PCS_DID_NOT_ACQUIRE_BLOCK_LOCK},
 	{10, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
@@ -2264,17 +2196,17 @@ mlx5e_link_ext_state_opcode_map[] = {
 	{13, ETHTOOL_LINK_EXT_STATE_LINK_LOGICAL_MISMATCH,
 		ETHTOOL_LINK_EXT_SUBSTATE_LLM_RS_FEC_IS_NOT_LOCKED},
 
-	/* Signal integrity issues */
+	 
 	{15, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY, 0},
 	{17, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
 		ETHTOOL_LINK_EXT_SUBSTATE_BSI_LARGE_NUMBER_OF_PHYSICAL_ERRORS},
 	{42, ETHTOOL_LINK_EXT_STATE_BAD_SIGNAL_INTEGRITY,
 		ETHTOOL_LINK_EXT_SUBSTATE_BSI_UNSUPPORTED_RATE},
 
-	/* No cable connected */
+	 
 	{1024, ETHTOOL_LINK_EXT_STATE_NO_CABLE, 0},
 
-	/* Failure is related to cable, e.g., unsupported cable */
+	 
 	{16, ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE,
 		ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE},
 	{20, ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE,
@@ -2287,16 +2219,16 @@ mlx5e_link_ext_state_opcode_map[] = {
 		ETHTOOL_LINK_EXT_SUBSTATE_CI_UNSUPPORTED_CABLE},
 	{1031, ETHTOOL_LINK_EXT_STATE_CABLE_ISSUE, 0},
 
-	/* Failure is related to EEPROM, e.g., failure during reading or parsing the data */
+	 
 	{1027, ETHTOOL_LINK_EXT_STATE_EEPROM_ISSUE, 0},
 
-	/* Failure during calibration algorithm */
+	 
 	{23, ETHTOOL_LINK_EXT_STATE_CALIBRATION_FAILURE, 0},
 
-	/* The hardware is not able to provide the power required from cable or module */
+	 
 	{1032, ETHTOOL_LINK_EXT_STATE_POWER_BUDGET_EXCEEDED, 0},
 
-	/* The module is overheated */
+	 
 	{1030, ETHTOOL_LINK_EXT_STATE_OVERHEAT, 0},
 };
 
@@ -2342,9 +2274,7 @@ mlx5e_get_link_ext_state(struct net_device *dev,
 	u32 status_opcode = 0;
 	int i;
 
-	/* Exit without data if the interface state is OK, since no extended data is
-	 * available in such case
-	 */
+	 
 	if (netif_carrier_ok(dev))
 		return -ENODATA;
 

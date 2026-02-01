@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  power_supply_hwmon.c - power supply hwmon support.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -190,12 +188,7 @@ static int power_supply_hwmon_read_string(struct device *dev,
 		*str = ps_temp_label[channel];
 		break;
 	default:
-		/* unreachable, but see:
-		 * gcc bug #51513 [1] and clang bug #978 [2]
-		 *
-		 * [1] https://gcc.gnu.org/bugzilla/show_bug.cgi?id=51513
-		 * [2] https://github.com/ClangBuiltLinux/linux/issues/978
-		 */
+		 
 		break;
 	}
 
@@ -220,18 +213,12 @@ power_supply_hwmon_read(struct device *dev, enum hwmon_sensor_types type,
 		return ret;
 
 	switch (type) {
-	/*
-	 * Both voltage and current is reported in units of
-	 * microvolts/microamps, so we need to adjust it to
-	 * milliamps(volts)
-	 */
+	 
 	case hwmon_curr:
 	case hwmon_in:
 		pspval.intval = DIV_ROUND_CLOSEST(pspval.intval, 1000);
 		break;
-	/*
-	 * Temp needs to be converted from 1/10 C to milli-C
-	 */
+	 
 	case hwmon_temp:
 		if (check_mul_overflow(pspval.intval, 100,
 				       &pspval.intval))
@@ -262,20 +249,14 @@ power_supply_hwmon_write(struct device *dev, enum hwmon_sensor_types type,
 	pspval.intval = val;
 
 	switch (type) {
-	/*
-	 * Both voltage and current is reported in units of
-	 * microvolts/microamps, so we need to adjust it to
-	 * milliamps(volts)
-	 */
+	 
 	case hwmon_curr:
 	case hwmon_in:
 		if (check_mul_overflow(pspval.intval, 1000,
 				       &pspval.intval))
 			return -EOVERFLOW;
 		break;
-	/*
-	 * Temp needs to be converted from 1/10 C to milli-C
-	 */
+	 
 	case hwmon_temp:
 		pspval.intval = DIV_ROUND_CLOSEST(pspval.intval, 100);
 		break;

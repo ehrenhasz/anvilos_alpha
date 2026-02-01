@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NXP S32G pinctrl driver
- *
- * Copyright 2015-2016 Freescale Semiconductor, Inc.
- * Copyright 2017-2018, 2020-2022 NXP
- * Copyright (C) 2022 SUSE LLC
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -216,7 +210,7 @@ enum s32_pins {
 	S32G_IMCR_CAN1_RXD = 631,
 	S32G_IMCR_CAN2_RXD = 632,
 	S32G_IMCR_CAN3_RXD = 633,
-	/* GMAC0 */
+	 
 	S32G_IMCR_Ethernet_MDIO = 527,
 	S32G_IMCR_Ethernet_CRS = 526,
 	S32G_IMCR_Ethernet_COL = 525,
@@ -229,8 +223,8 @@ enum s32_pins {
 	S32G_IMCR_Ethernet_RX_DV = 530,
 	S32G_IMCR_Ethernet_TX_CLK = 538,
 	S32G_IMCR_Ethernet_REF_CLK = 535,
-	/* PFE EMAC 0 MII */
-	/* PFE EMAC 1 MII */
+	 
+	 
 	S32G_IMCR_PFE_EMAC_1_MDIO = 857,
 	S32G_IMCR_PFE_EMAC_1_CRS = 856,
 	S32G_IMCR_PFE_EMAC_1_COL = 855,
@@ -243,7 +237,7 @@ enum s32_pins {
 	S32G_IMCR_PFE_EMAC_1_RX_DV = 865,
 	S32G_IMCR_PFE_EMAC_1_TX_CLK = 866,
 	S32G_IMCR_PFE_EMAC_1_REF_CLK = 858,
-	/* PFE EMAC 2 MII */
+	 
 	S32G_IMCR_PFE_EMAC_2_MDIO = 877,
 	S32G_IMCR_PFE_EMAC_2_CRS = 876,
 	S32G_IMCR_PFE_EMAC_2_COL = 875,
@@ -363,10 +357,10 @@ enum s32_pins {
 	S32G_IMCR_SIUL_EIRQ31 =  941,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc s32_pinctrl_pads_siul2[] = {
 
-	/* SIUL2_0 pins. */
+	 
 
 	S32_PINCTRL_PIN(S32G_MSCR_PA_00),
 	S32_PINCTRL_PIN(S32G_MSCR_PA_01),
@@ -503,7 +497,7 @@ static const struct pinctrl_pin_desc s32_pinctrl_pads_siul2[] = {
 	S32_PINCTRL_PIN(S32G_IMCR_USDHC_DAT7),
 	S32_PINCTRL_PIN(S32G_IMCR_USDHC_DQS),
 	S32_PINCTRL_PIN(S32G_IMCR_CAN0_RXD),
-	/* GMAC0 */
+	 
 	S32_PINCTRL_PIN(S32G_IMCR_Ethernet_MDIO),
 	S32_PINCTRL_PIN(S32G_IMCR_Ethernet_CRS),
 	S32_PINCTRL_PIN(S32G_IMCR_Ethernet_COL),
@@ -517,7 +511,7 @@ static const struct pinctrl_pin_desc s32_pinctrl_pads_siul2[] = {
 	S32_PINCTRL_PIN(S32G_IMCR_Ethernet_TX_CLK),
 	S32_PINCTRL_PIN(S32G_IMCR_Ethernet_REF_CLK),
 
-	/* SIUL2_1 pins. */
+	 
 
 	S32_PINCTRL_PIN(S32G_MSCR_PH_00),
 	S32_PINCTRL_PIN(S32G_MSCR_PH_01),
@@ -711,11 +705,11 @@ static const struct pinctrl_pin_desc s32_pinctrl_pads_siul2[] = {
 };
 
 static const struct s32_pin_range s32_pin_ranges_siul2[] = {
-	/* MSCR pin ID ranges */
+	 
 	S32_PIN_RANGE(0, 101),
 	S32_PIN_RANGE(112, 122),
 	S32_PIN_RANGE(144, 190),
-	/* IMCR pin ID ranges */
+	 
 	S32_PIN_RANGE(512, 595),
 	S32_PIN_RANGE(631, 909),
 	S32_PIN_RANGE(942, 1007),
@@ -733,7 +727,7 @@ static const struct of_device_id s32_pinctrl_of_match[] = {
 		.compatible = "nxp,s32g2-siul2-pinctrl",
 		.data = &s32_pinctrl_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, s32_pinctrl_of_match);
 

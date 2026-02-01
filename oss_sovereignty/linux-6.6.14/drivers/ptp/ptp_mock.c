@@ -1,34 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2023 NXP
- *
- * Mock-up PTP Hardware Clock driver for virtual network devices
- *
- * Create a PTP clock which offers PTP time manipulation operations
- * using a timecounter/cyclecounter on top of CLOCK_MONOTONIC_RAW.
- */
+
+ 
 
 #include <linux/ptp_clock_kernel.h>
 #include <linux/ptp_mock.h>
 #include <linux/timecounter.h>
 
-/* Clamp scaled_ppm between -2,097,152,000 and 2,097,152,000,
- * and thus "adj" between -68,719,476 and 68,719,476
- */
+ 
 #define MOCK_PHC_MAX_ADJ_PPB		32000000
-/* Timestamps from ktime_get_raw() have 1 ns resolution, so the scale factor
- * (MULT >> SHIFT) needs to be 1. Pick SHIFT as 31 bits, which translates
- * MULT(freq 0) into 0x80000000.
- */
+ 
 #define MOCK_PHC_CC_SHIFT		31
 #define MOCK_PHC_CC_MULT		(1 << MOCK_PHC_CC_SHIFT)
 #define MOCK_PHC_FADJ_SHIFT		9
 #define MOCK_PHC_FADJ_DENOMINATOR	15625ULL
 
-/* The largest cycle_delta that timecounter_read_delta() can handle without a
- * 64-bit overflow during the multiplication with cc->mult, given the max "adj"
- * we permit, is ~8.3 seconds. Make sure readouts are more frequent than that.
- */
+ 
 #define MOCK_PHC_REFRESH_INTERVAL	(HZ * 5)
 
 #define info_to_phc(d) container_of((d), struct mock_phc, info)

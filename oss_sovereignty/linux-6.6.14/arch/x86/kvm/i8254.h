@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __I8254_H
 #define __I8254_H
 
@@ -7,7 +7,7 @@
 #include <kvm/iodev.h>
 
 struct kvm_kpit_channel_state {
-	u32 count; /* can be 65536 */
+	u32 count;  
 	u16 latched_count;
 	u8 count_latched;
 	u8 status_latched;
@@ -17,22 +17,22 @@ struct kvm_kpit_channel_state {
 	u8 write_latch;
 	u8 rw_mode;
 	u8 mode;
-	u8 bcd; /* not supported */
-	u8 gate; /* timer start */
+	u8 bcd;  
+	u8 gate;  
 	ktime_t count_load_time;
 };
 
 struct kvm_kpit_state {
-	/* All members before "struct mutex lock" are protected by the lock. */
+	 
 	struct kvm_kpit_channel_state channels[3];
 	u32 flags;
 	bool is_periodic;
-	s64 period; 				/* unit: ns */
+	s64 period; 				 
 	struct hrtimer timer;
 
 	struct mutex lock;
 	atomic_t reinject;
-	atomic_t pending; /* accumulated triggered timers */
+	atomic_t pending;  
 	atomic_t irq_ack;
 	struct kvm_irq_ack_notifier irq_ack_notifier;
 };

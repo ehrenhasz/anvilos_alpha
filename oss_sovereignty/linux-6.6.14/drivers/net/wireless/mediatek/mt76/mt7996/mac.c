@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/timekeeping.h>
@@ -132,7 +130,7 @@ static void mt7996_mac_sta_poll(struct mt7996_dev *dev)
 
 		idx = msta->wcid.idx;
 
-		/* refresh peer's airtime reporting */
+		 
 		addr = mt7996_mac_wtbl_lmac_addr(dev, idx, 20);
 
 		for (i = 0; i < IEEE80211_NUM_ACS; i++) {
@@ -174,11 +172,7 @@ static void mt7996_mac_sta_poll(struct mt7996_dev *dev)
 			ieee80211_sta_register_airtime(sta, tid, tx_cur, rx_cur);
 		}
 
-		/* We don't support reading GI info from txs packets.
-		 * For accurate tx status reporting and AQL improvement,
-		 * we need to make sure that flags match so polling GI
-		 * from per-sta counters directly.
-		 */
+		 
 		rate = &msta->wcid.rate;
 
 		switch (rate->bw) {
@@ -217,7 +211,7 @@ static void mt7996_mac_sta_poll(struct mt7996_dev *dev)
 				rate->flags &= ~RATE_INFO_FLAGS_SHORT_GI;
 		}
 
-		/* get signal strength of resp frames (CTS/BA/ACK) */
+		 
 		addr = mt7996_mac_wtbl_lmac_addr(dev, idx, 34);
 		val = mt76_rr(dev, addr);
 
@@ -254,12 +248,12 @@ void mt7996_mac_set_fixed_rate_table(struct mt7996_dev *dev,
 	u32 ctrl = MT_WTBL_ITCR_WR | MT_WTBL_ITCR_EXEC | tbl_idx;
 
 	mt76_wr(dev, MT_WTBL_ITDR0, rate_idx);
-	/* use wtbl spe idx */
+	 
 	mt76_wr(dev, MT_WTBL_ITDR1, MT_WTBL_SPE_IDX_SEL);
 	mt76_wr(dev, MT_WTBL_ITCR, ctrl);
 }
 
-/* The HW does not translate the mac header to 802.3 for mesh point */
+ 
 static int mt7996_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
 {
 	struct mt76_rx_status *status = (struct mt76_rx_status *)skb->cb;
@@ -284,7 +278,7 @@ static int mt7996_reverse_frag0_hdr_trans(struct sk_buff *skb, u16 hdr_gap)
 	sta = container_of((void *)msta, struct ieee80211_sta, drv_priv);
 	vif = container_of((void *)msta->vif, struct ieee80211_vif, drv_priv);
 
-	/* store the info from RXD and ethhdr to avoid being overridden */
+	 
 	frame_control = le32_get_bits(rxd[8], MT_RXD8_FRAME_CONTROL);
 	hdr.frame_control = cpu_to_le16(frame_control);
 	hdr.seq_ctrl = cpu_to_le16(le32_get_bits(rxd[10], MT_RXD10_SEQ_CTRL));
@@ -433,7 +427,7 @@ mt7996_mac_fill_rx_rate(struct mt7996_dev *dev,
 	case IEEE80211_STA_RX_BW_160:
 		status->bw = RATE_INFO_BW_160;
 		break;
-	/* rxv reports bw 320-1 and 320-2 separately */
+	 
 	case IEEE80211_STA_RX_BW_320:
 	case IEEE80211_STA_RX_BW_320 + 1:
 		status->bw = RATE_INFO_BW_320;
@@ -493,7 +487,7 @@ mt7996_mac_fill_rx(struct mt7996_dev *dev, struct sk_buff *skb)
 	if (hdr_trans && (rxd1 & MT_RXD1_NORMAL_CM))
 		return -EINVAL;
 
-	/* ICV error or CCMP/BIP/WPI MIC error */
+	 
 	if (rxd1 & MT_RXD1_NORMAL_ICV_ERR)
 		status->flag |= RX_FLAG_ONLY_MONITOR;
 
@@ -598,7 +592,7 @@ mt7996_mac_fill_rx(struct mt7996_dev *dev, struct sk_buff *skb)
 		if (!(rxd2 & MT_RXD2_NORMAL_NON_AMPDU)) {
 			status->flag |= RX_FLAG_AMPDU_DETAILS;
 
-			/* all subframes of an A-MPDU have the same timestamp */
+			 
 			if (phy->rx_ampdu_ts != status->timestamp) {
 				if (!++phy->ampdu_ref)
 					phy->ampdu_ref++;
@@ -613,7 +607,7 @@ mt7996_mac_fill_rx(struct mt7996_dev *dev, struct sk_buff *skb)
 			return -EINVAL;
 	}
 
-	/* RXD Group 3 - P-RXV */
+	 
 	if (rxd1 & MT_RXD1_NORMAL_GROUP_3) {
 		u32 v3;
 		int ret;
@@ -631,7 +625,7 @@ mt7996_mac_fill_rx(struct mt7996_dev *dev, struct sk_buff *skb)
 		status->chain_signal[2] = to_rssi(MT_PRXV_RCPI2, v3);
 		status->chain_signal[3] = to_rssi(MT_PRXV_RCPI3, v3);
 
-		/* RXD Group 5 - C-RXV */
+		 
 		if (rxd1 & MT_RXD1_NORMAL_GROUP_5) {
 			rxd += 24;
 			if ((u8 *)rxd - skb->data >= skb->len)
@@ -662,13 +656,7 @@ mt7996_mac_fill_rx(struct mt7996_dev *dev, struct sk_buff *skb)
 		if (!hdr_trans && status->amsdu && !(ieee80211_has_a4(fc) && is_mesh)) {
 			pad_start = ieee80211_get_hdrlen_from_skb(skb);
 		} else if (hdr_trans && (rxd2 & MT_RXD2_NORMAL_HDR_TRANS_ERROR)) {
-			/* When header translation failure is indicated,
-			 * the hardware will insert an extra 2-byte field
-			 * containing the data length after the protocol
-			 * type field. This happens either when the LLC-SNAP
-			 * pattern did not match, or if a VLAN header was
-			 * detected.
-			 */
+			 
 			pad_start = 12;
 			if (get_unaligned_be16(skb->data + pad_start) == ETH_P_8021Q)
 				pad_start += 4;
@@ -699,10 +687,7 @@ mt7996_mac_fill_rx(struct mt7996_dev *dev, struct sk_buff *skb)
 			seq_ctrl = le16_to_cpu(hdr->seq_ctrl);
 			qos_ctl = *qos;
 
-			/* Mesh DA/SA/Length will be stripped after hardware
-			 * de-amsdu, so here needs to clear amsdu present bit
-			 * to mark it as a normal mesh frame.
-			 */
+			 
 			if (ieee80211_has_a4(fc) && is_mesh && status->amsdu)
 				*qos &= ~IEEE80211_QOS_CTL_A_MSDU_PRESENT;
 		}
@@ -997,7 +982,7 @@ int mt7996_tx_prepare_skb(struct mt76_dev *mdev, void *txwi_ptr,
 
 	tx_info->skb = NULL;
 
-	/* pass partial skb header to fw */
+	 
 	tx_info->buf[1].len = MT_CT_PARSE_LEN;
 	tx_info->buf[1].skip_unmap = true;
 	tx_info->nbuf = MT_CT_DMA_BUF_NUM;
@@ -1016,7 +1001,7 @@ mt7996_tx_check_aggr(struct ieee80211_sta *sta, __le32 *txwi)
 		return;
 
 	tid = le32_get_bits(txwi[1], MT_TXD1_TID);
-	if (tid >= 6) /* skip VO queue */
+	if (tid >= 6)  
 		return;
 
 	val = le32_to_cpu(txwi[2]);
@@ -1076,7 +1061,7 @@ mt7996_mac_tx_free(struct mt7996_dev *dev, void *data, int len)
 	bool wake = false;
 	u16 total, count = 0;
 
-	/* clean DMA queues and unmap buffers first */
+	 
 	mt76_queue_tx_cleanup(dev, dev->mphy.q_tx[MT_TXQ_PSD], false);
 	mt76_queue_tx_cleanup(dev, dev->mphy.q_tx[MT_TXQ_BE], false);
 	if (phy2) {
@@ -1098,9 +1083,7 @@ mt7996_mac_tx_free(struct mt7996_dev *dev, void *data, int len)
 
 		if (WARN_ON_ONCE((void *)cur_info >= end))
 			return;
-		/* 1'b1: new wcid pair.
-		 * 1'b0: msdu_id with the same 'wcid pair' as above.
-		 */
+		 
 		info = le32_to_cpu(*cur_info);
 		if (info & MT_TXFREE_INFO_PAIR) {
 			struct mt7996_sta *msta;
@@ -1432,7 +1415,7 @@ void mt7996_mac_reset_counters(struct mt7996_phy *phy)
 
 	memset(phy->mt76->aggr_stats, 0, sizeof(phy->mt76->aggr_stats));
 
-	/* reset airtime counters */
+	 
 	mt76_set(dev, MT_WF_RMAC_MIB_AIRTIME0(band_idx),
 		 MT_WF_RMAC_MIB_RXTIME_CLR);
 
@@ -1622,14 +1605,14 @@ mt7996_mac_restart(struct mt7996_dev *dev)
 		set_bit(MT76_MCU_RESET, &phy3->mt76->state);
 	}
 
-	/* lock/unlock all queues to ensure that no tx is pending */
+	 
 	mt76_txq_schedule_all(&dev->mphy);
 	if (phy2)
 		mt76_txq_schedule_all(phy2->mt76);
 	if (phy3)
 		mt76_txq_schedule_all(phy3->mt76);
 
-	/* disable all tx/rx napi */
+	 
 	mt76_worker_disable(&dev->mt76.tx_worker);
 	mt76_for_each_q_rx(mdev, i) {
 		if (mdev->q_rx[i].ndesc)
@@ -1637,7 +1620,7 @@ mt7996_mac_restart(struct mt7996_dev *dev)
 	}
 	napi_disable(&dev->mt76.tx_napi);
 
-	/* token reinit */
+	 
 	mt7996_tx_token_put(dev);
 	idr_init(&dev->mt76.token);
 
@@ -1666,12 +1649,12 @@ mt7996_mac_restart(struct mt7996_dev *dev)
 			mt76_wr(dev, MT_PCIE1_MAC_INT_ENABLE, 0xff);
 	}
 
-	/* load firmware */
+	 
 	ret = mt7996_mcu_init_firmware(dev);
 	if (ret)
 		goto out;
 
-	/* set the necessary init items */
+	 
 	ret = mt7996_mcu_set_eeprom(dev);
 	if (ret)
 		goto out;
@@ -1701,7 +1684,7 @@ mt7996_mac_restart(struct mt7996_dev *dev)
 	}
 
 out:
-	/* reset done */
+	 
 	clear_bit(MT76_RESET, &dev->mphy.state);
 	if (phy2)
 		clear_bit(MT76_RESET, &phy2->mt76->state);
@@ -1786,9 +1769,9 @@ void mt7996_mac_reset_work(struct work_struct *work)
 	phy2 = mt7996_phy2(dev);
 	phy3 = mt7996_phy3(dev);
 
-	/* chip full reset */
+	 
 	if (dev->recovery.restart) {
-		/* disable WA/WM WDT */
+		 
 		mt76_clear(dev, MT_WFDMA0_MCU_HOST_INT_ENA,
 			   MT_MCU_CMD_WDT_MASK);
 
@@ -1799,11 +1782,11 @@ void mt7996_mac_reset_work(struct work_struct *work)
 
 		mt7996_mac_full_reset(dev);
 
-		/* enable mcu irq */
+		 
 		mt7996_irq_enable(dev, MT_INT_MCU_CMD);
 		mt7996_irq_disable(dev, 0);
 
-		/* enable WA/WM WDT */
+		 
 		mt76_set(dev, MT_WFDMA0_MCU_HOST_INT_ENA, MT_MCU_CMD_WDT_MASK);
 
 		dev->recovery.state = MT_MCU_CMD_NORMAL_STATE;
@@ -1856,7 +1839,7 @@ void mt7996_mac_reset_work(struct work_struct *work)
 	mt76_wr(dev, MT_MCU_INT_EVENT, MT_MCU_INT_EVENT_RESET_DONE);
 	mt7996_wait_reset_state(dev, MT_MCU_CMD_NORMAL_STATE);
 
-	/* enable DMA Tx/Tx and interrupt */
+	 
 	mt7996_dma_start(dev, false);
 
 	clear_bit(MT76_MCU_RESET, &dev->mphy.state);
@@ -1906,7 +1889,7 @@ void mt7996_mac_reset_work(struct work_struct *work)
 		 wiphy_name(dev->mt76.hw->wiphy));
 }
 
-/* firmware coredump */
+ 
 void mt7996_mac_dump_work(struct work_struct *work)
 {
 	const struct mt7996_mem_region *mem_region;
@@ -1937,7 +1920,7 @@ void mt7996_mac_dump_work(struct work_struct *work)
 	buf = crash_data->memdump_buf;
 	buf_len = crash_data->memdump_buf_len;
 
-	/* dumping memory content... */
+	 
 	memset(buf, 0, buf_len);
 	for (i = 0; i < num; i++) {
 		if (mem_region->len > buf_len) {
@@ -1946,7 +1929,7 @@ void mt7996_mac_dump_work(struct work_struct *work)
 			break;
 		}
 
-		/* reserve space for the header */
+		 
 		hdr = (void *)buf;
 		buf += sizeof(*hdr);
 		buf_len -= sizeof(*hdr);
@@ -1958,7 +1941,7 @@ void mt7996_mac_dump_work(struct work_struct *work)
 		hdr->len = mem_region->len;
 
 		if (!mem_region->len)
-			/* note: the header remains, just with zero length */
+			 
 			break;
 
 		buf += mem_region->len;
@@ -1983,7 +1966,7 @@ void mt7996_reset(struct mt7996_dev *dev)
 	if (dev->recovery.hw_full_reset)
 		return;
 
-	/* wm/wa exception: do full recovery */
+	 
 	if (READ_ONCE(dev->recovery.state) & MT_MCU_CMD_WDT_MASK) {
 		dev->recovery.restart = true;
 		dev_info(dev->mt76.dev,
@@ -2118,19 +2101,19 @@ void mt7996_mac_update_stats(struct mt7996_phy *phy)
 		mib->tx_amsdu_cnt += cnt;
 	}
 
-	/* rts count */
+	 
 	cnt = mt76_rr(dev, MT_MIB_BTSCR5(band_idx));
 	mib->rts_cnt += cnt;
 
-	/* rts retry count */
+	 
 	cnt = mt76_rr(dev, MT_MIB_BTSCR6(band_idx));
 	mib->rts_retries_cnt += cnt;
 
-	/* ba miss count */
+	 
 	cnt = mt76_rr(dev, MT_MIB_BTSCR0(band_idx));
 	mib->ba_miss_cnt += cnt;
 
-	/* ack fail count */
+	 
 	cnt = mt76_rr(dev, MT_MIB_BFTFCR(band_idx));
 	mib->ack_fail_cnt += cnt;
 
@@ -2167,7 +2150,7 @@ void mt7996_mac_sta_rc_work(struct work_struct *work)
 			       IEEE80211_RC_BW_CHANGED))
 			mt7996_mcu_add_rate_ctrl(dev, vif, sta, true);
 
-		/* TODO: smps change */
+		 
 
 		spin_lock_bh(&dev->mt76.sta_poll_lock);
 	}
@@ -2246,7 +2229,7 @@ static int mt7996_dfs_start_radar_detector(struct mt7996_phy *phy)
 	u8 band_idx = phy->mt76->band_idx;
 	int err;
 
-	/* start CAC */
+	 
 	err = mt7996_mcu_rdd_cmd(dev, RDD_CAC_START, band_idx,
 				 MT_RX_SEL0, 0);
 	if (err < 0)
@@ -2376,7 +2359,7 @@ mt7996_mac_twt_sched_list_add(struct mt7996_dev *dev,
 	iter = list_first_entry_or_null(&dev->twt_list,
 					struct mt7996_twt_flow, list);
 	if (!iter || !iter->sched || iter->start_tsf > duration) {
-		/* add flow as first entry in the list */
+		 
 		list_add(&flow->list, &dev->twt_list);
 		return 0;
 	}
@@ -2394,7 +2377,7 @@ mt7996_mac_twt_sched_list_add(struct mt7996_dev *dev,
 		}
 	}
 
-	/* add flow as last entry in the list */
+	 
 	list_add_tail(&flow->list, &dev->twt_list);
 out:
 	return start_tsf;
@@ -2407,17 +2390,17 @@ static int mt7996_mac_check_twt_req(struct ieee80211_twt_setup *twt)
 	u16 mantissa;
 	u8 exp;
 
-	/* only individual agreement supported */
+	 
 	if (twt->control & IEEE80211_TWT_CONTROL_NEG_TYPE_BROADCAST)
 		return -EOPNOTSUPP;
 
-	/* only 256us unit supported */
+	 
 	if (twt->control & IEEE80211_TWT_CONTROL_WAKE_DUR_UNIT)
 		return -EOPNOTSUPP;
 
 	twt_agrt = (struct ieee80211_twt_params *)twt->params;
 
-	/* explicit agreement not supported */
+	 
 	if (!(twt_agrt->req_type & cpu_to_le16(IEEE80211_TWT_REQTYPE_IMPLICIT)))
 		return -EOPNOTSUPP;
 

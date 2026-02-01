@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <net/dsa.h>
 
 #include "chip.h"
@@ -301,13 +301,10 @@ out:
 	return err;
 }
 
-/* The ATU entry varies between mv88e6xxx chipset generations. Define
- * a generic format which covers all the current and hopefully future
- * mv88e6xxx generations
- */
+ 
 
 struct mv88e6xxx_devlink_atu_entry {
-	/* The FID is scattered over multiple registers. */
+	 
 	u16 fid;
 	u16 atu_op;
 	u16 atu_data;
@@ -417,21 +414,7 @@ out:
 	return err;
 }
 
-/**
- * struct mv88e6xxx_devlink_vtu_entry - Devlink VTU entry
- * @fid:   Global1/2:   FID and VLAN policy.
- * @sid:   Global1/3:   SID, unknown filters and learning.
- * @op:    Global1/5:   FID (old chipsets).
- * @vid:   Global1/6:   VID, valid, and page.
- * @data:  Global1/7-9: Membership data and priority override.
- * @resvd: Reserved. Also happens to align the size to 16B.
- *
- * The VTU entry format varies between chipset generations, the
- * descriptions above represent the superset of all possible
- * information, not all fields are valid on all devices. Since this is
- * a low-level debug interface, copy all data verbatim and defer
- * parsing to the consumer.
- */
+ 
 struct mv88e6xxx_devlink_vtu_entry {
 	u16 fid;
 	u16 sid;
@@ -503,20 +486,7 @@ static int mv88e6xxx_region_vtu_snapshot(struct devlink *dl,
 	return 0;
 }
 
-/**
- * struct mv88e6xxx_devlink_stu_entry - Devlink STU entry
- * @sid:   Global1/3:   SID, unknown filters and learning.
- * @vid:   Global1/6:   Valid bit.
- * @data:  Global1/7-9: Membership data and priority override.
- * @resvd: Reserved. In case we forgot something.
- *
- * The STU entry format varies between chipset generations. Peridot
- * and Amethyst packs the STU data into Global1/7-8. Older silicon
- * spreads the information across all three VTU data registers -
- * inheriting the layout of even older hardware that had no STU at
- * all. Since this is a low-level debug interface, copy all data
- * verbatim and defer parsing to the consumer.
- */
+ 
 struct mv88e6xxx_devlink_stu_entry {
 	u16 sid;
 	u16 vid;
@@ -719,16 +689,16 @@ static struct mv88e6xxx_region mv88e6xxx_regions[] = {
 		.size = 32 * sizeof(u16) },
 	[MV88E6XXX_REGION_ATU] = {
 		.ops = &mv88e6xxx_region_atu_ops
-	  /* calculated at runtime */
+	   
 	},
 	[MV88E6XXX_REGION_VTU] = {
 		.ops = &mv88e6xxx_region_vtu_ops
-	  /* calculated at runtime */
+	   
 	},
 	[MV88E6XXX_REGION_STU] = {
 		.ops = &mv88e6xxx_region_stu_ops,
 		.cond = mv88e6xxx_has_stu,
-	  /* calculated at runtime */
+	   
 	},
 	[MV88E6XXX_REGION_PVT] = {
 		.ops = &mv88e6xxx_region_pvt_ops,

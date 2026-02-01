@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2021-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -12,33 +9,15 @@
 #include "scrub/scrub.h"
 #include "scrub/trace.h"
 
-/*
- * Large Arrays of Fixed-Size Records
- * ==================================
- *
- * This memory array uses an xfile (which itself is a memfd "file") to store
- * large numbers of fixed-size records in memory that can be paged out.  This
- * puts less stress on the memory reclaim algorithms during an online repair
- * because we don't have to pin so much memory.  However, array access is less
- * direct than would be in a regular memory array.  Access to the array is
- * performed via indexed load and store methods, and an append method is
- * provided for convenience.  Array elements can be unset, which sets them to
- * all zeroes.  Unset entries are skipped during iteration, though direct loads
- * will return a zeroed buffer.  Callers are responsible for concurrency
- * control.
- */
+ 
 
-/*
- * Pointer to scratch space.  Because we can't access the xfile data directly,
- * we allocate a small amount of memory on the end of the xfarray structure to
- * buffer array items when we need space to store values temporarily.
- */
+ 
 static inline void *xfarray_scratch(struct xfarray *array)
 {
 	return (array + 1);
 }
 
-/* Compute array index given an xfile offset. */
+ 
 static xfarray_idx_t
 xfarray_idx(
 	struct xfarray	*array,
@@ -50,7 +29,7 @@ xfarray_idx(
 	return div_u64((xfarray_idx_t)pos, array->obj_size);
 }
 
-/* Compute xfile offset of array element. */
+ 
 static inline loff_t xfarray_pos(struct xfarray *array, xfarray_idx_t idx)
 {
 	if (array->obj_size_log >= 0)
@@ -59,13 +38,7 @@ static inline loff_t xfarray_pos(struct xfarray *array, xfarray_idx_t idx)
 	return idx * array->obj_size;
 }
 
-/*
- * Initialize a big memory array.  Array records cannot be larger than a
- * page, and the array cannot span more bytes than the page cache supports.
- * If @required_capacity is nonzero, the maximum array size will be set to this
- * quantity and the array creation will fail if the underlying storage cannot
- * support that many records.
- */
+ 
 int
 xfarray_create(
 	const char		*description,
@@ -117,7 +90,7 @@ out_xfile:
 	return error;
 }
 
-/* Destroy the array. */
+ 
 void
 xfarray_destroy(
 	struct xfarray	*array)
@@ -126,7 +99,7 @@ xfarray_destroy(
 	kfree(array);
 }
 
-/* Load an element from the array. */
+ 
 int
 xfarray_load(
 	struct xfarray	*array,
@@ -140,7 +113,7 @@ xfarray_load(
 			xfarray_pos(array, idx));
 }
 
-/* Is this array element potentially unset? */
+ 
 static inline bool
 xfarray_is_unset(
 	struct xfarray	*array,
@@ -159,10 +132,7 @@ xfarray_is_unset(
 	return false;
 }
 
-/*
- * Unset an array element.  If @idx is the last element in the array, the
- * array will be truncated.  Otherwise, the entry will be zeroed.
- */
+ 
 int
 xfarray_unset(
 	struct xfarray	*array,
@@ -192,10 +162,7 @@ xfarray_unset(
 	return 0;
 }
 
-/*
- * Store an element in the array.  The element must not be completely zeroed,
- * because those are considered unset sparse elements.
- */
+ 
 int
 xfarray_store(
 	struct xfarray	*array,
@@ -218,7 +185,7 @@ xfarray_store(
 	return 0;
 }
 
-/* Is this array element NULL? */
+ 
 bool
 xfarray_element_is_null(
 	struct xfarray	*array,
@@ -227,10 +194,7 @@ xfarray_element_is_null(
 	return !memchr_inv(ptr, 0, array->obj_size);
 }
 
-/*
- * Store an element anywhere in the array that is unset.  If there are no
- * unset slots, append the element to the array.
- */
+ 
 int
 xfarray_store_anywhere(
 	struct xfarray	*array,
@@ -241,7 +205,7 @@ xfarray_store_anywhere(
 	loff_t		pos;
 	int		error;
 
-	/* Find an unset slot to put it in. */
+	 
 	for (pos = 0;
 	     pos < endpos && array->unset_slots > 0;
 	     pos += array->obj_size) {
@@ -259,12 +223,12 @@ xfarray_store_anywhere(
 		return 0;
 	}
 
-	/* No unset slots found; attach it on the end. */
+	 
 	array->unset_slots = 0;
 	return xfarray_append(array, ptr);
 }
 
-/* Return length of array. */
+ 
 uint64_t
 xfarray_length(
 	struct xfarray	*array)
@@ -272,16 +236,7 @@ xfarray_length(
 	return array->nr;
 }
 
-/*
- * Decide which array item we're going to read as part of an _iter_get.
- * @cur is the array index, and @pos is the file offset of that array index in
- * the backing xfile.  Returns ENODATA if we reach the end of the records.
- *
- * Reading from a hole in a sparse xfile causes page instantiation, so for
- * iterating a (possibly sparse) array we need to figure out if the cursor is
- * pointing at a totally uninitialized hole and move the cursor up if
- * necessary.
- */
+ 
 static inline int
 xfarray_find_data(
 	struct xfarray	*array,
@@ -292,24 +247,11 @@ xfarray_find_data(
 	loff_t		end_pos = *pos + array->obj_size - 1;
 	loff_t		new_pos;
 
-	/*
-	 * If the current array record is not adjacent to a page boundary, we
-	 * are in the middle of the page.  We do not need to move the cursor.
-	 */
+	 
 	if (pgoff != 0 && pgoff + array->obj_size - 1 < PAGE_SIZE)
 		return 0;
 
-	/*
-	 * Call SEEK_DATA on the last byte in the record we're about to read.
-	 * If the record ends at (or crosses) the end of a page then we know
-	 * that the first byte of the record is backed by pages and don't need
-	 * to query it.  If instead the record begins at the start of the page
-	 * then we know that querying the last byte is just as good as querying
-	 * the first byte, since records cannot be larger than a page.
-	 *
-	 * If the call returns the same file offset, we know this record is
-	 * backed by real pages.  We do not need to move the cursor.
-	 */
+	 
 	new_pos = xfile_seek_data(array->xfile, end_pos);
 	if (new_pos == -ENXIO)
 		return -ENODATA;
@@ -318,23 +260,14 @@ xfarray_find_data(
 	if (new_pos == end_pos)
 		return 0;
 
-	/*
-	 * Otherwise, SEEK_DATA told us how far up to move the file pointer to
-	 * find more data.  Move the array index to the first record past the
-	 * byte offset we were given.
-	 */
+	 
 	new_pos = roundup_64(new_pos, array->obj_size);
 	*cur = xfarray_idx(array, new_pos);
 	*pos = xfarray_pos(array, *cur);
 	return 0;
 }
 
-/*
- * Starting at *idx, fetch the next non-null array entry and advance the index
- * to set up the next _load_next call.  Returns ENODATA if we reach the end of
- * the array.  Callers must set @*idx to XFARRAY_CURSOR_INIT before the first
- * call to this function.
- */
+ 
 int
 xfarray_load_next(
 	struct xfarray	*array,
@@ -349,10 +282,7 @@ xfarray_load_next(
 		if (cur >= array->nr)
 			return -ENODATA;
 
-		/*
-		 * Ask the backing store for the location of next possible
-		 * written record, then retrieve that record.
-		 */
+		 
 		error = xfarray_find_data(array, &cur, &pos);
 		if (error)
 			return error;
@@ -368,7 +298,7 @@ xfarray_load_next(
 	return 0;
 }
 
-/* Sorting functions */
+ 
 
 #ifdef DEBUG
 # define xfarray_sort_bump_loads(si)	do { (si)->loads++; } while (0)
@@ -380,9 +310,9 @@ xfarray_load_next(
 # define xfarray_sort_bump_stores(si)
 # define xfarray_sort_bump_compares(si)
 # define xfarray_sort_bump_heapsorts(si)
-#endif /* DEBUG */
+#endif  
 
-/* Load an array element for sorting. */
+ 
 static inline int
 xfarray_sort_load(
 	struct xfarray_sortinfo	*si,
@@ -393,7 +323,7 @@ xfarray_sort_load(
 	return xfarray_load(si->array, idx, ptr);
 }
 
-/* Store an array element for sorting. */
+ 
 static inline int
 xfarray_sort_store(
 	struct xfarray_sortinfo	*si,
@@ -404,7 +334,7 @@ xfarray_sort_store(
 	return xfarray_store(si->array, idx, ptr);
 }
 
-/* Compare an array element for sorting. */
+ 
 static inline int
 xfarray_sort_cmp(
 	struct xfarray_sortinfo	*si,
@@ -415,19 +345,19 @@ xfarray_sort_cmp(
 	return si->cmp_fn(a, b);
 }
 
-/* Return a pointer to the low index stack for quicksort partitioning. */
+ 
 static inline xfarray_idx_t *xfarray_sortinfo_lo(struct xfarray_sortinfo *si)
 {
 	return (xfarray_idx_t *)(si + 1);
 }
 
-/* Return a pointer to the high index stack for quicksort partitioning. */
+ 
 static inline xfarray_idx_t *xfarray_sortinfo_hi(struct xfarray_sortinfo *si)
 {
 	return xfarray_sortinfo_lo(si) + si->max_stack_depth;
 }
 
-/* Size of each element in the quicksort pivot array. */
+ 
 static inline size_t
 xfarray_pivot_rec_sz(
 	struct xfarray		*array)
@@ -435,7 +365,7 @@ xfarray_pivot_rec_sz(
 	return round_up(array->obj_size, 8) + sizeof(xfarray_idx_t);
 }
 
-/* Allocate memory to handle the sort. */
+ 
 static inline int
 xfarray_sortinfo_alloc(
 	struct xfarray		*array,
@@ -448,28 +378,18 @@ xfarray_sortinfo_alloc(
 	size_t			pivot_rec_sz = xfarray_pivot_rec_sz(array);
 	int			max_stack_depth;
 
-	/*
-	 * The median-of-nine pivot algorithm doesn't work if a subset has
-	 * fewer than 9 items.  Make sure the in-memory sort will always take
-	 * over for subsets where this wouldn't be the case.
-	 */
+	 
 	BUILD_BUG_ON(XFARRAY_QSORT_PIVOT_NR >= XFARRAY_ISORT_NR);
 
-	/*
-	 * Tail-call recursion during the partitioning phase means that
-	 * quicksort will never recurse more than log2(nr) times.  We need one
-	 * extra level of stack to hold the initial parameters.  In-memory
-	 * sort will always take care of the last few levels of recursion for
-	 * us, so we can reduce the stack depth by that much.
-	 */
+	 
 	max_stack_depth = ilog2(array->nr) + 1 - (XFARRAY_ISORT_SHIFT - 1);
 	if (max_stack_depth < 1)
 		max_stack_depth = 1;
 
-	/* Each level of quicksort uses a lo and a hi index */
+	 
 	nr_bytes += max_stack_depth * sizeof(xfarray_idx_t) * 2;
 
-	/* Scratchpad for in-memory sort, or finding the pivot */
+	 
 	nr_bytes += max_t(size_t,
 			(XFARRAY_QSORT_PIVOT_NR + 1) * pivot_rec_sz,
 			XFARRAY_ISORT_NR * array->obj_size);
@@ -492,17 +412,13 @@ xfarray_sortinfo_alloc(
 	return 0;
 }
 
-/* Should this sort be terminated by a fatal signal? */
+ 
 static inline bool
 xfarray_sort_terminated(
 	struct xfarray_sortinfo	*si,
 	int			*error)
 {
-	/*
-	 * If preemption is disabled, we need to yield to the scheduler every
-	 * few seconds so that we don't run afoul of the soft lockup watchdog
-	 * or RCU stall detector.
-	 */
+	 
 	cond_resched();
 
 	if ((si->flags & XFARRAY_SORT_KILLABLE) &&
@@ -514,30 +430,24 @@ xfarray_sort_terminated(
 	return false;
 }
 
-/* Do we want an in-memory sort? */
+ 
 static inline bool
 xfarray_want_isort(
 	struct xfarray_sortinfo *si,
 	xfarray_idx_t		start,
 	xfarray_idx_t		end)
 {
-	/*
-	 * For array subsets that fit in the scratchpad, it's much faster to
-	 * use the kernel's heapsort than quicksort's stack machine.
-	 */
+	 
 	return (end - start) < XFARRAY_ISORT_NR;
 }
 
-/* Return the scratch space within the sortinfo structure. */
+ 
 static inline void *xfarray_sortinfo_isort_scratch(struct xfarray_sortinfo *si)
 {
 	return xfarray_sortinfo_hi(si) + si->max_stack_depth;
 }
 
-/*
- * Sort a small number of array records using scratchpad memory.  The records
- * need not be contiguous in the xfile's memory pages.
- */
+ 
 STATIC int
 xfarray_isort(
 	struct xfarray_sortinfo	*si,
@@ -563,7 +473,7 @@ xfarray_isort(
 	return xfile_obj_store(si->array->xfile, scratch, len, lo_pos);
 }
 
-/* Grab a page for sorting records. */
+ 
 static inline int
 xfarray_sort_get_page(
 	struct xfarray_sortinfo	*si,
@@ -576,15 +486,12 @@ xfarray_sort_get_page(
 	if (error)
 		return error;
 
-	/*
-	 * xfile pages must never be mapped into userspace, so we skip the
-	 * dcache flush when mapping the page.
-	 */
+	 
 	si->page_kaddr = kmap_local_page(si->xfpage.page);
 	return 0;
 }
 
-/* Release a page we grabbed for sorting records. */
+ 
 static inline int
 xfarray_sort_put_page(
 	struct xfarray_sortinfo	*si)
@@ -598,7 +505,7 @@ xfarray_sort_put_page(
 	return xfile_put_page(si->array->xfile, &si->xfpage);
 }
 
-/* Decide if these records are eligible for in-page sorting. */
+ 
 static inline bool
 xfarray_want_pagesort(
 	struct xfarray_sortinfo	*si,
@@ -609,7 +516,7 @@ xfarray_want_pagesort(
 	pgoff_t			hi_page;
 	loff_t			end_pos;
 
-	/* We can only map one page at a time. */
+	 
 	lo_page = xfarray_pos(si->array, lo) >> PAGE_SHIFT;
 	end_pos = xfarray_pos(si->array, hi) + si->array->obj_size - 1;
 	hi_page = end_pos >> PAGE_SHIFT;
@@ -617,7 +524,7 @@ xfarray_want_pagesort(
 	return lo_page == hi_page;
 }
 
-/* Sort a bunch of records that all live in the same memory page. */
+ 
 STATIC int
 xfarray_pagesort(
 	struct xfarray_sortinfo	*si,
@@ -644,13 +551,13 @@ xfarray_pagesort(
 	return xfarray_sort_put_page(si);
 }
 
-/* Return a pointer to the xfarray pivot record within the sortinfo struct. */
+ 
 static inline void *xfarray_sortinfo_pivot(struct xfarray_sortinfo *si)
 {
 	return xfarray_sortinfo_hi(si) + si->max_stack_depth;
 }
 
-/* Return a pointer to the start of the pivot array. */
+ 
 static inline void *
 xfarray_sortinfo_pivot_array(
 	struct xfarray_sortinfo	*si)
@@ -658,7 +565,7 @@ xfarray_sortinfo_pivot_array(
 	return xfarray_sortinfo_pivot(si) + si->array->obj_size;
 }
 
-/* The xfarray record is stored at the start of each pivot array element. */
+ 
 static inline void *
 xfarray_pivot_array_rec(
 	void			*pa,
@@ -668,7 +575,7 @@ xfarray_pivot_array_rec(
 	return pa + (pa_recsz * pa_idx);
 }
 
-/* The xfarray index is stored at the end of each pivot array element. */
+ 
 static inline xfarray_idx_t *
 xfarray_pivot_array_idx(
 	void			*pa,
@@ -679,15 +586,7 @@ xfarray_pivot_array_idx(
 			sizeof(xfarray_idx_t);
 }
 
-/*
- * Find a pivot value for quicksort partitioning, swap it with a[lo], and save
- * the cached pivot record for the next step.
- *
- * Load evenly-spaced records within the given range into memory, sort them,
- * and choose the pivot from the median record.  Using multiple points will
- * improve the quality of the pivot selection, and hopefully avoid the worst
- * quicksort behavior, since our array values are nearly always evenly sorted.
- */
+ 
 STATIC int
 xfarray_qsort_pivot(
 	struct xfarray_sortinfo	*si,
@@ -705,10 +604,7 @@ xfarray_qsort_pivot(
 
 	ASSERT(step > 0);
 
-	/*
-	 * Load the xfarray indexes of the records we intend to sample into the
-	 * pivot array.
-	 */
+	 
 	idxp = xfarray_pivot_array_idx(parray, pivot_rec_sz, 0);
 	*idxp = lo;
 	for (i = 1; i < XFARRAY_QSORT_PIVOT_NR - 1; i++) {
@@ -719,14 +615,14 @@ xfarray_qsort_pivot(
 			XFARRAY_QSORT_PIVOT_NR - 1);
 	*idxp = hi;
 
-	/* Load the selected xfarray records into the pivot array. */
+	 
 	for (i = 0; i < XFARRAY_QSORT_PIVOT_NR; i++) {
 		xfarray_idx_t	idx;
 
 		recp = xfarray_pivot_array_rec(parray, pivot_rec_sz, i);
 		idxp = xfarray_pivot_array_idx(parray, pivot_rec_sz, i);
 
-		/* No unset records; load directly into the array. */
+		 
 		if (likely(si->array->unset_slots == 0)) {
 			error = xfarray_sort_load(si, *idxp, recp);
 			if (error)
@@ -734,10 +630,7 @@ xfarray_qsort_pivot(
 			continue;
 		}
 
-		/*
-		 * Load non-null records into the scratchpad without changing
-		 * the xfarray_idx_t in the pivot array.
-		 */
+		 
 		idx = *idxp;
 		xfarray_sort_bump_loads(si);
 		error = xfarray_load_next(si->array, &idx, recp);
@@ -748,26 +641,18 @@ xfarray_qsort_pivot(
 	xfarray_sort_bump_heapsorts(si);
 	sort(parray, XFARRAY_QSORT_PIVOT_NR, pivot_rec_sz, si->cmp_fn, NULL);
 
-	/*
-	 * We sorted the pivot array records (which includes the xfarray
-	 * indices) in xfarray record order.  The median element of the pivot
-	 * array contains the xfarray record that we will use as the pivot.
-	 * Copy that xfarray record to the designated space.
-	 */
+	 
 	recp = xfarray_pivot_array_rec(parray, pivot_rec_sz,
 			XFARRAY_QSORT_PIVOT_NR / 2);
 	memcpy(pivot, recp, si->array->obj_size);
 
-	/* If the pivot record we chose was already in a[lo] then we're done. */
+	 
 	idxp = xfarray_pivot_array_idx(parray, pivot_rec_sz,
 			XFARRAY_QSORT_PIVOT_NR / 2);
 	if (*idxp == lo)
 		return 0;
 
-	/*
-	 * Find the cached copy of a[lo] in the pivot array so that we can swap
-	 * a[lo] and a[pivot].
-	 */
+	 
 	for (i = 0, j = -1; i < XFARRAY_QSORT_PIVOT_NR; i++) {
 		idxp = xfarray_pivot_array_idx(parray, pivot_rec_sz, i);
 		if (*idxp == lo)
@@ -778,7 +663,7 @@ xfarray_qsort_pivot(
 		return -EFSCORRUPTED;
 	}
 
-	/* Swap a[lo] and a[pivot]. */
+	 
 	error = xfarray_sort_store(si, lo, pivot);
 	if (error)
 		return error;
@@ -789,12 +674,7 @@ xfarray_qsort_pivot(
 	return xfarray_sort_store(si, *idxp, recp);
 }
 
-/*
- * Set up the pointers for the next iteration.  We push onto the stack all of
- * the unsorted values between a[lo + 1] and a[end[i]], and we tweak the
- * current stack frame to point to the unsorted values between a[beg[i]] and
- * a[lo] so that those values will be sorted when we pop the stack.
- */
+ 
 static inline int
 xfarray_qsort_push(
 	struct xfarray_sortinfo	*si,
@@ -803,7 +683,7 @@ xfarray_qsort_push(
 	xfarray_idx_t		lo,
 	xfarray_idx_t		hi)
 {
-	/* Check for stack overflows */
+	 
 	if (si->stack_depth >= si->max_stack_depth - 1) {
 		ASSERT(si->stack_depth < si->max_stack_depth - 1);
 		return -EFSCORRUPTED;
@@ -816,10 +696,7 @@ xfarray_qsort_push(
 	si_hi[si->stack_depth + 1] = si_hi[si->stack_depth];
 	si_hi[si->stack_depth++] = lo - 1;
 
-	/*
-	 * Always start with the smaller of the two partitions to keep the
-	 * amount of recursion in check.
-	 */
+	 
 	if (si_hi[si->stack_depth]     - si_lo[si->stack_depth] >
 	    si_hi[si->stack_depth - 1] - si_lo[si->stack_depth - 1]) {
 		swap(si_lo[si->stack_depth], si_lo[si->stack_depth - 1]);
@@ -829,10 +706,7 @@ xfarray_qsort_push(
 	return 0;
 }
 
-/*
- * Load an element from the array into the first scratchpad and cache the page,
- * if possible.
- */
+ 
 static inline int
 xfarray_sort_load_cached(
 	struct xfarray_sortinfo	*si,
@@ -844,10 +718,7 @@ xfarray_sort_load_cached(
 	pgoff_t			endpage;
 	int			error = 0;
 
-	/*
-	 * If this load would split a page, release the cached page, if any,
-	 * and perform a traditional read.
-	 */
+	 
 	startpage = idx_pos >> PAGE_SHIFT;
 	endpage = (idx_pos + si->array->obj_size - 1) >> PAGE_SHIFT;
 	if (startpage != endpage) {
@@ -862,7 +733,7 @@ xfarray_sort_load_cached(
 				si->array->obj_size, idx_pos);
 	}
 
-	/* If the cached page is not the one we want, release it. */
+	 
 	if (xfile_page_cached(&si->xfpage) &&
 	    xfile_page_index(&si->xfpage) != startpage) {
 		error = xfarray_sort_put_page(si);
@@ -870,10 +741,7 @@ xfarray_sort_load_cached(
 			return error;
 	}
 
-	/*
-	 * If we don't have a cached page (and we know the load is contained
-	 * in a single page) then grab it.
-	 */
+	 
 	if (!xfile_page_cached(&si->xfpage)) {
 		if (xfarray_sort_terminated(si, &error))
 			return error;
@@ -889,41 +757,9 @@ xfarray_sort_load_cached(
 	return 0;
 }
 
-/*
- * Sort the array elements via quicksort.  This implementation incorporates
- * four optimizations discussed in Sedgewick:
- *
- * 1. Use an explicit stack of array indices to store the next array partition
- *    to sort.  This helps us to avoid recursion in the call stack, which is
- *    particularly expensive in the kernel.
- *
- * 2. For arrays with records in arbitrary or user-controlled order, choose the
- *    pivot element using a median-of-nine decision tree.  This reduces the
- *    probability of selecting a bad pivot value which causes worst case
- *    behavior (i.e. partition sizes of 1).
- *
- * 3. The smaller of the two sub-partitions is pushed onto the stack to start
- *    the next level of recursion, and the larger sub-partition replaces the
- *    current stack frame.  This guarantees that we won't need more than
- *    log2(nr) stack space.
- *
- * 4. For small sets, load the records into the scratchpad and run heapsort on
- *    them because that is very fast.  In the author's experience, this yields
- *    a ~10% reduction in runtime.
- *
- *    If a small set is contained entirely within a single xfile memory page,
- *    map the page directly and run heap sort directly on the xfile page
- *    instead of using the load/store interface.  This halves the runtime.
- *
- * 5. This optimization is specific to the implementation.  When converging lo
- *    and hi after selecting a pivot, we will try to retain the xfile memory
- *    page between load calls, which reduces run time by 50%.
- */
+ 
 
-/*
- * Due to the use of signed indices, we can only support up to 2^63 records.
- * Files can only grow to 2^63 bytes, so this is not much of a limitation.
- */
+ 
 #define QSORT_MAX_RECS		(1ULL << 63)
 
 int
@@ -957,16 +793,13 @@ xfarray_sort(
 
 		trace_xfarray_qsort(si, lo, hi);
 
-		/* Nothing left in this partition to sort; pop stack. */
+		 
 		if (lo >= hi) {
 			si->stack_depth--;
 			continue;
 		}
 
-		/*
-		 * If directly mapping the page and sorting can solve our
-		 * problems, we're done.
-		 */
+		 
 		if (xfarray_want_pagesort(si, lo, hi)) {
 			error = xfarray_pagesort(si, lo, hi);
 			if (error)
@@ -975,7 +808,7 @@ xfarray_sort(
 			continue;
 		}
 
-		/* If insertion sort can solve our problems, we're done. */
+		 
 		if (xfarray_want_isort(si, lo, hi)) {
 			error = xfarray_isort(si, lo, hi);
 			if (error)
@@ -984,21 +817,14 @@ xfarray_sort(
 			continue;
 		}
 
-		/* Pick a pivot, move it to a[lo] and stash it. */
+		 
 		error = xfarray_qsort_pivot(si, lo, hi);
 		if (error)
 			goto out_free;
 
-		/*
-		 * Rearrange a[lo..hi] such that everything smaller than the
-		 * pivot is on the left side of the range and everything larger
-		 * than the pivot is on the right side of the range.
-		 */
+		 
 		while (lo < hi) {
-			/*
-			 * Decrement hi until it finds an a[hi] less than the
-			 * pivot value.
-			 */
+			 
 			error = xfarray_sort_load_cached(si, hi, scratch);
 			if (error)
 				goto out_free;
@@ -1017,17 +843,14 @@ xfarray_sort(
 			if (xfarray_sort_terminated(si, &error))
 				goto out_free;
 
-			/* Copy that item (a[hi]) to a[lo]. */
+			 
 			if (lo < hi) {
 				error = xfarray_sort_store(si, lo++, scratch);
 				if (error)
 					goto out_free;
 			}
 
-			/*
-			 * Increment lo until it finds an a[lo] greater than
-			 * the pivot value.
-			 */
+			 
 			error = xfarray_sort_load_cached(si, lo, scratch);
 			if (error)
 				goto out_free;
@@ -1046,7 +869,7 @@ xfarray_sort(
 			if (xfarray_sort_terminated(si, &error))
 				goto out_free;
 
-			/* Copy that item (a[lo]) to a[hi]. */
+			 
 			if (lo < hi) {
 				error = xfarray_sort_store(si, hi--, scratch);
 				if (error)
@@ -1057,17 +880,12 @@ xfarray_sort(
 				goto out_free;
 		}
 
-		/*
-		 * Put our pivot value in the correct place at a[lo].  All
-		 * values between a[beg[i]] and a[lo - 1] should be less than
-		 * the pivot; and all values between a[lo + 1] and a[end[i]-1]
-		 * should be greater than the pivot.
-		 */
+		 
 		error = xfarray_sort_store(si, lo, pivot);
 		if (error)
 			goto out_free;
 
-		/* Set up the stack frame to process the two partitions. */
+		 
 		error = xfarray_qsort_push(si, si_lo, si_hi, lo, hi);
 		if (error)
 			goto out_free;

@@ -1,30 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Comedi driver for NI PCMCIA MIO E series cards
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: ni_mio_cs
- * Description: National Instruments DAQCard E series
- * Author: ds
- * Status: works
- * Devices: [National Instruments] DAQCard-AI-16XE-50 (ni_mio_cs),
- *   DAQCard-AI-16E-4, DAQCard-6062E, DAQCard-6024E, DAQCard-6036E
- * Updated: Thu Oct 23 19:43:17 CDT 2003
- *
- * See the notes in the ni_atmio.o driver.
- */
+ 
 
-/*
- * The real guts of the driver is in ni_mio_common.c, which is
- * included by all the E series drivers.
- *
- * References for specifications:
- *	341080a.pdf  DAQCard E Series Register Level Programmer Manual
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -33,9 +12,7 @@
 
 #include "ni_stc.h"
 
-/*
- *  AT specific setup
- */
+ 
 
 static const struct ni_board_struct ni_boards[] = {
 	{
@@ -55,7 +32,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ai_fifo_depth	= 1024,
 		.gainlkup	= ai_gain_16,
 		.ai_speed	= 4000,
-		.caldac		= { mb88341 },		/* verified */
+		.caldac		= { mb88341 },		 
 	}, {
 		.name		= "DAQCard-6062E",
 		.device_id	= 0x02c4,
@@ -69,9 +46,9 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_fifo_depth	= 2048,
 		.ao_range_table	= &range_bipolar10,
 		.ao_speed	= 1176,
-		.caldac		= { ad8804_debug },	/* verified */
+		.caldac		= { ad8804_debug },	 
 	 }, {
-		/* specs incorrect! */
+		 
 		.name		= "DAQCard-6024E",
 		.device_id	= 0x075e,
 		.n_adchan	= 16,
@@ -85,7 +62,7 @@ static const struct ni_board_struct ni_boards[] = {
 		.ao_speed	= 1000000,
 		.caldac		= { ad8804_debug },
 	}, {
-		/* specs incorrect! */
+		 
 		.name		= "DAQCard-6036E",
 		.device_id	= 0x0245,
 		.n_adchan	= 16,
@@ -103,7 +80,7 @@ static const struct ni_board_struct ni_boards[] = {
 #if 0
 	{
 		.name		= "DAQCard-6715",
-		.device_id	= 0x0000,	/* unknown */
+		.device_id	= 0x0000,	 
 		.n_aochan	= 8,
 		.ao_maxdata	= 0x0fff,
 		.ao_671x	= 8192,
@@ -195,11 +172,11 @@ static int cs_attach(struct pcmcia_device *link)
 }
 
 static const struct pcmcia_device_id ni_mio_cs_ids[] = {
-	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x010d),	/* DAQCard-ai-16xe-50 */
-	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x010c),	/* DAQCard-ai-16e-4 */
-	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x02c4),	/* DAQCard-6062E */
-	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x075e),	/* DAQCard-6024E */
-	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x0245),	/* DAQCard-6036E */
+	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x010d),	 
+	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x010c),	 
+	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x02c4),	 
+	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x075e),	 
+	PCMCIA_DEVICE_MANF_CARD(0x010b, 0x0245),	 
 	PCMCIA_DEVICE_NULL
 };
 MODULE_DEVICE_TABLE(pcmcia, ni_mio_cs_ids);

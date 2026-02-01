@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI bus driver for the Topcliff PCH used by Intel SoCs
- *
- * Copyright (C) 2011 LAPIS Semiconductor Co., Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -19,14 +15,14 @@
 #include <linux/dmaengine.h>
 #include <linux/pch_dma.h>
 
-/* Register offsets */
-#define PCH_SPCR		0x00	/* SPI control register */
-#define PCH_SPBRR		0x04	/* SPI baud rate register */
-#define PCH_SPSR		0x08	/* SPI status register */
-#define PCH_SPDWR		0x0C	/* SPI write data register */
-#define PCH_SPDRR		0x10	/* SPI read data register */
-#define PCH_SSNXCR		0x18	/* SSN Expand Control Register */
-#define PCH_SRST		0x1C	/* SPI reset register */
+ 
+#define PCH_SPCR		0x00	 
+#define PCH_SPBRR		0x04	 
+#define PCH_SPSR		0x08	 
+#define PCH_SPDWR		0x0C	 
+#define PCH_SPDRR		0x10	 
+#define PCH_SSNXCR		0x18	 
+#define PCH_SRST		0x1C	 
 #define PCH_ADDRESS_SIZE	0x20
 
 #define PCH_SPSR_TFD		0x000007C0
@@ -83,18 +79,12 @@
 #define PCH_CLOCK_HZ		50000000
 #define PCH_MAX_SPBR		1023
 
-/* Definition for ML7213/ML7223/ML7831 by LAPIS Semiconductor */
+ 
 #define PCI_DEVICE_ID_ML7213_SPI	0x802c
 #define PCI_DEVICE_ID_ML7223_SPI	0x800F
 #define PCI_DEVICE_ID_ML7831_SPI	0x8816
 
-/*
- * Set the number of SPI instance max
- * Intel EG20T PCH :		1ch
- * LAPIS Semiconductor ML7213 IOH :	2ch
- * LAPIS Semiconductor ML7223 IOH :	1ch
- * LAPIS Semiconductor ML7831 IOH :	1ch
-*/
+ 
 #define PCH_SPI_MAX_DEV			2
 
 #define PCH_BUF_SIZE		4096
@@ -120,44 +110,7 @@ struct pch_spi_dma_ctrl {
 	dma_addr_t			tx_buf_dma;
 	dma_addr_t			rx_buf_dma;
 };
-/**
- * struct pch_spi_data - Holds the SPI channel specific details
- * @io_remap_addr:		The remapped PCI base address
- * @io_base_addr:		Base address
- * @master:			Pointer to the SPI master structure
- * @work:			Reference to work queue handler
- * @wait:			Wait queue for waking up upon receiving an
- *				interrupt.
- * @transfer_complete:		Status of SPI Transfer
- * @bcurrent_msg_processing:	Status flag for message processing
- * @lock:			Lock for protecting this structure
- * @queue:			SPI Message queue
- * @status:			Status of the SPI driver
- * @bpw_len:			Length of data to be transferred in bits per
- *				word
- * @transfer_active:		Flag showing active transfer
- * @tx_index:			Transmit data count; for bookkeeping during
- *				transfer
- * @rx_index:			Receive data count; for bookkeeping during
- *				transfer
- * @pkt_tx_buff:		Buffer for data to be transmitted
- * @pkt_rx_buff:		Buffer for received data
- * @n_curnt_chip:		The chip number that this SPI driver currently
- *				operates on
- * @current_chip:		Reference to the current chip that this SPI
- *				driver currently operates on
- * @current_msg:		The current message that this SPI driver is
- *				handling
- * @cur_trans:			The current transfer that this SPI driver is
- *				handling
- * @board_dat:			Reference to the SPI device data structure
- * @plat_dev:			platform_device structure
- * @ch:				SPI channel number
- * @dma:			Local DMA information
- * @use_dma:			True if DMA is to be used
- * @irq_reg_sts:		Status of IRQ registration
- * @save_total_len:		Save length while data is being transferred
- */
+ 
 struct pch_spi_data {
 	void __iomem *io_remap_addr;
 	unsigned long io_base_addr;
@@ -188,12 +141,7 @@ struct pch_spi_data {
 	int save_total_len;
 };
 
-/**
- * struct pch_spi_board_data - Holds the SPI device specific details
- * @pdev:		Pointer to the PCI device
- * @suspend_sts:	Status of suspend
- * @num:		The number of SPI device instance
- */
+ 
 struct pch_spi_board_data {
 	struct pci_dev *pdev;
 	u8 suspend_sts;
@@ -214,23 +162,14 @@ static const struct pci_device_id pch_spi_pcidev_id[] = {
 	{ }
 };
 
-/**
- * pch_spi_writereg() - Performs  register writes
- * @master:	Pointer to struct spi_master.
- * @idx:	Register offset.
- * @val:	Value to be written to register.
- */
+ 
 static inline void pch_spi_writereg(struct spi_master *master, int idx, u32 val)
 {
 	struct pch_spi_data *data = spi_master_get_devdata(master);
 	iowrite32(val, (data->io_remap_addr + idx));
 }
 
-/**
- * pch_spi_readreg() - Performs register reads
- * @master:	Pointer to struct spi_master.
- * @idx:	Register offset.
- */
+ 
 static inline u32 pch_spi_readreg(struct spi_master *master, int idx)
 {
 	struct pch_spi_data *data = spi_master_get_devdata(master);
@@ -250,10 +189,7 @@ static void pch_spi_set_master_mode(struct spi_master *master)
 	pch_spi_setclr_reg(master, PCH_SPCR, SPCR_MSTR_BIT, 0);
 }
 
-/**
- * pch_spi_clear_fifo() - Clears the Transmit and Receive FIFOs
- * @master:	Pointer to struct spi_master.
- */
+ 
 static void pch_spi_clear_fifo(struct spi_master *master)
 {
 	pch_spi_setclr_reg(master, PCH_SPCR, SPCR_FICLR_BIT, 0);
@@ -292,31 +228,30 @@ static void pch_spi_handler_sub(struct pch_spi_data *data, u32 reg_spsr_val,
 				iowrite32(pkt_tx_buff[tx_index++], spdwr);
 		}
 
-		/* disable RFI if not needed */
+		 
 		if ((bpw_len - rx_index) <= PCH_MAX_FIFO_DEPTH) {
 			reg_spcr_val = ioread32(io_remap_addr + PCH_SPCR);
-			reg_spcr_val &= ~SPCR_RFIE_BIT; /* disable RFI */
+			reg_spcr_val &= ~SPCR_RFIE_BIT;  
 
-			/* reset rx threshold */
+			 
 			reg_spcr_val &= ~MASK_RFIC_SPCR_BITS;
 			reg_spcr_val |= (PCH_RX_THOLD_MAX << SPCR_RFIC_FIELD);
 
 			iowrite32(reg_spcr_val, (io_remap_addr + PCH_SPCR));
 		}
 
-		/* update counts */
+		 
 		data->tx_index = tx_index;
 		data->rx_index = rx_index;
 
-		/* if transfer complete interrupt */
+		 
 		if (reg_spsr_val & SPSR_FI_BIT) {
 			if ((tx_index == bpw_len) && (rx_index == tx_index)) {
-				/* disable interrupts */
+				 
 				pch_spi_setclr_reg(data->master, PCH_SPCR, 0,
 						   PCH_ALL);
 
-				/* transfer is completed;
-				   inform pch_spi_process_messages */
+				 
 				data->transfer_complete = true;
 				data->transfer_active = false;
 				wake_up(&data->wait);
@@ -329,11 +264,7 @@ static void pch_spi_handler_sub(struct pch_spi_data *data, u32 reg_spsr_val,
 	}
 }
 
-/**
- * pch_spi_handler() - Interrupt handler
- * @irq:	The interrupt number.
- * @dev_id:	Pointer to struct pch_spi_board_data.
- */
+ 
 static irqreturn_t pch_spi_handler(int irq, void *dev_id)
 {
 	u32 reg_spsr_val;
@@ -369,7 +300,7 @@ static irqreturn_t pch_spi_handler(int irq, void *dev_id)
 	if (data->use_dma)
 		return IRQ_NONE;
 
-	/* Check if the interrupt is for SPI device */
+	 
 	if (reg_spsr_val & (SPSR_FI_BIT | SPSR_RFI_BIT)) {
 		pch_spi_handler_sub(data, reg_spsr_val, io_remap_addr);
 		ret = IRQ_HANDLED;
@@ -381,27 +312,19 @@ static irqreturn_t pch_spi_handler(int irq, void *dev_id)
 	return ret;
 }
 
-/**
- * pch_spi_set_baud_rate() - Sets SPBR field in SPBRR
- * @master:	Pointer to struct spi_master.
- * @speed_hz:	Baud rate.
- */
+ 
 static void pch_spi_set_baud_rate(struct spi_master *master, u32 speed_hz)
 {
 	u32 n_spbr = PCH_CLOCK_HZ / (speed_hz * 2);
 
-	/* if baud rate is less than we can support limit it */
+	 
 	if (n_spbr > PCH_MAX_SPBR)
 		n_spbr = PCH_MAX_SPBR;
 
 	pch_spi_setclr_reg(master, PCH_SPBRR, n_spbr, MASK_SPBRR_SPBR_BITS);
 }
 
-/**
- * pch_spi_set_bits_per_word() - Sets SIZE field in SPBRR
- * @master:		Pointer to struct spi_master.
- * @bits_per_word:	Bits per word for SPI transfer.
- */
+ 
 static void pch_spi_set_bits_per_word(struct spi_master *master,
 				      u8 bits_per_word)
 {
@@ -411,10 +334,7 @@ static void pch_spi_set_bits_per_word(struct spi_master *master,
 		pch_spi_setclr_reg(master, PCH_SPBRR, SPBRR_SIZE_BIT, 0);
 }
 
-/**
- * pch_spi_setup_transfer() - Configures the PCH SPI hardware for transfer
- * @spi:	Pointer to struct spi_device.
- */
+ 
 static void pch_spi_setup_transfer(struct spi_device *spi)
 {
 	u32 flags = 0;
@@ -424,7 +344,7 @@ static void pch_spi_setup_transfer(struct spi_device *spi)
 		spi->max_speed_hz);
 	pch_spi_set_baud_rate(spi->master, spi->max_speed_hz);
 
-	/* set bits per word */
+	 
 	pch_spi_set_bits_per_word(spi->master, spi->bits_per_word);
 
 	if (!(spi->mode & SPI_LSB_FIRST))
@@ -436,20 +356,17 @@ static void pch_spi_setup_transfer(struct spi_device *spi)
 	pch_spi_setclr_reg(spi->master, PCH_SPCR, flags,
 			   (SPCR_LSBF_BIT | SPCR_CPOL_BIT | SPCR_CPHA_BIT));
 
-	/* Clear the FIFO by toggling  FICLR to 1 and back to 0 */
+	 
 	pch_spi_clear_fifo(spi->master);
 }
 
-/**
- * pch_spi_reset() - Clears SPI registers
- * @master:	Pointer to struct spi_master.
- */
+ 
 static void pch_spi_reset(struct spi_master *master)
 {
-	/* write 1 to reset SPI */
+	 
 	pch_spi_writereg(master, PCH_SRST, 0x1);
 
-	/* clear reset */
+	 
 	pch_spi_writereg(master, PCH_SRST, 0x0);
 }
 
@@ -459,27 +376,27 @@ static int pch_spi_transfer(struct spi_device *pspi, struct spi_message *pmsg)
 	int retval;
 	unsigned long flags;
 
-	/* We won't process any messages if we have been asked to terminate */
+	 
 	if (data->status == STATUS_EXITING) {
 		dev_err(&pspi->dev, "%s status = STATUS_EXITING.\n", __func__);
 		retval = -ESHUTDOWN;
 		goto err_out;
 	}
 
-	/* If suspended ,return -EINVAL */
+	 
 	if (data->board_dat->suspend_sts) {
 		dev_err(&pspi->dev, "%s suspend; returning EINVAL\n", __func__);
 		retval = -EINVAL;
 		goto err_out;
 	}
 
-	/* set status of message */
+	 
 	pmsg->actual_length = 0;
 	dev_dbg(&pspi->dev, "%s - pmsg->status =%d\n", __func__, pmsg->status);
 
 	pmsg->status = -EINPROGRESS;
 	spin_lock_irqsave(&data->lock, flags);
-	/* add message to queue */
+	 
 	list_add_tail(&pmsg->queue, &data->queue);
 	spin_unlock_irqrestore(&data->lock, flags);
 
@@ -522,13 +439,13 @@ static void pch_spi_set_tx(struct pch_spi_data *data, int *bpw)
 	const u8 *tx_buf;
 	const u16 *tx_sbuf;
 
-	/* set baud rate if needed */
+	 
 	if (data->cur_trans->speed_hz) {
 		dev_dbg(&data->master->dev, "%s:setting baud rate\n", __func__);
 		pch_spi_set_baud_rate(data->master, data->cur_trans->speed_hz);
 	}
 
-	/* set bits per word if needed */
+	 
 	if (data->cur_trans->bits_per_word &&
 	    (data->current_msg->spi->bits_per_word != data->cur_trans->bits_per_word)) {
 		dev_dbg(&data->master->dev, "%s:set bits per word\n", __func__);
@@ -539,16 +456,16 @@ static void pch_spi_set_tx(struct pch_spi_data *data, int *bpw)
 		*bpw = data->current_msg->spi->bits_per_word;
 	}
 
-	/* reset Tx/Rx index */
+	 
 	data->tx_index = 0;
 	data->rx_index = 0;
 
 	data->bpw_len = data->cur_trans->len / (*bpw / 8);
 
-	/* find alloc size */
+	 
 	size = data->cur_trans->len * sizeof(*data->pkt_tx_buff);
 
-	/* allocate memory for pkt_tx_buff & pkt_rx_buffer */
+	 
 	data->pkt_tx_buff = kzalloc(size, GFP_KERNEL);
 	if (data->pkt_tx_buff != NULL) {
 		data->pkt_rx_buff = kzalloc(size, GFP_KERNEL);
@@ -559,20 +476,20 @@ static void pch_spi_set_tx(struct pch_spi_data *data, int *bpw)
 	}
 
 	if (!data->pkt_rx_buff) {
-		/* flush queue and set status of all transfers to -ENOMEM */
+		 
 		list_for_each_entry_safe(pmsg, tmp, data->queue.next, queue) {
 			pmsg->status = -ENOMEM;
 
 			if (pmsg->complete)
 				pmsg->complete(pmsg->context);
 
-			/* delete from queue */
+			 
 			list_del_init(&pmsg->queue);
 		}
 		return;
 	}
 
-	/* copy Tx Data */
+	 
 	if (data->cur_trans->tx_buf != NULL) {
 		if (*bpw == 8) {
 			tx_buf = data->cur_trans->tx_buf;
@@ -585,7 +502,7 @@ static void pch_spi_set_tx(struct pch_spi_data *data, int *bpw)
 		}
 	}
 
-	/* if len greater than PCH_MAX_FIFO_DEPTH, write 16,else len bytes */
+	 
 	n_writes = data->bpw_len;
 	if (n_writes > PCH_MAX_FIFO_DEPTH)
 		n_writes = PCH_MAX_FIFO_DEPTH;
@@ -598,10 +515,10 @@ static void pch_spi_set_tx(struct pch_spi_data *data, int *bpw)
 	for (j = 0; j < n_writes; j++)
 		pch_spi_writereg(data->master, PCH_SPDWR, data->pkt_tx_buff[j]);
 
-	/* update tx_index */
+	 
 	data->tx_index = j;
 
-	/* reset transfer complete flag */
+	 
 	data->transfer_complete = false;
 	data->transfer_active = true;
 }
@@ -610,8 +527,7 @@ static void pch_spi_nomore_transfer(struct pch_spi_data *data)
 {
 	struct spi_message *pmsg, *tmp;
 	dev_dbg(&data->master->dev, "%s called\n", __func__);
-	/* Invoke complete callback
-	 * [To the spi core..indicating end of transfer] */
+	 
 	data->current_msg->status = 0;
 
 	if (data->current_msg->complete) {
@@ -620,7 +536,7 @@ static void pch_spi_nomore_transfer(struct pch_spi_data *data)
 		data->current_msg->complete(data->current_msg->context);
 	}
 
-	/* update status in global variable */
+	 
 	data->bcurrent_msg_processing = false;
 
 	dev_dbg(&data->master->dev,
@@ -629,15 +545,11 @@ static void pch_spi_nomore_transfer(struct pch_spi_data *data)
 	data->current_msg = NULL;
 	data->cur_trans = NULL;
 
-	/* check if we have items in list and not suspending
-	 * return 1 if list empty */
+	 
 	if ((list_empty(&data->queue) == 0) &&
 	    (!data->board_dat->suspend_sts) &&
 	    (data->status != STATUS_EXITING)) {
-		/* We have some more work to do (either there is more tranint
-		 * bpw;sfer requests in the current message or there are
-		 *more messages)
-		 */
+		 
 		dev_dbg(&data->master->dev, "%s:Invoke queue_work\n", __func__);
 		schedule_work(&data->work);
 	} else if (data->board_dat->suspend_sts ||
@@ -651,7 +563,7 @@ static void pch_spi_nomore_transfer(struct pch_spi_data *data)
 			if (pmsg->complete)
 				pmsg->complete(pmsg->context);
 
-			/* delete from queue */
+			 
 			list_del_init(&pmsg->queue);
 		}
 	}
@@ -659,35 +571,34 @@ static void pch_spi_nomore_transfer(struct pch_spi_data *data)
 
 static void pch_spi_set_ir(struct pch_spi_data *data)
 {
-	/* enable interrupts, set threshold, enable SPI */
+	 
 	if ((data->bpw_len) > PCH_MAX_FIFO_DEPTH)
-		/* set receive threshold to PCH_RX_THOLD */
+		 
 		pch_spi_setclr_reg(data->master, PCH_SPCR,
 				   PCH_RX_THOLD << SPCR_RFIC_FIELD |
 				   SPCR_FIE_BIT | SPCR_RFIE_BIT |
 				   SPCR_ORIE_BIT | SPCR_SPE_BIT,
 				   MASK_RFIC_SPCR_BITS | PCH_ALL);
 	else
-		/* set receive threshold to maximum */
+		 
 		pch_spi_setclr_reg(data->master, PCH_SPCR,
 				   PCH_RX_THOLD_MAX << SPCR_RFIC_FIELD |
 				   SPCR_FIE_BIT | SPCR_ORIE_BIT |
 				   SPCR_SPE_BIT,
 				   MASK_RFIC_SPCR_BITS | PCH_ALL);
 
-	/* Wait until the transfer completes; go to sleep after
-				 initiating the transfer. */
+	 
 	dev_dbg(&data->master->dev,
 		"%s:waiting for transfer to get over\n", __func__);
 
 	wait_event_interruptible(data->wait, data->transfer_complete);
 
-	/* clear all interrupts */
+	 
 	pch_spi_writereg(data->master, PCH_SPSR,
 			 pch_spi_readreg(data->master, PCH_SPSR));
-	/* Disable interrupts and SPI transfer */
+	 
 	pch_spi_setclr_reg(data->master, PCH_SPCR, 0, PCH_ALL | SPCR_SPE_BIT);
-	/* clear FIFO */
+	 
 	pch_spi_clear_fifo(data->master);
 }
 
@@ -697,7 +608,7 @@ static void pch_spi_copy_rx_data(struct pch_spi_data *data, int bpw)
 	u8 *rx_buf;
 	u16 *rx_sbuf;
 
-	/* copy Rx Data */
+	 
 	if (!data->cur_trans->rx_buf)
 		return;
 
@@ -720,7 +631,7 @@ static void pch_spi_copy_rx_data_for_dma(struct pch_spi_data *data, int bpw)
 	const u8 *rx_dma_buf;
 	const u16 *rx_dma_sbuf;
 
-	/* copy Rx Data */
+	 
 	if (!data->cur_trans->rx_buf)
 		return;
 
@@ -749,13 +660,12 @@ static int pch_spi_start_transfer(struct pch_spi_data *data)
 
 	spin_lock_irqsave(&data->lock, flags);
 
-	/* disable interrupts, SPI set enable */
+	 
 	pch_spi_setclr_reg(data->master, PCH_SPCR, SPCR_SPE_BIT, PCH_ALL);
 
 	spin_unlock_irqrestore(&data->lock, flags);
 
-	/* Wait until the transfer completes; go to sleep after
-				 initiating the transfer. */
+	 
 	dev_dbg(&data->master->dev,
 		"%s:waiting for transfer to get over\n", __func__);
 	rtn = wait_event_interruptible_timeout(data->wait,
@@ -779,14 +689,14 @@ static int pch_spi_start_transfer(struct pch_spi_data *data)
 
 	spin_lock_irqsave(&data->lock, flags);
 
-	/* clear fifo threshold, disable interrupts, disable SPI transfer */
+	 
 	pch_spi_setclr_reg(data->master, PCH_SPCR, 0,
 			   MASK_RFIC_SPCR_BITS | MASK_TFIC_SPCR_BITS | PCH_ALL |
 			   SPCR_SPE_BIT);
-	/* clear all interrupts */
+	 
 	pch_spi_writereg(data->master, PCH_SPSR,
 			 pch_spi_readreg(data->master, PCH_SPSR));
-	/* clear FIFO */
+	 
 	pch_spi_clear_fifo(data->master);
 
 	spin_unlock_irqrestore(&data->lock, flags);
@@ -798,7 +708,7 @@ static void pch_dma_rx_complete(void *arg)
 {
 	struct pch_spi_data *data = arg;
 
-	/* transfer is completed;inform pch_spi_process_messages_dma */
+	 
 	data->transfer_complete = true;
 	wake_up_interruptible(&data->wait);
 }
@@ -834,14 +744,14 @@ static void pch_spi_request_dma(struct pch_spi_data *data, int bpw)
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 
-	/* Get DMA's dev information */
+	 
 	dma_dev = pci_get_slot(data->board_dat->pdev->bus,
 			PCI_DEVFN(PCI_SLOT(data->board_dat->pdev->devfn), 0));
 
-	/* Set Tx DMA */
+	 
 	param = &dma->param_tx;
 	param->dma_dev = &dma_dev->dev;
-	param->chan_id = data->ch * 2; /* Tx = 0, 2 */
+	param->chan_id = data->ch * 2;  
 	param->tx_reg = data->io_base_addr + PCH_SPDWR;
 	param->width = width;
 	chan = dma_request_channel(mask, pch_spi_filter, param);
@@ -852,10 +762,10 @@ static void pch_spi_request_dma(struct pch_spi_data *data, int bpw)
 	}
 	dma->chan_tx = chan;
 
-	/* Set Rx DMA */
+	 
 	param = &dma->param_rx;
 	param->dma_dev = &dma_dev->dev;
-	param->chan_id = data->ch * 2 + 1; /* Rx = Tx + 1 */
+	param->chan_id = data->ch * 2 + 1;  
 	param->rx_reg = data->io_base_addr + PCH_SPDRR;
 	param->width = width;
 	chan = dma_request_channel(mask, pch_spi_filter, param);
@@ -911,7 +821,7 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 
 	dma = &data->dma;
 
-	/* set baud rate if needed */
+	 
 	if (data->cur_trans->speed_hz) {
 		dev_dbg(&data->master->dev, "%s:setting baud rate\n", __func__);
 		spin_lock_irqsave(&data->lock, flags);
@@ -919,7 +829,7 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 		spin_unlock_irqrestore(&data->lock, flags);
 	}
 
-	/* set bits per word if needed */
+	 
 	if (data->cur_trans->bits_per_word &&
 	    (data->current_msg->spi->bits_per_word !=
 	     data->cur_trans->bits_per_word)) {
@@ -939,7 +849,7 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 		data->cur_trans->len -= PCH_BUF_SIZE;
 	}
 
-	/* copy Tx Data */
+	 
 	if (data->cur_trans->tx_buf != NULL) {
 		if (*bpw == 8) {
 			tx_buf = data->cur_trans->tx_buf;
@@ -954,7 +864,7 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 		}
 	}
 
-	/* Calculate Rx parameter for DMA transmitting */
+	 
 	if (data->bpw_len > PCH_DMA_TRANS_SIZE) {
 		if (data->bpw_len % PCH_DMA_TRANS_SIZE) {
 			num = data->bpw_len / PCH_DMA_TRANS_SIZE + 1;
@@ -973,7 +883,7 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 		__func__, num, size, rem);
 	spin_lock_irqsave(&data->lock, flags);
 
-	/* set receive fifo threshold and transmit fifo threshold */
+	 
 	pch_spi_setclr_reg(data->master, PCH_SPCR,
 			   ((size - 1) << SPCR_RFIC_FIELD) |
 			   (PCH_TX_THOLD << SPCR_TFIC_FIELD),
@@ -981,13 +891,13 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 
 	spin_unlock_irqrestore(&data->lock, flags);
 
-	/* RX */
+	 
 	dma->sg_rx_p = kmalloc_array(num, sizeof(*dma->sg_rx_p), GFP_ATOMIC);
 	if (!dma->sg_rx_p)
 		return;
 
-	sg_init_table(dma->sg_rx_p, num); /* Initialize SG table */
-	/* offset, length setting */
+	sg_init_table(dma->sg_rx_p, num);  
+	 
 	sg = dma->sg_rx_p;
 	for (i = 0; i < num; i++, sg++) {
 		if (i == (num - 2)) {
@@ -1026,7 +936,7 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 	dma->nent = num;
 	dma->desc_rx = desc_rx;
 
-	/* Calculate Tx parameter for DMA transmitting */
+	 
 	if (data->bpw_len > PCH_MAX_FIFO_DEPTH) {
 		head = PCH_MAX_FIFO_DEPTH - PCH_DMA_TRANS_SIZE;
 		if (data->bpw_len % PCH_DMA_TRANS_SIZE > 4) {
@@ -1049,8 +959,8 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 	if (!dma->sg_tx_p)
 		return;
 
-	sg_init_table(dma->sg_tx_p, num); /* Initialize SG table */
-	/* offset, length setting */
+	sg_init_table(dma->sg_tx_p, num);  
+	 
 	sg = dma->sg_tx_p;
 	for (i = 0; i < num; i++, sg++) {
 		if (i == 0) {
@@ -1096,7 +1006,7 @@ static void pch_spi_handle_dma(struct pch_spi_data *data, int *bpw)
 	desc_tx->tx_submit(desc_tx);
 	spin_unlock_irqrestore(&data->lock, flags);
 
-	/* reset transfer complete flag */
+	 
 	data->transfer_complete = false;
 }
 
@@ -1110,7 +1020,7 @@ static void pch_spi_process_messages(struct work_struct *pwork)
 	dev_dbg(&data->master->dev, "%s data initialized\n", __func__);
 
 	spin_lock(&data->lock);
-	/* check if suspend has been initiated;if yes flush queue */
+	 
 	if (data->board_dat->suspend_sts || (data->status == STATUS_EXITING)) {
 		dev_dbg(&data->master->dev,
 			"%s suspend/remove initiated, flushing queue\n", __func__);
@@ -1123,7 +1033,7 @@ static void pch_spi_process_messages(struct work_struct *pwork)
 				spin_lock(&data->lock);
 			}
 
-			/* delete from queue */
+			 
 			list_del_init(&pmsg->queue);
 		}
 
@@ -1135,7 +1045,7 @@ static void pch_spi_process_messages(struct work_struct *pwork)
 	dev_dbg(&data->master->dev,
 		"%s Set data->bcurrent_msg_processing= true\n", __func__);
 
-	/* Get the message from the queue and delete it from there. */
+	 
 	data->current_msg = list_entry(data->queue.next, struct spi_message,
 					queue);
 
@@ -1153,9 +1063,7 @@ static void pch_spi_process_messages(struct work_struct *pwork)
 	pch_spi_writereg(data->master, PCH_SSNXCR, SSN_NO_CONTROL);
 	do {
 		int cnt;
-		/* If we are already processing a message get the next
-		transfer structure from the message otherwise retrieve
-		the 1st transfer request from the message. */
+		 
 		spin_lock(&data->lock);
 		if (data->cur_trans == NULL) {
 			data->cur_trans =
@@ -1206,7 +1114,7 @@ static void pch_spi_process_messages(struct work_struct *pwork)
 			kfree(data->pkt_tx_buff);
 			data->pkt_tx_buff = NULL;
 		}
-		/* increment message count */
+		 
 		data->cur_trans->len = data->save_total_len;
 		data->current_msg->actual_length += data->cur_trans->len;
 
@@ -1218,7 +1126,7 @@ static void pch_spi_process_messages(struct work_struct *pwork)
 
 		spin_lock(&data->lock);
 
-		/* No more transfer in this message. */
+		 
 		if ((data->cur_trans->transfer_list.next) ==
 		    &(data->current_msg->transfers)) {
 			pch_spi_nomore_transfer(data);
@@ -1247,7 +1155,7 @@ static int pch_spi_get_resources(struct pch_spi_board_data *board_dat,
 {
 	dev_dbg(&board_dat->pdev->dev, "%s ENTRY\n", __func__);
 
-	/* reset PCH SPI h/w */
+	 
 	pch_spi_reset(data->master);
 	dev_dbg(&board_dat->pdev->dev,
 		"%s pch_spi_reset invoked successfully\n", __func__);
@@ -1279,13 +1187,13 @@ static int pch_alloc_dma_buf(struct pch_spi_board_data *board_dat,
 
 	dma = &data->dma;
 	ret = 0;
-	/* Get Consistent memory for Tx DMA */
+	 
 	dma->tx_buf_virt = dma_alloc_coherent(&board_dat->pdev->dev,
 				PCH_BUF_SIZE, &dma->tx_buf_dma, GFP_KERNEL);
 	if (!dma->tx_buf_virt)
 		ret = -ENOMEM;
 
-	/* Get Consistent memory for Rx DMA */
+	 
 	dma->rx_buf_virt = dma_alloc_coherent(&board_dat->pdev->dev,
 				PCH_BUF_SIZE, &dma->rx_buf_dma, GFP_KERNEL);
 	if (!dma->rx_buf_virt)
@@ -1316,7 +1224,7 @@ static int pch_spi_pd_probe(struct platform_device *plat_dev)
 
 	platform_set_drvdata(plat_dev, data);
 
-	/* baseaddress + address offset) */
+	 
 	data->io_base_addr = pci_resource_start(board_dat->pdev, 1) +
 					 PCH_ADDRESS_SIZE * plat_dev->id;
 	data->io_remap_addr = pci_iomap(board_dat->pdev, 1, 0);
@@ -1330,7 +1238,7 @@ static int pch_spi_pd_probe(struct platform_device *plat_dev)
 	dev_dbg(&plat_dev->dev, "[ch%d] remap_addr=%p\n",
 		plat_dev->id, data->io_remap_addr);
 
-	/* initialize members of SPI master */
+	 
 	master->num_chipselect = PCH_MAX_CS;
 	master->transfer = pch_spi_transfer;
 	master->mode_bits = SPI_CPOL | SPI_CPHA | SPI_LSB_FIRST;
@@ -1409,8 +1317,7 @@ static void pch_spi_pd_remove(struct platform_device *plat_dev)
 	if (use_dma)
 		pch_free_dma_buf(board_dat, data);
 
-	/* check for any pending messages; no action is taken if the queue
-	 * is still full; but at least we tried.  Unload anyway */
+	 
 	count = 500;
 	spin_lock_irqsave(&data->lock, flags);
 	data->status = STATUS_EXITING;
@@ -1424,9 +1331,9 @@ static void pch_spi_pd_remove(struct platform_device *plat_dev)
 	spin_unlock_irqrestore(&data->lock, flags);
 
 	pch_spi_free_resources(board_dat, data);
-	/* disable interrupts & free IRQ */
+	 
 	if (data->irq_reg_sts) {
-		/* disable interrupts */
+		 
 		pch_spi_setclr_reg(data->master, PCH_SPCR, 0, PCH_ALL);
 		data->irq_reg_sts = false;
 		free_irq(board_dat->pdev->irq, data);
@@ -1451,8 +1358,7 @@ static int pch_spi_pd_suspend(struct platform_device *pd_dev,
 		return -EFAULT;
 	}
 
-	/* check if the current message is processed:
-	   Only after thats done the transfer will be suspended */
+	 
 	count = 255;
 	while ((--count) > 0) {
 		if (!(data->bcurrent_msg_processing))
@@ -1460,9 +1366,9 @@ static int pch_spi_pd_suspend(struct platform_device *pd_dev,
 		msleep(PCH_SLEEP_TIME);
 	}
 
-	/* Free IRQ */
+	 
 	if (data->irq_reg_sts) {
-		/* disable all interrupts */
+		 
 		pch_spi_setclr_reg(data->master, PCH_SPCR, 0, PCH_ALL);
 		pch_spi_reset(data->master);
 		free_irq(board_dat->pdev->irq, data);
@@ -1488,7 +1394,7 @@ static int pch_spi_pd_resume(struct platform_device *pd_dev)
 	}
 
 	if (!data->irq_reg_sts) {
-		/* register IRQ */
+		 
 		retval = request_irq(board_dat->pdev->irq, pch_spi_handler,
 				     IRQF_SHARED, KBUILD_MODNAME, data);
 		if (retval < 0) {
@@ -1497,7 +1403,7 @@ static int pch_spi_pd_resume(struct platform_device *pd_dev)
 			return retval;
 		}
 
-		/* reset PCH SPI h/w */
+		 
 		pch_spi_reset(data->master);
 		pch_spi_set_master_mode(data->master);
 		data->irq_reg_sts = true;
@@ -1632,7 +1538,7 @@ static int __maybe_unused pch_spi_resume(struct device *dev)
 
 	dev_dbg(dev, "%s ENTRY\n", __func__);
 
-	/* set suspend status to false */
+	 
 	pd_dev_save->board_dat->suspend_sts = false;
 
 	return 0;

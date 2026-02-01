@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence USBSS PCI Glue driver
- *
- * Copyright (C) 2018-2019 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -44,12 +38,7 @@ static struct pci_dev *cdns3_get_second_fun(struct pci_dev *pdev)
 {
 	struct pci_dev *func;
 
-	/*
-	 * Gets the second function.
-	 * It's little tricky, but this platform has two function.
-	 * The fist keeps resources for Host/Device while the second
-	 * keeps resources for DRD/OTG.
-	 */
+	 
 	func = pci_get_device(pdev->vendor, pdev->device, NULL);
 	if (unlikely(!func))
 		return NULL;
@@ -77,10 +66,7 @@ static int cdns3_pci_probe(struct pci_dev *pdev,
 	struct pci_dev *func;
 	int err;
 
-	/*
-	 * for GADGET/HOST PCI (devfn) function number is 0,
-	 * for OTG PCI (devfn) function number is 1
-	 */
+	 
 	if (!id || (pdev->devfn != PCI_DEV_FN_HOST_DEVICE &&
 		    pdev->devfn != PCI_DEV_FN_OTG))
 		return -EINVAL;
@@ -110,7 +96,7 @@ static int cdns3_pci_probe(struct pci_dev *pdev,
 	res = wrap->dev_res;
 
 	if (pdev->devfn == PCI_DEV_FN_HOST_DEVICE) {
-		/* function 0: host(BAR_0) + device(BAR_1).*/
+		 
 		dev_dbg(&pdev->dev, "Initialize Device resources\n");
 		res[RES_DEV_ID].start = pci_resource_start(pdev, PCI_BAR_DEV);
 		res[RES_DEV_ID].end =   pci_resource_end(pdev, PCI_BAR_DEV);
@@ -126,12 +112,12 @@ static int cdns3_pci_probe(struct pci_dev *pdev,
 		dev_dbg(&pdev->dev, "USBSS-XHCI physical base addr: %pa\n",
 			&res[RES_HOST_ID].start);
 
-		/* Interrupt for XHCI */
+		 
 		wrap->dev_res[RES_IRQ_HOST_ID].start = pdev->irq;
 		wrap->dev_res[RES_IRQ_HOST_ID].name = "host";
 		wrap->dev_res[RES_IRQ_HOST_ID].flags = IORESOURCE_IRQ;
 
-		/* Interrupt device. It's the same as for HOST. */
+		 
 		wrap->dev_res[RES_IRQ_PERIPHERAL_ID].start = pdev->irq;
 		wrap->dev_res[RES_IRQ_PERIPHERAL_ID].name = "peripheral";
 		wrap->dev_res[RES_IRQ_PERIPHERAL_ID].flags = IORESOURCE_IRQ;
@@ -143,14 +129,14 @@ static int cdns3_pci_probe(struct pci_dev *pdev,
 		dev_dbg(&pdev->dev, "USBSS-DRD physical base addr: %pa\n",
 			&res[RES_DRD_ID].start);
 
-		/* Interrupt for OTG/DRD. */
+		 
 		wrap->dev_res[RES_IRQ_OTG_ID].start = pdev->irq;
 		wrap->dev_res[RES_IRQ_OTG_ID].name = "otg";
 		wrap->dev_res[RES_IRQ_OTG_ID].flags = IORESOURCE_IRQ;
 	}
 
 	if (pci_is_enabled(func)) {
-		/* set up platform device info */
+		 
 		memset(&plat_info, 0, sizeof(plat_info));
 		plat_info.parent = &pdev->dev;
 		plat_info.fwnode = pdev->dev.fwnode;
@@ -160,7 +146,7 @@ static int cdns3_pci_probe(struct pci_dev *pdev,
 		plat_info.res = wrap->dev_res;
 		plat_info.num_res = ARRAY_SIZE(wrap->dev_res);
 		plat_info.dma_mask = pdev->dma_mask;
-		/* register platform device */
+		 
 		wrap->plat_dev = platform_device_register_full(&plat_info);
 		if (IS_ERR(wrap->plat_dev)) {
 			pci_disable_device(pdev);

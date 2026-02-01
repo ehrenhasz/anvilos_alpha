@@ -1,13 +1,4 @@
-/* CoreChip-sz SR9800 one chip USB 2.0 Ethernet Devices
- *
- * Author : Liu Junliang <liujunliang_ljl@163.com>
- *
- * Based on asix_common.c, asix_devices.c
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.*
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kmod.h>
@@ -63,7 +54,7 @@ static int sr_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 {
 	int offset = 0;
 
-	/* This check is no longer done by usbnet */
+	 
 	if (skb->len < dev->net->hard_header_len)
 		return 0;
 
@@ -73,7 +64,7 @@ static int sr_rx_fixup(struct usbnet *dev, struct sk_buff *skb)
 		u32 header = get_unaligned_le32(skb->data + offset);
 
 		offset += sizeof(u32);
-		/* get the packet length */
+		 
 		size = (u16) (header & 0x7ff);
 		if (size != ((~header >> 16) & 0x07ff)) {
 			netdev_err(dev->net, "%s : Bad Header Length\n",
@@ -257,7 +248,7 @@ static u16 sr_read_medium_status(struct usbnet *dev)
 	if (ret < 0) {
 		netdev_err(dev->net,
 			   "Error reading Medium Status register:%02x\n", ret);
-		return ret;	/* TODO: callers not checking for error ret */
+		return ret;	 
 	}
 
 	return le16_to_cpu(v);
@@ -291,7 +282,7 @@ static int sr_write_gpio(struct usbnet *dev, u16 value, int sleep)
 	return ret;
 }
 
-/* SR9800 have a 16-bit RX_CTL value */
+ 
 static void sr_set_multicast(struct net_device *net)
 {
 	struct usbnet *dev = netdev_priv(net);
@@ -304,19 +295,15 @@ static void sr_set_multicast(struct net_device *net)
 		   netdev_mc_count(net) > SR_MAX_MCAST) {
 		rx_ctl |= SR_RX_CTL_AMALL;
 	} else if (netdev_mc_empty(net)) {
-		/* just broadcast and directed */
+		 
 	} else {
-		/* We use the 20 byte dev->data
-		 * for our 8 byte filter buffer
-		 * to avoid allocating memory that
-		 * is tricky to free later
-		 */
+		 
 		struct netdev_hw_addr *ha;
 		u32 crc_bits;
 
 		memset(data->multi_filter, 0, SR_MCAST_FILTER_SIZE);
 
-		/* Build the multicast hash filter. */
+		 
 		netdev_for_each_mc_addr(ha, net) {
 			crc_bits = ether_crc(ETH_ALEN, ha->addr) >> 26;
 			data->multi_filter[crc_bits >> 3] |=
@@ -366,14 +353,14 @@ sr_mdio_write(struct net_device *net, int phy_id, int loc, int val)
 	mutex_unlock(&dev->phy_mutex);
 }
 
-/* Get the PHY Identifier from the PHYSID1 & PHYSID2 MII registers */
+ 
 static u32 sr_get_phyid(struct usbnet *dev)
 {
 	int phy_reg;
 	u32 phy_id;
 	int i;
 
-	/* Poll for the rare case the FW or phy isn't ready yet.  */
+	 
 	for (i = 0; i < 100; i++) {
 		phy_reg = sr_mdio_read(dev->net, dev->mii.phy_id, MII_PHYSID1);
 		if (phy_reg != 0 && phy_reg != 0xFFFF)
@@ -451,15 +438,13 @@ static int sr_get_eeprom(struct net_device *net,
 	int ret;
 	int i;
 
-	/* Crude hack to ensure that we don't overwrite memory
-	 * if an odd length is supplied
-	 */
+	 
 	if (eeprom->len % 2)
 		return -EINVAL;
 
 	eeprom->magic = SR_EEPROM_MAGIC;
 
-	/* sr9800 returns 2 bytes from eeprom on read */
+	 
 	for (i = 0; i < eeprom->len / 2; i++) {
 		ret = sr_read_cmd(dev, SR_CMD_READ_EEPROM, eeprom->offset + i,
 				  0, 2, &ebuf[i]);
@@ -472,7 +457,7 @@ static int sr_get_eeprom(struct net_device *net,
 static void sr_get_drvinfo(struct net_device *net,
 				 struct ethtool_drvinfo *info)
 {
-	/* Inherit standard device info */
+	 
 	usbnet_get_drvinfo(net, info);
 	strncpy(info->driver, DRIVER_NAME, sizeof(info->driver));
 	strncpy(info->version, DRIVER_VERSION, sizeof(info->version));
@@ -505,11 +490,7 @@ static int sr_set_mac_address(struct net_device *net, void *p)
 
 	eth_hw_addr_set(net, addr->sa_data);
 
-	/* We use the 20 byte dev->data
-	 * for our 6 byte mac buffer
-	 * to avoid allocating memory that
-	 * is tricky to free later
-	 */
+	 
 	memcpy(data->mac_addr, addr->sa_data, ETH_ALEN);
 	sr_write_cmd_async(dev, SR_CMD_WRITE_NODE_ID, 0, 0, ETH_ALEN,
 			   data->mac_addr);
@@ -577,7 +558,7 @@ static int sr9800_set_default_mode(struct usbnet *dev)
 		goto out;
 	}
 
-	/* Set RX_CTL to default values with 2k buffer, and enable cactus */
+	 
 	ret = sr_write_rx_ctl(dev, SR_DEFAULT_RX_CTL);
 	if (ret < 0)
 		goto out;
@@ -662,7 +643,7 @@ static int sr9800_reset(struct usbnet *dev)
 	if (ret < 0)
 		goto out;
 
-	/* Rewrite MAC address */
+	 
 	memcpy(data->mac_addr, dev->net->dev_addr, ETH_ALEN);
 	ret = sr_write_cmd(dev, SR_CMD_WRITE_NODE_ID, 0, 0, ETH_ALEN,
 							data->mac_addr);
@@ -692,7 +673,7 @@ static int sr9800_phy_powerup(struct usbnet *dev)
 {
 	int ret;
 
-	/* set the embedded Ethernet PHY in power-down state */
+	 
 	ret = sr_sw_reset(dev, SR_SWRESET_IPPD | SR_SWRESET_IPRL);
 	if (ret < 0) {
 		netdev_err(dev->net, "Failed to power down PHY : %d\n", ret);
@@ -700,7 +681,7 @@ static int sr9800_phy_powerup(struct usbnet *dev)
 	}
 	msleep(20);
 
-	/* set the embedded Ethernet PHY in power-up state */
+	 
 	ret = sr_sw_reset(dev, SR_SWRESET_IPRL);
 	if (ret < 0) {
 		netdev_err(dev->net, "Failed to reset PHY: %d\n", ret);
@@ -708,7 +689,7 @@ static int sr9800_phy_powerup(struct usbnet *dev)
 	}
 	msleep(600);
 
-	/* set the embedded Ethernet PHY in reset state */
+	 
 	ret = sr_sw_reset(dev, SR_SWRESET_CLEAR);
 	if (ret < 0) {
 		netdev_err(dev->net, "Failed to power up PHY: %d\n", ret);
@@ -716,7 +697,7 @@ static int sr9800_phy_powerup(struct usbnet *dev)
 	}
 	msleep(20);
 
-	/* set the embedded Ethernet PHY in power-up state */
+	 
 	ret = sr_sw_reset(dev, SR_SWRESET_IPRL);
 	if (ret < 0) {
 		netdev_err(dev->net, "Failed to reset PHY: %d\n", ret);
@@ -739,13 +720,7 @@ static int sr9800_bind(struct usbnet *dev, struct usb_interface *intf)
 
 	usbnet_get_endpoints(dev, intf);
 
-	/* LED Setting Rule :
-	 * AABB:CCDD
-	 * AA : MFA0(LED0)
-	 * BB : MFA1(LED1)
-	 * CC : MFA2(LED2), Reserved for SR9800
-	 * DD : MFA3(LED3), Reserved for SR9800
-	 */
+	 
 	led01_mux = (SR_LED_MUX_LINK_ACTIVE << 8) | SR_LED_MUX_LINK;
 	led23_mux = (SR_LED_MUX_LINK_ACTIVE << 8) | SR_LED_MUX_TX_ACTIVE;
 	ret = sr_write_cmd(dev, SR_CMD_LED_MUX, led01_mux, led23_mux, 0, NULL);
@@ -754,7 +729,7 @@ static int sr9800_bind(struct usbnet *dev, struct usb_interface *intf)
 			goto out;
 	}
 
-	/* Get the MAC address */
+	 
 	ret = sr_read_cmd(dev, SR_CMD_READ_NODE_ID, 0, 0, ETH_ALEN, addr);
 	if (ret < 0) {
 		netdev_dbg(dev->net, "Failed to read MAC address: %d\n", ret);
@@ -763,7 +738,7 @@ static int sr9800_bind(struct usbnet *dev, struct usb_interface *intf)
 	eth_hw_addr_set(dev->net, addr);
 	netdev_dbg(dev->net, "mac addr : %pM\n", dev->net->dev_addr);
 
-	/* Initialize MII structure */
+	 
 	dev->mii.dev = dev->net;
 	dev->mii.mdio_read = sr_mdio_read;
 	dev->mii.mdio_write = sr_mdio_write;
@@ -775,14 +750,14 @@ static int sr9800_bind(struct usbnet *dev, struct usb_interface *intf)
 	dev->net->ethtool_ops = &sr9800_ethtool_ops;
 
 	embd_phy = ((dev->mii.phy_id & 0x1f) == 0x10 ? 1 : 0);
-	/* Reset the PHY to normal operation mode */
+	 
 	ret = sr_write_cmd(dev, SR_CMD_SW_PHY_SELECT, embd_phy, 0, 0, NULL);
 	if (ret < 0) {
 		netdev_dbg(dev->net, "Select PHY #1 failed: %d\n", ret);
 		return ret;
 	}
 
-	/* Init PHY routine */
+	 
 	ret = sr9800_phy_powerup(dev);
 	if (ret < 0)
 		goto out;
@@ -796,11 +771,11 @@ static int sr9800_bind(struct usbnet *dev, struct usb_interface *intf)
 	rx_ctl = sr_read_rx_ctl(dev);
 	netdev_dbg(dev->net, "RX_CTL is 0x%04x setting to 0x0000\n", rx_ctl);
 
-	/* Read PHYID register *AFTER* the PHY was reset properly */
+	 
 	phyid = sr_get_phyid(dev);
 	netdev_dbg(dev->net, "PHYID=0x%08x\n", phyid);
 
-	/* medium mode setting */
+	 
 	ret = sr9800_set_default_mode(dev);
 	if (ret < 0)
 		goto out;
@@ -849,10 +824,10 @@ static const struct driver_info sr9800_driver_info = {
 
 static const struct usb_device_id	products[] = {
 	{
-		USB_DEVICE(0x0fe6, 0x9800),	/* SR9800 Device  */
+		USB_DEVICE(0x0fe6, 0x9800),	 
 		.driver_info = (unsigned long) &sr9800_driver_info,
 	},
-	{},		/* END */
+	{},		 
 };
 
 MODULE_DEVICE_TABLE(usb, products);

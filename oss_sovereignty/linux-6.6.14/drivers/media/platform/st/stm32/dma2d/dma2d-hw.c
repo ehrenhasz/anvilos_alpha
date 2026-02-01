@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ST stm32 Chrom-Art - 2D Graphics Accelerator Driver
- *
- * Copyright (c) 2021 Dillon Min
- * Dillon Min, <dillon.minfei@gmail.com>
- *
- * based on s5p-g2d
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Kamil Debski, <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/io.h>
 

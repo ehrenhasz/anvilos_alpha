@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/i2c/busses/i2c-mt7621.c
- *
- * Copyright (C) 2013 Steven Liu <steven_liu@mediatek.com>
- * Copyright (C) 2016 Michael Lee <igvtee@gmail.com>
- * Copyright (C) 2018 Jan Breuer <jan.breuer@jaybee.cz>
- *
- * Improve driver for i2cdetect from i2c-tools to detect i2c devices on the bus.
- * (C) 2014 Sittisak <sittisaks@hotmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -29,10 +20,10 @@
 #define REG_PINTST_REG		0x60
 #define REG_PINTCL_REG		0x64
 
-/* REG_SM0CFG2_REG */
+ 
 #define SM0CFG2_IS_AUTOMODE	BIT(0)
 
-/* REG_SM0CTL0_REG */
+ 
 #define SM0CTL0_ODRAIN		BIT(31)
 #define SM0CTL0_CLK_DIV_MASK	(0x7ff << 16)
 #define SM0CTL0_CLK_DIV_MAX	0x7ff
@@ -42,7 +33,7 @@
 #define SM0CTL0_EN              BIT(1)
 #define SM0CTL0_SCL_STRETCH     BIT(0)
 
-/* REG_SM0CTL1_REG */
+ 
 #define SM0CTL1_ACK_MASK	(0xff << 16)
 #define SM0CTL1_PGLEN_MASK	(0x7 << 8)
 #define SM0CTL1_PGLEN(x)	((((x) - 1) << 8) & SM0CTL1_PGLEN_MASK)
@@ -54,7 +45,7 @@
 #define SM0CTL1_MODE_MASK	(0x7 << 4)
 #define SM0CTL1_TRI		BIT(0)
 
-/* timeout waiting for I2C devices to respond */
+ 
 #define TIMEOUT_MS		1000
 
 struct mtk_i2c {
@@ -89,10 +80,7 @@ static void mtk_i2c_reset(struct mtk_i2c *i2c)
 	if (ret)
 		dev_err(i2c->dev, "I2C reset failed!\n");
 
-	/*
-	 * Don't set SM0CTL0_ODRAIN as its bit meaning is inverted. To
-	 * configure open-drain mode, this bit needs to be cleared.
-	 */
+	 
 	iowrite32(((i2c->clk_div << 16) & SM0CTL0_CLK_DIV_MASK) | SM0CTL0_EN |
 		  SM0CTL0_SCL_STRETCH, i2c->base + REG_SM0CTL0_REG);
 	iowrite32(0, i2c->base + REG_SM0CFG2_REG);
@@ -151,19 +139,19 @@ static int mtk_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	for (i = 0; i < num; i++) {
 		pmsg = &msgs[i];
 
-		/* wait hardware idle */
+		 
 		ret = mtk_i2c_wait_idle(i2c);
 		if (ret)
 			goto err_timeout;
 
-		/* start sequence */
+		 
 		ret = mtk_i2c_master_start(i2c);
 		if (ret)
 			goto err_timeout;
 
-		/* write address */
+		 
 		if (pmsg->flags & I2C_M_TEN) {
-			/* 10 bits address */
+			 
 			addr = 0xf0 | ((pmsg->addr >> 7) & 0x06);
 			addr |= (pmsg->addr & 0xff) << 8;
 			if (pmsg->flags & I2C_M_RD)
@@ -173,7 +161,7 @@ static int mtk_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 			if (ret)
 				goto err_timeout;
 		} else {
-			/* 7 bits address */
+			 
 			addr = i2c_8bit_addr_from_msg(pmsg);
 			iowrite32(addr, i2c->base + REG_SM0D0_REG);
 			ret = mtk_i2c_master_cmd(i2c, SM0CTL1_WRITE, 1);
@@ -181,14 +169,14 @@ static int mtk_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 				goto err_timeout;
 		}
 
-		/* check address ACK */
+		 
 		if (!(pmsg->flags & I2C_M_IGNORE_NAK)) {
 			ret = mtk_i2c_check_ack(i2c, BIT(0));
 			if (ret)
 				goto err_ack;
 		}
 
-		/* transfer data */
+		 
 		for (len = pmsg->len, j = 0; len > 0; len -= 8, j += 8) {
 			page_len = (len >= 8) ? 8 : len;
 
@@ -226,7 +214,7 @@ static int mtk_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 	if (ret)
 		goto err_timeout;
 
-	/* the return value is number of executed messages */
+	 
 	return i;
 
 err_ack:
@@ -253,7 +241,7 @@ static const struct i2c_algorithm mtk_i2c_algo = {
 
 static const struct of_device_id i2c_mtk_dt_ids[] = {
 	{ .compatible = "mediatek,mt7621-i2c" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, i2c_mtk_dt_ids);

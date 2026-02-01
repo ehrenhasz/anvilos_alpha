@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- *
- * This is an implementation of the BLAKE2s hash and PRF functions.
- *
- * Information: https://blake2.net/
- *
- */
+
+ 
 
 #include <crypto/internal/blake2s.h>
 #include <linux/types.h>

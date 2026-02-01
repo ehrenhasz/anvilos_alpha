@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __WLAN_BSSDEF_H__
 #define __WLAN_BSSDEF_H__
 
@@ -30,25 +19,22 @@ enum NDIS_802_11_NETWORK_TYPE {
 	Ndis802_11DS,
 	Ndis802_11OFDM5,
 	Ndis802_11OFDM24,
-	Ndis802_11NetworkTypeMax /* not a real type, defined as an upper bound*/
+	Ndis802_11NetworkTypeMax  
 };
 
 struct NDIS_802_11_CONFIGURATION_FH {
-	u32 Length;             /* Length of structure */
-	u32 HopPattern;         /* As defined by 802.11, MSB set */
-	u32 HopSet;             /* to one if non-802.11 */
-	u32 DwellTime;          /* units are Kusec */
+	u32 Length;              
+	u32 HopPattern;          
+	u32 HopSet;              
+	u32 DwellTime;           
 };
 
-/*
- * FW will only save the channel number in DSConfig.
- * ODI Handler will convert the channel number to freq. number.
- */
+ 
 struct NDIS_802_11_CONFIGURATION {
-	u32 Length;             /* Length of structure */
-	u32 BeaconPeriod;       /* units are Kusec */
-	u32 ATIMWindow;         /* units are Kusec */
-	u32 DSConfig;           /* Frequency, units are kHz */
+	u32 Length;              
+	u32 BeaconPeriod;        
+	u32 ATIMWindow;          
+	u32 DSConfig;            
 	struct NDIS_802_11_CONFIGURATION_FH FHConfig;
 };
 
@@ -56,7 +42,7 @@ enum NDIS_802_11_NETWORK_INFRASTRUCTURE {
 	Ndis802_11IBSS,
 	Ndis802_11Infrastructure,
 	Ndis802_11AutoUnknown,
-	Ndis802_11InfrastructureMax, /*Not a real value,defined as upper bound*/
+	Ndis802_11InfrastructureMax,  
 	Ndis802_11APMode
 };
 
@@ -77,9 +63,9 @@ struct wlan_bssid_ex {
 	struct NDIS_802_11_CONFIGURATION  Configuration;
 	enum NDIS_802_11_NETWORK_INFRASTRUCTURE  InfrastructureMode;
 	u8 rates[NDIS_802_11_LENGTH_RATES_EX];
-	/* number of content bytes in EIs, which varies */
+	 
 	u32 IELength;
-	/*(timestamp, beacon interval, and capability information) */
+	 
 	u8 IEs[MAX_IE_SZ];
 };
 
@@ -90,7 +76,7 @@ enum NDIS_802_11_AUTHENTICATION_MODE {
 	Ndis802_11AuthModeWPA,
 	Ndis802_11AuthModeWPAPSK,
 	Ndis802_11AuthModeWPANone,
-	Ndis802_11AuthModeMax      /* Not a real mode, defined as upper bound */
+	Ndis802_11AuthModeMax       
 };
 
 enum {
@@ -140,39 +126,37 @@ struct NDIS_802_11_ASSOCIATION_INFORMATION {
 	u32 OffsetResponseIEs;
 };
 
-/* Key mapping keys require a BSSID*/
+ 
 struct NDIS_802_11_KEY {
-	u32 Length;			/* Length of this structure */
+	u32 Length;			 
 	u32 KeyIndex;
-	u32 KeyLength;			/* length of key in bytes */
+	u32 KeyLength;			 
 	unsigned char BSSID[6];
 	unsigned long long KeyRSC;
-	u8  KeyMaterial[32];		/* variable length */
+	u8  KeyMaterial[32];		 
 };
 
 struct NDIS_802_11_REMOVE_KEY {
-	u32 Length;			/* Length of this structure */
+	u32 Length;			 
 	u32 KeyIndex;
 	unsigned char BSSID[6];
 };
 
 struct NDIS_802_11_WEP {
-	u32 Length;		  /* Length of this structure */
-	u32 KeyIndex;		  /* 0 is the per-client key,
-				   * 1-N are the global keys
-				   */
-	u32 KeyLength;		  /* length of key in bytes */
-	u8  KeyMaterial[16];      /* variable length depending on above field */
+	u32 Length;		   
+	u32 KeyIndex;		   
+	u32 KeyLength;		   
+	u8  KeyMaterial[16];       
 };
 
-/* mask for authentication/integrity fields */
+ 
 #define NDIS_802_11_AUTH_REQUEST_AUTH_FIELDS        0x0f
 #define NDIS_802_11_AUTH_REQUEST_REAUTH			0x01
 #define NDIS_802_11_AUTH_REQUEST_KEYUPDATE		0x02
 #define NDIS_802_11_AUTH_REQUEST_PAIRWISE_ERROR		0x06
 #define NDIS_802_11_AUTH_REQUEST_GROUP_ERROR		0x0E
 
-/* MIC check time, 60 seconds. */
+ 
 #define MIC_CHECK_TIME	60000000
 
 #ifndef Ndis802_11APMode
@@ -181,14 +165,12 @@ struct NDIS_802_11_WEP {
 
 struct	wlan_network {
 	struct list_head list;
-	int	network_type;	/*refer to ieee80211.h for WIRELESS_11A/B/G */
-	int	fixed;		/* set to fixed when not to be removed asi
-				 * site-surveying
-				 */
-	unsigned int	last_scanned; /*timestamp for the network */
-	int	aid;		/*will only be valid when a BSS is joined. */
+	int	network_type;	 
+	int	fixed;		 
+	unsigned int	last_scanned;  
+	int	aid;		 
 	int	join_res;
-	struct wlan_bssid_ex network; /*must be the last item */
+	struct wlan_bssid_ex network;  
 };
 
 enum VRTL_CARRIER_SENSE {
@@ -219,5 +201,5 @@ enum UAPSD_MAX_SP {
 #define NUM_PRE_AUTH_KEY 16
 #define NUM_PMKID_CACHE NUM_PRE_AUTH_KEY
 
-#endif /* #ifndef WLAN_BSSDEF_H_ */
+#endif  
 

@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/slab.h>
 
@@ -56,7 +25,7 @@ int ipoib_mcast_attach(struct net_device *dev, struct ib_device *hca,
 		if (!qp_attr)
 			goto out;
 
-		/* set correct QKey for QP */
+		 
 		qp_attr->qkey = qkey;
 		ret = ib_modify_qp(priv->qp, qp_attr, IB_QP_QKEY);
 		if (ret) {
@@ -65,7 +34,7 @@ int ipoib_mcast_attach(struct net_device *dev, struct ib_device *hca,
 		}
 	}
 
-	/* attach QP to multicast group */
+	 
 	ret = ib_attach_mcast(priv->qp, mgid, mlid);
 	if (ret)
 		ipoib_warn(priv, "failed to attach to multicast group, ret = %d\n", ret);
@@ -112,7 +81,7 @@ int ipoib_init_qp(struct net_device *dev)
 	}
 
 	qp_attr.qp_state = IB_QPS_RTR;
-	/* Can't set this in a INIT->RTR transition */
+	 
 	attr_mask &= ~IB_QP_PORT;
 	ret = ib_modify_qp(priv->qp, &qp_attr, attr_mask);
 	if (ret) {
@@ -165,7 +134,7 @@ int ipoib_transport_dev_init(struct net_device *dev, struct ib_device *ca)
 	if (!ret) {
 		size += ipoib_sendq_size;
 		if (ipoib_cm_has_srq(dev))
-			size += ipoib_recvq_size + 1; /* 1 extra for rx_drain_qp */
+			size += ipoib_recvq_size + 1;  
 		else
 			size += ipoib_recvq_size * ipoib_max_conn_qp;
 	} else

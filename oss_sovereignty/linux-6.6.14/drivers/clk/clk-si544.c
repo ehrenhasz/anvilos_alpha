@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Silicon Labs Si544 Programmable Oscillator
- * Copyright (C) 2018 Topic Embedded Products
- * Author: Mike Looijmans <mike.looijmans@topic.nl>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -13,7 +9,7 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/* I2C registers (decimal as in datasheet) */
+ 
 #define SI544_REG_CONTROL	7
 #define SI544_REG_OE_STATE	17
 #define SI544_REG_HS_DIV	23
@@ -30,28 +26,28 @@
 #define SI544_REG_ADPLL_DELTA_M16	233
 #define SI544_REG_PAGE_SELECT	255
 
-/* Register values */
+ 
 #define SI544_CONTROL_RESET	BIT(7)
 #define SI544_CONTROL_MS_ICAL2	BIT(3)
 
 #define SI544_OE_STATE_ODC_OE	BIT(0)
 
-/* Max freq depends on speed grade */
+ 
 #define SI544_MIN_FREQ	    200000U
 
-/* Si544 Internal oscilator runs at 55.05 MHz */
+ 
 #define FXO		  55050000U
 
-/* VCO range is 10.8 .. 12.1 GHz, max depends on speed grade */
+ 
 #define FVCO_MIN       10800000000ULL
 
 #define HS_DIV_MAX	2046
 #define HS_DIV_MAX_ODD	33
 
-/* Lowest frequency synthesizeable using only the HS divider */
+ 
 #define MIN_HSDIV_FREQ	(FVCO_MIN / HS_DIV_MAX)
 
-/* Range and interpretation of the adjustment value */
+ 
 #define DELTA_M_MAX	8161512
 #define DELTA_M_FRAC_NUM	19
 #define DELTA_M_FRAC_DEN	20000
@@ -70,15 +66,7 @@ struct clk_si544 {
 };
 #define to_clk_si544(_hw)	container_of(_hw, struct clk_si544, hw)
 
-/**
- * struct clk_si544_muldiv - Multiplier/divider settings
- * @fb_div_frac:	integer part of feedback divider (32 bits)
- * @fb_div_int:		fractional part of feedback divider (11 bits)
- * @hs_div:		1st divider, 5..2046, must be even when >33
- * @ls_div_bits:	2nd divider, as 2^x, range 0..5
- *                      If ls_div_bits is non-zero, hs_div must be even
- * @delta_m:		Frequency shift for small -950..+950 ppm changes, 24 bit
- */
+ 
 struct clk_si544_muldiv {
 	u32 fb_div_frac;
 	u16 fb_div_int;
@@ -87,7 +75,7 @@ struct clk_si544_muldiv {
 	s32 delta_m;
 };
 
-/* Enables or disables the output driver */
+ 
 static int si544_enable_output(struct clk_si544 *data, bool enable)
 {
 	return regmap_update_bits(data->regmap, SI544_REG_OE_STATE,
@@ -121,7 +109,7 @@ static int si544_is_prepared(struct clk_hw *hw)
 	return !!(val & SI544_OE_STATE_ODC_OE);
 }
 
-/* Retrieve clock multiplier and dividers from hardware */
+ 
 static int si544_get_muldiv(struct clk_si544 *data,
 	struct clk_si544_muldiv *settings)
 {
@@ -147,7 +135,7 @@ static int si544_get_muldiv(struct clk_si544 *data,
 	if (err)
 		return err;
 
-	/* Interpret as 24-bit signed number */
+	 
 	settings->delta_m = reg[0] << 8 | reg[1] << 16 | reg[2] << 24;
 	settings->delta_m >>= 8;
 
@@ -186,10 +174,7 @@ static int si544_set_muldiv(struct clk_si544 *data,
 	reg[4] = settings->fb_div_int;
 	reg[5] = settings->fb_div_int >> 8;
 
-	/*
-	 * Writing to SI544_REG_FBDIV40 triggers the clock change, so that
-	 * must be written last
-	 */
+	 
 	return regmap_bulk_write(data->regmap, SI544_REG_FBDIV0, reg, 6);
 }
 
@@ -216,7 +201,7 @@ static bool is_valid_frequency(const struct clk_si544 *data,
 	return frequency <= max_freq;
 }
 
-/* Calculate divider settings for a given frequency */
+ 
 static int si544_calc_muldiv(struct clk_si544_muldiv *settings,
 	unsigned long frequency)
 {
@@ -225,7 +210,7 @@ static int si544_calc_muldiv(struct clk_si544_muldiv *settings,
 	u32 tmp;
 	u8 res;
 
-	/* Determine the minimum value of LS_DIV and resulting target freq. */
+	 
 	ls_freq = frequency;
 	settings->ls_div_bits = 0;
 
@@ -244,51 +229,51 @@ static int si544_calc_muldiv(struct clk_si544_muldiv *settings,
 		ls_freq = frequency << res;
 	}
 
-	/* Determine minimum HS_DIV by rounding up */
+	 
 	vco = FVCO_MIN + ls_freq - 1;
 	do_div(vco, ls_freq);
 	settings->hs_div = vco;
 
-	/* round up to even number when required */
+	 
 	if ((settings->hs_div & 1) &&
 	    (settings->hs_div > HS_DIV_MAX_ODD || settings->ls_div_bits))
 		++settings->hs_div;
 
-	/* Calculate VCO frequency (in 10..12GHz range) */
+	 
 	vco = (u64)ls_freq * settings->hs_div;
 
-	/* Calculate the integer part of the feedback divider */
+	 
 	tmp = do_div(vco, FXO);
 	settings->fb_div_int = vco;
 
-	/* And the fractional bits using the remainder */
+	 
 	vco = (u64)tmp << 32;
-	vco += FXO / 2; /* Round to nearest multiple */
+	vco += FXO / 2;  
 	do_div(vco, FXO);
 	settings->fb_div_frac = vco;
 
-	/* Reset the frequency adjustment */
+	 
 	settings->delta_m = 0;
 
 	return 0;
 }
 
-/* Calculate resulting frequency given the register settings */
+ 
 static unsigned long si544_calc_center_rate(
 		const struct clk_si544_muldiv *settings)
 {
 	u32 d = settings->hs_div * BIT(settings->ls_div_bits);
 	u64 vco;
 
-	/* Calculate VCO from the fractional part */
+	 
 	vco = (u64)settings->fb_div_frac * FXO;
 	vco += (FXO / 2);
 	vco >>= 32;
 
-	/* Add the integer part of the VCO frequency */
+	 
 	vco += (u64)settings->fb_div_int * FXO;
 
-	/* Apply divider to obtain the generated frequency */
+	 
 	do_div(vco, d);
 
 	return vco;
@@ -299,11 +284,7 @@ static unsigned long si544_calc_rate(const struct clk_si544_muldiv *settings)
 	unsigned long rate = si544_calc_center_rate(settings);
 	s64 delta = (s64)rate * (DELTA_M_FRAC_NUM * settings->delta_m);
 
-	/*
-	 * The clock adjustment is much smaller than 1 Hz, round to the
-	 * nearest multiple. Apparently div64_s64 rounds towards zero, hence
-	 * check the sign and adjust into the proper direction.
-	 */
+	 
 	if (settings->delta_m < 0)
 		delta -= ((s64)DELTA_M_MAX * DELTA_M_FRAC_DEN) / 2;
 	else
@@ -335,11 +316,11 @@ static long si544_round_rate(struct clk_hw *hw, unsigned long rate,
 	if (!is_valid_frequency(data, rate))
 		return -EINVAL;
 
-	/* The accuracy is less than 1 Hz, so any rate is possible */
+	 
 	return rate;
 }
 
-/* Calculates the maximum "small" change, 950 * rate / 1000000 */
+ 
 static unsigned long si544_max_delta(unsigned long rate)
 {
 	u64 num = rate;
@@ -371,7 +352,7 @@ static int si544_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (!is_valid_frequency(data, rate))
 		return -EINVAL;
 
-	/* Try using the frequency adjustment feature for a <= 950ppm change */
+	 
 	err = si544_get_muldiv(data, &settings);
 	if (err)
 		return err;
@@ -384,7 +365,7 @@ static int si544_set_rate(struct clk_hw *hw, unsigned long rate,
 		return si544_set_delta_m(data,
 					 si544_calc_delta(delta, max_delta));
 
-	/* Too big for the delta adjustment, need to reprogram */
+	 
 	err = si544_calc_muldiv(&settings, rate);
 	if (err)
 		return err;
@@ -395,7 +376,7 @@ static int si544_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	si544_enable_output(data, false);
 
-	/* Allow FCAL for this frequency update */
+	 
 	err = regmap_write(data->regmap, SI544_REG_FCAL_OVR, 0);
 	if (err < 0)
 		return err;
@@ -406,15 +387,15 @@ static int si544_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	err = si544_set_muldiv(data, &settings);
 	if (err < 0)
-		return err; /* Undefined state now, best to leave disabled */
+		return err;  
 
-	/* Trigger calibration */
+	 
 	err = regmap_write(data->regmap, SI544_REG_CONTROL,
 			   SI544_CONTROL_MS_ICAL2);
 	if (err < 0)
 		return err;
 
-	/* Applying a new frequency can take up to 10ms */
+	 
 	usleep_range(10000, 12000);
 
 	if (old_oe_state & SI544_OE_STATE_ODC_OE)
@@ -487,7 +468,7 @@ static int si544_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, data);
 
-	/* Select page 0, just to be sure, there appear to be no more */
+	 
 	err = regmap_write(data->regmap, SI544_REG_PAGE_SELECT, 0);
 	if (err < 0)
 		return err;

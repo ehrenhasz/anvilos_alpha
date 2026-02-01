@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016 InforceComputing
- * Copyright (C) 2016 Linaro Ltd
- * Copyright (C) 2023 BayLibre, SAS
- *
- * Authors:
- * - Vinay Simha BN <simhavcs@gmail.com>
- * - Sumit Semwal <sumit.semwal@linaro.org>
- * - Guillaume La Roque <glaroque@baylibre.com>
- *
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -25,8 +15,8 @@
 #include <drm/drm_panel.h>
 
 #define DSI_REG_MCAP	0xB0
-#define DSI_REG_IS	0xB3 /* Interface Setting */
-#define DSI_REG_IIS	0xB4 /* Interface ID Setting */
+#define DSI_REG_IS	0xB3  
+#define DSI_REG_IIS	0xB4  
 #define DSI_REG_CTRL	0xB6
 
 enum {
@@ -39,8 +29,8 @@ struct stk_panel {
 	const struct drm_display_mode *mode;
 	struct backlight_device *backlight;
 	struct drm_panel base;
-	struct gpio_desc *enable_gpio; /* Power IC supply enable */
-	struct gpio_desc *reset_gpio; /* External reset */
+	struct gpio_desc *enable_gpio;  
+	struct gpio_desc *reset_gpio;  
 	struct mipi_dsi_device *dsi;
 	struct regulator_bulk_data supplies[2];
 };
@@ -72,7 +62,7 @@ static int stk_panel_init(struct stk_panel *stk)
 
 	mipi_dsi_generic_write_seq(dsi, DSI_REG_MCAP, 0x04);
 
-	/* Interface setting, video mode */
+	 
 	mipi_dsi_generic_write_seq(dsi, DSI_REG_IS, 0x14, 0x08, 0x00, 0x22, 0x00);
 	mipi_dsi_generic_write_seq(dsi, DSI_REG_IIS, 0x0C, 0x00);
 	mipi_dsi_generic_write_seq(dsi, DSI_REG_CTRL, 0x3A, 0xD3);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <sys/mman.h>
@@ -50,7 +50,7 @@ static struct test_case {
 			.str_val = "abracad",
 		},
 	},
-	/* TRISTATE */
+	 
 	{ .name = "tristate (y)", .cfg = CFG"CONFIG_TRISTATE=y\n",
 	  .data = { .tristate_val = TRI_YES } },
 	{ .name = "tristate (n)", .cfg = CFG"CONFIG_TRISTATE=n\n",
@@ -59,20 +59,20 @@ static struct test_case {
 	  .data = { .tristate_val = TRI_MODULE } },
 	{ .name = "tristate (int)", .fails = 1, .cfg = CFG"CONFIG_TRISTATE=1" },
 	{ .name = "tristate (bad)", .fails = 1, .cfg = CFG"CONFIG_TRISTATE=M" },
-	/* BOOL */
+	 
 	{ .name = "bool (y)", .cfg = CFG"CONFIG_BOOL=y\n",
 	  .data = { .bool_val = true } },
 	{ .name = "bool (n)", .cfg = CFG"CONFIG_BOOL=n\n",
 	  .data = { .bool_val = false } },
 	{ .name = "bool (tristate)", .fails = 1, .cfg = CFG"CONFIG_BOOL=m" },
 	{ .name = "bool (int)", .fails = 1, .cfg = CFG"CONFIG_BOOL=1" },
-	/* CHAR */
+	 
 	{ .name = "char (tristate)", .cfg = CFG"CONFIG_CHAR=m\n",
 	  .data = { .char_val = 'm' } },
 	{ .name = "char (bad)", .fails = 1, .cfg = CFG"CONFIG_CHAR=q\n" },
 	{ .name = "char (empty)", .fails = 1, .cfg = CFG"CONFIG_CHAR=\n" },
 	{ .name = "char (str)", .fails = 1, .cfg = CFG"CONFIG_CHAR=\"y\"\n" },
-	/* STRING */
+	 
 	{ .name = "str (empty)", .cfg = CFG"CONFIG_STR=\"\"\n",
 	  .data = { .str_val = "\0\0\0\0\0\0\0" } },
 	{ .name = "str (padded)", .cfg = CFG"CONFIG_STR=\"abra\"\n",
@@ -81,7 +81,7 @@ static struct test_case {
 	  .data = { .str_val = "abracad" } },
 	{ .name = "str (no value)", .fails = 1, .cfg = CFG"CONFIG_STR=\n" },
 	{ .name = "str (bad value)", .fails = 1, .cfg = CFG"CONFIG_STR=bla\n" },
-	/* INTEGERS */
+	 
 	{
 		.name = "integer forms",
 		.cfg = CFG

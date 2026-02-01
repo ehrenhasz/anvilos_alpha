@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2004-2009  Dominik Brodowski <linux@dominikbrodowski.de>
- */
+
+ 
 
 
 #include <unistd.h>
@@ -47,7 +45,7 @@ struct freq_units {
 
 const struct freq_units def_units[] = {
 	{"hz", -3},
-	{"khz", 0}, /* default */
+	{"khz", 0},  
 	{"mhz", 3},
 	{"ghz", 6},
 	{"thz", 9},
@@ -94,7 +92,7 @@ static unsigned long string_to_frequency(const char *str)
 			return 0;
 	}
 
-	/* count the number of digits to be copied */
+	 
 	for (cp = 0; isdigit(str[cp]); cp++)
 		continue;
 
@@ -104,32 +102,32 @@ static unsigned long string_to_frequency(const char *str)
 			power--;
 		}
 	}
-	if (power >= -1) {		/* not enough => pad */
+	if (power >= -1) {		 
 		pad = power + 1;
-	} else {			/* too much => strip */
+	} else {			 
 		pad = 0;
 		cp += power + 1;
 	}
-	/* check bounds */
+	 
 	if (cp <= 0 || cp + pad > NORM_FREQ_LEN - 1)
 		return 0;
 
-	/* copy digits */
+	 
 	for (i = 0; i < cp; i++, str++) {
 		if (*str == '.')
 			str++;
 		normalized[i] = *str;
 	}
-	/* and pad */
+	 
 	for (; i < cp + pad; i++)
 		normalized[i] = '0';
 
-	/* round up, down ? */
+	 
 	match_count = (normalized[i-1] >= '5');
-	/* and drop the decimal part */
-	normalized[i-1] = 0; /* cp > 0 && pad >= 0 ==> i > 0 */
+	 
+	normalized[i-1] = 0;  
 
-	/* final conversion (and applying rounding) */
+	 
 	errno = 0;
 	freq = strtoul(normalized, &end, 10);
 	if (errno)
@@ -176,9 +174,7 @@ static int do_one_cpu(unsigned int cpu, struct cpufreq_policy *new_pol,
 		return cpufreq_set_frequency(cpu, freq);
 
 	case 1:
-		/* if only one value of a policy is to be changed, we can
-		 * use a "fast path".
-		 */
+		 
 		if (new_pol->min)
 			return cpufreq_modify_policy_min(cpu, new_pol->min);
 		else if (new_pol->max)
@@ -188,7 +184,7 @@ static int do_one_cpu(unsigned int cpu, struct cpufreq_policy *new_pol,
 							new_pol->governor);
 
 	default:
-		/* slow path */
+		 
 		return do_new_policy(cpu, new_pol);
 	}
 }
@@ -209,7 +205,7 @@ int cmd_freq_set(int argc, char **argv)
 		.governor = NULL,
 	};
 
-	/* parameter parsing */
+	 
 	do {
 		ret = getopt_long(argc, argv, "d:u:g:f:r", set_opts, NULL);
 		switch (ret) {
@@ -270,7 +266,7 @@ int cmd_freq_set(int argc, char **argv)
 		}
 	} while (cont);
 
-	/* parameter checking */
+	 
 	if (double_parm) {
 		printf("the same parameter was passed more than once\n");
 		return -EINVAL;
@@ -288,11 +284,11 @@ int cmd_freq_set(int argc, char **argv)
 		return -EINVAL;
 	}
 
-	/* Default is: set all CPUs */
+	 
 	if (bitmask_isallclear(cpus_chosen))
 		bitmask_setall(cpus_chosen);
 
-	/* Also set frequency settings for related CPUs if -r is passed */
+	 
 	if (related) {
 		for (cpu = bitmask_first(cpus_chosen);
 		     cpu <= bitmask_last(cpus_chosen); cpu++) {
@@ -309,7 +305,7 @@ int cmd_freq_set(int argc, char **argv)
 				bitmask_setbit(cpus_chosen, cpus->cpu);
 				cpus = cpus->next;
 			}
-			/* Set the last cpu in related cpus list */
+			 
 			bitmask_setbit(cpus_chosen, cpus->cpu);
 			cpufreq_put_related_cpus(cpus);
 		}
@@ -317,7 +313,7 @@ int cmd_freq_set(int argc, char **argv)
 
 	get_cpustate();
 
-	/* loop over CPUs */
+	 
 	for (cpu = bitmask_first(cpus_chosen);
 	     cpu <= bitmask_last(cpus_chosen); cpu++) {
 

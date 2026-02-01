@@ -1,29 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ACRN HSM eventfd - use eventfd objects to signal expected I/O requests
- *
- * Copyright (C) 2020 Intel Corporation. All rights reserved.
- *
- * Authors:
- *	Shuo Liu <shuo.a.liu@intel.com>
- *	Yakui Zhao <yakui.zhao@intel.com>
- */
+
+ 
 
 #include <linux/eventfd.h>
 #include <linux/slab.h>
 
 #include "acrn_drv.h"
 
-/**
- * struct hsm_ioeventfd - Properties of HSM ioeventfd
- * @list:	Entry within &acrn_vm.ioeventfds of ioeventfds of a VM
- * @eventfd:	Eventfd of the HSM ioeventfd
- * @addr:	Address of I/O range
- * @data:	Data for matching
- * @length:	Length of I/O range
- * @type:	Type of I/O range (ACRN_IOREQ_TYPE_MMIO/ACRN_IOREQ_TYPE_PORTIO)
- * @wildcard:	Data matching or not
- */
+ 
 struct hsm_ioeventfd {
 	struct list_head	list;
 	struct eventfd_ctx	*eventfd;
@@ -56,7 +39,7 @@ static bool hsm_ioeventfd_is_conflict(struct acrn_vm *vm,
 
 	lockdep_assert_held(&vm->ioeventfds_lock);
 
-	/* Either one is wildcard, the data matching will be skipped. */
+	 
 	list_for_each_entry(p, &vm->ioeventfds, list)
 		if (p->eventfd == ioeventfd->eventfd &&
 		    p->addr == ioeventfd->addr &&
@@ -68,11 +51,7 @@ static bool hsm_ioeventfd_is_conflict(struct acrn_vm *vm,
 	return false;
 }
 
-/*
- * Assign an eventfd to a VM and create a HSM ioeventfd associated with the
- * eventfd. The properties of the HSM ioeventfd are built from a &struct
- * acrn_ioeventfd.
- */
+ 
 static int acrn_ioeventfd_assign(struct acrn_vm *vm,
 				 struct acrn_ioeventfd *args)
 {
@@ -80,14 +59,11 @@ static int acrn_ioeventfd_assign(struct acrn_vm *vm,
 	struct hsm_ioeventfd *p;
 	int ret;
 
-	/* Check for range overflow */
+	 
 	if (args->addr + args->len < args->addr)
 		return -EINVAL;
 
-	/*
-	 * Currently, acrn_ioeventfd is used to support vhost. 1,2,4,8 width
-	 * accesses can cover vhost's requirements.
-	 */
+	 
 	if (!(args->len == 1 || args->len == 2 ||
 	      args->len == 4 || args->len == 8))
 		return -EINVAL;
@@ -108,11 +84,7 @@ static int acrn_ioeventfd_assign(struct acrn_vm *vm,
 	p->eventfd = eventfd;
 	p->type = ioreq_type_from_flags(args->flags);
 
-	/*
-	 * ACRN_IOEVENTFD_FLAG_DATAMATCH flag is set in virtio 1.0 support, the
-	 * writing of notification register of each virtqueue may trigger the
-	 * notification. There is no data matching requirement.
-	 */
+	 
 	if (args->flags & ACRN_IOEVENTFD_FLAG_DATAMATCH)
 		p->data = args->data;
 	else
@@ -125,7 +97,7 @@ static int acrn_ioeventfd_assign(struct acrn_vm *vm,
 		goto unlock_fail;
 	}
 
-	/* register the I/O range into ioreq client */
+	 
 	ret = acrn_ioreq_range_add(vm->ioeventfd_client, p->type,
 				   p->addr, p->addr + p->length - 1);
 	if (ret < 0)
@@ -194,15 +166,9 @@ static int acrn_ioeventfd_handler(struct acrn_ioreq_client *client,
 	int size;
 
 	if (req->type == ACRN_IOREQ_TYPE_MMIO) {
-		/*
-		 * I/O requests are dispatched by range check only, so a
-		 * acrn_ioreq_client need process both READ and WRITE accesses
-		 * of same range. READ accesses are safe to be ignored here
-		 * because virtio PCI devices write the notify registers for
-		 * notification.
-		 */
+		 
 		if (req->reqs.mmio_request.direction == ACRN_IOREQ_DIR_READ) {
-			/* reading does nothing and return 0 */
+			 
 			req->reqs.mmio_request.value = 0;
 			return 0;
 		}
@@ -211,7 +177,7 @@ static int acrn_ioeventfd_handler(struct acrn_ioreq_client *client,
 		val = req->reqs.mmio_request.value;
 	} else {
 		if (req->reqs.pio_request.direction == ACRN_IOREQ_DIR_READ) {
-			/* reading does nothing and return 0 */
+			 
 			req->reqs.pio_request.value = 0;
 			return 0;
 		}

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom B43 wireless driver
- *
- * SDIO over Sonics Silicon Backplane bus glue for b43.
- *
- * Copyright (C) 2009 Albert Herranz
- * Copyright (C) 2009 Michael Buesch <m@bues.ch>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/mmc/card.h>
@@ -19,9 +12,9 @@
 #include "b43.h"
 
 
-#define HNBU_CHIPID		0x01	/* vendor & device id */
+#define HNBU_CHIPID		0x01	 
 
-#define B43_SDIO_BLOCK_SIZE	64	/* rx fifo max size in bytes */
+#define B43_SDIO_BLOCK_SIZE	64	 
 
 
 static const struct b43_sdio_quirk {
@@ -97,7 +90,7 @@ static int b43_sdio_probe(struct sdio_func *func,
 	u16 vendor = 0, device = 0;
 	int error;
 
-	/* Look for the card chip identifier. */
+	 
 	tuple = func->tuples;
 	while (tuple) {
 		switch (tuple->code) {

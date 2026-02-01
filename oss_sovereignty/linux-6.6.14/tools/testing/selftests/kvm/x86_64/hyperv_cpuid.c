@@ -1,14 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test for x86 KVM_CAP_HYPERV_CPUID
- *
- * Copyright (C) 2018, Red Hat, Inc.
- *
- * This work is licensed under the terms of the GNU GPL, version 2.
- *
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -103,13 +96,7 @@ static void test_hv_cpuid(const struct kvm_cpuid2 *hv_cpuid_entries,
 			break;
 
 		}
-		/*
-		 * If needed for debug:
-		 * fprintf(stdout,
-		 *	"CPUID%lx EAX=0x%lx EBX=0x%lx ECX=0x%lx EDX=0x%lx\n",
-		 *	entry->function, entry->eax, entry->ebx, entry->ecx,
-		 *	entry->edx);
-		 */
+		 
 	}
 }
 
@@ -138,7 +125,7 @@ int main(int argc, char *argv[])
 
 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
 
-	/* Test vCPU ioctl version */
+	 
 	test_hv_cpuid_e2big(vm, vcpu);
 
 	hv_cpuid_entries = vcpu_get_supported_hv_cpuid(vcpu);
@@ -156,7 +143,7 @@ int main(int argc, char *argv[])
 	free((void *)hv_cpuid_entries);
 
 do_sys:
-	/* Test system ioctl version */
+	 
 	if (!kvm_has_cap(KVM_CAP_SYS_HYPERV_CPUID)) {
 		print_skip("KVM_CAP_SYS_HYPERV_CPUID not supported");
 		goto out;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <subcmd/parse-options.h>
 #include "bench.h"
 
@@ -168,7 +168,7 @@ int bench_sched_seccomp_notify(int argc, const char **argv)
 		break;
 
 	default:
-		/* reaching here is something disaster */
+		 
 		fprintf(stderr, "Unknown format:%d\n", bench_format);
 		exit(1);
 		break;

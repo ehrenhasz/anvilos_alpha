@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Common header-file of the Linux driver for the Afatech 9005
- * USB1.1 DVB-T receiver.
- *
- * Copyright (C) 2007 Luca Olivetti (luca@ventoso.org)
- *
- * Thanks to Afatech who kindly provided information.
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+ 
+ 
 #ifndef _DVB_USB_AF9005_H_
 #define _DVB_USB_AF9005_H_
 
@@ -24,7 +16,7 @@ extern int dvb_usb_af9005_debug;
 
 extern bool dvb_usb_af9005_led;
 
-/* firmware */
+ 
 #define FW_BULKOUT_SIZE 250
 enum {
 	FW_CONFIG,
@@ -32,7 +24,7 @@ enum {
 	FW_BOOT
 };
 
-/* af9005 commands */
+ 
 #define AF9005_OFDM_REG  0
 #define AF9005_TUNER_REG 1
 
@@ -46,17 +38,15 @@ enum {
 #define AF9005_CMD_READ     0x00
 #define AF9005_CMD_WRITE    0x01
 
-/* af9005 registers */
+ 
 #define APO_REG_RESET					0xAEFF
 
 #define APO_REG_I2C_RW_CAN_TUNER            0xF000
 #define APO_REG_I2C_RW_SILICON_TUNER        0xF001
-#define APO_REG_GPIO_RW_SILICON_TUNER       0xFFFE	/*  also for OFSM */
-#define APO_REG_TRIGGER_OFSM                0xFFFF	/*  also for OFSM */
+#define APO_REG_GPIO_RW_SILICON_TUNER       0xFFFE	 
+#define APO_REG_TRIGGER_OFSM                0xFFFF	 
 
-/***********************************************************************
- *  Apollo Registers from VLSI					       *
- ***********************************************************************/
+ 
 #define xd_p_reg_aagc_inverted_agc	0xA000
 #define	reg_aagc_inverted_agc_pos 0
 #define	reg_aagc_inverted_agc_len 1
@@ -3474,7 +3464,7 @@ extern int af9005_led_control(struct dvb_usb_device *d, int onoff);
 
 extern u8 regmask[8];
 
-/* remote control decoder */
+ 
 extern int af9005_rc_decode(struct dvb_usb_device *d, u8 * data, int len,
 			    u32 * event, int *state);
 extern struct rc_map_table rc_map_af9005_table[];

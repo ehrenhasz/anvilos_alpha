@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (c) Copyright 2021 Hewlett Packard Enterprise Development LP.
- */
+
+ 
 
 #include <linux/hrtimer.h>
 #include <linux/watchdog.h>

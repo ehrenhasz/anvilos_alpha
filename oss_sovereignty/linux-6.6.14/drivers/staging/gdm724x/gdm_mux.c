@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -29,10 +29,10 @@ static u16 packet_type_for_tty_index[TTY_MAX_COUNT] = {0xF011, 0xF010};
 	.bInterfaceSubClass = USB_CDC_SUBCLASS_ACM
 
 static const struct usb_device_id id_table[] = {
-	{ USB_DEVICE_CDC_DATA(0x1076, 0x8000) }, /* GCT GDM7240 */
-	{ USB_DEVICE_CDC_DATA(0x1076, 0x8f00) }, /* GCT GDM7243 */
-	{ USB_DEVICE_CDC_DATA(0x1076, 0x9000) }, /* GCT GDM7243 */
-	{ USB_DEVICE_CDC_DATA(0x1d74, 0x2300) }, /* LGIT Phoenix */
+	{ USB_DEVICE_CDC_DATA(0x1076, 0x8000) },  
+	{ USB_DEVICE_CDC_DATA(0x1076, 0x8f00) },  
+	{ USB_DEVICE_CDC_DATA(0x1076, 0x9000) },  
+	{ USB_DEVICE_CDC_DATA(0x1d74, 0x2300) },  
 	{}
 };
 

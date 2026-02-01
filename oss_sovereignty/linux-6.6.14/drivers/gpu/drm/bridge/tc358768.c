@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2020 Texas Instruments Incorporated - https://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -25,7 +22,7 @@
 #include <video/mipi_display.h>
 #include <video/videomode.h>
 
-/* Global (16-bit addressable) */
+ 
 #define TC358768_CHIPID			0x0000
 #define TC358768_SYSCTL			0x0002
 #define TC358768_CONFCTL		0x0004
@@ -42,13 +39,13 @@
 #define TC358768_DSITX_DT		0x0050
 #define TC358768_FIFOSTATUS		0x00F8
 
-/* Debug (16-bit addressable) */
+ 
 #define TC358768_VBUFCTRL		0x00E0
 #define TC358768_DBG_WIDTH		0x00E2
 #define TC358768_DBG_VBLANK		0x00E4
 #define TC358768_DBG_DATA		0x00E8
 
-/* TX PHY (32-bit addressable) */
+ 
 #define TC358768_CLW_DPHYCONTTX		0x0100
 #define TC358768_D0W_DPHYCONTTX		0x0104
 #define TC358768_D1W_DPHYCONTTX		0x0108
@@ -60,7 +57,7 @@
 #define TC358768_D2W_CNTRL		0x014C
 #define TC358768_D3W_CNTRL		0x0150
 
-/* TX PPI (32-bit addressable) */
+ 
 #define TC358768_STARTCNTRL		0x0204
 #define TC358768_DSITXSTATUS		0x0208
 #define TC358768_LINEINITCNT		0x0210
@@ -76,7 +73,7 @@
 #define TC358768_TXOPTIONCNTRL		0x0238
 #define TC358768_BTACNTRL1		0x023C
 
-/* TX CTRL (32-bit addressable) */
+ 
 #define TC358768_DSI_CONTROL		0x040C
 #define TC358768_DSI_STATUS		0x0410
 #define TC358768_DSI_INT		0x0414
@@ -97,7 +94,7 @@
 #define TC358768_DSI_INT_CLR		0x050C
 #define TC358768_DSI_START		0x0518
 
-/* DSITX CTRL (16-bit addressable) */
+ 
 #define TC358768_DSICMD_TX		0x0600
 #define TC358768_DSICMD_TYPE		0x0602
 #define TC358768_DSICMD_WC		0x0604
@@ -113,13 +110,13 @@
 #define TC358768_DSI_HBPR		0x062A
 #define TC358768_DSI_HACT		0x062C
 
-/* TC358768_DSI_CONTROL (0x040C) register */
+ 
 #define TC358768_DSI_CONTROL_DIS_MODE	BIT(15)
 #define TC358768_DSI_CONTROL_TXMD	BIT(7)
 #define TC358768_DSI_CONTROL_HSCKMD	BIT(5)
 #define TC358768_DSI_CONTROL_EOTDIS	BIT(0)
 
-/* TC358768_DSI_CONFW (0x0500) register */
+ 
 #define TC358768_DSI_CONFW_MODE_SET	(5 << 29)
 #define TC358768_DSI_CONFW_MODE_CLR	(6 << 29)
 #define TC358768_DSI_CONFW_ADDR_DSI_CONTROL	(0x3 << 24)
@@ -147,16 +144,16 @@ struct tc358768_priv {
 	struct drm_bridge bridge;
 	struct tc358768_dsi_output output;
 
-	u32 pd_lines; /* number of Parallel Port Input Data Lines */
-	u32 dsi_lanes; /* number of DSI Lanes */
-	u32 dsi_bpp; /* number of Bits Per Pixel over DSI */
+	u32 pd_lines;  
+	u32 dsi_lanes;  
+	u32 dsi_bpp;  
 
-	/* Parameters for PLL programming */
-	u32 fbd;	/* PLL feedback divider */
-	u32 prd;	/* PLL input divider */
-	u32 frs;	/* PLL Freqency range for HSCK (post divider) */
+	 
+	u32 fbd;	 
+	u32 prd;	 
+	u32 frs;	 
 
-	u32 dsiclk;	/* pll_clk / 2 */
+	u32 dsiclk;	 
 };
 
 static inline struct tc358768_priv *dsi_host_to_tc358768(struct mipi_dsi_host
@@ -181,14 +178,7 @@ static int tc358768_clear_error(struct tc358768_priv *priv)
 
 static void tc358768_write(struct tc358768_priv *priv, u32 reg, u32 val)
 {
-	/* work around https://gcc.gnu.org/bugzilla/show_bug.cgi?id=81715 */
-	int tmpval = val;
-	size_t count = 2;
-
-	if (priv->error)
-		return;
-
-	/* 16-bit register? */
+	 
 	if (reg < 0x100 || reg >= 0x600)
 		count = 1;
 
@@ -202,7 +192,7 @@ static void tc358768_read(struct tc358768_priv *priv, u32 reg, u32 *val)
 	if (priv->error)
 		return;
 
-	/* 16-bit register? */
+	 
 	if (reg < 0x100 || reg >= 0x600) {
 		*val = 0;
 		count = 1;
@@ -229,9 +219,9 @@ static void tc358768_update_bits(struct tc358768_priv *priv, u32 reg, u32 mask,
 
 static int tc358768_sw_reset(struct tc358768_priv *priv)
 {
-	/* Assert Reset */
+	 
 	tc358768_write(priv, TC358768_SYSCTL, 1);
-	/* Release Reset, Exit Sleep */
+	 
 	tc358768_write(priv, TC358768_SYSCTL, 0);
 
 	return tc358768_clear_error(priv);
@@ -255,13 +245,10 @@ static void tc358768_hw_enable(struct tc358768_priv *priv)
 	if (priv->reset_gpio)
 		usleep_range(200, 300);
 
-	/*
-	 * The RESX is active low (GPIO_ACTIVE_LOW).
-	 * DEASSERT (value = 0) the reset_gpio to enable the chip
-	 */
+	 
 	gpiod_set_value_cansleep(priv->reset_gpio, 0);
 
-	/* wait for encoder clocks to stabilize */
+	 
 	usleep_range(1000, 2000);
 
 	priv->enabled = true;
@@ -274,10 +261,7 @@ static void tc358768_hw_disable(struct tc358768_priv *priv)
 	if (!priv->enabled)
 		return;
 
-	/*
-	 * The RESX is active low (GPIO_ACTIVE_LOW).
-	 * ASSERT (value = 1) the reset_gpio to disable the chip
-	 */
+	 
 	gpiod_set_value_cansleep(priv->reset_gpio, 1);
 
 	ret = regulator_bulk_disable(ARRAY_SIZE(priv->supplies),
@@ -317,7 +301,7 @@ static int tc358768_calc_pll(struct tc358768_priv *priv,
 
 	target_pll = tc358768_pclk_to_pll(priv, mode->clock * 1000);
 
-	/* pll_clk = RefClk * [(FBD + 1)/ (PRD + 1)] * [1 / (2^FRS)] */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(frs_limits); i++)
 		if (target_pll >= frs_limits[i])
@@ -399,19 +383,13 @@ static int tc358768_dsi_host_attach(struct mipi_dsi_host *host,
 		return -EINVAL;
 	}
 
-	/*
-	 * tc358768 supports both Video and Pulse mode, but the driver only
-	 * implements Video (event) mode currently
-	 */
+	 
 	if (!(dev->mode_flags & MIPI_DSI_MODE_VIDEO)) {
 		dev_err(priv->dev, "Only MIPI_DSI_MODE_VIDEO is supported\n");
 		return -ENOTSUPP;
 	}
 
-	/*
-	 * tc358768 supports RGB888, RGB666, RGB666_PACKED and RGB565, but only
-	 * RGB888 is verified.
-	 */
+	 
 	if (dev->format != MIPI_DSI_FMT_RGB888) {
 		dev_warn(priv->dev, "Only MIPI_DSI_FMT_RGB888 tested!\n");
 		return -ENOTSUPP;
@@ -436,7 +414,7 @@ static int tc358768_dsi_host_attach(struct mipi_dsi_host *host,
 	priv->dsi_lanes = dev->lanes;
 	priv->dsi_bpp = mipi_dsi_pixel_format_to_bpp(dev->format);
 
-	/* get input ep (port0/endpoint0) */
+	 
 	ret = -EINVAL;
 	ep = of_graph_get_endpoint_by_regs(host->dev->of_node, 0, 0);
 	if (ep) {
@@ -513,7 +491,7 @@ static ssize_t tc358768_dsi_host_transfer(struct mipi_dsi_host *host,
 		}
 	}
 
-	/* start transfer */
+	 
 	tc358768_write(priv, TC358768_DSICMD_TX, 1);
 
 	ret = tc358768_clear_error(priv);
@@ -563,16 +541,16 @@ static void tc358768_bridge_disable(struct drm_bridge *bridge)
 	struct tc358768_priv *priv = bridge_to_tc358768(bridge);
 	int ret;
 
-	/* set FrmStop */
+	 
 	tc358768_update_bits(priv, TC358768_PP_MISC, BIT(15), BIT(15));
 
-	/* wait at least for one frame */
+	 
 	msleep(50);
 
-	/* clear PP_en */
+	 
 	tc358768_update_bits(priv, TC358768_CONFCTL, BIT(6), 0);
 
-	/* set RstPtr */
+	 
 	tc358768_update_bits(priv, TC358768_PP_MISC, BIT(14), BIT(14));
 
 	ret = tc358768_clear_error(priv);
@@ -611,17 +589,17 @@ static int tc358768_setup_pll(struct tc358768_priv *priv,
 		tc358768_pll_to_pclk(priv, priv->dsiclk * 2),
 		mode->clock * 1000);
 
-	/* PRD[15:12] FBD[8:0] */
+	 
 	tc358768_write(priv, TC358768_PLLCTL0, (prd << 12) | fbd);
 
-	/* FRS[11:10] LBWS[9:8] CKEN[4] RESETB[1] EN[0] */
+	 
 	tc358768_write(priv, TC358768_PLLCTL1,
 		       (frs << 10) | (0x2 << 8) | BIT(1) | BIT(0));
 
-	/* wait for lock */
+	 
 	usleep_range(1000, 2000);
 
-	/* FRS[11:10] LBWS[9:8] CKEN[4] PLL_CKEN[4] RESETB[1] EN[0] */
+	 
 	tc358768_write(priv, TC358768_PLLCTL1,
 		       (frs << 10) | (0x2 << 8) | BIT(4) | BIT(1) | BIT(0));
 
@@ -680,8 +658,8 @@ static void tc358768_bridge_pre_enable(struct drm_bridge *bridge)
 	dsiclk = priv->dsiclk;
 	hsbyteclk = dsiclk / 4;
 
-	/* Data Format Control Register */
-	val = BIT(2) | BIT(1) | BIT(0); /* rdswap_en | dsitx_en | txdt_en */
+	 
+	val = BIT(2) | BIT(1) | BIT(0);  
 	switch (dsi_dev->format) {
 	case MIPI_DSI_FMT_RGB888:
 		val |= (0x3 << 4);
@@ -716,77 +694,77 @@ static void tc358768_bridge_pre_enable(struct drm_bridge *bridge)
 		return;
 	}
 
-	/* VSDly[9:0] */
+	 
 	video_start = max(video_start, internal_delay + 1) - internal_delay;
 	tc358768_write(priv, TC358768_VSDLY, video_start);
 
 	tc358768_write(priv, TC358768_DATAFMT, val);
 	tc358768_write(priv, TC358768_DSITX_DT, data_type);
 
-	/* Enable D-PHY (HiZ->LP11) */
+	 
 	tc358768_write(priv, TC358768_CLW_CNTRL, 0x0000);
-	/* Enable lanes */
+	 
 	for (i = 0; i < dsi_dev->lanes; i++)
 		tc358768_write(priv, TC358768_D0W_CNTRL + i * 4, 0x0000);
 
-	/* DSI Timings */
+	 
 	hsbyteclk_ps = (u32)div_u64(PICO, hsbyteclk);
 	dsiclk_ps = (u32)div_u64(PICO, dsiclk);
 	ui_ps = dsiclk_ps / 2;
 	dev_dbg(dev, "dsiclk: %u ps, ui %u ps, hsbyteclk %u ps\n", dsiclk_ps,
 		ui_ps, hsbyteclk_ps);
 
-	/* LP11 > 100us for D-PHY Rx Init */
+	 
 	val = tc358768_ns_to_cnt(100 * 1000, hsbyteclk_ps) - 1;
 	dev_dbg(dev, "LINEINITCNT: %u\n", val);
 	tc358768_write(priv, TC358768_LINEINITCNT, val);
 
-	/* LPTimeCnt > 50ns */
+	 
 	val = tc358768_ns_to_cnt(50, hsbyteclk_ps) - 1;
 	lptxcnt = val;
 	dev_dbg(dev, "LPTXTIMECNT: %u\n", val);
 	tc358768_write(priv, TC358768_LPTXTIMECNT, val);
 
-	/* 38ns < TCLK_PREPARE < 95ns */
+	 
 	val = tc358768_ns_to_cnt(65, hsbyteclk_ps) - 1;
 	dev_dbg(dev, "TCLK_PREPARECNT %u\n", val);
-	/* TCLK_PREPARE + TCLK_ZERO > 300ns */
+	 
 	val2 = tc358768_ns_to_cnt(300 - tc358768_ps_to_ns(2 * ui_ps),
 				  hsbyteclk_ps) - 2;
 	dev_dbg(dev, "TCLK_ZEROCNT %u\n", val2);
 	val |= val2 << 8;
 	tc358768_write(priv, TC358768_TCLK_HEADERCNT, val);
 
-	/* TCLK_TRAIL > 60ns AND TEOT <= 105 ns + 12*UI */
+	 
 	raw_val = tc358768_ns_to_cnt(60 + tc358768_ps_to_ns(2 * ui_ps), hsbyteclk_ps) - 5;
 	val = clamp(raw_val, 0, 127);
 	dev_dbg(dev, "TCLK_TRAILCNT: %u\n", val);
 	tc358768_write(priv, TC358768_TCLK_TRAILCNT, val);
 
-	/* 40ns + 4*UI < THS_PREPARE < 85ns + 6*UI */
+	 
 	val = 50 + tc358768_ps_to_ns(4 * ui_ps);
 	val = tc358768_ns_to_cnt(val, hsbyteclk_ps) - 1;
 	dev_dbg(dev, "THS_PREPARECNT %u\n", val);
-	/* THS_PREPARE + THS_ZERO > 145ns + 10*UI */
+	 
 	raw_val = tc358768_ns_to_cnt(145 - tc358768_ps_to_ns(3 * ui_ps), hsbyteclk_ps) - 10;
 	val2 = clamp(raw_val, 0, 127);
 	dev_dbg(dev, "THS_ZEROCNT %u\n", val2);
 	val |= val2 << 8;
 	tc358768_write(priv, TC358768_THS_HEADERCNT, val);
 
-	/* TWAKEUP > 1ms in lptxcnt steps */
+	 
 	val = tc358768_ns_to_cnt(1020000, hsbyteclk_ps);
 	val = val / (lptxcnt + 1) - 1;
 	dev_dbg(dev, "TWAKEUP: %u\n", val);
 	tc358768_write(priv, TC358768_TWAKEUP, val);
 
-	/* TCLK_POSTCNT > 60ns + 52*UI */
+	 
 	val = tc358768_ns_to_cnt(60 + tc358768_ps_to_ns(52 * ui_ps),
 				 hsbyteclk_ps) - 3;
 	dev_dbg(dev, "TCLK_POSTCNT: %u\n", val);
 	tc358768_write(priv, TC358768_TCLK_POSTCNT, val);
 
-	/* max(60ns + 4*UI, 8*UI) < THS_TRAILCNT < 105ns + 12*UI */
+	 
 	raw_val = tc358768_ns_to_cnt(60 + tc358768_ps_to_ns(18 * ui_ps),
 				     hsbyteclk_ps) - 4;
 	val = clamp(raw_val, 0, 15);
@@ -801,7 +779,7 @@ static void tc358768_bridge_pre_enable(struct drm_bridge *bridge)
 	tc358768_write(priv, TC358768_TXOPTIONCNTRL,
 		       (mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS) ? 0 : BIT(0));
 
-	/* TXTAGOCNT[26:16] RXTASURECNT[10:0] */
+	 
 	val = tc358768_ps_to_ns((lptxcnt + 1) * hsbyteclk_ps * 4);
 	val = tc358768_ns_to_cnt(val, hsbyteclk_ps) / 4 - 1;
 	dev_dbg(dev, "TXTAGOCNT: %u\n", val);
@@ -811,72 +789,72 @@ static void tc358768_bridge_pre_enable(struct drm_bridge *bridge)
 	val = val << 16 | val2;
 	tc358768_write(priv, TC358768_BTACNTRL1, val);
 
-	/* START[0] */
+	 
 	tc358768_write(priv, TC358768_STARTCNTRL, 1);
 
 	if (dsi_dev->mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE) {
-		/* Set pulse mode */
+		 
 		tc358768_write(priv, TC358768_DSI_EVENT, 0);
 
-		/* vact */
+		 
 		tc358768_write(priv, TC358768_DSI_VACT, vm.vactive);
 
-		/* vsw */
+		 
 		tc358768_write(priv, TC358768_DSI_VSW, vm.vsync_len);
 
-		/* vbp */
+		 
 		tc358768_write(priv, TC358768_DSI_VBPR, vm.vback_porch);
 
-		/* hsw * byteclk * ndl / pclk */
+		 
 		val = (u32)div_u64(vm.hsync_len *
 				   (u64)hsbyteclk * priv->dsi_lanes,
 				   vm.pixelclock);
 		tc358768_write(priv, TC358768_DSI_HSW, val);
 
-		/* hbp * byteclk * ndl / pclk */
+		 
 		val = (u32)div_u64(vm.hback_porch *
 				   (u64)hsbyteclk * priv->dsi_lanes,
 				   vm.pixelclock);
 		tc358768_write(priv, TC358768_DSI_HBPR, val);
 	} else {
-		/* Set event mode */
+		 
 		tc358768_write(priv, TC358768_DSI_EVENT, 1);
 
-		/* vact */
+		 
 		tc358768_write(priv, TC358768_DSI_VACT, vm.vactive);
 
-		/* vsw (+ vbp) */
+		 
 		tc358768_write(priv, TC358768_DSI_VSW,
 			       vm.vsync_len + vm.vback_porch);
 
-		/* vbp (not used in event mode) */
+		 
 		tc358768_write(priv, TC358768_DSI_VBPR, 0);
 
-		/* (hsw + hbp) * byteclk * ndl / pclk */
+		 
 		val = (u32)div_u64((vm.hsync_len + vm.hback_porch) *
 				   (u64)hsbyteclk * priv->dsi_lanes,
 				   vm.pixelclock);
 		tc358768_write(priv, TC358768_DSI_HSW, val);
 
-		/* hbp (not used in event mode) */
+		 
 		tc358768_write(priv, TC358768_DSI_HBPR, 0);
 	}
 
-	/* hact (bytes) */
+	 
 	tc358768_write(priv, TC358768_DSI_HACT, hact);
 
-	/* VSYNC polarity */
+	 
 	tc358768_update_bits(priv, TC358768_CONFCTL, BIT(5),
 			     (mode->flags & DRM_MODE_FLAG_PVSYNC) ? BIT(5) : 0);
 
-	/* HSYNC polarity */
+	 
 	tc358768_update_bits(priv, TC358768_PP_MISC, BIT(0),
 			     (mode->flags & DRM_MODE_FLAG_PHSYNC) ? BIT(0) : 0);
 
-	/* Start DSI Tx */
+	 
 	tc358768_write(priv, TC358768_DSI_START, 0x1);
 
-	/* Configure DSI_Control register */
+	 
 	val = TC358768_DSI_CONFW_MODE_CLR | TC358768_DSI_CONFW_ADDR_DSI_CONTROL;
 	val |= TC358768_DSI_CONTROL_TXMD | TC358768_DSI_CONTROL_HSCKMD |
 	       0x3 << 1 | TC358768_DSI_CONTROL_EOTDIS;
@@ -896,7 +874,7 @@ static void tc358768_bridge_pre_enable(struct drm_bridge *bridge)
 	tc358768_write(priv, TC358768_DSI_CONFW, val);
 
 	val = TC358768_DSI_CONFW_MODE_CLR | TC358768_DSI_CONFW_ADDR_DSI_CONTROL;
-	val |= TC358768_DSI_CONTROL_DIS_MODE; /* DSI mode */
+	val |= TC358768_DSI_CONTROL_DIS_MODE;  
 	tc358768_write(priv, TC358768_DSI_CONFW, val);
 
 	ret = tc358768_clear_error(priv);
@@ -917,10 +895,10 @@ static void tc358768_bridge_enable(struct drm_bridge *bridge)
 		return;
 	}
 
-	/* clear FrmStop and RstPtr */
+	 
 	tc358768_update_bits(priv, TC358768_PP_MISC, 0x3 << 14, 0);
 
-	/* set PP_en */
+	 
 	tc358768_update_bits(priv, TC358768_CONFCTL, BIT(6), BIT(6));
 
 	ret = tc358768_clear_error(priv);
@@ -1103,11 +1081,7 @@ static int tc358768_i2c_probe(struct i2c_client *client)
 	if (IS_ERR(priv->refclk))
 		return PTR_ERR(priv->refclk);
 
-	/*
-	 * RESX is low active, to disable tc358768 initially (keep in reset)
-	 * the gpio line must be LOW. This is the ASSERTED state of
-	 * GPIO_ACTIVE_LOW (GPIOD_OUT_HIGH == ASSERTED).
-	 */
+	 
 	priv->reset_gpio  = devm_gpiod_get_optional(dev, "reset",
 						    GPIOD_OUT_HIGH);
 	if (IS_ERR(priv->reset_gpio))

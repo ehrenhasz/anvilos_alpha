@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * dice_transaction.c - a part of driver for Dice based devices
- *
- * Copyright (c) Clemens Ladisch
- * Copyright (c) 2014 Takashi Sakamoto
- */
+
+ 
 
 #include "dice.h"
 
@@ -180,7 +175,7 @@ static int register_notification_address(struct snd_dice *dice, bool retry)
 			dice->notification_handler.offset);
 
 		dice->owner_generation = device->generation;
-		smp_rmb(); /* node_id vs. generation */
+		smp_rmb();  
 		err = snd_fw_transaction(dice->unit, TCODE_LOCK_COMPARE_SWAP,
 					 get_subaddr(dice,
 						     SND_DICE_ADDR_TYPE_GLOBAL,
@@ -189,10 +184,10 @@ static int register_notification_address(struct snd_dice *dice, bool retry)
 					 FW_FIXED_GENERATION |
 							dice->owner_generation);
 		if (err == 0) {
-			/* success */
+			 
 			if (buffer[0] == cpu_to_be64(OWNER_NO_OWNER))
 				break;
-			/* The address seems to be already registered. */
+			 
 			if (buffer[0] == buffer[1])
 				break;
 
@@ -281,11 +276,7 @@ static int get_subaddrs(struct snd_dice *dice)
 	if (pointers == NULL)
 		return -ENOMEM;
 
-	/*
-	 * Check that the sub address spaces exist and are located inside the
-	 * private address space.  The minimum values are chosen so that all
-	 * minimally required registers are included.
-	 */
+	 
 	err = snd_fw_transaction(dice->unit, TCODE_READ_BLOCK_REQUEST,
 				 DICE_PRIVATE_SPACE, pointers,
 				 sizeof(__be32) * ARRAY_SIZE(min_values), 0);
@@ -301,10 +292,7 @@ static int get_subaddrs(struct snd_dice *dice)
 	}
 
 	if (be32_to_cpu(pointers[1]) > 0x18) {
-		/*
-		 * Check that the implemented DICE driver specification major
-		 * version number matches.
-		 */
+		 
 		err = snd_fw_transaction(dice->unit, TCODE_READ_QUADLET_REQUEST,
 				DICE_PRIVATE_SPACE +
 				be32_to_cpu(pointers[0]) * 4 + GLOBAL_VERSION,
@@ -321,7 +309,7 @@ static int get_subaddrs(struct snd_dice *dice)
 			goto end;
 		}
 
-		/* Set up later. */
+		 
 		dice->clock_caps = 1;
 	}
 
@@ -329,7 +317,7 @@ static int get_subaddrs(struct snd_dice *dice)
 	dice->tx_offset = be32_to_cpu(pointers[2]) * 4;
 	dice->rx_offset = be32_to_cpu(pointers[4]) * 4;
 
-	/* Old firmware doesn't support these fields. */
+	 
 	if (pointers[7])
 		dice->sync_offset = be32_to_cpu(pointers[6]) * 4;
 	if (pointers[9])
@@ -348,7 +336,7 @@ int snd_dice_transaction_init(struct snd_dice *dice)
 	if (err < 0)
 		return err;
 
-	/* Allocation callback in address space over host controller */
+	 
 	handler->length = 4;
 	handler->address_callback = dice_notification;
 	handler->callback_data = dice;
@@ -358,7 +346,7 @@ int snd_dice_transaction_init(struct snd_dice *dice)
 		return err;
 	}
 
-	/* Register the address space */
+	 
 	err = register_notification_address(dice, true);
 	if (err < 0) {
 		fw_core_remove_address_handler(handler);

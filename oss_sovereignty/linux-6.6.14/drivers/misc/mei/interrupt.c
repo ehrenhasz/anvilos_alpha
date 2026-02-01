@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2003-2018, Intel Corporation. All rights reserved.
- * Intel Management Engine Interface (Intel MEI) Linux driver
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/kthread.h>
@@ -19,13 +16,7 @@
 #include "client.h"
 
 
-/**
- * mei_irq_compl_handler - dispatch complete handlers
- *	for the completed callbacks
- *
- * @dev: mei device
- * @cmpl_list: list of completed cbs
- */
+ 
 void mei_irq_compl_handler(struct mei_device *dev, struct list_head *cmpl_list)
 {
 	struct mei_cl_cb *cb, *next;
@@ -41,14 +32,7 @@ void mei_irq_compl_handler(struct mei_device *dev, struct list_head *cmpl_list)
 }
 EXPORT_SYMBOL_GPL(mei_irq_compl_handler);
 
-/**
- * mei_cl_hbm_equal - check if hbm is addressed to the client
- *
- * @cl: host client
- * @mei_hdr: header of mei client message
- *
- * Return: true if matches, false otherwise
- */
+ 
 static inline int mei_cl_hbm_equal(struct mei_cl *cl,
 			struct mei_msg_hdr *mei_hdr)
 {
@@ -56,13 +40,7 @@ static inline int mei_cl_hbm_equal(struct mei_cl *cl,
 		mei_cl_me_id(cl) == mei_hdr->me_addr;
 }
 
-/**
- * mei_irq_discard_msg  - discard received message
- *
- * @dev: mei device
- * @hdr: message header
- * @discard_len: the length of the message to discard (excluding header)
- */
+ 
 static void mei_irq_discard_msg(struct mei_device *dev, struct mei_msg_hdr *hdr,
 				size_t discard_len)
 {
@@ -71,25 +49,13 @@ static void mei_irq_discard_msg(struct mei_device *dev, struct mei_msg_hdr *hdr,
 				  hdr->extension[dev->rd_msg_hdr_count - 2]);
 		discard_len = 0;
 	}
-	/*
-	 * no need to check for size as it is guarantied
-	 * that length fits into rd_msg_buf
-	 */
+	 
 	mei_read_slots(dev, dev->rd_msg_buf, discard_len);
 	dev_dbg(dev->dev, "discarding message " MEI_HDR_FMT "\n",
 		MEI_HDR_PRM(hdr));
 }
 
-/**
- * mei_cl_irq_read_msg - process client message
- *
- * @cl: reading client
- * @mei_hdr: header of mei client message
- * @meta: extend meta header
- * @cmpl_list: completion list
- *
- * Return: always 0
- */
+ 
 static int mei_cl_irq_read_msg(struct mei_cl *cl,
 			       struct mei_msg_hdr *mei_hdr,
 			       struct mei_ext_meta_hdr *meta,
@@ -200,7 +166,7 @@ static int mei_cl_irq_read_msg(struct mei_cl *cl,
 		length = mei_hdr->extension[mei_data2slots(ext_len)];
 
 	buf_sz = length + cb->buf_idx;
-	/* catch for integer overflow */
+	 
 	if (buf_sz < cb->buf_idx) {
 		cl_err(dev, cl, "message is too big len %d idx %zu\n",
 		       length, cb->buf_idx);
@@ -217,7 +183,7 @@ static int mei_cl_irq_read_msg(struct mei_cl *cl,
 
 	if (mei_hdr->dma_ring) {
 		mei_dma_ring_read(dev, cb->buf.data + cb->buf_idx, length);
-		/*  for DMA read 0 length to generate interrupt to the device */
+		 
 		mei_read_slots(dev, cb->buf.data + cb->buf_idx, 0);
 	} else {
 		mei_read_slots(dev, cb->buf.data + cb->buf_idx, length);
@@ -242,15 +208,7 @@ discard:
 	return 0;
 }
 
-/**
- * mei_cl_irq_disconnect_rsp - send disconnection response message
- *
- * @cl: client
- * @cb: callback block.
- * @cmpl_list: complete list.
- *
- * Return: 0, OK; otherwise, error.
- */
+ 
 static int mei_cl_irq_disconnect_rsp(struct mei_cl *cl, struct mei_cl_cb *cb,
 				     struct list_head *cmpl_list)
 {
@@ -273,16 +231,7 @@ static int mei_cl_irq_disconnect_rsp(struct mei_cl *cl, struct mei_cl_cb *cb,
 	return ret;
 }
 
-/**
- * mei_cl_irq_read - processes client read related operation from the
- *	interrupt thread context - request for flow control credits
- *
- * @cl: client
- * @cb: callback block.
- * @cmpl_list: complete list.
- *
- * Return: 0, OK; otherwise, error.
- */
+ 
 static int mei_cl_irq_read(struct mei_cl *cl, struct mei_cl_cb *cb,
 			   struct list_head *cmpl_list)
 {
@@ -347,16 +296,7 @@ static inline int hdr_is_valid(u32 msg_hdr)
 	return 0;
 }
 
-/**
- * mei_irq_read_handler - bottom half read routine after ISR to
- * handle the read processing.
- *
- * @dev: the device structure
- * @cmpl_list: An instance of our list structure
- * @slots: slots to read.
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 int mei_irq_read_handler(struct mei_device *dev,
 			 struct list_head *cmpl_list, s32 *slots)
 {
@@ -389,7 +329,7 @@ int mei_irq_read_handler(struct mei_device *dev,
 	if (mei_slots2data(*slots) < mei_hdr->length) {
 		dev_err(dev->dev, "less data available than length=%08x.\n",
 				*slots);
-		/* we can't read the message */
+		 
 		ret = -ENODATA;
 		goto end;
 	}
@@ -442,7 +382,7 @@ int mei_irq_read_handler(struct mei_device *dev,
 		mei_hdr->length -= sizeof(dev->rd_msg_hdr[ext_hdr_end]);
 	}
 
-	/*  HBM message */
+	 
 	if (hdr_is_hbm(mei_hdr)) {
 		ret = mei_hbm_dispatch(dev, mei_hdr);
 		if (ret) {
@@ -453,7 +393,7 @@ int mei_irq_read_handler(struct mei_device *dev,
 		goto reset_slots;
 	}
 
-	/* find recipient cl */
+	 
 	list_for_each_entry(cl, &dev->file_list, link) {
 		if (mei_cl_hbm_equal(cl, mei_hdr)) {
 			cl_dbg(dev, cl, "got a message\n");
@@ -462,12 +402,8 @@ int mei_irq_read_handler(struct mei_device *dev,
 		}
 	}
 
-	/* if no recipient cl was found we assume corrupted header */
-	/* A message for not connected fixed address clients
-	 * should be silently discarded
-	 * On power down client may be force cleaned,
-	 * silently discard such messages
-	 */
+	 
+	 
 	if (hdr_is_fixed(mei_hdr) ||
 	    dev->dev_state == MEI_DEV_POWER_DOWN) {
 		mei_irq_discard_msg(dev, mei_hdr, mei_hdr->length);
@@ -479,14 +415,14 @@ int mei_irq_read_handler(struct mei_device *dev,
 	goto end;
 
 reset_slots:
-	/* reset the number of slots and header */
+	 
 	memset(dev->rd_msg_hdr, 0, sizeof(dev->rd_msg_hdr));
 	dev->rd_msg_hdr_count = 0;
 	*slots = mei_count_full_read_slots(dev);
 	if (*slots == -EOVERFLOW) {
-		/* overflow - reset */
+		 
 		dev_err(dev->dev, "resetting due to slots overflow.\n");
-		/* set the event since message has been read */
+		 
 		ret = -ERANGE;
 		goto end;
 	}
@@ -496,15 +432,7 @@ end:
 EXPORT_SYMBOL_GPL(mei_irq_read_handler);
 
 
-/**
- * mei_irq_write_handler -  dispatch write requests
- *  after irq received
- *
- * @dev: the device structure
- * @cmpl_list: An instance of our list structure
- *
- * Return: 0 on success, <0 on failure.
- */
+ 
 int mei_irq_write_handler(struct mei_device *dev, struct list_head *cmpl_list)
 {
 
@@ -524,7 +452,7 @@ int mei_irq_write_handler(struct mei_device *dev, struct list_head *cmpl_list)
 	if (slots == 0)
 		return -EMSGSIZE;
 
-	/* complete all waiting for write CB */
+	 
 	dev_dbg(dev->dev, "complete all waiting for write cb.\n");
 
 	list_for_each_entry_safe(cb, next, &dev->write_waiting_list, list) {
@@ -536,34 +464,34 @@ int mei_irq_write_handler(struct mei_device *dev, struct list_head *cmpl_list)
 		list_move_tail(&cb->list, cmpl_list);
 	}
 
-	/* complete control write list CB */
+	 
 	dev_dbg(dev->dev, "complete control write list cb.\n");
 	list_for_each_entry_safe(cb, next, &dev->ctrl_wr_list, list) {
 		cl = cb->cl;
 		switch (cb->fop_type) {
 		case MEI_FOP_DISCONNECT:
-			/* send disconnect message */
+			 
 			ret = mei_cl_irq_disconnect(cl, cb, cmpl_list);
 			if (ret)
 				return ret;
 
 			break;
 		case MEI_FOP_READ:
-			/* send flow control message */
+			 
 			ret = mei_cl_irq_read(cl, cb, cmpl_list);
 			if (ret)
 				return ret;
 
 			break;
 		case MEI_FOP_CONNECT:
-			/* connect message */
+			 
 			ret = mei_cl_irq_connect(cl, cb, cmpl_list);
 			if (ret)
 				return ret;
 
 			break;
 		case MEI_FOP_DISCONNECT_RSP:
-			/* send disconnect resp */
+			 
 			ret = mei_cl_irq_disconnect_rsp(cl, cb, cmpl_list);
 			if (ret)
 				return ret;
@@ -590,7 +518,7 @@ int mei_irq_write_handler(struct mei_device *dev, struct list_head *cmpl_list)
 		}
 
 	}
-	/* complete  write list CB */
+	 
 	dev_dbg(dev->dev, "complete write list cb.\n");
 	list_for_each_entry_safe(cb, next, &dev->write_list, list) {
 		cl = cb->cl;
@@ -603,11 +531,7 @@ int mei_irq_write_handler(struct mei_device *dev, struct list_head *cmpl_list)
 EXPORT_SYMBOL_GPL(mei_irq_write_handler);
 
 
-/**
- * mei_connect_timeout  - connect/disconnect timeouts
- *
- * @cl: host client
- */
+ 
 static void mei_connect_timeout(struct mei_cl *cl)
 {
 	struct mei_device *dev = cl->dev;
@@ -623,24 +547,13 @@ static void mei_connect_timeout(struct mei_cl *cl)
 }
 
 #define MEI_STALL_TIMER_FREQ (2 * HZ)
-/**
- * mei_schedule_stall_timer - re-arm stall_timer work
- *
- * Schedule stall timer
- *
- * @dev: the device structure
- */
+ 
 void mei_schedule_stall_timer(struct mei_device *dev)
 {
 	schedule_delayed_work(&dev->timer_work, MEI_STALL_TIMER_FREQ);
 }
 
-/**
- * mei_timer - timer function.
- *
- * @work: pointer to the work_struct structure
- *
- */
+ 
 void mei_timer(struct work_struct *work)
 {
 	struct mei_cl *cl;
@@ -650,7 +563,7 @@ void mei_timer(struct work_struct *work)
 
 	mutex_lock(&dev->device_lock);
 
-	/* Catch interrupt stalls during HBM init handshake */
+	 
 	if (dev->dev_state == MEI_DEV_INIT_CLIENTS &&
 	    dev->hbm_state != MEI_HBM_IDLE) {
 
@@ -668,7 +581,7 @@ void mei_timer(struct work_struct *work)
 	if (dev->dev_state != MEI_DEV_ENABLED)
 		goto out;
 
-	/*** connect/disconnect timeouts ***/
+	 
 	list_for_each_entry(cl, &dev->file_list, link) {
 		if (cl->timer_count) {
 			if (--cl->timer_count == 0) {

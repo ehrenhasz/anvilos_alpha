@@ -1,28 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Texas Instruments N-Port Ethernet Switch Address Lookup Engine APIs
- *
- * Copyright (C) 2012 Texas Instruments
- *
- */
+ 
+ 
 #ifndef __TI_CPSW_ALE_H__
 #define __TI_CPSW_ALE_H__
 
 struct cpsw_ale_params {
 	struct device		*dev;
 	void __iomem		*ale_regs;
-	unsigned long		ale_ageout;	/* in secs */
+	unsigned long		ale_ageout;	 
 	unsigned long		ale_entries;
 	unsigned long		ale_ports;
-	/* NU Switch has specific handling as number of bits in ALE entries
-	 * are different than other versions of ALE. Also there are specific
-	 * registers for unknown vlan specific fields. So use nu_switch_ale
-	 * to identify this hardware.
-	 */
+	 
 	bool			nu_switch_ale;
-	/* mask bit used in NU Switch ALE is 3 bits instead of 8 bits. So
-	 * pass it from caller.
-	 */
+	 
 	u32			major_ver_mask;
 	const char		*dev_id;
 	unsigned long		bus_freq;
@@ -36,7 +25,7 @@ struct cpsw_ale {
 	unsigned long		ageout;
 	u32			version;
 	u32			features;
-	/* These bits are different on NetCP NU Switch ALE */
+	 
 	u32			port_mask_bits;
 	u32			port_num_bits;
 	u32			vlan_field_bits;
@@ -45,7 +34,7 @@ struct cpsw_ale {
 };
 
 enum cpsw_ale_control {
-	/* global */
+	 
 	ALE_ENABLE,
 	ALE_CLEAR,
 	ALE_AGEOUT,
@@ -58,7 +47,7 @@ enum cpsw_ale_control {
 	ALE_VLAN_AWARE,
 	ALE_AUTH_ENABLE,
 	ALE_RATE_LIMIT,
-	/* port controls */
+	 
 	ALE_PORT_STATE,
 	ALE_PORT_DROP_UNTAGGED,
 	ALE_PORT_DROP_UNKNOWN_VLAN,
@@ -84,7 +73,7 @@ enum cpsw_ale_port_state {
 	ALE_PORT_STATE_FORWARD	= 0x03,
 };
 
-/* ALE unicast entry flags - passed into cpsw_ale_add_ucast() */
+ 
 #define ALE_SECURE			BIT(0)
 #define ALE_BLOCKED			BIT(1)
 #define ALE_SUPER			BIT(2)

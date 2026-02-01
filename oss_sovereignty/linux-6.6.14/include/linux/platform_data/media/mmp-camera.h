@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Information for the Marvell Armada MMP camera
- */
+ 
+ 
 
 #include <media/v4l2-mediabus.h>
 
@@ -13,13 +11,11 @@ enum dphy3_algo {
 
 struct mmp_camera_platform_data {
 	enum v4l2_mbus_type bus_type;
-	int mclk_src;	/* which clock source the MCLK derives from */
-	int mclk_div;	/* Clock Divider Value for MCLK */
-	/*
-	 * MIPI support
-	 */
-	int dphy[3];		/* DPHY: CSI2_DPHY3, CSI2_DPHY5, CSI2_DPHY6 */
-	enum dphy3_algo dphy3_algo;	/* algos for calculate CSI2_DPHY3 */
-	int lane;		/* ccic used lane number; 0 means DVP mode */
+	int mclk_src;	 
+	int mclk_div;	 
+	 
+	int dphy[3];		 
+	enum dphy3_algo dphy3_algo;	 
+	int lane;		 
 	int lane_clk;
 };

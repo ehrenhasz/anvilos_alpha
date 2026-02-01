@@ -1,12 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 1998-2008 VIA Technologies, Inc. All Rights Reserved.
- * Copyright 2001-2008 S3 Graphics, Inc. All Rights Reserved.
- * Copyright 2011 Florian Tobias Schandinat <FlorianSchandinat@gmx.de>
- */
-/*
- * clock and PLL management functions
- */
+ 
+ 
+ 
 
 #ifndef __VIA_CLOCK_H__
 #define __VIA_CLOCK_H__
@@ -58,4 +52,4 @@ static inline u32 get_pll_output_frequency(u32 ref_freq,
 
 void via_clock_init(struct via_clock *clock, int gfx_chip);
 
-#endif /* __VIA_CLOCK_H__ */
+#endif  

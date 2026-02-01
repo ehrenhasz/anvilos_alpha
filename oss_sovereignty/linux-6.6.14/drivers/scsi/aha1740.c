@@ -1,41 +1,4 @@
-/*  $Id$
- *  1993/03/31
- *  linux/kernel/aha1740.c
- *
- *  Based loosely on aha1542.c which is
- *  Copyright (C) 1992  Tommy Thorn and
- *  Modified by Eric Youngdale
- *
- *  This file is aha1740.c, written and
- *  Copyright (C) 1992,1993  Brad McLean
- *  brad@saturn.gaylord.com or brad@bradpc.gaylord.com.
- *  
- *  Modifications to makecode and queuecommand
- *  for proper handling of multiple devices courteously
- *  provided by Michael Weller, March, 1993
- *
- *  Multiple adapter support, extended translation detection,
- *  update to current scsi subsystem changes, proc fs support,
- *  working (!) module support based on patches from Andreas Arens,
- *  by Andreas Degert <ad@papyrus.hamburg.com>, 2/1997
- *
- * aha1740_makecode may still need even more work
- * if it doesn't work for your devices, take a look.
- *
- * Reworked for new_eh and new locking by Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- * Converted to EISA and generic DMA APIs by Marc Zyngier
- * <maz@wild-wind.fr.eu.org>, 4/2003.
- *
- * Shared interrupt support added by Rask Ingemann Lambertsen
- * <rask@sygehus.dk>, 10/2003
- *
- * For the avoidance of doubt the "preferred form" of this code is one which
- * is in an open non patent encumbered format. Where cryptographic key signing
- * forms part of the process of creating an executable the information
- * including keys needed to generate an equivalently functional executable
- * are deemed to be part of the source code.
- */
+ 
 
 #include <linux/blkdev.h>
 #include <linux/interrupt.h>
@@ -63,10 +26,7 @@
 #include <scsi/scsi_tcq.h>
 #include "aha1740.h"
 
-/* IF YOU ARE HAVING PROBLEMS WITH THIS DRIVER, AND WANT TO WATCH
-   IT WORK, THEN:
-#define DEBUG
-*/
+ 
 #ifdef DEBUG
 #define DEB(x) x
 #else
@@ -124,18 +84,18 @@ static int aha1740_makecode(unchar *sense, unchar *status)
 {
 	struct statusword
 	{
-		ushort	don:1,	/* Command Done - No Error */
-			du:1,	/* Data underrun */
-		    :1,	qf:1,	/* Queue full */
-		        sc:1,	/* Specification Check */
-		        dor:1,	/* Data overrun */
-		        ch:1,	/* Chaining Halted */
-		        intr:1,	/* Interrupt issued */
-		        asa:1,	/* Additional Status Available */
-		        sns:1,	/* Sense information Stored */
-		    :1,	ini:1,	/* Initialization Required */
-			me:1,	/* Major error or exception */
-		    :1,	eca:1,  /* Extended Contingent alliance */
+		ushort	don:1,	 
+			du:1,	 
+		    :1,	qf:1,	 
+		        sc:1,	 
+		        dor:1,	 
+		        ch:1,	 
+		        intr:1,	 
+		        asa:1,	 
+		        sns:1,	 
+		    :1,	ini:1,	 
+			me:1,	 
+		    :1,	eca:1,   
 		    :1;
 	} status_word;
 	int retval = DID_OK;
@@ -146,19 +106,17 @@ static int aha1740_makecode(unchar *sense, unchar *status)
 	       status[0], status[1], status[2], status[3],
 	       sense[0], sense[1], sense[2], sense[3]);
 #endif
-	if (!status_word.don) { /* Anything abnormal was detected */
+	if (!status_word.don) {  
 		if ( (status[1]&0x18) || status_word.sc ) {
-			/*Additional info available*/
-			/* Use the supplied info for further diagnostics */
+			 
+			 
 			switch ( status[2] ) {
 			case 0x12:
 				if ( status_word.dor )
-					retval=DID_ERROR; /* It's an Overrun */
-				/* If not overrun, assume underrun and
-				 * ignore it! */
+					retval=DID_ERROR;  
+				 
 				break;
-			case 0x00: /* No info, assume no error, should
-				    * not occur */
+			case 0x00:  
 				break;
 			case 0x11:
 			case 0x21:
@@ -170,45 +128,39 @@ static int aha1740_makecode(unchar *sense, unchar *status)
 			case 0x04:
 			case 0x05:
 				retval=DID_ABORT;
-				/* Either by this driver or the
-				 * AHA1740 itself */
+				 
 				break;
 			default:
-				retval=DID_ERROR; /* No further
-						   * diagnostics
-						   * possible */
+				retval=DID_ERROR;  
 			}
 		} else {
-			/* Michael suggests, and Brad concurs: */
+			 
 			if ( status_word.qf ) {
-				retval = DID_TIME_OUT; /* forces a redo */
-				/* I think this specific one should
-				 * not happen -Brad */
+				retval = DID_TIME_OUT;  
+				 
 				printk("aha1740.c: WARNING: AHA1740 queue overflow!\n");
 			} else
 				if ( status[0]&0x60 ) {
-					 /* Didn't find a better error */
+					  
 					retval = DID_ERROR;
 				}
-			/* In any other case return DID_OK so for example
-			   CONDITION_CHECKS make it through to the appropriate
-			   device driver */
+			 
 		}
 	}
-	/* Under all circumstances supply the target status -Michael */
+	 
 	return status[3] | retval << 16;
 }
 
 static int aha1740_test_port(unsigned int base)
 {
 	if ( inb(PORTADR(base)) & PORTADDR_ENH )
-		return 1;   /* Okay, we're all set */
+		return 1;    
 	
 	printk("aha174x: Board detected, but not in enhanced mode, so disabled it.\n");
 	return 0;
 }
 
-/* A "high" level interrupt handler */
+ 
 static irqreturn_t aha1740_intr_handle(int irq, void *dev_id)
 {
 	struct Scsi_Host *host = (struct Scsi_Host *) dev_id;
@@ -235,13 +187,13 @@ static irqreturn_t aha1740_intr_handle(int irq, void *dev_id)
 		DEB(printk("aha1740_intr top of loop.\n"));
 		adapstat = inb(G2INTST(base));
 		ecbptr = ecb_dma_to_cpu (host, inl(MBOXIN0(base)));
-		outb(G2CNTRL_IRST,G2CNTRL(base)); /* interrupt reset */
+		outb(G2CNTRL_IRST,G2CNTRL(base));  
       
 		switch ( adapstat & G2INTST_MASK ) {
 		case	G2INTST_CCBRETRY:
 		case	G2INTST_CCBERROR:
 		case	G2INTST_CCBGOOD:
-			/* Host Ready -> Mailbox in complete */
+			 
 			outb(G2CNTRL_HRDY,G2CNTRL(base));
 			if (!ecbptr) {
 				printk("Aha1740 null ecbptr in interrupt (%x,%x,%x,%d)\n",
@@ -259,17 +211,13 @@ static irqreturn_t aha1740_intr_handle(int irq, void *dev_id)
 			sgptr = (struct aha1740_sg *) SCtmp->host_scribble;
 			scsi_dma_unmap(SCtmp);
 
-			/* Free the sg block */
+			 
 			dma_free_coherent (&edev->dev,
 					   sizeof (struct aha1740_sg),
 					   SCtmp->host_scribble,
 					   sgptr->sg_dma_addr);
 	    
-			/* Fetch the sense data, and tuck it away, in
-			   the required slot.  The Adaptec
-			   automatically fetches it, and there is no
-			   guarantee that we will still have it in the
-			   cdb when we come back */
+			 
 			if ( (adapstat & G2INTST_MASK) == G2INTST_CCBERROR ) {
 				memcpy_and_pad(SCtmp->sense_buffer,
 					       SCSI_SENSE_BUFFERSIZE,
@@ -291,7 +239,7 @@ static irqreturn_t aha1740_intr_handle(int irq, void *dev_id)
 			
 		case	G2INTST_HARDFAIL:
 			printk(KERN_ALERT "aha1740 hardware failure!\n");
-			panic("aha1740.c");	/* Goodbye */
+			panic("aha1740.c");	 
 			
 		case	G2INTST_ASNEVENT:
 			printk("aha1740 asynchronous event: %02x %02x %02x %02x %02x\n",
@@ -299,17 +247,17 @@ static irqreturn_t aha1740_intr_handle(int irq, void *dev_id)
 			       inb(MBOXIN0(base)),
 			       inb(MBOXIN1(base)),
 			       inb(MBOXIN2(base)),
-			       inb(MBOXIN3(base))); /* Say What? */
-			/* Host Ready -> Mailbox in complete */
+			       inb(MBOXIN3(base)));  
+			 
 			outb(G2CNTRL_HRDY,G2CNTRL(base));
 			break;
 			
 		case	G2INTST_CMDGOOD:
-			/* set immediate command success flag here: */
+			 
 			break;
 			
 		case	G2INTST_CMDERROR:
-			/* Set immediate command failure flag here: */
+			 
 			break;
 		}
 		number_serviced++;
@@ -352,9 +300,9 @@ static int aha1740_queuecommand_lck(struct scsi_cmnd *SCpnt)
 	printk("\n");
 #endif
 
-	/* locate an available ecb */
+	 
 	spin_lock_irqsave(SCpnt->device->host->host_lock, flags);
-	ecbno = host->last_ecb_used + 1; /* An optimization */
+	ecbno = host->last_ecb_used + 1;  
 	if (ecbno >= AHA1740_ECBS)
 		ecbno = 0;
 	do {
@@ -368,8 +316,7 @@ static int aha1740_queuecommand_lck(struct scsi_cmnd *SCpnt)
 	if (host->ecb[ecbno].cmdw)
 		panic("Unable to find empty ecb for aha1740.\n");
 
-	host->ecb[ecbno].cmdw = AHA1740CMD_INIT; /* SCSI Initiator Command
-						    doubles as reserved flag */
+	host->ecb[ecbno].cmdw = AHA1740CMD_INIT;  
 
 	host->last_ecb_used = ecbno;    
 	spin_unlock_irqrestore(SCpnt->device->host->host_lock, flags);
@@ -378,9 +325,7 @@ static int aha1740_queuecommand_lck(struct scsi_cmnd *SCpnt)
 	printk("Sending command (%d %x)...", ecbno, done);
 #endif
 
-	host->ecb[ecbno].cdblen = SCpnt->cmd_len; /* SCSI Command
-						   * Descriptor Block
-						   * Length */
+	host->ecb[ecbno].cdblen = SCpnt->cmd_len;  
 
 	direction = 0;
 	if (*cmd == READ_10 || *cmd == READ_6)
@@ -408,8 +353,7 @@ static int aha1740_queuecommand_lck(struct scsi_cmnd *SCpnt)
 		int i;
 		DEB(unsigned char * ptr);
 
-		host->ecb[ecbno].sg = 1;  /* SCSI Initiator Command
-					   * w/scatter-gather*/
+		host->ecb[ecbno].sg = 1;   
 		cptr = sgptr->sg_chain;
 		scsi_for_each_sg(SCpnt, sg, nseg, i) {
 			cptr[i].datalen = sg_dma_len (sg);
@@ -427,9 +371,9 @@ static int aha1740_queuecommand_lck(struct scsi_cmnd *SCpnt)
 		host->ecb[ecbno].dataptr = 0;
 	}
 	host->ecb[ecbno].lun = SCpnt->device->lun;
-	host->ecb[ecbno].ses = 1; /* Suppress underrun errors */
+	host->ecb[ecbno].ses = 1;  
 	host->ecb[ecbno].dir = direction;
-	host->ecb[ecbno].ars = 1; /* Yes, get the sense on an error */
+	host->ecb[ecbno].ars = 1;  
 	host->ecb[ecbno].senselen = 12;
 	host->ecb[ecbno].senseptr = ecb_cpu_to_dma (SCpnt->device->host,
 						    host->ecb[ecbno].sense);
@@ -447,20 +391,10 @@ static int aha1740_queuecommand_lck(struct scsi_cmnd *SCpnt)
 	printk("\n");
 #endif
 	if (done) {
-	/* The Adaptec Spec says the card is so fast that the loops
-           will only be executed once in the code below. Even if this
-           was true with the fastest processors when the spec was
-           written, it doesn't seem to be true with today's fast
-           processors. We print a warning if the code is executed more
-           often than LOOPCNT_WARN. If this happens, it should be
-           investigated. If the count reaches LOOPCNT_MAX, we assume
-           something is broken; since there is no way to return an
-           error (the return value is ignored by the mid-level scsi
-           layer) we have to panic (and maybe that's the best thing we
-           can do then anyhow). */
+	 
 
-#define LOOPCNT_WARN 10		/* excessive mbxout wait -> syslog-msg */
-#define LOOPCNT_MAX 1000000	/* mbxout deadlock -> panic() after ~ 2 sec. */
+#define LOOPCNT_WARN 10		 
+#define LOOPCNT_MAX 1000000	 
 		int loopcnt;
 		unsigned int base = SCpnt->device->host->io_port;
 		DEB(printk("aha1740[%d] critical section\n",ecbno));
@@ -484,7 +418,7 @@ static int aha1740_queuecommand_lck(struct scsi_cmnd *SCpnt)
 			if (loopcnt == LOOPCNT_MAX)
 				panic("aha1740.c: attn wait failed!\n");
 		}
-		outb(ATTN_START | (target & 7), ATTN(base)); /* Start it up */
+		outb(ATTN_START | (target & 7), ATTN(base));  
 		spin_unlock_irqrestore(SCpnt->device->host->host_lock, flags);
 		DEB(printk("aha1740[%d] request queued.\n",ecbno));
 	} else
@@ -494,8 +428,7 @@ static int aha1740_queuecommand_lck(struct scsi_cmnd *SCpnt)
 
 static DEF_SCSI_QCMD(aha1740_queuecommand)
 
-/* Query the board for its irq_level and irq_type.  Nothing else matters
-   in enhanced mode on an EISA bus. */
+ 
 
 static void aha1740_getconfig(unsigned int base, unsigned int *irq_level,
 			      unsigned int *irq_type,
@@ -531,14 +464,7 @@ static int aha1740_biosparam(struct scsi_device *sdev,
 
 static int aha1740_eh_abort_handler (struct scsi_cmnd *dummy)
 {
-/*
- * From Alan Cox :
- * The AHA1740 has firmware handled abort/reset handling. The "head in
- * sand" kernel code is correct for once 8)
- *
- * So we define a dummy handler just to keep the kernel SCSI code as
- * quiet as possible...
- */
+ 
 
 	return SUCCESS;
 }
@@ -567,14 +493,14 @@ static int aha1740_probe (struct device *dev)
 	DEB(printk("aha1740_probe: \n"));
 	
 	slotbase = edev->base_addr + EISA_VENDOR_ID_OFFSET;
-	if (!request_region(slotbase, SLOTSIZE, "aha1740")) /* See if in use */
+	if (!request_region(slotbase, SLOTSIZE, "aha1740"))  
 		return -EBUSY;
 	if (!aha1740_test_port(slotbase))
 		goto err_release_region;
 	aha1740_getconfig(slotbase,&irq_level,&irq_type,&translation);
 	if ((inb(G2STAT(slotbase)) &
 	     (G2STAT_MBXOUT|G2STAT_BUSY)) != G2STAT_MBXOUT) {
-		/* If the card isn't ready, hard reset it */
+		 
 		outb(G2CNTRL_HRST, G2CNTRL(slotbase));
 		outb(0, G2CNTRL(slotbase));
 	}
@@ -651,10 +577,10 @@ static int aha1740_remove (struct device *dev)
 }
 
 static struct eisa_device_id aha1740_ids[] = {
-	{ "ADP0000" },		/* 1740  */
-	{ "ADP0001" },		/* 1740A */
-	{ "ADP0002" },		/* 1742A */
-	{ "ADP0400" },		/* 1744  */
+	{ "ADP0000" },		 
+	{ "ADP0001" },		 
+	{ "ADP0002" },		 
+	{ "ADP0400" },		 
 	{ "" }
 };
 MODULE_DEVICE_TABLE(eisa, aha1740_ids);

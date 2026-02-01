@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell Kirkwood pinctrl driver based on mvebu pinctrl core
- *
- * Author: Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>

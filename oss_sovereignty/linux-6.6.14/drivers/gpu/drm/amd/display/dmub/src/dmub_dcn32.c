@@ -1,27 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "../dmub_srv.h"
 #include "dmub_reg.h"
@@ -96,14 +73,7 @@ void dmub_dcn32_reset(struct dmub_srv *dmub)
 
 		dmub->hw_funcs.set_gpint(dmub, cmd);
 
-		/**
-		 * Timeout covers both the ACK and the wait
-		 * for remaining work to finish.
-		 *
-		 * This is mostly bound by the PHY disable sequence.
-		 * Each register check will be greater than 1us, so
-		 * don't bother using udelay.
-		 */
+		 
 
 		for (i = 0; i < timeout; ++i) {
 			if (dmub->hw_funcs.is_gpint_acked(dmub, cmd))
@@ -116,7 +86,7 @@ void dmub_dcn32_reset(struct dmub_srv *dmub)
 				break;
 		}
 
-		/* Force reset in case we timed out, DMCUB is likely hung. */
+		 
 	}
 
 	REG_UPDATE(DMCUB_CNTL2, DMCUB_SOFT_RESET, 1);
@@ -130,7 +100,7 @@ void dmub_dcn32_reset(struct dmub_srv *dmub)
 	REG_WRITE(DMCUB_OUTBOX0_WPTR, 0);
 	REG_WRITE(DMCUB_SCRATCH0, 0);
 
-	/* Clear the GPINT command manually so we don't reset again. */
+	 
 	cmd.all = 0;
 	dmub->hw_funcs.set_gpint(dmub, cmd);
 }
@@ -290,19 +260,13 @@ void dmub_dcn32_setup_out_mailbox(struct dmub_srv *dmub,
 
 uint32_t dmub_dcn32_get_outbox1_wptr(struct dmub_srv *dmub)
 {
-	/**
-	 * outbox1 wptr register is accessed without locks (dal & dc)
-	 * and to be called only by dmub_srv_stat_get_notification()
-	 */
+	 
 	return REG_READ(DMCUB_OUTBOX1_WPTR);
 }
 
 void dmub_dcn32_set_outbox1_rptr(struct dmub_srv *dmub, uint32_t rptr_offset)
 {
-	/**
-	 * outbox1 rptr register is accessed without locks (dal & dc)
-	 * and to be called only by dmub_srv_stat_get_notification()
-	 */
+	 
 	REG_WRITE(DMCUB_OUTBOX1_RPTR, rptr_offset);
 }
 
@@ -475,14 +439,7 @@ void dmub_dcn32_get_diagnostic_data(struct dmub_srv *dmub, struct dmub_diagnosti
 }
 void dmub_dcn32_configure_dmub_in_system_memory(struct dmub_srv *dmub)
 {
-	/* DMCUB_REGION3_TMR_AXI_SPACE values:
-	 * 0b011 (0x3) - FB physical address
-	 * 0b100 (0x4) - GPU virtual address
-	 *
-	 * Default value is 0x3 (FB Physical address for TMR). When programming
-	 * DMUB to be in system memory, change to 0x4. The system memory allocated
-	 * is accessible by both GPU and CPU, so we use GPU virtual address.
-	 */
+	 
 	REG_WRITE(DMCUB_REGION3_TMR_AXI_SPACE, 0x4);
 }
 

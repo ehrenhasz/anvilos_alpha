@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 2012-2013 by Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * This software has been sponsored by Sophos Astaro <http://www.sophos.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -21,7 +17,7 @@
 #include <net/netfilter/nf_tables.h>
 #include <net/netfilter/nf_log.h>
 
-/* Used for matches where *info is larger than X byte */
+ 
 #define NFT_MATCH_LARGE_THRESH	192
 
 struct nft_xt_match_priv {
@@ -223,12 +219,7 @@ static int nft_parse_compat(const struct nlattr *attr, u16 *proto, bool *inv)
 
 static void nft_compat_wait_for_destructors(void)
 {
-	/* xtables matches or targets can have side effects, e.g.
-	 * creation/destruction of /proc files.
-	 * The xt ->destroy functions are run asynchronously from
-	 * work queue.  If we have pending invocations we thus
-	 * need to wait for those to finish.
-	 */
+	 
 	nf_tables_trans_destroy_flush_work();
 }
 
@@ -275,7 +266,7 @@ nft_target_init(const struct nft_ctx *ctx, const struct nft_expr *expr,
 		return ret;
 	}
 
-	/* The standard target cannot be used */
+	 
 	if (!target->target)
 		return -EINVAL;
 
@@ -417,7 +408,7 @@ static const struct nla_policy nft_match_policy[NFTA_MATCH_MAX + 1] = {
 	[NFTA_MATCH_INFO]	= { .type = NLA_BINARY },
 };
 
-/* struct xt_mtchk_param and xt_tgchk_param look very similar */
+ 
 static void
 nft_match_set_mtchk_param(struct xt_mtchk_param *par, const struct nft_ctx *ctx,
 			  struct xt_match *match, void *info,
@@ -691,7 +682,7 @@ static int nfnl_compat_get_rcu(struct sk_buff *skb,
 		goto out_put;
 	}
 
-	/* include the best revision for this extension in the message */
+	 
 	if (nfnl_compat_fill_info(skb2, NETLINK_CB(skb).portid,
 				  info->nlh->nlmsg_seq,
 				  NFNL_MSG_TYPE(info->nlh->nlmsg_type),

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Changes:
- * Arnaldo Carvalho de Melo <acme@conectiva.com.br> 08/23/2000
- * - get rid of some verify_areas and use __copy*user and __get/put_user
- *   for the ones that remain
- */
+
+ 
 #include <linux/module.h>
 #include <linux/blkdev.h>
 #include <linux/interrupt.h>
@@ -32,14 +27,7 @@
 
 #define MAX_BUF PAGE_SIZE
 
-/**
- * ioctl_probe  --  return host identification
- * @host:	host to identify
- * @buffer:	userspace buffer for identification
- *
- * Return an identifying string at @buffer, if @buffer is non-NULL, filling
- * to the length stored at * (int *) @buffer.
- */
+ 
 static int ioctl_probe(struct Scsi_Host *host, void __user *buffer)
 {
 	unsigned int len, slen;
@@ -96,17 +84,17 @@ static int ioctl_internal_command(struct scsi_device *sdev, char *cmd,
 					    "asc=0x%x ascq=0x%x\n",
 					    sshdr.asc, sshdr.ascq);
 			break;
-		case NOT_READY:	/* This happens if there is no disc in drive */
+		case NOT_READY:	 
 			if (sdev->removable)
 				break;
 			fallthrough;
 		case UNIT_ATTENTION:
 			if (sdev->removable) {
 				sdev->changed = 1;
-				result = 0;	/* This is no longer considered an error */
+				result = 0;	 
 				break;
 			}
-			fallthrough;	/* for non-removable media */
+			fallthrough;	 
 		default:
 			sdev_printk(KERN_INFO, sdev,
 				    "ioctl_internal_command return code = %x\n",
@@ -144,16 +132,7 @@ int scsi_set_medium_removal(struct scsi_device *sdev, char state)
 }
 EXPORT_SYMBOL(scsi_set_medium_removal);
 
-/*
- * The scsi_ioctl_get_pci() function places into arg the value
- * pci_dev::slot_name (8 characters) for the PCI device (if any).
- * Returns: 0 on success
- *          -ENXIO if there isn't a PCI device pointer
- *                 (could be because the SCSI driver hasn't been
- *                  updated yet, or because it isn't a SCSI
- *                  device)
- *          any copy_to_user() error on failure there
- */
+ 
 static int scsi_ioctl_get_pci(struct scsi_device *sdev, void __user *arg)
 {
 	struct device *dev = scsi_get_device(sdev->host);
@@ -164,8 +143,7 @@ static int scsi_ioctl_get_pci(struct scsi_device *sdev, void __user *arg)
 
 	name = dev_name(dev);
 
-	/* compatibility with old ioctl which only returned
-	 * 20 characters */
+	 
         return copy_to_user(arg, name, min(strlen(name), (size_t)20))
 		? -EFAULT: 0;
 }
@@ -209,10 +187,7 @@ static int sg_set_reserved_size(struct scsi_device *sdev, int __user *p)
 	return 0;
 }
 
-/*
- * will always return that we are ATAPI even for a real SCSI drive, I'm not
- * so sure this is worth doing anything about (why would you care??)
- */
+ 
 static int sg_emulated_host(struct request_queue *q, int __user *p)
 {
 	return put_user(1, p);
@@ -242,21 +217,16 @@ static int scsi_send_start_stop(struct scsi_device *sdev, int data)
 				      NORMAL_RETRIES);
 }
 
-/*
- * Check if the given command is allowed.
- *
- * Only a subset of commands are allowed for unprivileged users. Commands used
- * to format the media, update the firmware, etc. are not permitted.
- */
+ 
 bool scsi_cmd_allowed(unsigned char *cmd, bool open_for_write)
 {
-	/* root can do any command. */
+	 
 	if (capable(CAP_SYS_RAWIO))
 		return true;
 
-	/* Anybody who can open the device can do a read-safe command */
+	 
 	switch (cmd[0]) {
-	/* Basic read-only commands */
+	 
 	case TEST_UNIT_READY:
 	case REQUEST_SENSE:
 	case READ_6:
@@ -265,7 +235,7 @@ bool scsi_cmd_allowed(unsigned char *cmd, bool open_for_write)
 	case READ_16:
 	case READ_BUFFER:
 	case READ_DEFECT_DATA:
-	case READ_CAPACITY: /* also GPCMD_READ_CDVD_CAPACITY */
+	case READ_CAPACITY:  
 	case READ_LONG:
 	case INQUIRY:
 	case MODE_SENSE:
@@ -277,15 +247,15 @@ bool scsi_cmd_allowed(unsigned char *cmd, bool open_for_write)
 	case REPORT_LUNS:
 	case SERVICE_ACTION_IN_16:
 	case RECEIVE_DIAGNOSTIC:
-	case MAINTENANCE_IN: /* also GPCMD_SEND_KEY, which is a write command */
+	case MAINTENANCE_IN:  
 	case GPCMD_READ_BUFFER_CAPACITY:
-	/* Audio CD commands */
+	 
 	case GPCMD_PLAY_CD:
 	case GPCMD_PLAY_AUDIO_10:
 	case GPCMD_PLAY_AUDIO_MSF:
 	case GPCMD_PLAY_AUDIO_TI:
 	case GPCMD_PAUSE_RESUME:
-	/* CD/DVD data reading */
+	 
 	case GPCMD_READ_CD:
 	case GPCMD_READ_CD_MSF:
 	case GPCMD_READ_DISC_INFO:
@@ -302,10 +272,10 @@ bool scsi_cmd_allowed(unsigned char *cmd, bool open_for_write)
 	case GPCMD_GET_PERFORMANCE:
 	case GPCMD_SEEK:
 	case GPCMD_STOP_PLAY_SCAN:
-	/* ZBC */
+	 
 	case ZBC_IN:
 		return true;
-	/* Basic writing commands */
+	 
 	case WRITE_6:
 	case WRITE_10:
 	case WRITE_VERIFY:
@@ -336,7 +306,7 @@ bool scsi_cmd_allowed(unsigned char *cmd, bool open_for_write)
 	case GPCMD_LOAD_UNLOAD:
 	case GPCMD_SET_STREAMING:
 	case GPCMD_SET_READ_AHEAD:
-	/* ZBC */
+	 
 	case ZBC_OUT:
 		return open_for_write;
 	default:
@@ -375,9 +345,7 @@ static int scsi_complete_sghdr_rq(struct request *rq, struct sg_io_hdr *hdr,
 	struct scsi_cmnd *scmd = blk_mq_rq_to_pdu(rq);
 	int r, ret = 0;
 
-	/*
-	 * fill in all the output members
-	 */
+	 
 	hdr->status = scmd->result & 0xff;
 	hdr->masked_status = sg_status_byte(scmd->result);
 	hdr->msg_status = COMMAND_COMPLETE;
@@ -475,32 +443,7 @@ out_put_request:
 	return ret;
 }
 
-/**
- * sg_scsi_ioctl  --  handle deprecated SCSI_IOCTL_SEND_COMMAND ioctl
- * @q:		request queue to send scsi commands down
- * @open_for_write: is the file / block device opened for writing?
- * @sic:	userspace structure describing the command to perform
- *
- * Send down the scsi command described by @sic to the device below
- * the request queue @q.
- *
- * Notes:
- *   -  This interface is deprecated - users should use the SG_IO
- *      interface instead, as this is a more flexible approach to
- *      performing SCSI commands on a device.
- *   -  The SCSI command length is determined by examining the 1st byte
- *      of the given command. There is no way to override this.
- *   -  Data transfers are limited to PAGE_SIZE
- *   -  The length (x + y) must be at least OMAX_SB_LEN bytes long to
- *      accommodate the sense buffer when an error occurs.
- *      The sense buffer is truncated to OMAX_SB_LEN (16) bytes so that
- *      old code will not be surprised.
- *   -  If a Unix error occurs (e.g. ENOMEM) then the user will receive
- *      a negative return and the Unix error code in 'errno'.
- *      If the SCSI command succeeds then 0 is returned.
- *      Positive numbers returned are the compacted SCSI error codes (4
- *      bytes in one int) where the lowest byte is the SCSI status.
- */
+ 
 static int sg_scsi_ioctl(struct request_queue *q, bool open_for_write,
 		struct scsi_ioctl_command __user *sic)
 {
@@ -513,9 +456,7 @@ static int sg_scsi_ioctl(struct request_queue *q, bool open_for_write,
 	if (!sic)
 		return -EINVAL;
 
-	/*
-	 * get in an out lengths, verify they don't exceed a page worth of data
-	 */
+	 
 	if (get_user(in_len, &sic->inlen))
 		return -EFAULT;
 	if (get_user(out_len, &sic->outlen))
@@ -542,9 +483,7 @@ static int sg_scsi_ioctl(struct request_queue *q, bool open_for_write,
 
 	cmdlen = COMMAND_SIZE(opcode);
 
-	/*
-	 * get command and data to send to device, if any
-	 */
+	 
 	err = -EFAULT;
 	scmd->cmd_len = cmdlen;
 	if (copy_from_user(scmd->cmnd, sic->data, cmdlen))
@@ -557,7 +496,7 @@ static int sg_scsi_ioctl(struct request_queue *q, bool open_for_write,
 	if (!scsi_cmd_allowed(scmd->cmnd, open_for_write))
 		goto error;
 
-	/* default.  possible overridden later */
+	 
 	scmd->allowed = 5;
 
 	switch (opcode) {
@@ -592,10 +531,10 @@ static int sg_scsi_ioctl(struct request_queue *q, bool open_for_write,
 
 	blk_execute_rq(rq, false);
 
-	err = scmd->result & 0xff;	/* only 8 bit SCSI status */
+	err = scmd->result & 0xff;	 
 	if (err) {
 		if (scmd->sense_len && scmd->sense_buffer) {
-			/* limit sense len for backward compatibility */
+			 
 			if (copy_to_user(sic->data, scmd->sense_buffer,
 					 min(scmd->sense_len, 16U)))
 				err = -EFAULT;
@@ -849,25 +788,14 @@ static int scsi_ioctl_sg_io(struct scsi_device *sdev, bool open_for_write,
 	return error;
 }
 
-/**
- * scsi_ioctl - Dispatch ioctl to scsi device
- * @sdev: scsi device receiving ioctl
- * @open_for_write: is the file / block device opened for writing?
- * @cmd: which ioctl is it
- * @arg: data associated with ioctl
- *
- * Description: The scsi_ioctl() function differs from most ioctls in that it
- * does not take a major/minor number as the dev field.  Rather, it takes
- * a pointer to a &struct scsi_device.
- */
+ 
 int scsi_ioctl(struct scsi_device *sdev, bool open_for_write, int cmd,
 		void __user *arg)
 {
 	struct request_queue *q = sdev->request_queue;
 	struct scsi_sense_hdr sense_hdr;
 
-	/* Check for deprecated ioctls ... all the ioctls which don't
-	 * follow the new unique numbering scheme are deprecated */
+	 
 	switch (cmd) {
 	case SCSI_IOCTL_SEND_COMMAND:
 	case SCSI_IOCTL_TEST_UNIT_READY:
@@ -941,9 +869,7 @@ int scsi_ioctl(struct scsi_device *sdev, bool open_for_write, int cmd,
 }
 EXPORT_SYMBOL(scsi_ioctl);
 
-/*
- * We can process a reset even when a device isn't fully operable.
- */
+ 
 int scsi_ioctl_block_when_processing_errors(struct scsi_device *sdev, int cmd,
 		bool ndelay)
 {

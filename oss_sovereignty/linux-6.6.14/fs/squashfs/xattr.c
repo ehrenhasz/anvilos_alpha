@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2010
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * xattr.c
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -36,11 +29,11 @@ ssize_t squashfs_listxattr(struct dentry *d, char *buffer,
 	size_t rest = buffer_size;
 	int err;
 
-	/* check that the file system has xattrs */
+	 
 	if (msblk->xattr_id_table == NULL)
 		return -EOPNOTSUPP;
 
-	/* loop reading each xattr name */
+	 
 	while (count--) {
 		struct squashfs_xattr_entry entry;
 		struct squashfs_xattr_val val;
@@ -76,7 +69,7 @@ ssize_t squashfs_listxattr(struct dentry *d, char *buffer,
 			}
 			rest -= prefix_size + name_size + 1;
 		} else  {
-			/* no handler or insuffficient privileges, so skip */
+			 
 			err = squashfs_read_metadata(sb, NULL, &start,
 				&offset, name_size);
 			if (err < 0)
@@ -84,7 +77,7 @@ ssize_t squashfs_listxattr(struct dentry *d, char *buffer,
 		}
 
 
-		/* skip remaining xattr entry */
+		 
 		err = squashfs_read_metadata(sb, &val, &start, &offset,
 						sizeof(val));
 		if (err < 0)
@@ -118,7 +111,7 @@ static int squashfs_xattr_get(struct inode *inode, int name_index,
 	if (target == NULL)
 		return  -ENOMEM;
 
-	/* loop reading each xattr name */
+	 
 	for (; count; count--) {
 		struct squashfs_xattr_entry entry;
 		struct squashfs_xattr_val val;
@@ -144,11 +137,11 @@ static int squashfs_xattr_get(struct inode *inode, int name_index,
 
 		if (prefix == name_index && name_size == name_len &&
 					strncmp(target, name, name_size) == 0) {
-			/* found xattr */
+			 
 			if (type & SQUASHFS_XATTR_VALUE_OOL) {
 				__le64 xattr_val;
 				u64 xattr;
-				/* val is a reference to the real location */
+				 
 				err = squashfs_read_metadata(sb, &val, &start,
 						&offset, sizeof(val));
 				if (err < 0)
@@ -162,7 +155,7 @@ static int squashfs_xattr_get(struct inode *inode, int name_index,
 							msblk->xattr_table;
 				offset = SQUASHFS_XATTR_OFFSET(xattr);
 			}
-			/* read xattr value */
+			 
 			err = squashfs_read_metadata(sb, &val, &start, &offset,
 							sizeof(val));
 			if (err < 0)
@@ -182,7 +175,7 @@ static int squashfs_xattr_get(struct inode *inode, int name_index,
 			break;
 		}
 
-		/* no match, skip remaining xattr entry */
+		 
 		err = squashfs_read_metadata(sb, &val, &start, &offset,
 							sizeof(val));
 		if (err < 0)
@@ -210,18 +203,14 @@ static int squashfs_xattr_handler_get(const struct xattr_handler *handler,
 		buffer, size);
 }
 
-/*
- * User namespace support
- */
+ 
 static const struct xattr_handler squashfs_xattr_user_handler = {
 	.prefix	= XATTR_USER_PREFIX,
 	.flags	= SQUASHFS_XATTR_USER,
 	.get	= squashfs_xattr_handler_get
 };
 
-/*
- * Trusted namespace support
- */
+ 
 static bool squashfs_trusted_xattr_handler_list(struct dentry *d)
 {
 	return capable(CAP_SYS_ADMIN);
@@ -234,9 +223,7 @@ static const struct xattr_handler squashfs_xattr_trusted_handler = {
 	.get	= squashfs_xattr_handler_get
 };
 
-/*
- * Security namespace support
- */
+ 
 static const struct xattr_handler squashfs_xattr_security_handler = {
 	.prefix	= XATTR_SECURITY_PREFIX,
 	.flags	= SQUASHFS_XATTR_SECURITY,
@@ -246,7 +233,7 @@ static const struct xattr_handler squashfs_xattr_security_handler = {
 static const struct xattr_handler *squashfs_xattr_handler(int type)
 {
 	if (type & ~(SQUASHFS_XATTR_PREFIX_MASK | SQUASHFS_XATTR_VALUE_OOL))
-		/* ignore unrecognised type */
+		 
 		return NULL;
 
 	switch (type & SQUASHFS_XATTR_PREFIX_MASK) {
@@ -257,7 +244,7 @@ static const struct xattr_handler *squashfs_xattr_handler(int type)
 	case SQUASHFS_XATTR_SECURITY:
 		return &squashfs_xattr_security_handler;
 	default:
-		/* ignore unrecognised type */
+		 
 		return NULL;
 	}
 }

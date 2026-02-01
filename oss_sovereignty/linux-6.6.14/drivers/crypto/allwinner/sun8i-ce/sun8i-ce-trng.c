@@ -1,24 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sun8i-ce-trng.c - hardware cryptographic offloader for
- * Allwinner H3/A64/H5/H2+/H6/R40 SoC
- *
- * Copyright (C) 2015-2020 Corentin Labbe <clabbe@baylibre.com>
- *
- * This file handle the TRNG
- *
- * You could find a link for the datasheet in Documentation/arch/arm/sunxi.rst
- */
+
+ 
 #include "sun8i-ce.h"
 #include <linux/dma-mapping.h>
 #include <linux/pm_runtime.h>
 #include <linux/hw_random.h>
-/*
- * Note that according to the algorithm ID, 2 versions of the TRNG exists,
- * The first present in H3/H5/R40/A64 and the second present in H6.
- * This file adds support for both, but only the second is working
- * reliabily according to rngtest.
- **/
+ 
 
 static int sun8i_ce_trng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 {
@@ -34,7 +20,7 @@ static int sun8i_ce_trng_read(struct hwrng *rng, void *data, size_t max, bool wa
 
 	ce = container_of(rng, struct sun8i_ce_dev, trng);
 
-	/* round the data length to a multiple of 32*/
+	 
 	todo = max + 32;
 	todo -= todo % 32;
 
@@ -68,7 +54,7 @@ static int sun8i_ce_trng_read(struct hwrng *rng, void *data, size_t max, bool wa
 	common = ce->variant->trng | CE_COMM_INT;
 	cet->t_common_ctl = cpu_to_le32(common);
 
-	/* recent CE (H6) need length in bytes, in word otherwise */
+	 
 	if (ce->variant->trng_t_dlen_in_bytes)
 		cet->t_dlen = cpu_to_le32(todo);
 	else

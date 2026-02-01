@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx 'Clocking Wizard' driver
- *
- *  Copyright (C) 2013 - 2021 Xilinx
- *
- *  Sören Brinkmann <soren.brinkmann@xilinx.com>
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/platform_device.h>
@@ -53,7 +46,7 @@
 #define WZRD_USEC_POLL		10
 #define WZRD_TIMEOUT_POLL		1000
 
-/* Divider limits, from UG572 Table 3-4 for Ultrascale+ */
+ 
 #define DIV_O				0x01
 #define DIV_ALL				0x03
 
@@ -68,10 +61,10 @@
 #define WZRD_MIN_ERR			20000
 #define WZRD_FRAC_POINTS		1000
 
-/* Get the mask from width */
+ 
 #define div_mask(width)			((1 << (width)) - 1)
 
-/* Extract divider instance from clock hardware instance */
+ 
 #define to_clk_wzrd_divider(_hw) container_of(_hw, struct clk_wzrd_divider, hw)
 
 enum clk_wzrd_int_clks {
@@ -81,19 +74,7 @@ enum clk_wzrd_int_clks {
 	wzrd_clk_int_max
 };
 
-/**
- * struct clk_wzrd - Clock wizard private data structure
- *
- * @clk_data:		Clock data
- * @nb:			Notifier block
- * @base:		Memory base
- * @clk_in1:		Handle to input clock 'clk_in1'
- * @axi_clk:		Handle to input clock 's_axi_aclk'
- * @clks_internal:	Internal clocks
- * @clkout:		Output clocks
- * @speed_grade:	Speed grade of the device
- * @suspended:		Flag indicating power state of the device
- */
+ 
 struct clk_wzrd {
 	struct clk_onecell_data clk_data;
 	struct notifier_block nb;
@@ -106,21 +87,7 @@ struct clk_wzrd {
 	bool suspended;
 };
 
-/**
- * struct clk_wzrd_divider - clock divider specific to clk_wzrd
- *
- * @hw:		handle between common and hardware-specific interfaces
- * @base:	base address of register containing the divider
- * @offset:	offset address of register containing the divider
- * @shift:	shift to the divider bit field
- * @width:	width of the divider bit field
- * @flags:	clk_wzrd divider flags
- * @table:	array of value/divider pairs, last entry should have div = 0
- * @m:	value of the multiplier
- * @d:	value of the common divider
- * @o:	value of the leaf divider
- * @lock:	register lock
- */
+ 
 struct clk_wzrd_divider {
 	struct clk_hw hw;
 	void __iomem *base;
@@ -132,19 +99,19 @@ struct clk_wzrd_divider {
 	u32 m;
 	u32 d;
 	u32 o;
-	spinlock_t *lock;  /* divider lock */
+	spinlock_t *lock;   
 };
 
 #define to_clk_wzrd(_nb) container_of(_nb, struct clk_wzrd, nb)
 
-/* maximum frequencies for input/output clocks per speed grade */
+ 
 static const unsigned long clk_wzrd_max_freq[] = {
 	800000000UL,
 	933000000UL,
 	1066000000UL
 };
 
-/* spin lock variable for clk_wzrd */
+ 
 static DEFINE_SPINLOCK(clkwzrd_lock);
 
 static unsigned long clk_wzrd_recalc_rate(struct clk_hw *hw,
@@ -177,27 +144,27 @@ static int clk_wzrd_dynamic_reconfig(struct clk_hw *hw, unsigned long rate,
 
 	value = DIV_ROUND_CLOSEST(parent_rate, rate);
 
-	/* Cap the value to max */
+	 
 	min_t(u32, value, WZRD_DR_MAX_INT_DIV_VALUE);
 
-	/* Set divisor and clear phase offset */
+	 
 	writel(value, div_addr);
 	writel(0x00, div_addr + WZRD_DR_DIV_TO_PHASE_OFFSET);
 
-	/* Check status register */
+	 
 	err = readl_poll_timeout(divider->base + WZRD_DR_STATUS_REG_OFFSET,
 				 value, value & WZRD_DR_LOCK_BIT_MASK,
 				 WZRD_USEC_POLL, WZRD_TIMEOUT_POLL);
 	if (err)
 		goto err_reconfig;
 
-	/* Initiate reconfiguration */
+	 
 	writel(WZRD_DR_BEGIN_DYNA_RECONF_5_2,
 	       divider->base + WZRD_DR_INIT_REG_OFFSET);
 	writel(WZRD_DR_BEGIN_DYNA_RECONF1_5_2,
 	       divider->base + WZRD_DR_INIT_REG_OFFSET);
 
-	/* Check status register */
+	 
 	err = readl_poll_timeout(divider->base + WZRD_DR_STATUS_REG_OFFSET,
 				 value, value & WZRD_DR_LOCK_BIT_MASK,
 				 WZRD_USEC_POLL, WZRD_TIMEOUT_POLL);
@@ -214,10 +181,7 @@ static long clk_wzrd_round_rate(struct clk_hw *hw, unsigned long rate,
 {
 	u8 div;
 
-	/*
-	 * since we don't change parent rate we just round rate to closest
-	 * achievable
-	 */
+	 
 	div = DIV_ROUND_CLOSEST(*prate, rate);
 
 	return *prate / div;
@@ -276,24 +240,24 @@ static int clk_wzrd_dynamic_all_nolock(struct clk_hw *hw, unsigned long rate,
 	      FIELD_PREP(WZRD_CLKOUT0_FRAC_MASK, f);
 
 	writel(reg, divider->base + WZRD_CLK_CFG_REG(2));
-	/* Set divisor and clear phase offset */
+	 
 	reg = FIELD_PREP(WZRD_CLKFBOUT_MULT_MASK, divider->m) |
 	      FIELD_PREP(WZRD_DIVCLK_DIVIDE_MASK, divider->d);
 	writel(reg, divider->base + WZRD_CLK_CFG_REG(0));
 	writel(divider->o, divider->base + WZRD_CLK_CFG_REG(2));
 	writel(0, divider->base + WZRD_CLK_CFG_REG(3));
-	/* Check status register */
+	 
 	err = readl_poll_timeout(divider->base + WZRD_DR_STATUS_REG_OFFSET, value,
 				 value & WZRD_DR_LOCK_BIT_MASK,
 				 WZRD_USEC_POLL, WZRD_TIMEOUT_POLL);
 	if (err)
 		return -ETIMEDOUT;
 
-	/* Initiate reconfiguration */
+	 
 	writel(WZRD_DR_BEGIN_DYNA_RECONF,
 	       divider->base + WZRD_DR_INIT_REG_OFFSET);
 
-	/* Check status register */
+	 
 	return readl_poll_timeout(divider->base + WZRD_DR_STATUS_REG_OFFSET, value,
 				 value & WZRD_DR_LOCK_BIT_MASK,
 				 WZRD_USEC_POLL, WZRD_TIMEOUT_POLL);
@@ -406,24 +370,24 @@ static int clk_wzrd_dynamic_reconfig_f(struct clk_hw *hw, unsigned long rate,
 
 	value = (f  | (clockout0_div & WZRD_CLKOUT_DIVIDE_MASK));
 
-	/* Set divisor and clear phase offset */
+	 
 	writel(value, div_addr);
 	writel(0x0, div_addr + WZRD_DR_DIV_TO_PHASE_OFFSET);
 
-	/* Check status register */
+	 
 	err = readl_poll_timeout(divider->base + WZRD_DR_STATUS_REG_OFFSET, value,
 				 value & WZRD_DR_LOCK_BIT_MASK,
 				 WZRD_USEC_POLL, WZRD_TIMEOUT_POLL);
 	if (err)
 		return err;
 
-	/* Initiate reconfiguration */
+	 
 	writel(WZRD_DR_BEGIN_DYNA_RECONF_5_2,
 	       divider->base + WZRD_DR_INIT_REG_OFFSET);
 	writel(WZRD_DR_BEGIN_DYNA_RECONF1_5_2,
 	       divider->base + WZRD_DR_INIT_REG_OFFSET);
 
-	/* Check status register */
+	 
 	return readl_poll_timeout(divider->base + WZRD_DR_STATUS_REG_OFFSET, value,
 				value & WZRD_DR_LOCK_BIT_MASK,
 				WZRD_USEC_POLL, WZRD_TIMEOUT_POLL);
@@ -545,7 +509,7 @@ static int clk_wzrd_clk_notifier(struct notifier_block *nb, unsigned long event,
 	else if (ndata->clk == clk_wzrd->axi_clk)
 		max = WZRD_ACLK_MAX_FREQ;
 	else
-		return NOTIFY_DONE;	/* should never happen */
+		return NOTIFY_DONE;	 
 
 	switch (event) {
 	case PRE_RATE_CHANGE:
@@ -695,7 +659,7 @@ static int clk_wzrd_probe(struct platform_device *pdev)
 	}
 
 	ctrl_reg = clk_wzrd->base + WZRD_CLK_CFG_REG(0);
-	/* register div */
+	 
 	clk_wzrd->clks_internal[wzrd_clk_mul_div] = clk_register_divider
 			(&pdev->dev, clk_name,
 			 __clk_get_name(clk_wzrd->clks_internal[wzrd_clk_mul]),
@@ -707,7 +671,7 @@ static int clk_wzrd_probe(struct platform_device *pdev)
 		goto err_rm_int_clk;
 	}
 
-	/* register div per output */
+	 
 	for (i = nr_outputs - 1; i >= 0 ; i--) {
 		clkout_name = devm_kasprintf(&pdev->dev, GFP_KERNEL,
 					     "%s_out%d", dev_name(&pdev->dev), i);

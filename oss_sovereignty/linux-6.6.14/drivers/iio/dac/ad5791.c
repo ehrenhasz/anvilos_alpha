@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5760, AD5780, AD5781, AD5790, AD5791 Voltage Output Digital to Analog
- * Converter
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/fs.h>
@@ -27,14 +22,14 @@
 #define AD5791_CMD_WRITE		0
 #define AD5791_ADDR(addr)		((addr) << 20)
 
-/* Registers */
+ 
 #define AD5791_ADDR_NOOP		0
 #define AD5791_ADDR_DAC0		1
 #define AD5791_ADDR_CTRL		2
 #define AD5791_ADDR_CLRCODE		3
 #define AD5791_ADDR_SW_CTRL		4
 
-/* Control Register */
+ 
 #define AD5791_CTRL_RBUF		BIT(1)
 #define AD5791_CTRL_OPGND		BIT(2)
 #define AD5791_CTRL_DACTRI		BIT(3)
@@ -51,7 +46,7 @@
 #define AD5780_LINCOMP_0_10		0
 #define AD5780_LINCOMP_10_20		12
 
-/* Software Control Register */
+ 
 #define AD5791_SWCTRL_LDAC		BIT(0)
 #define AD5791_SWCTRL_CLR		BIT(1)
 #define AD5791_SWCTRL_RESET		BIT(2)
@@ -59,28 +54,13 @@
 #define AD5791_DAC_PWRDN_6K		0
 #define AD5791_DAC_PWRDN_3STATE		1
 
-/**
- * struct ad5791_chip_info - chip specific information
- * @get_lin_comp:	function pointer to the device specific function
- */
+ 
 
 struct ad5791_chip_info {
 	int (*get_lin_comp)	(unsigned int span);
 };
 
-/**
- * struct ad5791_state - driver instance specific data
- * @spi:			spi_device
- * @reg_vdd:		positive supply regulator
- * @reg_vss:		negative supply regulator
- * @chip_info:		chip model specific constants
- * @vref_mv:		actual reference voltage used
- * @vref_neg_mv:	voltage of the negative supply
- * @ctrl:		control register cache
- * @pwr_down_mode:	current power down mode
- * @pwr_down:		true if device is powered down
- * @data:		spi transfer buffers
- */
+ 
 struct ad5791_state {
 	struct spi_device		*spi;
 	struct regulator		*reg_vdd;

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ALSA SoC Audio driver for CS4234 codec
- *
- * Copyright (C) 2020 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- */
+ 
+ 
 
 #ifndef CS4234_H
 #define CS4234_H

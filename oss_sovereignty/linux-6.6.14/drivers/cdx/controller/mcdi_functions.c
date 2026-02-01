@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022-2023, Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 

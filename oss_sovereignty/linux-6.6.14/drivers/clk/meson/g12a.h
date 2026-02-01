@@ -1,22 +1,9 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (c) 2016 Amlogic, Inc.
- * Author: Michael Turquette <mturquette@baylibre.com>
- *
- * Copyright (c) 2018 Amlogic, inc.
- * Author: Qiufang Dai <qiufang.dai@amlogic.com>
- * Author: Jian Hu <jian.hu@amlogic.com>
- *
- */
+ 
+ 
 #ifndef __G12A_H
 #define __G12A_H
 
-/*
- * Clock controller register offsets
- *
- * Register offsets from the data sheet must be multiplied by 4 before
- * adding them to the base address to get the right value.
- */
+ 
 #define HHI_MIPI_CNTL0			0x000
 #define HHI_MIPI_CNTL1			0x004
 #define HHI_MIPI_CNTL2			0x008
@@ -126,4 +113,4 @@
 #define HHI_SYS1_PLL_CNTL5		0x394
 #define HHI_SYS1_PLL_CNTL6		0x398
 
-#endif /* __G12A_H */
+#endif  

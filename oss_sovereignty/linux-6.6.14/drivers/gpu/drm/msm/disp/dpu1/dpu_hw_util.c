@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 
 #include "msm_drv.h"
@@ -10,10 +7,10 @@
 #include "dpu_hw_mdss.h"
 #include "dpu_hw_util.h"
 
-/* using a file static variables for debugfs access */
+ 
 static u32 dpu_hw_util_log_mask = DPU_DBG_MASK_NONE;
 
-/* DPU_SCALER_QSEED3 */
+ 
 #define QSEED3_HW_VERSION                  0x00
 #define QSEED3_OP_MODE                     0x04
 #define QSEED3_RGB2Y_COEFF                 0x08
@@ -61,7 +58,7 @@ static u32 dpu_hw_util_log_mask = DPU_DBG_MASK_NONE;
 #define QSEED3_SEP_LUT_SIZE \
 	(QSEED3_LUT_SIZE * QSEED3_SEPARABLE_LUTS * sizeof(u32))
 
-/* DPU_SCALER_QSEED3LITE */
+ 
 #define QSEED3LITE_COEF_LUT_Y_SEP_BIT         4
 #define QSEED3LITE_COEF_LUT_UV_SEP_BIT        5
 #define QSEED3LITE_COEF_LUT_CTRL              0x4C
@@ -73,7 +70,7 @@ static u32 dpu_hw_util_log_mask = DPU_DBG_MASK_NONE;
 #define QSEED3LITE_SEP_LUT_SIZE \
 	        (QSEED3LITE_LUT_SIZE * QSEED3LITE_SEPARABLE_LUTS * sizeof(u32))
 
-/* QOS_LUT */
+ 
 #define QOS_DANGER_LUT                    0x00
 #define QOS_SAFE_LUT                      0x04
 #define QOS_CREQ_LUT                      0x08
@@ -81,7 +78,7 @@ static u32 dpu_hw_util_log_mask = DPU_DBG_MASK_NONE;
 #define QOS_CREQ_LUT_0                    0x14
 #define QOS_CREQ_LUT_1                    0x18
 
-/* QOS_QOS_CTRL */
+ 
 #define QOS_QOS_CTRL_DANGER_SAFE_EN       BIT(0)
 #define QOS_QOS_CTRL_DANGER_VBLANK_MASK   GENMASK(5, 4)
 #define QOS_QOS_CTRL_VBLANK_EN            BIT(16)
@@ -92,7 +89,7 @@ void dpu_reg_write(struct dpu_hw_blk_reg_map *c,
 		u32 val,
 		const char *name)
 {
-	/* don't need to mutex protect this */
+	 
 	if (c->log_mask & dpu_hw_util_log_mask)
 		DPU_DEBUG_DRIVER("[%s:0x%X] <= 0x%X\n",
 				name, reg_off, val);
@@ -395,7 +392,7 @@ void dpu_hw_csc_setup(struct dpu_hw_blk_reg_map *c,
 	u32 clamp_shift = csc10 ? 16 : 8;
 	u32 val;
 
-	/* matrix coeff - convert S15.16 to S4.9 */
+	 
 	val = ((data->csc_mv[0] >> matrix_shift) & 0x1FFF) |
 		(((data->csc_mv[1] >> matrix_shift) & 0x1FFF) << 16);
 	DPU_REG_WRITE(c, csc_reg_off, val);
@@ -411,7 +408,7 @@ void dpu_hw_csc_setup(struct dpu_hw_blk_reg_map *c,
 	val = (data->csc_mv[8] >> matrix_shift) & 0x1FFF;
 	DPU_REG_WRITE(c, csc_reg_off + 0x10, val);
 
-	/* Pre clamp */
+	 
 	val = (data->csc_pre_lv[0] << clamp_shift) | data->csc_pre_lv[1];
 	DPU_REG_WRITE(c, csc_reg_off + 0x14, val);
 	val = (data->csc_pre_lv[2] << clamp_shift) | data->csc_pre_lv[3];
@@ -419,7 +416,7 @@ void dpu_hw_csc_setup(struct dpu_hw_blk_reg_map *c,
 	val = (data->csc_pre_lv[4] << clamp_shift) | data->csc_pre_lv[5];
 	DPU_REG_WRITE(c, csc_reg_off + 0x1c, val);
 
-	/* Post clamp */
+	 
 	val = (data->csc_post_lv[0] << clamp_shift) | data->csc_post_lv[1];
 	DPU_REG_WRITE(c, csc_reg_off + 0x20, val);
 	val = (data->csc_post_lv[2] << clamp_shift) | data->csc_post_lv[3];
@@ -427,23 +424,18 @@ void dpu_hw_csc_setup(struct dpu_hw_blk_reg_map *c,
 	val = (data->csc_post_lv[4] << clamp_shift) | data->csc_post_lv[5];
 	DPU_REG_WRITE(c, csc_reg_off + 0x28, val);
 
-	/* Pre-Bias */
+	 
 	DPU_REG_WRITE(c, csc_reg_off + 0x2c, data->csc_pre_bv[0]);
 	DPU_REG_WRITE(c, csc_reg_off + 0x30, data->csc_pre_bv[1]);
 	DPU_REG_WRITE(c, csc_reg_off + 0x34, data->csc_pre_bv[2]);
 
-	/* Post-Bias */
+	 
 	DPU_REG_WRITE(c, csc_reg_off + 0x38, data->csc_post_bv[0]);
 	DPU_REG_WRITE(c, csc_reg_off + 0x3c, data->csc_post_bv[1]);
 	DPU_REG_WRITE(c, csc_reg_off + 0x40, data->csc_post_bv[2]);
 }
 
-/**
- * _dpu_hw_get_qos_lut - get LUT mapping based on fill level
- * @tbl:		Pointer to LUT table
- * @total_fl:		fill level
- * Return: LUT setting corresponding to the fill level
- */
+ 
 u64 _dpu_hw_get_qos_lut(const struct dpu_qos_lut_tbl *tbl,
 		u32 total_fl)
 {
@@ -456,7 +448,7 @@ u64 _dpu_hw_get_qos_lut(const struct dpu_qos_lut_tbl *tbl,
 		if (total_fl <= tbl->entries[i].fl)
 			return tbl->entries[i].lut;
 
-	/* if last fl is zero, use as default */
+	 
 	if (!tbl->entries[i-1].fl)
 		return tbl->entries[i-1].lut;
 
@@ -481,9 +473,7 @@ void _dpu_hw_setup_qos_lut(struct dpu_hw_blk_reg_map *c, u32 offset,
 		      cfg->danger_safe_en ? QOS_QOS_CTRL_DANGER_SAFE_EN : 0);
 }
 
-/*
- * note: Aside from encoders, input_sel should be set to 0x0 by default
- */
+ 
 void dpu_hw_setup_misr(struct dpu_hw_blk_reg_map *c,
 		u32 misr_ctrl_offset, u8 input_sel)
 {
@@ -491,7 +481,7 @@ void dpu_hw_setup_misr(struct dpu_hw_blk_reg_map *c,
 
 	DPU_REG_WRITE(c, misr_ctrl_offset, MISR_CTRL_STATUS_CLEAR);
 
-	/* Clear old MISR value (in case it's read before a new value is calculated)*/
+	 
 	wmb();
 
 	config = MISR_FRAME_COUNT | MISR_CTRL_ENABLE | MISR_CTRL_FREE_RUN_MASK |

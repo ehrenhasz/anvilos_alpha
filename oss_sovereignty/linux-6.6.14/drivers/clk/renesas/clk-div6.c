@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * r8a7790 Common Clock Framework support
- *
- * Copyright (C) 2013  Renesas Solutions Corp.
- *
- * Contact: Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -23,15 +17,7 @@
 #define CPG_DIV6_DIV(d)		((d) & 0x3f)
 #define CPG_DIV6_DIV_MASK	0x3f
 
-/**
- * struct div6_clock - CPG 6 bit divider clock
- * @hw: handle between common and hardware-specific interfaces
- * @reg: IO-remapped register
- * @div: divisor value (1-64)
- * @src_mask: Bitmask covering the register bits to select the parent clock
- * @nb: Notifier block to save/restore clock state for system resume
- * @parents: Array to map from valid parent clocks indices to hardware indices
- */
+ 
 struct div6_clock {
 	struct clk_hw hw;
 	void __iomem *reg;
@@ -62,12 +48,7 @@ static void cpg_div6_clock_disable(struct clk_hw *hw)
 
 	val = readl(clock->reg);
 	val |= CPG_DIV6_CKSTP;
-	/*
-	 * DIV6 clocks require the divisor field to be non-zero when stopping
-	 * the clock. However, some clocks (e.g. ZB on sh73a0) fail to be
-	 * re-enabled later if the divisor field is changed when stopping the
-	 * clock
-	 */
+	 
 	if (!(val & CPG_DIV6_DIV_MASK))
 		val |= CPG_DIV6_DIV_MASK;
 	writel(val, clock->reg);
@@ -155,7 +136,7 @@ static int cpg_div6_clock_set_rate(struct clk_hw *hw, unsigned long rate,
 	clock->div = div;
 
 	val = readl(clock->reg) & ~CPG_DIV6_DIV_MASK;
-	/* Only program the new divisor if the clock isn't stopped. */
+	 
 	if (!(val & CPG_DIV6_CKSTP))
 		writel(val | CPG_DIV6_DIV(clock->div - 1), clock->reg);
 
@@ -214,13 +195,7 @@ static int cpg_div6_clock_notifier_call(struct notifier_block *nb,
 
 	switch (action) {
 	case PM_EVENT_RESUME:
-		/*
-		 * TODO: This does not yet support DIV6 clocks with multiple
-		 * parents, as the parent selection bits are not restored.
-		 * Fortunately so far such DIV6 clocks are found only on
-		 * R/SH-Mobile SoCs, while the resume functionality is only
-		 * needed on R-Car Gen3.
-		 */
+		 
 		if (__clk_get_enable_count(clock->hw.clk))
 			cpg_div6_clock_enable(&clock->hw);
 		else
@@ -231,14 +206,7 @@ static int cpg_div6_clock_notifier_call(struct notifier_block *nb,
 	return NOTIFY_DONE;
 }
 
-/**
- * cpg_div6_register - Register a DIV6 clock
- * @name: Name of the DIV6 clock
- * @num_parents: Number of parent clocks of the DIV6 clock (1, 4, or 8)
- * @parent_names: Array containing the names of the parent clocks
- * @reg: Mapped register used to control the DIV6 clock
- * @notifiers: Optional notifier chain to save/restore state for system resume
- */
+ 
 struct clk * __init cpg_div6_register(const char *name,
 				      unsigned int num_parents,
 				      const char **parent_names,
@@ -257,23 +225,20 @@ struct clk * __init cpg_div6_register(const char *name,
 
 	clock->reg = reg;
 
-	/*
-	 * Read the divisor. Disabling the clock overwrites the divisor, so we
-	 * need to cache its value for the enable operation.
-	 */
+	 
 	clock->div = (readl(clock->reg) & CPG_DIV6_DIV_MASK) + 1;
 
 	switch (num_parents) {
 	case 1:
-		/* fixed parent clock */
+		 
 		clock->src_mask = 0;
 		break;
 	case 4:
-		/* clock with EXSRC bits 6-7 */
+		 
 		clock->src_mask = GENMASK(7, 6);
 		break;
 	case 8:
-		/* VCLK with EXSRC bits 12-14 */
+		 
 		clock->src_mask = GENMASK(14, 12);
 		break;
 	default:
@@ -283,7 +248,7 @@ struct clk * __init cpg_div6_register(const char *name,
 		goto free_clock;
 	}
 
-	/* Filter out invalid parents */
+	 
 	for (i = 0, valid_parents = 0; i < num_parents; i++) {
 		if (parent_names[i]) {
 			parent_names[valid_parents] = parent_names[i];
@@ -292,7 +257,7 @@ struct clk * __init cpg_div6_register(const char *name,
 		}
 	}
 
-	/* Register the clock. */
+	 
 	init.name = name;
 	init.ops = &cpg_div6_clock_ops;
 	init.parent_names = parent_names;
@@ -344,7 +309,7 @@ static void __init cpg_div6_clock_init(struct device_node *np)
 		goto error;
 	}
 
-	/* Parse the DT properties. */
+	 
 	of_property_read_string(np, "clock-output-names", &clk_name);
 
 	for (i = 0; i < num_parents; i++)

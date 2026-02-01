@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/debugfs.h>
@@ -13,10 +12,7 @@
 #include "dpu_hw_mdss.h"
 #include "dpu_trace.h"
 
-/*
- * Register offsets in MDSS register file for the interrupt registers
- * w.r.t. the MDP base
- */
+ 
 #define MDP_INTF_OFF(intf)				(0x6A000 + 0x800 * (intf))
 #define MDP_INTF_INTR_EN(intf)				(MDP_INTF_OFF(intf) + 0x1c0)
 #define MDP_INTF_INTR_STATUS(intf)			(MDP_INTF_OFF(intf) + 0x1c4)
@@ -38,21 +34,14 @@
 #define MDP_INTF_REV_7xxx_INTR_TEAR_STATUS(intf)	(MDP_INTF_REV_7xxx_TEAR_OFF(intf) + 0x004)
 #define MDP_INTF_REV_7xxx_INTR_TEAR_CLEAR(intf)		(MDP_INTF_REV_7xxx_TEAR_OFF(intf) + 0x008)
 
-/**
- * struct dpu_intr_reg - array of DPU register sets
- * @clr_off:	offset to CLEAR reg
- * @en_off:	offset to ENABLE reg
- * @status_off:	offset to STATUS reg
- */
+ 
 struct dpu_intr_reg {
 	u32 clr_off;
 	u32 en_off;
 	u32 status_off;
 };
 
-/*
- * dpu_intr_set_legacy -  List of DPU interrupt registers for DPU <= 6.x
- */
+ 
 static const struct dpu_intr_reg dpu_intr_set_legacy[] = {
 	[MDP_SSPP_TOP0_INTR] = {
 		INTR_CLEAR,
@@ -121,9 +110,7 @@ static const struct dpu_intr_reg dpu_intr_set_legacy[] = {
 	},
 };
 
-/*
- * dpu_intr_set_7xxx -  List of DPU interrupt registers for DPU >= 7.0
- */
+ 
 static const struct dpu_intr_reg dpu_intr_set_7xxx[] = {
 	[MDP_SSPP_TOP0_INTR] = {
 		INTR_CLEAR,
@@ -200,11 +187,7 @@ static const struct dpu_intr_reg dpu_intr_set_7xxx[] = {
 #define DPU_IRQ_REG(irq_idx)	(irq_idx / 32)
 #define DPU_IRQ_MASK(irq_idx)	(BIT(irq_idx % 32))
 
-/**
- * dpu_core_irq_callback_handler - dispatch core interrupts
- * @dpu_kms:		Pointer to DPU's KMS structure
- * @irq_idx:		interrupt index
- */
+ 
 static void dpu_core_irq_callback_handler(struct dpu_kms *dpu_kms, int irq_idx)
 {
 	VERB("irq_idx=%d\n", irq_idx);
@@ -214,9 +197,7 @@ static void dpu_core_irq_callback_handler(struct dpu_kms *dpu_kms, int irq_idx)
 
 	atomic_inc(&dpu_kms->hw_intr->irq_tbl[irq_idx].count);
 
-	/*
-	 * Perform registered function callback
-	 */
+	 
 	dpu_kms->hw_intr->irq_tbl[irq_idx].cb(dpu_kms->hw_intr->irq_tbl[irq_idx].arg, irq_idx);
 }
 
@@ -239,41 +220,35 @@ irqreturn_t dpu_core_irq(struct msm_kms *kms)
 		if (!test_bit(reg_idx, &intr->irq_mask))
 			continue;
 
-		/* Read interrupt status */
+		 
 		irq_status = DPU_REG_READ(&intr->hw, intr->intr_set[reg_idx].status_off);
 
-		/* Read enable mask */
+		 
 		enable_mask = DPU_REG_READ(&intr->hw, intr->intr_set[reg_idx].en_off);
 
-		/* and clear the interrupt */
+		 
 		if (irq_status)
 			DPU_REG_WRITE(&intr->hw, intr->intr_set[reg_idx].clr_off,
 				     irq_status);
 
-		/* Finally update IRQ status based on enable mask */
+		 
 		irq_status &= enable_mask;
 
 		if (!irq_status)
 			continue;
 
-		/*
-		 * Search through matching intr status.
-		 */
+		 
 		while ((bit = ffs(irq_status)) != 0) {
 			irq_idx = DPU_IRQ_IDX(reg_idx, bit - 1);
 
 			dpu_core_irq_callback_handler(dpu_kms, irq_idx);
 
-			/*
-			 * When callback finish, clear the irq_status
-			 * with the matching mask. Once irq_status
-			 * is all cleared, the search can be stopped.
-			 */
+			 
 			irq_status &= ~BIT(bit - 1);
 		}
 	}
 
-	/* ensure register writes go through */
+	 
 	wmb();
 
 	spin_unlock_irqrestore(&intr->irq_lock, irq_flags);
@@ -296,17 +271,13 @@ static int dpu_hw_intr_enable_irq_locked(struct dpu_hw_intr *intr, int irq_idx)
 		return -EINVAL;
 	}
 
-	/*
-	 * The cache_irq_mask and hardware RMW operations needs to be done
-	 * under irq_lock and it's the caller's responsibility to ensure that's
-	 * held.
-	 */
+	 
 	assert_spin_locked(&intr->irq_lock);
 
 	reg_idx = DPU_IRQ_REG(irq_idx);
 	reg = &intr->intr_set[reg_idx];
 
-	/* Is this interrupt register supported on the platform */
+	 
 	if (WARN_ON(!reg->en_off))
 		return -EINVAL;
 
@@ -317,12 +288,12 @@ static int dpu_hw_intr_enable_irq_locked(struct dpu_hw_intr *intr, int irq_idx)
 		dbgstr = "";
 
 		cache_irq_mask |= DPU_IRQ_MASK(irq_idx);
-		/* Cleaning any pending interrupt */
+		 
 		DPU_REG_WRITE(&intr->hw, reg->clr_off, DPU_IRQ_MASK(irq_idx));
-		/* Enabling interrupts with the new mask */
+		 
 		DPU_REG_WRITE(&intr->hw, reg->en_off, cache_irq_mask);
 
-		/* ensure register write goes through */
+		 
 		wmb();
 
 		intr->cache_irq_mask[reg_idx] = cache_irq_mask;
@@ -349,11 +320,7 @@ static int dpu_hw_intr_disable_irq_locked(struct dpu_hw_intr *intr, int irq_idx)
 		return -EINVAL;
 	}
 
-	/*
-	 * The cache_irq_mask and hardware RMW operations needs to be done
-	 * under irq_lock and it's the caller's responsibility to ensure that's
-	 * held.
-	 */
+	 
 	assert_spin_locked(&intr->irq_lock);
 
 	reg_idx = DPU_IRQ_REG(irq_idx);
@@ -366,12 +333,12 @@ static int dpu_hw_intr_disable_irq_locked(struct dpu_hw_intr *intr, int irq_idx)
 		dbgstr = "";
 
 		cache_irq_mask &= ~DPU_IRQ_MASK(irq_idx);
-		/* Disable interrupts based on the new mask */
+		 
 		DPU_REG_WRITE(&intr->hw, reg->en_off, cache_irq_mask);
-		/* Cleaning any pending interrupt */
+		 
 		DPU_REG_WRITE(&intr->hw, reg->clr_off, DPU_IRQ_MASK(irq_idx));
 
-		/* ensure register write goes through */
+		 
 		wmb();
 
 		intr->cache_irq_mask[reg_idx] = cache_irq_mask;
@@ -397,7 +364,7 @@ static void dpu_clear_irqs(struct dpu_kms *dpu_kms)
 					intr->intr_set[i].clr_off, 0xffffffff);
 	}
 
-	/* ensure register writes go through */
+	 
 	wmb();
 }
 
@@ -415,7 +382,7 @@ static void dpu_disable_all_irqs(struct dpu_kms *dpu_kms)
 					intr->intr_set[i].en_off, 0x00000000);
 	}
 
-	/* ensure register writes go through */
+	 
 	wmb();
 }
 
@@ -450,7 +417,7 @@ u32 dpu_core_irq_read(struct dpu_kms *dpu_kms, int irq_idx)
 		DPU_REG_WRITE(&intr->hw, intr->intr_set[reg_idx].clr_off,
 				intr_status);
 
-	/* ensure register writes go through */
+	 
 	wmb();
 
 	spin_unlock_irqrestore(&intr->irq_lock, irq_flags);

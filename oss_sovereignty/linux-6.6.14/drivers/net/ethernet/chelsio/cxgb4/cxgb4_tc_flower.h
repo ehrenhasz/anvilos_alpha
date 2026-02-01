@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T4/T5/T6 Ethernet driver for Linux.
- *
- * Copyright (c) 2017 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __CXGB4_TC_FLOWER_H
 #define __CXGB4_TC_FLOWER_H
@@ -50,34 +18,34 @@ struct ch_tc_flower_entry {
 	unsigned long tc_flower_cookie;
 	struct rhash_head node;
 	struct rcu_head rcu;
-	spinlock_t lock; /* lock for stats */
+	spinlock_t lock;  
 	u32 filter_id;
 };
 
 enum {
-	ETH_DMAC_31_0,	/* dmac bits 0.. 31 */
-	ETH_DMAC_47_32,	/* dmac bits 32..47 */
-	ETH_SMAC_15_0,	/* smac bits 0.. 15 */
-	ETH_SMAC_47_16,	/* smac bits 16..47 */
+	ETH_DMAC_31_0,	 
+	ETH_DMAC_47_32,	 
+	ETH_SMAC_15_0,	 
+	ETH_SMAC_47_16,	 
 
-	IP4_SRC,	/* 32-bit IPv4 src  */
-	IP4_DST,	/* 32-bit IPv4 dst  */
+	IP4_SRC,	 
+	IP4_DST,	 
 
-	IP6_SRC_31_0,	/* src bits 0..  31 */
-	IP6_SRC_63_32,	/* src bits 63.. 32 */
-	IP6_SRC_95_64,	/* src bits 95.. 64 */
-	IP6_SRC_127_96,	/* src bits 127..96 */
+	IP6_SRC_31_0,	 
+	IP6_SRC_63_32,	 
+	IP6_SRC_95_64,	 
+	IP6_SRC_127_96,	 
 
-	IP6_DST_31_0,	/* dst bits 0..  31 */
-	IP6_DST_63_32,	/* dst bits 63.. 32 */
-	IP6_DST_95_64,	/* dst bits 95.. 64 */
-	IP6_DST_127_96,	/* dst bits 127..96 */
+	IP6_DST_31_0,	 
+	IP6_DST_63_32,	 
+	IP6_DST_95_64,	 
+	IP6_DST_127_96,	 
 
-	TCP_SPORT,	/* 16-bit TCP sport */
-	TCP_DPORT,	/* 16-bit TCP dport */
+	TCP_SPORT,	 
+	TCP_DPORT,	 
 
-	UDP_SPORT,	/* 16-bit UDP sport */
-	UDP_DPORT,	/* 16-bit UDP dport */
+	UDP_SPORT,	 
+	UDP_DPORT,	 
 };
 
 struct ch_tc_pedit_fields {
@@ -116,7 +84,7 @@ enum cxgb4_action_natmode_flags {
 	CXGB4_ACTION_NATMODE_SPORT = (1 << 3),
 };
 
-/* TC PEDIT action to NATMODE translation entry */
+ 
 struct cxgb4_natmode_config {
 	enum chip_type chip;
 	u8 flags;
@@ -145,4 +113,4 @@ int cxgb4_flow_rule_destroy(struct net_device *dev, u32 tc_prio,
 
 int cxgb4_init_tc_flower(struct adapter *adap);
 void cxgb4_cleanup_tc_flower(struct adapter *adap);
-#endif /* __CXGB4_TC_FLOWER_H */
+#endif  

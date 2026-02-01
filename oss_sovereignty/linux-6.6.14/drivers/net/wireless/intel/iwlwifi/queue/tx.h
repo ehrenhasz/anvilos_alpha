@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+ 
+ 
 #ifndef __iwl_trans_queue_tx_h__
 #define __iwl_trans_queue_tx_h__
 #include "iwl-fh.h"
@@ -46,11 +44,7 @@ static inline void *iwl_txq_get_tfd(struct iwl_trans *trans,
 
 int iwl_txq_alloc(struct iwl_trans *trans, struct iwl_txq *txq, int slots_num,
 		  bool cmd_queue);
-/*
- * We need this inline in case dma_addr_t is only 32-bits - since the
- * hardware is always 64-bit, the issue can still occur in that case,
- * so use u64 for 'phys' here to force the addition in 64-bit.
- */
+ 
 static inline bool iwl_txq_crosses_4g_boundary(u64 phys, u16 len)
 {
 	return upper_32_bits(phys) != upper_32_bits(phys + len);
@@ -69,20 +63,14 @@ static inline void iwl_txq_stop(struct iwl_trans *trans, struct iwl_txq *txq)
 	}
 }
 
-/**
- * iwl_txq_inc_wrap - increment queue index, wrap back to beginning
- * @index -- current index
- */
+ 
 static inline int iwl_txq_inc_wrap(struct iwl_trans *trans, int index)
 {
 	return ++index &
 		(trans->trans_cfg->base_params->max_tfd_queue_size - 1);
 }
 
-/**
- * iwl_txq_dec_wrap - decrement queue index, wrap back to end
- * @index -- current index
- */
+ 
 static inline int iwl_txq_dec_wrap(struct iwl_trans *trans, int index)
 {
 	return --index &
@@ -186,4 +174,4 @@ void iwl_trans_txq_freeze_timer(struct iwl_trans *trans, unsigned long txqs,
 void iwl_txq_progress(struct iwl_txq *txq);
 void iwl_txq_free_tfd(struct iwl_trans *trans, struct iwl_txq *txq);
 int iwl_trans_txq_send_hcmd(struct iwl_trans *trans, struct iwl_host_cmd *cmd);
-#endif /* __iwl_trans_queue_tx_h__ */
+#endif  

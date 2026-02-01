@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Authors: Keyon Jie <yang.jie@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <sound/pcm_params.h>
 #include <sound/hdaudio_ext.h>
@@ -21,10 +21,7 @@
 #include "../sof-audio.h"
 #include "hda.h"
 
-/*
- * The default method is to fetch NHLT from BIOS. With this parameter set
- * it is possible to override that with NHLT in the SOF topology manifest.
- */
+ 
 static bool hda_use_tplg_nhlt;
 module_param_named(sof_use_tplg_nhlt, hda_use_tplg_nhlt, bool, 0444);
 MODULE_PARM_DESC(sof_use_tplg_nhlt, "SOF topology nhlt override");
@@ -83,23 +80,20 @@ hda_dai_get_ops(struct snd_pcm_substream *substream, struct snd_soc_dai *cpu_dai
 
 	sdev = widget_to_sdev(w);
 
-	/*
-	 * The swidget parameter of hda_select_dai_widget_ops() is ignored in
-	 * case of DSPless mode
-	 */
+	 
 	if (sdev->dspless_mode_selected)
 		return hda_select_dai_widget_ops(sdev, NULL);
 
 	sdai = swidget->private;
 
-	/* select and set the DAI widget ops if not set already */
+	 
 	if (!sdai->platform_private) {
 		const struct hda_dai_widget_dma_ops *ops =
 			hda_select_dai_widget_ops(sdev, swidget);
 		if (!ops)
 			return NULL;
 
-		/* check if mandatory ops are set */
+		 
 		if (!ops || !ops->get_hext_stream)
 			return NULL;
 
@@ -139,7 +133,7 @@ int hda_link_dma_cleanup(struct snd_pcm_substream *substream, struct hdac_ext_st
 
 	hext_stream->link_prepared = 0;
 
-	/* free the host DMA channel reserved by hostless streams */
+	 
 	hda_stream = hstream_to_sof_hda_stream(hext_stream);
 	hda_stream->host_reserved = 0;
 
@@ -183,7 +177,7 @@ static int hda_link_dma_hw_params(struct snd_pcm_substream *substream,
 	if (hext_stream->hstream.direction == SNDRV_PCM_STREAM_PLAYBACK)
 		snd_hdac_ext_bus_link_set_stream_id(hlink, stream_tag);
 
-	/* set the hdac_stream in the codec dai */
+	 
 	if (ops->codec_dai_set_stream)
 		ops->codec_dai_set_stream(sdev, substream, hstream);
 
@@ -253,10 +247,7 @@ static int __maybe_unused hda_dai_hw_params(struct snd_pcm_substream *substream,
 	return hda_dai_config(w, flags, &data);
 }
 
-/*
- * In contrast to IPC3, the dai trigger in IPC4 mixes pipeline state changes
- * (over IPC channel) and DMA state change (direct host register changes).
- */
+ 
 static int __maybe_unused hda_dai_trigger(struct snd_pcm_substream *substream, int cmd,
 					  struct snd_soc_dai *dai)
 {
@@ -361,14 +352,14 @@ static int non_hda_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* use HDaudio stream handling */
+	 
 	ret = hda_dai_hw_params(substream, params, cpu_dai);
 	if (ret < 0) {
 		dev_err(cpu_dai->dev, "%s: hda_dai_hw_params failed: %d\n", __func__, ret);
 		return ret;
 	}
 
-	/* get stream_id */
+	 
 	sdev = widget_to_sdev(w);
 	hext_stream = ops->get_hext_stream(sdev, cpu_dai, substream);
 
@@ -385,12 +376,12 @@ static int non_hda_dai_hw_params(struct snd_pcm_substream *substream,
 		return -ENODEV;
 	}
 
-	/* configure TLV */
+	 
 	ipc4_copier = widget_to_copier(w);
 
 	dma_config_tlv = &ipc4_copier->dma_config_tlv;
 	dma_config_tlv->type = SOF_IPC4_GTW_DMA_CONFIG_ID;
-	/* dma_config_priv_size is zero */
+	 
 	dma_config_tlv->length = sizeof(dma_config_tlv->dma_config);
 
 	dma_config = &dma_config_tlv->dma_config;
@@ -399,7 +390,7 @@ static int non_hda_dai_hw_params(struct snd_pcm_substream *substream,
 	dma_config->pre_allocated_by_host = 1;
 	dma_config->dma_channel_id = stream_id - 1;
 	dma_config->stream_id = stream_id;
-	dma_config->dma_stream_channel_map.device_count = 0; /* mapping not used */
+	dma_config->dma_stream_channel_map.device_count = 0;  
 	dma_config->dma_priv_config_size = 0;
 
 	return 0;
@@ -452,7 +443,7 @@ int sdw_hda_dai_hw_params(struct snd_pcm_substream *substream,
 	if (!hext_stream)
 		return -ENODEV;
 
-	/* in the case of SoundWire we need to program the PCMSyCM registers */
+	 
 	ret = hdac_bus_eml_sdw_map_stream_ch(sof_to_bus(sdev), link_id, cpu_dai->id,
 					     GENMASK(params_channels(params) - 1, 0),
 					     hdac_stream(hext_stream)->stream_tag,
@@ -482,7 +473,7 @@ int sdw_hda_dai_hw_free(struct snd_pcm_substream *substream,
 
 	sdev = widget_to_sdev(w);
 
-	/* in the case of SoundWire we need to reset the PCMSyCM registers */
+	 
 	ret = hdac_bus_eml_sdw_map_stream_ch(sof_to_bus(sdev), link_id, cpu_dai->id,
 					     0, 0, substream->stream);
 	if (ret < 0) {
@@ -507,17 +498,12 @@ static int hda_dai_suspend(struct hdac_bus *bus)
 	struct hdac_stream *s;
 	int ret;
 
-	/* set internal flag for BE */
+	 
 	list_for_each_entry(s, &bus->stream_list, list) {
 
 		hext_stream = stream_to_hdac_ext_stream(s);
 
-		/*
-		 * clear stream. This should already be taken care for running
-		 * streams when the SUSPEND trigger is called. But paused
-		 * streams do not get suspended, so this needs to be done
-		 * explicitly during suspend.
-		 */
+		 
 		if (hext_stream->link_substream) {
 			const struct hda_dai_widget_dma_ops *ops;
 			struct snd_sof_widget *swidget;
@@ -540,7 +526,7 @@ static int hda_dai_suspend(struct hdac_bus *bus)
 			if (ret < 0)
 				return ret;
 
-			/* for consistency with TRIGGER_SUSPEND  */
+			 
 			if (ops->post_trigger) {
 				ret = ops->post_trigger(sdev, cpu_dai,
 							hext_stream->link_substream,
@@ -589,7 +575,7 @@ static void dmic_set_dai_drv_ops(struct snd_sof_dev *sdev, struct snd_sof_dsp_op
 static inline void ssp_set_dai_drv_ops(struct snd_sof_dev *sdev, struct snd_sof_dsp_ops *ops) {}
 static inline void dmic_set_dai_drv_ops(struct snd_sof_dev *sdev, struct snd_sof_dsp_ops *ops) {}
 
-#endif /* CONFIG_SND_SOC_SOF_HDA_LINK */
+#endif  
 
 void hda_set_dai_drv_ops(struct snd_sof_dev *sdev, struct snd_sof_dsp_ops *ops)
 {
@@ -625,11 +611,7 @@ void hda_ops_free(struct snd_sof_dev *sdev)
 }
 EXPORT_SYMBOL_NS(hda_ops_free, SND_SOC_SOF_INTEL_HDA_COMMON);
 
-/*
- * common dai driver for skl+ platforms.
- * some products who use this DAI array only physically have a subset of
- * the DAIs, but no harm is done here by adding the whole set.
- */
+ 
 struct snd_soc_dai_driver skl_dai[] = {
 {
 	.name = "SSP0 Pin",
@@ -778,12 +760,7 @@ struct snd_soc_dai_driver skl_dai[] = {
 
 int hda_dsp_dais_suspend(struct snd_sof_dev *sdev)
 {
-	/*
-	 * In the corner case where a SUSPEND happens during a PAUSE, the ALSA core
-	 * does not throw the TRIGGER_SUSPEND. This leaves the DAIs in an unbalanced state.
-	 * Since the component suspend is called last, we can trap this corner case
-	 * and force the DAIs to release their resources.
-	 */
+	 
 #if IS_ENABLED(CONFIG_SND_SOC_SOF_HDA_LINK)
 	int ret;
 

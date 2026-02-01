@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	STB6100 Silicon Tuner
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-	Copyright (C) ST Microelectronics
-
-*/
+ 
+ 
 
 #ifndef __STB_6100_REG_H
 #define __STB_6100_REG_H
@@ -97,6 +91,6 @@ static inline struct dvb_frontend *stb6100_attach(struct dvb_frontend *fe,
 	return NULL;
 }
 
-#endif //CONFIG_DVB_STB6100
+#endif 
 
 #endif

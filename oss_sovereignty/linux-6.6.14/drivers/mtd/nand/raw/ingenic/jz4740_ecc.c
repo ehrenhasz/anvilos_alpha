@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ4740 ECC controller driver
- *
- * Copyright (c) 2019 Paul Cercueil <paul@crapouillou.net>
- *
- * based on jz4740-nand.c
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/device.h>
@@ -46,17 +40,17 @@ static void jz4740_ecc_reset(struct ingenic_ecc *ecc, bool calc_ecc)
 {
 	uint32_t reg;
 
-	/* Clear interrupt status */
+	 
 	writel(0, ecc->base + JZ_REG_NAND_IRQ_STAT);
 
-	/* Initialize and enable ECC hardware */
+	 
 	reg = readl(ecc->base + JZ_REG_NAND_ECC_CTRL);
 	reg |= JZ_NAND_ECC_CTRL_RESET;
 	reg |= JZ_NAND_ECC_CTRL_ENABLE;
 	reg |= JZ_NAND_ECC_CTRL_RS;
-	if (calc_ecc) /* calculate ECC from data */
+	if (calc_ecc)  
 		reg |= JZ_NAND_ECC_CTRL_ENCODING;
-	else /* correct data from ECC */
+	else  
 		reg &= ~JZ_NAND_ECC_CTRL_ENCODING;
 
 	writel(reg, ecc->base + JZ_REG_NAND_ECC_CTRL);
@@ -86,10 +80,7 @@ static int jz4740_ecc_calculate(struct ingenic_ecc *ecc,
 	for (i = 0; i < params->bytes; ++i)
 		ecc_code[i] = readb(ecc->base + JZ_REG_NAND_PAR0 + i);
 
-	/*
-	 * If the written data is completely 0xff, we also want to write 0xff as
-	 * ECC, otherwise we will get in trouble when doing subpage writes.
-	 */
+	 
 	if (memcmp(ecc_code, empty_block_ecc, sizeof(empty_block_ecc)) == 0)
 		memset(ecc_code, 0xff, sizeof(empty_block_ecc));
 

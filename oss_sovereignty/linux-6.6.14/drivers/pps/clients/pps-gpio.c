@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pps-gpio.c -- PPS client driver using GPIO
- *
- * Copyright (C) 2010 Ricardo Martins <rasm@fe.up.pt>
- * Copyright (C) 2011 James Nuss <jamesnuss@nanometrics.ca>
- */
+
+ 
 
 #define PPS_GPIO_NAME "pps-gpio"
 #define pr_fmt(fmt) PPS_GPIO_NAME ": " fmt
@@ -23,23 +18,21 @@
 #include <linux/timer.h>
 #include <linux/jiffies.h>
 
-/* Info for each registered platform device */
+ 
 struct pps_gpio_device_data {
-	int irq;			/* IRQ used as PPS source */
-	struct pps_device *pps;		/* PPS source device */
-	struct pps_source_info info;	/* PPS source information */
-	struct gpio_desc *gpio_pin;	/* GPIO port descriptors */
+	int irq;			 
+	struct pps_device *pps;		 
+	struct pps_source_info info;	 
+	struct gpio_desc *gpio_pin;	 
 	struct gpio_desc *echo_pin;
-	struct timer_list echo_timer;	/* timer to reset echo active state */
+	struct timer_list echo_timer;	 
 	bool assert_falling_edge;
 	bool capture_clear;
-	unsigned int echo_active_ms;	/* PPS echo active duration */
-	unsigned long echo_timeout;	/* timer timeout value in jiffies */
+	unsigned int echo_active_ms;	 
+	unsigned long echo_timeout;	 
 };
 
-/*
- * Report the PPS event
- */
+ 
 
 static irqreturn_t pps_gpio_irq_handler(int irq, void *data)
 {
@@ -47,7 +40,7 @@ static irqreturn_t pps_gpio_irq_handler(int irq, void *data)
 	struct pps_event_time ts;
 	int rising_edge;
 
-	/* Get the time stamp first */
+	 
 	pps_get_ts(&ts);
 
 	info = data;
@@ -64,10 +57,10 @@ static irqreturn_t pps_gpio_irq_handler(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/* This function will only be called when an ECHO GPIO is defined */
+ 
 static void pps_gpio_echo(struct pps_device *pps, int event, void *data)
 {
-	/* add_timer() needs to write into info->echo_timer */
+	 
 	struct pps_gpio_device_data *info = data;
 
 	switch (event) {
@@ -82,14 +75,14 @@ static void pps_gpio_echo(struct pps_device *pps, int event, void *data)
 		break;
 	}
 
-	/* fire the timer */
+	 
 	if (info->pps->params.mode & (PPS_ECHOASSERT | PPS_ECHOCLEAR)) {
 		info->echo_timer.expires = jiffies + info->echo_timeout;
 		add_timer(&info->echo_timer);
 	}
 }
 
-/* Timer callback to reset the echo pin to the inactive state */
+ 
 static void pps_gpio_echo_timer_callback(struct timer_list *t)
 {
 	const struct pps_gpio_device_data *info;
@@ -127,7 +120,7 @@ static int pps_gpio_setup(struct device *dev)
 		return ret;
 	}
 
-	/* sanity check on echo_active_ms */
+	 
 	if (!value || value > 999) {
 		dev_err(dev, "echo-active-ms: %u - bad value from FW\n", value);
 		return -EINVAL;
@@ -159,19 +152,19 @@ static int pps_gpio_probe(struct platform_device *pdev)
 	int ret;
 	int pps_default_params;
 
-	/* allocate space for device info */
+	 
 	data = devm_kzalloc(dev, sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	dev_set_drvdata(dev, data);
 
-	/* GPIO setup */
+	 
 	ret = pps_gpio_setup(dev);
 	if (ret)
 		return ret;
 
-	/* IRQ setup */
+	 
 	ret = gpiod_to_irq(data->gpio_pin);
 	if (ret < 0) {
 		dev_err(dev, "failed to map GPIO to IRQ: %d\n", ret);
@@ -179,7 +172,7 @@ static int pps_gpio_probe(struct platform_device *pdev)
 	}
 	data->irq = ret;
 
-	/* initialize PPS specific parts of the bookkeeping data structure. */
+	 
 	data->info.mode = PPS_CAPTUREASSERT | PPS_OFFSETASSERT |
 		PPS_ECHOASSERT | PPS_CANWAIT | PPS_TSFMT_TSPEC;
 	if (data->capture_clear)
@@ -194,7 +187,7 @@ static int pps_gpio_probe(struct platform_device *pdev)
 		timer_setup(&data->echo_timer, pps_gpio_echo_timer_callback, 0);
 	}
 
-	/* register PPS source */
+	 
 	pps_default_params = PPS_CAPTUREASSERT | PPS_OFFSETASSERT;
 	if (data->capture_clear)
 		pps_default_params |= PPS_CAPTURECLEAR | PPS_OFFSETCLEAR;
@@ -205,7 +198,7 @@ static int pps_gpio_probe(struct platform_device *pdev)
 		return PTR_ERR(data->pps);
 	}
 
-	/* register IRQ interrupt handler */
+	 
 	ret = devm_request_irq(dev, data->irq, pps_gpio_irq_handler,
 			get_irqf_trigger_flags(data), data->info.name, data);
 	if (ret) {
@@ -226,7 +219,7 @@ static int pps_gpio_remove(struct platform_device *pdev)
 
 	pps_unregister_source(data->pps);
 	del_timer_sync(&data->echo_timer);
-	/* reset echo pin in any case */
+	 
 	gpiod_set_value(data->echo_pin, 0);
 	dev_info(&pdev->dev, "removed IRQ %d as PPS source\n", data->irq);
 	return 0;
@@ -234,7 +227,7 @@ static int pps_gpio_remove(struct platform_device *pdev)
 
 static const struct of_device_id pps_gpio_dt_ids[] = {
 	{ .compatible = "pps-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pps_gpio_dt_ids);
 

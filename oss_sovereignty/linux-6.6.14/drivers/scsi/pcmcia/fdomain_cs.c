@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1)
-/*
- * Driver for Future Domain-compatible PCMCIA SCSI cards
- * Copyright 2019 Ondrej Zary
- *
- * The initial developer of the original code is David A. Hinds
- * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
- * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -27,10 +27,7 @@ const volatile int x = 0;
 SEC("tc")
 int load(struct __sk_buff *skb)
 {
-	/* This will be kept by clang, but removed by verifier. Since it is
-	 * marked as __weak, libbpf and gen_loader don't error out if BTF ID
-	 * is not found for it, instead imm and off is set to 0 for it.
-	 */
+	 
 	if (x)
 		bpf_testmod_invalid_mod_kfunc();
 	bpf_testmod_test_mod_kfunc(42);
@@ -41,7 +38,7 @@ int load(struct __sk_buff *skb)
 SEC("tc")
 int load_256(struct __sk_buff *skb)
 {
-	/* this will fail if kfunc doesn't reuse its own btf fd index */
+	 
 	REPEAT_256(bpf_testmod_test_mod_kfunc(42););
 	bpf_testmod_test_mod_kfunc(42);
 	return 0;

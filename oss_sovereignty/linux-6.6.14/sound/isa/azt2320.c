@@ -1,21 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-    card-azt2320.c - driver for Aztech Systems AZT2320 based soundcards.
-    Copyright (C) 1999-2000 by Massimo Piccioni <dafastidio@libero.it>
 
-*/
+ 
 
-/*
-    This driver should provide support for most Aztech AZT2320 based cards.
-    Several AZT2316 chips are also supported/tested, but autoprobe doesn't
-    work: all module option have to be set.
-
-    No docs available for us at Aztech headquarters !!!   Unbelievable ...
-    No other help obtained.
-
-    Thanks to Rainer Wiesner <rainer.wiesner@01019freenet.de> for the WSS
-    activation method (full-duplex audio!).
-*/
+ 
 
 #include <linux/io.h>
 #include <linux/delay.h>
@@ -36,17 +22,17 @@ MODULE_AUTHOR("Massimo Piccioni <dafastidio@libero.it>");
 MODULE_DESCRIPTION("Aztech Systems AZT2320");
 MODULE_LICENSE("GPL");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_ISAPNP; /* Enable this card */
-static long port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	/* PnP setup */
-static long wss_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	/* PnP setup */
-static long mpu_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	/* PnP setup */
-static long fm_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	/* PnP setup */
-static int irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	/* Pnp setup */
-static int mpu_irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	/* Pnp setup */
-static int dma1[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;	/* PnP setup */
-static int dma2[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;	/* PnP setup */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_ISAPNP;  
+static long port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	 
+static long wss_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	 
+static long mpu_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	 
+static long fm_port[SNDRV_CARDS] = SNDRV_DEFAULT_PORT;	 
+static int irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	 
+static int mpu_irq[SNDRV_CARDS] = SNDRV_DEFAULT_IRQ;	 
+static int dma1[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;	 
+static int dma2[SNDRV_CARDS] = SNDRV_DEFAULT_DMA;	 
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for azt2320 based soundcard.");
@@ -63,19 +49,19 @@ struct snd_card_azt2320 {
 };
 
 static const struct pnp_card_device_id snd_azt2320_pnpids[] = {
-	/* PRO16V */
+	 
 	{ .id = "AZT1008", .devs = { { "AZT1008" }, { "AZT2001" }, } },
-	/* Aztech Sound Galaxy 16 */
+	 
 	{ .id = "AZT2320", .devs = { { "AZT0001" }, { "AZT0002" }, } },
-	/* Packard Bell Sound III 336 AM/SP */
+	 
 	{ .id = "AZT3000", .devs = { { "AZT1003" }, { "AZT2001" }, } },
-	/* AT3300 */
+	 
 	{ .id = "AZT3002", .devs = { { "AZT1004" }, { "AZT2001" }, } },
-	/* --- */
+	 
 	{ .id = "AZT3005", .devs = { { "AZT1003" }, { "AZT2001" }, } },
-	/* --- */
+	 
 	{ .id = "AZT3011", .devs = { { "AZT1003" }, { "AZT2001" }, } },
-	{ .id = "" }	/* end */
+	{ .id = "" }	 
 };
 
 MODULE_DEVICE_TABLE(pnp_card, snd_azt2320_pnpids);
@@ -129,7 +115,7 @@ static int snd_card_azt2320_pnp(int dev, struct snd_card_azt2320 *acard,
 	return 0;
 }
 
-/* same of snd_sbdsp_command by Jaroslav Kysela */
+ 
 static int snd_card_azt2320_command(unsigned long port, unsigned char val)
 {
 	int i;

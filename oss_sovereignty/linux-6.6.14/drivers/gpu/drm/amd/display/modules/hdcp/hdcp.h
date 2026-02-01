@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef HDCP_H_
 #define HDCP_H_
@@ -143,10 +120,10 @@ struct mod_hdcp_message_hdcp2 {
 	uint8_t		lc_init[9];
 	uint8_t		lc_l_prime[33];
 	uint8_t		ske_eks[25];
-	uint8_t		rx_id_list[177]; // 22 + 5 * 31
+	uint8_t		rx_id_list[177]; 
 	uint16_t	rx_id_list_size;
 	uint8_t		repeater_auth_ack[17];
-	uint8_t		repeater_auth_stream_manage[68]; // 6 + 2 * 31
+	uint8_t		repeater_auth_stream_manage[68]; 
 	uint16_t	stream_manage_size;
 	uint8_t		repeater_auth_stream_ready[33];
 	uint8_t		rxstatus_dp;
@@ -162,7 +139,7 @@ struct mod_hdcp_auth_counters {
 	uint8_t stream_management_retry_count;
 };
 
-/* contains values per connection */
+ 
 struct mod_hdcp_connection {
 	struct mod_hdcp_link link;
 	uint8_t is_repeater;
@@ -174,7 +151,7 @@ struct mod_hdcp_connection {
 	uint8_t hdcp2_retry_count;
 };
 
-/* contains values per authentication cycle */
+ 
 struct mod_hdcp_authentication {
 	uint32_t id;
 	union mod_hdcp_message msg;
@@ -182,13 +159,13 @@ struct mod_hdcp_authentication {
 	struct mod_hdcp_auth_counters count;
 };
 
-/* contains values per state change */
+ 
 struct mod_hdcp_state {
 	uint8_t id;
 	uint32_t stay_count;
 };
 
-/* per event in a state */
+ 
 struct mod_hdcp_event_context {
 	enum mod_hdcp_event event;
 	uint8_t rx_id_list_ready;
@@ -196,17 +173,17 @@ struct mod_hdcp_event_context {
 };
 
 struct mod_hdcp {
-	/* per link */
+	 
 	struct mod_hdcp_config config;
-	/* per connection */
+	 
 	struct mod_hdcp_connection connection;
-	/* per displays */
+	 
 	struct mod_hdcp_display displays[MAX_NUM_OF_DISPLAYS];
-	/* per authentication attempt */
+	 
 	struct mod_hdcp_authentication auth;
-	/* per state in an authentication */
+	 
 	struct mod_hdcp_state state;
-	/* reserved memory buffer */
+	 
 	uint8_t buf[2025];
 };
 
@@ -285,7 +262,7 @@ enum mod_hdcp_hdcp2_dp_state_id {
 	HDCP_STATE_END = HDCP2_DP_STATE_END,
 };
 
-/* hdcp1 executions and transitions */
+ 
 typedef enum mod_hdcp_status (*mod_hdcp_action)(struct mod_hdcp *hdcp);
 uint8_t mod_hdcp_execute_and_set(
 		mod_hdcp_action func, uint8_t *flag,
@@ -305,7 +282,7 @@ enum mod_hdcp_status mod_hdcp_hdcp1_dp_transition(struct mod_hdcp *hdcp,
 	struct mod_hdcp_transition_input_hdcp1 *input,
 	struct mod_hdcp_output *output);
 
-/* hdcp2 executions and transitions */
+ 
 enum mod_hdcp_status mod_hdcp_hdcp2_execution(struct mod_hdcp *hdcp,
 	struct mod_hdcp_event_context *event_ctx,
 	struct mod_hdcp_transition_input_hdcp2 *input);
@@ -321,13 +298,13 @@ enum mod_hdcp_status mod_hdcp_hdcp2_dp_transition(struct mod_hdcp *hdcp,
 	struct mod_hdcp_transition_input_hdcp2 *input,
 	struct mod_hdcp_output *output);
 
-/* log functions */
+ 
 void mod_hdcp_dump_binary_message(uint8_t *msg, uint32_t msg_size,
 		uint8_t *buf, uint32_t buf_size);
 void mod_hdcp_log_ddc_trace(struct mod_hdcp *hdcp);
-/* TODO: add adjustment log */
+ 
 
-/* psp functions */
+ 
 enum mod_hdcp_status mod_hdcp_add_display_to_topology(
 		struct mod_hdcp *hdcp, struct mod_hdcp_display *display);
 enum mod_hdcp_status mod_hdcp_remove_display_from_topology(
@@ -357,7 +334,7 @@ enum mod_hdcp_status mod_hdcp_hdcp2_prepare_stream_management(
 enum mod_hdcp_status mod_hdcp_hdcp2_validate_stream_ready(
 		struct mod_hdcp *hdcp);
 
-/* ddc functions */
+ 
 enum mod_hdcp_status mod_hdcp_read_bksv(struct mod_hdcp *hdcp);
 enum mod_hdcp_status mod_hdcp_read_bcaps(struct mod_hdcp *hdcp);
 enum mod_hdcp_status mod_hdcp_read_bstatus(struct mod_hdcp *hdcp);
@@ -387,7 +364,7 @@ enum mod_hdcp_status mod_hdcp_write_stream_manage(struct mod_hdcp *hdcp);
 enum mod_hdcp_status mod_hdcp_write_content_type(struct mod_hdcp *hdcp);
 enum mod_hdcp_status mod_hdcp_clear_cp_irq_status(struct mod_hdcp *hdcp);
 
-/* hdcp version helpers */
+ 
 static inline uint8_t is_dp_hdcp(struct mod_hdcp *hdcp)
 {
 	return (hdcp->connection.link.mode == MOD_HDCP_MODE_DP);
@@ -404,7 +381,7 @@ static inline uint8_t is_hdmi_dvi_sl_hdcp(struct mod_hdcp *hdcp)
 	return (hdcp->connection.link.mode == MOD_HDCP_MODE_DEFAULT);
 }
 
-/* hdcp state helpers */
+ 
 static inline uint8_t current_state(struct mod_hdcp *hdcp)
 {
 	return hdcp->state.id;
@@ -415,7 +392,7 @@ static inline void set_state_id(struct mod_hdcp *hdcp,
 {
 	memset(&hdcp->state, 0, sizeof(hdcp->state));
 	hdcp->state.id = id;
-	/* callback timer should be reset per state */
+	 
 	output->callback_stop = 1;
 	output->watchdog_timer_stop = 1;
 	HDCP_NEXT_STATE_TRACE(hdcp, id, output);
@@ -473,7 +450,7 @@ static inline uint8_t is_in_initialized_state(struct mod_hdcp *hdcp)
 	return current_state(hdcp) == HDCP_INITIALIZED;
 }
 
-/* transition operation helpers */
+ 
 static inline void increment_stay_counter(struct mod_hdcp *hdcp)
 {
 	hdcp->state.stay_count++;
@@ -510,7 +487,7 @@ static inline void set_auth_complete(struct mod_hdcp *hdcp,
 	mod_hdcp_log_ddc_trace(hdcp);
 }
 
-/* connection topology helpers */
+ 
 static inline uint8_t is_display_active(struct mod_hdcp_display *display)
 {
 	return display->state >= MOD_HDCP_DISPLAY_ACTIVE;
@@ -581,4 +558,4 @@ static inline void reset_retry_counts(struct mod_hdcp *hdcp)
 	hdcp->connection.hdcp2_retry_count = 0;
 }
 
-#endif /* HDCP_H_ */
+#endif  

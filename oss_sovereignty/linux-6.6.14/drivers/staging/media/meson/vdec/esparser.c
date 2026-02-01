@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Author: Maxime Jourdan <mjourdan@baylibre.com>
- *
- * The Elementary Stream Parser is a HW bitstream parser.
- * It reads bitstream buffers and feeds them to the VIFIFO
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/ioctl.h>
@@ -20,7 +14,7 @@
 #include "esparser.h"
 #include "vdec_helpers.h"
 
-/* PARSER REGS (CBUS) */
+ 
 #define PARSER_CONTROL 0x00
 	#define ES_PACK_SIZE_BIT	8
 	#define ES_WRITE		BIT(5)
@@ -74,10 +68,7 @@ static irqreturn_t esparser_isr(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * VP9 frame headers need to be appended by a 16-byte long
- * Amlogic custom header
- */
+ 
 static int vp9_update_header(struct amvdec_core *core, struct vb2_buffer *buf)
 {
 	u8 *dp;
@@ -165,7 +156,7 @@ static int vp9_update_header(struct amvdec_core *core, struct vb2_buffer *buf)
 		fdata[15] = 'V';
 
 		if (!old_header) {
-			/* nothing */
+			 
 		} else if (old_header > fdata + 16 + framesize) {
 			dev_dbg(core->dev, "%s: data has gaps, setting to 0\n",
 				__func__);
@@ -180,11 +171,7 @@ static int vp9_update_header(struct amvdec_core *core, struct vb2_buffer *buf)
 	return new_frame_size;
 }
 
-/* Pad the packet to at least 4KiB bytes otherwise the VDEC unit won't trigger
- * ISRs.
- * Also append a start code 000001ff at the end to trigger
- * the ESPARSER interrupt.
- */
+ 
 static u32 esparser_pad_start_code(struct amvdec_core *core,
 				   struct vb2_buffer *vb,
 				   u32 payload_size)
@@ -240,7 +227,7 @@ static u32 esparser_vififo_get_free_space(struct amvdec_session *sess)
 
 	vififo_usage  = vdec_ops->vififo_level(sess);
 	vififo_usage += amvdec_read_parser(core, PARSER_VIDEO_HOLE);
-	vififo_usage += (6 * SZ_1K); // 6 KiB internal fifo
+	vififo_usage += (6 * SZ_1K); 
 
 	if (vififo_usage > sess->vififo_size) {
 		dev_warn(sess->core->dev,
@@ -300,14 +287,7 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
 	u32 offset;
 	u32 pad_size;
 
-	/*
-	 * When max ref frame is held by VP9, this should be -= 3 to prevent a
-	 * shortage of CAPTURE buffers on the decoder side.
-	 * For the future, a good enhancement of the way this is handled could
-	 * be to notify new capture buffers to the decoding modules, so that
-	 * they could pause when there is no capture buffer available and
-	 * resume on this notification.
-	 */
+	 
 	if (sess->fmt_out->pixfmt == V4L2_PIX_FMT_VP9) {
 		if (codec_ops->num_pending_bufs)
 			num_dst_bufs = codec_ops->num_pending_bufs(sess);
@@ -342,7 +322,7 @@ esparser_queue(struct amvdec_session *sess, struct vb2_v4l2_buffer *vbuf)
 	if (sess->fmt_out->pixfmt == V4L2_PIX_FMT_VP9) {
 		payload_size = vp9_update_header(core, vb);
 
-		/* If unable to alter buffer to add headers */
+		 
 		if (payload_size == 0) {
 			amvdec_remove_ts(sess, vb->timestamp);
 			v4l2_m2m_buf_done(vbuf, VB2_BUF_STATE_ERROR);

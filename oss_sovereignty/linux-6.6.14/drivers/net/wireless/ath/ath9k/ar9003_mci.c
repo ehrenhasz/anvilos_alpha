@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/export.h>
 #include "hw.h"
@@ -184,10 +170,7 @@ static void ar9003_mci_send_coex_bt_status_query(struct ath_hw *ah,
 
 	*(((u8 *)payload) + MCI_GPM_COEX_B_BT_BITMAP) = query_type;
 
-	/*
-	 * If bt_status_query message is  not sent successfully,
-	 * then need_flush_btinfo should be set again.
-	 */
+	 
 	if (!ar9003_mci_send_message(ah, MCI_GPM, 0, payload, 16,
 				wait_done, true)) {
 		if (query_btinfo)
@@ -209,7 +192,7 @@ static void ar9003_mci_send_coex_halt_bt_gpm(struct ath_hw *ah, bool halt,
 
 	if (halt) {
 		mci->query_bt = true;
-		/* Send next unhalt no matter halt sent or not */
+		 
 		mci->unhalt_bt_gpm = true;
 		mci->need_flush_btinfo = true;
 		*(((u8 *)payload) + MCI_GPM_COEX_B_HALT_STATE) =
@@ -246,40 +229,18 @@ static void ar9003_mci_prep_interface(struct ath_hw *ah)
 
 	mci->bt_state = MCI_BT_AWAKE;
 
-	/*
-	 * we don't need to send more remote_reset at this moment.
-	 * If BT receive first remote_reset, then BT HW will
-	 * be cleaned up and will be able to receive req_wake
-	 * and BT HW will respond sys_waking.
-	 * In this case, WLAN will receive BT's HW sys_waking.
-	 * Otherwise, if BT SW missed initial remote_reset,
-	 * that remote_reset will still clean up BT MCI RX,
-	 * and the req_wake will wake BT up,
-	 * and BT SW will respond this req_wake with a remote_reset and
-	 * sys_waking. In this case, WLAN will receive BT's SW
-	 * sys_waking. In either case, BT's RX is cleaned up. So we
-	 * don't need to reply BT's remote_reset now, if any.
-	 * Similarly, if in any case, WLAN can receive BT's sys_waking,
-	 * that means WLAN's RX is also fine.
-	 */
+	 
 	ar9003_mci_send_sys_waking(ah, true);
 	udelay(10);
 
-	/*
-	 * Set BT priority interrupt value to be 0xff to
-	 * avoid having too many BT PRIORITY interrupts.
-	 */
+	 
 	REG_WRITE(ah, AR_MCI_BT_PRI0, 0xFFFFFFFF);
 	REG_WRITE(ah, AR_MCI_BT_PRI1, 0xFFFFFFFF);
 	REG_WRITE(ah, AR_MCI_BT_PRI2, 0xFFFFFFFF);
 	REG_WRITE(ah, AR_MCI_BT_PRI3, 0xFFFFFFFF);
 	REG_WRITE(ah, AR_MCI_BT_PRI, 0X000000FF);
 
-	/*
-	 * A contention reset will be received after send out
-	 * sys_waking. Also BT priority interrupt bits will be set.
-	 * Clear those bits before the next step.
-	 */
+	 
 
 	REG_WRITE(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
 		  AR_MCI_INTERRUPT_RX_MSG_CONT_RST);
@@ -303,7 +264,7 @@ static void ar9003_mci_prep_interface(struct ath_hw *ah)
 	}
 
 clear_redunt:
-	/* Clear the extra redundant SYS_WAKING from BT */
+	 
 	if ((mci->bt_state == MCI_BT_AWAKE) &&
 	    (REG_READ_FIELD(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
 			    AR_MCI_INTERRUPT_RX_MSG_SYS_WAKING)) &&
@@ -360,7 +321,7 @@ void ar9003_mci_get_interrupt(struct ath_hw *ah, u32 *raw_intr,
 	*raw_intr = mci->raw_intr;
 	*rx_msg_intr = mci->rx_msg_intr;
 
-	/* Clean int bits after the values are read. */
+	 
 	mci->raw_intr = 0;
 	mci->rx_msg_intr = 0;
 }
@@ -520,10 +481,7 @@ void ar9003_mci_check_bt(struct ath_hw *ah)
 	if (!mci_hw->ready)
 		return;
 
-	/*
-	 * check BT state again to make
-	 * sure it's not changed.
-	 */
+	 
 	ar9003_mci_sync_bt_state(ah);
 	ar9003_mci_2g5g_switch(ah, true);
 
@@ -629,18 +587,7 @@ static u32 ar9003_mci_wait_for_gpm(struct ath_hw *ah, u8 gpm_type,
 			   (recv_opcode == gpm_opcode))
 			break;
 
-		/*
-		 * check if it's cal_grant
-		 *
-		 * When we're waiting for cal_grant in reset routine,
-		 * it's possible that BT sends out cal_request at the
-		 * same time. Since BT's calibration doesn't happen
-		 * that often, we'll let BT completes calibration then
-		 * we continue to wait for cal_grant from BT.
-		 * Orginal: Wait BT_CAL_GRANT.
-		 * New: Receive BT_CAL_REQ -> send WLAN_CAL_GRANT->wait
-		 * BT_CAL_DONE -> Wait BT_CAL_GRANT.
-		 */
+		 
 
 		if ((gpm_type == MCI_GPM_BT_CAL_GRANT) &&
 		    (recv_type == MCI_GPM_BT_CAL_REQ)) {
@@ -701,18 +648,14 @@ bool ar9003_mci_start_reset(struct ath_hw *ah, struct ath9k_channel *chan)
 
 	mci_hw->bt_state = MCI_BT_CAL;
 
-	/*
-	 * MCI FIX: disable mci interrupt here. This is to avoid
-	 * SW_MSG_DONE or RX_MSG bits to trigger MCI_INT and
-	 * lead to mci_intr reentry.
-	 */
+	 
 	ar9003_mci_disable_interrupt(ah);
 
 	MCI_GPM_SET_CAL_TYPE(payload, MCI_GPM_WLAN_CAL_GRANT);
 	ar9003_mci_send_message(ah, MCI_GPM, 0, payload,
 				16, true, false);
 
-	/* Wait BT calibration to be completed for 25ms */
+	 
 
 	if (ar9003_mci_wait_for_gpm(ah, MCI_GPM_BT_CAL_DONE,
 				    0, 25000))
@@ -722,7 +665,7 @@ bool ar9003_mci_start_reset(struct ath_hw *ah, struct ath9k_channel *chan)
 			"MCI BT_CAL_DONE not received\n");
 
 	mci_hw->bt_state = MCI_BT_AWAKE;
-	/* MCI FIX: enable mci interrupt here */
+	 
 	ar9003_mci_enable_interrupt(ah);
 
 	return true;
@@ -743,12 +686,7 @@ int ar9003_mci_end_reset(struct ath_hw *ah, struct ath9k_channel *chan,
 	    !ar9003_mci_check_int(ah, AR_MCI_INTERRUPT_RX_MSG_REQ_WAKE))
 		goto exit;
 
-	/*
-	 * BT is sleeping. Check if BT wakes up during
-	 * WLAN calibration. If BT wakes up during
-	 * WLAN calibration, need to go through all
-	 * message exchanges again and recal.
-	 */
+	 
 	REG_WRITE(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
 		  (AR_MCI_INTERRUPT_RX_MSG_REMOTE_RESET |
 		   AR_MCI_INTERRUPT_RX_MSG_REQ_WAKE));
@@ -786,7 +724,7 @@ static void ar9003_mci_mute_bt(struct ath_hw *ah)
 {
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 
-	/* disable all MCI messages */
+	 
 	REG_WRITE(ah, AR_MCI_MSG_ATTRIBUTES_TABLE, 0xffff0000);
 	REG_WRITE(ah, AR_BTCOEX_WL_WEIGHTS0, 0xffffffff);
 	REG_WRITE(ah, AR_BTCOEX_WL_WEIGHTS1, 0xffffffff);
@@ -794,14 +732,10 @@ static void ar9003_mci_mute_bt(struct ath_hw *ah)
 	REG_WRITE(ah, AR_BTCOEX_WL_WEIGHTS3, 0xffffffff);
 	REG_SET_BIT(ah, AR_MCI_TX_CTRL, AR_MCI_TX_CTRL_DISABLE_LNA_UPDATE);
 
-	/* wait pending HW messages to flush out */
+	 
 	udelay(10);
 
-	/*
-	 * Send LNA_TAKE and SYS_SLEEPING when
-	 * 1. reset not after resuming from full sleep
-	 * 2. before reset MCI RX, to quiet BT and avoid MCI RX misalignment
-	 */
+	 
 	if (MCI_ANT_ARCH_PA_LNA_SHARED(mci)) {
 		ar9003_mci_send_lna_take(ah, true);
 		udelay(5);
@@ -930,15 +864,12 @@ int ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 		return -EINVAL;
 	}
 
-	/* Program MCI DMA related registers */
+	 
 	REG_WRITE(ah, AR_MCI_GPM_0, mci->gpm_addr);
 	REG_WRITE(ah, AR_MCI_GPM_1, mci->gpm_len);
 	REG_WRITE(ah, AR_MCI_SCHD_TABLE_0, mci->sched_addr);
 
-	/*
-	* To avoid MCI state machine be affected by incoming remote MCI msgs,
-	* MCI mode will be enabled later, right before reset the MCI TX and RX.
-	*/
+	 
 	if (AR_SREV_9565(ah)) {
 		u8 ant = MS(mci->config, ATH_MCI_CONFIG_ANT_ARCH);
 
@@ -963,10 +894,10 @@ int ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 	REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2, AR_BTCOEX_CTRL2_RX_DEWEIGHT, 0);
 	REG_RMW_FIELD(ah, AR_PCU_MISC, AR_PCU_BT_ANT_PREVENT_RX, 0);
 
-	/* Set the time out to 3.125ms (5 BT slots) */
+	 
 	REG_RMW_FIELD(ah, AR_BTCOEX_WL_LNA, AR_BTCOEX_WL_LNA_TIMEOUT, 0x3D090);
 
-	/* concurrent tx priority */
+	 
 	if (mci->config & ATH_MCI_CONFIG_CONCUR_TX) {
 		REG_RMW_FIELD(ah, AR_BTCOEX_CTRL2,
 			      AR_BTCOEX_CTRL2_DESC_BASED_TXPWR_ENABLE, 0);
@@ -982,7 +913,7 @@ int ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 	REG_RMW_FIELD(ah, AR_MCI_TX_CTRL, AR_MCI_TX_CTRL_CLK_DIV, regval);
 	REG_SET_BIT(ah, AR_BTCOEX_CTRL, AR_BTCOEX_CTRL_MCI_MODE_EN);
 
-	/* Resetting the Rx and Tx paths of MCI */
+	 
 	regval = REG_READ(ah, AR_MCI_COMMAND2);
 	regval |= SM(1, AR_MCI_COMMAND2_RESET_TX);
 	REG_WRITE(ah, AR_MCI_COMMAND2, regval);
@@ -997,7 +928,7 @@ int ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 		udelay(100);
 	}
 
-	/* Check pending GPM msg before MCI Reset Rx */
+	 
 	ar9003_mci_check_gpm_offset(ah);
 
 	regval |= SM(1, AR_MCI_COMMAND2_RESET_RX);
@@ -1006,7 +937,7 @@ int ar9003_mci_reset(struct ath_hw *ah, bool en_int, bool is_2g,
 	regval &= ~SM(1, AR_MCI_COMMAND2_RESET_RX);
 	REG_WRITE(ah, AR_MCI_COMMAND2, regval);
 
-	/* Init GPM offset after MCI Reset Rx */
+	 
 	ar9003_mci_state(ah, MCI_STATE_INIT_GPM_OFFSET);
 
 	REG_WRITE(ah, AR_MCI_MSG_ATTRIBUTES_TABLE,
@@ -1083,7 +1014,7 @@ static void ar9003_mci_queue_unsent_gpm(struct ath_hw *ah, u8 header,
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u8 type, opcode;
 
-	/* check if the message is to be queued */
+	 
 	if (header != MCI_GPM)
 		return;
 
@@ -1193,7 +1124,7 @@ bool ar9003_mci_send_message(struct ath_hw *ah, u8 header, u32 flag,
 	if (wait_done)
 		REG_WRITE(ah, AR_MCI_INTERRUPT_EN, 0);
 
-	/* Need to clear SW_MSG_DONE raw bit before wait */
+	 
 
 	REG_WRITE(ah, AR_MCI_INTERRUPT_RAW,
 		  (AR_MCI_INTERRUPT_SW_MSG_DONE |
@@ -1280,7 +1211,7 @@ EXPORT_SYMBOL(ar9003_mci_setup);
 
 void ar9003_mci_cleanup(struct ath_hw *ah)
 {
-	/* Turn off MCI and Jupiter mode. */
+	 
 	REG_WRITE(ah, AR_BTCOEX_CTRL, 0x00);
 	ar9003_mci_disable_interrupt(ah);
 }
@@ -1313,7 +1244,7 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type)
 	case MCI_STATE_LAST_SCHD_MSG_OFFSET:
 		value = MS(REG_READ(ah, AR_MCI_RX_STATUS),
 				    AR_MCI_RX_LAST_SCHD_MSG_INDEX);
-		/* Make it in bytes */
+		 
 		value <<= 4;
 		break;
 	case MCI_STATE_REMOTE_SLEEP:
@@ -1336,7 +1267,7 @@ u32 ar9003_mci_state(struct ath_hw *ah, u32 state_type)
 		mci->update_2g5g = true;
 
 		if (mci->config & ATH_MCI_CONFIG_MCI_OBS_MASK) {
-			/* Check if we still have control of the GPIOs */
+			 
 			if ((REG_READ(ah, AR_GLB_GPIO_CONTROL) &
 			     ATH_MCI_CONFIG_MCI_OBS_GPIO) !=
 			    ATH_MCI_CONFIG_MCI_OBS_GPIO) {
@@ -1415,7 +1346,7 @@ void ar9003_mci_bt_gain_ctrl(struct ath_hw *ah)
 	mci->update_2g5g = true;
 	ar9003_mci_send_2g5g_status(ah, true);
 
-	/* Force another 2g5g update at next scanning */
+	 
 	mci->update_2g5g = true;
 }
 
@@ -1459,9 +1390,7 @@ void ar9003_mci_check_gpm_offset(struct ath_hw *ah)
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 offset;
 
-	/*
-	 * This should only be called before "MAC Warm Reset" or "MCI Reset Rx".
-	 */
+	 
 	offset = MS(REG_READ(ah, AR_MCI_GPM_1), AR_MCI_GPM_WRITE_PTR);
 	if (mci->gpm_idx == offset)
 		return;
@@ -1477,15 +1406,7 @@ u32 ar9003_mci_get_next_gpm_offset(struct ath_hw *ah, u32 *more)
 	struct ath9k_hw_mci *mci = &ah->btcoex_hw.mci;
 	u32 offset, more_gpm = 0, gpm_ptr;
 
-	/*
-	 * This could be useful to avoid new GPM message interrupt which
-	 * may lead to spurious interrupt after power sleep, or multiple
-	 * entry of ath_mci_intr().
-	 * Adding empty GPM check by returning HAL_MCI_GPM_INVALID can
-	 * alleviate this effect, but clearing GPM RX interrupt bit is
-	 * safe, because whether this is called from hw or driver code
-	 * there must be an interrupt bit set/triggered initially
-	 */
+	 
 	REG_WRITE(ah, AR_MCI_INTERRUPT_RX_MSG_RAW,
 			AR_MCI_INTERRUPT_RX_MSG_GPM);
 
@@ -1509,7 +1430,7 @@ u32 ar9003_mci_get_next_gpm_offset(struct ath_hw *ah, u32 *more)
 	for (;;) {
 		u32 temp_index;
 
-		/* skip reserved GPM if any */
+		 
 
 		if (offset != mci->gpm_idx)
 			more_gpm = MCI_GPM_MORE;

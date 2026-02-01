@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_IF0012_H__
 #define __NVIF_IF0012_H__
 
@@ -7,7 +7,7 @@
 union nvif_outp_args {
 	struct nvif_outp_v0 {
 		__u8 version;
-		__u8 id;	/* DCB device index. */
+		__u8 id;	 
 		__u8 pad02[6];
 	} v0;
 };
@@ -26,7 +26,7 @@ union nvif_outp_load_detect_args {
 		__u8  version;
 		__u8  load;
 		__u8  pad02[2];
-		__u32 data; /*TODO: move vbios loadval parsing into nvkm */
+		__u32 data;  
 	} v0;
 };
 
@@ -60,8 +60,8 @@ union nvif_outp_acquire_args {
 				__u8 pad02[6];
 			} lvds;
 			struct {
-				__u8 link_nr; /* 0 = highest possible. */
-				__u8 link_bw; /* 0 = highest possible, DP BW code otherwise. */
+				__u8 link_nr;  
+				__u8 link_bw;  
 				__u8 hda;
 				__u8 mst;
 				__u8 pad04[4];

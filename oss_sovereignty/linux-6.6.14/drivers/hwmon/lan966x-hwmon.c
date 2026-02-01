@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -10,27 +10,7 @@
 #include <linux/polynomial.h>
 #include <linux/regmap.h>
 
-/*
- * The original translation formulae of the temperature (in degrees of Celsius)
- * are as follows:
- *
- *   T = -3.4627e-11*(N^4) + 1.1023e-7*(N^3) + -1.9165e-4*(N^2) +
- *       3.0604e-1*(N^1) + -5.6197e1
- *
- * where [-56.197, 136.402]C and N = [0, 1023].
- *
- * They must be accordingly altered to be suitable for the integer arithmetics.
- * The technique is called 'factor redistribution', which just makes sure the
- * multiplications and divisions are made so to have a result of the operations
- * within the integer numbers limit. In addition we need to translate the
- * formulae to accept millidegrees of Celsius. Here what it looks like after
- * the alterations:
- *
- *   T = -34627e-12*(N^4) + 110230e-9*(N^3) + -191650e-6*(N^2) +
- *       306040e-3*(N^1) + -56197
- *
- * where T = [-56197, 136402]mC and N = [0, 1023].
- */
+ 
 
 static const struct polynomial poly_N_to_temp = {
 	.terms = {
@@ -42,7 +22,7 @@ static const struct polynomial poly_N_to_temp = {
 	}
 };
 
-#define PVT_SENSOR_CTRL		0x0 /* unused */
+#define PVT_SENSOR_CTRL		0x0  
 #define PVT_SENSOR_CFG		0x4
 #define   SENSOR_CFG_CLK_CFG		GENMASK(27, 20)
 #define   SENSOR_CFG_TRIM_VAL		GENMASK(13, 9)
@@ -66,7 +46,7 @@ static const struct polynomial poly_N_to_temp = {
 #define FAN_CNT			0xc
 #define   FAN_CNT_DATA			GENMASK(15, 0)
 
-#define LAN966X_PVT_CLK		1200000 /* 1.2 MHz */
+#define LAN966X_PVT_CLK		1200000  
 
 struct lan966x_hwmon {
 	struct regmap *regmap_pvt;
@@ -104,10 +84,7 @@ static int lan966x_hwmon_read_fan(struct device *dev, long *val)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Data is given in pulses per second. Assume two pulses
-	 * per revolution.
-	 */
+	 
 	*val = FIELD_GET(FAN_CNT_DATA, data) * 60 / 2;
 
 	return 0;
@@ -139,10 +116,7 @@ static int lan966x_hwmon_read_pwm_freq(struct device *dev, long *val)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Datasheet says it is sys_clk / 256 / pwm_freq. But in reality
-	 * it is sys_clk / 256 / (pwm_freq + 1).
-	 */
+	 
 	data = FIELD_GET(FAN_PWM_FREQ_FREQ, data) + 1;
 	tmp = DIV_ROUND_CLOSEST(hwmon->clk_rate, 256);
 	*val = DIV_ROUND_CLOSEST(tmp, data);
@@ -300,10 +274,10 @@ static int lan966x_hwmon_enable(struct device *dev,
 	unsigned int div;
 	int ret;
 
-	/* enable continuous mode */
+	 
 	val = SENSOR_CFG_SAMPLE_ENA | SENSOR_CFG_CONTINIOUS_MODE;
 
-	/* set PVT clock to be between 1.15 and 1.25 MHz */
+	 
 	div = DIV_ROUND_CLOSEST(hwmon->clk_rate, LAN966X_PVT_CLK);
 	val |= FIELD_PREP(SENSOR_CFG_CLK_CFG, div);
 

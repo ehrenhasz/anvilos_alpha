@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Secure Digital Host Controller
-//
-// Copyright (C) 2018 Spreadtrum, Inc.
-// Author: Chunyan Zhang <chunyan.zhang@unisoc.com>
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -23,7 +23,7 @@
 #include "sdhci-pltfm.h"
 #include "mmc_hsq.h"
 
-/* SDHCI_ARGUMENT2 register high 16bit */
+ 
 #define SDHCI_SPRD_ARG2_STUFF		GENMASK(31, 16)
 
 #define SDHCI_SPRD_REG_32_DLL_CFG	0x200
@@ -54,18 +54,12 @@
 
 #define  SDHCI_SPRD_INT_SIGNAL_MASK	0x1B7F410B
 
-/* SDHCI_HOST_CONTROL2 */
+ 
 #define  SDHCI_SPRD_CTRL_HS200		0x0005
 #define  SDHCI_SPRD_CTRL_HS400		0x0006
 #define  SDHCI_SPRD_CTRL_HS400ES	0x0007
 
-/*
- * According to the standard specification, BIT(3) of SDHCI_SOFTWARE_RESET is
- * reserved, and only used on Spreadtrum's design, the hardware cannot work
- * if this bit is cleared.
- * 1 : normal work
- * 0 : hardware reset
- */
+ 
 #define  SDHCI_HW_RESET_CARD		BIT(3)
 
 #define SDHCI_SPRD_MAX_CUR		0xFFFFFF
@@ -88,7 +82,7 @@ struct sdhci_sprd_host {
 	struct pinctrl_state *pins_uhs;
 	struct pinctrl_state *pins_default;
 	u32 base_rate;
-	int flags; /* backup of host attribute */
+	int flags;  
 	u32 phy_delay[MMC_TIMING_MMC_HS400 + 2];
 };
 
@@ -120,7 +114,7 @@ static void sdhci_sprd_init_config(struct sdhci_host *host)
 {
 	u16 val;
 
-	/* set dll backup mode */
+	 
 	val = sdhci_readl(host, SDHCI_SPRD_REG_DEBOUNCE);
 	val |= SDHCI_SPRD_BIT_DLL_BAK | SDHCI_SPRD_BIT_DLL_VAL;
 	sdhci_writel(host, val, SDHCI_SPRD_REG_DEBOUNCE);
@@ -136,7 +130,7 @@ static inline u32 sdhci_sprd_readl(struct sdhci_host *host, int reg)
 
 static inline void sdhci_sprd_writel(struct sdhci_host *host, u32 val, int reg)
 {
-	/* SDHCI_MAX_CURRENT is reserved on Spreadtrum's platform */
+	 
 	if (unlikely(reg == SDHCI_MAX_CURRENT))
 		return;
 
@@ -148,7 +142,7 @@ static inline void sdhci_sprd_writel(struct sdhci_host *host, u32 val, int reg)
 
 static inline void sdhci_sprd_writew(struct sdhci_host *host, u16 val, int reg)
 {
-	/* SDHCI_BLOCK_COUNT is Read Only on Spreadtrum's platform */
+	 
 	if (unlikely(reg == SDHCI_BLOCK_COUNT))
 		return;
 
@@ -157,14 +151,7 @@ static inline void sdhci_sprd_writew(struct sdhci_host *host, u16 val, int reg)
 
 static inline void sdhci_sprd_writeb(struct sdhci_host *host, u8 val, int reg)
 {
-	/*
-	 * Since BIT(3) of SDHCI_SOFTWARE_RESET is reserved according to the
-	 * standard specification, sdhci_reset() write this register directly
-	 * without checking other reserved bits, that will clear BIT(3) which
-	 * is defined as hardware reset on Spreadtrum's platform and clearing
-	 * it by mistake will lead the card not work. So here we need to work
-	 * around it.
-	 */
+	 
 	if (unlikely(reg == SDHCI_SOFTWARE_RESET)) {
 		if (readb_relaxed(host->ioaddr + reg) & SDHCI_HW_RESET_CARD)
 			val |= SDHCI_HW_RESET_CARD;
@@ -207,7 +194,7 @@ static inline u32 sdhci_sprd_calc_div(u32 base_clk, u32 clk)
 {
 	u32 div;
 
-	/* select 2x clock source */
+	 
 	if (base_clk <= clk * 2)
 		return 0;
 
@@ -241,7 +228,7 @@ static inline void _sdhci_sprd_set_clock(struct sdhci_host *host,
 
 	val = sdhci_readl(host, SDHCI_SPRD_REG_32_BUSY_POSI);
 	mask = SDHCI_SPRD_BIT_OUTR_CLK_AUTO_EN | SDHCI_SPRD_BIT_INNR_CLK_AUTO_EN;
-	/* Enable CLK_AUTO when the clock is greater than 400K. */
+	 
 	if (clk > 400000) {
 		if (mask != (val & mask)) {
 			val |= mask;
@@ -262,20 +249,20 @@ static void sdhci_sprd_enable_phy_dll(struct sdhci_host *host)
 	tmp = sdhci_readl(host, SDHCI_SPRD_REG_32_DLL_CFG);
 	tmp &= ~(SDHCI_SPRD_DLL_EN | SDHCI_SPRD_DLL_ALL_CPST_EN);
 	sdhci_writel(host, tmp, SDHCI_SPRD_REG_32_DLL_CFG);
-	/* wait 1ms */
+	 
 	usleep_range(1000, 1250);
 
 	tmp = sdhci_readl(host, SDHCI_SPRD_REG_32_DLL_CFG);
 	tmp |= SDHCI_SPRD_DLL_ALL_CPST_EN | SDHCI_SPRD_DLL_SEARCH_MODE |
 		SDHCI_SPRD_DLL_INIT_COUNT | SDHCI_SPRD_DLL_PHASE_INTERNAL;
 	sdhci_writel(host, tmp, SDHCI_SPRD_REG_32_DLL_CFG);
-	/* wait 1ms */
+	 
 	usleep_range(1000, 1250);
 
 	tmp = sdhci_readl(host, SDHCI_SPRD_REG_32_DLL_CFG);
 	tmp |= SDHCI_SPRD_DLL_EN;
 	sdhci_writel(host, tmp, SDHCI_SPRD_REG_32_DLL_CFG);
-	/* wait 1ms */
+	 
 	usleep_range(1000, 1250);
 
 	if (read_poll_timeout(sdhci_readl, tmp, (tmp & SDHCI_SPRD_DLL_LOCKED),
@@ -307,12 +294,7 @@ static void sdhci_sprd_set_clock(struct sdhci_host *host, unsigned int clock)
 		_sdhci_sprd_set_clock(host, clock);
 	}
 
-	/*
-	 * According to the Spreadtrum SD host specification, when we changed
-	 * the clock to be more than 52M, we should enable the PHY DLL which
-	 * is used to track the clock frequency to make the clock work more
-	 * stable. Otherwise deviation may occur of the higher clock.
-	 */
+	 
 	if (clk_changed && clock > SDHCI_SPRD_PHY_DLL_CLK)
 		sdhci_sprd_enable_phy_dll(host);
 }
@@ -341,7 +323,7 @@ static void sdhci_sprd_set_uhs_signaling(struct sdhci_host *host,
 		return;
 
 	ctrl_2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
-	/* Select Bus Speed Mode for host */
+	 
 	ctrl_2 &= ~SDHCI_CTRL_UHS_MASK;
 	switch (timing) {
 	case MMC_TIMING_UHS_SDR12:
@@ -382,16 +364,11 @@ static void sdhci_sprd_hw_reset(struct sdhci_host *host)
 {
 	int val;
 
-	/*
-	 * Note: don't use sdhci_writeb() API here since it is redirected to
-	 * sdhci_sprd_writeb() in which we have a workaround for
-	 * SDHCI_SOFTWARE_RESET which would make bit SDHCI_HW_RESET_CARD can
-	 * not be cleared.
-	 */
+	 
 	val = readb_relaxed(host->ioaddr + SDHCI_SOFTWARE_RESET);
 	val &= ~SDHCI_HW_RESET_CARD;
 	writeb_relaxed(val, host->ioaddr + SDHCI_SOFTWARE_RESET);
-	/* wait for 10 us */
+	 
 	usleep_range(10, 20);
 
 	val |= SDHCI_HW_RESET_CARD;
@@ -401,7 +378,7 @@ static void sdhci_sprd_hw_reset(struct sdhci_host *host)
 
 static unsigned int sdhci_sprd_get_max_timeout_count(struct sdhci_host *host)
 {
-	/* The Spredtrum controller actual maximum timeout count is 1 << 31 */
+	 
 	return 1 << 31;
 }
 
@@ -413,7 +390,7 @@ static unsigned int sdhci_sprd_get_ro(struct sdhci_host *host)
 static void sdhci_sprd_request_done(struct sdhci_host *host,
 				    struct mmc_request *mrq)
 {
-	/* Validate if the request was from software queue firstly. */
+	 
 	if (mmc_hsq_finalize_request(host->mmc, mrq))
 		return;
 
@@ -466,11 +443,7 @@ static void sdhci_sprd_check_auto_cmd23(struct mmc_host *mmc,
 
 	host->flags |= sprd_host->flags & SDHCI_AUTO_CMD23;
 
-	/*
-	 * From version 4.10 onward, ARGUMENT2 register is also as 32-bit
-	 * block count register which doesn't support stuff bits of
-	 * CMD23 argument on Spreadtrum's sd host controller.
-	 */
+	 
 	if (host->version >= SDHCI_SPEC_410 &&
 	    mrq->sbc && (mrq->sbc->arg & SDHCI_SPRD_ARG2_STUFF) &&
 	    (host->flags & SDHCI_AUTO_CMD23))
@@ -534,7 +507,7 @@ static int sdhci_sprd_voltage_switch(struct mmc_host *mmc, struct mmc_ios *ios)
 		break;
 	}
 
-	/* Wait for 300 ~ 500 us for pin state stable */
+	 
 	usleep_range(300, 500);
 
 reset:
@@ -556,7 +529,7 @@ static void sdhci_sprd_hs400_enhanced_strobe(struct mmc_host *mmc,
 
 	sdhci_sprd_sd_clk_off(host);
 
-	/* Set HS400 enhanced strobe mode */
+	 
 	ctrl_2 = sdhci_readw(host, SDHCI_HOST_CONTROL2);
 	ctrl_2 &= ~SDHCI_CTRL_UHS_MASK;
 	ctrl_2 |= SDHCI_SPRD_CTRL_HS400ES;
@@ -564,7 +537,7 @@ static void sdhci_sprd_hs400_enhanced_strobe(struct mmc_host *mmc,
 
 	sdhci_sprd_sd_clk_on(host);
 
-	/* Set the PHY DLL delay value for HS400 enhanced strobe mode */
+	 
 	sdhci_writel(host, p[MMC_TIMING_MMC_HS400 + 1],
 		     SDHCI_SPRD_REG_32_DLL_DLY);
 }
@@ -751,12 +724,7 @@ static int sdhci_sprd_probe(struct platform_device *pdev)
 	host->mmc_host_ops.execute_sd_hs_tuning =
 		sdhci_sprd_execute_sd_hs_data_tuning;
 
-	/*
-	 * We can not use the standard ops to change and detect the voltage
-	 * signal for Spreadtrum SD host controller, since our voltage regulator
-	 * for I/O is fixed in hardware, that means we do not need control
-	 * the standard SD host controller to change the I/O voltage.
-	 */
+	 
 	host->mmc_host_ops.start_signal_voltage_switch =
 		sdhci_sprd_voltage_switch;
 
@@ -839,11 +807,7 @@ static int sdhci_sprd_probe(struct platform_device *pdev)
 
 	sdhci_enable_v4_mode(host);
 
-	/*
-	 * Supply the existing CAPS, but clear the UHS-I modes. This
-	 * will allow these modes to be specified only by device
-	 * tree properties through mmc_of_parse().
-	 */
+	 
 	sdhci_read_caps(host);
 	host->caps1 &= ~(SDHCI_SUPPORT_SDR50 | SDHCI_SUPPORT_SDR104 |
 			 SDHCI_SUPPORT_DDR50);

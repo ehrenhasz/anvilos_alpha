@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _RDS_IB_H
 #define _RDS_IB_H
 
@@ -19,7 +19,7 @@
 
 #define RDS_IB_DEFAULT_RETRY_COUNT	1
 
-#define RDS_IB_SUPPORTED_PROTOCOLS	0x00000003	/* minor versions supported */
+#define RDS_IB_SUPPORTED_PROTOCOLS	0x00000003	 
 
 #define RDS_IB_RECYCLE_BATCH_COUNT	32
 
@@ -28,11 +28,7 @@
 extern struct rw_semaphore rds_ib_devices_lock;
 extern struct list_head rds_ib_devices;
 
-/*
- * IB posts RDS_FRAG_SIZE fragments of pages to the receive queues to
- * try and minimize the amount of memory tied up both the device and
- * socket receive queues.
- */
+ 
 struct rds_page_frag {
 	struct list_head	f_item;
 	struct list_head	f_cache_entry;
@@ -56,32 +52,27 @@ struct rds_ib_refill_cache {
 	struct list_head	 *ready;
 };
 
-/* This is the common structure for the IB private data exchange in setting up
- * an RDS connection.  The exchange is different for IPv4 and IPv6 connections.
- * The reason is that the address size is different and the addresses
- * exchanged are in the beginning of the structure.  Hence it is not possible
- * for interoperability if same structure is used.
- */
+ 
 struct rds_ib_conn_priv_cmn {
 	u8			ricpc_protocol_major;
 	u8			ricpc_protocol_minor;
-	__be16			ricpc_protocol_minor_mask;	/* bitmask */
+	__be16			ricpc_protocol_minor_mask;	 
 	u8			ricpc_dp_toss;
 	u8			ripc_reserved1;
 	__be16			ripc_reserved2;
 	__be64			ricpc_ack_seq;
-	__be32			ricpc_credit;	/* non-zero enables flow ctl */
+	__be32			ricpc_credit;	 
 };
 
 struct rds_ib_connect_private {
-	/* Add new fields at the end, and don't permute existing fields. */
+	 
 	__be32				dp_saddr;
 	__be32				dp_daddr;
 	struct rds_ib_conn_priv_cmn	dp_cmn;
 };
 
 struct rds6_ib_connect_private {
-	/* Add new fields at the end, and don't permute existing fields. */
+	 
 	struct in6_addr			dp_saddr;
 	struct in6_addr			dp_daddr;
 	struct rds_ib_conn_priv_cmn	dp_cmn;
@@ -124,11 +115,7 @@ struct rds_ib_work_ring {
 	atomic_t	w_free_ctr;
 };
 
-/* Rings are posted with all the allocations they'll need to queue the
- * incoming message to the receiving socket so this can't fail.
- * All fragments start with a header, so we can make sure we're not receiving
- * garbage, and we can tell a small 8 byte fragment from an ACK frame.
- */
+ 
 struct rds_ib_ack_state {
 	u64		ack_next;
 	u64		ack_recv;
@@ -146,7 +133,7 @@ struct rds_ib_connection {
 	struct rds_ib_device	*rds_ibdev;
 	struct rds_connection	*conn;
 
-	/* alphabet soup, IBTA style */
+	 
 	struct rdma_cm_id	*i_cm_id;
 	struct ib_pd		*i_pd;
 	struct ib_cq		*i_send_cq;
@@ -154,15 +141,15 @@ struct rds_ib_connection {
 	struct ib_wc		i_send_wc[RDS_IB_WC_MAX];
 	struct ib_wc		i_recv_wc[RDS_IB_WC_MAX];
 
-	/* To control the number of wrs from fastreg */
+	 
 	atomic_t		i_fastreg_wrs;
 	atomic_t		i_fastreg_inuse_count;
 
-	/* interrupt handling */
+	 
 	struct tasklet_struct	i_send_tasklet;
 	struct tasklet_struct	i_recv_tasklet;
 
-	/* tx */
+	 
 	struct rds_ib_work_ring	i_send_ring;
 	struct rm_data_op	*i_data_op;
 	struct rds_header	**i_send_hdrs;
@@ -170,7 +157,7 @@ struct rds_ib_connection {
 	struct rds_ib_send_work *i_sends;
 	atomic_t		i_signaled_sends;
 
-	/* rx */
+	 
 	struct mutex		i_recv_mutex;
 	struct rds_ib_work_ring	i_recv_ring;
 	struct rds_ib_incoming	*i_ibinc;
@@ -178,18 +165,18 @@ struct rds_ib_connection {
 	struct rds_header	**i_recv_hdrs;
 	dma_addr_t		*i_recv_hdrs_dma;
 	struct rds_ib_recv_work *i_recvs;
-	u64			i_ack_recv;	/* last ACK received */
+	u64			i_ack_recv;	 
 	struct rds_ib_refill_cache i_cache_incs;
 	struct rds_ib_refill_cache i_cache_frags;
 	atomic_t		i_cache_allocs;
 
-	/* sending acks */
+	 
 	unsigned long		i_ack_flags;
 #ifdef KERNEL_HAS_ATOMIC64
-	atomic64_t		i_ack_next;	/* next ACK to send */
+	atomic64_t		i_ack_next;	 
 #else
-	spinlock_t		i_ack_lock;	/* protect i_ack_next */
-	u64			i_ack_next;	/* next ACK to send */
+	spinlock_t		i_ack_lock;	 
+	u64			i_ack_next;	 
 #endif
 	struct rds_header	*i_ack;
 	struct ib_send_wr	i_ack_wr;
@@ -197,33 +184,26 @@ struct rds_ib_connection {
 	dma_addr_t		i_ack_dma;
 	unsigned long		i_ack_queued;
 
-	/* Flow control related information
-	 *
-	 * Our algorithm uses a pair variables that we need to access
-	 * atomically - one for the send credits, and one posted
-	 * recv credits we need to transfer to remote.
-	 * Rather than protect them using a slow spinlock, we put both into
-	 * a single atomic_t and update it using cmpxchg
-	 */
+	 
 	atomic_t		i_credits;
 
-	/* Protocol version specific information */
-	unsigned int		i_flowctl:1;	/* enable/disable flow ctl */
+	 
+	unsigned int		i_flowctl:1;	 
 
-	/* Batched completions */
+	 
 	unsigned int		i_unsignaled_wrs;
 
-	/* Endpoint role in connection */
+	 
 	bool			i_active_side;
 	atomic_t		i_cq_quiesce;
 
-	/* Send/Recv vectors */
+	 
 	int			i_scq_vector;
 	int			i_rcq_vector;
 	u8			i_sl;
 };
 
-/* This assumes that atomic_t is at least 32 bits */
+ 
 #define IB_GET_SEND_CREDITS(v)	((v) & 0xffff)
 #define IB_GET_POST_CREDITS(v)	((v) >> 16)
 #define IB_SET_SEND_CREDITS(v)	((v) & 0xffff)
@@ -257,7 +237,7 @@ struct rds_ib_device {
 	unsigned int		max_wrs;
 	unsigned int		max_initiator_depth;
 	unsigned int		max_responder_resources;
-	spinlock_t		spinlock;	/* protect the above */
+	spinlock_t		spinlock;	 
 	refcount_t		refcount;
 	struct work_struct	free_work;
 	int			*vector_load;
@@ -265,11 +245,11 @@ struct rds_ib_device {
 
 #define rdsibdev_to_node(rdsibdev) ibdev_to_node(rdsibdev->dev)
 
-/* bits for i_ack_flags */
+ 
 #define IB_ACK_IN_FLIGHT	0
 #define IB_ACK_REQUESTED	1
 
-/* Magic WR_ID for ACKs */
+ 
 #define RDS_IB_ACK_WR_ID	(~(u64) 0)
 
 struct rds_ib_statistics {
@@ -318,10 +298,7 @@ struct rds_ib_statistics {
 
 extern struct workqueue_struct *rds_ib_wq;
 
-/*
- * Fake ib_dma_sync_sg_for_{cpu,device} as long as ib_verbs.h
- * doesn't define it.
- */
+ 
 static inline void rds_ib_dma_sync_sg_for_cpu(struct ib_device *dev,
 					      struct scatterlist *sglist,
 					      unsigned int sg_dma_len,
@@ -353,7 +330,7 @@ static inline void rds_ib_dma_sync_sg_for_device(struct ib_device *dev,
 #define ib_dma_sync_sg_for_device	rds_ib_dma_sync_sg_for_device
 
 
-/* ib.c */
+ 
 extern struct rds_transport rds_ib_transport;
 struct rds_ib_device *rds_ib_get_client_data(struct ib_device *device);
 void rds_ib_dev_put(struct rds_ib_device *rds_ibdev);
@@ -364,7 +341,7 @@ extern unsigned int rds_ib_retry_count;
 extern spinlock_t ib_nodev_conns_lock;
 extern struct list_head ib_nodev_conns;
 
-/* ib_cm.c */
+ 
 int rds_ib_conn_alloc(struct rds_connection *conn, gfp_t gfp);
 void rds_ib_conn_free(void *arg);
 int rds_ib_conn_path_connect(struct rds_conn_path *cp);
@@ -383,7 +360,7 @@ void rds_ib_cm_connect_complete(struct rds_connection *conn,
 #define rds_ib_conn_error(conn, fmt...) \
 	__rds_ib_conn_error(conn, KERN_WARNING "RDS/IB: " fmt)
 
-/* ib_rdma.c */
+ 
 int rds_ib_update_ipaddr(struct rds_ib_device *rds_ibdev,
 			 struct in6_addr *ipaddr);
 void rds_ib_add_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *conn);
@@ -391,7 +368,7 @@ void rds_ib_remove_conn(struct rds_ib_device *rds_ibdev, struct rds_connection *
 void rds_ib_destroy_nodev_conns(void);
 void rds_ib_mr_cqe_handler(struct rds_ib_connection *ic, struct ib_wc *wc);
 
-/* ib_recv.c */
+ 
 int rds_ib_recv_init(void);
 void rds_ib_recv_exit(void);
 int rds_ib_recv_path(struct rds_conn_path *conn);
@@ -411,7 +388,7 @@ void rds_ib_ack_send_complete(struct rds_ib_connection *ic);
 u64 rds_ib_piggyb_ack(struct rds_ib_connection *ic);
 void rds_ib_set_ack(struct rds_ib_connection *ic, u64 seq, int ack_required);
 
-/* ib_ring.c */
+ 
 void rds_ib_ring_init(struct rds_ib_work_ring *ring, u32 nr);
 void rds_ib_ring_resize(struct rds_ib_work_ring *ring, u32 nr);
 u32 rds_ib_ring_alloc(struct rds_ib_work_ring *ring, u32 val, u32 *pos);
@@ -423,7 +400,7 @@ u32 rds_ib_ring_oldest(struct rds_ib_work_ring *ring);
 u32 rds_ib_ring_completed(struct rds_ib_work_ring *ring, u32 wr_id, u32 oldest);
 extern wait_queue_head_t rds_ib_ring_empty_wait;
 
-/* ib_send.c */
+ 
 void rds_ib_xmit_path_complete(struct rds_conn_path *cp);
 int rds_ib_xmit(struct rds_connection *conn, struct rds_message *rm,
 		unsigned int hdr_off, unsigned int sg, unsigned int off);
@@ -437,7 +414,7 @@ int rds_ib_send_grab_credits(struct rds_ib_connection *ic, u32 wanted,
 			     u32 *adv_credits, int need_posted, int max_posted);
 int rds_ib_xmit_atomic(struct rds_connection *conn, struct rm_atomic_op *op);
 
-/* ib_stats.c */
+ 
 DECLARE_PER_CPU_SHARED_ALIGNED(struct rds_ib_statistics, rds_ib_stats);
 #define rds_ib_stats_inc(member) rds_stats_inc_which(rds_ib_stats, member)
 #define rds_ib_stats_add(member, count) \
@@ -445,7 +422,7 @@ DECLARE_PER_CPU_SHARED_ALIGNED(struct rds_ib_statistics, rds_ib_stats);
 unsigned int rds_ib_stats_info_copy(struct rds_info_iterator *iter,
 				    unsigned int avail);
 
-/* ib_sysctl.c */
+ 
 int rds_ib_sysctl_init(void);
 void rds_ib_sysctl_exit(void);
 extern unsigned long rds_ib_sysctl_max_send_wr;

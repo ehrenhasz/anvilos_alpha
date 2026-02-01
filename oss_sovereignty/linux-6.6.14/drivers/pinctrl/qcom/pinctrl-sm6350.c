@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -17,7 +14,7 @@
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\
@@ -1145,12 +1142,7 @@ static const struct pinfunction sm6350_functions[] = {
 	MSM_PIN_FUNCTION(wlan2_adc1),
 };
 
-/*
- * Every pin is maintained as a single group, and missing or non-existing pin
- * would be maintained as dummy group to synchronize pin group index with
- * pin descriptor registered with pinctrl core.
- * Clients would not be able to request these dummy pin groups.
- */
+ 
 static const struct msm_pingroup sm6350_groups[] = {
 	[0] = PINGROUP(0, ibi_i3c, qup00, cri_trng, _, _, _, _, _, _),
 	[1] = PINGROUP(1, ibi_i3c, qup00, cri_trng, _, _, _, _, _, _),

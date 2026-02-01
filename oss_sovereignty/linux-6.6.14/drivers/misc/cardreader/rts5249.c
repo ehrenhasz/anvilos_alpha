@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -104,7 +98,7 @@ static void rts5249_init_from_cfg(struct rtsx_pcr *pcr)
 
 static void rts52xa_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
 {
-	/* Set relink_time to 0 */
+	 
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 1, MASK_8_BIT_DEF, 0);
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 2, MASK_8_BIT_DEF, 0);
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 3,
@@ -141,7 +135,7 @@ static void rts52xa_save_content_from_efuse(struct rtsx_pcr *pcr)
 	rtsx_pci_write_register(pcr, RTS525A_EFUSE_ADD, REG_EFUSE_ADD_MASK, 0x00);
 	rtsx_pci_write_register(pcr, RTS525A_EFUSE_CTL,
 				REG_EFUSE_ENABLE | REG_EFUSE_MODE, REG_EFUSE_ENABLE);
-	/* Wait transfer end */
+	 
 	for (j = 0; j < 1024; j++) {
 		rtsx_pci_read_register(pcr, RTS525A_EFUSE_CTL, &tmp);
 		if ((tmp & 0x80) == 0)
@@ -157,7 +151,7 @@ static void rts52xa_save_content_from_efuse(struct rtsx_pcr *pcr)
 				REG_EFUSE_ADD_MASK, 0x04 + i);
 			rtsx_pci_write_register(pcr, RTS525A_EFUSE_CTL,
 				REG_EFUSE_ENABLE | REG_EFUSE_MODE, REG_EFUSE_ENABLE);
-			/* Wait transfer end */
+			 
 			for (j = 0; j < 1024; j++) {
 				rtsx_pci_read_register(pcr, RTS525A_EFUSE_CTL, &tmp);
 				if ((tmp & 0x80) == 0)
@@ -182,7 +176,7 @@ static void rts52xa_save_content_from_efuse(struct rtsx_pcr *pcr)
 				REG_EFUSE_ADD_MASK, 0x04 + i);
 		rtsx_pci_write_register(pcr, RTS525A_EFUSE_CTL,
 				REG_EFUSE_ENABLE | REG_EFUSE_MODE, REG_EFUSE_ENABLE);
-		/* Wait transfer end */
+		 
 		for (j = 0; j < 1024; j++) {
 			rtsx_pci_read_register(pcr, RTS525A_EFUSE_CTL, &tmp);
 			if ((tmp & 0x80) == 0)
@@ -240,18 +234,18 @@ static int rts5249_extra_init_hw(struct rtsx_pcr *pcr)
 	if (CHK_PCI_PID(pcr, PID_524A) || CHK_PCI_PID(pcr, PID_525A))
 		rts52xa_save_content_to_autoload_space(pcr);
 
-	/* Rest L1SUB Config */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, L1SUB_CONFIG3, 0xFF, 0x00);
-	/* Configure GPIO as output */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, GPIO_CTL, 0x02, 0x02);
-	/* Reset ASPM state to default value */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, ASPM_FORCE_CTL, 0x3F, 0);
-	/* Switch LDO3318 source from DV33 to card_3v3 */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, LDO_PWR_SEL, 0x03, 0x00);
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, LDO_PWR_SEL, 0x03, 0x01);
-	/* LED shine disabled, set initial shine cycle period */
+	 
 	rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, OLT_LED_CTL, 0x0F, 0x02);
-	/* Configure driving */
+	 
 	rts5249_fill_driving(pcr, OUTPUT_3V3);
 	if (pcr->flags & PCR_REVERSE_SOCKET)
 		rtsx_pci_add_cmd(pcr, WRITE_REG_CMD, PETXCFG, 0xB0, 0xB0);
@@ -285,10 +279,7 @@ static int rts5249_extra_init_hw(struct rtsx_pcr *pcr)
 	}
 
 
-	/*
-	 * If u_force_clkreq_0 is enabled, CLKREQ# PIN will be forced
-	 * to drive low, and we forcibly request clock.
-	 */
+	 
 	if (option->force_clkreq_0)
 		rtsx_pci_write_register(pcr, PETXCFG,
 			FORCE_CLKREQ_DELINK_MASK, FORCE_CLKREQ_LOW);
@@ -464,7 +455,7 @@ static int rtsx_base_switch_output_voltage(struct rtsx_pcr *pcr, u8 voltage)
 		return -EINVAL;
 	}
 
-	/* set pad drive */
+	 
 	rtsx_pci_init_cmd(pcr);
 	rts5249_fill_driving(pcr, voltage);
 	return rtsx_pci_send_cmd(pcr, 100);
@@ -483,13 +474,7 @@ static const struct pcr_ops rts5249_pcr_ops = {
 	.switch_output_voltage = rtsx_base_switch_output_voltage,
 };
 
-/* SD Pull Control Enable:
- *     SD_DAT[3:0] ==> pull up
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull up
- *     SD_CMD      ==> pull up
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5249_sd_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0x66),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0xAA),
@@ -498,13 +483,7 @@ static const u32 rts5249_sd_pull_ctl_enable_tbl[] = {
 	0,
 };
 
-/* SD Pull Control Disable:
- *     SD_DAT[3:0] ==> pull down
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull down
- *     SD_CMD      ==> pull down
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5249_sd_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL1, 0x66),
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
@@ -513,10 +492,7 @@ static const u32 rts5249_sd_pull_ctl_disable_tbl[] = {
 	0,
 };
 
-/* MS Pull Control Enable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5249_ms_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL4, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
@@ -524,10 +500,7 @@ static const u32 rts5249_ms_pull_ctl_enable_tbl[] = {
 	0,
 };
 
-/* MS Pull Control Disable:
- *     MS CD       ==> pull up
- *     others      ==> pull down
- */
+ 
 static const u32 rts5249_ms_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL4, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL5, 0x55),
@@ -564,7 +537,7 @@ void rts5249_init_params(struct rtsx_pcr *pcr)
 				| LTR_L1SS_PWR_GATE_EN);
 	option->ltr_en = true;
 
-	/* Init latency of active, idle, L1OFF to 60us, 300us, 3ms */
+	 
 	option->ltr_active_latency = LTR_ACTIVE_LATENCY_DEF;
 	option->ltr_idle_latency = LTR_IDLE_LATENCY_DEF;
 	option->ltr_l1off_latency = LTR_L1OFF_LATENCY_DEF;
@@ -672,11 +645,11 @@ static void rts5250_set_l1off_cfg_sub_d0(struct rtsx_pcr *pcr, int active)
 	aspm_L1_2 = rtsx_check_dev_flag(pcr, ASPM_L1_2_EN);
 
 	if (active) {
-		/* Run, latency: 60us */
+		 
 		if (aspm_L1_1)
 			val = option->ltr_l1off_snooze_sspwrgate;
 	} else {
-		/* L1off, latency: 300us */
+		 
 		if (aspm_L1_2)
 			val = option->ltr_l1off_sspwrgate;
 	}

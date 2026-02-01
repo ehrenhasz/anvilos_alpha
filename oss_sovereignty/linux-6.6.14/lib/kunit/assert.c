@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Assertion and expectation serialization API.
- *
- * Copyright (C) 2019, Google LLC.
- * Author: Brendan Higgins <brendanhiggins@google.com>
- */
+
+ 
 #include <kunit/assert.h>
 #include <kunit/test.h>
 
@@ -88,7 +83,7 @@ void kunit_ptr_not_err_assert_format(const struct kunit_assert *assert,
 }
 EXPORT_SYMBOL_GPL(kunit_ptr_not_err_assert_format);
 
-/* Checks if `text` is a literal representing `value`, e.g. "5" and 5 */
+ 
 static bool is_literal(struct kunit *test, const char *text, long long value,
 		       gfp_t gfp)
 {
@@ -165,9 +160,7 @@ void kunit_binary_ptr_assert_format(const struct kunit_assert *assert,
 }
 EXPORT_SYMBOL_GPL(kunit_binary_ptr_assert_format);
 
-/* Checks if KUNIT_EXPECT_STREQ() args were string literals.
- * Note: `text` will have ""s where as `value` will not.
- */
+ 
 static bool is_str_literal(const char *text, const char *value)
 {
 	int len;
@@ -207,9 +200,7 @@ void kunit_binary_str_assert_format(const struct kunit_assert *assert,
 }
 EXPORT_SYMBOL_GPL(kunit_binary_str_assert_format);
 
-/* Adds a hexdump of a buffer to a string_stream comparing it with
- * a second buffer. The different bytes are marked with <>.
- */
+ 
 static void kunit_assert_hexdump(struct string_stream *stream,
 				 const void *buf,
 				 const void *compared_buf,

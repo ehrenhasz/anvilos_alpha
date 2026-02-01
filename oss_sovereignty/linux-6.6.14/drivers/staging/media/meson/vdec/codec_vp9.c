@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Maxime Jourdan <mjourdan@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- */
+
+ 
 
 #include <media/v4l2-mem2mem.h>
 #include <media/videobuf2-dma-contig.h>
@@ -13,7 +10,7 @@
 #include "vdec_helpers.h"
 #include "codec_hevc_common.h"
 
-/* HEVC reg mapping */
+ 
 #define VP9_DEC_STATUS_REG	HEVC_ASSIST_SCRATCH_0
 	#define VP9_10B_DECODE_SLICE	5
 	#define VP9_HEAD_PARSER_DONE	0xf0
@@ -38,7 +35,7 @@
 #define HEVC_DECODE_COUNT	HEVC_ASSIST_SCRATCH_M
 #define HEVC_DECODE_SIZE	HEVC_ASSIST_SCRATCH_N
 
-/* VP9 Constants */
+ 
 #define LCU_SIZE		64
 #define MAX_REF_PIC_NUM		24
 #define REFS_PER_FRAME		3
@@ -52,7 +49,7 @@ enum FRAME_TYPE {
 	FRAME_TYPES,
 };
 
-/* VP9 Workspace layout */
+ 
 #define MPRED_MV_BUF_SIZE 0x120000
 
 #define IPP_SIZE	0x4000
@@ -108,16 +105,7 @@ enum FRAME_TYPE {
 #define ALTREF_FRAME    3
 #define MAX_REF_FRAMES  4
 
-/*
- * Defines, declarations, sub-functions for vp9 de-block loop
-	filter Thr/Lvl table update
- * - struct segmentation is for loop filter only (removed something)
- * - function "vp9_loop_filter_init" and "vp9_loop_filter_frame_init" will
-	be instantiated in C_Entry
- * - vp9_loop_filter_init run once before decoding start
- * - vp9_loop_filter_frame_init run before every frame decoding start
- * - set video format to VP9 is in vp9_loop_filter_init
- */
+ 
 #define MAX_LOOP_FILTER		63
 #define MAX_REF_LF_DELTAS	4
 #define MAX_MODE_LF_DELTAS	2
@@ -125,7 +113,7 @@ enum FRAME_TYPE {
 #define SEGMENT_ABSDATA		1
 #define MAX_SEGMENTS		8
 
-/* VP9 PROB processing defines */
+ 
 #define VP9_PARTITION_START      0
 #define VP9_PARTITION_SIZE_STEP  (3 * 4)
 #define VP9_PARTITION_ONE_SIZE   (4 * VP9_PARTITION_SIZE_STEP)
@@ -133,7 +121,7 @@ enum FRAME_TYPE {
 #define VP9_PARTITION_P_START    VP9_PARTITION_ONE_SIZE
 #define VP9_PARTITION_SIZE       (2 * VP9_PARTITION_ONE_SIZE)
 #define VP9_SKIP_START           (VP9_PARTITION_START + VP9_PARTITION_SIZE)
-#define VP9_SKIP_SIZE            4 /* only use 3*/
+#define VP9_SKIP_SIZE            4  
 #define VP9_TX_MODE_START        (VP9_SKIP_START + VP9_SKIP_SIZE)
 #define VP9_TX_MODE_8_0_OFFSET   0
 #define VP9_TX_MODE_8_1_OFFSET   1
@@ -149,7 +137,7 @@ enum FRAME_TYPE {
 #define VP9_COEF_BAND_3_OFFSET   (VP9_COEF_BAND_2_OFFSET + 6 * 3)
 #define VP9_COEF_BAND_4_OFFSET   (VP9_COEF_BAND_3_OFFSET + 6 * 3)
 #define VP9_COEF_BAND_5_OFFSET   (VP9_COEF_BAND_4_OFFSET + 6 * 3)
-#define VP9_COEF_SIZE_ONE_SET    100 /* ((3 + 5 * 6) * 3 + 1 padding)*/
+#define VP9_COEF_SIZE_ONE_SET    100  
 #define VP9_COEF_4X4_START       (VP9_COEF_START + 0 * VP9_COEF_SIZE_ONE_SET)
 #define VP9_COEF_8X8_START       (VP9_COEF_START + 4 * VP9_COEF_SIZE_ONE_SET)
 #define VP9_COEF_16X16_START     (VP9_COEF_START + 8 * VP9_COEF_SIZE_ONE_SET)
@@ -157,7 +145,7 @@ enum FRAME_TYPE {
 #define VP9_COEF_SIZE_PLANE      (2 * VP9_COEF_SIZE_ONE_SET)
 #define VP9_COEF_SIZE            (4 * 2 * 2 * VP9_COEF_SIZE_ONE_SET)
 #define VP9_INTER_MODE_START     (VP9_COEF_START + VP9_COEF_SIZE)
-#define VP9_INTER_MODE_SIZE      24 /* only use 21 (# * 7)*/
+#define VP9_INTER_MODE_SIZE      24  
 #define VP9_INTERP_START         (VP9_INTER_MODE_START + VP9_INTER_MODE_SIZE)
 #define VP9_INTERP_SIZE          8
 #define VP9_INTRA_INTER_START    (VP9_INTERP_START + VP9_INTERP_SIZE)
@@ -177,7 +165,7 @@ enum FRAME_TYPE {
 #define VP9_IF_Y_MODE_START      (VP9_REF_MODE_START + VP9_REF_MODE_SIZE)
 #define VP9_IF_Y_MODE_SIZE       36
 #define VP9_IF_UV_MODE_START     (VP9_IF_Y_MODE_START + VP9_IF_Y_MODE_SIZE)
-#define VP9_IF_UV_MODE_SIZE      92 /* only use 90*/
+#define VP9_IF_UV_MODE_SIZE      92  
 #define VP9_MV_JOINTS_START      (VP9_IF_UV_MODE_START + VP9_IF_UV_MODE_SIZE)
 #define VP9_MV_JOINTS_SIZE       3
 #define VP9_MV_SIGN_0_START      (VP9_MV_JOINTS_START + VP9_MV_JOINTS_SIZE)
@@ -213,11 +201,11 @@ enum FRAME_TYPE {
 			(VP9_MV_CLASS0_HP_0_START + VP9_MV_CLASS0_HP_0_SIZE)
 #define VP9_MV_CLASS0_HP_1_SIZE  2
 #define VP9_MV_START             VP9_MV_JOINTS_START
-#define VP9_MV_SIZE              72 /*only use 69*/
+#define VP9_MV_SIZE              72  
 
 #define VP9_TOTAL_SIZE           (VP9_MV_START + VP9_MV_SIZE)
 
-/* VP9 COUNT mem processing defines */
+ 
 #define VP9_COEF_COUNT_START           0
 #define VP9_COEF_COUNT_BAND_0_OFFSET   0
 #define VP9_COEF_COUNT_BAND_1_OFFSET   \
@@ -230,7 +218,7 @@ enum FRAME_TYPE {
 			(VP9_COEF_COUNT_BAND_3_OFFSET + 6 * 5)
 #define VP9_COEF_COUNT_BAND_5_OFFSET   \
 			(VP9_COEF_COUNT_BAND_4_OFFSET + 6 * 5)
-#define VP9_COEF_COUNT_SIZE_ONE_SET    165 /* ((3 + 5 * 6) * 5 */
+#define VP9_COEF_COUNT_SIZE_ONE_SET    165  
 #define VP9_COEF_COUNT_4X4_START       \
 		(VP9_COEF_COUNT_START + 0 * VP9_COEF_COUNT_SIZE_ONE_SET)
 #define VP9_COEF_COUNT_8X8_START       \
@@ -279,7 +267,7 @@ enum FRAME_TYPE {
 		(VP9_MV_CLASS0_HP_0_COUNT_START + VP9_MV_CLASS0_HP_0_COUNT_SIZE)
 #define VP9_MV_CLASS0_HP_1_COUNT_SIZE  (2 * 2)
 
-/* Start merge_tree */
+ 
 #define VP9_INTER_MODE_COUNT_START     \
 		(VP9_MV_CLASS0_HP_1_COUNT_START + VP9_MV_CLASS0_HP_1_COUNT_SIZE)
 #define VP9_INTER_MODE_COUNT_SIZE      (7 * 4)
@@ -317,18 +305,18 @@ enum FRAME_TYPE {
 		(VP9_MV_CLASS0_FP_0_COUNT_START + VP9_MV_CLASS0_FP_0_COUNT_SIZE)
 #define VP9_MV_CLASS0_FP_1_COUNT_SIZE  (3 * 4)
 
-#define DC_PRED    0	/* Average of above and left pixels */
-#define V_PRED     1	/* Vertical */
-#define H_PRED     2	/* Horizontal */
-#define D45_PRED   3	/* Directional 45 deg = round(arctan(1/1) * 180/pi) */
-#define D135_PRED  4	/* Directional 135 deg = 180 - 45 */
-#define D117_PRED  5	/* Directional 117 deg = 180 - 63 */
-#define D153_PRED  6	/* Directional 153 deg = 180 - 27 */
-#define D207_PRED  7	/* Directional 207 deg = 180 + 27 */
-#define D63_PRED   8	/* Directional 63 deg = round(arctan(2/1) * 180/pi) */
-#define TM_PRED    9	/* True-motion */
+#define DC_PRED    0	 
+#define V_PRED     1	 
+#define H_PRED     2	 
+#define D45_PRED   3	 
+#define D135_PRED  4	 
+#define D117_PRED  5	 
+#define D153_PRED  6	 
+#define D207_PRED  7	 
+#define D63_PRED   8	 
+#define TM_PRED    9	 
 
-/* Use a static inline to avoid possible side effect from num being reused */
+ 
 static inline int round_power_of_two(int value, int num)
 {
 	return (value + (1 << (num - 1))) >> num;
@@ -348,11 +336,11 @@ union rpm_param {
 		u16 profile;
 		u16 show_existing_frame;
 		u16 frame_to_show_idx;
-		u16 frame_type; /*1 bit*/
-		u16 show_frame; /*1 bit*/
-		u16 error_resilient_mode; /*1 bit*/
-		u16 intra_only; /*1 bit*/
-		u16 display_size_present; /*1 bit*/
+		u16 frame_type;  
+		u16 show_frame;  
+		u16 error_resilient_mode;  
+		u16 intra_only;  
+		u16 display_size_present;  
 		u16 reset_frame_context;
 		u16 refresh_frame_flags;
 		u16 width;
@@ -370,17 +358,17 @@ union rpm_param {
 		u16 seg_quant_info[8];
 		u16 seg_enabled;
 		u16 seg_abs_delta;
-		/* bit 15: feature enabled; bit 8, sign; bit[5:0], data */
+		 
 		u16 seg_lf_info[8];
 	} p;
 };
 
 enum SEG_LVL_FEATURES {
-	SEG_LVL_ALT_Q = 0,	/* Use alternate Quantizer */
-	SEG_LVL_ALT_LF = 1,	/* Use alternate loop filter value */
-	SEG_LVL_REF_FRAME = 2,	/* Optional Segment reference frame */
-	SEG_LVL_SKIP = 3,	/* Optional Segment (0,0) + skip mode */
-	SEG_LVL_MAX = 4		/* Number of features supported */
+	SEG_LVL_ALT_Q = 0,	 
+	SEG_LVL_ALT_LF = 1,	 
+	SEG_LVL_REF_FRAME = 2,	 
+	SEG_LVL_SKIP = 3,	 
+	SEG_LVL_MAX = 4		 
 };
 
 struct segmentation {
@@ -413,11 +401,11 @@ struct loopfilter {
 	u8 mode_ref_delta_enabled;
 	u8 mode_ref_delta_update;
 
-	/*0 = Intra, Last, GF, ARF*/
+	 
 	signed char ref_deltas[MAX_REF_LF_DELTAS];
 	signed char last_ref_deltas[MAX_REF_LF_DELTAS];
 
-	/*0 = ZERO_MV, MV*/
+	 
 	signed char mode_deltas[MAX_MODE_LF_DELTAS];
 	signed char last_mode_deltas[MAX_MODE_LF_DELTAS];
 };
@@ -435,32 +423,30 @@ struct vp9_frame {
 };
 
 struct codec_vp9 {
-	/* VP9 context lock */
+	 
 	struct mutex lock;
 
-	/* Common part with the HEVC decoder */
+	 
 	struct codec_hevc_common common;
 
-	/* Buffer for the VP9 Workspace */
+	 
 	void      *workspace_vaddr;
 	dma_addr_t workspace_paddr;
 
-	/* Contains many information parsed from the bitstream */
+	 
 	union rpm_param rpm_param;
 
-	/* Whether we detected the bitstream as 10-bit */
+	 
 	int is_10bit;
 
-	/* Coded resolution reported by the hardware */
+	 
 	u32 width, height;
 
-	/* All ref frames used by the HW at a given time */
+	 
 	struct list_head ref_frames_list;
 	u32 frames_num;
 
-	/* In case of downsampling (decoding with FBC but outputting in NV12M),
-	 * we need to allocate additional buffers for FBC.
-	 */
+	 
 	void      *fbc_buffer_vaddr[MAX_REF_PIC_NUM];
 	dma_addr_t fbc_buffer_paddr[MAX_REF_PIC_NUM];
 
@@ -470,7 +456,7 @@ struct codec_vp9 {
 
 	u32 lcu_total;
 
-	/* loop filter */
+	 
 	int default_filt_lvl;
 	struct loop_filter_info_n lfi;
 	struct loopfilter lf;
@@ -510,9 +496,9 @@ static void vp9_update_sharpness(struct loop_filter_info_n *lfi,
 {
 	int lvl;
 
-	/* For each possible value for the loop filter fill out limits*/
+	 
 	for (lvl = 0; lvl <= MAX_LOOP_FILTER; lvl++) {
-		/* Set loop filter parameters that control sharpness.*/
+		 
 		int block_inside_limit = lvl >> ((sharpness_lvl > 0) +
 					(sharpness_lvl > 4));
 
@@ -530,7 +516,7 @@ static void vp9_update_sharpness(struct loop_filter_info_n *lfi,
 	}
 }
 
-/* Instantiate this function once when decode is started */
+ 
 static void
 vp9_loop_filter_init(struct amvdec_core *core, struct codec_vp9 *vp9)
 {
@@ -559,12 +545,12 @@ vp9_loop_filter_init(struct amvdec_core *core, struct codec_vp9 *vp9)
 
 	if (core->platform->revision >= VDEC_REVISION_SM1)
 		amvdec_write_dos(core, HEVC_DBLK_CFGB,
-				 (0x3 << 14) | /* dw fifo thres r and b */
-				 (0x3 << 12) | /* dw fifo thres r or b */
-				 (0x3 << 10) | /* dw fifo thres not r/b */
-				 BIT(0)); /* VP9 video format */
+				 (0x3 << 14) |  
+				 (0x3 << 12) |  
+				 (0x3 << 10) |  
+				 BIT(0));  
 	else if (core->platform->revision >= VDEC_REVISION_G12A)
-		/* VP9 video format */
+		 
 		amvdec_write_dos(core, HEVC_DBLK_CFGB, (0x54 << 8) | BIT(0));
 	else
 		amvdec_write_dos(core, HEVC_DBLK_CFGB, 0x40400001);
@@ -578,20 +564,15 @@ vp9_loop_filter_frame_init(struct amvdec_core *core, struct segmentation *seg,
 	int i;
 	int seg_id;
 
-	/*
-	 * n_shift is the multiplier for lf_deltas
-	 * the multiplier is:
-	 * - 1 for when filter_lvl is between 0 and 31
-	 * - 2 when filter_lvl is between 32 and 63
-	 */
+	 
 	const int scale = 1 << (default_filt_lvl >> 5);
 
-	/* update limits if sharpness has changed */
+	 
 	if (lf->last_sharpness_level != lf->sharpness_level) {
 		vp9_update_sharpness(lfi, lf->sharpness_level);
 		lf->last_sharpness_level = lf->sharpness_level;
 
-		/* Write to register */
+		 
 		for (i = 0; i < 32; i++) {
 			unsigned int thr;
 
@@ -618,11 +599,7 @@ vp9_loop_filter_frame_init(struct amvdec_core *core, struct segmentation *seg,
 		}
 
 		if (!lf->mode_ref_delta_enabled) {
-			/*
-			 * We could get rid of this if we assume that deltas
-			 * are set to zero when not in use.
-			 * encoder always uses deltas
-			 */
+			 
 			memset(lfi->lvl[seg_id], lvl_seg,
 			       sizeof(lfi->lvl[seg_id]));
 		} else {
@@ -697,7 +674,7 @@ static u32 codec_vp9_num_pending_bufs(struct amvdec_session *sess)
 static int codec_vp9_alloc_workspace(struct amvdec_core *core,
 				     struct codec_vp9 *vp9)
 {
-	/* Allocate some memory for the VP9 decoder's state */
+	 
 	vp9->workspace_vaddr = dma_alloc_coherent(core->dev, SIZE_WORKSPACE,
 						  &vp9->workspace_paddr,
 						  GFP_KERNEL);
@@ -772,7 +749,7 @@ static int codec_vp9_start(struct amvdec_session *sess)
 
 	codec_vp9_setup_workspace(sess, vp9);
 	amvdec_write_dos_bits(core, HEVC_STREAM_CONTROL, BIT(0));
-	/* stream_fifo_hole */
+	 
 	if (core->platform->revision >= VDEC_REVISION_G12A)
 		amvdec_write_dos_bits(core, HEVC_STREAM_FIFO_CTL, BIT(29));
 
@@ -804,13 +781,13 @@ static int codec_vp9_start(struct amvdec_session *sess)
 
 	amvdec_write_dos(core, VP9_WAIT_FLAG, 1);
 
-	/* clear mailbox interrupt */
+	 
 	amvdec_write_dos(core, HEVC_ASSIST_MBOX1_CLR_REG, 1);
-	/* enable mailbox interrupt */
+	 
 	amvdec_write_dos(core, HEVC_ASSIST_MBOX1_MASK, 1);
-	/* disable PSCALE for hardware sharing */
+	 
 	amvdec_write_dos(core, HEVC_PSCALE_CTRL, 0);
-	/* Let the uCode do all the parsing */
+	 
 	amvdec_write_dos(core, NAL_SEARCH_CTL, 0x8);
 
 	amvdec_write_dos(core, DECODE_STOP_POS, 0);
@@ -854,19 +831,16 @@ static int codec_vp9_stop(struct amvdec_session *sess)
 	return 0;
 }
 
-/*
- * Program LAST & GOLDEN frames into the motion compensation reference cache
- * controller
- */
+ 
 static void codec_vp9_set_mcrcc(struct amvdec_session *sess)
 {
 	struct amvdec_core *core = sess->core;
 	struct codec_vp9 *vp9 = sess->priv;
 	u32 val;
 
-	/* Reset mcrcc */
+	 
 	amvdec_write_dos(core, HEVCD_MCRCC_CTL1, 0x2);
-	/* Disable on I-frame */
+	 
 	if (vp9->cur_frame->type == KEY_FRAME || vp9->cur_frame->intra_only) {
 		amvdec_write_dos(core, HEVCD_MCRCC_CTL1, 0x0);
 		return;
@@ -880,7 +854,7 @@ static void codec_vp9_set_mcrcc(struct amvdec_session *sess)
 	val |= (val << 16);
 	amvdec_write_dos(core, HEVCD_MCRCC_CTL3, val);
 
-	/* Enable mcrcc progressive-mode */
+	 
 	amvdec_write_dos(core, HEVCD_MCRCC_CTL1, 0xff0);
 }
 
@@ -922,7 +896,7 @@ static void codec_vp9_set_sao(struct amvdec_session *sess,
 			       vp9->is_10bit)) {
 		amvdec_write_dos(core, HEVC_CM_HEADER_START_ADDR,
 				 vp9->common.mmu_header_paddr[vb->index]);
-		/* use HEVC_CM_HEADER_START_ADDR */
+		 
 		amvdec_write_dos_bits(core, HEVC_SAO_CTRL5, BIT(10));
 	}
 
@@ -934,15 +908,15 @@ static void codec_vp9_set_sao(struct amvdec_session *sess,
 	if (core->platform->revision >= VDEC_REVISION_G12A) {
 		amvdec_clear_dos_bits(core, HEVC_DBLK_CFGB,
 				      BIT(4) | BIT(5) | BIT(8) | BIT(9));
-		/* enable first, compressed write */
+		 
 		if (codec_hevc_use_fbc(sess->pixfmt_cap, vp9->is_10bit))
 			amvdec_write_dos_bits(core, HEVC_DBLK_CFGB, BIT(8));
 
-		/* enable second, uncompressed write */
+		 
 		if (sess->pixfmt_cap == V4L2_PIX_FMT_NV12M)
 			amvdec_write_dos_bits(core, HEVC_DBLK_CFGB, BIT(9));
 
-		/* dblk pipeline mode=1 for performance */
+		 
 		if (sess->width >= 1280)
 			amvdec_write_dos_bits(core, HEVC_DBLK_CFGB, BIT(4));
 
@@ -951,24 +925,24 @@ static void codec_vp9_set_sao(struct amvdec_session *sess,
 	}
 
 	val = amvdec_read_dos(core, HEVC_SAO_CTRL1) & ~0x3ff0;
-	val |= 0xff0; /* Set endianness for 2-bytes swaps (nv12) */
+	val |= 0xff0;  
 	if (core->platform->revision < VDEC_REVISION_G12A) {
 		val &= ~0x3;
 		if (!codec_hevc_use_fbc(sess->pixfmt_cap, vp9->is_10bit))
-			val |= BIT(0); /* disable cm compression */
-		/* TOFIX: Handle Amlogic Framebuffer compression */
+			val |= BIT(0);  
+		 
 	}
 
 	amvdec_write_dos(core, HEVC_SAO_CTRL1, val);
 	pr_debug("HEVC_SAO_CTRL1: %08X\n", val);
 
-	/* no downscale for NV12 */
+	 
 	val = amvdec_read_dos(core, HEVC_SAO_CTRL5) & ~0xff0000;
 	amvdec_write_dos(core, HEVC_SAO_CTRL5, val);
 
 	val = amvdec_read_dos(core, HEVCD_IPP_AXIIF_CONFIG) & ~0x30;
 	val |= 0xf;
-	val &= ~BIT(12); /* NV12 */
+	val &= ~BIT(12);  
 	amvdec_write_dos(core, HEVCD_IPP_AXIIF_CONFIG, val);
 }
 
@@ -1287,7 +1261,7 @@ static void codec_vp9_process_frame(struct amvdec_session *sess)
 
 	intra_only = param->p.show_frame ? 0 : param->p.intra_only;
 
-	/* clear mpred (for keyframe only) */
+	 
 	if (param->p.frame_type != KEY_FRAME && !intra_only) {
 		codec_vp9_set_mc(sess, vp9);
 		codec_vp9_set_mpred_mv(core, vp9);
@@ -1304,7 +1278,7 @@ static void codec_vp9_process_frame(struct amvdec_session *sess)
 				   &vp9->lfi, &vp9->lf,
 				   vp9->default_filt_lvl);
 
-	/* ask uCode to start decoding */
+	 
 	amvdec_write_dos(core, VP9_DEC_STATUS_REG, VP9_10B_DECODE_SLICE);
 }
 
@@ -1356,10 +1330,7 @@ static void codec_vp9_resume(struct amvdec_session *sess)
 	mutex_unlock(&vp9->lock);
 }
 
-/*
- * The RPM section within the workspace contains
- * many information regarding the parsed bitstream
- */
+ 
 static void codec_vp9_fetch_rpm(struct amvdec_session *sess)
 {
 	struct codec_vp9 *vp9 = sess->priv;
@@ -1465,7 +1436,7 @@ static void vp9_tree_merge_probs(unsigned int *prev_prob,
 					   (den >> 1)),
 					  den));
 
-		/* weighted_prob */
+		 
 		factor = count_to_update_factor[m_count];
 		new_prob = round_power_of_two(pre_prob * (256 - factor) +
 					      get_prob * factor, 8);
@@ -1510,7 +1481,7 @@ static void adapt_coef_probs_cxt(unsigned int *prev_prob,
 			prob_shift = prob_res * 8;
 			pre_prob = (prob_32 >> prob_shift) & 0xff;
 
-			/* get binary prob */
+			 
 			num = branch_ct[node][0];
 			den = branch_ct[node][0] + branch_ct[node][1];
 			m_count = min(den, count_sat);
@@ -1620,7 +1591,7 @@ static void adapt_coef_probs(int prev_kf, int cur_kf, int pre_fc,
 	}
 
 	if (cur_kf == 0) {
-		/* mode_mv_merge_probs - merge_intra_inter_prob */
+		 
 		for (coef_count_node_start = VP9_INTRA_INTER_COUNT_START;
 		     coef_count_node_start < (VP9_MV_CLASS0_HP_1_COUNT_START +
 					      VP9_MV_CLASS0_HP_1_COUNT_SIZE);
@@ -1649,7 +1620,7 @@ static void adapt_coef_probs(int prev_kf, int cur_kf, int pre_fc,
 			else if (coef_count_node_start ==
 					VP9_MV_BITS_1_COUNT_START)
 				coef_node_start = VP9_MV_BITS_1_START;
-			else /* node_start == VP9_MV_CLASS0_HP_0_COUNT_START */
+			else  
 				coef_node_start = VP9_MV_CLASS0_HP_0_START;
 
 			den = count[coef_count_node_start] +
@@ -1670,7 +1641,7 @@ static void adapt_coef_probs(int prev_kf, int cur_kf, int pre_fc,
 					(den >> 1)),
 					den));
 
-				/* weighted prob */
+				 
 				factor = count_to_update_factor[m_count];
 				new_prob =
 					round_power_of_two(pre_prob *
@@ -2098,7 +2069,7 @@ static irqreturn_t codec_vp9_threaded_isr(struct amvdec_session *sess)
 	sess->keyframe_found = 1;
 
 	if ((prob_status & 0xff) == 0xfd && vp9->cur_frame) {
-		/* VP9_REQ_ADAPT_PROB */
+		 
 		u8 *prev_prob_b = ((u8 *)vp9->workspace_vaddr +
 					 PROB_OFFSET) +
 					((prob_status >> 8) * 0x1000);
@@ -2121,7 +2092,7 @@ static irqreturn_t codec_vp9_threaded_isr(struct amvdec_session *sess)
 		amvdec_write_dos(core, VP9_ADAPT_PROB_REG, 0);
 	}
 
-	/* Invalidate first 3 refs */
+	 
 	for (i = 0; i < REFS_PER_FRAME ; ++i)
 		vp9->frame_refs[i] = NULL;
 
@@ -2132,13 +2103,13 @@ static irqreturn_t codec_vp9_threaded_isr(struct amvdec_session *sess)
 	if (codec_vp9_process_rpm(vp9)) {
 		amvdec_src_change(sess, vp9->width, vp9->height, 16);
 
-		/* No frame is actually processed */
+		 
 		vp9->cur_frame = NULL;
 
-		/* Show the remaining frame */
+		 
 		codec_vp9_show_frame(sess);
 
-		/* FIXME: Save refs for resized frame */
+		 
 		if (vp9->frames_num)
 			codec_vp9_save_refs(vp9);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: station command handling
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "decl.h"
 #include "ioctl.h"
@@ -22,15 +18,7 @@ static bool disable_auto_ds;
 module_param(disable_auto_ds, bool, 0);
 MODULE_PARM_DESC(disable_auto_ds,
 		 "deepsleep enabled=0(default), deepsleep disabled=1");
-/*
- * This function prepares command to set/get RSSI information.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting data/beacon average factors
- *      - Resetting SNR/NF/RSSI values in private structure
- *      - Ensuring correct endian-ness
- */
+ 
 static int
 mwifiex_cmd_802_11_rssi_info(struct mwifiex_private *priv,
 			     struct host_cmd_ds_command *cmd, u16 cmd_action)
@@ -42,7 +30,7 @@ mwifiex_cmd_802_11_rssi_info(struct mwifiex_private *priv,
 	cmd->params.rssi_info.ndata = cpu_to_le16(priv->data_avg_factor);
 	cmd->params.rssi_info.nbcn = cpu_to_le16(priv->bcn_avg_factor);
 
-	/* Reset SNR/NF/RSSI values in private structure */
+	 
 	priv->data_rssi_last = 0;
 	priv->data_nf_last = 0;
 	priv->data_rssi_avg = 0;
@@ -55,13 +43,7 @@ mwifiex_cmd_802_11_rssi_info(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set MAC control.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_mac_control(struct mwifiex_private *priv,
 				   struct host_cmd_ds_command *cmd,
 				   u16 cmd_action, u32 *action)
@@ -82,21 +64,7 @@ static int mwifiex_cmd_mac_control(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set/get SNMP MIB.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting SNMP MIB OID number and value
- *        (as required)
- *      - Ensuring correct endian-ness
- *
- * The following SNMP MIB OIDs are supported -
- *      - FRAG_THRESH_I     : Fragmentation threshold
- *      - RTS_THRESH_I      : RTS threshold
- *      - SHORT_RETRY_LIM_I : Short retry limit
- *      - DOT11D_I          : 11d support
- */
+ 
 static int mwifiex_cmd_802_11_snmp_mib(struct mwifiex_private *priv,
 				       struct host_cmd_ds_command *cmd,
 				       u16 cmd_action, u32 cmd_oid,
@@ -130,13 +98,7 @@ static int mwifiex_cmd_802_11_snmp_mib(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to get log.
- *
- * Preparation includes -
- *      - Setting command ID and proper size
- *      - Ensuring correct endian-ness
- */
+ 
 static int
 mwifiex_cmd_802_11_get_log(struct host_cmd_ds_command *cmd)
 {
@@ -146,15 +108,7 @@ mwifiex_cmd_802_11_get_log(struct host_cmd_ds_command *cmd)
 	return 0;
 }
 
-/*
- * This function prepares command to set/get Tx data rate configuration.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting configuration index, rate scope and rate drop pattern
- *        parameters (as required)
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_tx_rate_cfg(struct mwifiex_private *priv,
 				   struct host_cmd_ds_command *cmd,
 				   u16 cmd_action, u16 *pbitmap_rates)
@@ -218,15 +172,7 @@ static int mwifiex_cmd_tx_rate_cfg(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set/get Tx power configuration.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting Tx power mode, power group TLV
- *        (as required)
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_tx_power_cfg(struct host_cmd_ds_command *cmd,
 				    u16 cmd_action,
 				    struct host_cmd_ds_txpwr_cfg *txp)
@@ -267,9 +213,7 @@ static int mwifiex_cmd_tx_power_cfg(struct host_cmd_ds_command *cmd,
 	return 0;
 }
 
-/*
- * This function prepares command to get RF Tx power.
- */
+ 
 static int mwifiex_cmd_rf_tx_power(struct mwifiex_private *priv,
 				   struct host_cmd_ds_command *cmd,
 				   u16 cmd_action, void *data_buf)
@@ -284,9 +228,7 @@ static int mwifiex_cmd_rf_tx_power(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set rf antenna.
- */
+ 
 static int mwifiex_cmd_rf_antenna(struct mwifiex_private *priv,
 				  struct host_cmd_ds_command *cmd,
 				  u16 cmd_action,
@@ -335,15 +277,7 @@ static int mwifiex_cmd_rf_antenna(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set Host Sleep configuration.
- *
- * Preparation includes -
- *      - Setting command ID and proper size
- *      - Setting Host Sleep action, conditions, ARP filters
- *        (as required)
- *      - Ensuring correct endian-ness
- */
+ 
 static int
 mwifiex_cmd_802_11_hs_cfg(struct mwifiex_private *priv,
 			  struct host_cmd_ds_command *cmd,
@@ -358,7 +292,7 @@ mwifiex_cmd_802_11_hs_cfg(struct mwifiex_private *priv,
 	u16 size;
 
 	if (!hscfg_param)
-		/* New Activate command */
+		 
 		hs_activate = true;
 	cmd->command = cpu_to_le16(HostCmd_CMD_802_11_HS_CFG_ENH);
 
@@ -416,14 +350,7 @@ mwifiex_cmd_802_11_hs_cfg(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set/get MAC address.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting MAC address (for SET only)
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_802_11_mac_address(struct mwifiex_private *priv,
 					  struct host_cmd_ds_command *cmd,
 					  u16 cmd_action)
@@ -441,14 +368,7 @@ static int mwifiex_cmd_802_11_mac_address(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set MAC multicast address.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting MAC multicast address
- *      - Ensuring correct endian-ness
- */
+ 
 static int
 mwifiex_cmd_mac_multicast_adr(struct host_cmd_ds_command *cmd,
 			      u16 cmd_action,
@@ -469,14 +389,7 @@ mwifiex_cmd_mac_multicast_adr(struct host_cmd_ds_command *cmd,
 	return 0;
 }
 
-/*
- * This function prepares command to deauthenticate.
- *
- * Preparation includes -
- *      - Setting command ID and proper size
- *      - Setting AP MAC address and reason code
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_802_11_deauthenticate(struct mwifiex_private *priv,
 					     struct host_cmd_ds_command *cmd,
 					     u8 *mac)
@@ -487,7 +400,7 @@ static int mwifiex_cmd_802_11_deauthenticate(struct mwifiex_private *priv,
 	cmd->size = cpu_to_le16(sizeof(struct host_cmd_ds_802_11_deauthenticate)
 				+ S_DS_GEN);
 
-	/* Set AP MAC address */
+	 
 	memcpy(deauth->mac_addr, mac, ETH_ALEN);
 
 	mwifiex_dbg(priv->adapter, CMD, "cmd: Deauth: %pM\n", deauth->mac_addr);
@@ -497,13 +410,7 @@ static int mwifiex_cmd_802_11_deauthenticate(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to stop Ad-Hoc network.
- *
- * Preparation includes -
- *      - Setting command ID and proper size
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_802_11_ad_hoc_stop(struct host_cmd_ds_command *cmd)
 {
 	cmd->command = cpu_to_le16(HostCmd_CMD_802_11_AD_HOC_STOP);
@@ -511,12 +418,7 @@ static int mwifiex_cmd_802_11_ad_hoc_stop(struct host_cmd_ds_command *cmd)
 	return 0;
 }
 
-/*
- * This function sets WEP key(s) to key parameter TLV(s).
- *
- * Multi-key parameter TLVs are supported, so we can send multiple
- * WEP keys in a single buffer.
- */
+ 
 static int
 mwifiex_set_keyparamset_wep(struct mwifiex_private *priv,
 			    struct mwifiex_ie_type_key_param_set *key_param_set,
@@ -525,13 +427,13 @@ mwifiex_set_keyparamset_wep(struct mwifiex_private *priv,
 	int cur_key_param_len;
 	u8 i;
 
-	/* Multi-key_param_set TLV is supported */
+	 
 	for (i = 0; i < NUM_WEP_KEYS; i++) {
 		if ((priv->wep_key[i].key_length == WLAN_KEY_LEN_WEP40) ||
 		    (priv->wep_key[i].key_length == WLAN_KEY_LEN_WEP104)) {
 			key_param_set->type =
 				cpu_to_le16(TLV_TYPE_KEY_MATERIAL);
-/* Key_param_set WEP fixed length */
+ 
 #define KEYPARAMSET_WEP_FIXED_LEN 8
 			key_param_set->length = cpu_to_le16((u16)
 					(priv->wep_key[i].
@@ -544,9 +446,9 @@ mwifiex_set_keyparamset_wep(struct mwifiex_private *priv,
 					    KEY_MCAST);
 			key_param_set->key_len =
 				cpu_to_le16(priv->wep_key[i].key_length);
-			/* Set WEP key index */
+			 
 			key_param_set->key[0] = i;
-			/* Set default Tx key flag */
+			 
 			if (i ==
 			    (priv->
 			     wep_key_curr_index & HostCmd_WEP_KEY_INDEX_MASK))
@@ -578,9 +480,7 @@ mwifiex_set_keyparamset_wep(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function populates key material v2 command
- * to set network key for AES & CMAC AES.
- */
+ 
 static int mwifiex_set_aes_key_v2(struct mwifiex_private *priv,
 				  struct host_cmd_ds_command *cmd,
 				  struct mwifiex_ds_encrypt_key *enc_key,
@@ -630,14 +530,7 @@ static int mwifiex_set_aes_key_v2(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function prepares command to set/get/reset network key(s).
- * This function prepares key material command for V2 format.
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting WEP keys, WAPI keys or WPA keys along with required
- *        encryption (TKIP, AES) (as required)
- *      - Ensuring correct endian-ness
- */
+ 
 static int
 mwifiex_cmd_802_11_key_material_v2(struct mwifiex_private *priv,
 				   struct host_cmd_ds_command *cmd,
@@ -764,12 +657,12 @@ mwifiex_cmd_802_11_key_material_v2(struct mwifiex_private *priv,
 
 	if (priv->bss_mode == NL80211_IFTYPE_ADHOC) {
 		key_info |= KEY_DEFAULT;
-		/* Enable unicast bit for WPA-NONE/ADHOC_AES */
+		 
 		if (!priv->sec_info.wpa2_enabled &&
 		    !is_broadcast_ether_addr(mac))
 			key_info |= KEY_UNICAST;
 	} else {
-		/* Enable default key for WPA/WPA2 */
+		 
 		if (!priv->wpa_is_gtk_set)
 			key_info |= KEY_DEFAULT;
 	}
@@ -800,16 +693,7 @@ mwifiex_cmd_802_11_key_material_v2(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set/get/reset network key(s).
- * This function prepares key material command for V1 format.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting WEP keys, WAPI keys or WPA keys along with required
- *        encryption (TKIP, AES) (as required)
- *      - Ensuring correct endian-ness
- */
+ 
 static int
 mwifiex_cmd_802_11_key_material_v1(struct mwifiex_private *priv,
 				   struct host_cmd_ds_command *cmd,
@@ -860,13 +744,13 @@ mwifiex_cmd_802_11_key_material_v1(struct mwifiex_private *priv,
 		if (!priv->sec_info.wapi_key_on)
 			set->key[1] = 1;
 		else
-			/* set 0 when re-key */
+			 
 			set->key[1] = 0;
 
 		if (!is_broadcast_ether_addr(enc_key->mac_addr)) {
-			/* WAPI pairwise key: unicast */
+			 
 			set->key_info |= cpu_to_le16(KEY_UNICAST);
-		} else {	/* WAPI group key: multicast */
+		} else {	 
 			set->key_info |= cpu_to_le16(KEY_MCAST);
 			priv->sec_info.wapi_key_on = true;
 		}
@@ -909,10 +793,10 @@ mwifiex_cmd_802_11_key_material_v1(struct mwifiex_private *priv,
 						cpu_to_le16(!KEY_ENABLED);
 
 			if (enc_key->key_index & MWIFIEX_KEY_INDEX_UNICAST)
-				/* AES pairwise key: unicast */
+				 
 				key_material->key_param_set.key_info |=
 						cpu_to_le16(KEY_UNICAST);
-			else	/* AES group key: multicast */
+			else	 
 				key_material->key_param_set.key_info |=
 							cpu_to_le16(KEY_MCAST);
 		}
@@ -924,10 +808,10 @@ mwifiex_cmd_802_11_key_material_v1(struct mwifiex_private *priv,
 						cpu_to_le16(KEY_ENABLED);
 
 		if (enc_key->key_index & MWIFIEX_KEY_INDEX_UNICAST)
-				/* TKIP pairwise key: unicast */
+				 
 			key_material->key_param_set.key_info |=
 						cpu_to_le16(KEY_UNICAST);
-		else		/* TKIP group key: multicast */
+		else		 
 			key_material->key_param_set.key_info |=
 							cpu_to_le16(KEY_MCAST);
 	}
@@ -987,7 +871,7 @@ mwifiex_cmd_802_11_key_material_v1(struct mwifiex_private *priv,
 	return ret;
 }
 
-/* Wrapper function for setting network key depending upon FW KEY API version */
+ 
 static int
 mwifiex_cmd_802_11_key_material(struct mwifiex_private *priv,
 				struct host_cmd_ds_command *cmd,
@@ -1005,14 +889,7 @@ mwifiex_cmd_802_11_key_material(struct mwifiex_private *priv,
 							  enc_key);
 }
 
-/*
- * This function prepares command to set/get 11d domain information.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting domain information fields (for SET only)
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_802_11d_domain_info(struct mwifiex_private *priv,
 					   struct host_cmd_ds_command *cmd,
 					   u16 cmd_action)
@@ -1034,7 +911,7 @@ static int mwifiex_cmd_802_11d_domain_info(struct mwifiex_private *priv,
 		return 0;
 	}
 
-	/* Set domain info fields */
+	 
 	domain->header.type = cpu_to_le16(WLAN_EID_COUNTRY);
 	memcpy(domain->country_code, adapter->domain_reg.country_code,
 	       sizeof(domain->country_code));
@@ -1060,14 +937,7 @@ static int mwifiex_cmd_802_11d_domain_info(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command to set/get IBSS coalescing status.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting status to enable or disable (for SET only)
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_ibss_coalescing_status(struct host_cmd_ds_command *cmd,
 					      u16 cmd_action, u16 *enable)
 {
@@ -1088,7 +958,7 @@ static int mwifiex_cmd_ibss_coalescing_status(struct host_cmd_ds_command *cmd,
 			ibss_coal->enable = 0;
 		break;
 
-		/* In other case.. Nothing to do */
+		 
 	case HostCmd_ACT_GEN_GET:
 	default:
 		break;
@@ -1097,8 +967,7 @@ static int mwifiex_cmd_ibss_coalescing_status(struct host_cmd_ds_command *cmd,
 	return 0;
 }
 
-/* This function prepares command buffer to get/set memory location value.
- */
+ 
 static int
 mwifiex_cmd_mem_access(struct host_cmd_ds_command *cmd, u16 cmd_action,
 		       void *pdata_buf)
@@ -1117,23 +986,7 @@ mwifiex_cmd_mem_access(struct host_cmd_ds_command *cmd, u16 cmd_action,
 	return 0;
 }
 
-/*
- * This function prepares command to set/get register value.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting register offset (for both GET and SET) and
- *        register value (for SET only)
- *      - Ensuring correct endian-ness
- *
- * The following type of registers can be accessed with this function -
- *      - MAC register
- *      - BBP register
- *      - RF register
- *      - PMIC register
- *      - CAU register
- *      - EEPROM
- */
+ 
 static int mwifiex_cmd_reg_access(struct host_cmd_ds_command *cmd,
 				  u16 cmd_action, void *data_buf)
 {
@@ -1215,15 +1068,7 @@ static int mwifiex_cmd_reg_access(struct host_cmd_ds_command *cmd,
 	return 0;
 }
 
-/*
- * This function prepares command to set PCI-Express
- * host buffer configuration
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Setting host buffer configuration
- *      - Ensuring correct endian-ness
- */
+ 
 static int
 mwifiex_cmd_pcie_host_spec(struct mwifiex_private *priv,
 			   struct host_cmd_ds_command *cmd, u16 action)
@@ -1242,7 +1087,7 @@ mwifiex_cmd_pcie_host_spec(struct mwifiex_private *priv,
 	if (action != HostCmd_ACT_GEN_SET)
 		return 0;
 
-	/* Send the ring base addresses and count to firmware */
+	 
 	host_spec->txbd_addr_lo = cpu_to_le32((u32)(card->txbd_ring_pbase));
 	host_spec->txbd_addr_hi =
 			cpu_to_le32((u32)(((u64)card->txbd_ring_pbase) >> 32));
@@ -1268,12 +1113,7 @@ mwifiex_cmd_pcie_host_spec(struct mwifiex_private *priv,
 	return 0;
 }
 
-/*
- * This function prepares command for event subscription, configuration
- * and query. Events can be subscribed or unsubscribed. Current subscribed
- * events can be queried. Also, current subscribed events are reported in
- * every FW response.
- */
+ 
 static int
 mwifiex_cmd_802_11_subsc_evt(struct mwifiex_private *priv,
 			     struct host_cmd_ds_command *cmd,
@@ -1292,7 +1132,7 @@ mwifiex_cmd_802_11_subsc_evt(struct mwifiex_private *priv,
 	mwifiex_dbg(priv->adapter, CMD,
 		    "cmd: action: %d\n", subsc_evt_cfg->action);
 
-	/*For query requests, no configuration TLV structures are to be added.*/
+	 
 	if (subsc_evt_cfg->action == HostCmd_ACT_GEN_GET)
 		return 0;
 
@@ -1311,11 +1151,7 @@ mwifiex_cmd_802_11_subsc_evt(struct mwifiex_private *priv,
 		return -EINVAL;
 	}
 
-	/*
-	 * Append TLV structures for each of the specified events for
-	 * subscribing or re-configuring. This is not required for
-	 * bitwise unsubscribing request.
-	 */
+	 
 	if (subsc_evt_cfg->action == HostCmd_ACT_BITWISE_CLR)
 		return 0;
 
@@ -1449,7 +1285,7 @@ mwifiex_cmd_mef_cfg(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function parse cal data from ASCII to hex */
+ 
 static u32 mwifiex_parse_cal_cfg(u8 *src, size_t len, u8 *dst)
 {
 	u8 *s = src, *d = dst;
@@ -1478,13 +1314,13 @@ int mwifiex_dnld_dt_cfgdata(struct mwifiex_private *priv,
 	size_t len = strlen(prefix);
 	int ret;
 
-	/* look for all matching property names */
+	 
 	for_each_property_of_node(node, prop) {
 		if (len > strlen(prop->name) ||
 		    strncmp(prop->name, prefix, len))
 			continue;
 
-		/* property header is 6 bytes, data must fit in cmd buffer */
+		 
 		if (prop->value && prop->length > 6 &&
 		    prop->length <= MWIFIEX_SIZE_OF_CMD_BUFFER - S_DS_GEN) {
 			ret = mwifiex_send_cmd(priv, HostCmd_CMD_CFG_DATA,
@@ -1498,7 +1334,7 @@ int mwifiex_dnld_dt_cfgdata(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function prepares command of set_cfg_data. */
+ 
 static int mwifiex_cmd_cfg_data(struct mwifiex_private *priv,
 				struct host_cmd_ds_command *cmd, void *data_buf)
 {
@@ -1658,14 +1494,11 @@ mwifiex_cmd_coalesce_cfg(struct mwifiex_private *priv,
 			param++;
 		}
 
-		/* Total rule length is sizeof max_coalescing_delay(u16),
-		 * num_of_fields(u8), pkt_type(u8) and total length of the all
-		 * params
-		 */
+		 
 		rule->header.len = cpu_to_le16(length + sizeof(u16) +
 					       sizeof(u8) + sizeof(u8));
 
-		/* Add the rule length to the command size*/
+		 
 		le16_unaligned_add_cpu(&cmd->size,
 				       le16_to_cpu(rule->header.len) +
 				       sizeof(struct mwifiex_ie_types_header));
@@ -1673,7 +1506,7 @@ mwifiex_cmd_coalesce_cfg(struct mwifiex_private *priv,
 		rule = (void *)((u8 *)rule->params + length);
 	}
 
-	/* Add sizeof action, num_of_rules to total command length */
+	 
 	le16_unaligned_add_cpu(&cmd->size, sizeof(u16) + sizeof(u16));
 
 	return 0;
@@ -1852,7 +1685,7 @@ mwifiex_cmd_tdls_oper(struct mwifiex_private *priv,
 	return 0;
 }
 
-/* This function prepares command of sdio rx aggr info. */
+ 
 static int mwifiex_cmd_sdio_rx_aggr_cfg(struct host_cmd_ds_command *cmd,
 					u16 cmd_action, void *data_buf)
 {
@@ -1870,12 +1703,7 @@ static int mwifiex_cmd_sdio_rx_aggr_cfg(struct host_cmd_ds_command *cmd,
 	return 0;
 }
 
-/* This function prepares command to get HS wakeup reason.
- *
- * Preparation includes -
- *      - Setting command ID, action and proper size
- *      - Ensuring correct endian-ness
- */
+ 
 static int mwifiex_cmd_get_wakeup_reason(struct mwifiex_private *priv,
 					 struct host_cmd_ds_command *cmd)
 {
@@ -1905,7 +1733,7 @@ static int mwifiex_cmd_get_chan_info(struct host_cmd_ds_command *cmd,
 	return 0;
 }
 
-/* This function check if the command is supported by firmware */
+ 
 static int mwifiex_is_cmd_supported(struct mwifiex_private *priv, u16 cmd_no)
 {
 	if (!ISSUPP_ADHOC_ENABLED(priv->adapter->fw_cap_info)) {
@@ -1923,12 +1751,7 @@ static int mwifiex_is_cmd_supported(struct mwifiex_private *priv, u16 cmd_no)
 	return 0;
 }
 
-/*
- * This function prepares the commands before sending them to the firmware.
- *
- * This is a generic function which calls specific command preparation
- * routines based upon the command number.
- */
+ 
 int mwifiex_sta_prepare_cmd(struct mwifiex_private *priv, uint16_t cmd_no,
 			    u16 cmd_action, u32 cmd_oid,
 			    void *data_buf, void *cmd_buf)
@@ -1943,7 +1766,7 @@ int mwifiex_sta_prepare_cmd(struct mwifiex_private *priv, uint16_t cmd_no,
 		return -EOPNOTSUPP;
 	}
 
-	/* Prepare command */
+	 
 	switch (cmd_no) {
 	case HostCmd_CMD_GET_HW_SPEC:
 		ret = mwifiex_cmd_get_hw_spec(priv, cmd_ptr);
@@ -2229,27 +2052,7 @@ int mwifiex_sta_prepare_cmd(struct mwifiex_private *priv, uint16_t cmd_no,
 	return ret;
 }
 
-/*
- * This function issues commands to initialize firmware.
- *
- * This is called after firmware download to bring the card to
- * working state.
- * Function is also called during reinitialization of virtual
- * interfaces.
- *
- * The following commands are issued sequentially -
- *      - Set PCI-Express host buffer configuration (PCIE only)
- *      - Function init (for first interface only)
- *      - Read MAC address (for first interface only)
- *      - Reconfigure Tx buffer size (for first interface only)
- *      - Enable auto deep sleep (for first interface only)
- *      - Get Tx rate
- *      - Get Tx power
- *      - Set IBSS coalescing status
- *      - Set AMSDU aggregation control
- *      - Set 11d control
- *      - Set MAC control (this must be the last command to initialize firmware)
- */
+ 
 int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 {
 	struct mwifiex_adapter *adapter = priv->adapter;
@@ -2277,10 +2080,7 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 		if (ret)
 			return -1;
 
-		/* Download calibration data to firmware.
-		 * The cal-data can be read from device tree and/or
-		 * a configuration file and downloaded to firmware.
-		 */
+		 
 		if (adapter->dt_node) {
 			if (of_property_read_u32(adapter->dt_node,
 						 "marvell,wakeup-pin",
@@ -2297,13 +2097,13 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 			mwifiex_send_cmd(priv, HostCmd_CMD_CFG_DATA,
 					 HostCmd_ACT_GEN_SET, 0, NULL, true);
 
-		/* Read MAC address from HW */
+		 
 		ret = mwifiex_send_cmd(priv, HostCmd_CMD_GET_HW_SPEC,
 				       HostCmd_ACT_GEN_GET, 0, NULL, true);
 		if (ret)
 			return -1;
 
-		/** Set SDIO Single Port RX Aggr Info */
+		 
 		if (priv->adapter->iface_type == MWIFIEX_SDIO &&
 		    ISSUPP_SDIO_SPA_ENABLED(priv->adapter->fw_cap_info) &&
 		    !priv->adapter->host_disable_sdio_rx_aggr) {
@@ -2320,7 +2120,7 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 			}
 		}
 
-		/* Reconfigure tx buf size */
+		 
 		ret = mwifiex_send_cmd(priv, HostCmd_CMD_RECONFIGURE_TX_BUFF,
 				       HostCmd_ACT_GEN_SET, 0,
 				       &priv->adapter->tx_buf_size, true);
@@ -2328,7 +2128,7 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 			return -1;
 
 		if (priv->bss_type != MWIFIEX_BSS_TYPE_UAP) {
-			/* Enable IEEE PS by default */
+			 
 			priv->adapter->ps_mode = MWIFIEX_802_11_POWER_MODE_PSP;
 			ret = mwifiex_send_cmd(priv,
 					       HostCmd_CMD_802_11_PS_MODE_ENH,
@@ -2354,14 +2154,14 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 				 HostCmd_ACT_GEN_GET, 0, NULL, true);
 	}
 
-	/* get tx rate */
+	 
 	ret = mwifiex_send_cmd(priv, HostCmd_CMD_TX_RATE_CFG,
 			       HostCmd_ACT_GEN_GET, 0, NULL, true);
 	if (ret)
 		return -1;
 	priv->data_rate = 0;
 
-	/* get tx power */
+	 
 	ret = mwifiex_send_cmd(priv, HostCmd_CMD_RF_TX_PWR,
 			       HostCmd_ACT_GEN_GET, 0, NULL, true);
 	if (ret)
@@ -2369,14 +2169,14 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 
 	memset(&amsdu_aggr_ctrl, 0, sizeof(amsdu_aggr_ctrl));
 	amsdu_aggr_ctrl.enable = true;
-	/* Send request to firmware */
+	 
 	ret = mwifiex_send_cmd(priv, HostCmd_CMD_AMSDU_AGGR_CTRL,
 			       HostCmd_ACT_GEN_SET, 0,
 			       &amsdu_aggr_ctrl, true);
 	if (ret)
 		return -1;
-	/* MAC Control must be the last command in init_fw */
-	/* set MAC Control */
+	 
+	 
 	ret = mwifiex_send_cmd(priv, HostCmd_CMD_MAC_CONTROL,
 			       HostCmd_ACT_GEN_SET, 0,
 			       &priv->curr_pkt_filter, true);
@@ -2385,7 +2185,7 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 
 	if (!disable_auto_ds && first_sta &&
 	    priv->bss_type != MWIFIEX_BSS_TYPE_UAP) {
-		/* Enable auto deep sleep */
+		 
 		auto_ds.auto_ds = DEEP_SLEEP_ON;
 		auto_ds.idle_time = DEEP_SLEEP_IDLE_TIME;
 		ret = mwifiex_send_cmd(priv, HostCmd_CMD_802_11_PS_MODE_ENH,
@@ -2396,7 +2196,7 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 	}
 
 	if (priv->bss_type != MWIFIEX_BSS_TYPE_UAP) {
-		/* Send cmd to FW to enable/disable 11D function */
+		 
 		state_11d = ENABLE_11D;
 		ret = mwifiex_send_cmd(priv, HostCmd_CMD_802_11_SNMP_MIB,
 				       HostCmd_ACT_GEN_SET, DOT11D_I,
@@ -2406,7 +2206,7 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 				    "11D: failed to enable 11D\n");
 	}
 
-	/* Pacekt aggregation handshake with firmware */
+	 
 	if (aggr_ctrl) {
 		packet_aggr_enable = true;
 		mwifiex_send_cmd(priv, HostCmd_CMD_PACKET_AGGR_CTRL,
@@ -2414,15 +2214,13 @@ int mwifiex_sta_init_cmd(struct mwifiex_private *priv, u8 first_sta, bool init)
 				 &packet_aggr_enable, true);
 	}
 
-	/* Send cmd to FW to configure 11n specific configuration
-	 * (Short GI, Channel BW, Green field support etc.) for transmit
-	 */
+	 
 	tx_cfg.tx_htcap = MWIFIEX_FW_DEF_HTTXCFG;
 	ret = mwifiex_send_cmd(priv, HostCmd_CMD_11N_CFG,
 			       HostCmd_ACT_GEN_SET, 0, &tx_cfg, true);
 
 	if (init) {
-		/* set last_init_cmd before sending the command */
+		 
 		priv->adapter->last_init_cmd = HostCmd_CMD_11N_CFG;
 		ret = -EINPROGRESS;
 	}

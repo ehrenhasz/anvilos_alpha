@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_gact.c		Generic actions
- *
- * copyright 	Jamal Hadi Salim (2002-4)
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -25,7 +21,7 @@ static struct tc_action_ops act_gact_ops;
 #ifdef CONFIG_GACT_PROB
 static int gact_net_rand(struct tcf_gact *gact)
 {
-	smp_rmb(); /* coupled with smp_wmb() in tcf_gact_init() */
+	smp_rmb();  
 	if (get_random_u32_below(gact->tcfg_pval))
 		return gact->tcf_action;
 	return gact->tcfg_paction;
@@ -35,7 +31,7 @@ static int gact_determ(struct tcf_gact *gact)
 {
 	u32 pack = atomic_inc_return(&gact->packets);
 
-	smp_rmb(); /* coupled with smp_wmb() in tcf_gact_init() */
+	smp_rmb();  
 	if (pack % gact->tcfg_pval)
 		return gact->tcf_action;
 	return gact->tcfg_paction;
@@ -43,7 +39,7 @@ static int gact_determ(struct tcf_gact *gact)
 
 typedef int (*g_rand)(struct tcf_gact *gact);
 static g_rand gact_rand[MAX_RAND] = { NULL, gact_net_rand, gact_determ };
-#endif /* CONFIG_GACT_PROB */
+#endif  
 
 static const struct nla_policy gact_policy[TCA_GACT_MAX + 1] = {
 	[TCA_GACT_PARMS]	= { .len = sizeof(struct tc_gact) },
@@ -107,7 +103,7 @@ static int tcf_gact_init(struct net *net, struct nlattr *nla,
 		}
 		ret = ACT_P_CREATED;
 	} else if (err > 0) {
-		if (bind)/* dont override defaults */
+		if (bind) 
 			return 0;
 		if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
 			tcf_idr_release(*a, bind);
@@ -128,9 +124,7 @@ static int tcf_gact_init(struct net *net, struct nlattr *nla,
 	if (p_parm) {
 		gact->tcfg_paction = p_parm->paction;
 		gact->tcfg_pval    = max_t(u16, 1, p_parm->pval);
-		/* Make sure tcfg_pval is written before tcfg_ptype
-		 * coupled with smp_rmb() in gact_net_rand() & gact_determ()
-		 */
+		 
 		smp_wmb();
 		gact->tcfg_ptype   = p_parm->ptype;
 	}
@@ -225,11 +219,11 @@ nla_put_failure:
 
 static size_t tcf_gact_get_fill_size(const struct tc_action *act)
 {
-	size_t sz = nla_total_size(sizeof(struct tc_gact)); /* TCA_GACT_PARMS */
+	size_t sz = nla_total_size(sizeof(struct tc_gact));  
 
 #ifdef CONFIG_GACT_PROB
 	if (to_gact(act)->tcfg_ptype)
-		/* TCA_GACT_PROB */
+		 
 		sz += nla_total_size(sizeof(struct tc_gact_p));
 #endif
 

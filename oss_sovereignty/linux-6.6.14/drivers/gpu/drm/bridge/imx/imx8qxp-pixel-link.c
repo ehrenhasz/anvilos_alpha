@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Copyright 2020,2022 NXP
- */
+
+ 
 
 #include <linux/firmware/imx/svc/misc.h>
 #include <linux/media-bus-format.h>
@@ -271,7 +269,7 @@ imx8qxp_pixel_link_find_next_bridge(struct imx8qxp_pixel_link *pl)
 	u32 port_id;
 	bool found_port = false;
 	int reg, ep_cnt = 0;
-	/* select the first next bridge by default */
+	 
 	int bridge_sel = 0;
 
 	for (port_id = 1; port_id <= PL_MAX_MST_ADDR + 1; port_id++) {
@@ -312,7 +310,7 @@ imx8qxp_pixel_link_find_next_bridge(struct imx8qxp_pixel_link *pl)
 			return ERR_PTR(-EPROBE_DEFER);
 		}
 
-		/* specially select the next bridge with companion PXL2DPI */
+		 
 		if (of_property_present(remote, "fsl,companion-pxl2dpi"))
 			bridge_sel = ep_cnt;
 
@@ -373,7 +371,7 @@ static int imx8qxp_pixel_link_bridge_probe(struct platform_device *pdev)
 		pl->sync_ctrl     = IMX_SC_C_SYNC_CTRL1;
 	}
 
-	/* disable all controls to POR default */
+	 
 	ret = imx8qxp_pixel_link_disable_all_controls(pl);
 	if (ret)
 		return ret;
@@ -408,7 +406,7 @@ static void imx8qxp_pixel_link_bridge_remove(struct platform_device *pdev)
 static const struct of_device_id imx8qxp_pixel_link_dt_ids[] = {
 	{ .compatible = "fsl,imx8qm-dc-pixel-link", },
 	{ .compatible = "fsl,imx8qxp-dc-pixel-link", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8qxp_pixel_link_dt_ids);
 

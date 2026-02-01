@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 Google Inc.
- *
- * The DP AUX bus is used for devices that are connected over a DisplayPort
- * AUX bus. The device on the far side of the bus is referred to as an
- * endpoint in this code.
- *
- * There is only one device connected to the DP AUX bus: an eDP panel.
- * Though historically panels (even DP panels) have been modeled as simple
- * platform devices, putting them under the DP AUX bus allows the panel driver
- * to perform transactions on that bus.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -27,28 +16,13 @@ struct dp_aux_ep_device_with_data {
 	int (*done_probing)(struct drm_dp_aux *aux);
 };
 
-/**
- * dp_aux_ep_match() - The match function for the dp_aux_bus.
- * @dev: The device to match.
- * @drv: The driver to try to match against.
- *
- * At the moment, we just match on device tree.
- *
- * Return: True if this driver matches this device; false otherwise.
- */
+ 
 static int dp_aux_ep_match(struct device *dev, struct device_driver *drv)
 {
 	return !!of_match_device(drv->of_match_table, dev);
 }
 
-/**
- * dp_aux_ep_probe() - The probe function for the dp_aux_bus.
- * @dev: The device to probe.
- *
- * Calls through to the endpoint driver probe.
- *
- * Return: 0 if no error or negative error code.
- */
+ 
 static int dp_aux_ep_probe(struct device *dev)
 {
 	struct dp_aux_ep_driver *aux_ep_drv = to_dp_aux_ep_drv(dev->driver);
@@ -68,12 +42,7 @@ static int dp_aux_ep_probe(struct device *dev)
 	if (aux_ep_with_data->done_probing) {
 		ret = aux_ep_with_data->done_probing(aux_ep->aux);
 		if (ret) {
-			/*
-			 * The done_probing() callback should not return
-			 * -EPROBE_DEFER to us. If it does, we treat it as an
-			 * error. Passing it on as-is would cause the _panel_
-			 * to defer.
-			 */
+			 
 			if (ret == -EPROBE_DEFER) {
 				dev_err(dev,
 					"DP AUX done_probing() can't defer\n");
@@ -93,12 +62,7 @@ err_attached:
 	return ret;
 }
 
-/**
- * dp_aux_ep_remove() - The remove function for the dp_aux_bus.
- * @dev: The device to remove.
- *
- * Calls through to the endpoint driver remove.
- */
+ 
 static void dp_aux_ep_remove(struct device *dev)
 {
 	struct dp_aux_ep_driver *aux_ep_drv = to_dp_aux_ep_drv(dev->driver);
@@ -109,12 +73,7 @@ static void dp_aux_ep_remove(struct device *dev)
 	dev_pm_domain_detach(dev, true);
 }
 
-/**
- * dp_aux_ep_shutdown() - The shutdown function for the dp_aux_bus.
- * @dev: The device to shutdown.
- *
- * Calls through to the endpoint driver shutdown.
- */
+ 
 static void dp_aux_ep_shutdown(struct device *dev)
 {
 	struct dp_aux_ep_driver *aux_ep_drv;
@@ -148,10 +107,7 @@ static struct attribute *dp_aux_ep_dev_attrs[] = {
 };
 ATTRIBUTE_GROUPS(dp_aux_ep_dev);
 
-/**
- * dp_aux_ep_dev_release() - Free memory for the dp_aux_ep device
- * @dev: The device to free.
- */
+ 
 static void dp_aux_ep_dev_release(struct device *dev)
 {
 	struct dp_aux_ep_device *aux_ep = to_dp_aux_ep_dev(dev);
@@ -172,22 +128,7 @@ static struct device_type dp_aux_device_type_type = {
 	.release	= dp_aux_ep_dev_release,
 };
 
-/**
- * of_dp_aux_ep_destroy() - Destroy an DP AUX endpoint device
- * @dev: The device to destroy.
- * @data: Not used
- *
- * This is just used as a callback by of_dp_aux_depopulate_bus() and
- * is called for _all_ of the child devices of the device providing the AUX bus.
- * We'll only act on those that are of type "dp_aux_bus_type".
- *
- * This function is effectively an inverse of what's in
- * of_dp_aux_populate_bus(). NOTE: since we only populate one child
- * then it's expected that only one device will match all the "if" tests in
- * this function and get to the device_unregister().
- *
- * Return: 0 if no error or negative error code.
- */
+ 
 static int of_dp_aux_ep_destroy(struct device *dev, void *data)
 {
 	struct device_node *np = dev->of_node;
@@ -206,51 +147,14 @@ static int of_dp_aux_ep_destroy(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * of_dp_aux_depopulate_bus() - Undo of_dp_aux_populate_bus
- * @aux: The AUX channel whose device we want to depopulate
- *
- * This will destroy the device that was created
- * by of_dp_aux_populate_bus().
- */
+ 
 void of_dp_aux_depopulate_bus(struct drm_dp_aux *aux)
 {
 	device_for_each_child_reverse(aux->dev, NULL, of_dp_aux_ep_destroy);
 }
 EXPORT_SYMBOL_GPL(of_dp_aux_depopulate_bus);
 
-/**
- * of_dp_aux_populate_bus() - Populate the endpoint device on the DP AUX
- * @aux: The AUX channel whose device we want to populate. It is required that
- *       drm_dp_aux_init() has already been called for this AUX channel.
- * @done_probing: Callback functions to call after EP device finishes probing.
- *                Will not be called if there are no EP devices and this
- *                function will return -ENODEV.
- *
- * This will populate the device (expected to be an eDP panel) under the
- * "aux-bus" node of the device providing the AUX channel (AKA aux->dev).
- *
- * When this function finishes, it is _possible_ (but not guaranteed) that
- * our sub-device will have finished probing. It should be noted that if our
- * sub-device returns -EPROBE_DEFER or is probing asynchronously for some
- * reason that we will not return any error codes ourselves but our
- * sub-device will _not_ have actually probed successfully yet.
- *
- * In many cases it's important for the caller of this function to be notified
- * when our sub device finishes probing. Our sub device is expected to be an
- * eDP panel and the caller is expected to be an eDP controller. The eDP
- * controller needs to be able to get a reference to the panel when it finishes
- * probing. For this reason the caller can pass in a function pointer that
- * will be called when our sub-device finishes probing.
- *
- * If this function succeeds you should later make sure you call
- * of_dp_aux_depopulate_bus() to undo it, or just use the devm version
- * of this function.
- *
- * Return: 0 if no error or negative error code; returns -ENODEV if there are
- *         no children. The done_probing() function won't be called in that
- *         case.
- */
+ 
 int of_dp_aux_populate_bus(struct drm_dp_aux *aux,
 			   int (*done_probing)(struct drm_dp_aux *aux))
 {
@@ -259,7 +163,7 @@ int of_dp_aux_populate_bus(struct drm_dp_aux *aux,
 	struct dp_aux_ep_device_with_data *aux_ep_with_data;
 	int ret;
 
-	/* drm_dp_aux_init() should have been called already; warn if not */
+	 
 	WARN_ON_ONCE(!aux->ddc.algo);
 
 	if (!aux->dev->of_node)
@@ -299,10 +203,7 @@ int of_dp_aux_populate_bus(struct drm_dp_aux *aux,
 	if (ret) {
 		dev_err(aux->dev, "Failed to create AUX EP for %pOF: %d\n", np, ret);
 
-		/*
-		 * As per docs of device_register(), call this instead
-		 * of kfree() directly for error cases.
-		 */
+		 
 		put_device(&aux_ep->dev);
 
 		goto err_did_set_populated;
@@ -325,19 +226,7 @@ static void of_dp_aux_depopulate_bus_void(void *data)
 	of_dp_aux_depopulate_bus(data);
 }
 
-/**
- * devm_of_dp_aux_populate_bus() - devm wrapper for of_dp_aux_populate_bus()
- * @aux: The AUX channel whose device we want to populate
- * @done_probing: Callback functions to call after EP device finishes probing.
- *                Will not be called if there are no EP devices and this
- *                function will return -ENODEV.
- *
- * Handles freeing w/ devm on the device "aux->dev".
- *
- * Return: 0 if no error or negative error code; returns -ENODEV if there are
- *         no children. The done_probing() function won't be called in that
- *         case.
- */
+ 
 int devm_of_dp_aux_populate_bus(struct drm_dp_aux *aux,
 				int (*done_probing)(struct drm_dp_aux *aux))
 {

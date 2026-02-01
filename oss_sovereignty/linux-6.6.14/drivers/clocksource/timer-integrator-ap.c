@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Integrator/AP timer driver
- * Copyright (C) 2000-2003 Deep Blue Solutions Ltd
- * Copyright (c) 2014, Linaro Limited
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clocksource.h>
@@ -52,14 +48,12 @@ static int __init integrator_clocksource_init(unsigned long inrate,
 static unsigned long timer_reload;
 static void __iomem * clkevt_base;
 
-/*
- * IRQ handler for the timer
- */
+ 
 static irqreturn_t integrator_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *evt = dev_id;
 
-	/* clear the interrupt */
+	 
 	writel(1, clkevt_base + TIMER_INTCLR);
 
 	evt->event_handler(evt);
@@ -71,7 +65,7 @@ static int clkevt_shutdown(struct clock_event_device *evt)
 {
 	u32 ctrl = readl(clkevt_base + TIMER_CTRL) & ~TIMER_CTRL_ENABLE;
 
-	/* Disable timer */
+	 
 	writel(ctrl, clkevt_base + TIMER_CTRL);
 	return 0;
 }
@@ -81,7 +75,7 @@ static int clkevt_set_oneshot(struct clock_event_device *evt)
 	u32 ctrl = readl(clkevt_base + TIMER_CTRL) &
 		   ~(TIMER_CTRL_ENABLE | TIMER_CTRL_PERIODIC);
 
-	/* Leave the timer disabled, .set_next_event will enable it */
+	 
 	writel(ctrl, clkevt_base + TIMER_CTRL);
 	return 0;
 }
@@ -90,10 +84,10 @@ static int clkevt_set_periodic(struct clock_event_device *evt)
 {
 	u32 ctrl = readl(clkevt_base + TIMER_CTRL) & ~TIMER_CTRL_ENABLE;
 
-	/* Disable timer */
+	 
 	writel(ctrl, clkevt_base + TIMER_CTRL);
 
-	/* Enable the timer and start the periodic tick */
+	 
 	writel(timer_reload, clkevt_base + TIMER_LOAD);
 	ctrl |= TIMER_CTRL_PERIODIC | TIMER_CTRL_ENABLE;
 	writel(ctrl, clkevt_base + TIMER_CTRL);
@@ -131,7 +125,7 @@ static int integrator_clockevent_init(unsigned long inrate,
 	int ret;
 
 	clkevt_base = base;
-	/* Calculate and program a divisor */
+	 
 	if (rate > 0x100000 * HZ) {
 		rate /= 256;
 		ctrl |= TIMER_CTRL_DIV256;
@@ -187,15 +181,11 @@ static int __init integrator_ap_timer_init_of(struct device_node *node)
 
 	alias_node = of_find_node_by_path(path);
 
-	/*
-	 * The pointer is used as an identifier not as a pointer, we
-	 * can drop the refcount on the of__node immediately after
-	 * getting it.
-	 */
+	 
 	of_node_put(alias_node);
 
 	if (node == alias_node)
-		/* The primary timer lacks IRQ, use as clocksource */
+		 
 		return integrator_clocksource_init(rate, base);
 
 	err = of_property_read_string(of_aliases,
@@ -210,7 +200,7 @@ static int __init integrator_ap_timer_init_of(struct device_node *node)
 	of_node_put(alias_node);
 
 	if (node == alias_node) {
-		/* The secondary timer will drive the clock event */
+		 
 		irq = irq_of_parse_and_map(node, 0);
 		return integrator_clockevent_init(rate, base, irq);
 	}

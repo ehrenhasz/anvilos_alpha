@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/irqdomain.h>
 #include <linux/pci.h>
@@ -134,12 +111,7 @@ static int acp_poweroff(struct generic_pm_domain *genpd)
 
 	apd = container_of(genpd, struct acp_pm_domain, gpd);
 	adev = apd->adev;
-	/* call smu to POWER GATE ACP block
-	 * smu will
-	 * 1. turn off the acp clock
-	 * 2. power off the acp tiles
-	 * 3. check and enter ulv state
-	 */
+	 
 	amdgpu_dpm_set_powergating_by_smu(adev, AMD_IP_BLOCK_TYPE_ACP, true);
 	return 0;
 }
@@ -151,12 +123,7 @@ static int acp_poweron(struct generic_pm_domain *genpd)
 
 	apd = container_of(genpd, struct acp_pm_domain, gpd);
 	adev = apd->adev;
-	/* call smu to UNGATE ACP block
-	 * smu will
-	 * 1. exit ulv
-	 * 2. turn on acp clock
-	 * 3. power on acp tiles
-	 */
+	 
 	amdgpu_dpm_set_powergating_by_smu(adev, AMD_IP_BLOCK_TYPE_ACP, false);
 	return 0;
 }
@@ -181,7 +148,7 @@ static int acp_genpd_remove_device(struct device *dev, void *data)
 	if (ret)
 		dev_err(dev, "Failed to remove dev from genpd %d\n", ret);
 
-	/* Continue to remove */
+	 
 	return 0;
 }
 
@@ -216,12 +183,7 @@ static const struct dmi_system_id acp_quirk_table[] = {
 	{}
 };
 
-/**
- * acp_hw_init - start and test ACP block
- *
- * @handle: handle used to pass amdgpu_device pointer
- *
- */
+ 
 static int acp_hw_init(void *handle)
 {
 	int r;
@@ -240,7 +202,7 @@ static int acp_hw_init(void *handle)
 
 	r = amd_acp_hw_init(adev->acp.cgs_device,
 			    ip_block->version->major, ip_block->version->minor);
-	/* -ENODEV means board uses AZ rather than ACP */
+	 
 	if (r == -ENODEV) {
 		amdgpu_dpm_set_powergating_by_smu(adev, AMD_IP_BLOCK_TYPE_ACP, true);
 		return 0;
@@ -449,7 +411,7 @@ static int acp_hw_init(void *handle)
 			goto failure;
 	}
 
-	/* Assert Soft reset of ACP */
+	 
 	val = cgs_read_register(adev->acp.cgs_device, mmACP_SOFT_RESET);
 
 	val |= ACP_SOFT_RESET__SoftResetAud_MASK;
@@ -468,7 +430,7 @@ static int acp_hw_init(void *handle)
 		}
 		udelay(100);
 	}
-	/* Enable clock to ACP and wait until the clock is enabled */
+	 
 	val = cgs_read_register(adev->acp.cgs_device, mmACP_CONTROL);
 	val = val | ACP_CONTROL__ClkEn_MASK;
 	cgs_write_register(adev->acp.cgs_device, mmACP_CONTROL, val);
@@ -486,7 +448,7 @@ static int acp_hw_init(void *handle)
 		}
 		udelay(100);
 	}
-	/* Deassert the SOFT RESET flags */
+	 
 	val = cgs_read_register(adev->acp.cgs_device, mmACP_SOFT_RESET);
 	val &= ~ACP_SOFT_RESET__SoftResetAud_MASK;
 	cgs_write_register(adev->acp.cgs_device, mmACP_SOFT_RESET, val);
@@ -500,25 +462,20 @@ failure:
 	return r;
 }
 
-/**
- * acp_hw_fini - stop the hardware block
- *
- * @handle: handle used to pass amdgpu_device pointer
- *
- */
+ 
 static int acp_hw_fini(void *handle)
 {
 	u32 val = 0;
 	u32 count = 0;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* return early if no ACP */
+	 
 	if (!adev->acp.acp_genpd) {
 		amdgpu_dpm_set_powergating_by_smu(adev, AMD_IP_BLOCK_TYPE_ACP, false);
 		return 0;
 	}
 
-	/* Assert Soft reset of ACP */
+	 
 	val = cgs_read_register(adev->acp.cgs_device, mmACP_SOFT_RESET);
 
 	val |= ACP_SOFT_RESET__SoftResetAud_MASK;
@@ -536,7 +493,7 @@ static int acp_hw_fini(void *handle)
 		}
 		udelay(100);
 	}
-	/* Disable ACP clock */
+	 
 	val = cgs_read_register(adev->acp.cgs_device, mmACP_CONTROL);
 	val &= ~ACP_CONTROL__ClkEn_MASK;
 	cgs_write_register(adev->acp.cgs_device, mmACP_CONTROL, val);
@@ -569,7 +526,7 @@ static int acp_suspend(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* power up on suspend */
+	 
 	if (!adev->acp.acp_cell)
 		amdgpu_dpm_set_powergating_by_smu(adev, AMD_IP_BLOCK_TYPE_ACP, false);
 	return 0;
@@ -579,7 +536,7 @@ static int acp_resume(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* power down again on resume */
+	 
 	if (!adev->acp.acp_cell)
 		amdgpu_dpm_set_powergating_by_smu(adev, AMD_IP_BLOCK_TYPE_ACP, true);
 	return 0;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2020 Noralf Trønnes
- */
+
+ 
 
 #include <linux/lz4.h>
 #include <linux/usb.h>
@@ -25,20 +23,12 @@
 
 #include "gud_internal.h"
 
-/*
- * Some userspace rendering loops run all displays in the same loop.
- * This means that a fast display will have to wait for a slow one.
- * Such users might want to enable this module parameter.
- */
+ 
 static bool gud_async_flush;
 module_param_named(async_flush, gud_async_flush, bool, 0644);
 MODULE_PARM_DESC(async_flush, "Enable asynchronous flushing [default=0]");
 
-/*
- * FIXME: The driver is probably broken on Big Endian machines.
- * See discussion:
- * https://lore.kernel.org/dri-devel/CAKb7UvihLX0hgBOP3VBG7O+atwZcUVCPVuBdfmDMpg0NjXe-cQ@mail.gmail.com/
- */
+ 
 
 static bool gud_is_big_endian(void)
 {
@@ -56,14 +46,14 @@ static size_t gud_xrgb8888_to_r124(u8 *dst, const struct drm_format_info *format
 	unsigned int block_width = drm_format_info_block_width(format, 0);
 	unsigned int bits_per_pixel = 8 / block_width;
 	unsigned int x, y, width, height;
-	u8 pix, *pix8, *block = dst; /* Assign to silence compiler warning */
+	u8 pix, *pix8, *block = dst;  
 	struct iosys_map dst_map, vmap;
 	size_t len;
 	void *buf;
 
 	WARN_ON_ONCE(format->char_per_block[0] != 1);
 
-	/* Start on a byte boundary */
+	 
 	rect->x1 = ALIGN_DOWN(rect->x1, block_width);
 	width = drm_rect_width(rect);
 	height = drm_rect_height(rect);
@@ -80,7 +70,7 @@ static size_t gud_xrgb8888_to_r124(u8 *dst, const struct drm_format_info *format
 
 	for (y = 0; y < height; y++) {
 		for (x = 0; x < width; x++) {
-			unsigned int pixpos = x % block_width; /* within byte from the left */
+			unsigned int pixpos = x % block_width;  
 			unsigned int pixshift = (block_width - pixpos - 1) * bits_per_pixel;
 
 			if (!pixpos) {
@@ -104,13 +94,13 @@ static size_t gud_xrgb8888_to_color(u8 *dst, const struct drm_format_info *forma
 {
 	unsigned int block_width = drm_format_info_block_width(format, 0);
 	unsigned int bits_per_pixel = 8 / block_width;
-	u8 r, g, b, pix, *block = dst; /* Assign to silence compiler warning */
+	u8 r, g, b, pix, *block = dst;  
 	unsigned int x, y, width;
 	__le32 *sbuf32;
 	u32 pix32;
 	size_t len;
 
-	/* Start on a byte boundary */
+	 
 	rect->x1 = ALIGN_DOWN(rect->x1, block_width);
 	width = drm_rect_width(rect);
 	len = drm_format_info_min_pitch(format, 0, width) * drm_rect_height(rect);
@@ -120,7 +110,7 @@ static size_t gud_xrgb8888_to_color(u8 *dst, const struct drm_format_info *forma
 		sbuf32 += rect->x1;
 
 		for (x = 0; x < width; x++) {
-			unsigned int pixpos = x % block_width; /* within byte from the left */
+			unsigned int pixpos = x % block_width;  
 			unsigned int pixshift = (block_width - pixpos - 1) * bits_per_pixel;
 
 			if (!pixpos) {
@@ -172,10 +162,7 @@ retry:
 		buf = gdrm->bulk_buf;
 	iosys_map_set_vaddr(&dst, buf);
 
-	/*
-	 * Imported buffers are assumed to be write-combined and thus uncached
-	 * with slow reads (at least on ARM).
-	 */
+	 
 	if (format != fb->format) {
 		if (format->format == GUD_DRM_FORMAT_R1) {
 			len = gud_xrgb8888_to_r124(buf, format, vaddr, fb, rect);
@@ -196,7 +183,7 @@ retry:
 	} else if (gud_is_big_endian() && format->cpp[0] > 1) {
 		drm_fb_swab(&dst, NULL, src, fb, rect, cached_reads);
 	} else if (compression && cached_reads && pitch == fb->pitches[0]) {
-		/* can compress directly from the framebuffer */
+		 
 		buf = vaddr + rect->y1 * pitch;
 	} else {
 		drm_fb_memcpy(&dst, NULL, src, fb, rect);
@@ -286,7 +273,7 @@ static int gud_flush_rect(struct gud_device *gdrm, struct drm_framebuffer *fb,
 		trlen = len;
 
 	gdrm->stats_length += len;
-	/* Did it wrap around? */
+	 
 	if (gdrm->stats_length <= len && gdrm->stats_actual_length) {
 		gdrm->stats_length = len;
 		gdrm->stats_actual_length = 0;
@@ -327,7 +314,7 @@ static void gud_flush_damage(struct gud_device *gdrm, struct drm_framebuffer *fb
 	if (format->format == DRM_FORMAT_XRGB8888 && gdrm->xrgb8888_emulation_format)
 		format = gdrm->xrgb8888_emulation_format;
 
-	/* Split update if it's too big */
+	 
 	pitch = drm_format_info_min_pitch(format, 0, drm_rect_width(damage));
 	lines = drm_rect_height(damage);
 
@@ -436,7 +423,7 @@ static void gud_fb_handle_damage(struct gud_device *gdrm, struct drm_framebuffer
 			return;
 	}
 
-	/* Imported buffers are assumed to be WriteCombined with uncached reads */
+	 
 	gud_flush_damage(gdrm, fb, src, !fb->obj[0]->import_attach, damage);
 }
 
@@ -470,7 +457,7 @@ int gud_pipe_check(struct drm_simple_display_pipe *pipe,
 	if (!new_crtc_state->mode_changed && !new_crtc_state->connectors_changed)
 		return 0;
 
-	/* Only one connector is supported */
+	 
 	if (hweight32(new_crtc_state->connector_mask) != 1)
 		return -EINVAL;
 
@@ -482,10 +469,7 @@ int gud_pipe_check(struct drm_simple_display_pipe *pipe,
 			break;
 	}
 
-	/*
-	 * DRM_IOCTL_MODE_OBJ_SETPROPERTY on the rotation property will not have
-	 * the connector included in the state.
-	 */
+	 
 	if (!connector_state) {
 		struct drm_connector_list_iter conn_iter;
 
@@ -529,7 +513,7 @@ int gud_pipe_check(struct drm_simple_display_pipe *pipe,
 
 		switch (prop) {
 		case GUD_PROPERTY_ROTATION:
-			/* DRM UAPI matches the protocol so use value directly */
+			 
 			val = new_plane_state->rotation;
 			break;
 		default:

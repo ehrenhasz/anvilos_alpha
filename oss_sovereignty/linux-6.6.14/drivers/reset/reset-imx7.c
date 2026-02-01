@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, Impinj, Inc.
- *
- * i.MX7 System Reset Controller (SRC) driver
- *
- * Author: Andrey Smirnov <andrew.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
@@ -97,10 +91,7 @@ static int imx7_reset_set(struct reset_controller_dev *rcdev,
 
 	switch (id) {
 	case IMX7_RESET_PCIEPHY:
-		/*
-		 * wait for more than 10us to release phy g_rst and
-		 * btnrst
-		 */
+		 
 		if (!assert)
 			udelay(10);
 		break;
@@ -226,10 +217,7 @@ static int imx8mq_reset_set(struct reset_controller_dev *rcdev,
 	switch (id) {
 	case IMX8MQ_RESET_PCIEPHY:
 	case IMX8MQ_RESET_PCIEPHY2:
-		/*
-		 * wait for more than 10us to release phy g_rst and
-		 * btnrst
-		 */
+		 
 		if (!assert)
 			udelay(10);
 		break;
@@ -320,10 +308,7 @@ static int imx8mp_reset_set(struct reset_controller_dev *rcdev,
 
 	switch (id) {
 	case IMX8MP_RESET_PCIEPHY:
-		/*
-		 * wait for more than 10us to release phy g_rst and
-		 * btnrst
-		 */
+		 
 		if (!assert)
 			udelay(10);
 		break;
@@ -389,7 +374,7 @@ static const struct of_device_id imx7_reset_dt_ids[] = {
 	{ .compatible = "fsl,imx7d-src", .data = &variant_imx7 },
 	{ .compatible = "fsl,imx8mq-src", .data = &variant_imx8mq },
 	{ .compatible = "fsl,imx8mp-src", .data = &variant_imx8mp },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, imx7_reset_dt_ids);
 

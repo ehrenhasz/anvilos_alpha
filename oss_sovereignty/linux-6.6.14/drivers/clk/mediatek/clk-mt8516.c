@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- *         Fabien Parent <fparent@baylibre.com>
- * Copyright (c) 2023 Collabora Ltd.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/of.h>
@@ -361,7 +356,7 @@ static const char * const nfiecc_parents[] __initconst = {
 };
 
 static struct mtk_composite top_muxes[] __initdata = {
-	/* CLK_MUX_SEL0 */
+	 
 	MUX(CLK_TOP_UART0_SEL, "uart0_sel", uart0_parents,
 		0x000, 0, 1),
 	MUX(CLK_TOP_AHB_INFRA_SEL, "ahb_infra_sel", ahb_infra_parents,
@@ -378,14 +373,14 @@ static struct mtk_composite top_muxes[] __initdata = {
 		0x000, 26, 1),
 	MUX(CLK_TOP_AUD_INTBUS_SEL, "aud_intbus_sel", aud_intbus_parents,
 		0x000, 27, 3),
-	/* CLK_MUX_SEL1 */
+	 
 	MUX(CLK_TOP_NFI2X_PAD_SEL, "nfi2x_pad_sel", nfi2x_pad_parents,
 		0x004, 0, 7),
 	MUX(CLK_TOP_NFI1X_PAD_SEL, "nfi1x_pad_sel", nfi1x_pad_parents,
 		0x004, 7, 1),
 	MUX(CLK_TOP_USB_78M_SEL, "usb_78m_sel", usb_78m_parents,
 		0x004, 20, 3),
-	/* CLK_MUX_SEL8 */
+	 
 	MUX(CLK_TOP_SPINOR_SEL, "spinor_sel", spinor_parents,
 		0x040, 0, 3),
 	MUX(CLK_TOP_MSDC2_SEL, "msdc2_sel", msdc2_parents,
@@ -402,7 +397,7 @@ static struct mtk_composite top_muxes[] __initdata = {
 		0x040, 26, 2),
 	MUX(CLK_TOP_I2C_SEL, "i2c_sel", i2c_parents,
 		0x040, 28, 2),
-	/* CLK_SEL_9 */
+	 
 	MUX(CLK_TOP_AUD_I2S0_M_SEL, "aud_i2s0_m_sel", aud_i2s0_m_parents,
 		0x044, 12, 1),
 	MUX(CLK_TOP_AUD_I2S1_M_SEL, "aud_i2s1_m_sel", aud_i2s0_m_parents,
@@ -417,7 +412,7 @@ static struct mtk_composite top_muxes[] __initdata = {
 		0x044, 17, 1),
 	MUX(CLK_TOP_AUD_SPDIF_B_SEL, "aud_spdif_b_sel", aud_i2s0_m_parents,
 		0x044, 18, 1),
-	/* CLK_MUX_SEL13 */
+	 
 	MUX(CLK_TOP_PWM_SEL, "pwm_sel", pwm_parents,
 		0x07c, 0, 1),
 	MUX(CLK_TOP_SPI_SEL, "spi_sel", spi_parents,
@@ -545,7 +540,7 @@ static const struct mtk_gate_regs top5_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &top5_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
 
 static const struct mtk_gate top_clks[] __initconst = {
-	/* TOP1 */
+	 
 	GATE_TOP1(CLK_TOP_THEM, "them", "ahb_infra_sel", 1),
 	GATE_TOP1(CLK_TOP_APDMA, "apdma", "ahb_infra_sel", 2),
 	GATE_TOP1(CLK_TOP_I2C0, "i2c0", "ifr_i2c0_sel", 3),
@@ -576,7 +571,7 @@ static const struct mtk_gate top_clks[] __initconst = {
 	GATE_TOP1(CLK_TOP_PMICWRAP_26M, "pwrap_26m", "clk26m_ck", 29),
 	GATE_TOP1(CLK_TOP_AUX_ADC, "aux_adc", "clk26m_ck", 30),
 	GATE_TOP1(CLK_TOP_AUX_TP, "aux_tp", "clk26m_ck", 31),
-	/* TOP2 */
+	 
 	GATE_TOP2(CLK_TOP_MSDC2, "msdc2", "ahb_infra_sel", 0),
 	GATE_TOP2(CLK_TOP_RBIST, "rbist", "univpll_d12", 1),
 	GATE_TOP2(CLK_TOP_NFI_BUS, "nfi_bus", "ahb_infra_sel", 2),
@@ -605,7 +600,7 @@ static const struct mtk_gate top_clks[] __initconst = {
 	GATE_TOP2_I(CLK_TOP_MSDC1_INFRA, "msdc1_infra", "msdc1", 29),
 	GATE_TOP2_I(CLK_TOP_MSDC2_INFRA, "msdc2_infra", "rg_msdc2", 30),
 	GATE_TOP2(CLK_TOP_USB_78M, "usb_78m", "usb_78m_sel", 31),
-	/* TOP3 */
+	 
 	GATE_TOP3(CLK_TOP_RG_SPINOR, "rg_spinor", "spinor_sel", 0),
 	GATE_TOP3(CLK_TOP_RG_MSDC2, "rg_msdc2", "msdc2_sel", 1),
 	GATE_TOP3(CLK_TOP_RG_ETH, "rg_eth", "eth_sel", 2),
@@ -621,14 +616,14 @@ static const struct mtk_gate top_clks[] __initconst = {
 	GATE_TOP3(CLK_TOP_RG_BSI, "rg_bsi", "bsi_sel", 16),
 	GATE_TOP3(CLK_TOP_RG_DBG_ATCLK, "rg_dbg_atclk", "dbg_atclk_sel", 17),
 	GATE_TOP3(CLK_TOP_RG_NFIECC, "rg_nfiecc", "nfiecc_sel", 18),
-	/* TOP4 */
+	 
 	GATE_TOP4_I(CLK_TOP_RG_APLL1_D2_EN, "rg_apll1_d2_en", "apll1_d2", 8),
 	GATE_TOP4_I(CLK_TOP_RG_APLL1_D4_EN, "rg_apll1_d4_en", "apll1_d4", 9),
 	GATE_TOP4_I(CLK_TOP_RG_APLL1_D8_EN, "rg_apll1_d8_en", "apll1_d8", 10),
 	GATE_TOP4_I(CLK_TOP_RG_APLL2_D2_EN, "rg_apll2_d2_en", "apll2_d2", 11),
 	GATE_TOP4_I(CLK_TOP_RG_APLL2_D4_EN, "rg_apll2_d4_en", "apll2_d4", 12),
 	GATE_TOP4_I(CLK_TOP_RG_APLL2_D8_EN, "rg_apll2_d8_en", "apll2_d8", 13),
-	/* TOP5 */
+	 
 	GATE_TOP5(CLK_TOP_APLL12_DIV0, "apll12_div0", "apll12_ck_div0", 0),
 	GATE_TOP5(CLK_TOP_APLL12_DIV1, "apll12_div1", "apll12_ck_div1", 1),
 	GATE_TOP5(CLK_TOP_APLL12_DIV2, "apll12_div2", "apll12_ck_div2", 2),
@@ -663,7 +658,7 @@ static const struct mtk_clk_desc infra_desc = {
 static const struct of_device_id of_match_clk_mt8516[] = {
 	{ .compatible = "mediatek,mt8516-topckgen", .data = &topck_desc },
 	{ .compatible = "mediatek,mt8516-infracfg", .data = &infra_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8516);
 

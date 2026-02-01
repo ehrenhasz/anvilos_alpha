@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/interconnect.h>
 #include <linux/interconnect-provider.h>
@@ -14,10 +12,7 @@
 #include "icc-common.h"
 #include "icc-rpmh.h"
 
-/**
- * qcom_icc_pre_aggregate - cleans up stale values from prior icc_set
- * @node: icc node to operate on
- */
+ 
 void qcom_icc_pre_aggregate(struct icc_node *node)
 {
 	size_t i;
@@ -37,15 +32,7 @@ void qcom_icc_pre_aggregate(struct icc_node *node)
 }
 EXPORT_SYMBOL_GPL(qcom_icc_pre_aggregate);
 
-/**
- * qcom_icc_aggregate - aggregate bw for buckets indicated by tag
- * @node: node to aggregate
- * @tag: tag to indicate which buckets to aggregate
- * @avg_bw: new bw to sum aggregate
- * @peak_bw: new bw to max aggregate
- * @agg_avg: existing aggregate avg bw val
- * @agg_peak: existing aggregate peak bw val
- */
+ 
 int qcom_icc_aggregate(struct icc_node *node, u32 tag, u32 avg_bw,
 		       u32 peak_bw, u32 *agg_avg, u32 *agg_peak)
 {
@@ -76,13 +63,7 @@ int qcom_icc_aggregate(struct icc_node *node, u32 tag, u32 avg_bw,
 }
 EXPORT_SYMBOL_GPL(qcom_icc_aggregate);
 
-/**
- * qcom_icc_set - set the constraints based on path
- * @src: source node for the path to set constraints on
- * @dst: destination node for the path to set constraints on
- *
- * Return: 0 on success, or an error code otherwise
- */
+ 
 int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
 {
 	struct qcom_icc_provider *qp;
@@ -101,13 +82,7 @@ int qcom_icc_set(struct icc_node *src, struct icc_node *dst)
 }
 EXPORT_SYMBOL_GPL(qcom_icc_set);
 
-/**
- * qcom_icc_bcm_init - populates bcm aux data and connect qnodes
- * @bcm: bcm to be initialized
- * @dev: associated provider device
- *
- * Return: 0 on success, or an error code otherwise
- */
+ 
 int qcom_icc_bcm_init(struct qcom_icc_bcm *bcm, struct device *dev)
 {
 	struct qcom_icc_node *qn;
@@ -115,7 +90,7 @@ int qcom_icc_bcm_init(struct qcom_icc_bcm *bcm, struct device *dev)
 	size_t data_count;
 	int i;
 
-	/* BCM is already initialised*/
+	 
 	if (bcm->addr)
 		return 0;
 
@@ -148,7 +123,7 @@ int qcom_icc_bcm_init(struct qcom_icc_bcm *bcm, struct device *dev)
 	if (!bcm->vote_scale)
 		bcm->vote_scale = 1000;
 
-	/* Link Qnodes to their respective BCMs */
+	 
 	for (i = 0; i < bcm->num_nodes; i++) {
 		qn = bcm->nodes[i];
 		qn->bcms[qn->num_bcms] = bcm;
@@ -235,7 +210,7 @@ int qcom_icc_rpmh_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, qp);
 
-	/* Populate child NoC devices if any */
+	 
 	if (of_get_child_count(dev->of_node) > 0) {
 		ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
 		if (ret)

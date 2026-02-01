@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SMB root file system support
- *
- * Copyright (c) 2019 Paulo Alcantara <palcantara@suse.de>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/fs.h>
 #include <linux/types.h>
@@ -24,7 +20,7 @@ static char root_opts[1024] __initdata = DEFAULT_MNT_OPTS;
 
 static __be32 __init parse_srvaddr(char *start, char *end)
 {
-	/* TODO: ipv6 support */
+	 
 	char addr[sizeof("aaa.bbb.ccc.ddd")];
 	int i = 0;
 
@@ -37,23 +33,9 @@ static __be32 __init parse_srvaddr(char *start, char *end)
 	return in_aton(addr);
 }
 
-/* cifsroot=//<server-ip>/<share>[,options] */
-static int __init cifs_root_setup(char *line)
-{
-	char *s;
-	int len;
-	__be32 srvaddr = htonl(INADDR_NONE);
-
-	ROOT_DEV = Root_CIFS;
-
-	if (strlen(line) > 3 && line[0] == '/' && line[1] == '/') {
-		s = strchr(&line[2], '/');
-		if (!s || s[1] == '\0')
-			return 1;
-
-		/* make s point to ',' or '\0' at end of line */
+ 
 		s = strchrnul(s, ',');
-		/* len is strlen(unc) + '\0' */
+		 
 		len = s - line + 1;
 		if (len > sizeof(root_dev)) {
 			pr_err("Root-CIFS: UNC path too long\n");

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2020 Felix Fietkau <nbd@nbd.name> */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -107,12 +107,12 @@ static int mtk_mib_entry_read(struct mtk_ppe *ppe, u16 index, u64 *bytes, u64 *p
 	cnt_r2 = readl(ppe->base + MTK_PPE_MIB_SER_R2);
 
 	if (mtk_is_netsys_v3_or_greater(ppe->eth)) {
-		/* 64 bit for each counter */
+		 
 		u32 cnt_r3 = readl(ppe->base + MTK_PPE_MIB_SER_R3);
 		*bytes = ((u64)cnt_r1 << 32) | cnt_r0;
 		*packets = ((u64)cnt_r3 << 32) | cnt_r2;
 	} else {
-		/* 48 bit byte counter, 40 bit packet counter */
+		 
 		u32 byte_cnt_low = FIELD_GET(MTK_PPE_MIB_SER_R0_BYTE_CNT_LOW, cnt_r0);
 		u32 byte_cnt_high = FIELD_GET(MTK_PPE_MIB_SER_R1_BYTE_CNT_HIGH, cnt_r1);
 		u32 pkt_cnt_low = FIELD_GET(MTK_PPE_MIB_SER_R1_PKT_CNT_LOW, cnt_r1);
@@ -824,22 +824,22 @@ int mtk_ppe_prepare_reset(struct mtk_ppe *ppe)
 	if (!ppe)
 		return -EINVAL;
 
-	/* disable KA */
+	 
 	ppe_clear(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_KEEPALIVE);
 	ppe_clear(ppe, MTK_PPE_BIND_LMT1, MTK_PPE_NTU_KEEPALIVE);
 	ppe_w32(ppe, MTK_PPE_KEEPALIVE, 0);
 	usleep_range(10000, 11000);
 
-	/* set KA timer to maximum */
+	 
 	ppe_set(ppe, MTK_PPE_BIND_LMT1, MTK_PPE_NTU_KEEPALIVE);
 	ppe_w32(ppe, MTK_PPE_KEEPALIVE, 0xffffffff);
 
-	/* set KA tick select */
+	 
 	ppe_set(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_TICK_SEL);
 	ppe_set(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_KEEPALIVE);
 	usleep_range(10000, 11000);
 
-	/* disable scan mode */
+	 
 	ppe_clear(ppe, MTK_PPE_TB_CFG, MTK_PPE_TB_CFG_SCAN_MODE);
 	usleep_range(10000, 11000);
 
@@ -889,9 +889,7 @@ struct mtk_ppe *mtk_ppe_init(struct mtk_eth *eth, void __iomem *base, int index)
 
 	rhashtable_init(&ppe->l2_flows, &mtk_flow_l2_ht_params);
 
-	/* need to allocate a separate device, since it PPE DMA access is
-	 * not coherent.
-	 */
+	 
 	ppe->base = base;
 	ppe->eth = eth;
 	ppe->dev = dev;
@@ -960,7 +958,7 @@ static void mtk_ppe_init_foe_table(struct mtk_ppe *ppe)
 	if (!IS_ENABLED(CONFIG_SOC_MT7621))
 		return;
 
-	/* skip all entries that cross the 1024 byte boundary */
+	 
 	for (i = 0; i < MTK_PPE_ENTRIES; i += 128) {
 		for (k = 0; k < ARRAY_SIZE(skip); k++) {
 			struct mtk_foe_entry *hwe;
@@ -1046,7 +1044,7 @@ void mtk_ppe_start(struct mtk_ppe *ppe)
 	      FIELD_PREP(MTK_PPE_BIND_RATE_PREBIND, 1);
 	ppe_w32(ppe, MTK_PPE_BIND_RATE, val);
 
-	/* enable PPE */
+	 
 	val = MTK_PPE_GLO_CFG_EN |
 	      MTK_PPE_GLO_CFG_IP4_L4_CS_DROP |
 	      MTK_PPE_GLO_CFG_IP4_CS_DROP |
@@ -1088,11 +1086,11 @@ int mtk_ppe_stop(struct mtk_ppe *ppe)
 
 	mtk_ppe_cache_enable(ppe, false);
 
-	/* disable offload engine */
+	 
 	ppe_clear(ppe, MTK_PPE_GLO_CFG, MTK_PPE_GLO_CFG_EN);
 	ppe_w32(ppe, MTK_PPE_FLOW_CFG, 0);
 
-	/* disable aging */
+	 
 	val = MTK_PPE_TB_CFG_AGE_NON_L4 |
 	      MTK_PPE_TB_CFG_AGE_UNBIND |
 	      MTK_PPE_TB_CFG_AGE_TCP |

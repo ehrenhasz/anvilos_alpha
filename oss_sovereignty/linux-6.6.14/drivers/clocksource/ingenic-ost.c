@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ47xx SoCs TCU Operating System Timer driver
- *
- * Copyright (C) 2016 Maarten ter Huurne <maarten@treewalker.org>
- * Copyright (C) 2020 Paul Cercueil <paul@crapouillou.net>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clocksource.h>
@@ -21,10 +16,7 @@
 
 #define TCU_OST_CHANNEL		15
 
-/*
- * The TCU_REG_OST_CNT{L,R} from <linux/mfd/ingenic-tcu.h> are only for the
- * regmap; these are for use with the __iomem pointer.
- */
+ 
 #define OST_REG_CNTL		0x4
 #define OST_REG_CNTH		0x8
 
@@ -43,13 +35,13 @@ static struct ingenic_ost *ingenic_ost;
 
 static u64 notrace ingenic_ost_read_cntl(void)
 {
-	/* Read using __iomem pointer instead of regmap to avoid locking */
+	 
 	return readl(ingenic_ost->regs + OST_REG_CNTL);
 }
 
 static u64 notrace ingenic_ost_read_cnth(void)
 {
-	/* Read using __iomem pointer instead of regmap to avoid locking */
+	 
 	return readl(ingenic_ost->regs + OST_REG_CNTH);
 }
 
@@ -101,18 +93,18 @@ static int __init ingenic_ost_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* Clear counter high/low registers */
+	 
 	if (soc_info->is64bit)
 		regmap_write(map, TCU_REG_OST_CNTL, 0);
 	regmap_write(map, TCU_REG_OST_CNTH, 0);
 
-	/* Don't reset counter at compare value. */
+	 
 	regmap_update_bits(map, TCU_REG_OST_TCSR,
 			   TCU_OST_TCSR_MASK, TCU_OST_TCSR_CNT_MD);
 
 	rate = clk_get_rate(ost->clk);
 
-	/* Enable OST TCU channel */
+	 
 	regmap_write(map, TCU_REG_TESR, BIT(TCU_OST_CHANNEL));
 
 	cs = &ost->cs;
@@ -158,7 +150,7 @@ static int ingenic_ost_resume(struct device *dev)
 }
 
 static const struct dev_pm_ops ingenic_ost_pm_ops = {
-	/* _noirq: We want the OST clock to be gated last / ungated first */
+	 
 	.suspend_noirq = ingenic_ost_suspend,
 	.resume_noirq  = ingenic_ost_resume,
 };

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  ALSA sequencer main module
- *  Copyright (c) 1998-1999 by Frank van de Pol <fvdpol@coil.demon.nl>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -37,7 +34,7 @@ int seq_default_timer_device =
 #endif
 	;
 int seq_default_timer_subdevice = 0;
-int seq_default_timer_resolution = 0;	/* Hz */
+int seq_default_timer_resolution = 0;	 
 
 MODULE_AUTHOR("Frank van de Pol <fvdpol@coil.demon.nl>, Jaroslav Kysela <perex@perex.cz>");
 MODULE_DESCRIPTION("Advanced Linux Sound Architecture sequencer.");
@@ -61,9 +58,7 @@ MODULE_PARM_DESC(seq_default_timer_resolution, "The default timer resolution in 
 MODULE_ALIAS_CHARDEV(CONFIG_SND_MAJOR, SNDRV_MINOR_SEQUENCER);
 MODULE_ALIAS("devname:snd/seq");
 
-/*
- *  INIT PART
- */
+ 
 
 static int __init alsa_seq_init(void)
 {
@@ -73,17 +68,17 @@ static int __init alsa_seq_init(void)
 	if (err < 0)
 		goto error;
 
-	/* register sequencer device */
+	 
 	err = snd_sequencer_device_init();
 	if (err < 0)
 		goto error;
 
-	/* register proc interface */
+	 
 	err = snd_seq_info_init();
 	if (err < 0)
 		goto error_device;
 
-	/* register our internal client */
+	 
 	err = snd_seq_system_client_init();
 	if (err < 0)
 		goto error_info;
@@ -101,16 +96,16 @@ static int __init alsa_seq_init(void)
 
 static void __exit alsa_seq_exit(void)
 {
-	/* unregister our internal client */
+	 
 	snd_seq_system_client_done();
 
-	/* unregister proc interface */
+	 
 	snd_seq_info_done();
 	
-	/* delete timing queues */
+	 
 	snd_seq_queues_delete();
 
-	/* unregister sequencer device */
+	 
 	snd_sequencer_device_done();
 
 	snd_seq_autoload_exit();

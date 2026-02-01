@@ -1,32 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An SPI driver for the Philips PCF2123 RTC
- * Copyright 2009 Cyber Switching, Inc.
- *
- * Author: Chris Verges <chrisv@cyberswitching.com>
- * Maintainers: http://www.cyberswitching.com
- *
- * based on the RS5C348 driver in this same directory.
- *
- * Thanks to Christian Pellegrin <chripell@fsfe.org> for
- * the sysfs contributions to this driver.
- *
- * Please note that the CS is active high, so platform data
- * should look something like:
- *
- * static struct spi_board_info ek_spi_devices[] = {
- *	...
- *	{
- *		.modalias		= "rtc-pcf2123",
- *		.chip_select		= 1,
- *		.controller_data	= (void *)AT91_PIN_PA10,
- *		.max_speed_hz		= 1000 * 1000,
- *		.mode			= SPI_CS_HIGH,
- *		.bus_num		= 0,
- *	},
- *	...
- *};
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/delay.h>
@@ -42,62 +15,62 @@
 #include <linux/module.h>
 #include <linux/regmap.h>
 
-/* REGISTERS */
-#define PCF2123_REG_CTRL1	(0x00)	/* Control Register 1 */
-#define PCF2123_REG_CTRL2	(0x01)	/* Control Register 2 */
-#define PCF2123_REG_SC		(0x02)	/* datetime */
+ 
+#define PCF2123_REG_CTRL1	(0x00)	 
+#define PCF2123_REG_CTRL2	(0x01)	 
+#define PCF2123_REG_SC		(0x02)	 
 #define PCF2123_REG_MN		(0x03)
 #define PCF2123_REG_HR		(0x04)
 #define PCF2123_REG_DM		(0x05)
 #define PCF2123_REG_DW		(0x06)
 #define PCF2123_REG_MO		(0x07)
 #define PCF2123_REG_YR		(0x08)
-#define PCF2123_REG_ALRM_MN	(0x09)	/* Alarm Registers */
+#define PCF2123_REG_ALRM_MN	(0x09)	 
 #define PCF2123_REG_ALRM_HR	(0x0a)
 #define PCF2123_REG_ALRM_DM	(0x0b)
 #define PCF2123_REG_ALRM_DW	(0x0c)
-#define PCF2123_REG_OFFSET	(0x0d)	/* Clock Rate Offset Register */
-#define PCF2123_REG_TMR_CLKOUT	(0x0e)	/* Timer Registers */
+#define PCF2123_REG_OFFSET	(0x0d)	 
+#define PCF2123_REG_TMR_CLKOUT	(0x0e)	 
 #define PCF2123_REG_CTDWN_TMR	(0x0f)
 
-/* PCF2123_REG_CTRL1 BITS */
-#define CTRL1_CLEAR		(0)	/* Clear */
-#define CTRL1_CORR_INT		BIT(1)	/* Correction irq enable */
-#define CTRL1_12_HOUR		BIT(2)	/* 12 hour time */
-#define CTRL1_SW_RESET	(BIT(3) | BIT(4) | BIT(6))	/* Software reset */
-#define CTRL1_STOP		BIT(5)	/* Stop the clock */
-#define CTRL1_EXT_TEST		BIT(7)	/* External clock test mode */
+ 
+#define CTRL1_CLEAR		(0)	 
+#define CTRL1_CORR_INT		BIT(1)	 
+#define CTRL1_12_HOUR		BIT(2)	 
+#define CTRL1_SW_RESET	(BIT(3) | BIT(4) | BIT(6))	 
+#define CTRL1_STOP		BIT(5)	 
+#define CTRL1_EXT_TEST		BIT(7)	 
 
-/* PCF2123_REG_CTRL2 BITS */
-#define CTRL2_TIE		BIT(0)	/* Countdown timer irq enable */
-#define CTRL2_AIE		BIT(1)	/* Alarm irq enable */
-#define CTRL2_TF		BIT(2)	/* Countdown timer flag */
-#define CTRL2_AF		BIT(3)	/* Alarm flag */
-#define CTRL2_TI_TP		BIT(4)	/* Irq pin generates pulse */
-#define CTRL2_MSF		BIT(5)	/* Minute or second irq flag */
-#define CTRL2_SI		BIT(6)	/* Second irq enable */
-#define CTRL2_MI		BIT(7)	/* Minute irq enable */
+ 
+#define CTRL2_TIE		BIT(0)	 
+#define CTRL2_AIE		BIT(1)	 
+#define CTRL2_TF		BIT(2)	 
+#define CTRL2_AF		BIT(3)	 
+#define CTRL2_TI_TP		BIT(4)	 
+#define CTRL2_MSF		BIT(5)	 
+#define CTRL2_SI		BIT(6)	 
+#define CTRL2_MI		BIT(7)	 
 
-/* PCF2123_REG_SC BITS */
-#define OSC_HAS_STOPPED		BIT(7)	/* Clock has been stopped */
+ 
+#define OSC_HAS_STOPPED		BIT(7)	 
 
-/* PCF2123_REG_ALRM_XX BITS */
-#define ALRM_DISABLE		BIT(7)	/* MN, HR, DM, or DW alarm matching */
+ 
+#define ALRM_DISABLE		BIT(7)	 
 
-/* PCF2123_REG_TMR_CLKOUT BITS */
-#define CD_TMR_4096KHZ		(0)	/* 4096 KHz countdown timer */
-#define CD_TMR_64HZ		(1)	/* 64 Hz countdown timer */
-#define CD_TMR_1HZ		(2)	/* 1 Hz countdown timer */
-#define CD_TMR_60th_HZ		(3)	/* 60th Hz countdown timer */
-#define CD_TMR_TE		BIT(3)	/* Countdown timer enable */
+ 
+#define CD_TMR_4096KHZ		(0)	 
+#define CD_TMR_64HZ		(1)	 
+#define CD_TMR_1HZ		(2)	 
+#define CD_TMR_60th_HZ		(3)	 
+#define CD_TMR_TE		BIT(3)	 
 
-/* PCF2123_REG_OFFSET BITS */
-#define OFFSET_SIGN_BIT		6	/* 2's complement sign bit */
-#define OFFSET_COARSE		BIT(7)	/* Coarse mode offset */
-#define OFFSET_STEP		(2170)	/* Offset step in parts per billion */
-#define OFFSET_MASK		GENMASK(6, 0)	/* Offset value */
+ 
+#define OFFSET_SIGN_BIT		6	 
+#define OFFSET_COARSE		BIT(7)	 
+#define OFFSET_STEP		(2170)	 
+#define OFFSET_MASK		GENMASK(6, 0)	 
 
-/* READ/WRITE ADDRESS BITS */
+ 
 #define PCF2123_WRITE		BIT(4)
 #define PCF2123_READ		(BIT(4) | BIT(7))
 
@@ -137,16 +110,7 @@ static int pcf2123_read_offset(struct device *dev, long *offset)
 	return 0;
 }
 
-/*
- * The offset register is a 7 bit signed value with a coarse bit in bit 7.
- * The main difference between the two is normal offset adjusts the first
- * second of n minutes every other hour, with 61, 62 and 63 being shoved
- * into the 60th minute.
- * The coarse adjustment does the same, but every hour.
- * the two overlap, with every even normal offset value corresponding
- * to a coarse offset. Based on this algorithm, it seems that despite the
- * name, coarse offset is a better fit for overlapping values.
- */
+ 
 static int pcf2123_set_offset(struct device *dev, long offset)
 {
 	struct pcf2123_data *pcf2123 = dev_get_drvdata(dev);
@@ -159,12 +123,12 @@ static int pcf2123_set_offset(struct device *dev, long offset)
 	else
 		reg = DIV_ROUND_CLOSEST(offset, OFFSET_STEP);
 
-	/* choose fine offset only for odd values in the normal range */
+	 
 	if (reg & 1 && reg <= 63 && reg >= -64) {
-		/* Normal offset. Clear the coarse bit */
+		 
 		reg &= ~OFFSET_COARSE;
 	} else {
-		/* Coarse offset. Divide by 2 and set the coarse bit */
+		 
 		reg >>= 1;
 		reg |= OFFSET_COARSE;
 	}
@@ -190,10 +154,10 @@ static int pcf2123_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	tm->tm_sec = bcd2bin(rxbuf[0] & 0x7F);
 	tm->tm_min = bcd2bin(rxbuf[1] & 0x7F);
-	tm->tm_hour = bcd2bin(rxbuf[2] & 0x3F); /* rtc hr 0-23 */
+	tm->tm_hour = bcd2bin(rxbuf[2] & 0x3F);  
 	tm->tm_mday = bcd2bin(rxbuf[3] & 0x3F);
 	tm->tm_wday = rxbuf[4] & 0x07;
-	tm->tm_mon = bcd2bin(rxbuf[5] & 0x1F) - 1; /* rtc mn 1-12 */
+	tm->tm_mon = bcd2bin(rxbuf[5] & 0x1F) - 1;  
 	tm->tm_year = bcd2bin(rxbuf[6]) + 100;
 
 	dev_dbg(dev, "%s: tm is %ptR\n", __func__, tm);
@@ -209,18 +173,18 @@ static int pcf2123_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	dev_dbg(dev, "%s: tm is %ptR\n", __func__, tm);
 
-	/* Stop the counter first */
+	 
 	ret = regmap_write(pcf2123->map, PCF2123_REG_CTRL1, CTRL1_STOP);
 	if (ret)
 		return ret;
 
-	/* Set the new time */
+	 
 	txbuf[0] = bin2bcd(tm->tm_sec & 0x7F);
 	txbuf[1] = bin2bcd(tm->tm_min & 0x7F);
 	txbuf[2] = bin2bcd(tm->tm_hour & 0x3F);
 	txbuf[3] = bin2bcd(tm->tm_mday & 0x3F);
 	txbuf[4] = tm->tm_wday & 0x07;
-	txbuf[5] = bin2bcd((tm->tm_mon + 1) & 0x1F); /* rtc mn 1-12 */
+	txbuf[5] = bin2bcd((tm->tm_mon + 1) & 0x1F);  
 	txbuf[6] = bin2bcd(tm->tm_year - 100);
 
 	ret = regmap_bulk_write(pcf2123->map, PCF2123_REG_SC, txbuf,
@@ -228,7 +192,7 @@ static int pcf2123_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret)
 		return ret;
 
-	/* Start the counter */
+	 
 	ret = regmap_write(pcf2123->map, PCF2123_REG_CTRL1, CTRL1_CLEAR);
 	if (ret)
 		return ret;
@@ -280,17 +244,17 @@ static int pcf2123_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 
 	dev_dbg(dev, "%s: alm is %ptR\n", __func__, &alm->time);
 
-	/* Disable alarm interrupt */
+	 
 	ret = regmap_update_bits(pcf2123->map, PCF2123_REG_CTRL2, CTRL2_AIE, 0);
 	if (ret)
 		return ret;
 
-	/* Ensure alarm flag is clear */
+	 
 	ret = regmap_update_bits(pcf2123->map, PCF2123_REG_CTRL2, CTRL2_AF, 0);
 	if (ret)
 		return ret;
 
-	/* Set new alarm */
+	 
 	txbuf[0] = bin2bcd(alm->time.tm_min & 0x7F);
 	txbuf[1] = bin2bcd(alm->time.tm_hour & 0x3F);
 	txbuf[2] = bin2bcd(alm->time.tm_mday & 0x3F);
@@ -313,11 +277,11 @@ static irqreturn_t pcf2123_rtc_irq(int irq, void *dev)
 	rtc_lock(pcf2123->rtc);
 	regmap_read(pcf2123->map, PCF2123_REG_CTRL2, &val);
 
-	/* Alarm? */
+	 
 	if (val & CTRL2_AF) {
 		ret = IRQ_HANDLED;
 
-		/* Clear alarm flag */
+		 
 		regmap_update_bits(pcf2123->map, PCF2123_REG_CTRL2, CTRL2_AF, 0);
 
 		rtc_update_irq(pcf2123->rtc, 1, RTC_IRQF | RTC_AF);
@@ -338,13 +302,13 @@ static int pcf2123_reset(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Stop the counter */
+	 
 	dev_dbg(dev, "stopping RTC\n");
 	ret = regmap_write(pcf2123->map, PCF2123_REG_CTRL1, CTRL1_STOP);
 	if (ret)
 		return ret;
 
-	/* See if the counter was actually stopped */
+	 
 	dev_dbg(dev, "checking for presence of RTC\n");
 	ret = regmap_read(pcf2123->map, PCF2123_REG_CTRL1, &val);
 	if (ret)
@@ -354,7 +318,7 @@ static int pcf2123_reset(struct device *dev)
 	if (!(val & CTRL1_STOP))
 		return -ENODEV;
 
-	/* Start the counter */
+	 
 	ret = regmap_write(pcf2123->map, PCF2123_REG_CTRL1, CTRL1_CLEAR);
 	if (ret)
 		return ret;
@@ -404,14 +368,14 @@ static int pcf2123_probe(struct spi_device *spi)
 	dev_info(&spi->dev, "spiclk %u KHz.\n",
 			(spi->max_speed_hz + 500) / 1000);
 
-	/* Finalize the initialization */
+	 
 	rtc = devm_rtc_allocate_device(&spi->dev);
 	if (IS_ERR(rtc))
 		return PTR_ERR(rtc);
 
 	pcf2123->rtc = rtc;
 
-	/* Register alarm irq */
+	 
 	if (spi->irq > 0) {
 		unsigned long irqflags = IRQF_TRIGGER_LOW;
 
@@ -428,10 +392,7 @@ static int pcf2123_probe(struct spi_device *spi)
 			dev_err(&spi->dev, "could not request irq.\n");
 	}
 
-	/* The PCF2123's alarm only has minute accuracy. Must add timer
-	 * support to this driver to generate interrupts more than once
-	 * per minute.
-	 */
+	 
 	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, rtc->features);
 	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, rtc->features);
 	rtc->ops = &pcf2123_rtc_ops;
@@ -450,9 +411,9 @@ static int pcf2123_probe(struct spi_device *spi)
 static const struct of_device_id pcf2123_dt_ids[] = {
 	{ .compatible = "nxp,pcf2123", },
 	{ .compatible = "microcrystal,rv2123", },
-	/* Deprecated, do not use */
+	 
 	{ .compatible = "nxp,rtc-pcf2123", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pcf2123_dt_ids);
 #endif
@@ -461,7 +422,7 @@ static const struct spi_device_id pcf2123_spi_ids[] = {
 	{ .name = "pcf2123", },
 	{ .name = "rv2123", },
 	{ .name = "rtc-pcf2123", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, pcf2123_spi_ids);
 

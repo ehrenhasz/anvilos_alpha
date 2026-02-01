@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Ryder Lee <ryder.lee@mediatek.com>
- *         Roy Luo <royluo@google.com>
- *         Lorenzo Bianconi <lorenzo@kernel.org>
- *         Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include "mt7615.h"
 #include "../dma.h"
@@ -172,12 +166,12 @@ static void mt7663_dma_sched_init(struct mt7615_dev *dev)
 		 FIELD_PREP(MT_DMASHDL_PKT_MAX_SIZE_PLE, 1) |
 		 FIELD_PREP(MT_DMASHDL_PKT_MAX_SIZE_PSE, 8));
 
-	/* enable refill control group 0, 1, 2, 4, 5 */
+	 
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_REFILL), 0xffc80000);
-	/* enable group 0, 1, 2, 4, 5, 15 */
+	 
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_OPTIONAL), 0x70068037);
 
-	/* each group min quota must larger then PLE_PKT_MAX_SIZE_NUM */
+	 
 	for (i = 0; i < 5; i++)
 		mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_GROUP_QUOTA(i)),
 			FIELD_PREP(MT_DMASHDL_GROUP_QUOTA_MIN, 0x40) |
@@ -193,14 +187,14 @@ static void mt7663_dma_sched_init(struct mt7615_dev *dev)
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_Q_MAP(1)), 0x42104210);
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_Q_MAP(2)), 0x00050005);
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_Q_MAP(3)), 0);
-	/* ALTX0 and ALTX1 QID mapping to group 5 */
+	 
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_SCHED_SET0), 0x6012345f);
 	mt76_wr(dev, MT_DMA_SHDL(MT_DMASHDL_SCHED_SET1), 0xedcba987);
 }
 
 void mt7615_dma_start(struct mt7615_dev *dev)
 {
-	/* start dma engine */
+	 
 	mt76_set(dev, MT_WPDMA_GLO_CFG,
 		 MT_WPDMA_GLO_CFG_TX_DMA_EN |
 		 MT_WPDMA_GLO_CFG_RX_DMA_EN |
@@ -261,7 +255,7 @@ int mt7615_dma_init(struct mt7615_dev *dev)
 	if (ret)
 		return ret;
 
-	/* init rx queues */
+	 
 	ret = mt76_queue_alloc(dev, &dev->mt76.q_rx[MT_RXQ_MCU], 1,
 			       MT7615_RX_MCU_RING_SIZE, MT_RX_BUF_SIZE,
 			       MT_RX_RING_BASE);
@@ -290,7 +284,7 @@ int mt7615_dma_init(struct mt7615_dev *dev)
 		  MT_WPDMA_GLO_CFG_TX_DMA_BUSY |
 		  MT_WPDMA_GLO_CFG_RX_DMA_BUSY, 0, 1000);
 
-	/* enable interrupts for TX/RX rings */
+	 
 
 	mask = MT_INT_RX_DONE_ALL | mt7615_tx_mcu_int_mask(dev);
 	if (is_mt7663(&dev->mt76))

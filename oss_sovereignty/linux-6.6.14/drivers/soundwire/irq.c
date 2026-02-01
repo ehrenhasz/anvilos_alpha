@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2023 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
+
+
+
 
 #include <linux/device.h>
 #include <linux/fwnode.h>

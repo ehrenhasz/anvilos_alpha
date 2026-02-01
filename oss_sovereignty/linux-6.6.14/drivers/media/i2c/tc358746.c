@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TC358746 - Parallel <-> CSI-2 Bridge
- *
- * Copyright 2022 Marco Felsch <kernel@pengutronix.de>
- *
- * Notes:
- *  - Currently only 'Parallel-in -> CSI-out' mode is supported!
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -26,7 +19,7 @@
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-mc.h>
 
-/* 16-bit registers */
+ 
 #define CHIPID_REG			0x0000
 #define		CHIPID			GENMASK(15, 8)
 
@@ -77,7 +70,7 @@
 #define		FRMSTOP			BIT(15)
 #define		RSTPTR			BIT(14)
 
-/* 32-bit registers */
+ 
 #define CLW_DPHYCONTTX_REG		0x0100
 #define CLW_CNTRL_REG			0x0140
 #define D0W_CNTRL_REG			0x0144
@@ -163,7 +156,7 @@ struct tc358746 {
 
 #define TC358746_VB_MAX_SIZE		(511 * 32)
 #define TC358746_VB_DEFAULT_SIZE	  (1 * 32)
-	unsigned int			vb_size; /* Video buffer size in bits */
+	unsigned int			vb_size;  
 
 	struct phy_configure_opts_mipi_dphy dphy_cfg;
 };
@@ -183,9 +176,9 @@ struct tc358746_format {
 	bool		csi_format;
 	unsigned char	bus_width;
 	unsigned char	bpp;
-	/* Register values */
-	u8		pdformat; /* Peripheral Data Format */
-	u8		pdataf;   /* Parallel Data Format Option */
+	 
+	u8		pdformat;  
+	u8		pdataf;    
 };
 
 enum {
@@ -196,13 +189,13 @@ enum {
 	PDFORMAT_RGB666,
 	PDFORMAT_RGB565,
 	PDFORMAT_YUV422_8BIT,
-	/* RESERVED = 7 */
+	 
 	PDFORMAT_RAW14 = 8,
 	PDFORMAT_YUV422_10BIT,
 	PDFORMAT_YUV444,
 };
 
-/* Check tc358746_src_mbus_code() if you add new formats */
+ 
 static const struct tc358746_format tc358746_formats[] = {
 	{
 		.code = MEDIA_BUS_FMT_UYVY8_2X8,
@@ -229,11 +222,11 @@ static const struct tc358746_format tc358746_formats[] = {
 		.bus_width = 10,
 		.bpp = 20,
 		.pdformat = PDFORMAT_YUV422_10BIT,
-		.pdataf = PDATAF_MODE0, /* don't care */
+		.pdataf = PDATAF_MODE0,  
 	}
 };
 
-/* Get n-th format for pad */
+ 
 static const struct tc358746_format *
 tc358746_get_format_by_idx(unsigned int pad, unsigned int index)
 {
@@ -313,7 +306,7 @@ static int tc358746_write(struct tc358746 *tc358746, u32 reg, u32 val)
 	size_t count;
 	int err;
 
-	/* 32-bit registers starting from CLW_DPHYCONTTX */
+	 
 	count = reg < CLW_DPHYCONTTX_REG ? 1 : 2;
 
 	err = regmap_bulk_write(tc358746->regmap, reg, &val, count);
@@ -329,7 +322,7 @@ static int tc358746_read(struct tc358746 *tc358746, u32 reg, u32 *val)
 	size_t count;
 	int err;
 
-	/* 32-bit registers starting from CLW_DPHYCONTTX */
+	 
 	count = reg < CLW_DPHYCONTTX_REG ? 1 : 2;
 	*val = 0;
 
@@ -393,11 +386,11 @@ tc358746_apply_pll_config(struct tc358746 *tc358746)
 	if (err)
 		return err;
 
-	/* Don't touch the PLL if running */
+	 
 	if (FIELD_GET(PLL_EN, val) == 1)
 		return 0;
 
-	/* Pre-div and Multiplicator have a internal +1 logic */
+	 
 	val = PLL_PRD(pre - 1) | PLL_FBD(mul - 1);
 	mask = PLL_PRD_MASK | PLL_FBD_MASK;
 	err = tc358746_update_bits(tc358746, PLLCTL0_REG, mask, val);
@@ -430,7 +423,7 @@ static int tc358746_apply_misc_config(struct tc358746 *tc358746)
 	mbusfmt = v4l2_subdev_get_pad_format(sd, sink_state, TC358746_SINK);
 	fmt = tc358746_get_format_by_code(TC358746_SINK, mbusfmt->code);
 
-	/* Self defined CSI user data type id's are not supported yet */
+	 
 	val = PDFMT(fmt->pdformat);
 	dev_dbg(dev, "DATAFMT: 0x%x\n", val);
 	err = tc358746_write(tc358746, DATAFMT_REG, val);
@@ -449,7 +442,7 @@ static int tc358746_apply_misc_config(struct tc358746 *tc358746)
 	if (err)
 		goto out;
 
-	/* Total number of bytes for each line/width */
+	 
 	val = mbusfmt->width * fmt->bpp / 8;
 	dev_dbg(dev, "WORDCNT: %u (0x%x)\n", val, val);
 	err = tc358746_write(tc358746, WORDCNT_REG, val);
@@ -460,7 +453,7 @@ out:
 	return err;
 }
 
-/* Use MHz as base so the div needs no u64 */
+ 
 static u32 tc358746_cfg_to_cnt(unsigned int cfg_val,
 			       unsigned int clk_mhz,
 			       unsigned int time_base)
@@ -490,7 +483,7 @@ static int tc358746_apply_dphy_config(struct tc358746 *tc358746)
 	u32 val, val2, lptxcnt;
 	int err;
 
-	/* The hs_byte_clk is also called SYSCLK in the excel sheet */
+	 
 	hs_byte_clk = cfg->hs_clk_rate / 8;
 	hs_byte_clk /= HZ_PER_MHZ;
 	hf_clk = hs_byte_clk / 2;
@@ -536,7 +529,7 @@ static int tc358746_apply_dphy_config(struct tc358746 *tc358746)
 	if (err)
 		return err;
 
-	/* TWAKEUP > 1ms in lptxcnt steps */
+	 
 	val = tc358746_us_to_cnt(cfg->wakeup, hs_byte_clk);
 	val = val / (lptxcnt + 1) - 1;
 	dev_dbg(dev, "TWAKEUP: %u (0x%x)\n", val, val);
@@ -575,7 +568,7 @@ static int tc358746_enable_csi_lanes(struct tc358746 *tc358746, int enable)
 	if (err)
 		return err;
 
-	/* Clock lane */
+	 
 	val = enable ? 0 : LANEDISABLE;
 	dev_dbg(tc358746->sd.dev, "CLW_CNTRL: 0x%x\n", val);
 	err = tc358746_write(tc358746, CLW_CNTRL_REG, val);
@@ -583,7 +576,7 @@ static int tc358746_enable_csi_lanes(struct tc358746 *tc358746, int enable)
 		return err;
 
 	for (lane = 0; lane < MAX_DATA_LANES; lane++) {
-		/* Data lanes */
+		 
 		reg = D0W_CNTRL_REG + lane * 0x4;
 		val = (enable && lane < lanes) ? 0 : LANEDISABLE;
 
@@ -595,10 +588,10 @@ static int tc358746_enable_csi_lanes(struct tc358746 *tc358746, int enable)
 
 	val = 0;
 	if (enable) {
-		/* Clock lane */
+		 
 		val |= BIT(0);
 
-		/* Data lanes */
+		 
 		for (lane = 1; lane <= lanes; lane++)
 			val |= BIT(lane);
 	}
@@ -613,11 +606,7 @@ static int tc358746_enable_csi_module(struct tc358746 *tc358746, int enable)
 	unsigned int lanes = tc358746->dphy_cfg.lanes;
 	int err;
 
-	/*
-	 * START and STRT are only reseted/disabled by sw reset. This is
-	 * required to put the lane state back into LP-11 state. The sw reset
-	 * don't reset register values.
-	 */
+	 
 	if (!enable)
 		return tc358746_sw_reset(tc358746);
 
@@ -629,7 +618,7 @@ static int tc358746_enable_csi_module(struct tc358746 *tc358746, int enable)
 	if (err)
 		return err;
 
-	/* CSI_CONTROL_REG is only indirect accessible */
+	 
 	return tc358746_write(tc358746, CSI_CONFW_REG,
 			      MODE(MODE_SET) |
 			      ADDRESS(CSI_CONTROL_ADDRESS) |
@@ -718,10 +707,7 @@ err_out:
 		return err;
 	}
 
-	/*
-	 * The lanes must be disabled first (before the csi module) so the
-	 * LP-11 state is entered correctly.
-	 */
+	 
 	err = tc358746_enable_csi_lanes(tc358746, 0);
 	if (err)
 		return err;
@@ -777,7 +763,7 @@ static int tc358746_set_fmt(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *src_fmt, *sink_fmt;
 	const struct tc358746_format *fmt;
 
-	/* Source follows the sink */
+	 
 	if (format->pad == TC358746_SOURCE)
 		return v4l2_subdev_get_fmt(sd, sd_state, format);
 
@@ -903,7 +889,7 @@ tc358746_link_validate(struct v4l2_subdev *sd, struct media_link *link,
 	sink_state = v4l2_subdev_lock_and_get_active_state(sd);
 	mbusfmt = v4l2_subdev_get_pad_format(sd, sink_state, TC358746_SINK);
 
-	/* Check the FIFO settings */
+	 
 	fmt = tc358746_get_format_by_code(TC358746_SINK, mbusfmt->code);
 
 	source = media_entity_to_v4l2_subdev(link->source->entity);
@@ -912,7 +898,7 @@ tc358746_link_validate(struct v4l2_subdev *sd, struct media_link *link,
 		dev_err(tc358746->sd.dev,
 			"Failed to query or invalid source link frequency\n");
 		v4l2_subdev_unlock_state(sink_state);
-		/* Return -EINVAL in case of source_link_freq is 0 */
+		 
 		return source_link_freq ? : -EINVAL;
 	}
 	source_bitrate = source_link_freq * fmt->bus_width;
@@ -923,35 +909,20 @@ tc358746_link_validate(struct v4l2_subdev *sd, struct media_link *link,
 		"Fifo settings params: source-bitrate:%lu csi-bitrate:%lu",
 		source_bitrate, csi_bitrate);
 
-	/* Avoid possible FIFO overflows */
+	 
 	if (csi_bitrate < source_bitrate) {
 		v4l2_subdev_unlock_state(sink_state);
 		return -EINVAL;
 	}
 
-	/* Best case */
+	 
 	if (csi_bitrate == source_bitrate) {
 		fifo_sz = TC358746_VB_DEFAULT_SIZE;
 		tc358746->vb_size = TC358746_VB_DEFAULT_SIZE;
 		goto out;
 	}
 
-	/*
-	 * Avoid possible FIFO underflow in case of
-	 * csi_bitrate > source_bitrate. For such case the chip has a internal
-	 * fifo which can be used to delay the line output.
-	 *
-	 * Fifo size calculation (excluding precision):
-	 *
-	 * fifo-sz, image-width - in bits
-	 * sbr                  - source_bitrate in bits/s
-	 * csir                 - csi_bitrate in bits/s
-	 *
-	 * image-width / csir >= (image-width - fifo-sz) / sbr
-	 * image-width * sbr / csir >= image-width - fifo-sz
-	 * fifo-sz >= image-width - image-width * sbr / csir; with n = csir/sbr
-	 * fifo-sz >= image-width - image-width / n
-	 */
+	 
 
 	source_bitrate /= TC358746_PRECISION;
 	n = csi_bitrate / source_bitrate;
@@ -991,7 +962,7 @@ tc358746_g_register(struct v4l2_subdev *sd, struct v4l2_dbg_register *reg)
 	u32 val;
 	int err;
 
-	/* 32-bit registers starting from CLW_DPHYCONTTX */
+	 
 	reg->size = reg->reg < CLW_DPHYCONTTX_REG ? 2 : 4;
 
 	if (!pm_runtime_get_if_in_use(sd->dev))
@@ -1097,30 +1068,12 @@ tc358746_find_mclk_settings(struct tc358746 *tc358746, unsigned long mclk_rate)
 	unsigned long best_mclk_rate;
 	unsigned int i;
 
-	/*
-	 *                          MCLK-Div
-	 *           -------------------´`---------------------
-	 *          ´                                          `
-	 *         +-------------+     +------------------------+
-	 *         | MCLK-PreDiv |     |       MCLK-PostDiv     |
-	 * PLL --> |   (2/4/8)   | --> | (mclk_low + mclk_high) | --> MCLK
-	 *         +-------------+     +------------------------+
-	 *
-	 * The register value of mclk_low/high is mclk_low/high+1, i.e.:
-	 *   mclk_low/high = 1   --> 2 MCLK-Ref Counts
-	 *   mclk_low/high = 255 --> 256 MCLK-Ref Counts == max.
-	 * If mclk_low and mclk_high are 0 then MCLK is disabled.
-	 *
-	 * Keep it simple and support 50/50 duty cycles only for now,
-	 * so the calc will be:
-	 *
-	 *   MCLK = PLL / (MCLK-PreDiv * 2 * MCLK-PostDiv)
-	 */
+	 
 
 	if (mclk_rate == tc358746->mclk_rate)
 		return mclk_rate;
 
-	/* Highest possible rate */
+	 
 	mclkdiv = pll_rate / mclk_rate;
 	if (mclkdiv <= 8) {
 		mclk_prediv = 2;
@@ -1129,7 +1082,7 @@ tc358746_find_mclk_settings(struct tc358746 *tc358746, unsigned long mclk_rate)
 		goto out;
 	}
 
-	/* First check the prediv */
+	 
 	for (i = 0; i < ARRAY_SIZE(prediv); i++) {
 		postdiv = mclkdiv / prediv[i];
 
@@ -1144,7 +1097,7 @@ tc358746_find_mclk_settings(struct tc358746 *tc358746, unsigned long mclk_rate)
 		}
 	}
 
-	/* No suitable prediv found, so try to adjust the postdiv */
+	 
 	for (postdiv = 4; postdiv <= 512; postdiv += 2) {
 		unsigned int pre;
 
@@ -1157,7 +1110,7 @@ tc358746_find_mclk_settings(struct tc358746 *tc358746, unsigned long mclk_rate)
 		}
 	}
 
-	/* The MCLK <-> PLL gap is to high -> use largest possible div */
+	 
 	mclk_prediv = 8;
 	mclk_postdiv = 512;
 	best_mclk_rate = pll_rate / (8 * 512);
@@ -1242,11 +1195,11 @@ static int tc358746_setup_mclk_provider(struct tc358746 *tc358746)
 	const char *mclk_name;
 	int err;
 
-	/* MCLK clk provider support is optional */
+	 
 	if (!device_property_present(dev, "#clock-cells"))
 		return 0;
 
-	/* Init to highest possibel MCLK */
+	 
 	tc358746->mclk_postdiv = 512;
 	tc358746->mclk_prediv = 8;
 
@@ -1313,7 +1266,7 @@ tc358746_init_output_port(struct tc358746 *tc358746, unsigned long refclk)
 		return -EINVAL;
 	}
 
-	/* Currently we only support 'parallel in' -> 'csi out' */
+	 
 	vep = &tc358746->csi_vep;
 	vep->bus_type = V4L2_MBUS_CSI2_DPHY;
 	err = v4l2_fwnode_endpoint_alloc_parse(ep, vep);
@@ -1331,7 +1284,7 @@ tc358746_init_output_port(struct tc358746 *tc358746, unsigned long refclk)
 		goto err;
 	}
 
-	/* TODO: Add support to handle multiple link frequencies */
+	 
 	csi_link_rate = (unsigned long)vep->link_frequencies[0];
 	tc358746->pll_rate = tc358746_find_pll_settings(tc358746, refclk,
 							csi_link_rate * 2);
@@ -1368,7 +1321,7 @@ static int tc358746_init_hw(struct tc358746 *tc358746)
 		return err;
 	}
 
-	 /* Ensure that CSI interface is put into LP-11 state */
+	  
 	err = tc358746_sw_reset(tc358746);
 	if (err) {
 		pm_runtime_put_sync(dev);
@@ -1401,12 +1354,7 @@ static int tc358746_init_controls(struct tc358746 *tc358746)
 	if (err)
 		return err;
 
-	/*
-	 * The driver currently supports only one link-frequency, regardless of
-	 * the input from the firmware, see: tc358746_init_output_port(). So
-	 * report only the first frequency from the array of possible given
-	 * frequencies.
-	 */
+	 
 	ctrl = v4l2_ctrl_new_int_menu(&tc358746->ctrl_hdl, NULL,
 				      V4L2_CID_LINK_FREQ, 0, 0,
 				      link_frequencies);
@@ -1545,17 +1493,14 @@ static int tc358746_probe(struct i2c_client *client)
 	if (err)
 		goto err_subdev;
 
-	/*
-	 * Keep this order since we need the output port link-frequencies
-	 * information.
-	 */
+	 
 	err = tc358746_init_controls(tc358746);
 	if (err)
 		goto err_fwnode;
 
 	dev_set_drvdata(dev, tc358746);
 
-	/* Set to 1sec to give the stream reconfiguration enough time */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 1000);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_enable(dev);
@@ -1636,7 +1581,7 @@ static int tc358746_resume(struct device *dev)
 	if (err)
 		return err;
 
-	/* min. 200ns */
+	 
 	usleep_range(10, 20);
 
 	gpiod_set_value(tc358746->reset_gpio, 0);
@@ -1645,13 +1590,10 @@ static int tc358746_resume(struct device *dev)
 	if (err)
 		goto err;
 
-	/* min. 700us ... 1ms */
+	 
 	usleep_range(1000, 1500);
 
-	/*
-	 * Enable the PLL here since it can be called by the clk-framework or by
-	 * the .s_stream() callback. So this is the common place for both.
-	 */
+	 
 	err = tc358746_apply_pll_config(tc358746);
 	if (err)
 		goto err_clk;

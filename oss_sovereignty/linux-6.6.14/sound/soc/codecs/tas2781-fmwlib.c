@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// tasdevice-fmw.c -- TASDEVICE firmware support
-//
-// Copyright 2023 Texas Instruments, Inc.
-//
-// Author: Shenghao Ding <shenghao-ding@ti.com>
+
+
+
+
+
+
+
 
 #include <linux/crc8.h>
 #include <linux/firmware.h>
@@ -41,7 +41,7 @@
 #define TAS2781_YRAM3_START_REG			8
 #define TAS2781_YRAM3_END_REG			27
 
-/*should not include B0_P53_R44-R47 */
+ 
 #define TAS2781_YRAM_BOOK2			0
 #define TAS2781_YRAM4_START_PAGE		50
 #define TAS2781_YRAM4_END_PAGE			60
@@ -93,14 +93,7 @@ static struct tasdevice_config_info *tasdevice_add_config(
 	unsigned int config_offset = 0;
 	unsigned int i;
 
-	/* In most projects are many audio cases, such as music, handfree,
-	 * receiver, games, audio-to-haptics, PMIC record, bypass mode,
-	 * portrait, landscape, etc. Even in multiple audios, one or
-	 * two of the chips will work for the special case, such as
-	 * ultrasonic application. In order to support these variable-numbers
-	 * of audio cases, flexible configs have been introduced in the
-	 * dsp firmware.
-	 */
+	 
 	cfg_info = kzalloc(sizeof(struct tasdevice_config_info), GFP_KERNEL);
 	if (!cfg_info) {
 		*status = -ENOMEM;
@@ -122,17 +115,12 @@ static struct tasdevice_config_info *tasdevice_add_config(
 		goto out;
 	}
 
-	/* convert data[offset], data[offset + 1], data[offset + 2] and
-	 * data[offset + 3] into host
-	 */
+	 
 	cfg_info->nblocks =
 		be32_to_cpup((__be32 *)&config_data[config_offset]);
 	config_offset += 4;
 
-	/* Several kinds of dsp/algorithm firmwares can run on tas2781,
-	 * the number and size of blk are not fixed and different among
-	 * these firmwares.
-	 */
+	 
 	bk_da = cfg_info->blk_data = kcalloc(cfg_info->nblocks,
 		sizeof(struct tasdev_blk_data *), GFP_KERNEL);
 	if (!bk_da) {
@@ -188,7 +176,7 @@ static struct tasdevice_config_info *tasdevice_add_config(
 				__func__, i, cfg_info->nblocks);
 			break;
 		}
-		/* instead of kzalloc+memcpy */
+		 
 		bk_da[i]->regdata = kmemdup(&config_data[config_offset],
 			bk_da[i]->block_size, GFP_KERNEL);
 		if (!bk_da[i]->regdata) {
@@ -327,9 +315,7 @@ static int fw_parse_block_data_kernel(struct tasdevice_fw *tas_fmw,
 		goto out;
 	}
 
-	/* convert data[offset], data[offset + 1], data[offset + 2] and
-	 * data[offset + 3] into host
-	 */
+	 
 	block->type = be32_to_cpup((__be32 *)&data[offset]);
 	offset += 4;
 
@@ -356,7 +342,7 @@ static int fw_parse_block_data_kernel(struct tasdevice_fw *tas_fmw,
 		offset = -EINVAL;
 		goto out;
 	}
-	/* instead of kzalloc+memcpy */
+	 
 	block->data = kmemdup(&data[offset], block->blk_size, GFP_KERNEL);
 	if (!block->data) {
 		offset = -ENOMEM;
@@ -418,7 +404,7 @@ static int fw_parse_program_data_kernel(
 			offset = -EINVAL;
 			goto out;
 		}
-		/*skip 72 unused byts*/
+		 
 		offset += 72;
 
 		offset = fw_parse_data_kernel(tas_fmw, &(program->dev_data),
@@ -447,7 +433,7 @@ static int fw_parse_configuration_data_kernel(
 			goto out;
 		}
 		memcpy(config->name, &data[offset], 64);
-		/*skip extra 16 bytes*/
+		 
 		offset += 80;
 
 		offset = fw_parse_data_kernel(tas_fmw, &(config->dev_data),
@@ -525,16 +511,13 @@ static int fw_parse_variable_header_kernel(
 		offset += 4;
 	}
 
-	/* Skip the unused prog_size */
+	 
 	offset += 4 * (TASDEVICE_MAXPROGRAM_NUM_KERNEL - tas_fmw->nr_programs);
 
 	tas_fmw->nr_configurations = be32_to_cpup((__be32 *)&buf[offset]);
 	offset += 4;
 
-	/* The max number of config in firmware greater than 4 pieces of
-	 * tas2781s is different from the one lower than 4 pieces of
-	 * tas2781s.
-	 */
+	 
 	max_confs = (fw_hdr->ndev >= 4) ?
 		TASDEVICE_MAXCONFIG_NUM_KERNEL_MULTIPLE_AMPS :
 		TASDEVICE_MAXCONFIG_NUM_KERNEL;
@@ -564,7 +547,7 @@ static int fw_parse_variable_header_kernel(
 		offset += 4;
 	}
 
-	/* Skip the unused configs */
+	 
 	offset += 4 * (max_confs - tas_fmw->nr_programs);
 
 out:
@@ -1029,7 +1012,7 @@ static int fw_parse_block_data(struct tasdevice_fw *tas_fmw,
 		offset = -EINVAL;
 		goto out;
 	}
-	/* instead of kzalloc+memcpy */
+	 
 	block->data = kmemdup(&data[offset], n, GFP_KERNEL);
 	if (!block->data) {
 		offset = -ENOMEM;
@@ -1041,9 +1024,7 @@ out:
 	return offset;
 }
 
-/* When parsing error occurs, all the memory resource will be released
- * in the end of tasdevice_rca_ready.
- */
+ 
 static int fw_parse_data(struct tasdevice_fw *tas_fmw,
 	struct tasdevice_data *img_data, const struct firmware *fmw,
 	int offset)
@@ -1091,9 +1072,7 @@ out:
 	return offset;
 }
 
-/* When parsing error occurs, all the memory resource will be released
- * in the end of tasdevice_rca_ready.
- */
+ 
 static int fw_parse_program_data(struct tasdevice_priv *tas_priv,
 	struct tasdevice_fw *tas_fmw, const struct firmware *fmw, int offset)
 {
@@ -1110,7 +1089,7 @@ static int fw_parse_program_data(struct tasdevice_priv *tas_priv,
 	offset += 2;
 
 	if (tas_fmw->nr_programs == 0) {
-		/*Not error in calibration Data file, return directly*/
+		 
 		dev_info(tas_priv->dev, "%s: No Programs data, maybe calbin\n",
 			__func__);
 		goto out;
@@ -1135,7 +1114,7 @@ static int fw_parse_program_data(struct tasdevice_priv *tas_priv,
 		offset += 64;
 
 		n = strlen((char *)&buf[offset]);
-		/* skip '\0' and 5 unused bytes */
+		 
 		n += 6;
 		if (offset + n > fmw->size) {
 			dev_err(tas_priv->dev, "Description err\n");
@@ -1155,9 +1134,7 @@ out:
 	return offset;
 }
 
-/* When parsing error occurs, all the memory resource will be released
- * in the end of tasdevice_rca_ready.
- */
+ 
 static int fw_parse_configuration_data(
 	struct tasdevice_priv *tas_priv,
 	struct tasdevice_fw *tas_fmw,
@@ -1178,7 +1155,7 @@ static int fw_parse_configuration_data(
 
 	if (tas_fmw->nr_configurations == 0) {
 		dev_err(tas_priv->dev, "%s: Conf is zero\n", __func__);
-		/*Not error for calibration Data file, return directly*/
+		 
 		goto out;
 	}
 	tas_fmw->configs = kcalloc(tas_fmw->nr_configurations,
@@ -1263,10 +1240,7 @@ static bool check_inpage_yram_bk1(struct tas_crc *cd,
 	return in;
 }
 
-/* Return Code:
- * true -- the registers are in the inpage yram
- * false -- the registers are NOT in the inpage yram
- */
+ 
 static bool check_inpage_yram(struct tas_crc *cd, unsigned char book,
 	unsigned char page, unsigned char reg, unsigned char len)
 {
@@ -1309,10 +1283,7 @@ static bool check_inblock_yram_bk(struct tas_crc *cd,
 	return in;
 }
 
-/* Return Code:
- * true -- the registers are in the inblock yram
- * false -- the registers are NOT in the inblock yram
- */
+ 
 static bool check_inblock_yram(struct tas_crc *cd, unsigned char book,
 	unsigned char page, unsigned char reg, unsigned char len)
 {
@@ -1359,7 +1330,7 @@ static int tasdev_multibytes_chksum(struct tasdevice_priv *tasdevice,
 		&& (page == TASDEVICE_PAGE_ID(TAS2781_SA_COEFF_SWAP_REG))
 		&& (reg == TASDEVICE_PAGE_REG(TAS2781_SA_COEFF_SWAP_REG))
 		&& (len == 4)) {
-		/*DSP swap command, pass */
+		 
 		ret = 0;
 		goto end;
 	}
@@ -1389,7 +1360,7 @@ static int tasdev_multibytes_chksum(struct tasdevice_priv *tasdevice,
 			&& ((i + crc_data.offset)
 			<= (TASDEVICE_PAGE_REG(TAS2781_SA_COEFF_SWAP_REG)
 			+ 4)))
-			/*DSP swap command, bypass */
+			 
 			continue;
 		else
 			crc_chksum += crc8(tasdevice->crc8_lkp_tbl, &nBuf1[i],
@@ -1416,7 +1387,7 @@ static int do_singlereg_checksum(struct tasdevice_priv *tasdevice,
 		&& (reg >= TASDEVICE_PAGE_REG(TAS2781_SA_COEFF_SWAP_REG))
 		&& (reg <= (TASDEVICE_PAGE_REG(
 		TAS2781_SA_COEFF_SWAP_REG) + 4))) {
-		/*DSP swap command, pass */
+		 
 		ret = 0;
 		goto end;
 	}
@@ -1591,7 +1562,7 @@ static int tasdev_load_blk(struct tasdevice_priv *tas_priv,
 			val = data[3];
 
 			nr_cmds++;
-			/*Single byte write*/
+			 
 			if (offset <= 0x7F) {
 				ret = tasdevice_dev_write(tas_priv, chn,
 					TASDEVICE_REG(book, page, offset),
@@ -1607,14 +1578,14 @@ static int tasdev_load_blk(struct tasdevice_priv *tas_priv,
 				}
 				continue;
 			}
-			/*sleep command*/
+			 
 			if (offset == 0x81) {
-				/*book -- data[0] page -- data[1]*/
+				 
 				sleep_time = ((book << 8) + page)*1000;
 				usleep_range(sleep_time, sleep_time + 50);
 				continue;
 			}
-			/*Multiple bytes write*/
+			 
 			if (offset == 0x85) {
 				data += 4;
 				len = (book << 8) + page;
@@ -1631,7 +1602,7 @@ static int tasdev_load_blk(struct tasdevice_priv *tas_priv,
 		if (ret == -EAGAIN) {
 			if (block->nr_retry > 0)
 				continue;
-		} else if (ret < 0) /*err in current device, skip it*/
+		} else if (ret < 0)  
 			break;
 
 		if (block->is_pchksum_present) {
@@ -1639,12 +1610,12 @@ static int tasdev_load_blk(struct tasdevice_priv *tas_priv,
 			if (ret == -EAGAIN) {
 				if (block->nr_retry > 0)
 					continue;
-			} else if (ret < 0) /*err in current device, skip it*/
+			} else if (ret < 0)  
 				break;
 		}
 
 		if (block->is_ychksum_present) {
-			/* TBD, open it when FW ready */
+			 
 			dev_err(tas_priv->dev,
 				"Blk YChkSum: FW = 0x%x, YCRC = 0x%x\n",
 				block->ychksum, crc_chksum);
@@ -1653,7 +1624,7 @@ static int tasdev_load_blk(struct tasdevice_priv *tas_priv,
 				~ERROR_YRAM_CRCCHK;
 			ret = 0;
 		}
-		/*skip current blk*/
+		 
 		break;
 	}
 
@@ -1802,9 +1773,7 @@ static int fw_parse_header(struct tasdevice_priv *tas_priv,
 	}
 	offset += 4;
 
-	/* Convert data[offset], data[offset + 1], data[offset + 2] and
-	 * data[offset + 3] into host
-	 */
+	 
 	fw_fixed_hdr->fwsize = be32_to_cpup((__be32 *)&buf[offset]);
 	offset += 4;
 	if (fw_fixed_hdr->fwsize != fmw->size) {
@@ -1842,10 +1811,7 @@ out:
 	return offset;
 }
 
-/* When calibrated data parsing error occurs, DSP can still work with default
- * calibrated data, memory resource related to calibrated data will be
- * released in the tasdevice_codec_remove.
- */
+ 
 static int fw_parse_calibration_data(struct tasdevice_priv *tas_priv,
 	struct tasdevice_fw *tas_fmw, const struct firmware *fmw, int offset)
 {
@@ -1884,7 +1850,7 @@ static int fw_parse_calibration_data(struct tasdevice_priv *tas_priv,
 		offset += 64;
 
 		n = strlen((char *)&data[offset]);
-		/* skip '\0' and 2 unused bytes */
+		 
 		n += 3;
 		if (offset + n > fmw->size) {
 			dev_err(tas_priv->dev, "Description err\n");
@@ -2007,7 +1973,7 @@ static int tasdevice_dspfw_ready(const struct firmware *fmw,
 		goto out;
 	}
 	fw_fixed_hdr = &(tas_fmw->fw_hdr.fixed_hdr);
-	/* Support different versions of firmware */
+	 
 	switch (fw_fixed_hdr->drv_ver) {
 	case 0x301:
 	case 0x302:
@@ -2410,7 +2376,7 @@ void tasdevice_tuning_switch(void *context, int state)
 
 	if (state == 0) {
 		if (tas_priv->cur_prog < tas_fmw->nr_programs) {
-			/*dsp mode or tuning mode*/
+			 
 			profile_cfg_id = tas_priv->rcabin.profile_cfg_id;
 			tasdevice_select_tuningprm_cfg(tas_priv,
 				tas_priv->cur_prog, tas_priv->cur_conf,

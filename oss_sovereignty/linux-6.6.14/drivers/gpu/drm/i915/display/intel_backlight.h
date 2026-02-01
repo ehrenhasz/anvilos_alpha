@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_BACKLIGHT_H__
 #define __INTEL_BACKLIGHT_H__
@@ -39,7 +37,7 @@ u32 intel_backlight_level_from_pwm(struct intel_connector *connector, u32 val);
 #if IS_ENABLED(CONFIG_BACKLIGHT_CLASS_DEVICE)
 int intel_backlight_device_register(struct intel_connector *connector);
 void intel_backlight_device_unregister(struct intel_connector *connector);
-#else /* CONFIG_BACKLIGHT_CLASS_DEVICE */
+#else  
 static inline int intel_backlight_device_register(struct intel_connector *connector)
 {
 	return 0;
@@ -47,6 +45,6 @@ static inline int intel_backlight_device_register(struct intel_connector *connec
 static inline void intel_backlight_device_unregister(struct intel_connector *connector)
 {
 }
-#endif /* CONFIG_BACKLIGHT_CLASS_DEVICE */
+#endif  
 
-#endif /* __INTEL_BACKLIGHT_H__ */
+#endif  

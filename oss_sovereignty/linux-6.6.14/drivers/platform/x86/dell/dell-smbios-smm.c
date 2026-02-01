@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  SMI methods for use with dell-smbios
- *
- *  Copyright (c) Red Hat <mjg@redhat.com>
- *  Copyright (c) 2014 Gabriele Mazzotta <gabriele.mzt@gmail.com>
- *  Copyright (c) 2014 Pali Rohár <pali@kernel.org>
- *  Copyright (c) 2017 Dell Inc.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/dmi.h>
@@ -30,9 +23,7 @@ static void parse_da_table(const struct dmi_header *dm)
 	struct calling_interface_structure *table =
 		container_of(dm, struct calling_interface_structure, header);
 
-	/* 4 bytes of table header, plus 7 bytes of Dell header, plus at least
-	 * 6 bytes of entry
-	 */
+	 
 	if (dm->length < 17)
 		return;
 
@@ -43,7 +34,7 @@ static void parse_da_table(const struct dmi_header *dm)
 static void find_cmd_address(const struct dmi_header *dm, void *dummy)
 {
 	switch (dm->type) {
-	case 0xda: /* Calling interface */
+	case 0xda:  
 		parse_da_table(dm);
 		break;
 	}
@@ -69,20 +60,17 @@ static int dell_smbios_smm_call(struct calling_interface_buffer *input)
 	return 0;
 }
 
-/* When enabled this indicates that SMM won't work */
+ 
 static bool test_wsmt_enabled(void)
 {
 	struct calling_interface_token *wsmt;
 
-	/* if token doesn't exist, SMM will work */
+	 
 	wsmt = dell_smbios_find_token(WSMT_EN_TOKEN);
 	if (!wsmt)
 		return false;
 
-	/* If token exists, try to access over SMM but set a dummy return.
-	 * - If WSMT disabled it will be overwritten by SMM
-	 * - If WSMT enabled then dummy value will remain
-	 */
+	 
 	buffer->cmd_class = CLASS_TOKEN_READ;
 	buffer->cmd_select = SELECT_TOKEN_STD;
 	memset(buffer, 0, sizeof(struct calling_interface_buffer));
@@ -98,10 +86,7 @@ static bool test_wsmt_enabled(void)
 int init_dell_smbios_smm(void)
 {
 	int ret;
-	/*
-	 * Allocate buffer below 4GB for SMI data--only 32-bit physical addr
-	 * is passed to SMI handler.
-	 */
+	 
 	ret = dcdbas_smi_alloc(&smi_buf, PAGE_SIZE);
 	if (ret)
 		return ret;

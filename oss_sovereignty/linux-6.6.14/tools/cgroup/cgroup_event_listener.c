@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cgroup_event_listener.c - Simple listener of cgroup events
- *
- * Copyright (C) Kirill A. Shutemov <kirill@shutemov.name>
- */
+
+ 
 
 #include <assert.h>
 #include <err.h>

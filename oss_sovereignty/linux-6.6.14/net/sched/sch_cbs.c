@@ -1,54 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_cbs.c	Credit Based Shaper
- *
- * Authors:	Vinicius Costa Gomes <vinicius.gomes@intel.com>
- */
 
-/* Credit Based Shaper (CBS)
- * =========================
- *
- * This is a simple rate-limiting shaper aimed at TSN applications on
- * systems with known traffic workloads.
- *
- * Its algorithm is defined by the IEEE 802.1Q-2014 Specification,
- * Section 8.6.8.2, and explained in more detail in the Annex L of the
- * same specification.
- *
- * There are four tunables to be considered:
- *
- *	'idleslope': Idleslope is the rate of credits that is
- *	accumulated (in kilobits per second) when there is at least
- *	one packet waiting for transmission. Packets are transmitted
- *	when the current value of credits is equal or greater than
- *	zero. When there is no packet to be transmitted the amount of
- *	credits is set to zero. This is the main tunable of the CBS
- *	algorithm.
- *
- *	'sendslope':
- *	Sendslope is the rate of credits that is depleted (it should be a
- *	negative number of kilobits per second) when a transmission is
- *	ocurring. It can be calculated as follows, (IEEE 802.1Q-2014 Section
- *	8.6.8.2 item g):
- *
- *	sendslope = idleslope - port_transmit_rate
- *
- *	'hicredit': Hicredit defines the maximum amount of credits (in
- *	bytes) that can be accumulated. Hicredit depends on the
- *	characteristics of interfering traffic,
- *	'max_interference_size' is the maximum size of any burst of
- *	traffic that can delay the transmission of a frame that is
- *	available for transmission for this traffic class, (IEEE
- *	802.1Q-2014 Annex L, Equation L-3):
- *
- *	hicredit = max_interference_size * (idleslope / port_transmit_rate)
- *
- *	'locredit': Locredit is the minimum amount of credits that can
- *	be reached. It is a function of the traffic flowing through
- *	this qdisc (IEEE 802.1Q-2014 Annex L, Equation L-2):
- *
- *	locredit = max_frame_size * (sendslope / port_transmit_rate)
- */
+ 
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/module.h>
@@ -70,13 +23,13 @@ static DEFINE_SPINLOCK(cbs_list_lock);
 struct cbs_sched_data {
 	bool offload;
 	int queue;
-	atomic64_t port_rate; /* in bytes/s */
-	s64 last; /* timestamp in ns */
-	s64 credits; /* in bytes */
-	s32 locredit; /* in bytes */
-	s32 hicredit; /* in bytes */
-	s64 sendslope; /* in bytes/s */
-	s64 idleslope; /* in bytes/s */
+	atomic64_t port_rate;  
+	s64 last;  
+	s64 credits;  
+	s32 locredit;  
+	s32 hicredit;  
+	s64 sendslope;  
+	s64 idleslope;  
 	struct qdisc_watchdog watchdog;
 	int (*enqueue)(struct sk_buff *skb, struct Qdisc *sch,
 		       struct sk_buff **to_free);
@@ -118,9 +71,7 @@ static int cbs_enqueue_soft(struct sk_buff *skb, struct Qdisc *sch,
 	struct Qdisc *qdisc = q->qdisc;
 
 	if (sch->q.qlen == 0 && q->credits > 0) {
-		/* We need to stop accumulating credits when there's
-		 * no enqueued packets and q->credits is positive.
-		 */
+		 
 		q->credits = 0;
 		q->last = ktime_get_ns();
 	}
@@ -136,7 +87,7 @@ static int cbs_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	return q->enqueue(skb, sch, to_free);
 }
 
-/* timediff is in ns, slope is in bytes/s */
+ 
 static s64 timediff_to_credits(s64 timediff, s64 slope)
 {
 	return div64_s64(timediff * slope, NSEC_PER_SEC);
@@ -182,7 +133,7 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
 	s64 credits;
 	int len;
 
-	/* The previous packet is still being sent */
+	 
 	if (now < q->last) {
 		qdisc_watchdog_schedule_ns(&q->watchdog, q->last);
 		return NULL;
@@ -210,15 +161,13 @@ static struct sk_buff *cbs_dequeue_soft(struct Qdisc *sch)
 
 	len = qdisc_pkt_len(skb);
 
-	/* As sendslope is a negative number, this will decrease the
-	 * amount of q->credits.
-	 */
+	 
 	credits = credits_from_len(len, q->sendslope,
 				   atomic64_read(&q->port_rate));
 	credits += q->credits;
 
 	q->credits = max_t(s64, credits, q->locredit);
-	/* Estimate of the transmission of the last byte of the packet in ns */
+	 
 	if (unlikely(atomic64_read(&q->port_rate) == 0))
 		q->last = now;
 	else
@@ -388,7 +337,7 @@ static int cbs_change(struct Qdisc *sch, struct nlattr *opt,
 			return err;
 	}
 
-	/* Everything went OK, save the parameters used. */
+	 
 	q->hicredit = qopt->hicredit;
 	q->locredit = qopt->locredit;
 	q->idleslope = qopt->idleslope * BYTES_PER_KBIT;
@@ -435,7 +384,7 @@ static void cbs_destroy(struct Qdisc *sch)
 	struct cbs_sched_data *q = qdisc_priv(sch);
 	struct net_device *dev = qdisc_dev(sch);
 
-	/* Nothing to do if we couldn't create the underlying qdisc */
+	 
 	if (!q->qdisc)
 		return;
 
@@ -480,7 +429,7 @@ static int cbs_dump_class(struct Qdisc *sch, unsigned long cl,
 {
 	struct cbs_sched_data *q = qdisc_priv(sch);
 
-	if (cl != 1 || !q->qdisc)	/* only one class */
+	if (cl != 1 || !q->qdisc)	 
 		return -ENOENT;
 
 	tcm->tcm_handle |= TC_H_MIN(1);

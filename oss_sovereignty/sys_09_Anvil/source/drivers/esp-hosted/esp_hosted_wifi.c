@@ -1,30 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2023 Arduino SA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * ESP-Hosted WiFi driver.
- */
+ 
 
 #include "py/mphal.h"
 #include "py/mperrno.h"
@@ -77,8 +51,8 @@ static void esp_hosted_macstr_to_bytes(const uint8_t *mac_str, size_t mac_len, u
     }
 }
 
-// to avoid bleeding the protocol buffer API into the public interface, convert esp_hosted_security_t
-// to/from CtrlWifiSecProt here.
+
+
 
 static esp_hosted_security_t sec_prot_to_hosted_security(CtrlWifiSecProt sec_prot)
 {
@@ -124,7 +98,7 @@ static CtrlWifiSecProt hosted_security_to_sec_prot(esp_hosted_security_t hosted_
     case ESP_HOSTED_SEC_WPA2_WPA3_PSK:
         return CTRL__WIFI_SEC_PROT__WPA2_WPA3_PSK;
     default:
-        abort(); // Range should be checked by the caller, making this unreachable
+        abort(); 
     }
 }
 
@@ -158,9 +132,9 @@ static void esp_hosted_dump_header(esp_header_t *esp_header) {
 #endif
 
 static int32_t esp_hosted_resp_value(CtrlMsg *ctrl_msg) {
-    // Each response struct return value is located at a different offset,
-    // the following array maps response CtrlMsgs to return values (resp)
-    // offsets within each response struct.
+    
+    
+    
     const static size_t ctrl_msg_resp_offset[] = {
         offsetof(CtrlMsgRespGetMacAddress, resp),
         offsetof(CtrlMsgRespSetMacAddress, resp),
@@ -188,11 +162,11 @@ static int32_t esp_hosted_resp_value(CtrlMsg *ctrl_msg) {
     int32_t resp = -1;
     size_t index = ctrl_msg->msg_id - CTRL_MSG_ID__Resp_Base;
 
-    // All types of messages share the same payload base address.
+    
     if (ctrl_msg->resp_get_mac_address != NULL &&
         ctrl_msg->msg_type == CTRL_MSG_TYPE__Resp &&
         index > 0 && index <= MP_ARRAY_SIZE(ctrl_msg_resp_offset)) {
-        // Return the response struct's return value.
+        
         size_t offset = ctrl_msg_resp_offset[index - 1];
         resp = *((int32_t *)((char *)ctrl_msg->resp_get_mac_address + offset));
     }
@@ -205,10 +179,10 @@ static int esp_hosted_request(CtrlMsgId msg_id, void *ctrl_payload) {
     ctrl_msg.msg_id = msg_id;
     ctrl_msg.payload_case = msg_id;
 
-    // All types of messages share the same payload base address.
+    
     ctrl_msg.req_get_mac_address = ctrl_payload;
 
-    // Pack protobuf
+    
     size_t payload_size = ctrl_msg__get_packed_size(&ctrl_msg);
     if ((payload_size + sizeof(tlv_header_t)) > ESP_FRAME_MAX_PAYLOAD) {
         error_printf("esp_hosted_request() payload size > max payload %d\n", msg_id);
@@ -256,11 +230,11 @@ static CtrlMsg *esp_hosted_response(CtrlMsgId msg_id, uint32_t timeout) {
         }
 
         if (timeout == 0) {
-            // Request expected a sync response.
+            
             return NULL;
         }
 
-        // Check timeout.
+        
         if ((mp_hal_ticks_ms() - start) >= timeout) {
             return NULL;
         }
@@ -268,7 +242,7 @@ static CtrlMsg *esp_hosted_response(CtrlMsgId msg_id, uint32_t timeout) {
         MICROPY_EVENT_POLL_HOOK
     }
 
-    // If message type is a response, check the response struct's return value.
+    
     if (ctrl_msg->msg_type == CTRL_MSG_TYPE__Resp && esp_hosted_resp_value(ctrl_msg) != 0) {
         error_printf("esp_hosted_response() response %d failed %d\n", msg_id, esp_hosted_resp_value(ctrl_msg));
         ctrl_msg__free_unpacked(ctrl_msg, &protobuf_alloc);
@@ -301,7 +275,7 @@ int esp_hosted_wifi_poll(void) {
     do {
         esp_header_t *frag_header = (esp_header_t *)(esp_state.buf + offset);
         if ((ESP_STATE_BUF_SIZE - offset) < ESP_FRAME_MAX_SIZE) {
-            // This shouldn't happen, but if it did stop polling.
+            
             error_printf("esp_hosted_poll() spi buffer overflow offs %d\n", offset);
             return -1;
         }
@@ -314,7 +288,7 @@ int esp_hosted_wifi_poll(void) {
         if (frag_header->len == 0 ||
             frag_header->len > ESP_FRAME_MAX_PAYLOAD ||
             frag_header->offset != sizeof(esp_header_t)) {
-            // Invalid or empty packet, just ignore it silently.
+            
             warn_printf("esp_hosted_poll() invalid frame size %d offset %d\n",
                 esp_header->len, esp_header->offset);
             return 0;
@@ -328,7 +302,7 @@ int esp_hosted_wifi_poll(void) {
         }
 
         if (offset) {
-            // Combine fragmented packet
+            
             if ((esp_header->seq_num + 1) != frag_header->seq_num) {
                 error_printf("esp_hosted_poll() fragmented frame sequence mismatch\n");
                 return 0;
@@ -337,7 +311,7 @@ int esp_hosted_wifi_poll(void) {
             esp_header->seq_num = frag_header->seq_num;
             esp_header->flags = frag_header->flags;
             info_printf("esp_hosted_poll() received fragmented packet %d\n", frag_header->len);
-            // Append the current fragment's payload to the previous one.
+            
             memcpy(esp_state.buf + offset, frag_header->payload, frag_header->len);
         }
 
@@ -351,7 +325,7 @@ int esp_hosted_wifi_poll(void) {
     switch (esp_header->if_type) {
         case ESP_HOSTED_STA_IF:
         case ESP_HOSTED_AP_IF: {
-            // Networking traffic
+            
             uint32_t itf = esp_header->if_type;
             if (netif_is_link_up(&esp_state.netif[itf])) {
                 if (esp_hosted_netif_input(&esp_state, itf, esp_header->payload, esp_header->len) != 0) {
@@ -380,7 +354,7 @@ int esp_hosted_wifi_poll(void) {
             error_printf("esp_hosted_poll() unexpected interface type %d\n", esp_header->if_type);
             return 0;
         case ESP_HOSTED_SERIAL_IF:
-            // Requires further processing
+            
             break;
     }
 
@@ -410,7 +384,7 @@ int esp_hosted_wifi_poll(void) {
         }
     }
 
-    // Responses that should be handled here.
+    
     if (ctrl_msg->msg_type == CTRL_MSG_TYPE__Resp) {
         switch (ctrl_msg->msg_id) {
             case CTRL_MSG_ID__Resp_ConnectAP: {
@@ -426,7 +400,7 @@ int esp_hosted_wifi_poll(void) {
         }
     }
 
-    // A control message resp/event will be pushed on the stack for further processing.
+    
     if (!esp_hosted_stack_push(&esp_state.stack, ctrl_msg)) {
         error_printf("esp_hosted_poll() message stack full\n");
         return -1;
@@ -438,28 +412,28 @@ int esp_hosted_wifi_poll(void) {
 
 int esp_hosted_wifi_init(uint32_t itf) {
     if (esp_state.flags == ESP_HOSTED_FLAGS_RESET) {
-        // Init state
+        
         memset(&esp_state, 0, sizeof(esp_hosted_state_t));
         esp_hosted_stack_init(&esp_state.stack);
 
-        // Low-level pins and SPI init, memory pool allocation etc...
+        
         if (esp_hosted_hal_init(ESP_HOSTED_MODE_WIFI) != 0) {
             return -1;
         }
 
-        // Allow polling the bus.
+        
         esp_state.flags |= ESP_HOSTED_FLAGS_INIT;
 
         CtrlMsg *ctrl_msg = NULL;
 
-        // Wait for an ESPInit control event.
+        
         ctrl_msg = esp_hosted_response(CTRL_MSG_ID__Event_ESPInit, ESP_SYNC_REQ_TIMEOUT);
         if (ctrl_msg == NULL) {
             return -1;
         }
         ctrl_msg__free_unpacked(ctrl_msg, &protobuf_alloc);
 
-        // Set WiFi mode to STA/AP.
+        
         CtrlMsgReqSetMode ctrl_payload;
         ctrl_msg__req__set_mode__init(&ctrl_payload);
         ctrl_payload.mode = CTRL__WIFI_MODE__APSTA;
@@ -472,19 +446,19 @@ int esp_hosted_wifi_init(uint32_t itf) {
     }
 
     if (!netif_is_link_up(&esp_state.netif[itf])) {
-        // Init lwip netif, and start DHCP client/server.
+        
         esp_hosted_netif_init(&esp_state, itf);
         info_printf("esp_hosted_init() initialized itf %lu\n", itf);
     }
 
-    // Re/enable IRQ pin.
+    
     esp_hosted_hal_irq_enable(true);
 
     return 0;
 }
 
 int esp_hosted_wifi_disable(uint32_t itf) {
-    // Remove netif
+    
     esp_hosted_netif_deinit(&esp_state, itf);
 
     if (itf == ESP_HOSTED_STA_IF) {
@@ -499,11 +473,11 @@ int esp_hosted_wifi_disable(uint32_t itf) {
 
 int esp_hosted_wifi_deinit(void) {
     if (esp_state.flags & ESP_HOSTED_FLAGS_INIT) {
-        // Remove network interfaces
+        
         esp_hosted_wifi_disable(ESP_HOSTED_STA_IF);
         esp_hosted_wifi_disable(ESP_HOSTED_AP_IF);
 
-        // Reset state
+        
         memset(&esp_state, 0, sizeof(esp_hosted_state_t));
         esp_hosted_stack_init(&esp_state.stack);
 
@@ -540,7 +514,7 @@ int esp_hosted_wifi_connect(const char *ssid, const char *bssid, esp_hosted_secu
     ctrl_msg__req__connect_ap__init(&ctrl_payload);
 
     if (security >= ESP_HOSTED_SEC_MAX) {
-        // Note: this argument is otherwise unused(!)
+        
         return -1;
     }
 
@@ -698,4 +672,4 @@ int esp_hosted_wifi_scan(esp_hosted_scan_callback_t scan_callback, void *arg, ui
     ctrl_msg__free_unpacked(ctrl_msg, &protobuf_alloc);
     return 0;
 }
-#endif // MICROPY_PY_NETWORK_ESP_HOSTED
+#endif 

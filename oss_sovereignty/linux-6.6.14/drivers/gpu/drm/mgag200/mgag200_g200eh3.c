@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/pci.h>
 
@@ -10,9 +10,7 @@
 
 #include "mgag200_drv.h"
 
-/*
- * PIXPLLC
- */
+ 
 
 static int mgag200_g200eh3_pixpllc_atomic_check(struct drm_crtc *crtc,
 						struct drm_atomic_state *new_state)
@@ -66,9 +64,7 @@ static int mgag200_g200eh3_pixpllc_atomic_check(struct drm_crtc *crtc,
 	return 0;
 }
 
-/*
- * Mode-setting pipeline
- */
+ 
 
 static const struct drm_plane_helper_funcs mgag200_g200eh3_primary_plane_helper_funcs = {
 	MGAG200_PRIMARY_PLANE_HELPER_FUNCS,
@@ -129,7 +125,7 @@ static int mgag200_g200eh3_pipeline_init(struct mga_device *mdev)
 	}
 	drm_crtc_helper_add(crtc, &mgag200_g200eh3_crtc_helper_funcs);
 
-	/* FIXME: legacy gamma tables, but atomic gamma doesn't work without */
+	 
 	drm_mode_crtc_set_gamma_size(crtc, MGAG200_LUT_SIZE);
 	drm_crtc_enable_color_mgmt(crtc, 0, false, MGAG200_LUT_SIZE);
 
@@ -166,16 +162,14 @@ static int mgag200_g200eh3_pipeline_init(struct mga_device *mdev)
 	return 0;
 }
 
-/*
- * DRM device
- */
+ 
 
 static const struct mgag200_device_info mgag200_g200eh3_device_info =
 	MGAG200_DEVICE_INFO_INIT(2048, 2048, 0, false, 1, 0, false);
 
 static const struct mgag200_device_funcs mgag200_g200eh3_device_funcs = {
 	.pixpllc_atomic_check = mgag200_g200eh3_pixpllc_atomic_check,
-	.pixpllc_atomic_update = mgag200_g200eh_pixpllc_atomic_update, // same as G200EH
+	.pixpllc_atomic_update = mgag200_g200eh_pixpllc_atomic_update, 
 };
 
 struct mga_device *mgag200_g200eh3_device_create(struct pci_dev *pdev,
@@ -206,7 +200,7 @@ struct mga_device *mgag200_g200eh3_device_create(struct pci_dev *pdev,
 	if (ret)
 		return ERR_PTR(ret);
 
-	mgag200_g200eh_init_registers(mdev); // same as G200EH
+	mgag200_g200eh_init_registers(mdev); 
 
 	vram_available = mgag200_device_probe_vram(mdev);
 

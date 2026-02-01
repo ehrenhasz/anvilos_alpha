@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+ 
+ 
 
 #ifndef __DRV_CLK_MTK_H
 #define __DRV_CLK_MTK_H
@@ -22,13 +19,7 @@
 
 struct platform_device;
 
-/*
- * We need the clock IDs to start from zero but to maintain devicetree
- * backwards compatibility we can't change bindings to start from zero.
- * Only a few platforms are affected, so we solve issues given by the
- * commonized MTK clocks probe function(s) by adding a dummy clock at
- * the beginning where needed.
- */
+ 
 #define CLK_DUMMY		0
 
 extern const struct clk_ops mtk_clk_dummy_ops;
@@ -125,19 +116,13 @@ struct mtk_composite {
 		.mux_flags = _muxflags,					\
 	}
 
-/*
- * In case the rate change propagation to parent clocks is undesirable,
- * this macro allows to specify the clock flags manually.
- */
+ 
 #define MUX_GATE_FLAGS(_id, _name, _parents, _reg, _shift, _width,	\
 			_gate, _flags)					\
 		MUX_GATE_FLAGS_2(_id, _name, _parents, _reg,		\
 					_shift, _width, _gate, _flags, 0)
 
-/*
- * Unless necessary, all MUX_GATE clocks propagate rate changes to their
- * parent clock by default.
- */
+ 
 #define MUX_GATE(_id, _name, _parents, _reg, _shift, _width, _gate)	\
 	MUX_GATE_FLAGS(_id, _name, _parents, _reg, _shift, _width,	\
 		_gate, CLK_SET_RATE_PARENT)
@@ -244,4 +229,4 @@ void mtk_clk_pdev_remove(struct platform_device *pdev);
 int mtk_clk_simple_probe(struct platform_device *pdev);
 void mtk_clk_simple_remove(struct platform_device *pdev);
 
-#endif /* __DRV_CLK_MTK_H */
+#endif  

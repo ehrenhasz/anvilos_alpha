@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AMD Family 10h mmconfig enablement
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/mm.h>
@@ -47,7 +45,7 @@ static int cmp_range(const void *x1, const void *x2)
 #define MMCONF_UNIT (1ULL << FAM10H_MMIO_CONF_BASE_SHIFT)
 #define MMCONF_MASK (~(MMCONF_UNIT - 1))
 #define MMCONF_SIZE (MMCONF_UNIT << 8)
-/* need to avoid (0xfd<<32), (0xfe<<32), and (0xff<<32), ht used space */
+ 
 #define FAM10H_PCI_MMCONF_BASE (0xfcULL<<32)
 #define BASE_VALID(b) ((b) + MMCONF_SIZE <= (0xfdULL<<32) || (b) >= (1ULL<<40))
 static void get_fam10h_pci_mmconf_base(void)
@@ -65,7 +63,7 @@ static void get_fam10h_pci_mmconf_base(void)
 	int hi_mmio_num;
 	struct range range[8];
 
-	/* only try to get setting from BSP */
+	 
 	if (fam10h_pci_mmconf_base)
 		return;
 
@@ -94,15 +92,15 @@ static void get_fam10h_pci_mmconf_base(void)
 	if (!found)
 		return;
 
-	/* SYS_CFG */
+	 
 	address = MSR_AMD64_SYSCFG;
 	rdmsrl(address, val);
 
-	/* TOP_MEM2 is not enabled? */
+	 
 	if (!(val & (1<<21))) {
 		tom2 = 1ULL << 32;
 	} else {
-		/* TOP_MEM2 */
+		 
 		address = MSR_K8_TOP_MEM2;
 		rdmsrl(address, val);
 		tom2 = max(val & 0xffffff800000ULL, 1ULL << 32);
@@ -111,10 +109,7 @@ static void get_fam10h_pci_mmconf_base(void)
 	if (base <= tom2)
 		base = (tom2 + 2 * MMCONF_UNIT - 1) & MMCONF_MASK;
 
-	/*
-	 * need to check if the range is in the high mmio range that is
-	 * above 4G
-	 */
+	 
 	hi_mmio_num = 0;
 	for (i = 0; i < 8; i++) {
 		u32 reg;
@@ -124,9 +119,9 @@ static void get_fam10h_pci_mmconf_base(void)
 		if (!(reg & 3))
 			continue;
 
-		start = (u64)(reg & 0xffffff00) << 8; /* 39:16 on 31:8*/
+		start = (u64)(reg & 0xffffff00) << 8;  
 		reg = read_pci_config(bus, slot, 1, 0x84 + (i << 3));
-		end = ((u64)(reg & 0xffffff00) << 8) | 0xffff; /* 39:16 on 31:8*/
+		end = ((u64)(reg & 0xffffff00) << 8) | 0xffff;  
 
 		if (end < tom2)
 			continue;
@@ -139,7 +134,7 @@ static void get_fam10h_pci_mmconf_base(void)
 	if (!hi_mmio_num)
 		goto out;
 
-	/* sort the range */
+	 
 	sort(range, hi_mmio_num, sizeof(struct range), cmp_range, NULL);
 
 	if (range[hi_mmio_num - 1].end < base)
@@ -147,14 +142,14 @@ static void get_fam10h_pci_mmconf_base(void)
 	if (range[0].start > base + MMCONF_SIZE)
 		goto out;
 
-	/* need to find one window */
+	 
 	base = (range[0].start & MMCONF_MASK) - MMCONF_UNIT;
 	if ((base > tom2) && BASE_VALID(base))
 		goto out;
 	base = (range[hi_mmio_num - 1].end + MMCONF_UNIT) & MMCONF_MASK;
 	if (BASE_VALID(base))
 		goto out;
-	/* need to find window between ranges */
+	 
 	for (i = 1; i < hi_mmio_num; i++) {
 		base = (range[i - 1].end + MMCONF_UNIT) & MMCONF_MASK;
 		val = range[i].start & MMCONF_MASK;
@@ -178,13 +173,13 @@ void fam10h_check_enable_mmcfg(void)
 	address = MSR_FAM10H_MMIO_CONF_BASE;
 	rdmsrl(address, val);
 
-	/* try to make sure that AP's setting is identical to BSP setting */
+	 
 	if (val & FAM10H_MMIO_CONF_ENABLE) {
 		unsigned busnbits;
 		busnbits = (val >> FAM10H_MMIO_CONF_BUSRANGE_SHIFT) &
 			FAM10H_MMIO_CONF_BUSRANGE_MASK;
 
-		/* only trust the one handle 256 buses, if acpi=off */
+		 
 		if (!acpi_pci_disabled || busnbits >= 8) {
 			u64 base = val & MMCONF_MASK;
 
@@ -196,10 +191,7 @@ void fam10h_check_enable_mmcfg(void)
 		}
 	}
 
-	/*
-	 * if it is not enabled, try to enable it and assume only one segment
-	 * with 256 buses
-	 */
+	 
 	get_fam10h_pci_mmconf_base();
 	if (!fam10h_pci_mmconf_base) {
 		pci_probe &= ~PCI_CHECK_ENABLE_AMD_MMCONF;
@@ -231,7 +223,7 @@ static const struct dmi_system_id __initconst mmconf_dmi_table[] = {
 	{}
 };
 
-/* Called from a non __init function, but only on the BSP. */
+ 
 void __ref check_enable_amd_mmconf_dmi(void)
 {
 	dmi_check_system(mmconf_dmi_table);

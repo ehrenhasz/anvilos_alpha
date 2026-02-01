@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MPRLS0025PA - Honeywell MicroPressure pressure sensor series driver
- *
- * Copyright (c) Andreas Klinger <ak@it-klinger.de>
- *
- * Data sheet:
- *  https://prod-edam.honeywell.com/content/dam/honeywell-edam/sps/siot/en-us/
- *    products/sensors/pressure-sensors/board-mount-pressure-sensors/
- *    micropressure-mpr-series/documents/
- *    sps-siot-mpr-series-datasheet-32332628-ciid-172626.pdf
- *
- * 7-bit I2C default slave address: 0x18
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -33,43 +21,15 @@
 
 #include <asm/unaligned.h>
 
-/* bits in i2c status byte */
-#define MPR_I2C_POWER	BIT(6)	/* device is powered */
-#define MPR_I2C_BUSY	BIT(5)	/* device is busy */
-#define MPR_I2C_MEMORY	BIT(2)	/* integrity test passed */
-#define MPR_I2C_MATH	BIT(0)	/* internal math saturation */
+ 
+#define MPR_I2C_POWER	BIT(6)	 
+#define MPR_I2C_BUSY	BIT(5)	 
+#define MPR_I2C_MEMORY	BIT(2)	 
+#define MPR_I2C_MATH	BIT(0)	 
 
-/*
- * support _RAW sysfs interface:
- *
- * Calculation formula from the datasheet:
- * pressure = (press_cnt - outputmin) * scale + pmin
- * with:
- * * pressure	- measured pressure in Pascal
- * * press_cnt	- raw value read from sensor
- * * pmin	- minimum pressure range value of sensor (data->pmin)
- * * pmax	- maximum pressure range value of sensor (data->pmax)
- * * outputmin	- minimum numerical range raw value delivered by sensor
- *						(mpr_func_spec.output_min)
- * * outputmax	- maximum numerical range raw value delivered by sensor
- *						(mpr_func_spec.output_max)
- * * scale	- (pmax - pmin) / (outputmax - outputmin)
- *
- * formula of the userspace:
- * pressure = (raw + offset) * scale
- *
- * Values given to the userspace in sysfs interface:
- * * raw	- press_cnt
- * * offset	- (-1 * outputmin) - pmin / scale
- *                note: With all sensors from the datasheet pmin = 0
- *                which reduces the offset to (-1 * outputmin)
- */
+ 
 
-/*
- * transfer function A: 10%   to 90%   of 2^24
- * transfer function B:  2.5% to 22.5% of 2^24
- * transfer function C: 20%   to 80%   of 2^24
- */
+ 
 enum mpr_func_id {
 	MPR_FUNCTION_A,
 	MPR_FUNCTION_B,
@@ -88,42 +48,26 @@ static const struct mpr_func_spec mpr_func_spec[] = {
 };
 
 struct mpr_chan {
-	s32			pres;		/* pressure value */
-	s64			ts;		/* timestamp */
+	s32			pres;		 
+	s64			ts;		 
 };
 
 struct mpr_data {
 	struct i2c_client	*client;
-	struct mutex		lock;		/*
-						 * access to device during read
-						 */
-	u32			pmin;		/* minimal pressure in pascal */
-	u32			pmax;		/* maximal pressure in pascal */
-	enum mpr_func_id	function;	/* transfer function */
-	u32			outmin;		/*
-						 * minimal numerical range raw
-						 * value from sensor
-						 */
-	u32			outmax;		/*
-						 * maximal numerical range raw
-						 * value from sensor
-						 */
-	int                     scale;          /* int part of scale */
-	int                     scale2;         /* nano part of scale */
-	int                     offset;         /* int part of offset */
-	int                     offset2;        /* nano part of offset */
-	struct gpio_desc	*gpiod_reset;	/* reset */
-	int			irq;		/*
-						 * end of conversion irq;
-						 * used to distinguish between
-						 * irq mode and reading in a
-						 * loop until data is ready
-						 */
-	struct completion	completion;	/* handshake from irq to read */
-	struct mpr_chan		chan;		/*
-						 * channel values for buffered
-						 * mode
-						 */
+	struct mutex		lock;		 
+	u32			pmin;		 
+	u32			pmax;		 
+	enum mpr_func_id	function;	 
+	u32			outmin;		 
+	u32			outmax;		 
+	int                     scale;           
+	int                     scale2;          
+	int                     offset;          
+	int                     offset2;         
+	struct gpio_desc	*gpiod_reset;	 
+	int			irq;		 
+	struct completion	completion;	 
+	struct mpr_chan		chan;		 
 };
 
 static const struct iio_chan_spec mpr_channels[] = {
@@ -152,22 +96,7 @@ static void mpr_reset(struct mpr_data *data)
 	}
 }
 
-/**
- * mpr_read_pressure() - Read pressure value from sensor via I2C
- * @data: Pointer to private data struct.
- * @press: Output value read from sensor.
- *
- * Reading from the sensor by sending and receiving I2C telegrams.
- *
- * If there is an end of conversion (EOC) interrupt registered the function
- * waits for a maximum of one second for the interrupt.
- *
- * Context: The function can sleep and data->lock should be held when calling it
- * Return:
- * * 0		- OK, the pressure value could be read
- * * -ETIMEDOUT	- Timeout while waiting for the EOC interrupt or busy flag is
- *		  still set after nloops attempts of reading
- */
+ 
 static int mpr_read_pressure(struct mpr_data *data, s32 *press)
 {
 	struct device *dev = &data->client->dev;
@@ -197,14 +126,9 @@ static int mpr_read_pressure(struct mpr_data *data, s32 *press)
 			return -ETIMEDOUT;
 		}
 	} else {
-		/* wait until status indicates data is ready */
+		 
 		for (i = 0; i < nloops; i++) {
-			/*
-			 * datasheet only says to wait at least 5 ms for the
-			 * data but leave the maximum response time open
-			 * --> let's try it nloops (10) times which seems to be
-			 *     quite long
-			 */
+			 
 			usleep_range(5000, 10000);
 			status = i2c_smbus_read_byte(data->client);
 			if (status < 0) {
@@ -234,10 +158,7 @@ static int mpr_read_pressure(struct mpr_data *data, s32 *press)
 	}
 
 	if (buf[0] & MPR_I2C_BUSY) {
-		/*
-		 * it should never be the case that status still indicates
-		 * business
-		 */
+		 
 		dev_err(dev, "data still not ready: %08x\n", buf[0]);
 		return -ETIMEDOUT;
 	}
@@ -371,24 +292,21 @@ static int mpr_probe(struct i2c_client *client)
 				"honeywell,transfer-function %d invalid\n",
 								data->function);
 	} else {
-		/* when loaded as i2c device we need to use default values */
+		 
 		dev_notice(dev, "firmware node not found; using defaults\n");
 		data->pmin = 0;
-		data->pmax = 172369; /* 25 psi */
+		data->pmax = 172369;  
 		data->function = MPR_FUNCTION_A;
 	}
 
 	data->outmin = mpr_func_spec[data->function].output_min;
 	data->outmax = mpr_func_spec[data->function].output_max;
 
-	/* use 64 bit calculation for preserving a reasonable precision */
+	 
 	scale = div_s64(((s64)(data->pmax - data->pmin)) * NANO,
 						data->outmax - data->outmin);
 	data->scale = div_s64_rem(scale, NANO, &data->scale2);
-	/*
-	 * multiply with NANO before dividing by scale and later divide by NANO
-	 * again.
-	 */
+	 
 	offset = ((-1LL) * (s64)data->outmin) * NANO -
 			div_s64(div_s64((s64)data->pmin * NANO, scale), NANO);
 	data->offset = div_s64_rem(offset, NANO, &data->offset2);

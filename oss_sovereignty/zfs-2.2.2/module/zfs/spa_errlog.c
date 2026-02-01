@@ -1,64 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2006, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2013, 2014, Delphix. All rights reserved.
- * Copyright (c) 2019 Datto Inc.
- * Copyright (c) 2021, 2022, George Amanakis. All rights reserved.
- */
+ 
+ 
 
-/*
- * Routines to manage the on-disk persistent error log.
- *
- * Each pool stores a log of all logical data errors seen during normal
- * operation.  This is actually the union of two distinct logs: the last log,
- * and the current log.  All errors seen are logged to the current log.  When a
- * scrub completes, the current log becomes the last log, the last log is thrown
- * out, and the current log is reinitialized.  This way, if an error is somehow
- * corrected, a new scrub will show that it no longer exists, and will be
- * deleted from the log when the scrub completes.
- *
- * The log is stored using a ZAP object whose key is a string form of the
- * zbookmark_phys tuple (objset, object, level, blkid), and whose contents is an
- * optional 'objset:object' human-readable string describing the data.  When an
- * error is first logged, this string will be empty, indicating that no name is
- * known.  This prevents us from having to issue a potentially large amount of
- * I/O to discover the object name during an error path.  Instead, we do the
- * calculation when the data is requested, storing the result so future queries
- * will be faster.
- *
- * If the head_errlog feature is enabled, a different on-disk format is used.
- * The error log of each head dataset is stored separately in the zap object
- * and keyed by the head id. This enables listing every dataset affected in
- * userland. In order to be able to track whether an error block has been
- * modified or added to snapshots since it was marked as an error, a new tuple
- * is introduced: zbookmark_err_phys_t. It allows the storage of the birth
- * transaction group of an error block on-disk. The birth transaction group is
- * used by check_filesystem() to assess whether this block was freed,
- * re-written or added to a snapshot since its marking as an error.
- *
- * This log is then shipped into an nvlist where the key is the dataset name and
- * the value is the object name.  Userland is then responsible for uniquifying
- * this list and displaying it to the user.
- */
+ 
 
 #include <sys/dmu_tx.h>
 #include <sys/spa.h>
@@ -77,17 +20,10 @@ typedef struct clones {
 	list_node_t node;
 } clones_t;
 
-/*
- * spa_upgrade_errlog_limit : A zfs module parameter that controls the number
- *		of on-disk error log entries that will be converted to the new
- *		format when enabling head_errlog. Defaults to 0 which converts
- *		all log entries.
- */
+ 
 static uint_t spa_upgrade_errlog_limit = 0;
 
-/*
- * Convert a bookmark to a string.
- */
+ 
 static void
 bookmark_to_name(zbookmark_phys_t *zb, char *buf, size_t len)
 {
@@ -96,9 +32,7 @@ bookmark_to_name(zbookmark_phys_t *zb, char *buf, size_t len)
 	    (u_longlong_t)zb->zb_level, (u_longlong_t)zb->zb_blkid);
 }
 
-/*
- * Convert an err_phys to a string.
- */
+ 
 static void
 errphys_to_name(zbookmark_err_phys_t *zep, char *buf, size_t len)
 {
@@ -107,9 +41,7 @@ errphys_to_name(zbookmark_err_phys_t *zep, char *buf, size_t len)
 	    (u_longlong_t)zep->zb_blkid, (u_longlong_t)zep->zb_birth);
 }
 
-/*
- * Convert a string to a err_phys.
- */
+ 
 void
 name_to_errphys(char *buf, zbookmark_err_phys_t *zep)
 {
@@ -123,9 +55,7 @@ name_to_errphys(char *buf, zbookmark_err_phys_t *zep)
 	ASSERT(*buf == '\0');
 }
 
-/*
- * Convert a string to a bookmark.
- */
+ 
 static void
 name_to_bookmark(char *buf, zbookmark_phys_t *zb)
 {
@@ -155,9 +85,7 @@ name_to_object(char *buf, uint64_t *obj)
 	ASSERT(*buf == '\0');
 }
 
-/*
- * Retrieve the head filesystem.
- */
+ 
 static int get_head_ds(spa_t *spa, uint64_t dsobj, uint64_t *head_ds)
 {
 	dsl_dataset_t *ds;
@@ -174,11 +102,7 @@ static int get_head_ds(spa_t *spa, uint64_t dsobj, uint64_t *head_ds)
 	return (error);
 }
 
-/*
- * Log an uncorrectable error to the persistent error log.  We add it to the
- * spa's list of pending errors.  The changes are actually synced out to disk
- * during spa_errlog_sync().
- */
+ 
 void
 spa_log_error(spa_t *spa, const zbookmark_phys_t *zb, const uint64_t *birth)
 {
@@ -187,19 +111,13 @@ spa_log_error(spa_t *spa, const zbookmark_phys_t *zb, const uint64_t *birth)
 	avl_tree_t *tree;
 	avl_index_t where;
 
-	/*
-	 * If we are trying to import a pool, ignore any errors, as we won't be
-	 * writing to the pool any time soon.
-	 */
+	 
 	if (spa_load_state(spa) == SPA_LOAD_TRYIMPORT)
 		return;
 
 	mutex_enter(&spa->spa_errlist_lock);
 
-	/*
-	 * If we have had a request to rotate the log, log it to the next list
-	 * instead of the current one.
-	 */
+	 
 	if (spa->spa_scrub_active || spa->spa_scrub_finished)
 		tree = &spa->spa_errlist_scrub;
 	else
@@ -214,20 +132,13 @@ spa_log_error(spa_t *spa, const zbookmark_phys_t *zb, const uint64_t *birth)
 	new = kmem_zalloc(sizeof (spa_error_entry_t), KM_SLEEP);
 	new->se_bookmark = *zb;
 
-	/*
-	 * If the head_errlog feature is enabled, store the birth txg now. In
-	 * case the file is deleted before spa_errlog_sync() runs, we will not
-	 * be able to retrieve the birth txg.
-	 */
+	 
 	if (spa_feature_is_enabled(spa, SPA_FEATURE_HEAD_ERRLOG)) {
 		new->se_zep.zb_object = zb->zb_object;
 		new->se_zep.zb_level = zb->zb_level;
 		new->se_zep.zb_blkid = zb->zb_blkid;
 
-		/*
-		 * birth may end up being NULL, e.g. in zio_done(). We
-		 * will handle this in process_error_block().
-		 */
+		 
 		if (birth != NULL)
 			new->se_zep.zb_birth = *birth;
 	}
@@ -264,10 +175,7 @@ find_birth_txg(dsl_dataset_t *ds, zbookmark_err_phys_t *zep,
 	return (error);
 }
 
-/*
- * This function finds the oldest affected filesystem containing an error
- * block.
- */
+ 
 int
 find_top_affected_fs(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
     uint64_t *top_affected_fs)
@@ -292,10 +200,7 @@ find_top_affected_fs(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 
 
 #ifdef _KERNEL
-/*
- * Copy the bookmark to the end of the user-space buffer which starts at
- * uaddr and has *count unused entries, and decrement *count by 1.
- */
+ 
 static int
 copyout_entry(const zbookmark_phys_t *zb, void *uaddr, uint64_t *count)
 {
@@ -309,13 +214,7 @@ copyout_entry(const zbookmark_phys_t *zb, void *uaddr, uint64_t *count)
 	return (0);
 }
 
-/*
- * Each time the error block is referenced by a snapshot or clone, add a
- * zbookmark_phys_t entry to the userspace array at uaddr. The array is
- * filled from the back and the in-out parameter *count is modified to be the
- * number of unused entries at the beginning of the array. The function
- * scrub_filesystem() is modelled after this one.
- */
+ 
 static int
 check_filesystem(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
     void *uaddr, uint64_t *count, list_t *clones_list)
@@ -333,13 +232,9 @@ check_filesystem(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 	boolean_t check_snapshot = B_TRUE;
 	error = find_birth_txg(ds, zep, &latest_txg);
 
-	/*
-	 * If find_birth_txg() errors out otherwise, let txg_to_consider be
-	 * equal to the spa's syncing txg: if check_filesystem() errors out
-	 * then affected snapshots or clones will not be checked.
-	 */
+	 
 	if (error == 0 && zep->zb_birth == latest_txg) {
-		/* Block neither free nor rewritten. */
+		 
 		zbookmark_phys_t zb;
 		zep_to_zb(head_ds, zep, &zb);
 		error = copyout_entry(&zb, uaddr, count);
@@ -352,9 +247,7 @@ check_filesystem(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 		txg_to_consider = latest_txg;
 	}
 
-	/*
-	 * Retrieve the number of snapshots if the dataset is not a snapshot.
-	 */
+	 
 	uint64_t snap_count = 0;
 	if (dsl_dataset_phys(ds)->ds_snapnames_zapobj != 0) {
 
@@ -368,7 +261,7 @@ check_filesystem(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 	}
 
 	if (snap_count == 0) {
-		/* Filesystem without snapshots. */
+		 
 		dsl_dataset_rele_flags(ds, DS_HOLD_FLAG_DECRYPT, FTAG);
 		return (0);
 	}
@@ -383,7 +276,7 @@ check_filesystem(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 
 	dsl_dataset_rele_flags(ds, DS_HOLD_FLAG_DECRYPT, FTAG);
 
-	/* Check only snapshots created from this file system. */
+	 
 	while (snap_obj != 0 && zep->zb_birth < snap_obj_txg &&
 	    snap_obj_txg <= txg_to_consider) {
 
@@ -406,7 +299,7 @@ check_filesystem(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 			affected = (error == 0 && zep->zb_birth == blk_txg);
 		}
 
-		/* Report errors in snapshots. */
+		 
 		if (affected) {
 			snap_obj_array[aff_snap_count] = snap_obj;
 			aff_snap_count++;
@@ -428,7 +321,7 @@ check_filesystem(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 	if (zap_clone == 0 || aff_snap_count == 0)
 		return (0);
 
-	/* Check clones. */
+	 
 	zap_cursor_t *zc;
 	zap_attribute_t *za;
 
@@ -446,10 +339,7 @@ check_filesystem(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 		if (error != 0)
 			break;
 
-		/*
-		 * Only clones whose origins were affected could also
-		 * have affected snapshots.
-		 */
+		 
 		boolean_t found = B_FALSE;
 		for (int i = 0; i < snap_count; i++) {
 			if (dsl_dir_phys(clone->ds_dir)->dd_origin_obj
@@ -479,13 +369,7 @@ static int
 process_error_block(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
     void *uaddr, uint64_t *count)
 {
-	/*
-	 * If zb_birth == 0 or head_ds == 0 it means we failed to retrieve the
-	 * birth txg or the head filesystem of the block pointer. This may
-	 * happen e.g. when an encrypted filesystem is not mounted or when
-	 * the key is not loaded. In this case do not proceed to
-	 * check_filesystem(), instead do the accounting here.
-	 */
+	 
 	if (zep->zb_birth == 0 || head_ds == 0) {
 		zbookmark_phys_t zb;
 		zep_to_zb(head_ds, zep, &zb);
@@ -526,11 +410,7 @@ process_error_block(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 		list_destroy(&clones_list);
 	}
 	if (error == 0 && init_count == *count) {
-		/*
-		 * If we reach this point, no errors have been detected
-		 * in the checked filesystems/snapshots. Before returning mark
-		 * the error block to be removed from the error lists and logs.
-		 */
+		 
 		zbookmark_phys_t zb;
 		zep_to_zb(head_ds, zep, &zb);
 		spa_remove_error(spa, &zb, &zep->zb_birth);
@@ -540,7 +420,7 @@ process_error_block(spa_t *spa, uint64_t head_ds, zbookmark_err_phys_t *zep,
 }
 #endif
 
-/* Return the number of errors in the error log */
+ 
 uint64_t
 spa_get_last_errlog_size(spa_t *spa)
 {
@@ -555,10 +435,7 @@ spa_get_last_errlog_size(spa_t *spa)
 	return (total);
 }
 
-/*
- * If a healed bookmark matches an entry in the error log we stash it in a tree
- * so that we can later remove the related log entries in sync context.
- */
+ 
 static void
 spa_add_healed_error(spa_t *spa, uint64_t obj, zbookmark_phys_t *healed_zb,
     const uint64_t *birth)
@@ -581,10 +458,7 @@ spa_add_healed_error(spa_t *spa, uint64_t obj, zbookmark_phys_t *healed_zb,
 				held_log = B_TRUE;
 			}
 
-			/*
-			 * Found an error matching healed zb, add zb to our
-			 * tree of healed errors
-			 */
+			 
 			avl_tree_t *tree = &spa->spa_errlist_healed;
 			spa_error_entry_t search;
 			spa_error_entry_t *new;
@@ -667,9 +541,7 @@ spa_add_healed_error(spa_t *spa, uint64_t obj, zbookmark_phys_t *healed_zb,
 	zap_cursor_fini(&zc);
 }
 
-/*
- * If this error exists in the given tree remove it.
- */
+ 
 static void
 remove_error_from_list(spa_t *spa, avl_tree_t *t, const zbookmark_phys_t *zb)
 {
@@ -686,9 +558,7 @@ remove_error_from_list(spa_t *spa, avl_tree_t *t, const zbookmark_phys_t *zb)
 }
 
 
-/*
- * Removes all of the recv healed errors from both on-disk error logs
- */
+ 
 static void
 spa_remove_healed_errors(spa_t *spa, avl_tree_t *s, avl_tree_t *l, dmu_tx_t *tx)
 {
@@ -735,10 +605,7 @@ spa_remove_healed_errors(spa_t *spa, avl_tree_t *s, avl_tree_t *l, dmu_tx_t *tx)
 	}
 }
 
-/*
- * Stash away healed bookmarks to remove them from the on-disk error logs
- * later in spa_remove_healed_errors().
- */
+ 
 void
 spa_remove_error(spa_t *spa, zbookmark_phys_t *zb, const uint64_t *birth)
 {
@@ -766,11 +633,7 @@ approx_errlog_size_impl(spa_t *spa, uint64_t spa_err_obj)
 	return (total);
 }
 
-/*
- * Return the approximate number of errors currently in the error log.  This
- * will be nonzero if there are some errors, but otherwise it may be more
- * or less than the number of entries returned by spa_get_errlog().
- */
+ 
 uint64_t
 spa_approx_errlog_size(spa_t *spa)
 {
@@ -803,12 +666,7 @@ spa_approx_errlog_size(spa_t *spa)
 	return (total);
 }
 
-/*
- * This function sweeps through an on-disk error log and stores all bookmarks
- * as error bookmarks in a new ZAP object. At the end we discard the old one,
- * and spa_update_errlog() will set the spa's on-disk error log to new ZAP
- * object.
- */
+ 
 static void
 sync_upgrade_errlog(spa_t *spa, uint64_t spa_err_obj, uint64_t *newobj,
     dmu_tx_t *tx)
@@ -821,10 +679,7 @@ sync_upgrade_errlog(spa_t *spa, uint64_t spa_err_obj, uint64_t *newobj,
 	*newobj = zap_create(spa->spa_meta_objset, DMU_OT_ERROR_LOG,
 	    DMU_OT_NONE, 0, tx);
 
-	/*
-	 * If we cannnot perform the upgrade we should clear the old on-disk
-	 * error logs.
-	 */
+	 
 	if (zap_count(spa->spa_meta_objset, spa_err_obj, &count) != 0) {
 		VERIFY0(dmu_object_free(spa->spa_meta_objset, spa_err_obj, tx));
 		return;
@@ -845,10 +700,7 @@ sync_upgrade_errlog(spa_t *spa, uint64_t spa_err_obj, uint64_t *newobj,
 		zep.zb_blkid = zb.zb_blkid;
 		zep.zb_birth = 0;
 
-		/*
-		 * In case of an error we should simply continue instead of
-		 * returning prematurely. See the next comment.
-		 */
+		 
 		uint64_t head_ds;
 		dsl_pool_t *dp = spa->spa_dsl_pool;
 		dsl_dataset_t *ds;
@@ -861,14 +713,7 @@ sync_upgrade_errlog(spa_t *spa, uint64_t spa_err_obj, uint64_t *newobj,
 
 		head_ds = dsl_dir_phys(ds->ds_dir)->dd_head_dataset_obj;
 
-		/*
-		 * The objset and the dnode are required for getting the block
-		 * pointer, which is used to determine if BP_IS_HOLE(). If
-		 * getting the objset or the dnode fails, do not create a
-		 * zap entry (presuming we know the dataset) as this may create
-		 * spurious errors that we cannot ever resolve. If an error is
-		 * truly persistent, it should re-appear after a scan.
-		 */
+		 
 		if (dmu_objset_from_ds(ds, &os) != 0) {
 			dsl_dataset_rele_flags(ds, DS_HOLD_FLAG_DECRYPT, FTAG);
 			continue;
@@ -949,9 +794,7 @@ spa_upgrade_errlog(spa_t *spa, dmu_tx_t *tx)
 }
 
 #ifdef _KERNEL
-/*
- * If an error block is shared by two datasets it will be counted twice.
- */
+ 
 static int
 process_error_log(spa_t *spa, uint64_t obj, void *uaddr, uint64_t *count)
 {
@@ -1058,11 +901,7 @@ process_error_list(spa_t *spa, avl_tree_t *list, void *uaddr, uint64_t *count)
 		int error = get_head_ds(spa, se->se_bookmark.zb_objset,
 		    &head_ds);
 
-		/*
-		 * If get_head_ds() errors out, set the head filesystem
-		 * to the filesystem stored in the bookmark of the
-		 * error block.
-		 */
+		 
 		if (error != 0)
 			head_ds = se->se_bookmark.zb_objset;
 
@@ -1075,29 +914,14 @@ process_error_list(spa_t *spa, avl_tree_t *list, void *uaddr, uint64_t *count)
 }
 #endif
 
-/*
- * Copy all known errors to userland as an array of bookmarks.  This is
- * actually a union of the on-disk last log and current log, as well as any
- * pending error requests.
- *
- * Because the act of reading the on-disk log could cause errors to be
- * generated, we have two separate locks: one for the error log and one for the
- * in-core error lists.  We only need the error list lock to log and error, so
- * we grab the error log lock while we read the on-disk logs, and only pick up
- * the error list lock when we are finished.
- */
+ 
 int
 spa_get_errlog(spa_t *spa, void *uaddr, uint64_t *count)
 {
 	int ret = 0;
 
 #ifdef _KERNEL
-	/*
-	 * The pool config lock is needed to hold a dataset_t via (among other
-	 * places) process_error_list() -> process_error_block()->
-	 * find_top_affected_fs(), and lock ordering requires that we get it
-	 * before the spa_errlog_lock.
-	 */
+	 
 	dsl_pool_config_enter(spa->spa_dsl_pool, FTAG);
 	mutex_enter(&spa->spa_errlog_lock);
 
@@ -1125,11 +949,7 @@ spa_get_errlog(spa_t *spa, void *uaddr, uint64_t *count)
 	return (ret);
 }
 
-/*
- * Called when a scrub completes.  This simply set a bit which tells which AVL
- * tree to add new errors.  spa_errlog_sync() is responsible for actually
- * syncing the changes to the underlying objects.
- */
+ 
 void
 spa_errlog_rotate(spa_t *spa)
 {
@@ -1138,10 +958,7 @@ spa_errlog_rotate(spa_t *spa)
 	mutex_exit(&spa->spa_errlist_lock);
 }
 
-/*
- * Discard any pending errors from the spa_t.  Called when unloading a faulted
- * pool, as the errors encountered during the open cannot be synced to disk.
- */
+ 
 void
 spa_errlog_drain(spa_t *spa)
 {
@@ -1162,9 +979,7 @@ spa_errlog_drain(spa_t *spa)
 	mutex_exit(&spa->spa_errlist_lock);
 }
 
-/*
- * Process a list of errors into the current on-disk log.
- */
+ 
 void
 sync_error_list(spa_t *spa, avl_tree_t *t, uint64_t *obj, dmu_tx_t *tx)
 {
@@ -1175,12 +990,12 @@ sync_error_list(spa_t *spa, avl_tree_t *t, uint64_t *obj, dmu_tx_t *tx)
 	if (avl_numnodes(t) == 0)
 		return;
 
-	/* create log if necessary */
+	 
 	if (*obj == 0)
 		*obj = zap_create(spa->spa_meta_objset, DMU_OT_ERROR_LOG,
 		    DMU_OT_NONE, 0, tx);
 
-	/* add errors to the current log */
+	 
 	if (!spa_feature_is_enabled(spa, SPA_FEATURE_HEAD_ERRLOG)) {
 		for (se = avl_first(t); se != NULL; se = AVL_NEXT(t, se)) {
 			bookmark_to_name(&se->se_bookmark, buf, sizeof (buf));
@@ -1201,11 +1016,7 @@ sync_error_list(spa_t *spa, avl_tree_t *t, uint64_t *obj, dmu_tx_t *tx)
 			int error = get_head_ds(spa, se->se_bookmark.zb_objset,
 			    &head_ds);
 
-			/*
-			 * If get_head_ds() errors out, set the head filesystem
-			 * to the filesystem stored in the bookmark of the
-			 * error block.
-			 */
+			 
 			if (error != 0)
 				head_ds = se->se_bookmark.zb_objset;
 
@@ -1227,7 +1038,7 @@ sync_error_list(spa_t *spa, avl_tree_t *t, uint64_t *obj, dmu_tx_t *tx)
 			    err_obj, buf, 1, strlen(name) + 1, name, tx);
 		}
 	}
-	/* purge the error list */
+	 
 	cookie = NULL;
 	while ((se = avl_destroy_nodes(t, &cookie)) != NULL)
 		kmem_free(se, sizeof (spa_error_entry_t));
@@ -1250,16 +1061,7 @@ delete_errlog(spa_t *spa, uint64_t spa_err_obj, dmu_tx_t *tx)
 	VERIFY0(dmu_object_free(spa->spa_meta_objset, spa_err_obj, tx));
 }
 
-/*
- * Sync the error log out to disk.  This is a little tricky because the act of
- * writing the error log requires the spa_errlist_lock.  So, we need to lock the
- * error lists, take a copy of the lists, and then reinitialize them.  Then, we
- * drop the error list lock and take the error log lock, at which point we
- * do the errlog processing.  Then, if we encounter an I/O error during this
- * process, we can successfully add the error to the list.  Note that this will
- * result in the perpetual recycling of errors, but it is an unlikely situation
- * and not a performance critical operation.
- */
+ 
 void
 spa_errlog_sync(spa_t *spa, uint64_t txg)
 {
@@ -1269,9 +1071,7 @@ spa_errlog_sync(spa_t *spa, uint64_t txg)
 
 	mutex_enter(&spa->spa_errlist_lock);
 
-	/*
-	 * Bail out early under normal circumstances.
-	 */
+	 
 	if (avl_numnodes(&spa->spa_errlist_scrub) == 0 &&
 	    avl_numnodes(&spa->spa_errlist_last) == 0 &&
 	    avl_numnodes(&spa->spa_errlist_healed) == 0 &&
@@ -1286,29 +1086,19 @@ spa_errlog_sync(spa_t *spa, uint64_t txg)
 
 	mutex_exit(&spa->spa_errlist_lock);
 
-	/*
-	 * The pool config lock is needed to hold a dataset_t via
-	 * sync_error_list() -> get_head_ds(), and lock ordering
-	 * requires that we get it before the spa_errlog_lock.
-	 */
+	 
 	dsl_pool_config_enter(spa->spa_dsl_pool, FTAG);
 	mutex_enter(&spa->spa_errlog_lock);
 
 	tx = dmu_tx_create_assigned(spa->spa_dsl_pool, txg);
 
-	/*
-	 * Remove healed errors from errors.
-	 */
+	 
 	spa_remove_healed_errors(spa, &last, &scrub, tx);
 
-	/*
-	 * Sync out the current list of errors.
-	 */
+	 
 	sync_error_list(spa, &last, &spa->spa_errlog_last, tx);
 
-	/*
-	 * Rotate the log if necessary.
-	 */
+	 
 	if (scrub_finished) {
 		if (spa->spa_errlog_last != 0)
 			delete_errlog(spa, spa->spa_errlog_last, tx);
@@ -1318,14 +1108,10 @@ spa_errlog_sync(spa_t *spa, uint64_t txg)
 		sync_error_list(spa, &scrub, &spa->spa_errlog_last, tx);
 	}
 
-	/*
-	 * Sync out any pending scrub errors.
-	 */
+	 
 	sync_error_list(spa, &scrub, &spa->spa_errlog_scrub, tx);
 
-	/*
-	 * Update the MOS to reflect the new values.
-	 */
+	 
 	(void) zap_update(spa->spa_meta_objset, DMU_POOL_DIRECTORY_OBJECT,
 	    DMU_POOL_ERRLOG_LAST, sizeof (uint64_t), 1,
 	    &spa->spa_errlog_last, tx);
@@ -1417,7 +1203,7 @@ swap_errlog(spa_t *spa, uint64_t spa_err_obj, uint64_t new_head, uint64_t
 	int error = zap_lookup_int_key(spa->spa_meta_objset, spa_err_obj,
 	    old_head, &old_head_errlog);
 
-	/* If no error log, then there is nothing to do. */
+	 
 	if (error != 0)
 		return;
 
@@ -1426,10 +1212,7 @@ swap_errlog(spa_t *spa, uint64_t spa_err_obj, uint64_t new_head, uint64_t
 	if (error != 0)
 		return;
 
-	/*
-	 * Create an error log if the file system being promoted does not
-	 * already have one.
-	 */
+	 
 	uint64_t new_head_errlog;
 	error = zap_lookup_int_key(spa->spa_meta_objset, spa_err_obj, new_head,
 	    &new_head_errlog);
@@ -1472,7 +1255,7 @@ spa_swap_errlog(spa_t *spa, uint64_t new_head_ds, uint64_t old_head_ds,
 }
 
 #if defined(_KERNEL)
-/* error handling */
+ 
 EXPORT_SYMBOL(spa_log_error);
 EXPORT_SYMBOL(spa_approx_errlog_size);
 EXPORT_SYMBOL(spa_get_last_errlog_size);
@@ -1491,8 +1274,8 @@ EXPORT_SYMBOL(zep_to_zb);
 EXPORT_SYMBOL(name_to_errphys);
 #endif
 
-/* BEGIN CSTYLED */
+ 
 ZFS_MODULE_PARAM(zfs_spa, spa_, upgrade_errlog_limit, UINT, ZMOD_RW,
 	"Limit the number of errors which will be upgraded to the new "
 	"on-disk error log when enabling head_errlog");
-/* END CSTYLED */
+ 

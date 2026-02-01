@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Microsemi Ocelot Switch driver
- *
- * Copyright (c) 2017, 2019 Microsemi Corporation
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/if_bridge.h>
 #include <linux/mrp_bridge.h>
@@ -81,9 +77,7 @@ static void ocelot_populate_mrp_trap_key(struct ocelot_vcap_filter *filter)
 {
 	const u8 mrp_mask[] = { 0xff, 0xff, 0xff, 0xff, 0xff, 0x00 };
 
-	/* Here is possible to use control or test dmac because the mask
-	 * doesn't cover the LSB
-	 */
+	 
 	ether_addr_copy(filter->key.etype.dmac.value, mrp_test_dmac);
 	ether_addr_copy(filter->key.etype.dmac.mask, mrp_mask);
 }

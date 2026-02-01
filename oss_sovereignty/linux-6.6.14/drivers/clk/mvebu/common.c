@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell EBU SoC common clock handling
- *
- * Copyright (C) 2012 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -21,9 +12,7 @@
 
 #include "common.h"
 
-/*
- * Core Clocks
- */
+ 
 
 #define SSCG_CONF_MODE(reg)	(((reg) >> 16) & 0x3)
 #define SSCG_SPREAD_DOWN	0x0
@@ -34,12 +23,7 @@
 
 static struct clk_onecell_data clk_data;
 
-/*
- * This function can be used by the Kirkwood, the Armada 370, the
- * Armada XP and the Armada 375 SoC. The name of the function was
- * chosen following the dt convention: using the first known SoC
- * compatible with it.
- */
+ 
 u32 kirkwood_fix_sscg_deviation(u32 system_clk)
 {
 	struct device_node *sscg_np = NULL;
@@ -66,19 +50,7 @@ u32 kirkwood_fix_sscg_deviation(u32 system_clk)
 
 	if ((high_bound - low_bound) <= 0)
 		goto out;
-	/*
-	 * From Marvell engineer we got the following formula (when
-	 * this code was written, the datasheet was erroneous)
-	 * Spread percentage = 1/96 * (H - L) / H
-	 * H = SSCG_High_Boundary
-	 * L = SSCG_Low_Boundary
-	 *
-	 * As the deviation is half of spread then it lead to the
-	 * following formula in the code.
-	 *
-	 * To avoid an overflow and not lose any significant digit in
-	 * the same time we have to use a 64 bit integer.
-	 */
+	 
 
 	freq_swing_half = (((u64)high_bound - (u64)low_bound)
 			* (u64)system_clk);
@@ -117,10 +89,10 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 	if (WARN_ON(!base))
 		return;
 
-	/* Allocate struct for TCLK, cpu clk, and core ratio clocks */
+	 
 	clk_data.clk_num = 2 + desc->num_ratios;
 
-	/* One more clock for the optional refclk */
+	 
 	if (desc->get_refclk_freq)
 		clk_data.clk_num += 1;
 
@@ -131,7 +103,7 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 		return;
 	}
 
-	/* Register TCLK */
+	 
 	of_property_read_string_index(np, "clock-output-names", 0,
 				      &tclk_name);
 	rate = desc->get_tclk_freq(base);
@@ -139,7 +111,7 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 						   rate);
 	WARN_ON(IS_ERR(clk_data.clks[0]));
 
-	/* Register CPU clock */
+	 
 	of_property_read_string_index(np, "clock-output-names", 1,
 				      &cpuclk_name);
 	rate = desc->get_cpu_freq(base);
@@ -152,7 +124,7 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 						   rate);
 	WARN_ON(IS_ERR(clk_data.clks[1]));
 
-	/* Register fixed-factor clocks derived from CPU clock */
+	 
 	for (n = 0; n < desc->num_ratios; n++) {
 		const char *rclk_name = desc->ratios[n].name;
 		int mult, div;
@@ -165,7 +137,7 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 		WARN_ON(IS_ERR(clk_data.clks[2+n]));
 	}
 
-	/* Register optional refclk */
+	 
 	if (desc->get_refclk_freq) {
 		const char *name = "refclk";
 		of_property_read_string_index(np, "clock-output-names",
@@ -176,15 +148,13 @@ void __init mvebu_coreclk_setup(struct device_node *np,
 		WARN_ON(IS_ERR(clk_data.clks[2 + desc->num_ratios]));
 	}
 
-	/* SAR register isn't needed anymore */
+	 
 	iounmap(base);
 
 	of_clk_add_provider(np, of_clk_src_onecell_get, &clk_data);
 }
 
-/*
- * Clock Gating Control
- */
+ 
 
 DEFINE_SPINLOCK(ctrl_gating_lock);
 
@@ -258,12 +228,12 @@ void __init mvebu_clk_gating_setup(struct device_node *np,
 	if (WARN_ON(!ctrl))
 		goto ctrl_out;
 
-	/* lock must already be initialized */
+	 
 	ctrl->lock = &ctrl_gating_lock;
 
 	ctrl->base = base;
 
-	/* Count, allocate, and register clock gates */
+	 
 	for (n = 0; desc[n].name;)
 		n++;
 

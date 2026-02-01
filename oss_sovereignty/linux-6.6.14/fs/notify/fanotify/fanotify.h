@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/fsnotify_backend.h>
 #include <linux/path.h>
 #include <linux/slab.h>
@@ -10,7 +10,7 @@ extern struct kmem_cache *fanotify_fid_event_cachep;
 extern struct kmem_cache *fanotify_path_event_cachep;
 extern struct kmem_cache *fanotify_perm_event_cachep;
 
-/* Possible states of the permission event */
+ 
 enum {
 	FAN_EVENT_INIT,
 	FAN_EVENT_REPORTED,
@@ -18,15 +18,11 @@ enum {
 	FAN_EVENT_CANCELED,
 };
 
-/*
- * 3 dwords are sufficient for most local fs (64bit ino, 32bit generation).
- * fh buf should be dword aligned. On 64bit arch, the ext_buf pointer is
- * stored in either the first or last 2 dwords.
- */
+ 
 #define FANOTIFY_INLINE_FH_LEN	(3 << 2)
 #define FANOTIFY_FH_HDR_LEN	offsetof(struct fanotify_fh, buf)
 
-/* Fixed size struct for file handle */
+ 
 struct fanotify_fh {
 	u8 type;
 	u8 len;
@@ -36,9 +32,9 @@ struct fanotify_fh {
 	unsigned char buf[];
 } __aligned(4);
 
-/* Variable size struct for dir file handle + child file handle + name */
+ 
 struct fanotify_info {
-	/* size of dir_fh/file_fh including fanotify_fh hdr size */
+	 
 	u8 dir_fh_totlen;
 	u8 dir2_fh_totlen;
 	u8 file_fh_totlen;
@@ -46,13 +42,7 @@ struct fanotify_info {
 	u8 name2_len;
 	u8 pad[3];
 	unsigned char buf[];
-	/*
-	 * (struct fanotify_fh) dir_fh starts at buf[0]
-	 * (optional) dir2_fh starts at buf[dir_fh_totlen]
-	 * (optional) file_fh starts at buf[dir_fh_totlen + dir2_fh_totlen]
-	 * name starts at buf[dir_fh_totlen + dir2_fh_totlen + file_fh_totlen]
-	 * ...
-	 */
+	 
 #define FANOTIFY_DIR_FH_SIZE(info)	((info)->dir_fh_totlen)
 #define FANOTIFY_DIR2_FH_SIZE(info)	((info)->dir2_fh_totlen)
 #define FANOTIFY_FILE_FH_SIZE(info)	((info)->file_fh_totlen)
@@ -176,7 +166,7 @@ static inline void fanotify_info_init(struct fanotify_info *info)
 	info->name2_len = 0;
 }
 
-/* These set/copy helpers MUST be called by order */
+ 
 static inline void fanotify_info_set_dir_fh(struct fanotify_info *info,
 					    unsigned int totlen)
 {
@@ -231,19 +221,14 @@ static inline void fanotify_info_copy_name2(struct fanotify_info *info,
 	strcpy(fanotify_info_name2(info), name->name);
 }
 
-/*
- * Common structure for fanotify events. Concrete structs are allocated in
- * fanotify_handle_event() and freed when the information is retrieved by
- * userspace. The type of event determines how it was allocated, how it will
- * be freed and which concrete struct it may be cast to.
- */
+ 
 enum fanotify_event_type {
-	FANOTIFY_EVENT_TYPE_FID, /* fixed length */
-	FANOTIFY_EVENT_TYPE_FID_NAME, /* variable length */
+	FANOTIFY_EVENT_TYPE_FID,  
+	FANOTIFY_EVENT_TYPE_FID_NAME,  
 	FANOTIFY_EVENT_TYPE_PATH,
 	FANOTIFY_EVENT_TYPE_PATH_PERM,
-	FANOTIFY_EVENT_TYPE_OVERFLOW, /* struct fanotify_event */
-	FANOTIFY_EVENT_TYPE_FS_ERROR, /* struct fanotify_error_event */
+	FANOTIFY_EVENT_TYPE_OVERFLOW,  
+	FANOTIFY_EVENT_TYPE_FS_ERROR,  
 	__FANOTIFY_EVENT_TYPE_NUM
 };
 
@@ -254,7 +239,7 @@ enum fanotify_event_type {
 
 struct fanotify_event {
 	struct fsnotify_event fse;
-	struct hlist_node merge_list;	/* List for hashed merge */
+	struct hlist_node merge_list;	 
 	u32 mask;
 	struct {
 		unsigned int type : FANOTIFY_EVENT_TYPE_BITS;
@@ -276,7 +261,7 @@ static inline void fanotify_init_event(struct fanotify_event *event,
 #define FANOTIFY_INLINE_FH(name, size)					\
 struct {								\
 	struct fanotify_fh (name);					\
-	/* Space for object_fh.buf[] - access with fanotify_fh_buf() */	\
+	 	\
 	unsigned char _inline_fh_buf[(size)];				\
 }
 
@@ -307,10 +292,10 @@ FANOTIFY_NE(struct fanotify_event *event)
 
 struct fanotify_error_event {
 	struct fanotify_event fae;
-	s32 error; /* Error reported by the Filesystem. */
-	u32 err_count; /* Suppressed errors count */
+	s32 error;  
+	u32 err_count;  
 
-	__kernel_fsid_t fsid; /* FSID this error refers to. */
+	__kernel_fsid_t fsid;  
 
 	FANOTIFY_INLINE_FH(object_fh, MAX_HANDLE_SZ);
 };
@@ -382,7 +367,7 @@ static inline int fanotify_event_dir2_fh_len(struct fanotify_event *event)
 
 static inline bool fanotify_event_has_object_fh(struct fanotify_event *event)
 {
-	/* For error events, even zeroed fh are reported. */
+	 
 	if (event->type == FANOTIFY_EVENT_TYPE_FS_ERROR)
 		return true;
 	return fanotify_event_object_fh_len(event) > 0;
@@ -415,19 +400,13 @@ FANOTIFY_PE(struct fanotify_event *event)
 	return container_of(event, struct fanotify_path_event, fae);
 }
 
-/*
- * Structure for permission fanotify events. It gets allocated and freed in
- * fanotify_handle_event() since we wait there for user response. When the
- * information is retrieved by userspace the structure is moved from
- * group->notification_list to group->fanotify_data.access_list to wait for
- * user response.
- */
+ 
 struct fanotify_perm_event {
 	struct fanotify_event fae;
 	struct path path;
-	u32 response;			/* userspace answer to the event */
-	unsigned short state;		/* state of the event */
-	int fd;		/* fd we passed to userspace for this event */
+	u32 response;			 
+	unsigned short state;		 
+	int fd;		 
 	union {
 		struct fanotify_response_info_header hdr;
 		struct fanotify_response_info_audit_rule audit_rule;
@@ -466,16 +445,12 @@ static inline const struct path *fanotify_event_path(struct fanotify_event *even
 		return NULL;
 }
 
-/*
- * Use 128 size hash table to speed up events merge.
- */
+ 
 #define FANOTIFY_HTABLE_BITS	(7)
 #define FANOTIFY_HTABLE_SIZE	(1 << FANOTIFY_HTABLE_BITS)
 #define FANOTIFY_HTABLE_MASK	(FANOTIFY_HTABLE_SIZE - 1)
 
-/*
- * Permission events and overflow event do not get merged - don't hash them.
- */
+ 
 static inline bool fanotify_is_hashed_event(u32 mask)
 {
 	return !(fanotify_is_perm_event(mask) ||

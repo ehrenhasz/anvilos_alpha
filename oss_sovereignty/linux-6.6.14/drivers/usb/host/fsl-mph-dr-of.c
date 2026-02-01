@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Setup platform devices needed by the Freescale multi-port host
- * and/or dual-role USB controller modules based on the description
- * in flat device tree.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -17,9 +13,9 @@
 #include <linux/dma-mapping.h>
 
 struct fsl_usb2_dev_data {
-	char *dr_mode;		/* controller mode */
-	char *drivers[3];	/* drivers to instantiate for this mode */
-	enum fsl_usb2_operating_modes op_mode;	/* operating mode */
+	char *dr_mode;		 
+	char *drivers[3];	 
+	enum fsl_usb2_operating_modes op_mode;	 
 };
 
 static struct fsl_usb2_dev_data dr_mode_data[] = {
@@ -54,7 +50,7 @@ static struct fsl_usb2_dev_data *get_dr_mode_data(struct device_node *np)
 	}
 	pr_warn("%pOF: Invalid 'dr_mode' property, fallback to host mode\n",
 		np);
-	return &dr_mode_data[0]; /* mode not specified, use host */
+	return &dr_mode_data[0];  
 }
 
 static enum fsl_usb2_phy_modes determine_usb_phy(const char *phy_type)
@@ -132,13 +128,7 @@ static enum fsl_usb2_controller_ver usb_get_ver_info(struct device_node *np)
 {
 	enum fsl_usb2_controller_ver ver = FSL_USB_VER_NONE;
 
-	/*
-	 * returns 1 for usb controller version 1.6
-	 * returns 2 for usb controller version 2.2
-	 * returns 3 for usb controller version 2.4
-	 * returns 4 for usb controller version 2.5
-	 * returns 0 otherwise
-	 */
+	 
 	if (of_device_is_compatible(np, "fsl-usb2-dr")) {
 		if (of_device_is_compatible(np, "fsl-usb2-dr-v1.6"))
 			ver = FSL_USB_VER_1_6;
@@ -148,7 +138,7 @@ static enum fsl_usb2_controller_ver usb_get_ver_info(struct device_node *np)
 			ver = FSL_USB_VER_2_4;
 		else if (of_device_is_compatible(np, "fsl-usb2-dr-v2.5"))
 			ver = FSL_USB_VER_2_5;
-		else /* for previous controller versions */
+		else  
 			ver = FSL_USB_VER_OLD;
 
 		if (ver > FSL_USB_VER_NONE)
@@ -167,7 +157,7 @@ static enum fsl_usb2_controller_ver usb_get_ver_info(struct device_node *np)
 			ver = FSL_USB_VER_2_4;
 		else if (of_device_is_compatible(np, "fsl-usb2-mph-v2.5"))
 			ver = FSL_USB_VER_2_5;
-		else /* for previous controller versions */
+		else  
 			ver = FSL_USB_VER_OLD;
 	}
 
@@ -212,7 +202,7 @@ static int fsl_usb2_mph_dr_of_probe(struct platform_device *ofdev)
 		pdata->invert_drvvbus = of_property_read_bool(np, "fsl,invert-drvvbus");
 		pdata->invert_pwr_fault = of_property_read_bool(np, "fsl,invert-pwr-fault");
 
-		/* setup mode selected in the device tree */
+		 
 		pdata->operating_mode = dev_data->op_mode;
 	}
 
@@ -220,7 +210,7 @@ static int fsl_usb2_mph_dr_of_probe(struct platform_device *ofdev)
 	pdata->phy_mode = determine_usb_phy(prop);
 	pdata->controller_ver = usb_get_ver_info(np);
 
-	/* Activate Erratum by reading property in device tree */
+	 
 	pdata->has_fsl_erratum_a007792 =
 		of_property_read_bool(np, "fsl,usb-erratum-a007792");
 	pdata->has_fsl_erratum_a005275 =
@@ -232,10 +222,7 @@ static int fsl_usb2_mph_dr_of_probe(struct platform_device *ofdev)
 	pdata->has_fsl_erratum_14 =
 		of_property_read_bool(np, "fsl,usb_erratum-14");
 
-	/*
-	 * Determine whether phy_clk_valid needs to be checked
-	 * by reading property in device tree
-	 */
+	 
 	pdata->check_phy_clk_valid =
 		of_property_read_bool(np, "phy-clk-valid");
 
@@ -273,20 +260,20 @@ static void fsl_usb2_mph_dr_of_remove(struct platform_device *ofdev)
 
 #ifdef CONFIG_PPC_MPC512x
 
-#define USBGENCTRL		0x200		/* NOTE: big endian */
-#define GC_WU_INT_CLR		(1 << 5)	/* Wakeup int clear */
-#define GC_ULPI_SEL		(1 << 4)	/* ULPI i/f select (usb0 only)*/
-#define GC_PPP			(1 << 3)	/* Inv. Port Power Polarity */
-#define GC_PFP			(1 << 2)	/* Inv. Power Fault Polarity */
-#define GC_WU_ULPI_EN		(1 << 1)	/* Wakeup on ULPI event */
-#define GC_WU_IE		(1 << 1)	/* Wakeup interrupt enable */
+#define USBGENCTRL		0x200		 
+#define GC_WU_INT_CLR		(1 << 5)	 
+#define GC_ULPI_SEL		(1 << 4)	 
+#define GC_PPP			(1 << 3)	 
+#define GC_PFP			(1 << 2)	 
+#define GC_WU_ULPI_EN		(1 << 1)	 
+#define GC_WU_IE		(1 << 1)	 
 
-#define ISIPHYCTRL		0x204		/* NOTE: big endian */
-#define PHYCTRL_PHYE		(1 << 4)	/* On-chip UTMI PHY enable */
-#define PHYCTRL_BSENH		(1 << 3)	/* Bit Stuff Enable High */
-#define PHYCTRL_BSEN		(1 << 2)	/* Bit Stuff Enable */
-#define PHYCTRL_LSFE		(1 << 1)	/* Line State Filter Enable */
-#define PHYCTRL_PXE		(1 << 0)	/* PHY oscillator enable */
+#define ISIPHYCTRL		0x204		 
+#define PHYCTRL_PHYE		(1 << 4)	 
+#define PHYCTRL_BSENH		(1 << 3)	 
+#define PHYCTRL_BSEN		(1 << 2)	 
+#define PHYCTRL_LSFE		(1 << 1)	 
+#define PHYCTRL_PXE		(1 << 0)	 
 
 int fsl_usb2_mpc5121_init(struct platform_device *pdev)
 {
@@ -340,7 +327,7 @@ static struct fsl_usb2_platform_data fsl_usb2_mpc5121_pd = {
 	.init = fsl_usb2_mpc5121_init,
 	.exit = fsl_usb2_mpc5121_exit,
 };
-#endif /* CONFIG_PPC_MPC512x */
+#endif  
 
 static struct fsl_usb2_platform_data fsl_usb2_mpc8xxx_pd = {
 	.have_sysif_regs = 1,

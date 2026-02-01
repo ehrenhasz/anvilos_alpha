@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cros_ec_baro - Driver for barometer sensor behind CrosEC.
- *
- * Copyright (C) 2017 Google, Inc
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iio/buffer.h>
@@ -21,14 +17,12 @@
 #include <linux/platform_data/cros_ec_proto.h>
 #include <linux/platform_device.h>
 
-/*
- * One channel for pressure, the other for timestamp.
- */
+ 
 #define CROS_EC_BARO_MAX_CHANNELS (1 + 1)
 
-/* State data for ec_sensors iio driver. */
+ 
 struct cros_ec_baro_state {
-	/* Shared by all sensors */
+	 
 	struct cros_ec_sensors_core_state core;
 
 	struct iio_chan_spec channels[CROS_EC_BARO_MAX_CHANNELS];
@@ -65,7 +59,7 @@ static int cros_ec_baro_read(struct iio_dev *indio_dev,
 
 		*val = st->core.resp->sensor_range.ret;
 
-		/* scale * in_pressure_raw --> kPa */
+		 
 		*val2 = 10 << CROS_EC_SENSOR_BITS;
 		ret = IIO_VAL_FRACTIONAL;
 		break;
@@ -94,7 +88,7 @@ static int cros_ec_baro_write(struct iio_dev *indio_dev,
 		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
 		st->core.param.sensor_range.data = val;
 
-		/* Always roundup, so caller gets at least what it asks for. */
+		 
 		st->core.param.sensor_range.roundup = 1;
 
 		ret = cros_ec_motion_send_host_cmd(&st->core, 0);
@@ -146,7 +140,7 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
 	indio_dev->info = &cros_ec_baro_info;
 	state = iio_priv(indio_dev);
 	channel = state->channels;
-	/* Common part */
+	 
 	channel->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
 	channel->info_mask_shared_by_all =
 		BIT(IIO_CHAN_INFO_SCALE) |
@@ -160,7 +154,7 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
 	channel->ext_info = cros_ec_sensors_ext_info;
 	channel->scan_type.sign = 'u';
 
-	/* Sensor specific */
+	 
 	switch (state->core.type) {
 	case MOTIONSENSE_TYPE_BARO:
 		channel->type = IIO_PRESSURE;
@@ -170,7 +164,7 @@ static int cros_ec_baro_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Timestamp */
+	 
 	channel++;
 	channel->type = IIO_TIMESTAMP;
 	channel->channel = -1;
@@ -192,7 +186,7 @@ static const struct platform_device_id cros_ec_baro_ids[] = {
 	{
 		.name = "cros-ec-baro",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
 

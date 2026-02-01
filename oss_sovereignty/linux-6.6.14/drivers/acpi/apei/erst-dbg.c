@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * APEI Error Record Serialization Table debug support
- *
- * ERST is a way provided by APEI to save and retrieve hardware error
- * information to and from a persistent store. This file provide the
- * debugging/testing support for ERST kernel support and firmware
- * implementation.
- *
- * Copyright 2010 Intel Corp.
- *   Author: Huang Ying <ying.huang@intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -26,7 +16,7 @@
 static void *erst_dbg_buf;
 static unsigned int erst_dbg_buf_len;
 
-/* Prevent erst_dbg_read/write from being invoked concurrently */
+ 
 static DEFINE_MUTEX(erst_dbg_mutex);
 
 static int erst_dbg_open(struct inode *inode, struct file *file)
@@ -98,14 +88,9 @@ retry_next:
 	rc = erst_get_record_id_next(pos, &id);
 	if (rc)
 		goto out;
-	/* no more record */
+	 
 	if (id == APEI_ERST_INVALID_RECORD_ID) {
-		/*
-		 * If the persistent store is empty initially, the function
-		 * 'erst_read' below will return "-ENOENT" value. This causes
-		 * 'retry_next' label is entered again. The returned value
-		 * should be zero indicating the read operation is EOF.
-		 */
+		 
 		len = 0;
 
 		goto out;
@@ -113,7 +98,7 @@ retry_next:
 retry:
 	rc = len = erst_read_record(id, erst_dbg_buf, erst_dbg_buf_len,
 			erst_dbg_buf_len, NULL);
-	/* The record may be cleared by others, try read next record */
+	 
 	if (rc == -ENOENT)
 		goto retry_next;
 	if (rc < 0)

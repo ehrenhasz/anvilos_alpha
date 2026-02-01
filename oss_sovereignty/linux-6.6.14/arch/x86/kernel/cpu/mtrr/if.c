@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/capability.h>
 #include <linux/seq_file.h>
 #include <linux/uaccess.h>
@@ -18,13 +18,13 @@
 
 static const char *const mtrr_strings[MTRR_NUM_TYPES] =
 {
-	"uncachable",		/* 0 */
-	"write-combining",	/* 1 */
-	"?",			/* 2 */
-	"?",			/* 3 */
-	"write-through",	/* 4 */
-	"write-protect",	/* 5 */
-	"write-back",		/* 6 */
+	"uncachable",		 
+	"write-combining",	 
+	"?",			 
+	"?",			 
+	"write-through",	 
+	"write-protect",	 
+	"write-back",		 
 };
 
 const char *mtrr_attrib_to_str(int x)
@@ -84,12 +84,7 @@ mtrr_file_del(unsigned long base, unsigned long size,
 	return reg;
 }
 
-/*
- * seq_file can seek but we ignore it.
- *
- * Format of control line:
- *    "base=%Lx size=%Lx type=%s" or "disable=%d"
- */
+ 
 static ssize_t
 mtrr_write(struct file *file, const char __user *buf, size_t len, loff_t * ppos)
 {
@@ -253,7 +248,7 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 			return -EINVAL;
 		mtrr_if->get(gentry.regnum, &base, &size, &type);
 
-		/* Hide entries that go above 4GB */
+		 
 		if (base + size - 1 >= (1UL << (8 * sizeof(gentry.size) - PAGE_SHIFT))
 		    || size >= (1UL << (8 * sizeof(gentry.size) - PAGE_SHIFT)))
 			gentry.base = gentry.size = gentry.type = 0;
@@ -298,7 +293,7 @@ mtrr_ioctl(struct file *file, unsigned int cmd, unsigned long __arg)
 		if (gentry.regnum >= num_var_ranges)
 			return -EINVAL;
 		mtrr_if->get(gentry.regnum, &base, &size, &type);
-		/* Hide entries that would overflow */
+		 
 		if (size != (__typeof__(gentry.size))size)
 			gentry.base = gentry.size = gentry.type = 0;
 		else {
@@ -369,14 +364,14 @@ static int mtrr_seq_show(struct seq_file *seq, void *offset)
 			continue;
 		}
 		if (size < (0x100000 >> PAGE_SHIFT)) {
-			/* less than 1MB */
+			 
 			factor = 'K';
 			size <<= PAGE_SHIFT - 10;
 		} else {
 			factor = 'M';
 			size >>= 20 - PAGE_SHIFT;
 		}
-		/* Base can be > 32bit */
+		 
 		seq_printf(seq, "reg%02i: base=0x%06lx000 (%5luMB), size=%5lu%cB, count=%d: %s\n",
 			   i, base, base >> (20 - PAGE_SHIFT),
 			   size, factor,
@@ -422,4 +417,4 @@ static int __init mtrr_if_init(void)
 	return 0;
 }
 arch_initcall(mtrr_if_init);
-#endif			/*  CONFIG_PROC_FS  */
+#endif			 

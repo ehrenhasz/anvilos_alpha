@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2020-2021, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_QCOM_CAM_CC_SM8450_H
 #define _DT_BINDINGS_CLK_QCOM_CAM_CC_SM8450_H
 
-/* CAM_CC clocks */
+ 
 #define CAM_CC_BPS_AHB_CLK					0
 #define CAM_CC_BPS_CLK						1
 #define CAM_CC_BPS_CLK_SRC					2
@@ -133,7 +131,7 @@
 #define CAM_CC_SLOW_AHB_CLK_SRC					123
 #define CAM_CC_XO_CLK_SRC					124
 
-/* CAM_CC resets */
+ 
 #define CAM_CC_BPS_BCR						0
 #define CAM_CC_ICP_BCR						1
 #define CAM_CC_IFE_0_BCR					2
@@ -145,7 +143,7 @@
 #define CAM_CC_SFE_0_BCR					8
 #define CAM_CC_SFE_1_BCR					9
 
-/* CAM_CC GDSCRs */
+ 
 #define BPS_GDSC		0
 #define IPE_0_GDSC		1
 #define SBI_GDSC		2

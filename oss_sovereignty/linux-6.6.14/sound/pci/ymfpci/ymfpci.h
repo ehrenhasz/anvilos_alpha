@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __SOUND_YMFPCI_H
 #define __SOUND_YMFPCI_H
 
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Definitions for Yahama YMF724/740/744/754 chips
- */
+ 
 
 #include <sound/pcm.h>
 #include <sound/rawmidi.h>
@@ -13,9 +10,7 @@
 #include <sound/timer.h>
 #include <linux/gameport.h>
 
-/*
- *  Direct registers
- */
+ 
 
 #define YMFREG(chip, reg)		(chip->port + YDSXGR_##reg)
 
@@ -139,44 +134,42 @@
 #define YDSXG_CAPTURE_VOICES		2
 #define YDSXG_EFFECT_VOICES		5
 
-#define YMFPCI_LEGACY_SBEN	(1 << 0)	/* soundblaster enable */
-#define YMFPCI_LEGACY_FMEN	(1 << 1)	/* OPL3 enable */
-#define YMFPCI_LEGACY_JPEN	(1 << 2)	/* joystick enable */
-#define YMFPCI_LEGACY_MEN	(1 << 3)	/* MPU401 enable */
-#define YMFPCI_LEGACY_MIEN	(1 << 4)	/* MPU RX irq enable */
-#define YMFPCI_LEGACY_IOBITS	(1 << 5)	/* i/o bits range, 0 = 16bit, 1 =10bit */
-#define YMFPCI_LEGACY_SDMA	(3 << 6)	/* SB DMA select */
-#define YMFPCI_LEGACY_SBIRQ	(7 << 8)	/* SB IRQ select */
-#define YMFPCI_LEGACY_MPUIRQ	(7 << 11)	/* MPU IRQ select */
-#define YMFPCI_LEGACY_SIEN	(1 << 14)	/* serialized IRQ */
-#define YMFPCI_LEGACY_LAD	(1 << 15)	/* legacy audio disable */
+#define YMFPCI_LEGACY_SBEN	(1 << 0)	 
+#define YMFPCI_LEGACY_FMEN	(1 << 1)	 
+#define YMFPCI_LEGACY_JPEN	(1 << 2)	 
+#define YMFPCI_LEGACY_MEN	(1 << 3)	 
+#define YMFPCI_LEGACY_MIEN	(1 << 4)	 
+#define YMFPCI_LEGACY_IOBITS	(1 << 5)	 
+#define YMFPCI_LEGACY_SDMA	(3 << 6)	 
+#define YMFPCI_LEGACY_SBIRQ	(7 << 8)	 
+#define YMFPCI_LEGACY_MPUIRQ	(7 << 11)	 
+#define YMFPCI_LEGACY_SIEN	(1 << 14)	 
+#define YMFPCI_LEGACY_LAD	(1 << 15)	 
 
-#define YMFPCI_LEGACY2_FMIO	(3 << 0)	/* OPL3 i/o address (724/740) */
-#define YMFPCI_LEGACY2_SBIO	(3 << 2)	/* SB i/o address (724/740) */
-#define YMFPCI_LEGACY2_MPUIO	(3 << 4)	/* MPU401 i/o address (724/740) */
-#define YMFPCI_LEGACY2_JSIO	(3 << 6)	/* joystick i/o address (724/740) */
-#define YMFPCI_LEGACY2_MAIM	(1 << 8)	/* MPU401 ack intr mask */
-#define YMFPCI_LEGACY2_SMOD	(3 << 11)	/* SB DMA mode */
-#define YMFPCI_LEGACY2_SBVER	(3 << 13)	/* SB version select */
-#define YMFPCI_LEGACY2_IMOD	(1 << 15)	/* legacy IRQ mode */
-/* SIEN:IMOD 0:0 = legacy irq, 0:1 = INTA, 1:0 = serialized IRQ */
+#define YMFPCI_LEGACY2_FMIO	(3 << 0)	 
+#define YMFPCI_LEGACY2_SBIO	(3 << 2)	 
+#define YMFPCI_LEGACY2_MPUIO	(3 << 4)	 
+#define YMFPCI_LEGACY2_JSIO	(3 << 6)	 
+#define YMFPCI_LEGACY2_MAIM	(1 << 8)	 
+#define YMFPCI_LEGACY2_SMOD	(3 << 11)	 
+#define YMFPCI_LEGACY2_SBVER	(3 << 13)	 
+#define YMFPCI_LEGACY2_IMOD	(1 << 15)	 
+ 
 
 #if IS_REACHABLE(CONFIG_GAMEPORT)
 #define SUPPORT_JOYSTICK
 #endif
 
-/*
- *
- */
+ 
 
 struct snd_ymfpci_playback_bank {
 	__le32 format;
 	__le32 loop_default;
-	__le32 base;			/* 32-bit address */
-	__le32 loop_start;		/* 32-bit offset */
-	__le32 loop_end;		/* 32-bit offset */
-	__le32 loop_frac;		/* 8-bit fraction - loop_start */
-	__le32 delta_end;		/* pitch delta end */
+	__le32 base;			 
+	__le32 loop_start;		 
+	__le32 loop_end;		 
+	__le32 loop_frac;		 
+	__le32 delta_end;		 
 	__le32 lpfK_end;
 	__le32 eg_gain_end;
 	__le32 left_gain_end;
@@ -203,16 +196,16 @@ struct snd_ymfpci_playback_bank {
  };
 
 struct snd_ymfpci_capture_bank {
-	__le32 base;			/* 32-bit address */
-	__le32 loop_end;		/* 32-bit offset */
-	__le32 start;			/* 32-bit offset */
-	__le32 num_of_loops;		/* counter */
+	__le32 base;			 
+	__le32 loop_end;		 
+	__le32 start;			 
+	__le32 num_of_loops;		 
 };
 
 struct snd_ymfpci_effect_bank {
-	__le32 base;			/* 32-bit address */
-	__le32 loop_end;		/* 32-bit offset */
-	__le32 start;			/* 32-bit offset */
+	__le32 base;			 
+	__le32 loop_end;		 
+	__le32 start;			 
 	__le32 temp;
 };
 
@@ -253,15 +246,15 @@ struct snd_ymfpci_pcm {
 	struct snd_ymfpci *chip;
 	enum snd_ymfpci_pcm_type type;
 	struct snd_pcm_substream *substream;
-	struct snd_ymfpci_voice *voices[2];	/* playback only */
+	struct snd_ymfpci_voice *voices[2];	 
 	unsigned int running: 1,
 		     use_441_slot: 1,
 	             output_front: 1,
 	             output_rear: 1,
 	             swap_rear: 1;
 	unsigned int update_pcm_vol;
-	u32 period_size;		/* cached from runtime->period_size */
-	u32 buffer_size;		/* cached from runtime->buffer_size */
+	u32 period_size;		 
+	u32 buffer_size;		 
 	u32 period_pos;
 	u32 last_pos;
 	u32 capture_bank_number;
@@ -269,11 +262,11 @@ struct snd_ymfpci_pcm {
 };
 
 static const int saved_regs_index[] = {
-	/* spdif */
+	 
 	YDSXGR_SPDIFOUTCTRL,
 	YDSXGR_SPDIFOUTSTATUS,
 	YDSXGR_SPDIFINCTRL,
-	/* volumes */
+	 
 	YDSXGR_PRIADCLOOPVOL,
 	YDSXGR_NATIVEDACINVOL,
 	YDSXGR_NATIVEDACOUTVOL,
@@ -283,12 +276,12 @@ static const int saved_regs_index[] = {
 	YDSXGR_SPDIFOUTVOL,
 	YDSXGR_ZVOUTVOL,
 	YDSXGR_LEGACYOUTVOL,
-	/* address bases */
+	 
 	YDSXGR_PLAYCTRLBASE,
 	YDSXGR_RECCTRLBASE,
 	YDSXGR_EFFCTRLBASE,
 	YDSXGR_WORKBASE,
-	/* capture set up */
+	 
 	YDSXGR_MAPOFREC,
 	YDSXGR_RECFORMAT,
 	YDSXGR_RECSLOTSR,
@@ -298,10 +291,10 @@ static const int saved_regs_index[] = {
 #define YDSXGR_NUM_SAVED_REGS	ARRAY_SIZE(saved_regs_index)
 
 static const int pci_saved_regs_index[] = {
-	/* All Chips */
+	 
 	PCIR_DSXG_LEGACY,
 	PCIR_DSXG_ELEGACY,
-	/* YMF 744/754 */
+	 
 	PCIR_DSXG_FMBASE,
 	PCIR_DSXG_SBBASE,
 	PCIR_DSXG_MPU401BASE,
@@ -314,8 +307,8 @@ static_assert(DSXG_PCI_NUM_SAVED_LEGACY_REGS <= DSXG_PCI_NUM_SAVED_REGS);
 struct snd_ymfpci {
 	int irq;
 
-	unsigned int device_id;	/* PCI device ID */
-	unsigned char rev;	/* PCI revision */
+	unsigned int device_id;	 
+	unsigned char rev;	 
 	unsigned long reg_area_phys;
 	void __iomem *reg_area_virt;
 
@@ -407,4 +400,4 @@ int snd_ymfpci_pcm_4ch(struct snd_ymfpci *chip, int device);
 int snd_ymfpci_mixer(struct snd_ymfpci *chip, int rear_switch);
 int snd_ymfpci_timer(struct snd_ymfpci *chip, int device);
 
-#endif /* __SOUND_YMFPCI_H */
+#endif  

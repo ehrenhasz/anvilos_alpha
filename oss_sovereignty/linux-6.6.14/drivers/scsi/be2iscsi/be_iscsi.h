@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2017 Broadcom. All Rights Reserved.
- * The term "Broadcom" refers to Broadcom Limited and/or its subsidiaries.
- *
- * Contact Information:
- * linux-drivers@broadcom.com
- */
+ 
+ 
 
 #ifndef _BE_ISCSI_
 #define _BE_ISCSI_

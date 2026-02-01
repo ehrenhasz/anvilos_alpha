@@ -1,29 +1,4 @@
-/*
- * Copyright (C) 2015 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Authors:
- *    Dave Airlie
- *    Alon Levy
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_damage_helper.h>
@@ -124,12 +99,7 @@ static void virtio_gpu_crtc_atomic_flush(struct drm_crtc *crtc,
 									  crtc);
 	struct virtio_gpu_output *output = drm_crtc_to_virtio_gpu_output(crtc);
 
-	/*
-	 * virtio-gpu can't do modeset and plane update operations
-	 * independent from each other.  So the actual modeset happens
-	 * in the plane update callback, and here we just check
-	 * whenever we must force the modeset.
-	 */
+	 
 	if (drm_atomic_crtc_needs_modeset(crtc_state)) {
 		output->needs_modeset = true;
 	}
@@ -305,7 +275,7 @@ virtio_gpu_user_framebuffer_create(struct drm_device *dev,
 	    mode_cmd->pixel_format != DRM_FORMAT_HOST_ARGB8888)
 		return ERR_PTR(-ENOENT);
 
-	/* lookup object associated with res handle */
+	 
 	obj = drm_gem_object_lookup(file_priv, mode_cmd->handles[0]);
 	if (!obj)
 		return ERR_PTR(-EINVAL);
@@ -346,7 +316,7 @@ int virtio_gpu_modeset_init(struct virtio_gpu_device *vgdev)
 	vgdev->ddev->mode_config.quirk_addfb_prefer_host_byte_order = true;
 	vgdev->ddev->mode_config.funcs = &virtio_gpu_mode_funcs;
 
-	/* modes will be validated against the framebuffer size */
+	 
 	vgdev->ddev->mode_config.min_width = XRES_MIN;
 	vgdev->ddev->mode_config.min_height = YRES_MIN;
 	vgdev->ddev->mode_config.max_width = XRES_MAX;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009, Steven Rostedt <srostedt@redhat.com>
- */
+
+ 
 #include <dirent.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -67,7 +65,7 @@ static int do_read(void *data, int size)
 	return r;
 }
 
-/* If it fails, the next read will report it */
+ 
 static void skip(int size)
 {
 	char buf[BUFSIZ];
@@ -149,17 +147,7 @@ static int read_proc_kallsyms(struct tep_handle *pevent)
 	size = read4(pevent);
 	if (!size)
 		return 0;
-	/*
-	 * Just skip it, now that we configure libtraceevent to use the
-	 * tools/perf/ symbol resolver.
-	 *
-	 * We need to skip it so that we can continue parsing old perf.data
-	 * files, that contains this /proc/kallsyms payload.
-	 *
-	 * Newer perf.data files will have just the 4-bytes zeros "kallsyms
-	 * payload", so that older tools can continue reading it and interpret
-	 * it as "no kallsyms payload is present".
-	 */
+	 
 	lseek(input_fd, size, SEEK_CUR);
 	trace_data_size += size;
 	return 0;
@@ -170,7 +158,7 @@ static int read_ftrace_printk(struct tep_handle *pevent)
 	unsigned int size;
 	char *buf;
 
-	/* it can have 0 size */
+	 
 	size = read4(pevent);
 	if (!size)
 		return 0;
@@ -221,10 +209,7 @@ static int read_header_files(struct tep_handle *pevent)
 
 	if (!tep_parse_header_page(pevent, header_page, size,
 				   tep_get_long_size(pevent))) {
-		/*
-		 * The commit field in the page is of type long,
-		 * use that instead, since it represents the kernel.
-		 */
+		 
 		tep_set_long_size(pevent, tep_get_header_page_size(pevent));
 	}
 	free(header_page);
@@ -347,7 +332,7 @@ static int read_saved_cmdline(struct tep_handle *pevent)
 	char *buf;
 	int ret;
 
-	/* it can have 0 size */
+	 
 	size = read8(pevent);
 	if (!size)
 		return 0;

@@ -1,39 +1,9 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/mlx5/port.h>
 #include "mlx5_core.h"
 
-/* calling with verbose false will not print error to log */
+ 
 int mlx5_access_reg(struct mlx5_core_dev *dev, void *data_in, int size_in,
 		    void *data_out, int size_out, u16 reg_id, int arg,
 		    int write, bool verbose)
@@ -184,7 +154,7 @@ int mlx5_query_ib_port_oper(struct mlx5_core_dev *dev, u16 *link_width_oper,
 }
 EXPORT_SYMBOL(mlx5_query_ib_port_oper);
 
-/* This function should be used after setting a port register only */
+ 
 void mlx5_toggle_port_link(struct mlx5_core_dev *dev)
 {
 	enum mlx5_port_status ps;
@@ -326,23 +296,20 @@ static int mlx5_query_module_id(struct mlx5_core_dev *dev, int module_num,
 static int mlx5_qsfp_eeprom_page(u16 offset)
 {
 	if (offset < MLX5_EEPROM_PAGE_LENGTH)
-		/* Addresses between 0-255 - page 00 */
+		 
 		return 0;
 
-	/* Addresses between 256 - 639 belongs to pages 01, 02 and 03
-	 * For example, offset = 400 belongs to page 02:
-	 * 1 + ((400 - 256)/128) = 2
-	 */
+	 
 	return 1 + ((offset - MLX5_EEPROM_PAGE_LENGTH) /
 		    MLX5_EEPROM_HIGH_PAGE_LENGTH);
 }
 
 static int mlx5_qsfp_eeprom_high_page_offset(int page_num)
 {
-	if (!page_num) /* Page 0 always start from low page */
+	if (!page_num)  
 		return 0;
 
-	/* High page */
+	 
 	return page_num * MLX5_EEPROM_HIGH_PAGE_LENGTH;
 }
 
@@ -367,7 +334,7 @@ static void mlx5_sfp_eeprom_params_set(u16 *i2c_addr, int *page_num, u16 *offset
 
 static int mlx5_mcia_max_bytes(struct mlx5_core_dev *dev)
 {
-	/* mcia supports either 12 dwords or 32 dwords */
+	 
 	return (MLX5_CAP_MCAM_FEATURE(dev, mcia_32dwords) ? 32 : 12) * sizeof(u32);
 }
 
@@ -437,7 +404,7 @@ int mlx5_query_module_eeprom(struct mlx5_core_dev *dev,
 	}
 
 	if (offset + size > MLX5_EEPROM_PAGE_LENGTH)
-		/* Cross pages read, read until offset 256 in low page */
+		 
 		size = MLX5_EEPROM_PAGE_LENGTH - offset;
 
 	query.size = size;
@@ -894,7 +861,7 @@ void mlx5_query_port_fcs(struct mlx5_core_dev *mdev, bool *supported,
 			 bool *enabled)
 {
 	u32 out[MLX5_ST_SZ_DW(pcmr_reg)];
-	/* Default values for FW which do not support MLX5_REG_PCMR */
+	 
 	*supported = false;
 	*enabled = true;
 
@@ -1009,7 +976,7 @@ int mlx5_set_dscp2prio(struct mlx5_core_dev *mdev, u8 dscp, u8 prio)
 	memcpy(in, out, sz);
 	MLX5_SET(qpdpm_reg, in, local_port, 1);
 
-	/* Update the corresponding dscp entry */
+	 
 	qpdpm_dscp = MLX5_ADDR_OF(qpdpm_reg, in, dscp[dscp]);
 	MLX5_SET16(qpdpm_dscp_reg, qpdpm_dscp, prio, prio);
 	MLX5_SET16(qpdpm_dscp_reg, qpdpm_dscp, e, 1);
@@ -1021,7 +988,7 @@ out:
 	return err;
 }
 
-/* dscp2prio[i]: priority that dscp i mapped to */
+ 
 #define MLX5E_SUPPORTED_DSCP 64
 int mlx5_query_dscp2prio(struct mlx5_core_dev *mdev, u8 *dscp2prio)
 {
@@ -1055,7 +1022,7 @@ out:
 	return err;
 }
 
-/* speed in units of 1Mb */
+ 
 static const u32 mlx5e_link_speed[MLX5E_LINK_MODES_NUMBER] = {
 	[MLX5E_1000BASE_CX_SGMII] = 1000,
 	[MLX5E_1000BASE_KX]       = 1000,

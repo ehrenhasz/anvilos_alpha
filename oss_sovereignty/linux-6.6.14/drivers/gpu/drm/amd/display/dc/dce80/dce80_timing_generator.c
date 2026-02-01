@@ -1,31 +1,8 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
-/* include DCE8 register header files */
+ 
 #include "dce/dce_8_0_d.h"
 #include "dce/dce_8_0_sh_mask.h"
 
@@ -39,7 +16,7 @@
 #include "timing_generator.h"
 
 enum black_color_format {
-	BLACK_COLOR_FORMAT_RGB_FULLRANGE = 0,	/* used as index in array */
+	BLACK_COLOR_FORMAT_RGB_FULLRANGE = 0,	 
 	BLACK_COLOR_FORMAT_RGB_LIMITED,
 	BLACK_COLOR_FORMAT_YUV_TV,
 	BLACK_COLOR_FORMAT_YUV_CV,
@@ -215,7 +192,7 @@ static const struct timing_generator_funcs dce80_tg_funcs = {
 		.set_test_pattern = dce110_timing_generator_set_test_pattern,
 		.arm_vert_intr = dce110_arm_vert_intr,
 
-		/* DCE8.0 overrides */
+		 
 		.enable_advanced_request =
 				dce80_timing_generator_enable_advanced_request,
 		.configure_crc = dce110_configure_crc,

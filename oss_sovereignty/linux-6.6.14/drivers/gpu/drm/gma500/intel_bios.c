@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2006 Intel Corporation
- *
- * Authors:
- *    Eric Anholt <eric@anholt.net>
- */
+
+ 
 
 #include <drm/display/drm_dp_helper.h>
 #include <drm/drm.h>
@@ -24,11 +19,11 @@ static void *find_section(struct bdb_header *bdb, int section_id)
 	u16 total, current_size;
 	u8 current_id;
 
-	/* skip to first section */
+	 
 	index += bdb->header_size;
 	total = bdb->bdb_size;
 
-	/* walk the sections looking for section_id */
+	 
 	while (index < total) {
 		current_id = *(base + index);
 		index++;
@@ -74,7 +69,7 @@ parse_edp(struct drm_psb_private *dev_priv, struct bdb_header *bdb)
 		break;
 	}
 
-	/* Get the eDP sequencing and link info */
+	 
 	edp_pps = &edp->power_seqs[panel_type];
 	edp_link_params = &edp->link_params[panel_type];
 
@@ -177,7 +172,7 @@ static void fill_detail_timing_data(struct drm_display_mode *panel_fixed_mode,
 	else
 		panel_fixed_mode->flags |= DRM_MODE_FLAG_NVSYNC;
 
-	/* Some VBTs have bogus h/vtotal values */
+	 
 	if (panel_fixed_mode->hsync_end > panel_fixed_mode->htotal)
 		panel_fixed_mode->htotal = panel_fixed_mode->hsync_end + 1;
 	if (panel_fixed_mode->vsync_end > panel_fixed_mode->vtotal)
@@ -214,7 +209,7 @@ static void parse_backlight_data(struct drm_psb_private *dev_priv,
 	dev_priv->lvds_bl = lvds_bl;
 }
 
-/* Try to find integrated panel data */
+ 
 static void parse_lfp_panel_data(struct drm_psb_private *dev_priv,
 			    struct bdb_header *bdb)
 {
@@ -224,7 +219,7 @@ static void parse_lfp_panel_data(struct drm_psb_private *dev_priv,
 	struct lvds_dvo_timing *dvo_timing;
 	struct drm_display_mode *panel_fixed_mode;
 
-	/* Defaults if we can't find VBT info */
+	 
 	dev_priv->lvds_dither = 0;
 	dev_priv->lvds_vbt = 0;
 
@@ -267,7 +262,7 @@ static void parse_lfp_panel_data(struct drm_psb_private *dev_priv,
 	return;
 }
 
-/* Try to find sdvo panel data */
+ 
 static void parse_sdvo_panel_data(struct drm_psb_private *dev_priv,
 		      struct bdb_header *bdb)
 {
@@ -303,7 +298,7 @@ static void parse_general_features(struct drm_psb_private *dev_priv,
 {
 	struct bdb_general_features *general;
 
-	/* Set sensible defaults in case we can't find the general block */
+	 
 	dev_priv->int_tv_support = 1;
 	dev_priv->int_crt_support = 1;
 
@@ -335,39 +330,32 @@ parse_sdvo_device_mapping(struct drm_psb_private *dev_priv,
 		DRM_DEBUG_KMS("No general definition block is found, unable to construct sdvo mapping.\n");
 		return;
 	}
-	/* judge whether the size of child device meets the requirements.
-	 * If the child device size obtained from general definition block
-	 * is different with sizeof(struct child_device_config), skip the
-	 * parsing of sdvo device info
-	 */
+	 
 	if (p_defs->child_dev_size != sizeof(*p_child)) {
-		/* different child dev size . Ignore it */
+		 
 		DRM_DEBUG_KMS("different child size is found. Invalid.\n");
 		return;
 	}
-	/* get the block size of general definitions */
+	 
 	block_size = get_blocksize(p_defs);
-	/* get the number of child device */
+	 
 	child_device_num = (block_size - sizeof(*p_defs)) /
 				sizeof(*p_child);
 	count = 0;
 	for (i = 0; i < child_device_num; i++) {
 		p_child = &(p_defs->devices[i]);
 		if (!p_child->device_type) {
-			/* skip the device block if device type is invalid */
+			 
 			continue;
 		}
 		if (p_child->slave_addr != SLAVE_ADDR1 &&
 			p_child->slave_addr != SLAVE_ADDR2) {
-			/*
-			 * If the slave address is neither 0x70 nor 0x72,
-			 * it is not a SDVO device. Skip it.
-			 */
+			 
 			continue;
 		}
 		if (p_child->dvo_port != DEVICE_PORT_DVOB &&
 			p_child->dvo_port != DEVICE_PORT_DVOC) {
-			/* skip the incorrect SDVO port */
+			 
 			DRM_DEBUG_KMS("Incorrect SDVO port. Skip it\n");
 			continue;
 		}
@@ -395,8 +383,8 @@ parse_sdvo_device_mapping(struct drm_psb_private *dev_priv,
 					 "two SDVO device.\n");
 		}
 		if (p_child->slave2_addr) {
-			/* Maybe this is a SDVO device with multiple inputs */
-			/* And the mapping info is not added */
+			 
+			 
 			DRM_DEBUG_KMS("there exists the slave2_addr. Maybe this"
 				" is a SDVO device with multiple inputs.\n");
 		}
@@ -404,7 +392,7 @@ parse_sdvo_device_mapping(struct drm_psb_private *dev_priv,
 	}
 
 	if (!count) {
-		/* No SDVO device info is found */
+		 
 		DRM_DEBUG_KMS("No SDVO device info is found in VBT\n");
 	}
 	return;
@@ -427,7 +415,7 @@ parse_driver_features(struct drm_psb_private *dev_priv,
 	dev_priv->lvds_enabled_in_vbt = driver->lvds_config != 0;
 	DRM_DEBUG_KMS("LVDS VBT config bits: 0x%x\n", driver->lvds_config);
 
-	/* This bit means to use 96Mhz for DPLL_A or not */
+	 
 	if (driver->primary_lfp_id)
 		dev_priv->dplla_96mhz = true;
 	else
@@ -448,27 +436,23 @@ parse_device_mapping(struct drm_psb_private *dev_priv,
 		DRM_DEBUG_KMS("No general definition block is found, no devices defined.\n");
 		return;
 	}
-	/* judge whether the size of child device meets the requirements.
-	 * If the child device size obtained from general definition block
-	 * is different with sizeof(struct child_device_config), skip the
-	 * parsing of sdvo device info
-	 */
+	 
 	if (p_defs->child_dev_size != sizeof(*p_child)) {
-		/* different child dev size . Ignore it */
+		 
 		DRM_DEBUG_KMS("different child size is found. Invalid.\n");
 		return;
 	}
-	/* get the block size of general definitions */
+	 
 	block_size = get_blocksize(p_defs);
-	/* get the number of child device */
+	 
 	child_device_num = (block_size - sizeof(*p_defs)) /
 				sizeof(*p_child);
 	count = 0;
-	/* get the number of child devices that are present */
+	 
 	for (i = 0; i < child_device_num; i++) {
 		p_child = &(p_defs->devices[i]);
 		if (!p_child->device_type) {
-			/* skip the device block if device type is invalid */
+			 
 			continue;
 		}
 		count++;
@@ -488,7 +472,7 @@ parse_device_mapping(struct drm_psb_private *dev_priv,
 	for (i = 0; i < child_device_num; i++) {
 		p_child = &(p_defs->devices[i]);
 		if (!p_child->device_type) {
-			/* skip the device block if device type is invalid */
+			 
 			continue;
 		}
 		child_dev_ptr = dev_priv->child_dev + count;
@@ -500,20 +484,7 @@ parse_device_mapping(struct drm_psb_private *dev_priv,
 }
 
 
-/**
- * psb_intel_init_bios - initialize VBIOS settings & find VBT
- * @dev: DRM device
- *
- * Loads the Video BIOS and checks that the VBT exists.  Sets scratch registers
- * to appropriate values.
- *
- * VBT existence is a sanity check that is relied on by other i830_bios.c code.
- * Note that it would be better to use a BIOS call to get the VBT, as BIOSes may
- * feed an updated VBT back through that, compared to what we'll fetch using
- * this method of groping around in the BIOS data.
- *
- * Returns 0 on success, nonzero on failure.
- */
+ 
 int psb_intel_init_bios(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);
@@ -527,7 +498,7 @@ int psb_intel_init_bios(struct drm_device *dev)
 
 	dev_priv->panel_type = 0xff;
 
-	/* XXX Should this validation be moved to intel_opregion.c? */
+	 
 	if (dev_priv->opregion.vbt) {
 		struct vbt_header *vbt = dev_priv->opregion.vbt;
 		if (memcmp(vbt->signature, "$VBT", 4) == 0) {
@@ -543,7 +514,7 @@ int psb_intel_init_bios(struct drm_device *dev)
 		if (!bios)
 			return -1;
 
-		/* Scour memory looking for the VBT signature */
+		 
 		for (i = 0; i + 4 < size; i++) {
 			if (!memcmp(bios + i, "$VBT", 4)) {
 				vbt = (struct vbt_header *)(bios + i);
@@ -559,7 +530,7 @@ int psb_intel_init_bios(struct drm_device *dev)
 		bdb = (struct bdb_header *)(bios + i + vbt->bdb_offset);
 	}
 
-	/* Grab useful general dxefinitions */
+	 
 	parse_general_features(dev_priv, bdb);
 	parse_driver_features(dev_priv, bdb);
 	parse_lfp_panel_data(dev_priv, bdb);
@@ -575,9 +546,7 @@ int psb_intel_init_bios(struct drm_device *dev)
 	return 0;
 }
 
-/*
- * Destroy and free VBT data
- */
+ 
 void psb_intel_destroy_bios(struct drm_device *dev)
 {
 	struct drm_psb_private *dev_priv = to_drm_psb_private(dev);

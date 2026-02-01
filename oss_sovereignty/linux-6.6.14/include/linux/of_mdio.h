@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * OF helpers for the MDIO (Ethernet PHY) API
- *
- * Copyright (c) 2009 Secret Lab Technologies, Ltd.
- */
+ 
+ 
 
 #ifndef __LINUX_OF_MDIO_H
 #define __LINUX_OF_MDIO_H
@@ -62,7 +58,7 @@ static inline int of_mdio_parse_addr(struct device *dev,
 		return ret;
 	}
 
-	/* A PHY must have a reg property in the range [0-31] */
+	 
 	if (addr >= PHY_MAX_ADDR) {
 		dev_err(dev, "%s PHY address %i is too large\n",
 			np->full_name, addr);
@@ -72,7 +68,7 @@ static inline int of_mdio_parse_addr(struct device *dev,
 	return addr;
 }
 
-#else /* CONFIG_OF_MDIO */
+#else  
 static inline bool of_mdiobus_child_is_phy(struct device_node *child)
 {
 	return false;
@@ -80,10 +76,7 @@ static inline bool of_mdiobus_child_is_phy(struct device_node *child)
 
 static inline int of_mdiobus_register(struct mii_bus *mdio, struct device_node *np)
 {
-	/*
-	 * Fall back to the non-DT function to register a bus.
-	 * This way, we don't have to keep compat bits around in drivers.
-	 */
+	 
 
 	return mdiobus_register(mdio);
 }
@@ -151,4 +144,4 @@ static inline int of_mdiobus_phy_device_register(struct mii_bus *mdio,
 #endif
 
 
-#endif /* __LINUX_OF_MDIO_H */
+#endif  

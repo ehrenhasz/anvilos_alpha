@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: exdebug - Support for stores to the AML Debug Object
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -15,27 +9,7 @@
 ACPI_MODULE_NAME("exdebug")
 
 #ifndef ACPI_NO_ERROR_MESSAGES
-/*******************************************************************************
- *
- * FUNCTION:    acpi_ex_do_debug_object
- *
- * PARAMETERS:  source_desc         - Object to be output to "Debug Object"
- *              level               - Indentation level (used for packages)
- *              index               - Current package element, zero if not pkg
- *
- * RETURN:      None
- *
- * DESCRIPTION: Handles stores to the AML Debug Object. For example:
- *              Store(INT1, Debug)
- *
- * This function is not compiled if ACPI_NO_ERROR_MESSAGES is set.
- *
- * This function is only enabled if acpi_gbl_enable_aml_debug_object is set, or
- * if ACPI_LV_DEBUG_OBJECT is set in the acpi_dbg_level. Thus, in the normal
- * operational case, stores to the debug object are ignored but can be easily
- * enabled if necessary.
- *
- ******************************************************************************/
+ 
 void
 acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 			u32 level, u32 index)
@@ -47,14 +21,14 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 
 	ACPI_FUNCTION_TRACE_PTR(ex_do_debug_object, source_desc);
 
-	/* Output must be enabled via the debug_object global or the dbg_level */
+	 
 
 	if (!acpi_gbl_enable_aml_debug_object &&
 	    !(acpi_dbg_level & ACPI_LV_DEBUG_OBJECT)) {
 		return_VOID;
 	}
 
-	/* Newline -- don't emit the line header */
+	 
 
 	if (source_desc &&
 	    (ACPI_GET_DESCRIPTOR_TYPE(source_desc) == ACPI_DESC_TYPE_OPERAND) &&
@@ -66,19 +40,10 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 		}
 	}
 
-	/*
-	 * Print line header as long as we are not in the middle of an
-	 * object display
-	 */
+	 
 	if (!((level > 0) && index == 0)) {
 		if (acpi_gbl_display_debug_timer) {
-			/*
-			 * We will emit the current timer value (in microseconds) with each
-			 * debug output. Only need the lower 26 bits. This allows for 67
-			 * million microseconds or 67 seconds before rollover.
-			 *
-			 * Convert 100 nanosecond units to microseconds
-			 */
+			 
 			timer = ((u32)acpi_os_get_timer() / 10);
 			timer &= 0x03FFFFFF;
 
@@ -89,7 +54,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 		}
 	}
 
-	/* Display the index for package output only */
+	 
 
 	if (index > 0) {
 		acpi_os_printf("(%.2u) ", index - 1);
@@ -102,7 +67,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 
 	if (ACPI_GET_DESCRIPTOR_TYPE(source_desc) == ACPI_DESC_TYPE_OPERAND) {
 
-		/* No object type prefix needed for integers and strings */
+		 
 
 		if ((source_desc->common.type != ACPI_TYPE_INTEGER) &&
 		    (source_desc->common.type != ACPI_TYPE_STRING)) {
@@ -128,12 +93,12 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 		return_VOID;
 	}
 
-	/* source_desc is of type ACPI_DESC_TYPE_OPERAND */
+	 
 
 	switch (source_desc->common.type) {
 	case ACPI_TYPE_INTEGER:
 
-		/* Output correct integer width */
+		 
 
 		if (acpi_gbl_integer_byte_width == 4) {
 			acpi_os_printf("0x%8.8X\n",
@@ -164,7 +129,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 		acpi_os_printf("(Contains 0x%.2X Elements):\n",
 			       source_desc->package.count);
 
-		/* Output the entire contents of the package */
+		 
 
 		for (i = 0; i < source_desc->package.count; i++) {
 			acpi_ex_do_debug_object(source_desc->package.
@@ -177,7 +142,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 		acpi_os_printf("[%s] ",
 			       acpi_ut_get_reference_name(source_desc));
 
-		/* Decode the reference */
+		 
 
 		switch (source_desc->reference.class) {
 		case ACPI_REFCLASS_INDEX:
@@ -187,7 +152,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 
 		case ACPI_REFCLASS_TABLE:
 
-			/* Case for ddb_handle */
+			 
 
 			acpi_os_printf("Table Index 0x%X\n",
 				       source_desc->reference.value);
@@ -200,7 +165,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 
 		acpi_os_printf(" ");
 
-		/* Check for valid node first, then valid object */
+		 
 
 		if (source_desc->reference.node) {
 			if (ACPI_GET_DESCRIPTOR_TYPE
@@ -217,7 +182,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 
 				switch ((source_desc->reference.node)->type) {
 
-					/* These types have no attached object */
+					 
 
 				case ACPI_TYPE_DEVICE:
 					acpi_os_printf("Device\n");
@@ -241,7 +206,7 @@ acpi_ex_do_debug_object(union acpi_operand_object *source_desc,
 			    (source_desc->reference.object) ==
 			    ACPI_DESC_TYPE_NAMED) {
 
-				/* Reference object is a namespace node */
+				 
 
 				acpi_ex_do_debug_object(ACPI_CAST_PTR
 							(union

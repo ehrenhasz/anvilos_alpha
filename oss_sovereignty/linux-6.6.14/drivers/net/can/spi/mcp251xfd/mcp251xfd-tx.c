@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2019, 2020, 2021 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
-// Based on:
-//
-// CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-//
-// Copyright (c) 2019 Martin Sperl <kernel@martin.sperl.org>
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <asm/unaligned.h>
 #include <linux/bitfield.h>
@@ -55,10 +55,7 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
 		flags = 0;
 	}
 
-	/* Use the MCP2518FD mask even on the MCP2517FD. It doesn't
-	 * harm, only the lower 7 bits will be transferred into the
-	 * TEF object.
-	 */
+	 
 	flags |= FIELD_PREP(MCP251XFD_OBJ_FLAGS_SEQ_MCP2518FD_MASK, seq);
 
 	if (cfd->can_id & CAN_RTR_FLAG)
@@ -66,7 +63,7 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
 	else
 		len_sanitized = canfd_sanitize_len(cfd->len);
 
-	/* CANFD */
+	 
 	if (can_is_canfd_skb(skb)) {
 		if (cfd->flags & CANFD_ESI)
 			flags |= MCP251XFD_OBJ_FLAGS_ESI;
@@ -93,10 +90,10 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
 	put_unaligned_le32(id, &hw_tx_obj->id);
 	put_unaligned_le32(flags, &hw_tx_obj->flags);
 
-	/* Copy data */
+	 
 	memcpy(hw_tx_obj->data, cfd->data, cfd->len);
 
-	/* Clear unused data at end of CAN frame */
+	 
 	if (MCP251XFD_SANITIZE_CAN && len_sanitized) {
 		int pad_len;
 
@@ -105,7 +102,7 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
 			memset(hw_tx_obj->data + cfd->len, 0x0, pad_len);
 	}
 
-	/* Number of bytes to be written into the RAM of the controller */
+	 
 	len = sizeof(hw_tx_obj->id) + sizeof(hw_tx_obj->flags);
 	if (MCP251XFD_SANITIZE_CAN)
 		len += round_up(len_sanitized, sizeof(u32));
@@ -117,12 +114,12 @@ mcp251xfd_tx_obj_from_skb(const struct mcp251xfd_priv *priv,
 
 		mcp251xfd_spi_cmd_crc_set_len_in_ram(&load_buf->crc.cmd,
 						     len);
-		/* CRC */
+		 
 		len += sizeof(load_buf->crc.cmd);
 		crc = mcp251xfd_crc16_compute(&load_buf->crc, len);
 		put_unaligned_be16(crc, (void *)load_buf + len);
 
-		/* Total length */
+		 
 		len += sizeof(load_buf->crc.crc);
 	} else {
 		len += sizeof(load_buf->nocrc.cmd);
@@ -145,7 +142,7 @@ static bool mcp251xfd_tx_busy(const struct mcp251xfd_priv *priv,
 
 	netif_stop_queue(priv->ndev);
 
-	/* Memory barrier before checking tx_free (head and tail) */
+	 
 	smp_mb();
 
 	if (mcp251xfd_get_tx_free(tx_ring) == 0) {
@@ -181,7 +178,7 @@ netdev_tx_t mcp251xfd_start_xmit(struct sk_buff *skb,
 	tx_obj = mcp251xfd_get_tx_obj_next(tx_ring);
 	mcp251xfd_tx_obj_from_skb(priv, tx_obj, skb, tx_ring->head);
 
-	/* Stop queue if we occupy the complete TX FIFO */
+	 
 	tx_head = mcp251xfd_get_tx_head(tx_ring);
 	tx_ring->head++;
 	if (mcp251xfd_get_tx_free(tx_ring) == 0)

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Guest agent for virtio-trace
- *
- * Copyright (C) 2012 Hitachi, Ltd.
- * Created by Yoshihiro Yunomae <yoshihiro.yunomae.ez@hitachi.com>
- *            Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <limits.h>
@@ -61,7 +55,7 @@ static void *agent_info_new(void)
 	s->cpus = get_total_cpus();
 	s->ctl_fd = -1;
 
-	/* read/write threads init */
+	 
 	for (i = 0; i < s->cpus; i++)
 		s->rw_ti[i] = rw_thread_info_new();
 
@@ -93,7 +87,7 @@ static unsigned long parse_size(const char *arg)
 		goto error;
 	}
 
-	/* Align buffer size with page unit */
+	 
 	round = value & (PAGE_SIZE - 1);
 	value = value - round;
 
@@ -119,10 +113,10 @@ static const char *make_path(int cpu_num, bool this_is_write_path)
 	}
 
 	if (this_is_write_path)
-		/* write(output) path */
+		 
 		ret = snprintf(buf, PATH_MAX, WRITE_PATH_FMT, cpu_num);
 	else {
-		/* read(input) path */
+		 
 		ret = snprintf(buf, PATH_MAX, READ_PATH_FMT, TRACEFS, cpu_num);
 		if (ret > 0 && access(buf, F_OK) != 0)
 			ret = snprintf(buf, PATH_MAX, READ_PATH_FMT, DEBUGFS, cpu_num);
@@ -157,27 +151,27 @@ static void *agent_info_init(struct agent_info *s)
 	const char *in_path = NULL;
 	const char *out_path = NULL;
 
-	/* init read/write threads */
+	 
 	for (cpu = 0; cpu < s->cpus; cpu++) {
-		/* set read(input) path per read/write thread */
+		 
 		in_path = make_input_path(cpu);
 		if (in_path == NULL)
 			goto error;
 
-		/* set write(output) path per read/write thread*/
+		 
 		if (!s->use_stdout) {
 			out_path = make_output_path(cpu);
 			if (out_path == NULL)
 				goto error;
 		} else
-			/* stdout mode */
+			 
 			pr_debug("stdout mode\n");
 
 		rw_thread_init(cpu, in_path, out_path, s->use_stdout,
 						s->pipe_size, s->rw_ti[cpu]);
 	}
 
-	/* init controller of read/write threads */
+	 
 	s->ctl_fd = rw_ctl_init((const char *)CTL_PATH);
 
 	return NULL;
@@ -193,11 +187,11 @@ static void *parse_args(int argc, char *argv[], struct agent_info *s)
 
 	while ((cmd = getopt(argc, argv, "hos:")) != -1) {
 		switch (cmd) {
-		/* stdout mode */
+		 
 		case 'o':
 			s->use_stdout = true;
 			break;
-		/* size of pipe */
+		 
 		case 's':
 			size = parse_size(optarg);
 			if (size == 0)
@@ -224,13 +218,13 @@ static void agent_main_loop(struct agent_info *s)
 	int cpu;
 	pthread_t rw_thread_per_cpu[MAX_CPUS];
 
-	/* Start all read/write threads */
+	 
 	for (cpu = 0; cpu < s->cpus; cpu++)
 		rw_thread_per_cpu[cpu] = rw_thread_run(s->rw_ti[cpu]);
 
 	rw_ctl_loop(s->ctl_fd);
 
-	/* Finish all read/write threads */
+	 
 	for (cpu = 0; cpu < s->cpus; cpu++) {
 		int ret;
 

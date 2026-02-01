@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_ahub.c - Tegra210 AHUB driver
-//
-// Copyright (c) 2020-2022, NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -22,10 +22,7 @@ static int tegra_ahub_get_value_enum(struct snd_kcontrol *kctl,
 	struct soc_enum *e = (struct soc_enum *)kctl->private_value;
 	unsigned int reg, i, bit_pos = 0;
 
-	/*
-	 * Find the bit position of current MUX input.
-	 * If nothing is set, position would be 0 and it corresponds to 'None'.
-	 */
+	 
 	for (i = 0; i < ahub->soc_data->reg_count; i++) {
 		unsigned int reg_val;
 
@@ -40,7 +37,7 @@ static int tegra_ahub_get_value_enum(struct snd_kcontrol *kctl,
 		}
 	}
 
-	/* Find index related to the item in array *_ahub_mux_texts[] */
+	 
 	for (i = 0; i < e->items; i++) {
 		if (bit_pos == e->values[i]) {
 			uctl->value.enumerated.item[0] = i;
@@ -68,24 +65,20 @@ static int tegra_ahub_put_value_enum(struct snd_kcontrol *kctl,
 		return -EINVAL;
 
 	if (value) {
-		/* Get the register index and value to set */
+		 
 		reg_idx = (value - 1) / (8 * cmpnt->val_bytes);
 		bit_pos = (value - 1) % (8 * cmpnt->val_bytes);
 		reg_val = BIT(bit_pos);
 	}
 
-	/*
-	 * Run through all parts of a MUX register to find the state changes.
-	 * There will be an additional update if new MUX input value is from
-	 * different part of the MUX register.
-	 */
+	 
 	for (i = 0; i < ahub->soc_data->reg_count; i++) {
 		update[i].reg = e->reg + (TEGRA210_XBAR_PART1_RX * i);
 		update[i].val = (i == reg_idx) ? reg_val : 0;
 		update[i].mask = ahub->soc_data->mask[i];
 		update[i].kcontrol = kctl;
 
-		/* Update widget power if state has changed */
+		 
 		if (snd_soc_component_test_bits(cmpnt, update[i].reg,
 						update[i].mask,
 						update[i].val))
@@ -108,17 +101,17 @@ static struct snd_soc_dai_driver tegra210_ahub_dais[] = {
 	DAI(ADMAIF8),
 	DAI(ADMAIF9),
 	DAI(ADMAIF10),
-	/* XBAR <-> I2S <-> Codec */
+	 
 	DAI(I2S1),
 	DAI(I2S2),
 	DAI(I2S3),
 	DAI(I2S4),
 	DAI(I2S5),
-	/* XBAR <- DMIC <- Codec */
+	 
 	DAI(DMIC1),
 	DAI(DMIC2),
 	DAI(DMIC3),
-	/* XBAR -> SFC -> XBAR */
+	 
 	DAI(SFC1 RX),
 	DAI(SFC1 TX),
 	DAI(SFC2 RX),
@@ -127,12 +120,12 @@ static struct snd_soc_dai_driver tegra210_ahub_dais[] = {
 	DAI(SFC3 TX),
 	DAI(SFC4 RX),
 	DAI(SFC4 TX),
-	/* XBAR -> MVC -> XBAR */
+	 
 	DAI(MVC1 RX),
 	DAI(MVC1 TX),
 	DAI(MVC2 RX),
 	DAI(MVC2 TX),
-	/* XBAR -> AMX(4:1) -> XBAR */
+	 
 	DAI(AMX1 RX1),
 	DAI(AMX1 RX2),
 	DAI(AMX1 RX3),
@@ -143,7 +136,7 @@ static struct snd_soc_dai_driver tegra210_ahub_dais[] = {
 	DAI(AMX2 RX3),
 	DAI(AMX2 RX4),
 	DAI(AMX2),
-	/* XBAR -> ADX(1:4) -> XBAR */
+	 
 	DAI(ADX1),
 	DAI(ADX1 TX1),
 	DAI(ADX1 TX2),
@@ -154,7 +147,7 @@ static struct snd_soc_dai_driver tegra210_ahub_dais[] = {
 	DAI(ADX2 TX2),
 	DAI(ADX2 TX3),
 	DAI(ADX2 TX4),
-	/* XBAR -> MIXER(10:5) -> XBAR */
+	 
 	DAI(MIXER1 RX1),
 	DAI(MIXER1 RX2),
 	DAI(MIXER1 RX3),
@@ -170,7 +163,7 @@ static struct snd_soc_dai_driver tegra210_ahub_dais[] = {
 	DAI(MIXER1 TX3),
 	DAI(MIXER1 TX4),
 	DAI(MIXER1 TX5),
-	/* XBAR -> OPE -> XBAR */
+	 
 	DAI(OPE1 RX),
 	DAI(OPE1 TX),
 	DAI(OPE2 RX),
@@ -198,22 +191,22 @@ static struct snd_soc_dai_driver tegra186_ahub_dais[] = {
 	DAI(ADMAIF18),
 	DAI(ADMAIF19),
 	DAI(ADMAIF20),
-	/* XBAR <-> I2S <-> Codec */
+	 
 	DAI(I2S1),
 	DAI(I2S2),
 	DAI(I2S3),
 	DAI(I2S4),
 	DAI(I2S5),
 	DAI(I2S6),
-	/* XBAR <- DMIC <- Codec */
+	 
 	DAI(DMIC1),
 	DAI(DMIC2),
 	DAI(DMIC3),
 	DAI(DMIC4),
-	/* XBAR -> DSPK -> Codec */
+	 
 	DAI(DSPK1),
 	DAI(DSPK2),
-	/* XBAR -> SFC -> XBAR */
+	 
 	DAI(SFC1 RX),
 	DAI(SFC1 TX),
 	DAI(SFC2 RX),
@@ -222,12 +215,12 @@ static struct snd_soc_dai_driver tegra186_ahub_dais[] = {
 	DAI(SFC3 TX),
 	DAI(SFC4 RX),
 	DAI(SFC4 TX),
-	/* XBAR -> MVC -> XBAR */
+	 
 	DAI(MVC1 RX),
 	DAI(MVC1 TX),
 	DAI(MVC2 RX),
 	DAI(MVC2 TX),
-	/* XBAR -> AMX(4:1) -> XBAR */
+	 
 	DAI(AMX1 RX1),
 	DAI(AMX1 RX2),
 	DAI(AMX1 RX3),
@@ -248,7 +241,7 @@ static struct snd_soc_dai_driver tegra186_ahub_dais[] = {
 	DAI(AMX4 RX3),
 	DAI(AMX4 RX4),
 	DAI(AMX4),
-	/* XBAR -> ADX(1:4) -> XBAR */
+	 
 	DAI(ADX1),
 	DAI(ADX1 TX1),
 	DAI(ADX1 TX2),
@@ -269,7 +262,7 @@ static struct snd_soc_dai_driver tegra186_ahub_dais[] = {
 	DAI(ADX4 TX2),
 	DAI(ADX4 TX3),
 	DAI(ADX4 TX4),
-	/* XBAR -> MIXER1(10:5) -> XBAR */
+	 
 	DAI(MIXER1 RX1),
 	DAI(MIXER1 RX2),
 	DAI(MIXER1 RX3),
@@ -285,7 +278,7 @@ static struct snd_soc_dai_driver tegra186_ahub_dais[] = {
 	DAI(MIXER1 TX3),
 	DAI(MIXER1 TX4),
 	DAI(MIXER1 TX5),
-	/* XBAR -> ASRC -> XBAR */
+	 
 	DAI(ASRC1 RX1),
 	DAI(ASRC1 TX1),
 	DAI(ASRC1 RX2),
@@ -299,7 +292,7 @@ static struct snd_soc_dai_driver tegra186_ahub_dais[] = {
 	DAI(ASRC1 RX6),
 	DAI(ASRC1 TX6),
 	DAI(ASRC1 RX7),
-	/* XBAR -> OPE -> XBAR */
+	 
 	DAI(OPE1 RX),
 	DAI(OPE1 TX),
 };
@@ -423,7 +416,7 @@ static const char * const tegra186_ahub_mux_texts[] = {
 
 static const unsigned int tegra210_ahub_mux_values[] = {
 	0,
-	/* ADMAIF */
+	 
 	MUX_VALUE(0, 0),
 	MUX_VALUE(0, 1),
 	MUX_VALUE(0, 2),
@@ -434,28 +427,28 @@ static const unsigned int tegra210_ahub_mux_values[] = {
 	MUX_VALUE(0, 7),
 	MUX_VALUE(0, 8),
 	MUX_VALUE(0, 9),
-	/* I2S */
+	 
 	MUX_VALUE(0, 16),
 	MUX_VALUE(0, 17),
 	MUX_VALUE(0, 18),
 	MUX_VALUE(0, 19),
 	MUX_VALUE(0, 20),
-	/* DMIC */
+	 
 	MUX_VALUE(2, 18),
 	MUX_VALUE(2, 19),
 	MUX_VALUE(2, 20),
-	/* SFC */
+	 
 	MUX_VALUE(0, 24),
 	MUX_VALUE(0, 25),
 	MUX_VALUE(0, 26),
 	MUX_VALUE(0, 27),
-	/* MVC */
+	 
 	MUX_VALUE(2, 8),
 	MUX_VALUE(2, 9),
-	/* AMX */
+	 
 	MUX_VALUE(1, 8),
 	MUX_VALUE(1, 9),
-	/* ADX */
+	 
 	MUX_VALUE(2, 24),
 	MUX_VALUE(2, 25),
 	MUX_VALUE(2, 26),
@@ -464,20 +457,20 @@ static const unsigned int tegra210_ahub_mux_values[] = {
 	MUX_VALUE(2, 29),
 	MUX_VALUE(2, 30),
 	MUX_VALUE(2, 31),
-	/* MIXER */
+	 
 	MUX_VALUE(1, 0),
 	MUX_VALUE(1, 1),
 	MUX_VALUE(1, 2),
 	MUX_VALUE(1, 3),
 	MUX_VALUE(1, 4),
-	/* OPE */
+	 
 	MUX_VALUE(2, 0),
 	MUX_VALUE(2, 1),
 };
 
 static const unsigned int tegra186_ahub_mux_values[] = {
 	0,
-	/* ADMAIF */
+	 
 	MUX_VALUE(0, 0),
 	MUX_VALUE(0, 1),
 	MUX_VALUE(0, 2),
@@ -494,37 +487,37 @@ static const unsigned int tegra186_ahub_mux_values[] = {
 	MUX_VALUE(0, 13),
 	MUX_VALUE(0, 14),
 	MUX_VALUE(0, 15),
-	/* I2S */
+	 
 	MUX_VALUE(0, 16),
 	MUX_VALUE(0, 17),
 	MUX_VALUE(0, 18),
 	MUX_VALUE(0, 19),
 	MUX_VALUE(0, 20),
 	MUX_VALUE(0, 21),
-	/* ADMAIF */
+	 
 	MUX_VALUE(3, 16),
 	MUX_VALUE(3, 17),
 	MUX_VALUE(3, 18),
 	MUX_VALUE(3, 19),
-	/* DMIC */
+	 
 	MUX_VALUE(2, 18),
 	MUX_VALUE(2, 19),
 	MUX_VALUE(2, 20),
 	MUX_VALUE(2, 21),
-	/* SFC */
+	 
 	MUX_VALUE(0, 24),
 	MUX_VALUE(0, 25),
 	MUX_VALUE(0, 26),
 	MUX_VALUE(0, 27),
-	/* MVC */
+	 
 	MUX_VALUE(2, 8),
 	MUX_VALUE(2, 9),
-	/* AMX */
+	 
 	MUX_VALUE(1, 8),
 	MUX_VALUE(1, 9),
 	MUX_VALUE(1, 10),
 	MUX_VALUE(1, 11),
-	/* ADX */
+	 
 	MUX_VALUE(2, 24),
 	MUX_VALUE(2, 25),
 	MUX_VALUE(2, 26),
@@ -541,24 +534,24 @@ static const unsigned int tegra186_ahub_mux_values[] = {
 	MUX_VALUE(3, 5),
 	MUX_VALUE(3, 6),
 	MUX_VALUE(3, 7),
-	/* MIXER */
+	 
 	MUX_VALUE(1, 0),
 	MUX_VALUE(1, 1),
 	MUX_VALUE(1, 2),
 	MUX_VALUE(1, 3),
 	MUX_VALUE(1, 4),
-	/* ASRC */
+	 
 	MUX_VALUE(3, 24),
 	MUX_VALUE(3, 25),
 	MUX_VALUE(3, 26),
 	MUX_VALUE(3, 27),
 	MUX_VALUE(3, 28),
 	MUX_VALUE(3, 29),
-	/* OPE */
+	 
 	MUX_VALUE(2, 0),
 };
 
-/* Controls for t210 */
+ 
 MUX_ENUM_CTRL_DECL(t210_admaif1_tx, 0x00);
 MUX_ENUM_CTRL_DECL(t210_admaif2_tx, 0x01);
 MUX_ENUM_CTRL_DECL(t210_admaif3_tx, 0x02);
@@ -603,7 +596,7 @@ MUX_ENUM_CTRL_DECL(t210_mixer110_tx, 0x29);
 MUX_ENUM_CTRL_DECL(t210_ope1_tx, 0x40);
 MUX_ENUM_CTRL_DECL(t210_ope2_tx, 0x41);
 
-/* Controls for t186 */
+ 
 MUX_ENUM_CTRL_DECL_186(t186_admaif1_tx, 0x00);
 MUX_ENUM_CTRL_DECL_186(t186_admaif2_tx, 0x01);
 MUX_ENUM_CTRL_DECL_186(t186_admaif3_tx, 0x02);
@@ -677,7 +670,7 @@ MUX_ENUM_CTRL_DECL_186(t186_asrc16_tx, 0x71);
 MUX_ENUM_CTRL_DECL_186(t186_asrc17_tx, 0x72);
 MUX_ENUM_CTRL_DECL_186(t186_ope1_tx, 0x40);
 
-/* Controls for t234 */
+ 
 MUX_ENUM_CTRL_DECL_234(t234_mvc1_tx, 0x44);
 MUX_ENUM_CTRL_DECL_234(t234_mvc2_tx, 0x45);
 MUX_ENUM_CTRL_DECL_234(t234_amx11_tx, 0x48);
@@ -1080,7 +1073,7 @@ static const struct snd_soc_dapm_widget tegra234_ahub_widgets[] = {
 	TEGRA_COMMON_MUX_ROUTES(name)					\
 	TEGRA186_ONLY_MUX_ROUTES(name)
 
-/* Connect FEs with XBAR */
+ 
 #define TEGRA_FE_ROUTES(name) \
 	{ name " XBAR-Playback",	NULL,	name " Playback" },	\
 	{ name " XBAR-RX",		NULL,	name " XBAR-Playback"}, \

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Azoteq IQS621/622 Ambient Light Sensors
- *
- * Copyright (C) 2019 Jeff LaBundy <jeff@labundy.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/iio/events.h>
@@ -128,7 +124,7 @@ static int iqs621_als_notifier(struct notifier_block *notifier,
 		goto err_mutex;
 	}
 
-	/* IQS621 only */
+	 
 	light_new = event_data->als_flags & IQS621_ALS_FLAGS_LIGHT;
 	light_old = iqs621_als->als_flags & IQS621_ALS_FLAGS_LIGHT;
 
@@ -145,7 +141,7 @@ static int iqs621_als_notifier(struct notifier_block *notifier,
 						    IIO_EV_DIR_FALLING),
 			       timestamp);
 
-	/* IQS621 and IQS622 */
+	 
 	range_new = event_data->als_flags & IQS621_ALS_FLAGS_RANGE;
 	range_old = iqs621_als->als_flags & IQS621_ALS_FLAGS_RANGE;
 
@@ -162,7 +158,7 @@ static int iqs621_als_notifier(struct notifier_block *notifier,
 						    IIO_EV_DIR_FALLING),
 			       timestamp);
 
-	/* IQS622 only */
+	 
 	prox_new = event_data->ir_flags & iqs621_als->ir_flags_mask;
 	prox_old = iqs621_als->ir_flags & iqs621_als->ir_flags_mask;
 
@@ -397,19 +393,7 @@ static int iqs621_als_write_event_value(struct iio_dev *indio_dev,
 		break;
 
 	case IIO_EV_DIR_EITHER:
-		/*
-		 * The IQS622 supports two detection thresholds, both measured
-		 * in the same arbitrary units reported by read_raw: proximity
-		 * (0 through 255 in steps of 1), and touch (0 through 1020 in
-		 * steps of 4).
-		 *
-		 * Based on the single detection threshold chosen by the user,
-		 * select the hardware threshold that gives the best trade-off
-		 * between range and resolution.
-		 *
-		 * By default, the close-range (but coarse) touch threshold is
-		 * chosen during probe.
-		 */
+		 
 		switch (val) {
 		case 0 ... 255:
 			thresh_reg = IQS622_IR_THRESH_PROX;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ingenic JZ4740 SoC CGU driver
- *
- * Copyright (c) 2015 Imagination Technologies
- * Author: Paul Burton <paul.burton@mips.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -16,7 +11,7 @@
 #include "cgu.h"
 #include "pm.h"
 
-/* CGU register offsets */
+ 
 #define CGU_REG_CPCCR		0x00
 #define CGU_REG_LCR		0x04
 #define CGU_REG_CPPCR		0x10
@@ -28,7 +23,7 @@
 #define CGU_REG_UHCCDR		0x6c
 #define CGU_REG_SSICDR		0x74
 
-/* bits within a PLL control register */
+ 
 #define PLLCTL_M_SHIFT		23
 #define PLLCTL_M_MASK		(0x1ff << PLLCTL_M_SHIFT)
 #define PLLCTL_N_SHIFT		18
@@ -39,10 +34,10 @@
 #define PLLCTL_BYPASS		(1 << 9)
 #define PLLCTL_ENABLE		(1 << 8)
 
-/* bits within the LCR register */
+ 
 #define LCR_SLEEP		(1 << 0)
 
-/* bits within the CLKGR register */
+ 
 #define CLKGR_UDC		(1 << 11)
 
 static struct ingenic_cgu *cgu;
@@ -61,7 +56,7 @@ static const u8 jz4740_cgu_pll_half_div_table[] = {
 
 static const struct ingenic_cgu_clk_info jz4740_cgu_clocks[] = {
 
-	/* External clocks */
+	 
 
 	[JZ4740_CLK_EXT] = { "ext", CGU_CLK_EXT },
 	[JZ4740_CLK_RTC] = { "rtc", CGU_CLK_EXT },
@@ -89,7 +84,7 @@ static const struct ingenic_cgu_clk_info jz4740_cgu_clocks[] = {
 		},
 	},
 
-	/* Muxes & dividers */
+	 
 
 	[JZ4740_CLK_PLL_HALF] = {
 		"pll half", CGU_CLK_DIV,
@@ -102,10 +97,7 @@ static const struct ingenic_cgu_clk_info jz4740_cgu_clocks[] = {
 
 	[JZ4740_CLK_CCLK] = {
 		"cclk", CGU_CLK_DIV,
-		/*
-		 * Disabling the CPU clock or any parent clocks will hang the
-		 * system; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4740_CLK_PLL, -1, -1, -1 },
 		.div = {
@@ -134,10 +126,7 @@ static const struct ingenic_cgu_clk_info jz4740_cgu_clocks[] = {
 
 	[JZ4740_CLK_MCLK] = {
 		"mclk", CGU_CLK_DIV,
-		/*
-		 * Disabling MCLK or its parents will render DRAM
-		 * inaccessible; mark it critical.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.parents = { JZ4740_CLK_PLL, -1, -1, -1 },
 		.div = {
@@ -200,7 +189,7 @@ static const struct ingenic_cgu_clk_info jz4740_cgu_clocks[] = {
 		.gate = { CGU_REG_SCR, 6, true },
 	},
 
-	/* Gate-only clocks */
+	 
 
 	[JZ4740_CLK_UART0] = {
 		"uart0", CGU_CLK_GATE,

@@ -1,22 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 Davidlohr Bueso <davidlohr.bueso@hp.com>
- *
- *  Based on the shift-and-subtract algorithm for computing integer
- *  square root from Guy L. Steele.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/bitops.h>
 #include <linux/limits.h>
 #include <linux/math.h>
 
-/**
- * int_sqrt - computes the integer square root
- * @x: integer of which to calculate the sqrt
- *
- * Computes: floor(sqrt(x))
- */
+ 
 unsigned long int_sqrt(unsigned long x)
 {
 	unsigned long b, m, y = 0;
@@ -41,11 +31,7 @@ unsigned long int_sqrt(unsigned long x)
 EXPORT_SYMBOL(int_sqrt);
 
 #if BITS_PER_LONG < 64
-/**
- * int_sqrt64 - strongly typed int_sqrt function when minimum 64 bit input
- * is expected.
- * @x: 64bit integer of which to calculate the sqrt
- */
+ 
 u32 int_sqrt64(u64 x)
 {
 	u64 b, m, y = 0;

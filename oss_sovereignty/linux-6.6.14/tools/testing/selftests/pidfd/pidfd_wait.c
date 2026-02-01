@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -21,7 +21,7 @@
 
 #define ptr_to_u64(ptr) ((__u64)((uintptr_t)(ptr)))
 
-/* Attempt to de-conflict with the selftests tree. */
+ 
 #ifndef SKIP
 #define SKIP(s, ...)	XFAIL(s, ##__VA_ARGS__)
 #endif
@@ -162,13 +162,10 @@ TEST(wait_nonblock)
 		.si_signo = 0,
 	};
 
-	/*
-	 * Callers need to see ECHILD with non-blocking pidfds when no child
-	 * processes exists.
-	 */
+	 
 	pidfd = sys_pidfd_open(getpid(), PIDFD_NONBLOCK);
 	EXPECT_GE(pidfd, 0) {
-		/* pidfd_open() doesn't support PIDFD_NONBLOCK. */
+		 
 		ASSERT_EQ(errno, EINVAL);
 		SKIP(return, "Skipping PIDFD_NONBLOCK test");
 	}
@@ -188,7 +185,7 @@ TEST(wait_nonblock)
 
 	pidfd = sys_pidfd_open(pid, PIDFD_NONBLOCK);
 	EXPECT_GE(pidfd, 0) {
-		/* pidfd_open() doesn't support PIDFD_NONBLOCK. */
+		 
 		ASSERT_EQ(errno, EINVAL);
 		SKIP(return, "Skipping PIDFD_NONBLOCK test");
 	}
@@ -197,19 +194,12 @@ TEST(wait_nonblock)
 	ASSERT_GT(flags, 0);
 	ASSERT_GT((flags & O_NONBLOCK), 0);
 
-	/*
-	 * Callers need to see EAGAIN/EWOULDBLOCK with non-blocking pidfd when
-	 * child processes exist but none have exited.
-	 */
+	 
 	ret = sys_waitid(P_PIDFD, pidfd, &info, WEXITED, NULL);
 	ASSERT_LT(ret, 0);
 	ASSERT_EQ(errno, EAGAIN);
 
-	/*
-	 * Callers need to continue seeing 0 with non-blocking pidfd and
-	 * WNOHANG raised explicitly when child processes exist but none have
-	 * exited.
-	 */
+	 
 	ret = sys_waitid(P_PIDFD, pidfd, &info, WEXITED | WNOHANG, NULL);
 	ASSERT_EQ(ret, 0);
 

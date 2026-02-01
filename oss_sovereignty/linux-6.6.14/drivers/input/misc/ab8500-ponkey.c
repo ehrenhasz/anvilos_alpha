@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Sundar Iyer <sundar.iyer@stericsson.com> for ST-Ericsson
- *
- * AB8500 Power-On Key handler
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -17,13 +11,7 @@
 #include <linux/of.h>
 #include <linux/slab.h>
 
-/**
- * struct ab8500_ponkey - ab8500 ponkey information
- * @idev: pointer to input device
- * @ab8500: ab8500 parent
- * @irq_dbf: irq number for falling transition
- * @irq_dbr: irq number for rising transition
- */
+ 
 struct ab8500_ponkey {
 	struct input_dev	*idev;
 	struct ab8500		*ab8500;
@@ -31,7 +19,7 @@ struct ab8500_ponkey {
 	int			irq_dbr;
 };
 
-/* AB8500 gives us an interrupt when ONKEY is held */
+ 
 static irqreturn_t ab8500_ponkey_handler(int irq, void *data)
 {
 	struct ab8500_ponkey *ponkey = data;

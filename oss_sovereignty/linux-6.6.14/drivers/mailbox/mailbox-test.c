@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 ST Microelectronics
- *
- * Author: Lee Jones <lee.jones@linaro.org>
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -64,7 +60,7 @@ static ssize_t mbox_test_signal_write(struct file *filp,
 		return -EINVAL;
 	}
 
-	/* Only allocate memory if we need to */
+	 
 	if (!tdev->signal) {
 		tdev->signal = kzalloc(MBOX_MAX_SIG_LEN, GFP_KERNEL);
 		if (!tdev->signal)
@@ -127,10 +123,7 @@ static ssize_t mbox_test_message_write(struct file *filp,
 		goto out;
 	}
 
-	/*
-	 * A separate signal is only of use if there is
-	 * MMIO to subsequently pass the message through
-	 */
+	 
 	if (tdev->tx_mmio && tdev->signal) {
 		print_hex_dump_bytes("Client: Sending: Signal: ", DUMP_PREFIX_ADDRESS,
 				     tdev->signal, MBOX_MAX_SIG_LEN);
@@ -366,17 +359,17 @@ static int mbox_test_probe(struct platform_device *pdev)
 	if (!tdev)
 		return -ENOMEM;
 
-	/* It's okay for MMIO to be NULL */
+	 
 	tdev->tx_mmio = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (PTR_ERR(tdev->tx_mmio) == -EBUSY) {
-		/* if reserved area in SRAM, try just ioremap */
+		 
 		size = resource_size(res);
 		tdev->tx_mmio = devm_ioremap(&pdev->dev, res->start, size);
 	} else if (IS_ERR(tdev->tx_mmio)) {
 		tdev->tx_mmio = NULL;
 	}
 
-	/* If specified, second reg entry is Rx MMIO */
+	 
 	tdev->rx_mmio = devm_platform_get_and_ioremap_resource(pdev, 1, &res);
 	if (PTR_ERR(tdev->rx_mmio) == -EBUSY) {
 		size = resource_size(res);
@@ -391,7 +384,7 @@ static int mbox_test_probe(struct platform_device *pdev)
 	if (IS_ERR_OR_NULL(tdev->tx_channel) && IS_ERR_OR_NULL(tdev->rx_channel))
 		return -EPROBE_DEFER;
 
-	/* If Rx is not specified but has Rx MMIO, then Rx = Tx */
+	 
 	if (!tdev->rx_channel && (tdev->rx_mmio != tdev->tx_mmio))
 		tdev->rx_channel = tdev->tx_channel;
 

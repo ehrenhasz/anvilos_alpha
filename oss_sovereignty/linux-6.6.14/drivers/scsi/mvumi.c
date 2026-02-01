@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell UMI driver
- *
- * Copyright 2011 Marvell. <jyli@marvell.com>
-*/
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -177,15 +173,7 @@ static void mvumi_release_mem_resource(struct mvumi_hba *mhba)
 	mhba->fw_flag &= ~MVUMI_FW_ALLOC;
 }
 
-/**
- * mvumi_make_sgl -	Prepares  SGL
- * @mhba:		Adapter soft state
- * @scmd:		SCSI command from the mid-layer
- * @sgl_p:		SGL to be filled in
- * @sg_count:		return the number of SG elements
- *
- * If successful, this function returns 0. otherwise, it returns -1.
- */
+ 
 static int mvumi_make_sgl(struct mvumi_hba *mhba, struct scsi_cmnd *scmd,
 					void *sgl_p, unsigned char *sg_count)
 {
@@ -307,12 +295,7 @@ static void mvumi_delete_internal_cmd(struct mvumi_hba *mhba,
 	}
 }
 
-/**
- * mvumi_get_cmd -	Get a command from the free pool
- * @mhba:		Adapter soft state
- *
- * Returns a free command from the pool
- */
+ 
 static struct mvumi_cmd *mvumi_get_cmd(struct mvumi_hba *mhba)
 {
 	struct mvumi_cmd *cmd = NULL;
@@ -327,11 +310,7 @@ static struct mvumi_cmd *mvumi_get_cmd(struct mvumi_hba *mhba)
 	return cmd;
 }
 
-/**
- * mvumi_return_cmd -	Return a cmd to free command pool
- * @mhba:		Adapter soft state
- * @cmd:		Command packet to be returned to free command pool
- */
+ 
 static inline void mvumi_return_cmd(struct mvumi_hba *mhba,
 						struct mvumi_cmd *cmd)
 {
@@ -339,10 +318,7 @@ static inline void mvumi_return_cmd(struct mvumi_hba *mhba,
 	list_add_tail(&cmd->queue_pointer, &mhba->cmd_pool);
 }
 
-/**
- * mvumi_free_cmds -	Free all the cmds in the free cmd pool
- * @mhba:		Adapter soft state
- */
+ 
 static void mvumi_free_cmds(struct mvumi_hba *mhba)
 {
 	struct mvumi_cmd *cmd;
@@ -357,11 +333,7 @@ static void mvumi_free_cmds(struct mvumi_hba *mhba)
 	}
 }
 
-/**
- * mvumi_alloc_cmds -	Allocates the command packets
- * @mhba:		Adapter soft state
- *
- */
+ 
 static int mvumi_alloc_cmds(struct mvumi_hba *mhba)
 {
 	int i;
@@ -543,9 +515,7 @@ static void mvumi_receive_ob_list_entry(struct mvumi_hba *mhba)
 
 		p_outb_frame = mhba->ob_list + cur_obf * mhba->ob_max_size;
 
-		/* Copy pointer may point to entry in outbound list
-		*  before entry has valid data
-		*/
+		 
 		if (unlikely(p_outb_frame->tag > mhba->tag_pool.size ||
 			mhba->tag_cmd[p_outb_frame->tag] == NULL ||
 			p_outb_frame->request_id !=
@@ -730,7 +700,7 @@ static int mvumi_issue_blocked_cmd(struct mvumi_hba *mhba,
 		(cmd->cmd_status != REQ_STATUS_PENDING),
 		MVUMI_INTERNAL_CMD_WAIT_TIME * HZ);
 
-	/* command timeout */
+	 
 	if (atomic_read(&cmd->sync_cmd)) {
 		spin_lock_irqsave(mhba->shost->host_lock, flags);
 		atomic_dec(&cmd->sync_cmd);
@@ -841,9 +811,9 @@ static void mvumi_hs_build_page(struct mvumi_hba *mhba,
 		hs_page2 = (struct mvumi_hs_page2 *) hs_header;
 		hs_header->frame_length = sizeof(*hs_page2) - 4;
 		memset(hs_header->frame_content, 0, hs_header->frame_length);
-		hs_page2->host_type = 3; /* 3 mean linux*/
+		hs_page2->host_type = 3;  
 		if (mhba->hba_capability & HS_CAPABILITY_SUPPORT_DYN_SRC)
-			hs_page2->host_cap = 0x08;/* host dynamic source mode */
+			hs_page2->host_cap = 0x08; 
 		hs_page2->host_ver.ver_major = VER_MAJOR;
 		hs_page2->host_ver.ver_minor = VER_MINOR;
 		hs_page2->host_ver.ver_oem = VER_OEM;
@@ -901,10 +871,7 @@ static void mvumi_hs_build_page(struct mvumi_hba *mhba,
 	}
 }
 
-/**
- * mvumi_init_data -	Initialize requested date for FW
- * @mhba:			Adapter soft state
- */
+ 
 static int mvumi_init_data(struct mvumi_hba *mhba)
 {
 	struct mvumi_ob_data *ob_pool;
@@ -933,7 +900,7 @@ static int mvumi_init_data(struct mvumi_hba *mhba)
 
 	p = res_mgnt->bus_addr;
 	v = res_mgnt->virt_addr;
-	/* ib_list */
+	 
 	offset = round_up(p, 128) - p;
 	p += offset;
 	v += offset;
@@ -948,7 +915,7 @@ static int mvumi_init_data(struct mvumi_hba *mhba)
 	v += mhba->ib_max_size * mhba->max_io;
 	p += mhba->ib_max_size * mhba->max_io;
 
-	/* ib shadow */
+	 
 	offset = round_up(p, 8) - p;
 	p += offset;
 	v += offset;
@@ -956,7 +923,7 @@ static int mvumi_init_data(struct mvumi_hba *mhba)
 	mhba->ib_shadow_phys = p;
 	p += sizeof(u32)*2;
 	v += sizeof(u32)*2;
-	/* ob shadow */
+	 
 	if (mhba->pdev->device == PCI_DEVICE_ID_MARVELL_MV9580) {
 		offset = round_up(p, 8) - p;
 		p += offset;
@@ -975,7 +942,7 @@ static int mvumi_init_data(struct mvumi_hba *mhba)
 		v += 4;
 	}
 
-	/* ob list */
+	 
 	offset = round_up(p, 128) - p;
 	p += offset;
 	v += offset;
@@ -983,7 +950,7 @@ static int mvumi_init_data(struct mvumi_hba *mhba)
 	mhba->ob_list = v;
 	mhba->ob_list_phys = p;
 
-	/* ob data pool */
+	 
 	tmp_size = mhba->max_io * (mhba->ob_max_size + sizeof(*ob_pool));
 	tmp_size = round_up(tmp_size, 8);
 
@@ -1079,15 +1046,7 @@ static int mvumi_hs_process_page(struct mvumi_hba *mhba,
 	return 0;
 }
 
-/**
- * mvumi_handshake -	Move the FW to READY state
- * @mhba:				Adapter soft state
- *
- * During the initialization, FW passes can potentially be in any one of
- * several possible states. If the FW in operational, waiting-for-handshake
- * states, driver must take steps to bring it to ready state. Otherwise, it
- * has to wait for the ready state.
- */
+ 
 static int mvumi_handshake(struct mvumi_hba *mhba)
 {
 	unsigned int hs_state, tmp, hs_fun;
@@ -1170,19 +1129,19 @@ static int mvumi_handshake(struct mvumi_hba *mhba)
 		break;
 
 	case HS_S_END:
-		/* Set communication list ISR */
+		 
 		tmp = ioread32(regs->enpointa_mask_reg);
 		tmp |= regs->int_comaout | regs->int_comaerr;
 		iowrite32(tmp, regs->enpointa_mask_reg);
 		iowrite32(mhba->list_num_io, mhba->ib_shadow);
-		/* Set InBound List Available count shadow */
+		 
 		iowrite32(lower_32_bits(mhba->ib_shadow_phys),
 					regs->inb_aval_count_basel);
 		iowrite32(upper_32_bits(mhba->ib_shadow_phys),
 					regs->inb_aval_count_baseh);
 
 		if (mhba->pdev->device == PCI_DEVICE_ID_MARVELL_MV9143) {
-			/* Set OutBound List Available count shadow */
+			 
 			iowrite32((mhba->list_num_io-1) |
 							regs->cl_pointer_toggle,
 							mhba->ob_shadow);
@@ -1277,7 +1236,7 @@ static unsigned char mvumi_start(struct mvumi_hba *mhba)
 	unsigned int tmp;
 	struct mvumi_hw_regs *regs = mhba->regs;
 
-	/* clear Door bell */
+	 
 	tmp = ioread32(regs->arm_to_pciea_drbl_reg);
 	iowrite32(tmp, regs->arm_to_pciea_drbl_reg);
 
@@ -1291,12 +1250,7 @@ static unsigned char mvumi_start(struct mvumi_hba *mhba)
 	return 0;
 }
 
-/**
- * mvumi_complete_cmd -	Completes a command
- * @mhba:			Adapter soft state
- * @cmd:			Command to be completed
- * @ob_frame:			Command response
- */
+ 
 static void mvumi_complete_cmd(struct mvumi_hba *mhba, struct mvumi_cmd *cmd,
 					struct mvumi_rsp_frame *ob_frame)
 {
@@ -1465,7 +1419,7 @@ static void mvumi_detach_devices(struct mvumi_hba *mhba)
 
 	mutex_lock(&mhba->device_lock);
 
-	/* detach Hard Disk */
+	 
 	list_for_each_entry_safe(mv_dev, dev_next,
 		&mhba->shost_dev_list, list) {
 		mvumi_handle_hotplug(mhba, mv_dev->id, DEVICE_OFFLINE);
@@ -1481,7 +1435,7 @@ static void mvumi_detach_devices(struct mvumi_hba *mhba)
 		kfree(mv_dev);
 	}
 
-	/* detach virtual device */
+	 
 	if (mhba->pdev->device == PCI_DEVICE_ID_MARVELL_MV9580)
 		sdev = scsi_device_lookup(mhba->shost, 0,
 						mhba->max_target_id - 1, 0);
@@ -1565,10 +1519,10 @@ static int mvumi_probe_devices(struct mvumi_hba *mhba)
 	for (id = 0; id < maxid; id++) {
 		wwid = mvumi_inquiry(mhba, id, cmd);
 		if (!wwid) {
-			/* device no response, remove it */
+			 
 			mvumi_remove_devices(mhba, id);
 		} else {
-			/* device response, add it */
+			 
 			found = mvumi_match_devices(mhba, id, wwid);
 			if (!found) {
 				mvumi_remove_devices(mhba, id);
@@ -1891,10 +1845,7 @@ static void mvumi_fire_cmd(struct mvumi_hba *mhba, struct mvumi_cmd *cmd)
 		mvumi_send_ib_list_entry(mhba);
 }
 
-/**
- * mvumi_enable_intr -	Enables interrupts
- * @mhba:		Adapter soft state
- */
+ 
 static void mvumi_enable_intr(struct mvumi_hba *mhba)
 {
 	unsigned int mask;
@@ -1906,10 +1857,7 @@ static void mvumi_enable_intr(struct mvumi_hba *mhba)
 	iowrite32(mask, regs->enpointa_mask_reg);
 }
 
-/**
- * mvumi_disable_intr -Disables interrupt
- * @mhba:		Adapter soft state
- */
+ 
 static void mvumi_disable_intr(struct mvumi_hba *mhba)
 {
 	unsigned int mask;
@@ -1945,7 +1893,7 @@ static int mvumi_clear_intr(void *extend)
 						regs->outb_isr_cause);
 		}
 		status ^= mhba->regs->int_comaerr;
-		/* inbound or outbound parity error, command will timeout */
+		 
 	}
 	if (status & regs->int_comaout) {
 		tmp = ioread32(regs->outb_isr_cause);
@@ -1964,10 +1912,7 @@ static int mvumi_clear_intr(void *extend)
 	return 0;
 }
 
-/**
- * mvumi_read_fw_status_reg - returns the current FW status value
- * @mhba:		Adapter soft state
- */
+ 
 static unsigned int mvumi_read_fw_status_reg(struct mvumi_hba *mhba)
 {
 	unsigned int status;
@@ -2013,15 +1958,7 @@ static int mvumi_slave_configure(struct scsi_device *sdev)
 	return 0;
 }
 
-/**
- * mvumi_build_frame -	Prepares a direct cdb (DCDB) command
- * @mhba:		Adapter soft state
- * @scmd:		SCSI command
- * @cmd:		Command to be prepared in
- *
- * This function prepares CDB commands. These are typcially pass-through
- * commands to the devices.
- */
+ 
 static unsigned char mvumi_build_frame(struct mvumi_hba *mhba,
 				struct scsi_cmnd *scmd, struct mvumi_cmd *cmd)
 {
@@ -2071,11 +2008,7 @@ error:
 	return -1;
 }
 
-/**
- * mvumi_queue_command -	Queue entry point
- * @shost:			Scsi host to queue command on
- * @scmd:			SCSI command to be queued
- */
+ 
 static int mvumi_queue_command(struct Scsi_Host *shost,
 					struct scsi_cmnd *scmd)
 {
@@ -2198,14 +2131,14 @@ static int mvumi_cfg_hw_reg(struct mvumi_hba *mhba)
 		}
 		regs = mhba->regs;
 
-		/* For Arm */
+		 
 		regs->ctrl_sts_reg          = base + 0x20104;
 		regs->rstoutn_mask_reg      = base + 0x20108;
 		regs->sys_soft_rst_reg      = base + 0x2010C;
 		regs->main_int_cause_reg    = base + 0x20200;
 		regs->enpointa_mask_reg     = base + 0x2020C;
 		regs->rstoutn_en_reg        = base + 0xF1400;
-		/* For Doorbell */
+		 
 		regs->pciea_to_arm_drbl_reg = base + 0x20400;
 		regs->arm_to_pciea_drbl_reg = base + 0x20408;
 		regs->arm_to_pciea_mask_reg = base + 0x2040C;
@@ -2214,7 +2147,7 @@ static int mvumi_cfg_hw_reg(struct mvumi_hba *mhba)
 		regs->arm_to_pciea_msg0     = base + 0x20438;
 		regs->arm_to_pciea_msg1     = base + 0x2043C;
 
-		/* For Message Unit */
+		 
 
 		regs->inb_aval_count_basel  = base + 0x508;
 		regs->inb_aval_count_baseh  = base + 0x50C;
@@ -2227,7 +2160,7 @@ static int mvumi_cfg_hw_reg(struct mvumi_hba *mhba)
 		regs->outb_read_pointer     = base + 0x548;
 		regs->outb_isr_cause        = base + 0x560;
 		regs->outb_coal_cfg         = base + 0x568;
-		/* Bit setting for HW */
+		 
 		regs->int_comaout           = 1 << 8;
 		regs->int_comaerr           = 1 << 6;
 		regs->int_dl_cpu2pciea      = 1 << 1;
@@ -2249,7 +2182,7 @@ static int mvumi_cfg_hw_reg(struct mvumi_hba *mhba)
 				return -ENOMEM;
 		}
 		regs = mhba->regs;
-		/* For Arm */
+		 
 		regs->ctrl_sts_reg          = base + 0x20104;
 		regs->rstoutn_mask_reg      = base + 0x1010C;
 		regs->sys_soft_rst_reg      = base + 0x10108;
@@ -2257,7 +2190,7 @@ static int mvumi_cfg_hw_reg(struct mvumi_hba *mhba)
 		regs->enpointa_mask_reg     = base + 0x1020C;
 		regs->rstoutn_en_reg        = base + 0xF1400;
 
-		/* For Doorbell */
+		 
 		regs->pciea_to_arm_drbl_reg = base + 0x10460;
 		regs->arm_to_pciea_drbl_reg = base + 0x10480;
 		regs->arm_to_pciea_mask_reg = base + 0x10484;
@@ -2266,11 +2199,11 @@ static int mvumi_cfg_hw_reg(struct mvumi_hba *mhba)
 		regs->arm_to_pciea_msg0     = base + 0x10420;
 		regs->arm_to_pciea_msg1     = base + 0x10424;
 
-		/* For reset*/
+		 
 		regs->reset_request         = base + 0x10108;
 		regs->reset_enable          = base + 0x1010c;
 
-		/* For Message Unit */
+		 
 		regs->inb_aval_count_basel  = base + 0x4008;
 		regs->inb_aval_count_baseh  = base + 0x400C;
 		regs->inb_write_pointer     = base + 0x4018;
@@ -2281,7 +2214,7 @@ static int mvumi_cfg_hw_reg(struct mvumi_hba *mhba)
 		regs->outb_read_pointer     = base + 0x4070;
 		regs->outb_coal_cfg         = base + 0x4080;
 		regs->outb_isr_cause        = base + 0x4088;
-		/* Bit setting for HW */
+		 
 		regs->int_comaout           = 1 << 4;
 		regs->int_dl_cpu2pciea      = 1 << 12;
 		regs->int_comaerr           = 1 << 29;
@@ -2299,12 +2232,7 @@ static int mvumi_cfg_hw_reg(struct mvumi_hba *mhba)
 	return 0;
 }
 
-/**
- * mvumi_init_fw -	Initializes the FW
- * @mhba:		Adapter soft state
- *
- * This is the main function for initializing firmware.
- */
+ 
 static int mvumi_init_fw(struct mvumi_hba *mhba)
 {
 	int ret = 0;
@@ -2378,10 +2306,7 @@ fail_ioremap:
 	return ret;
 }
 
-/**
- * mvumi_io_attach -	Attaches this driver to SCSI mid-layer
- * @mhba:		Adapter soft state
- */
+ 
 static int mvumi_io_attach(struct mvumi_hba *mhba)
 {
 	struct Scsi_Host *host = mhba->shost;
@@ -2445,11 +2370,7 @@ fail_add_device:
 	return ret;
 }
 
-/**
- * mvumi_probe_one -	PCI hotplug entry point
- * @pdev:		PCI device structure
- * @id:			PCI ids of supported hotplugged adapter
- */
+ 
 static int mvumi_probe_one(struct pci_dev *pdev, const struct pci_device_id *id)
 {
 	struct Scsi_Host *host;
@@ -2554,10 +2475,7 @@ static void mvumi_detach_one(struct pci_dev *pdev)
 	dev_dbg(&pdev->dev, "driver is removed!\n");
 }
 
-/**
- * mvumi_shutdown -	Shutdown entry point
- * @pdev:		PCI device structure
- */
+ 
 static void mvumi_shutdown(struct pci_dev *pdev)
 {
 	struct mvumi_hba *mhba = pci_get_drvdata(pdev);

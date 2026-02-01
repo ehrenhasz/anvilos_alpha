@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Author: Padmavathi Venna <padma.v@samsung.com>
- *
- * Common Clock Framework support for Audio Subsystem Clock Controller.
-*/
+
+ 
 
 #include <linux/slab.h>
 #include <linux/io.h>
@@ -20,12 +15,7 @@
 static DEFINE_SPINLOCK(lock);
 static void __iomem *reg_base;
 static struct clk_hw_onecell_data *clk_data;
-/*
- * On Exynos5420 this will be a clock which has to be enabled before any
- * access to audss registers. Typically a child of EPLL.
- *
- * On other platforms this will be -ENODEV.
- */
+ 
 static struct clk *epll;
 
 #define ASS_CLK_SRC 0x0
@@ -119,7 +109,7 @@ static void exynos_audss_clk_teardown(void)
 	}
 }
 
-/* register exynos_audss clocks */
+ 
 static int exynos_audss_clk_probe(struct platform_device *pdev)
 {
 	const char *mout_audss_p[] = {"fin_pll", "fout_epll"};
@@ -170,12 +160,7 @@ static int exynos_audss_clk_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * Enable runtime PM here to allow the clock core using runtime PM
-	 * for the registered clocks. Additionally, we increase the runtime
-	 * PM usage count before registering the clocks, to prevent the
-	 * clock core from runtime suspending the device.
-	 */
+	 
 	pm_runtime_get_noresume(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);

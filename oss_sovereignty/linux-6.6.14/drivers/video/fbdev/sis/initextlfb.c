@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SiS 300/540/630[S]/730[S]
- * SiS 315[E|PRO]/550/[M]65x/[M]66x[F|M|G]X/[M]74x[GX]/330/[M]76x[GX]
- * XGI V3XT/V5/V8, Z7
- * frame buffer driver for Linux kernels >= 2.4.14 and >=2.6.3
- *
- * Linux kernel specific extensions to init.c/init301.c
- *
- * Copyright (C) 2001-2005 Thomas Winischhofer, Vienna, Austria.
- *
- * Author:	Thomas Winischhofer <thomas@winischhofer.net>
- */
+
+ 
 
 #include "initdef.h"
 #include "vgatypes.h"
@@ -61,7 +50,7 @@ sisfb_mode_rate_to_dclock(struct SiS_Private *SiS_Pr, unsigned char modeno,
 
     if(SiS_Pr->SiS_RefIndex[RRTI].Ext_InfoFlag & HaveWideTiming) {
        if(SiS_Pr->SiS_UseWide == 1) {
-	  /* Wide screen: Ignore rateindex */
+	   
 	  ClockIndex = SiS_Pr->SiS_RefIndex[RRTI].Ext_CRTVCLK_WIDE;
        } else {
 	  RRTI += rateindex;
@@ -101,7 +90,7 @@ sisfb_mode_rate_to_ddata(struct SiS_Private *SiS_Pr, unsigned char modeno,
     RRTI = SiS_Pr->SiS_EModeIDTable[ModeIdIndex].REFindex;
     if(SiS_Pr->SiS_RefIndex[RRTI].Ext_InfoFlag & HaveWideTiming) {
        if(SiS_Pr->SiS_UseWide == 1) {
-	  /* Wide screen: Ignore rateindex */
+	   
 	  index = SiS_Pr->SiS_RefIndex[RRTI].Ext_CRT1CRTC_WIDE;
        } else {
 	  RRTI += rateindex;
@@ -146,7 +135,7 @@ sisfb_mode_rate_to_ddata(struct SiS_Private *SiS_Pr, unsigned char modeno,
     }
 
     if((var->vmode & FB_VMODE_MASK) == FB_VMODE_INTERLACED) {
-#if 0  /* Do this? */
+#if 0   
        var->upper_margin <<= 1;
        var->lower_margin <<= 1;
        var->vsync_len <<= 1;
@@ -185,7 +174,7 @@ sisfb_gettotalfrommode(struct SiS_Private *SiS_Pr, unsigned char modeno, int *ht
     RRTI = SiS_Pr->SiS_EModeIDTable[ModeIdIndex].REFindex;
     if(SiS_Pr->SiS_RefIndex[RRTI].Ext_InfoFlag & HaveWideTiming) {
        if(SiS_Pr->SiS_UseWide == 1) {
-	  /* Wide screen: Ignore rateindex */
+	   
 	  CRT1Index = SiS_Pr->SiS_RefIndex[RRTI].Ext_CRT1CRTC_WIDE;
        } else {
 	  RRTI += rateindex;

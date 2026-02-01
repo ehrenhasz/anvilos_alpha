@@ -1,23 +1,6 @@
-/* undo.c - manage list of changes to lines, offering opportunity to undo them */
+ 
 
-/* Copyright (C) 1987-2021 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -28,21 +11,21 @@
 #include <sys/types.h>
 
 #if defined (HAVE_UNISTD_H)
-#  include <unistd.h>           /* for _POSIX_VERSION */
-#endif /* HAVE_UNISTD_H */
+#  include <unistd.h>            
+#endif  
 
 #if defined (HAVE_STDLIB_H)
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #include <stdio.h>
 
-/* System-specific feature definitions and include files. */
+ 
 #include "rldefs.h"
 
-/* Some standard library routines. */
+ 
 #include "readline.h"
 #include "history.h"
 
@@ -51,21 +34,20 @@
 
 #include "histlib.h"
 
-/* Non-zero tells rl_delete_text and rl_insert_text to not add to
-   the undo list. */
+ 
 int _rl_doing_an_undo = 0;
 
-/* How many unclosed undo groups we currently have. */
+ 
 int _rl_undo_group_level = 0;
 
-/* The current undo list for THE_LINE. */
+ 
 UNDO_LIST *rl_undo_list = (UNDO_LIST *)NULL;
 
-/* **************************************************************** */
-/*								    */
-/*			Undo, and Undoing			    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 static UNDO_LIST *
 alloc_undo_entry (enum undo_code what, int start, int end, char *text)
@@ -82,8 +64,7 @@ alloc_undo_entry (enum undo_code what, int start, int end, char *text)
   return temp;
 }
 
-/* Remember how to undo something.  Concatenate some undos if that
-   seems right. */
+ 
 void
 rl_add_undo (enum undo_code what, int start, int end, char *text)
 {
@@ -94,7 +75,7 @@ rl_add_undo (enum undo_code what, int start, int end, char *text)
   rl_undo_list = temp;
 }
 
-/* Free an UNDO_LIST */
+ 
 void
 _rl_free_undo_list (UNDO_LIST *ul)
 {
@@ -112,7 +93,7 @@ _rl_free_undo_list (UNDO_LIST *ul)
     }
 }
 
-/* Free the existing undo list. */
+ 
 void
 rl_free_undo_list (void)
 {
@@ -161,8 +142,7 @@ _rl_copy_undo_list (UNDO_LIST *head)
   return new;
 }
 
-/* Undo the next thing in the list.  Return 0 if there
-   is nothing to undo, or non-zero if there was. */
+ 
 int
 rl_do_undo (void)
 {
@@ -181,8 +161,7 @@ rl_do_undo (void)
       _rl_doing_an_undo = 1;
       RL_SETSTATE(RL_STATE_UNDOING);
 
-      /* To better support vi-mode, a start or end value of -1 means
-	 rl_point, and a value of -2 means rl_end. */
+       
       if (rl_undo_list->what == UNDO_DELETE || rl_undo_list->what == UNDO_INSERT)
 	{
 	  start = TRANS (rl_undo_list->start);
@@ -191,7 +170,7 @@ rl_do_undo (void)
 
       switch (rl_undo_list->what)
 	{
-	/* Undoing deletes means inserting some text. */
+	 
 	case UNDO_DELETE:
 	  rl_point = start;
 	  _rl_fix_point (1);
@@ -199,19 +178,19 @@ rl_do_undo (void)
 	  xfree (rl_undo_list->text);
 	  break;
 
-	/* Undoing inserts means deleting some text. */
+	 
 	case UNDO_INSERT:
 	  rl_delete_text (start, end);
 	  rl_point = start;
 	  _rl_fix_point (1);
 	  break;
 
-	/* Undoing an END means undoing everything 'til we get to a BEGIN. */
+	 
 	case UNDO_END:
 	  waiting_for_begin++;
 	  break;
 
-	/* Undoing a BEGIN means that we are done with this group. */
+	 
 	case UNDO_BEGIN:
 	  if (waiting_for_begin)
 	    waiting_for_begin--;
@@ -225,10 +204,9 @@ rl_do_undo (void)
 
       release = rl_undo_list;
       rl_undo_list = rl_undo_list->next;
-      release->next = 0;	/* XXX */
+      release->next = 0;	 
 
-      /* If we are editing a history entry, make sure the change is replicated
-	 in the history entry's line */
+       
       cur = current_history ();
       if (cur && cur->data && (UNDO_LIST *)cur->data == release)
 	{
@@ -238,13 +216,13 @@ rl_do_undo (void)
 	  xfree (temp);
 	}
 
-      /* Make sure there aren't any history entries with that undo list */
+       
       _hs_replace_history_data (-1, (histdata_t *)release, (histdata_t *)rl_undo_list);
 
-      /* And make sure this list isn't anywhere in the saved line for history */
+       
       if (_rl_saved_line_for_history && _rl_saved_line_for_history->data)
 	{
-	  /* Brute force; no finesse here */
+	   
 	  search = (UNDO_LIST *)_rl_saved_line_for_history->data;
 	  if (search == release)
 	    _rl_saved_line_for_history->data = rl_undo_list;
@@ -287,7 +265,7 @@ _rl_fix_last_undo_of_type (int type, int start, int end)
   return 1;
 }
 
-/* Begin a group.  Subsequent undos are undone as an atomic operation. */
+ 
 int
 rl_begin_undo_group (void)
 {
@@ -296,7 +274,7 @@ rl_begin_undo_group (void)
   return 0;
 }
 
-/* End an undo group started with rl_begin_undo_group (). */
+ 
 int
 rl_end_undo_group (void)
 {
@@ -305,7 +283,7 @@ rl_end_undo_group (void)
   return 0;
 }
 
-/* Save an undo entry for the text from START to END. */
+ 
 int
 rl_modifying (int start, int end)
 {
@@ -325,7 +303,7 @@ rl_modifying (int start, int end)
   return 0;
 }
 
-/* Revert the current line to its previous state. */
+ 
 int
 rl_revert_line (int count, int key)
 {
@@ -337,19 +315,19 @@ rl_revert_line (int count, int key)
 	rl_do_undo ();
 #if defined (VI_MODE)
       if (rl_editing_mode == vi_mode)
-	rl_point = rl_mark = 0;		/* rl_end should be set correctly */
+	rl_point = rl_mark = 0;		 
 #endif
     }
     
   return 0;
 }
 
-/* Do some undoing of things that were done. */
+ 
 int
 rl_undo_command (int count, int key)
 {
   if (count < 0)
-    return 0;	/* Nothing to do. */
+    return 0;	 
 
   while (count)
     {

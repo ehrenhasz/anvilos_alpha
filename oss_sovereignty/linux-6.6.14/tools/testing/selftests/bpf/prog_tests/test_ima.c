@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2020 Google LLC.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -95,11 +93,7 @@ void test_test_ima(void)
 	if (CHECK(err, "failed to run command", "%s, errno = %d\n", cmd, errno))
 		goto close_clean;
 
-	/*
-	 * Test #1
-	 * - Goal: obtain a sample with the bpf_ima_inode_hash() helper
-	 * - Expected result:  1 sample (/bin/true)
-	 */
+	 
 	test_init(skel->bss);
 	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
 	if (CHECK(err, "run_measured_process #1", "err = %d\n", err))
@@ -109,11 +103,7 @@ void test_test_ima(void)
 	ASSERT_EQ(err, 1, "num_samples_or_err");
 	ASSERT_NEQ(ima_hash_from_bpf[0], 0, "ima_hash");
 
-	/*
-	 * Test #2
-	 * - Goal: obtain samples with the bpf_ima_file_hash() helper
-	 * - Expected result: 2 samples (./ima_setup.sh, /bin/true)
-	 */
+	 
 	test_init(skel->bss);
 	skel->bss->use_ima_file_hash = true;
 	err = run_measured_process(measured_dir, &skel->bss->monitored_pid);
@@ -126,19 +116,7 @@ void test_test_ima(void)
 	ASSERT_NEQ(ima_hash_from_bpf[1], 0, "ima_hash");
 	bin_true_sample = ima_hash_from_bpf[1];
 
-	/*
-	 * Test #3
-	 * - Goal: confirm that bpf_ima_inode_hash() returns a non-fresh digest
-	 * - Expected result:
-	 *   1 sample (/bin/true: fresh) if commit 62622dab0a28 applied
-	 *   2 samples (/bin/true: non-fresh, fresh) if commit 62622dab0a28 is
-	 *     not applied
-	 *
-	 * If commit 62622dab0a28 ("ima: return IMA digest value only when
-	 * IMA_COLLECTED flag is set") is applied, bpf_ima_inode_hash() refuses
-	 * to give a non-fresh digest, hence the correct result is 1 instead of
-	 * 2.
-	 */
+	 
 	test_init(skel->bss);
 
 	err = _run_measured_process(measured_dir, &skel->bss->monitored_pid,
@@ -161,16 +139,11 @@ void test_test_ima(void)
 	}
 
 	ASSERT_NEQ(ima_hash_from_bpf[fresh_digest_idx], 0, "ima_hash");
-	/* IMA refreshed the digest. */
+	 
 	ASSERT_NEQ(ima_hash_from_bpf[fresh_digest_idx], bin_true_sample,
 		   "sample_equal_or_err");
 
-	/*
-	 * Test #4
-	 * - Goal: verify that bpf_ima_file_hash() returns a fresh digest
-	 * - Expected result: 4 samples (./ima_setup.sh: fresh, fresh;
-	 *                               /bin/true: fresh, fresh)
-	 */
+	 
 	test_init(skel->bss);
 	skel->bss->use_ima_file_hash = true;
 	skel->bss->enable_bprm_creds_for_exec = true;
@@ -196,11 +169,7 @@ void test_test_ima(void)
 	if (CHECK(err, "restore-bin #3", "err = %d\n", err))
 		goto close_clean;
 
-	/*
-	 * Test #5
-	 * - Goal: obtain a sample from the kernel_read_file hook
-	 * - Expected result: 2 samples (./ima_setup.sh, policy_test)
-	 */
+	 
 	test_init(skel->bss);
 	skel->bss->use_ima_file_hash = true;
 	skel->bss->enable_kernel_read_file = true;
@@ -214,11 +183,7 @@ void test_test_ima(void)
 	ASSERT_NEQ(ima_hash_from_bpf[0], 0, "ima_hash");
 	ASSERT_NEQ(ima_hash_from_bpf[1], 0, "ima_hash");
 
-	/*
-	 * Test #6
-	 * - Goal: ensure that the kernel_read_file hook denies an operation
-	 * - Expected result: 0 samples
-	 */
+	 
 	test_init(skel->bss);
 	skel->bss->enable_kernel_read_file = true;
 	skel->bss->test_deny = true;

@@ -1,75 +1,52 @@
-// SPDX-License-Identifier: GPL-2.0+
-// behold-columbus.h - Keytable for behold_columbus Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/* Beholder Intl. Ltd. 2008
- * Dmitry Belimov d.belimov@google.com
- * Keytable is used by BeholdTV Columbus
- * The "ascii-art picture" below (in comments, first row
- * is the keycode in hex, and subsequent row(s) shows
- * the button labels (several variants when appropriate)
- * helps to decide which keycodes to assign to the buttons.
- */
+ 
 
 static struct rc_map_table behold_columbus[] = {
 
-	/*  0x13   0x11   0x1C   0x12  *
-	 *  Mute  Source  TV/FM  Power *
-	 *                             */
+	 
 
 	{ 0x13, KEY_MUTE },
 	{ 0x11, KEY_VIDEO },
-	{ 0x1C, KEY_TUNER },	/* KEY_TV/KEY_RADIO	*/
+	{ 0x1C, KEY_TUNER },	 
 	{ 0x12, KEY_POWER },
 
-	/*  0x01    0x02    0x03  0x0D    *
-	 *   1       2       3   Stereo   *
-	 *				  *
-	 *  0x04    0x05    0x06  0x19    *
-	 *   4       5       6   Snapshot *
-	 *				  *
-	 *  0x07    0x08    0x09  0x10    *
-	 *   7       8       9    Zoom	  *
-	 *                                */
+	 
 	{ 0x01, KEY_NUMERIC_1 },
 	{ 0x02, KEY_NUMERIC_2 },
 	{ 0x03, KEY_NUMERIC_3 },
-	{ 0x0D, KEY_SETUP },	  /* Setup key */
+	{ 0x0D, KEY_SETUP },	   
 	{ 0x04, KEY_NUMERIC_4 },
 	{ 0x05, KEY_NUMERIC_5 },
 	{ 0x06, KEY_NUMERIC_6 },
-	{ 0x19, KEY_CAMERA },	/* Snapshot key */
+	{ 0x19, KEY_CAMERA },	 
 	{ 0x07, KEY_NUMERIC_7 },
 	{ 0x08, KEY_NUMERIC_8 },
 	{ 0x09, KEY_NUMERIC_9 },
 	{ 0x10, KEY_ZOOM },
 
-	/*  0x0A    0x00    0x0B       0x0C   *
-	 * RECALL    0    ChannelUp  VolumeUp *
-	 *                                    */
+	 
 	{ 0x0A, KEY_AGAIN },
 	{ 0x00, KEY_NUMERIC_0 },
 	{ 0x0B, KEY_CHANNELUP },
 	{ 0x0C, KEY_VOLUMEUP },
 
-	/*   0x1B      0x1D      0x15        0x18     *
-	 * Timeshift  Record  ChannelDown  VolumeDown *
-	 *                                            */
+	 
 
 	{ 0x1B, KEY_TIME },
 	{ 0x1D, KEY_RECORD },
 	{ 0x15, KEY_CHANNELDOWN },
 	{ 0x18, KEY_VOLUMEDOWN },
 
-	/*   0x0E   0x1E     0x0F     0x1A  *
-	 *   Stop   Pause  Previous   Next  *
-	 *                                  */
+	 
 
 	{ 0x0E, KEY_STOP },
 	{ 0x1E, KEY_PAUSE },
@@ -82,7 +59,7 @@ static struct rc_map_list behold_columbus_map = {
 	.map = {
 		.scan     = behold_columbus,
 		.size     = ARRAY_SIZE(behold_columbus),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_BEHOLD_COLUMBUS,
 	}
 };

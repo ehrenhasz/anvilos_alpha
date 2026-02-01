@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023, Linaro Ltd. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -35,7 +33,7 @@ struct pmic_typec {
 	struct pmic_typec_pdphy	*pmic_typec_pdphy;
 	struct pmic_typec_port	*pmic_typec_port;
 	bool			vbus_enabled;
-	struct mutex		lock;		/* VBUS state serialization */
+	struct mutex		lock;		 
 	struct drm_bridge	bridge;
 };
 
@@ -103,7 +101,7 @@ static int qcom_pmic_typec_set_cc(struct tcpc_dev *tcpc,
 static int qcom_pmic_typec_set_polarity(struct tcpc_dev *tcpc,
 					enum typec_cc_polarity pol)
 {
-	/* Polarity is set separately by phy-qcom-qmp.c */
+	 
 	return 0;
 }
 

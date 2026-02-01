@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Amlogic Meson-G12A Clock Controller Driver
- *
- * Copyright (c) 2016 Baylibre SAS.
- * Author: Michael Turquette <mturquette@baylibre.com>
- *
- * Copyright (c) 2018 Amlogic, inc.
- * Author: Qiufang Dai <qiufang.dai@amlogic.com>
- * Author: Jian Hu <jian.hu@amlogic.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -86,10 +77,7 @@ static struct clk_regmap g12a_fixed_pll = {
 			&g12a_fixed_pll_dco.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock won't ever change at runtime so
-		 * CLK_SET_RATE_PARENT is not required
-		 */
+		 
 	},
 };
 
@@ -134,7 +122,7 @@ static struct clk_regmap g12a_sys_pll_dco = {
 			.fw_name = "xtal",
 		},
 		.num_parents = 1,
-		/* This clock feeds the CPU, avoid disabling it */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -193,7 +181,7 @@ static struct clk_regmap g12b_sys1_pll_dco = {
 			.fw_name = "xtal",
 		},
 		.num_parents = 1,
-		/* This clock feeds the CPU, avoid disabling it */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -226,10 +214,7 @@ static struct clk_regmap g12a_sys_pll_div16_en = {
 		.ops = &clk_regmap_gate_ro_ops,
 		.parent_hws = (const struct clk_hw *[]) { &g12a_sys_pll.hw },
 		.num_parents = 1,
-		/*
-		 * This clock is used to debug the sys_pll range
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -245,10 +230,7 @@ static struct clk_regmap g12b_sys1_pll_div16_en = {
 			&g12b_sys1_pll.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is used to debug the sys_pll range
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -301,16 +283,7 @@ static struct clk_regmap g12a_fclk_div2 = {
 			&g12a_fclk_div2_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * Similar to fclk_div3, it seems that this clock is used by
-		 * the resident firmware and is required by the platform to
-		 * operate correctly.
-		 * Until the following condition are met, we need this clock to
-		 * be marked as critical:
-		 * a) Mark the clock used by a firmware resource, if possible
-		 * b) CCF has a clock hand-off mechanism to make the sure the
-		 *    clock stays on until the proper driver comes along
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -338,20 +311,12 @@ static struct clk_regmap g12a_fclk_div3 = {
 			&g12a_fclk_div3_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is used by the resident firmware and is required
-		 * by the platform to operate correctly.
-		 * Until the following condition are met, we need this clock to
-		 * be marked as critical:
-		 * a) Mark the clock used by a firmware resource, if possible
-		 * b) CCF has a clock hand-off mechanism to make the sure the
-		 *    clock stays on until the proper driver comes along
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
 
-/* Datasheet names this field as "premux0" */
+ 
 static struct clk_regmap g12a_cpu_clk_premux0 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL0,
@@ -372,7 +337,7 @@ static struct clk_regmap g12a_cpu_clk_premux0 = {
 	},
 };
 
-/* Datasheet names this field as "premux1" */
+ 
 static struct clk_regmap g12a_cpu_clk_premux1 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL0,
@@ -388,12 +353,12 @@ static struct clk_regmap g12a_cpu_clk_premux1 = {
 			{ .hw = &g12a_fclk_div3.hw },
 		},
 		.num_parents = 3,
-		/* This sub-tree is used a parking clock */
+		 
 		.flags = CLK_SET_RATE_NO_REPARENT
 	},
 };
 
-/* Datasheet names this field as "mux0_divn_tcnt" */
+ 
 static struct clk_regmap g12a_cpu_clk_mux0_div = {
 	.data = &(struct meson_clk_cpu_dyndiv_data){
 		.div = {
@@ -418,7 +383,7 @@ static struct clk_regmap g12a_cpu_clk_mux0_div = {
 	},
 };
 
-/* Datasheet names this field as "postmux0" */
+ 
 static struct clk_regmap g12a_cpu_clk_postmux0 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL0,
@@ -438,7 +403,7 @@ static struct clk_regmap g12a_cpu_clk_postmux0 = {
 	},
 };
 
-/* Datasheet names this field as "Mux1_divn_tcnt" */
+ 
 static struct clk_regmap g12a_cpu_clk_mux1_div = {
 	.data = &(struct clk_regmap_div_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL0,
@@ -455,7 +420,7 @@ static struct clk_regmap g12a_cpu_clk_mux1_div = {
 	},
 };
 
-/* Datasheet names this field as "postmux1" */
+ 
 static struct clk_regmap g12a_cpu_clk_postmux1 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL0,
@@ -470,12 +435,12 @@ static struct clk_regmap g12a_cpu_clk_postmux1 = {
 			&g12a_cpu_clk_mux1_div.hw,
 		},
 		.num_parents = 2,
-		/* This sub-tree is used a parking clock */
+		 
 		.flags = CLK_SET_RATE_NO_REPARENT,
 	},
 };
 
-/* Datasheet names this field as "Final_dyn_mux_sel" */
+ 
 static struct clk_regmap g12a_cpu_clk_dyn = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL0,
@@ -495,7 +460,7 @@ static struct clk_regmap g12a_cpu_clk_dyn = {
 	},
 };
 
-/* Datasheet names this field as "Final_mux_sel" */
+ 
 static struct clk_regmap g12a_cpu_clk = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL0,
@@ -515,7 +480,7 @@ static struct clk_regmap g12a_cpu_clk = {
 	},
 };
 
-/* Datasheet names this field as "Final_mux_sel" */
+ 
 static struct clk_regmap g12b_cpu_clk = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL0,
@@ -535,7 +500,7 @@ static struct clk_regmap g12b_cpu_clk = {
 	},
 };
 
-/* Datasheet names this field as "premux0" */
+ 
 static struct clk_regmap g12b_cpub_clk_premux0 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPUB_CLK_CNTL,
@@ -556,7 +521,7 @@ static struct clk_regmap g12b_cpub_clk_premux0 = {
 	},
 };
 
-/* Datasheet names this field as "mux0_divn_tcnt" */
+ 
 static struct clk_regmap g12b_cpub_clk_mux0_div = {
 	.data = &(struct meson_clk_cpu_dyndiv_data){
 		.div = {
@@ -581,7 +546,7 @@ static struct clk_regmap g12b_cpub_clk_mux0_div = {
 	},
 };
 
-/* Datasheet names this field as "postmux0" */
+ 
 static struct clk_regmap g12b_cpub_clk_postmux0 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPUB_CLK_CNTL,
@@ -601,7 +566,7 @@ static struct clk_regmap g12b_cpub_clk_postmux0 = {
 	},
 };
 
-/* Datasheet names this field as "premux1" */
+ 
 static struct clk_regmap g12b_cpub_clk_premux1 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPUB_CLK_CNTL,
@@ -617,12 +582,12 @@ static struct clk_regmap g12b_cpub_clk_premux1 = {
 			{ .hw = &g12a_fclk_div3.hw },
 		},
 		.num_parents = 3,
-		/* This sub-tree is used a parking clock */
+		 
 		.flags = CLK_SET_RATE_NO_REPARENT,
 	},
 };
 
-/* Datasheet names this field as "Mux1_divn_tcnt" */
+ 
 static struct clk_regmap g12b_cpub_clk_mux1_div = {
 	.data = &(struct clk_regmap_div_data){
 		.offset = HHI_SYS_CPUB_CLK_CNTL,
@@ -639,7 +604,7 @@ static struct clk_regmap g12b_cpub_clk_mux1_div = {
 	},
 };
 
-/* Datasheet names this field as "postmux1" */
+ 
 static struct clk_regmap g12b_cpub_clk_postmux1 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPUB_CLK_CNTL,
@@ -654,12 +619,12 @@ static struct clk_regmap g12b_cpub_clk_postmux1 = {
 			&g12b_cpub_clk_mux1_div.hw
 		},
 		.num_parents = 2,
-		/* This sub-tree is used a parking clock */
+		 
 		.flags = CLK_SET_RATE_NO_REPARENT,
 	},
 };
 
-/* Datasheet names this field as "Final_dyn_mux_sel" */
+ 
 static struct clk_regmap g12b_cpub_clk_dyn = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPUB_CLK_CNTL,
@@ -679,7 +644,7 @@ static struct clk_regmap g12b_cpub_clk_dyn = {
 	},
 };
 
-/* Datasheet names this field as "Final_mux_sel" */
+ 
 static struct clk_regmap g12b_cpub_clk = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPUB_CLK_CNTL,
@@ -701,7 +666,7 @@ static struct clk_regmap g12b_cpub_clk = {
 
 static struct clk_regmap sm1_gp1_pll;
 
-/* Datasheet names this field as "premux0" */
+ 
 static struct clk_regmap sm1_dsu_clk_premux0 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL5,
@@ -721,7 +686,7 @@ static struct clk_regmap sm1_dsu_clk_premux0 = {
 	},
 };
 
-/* Datasheet names this field as "premux1" */
+ 
 static struct clk_regmap sm1_dsu_clk_premux1 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL5,
@@ -741,7 +706,7 @@ static struct clk_regmap sm1_dsu_clk_premux1 = {
 	},
 };
 
-/* Datasheet names this field as "Mux0_divn_tcnt" */
+ 
 static struct clk_regmap sm1_dsu_clk_mux0_div = {
 	.data = &(struct clk_regmap_div_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL5,
@@ -758,7 +723,7 @@ static struct clk_regmap sm1_dsu_clk_mux0_div = {
 	},
 };
 
-/* Datasheet names this field as "postmux0" */
+ 
 static struct clk_regmap sm1_dsu_clk_postmux0 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL5,
@@ -776,7 +741,7 @@ static struct clk_regmap sm1_dsu_clk_postmux0 = {
 	},
 };
 
-/* Datasheet names this field as "Mux1_divn_tcnt" */
+ 
 static struct clk_regmap sm1_dsu_clk_mux1_div = {
 	.data = &(struct clk_regmap_div_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL5,
@@ -793,7 +758,7 @@ static struct clk_regmap sm1_dsu_clk_mux1_div = {
 	},
 };
 
-/* Datasheet names this field as "postmux1" */
+ 
 static struct clk_regmap sm1_dsu_clk_postmux1 = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL5,
@@ -811,7 +776,7 @@ static struct clk_regmap sm1_dsu_clk_postmux1 = {
 	},
 };
 
-/* Datasheet names this field as "Final_dyn_mux_sel" */
+ 
 static struct clk_regmap sm1_dsu_clk_dyn = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL5,
@@ -829,7 +794,7 @@ static struct clk_regmap sm1_dsu_clk_dyn = {
 	},
 };
 
-/* Datasheet names this field as "Final_mux_sel" */
+ 
 static struct clk_regmap sm1_dsu_final_clk = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL5,
@@ -847,7 +812,7 @@ static struct clk_regmap sm1_dsu_final_clk = {
 	},
 };
 
-/* Datasheet names this field as "Cpu_clk_sync_mux_sel" bit 0 */
+ 
 static struct clk_regmap sm1_cpu1_clk = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL6,
@@ -859,13 +824,13 @@ static struct clk_regmap sm1_cpu1_clk = {
 		.ops = &clk_regmap_mux_ro_ops,
 		.parent_hws = (const struct clk_hw *[]) {
 			&g12a_cpu_clk.hw,
-			/* This CPU also have a dedicated clock tree */
+			 
 		},
 		.num_parents = 1,
 	},
 };
 
-/* Datasheet names this field as "Cpu_clk_sync_mux_sel" bit 1 */
+ 
 static struct clk_regmap sm1_cpu2_clk = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL6,
@@ -877,13 +842,13 @@ static struct clk_regmap sm1_cpu2_clk = {
 		.ops = &clk_regmap_mux_ro_ops,
 		.parent_hws = (const struct clk_hw *[]) {
 			&g12a_cpu_clk.hw,
-			/* This CPU also have a dedicated clock tree */
+			 
 		},
 		.num_parents = 1,
 	},
 };
 
-/* Datasheet names this field as "Cpu_clk_sync_mux_sel" bit 2 */
+ 
 static struct clk_regmap sm1_cpu3_clk = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL6,
@@ -895,13 +860,13 @@ static struct clk_regmap sm1_cpu3_clk = {
 		.ops = &clk_regmap_mux_ro_ops,
 		.parent_hws = (const struct clk_hw *[]) {
 			&g12a_cpu_clk.hw,
-			/* This CPU also have a dedicated clock tree */
+			 
 		},
 		.num_parents = 1,
 	},
 };
 
-/* Datasheet names this field as "Cpu_clk_sync_mux_sel" bit 4 */
+ 
 static struct clk_regmap sm1_dsu_clk = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SYS_CPU_CLK_CNTL6,
@@ -923,7 +888,7 @@ static int g12a_cpu_clk_mux_notifier_cb(struct notifier_block *nb,
 					unsigned long event, void *data)
 {
 	if (event == POST_RATE_CHANGE || event == PRE_RATE_CHANGE) {
-		/* Wait for clock propagation before/after changing the mux */
+		 
 		udelay(100);
 		return NOTIFY_OK;
 	}
@@ -952,68 +917,34 @@ static int g12a_cpu_clk_postmux_notifier_cb(struct notifier_block *nb,
 
 	switch (event) {
 	case PRE_RATE_CHANGE:
-		/*
-		 * This notifier means cpu_clk_postmux0 clock will be changed
-		 * to feed cpu_clk, this is the current path :
-		 * cpu_clk
-		 *    \- cpu_clk_dyn
-		 *          \- cpu_clk_postmux0
-		 *                \- cpu_clk_muxX_div
-		 *                      \- cpu_clk_premux0
-		 *				\- fclk_div3 or fclk_div2
-		 *		OR
-		 *                \- cpu_clk_premux0
-		 *			\- fclk_div3 or fclk_div2
-		 */
+		 
 
-		/* Setup cpu_clk_premux1 to xtal */
+		 
 		clk_hw_set_parent(nb_data->cpu_clk_premux1,
 				  nb_data->xtal);
 
-		/* Setup cpu_clk_postmux1 to bypass divider */
+		 
 		clk_hw_set_parent(nb_data->cpu_clk_postmux1,
 				  nb_data->cpu_clk_premux1);
 
-		/* Switch to parking clk on cpu_clk_postmux1 */
+		 
 		clk_hw_set_parent(nb_data->cpu_clk_dyn,
 				  nb_data->cpu_clk_postmux1);
 
-		/*
-		 * Now, cpu_clk is 24MHz in the current path :
-		 * cpu_clk
-		 *    \- cpu_clk_dyn
-		 *          \- cpu_clk_postmux1
-		 *                \- cpu_clk_premux1
-		 *                      \- xtal
-		 */
+		 
 
 		udelay(100);
 
 		return NOTIFY_OK;
 
 	case POST_RATE_CHANGE:
-		/*
-		 * The cpu_clk_postmux0 has ben updated, now switch back
-		 * cpu_clk_dyn to cpu_clk_postmux0 and take the changes
-		 * in account.
-		 */
+		 
 
-		/* Configure cpu_clk_dyn back to cpu_clk_postmux0 */
+		 
 		clk_hw_set_parent(nb_data->cpu_clk_dyn,
 				  nb_data->cpu_clk_postmux0);
 
-		/*
-		 * new path :
-		 * cpu_clk
-		 *    \- cpu_clk_dyn
-		 *          \- cpu_clk_postmux0
-		 *                \- cpu_clk_muxX_div
-		 *                      \- cpu_clk_premux0
-		 *				\- fclk_div3 or fclk_div2
-		 *		OR
-		 *                \- cpu_clk_premux0
-		 *			\- fclk_div3 or fclk_div2
-		 */
+		 
 
 		udelay(100);
 
@@ -1055,50 +986,28 @@ static int g12a_sys_pll_notifier_cb(struct notifier_block *nb,
 
 	switch (event) {
 	case PRE_RATE_CHANGE:
-		/*
-		 * This notifier means sys_pll clock will be changed
-		 * to feed cpu_clk, this the current path :
-		 * cpu_clk
-		 *    \- sys_pll
-		 *          \- sys_pll_dco
-		 */
+		 
 
-		/* Configure cpu_clk to use cpu_clk_dyn */
+		 
 		clk_hw_set_parent(nb_data->cpu_clk,
 				  nb_data->cpu_clk_dyn);
 
-		/*
-		 * Now, cpu_clk uses the dyn path
-		 * cpu_clk
-		 *    \- cpu_clk_dyn
-		 *          \- cpu_clk_dynX
-		 *                \- cpu_clk_dynX_sel
-		 *		     \- cpu_clk_dynX_div
-		 *                      \- xtal/fclk_div2/fclk_div3
-		 *                   \- xtal/fclk_div2/fclk_div3
-		 */
+		 
 
 		udelay(100);
 
 		return NOTIFY_OK;
 
 	case POST_RATE_CHANGE:
-		/*
-		 * The sys_pll has ben updated, now switch back cpu_clk to
-		 * sys_pll
-		 */
+		 
 
-		/* Configure cpu_clk to use sys_pll */
+		 
 		clk_hw_set_parent(nb_data->cpu_clk,
 				  nb_data->sys_pll);
 
 		udelay(100);
 
-		/* new path :
-		 * cpu_clk
-		 *    \- sys_pll
-		 *          \- sys_pll_dco
-		 */
+		 
 
 		return NOTIFY_OK;
 
@@ -1114,7 +1023,7 @@ static struct g12a_sys_pll_nb_data g12a_sys_pll_nb_data = {
 	.nb.notifier_call = g12a_sys_pll_notifier_cb,
 };
 
-/* G12B first CPU cluster uses sys1_pll */
+ 
 static struct g12a_sys_pll_nb_data g12b_cpu_clk_sys1_pll_nb_data = {
 	.sys_pll = &g12b_sys1_pll.hw,
 	.cpu_clk = &g12b_cpu_clk.hw,
@@ -1122,7 +1031,7 @@ static struct g12a_sys_pll_nb_data g12b_cpu_clk_sys1_pll_nb_data = {
 	.nb.notifier_call = g12a_sys_pll_notifier_cb,
 };
 
-/* G12B second CPU cluster uses sys_pll */
+ 
 static struct g12a_sys_pll_nb_data g12b_cpub_clk_sys_pll_nb_data = {
 	.sys_pll = &g12a_sys_pll.hw,
 	.cpu_clk = &g12b_cpub_clk.hw,
@@ -1142,10 +1051,7 @@ static struct clk_regmap g12a_cpu_clk_div16_en = {
 			&g12a_cpu_clk.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is used to debug the cpu_clk range
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1161,10 +1067,7 @@ static struct clk_regmap g12b_cpub_clk_div16_en = {
 			&g12b_cpub_clk.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is used to debug the cpu_clk range
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1221,10 +1124,7 @@ static struct clk_regmap g12a_cpu_clk_apb = {
 			&g12a_cpu_clk_apb_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is set by the ROM monitor code,
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1255,10 +1155,7 @@ static struct clk_regmap g12a_cpu_clk_atb = {
 			&g12a_cpu_clk_atb_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is set by the ROM monitor code,
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1289,10 +1186,7 @@ static struct clk_regmap g12a_cpu_clk_axi = {
 			&g12a_cpu_clk_axi_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is set by the ROM monitor code,
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1307,13 +1201,7 @@ static struct clk_regmap g12a_cpu_clk_trace_div = {
 		.name = "cpu_clk_trace_div",
 		.ops = &clk_regmap_divider_ro_ops,
 		.parent_data = &(const struct clk_parent_data) {
-			/*
-			 * Note:
-			 * G12A and G12B have different cpu_clks (with
-			 * different struct clk_hw). We fallback to the global
-			 * naming string mechanism so cpu_clk_trace_div picks
-			 * up the appropriate one.
-			 */
+			 
 			.name = "cpu_clk",
 			.index = -1,
 		},
@@ -1333,10 +1221,7 @@ static struct clk_regmap g12a_cpu_clk_trace = {
 			&g12a_cpu_clk_trace_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is set by the ROM monitor code,
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1468,10 +1353,7 @@ static struct clk_regmap g12b_cpub_clk_apb = {
 			&g12b_cpub_clk_apb_sel.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is set by the ROM monitor code,
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1511,10 +1393,7 @@ static struct clk_regmap g12b_cpub_clk_atb = {
 			&g12b_cpub_clk_atb_sel.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is set by the ROM monitor code,
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1554,10 +1433,7 @@ static struct clk_regmap g12b_cpub_clk_axi = {
 			&g12b_cpub_clk_axi_sel.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is set by the ROM monitor code,
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1597,10 +1473,7 @@ static struct clk_regmap g12b_cpub_clk_trace = {
 			&g12b_cpub_clk_trace_sel.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is set by the ROM monitor code,
-		 * Linux should not change it at runtime
-		 */
+		 
 	},
 };
 
@@ -1609,9 +1482,7 @@ static const struct pll_mult_range g12a_gp0_pll_mult_range = {
 	.max = 255,
 };
 
-/*
- * Internal gp0 pll emulation configuration parameters
- */
+ 
 static const struct reg_sequence g12a_gp0_init_regs[] = {
 	{ .reg = HHI_GP0_PLL_CNTL1,	.def = 0x00000000 },
 	{ .reg = HHI_GP0_PLL_CNTL2,	.def = 0x00000000 },
@@ -1726,7 +1597,7 @@ static struct clk_regmap sm1_gp1_pll_dco = {
 			.fw_name = "xtal",
 		},
 		.num_parents = 1,
-		/* This clock feeds the DSU, avoid disabling it */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -1749,9 +1620,7 @@ static struct clk_regmap sm1_gp1_pll = {
 	},
 };
 
-/*
- * Internal hifi pll emulation configuration parameters
- */
+ 
 static const struct reg_sequence g12a_hifi_init_regs[] = {
 	{ .reg = HHI_HIFI_PLL_CNTL1,	.def = 0x00000000 },
 	{ .reg = HHI_HIFI_PLL_CNTL2,	.def = 0x00000000 },
@@ -1827,11 +1696,7 @@ static struct clk_regmap g12a_hifi_pll = {
 	},
 };
 
-/*
- * The Meson G12A PCIE PLL is fined tuned to deliver a very precise
- * 100MHz reference clock for the PCIe Analog PHY, and thus requires
- * a strict register sequence to enable the PLL.
- */
+ 
 static const struct reg_sequence g12a_pcie_pll_init_regs[] = {
 	{ .reg = HHI_PCIE_PLL_CNTL0,	.def = 0x20090496 },
 	{ .reg = HHI_PCIE_PLL_CNTL0,	.def = 0x30090496 },
@@ -1847,7 +1712,7 @@ static const struct reg_sequence g12a_pcie_pll_init_regs[] = {
 	{ .reg = HHI_PCIE_PLL_CNTL2,	.def = 0x00001000 },
 };
 
-/* Keep a single entry table for recalc/round_rate() ops */
+ 
 static const struct pll_params_table g12a_pcie_pll_table[] = {
 	PLL_PARAMS(150, 1),
 	{0, 0},
@@ -1987,10 +1852,7 @@ static struct clk_regmap g12a_hdmi_pll_dco = {
 			.fw_name = "xtal",
 		},
 		.num_parents = 1,
-		/*
-		 * Display directly handle hdmi pll registers ATM, we need
-		 * NOCACHE to keep our view of the clock as accurate as possible
-		 */
+		 
 		.flags = CLK_GET_RATE_NOCACHE,
 	},
 };
@@ -2479,15 +2341,10 @@ static const struct clk_parent_data g12a_sd_emmc_clk0_parent_data[] = {
 	{ .hw = &g12a_fclk_div3.hw },
 	{ .hw = &g12a_fclk_div5.hw },
 	{ .hw = &g12a_fclk_div7.hw },
-	/*
-	 * Following these parent clocks, we should also have had mpll2, mpll3
-	 * and gp0_pll but these clocks are too precious to be used here. All
-	 * the necessary rates for MMC and NAND operation can be acheived using
-	 * g12a_ee_core or fclk_div clocks
-	 */
+	 
 };
 
-/* SDIO clock */
+ 
 static struct clk_regmap g12a_sd_emmc_a_clk0_sel = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SD_EMMC_CLK_CNTL,
@@ -2536,7 +2393,7 @@ static struct clk_regmap g12a_sd_emmc_a_clk0 = {
 	},
 };
 
-/* SDcard clock */
+ 
 static struct clk_regmap g12a_sd_emmc_b_clk0_sel = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SD_EMMC_CLK_CNTL,
@@ -2585,7 +2442,7 @@ static struct clk_regmap g12a_sd_emmc_b_clk0 = {
 	},
 };
 
-/* EMMC/NAND clock */
+ 
 static struct clk_regmap g12a_sd_emmc_c_clk0_sel = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_NAND_CLK_CNTL,
@@ -2634,7 +2491,7 @@ static struct clk_regmap g12a_sd_emmc_c_clk0 = {
 	},
 };
 
-/* Video Clocks */
+ 
 
 static struct clk_regmap g12a_vid_pll_div = {
 	.data = &(struct meson_vid_pll_div_data){
@@ -2672,10 +2529,7 @@ static struct clk_regmap g12a_vid_pll_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vid_pll_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bit 18 selects from 2 possible parents:
-		 * vid_pll_div or hdmi_pll
-		 */
+		 
 		.parent_hws = g12a_vid_pll_parent_hws,
 		.num_parents = ARRAY_SIZE(g12a_vid_pll_parent_hws),
 		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
@@ -2698,7 +2552,7 @@ static struct clk_regmap g12a_vid_pll = {
 	},
 };
 
-/* VPU Clock */
+ 
 
 static const struct clk_hw *g12a_vpu_parent_hws[] = {
 	&g12a_fclk_div3.hw,
@@ -2808,10 +2662,7 @@ static struct clk_regmap g12a_vpu = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vpu",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bit 31 selects from 2 possible parents:
-		 * vpu_0 or vpu_1
-		 */
+		 
 		.parent_hws = (const struct clk_hw *[]) {
 			&g12a_vpu_0.hw,
 			&g12a_vpu_1.hw,
@@ -2821,7 +2672,7 @@ static struct clk_regmap g12a_vpu = {
 	},
 };
 
-/* VDEC clocks */
+ 
 
 static const struct clk_hw *g12a_vdec_parent_hws[] = {
 	&g12a_fclk_div2p5.hw,
@@ -2983,7 +2834,7 @@ static struct clk_regmap g12a_vdec_hevc = {
 	},
 };
 
-/* VAPB Clock */
+ 
 
 static const struct clk_hw *g12a_vapb_parent_hws[] = {
 	&g12a_fclk_div4.hw,
@@ -3101,10 +2952,7 @@ static struct clk_regmap g12a_vapb_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vapb_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bit 31 selects from 2 possible parents:
-		 * vapb_0 or vapb_1
-		 */
+		 
 		.parent_hws = (const struct clk_hw *[]) {
 			&g12a_vapb_0.hw,
 			&g12a_vapb_1.hw,
@@ -3565,7 +3413,7 @@ static struct clk_regmap g12a_cts_vdac_sel = {
 	},
 };
 
-/* TOFIX: add support for cts_tcon */
+ 
 static u32 mux_table_hdmi_tx_sel[] = { 0, 1, 2, 3, 4, 8, 9, 10, 11, 12 };
 static const struct clk_hw *g12a_cts_hdmi_tx_parent_hws[] = {
 	&g12a_vclk_div1.hw,
@@ -3660,7 +3508,7 @@ static struct clk_regmap g12a_hdmi_tx = {
 	},
 };
 
-/* MIPI DSI Host Clocks */
+ 
 
 static const struct clk_hw *g12a_mipi_dsi_pxclk_parent_hws[] = {
 	&g12a_vid_pll.hw,
@@ -3722,7 +3570,7 @@ static struct clk_regmap g12a_mipi_dsi_pxclk = {
 	},
 };
 
-/* HDMI Clocks */
+ 
 
 static const struct clk_parent_data g12a_hdmi_parent_data[] = {
 	{ .fw_name = "xtal", },
@@ -3776,12 +3624,7 @@ static struct clk_regmap g12a_hdmi = {
 	},
 };
 
-/*
- * The MALI IP is clocked by two identical clocks (mali_0 and mali_1)
- * muxed by a glitch-free switch. The CCF can manage this glitch-free
- * mux because it does top-to-bottom updates the each clock tree and
- * switches to the "inactive" one when CLK_SET_RATE_GATE is set.
- */
+ 
 static const struct clk_parent_data g12a_mali_0_1_parent_data[] = {
 	{ .fw_name = "xtal", },
 	{ .hw = &g12a_gp0_pll.hw },
@@ -3804,12 +3647,7 @@ static struct clk_regmap g12a_mali_0_sel = {
 		.ops = &clk_regmap_mux_ops,
 		.parent_data = g12a_mali_0_1_parent_data,
 		.num_parents = 8,
-		/*
-		 * Don't request the parent to change the rate because
-		 * all GPU frequencies can be derived from the fclk_*
-		 * clocks and one special GP0_PLL setting. This is
-		 * important because we need the MPLL clocks for audio.
-		 */
+		 
 		.flags = 0,
 	},
 };
@@ -3858,12 +3696,7 @@ static struct clk_regmap g12a_mali_1_sel = {
 		.ops = &clk_regmap_mux_ops,
 		.parent_data = g12a_mali_0_1_parent_data,
 		.num_parents = 8,
-		/*
-		 * Don't request the parent to change the rate because
-		 * all GPU frequencies can be derived from the fclk_*
-		 * clocks and one special GP0_PLL setting. This is
-		 * important because we need the MPLL clocks for audio.
-		 */
+		 
 		.flags = 0,
 	},
 };
@@ -3952,7 +3785,7 @@ static struct clk_regmap g12a_ts = {
 	},
 };
 
-/* SPICC SCLK source clock */
+ 
 
 static const struct clk_parent_data spicc_sclk_parent_data[] = {
 	{ .fw_name = "xtal", },
@@ -4057,7 +3890,7 @@ static struct clk_regmap g12a_spicc1_sclk = {
 	},
 };
 
-/* Neural Network Accelerator source clock */
+ 
 
 static const struct clk_parent_data nna_clk_parent_data[] = {
 	{ .fw_name = "xtal", },
@@ -4170,7 +4003,7 @@ static struct clk_regmap sm1_nna_core_clk = {
 #define MESON_GATE_RO(_name, _reg, _bit) \
 	MESON_PCLK_RO(_name, _reg, _bit, &g12a_clk81.hw)
 
-/* Everything Else (EE) domain gates */
+ 
 static MESON_GATE(g12a_ddr,			HHI_GCLK_MPEG0,	0);
 static MESON_GATE(g12a_dos,			HHI_GCLK_MPEG0,	1);
 static MESON_GATE(g12a_audio_locker,		HHI_GCLK_MPEG0,	2);
@@ -4245,7 +4078,7 @@ static MESON_GATE_RO(g12a_rom_boot,		HHI_GCLK_OTHER2, 2);
 static MESON_GATE_RO(g12a_reset_sec,		HHI_GCLK_OTHER2, 3);
 static MESON_GATE_RO(g12a_sec_ahb_apb3,		HHI_GCLK_OTHER2, 4);
 
-/* Array of all clocks provided by this provider */
+ 
 static struct clk_hw *g12a_hw_clks[] = {
 	[CLKID_SYS_PLL]			= &g12a_sys_pll.hw,
 	[CLKID_FIXED_PLL]		= &g12a_fixed_pll.hw,
@@ -4976,7 +4809,7 @@ static struct clk_hw *sm1_hw_clks[] = {
 	[CLKID_MIPI_DSI_PXCLK]		= &g12a_mipi_dsi_pxclk.hw,
 };
 
-/* Convenience table to populate regmap in .probe */
+ 
 static struct clk_regmap *const g12a_clk_regmaps[] = {
 	&g12a_clk81,
 	&g12a_dos,
@@ -5238,7 +5071,7 @@ static int meson_g12a_dvfs_setup_common(struct device *dev,
 
 	xtal = clk_hw_get_parent_by_index(hws[CLKID_CPU_CLK_DYN1_SEL], 0);
 
-	/* Setup clock notifier for cpu_clk_postmux0 */
+	 
 	g12a_cpu_clk_postmux0_nb_data.xtal = xtal;
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12a_cpu_clk_postmux0.hw,
 					   DVFS_CON_ID);
@@ -5249,7 +5082,7 @@ static int meson_g12a_dvfs_setup_common(struct device *dev,
 		return ret;
 	}
 
-	/* Setup clock notifier for cpu_clk_dyn mux */
+	 
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12a_cpu_clk_dyn.hw,
 					   DVFS_CON_ID);
 	ret = devm_clk_notifier_register(dev, notifier_clk,
@@ -5276,7 +5109,7 @@ static int meson_g12b_dvfs_setup(struct platform_device *pdev)
 
 	xtal = clk_hw_get_parent_by_index(hws[CLKID_CPU_CLK_DYN1_SEL], 0);
 
-	/* Setup clock notifier for cpu_clk mux */
+	 
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12b_cpu_clk.hw,
 					   DVFS_CON_ID);
 	ret = devm_clk_notifier_register(dev, notifier_clk,
@@ -5286,7 +5119,7 @@ static int meson_g12b_dvfs_setup(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Setup clock notifier for sys1_pll */
+	 
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12b_sys1_pll.hw,
 					   DVFS_CON_ID);
 	ret = devm_clk_notifier_register(dev, notifier_clk,
@@ -5296,9 +5129,9 @@ static int meson_g12b_dvfs_setup(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Add notifiers for the second CPU cluster */
+	 
 
-	/* Setup clock notifier for cpub_clk_postmux0 */
+	 
 	g12b_cpub_clk_postmux0_nb_data.xtal = xtal;
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12b_cpub_clk_postmux0.hw,
 					   DVFS_CON_ID);
@@ -5309,7 +5142,7 @@ static int meson_g12b_dvfs_setup(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Setup clock notifier for cpub_clk_dyn mux */
+	 
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12b_cpub_clk_dyn.hw, "dvfs");
 	ret = devm_clk_notifier_register(dev, notifier_clk,
 					 &g12a_cpu_clk_mux_nb);
@@ -5318,7 +5151,7 @@ static int meson_g12b_dvfs_setup(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Setup clock notifier for cpub_clk mux */
+	 
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12b_cpub_clk.hw, DVFS_CON_ID);
 	ret = devm_clk_notifier_register(dev, notifier_clk,
 					 &g12a_cpu_clk_mux_nb);
@@ -5327,7 +5160,7 @@ static int meson_g12b_dvfs_setup(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Setup clock notifier for sys_pll */
+	 
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12a_sys_pll.hw, DVFS_CON_ID);
 	ret = devm_clk_notifier_register(dev, notifier_clk,
 					 &g12b_cpub_clk_sys_pll_nb_data.nb);
@@ -5350,7 +5183,7 @@ static int meson_g12a_dvfs_setup(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Setup clock notifier for cpu_clk mux */
+	 
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12a_cpu_clk.hw, DVFS_CON_ID);
 	ret = devm_clk_notifier_register(dev, notifier_clk,
 				    &g12a_cpu_clk_mux_nb);
@@ -5359,7 +5192,7 @@ static int meson_g12a_dvfs_setup(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Setup clock notifier for sys_pll */
+	 
 	notifier_clk = devm_clk_hw_get_clk(dev, &g12a_sys_pll.hw, DVFS_CON_ID);
 	ret = devm_clk_notifier_register(dev, notifier_clk,
 					 &g12a_sys_pll_nb_data.nb);

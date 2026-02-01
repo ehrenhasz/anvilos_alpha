@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP DPLL clock support
- *
- * Copyright (C) 2013 Texas Instruments, Inc.
- *
- * Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -141,15 +135,7 @@ static const struct clk_ops dpll_x2_ck_ops = {
 	.recalc_rate	= &omap3_clkoutx2_recalc,
 };
 
-/**
- * _register_dpll - low level registration of a DPLL clock
- * @user: pointer to the hardware clock definition for the clock
- * @node: device node for the clock
- *
- * Finalizes DPLL registration process. In case a failure (clk-ref or
- * clk-bypass is missing), the clock is added to retry list and
- * the initialization is retried on later stage.
- */
+ 
 static void __init _register_dpll(void *user,
 				  struct device_node *node)
 {
@@ -185,7 +171,7 @@ static void __init _register_dpll(void *user,
 
 	dd->clk_bypass = __clk_get_hw(clk);
 
-	/* register the clock */
+	 
 	name = ti_dt_clk_name(node);
 	clk = of_ti_clk_register_omap_hw(node, &clk_hw->hw, name);
 
@@ -206,14 +192,7 @@ cleanup:
 #if defined(CONFIG_ARCH_OMAP4) || defined(CONFIG_SOC_OMAP5) || \
 	defined(CONFIG_SOC_DRA7XX) || defined(CONFIG_SOC_AM33XX) || \
 	defined(CONFIG_SOC_AM43XX)
-/**
- * _register_dpll_x2 - Registers a DPLLx2 clock
- * @node: device node for this clock
- * @ops: clk_ops for this clock
- * @hw_ops: clk_hw_ops for this clock
- *
- * Initializes a DPLL x 2 clock from device tree data.
- */
+ 
 static void _register_dpll_x2(struct device_node *node,
 			      const struct clk_ops *ops,
 			      const struct clk_hw_omap_ops *hw_ops)
@@ -247,7 +226,7 @@ static void _register_dpll_x2(struct device_node *node,
 	if (hw_ops == &clkhwops_omap4_dpllmx) {
 		int ret;
 
-		/* Check if register defined, if not, drop hw-ops */
+		 
 		ret = of_property_count_elems_of_size(node, "reg", 1);
 		if (ret <= 0) {
 			clk_hw->ops = NULL;
@@ -258,7 +237,7 @@ static void _register_dpll_x2(struct device_node *node,
 	}
 #endif
 
-	/* register the clock */
+	 
 	clk = of_ti_clk_register_omap_hw(node, &clk_hw->hw, name);
 
 	if (IS_ERR(clk))
@@ -268,14 +247,7 @@ static void _register_dpll_x2(struct device_node *node,
 }
 #endif
 
-/**
- * of_ti_dpll_setup - Setup function for OMAP DPLL clocks
- * @node: device node containing the DPLL info
- * @ops: ops for the DPLL
- * @ddt: DPLL data template to use
- *
- * Initializes a DPLL clock from device tree data.
- */
+ 
 static void __init of_ti_dpll_setup(struct device_node *node,
 				    const struct clk_ops *ops,
 				    const struct dpll_data *ddt)
@@ -318,11 +290,7 @@ static void __init of_ti_dpll_setup(struct device_node *node,
 	if (ti_clk_get_reg_addr(node, 0, &dd->control_reg))
 		goto cleanup;
 
-	/*
-	 * Special case for OMAP2 DPLL, register order is different due to
-	 * missing idlest_reg, also clkhwops is different. Detected from
-	 * missing idlest_mask.
-	 */
+	 
 	if (!dd->idlest_mask) {
 		if (ti_clk_get_reg_addr(node, 1, &dd->mult_div1_reg))
 			goto cleanup;
@@ -527,7 +495,7 @@ static void __init of_ti_omap5_mpu_dpll_setup(struct device_node *node)
 		.max_multiplier = 2047,
 		.max_divider = 128,
 		.dcc_mask = BIT(22),
-		.dcc_rate = 1400000000, /* DCC beyond 1.4GHz */
+		.dcc_rate = 1400000000,  
 		.min_divider = 1,
 		.modes = (1 << DPLL_LOW_POWER_BYPASS) | (1 << DPLL_LOCKED),
 	};

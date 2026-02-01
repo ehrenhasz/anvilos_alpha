@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2019 NXP
- *
- */
+ 
+ 
 
 #ifndef _FSL_ASRC_COMMON_H
 #define _FSL_ASRC_COMMON_H
 
-/* directions */
+ 
 #define IN	0
 #define OUT	1
 
@@ -21,20 +18,7 @@ enum asrc_pair_index {
 
 #define PAIR_CTX_NUM  0x4
 
-/**
- * fsl_asrc_pair: ASRC Pair common data
- *
- * @asrc: pointer to its parent module
- * @error: error record
- * @index: pair index (ASRC_PAIR_A, ASRC_PAIR_B, ASRC_PAIR_C)
- * @channels: occupied channel number
- * @desc: input and output dma descriptors
- * @dma_chan: inputer and output DMA channels
- * @dma_data: private dma data
- * @pos: hardware pointer position
- * @req_dma_chan: flag to release dev_to_dev chan
- * @private: pair private area
- */
+ 
 struct fsl_asrc_pair {
 	struct fsl_asrc *asrc;
 	unsigned int error;
@@ -51,30 +35,7 @@ struct fsl_asrc_pair {
 	void *private;
 };
 
-/**
- * fsl_asrc: ASRC common data
- *
- * @dma_params_rx: DMA parameters for receive channel
- * @dma_params_tx: DMA parameters for transmit channel
- * @pdev: platform device pointer
- * @regmap: regmap handler
- * @paddr: physical address to the base address of registers
- * @mem_clk: clock source to access register
- * @ipg_clk: clock source to drive peripheral
- * @spba_clk: SPBA clock (optional, depending on SoC design)
- * @lock: spin lock for resource protection
- * @pair: pair pointers
- * @channel_avail: non-occupied channel numbers
- * @asrc_rate: default sample rate for ASoC Back-Ends
- * @asrc_format: default sample format for ASoC Back-Ends
- * @use_edma: edma is used
- * @get_dma_channel: function pointer
- * @request_pair: function pointer
- * @release_pair: function pointer
- * @get_fifo_addr: function pointer
- * @pair_priv_size: size of pair private struct.
- * @private: private data structure
- */
+ 
 struct fsl_asrc {
 	struct snd_dmaengine_dai_dma_data dma_params_rx;
 	struct snd_dmaengine_dai_dma_data dma_params_tx;
@@ -84,7 +45,7 @@ struct fsl_asrc {
 	struct clk *mem_clk;
 	struct clk *ipg_clk;
 	struct clk *spba_clk;
-	spinlock_t lock;      /* spin lock for resource protection */
+	spinlock_t lock;       
 
 	struct fsl_asrc_pair *pair[PAIR_CTX_NUM];
 	unsigned int channel_avail;
@@ -105,4 +66,4 @@ struct fsl_asrc {
 #define DRV_NAME "fsl-asrc-dai"
 extern struct snd_soc_component_driver fsl_asrc_component;
 
-#endif /* _FSL_ASRC_COMMON_H */
+#endif  

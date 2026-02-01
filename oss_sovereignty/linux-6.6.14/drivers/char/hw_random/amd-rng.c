@@ -1,28 +1,4 @@
-/*
- * RNG driver for AMD RNGs
- *
- * Copyright 2005 (c) MontaVista Software, Inc.
- *
- * with the majority of the code coming from:
- *
- * Hardware driver for the Intel/AMD/VIA Random Number Generators (RNG)
- * (c) Copyright 2003 Red Hat Inc <jgarzik@redhat.com>
- *
- * derived from
- *
- * Hardware driver for the AMD 768 Random Number Generator (RNG)
- * (c) Copyright 2001 Red Hat Inc
- *
- * derived from
- *
- * Hardware driver for Intel i810 Random Number Generator (RNG)
- * Copyright 2000,2001 Jeff Garzik <jgarzik@pobox.com>
- * Copyright 2000,2001 Philipp Rumpf <prumpf@mandrakesoft.com>
- *
- * This file is licensed under  the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/hw_random.h>
@@ -38,18 +14,11 @@
 #define PMBASE_OFFSET	0xF0
 #define PMBASE_SIZE	8
 
-/*
- * Data for PCI driver interface
- *
- * This data only exists for exporting the supported
- * PCI ids via MODULE_DEVICE_TABLE.  We do not actually
- * register a pci_driver, because someone else might one day
- * want to register another driver on the same PCI id.
- */
+ 
 static const struct pci_device_id pci_tbl[] = {
 	{ PCI_VDEVICE(AMD, 0x7443), 0, },
 	{ PCI_VDEVICE(AMD, 0x746b), 0, },
-	{ 0, },	/* terminate list */
+	{ 0, },	 
 };
 MODULE_DEVICE_TABLE(pci, pci_tbl);
 
@@ -64,18 +33,14 @@ static int amd_rng_read(struct hwrng *rng, void *buf, size_t max, bool wait)
 	u32 *data = buf;
 	struct amd768_priv *priv = (struct amd768_priv *)rng->priv;
 	size_t read = 0;
-	/* We will wait at maximum one time per read */
+	 
 	int timeout = max / 4 + 1;
 
-	/*
-	 * RNG data is available when RNGDONE is set to 1
-	 * New random numbers are generated approximately 128 microseconds
-	 * after RNGDATA is read
-	 */
+	 
 	while (read < max) {
 		if (ioread32(priv->iobase + RNGDONE) == 0) {
 			if (wait) {
-				/* Delay given by datasheet */
+				 
 				usleep_range(128, 196);
 				if (timeout-- == 0)
 					return read;
@@ -98,11 +63,11 @@ static int amd_rng_init(struct hwrng *rng)
 	u8 rnen;
 
 	pci_read_config_byte(priv->pcidev, 0x40, &rnen);
-	rnen |= BIT(7);	/* RNG on */
+	rnen |= BIT(7);	 
 	pci_write_config_byte(priv->pcidev, 0x40, rnen);
 
 	pci_read_config_byte(priv->pcidev, 0x41, &rnen);
-	rnen |= BIT(7);	/* PMIO enable */
+	rnen |= BIT(7);	 
 	pci_write_config_byte(priv->pcidev, 0x41, rnen);
 
 	return 0;
@@ -114,7 +79,7 @@ static void amd_rng_cleanup(struct hwrng *rng)
 	u8 rnen;
 
 	pci_read_config_byte(priv->pcidev, 0x40, &rnen);
-	rnen &= ~BIT(7);	/* RNG off */
+	rnen &= ~BIT(7);	 
 	pci_write_config_byte(priv->pcidev, 0x40, rnen);
 }
 
@@ -138,7 +103,7 @@ static int __init amd_rng_mod_init(void)
 		if (ent)
 			goto found;
 	}
-	/* Device not found. */
+	 
 	return -ENODEV;
 
 found:

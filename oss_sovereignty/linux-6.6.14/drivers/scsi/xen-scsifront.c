@@ -1,32 +1,4 @@
-/*
- * Xen SCSI frontend driver
- *
- * Copyright (c) 2008, FUJITSU Limited
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -62,7 +34,7 @@
 #define VSCSIFRONT_OP_DEL_LUN	2
 #define VSCSIFRONT_OP_READD_LUN	3
 
-/* Tuning point. */
+ 
 #define VSCSIIF_DEFAULT_CMD_PER_LUN 10
 #define VSCSIIF_MAX_TARGET          64
 #define VSCSIIF_MAX_LUN             255
@@ -74,7 +46,7 @@
 				sizeof(struct scsiif_request_segment)))
 
 struct vscsifrnt_shadow {
-	/* command between backend and frontend */
+	 
 	unsigned char act;
 	uint8_t nr_segments;
 	uint16_t rqid;
@@ -82,19 +54,19 @@ struct vscsifrnt_shadow {
 
 	bool inflight;
 
-	unsigned int nr_grants;		/* number of grants in gref[] */
-	struct scsiif_request_segment *sg;	/* scatter/gather elements */
+	unsigned int nr_grants;		 
+	struct scsiif_request_segment *sg;	 
 	struct scsiif_request_segment seg[VSCSIIF_SG_TABLESIZE];
 
-	/* Do reset or abort function. */
-	wait_queue_head_t wq_reset;	/* reset work queue           */
-	int wait_reset;			/* reset work queue condition */
-	int32_t rslt_reset;		/* reset response status:     */
-					/* SUCCESS or FAILED or:      */
+	 
+	wait_queue_head_t wq_reset;	 
+	int wait_reset;			 
+	int32_t rslt_reset;		 
+					 
 #define RSLT_RESET_WAITING	0
 #define RSLT_RESET_ERR		-1
 
-	/* Requested struct scsi_cmnd is stored from kernel. */
+	 
 	struct scsi_cmnd *sc;
 	int gref[vscsiif_grants_sg(SG_ALL) + SG_ALL];
 };
@@ -120,7 +92,7 @@ struct vscsifrnt_info {
 	DECLARE_BITMAP(shadow_free_bitmap, VSCSIIF_MAX_REQS);
 	struct vscsifrnt_shadow *shadow[VSCSIIF_MAX_REQS];
 
-	/* Following items are protected by the host lock. */
+	 
 	wait_queue_head_t wq_sync;
 	wait_queue_head_t wq_pause;
 	unsigned int wait_ring_available:1;
@@ -190,7 +162,7 @@ static int scsifront_do_request(struct vscsifrnt_info *info,
 	if (RING_FULL(&info->ring))
 		return -EBUSY;
 
-	id = scsifront_get_rqid(info);	/* use id in response */
+	id = scsifront_get_rqid(info);	 
 	if (id >= VSCSIIF_MAX_REQS)
 		return -EBUSY;
 
@@ -388,7 +360,7 @@ static int scsifront_ring_drain(struct vscsifrnt_info *info,
 	int more_to_do = 0;
 
 	rp = READ_ONCE(info->ring.sring->rsp_prod);
-	virt_rmb();	/* ordering required respective to backend */
+	virt_rmb();	 
 	if (RING_RESPONSE_PROD_OVERFLOW(&info->ring, rp)) {
 		scsifront_set_error(info, "illegal number of responses");
 		return 0;
@@ -441,7 +413,7 @@ static irqreturn_t scsifront_irq_fn(int irq, void *dev_id)
 	}
 
 	while (scsifront_cmd_done(info, &eoiflag))
-		/* Yield point for this unbounded loop. */
+		 
 		cond_resched();
 
 	xen_irq_lateeoi(irq, eoiflag);
@@ -543,11 +515,7 @@ static int map_data_for_request(struct vscsifrnt_info *info,
 		len = sg->length;
 
 		while (len > 0 && data_len > 0) {
-			/*
-			 * sg sends a scatterlist that is larger than
-			 * the data_len it wants transferred for certain
-			 * IO sizes.
-			 */
+			 
 			bytes = min_t(unsigned int, len, PAGE_SIZE - off);
 			bytes = min(bytes, data_len);
 
@@ -654,11 +622,7 @@ busy:
 	return SCSI_MLQUEUE_HOST_BUSY;
 }
 
-/*
- * Any exception handling (reset or abort) must be forwarded to the backend.
- * We have to wait until an answer is returned. This answer contains the
- * result to be returned to the requestor.
- */
+ 
 static int scsifront_action_handler(struct scsi_cmnd *sc, uint8_t act)
 {
 	struct Scsi_Host *host = sc->device->host;
@@ -792,7 +756,7 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
 	struct vscsiif_sring *sring;
 	int err;
 
-	/***** Frontend to Backend ring start *****/
+	 
 	err = xenbus_setup_ring(dev, GFP_KERNEL, (void **)&sring, 1,
 				&info->ring_ref);
 	if (err)
@@ -823,7 +787,7 @@ static int scsifront_alloc_ring(struct vscsifrnt_info *info)
 
 	return 0;
 
-/* free resource */
+ 
 free_irq:
 	unbind_from_irqhandler(info->irq, info);
 free_gnttab:
@@ -954,12 +918,12 @@ static int scsifront_resume(struct xenbus_device *dev)
 
 	spin_lock_irq(host->host_lock);
 
-	/* Finish all still pending commands. */
+	 
 	scsifront_finish_all(info);
 
 	spin_unlock_irq(host->host_lock);
 
-	/* Reconnect to dom0. */
+	 
 	scsifront_free_ring(info);
 	err = scsifront_init_ring(info);
 	if (err) {
@@ -979,7 +943,7 @@ static int scsifront_suspend(struct xenbus_device *dev)
 	struct Scsi_Host *host = info->host;
 	int err = 0;
 
-	/* No new commands for the backend. */
+	 
 	spin_lock_irq(host->host_lock);
 	info->pause = 1;
 	while (info->callers && !err) {
@@ -1003,7 +967,7 @@ static void scsifront_remove(struct xenbus_device *dev)
 
 	mutex_lock(&scsifront_mutex);
 	if (info->host_active != STATE_INACTIVE) {
-		/* Scsi_host not yet removed */
+		 
 		scsi_remove_host(info->host);
 		info->host_active = STATE_INACTIVE;
 	}
@@ -1020,11 +984,7 @@ static void scsifront_disconnect(struct vscsifrnt_info *info)
 
 	pr_debug("%s: %s disconnect\n", __func__, dev->nodename);
 
-	/*
-	 * When this function is executed, all devices of
-	 * Frontend have been deleted.
-	 * Therefore, it need not block I/O before remove_host.
-	 */
+	 
 
 	mutex_lock(&scsifront_mutex);
 	if (info->host_active != STATE_INACTIVE) {
@@ -1054,30 +1014,26 @@ static void scsifront_do_lun_hotplug(struct vscsifrnt_info *info, int op)
 	if (IS_ERR(dir))
 		return;
 
-	/* mark current task as the one allowed to modify device states */
+	 
 	BUG_ON(info->curr);
 	info->curr = current;
 
 	for (i = 0; i < dir_n; i++) {
-		/* read status */
+		 
 		snprintf(str, sizeof(str), "vscsi-devs/%s/state", dir[i]);
 		err = xenbus_scanf(XBT_NIL, dev->otherend, str, "%u",
 				   &device_state);
 		if (XENBUS_EXIST_ERR(err))
 			continue;
 
-		/* virtual SCSI device */
+		 
 		snprintf(str, sizeof(str), "vscsi-devs/%s/v-dev", dir[i]);
 		err = xenbus_scanf(XBT_NIL, dev->otherend, str,
 				   "%u:%u:%u:%u", &hst, &chn, &tgt, &lun);
 		if (XENBUS_EXIST_ERR(err))
 			continue;
 
-		/*
-		 * Front device state path, used in slave_configure called
-		 * on successfull scsi_add_device, and in slave_destroy called
-		 * on remove of a device.
-		 */
+		 
 		snprintf(info->dev_state_path, sizeof(info->dev_state_path),
 			 "vscsi-devs/%s/state", dir[i]);
 
@@ -1185,7 +1141,7 @@ static void scsifront_backend_changed(struct xenbus_device *dev,
 	case XenbusStateClosed:
 		if (dev->state == XenbusStateClosed)
 			break;
-		fallthrough;	/* Missed the backend's Closing state */
+		fallthrough;	 
 	case XenbusStateClosing:
 		scsifront_disconnect(info);
 		break;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015, Sam Bobroff, IBM Corp.
- *
- * Test the kernel's system call code to ensure that a system call
- * made from within an active HTM transaction is aborted with the
- * correct failure code.
- * Conversely, ensure that a system call made from within a
- * suspended transaction can succeed.
- */
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -20,7 +12,7 @@
 #include "tm.h"
 
 #ifndef PPC_FEATURE2_SCV
-#define PPC_FEATURE2_SCV               0x00100000 /* scv syscall */
+#define PPC_FEATURE2_SCV               0x00100000  
 #endif
 
 extern int getppid_tm_active(void);
@@ -30,7 +22,7 @@ extern int getppid_scv_tm_suspended(void);
 
 unsigned retries = 0;
 
-#define TEST_DURATION 10 /* seconds */
+#define TEST_DURATION 10  
 
 pid_t getppid_tm(bool scv, bool suspend)
 {
@@ -91,26 +83,20 @@ int tm_syscall(void)
 	timeradd(&end, &now, &end);
 
 	for (count = 0; timercmp(&now, &end, <); count++) {
-		/*
-		 * Test a syscall within a suspended transaction and verify
-		 * that it succeeds.
-		 */
-		FAIL_IF(getppid_tm(false, true) == -1); /* Should succeed. */
+		 
+		FAIL_IF(getppid_tm(false, true) == -1);  
 
-		/*
-		 * Test a syscall within an active transaction and verify that
-		 * it fails with the correct failure code.
-		 */
-		FAIL_IF(getppid_tm(false, false) != -1);  /* Should fail... */
-		FAIL_IF(!failure_is_persistent()); /* ...persistently... */
-		FAIL_IF(!failure_is_syscall());    /* ...with code syscall. */
+		 
+		FAIL_IF(getppid_tm(false, false) != -1);   
+		FAIL_IF(!failure_is_persistent());  
+		FAIL_IF(!failure_is_syscall());     
 
-		/* Now do it all again with scv if it is available. */
+		 
 		if (have_hwcap2(PPC_FEATURE2_SCV)) {
-			FAIL_IF(getppid_tm(true, true) == -1); /* Should succeed. */
-			FAIL_IF(getppid_tm(true, false) != -1);  /* Should fail... */
-			FAIL_IF(!failure_is_persistent()); /* ...persistently... */
-			FAIL_IF(!failure_is_syscall());    /* ...with code syscall. */
+			FAIL_IF(getppid_tm(true, true) == -1);  
+			FAIL_IF(getppid_tm(true, false) != -1);   
+			FAIL_IF(!failure_is_persistent());  
+			FAIL_IF(!failure_is_syscall());     
 		}
 
 		gettimeofday(&now, 0);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Google, Inc.
- * Author: Erik Gilling <konkers@android.com>
- *
- * Copyright (C) 2011-2017 NVIDIA Corporation
- */
+
+ 
 
 #include "../dev.h"
 #include "../debug.h"
@@ -87,7 +82,7 @@ static void host1x_debug_show_channel_fifo(struct host1x *host,
 	host1x_debug_output(o, "CMDFIFO_RDATA %08x\n", val);
 
 #if HOST1X_HW <= 6
-	/* Peek pointer values are invalid during SLCG, so disable it */
+	 
 	host1x_hypervisor_writel(host, 0x1, HOST1X_HV_ICG_EN_OVERRIDE);
 
 	val = 0;
@@ -141,5 +136,5 @@ static void host1x_debug_show_channel_fifo(struct host1x *host,
 
 static void host1x_debug_show_mlocks(struct host1x *host, struct output *o)
 {
-	/* TODO */
+	 
 }

@@ -1,21 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *    Support for OR51211 (pcHDTV HD-2000) - VSB
- *
- *    Copyright (C) 2005 Kirk Lapray <kirk_lapray@bigfoot.com>
- *
- *    Based on code from Jack Kelliher (kelliher@xmission.com)
- *                           Copyright (C) 2002 & pcHDTV, inc.
-*/
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": %s: " fmt, __func__
 
-/*
- * This driver needs external firmware. Please use the command
- * "<kerneldir>/scripts/get_dvb_firmware or51211" to
- * download/extract it, and then copy it to /usr/lib/hotplug/firmware
- * or /lib/firmware (depending on configuration of firmware hotplug).
- */
+ 
 #define OR51211_DEFAULT_FIRMWARE "dvb-fe-or51211.fw"
 
 #include <linux/kernel.h>
@@ -35,23 +23,23 @@ static int debug;
 	do { if (debug) pr_debug(args); } while (0)
 
 static u8 run_buf[] = {0x7f,0x01};
-static u8 cmd_buf[] = {0x04,0x01,0x50,0x80,0x06}; // ATSC
+static u8 cmd_buf[] = {0x04,0x01,0x50,0x80,0x06}; 
 
 struct or51211_state {
 
 	struct i2c_adapter* i2c;
 
-	/* Configuration settings */
+	 
 	const struct or51211_config* config;
 
 	struct dvb_frontend frontend;
 	struct bt878* bt;
 
-	/* Demodulator private data */
+	 
 	u8 initialized:1;
-	u32 snr; /* Result of last SNR calculation */
+	u32 snr;  
 
-	/* Tuner private data */
+	 
 	u32 current_frequency;
 };
 
@@ -99,7 +87,7 @@ static int or51211_load_firmware (struct dvb_frontend* fe,
 
 	dprintk("Firmware is %zu bytes\n", fw->size);
 
-	/* Get eprom data */
+	 
 	tudata[0] = 17;
 	if (i2c_writebytes(state,0x50,tudata,1)) {
 		pr_warn("error eprom addr\n");
@@ -110,7 +98,7 @@ static int or51211_load_firmware (struct dvb_frontend* fe,
 		return -1;
 	}
 
-	/* Create firmware buffer */
+	 
 	for (i = 0; i < 145; i++)
 		tudata[i] = fw->data[i];
 
@@ -137,7 +125,7 @@ static int or51211_load_firmware (struct dvb_frontend* fe,
 		return -1;
 	}
 
-	/* Wait at least 5 msec */
+	 
 	msleep(10);
 	if (i2c_writebytes(state,state->config->demod_address,run_buf,2)) {
 		pr_warn("error 4\n");
@@ -161,7 +149,7 @@ static int or51211_setmode(struct dvb_frontend* fe, int mode)
 		return -1;
 	}
 
-	/* Wait at least 5 msec */
+	 
 	msleep(10);
 	if (i2c_writebytes(state,state->config->demod_address,run_buf,2)) {
 		pr_warn("error 2\n");
@@ -170,15 +158,7 @@ static int or51211_setmode(struct dvb_frontend* fe, int mode)
 
 	msleep(10);
 
-	/* Set operation mode in Receiver 1 register;
-	 * type 1:
-	 * data 0x50h  Automatic sets receiver channel conditions
-	 *             Automatic NTSC rejection filter
-	 *             Enable  MPEG serial data output
-	 *             MPEG2tr
-	 *             High tuner phase noise
-	 *             normal +/-150kHz Carrier acquisition range
-	 */
+	 
 	if (i2c_writebytes(state,state->config->demod_address,cmd_buf,3)) {
 		pr_warn("error 3\n");
 		return -1;
@@ -207,17 +187,17 @@ static int or51211_set_parameters(struct dvb_frontend *fe)
 	struct dtv_frontend_properties *p = &fe->dtv_property_cache;
 	struct or51211_state* state = fe->demodulator_priv;
 
-	/* Change only if we are actually changing the channel */
+	 
 	if (state->current_frequency != p->frequency) {
 		if (fe->ops.tuner_ops.set_params) {
 			fe->ops.tuner_ops.set_params(fe);
 			if (fe->ops.i2c_gate_ctrl) fe->ops.i2c_gate_ctrl(fe, 0);
 		}
 
-		/* Set to ATSC mode */
+		 
 		or51211_setmode(fe,0);
 
-		/* Update current frequency */
+		 
 		state->current_frequency = p->frequency;
 	}
 	return 0;
@@ -230,7 +210,7 @@ static int or51211_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	unsigned char snd_buf[] = {0x04,0x00,0x03,0x00};
 	*status = 0;
 
-	/* Receiver Status */
+	 
 	if (i2c_writebytes(state,state->config->demod_address,snd_buf,3)) {
 		pr_warn("write error\n");
 		return -1;
@@ -242,7 +222,7 @@ static int or51211_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	}
 	dprintk("%x %x\n", rec_buf[0], rec_buf[1]);
 
-	if (rec_buf[0] &  0x01) { /* Receiver Lock */
+	if (rec_buf[0] &  0x01) {  
 		*status |= FE_HAS_SIGNAL;
 		*status |= FE_HAS_CARRIER;
 		*status |= FE_HAS_VITERBI;
@@ -252,27 +232,16 @@ static int or51211_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	return 0;
 }
 
-/* Calculate SNR estimation (scaled by 2^24)
-
-   8-VSB SNR equation from Oren datasheets
-
-   For 8-VSB:
-     SNR[dB] = 10 * log10(219037.9454 / MSE^2 )
-
-   We re-write the snr equation as:
-     SNR * 2^24 = 10*(c - 2*intlog10(MSE))
-   Where for 8-VSB, c = log10(219037.9454) * 2^24 */
+ 
 
 static u32 calculate_snr(u32 mse, u32 c)
 {
-	if (mse == 0) /* No signal */
+	if (mse == 0)  
 		return 0;
 
 	mse = 2*intlog10(mse);
 	if (mse > c) {
-		/* Negative SNR, which is possible, but realisticly the
-		demod will lose lock before the signal gets this bad.  The
-		API only allows for unsigned values, so just return 0 */
+		 
 		return 0;
 	}
 	return 10*(c - mse);
@@ -284,7 +253,7 @@ static int or51211_read_snr(struct dvb_frontend* fe, u16* snr)
 	u8 rec_buf[2];
 	u8 snd_buf[3];
 
-	/* SNR after Equalizer */
+	 
 	snd_buf[0] = 0x04;
 	snd_buf[1] = 0x00;
 	snd_buf[2] = 0x04;
@@ -309,9 +278,9 @@ static int or51211_read_snr(struct dvb_frontend* fe, u16* snr)
 
 static int or51211_read_signal_strength(struct dvb_frontend* fe, u16* strength)
 {
-	/* Calculate Strength from SNR up to 35dB */
-	/* Even though the SNR can go higher than 35dB, there is some comfort */
-	/* factor in having a range of strong signals that can show at 100%   */
+	 
+	 
+	 
 	struct or51211_state* state = (struct or51211_state*)fe->demodulator_priv;
 	u16 snr;
 	int ret;
@@ -319,8 +288,8 @@ static int or51211_read_signal_strength(struct dvb_frontend* fe, u16* strength)
 	ret = fe->ops.read_snr(fe, &snr);
 	if (ret != 0)
 		return ret;
-	/* Rather than use the 8.8 value snr, use state->snr which is 8.24 */
-	/* scale the range 0 - 35*2^24 into 0 - 65535 */
+	 
+	 
 	if (state->snr >= 8960 * 0x10000)
 		*strength = 0xffff;
 	else
@@ -356,7 +325,7 @@ static int or51211_init(struct dvb_frontend* fe)
 	int ret,i;
 
 	if (!state->initialized) {
-		/* Request the firmware, this will block until it uploads */
+		 
 		pr_info("Waiting for firmware upload (%s)...\n",
 			OR51211_DEFAULT_FIRMWARE);
 		ret = config->request_firmware(fe, &fw,
@@ -375,23 +344,15 @@ static int or51211_init(struct dvb_frontend* fe)
 		}
 		pr_info("Firmware upload complete.\n");
 
-		/* Set operation mode in Receiver 1 register;
-		 * type 1:
-		 * data 0x50h  Automatic sets receiver channel conditions
-		 *             Automatic NTSC rejection filter
-		 *             Enable  MPEG serial data output
-		 *             MPEG2tr
-		 *             High tuner phase noise
-		 *             normal +/-150kHz Carrier acquisition range
-		 */
+		 
 		if (i2c_writebytes(state,state->config->demod_address,
 				   cmd_buf,3)) {
 			pr_warn("Load DVR Error 5\n");
 			return -1;
 		}
 
-		/* Read back ucode version to besure we loaded correctly */
-		/* and are really up and running */
+		 
+		 
 		rec_buf[0] = 0x04;
 		rec_buf[1] = 0x00;
 		rec_buf[2] = 0x03;
@@ -444,7 +405,7 @@ static int or51211_init(struct dvb_frontend* fe)
 				pr_warn("Load DVR Error 7 - %d\n", i);
 				return -1;
 			}
-			/* If we didn't receive the right index, try again */
+			 
 			if ((int)rec_buf[i*2+1]!=i+1){
 			  i--;
 			}
@@ -500,18 +461,18 @@ struct dvb_frontend* or51211_attach(const struct or51211_config* config,
 {
 	struct or51211_state* state = NULL;
 
-	/* Allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(struct or51211_state), GFP_KERNEL);
 	if (state == NULL)
 		return NULL;
 
-	/* Setup the state */
+	 
 	state->config = config;
 	state->i2c = i2c;
 	state->initialized = 0;
 	state->current_frequency = 0;
 
-	/* Create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops, &or51211_ops, sizeof(struct dvb_frontend_ops));
 	state->frontend.demodulator_priv = state;
 	return &state->frontend;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2013-2014, 2018-2020, 2022 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- */
+
+ 
 #include <linux/ieee80211.h>
 #include <linux/etherdevice.h>
 #include <net/mac80211.h>
@@ -12,9 +9,9 @@
 #include "mvm.h"
 #include "iwl-debug.h"
 
-/* 20MHz / 40MHz below / 40Mhz above*/
+ 
 static const __le64 iwl_ci_mask[][3] = {
-	/* dummy entry for channel 0 */
+	 
 	{cpu_to_le64(0), cpu_to_le64(0), cpu_to_le64(0)},
 	{
 		cpu_to_le64(0x0000001FFFULL),
@@ -96,13 +93,7 @@ iwl_get_coex_type(struct iwl_mvm *mvm, const struct ieee80211_vif *vif)
 	u16 phy_ctx_id;
 	u32 primary_ch_phy_id, secondary_ch_phy_id;
 
-	/*
-	 * Checking that we hold mvm->mutex is a good idea, but the rate
-	 * control can't acquire the mutex since it runs in Tx path.
-	 * So this is racy in that case, but in the worst case, the AMPDU
-	 * size limit will be wrong for a short time which is not a big
-	 * issue.
-	 */
+	 
 
 	rcu_read_lock();
 
@@ -130,7 +121,7 @@ iwl_get_coex_type(struct iwl_mvm *mvm, const struct ieee80211_vif *vif)
 		ret = le32_to_cpu(mvm->last_bt_notif.primary_ch_lut);
 	else if (secondary_ch_phy_id == phy_ctx_id)
 		ret = le32_to_cpu(mvm->last_bt_notif.secondary_ch_lut);
-	/* else - default = TX TX disallowed */
+	 
 
 	rcu_read_unlock();
 
@@ -190,7 +181,7 @@ static int iwl_mvm_bt_coex_reduced_txp(struct iwl_mvm *mvm, u8 sta_id,
 	if (!mvmsta)
 		return 0;
 
-	/* nothing to do */
+	 
 	if (mvmsta->bt_reduced_txpower == enable)
 		return 0;
 
@@ -245,9 +236,9 @@ static void iwl_mvm_bt_coex_tcm_based_ci(struct iwl_mvm *mvm,
 
 	mvm->bt_coex_last_tcm_ts = now;
 
-	/* We assume here that we don't have more than 2 vifs on 2.4GHz */
+	 
 
-	/* if the primary is low latency, it will stay primary */
+	 
 	if (data->primary_ll)
 		return;
 
@@ -262,7 +253,7 @@ static void iwl_mvm_bt_notif_per_link(struct iwl_mvm *mvm,
 				      struct iwl_bt_iterator_data *data,
 				      unsigned int link_id)
 {
-	/* default smps_mode is AUTOMATIC - only used for client modes */
+	 
 	enum ieee80211_smps_mode smps_mode = IEEE80211_SMPS_AUTOMATIC;
 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
 	u32 bt_activity_grading, min_ag_for_static_smps;
@@ -278,25 +269,22 @@ static void iwl_mvm_bt_notif_per_link(struct iwl_mvm *mvm,
 		return;
 
 	link_conf = rcu_dereference(vif->link_conf[link_id]);
-	/* This can happen due to races: if we receive the notification
-	 * and have the mutex held, while mac80211 is stuck on our mutex
-	 * in the middle of removing the link.
-	 */
+	 
 	if (!link_conf)
 		return;
 
 	chanctx_conf = rcu_dereference(link_conf->chanctx_conf);
 
-	/* If channel context is invalid or not on 2.4GHz .. */
+	 
 	if ((!chanctx_conf ||
 	     chanctx_conf->def.chan->band != NL80211_BAND_2GHZ)) {
 		if (vif->type == NL80211_IFTYPE_STATION) {
-			/* ... relax constraints and disable rssi events */
+			 
 			iwl_mvm_update_smps(mvm, vif, IWL_MVM_SMPS_REQ_BT_COEX,
 					    smps_mode, link_id);
 			iwl_mvm_bt_coex_reduced_txp(mvm, link_info->ap_sta_id,
 						    false);
-			/* FIXME: should this be per link? */
+			 
 			iwl_mvm_bt_coex_enable_rssi_event(mvm, vif, false, 0);
 		}
 		return;
@@ -313,7 +301,7 @@ static void iwl_mvm_bt_notif_per_link(struct iwl_mvm *mvm,
 	else if (bt_activity_grading >= BT_LOW_TRAFFIC)
 		smps_mode = IEEE80211_SMPS_DYNAMIC;
 
-	/* relax SMPS constraints for next association */
+	 
 	if (!vif->cfg.assoc)
 		smps_mode = IEEE80211_SMPS_AUTOMATIC;
 
@@ -330,7 +318,7 @@ static void iwl_mvm_bt_notif_per_link(struct iwl_mvm *mvm,
 		iwl_mvm_update_smps(mvm, vif, IWL_MVM_SMPS_REQ_BT_COEX,
 				    smps_mode, link_id);
 
-	/* low latency is always primary */
+	 
 	if (iwl_mvm_vif_low_latency(mvmvif)) {
 		data->primary_ll = true;
 
@@ -346,18 +334,15 @@ static void iwl_mvm_bt_notif_per_link(struct iwl_mvm *mvm,
 			return;
 
 		if (!data->primary_ll) {
-			/*
-			 * downgrade the current primary no matter what its
-			 * type is.
-			 */
+			 
 			data->secondary = data->primary;
 			data->primary = chanctx_conf;
 		} else {
-			/* there is low latency vif - we will be secondary */
+			 
 			data->secondary = chanctx_conf;
 		}
 
-		/* FIXME: TCM load per interface? or need something per link? */
+		 
 		if (data->primary == chanctx_conf)
 			data->primary_load = mvm->tcm.result.load[mvmvif->id];
 		else if (data->secondary == chanctx_conf)
@@ -365,41 +350,32 @@ static void iwl_mvm_bt_notif_per_link(struct iwl_mvm *mvm,
 		return;
 	}
 
-	/*
-	 * STA / P2P Client, try to be primary if first vif. If we are in low
-	 * latency mode, we are already in primary and just don't do much
-	 */
+	 
 	if (!data->primary || data->primary == chanctx_conf)
 		data->primary = chanctx_conf;
 	else if (!data->secondary)
-		/* if secondary is not NULL, it might be a GO */
+		 
 		data->secondary = chanctx_conf;
 
-	/* FIXME: TCM load per interface? or need something per link? */
+	 
 	if (data->primary == chanctx_conf)
 		data->primary_load = mvm->tcm.result.load[mvmvif->id];
 	else if (data->secondary == chanctx_conf)
 		data->secondary_load = mvm->tcm.result.load[mvmvif->id];
-	/*
-	 * don't reduce the Tx power if one of these is true:
-	 *  we are in LOOSE
-	 *  single share antenna product
-	 *  BT is inactive
-	 *  we are not associated
-	 */
+	 
 	if (iwl_get_coex_type(mvm, vif) == BT_COEX_LOOSE_LUT ||
 	    mvm->cfg->bt_shared_single_ant || !vif->cfg.assoc ||
 	    le32_to_cpu(mvm->last_bt_notif.bt_activity_grading) == BT_OFF) {
 		iwl_mvm_bt_coex_reduced_txp(mvm, link_info->ap_sta_id, false);
-		/* FIXME: should this be per link? */
+		 
 		iwl_mvm_bt_coex_enable_rssi_event(mvm, vif, false, 0);
 		return;
 	}
 
-	/* try to get the avg rssi from fw */
+	 
 	ave_rssi = mvmvif->bf_data.ave_beacon_signal;
 
-	/* if the RSSI isn't valid, fake it is very low */
+	 
 	if (!ave_rssi)
 		ave_rssi = -100;
 	if (ave_rssi > -IWL_MVM_BT_COEX_EN_RED_TXP_THRESH) {
@@ -412,11 +388,11 @@ static void iwl_mvm_bt_notif_per_link(struct iwl_mvm *mvm,
 			IWL_ERR(mvm, "Couldn't send BT_CONFIG cmd\n");
 	}
 
-	/* Begin to monitor the RSSI: it may influence the reduced Tx power */
+	 
 	iwl_mvm_bt_coex_enable_rssi_event(mvm, vif, true, ave_rssi);
 }
 
-/* must be called under rcu_read_lock */
+ 
 static void iwl_mvm_bt_notif_iterator(void *_data, u8 *mac,
 				      struct ieee80211_vif *vif)
 {
@@ -451,7 +427,7 @@ static void iwl_mvm_bt_coex_notif_handle(struct iwl_mvm *mvm)
 	struct iwl_bt_coex_ci_cmd cmd = {};
 	u8 ci_bw_idx;
 
-	/* Ignore updates if we are in force mode */
+	 
 	if (unlikely(mvm->bt_force_ant_mode != BT_FORCE_ANT_DIS))
 		return;
 
@@ -510,7 +486,7 @@ static void iwl_mvm_bt_coex_notif_handle(struct iwl_mvm *mvm)
 
 	rcu_read_unlock();
 
-	/* Don't spam the fw with the same command over and over */
+	 
 	if (memcmp(&cmd, &mvm->last_bt_ci_cmd, sizeof(cmd))) {
 		if (iwl_mvm_send_cmd_pdu(mvm, BT_COEX_CI, 0,
 					 sizeof(cmd), &cmd))
@@ -534,7 +510,7 @@ void iwl_mvm_rx_bt_coex_notif(struct iwl_mvm *mvm,
 	IWL_DEBUG_COEX(mvm, "\tBT activity grading %d\n",
 		       le32_to_cpu(notif->bt_activity_grading));
 
-	/* remember this notification for future use: rssi fluctuations */
+	 
 	memcpy(&mvm->last_bt_notif, notif, sizeof(mvm->last_bt_notif));
 
 	iwl_mvm_bt_coex_notif_handle(mvm);
@@ -548,28 +524,22 @@ void iwl_mvm_bt_rssi_event(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* Ignore updates if we are in force mode */
+	 
 	if (unlikely(mvm->bt_force_ant_mode != BT_FORCE_ANT_DIS))
 		return;
 
-	/*
-	 * Rssi update while not associated - can happen since the statistics
-	 * are handled asynchronously
-	 */
+	 
 	if (mvmvif->deflink.ap_sta_id == IWL_MVM_INVALID_STA)
 		return;
 
-	/* No BT - reports should be disabled */
+	 
 	if (le32_to_cpu(mvm->last_bt_notif.bt_activity_grading) == BT_OFF)
 		return;
 
 	IWL_DEBUG_COEX(mvm, "RSSI for %pM is now %s\n", vif->bss_conf.bssid,
 		       rssi_event == RSSI_EVENT_HIGH ? "HIGH" : "LOW");
 
-	/*
-	 * Check if rssi is good enough for reduced Tx power, but not in loose
-	 * scheme.
-	 */
+	 
 	if (rssi_event == RSSI_EVENT_LOW || mvm->cfg->bt_shared_single_ant ||
 	    iwl_get_coex_type(mvm, vif) == BT_COEX_LOOSE_LUT)
 		ret = iwl_mvm_bt_coex_reduced_txp(mvm,
@@ -607,7 +577,7 @@ u16 iwl_mvm_coex_agg_time_limit(struct iwl_mvm *mvm,
 	if (lut_type == BT_COEX_LOOSE_LUT || lut_type == BT_COEX_INVALID_LUT)
 		return LINK_QUAL_AGG_TIME_LIMIT_DEF;
 
-	/* tight coex, high bt traffic, reduce AGG time limit */
+	 
 	return LINK_QUAL_AGG_TIME_LIMIT_BT_ACT;
 }
 
@@ -626,20 +596,14 @@ bool iwl_mvm_bt_coex_is_mimo_allowed(struct iwl_mvm *mvm,
 	    BT_HIGH_TRAFFIC)
 		return true;
 
-	/*
-	 * In Tight / TxTxDis, BT can't Rx while we Tx, so use both antennas
-	 * since BT is already killed.
-	 * In Loose, BT can Rx while we Tx, so forbid MIMO to let BT Rx while
-	 * we Tx.
-	 * When we are in 5GHz, we'll get BT_COEX_INVALID_LUT allowing MIMO.
-	 */
+	 
 	lut_type = iwl_get_coex_type(mvm, mvmsta->vif);
 	return lut_type != BT_COEX_LOOSE_LUT;
 }
 
 bool iwl_mvm_bt_coex_is_ant_avail(struct iwl_mvm *mvm, u8 ant)
 {
-	/* there is no other antenna, shared antenna is always available */
+	 
 	if (mvm->cfg->bt_shared_single_ant)
 		return true;
 
@@ -652,7 +616,7 @@ bool iwl_mvm_bt_coex_is_ant_avail(struct iwl_mvm *mvm, u8 ant)
 
 bool iwl_mvm_bt_coex_is_shared_ant_avail(struct iwl_mvm *mvm)
 {
-	/* there is no other antenna, shared antenna is always available */
+	 
 	if (mvm->cfg->bt_shared_single_ant)
 		return true;
 
@@ -710,7 +674,7 @@ u8 iwl_mvm_bt_coex_tx_prio(struct iwl_mvm *mvm, struct ieee80211_hdr *hdr,
 	} else if (ieee80211_is_mgmt(fc)) {
 		return ieee80211_is_disassoc(fc) ? 0 : 3;
 	} else if (ieee80211_is_ctl(fc)) {
-		/* ignore cfend and cfendack frames as we never send those */
+		 
 		return 3;
 	}
 

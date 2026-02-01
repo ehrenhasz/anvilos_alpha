@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -40,9 +19,9 @@
 #include "asic_reg/pwr/pwr_10_0_sh_mask.h"
 
 #define SMU10_MAX_DEEPSLEEP_DIVIDER_ID     5
-#define SMU10_MINIMUM_ENGINE_CLOCK         800   /* 8Mhz, the low boundary of engine clock allowed on this chip */
+#define SMU10_MINIMUM_ENGINE_CLOCK         800    
 #define SCLK_MIN_DIV_INTV_SHIFT         12
-#define SMU10_DISPCLK_BYPASS_THRESHOLD     10000 /* 100Mhz */
+#define SMU10_DISPCLK_BYPASS_THRESHOLD     10000  
 #define SMC_RAM_END                     0x40000
 
 static const unsigned long SMU10_Magic = (unsigned long) PHM_Rv_Magic;
@@ -352,7 +331,7 @@ static int smu10_disable_gfx_off(struct pp_hwmgr *hwmgr)
 	if (adev->pm.pp_feature & PP_GFXOFF_MASK) {
 		smum_send_msg_to_smc(hwmgr, PPSMC_MSG_DisableGfxOff, NULL);
 
-		/* confirm gfx is back to "on" state */
+		 
 		while (!smu10_is_gfx_on(hwmgr))
 			msleep(1);
 	}
@@ -429,7 +408,7 @@ static int smu10_apply_state_adjust_rules(struct pp_hwmgr *hwmgr,
 	return 0;
 }
 
-/* temporary hardcoded clock voltage breakdown tables */
+ 
 static const DpmClock_t VddDcfClk[] = {
 	{ 300, 2600},
 	{ 600, 3200},
@@ -587,9 +566,9 @@ static int smu10_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 
 	hwmgr->platform_descriptor.minimumClocksReductionPercentage = 50;
 
-	/* enable the pp_od_clk_voltage sysfs file */
+	 
 	hwmgr->od_enabled = 1;
-	/* disabled fine grain tuning function by default */
+	 
 	data->fine_grain_enabled = 0;
 	return result;
 }
@@ -639,7 +618,7 @@ static int smu10_dpm_force_dpm_level(struct pp_hwmgr *hwmgr,
 	if (min_sclk < data->gfx_min_freq_limit)
 		min_sclk = data->gfx_min_freq_limit;
 
-	min_sclk /= 100; /* transfer 10KHz to MHz */
+	min_sclk /= 100;  
 	if (min_mclk < data->clock_table.FClocks[0].Freq)
 		min_mclk = data->clock_table.FClocks[0].Freq;
 
@@ -1038,7 +1017,7 @@ static int smu10_print_clock_levels(struct pp_hwmgr *hwmgr,
 	case PP_SCLK:
 		smum_send_msg_to_smc(hwmgr, PPSMC_MSG_GetGfxclkFrequency, &now);
 
-	/* driver only know min/max gfx_clk, Add level 1 for all other gfx clks */
+	 
 		if (now == data->gfx_max_freq_limit/100)
 			i = 2;
 		else if (now == data->gfx_min_freq_limit/100)
@@ -1270,7 +1249,7 @@ static int smu10_get_clock_by_type_with_voltage(struct pp_hwmgr *hwmgr,
 
 static int smu10_get_max_high_clocks(struct pp_hwmgr *hwmgr, struct amd_pp_simple_clock_info *clocks)
 {
-	clocks->engine_max_clock = 80000; /* driver can't get engine clock, temp hard code to 800MHz */
+	clocks->engine_max_clock = 80000;  
 	return 0;
 }
 
@@ -1298,7 +1277,7 @@ static int smu10_read_sensor(struct pp_hwmgr *hwmgr, int idx,
 	bool has_gfx_busy;
 	int ret = 0;
 
-	/* GetGfxBusy support was added on RV SMU FW 30.85.00 and PCO 4.30.59 */
+	 
 	if ((adev->apu_flags & AMD_APU_IS_PICASSO) &&
 	    (hwmgr->smu_version >= 0x41e3b))
 		has_gfx_busy = true;
@@ -1311,13 +1290,13 @@ static int smu10_read_sensor(struct pp_hwmgr *hwmgr, int idx,
 	switch (idx) {
 	case AMDGPU_PP_SENSOR_GFX_SCLK:
 		smum_send_msg_to_smc(hwmgr, PPSMC_MSG_GetGfxclkFrequency, &sclk);
-			/* in units of 10KHZ */
+			 
 		*((uint32_t *)value) = sclk * 100;
 		*size = 4;
 		break;
 	case AMDGPU_PP_SENSOR_GFX_MCLK:
 		smum_send_msg_to_smc(hwmgr, PPSMC_MSG_GetFclkFrequency, &mclk);
-			/* in units of 10KHZ */
+			 
 		*((uint32_t *)value) = mclk * 100;
 		*size = 4;
 		break;
@@ -1495,7 +1474,7 @@ static int smu10_set_power_profile_mode(struct pp_hwmgr *hwmgr, long *input, uin
 	if (hwmgr->power_profile_mode == input[size])
 		return 0;
 
-	/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+	 
 	workload_type =
 		conv_power_profile_to_pplib_workload(input[size]);
 	if (workload_type &&

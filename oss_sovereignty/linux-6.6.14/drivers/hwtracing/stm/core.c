@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Trace Module (STM) infrastructure
- * Copyright (c) 2014, Intel Corporation.
- *
- * STM class implements generic infrastructure for  System Trace Module devices
- * as defined in MIPI STPv2 specification.
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/uaccess.h>
@@ -26,11 +20,7 @@
 
 static unsigned int stm_core_up;
 
-/*
- * The SRCU here makes sure that STM device doesn't disappear from under a
- * stm_source_write() caller, which may want to have as little overhead as
- * possible.
- */
+ 
 static struct srcu_struct stm_source_srcu;
 
 static ssize_t masters_show(struct device *dev,
@@ -89,18 +79,7 @@ static struct class stm_class = {
 	.dev_groups	= stm_groups,
 };
 
-/**
- * stm_find_device() - find stm device by name
- * @buf:	character buffer containing the name
- *
- * This is called when either policy gets assigned to an stm device or an
- * stm_source device gets linked to an stm device.
- *
- * This grabs device's reference (get_device()) and module reference, both
- * of which the calling path needs to make sure to drop with stm_put_device().
- *
- * Return:	stm device pointer or null if lookup failed.
- */
+ 
 struct stm_device *stm_find_device(const char *buf)
 {
 	struct stm_device *stm;
@@ -115,7 +94,7 @@ struct stm_device *stm_find_device(const char *buf)
 
 	stm = to_stm_device(dev);
 	if (!try_module_get(stm->owner)) {
-		/* matches class_find_device() above */
+		 
 		put_device(dev);
 		return NULL;
 	}
@@ -123,26 +102,14 @@ struct stm_device *stm_find_device(const char *buf)
 	return stm;
 }
 
-/**
- * stm_put_device() - drop references on the stm device
- * @stm:	stm device, previously acquired by stm_find_device()
- *
- * This drops the module reference and device reference taken by
- * stm_find_device() or stm_char_open().
- */
+ 
 void stm_put_device(struct stm_device *stm)
 {
 	module_put(stm->owner);
 	put_device(&stm->dev);
 }
 
-/*
- * Internally we only care about software-writable masters here, that is the
- * ones in the range [stm_data->sw_start..stm_data..sw_end], however we need
- * original master numbers to be visible externally, since they are the ones
- * that will appear in the STP stream. Thus, the internal bookkeeping uses
- * $master - stm_data->sw_start to reference master descriptors and such.
- */
+ 
 
 #define __stm_master(_s, _m)				\
 	((_s)->masters[(_m) - (_s)->data->sw_start])
@@ -214,10 +181,7 @@ stm_output_disclaim(struct stm_device *stm, struct stm_output *output)
 	output->nr_chans = 0;
 }
 
-/*
- * This is like bitmap_find_free_region(), except it can ignore @start bits
- * at the beginning.
- */
+ 
 static int find_free_channels(unsigned long *bitmap, unsigned int start,
 			      unsigned int end, unsigned int width)
 {
@@ -237,7 +201,7 @@ static int find_free_channels(unsigned long *bitmap, unsigned int start,
 		if (i == width)
 			return pos;
 
-		/* step over [pos..pos+i) to continue search */
+		 
 		pos += i;
 	}
 
@@ -288,19 +252,16 @@ static int stm_output_assign(struct stm_device *stm, unsigned int width,
 	if (width > stm->data->sw_nchannels)
 		return -EINVAL;
 
-	/* We no longer accept policy_node==NULL here */
+	 
 	if (WARN_ON_ONCE(!policy_node))
 		return -EINVAL;
 
-	/*
-	 * Also, the caller holds reference to policy_node, so it won't
-	 * disappear on us.
-	 */
+	 
 	stp_policy_node_get_ranges(policy_node, &midx, &mend, &cidx, &cend);
 
 	spin_lock(&stm->mc_lock);
 	spin_lock(&output->lock);
-	/* output is already assigned -- shouldn't happen */
+	 
 	if (WARN_ON_ONCE(output->nr_chans))
 		goto unlock;
 
@@ -317,7 +278,7 @@ static int stm_output_assign(struct stm_device *stm, unsigned int width,
 		if (WARN_ON_ONCE(!priv))
 			goto unlock;
 
-		/* configfs subsys mutex is held by the caller */
+		 
 		ret = stm->pdrv->output_open(priv, output);
 		if (ret)
 			goto unlock;
@@ -361,11 +322,7 @@ static int major_match(struct device *dev, const void *data)
 	return MAJOR(dev->devt) == major;
 }
 
-/*
- * Framing protocol management
- * Modules can implement STM protocol drivers and (un-)register them
- * with the STM class framework.
- */
+ 
 static struct list_head stm_pdrv_head;
 static struct mutex stm_pdrv_mutex;
 
@@ -380,9 +337,7 @@ __stm_lookup_protocol(const char *name)
 {
 	struct stm_pdrv_entry *pe;
 
-	/*
-	 * If no name is given (NULL or ""), fall back to "p_basic".
-	 */
+	 
 	if (!name || !*name)
 		name = "p_basic";
 
@@ -511,7 +466,7 @@ static int stm_char_open(struct inode *inode, struct file *file)
 err_free:
 	kfree(stmf);
 err_put_device:
-	/* matches class_find_device() above */
+	 
 	put_device(dev);
 
 	return err;
@@ -528,10 +483,7 @@ static int stm_char_release(struct inode *inode, struct file *file)
 
 	stm_output_free(stm, &stmf->output);
 
-	/*
-	 * matches the stm_char_open()'s
-	 * class_find_device() + try_module_get()
-	 */
+	 
 	stm_put_device(stm);
 	kfree(stmf);
 
@@ -545,12 +497,7 @@ stm_assign_first_policy(struct stm_device *stm, struct stm_output *output,
 	struct stp_policy_node *pn;
 	int err, n;
 
-	/*
-	 * On success, stp_policy_node_lookup() will return holding the
-	 * configfs subsystem mutex, which is then released in
-	 * stp_policy_node_put(). This allows the pdrv->output_open() in
-	 * stm_output_assign() to serialize against the attribute accessors.
-	 */
+	 
 	for (n = 0, pn = NULL; ids[n] && !pn; n++)
 		pn = stp_policy_node_lookup(stm, ids[n]);
 
@@ -564,15 +511,7 @@ stm_assign_first_policy(struct stm_device *stm, struct stm_output *output,
 	return err;
 }
 
-/**
- * stm_data_write() - send the given payload as data packets
- * @data:	stm driver's data
- * @m:		STP master
- * @c:		STP channel
- * @ts_first:	timestamp the first packet
- * @buf:	data payload buffer
- * @count:	data payload size
- */
+ 
 ssize_t notrace stm_data_write(struct stm_data *data, unsigned int m,
 			       unsigned int c, bool ts_first, const void *buf,
 			       size_t count)
@@ -604,7 +543,7 @@ stm_write(struct stm_device *stm, struct stm_output *output,
 {
 	int err;
 
-	/* stm->pdrv is serialized against policy_mutex */
+	 
 	if (!stm->pdrv)
 		return -ENODEV;
 
@@ -626,10 +565,7 @@ static ssize_t stm_char_write(struct file *file, const char __user *buf,
 	if (count + 1 > PAGE_SIZE)
 		count = PAGE_SIZE - 1;
 
-	/*
-	 * If no m/c have been assigned to this writer up to this
-	 * point, try to use the task name and "default" policy entries.
-	 */
+	 
 	if (!stmf->output.nr_chans) {
 		char comm[sizeof(current->comm)];
 		char *ids[] = { comm, "default", NULL };
@@ -637,10 +573,7 @@ static ssize_t stm_char_write(struct file *file, const char __user *buf,
 		get_task_comm(comm, current);
 
 		err = stm_assign_first_policy(stmf->stm, &stmf->output, ids, 1);
-		/*
-		 * EBUSY means that somebody else just assigned this
-		 * output, which is just fine for write()
-		 */
+		 
 		if (err)
 			return err;
 	}
@@ -739,10 +672,7 @@ static int stm_char_policy_set_ioctl(struct stm_file *stmf, void __user *arg)
 	if (size < sizeof(*id) || size >= PATH_MAX + sizeof(*id))
 		return -EINVAL;
 
-	/*
-	 * size + 1 to make sure the .id string at the bottom is terminated,
-	 * which is also why memdup_user() is not useful here
-	 */
+	 
 	id = kzalloc(size + 1, GFP_KERNEL);
 	if (!id)
 		return -ENOMEM;
@@ -881,7 +811,7 @@ int stm_register_device(struct device *parent, struct stm_data *stm_data,
 	spin_lock_init(&stm->link_lock);
 	INIT_LIST_HEAD(&stm->link_list);
 
-	/* initialize the object before it is accessible via sysfs */
+	 
 	spin_lock_init(&stm->mc_lock);
 	mutex_init(&stm->policy_mutex);
 	stm->sw_nmasters = nmasters;
@@ -897,11 +827,7 @@ int stm_register_device(struct device *parent, struct stm_data *stm_data,
 	if (err)
 		goto err_device;
 
-	/*
-	 * Use delayed autosuspend to avoid bouncing back and forth
-	 * on recurring character device writes, with the initial
-	 * delay time of 2 seconds.
-	 */
+	 
 	pm_runtime_no_callbacks(&stm->dev);
 	pm_runtime_use_autosuspend(&stm->dev);
 	pm_runtime_set_autosuspend_delay(&stm->dev, 2000);
@@ -913,7 +839,7 @@ int stm_register_device(struct device *parent, struct stm_data *stm_data,
 err_device:
 	unregister_chrdev(stm->major, stm_data->name);
 
-	/* matches device_initialize() above */
+	 
 	put_device(&stm->dev);
 err_free:
 	vfree(stm);
@@ -937,13 +863,7 @@ void stm_unregister_device(struct stm_data *stm_data)
 	mutex_lock(&stm->link_mutex);
 	list_for_each_entry_safe(src, iter, &stm->link_list, link_entry) {
 		ret = __stm_source_link_drop(src, stm);
-		/*
-		 * src <-> stm link must not change under the same
-		 * stm::link_mutex, so complain loudly if it has;
-		 * also in this situation ret!=0 means this src is
-		 * not connected to this stm and it should be otherwise
-		 * safe to proceed with the tear-down of stm.
-		 */
+		 
 		WARN_ON_ONCE(ret);
 	}
 	mutex_unlock(&stm->link_mutex);
@@ -965,27 +885,9 @@ void stm_unregister_device(struct stm_data *stm_data)
 }
 EXPORT_SYMBOL_GPL(stm_unregister_device);
 
-/*
- * stm::link_list access serialization uses a spinlock and a mutex; holding
- * either of them guarantees that the list is stable; modification requires
- * holding both of them.
- *
- * Lock ordering is as follows:
- *   stm::link_mutex
- *     stm::link_lock
- *       src::link_lock
- */
+ 
 
-/**
- * stm_source_link_add() - connect an stm_source device to an stm device
- * @src:	stm_source device
- * @stm:	stm device
- *
- * This function establishes a link from stm_source to an stm device so that
- * the former can send out trace data to the latter.
- *
- * Return:	0 on success, -errno otherwise.
- */
+ 
 static int stm_source_link_add(struct stm_source_device *src,
 			       struct stm_device *stm)
 {
@@ -996,7 +898,7 @@ static int stm_source_link_add(struct stm_source_device *src,
 	spin_lock(&stm->link_lock);
 	spin_lock(&src->link_lock);
 
-	/* src->link is dereferenced under stm_source_srcu but not the list */
+	 
 	rcu_assign_pointer(src->link, stm);
 	list_add_tail(&src->link_entry, &stm->link_list);
 
@@ -1015,7 +917,7 @@ static int stm_source_link_add(struct stm_source_device *src,
 	if (err)
 		goto fail_detach;
 
-	/* this is to notify the STM device that a new link has been made */
+	 
 	if (stm->data->link)
 		err = stm->data->link(stm->data, src->output.master,
 				      src->output.channel);
@@ -1023,7 +925,7 @@ static int stm_source_link_add(struct stm_source_device *src,
 	if (err)
 		goto fail_free_output;
 
-	/* this is to let the source carry out all necessary preparations */
+	 
 	if (src->data->link)
 		src->data->link(src->data);
 
@@ -1047,16 +949,7 @@ fail_detach:
 	return err;
 }
 
-/**
- * __stm_source_link_drop() - detach stm_source from an stm device
- * @src:	stm_source device
- * @stm:	stm device
- *
- * If @stm is @src::link, disconnect them from one another and put the
- * reference on the @stm device.
- *
- * Caller must hold stm::link_mutex.
- */
+ 
 static int __stm_source_link_drop(struct stm_source_device *src,
 				  struct stm_device *stm)
 {
@@ -1065,16 +958,12 @@ static int __stm_source_link_drop(struct stm_source_device *src,
 
 	lockdep_assert_held(&stm->link_mutex);
 
-	/* for stm::link_list modification, we hold both mutex and spinlock */
+	 
 	spin_lock(&stm->link_lock);
 	spin_lock(&src->link_lock);
 	link = srcu_dereference_check(src->link, &stm_source_srcu, 1);
 
-	/*
-	 * The linked device may have changed since we last looked, because
-	 * we weren't holding the src::link_lock back then; if this is the
-	 * case, tell the caller to retry.
-	 */
+	 
 	if (link != stm) {
 		ret = -EAGAIN;
 		goto unlock;
@@ -1084,7 +973,7 @@ static int __stm_source_link_drop(struct stm_source_device *src,
 	list_del_init(&src->link_entry);
 	pm_runtime_mark_last_busy(&link->dev);
 	pm_runtime_put_autosuspend(&link->dev);
-	/* matches stm_find_device() from stm_source_link_store() */
+	 
 	stm_put_device(link);
 	rcu_assign_pointer(src->link, NULL);
 
@@ -1092,10 +981,7 @@ unlock:
 	spin_unlock(&src->link_lock);
 	spin_unlock(&stm->link_lock);
 
-	/*
-	 * Call the unlink callbacks for both source and stm, when we know
-	 * that we have actually performed the unlinking.
-	 */
+	 
 	if (!ret) {
 		if (src->data->unlink)
 			src->data->unlink(src->data);
@@ -1108,16 +994,7 @@ unlock:
 	return ret;
 }
 
-/**
- * stm_source_link_drop() - detach stm_source from its stm device
- * @src:	stm_source device
- *
- * Unlinking means disconnecting from source's STM device; after this
- * writes will be unsuccessful until it is linked to a new STM device.
- *
- * This will happen on "stm_source_link" sysfs attribute write to undo
- * the existing link (if any), or on linked STM device's de-registration.
- */
+ 
 static void stm_source_link_drop(struct stm_source_device *src)
 {
 	struct stm_device *stm;
@@ -1125,11 +1002,7 @@ static void stm_source_link_drop(struct stm_source_device *src)
 
 retry:
 	idx = srcu_read_lock(&stm_source_srcu);
-	/*
-	 * The stm device will be valid for the duration of this
-	 * read section, but the link may change before we grab
-	 * the src::link_lock in __stm_source_link_drop().
-	 */
+	 
 	stm = srcu_dereference(src->link, &stm_source_srcu);
 
 	ret = 0;
@@ -1141,7 +1014,7 @@ retry:
 
 	srcu_read_unlock(&stm_source_srcu, idx);
 
-	/* if it did change, retry */
+	 
 	if (ret == -EAGAIN)
 		goto retry;
 }
@@ -1182,7 +1055,7 @@ static ssize_t stm_source_link_store(struct device *dev,
 	err = stm_source_link_add(src, link);
 	if (err) {
 		pm_runtime_put_autosuspend(&link->dev);
-		/* matches the stm_find_device() above */
+		 
 		stm_put_device(link);
 	}
 
@@ -1210,16 +1083,7 @@ static void stm_source_device_release(struct device *dev)
 	kfree(src);
 }
 
-/**
- * stm_source_register_device() - register an stm_source device
- * @parent:	parent device
- * @data:	device description structure
- *
- * This will create a device of stm_source class that can write
- * data to an stm device once linked.
- *
- * Return:	0 on success, -errno otherwise.
- */
+ 
 int stm_source_register_device(struct device *parent,
 			       struct stm_source_data *data)
 {
@@ -1264,12 +1128,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(stm_source_register_device);
 
-/**
- * stm_source_unregister_device() - unregister an stm_source device
- * @data:	device description that was used to register the device
- *
- * This will remove a previously created stm_source device from the system.
- */
+ 
 void stm_source_unregister_device(struct stm_source_data *data)
 {
 	struct stm_source_device *src = data->src;
@@ -1328,10 +1187,7 @@ static int __init stm_core_init(void)
 	INIT_LIST_HEAD(&stm_pdrv_head);
 	mutex_init(&stm_pdrv_mutex);
 
-	/*
-	 * So as to not confuse existing users with a requirement
-	 * to load yet another module, do it here.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_STM_PROTO_BASIC))
 		(void)request_module_nowait("stm_p_basic");
 	stm_core_up++;

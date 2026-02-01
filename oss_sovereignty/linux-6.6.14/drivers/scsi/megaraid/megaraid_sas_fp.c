@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Linux MegaRAID driver for SAS based RAID controllers
- *
- *  Copyright (c) 2009-2013  LSI Corporation
- *  Copyright (c) 2013-2016  Avago Technologies
- *  Copyright (c) 2016-2018  Broadcom Inc.
- *
- *  FILE: megaraid_sas_fp.c
- *
- *  Authors: Broadcom Inc.
- *           Sumant Patro
- *           Varad Talamacki
- *           Manoj Jose
- *           Kashyap Desai <kashyap.desai@broadcom.com>
- *           Sumit Saxena <sumit.saxena@broadcom.com>
- *
- *  Send feedback to: megaraidlinux.pdl@broadcom.com
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -58,7 +41,7 @@ MODULE_PARM_DESC(lb_pending_cmds, "Change raid-1 load balancing outstanding "
 #define SPAN_ROW_DATA_SIZE(map_, ld, index_)   (MR_LdSpanPtrGet(ld, index_, map)->spanRowDataSize)
 #define SPAN_INVALID  0xff
 
-/* Prototypes */
+ 
 static void mr_update_span_set(struct MR_DRV_RAID_MAP_ALL *map,
 	PLD_SPAN_INFO ldSpanInfo);
 static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
@@ -79,13 +62,7 @@ u32 mega_mod64(u64 dividend, u32 divisor)
 	return remainder;
 }
 
-/**
- * mega_div64_32 - Do a 64-bit division
- * @dividend:	Dividend
- * @divisor:	Divisor
- *
- * @return quotient
- **/
+ 
 static u64 mega_div64_32(uint64_t dividend, uint32_t divisor)
 {
 	u64 d = dividend;
@@ -151,9 +128,7 @@ static struct MR_LD_SPAN *MR_LdSpanPtrGet(u32 ld, u32 span,
 	return &map->raidMap.ldSpanMap[ld].spanBlock[span].span;
 }
 
-/*
- * This function will Populate Driver Map using firmware raid map
- */
+ 
 static int MR_PopulateDrvRaidMap(struct megasas_instance *instance, u64 map_id)
 {
 	struct fusion_context *fusion = instance->ctrl_context;
@@ -189,7 +164,7 @@ static int MR_PopulateDrvRaidMap(struct megasas_instance *instance, u64 map_id)
 			fw_map_dyn->fp_pd_io_timeout_sec;
 		pDrvRaidMap->totalSize =
 			cpu_to_le32(sizeof(struct MR_DRV_RAID_MAP_ALL));
-		/* point to actual data starting point*/
+		 
 		raid_map_data = (void *)fw_map_dyn +
 			le32_to_cpu(fw_map_dyn->desc_table_offset) +
 			le32_to_cpu(fw_map_dyn->desc_table_size);
@@ -261,9 +236,7 @@ static int MR_PopulateDrvRaidMap(struct megasas_instance *instance, u64 map_id)
 		       sizeof(struct MR_DEV_HANDLE_INFO) *
 		       MAX_RAIDMAP_PHYSICAL_DEVICES);
 
-		/* New Raid map will not set totalSize, so keep expected value
-		 * for legacy code in ValidateMapInfo
-		 */
+		 
 		pDrvRaidMap->totalSize =
 			cpu_to_le32(sizeof(struct MR_FW_RAID_MAP_EXT));
 	} else {
@@ -296,9 +269,7 @@ static int MR_PopulateDrvRaidMap(struct megasas_instance *instance, u64 map_id)
 	return 0;
 }
 
-/*
- * This function will validate Map info data provided by FW
- */
+ 
 u8 MR_ValidateMapInfo(struct megasas_instance *instance, u64 map_id)
 {
 	struct fusion_context *fusion;
@@ -353,11 +324,11 @@ u8 MR_ValidateMapInfo(struct megasas_instance *instance, u64 map_id)
 	       instance->ld_ids_from_raidmap,
 	       sizeof(instance->ld_ids_from_raidmap));
 	memset(instance->ld_ids_from_raidmap, 0xff, MEGASAS_MAX_LD_IDS);
-	/*Convert Raid capability values to CPU arch */
+	 
 	for (i = 0; (num_lds > 0) && (i < MAX_LOGICAL_DRIVES_EXT); i++) {
 		ld = MR_TargetIdToLdGet(i, drv_map);
 
-		/* For non existing VDs, iterate to next VD*/
+		 
 		if (ld >= MEGASAS_MAX_SUPPORTED_LD_IDS)
 			continue;
 
@@ -402,23 +373,7 @@ static u32 MR_GetSpanBlock(u32 ld, u64 row, u64 *span_blk,
 	return SPAN_INVALID;
 }
 
-/*
-******************************************************************************
-*
-* This routine calculates the Span block for given row using spanset.
-*
-* Inputs :
-*    instance - HBA instance
-*    ld   - Logical drive number
-*    row        - Row number
-*    map    - LD map
-*
-* Outputs :
-*
-*    span          - Span number
-*    block         - Absolute Block number in the physical disk
-*    div_error	   - Devide error code.
-*/
+ 
 
 static u32 mr_spanset_get_span_block(struct megasas_instance *instance,
 		u32 ld, u64 row, u64 *span_blk, struct MR_DRV_RAID_MAP_ALL *map)
@@ -467,21 +422,7 @@ static u32 mr_spanset_get_span_block(struct megasas_instance *instance,
 	return SPAN_INVALID;
 }
 
-/*
-******************************************************************************
-*
-* This routine calculates the row for given strip using spanset.
-*
-* Inputs :
-*    instance - HBA instance
-*    ld   - Logical drive number
-*    Strip        - Strip
-*    map    - LD map
-*
-* Outputs :
-*
-*    row         - row associated with strip
-*/
+ 
 
 static u64  get_row_from_strip(struct megasas_instance *instance,
 	u32 ld, u64 strip, struct MR_DRV_RAID_MAP_ALL *map)
@@ -524,21 +465,7 @@ static u64  get_row_from_strip(struct megasas_instance *instance,
 }
 
 
-/*
-******************************************************************************
-*
-* This routine calculates the Start Strip for given row using spanset.
-*
-* Inputs :
-*    instance - HBA instance
-*    ld   - Logical drive number
-*    row        - Row number
-*    map    - LD map
-*
-* Outputs :
-*
-*    Strip         - Start strip associated with row
-*/
+ 
 
 static u64 get_strip_from_row(struct megasas_instance *instance,
 		u32 ld, u64 row, struct MR_DRV_RAID_MAP_ALL *map)
@@ -585,21 +512,7 @@ static u64 get_strip_from_row(struct megasas_instance *instance,
 	return -1;
 }
 
-/*
-******************************************************************************
-*
-* This routine calculates the Physical Arm for given strip using spanset.
-*
-* Inputs :
-*    instance - HBA instance
-*    ld   - Logical drive number
-*    strip      - Strip
-*    map    - LD map
-*
-* Outputs :
-*
-*    Phys Arm         - Phys Arm associated with strip
-*/
+ 
 
 static u32 get_arm_from_strip(struct megasas_instance *instance,
 	u32 ld, u64 strip, struct MR_DRV_RAID_MAP_ALL *map)
@@ -644,12 +557,12 @@ static u32 get_arm_from_strip(struct megasas_instance *instance,
 	return -1;
 }
 
-/* This Function will return Phys arm */
+ 
 static u8 get_arm(struct megasas_instance *instance, u32 ld, u8 span, u64 stripe,
 		struct MR_DRV_RAID_MAP_ALL *map)
 {
 	struct MR_LD_RAID  *raid = MR_LdRaidGet(ld, map);
-	/* Need to check correct default value */
+	 
 	u32    arm = 0;
 
 	switch (raid->level) {
@@ -659,7 +572,7 @@ static u8 get_arm(struct megasas_instance *instance, u32 ld, u8 span, u64 stripe
 		arm = mega_mod64(stripe, SPAN_ROW_SIZE(map, ld, span));
 		break;
 	case 1:
-		/* start with logical arm */
+		 
 		arm = get_arm_from_strip(instance, ld, stripe, map);
 		if (arm != -1U)
 			arm *= 2;
@@ -670,23 +583,7 @@ static u8 get_arm(struct megasas_instance *instance, u32 ld, u8 span, u64 stripe
 }
 
 
-/*
-******************************************************************************
-*
-* This routine calculates the arm, span and block for the specified stripe and
-* reference in stripe using spanset
-*
-* Inputs :
-*
-*    ld   - Logical drive number
-*    stripRow        - Stripe number
-*    stripRef    - Reference in stripe
-*
-* Outputs :
-*
-*    span          - Span number
-*    block         - Absolute Block number in the physical disk
-*/
+ 
 static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 		u64 stripRow, u16 stripRef, struct IO_REQUEST_INFO *io_info,
 		struct RAID_CONTEXT *pRAID_Context,
@@ -704,7 +601,7 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 
 	*pDevHandle = cpu_to_le16(MR_DEVHANDLE_INVALID);
 
-	/*Get row and span from io_info for Uneven Span IO.*/
+	 
 	row	    = io_info->start_row;
 	span	    = io_info->start_span;
 
@@ -720,7 +617,7 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 			arm -= SPAN_ROW_SIZE(map, ld, span);
 		physArm = (u8)arm;
 	} else
-		/* Calculate the arm */
+		 
 		physArm = get_arm(instance, ld, span, stripRow, map);
 	if (physArm == 0xFF)
 		return false;
@@ -731,7 +628,7 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 	if (pd != MR_PD_INVALID) {
 		*pDevHandle = MR_PdDevHandleGet(pd, map);
 		*pPdInterface = MR_PdInterfaceTypeGet(pd, map);
-		/* get second pd also for raid 1/10 fast path writes*/
+		 
 		if ((instance->adapter_type >= VENTURA_SERIES) &&
 		    (raid->level == 1) &&
 		    !io_info->isRead) {
@@ -771,23 +668,7 @@ static u8 mr_spanset_get_phy_params(struct megasas_instance *instance, u32 ld,
 	return retval;
 }
 
-/*
-******************************************************************************
-*
-* This routine calculates the arm, span and block for the specified stripe and
-* reference in stripe.
-*
-* Inputs :
-*
-*    ld   - Logical drive number
-*    stripRow        - Stripe number
-*    stripRef    - Reference in stripe
-*
-* Outputs :
-*
-*    span          - Span number
-*    block         - Absolute Block number in the physical disk
-*/
+ 
 static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRow,
 		u16 stripRef, struct IO_REQUEST_INFO *io_info,
 		struct RAID_CONTEXT *pRAID_Context,
@@ -807,17 +688,17 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 	row =  mega_div64_32(stripRow, raid->rowDataSize);
 
 	if (raid->level == 6) {
-		/* logical arm within row */
+		 
 		u32 logArm =  mega_mod64(stripRow, raid->rowDataSize);
 		u32 rowMod, armQ, arm;
 
 		if (raid->rowSize == 0)
 			return false;
-		/* get logical row mod */
+		 
 		rowMod = mega_mod64(row, raid->rowSize);
-		armQ = raid->rowSize-1-rowMod; /* index of Q drive */
-		arm = armQ+1+logArm; /* data always logically follows Q */
-		if (arm >= raid->rowSize) /* handle wrap condition */
+		armQ = raid->rowSize-1-rowMod;  
+		arm = armQ+1+logArm;  
+		if (arm >= raid->rowSize)  
 			arm -= raid->rowSize;
 		physArm = (u8)arm;
 	} else  {
@@ -837,15 +718,15 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 			return false;
 	}
 
-	/* Get the array on which this span is present */
+	 
 	arRef       = MR_LdSpanArrayGet(ld, span, map);
-	pd          = MR_ArPdGet(arRef, physArm, map); /* Get the pd */
+	pd          = MR_ArPdGet(arRef, physArm, map);  
 
 	if (pd != MR_PD_INVALID) {
-		/* Get dev handle from Pd. */
+		 
 		*pDevHandle = MR_PdDevHandleGet(pd, map);
 		*pPdInterface = MR_PdInterfaceTypeGet(pd, map);
-		/* get second pd also for raid 1/10 fast path writes*/
+		 
 		if ((instance->adapter_type >= VENTURA_SERIES) &&
 		    (raid->level == 1) &&
 		    !io_info->isRead) {
@@ -861,11 +742,11 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 			(raid->regTypeReqOnRead != REGION_TYPE_UNUSED))))
 			pRAID_Context->reg_lock_flags = REGION_TYPE_EXCLUSIVE;
 		else if (raid->level == 1) {
-			/* Get alternate Pd. */
+			 
 			physArm = physArm + 1;
 			pd = MR_ArPdGet(arRef, physArm, map);
 			if (pd != MR_PD_INVALID) {
-				/* Get dev handle from Pd */
+				 
 				*pDevHandle = MR_PdDevHandleGet(pd, map);
 				*pPdInterface = MR_PdInterfaceTypeGet(pd, map);
 			}
@@ -887,18 +768,7 @@ static u8 MR_GetPhyParams(struct megasas_instance *instance, u32 ld, u64 stripRo
 	return retval;
 }
 
-/*
- * mr_get_phy_params_r56_rmw -  Calculate parameters for R56 CTIO write operation
- * @instance:			Adapter soft state
- * @ld:				LD index
- * @stripNo:			Strip Number
- * @io_info:			IO info structure pointer
- * pRAID_Context:		RAID context pointer
- * map:				RAID map pointer
- *
- * This routine calculates the logical arm, data Arm, row number and parity arm
- * for R56 CTIO write operation.
- */
+ 
 static void mr_get_phy_params_r56_rmw(struct megasas_instance *instance,
 			    u32 ld, u64 stripNo,
 			    struct IO_REQUEST_INFO *io_info,
@@ -915,12 +785,12 @@ static void mr_get_phy_params_r56_rmw(struct megasas_instance *instance,
 	arms = raid->rowSize;
 
 	rowNum =  mega_div64_32(stripNo, dataArms);
-	/* parity disk arm, first arm is 0 */
+	 
 	rightmostParityArm = (arms - 1) - mega_mod64(rowNum, arms);
 
-	/* logical arm within row */
+	 
 	logArm =  mega_mod64(stripNo, dataArms);
-	/* physical arm for data */
+	 
 	dataArm = mega_mod64((rightmostParityArm + 1 + logArm), arms);
 
 	if (raid->spanDepth == 1) {
@@ -932,13 +802,13 @@ static void mr_get_phy_params_r56_rmw(struct megasas_instance *instance,
 	}
 
 	if (raid->level == 6) {
-		/* P Parity arm, note this can go negative adjust if negative */
+		 
 		PParityArm = (arms - 2) - mega_mod64(rowNum, arms);
 
 		if (PParityArm < 0)
 			PParityArm += arms;
 
-		/* rightmostParityArm is P-Parity for RAID 5 and Q-Parity for RAID */
+		 
 		pRAID_Context->flow_specific.r56_arm_map = rightmostParityArm;
 		pRAID_Context->flow_specific.r56_arm_map |=
 				    (u16)(PParityArm << RAID_CTX_R56_P_ARM_SHIFT);
@@ -958,15 +828,7 @@ static void mr_get_phy_params_r56_rmw(struct megasas_instance *instance,
 	return;
 }
 
-/*
-******************************************************************************
-*
-* MR_BuildRaidContext function
-*
-* This function will initiate command processing.  The start/end row and strip
-* information is calculated then the lock is acquired.
-* This function will return 0 if region lock was acquired OR return num strips
-*/
+ 
 u8
 MR_BuildRaidContext(struct megasas_instance *instance,
 		    struct IO_REQUEST_INFO *io_info,
@@ -999,13 +861,10 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 
 	ld = MR_TargetIdToLdGet(ldTgtId, map);
 	raid = MR_LdRaidGet(ld, map);
-	/*check read ahead bit*/
+	 
 	io_info->ra_capable = raid->capability.ra_capable;
 
-	/*
-	 * if rowDataSize @RAID map and spanRowDataSize @SPAN INFO are zero
-	 * return FALSE
-	 */
+	 
 	if (raid->rowDataSize == 0) {
 		if (MR_LdSpanPtrGet(ld, 0, map)->spanRowDataSize == 0)
 			return false;
@@ -1026,15 +885,13 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 
 	io_info->data_arms = raid->rowDataSize;
 
-	/*
-	 * calculate starting row and stripe, and number of strips and rows
-	 */
+	 
 	start_strip         = ldStartBlock >> raid->stripeShift;
 	ref_in_start_stripe = (u16)(ldStartBlock & stripe_mask);
 	endLba              = ldStartBlock + numBlocks - 1;
 	ref_in_end_stripe   = (u16)(endLba & stripe_mask);
 	endStrip            = endLba >> raid->stripeShift;
-	num_strips          = (u8)(endStrip - start_strip + 1); /* End strip */
+	num_strips          = (u8)(endStrip - start_strip + 1);  
 
 	if (io_info->IoforUnevenSpan) {
 		start_row = get_row_from_strip(instance, ld, start_strip, map);
@@ -1069,18 +926,16 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 	}
 	numRows = (u8)(endRow - start_row + 1);
 
-	/*
-	 * calculate region info.
-	 */
+	 
 
-	/* assume region is at the start of the first row */
+	 
 	regStart            = start_row << raid->stripeShift;
-	/* assume this IO needs the full row - we'll adjust if not true */
+	 
 	regSize             = stripSize;
 
 	io_info->do_fp_rlbypass = raid->capability.fpBypassRegionLock;
 
-	/* Check if we can send this I/O via FastPath */
+	 
 	if (raid->capability.fpCapable) {
 		if (isRead)
 			io_info->fpOkForIo = (raid->capability.fpReadCapable &&
@@ -1096,53 +951,44 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 		io_info->fpOkForIo = false;
 
 	if (numRows == 1) {
-		/* single-strip IOs can always lock only the data needed */
+		 
 		if (num_strips == 1) {
 			regStart += ref_in_start_stripe;
 			regSize = numBlocks;
 		}
-		/* multi-strip IOs always need to full stripe locked */
+		 
 	} else if (io_info->IoforUnevenSpan == 0) {
-		/*
-		 * For Even span region lock optimization.
-		 * If the start strip is the last in the start row
-		 */
+		 
 		if (start_strip == (start_row + 1) * raid->rowDataSize - 1) {
 			regStart += ref_in_start_stripe;
-			/* initialize count to sectors from startref to end
-			   of strip */
+			 
 			regSize = stripSize - ref_in_start_stripe;
 		}
 
-		/* add complete rows in the middle of the transfer */
+		 
 		if (numRows > 2)
 			regSize += (numRows-2) << raid->stripeShift;
 
-		/* if IO ends within first strip of last row*/
+		 
 		if (endStrip == endRow*raid->rowDataSize)
 			regSize += ref_in_end_stripe+1;
 		else
 			regSize += stripSize;
 	} else {
-		/*
-		 * For Uneven span region lock optimization.
-		 * If the start strip is the last in the start row
-		 */
+		 
 		if (start_strip == (get_strip_from_row(instance, ld, start_row, map) +
 				SPAN_ROW_DATA_SIZE(map, ld, startlba_span) - 1)) {
 			regStart += ref_in_start_stripe;
-			/* initialize count to sectors from
-			 * startRef to end of strip
-			 */
+			 
 			regSize = stripSize - ref_in_start_stripe;
 		}
-		/* Add complete rows in the middle of the transfer*/
+		 
 
 		if (numRows > 2)
-			/* Add complete rows in the middle of the transfer*/
+			 
 			regSize += (numRows-2) << raid->stripeShift;
 
-		/* if IO ends within first strip of last row */
+		 
 		if (endStrip == get_strip_from_row(instance, ld, endRow, map))
 			regSize += ref_in_end_stripe + 1;
 		else
@@ -1163,10 +1009,10 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 	pRAID_Context->reg_lock_row_lba    = cpu_to_le64(regStart);
 	pRAID_Context->reg_lock_length    = cpu_to_le32(regSize);
 	pRAID_Context->config_seq_num	= raid->seqNum;
-	/* save pointer to raid->LUN array */
+	 
 	*raidLUN = raid->LUN;
 
-	/* Aero R5/6 Division Offload for WRITE */
+	 
 	if (fusion->r56_div_offload && (raid->level >= 5) && !isRead) {
 		mr_get_phy_params_r56_rmw(instance, ld, start_strip, io_info,
 				       (struct RAID_CONTEXT_G35 *)pRAID_Context,
@@ -1174,8 +1020,7 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 		return true;
 	}
 
-	/*Get Phy Params only if FP capable, or else leave it to MR firmware
-	  to do the calculation.*/
+	 
 	if (io_info->fpOkForIo) {
 		retval = io_info->IoforUnevenSpan ?
 				mr_spanset_get_phy_params(instance, ld,
@@ -1184,7 +1029,7 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 				MR_GetPhyParams(instance, ld, start_strip,
 					ref_in_start_stripe, io_info,
 					pRAID_Context, map);
-		/* If IO on an invalid Pd, then FP is not possible.*/
+		 
 		if (io_info->devHandle == MR_DEVHANDLE_INVALID)
 			io_info->fpOkForIo = false;
 		return retval;
@@ -1206,17 +1051,7 @@ MR_BuildRaidContext(struct megasas_instance *instance,
 	return true;
 }
 
-/*
-******************************************************************************
-*
-* This routine pepare spanset info from Valid Raid map and store it into
-* local copy of ldSpanInfo per instance data structure.
-*
-* Inputs :
-* map    - LD map
-* ldSpanInfo - ldSpanInfo per HBA instance
-*
-*/
+ 
 void mr_update_span_set(struct MR_DRV_RAID_MAP_ALL *map,
 	PLD_SPAN_INFO ldSpanInfo)
 {
@@ -1374,30 +1209,28 @@ static u8 megasas_get_best_arm_pd(struct megasas_instance *instance,
 	pd1 = MR_ArPdGet(arRef, (arm + 1) >= span_row_size ?
 		(arm + 1 - span_row_size) : arm + 1, drv_map);
 
-	/* Get PD1 Dev Handle */
+	 
 
 	pd1_dev_handle = MR_PdDevHandleGet(pd1, drv_map);
 
 	if (pd1_dev_handle == MR_DEVHANDLE_INVALID) {
 		bestArm = arm;
 	} else {
-		/* get the pending cmds for the data and mirror arms */
+		 
 		pend0 = atomic_read(&lbInfo->scsi_pending_cmds[pd0]);
 		pend1 = atomic_read(&lbInfo->scsi_pending_cmds[pd1]);
 
-		/* Determine the disk whose head is nearer to the req. block */
+		 
 		diff0 = ABS_DIFF(block, lbInfo->last_accessed_block[pd0]);
 		diff1 = ABS_DIFF(block, lbInfo->last_accessed_block[pd1]);
 		bestArm = (diff0 <= diff1 ? arm : arm ^ 1);
 
-		/* Make balance count from 16 to 4 to
-		 *  keep driver in sync with Firmware
-		 */
+		 
 		if ((bestArm == arm && pend0 > pend1 + lb_pending_cmds)  ||
 		    (bestArm != arm && pend1 > pend0 + lb_pending_cmds))
 			bestArm ^= 1;
 
-		/* Update the last accessed block on the correct pd */
+		 
 		io_info->span_arm =
 			(span << RAID_CTX_SPANARM_SPAN_SHIFT) | bestArm;
 		io_info->pd_after_lb = (bestArm == arm) ? pd0 : pd1;
@@ -1415,7 +1248,7 @@ __le16 get_updated_dev_handle(struct megasas_instance *instance,
 	u8 arm_pd;
 	__le16 devHandle;
 
-	/* get best new arm (PD ID) */
+	 
 	arm_pd  = megasas_get_best_arm_pd(instance, lbInfo, io_info, drv_map);
 	devHandle = MR_PdDevHandleGet(arm_pd, drv_map);
 	io_info->pd_interface = MR_PdInterfaceTypeGet(arm_pd, drv_map);

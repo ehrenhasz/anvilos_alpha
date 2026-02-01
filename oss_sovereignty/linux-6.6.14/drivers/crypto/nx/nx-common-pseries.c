@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for IBM Power 842 compression accelerator
- *
- * Copyright (C) IBM Corporation, 2012
- *
- * Authors: Robert Jennings <rcj@linux.vnet.ibm.com>
- *          Seth Jennings <sjenning@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <asm/vio.h>
 #include <asm/hvcall.h>
 #include <asm/vas.h>
 
 #include "nx-842.h"
-#include "nx_csbcpb.h" /* struct nx_csbcpb */
+#include "nx_csbcpb.h"  
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Robert Jennings <rcj@linux.vnet.ibm.com>");
@@ -21,24 +14,20 @@ MODULE_DESCRIPTION("842 H/W Compression driver for IBM Power processors");
 MODULE_ALIAS_CRYPTO("842");
 MODULE_ALIAS_CRYPTO("842-nx");
 
-/*
- * Coprocessor type specific capabilities from the hypervisor.
- */
+ 
 struct hv_nx_cop_caps {
 	__be64	descriptor;
-	__be64	req_max_processed_len;	/* Max bytes in one GZIP request */
-	__be64	min_compress_len;	/* Min compression size in bytes */
-	__be64	min_decompress_len;	/* Min decompression size in bytes */
+	__be64	req_max_processed_len;	 
+	__be64	min_compress_len;	 
+	__be64	min_decompress_len;	 
 } __packed __aligned(0x1000);
 
-/*
- * Coprocessor type specific capabilities.
- */
+ 
 struct nx_cop_caps {
 	u64	descriptor;
-	u64	req_max_processed_len;	/* Max bytes in one GZIP request */
-	u64	min_compress_len;	/* Min compression in bytes */
-	u64	min_decompress_len;	/* Min decompression in bytes */
+	u64	req_max_processed_len;	 
+	u64	min_compress_len;	 
+	u64	min_decompress_len;	 
 };
 
 static u64 caps_feat;
@@ -48,7 +37,7 @@ static struct nx842_constraints nx842_pseries_constraints = {
 	.alignment =	DDE_BUFFER_ALIGN,
 	.multiple =	DDE_BUFFER_LAST_MULT,
 	.minimum =	DDE_BUFFER_LAST_MULT,
-	.maximum =	PAGE_SIZE, /* dynamic, max_sync_size */
+	.maximum =	PAGE_SIZE,  
 };
 
 static int check_constraints(unsigned long buf, unsigned int *len, bool in)
@@ -84,32 +73,29 @@ static int check_constraints(unsigned long buf, unsigned int *len, bool in)
 	return 0;
 }
 
-/* I assume we need to align the CSB? */
+ 
 #define WORKMEM_ALIGN	(256)
 
 struct nx842_workmem {
-	/* scatterlist */
+	 
 	char slin[4096];
 	char slout[4096];
-	/* coprocessor status/parameter block */
+	 
 	struct nx_csbcpb csbcpb;
 
 	char padding[WORKMEM_ALIGN];
 } __aligned(WORKMEM_ALIGN);
 
-/* Macros for fields within nx_csbcpb */
-/* Check the valid bit within the csbcpb valid field */
+ 
+ 
 #define NX842_CSBCBP_VALID_CHK(x) (x & BIT_MASK(7))
 
-/* CE macros operate on the completion_extension field bits in the csbcpb.
- * CE0 0=full completion, 1=partial completion
- * CE1 0=CE0 indicates completion, 1=termination (output may be modified)
- * CE2 0=processed_bytes is source bytes, 1=processed_bytes is target bytes */
+ 
 #define NX842_CSBCPB_CE0(x)	(x & BIT_MASK(7))
 #define NX842_CSBCPB_CE1(x)	(x & BIT_MASK(6))
 #define NX842_CSBCPB_CE2(x)	(x & BIT_MASK(5))
 
-/* The NX unit accepts data only on 4K page boundaries */
+ 
 #define NX842_HW_PAGE_SIZE	(4096)
 #define NX842_HW_PAGE_MASK	(~(NX842_HW_PAGE_SIZE-1))
 
@@ -159,7 +145,7 @@ static void ibm_nx842_incr_hist(atomic64_t *times, unsigned int time)
 	atomic64_inc(&times[bucket]);
 }
 
-/* NX unit operation flags */
+ 
 #define NX842_OP_COMPRESS	0x0
 #define NX842_OP_CRC		0x1
 #define NX842_OP_DECOMPRESS	0x2
@@ -171,22 +157,22 @@ static void ibm_nx842_incr_hist(atomic64_t *times, unsigned int time)
 
 static unsigned long nx842_get_desired_dma(struct vio_dev *viodev)
 {
-	/* No use of DMA mappings within the driver. */
+	 
 	return 0;
 }
 
 struct nx842_slentry {
-	__be64 ptr; /* Real address (use __pa()) */
+	__be64 ptr;  
 	__be64 len;
 };
 
-/* pHyp scatterlist entry */
+ 
 struct nx842_scatterlist {
-	int entry_nr; /* number of slentries */
-	struct nx842_slentry *entries; /* ptr to array of slentries */
+	int entry_nr;  
+	struct nx842_slentry *entries;  
 };
 
-/* Does not include sizeof(entry_nr) in the size */
+ 
 static inline unsigned long nx842_get_scatterlist_size(
 				struct nx842_scatterlist *sl)
 {
@@ -221,7 +207,7 @@ static int nx842_build_scatterlist(unsigned long buf, int len,
 static int nx842_validate_result(struct device *dev,
 	struct cop_status_block *csb)
 {
-	/* The csb must be valid after returning from vio_h_cop_sync */
+	 
 	if (!NX842_CSBCBP_VALID_CHK(csb->valid)) {
 		dev_err(dev, "%s: cspcbp not valid upon completion.\n",
 				__func__);
@@ -236,24 +222,24 @@ static int nx842_validate_result(struct device *dev,
 		return -EIO;
 	}
 
-	/* Check return values from the hardware in the CSB */
+	 
 	switch (csb->completion_code) {
-	case 0:	/* Completed without error */
+	case 0:	 
 		break;
-	case 64: /* Compression ok, but output larger than input */
+	case 64:  
 		dev_dbg(dev, "%s: output size larger than input size\n",
 					__func__);
 		break;
-	case 13: /* Output buffer too small */
+	case 13:  
 		dev_dbg(dev, "%s: Out of space in output buffer\n",
 					__func__);
 		return -ENOSPC;
-	case 65: /* Calculated CRC doesn't match the passed value */
+	case 65:  
 		dev_dbg(dev, "%s: CRC mismatch for decompression\n",
 					__func__);
 		return -EINVAL;
-	case 66: /* Input data contains an illegal template field */
-	case 67: /* Template indicates data past the end of the input stream */
+	case 66:  
+	case 67:  
 		dev_dbg(dev, "%s: Bad data for decompression (code:%d)\n",
 					__func__, csb->completion_code);
 		return -EINVAL;
@@ -263,7 +249,7 @@ static int nx842_validate_result(struct device *dev,
 		return -EIO;
 	}
 
-	/* Hardware sanity check */
+	 
 	if (!NX842_CSBCPB_CE2(csb->completion_extension)) {
 		dev_err(dev, "%s: No error returned by hardware, but "
 				"data returned is unusable, contact support.\n"
@@ -276,31 +262,7 @@ static int nx842_validate_result(struct device *dev,
 	return 0;
 }
 
-/**
- * nx842_pseries_compress - Compress data using the 842 algorithm
- *
- * Compression provide by the NX842 coprocessor on IBM Power systems.
- * The input buffer is compressed and the result is stored in the
- * provided output buffer.
- *
- * Upon return from this function @outlen contains the length of the
- * compressed data.  If there is an error then @outlen will be 0 and an
- * error will be specified by the return code from this function.
- *
- * @in: Pointer to input buffer
- * @inlen: Length of input buffer
- * @out: Pointer to output buffer
- * @outlen: Length of output buffer
- * @wmem: ptr to buffer for working memory, size determined by
- *        nx842_pseries_driver.workmem_size
- *
- * Returns:
- *   0		Success, output of length @outlen stored in the buffer at @out
- *   -ENOMEM	Unable to allocate internal buffers
- *   -ENOSPC	Output buffer is to small
- *   -EIO	Internal error
- *   -ENODEV	Hardware unavailable
- */
+ 
 static int nx842_pseries_compress(const unsigned char *in, unsigned int inlen,
 				  unsigned char *out, unsigned int *outlen,
 				  void *wmem)
@@ -335,12 +297,12 @@ static int nx842_pseries_compress(const unsigned char *in, unsigned int inlen,
 	}
 	dev = local_devdata->dev;
 
-	/* Init scatterlist */
+	 
 	workmem = PTR_ALIGN(wmem, WORKMEM_ALIGN);
 	slin.entries = (struct nx842_slentry *)workmem->slin;
 	slout.entries = (struct nx842_slentry *)workmem->slout;
 
-	/* Init operation */
+	 
 	op.flags = NX842_OP_COMPRESS_CRC;
 	csbcpb = &workmem->csbcpb;
 	memset(csbcpb, 0, sizeof(*csbcpb));
@@ -348,11 +310,11 @@ static int nx842_pseries_compress(const unsigned char *in, unsigned int inlen,
 
 	if ((inbuf & NX842_HW_PAGE_MASK) ==
 	    ((inbuf + inlen - 1) & NX842_HW_PAGE_MASK)) {
-		/* Create direct DDE */
+		 
 		op.in = nx842_get_pa((void *)inbuf);
 		op.inlen = inlen;
 	} else {
-		/* Create indirect DDE (scatterlist) */
+		 
 		nx842_build_scatterlist(inbuf, inlen, &slin);
 		op.in = nx842_get_pa(slin.entries);
 		op.inlen = -nx842_get_scatterlist_size(&slin);
@@ -360,11 +322,11 @@ static int nx842_pseries_compress(const unsigned char *in, unsigned int inlen,
 
 	if ((outbuf & NX842_HW_PAGE_MASK) ==
 	    ((outbuf + *outlen - 1) & NX842_HW_PAGE_MASK)) {
-		/* Create direct DDE */
+		 
 		op.out = nx842_get_pa((void *)outbuf);
 		op.outlen = *outlen;
 	} else {
-		/* Create indirect DDE (scatterlist) */
+		 
 		nx842_build_scatterlist(outbuf, *outlen, &slout);
 		op.out = nx842_get_pa(slout.entries);
 		op.outlen = -nx842_get_scatterlist_size(&slout);
@@ -374,10 +336,10 @@ static int nx842_pseries_compress(const unsigned char *in, unsigned int inlen,
 		__func__, (unsigned long)op.in, (long)op.inlen,
 		(unsigned long)op.out, (long)op.outlen);
 
-	/* Send request to pHyp */
+	 
 	ret = vio_h_cop_sync(local_devdata->vdev, &op);
 
-	/* Check for pHyp error */
+	 
 	if (ret) {
 		dev_dbg(dev, "%s: vio_h_cop_sync error (ret=%d, hret=%ld)\n",
 			__func__, ret, op.hcall_err);
@@ -385,7 +347,7 @@ static int nx842_pseries_compress(const unsigned char *in, unsigned int inlen,
 		goto unlock;
 	}
 
-	/* Check for hardware error */
+	 
 	ret = nx842_validate_result(dev, &csbcpb->csb);
 	if (ret)
 		goto unlock;
@@ -405,32 +367,7 @@ unlock:
 	return ret;
 }
 
-/**
- * nx842_pseries_decompress - Decompress data using the 842 algorithm
- *
- * Decompression provide by the NX842 coprocessor on IBM Power systems.
- * The input buffer is decompressed and the result is stored in the
- * provided output buffer.  The size allocated to the output buffer is
- * provided by the caller of this function in @outlen.  Upon return from
- * this function @outlen contains the length of the decompressed data.
- * If there is an error then @outlen will be 0 and an error will be
- * specified by the return code from this function.
- *
- * @in: Pointer to input buffer
- * @inlen: Length of input buffer
- * @out: Pointer to output buffer
- * @outlen: Length of output buffer
- * @wmem: ptr to buffer for working memory, size determined by
- *        nx842_pseries_driver.workmem_size
- *
- * Returns:
- *   0		Success, output of length @outlen stored in the buffer at @out
- *   -ENODEV	Hardware decompression device is unavailable
- *   -ENOMEM	Unable to allocate internal buffers
- *   -ENOSPC	Output buffer is to small
- *   -EINVAL	Bad input data encountered when attempting decompress
- *   -EIO	Internal error
- */
+ 
 static int nx842_pseries_decompress(const unsigned char *in, unsigned int inlen,
 				    unsigned char *out, unsigned int *outlen,
 				    void *wmem)
@@ -449,7 +386,7 @@ static int nx842_pseries_decompress(const unsigned char *in, unsigned int inlen,
 	};
 	unsigned long start = get_tb();
 
-	/* Ensure page alignment and size */
+	 
 	inbuf = (unsigned long)in;
 	if (check_constraints(inbuf, &inlen, true))
 		return -EINVAL;
@@ -468,11 +405,11 @@ static int nx842_pseries_decompress(const unsigned char *in, unsigned int inlen,
 
 	workmem = PTR_ALIGN(wmem, WORKMEM_ALIGN);
 
-	/* Init scatterlist */
+	 
 	slin.entries = (struct nx842_slentry *)workmem->slin;
 	slout.entries = (struct nx842_slentry *)workmem->slout;
 
-	/* Init operation */
+	 
 	op.flags = NX842_OP_DECOMPRESS_CRC;
 	csbcpb = &workmem->csbcpb;
 	memset(csbcpb, 0, sizeof(*csbcpb));
@@ -480,11 +417,11 @@ static int nx842_pseries_decompress(const unsigned char *in, unsigned int inlen,
 
 	if ((inbuf & NX842_HW_PAGE_MASK) ==
 	    ((inbuf + inlen - 1) & NX842_HW_PAGE_MASK)) {
-		/* Create direct DDE */
+		 
 		op.in = nx842_get_pa((void *)inbuf);
 		op.inlen = inlen;
 	} else {
-		/* Create indirect DDE (scatterlist) */
+		 
 		nx842_build_scatterlist(inbuf, inlen, &slin);
 		op.in = nx842_get_pa(slin.entries);
 		op.inlen = -nx842_get_scatterlist_size(&slin);
@@ -492,11 +429,11 @@ static int nx842_pseries_decompress(const unsigned char *in, unsigned int inlen,
 
 	if ((outbuf & NX842_HW_PAGE_MASK) ==
 	    ((outbuf + *outlen - 1) & NX842_HW_PAGE_MASK)) {
-		/* Create direct DDE */
+		 
 		op.out = nx842_get_pa((void *)outbuf);
 		op.outlen = *outlen;
 	} else {
-		/* Create indirect DDE (scatterlist) */
+		 
 		nx842_build_scatterlist(outbuf, *outlen, &slout);
 		op.out = nx842_get_pa(slout.entries);
 		op.outlen = -nx842_get_scatterlist_size(&slout);
@@ -506,17 +443,17 @@ static int nx842_pseries_decompress(const unsigned char *in, unsigned int inlen,
 		__func__, (unsigned long)op.in, (long)op.inlen,
 		(unsigned long)op.out, (long)op.outlen);
 
-	/* Send request to pHyp */
+	 
 	ret = vio_h_cop_sync(local_devdata->vdev, &op);
 
-	/* Check for pHyp error */
+	 
 	if (ret) {
 		dev_dbg(dev, "%s: vio_h_cop_sync error (ret=%d, hret=%ld)\n",
 			__func__, ret, op.hcall_err);
 		goto unlock;
 	}
 
-	/* Check for hardware error */
+	 
 	ret = nx842_validate_result(dev, &csbcpb->csb);
 	if (ret)
 		goto unlock;
@@ -525,7 +462,7 @@ static int nx842_pseries_decompress(const unsigned char *in, unsigned int inlen,
 
 unlock:
 	if (ret)
-		/* decompress fail */
+		 
 		nx842_inc_decomp_failed(local_devdata);
 	else {
 		nx842_inc_decomp_complete(local_devdata);
@@ -537,15 +474,7 @@ unlock:
 	return ret;
 }
 
-/**
- * nx842_OF_set_defaults -- Set default (disabled) values for devdata
- *
- * @devdata: struct nx842_devdata to update
- *
- * Returns:
- *  0 on success
- *  -ENOENT if @devdata ptr is NULL
- */
+ 
 static int nx842_OF_set_defaults(struct nx842_devdata *devdata)
 {
 	if (devdata) {
@@ -557,21 +486,7 @@ static int nx842_OF_set_defaults(struct nx842_devdata *devdata)
 		return -ENOENT;
 }
 
-/**
- * nx842_OF_upd_status -- Check the device info from OF status prop
- *
- * The status property indicates if the accelerator is enabled.  If the
- * device is in the OF tree it indicates that the hardware is present.
- * The status field indicates if the device is enabled when the status
- * is 'okay'.  Otherwise the device driver will be disabled.
- *
- * @devdata: struct nx842_devdata to use for dev_info
- * @prop: struct property point containing the maxsyncop for the update
- *
- * Returns:
- *  0 - Device is available
- *  -ENODEV - Device is not available
- */
+ 
 static int nx842_OF_upd_status(struct nx842_devdata *devdata,
 			       struct property *prop)
 {
@@ -586,27 +501,7 @@ static int nx842_OF_upd_status(struct nx842_devdata *devdata,
 	return -EINVAL;
 }
 
-/**
- * nx842_OF_upd_maxsglen -- Update the device info from OF maxsglen prop
- *
- * Definition of the 'ibm,max-sg-len' OF property:
- *  This field indicates the maximum byte length of a scatter list
- *  for the platform facility. It is a single cell encoded as with encode-int.
- *
- * Example:
- *  # od -x ibm,max-sg-len
- *  0000000 0000 0ff0
- *
- *  In this example, the maximum byte length of a scatter list is
- *  0x0ff0 (4,080).
- *
- * @devdata: struct nx842_devdata to update
- * @prop: struct property point containing the maxsyncop for the update
- *
- * Returns:
- *  0 on success
- *  -EINVAL on failure
- */
+ 
 static int nx842_OF_upd_maxsglen(struct nx842_devdata *devdata,
 					struct property *prop) {
 	int ret = 0;
@@ -625,36 +520,7 @@ static int nx842_OF_upd_maxsglen(struct nx842_devdata *devdata,
 	return ret;
 }
 
-/**
- * nx842_OF_upd_maxsyncop -- Update the device info from OF maxsyncop prop
- *
- * Definition of the 'ibm,max-sync-cop' OF property:
- *  Two series of cells.  The first series of cells represents the maximums
- *  that can be synchronously compressed. The second series of cells
- *  represents the maximums that can be synchronously decompressed.
- *  1. The first cell in each series contains the count of the number of
- *     data length, scatter list elements pairs that follow – each being
- *     of the form
- *    a. One cell data byte length
- *    b. One cell total number of scatter list elements
- *
- * Example:
- *  # od -x ibm,max-sync-cop
- *  0000000 0000 0001 0000 1000 0000 01fe 0000 0001
- *  0000020 0000 1000 0000 01fe
- *
- *  In this example, compression supports 0x1000 (4,096) data byte length
- *  and 0x1fe (510) total scatter list elements.  Decompression supports
- *  0x1000 (4,096) data byte length and 0x1f3 (510) total scatter list
- *  elements.
- *
- * @devdata: struct nx842_devdata to update
- * @prop: struct property point containing the maxsyncop for the update
- *
- * Returns:
- *  0 on success
- *  -EINVAL on failure
- */
+ 
 static int nx842_OF_upd_maxsyncop(struct nx842_devdata *devdata,
 					struct property *prop) {
 	int ret = 0;
@@ -683,10 +549,7 @@ static int nx842_OF_upd_maxsyncop(struct nx842_devdata *devdata,
 	decomp_data_limit = be32_to_cpu(maxsynccop->decomp_data_limit);
 	decomp_sg_limit = be32_to_cpu(maxsynccop->decomp_sg_limit);
 
-	/* Use one limit rather than separate limits for compression and
-	 * decompression. Set a maximum for this so as not to exceed the
-	 * size that the header can support and round the value down to
-	 * the hardware page size (4K) */
+	 
 	devdata->max_sync_size = min(comp_data_limit, decomp_data_limit);
 
 	devdata->max_sync_size = min_t(unsigned int, devdata->max_sync_size,
@@ -717,24 +580,7 @@ out:
 	return ret;
 }
 
-/**
- * nx842_OF_upd -- Handle OF properties updates for the device.
- *
- * Set all properties from the OF tree.  Optionally, a new property
- * can be provided by the @new_prop pointer to overwrite an existing value.
- * The device will remain disabled until all values are valid, this function
- * will return an error for updates unless all values are valid.
- *
- * @new_prop: If not NULL, this property is being updated.  If NULL, update
- *  all properties from the current values in the OF tree.
- *
- * Returns:
- *  0 - Success
- *  -ENOMEM - Could not allocate memory for new devdata structure
- *  -EINVAL - property value not found, new_prop is not a recognized
- *	property for the device or property value is not valid.
- *  -ENODEV - Device is not available
- */
+ 
 static int nx842_OF_upd(struct property *new_prop)
 {
 	struct nx842_devdata *old_devdata = NULL;
@@ -766,7 +612,7 @@ static int nx842_OF_upd(struct property *new_prop)
 	memcpy(new_devdata, old_devdata, sizeof(*old_devdata));
 	new_devdata->counters = old_devdata->counters;
 
-	/* Set ptrs for existing properties */
+	 
 	status = of_find_property(of_node, "status", NULL);
 	maxsglen = of_find_property(of_node, "ibm,max-sg-len", NULL);
 	maxsyncop = of_find_property(of_node, "ibm,max-sync-cop", NULL);
@@ -776,16 +622,13 @@ static int nx842_OF_upd(struct property *new_prop)
 		goto error_out;
 	}
 
-	/*
-	 * If this is a property update, there are only certain properties that
-	 * we care about. Bail if it isn't in the below list
-	 */
+	 
 	if (new_prop && (strncmp(new_prop->name, "status", new_prop->length) ||
 		         strncmp(new_prop->name, "ibm,max-sg-len", new_prop->length) ||
 		         strncmp(new_prop->name, "ibm,max-sync-cop", new_prop->length)))
 		goto out;
 
-	/* Perform property updates */
+	 
 	ret = nx842_OF_upd_status(new_devdata, status);
 	if (ret)
 		goto error_out;
@@ -835,18 +678,7 @@ error_out:
 	return ret;
 }
 
-/**
- * nx842_OF_notifier - Process updates to OF properties for the device
- *
- * @np: notifier block
- * @action: notifier action
- * @data: struct of_reconfig_data pointer
- *
- * Returns:
- *	NOTIFY_OK on success
- *	NOTIFY_BAD encoded with error number on failure, use
- *		notifier_to_errno() to decode this value
- */
+ 
 static int nx842_OF_notifier(struct notifier_block *np, unsigned long action,
 			     void *data)
 {
@@ -942,8 +774,7 @@ static ssize_t nx842_timehist_show(struct device *dev,
 		bytes_remain -= bytes;
 		p += bytes;
 	}
-	/* The last bucket holds everything over
-	 * 2<<(NX842_HIST_SLOTS - 2) us */
+	 
 	bytes = snprintf(p, bytes_remain, "%uus - :\t%lld\n",
 			2<<(NX842_HIST_SLOTS - 2),
 			atomic64_read(&times[(NX842_HIST_SLOTS - 1)]));
@@ -965,7 +796,7 @@ static struct attribute *nx842_sysfs_entries[] = {
 };
 
 static const struct attribute_group nx842_attribute_group = {
-	.name = NULL,		/* put in device directory */
+	.name = NULL,		 
 	.attrs = nx842_sysfs_entries,
 };
 
@@ -1135,11 +966,7 @@ static void nx842_remove(struct vio_dev *viodev)
 	kfree(old_devdata);
 }
 
-/*
- * Get NX capabilities from the hypervisor.
- * Only NXGZIP capabilities are provided by the hypersvisor right
- * now and these values are available to user space with sysfs.
- */
+ 
 static void __init nxcop_get_capabilities(void)
 {
 	struct hv_vas_all_caps *hv_caps;
@@ -1149,25 +976,19 @@ static void __init nxcop_get_capabilities(void)
 	hv_caps = kmalloc(sizeof(*hv_caps), GFP_KERNEL);
 	if (!hv_caps)
 		return;
-	/*
-	 * Get NX overall capabilities with feature type=0
-	 */
+	 
 	rc = h_query_vas_capabilities(H_QUERY_NX_CAPABILITIES, 0,
 					  (u64)virt_to_phys(hv_caps));
 	if (rc)
 		goto out;
 
 	caps_feat = be64_to_cpu(hv_caps->feat_type);
-	/*
-	 * NX-GZIP feature available
-	 */
+	 
 	if (caps_feat & VAS_NX_GZIP_FEAT_BIT) {
 		hv_nxc = kmalloc(sizeof(*hv_nxc), GFP_KERNEL);
 		if (!hv_nxc)
 			goto out;
-		/*
-		 * Get capabilities for NX-GZIP feature
-		 */
+		 
 		rc = h_query_vas_capabilities(H_QUERY_NX_CAPABILITIES,
 						  VAS_NX_GZIP_FEAT,
 						  (u64)virt_to_phys(hv_nxc));
@@ -1224,9 +1045,7 @@ static int __init nx842_pseries_init(void)
 		return -ENOMEM;
 
 	RCU_INIT_POINTER(devdata, new_devdata);
-	/*
-	 * Get NX capabilities from the hypervisor.
-	 */
+	 
 	nxcop_get_capabilities();
 
 	ret = vio_register_driver(&nx842_vio_driver);

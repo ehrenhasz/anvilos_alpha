@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Microchip KSZ PTP Implementation
- *
- * Copyright (C) 2020 ARRI Lighting
- * Copyright (C) 2022 Microchip Technology Inc.
- */
+
+ 
 
 #include <linux/dsa/ksz_common.h>
 #include <linux/irq.h>
@@ -21,13 +17,11 @@
 #define work_to_xmit_work(w) \
 		container_of((w), struct ksz_deferred_xmit_work, work)
 
-/* Sub-nanoseconds-adj,max * sub-nanoseconds / 40ns * 1ns
- * = (2^30-1) * (2 ^ 32) / 40 ns * 1 ns = 6249999
- */
+ 
 #define KSZ_MAX_DRIFT_CORR 6249999
 #define KSZ_MAX_PULSE_WIDTH 125000000LL
 
-#define KSZ_PTP_INC_NS 40ULL  /* HW clock is incremented every 40 ns (by 40) */
+#define KSZ_PTP_INC_NS 40ULL   
 #define KSZ_PTP_SUBNS_BITS 32
 
 #define KSZ_PTP_INT_START 13
@@ -59,7 +53,7 @@ static int ksz_ptp_tou_reset(struct ksz_device *dev, u8 unit)
 	u32 data;
 	int ret;
 
-	/* Reset trigger unit (clears TRIGGER_EN, but not GPIOSTATx) */
+	 
 	ret = ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, TRIG_RESET, TRIG_RESET);
 
 	data = FIELD_PREP(TRIG_DONE_M, BIT(unit));
@@ -72,7 +66,7 @@ static int ksz_ptp_tou_reset(struct ksz_device *dev, u8 unit)
 	if (ret)
 		return ret;
 
-	/* Clear reset and set GPIO direction */
+	 
 	return ksz_rmw32(dev, REG_PTP_CTRL_STAT__4, (TRIG_RESET | TRIG_ENABLE),
 			 0);
 }
@@ -96,7 +90,7 @@ static int ksz_ptp_tou_target_time_set(struct ksz_device *dev,
 {
 	int ret;
 
-	/* Hardware has only 32 bit */
+	 
 	if ((ts->tv_sec & 0xffffffff) != ts->tv_sec)
 		return -EINVAL;
 
@@ -120,9 +114,7 @@ static int ksz_ptp_tou_start(struct ksz_device *dev, u8 unit)
 	if (ret)
 		return ret;
 
-	/* Check error flag:
-	 * - the ACTIVE flag is NOT cleared an error!
-	 */
+	 
 	ret = ksz_read32(dev, REG_PTP_TRIG_STATUS__4, &data);
 	if (ret)
 		return ret;
@@ -131,7 +123,7 @@ static int ksz_ptp_tou_start(struct ksz_device *dev, u8 unit)
 		dev_err(dev->dev, "%s: Trigger unit%d error!\n", __func__,
 			unit);
 		ret = -EIO;
-		/* Unit will be reset on next access */
+		 
 		return ret;
 	}
 
@@ -157,7 +149,7 @@ static int ksz_ptp_configure_perout(struct ksz_device *dev,
 	if (ret)
 		return ret;
 
-	/* Set cycle count 0 - Infinite */
+	 
 	ret = ksz_rmw32(dev, REG_TRIG_CYCLE_CNT, TRIG_CYCLE_CNT_M, 0);
 	if (ret)
 		return ret;
@@ -227,9 +219,7 @@ static int ksz_ptp_enable_perout(struct ksz_device *dev,
 		pulse_width_ns = request->on.sec * NSEC_PER_SEC +
 			request->on.nsec;
 	} else {
-		/* Use a duty cycle of 50%. Maximum pulse width supported by the
-		 * hardware is a little bit more than 125 ms.
-		 */
+		 
 		req_pulse_width_ns = (request->period.sec * NSEC_PER_SEC +
 				      request->period.nsec) / 2;
 		pulse_width_ns = min_t(u64, req_pulse_width_ns,
@@ -290,9 +280,7 @@ static int ksz_ptp_enable_mode(struct ksz_device *dev)
 			 tag_en ? PTP_ENABLE : 0);
 }
 
-/* The function is return back the capability of timestamping feature when
- * requested through ethtool -T <interface> utility
- */
+ 
 int ksz_get_ts_info(struct dsa_switch *ds, int port, struct ethtool_ts_info *ts)
 {
 	struct ksz_device *dev = ds->priv;
@@ -445,10 +433,10 @@ static ktime_t ksz_tstamp_reconstruct(struct ksz_device *dev, ktime_t tstamp)
 	ptp_clock_time = ptp_data->clock_time;
 	spin_unlock_bh(&ptp_data->clock_lock);
 
-	/* calculate full time from partial time stamp */
+	 
 	ts.tv_sec = (ptp_clock_time.tv_sec & ~3) | ts.tv_sec;
 
-	/* find nearest possible point in time */
+	 
 	diff = timespec64_sub(ts, ptp_clock_time);
 	if (diff.tv_sec > 2)
 		ts.tv_sec -= 4;
@@ -486,11 +474,7 @@ bool ksz_port_rxtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb,
 	if (ptp_msg_type != PTP_MSGTYPE_PDELAY_REQ)
 		goto out;
 
-	/* Only subtract the partial time stamp from the correction field.  When
-	 * the hardware adds the egress time stamp to the correction field of
-	 * the PDelay_Resp message on tx, also only the partial time stamp will
-	 * be added.
-	 */
+	 
 	correction = (s64)get_unaligned_be64(&ptp_hdr->correction);
 	correction -= ktime_to_ns(tstamp) << 16;
 
@@ -547,7 +531,7 @@ void ksz_port_txtstamp(struct dsa_switch *ds, int port, struct sk_buff *skb)
 	if (!clone)
 		return;
 
-	/* caching the value to be used in tag_ksz.c */
+	 
 	KSZ_SKB_CB(skb)->clone = clone;
 }
 
@@ -557,9 +541,7 @@ static void ksz_ptp_txtstamp_skb(struct ksz_device *dev,
 	struct skb_shared_hwtstamps hwtstamps = {};
 	int ret;
 
-	/* timeout must include DSA master to transmit data, tstamp latency,
-	 * IRQ latency and time for reading the time stamp.
-	 */
+	 
 	ret = wait_for_completion_timeout(&prt->tstamp_msg_comp,
 					  msecs_to_jiffies(100));
 	if (!ret)
@@ -599,7 +581,7 @@ static int _ksz_ptp_gettime(struct ksz_device *dev, struct timespec64 *ts)
 	u8 phase;
 	int ret;
 
-	/* Copy current PTP clock into shadow registers and read */
+	 
 	ret = ksz_rmw16(dev, REG_PTP_CLK_CTRL, PTP_READ_TIME, PTP_READ_TIME);
 	if (ret)
 		return ret;
@@ -654,7 +636,7 @@ static int ksz_ptp_restart_perout(struct ksz_device *dev)
 	now_ns = timespec64_to_ns(&now);
 	first_ns = timespec64_to_ns(&ptp_data->perout_target_time_first);
 
-	/* Calculate next perout event based on start time and period */
+	 
 	period_ns = timespec64_to_ns(&ptp_data->perout_period);
 
 	if (first_ns < now_ns) {
@@ -664,11 +646,11 @@ static int ksz_ptp_restart_perout(struct ksz_device *dev)
 		next_ns = first_ns;
 	}
 
-	/* Ensure 100 ms guard time prior next event */
+	 
 	while (next_ns < now_ns + 100000000)
 		next_ns += period_ns;
 
-	/* Restart periodic output signal */
+	 
 	next = ns_to_timespec64(next_ns);
 	request.start.sec  = next.tv_sec;
 	request.start.nsec = next.tv_nsec;
@@ -689,7 +671,7 @@ static int ksz_ptp_settime(struct ptp_clock_info *ptp,
 
 	mutex_lock(&ptp_data->lock);
 
-	/* Write to shadow registers and Load PTP clock */
+	 
 	ret = ksz_write16(dev, REG_PTP_RTC_SUB_NANOSEC__2, PTP_RTC_0NS);
 	if (ret)
 		goto unlock;
@@ -778,9 +760,7 @@ static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 
 	mutex_lock(&ptp_data->lock);
 
-	/* do not use ns_to_timespec64(),
-	 * both sec and nsec are subtracted by hw
-	 */
+	 
 	sec = div_s64_rem(delta, NSEC_PER_SEC, &nsec);
 
 	ret = ksz_write32(dev, REG_PTP_RTC_NANOSEC, abs(nsec));
@@ -797,7 +777,7 @@ static int ksz_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 
 	data16 |= PTP_STEP_ADJ;
 
-	/* PTP_STEP_DIR -- 0: subtract, 1: add */
+	 
 	if (delta < 0)
 		data16 &= ~PTP_STEP_DIR;
 	else
@@ -865,7 +845,7 @@ static int ksz_ptp_verify_pin(struct ptp_clock_info *ptp, unsigned int pin,
 	return ret;
 }
 
-/*  Function is pointer to the do_aux_work in the ptp_clock capability */
+ 
 static long ksz_ptp_do_aux_work(struct ptp_clock_info *ptp)
 {
 	struct ksz_ptp_data *ptp_data = ptp_caps_to_data(ptp);
@@ -885,7 +865,7 @@ static long ksz_ptp_do_aux_work(struct ptp_clock_info *ptp)
 out:
 	mutex_unlock(&ptp_data->lock);
 
-	return HZ;  /* reschedule in 1 second */
+	return HZ;   
 }
 
 static int ksz_ptp_start_clock(struct ksz_device *dev)
@@ -942,9 +922,7 @@ int ksz_ptp_clock_register(struct dsa_switch *ds)
 
 	ptp_data->caps.pin_config = ptp_data->pin_config;
 
-	/* Currently only P2P mode is supported. When 802_1AS bit is set, it
-	 * forwards all PTP packets to host port and none to other ports.
-	 */
+	 
 	ret = ksz_rmw16(dev, REG_PTP_MSG_CONF1, PTP_TC_P2P | PTP_802_1AS,
 			PTP_TC_P2P | PTP_802_1AS);
 	if (ret)
@@ -1011,7 +989,7 @@ static irqreturn_t ksz_ptp_irq_thread_fn(int irq, void *dev_id)
 	if (ret)
 		goto out;
 
-	/* Clear the interrupts W1C */
+	 
 	ret = ksz_write16(dev, ptpirq->reg_status, data);
 	if (ret)
 		return IRQ_NONE;

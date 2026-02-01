@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Willsemi WUSB3801 Type-C port controller driver
- *
- * Copyright (C) 2022 Samuel Holland <samuel@sholland.org>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -44,7 +40,7 @@
 #define WUSB3801_CTRL0_TRY_NONE		(0x0 << 5)
 #define WUSB3801_CTRL0_TRY_SNK		(0x1 << 5)
 #define WUSB3801_CTRL0_TRY_SRC		(0x2 << 5)
-#define WUSB3801_CTRL0_CURRENT		GENMASK(4, 3) /* SRC */
+#define WUSB3801_CTRL0_CURRENT		GENMASK(4, 3)  
 #define WUSB3801_CTRL0_CURRENT_DEFAULT	(0x0 << 3)
 #define WUSB3801_CTRL0_CURRENT_1_5A	(0x1 << 3)
 #define WUSB3801_CTRL0_CURRENT_3_0A	(0x2 << 3)
@@ -58,7 +54,7 @@
 #define WUSB3801_INT_DETACHED		BIT(1)
 
 #define WUSB3801_STAT_VBUS_DETECTED	BIT(7)
-#define WUSB3801_STAT_CURRENT		GENMASK(6, 5) /* SNK */
+#define WUSB3801_STAT_CURRENT		GENMASK(6, 5)  
 #define WUSB3801_STAT_CURRENT_STANDBY	(0x0 << 5)
 #define WUSB3801_STAT_CURRENT_DEFAULT	(0x1 << 5)
 #define WUSB3801_STAT_CURRENT_1_5A	(0x2 << 5)
@@ -302,10 +298,7 @@ static irqreturn_t wusb3801_irq(int irq, void *data)
 	struct wusb3801 *wusb3801 = data;
 	unsigned int dummy;
 
-	/*
-	 * The interrupt register must be read in order to clear the IRQ,
-	 * but all of the useful information is in the status register.
-	 */
+	 
 	regmap_read(wusb3801->regmap, WUSB3801_REG_INT, &dummy);
 
 	wusb3801_hw_update(wusb3801);
@@ -361,7 +354,7 @@ static int wusb3801_probe(struct i2c_client *client)
 		goto err_put_connector;
 	wusb3801->pwr_opmode = ret;
 
-	/* Initialize the hardware with the devicetree settings. */
+	 
 	ret = wusb3801_hw_init(wusb3801);
 	if (ret)
 		goto err_put_connector;
@@ -379,7 +372,7 @@ static int wusb3801_probe(struct i2c_client *client)
 		goto err_put_connector;
 	}
 
-	/* Initialize the port attributes from the hardware state. */
+	 
 	wusb3801_hw_update(wusb3801);
 
 	ret = request_threaded_irq(client->irq, NULL, wusb3801_irq,

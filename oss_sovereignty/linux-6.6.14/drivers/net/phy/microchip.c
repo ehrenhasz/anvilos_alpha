@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Microchip Technology
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/mii.h>
@@ -36,7 +34,7 @@ static int lan88xx_phy_config_intr(struct phy_device *phydev)
 	int rc;
 
 	if (phydev->interrupts == PHY_INTERRUPT_ENABLED) {
-		/* unmask all source and clear them before enable */
+		 
 		rc = phy_write(phydev, LAN88XX_INT_MASK, 0x7FFF);
 		rc = phy_read(phydev, LAN88XX_INT_STS);
 		rc = phy_write(phydev, LAN88XX_INT_MASK,
@@ -47,7 +45,7 @@ static int lan88xx_phy_config_intr(struct phy_device *phydev)
 		if (rc)
 			return rc;
 
-		/* Ack interrupts after they have been disabled */
+		 
 		rc = phy_read(phydev, LAN88XX_INT_STS);
 	}
 
@@ -76,7 +74,7 @@ static int lan88xx_suspend(struct phy_device *phydev)
 {
 	struct lan88xx_priv *priv = phydev->priv;
 
-	/* do not power down PHY when WOL is enabled */
+	 
 	if (!priv->wolopts)
 		genphy_suspend(phydev);
 
@@ -89,14 +87,14 @@ static int lan88xx_TR_reg_set(struct phy_device *phydev, u16 regaddr,
 	int val, save_page, ret = 0;
 	u16 buf;
 
-	/* Save current page */
+	 
 	save_page = phy_save_page(phydev);
 	if (save_page < 0) {
 		phydev_warn(phydev, "Failed to get current page\n");
 		goto err;
 	}
 
-	/* Switch to TR page */
+	 
 	lan88xx_write_page(phydev, LAN88XX_EXT_PAGE_ACCESS_TR);
 
 	ret = __phy_write(phydev, LAN88XX_EXT_PAGE_TR_LOW_DATA,
@@ -113,9 +111,9 @@ static int lan88xx_TR_reg_set(struct phy_device *phydev, u16 regaddr,
 		goto err;
 	}
 
-	/* Config control bits [15:13] of register */
-	buf = (regaddr & ~(0x3 << 13));/* Clr [14:13] to write data in reg */
-	buf |= 0x8000; /* Set [15] to Packet transmit */
+	 
+	buf = (regaddr & ~(0x3 << 13)); 
+	buf |= 0x8000;  
 
 	ret = __phy_write(phydev, LAN88XX_EXT_PAGE_TR_CR, buf);
 	if (ret < 0) {
@@ -123,7 +121,7 @@ static int lan88xx_TR_reg_set(struct phy_device *phydev, u16 regaddr,
 		goto err;
 	}
 
-	usleep_range(1000, 2000);/* Wait for Data to be written */
+	usleep_range(1000, 2000); 
 	val = __phy_read(phydev, LAN88XX_EXT_PAGE_TR_CR);
 	if (!(val & 0x8000))
 		phydev_warn(phydev, "TR Register[0x%X] configuration failed\n",
@@ -136,93 +134,57 @@ static void lan88xx_config_TR_regs(struct phy_device *phydev)
 {
 	int err;
 
-	/* Get access to Channel 0x1, Node 0xF , Register 0x01.
-	 * Write 24-bit value 0x12B00A to register. Setting MrvlTrFix1000Kf,
-	 * MrvlTrFix1000Kp, MasterEnableTR bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x0F82, 0x12B00A);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x0F82]\n");
 
-	/* Get access to Channel b'10, Node b'1101, Register 0x06.
-	 * Write 24-bit value 0xD2C46F to register. Setting SSTrKf1000Slv,
-	 * SSTrKp1000Mas bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x168C, 0xD2C46F);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x168C]\n");
 
-	/* Get access to Channel b'10, Node b'1111, Register 0x11.
-	 * Write 24-bit value 0x620 to register. Setting rem_upd_done_thresh
-	 * bits
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x17A2, 0x620);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x17A2]\n");
 
-	/* Get access to Channel b'10, Node b'1101, Register 0x10.
-	 * Write 24-bit value 0xEEFFDD to register. Setting
-	 * eee_TrKp1Long_1000, eee_TrKp2Long_1000, eee_TrKp3Long_1000,
-	 * eee_TrKp1Short_1000,eee_TrKp2Short_1000, eee_TrKp3Short_1000 bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x16A0, 0xEEFFDD);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x16A0]\n");
 
-	/* Get access to Channel b'10, Node b'1101, Register 0x13.
-	 * Write 24-bit value 0x071448 to register. Setting
-	 * slv_lpi_tr_tmr_val1, slv_lpi_tr_tmr_val2 bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x16A6, 0x071448);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x16A6]\n");
 
-	/* Get access to Channel b'10, Node b'1101, Register 0x12.
-	 * Write 24-bit value 0x13132F to register. Setting
-	 * slv_sigdet_timer_val1, slv_sigdet_timer_val2 bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x16A4, 0x13132F);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x16A4]\n");
 
-	/* Get access to Channel b'10, Node b'1101, Register 0x14.
-	 * Write 24-bit value 0x0 to register. Setting eee_3level_delay,
-	 * eee_TrKf_freeze_delay bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x16A8, 0x0);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x16A8]\n");
 
-	/* Get access to Channel b'01, Node b'1111, Register 0x34.
-	 * Write 24-bit value 0x91B06C to register. Setting
-	 * FastMseSearchThreshLong1000, FastMseSearchThreshShort1000,
-	 * FastMseSearchUpdGain1000 bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x0FE8, 0x91B06C);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x0FE8]\n");
 
-	/* Get access to Channel b'01, Node b'1111, Register 0x3E.
-	 * Write 24-bit value 0xC0A028 to register. Setting
-	 * FastMseKp2ThreshLong1000, FastMseKp2ThreshShort1000,
-	 * FastMseKp2UpdGain1000, FastMseKp2ExitEn1000 bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x0FFC, 0xC0A028);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x0FFC]\n");
 
-	/* Get access to Channel b'01, Node b'1111, Register 0x35.
-	 * Write 24-bit value 0x041600 to register. Setting
-	 * FastMseSearchPhShNum1000, FastMseSearchClksPerPh1000,
-	 * FastMsePhChangeDelay1000 bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x0FEA, 0x041600);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x0FEA]\n");
 
-	/* Get access to Channel b'10, Node b'1101, Register 0x03.
-	 * Write 24-bit value 0x000004 to register. Setting TrFreeze bits.
-	 */
+	 
 	err = lan88xx_TR_reg_set(phydev, 0x1686, 0x000004);
 	if (err < 0)
 		phydev_warn(phydev, "Failed to Set Register[0x1686]\n");
@@ -262,7 +224,7 @@ static int lan88xx_probe(struct phy_device *phydev)
 		return -EINVAL;
 	}
 
-	/* these values can be used to identify internal PHY */
+	 
 	priv->chip_id = phy_read_mmd(phydev, 3, LAN88XX_MMD3_CHIP_ID);
 	priv->chip_rev = phy_read_mmd(phydev, 3, LAN88XX_MMD3_CHIP_REV);
 
@@ -321,7 +283,7 @@ static int lan88xx_config_init(struct phy_device *phydev)
 {
 	int val;
 
-	/*Zerodetect delay enable */
+	 
 	val = phy_read_mmd(phydev, MDIO_MMD_PCS,
 			   PHY_ARDENNES_MMD_DEV_3_PHY_CFG);
 	val |= PHY_ARDENNES_MMD_DEV_3_PHY_CFG_ZD_DLY_EN_;
@@ -329,7 +291,7 @@ static int lan88xx_config_init(struct phy_device *phydev)
 	phy_write_mmd(phydev, MDIO_MMD_PCS, PHY_ARDENNES_MMD_DEV_3_PHY_CFG,
 		      val);
 
-	/* Config DSP registers */
+	 
 	lan88xx_config_TR_regs(phydev);
 
 	return 0;
@@ -346,27 +308,23 @@ static void lan88xx_link_change_notify(struct phy_device *phydev)
 {
 	int temp;
 
-	/* At forced 100 F/H mode, chip may fail to set mode correctly
-	 * when cable is switched between long(~50+m) and short one.
-	 * As workaround, set to 10 before setting to 100
-	 * at forced 100 F/H mode.
-	 */
+	 
 	if (!phydev->autoneg && phydev->speed == 100) {
-		/* disable phy interrupt */
+		 
 		temp = phy_read(phydev, LAN88XX_INT_MASK);
 		temp &= ~LAN88XX_INT_MASK_MDINTPIN_EN_;
 		phy_write(phydev, LAN88XX_INT_MASK, temp);
 
 		temp = phy_read(phydev, MII_BMCR);
 		temp &= ~(BMCR_SPEED100 | BMCR_SPEED1000);
-		phy_write(phydev, MII_BMCR, temp); /* set to 10 first */
+		phy_write(phydev, MII_BMCR, temp);  
 		temp |= BMCR_SPEED100;
-		phy_write(phydev, MII_BMCR, temp); /* set to 100 later */
+		phy_write(phydev, MII_BMCR, temp);  
 
-		/* clear pending interrupt generated while workaround */
+		 
 		temp = phy_read(phydev, LAN88XX_INT_STS);
 
-		/* enable phy interrupt back */
+		 
 		temp = phy_read(phydev, LAN88XX_INT_MASK);
 		temp |= LAN88XX_INT_MASK_MDINTPIN_EN_;
 		phy_write(phydev, LAN88XX_INT_MASK, temp);
@@ -376,14 +334,11 @@ static void lan88xx_link_change_notify(struct phy_device *phydev)
 static struct phy_driver microchip_phy_driver[] = {
 {
 	.phy_id		= 0x0007c132,
-	/* This mask (0xfffffff2) is to differentiate from
-	 * LAN8742 (phy_id 0x0007c130 and 0x0007c131)
-	 * and allows future phy_id revisions.
-	 */
+	 
 	.phy_id_mask	= 0xfffffff2,
 	.name		= "Microchip LAN88xx",
 
-	/* PHY_GBIT_FEATURES */
+	 
 
 	.probe		= lan88xx_probe,
 	.remove		= lan88xx_remove,

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) IBM Corporation 2017
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERGCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -34,25 +23,20 @@
 
 #include <uapi/linux/fsi.h>
 
-/*
- * The SBEFIFO is a pipe-like FSI device for communicating with
- * the self boot engine on POWER processors.
- */
+ 
 
 #define DEVICE_NAME		"sbefifo"
 #define FSI_ENGID_SBE		0x22
 
-/*
- * Register layout
- */
+ 
 
-/* Register banks */
-#define SBEFIFO_UP		0x00		/* FSI -> Host */
-#define SBEFIFO_DOWN		0x40		/* Host -> FSI */
+ 
+#define SBEFIFO_UP		0x00		 
+#define SBEFIFO_DOWN		0x40		 
 
-/* Per-bank registers */
-#define SBEFIFO_FIFO		0x00		/* The FIFO itself */
-#define SBEFIFO_STS		0x04		/* Status register */
+ 
+#define SBEFIFO_FIFO		0x00		 
+#define SBEFIFO_STS		0x04		 
 #define   SBEFIFO_STS_PARITY_ERR	0x20000000
 #define   SBEFIFO_STS_RESET_REQ		0x02000000
 #define   SBEFIFO_STS_GOT_EOT		0x00800000
@@ -65,14 +49,14 @@
 #define   SBEFIFO_STS_VALID_SHIFT	8
 #define   SBEFIFO_STS_EOT_MASK		0x000000ff
 #define   SBEFIFO_STS_EOT_SHIFT		0
-#define SBEFIFO_EOT_RAISE	0x08		/* (Up only) Set End Of Transfer */
-#define SBEFIFO_REQ_RESET	0x0C		/* (Up only) Reset Request */
-#define SBEFIFO_PERFORM_RESET	0x10		/* (Down only) Perform Reset */
-#define SBEFIFO_EOT_ACK		0x14		/* (Down only) Acknowledge EOT */
-#define SBEFIFO_DOWN_MAX	0x18		/* (Down only) Max transfer */
+#define SBEFIFO_EOT_RAISE	0x08		 
+#define SBEFIFO_REQ_RESET	0x0C		 
+#define SBEFIFO_PERFORM_RESET	0x10		 
+#define SBEFIFO_EOT_ACK		0x14		 
+#define SBEFIFO_DOWN_MAX	0x18		 
 
-/* CFAM GP Mailbox SelfBoot Message register */
-#define CFAM_GP_MBOX_SBM_ADDR	0x2824	/* Converted 0x2809 */
+ 
+#define CFAM_GP_MBOX_SBM_ADDR	0x2824	 
 
 #define CFAM_SBM_SBE_BOOTED		0x80000000
 #define CFAM_SBM_SBE_ASYNC_FFDC		0x40000000
@@ -81,21 +65,21 @@
 
 enum sbe_state
 {
-	SBE_STATE_UNKNOWN = 0x0, // Unknown, initial state
-	SBE_STATE_IPLING  = 0x1, // IPL'ing - autonomous mode (transient)
-	SBE_STATE_ISTEP   = 0x2, // ISTEP - Running IPL by steps (transient)
-	SBE_STATE_MPIPL   = 0x3, // MPIPL
-	SBE_STATE_RUNTIME = 0x4, // SBE Runtime
-	SBE_STATE_DMT     = 0x5, // Dead Man Timer State (transient)
-	SBE_STATE_DUMP    = 0x6, // Dumping
-	SBE_STATE_FAILURE = 0x7, // Internal SBE failure
-	SBE_STATE_QUIESCE = 0x8, // Final state - needs SBE reset to get out
+	SBE_STATE_UNKNOWN = 0x0, 
+	SBE_STATE_IPLING  = 0x1, 
+	SBE_STATE_ISTEP   = 0x2, 
+	SBE_STATE_MPIPL   = 0x3, 
+	SBE_STATE_RUNTIME = 0x4, 
+	SBE_STATE_DMT     = 0x5, 
+	SBE_STATE_DUMP    = 0x6, 
+	SBE_STATE_FAILURE = 0x7, 
+	SBE_STATE_QUIESCE = 0x8, 
 };
 
-/* FIFO depth */
+ 
 #define SBEFIFO_FIFO_DEPTH		8
 
-/* Helpers */
+ 
 #define sbefifo_empty(sts)	((sts) & SBEFIFO_STS_EMPTY)
 #define sbefifo_full(sts)	((sts) & SBEFIFO_STS_FULL)
 #define sbefifo_parity_err(sts)	((sts) & SBEFIFO_STS_PARITY_ERR)
@@ -103,22 +87,22 @@ enum sbe_state
 #define sbefifo_vacant(sts)	(SBEFIFO_FIFO_DEPTH - sbefifo_populated(sts))
 #define sbefifo_eot_set(sts)	(((sts) & SBEFIFO_STS_EOT_MASK) >> SBEFIFO_STS_EOT_SHIFT)
 
-/* Reset request timeout in ms */
+ 
 #define SBEFIFO_RESET_TIMEOUT		10000
 
-/* Timeouts for commands in ms */
+ 
 #define SBEFIFO_TIMEOUT_START_CMD	10000
 #define SBEFIFO_TIMEOUT_IN_CMD		1000
 #define SBEFIFO_TIMEOUT_START_RSP	10000
 #define SBEFIFO_TIMEOUT_IN_RSP		1000
 
-/* Other constants */
+ 
 #define SBEFIFO_MAX_USER_CMD_LEN	(0x100000 + PAGE_SIZE)
-#define SBEFIFO_RESET_MAGIC		0x52534554 /* "RSET" */
+#define SBEFIFO_RESET_MAGIC		0x52534554  
 
 struct sbefifo {
 	uint32_t		magic;
-#define SBEFIFO_MAGIC		0x53424546 /* "SBEF" */
+#define SBEFIFO_MAGIC		0x53424546  
 	struct fsi_device	*fsi_dev;
 	struct device		dev;
 	struct cdev		cdev;
@@ -253,10 +237,7 @@ int sbefifo_parse_status(struct device *dev, u16 cmd, __be32 *response,
 	if (data_len)
 		*data_len = resp_len - dh;
 
-	/*
-	 * Primary status don't have the top bit set, so can't be confused with
-	 * Linux negative error codes, so return the status word whole.
-	 */
+	 
 	return s1;
 }
 EXPORT_SYMBOL_GPL(sbefifo_parse_status);
@@ -296,11 +277,11 @@ static int sbefifo_check_sbe_state(struct sbefifo *sbefifo)
 		return rc;
 	sbm = be32_to_cpu(raw_word);
 
-	/* SBE booted at all ? */
+	 
 	if (!(sbm & CFAM_SBM_SBE_BOOTED))
 		return -ESHUTDOWN;
 
-	/* Check its state */
+	 
 	switch ((sbm & CFAM_SBM_SBE_STATE_MASK) >> CFAM_SBM_SBE_STATE_SHIFT) {
 	case SBE_STATE_UNKNOWN:
 		return -ESHUTDOWN;
@@ -310,21 +291,21 @@ static int sbefifo_check_sbe_state(struct sbefifo *sbefifo)
 	case SBE_STATE_ISTEP:
 	case SBE_STATE_MPIPL:
 	case SBE_STATE_RUNTIME:
-	case SBE_STATE_DUMP: /* Not sure about that one */
+	case SBE_STATE_DUMP:  
 		break;
 	case SBE_STATE_FAILURE:
 	case SBE_STATE_QUIESCE:
 		return -ESHUTDOWN;
 	}
 
-	/* Is there async FFDC available ? Remember it */
+	 
 	if (sbm & CFAM_SBM_SBE_ASYNC_FFDC)
 		sbefifo->async_ffdc = true;
 
 	return 0;
 }
 
-/* Don't flip endianness of data to/from FIFO, just pass through. */
+ 
 static int sbefifo_down_read(struct sbefifo *sbefifo, __be32 *word)
 {
 	return fsi_device_read(sbefifo->fsi_dev, SBEFIFO_DOWN, word,
@@ -346,17 +327,17 @@ static int sbefifo_request_reset(struct sbefifo *sbefifo)
 
 	dev_dbg(dev, "Requesting FIFO reset\n");
 
-	/* Mark broken first, will be cleared if reset succeeds */
+	 
 	sbefifo->broken = true;
 
-	/* Send reset request */
+	 
 	rc = sbefifo_regw(sbefifo, SBEFIFO_UP | SBEFIFO_REQ_RESET, 1);
 	if (rc) {
 		dev_err(dev, "Sending reset request failed, rc=%d\n", rc);
 		return rc;
 	}
 
-	/* Wait for it to complete */
+	 
 	end_time = jiffies + msecs_to_jiffies(SBEFIFO_RESET_TIMEOUT);
 	while (!time_after(jiffies, end_time)) {
 		rc = sbefifo_regr(sbefifo, SBEFIFO_UP | SBEFIFO_STS, &status);
@@ -392,7 +373,7 @@ static int sbefifo_cleanup_hw(struct sbefifo *sbefifo)
 		return rc;
 	}
 
-	/* If broken, we don't need to look at status, go straight to reset */
+	 
 	if (sbefifo->broken)
 		goto do_reset;
 
@@ -400,7 +381,7 @@ static int sbefifo_cleanup_hw(struct sbefifo *sbefifo)
 	if (rc) {
 		dev_err(dev, "Cleanup: Reading UP status failed, rc=%d\n", rc);
 
-		/* Will try reset again on next attempt at using it */
+		 
 		sbefifo->broken = true;
 		return rc;
 	}
@@ -409,12 +390,12 @@ static int sbefifo_cleanup_hw(struct sbefifo *sbefifo)
 	if (rc) {
 		dev_err(dev, "Cleanup: Reading DOWN status failed, rc=%d\n", rc);
 
-		/* Will try reset again on next attempt at using it */
+		 
 		sbefifo->broken = true;
 		return rc;
 	}
 
-	/* The FIFO already contains a reset request from the SBE ? */
+	 
 	if (down_status & SBEFIFO_STS_RESET_REQ) {
 		dev_info(dev, "Cleanup: FIFO reset request set, resetting\n");
 		rc = sbefifo_regw(sbefifo, SBEFIFO_DOWN, SBEFIFO_PERFORM_RESET);
@@ -427,11 +408,11 @@ static int sbefifo_cleanup_hw(struct sbefifo *sbefifo)
 		return 0;
 	}
 
-	/* Parity error on either FIFO ? */
+	 
 	if ((up_status | down_status) & SBEFIFO_STS_PARITY_ERR)
 		need_reset = true;
 
-	/* Either FIFO not empty ? */
+	 
 	if (!((up_status & down_status) & SBEFIFO_STS_EMPTY))
 		need_reset = true;
 
@@ -443,7 +424,7 @@ static int sbefifo_cleanup_hw(struct sbefifo *sbefifo)
 
  do_reset:
 
-	/* Mark broken, will be cleared if/when reset succeeds */
+	 
 	return sbefifo_request_reset(sbefifo);
 }
 
@@ -503,10 +484,10 @@ static int sbefifo_send_command(struct sbefifo *sbefifo,
 	dev_dbg(dev, "sending command (%zd words, cmd=%04x)\n",
 		cmd_len, be32_to_cpu(command[1]));
 
-	/* As long as there's something to send */
+	 
 	timeout = msecs_to_jiffies(SBEFIFO_TIMEOUT_START_CMD);
 	while (remaining) {
-		/* Wait for room in the FIFO */
+		 
 		rc = sbefifo_wait(sbefifo, true, &status, timeout);
 		if (rc < 0)
 			return rc;
@@ -518,7 +499,7 @@ static int sbefifo_send_command(struct sbefifo *sbefifo,
 		dev_vdbg(dev, "  status=%08x vacant=%zd chunk=%zd\n",
 			 status, vacant, chunk);
 
-		/* Write as much as we can */
+		 
 		while (len--) {
 			rc = sbefifo_up_write(sbefifo, *(command++));
 			if (rc) {
@@ -530,14 +511,14 @@ static int sbefifo_send_command(struct sbefifo *sbefifo,
 		vacant -= chunk;
 	}
 
-	/* If there's no room left, wait for some to write EOT */
+	 
 	if (!vacant) {
 		rc = sbefifo_wait(sbefifo, true, &status, timeout);
 		if (rc)
 			return rc;
 	}
 
-	/* Send an EOT */
+	 
 	rc = sbefifo_regw(sbefifo, SBEFIFO_UP | SBEFIFO_EOT_RAISE, 0);
 	if (rc)
 		dev_err(dev, "FSI error %d writing EOT\n", rc);
@@ -558,7 +539,7 @@ static int sbefifo_read_response(struct sbefifo *sbefifo, struct iov_iter *respo
 
 	timeout = msecs_to_jiffies(sbefifo->timeout_start_rsp_ms);
 	for (;;) {
-		/* Grab FIFO status (this will handle parity errors) */
+		 
 		rc = sbefifo_wait(sbefifo, false, &status, timeout);
 		if (rc < 0) {
 			dev_dbg(dev, "timeout waiting (%u ms)\n", jiffies_to_msecs(timeout));
@@ -566,27 +547,22 @@ static int sbefifo_read_response(struct sbefifo *sbefifo, struct iov_iter *respo
 		}
 		timeout = msecs_to_jiffies(SBEFIFO_TIMEOUT_IN_RSP);
 
-		/* Decode status */
+		 
 		len = sbefifo_populated(status);
 		eot_set = sbefifo_eot_set(status);
 
 		dev_dbg(dev, "  chunk size %zd eot_set=0x%x\n", len, eot_set);
 
-		/* Go through the chunk */
+		 
 		while(len--) {
-			/* Read the data */
+			 
 			rc = sbefifo_down_read(sbefifo, &data);
 			if (rc < 0)
 				return rc;
 
-			/* Was it an EOT ? */
+			 
 			if (eot_set & 0x80) {
-				/*
-				 * There should be nothing else in the FIFO,
-				 * if there is, mark broken, this will force
-				 * a reset on next use, but don't fail the
-				 * command.
-				 */
+				 
 				if (len) {
 					dev_warn(dev, "FIFO read hit"
 						 " EOT with still %zd data\n",
@@ -594,25 +570,21 @@ static int sbefifo_read_response(struct sbefifo *sbefifo, struct iov_iter *respo
 					sbefifo->broken = true;
 				}
 
-				/* We are done */
+				 
 				rc = sbefifo_regw(sbefifo,
 						  SBEFIFO_DOWN | SBEFIFO_EOT_ACK, 0);
 
-				/*
-				 * If that write fail, still complete the request but mark
-				 * the fifo as broken for subsequent reset (not much else
-				 * we can do here).
-				 */
+				 
 				if (rc) {
 					dev_err(dev, "FSI error %d ack'ing EOT\n", rc);
 					sbefifo->broken = true;
 				}
 
-				/* Tell whether we overflowed */
+				 
 				return overflow ? -EOVERFLOW : 0;
 			}
 
-			/* Store it if there is room */
+			 
 			if (iov_iter_count(response) >= sizeof(__be32)) {
 				if (copy_to_iter(&data, sizeof(__be32), response) < sizeof(__be32))
 					return -EFAULT;
@@ -622,11 +594,11 @@ static int sbefifo_read_response(struct sbefifo *sbefifo, struct iov_iter *respo
 				overflow = true;
 			}
 
-			/* Next EOT bit */
+			 
 			eot_set <<= 1;
 		}
 	}
-	/* Shouldn't happen */
+	 
 	return -EIO;
 }
 
@@ -634,12 +606,12 @@ static int sbefifo_do_command(struct sbefifo *sbefifo,
 			      const __be32 *command, size_t cmd_len,
 			      struct iov_iter *response)
 {
-	/* Try sending the command */
+	 
 	int rc = sbefifo_send_command(sbefifo, command, cmd_len);
 	if (rc)
 		return rc;
 
-	/* Now, get the response */
+	 
 	return sbefifo_read_response(sbefifo, response);
 }
 
@@ -700,12 +672,12 @@ static int __sbefifo_submit(struct sbefifo *sbefifo,
 		return -EINVAL;
 	}
 
-	/* First ensure the HW is in a clean state */
+	 
 	rc = sbefifo_cleanup_hw(sbefifo);
 	if (rc)
 		return rc;
 
-	/* Look for async FFDC first if any */
+	 
 	if (sbefifo->async_ffdc)
 		sbefifo_collect_async_ffdc(sbefifo);
 
@@ -714,27 +686,14 @@ static int __sbefifo_submit(struct sbefifo *sbefifo,
 		goto fail;
 	return rc;
  fail:
-	/*
-	 * On failure, attempt a reset. Ignore the result, it will mark
-	 * the fifo broken if the reset fails
-	 */
+	 
         sbefifo_request_reset(sbefifo);
 
-	/* Return original error */
+	 
 	return rc;
 }
 
-/**
- * sbefifo_submit() - Submit and SBE fifo command and receive response
- * @dev: The sbefifo device
- * @command: The raw command data
- * @cmd_len: The command size (in 32-bit words)
- * @response: The output response buffer
- * @resp_len: In: Response buffer size, Out: Response size
- *
- * This will perform the entire operation. If the response buffer
- * overflows, returns -EOVERFLOW
- */
+ 
 int sbefifo_submit(struct device *dev, const __be32 *command, size_t cmd_len,
 		   __be32 *response, size_t *resp_len)
 {
@@ -754,20 +713,20 @@ int sbefifo_submit(struct device *dev, const __be32 *command, size_t cmd_len,
 	if (!resp_len || !command || !response)
 		return -EINVAL;
 
-	/* Prepare iov iterator */
+	 
 	rbytes = (*resp_len) * sizeof(__be32);
 	resp_iov.iov_base = response;
 	resp_iov.iov_len = rbytes;
         iov_iter_kvec(&resp_iter, ITER_DEST, &resp_iov, 1, rbytes);
 
-	/* Perform the command */
+	 
 	rc = mutex_lock_interruptible(&sbefifo->lock);
 	if (rc)
 		return rc;
 	rc = __sbefifo_submit(sbefifo, command, cmd_len, &resp_iter);
 	mutex_unlock(&sbefifo->lock);
 
-	/* Extract the response length */
+	 
 	rbytes -= iov_iter_count(&resp_iter);
 	*resp_len = rbytes / sizeof(__be32);
 
@@ -775,9 +734,7 @@ int sbefifo_submit(struct device *dev, const __be32 *command, size_t cmd_len,
 }
 EXPORT_SYMBOL_GPL(sbefifo_submit);
 
-/*
- * Char device interface
- */
+ 
 
 static void sbefifo_release_command(struct sbefifo_user *user)
 {
@@ -828,7 +785,7 @@ static ssize_t sbefifo_user_read(struct file *file, char __user *buf,
 
 	mutex_lock(&user->file_lock);
 
-	/* Cronus relies on -EAGAIN after a short read */
+	 
 	if (user->pending_len == 0) {
 		rc = -EAGAIN;
 		goto bail;
@@ -839,12 +796,12 @@ static ssize_t sbefifo_user_read(struct file *file, char __user *buf,
 	}
 	cmd_len = user->pending_len >> 2;
 
-	/* Prepare iov iterator */
+	 
 	resp_iov.iov_base = buf;
 	resp_iov.iov_len = len;
 	iov_iter_init(&resp_iter, ITER_DEST, &resp_iov, 1, len);
 
-	/* Perform the command */
+	 
 	rc = mutex_lock_interruptible(&sbefifo->lock);
 	if (rc)
 		goto bail;
@@ -857,7 +814,7 @@ static ssize_t sbefifo_user_read(struct file *file, char __user *buf,
 	if (rc < 0)
 		goto bail;
 
-	/* Extract the response length */
+	 
 	rc = len - iov_iter_count(&resp_iter);
  bail:
 	sbefifo_release_command(user);
@@ -882,7 +839,7 @@ static ssize_t sbefifo_user_write(struct file *file, const char __user *buf,
 
 	mutex_lock(&user->file_lock);
 
-	/* Can we use the pre-allocate buffer ? If not, allocate */
+	 
 	if (len <= PAGE_SIZE)
 		user->pending_cmd = user->cmd_page;
 	else
@@ -892,20 +849,20 @@ static ssize_t sbefifo_user_write(struct file *file, const char __user *buf,
 		goto bail;
 	}
 
-	/* Copy the command into the staging buffer */
+	 
 	if (copy_from_user(user->pending_cmd, buf, len)) {
 		rc = -EFAULT;
 		goto bail;
 	}
 
-	/* Check for the magic reset command */
+	 
 	if (len == 4 && be32_to_cpu(*(__be32 *)user->pending_cmd) ==
 	    SBEFIFO_RESET_MAGIC)  {
 
-		/* Clear out any pending command */
+		 
 		user->pending_len = 0;
 
-		/* Trigger reset request */
+		 
 		rc = mutex_lock_interruptible(&sbefifo->lock);
 		if (rc)
 			goto bail;
@@ -916,7 +873,7 @@ static ssize_t sbefifo_user_write(struct file *file, const char __user *buf,
 		goto bail;
 	}
 
-	/* Update the staging buffer size */
+	 
 	user->pending_len = len;
  bail:
 	if (!user->pending_len)
@@ -924,7 +881,7 @@ static ssize_t sbefifo_user_write(struct file *file, const char __user *buf,
 
 	mutex_unlock(&user->file_lock);
 
-	/* And that's it, we'll issue the command on a read */
+	 
 	return rc;
 }
 
@@ -956,7 +913,7 @@ static int sbefifo_cmd_timeout(struct sbefifo_user *user, void __user *argp)
 		return 0;
 	}
 
-	user->cmd_timeout_ms = timeout * 1000; /* user timeout is in sec */
+	user->cmd_timeout_ms = timeout * 1000;  
 	dev_dbg(dev, "Command timeout set to %us\n", timeout);
 	return 0;
 }
@@ -975,7 +932,7 @@ static int sbefifo_read_timeout(struct sbefifo_user *user, void __user *argp)
 		return 0;
 	}
 
-	user->read_timeout_ms = timeout * 1000; /* user timeout is in sec */
+	user->read_timeout_ms = timeout * 1000;  
 	dev_dbg(dev, "Timeout set to %us\n", timeout);
 	return 0;
 }
@@ -1018,9 +975,7 @@ static void sbefifo_free(struct device *dev)
 	kfree(sbefifo);
 }
 
-/*
- * Probe/remove
- */
+ 
 
 static int sbefifo_probe(struct device *dev)
 {
@@ -1037,7 +992,7 @@ static int sbefifo_probe(struct device *dev)
 	if (!sbefifo)
 		return -ENOMEM;
 
-	/* Grab a reference to the device (parent of our cdev), we'll drop it later */
+	 
 	if (!get_device(dev)) {
 		kfree(sbefifo);
 		return -ENODEV;
@@ -1050,13 +1005,13 @@ static int sbefifo_probe(struct device *dev)
 	sbefifo->timeout_in_cmd_ms = SBEFIFO_TIMEOUT_IN_CMD;
 	sbefifo->timeout_start_rsp_ms = SBEFIFO_TIMEOUT_START_RSP;
 
-	/* Create chardev for userspace access */
+	 
 	sbefifo->dev.type = &fsi_cdev_type;
 	sbefifo->dev.parent = dev;
 	sbefifo->dev.release = sbefifo_free;
 	device_initialize(&sbefifo->dev);
 
-	/* Allocate a minor in the FSI space */
+	 
 	rc = fsi_get_new_minor(fsi_dev, fsi_dev_sbefifo, &sbefifo->dev.devt, &didx);
 	if (rc)
 		goto err;
@@ -1070,7 +1025,7 @@ static int sbefifo_probe(struct device *dev)
 		goto err_free_minor;
 	}
 
-	/* Create platform devs for dts child nodes (occ, etc) */
+	 
 	for_each_available_child_of_node(dev->of_node, np) {
 		snprintf(child_name, sizeof(child_name), "%s-dev%d",
 			 dev_name(&sbefifo->dev), child_idx++);

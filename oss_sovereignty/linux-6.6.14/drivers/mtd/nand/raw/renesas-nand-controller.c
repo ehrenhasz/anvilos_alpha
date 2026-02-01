@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Evatronix/Renesas R-Car Gen3, RZ/N1D, RZ/N1S, RZ/N1L NAND controller driver
- *
- * Copyright (C) 2021 Schneider Electric
- * Author: Miquel RAYNAL <miquel.raynal@bootlin.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -416,14 +411,14 @@ static int rnandc_read_page_hw_ecc(struct nand_chip *chip, u8 *buf,
 	u32 ecc_stat;
 	int bf, ret, i;
 
-	/* Prepare controller */
+	 
 	rnandc_select_target(chip, chip->cur_cs);
 	rnandc_clear_status(rnandc);
 	reinit_completion(&rnandc->complete);
 	rnandc_en_interrupts(rnandc, INT_DMA_ENDED);
 	rnandc_en_correction(rnandc);
 
-	/* Configure DMA */
+	 
 	dma_addr = dma_map_single(rnandc->dev, rnandc->buf, mtd->writesize,
 				  DMA_FROM_DEVICE);
 	writel(dma_addr, rnandc->regs + DMA_ADDR_LOW_REG);
@@ -471,11 +466,7 @@ static int rnandc_read_page_hw_ecc(struct nand_chip *chip, u8 *buf,
 		}
 	} else if (ECC_STAT_CORRECTABLE(cs, ecc_stat)) {
 		bf = ECC_CNT(cs, readl_relaxed(rnandc->regs + ECC_CNT_REG));
-		/*
-		 * The number of bitflips is an approximation given the fact
-		 * that this controller does not provide per-chunk details but
-		 * only gives statistics on the entire page.
-		 */
+		 
 		mtd->ecc_stats.corrected += bf;
 	}
 
@@ -510,7 +501,7 @@ static int rnandc_read_subpage_hw_ecc(struct nand_chip *chip, u32 req_offset,
 	u32 ecc_stat;
 	int bf, ret;
 
-	/* Prepare controller */
+	 
 	rnandc_select_target(chip, chip->cur_cs);
 	rnandc_clear_status(rnandc);
 	rnandc_en_correction(rnandc);
@@ -565,11 +556,7 @@ static int rnandc_read_subpage_hw_ecc(struct nand_chip *chip, u32 req_offset,
 		}
 	} else if (ECC_STAT_CORRECTABLE(cs, ecc_stat)) {
 		bf = ECC_CNT(cs, readl_relaxed(rnandc->regs + ECC_CNT_REG));
-		/*
-		 * The number of bitflips is an approximation given the fact
-		 * that this controller does not provide per-chunk details but
-		 * only gives statistics on the entire page.
-		 */
+		 
 		mtd->ecc_stats.corrected += bf;
 	}
 
@@ -596,14 +583,14 @@ static int rnandc_write_page_hw_ecc(struct nand_chip *chip, const u8 *buf,
 
 	memcpy(rnandc->buf, buf, mtd->writesize);
 
-	/* Prepare controller */
+	 
 	rnandc_select_target(chip, chip->cur_cs);
 	rnandc_clear_status(rnandc);
 	reinit_completion(&rnandc->complete);
 	rnandc_en_interrupts(rnandc, INT_MEM_RDY(cs));
 	rnandc_en_correction(rnandc);
 
-	/* Configure DMA */
+	 
 	dma_addr = dma_map_single(rnandc->dev, (void *)rnandc->buf, mtd->writesize,
 				  DMA_TO_DEVICE);
 	writel(dma_addr, rnandc->regs + DMA_ADDR_LOW_REG);
@@ -650,7 +637,7 @@ static int rnandc_write_subpage_hw_ecc(struct nand_chip *chip, u32 req_offset,
 	};
 	int ret;
 
-	/* Prepare controller */
+	 
 	rnandc_select_target(chip, chip->cur_cs);
 	rnandc_clear_status(rnandc);
 	rnandc_en_correction(rnandc);
@@ -675,10 +662,7 @@ static int rnandc_write_subpage_hw_ecc(struct nand_chip *chip, u32 req_offset,
 	return 0;
 }
 
-/*
- * This controller is simple enough and thus does not need to use the parser
- * provided by the core, instead, handle every situation here.
- */
+ 
 static int rnandc_exec_op(struct nand_chip *chip,
 			  const struct nand_operation *op, bool check_only)
 {
@@ -822,10 +806,7 @@ static int rnandc_exec_op(struct nand_chip *chip,
 		}
 	}
 
-	/*
-	 * Sequence 19 is generic and dedicated to write operations.
-	 * Sequence 18 is also generic and works for all other operations.
-	 */
+	 
 	if (rop.buf && !rop.read)
 		rop.command |= COMMAND_SEQ_GEN_OUT;
 	else
@@ -926,43 +907,28 @@ static int rnandc_setup_interface(struct nand_chip *chip, int chipnr,
 	bef_dly = sdr->tWB_max - sdr->tDH_min;
 	ca_to_data = sdr->tWHR_min + sdr->tREA_max - sdr->tDH_min;
 
-	/*
-	 * D0 = CMD -> ADDR = tCLH + tCLS - 1 cycle
-	 * D1 = CMD -> CMD = tCLH + tCLS - 1 cycle
-	 * D2 = CMD -> DLY = tWB - tDH
-	 * D3 = CMD -> DATA = tWHR + tREA - tDH
-	 */
+	 
 	rnand->tim_gen_seq0 =
 		TIM_GEN_SEQ0_D0(TO_CYCLES64(cle - cyc, period_ns)) |
 		TIM_GEN_SEQ0_D1(TO_CYCLES64(cle - cyc, period_ns)) |
 		TIM_GEN_SEQ0_D2(TO_CYCLES64(bef_dly, period_ns)) |
 		TIM_GEN_SEQ0_D3(TO_CYCLES64(ca_to_data, period_ns));
 
-	/*
-	 * D4 = ADDR -> CMD = tALH + tALS - 1 cyle
-	 * D5 = ADDR -> ADDR = tALH + tALS - 1 cyle
-	 * D6 = ADDR -> DLY = tWB - tDH
-	 * D7 = ADDR -> DATA = tWHR + tREA - tDH
-	 */
+	 
 	rnand->tim_gen_seq1 =
 		TIM_GEN_SEQ1_D4(TO_CYCLES64(ale - cyc, period_ns)) |
 		TIM_GEN_SEQ1_D5(TO_CYCLES64(ale - cyc, period_ns)) |
 		TIM_GEN_SEQ1_D6(TO_CYCLES64(bef_dly, period_ns)) |
 		TIM_GEN_SEQ1_D7(TO_CYCLES64(ca_to_data, period_ns));
 
-	/*
-	 * D8 = DLY -> DATA = tRR + tREA
-	 * D9 = DLY -> CMD = tRR
-	 * D10 = DATA -> CMD = tCLH + tCLS - 1 cycle
-	 * D11 = DATA -> DLY = tWB - tDH
-	 */
+	 
 	rnand->tim_gen_seq2 =
 		TIM_GEN_SEQ2_D8(TO_CYCLES64(sdr->tRR_min + sdr->tREA_max, period_ns)) |
 		TIM_GEN_SEQ2_D9(TO_CYCLES64(sdr->tRR_min, period_ns)) |
 		TIM_GEN_SEQ2_D10(TO_CYCLES64(cle - cyc, period_ns)) |
 		TIM_GEN_SEQ2_D11(TO_CYCLES64(bef_dly, period_ns));
 
-	/* D12 = DATA -> END = tCLH - tDH */
+	 
 	rnand->tim_gen_seq3 =
 		TIM_GEN_SEQ3_D12(TO_CYCLES64(sdr->tCLH_min - sdr->tDH_min, period_ns));
 
@@ -1116,7 +1082,7 @@ static int rnandc_attach_chip(struct nand_chip *chip)
 	struct nand_memory_organization *memorg = nanddev_get_memorg(&chip->base);
 	int ret;
 
-	/* Do not store BBT bits in the OOB section as it is not protected */
+	 
 	if (chip->bbt_options & NAND_BBT_USE_FLASH)
 		chip->bbt_options |= NAND_BBT_NO_OOB;
 
@@ -1153,7 +1119,7 @@ static int rnandc_attach_chip(struct nand_chip *chip)
 		return ret;
 	}
 
-	/* Force an update of the configuration registers */
+	 
 	rnand->selected_die = -1;
 
 	return 0;
@@ -1210,7 +1176,7 @@ static int rnandc_chip_init(struct rnandc *rnandc, struct device_node *np)
 		return ret;
 	}
 
-	/* Alloc the driver's NAND chip structure */
+	 
 	rnand = devm_kzalloc(rnandc->dev, struct_size(rnand, sels, nsels),
 			     GFP_KERNEL);
 	if (!rnand)
@@ -1236,10 +1202,7 @@ static int rnandc_chip_init(struct rnandc *rnandc, struct device_node *np)
 			return -EINVAL;
 		}
 
-		/*
-		 * No need to check for RB or WP properties, there is a 1:1
-		 * mandatory mapping with the CS.
-		 */
+		 
 		rnand->sels[i].cs = cs;
 	}
 
@@ -1341,7 +1304,7 @@ static int rnandc_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* The external NAND bus clock rate is needed for computing timings */
+	 
 	eclk = clk_get(&pdev->dev, "eclk");
 	if (IS_ERR(eclk)) {
 		ret = PTR_ERR(eclk);
@@ -1398,7 +1361,7 @@ static void rnandc_remove(struct platform_device *pdev)
 static const struct of_device_id rnandc_id_table[] = {
 	{ .compatible = "renesas,rcar-gen3-nandc" },
 	{ .compatible = "renesas,rzn1-nandc" },
-	{} /* sentinel */
+	{}  
 };
 MODULE_DEVICE_TABLE(of, rnandc_id_table);
 

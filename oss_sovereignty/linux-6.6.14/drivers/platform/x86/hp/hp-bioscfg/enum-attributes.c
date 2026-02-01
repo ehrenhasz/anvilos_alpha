@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to enumeration type attributes under
- * BIOS Enumeration GUID for use with hp-bioscfg driver.
- *
- * Copyright (c) 2022 HP Development Company, L.P.
- */
+
+ 
 
 #include "bioscfg.h"
 
@@ -21,20 +16,14 @@ static ssize_t current_value_show(struct kobject *kobj, struct kobj_attribute *a
 			 bioscfg_drv.enumeration_data[instance_id].current_value);
 }
 
-/**
- * validate_enumeration_input() -
- * Validate input of current_value against possible values
- *
- * @instance_id: The instance on which input is validated
- * @buf: Input value
- */
+ 
 static int validate_enumeration_input(int instance_id, const char *buf)
 {
 	int i;
 	int found = 0;
 	struct enumeration_data *enum_data = &bioscfg_drv.enumeration_data[instance_id];
 
-	/* Is it a read only attribute */
+	 
 	if (enum_data->common.is_readonly)
 		return -EIO;
 
@@ -105,7 +94,7 @@ int hp_alloc_enumeration_data(void)
 	return 0;
 }
 
-/* Expected Values types associated with each element */
+ 
 static const acpi_object_type expected_enum_types[] = {
 	[NAME] = ACPI_TYPE_STRING,
 	[VALUE] = ACPI_TYPE_STRING,
@@ -138,7 +127,7 @@ static int hp_populate_enumeration_elements_from_package(union acpi_object *enum
 	struct enumeration_data *enum_data = &bioscfg_drv.enumeration_data[instance_id];
 
 	for (elem = 1, eloc = 1; elem < enum_obj_count; elem++, eloc++) {
-		/* ONLY look at the first ENUM_ELEM_CNT elements */
+		 
 		if (eloc == ENUM_ELEM_CNT)
 			goto exit_enumeration_package;
 
@@ -160,7 +149,7 @@ static int hp_populate_enumeration_elements_from_package(union acpi_object *enum
 			continue;
 		}
 
-		/* Check that both expected and read object type match */
+		 
 		if (expected_enum_types[eloc] != enum_obj[elem].type) {
 			pr_err("Error expected type %d for elem %d, but got type %d instead\n",
 			       expected_enum_types[eloc], elem, enum_obj[elem].type);
@@ -168,7 +157,7 @@ static int hp_populate_enumeration_elements_from_package(union acpi_object *enum
 			return -EIO;
 		}
 
-		/* Assign appropriate element value to corresponding field */
+		 
 		switch (eloc) {
 		case NAME:
 		case VALUE:
@@ -196,13 +185,7 @@ static int hp_populate_enumeration_elements_from_package(union acpi_object *enum
 			}
 			enum_data->common.prerequisites_size = int_value;
 
-			/*
-			 * This step is needed to keep the expected
-			 * element list pointing to the right obj[elem].type
-			 * when the size is zero. PREREQUISITES
-			 * object is omitted by BIOS when the size is
-			 * zero.
-			 */
+			 
 			if (int_value == 0)
 				eloc++;
 			break;
@@ -246,12 +229,7 @@ static int hp_populate_enumeration_elements_from_package(union acpi_object *enum
 			}
 			enum_data->possible_values_size = int_value;
 
-			/*
-			 * This step is needed to keep the expected
-			 * element list pointing to the right obj[elem].type
-			 * when the size is zero. POSSIBLE_VALUES
-			 * object is omitted by BIOS when the size is zero.
-			 */
+			 
 			if (int_value == 0)
 				eloc++;
 			break;
@@ -273,10 +251,7 @@ static int hp_populate_enumeration_elements_from_package(union acpi_object *enum
 				if (ret)
 					return -EINVAL;
 
-				/*
-				 * ignore strings when possible values size
-				 * is greater than MAX_VALUES_SIZE
-				 */
+				 
 				if (size < MAX_VALUES_SIZE)
 					strscpy(enum_data->possible_values[pos_values],
 						str_value,
@@ -300,14 +275,7 @@ exit_enumeration_package:
 	return 0;
 }
 
-/**
- * hp_populate_enumeration_package_data() -
- * Populate all properties of an instance under enumeration attribute
- *
- * @enum_obj: ACPI object with enumeration data
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int hp_populate_enumeration_package_data(union acpi_object *enum_obj,
 					 int instance_id,
 					 struct kobject *attr_name_kobj)
@@ -321,10 +289,7 @@ int hp_populate_enumeration_package_data(union acpi_object *enum_obj,
 						      instance_id);
 	hp_update_attribute_permissions(enum_data->common.is_readonly,
 					&enumeration_current_val);
-	/*
-	 * Several attributes have names such "MONDAY". Friendly
-	 * user nane is generated to make the name more descriptive
-	 */
+	 
 	hp_friendly_user_name_update(enum_data->common.path,
 				     attr_name_kobj->name,
 				     enum_data->common.display_name,
@@ -339,50 +304,37 @@ static int hp_populate_enumeration_elements_from_buffer(u8 *buffer_ptr, u32 *buf
 	struct enumeration_data *enum_data = &bioscfg_drv.enumeration_data[instance_id];
 	int ret = 0;
 
-	/*
-	 * Only data relevant to this driver and its functionality is
-	 * read. BIOS defines the order in which each * element is
-	 * read. Element 0 data is not relevant to this
-	 * driver hence it is ignored. For clarity, all element names
-	 * (DISPLAY_IN_UI) which defines the order in which is read
-	 * and the name matches the variable where the data is stored.
-	 *
-	 * In earlier implementation, reported errors were ignored
-	 * causing the data to remain uninitialized. It is not
-	 * possible to determine if data read from BIOS is valid or
-	 * not. It is for this reason functions may return a error
-	 * without validating the data itself.
-	 */
+	 
 
-	// VALUE:
+	
 	ret = hp_get_string_from_buffer(&buffer_ptr, buffer_size, enum_data->current_value,
 					sizeof(enum_data->current_value));
 	if (ret < 0)
 		goto buffer_exit;
 
-	// COMMON:
+	
 	ret = hp_get_common_data_from_buffer(&buffer_ptr, buffer_size, &enum_data->common);
 	if (ret < 0)
 		goto buffer_exit;
 
-	// ENUM_CURRENT_VALUE:
+	
 	ret = hp_get_string_from_buffer(&buffer_ptr, buffer_size,
 					enum_data->current_value,
 					sizeof(enum_data->current_value));
 	if (ret < 0)
 		goto buffer_exit;
 
-	// ENUM_SIZE:
+	
 	ret = hp_get_integer_from_buffer(&buffer_ptr, buffer_size,
 					 &enum_data->possible_values_size);
 
 	if (enum_data->possible_values_size > MAX_VALUES_SIZE) {
-		/* Report a message and limit possible values size to maximum value */
+		 
 		pr_warn("Enum Possible size value exceeded the maximum number of elements supported or data may be malformed\n");
 		enum_data->possible_values_size = MAX_VALUES_SIZE;
 	}
 
-	// ENUM_POSSIBLE_VALUES:
+	
 	for (values = 0; values < enum_data->possible_values_size; values++) {
 		ret = hp_get_string_from_buffer(&buffer_ptr, buffer_size,
 						enum_data->possible_values[values],
@@ -395,15 +347,7 @@ buffer_exit:
 	return ret;
 }
 
-/**
- * hp_populate_enumeration_buffer_data() -
- * Populate all properties of an instance under enumeration attribute
- *
- * @buffer_ptr: Buffer pointer
- * @buffer_size: Buffer size
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int hp_populate_enumeration_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 					int instance_id,
 					struct kobject *attr_name_kobj)
@@ -413,7 +357,7 @@ int hp_populate_enumeration_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 
 	enum_data->attr_name_kobj = attr_name_kobj;
 
-	/* Populate enumeration elements */
+	 
 	ret = hp_populate_enumeration_elements_from_buffer(buffer_ptr, buffer_size,
 							   instance_id);
 	if (ret < 0)
@@ -421,10 +365,7 @@ int hp_populate_enumeration_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 
 	hp_update_attribute_permissions(enum_data->common.is_readonly,
 					&enumeration_current_val);
-	/*
-	 * Several attributes have names such "MONDAY". A Friendlier
-	 * user nane is generated to make the name more descriptive
-	 */
+	 
 	hp_friendly_user_name_update(enum_data->common.path,
 				     attr_name_kobj->name,
 				     enum_data->common.display_name,
@@ -433,11 +374,7 @@ int hp_populate_enumeration_buffer_data(u8 *buffer_ptr, u32 *buffer_size,
 	return sysfs_create_group(attr_name_kobj, &enumeration_attr_group);
 }
 
-/**
- * hp_exit_enumeration_attributes() - Clear all attribute data
- *
- * Clears all data allocated for this group of attributes
- */
+ 
 void hp_exit_enumeration_attributes(void)
 {
 	int instance_id;

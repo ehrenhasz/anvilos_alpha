@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2019~2020 NXP
- */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 
 #include "clk-scu.h"
 
-/* Keep sorted in the ascending order */
+ 
 static u32 imx8dxl_clk_scu_rsrc_table[] = {
 	IMX_SC_R_SPI_0,
 	IMX_SC_R_SPI_1,

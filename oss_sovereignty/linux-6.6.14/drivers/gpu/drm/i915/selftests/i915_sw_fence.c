@@ -1,26 +1,4 @@
-/*
- * Copyright © 2017 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -36,7 +14,7 @@ fence_notify(struct i915_sw_fence *fence, enum i915_sw_fence_notify state)
 		break;
 
 	case FENCE_FREE:
-		/* Leave the fence for the caller to free it after testing */
+		 
 		break;
 	}
 
@@ -82,7 +60,7 @@ static int test_self(void *arg)
 	struct i915_sw_fence *fence;
 	int ret;
 
-	/* Test i915_sw_fence signaling and completion testing */
+	 
 	fence = alloc_fence();
 	if (!fence)
 		return -ENOMEM;
@@ -98,7 +76,7 @@ static int test_dag(void *arg)
 	struct i915_sw_fence *A, *B, *C;
 	int ret = -EINVAL;
 
-	/* Test detection of cycles within the i915_sw_fence graphs */
+	 
 	if (!IS_ENABLED(CONFIG_DRM_I915_SW_FENCE_CHECK_DAG))
 		return 0;
 
@@ -177,7 +155,7 @@ static int test_AB(void *arg)
 	struct i915_sw_fence *A, *B;
 	int ret;
 
-	/* Test i915_sw_fence (A) waiting on an event source (B) */
+	 
 	A = alloc_fence();
 	if (!A)
 		return -ENOMEM;
@@ -225,7 +203,7 @@ static int test_ABC(void *arg)
 	struct i915_sw_fence *A, *B, *C;
 	int ret;
 
-	/* Test a chain of fences, A waits on B who waits on C */
+	 
 	A = alloc_fence();
 	if (!A)
 		return -ENOMEM;
@@ -305,7 +283,7 @@ static int test_AB_C(void *arg)
 	struct i915_sw_fence *A, *B, *C;
 	int ret = -EINVAL;
 
-	/* Test multiple fences (AB) waiting on a single event (C) */
+	 
 	A = alloc_fence();
 	if (!A)
 		return -ENOMEM;
@@ -382,7 +360,7 @@ static int test_C_AB(void *arg)
 	struct i915_sw_fence *A, *B, *C;
 	int ret;
 
-	/* Test multiple event sources (A,B) for a single fence (C) */
+	 
 	A = alloc_fence();
 	if (!A)
 		return -ENOMEM;
@@ -453,7 +431,7 @@ static int test_chain(void *arg)
 	struct i915_sw_fence **fences;
 	int ret, i;
 
-	/* Test a long chain of fences */
+	 
 	fences = kmalloc_array(nfences, sizeof(*fences), GFP_KERNEL);
 	if (!fences)
 		return -ENOMEM;
@@ -530,7 +508,7 @@ static int test_ipc(void *arg)
 	if (wq == NULL)
 		return -ENOMEM;
 
-	/* Test use of i915_sw_fence as an interprocess signaling mechanism */
+	 
 	ipc.in = alloc_fence();
 	if (!ipc.in) {
 		ret = -ENOMEM;
@@ -542,7 +520,7 @@ static int test_ipc(void *arg)
 		goto err_in;
 	}
 
-	/* use a completion to avoid chicken-and-egg testing */
+	 
 	init_completion(&ipc.started);
 
 	ipc.value = 0;
@@ -696,7 +674,7 @@ static int test_dma_fence(void *arg)
 		goto err;
 	}
 
-	/* We round the timeout for the fence up to the next second */
+	 
 	end = round_jiffies_up(jiffies + delay);
 
 	sleep = jiffies_to_usecs(delay) / 3;

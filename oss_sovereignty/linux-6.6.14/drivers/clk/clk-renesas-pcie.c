@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Renesas 9-series PCIe clock generator driver
- *
- * The following series can be supported:
- *   - 9FGV/9DBV/9DMV/9FGL/9DML/9QXL/9SQ
- * Currently supported:
- *   - 9FGV0241
- *   - 9FGV0441
- *
- * Copyright (C) 2022 Marek Vasut <marex@denx.de>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/i2c.h>
@@ -49,13 +39,13 @@
 #define RS9_REG_DID_TYPE_DMV			(0x2 << RS9_REG_DID_TYPE_SHIFT)
 #define RS9_REG_DID_TYPE_SHIFT			0x6
 
-/* Supported Renesas 9-series models. */
+ 
 enum rs9_model {
 	RENESAS_9FGV0241,
 	RENESAS_9FGV0441,
 };
 
-/* Structure to describe features of a particular 9-series model */
+ 
 struct rs9_chip_info {
 	const enum rs9_model	model;
 	unsigned int		num_clks;
@@ -72,9 +62,7 @@ struct rs9_driver_data {
 	u8			clk_dif_sr;
 };
 
-/*
- * Renesas 9-series i2c regmap
- */
+ 
 static const struct regmap_range rs9_readable_ranges[] = {
 	regmap_reg_range(RS9_REG_OE, RS9_REG_REF),
 	regmap_reg_range(RS9_REG_VID, RS9_REG_BCP),
@@ -137,11 +125,7 @@ static int rs9_regmap_i2c_read(void *context,
 	if (ret != 2)
 		return -EIO;
 
-	/*
-	 * Byte 0 is transfer length, which is always 1 due
-	 * to BCP register programming to 1 in rs9_probe(),
-	 * ignore it and use data from Byte 1.
-	 */
+	 
 	*val = rxdata[1];
 	return 0;
 }
@@ -179,7 +163,7 @@ static int rs9_get_output_config(struct rs9_driver_data *rs9, int idx)
 	int ret;
 	u32 sr;
 
-	/* Set defaults */
+	 
 	rs9->clk_dif_sr |= dif;
 
 	snprintf(name, 5, "DIF%d", idx);
@@ -187,13 +171,13 @@ static int rs9_get_output_config(struct rs9_driver_data *rs9, int idx)
 	if (!np)
 		return 0;
 
-	/* Output clock slew rate */
+	 
 	ret = of_property_read_u32(np, "renesas,slew-rate", &sr);
 	of_node_put(np);
 	if (!ret) {
-		if (sr == 2000000) {		/* 2V/ns */
+		if (sr == 2000000) {		 
 			rs9->clk_dif_sr &= ~dif;
-		} else if (sr == 3000000) {	/* 3V/ns (default) */
+		} else if (sr == 3000000) {	 
 			rs9->clk_dif_sr |= dif;
 		} else
 			ret = dev_err_probe(&client->dev, -EINVAL,
@@ -210,35 +194,35 @@ static int rs9_get_common_config(struct rs9_driver_data *rs9)
 	unsigned int amp, ssc;
 	int ret;
 
-	/* Set defaults */
+	 
 	rs9->pll_amplitude = RS9_REG_SS_AMP_0V7;
 	rs9->pll_ssc = RS9_REG_SS_SSC_100;
 
-	/* Output clock amplitude */
+	 
 	ret = of_property_read_u32(np, "renesas,out-amplitude-microvolt",
 				   &amp);
 	if (!ret) {
-		if (amp == 600000)	/* 0.6V */
+		if (amp == 600000)	 
 			rs9->pll_amplitude = RS9_REG_SS_AMP_0V6;
-		else if (amp == 700000)	/* 0.7V (default) */
+		else if (amp == 700000)	 
 			rs9->pll_amplitude = RS9_REG_SS_AMP_0V7;
-		else if (amp == 800000)	/* 0.8V */
+		else if (amp == 800000)	 
 			rs9->pll_amplitude = RS9_REG_SS_AMP_0V8;
-		else if (amp == 900000)	/* 0.9V */
+		else if (amp == 900000)	 
 			rs9->pll_amplitude = RS9_REG_SS_AMP_0V9;
 		else
 			return dev_err_probe(&client->dev, -EINVAL,
 					     "Invalid renesas,out-amplitude-microvolt value\n");
 	}
 
-	/* Output clock spread spectrum */
+	 
 	ret = of_property_read_u32(np, "renesas,out-spread-spectrum", &ssc);
 	if (!ret) {
-		if (ssc == 100000)	/* 100% ... no spread (default) */
+		if (ssc == 100000)	 
 			rs9->pll_ssc = RS9_REG_SS_SSC_100;
-		else if (ssc == 99750)	/* -0.25% ... down spread */
+		else if (ssc == 99750)	 
 			rs9->pll_ssc = RS9_REG_SS_SSC_M025;
-		else if (ssc == 99500)	/* -0.50% ... down spread */
+		else if (ssc == 99500)	 
 			rs9->pll_ssc = RS9_REG_SS_SSC_M050;
 		else
 			return dev_err_probe(&client->dev, -EINVAL,
@@ -252,13 +236,13 @@ static void rs9_update_config(struct rs9_driver_data *rs9)
 {
 	int i;
 
-	/* If amplitude is non-default, update it. */
+	 
 	if (rs9->pll_amplitude != RS9_REG_SS_AMP_0V7) {
 		regmap_update_bits(rs9->regmap, RS9_REG_SS, RS9_REG_SS_AMP_MASK,
 				   rs9->pll_amplitude);
 	}
 
-	/* If SSC is non-default, update it. */
+	 
 	if (rs9->pll_ssc != RS9_REG_SS_SSC_100) {
 		regmap_update_bits(rs9->regmap, RS9_REG_SS, RS9_REG_SS_SSC_MASK,
 				   rs9->pll_ssc);
@@ -302,12 +286,12 @@ static int rs9_probe(struct i2c_client *client)
 	if (!rs9->chip_info)
 		return -EINVAL;
 
-	/* Fetch common configuration from DT (if specified) */
+	 
 	ret = rs9_get_common_config(rs9);
 	if (ret)
 		return ret;
 
-	/* Fetch DIFx output configuration from DT (if specified) */
+	 
 	for (i = 0; i < rs9->chip_info->num_clks; i++) {
 		ret = rs9_get_output_config(rs9, i);
 		if (ret)
@@ -320,7 +304,7 @@ static int rs9_probe(struct i2c_client *client)
 		return dev_err_probe(&client->dev, PTR_ERR(rs9->regmap),
 				     "Failed to allocate register map\n");
 
-	/* Always read back 1 Byte via I2C */
+	 
 	ret = regmap_write(rs9->regmap, RS9_REG_BCP, 1);
 	if (ret < 0)
 		return ret;
@@ -339,7 +323,7 @@ static int rs9_probe(struct i2c_client *client)
 				     vid, did, RS9_REG_VID_IDT,
 				     rs9->chip_info->did);
 
-	/* Register clock */
+	 
 	for (i = 0; i < rs9->chip_info->num_clks; i++) {
 		snprintf(name, 5, "DIF%d", i);
 		hw = devm_clk_hw_register_fixed_factor_index(&client->dev, name,

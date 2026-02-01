@@ -1,23 +1,6 @@
-/* xmalloc.c -- safe versions of malloc and realloc */
+ 
 
-/* Copyright (C) 1991-2003 Free Software Foundation, Inc.
-
-   This file is part of GNU Readline, a library for reading lines
-   of text with interactive input and history editing.
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if defined (HAVE_CONFIG_H)
 #include <config.h>
@@ -29,9 +12,9 @@
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
-/* Generic pointer type. */
+ 
 #ifndef PTR_T
 
 #if defined (__STDC__)
@@ -40,13 +23,13 @@
 #  define PTR_T char *
 #endif
 
-#endif /* PTR_T */
+#endif  
 
-/* **************************************************************** */
-/*								    */
-/*		   Memory Allocation and Deallocation.		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 static void
 memory_error_and_abort (fname)
@@ -56,9 +39,7 @@ memory_error_and_abort (fname)
   exit (2);
 }
 
-/* Return a pointer to free()able block of memory large enough
-   to hold BYTES number of bytes.  If the memory cannot be allocated,
-   print an error message and abort. */
+ 
 PTR_T
 xmalloc (bytes)
      size_t bytes;

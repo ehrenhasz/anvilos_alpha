@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) International Business Machines  Corp., 2002
- */
+ 
+ 
 #ifndef _H_JFS_ACL
 #define _H_JFS_ACL
 
@@ -21,4 +19,4 @@ static inline int jfs_init_acl(tid_t tid, struct inode *inode,
 }
 
 #endif
-#endif		/* _H_JFS_ACL */
+#endif		 

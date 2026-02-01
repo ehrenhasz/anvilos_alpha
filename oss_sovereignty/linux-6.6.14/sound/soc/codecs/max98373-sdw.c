@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020, Maxim Integrated
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -180,11 +180,11 @@ static bool max98373_readable_register(struct device *dev, unsigned int reg)
 	switch (reg) {
 	case MAX98373_R21FF_REV_ID:
 	case MAX98373_R2010_IRQ_CTRL:
-	/* SoundWire Control Port Registers */
+	 
 	case MAX98373_R0040_SCP_INIT_STAT_1 ... MAX98373_R0070_SCP_FRAME_CTLR:
-	/* Soundwire Data Port 1 Registers */
+	 
 	case MAX98373_R0100_DP1_INIT_STAT ... MAX98373_R0137_DP1_BLOCK_CTRL3:
-	/* Soundwire Data Port 3 Registers */
+	 
 	case MAX98373_R0300_DP3_INIT_STAT ... MAX98373_R0337_DP3_BLOCK_CTRL3:
 	case MAX98373_R2000_SW_RESET ... MAX98373_R200C_INT_EN3:
 	case MAX98373_R2014_THERM_WARN_THRESH
@@ -219,11 +219,11 @@ static bool max98373_volatile_reg(struct device *dev, unsigned int reg)
 	case MAX98373_R20B6_BDE_CUR_STATE_READBACK:
 	case MAX98373_R20FF_GLOBAL_SHDN:
 	case MAX98373_R21FF_REV_ID:
-	/* SoundWire Control Port Registers */
+	 
 	case MAX98373_R0040_SCP_INIT_STAT_1 ... MAX98373_R0070_SCP_FRAME_CTLR:
-	/* Soundwire Data Port 1 Registers */
+	 
 	case MAX98373_R0100_DP1_INIT_STAT ... MAX98373_R0137_DP1_BLOCK_CTRL3:
-	/* Soundwire Data Port 3 Registers */
+	 
 	case MAX98373_R0300_DP3_INIT_STAT ... MAX98373_R0337_DP3_BLOCK_CTRL3:
 	case MAX98373_R2000_SW_RESET ... MAX98373_R2009_INT_FLAG3:
 		return true;
@@ -245,13 +245,13 @@ static const struct regmap_config max98373_sdw_regmap = {
 	.use_single_write = true,
 };
 
-/* Power management functions and structure */
+ 
 static __maybe_unused int max98373_suspend(struct device *dev)
 {
 	struct max98373_priv *max98373 = dev_get_drvdata(dev);
 	int i;
 
-	/* cache feedback register values before suspend */
+	 
 	for (i = 0; i < max98373->cache_num; i++)
 		regmap_read(max98373->regmap, max98373->cache[i].reg, &max98373->cache[i].val);
 
@@ -306,9 +306,9 @@ static int max98373_read_prop(struct sdw_slave *slave)
 
 	prop->scp_int1_mask = SDW_SCP_INT1_BUS_CLASH | SDW_SCP_INT1_PARITY;
 
-	/* BITMAP: 00001000  Dataport 3 is active */
+	 
 	prop->source_ports = BIT(3);
-	/* BITMAP: 00000010  Dataport 1 is active */
+	 
 	prop->sink_ports = BIT(1);
 	prop->paging_support = true;
 	prop->clk_stop_timeout = 20;
@@ -331,7 +331,7 @@ static int max98373_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* do this again for sink now */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 					   sizeof(*prop->sink_dpn_prop),
@@ -350,7 +350,7 @@ static int max98373_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 20;
 
 	return 0;
@@ -365,49 +365,47 @@ static int max98373_io_init(struct sdw_slave *slave)
 	if (max98373->first_hw_init)
 		regcache_cache_bypass(max98373->regmap, true);
 
-	/*
-	 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-	 */
+	 
 	if (!max98373->first_hw_init)
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(dev);
 
 	pm_runtime_get_noresume(dev);
 
-	/* Software Reset */
+	 
 	max98373_reset(max98373, dev);
 
-	/* Set soundwire mode */
+	 
 	regmap_write(max98373->regmap, MAX98373_R2025_AUDIO_IF_MODE, 3);
-	/* Enable ADC */
+	 
 	regmap_write(max98373->regmap, MAX98373_R2047_IV_SENSE_ADC_EN, 3);
-	/* Set default Soundwire clock */
+	 
 	regmap_write(max98373->regmap, MAX98373_R2036_SOUNDWIRE_CTRL, 5);
-	/* Set default sampling rate for speaker and IVDAC */
+	 
 	regmap_write(max98373->regmap, MAX98373_R2028_PCM_SR_SETUP_2, 0x88);
-	/* IV default slot configuration */
+	 
 	regmap_write(max98373->regmap,
 		     MAX98373_R2020_PCM_TX_HIZ_EN_1,
 		     0xFF);
 	regmap_write(max98373->regmap,
 		     MAX98373_R2021_PCM_TX_HIZ_EN_2,
 		     0xFF);
-	/* L/R mix configuration */
+	 
 	regmap_write(max98373->regmap,
 		     MAX98373_R2029_PCM_TO_SPK_MONO_MIX_1,
 		     0x80);
 	regmap_write(max98373->regmap,
 		     MAX98373_R202A_PCM_TO_SPK_MONO_MIX_2,
 		     0x1);
-	/* Enable DC blocker */
+	 
 	regmap_write(max98373->regmap,
 		     MAX98373_R203F_AMP_DSP_CFG,
 		     0x3);
-	/* Enable IMON VMON DC blocker */
+	 
 	regmap_write(max98373->regmap,
 		     MAX98373_R2046_IV_SENSE_ADC_DSP_CFG,
 		     0x7);
-	/* voltage, current slot configuration */
+	 
 	regmap_write(max98373->regmap,
 		     MAX98373_R2022_PCM_TX_SRC_1,
 		     (max98373->i_slot << MAX98373_PCM_TX_CH_SRC_A_I_SHIFT |
@@ -430,19 +428,19 @@ static int max98373_io_init(struct sdw_slave *slave)
 				   MAX98373_R2021_PCM_TX_HIZ_EN_2,
 				   1 << (max98373->i_slot - 8), 0);
 
-	/* speaker feedback slot configuration */
+	 
 	regmap_write(max98373->regmap,
 		     MAX98373_R2023_PCM_TX_SRC_2,
 		     max98373->spkfb_slot & 0xFF);
 
-	/* Set interleave mode */
+	 
 	if (max98373->interleave_mode)
 		regmap_update_bits(max98373->regmap,
 				   MAX98373_R2024_PCM_DATA_FMT_CFG,
 				   MAX98373_PCM_TX_CH_INTERLEAVE_MASK,
 				   MAX98373_PCM_TX_CH_INTERLEAVE_MASK);
 
-	/* Speaker enable */
+	 
 	regmap_update_bits(max98373->regmap,
 			   MAX98373_R2043_AMP_EN,
 			   MAX98373_SPK_EN_MASK, 1);
@@ -478,7 +476,7 @@ static int max98373_clock_calculate(struct sdw_slave *slave,
 			if (clk_freq == (max98373_clk_family[y] >> x))
 				return (x << 3) + y;
 
-	/* Set default clock (12.288 Mhz) if the value is not in the list */
+	 
 	dev_err(&slave->dev, "Requested clock not found. (clk_freq = %d)\n",
 		clk_freq);
 	return 0x5;
@@ -493,17 +491,13 @@ static int max98373_clock_config(struct sdw_slave *slave,
 
 	clk_freq = (params->curr_dr_freq >> 1);
 
-	/*
-	 *	Select the proper value for the register based on the
-	 *	requested clock. If the value is not in the list,
-	 *	use reasonable default - 12.288 Mhz
-	 */
+	 
 	value = max98373_clock_calculate(slave, clk_freq);
 
-	/* SWCLK */
+	 
 	regmap_write(max98373->regmap, MAX98373_R2036_SOUNDWIRE_CTRL, value);
 
-	/* The default Sampling Rate value for IV is 48KHz*/
+	 
 	regmap_write(max98373->regmap, MAX98373_R2028_PCM_SR_SETUP_2, 0x88);
 
 	return 0;
@@ -544,7 +538,7 @@ static int max98373_sdw_dai_hw_params(struct snd_pcm_substream *substream,
 	} else {
 		port_config.num = 3;
 
-		/* only IV are supported by capture */
+		 
 		stream_config.ch_count = 2;
 		port_config.ch_mask = GENMASK((int)stream_config.ch_count - 1, 0);
 	}
@@ -562,7 +556,7 @@ static int max98373_sdw_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Channel size configuration */
+	 
 	switch (snd_pcm_format_width(params_format(params))) {
 	case 16:
 		chan_sz = MAX98373_PCM_MODE_CFG_CHANSZ_16;
@@ -587,7 +581,7 @@ static int max98373_sdw_dai_hw_params(struct snd_pcm_substream *substream,
 
 	dev_dbg(component->dev, "Format supported %d", params_format(params));
 
-	/* Sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 8000:
 		sampling_rate = MAX98373_PCM_SR_SET1_SR_8000;
@@ -628,13 +622,13 @@ static int max98373_sdw_dai_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* set correct sampling frequency */
+	 
 	regmap_update_bits(max98373->regmap,
 			   MAX98373_R2028_PCM_SR_SETUP_2,
 			   MAX98373_PCM_SR_SET2_SR_MASK,
 			   sampling_rate << MAX98373_PCM_SR_SET2_SR_SHIFT);
 
-	/* set sampling rate of IV */
+	 
 	regmap_update_bits(max98373->regmap,
 			   MAX98373_R2028_PCM_SR_SETUP_2,
 			   MAX98373_PCM_SR_SET2_IVADC_SR_MASK,
@@ -682,7 +676,7 @@ static int max98373_sdw_set_tdm_slot(struct snd_soc_dai *dai,
 	struct max98373_priv *max98373 =
 		snd_soc_component_get_drvdata(component);
 
-	/* tx_mask is unused since it's irrelevant for I/V feedback */
+	 
 	if (tx_mask)
 		return -EINVAL;
 
@@ -733,7 +727,7 @@ static int max98373_init(struct sdw_slave *slave, struct regmap *regmap)
 	int i;
 	struct device *dev = &slave->dev;
 
-	/*  Allocate and assign private driver data structure  */
+	 
 	max98373 = devm_kzalloc(dev, sizeof(*max98373), GFP_KERNEL);
 	if (!max98373)
 		return -ENOMEM;
@@ -754,13 +748,13 @@ static int max98373_init(struct sdw_slave *slave, struct regmap *regmap)
 	for (i = 0; i < max98373->cache_num; i++)
 		max98373->cache[i].reg = max98373_sdw_cache_reg[i];
 
-	/* Read voltage and slot configuration */
+	 
 	max98373_slot_config(dev, max98373);
 
 	max98373->hw_init = false;
 	max98373->first_hw_init = false;
 
-	/* codec registration  */
+	 
 	ret = devm_snd_soc_register_component(dev, &soc_codec_dev_max98373_sdw,
 					      max98373_sdw_dai,
 					      ARRAY_SIZE(max98373_sdw_dai));
@@ -769,20 +763,16 @@ static int max98373_init(struct sdw_slave *slave, struct regmap *regmap)
 		return ret;
 	}
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	return 0;
 }
@@ -795,13 +785,11 @@ static int max98373_update_status(struct sdw_slave *slave,
 	if (status == SDW_SLAVE_UNATTACHED)
 		max98373->hw_init = false;
 
-	/*
-	 * Perform initialization only if slave status is SDW_SLAVE_ATTACHED
-	 */
+	 
 	if (max98373->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return max98373_io_init(slave);
 }
 
@@ -817,10 +805,7 @@ static int max98373_bus_config(struct sdw_slave *slave,
 	return ret;
 }
 
-/*
- * slave_ops: callbacks for get_clock_stop_mode, clock_stop and
- * port_prep are not defined for now
- */
+ 
 static struct sdw_slave_ops max98373_slave_ops = {
 	.read_prop = max98373_read_prop,
 	.update_status = max98373_update_status,
@@ -832,7 +817,7 @@ static int max98373_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap;
 
-	/* Regmap Initialization */
+	 
 	regmap = devm_regmap_init_sdw(slave, &max98373_sdw_regmap);
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);

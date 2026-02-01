@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Linux I2C core slave support code
- *
- * Copyright (C) 2014 by Wolfram Sang <wsa@sang-engineering.com>
- */
+
+ 
 
 #include <dt-bindings/i2c/i2c.h>
 #include <linux/acpi.h>
@@ -29,7 +25,7 @@ int i2c_slave_register(struct i2c_client *client, i2c_slave_cb_t slave_cb)
 			 __func__);
 
 	if (!(client->flags & I2C_CLIENT_TEN)) {
-		/* Enforce stricter address checking */
+		 
 		ret = i2c_check_7bit_addr_validity_strict(client->addr);
 		if (ret) {
 			dev_err(&client->dev, "%s: invalid address\n", __func__);
@@ -94,18 +90,7 @@ int i2c_slave_event(struct i2c_client *client,
 }
 EXPORT_SYMBOL_GPL(i2c_slave_event);
 
-/**
- * i2c_detect_slave_mode - detect operation mode
- * @dev: The device owning the bus
- *
- * This checks the device nodes for an I2C slave by checking the address
- * used in the reg property. If the address match the I2C_OWN_SLAVE_ADDRESS
- * flag this means the device is configured to act as a I2C slave and it will
- * be listening at that address.
- *
- * Returns true if an I2C own slave address is detected, otherwise returns
- * false.
- */
+ 
 bool i2c_detect_slave_mode(struct device *dev)
 {
 	if (IS_BUILTIN(CONFIG_OF) && dev->of_node) {

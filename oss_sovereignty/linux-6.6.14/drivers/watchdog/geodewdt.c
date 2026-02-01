@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Watchdog timer for machines with the CS5535/CS5536 companion chip
- *
- * Copyright (C) 2006-2007, Advanced Micro Devices, Inc.
- * Copyright (C) 2009  Andres Salomon <dilinger@collabora.co.uk>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -49,13 +45,13 @@ static int safe_close;
 
 static void geodewdt_ping(void)
 {
-	/* Stop the counter */
+	 
 	cs5535_mfgpt_write(wdt_timer, MFGPT_REG_SETUP, 0);
 
-	/* Reset the counter */
+	 
 	cs5535_mfgpt_write(wdt_timer, MFGPT_REG_COUNTER, 0);
 
-	/* Enable the counter */
+	 
 	cs5535_mfgpt_write(wdt_timer, MFGPT_REG_SETUP, MFGPT_SETUP_CNTEN);
 }
 
@@ -220,15 +216,15 @@ static int __init geodewdt_probe(struct platform_device *dev)
 		return -ENODEV;
 	}
 
-	/* Set up the timer */
+	 
 
 	cs5535_mfgpt_write(wdt_timer, MFGPT_REG_SETUP,
 			  GEODEWDT_SCALE | (3 << 8));
 
-	/* Set up comparator 2 to reset when the event fires */
+	 
 	cs5535_mfgpt_toggle_event(wdt_timer, MFGPT_CMP2, MFGPT_EVENT_RESET, 1);
 
-	/* Set up the initial timeout */
+	 
 
 	cs5535_mfgpt_write(wdt_timer, MFGPT_REG_CMP2,
 		timeout * GEODEWDT_HZ);

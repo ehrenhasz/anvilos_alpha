@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) STMicroelectronics SA 2017
- * Author: Fabien Dessenne <fabien.dessenne@st.com>
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/clk.h>
@@ -23,13 +20,13 @@
 #define CHKSUM_DIGEST_SIZE      4
 #define CHKSUM_BLOCK_SIZE       1
 
-/* Registers */
+ 
 #define CRC_DR                  0x00000000
 #define CRC_CR                  0x00000008
 #define CRC_INIT                0x00000010
 #define CRC_POL                 0x00000014
 
-/* Registers values */
+ 
 #define CRC_CR_RESET            BIT(0)
 #define CRC_CR_REV_IN_WORD      (BIT(6) | BIT(5))
 #define CRC_CR_REV_IN_BYTE      BIT(5)
@@ -52,7 +49,7 @@ struct stm32_crc {
 
 struct stm32_crc_list {
 	struct list_head dev_list;
-	spinlock_t       lock; /* protect dev_list */
+	spinlock_t       lock;  
 };
 
 static struct stm32_crc_list crc_list = {
@@ -66,7 +63,7 @@ struct stm32_crc_ctx {
 };
 
 struct stm32_crc_desc_ctx {
-	u32    partial; /* crc32c: partial in first 4 bytes of that struct */
+	u32    partial;  
 };
 
 static int stm32_crc32_cra_init(struct crypto_tfm *tfm)
@@ -127,13 +124,13 @@ static int stm32_crc_init(struct shash_desc *desc)
 
 	spin_lock_irqsave(&crc->lock, flags);
 
-	/* Reset, set key, poly and configure in bit reverse mode */
+	 
 	writel_relaxed(bitrev32(mctx->key), crc->regs + CRC_INIT);
 	writel_relaxed(bitrev32(mctx->poly), crc->regs + CRC_POL);
 	writel_relaxed(CRC_CR_RESET | CRC_CR_REV_IN_WORD | CRC_CR_REV_OUT,
 		       crc->regs + CRC_CR);
 
-	/* Store partial result */
+	 
 	ctx->partial = readl_relaxed(crc->regs + CRC_DR);
 
 	spin_unlock_irqrestore(&crc->lock, flags);
@@ -158,7 +155,7 @@ static int burst_update(struct shash_desc *desc, const u8 *d8,
 	pm_runtime_get_sync(crc->dev);
 
 	if (!spin_trylock(&crc->lock)) {
-		/* Hardware is busy, calculate crc32 by software */
+		 
 		if (mctx->poly == CRC32_POLY_LE)
 			ctx->partial = crc32_le(ctx->partial, d8, length);
 		else
@@ -167,26 +164,21 @@ static int burst_update(struct shash_desc *desc, const u8 *d8,
 		goto pm_out;
 	}
 
-	/*
-	 * Restore previously calculated CRC for this context as init value
-	 * Restore polynomial configuration
-	 * Configure in register for word input data,
-	 * Configure out register in reversed bit mode data.
-	 */
+	 
 	writel_relaxed(bitrev32(ctx->partial), crc->regs + CRC_INIT);
 	writel_relaxed(bitrev32(mctx->poly), crc->regs + CRC_POL);
 	writel_relaxed(CRC_CR_RESET | CRC_CR_REV_IN_WORD | CRC_CR_REV_OUT,
 		       crc->regs + CRC_CR);
 
 	if (d8 != PTR_ALIGN(d8, sizeof(u32))) {
-		/* Configure for byte data */
+		 
 		writel_relaxed(CRC_CR_REV_IN_BYTE | CRC_CR_REV_OUT,
 			       crc->regs + CRC_CR);
 		while (d8 != PTR_ALIGN(d8, sizeof(u32)) && length) {
 			writeb_relaxed(*d8++, crc->regs + CRC_DR);
 			length--;
 		}
-		/* Configure for word data */
+		 
 		writel_relaxed(CRC_CR_REV_IN_WORD | CRC_CR_REV_OUT,
 			       crc->regs + CRC_CR);
 	}
@@ -195,14 +187,14 @@ static int burst_update(struct shash_desc *desc, const u8 *d8,
 		writel_relaxed(*((u32 *)d8), crc->regs + CRC_DR);
 
 	if (length) {
-		/* Configure for byte data */
+		 
 		writel_relaxed(CRC_CR_REV_IN_BYTE | CRC_CR_REV_OUT,
 			       crc->regs + CRC_CR);
 		while (length--)
 			writeb_relaxed(*d8++, crc->regs + CRC_DR);
 	}
 
-	/* Store partial result */
+	 
 	ctx->partial = readl_relaxed(crc->regs + CRC_DR);
 
 	spin_unlock(&crc->lock);
@@ -226,7 +218,7 @@ static int stm32_crc_update(struct shash_desc *desc, const u8 *d8,
 	if (!burst_sz)
 		return burst_update(desc, d8, length);
 
-	/* Digest first bytes not 32bit aligned at first pass in the loop */
+	 
 	size = min_t(size_t, length, burst_sz + (size_t)d8 -
 				     ALIGN_DOWN((size_t)d8, sizeof(u32)));
 	for (rem_sz = length, cur = d8; rem_sz;
@@ -244,7 +236,7 @@ static int stm32_crc_final(struct shash_desc *desc, u8 *out)
 	struct stm32_crc_desc_ctx *ctx = shash_desc_ctx(desc);
 	struct stm32_crc_ctx *mctx = crypto_shash_ctx(desc->tfm);
 
-	/* Send computed CRC */
+	 
 	put_unaligned_le32(mctx->poly == CRC32C_POLY_LE ?
 			   ~ctx->partial : ctx->partial, out);
 
@@ -267,7 +259,7 @@ static int stm32_crc_digest(struct shash_desc *desc, const u8 *data,
 static unsigned int refcnt;
 static DEFINE_MUTEX(refcnt_lock);
 static struct shash_alg algs[] = {
-	/* CRC-32 */
+	 
 	{
 		.setkey         = stm32_crc_setkey,
 		.init           = stm32_crc_init,
@@ -289,7 +281,7 @@ static struct shash_alg algs[] = {
 			.cra_init               = stm32_crc32_cra_init,
 		}
 	},
-	/* CRC-32Castagnoli */
+	 
 	{
 		.setkey         = stm32_crc_setkey,
 		.init           = stm32_crc_init,

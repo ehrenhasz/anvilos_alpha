@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ld9040 AMOLED LCD drm_panel driver.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- * Derived from drivers/video/backlight/ld9040.c
- *
- * Andrzej Hajda <a.hajda@samsung.com>
-*/
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -23,7 +16,7 @@
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
 
-/* Manufacturer Command Set */
+ 
 #define MCS_MANPWR		0xb0
 #define MCS_ELVSS_ON		0xb1
 #define MCS_USER_SETTING	0xf0
@@ -34,7 +27,7 @@
 #define MCS_GAMMA_SET1		0xf9
 #define MCS_GAMMA_CTRL		0xfb
 
-/* array of gamma tables for gamma value 2.2 */
+ 
 static u8 const ld9040_gammas[25][22] = {
 	{ 0xf9, 0x00, 0x13, 0xb2, 0xba, 0xd2, 0x00, 0x30, 0x00, 0xaf, 0xc0,
 	  0xb8, 0xcd, 0x00, 0x3d, 0x00, 0xa8, 0xb8, 0xb7, 0xcd, 0x00, 0x44 },
@@ -102,12 +95,7 @@ struct ld9040 {
 
 	int brightness;
 
-	/* This field is tested by functions directly accessing bus before
-	 * transfer, transfer is skipped if it is set. In case of transfer
-	 * failure or unexpected response the field is set to error value.
-	 * Such construct allows to eliminate many checks in higher level
-	 * functions.
-	 */
+	 
 	int error;
 };
 
@@ -403,7 +391,7 @@ MODULE_DEVICE_TABLE(of, ld9040_of_match);
 
 static const struct spi_device_id ld9040_ids[] = {
 	{ "ld9040", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, ld9040_ids);
 

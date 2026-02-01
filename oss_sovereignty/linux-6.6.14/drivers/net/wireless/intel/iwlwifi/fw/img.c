@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright(c) 2019 - 2021 Intel Corporation
- */
+
+ 
 #include <fw/api/commands.h>
 #include "img.h"
 
@@ -9,7 +7,7 @@ u8 iwl_fw_lookup_cmd_ver(const struct iwl_fw *fw, u32 cmd_id, u8 def)
 {
 	const struct iwl_fw_cmd_version *entry;
 	unsigned int i;
-	/* prior to LONG_GROUP, we never used this CMD version API */
+	 
 	u8 grp = iwl_cmd_groupid(cmd_id) ?: LONG_GROUP;
 	u8 cmd = iwl_cmd_opcode(cmd_id);
 
@@ -87,7 +85,7 @@ const char *iwl_fw_lookup_assert_desc(u32 num)
 		if (advanced_lookup[i].num == (num & ~FW_SYSASSERT_CPU_MASK))
 			return advanced_lookup[i].name;
 
-	/* No entry matches 'num', so it is the last: ADVANCED_SYSASSERT */
+	 
 	return advanced_lookup[i].name;
 }
 EXPORT_SYMBOL_GPL(iwl_fw_lookup_assert_desc);

@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __AMDGPU_TTM_H__
 #define __AMDGPU_TTM_H__
@@ -57,15 +36,15 @@ struct amdgpu_mman {
 	bool				initialized;
 	void __iomem			*aper_base_kaddr;
 
-	/* buffer handling */
+	 
 	const struct amdgpu_buffer_funcs	*buffer_funcs;
 	struct amdgpu_ring			*buffer_funcs_ring;
 	bool					buffer_funcs_enabled;
 
 	struct mutex				gtt_window_lock;
-	/* High priority scheduler entity for buffer moves */
+	 
 	struct drm_sched_entity			high_pr;
-	/* Low priority scheduler entity for VRAM clearing */
+	 
 	struct drm_sched_entity			low_pr;
 
 	struct amdgpu_vram_mgr vram_mgr;
@@ -82,25 +61,25 @@ struct amdgpu_mman {
 	uint64_t		stolen_reserved_offset;
 	uint64_t		stolen_reserved_size;
 
-	/* discovery */
+	 
 	uint8_t				*discovery_bin;
 	uint32_t			discovery_tmr_size;
-	/* fw reserved memory */
+	 
 	struct amdgpu_bo		*fw_reserved_memory;
 
-	/* firmware VRAM reservation */
+	 
 	u64		fw_vram_usage_start_offset;
 	u64		fw_vram_usage_size;
 	struct amdgpu_bo	*fw_vram_usage_reserved_bo;
 	void		*fw_vram_usage_va;
 
-	/* driver VRAM reservation */
+	 
 	u64		drv_vram_usage_start_offset;
 	u64		drv_vram_usage_size;
 	struct amdgpu_bo	*drv_vram_usage_reserved_bo;
 	void		*drv_vram_usage_va;
 
-	/* PAGE_SIZE'd BO for process memory r/w over SDMA. */
+	 
 	struct amdgpu_bo	*sdma_access_bo;
 	void			*sdma_access_ptr;
 };

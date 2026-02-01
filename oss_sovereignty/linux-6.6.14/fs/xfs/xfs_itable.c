@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2002,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -21,14 +18,7 @@
 #include "xfs_health.h"
 #include "xfs_trans.h"
 
-/*
- * Bulk Stat
- * =========
- *
- * Use the inode walking functions to fill out struct xfs_bulkstat for every
- * allocated inode, then pass the stat information to some externally provided
- * iteration function.
- */
+ 
 
 struct xfs_bstat_chunk {
 	bulkstat_one_fmt_pf	formatter;
@@ -36,22 +26,7 @@ struct xfs_bstat_chunk {
 	struct xfs_bulkstat	*buf;
 };
 
-/*
- * Fill out the bulkstat info for a single inode and report it somewhere.
- *
- * bc->breq->lastino is effectively the inode cursor as we walk through the
- * filesystem.  Therefore, we update it any time we need to move the cursor
- * forward, regardless of whether or not we're sending any bstat information
- * back to userspace.  If the inode is internal metadata or, has been freed
- * out from under us, we just simply keep going.
- *
- * However, if any other type of error happens we want to stop right where we
- * are so that userspace will call back with exact number of the bad inode and
- * we can send back an error code.
- *
- * Note that if the formatter tells us there's no space left in the buffer we
- * move the cursor forward and abort the walk.
- */
+ 
 STATIC int
 xfs_bulkstat_one_int(
 	struct xfs_mount	*mp,
@@ -61,7 +36,7 @@ xfs_bulkstat_one_int(
 	struct xfs_bstat_chunk	*bc)
 {
 	struct user_namespace	*sb_userns = mp->m_super->s_user_ns;
-	struct xfs_inode	*ip;		/* incore inode pointer */
+	struct xfs_inode	*ip;		 
 	struct inode		*inode;
 	struct xfs_bulkstat	*buf = bc->buf;
 	xfs_extnum_t		nextents;
@@ -80,7 +55,7 @@ xfs_bulkstat_one_int(
 	if (error)
 		goto out;
 
-	/* Reload the incore unlinked list to avoid failure in inodegc. */
+	 
 	if (xfs_inode_unlinked_incomplete(ip)) {
 		error = xfs_inode_reload_unlinked_bucket(tp, ip);
 		if (error) {
@@ -97,9 +72,7 @@ xfs_bulkstat_one_int(
 	vfsuid = i_uid_into_vfsuid(idmap, inode);
 	vfsgid = i_gid_into_vfsgid(idmap, inode);
 
-	/* xfs_iget returns the following without needing
-	 * further change.
-	 */
+	 
 	buf->bs_projectid = ip->i_projid;
 	buf->bs_ino = ino;
 	buf->bs_uid = from_kuid(sb_userns, vfsuid_into_kuid(vfsuid));
@@ -165,18 +138,13 @@ xfs_bulkstat_one_int(
 		goto out;
 
 out_advance:
-	/*
-	 * Advance the cursor to the inode that comes after the one we just
-	 * looked at.  We want the caller to move along if the bulkstat
-	 * information was copied successfully; if we tried to grab the inode
-	 * but it's no longer allocated; or if it's internal metadata.
-	 */
+	 
 	bc->breq->startino = ino + 1;
 out:
 	return error;
 }
 
-/* Bulkstat a single inode. */
+ 
 int
 xfs_bulkstat_one(
 	struct xfs_ibulk	*breq,
@@ -202,10 +170,7 @@ xfs_bulkstat_one(
 	if (!bc.buf)
 		return -ENOMEM;
 
-	/*
-	 * Grab an empty transaction so that we can use its recursive buffer
-	 * locking abilities to detect cycles in the inobt without deadlocking.
-	 */
+	 
 	error = xfs_trans_alloc_empty(breq->mp, &tp);
 	if (error)
 		goto out;
@@ -216,10 +181,7 @@ xfs_bulkstat_one(
 out:
 	kmem_free(bc.buf);
 
-	/*
-	 * If we reported one inode to userspace then we abort because we hit
-	 * the end of the buffer.  Don't leak that back to userspace.
-	 */
+	 
 	if (error == -ECANCELED)
 		error = 0;
 
@@ -237,24 +199,13 @@ xfs_bulkstat_iwalk(
 	int			error;
 
 	error = xfs_bulkstat_one_int(mp, bc->breq->idmap, tp, ino, data);
-	/* bulkstat just skips over missing inodes */
+	 
 	if (error == -ENOENT || error == -EINVAL)
 		return 0;
 	return error;
 }
 
-/*
- * Check the incoming lastino parameter.
- *
- * We allow any inode value that could map to physical space inside the
- * filesystem because if there are no inodes there, bulkstat moves on to the
- * next chunk.  In other words, the magic agino value of zero takes us to the
- * first chunk in the AG, and an agino value past the end of the AG takes us to
- * the first chunk in the next AG.
- *
- * Therefore we can end early if the requested inode is beyond the end of the
- * filesystem or doesn't map properly.
- */
+ 
 static inline bool
 xfs_bulkstat_already_done(
 	struct xfs_mount	*mp,
@@ -267,7 +218,7 @@ xfs_bulkstat_already_done(
 	       startino != XFS_AGINO_TO_INO(mp, agno, agino);
 }
 
-/* Return stat information in bulk (by-inode) for the filesystem. */
+ 
 int
 xfs_bulkstat(
 	struct xfs_ibulk	*breq,
@@ -294,10 +245,7 @@ xfs_bulkstat(
 	if (!bc.buf)
 		return -ENOMEM;
 
-	/*
-	 * Grab an empty transaction so that we can use its recursive buffer
-	 * locking abilities to detect cycles in the inobt without deadlocking.
-	 */
+	 
 	error = xfs_trans_alloc_empty(breq->mp, &tp);
 	if (error)
 		goto out;
@@ -311,27 +259,21 @@ xfs_bulkstat(
 out:
 	kmem_free(bc.buf);
 
-	/*
-	 * We found some inodes, so clear the error status and return them.
-	 * The lastino pointer will point directly at the inode that triggered
-	 * any error that occurred, so on the next call the error will be
-	 * triggered again and propagated to userspace as there will be no
-	 * formatted inodes in the buffer.
-	 */
+	 
 	if (breq->ocount > 0)
 		error = 0;
 
 	return error;
 }
 
-/* Convert bulkstat (v5) to bstat (v1). */
+ 
 void
 xfs_bulkstat_to_bstat(
 	struct xfs_mount		*mp,
 	struct xfs_bstat		*bs1,
 	const struct xfs_bulkstat	*bstat)
 {
-	/* memset is needed here because of padding holes in the structure. */
+	 
 	memset(bs1, 0, sizeof(struct xfs_bstat));
 	bs1->bs_ino = bstat->bs_ino;
 	bs1->bs_mode = bstat->bs_mode;
@@ -368,21 +310,9 @@ struct xfs_inumbers_chunk {
 	struct xfs_ibulk	*breq;
 };
 
-/*
- * INUMBERS
- * ========
- * This is how we export inode btree records to userspace, so that XFS tools
- * can figure out where inodes are allocated.
- */
+ 
 
-/*
- * Format the inode group structure and report it somewhere.
- *
- * Similar to xfs_bulkstat_one_int, lastino is the inode cursor as we walk
- * through the filesystem so we move it forward unless there was a runtime
- * error.  If the formatter tells us the buffer is now full we also move the
- * cursor forward and abort the walk.
- */
+ 
 STATIC int
 xfs_inumbers_walk(
 	struct xfs_mount	*mp,
@@ -409,9 +339,7 @@ xfs_inumbers_walk(
 	return error;
 }
 
-/*
- * Return inode number table for the filesystem.
- */
+ 
 int
 xfs_inumbers(
 	struct xfs_ibulk	*breq,
@@ -427,10 +355,7 @@ xfs_inumbers(
 	if (xfs_bulkstat_already_done(breq->mp, breq->startino))
 		return 0;
 
-	/*
-	 * Grab an empty transaction so that we can use its recursive buffer
-	 * locking abilities to detect cycles in the inobt without deadlocking.
-	 */
+	 
 	error = xfs_trans_alloc_empty(breq->mp, &tp);
 	if (error)
 		goto out;
@@ -440,26 +365,20 @@ xfs_inumbers(
 	xfs_trans_cancel(tp);
 out:
 
-	/*
-	 * We found some inode groups, so clear the error status and return
-	 * them.  The lastino pointer will point directly at the inode that
-	 * triggered any error that occurred, so on the next call the error
-	 * will be triggered again and propagated to userspace as there will be
-	 * no formatted inode groups in the buffer.
-	 */
+	 
 	if (breq->ocount > 0)
 		error = 0;
 
 	return error;
 }
 
-/* Convert an inumbers (v5) struct to a inogrp (v1) struct. */
+ 
 void
 xfs_inumbers_to_inogrp(
 	struct xfs_inogrp		*ig1,
 	const struct xfs_inumbers	*ig)
 {
-	/* memset is needed here because of padding holes in the structure. */
+	 
 	memset(ig1, 0, sizeof(struct xfs_inogrp));
 	ig1->xi_startino = ig->xi_startino;
 	ig1->xi_alloccount = ig->xi_alloccount;

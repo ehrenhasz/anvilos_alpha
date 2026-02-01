@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Line 6 Linux USB driver
- *
- * Copyright (C) 2004-2010 Markus Grabner (grabner@icg.tugraz.at)
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -87,7 +83,7 @@ int line6_midibuf_write(struct midi_buffer *this, unsigned char *data,
 	if (midibuf_is_full(this) || (length <= 0))
 		return 0;
 
-	/* skip trailing active sense */
+	 
 	if (data[length - 1] == 0xfe) {
 		--length;
 		skip_active_sense = 1;
@@ -102,11 +98,11 @@ int line6_midibuf_write(struct midi_buffer *this, unsigned char *data,
 		length1 = this->size - this->pos_write;
 
 		if (length < length1) {
-			/* no buffer wraparound */
+			 
 			memcpy(this->buf + this->pos_write, data, length);
 			this->pos_write += length;
 		} else {
-			/* buffer wraparound */
+			 
 			length2 = length - length1;
 			memcpy(this->buf + this->pos_write, data, length1);
 			memcpy(this->buf, data + length1, length2);
@@ -130,7 +126,7 @@ int line6_midibuf_read(struct midi_buffer *this, unsigned char *data,
 	int repeat = 0;
 	int i;
 
-	/* we need to be able to store at least a 3 byte MIDI message */
+	 
 	if (length < 3)
 		return -EINVAL;
 
@@ -145,12 +141,7 @@ int line6_midibuf_read(struct midi_buffer *this, unsigned char *data,
 	length1 = this->size - this->pos_read;
 
 	command = this->buf[this->pos_read];
-	/*
-	   PODxt always has status byte lower nibble set to 0010,
-	   when it means to send 0000, so we correct if here so
-	   that control/program changes come on channel 1 and
-	   sysex message status byte is correct
-	 */
+	 
 	if (read_type == LINE6_MIDIBUF_READ_RX) {
 		if (command == 0xb2 || command == 0xc2 || command == 0xf2) {
 			unsigned char fixed = command & 0xf0;
@@ -159,7 +150,7 @@ int line6_midibuf_read(struct midi_buffer *this, unsigned char *data,
 		}
 	}
 
-	/* check MIDI command length */
+	 
 	if (command & 0x80) {
 		midi_length = midibuf_message_length(command);
 		this->command_prev = command;
@@ -178,16 +169,16 @@ int line6_midibuf_read(struct midi_buffer *this, unsigned char *data,
 	}
 
 	if (midi_length < 0) {
-		/* search for end of message */
+		 
 		if (length < length1) {
-			/* no buffer wraparound */
+			 
 			for (i = 1; i < length; ++i)
 				if (this->buf[this->pos_read + i] & 0x80)
 					break;
 
 			midi_length = i;
 		} else {
-			/* buffer wraparound */
+			 
 			length2 = length - length1;
 
 			for (i = 1; i < length1; ++i)
@@ -206,25 +197,25 @@ int line6_midibuf_read(struct midi_buffer *this, unsigned char *data,
 		}
 
 		if (midi_length == length)
-			midi_length = -1;	/* end of message not found */
+			midi_length = -1;	 
 	}
 
 	if (midi_length < 0) {
 		if (!this->split)
-			return 0;	/* command is not yet complete */
+			return 0;	 
 	} else {
 		if (length < midi_length)
-			return 0;	/* command is not yet complete */
+			return 0;	 
 
 		length = midi_length;
 	}
 
 	if (length < length1) {
-		/* no buffer wraparound */
+		 
 		memcpy(data + repeat, this->buf + this->pos_read, length);
 		this->pos_read += length;
 	} else {
-		/* buffer wraparound */
+		 
 		length2 = length - length1;
 		memcpy(data + repeat, this->buf + this->pos_read, length1);
 		memcpy(data + repeat + length1, this->buf, length2);

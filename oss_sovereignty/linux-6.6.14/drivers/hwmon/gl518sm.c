@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * gl518sm.c - Part of lm_sensors, Linux kernel modules for hardware
- *             monitoring
- * Copyright (C) 1998, 1999 Frodo Looijaard <frodol@dds.nl> and
- * Kyosti Malkki <kmalkki@cc.hut.fi>
- * Copyright (C) 2004 Hong-Gunn Chew <hglinux@gunnet.org> and
- * Jean Delvare <jdelvare@suse.de>
- *
- * Ported to Linux 2.6 by Hong-Gunn Chew with the help of Jean Delvare
- * and advice of Greg Kroah-Hartman.
- *
- * Notes about the port:
- * Release 0x00 of the GL518SM chipset doesn't support reading of in0,
- * in1 nor in2. The original driver had an ugly workaround to get them
- * anyway (changing limits and watching alarms trigger and wear off).
- * We did not keep that part of the original driver in the Linux 2.6
- * version, since it was making the driver significantly more complex
- * with no real benefit.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -30,14 +12,14 @@
 #include <linux/mutex.h>
 #include <linux/sysfs.h>
 
-/* Addresses to scan */
+ 
 static const unsigned short normal_i2c[] = { 0x2c, 0x2d, I2C_CLIENT_END };
 
 enum chips { gl518sm_r00, gl518sm_r80 };
 
-/* Many GL518 constants specified below */
+ 
 
-/* The GL518 registers */
+ 
 #define GL518_REG_CHIP_ID	0x00
 #define GL518_REG_REVISION	0x01
 #define GL518_REG_VENDOR_ID	0x02
@@ -61,12 +43,7 @@ enum chips { gl518sm_r00, gl518sm_r80 };
 #define GL518_REG_VDD		0x15
 
 
-/*
- * Conversions. Rounding and limit checking is only done on the TO_REG
- * variants. Note that you should be a bit careful with which arguments
- * these macros are called: arguments may be evaluated more than once.
- * Fixing this is just not worth it.
- */
+ 
 
 #define RAW_FROM_REG(val)	val
 
@@ -100,37 +77,33 @@ static inline u8 FAN_TO_REG(long rpm, int div)
 #define BEEP_MASK_TO_REG(val)	((val) & 0x7f & data->alarm_mask)
 #define BEEP_MASK_FROM_REG(val)	((val) & 0x7f)
 
-/* Each client has this additional data */
+ 
 struct gl518_data {
 	struct i2c_client *client;
 	const struct attribute_group *groups[3];
 	enum chips type;
 
 	struct mutex update_lock;
-	bool valid;		/* true if following fields are valid */
-	unsigned long last_updated;	/* In jiffies */
+	bool valid;		 
+	unsigned long last_updated;	 
 
-	u8 voltage_in[4];	/* Register values; [0] = VDD */
-	u8 voltage_min[4];	/* Register values; [0] = VDD */
-	u8 voltage_max[4];	/* Register values; [0] = VDD */
+	u8 voltage_in[4];	 
+	u8 voltage_min[4];	 
+	u8 voltage_max[4];	 
 	u8 fan_in[2];
 	u8 fan_min[2];
-	u8 fan_div[2];		/* Register encoding, shifted right */
-	u8 fan_auto1;		/* Boolean */
-	u8 temp_in;		/* Register values */
-	u8 temp_max;		/* Register values */
-	u8 temp_hyst;		/* Register values */
-	u8 alarms;		/* Register value */
+	u8 fan_div[2];		 
+	u8 fan_auto1;		 
+	u8 temp_in;		 
+	u8 temp_max;		 
+	u8 temp_hyst;		 
+	u8 alarms;		 
 	u8 alarm_mask;
-	u8 beep_mask;		/* Register value */
-	u8 beep_enable;		/* Boolean */
+	u8 beep_mask;		 
+	u8 beep_enable;		 
 };
 
-/*
- * Registers 0x07 to 0x0c are word-sized, others are byte-sized
- * GL518 uses a high-byte first convention, which is exactly opposite to
- * the SMBus standard.
- */
+ 
 static int gl518_read_value(struct i2c_client *client, u8 reg)
 {
 	if ((reg >= 0x07) && (reg <= 0x0c))
@@ -219,9 +192,7 @@ static struct gl518_data *gl518_update_device(struct device *dev)
 	return data;
 }
 
-/*
- * Sysfs stuff
- */
+ 
 
 #define show(type, suffix, value)					\
 static ssize_t show_##suffix(struct device *dev,			\
@@ -562,11 +533,9 @@ static const struct attribute_group gl518_group_r80 = {
 	.attrs = gl518_attributes_r80,
 };
 
-/*
- * Real code
- */
+ 
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int gl518_detect(struct i2c_client *client, struct i2c_board_info *info)
 {
 	struct i2c_adapter *adapter = client->adapter;
@@ -576,12 +545,12 @@ static int gl518_detect(struct i2c_client *client, struct i2c_board_info *info)
 				     I2C_FUNC_SMBUS_WORD_DATA))
 		return -ENODEV;
 
-	/* Now, we do the remaining detection. */
+	 
 	if ((gl518_read_value(client, GL518_REG_CHIP_ID) != 0x80)
 	 || (gl518_read_value(client, GL518_REG_CONF) & 0x80))
 		return -ENODEV;
 
-	/* Determine the chip type. */
+	 
 	rev = gl518_read_value(client, GL518_REG_REVISION);
 	if (rev != 0x00 && rev != 0x80)
 		return -ENODEV;
@@ -591,22 +560,19 @@ static int gl518_detect(struct i2c_client *client, struct i2c_board_info *info)
 	return 0;
 }
 
-/*
- * Called when we have found a new GL518SM.
- * Note that we preserve D4:NoFan2 and D2:beep_enable.
- */
+ 
 static void gl518_init_client(struct i2c_client *client)
 {
-	/* Make sure we leave D7:Reset untouched */
+	 
 	u8 regvalue = gl518_read_value(client, GL518_REG_CONF) & 0x7f;
 
-	/* Comparator mode (D3=0), standby mode (D6=0) */
+	 
 	gl518_write_value(client, GL518_REG_CONF, (regvalue &= 0x37));
 
-	/* Never interrupts */
+	 
 	gl518_write_value(client, GL518_REG_MASK, 0x00);
 
-	/* Clear status register (D5=1), start (D6=1) */
+	 
 	gl518_write_value(client, GL518_REG_CONF, 0x20 | regvalue);
 	gl518_write_value(client, GL518_REG_CONF, 0x40 | regvalue);
 }
@@ -627,11 +593,11 @@ static int gl518_probe(struct i2c_client *client)
 	data->type = revision == 0x80 ? gl518sm_r80 : gl518sm_r00;
 	mutex_init(&data->update_lock);
 
-	/* Initialize the GL518SM chip */
+	 
 	data->alarm_mask = 0xff;
 	gl518_init_client(client);
 
-	/* sysfs hooks */
+	 
 	data->groups[0] = &gl518_group;
 	if (data->type == gl518sm_r80)
 		data->groups[1] = &gl518_group_r80;

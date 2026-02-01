@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2012
- *
- * Author: Ola Lilja <ola.o.lilja@stericsson.com>,
- *         Roger Nilsson <roger.xr.nilsson@stericsson.com>
- *         for ST-Ericsson.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -319,7 +313,7 @@ static int setup_msp_config(struct snd_pcm_substream *substream,
 
 	dev_dbg(dai->dev, "%s: f_inputclk = %u, frame_freq = %u.\n",
 	       __func__, msp_config->f_inputclk, msp_config->frame_freq);
-	/* To avoid division by zero */
+	 
 	prot_desc->clocks_per_frame = 1;
 
 	dev_dbg(dai->dev, "%s: rate: %u, channels: %d.\n", __func__,
@@ -386,7 +380,7 @@ static int ux500_msp_dai_startup(struct snd_pcm_substream *substream,
 	dev_dbg(dai->dev, "%s: MSP %d (%s): Enter.\n", __func__, dai->id,
 		snd_pcm_stream_str(substream));
 
-	/* Enable regulator */
+	 
 	ret = regulator_enable(drvdata->reg_vape);
 	if (ret != 0) {
 		dev_err(drvdata->msp->dev,
@@ -394,7 +388,7 @@ static int ux500_msp_dai_startup(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Prepare and enable clocks */
+	 
 	dev_dbg(dai->dev, "%s: Enabling MSP-clocks.\n", __func__);
 	ret = clk_prepare_enable(drvdata->pclk);
 	if (ret) {
@@ -441,11 +435,11 @@ static void ux500_msp_dai_shutdown(struct snd_pcm_substream *substream,
 			__func__, dai->id, snd_pcm_stream_str(substream));
 	}
 
-	/* Disable and unprepare clocks */
+	 
 	clk_disable_unprepare(drvdata->clk);
 	clk_disable_unprepare(drvdata->pclk);
 
-	/* Disable regulator */
+	 
 	ret = regulator_disable(drvdata->reg_vape);
 	if (ret < 0)
 		dev_err(dai->dev,
@@ -473,12 +467,10 @@ static int ux500_msp_dai_prepare(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Set OPP-level */
+	 
 	if ((drvdata->fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) &&
 		(drvdata->msp->f_bitclk > 19200000)) {
-		/* If the bit-clock is higher than 19.2MHz, Vape should be
-		 * run in 100% OPP. Only when bit-clock is used (MSP master)
-		 */
+		 
 		prcmu_qos_update_requirement(PRCMU_QOS_APE_OPP,
 					"ux500-msp-i2s", 100);
 		drvdata->vape_opp_constraint = 1;

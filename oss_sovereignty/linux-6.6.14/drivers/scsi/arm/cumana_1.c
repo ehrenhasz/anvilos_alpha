@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic Generic NCR5380 driver
- *
- * Copyright 1995-2002, Russell King
- */
+
+ 
 #include <linux/module.h>
 #include <linux/ioport.h>
 #include <linux/blkdev.h>

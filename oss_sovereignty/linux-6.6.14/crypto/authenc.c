@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Authenc: Simple AEAD wrapper for IPsec
- *
- * Copyright (c) 2007-2015 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/internal/hash.h>
@@ -54,12 +50,7 @@ int crypto_authenc_extractkeys(struct crypto_authenc_keys *keys, const u8 *key,
 	if (rta->rta_type != CRYPTO_AUTHENC_KEYA_PARAM)
 		return -EINVAL;
 
-	/*
-	 * RTA_OK() didn't align the rtattr's payload when validating that it
-	 * fits in the buffer.  Yet, the keys should start on the next 4-byte
-	 * aligned boundary.  To avoid confusion, require that the rtattr
-	 * payload be exactly the param struct, which has a 4-byte aligned size.
-	 */
+	 
 	if (RTA_PAYLOAD(rta) != sizeof(*param))
 		return -EINVAL;
 	BUILD_BUG_ON(sizeof(*param) % RTA_ALIGNTO);

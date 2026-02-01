@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -11,14 +11,12 @@
 #include "bpf_util.h"
 
 #ifdef __mips__
-#define	MAX_ENTRIES  6000 /* MIPS n64 syscalls start at 5000 */
+#define	MAX_ENTRIES  6000  
 #else
 #define	MAX_ENTRIES  1024
 #endif
 
-/* install fake seccomp program to enable seccomp code path inside the kernel,
- * so that our kprobe attached to seccomp_phase1() can be triggered
- */
+ 
 static void install_accept_all_seccomp(void)
 {
 	struct sock_filter filter[] = {
@@ -55,7 +53,7 @@ int main(int ac, char **argv)
 		goto cleanup;
 	}
 
-	/* load BPF program */
+	 
 	if (bpf_object__load(obj)) {
 		fprintf(stderr, "ERROR: loading BPF object file failed\n");
 		goto cleanup;
@@ -76,7 +74,7 @@ int main(int ac, char **argv)
 
 	bpf_object__for_each_program(prog, obj) {
 		section = bpf_program__section_name(prog);
-		/* register only syscalls to PROG_ARRAY */
+		 
 		if (sscanf(section, "kprobe/%d", &key) != 1)
 			continue;
 

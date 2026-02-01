@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus operations
- *
- * Copyright 2015-2016 Google Inc.
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/sysfs.h>

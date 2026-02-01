@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * lm3533-core.c -- LM3533 Core
- *
- * Copyright (C) 2011-2012 Texas Instruments
- *
- * Author: Johan Hovold <jhovold@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -161,9 +155,7 @@ static int lm3533_set_boost_ovp(struct lm3533 *lm3533,
 	return ret;
 }
 
-/*
- * HVLED output config -- output hvled controlled by backlight bl
- */
+ 
 static int lm3533_set_hvled_config(struct lm3533 *lm3533, u8 hvled, u8 bl)
 {
 	u8 val;
@@ -188,9 +180,7 @@ static int lm3533_set_hvled_config(struct lm3533 *lm3533, u8 hvled, u8 bl)
 	return ret;
 }
 
-/*
- * LVLED output config -- output lvled controlled by LED led
- */
+ 
 static int lm3533_set_lvled_config(struct lm3533 *lm3533, u8 lvled, u8 led)
 {
 	u8 reg;
@@ -327,12 +317,7 @@ static ssize_t store_output(struct device *dev,
 	LM3533_OUTPUT_ATTR_RW(hvled##_nr, LM3533_ATTR_TYPE_BACKLIGHT, _nr)
 #define LM3533_OUTPUT_LVLED_ATTR_RW(_nr) \
 	LM3533_OUTPUT_ATTR_RW(lvled##_nr, LM3533_ATTR_TYPE_LED, _nr)
-/*
- * Output config:
- *
- * output_hvled<nr>	0-1
- * output_lvled<nr>	0-3
- */
+ 
 static LM3533_OUTPUT_HVLED_ATTR_RW(1);
 static LM3533_OUTPUT_HVLED_ATTR_RW(2);
 static LM3533_OUTPUT_LVLED_ATTR_RW(1);
@@ -554,9 +539,9 @@ static bool lm3533_readable_register(struct device *dev, unsigned int reg)
 static bool lm3533_volatile_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
-	case 0x34 ... 0x36:	/* zone */
-	case 0x37 ... 0x38:	/* adc */
-	case 0xb0 ... 0xb1:	/* fault */
+	case 0x34 ... 0x36:	 
+	case 0x37 ... 0x38:	 
+	case 0xb0 ... 0xb1:	 
 		return true;
 	default:
 		return false;
@@ -566,7 +551,7 @@ static bool lm3533_volatile_register(struct device *dev, unsigned int reg)
 static bool lm3533_precious_register(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
-	case 0x34:		/* zone */
+	case 0x34:		 
 		return true;
 	default:
 		return false;

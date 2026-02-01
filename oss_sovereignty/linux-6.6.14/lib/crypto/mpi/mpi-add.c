@@ -1,22 +1,8 @@
-/* mpi-add.c  -  MPI functions
- * Copyright (C) 1994, 1996, 1998, 2001, 2002,
- *               2003 Free Software Foundation, Inc.
- *
- * This file is part of Libgcrypt.
- *
- * Note: This code is heavily based on the GNU MP Library.
- *	 Actually it's the same code with only minor changes in the
- *	 way the data is stored; this is to support the abstraction
- *	 of an optional secure memory allocation which may be used
- *	 to avoid revealing of sensitive data due to paging etc.
- */
+ 
 
 #include "mpi-internal.h"
 
-/****************
- * Add the unsigned integer V to the mpi-integer U and store the
- * result in W. U and V may be the same.
- */
+ 
 void mpi_add_ui(MPI w, MPI u, unsigned long v)
 {
 	mpi_ptr_t wp, up;
@@ -27,33 +13,31 @@ void mpi_add_ui(MPI w, MPI u, unsigned long v)
 	usign = u->sign;
 	wsign = 0;
 
-	/* If not space for W (and possible carry), increase space.  */
+	 
 	wsize = usize + 1;
 	if (w->alloced < wsize)
 		mpi_resize(w, wsize);
 
-	/* These must be after realloc (U may be the same as W).  */
+	 
 	up = u->d;
 	wp = w->d;
 
-	if (!usize) {  /* simple */
+	if (!usize) {   
 		wp[0] = v;
 		wsize = v ? 1:0;
-	} else if (!usign) {  /* mpi is not negative */
+	} else if (!usign) {   
 		mpi_limb_t cy;
 		cy = mpihelp_add_1(wp, up, usize, v);
 		wp[usize] = cy;
 		wsize = usize + cy;
 	} else {
-		/* The signs are different.  Need exact comparison to determine
-		 * which operand to subtract from which.
-		 */
+		 
 		if (usize == 1 && up[0] < v) {
 			wp[0] = v - up[0];
 			wsize = 1;
 		} else {
 			mpihelp_sub_1(wp, up, usize, v);
-			/* Size can decrease with at most one limb. */
+			 
 			wsize = usize - (wp[usize-1] == 0);
 			wsign = 1;
 		}
@@ -70,14 +54,14 @@ void mpi_add(MPI w, MPI u, MPI v)
 	mpi_size_t usize, vsize, wsize;
 	int usign, vsign, wsign;
 
-	if (u->nlimbs < v->nlimbs) { /* Swap U and V. */
+	if (u->nlimbs < v->nlimbs) {  
 		usize = v->nlimbs;
 		usign = v->sign;
 		vsize = u->nlimbs;
 		vsign = u->sign;
 		wsize = usize + 1;
 		RESIZE_IF_NEEDED(w, wsize);
-		/* These must be after realloc (u or v may be the same as w).  */
+		 
 		up = v->d;
 		vp = u->d;
 	} else {
@@ -87,19 +71,19 @@ void mpi_add(MPI w, MPI u, MPI v)
 		vsign = v->sign;
 		wsize = usize + 1;
 		RESIZE_IF_NEEDED(w, wsize);
-		/* These must be after realloc (u or v may be the same as w).  */
+		 
 		up = u->d;
 		vp = v->d;
 	}
 	wp = w->d;
 	wsign = 0;
 
-	if (!vsize) {  /* simple */
+	if (!vsize) {   
 		MPN_COPY(wp, up, usize);
 		wsize = usize;
 		wsign = usign;
-	} else if (usign != vsign) { /* different sign */
-		/* This test is right since USIZE >= VSIZE */
+	} else if (usign != vsign) {  
+		 
 		if (usize != vsize) {
 			mpihelp_sub(wp, up, usize, vp, vsize);
 			wsize = usize;
@@ -118,7 +102,7 @@ void mpi_add(MPI w, MPI u, MPI v)
 			if (usign)
 				wsign = 1;
 		}
-	} else { /* U and V have same sign. Add them. */
+	} else {  
 		mpi_limb_t cy = mpihelp_add(wp, up, usize, vp, vsize);
 		wp[usize] = cy;
 		wsize = usize + cy;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NOUVEAU_DISPLAY_H__
 #define __NOUVEAU_DISPLAY_H__
 
@@ -27,7 +27,7 @@ struct nouveau_display {
 	struct drm_property *underscan_property;
 	struct drm_property *underscan_hborder_property;
 	struct drm_property *underscan_vborder_property;
-	/* not really hue and saturation: */
+	 
 	struct drm_property *vibrant_hue_property;
 	struct drm_property *color_vibrance_property;
 

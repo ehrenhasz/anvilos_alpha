@@ -1,14 +1,4 @@
-/*
- * hw_random/core.c: HWRNG core API
- *
- * Copyright 2006 Michael Buesch <m@bues.ch>
- * Copyright 2005 (c) MontaVista Software, Inc.
- *
- * Please read Documentation/admin-guide/hw_random.rst for details on use.
- *
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -28,19 +18,19 @@
 #define RNG_MODULE_NAME		"hw_random"
 
 static struct hwrng *current_rng;
-/* the current rng has been explicitly chosen by user via sysfs */
+ 
 static int cur_rng_set_by_user;
 static struct task_struct *hwrng_fill;
-/* list of registered rngs */
+ 
 static LIST_HEAD(rng_list);
-/* Protects rng_list and current_rng */
+ 
 static DEFINE_MUTEX(rng_mutex);
-/* Protects rng read functions, data_avail, rng_buffer and rng_fillbuf */
+ 
 static DEFINE_MUTEX(reading_mutex);
 static int data_avail;
 static u8 *rng_buffer, *rng_fillbuf;
 static unsigned short current_quality;
-static unsigned short default_quality = 1024; /* default to maximum */
+static unsigned short default_quality = 1024;  
 
 module_param(current_quality, ushort, 0644);
 MODULE_PARM_DESC(current_quality,
@@ -97,7 +87,7 @@ static int set_current_rng(struct hwrng *rng)
 	drop_current_rng();
 	current_rng = rng;
 
-	/* if necessary, start hwrng thread */
+	 
 	if (!hwrng_fill) {
 		hwrng_fill = kthread_run(hwrng_fillfn, NULL, "hwrng");
 		if (IS_ERR(hwrng_fill)) {
@@ -115,12 +105,12 @@ static void drop_current_rng(void)
 	if (!current_rng)
 		return;
 
-	/* decrease last reference for triggering the cleanup */
+	 
 	kref_put(&current_rng->ref, cleanup_rng);
 	current_rng = NULL;
 }
 
-/* Returns ERR_PTR(), NULL or refcounted hwrng */
+ 
 static struct hwrng *get_current_rng_nolock(void)
 {
 	if (current_rng)
@@ -144,10 +134,7 @@ static struct hwrng *get_current_rng(void)
 
 static void put_rng(struct hwrng *rng)
 {
-	/*
-	 * Hold rng_mutex here so we serialize in case they set_current_rng
-	 * on rng again immediately.
-	 */
+	 
 	mutex_lock(&rng_mutex);
 	if (rng)
 		kref_put(&rng->ref, cleanup_rng);
@@ -172,14 +159,14 @@ static int hwrng_init(struct hwrng *rng)
 
 skip_init:
 	rng->quality = min_t(u16, min_t(u16, default_quality, 1024), rng->quality ?: 1024);
-	current_quality = rng->quality; /* obsolete */
+	current_quality = rng->quality;  
 
 	return 0;
 }
 
 static int rng_dev_open(struct inode *inode, struct file *filp)
 {
-	/* enforce read-only access to this chrdev */
+	 
 	if ((filp->f_mode & FMODE_READ) == 0)
 		return -EINVAL;
 	if (filp->f_mode & FMODE_WRITE)
@@ -307,14 +294,14 @@ static int enable_best_rng(void)
 
 	BUG_ON(!mutex_is_locked(&rng_mutex));
 
-	/* no rng to use? */
+	 
 	if (list_empty(&rng_list)) {
 		drop_current_rng();
 		cur_rng_set_by_user = 0;
 		return 0;
 	}
 
-	/* use the rng which offers the best quality */
+	 
 	list_for_each_entry(rng, &rng_list, list) {
 		if (!new_rng || rng->quality > new_rng->quality)
 			new_rng = rng;
@@ -419,7 +406,7 @@ static ssize_t rng_quality_show(struct device *dev,
 	if (IS_ERR(rng))
 		return PTR_ERR(rng);
 
-	if (!rng) /* no need to put_rng */
+	if (!rng)  
 		return -ENODEV;
 
 	ret = sysfs_emit(buf, "%hu\n", rng->quality);
@@ -454,9 +441,9 @@ static ssize_t rng_quality_store(struct device *dev,
 	}
 
 	current_rng->quality = quality;
-	current_quality = quality; /* obsolete */
+	current_quality = quality;  
 
-	/* the best available RNG may have changed */
+	 
 	ret = enable_best_rng();
 
 out:
@@ -491,7 +478,7 @@ static int __init register_miscdev(void)
 
 static int hwrng_fillfn(void *unused)
 {
-	size_t entropy, entropy_credit = 0; /* in 1/1024 of a bit */
+	size_t entropy, entropy_credit = 0;  
 	long rc;
 
 	while (!kthread_should_stop()) {
@@ -505,7 +492,7 @@ static int hwrng_fillfn(void *unused)
 		rc = rng_get_data(rng, rng_fillbuf,
 				  rng_buffer_size(), 1);
 		if (current_quality != rng->quality)
-			rng->quality = current_quality; /* obsolete */
+			rng->quality = current_quality;  
 		quality = rng->quality;
 		mutex_unlock(&reading_mutex);
 
@@ -517,14 +504,12 @@ static int hwrng_fillfn(void *unused)
 		if (rc <= 0)
 			continue;
 
-		/* If we cannot credit at least one bit of entropy,
-		 * keep track of the remainder for the next iteration
-		 */
+		 
 		entropy = rc * quality * 8 + entropy_credit;
 		if ((entropy >> 10) == 0)
 			entropy_credit = entropy;
 
-		/* Outside lock, sure, but y'know: randomness. */
+		 
 		add_hwgenerator_randomness((void *)rng_fillbuf, rc,
 					   entropy >> 10, true);
 	}
@@ -543,7 +528,7 @@ int hwrng_register(struct hwrng *rng)
 
 	mutex_lock(&rng_mutex);
 
-	/* Must not register two RNGs with the same name. */
+	 
 	err = -EEXIST;
 	list_for_each_entry(tmp, &rng_list, list) {
 		if (strcmp(tmp->name, rng->name) == 0)
@@ -557,29 +542,17 @@ int hwrng_register(struct hwrng *rng)
 
 	if (!current_rng ||
 	    (!cur_rng_set_by_user && rng->quality > current_rng->quality)) {
-		/*
-		 * Set new rng as current as the new rng source
-		 * provides better entropy quality and was not
-		 * chosen by userspace.
-		 */
+		 
 		err = set_current_rng(rng);
 		if (err)
 			goto out_unlock;
-		/* to use current_rng in add_early_randomness() we need
-		 * to take a ref
-		 */
+		 
 		is_new_current = true;
 		kref_get(&rng->ref);
 	}
 	mutex_unlock(&rng_mutex);
 	if (is_new_current || !rng->init) {
-		/*
-		 * Use a new device's input to add some randomness to
-		 * the system.  If this rng device isn't going to be
-		 * used right away, its init function hasn't been
-		 * called yet by set_current_rng(); so only use the
-		 * randomness from devices that don't need an init callback
-		 */
+		 
 		add_early_randomness(rng);
 	}
 	if (is_new_current)
@@ -688,7 +661,7 @@ static int __init hwrng_modinit(void)
 {
 	int ret;
 
-	/* kmalloc makes this safe for virt_to_page() in virtio_rng.c */
+	 
 	rng_buffer = kmalloc(rng_buffer_size(), GFP_KERNEL);
 	if (!rng_buffer)
 		return -ENOMEM;
@@ -719,7 +692,7 @@ static void __exit hwrng_modexit(void)
 	unregister_miscdev();
 }
 
-fs_initcall(hwrng_modinit); /* depends on misc_register() */
+fs_initcall(hwrng_modinit);  
 module_exit(hwrng_modexit);
 
 MODULE_DESCRIPTION("H/W Random Number Generator (RNG) driver");

@@ -1,50 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API for the NX-842 hardware compression.
- *
- * Copyright (C) IBM Corporation, 2011-2015
- *
- * Designer of the Power data compression engine:
- *   Bulent Abali <abali@us.ibm.com>
- *
- * Original Authors: Robert Jennings <rcj@linux.vnet.ibm.com>
- *                   Seth Jennings <sjenning@linux.vnet.ibm.com>
- *
- * Rewrite: Dan Streetman <ddstreet@ieee.org>
- *
- * This is an interface to the NX-842 compression hardware in PowerPC
- * processors.  Most of the complexity of this drvier is due to the fact that
- * the NX-842 compression hardware requires the input and output data buffers
- * to be specifically aligned, to be a specific multiple in length, and within
- * specific minimum and maximum lengths.  Those restrictions, provided by the
- * nx-842 driver via nx842_constraints, mean this driver must use bounce
- * buffers and headers to correct misaligned in or out buffers, and to split
- * input buffers that are too large.
- *
- * This driver will fall back to software decompression if the hardware
- * decompression fails, so this driver's decompression should never fail as
- * long as the provided compressed buffer is valid.  Any compressed buffer
- * created by this driver will have a header (except ones where the input
- * perfectly matches the constraints); so users of this driver cannot simply
- * pass a compressed buffer created by this driver over to the 842 software
- * decompression library.  Instead, users must use this driver to decompress;
- * if the hardware fails or is unavailable, the compressed buffer will be
- * parsed and the header removed, and the raw 842 buffer(s) passed to the 842
- * software decompression library.
- *
- * This does not fall back to software compression, however, since the caller
- * of this function is specifically requesting hardware compression; if the
- * hardware compression fails, the caller can fall back to software
- * compression, and the raw 842 compressed buffer that the software compressor
- * creates can be passed to this driver for hardware decompression; any
- * buffer without our specific header magic is assumed to be a raw 842 buffer
- * and passed directly to the hardware.  Note that the software compression
- * library will produce a compressed buffer that is incompatible with the
- * hardware decompressor if the original input buffer length is not a multiple
- * of 8; if such a compressed buffer is passed to this driver for
- * decompression, the hardware will reject it and this driver will then pass
- * it over to the software library for decompression.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -54,12 +9,7 @@
 
 #include "nx-842.h"
 
-/* The first 5 bits of this magic are 0x1f, which is an invalid 842 5-bit
- * template (see lib/842/842.h), so this magic number will never appear at
- * the start of a raw 842 compressed buffer.  That is important, as any buffer
- * passed to us without this magic is assumed to be a raw 842 compressed
- * buffer, and passed directly to the hardware to decompress.
- */
+ 
 #define NX842_CRYPTO_MAGIC	(0xf842)
 #define NX842_CRYPTO_HEADER_SIZE(g)				\
 	(sizeof(struct nx842_crypto_header) +			\
@@ -67,14 +17,14 @@
 #define NX842_CRYPTO_HEADER_MAX_SIZE				\
 	NX842_CRYPTO_HEADER_SIZE(NX842_CRYPTO_GROUP_MAX)
 
-/* bounce buffer size */
+ 
 #define BOUNCE_BUFFER_ORDER	(2)
 #define BOUNCE_BUFFER_SIZE					\
 	((unsigned int)(PAGE_SIZE << BOUNCE_BUFFER_ORDER))
 
-/* try longer on comp because we can fallback to sw decomp if hw is busy */
-#define COMP_BUSY_TIMEOUT	(250) /* ms */
-#define DECOMP_BUSY_TIMEOUT	(50) /* ms */
+ 
+#define COMP_BUSY_TIMEOUT	(250)  
+#define DECOMP_BUSY_TIMEOUT	(50)  
 
 struct nx842_crypto_param {
 	u8 *in;
@@ -133,7 +83,7 @@ EXPORT_SYMBOL_GPL(nx842_crypto_exit);
 
 static void check_constraints(struct nx842_constraints *c)
 {
-	/* limit maximum, to always have enough bounce buffer to decompress */
+	 
 	if (c->maximum > BOUNCE_BUFFER_SIZE)
 		c->maximum = BOUNCE_BUFFER_SIZE;
 }
@@ -142,7 +92,7 @@ static int nx842_crypto_add_header(struct nx842_crypto_header *hdr, u8 *buf)
 {
 	int s = NX842_CRYPTO_HEADER_SIZE(hdr->groups);
 
-	/* compress should have added space for header */
+	 
 	if (s > be16_to_cpu(hdr->group[0].padding)) {
 		pr_err("Internal error: no space for header\n");
 		return -EINVAL;
@@ -215,11 +165,9 @@ nospc:
 	tmplen = dlen;
 	timeout = ktime_add_ms(ktime_get(), COMP_BUSY_TIMEOUT);
 	do {
-		dlen = tmplen; /* reset dlen, if we're retrying */
+		dlen = tmplen;  
 		ret = ctx->driver->compress(src, slen, dst, &dlen, ctx->wmem);
-		/* possibly we should reduce the slen here, instead of
-		 * retrying with the dbounce buffer?
-		 */
+		 
 		if (ret == -ENOSPC && dst != ctx->dbounce)
 			goto nospc;
 	} while (ret == -EBUSY && ktime_before(ktime_get(), timeout));
@@ -275,7 +223,7 @@ int nx842_crypto_compress(struct crypto_tfm *tfm,
 
 	spin_lock_bh(&ctx->lock);
 
-	/* skip adding header if the buffers meet all constraints */
+	 
 	add_header = (p.iremain % c.multiple	||
 		      p.iremain < c.minimum	||
 		      p.iremain > c.maximum	||
@@ -295,7 +243,7 @@ int nx842_crypto_compress(struct crypto_tfm *tfm,
 		if (hdr->groups > NX842_CRYPTO_GROUP_MAX)
 			goto unlock;
 
-		/* header goes before first group */
+		 
 		h = !n && add_header ? hdrsize : 0;
 
 		if (ignore)
@@ -312,7 +260,7 @@ int nx842_crypto_compress(struct crypto_tfm *tfm,
 		goto unlock;
 	}
 
-	/* ignore indicates the input stream needed to be padded */
+	 
 	hdr->ignore = cpu_to_be16(ignore);
 	if (ignore)
 		pr_debug("marked %d bytes as ignore\n", ignore);
@@ -365,10 +313,7 @@ static int decompress(struct nx842_crypto_ctx *ctx,
 	if (slen > c->maximum)
 		goto usesw;
 	if (slen < adj_slen || (u64)src % c->alignment) {
-		/* we can append padding bytes because the 842 format defines
-		 * an "end" template (see lib/842/842_decompress.c) and will
-		 * ignore any bytes following it.
-		 */
+		 
 		if (slen < adj_slen)
 			memset(ctx->sbounce + slen, 0, adj_slen - slen);
 		memcpy(ctx->sbounce, src, slen);
@@ -393,18 +338,18 @@ static int decompress(struct nx842_crypto_ctx *ctx,
 	tmplen = dlen;
 	timeout = ktime_add_ms(ktime_get(), DECOMP_BUSY_TIMEOUT);
 	do {
-		dlen = tmplen; /* reset dlen, if we're retrying */
+		dlen = tmplen;  
 		ret = ctx->driver->decompress(src, slen, dst, &dlen, ctx->wmem);
 	} while (ret == -EBUSY && ktime_before(ktime_get(), timeout));
 	if (ret) {
 usesw:
-		/* reset everything, sw doesn't have constraints */
+		 
 		src = p->in + padding;
 		slen = be32_to_cpu(g->compressed_length);
 		spadding = 0;
 		dst = p->out;
 		dlen = p->oremain;
-		if (dlen < required_len) { /* have ignore bytes */
+		if (dlen < required_len) {  
 			dst = ctx->dbounce;
 			dlen = BOUNCE_BUFFER_SIZE;
 		}
@@ -454,9 +399,7 @@ int nx842_crypto_decompress(struct crypto_tfm *tfm,
 
 	spin_lock_bh(&ctx->lock);
 
-	/* If it doesn't start with our header magic number, assume it's a raw
-	 * 842 compressed buffer and pass it directly to the hardware driver
-	 */
+	 
 	if (be16_to_cpu(hdr->magic) != NX842_CRYPTO_MAGIC) {
 		struct nx842_crypto_header_group g = {
 			.padding =		0,
@@ -493,7 +436,7 @@ int nx842_crypto_decompress(struct crypto_tfm *tfm,
 	hdr = &ctx->header;
 
 	for (n = 0; n < hdr->groups; n++) {
-		/* ignore applies to last group */
+		 
 		if (n + 1 == hdr->groups)
 			ignore = be16_to_cpu(hdr->ignore);
 

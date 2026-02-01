@@ -1,8 +1,4 @@
-/*
-** $Id: ldo.h,v 2.20.1.1 2013/04/12 18:48:47 roberto Exp $
-** Stack and Call structure of Lua
-** See Copyright Notice in lua.h
-*/
+ 
 
 #ifndef ldo_h
 #define ldo_h
@@ -23,7 +19,7 @@
 #define restorestack(L,n)	((TValue *)((char *)L->stack + (n)))
 
 
-/* type of protected functions, to be ran by `runprotected' */
+ 
 typedef void (*Pfunc) (lua_State *L, void *ud);
 
 LUAI_FUNC int luaD_protectedparser (lua_State *L, ZIO *z, const char *name,

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef BTRFS_FILE_ITEM_H
 #define BTRFS_FILE_ITEM_H
@@ -13,11 +13,7 @@ static inline u32 BTRFS_MAX_INLINE_DATA_SIZE(const struct btrfs_fs_info *info)
 	return BTRFS_MAX_ITEM_SIZE(info) - BTRFS_FILE_EXTENT_INLINE_DATA_START;
 }
 
-/*
- * Return the number of bytes used by the item on disk, minus the size of any
- * extent headers.  If a file is compressed on disk, this is the compressed
- * size.
- */
+ 
 static inline u32 btrfs_file_extent_inline_item_len(
 						const struct extent_buffer *eb,
 						int nr)

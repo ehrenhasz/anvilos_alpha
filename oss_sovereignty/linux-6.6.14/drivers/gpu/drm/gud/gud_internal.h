@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 
 #ifndef __LINUX_GUD_INTERNAL_H
 #define __LINUX_GUD_INTERNAL_H
@@ -37,9 +37,9 @@ struct gud_device {
 	u64 stats_actual_length;
 	unsigned int stats_num_errors;
 
-	struct mutex ctrl_lock; /* Serialize get/set and status transfers */
+	struct mutex ctrl_lock;  
 
-	struct mutex damage_lock; /* Protects the following members: */
+	struct mutex damage_lock;  
 	struct drm_framebuffer *fb;
 	struct drm_rect damage;
 	bool prev_flush_failed;
@@ -72,7 +72,7 @@ int gud_connector_fill_properties(struct drm_connector_state *connector_state,
 				  struct gud_property_req *properties);
 int gud_get_connectors(struct gud_device *gdrm);
 
-/* Driver internal fourcc transfer formats */
+ 
 #define GUD_DRM_FORMAT_R1		0x00000122
 #define GUD_DRM_FORMAT_XRGB1111		0x03121722
 

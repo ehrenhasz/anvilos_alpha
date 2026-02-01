@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2017 Sebastian Reichel <sre@kernel.org>
- */
+
+ 
 
 #include <linux/leds.h>
 #include <linux/mfd/motorola-cpcap.h>
@@ -40,7 +38,7 @@ static const struct cpcap_led_info cpcap_led_blue = {
 	.limit	= 31,
 };
 
-/* aux display light */
+ 
 static const struct cpcap_led_info cpcap_led_adl = {
 	.reg		= CPCAP_REG_ADLC,
 	.mask		= 0x000F,
@@ -49,7 +47,7 @@ static const struct cpcap_led_info cpcap_led_adl = {
 	.init_val	= 0x5FF0,
 };
 
-/* camera privacy led */
+ 
 static const struct cpcap_led_info cpcap_led_cp = {
 	.reg		= CPCAP_REG_CLEDC,
 	.mask		= 0x0007,
@@ -72,8 +70,8 @@ struct cpcap_led {
 
 static u16 cpcap_led_val(u8 current_limit, u8 duty_cycle)
 {
-	current_limit &= 0x1f; /* 5 bit */
-	duty_cycle &= 0x0f; /* 4 bit */
+	current_limit &= 0x1f;  
+	duty_cycle &= 0x0f;  
 
 	return current_limit << 4 | duty_cycle;
 }
@@ -115,7 +113,7 @@ static int cpcap_led_set(struct led_classdev *ledc, enum led_brightness value)
 	}
 
 	if (value == LED_OFF) {
-		/* Avoid HW issue by turning off current before duty cycle */
+		 
 		err = regmap_update_bits(led->regmap,
 			led->info->reg, led->info->mask, CPCAP_LED_NO_CURRENT);
 		if (err) {

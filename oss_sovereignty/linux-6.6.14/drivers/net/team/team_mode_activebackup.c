@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/team/team_mode_activebackup.c - Active-backup mode for team
- * Copyright (c) 2011 Jiri Pirko <jpirko@redhat.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * pxa1928 clock framework source file
- *
- * Copyright (C) 2015 Linaro, Ltd.
- * Rob Herring <robh@kernel.org>
- *
- * Based on drivers/clk/mmp/clk-of-mmp2.c:
- * Copyright (C) 2012 Marvell
- * Chao Xie <xiechao.mail@gmail.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/io.h>
 #include <linux/of_address.h>
@@ -62,8 +53,8 @@ static struct mmp_clk_factor_masks uart_factor_masks = {
 };
 
 static struct mmp_clk_factor_tbl uart_factor_tbl[] = {
-	{.num = 832, .den = 234},	/*58.5MHZ */
-	{.num = 1, .den = 1},		/*26MHZ */
+	{.num = 832, .den = 234},	 
+	{.num = 1, .den = 1},		 
 };
 
 static void pxa1928_pll_init(struct pxa1928_clk_unit *pxa_unit)
@@ -118,7 +109,7 @@ static struct mmp_param_gate_clk apbc_gate_clks[] = {
 	{PXA1928_CLK_PWM1, "pwm1_clk", "vctcxo", CLK_SET_RATE_PARENT, PXA1928_CLK_PWM1 * 4, 0x3, 0x3, 0x0, 0, &reset_lock},
 	{PXA1928_CLK_PWM2, "pwm2_clk", "vctcxo", CLK_SET_RATE_PARENT, PXA1928_CLK_PWM2 * 4, 0x3, 0x3, 0x0, 0, &reset_lock},
 	{PXA1928_CLK_PWM3, "pwm3_clk", "vctcxo", CLK_SET_RATE_PARENT, PXA1928_CLK_PWM3 * 4, 0x3, 0x3, 0x0, 0, &reset_lock},
-	/* The gate clocks has mux parent. */
+	 
 	{PXA1928_CLK_UART0, "uart0_clk", "uart0_mux", CLK_SET_RATE_PARENT, PXA1928_CLK_UART0 * 4, 0x3, 0x3, 0x0, 0, &uart0_lock},
 	{PXA1928_CLK_UART1, "uart1_clk", "uart1_mux", CLK_SET_RATE_PARENT, PXA1928_CLK_UART1 * 4, 0x3, 0x3, 0x0, 0, &uart1_lock},
 	{PXA1928_CLK_UART2, "uart2_clk", "uart2_mux", CLK_SET_RATE_PARENT, PXA1928_CLK_UART2 * 4, 0x3, 0x3, 0x0, 0, &uart2_lock},
@@ -158,7 +149,7 @@ static struct mmp_param_div_clk apmu_div_clks[] = {
 static struct mmp_param_gate_clk apmu_gate_clks[] = {
 	{PXA1928_CLK_USB, "usb_clk", "usb_pll", 0, PXA1928_CLK_USB * 4, 0x9, 0x9, 0x0, 0, &usb_lock},
 	{PXA1928_CLK_HSIC, "hsic_clk", "usb_pll", 0, PXA1928_CLK_HSIC * 4, 0x9, 0x9, 0x0, 0, &usb_lock},
-	/* The gate clocks has mux parent. */
+	 
 	{PXA1928_CLK_SDH0, "sdh0_clk", "sdh_div", CLK_SET_RATE_PARENT, PXA1928_CLK_SDH0 * 4, 0x1b, 0x1b, 0x0, 0, &sdh0_lock},
 	{PXA1928_CLK_SDH1, "sdh1_clk", "sdh_div", CLK_SET_RATE_PARENT, PXA1928_CLK_SDH1 * 4, 0x1b, 0x1b, 0x0, 0, &sdh1_lock},
 	{PXA1928_CLK_SDH2, "sdh2_clk", "sdh_div", CLK_SET_RATE_PARENT, PXA1928_CLK_SDH2 * 4, 0x1b, 0x1b, 0x0, 0, &sdh2_lock},

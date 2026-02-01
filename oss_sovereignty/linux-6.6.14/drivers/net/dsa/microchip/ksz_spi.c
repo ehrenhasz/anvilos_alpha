@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Microchip ksz series register access through SPI
- *
- * Copyright (C) 2017 Microchip Technology Inc.
- *	Tristram Ha <Tristram.Ha@microchip.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 
@@ -80,7 +75,7 @@ static int ksz_spi_probe(struct spi_device *spi)
 	if (spi->dev.platform_data)
 		dev->pdata = spi->dev.platform_data;
 
-	/* setup spi */
+	 
 	spi->mode = SPI_MODE_3;
 	ret = spi_setup(spi);
 	if (ret)
@@ -90,7 +85,7 @@ static int ksz_spi_probe(struct spi_device *spi)
 
 	ret = ksz_switch_register(dev);
 
-	/* Main DSA driver may not be started yet. */
+	 
 	if (ret)
 		return ret;
 

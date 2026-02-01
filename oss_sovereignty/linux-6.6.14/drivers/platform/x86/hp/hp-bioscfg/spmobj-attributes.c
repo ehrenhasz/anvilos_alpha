@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to secure platform management object type
- * attributes under BIOS PASSWORD for use with hp-bioscfg driver
- *
- * Copyright (c) 2022 HP Development Company, L.P.
- */
+
+ 
 
 #include "bioscfg.h"
 
@@ -31,14 +26,7 @@ struct secureplatform_provisioning_data {
 	u8 kek_mod[MAX_KEY_MOD_SIZE];
 };
 
-/**
- * hp_calculate_security_buffer() - determines size of security buffer
- * for authentication scheme
- *
- * @authentication: the authentication content
- *
- * Currently only supported type is Admin password
- */
+ 
 size_t hp_calculate_security_buffer(const char *authentication)
 {
 	size_t size, authlen;
@@ -57,15 +45,7 @@ size_t hp_calculate_security_buffer(const char *authentication)
 	return size;
 }
 
-/**
- * hp_populate_security_buffer() - builds a security buffer for
- * authentication scheme
- *
- * @authbuf: the security buffer
- * @authentication: the authentication content
- *
- * Currently only supported type is PLAIN TEXT
- */
+ 
 int hp_populate_security_buffer(u16 *authbuf, const char *authentication)
 {
 	u16 *auth = authbuf;
@@ -73,22 +53,16 @@ int hp_populate_security_buffer(u16 *authbuf, const char *authentication)
 	int ret = 0;
 
 	if (strstarts(authentication, BEAM_PREFIX)) {
-		/*
-		 * BEAM_PREFIX is append to authbuf when a signature
-		 * is provided and Sure Admin is enabled in BIOS
-		 */
-		/* BEAM_PREFIX found, convert part to unicode */
+		 
+		 
 		auth = hp_ascii_to_utf16_unicode(auth, authentication);
 		if (!auth)
 			return -EINVAL;
 
 	} else {
-		/*
-		 * UTF-16 prefix is append to the * authbuf when a BIOS
-		 * admin password is configured in BIOS
-		 */
+		 
 
-		/* append UTF_PREFIX to part and then convert it to unicode */
+		 
 		strprefix = kasprintf(GFP_KERNEL, "%s%s", UTF_PREFIX,
 				      authentication);
 		if (!strprefix)
@@ -139,9 +113,7 @@ static ssize_t statusbin(struct kobject *kobj,
 	return sizeof(struct secureplatform_provisioning_data);
 }
 
-/*
- * status_show - Reads SPM status
- */
+ 
 static ssize_t status_show(struct kobject *kobj, struct kobj_attribute
 			   *attr, char *buf)
 {
@@ -153,17 +125,7 @@ static ssize_t status_show(struct kobject *kobj, struct kobj_attribute
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * 'status' is a read-only file that returns ASCII text in
-	 * JSON format reporting the status information.
-	 *
-	 * "State": "not provisioned | provisioned | provisioning in progress ",
-	 * "Version": " Major. Minor ",
-	 * "Nonce": <16-bit unsigned number display in base 10>,
-	 * "FeaturesInUse": <16-bit unsigned number display in base 10>,
-	 * "EndorsementKeyMod": "<256 bytes in base64>",
-	 * "SigningKeyMod": "<256 bytes in base64>"
-	 */
+	 
 
 	len += sysfs_emit_at(buf, len, "{\n");
 	len += sysfs_emit_at(buf, len, "\t\"State\": \"%s\",\n",
@@ -171,10 +133,7 @@ static ssize_t status_show(struct kobject *kobj, struct kobj_attribute
 	len += sysfs_emit_at(buf, len, "\t\"Version\": \"%d.%d\"",
 			     data.version[0], data.version[1]);
 
-	/*
-	 * state == 0 means secure platform management
-	 * feature is not configured in BIOS.
-	 */
+	 
 	if (data.state == 0) {
 		len += sysfs_emit_at(buf, len, "\n");
 		goto status_exit;
@@ -195,7 +154,7 @@ static ssize_t status_show(struct kobject *kobj, struct kobj_attribute
 	for (i = 255; i >= 0; i--)
 		len += sysfs_emit_at(buf, len, " %u", data.sk_mod[i]);
 
-	/* Return buf contents */
+	 
 	len += sysfs_emit_at(buf, len, " \"\n");
 
 status_exit:
@@ -229,12 +188,12 @@ static ssize_t sk_store(struct kobject *kobj,
 	if (buf[length - 1] == '\n')
 		length--;
 
-	/* allocate space and copy current signing key */
+	 
 	bioscfg_drv.spm_data.signing_key = kmemdup(buf, length, GFP_KERNEL);
 	if (!bioscfg_drv.spm_data.signing_key)
 		return -ENOMEM;
 
-	/* submit signing key payload */
+	 
 	ret = hp_wmi_perform_query(HPWMI_SECUREPLATFORM_SET_SK,
 				   HPWMI_SECUREPLATFORM,
 				   (void *)bioscfg_drv.spm_data.signing_key,
@@ -264,7 +223,7 @@ static ssize_t kek_store(struct kobject *kobj,
 	if (buf[length - 1] == '\n')
 		length--;
 
-	/* allocate space and copy current signing key */
+	 
 	bioscfg_drv.spm_data.endorsement_key = kmemdup(buf, length, GFP_KERNEL);
 	if (!bioscfg_drv.spm_data.endorsement_key) {
 		ret = -ENOMEM;
@@ -309,7 +268,7 @@ static ssize_t auth_token_store(struct kobject *kobj,
 	if (buf[length - 1] == '\n')
 		length--;
 
-	/* allocate space and copy current auth token */
+	 
 	bioscfg_drv.spm_data.auth_token = kmemdup(buf, length, GFP_KERNEL);
 	if (!bioscfg_drv.spm_data.auth_token) {
 		ret = -ENOMEM;
@@ -344,7 +303,7 @@ static const struct attribute_group secure_platform_attr_group = {
 
 void hp_exit_secure_platform_attributes(void)
 {
-	/* remove secure platform sysfs entry and free key data*/
+	 
 
 	kfree(bioscfg_drv.spm_data.endorsement_key);
 	bioscfg_drv.spm_data.endorsement_key = NULL;
@@ -362,7 +321,7 @@ void hp_exit_secure_platform_attributes(void)
 
 int hp_populate_secure_platform_data(struct kobject *attr_name_kobj)
 {
-	/* Populate data for Secure Platform Management */
+	 
 	bioscfg_drv.spm_data.attr_name_kobj = attr_name_kobj;
 
 	strscpy(bioscfg_drv.spm_data.attribute_name, SPM_STR,

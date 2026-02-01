@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2022 - 2023 Intel Corporation
- */
+
+ 
 #include <linux/kernel.h>
 #include <net/mac80211.h>
 #include "mvm.h"
@@ -24,35 +22,27 @@ static u32 iwl_mvm_get_sec_sta_mask(struct iwl_mvm *mvm,
 			return 0;
 	}
 
-	/* AP group keys are per link and should be on the mcast/bcast STA */
+	 
 	if (vif->type == NL80211_IFTYPE_AP &&
 	    !(keyconf->flags & IEEE80211_KEY_FLAG_PAIRWISE)) {
-		/* IGTK/BIGTK to bcast STA */
+		 
 		if (keyconf->keyidx >= 4)
 			return BIT(link_info->bcast_sta.sta_id);
-		/* GTK for data to mcast STA */
+		 
 		return BIT(link_info->mcast_sta.sta_id);
 	}
 
-	/* for client mode use the AP STA also for group keys */
+	 
 	if (!sta && vif->type == NL80211_IFTYPE_STATION)
 		sta = mvmvif->ap_sta;
 
-	/* During remove the STA was removed and the group keys come later
-	 * (which sounds like a bad sequence, but remember that to mac80211 the
-	 * group keys have no sta pointer), so we don't have a STA now.
-	 * Since this happens for group keys only, just use the link_info as
-	 * the group keys are per link; make sure that is the case by checking
-	 * we do have a link_id or are not doing MLO.
-	 * Of course the same can be done during add as well, but we must do
-	 * it during remove, since we don't have the mvmvif->ap_sta pointer.
-	 */
+	 
 	if (!sta && (keyconf->link_id >= 0 || !ieee80211_vif_is_mld(vif)))
 		return BIT(link_info->ap_sta_id);
 
-	/* STA should be non-NULL now, but iwl_mvm_sta_fw_id_mask() checks */
+	 
 
-	/* pass link_id to filter by it if not -1 (GTK on client) */
+	 
 	return iwl_mvm_sta_fw_id_mask(mvm, sta, keyconf->link_id);
 }
 
@@ -96,9 +86,7 @@ u32 iwl_mvm_get_sec_flags(struct iwl_mvm *mvm,
 	if (!sta && vif->type == NL80211_IFTYPE_STATION)
 		sta = mvmvif->ap_sta;
 
-	/* Set the MFP flag also for an AP interface where the key is an IGTK
-	 * key as in such a case the station would always be NULL
-	 */
+	 
 	if ((!IS_ERR_OR_NULL(sta) && sta->mfp) ||
 	    (vif->type == NL80211_IFTYPE_AP &&
 	     (keyconf->keyidx == 4 || keyconf->keyidx == 5)))
@@ -133,7 +121,7 @@ static void iwl_mvm_mld_update_sta_key(struct ieee80211_hw *hw,
 	};
 	int err;
 
-	/* only need to do this for pairwise keys (link_id == -1) */
+	 
 	if (sta != data->sta || key->link_id >= 0)
 		return;
 
@@ -218,10 +206,7 @@ int iwl_mvm_mld_send_key(struct iwl_mvm *mvm, u32 sta_mask, u32 key_flags,
 	if (ret)
 		return ret;
 
-	/*
-	 * For WEP, the same key is used for multicast and unicast so need to
-	 * upload it again. If this fails, remove the original as well.
-	 */
+	 
 	if (keyconf->cipher == WLAN_CIPHER_SUITE_WEP40 ||
 	    keyconf->cipher == WLAN_CIPHER_SUITE_WEP104) {
 		cmd.u.add.key_flags ^= cpu_to_le32(IWL_SEC_KEY_FLAG_MCAST_KEY);
@@ -248,7 +233,7 @@ int iwl_mvm_sec_key_add(struct iwl_mvm *mvm,
 	if (keyconf->keyidx == 4 || keyconf->keyidx == 5) {
 		unsigned int link_id = 0;
 
-		/* set to -1 for non-MLO right now */
+		 
 		if (keyconf->link_id >= 0)
 			link_id = keyconf->link_id;
 
@@ -277,10 +262,7 @@ int iwl_mvm_sec_key_add(struct iwl_mvm *mvm,
 	if (mvm_link)
 		mvm_link->igtk = keyconf;
 
-	/* We don't really need this, but need it to be not invalid,
-	 * and if we switch links multiple times it might go to be
-	 * invalid when removed.
-	 */
+	 
 	keyconf->hw_key_idx = 0;
 
 	return 0;
@@ -304,7 +286,7 @@ static int _iwl_mvm_sec_key_del(struct iwl_mvm *mvm,
 		struct iwl_mvm_vif_link_info *mvm_link;
 		unsigned int link_id = 0;
 
-		/* set to -1 for non-MLO right now */
+		 
 		if (keyconf->link_id >= 0)
 			link_id = keyconf->link_id;
 
@@ -313,7 +295,7 @@ static int _iwl_mvm_sec_key_del(struct iwl_mvm *mvm,
 			return -EINVAL;
 
 		if (mvm_link->igtk == keyconf) {
-			/* no longer in HW - mark for later */
+			 
 			mvm_link->igtk->hw_key_idx = STA_KEY_IDX_INVALID;
 			mvm_link->igtk = NULL;
 		}
@@ -324,7 +306,7 @@ static int _iwl_mvm_sec_key_del(struct iwl_mvm *mvm,
 	if (ret)
 		return ret;
 
-	/* For WEP, delete the key again as unicast */
+	 
 	if (keyconf->cipher == WLAN_CIPHER_SUITE_WEP40 ||
 	    keyconf->cipher == WLAN_CIPHER_SUITE_WEP104) {
 		key_flags ^= IWL_SEC_KEY_FLAG_MCAST_KEY;

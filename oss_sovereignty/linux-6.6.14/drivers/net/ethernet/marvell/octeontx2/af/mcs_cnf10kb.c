@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell MCS driver
- *
- * Copyright (C) 2022 Marvell.
- */
+
+ 
 
 #include "mcs.h"
 #include "mcs_reg.h"
@@ -26,21 +23,21 @@ void cnf10kb_mcs_set_hw_capabilities(struct mcs *mcs)
 {
 	struct hwinfo *hw = mcs->hw;
 
-	hw->tcam_entries = 64;		/* TCAM entries */
-	hw->secy_entries  = 64;		/* SecY entries */
-	hw->sc_entries = 64;		/* SC CAM entries */
-	hw->sa_entries = 128;		/* SA entries */
-	hw->lmac_cnt = 4;		/* lmacs/ports per mcs block */
-	hw->mcs_x2p_intf = 1;		/* x2p clabration intf */
-	hw->mcs_blks = 7;		/* MCS blocks */
-	hw->ip_vec = MCS_CNF10KB_INT_VEC_IP; /* IP vector */
+	hw->tcam_entries = 64;		 
+	hw->secy_entries  = 64;		 
+	hw->sc_entries = 64;		 
+	hw->sa_entries = 128;		 
+	hw->lmac_cnt = 4;		 
+	hw->mcs_x2p_intf = 1;		 
+	hw->mcs_blks = 7;		 
+	hw->ip_vec = MCS_CNF10KB_INT_VEC_IP;  
 }
 
 void cnf10kb_mcs_parser_cfg(struct mcs *mcs)
 {
 	u64 reg, val;
 
-	/* VLAN Ctag */
+	 
 	val = (0x8100ull & 0xFFFF) | BIT_ULL(20) | BIT_ULL(22);
 
 	reg = MCSX_PEX_RX_SLAVE_CUSTOM_TAGX(0);
@@ -49,18 +46,18 @@ void cnf10kb_mcs_parser_cfg(struct mcs *mcs)
 	reg = MCSX_PEX_TX_SLAVE_CUSTOM_TAGX(0);
 	mcs_reg_write(mcs, reg, val);
 
-	/* VLAN STag */
+	 
 	val = (0x88a8ull & 0xFFFF) | BIT_ULL(20) | BIT_ULL(23);
 
-	/* RX */
+	 
 	reg = MCSX_PEX_RX_SLAVE_CUSTOM_TAGX(1);
 	mcs_reg_write(mcs, reg, val);
 
-	/* TX */
+	 
 	reg = MCSX_PEX_TX_SLAVE_CUSTOM_TAGX(1);
 	mcs_reg_write(mcs, reg, val);
 
-	/* Enable custom tage 0 and 1 and sectag */
+	 
 	val = BIT_ULL(0) | BIT_ULL(1) | BIT_ULL(12);
 
 	reg = MCSX_PEX_RX_SLAVE_ETYPE_ENABLE;
@@ -133,7 +130,7 @@ int mcs_set_force_clk_en(struct mcs *mcs, bool set)
 		val |= BIT_ULL(4);
 		mcs_reg_write(mcs, MCSX_MIL_GLOBAL, val);
 
-		/* Poll till mcsx_mil_ip_gbl_status.mcs_ip_stats_ready value is 1 */
+		 
 		while (!(mcs_reg_read(mcs, MCSX_MIL_IP_GBL_STATUS) & BIT_ULL(0))) {
 			if (time_after(jiffies, timeout)) {
 				dev_err(mcs->dev, "MCS set force clk enable failed\n");
@@ -148,11 +145,7 @@ int mcs_set_force_clk_en(struct mcs *mcs, bool set)
 	return 0;
 }
 
-/* TX SA interrupt is raised only if autorekey is enabled.
- * MCS_CPM_TX_SLAVE_SA_MAP_MEM_0X[sc].tx_sa_active bit gets toggled if
- * one of two SAs mapped to SC gets expired. If tx_sa_active=0 implies
- * SA in SA_index1 got expired else SA in SA_index0 got expired.
- */
+ 
 void cnf10kb_mcs_tx_pn_thresh_reached_handler(struct mcs *mcs)
 {
 	struct mcs_intr_event event;
@@ -169,15 +162,15 @@ void cnf10kb_mcs_tx_pn_thresh_reached_handler(struct mcs *mcs)
 	rekey_ena = mcs_reg_read(mcs, MCSX_CPM_TX_SLAVE_AUTO_REKEY_ENABLE_0);
 
 	for_each_set_bit(sc, sc_bmap->bmap, mcs->hw->sc_entries) {
-		/* Auto rekey is enable */
+		 
 		if (!test_bit(sc, &rekey_ena))
 			continue;
 		sa_status = mcs_reg_read(mcs, MCSX_CPM_TX_SLAVE_TX_SA_ACTIVEX(sc));
-		/* Check if tx_sa_active status had changed */
+		 
 		if (sa_status == mcs->tx_sa_active[sc])
 			continue;
 
-		/* SA_index0 is expired */
+		 
 		val = mcs_reg_read(mcs, MCSX_CPM_TX_SLAVE_SA_MAP_MEM_0X(sc));
 		if (sa_status)
 			event.sa_id = val & 0x7F;
@@ -205,10 +198,10 @@ void cnf10kb_mcs_tx_pn_wrapped_handler(struct mcs *mcs)
 		val = mcs_reg_read(mcs, MCSX_CPM_TX_SLAVE_SA_MAP_MEM_0X(sc));
 
 		if (mcs->tx_sa_active[sc])
-			/* SA_index1 was used and got expired */
+			 
 			event.sa_id = (val >> 7) & 0x7F;
 		else
-			/* SA_index0 was used and got expired */
+			 
 			event.sa_id = val & 0x7F;
 
 		event.pcifunc = mcs->tx.sa2pf_map[event.sa_id];
@@ -232,9 +225,7 @@ void cnf10kb_mcs_bbe_intr_handler(struct mcs *mcs, u64 intr,
 		if (!(intr & BIT_ULL(i)))
 			continue;
 
-		/* Lower nibble denotes data fifo overflow interrupts and
-		 * upper nibble indicates policy fifo overflow interrupts.
-		 */
+		 
 		if (intr & 0xFULL)
 			event.intr_mask = (dir == MCS_RX) ?
 					  MCS_BBE_RX_DFIFO_OVERFLOW_INT :
@@ -244,7 +235,7 @@ void cnf10kb_mcs_bbe_intr_handler(struct mcs *mcs, u64 intr,
 					  MCS_BBE_RX_PLFIFO_OVERFLOW_INT :
 					  MCS_BBE_TX_PLFIFO_OVERFLOW_INT;
 
-		/* Notify the lmac_id info which ran into BBE fatal error */
+		 
 		event.lmac_id = i & 0x3ULL;
 		mcs_add_intr_wq_entry(mcs, &event);
 	}
@@ -270,7 +261,7 @@ void cnf10kb_mcs_pab_intr_handler(struct mcs *mcs, u64 intr,
 				  MCS_PAB_RX_CHAN_OVERFLOW_INT :
 				  MCS_PAB_TX_CHAN_OVERFLOW_INT;
 
-		/* Notify the lmac_id info which ran into PAB fatal error */
+		 
 		event.lmac_id = i;
 		mcs_add_intr_wq_entry(mcs, &event);
 	}

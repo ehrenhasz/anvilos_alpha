@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs_dsp.c  --  Cirrus Logic DSP firmware support
- *
- * Based on sound/soc/codecs/wm_adsp.c
- *
- * Copyright 2012 Wolfson Microelectronics plc
- * Copyright (C) 2015-2021 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/debugfs.h>
@@ -62,39 +54,33 @@
 #define ADSP1_CONTROL_30                  0x24
 #define ADSP1_CONTROL_31                  0x26
 
-/*
- * ADSP1 Control 19
- */
-#define ADSP1_WDMA_BUFFER_LENGTH_MASK     0x00FF  /* DSP1_WDMA_BUFFER_LENGTH - [7:0] */
-#define ADSP1_WDMA_BUFFER_LENGTH_SHIFT         0  /* DSP1_WDMA_BUFFER_LENGTH - [7:0] */
-#define ADSP1_WDMA_BUFFER_LENGTH_WIDTH         8  /* DSP1_WDMA_BUFFER_LENGTH - [7:0] */
+ 
+#define ADSP1_WDMA_BUFFER_LENGTH_MASK     0x00FF   
+#define ADSP1_WDMA_BUFFER_LENGTH_SHIFT         0   
+#define ADSP1_WDMA_BUFFER_LENGTH_WIDTH         8   
 
-/*
- * ADSP1 Control 30
- */
-#define ADSP1_DBG_CLK_ENA                 0x0008  /* DSP1_DBG_CLK_ENA */
-#define ADSP1_DBG_CLK_ENA_MASK            0x0008  /* DSP1_DBG_CLK_ENA */
-#define ADSP1_DBG_CLK_ENA_SHIFT                3  /* DSP1_DBG_CLK_ENA */
-#define ADSP1_DBG_CLK_ENA_WIDTH                1  /* DSP1_DBG_CLK_ENA */
-#define ADSP1_SYS_ENA                     0x0004  /* DSP1_SYS_ENA */
-#define ADSP1_SYS_ENA_MASK                0x0004  /* DSP1_SYS_ENA */
-#define ADSP1_SYS_ENA_SHIFT                    2  /* DSP1_SYS_ENA */
-#define ADSP1_SYS_ENA_WIDTH                    1  /* DSP1_SYS_ENA */
-#define ADSP1_CORE_ENA                    0x0002  /* DSP1_CORE_ENA */
-#define ADSP1_CORE_ENA_MASK               0x0002  /* DSP1_CORE_ENA */
-#define ADSP1_CORE_ENA_SHIFT                   1  /* DSP1_CORE_ENA */
-#define ADSP1_CORE_ENA_WIDTH                   1  /* DSP1_CORE_ENA */
-#define ADSP1_START                       0x0001  /* DSP1_START */
-#define ADSP1_START_MASK                  0x0001  /* DSP1_START */
-#define ADSP1_START_SHIFT                      0  /* DSP1_START */
-#define ADSP1_START_WIDTH                      1  /* DSP1_START */
+ 
+#define ADSP1_DBG_CLK_ENA                 0x0008   
+#define ADSP1_DBG_CLK_ENA_MASK            0x0008   
+#define ADSP1_DBG_CLK_ENA_SHIFT                3   
+#define ADSP1_DBG_CLK_ENA_WIDTH                1   
+#define ADSP1_SYS_ENA                     0x0004   
+#define ADSP1_SYS_ENA_MASK                0x0004   
+#define ADSP1_SYS_ENA_SHIFT                    2   
+#define ADSP1_SYS_ENA_WIDTH                    1   
+#define ADSP1_CORE_ENA                    0x0002   
+#define ADSP1_CORE_ENA_MASK               0x0002   
+#define ADSP1_CORE_ENA_SHIFT                   1   
+#define ADSP1_CORE_ENA_WIDTH                   1   
+#define ADSP1_START                       0x0001   
+#define ADSP1_START_MASK                  0x0001   
+#define ADSP1_START_SHIFT                      0   
+#define ADSP1_START_WIDTH                      1   
 
-/*
- * ADSP1 Control 31
- */
-#define ADSP1_CLK_SEL_MASK                0x0007  /* CLK_SEL_ENA */
-#define ADSP1_CLK_SEL_SHIFT                    0  /* CLK_SEL_ENA */
-#define ADSP1_CLK_SEL_WIDTH                    3  /* CLK_SEL_ENA */
+ 
+#define ADSP1_CLK_SEL_MASK                0x0007   
+#define ADSP1_CLK_SEL_SHIFT                    0   
+#define ADSP1_CLK_SEL_WIDTH                    3   
 
 #define ADSP2_CONTROL                     0x0
 #define ADSP2_CLOCKING                    0x1
@@ -113,55 +99,45 @@
 #define ADSP2V2_SCRATCH0_1                0x40
 #define ADSP2V2_SCRATCH2_3                0x42
 
-/*
- * ADSP2 Control
- */
-#define ADSP2_MEM_ENA                     0x0010  /* DSP1_MEM_ENA */
-#define ADSP2_MEM_ENA_MASK                0x0010  /* DSP1_MEM_ENA */
-#define ADSP2_MEM_ENA_SHIFT                    4  /* DSP1_MEM_ENA */
-#define ADSP2_MEM_ENA_WIDTH                    1  /* DSP1_MEM_ENA */
-#define ADSP2_SYS_ENA                     0x0004  /* DSP1_SYS_ENA */
-#define ADSP2_SYS_ENA_MASK                0x0004  /* DSP1_SYS_ENA */
-#define ADSP2_SYS_ENA_SHIFT                    2  /* DSP1_SYS_ENA */
-#define ADSP2_SYS_ENA_WIDTH                    1  /* DSP1_SYS_ENA */
-#define ADSP2_CORE_ENA                    0x0002  /* DSP1_CORE_ENA */
-#define ADSP2_CORE_ENA_MASK               0x0002  /* DSP1_CORE_ENA */
-#define ADSP2_CORE_ENA_SHIFT                   1  /* DSP1_CORE_ENA */
-#define ADSP2_CORE_ENA_WIDTH                   1  /* DSP1_CORE_ENA */
-#define ADSP2_START                       0x0001  /* DSP1_START */
-#define ADSP2_START_MASK                  0x0001  /* DSP1_START */
-#define ADSP2_START_SHIFT                      0  /* DSP1_START */
-#define ADSP2_START_WIDTH                      1  /* DSP1_START */
+ 
+#define ADSP2_MEM_ENA                     0x0010   
+#define ADSP2_MEM_ENA_MASK                0x0010   
+#define ADSP2_MEM_ENA_SHIFT                    4   
+#define ADSP2_MEM_ENA_WIDTH                    1   
+#define ADSP2_SYS_ENA                     0x0004   
+#define ADSP2_SYS_ENA_MASK                0x0004   
+#define ADSP2_SYS_ENA_SHIFT                    2   
+#define ADSP2_SYS_ENA_WIDTH                    1   
+#define ADSP2_CORE_ENA                    0x0002   
+#define ADSP2_CORE_ENA_MASK               0x0002   
+#define ADSP2_CORE_ENA_SHIFT                   1   
+#define ADSP2_CORE_ENA_WIDTH                   1   
+#define ADSP2_START                       0x0001   
+#define ADSP2_START_MASK                  0x0001   
+#define ADSP2_START_SHIFT                      0   
+#define ADSP2_START_WIDTH                      1   
 
-/*
- * ADSP2 clocking
- */
-#define ADSP2_CLK_SEL_MASK                0x0007  /* CLK_SEL_ENA */
-#define ADSP2_CLK_SEL_SHIFT                    0  /* CLK_SEL_ENA */
-#define ADSP2_CLK_SEL_WIDTH                    3  /* CLK_SEL_ENA */
+ 
+#define ADSP2_CLK_SEL_MASK                0x0007   
+#define ADSP2_CLK_SEL_SHIFT                    0   
+#define ADSP2_CLK_SEL_WIDTH                    3   
 
-/*
- * ADSP2V2 clocking
- */
-#define ADSP2V2_CLK_SEL_MASK             0x70000  /* CLK_SEL_ENA */
-#define ADSP2V2_CLK_SEL_SHIFT                 16  /* CLK_SEL_ENA */
-#define ADSP2V2_CLK_SEL_WIDTH                  3  /* CLK_SEL_ENA */
+ 
+#define ADSP2V2_CLK_SEL_MASK             0x70000   
+#define ADSP2V2_CLK_SEL_SHIFT                 16   
+#define ADSP2V2_CLK_SEL_WIDTH                  3   
 
-#define ADSP2V2_RATE_MASK                 0x7800  /* DSP_RATE */
-#define ADSP2V2_RATE_SHIFT                    11  /* DSP_RATE */
-#define ADSP2V2_RATE_WIDTH                     4  /* DSP_RATE */
+#define ADSP2V2_RATE_MASK                 0x7800   
+#define ADSP2V2_RATE_SHIFT                    11   
+#define ADSP2V2_RATE_WIDTH                     4   
 
-/*
- * ADSP2 Status 1
- */
+ 
 #define ADSP2_RAM_RDY                     0x0001
 #define ADSP2_RAM_RDY_MASK                0x0001
 #define ADSP2_RAM_RDY_SHIFT                    0
 #define ADSP2_RAM_RDY_WIDTH                    1
 
-/*
- * ADSP2 Lock support
- */
+ 
 #define ADSP2_LOCK_CODE_0                    0x5555
 #define ADSP2_LOCK_CODE_1                    0xAAAA
 
@@ -190,20 +166,14 @@
 
 #define ADSP2_LOCK_REGION_SHIFT              16
 
-/*
- * Event control messages
- */
+ 
 #define CS_DSP_FW_EVENT_SHUTDOWN             0x000001
 
-/*
- * HALO system info
- */
+ 
 #define HALO_AHBM_WINDOW_DEBUG_0             0x02040
 #define HALO_AHBM_WINDOW_DEBUG_1             0x02044
 
-/*
- * HALO core
- */
+ 
 #define HALO_SCRATCH1                        0x005c0
 #define HALO_SCRATCH2                        0x005c8
 #define HALO_SCRATCH3                        0x005d0
@@ -212,9 +182,7 @@
 #define HALO_CORE_SOFT_RESET                 0x00010
 #define HALO_WDT_CONTROL                     0x47000
 
-/*
- * HALO MPU banks
- */
+ 
 #define HALO_MPU_XMEM_ACCESS_0               0x43000
 #define HALO_MPU_YMEM_ACCESS_0               0x43004
 #define HALO_MPU_WINDOW_ACCESS_0             0x43008
@@ -243,32 +211,22 @@
 #define HALO_MPU_PM_VIO_STATUS               0x43114
 #define HALO_MPU_LOCK_CONFIG                 0x43140
 
-/*
- * HALO_AHBM_WINDOW_DEBUG_1
- */
+ 
 #define HALO_AHBM_CORE_ERR_ADDR_MASK         0x0fffff00
 #define HALO_AHBM_CORE_ERR_ADDR_SHIFT                 8
 #define HALO_AHBM_FLAGS_ERR_MASK             0x000000ff
 
-/*
- * HALO_CCM_CORE_CONTROL
- */
+ 
 #define HALO_CORE_RESET                     0x00000200
 #define HALO_CORE_EN                        0x00000001
 
-/*
- * HALO_CORE_SOFT_RESET
- */
+ 
 #define HALO_CORE_SOFT_RESET_MASK           0x00000001
 
-/*
- * HALO_WDT_CONTROL
- */
+ 
 #define HALO_WDT_EN_MASK                    0x00000001
 
-/*
- * HALO_MPU_?M_VIO_STATUS
- */
+ 
 #define HALO_MPU_VIO_STS_MASK               0x007e0000
 #define HALO_MPU_VIO_STS_SHIFT                      17
 #define HALO_MPU_VIO_ERR_WR_MASK            0x00008000
@@ -342,12 +300,7 @@ static void cs_dsp_buf_free(struct list_head *list)
 	}
 }
 
-/**
- * cs_dsp_mem_region_name() - Return a name string for a memory type
- * @type: the memory type to match
- *
- * Return: A const string identifying the memory region.
- */
+ 
 const char *cs_dsp_mem_region_name(unsigned int type)
 {
 	switch (type) {
@@ -485,12 +438,7 @@ static int cs_dsp_debugfs_read_controls_show(struct seq_file *s, void *ignored)
 }
 DEFINE_SHOW_ATTRIBUTE(cs_dsp_debugfs_read_controls);
 
-/**
- * cs_dsp_init_debugfs() - Create and populate DSP representation in debugfs
- * @dsp: pointer to DSP structure
- * @debugfs_root: pointer to debugfs directory in which to create this DSP
- *                representation
- */
+ 
 void cs_dsp_init_debugfs(struct cs_dsp *dsp, struct dentry *debugfs_root)
 {
 	struct dentry *root = NULL;
@@ -514,10 +462,7 @@ void cs_dsp_init_debugfs(struct cs_dsp *dsp, struct dentry *debugfs_root)
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_init_debugfs, FW_CS_DSP);
 
-/**
- * cs_dsp_cleanup_debugfs() - Removes DSP representation from debugfs
- * @dsp: pointer to DSP structure
- */
+ 
 void cs_dsp_cleanup_debugfs(struct cs_dsp *dsp)
 {
 	cs_dsp_debugfs_clear(dsp);
@@ -667,18 +612,7 @@ static int cs_dsp_coeff_base_reg(struct cs_dsp_coeff_ctl *ctl, unsigned int *reg
 	return 0;
 }
 
-/**
- * cs_dsp_coeff_write_acked_control() - Sends event_id to the acked control
- * @ctl: pointer to acked coefficient control
- * @event_id: the value to write to the given acked control
- *
- * Once the value has been written to the control the function shall block
- * until the running firmware acknowledges the write or timeout is exceeded.
- *
- * Must be called with pwr_lock held.
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_coeff_write_acked_control(struct cs_dsp_coeff_ctl *ctl, unsigned int event_id)
 {
 	struct cs_dsp *dsp = ctl->dsp;
@@ -705,12 +639,7 @@ int cs_dsp_coeff_write_acked_control(struct cs_dsp_coeff_ctl *ctl, unsigned int 
 		return ret;
 	}
 
-	/*
-	 * Poll for ack, we initially poll at ~1ms intervals for firmwares
-	 * that respond quickly, then go to ~10ms polls. A firmware is unlikely
-	 * to ack instantly so we do the first 1ms delay before reading the
-	 * control to avoid a pointless bus transaction
-	 */
+	 
 	for (i = 0; i < CS_DSP_ACKED_CTL_TIMEOUT_MS;) {
 		switch (i) {
 		case 0 ... CS_DSP_ACKED_CTL_N_QUICKPOLLS - 1:
@@ -775,17 +704,7 @@ static int cs_dsp_coeff_write_ctrl_raw(struct cs_dsp_coeff_ctl *ctl,
 	return 0;
 }
 
-/**
- * cs_dsp_coeff_write_ctrl() - Writes the given buffer to the given coefficient control
- * @ctl: pointer to coefficient control
- * @off: word offset at which data should be written
- * @buf: the buffer to write to the given control
- * @len: the length of the buffer in bytes
- *
- * Must be called with pwr_lock held.
- *
- * Return: < 0 on error, 1 when the control value changed and 0 when it has not.
- */
+ 
 int cs_dsp_coeff_write_ctrl(struct cs_dsp_coeff_ctl *ctl,
 			    unsigned int off, const void *buf, size_t len)
 {
@@ -850,17 +769,7 @@ static int cs_dsp_coeff_read_ctrl_raw(struct cs_dsp_coeff_ctl *ctl,
 	return 0;
 }
 
-/**
- * cs_dsp_coeff_read_ctrl() - Reads the given coefficient control into the given buffer
- * @ctl: pointer to coefficient control
- * @off: word offset at which data should be read
- * @buf: the buffer to store to the given control
- * @len: the length of the buffer in bytes
- *
- * Must be called with pwr_lock held.
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_coeff_read_ctrl(struct cs_dsp_coeff_ctl *ctl,
 			   unsigned int off, void *buf, size_t len)
 {
@@ -902,11 +811,7 @@ static int cs_dsp_coeff_init_control_caches(struct cs_dsp *dsp)
 		if (ctl->flags & WMFW_CTL_FLAG_VOLATILE)
 			continue;
 
-		/*
-		 * For readable controls populate the cache from the DSP memory.
-		 * For non-readable controls the cache was zero-filled when
-		 * created so we don't need to do anything.
-		 */
+		 
 		if (!ctl->flags || (ctl->flags & WMFW_CTL_FLAG_READABLE)) {
 			ret = cs_dsp_coeff_read_ctrl_raw(ctl, 0, ctl->cache, ctl->len);
 			if (ret < 0)
@@ -1205,7 +1110,7 @@ static int cs_dsp_parse_coeff(struct cs_dsp *dsp,
 			break;
 		case WMFW_CTL_TYPE_ACKED:
 			if (coeff_blk.flags & WMFW_CTL_FLAG_SYS)
-				continue;	/* ignore */
+				continue;	 
 
 			ret = cs_dsp_check_coeff_flags(dsp, &coeff_blk,
 						       WMFW_CTL_FLAG_VOLATILE |
@@ -1504,17 +1409,7 @@ out_fw:
 	return ret;
 }
 
-/**
- * cs_dsp_get_ctl() - Finds a matching coefficient control
- * @dsp: pointer to DSP structure
- * @name: pointer to string to match with a control's subname
- * @type: the algorithm type to match
- * @alg: the algorithm id to match
- *
- * Find cs_dsp_coeff_ctl with input name as its subname
- *
- * Return: pointer to the control on success, NULL if not found
- */
+ 
 struct cs_dsp_coeff_ctl *cs_dsp_get_ctl(struct cs_dsp *dsp, const char *name, int type,
 					unsigned int alg)
 {
@@ -1571,7 +1466,7 @@ static void *cs_dsp_read_algs(struct cs_dsp *dsp, size_t n_algs,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* Read the terminator first to validate the length */
+	 
 	reg = dsp->ops->region_to_reg(mem, pos + len);
 
 	ret = regmap_raw_read(dsp->regmap, reg, &val, sizeof(val));
@@ -1585,7 +1480,7 @@ static void *cs_dsp_read_algs(struct cs_dsp *dsp, size_t n_algs,
 		cs_dsp_warn(dsp, "Algorithm list end %x 0x%x != 0xbedead\n",
 			    reg, be32_to_cpu(val));
 
-	/* Convert length from DSP words to bytes */
+	 
 	len *= sizeof(u32);
 
 	alg = kzalloc(len, GFP_KERNEL | GFP_DMA);
@@ -1604,14 +1499,7 @@ static void *cs_dsp_read_algs(struct cs_dsp *dsp, size_t n_algs,
 	return alg;
 }
 
-/**
- * cs_dsp_find_alg_region() - Finds a matching algorithm region
- * @dsp: pointer to DSP structure
- * @type: the algorithm type to match
- * @id: the algorithm id to match
- *
- * Return: Pointer to matching algorithm region, or NULL if not found.
- */
+ 
 struct cs_dsp_alg_region *cs_dsp_find_alg_region(struct cs_dsp *dsp,
 						 int type, unsigned int id)
 {
@@ -1743,7 +1631,7 @@ static int cs_dsp_adsp1_setup_algs(struct cs_dsp *dsp)
 	if (IS_ERR(alg_region))
 		return PTR_ERR(alg_region);
 
-	/* Calculate offset and length in DSP words */
+	 
 	pos = sizeof(adsp1_id) / sizeof(u32);
 	len = (sizeof(*adsp1_alg) * n_algs) / sizeof(u32);
 
@@ -1854,7 +1742,7 @@ static int cs_dsp_adsp2_setup_algs(struct cs_dsp *dsp)
 	if (IS_ERR(alg_region))
 		return PTR_ERR(alg_region);
 
-	/* Calculate offset and length in DSP words */
+	 
 	pos = sizeof(adsp2_id) / sizeof(u32);
 	len = (sizeof(*adsp2_alg) * n_algs) / sizeof(u32);
 
@@ -1987,7 +1875,7 @@ static int cs_dsp_halo_setup_algs(struct cs_dsp *dsp)
 	if (ret)
 		return ret;
 
-	/* Calculate offset and length in DSP words */
+	 
 	pos = sizeof(halo_id) / sizeof(u32);
 	len = (sizeof(*halo_alg) * n_algs) / sizeof(u32);
 
@@ -2094,10 +1982,7 @@ static int cs_dsp_load_coeff(struct cs_dsp *dsp, const struct firmware *firmware
 		case (WMFW_METADATA << 8):
 			break;
 		case (WMFW_ABSOLUTE << 8):
-			/*
-			 * Old files may use this for global
-			 * coefficients.
-			 */
+			 
 			if (le32_to_cpu(blk->id) == dsp->fw_id &&
 			    offset == 0) {
 				region_name = "global coefficients";
@@ -2249,12 +2134,7 @@ static int cs_dsp_common_init(struct cs_dsp *dsp)
 	return 0;
 }
 
-/**
- * cs_dsp_adsp1_init() - Initialise a cs_dsp structure representing a ADSP1 device
- * @dsp: pointer to DSP structure
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_adsp1_init(struct cs_dsp *dsp)
 {
 	dsp->ops = &cs_dsp_adsp1_ops;
@@ -2263,17 +2143,7 @@ int cs_dsp_adsp1_init(struct cs_dsp *dsp)
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_adsp1_init, FW_CS_DSP);
 
-/**
- * cs_dsp_adsp1_power_up() - Load and start the named firmware
- * @dsp: pointer to DSP structure
- * @wmfw_firmware: the firmware to be sent
- * @wmfw_filename: file name of firmware to be sent
- * @coeff_firmware: the coefficient data to be sent
- * @coeff_filename: file name of coefficient to data be sent
- * @fw_name: the user-friendly firmware name
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_adsp1_power_up(struct cs_dsp *dsp,
 			  const struct firmware *wmfw_firmware, char *wmfw_filename,
 			  const struct firmware *coeff_firmware, char *coeff_filename,
@@ -2289,10 +2159,7 @@ int cs_dsp_adsp1_power_up(struct cs_dsp *dsp,
 	regmap_update_bits(dsp->regmap, dsp->base + ADSP1_CONTROL_30,
 			   ADSP1_SYS_ENA, ADSP1_SYS_ENA);
 
-	/*
-	 * For simplicity set the DSP clock rate to be the
-	 * SYSCLK rate rather than making it configurable.
-	 */
+	 
 	if (dsp->sysclk_reg) {
 		ret = regmap_read(dsp->regmap, dsp->sysclk_reg, &val);
 		if (ret != 0) {
@@ -2323,19 +2190,19 @@ int cs_dsp_adsp1_power_up(struct cs_dsp *dsp,
 	if (ret != 0)
 		goto err_ena;
 
-	/* Initialize caches for enabled and unset controls */
+	 
 	ret = cs_dsp_coeff_init_control_caches(dsp);
 	if (ret != 0)
 		goto err_ena;
 
-	/* Sync set controls */
+	 
 	ret = cs_dsp_coeff_sync_controls(dsp);
 	if (ret != 0)
 		goto err_ena;
 
 	dsp->booted = true;
 
-	/* Start the core running */
+	 
 	regmap_update_bits(dsp->regmap, dsp->base + ADSP1_CONTROL_30,
 			   ADSP1_CORE_ENA | ADSP1_START,
 			   ADSP1_CORE_ENA | ADSP1_START);
@@ -2355,10 +2222,7 @@ err_mutex:
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_adsp1_power_up, FW_CS_DSP);
 
-/**
- * cs_dsp_adsp1_power_down() - Halts the DSP
- * @dsp: pointer to DSP structure
- */
+ 
 void cs_dsp_adsp1_power_down(struct cs_dsp *dsp)
 {
 	struct cs_dsp_coeff_ctl *ctl;
@@ -2368,7 +2232,7 @@ void cs_dsp_adsp1_power_down(struct cs_dsp *dsp)
 	dsp->running = false;
 	dsp->booted = false;
 
-	/* Halt the core */
+	 
 	regmap_update_bits(dsp->regmap, dsp->base + ADSP1_CONTROL_30,
 			   ADSP1_CORE_ENA | ADSP1_START, 0);
 
@@ -2392,7 +2256,7 @@ static int cs_dsp_adsp2v2_enable_core(struct cs_dsp *dsp)
 	unsigned int val;
 	int ret, count;
 
-	/* Wait for the RAM to start, should be near instantaneous */
+	 
 	for (count = 0; count < 10; ++count) {
 		ret = regmap_read(dsp->regmap, dsp->base + ADSP2_STATUS1, &val);
 		if (ret != 0)
@@ -2516,15 +2380,7 @@ static int cs_dsp_halo_configure_mpu(struct cs_dsp *dsp, unsigned int lock_regio
 	return regmap_multi_reg_write(dsp->regmap, config, ARRAY_SIZE(config));
 }
 
-/**
- * cs_dsp_set_dspclk() - Applies the given frequency to the given cs_dsp
- * @dsp: pointer to DSP structure
- * @freq: clock rate to set
- *
- * This is only for use on ADSP2 cores.
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_set_dspclk(struct cs_dsp *dsp, unsigned int freq)
 {
 	int ret;
@@ -2551,23 +2407,7 @@ static void cs_dsp_halo_stop_watchdog(struct cs_dsp *dsp)
 			   HALO_WDT_EN_MASK, 0);
 }
 
-/**
- * cs_dsp_power_up() - Downloads firmware to the DSP
- * @dsp: pointer to DSP structure
- * @wmfw_firmware: the firmware to be sent
- * @wmfw_filename: file name of firmware to be sent
- * @coeff_firmware: the coefficient data to be sent
- * @coeff_filename: file name of coefficient to data be sent
- * @fw_name: the user-friendly firmware name
- *
- * This function is used on ADSP2 and Halo DSP cores, it powers-up the DSP core
- * and downloads the firmware but does not start the firmware running. The
- * cs_dsp booted flag will be set once completed and if the core has a low-power
- * memory retention mode it will be put into this state after the firmware is
- * downloaded.
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_power_up(struct cs_dsp *dsp,
 		    const struct firmware *wmfw_firmware, char *wmfw_filename,
 		    const struct firmware *coeff_firmware, char *coeff_filename,
@@ -2603,7 +2443,7 @@ int cs_dsp_power_up(struct cs_dsp *dsp,
 	if (ret != 0)
 		goto err_ena;
 
-	/* Initialize caches for enabled and unset controls */
+	 
 	ret = cs_dsp_coeff_init_control_caches(dsp);
 	if (ret != 0)
 		goto err_ena;
@@ -2629,13 +2469,7 @@ err_mutex:
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_power_up, FW_CS_DSP);
 
-/**
- * cs_dsp_power_down() - Powers-down the DSP
- * @dsp: pointer to DSP structure
- *
- * cs_dsp_stop() must have been called before this function. The core will be
- * fully powered down and so the memory will not be retained.
- */
+ 
 void cs_dsp_power_down(struct cs_dsp *dsp)
 {
 	struct cs_dsp_coeff_ctl *ctl;
@@ -2676,14 +2510,7 @@ static void cs_dsp_adsp2_stop_core(struct cs_dsp *dsp)
 			   ADSP2_CORE_ENA | ADSP2_START, 0);
 }
 
-/**
- * cs_dsp_run() - Starts the firmware running
- * @dsp: pointer to DSP structure
- *
- * cs_dsp_power_up() must have previously been called successfully.
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_run(struct cs_dsp *dsp)
 {
 	int ret;
@@ -2707,7 +2534,7 @@ int cs_dsp_run(struct cs_dsp *dsp)
 			goto err;
 	}
 
-	/* Sync set controls */
+	 
 	ret = cs_dsp_coeff_sync_controls(dsp);
 	if (ret != 0)
 		goto err;
@@ -2749,21 +2576,16 @@ err:
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_run, FW_CS_DSP);
 
-/**
- * cs_dsp_stop() - Stops the firmware
- * @dsp: pointer to DSP structure
- *
- * Memory will not be disabled so firmware will remain loaded.
- */
+ 
 void cs_dsp_stop(struct cs_dsp *dsp)
 {
-	/* Tell the firmware to cleanup */
+	 
 	cs_dsp_signal_event_controls(dsp, CS_DSP_FW_EVENT_SHUTDOWN);
 
 	if (dsp->ops->stop_watchdog)
 		dsp->ops->stop_watchdog(dsp);
 
-	/* Log firmware state, it can be useful for analysis */
+	 
 	if (dsp->ops->show_fw_status)
 		dsp->ops->show_fw_status(dsp);
 
@@ -2807,27 +2629,19 @@ static void cs_dsp_halo_stop_core(struct cs_dsp *dsp)
 	regmap_update_bits(dsp->regmap, dsp->base + HALO_CCM_CORE_CONTROL,
 			   HALO_CORE_EN, 0);
 
-	/* reset halo core with CORE_SOFT_RESET */
+	 
 	regmap_update_bits(dsp->regmap, dsp->base + HALO_CORE_SOFT_RESET,
 			   HALO_CORE_SOFT_RESET_MASK, 1);
 }
 
-/**
- * cs_dsp_adsp2_init() - Initialise a cs_dsp structure representing a ADSP2 core
- * @dsp: pointer to DSP structure
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_adsp2_init(struct cs_dsp *dsp)
 {
 	int ret;
 
 	switch (dsp->rev) {
 	case 0:
-		/*
-		 * Disable the DSP memory by default when in reset for a small
-		 * power saving.
-		 */
+		 
 		ret = regmap_update_bits(dsp->regmap, dsp->base + ADSP2_CONTROL,
 					 ADSP2_MEM_ENA, 0);
 		if (ret) {
@@ -2850,12 +2664,7 @@ int cs_dsp_adsp2_init(struct cs_dsp *dsp)
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_adsp2_init, FW_CS_DSP);
 
-/**
- * cs_dsp_halo_init() - Initialise a cs_dsp structure representing a HALO Core DSP
- * @dsp: pointer to DSP structure
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_halo_init(struct cs_dsp *dsp)
 {
 	if (dsp->no_core_startstop)
@@ -2867,10 +2676,7 @@ int cs_dsp_halo_init(struct cs_dsp *dsp)
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_halo_init, FW_CS_DSP);
 
-/**
- * cs_dsp_remove() - Clean a cs_dsp before deletion
- * @dsp: pointer to DSP structure
- */
+ 
 void cs_dsp_remove(struct cs_dsp *dsp)
 {
 	struct cs_dsp_coeff_ctl *ctl;
@@ -2887,20 +2693,7 @@ void cs_dsp_remove(struct cs_dsp *dsp)
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_remove, FW_CS_DSP);
 
-/**
- * cs_dsp_read_raw_data_block() - Reads a block of data from DSP memory
- * @dsp: pointer to DSP structure
- * @mem_type: the type of DSP memory containing the data to be read
- * @mem_addr: the address of the data within the memory region
- * @num_words: the length of the data to read
- * @data: a buffer to store the fetched data
- *
- * If this is used to read unpacked 24-bit memory, each 24-bit DSP word will
- * occupy 32-bits in data (MSbyte will be 0). This padding can be removed using
- * cs_dsp_remove_padding()
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_read_raw_data_block(struct cs_dsp *dsp, int mem_type, unsigned int mem_addr,
 			       unsigned int num_words, __be32 *data)
 {
@@ -2924,15 +2717,7 @@ int cs_dsp_read_raw_data_block(struct cs_dsp *dsp, int mem_type, unsigned int me
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_read_raw_data_block, FW_CS_DSP);
 
-/**
- * cs_dsp_read_data_word() - Reads a word from DSP memory
- * @dsp: pointer to DSP structure
- * @mem_type: the type of DSP memory containing the data to be read
- * @mem_addr: the address of the data within the memory region
- * @data: a buffer to store the fetched data
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_read_data_word(struct cs_dsp *dsp, int mem_type, unsigned int mem_addr, u32 *data)
 {
 	__be32 raw;
@@ -2948,15 +2733,7 @@ int cs_dsp_read_data_word(struct cs_dsp *dsp, int mem_type, unsigned int mem_add
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_read_data_word, FW_CS_DSP);
 
-/**
- * cs_dsp_write_data_word() - Writes a word to DSP memory
- * @dsp: pointer to DSP structure
- * @mem_type: the type of DSP memory containing the data to be written
- * @mem_addr: the address of the data within the memory region
- * @data: the data to be written
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_write_data_word(struct cs_dsp *dsp, int mem_type, unsigned int mem_addr, u32 data)
 {
 	struct cs_dsp_region const *mem = cs_dsp_find_region(dsp, mem_type);
@@ -2974,15 +2751,7 @@ int cs_dsp_write_data_word(struct cs_dsp *dsp, int mem_type, unsigned int mem_ad
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_write_data_word, FW_CS_DSP);
 
-/**
- * cs_dsp_remove_padding() - Convert unpacked words to packed bytes
- * @buf: buffer containing DSP words read from DSP memory
- * @nwords: number of words to convert
- *
- * DSP words from the register map have pad bytes and the data bytes
- * are in swapped order. This swaps to the native endian order and
- * strips the pad bytes.
- */
+ 
 void cs_dsp_remove_padding(u32 *buf, int nwords)
 {
 	const __be32 *pack_in = (__be32 *)buf;
@@ -2998,12 +2767,7 @@ void cs_dsp_remove_padding(u32 *buf, int nwords)
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_remove_padding, FW_CS_DSP);
 
-/**
- * cs_dsp_adsp2_bus_error() - Handle a DSP bus error interrupt
- * @dsp: pointer to DSP structure
- *
- * The firmware and DSP state will be logged for future analysis.
- */
+ 
 void cs_dsp_adsp2_bus_error(struct cs_dsp *dsp)
 {
 	unsigned int val;
@@ -3068,12 +2832,7 @@ error:
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_adsp2_bus_error, FW_CS_DSP);
 
-/**
- * cs_dsp_halo_bus_error() - Handle a DSP bus error interrupt
- * @dsp: pointer to DSP structure
- *
- * The firmware and DSP state will be logged for future analysis.
- */
+ 
 void cs_dsp_halo_bus_error(struct cs_dsp *dsp)
 {
 	struct regmap *regmap = dsp->regmap;
@@ -3128,12 +2887,7 @@ exit_unlock:
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_halo_bus_error, FW_CS_DSP);
 
-/**
- * cs_dsp_halo_wdt_expire() - Handle DSP watchdog expiry
- * @dsp: pointer to DSP structure
- *
- * This is logged for future analysis.
- */
+ 
 void cs_dsp_halo_wdt_expire(struct cs_dsp *dsp)
 {
 	mutex_lock(&dsp->pwr_lock);
@@ -3235,19 +2989,7 @@ static const struct cs_dsp_ops cs_dsp_halo_ao_ops = {
 	.show_fw_status = cs_dsp_halo_show_fw_status,
 };
 
-/**
- * cs_dsp_chunk_write() - Format data to a DSP memory chunk
- * @ch: Pointer to the chunk structure
- * @nbits: Number of bits to write
- * @val: Value to write
- *
- * This function sequentially writes values into the format required for DSP
- * memory, it handles both inserting of the padding bytes and converting to
- * big endian. Note that data is only committed to the chunk when a whole DSP
- * words worth of data is available.
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_chunk_write(struct cs_dsp_chunk *ch, int nbits, u32 val)
 {
 	int nwrite, i;
@@ -3278,16 +3020,7 @@ int cs_dsp_chunk_write(struct cs_dsp_chunk *ch, int nbits, u32 val)
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_chunk_write, FW_CS_DSP);
 
-/**
- * cs_dsp_chunk_flush() - Pad remaining data with zero and commit to chunk
- * @ch: Pointer to the chunk structure
- *
- * As cs_dsp_chunk_write only writes data when a whole DSP word is ready to
- * be written out it is possible that some data will remain in the cache, this
- * function will pad that data with zeros upto a whole DSP word and write out.
- *
- * Return: Zero for success, a negative number on error.
- */
+ 
 int cs_dsp_chunk_flush(struct cs_dsp_chunk *ch)
 {
 	if (!ch->cachebits)
@@ -3297,16 +3030,7 @@ int cs_dsp_chunk_flush(struct cs_dsp_chunk *ch)
 }
 EXPORT_SYMBOL_NS_GPL(cs_dsp_chunk_flush, FW_CS_DSP);
 
-/**
- * cs_dsp_chunk_read() - Parse data from a DSP memory chunk
- * @ch: Pointer to the chunk structure
- * @nbits: Number of bits to read
- *
- * This function sequentially reads values from a DSP memory formatted buffer,
- * it handles both removing of the padding bytes and converting from big endian.
- *
- * Return: A negative number is returned on error, otherwise the read value.
- */
+ 
 int cs_dsp_chunk_read(struct cs_dsp_chunk *ch, int nbits)
 {
 	int nread, i;

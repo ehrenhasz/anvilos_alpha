@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- *  dialog.h -- common declarations for all dialog modules
- *
- *  AUTHOR: Savio Lam (lam836@cs.cuhk.hk)
- */
+ 
+ 
 
 #include <sys/types.h>
 #include <fcntl.h>
@@ -58,17 +54,15 @@
 #define ACS_DARROW 'v'
 #endif
 
-/* error return codes */
+ 
 #define ERRDISPLAYTOOSMALL (KEY_MAX + 1)
 
-/*
- *   Color definitions
- */
+ 
 struct dialog_color {
-	chtype atr;	/* Color attribute */
-	int fg;		/* foreground */
-	int bg;		/* background */
-	int hl;		/* highlight this item */
+	chtype atr;	 
+	int fg;		 
+	int bg;		 
+	int hl;		 
 };
 
 struct subtitle_list {
@@ -110,18 +104,14 @@ struct dialog_info {
 	struct dialog_color darrow;
 };
 
-/*
- * Global variables
- */
+ 
 extern struct dialog_info dlg;
 extern char dialog_input_result[];
-extern int saved_x, saved_y;		/* Needed in signal handler in mconf.c */
+extern int saved_x, saved_y;		 
 
-/*
- * Function prototypes
- */
+ 
 
-/* item list as used by checklist and menubox */
+ 
 void item_reset(void);
 void item_make(const char *fmt, ...);
 void item_add_str(const char *fmt, ...);
@@ -132,16 +122,16 @@ int item_activate_selected(void);
 void *item_data(void);
 char item_tag(void);
 
-/* item list manipulation for lxdialog use */
+ 
 #define MAXITEMSTR 200
 struct dialog_item {
-	char str[MAXITEMSTR];	/* prompt displayed */
+	char str[MAXITEMSTR];	 
 	char tag;
-	void *data;	/* pointer to menu item - used by menubox+checklist */
-	int selected;	/* Set to 1 by dialog_*() function if selected. */
+	void *data;	 
+	int selected;	 
 };
 
-/* list of lialog_items */
+ 
 struct dialog_list {
 	struct dialog_item node;
 	struct dialog_list *next;
@@ -161,22 +151,22 @@ int item_is_tag(char tag);
 	for (item_cur = item_head ? item_head: item_cur; \
 	     item_cur && (item_cur != &item_nil); item_cur = item_cur->next)
 
-/* generic key handlers */
+ 
 int on_key_esc(WINDOW *win);
 int on_key_resize(void);
 
-/* minimum (re)size values */
-#define CHECKLIST_HEIGTH_MIN 6	/* For dialog_checklist() */
+ 
+#define CHECKLIST_HEIGTH_MIN 6	 
 #define CHECKLIST_WIDTH_MIN 6
-#define INPUTBOX_HEIGTH_MIN 2	/* For dialog_inputbox() */
+#define INPUTBOX_HEIGTH_MIN 2	 
 #define INPUTBOX_WIDTH_MIN 2
-#define MENUBOX_HEIGTH_MIN 15	/* For dialog_menu() */
+#define MENUBOX_HEIGTH_MIN 15	 
 #define MENUBOX_WIDTH_MIN 65
-#define TEXTBOX_HEIGTH_MIN 8	/* For dialog_textbox() */
+#define TEXTBOX_HEIGTH_MIN 8	 
 #define TEXTBOX_WIDTH_MIN 8
-#define YESNO_HEIGTH_MIN 4	/* For dialog_yesno() */
+#define YESNO_HEIGTH_MIN 4	 
 #define YESNO_WIDTH_MIN 4
-#define WINDOW_HEIGTH_MIN 19	/* For init_dialog() */
+#define WINDOW_HEIGTH_MIN 19	 
 #define WINDOW_WIDTH_MIN 80
 
 int init_dialog(const char *backtitle);

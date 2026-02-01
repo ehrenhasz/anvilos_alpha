@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2018 Chelsio Communications, Inc.
- *
- * Written by: Atul Gupta (atul.gupta@chelsio.com)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/list.h>
@@ -215,7 +211,7 @@ int send_tx_flowc_wr(struct sock *sk, int compl,
 	return send_flowc_wr(sk, flowc, flowclen);
 }
 
-/* Copy IVs to WR */
+ 
 static int tls_copy_ivs(struct sock *sk, struct sk_buff *skb)
 
 {
@@ -236,14 +232,14 @@ static int tls_copy_ivs(struct sock *sk, struct sk_buff *skb)
 		return -ENOMEM;
 	}
 
-	/* generate the  IVs */
+	 
 	ivs = kmalloc_array(CIPHER_BLOCK_SIZE, number_of_ivs, GFP_ATOMIC);
 	if (!ivs)
 		return -ENOMEM;
 	get_random_bytes(ivs, number_of_ivs * CIPHER_BLOCK_SIZE);
 
 	if (skb_ulp_tls_iv_imm(skb)) {
-		/* send the IVs as immediate data in the WR */
+		 
 		iv_loc = (unsigned char *)__skb_push(skb, number_of_ivs *
 						CIPHER_BLOCK_SIZE);
 		if (iv_loc)
@@ -251,8 +247,8 @@ static int tls_copy_ivs(struct sock *sk, struct sk_buff *skb)
 
 		hws->ivsize = number_of_ivs * CIPHER_BLOCK_SIZE;
 	} else {
-		/* Send the IVs as sgls */
-		/* Already accounted IV DSGL for credits */
+		 
+		 
 		skb_shinfo(skb)->nr_frags--;
 		page = alloc_pages(sk->sk_allocation | __GFP_COMP, 0);
 		if (!page) {
@@ -272,7 +268,7 @@ out:
 	return err;
 }
 
-/* Copy Key to WR */
+ 
 static void tls_copy_tx_key(struct sock *sk, struct sk_buff *skb)
 {
 	struct ulptx_sc_memrd *sc_memrd;
@@ -313,15 +309,13 @@ static bool is_sg_request(const struct sk_buff *skb)
 		(skb->len > MAX_IMM_ULPTX_WR_LEN);
 }
 
-/*
- * Returns true if an sk_buff carries urgent data.
- */
+ 
 static bool skb_urgent(struct sk_buff *skb)
 {
 	return ULP_SKB_CB(skb)->flags & ULPCB_FLAG_URG;
 }
 
-/* TLS content type for CPL SFO */
+ 
 static unsigned char tls_content_type(unsigned char content_type)
 {
 	switch (content_type) {
@@ -406,7 +400,7 @@ static void tls_tx_data_wr(struct sock *sk, struct sk_buff *skb,
 			      FW_TLSTX_DATA_WR_IVDSGL_V(!iv_imm) |
 			      FW_TLSTX_DATA_WR_KEYSIZE_V(hws->keylen >> 4));
 
-	/* Fill in the length */
+	 
 	req_wr->plen = htonl(len);
 	req_wr->mfs = htons(hws->mfs);
 	req_wr->adjustedplen_pkd =
@@ -429,16 +423,14 @@ static void tls_tx_data_wr(struct sock *sk, struct sk_buff *skb,
 		TLS_HDR_TYPE_HEARTBEAT : 0) |
 		CPL_TX_TLS_SFO_PROTOVER_V(0));
 
-	/* create the s-command */
+	 
 	req_cpl->r1_lo = 0;
 	req_cpl->seqno_numivs  = cpu_to_be32(hws->scmd.seqno_numivs);
 	req_cpl->ivgen_hdrlen = cpu_to_be32(hws->scmd.ivgen_hdrlen);
 	req_cpl->scmd1 = cpu_to_be64(tlstx_incr_seqnum(hws));
 }
 
-/*
- * Calculate the TLS data expansion size
- */
+ 
 static int chtls_expansion_size(struct sock *sk, int data_len,
 				int fullpdu,
 				unsigned short *pducnt)
@@ -475,7 +467,7 @@ static int chtls_expansion_size(struct sock *sk, int data_len,
 	return expnsize;
 }
 
-/* WR with IV, KEY and CPL SFO added */
+ 
 static void make_tlstx_data_wr(struct sock *sk, struct sk_buff *skb,
 			       int tls_tx_imm, int tls_len, u32 credits)
 {
@@ -549,7 +541,7 @@ static int chtls_wr_size(struct chtls_sock *csk, const struct sk_buff *skb,
 	if (size)
 		return wr_size;
 
-	/* frags counted for IV dsgl */
+	 
 	if (!skb_ulp_tls_iv_imm(skb))
 		skb_shinfo(skb)->nr_frags++;
 
@@ -564,7 +556,7 @@ static bool is_ofld_imm(struct chtls_sock *csk, const struct sk_buff *skb)
 		return false;
 
 	if (likely(ULP_SKB_CB(skb)->flags & ULPCB_FLAG_NEED_HDR)) {
-		/* Check TLS header len for Immediate */
+		 
 		if (csk->ulp_mode == ULP_MODE_TLS &&
 		    skb_ulp_tls_inline(skb))
 			length += chtls_wr_size(csk, skb, true);
@@ -581,7 +573,7 @@ static unsigned int calc_tx_flits(const struct sk_buff *skb,
 {
 	unsigned int flits, cnt;
 
-	flits = immdlen / 8;   /* headers */
+	flits = immdlen / 8;    
 	cnt = skb_shinfo(skb)->nr_frags;
 	if (skb_tail_pointer(skb) != skb_transport_header(skb))
 		cnt++;
@@ -618,9 +610,9 @@ int chtls_push_frames(struct chtls_sock *csk, int comp)
 		unsigned int credit_len = skb->len;
 		unsigned int credits_needed;
 		unsigned int completion = 0;
-		int tls_len = skb->len;/* TLS data len before IV/key */
+		int tls_len = skb->len; 
 		unsigned int immdlen;
-		int len = skb->len;    /* length [ulp bytes] inserted by hw */
+		int len = skb->len;     
 		int flowclen16 = 0;
 		int tls_tx_imm = 0;
 
@@ -722,41 +714,29 @@ static void mark_urg(struct tcp_sock *tp, int flags,
 	}
 }
 
-/*
- * Returns true if a connection should send more data to TCP engine
- */
+ 
 static bool should_push(struct sock *sk)
 {
 	struct chtls_sock *csk = rcu_dereference_sk_user_data(sk);
 	struct chtls_dev *cdev = csk->cdev;
 	struct tcp_sock *tp = tcp_sk(sk);
 
-	/*
-	 * If we've released our offload resources there's nothing to do ...
-	 */
+	 
 	if (!cdev)
 		return false;
 
-	/*
-	 * If there aren't any work requests in flight, or there isn't enough
-	 * data in flight, or Nagle is off then send the current TX_DATA
-	 * otherwise hold it and wait to accumulate more data.
-	 */
+	 
 	return csk->wr_credits == csk->wr_max_credits ||
 		(tp->nonagle & TCP_NAGLE_OFF);
 }
 
-/*
- * Returns true if a TCP socket is corked.
- */
+ 
 static bool corked(const struct tcp_sock *tp, int flags)
 {
 	return (flags & MSG_MORE) || (tp->nonagle & TCP_NAGLE_CORK);
 }
 
-/*
- * Returns true if a send should try to push new data.
- */
+ 
 static bool send_should_push(struct sock *sk, int flags)
 {
 	return should_push(sk) && !corked(tcp_sk(sk), flags);
@@ -787,29 +767,16 @@ void chtls_tcp_push(struct sock *sk, int flags)
 	}
 }
 
-/*
- * Calculate the size for a new send sk_buff.  It's maximum size so we can
- * pack lots of data into it, unless we plan to send it immediately, in which
- * case we size it more tightly.
- *
- * Note: we don't bother compensating for MSS < PAGE_SIZE because it doesn't
- * arise in normal cases and when it does we are just wasting memory.
- */
+ 
 static int select_size(struct sock *sk, int io_len, int flags, int len)
 {
 	const int pgbreak = SKB_MAX_HEAD(len);
 
-	/*
-	 * If the data wouldn't fit in the main body anyway, put only the
-	 * header in the main body so it can use immediate data and place all
-	 * the payload in page fragments.
-	 */
+	 
 	if (io_len > pgbreak)
 		return 0;
 
-	/*
-	 * If we will be accumulating payload get a large main body.
-	 */
+	 
 	if (!send_should_push(sk, flags))
 		return pgbreak;
 
@@ -1056,7 +1023,7 @@ int chtls_sendmsg(struct sock *sk, struct msghdr *msg, size_t size)
 				if (err)
 					goto out_err;
 
-				/* Avoid appending tls handshake, alert to tls data */
+				 
 				if (skb)
 					tx_skb_finalize(skb);
 			}
@@ -1174,7 +1141,7 @@ copy:
 				}
 				goto do_fault;
 			}
-			/* Update the skb. */
+			 
 			if (merge) {
 				skb_frag_size_add(
 						&skb_shinfo(skb)->frags[i - 1],
@@ -1182,7 +1149,7 @@ copy:
 			} else {
 				skb_fill_page_desc(skb, i, page, off, copy);
 				if (off + copy < pg_size) {
-					/* space left keep page */
+					 
 					get_page(page);
 					TCP_PAGE(sk) = page;
 				} else {
@@ -1261,25 +1228,17 @@ static void chtls_select_window(struct sock *sk)
 	if (wnd > MAX_RCV_WND)
 		wnd = MAX_RCV_WND;
 
-/*
- * Check if we need to grow the receive window in response to an increase in
- * the socket's receive buffer size.  Some applications increase the buffer
- * size dynamically and rely on the window to grow accordingly.
- */
+ 
 
 	if (wnd > tp->rcv_wnd) {
 		tp->rcv_wup -= wnd - tp->rcv_wnd;
 		tp->rcv_wnd = wnd;
-		/* Mark the receive window as updated */
+		 
 		csk_reset_flag(csk, CSK_UPDATE_RCV_WND);
 	}
 }
 
-/*
- * Send RX credits through an RX_DATA_ACK CPL message.  We are permitted
- * to return without sending the message in case we cannot allocate
- * an sk_buff.  Returns the number of credits sent.
- */
+ 
 static u32 send_rx_credits(struct chtls_sock *csk, u32 credits)
 {
 	struct cpl_rx_data_ack *req;
@@ -1305,10 +1264,7 @@ static u32 send_rx_credits(struct chtls_sock *csk, u32 credits)
 			     TCPF_FIN_WAIT1 | \
 			     TCPF_FIN_WAIT2)
 
-/*
- * Called after some received data has been read.  It returns RX credits
- * to the HW for the amount of data processed.
- */
+ 
 static void chtls_cleanup_rbuf(struct sock *sk, int copied)
 {
 	struct chtls_sock *csk = rcu_dereference_sk_user_data(sk);
@@ -1328,10 +1284,7 @@ static void chtls_cleanup_rbuf(struct sock *sk, int copied)
 	if (unlikely(!credits))
 		return;
 
-/*
- * For coalescing to work effectively ensure the receive window has
- * at least 16KB left.
- */
+ 
 	must_send = credits + 16384 >= tp->rcv_wnd;
 
 	if (must_send || credits >= thres)
@@ -1463,7 +1416,7 @@ found_ok_skb:
 				if (urg_offset) {
 					avail = urg_offset;
 				} else if (!sock_flag(sk, SOCK_URGINLINE)) {
-					/* First byte is urgent, skip */
+					 
 					tp->copied_seq++;
 					offset++;
 					avail--;
@@ -1472,9 +1425,7 @@ found_ok_skb:
 				}
 			}
 		}
-		/* Set record type if not already done. For a non-data record,
-		 * do not proceed if record type could not be copied.
-		 */
+		 
 		if (ULP_SKB_CB(skb)->flags & ULPCB_FLAG_TLS_HDR) {
 			struct tls_hdr *thdr = (struct tls_hdr *)skb->data;
 			int cerr = 0;
@@ -1486,7 +1437,7 @@ found_ok_skb:
 				copied = -EIO;
 				break;
 			}
-			/*  don't send tls header, skip copy */
+			 
 			goto skip_copy;
 		}
 
@@ -1532,9 +1483,7 @@ unlock:
 	return copied;
 }
 
-/*
- * Peek at data in a socket's receive buffer.
- */
+ 
 static int peekmsg(struct sock *sk, struct msghdr *msg,
 		   size_t len, int flags)
 {
@@ -1542,7 +1491,7 @@ static int peekmsg(struct sock *sk, struct msghdr *msg,
 	u32 peek_seq, offset;
 	struct sk_buff *skb;
 	int copied = 0;
-	size_t avail;          /* amount of available data in current skb */
+	size_t avail;           
 	long timeo;
 	int ret;
 
@@ -1567,7 +1516,7 @@ static int peekmsg(struct sock *sk, struct msghdr *msg,
 				goto found_ok_skb;
 		}
 
-		/* empty receive queue */
+		 
 		if (copied)
 			break;
 		if (sock_flag(sk, SOCK_DONE))
@@ -1592,13 +1541,13 @@ static int peekmsg(struct sock *sk, struct msghdr *msg,
 		}
 
 		if (READ_ONCE(sk->sk_backlog.tail)) {
-			/* Do not sleep, just process backlog. */
+			 
 			release_sock(sk);
 			lock_sock(sk);
 		} else {
 			ret = sk_wait_data(sk, &timeo, NULL);
 			if (ret < 0) {
-				/* here 'copied' is 0 due to previous checks */
+				 
 				copied = ret;
 				break;
 			}
@@ -1616,19 +1565,13 @@ found_ok_skb:
 		avail = skb->len - offset;
 		if (len < avail)
 			avail = len;
-		/*
-		 * Do we have urgent data here?  We need to skip over the
-		 * urgent byte.
-		 */
+		 
 		if (unlikely(tp->urg_data)) {
 			u32 urg_offset = tp->urg_seq - peek_seq;
 
 			if (urg_offset < avail) {
-				/*
-				 * The amount of data we are preparing to copy
-				 * contains urgent data.
-				 */
-				if (!urg_offset) { /* First byte is urgent */
+				 
+				if (!urg_offset) {  
 					if (!sock_flag(sk, SOCK_URGINLINE)) {
 						peek_seq++;
 						offset++;
@@ -1637,15 +1580,13 @@ found_ok_skb:
 					if (!avail)
 						continue;
 				} else {
-					/* stop short of the urgent data */
+					 
 					avail = urg_offset;
 				}
 			}
 		}
 
-		/*
-		 * If MSG_TRUNC is specified the data is discarded.
-		 */
+		 
 		if (likely(!(flags & MSG_TRUNC)))
 			if (skb_copy_datagram_msg(skb, offset, msg, len)) {
 				if (!copied) {
@@ -1667,11 +1608,11 @@ int chtls_recvmsg(struct sock *sk, struct msghdr *msg, size_t len,
 {
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct chtls_sock *csk;
-	unsigned long avail;    /* amount of available data in current skb */
+	unsigned long avail;     
 	int buffers_freed;
 	int copied = 0;
 	long timeo;
-	int target;             /* Read at least this many bytes */
+	int target;              
 	int ret;
 
 	buffers_freed = 0;

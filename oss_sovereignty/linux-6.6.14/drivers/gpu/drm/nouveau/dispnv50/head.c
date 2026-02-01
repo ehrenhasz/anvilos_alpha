@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "head.h"
 #include "base.h"
 #include "core.h"
@@ -138,27 +118,22 @@ nv50_head_atomic_check_view(struct nv50_head_atom *armh,
 		if (mode == DRM_MODE_SCALE_NONE)
 			omode = umode;
 	} else {
-		/* Non-EDID LVDS/eDP mode. */
+		 
 		mode = DRM_MODE_SCALE_FULLSCREEN;
 	}
 
-	/* For the user-specified mode, we must ignore doublescan and
-	 * the like, but honor frame packing.
-	 */
+	 
 	umode_vdisplay = umode->vdisplay;
 	if ((umode->flags & DRM_MODE_FLAG_3D_MASK) == DRM_MODE_FLAG_3D_FRAME_PACKING)
 		umode_vdisplay += umode->vtotal;
 	asyh->view.iW = umode->hdisplay;
 	asyh->view.iH = umode_vdisplay;
-	/* For the output mode, we can just use the stock helper. */
+	 
 	drm_mode_get_hv_timing(omode, &omode_hdisplay, &omode_vdisplay);
 	asyh->view.oW = omode_hdisplay;
 	asyh->view.oH = omode_vdisplay;
 
-	/* Add overscan compensation if necessary, will keep the aspect
-	 * ratio the same as the backend mode unless overridden by the
-	 * user setting both hborder and vborder properties.
-	 */
+	 
 	if ((asyc->scaler.underscan.mode == UNDERSCAN_ON ||
 	    (asyc->scaler.underscan.mode == UNDERSCAN_AUTO &&
 	     drm_detect_hdmi_monitor(edid)))) {
@@ -177,39 +152,21 @@ nv50_head_atomic_check_view(struct nv50_head_atom *armh,
 		}
 	}
 
-	/* Handle CENTER/ASPECT scaling, taking into account the areas
-	 * removed already for overscan compensation.
-	 */
+	 
 	switch (mode) {
 	case DRM_MODE_SCALE_CENTER:
-		/* NOTE: This will cause scaling when the input is
-		 * larger than the output.
-		 */
+		 
 		asyh->view.oW = min(asyh->view.iW, asyh->view.oW);
 		asyh->view.oH = min(asyh->view.iH, asyh->view.oH);
 		break;
 	case DRM_MODE_SCALE_ASPECT:
-		/* Determine whether the scaling should be on width or on
-		 * height. This is done by comparing the aspect ratios of the
-		 * sizes. If the output AR is larger than input AR, that means
-		 * we want to change the width (letterboxed on the
-		 * left/right), otherwise on the height (letterboxed on the
-		 * top/bottom).
-		 *
-		 * E.g. 4:3 (1.333) AR image displayed on a 16:10 (1.6) AR
-		 * screen will have letterboxes on the left/right. However a
-		 * 16:9 (1.777) AR image on that same screen will have
-		 * letterboxes on the top/bottom.
-		 *
-		 * inputAR = iW / iH; outputAR = oW / oH
-		 * outputAR > inputAR is equivalent to oW * iH > iW * oH
-		 */
+		 
 		if (asyh->view.oW * asyh->view.iH > asyh->view.iW * asyh->view.oH) {
-			/* Recompute output width, i.e. left/right letterbox */
+			 
 			u32 r = (asyh->view.iW << 19) / asyh->view.iH;
 			asyh->view.oW = ((asyh->view.oH * r) + (r / 2)) >> 19;
 		} else {
-			/* Recompute output height, i.e. top/bottom letterbox */
+			 
 			u32 r = (asyh->view.iH << 19) / asyh->view.iW;
 			asyh->view.oH = ((asyh->view.oW * r) + (r / 2)) >> 19;
 		}
@@ -233,7 +190,7 @@ nv50_head_atomic_check_lut(struct nv50_head *head,
 				 *ilut = asyh->state.degamma_lut;
 	int size;
 
-	/* Ensure that the ilut is valid */
+	 
 	if (ilut) {
 		size = drm_color_lut_size(ilut);
 		if (!head->func->ilut_check(size)) {
@@ -243,15 +200,11 @@ nv50_head_atomic_check_lut(struct nv50_head *head,
 		}
 	}
 
-	/* Determine whether core output LUT should be enabled. */
+	 
 	if (olut) {
-		/* Check if any window(s) have stolen the core output LUT
-		 * to as an input LUT for legacy gamma + I8 colour format.
-		 */
+		 
 		if (asyh->wndw.olut) {
-			/* If any window has stolen the core output LUT,
-			 * all of them must.
-			 */
+			 
 			if (asyh->wndw.olut != asyh->wndw.mask)
 				return -EINVAL;
 			olut = NULL;
@@ -288,12 +241,7 @@ nv50_head_atomic_check_mode(struct nv50_head *head, struct nv50_head_atom *asyh)
 
 	drm_mode_set_crtcinfo(mode, CRTC_INTERLACE_HALVE_V | CRTC_STEREO_DOUBLE);
 
-	/*
-	 * DRM modes are defined in terms of a repeating interval
-	 * starting with the active display area.  The hardware modes
-	 * are defined in terms of a repeating interval starting one
-	 * unit (pixel or line) into the sync pulse.  So, add bias.
-	 */
+	 
 
 	m->h.active = mode->crtc_htotal;
 	m->h.synce  = mode->crtc_hsync_end - mode->crtc_hsync_start - 1;
@@ -305,7 +253,7 @@ nv50_head_atomic_check_mode(struct nv50_head *head, struct nv50_head_atom *asyh)
 	m->v.blanke = mode->crtc_vblank_end - mode->crtc_vsync_start - 1;
 	m->v.blanks = m->v.blanke + mode->crtc_vdisplay;
 
-	/*XXX: Safe underestimate, even "0" works */
+	 
 	blankus = (m->v.active - mode->crtc_vdisplay - 2) * m->h.active;
 	blankus *= 1000;
 	blankus /= mode->crtc_clock;
@@ -610,7 +558,7 @@ nv50_head_create(struct drm_device *dev, int index)
 	drm_crtc_init_with_planes(dev, crtc, &base->plane, &curs->plane,
 				  funcs, "head-%d", head->base.index);
 	drm_crtc_helper_add(crtc, &nv50_head_help);
-	/* Keep the legacy gamma size at 256 to avoid compatibility issues */
+	 
 	drm_mode_crtc_set_gamma_size(crtc, 256);
 	drm_crtc_enable_color_mgmt(crtc, base->func->ilut_size,
 				   disp->disp->object.oclass >= GF110_DISP,

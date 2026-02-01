@@ -1,21 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021-2022, Intel Corporation. */
+
+ 
 
 #include "ice.h"
 #include "ice_lib.h"
 
-/**
- * ice_gnss_do_write - Write data to internal GNSS receiver
- * @pf: board private structure
- * @buf: command buffer
- * @size: command buffer size
- *
- * Write UBX command data to the GNSS receiver
- *
- * Return:
- * * number of bytes written - success
- * * negative - error code
- */
+ 
 static int
 ice_gnss_do_write(struct ice_pf *pf, const unsigned char *buf, unsigned int size)
 {
@@ -30,12 +19,7 @@ ice_gnss_do_write(struct ice_pf *pf, const unsigned char *buf, unsigned int size
 		FIELD_PREP(ICE_AQC_LINK_TOPO_NODE_CTX_M,
 			   ICE_AQC_LINK_TOPO_NODE_CTX_OVERRIDE);
 
-	/* It's not possible to write a single byte to u-blox.
-	 * Write all bytes in a loop until there are 6 or less bytes left. If
-	 * there are exactly 6 bytes left, the last write would be only a byte.
-	 * In this case, do 4+2 bytes writes instead of 5+1. Otherwise, do the
-	 * last 2 to 5 bytes write.
-	 */
+	 
 	while (size - offset > ICE_GNSS_UBX_WRITE_BYTES + 1) {
 		err = ice_aq_write_i2c(hw, link_topo, ICE_GNSS_UBX_I2C_BUS_ADDR,
 				       cpu_to_le16(buf[offset]),
@@ -47,7 +31,7 @@ ice_gnss_do_write(struct ice_pf *pf, const unsigned char *buf, unsigned int size
 		offset += ICE_GNSS_UBX_WRITE_BYTES;
 	}
 
-	/* Single byte would be written. Write 4 bytes instead of 5. */
+	 
 	if (size - offset == ICE_GNSS_UBX_WRITE_BYTES + 1) {
 		err = ice_aq_write_i2c(hw, link_topo, ICE_GNSS_UBX_I2C_BUS_ADDR,
 				       cpu_to_le16(buf[offset]),
@@ -59,7 +43,7 @@ ice_gnss_do_write(struct ice_pf *pf, const unsigned char *buf, unsigned int size
 		offset += ICE_GNSS_UBX_WRITE_BYTES - 1;
 	}
 
-	/* Do the last write, 2 to 5 bytes. */
+	 
 	err = ice_aq_write_i2c(hw, link_topo, ICE_GNSS_UBX_I2C_BUS_ADDR,
 			       cpu_to_le16(buf[offset]), size - offset - 1,
 			       &buf[offset + 1], NULL);
@@ -75,12 +59,7 @@ err_out:
 	return err;
 }
 
-/**
- * ice_gnss_read - Read data from internal GNSS module
- * @work: GNSS read work structure
- *
- * Read the data from internal GNSS receiver, write it to gnss_dev.
- */
+ 
 static void ice_gnss_read(struct kthread_work *work)
 {
 	struct gnss_serial *gnss = container_of(work, struct gnss_serial,
@@ -120,7 +99,7 @@ static void ice_gnss_read(struct kthread_work *work)
 	if (data_len == 0 || data_len == U16_MAX)
 		goto requeue;
 
-	/* The u-blox has data_len bytes for us to read */
+	 
 
 	data_len = min_t(typeof(data_len), data_len, PAGE_SIZE);
 
@@ -130,7 +109,7 @@ static void ice_gnss_read(struct kthread_work *work)
 		goto requeue;
 	}
 
-	/* Read received data */
+	 
 	for (i = 0; i < data_len; i += bytes_read) {
 		unsigned int bytes_left = data_len - i;
 
@@ -158,16 +137,7 @@ requeue:
 		dev_dbg(ice_pf_to_dev(pf), "GNSS failed to read err=%d\n", err);
 }
 
-/**
- * ice_gnss_struct_init - Initialize GNSS receiver
- * @pf: Board private structure
- *
- * Initialize GNSS structures and workers.
- *
- * Return:
- * * pointer to initialized gnss_serial struct - success
- * * NULL - error
- */
+ 
 static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf)
 {
 	struct device *dev = ice_pf_to_dev(pf);
@@ -193,16 +163,7 @@ static struct gnss_serial *ice_gnss_struct_init(struct ice_pf *pf)
 	return gnss;
 }
 
-/**
- * ice_gnss_open - Open GNSS device
- * @gdev: pointer to the gnss device struct
- *
- * Open GNSS device and start filling the read buffer for consumer.
- *
- * Return:
- * * 0 - success
- * * negative - error code
- */
+ 
 static int ice_gnss_open(struct gnss_device *gdev)
 {
 	struct ice_pf *pf = gnss_get_drvdata(gdev);
@@ -223,12 +184,7 @@ static int ice_gnss_open(struct gnss_device *gdev)
 	return 0;
 }
 
-/**
- * ice_gnss_close - Close GNSS device
- * @gdev: pointer to the gnss device struct
- *
- * Close GNSS device, cancel worker, stop filling the read buffer.
- */
+ 
 static void ice_gnss_close(struct gnss_device *gdev)
 {
 	struct ice_pf *pf = gnss_get_drvdata(gdev);
@@ -244,16 +200,7 @@ static void ice_gnss_close(struct gnss_device *gdev)
 	kthread_cancel_delayed_work_sync(&gnss->read_work);
 }
 
-/**
- * ice_gnss_write - Write to GNSS device
- * @gdev: pointer to the gnss device struct
- * @buf: pointer to the user data
- * @count: size of the buffer to be sent to the GNSS device
- *
- * Return:
- * * number of written bytes - success
- * * negative - error code
- */
+ 
 static int
 ice_gnss_write(struct gnss_device *gdev, const unsigned char *buf,
 	       size_t count)
@@ -261,7 +208,7 @@ ice_gnss_write(struct gnss_device *gdev, const unsigned char *buf,
 	struct ice_pf *pf = gnss_get_drvdata(gdev);
 	struct gnss_serial *gnss;
 
-	/* We cannot write a single byte using our I2C implementation. */
+	 
 	if (count <= 1 || count > ICE_GNSS_TTY_WRITE_BUF)
 		return -EINVAL;
 
@@ -284,16 +231,7 @@ static const struct gnss_operations ice_gnss_ops = {
 	.write_raw = ice_gnss_write,
 };
 
-/**
- * ice_gnss_register - Register GNSS receiver
- * @pf: Board private structure
- *
- * Allocate and register GNSS receiver in the Linux GNSS subsystem.
- *
- * Return:
- * * 0 - success
- * * negative - error code
- */
+ 
 static int ice_gnss_register(struct ice_pf *pf)
 {
 	struct gnss_device *gdev;
@@ -321,13 +259,7 @@ static int ice_gnss_register(struct ice_pf *pf)
 	return ret;
 }
 
-/**
- * ice_gnss_deregister - Deregister GNSS receiver
- * @pf: Board private structure
- *
- * Deregister GNSS receiver from the Linux GNSS subsystem,
- * release its resources.
- */
+ 
 static void ice_gnss_deregister(struct ice_pf *pf)
 {
 	if (pf->gnss_dev) {
@@ -337,10 +269,7 @@ static void ice_gnss_deregister(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_gnss_init - Initialize GNSS support
- * @pf: Board private structure
- */
+ 
 void ice_gnss_init(struct ice_pf *pf)
 {
 	int ret;
@@ -359,10 +288,7 @@ void ice_gnss_init(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_gnss_exit - Disable GNSS TTY support
- * @pf: Board private structure
- */
+ 
 void ice_gnss_exit(struct ice_pf *pf)
 {
 	ice_gnss_deregister(pf);
@@ -380,10 +306,7 @@ void ice_gnss_exit(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_gnss_is_gps_present - Check if GPS HW is present
- * @hw: pointer to HW struct
- */
+ 
 bool ice_gnss_is_gps_present(struct ice_hw *hw)
 {
 	if (!hw->func_caps.ts_func_info.src_tmr_owned)
@@ -403,7 +326,7 @@ bool ice_gnss_is_gps_present(struct ice_hw *hw)
 #else
 	if (!ice_is_e810t(hw))
 		return false;
-#endif /* IS_ENABLED(CONFIG_PTP_1588_CLOCK) */
+#endif  
 
 	return true;
 }

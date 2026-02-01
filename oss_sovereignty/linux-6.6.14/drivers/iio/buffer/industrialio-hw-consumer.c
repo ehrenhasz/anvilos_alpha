@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2017 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/export.h>
@@ -14,11 +11,7 @@
 #include <linux/iio/hw-consumer.h>
 #include <linux/iio/buffer_impl.h>
 
-/**
- * struct iio_hw_consumer - IIO hw consumer block
- * @buffers: hardware buffers list head.
- * @channels: IIO provider channels.
- */
+ 
 struct iio_hw_consumer {
 	struct list_head buffers;
 	struct iio_channel *channels;
@@ -74,12 +67,7 @@ static struct hw_consumer_buffer *iio_hw_consumer_get_buffer(
 	return buf;
 }
 
-/**
- * iio_hw_consumer_alloc() - Allocate IIO hardware consumer
- * @dev: Pointer to consumer device.
- *
- * Returns a valid iio_hw_consumer on success or a ERR_PTR() on failure.
- */
+ 
 struct iio_hw_consumer *iio_hw_consumer_alloc(struct device *dev)
 {
 	struct hw_consumer_buffer *buf;
@@ -122,10 +110,7 @@ err_free_hwc:
 }
 EXPORT_SYMBOL_GPL(iio_hw_consumer_alloc);
 
-/**
- * iio_hw_consumer_free() - Free IIO hardware consumer
- * @hwc: hw consumer to free.
- */
+ 
 void iio_hw_consumer_free(struct iio_hw_consumer *hwc)
 {
 	struct hw_consumer_buffer *buf, *n;
@@ -142,15 +127,7 @@ static void devm_iio_hw_consumer_release(void *iio_hwc)
 	iio_hw_consumer_free(iio_hwc);
 }
 
-/**
- * devm_iio_hw_consumer_alloc - Resource-managed iio_hw_consumer_alloc()
- * @dev: Pointer to consumer device.
- *
- * Managed iio_hw_consumer_alloc. iio_hw_consumer allocated with this function
- * is automatically freed on driver detach.
- *
- * returns pointer to allocated iio_hw_consumer on success, NULL on failure.
- */
+ 
 struct iio_hw_consumer *devm_iio_hw_consumer_alloc(struct device *dev)
 {
 	struct iio_hw_consumer *iio_hwc;
@@ -169,12 +146,7 @@ struct iio_hw_consumer *devm_iio_hw_consumer_alloc(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(devm_iio_hw_consumer_alloc);
 
-/**
- * iio_hw_consumer_enable() - Enable IIO hardware consumer
- * @hwc: iio_hw_consumer to enable.
- *
- * Returns 0 on success.
- */
+ 
 int iio_hw_consumer_enable(struct iio_hw_consumer *hwc)
 {
 	struct hw_consumer_buffer *buf;
@@ -195,10 +167,7 @@ err_disable_buffers:
 }
 EXPORT_SYMBOL_GPL(iio_hw_consumer_enable);
 
-/**
- * iio_hw_consumer_disable() - Disable IIO hardware consumer
- * @hwc: iio_hw_consumer to disable.
- */
+ 
 void iio_hw_consumer_disable(struct iio_hw_consumer *hwc)
 {
 	struct hw_consumer_buffer *buf;

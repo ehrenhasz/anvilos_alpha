@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Sample application for SMBIOS communication over WMI interface
- *  Performs the following:
- *  - Simple cmd_class/cmd_select lookup for TPM information
- *  - Simple query of known tokens and their values
- *  - Simple activation of a token
- *
- *  Copyright (C) 2017 Dell, Inc.
- */
+
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -16,15 +8,13 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-/* if uapi header isn't installed, this might not yet exist */
+ 
 #ifndef __packed
 #define __packed __attribute__((packed))
 #endif
 #include <linux/wmi.h>
 
-/* It would be better to discover these using udev, but for a simple
- * application they're hardcoded
- */
+ 
 static const char *ioctl_devfs = "/dev/wmi/dell-smbios";
 static const char *token_sysfs =
 			"/sys/bus/platform/devices/dell-smbios.0/tokens";
@@ -173,7 +163,7 @@ int main(void)
 	}
 	buffer->length = value;
 
-	/* simple SMBIOS call for looking up TPM info */
+	 
 	buffer->std.cmd_class = CLASS_FLASH_INTERFACE;
 	buffer->std.cmd_select = SELECT_FLASH_INTERFACE;
 	buffer->std.input[0] = 2;
@@ -185,13 +175,13 @@ int main(void)
 	}
 	show_buffer(buffer);
 
-	/* query some tokens */
+	 
 	ret = query_token(CAPSULE_EN_TOKEN, buffer);
 	printf("UEFI Capsule enabled token is: %d\n", ret);
 	ret = query_token(CAPSULE_DIS_TOKEN, buffer);
 	printf("UEFI Capsule disabled token is: %d\n", ret);
 
-	/* activate UEFI capsule token if disabled */
+	 
 	if (ret) {
 		printf("Enabling UEFI capsule token");
 		if (activate_token(buffer, CAPSULE_EN_TOKEN)) {

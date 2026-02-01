@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/random.h>
@@ -11,10 +11,7 @@
 #include <linux/stacktrace.h>
 #include <linux/fault-inject.h>
 
-/*
- * setup_fault_attr() is a helper function for various __setup handlers, so it
- * returns 0 on error, because that is what __setup handlers do.
- */
+ 
 int setup_fault_attr(struct fault_attr *attr, char *str)
 {
 	unsigned long probability;
@@ -22,7 +19,7 @@ int setup_fault_attr(struct fault_attr *attr, char *str)
 	int times;
 	int space;
 
-	/* "<interval>,<probability>,<space>,<times>" */
+	 
 	if (sscanf(str, "%lu,%lu,%d,%d",
 			&interval, &probability, &space, &times) < 4) {
 		printk(KERN_WARNING
@@ -93,12 +90,9 @@ static inline bool fail_stacktrace(struct fault_attr *attr)
 	return true;
 }
 
-#endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
+#endif  
 
-/*
- * This code is stolen from failmalloc-1.0
- * http://www.nongnu.org/failmalloc/
- */
+ 
 
 bool should_fail_ex(struct fault_attr *attr, ssize_t size, int flags)
 {
@@ -121,7 +115,7 @@ bool should_fail_ex(struct fault_attr *attr, ssize_t size, int flags)
 		}
 	}
 
-	/* No need to check any other properties if the probability is 0 */
+	 
 	if (attr->probability == 0)
 		return false;
 
@@ -206,7 +200,7 @@ static void debugfs_create_stacktrace_depth(const char *name, umode_t mode,
 	debugfs_create_file(name, mode, parent, value, &fops_stacktrace_depth);
 }
 
-#endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
+#endif  
 
 struct dentry *fault_create_debugfs_attr(const char *name,
 			struct dentry *parent, struct fault_attr *attr)
@@ -236,18 +230,18 @@ struct dentry *fault_create_debugfs_attr(const char *name,
 	debugfs_create_xul("require-end", mode, dir, &attr->require_end);
 	debugfs_create_xul("reject-start", mode, dir, &attr->reject_start);
 	debugfs_create_xul("reject-end", mode, dir, &attr->reject_end);
-#endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
+#endif  
 
 	attr->dname = dget(dir);
 	return dir;
 }
 EXPORT_SYMBOL_GPL(fault_create_debugfs_attr);
 
-#endif /* CONFIG_FAULT_INJECTION_DEBUG_FS */
+#endif  
 
 #ifdef CONFIG_FAULT_INJECTION_CONFIGFS
 
-/* These configfs attribute utilities are copied from drivers/block/null_blk/main.c */
+ 
 
 static ssize_t fault_uint_attr_show(unsigned int val, char *page)
 {
@@ -402,7 +396,7 @@ FAULT_CONFIGFS_ATTR_NAMED(require_end, "require-end", require_end, xul);
 FAULT_CONFIGFS_ATTR_NAMED(reject_start, "reject-start", reject_start, xul);
 FAULT_CONFIGFS_ATTR_NAMED(reject_end, "reject-end", reject_end, xul);
 
-#endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
+#endif  
 
 static struct configfs_attribute *fault_config_attrs[] = {
 	&fault_attr_probability,
@@ -419,7 +413,7 @@ static struct configfs_attribute *fault_config_attrs[] = {
 	&fault_attr_require_end,
 	&fault_attr_reject_start,
 	&fault_attr_reject_end,
-#endif /* CONFIG_FAULT_INJECTION_STACKTRACE_FILTER */
+#endif  
 	NULL,
 };
 
@@ -434,4 +428,4 @@ void fault_config_init(struct fault_config *config, const char *name)
 }
 EXPORT_SYMBOL_GPL(fault_config_init);
 
-#endif /* CONFIG_FAULT_INJECTION_CONFIGFS */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2023 MediaTek Inc. */
+
+ 
 
 #include "mt76_connac.h"
 #include "mt76_connac3_mac.h"

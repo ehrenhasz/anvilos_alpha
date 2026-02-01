@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SPI access for Dialog DA9052 PMICs.
- *
- * Copyright(c) 2011 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>

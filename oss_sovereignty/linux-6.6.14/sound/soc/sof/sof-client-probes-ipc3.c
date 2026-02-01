@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2019-2022 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
-// Code moved to this file by:
-//  Jyri Sarha <jyri.sarha@intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/stddef.h>
 #include <sound/soc.h>
@@ -46,20 +46,7 @@ struct sof_ipc_probe_point_remove_params {
 	unsigned int buffer_id[];
 } __packed;
 
-/**
- * ipc3_probes_init - initialize data probing
- * @cdev:		SOF client device
- * @stream_tag:		Extractor stream tag
- * @buffer_size:	DMA buffer size to set for extractor
- *
- * Host chooses whether extraction is supported or not by providing
- * valid stream tag to DSP. Once specified, stream described by that
- * tag will be tied to DSP for extraction for the entire lifetime of
- * probe.
- *
- * Probing is initialized only once and each INIT request must be
- * matched by DEINIT call.
- */
+ 
 static int ipc3_probes_init(struct sof_client_dev *cdev, u32 stream_tag,
 			    size_t buffer_size)
 {
@@ -81,14 +68,7 @@ static int ipc3_probes_init(struct sof_client_dev *cdev, u32 stream_tag,
 	return ret;
 }
 
-/**
- * ipc3_probes_deinit - cleanup after data probing
- * @cdev:		SOF client device
- *
- * Host sends DEINIT request to free previously initialized probe
- * on DSP side once it is no longer needed. DEINIT only when there
- * are no probes connected and with all injectors detached.
- */
+ 
 static int ipc3_probes_deinit(struct sof_client_dev *cdev)
 {
 	struct sof_ipc_cmd_hdr msg;
@@ -141,16 +121,7 @@ exit:
 	return ret;
 }
 
-/**
- * ipc3_probes_points_info - retrieve list of active probe points
- * @cdev:		SOF client device
- * @desc:	Returned list of active probes
- * @num_desc:	Returned count of active probes
- *
- * Host sends PROBE_POINT_INFO request to obtain list of active probe
- * points, valid for disconnection when given probe is no longer
- * required.
- */
+ 
 static int ipc3_probes_points_info(struct sof_client_dev *cdev,
 				   struct sof_probe_point_desc **desc,
 				   size_t *num_desc)
@@ -159,19 +130,7 @@ static int ipc3_probes_points_info(struct sof_client_dev *cdev,
 			       (void **)desc, num_desc);
 }
 
-/**
- * ipc3_probes_points_add - connect specified probes
- * @cdev:		SOF client device
- * @desc:	List of probe points to connect
- * @num_desc:	Number of elements in @desc
- *
- * Dynamically connects to provided set of endpoints. Immediately
- * after connection is established, host must be prepared to
- * transfer data from or to target stream given the probing purpose.
- *
- * Each probe point should be removed using PROBE_POINT_REMOVE
- * request when no longer needed.
- */
+ 
 static int ipc3_probes_points_add(struct sof_client_dev *cdev,
 				  struct sof_probe_point_desc *desc,
 				  size_t num_desc)
@@ -193,15 +152,7 @@ static int ipc3_probes_points_add(struct sof_client_dev *cdev,
 	return ret;
 }
 
-/**
- * ipc3_probes_points_remove - disconnect specified probes
- * @cdev:		SOF client device
- * @buffer_id:		List of probe points to disconnect
- * @num_buffer_id:	Number of elements in @desc
- *
- * Removes previously connected probes from list of active probe
- * points and frees all resources on DSP side.
- */
+ 
 static int ipc3_probes_points_remove(struct sof_client_dev *cdev,
 				     unsigned int *buffer_id,
 				     size_t num_buffer_id)

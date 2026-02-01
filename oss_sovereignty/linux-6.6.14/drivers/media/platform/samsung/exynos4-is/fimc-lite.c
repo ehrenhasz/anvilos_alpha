@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung EXYNOS FIMC-LITE (camera host interface) driver
-*
- * Copyright (C) 2012 - 2013 Samsung Electronics Co., Ltd.
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 #define pr_fmt(fmt) "%s:%d " fmt, __func__, __LINE__
 
 #include <linux/bug.h>
@@ -98,13 +93,7 @@ static const struct fimc_fmt fimc_lite_formats[] = {
 	},
 };
 
-/**
- * fimc_lite_find_format - lookup fimc color format by fourcc or media bus code
- * @pixelformat: fourcc to match, ignored if null
- * @mbus_code: media bus code to match, ignored if null
- * @mask: the color format flags to match
- * @index: index to the fimc_lite_formats array, ignored if negative
- */
+ 
 static const struct fimc_fmt *fimc_lite_find_format(const u32 *pixelformat,
 			const u32 *mbus_code, unsigned int mask, int index)
 {
@@ -141,7 +130,7 @@ static int fimc_lite_hw_init(struct fimc_lite *fimc, bool isp_output)
 	if (fimc->inp_frame.fmt == NULL || fimc->out_frame.fmt == NULL)
 		return -EINVAL;
 
-	/* Get sensor configuration data from the sensor subdev */
+	 
 	si = v4l2_get_subdev_hostdata(fimc->sensor);
 	if (!si)
 		return -EINVAL;
@@ -163,14 +152,7 @@ static int fimc_lite_hw_init(struct fimc_lite *fimc, bool isp_output)
 	return 0;
 }
 
-/*
- * Reinitialize the driver so it is ready to start the streaming again.
- * Set fimc->state to indicate stream off and the hardware shut down state.
- * If not suspending (@suspend is false), return any buffers to videobuf2.
- * Otherwise put any owned buffers onto the pending buffers queue, so they
- * can be re-spun when the device is being resumed. Also perform FIMC
- * software reset and disable streaming on the whole pipeline if required.
- */
+ 
 static int fimc_lite_reinit(struct fimc_lite *fimc, bool suspend)
 {
 	struct flite_buffer *buf;
@@ -188,12 +170,12 @@ static int fimc_lite_reinit(struct fimc_lite *fimc, bool suspend)
 		fimc->state &= ~(1 << ST_FLITE_PENDING |
 				 1 << ST_FLITE_SUSPENDED);
 
-	/* Release unused buffers */
+	 
 	while (!suspend && !list_empty(&fimc->pending_buf_q)) {
 		buf = fimc_lite_pending_queue_pop(fimc);
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
 	}
-	/* If suspending put unused buffers onto pending queue */
+	 
 	while (!list_empty(&fimc->active_buf_q)) {
 		buf = fimc_lite_active_queue_pop(fimc);
 		if (suspend)
@@ -226,12 +208,12 @@ static int fimc_lite_stop_capture(struct fimc_lite *fimc, bool suspend)
 
 	wait_event_timeout(fimc->irq_queue,
 			   !test_bit(ST_FLITE_OFF, &fimc->state),
-			   (2*HZ/10)); /* 200 ms */
+			   (2*HZ/10));  
 
 	return fimc_lite_reinit(fimc, suspend);
 }
 
-/* Must be called  with fimc.slock spinlock held. */
+ 
 static void fimc_lite_config_update(struct fimc_lite *fimc)
 {
 	flite_hw_set_window_offset(fimc, &fimc->inp_frame);
@@ -485,7 +467,7 @@ static int fimc_lite_open(struct file *file)
 
 	ret = fimc_pipeline_call(&fimc->ve, open, me, true);
 
-	/* Mark video pipeline ending at this video node as in use. */
+	 
 	if (ret == 0)
 		me->use_count++;
 
@@ -545,9 +527,7 @@ static const struct v4l2_file_operations fimc_lite_fops = {
 	.mmap		= vb2_fop_mmap,
 };
 
-/*
- * Format and crop negotiation helpers
- */
+ 
 
 static const struct fimc_fmt *fimc_lite_subdev_try_fmt(struct fimc_lite *fimc,
 					struct v4l2_subdev_state *sd_state,
@@ -590,7 +570,7 @@ static const struct fimc_fmt *fimc_lite_subdev_try_fmt(struct fimc_lite *fimc,
 			rect = &sink->rect;
 		}
 
-		/* Allow changing format only on sink pad */
+		 
 		mf->width = rect->width;
 		mf->height = rect->height;
 	}
@@ -610,7 +590,7 @@ static void fimc_lite_try_crop(struct fimc_lite *fimc, struct v4l2_rect *r)
 	v4l_bound_align_image(&r->width, 0, frame->f_width, 0,
 			      &r->height, 0, frame->f_height, 0, 0);
 
-	/* Adjust left/top if cropping rectangle got out of bounds */
+	 
 	r->left = clamp_t(u32, r->left, 0, frame->f_width - r->width);
 	r->left = round_down(r->left, fimc->dd->win_hor_offs_align);
 	r->top  = clamp_t(u32, r->top, 0, frame->f_height - r->height);
@@ -625,12 +605,11 @@ static void fimc_lite_try_compose(struct fimc_lite *fimc, struct v4l2_rect *r)
 	struct flite_frame *frame = &fimc->out_frame;
 	struct v4l2_rect *crop_rect = &fimc->inp_frame.rect;
 
-	/* Scaling is not supported so we enforce compose rectangle size
-	   same as size of the sink crop rectangle. */
+	 
 	r->width = crop_rect->width;
 	r->height = crop_rect->height;
 
-	/* Adjust left/top if the composing rectangle got out of bounds */
+	 
 	r->left = clamp_t(u32, r->left, 0, frame->f_width - r->width);
 	r->left = round_down(r->left, fimc->dd->out_hor_offs_align);
 	r->top  = clamp_t(u32, r->top, 0, fimc->out_frame.f_height - r->height);
@@ -640,9 +619,7 @@ static void fimc_lite_try_compose(struct fimc_lite *fimc, struct v4l2_rect *r)
 		 frame->f_width, frame->f_height);
 }
 
-/*
- * Video node ioctl operations
- */
+ 
 static int fimc_lite_querycap(struct file *file, void *priv,
 					struct v4l2_capability *cap)
 {
@@ -697,11 +674,7 @@ static int fimc_lite_try_fmt(struct fimc_lite *fimc,
 
 	if (WARN_ON(inp_fmt == NULL))
 		return -EINVAL;
-	/*
-	 * We allow some flexibility only for YUV formats. In case of raw
-	 * raw Bayer the FIMC-LITE's output format must match its camera
-	 * interface input format.
-	 */
+	 
 	if (inp_fmt->flags & FMT_FLAGS_YUV)
 		fmt = fimc_lite_find_format(&pixm->pixelformat, NULL,
 						inp_fmt->flags, 0);
@@ -775,11 +748,11 @@ static int fimc_pipeline_validate(struct fimc_lite *fimc)
 	int ret;
 
 	while (1) {
-		/* Retrieve format at the sink pad */
+		 
 		pad = &sd->entity.pads[0];
 		if (!(pad->flags & MEDIA_PAD_FL_SINK))
 			break;
-		/* Don't call FIMC subdev operation to avoid nested locking */
+		 
 		if (sd == &fimc->subdev) {
 			struct flite_frame *ff = &fimc->out_frame;
 			sink_fmt.format.width = ff->f_width;
@@ -792,7 +765,7 @@ static int fimc_pipeline_validate(struct fimc_lite *fimc)
 			if (ret < 0 && ret != -ENOIOCTLCMD)
 				return -EPIPE;
 		}
-		/* Retrieve format at the source pad */
+		 
 		pad = media_pad_remote_pad_first(pad);
 		if (!pad || !is_media_entity_v4l2_subdev(pad->entity))
 			break;
@@ -945,7 +918,7 @@ static const struct v4l2_ioctl_ops fimc_lite_ioctl_ops = {
 	.vidioc_streamoff		= fimc_lite_streamoff,
 };
 
-/* Capture subdev media entity operations */
+ 
 static int fimc_lite_link_setup(struct media_entity *entity,
 				const struct media_pad *local,
 				const struct media_pad *remote, u32 flags)
@@ -1043,11 +1016,11 @@ static int fimc_lite_subdev_get_fmt(struct v4l2_subdev *sd,
 	mf->code = f->fmt->mbus_code;
 
 	if (fmt->pad == FLITE_SD_PAD_SINK) {
-		/* full camera input frame size */
+		 
 		mf->width = f->f_width;
 		mf->height = f->f_height;
 	} else {
-		/* crop size */
+		 
 		mf->width = f->rect.width;
 		mf->height = f->rect.height;
 	}
@@ -1101,12 +1074,12 @@ static int fimc_lite_subdev_set_fmt(struct v4l2_subdev *sd,
 		sink->f_width = mf->width;
 		sink->f_height = mf->height;
 		sink->fmt = ffmt;
-		/* Set sink crop rectangle */
+		 
 		sink->rect.width = mf->width;
 		sink->rect.height = mf->height;
 		sink->rect.left = 0;
 		sink->rect.top = 0;
-		/* Reset source format and crop rectangle */
+		 
 		source->rect = sink->rect;
 		source->f_width = mf->width;
 		source->f_height = mf->height;
@@ -1171,7 +1144,7 @@ static int fimc_lite_subdev_set_selection(struct v4l2_subdev *sd,
 		unsigned long flags;
 		spin_lock_irqsave(&fimc->slock, flags);
 		f->rect = sel->r;
-		/* Same crop rectangle on the source pad */
+		 
 		fimc->out_frame.rect = sel->r;
 		set_bit(ST_FLITE_CONFIG, &fimc->state);
 		spin_unlock_irqrestore(&fimc->slock, flags);
@@ -1191,13 +1164,7 @@ static int fimc_lite_subdev_s_stream(struct v4l2_subdev *sd, int on)
 	unsigned long flags;
 	int ret;
 
-	/*
-	 * Find sensor subdev linked to FIMC-LITE directly or through
-	 * MIPI-CSIS. This is required for configuration where FIMC-LITE
-	 * is used as a subdev only and feeds data internally to FIMC-IS.
-	 * The pipeline links are protected through entity.pipe so there is no
-	 * need to take the media graph mutex here.
-	 */
+	 
 	fimc->sensor = fimc_find_remote_sensor(&sd->entity);
 
 	if (atomic_read(&fimc->out_path) != FIMC_IO_ISP)
@@ -1497,7 +1464,7 @@ static int fimc_lite_probe(struct platform_device *pdev)
 		goto err_clk_put;
 	}
 
-	/* The video node will be created within the subdev's registered() op */
+	 
 	ret = fimc_lite_create_capture_subdev(fimc);
 	if (ret)
 		goto err_clk_put;
@@ -1594,7 +1561,7 @@ static int fimc_lite_suspend(struct device *dev)
 
 	return fimc_pipeline_call(&fimc->ve, close);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static void fimc_lite_remove(struct platform_device *pdev)
 {
@@ -1619,7 +1586,7 @@ static const struct dev_pm_ops fimc_lite_pm_ops = {
 			   NULL)
 };
 
-/* EXYNOS4212, EXYNOS4412 */
+ 
 static struct flite_drvdata fimc_lite_drvdata_exynos4 = {
 	.max_width		= 8192,
 	.max_height		= 8192,
@@ -1630,7 +1597,7 @@ static struct flite_drvdata fimc_lite_drvdata_exynos4 = {
 	.num_instances		= 2,
 };
 
-/* EXYNOS5250 */
+ 
 static struct flite_drvdata fimc_lite_drvdata_exynos5 = {
 	.max_width		= 8192,
 	.max_height		= 8192,
@@ -1650,7 +1617,7 @@ static const struct of_device_id flite_of_match[] = {
 		.compatible = "samsung,exynos5250-fimc-lite",
 		.data = &fimc_lite_drvdata_exynos5,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, flite_of_match);
 

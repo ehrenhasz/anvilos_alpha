@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test driver to test endpoint functionality
- *
- * Copyright (C) 2017 Texas Instruments
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <linux/crc32.h>
 #include <linux/delay.h>
@@ -98,24 +93,7 @@ static void pci_epf_test_dma_callback(void *param)
 		complete(&epf_test->transfer_complete);
 }
 
-/**
- * pci_epf_test_data_transfer() - Function that uses dmaengine API to transfer
- *				  data between PCIe EP and remote PCIe RC
- * @epf_test: the EPF test device that performs the data transfer operation
- * @dma_dst: The destination address of the data transfer. It can be a physical
- *	     address given by pci_epc_mem_alloc_addr or DMA mapping APIs.
- * @dma_src: The source address of the data transfer. It can be a physical
- *	     address given by pci_epc_mem_alloc_addr or DMA mapping APIs.
- * @len: The size of the data transfer
- * @dma_remote: remote RC physical address
- * @dir: DMA transfer direction
- *
- * Function that uses dmaengine API to transfer data between PCIe EP and remote
- * PCIe RC. The source and destination address can be a physical address given
- * by pci_epc_mem_alloc_addr or the one obtained using DMA mapping APIs.
- *
- * The function returns '0' on success and negative value on failure.
- */
+ 
 static int pci_epf_test_data_transfer(struct pci_epf_test *epf_test,
 				      dma_addr_t dma_dst, dma_addr_t dma_src,
 				      size_t len, dma_addr_t dma_remote,
@@ -206,12 +184,7 @@ static bool epf_dma_filter_fn(struct dma_chan *chan, void *node)
 		&& (filter->dma_mask & caps.directions);
 }
 
-/**
- * pci_epf_test_init_dma_chan() - Function to initialize EPF test DMA channel
- * @epf_test: the EPF test device that performs data transfer operation
- *
- * Function to initialize EPF test DMA channel.
- */
+ 
 static int pci_epf_test_init_dma_chan(struct pci_epf_test *epf_test)
 {
 	struct pci_epf *epf = epf_test->epf;
@@ -271,12 +244,7 @@ fail_back_tx:
 	return 0;
 }
 
-/**
- * pci_epf_test_clean_dma_chan() - Function to cleanup EPF test DMA channel
- * @epf_test: the EPF test device that performs data transfer operation
- *
- * Helper to cleanup EPF test DMA channel.
- */
+ 
 static void pci_epf_test_clean_dma_chan(struct pci_epf_test *epf_test)
 {
 	if (!epf_test->dma_supported)
@@ -303,7 +271,7 @@ static void pci_epf_test_print_rate(struct pci_epf_test *epf_test,
 	struct timespec64 ts = timespec64_sub(*end, *start);
 	u64 rate = 0, ns;
 
-	/* calculate the rate */
+	 
 	ns = timespec64_to_ns(&ts);
 	if (ns)
 		rate = div64_u64(size * NSEC_PER_SEC, ns * 1000);
@@ -562,10 +530,7 @@ static void pci_epf_test_write(struct pci_epf_test *epf_test,
 	pci_epf_test_print_rate(epf_test, "WRITE", reg->size, &start, &end,
 				reg->flags & FLAG_USE_DMA);
 
-	/*
-	 * wait 1ms inorder for the write to complete. Without this delay L3
-	 * error in observed in the host system.
-	 */
+	 
 	usleep_range(1000, 2000);
 
 err_dma_map:
@@ -593,10 +558,7 @@ static void pci_epf_test_raise_irq(struct pci_epf_test *epf_test,
 	u32 status = reg->status | STATUS_IRQ_RAISED;
 	int count;
 
-	/*
-	 * Set the status before raising the IRQ to ensure that the host sees
-	 * the updated value when it gets the IRQ.
-	 */
+	 
 	WRITE_ONCE(reg->status, status);
 
 	switch (reg->irq_type) {
@@ -722,11 +684,7 @@ static int pci_epf_test_set_bar(struct pci_epf *epf)
 
 	for (bar = 0; bar < PCI_STD_NUM_BARS; bar += add) {
 		epf_bar = &epf->bar[bar];
-		/*
-		 * pci_epc_set_bar() sets PCI_BASE_ADDRESS_MEM_TYPE_64
-		 * if the specific implementation required a 64-bit BAR,
-		 * even if we only requested a 32-bit BAR.
-		 */
+		 
 		add = (epf_bar->flags & PCI_BASE_ADDRESS_MEM_TYPE_64) ? 2 : 1;
 
 		if (!!(epc_features->reserved_bar & (1 << bar)))
@@ -836,7 +794,7 @@ static int pci_epf_test_alloc_space(struct pci_epf *epf)
 	if (msix_capable) {
 		msix_table_size = PCI_MSIX_ENTRY_SIZE * epf->msix_interrupts;
 		epf_test->msix_table_offset = test_reg_bar_size;
-		/* Align to QWORD or 8 Bytes */
+		 
 		pba_size = ALIGN(DIV_ROUND_UP(epf->msix_interrupts, 8), 8);
 	}
 	test_reg_size = test_reg_bar_size + msix_table_size + pba_size;

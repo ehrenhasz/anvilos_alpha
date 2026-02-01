@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation.
- */
+
+ 
 
 #include "main.h"
 #include "reg.h"
@@ -205,11 +204,11 @@ void rtw_bf_enable_bfee_su(struct rtw_dev *rtwdev, struct rtw_vif *vif,
 		break;
 	}
 
-	/* Sounding protocol control */
+	 
 	rtw_write8_mask(rtwdev, REG_SND_PTCL_CTRL, BIT_MASK_BEAMFORM,
 			RTW_SND_CTRL_SOUNDING);
 
-	/* MAC address/Partial AID of Beamformer */
+	 
 	for (i = 0; i < ETH_ALEN; i++)
 		rtw_write8(rtwdev, addr_bfer_info + i, bfee->mac_addr[i]);
 
@@ -220,15 +219,12 @@ void rtw_bf_enable_bfee_su(struct rtw_dev *rtwdev, struct rtw_vif *vif,
 			  nc_index);
 	rtw_write16(rtwdev, addr_csi_rpt, csi_param);
 
-	/* ndp rx standby timer */
+	 
 	rtw_write8(rtwdev, REG_SND_PTCL_CTRL + 3, RTW_NDP_RX_STANDBY_TIME);
 }
 EXPORT_SYMBOL(rtw_bf_enable_bfee_su);
 
-/* nc index: 1 2T2R 0 1T1R
- * nr index: 1 use Nsts 0 use reg setting
- * codebookinfo: 1 802.11ac 3 802.11n
- */
+ 
 void rtw_bf_enable_bfee_mu(struct rtw_dev *rtwdev, struct rtw_vif *vif,
 			   struct rtw_bfee *bfee)
 {
@@ -262,10 +258,10 @@ void rtw_bf_enable_bfee_mu(struct rtw_dev *rtwdev, struct rtw_vif *vif,
 	bf_info->cur_csi_rpt_rate = DESC_RATE6M;
 	rtw_bf_cfg_sounding(rtwdev, vif, DESC_RATE6M);
 
-	/* accept action_no_ack */
+	 
 	rtw_write16_set(rtwdev, REG_RXFLTMAP0, BIT_RXFLTMAP0_ACTIONNOACK);
 
-	/* accept NDPA and BF report poll */
+	 
 	rtw_write16_set(rtwdev, REG_RXFLTMAP1, BIT_RXFLTMAP1_BF);
 }
 EXPORT_SYMBOL(rtw_bf_enable_bfee_mu);
@@ -350,27 +346,27 @@ void rtw_bf_phy_init(struct rtw_dev *rtwdev)
 	u8 ack_policy = 3;
 
 	tmp32 = rtw_read32(rtwdev, REG_MU_TX_CTL);
-	/* Enable P1 aggr new packet according to P0 transfer time */
+	 
 	tmp32 |= BIT_MU_P1_WAIT_STATE_EN;
-	/* MU Retry Limit */
+	 
 	tmp32 &= ~BIT_MASK_R_MU_RL;
 	tmp32 |= (retry_limit << BIT_SHIFT_R_MU_RL) & BIT_MASK_R_MU_RL;
-	/* Disable Tx MU-MIMO until sounding done */
+	 
 	tmp32 &= ~BIT_EN_MU_MIMO;
-	/* Clear validity of MU STAs */
+	 
 	tmp32 &= ~BIT_MASK_R_MU_TABLE_VALID;
 	rtw_write32(rtwdev, REG_MU_TX_CTL, tmp32);
 
-	/* MU-MIMO Option as default value */
+	 
 	tmp8 = ack_policy << BIT_SHIFT_WMAC_TXMU_ACKPOLICY;
 	tmp8 |= BIT_WMAC_TXMU_ACKPOLICY_EN;
 	rtw_write8(rtwdev, REG_WMAC_MU_BF_OPTION, tmp8);
 
-	/* MU-MIMO Control as default value */
+	 
 	rtw_write16(rtwdev, REG_WMAC_MU_BF_CTL, 0);
-	/* Set MU NDPA rate & BW source */
+	 
 	rtw_write32_set(rtwdev, REG_TXBF_CTRL, BIT_USE_NDPA_PARAMETER);
-	/* Set NDPA Rate */
+	 
 	rtw_write8(rtwdev, REG_NDPA_OPT_CTRL, ndpa_rate);
 
 	rtw_write32_mask(rtwdev, REG_BBPSF_CTRL, BIT_MASK_CSI_RATE,

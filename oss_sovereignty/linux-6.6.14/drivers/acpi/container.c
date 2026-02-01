@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * container.c  - ACPI Generic Container Driver
- *
- * Copyright (C) 2004 Anil S Keshavamurthy (anil.s.keshavamurthy@intel.com)
- * Copyright (C) 2004 Keiichiro Tokunaga (tokunaga.keiich@jp.fujitsu.com)
- * Copyright (C) 2004 Motoyuki Ito (motoyuki@soft.fujitsu.com)
- * Copyright (C) 2004 FUJITSU LIMITED
- * Copyright (C) 2004, 2013 Intel Corp.
- * Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/container.h>
 
@@ -33,7 +24,7 @@ static int check_offline(struct acpi_device *adev, void *not_used)
 
 static int acpi_container_offline(struct container_dev *cdev)
 {
-	/* Check all of the dependent devices' physical companions. */
+	 
 	return acpi_dev_for_each_child(ACPI_COMPANION(&cdev->dev), check_offline, NULL);
 }
 
@@ -114,4 +105,4 @@ void __init acpi_container_init(void)
 	acpi_scan_add_handler_with_hotplug(&container_handler, "container");
 }
 
-#endif /* CONFIG_ACPI_CONTAINER */
+#endif  

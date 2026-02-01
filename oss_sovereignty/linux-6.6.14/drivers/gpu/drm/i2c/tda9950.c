@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  TDA9950 Consumer Electronics Control driver
- *
- * The NXP TDA9950 implements the HDMI Consumer Electronics Control
- * interface.  The host interface is similar to a mailbox: the data
- * registers starting at REG_CDR0 are written to send a command to the
- * internal CPU, and replies are read from these registers.
- *
- * As the data registers represent a mailbox, they must be accessed
- * as a single I2C transaction.  See the TDA9950 data sheet for details.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -153,17 +143,14 @@ static irqreturn_t tda9950_irq(int irq, void *data)
 
 	tda9950_read_range(priv->client, REG_CDR0, buf, sizeof(buf));
 
-	/*
-	 * This should never happen: the data sheet says that there will
-	 * always be a valid message if the interrupt line is asserted.
-	 */
+	 
 	if (buf[0] == 0) {
 		dev_warn(&priv->client->dev, "interrupt pending, but no message?\n");
 		return IRQ_NONE;
 	}
 
 	switch (buf[1]) {
-	case CDR1_CNF: /* transmit result */
+	case CDR1_CNF:  
 		arb_lost_cnt = nack_cnt = err_cnt = 0;
 		switch (buf[2]) {
 		case CDR2_CNF_SUCCESS:
@@ -180,14 +167,14 @@ static irqreturn_t tda9950_irq(int irq, void *data)
 			nack_cnt = cconr;
 			break;
 
-		default: /* some other error, refer to TDA9950 docs */
+		default:  
 			dev_err(&priv->client->dev, "CNF reply error 0x%02x\n",
 				buf[2]);
 			tx_status = CEC_TX_STATUS_ERROR;
 			err_cnt = cconr;
 			break;
 		}
-		/* TDA9950 executes all retries for us */
+		 
 		if (tx_status != CEC_TX_STATUS_OK)
 			tx_status |= CEC_TX_STATUS_MAX_RETRIES;
 		cec_transmit_done(priv->adap, tx_status, arb_lost_cnt,
@@ -203,7 +190,7 @@ static irqreturn_t tda9950_irq(int irq, void *data)
 		cec_received_msg(priv->adap, &priv->rx_msg);
 		break;
 
-	default: /* unknown */
+	default:  
 		dev_err(&priv->client->dev, "unknown service id 0x%02x\n",
 			buf[1]);
 		break;
@@ -241,7 +228,7 @@ static int tda9950_cec_adap_log_addr(struct cec_adapter *adap, u8 addr)
 	else
 		addresses = priv->addresses |= BIT(addr);
 
-	/* TDA9950 doesn't want address 15 set */
+	 
 	addresses &= 0x7fff;
 	buf[0] = addresses >> 8;
 	buf[1] = addresses;
@@ -249,12 +236,7 @@ static int tda9950_cec_adap_log_addr(struct cec_adapter *adap, u8 addr)
 	return tda9950_write_range(priv->client, REG_ACKH, buf, 2);
 }
 
-/*
- * When operating as part of the TDA998x, we need additional handling
- * to initialise and shut down the TDA9950 part of the device.  These
- * two hooks are provided to allow the TDA998x code to perform those
- * activities.
- */
+ 
 static int tda9950_glue_open(struct tda9950_priv *priv)
 {
 	int ret = 0;
@@ -284,13 +266,13 @@ static int tda9950_open(struct tda9950_priv *priv)
 	if (ret)
 		return ret;
 
-	/* Reset the TDA9950, and wait 250ms for it to recover */
+	 
 	tda9950_write(client, REG_CCR, CCR_RESET);
 	msleep(250);
 
 	tda9950_cec_adap_log_addr(priv->adap, CEC_LOG_ADDR_INVALID);
 
-	/* Start the command processor */
+	 
 	tda9950_write(client, REG_CCR, CCR_ON);
 
 	return 0;
@@ -302,10 +284,10 @@ static void tda9950_release(struct tda9950_priv *priv)
 	int timeout = 50;
 	u8 csr;
 
-	/* Stop the command processor */
+	 
 	tda9950_write(client, REG_CCR, 0);
 
-	/* Wait up to .5s for it to signal non-busy */
+	 
 	do {
 		csr = tda9950_read(client, REG_CSR);
 		if (!(csr & CSR_BUSY) || !--timeout)
@@ -313,7 +295,7 @@ static void tda9950_release(struct tda9950_priv *priv)
 		msleep(10);
 	} while (1);
 
-	/* Warn the user that their IRQ may die if it's shared. */
+	 
 	if (csr & CSR_BUSY)
 		dev_warn(&client->dev, "command processor failed to stop, irq%d may die (csr=0x%02x)\n",
 			 client->irq, csr);
@@ -339,10 +321,7 @@ static const struct cec_adap_ops tda9950_cec_ops = {
 	.adap_transmit = tda9950_cec_transmit,
 };
 
-/*
- * When operating as part of the TDA998x, we need to claim additional
- * resources.  These two hooks permit the management of those resources.
- */
+ 
 static void tda9950_devm_glue_exit(void *data)
 {
 	struct tda9950_glue *glue = data;
@@ -384,17 +363,14 @@ static int tda9950_probe(struct i2c_client *client)
 	int ret;
 	u8 cvr;
 
-	/*
-	 * We must have I2C functionality: our multi-byte accesses
-	 * must be performed as a single contiguous transaction.
-	 */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
 		dev_err(&client->dev,
 			"adapter does not support I2C functionality\n");
 		return -ENXIO;
 	}
 
-	/* We must have an interrupt to be functional. */
+	 
 	if (client->irq <= 0) {
 		dev_err(&client->dev, "driver requires an interrupt\n");
 		return -ENXIO;
@@ -409,11 +385,7 @@ static int tda9950_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, priv);
 
-	/*
-	 * If we're part of a TDA998x, we want the class devices to be
-	 * associated with the HDMI Tx so we have a tight relationship
-	 * between the HDMI interface and the CEC interface.
-	 */
+	 
 	priv->hdmi = dev;
 	if (glue && glue->parent)
 		priv->hdmi = glue->parent;
@@ -468,10 +440,7 @@ static int tda9950_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/*
-	 * CEC documentation says we must not call cec_delete_adapter
-	 * after a successful call to cec_register_adapter().
-	 */
+	 
 	devm_remove_action(dev, tda9950_cec_del, priv);
 
 	return 0;

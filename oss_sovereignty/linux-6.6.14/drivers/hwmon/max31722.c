@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * max31722 - hwmon driver for Maxim Integrated MAX31722/MAX31723 SPI
- * digital thermometer and thermostats.
- *
- * Copyright (c) 2016, Intel Corporation.
- */
+
+ 
 
 #include <linux/hwmon.h>
 #include <linux/hwmon-sysfs.h>
@@ -55,7 +50,7 @@ static ssize_t max31722_temp_show(struct device *dev,
 	ret = spi_w8r16(data->spi_device, MAX31722_REG_TEMP_LSB);
 	if (ret < 0)
 		return ret;
-	/* Keep 12 bits and multiply by the scale of 62.5 millidegrees/bit. */
+	 
 	return sprintf(buf, "%d\n", (s16)le16_to_cpu(ret) * 125 / 32);
 }
 
@@ -79,10 +74,7 @@ static int max31722_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, data);
 	data->spi_device = spi;
-	/*
-	 * Set SD bit to 0 so we can have continuous measurements.
-	 * Set resolution to 12 bits for maximum precision.
-	 */
+	 
 	data->mode = MAX31722_MODE_CONTINUOUS | MAX31722_RESOLUTION_12BIT;
 	ret = max31722_set_mode(data, MAX31722_MODE_CONTINUOUS);
 	if (ret < 0)
@@ -109,7 +101,7 @@ static void max31722_remove(struct spi_device *spi)
 
 	ret = max31722_set_mode(data, MAX31722_MODE_STANDBY);
 	if (ret)
-		/* There is nothing we can do about this ... */
+		 
 		dev_warn(&spi->dev, "Failed to put device in stand-by mode\n");
 }
 

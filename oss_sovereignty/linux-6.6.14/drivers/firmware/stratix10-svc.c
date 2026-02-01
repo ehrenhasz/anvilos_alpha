@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017-2018, Intel Corporation
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -20,26 +18,14 @@
 #include <linux/firmware/intel/stratix10-svc-client.h>
 #include <linux/types.h>
 
-/**
- * SVC_NUM_DATA_IN_FIFO - number of struct stratix10_svc_data in the FIFO
- *
- * SVC_NUM_CHANNEL - number of channel supported by service layer driver
- *
- * FPGA_CONFIG_DATA_CLAIM_TIMEOUT_MS - claim back the submitted buffer(s)
- * from the secure world for FPGA manager to reuse, or to free the buffer(s)
- * when all bit-stream data had be send.
- *
- * FPGA_CONFIG_STATUS_TIMEOUT_SEC - poll the FPGA configuration status,
- * service layer will return error to FPGA manager when timeout occurs,
- * timeout is set to 30 seconds (30 * 1000) at Intel Stratix10 SoC.
- */
+ 
 #define SVC_NUM_DATA_IN_FIFO			32
 #define SVC_NUM_CHANNEL				3
 #define FPGA_CONFIG_DATA_CLAIM_TIMEOUT_MS	200
 #define FPGA_CONFIG_STATUS_TIMEOUT_SEC		30
 #define BYTE_TO_WORD_SIZE              4
 
-/* stratix10 service layer clients */
+ 
 #define STRATIX10_RSU				"stratix10-rsu"
 #define INTEL_FCS				"intel-fcs"
 
@@ -49,29 +35,13 @@ typedef void (svc_invoke_fn)(unsigned long, unsigned long, unsigned long,
 			     struct arm_smccc_res *);
 struct stratix10_svc_chan;
 
-/**
- * struct stratix10_svc - svc private data
- * @stratix10_svc_rsu: pointer to stratix10 RSU device
- */
+ 
 struct stratix10_svc {
 	struct platform_device *stratix10_svc_rsu;
 	struct platform_device *intel_svc_fcs;
 };
 
-/**
- * struct stratix10_svc_sh_memory - service shared memory structure
- * @sync_complete: state for a completion
- * @addr: physical address of shared memory block
- * @size: size of shared memory block
- * @invoke_fn: function to issue secure monitor or hypervisor call
- *
- * This struct is used to save physical address and size of shared memory
- * block. The shared memory blocked is allocated by secure monitor software
- * at secure world.
- *
- * Service layer driver uses the physical address and size to create a memory
- * pool, then allocates data buffer from that memory pool for service client.
- */
+ 
 struct stratix10_svc_sh_memory {
 	struct completion sync_complete;
 	unsigned long addr;
@@ -79,17 +49,7 @@ struct stratix10_svc_sh_memory {
 	svc_invoke_fn *invoke_fn;
 };
 
-/**
- * struct stratix10_svc_data_mem - service memory structure
- * @vaddr: virtual address
- * @paddr: physical address
- * @size: size of memory
- * @node: link list head node
- *
- * This struct is used in a list that keeps track of buffers which have
- * been allocated or freed from the memory pool. Service layer driver also
- * uses this struct to transfer physical address to virtual address.
- */
+ 
 struct stratix10_svc_data_mem {
 	void *vaddr;
 	phys_addr_t paddr;
@@ -97,19 +57,7 @@ struct stratix10_svc_data_mem {
 	struct list_head node;
 };
 
-/**
- * struct stratix10_svc_data - service data structure
- * @chan: service channel
- * @paddr: physical address of to be processed payload
- * @size: to be processed playload size
- * @paddr_output: physical address of processed payload
- * @size_output: processed payload size
- * @command: service command requested by client
- * @flag: configuration type (full or partial)
- * @arg: args to be passed via registers and not physically mapped buffers
- *
- * This struct is used in service FIFO for inter-process communication.
- */
+ 
 struct stratix10_svc_data {
 	struct stratix10_svc_chan *chan;
 	phys_addr_t paddr;
@@ -121,23 +69,7 @@ struct stratix10_svc_data {
 	u64 arg[3];
 };
 
-/**
- * struct stratix10_svc_controller - service controller
- * @dev: device
- * @chans: array of service channels
- * @num_chans: number of channels in 'chans' array
- * @num_active_client: number of active service client
- * @node: list management
- * @genpool: memory pool pointing to the memory region
- * @task: pointer to the thread task which handles SMC or HVC call
- * @svc_fifo: a queue for storing service message data
- * @complete_status: state for completion
- * @svc_fifo_lock: protect access to service message data queue
- * @invoke_fn: function to issue secure monitor call or hypervisor call
- *
- * This struct is used to create communication channels for service clients, to
- * handle secure monitor or hypervisor call.
- */
+ 
 struct stratix10_svc_controller {
 	struct device *dev;
 	struct stratix10_svc_chan *chans;
@@ -152,16 +84,7 @@ struct stratix10_svc_controller {
 	svc_invoke_fn *invoke_fn;
 };
 
-/**
- * struct stratix10_svc_chan - service communication channel
- * @ctrl: pointer to service controller which is the provider of this channel
- * @scl: pointer to service client which owns the channel
- * @name: service client name associated with the channel
- * @lock: protect access to the channel
- *
- * This struct is used by service client to communicate with service layer, each
- * service client has its own channel created by service controller.
- */
+ 
 struct stratix10_svc_chan {
 	struct stratix10_svc_controller *ctrl;
 	struct stratix10_svc_client *scl;
@@ -172,13 +95,7 @@ struct stratix10_svc_chan {
 static LIST_HEAD(svc_ctrl);
 static LIST_HEAD(svc_data_mem);
 
-/**
- * svc_pa_to_va() - translate physical address to virtual address
- * @addr: to be translated physical address
- *
- * Return: valid virtual address or NULL if the provided physical
- * address doesn't exist.
- */
+ 
 static void *svc_pa_to_va(unsigned long addr)
 {
 	struct stratix10_svc_data_mem *pmem;
@@ -188,19 +105,11 @@ static void *svc_pa_to_va(unsigned long addr)
 		if (pmem->paddr == addr)
 			return pmem->vaddr;
 
-	/* physical address is not found */
+	 
 	return NULL;
 }
 
-/**
- * svc_thread_cmd_data_claim() - claim back buffer from the secure world
- * @ctrl: pointer to service layer controller
- * @p_data: pointer to service data structure
- * @cb_data: pointer to callback data structure to service client
- *
- * Claim back the submitted buffers from the secure world and pass buffer
- * back to service client (FPGA manager, etc) for reuse.
- */
+ 
 static void svc_thread_cmd_data_claim(struct stratix10_svc_controller *ctrl,
 				      struct stratix10_svc_data *p_data,
 				      struct stratix10_svc_cb_data *cb_data)
@@ -238,15 +147,7 @@ static void svc_thread_cmd_data_claim(struct stratix10_svc_controller *ctrl,
 		 wait_for_completion_timeout(&ctrl->complete_status, timeout));
 }
 
-/**
- * svc_thread_cmd_config_status() - check configuration status
- * @ctrl: pointer to service layer controller
- * @p_data: pointer to service data structure
- * @cb_data: pointer to callback data structure to service client
- *
- * Check whether the secure firmware at secure world has finished the FPGA
- * configuration, and then inform FPGA manager the configuration status.
- */
+ 
 static void svc_thread_cmd_config_status(struct stratix10_svc_controller *ctrl,
 					 struct stratix10_svc_data *p_data,
 					 struct stratix10_svc_cb_data *cb_data)
@@ -277,10 +178,7 @@ static void svc_thread_cmd_config_status(struct stratix10_svc_controller *ctrl,
 		    (res.a0 == INTEL_SIP_SMC_STATUS_REJECTED))
 			break;
 
-		/*
-		 * request is still in progress, wait one second then
-		 * poll again
-		 */
+		 
 		msleep(1000);
 		count_in_sec--;
 	}
@@ -305,14 +203,7 @@ static void svc_thread_cmd_config_status(struct stratix10_svc_controller *ctrl,
 	p_data->chan->scl->receive_cb(p_data->chan->scl, cb_data);
 }
 
-/**
- * svc_thread_recv_status_ok() - handle the successful status
- * @p_data: pointer to service data structure
- * @cb_data: pointer to callback data structure to service client
- * @res: result from SMC or HVC call
- *
- * Send back the correspond status to the service clients.
- */
+ 
 static void svc_thread_recv_status_ok(struct stratix10_svc_data *p_data,
 				      struct stratix10_svc_cb_data *cb_data,
 				      struct arm_smccc_res res)
@@ -365,7 +256,7 @@ static void svc_thread_recv_status_ok(struct stratix10_svc_data *p_data,
 	case COMMAND_MBOX_SEND_CMD:
 		cb_data->status = BIT(SVC_STATUS_OK);
 		cb_data->kaddr1 = &res.a1;
-		/* SDM return size in u8. Convert size to u32 word */
+		 
 		res.a2 = res.a2 * BYTE_TO_WORD_SIZE;
 		cb_data->kaddr2 = &res.a2;
 		break;
@@ -378,16 +269,7 @@ static void svc_thread_recv_status_ok(struct stratix10_svc_data *p_data,
 	p_data->chan->scl->receive_cb(p_data->chan->scl, cb_data);
 }
 
-/**
- * svc_normal_to_secure_thread() - the function to run in the kthread
- * @data: data pointer for kthread function
- *
- * Service layer driver creates stratix10_svc_smc_hvc_call kthread on CPU
- * node 0, its function stratix10_svc_secure_call_thread is used to handle
- * SMC or HVC calls between kernel driver and secure monitor software.
- *
- * Return: 0 for success or -ENOMEM on error.
- */
+ 
 static int svc_normal_to_secure_thread(void *data)
 {
 	struct stratix10_svc_controller
@@ -408,7 +290,7 @@ static int svc_normal_to_secure_thread(void *data)
 		return -ENOMEM;
 	}
 
-	/* default set, to remove build warning */
+	 
 	a0 = INTEL_SIP_SMC_FPGA_CONFIG_LOOPBACK;
 	a1 = 0;
 	a2 = 0;
@@ -488,7 +370,7 @@ static int svc_normal_to_secure_thread(void *data)
 			a2 = 0;
 			break;
 
-		/* for FCS */
+		 
 		case COMMAND_FCS_DATA_ENCRYPTION:
 			a0 = INTEL_SIP_SMC_FCS_CRYPTION;
 			a1 = 1;
@@ -526,7 +408,7 @@ static int svc_normal_to_secure_thread(void *data)
 			a2 = 0;
 			break;
 
-		/* for polling */
+		 
 		case COMMAND_POLL_SERVICE_STATUS:
 			a0 = INTEL_SIP_SMC_SERVICE_COMPLETED;
 			a1 = (unsigned long)pdata->paddr;
@@ -606,7 +488,7 @@ static int svc_normal_to_secure_thread(void *data)
 			break;
 		case INTEL_SIP_SMC_STATUS_REJECTED:
 			pr_debug("%s: STATUS_REJECTED\n", __func__);
-			/* for FCS */
+			 
 			switch (pdata->command) {
 			case COMMAND_FCS_REQUEST_SERVICE:
 			case COMMAND_FCS_SEND_CERTIFICATE:
@@ -637,10 +519,7 @@ static int svc_normal_to_secure_thread(void *data)
 		default:
 			pr_warn("Secure firmware doesn't support...\n");
 
-			/*
-			 * be compatible with older version firmware which
-			 * doesn't support newer RSU commands
-			 */
+			 
 			if ((pdata->command != COMMAND_RSU_UPDATE) &&
 				(pdata->command != COMMAND_RSU_STATUS)) {
 				cbdata->status =
@@ -662,26 +541,14 @@ static int svc_normal_to_secure_thread(void *data)
 	return 0;
 }
 
-/**
- * svc_normal_to_secure_shm_thread() - the function to run in the kthread
- * @data: data pointer for kthread function
- *
- * Service layer driver creates stratix10_svc_smc_hvc_shm kthread on CPU
- * node 0, its function stratix10_svc_secure_shm_thread is used to query the
- * physical address of memory block reserved by secure monitor software at
- * secure world.
- *
- * svc_normal_to_secure_shm_thread() terminates directly since it is a
- * standlone thread for which no one will call kthread_stop() or return when
- * 'kthread_should_stop()' is true.
- */
+ 
 static int svc_normal_to_secure_shm_thread(void *data)
 {
 	struct stratix10_svc_sh_memory
 			*sh_mem = (struct stratix10_svc_sh_memory *)data;
 	struct arm_smccc_res res;
 
-	/* SMC or HVC call to get shared memory info from secure world */
+	 
 	sh_mem->invoke_fn(INTEL_SIP_SMC_FPGA_CONFIG_GET_MEM,
 			  0, 0, 0, 0, 0, 0, 0, &res);
 	if (res.a0 == INTEL_SIP_SMC_STATUS_OK) {
@@ -698,14 +565,7 @@ static int svc_normal_to_secure_shm_thread(void *data)
 	return 0;
 }
 
-/**
- * svc_get_sh_memory() - get memory block reserved by secure monitor SW
- * @pdev: pointer to service layer device
- * @sh_memory: pointer to service shared memory structure
- *
- * Return: zero for successfully getting the physical address of memory block
- * reserved by secure monitor software, or negative value on error.
- */
+ 
 static int svc_get_sh_memory(struct platform_device *pdev,
 				    struct stratix10_svc_sh_memory *sh_memory)
 {
@@ -715,7 +575,7 @@ static int svc_get_sh_memory(struct platform_device *pdev,
 
 	init_completion(&sh_memory->sync_complete);
 
-	/* smc or hvc call happens on cpu 0 bound kthread */
+	 
 	sh_memory_task = kthread_create_on_node(svc_normal_to_secure_shm_thread,
 					       (void *)sh_memory,
 						cpu_to_node(cpu),
@@ -746,13 +606,7 @@ static int svc_get_sh_memory(struct platform_device *pdev,
 	return 0;
 }
 
-/**
- * svc_create_memory_pool() - create a memory pool from reserved memory block
- * @pdev: pointer to service layer device
- * @sh_memory: pointer to service shared memory structure
- *
- * Return: pool allocated from reserved memory block or ERR_PTR() on error.
- */
+ 
 static struct gen_pool *
 svc_create_memory_pool(struct platform_device *pdev,
 		       struct stratix10_svc_sh_memory *sh_memory)
@@ -803,18 +657,7 @@ svc_create_memory_pool(struct platform_device *pdev,
 	return genpool;
 }
 
-/**
- * svc_smccc_smc() - secure monitor call between normal and secure world
- * @a0: argument passed in registers 0
- * @a1: argument passed in registers 1
- * @a2: argument passed in registers 2
- * @a3: argument passed in registers 3
- * @a4: argument passed in registers 4
- * @a5: argument passed in registers 5
- * @a6: argument passed in registers 6
- * @a7: argument passed in registers 7
- * @res: result values from register 0 to 3
- */
+ 
 static void svc_smccc_smc(unsigned long a0, unsigned long a1,
 			  unsigned long a2, unsigned long a3,
 			  unsigned long a4, unsigned long a5,
@@ -824,18 +667,7 @@ static void svc_smccc_smc(unsigned long a0, unsigned long a1,
 	arm_smccc_smc(a0, a1, a2, a3, a4, a5, a6, a7, res);
 }
 
-/**
- * svc_smccc_hvc() - hypervisor call between normal and secure world
- * @a0: argument passed in registers 0
- * @a1: argument passed in registers 1
- * @a2: argument passed in registers 2
- * @a3: argument passed in registers 3
- * @a4: argument passed in registers 4
- * @a5: argument passed in registers 5
- * @a6: argument passed in registers 6
- * @a7: argument passed in registers 7
- * @res: result values from register 0 to 3
- */
+ 
 static void svc_smccc_hvc(unsigned long a0, unsigned long a1,
 			  unsigned long a2, unsigned long a3,
 			  unsigned long a4, unsigned long a5,
@@ -845,12 +677,7 @@ static void svc_smccc_hvc(unsigned long a0, unsigned long a1,
 	arm_smccc_hvc(a0, a1, a2, a3, a4, a5, a6, a7, res);
 }
 
-/**
- * get_invoke_func() - invoke SMC or HVC call
- * @dev: pointer to device
- *
- * Return: function pointer to svc_smccc_smc or svc_smccc_hvc.
- */
+ 
 static svc_invoke_fn *get_invoke_func(struct device *dev)
 {
 	const char *method;
@@ -870,16 +697,7 @@ static svc_invoke_fn *get_invoke_func(struct device *dev)
 	return ERR_PTR(-EINVAL);
 }
 
-/**
- * stratix10_svc_request_channel_byname() - request a service channel
- * @client: pointer to service client
- * @name: service client name
- *
- * This function is used by service client to request a service channel.
- *
- * Return: a pointer to channel assigned to the client on success,
- * or ERR_PTR() on error.
- */
+ 
 struct stratix10_svc_chan *stratix10_svc_request_channel_byname(
 	struct stratix10_svc_client *client, const char *name)
 {
@@ -889,7 +707,7 @@ struct stratix10_svc_chan *stratix10_svc_request_channel_byname(
 	unsigned long flag;
 	int i;
 
-	/* if probe was called after client's, or error on probe */
+	 
 	if (list_empty(&svc_ctrl))
 		return ERR_PTR(-EPROBE_DEFER);
 
@@ -902,7 +720,7 @@ struct stratix10_svc_chan *stratix10_svc_request_channel_byname(
 		}
 	}
 
-	/* if there was no channel match */
+	 
 	if (i == SVC_NUM_CHANNEL) {
 		dev_err(dev, "%s: channel not allocated\n", __func__);
 		return ERR_PTR(-EINVAL);
@@ -922,12 +740,7 @@ struct stratix10_svc_chan *stratix10_svc_request_channel_byname(
 }
 EXPORT_SYMBOL_GPL(stratix10_svc_request_channel_byname);
 
-/**
- * stratix10_svc_free_channel() - free service channel
- * @chan: service channel to be freed
- *
- * This function is used by service client to free a service channel.
- */
+ 
 void stratix10_svc_free_channel(struct stratix10_svc_chan *chan)
 {
 	unsigned long flag;
@@ -940,17 +753,7 @@ void stratix10_svc_free_channel(struct stratix10_svc_chan *chan)
 }
 EXPORT_SYMBOL_GPL(stratix10_svc_free_channel);
 
-/**
- * stratix10_svc_send() - send a message data to the remote
- * @chan: service channel assigned to the client
- * @msg: message data to be sent, in the format of
- * "struct stratix10_svc_client_msg"
- *
- * This function is used by service client to add a message to the service
- * layer driver's queue for being sent to the secure world.
- *
- * Return: 0 for success, -ENOMEM or -ENOBUFS on error.
- */
+ 
 int stratix10_svc_send(struct stratix10_svc_chan *chan, void *msg)
 {
 	struct stratix10_svc_client_msg
@@ -964,7 +767,7 @@ int stratix10_svc_send(struct stratix10_svc_chan *chan, void *msg)
 	if (!p_data)
 		return -ENOMEM;
 
-	/* first client will create kernel thread */
+	 
 	if (!chan->ctrl->task) {
 		chan->ctrl->task =
 			kthread_create_on_node(svc_normal_to_secure_thread,
@@ -1033,17 +836,10 @@ int stratix10_svc_send(struct stratix10_svc_chan *chan, void *msg)
 }
 EXPORT_SYMBOL_GPL(stratix10_svc_send);
 
-/**
- * stratix10_svc_done() - complete service request transactions
- * @chan: service channel assigned to the client
- *
- * This function should be called when client has finished its request
- * or there is an error in the request process. It allows the service layer
- * to stop the running thread to have maximize savings in kernel resources.
- */
+ 
 void stratix10_svc_done(struct stratix10_svc_chan *chan)
 {
-	/* stop thread when thread is running AND only one active client */
+	 
 	if (chan->ctrl->task && chan->ctrl->num_active_client <= 1) {
 		pr_debug("svc_smc_hvc_shm_thread is stopped\n");
 		kthread_stop(chan->ctrl->task);
@@ -1052,16 +848,7 @@ void stratix10_svc_done(struct stratix10_svc_chan *chan)
 }
 EXPORT_SYMBOL_GPL(stratix10_svc_done);
 
-/**
- * stratix10_svc_allocate_memory() - allocate memory
- * @chan: service channel assigned to the client
- * @size: memory size requested by a specific service client
- *
- * Service layer allocates the requested number of bytes buffer from the
- * memory pool, service client uses this function to get allocated buffers.
- *
- * Return: address of allocated memory on success, or ERR_PTR() on error.
- */
+ 
 void *stratix10_svc_allocate_memory(struct stratix10_svc_chan *chan,
 				    size_t size)
 {
@@ -1093,13 +880,7 @@ void *stratix10_svc_allocate_memory(struct stratix10_svc_chan *chan,
 }
 EXPORT_SYMBOL_GPL(stratix10_svc_allocate_memory);
 
-/**
- * stratix10_svc_free_memory() - free allocated memory
- * @chan: service channel assigned to the client
- * @kaddr: memory to be freed
- *
- * This function is used by service client to free allocated buffers.
- */
+ 
 void stratix10_svc_free_memory(struct stratix10_svc_chan *chan, void *kaddr)
 {
 	struct stratix10_svc_data_mem *pmem;
@@ -1136,7 +917,7 @@ static int stratix10_svc_drv_probe(struct platform_device *pdev)
 	size_t fifo_size;
 	int ret;
 
-	/* get SMC or HVC function */
+	 
 	invoke_fn = get_invoke_func(dev);
 	if (IS_ERR(invoke_fn))
 		return -EINVAL;
@@ -1154,7 +935,7 @@ static int stratix10_svc_drv_probe(struct platform_device *pdev)
 	if (IS_ERR(genpool))
 		return PTR_ERR(genpool);
 
-	/* allocate service controller and supporting channel */
+	 
 	controller = devm_kzalloc(dev, sizeof(*controller), GFP_KERNEL);
 	if (!controller) {
 		ret = -ENOMEM;
@@ -1203,7 +984,7 @@ static int stratix10_svc_drv_probe(struct platform_device *pdev)
 	list_add_tail(&controller->node, &svc_ctrl);
 	platform_set_drvdata(pdev, controller);
 
-	/* add svc client device(s) */
+	 
 	svc = devm_kzalloc(dev, sizeof(*svc), GFP_KERNEL);
 	if (!svc) {
 		ret = -ENOMEM;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Block Translation Table
- * Copyright (c) 2014-2015, Intel Corporation.
- */
+
+ 
 #include <linux/highmem.h>
 #include <linux/debugfs.h>
 #include <linux/blkdev.h>
@@ -40,7 +37,7 @@ static int arena_read_bytes(struct arena_info *arena, resource_size_t offset,
 	struct nd_btt *nd_btt = arena->nd_btt;
 	struct nd_namespace_common *ndns = nd_btt->ndns;
 
-	/* arena offsets may be shifted from the base of the device */
+	 
 	offset = adjust_initial_offset(nd_btt, offset);
 	return nvdimm_read_bytes(ndns, offset, buf, n, flags);
 }
@@ -51,7 +48,7 @@ static int arena_write_bytes(struct arena_info *arena, resource_size_t offset,
 	struct nd_btt *nd_btt = arena->nd_btt;
 	struct nd_namespace_common *ndns = nd_btt->ndns;
 
-	/* arena offsets may be shifted from the base of the device */
+	 
 	offset = adjust_initial_offset(nd_btt, offset);
 	return nvdimm_write_bytes(ndns, offset, buf, n, flags);
 }
@@ -60,11 +57,7 @@ static int btt_info_write(struct arena_info *arena, struct btt_sb *super)
 {
 	int ret;
 
-	/*
-	 * infooff and info2off should always be at least 512B aligned.
-	 * We rely on that to make sure rw_bytes does error clearing
-	 * correctly, so make sure that is the case.
-	 */
+	 
 	dev_WARN_ONCE(to_dev(arena), !IS_ALIGNED(arena->infooff, 512),
 		"arena->infooff: %#llx is unaligned\n", arena->infooff);
 	dev_WARN_ONCE(to_dev(arena), !IS_ALIGNED(arena->info2off, 512),
@@ -85,12 +78,7 @@ static int btt_info_read(struct arena_info *arena, struct btt_sb *super)
 			sizeof(struct btt_sb), 0);
 }
 
-/*
- * 'raw' version of btt_map write
- * Assumptions:
- *   mapping is in little-endian
- *   mapping contains 'E' and 'Z' flags as desired
- */
+ 
 static int __btt_map_write(struct arena_info *arena, u32 lba, __le32 mapping,
 		unsigned long flags)
 {
@@ -109,21 +97,13 @@ static int btt_map_write(struct arena_info *arena, u32 lba, u32 mapping,
 	u32 ze;
 	__le32 mapping_le;
 
-	/*
-	 * This 'mapping' is supposed to be just the LBA mapping, without
-	 * any flags set, so strip the flag bits.
-	 */
+	 
 	mapping = ent_lba(mapping);
 
 	ze = (z_flag << 1) + e_flag;
 	switch (ze) {
 	case 0:
-		/*
-		 * We want to set neither of the Z or E flags, and
-		 * in the actual layout, this means setting the bit
-		 * positions of both to '1' to indicate a 'normal'
-		 * map entry
-		 */
+		 
 		mapping |= MAP_ENT_NORMAL;
 		break;
 	case 1:
@@ -133,11 +113,7 @@ static int btt_map_write(struct arena_info *arena, u32 lba, u32 mapping,
 		mapping |= (1 << MAP_TRIM_SHIFT);
 		break;
 	default:
-		/*
-		 * The case where Z and E are both sent in as '1' could be
-		 * construed as a valid 'normal' case, but we decide not to,
-		 * to avoid confusion
-		 */
+		 
 		dev_err_ratelimited(to_dev(arena),
 			"Invalid use of Z and E flags\n");
 		return -EIO;
@@ -171,13 +147,13 @@ static int btt_map_read(struct arena_info *arena, u32 lba, u32 *mapping,
 	ze = (z_flag << 1) + e_flag;
 	postmap = ent_lba(raw_mapping);
 
-	/* Reuse the {z,e}_flag variables for *trim and *error */
+	 
 	z_flag = 0;
 	e_flag = 0;
 
 	switch (ze) {
 	case 0:
-		/* Initial state. Return postmap = premap */
+		 
 		*mapping = lba;
 		break;
 	case 1:
@@ -219,7 +195,7 @@ static void arena_debugfs_init(struct arena_info *a, struct dentry *parent,
 	char dirname[32];
 	struct dentry *d;
 
-	/* If for some reason, parent bttN was not created, exit */
+	 
 	if (!parent)
 		return;
 
@@ -273,26 +249,14 @@ static u32 log_seq(struct log_group *log, int log_idx)
 	return le32_to_cpu(log->ent[log_idx].seq);
 }
 
-/*
- * This function accepts two log entries, and uses the
- * sequence number to find the 'older' entry.
- * It also updates the sequence number in this old entry to
- * make it the 'new' one if the mark_flag is set.
- * Finally, it returns which of the entries was the older one.
- *
- * TODO The logic feels a bit kludge-y. make it better..
- */
+ 
 static int btt_log_get_old(struct arena_info *a, struct log_group *log)
 {
 	int idx0 = a->log_index[0];
 	int idx1 = a->log_index[1];
 	int old;
 
-	/*
-	 * the first ever time this is seen, the entry goes into [0]
-	 * the next time, the following logic works out to put this
-	 * (next) entry into [1]
-	 */
+	 
 	if (log_seq(log, idx0) == 0) {
 		log->ent[idx0].seq = cpu_to_le32(1);
 		return 0;
@@ -318,12 +282,7 @@ static int btt_log_get_old(struct arena_info *a, struct log_group *log)
 	return old;
 }
 
-/*
- * This function copies the desired (old/new) log entry into ent if
- * it is not NULL. It returns the sub-slot number (0 or 1)
- * where the desired log entry was found. Negative return values
- * indicate errors.
- */
+ 
 static int btt_log_read(struct arena_info *arena, u32 lane,
 			struct log_entry *ent, int old_flag)
 {
@@ -341,7 +300,7 @@ static int btt_log_read(struct arena_info *arena, u32 lane,
 				"log corruption (%d): lane %d seq [%d, %d]\n",
 				old_ent, lane, log.ent[arena->log_index[0]].seq,
 				log.ent[arena->log_index[1]].seq);
-		/* TODO set error state? */
+		 
 		return -EIO;
 	}
 
@@ -353,11 +312,7 @@ static int btt_log_read(struct arena_info *arena, u32 lane,
 	return ret_ent;
 }
 
-/*
- * This function commits a log entry to media
- * It does _not_ prepare the freelist entry for the next write
- * btt_flog_write is the wrapper for updating the freelist elements
- */
+ 
 static int __btt_log_write(struct arena_info *arena, u32 lane,
 			u32 sub, struct log_entry *ent, unsigned long flags)
 {
@@ -369,7 +324,7 @@ static int __btt_log_write(struct arena_info *arena, u32 lane,
 
 	ns_off = arena->logoff + (lane * LOG_GRP_SIZE) +
 		(group_slot * LOG_ENT_SIZE);
-	/* split the 16B write into atomic, durable halves */
+	 
 	ret = arena_write_bytes(arena, ns_off, src, log_half, flags);
 	if (ret)
 		return ret;
@@ -388,7 +343,7 @@ static int btt_flog_write(struct arena_info *arena, u32 lane, u32 sub,
 	if (ret)
 		return ret;
 
-	/* prepare the next free entry */
+	 
 	arena->freelist[lane].sub = 1 - arena->freelist[lane].sub;
 	if (++(arena->freelist[lane].seq) == 4)
 		arena->freelist[lane].seq = 1;
@@ -399,10 +354,7 @@ static int btt_flog_write(struct arena_info *arena, u32 lane, u32 sub,
 	return ret;
 }
 
-/*
- * This function initializes the BTT map to the initial state, which is
- * all-zeroes, and indicates an identity mapping
- */
+ 
 static int btt_map_init(struct arena_info *arena)
 {
 	int ret = -EINVAL;
@@ -415,11 +367,7 @@ static int btt_map_init(struct arena_info *arena)
 	if (!zerobuf)
 		return -ENOMEM;
 
-	/*
-	 * mapoff should always be at least 512B  aligned. We rely on that to
-	 * make sure rw_bytes does error clearing correctly, so make sure that
-	 * is the case.
-	 */
+	 
 	dev_WARN_ONCE(to_dev(arena), !IS_ALIGNED(arena->mapoff, 512),
 		"arena->mapoff: %#llx is unaligned\n", arena->mapoff);
 
@@ -443,10 +391,7 @@ static int btt_map_init(struct arena_info *arena)
 	return ret;
 }
 
-/*
- * This function initializes the BTT log with 'fake' entries pointing
- * to the initial reserved set of blocks as being free
- */
+ 
 static int btt_log_init(struct arena_info *arena)
 {
 	size_t logsize = arena->info2off - arena->logoff;
@@ -459,11 +404,7 @@ static int btt_log_init(struct arena_info *arena)
 	zerobuf = kzalloc(chunk_size, GFP_KERNEL);
 	if (!zerobuf)
 		return -ENOMEM;
-	/*
-	 * logoff should always be at least 512B  aligned. We rely on that to
-	 * make sure rw_bytes does error clearing correctly, so make sure that
-	 * is the case.
-	 */
+	 
 	dev_WARN_ONCE(to_dev(arena), !IS_ALIGNED(arena->logoff, 512),
 		"arena->logoff: %#llx is unaligned\n", arena->logoff);
 
@@ -547,19 +488,16 @@ static int btt_freelist_init(struct arena_info *arena)
 		if (new < 0)
 			return new;
 
-		/* old and new map entries with any flags stripped out */
+		 
 		log_oldmap = ent_lba(le32_to_cpu(log_new.old_map));
 		log_newmap = ent_lba(le32_to_cpu(log_new.new_map));
 
-		/* sub points to the next one to be overwritten */
+		 
 		arena->freelist[i].sub = 1 - new;
 		arena->freelist[i].seq = nd_inc_seq(le32_to_cpu(log_new.seq));
 		arena->freelist[i].block = log_oldmap;
 
-		/*
-		 * FIXME: if error clearing fails during init, we want to make
-		 * the BTT read-only
-		 */
+		 
 		if (ent_e_flag(le32_to_cpu(log_new.old_map)) &&
 		    !ent_normal(le32_to_cpu(log_new.old_map))) {
 			arena->freelist[i].has_err = 1;
@@ -569,28 +507,19 @@ static int btt_freelist_init(struct arena_info *arena)
 					"Unable to clear known errors\n");
 		}
 
-		/* This implies a newly created or untouched flog entry */
+		 
 		if (log_oldmap == log_newmap)
 			continue;
 
-		/* Check if map recovery is needed */
+		 
 		ret = btt_map_read(arena, le32_to_cpu(log_new.lba), &map_entry,
 				NULL, NULL, 0);
 		if (ret)
 			return ret;
 
-		/*
-		 * The map_entry from btt_read_map is stripped of any flag bits,
-		 * so use the stripped out versions from the log as well for
-		 * testing whether recovery is needed. For restoration, use the
-		 * 'raw' version of the log entries as that captured what we
-		 * were going to write originally.
-		 */
+		 
 		if ((log_newmap != map_entry) && (log_oldmap == map_entry)) {
-			/*
-			 * Last transaction wrote the flog, but wasn't able
-			 * to complete the map write. So fix up the map.
-			 */
+			 
 			ret = btt_map_write(arena, le32_to_cpu(log_new.lba),
 					le32_to_cpu(log_new.new_map), 0, 0, 0);
 			if (ret)
@@ -607,19 +536,7 @@ static bool ent_is_padding(struct log_entry *ent)
 		&& (ent->seq == 0);
 }
 
-/*
- * Detecting valid log indices: We read a log group (see the comments in btt.h
- * for a description of a 'log_group' and its 'slots'), and iterate over its
- * four slots. We expect that a padding slot will be all-zeroes, and use this
- * to detect a padding slot vs. an actual entry.
- *
- * If a log_group is in the initial state, i.e. hasn't been used since the
- * creation of this BTT layout, it will have three of the four slots with
- * zeroes. We skip over these log_groups for the detection of log_index. If
- * all log_groups are in the initial state (i.e. the BTT has never been
- * written to), it is safe to assume the 'new format' of log entries in slots
- * (0, 1).
- */
+ 
 static int log_set_indices(struct arena_info *arena)
 {
 	bool idx_set = false, initial_state = true;
@@ -639,52 +556,38 @@ static int log_set_indices(struct arena_info *arena)
 					pad_count++;
 					continue;
 				} else {
-					/* Skip if index has been recorded */
+					 
 					if ((next_idx == 1) &&
 						(j == log_index[0]))
 						continue;
-					/* valid entry, record index */
+					 
 					log_index[next_idx] = j;
 					next_idx++;
 				}
 				if (next_idx == 2) {
-					/* two valid entries found */
+					 
 					idx_set = true;
 				} else if (next_idx > 2) {
-					/* too many valid indices */
+					 
 					return -ENXIO;
 				}
 			} else {
-				/*
-				 * once the indices have been set, just verify
-				 * that all subsequent log groups are either in
-				 * their initial state or follow the same
-				 * indices.
-				 */
+				 
 				if (j == log_index[0]) {
-					/* entry must be 'valid' */
+					 
 					if (ent_is_padding(&log.ent[j]))
 						return -ENXIO;
 				} else if (j == log_index[1]) {
 					;
-					/*
-					 * log_index[1] can be padding if the
-					 * lane never got used and it is still
-					 * in the initial state (three 'padding'
-					 * entries)
-					 */
+					 
 				} else {
-					/* entry must be invalid (padding) */
+					 
 					if (!ent_is_padding(&log.ent[j]))
 						return -ENXIO;
 				}
 			}
 		}
-		/*
-		 * If any of the log_groups have more than one valid,
-		 * non-padding entry, then the we are no longer in the
-		 * initial_state
-		 */
+		 
 		if (pad_count < 3)
 			initial_state = false;
 		pad_count = 0;
@@ -693,19 +596,13 @@ static int log_set_indices(struct arena_info *arena)
 	if (!initial_state && !idx_set)
 		return -ENXIO;
 
-	/*
-	 * If all the entries in the log were in the initial state,
-	 * assume new padding scheme
-	 */
+	 
 	if (initial_state)
 		log_index[1] = 1;
 
-	/*
-	 * Only allow the known permutations of log/padding indices,
-	 * i.e. (0, 1), and (0, 2)
-	 */
+	 
 	if ((log_index[0] == 0) && ((log_index[1] == 1) || (log_index[1] == 2)))
-		; /* known index possibilities */
+		;  
 	else {
 		dev_err(to_dev(arena), "Found an unknown padding scheme\n");
 		return -ENXIO;
@@ -771,14 +668,14 @@ static struct arena_info *alloc_arena(struct btt *btt, size_t size,
 	if (available % BTT_PG_SIZE)
 		available -= (available % BTT_PG_SIZE);
 
-	/* Two pages are reserved for the super block and its copy */
+	 
 	available -= 2 * BTT_PG_SIZE;
 
-	/* The log takes a fixed amount of space based on nfree */
+	 
 	logsize = roundup(arena->nfree * LOG_GRP_SIZE, BTT_PG_SIZE);
 	available -= logsize;
 
-	/* Calculate optimal split between map and data area */
+	 
 	arena->internal_nlba = div_u64(available - BTT_PG_SIZE,
 			arena->internal_lbasize + MAP_ENT_SIZE);
 	arena->external_nlba = arena->internal_nlba - arena->nfree;
@@ -786,14 +683,14 @@ static struct arena_info *alloc_arena(struct btt *btt, size_t size,
 	mapsize = roundup((arena->external_nlba * MAP_ENT_SIZE), BTT_PG_SIZE);
 	datasize = available - mapsize;
 
-	/* 'Absolute' values, relative to start of storage space */
+	 
 	arena->infooff = arena_off;
 	arena->dataoff = arena->infooff + BTT_PG_SIZE;
 	arena->mapoff = arena->dataoff + datasize;
 	arena->logoff = arena->mapoff + mapsize;
 	arena->info2off = arena->logoff + logsize;
 
-	/* Default log indices are (0,1) */
+	 
 	arena->log_index[0] = 0;
 	arena->log_index[1] = 1;
 	return arena;
@@ -813,10 +710,7 @@ static void free_arenas(struct btt *btt)
 	}
 }
 
-/*
- * This function reads an existing valid btt superblock and
- * populates the corresponding arena_info struct
- */
+ 
 static void parse_arena_meta(struct arena_info *arena, struct btt_sb *super,
 				u64 arena_off)
 {
@@ -858,7 +752,7 @@ static int discover_arenas(struct btt *btt)
 		return -ENOMEM;
 
 	while (remaining) {
-		/* Alloc memory for arena */
+		 
 		arena = alloc_arena(btt, 0, 0, 0);
 		if (!arena) {
 			ret = -ENOMEM;
@@ -960,12 +854,7 @@ static int create_arenas(struct btt *btt)
 	return 0;
 }
 
-/*
- * This function completes arena initialization by writing
- * all the metadata.
- * It is only called for an uninitialized arena when a write
- * to that arena occurs for the first time.
- */
+ 
 static int btt_arena_write_layout(struct arena_info *arena)
 {
 	int ret;
@@ -999,10 +888,7 @@ static int btt_arena_write_layout(struct arena_info *arena)
 	super->nfree = cpu_to_le32(arena->nfree);
 	super->infosize = cpu_to_le32(sizeof(struct btt_sb));
 	super->nextoff = cpu_to_le64(arena->nextoff);
-	/*
-	 * Subtract arena->infooff (arena start) so numbers are relative
-	 * to 'this' arena
-	 */
+	 
 	super->dataoff = cpu_to_le64(arena->dataoff - arena->infooff);
 	super->mapoff = cpu_to_le64(arena->mapoff - arena->infooff);
 	super->logoff = cpu_to_le64(arena->logoff - arena->infooff);
@@ -1018,10 +904,7 @@ static int btt_arena_write_layout(struct arena_info *arena)
 	return ret;
 }
 
-/*
- * This function completes the initialization for the BTT namespace
- * such that it is ready to accept IOs
- */
+ 
 static int btt_meta_init(struct btt *btt)
 {
 	int ret = 0;
@@ -1058,13 +941,7 @@ static u32 btt_meta_size(struct btt *btt)
 	return btt->lbasize - btt->sector_size;
 }
 
-/*
- * This function calculates the arena in which the given LBA lies
- * by doing a linear walk. This is acceptable since we expect only
- * a few arenas. If we have backing devices that get much larger,
- * we can construct a balanced binary tree of arenas at init time
- * so that this range search becomes faster.
- */
+ 
 static int lba_to_arena(struct btt *btt, sector_t sector, __u32 *premap,
 				struct arena_info **arena)
 {
@@ -1083,10 +960,7 @@ static int lba_to_arena(struct btt *btt, sector_t sector, __u32 *premap,
 	return -EIO;
 }
 
-/*
- * The following (lock_map, unlock_map) are mostly just to improve
- * readability, since they index into an array of locks
- */
+ 
 static void lock_map(struct arena_info *arena, u32 premap)
 		__acquires(&arena->map_locks[idx].lock)
 {
@@ -1156,11 +1030,7 @@ static int btt_rw_integrity(struct btt *btt, struct bio_integrity_payload *bip,
 		void *mem;
 
 		bv = bvec_iter_bvec(bip->bip_vec, bip->bip_iter);
-		/*
-		 * The 'bv' obtained from bvec_iter_bvec has its .bv_len and
-		 * .bv_offset already adjusted for iter->bi_bvec_done, and we
-		 * can use those directly
-		 */
+		 
 
 		cur_len = min(len, bv.bv_len);
 		mem = bvec_kmap_local(&bv);
@@ -1184,7 +1054,7 @@ static int btt_rw_integrity(struct btt *btt, struct bio_integrity_payload *bip,
 	return ret;
 }
 
-#else /* CONFIG_BLK_DEV_INTEGRITY */
+#else  
 static int btt_rw_integrity(struct btt *btt, struct bio_integrity_payload *bip,
 			struct arena_info *arena, u32 postmap, int rw)
 {
@@ -1217,11 +1087,7 @@ static int btt_read_pg(struct btt *btt, struct bio_integrity_payload *bip,
 		if (ret)
 			goto out_lane;
 
-		/*
-		 * We loop to make sure that the post map LBA didn't change
-		 * from under us between writing the RTT and doing the actual
-		 * read.
-		 */
+		 
 		while (1) {
 			u32 new_map;
 			int new_t, new_e;
@@ -1237,10 +1103,7 @@ static int btt_read_pg(struct btt *btt, struct bio_integrity_payload *bip,
 			}
 
 			arena->rtt[lane] = RTT_VALID | postmap;
-			/*
-			 * Barrier to make sure this write is not reordered
-			 * to do the verification map_read before the RTT store
-			 */
+			 
 			barrier();
 
 			ret = btt_map_read(arena, premap, &new_map, &new_t,
@@ -1259,7 +1122,7 @@ static int btt_read_pg(struct btt *btt, struct bio_integrity_payload *bip,
 
 		ret = btt_data_read(arena, page, off, postmap, cur_len);
 		if (ret) {
-			/* Media error - set the e_flag */
+			 
 			if (btt_map_write(arena, premap, postmap, 0, 1, NVDIMM_IO_ATOMIC))
 				dev_warn_ratelimited(to_dev(arena),
 					"Error persistently tracking bad blocks at %#x\n",
@@ -1290,11 +1153,7 @@ static int btt_read_pg(struct btt *btt, struct bio_integrity_payload *bip,
 	return ret;
 }
 
-/*
- * Normally, arena_{read,write}_bytes will take care of the initial offset
- * adjustment, but in the case of btt_is_badblock, where we query is_bad_pmem,
- * we need the final, raw namespace offset here
- */
+ 
 static bool btt_is_badblock(struct btt *btt, struct arena_info *arena,
 		u32 postmap)
 {
@@ -1343,13 +1202,13 @@ static int btt_write_pg(struct btt *btt, struct bio_integrity_payload *bip,
 			if (ret)
 				return ret;
 
-			/* OK to acquire a different lane/free block */
+			 
 			goto retry;
 		}
 
 		new_postmap = arena->freelist[lane].block;
 
-		/* Wait if the new block is being read from */
+		 
 		for (i = 0; i < arena->nfree; i++)
 			while (arena->rtt[i] == (RTT_VALID | new_postmap))
 				cpu_relax();
@@ -1484,7 +1343,7 @@ static void btt_submit_bio(struct bio *bio)
 
 static int btt_getgeo(struct block_device *bd, struct hd_geometry *geo)
 {
-	/* some standard values */
+	 
 	geo->heads = 1 << 6;
 	geo->sectors = 1 << 5;
 	geo->cylinders = get_capacity(bd->bd_disk) >> 11;
@@ -1544,23 +1403,7 @@ static void btt_blk_cleanup(struct btt *btt)
 	put_disk(btt->btt_disk);
 }
 
-/**
- * btt_init - initialize a block translation table for the given device
- * @nd_btt:	device with BTT geometry and backing device info
- * @rawsize:	raw size in bytes of the backing device
- * @lbasize:	lba size of the backing device
- * @uuid:	A uuid for the backing device - this is stored on media
- * @maxlane:	maximum number of parallel requests the device can handle
- *
- * Initialize a Block Translation Table on a backing device to provide
- * single sector power fail atomicity.
- *
- * Context:
- * Might sleep.
- *
- * Returns:
- * Pointer to a new struct btt on success, NULL on failure.
- */
+ 
 static struct btt *btt_init(struct nd_btt *nd_btt, unsigned long long rawsize,
 			    u32 lbasize, uuid_t *uuid,
 			    struct nd_region *nd_region)
@@ -1624,15 +1467,7 @@ static struct btt *btt_init(struct nd_btt *nd_btt, unsigned long long rawsize,
 	return btt;
 }
 
-/**
- * btt_fini - de-initialize a BTT
- * @btt:	the BTT handle that was generated by btt_init
- *
- * De-initialize a Block Translation Table on device removal
- *
- * Context:
- * Might sleep.
- */
+ 
 static void btt_fini(struct btt *btt)
 {
 	if (btt) {
@@ -1665,12 +1500,7 @@ int nvdimm_namespace_attach_btt(struct nd_namespace_common *ndns)
 	if (rc)
 		return rc;
 
-	/*
-	 * If this returns < 0, that is ok as it just means there wasn't
-	 * an existing BTT, and we're creating a new one. We still need to
-	 * call this as we need the version dependent fields in nd_btt to be
-	 * set correctly based on the holder class
-	 */
+	 
 	nd_btt_version(nd_btt, ndns, btt_sb);
 
 	rawsize = size - nd_btt->initial_offset;

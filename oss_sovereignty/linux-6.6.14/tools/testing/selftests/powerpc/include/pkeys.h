@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright 2020, Sandipan Das, IBM Corp.
- */
+ 
+ 
 
 #ifndef _SELFTESTS_POWERPC_PKEYS_H
 #define _SELFTESTS_POWERPC_PKEYS_H
@@ -11,10 +9,7 @@
 #include "reg.h"
 #include "utils.h"
 
-/*
- * Older versions of libc use the Intel-specific access rights.
- * Hence, override the definitions as they might be incorrect.
- */
+ 
 #undef PKEY_DISABLE_ACCESS
 #define PKEY_DISABLE_ACCESS	0x3
 
@@ -24,7 +19,7 @@
 #undef PKEY_DISABLE_EXECUTE
 #define PKEY_DISABLE_EXECUTE	0x4
 
-/* Older versions of libc do not define this */
+ 
 #ifndef SEGV_PKUERR
 #define SEGV_PKUERR	4
 #endif
@@ -80,11 +75,11 @@ int pkeys_unsupported(void)
 	bool hash_mmu = false;
 	int pkey;
 
-	/* Protection keys are currently supported on Hash MMU only */
+	 
 	FAIL_IF(using_hash_mmu(&hash_mmu));
 	SKIP_IF(!hash_mmu);
 
-	/* Check if the system call is supported */
+	 
 	pkey = sys_pkey_alloc(0, 0);
 	SKIP_IF(pkey < 0);
 	sys_pkey_free(pkey);
@@ -94,10 +89,7 @@ int pkeys_unsupported(void)
 
 int siginfo_pkey(siginfo_t *si)
 {
-	/*
-	 * In older versions of libc, siginfo_t does not have si_pkey as
-	 * a member.
-	 */
+	 
 #ifdef si_pkey
 	return si->si_pkey;
 #else
@@ -133,4 +125,4 @@ unsigned long next_pkey_rights(unsigned long rights)
 	return rights;
 }
 
-#endif /* _SELFTESTS_POWERPC_PKEYS_H */
+#endif  

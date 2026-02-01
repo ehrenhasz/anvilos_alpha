@@ -1,20 +1,4 @@
-/* Test of file timestamp modification functions.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* This file defines some prerequisites useful to utime-related tests.  */
+ 
 
 #ifndef GL_TEST_UTIMENS_COMMON
 # define GL_TEST_UTIMENS_COMMON
@@ -25,21 +9,20 @@
 # include <sys/stat.h>
 # include <unistd.h>
 
-/* Gnulib modules.  */
+ 
 # include "stat-time.h"
 # include "timespec.h"
 # include "utimecmp.h"
 
-/* Gnulib test header.  */
+ 
 # include "nap.h"
 
 enum {
   BILLION = 1000 * 1000 * 1000,
 
-  Y2K = 946684800, /* Jan 1, 2000, in seconds since epoch.  */
+  Y2K = 946684800,  
 
-  /* Bogus positive and negative tv_nsec values closest to valid
-     range, but without colliding with UTIME_NOW or UTIME_OMIT.  */
+   
   UTIME_BOGUS_POS = BILLION + ((UTIME_NOW == BILLION || UTIME_OMIT == BILLION)
                                ? (1 + (UTIME_NOW == BILLION + 1)
                                   + (UTIME_OMIT == BILLION + 1))
@@ -50,20 +33,13 @@ enum {
 };
 
 # if defined _WIN32 && !defined __CYGWIN__
-/* Skip ctime tests on native Windows, since it is either a copy of
-   mtime or birth time (depending on the file system), rather than a
-   properly tracked change time.  See
-   <https://docs.microsoft.com/en-us/cpp/c-runtime-library/reference/stat-functions>.  */
-#  define check_ctime 0
-# elif defined __APPLE__ && defined __MACH__
-/* On macOS, the ctime is not updated when only the st_atime changes.  */
+ 
 #  define check_ctime -1
 # else
 #  define check_ctime 1
 # endif
 
-/* Compare two st_ctime values.  Return -1, 0 or 1, respectively
-   when A's st_ctime is smaller than, equal to or greater than B's.  */
+ 
 static int
 ctime_compare (struct stat const *a, struct stat const *b)
 {
@@ -79,4 +55,4 @@ ctime_compare (struct stat const *a, struct stat const *b)
     return 0;
 }
 
-#endif /* GL_TEST_UTIMENS_COMMON */
+#endif  

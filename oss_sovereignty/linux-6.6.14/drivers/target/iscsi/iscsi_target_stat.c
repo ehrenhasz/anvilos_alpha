@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Modern ConfigFS group context specific iSCSI statistics based on original
- * iscsi_target_mib.c code
- *
- * Copyright (c) 2011-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/configfs.h>
 #include <linux/export.h>
@@ -25,7 +17,7 @@
 #define INITIAL_JIFFIES ((unsigned long)(unsigned int) (-300*HZ))
 #endif
 
-/* Instance Attributes Table */
+ 
 #define ISCSI_INST_NUM_NODES		1
 #define ISCSI_INST_DESCR		"Storage Engine Target"
 #define ISCSI_DISCONTINUITY_TIME	0
@@ -34,12 +26,8 @@
 
 #define ISPRINT(a)   ((a >= ' ') && (a <= '~'))
 
-/****************************************************************************
- * iSCSI MIB Tables
- ****************************************************************************/
-/*
- * Instance Attributes Table
- */
+ 
+ 
 static struct iscsi_tiqn *iscsi_instance_tiqn(struct config_item *item)
 {
 	struct iscsi_wwn_stat_grps *igrps = container_of(to_config_group(item),
@@ -183,9 +171,7 @@ const struct config_item_type iscsi_stat_instance_cit = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/*
- * Instance Session Failure Stats Table
- */
+ 
 static struct iscsi_tiqn *iscsi_sess_err_tiqn(struct config_item *item)
 {
 	struct iscsi_wwn_stat_grps *igrps = container_of(to_config_group(item),
@@ -245,9 +231,7 @@ const struct config_item_type iscsi_stat_sess_err_cit = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/*
- * Target Attributes Table
- */
+ 
 static struct iscsi_tiqn *iscsi_tgt_attr_tiqn(struct config_item *item)
 {
 	struct iscsi_wwn_stat_grps *igrps = container_of(to_config_group(item),
@@ -386,9 +370,7 @@ const struct config_item_type iscsi_stat_tgt_attr_cit = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/*
- * Target Login Stats Table
- */
+ 
 static struct iscsi_tiqn *iscsi_login_stat_tiqn(struct config_item *item)
 {
 	struct iscsi_wwn_stat_grps *igrps = container_of(to_config_group(item),
@@ -518,9 +500,7 @@ const struct config_item_type iscsi_stat_login_cit = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/*
- * Target Logout Stats Table
- */
+ 
 static struct iscsi_tiqn *iscsi_logout_stat_tiqn(struct config_item *item)
 {
 	struct iscsi_wwn_stat_grps *igrps = container_of(to_config_group(item),
@@ -575,9 +555,7 @@ const struct config_item_type iscsi_stat_logout_cit = {
 	.ct_owner		= THIS_MODULE,
 };
 
-/*
- * Session Stats Table
- */
+ 
 static struct iscsi_node_acl *iscsi_stat_nacl(struct config_item *item)
 {
 	struct iscsi_node_stat_grps *igrps = container_of(to_config_group(item),

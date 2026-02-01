@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/* Copyright(c) 2020 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/delay.h>
 #include <linux/init.h>
@@ -50,10 +50,7 @@ static int gen4_poll_link(struct intel_ntb_dev *ndev)
 {
 	u16 reg_val;
 
-	/*
-	 * We need to write to DLLSCS bit in the SLOTSTS before we
-	 * can clear the hardware link interrupt on ICX NTB.
-	 */
+	 
 	iowrite16(GEN4_SLOTSTS_DLLSCS, ndev->self_mmio + GEN4_SLOTSTS);
 	ndev->reg->db_iowrite(ndev->db_link_mask,
 			      ndev->self_mmio +
@@ -77,13 +74,7 @@ static int gen4_init_isr(struct intel_ntb_dev *ndev)
 {
 	int i;
 
-	/*
-	 * The MSIX vectors and the interrupt status bits are not lined up
-	 * on Gen3 (Skylake) and Gen4. By default the link status bit is bit
-	 * 32, however it is by default MSIX vector0. We need to fixup to
-	 * line them up. The vectors at reset is 1-32,0. We need to reprogram
-	 * to 0-32.
-	 */
+	 
 	for (i = 0; i < GEN4_DB_MSIX_VECTOR_COUNT; i++)
 		iowrite8(i, ndev->self_mmio + GEN4_INTVEC_OFFSET + i);
 
@@ -104,7 +95,7 @@ static int gen4_setup_b2b_mw(struct intel_ntb_dev *ndev,
 	pdev = ndev->ntb.pdev;
 	mmio = ndev->self_mmio;
 
-	/* setup incoming bar limits == base addrs (zero length windows) */
+	 
 	bar_addr = addr->bar2_addr64;
 	iowrite64(bar_addr, mmio + GEN4_IM23XLMT_OFFSET);
 	bar_addr = ioread64(mmio + GEN4_IM23XLMT_OFFSET);
@@ -115,7 +106,7 @@ static int gen4_setup_b2b_mw(struct intel_ntb_dev *ndev,
 	bar_addr = ioread64(mmio + GEN4_IM45XLMT_OFFSET);
 	dev_dbg(&pdev->dev, "IM45XLMT %#018llx\n", bar_addr);
 
-	/* zero incoming translation addrs */
+	 
 	iowrite64(0, mmio + GEN4_IM23XBASE_OFFSET);
 	iowrite64(0, mmio + GEN4_IM45XBASE_OFFSET);
 
@@ -183,7 +174,7 @@ static enum ntb_topo spr_ppd_topo(struct intel_ntb_dev *ndev, u32 ppd)
 int gen4_init_dev(struct intel_ntb_dev *ndev)
 {
 	struct pci_dev *pdev = ndev->ntb.pdev;
-	u32 ppd1/*, ppd0*/;
+	u32 ppd1 ;
 	u16 lnkctl;
 	int rc;
 
@@ -208,7 +199,7 @@ int gen4_init_dev(struct intel_ntb_dev *ndev)
 	if (rc)
 		return rc;
 
-	/* init link setup */
+	 
 	lnkctl = ioread16(ndev->self_mmio + GEN4_LINK_CTRL_OFFSET);
 	lnkctl |= GEN4_LINK_CTRL_LINK_DISABLE;
 	iowrite16(lnkctl, ndev->self_mmio + GEN4_LINK_CTRL_OFFSET);
@@ -363,7 +354,7 @@ static int intel_ntb4_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 		mw_size = bar_size;
 
 	if (ndev->hwerr_flags & NTB_HWERR_BAR_ALIGN) {
-		/* hardware requires that addr is aligned to bar size */
+		 
 		if (addr & (bar_size - 1))
 			return -EINVAL;
 	} else {
@@ -371,7 +362,7 @@ static int intel_ntb4_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 			return -EINVAL;
 	}
 
-	/* make sure the range fits in the usable mw size */
+	 
 	if (size > mw_size)
 		return -EINVAL;
 
@@ -380,7 +371,7 @@ static int intel_ntb4_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 	limit_reg = ndev->xlat_reg->bar2_limit + (idx * 0x10);
 	base = pci_resource_start(ndev->ntb.pdev, bar);
 
-	/* Set the limit if supported, if size is not mw_size */
+	 
 	if (limit_reg && size != mw_size) {
 		limit = base + size;
 		base_idx = __ilog2_u64(size);
@@ -390,7 +381,7 @@ static int intel_ntb4_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 	}
 
 
-	/* set and verify setting the translation address */
+	 
 	iowrite64(addr, mmio + xlat_reg);
 	reg_val = ioread64(mmio + xlat_reg);
 	if (reg_val != addr) {
@@ -400,7 +391,7 @@ static int intel_ntb4_mw_set_trans(struct ntb_dev *ntb, int pidx, int idx,
 
 	dev_dbg(&ntb->pdev->dev, "BAR %d IMXBASE: %#Lx\n", bar, reg_val);
 
-	/* set and verify setting the limit */
+	 
 	iowrite64(limit, mmio + limit_reg);
 	reg_val = ioread64(mmio + limit_reg);
 	if (reg_val != limit) {
@@ -451,19 +442,19 @@ static int intel_ntb4_link_enable(struct ntb_dev *ntb,
 	if (!(ndev->hwerr_flags & NTB_HWERR_LTR_BAD)) {
 		u32 ltr;
 
-		/* Setup active snoop LTR values */
+		 
 		ltr = NTB_LTR_ACTIVE_REQMNT | NTB_LTR_ACTIVE_VAL | NTB_LTR_ACTIVE_LATSCALE;
-		/* Setup active non-snoop values */
+		 
 		ltr = (ltr << NTB_LTR_NS_SHIFT) | ltr;
 		iowrite32(ltr, ndev->self_mmio + GEN4_LTR_ACTIVE_OFFSET);
 
-		/* Setup idle snoop LTR values */
+		 
 		ltr = NTB_LTR_IDLE_VAL | NTB_LTR_IDLE_LATSCALE | NTB_LTR_IDLE_REQMNT;
-		/* Setup idle non-snoop values */
+		 
 		ltr = (ltr << NTB_LTR_NS_SHIFT) | ltr;
 		iowrite32(ltr, ndev->self_mmio + GEN4_LTR_IDLE_OFFSET);
 
-		/* setup PCIe LTR to active */
+		 
 		iowrite8(NTB_LTR_SWSEL_ACTIVE, ndev->self_mmio + GEN4_LTR_SWSEL_OFFSET);
 	}
 
@@ -475,12 +466,12 @@ static int intel_ntb4_link_enable(struct ntb_dev *ntb,
 	lnkctl &= ~GEN4_LINK_CTRL_LINK_DISABLE;
 	iowrite16(lnkctl, ndev->self_mmio + GEN4_LINK_CTRL_OFFSET);
 
-	/* start link training in PPD0 */
+	 
 	ppd0 = ioread32(ndev->self_mmio + GEN4_PPD0_OFFSET);
 	ppd0 |= GEN4_PPD_LINKTRN;
 	iowrite32(ppd0, ndev->self_mmio + GEN4_PPD0_OFFSET);
 
-	/* make sure link training has started */
+	 
 	ppd0 = ioread32(ndev->self_mmio + GEN4_PPD0_OFFSET);
 	if (!(ppd0 & GEN4_PPD_LINKTRN)) {
 		dev_warn(&ntb->pdev->dev, "Link is not training\n");
@@ -502,7 +493,7 @@ static int intel_ntb4_link_disable(struct ntb_dev *ntb)
 
 	dev_dbg(&ntb->pdev->dev, "Disabling link\n");
 
-	/* clear the snoop bits */
+	 
 	ntb_cntl = ioread32(ndev->self_mmio + ndev->reg->ntb_ctl);
 	ntb_cntl &= ~(NTB_CTL_E2I_BAR23_SNOOP | NTB_CTL_I2E_BAR23_SNOOP);
 	ntb_cntl &= ~(NTB_CTL_E2I_BAR45_SNOOP | NTB_CTL_I2E_BAR45_SNOOP);
@@ -512,7 +503,7 @@ static int intel_ntb4_link_disable(struct ntb_dev *ntb)
 	lnkctl |= GEN4_LINK_CTRL_LINK_DISABLE;
 	iowrite16(lnkctl, ndev->self_mmio + GEN4_LINK_CTRL_OFFSET);
 
-	/* set LTR to idle */
+	 
 	if (!(ndev->hwerr_flags & NTB_HWERR_LTR_BAD))
 		iowrite8(NTB_LTR_SWSEL_IDLE, ndev->self_mmio + GEN4_LTR_SWSEL_OFFSET);
 

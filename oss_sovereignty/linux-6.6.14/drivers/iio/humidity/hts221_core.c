@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics hts221 sensor driver
- *
- * Copyright 2016 STMicroelectronics Inc.
- *
- * Lorenzo Bianconi <lorenzo.bianconi@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,7 +23,7 @@
 #define HTS221_BDU_MASK			BIT(2)
 #define HTS221_ENABLE_MASK		BIT(7)
 
-/* calibration registers */
+ 
 #define HTS221_REG_0RH_CAL_X_H		0x36
 #define HTS221_REG_1RH_CAL_X_H		0x3a
 #define HTS221_REG_0RH_CAL_Y_H		0x30
@@ -53,9 +47,9 @@ struct hts221_avg {
 };
 
 static const struct hts221_odr hts221_odr_table[] = {
-	{  1, 0x01 },	/* 1Hz */
-	{  7, 0x02 },	/* 7Hz */
-	{ 13, 0x03 },	/* 12.5Hz */
+	{  1, 0x01 },	 
+	{  7, 0x02 },	 
+	{ 13, 0x03 },	 
 };
 
 static const struct hts221_avg hts221_avg_list[] = {
@@ -63,28 +57,28 @@ static const struct hts221_avg hts221_avg_list[] = {
 		.addr = 0x10,
 		.mask = 0x07,
 		.avg_avl = {
-			4, /* 0.4 %RH */
-			8, /* 0.3 %RH */
-			16, /* 0.2 %RH */
-			32, /* 0.15 %RH */
-			64, /* 0.1 %RH */
-			128, /* 0.07 %RH */
-			256, /* 0.05 %RH */
-			512, /* 0.03 %RH */
+			4,  
+			8,  
+			16,  
+			32,  
+			64,  
+			128,  
+			256,  
+			512,  
 		},
 	},
 	{
 		.addr = 0x10,
 		.mask = 0x38,
 		.avg_avl = {
-			2, /* 0.08 degC */
-			4, /* 0.05 degC */
-			8, /* 0.04 degC */
-			16, /* 0.03 degC */
-			32, /* 0.02 degC */
-			64, /* 0.015 degC */
-			128, /* 0.01 degC */
-			256, /* 0.007 degC */
+			2,  
+			4,  
+			8,  
+			16,  
+			32,  
+			64,  
+			128,  
+			256,  
 		},
 	},
 };
@@ -596,7 +590,7 @@ int hts221_probe(struct device *dev, int irq, const char *name,
 	iio_dev->name = HTS221_DEV_NAME;
 	iio_dev->info = &hts221_info;
 
-	/* enable Block Data Update */
+	 
 	err = regmap_update_bits(hw->regmap, HTS221_REG_CNTRL1_ADDR,
 				 HTS221_BDU_MASK,
 				 FIELD_PREP(HTS221_BDU_MASK, 1));
@@ -607,7 +601,7 @@ int hts221_probe(struct device *dev, int irq, const char *name,
 	if (err < 0)
 		return err;
 
-	/* configure humidity sensor */
+	 
 	err = hts221_parse_rh_caldata(hw);
 	if (err < 0) {
 		dev_err(hw->dev, "failed to get rh calibration data\n");
@@ -621,7 +615,7 @@ int hts221_probe(struct device *dev, int irq, const char *name,
 		return err;
 	}
 
-	/* configure temperature sensor */
+	 
 	err = hts221_parse_temp_caldata(hw);
 	if (err < 0) {
 		dev_err(hw->dev,

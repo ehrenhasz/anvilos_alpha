@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016, Mellanox Technologies, Ltd.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/ip.h>
 #include <linux/udp.h>
@@ -71,7 +41,7 @@ struct mlx5ehdr {
 };
 
 #ifdef CONFIG_INET
-/* loopback test */
+ 
 #define MLX5E_TEST_PKT_SIZE (sizeof(struct ethhdr) + sizeof(struct iphdr) +\
 			     sizeof(struct udphdr) + sizeof(struct mlx5ehdr))
 #define MLX5E_TEST_MAGIC 0x5AEED15C001ULL
@@ -94,7 +64,7 @@ static struct sk_buff *mlx5e_test_get_udp_skb(struct mlx5e_priv *priv)
 	net_prefetchw(skb->data);
 	skb_reserve(skb, NET_IP_ALIGN);
 
-	/*  Reserve for ethernet and IP header  */
+	 
 	ethh = skb_push(skb, ETH_HLEN);
 	skb_reset_mac_header(skb);
 
@@ -104,18 +74,18 @@ static struct sk_buff *mlx5e_test_get_udp_skb(struct mlx5e_priv *priv)
 	skb_set_transport_header(skb, skb->len);
 	udph = skb_put(skb, sizeof(struct udphdr));
 
-	/* Fill ETH header */
+	 
 	ether_addr_copy(ethh->h_dest, priv->netdev->dev_addr);
 	eth_zero_addr(ethh->h_source);
 	ethh->h_proto = htons(ETH_P_IP);
 
-	/* Fill UDP header */
+	 
 	udph->source = htons(9);
-	udph->dest = htons(9); /* Discard Protocol */
+	udph->dest = htons(9);  
 	udph->len = htons(sizeof(struct mlx5ehdr) + sizeof(struct udphdr));
 	udph->check = 0;
 
-	/* Fill IP header */
+	 
 	iph->ihl = 5;
 	iph->ttl = 32;
 	iph->version = 4;
@@ -130,7 +100,7 @@ static struct sk_buff *mlx5e_test_get_udp_skb(struct mlx5e_priv *priv)
 	iph->id = 0;
 	ip_send_check(iph);
 
-	/* Fill test header and data */
+	 
 	mlxh = skb_put(skb, sizeof(*mlxh));
 	mlxh->version = 0;
 	mlxh->magic = cpu_to_be64(MLX5E_TEST_MAGIC);
@@ -165,7 +135,7 @@ mlx5e_test_loopback_validate(struct sk_buff *skb,
 	struct udphdr *udph;
 	struct iphdr *iph;
 
-	/* We are only going to peek, no need to clone the SKB */
+	 
 	if (MLX5E_TEST_PKT_SIZE - ETH_HLEN > skb_headlen(skb))
 		goto out;
 
@@ -177,16 +147,16 @@ mlx5e_test_loopback_validate(struct sk_buff *skb,
 	if (iph->protocol != IPPROTO_UDP)
 		goto out;
 
-	/* Don't assume skb_transport_header() was set */
+	 
 	udph = (struct udphdr *)((u8 *)iph + 4 * iph->ihl);
 	if (udph->dest != htons(9))
 		goto out;
 
 	mlxh = (struct mlx5ehdr *)((char *)udph + sizeof(*udph));
 	if (mlxh->magic != cpu_to_be64(MLX5E_TEST_MAGIC))
-		goto out; /* so close ! */
+		goto out;  
 
-	/* bingo */
+	 
 	lbtp->loopback_ok = true;
 	complete(&lbtp->comp);
 out:
@@ -199,7 +169,7 @@ static int mlx5e_test_loopback_setup(struct mlx5e_priv *priv,
 {
 	int err = 0;
 
-	/* Temporarily enable local_lb */
+	 
 	err = mlx5_nic_vport_query_local_lb(priv->mdev, &lbtp->local_lb);
 	if (err)
 		return err;

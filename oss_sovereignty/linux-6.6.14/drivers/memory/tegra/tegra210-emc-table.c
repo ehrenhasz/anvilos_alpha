@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/of_reserved_mem.h>
 
@@ -29,7 +27,7 @@ static int tegra210_emc_table_device_init(struct reserved_mem *rmem,
 		count++;
 	}
 
-	/* only the nominal and derated tables are expected */
+	 
 	if (emc->derated) {
 		dev_warn(dev, "excess EMC table '%s'\n", rmem->name);
 		goto out;
@@ -50,7 +48,7 @@ static int tegra210_emc_table_device_init(struct reserved_mem *rmem,
 	}
 
 out:
-	/* keep track of which table this is */
+	 
 	rmem->priv = timings;
 
 	return 0;

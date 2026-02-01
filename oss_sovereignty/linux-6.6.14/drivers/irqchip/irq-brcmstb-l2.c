@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic Broadcom Set Top Box Level 2 Interrupt controller driver
- *
- * Copyright (C) 2014-2017 Broadcom
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME	": " fmt
 
@@ -31,7 +27,7 @@ struct brcmstb_intc_init_params {
 	int cpu_mask_clear;
 };
 
-/* Register offsets in the L2 latched interrupt controller */
+ 
 static const struct brcmstb_intc_init_params l2_edge_intc_init = {
 	.handler		= handle_edge_irq,
 	.cpu_status		= 0x00,
@@ -41,39 +37,27 @@ static const struct brcmstb_intc_init_params l2_edge_intc_init = {
 	.cpu_mask_clear		= 0x14
 };
 
-/* Register offsets in the L2 level interrupt controller */
+ 
 static const struct brcmstb_intc_init_params l2_lvl_intc_init = {
 	.handler		= handle_level_irq,
 	.cpu_status		= 0x00,
-	.cpu_clear		= -1, /* Register not present */
+	.cpu_clear		= -1,  
 	.cpu_mask_status	= 0x04,
 	.cpu_mask_set		= 0x08,
 	.cpu_mask_clear		= 0x0C
 };
 
-/* L2 intc private data structure */
+ 
 struct brcmstb_l2_intc_data {
 	struct irq_domain *domain;
 	struct irq_chip_generic *gc;
 	int status_offset;
 	int mask_offset;
 	bool can_wake;
-	u32 saved_mask; /* for suspend/resume */
+	u32 saved_mask;  
 };
 
-/**
- * brcmstb_l2_mask_and_ack - Mask and ack pending interrupt
- * @d: irq_data
- *
- * Chip has separate enable/disable registers instead of a single mask
- * register and pending interrupt is acknowledged by setting a bit.
- *
- * Note: This function is generic and could easily be added to the
- * generic irqchip implementation if there ever becomes a will to do so.
- * Perhaps with a name like irq_gc_mask_disable_and_ack_set().
- *
- * e.g.: https://patchwork.kernel.org/patch/9831047/
- */
+ 
 static void brcmstb_l2_mask_and_ack(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
@@ -123,11 +107,11 @@ static void brcmstb_l2_intc_suspend(struct irq_data *d)
 	unsigned long flags;
 
 	irq_gc_lock_irqsave(gc, flags);
-	/* Save the current mask */
+	 
 	b->saved_mask = irq_reg_readl(gc, ct->regs.mask);
 
 	if (b->can_wake) {
-		/* Program the wakeup mask */
+		 
 		irq_reg_writel(gc, ~gc->wake_active, ct->regs.disable);
 		irq_reg_writel(gc, gc->wake_active, ct->regs.enable);
 	}
@@ -143,12 +127,12 @@ static void brcmstb_l2_intc_resume(struct irq_data *d)
 
 	irq_gc_lock_irqsave(gc, flags);
 	if (ct->chip.irq_ack) {
-		/* Clear unmasked non-wakeup interrupts */
+		 
 		irq_reg_writel(gc, ~b->saved_mask & ~gc->wake_active,
 				ct->regs.ack);
 	}
 
-	/* Restore the saved mask */
+	 
 	irq_reg_writel(gc, b->saved_mask, ct->regs.disable);
 	irq_reg_writel(gc, ~b->saved_mask, ct->regs.enable);
 	irq_gc_unlock_irqrestore(gc, flags);
@@ -179,10 +163,10 @@ static int __init brcmstb_l2_intc_of_init(struct device_node *np,
 		goto out_free;
 	}
 
-	/* Disable all interrupts by default */
+	 
 	writel(0xffffffff, base + init_params->cpu_mask_set);
 
-	/* Wakeup interrupts may be retained from S5 (cold boot) */
+	 
 	data->can_wake = of_property_read_bool(np, "brcm,irq-can-wake");
 	if (!data->can_wake && (init_params->cpu_clear >= 0))
 		writel(0xffffffff, base + init_params->cpu_clear);
@@ -201,9 +185,7 @@ static int __init brcmstb_l2_intc_of_init(struct device_node *np,
 		goto out_unmap;
 	}
 
-	/* MIPS chips strapped for BE will automagically configure the
-	 * peripheral registers for CPU-native byte order.
-	 */
+	 
 	flags = 0;
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		flags |= IRQ_GC_BE_IO;
@@ -211,7 +193,7 @@ static int __init brcmstb_l2_intc_of_init(struct device_node *np,
 	if (init_params->handler == handle_level_irq)
 		set |= IRQ_LEVEL;
 
-	/* Allocate a single Generic IRQ chip for this node */
+	 
 	ret = irq_alloc_domain_generic_chips(data->domain, 32, 1,
 			np->full_name, init_params->handler, clr, set, flags);
 	if (ret) {
@@ -219,7 +201,7 @@ static int __init brcmstb_l2_intc_of_init(struct device_node *np,
 		goto out_free_domain;
 	}
 
-	/* Set the IRQ chaining logic */
+	 
 	irq_set_chained_handler_and_data(parent_irq,
 					 brcmstb_l2_intc_irq_handle, data);
 
@@ -236,7 +218,7 @@ static int __init brcmstb_l2_intc_of_init(struct device_node *np,
 		ct->chip.irq_ack = irq_gc_ack_set_bit;
 		ct->chip.irq_mask_ack = brcmstb_l2_mask_and_ack;
 	} else {
-		/* No Ack - but still slightly more efficient to define this */
+		 
 		ct->chip.irq_mask_ack = irq_gc_mask_disable_reg;
 	}
 
@@ -252,9 +234,7 @@ static int __init brcmstb_l2_intc_of_init(struct device_node *np,
 	ct->chip.irq_pm_shutdown = brcmstb_l2_intc_suspend;
 
 	if (data->can_wake) {
-		/* This IRQ chip can wake the system, set all child interrupts
-		 * in wake_enabled mask
-		 */
+		 
 		data->gc->wake_enabled = 0xffffffff;
 		ct->chip.irq_set_wake = irq_gc_set_wake;
 		enable_irq_wake(parent_irq);

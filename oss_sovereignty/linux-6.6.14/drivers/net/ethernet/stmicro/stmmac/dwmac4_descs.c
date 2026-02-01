@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This contains the functions to handle the descriptors for DesignWare databook
- * 4.xx.
- *
- * Copyright (C) 2015  STMicroelectronics Ltd
- *
- * Author: Alexandre Torgue <alexandre.torgue@st.com>
- */
+
+ 
 
 #include <linux/stmmac.h>
 #include "common.h"
@@ -22,11 +15,11 @@ static int dwmac4_wrback_get_tx_status(struct stmmac_extra_stats *x,
 
 	tdes3 = le32_to_cpu(p->des3);
 
-	/* Get tx owner first */
+	 
 	if (unlikely(tdes3 & TDES3_OWN))
 		return tx_dma_own;
 
-	/* Verify tx error by looking at the last segment. */
+	 
 	if (likely(!(tdes3 & TDES3_LAST_DESCRIPTOR)))
 		return tx_not_ls;
 
@@ -210,11 +203,11 @@ static void dwmac4_rd_enable_tx_timestamp(struct dma_desc *p)
 
 static int dwmac4_wrback_get_tx_timestamp_status(struct dma_desc *p)
 {
-	/* Context type from W/B descriptor must be zero */
+	 
 	if (le32_to_cpu(p->des3) & TDES3_CONTEXT_TYPE)
 		return 0;
 
-	/* Tx Timestamp Status is 1 so des0 and des1'll have valid values */
+	 
 	if (le32_to_cpu(p->des3) & TDES3_TIMESTAMP_STATUS)
 		return 1;
 
@@ -227,7 +220,7 @@ static inline void dwmac4_get_timestamp(void *desc, u32 ats, u64 *ts)
 	u64 ns;
 
 	ns = le32_to_cpu(p->des0);
-	/* convert high/sec time stamp value to nanosecond */
+	 
 	ns += le32_to_cpu(p->des1) * 1000000000ULL;
 
 	*ts = ns;
@@ -248,14 +241,14 @@ static int dwmac4_rx_check_timestamp(void *desc)
 
 	if (likely(!own && ctxt)) {
 		if ((rdes0 == 0xffffffff) && (rdes1 == 0xffffffff))
-			/* Corrupted value */
+			 
 			ret = -EINVAL;
 		else
-			/* A valid Timestamp is ready to be read */
+			 
 			ret = 0;
 	}
 
-	/* Timestamp not ready */
+	 
 	return ret;
 }
 
@@ -265,12 +258,12 @@ static int dwmac4_wrback_get_rx_timestamp_status(void *desc, void *next_desc,
 	struct dma_desc *p = (struct dma_desc *)desc;
 	int ret = -EINVAL;
 
-	/* Get the status from normal w/b descriptor */
+	 
 	if (likely(le32_to_cpu(p->des3) & RDES3_RDES1_VALID)) {
 		if (likely(le32_to_cpu(p->des1) & RDES1_TIMESTAMP_AVAILABLE)) {
 			int i = 0;
 
-			/* Check if timestamp is OK from context descriptor */
+			 
 			do {
 				ret = dwmac4_rx_check_timestamp(next_desc);
 				if (ret < 0)
@@ -328,15 +321,12 @@ static void dwmac4_rd_prepare_tx_desc(struct dma_desc *p, int is_fs, int len,
 	else
 		tdes3 &= ~TDES3_LAST_DESCRIPTOR;
 
-	/* Finally set the OWN bit. Later the DMA will start! */
+	 
 	if (tx_own)
 		tdes3 |= TDES3_OWN;
 
 	if (is_fs && tx_own)
-		/* When the own bit, for the first frame, has to be set, all
-		 * descriptors for the same frame has to be set before, to
-		 * avoid race condition.
-		 */
+		 
 		dma_wmb();
 
 	p->des3 = cpu_to_le32(tdes3);
@@ -371,15 +361,12 @@ static void dwmac4_rd_prepare_tso_tx_desc(struct dma_desc *p, int is_fs,
 	else
 		tdes3 &= ~TDES3_LAST_DESCRIPTOR;
 
-	/* Finally set the OWN bit. Later the DMA will start! */
+	 
 	if (tx_own)
 		tdes3 |= TDES3_OWN;
 
 	if (is_fs && tx_own)
-		/* When the own bit, for the first frame, has to be set, all
-		 * descriptors for the same frame has to be set before, to
-		 * avoid race condition.
-		 */
+		 
 		dma_wmb();
 
 	p->des3 = cpu_to_le32(tdes3);
@@ -494,7 +481,7 @@ static void dwmac4_set_vlan_tag(struct dma_desc *p, u16 tag, u16 inner_tag,
 	p->des2 = 0;
 	p->des3 = 0;
 
-	/* Inner VLAN */
+	 
 	if (inner_type) {
 		u32 des = inner_tag << TDES2_IVT_SHIFT;
 
@@ -506,7 +493,7 @@ static void dwmac4_set_vlan_tag(struct dma_desc *p, u16 tag, u16 inner_tag,
 		p->des3 = cpu_to_le32(des | TDES3_IVLTV);
 	}
 
-	/* Outer VLAN */
+	 
 	p->des3 |= cpu_to_le32(tag & TDES3_VLAN_TAG);
 	p->des3 |= cpu_to_le32(TDES3_VLTV);
 

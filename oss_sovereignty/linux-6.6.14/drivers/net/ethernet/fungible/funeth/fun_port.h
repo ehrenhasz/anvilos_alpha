@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
+ 
 
 #ifndef _FUN_PORT_H
 #define _FUN_PORT_H
@@ -94,4 +94,4 @@ enum port_mac_fec_stats {
 	PORT_MAC_FEC_STATS_MAX = 0x2,
 };
 
-#endif /* _FUN_PORT_H */
+#endif  

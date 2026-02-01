@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics uvis25 sensor driver
- *
- * Copyright 2017 STMicroelectronics Inc.
- *
- * Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -96,12 +90,7 @@ static int st_uvis25_read_oneshot(struct st_uvis25_hw *hw, u8 addr, int *val)
 
 	msleep(1500);
 
-	/*
-	 * in order to avoid possible race conditions with interrupt
-	 * generation, disable the sensor first and then poll output
-	 * register. That sequence guarantees the interrupt will be reset
-	 * when irq line is unmasked
-	 */
+	 
 	err = st_uvis25_set_enable(hw, false);
 	if (err < 0)
 		return err;
@@ -125,13 +114,7 @@ static int st_uvis25_read_raw(struct iio_dev *iio_dev,
 	case IIO_CHAN_INFO_PROCESSED: {
 		struct st_uvis25_hw *hw = iio_priv(iio_dev);
 
-		/*
-		 * mask irq line during oneshot read since the sensor
-		 * does not export the capability to disable data-ready line
-		 * in the register map and it is enabled by default.
-		 * If the line is unmasked during read_raw() it will be set
-		 * active and never reset since the trigger is disabled
-		 */
+		 
 		if (hw->irq > 0)
 			disable_irq(hw->irq);
 		ret = st_uvis25_read_oneshot(hw, ch->address, val);

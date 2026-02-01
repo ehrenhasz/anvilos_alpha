@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TI TPS380x Supply Voltage Supervisor and Reset Controller Driver
- *
- * Copyright (C) 2022 Pengutronix, Marco Felsch <kernel@pengutronix.de>
- *
- * Based on Simple Reset Controller Driver
- *
- * Copyright (C) 2017 Pengutronix, Philipp Zabel <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -64,7 +56,7 @@ static const struct reset_control_ops reset_tps380x_ops = {
 static int tps380x_reset_of_xlate(struct reset_controller_dev *rcdev,
 				  const struct of_phandle_args *reset_spec)
 {
-	/* No special handling needed, we have only one reset line per device */
+	 
 	return 0;
 }
 
@@ -108,7 +100,7 @@ static const struct tps380x_reset_devdata tps3801_reset_data = {
 
 static const struct of_device_id tps380x_reset_dt_ids[] = {
 	{ .compatible = "ti,tps3801", .data = &tps3801_reset_data },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, tps380x_reset_dt_ids);
 

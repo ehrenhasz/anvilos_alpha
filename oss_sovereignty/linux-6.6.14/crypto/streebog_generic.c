@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+ OR BSD-2-Clause
-/*
- * Streebog hash function as specified by GOST R 34.11-2012 and
- * described at https://tools.ietf.org/html/rfc6986
- *
- * Copyright (c) 2013 Alexey Degtyarev <alexey@renatasystems.org>
- * Copyright (c) 2018 Vitaly Chikunov <vt@altlinux.org>
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the Free
- * Software Foundation; either version 2 of the License, or (at your option)
- * any later version.
- */
+
+ 
 
 #include <crypto/internal/hash.h>
 #include <linux/module.h>
@@ -846,7 +835,7 @@ static const unsigned long long Ax[8][256] = {
 	0x9a494faf67707e71ULL, 0xb3dbd1eca9908293ULL, 0x72d14d3493b2e388ULL,
 	0xd6a30f258c153427ULL
 	}
-}; /* Ax */
+};  
 
 static void streebog_xor(const struct streebog_uint512 *x,
 			 const struct streebog_uint512 *y,
@@ -957,7 +946,7 @@ static void streebog_g(struct streebog_uint512 *h,
 
 	streebog_xlps(h, N, &data);
 
-	/* Starting E() */
+	 
 	Ki = data;
 	streebog_xlps(&Ki, m, &data);
 
@@ -966,7 +955,7 @@ static void streebog_g(struct streebog_uint512 *h,
 
 	streebog_xlps(&Ki, &C[11], &Ki);
 	streebog_xor(&Ki, &data, &data);
-	/* E() done */
+	 
 
 	streebog_xor(&data, h, &data);
 	streebog_xor(&data, m, h);

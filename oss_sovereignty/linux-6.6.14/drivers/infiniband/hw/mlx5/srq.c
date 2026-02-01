@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2013-2018, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <linux/mlx5/qp.h>
 #include <linux/slab.h>
@@ -205,7 +203,7 @@ int mlx5_ib_create_srq(struct ib_srq *ib_srq,
 	    init_attr->srq_type != IB_SRQT_TM)
 		return -EOPNOTSUPP;
 
-	/* Sanity check SRQ size before proceeding */
+	 
 	if (init_attr->attr.max_wr >= max_srq_wqes) {
 		mlx5_ib_dbg(dev, "max_wr %d, cap %d\n",
 			    init_attr->attr.max_wr,
@@ -325,7 +323,7 @@ int mlx5_ib_modify_srq(struct ib_srq *ibsrq, struct ib_srq_attr *attr,
 	struct mlx5_ib_srq *srq = to_msrq(ibsrq);
 	int ret;
 
-	/* We don't support resizing SRQs yet */
+	 
 	if (attr_mask & IB_SRQ_MAX_WR)
 		return -EINVAL;
 
@@ -389,7 +387,7 @@ void mlx5_ib_free_srq_wqe(struct mlx5_ib_srq *srq, int wqe_index)
 {
 	struct mlx5_wqe_srq_next_seg *next;
 
-	/* always called with interrupts disabled. */
+	 
 	spin_lock(&srq->lock);
 
 	next = get_wqe(srq, srq->tail);
@@ -455,9 +453,7 @@ int mlx5_ib_post_srq_recv(struct ib_srq *ibsrq, const struct ib_recv_wr *wr,
 	if (likely(nreq)) {
 		srq->wqe_ctr += nreq;
 
-		/* Make sure that descriptors are written before
-		 * doorbell record.
-		 */
+		 
 		wmb();
 
 		*srq->db.db = cpu_to_be32(srq->wqe_ctr);

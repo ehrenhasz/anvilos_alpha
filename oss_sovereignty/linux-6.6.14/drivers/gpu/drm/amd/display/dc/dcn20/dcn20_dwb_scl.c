@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-17 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "fixed31_32.h"
@@ -673,7 +650,7 @@ static const uint16_t *wbscl_get_filter_coeffs_16p(int taps, struct fixed31_32 r
 	else if (taps == 1)
 		return NULL;
 	else {
-		/* should never happen, bug */
+		 
 		BREAK_TO_DEBUGGER();
 		return NULL;
 	}
@@ -704,13 +681,13 @@ static void wbscl_set_scaler_filter(
 				WBSCL_COEF_RAM_FILTER_TYPE, filter_type);
 
 			REG_SET_4(WBSCL_COEF_RAM_TAP_DATA, 0,
-				/* Even tap coefficient (bits 1:0 fixed to 0) */
+				 
 				WBSCL_COEF_RAM_EVEN_TAP_COEF, even_coef,
-				/* Write/read control for even coefficient */
+				 
 				WBSCL_COEF_RAM_EVEN_TAP_COEF_EN, 1,
-				/* Odd tap coefficient (bits 1:0 fixed to 0) */
+				 
 				WBSCL_COEF_RAM_ODD_TAP_COEF, odd_coef,
-				/* Write/read control for odd coefficient */
+				 
 				WBSCL_COEF_RAM_ODD_TAP_COEF_EN, 1);
 		}
 	}
@@ -738,7 +715,7 @@ bool dwb_program_horz_scalar(struct dcn20_dwbc *dwbc20,
 	struct fixed31_32 tmp_h_init_phase_chroma = dc_fixpt_from_int(0);
 
 
-	/*Calculate ratio*/
+	 
 	struct fixed31_32 tmp_h_ratio_luma = dc_fixpt_from_fraction(
 		src_width, dest_width);
 
@@ -747,14 +724,14 @@ bool dwb_program_horz_scalar(struct dcn20_dwbc *dwbc20,
 	else
 		h_ratio_luma = dc_fixpt_u3d19(tmp_h_ratio_luma) << 5;
 
-	/*Program ratio*/
+	 
 	REG_UPDATE(WBSCL_HORZ_FILTER_SCALE_RATIO, WBSCL_H_SCALE_RATIO, h_ratio_luma);
 
-	/* Program taps*/
+	 
 	REG_UPDATE(WBSCL_TAP_CONTROL, WBSCL_H_NUM_OF_TAPS_Y_RGB, h_taps_luma - 1);
 	REG_UPDATE(WBSCL_TAP_CONTROL, WBSCL_H_NUM_OF_TAPS_CBCR, h_taps_chroma - 1);
 
-	/* Calculate phase*/
+	 
 	tmp_h_init_phase_luma = dc_fixpt_add_int(tmp_h_ratio_luma, h_taps_luma + 1);
 	tmp_h_init_phase_luma = dc_fixpt_div_int(tmp_h_init_phase_luma, 2);
 	tmp_h_init_phase_luma = dc_fixpt_sub_int(tmp_h_init_phase_luma, h_taps_luma);
@@ -773,13 +750,13 @@ bool dwb_program_horz_scalar(struct dcn20_dwbc *dwbc20,
 	h_init_phase_chroma_int = (h_init_phase_chroma >> 19) & 0x1f;
 	h_init_phase_chroma_frac = (h_init_phase_chroma & 0x7ffff) << 5;
 
-	/* Program phase*/
+	 
 	REG_UPDATE(WBSCL_HORZ_FILTER_INIT_Y_RGB, WBSCL_H_INIT_INT_Y_RGB, h_init_phase_luma_int);
 	REG_UPDATE(WBSCL_HORZ_FILTER_INIT_Y_RGB, WBSCL_H_INIT_FRAC_Y_RGB, h_init_phase_luma_frac);
 	REG_UPDATE(WBSCL_HORZ_FILTER_INIT_CBCR, WBSCL_H_INIT_INT_CBCR, h_init_phase_chroma_int);
 	REG_UPDATE(WBSCL_HORZ_FILTER_INIT_CBCR, WBSCL_H_INIT_FRAC_CBCR, h_init_phase_chroma_frac);
 
-	/* Program LUT coefficients*/
+	 
 	filter_h = wbscl_get_filter_coeffs_16p(
 		h_taps_luma, tmp_h_ratio_luma);
 	filter_h_c = wbscl_get_filter_coeffs_16p(
@@ -816,7 +793,7 @@ bool dwb_program_vert_scalar(struct dcn20_dwbc *dwbc20,
 	struct fixed31_32 tmp_v_init_phase_luma = dc_fixpt_from_int(0);
 	struct fixed31_32 tmp_v_init_phase_chroma = dc_fixpt_from_int(0);
 
-	/*Calculate ratio*/
+	 
 	struct fixed31_32 tmp_v_ratio_luma = dc_fixpt_from_fraction(
 		src_height, dest_height);
 
@@ -825,14 +802,14 @@ bool dwb_program_vert_scalar(struct dcn20_dwbc *dwbc20,
 	else
 		v_ratio_luma = dc_fixpt_u3d19(tmp_v_ratio_luma) << 5;
 
-	/*Program ratio*/
+	 
 	REG_UPDATE(WBSCL_VERT_FILTER_SCALE_RATIO, WBSCL_V_SCALE_RATIO, v_ratio_luma);
 
-	/* Program taps*/
+	 
 	REG_UPDATE(WBSCL_TAP_CONTROL, WBSCL_V_NUM_OF_TAPS_Y_RGB, v_taps_luma - 1);
 	REG_UPDATE(WBSCL_TAP_CONTROL, WBSCL_V_NUM_OF_TAPS_CBCR, v_taps_chroma - 1);
 
-	/* Calculate phase*/
+	 
 	tmp_v_init_phase_luma = dc_fixpt_add_int(tmp_v_ratio_luma, v_taps_luma + 1);
 	tmp_v_init_phase_luma = dc_fixpt_div_int(tmp_v_init_phase_luma, 2);
 	tmp_v_init_phase_luma = dc_fixpt_sub_int(tmp_v_init_phase_luma, v_taps_luma);
@@ -852,14 +829,14 @@ bool dwb_program_vert_scalar(struct dcn20_dwbc *dwbc20,
 	v_init_phase_chroma_int = (v_init_phase_chroma >> 19) & 0x1f;
 	v_init_phase_chroma_frac = (v_init_phase_chroma & 0x7ffff) << 5;
 
-	/* Program phase*/
+	 
 	REG_UPDATE(WBSCL_VERT_FILTER_INIT_Y_RGB, WBSCL_V_INIT_INT_Y_RGB, v_init_phase_luma_int);
 	REG_UPDATE(WBSCL_VERT_FILTER_INIT_Y_RGB, WBSCL_V_INIT_FRAC_Y_RGB, v_init_phase_luma_frac);
 	REG_UPDATE(WBSCL_VERT_FILTER_INIT_CBCR, WBSCL_V_INIT_INT_CBCR, v_init_phase_chroma_int);
 	REG_UPDATE(WBSCL_VERT_FILTER_INIT_CBCR, WBSCL_V_INIT_FRAC_CBCR, v_init_phase_chroma_frac);
 
 
-	/* Program LUT coefficients*/
+	 
 	filter_v  = wbscl_get_filter_coeffs_16p(
 		v_taps_luma, tmp_v_ratio_luma);
 	filter_v_c = wbscl_get_filter_coeffs_16p(

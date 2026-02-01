@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "gf100.h"
 #include "ctxgf100.h"
 
@@ -106,15 +86,15 @@ static int
 gv100_gr_scg_estimate_perf(struct gf100_gr *gr, unsigned long *gpc_tpc_mask,
 			   u32 disable_gpc, u32 disable_tpc, int *perf)
 {
-	const u32 scale_factor = 512UL;		/* Use fx23.9 */
-	const u32 pix_scale = 1024*1024UL;	/* Pix perf in [29:20] */
-	const u32 world_scale = 1024UL;		/* World performance in [19:10] */
-	const u32 tpc_scale = 1;		/* TPC balancing in [9:0] */
+	const u32 scale_factor = 512UL;		 
+	const u32 pix_scale = 1024*1024UL;	 
+	const u32 world_scale = 1024UL;		 
+	const u32 tpc_scale = 1;		 
 	u32 scg_num_pes = 0;
-	u32 min_scg_gpc_pix_perf = scale_factor; /* Init perf as maximum */
-	u32 average_tpcs = 0; /* Average of # of TPCs per GPC */
-	u32 deviation; /* absolute diff between TPC# and average_tpcs, averaged across GPCs */
-	u32 norm_tpc_deviation;	/* deviation/max_tpc_per_gpc */
+	u32 min_scg_gpc_pix_perf = scale_factor;  
+	u32 average_tpcs = 0;  
+	u32 deviation;  
+	u32 norm_tpc_deviation;	 
 	u32 tpc_balance;
 	u32 scg_gpc_pix_perf;
 	u32 scg_world_perf;
@@ -131,39 +111,35 @@ gv100_gr_scg_estimate_perf(struct gf100_gr *gr, unsigned long *gpc_tpc_mask,
 	if (!(num_tpc_gpc = kcalloc(gr->gpc_nr, sizeof(*num_tpc_gpc), GFP_KERNEL)))
 		return -ENOMEM;
 
-	/* Calculate pix-perf-reduction-rate per GPC and find bottleneck TPC */
+	 
 	for (gpc = 0; gpc < gr->gpc_nr; gpc++) {
 		num_tpc_mask = gpc_tpc_mask[gpc];
 
 		if ((gpc == disable_gpc) && num_tpc_mask & BIT(disable_tpc)) {
-			/* Safety check if a TPC is removed twice */
+			 
 			if (WARN_ON(tpc_removed_gpc))
 				goto done;
 
-			/* Remove logical TPC from set */
+			 
 			num_tpc_mask &= ~BIT(disable_tpc);
 			tpc_removed_gpc = true;
 		}
 
-		/* track balancing of tpcs across gpcs */
+		 
 		num_tpc_gpc[gpc] = hweight32(num_tpc_mask);
 		average_tpcs += num_tpc_gpc[gpc];
 
-		/* save the maximum numer of gpcs */
+		 
 		max_tpc_gpc = num_tpc_gpc[gpc] > max_tpc_gpc ? num_tpc_gpc[gpc] : max_tpc_gpc;
 
-		/*
-		 * Calculate ratio between TPC count and post-FS and post-SCG
-		 *
-		 * ratio represents relative throughput of the GPC
-		 */
+		 
 		scg_gpc_pix_perf = scale_factor * num_tpc_gpc[gpc] / gr->tpc_nr[gpc];
 		if (min_scg_gpc_pix_perf > scg_gpc_pix_perf)
 			min_scg_gpc_pix_perf = scg_gpc_pix_perf;
 
-		/* Calculate # of surviving PES */
+		 
 		for (pes = 0; pes < gr->ppc_nr[gpc]; pes++) {
-			/* Count the number of TPC on the set */
+			 
 			num_tpc_mask = gr->ppc_tpc_mask[gpc][pes] & gpc_tpc_mask[gpc];
 
 			if ((gpc == disable_gpc) && (num_tpc_mask & BIT(disable_tpc))) {
@@ -187,7 +163,7 @@ gv100_gr_scg_estimate_perf(struct gf100_gr *gr, unsigned long *gpc_tpc_mask,
 		goto done_ok;
 	}
 
-	/* Now calculate perf */
+	 
 	scg_world_perf = (scale_factor * scg_num_pes) / gr->ppc_total;
 	deviation = 0;
 	average_tpcs = scale_factor * average_tpcs / gr->gpc_nr;
@@ -251,7 +227,7 @@ gv100_gr_oneinit_sm_id(struct gf100_gr *gr)
 				if (ret)
 					goto done;
 
-				/* nvgpu does ">=" here, but this gets us RM's numbers. */
+				 
 				if (perf > maxperf) {
 					maxperf = perf;
 					gpc_table[gtpc] = gpc;
@@ -263,7 +239,7 @@ gv100_gr_oneinit_sm_id(struct gf100_gr *gr)
 		gpc_tpc_mask[gpc_table[gtpc]] &= ~BIT(tpc_table[gtpc]);
 	}
 
-	/*TODO: build table for sm_per_tpc != 1, don't use yet, but might need later? */
+	 
 	for (gtpc = 0; gtpc < gr->tpc_total; gtpc++) {
 		gr->sm[gtpc].gpc = gpc_table[gtpc];
 		gr->sm[gtpc].tpc = tpc_table[gtpc];

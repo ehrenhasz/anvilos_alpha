@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for OmniVision OV2722 1080p HD camera sensor.
- *
- * Copyright (c) 2013 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -35,7 +21,7 @@
 
 #include "ov2722.h"
 
-/* i2c read/write stuff */
+ 
 static int ov2722_read_reg(struct i2c_client *client,
 			   u16 data_length, u16 reg, u16 *val)
 {
@@ -63,7 +49,7 @@ static int ov2722_read_reg(struct i2c_client *client,
 	msg[0].len = I2C_MSG_LENGTH;
 	msg[0].buf = data;
 
-	/* high byte goes out first */
+	 
 	data[0] = (u8)(reg >> 8);
 	data[1] = (u8)(reg & 0xff);
 
@@ -82,7 +68,7 @@ static int ov2722_read_reg(struct i2c_client *client,
 	}
 
 	*val = 0;
-	/* high byte comes first */
+	 
 	if (data_length == OV2722_8BIT)
 		*val = (u8)data[0];
 	else if (data_length == OV2722_16BIT)
@@ -114,7 +100,7 @@ static int ov2722_write_reg(struct i2c_client *client, u16 data_length,
 	int ret;
 	unsigned char data[4] = {0};
 	__be16 *wreg = (__be16 *)data;
-	const u16 len = data_length + sizeof(u16); /* 16-bit address + data */
+	const u16 len = data_length + sizeof(u16);  
 
 	if (data_length != OV2722_8BIT && data_length != OV2722_16BIT) {
 		dev_err(&client->dev,
@@ -122,13 +108,13 @@ static int ov2722_write_reg(struct i2c_client *client, u16 data_length,
 		return -EINVAL;
 	}
 
-	/* high byte goes out first */
+	 
 	*wreg = cpu_to_be16(reg);
 
 	if (data_length == OV2722_8BIT) {
 		data[2] = (u8)(val);
 	} else {
-		/* OV2722_16BIT */
+		 
 		__be16 *wdata = (__be16 *)&data[2];
 
 		*wdata = cpu_to_be16(val);
@@ -143,20 +129,7 @@ static int ov2722_write_reg(struct i2c_client *client, u16 data_length,
 	return ret;
 }
 
-/*
- * ov2722_write_reg_array - Initializes a list of OV2722 registers
- * @client: i2c driver client structure
- * @reglist: list of registers to be written
- *
- * This function initializes a list of registers. When consecutive addresses
- * are found in a row on the list, this function creates a buffer and sends
- * consecutive data in a single i2c_transfer().
- *
- * __ov2722_flush_reg_array, __ov2722_buf_reg_array() and
- * __ov2722_write_reg_is_consecutive() are internal functions to
- * ov2722_write_reg_array_fast() and should be not used anywhere else.
- *
- */
+ 
 
 static int __ov2722_flush_reg_array(struct i2c_client *client,
 				    struct ov2722_write_ctrl *ctrl)
@@ -167,7 +140,7 @@ static int __ov2722_flush_reg_array(struct i2c_client *client,
 	if (ctrl->index == 0)
 		return 0;
 
-	size = sizeof(u16) + ctrl->index; /* 16-bit address + data */
+	size = sizeof(u16) + ctrl->index;  
 	*data16 = cpu_to_be16(ctrl->buffer.addr);
 	ctrl->index = 0;
 
@@ -195,16 +168,13 @@ static int __ov2722_buf_reg_array(struct i2c_client *client,
 		return -EINVAL;
 	}
 
-	/* When first item is added, we need to store its starting address */
+	 
 	if (ctrl->index == 0)
 		ctrl->buffer.addr = next->reg;
 
 	ctrl->index += size;
 
-	/*
-	 * Buffer cannot guarantee free space for u32? Better flush it to avoid
-	 * possible lack of memory for next item.
-	 */
+	 
 	if (ctrl->index + sizeof(u16) >= OV2722_MAX_WRITE_BUF_SIZE)
 		return __ov2722_flush_reg_array(client, ctrl);
 
@@ -238,10 +208,7 @@ static int ov2722_write_reg_array(struct i2c_client *client,
 			msleep(next->val);
 			break;
 		default:
-			/*
-			 * If next address is not consecutive, data needs to be
-			 * flushed before proceed.
-			 */
+			 
 			if (!__ov2722_write_reg_is_consecutive(client, &ctrl,
 							       next)) {
 				err = __ov2722_flush_reg_array(client, &ctrl);
@@ -272,7 +239,7 @@ static long __ov2722_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 
 	dev_dbg(&client->dev, "set_exposure without group hold\n");
 
-	/* clear VTS_DIFF on manual mode */
+	 
 	ret = ov2722_write_reg(client, OV2722_16BIT, OV2722_VTS_DIFF_H, 0);
 	if (ret)
 		return ret;
@@ -296,7 +263,7 @@ static long __ov2722_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 	if (ret)
 		return ret;
 
-	/* set exposure */
+	 
 	ret = ov2722_write_reg(client, OV2722_8BIT,
 			       OV2722_AEC_PK_EXPO_L,
 			       coarse_itg & 0xff);
@@ -309,13 +276,13 @@ static long __ov2722_set_exposure(struct v4l2_subdev *sd, int coarse_itg,
 	if (ret)
 		return ret;
 
-	/* set analog gain */
+	 
 	ret = ov2722_write_reg(client, OV2722_16BIT,
 			       OV2722_AGC_ADJ_H, gain);
 	if (ret)
 		return ret;
 
-	/* set digital gain */
+	 
 	ret = ov2722_write_reg(client, OV2722_16BIT,
 			       OV2722_MWB_GAIN_R_H, digitgain);
 	if (ret)
@@ -352,7 +319,7 @@ static long ov2722_s_exposure(struct v4l2_subdev *sd,
 	int gain = exposure->gain[0];
 	int digitgain = exposure->gain[1];
 
-	/* we should not accept the invalid value below. */
+	 
 	if (gain == 0) {
 		struct i2c_client *client = v4l2_get_subdevdata(sd);
 
@@ -374,16 +341,14 @@ static long ov2722_ioctl(struct v4l2_subdev *sd, unsigned int cmd, void *arg)
 	return 0;
 }
 
-/* This returns the exposure time being used. This should only be used
- * for filling in EXIF data, not for actual image processing.
- */
+ 
 static int ov2722_q_exposure(struct v4l2_subdev *sd, s32 *value)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	u16 reg_v, reg_v2;
 	int ret;
 
-	/* get exposure */
+	 
 	ret = ov2722_read_reg(client, OV2722_8BIT,
 			      OV2722_AEC_PK_EXPO_L,
 			      &reg_v);
@@ -424,7 +389,7 @@ static int ov2722_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 		if (val == 0)
 			return -EINVAL;
 
-		ctrl->val = val * 1000;	/* To Hz */
+		ctrl->val = val * 1000;	 
 		break;
 	default:
 		ret = -EINVAL;
@@ -468,7 +433,7 @@ static int ov2722_init(struct v4l2_subdev *sd)
 
 	mutex_lock(&dev->input_lock);
 
-	/* restore settings */
+	 
 	ov2722_res = ov2722_res_preview;
 	N_RES = N_RES_PREVIEW;
 
@@ -508,9 +473,7 @@ static int gpio_ctrl(struct v4l2_subdev *sd, bool flag)
 	if (!dev || !dev->platform_data)
 		return -ENODEV;
 
-	/* Note: the GPIO order is asymmetric: always RESET#
-	 * before PWDN# when turning it on or off.
-	 */
+	 
 	ret = dev->platform_data->gpio0_ctrl(sd, flag);
 	ret |= dev->platform_data->gpio1_ctrl(sd, flag);
 	return ret;
@@ -529,17 +492,17 @@ static int power_up(struct v4l2_subdev *sd)
 	}
 
 	if (dev->power_on == 1)
-		return 0; /* Already on */
+		return 0;  
 
-	/* power control */
+	 
 	ret = power_ctrl(sd, 1);
 	if (ret)
 		goto fail_power;
 
-	/* according to DS, at least 5ms is needed between DOVDD and PWDN */
+	 
 	usleep_range(5000, 6000);
 
-	/* gpio ctrl */
+	 
 	ret = gpio_ctrl(sd, 1);
 	if (ret) {
 		ret = gpio_ctrl(sd, 0);
@@ -547,12 +510,12 @@ static int power_up(struct v4l2_subdev *sd)
 			goto fail_power;
 	}
 
-	/* flis clock control */
+	 
 	ret = dev->platform_data->flisclk_ctrl(sd, 1);
 	if (ret)
 		goto fail_clk;
 
-	/* according to DS, 20ms is needed between PWDN and i2c access */
+	 
 	msleep(20);
 
 	dev->power_on = 1;
@@ -580,13 +543,13 @@ static int power_down(struct v4l2_subdev *sd)
 	}
 
 	if (dev->power_on == 0)
-		return 0; /* Already off */
+		return 0;  
 
 	ret = dev->platform_data->flisclk_ctrl(sd, 0);
 	if (ret)
 		dev_err(&client->dev, "flisclk failed\n");
 
-	/* gpio ctrl */
+	 
 	ret = gpio_ctrl(sd, 0);
 	if (ret) {
 		ret = gpio_ctrl(sd, 0);
@@ -594,7 +557,7 @@ static int power_down(struct v4l2_subdev *sd)
 			dev_err(&client->dev, "gpio failed 2\n");
 	}
 
-	/* power control */
+	 
 	ret = power_ctrl(sd, 0);
 	if (ret)
 		dev_err(&client->dev, "vprog failed.\n");
@@ -617,7 +580,7 @@ static int ov2722_s_power(struct v4l2_subdev *sd, int on)
 	return ret;
 }
 
-/* TODO: remove it. */
+ 
 static int startup(struct v4l2_subdev *sd)
 {
 	struct ov2722_device *dev = to_ov2722_sensor(sd);
@@ -677,7 +640,7 @@ static int ov2722_set_fmt(struct v4l2_subdev *sd,
 
 	mutex_lock(&dev->input_lock);
 
-	/* s_power has not been called yet for std v4l2 clients (camorama) */
+	 
 	power_up(sd);
 
 	dev->pixels_per_line = dev->res->pixels_per_line;
@@ -798,10 +761,7 @@ static int ov2722_s_config(struct v4l2_subdev *sd,
 
 	mutex_lock(&dev->input_lock);
 
-	/* power off the module, then power on it in future
-	 * as first power on by board may not fulfill the
-	 * power on sequqence needed by the module
-	 */
+	 
 	ret = power_down(sd);
 	if (ret) {
 		dev_err(&client->dev, "ov2722 power-off err.\n");
@@ -818,14 +778,14 @@ static int ov2722_s_config(struct v4l2_subdev *sd,
 	if (ret)
 		goto fail_csi_cfg;
 
-	/* config & detect sensor */
+	 
 	ret = ov2722_detect(client);
 	if (ret) {
 		dev_err(&client->dev, "ov2722_detect err s_config.\n");
 		goto fail_csi_cfg;
 	}
 
-	/* turn off sensor, after probed */
+	 
 	ret = power_down(sd);
 	if (ret) {
 		dev_err(&client->dev, "ov2722 power-off err.\n");

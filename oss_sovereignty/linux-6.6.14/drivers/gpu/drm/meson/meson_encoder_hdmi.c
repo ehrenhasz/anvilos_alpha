@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -77,11 +73,11 @@ static void meson_encoder_hdmi_set_vclk(struct meson_encoder_hdmi *encoder_hdmi,
 
 	vclk_freq = mode->clock;
 
-	/* For 420, pixel clock is half unlike venc clock */
+	 
 	if (encoder_hdmi->output_bus_fmt == MEDIA_BUS_FMT_UYYVYY8_0_5X24)
 		vclk_freq /= 2;
 
-	/* TMDS clock is pixel_clock * 10 */
+	 
 	phy_freq = vclk_freq * 10;
 
 	if (!vic) {
@@ -90,14 +86,14 @@ static void meson_encoder_hdmi_set_vclk(struct meson_encoder_hdmi *encoder_hdmi,
 		return;
 	}
 
-	/* 480i/576i needs global pixel doubling */
+	 
 	if (mode->flags & DRM_MODE_FLAG_DBLCLK)
 		vclk_freq *= 2;
 
 	venc_freq = vclk_freq;
 	hdmi_freq = vclk_freq;
 
-	/* VENC double pixels for 1080i, 720p and YUV420 modes */
+	 
 	if (meson_venc_hdmi_venc_repeat(vic) ||
 	    encoder_hdmi->output_bus_fmt == MEDIA_BUS_FMT_UYYVYY8_0_5X24)
 		venc_freq *= 2;
@@ -131,43 +127,43 @@ static enum drm_mode_status meson_encoder_hdmi_mode_valid(struct drm_bridge *bri
 
 	dev_dbg(priv->dev, "Modeline " DRM_MODE_FMT "\n", DRM_MODE_ARG(mode));
 
-	/* If sink does not support 540MHz, reject the non-420 HDMI2 modes */
+	 
 	if (display_info->max_tmds_clock &&
 	    mode->clock > display_info->max_tmds_clock &&
 	    !drm_mode_is_420_only(display_info, mode) &&
 	    !drm_mode_is_420_also(display_info, mode))
 		return MODE_BAD;
 
-	/* Check against non-VIC supported modes */
+	 
 	if (!vic) {
 		status = meson_venc_hdmi_supported_mode(mode);
 		if (status != MODE_OK)
 			return status;
 
 		return meson_vclk_dmt_supported_freq(priv, mode->clock);
-	/* Check against supported VIC modes */
+	 
 	} else if (!meson_venc_hdmi_supported_vic(vic))
 		return MODE_BAD;
 
 	vclk_freq = mode->clock;
 
-	/* For 420, pixel clock is half unlike venc clock */
+	 
 	if (drm_mode_is_420_only(display_info, mode) ||
 	    (!is_hdmi2_sink &&
 	     drm_mode_is_420_also(display_info, mode)))
 		vclk_freq /= 2;
 
-	/* TMDS clock is pixel_clock * 10 */
+	 
 	phy_freq = vclk_freq * 10;
 
-	/* 480i/576i needs global pixel doubling */
+	 
 	if (mode->flags & DRM_MODE_FLAG_DBLCLK)
 		vclk_freq *= 2;
 
 	venc_freq = vclk_freq;
 	hdmi_freq = vclk_freq;
 
-	/* VENC double pixels for 1080i, 720p and YUV420 modes */
+	 
 	if (meson_venc_hdmi_venc_repeat(vic) ||
 	    drm_mode_is_420_only(display_info, mode) ||
 	    (!is_hdmi2_sink &&
@@ -223,22 +219,22 @@ static void meson_encoder_hdmi_atomic_enable(struct drm_bridge *bridge,
 	} else if (encoder_hdmi->output_bus_fmt == MEDIA_BUS_FMT_UYVY8_1X16)
 		ycrcb_map = VPU_HDMI_OUTPUT_CRYCB;
 
-	/* VENC + VENC-DVI Mode setup */
+	 
 	meson_venc_hdmi_mode_set(priv, vic, ycrcb_map, yuv420_mode, mode);
 
-	/* VCLK Set clock */
+	 
 	meson_encoder_hdmi_set_vclk(encoder_hdmi, mode);
 
 	if (encoder_hdmi->output_bus_fmt == MEDIA_BUS_FMT_UYYVYY8_0_5X24)
-		/* Setup YUV420 to HDMI-TX, no 10bit diphering */
+		 
 		writel_relaxed(2 | (2 << 2),
 			       priv->io_base + _REG(VPU_HDMI_FMT_CTRL));
 	else if (encoder_hdmi->output_bus_fmt == MEDIA_BUS_FMT_UYVY8_1X16)
-		/* Setup YUV422 to HDMI-TX, no 10bit diphering */
+		 
 		writel_relaxed(1 | (2 << 2),
 				priv->io_base + _REG(VPU_HDMI_FMT_CTRL));
 	else
-		/* Setup YUV444 to HDMI-TX, no 10bit diphering */
+		 
 		writel_relaxed(0, priv->io_base + _REG(VPU_HDMI_FMT_CTRL));
 
 	dev_dbg(priv->dev, "%s\n", priv->venc.hdmi_use_enci ? "VENCI" : "VENCP");
@@ -365,7 +361,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
 	if (!meson_encoder_hdmi)
 		return -ENOMEM;
 
-	/* HDMI Transceiver Bridge */
+	 
 	remote = of_graph_get_remote_node(priv->dev->of_node, 1, 0);
 	if (!remote) {
 		dev_err(priv->dev, "HDMI transceiver device is disabled");
@@ -379,7 +375,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
 		goto err_put_node;
 	}
 
-	/* HDMI Encoder Bridge */
+	 
 	meson_encoder_hdmi->bridge.funcs = &meson_encoder_hdmi_bridge_funcs;
 	meson_encoder_hdmi->bridge.of_node = priv->dev->of_node;
 	meson_encoder_hdmi->bridge.type = DRM_MODE_CONNECTOR_HDMIA;
@@ -389,7 +385,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
 
 	meson_encoder_hdmi->priv = priv;
 
-	/* Encoder */
+	 
 	ret = drm_simple_encoder_init(priv->drm, &meson_encoder_hdmi->encoder,
 				      DRM_MODE_ENCODER_TMDS);
 	if (ret) {
@@ -399,7 +395,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
 
 	meson_encoder_hdmi->encoder.possible_crtcs = BIT(0);
 
-	/* Attach HDMI Encoder Bridge to Encoder */
+	 
 	ret = drm_bridge_attach(&meson_encoder_hdmi->encoder, &meson_encoder_hdmi->bridge, NULL,
 				DRM_BRIDGE_ATTACH_NO_CONNECTOR);
 	if (ret) {
@@ -407,7 +403,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
 		goto err_put_node;
 	}
 
-	/* Initialize & attach Bridge Connector */
+	 
 	meson_encoder_hdmi->connector = drm_bridge_connector_init(priv->drm,
 							&meson_encoder_hdmi->encoder);
 	if (IS_ERR(meson_encoder_hdmi->connector)) {
@@ -418,15 +414,9 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
 	drm_connector_attach_encoder(meson_encoder_hdmi->connector,
 				     &meson_encoder_hdmi->encoder);
 
-	/*
-	 * We should have now in place:
-	 * encoder->[hdmi encoder bridge]->[dw-hdmi bridge]->[display connector bridge]->[display connector]
-	 */
+	 
 
-	/*
-	 * drm_connector_attach_max_bpc_property() requires the
-	 * connector to have a state.
-	 */
+	 
 	drm_atomic_helper_connector_reset(meson_encoder_hdmi->connector);
 
 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXL) ||
@@ -436,7 +426,7 @@ int meson_encoder_hdmi_init(struct meson_drm *priv)
 
 	drm_connector_attach_max_bpc_property(meson_encoder_hdmi->connector, 8, 8);
 
-	/* Handle this here until handled by drm_bridge_connector_init() */
+	 
 	meson_encoder_hdmi->connector->ycbcr_420_allowed = true;
 
 	pdev = of_find_device_by_node(remote);

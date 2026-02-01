@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Serial Attached SCSI (SAS) Event processing
- *
- * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
- * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <scsi/scsi_host.h>
@@ -16,7 +11,7 @@ bool sas_queue_work(struct sas_ha_struct *ha, struct sas_work *sw)
 		return false;
 
 	if (test_bit(SAS_HA_DRAINING, &ha->state)) {
-		/* add it to the defer list, if not already pending */
+		 
 		if (list_empty(&sw->drain_node))
 			list_add_tail(&sw->drain_node, &ha->defer_q);
 		return true;
@@ -57,7 +52,7 @@ void sas_queue_deferred_work(struct sas_ha_struct *ha)
 void __sas_drain_work(struct sas_ha_struct *ha)
 {
 	set_bit(SAS_HA_DRAINING, &ha->state);
-	/* flush submitters */
+	 
 	spin_lock_irq(&ha->lock);
 	spin_unlock_irq(&ha->lock);
 
@@ -143,7 +138,7 @@ static void sas_phy_event_worker(struct work_struct *work)
 	sas_free_event(ev);
 }
 
-/* defer works of new phys during suspend */
+ 
 static bool sas_defer_event(struct asd_sas_phy *phy, struct asd_sas_event *ev)
 {
 	struct sas_ha_struct *ha = phy->ha;
@@ -173,7 +168,7 @@ void sas_notify_port_event(struct asd_sas_phy *phy, enum port_event event,
 	if (!ev)
 		return;
 
-	/* Call pm_runtime_put() with pairs in sas_port_event_worker() */
+	 
 	pm_runtime_get_noresume(ha->dev);
 
 	INIT_SAS_EVENT(ev, sas_port_event_worker, phy, event);
@@ -200,7 +195,7 @@ void sas_notify_phy_event(struct asd_sas_phy *phy, enum phy_event event,
 	if (!ev)
 		return;
 
-	/* Call pm_runtime_put() with pairs in sas_phy_event_worker() */
+	 
 	pm_runtime_get_noresume(ha->dev);
 
 	INIT_SAS_EVENT(ev, sas_phy_event_worker, phy, event);

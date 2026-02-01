@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Cryptographic Coprocessor (CCP) driver
- *
- * Copyright (C) 2016,2019 Advanced Micro Devices, Inc.
- *
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -24,14 +18,7 @@
 	(mask == 0) ? 64 : fls64(mask);	\
 })
 
-/* The CCP as a DMA provider can be configured for public or private
- * channels. Default is specified in the vdata for the device (PCI ID).
- * This module parameter will override for all channels on all devices:
- *   dma_chan_attr = 0x2 to force all channels public
- *                 = 0x1 to force all channels private
- *                 = 0x0 to defer to the vdata setting
- *                 = any other value: warning, revert to 0x0
- */
+ 
 static unsigned int dma_chan_attr = CCP_DMA_DFLT;
 module_param(dma_chan_attr, uint, 0444);
 MODULE_PARM_DESC(dma_chan_attr, "Set DMA channel visibility: 0 (default) = device defaults, 1 = make private, 2 = make public");
@@ -176,11 +163,11 @@ static void ccp_free_active_cmd(struct ccp_dma_desc *desc)
 static struct ccp_dma_desc *__ccp_next_dma_desc(struct ccp_dma_chan *chan,
 						struct ccp_dma_desc *desc)
 {
-	/* Move current DMA descriptor to the complete list */
+	 
 	if (desc)
 		list_move(&desc->entry, &chan->complete);
 
-	/* Get the next DMA descriptor on the active list */
+	 
 	desc = list_first_entry_or_null(&chan->active, struct ccp_dma_desc,
 					entry);
 
@@ -193,18 +180,18 @@ static struct ccp_dma_desc *ccp_handle_active_desc(struct ccp_dma_chan *chan,
 	struct dma_async_tx_descriptor *tx_desc;
 	unsigned long flags;
 
-	/* Loop over descriptors until one is found with commands */
+	 
 	do {
 		if (desc) {
-			/* Remove the DMA command from the list and free it */
+			 
 			ccp_free_active_cmd(desc);
 
 			if (!list_empty(&desc->pending)) {
-				/* No errors, keep going */
+				 
 				if (desc->status != DMA_ERROR)
 					return desc;
 
-				/* Error, free remaining commands and move on */
+				 
 				ccp_free_cmd_resources(desc->ccp,
 						       &desc->pending);
 			}
@@ -277,10 +264,10 @@ static void ccp_cmd_callback(void *data, int err)
 		desc->status = DMA_ERROR;
 
 	while (true) {
-		/* Check for DMA descriptor completion */
+		 
 		desc = ccp_handle_active_desc(chan, desc);
 
-		/* Don't submit cmd if no descriptor or DMA is paused */
+		 
 		if (!desc || (chan->status == DMA_PAUSED))
 			break;
 
@@ -532,7 +519,7 @@ static void ccp_issue_pending(struct dma_chan *dma_chan)
 
 	spin_unlock_irqrestore(&chan->lock, flags);
 
-	/* If there was nothing active, start processing */
+	 
 	if (desc)
 		ccp_cmd_callback(desc, 0);
 }
@@ -556,7 +543,7 @@ static enum dma_status ccp_tx_status(struct dma_chan *dma_chan,
 	if (ret == DMA_COMPLETE) {
 		spin_lock_irqsave(&chan->lock, flags);
 
-		/* Get status from complete chain, if still there */
+		 
 		list_for_each_entry(desc, &chan->complete, entry) {
 			if (desc->tx_desc.cookie != cookie)
 				continue;
@@ -581,7 +568,7 @@ static int ccp_pause(struct dma_chan *dma_chan)
 
 	chan->status = DMA_PAUSED;
 
-	/*TODO: Wait for active DMA to complete before returning? */
+	 
 
 	return 0;
 }
@@ -600,10 +587,10 @@ static int ccp_resume(struct dma_chan *dma_chan)
 
 	spin_unlock_irqrestore(&chan->lock, flags);
 
-	/* Indicate the channel is running again */
+	 
 	chan->status = DMA_IN_PROGRESS;
 
-	/* If there was something active, re-start */
+	 
 	if (desc)
 		ccp_cmd_callback(desc, 0);
 
@@ -618,11 +605,11 @@ static int ccp_terminate_all(struct dma_chan *dma_chan)
 
 	dev_dbg(chan->ccp->dev, "%s\n", __func__);
 
-	/*TODO: Wait for active DMA to complete before continuing */
+	 
 
 	spin_lock_irqsave(&chan->lock, flags);
 
-	/*TODO: Purge the complete list? */
+	 
 	ccp_free_desc_resources(chan->ccp, &chan->active);
 	ccp_free_desc_resources(chan->ccp, &chan->pending);
 	ccp_free_desc_resources(chan->ccp, &chan->created);
@@ -719,12 +706,7 @@ int ccp_dmaengine_register(struct ccp_device *ccp)
 	dma_cap_set(DMA_MEMCPY, dma_dev->cap_mask);
 	dma_cap_set(DMA_INTERRUPT, dma_dev->cap_mask);
 
-	/* The DMA channels for this device can be set to public or private,
-	 * and overridden by the module parameter dma_chan_attr.
-	 * Default: according to the value in vdata (dma_chan_attr=0)
-	 * dma_chan_attr=0x1: all channels private (override vdata)
-	 * dma_chan_attr=0x2: all channels public (override vdata)
-	 */
+	 
 	if (ccp_get_dma_chan_attr(ccp) == DMA_PRIVATE)
 		dma_cap_set(DMA_PRIVATE, dma_dev->cap_mask);
 

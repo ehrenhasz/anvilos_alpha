@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Common code for Freescale MMA955x Intelligent Sensor Platform drivers
- * Copyright (c) 2014, Intel Corporation.
- */
+ 
+ 
 
 #ifndef _MMA9551_CORE_H_
 #define _MMA9551_CORE_H_
 
-/* Applications IDs */
+ 
 #define MMA9551_APPID_VERSION		0x00
 #define MMA9551_APPID_GPIO		0x03
 #define MMA9551_APPID_AFE		0x06
@@ -17,7 +14,7 @@
 #define MMA9551_APPID_RSC		0x17
 #define MMA9551_APPID_NONE		0xff
 
-/* Reset/Suspend/Clear application app masks */
+ 
 #define MMA9551_RSC_PED			BIT(21)
 
 #define MMA9551_AUTO_SUSPEND_DELAY_MS	2000
@@ -70,4 +67,4 @@ int mma9551_read_accel_chan(struct i2c_client *client,
 int mma9551_read_accel_scale(int *val, int *val2);
 int mma9551_app_reset(struct i2c_client *client, u32 app_mask);
 
-#endif /* _MMA9551_CORE_H_ */
+#endif  

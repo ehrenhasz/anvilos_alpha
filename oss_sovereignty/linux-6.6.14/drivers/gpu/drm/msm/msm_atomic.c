@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_atomic_uapi.h>
 #include <drm/drm_vblank.h>
@@ -12,11 +9,7 @@
 #include "msm_gem.h"
 #include "msm_kms.h"
 
-/*
- * Helpers to control vblanks while we flush.. basically just to ensure
- * that vblank accounting is switched on, so we get valid seqn/timestamp
- * on pageflip events (if requested)
- */
+ 
 
 static void vblank_get(struct msm_kms *kms, unsigned crtc_mask)
 {
@@ -78,15 +71,11 @@ static void msm_atomic_async_commit(struct msm_kms *kms, int crtc_idx)
 
 	vblank_get(kms, crtc_mask);
 
-	/*
-	 * Flush hardware updates:
-	 */
+	 
 	trace_msm_atomic_flush_commit(crtc_mask);
 	kms->funcs->flush_commit(kms, crtc_mask);
 
-	/*
-	 * Wait for flush to complete:
-	 */
+	 
 	trace_msm_atomic_wait_flush_start(crtc_mask);
 	kms->funcs->wait_flush(kms, crtc_mask);
 	trace_msm_atomic_wait_flush_finish(crtc_mask);
@@ -148,7 +137,7 @@ static bool can_do_async(struct drm_atomic_state *state,
 	if (!(state->legacy_cursor_update || state->async_update))
 		return false;
 
-	/* any connector change, means slow path: */
+	 
 	for_each_new_connector_in_state(state, connector, connector_state, i)
 		return false;
 
@@ -165,10 +154,7 @@ static bool can_do_async(struct drm_atomic_state *state,
 	return true;
 }
 
-/* Get bitmask of crtcs that will need to be flushed.  The bitmask
- * can be used with for_each_crtc_mask() iterator, to iterate
- * effected crtcs without needing to preserve the atomic state.
- */
+ 
 static unsigned get_crtc_mask(struct drm_atomic_state *state)
 {
 	struct drm_crtc_state *crtc_state;
@@ -212,25 +198,17 @@ void msm_atomic_commit_tail(struct drm_atomic_state *state)
 
 	kms->funcs->enable_commit(kms);
 
-	/*
-	 * Ensure any previous (potentially async) commit has
-	 * completed:
-	 */
+	 
 	lock_crtcs(kms, crtc_mask);
 	trace_msm_atomic_wait_flush_start(crtc_mask);
 	kms->funcs->wait_flush(kms, crtc_mask);
 	trace_msm_atomic_wait_flush_finish(crtc_mask);
 
-	/*
-	 * Now that there is no in-progress flush, prepare the
-	 * current update:
-	 */
+	 
 	if (kms->funcs->prepare_commit)
 		kms->funcs->prepare_commit(kms, state);
 
-	/*
-	 * Push atomic updates down to hardware:
-	 */
+	 
 	drm_atomic_helper_commit_modeset_disables(dev, state);
 	drm_atomic_helper_commit_planes(dev, state, 0);
 	drm_atomic_helper_commit_modeset_enables(dev, state);
@@ -239,13 +217,10 @@ void msm_atomic_commit_tail(struct drm_atomic_state *state)
 		struct msm_pending_timer *timer =
 			&kms->pending_timers[drm_crtc_index(async_crtc)];
 
-		/* async updates are limited to single-crtc updates: */
+		 
 		WARN_ON(crtc_mask != drm_crtc_mask(async_crtc));
 
-		/*
-		 * Start timer if we don't already have an update pending
-		 * on this crtc:
-		 */
+		 
 		if (!(kms->pending_crtc_mask & crtc_mask)) {
 			ktime_t vsync_time, wakeup_time;
 
@@ -262,11 +237,7 @@ void msm_atomic_commit_tail(struct drm_atomic_state *state)
 
 		kms->funcs->disable_commit(kms);
 		unlock_crtcs(kms, crtc_mask);
-		/*
-		 * At this point, from drm core's perspective, we
-		 * are done with the atomic update, so we can just
-		 * go ahead and signal that it is done:
-		 */
+		 
 		drm_atomic_helper_commit_hw_done(state);
 		drm_atomic_helper_cleanup_planes(dev, state);
 
@@ -276,23 +247,16 @@ void msm_atomic_commit_tail(struct drm_atomic_state *state)
 	}
 
 fallback:
-	/*
-	 * If there is any async flush pending on updated crtcs, fold
-	 * them into the current flush.
-	 */
+	 
 	kms->pending_crtc_mask &= ~crtc_mask;
 
 	vblank_get(kms, crtc_mask);
 
-	/*
-	 * Flush hardware updates:
-	 */
+	 
 	trace_msm_atomic_flush_commit(crtc_mask);
 	kms->funcs->flush_commit(kms, crtc_mask);
 	unlock_crtcs(kms, crtc_mask);
-	/*
-	 * Wait for flush to complete:
-	 */
+	 
 	trace_msm_atomic_wait_flush_start(crtc_mask);
 	kms->funcs->wait_flush(kms, crtc_mask);
 	trace_msm_atomic_wait_flush_finish(crtc_mask);

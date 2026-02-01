@@ -1,33 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/**************************************************************************
- *
- * Copyright (c) 2007-2009 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
-/*
- * Authors: Thomas Hellstrom <thellstrom-at-vmware-dot-com>
- */
+ 
+ 
+ 
 
 #include <linux/vmalloc.h>
 
@@ -71,16 +44,7 @@ void ttm_mem_io_free(struct ttm_device *bdev,
 	mem->bus.addr = NULL;
 }
 
-/**
- * ttm_move_memcpy - Helper to perform a memcpy ttm move operation.
- * @clear: Whether to clear rather than copy.
- * @num_pages: Number of pages of the operation.
- * @dst_iter: A struct ttm_kmap_iter representing the destination resource.
- * @src_iter: A struct ttm_kmap_iter representing the source resource.
- *
- * This function is intended to be able to move out async under a
- * dma-fence if desired.
- */
+ 
 void ttm_move_memcpy(bool clear,
 		     u32 num_pages,
 		     struct ttm_kmap_iter *dst_iter,
@@ -91,11 +55,11 @@ void ttm_move_memcpy(bool clear,
 	struct iosys_map src_map, dst_map;
 	pgoff_t i;
 
-	/* Single TTM move. NOP */
+	 
 	if (dst_ops->maps_tt && src_ops->maps_tt)
 		return;
 
-	/* Don't move nonexistent data. Clear destination instead. */
+	 
 	if (clear) {
 		for (i = 0; i < num_pages; ++i) {
 			dst_ops->map_local(dst_iter, &dst_map, i);
@@ -123,22 +87,7 @@ void ttm_move_memcpy(bool clear,
 }
 EXPORT_SYMBOL(ttm_move_memcpy);
 
-/**
- * ttm_bo_move_memcpy
- *
- * @bo: A pointer to a struct ttm_buffer_object.
- * @ctx: operation context
- * @dst_mem: struct ttm_resource indicating where to move.
- *
- * Fallback move function for a mappable buffer object in mappable memory.
- * The function will, if successful,
- * free any old aperture space, and set (@new_mem)->mm_node to NULL,
- * and update the (@bo)->mem placement flags. If unsuccessful, the old
- * data remains untouched, and it's up to the caller to free the
- * memory space indicated by @new_mem.
- * Returns:
- * !0: Failure.
- */
+ 
 int ttm_bo_move_memcpy(struct ttm_buffer_object *bo,
 		       struct ttm_operation_ctx *ctx,
 		       struct ttm_resource *dst_mem)
@@ -208,20 +157,7 @@ static void ttm_transfered_destroy(struct ttm_buffer_object *bo)
 	kfree(fbo);
 }
 
-/**
- * ttm_buffer_object_transfer
- *
- * @bo: A pointer to a struct ttm_buffer_object.
- * @new_obj: A pointer to a pointer to a newly created ttm_buffer_object,
- * holding the data of @bo with the old placement.
- *
- * This is a utility function that may be called after an accelerated move
- * has been scheduled. A new buffer object is created as a placeholder for
- * the old data while it's being copied. When that buffer object is idle,
- * it can be destroyed, releasing the space of the old placement.
- * Returns:
- * !0: Failure.
- */
+ 
 
 static int ttm_buffer_object_transfer(struct ttm_buffer_object *bo,
 				      struct ttm_buffer_object **new_obj)
@@ -235,10 +171,7 @@ static int ttm_buffer_object_transfer(struct ttm_buffer_object *bo,
 
 	fbo->base = *bo;
 
-	/**
-	 * Fix up members that we shouldn't copy directly:
-	 * TODO: Explicit member copy would probably be better here.
-	 */
+	 
 
 	atomic_inc(&ttm_glob.bo_count);
 	drm_vma_node_reset(&fbo->base.base.vma_node);
@@ -277,16 +210,7 @@ static int ttm_buffer_object_transfer(struct ttm_buffer_object *bo,
 	return 0;
 }
 
-/**
- * ttm_io_prot
- *
- * @bo: ttm buffer object
- * @res: ttm resource object
- * @tmp: Page protection flag for a normal, cached mapping.
- *
- * Utility function that returns the pgprot_t that should be used for
- * setting up a PTE with the caching model indicated by @c_state.
- */
+ 
 pgprot_t ttm_io_prot(struct ttm_buffer_object *bo, struct ttm_resource *res,
 		     pgprot_t tmp)
 {
@@ -347,19 +271,13 @@ static int ttm_bo_kmap_ttm(struct ttm_buffer_object *bo,
 		return ret;
 
 	if (num_pages == 1 && ttm->caching == ttm_cached) {
-		/*
-		 * We're mapping a single page, and the desired
-		 * page protection is consistent with the bo.
-		 */
+		 
 
 		map->bo_kmap_type = ttm_bo_map_kmap;
 		map->page = ttm->pages[start_page];
 		map->virtual = kmap(map->page);
 	} else {
-		/*
-		 * We need to use vmap to get the desired page protection
-		 * or to make the buffer object look contiguous.
-		 */
+		 
 		prot = ttm_io_prot(bo, mem, PAGE_KERNEL);
 		map->bo_kmap_type = ttm_bo_map_vmap;
 		map->virtual = vmap(ttm->pages + start_page, num_pages,
@@ -368,22 +286,7 @@ static int ttm_bo_kmap_ttm(struct ttm_buffer_object *bo,
 	return (!map->virtual) ? -ENOMEM : 0;
 }
 
-/**
- * ttm_bo_kmap
- *
- * @bo: The buffer object.
- * @start_page: The first page to map.
- * @num_pages: Number of pages to map.
- * @map: pointer to a struct ttm_bo_kmap_obj representing the map.
- *
- * Sets up a kernel virtual mapping, using ioremap, vmap or kmap to the
- * data in the buffer object. The ttm_kmap_obj_virtual function can then be
- * used to obtain a virtual address to the data.
- *
- * Returns
- * -ENOMEM: Out of memory.
- * -EINVAL: Invalid range.
- */
+ 
 int ttm_bo_kmap(struct ttm_buffer_object *bo,
 		unsigned long start_page, unsigned long num_pages,
 		struct ttm_bo_kmap_obj *map)
@@ -411,13 +314,7 @@ int ttm_bo_kmap(struct ttm_buffer_object *bo,
 }
 EXPORT_SYMBOL(ttm_bo_kmap);
 
-/**
- * ttm_bo_kunmap
- *
- * @map: Object describing the map to unmap.
- *
- * Unmaps a kernel map set up by ttm_bo_kmap.
- */
+ 
 void ttm_bo_kunmap(struct ttm_bo_kmap_obj *map)
 {
 	if (!map->virtual)
@@ -443,20 +340,7 @@ void ttm_bo_kunmap(struct ttm_bo_kmap_obj *map)
 }
 EXPORT_SYMBOL(ttm_bo_kunmap);
 
-/**
- * ttm_bo_vmap
- *
- * @bo: The buffer object.
- * @map: pointer to a struct iosys_map representing the map.
- *
- * Sets up a kernel virtual mapping, using ioremap or vmap to the
- * data in the buffer object. The parameter @map returns the virtual
- * address as struct iosys_map. Unmap the buffer with ttm_bo_vunmap().
- *
- * Returns
- * -ENOMEM: Out of memory.
- * -EINVAL: Invalid range.
- */
+ 
 int ttm_bo_vmap(struct ttm_buffer_object *bo, struct iosys_map *map)
 {
 	struct ttm_resource *mem = bo->resource;
@@ -502,10 +386,7 @@ int ttm_bo_vmap(struct ttm_buffer_object *bo, struct iosys_map *map)
 		if (ret)
 			return ret;
 
-		/*
-		 * We need to use vmap to get the desired page protection
-		 * or to make the buffer object look contiguous.
-		 */
+		 
 		prot = ttm_io_prot(bo, mem, PAGE_KERNEL);
 		vaddr = vmap(ttm->pages, ttm->num_pages, 0, prot);
 		if (!vaddr)
@@ -518,14 +399,7 @@ int ttm_bo_vmap(struct ttm_buffer_object *bo, struct iosys_map *map)
 }
 EXPORT_SYMBOL(ttm_bo_vmap);
 
-/**
- * ttm_bo_vunmap
- *
- * @bo: The buffer object.
- * @map: Object describing the map to unmap.
- *
- * Unmaps a kernel map set up by ttm_bo_vmap().
- */
+ 
 void ttm_bo_vunmap(struct ttm_buffer_object *bo, struct iosys_map *map)
 {
 	struct ttm_resource *mem = bo->resource;
@@ -570,13 +444,7 @@ static int ttm_bo_move_to_ghost(struct ttm_buffer_object *bo,
 	struct ttm_buffer_object *ghost_obj;
 	int ret;
 
-	/**
-	 * This should help pipeline ordinary buffer moves.
-	 *
-	 * Hang old buffer memory on a new buffer object,
-	 * and leave it to be released when the GPU
-	 * operation has completed.
-	 */
+	 
 
 	ret = ttm_buffer_object_transfer(bo, &ghost_obj);
 	if (ret)
@@ -585,11 +453,7 @@ static int ttm_bo_move_to_ghost(struct ttm_buffer_object *bo,
 	dma_resv_add_fence(&ghost_obj->base._resv, fence,
 			   DMA_RESV_USAGE_KERNEL);
 
-	/**
-	 * If we're not moving to fixed memory, the TTM object
-	 * needs to stay alive. Otherwhise hang it on the ghost
-	 * bo to be unbound and destroyed.
-	 */
+	 
 
 	if (dst_use_tt)
 		ghost_obj->ttm = NULL;
@@ -609,10 +473,7 @@ static void ttm_bo_move_pipeline_evict(struct ttm_buffer_object *bo,
 
 	from = ttm_manager_type(bdev, bo->resource->mem_type);
 
-	/**
-	 * BO doesn't have a TTM we need to bind/unbind. Just remember
-	 * this eviction and free up the allocation
-	 */
+	 
 	spin_lock(&from->move_lock);
 	if (!from->move || dma_fence_is_later(fence, from->move)) {
 		dma_fence_put(from->move);
@@ -623,22 +484,7 @@ static void ttm_bo_move_pipeline_evict(struct ttm_buffer_object *bo,
 	ttm_resource_free(bo, &bo->resource);
 }
 
-/**
- * ttm_bo_move_accel_cleanup - cleanup helper for hw copies
- *
- * @bo: A pointer to a struct ttm_buffer_object.
- * @fence: A fence object that signals when moving is complete.
- * @evict: This is an evict move. Don't return until the buffer is idle.
- * @pipeline: evictions are to be pipelined.
- * @new_mem: struct ttm_resource indicating where to move.
- *
- * Accelerated move function to be called when an accelerated move
- * has been scheduled. The function will create a new temporary buffer object
- * representing the old placement, and put the sync object on both buffer
- * objects. After that the newly created buffer object is unref'd to be
- * destroyed when the move is complete. This will help pipeline
- * buffer moves.
- */
+ 
 int ttm_bo_move_accel_cleanup(struct ttm_buffer_object *bo,
 			      struct dma_fence *fence,
 			      bool evict,
@@ -667,15 +513,7 @@ int ttm_bo_move_accel_cleanup(struct ttm_buffer_object *bo,
 }
 EXPORT_SYMBOL(ttm_bo_move_accel_cleanup);
 
-/**
- * ttm_bo_move_sync_cleanup - cleanup by waiting for the move to finish
- *
- * @bo: A pointer to a struct ttm_buffer_object.
- * @new_mem: struct ttm_resource indicating where to move.
- *
- * Special case of ttm_bo_move_accel_cleanup where the bo is guaranteed
- * by the caller to be idle. Typically used after memcpy buffer moves.
- */
+ 
 void ttm_bo_move_sync_cleanup(struct ttm_buffer_object *bo,
 			      struct ttm_resource *new_mem)
 {
@@ -691,27 +529,17 @@ void ttm_bo_move_sync_cleanup(struct ttm_buffer_object *bo,
 }
 EXPORT_SYMBOL(ttm_bo_move_sync_cleanup);
 
-/**
- * ttm_bo_pipeline_gutting - purge the contents of a bo
- * @bo: The buffer object
- *
- * Purge the contents of a bo, async if the bo is not idle.
- * After a successful call, the bo is left unpopulated in
- * system placement. The function may wait uninterruptible
- * for idle on OOM.
- *
- * Return: 0 if successful, negative error code on failure.
- */
+ 
 int ttm_bo_pipeline_gutting(struct ttm_buffer_object *bo)
 {
 	struct ttm_buffer_object *ghost;
 	struct ttm_tt *ttm;
 	int ret;
 
-	/* If already idle, no need for ghost object dance. */
+	 
 	if (dma_resv_test_signaled(bo->base.resv, DMA_RESV_USAGE_BOOKKEEP)) {
 		if (!bo->ttm) {
-			/* See comment below about clearing. */
+			 
 			ret = ttm_tt_create(bo, true);
 			if (ret)
 				return ret;
@@ -724,13 +552,7 @@ int ttm_bo_pipeline_gutting(struct ttm_buffer_object *bo)
 		return 0;
 	}
 
-	/*
-	 * We need an unpopulated ttm_tt after giving our current one,
-	 * if any, to the ghost object. And we can't afford to fail
-	 * creating one *after* the operation. If the bo subsequently gets
-	 * resurrected, make sure it's cleared (if ttm_bo_type_device)
-	 * to avoid leaking sensitive information to user-space.
-	 */
+	 
 
 	ttm = bo->ttm;
 	bo->ttm = NULL;
@@ -744,7 +566,7 @@ int ttm_bo_pipeline_gutting(struct ttm_buffer_object *bo)
 		goto error_destroy_tt;
 
 	ret = dma_resv_copy_fences(&ghost->base._resv, bo->base.resv);
-	/* Last resort, wait for the BO to be idle when we are OOM */
+	 
 	if (ret) {
 		dma_resv_wait_timeout(bo->base.resv, DMA_RESV_USAGE_BOOKKEEP,
 				      false, MAX_SCHEDULE_TIMEOUT);

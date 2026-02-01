@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Extensible Firmware Interface
- *
- * Based on Extensible Firmware Interface Specification version 2.4
- *
- * Copyright (C) 2013 - 2015 Linaro Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt)	"efi: " fmt
 
@@ -31,11 +25,7 @@ static int __init is_memory(efi_memory_desc_t *md)
 	return 0;
 }
 
-/*
- * Translate a EFI virtual address into a physical address: this is necessary,
- * as some data members of the EFI system table are virtually remapped after
- * SetVirtualAddressMap() has been called.
- */
+ 
 static phys_addr_t __init efi_to_phys(unsigned long addr)
 {
 	efi_memory_desc_t *md;
@@ -44,7 +34,7 @@ static phys_addr_t __init efi_to_phys(unsigned long addr)
 		if (!(md->attribute & EFI_MEMORY_RUNTIME))
 			continue;
 		if (md->virt_addr == 0)
-			/* no virtual mapping has been installed by the stub */
+			 
 			break;
 		if (md->virt_addr <= addr &&
 		    (addr - md->virt_addr) < (md->num_pages << EFI_PAGE_SHIFT))
@@ -121,9 +111,7 @@ out:
 	return retval;
 }
 
-/*
- * Return true for regions that can be used as System RAM.
- */
+ 
 static __init int is_usable_memory(efi_memory_desc_t *md)
 {
 	switch (md->type) {
@@ -134,20 +122,12 @@ static __init int is_usable_memory(efi_memory_desc_t *md)
 	case EFI_BOOT_SERVICES_DATA:
 	case EFI_CONVENTIONAL_MEMORY:
 	case EFI_PERSISTENT_MEMORY:
-		/*
-		 * Special purpose memory is 'soft reserved', which means it
-		 * is set aside initially, but can be hotplugged back in or
-		 * be assigned to the dax driver after boot.
-		 */
+		 
 		if (efi_soft_reserve_enabled() &&
 		    (md->attribute & EFI_MEMORY_SP))
 			return false;
 
-		/*
-		 * According to the spec, these regions are no longer reserved
-		 * after calling ExitBootServices(). However, we can only use
-		 * them as System RAM if they can be mapped writeback cacheable.
-		 */
+		 
 		return (md->attribute & EFI_MEMORY_WB);
 	default:
 		break;
@@ -163,11 +143,7 @@ static __init void reserve_regions(void)
 	if (efi_enabled(EFI_DBG))
 		pr_info("Processing EFI memory map:\n");
 
-	/*
-	 * Discard memblocks discovered so far: if there are any at this
-	 * point, they originate from memory nodes in the DT, and UEFI
-	 * uses its own memory map instead.
-	 */
+	 
 	memblock_dump_all();
 	memblock_remove(0, PHYS_ADDR_MAX);
 
@@ -192,7 +168,7 @@ static __init void reserve_regions(void)
 			if (!is_usable_memory(md))
 				memblock_mark_nomap(paddr, size);
 
-			/* keep ACPI reclaim memory intact for kexec etc. */
+			 
 			if (md->type == EFI_ACPI_RECLAIM_MEMORY)
 				memblock_reserve(paddr, size);
 		}
@@ -204,17 +180,13 @@ void __init efi_init(void)
 	struct efi_memory_map_data data;
 	u64 efi_system_table;
 
-	/* Grab UEFI information placed in FDT by stub */
+	 
 	efi_system_table = efi_get_fdt_params(&data);
 	if (!efi_system_table)
 		return;
 
 	if (efi_memmap_init_early(&data) < 0) {
-		/*
-		* If we are booting via UEFI, the UEFI memory map is the only
-		* description of memory we have, so there is little point in
-		* proceeding if we cannot access it.
-		*/
+		 
 		panic("Unable to map EFI memory map.\n");
 	}
 
@@ -228,10 +200,7 @@ void __init efi_init(void)
 	}
 
 	reserve_regions();
-	/*
-	 * For memblock manipulation, the cap should come after the memblock_add().
-	 * And now, memblock is fully populated, it is time to do capping.
-	 */
+	 
 	early_init_dt_check_for_usable_mem_range();
 	efi_find_mirror();
 	efi_esrt_init();

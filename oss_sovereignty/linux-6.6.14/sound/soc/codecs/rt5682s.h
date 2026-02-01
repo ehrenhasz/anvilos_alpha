@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt5682s.h  --  RT5682I-VS ALSA SoC audio driver
- *
- * Copyright 2021 Realtek Microelectronics
- * Author: Derek Fang <derek.fang@realtek.com>
- */
+ 
+ 
 
 #ifndef __RT5682S_H__
 #define __RT5682S_H__
@@ -17,12 +12,12 @@
 #include <linux/clk-provider.h>
 
 
-/* Info */
+ 
 #define RT5682S_RESET				0x0000
 #define RT5682S_VERSION_ID			0x00fd
 #define RT5682S_VENDOR_ID			0x00fe
 #define RT5682S_DEVICE_ID			0x00ff
-/*  I/O - Output */
+ 
 #define RT5682S_HP_CTRL_1			0x0002
 #define RT5682S_HP_CTRL_2			0x0003
 #define RT5682S_HPL_GAIN			0x0005
@@ -30,7 +25,7 @@
 
 #define RT5682S_I2C_CTRL			0x0008
 
-/* I/O - Input */
+ 
 #define RT5682S_CBJ_BST_CTRL			0x000b
 #define RT5682S_CBJ_DET_CTRL			0x000f
 #define RT5682S_CBJ_CTRL_1			0x0010
@@ -41,27 +36,27 @@
 #define RT5682S_CBJ_CTRL_6			0x0015
 #define RT5682S_CBJ_CTRL_7			0x0016
 #define RT5682S_CBJ_CTRL_8			0x0017
-/* I/O - ADC/DAC/DMIC */
+ 
 #define RT5682S_DAC1_DIG_VOL			0x0019
 #define RT5682S_STO1_ADC_DIG_VOL		0x001c
 #define RT5682S_STO1_ADC_BOOST			0x001f
 #define RT5682S_HP_IMP_GAIN_1			0x0022
 #define RT5682S_HP_IMP_GAIN_2			0x0023
-/* Mixer - D-D */
+ 
 #define RT5682S_SIDETONE_CTRL			0x0024
 #define RT5682S_STO1_ADC_MIXER			0x0026
 #define RT5682S_AD_DA_MIXER			0x0029
 #define RT5682S_STO1_DAC_MIXER			0x002a
 #define RT5682S_A_DAC1_MUX			0x002b
 #define RT5682S_DIG_INF2_DATA			0x0030
-/* Mixer - ADC */
+ 
 #define RT5682S_REC_MIXER			0x003c
 #define RT5682S_CAL_REC				0x0044
-/* HP Analog Offset Control */
+ 
 #define RT5682S_HP_ANA_OST_CTRL_1		0x004b
 #define RT5682S_HP_ANA_OST_CTRL_2		0x004c
 #define RT5682S_HP_ANA_OST_CTRL_3		0x004d
-/* Power */
+ 
 #define RT5682S_PWR_DIG_1			0x0061
 #define RT5682S_PWR_DIG_2			0x0062
 #define RT5682S_PWR_ANLG_1			0x0063
@@ -73,29 +68,29 @@
 #define RT5682S_CLK_GATE_TCON_1			0x0068
 #define RT5682S_CLK_GATE_TCON_2			0x0069
 #define RT5682S_CLK_GATE_TCON_3			0x006a
-/* Clock Detect */
+ 
 #define RT5682S_CLK_DET				0x006b
-/* Filter Auto Reset */
+ 
 #define RT5682S_RESET_LPF_CTRL			0x006c
 #define RT5682S_RESET_HPF_CTRL			0x006d
-/* DMIC */
+ 
 #define RT5682S_DMIC_CTRL_1			0x006e
 #define RT5682S_LPF_AD_DMIC			0x006f
-/* Format - ADC/DAC */
+ 
 #define RT5682S_I2S1_SDP			0x0070
 #define RT5682S_I2S2_SDP			0x0071
 #define RT5682S_ADDA_CLK_1			0x0073
 #define RT5682S_ADDA_CLK_2			0x0074
 #define RT5682S_I2S1_F_DIV_CTRL_1		0x0075
 #define RT5682S_I2S1_F_DIV_CTRL_2		0x0076
-/* Format - TDM Control */
+ 
 #define RT5682S_TDM_CTRL			0x0079
 #define RT5682S_TDM_ADDA_CTRL_1			0x007a
 #define RT5682S_TDM_ADDA_CTRL_2			0x007b
 #define RT5682S_DATA_SEL_CTRL_1			0x007c
 #define RT5682S_TDM_TCON_CTRL_1			0x007e
 #define RT5682S_TDM_TCON_CTRL_2			0x007f
-/* Function - Analog */
+ 
 #define RT5682S_GLB_CLK				0x0080
 #define RT5682S_PLL_TRACK_1			0x0083
 #define RT5682S_PLL_TRACK_2			0x0084
@@ -159,7 +154,7 @@
 #define RT5682S_ADC_STO1_HP_CTRL_2		0x00eb
 #define RT5682S_AJD1_CTRL			0x00f0
 #define RT5682S_JD_CTRL_1			0x00f6
-/* General Control */
+ 
 #define RT5682S_DUMMY_1				0x00fa
 #define RT5682S_DUMMY_2				0x00fb
 #define RT5682S_DUMMY_3				0x00fc
@@ -408,7 +403,7 @@
 
 #define RT5682S_MAX_REG				(RT5682S_HP_AMP_DET_CTL_4)
 
-/* global definition */
+ 
 #define RT5682S_L_MUTE				(0x1 << 15)
 #define RT5682S_L_MUTE_SFT			15
 #define RT5682S_R_MUTE				(0x1 << 7)
@@ -418,10 +413,10 @@
 #define RT5682S_CLK_SRC_MCLK			(0x0)
 #define RT5682S_CLK_SRC_PLL1			(0x1)
 #define RT5682S_CLK_SRC_PLL2			(0x2)
-#define RT5682S_CLK_SRC_RCCLK			(0x4) /* 25M */
+#define RT5682S_CLK_SRC_RCCLK			(0x4)  
 
 
-/* Headphone Amp Control 2 (0x0003) */
+ 
 #define RT5682S_HPO_L_PATH_MASK			(0x1 << 14)
 #define RT5682S_HPO_L_PATH_EN			(0x1 << 14)
 #define RT5682S_HPO_L_PATH_DIS			(0x0 << 14)
@@ -432,13 +427,13 @@
 #define RT5682S_HPO_IP_EN_GATING		(0x1)
 #define RT5682S_HPO_IP_NO_GATING		(0x0)
 
-/*Headphone Amp L/R Analog Gain and Digital NG2 Gain Control (0x0005 0x0006)*/
+ 
 #define RT5682S_G_HP				(0xf << 8)
 #define RT5682S_G_HP_SFT			8
 #define RT5682S_G_STO_DA_DMIX			(0xf)
 #define RT5682S_G_STO_DA_SFT			0
 
-/* Embeeded Jack and Type Detection Control 2 (0x0010) */
+ 
 #define RT5682S_EMB_JD_MASK			(0x1 << 15)
 #define RT5682S_EMB_JD_EN			(0x1 << 15)
 #define RT5682S_EMB_JD_EN_SFT			15
@@ -479,7 +474,7 @@
 #define RT5682S_MIC_CAP_SRC_REG			(0x1)
 #define RT5682S_MIC_CAP_SRC_ANA			(0x0)
 
-/* Embeeded Jack and Type Detection Control 3 (0x0011) */
+ 
 #define RT5682S_SEL_CBJ_TYPE_SLOW		(0x1 << 15)
 #define RT5682S_SEL_CBJ_TYPE_NORM		(0x0 << 15)
 #define RT5682S_SEL_CBJ_TYPE_MASK		(0x1 << 15)
@@ -498,13 +493,13 @@
 #define RT5682S_EXT_JD_SRC_MANUAL		(0x4 << 4)
 #define RT5682S_JACK_TYPE_MASK			(0x3)
 
-/* Combo Jack and Type Detection Control 4 (0x0012) */
+ 
 #define RT5682S_CBJ_IN_BUF_MASK			(0x1 << 7)
 #define RT5682S_CBJ_IN_BUF_EN			(0x1 << 7)
 #define RT5682S_CBJ_IN_BUF_DIS			(0x0 << 7)
 #define RT5682S_CBJ_IN_BUF_BIT			7
 
-/* Combo Jack and Type Detection Control 5 (0x0013) */
+ 
 #define RT5682S_SEL_SHT_MID_TON_MASK		(0x3 << 12)
 #define RT5682S_SEL_SHT_MID_TON_2		(0x0 << 12)
 #define RT5682S_SEL_SHT_MID_TON_3		(0x1 << 12)
@@ -512,7 +507,7 @@
 #define RT5682S_CBJ_JD_TEST_NORM		(0x0 << 6)
 #define RT5682S_CBJ_JD_TEST_MODE		(0x1 << 6)
 
-/* Combo Jack and Type Detection Control 6 (0x0014) */
+ 
 #define RT5682S_JD_FAST_OFF_SRC_MASK		(0x7 << 8)
 #define RT5682S_JD_FAST_OFF_SRC_JDH		(0x6 << 8)
 #define RT5682S_JD_FAST_OFF_SRC_GPIO6		(0x5 << 8)
@@ -522,25 +517,25 @@
 #define RT5682S_JD_FAST_OFF_SRC_GPIO2		(0x1 << 8)
 #define RT5682S_JD_FAST_OFF_SRC_GPIO1		(0x0 << 8)
 
-/* DAC1 Digital Volume (0x0019) */
+ 
 #define RT5682S_DAC_L1_VOL_MASK			(0xff << 8)
 #define RT5682S_DAC_L1_VOL_SFT			8
 #define RT5682S_DAC_R1_VOL_MASK			(0xff)
 #define RT5682S_DAC_R1_VOL_SFT			0
 
-/* ADC Digital Volume Control (0x001c) */
+ 
 #define RT5682S_ADC_L_VOL_MASK			(0x7f << 8)
 #define RT5682S_ADC_L_VOL_SFT			8
 #define RT5682S_ADC_R_VOL_MASK			(0x7f)
 #define RT5682S_ADC_R_VOL_SFT			0
 
-/* Stereo1 ADC Boost Gain Control (0x001f) */
+ 
 #define RT5682S_STO1_ADC_L_BST_MASK		(0x3 << 14)
 #define RT5682S_STO1_ADC_L_BST_SFT		14
 #define RT5682S_STO1_ADC_R_BST_MASK		(0x3 << 12)
 #define RT5682S_STO1_ADC_R_BST_SFT		12
 
-/* Sidetone Control (0x0024) */
+ 
 #define RT5682S_ST_SRC_SEL			(0x1 << 8)
 #define RT5682S_ST_SRC_SFT			8
 #define RT5682S_ST_EN_MASK			(0x1 << 6)
@@ -548,7 +543,7 @@
 #define RT5682S_ST_EN				(0x1 << 6)
 #define RT5682S_ST_EN_SFT			6
 
-/* Stereo1 ADC Mixer Control (0x0026) */
+ 
 #define RT5682S_M_STO1_ADC_L1			(0x1 << 15)
 #define RT5682S_M_STO1_ADC_L1_SFT		15
 #define RT5682S_M_STO1_ADC_L2			(0x1 << 14)
@@ -572,7 +567,7 @@
 #define RT5682S_STO1_ADCR_SRC_MASK		(0x3 << 2)
 #define RT5682S_STO1_ADCR_SRC_SFT		2
 
-/* ADC Mixer to DAC Mixer Control (0x0029) */
+ 
 #define RT5682S_M_ADCMIX_L			(0x1 << 15)
 #define RT5682S_M_ADCMIX_L_SFT			15
 #define RT5682S_M_DAC1_L			(0x1 << 14)
@@ -582,7 +577,7 @@
 #define RT5682S_M_DAC1_R			(0x1 << 6)
 #define RT5682S_M_DAC1_R_SFT			6
 
-/* Stereo1 DAC Mixer Control (0x002a) */
+ 
 #define RT5682S_M_DAC_L1_STO_L			(0x1 << 15)
 #define RT5682S_M_DAC_L1_STO_L_SFT		15
 #define RT5682S_G_DAC_L1_STO_L_MASK		(0x1 << 14)
@@ -600,7 +595,7 @@
 #define RT5682S_G_DAC_R1_STO_R_MASK		(0x1 << 4)
 #define RT5682S_G_DAC_R1_STO_R_SFT		4
 
-/* Analog DAC1 Input Source Control (0x002b) */
+ 
 #define RT5682S_M_ST_STO_L			(0x1 << 9)
 #define RT5682S_M_ST_STO_L_SFT			9
 #define RT5682S_M_ST_STO_R			(0x1 << 8)
@@ -610,13 +605,13 @@
 #define RT5682S_DAC_R1_SRC_MASK			(0x1)
 #define RT5682S_A_DACR1_SFT			0
 
-/* Digital Interface Data Control (0x0030) */
+ 
 #define RT5682S_IF2_DAC_SEL_MASK		(0x3 << 2)
 #define RT5682S_IF2_DAC_SEL_SFT			2
 #define RT5682S_IF2_ADC_SEL_MASK		(0x3 << 0)
 #define RT5682S_IF2_ADC_SEL_SFT			0
 
-/* REC Left/Right Mixer Control 2 (0x003c) */
+ 
 #define RT5682S_BST_CBJ_MASK			(0x3f << 8)
 #define RT5682S_BST_CBJ_SFT			8
 #define RT5682S_M_CBJ_RM1_L			(0x1 << 7)
@@ -624,11 +619,11 @@
 #define RT5682S_M_CBJ_RM1_R			(0x1 << 6)
 #define RT5682S_M_CBJ_RM1_R_SFT			6
 
-/* REC Left/Right Mixer Calibration Control(0x0044) */
+ 
 #define RT5682S_PWR_RM1_R_BIT			8
 #define RT5682S_PWR_RM1_L_BIT			0
 
-/* Power Management for Digital 1 (0x0061) */
+ 
 #define RT5682S_PWR_I2S1			(0x1 << 15)
 #define RT5682S_PWR_I2S1_BIT			15
 #define RT5682S_PWR_I2S2			(0x1 << 14)
@@ -658,7 +653,7 @@
 #define RT5682S_DIG_GATE_CTRL			(0x1 << 0)
 #define RT5682S_DIG_GATE_CTRL_SFT		0
 
-/* Power Management for Digital 2 (0x0062) */
+ 
 #define RT5682S_PWR_ADC_S1F			(0x1 << 15)
 #define RT5682S_PWR_ADC_S1F_BIT			15
 #define RT5682S_PWR_DAC_S1F			(0x1 << 10)
@@ -673,7 +668,7 @@
 #define RT5682S_DLDO_SRC_REG			(0x1 << 4)
 #define RT5682S_DLDO_SRC_EFUSE			(0x0 << 4)
 
-/* Power Management for Analog 1 (0x0063) */
+ 
 #define RT5682S_PWR_VREF1			(0x1 << 15)
 #define RT5682S_PWR_VREF1_BIT			15
 #define RT5682S_PWR_FV1				(0x1 << 14)
@@ -691,7 +686,7 @@
 #define RT5682S_LDO1_BYPASS			(0x1 << 6)
 #define RT5682S_LDO1_NOT_BYPASS			(0x0 << 6)
 
-/* Power Management for Analog 2 (0x0064) */
+ 
 #define RT5682S_PWR_MCLK0_WD			(0x1 << 15)
 #define RT5682S_PWR_MCLK0_WD_BIT		15
 #define RT5682S_PWR_MCLK1_WD			(0x1 << 14)
@@ -710,7 +705,7 @@
 #define RT5682S_PWR_JD_ENABLE			(0x1 << 0)
 #define RT5682S_PWR_JD_DISABLE			(0x0 << 0)
 
-/* Power Management for Analog 3 (0x0065) */
+ 
 #define RT5682S_PWR_LDO_PLLA			(0x1 << 15)
 #define RT5682S_PWR_LDO_PLLA_BIT		15
 #define RT5682S_PWR_LDO_PLLB			(0x1 << 14)
@@ -736,7 +731,7 @@
 #define RT5682S_PWR_BGLDO			(0x1 << 0)
 #define RT5682S_PWR_BGLDO_BIT			0
 
-/* Power Management for Mixer (0x0066) */
+ 
 #define RT5682S_PWR_CLK_COMP_8FS		(0x1 << 15)
 #define RT5682S_PWR_CLK_COMP_8FS_BIT		15
 #define RT5682S_DBG_BGLDO_MASK			(0x3 << 12)
@@ -755,13 +750,13 @@
 #define RT5682S_DVO_BGLDO_MB1_SFT		2
 #define RT5682S_DVO_BGLDO_MB2_MASK		(0x3 << 0)
 
-/* MCLK and System Clock Detection Control (0x006b) */
+ 
 #define RT5682S_SYS_CLK_DET			(0x1 << 15)
 #define RT5682S_SYS_CLK_DET_SFT			15
 #define RT5682S_PLL1_CLK_DET			(0x1 << 14)
 #define RT5682S_PLL1_CLK_DET_SFT		14
 
-/* Digital Microphone Control 1 (0x006e) */
+ 
 #define RT5682S_DMIC_1_EN_MASK			(0x1 << 15)
 #define RT5682S_DMIC_1_EN_SFT			15
 #define RT5682S_DMIC_1_DIS			(0x0 << 15)
@@ -775,7 +770,7 @@
 #define RT5682S_DMIC_CLK_MASK			(0xf << 0)
 #define RT5682S_DMIC_CLK_SFT			0
 
-/* I2S1 Audio Serial Data Port Control (0x0070) */
+ 
 #define RT5682S_SEL_ADCDAT_MASK			(0x1 << 15)
 #define RT5682S_SEL_ADCDAT_OUT			(0x0 << 15)
 #define RT5682S_SEL_ADCDAT_IN			(0x1 << 15)
@@ -805,7 +800,7 @@
 #define RT5682S_I2S1_DL_32			(0x3 << 4)
 #define RT5682S_I2S1_DL_8			(0x4 << 4)
 
-/* I2S1/2 Audio Serial Data Port Control (0x0071) */
+ 
 #define RT5682S_I2S2_MS_MASK			(0x1 << 15)
 #define RT5682S_I2S2_MS_SFT			15
 #define RT5682S_I2S2_MS_M			(0x0 << 15)
@@ -839,7 +834,7 @@
 #define RT5682S_I2S_DF_PCM_A_N			(0x6)
 #define RT5682S_I2S_DF_PCM_B_N			(0x7)
 
-/* ADC/DAC Clock Control 1 (0x0073) */
+ 
 #define RT5682S_ADC_OSR_MASK			(0xf << 12)
 #define RT5682S_ADC_OSR_SFT			12
 #define RT5682S_ADC_OSR_D_1			(0x0 << 12)
@@ -880,14 +875,14 @@
 #define RT5682S_DAC_OSR_D_32			(0x8 << 0)
 #define RT5682S_DAC_OSR_D_48			(0x9 << 0)
 
-/* ADC/DAC Clock Control 2 (0x0074) */
+ 
 #define RT5682S_I2S2_BCLK_MS2_MASK		(0x1 << 11)
 #define RT5682S_I2S2_BCLK_MS2_SFT		11
 #define RT5682S_I2S2_BCLK_MS2_32		(0x0 << 11)
 #define RT5682S_I2S2_BCLK_MS2_64		(0x1 << 11)
 
 
-/* TDM control 1 (0x0079) */
+ 
 #define RT5682S_TDM_TX_CH_MASK			(0x3 << 12)
 #define RT5682S_TDM_TX_CH_2			(0x0 << 12)
 #define RT5682S_TDM_TX_CH_4			(0x1 << 12)
@@ -903,17 +898,17 @@
 #define RT5682S_TDM_ADC_DL_MASK			(0x3 << 0)
 #define RT5682S_TDM_ADC_DL_SFT			0
 
-/* TDM control 2 (0x007a) */
+ 
 #define RT5682S_IF1_ADC1_SEL_SFT		14
 #define RT5682S_IF1_ADC2_SEL_SFT		12
 #define RT5682S_IF1_ADC3_SEL_SFT		10
 #define RT5682S_IF1_ADC4_SEL_SFT		8
 #define RT5682S_TDM_ADC_SEL_SFT			3
 
-/* TDM control 3 (0x007b) */
+ 
 #define RT5682S_TDM_EN				(0x1 << 7)
 
-/* TDM/I2S control (0x007e) */
+ 
 #define RT5682S_TDM_S_BP_MASK			(0x1 << 15)
 #define RT5682S_TDM_S_BP_SFT			15
 #define RT5682S_TDM_S_BP_NOR			(0x0 << 15)
@@ -955,7 +950,7 @@
 #define RT5682S_TDM_MS_S			(0x0 << 0)
 #define RT5682S_TDM_MS_M			(0x1 << 0)
 
-/* Global Clock Control (0x0080) */
+ 
 #define RT5682S_SCLK_SRC_MASK			(0x7 << 13)
 #define RT5682S_SCLK_SRC_SFT			13
 #define RT5682S_PLL_SRC_MASK			(0x3 << 8)
@@ -964,7 +959,7 @@
 #define RT5682S_PLL_SRC_BCLK1			(0x1 << 8)
 #define RT5682S_PLL_SRC_RC			(0x3 << 8)
 
-/* PLL tracking mode 1 (0x0083) */
+ 
 #define RT5682S_DA_ASRC_MASK			(0x1 << 13)
 #define RT5682S_DA_ASRC_SFT			13
 #define RT5682S_DAC_STO1_ASRC_MASK		(0x1 << 12)
@@ -980,13 +975,13 @@
 #define RT5682S_DA_ASRC_SEL_MASK		(0x1 << 0)
 #define RT5682S_DA_ASRC_SEL_SFT			0
 
-/* PLL tracking mode 2 3 (0x0084)(0x0085)*/
+ 
 #define RT5682S_FILTER_CLK_SEL_MASK		(0x7 << 12)
 #define RT5682S_FILTER_CLK_SEL_SFT		12
 #define RT5682S_FILTER_CLK_DIV_MASK		(0xf << 8)
 #define RT5682S_FILTER_CLK_DIV_SFT		8
 
-/* ASRC Control 4 (0x0086) */
+ 
 #define RT5682S_ASRCIN_FTK_N1_MASK		(0x3 << 14)
 #define RT5682S_ASRCIN_FTK_N1_SFT		14
 #define RT5682S_ASRCIN_FTK_N2_MASK		(0x3 << 12)
@@ -996,7 +991,7 @@
 #define RT5682S_ASRCIN_FTK_M2_MASK		(0x7 << 4)
 #define RT5682S_ASRCIN_FTK_M2_SFT		4
 
-/* ASRC Control 11 (0x008c) */
+ 
 #define RT5682S_ASRCIN_AUTO_CLKOUT_MASK		(0x1 << 5)
 #define RT5682S_ASRCIN_AUTO_CLKOUT_EN		(0x1 << 5)
 #define RT5682S_ASRCIN_AUTO_CLKOUT_DIS		(0x0 << 5)
@@ -1009,7 +1004,7 @@
 #define RT5682S_SEL_LRCK_DET_DIV2		(0x1)
 #define RT5682S_SEL_LRCK_DET_DIV1		(0x0)
 
-/* Depop Mode Control 1 (0x008e) */
+ 
 #define RT5682S_OUT_HP_L_EN			(0x1 << 6)
 #define RT5682S_OUT_HP_R_EN			(0x1 << 5)
 #define RT5682S_LDO_PUMP_EN			(0x1 << 4)
@@ -1021,7 +1016,7 @@
 #define RT5682S_CAPLESS_R_EN			(0x1 << 0)
 #define RT5682S_CAPLESS_R_EN_SFT		0
 
-/* Depop Mode Control 2 (0x8f) */
+ 
 #define RT5682S_RAMP_MASK			(0x1 << 12)
 #define RT5682S_RAMP_SFT			12
 #define RT5682S_RAMP_DIS			(0x0 << 12)
@@ -1039,7 +1034,7 @@
 #define RT5682S_VLO_3V				(0x0 << 7)
 #define RT5682S_VLO_33V				(0x1 << 7)
 
-/* HPOUT charge pump 1 (0x0091) */
+ 
 #define RT5682S_OSW_L_MASK			(0x1 << 11)
 #define RT5682S_OSW_L_SFT			11
 #define RT5682S_OSW_L_DIS			(0x0 << 11)
@@ -1054,7 +1049,7 @@
 #define RT5682S_PM_HP_MV			(0x1 << 8)
 #define RT5682S_PM_HP_HV			(0x2 << 8)
 
-/* Micbias Control1 (0x93) */
+ 
 #define RT5682S_MIC1_OV_MASK			(0x3 << 14)
 #define RT5682S_MIC1_OV_SFT			14
 #define RT5682S_MIC1_OV_2V7			(0x0 << 14)
@@ -1068,7 +1063,7 @@
 #define RT5682S_MIC2_OV_2V25			(0x3 << 8)
 #define RT5682S_MIC2_OV_1V8			(0x4 << 8)
 
-/* Micbias Control2 (0x0094) */
+ 
 #define RT5682S_PWR_CLK25M_MASK			(0x1 << 9)
 #define RT5682S_PWR_CLK25M_SFT			9
 #define RT5682S_PWR_CLK25M_PD			(0x0 << 9)
@@ -1078,23 +1073,23 @@
 #define RT5682S_PWR_CLK1M_PD			(0x0 << 8)
 #define RT5682S_PWR_CLK1M_PU			(0x1 << 8)
 
-/* PLL M/N/K Code Control 1 (0x0098) */
+ 
 #define RT5682S_PLLA_N_MASK			(0x1ff << 0)
 
-/* PLL M/N/K Code Control 2 (0x0099) */
+ 
 #define RT5682S_PLLA_M_MASK			(0x1f << 8)
 #define RT5682S_PLLA_M_SFT			8
 #define RT5682S_PLLA_K_MASK			(0x1f << 0)
 
-/* PLL M/N/K Code Control 3 (0x009a) */
+ 
 #define RT5682S_PLLB_N_MASK			(0x3ff << 0)
 
-/* PLL M/N/K Code Control 4 (0x009b) */
+ 
 #define RT5682S_PLLB_M_MASK			(0x1f << 8)
 #define RT5682S_PLLB_M_SFT			8
 #define RT5682S_PLLB_K_MASK			(0x1f << 0)
 
-/* PLL M/N/K Code Control 6 (0x009d) */
+ 
 #define RT5682S_PLLB_SEL_PS_MASK		(0x1 << 13)
 #define RT5682S_PLLB_SEL_PS_SFT			13
 #define RT5682S_PLLB_BYP_PS_MASK		(0x1 << 12)
@@ -1108,16 +1103,16 @@
 #define RT5682S_PLLA_K_BP_MASK			(0x1 << 6)
 #define RT5682S_PLLA_K_BP_SFT			6
 
-/* PLL M/N/K Code Control 7 (0x009e) */
+ 
 #define RT5682S_PLLB_SRC_MASK			(0x1)
 #define RT5682S_PLLB_SRC_DFIN			(0x1)
 #define RT5682S_PLLB_SRC_PLLA			(0x0)
 
-/* RC Clock Control (0x009f) */
+ 
 #define RT5682S_POW_IRQ				(0x1 << 15)
 #define RT5682S_POW_JDH				(0x1 << 14)
 
-/* I2S2 Master Mode Clock Control 1 (0x00a0) */
+ 
 #define RT5682S_I2S2_M_CLK_SRC_MASK		(0x7 << 4)
 #define RT5682S_I2S2_M_CLK_SRC_SFT		4
 #define RT5682S_I2S2_M_D_MASK			(0xf << 0)
@@ -1134,13 +1129,13 @@
 #define RT5682S_I2S2_M_D_48			(0xa)
 #define RT5682S_I2S2_M_D_SFT			0
 
-/* IRQ Control 1 (0x00b6) */
+ 
 #define RT5682S_JD1_PULSE_EN_MASK		(0x1 << 10)
 #define RT5682S_JD1_PULSE_EN_SFT		10
 #define RT5682S_JD1_PULSE_DIS			(0x0 << 10)
 #define RT5682S_JD1_PULSE_EN			(0x1 << 10)
 
-/* IRQ Control 2 (0x00b7) */
+ 
 #define RT5682S_JD1_EN_MASK			(0x1 << 15)
 #define RT5682S_JD1_EN_SFT			15
 #define RT5682S_JD1_DIS				(0x0 << 15)
@@ -1152,7 +1147,7 @@
 #define RT5682S_JD1_IRQ_LEV			(0x0 << 10)
 #define RT5682S_JD1_IRQ_PUL			(0x1 << 10)
 
-/* IRQ Control 3 (0x00b8) */
+ 
 #define RT5682S_IL_IRQ_MASK			(0x1 << 7)
 #define RT5682S_IL_IRQ_DIS			(0x0 << 7)
 #define RT5682S_IL_IRQ_EN			(0x1 << 7)
@@ -1160,7 +1155,7 @@
 #define RT5682S_IL_IRQ_LEV			(0x0 << 4)
 #define RT5682S_IL_IRQ_PUL			(0x1 << 4)
 
-/* GPIO Control 1 (0x00c0) */
+ 
 #define RT5682S_GP1_PIN_MASK			(0x3 << 14)
 #define RT5682S_GP1_PIN_SFT			14
 #define RT5682S_GP1_PIN_GPIO1			(0x0 << 14)
@@ -1192,7 +1187,7 @@
 #define RT5682S_GP6_PIN_GPIO6			(0x0 << 5)
 #define RT5682S_GP6_PIN_LRCK1			(0x1 << 5)
 
-/* GPIO Control 2 (0x00c1)*/
+ 
 #define RT5682S_GP1_PF_MASK			(0x1 << 15)
 #define RT5682S_GP1_PF_IN			(0x0 << 15)
 #define RT5682S_GP1_PF_OUT			(0x1 << 15)
@@ -1230,7 +1225,7 @@
 #define RT5682S_GP6_OUT_L			(0x0 << 4)
 #define RT5682S_GP6_OUT_H			(0x1 << 4)
 
-/* GPIO Status (0x00c2) */
+ 
 #define RT5682S_GP6_ST				(0x1 << 6)
 #define RT5682S_GP5_ST				(0x1 << 5)
 #define RT5682S_GP4_ST				(0x1 << 4)
@@ -1238,13 +1233,13 @@
 #define RT5682S_GP2_ST				(0x1 << 2)
 #define RT5682S_GP1_ST				(0x1 << 1)
 
-/* Soft volume and zero cross control 1 (0x00d9) */
+ 
 #define RT5682S_ZCD_MASK			(0x1 << 10)
 #define RT5682S_ZCD_SFT				10
 #define RT5682S_ZCD_PD				(0x0 << 10)
 #define RT5682S_ZCD_PU				(0x1 << 10)
 
-/* 4 Button Inline Command Control 2 (0x00e3) */
+ 
 #define RT5682S_4BTN_IL_MASK			(0x1 << 15)
 #define RT5682S_4BTN_IL_EN			(0x1 << 15)
 #define RT5682S_4BTN_IL_DIS			(0x0 << 15)
@@ -1252,25 +1247,25 @@
 #define RT5682S_4BTN_IL_NOR			(0x1 << 14)
 #define RT5682S_4BTN_IL_RST			(0x0 << 14)
 
-/* 4 Button Inline Command Control 3~6 (0x00e5~0x00e8) */
+ 
 #define RT5682S_4BTN_IL_HOLD_WIN_MASK		(0x7f << 8)
 #define RT5682S_4BTN_IL_HOLD_WIN_SFT		8
 #define RT5682S_4BTN_IL_CLICK_WIN_MASK		(0x7f)
 #define RT5682S_4BTN_IL_CLICK_WIN_SFT		0
 
-/* Analog JD Control (0x00f0) */
+ 
 #define RT5682S_JDH_RS_MASK			(0x1 << 4)
 #define RT5682S_JDH_NO_PLUG			(0x1 << 4)
 #define RT5682S_JDH_PLUG			(0x0 << 4)
 
-/* Charge Pump Internal Register1 (0x0125) */
+ 
 #define RT5682S_CP_CLK_HP_MASK			(0x3 << 4)
 #define RT5682S_CP_CLK_HP_100KHZ		(0x0 << 4)
 #define RT5682S_CP_CLK_HP_200KHZ		(0x1 << 4)
 #define RT5682S_CP_CLK_HP_300KHZ		(0x2 << 4)
 #define RT5682S_CP_CLK_HP_600KHZ		(0x3 << 4)
 
-/* Pad Driving Control (0x0136) */
+ 
 #define RT5682S_PAD_DRV_GP1_MASK		(0x1 << 14)
 #define RT5682S_PAD_DRV_GP1_HIGH		(0x1 << 14)
 #define RT5682S_PAD_DRV_GP1_LOW			(0x0 << 14)
@@ -1290,44 +1285,44 @@
 #define RT5682S_PAD_DRV_GP6_HIGH		(0x1 << 4)
 #define RT5682S_PAD_DRV_GP6_LOW			(0x0 << 4)
 
-/* Chopper and Clock control for DAC (0x013a)*/
+ 
 #define RT5682S_CKXEN_DAC1_MASK			(0x1 << 13)
 #define RT5682S_CKXEN_DAC1_SFT			13
 #define RT5682S_CKGEN_DAC1_MASK			(0x1 << 12)
 #define RT5682S_CKGEN_DAC1_SFT			12
 
-/* Chopper and Clock control for ADC (0x013b)*/
+ 
 #define RT5682S_CKXEN_ADC1_MASK			(0x1 << 13)
 #define RT5682S_CKXEN_ADC1_SFT			13
 #define RT5682S_CKGEN_ADC1_MASK			(0x1 << 12)
 #define RT5682S_CKGEN_ADC1_SFT			12
 
-/* Volume test (0x013f)*/
+ 
 #define RT5682S_SEL_CLK_VOL_MASK		(0x1 << 15)
 #define RT5682S_SEL_CLK_VOL_EN			(0x1 << 15)
 #define RT5682S_SEL_CLK_VOL_DIS			(0x0 << 15)
 
-/* Test Mode Control 1 (0x0145) */
+ 
 #define RT5682S_AD2DA_LB_MASK			(0x1 << 10)
 #define RT5682S_AD2DA_LB_SFT			10
 
-/* Stereo Noise Gate Control 1 (0x0160) */
+ 
 #define RT5682S_NG2_EN_MASK			(0x1 << 15)
 #define RT5682S_NG2_EN				(0x1 << 15)
 #define RT5682S_NG2_DIS				(0x0 << 15)
 
-/* Stereo1 DAC Silence Detection Control (0x0190) */
+ 
 #define RT5682S_DEB_STO_DAC_MASK		(0x7 << 4)
 #define RT5682S_DEB_80_MS			(0x0 << 4)
 
-/* HP Behavior Logic Control 2 (0x01db) */
+ 
 #define RT5682S_HP_SIG_SRC_MASK			(0x3)
 #define RT5682S_HP_SIG_SRC_1BIT_CTL		(0x3)
 #define RT5682S_HP_SIG_SRC_REG			(0x2)
 #define RT5682S_HP_SIG_SRC_IMPE_REG		(0x1)
 #define RT5682S_HP_SIG_SRC_DC_CALI		(0x0)
 
-/* SAR ADC Inline Command Control 1 (0x0210) */
+ 
 #define RT5682S_SAR_BUTDET_MASK			(0x1 << 15)
 #define RT5682S_SAR_BUTDET_EN			(0x1 << 15)
 #define RT5682S_SAR_BUTDET_DIS			(0x0 << 15)
@@ -1358,17 +1353,17 @@
 #define RT5682S_SAR_SEL_SIGNAL_AUTO		(0x1 << 4)
 #define RT5682S_SAR_SEL_SIGNAL_MANU		(0x0 << 4)
 
-/* SAR ADC Inline Command Control 2 (0x0211) */
+ 
 #define RT5682S_SAR_ADC_PSV_MASK		(0x1 << 4)
 #define RT5682S_SAR_ADC_PSV_ENTRY		(0x1 << 4)
 
 
-/* SAR ADC Inline Command Control 13 (0x021c) */
+ 
 #define RT5682S_SAR_SOUR_MASK			(0x3f)
 #define RT5682S_SAR_SOUR_BTN			(0x3f)
 #define RT5682S_SAR_SOUR_TYPE			(0x0)
 
-/* Headphone Amp Detection Control 1 (0x3b00) */
+ 
 #define RT5682S_CP_SW_SIZE_MASK			(0x7 << 4)
 #define RT5682S_CP_SW_SIZE_L			(0x4 << 4)
 #define RT5682S_CP_SW_SIZE_M			(0x2 << 4)
@@ -1378,7 +1373,7 @@
 #define RT5682S_FORMATS (SNDRV_PCM_FMTBIT_S16_LE | SNDRV_PCM_FMTBIT_S20_3LE | \
 		SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S8)
 
-/* System Clock Source */
+ 
 enum {
 	RT5682S_SCLK_S_MCLK,
 	RT5682S_SCLK_S_PLL1,
@@ -1386,7 +1381,7 @@ enum {
 	RT5682S_SCLK_S_RCCLK,
 };
 
-/* PLL Source */
+ 
 enum {
 	RT5682S_PLL_S_MCLK,
 	RT5682S_PLL_S_BCLK1,
@@ -1406,7 +1401,7 @@ enum {
 	RT5682S_AIFS
 };
 
-/* filter mask */
+ 
 enum {
 	RT5682S_DA_STEREO1_FILTER = 0x1,
 	RT5682S_AD_STEREO1_FILTER = (0x1 << 1),
@@ -1482,4 +1477,4 @@ struct rt5682s_priv {
 int rt5682s_sel_asrc_clk_src(struct snd_soc_component *component,
 		unsigned int filter_mask, unsigned int clk_src);
 
-#endif /* __RT5682S_H__ */
+#endif  

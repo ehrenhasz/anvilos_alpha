@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Damien P. George on behalf of Pycom Ltd
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,35 +17,35 @@
 
 #include "shared/runtime/gchelper.h"
 
-// Some platforms don't have SIGRTMIN but if we do have it, use it to avoid
-// potential conflict with other uses of the more commonly used SIGUSR1.
+
+
 #ifdef SIGRTMIN
 #define MP_THREAD_GC_SIGNAL (SIGRTMIN + 5)
 #else
 #define MP_THREAD_GC_SIGNAL (SIGUSR1)
 #endif
 
-// This value seems to be about right for both 32-bit and 64-bit builds.
+
 #define THREAD_STACK_OVERFLOW_MARGIN (8192)
 
-// this structure forms a linked list, one node per active thread
+
 typedef struct _mp_thread_t {
-    pthread_t id;           // system id of thread
-    int ready;              // whether the thread is ready and running
-    void *arg;              // thread Python args, a GC root pointer
+    pthread_t id;           
+    int ready;              
+    void *arg;              
     struct _mp_thread_t *next;
 } mp_thread_t;
 
 static pthread_key_t tls_key;
 
-// The mutex is used for any code in this port that needs to be thread safe.
-// Specifically for thread management, access to the linked list is one example.
-// But also, e.g. scheduler state.
+
+
+
 static pthread_mutex_t thread_mutex;
 static mp_thread_t *thread;
 
-// this is used to synchronise the signal handler of the thread
-// it's needed because we can't use any pthread calls in a signal handler
+
+
 #if defined(__APPLE__)
 static char thread_signal_done_name[25];
 static sem_t *thread_signal_done_p;
@@ -85,16 +61,16 @@ void mp_thread_unix_end_atomic_section(void) {
     pthread_mutex_unlock(&thread_mutex);
 }
 
-// this signal handler is used to scan the regs and stack of a thread
+
 static void mp_thread_gc(int signo, siginfo_t *info, void *context) {
-    (void)info; // unused
-    (void)context; // unused
+    (void)info; 
+    (void)context; 
     if (signo == MP_THREAD_GC_SIGNAL) {
         gc_helper_collect_regs_and_stack();
-        // We have access to the context (regs, stack) of the thread but it seems
-        // that we don't need the extra information, enough is captured by the
-        // gc_collect_regs_and_stack function above
-        // gc_collect_root((void**)context, sizeof(ucontext_t) / sizeof(uintptr_t));
+        
+        
+        
+        
         #if MICROPY_ENABLE_PYSTACK
         void **ptrs = (void **)(void *)MP_STATE_THREAD(pystack_start);
         gc_collect_root(ptrs, (MP_STATE_THREAD(pystack_cur) - MP_STATE_THREAD(pystack_start)) / sizeof(void *));
@@ -111,14 +87,14 @@ void mp_thread_init(void) {
     pthread_key_create(&tls_key, NULL);
     pthread_setspecific(tls_key, &mp_state_ctx.thread);
 
-    // Needs to be a recursive mutex to emulate the behavior of
-    // BEGIN_ATOMIC_SECTION on bare metal.
+    
+    
     pthread_mutexattr_t thread_mutex_attr;
     pthread_mutexattr_init(&thread_mutex_attr);
     pthread_mutexattr_settype(&thread_mutex_attr, PTHREAD_MUTEX_RECURSIVE);
     pthread_mutex_init(&thread_mutex, &thread_mutex_attr);
 
-    // create first entry in linked list of all threads
+    
     thread = malloc(sizeof(mp_thread_t));
     thread->id = pthread_self();
     thread->ready = 1;
@@ -132,7 +108,7 @@ void mp_thread_init(void) {
     sem_init(&thread_signal_done, 0, 0);
     #endif
 
-    // enable signal handler for garbage collection
+    
     struct sigaction sa;
     sa.sa_flags = SA_SIGINFO;
     sa.sa_sigaction = mp_thread_gc;
@@ -157,12 +133,12 @@ void mp_thread_deinit(void) {
     free(thread);
 }
 
-// This function scans all pointers that are external to the current thread.
-// It does this by signalling all other threads and getting them to scan their
-// own registers and stack.  Note that there may still be some edge cases left
-// with race conditions and root-pointer scanning: a given thread may manipulate
-// the global root pointers (in mp_state_ctx) while another thread is doing a
-// garbage collection and tracing these pointers.
+
+
+
+
+
+
 void mp_thread_gc_others(void) {
     mp_thread_unix_begin_atomic_section();
     for (mp_thread_t *th = thread; th != NULL; th = th->next) {
@@ -196,7 +172,7 @@ mp_uint_t mp_thread_get_id(void) {
 }
 
 void mp_thread_start(void) {
-    // enable realtime priority if `-X realtime` command line parameter was set
+    
     #if defined(__APPLE__)
     if (mp_thread_is_realtime_enabled) {
         mp_thread_set_realtime();
@@ -215,22 +191,22 @@ void mp_thread_start(void) {
 }
 
 mp_uint_t mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size) {
-    // default stack size is 8k machine-words
+    
     if (*stack_size == 0) {
         *stack_size = 8192 * sizeof(void *);
     }
 
-    // minimum stack size is set by pthreads
+    
     if (*stack_size < PTHREAD_STACK_MIN) {
         *stack_size = PTHREAD_STACK_MIN;
     }
 
-    // ensure there is enough stack to include a stack-overflow margin
+    
     if (*stack_size < 2 * THREAD_STACK_OVERFLOW_MARGIN) {
         *stack_size = 2 * THREAD_STACK_OVERFLOW_MARGIN;
     }
 
-    // set thread attributes
+    
     pthread_attr_t attr;
     int ret = pthread_attr_init(&attr);
     if (ret != 0) {
@@ -248,7 +224,7 @@ mp_uint_t mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size
 
     mp_thread_unix_begin_atomic_section();
 
-    // create thread
+    
     pthread_t id;
     ret = pthread_create(&id, &attr, entry, arg);
     if (ret != 0) {
@@ -256,10 +232,10 @@ mp_uint_t mp_thread_create(void *(*entry)(void *), void *arg, size_t *stack_size
         goto er;
     }
 
-    // adjust stack_size to provide room to recover from hitting the limit
+    
     *stack_size -= THREAD_STACK_OVERFLOW_MARGIN;
 
-    // add thread to linked list of all threads
+    
     mp_thread_t *th = malloc(sizeof(mp_thread_t));
     th->id = id;
     th->ready = 0;
@@ -318,12 +294,12 @@ int mp_thread_mutex_lock(mp_thread_mutex_t *mutex, int wait) {
 
 void mp_thread_mutex_unlock(mp_thread_mutex_t *mutex) {
     pthread_mutex_unlock(mutex);
-    // TODO check return value
+    
 }
 
-#endif // MICROPY_PY_THREAD
+#endif 
 
-// this is used even when MICROPY_PY_THREAD is disabled
+
 
 #if defined(__APPLE__)
 #include <mach/mach_error.h>
@@ -333,7 +309,7 @@ void mp_thread_mutex_unlock(mp_thread_mutex_t *mutex) {
 
 bool mp_thread_is_realtime_enabled;
 
-// based on https://developer.apple.com/library/archive/technotes/tn2169/_index.html
+
 void mp_thread_set_realtime(void) {
     mach_timebase_info_data_t timebase_info;
 
@@ -344,7 +320,7 @@ void mp_thread_set_realtime(void) {
 
     thread_time_constraint_policy_data_t policy;
     policy.period = 0;
-    policy.computation = (uint32_t)(5 * clock2abs); // 5 ms of work
+    policy.computation = (uint32_t)(5 * clock2abs); 
     policy.constraint = (uint32_t)(10 * clock2abs);
     policy.preemptible = FALSE;
 

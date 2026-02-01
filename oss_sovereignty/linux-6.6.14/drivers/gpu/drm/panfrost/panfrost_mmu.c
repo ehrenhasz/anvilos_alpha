@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2019 Linaro, Ltd, Rob Herring <robh@kernel.org> */
+
+ 
 
 #include <drm/panfrost_drm.h>
 
@@ -31,13 +31,12 @@ static int wait_ready(struct panfrost_device *pfdev, u32 as_nr)
 	int ret;
 	u32 val;
 
-	/* Wait for the MMU status to indicate there is no active command, in
-	 * case one is pending. */
+	 
 	ret = readl_relaxed_poll_timeout_atomic(pfdev->iomem + AS_STATUS(as_nr),
 		val, !(val & AS_STATUS_AS_ACTIVE), 10, 100000);
 
 	if (ret) {
-		/* The GPU hung, let's trigger a reset */
+		 
 		panfrost_device_schedule_reset(pfdev);
 		dev_err(pfdev->dev, "AS_ACTIVE bit stuck\n");
 	}
@@ -49,7 +48,7 @@ static int write_cmd(struct panfrost_device *pfdev, u32 as_nr, u32 cmd)
 {
 	int status;
 
-	/* write AS_COMMAND when MMU is ready to accept another command */
+	 
 	status = wait_ready(pfdev, as_nr);
 	if (!status)
 		mmu_write(pfdev, AS_COMMAND(as_nr), cmd);
@@ -67,26 +66,16 @@ static void lock_region(struct panfrost_device *pfdev, u32 as_nr,
 	if (!size)
 		return;
 
-	/*
-	 * The locked region is a naturally aligned power of 2 block encoded as
-	 * log2 minus(1).
-	 * Calculate the desired start/end and look for the highest bit which
-	 * differs. The smallest naturally aligned block must include this bit
-	 * change, the desired region starts with this bit (and subsequent bits)
-	 * zeroed and ends with the bit (and subsequent bits) set to one.
-	 */
+	 
 	region_width = max(fls64(region_start ^ (region_end - 1)),
 			   const_ilog2(AS_LOCK_REGION_MIN_SIZE)) - 1;
 
-	/*
-	 * Mask off the low bits of region_start (which would be ignored by
-	 * the hardware anyway)
-	 */
+	 
 	region_start &= GENMASK_ULL(63, region_width);
 
 	region = region_width | region_start;
 
-	/* Lock the region that needs to be updated */
+	 
 	mmu_write(pfdev, AS_LOCKADDR_LO(as_nr), lower_32_bits(region));
 	mmu_write(pfdev, AS_LOCKADDR_HI(as_nr), upper_32_bits(region));
 	write_cmd(pfdev, as_nr, AS_COMMAND_LOCK);
@@ -102,10 +91,10 @@ static int mmu_hw_do_operation_locked(struct panfrost_device *pfdev, int as_nr,
 	if (op != AS_COMMAND_UNLOCK)
 		lock_region(pfdev, as_nr, iova, size);
 
-	/* Run the MMU operation */
+	 
 	write_cmd(pfdev, as_nr, op);
 
-	/* Wait for the flush to complete */
+	 
 	return wait_ready(pfdev, as_nr);
 }
 
@@ -133,9 +122,7 @@ static void panfrost_mmu_enable(struct panfrost_device *pfdev, struct panfrost_m
 	mmu_write(pfdev, AS_TRANSTAB_LO(as_nr), lower_32_bits(transtab));
 	mmu_write(pfdev, AS_TRANSTAB_HI(as_nr), upper_32_bits(transtab));
 
-	/* Need to revisit mem attrs.
-	 * NC is the default, Mali driver is inner WT.
-	 */
+	 
 	mmu_write(pfdev, AS_MEMATTR_LO(as_nr), lower_32_bits(memattr));
 	mmu_write(pfdev, AS_MEMATTR_HI(as_nr), upper_32_bits(memattr));
 
@@ -166,19 +153,13 @@ u32 panfrost_mmu_as_get(struct panfrost_device *pfdev, struct panfrost_mmu *mmu)
 		int en = atomic_inc_return(&mmu->as_count);
 		u32 mask = BIT(as) | BIT(16 + as);
 
-		/*
-		 * AS can be retained by active jobs or a perfcnt context,
-		 * hence the '+ 1' here.
-		 */
+		 
 		WARN_ON(en >= (NUM_JOB_SLOTS + 1));
 
 		list_move(&mmu->list, &pfdev->as_lru_list);
 
 		if (pfdev->as_faulty_mask & mask) {
-			/* Unhandled pagefault on this AS, the MMU was
-			 * disabled. We need to re-enable the MMU after
-			 * clearing+unmasking the AS interrupts.
-			 */
+			 
 			mmu_write(pfdev, MMU_INT_CLEAR, mask);
 			mmu_write(pfdev, MMU_INT_MASK, ~pfdev->as_faulty_mask);
 			pfdev->as_faulty_mask &= ~mask;
@@ -188,7 +169,7 @@ u32 panfrost_mmu_as_get(struct panfrost_device *pfdev, struct panfrost_mmu *mmu)
 		goto out;
 	}
 
-	/* Check for a free AS */
+	 
 	as = ffz(pfdev->as_alloc_mask);
 	if (!(BIT(as) & pfdev->features.as_present)) {
 		struct panfrost_mmu *lru_mmu;
@@ -206,7 +187,7 @@ u32 panfrost_mmu_as_get(struct panfrost_device *pfdev, struct panfrost_mmu *mmu)
 		lru_mmu->as = -1;
 	}
 
-	/* Assign the free or reclaimed AS to the FD */
+	 
 	mmu->as = as;
 	set_bit(as, &pfdev->as_alloc_mask);
 	atomic_set(&mmu->as_count, 1);
@@ -250,14 +231,7 @@ void panfrost_mmu_reset(struct panfrost_device *pfdev)
 
 static size_t get_pgsize(u64 addr, size_t size, size_t *count)
 {
-	/*
-	 * io-pgtable only operates on multiple pages within a single table
-	 * entry, so we need to split at boundaries of the table size, i.e.
-	 * the next block size up. The distance from address A to the next
-	 * boundary of block size B is logically B - A % B, but in unsigned
-	 * two's complement where B is a power of two we get the equivalence
-	 * B - A % B == (B - A) % B == (n * B - A) % B, and choose n = 0 :)
-	 */
+	 
 	size_t blk_offset = -addr % SZ_2M;
 
 	if (blk_offset || size < SZ_2M) {
@@ -278,7 +252,7 @@ static void panfrost_mmu_flush_range(struct panfrost_device *pfdev,
 
 	pm_runtime_get_noresume(pfdev->dev);
 
-	/* Flush the PTs only if we're already awake */
+	 
 	if (pm_runtime_active(pfdev->dev))
 		mmu_hw_do_operation(pfdev, mmu, iova, size, AS_COMMAND_FLUSH_PT);
 
@@ -305,7 +279,7 @@ static int mmu_map_sg(struct panfrost_device *pfdev, struct panfrost_mmu *mmu,
 
 			ops->map_pages(ops, iova, paddr, pgsize, pgcount, prot,
 				       GFP_KERNEL, &mapped);
-			/* Don't get stuck if things have gone wrong */
+			 
 			mapped = max(mapped, pgsize);
 			iova += mapped;
 			paddr += mapped;
@@ -384,8 +358,8 @@ static void mmu_tlb_inv_context_s1(void *cookie)
 
 static void mmu_tlb_sync_context(void *cookie)
 {
-	//struct panfrost_mmu *mmu = cookie;
-	// TODO: Wait 1000 GPU cycles for HW_ISSUE_6367/T60X
+	
+	
 }
 
 static void mmu_tlb_flush_walk(unsigned long iova, size_t size, size_t granule,
@@ -461,7 +435,7 @@ static int panfrost_mmu_map_fault_addr(struct panfrost_device *pfdev, int as,
 	}
 	WARN_ON(bomapping->mmu->as != as);
 
-	/* Assume 2MB alignment and size multiple */
+	 
 	addr &= ~((u64)SZ_2M - 1);
 	page_offset = addr >> PAGE_SHIFT;
 	page_offset -= bomapping->mmnode.start;
@@ -491,7 +465,7 @@ static int panfrost_mmu_map_fault_addr(struct panfrost_device *pfdev, int as,
 	} else {
 		pages = bo->base.pages;
 		if (pages[page_offset]) {
-			/* Pages are already mapped, bail out. */
+			 
 			goto out;
 		}
 	}
@@ -587,7 +561,7 @@ static void panfrost_drm_mm_color_adjust(const struct drm_mm_node *node,
 					 unsigned long color,
 					 u64 *start, u64 *end)
 {
-	/* Executable buffers can't start or end on a 4GB boundary */
+	 
 	if (!(color & PANFROST_BO_NOEXEC)) {
 		u64 next_seg;
 
@@ -616,7 +590,7 @@ struct panfrost_mmu *panfrost_mmu_ctx_create(struct panfrost_device *pfdev)
 	mmu->pfdev = pfdev;
 	spin_lock_init(&mmu->mm_lock);
 
-	/* 4G enough for now. can be 48-bit */
+	 
 	drm_mm_init(&mmu->mm, SZ_32M >> PAGE_SHIFT, (SZ_4G - SZ_32M) >> PAGE_SHIFT);
 	mmu->mm.color_adjust = panfrost_drm_mm_color_adjust;
 
@@ -695,20 +669,20 @@ static irqreturn_t panfrost_mmu_irq_handler_thread(int irq, void *data)
 		addr = mmu_read(pfdev, AS_FAULTADDRESS_LO(as));
 		addr |= (u64)mmu_read(pfdev, AS_FAULTADDRESS_HI(as)) << 32;
 
-		/* decode the fault status */
+		 
 		exception_type = fault_status & 0xFF;
 		access_type = (fault_status >> 8) & 0x3;
 		source_id = (fault_status >> 16);
 
 		mmu_write(pfdev, MMU_INT_CLEAR, mask);
 
-		/* Page fault only */
+		 
 		ret = -1;
 		if ((status & mask) == BIT(as) && (exception_type & 0xF8) == 0xC0)
 			ret = panfrost_mmu_map_fault_addr(pfdev, as, addr);
 
 		if (ret) {
-			/* terminal fault, print info about the fault */
+			 
 			dev_err(pfdev->dev,
 				"Unhandled Page fault in AS%d at VA 0x%016llX\n"
 				"Reason: %s\n"
@@ -726,19 +700,17 @@ static irqreturn_t panfrost_mmu_irq_handler_thread(int irq, void *data)
 				source_id);
 
 			spin_lock(&pfdev->as_lock);
-			/* Ignore MMU interrupts on this AS until it's been
-			 * re-enabled.
-			 */
+			 
 			pfdev->as_faulty_mask |= mask;
 
-			/* Disable the MMU to kill jobs on this AS. */
+			 
 			panfrost_mmu_disable(pfdev, as);
 			spin_unlock(&pfdev->as_lock);
 		}
 
 		status &= ~mask;
 
-		/* If we received new MMU interrupts, process them before returning. */
+		 
 		if (!status)
 			status = mmu_read(pfdev, MMU_INT_RAWSTAT) & ~pfdev->as_faulty_mask;
 	}

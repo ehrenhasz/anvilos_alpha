@@ -1,47 +1,14 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 2013-2014,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                        2013-on                 *
- ****************************************************************************/
+ 
 
-/*
-**	Support for obsolete/unusual features.
-*/
+ 
 
 #include <curses.priv.h>
 
 MODULE_ID("$Id: obsolete.c,v 1.6 2020/02/02 23:34:34 tom Exp $")
 
-/*
- * Obsolete entrypoint retained for binary compatibility.
- */
+ 
 NCURSES_EXPORT(void)
 NCURSES_SP_NAME(_nc_set_buffer) (NCURSES_SP_DCLx FILE *ofp, int buffered)
 {
@@ -100,7 +67,7 @@ _nc_memmove(void *s1, const void *s2, size_t n)
     }
     return s1;
 }
-#endif /* USE_MY_MEMMOVE */
+#endif  
 
 #ifdef EXP_XTERM_1005
 NCURSES_EXPORT(int)
@@ -119,10 +86,10 @@ _nc_conv_to_utf8(unsigned char *target, unsigned source, unsigned limit)
 	rc = 4;
     else if (source <= 0x03ffffff)
 	rc = 5;
-    else			/* (source <= 0x7fffffff) */
+    else			 
 	rc = 6;
 
-    if ((unsigned) rc > limit) {	/* whatever it is, we cannot decode it */
+    if ((unsigned) rc > limit) {	 
 	rc = 0;
     }
 
@@ -173,7 +140,7 @@ _nc_conv_to_utf8(unsigned char *target, unsigned source, unsigned limit)
 	}
     }
 
-    return rc;			/* number of bytes needed in target */
+    return rc;			 
 #undef CH
 }
 
@@ -185,9 +152,7 @@ _nc_conv_to_utf32(unsigned *target, const char *source, unsigned limit)
     int j;
     unsigned mask = 0;
 
-    /*
-     * Find the number of bytes we will need from the source.
-     */
+     
     if ((*source & 0x80) == 0) {
 	rc = 1;
 	mask = (unsigned) *source;
@@ -208,13 +173,11 @@ _nc_conv_to_utf32(unsigned *target, const char *source, unsigned limit)
 	mask = (unsigned) (*source & 0x01);
     }
 
-    if ((unsigned) rc > limit) {	/* whatever it is, we cannot decode it */
+    if ((unsigned) rc > limit) {	 
 	rc = 0;
     }
 
-    /*
-     * sanity-check.
-     */
+     
     if (rc > 1) {
 	for (j = 1; j < rc; j++) {
 	    if ((source[j] & 0xc0) != 0x80)
@@ -237,4 +200,4 @@ _nc_conv_to_utf32(unsigned *target, const char *source, unsigned limit)
     return rc;
 #undef CH
 }
-#endif /* EXP_XTERM_1005 */
+#endif  

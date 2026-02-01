@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2021 Microsoft
- */
+
+ 
 
 #include <linux/efi.h>
 #include <linux/hyperv.h>
@@ -54,12 +52,10 @@ static const struct pci_device_id hyperv_pci_tbl[] = {
 		.vendor = PCI_VENDOR_ID_MICROSOFT,
 		.device = PCI_DEVICE_ID_HYPERV_VIDEO,
 	},
-	{ /* end of list */ }
+	{   }
 };
 
-/*
- * PCI stub to support gen1 VM.
- */
+ 
 static struct pci_driver hyperv_pci_driver = {
 	.name =		KBUILD_MODNAME,
 	.id_table =	hyperv_pci_tbl,
@@ -86,11 +82,7 @@ static int hyperv_setup_vram(struct hyperv_drm_device *hv,
 		return -ENOMEM;
 	}
 
-	/*
-	 * Map the VRAM cacheable for performance. This is also required for VM
-	 * connect to display properly for ARM64 Linux VM, as the host also maps
-	 * the VRAM cacheable.
-	 */
+	 
 	hv->vram = ioremap_cache(hv->mem->start, hv->fb_size);
 	if (!hv->vram) {
 		drm_err(dev, "Failed to map vram\n");
@@ -133,11 +125,7 @@ static int hyperv_vmbus_probe(struct hv_device *hdev,
 	if (ret)
 		goto err_vmbus_close;
 
-	/*
-	 * Should be done only once during init and resume. Failing to update
-	 * vram location is not fatal. Device will update dirty area till
-	 * preferred resolution only.
-	 */
+	 
 	ret = hyperv_update_vram_location(hdev, hv->fb_base);
 	if (ret)
 		drm_warn(dev, "Failed to update vram location.\n");
@@ -210,7 +198,7 @@ static int hyperv_vmbus_resume(struct hv_device *hdev)
 }
 
 static const struct hv_vmbus_device_id hyperv_vmbus_tbl[] = {
-	/* Synthetic Video Device GUID */
+	 
 	{HV_SYNTHVID_GUID},
 	{}
 };

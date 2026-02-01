@@ -1,19 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* include/video/samsung_fimd.h
- *
- * Copyright 2008 Openmoko, Inc.
- * Copyright 2008 Simtec Electronics
- *      http://armlinux.simtec.co.uk/
- *      Ben Dooks <ben@simtec.co.uk>
- *
- * S3C Platform - new-style fimd and framebuffer register definitions
- *
- * This is the register set for the fimd and new style framebuffer interface
- * found from the S3C2443 onwards into the S3C2416, S3C2450, the
- * S3C64XX series such as the S3C6400 and S3C6410, and Exynos series.
-*/
+ 
+ 
 
-/* VIDCON0 */
+ 
 
 #define VIDCON0					0x00
 #define VIDCON0_DSI_EN				(1 << 30)
@@ -90,7 +78,7 @@
 #define VIDCON1_INV_VSYNC			(1 << 5)
 #define VIDCON1_INV_VDEN			(1 << 4)
 
-/* VIDCON2 */
+ 
 
 #define VIDCON2					0x08
 #define VIDCON2_EN601				(1 << 23)
@@ -105,14 +93,11 @@
 #define VIDCON2_ORGYCbCr			(1 << 8)
 #define VIDCON2_YUVORDCrCb			(1 << 7)
 
-/* PRTCON (S3C6410)
- * Might not be present in the S3C6410 documentation,
- * but tests prove it's there almost for sure; shouldn't hurt in any case.
- */
+ 
 #define PRTCON					0x0c
 #define PRTCON_PROTECT				(1 << 11)
 
-/* VIDTCON0 */
+ 
 
 #define VIDTCON0				0x10
 #define VIDTCON0_VBPDE_MASK			(0xff << 24)
@@ -135,7 +120,7 @@
 #define VIDTCON0_VSPW_LIMIT			0xff
 #define VIDTCON0_VSPW(_x)			((_x) << 0)
 
-/* VIDTCON1 */
+ 
 
 #define VIDTCON1				0x14
 #define VIDTCON1_VFPDE_MASK			(0xff << 24)
@@ -171,7 +156,7 @@
 #define VIDTCON2_HOZVAL_LIMIT			0x7ff
 #define VIDTCON2_HOZVAL(_x)			(((_x) & 0x7ff) << 0)
 
-/* WINCONx */
+ 
 
 #define WINCON(_win)				(0x20 + ((_win) * 4))
 #define WINCONx_CSCCON_EQ601			(0x0 << 28)
@@ -230,15 +215,15 @@
 #define WINCON1_BPPMODE_28BPP_A4888		(0xd << 2)
 #define WINCON1_ALPHA_SEL			(1 << 1)
 
-/* S5PV210 */
+ 
 #define SHADOWCON				0x34
 #define SHADOWCON_WINx_PROTECT(_win)		(1 << (10 + (_win)))
-/* DMA channels (all windows) */
+ 
 #define SHADOWCON_CHx_ENABLE(_win)		(1 << (_win))
-/* Local input channels (windows 0-2) */
+ 
 #define SHADOWCON_CHx_LOCAL_ENABLE(_win)	(1 << (5 + (_win)))
 
-/* VIDOSDx */
+ 
 
 #define VIDOSD_BASE				0x40
 #define VIDOSDxA_TOPLEFT_X_E(_x)		((((_x) & 0x800) >> 11) << 23)
@@ -265,7 +250,7 @@
 #define VIDOSDxB_BOTRIGHT_Y_LIMIT		0x7ff
 #define VIDOSDxB_BOTRIGHT_Y(_x)			(((_x) & 0x7ff) << 0)
 
-/* For VIDOSD[1..4]C */
+ 
 #define VIDISD14C_ALPHA0_R(_x)			((_x) << 20)
 #define VIDISD14C_ALPHA0_G_MASK			(0xf << 16)
 #define VIDISD14C_ALPHA0_G_SHIFT		16
@@ -293,7 +278,7 @@
 #define VIDW_ALPHA_G(_x)			((_x) << 8)
 #define VIDW_ALPHA_B(_x)			((_x) << 0)
 
-/* Video buffer addresses */
+ 
 #define VIDW_BUF_START(_buff)			(0xA0 + ((_buff) * 8))
 #define VIDW_BUF_START_S(_buff)			(0x40A0 + ((_buff) * 8))
 #define VIDW_BUF_START1(_buff)			(0xA4 + ((_buff) * 8))
@@ -313,7 +298,7 @@
 #define VIDW_BUF_SIZE_PAGEWIDTH_LIMIT		0x1fff
 #define VIDW_BUF_SIZE_PAGEWIDTH(_x)		(((_x) & 0x1fff) << 0)
 
-/* Interrupt controls and status */
+ 
 
 #define VIDINTCON0				0x130
 #define VIDINTCON0_FIFOINTERVAL_MASK		(0x3f << 20)
@@ -365,7 +350,7 @@
 #define VIDINTCON1_INT_FRAME			(1 << 1)
 #define VIDINTCON1_INT_FIFO			(1 << 0)
 
-/* Window colour-key control registers */
+ 
 #define WKEYCON					0x140
 
 #define WKEYCON0				0x00
@@ -383,7 +368,7 @@
 #define WxKEYCON1_COLVAL_LIMIT			0xffffff
 #define WxKEYCON1_COLVAL(_x)			((_x) << 0)
 
-/* Dithering control */
+ 
 #define DITHMODE				0x170
 #define DITHMODE_R_POS_MASK			(0x3 << 5)
 #define DITHMODE_R_POS_SHIFT			5
@@ -402,7 +387,7 @@
 #define DITHMODE_B_POS_5BIT			(0x2 << 1)
 #define DITHMODE_DITH_EN			(1 << 0)
 
-/* Window blanking (MAP) */
+ 
 #define WINxMAP(_win)				(0x180 + ((_win) * 4))
 #define WINxMAP_MAP				(1 << 24)
 #define WINxMAP_MAP_COLOUR_MASK			(0xffffff << 0)
@@ -410,7 +395,7 @@
 #define WINxMAP_MAP_COLOUR_LIMIT		0xffffff
 #define WINxMAP_MAP_COLOUR(_x)			((_x) << 0)
 
-/* Winodw palette control */
+ 
 #define WPALCON					0x1A0
 #define WPALCON_PAL_UPDATE			(1 << 9)
 #define WPALCON_W4PAL_16BPP_A555		(1 << 8)
@@ -435,7 +420,7 @@
 #define WPALCON_W0PAL_16BPP_A555		(0x5 << 0)
 #define WPALCON_W0PAL_16BPP_565			(0x6 << 0)
 
-/* Blending equation control */
+ 
 #define BLENDEQx(_win)				(0x244 + ((_win - 1) * 4))
 #define BLENDEQ_ZERO				0x0
 #define BLENDEQ_ONE				0x1
@@ -449,38 +434,19 @@
 #define BLENDCON_NEW_8BIT_ALPHA_VALUE		(1 << 0)
 #define BLENDCON_NEW_4BIT_ALPHA_VALUE		(0 << 0)
 
-/* Display port clock control */
+ 
 #define DP_MIE_CLKCON				0x27c
 #define DP_MIE_CLK_DISABLE			0x0
 #define DP_MIE_CLK_DP_ENABLE			0x2
 #define DP_MIE_CLK_MIE_ENABLE			0x3
 
-/* Notes on per-window bpp settings
- *
- * Value	Win0	 Win1	  Win2	   Win3	    Win 4
- * 0000		1(P)	 1(P)	  1(P)	   1(P)	    1(P)
- * 0001		2(P)	 2(P)     2(P)	   2(P)	    2(P)
- * 0010		4(P)	 4(P)     4(P)	   4(P)     -none-
- * 0011		8(P)	 8(P)     -none-   -none-   -none-
- * 0100		-none-	 8(A232)  8(A232)  -none-   -none-
- * 0101		16(565)	 16(565)  16(565)  16(565)   16(565)
- * 0110		-none-	 16(A555) 16(A555) 16(A555)  16(A555)
- * 0111		16(I555) 16(I565) 16(I555) 16(I555)  16(I555)
- * 1000		18(666)	 18(666)  18(666)  18(666)   18(666)
- * 1001		-none-	 18(A665) 18(A665) 18(A665)  16(A665)
- * 1010		-none-	 19(A666) 19(A666) 19(A666)  19(A666)
- * 1011		24(888)	 24(888)  24(888)  24(888)   24(888)
- * 1100		-none-	 24(A887) 24(A887) 24(A887)  24(A887)
- * 1101		-none-	 25(A888) 25(A888) 25(A888)  25(A888)
- * 1110		-none-	 -none-	  -none-   -none-    -none-
- * 1111		-none-	 -none-   -none-   -none-    -none-
-*/
+ 
 
 #define WIN_RGB_ORDER(_win)			(0x2020 + ((_win) * 4))
 #define WIN_RGB_ORDER_FORWARD			(0 << 11)
 #define WIN_RGB_ORDER_REVERSE			(1 << 11)
 
-/* FIMD Version 8 register offset definitions */
+ 
 #define FIMD_V8_VIDTCON0	0x20010
 #define FIMD_V8_VIDTCON1	0x20014
 #define FIMD_V8_VIDTCON2	0x20018

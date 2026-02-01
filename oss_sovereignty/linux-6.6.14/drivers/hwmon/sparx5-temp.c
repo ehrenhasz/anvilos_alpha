@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Sparx5 SoC temperature sensor driver
- *
- * Copyright (C) 2020 Lars Povlsen <lars.povlsen@microchip.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -51,16 +48,9 @@ static int s5_read(struct device *dev, enum hwmon_sensor_types type,
 		if (!(stat & TEMP_STAT_VALID))
 			return -EAGAIN;
 		value = stat & TEMP_STAT_TEMP;
-		/*
-		 * From register documentation:
-		 * Temp(C) = TEMP_SENSOR_STAT.TEMP / 4096 * 352.2 - 109.4
-		 */
+		 
 		value = DIV_ROUND_CLOSEST(value * 3522, 4096) - 1094;
-		/*
-		 * Scale down by 10 from above and multiply by 1000 to
-		 * have millidegrees as specified by the hwmon sysfs
-		 * interface.
-		 */
+		 
 		value *= 100;
 		*temp = value;
 		break;

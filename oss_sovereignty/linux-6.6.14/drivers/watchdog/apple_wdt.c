@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only OR MIT
-/*
- * Apple SoC Watchdog driver
- *
- * Copyright (C) The Asahi Linux Contributors
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -16,24 +12,7 @@
 #include <linux/platform_device.h>
 #include <linux/watchdog.h>
 
-/*
- * Apple Watchdog MMIO registers
- *
- * This HW block has three separate watchdogs. WD0 resets the machine
- * to recovery mode and is not very useful for us. WD1 and WD2 trigger a normal
- * machine reset. WD0 additionally supports a configurable interrupt.
- * This information can be used to implement pretimeout support at a later time.
- *
- * APPLE_WDT_WDx_CUR_TIME is a simple counter incremented for each tick of the
- * reference clock. It can also be overwritten to any value.
- * Whenever APPLE_WDT_CTRL_RESET_EN is set in APPLE_WDT_WDx_CTRL and
- * APPLE_WDT_WDx_CUR_TIME >= APPLE_WDT_WDx_BITE_TIME the entire machine is
- * reset.
- * Whenever APPLE_WDT_CTRL_IRQ_EN is set and APPLE_WDTx_WD1_CUR_TIME >=
- * APPLE_WDTx_WD1_BARK_TIME an interrupt is triggered and
- * APPLE_WDT_CTRL_IRQ_STATUS is set. The interrupt can be cleared by writing
- * 1 to APPLE_WDT_CTRL_IRQ_STATUS.
- */
+ 
 #define APPLE_WDT_WD0_CUR_TIME		0x00
 #define APPLE_WDT_WD0_BITE_TIME		0x04
 #define APPLE_WDT_WD0_BARK_TIME		0x08
@@ -124,12 +103,7 @@ static int apple_wdt_restart(struct watchdog_device *wdd, unsigned long mode,
 	writel_relaxed(0, wdt->regs + APPLE_WDT_WD1_BITE_TIME);
 	writel_relaxed(0, wdt->regs + APPLE_WDT_WD1_CUR_TIME);
 
-	/*
-	 * Flush writes and then wait for the SoC to reset. Even though the
-	 * reset is queued almost immediately experiments have shown that it
-	 * can take up to ~20-25ms until the SoC is actually reset. Just wait
-	 * 50ms here to be safe.
-	 */
+	 
 	(void)readl_relaxed(wdt->regs + APPLE_WDT_WD1_CUR_TIME);
 	mdelay(50);
 

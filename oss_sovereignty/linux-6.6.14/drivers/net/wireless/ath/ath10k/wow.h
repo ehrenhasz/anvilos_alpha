@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (c) 2015,2017 Qualcomm Atheros, Inc.
- */
+ 
+ 
 #ifndef _WOW_H_
 #define _WOW_H_
 
@@ -26,5 +24,5 @@ static inline int ath10k_wow_init(struct ath10k *ar)
 	return 0;
 }
 
-#endif /* CONFIG_PM */
-#endif /* _WOW_H_ */
+#endif  
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define NM_TOTAL_COEFF_COUNT 0x3158
 
 static const char coefficients[NM_TOTAL_COEFF_COUNT * 4] = {
@@ -4600,9 +4600,9 @@ static const char coefficients[NM_TOTAL_COEFF_COUNT * 4] = {
 
 static const u16
 coefficient_sizes[8 * 2] = {
-	/* Playback */
+	 
 	0x00C0, 0x5000, 0x0060, 0x2800, 0x0040, 0x0060, 0x1400, 0x0000,
-	/* capture */
+	 
 	0x0020, 0x1260, 0x0020, 0x1260, 0x0000, 0x0040, 0x1260, 0x0000,
 };
 

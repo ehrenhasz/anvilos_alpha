@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SGI IOC3 8250 UART driver
- *
- * Copyright (C) 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
- *
- * based on code Copyright (C) 2005 Stanislaw Skowronek <skylark@unaligned.org>
- *               Copyright (C) 2014 Joshua Kinard <kumba@gentoo.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -53,9 +46,9 @@ static int serial8250_ioc3_probe(struct platform_device *pdev)
 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
-		irq = 0; /* no interrupt -> use polling */
+		irq = 0;  
 
-	/* Register serial ports with 8250.c */
+	 
 	memset(&up, 0, sizeof(struct uart_8250_port));
 	up.port.iotype = UPIO_MEM;
 	up.port.uartclk = IOC3_UARTCLK;

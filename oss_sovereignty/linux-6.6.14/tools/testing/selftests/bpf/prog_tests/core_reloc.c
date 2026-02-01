@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "progs/core_reloc_types.h"
 #include "bpf_testmod/bpf_testmod.h"
@@ -14,7 +14,7 @@ static int duration = 0;
 #define MODULES_CASE(name, pg_name, tp_name) {				\
 	.case_name = name,						\
 	.bpf_obj_file = "test_core_reloc_module.bpf.o",			\
-	.btf_src_file = NULL, /* find in kernel module BTFs */		\
+	.btf_src_file = NULL,  		\
 	.input = "",							\
 	.input_len = 0,							\
 	.output = STRUCT_TO_CHAR_PTR(core_reloc_module_output) {	\
@@ -289,7 +289,7 @@ static int duration = 0;
 		.arr_off = offsetof(type, arr_field),			\
 		.arr_elem_sz = sizeof(((type *)0)->arr_field[1]),	\
 		.arr_elem_off = offsetof(type, arr_field[1]),		\
-		.ptr_sz = 8, /* always 8-byte pointer for BPF */	\
+		.ptr_sz = 8,  	\
 		.ptr_off = offsetof(type, ptr_field),			\
 		.enum_sz = sizeof(((type *)0)->enum_field),		\
 		.enum_off = offsetof(type, enum_field),			\
@@ -445,7 +445,7 @@ static int setup_type_id_case_local(struct core_reloc_test_case *test)
 	for (i = 1; i < btf__type_cnt(local_btf); i++)
 	{
 		t = btf__type_by_id(local_btf, i);
-		/* we are interested only in anonymous types */
+		 
 		if (t->name_off)
 			continue;
 
@@ -465,16 +465,16 @@ static int setup_type_id_case_local(struct core_reloc_test_case *test)
 			if (btf_is_func_proto(t) && (t = btf__type_by_id(local_btf, t->type)) &&
 			    btf_is_int(t) && (name = btf__name_by_offset(local_btf, t->name_off)) &&
 			    strcmp(name, "_Bool") == 0) {
-				/* ptr -> func_proto -> _Bool */
+				 
 				exp->local_anon_func_proto_ptr = i;
 			} else if (btf_is_void(t)) {
-				/* ptr -> void */
+				 
 				exp->local_anon_void_ptr = i;
 			}
 		} else if (btf_is_array(t) && (t = btf__type_by_id(local_btf, btf_array(t)->type)) &&
 			   btf_is_int(t) && (name = btf__name_by_offset(local_btf, t->name_off)) &&
 			   strcmp(name, "_Bool") == 0) {
-			/* _Bool[] */
+			 
 			exp->local_anon_arr = i;
 		}
 	}
@@ -544,11 +544,11 @@ static int __trigger_module_test_read(const struct core_reloc_test_case *test)
 }
 
 static const struct core_reloc_test_case test_cases[] = {
-	/* validate we can find kernel image and use its BTF for relocs */
+	 
 	{
 		.case_name = "kernel",
 		.bpf_obj_file = "test_core_reloc_kernel.bpf.o",
-		.btf_src_file = NULL, /* load from /lib/modules/$(uname -r) */
+		.btf_src_file = NULL,  
 		.input = "",
 		.input_len = 0,
 		.output = STRUCT_TO_CHAR_PTR(core_reloc_kernel_output) {
@@ -562,18 +562,16 @@ static const struct core_reloc_test_case test_cases[] = {
 		.prog_name = "test_core_kernel",
 	},
 
-	/* validate we can find kernel module BTF types for relocs/attach */
+	 
 	MODULES_CASE("module_probed", "test_core_module_probed", "bpf_testmod_test_read"),
 	MODULES_CASE("module_direct", "test_core_module_direct", NULL),
 
-	/* validate BPF program can use multiple flavors to match against
-	 * single target BTF type
-	 */
+	 
 	FLAVORS_CASE(flavors),
 
 	FLAVORS_ERR_CASE(flavors__err_wrong_name),
 
-	/* various struct/enum nesting and resolution scenarios */
+	 
 	NESTING_CASE(nesting),
 	NESTING_CASE(nesting___anon_embed),
 	NESTING_CASE(nesting___struct_union_mixup),
@@ -589,7 +587,7 @@ static const struct core_reloc_test_case test_cases[] = {
 	NESTING_ERR_CASE(nesting___err_partial_match_dups),
 	NESTING_ERR_CASE(nesting___err_too_deep),
 
-	/* various array access relocation scenarios */
+	 
 	ARRAYS_CASE(arrays),
 	ARRAYS_CASE(arrays___diff_arr_dim),
 	ARRAYS_CASE(arrays___diff_arr_val_sz),
@@ -602,7 +600,7 @@ static const struct core_reloc_test_case test_cases[] = {
 	ARRAYS_ERR_CASE(arrays___err_wrong_val_type),
 	ARRAYS_ERR_CASE(arrays___err_bad_zero_sz_arr),
 
-	/* enum/ptr/int handling scenarios */
+	 
 	PRIMITIVES_CASE(primitives),
 	PRIMITIVES_CASE(primitives___diff_enum_def),
 	PRIMITIVES_CASE(primitives___diff_func_proto),
@@ -612,42 +610,42 @@ static const struct core_reloc_test_case test_cases[] = {
 	PRIMITIVES_ERR_CASE(primitives___err_non_int),
 	PRIMITIVES_ERR_CASE(primitives___err_non_ptr),
 
-	/* const/volatile/restrict and typedefs scenarios */
+	 
 	MODS_CASE(mods),
 	MODS_CASE(mods___mod_swap),
 	MODS_CASE(mods___typedefs),
 
-	/* handling "ptr is an array" semantics */
+	 
 	PTR_AS_ARR_CASE(ptr_as_arr),
 	PTR_AS_ARR_CASE(ptr_as_arr___diff_sz),
 
-	/* int signedness/sizing/bitfield handling */
+	 
 	INTS_CASE(ints),
 	INTS_CASE(ints___bool),
 	INTS_CASE(ints___reverse_sign),
 
-	/* validate edge cases of capturing relocations */
+	 
 	{
 		.case_name = "misc",
 		.bpf_obj_file = "test_core_reloc_misc.bpf.o",
 		.btf_src_file = "btf__core_reloc_misc.bpf.o",
 		.input = (const char *)&(struct core_reloc_misc_extensible[]){
 			{ .a = 1 },
-			{ .a = 2 }, /* not read */
+			{ .a = 2 },  
 			{ .a = 3 },
 		},
 		.input_len = 4 * sizeof(int),
 		.output = STRUCT_TO_CHAR_PTR(core_reloc_misc_output) {
 			.a = 1,
 			.b = 1,
-			.c = 0, /* BUG in clang, should be 3 */
+			.c = 0,  
 		},
 		.output_len = sizeof(struct core_reloc_misc_output),
 		.raw_tp_name = "sys_enter",
 		.prog_name = "test_core_misc",
 	},
 
-	/* validate field existence checks */
+	 
 	{
 		FIELD_EXISTS_CASE_COMMON(existence),
 		.input = STRUCT_TO_CHAR_PTR(core_reloc_existence) {
@@ -712,7 +710,7 @@ static const struct core_reloc_test_case test_cases[] = {
 		.output_len = sizeof(struct core_reloc_existence_output),
 	},
 
-	/* bitfield relocation checks */
+	 
 	BITFIELDS_CASE(bitfields, {
 		.ub1 = 1,
 		.ub2 = 2,
@@ -746,13 +744,13 @@ static const struct core_reloc_test_case test_cases[] = {
 	}),
 	BITFIELDS_ERR_CASE(bitfields___err_too_big_bitfield),
 
-	/* field size and offset relocation checks */
+	 
 	SIZE_CASE(size),
 	SIZE_CASE(size___diff_sz),
 	SIZE_CASE(size___diff_offs),
 	SIZE_ERR_CASE(size___err_ambiguous),
 
-	/* validate type existence, match, and size relocations */
+	 
 	TYPE_BASED_CASE(type_based, {
 		.struct_exists = 1,
 		.complex_struct_exists = 1,
@@ -795,7 +793,7 @@ static const struct core_reloc_test_case test_cases[] = {
 		.typedef_arr_sz = sizeof(arr_typedef),
 	}),
 	TYPE_BASED_CASE(type_based___all_missing, {
-		/* all zeros */
+		 
 	}),
 	TYPE_BASED_CASE(type_based___diff, {
 		.struct_exists = 1,
@@ -884,11 +882,11 @@ static const struct core_reloc_test_case test_cases[] = {
 		.struct_sz = sizeof(struct a_struct),
 	}),
 
-	/* BTF_TYPE_ID_LOCAL/BTF_TYPE_ID_TARGET tests */
+	 
 	TYPE_ID_CASE(type_id, setup_type_id_case_success),
 	TYPE_ID_CASE(type_id___missing_targets, setup_type_id_case_failure),
 
-	/* Enumerator value existence and value relocations */
+	 
 	ENUMVAL_CASE(enumval, {
 		.named_val1_exists = true,
 		.named_val2_exists = true,
@@ -927,7 +925,7 @@ static const struct core_reloc_test_case test_cases[] = {
 	}),
 	ENUMVAL_ERR_CASE(enumval___err_missing),
 
-	/* 64bit enumerator value existence and value relocations */
+	 
 	ENUM64VAL_CASE(enum64val, {
 		.unsigned_val1_exists = true,
 		.unsigned_val2_exists = true,
@@ -1025,7 +1023,7 @@ static void run_core_reloc_tests(bool use_btfgen)
 			continue;
 		}
 
-		/* generate a "minimal" BTF file and use it as source */
+		 
 		if (use_btfgen) {
 
 			if (!test_case->btf_src_file || test_case->run_btfgen_fails) {
@@ -1036,7 +1034,7 @@ static void run_core_reloc_tests(bool use_btfgen)
 			fd = mkstemp(btf_file);
 			if (!ASSERT_GE(fd, 0, "btf_tmp"))
 				continue;
-			close(fd); /* we only need the path */
+			close(fd);  
 			err = run_btfgen(test_case->btf_src_file, btf_file,
 					 test_case->bpf_obj_file);
 			if (!ASSERT_OK(err, "run_btfgen"))
@@ -1063,7 +1061,7 @@ static void run_core_reloc_tests(bool use_btfgen)
 			goto cleanup;
 
 		probe_name = test_case->prog_name;
-		tp_name = test_case->raw_tp_name; /* NULL for tp_btf */
+		tp_name = test_case->raw_tp_name;  
 		prog = bpf_object__find_program_by_name(obj, probe_name);
 		if (CHECK(!prog, "find_probe",
 			  "prog '%s' not found\n", probe_name))
@@ -1098,7 +1096,7 @@ static void run_core_reloc_tests(bool use_btfgen)
 		if (!ASSERT_OK_PTR(link, "attach_raw_tp"))
 			goto cleanup;
 
-		/* trigger test run */
+		 
 		if (test_case->trigger) {
 			if (!ASSERT_OK(test_case->trigger(test_case), "test_trigger"))
 				goto cleanup;

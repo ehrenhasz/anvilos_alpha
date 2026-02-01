@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #ifndef _GNU_SOURCE
 #define _GNU_SOURCE
@@ -52,9 +52,7 @@ static const bool attach_types[] = {
 	[__MAX_BPF_ATTACH_TYPE] = false,
 };
 
-/* Textual representations traditionally used by the program and kept around
- * for the sake of backwards compatibility.
- */
+ 
 static const char * const attach_type_strings[] = {
 	[BPF_SK_SKB_STREAM_PARSER] = "stream_parser",
 	[BPF_SK_SKB_STREAM_VERDICT] = "stream_verdict",
@@ -332,9 +330,7 @@ static void show_prog_metadata(int fd, __u32 num_maps)
 	vlen = btf_vlen(t_datasec);
 	vsi = btf_var_secinfos(t_datasec);
 
-	/* We don't proceed to check the kinds of the elements of the DATASEC.
-	 * The verifier enforces them to be BTF_KIND_VAR.
-	 */
+	 
 
 	if (json_output) {
 		struct btf_dumper d = {
@@ -455,7 +451,7 @@ static void print_prog_json(struct bpf_prog_info *info, int fd)
 
 		print_boot_time(info->load_time, buf, sizeof(buf));
 
-		/* Piggy back on load_time, since 0 uid is a valid one */
+		 
 		jsonw_name(json_wtr, "loaded_at");
 		jsonw_printf(json_wtr, "%s", buf);
 		jsonw_uint_field(json_wtr, "uid", info->created_by_uid);
@@ -538,7 +534,7 @@ static void print_prog_plain(struct bpf_prog_info *info, int fd)
 
 		print_boot_time(info->load_time, buf, sizeof(buf));
 
-		/* Piggy back on load_time, since 0 uid is a valid one */
+		 
 		printf("\tloaded_at %s  uid %u\n", buf, info->created_by_uid);
 	}
 
@@ -610,7 +606,7 @@ static int do_show_subset(int argc, char **argv)
 		goto exit_free;
 
 	if (json_output && nb_fds > 1)
-		jsonw_start_array(json_wtr);	/* root array */
+		jsonw_start_array(json_wtr);	 
 	for (i = 0; i < nb_fds; i++) {
 		err = show_prog(fds[i]);
 		if (err) {
@@ -621,7 +617,7 @@ static int do_show_subset(int argc, char **argv)
 		close(fds[i]);
 	}
 	if (json_output && nb_fds > 1)
-		jsonw_end_array(json_wtr);	/* root array */
+		jsonw_end_array(json_wtr);	 
 
 exit_free:
 	free(fds);
@@ -715,7 +711,7 @@ prog_dump(struct bpf_prog_info *info, enum dump_mode mode,
 		}
 		buf = u64_to_ptr(info->jited_prog_insns);
 		member_len = info->jited_prog_len;
-	} else {	/* DUMP_XLATED */
+	} else {	 
 		if (info->xlated_prog_len == 0 || !info->xlated_prog_insns) {
 			p_err("error retrieving insn dump: kernel.kptr_restrict set?");
 			return -1;
@@ -949,7 +945,7 @@ static int do_dump(int argc, char **argv)
 	}
 
 	if (json_output && nb_fds > 1)
-		jsonw_start_array(json_wtr);	/* root array */
+		jsonw_start_array(json_wtr);	 
 	for (i = 0; i < nb_fds; i++) {
 		memset(&info, 0, sizeof(info));
 
@@ -972,7 +968,7 @@ static int do_dump(int argc, char **argv)
 		}
 
 		if (json_output && nb_fds > 1) {
-			jsonw_start_object(json_wtr);	/* prog object */
+			jsonw_start_object(json_wtr);	 
 			print_prog_header_json(&info, fds[i]);
 			jsonw_name(json_wtr, "insns");
 		} else if (nb_fds > 1) {
@@ -982,7 +978,7 @@ static int do_dump(int argc, char **argv)
 		err = prog_dump(&info, mode, filepath, opcodes, visual, linum);
 
 		if (json_output && nb_fds > 1)
-			jsonw_end_object(json_wtr);	/* prog object */
+			jsonw_end_object(json_wtr);	 
 		else if (i != nb_fds - 1 && nb_fds > 1)
 			printf("\n");
 
@@ -991,7 +987,7 @@ static int do_dump(int argc, char **argv)
 		close(fds[i]);
 	}
 	if (json_output && nb_fds > 1)
-		jsonw_end_array(json_wtr);	/* root array */
+		jsonw_end_array(json_wtr);	 
 
 exit_close:
 	for (; i < nb_fds; i++)
@@ -1157,7 +1153,7 @@ static int get_run_data(const char *fname, void **data_ptr, unsigned int *size)
 				      UINT32_MAX);
 				goto err_free;
 			}
-			/* No space for fread()-ing next chunk; realloc() */
+			 
 			buf_size *= 2;
 			tmp = realloc(*data_ptr, buf_size);
 			if (!tmp) {
@@ -1189,17 +1185,17 @@ static void hex_print(void *data, unsigned int size, FILE *f)
 	char c;
 
 	for (i = 0; i < size; i += 16) {
-		/* Row offset */
+		 
 		fprintf(f, "%07zx\t", i);
 
-		/* Hexadecimal values */
+		 
 		for (j = i; j < i + 16 && j < size; j++)
 			fprintf(f, "%02x%s", *(uint8_t *)(data + j),
 				j % 2 ? " " : "");
 		for (; j < i + 16; j++)
 			fprintf(f, "  %s", j % 2 ? " " : "");
 
-		/* ASCII values (if relevant), '.' otherwise */
+		 
 		fprintf(f, "| ");
 		for (j = i; j < i + 16 && j < size; j++) {
 			c = *(char *)(data + j);
@@ -1403,11 +1399,9 @@ static int do_run(int argc, char **argv)
 	err = 0;
 
 	if (json_output)
-		jsonw_start_object(json_wtr);	/* root */
+		jsonw_start_object(json_wtr);	 
 
-	/* Do not exit on errors occurring when printing output data/context,
-	 * we still want to print return value and duration for program run.
-	 */
+	 
 	if (test_attr.data_size_out)
 		err += print_run_output(test_attr.data_out,
 					test_attr.data_size_out,
@@ -1420,7 +1414,7 @@ static int do_run(int argc, char **argv)
 	if (json_output) {
 		jsonw_uint_field(json_wtr, "retval", test_attr.retval);
 		jsonw_uint_field(json_wtr, "duration", test_attr.duration);
-		jsonw_end_object(json_wtr);	/* root */
+		jsonw_end_object(json_wtr);	 
 	} else {
 		fprintf(stdout, "Return value: %u, duration%s: %uns\n",
 			test_attr.retval,
@@ -1450,7 +1444,7 @@ get_prog_type_by_name(const char *name, enum bpf_prog_type *prog_type,
 	if (!ret)
 		return ret;
 
-	/* libbpf_prog_type_by_name() failed, let's re-run with debug level */
+	 
 	print_backup = libbpf_set_print(print_all_levels);
 	ret = libbpf_prog_type_by_name(name, prog_type, expected_attach_type);
 	libbpf_set_print(print_backup);
@@ -1547,7 +1541,7 @@ static int load_with_options(int argc, char **argv, bool first_prog_only)
 			err = libbpf_prog_type_by_name(*argv, &common_prog_type,
 						       &expected_attach_type);
 			if (err < 0) {
-				/* Put a '/' at the end of type to appease libbpf */
+				 
 				char *type = malloc(strlen(*argv) + 2);
 
 				if (!type) {
@@ -1680,7 +1674,7 @@ offload_dev:
 	set_max_rlimit();
 
 	if (verifier_logs)
-		/* log_level1 + log_level2 + stats, but not stable UAPI */
+		 
 		open_opts.kernel_log_level = 1 + 2 + 4;
 
 	obj = bpf_object__open_file(file, &open_opts);
@@ -1715,9 +1709,7 @@ offload_dev:
 	qsort(map_replace, old_map_fds, sizeof(*map_replace),
 	      map_replace_compar);
 
-	/* After the sort maps by name will be first on the list, because they
-	 * have idx == -1.  Resolve them.
-	 */
+	 
 	j = 0;
 	while (j < old_map_fds && map_replace[j].name) {
 		i = 0;
@@ -1734,12 +1726,12 @@ offload_dev:
 		}
 		j++;
 	}
-	/* Resort if any names were resolved */
+	 
 	if (j)
 		qsort(map_replace, old_map_fds, sizeof(*map_replace),
 		      map_replace_compar);
 
-	/* Set ifindex and name reuse */
+	 
 	j = 0;
 	idx = 0;
 	bpf_object__for_each_map(map, obj) {
@@ -1753,7 +1745,7 @@ offload_dev:
 				goto err_close_obj;
 			}
 
-			/* Next reuse wants to apply to the same map */
+			 
 			if (j < old_map_fds && map_replace[j].idx == idx) {
 				p_err("replacement for map idx %d specified more than once",
 				      idx);
@@ -1905,7 +1897,7 @@ static int do_loader(int argc, char **argv)
 	file = GET_ARG();
 
 	if (verifier_logs)
-		/* log_level1 + log_level2 + stats, but not stable UAPI */
+		 
 		open_opts.kernel_log_level = 1 + 2 + 4;
 
 	obj = bpf_object__open_file(file, &open_opts);
@@ -1957,7 +1949,7 @@ static int do_profile(int argc, char **argv)
 	return 0;
 }
 
-#else /* BPFTOOL_WITHOUT_SKELETONS */
+#else  
 
 #include "profiler.skel.h"
 
@@ -1967,8 +1959,8 @@ struct profile_metric {
 	struct perf_event_attr attr;
 	bool selected;
 
-	/* calculate ratios like instructions per cycle */
-	const int ratio_metric; /* 0 for N/A, 1 for index 0 (cycles) */
+	 
+	const int ratio_metric;  
 	const char *ratio_desc;
 	const float ratio_mul;
 } metrics[] = {
@@ -2265,7 +2257,7 @@ static int profile_open_perf_event(int mid, int cpu, int map_fd)
 	int pmu_fd;
 
 	pmu_fd = syscall(__NR_perf_event_open, &metrics[mid].attr,
-			 -1 /*pid*/, cpu, -1 /*group_fd*/, 0);
+			 -1  , cpu, -1  , 0);
 	if (pmu_fd < 0) {
 		if (errno == ENODEV) {
 			p_info("cpu %d may be offline, skip %s profiling.",
@@ -2344,18 +2336,18 @@ static int do_profile(int argc, char **argv)
 	unsigned long duration;
 	char *endptr;
 
-	/* we at least need two args for the prog and one metric */
+	 
 	if (!REQ_ARGS(3))
 		return -EINVAL;
 
-	/* parse target fd */
+	 
 	profile_tgt_fd = prog_parse_fd(&argc, &argv);
 	if (profile_tgt_fd < 0) {
 		p_err("failed to parse fd");
 		return -1;
 	}
 
-	/* parse profiling optional duration */
+	 
 	if (argc > 2 && is_prefix(argv[0], "duration")) {
 		NEXT_ARG();
 		duration = strtoul(*argv, &endptr, 0);
@@ -2385,13 +2377,13 @@ static int do_profile(int argc, char **argv)
 	profile_obj->rodata->num_cpu = num_cpu;
 	profile_obj->rodata->num_metric = num_metric;
 
-	/* adjust map sizes */
+	 
 	bpf_map__set_max_entries(profile_obj->maps.events, num_metric * num_cpu);
 	bpf_map__set_max_entries(profile_obj->maps.fentry_readings, num_metric);
 	bpf_map__set_max_entries(profile_obj->maps.accum_readings, num_metric);
 	bpf_map__set_max_entries(profile_obj->maps.counts, 1);
 
-	/* change target name */
+	 
 	profile_tgt_name = profile_target_name(profile_tgt_fd);
 	if (!profile_tgt_name)
 		goto out;
@@ -2436,7 +2428,7 @@ out:
 	return err;
 }
 
-#endif /* BPFTOOL_WITHOUT_SKELETONS */
+#endif  
 
 static int do_help(int argc, char **argv)
 {

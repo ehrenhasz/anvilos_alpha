@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_SMP_H
 #define _ASM_X86_SMP_H
 #ifndef __ASSEMBLY__
@@ -14,7 +14,7 @@ extern unsigned int num_processors;
 DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_sibling_map);
 DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_core_map);
 DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_die_map);
-/* cpus sharing the last level cache: */
+ 
 DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_llc_shared_map);
 DECLARE_PER_CPU_READ_MOSTLY(cpumask_var_t, cpu_l2c_shared_map);
 DECLARE_PER_CPU_READ_MOSTLY(u16, cpu_llc_id);
@@ -45,7 +45,7 @@ struct smp_ops {
 	void (*send_call_func_single_ipi)(int cpu);
 };
 
-/* Globals due to paravirt */
+ 
 extern void set_cpu_sibling_map(int cpu);
 
 #ifdef CONFIG_SMP
@@ -139,10 +139,7 @@ __visible void smp_call_function_single_interrupt(struct pt_regs *r);
 #define cpu_physical_id(cpu)	per_cpu(x86_cpu_to_apicid, cpu)
 #define cpu_acpi_id(cpu)	per_cpu(x86_cpu_to_acpiid, cpu)
 
-/*
- * This function is needed by all SMP systems. It must _always_ be valid
- * from the initial startup.
- */
+ 
 #define raw_smp_processor_id()  this_cpu_read(pcpu_hot.cpu_number)
 #define __smp_processor_id() __this_cpu_read(pcpu_hot.cpu_number)
 
@@ -162,7 +159,7 @@ static inline struct cpumask *cpu_l2c_shared_mask(int cpu)
 	return per_cpu(cpu_l2c_shared_map, cpu);
 }
 
-#else /* !CONFIG_SMP */
+#else  
 #define wbinvd_on_cpu(cpu)     wbinvd()
 static inline int wbinvd_on_all_cpus(void)
 {
@@ -174,7 +171,7 @@ static inline struct cpumask *cpu_llc_shared_mask(int cpu)
 {
 	return (struct cpumask *)cpumask_of(0);
 }
-#endif /* CONFIG_SMP */
+#endif  
 
 extern unsigned disabled_cpus;
 
@@ -187,12 +184,12 @@ extern void nmi_selftest(void);
 extern unsigned int smpboot_control;
 extern unsigned long apic_mmio_base;
 
-#endif /* !__ASSEMBLY__ */
+#endif  
 
-/* Control bits for startup_64 */
+ 
 #define STARTUP_READ_APICID	0x80000000
 
-/* Top 8 bits are reserved for control */
+ 
 #define STARTUP_PARALLEL_MASK	0xFF000000
 
-#endif /* _ASM_X86_SMP_H */
+#endif  

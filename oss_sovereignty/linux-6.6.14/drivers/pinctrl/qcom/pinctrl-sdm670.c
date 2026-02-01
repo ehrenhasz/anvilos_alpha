@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017-2018, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Richard Acayan. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -21,7 +18,7 @@
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\
@@ -54,10 +51,7 @@
 		.intr_detection_width = 2,	\
 	}
 
-/*
- * A dummy pingroup is a pin group that cannot be assigned a function and has
- * no registers to control or monitor it.
- */
+ 
 #define PINGROUP_DUMMY(id)				\
 	{						\
 		.grp = PINCTRL_PINGROUP("gpio" #id, 	\
@@ -1118,13 +1112,7 @@ static const struct pinfunction sdm670_functions[] = {
 	MSM_PIN_FUNCTION(wsa_data),
 };
 
-/*
- * Each pin is individually controlled by its own group and gpios that cannot
- * be requested are represented by the PINGROUP_DUMMY macro so that the group
- * numbers and names correspond to their respective gpio. These dummy pins do
- * not have a valid set of pinfuncs or a valid ctl_reg and should not be
- * requested.
- */
+ 
 static const struct msm_pingroup sdm670_groups[] = {
 	PINGROUP(0, SOUTH, qup0, _, _, _, _, _, _, _, _),
 	PINGROUP(1, SOUTH, qup0, _, _, _, _, _, _, _, _),

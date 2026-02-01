@@ -1,41 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2020 by Delphix. All rights reserved.
- * Copyright (c) 2013 by Saso Kiselkov. All rights reserved.
- * Copyright (c) 2013, Joyent, Inc. All rights reserved.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- * Copyright (c) 2015, STRATO AG, Inc. All rights reserved.
- * Copyright (c) 2016 Actifio, Inc. All rights reserved.
- * Copyright 2017 Nexenta Systems, Inc.
- * Copyright (c) 2017 Open-E, Inc. All Rights Reserved.
- * Copyright (c) 2018, loli10K <ezomori.nozomu@gmail.com>. All rights reserved.
- * Copyright (c) 2019, Klara Inc.
- * Copyright (c) 2019, Allan Jude
- * Copyright (c) 2022 Hewlett Packard Enterprise Development LP.
- */
+ 
 
-/* Portions Copyright 2010 Robert Milkowski */
+ 
 
 #include <sys/cred.h>
 #include <sys/zfs_context.h>
@@ -67,25 +34,13 @@
 #include <sys/vdev_impl.h>
 #include <sys/arc.h>
 
-/*
- * Needed to close a window in dnode_move() that allows the objset to be freed
- * before it can be safely accessed.
- */
+ 
 krwlock_t os_lock;
 
-/*
- * Tunable to overwrite the maximum number of threads for the parallelization
- * of dmu_objset_find_dp, needed to speed up the import of pools with many
- * datasets.
- * Default is 4 times the number of leaf vdevs.
- */
+ 
 static const int dmu_find_threads = 0;
 
-/*
- * Backfill lower metadnode objects after this many have been freed.
- * Backfilling negatively impacts object creation rates, so only do it
- * if there are enough holes to fill.
- */
+ 
 static const int dmu_rescan_dnode_threshold = 1 << DN_MAX_INDBLKSHIFT;
 
 static const char *upgrade_tag = "upgrade_tag";
@@ -179,9 +134,7 @@ checksum_changed_cb(void *arg, uint64_t newval)
 {
 	objset_t *os = arg;
 
-	/*
-	 * Inheritance should have been done by now.
-	 */
+	 
 	ASSERT(newval != ZIO_CHECKSUM_INHERIT);
 
 	os->os_checksum = zio_checksum_select(newval, ZIO_CHECKSUM_ON_VALUE);
@@ -192,9 +145,7 @@ compression_changed_cb(void *arg, uint64_t newval)
 {
 	objset_t *os = arg;
 
-	/*
-	 * Inheritance and range checking should have been done by now.
-	 */
+	 
 	ASSERT(newval != ZIO_COMPRESS_INHERIT);
 
 	os->os_compress = zio_compress_select(os->os_spa,
@@ -208,9 +159,7 @@ copies_changed_cb(void *arg, uint64_t newval)
 {
 	objset_t *os = arg;
 
-	/*
-	 * Inheritance and range checking should have been done by now.
-	 */
+	 
 	ASSERT(newval > 0);
 	ASSERT(newval <= spa_max_replication(os->os_spa));
 
@@ -224,9 +173,7 @@ dedup_changed_cb(void *arg, uint64_t newval)
 	spa_t *spa = os->os_spa;
 	enum zio_checksum checksum;
 
-	/*
-	 * Inheritance should have been done by now.
-	 */
+	 
 	ASSERT(newval != ZIO_CHECKSUM_INHERIT);
 
 	checksum = zio_checksum_dedup_select(spa, newval, ZIO_CHECKSUM_OFF);
@@ -240,9 +187,7 @@ primary_cache_changed_cb(void *arg, uint64_t newval)
 {
 	objset_t *os = arg;
 
-	/*
-	 * Inheritance and range checking should have been done by now.
-	 */
+	 
 	ASSERT(newval == ZFS_CACHE_ALL || newval == ZFS_CACHE_NONE ||
 	    newval == ZFS_CACHE_METADATA);
 
@@ -254,9 +199,7 @@ secondary_cache_changed_cb(void *arg, uint64_t newval)
 {
 	objset_t *os = arg;
 
-	/*
-	 * Inheritance and range checking should have been done by now.
-	 */
+	 
 	ASSERT(newval == ZFS_CACHE_ALL || newval == ZFS_CACHE_NONE ||
 	    newval == ZFS_CACHE_METADATA);
 
@@ -268,9 +211,7 @@ sync_changed_cb(void *arg, uint64_t newval)
 {
 	objset_t *os = arg;
 
-	/*
-	 * Inheritance and range checking should have been done by now.
-	 */
+	 
 	ASSERT(newval == ZFS_SYNC_STANDARD || newval == ZFS_SYNC_ALWAYS ||
 	    newval == ZFS_SYNC_DISABLED);
 
@@ -284,9 +225,7 @@ redundant_metadata_changed_cb(void *arg, uint64_t newval)
 {
 	objset_t *os = arg;
 
-	/*
-	 * Inheritance and range checking should have been done by now.
-	 */
+	 
 	ASSERT(newval == ZFS_REDUNDANT_METADATA_ALL ||
 	    newval == ZFS_REDUNDANT_METADATA_MOST ||
 	    newval == ZFS_REDUNDANT_METADATA_SOME ||
@@ -305,12 +244,7 @@ dnodesize_changed_cb(void *arg, uint64_t newval)
 		os->os_dnodesize = DNODE_MIN_SIZE;
 		break;
 	case ZFS_DNSIZE_AUTO:
-		/*
-		 * Choose a dnode size that will work well for most
-		 * workloads if the user specified "auto". Future code
-		 * improvements could dynamically select a dnode size
-		 * based on observed workload patterns.
-		 */
+		 
 		os->os_dnodesize = DNODE_MIN_SIZE * 2;
 		break;
 	case ZFS_DNSIZE_1K:
@@ -328,9 +262,7 @@ smallblk_changed_cb(void *arg, uint64_t newval)
 {
 	objset_t *os = arg;
 
-	/*
-	 * Inheritance and range checking should have been done by now.
-	 */
+	 
 	ASSERT(newval <= SPA_MAXBLOCKSIZE);
 	ASSERT(ISP2(newval));
 
@@ -376,9 +308,7 @@ dmu_objset_byteswap(void *buf, size_t size)
 	}
 }
 
-/*
- * The hash is a CRC-based hash of the objset_t pointer and the object number.
- */
+ 
 static uint64_t
 dnode_hash(const objset_t *os, uint64_t obj)
 {
@@ -386,10 +316,7 @@ dnode_hash(const objset_t *os, uint64_t obj)
 	uint64_t crc = -1ULL;
 
 	ASSERT(zfs_crc64_table[128] == ZFS_CRC64_POLY);
-	/*
-	 * The low 6 bits of the pointer don't have much entropy, because
-	 * the objset_t is larger than 2^6 bytes long.
-	 */
+	 
 	crc = (crc >> 8) ^ zfs_crc64_table[(crc ^ (osv >> 6)) & 0xFF];
 	crc = (crc >> 8) ^ zfs_crc64_table[(crc ^ (obj >> 0)) & 0xFF];
 	crc = (crc >> 8) ^ zfs_crc64_table[(crc ^ (obj >> 8)) & 0xFF];
@@ -405,13 +332,7 @@ dnode_multilist_index_func(multilist_t *ml, void *obj)
 {
 	dnode_t *dn = obj;
 
-	/*
-	 * The low order bits of the hash value are thought to be
-	 * distributed evenly. Otherwise, in the case that the multilist
-	 * has a power of two number of sublists, each sublists' usage
-	 * would not be evenly distributed. In this context full 64bit
-	 * division would be a waste of time, so limit it to 32 bits.
-	 */
+	 
 	return ((unsigned int)dnode_hash(dn->dn_objset, dn->dn_object) %
 	    multilist_get_num_sublists(ml));
 }
@@ -444,10 +365,7 @@ dmu_os_is_l2cacheable(objset_t *os)
 	return (B_FALSE);
 }
 
-/*
- * Instantiates the objset_t in-memory structure corresponding to the
- * objset_phys_t that's pointed to by the specified blkptr_t.
- */
+ 
 int
 dmu_objset_open_impl(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
     objset_t **osp)
@@ -458,16 +376,10 @@ dmu_objset_open_impl(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
 	ASSERT(ds == NULL || MUTEX_HELD(&ds->ds_opening_lock));
 	ASSERT(!BP_IS_REDACTED(bp));
 
-	/*
-	 * We need the pool config lock to get properties.
-	 */
+	 
 	ASSERT(ds == NULL || dsl_pool_config_held(ds->ds_dir->dd_pool));
 
-	/*
-	 * The $ORIGIN dataset (if it exists) doesn't have an associated
-	 * objset, so there's no reason to open it. The $ORIGIN dataset
-	 * will not exist on pools older than SPA_VERSION_ORIGIN.
-	 */
+	 
 	if (ds != NULL && spa_get_dsl(spa) != NULL &&
 	    spa_get_dsl(spa)->dp_origin_snap != NULL) {
 		ASSERT3P(ds->ds_dir, !=,
@@ -501,7 +413,7 @@ dmu_objset_open_impl(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
 		    ZIO_PRIORITY_SYNC_READ, zio_flags, &aflags, &zb);
 		if (err != 0) {
 			kmem_free(os, sizeof (objset_t));
-			/* convert checksum errors into IO errors */
+			 
 			if (err == ECKSUM)
 				err = SET_ERROR(EIO);
 			return (err);
@@ -515,7 +427,7 @@ dmu_objset_open_impl(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
 		else
 			size = sizeof (objset_phys_t);
 
-		/* Increase the blocksize if we are permitted. */
+		 
 		if (arc_buf_size(os->os_phys_buf) < size) {
 			arc_buf_t *buf = arc_alloc_buf(spa, &os->os_phys_buf,
 			    ARC_BUFC_METADATA, size);
@@ -536,21 +448,13 @@ dmu_objset_open_impl(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
 		os->os_phys = os->os_phys_buf->b_data;
 		memset(os->os_phys, 0, size);
 	}
-	/*
-	 * These properties will be filled in by the logic in zfs_get_zplprop()
-	 * when they are queried for the first time.
-	 */
+	 
 	os->os_version = OBJSET_PROP_UNINITIALIZED;
 	os->os_normalization = OBJSET_PROP_UNINITIALIZED;
 	os->os_utf8only = OBJSET_PROP_UNINITIALIZED;
 	os->os_casesensitivity = OBJSET_PROP_UNINITIALIZED;
 
-	/*
-	 * Note: the changed_cb will be called once before the register
-	 * func returns, thus changing the checksum/compression from the
-	 * default (fletcher2/off).  Snapshots don't need to know about
-	 * checksum/compression/copies.
-	 */
+	 
 	if (ds != NULL) {
 		os->os_encrypted = (ds->ds_dir->dd_crypto_obj != 0);
 
@@ -622,7 +526,7 @@ dmu_objset_open_impl(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
 			return (err);
 		}
 	} else {
-		/* It's the meta-objset. */
+		 
 		os->os_checksum = ZIO_CHECKSUM_FLETCHER_4;
 		os->os_compress = ZIO_COMPRESS_ON;
 		os->os_complevel = ZIO_COMPLEVEL_DEFAULT;
@@ -685,11 +589,7 @@ dmu_objset_from_ds(dsl_dataset_t *ds, objset_t **osp)
 {
 	int err = 0;
 
-	/*
-	 * We need the pool_config lock to manipulate the dsl_dataset_t.
-	 * Even if the dataset is long-held, we need the pool_config lock
-	 * to open the objset, as it needs to get properties.
-	 */
+	 
 	ASSERT(dsl_pool_config_held(ds->ds_dir->dd_pool));
 
 	mutex_enter(&ds->ds_opening_lock);
@@ -712,10 +612,7 @@ dmu_objset_from_ds(dsl_dataset_t *ds, objset_t **osp)
 	return (err);
 }
 
-/*
- * Holds the pool while the objset is held.  Therefore only one objset
- * can be held at a time.
- */
+ 
 int
 dmu_objset_hold_flags(const char *name, boolean_t decrypt, const void *tag,
     objset_t **osp)
@@ -768,7 +665,7 @@ dmu_objset_own_impl(dsl_dataset_t *ds, dmu_objset_type_t type,
 		return (SET_ERROR(EROFS));
 	}
 
-	/* if we are decrypting, we can now check MACs in os->os_phys_buf */
+	 
 	if (decrypt && arc_is_unauthenticated((*osp)->os_phys_buf)) {
 		zbookmark_phys_t zb;
 
@@ -785,11 +682,7 @@ dmu_objset_own_impl(dsl_dataset_t *ds, dmu_objset_type_t type,
 	return (0);
 }
 
-/*
- * dsl_pool must not be held when this is called.
- * Upon successful return, there will be a longhold on the dataset,
- * and the dsl_pool will not be held.
- */
+ 
 int
 dmu_objset_own(const char *name, dmu_objset_type_t type,
     boolean_t readonly, boolean_t decrypt, const void *tag, objset_t **osp)
@@ -815,12 +708,7 @@ dmu_objset_own(const char *name, dmu_objset_type_t type,
 		return (err);
 	}
 
-	/*
-	 * User accounting requires the dataset to be decrypted and rw.
-	 * We also don't begin user accounting during claiming to help
-	 * speed up pool import times and to keep this txg reserved
-	 * completely for recovery work.
-	 */
+	 
 	if (!readonly && !dp->dp_spa->spa_claiming &&
 	    (ds->ds_dir->dd_crypto_obj == 0 || decrypt)) {
 		if (dmu_objset_userobjspace_upgradable(*osp) ||
@@ -874,17 +762,7 @@ dmu_objset_rele(objset_t *os, const void *tag)
 	dmu_objset_rele_flags(os, B_FALSE, tag);
 }
 
-/*
- * When we are called, os MUST refer to an objset associated with a dataset
- * that is owned by 'tag'; that is, is held and long held by 'tag' and ds_owner
- * == tag.  We will then release and reacquire ownership of the dataset while
- * holding the pool config_rwlock to avoid intervening namespace or ownership
- * changes may occur.
- *
- * This exists solely to accommodate zfs_ioc_userspace_upgrade()'s desire to
- * release the hold on its dataset and acquire a new one on the dataset of the
- * same name so that it can be partially torn down and reconstructed.
- */
+ 
 void
 dmu_objset_refresh_ownership(dsl_dataset_t *ds, dsl_dataset_t **newds,
     boolean_t decrypt, const void *tag)
@@ -912,9 +790,7 @@ dmu_objset_disown(objset_t *os, boolean_t decrypt, const void *tag)
 	ds_hold_flags_t flags;
 
 	flags = (decrypt) ? DS_HOLD_FLAG_DECRYPT : DS_HOLD_FLAG_NONE;
-	/*
-	 * Stop upgrading thread
-	 */
+	 
 	dmu_objset_upgrade_stop(os);
 	dsl_dataset_disown(os->os_dsl_dataset, flags, tag);
 }
@@ -930,11 +806,7 @@ dmu_objset_evict_dbufs(objset_t *os)
 	mutex_enter(&os->os_lock);
 	dn = list_head(&os->os_dnodes);
 	while (dn != NULL) {
-		/*
-		 * Skip dnodes without holds.  We have to do this dance
-		 * because dnode_add_ref() only works if there is already a
-		 * hold.  If the dnode has no holds, then it has no dbufs.
-		 */
+		 
 		if (dnode_add_ref(dn, FTAG)) {
 			list_insert_after(&os->os_dnodes, dn, dn_marker);
 			mutex_exit(&os->os_lock);
@@ -962,19 +834,7 @@ dmu_objset_evict_dbufs(objset_t *os)
 	dnode_evict_dbufs(DMU_META_DNODE(os));
 }
 
-/*
- * Objset eviction processing is split into into two pieces.
- * The first marks the objset as evicting, evicts any dbufs that
- * have a refcount of zero, and then queues up the objset for the
- * second phase of eviction.  Once os->os_dnodes has been cleared by
- * dnode_buf_pageout()->dnode_destroy(), the second phase is executed.
- * The second phase closes the special dnodes, dequeues the objset from
- * the list of those undergoing eviction, and finally frees the objset.
- *
- * NOTE: Due to asynchronous eviction processing (invocation of
- *       dnode_buf_pageout()), it is possible for the meta dnode for the
- *       objset to have no holds even though os->os_dnodes is not empty.
- */
+ 
 void
 dmu_objset_evict(objset_t *os)
 {
@@ -1019,12 +879,7 @@ dmu_objset_evict_done(objset_t *os)
 
 	arc_buf_destroy(os->os_phys_buf, &os->os_phys_buf);
 
-	/*
-	 * This is a barrier to prevent the objset from going away in
-	 * dnode_move() until we can safely ensure that the objset is still in
-	 * use. We consider the objset valid before the barrier and invalid
-	 * after the barrier.
-	 */
+	 
 	rw_enter(&os_lock, RW_READER);
 	rw_exit(&os_lock);
 
@@ -1072,31 +927,12 @@ dmu_objset_create_impl_dnstats(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
 	dnode_allocate(mdn, DMU_OT_DNODE, blksz, ibs, DMU_OT_NONE, 0,
 	    DNODE_MIN_SLOTS, tx);
 
-	/*
-	 * We don't want to have to increase the meta-dnode's nlevels
-	 * later, because then we could do it in quiescing context while
-	 * we are also accessing it in open context.
-	 *
-	 * This precaution is not necessary for the MOS (ds == NULL),
-	 * because the MOS is only updated in syncing context.
-	 * This is most fortunate: the MOS is the only objset that
-	 * needs to be synced multiple times as spa_sync() iterates
-	 * to convergence, so minimizing its dn_nlevels matters.
-	 */
+	 
 	if (ds != NULL) {
 		if (levels == 0) {
 			levels = 1;
 
-			/*
-			 * Determine the number of levels necessary for the
-			 * meta-dnode to contain DN_MAX_OBJECT dnodes.  Note
-			 * that in order to ensure that we do not overflow
-			 * 64 bits, there has to be a nlevels that gives us a
-			 * number of blocks > DN_MAX_OBJECT but < 2^64.
-			 * Therefore, (mdn->dn_indblkshift - SPA_BLKPTRSHIFT)
-			 * (10) must be less than (64 - log2(DN_MAX_OBJECT))
-			 * (16).
-			 */
+			 
 			while ((uint64_t)mdn->dn_nblkptr <<
 			    (mdn->dn_datablkshift - DNODE_SHIFT + (levels - 1) *
 			    (mdn->dn_indblkshift - SPA_BLKPTRSHIFT)) <
@@ -1113,10 +949,7 @@ dmu_objset_create_impl_dnstats(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
 	ASSERT(type < DMU_OST_NUMTYPES);
 	os->os_phys->os_type = type;
 
-	/*
-	 * Enable user accounting if it is enabled and this is not an
-	 * encrypted receive.
-	 */
+	 
 	if (dmu_objset_userused_enabled(os) &&
 	    (!os->os_encrypted || !dmu_objset_is_receiving(os))) {
 		os->os_phys->os_flags |= OBJSET_FLAG_USERACCOUNTING_COMPLETE;
@@ -1142,7 +975,7 @@ dmu_objset_create_impl_dnstats(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
 	return (os);
 }
 
-/* called from dsl for meta-objset */
+ 
 objset_t *
 dmu_objset_create_impl(spa_t *spa, dsl_dataset_t *ds, blkptr_t *bp,
     dmu_objset_type_t type, dmu_tx_t *tx)
@@ -1203,7 +1036,7 @@ dmu_objset_create_check(void *arg, dmu_tx_t *tx)
 		return (error);
 	}
 
-	/* can't create below anything but filesystems (eg. no ZVOLs) */
+	 
 	error = dsl_dataset_hold_obj(pdd->dd_pool,
 	    dsl_dir_phys(pdd)->dd_head_dataset_obj, FTAG, &parentds);
 	if (error != 0) {
@@ -1258,14 +1091,7 @@ dmu_objset_create_sync(void *arg, dmu_tx_t *tx)
 		    doca->doca_cred, tx);
 	}
 
-	/*
-	 * The doca_userfunc() may write out some data that needs to be
-	 * encrypted if the dataset is encrypted (specifically the root
-	 * directory).  This data must be written out before the encryption
-	 * key mapping is removed by dsl_dataset_rele_flags().  Force the
-	 * I/O to occur immediately by invoking the relevant sections of
-	 * dsl_pool_sync().
-	 */
+	 
 	if (os->os_encrypted) {
 		dsl_dataset_t *tmpds = NULL;
 		boolean_t need_sync_done = B_FALSE;
@@ -1332,14 +1158,7 @@ dmu_objset_create(const char *name, dmu_objset_type_t type, uint64_t flags,
 	doca.doca_userarg = arg;
 	doca.doca_type = type;
 
-	/*
-	 * Some callers (mostly for testing) do not provide a dcp on their
-	 * own but various code inside the sync task will require it to be
-	 * allocated. Rather than adding NULL checks throughout this code
-	 * or adding dummy dcp's to all of the callers we simply create a
-	 * dummy one here and use that. This zero dcp will have the same
-	 * effect as asking for inheritance of all encryption params.
-	 */
+	 
 	doca.doca_dcp = (dcp != NULL) ? dcp : &tmp_dcp;
 
 	int rv = dsl_sync_task(name,
@@ -1395,7 +1214,7 @@ dmu_objset_clone_check(void *arg, dmu_tx_t *tx)
 		return (error);
 	}
 
-	/* You can only clone snapshots, not the head datasets. */
+	 
 	if (!origin->ds_is_snapshot) {
 		dsl_dataset_rele(origin, FTAG);
 		dsl_dir_rele(pdd, FTAG);
@@ -1546,21 +1365,14 @@ dmu_objset_sync_dnodes(multilist_sublist_t *list, dmu_tx_t *tx)
 	while ((dn = multilist_sublist_head(list)) != NULL) {
 		ASSERT(dn->dn_object != DMU_META_DNODE_OBJECT);
 		ASSERT(dn->dn_dbuf->db_data_pending);
-		/*
-		 * Initialize dn_zio outside dnode_sync() because the
-		 * meta-dnode needs to set it outside dnode_sync().
-		 */
+		 
 		dn->dn_zio = dn->dn_dbuf->db_data_pending->dr_zio;
 		ASSERT(dn->dn_zio);
 
 		ASSERT3U(dn->dn_nlevels, <=, DN_MAX_LEVELS);
 		multilist_sublist_remove(list, dn);
 
-		/*
-		 * See the comment above dnode_rele_task() for an explanation
-		 * of why this dnode hold is always needed (even when not
-		 * doing user accounting).
-		 */
+		 
 		multilist_t *newlist = &dn->dn_objset->os_synced_dnodes;
 		(void) dnode_add_ref(dn, newlist);
 		multilist_insert(newlist, dn);
@@ -1582,12 +1394,7 @@ dmu_objset_write_ready(zio_t *zio, arc_buf_t *abuf, void *arg)
 	ASSERT3U(BP_GET_TYPE(bp), ==, DMU_OT_OBJSET);
 	ASSERT0(BP_GET_LEVEL(bp));
 
-	/*
-	 * Update rootbp fill count: it should be the number of objects
-	 * allocated in the object set (not counting the "special"
-	 * objects that are stored in the objset_phys_t -- the meta
-	 * dnode and user/group/project accounting objects).
-	 */
+	 
 	for (int i = 0; i < dnp->dn_nblkptr; i++)
 		fill += BP_GET_FILL(&dnp->dn_blkptr[i]);
 
@@ -1643,7 +1450,7 @@ sync_dnodes_task(void *arg)
 }
 
 
-/* called from dsl */
+ 
 void
 dmu_objset_sync(objset_t *os, zio_t *pio, dmu_tx_t *tx)
 {
@@ -1661,21 +1468,15 @@ dmu_objset_sync(objset_t *os, zio_t *pio, dmu_tx_t *tx)
 	dprintf_ds(os->os_dsl_dataset, "txg=%llu\n", (u_longlong_t)tx->tx_txg);
 
 	ASSERT(dmu_tx_is_syncing(tx));
-	/* XXX the write_done callback should really give us the tx... */
+	 
 	os->os_synctx = tx;
 
 	if (os->os_dsl_dataset == NULL) {
-		/*
-		 * This is the MOS.  If we have upgraded,
-		 * spa_max_replication() could change, so reset
-		 * os_copies here.
-		 */
+		 
 		os->os_copies = spa_max_replication(os->os_spa);
 	}
 
-	/*
-	 * Create the root block IO
-	 */
+	 
 	SET_BOOKMARK(&zb, os->os_dsl_dataset ?
 	    os->os_dsl_dataset->ds_object : DMU_META_OBJSET,
 	    ZB_ROOT_OBJECT, ZB_ROOT_LEVEL, ZB_ROOT_BLKID);
@@ -1683,11 +1484,7 @@ dmu_objset_sync(objset_t *os, zio_t *pio, dmu_tx_t *tx)
 
 	dmu_write_policy(os, NULL, 0, 0, &zp);
 
-	/*
-	 * If we are either claiming the ZIL or doing a raw receive, write
-	 * out the os_phys_buf raw. Neither of these actions will effect the
-	 * MAC at this point.
-	 */
+	 
 	if (os->os_raw_receive ||
 	    os->os_next_write_raw[tx->tx_txg & TXG_MASK]) {
 		ASSERT(os->os_encrypted);
@@ -1701,9 +1498,7 @@ dmu_objset_sync(objset_t *os, zio_t *pio, dmu_tx_t *tx)
 	    &zp, dmu_objset_write_ready, NULL, dmu_objset_write_done,
 	    os, ZIO_PRIORITY_ASYNC_WRITE, ZIO_FLAG_MUSTSUCCEED, &zb);
 
-	/*
-	 * Sync special dnodes - the parent IO for the sync is the root block
-	 */
+	 
 	DMU_META_DNODE(os)->dn_zio = zio;
 	dnode_sync(DMU_META_DNODE(os), tx);
 
@@ -1725,11 +1520,7 @@ dmu_objset_sync(objset_t *os, zio_t *pio, dmu_tx_t *tx)
 
 	txgoff = tx->tx_txg & TXG_MASK;
 
-	/*
-	 * We must create the list here because it uses the
-	 * dn_dirty_link[] of this txg.  But it may already
-	 * exist because we call dsl_dataset_sync() twice per txg.
-	 */
+	 
 	if (os->os_synced_dnodes.ml_sublists == NULL) {
 		multilist_create(&os->os_synced_dnodes, sizeof (dnode_t),
 		    offsetof(dnode_t, dn_dirty_link[txgoff]),
@@ -1750,7 +1541,7 @@ dmu_objset_sync(objset_t *os, zio_t *pio, dmu_tx_t *tx)
 		sda->sda_tx = tx;
 		(void) taskq_dispatch(dmu_objset_pool(os)->dp_sync_taskq,
 		    sync_dnodes_task, sda, 0);
-		/* callback frees sda */
+		 
 	}
 	taskq_wait(dmu_objset_pool(os)->dp_sync_taskq);
 
@@ -1760,15 +1551,13 @@ dmu_objset_sync(objset_t *os, zio_t *pio, dmu_tx_t *tx)
 		zio_nowait(dr->dr_zio);
 	}
 
-	/* Enable dnode backfill if enough objects have been freed. */
+	 
 	if (os->os_freed_dnodes >= dmu_rescan_dnode_threshold) {
 		os->os_rescan_dnodes = B_TRUE;
 		os->os_freed_dnodes = 0;
 	}
 
-	/*
-	 * Free intent log blocks up to this tx.
-	 */
+	 
 	zil_sync(os->os_zil, tx);
 	os->os_phys->os_zil_header = os->os_zil_header;
 	zio_nowait(zio);
@@ -1822,7 +1611,7 @@ dmu_objset_projectquota_enabled(objset_t *os)
 }
 
 typedef struct userquota_node {
-	/* must be in the first filed, see userquota_update_cache() */
+	 
 	char		uqn_id[20 + DMU_OBJACCT_PREFIX_LEN];
 	int64_t		uqn_delta;
 	avl_node_t	uqn_node;
@@ -1841,10 +1630,7 @@ userquota_compare(const void *l, const void *r)
 	const userquota_node_t *ruqn = r;
 	int rv;
 
-	/*
-	 * NB: can only access uqn_id because userquota_update_cache() doesn't
-	 * pass in an entire userquota_node_t.
-	 */
+	 
 	rv = strcmp(luqn->uqn_id, ruqn->uqn_id);
 
 	return (TREE_ISIGN(rv));
@@ -1861,11 +1647,7 @@ do_userquota_cacheflush(objset_t *os, userquota_cache_t *cache, dmu_tx_t *tx)
 	cookie = NULL;
 	while ((uqn = avl_destroy_nodes(&cache->uqc_user_deltas,
 	    &cookie)) != NULL) {
-		/*
-		 * os_userused_lock protects against concurrent calls to
-		 * zap_increment_int().  It's needed because zap_increment_int()
-		 * is not thread-safe (i.e. not atomic).
-		 */
+		 
 		mutex_enter(&os->os_userused_lock);
 		VERIFY0(zap_increment(os, DMU_USERUSED_OBJECT,
 		    uqn->uqn_id, uqn->uqn_delta, tx));
@@ -1906,11 +1688,7 @@ userquota_update_cache(avl_tree_t *avl, const char *id, int64_t delta)
 	avl_index_t idx;
 
 	ASSERT(strlen(id) < sizeof (uqn->uqn_id));
-	/*
-	 * Use id directly for searching because uqn_id is the first field of
-	 * userquota_node_t and fields after uqn_id won't be accessed in
-	 * avl_find().
-	 */
+	 
 	uqn = avl_find(avl, (const void *)id, &idx);
 	if (uqn == NULL) {
 		uqn = kmem_zalloc(sizeof (*uqn), KM_SLEEP);
@@ -2052,18 +1830,7 @@ userquota_updates_task(void *arg)
 	kmem_free(uua, sizeof (*uua));
 }
 
-/*
- * Release dnode holds from dmu_objset_sync_dnodes().  When the dnode is being
- * synced (i.e. we have issued the zio's for blocks in the dnode), it can't be
- * evicted because the block containing the dnode can't be evicted until it is
- * written out.  However, this hold is necessary to prevent the dnode_t from
- * being moved (via dnode_move()) while it's still referenced by
- * dbuf_dirty_record_t:dr_dnode.  And dr_dnode is needed for
- * dirty_lightweight_leaf-type dirty records.
- *
- * If we are doing user-object accounting, the dnode_rele() happens from
- * userquota_updates_task() instead.
- */
+ 
 static void
 dnode_rele_task(void *arg)
 {
@@ -2082,29 +1849,21 @@ dnode_rele_task(void *arg)
 	kmem_free(uua, sizeof (*uua));
 }
 
-/*
- * Return TRUE if userquota updates are needed.
- */
+ 
 static boolean_t
 dmu_objset_do_userquota_updates_prep(objset_t *os, dmu_tx_t *tx)
 {
 	if (!dmu_objset_userused_enabled(os))
 		return (B_FALSE);
 
-	/*
-	 * If this is a raw receive just return and handle accounting
-	 * later when we have the keys loaded. We also don't do user
-	 * accounting during claiming since the datasets are not owned
-	 * for the duration of claiming and this txg should only be
-	 * used for recovery.
-	 */
+	 
 	if (os->os_encrypted && dmu_objset_is_receiving(os))
 		return (B_FALSE);
 
 	if (tx->tx_txg <= os->os_spa->spa_claim_max_txg)
 		return (B_FALSE);
 
-	/* Allocate the user/group/project used objects if necessary. */
+	 
 	if (DMU_USERUSED_DNODE(os)->dn_type == DMU_OT_NONE) {
 		VERIFY0(zap_create_claim(os,
 		    DMU_USERUSED_OBJECT,
@@ -2122,11 +1881,7 @@ dmu_objset_do_userquota_updates_prep(objset_t *os, dmu_tx_t *tx)
 	return (B_TRUE);
 }
 
-/*
- * Dispatch taskq tasks to dp_sync_taskq to update the user accounting, and
- * also release the holds on the dnodes from dmu_objset_sync_dnodes().
- * The caller must taskq_wait(dp_sync_taskq).
- */
+ 
 void
 dmu_objset_sync_done(objset_t *os, dmu_tx_t *tx)
 {
@@ -2140,25 +1895,16 @@ dmu_objset_sync_done(objset_t *os, dmu_tx_t *tx)
 		uua->uua_sublist_idx = i;
 		uua->uua_tx = tx;
 
-		/*
-		 * If we don't need to update userquotas, use
-		 * dnode_rele_task() to call dnode_rele()
-		 */
+		 
 		(void) taskq_dispatch(dmu_objset_pool(os)->dp_sync_taskq,
 		    need_userquota ? userquota_updates_task : dnode_rele_task,
 		    uua, 0);
-		/* callback frees uua */
+		 
 	}
 }
 
 
-/*
- * Returns a pointer to data to find uid/gid from
- *
- * If a dirty record for transaction group that is syncing can't
- * be found then NULL is returned.  In the NULL case it is assumed
- * the uid/gid aren't changing.
- */
+ 
 static void *
 dmu_objset_userquota_find_data(dmu_buf_impl_t *db, dmu_tx_t *tx)
 {
@@ -2166,7 +1912,7 @@ dmu_objset_userquota_find_data(dmu_buf_impl_t *db, dmu_tx_t *tx)
 	void *data;
 
 	if (db->db_dirtycnt == 0)
-		return (db->db.db_data);  /* Nothing is changing */
+		return (db->db.db_data);   
 
 	dr = dbuf_find_dirty_eq(db, tx->tx_txg);
 
@@ -2196,15 +1942,7 @@ dmu_objset_userquota_get_ids(dnode_t *dn, boolean_t before, dmu_tx_t *tx)
 	if (!dmu_objset_userused_enabled(dn->dn_objset))
 		return;
 
-	/*
-	 * Raw receives introduce a problem with user accounting. Raw
-	 * receives cannot update the user accounting info because the
-	 * user ids and the sizes are encrypted. To guarantee that we
-	 * never end up with bad user accounting, we simply disable it
-	 * during raw receives. We also disable this for normal receives
-	 * so that an incremental raw receive may be done on top of an
-	 * existing non-raw receive.
-	 */
+	 
 	if (os->os_encrypted && dmu_objset_is_receiving(os))
 		return;
 
@@ -2242,10 +1980,7 @@ dmu_objset_userquota_get_ids(dnode_t *dn, boolean_t before, dmu_tx_t *tx)
 		return;
 	}
 
-	/*
-	 * Must always call the callback in case the object
-	 * type has changed and that type isn't an object type to track
-	 */
+	 
 	zfs_file_info_t zfi;
 	error = file_cbs[os->os_phys->os_type](dn->dn_bonustype, data, &zfi);
 
@@ -2260,13 +1995,7 @@ dmu_objset_userquota_get_ids(dnode_t *dn, boolean_t before, dmu_tx_t *tx)
 		dn->dn_newprojid = zfi.zfi_project;
 	}
 
-	/*
-	 * Preserve existing uid/gid when the callback can't determine
-	 * what the new uid/gid are and the callback returned EEXIST.
-	 * The EEXIST error tells us to just use the existing uid/gid.
-	 * If we don't know what the old values are then just assign
-	 * them to 0, since that is a new file  being created.
-	 */
+	 
 	if (!before && data == NULL && error == EEXIST) {
 		if (flags & DN_ID_OLD_EXIST) {
 			dn->dn_newuid = dn->dn_olduid;
@@ -2326,13 +2055,7 @@ dmu_objset_space_upgrade(objset_t *os)
 	uint64_t obj;
 	int err = 0;
 
-	/*
-	 * We simply need to mark every object dirty, so that it will be
-	 * synced out and now accounted.  If this is called
-	 * concurrently, or if we already did some work before crashing,
-	 * that's fine, since we track each object's accounted state
-	 * independently.
-	 */
+	 
 
 	for (obj = 0; err == 0; err = dmu_object_next(os, &obj, FALSE, 0)) {
 		dmu_tx_t *tx;
@@ -2571,7 +2294,7 @@ dmu_dir_list_next(objset_t *os, int namelen, char *name,
 	zap_cursor_t cursor;
 	zap_attribute_t attr;
 
-	/* there is no next dir on a snapshot! */
+	 
 	if (os->os_dsl_dataset->ds_object !=
 	    dsl_dir_phys(dd)->dd_head_dataset_obj)
 		return (SET_ERROR(ENOENT));
@@ -2604,7 +2327,7 @@ typedef struct dmu_objset_find_ctx {
 	taskq_t		*dc_tq;
 	dsl_pool_t	*dc_dp;
 	uint64_t	dc_ddobj;
-	char		*dc_ddname; /* last component of ddobj's name */
+	char		*dc_ddname;  
 	int		(*dc_func)(dsl_pool_t *, dsl_dataset_t *, void *);
 	void		*dc_arg;
 	int		dc_flags;
@@ -2623,20 +2346,16 @@ dmu_objset_find_dp_impl(dmu_objset_find_ctx_t *dcp)
 	uint64_t thisobj;
 	int err = 0;
 
-	/* don't process if there already was an error */
+	 
 	if (*dcp->dc_error != 0)
 		goto out;
 
-	/*
-	 * Note: passing the name (dc_ddname) here is optional, but it
-	 * improves performance because we don't need to call
-	 * zap_value_search() to determine the name.
-	 */
+	 
 	err = dsl_dir_hold_obj(dp, dcp->dc_ddobj, dcp->dc_ddname, FTAG, &dd);
 	if (err != 0)
 		goto out;
 
-	/* Don't visit hidden ($MOS & $ORIGIN) objsets. */
+	 
 	if (dd->dd_myname[0] == '$') {
 		dsl_dir_rele(dd, FTAG);
 		goto out;
@@ -2645,9 +2364,7 @@ dmu_objset_find_dp_impl(dmu_objset_find_ctx_t *dcp)
 	thisobj = dsl_dir_phys(dd)->dd_head_dataset_obj;
 	attr = kmem_alloc(sizeof (zap_attribute_t), KM_SLEEP);
 
-	/*
-	 * Iterate over all children.
-	 */
+	 
 	if (dcp->dc_flags & DS_FIND_CHILDREN) {
 		for (zap_cursor_init(&zc, dp->dp_meta_objset,
 		    dsl_dir_phys(dd)->dd_child_dir_zapobj);
@@ -2671,9 +2388,7 @@ dmu_objset_find_dp_impl(dmu_objset_find_ctx_t *dcp)
 		zap_cursor_fini(&zc);
 	}
 
-	/*
-	 * Iterate over all snapshots.
-	 */
+	 
 	if (dcp->dc_flags & DS_FIND_SNAPSHOTS) {
 		dsl_dataset_t *ds;
 		err = dsl_dataset_hold_obj(dp, thisobj, FTAG, &ds);
@@ -2711,17 +2426,10 @@ dmu_objset_find_dp_impl(dmu_objset_find_ctx_t *dcp)
 		goto out;
 	}
 
-	/*
-	 * Apply to self.
-	 */
+	 
 	err = dsl_dataset_hold_obj(dp, thisobj, FTAG, &ds);
 
-	/*
-	 * Note: we hold the dir while calling dsl_dataset_hold_obj() so
-	 * that the dir will remain cached, and we won't have to re-instantiate
-	 * it (which could be expensive due to finding its name via
-	 * zap_value_search()).
-	 */
+	 
 	dsl_dir_rele(dd, FTAG);
 	if (err != 0)
 		goto out;
@@ -2731,7 +2439,7 @@ dmu_objset_find_dp_impl(dmu_objset_find_ctx_t *dcp)
 out:
 	if (err != 0) {
 		mutex_enter(dcp->dc_error_lock);
-		/* only keep first error */
+		 
 		if (*dcp->dc_error == 0)
 			*dcp->dc_error = err;
 		mutex_exit(dcp->dc_error_lock);
@@ -2748,14 +2456,7 @@ dmu_objset_find_dp_cb(void *arg)
 	dmu_objset_find_ctx_t *dcp = arg;
 	dsl_pool_t *dp = dcp->dc_dp;
 
-	/*
-	 * We need to get a pool_config_lock here, as there are several
-	 * assert(pool_config_held) down the stack. Getting a lock via
-	 * dsl_pool_config_enter is risky, as it might be stalled by a
-	 * pending writer. This would deadlock, as the write lock can
-	 * only be granted when our parent thread gives up the lock.
-	 * The _prio interface gives us priority over a pending writer.
-	 */
+	 
 	dsl_pool_config_enter_prio(dp, FTAG);
 
 	dmu_objset_find_dp_impl(dcp);
@@ -2763,11 +2464,7 @@ dmu_objset_find_dp_cb(void *arg)
 	dsl_pool_config_exit(dp, FTAG);
 }
 
-/*
- * Find objsets under and including ddobj, call func(ds) on each.
- * The order for the enumeration is completely undefined.
- * func is called with dsl_pool_config held.
- */
+ 
 int
 dmu_objset_find_dp(dsl_pool_t *dp, uint64_t ddobj,
     int func(dsl_pool_t *, dsl_dataset_t *, void *), void *arg, int flags)
@@ -2791,19 +2488,7 @@ dmu_objset_find_dp(dsl_pool_t *dp, uint64_t ddobj,
 	dcp->dc_error = &error;
 
 	if ((flags & DS_FIND_SERIALIZE) || dsl_pool_config_held_writer(dp)) {
-		/*
-		 * In case a write lock is held we can't make use of
-		 * parallelism, as down the stack of the worker threads
-		 * the lock is asserted via dsl_pool_config_held.
-		 * In case of a read lock this is solved by getting a read
-		 * lock in each worker thread, which isn't possible in case
-		 * of a writer lock. So we fall back to the synchronous path
-		 * here.
-		 * In the future it might be possible to get some magic into
-		 * dsl_pool_config_held in a way that it returns true for
-		 * the worker threads so that a single lock held from this
-		 * thread suffices. For now, stay single threaded.
-		 */
+		 
 		dmu_objset_find_dp_impl(dcp);
 		mutex_destroy(&err_lock);
 
@@ -2823,18 +2508,10 @@ dmu_objset_find_dp(dsl_pool_t *dp, uint64_t ddobj,
 	}
 	dcp->dc_tq = tq;
 
-	/* dcp will be freed by task */
+	 
 	(void) taskq_dispatch(tq, dmu_objset_find_dp_cb, dcp, TQ_SLEEP);
 
-	/*
-	 * PORTING: this code relies on the property of taskq_wait to wait
-	 * until no more tasks are queued and no more tasks are active. As
-	 * we always queue new tasks from within other tasks, task_wait
-	 * reliably waits for the full recursion to finish, even though we
-	 * enqueue new tasks after taskq_wait has been called.
-	 * On platforms other than illumos, taskq_wait may not have this
-	 * property.
-	 */
+	 
 	taskq_wait(tq);
 	taskq_destroy(tq);
 	mutex_destroy(&err_lock);
@@ -2842,13 +2519,7 @@ dmu_objset_find_dp(dsl_pool_t *dp, uint64_t ddobj,
 	return (error);
 }
 
-/*
- * Find all objsets under name, and for each, call 'func(child_name, arg)'.
- * The dp_config_rwlock must not be held when this is called, and it
- * will not be held when the callback is called.
- * Therefore this function should only be used when the pool is not changing
- * (e.g. in syncing context), or the callback can deal with the possible races.
- */
+ 
 static int
 dmu_objset_find_impl(spa_t *spa, const char *name,
     int func(const char *, void *), void *arg, int flags)
@@ -2870,7 +2541,7 @@ dmu_objset_find_impl(spa_t *spa, const char *name,
 		return (err);
 	}
 
-	/* Don't visit hidden ($MOS & $ORIGIN) objsets. */
+	 
 	if (dd->dd_myname[0] == '$') {
 		dsl_dir_rele(dd, FTAG);
 		dsl_pool_config_exit(dp, FTAG);
@@ -2880,9 +2551,7 @@ dmu_objset_find_impl(spa_t *spa, const char *name,
 	thisobj = dsl_dir_phys(dd)->dd_head_dataset_obj;
 	attr = kmem_alloc(sizeof (zap_attribute_t), KM_SLEEP);
 
-	/*
-	 * Iterate over all children.
-	 */
+	 
 	if (flags & DS_FIND_CHILDREN) {
 		for (zap_cursor_init(&zc, dp->dp_meta_objset,
 		    dsl_dir_phys(dd)->dd_child_dir_zapobj);
@@ -2911,9 +2580,7 @@ dmu_objset_find_impl(spa_t *spa, const char *name,
 		}
 	}
 
-	/*
-	 * Iterate over all snapshots.
-	 */
+	 
 	if (flags & DS_FIND_SNAPSHOTS) {
 		err = dsl_dataset_hold_obj(dp, thisobj, FTAG, &ds);
 
@@ -2950,13 +2617,11 @@ dmu_objset_find_impl(spa_t *spa, const char *name,
 	if (err != 0)
 		return (err);
 
-	/* Apply to self. */
+	 
 	return (func(name, arg));
 }
 
-/*
- * See comment above dmu_objset_find_impl().
- */
+ 
 int
 dmu_objset_find(const char *name, int func(const char *, void *), void *arg,
     int flags)
@@ -2993,10 +2658,7 @@ dmu_objset_get_user(objset_t *os)
 	return (os->os_user_ptr);
 }
 
-/*
- * Determine name of filesystem, given name of snapshot.
- * buf must be at least ZFS_MAX_DATASET_NAME_LEN bytes
- */
+ 
 int
 dmu_fsname(const char *snapname, char *buf)
 {
@@ -3009,19 +2671,7 @@ dmu_fsname(const char *snapname, char *buf)
 	return (0);
 }
 
-/*
- * Call when we think we're going to write/free space in open context
- * to track the amount of dirty data in the open txg, which is also the
- * amount of memory that can not be evicted until this txg syncs.
- *
- * Note that there are two conditions where this can be called from
- * syncing context:
- *
- * [1] When we just created the dataset, in which case we go on with
- *     updating any accounting of dirty data as usual.
- * [2] When we are dirtying MOS data, in which case we only update the
- *     pool's accounting of dirty data.
- */
+ 
 void
 dmu_objset_willuse_space(objset_t *os, int64_t space, dmu_tx_t *tx)
 {

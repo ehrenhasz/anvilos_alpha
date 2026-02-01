@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Scalar fixed time AES core transform
- *
- * Copyright (C) 2017 Linaro Ltd <ard.biesheuvel@linaro.org>
- */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/algapi.h>
@@ -22,10 +18,7 @@ static void aesti_encrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 	const struct crypto_aes_ctx *ctx = crypto_tfm_ctx(tfm);
 	unsigned long flags;
 
-	/*
-	 * Temporarily disable interrupts to avoid races where cachelines are
-	 * evicted when the CPU is interrupted to do something else.
-	 */
+	 
 	local_irq_save(flags);
 
 	aes_encrypt(ctx, out, in);
@@ -38,10 +31,7 @@ static void aesti_decrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 	const struct crypto_aes_ctx *ctx = crypto_tfm_ctx(tfm);
 	unsigned long flags;
 
-	/*
-	 * Temporarily disable interrupts to avoid races where cachelines are
-	 * evicted when the CPU is interrupted to do something else.
-	 */
+	 
 	local_irq_save(flags);
 
 	aes_decrypt(ctx, out, in);

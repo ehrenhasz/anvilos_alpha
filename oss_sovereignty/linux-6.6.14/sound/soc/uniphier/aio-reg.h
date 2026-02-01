@@ -1,19 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Socionext UniPhier AIO ALSA driver.
- *
- * Copyright (c) 2016-2018 Socionext Inc.
- */
+ 
+ 
 
 #ifndef SND_UNIPHIER_AIO_REG_H__
 #define SND_UNIPHIER_AIO_REG_H__
 
 #include <linux/bitops.h>
 
-/* soc-glue */
+ 
 #define SG_AOUTEN                       0x1c04
 
-/* SW view */
+ 
 #define A2CHNMAPCTR0(n)                 (0x00000 + 0x40 * (n))
 #define A2RBNMAPCTR0(n)                 (0x01000 + 0x40 * (n))
 #define A2IPORTNMAPCTR0(n)              (0x02000 + 0x40 * (n))
@@ -27,7 +23,7 @@
 
 #define MAPCTR0_EN                      0x80000000
 
-/* CTL */
+ 
 #define A2APLLCTR0                      0x07000
 #define   A2APLLCTR0_APLLXPOW_MASK        GENMASK(3, 0)
 #define   A2APLLCTR0_APLLXPOW_PWOFF       (0x0 << 0)
@@ -56,13 +52,13 @@
 					   A2AIOINPUTSEL_RXSEL_PCMI3_MASK | \
 					   A2AIOINPUTSEL_RXSEL_IECI1_HDMIRX1)
 
-/* INTC */
+ 
 #define INTCHIM(m)                       (0x9028 + 0x80 * (m))
 #define INTRBIM(m)                       (0x9030 + 0x80 * (m))
 #define INTCHID(m)                       (0xa028 + 0x80 * (m))
 #define INTRBID(m)                       (0xa030 + 0x80 * (m))
 
-/* AIN(PCMINN) */
+ 
 #define IPORTMXCTR1(n)                   (0x22000 + 0x400 * (n))
 #define   IPORTMXCTR1_LRSEL_MASK           GENMASK(11, 10)
 #define   IPORTMXCTR1_LRSEL_RIGHT          (0x0 << 10)
@@ -140,7 +136,7 @@
 #define   IPORTMXRSTCTR_RSTPI_RELEASE      (0x0 << 7)
 #define   IPORTMXRSTCTR_RSTPI_RESET        (0x1 << 7)
 
-/* AIN(PBinMX) */
+ 
 #define PBINMXCTR(n)                     (0x20200 + 0x40 * (n))
 #define   PBINMXCTR_NCONNECT_MASK          BIT(15)
 #define   PBINMXCTR_NCONNECT_CONNECT       (0x0 << 15)
@@ -168,7 +164,7 @@
 #define PBINMXPAUSECTR0(n)               (0x20204 + 0x40 * (n))
 #define PBINMXPAUSECTR1(n)               (0x20208 + 0x40 * (n))
 
-/* AOUT */
+ 
 #define AOUTFADECTR0                     0x40020
 #define AOUTENCTR0                       0x40040
 #define AOUTENCTR1                       0x40044
@@ -180,10 +176,10 @@
 #define AOUTSRCRSTCTR1                   0x400c4
 #define AOUTSRCRSTCTR2                   0x400c8
 
-/* AOUT PCMOUT has 5 slots, slot0-3: D0-3, slot4: DMIX */
+ 
 #define OPORT_SLOT_MAX                     5
 
-/* AOUT(PCMOUTN) */
+ 
 #define OPORTMXCTR1(n)                   (0x42000 + 0x400 * (n))
 #define   OPORTMXCTR1_I2SLRSEL_MASK        (0x11 << 10)
 #define   OPORTMXCTR1_I2SLRSEL_RIGHT       (0x00 << 10)
@@ -318,7 +314,7 @@
 #define   OPORTMXRATE_I_ACLKSRC_APLL       (0x0 << 12)
 #define   OPORTMXRATE_I_ACLKSRC_USB        (0x1 << 12)
 #define   OPORTMXRATE_I_ACLKSRC_HSC        (0x3 << 12)
-/* if OPORTMXRATE_I_ACLKSRC_APLL */
+ 
 #define   OPORTMXRATE_I_ACLKSEL_MASK       GENMASK(11, 8)
 #define   OPORTMXRATE_I_ACLKSEL_APLLA1     (0x0 << 8)
 #define   OPORTMXRATE_I_ACLKSEL_APLLF1     (0x1 << 8)
@@ -391,7 +387,7 @@
 
 #define SBF_(frame, shift)    (((frame) * 2 - 1) << shift)
 
-/* AOUT(PBoutMX) */
+ 
 #define PBOUTMXCTR0(n)                   (0x40200 + 0x40 * (n))
 #define   PBOUTMXCTR0_ENDIAN_MASK         GENMASK(5, 4)
 #define   PBOUTMXCTR0_ENDIAN_3210         (0x0 << 4)
@@ -409,7 +405,7 @@
 #define PBOUTMXCTR1(n)                   (0x40204 + 0x40 * (n))
 #define PBOUTMXINTCTR(n)                 (0x40208 + 0x40 * (n))
 
-/* A2D(subsystem) */
+ 
 #define CDA2D_STRT0                      0x10000
 #define   CDA2D_STRT0_STOP_MASK            BIT(31)
 #define   CDA2D_STRT0_STOP_START           (0x0 << 31)
@@ -445,7 +441,7 @@
 #define CDA2D_CHMXDSTSTRTADRS(n)         (0x12038 + 0x80 * (n))
 #define CDA2D_CHMXDSTSTRTADRSU(n)        (0x1203c + 0x80 * (n))
 
-/* A2D(ring buffer) */
+ 
 #define CDA2D_RBFLUSH0                   0x10040
 #define CDA2D_RBADRSLOAD                 0x100b4
 #define CDA2D_RDPTRLOAD                  0x100b8
@@ -473,4 +469,4 @@
 #define   CDA2D_RBMXIX_SPACE               BIT(3)
 #define   CDA2D_RBMXIX_REMAIN              BIT(4)
 
-#endif /* SND_UNIPHIER_AIO_REG_H__ */
+#endif  

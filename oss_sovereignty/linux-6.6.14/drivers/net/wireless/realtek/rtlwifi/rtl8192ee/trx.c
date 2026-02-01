@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -41,7 +41,7 @@ static void _rtl92ee_query_rxphystatus(struct ieee80211_hw *hw,
 	bool is_cck = pstatus->is_cck;
 	u8 lan_idx, vga_idx;
 
-	/* Record it for next packet processing */
+	 
 	pstatus->packet_matchbssid = bpacket_match_bssid;
 	pstatus->packet_toself = bpacket_toself;
 	pstatus->packet_beacon = packet_beacon;
@@ -51,38 +51,35 @@ static void _rtl92ee_query_rxphystatus(struct ieee80211_hw *hw,
 	if (is_cck) {
 		u8 cck_highpwr;
 		u8 cck_agc_rpt;
-		/* CCK Driver info Structure is not the same as OFDM packet. */
+		 
 		cck_agc_rpt = p_phystrpt->cck_agc_rpt_ofdm_cfosho_a;
 
-		/* (1)Hardware does not provide RSSI for CCK
-		 * (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
 		cck_highpwr = (u8)rtl_get_bbreg(hw, RFPGA0_XA_HSSIPARAMETER2,
 						 BIT(9));
 
 		lan_idx = ((cck_agc_rpt & 0xE0) >> 5);
 		vga_idx = (cck_agc_rpt & 0x1f);
 		switch (lan_idx) {
-		case 7: /*VGA_idx = 27~2*/
+		case 7:  
 				if (vga_idx <= 27)
 					rx_pwr_all = -100 + 2 * (27 - vga_idx);
 				else
 					rx_pwr_all = -100;
 				break;
-		case 6: /*VGA_idx = 2~0*/
+		case 6:  
 				rx_pwr_all = -48 + 2 * (2 - vga_idx);
 				break;
-		case 5: /*VGA_idx = 7~5*/
+		case 5:  
 				rx_pwr_all = -42 + 2 * (7 - vga_idx);
 				break;
-		case 4: /*VGA_idx = 7~4*/
+		case 4:  
 				rx_pwr_all = -36 + 2 * (7 - vga_idx);
 				break;
-		case 3: /*VGA_idx = 7~0*/
+		case 3:  
 				rx_pwr_all = -24 + 2 * (7 - vga_idx);
 				break;
-		case 2: /*VGA_idx = 5~0*/
+		case 2:  
 				if (cck_highpwr)
 					rx_pwr_all = -12 + 2 * (5 - vga_idx);
 				else
@@ -115,7 +112,7 @@ static void _rtl92ee_query_rxphystatus(struct ieee80211_hw *hw,
 		pstatus->bt_rx_rssi_percentage = pwdb_all;
 		pstatus->recvsignalpower = rx_pwr_all;
 
-		/* (3) Get Signal Quality (EVM) */
+		 
 		if (bpacket_match_bssid) {
 			u8 sq, sq_rpt;
 
@@ -136,9 +133,9 @@ static void _rtl92ee_query_rxphystatus(struct ieee80211_hw *hw,
 			pstatus->rx_mimo_signalquality[1] = -1;
 		}
 	} else {
-		/* (1)Get RSSI for HT rate */
+		 
 		for (i = RF90_PATH_A; i < RF6052_MAX_PATH; i++) {
-			/* we will judge RF RX path now. */
+			 
 			if (rtlpriv->dm.rfpath_rxenable[i])
 				rf_rx_num++;
 
@@ -146,16 +143,14 @@ static void _rtl92ee_query_rxphystatus(struct ieee80211_hw *hw,
 				    - 110;
 
 			pstatus->rx_pwr[i] = rx_pwr[i];
-			/* Translate DBM to percentage. */
+			 
 			rssi = rtl_query_rxpwrpercentage(rx_pwr[i]);
 			total_rssi += rssi;
 
 			pstatus->rx_mimo_signalstrength[i] = (u8)rssi;
 		}
 
-		/* (2)PWDB, Average PWDB calculated by
-		 * hardware (for rate adaptive)
-		 */
+		 
 		rx_pwr_all = ((p_phystrpt->cck_sig_qual_ofdm_pwdb_all >> 1)
 			      & 0x7f) - 110;
 
@@ -165,7 +160,7 @@ static void _rtl92ee_query_rxphystatus(struct ieee80211_hw *hw,
 		pstatus->rxpower = rx_pwr_all;
 		pstatus->recvsignalpower = rx_pwr_all;
 
-		/* (3)EVM of HT rate */
+		 
 		if (pstatus->rate >= DESC_RATEMCS8 &&
 		    pstatus->rate <= DESC_RATEMCS15)
 			max_spatial_stream = 2;
@@ -177,9 +172,7 @@ static void _rtl92ee_query_rxphystatus(struct ieee80211_hw *hw,
 						p_phystrpt->stream_rxevm[i]);
 
 			if (bpacket_match_bssid) {
-				/* Fill value in RFD, Get the first
-				 * spatial stream only
-				 */
+				 
 				if (i == 0)
 					pstatus->signalquality = (u8)(evm &
 								       0xff);
@@ -200,9 +193,7 @@ static void _rtl92ee_query_rxphystatus(struct ieee80211_hw *hw,
 		}
 	}
 
-	/* UI BSS List signal strength(in percentage),
-	 * make it good looking, from 0~100.
-	 */
+	 
 	if (is_cck)
 		pstatus->signalstrength = (u8)(rtl_signal_scale_mapping(hw,
 								     pwdb_all));
@@ -383,14 +374,7 @@ bool rtl92ee_rx_query_desc(struct ieee80211_hw *hw,
 
 	rx_status->flag |= RX_FLAG_MACTIME_START;
 
-	/* hw will set status->decrypted true, if it finds the
-	 * frame is open data frame or mgmt frame.
-	 * So hw will not decryption robust managment frame
-	 * for IEEE80211w but still set status->decrypted
-	 * true, so here we should set it back to undecrypted
-	 * for IEEE80211w frame, and mac80211 sw will help
-	 * to decrypt it
-	 */
+	 
 	if (status->decrypted) {
 		if ((!_ieee80211_is_robust_mgmt_frame(hdr)) &&
 		    (ieee80211_has_protected(hdr->frame_control)))
@@ -399,11 +383,7 @@ bool rtl92ee_rx_query_desc(struct ieee80211_hw *hw,
 			rx_status->flag &= ~RX_FLAG_DECRYPTED;
 	}
 
-	/* rate_idx: index of data rate into band's
-	 * supported rates or MCS index if HT rates
-	 * are use (RX_FLAG_HT)
-	 * Notice: this is diff with windows define
-	 */
+	 
 	rx_status->rate_idx = rtlwifi_rate_mapping(hw, status->is_ht,
 						   false, status->rate);
 
@@ -425,7 +405,7 @@ bool rtl92ee_rx_query_desc(struct ieee80211_hw *hw,
 	return true;
 }
 
-/*in Windows, this == Rx_92EE_Interrupt*/
+ 
 void rtl92ee_rx_check_dma_ok(struct ieee80211_hw *hw, u8 *header_desc8,
 			     u8 queue_index)
 {
@@ -557,7 +537,7 @@ void rtl92ee_pre_fill_tx_bd_desc(struct ieee80211_hw *hw,
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	struct rtl_pci *rtlpci = rtl_pcidev(rtl_pcipriv(hw));
 	u32 pkt_len = skb->len;
-	u16 desc_size = 40; /*tx desc size*/
+	u16 desc_size = 40;  
 	u32 psblen = 0;
 	u16 tx_page_size;
 	u32 total_packet_size;
@@ -591,11 +571,11 @@ void rtl92ee_pre_fill_tx_bd_desc(struct ieee80211_hw *hw,
 			psblen += 1;
 	}
 
-	/* tx desc addr */
+	 
 	desc_dma_addr = rtlpci->tx_ring[queue_index].dma +
 			(current_bd_desc * TX_DESC_SIZE);
 
-	/* Reset */
+	 
 	set_tx_buff_desc_len_0(tx_bd_desc, 0);
 	set_tx_buff_desc_psb(tx_bd_desc, 0);
 	set_tx_buff_desc_own(tx_bd_desc, 0);
@@ -607,12 +587,12 @@ void rtl92ee_pre_fill_tx_bd_desc(struct ieee80211_hw *hw,
 		set_txbuffer_desc_add_high_with_offset(tx_bd_desc, i, 0, dma64);
 	}
 
-	/* Clear all status */
+	 
 	clear_pci_tx_desc_content(desc, TX_DESC_SIZE);
 
 	if (rtlpriv->rtlhal.earlymode_enable) {
 		if (queue_index < BEACON_QUEUE) {
-			/* This if needs braces */
+			 
 			set_tx_buff_desc_len_0(tx_bd_desc, desc_size + 8);
 		} else {
 			set_tx_buff_desc_len_0(tx_bd_desc, desc_size);
@@ -626,7 +606,7 @@ void rtl92ee_pre_fill_tx_bd_desc(struct ieee80211_hw *hw,
 				     dma64);
 
 	set_txbuffer_desc_len_with_offset(tx_bd_desc, 1, pkt_len);
-	/* don't using extendsion mode. */
+	 
 	set_txbuffer_desc_amsdu_with_offset(tx_bd_desc, 1, 0);
 	set_txbuffer_desc_add_low_with_offset(tx_bd_desc, 1, addr);
 	set_txbuffer_desc_add_high_with_offset(tx_bd_desc, 1,
@@ -670,7 +650,7 @@ void rtl92ee_tx_fill_desc(struct ieee80211_hw *hw,
 	}
 	seq_number = (le16_to_cpu(hdr->seq_ctrl) & IEEE80211_SCTL_SEQ) >> 4;
 	rtl_get_tcb_desc(hw, info, sta, skb, ptcb_desc);
-	/* reserve 8 byte for AMPDU early mode */
+	 
 	if (rtlhal->earlymode_enable) {
 		skb_push(skb, EM_HDR_LEN);
 		memset(skb->data, 0, EM_HDR_LEN);
@@ -788,13 +768,13 @@ void rtl92ee_tx_fill_desc(struct ieee80211_hw *hw,
 				       ptcb_desc->disable_ratefallback ? 1 : 0);
 		set_tx_desc_use_rate(pdesc, ptcb_desc->use_driver_rate ? 1 : 0);
 
-		/*set_tx_desc_pwr_status(pdesc, pwr_status);*/
-		/* Set TxRate and RTSRate in TxDesc  */
-		/* This prevent Tx initial rate of new-coming packets */
-		/* from being overwritten by retried  packet rate.*/
+		 
+		 
+		 
+		 
 		if (!ptcb_desc->use_driver_rate) {
-			/*set_tx_desc_rts_rate(pdesc, 0x08); */
-			/* set_tx_desc_tx_rate(pdesc, 0x0b); */
+			 
+			 
 		}
 		if (ieee80211_is_data_qos(fc)) {
 			if (mac->rdg_en) {
@@ -804,7 +784,7 @@ void rtl92ee_tx_fill_desc(struct ieee80211_hw *hw,
 				set_tx_desc_htc(pdesc, 1);
 			}
 		}
-		/* tx report */
+		 
 		rtl_set_tx_report(ptcb_desc, pdesc8, hw, tx_info);
 	}
 
@@ -907,7 +887,7 @@ void rtl92ee_set_desc(struct ieee80211_hw *hw, u8 *pdesc8, bool istx,
 				return;
 			}
 
-			/* make sure tx desc is available by caller */
+			 
 			ring->cur_tx_wp = ((ring->cur_tx_wp + 1) % max_tx_desc);
 
 			rtl_write_word(rtlpriv,
@@ -1008,7 +988,7 @@ bool rtl92ee_is_tx_desc_closed(struct ieee80211_hw *hw, u8 hw_queue, u16 index)
 				 get_desc_addr_fr_q_idx(hw_queue));
 		cur_tx_rp = (u16)((tmpu32 >> 16) & 0x0fff);
 
-		/* don't need to update ring->cur_tx_wp */
+		 
 		ring->cur_tx_rp = cur_tx_rp;
 	}
 

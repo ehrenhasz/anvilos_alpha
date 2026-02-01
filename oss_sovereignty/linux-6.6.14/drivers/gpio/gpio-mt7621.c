@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2009-2011 Gabor Juhos <juhosg@openwrt.org>
- * Copyright (C) 2013 John Crispin <blogic@openwrt.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/driver.h>
@@ -39,16 +36,7 @@ struct mtk_gc {
 	u32 llevel;
 };
 
-/**
- * struct mtk - state container for
- * data of the platform driver. It is 3
- * separate gpio-chip each one with its
- * own irq_chip.
- * @dev: device instance
- * @base: memory base address
- * @gpio_irq: irq number from the device tree
- * @gc_map: array of the gpio chips
- */
+ 
 struct mtk {
 	struct device *dev;
 	void __iomem *base;
@@ -255,10 +243,7 @@ mediatek_gpio_bank_probe(struct device *dev, int bank)
 	if (mtk->gpio_irq) {
 		struct gpio_irq_chip *girq;
 
-		/*
-		 * Directly request the irq here instead of passing
-		 * a flow-handler because the irq is shared.
-		 */
+		 
 		ret = devm_request_irq(dev, mtk->gpio_irq,
 				       mediatek_gpio_irq_handler, IRQF_SHARED,
 				       rg->chip.label, &rg->chip);
@@ -271,7 +256,7 @@ mediatek_gpio_bank_probe(struct device *dev, int bank)
 
 		girq = &rg->chip.irq;
 		gpio_irq_chip_set_chip(girq, &mt7621_irq_chip);
-		/* This will let us handle the parent IRQ in the driver */
+		 
 		girq->parent_handler = NULL;
 		girq->num_parents = 0;
 		girq->parents = NULL;
@@ -286,7 +271,7 @@ mediatek_gpio_bank_probe(struct device *dev, int bank)
 		return ret;
 	}
 
-	/* set polarity to low for all gpios */
+	 
 	mtk_gpio_w32(rg, GPIO_REG_POL, 0);
 
 	dev_info(dev, "registering %d gpios\n", rg->chip.ngpio);

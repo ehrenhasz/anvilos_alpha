@@ -1,6 +1,4 @@
-/*
- * This header provides constants for binding nvidia,tegra194-bpmp-thermal.
- */
+ 
 
 #ifndef _DT_BINDINGS_THERMAL_TEGRA194_BPMP_THERMAL_H
 #define _DT_BINDINGS_THERMAL_TEGRA194_BPMP_THERMAL_H

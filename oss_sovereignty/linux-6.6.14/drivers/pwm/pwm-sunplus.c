@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PWM device driver for SUNPLUS SP7021 SoC
- *
- * Links:
- *   Reference Manual:
- *   https://sunplus-tibbo.atlassian.net/wiki/spaces/doc/overview
- *
- *   Reference Manual(PWM module):
- *   https://sunplus.atlassian.net/wiki/spaces/doc/pages/461144198/12.+Pulse+Width+Modulation+PWM
- *
- * Limitations:
- * - Only supports normal polarity.
- * - It output low when PWM channel disabled.
- * - When the parameters change, current running period will not be completed
- *     and run new settings immediately.
- * - In .apply() PWM output need to write register FREQ and DUTY. When first write FREQ
- *     done and not yet write DUTY, it has short timing gap use new FREQ and old DUTY.
- *
- * Author: Hammer Hsieh <hammerh0314@gmail.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -64,11 +45,11 @@ static int sunplus_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return -EINVAL;
 
 	if (!state->enabled) {
-		/* disable pwm channel output */
+		 
 		mode0 = readl(priv->base + SP7021_PWM_MODE0);
 		mode0 &= ~SP7021_PWM_MODE0_PWMEN(pwm->hwpwm);
 		writel(mode0, priv->base + SP7021_PWM_MODE0);
-		/* disable pwm channel clk source */
+		 
 		mode1 = readl(priv->base + SP7021_PWM_MODE1);
 		mode1 &= ~SP7021_PWM_MODE1_CNT_EN(pwm->hwpwm);
 		writel(mode1, priv->base + SP7021_PWM_MODE1);
@@ -77,18 +58,11 @@ static int sunplus_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	clk_rate = clk_get_rate(priv->clk);
 
-	/*
-	 * The following calculations might overflow if clk is bigger
-	 * than 256 GHz. In practise it's 202.5MHz, so this limitation
-	 * is only theoretic.
-	 */
+	 
 	if (clk_rate > (u64)SP7021_PWM_FREQ_SCALER * NSEC_PER_SEC)
 		return -EINVAL;
 
-	/*
-	 * With clk_rate limited above we have dd_freq <= state->period,
-	 * so this cannot overflow.
-	 */
+	 
 	dd_freq = mul_u64_u64_div_u64(clk_rate, state->period, (u64)SP7021_PWM_FREQ_SCALER
 				* NSEC_PER_SEC);
 
@@ -100,20 +74,18 @@ static int sunplus_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	writel(dd_freq, priv->base + SP7021_PWM_FREQ(pwm->hwpwm));
 
-	/* cal and set pwm duty */
+	 
 	mode0 = readl(priv->base + SP7021_PWM_MODE0);
 	mode0 |= SP7021_PWM_MODE0_PWMEN(pwm->hwpwm);
 	mode1 = readl(priv->base + SP7021_PWM_MODE1);
 	mode1 |= SP7021_PWM_MODE1_CNT_EN(pwm->hwpwm);
 	if (state->duty_cycle == state->period) {
-		/* PWM channel output = high */
+		 
 		mode0 |= SP7021_PWM_MODE0_BYPASS(pwm->hwpwm);
 		duty = SP7021_PWM_DUTY_DD_SEL(pwm->hwpwm) | SP7021_PWM_DUTY_MAX;
 	} else {
 		mode0 &= ~SP7021_PWM_MODE0_BYPASS(pwm->hwpwm);
-		/*
-		 * duty_ns <= period_ns 27 bits, clk_rate 28 bits, won't overflow.
-		 */
+		 
 		duty = mul_u64_u64_div_u64(state->duty_cycle, clk_rate,
 					   (u64)dd_freq * NSEC_PER_SEC);
 		duty = SP7021_PWM_DUTY_DD_SEL(pwm->hwpwm) | duty;
@@ -139,15 +111,10 @@ static int sunplus_pwm_get_state(struct pwm_chip *chip, struct pwm_device *pwm,
 		dd_freq = readl(priv->base + SP7021_PWM_FREQ(pwm->hwpwm));
 		duty = readl(priv->base + SP7021_PWM_DUTY(pwm->hwpwm));
 		duty = FIELD_GET(SP7021_PWM_DUTY_MASK, duty);
-		/*
-		 * dd_freq 16 bits, SP7021_PWM_FREQ_SCALER 8 bits
-		 * NSEC_PER_SEC 30 bits, won't overflow.
-		 */
+		 
 		state->period = DIV64_U64_ROUND_UP((u64)dd_freq * (u64)SP7021_PWM_FREQ_SCALER
 						* NSEC_PER_SEC, clk_rate);
-		/*
-		 * dd_freq 16 bits, duty 8 bits, NSEC_PER_SEC 30 bits, won't overflow.
-		 */
+		 
 		state->duty_cycle = DIV64_U64_ROUND_UP((u64)dd_freq * (u64)duty * NSEC_PER_SEC,
 						       clk_rate);
 		state->enabled = true;

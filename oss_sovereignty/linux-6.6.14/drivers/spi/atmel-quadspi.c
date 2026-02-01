@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Atmel QSPI Controller
- *
- * Copyright (C) 2015 Atmel Corporation
- * Copyright (C) 2018 Cryptera A/S
- *
- * Author: Cyrille Pitchen <cyrille.pitchen@atmel.com>
- * Author: Piotr Bugalski <bugalski.piotr@gmail.com>
- *
- * This driver is based on drivers/mtd/spi-nor/fsl-quadspi.c from Freescale.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -24,39 +14,39 @@
 #include <linux/pm_runtime.h>
 #include <linux/spi/spi-mem.h>
 
-/* QSPI register offsets */
-#define QSPI_CR      0x0000  /* Control Register */
-#define QSPI_MR      0x0004  /* Mode Register */
-#define QSPI_RD      0x0008  /* Receive Data Register */
-#define QSPI_TD      0x000c  /* Transmit Data Register */
-#define QSPI_SR      0x0010  /* Status Register */
-#define QSPI_IER     0x0014  /* Interrupt Enable Register */
-#define QSPI_IDR     0x0018  /* Interrupt Disable Register */
-#define QSPI_IMR     0x001c  /* Interrupt Mask Register */
-#define QSPI_SCR     0x0020  /* Serial Clock Register */
+ 
+#define QSPI_CR      0x0000   
+#define QSPI_MR      0x0004   
+#define QSPI_RD      0x0008   
+#define QSPI_TD      0x000c   
+#define QSPI_SR      0x0010   
+#define QSPI_IER     0x0014   
+#define QSPI_IDR     0x0018   
+#define QSPI_IMR     0x001c   
+#define QSPI_SCR     0x0020   
 
-#define QSPI_IAR     0x0030  /* Instruction Address Register */
-#define QSPI_ICR     0x0034  /* Instruction Code Register */
-#define QSPI_WICR    0x0034  /* Write Instruction Code Register */
-#define QSPI_IFR     0x0038  /* Instruction Frame Register */
-#define QSPI_RICR    0x003C  /* Read Instruction Code Register */
+#define QSPI_IAR     0x0030   
+#define QSPI_ICR     0x0034   
+#define QSPI_WICR    0x0034   
+#define QSPI_IFR     0x0038   
+#define QSPI_RICR    0x003C   
 
-#define QSPI_SMR     0x0040  /* Scrambling Mode Register */
-#define QSPI_SKR     0x0044  /* Scrambling Key Register */
+#define QSPI_SMR     0x0040   
+#define QSPI_SKR     0x0044   
 
-#define QSPI_WPMR    0x00E4  /* Write Protection Mode Register */
-#define QSPI_WPSR    0x00E8  /* Write Protection Status Register */
+#define QSPI_WPMR    0x00E4   
+#define QSPI_WPSR    0x00E8   
 
-#define QSPI_VERSION 0x00FC  /* Version Register */
+#define QSPI_VERSION 0x00FC   
 
 
-/* Bitfields in QSPI_CR (Control Register) */
+ 
 #define QSPI_CR_QSPIEN                  BIT(0)
 #define QSPI_CR_QSPIDIS                 BIT(1)
 #define QSPI_CR_SWRST                   BIT(7)
 #define QSPI_CR_LASTXFER                BIT(24)
 
-/* Bitfields in QSPI_MR (Mode Register) */
+ 
 #define QSPI_MR_SMM                     BIT(0)
 #define QSPI_MR_LLB                     BIT(1)
 #define QSPI_MR_WDRBT                   BIT(2)
@@ -72,7 +62,7 @@
 #define QSPI_MR_DLYCS_MASK              GENMASK(31, 24)
 #define QSPI_MR_DLYCS(n)                (((n) << 24) & QSPI_MR_DLYCS_MASK)
 
-/* Bitfields in QSPI_SR/QSPI_IER/QSPI_IDR/QSPI_IMR  */
+ 
 #define QSPI_SR_RDRF                    BIT(0)
 #define QSPI_SR_TDRE                    BIT(1)
 #define QSPI_SR_TXEMPTY                 BIT(2)
@@ -84,7 +74,7 @@
 
 #define QSPI_SR_CMD_COMPLETED	(QSPI_SR_INSTRE | QSPI_SR_CSR)
 
-/* Bitfields in QSPI_SCR (Serial Clock Register) */
+ 
 #define QSPI_SCR_CPOL                   BIT(0)
 #define QSPI_SCR_CPHA                   BIT(1)
 #define QSPI_SCR_SCBR_MASK              GENMASK(15, 8)
@@ -92,13 +82,13 @@
 #define QSPI_SCR_DLYBS_MASK             GENMASK(23, 16)
 #define QSPI_SCR_DLYBS(n)               (((n) << 16) & QSPI_SCR_DLYBS_MASK)
 
-/* Bitfields in QSPI_ICR (Read/Write Instruction Code Register) */
+ 
 #define QSPI_ICR_INST_MASK              GENMASK(7, 0)
 #define QSPI_ICR_INST(inst)             (((inst) << 0) & QSPI_ICR_INST_MASK)
 #define QSPI_ICR_OPT_MASK               GENMASK(23, 16)
 #define QSPI_ICR_OPT(opt)               (((opt) << 16) & QSPI_ICR_OPT_MASK)
 
-/* Bitfields in QSPI_IFR (Instruction Frame Register) */
+ 
 #define QSPI_IFR_WIDTH_MASK             GENMASK(2, 0)
 #define QSPI_IFR_WIDTH_SINGLE_BIT_SPI   (0 << 0)
 #define QSPI_IFR_WIDTH_DUAL_OUTPUT      (1 << 0)
@@ -122,18 +112,18 @@
 #define QSPI_IFR_CRM                    BIT(14)
 #define QSPI_IFR_NBDUM_MASK             GENMASK(20, 16)
 #define QSPI_IFR_NBDUM(n)               (((n) << 16) & QSPI_IFR_NBDUM_MASK)
-#define QSPI_IFR_APBTFRTYP_READ		BIT(24)	/* Defined in SAM9X60 */
+#define QSPI_IFR_APBTFRTYP_READ		BIT(24)	 
 
-/* Bitfields in QSPI_SMR (Scrambling Mode Register) */
+ 
 #define QSPI_SMR_SCREN                  BIT(0)
 #define QSPI_SMR_RVDIS                  BIT(1)
 
-/* Bitfields in QSPI_WPMR (Write Protection Mode Register) */
+ 
 #define QSPI_WPMR_WPEN                  BIT(0)
 #define QSPI_WPMR_WPKEY_MASK            GENMASK(31, 8)
 #define QSPI_WPMR_WPKEY(wpkey)          (((wpkey) << 8) & QSPI_WPMR_WPKEY_MASK)
 
-/* Bitfields in QSPI_WPSR (Write Protection Status Register) */
+ 
 #define QSPI_WPSR_WPVS                  BIT(0)
 #define QSPI_WPSR_WPVSRC_MASK           GENMASK(15, 8)
 #define QSPI_WPSR_WPVSRC(src)           (((src) << 8) & QSPI_WPSR_WPVSRC)
@@ -221,7 +211,7 @@ static const char *atmel_qspi_reg_name(u32 offset, char *tmp, size_t sz)
 
 	return tmp;
 }
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 static u32 atmel_qspi_read(struct atmel_qspi *aq, u32 offset)
 {
@@ -232,7 +222,7 @@ static u32 atmel_qspi_read(struct atmel_qspi *aq, u32 offset)
 
 	dev_vdbg(&aq->pdev->dev, "read 0x%08x from %s\n", value,
 		 atmel_qspi_reg_name(offset, tmp, sizeof(tmp)));
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 	return value;
 }
@@ -244,7 +234,7 @@ static void atmel_qspi_write(u32 value, struct atmel_qspi *aq, u32 offset)
 
 	dev_vdbg(&aq->pdev->dev, "write 0x%08x into %s\n", value,
 		 atmel_qspi_reg_name(offset, tmp, sizeof(tmp)));
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 	writel_relaxed(value, aq->regs + offset);
 }
@@ -284,7 +274,7 @@ static bool atmel_qspi_supports_op(struct spi_mem *mem,
 	if (atmel_qspi_find_mode(op) < 0)
 		return false;
 
-	/* special case not supported by hardware */
+	 
 	if (op->addr.nbytes == 2 && op->cmd.buswidth != op->addr.buswidth &&
 	    op->dummy.nbytes == 0)
 		return false;
@@ -311,18 +301,7 @@ static int atmel_qspi_set_cfg(struct atmel_qspi *aq,
 	if (op->dummy.nbytes)
 		dummy_cycles = op->dummy.nbytes * 8 / op->dummy.buswidth;
 
-	/*
-	 * The controller allows 24 and 32-bit addressing while NAND-flash
-	 * requires 16-bit long. Handling 8-bit long addresses is done using
-	 * the option field. For the 16-bit addresses, the workaround depends
-	 * of the number of requested dummy bits. If there are 8 or more dummy
-	 * cycles, the address is shifted and sent with the first dummy byte.
-	 * Otherwise opcode is disabled and the first byte of the address
-	 * contains the command opcode (works only if the opcode and address
-	 * use the same buswidth). The limitation is when the 16-bit address is
-	 * used without enough dummy cycles and the opcode is using a different
-	 * buswidth than the address.
-	 */
+	 
 	if (op->addr.buswidth) {
 		switch (op->addr.nbytes) {
 		case 0:
@@ -356,14 +335,14 @@ static int atmel_qspi_set_cfg(struct atmel_qspi *aq,
 		}
 	}
 
-	/* offset of the data access in the QSPI memory space */
+	 
 	*offset = iar;
 
-	/* Set number of dummy cycles */
+	 
 	if (dummy_cycles)
 		ifr |= QSPI_IFR_NBDUM(dummy_cycles);
 
-	/* Set data enable and data transfer type. */
+	 
 	if (op->data.nbytes) {
 		ifr |= QSPI_IFR_DATAEN;
 
@@ -371,19 +350,16 @@ static int atmel_qspi_set_cfg(struct atmel_qspi *aq,
 			ifr |= QSPI_IFR_TFRTYP_MEM;
 	}
 
-	/*
-	 * If the QSPI controller is set in regular SPI mode, set it in
-	 * Serial Memory Mode (SMM).
-	 */
+	 
 	if (aq->mr != QSPI_MR_SMM) {
 		atmel_qspi_write(QSPI_MR_SMM, aq, QSPI_MR);
 		aq->mr = QSPI_MR_SMM;
 	}
 
-	/* Clear pending interrupts */
+	 
 	(void)atmel_qspi_read(aq, QSPI_SR);
 
-	/* Set QSPI Instruction Frame registers. */
+	 
 	if (op->addr.nbytes && !op->data.nbytes)
 		atmel_qspi_write(iar, aq, QSPI_IAR);
 
@@ -410,11 +386,7 @@ static int atmel_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 	u32 sr, offset;
 	int err;
 
-	/*
-	 * Check if the address exceeds the MMIO window size. An improvement
-	 * would be to add support for regular SPI mode and fall back to it
-	 * when the flash memories overrun the controller's memory space.
-	 */
+	 
 	if (op->addr.val + op->data.nbytes > aq->mmap_size)
 		return -ENOTSUPP;
 
@@ -426,12 +398,12 @@ static int atmel_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 	if (err)
 		goto pm_runtime_put;
 
-	/* Skip to the final steps if there is no data */
+	 
 	if (op->data.nbytes) {
-		/* Dummy read of QSPI_IFR to synchronize APB and AHB accesses */
+		 
 		(void)atmel_qspi_read(aq, QSPI_IFR);
 
-		/* Send/Receive data */
+		 
 		if (op->data.dir == SPI_MEM_DATA_IN)
 			memcpy_fromio(op->data.buf.in, aq->mem + offset,
 				      op->data.nbytes);
@@ -439,16 +411,16 @@ static int atmel_qspi_exec_op(struct spi_mem *mem, const struct spi_mem_op *op)
 			memcpy_toio(aq->mem + offset, op->data.buf.out,
 				    op->data.nbytes);
 
-		/* Release the chip-select */
+		 
 		atmel_qspi_write(QSPI_CR_LASTXFER, aq, QSPI_CR);
 	}
 
-	/* Poll INSTRuction End status */
+	 
 	sr = atmel_qspi_read(aq, QSPI_SR);
 	if ((sr & QSPI_SR_CMD_COMPLETED) == QSPI_SR_CMD_COMPLETED)
 		goto pm_runtime_put;
 
-	/* Wait for INSTRuction End interrupt */
+	 
 	reinit_completion(&aq->cmd_completion);
 	aq->pending = sr & QSPI_SR_CMD_COMPLETED;
 	atmel_qspi_write(QSPI_SR_CMD_COMPLETED, aq, QSPI_IER);
@@ -492,7 +464,7 @@ static int atmel_qspi_setup(struct spi_device *spi)
 	if (!src_rate)
 		return -EINVAL;
 
-	/* Compute the QSPI baudrate */
+	 
 	scbr = DIV_ROUND_UP(src_rate, spi->max_speed_hz);
 	if (scbr > 0)
 		scbr--;
@@ -545,14 +517,14 @@ static int atmel_qspi_set_cs_timing(struct spi_device *spi)
 
 static void atmel_qspi_init(struct atmel_qspi *aq)
 {
-	/* Reset the QSPI controller */
+	 
 	atmel_qspi_write(QSPI_CR_SWRST, aq, QSPI_CR);
 
-	/* Set the QSPI controller by default in Serial Memory Mode */
+	 
 	atmel_qspi_write(QSPI_MR_SMM, aq, QSPI_MR);
 	aq->mr = QSPI_MR_SMM;
 
-	/* Enable the QSPI controller */
+	 
 	atmel_qspi_write(QSPI_CR_QSPIEN, aq, QSPI_CR);
 }
 
@@ -600,7 +572,7 @@ static int atmel_qspi_probe(struct platform_device *pdev)
 	init_completion(&aq->cmd_completion);
 	aq->pdev = pdev;
 
-	/* Map the registers */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "qspi_base");
 	aq->regs = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(aq->regs)) {
@@ -608,7 +580,7 @@ static int atmel_qspi_probe(struct platform_device *pdev)
 		return PTR_ERR(aq->regs);
 	}
 
-	/* Map the AHB memory */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "qspi_mmap");
 	aq->mem = devm_ioremap_resource(&pdev->dev, res);
 	if (IS_ERR(aq->mem)) {
@@ -618,7 +590,7 @@ static int atmel_qspi_probe(struct platform_device *pdev)
 
 	aq->mmap_size = resource_size(res);
 
-	/* Get the peripheral clock */
+	 
 	aq->pclk = devm_clk_get(&pdev->dev, "pclk");
 	if (IS_ERR(aq->pclk))
 		aq->pclk = devm_clk_get(&pdev->dev, NULL);
@@ -628,7 +600,7 @@ static int atmel_qspi_probe(struct platform_device *pdev)
 		return PTR_ERR(aq->pclk);
 	}
 
-	/* Enable the peripheral clock */
+	 
 	err = clk_prepare_enable(aq->pclk);
 	if (err) {
 		dev_err(&pdev->dev, "failed to enable the peripheral clock\n");
@@ -643,7 +615,7 @@ static int atmel_qspi_probe(struct platform_device *pdev)
 	}
 
 	if (aq->caps->has_qspick) {
-		/* Get the QSPI system clock */
+		 
 		aq->qspick = devm_clk_get(&pdev->dev, "qspick");
 		if (IS_ERR(aq->qspick)) {
 			dev_err(&pdev->dev, "missing system clock\n");
@@ -651,7 +623,7 @@ static int atmel_qspi_probe(struct platform_device *pdev)
 			goto disable_pclk;
 		}
 
-		/* Enable the QSPI system clock */
+		 
 		err = clk_prepare_enable(aq->qspick);
 		if (err) {
 			dev_err(&pdev->dev,
@@ -660,7 +632,7 @@ static int atmel_qspi_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Request the IRQ */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		err = irq;
@@ -714,11 +686,7 @@ static void atmel_qspi_remove(struct platform_device *pdev)
 		clk_disable(aq->qspick);
 		clk_disable(aq->pclk);
 	} else {
-		/*
-		 * atmel_qspi_runtime_{suspend,resume} just disable and enable
-		 * the two clks respectively. So after resume failed these are
-		 * off, and we skip hardware access and disabling these clks again.
-		 */
+		 
 		dev_warn(&pdev->dev, "Failed to resume device on remove\n");
 	}
 
@@ -823,7 +791,7 @@ static const struct of_device_id atmel_qspi_dt_ids[] = {
 		.compatible = "microchip,sam9x60-qspi",
 		.data = &atmel_sam9x60_qspi_caps,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, atmel_qspi_dt_ids);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 Microchip
- *
- * Author: Kamel Bouhara <kamel.bouhara@bootlin.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/counter.h>
 #include <linux/mfd/syscon.h>
@@ -89,26 +85,26 @@ static int mchp_tc_count_function_write(struct counter_device *counter,
 	regmap_read(priv->regmap, ATMEL_TC_BMR, &bmr);
 	regmap_read(priv->regmap, ATMEL_TC_REG(priv->channel[0], CMR), &cmr);
 
-	/* Set capture mode */
+	 
 	cmr &= ~ATMEL_TC_WAVE;
 
 	switch (function) {
 	case COUNTER_FUNCTION_INCREASE:
 		priv->qdec_mode = 0;
-		/* Set highest rate based on whether soc has gclk or not */
+		 
 		bmr &= ~(ATMEL_TC_QDEN | ATMEL_TC_POSEN);
 		if (!priv->tc_cfg->has_gclk)
 			cmr |= ATMEL_TC_TIMER_CLOCK2;
 		else
 			cmr |= ATMEL_TC_TIMER_CLOCK1;
-		/* Setup the period capture mode */
+		 
 		cmr |=  ATMEL_TC_CMR_MASK;
 		cmr &= ~(ATMEL_TC_ABETRG | ATMEL_TC_XC0);
 		break;
 	case COUNTER_FUNCTION_QUADRATURE_X4:
 		if (!priv->tc_cfg->has_qdec)
 			return -EINVAL;
-		/* In QDEC mode settings both channels 0 and 1 are required */
+		 
 		if (priv->num_channels < 2 || priv->channel[0] != 0 ||
 		    priv->channel[1] != 1) {
 			pr_err("Invalid channels number or id for quadrature mode\n");
@@ -119,14 +115,14 @@ static int mchp_tc_count_function_write(struct counter_device *counter,
 		cmr |= ATMEL_TC_ETRGEDG_RISING | ATMEL_TC_ABETRG | ATMEL_TC_XC0;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 
 	regmap_write(priv->regmap, ATMEL_TC_BMR, bmr);
 	regmap_write(priv->regmap, ATMEL_TC_REG(priv->channel[0], CMR), cmr);
 
-	/* Enable clock and trigger counter */
+	 
 	regmap_write(priv->regmap, ATMEL_TC_REG(priv->channel[0], CCR),
 		     ATMEL_TC_CLKEN | ATMEL_TC_SWTRG);
 
@@ -174,7 +170,7 @@ static int mchp_tc_count_action_read(struct counter_device *counter,
 		return 0;
 	}
 
-	/* Only TIOA signal is evaluated in non-QDEC mode */
+	 
 	if (synapse->signal->id != 0) {
 		*action = COUNTER_SYNAPSE_ACTION_NONE;
 		return 0;
@@ -208,7 +204,7 @@ static int mchp_tc_count_action_write(struct counter_device *counter,
 	struct mchp_tc_data *const priv = counter_priv(counter);
 	u32 edge = ATMEL_TC_ETRGEDG_NONE;
 
-	/* QDEC mode is rising edge only; only TIOA handled in non-QDEC mode */
+	 
 	if (priv->qdec_mode || synapse->signal->id != 0)
 		return -EINVAL;
 
@@ -226,7 +222,7 @@ static int mchp_tc_count_action_write(struct counter_device *counter,
 		edge = ATMEL_TC_ETRGEDG_BOTH;
 		break;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 
@@ -291,7 +287,7 @@ static const struct of_device_id atmel_tc_of_match[] = {
 	{ .compatible = "atmel,at91sam9x5-tcb", .data = &tcb_sam9x5_config, },
 	{ .compatible = "atmel,sama5d2-tcb", .data = &tcb_sama5d2_config, },
 	{ .compatible = "atmel,sama5d3-tcb", .data = &tcb_sama5d3_config, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static void mchp_tc_clk_remove(void *ptr)
@@ -328,14 +324,14 @@ static int mchp_tc_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* max. channels number is 2 when in QDEC mode */
+	 
 	priv->num_channels = of_property_count_u32_elems(np, "reg");
 	if (priv->num_channels < 0) {
 		dev_err(&pdev->dev, "Invalid or missing channel\n");
 		return -EINVAL;
 	}
 
-	/* Register channels and initialize clocks */
+	 
 	for (i = 0; i < priv->num_channels; i++) {
 		ret = of_property_read_u32_index(np, "reg", i, &channel);
 		if (ret < 0 || channel > 2)
@@ -347,7 +343,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
 
 		clk[i] = of_clk_get_by_name(np->parent, clk_name);
 		if (IS_ERR(clk[i])) {
-			/* Fallback to t0_clk */
+			 
 			clk[i] = of_clk_get_by_name(np->parent, "t0_clk");
 			if (IS_ERR(clk[i]))
 				return PTR_ERR(clk[i]);
@@ -387,7 +383,7 @@ static int mchp_tc_probe(struct platform_device *pdev)
 
 static const struct of_device_id mchp_tc_dt_ids[] = {
 	{ .compatible = "microchip,tcb-capture", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mchp_tc_dt_ids);
 

@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2020 Damien P. George
- * Copyright (c) 2020 Jim Mussared
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/runtime.h"
 #include "py/mperrno.h"
@@ -44,14 +19,14 @@
 #define COL_GREEN "\033[0;32m"
 #define COL_BLUE "\033[0;34m"
 
-// Implements a btstack btstack_uart_block_t on top of the mphciuart.h
-// interface to an HCI UART provided by the port.
 
-// We pass the bytes directly to the UART during a send, but then notify btstack in the next poll.
+
+
+
 static bool send_done;
 static void (*send_handler)(void);
 
-// btstack issues a read of len bytes, and gives us a buffer to asynchronously fill up.
+
 static uint8_t *recv_buf;
 static size_t recv_len;
 static size_t recv_idx;
@@ -67,7 +42,7 @@ static int btstack_uart_init(const btstack_uart_config_t *uart_config) {
     recv_handler = NULL;
     send_handler = NULL;
 
-    // Set up the UART peripheral, attach IRQ and power up the HCI controller.
+    
     if (mp_bluetooth_hci_uart_init(MICROPY_HW_BLE_UART_ID, MICROPY_HW_BLE_UART_BAUDRATE)) {
         init_success = false;
         return -1;
@@ -131,8 +106,8 @@ static void btstack_uart_send_block(const uint8_t *buf, uint16_t len) {
     mp_bluetooth_hci_uart_write(buf, len);
     send_done = true;
 
-    // Data has been written out synchronously on the UART, so trigger a poll which will
-    // then notify btstack (don't call send_handler here or it may call us recursively).
+    
+    
     mp_bluetooth_hci_poll_now();
 }
 
@@ -142,12 +117,12 @@ static int btstack_uart_get_supported_sleep_modes(void) {
 
 static void btstack_uart_set_sleep(btstack_uart_sleep_mode_t sleep_mode) {
     (void)sleep_mode;
-    // printf("btstack_uart_set_sleep %u\n", sleep_mode);
+    
 }
 
 static void btstack_uart_set_wakeup_handler(void (*wakeup_handler)(void)) {
     (void)wakeup_handler;
-    // printf("btstack_uart_set_wakeup_handler\n");
+    
 }
 
 const btstack_uart_block_t mp_bluetooth_btstack_hci_uart_block = {
@@ -165,26 +140,26 @@ const btstack_uart_block_t mp_bluetooth_btstack_hci_uart_block = {
     &btstack_uart_set_sleep,
     &btstack_uart_set_wakeup_handler,
 
-    // The following are needed for H5 mode only.
-    NULL, // set_frame_received
-    NULL, // set_frame_sent,
-    NULL, // receive_frame,
-    NULL, // send_frame,
+    
+    NULL, 
+    NULL, 
+    NULL, 
+    NULL, 
 };
 
 void mp_bluetooth_btstack_hci_uart_process(void) {
     bool host_wake = mp_bluetooth_hci_controller_woken();
 
     if (send_done) {
-        // If we'd done a TX in the last interval, notify btstack that it's complete.
+        
         send_done = false;
         if (send_handler) {
             send_handler();
         }
     }
 
-    // Append any new bytes to the recv buffer, notifying bstack if we've got
-    // the number of bytes it was looking for.
+    
+    
     int chr;
     while (recv_idx < recv_len && (chr = mp_bluetooth_hci_uart_readchar()) >= 0) {
         recv_buf[recv_idx++] = chr;
@@ -209,4 +184,4 @@ void mp_bluetooth_btstack_hci_uart_process(void) {
     }
 }
 
-#endif // MICROPY_PY_BLUETOOTH && MICROPY_BLUETOOTH_BTSTACK
+#endif 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Analog Devices AD7466/7/8 AD7476/5/7/8 (A) SPI ADC driver
- * TI ADC081S/ADC101S/ADC121S 8/10/12-bit SPI ADC driver
- *
- * Copyright 2010 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -29,7 +24,7 @@ struct ad7476_state;
 struct ad7476_chip_info {
 	unsigned int			int_vref_uv;
 	struct iio_chan_spec		channel[2];
-	/* channels used when convst gpio is defined */
+	 
 	struct iio_chan_spec		convst_channel[2];
 	void (*reset)(struct ad7476_state *);
 	bool				has_vref;
@@ -43,12 +38,7 @@ struct ad7476_state {
 	struct gpio_desc		*convst_gpio;
 	struct spi_transfer		xfer;
 	struct spi_message		msg;
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 * Make the buffer large enough for one 16 bit sample and one 64 bit
-	 * aligned 64 bit timestamp.
-	 */
+	 
 	unsigned char data[ALIGN(2, sizeof(s64)) + sizeof(s64)] __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -81,9 +71,9 @@ static void ad7091_convst(struct ad7476_state *st)
 		return;
 
 	gpiod_set_value(st->convst_gpio, 0);
-	udelay(1); /* CONVST pulse width: 10 ns min */
+	udelay(1);  
 	gpiod_set_value(st->convst_gpio, 1);
-	udelay(1); /* Conversion time: 650 ns max */
+	udelay(1);  
 }
 
 static irqreturn_t ad7476_trigger_handler(int irq, void  *p)
@@ -109,7 +99,7 @@ done:
 
 static void ad7091_reset(struct ad7476_state *st)
 {
-	/* Any transfers with 8 scl cycles will reset the device */
+	 
 	spi_read(st->spi, st->data, 1);
 }
 
@@ -327,13 +317,13 @@ static int ad7476_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Either vcc or vref (below) as appropriate */
+	 
 	if (!st->chip_info->int_vref_uv)
 		st->ref_reg = reg;
 
 	if (st->chip_info->has_vref) {
 
-		/* If a device has an internal reference vref is optional */
+		 
 		if (st->chip_info->int_vref_uv) {
 			reg = devm_regulator_get_optional(&spi->dev, "vref");
 			if (IS_ERR(reg) && (PTR_ERR(reg) != -ENODEV))
@@ -356,13 +346,7 @@ static int ad7476_probe(struct spi_device *spi)
 				return ret;
 			st->ref_reg = reg;
 		} else {
-			/*
-			 * Can only get here if device supports both internal
-			 * and external reference, but the regulator connected
-			 * to the external reference is not connected.
-			 * Set the reference regulator pointer to NULL to
-			 * indicate this.
-			 */
+			 
 			st->ref_reg = NULL;
 		}
 	}
@@ -389,7 +373,7 @@ static int ad7476_probe(struct spi_device *spi)
 
 	if (st->convst_gpio)
 		indio_dev->channels = st->chip_info->convst_channel;
-	/* Setup default message */
+	 
 
 	st->xfer.rx_buf = &st->data;
 	st->xfer.len = st->chip_info->channel[0].scan_type.storagebits / 8;

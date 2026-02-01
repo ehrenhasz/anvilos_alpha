@@ -1,4 +1,4 @@
-// libfuzzer driver for key exchange fuzzing.
+
 
 
 #include <sys/types.h>
@@ -21,8 +21,8 @@ extern "C" {
 
 #include "fixed-keys.h"
 
-// Define if you want to generate traces.
-/* #define STANDALONE 1 */
+
+ 
 
 static int prepare_key(struct shared_state *st, int keytype, int bits);
 
@@ -32,9 +32,9 @@ struct shared_state {
 };
 
 struct test_state {
-	struct sshbuf *smsgs, *cmsgs; /* output, for standalone mode */
-	struct sshbuf *sin, *cin; /* input; setup per-test in do_kex_with_key */
-	struct sshbuf *s_template, *c_template; /* main copy of input */
+	struct sshbuf *smsgs, *cmsgs;  
+	struct sshbuf *sin, *cin;  
+	struct sshbuf *s_template, *c_template;  
 };
 
 static int
@@ -78,7 +78,7 @@ run_kex(struct test_state *ts, struct ssh *client, struct ssh *server)
 	int r = 0;
 	size_t cn, sn;
 
-	/* If fuzzing, replace server/client input */
+	 
 	if (ts->sin != NULL) {
 		if ((r = ssh_input_append(server, sshbuf_ptr(ts->sin),
 		    sshbuf_len(ts->sin))) != 0) {
@@ -236,7 +236,7 @@ do_kex_with_key(struct shared_state *st, struct test_state *ts,
 		error_fr(r, "kex");
 		goto fail;
 	}
-	/* XXX rekex, set_state, etc */
+	 
  fail:
 	for (i = 0; i < PROPOSAL_MAX; i++)
 		free(myproposal[i]);
@@ -301,7 +301,7 @@ prepare_key(struct shared_state *st, int kt, int bits)
 
 #if defined(STANDALONE)
 
-#if 0 /* use this if generating new keys to embed above */
+#if 0  
 static int
 prepare_key(struct shared_state *st, int keytype, int bits)
 {
@@ -344,7 +344,7 @@ int main(void)
 		st = (struct shared_state *)xcalloc(1, sizeof(*st));
 		prepare_keys(st);
 	}
-	/* Run each kex method for each key and save client/server packets */
+	 
 	for (i = 0; keytypes[i] != -1; i++) {
 		for (j = 0; kextypes[j] != NULL; j++) {
 			ts = (struct test_state *)xcalloc(1, sizeof(*ts));
@@ -361,7 +361,7 @@ int main(void)
 				abort();
 			fclose(f);
 			free(path);
-			//sshbuf_dump(ts->smsgs, stderr);
+			
 			xasprintf(&path, "C2S-%s-%s",
 			    kextypes[j], sshkey_type(st->pubkeys[keytypes[i]]));
 			debug_f("%s", path);
@@ -372,7 +372,7 @@ int main(void)
 				abort();
 			fclose(f);
 			free(path);
-			//sshbuf_dump(ts->cmsgs, stderr);
+			
 			sshbuf_free(ts->smsgs);
 			sshbuf_free(ts->cmsgs);
 			free(ts);
@@ -394,7 +394,7 @@ int main(void)
 		free(path);
 	}
 }
-#else /* !STANDALONE */
+#else  
 static void
 do_kex(struct shared_state *st, struct test_state *ts, const char *kex)
 {
@@ -431,7 +431,7 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 		prepare_keys(st);
 	}
 
-	/* Ensure that we can complete (fail) banner exchange at least */
+	 
 	memset(crbuf, '\n', sizeof(crbuf));
 
 	ts = (struct test_state *)xcalloc(1, sizeof(*ts));
@@ -456,5 +456,5 @@ int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size)
 
 	return 0;
 }
-#endif /* STANDALONE */
-} /* extern "C" */
+#endif  
+}  

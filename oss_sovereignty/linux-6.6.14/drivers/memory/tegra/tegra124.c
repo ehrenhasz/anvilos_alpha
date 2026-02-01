@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/device.h>
@@ -830,7 +828,7 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
 		.swgroup = TEGRA_SWGROUP_GPU,
 		.regs = {
 			.smmu = {
-				/* read-only */
+				 
 				.reg = 0x230,
 				.bit = 24,
 			},
@@ -847,7 +845,7 @@ static const struct tegra_mc_client tegra124_mc_clients[] = {
 		.swgroup = TEGRA_SWGROUP_GPU,
 		.regs = {
 			.smmu = {
-				/* read-only */
+				 
 				.reg = 0x230,
 				.bit = 25,
 			},
@@ -1147,19 +1145,14 @@ static const struct tegra_mc_reset tegra124_mc_resets[] = {
 
 static int tegra124_mc_icc_set(struct icc_node *src, struct icc_node *dst)
 {
-	/* TODO: program PTSA */
+	 
 	return 0;
 }
 
 static int tegra124_mc_icc_aggreate(struct icc_node *node, u32 tag, u32 avg_bw,
 				    u32 peak_bw, u32 *agg_avg, u32 *agg_peak)
 {
-	/*
-	 * ISO clients need to reserve extra bandwidth up-front because
-	 * there could be high bandwidth pressure during initial filling
-	 * of the client's FIFO buffers.  Secondly, we need to take into
-	 * account impurities of the memory subsystem.
-	 */
+	 
 	if (tag & TEGRA_MC_ICC_TAG_ISO)
 		peak_bw = tegra_mc_scale_percents(peak_bw, 400);
 
@@ -1194,7 +1187,7 @@ tegra124_mc_of_icc_xlate_extended(struct of_phandle_args *spec, void *data)
 		case TEGRA_SWGROUP_DCB:
 		case TEGRA_SWGROUP_PTC:
 		case TEGRA_SWGROUP_VI:
-			/* these clients are isochronous by default */
+			 
 			ndata->tag = TEGRA_MC_ICC_TAG_ISO;
 			break;
 
@@ -1276,7 +1269,7 @@ const struct tegra_mc_soc tegra124_mc_soc = {
 	.icc_ops = &tegra124_mc_icc_ops,
 	.ops = &tegra30_mc_ops,
 };
-#endif /* CONFIG_ARCH_TEGRA_124_SOC */
+#endif  
 
 #ifdef CONFIG_ARCH_TEGRA_132_SOC
 static const struct tegra_smmu_soc tegra132_smmu_soc = {
@@ -1308,4 +1301,4 @@ const struct tegra_mc_soc tegra132_mc_soc = {
 	.icc_ops = &tegra124_mc_icc_ops,
 	.ops = &tegra30_mc_ops,
 };
-#endif /* CONFIG_ARCH_TEGRA_132_SOC */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014-2015 Broadcom Corporation
+
+
 #include <linux/debugfs.h>
 #include <linux/dma-mapping.h>
 #include <linux/init.h>
@@ -15,7 +15,7 @@
 
 #include "cygnus-ssp.h"
 
-/* Register offset needed for ASoC PCM module */
+ 
 
 #define INTH_R5F_STATUS_OFFSET     0x040
 #define INTH_R5F_CLEAR_OFFSET      0x048
@@ -25,8 +25,8 @@
 #define BF_REARM_FREE_MARK_OFFSET 0x344
 #define BF_REARM_FULL_MARK_OFFSET 0x348
 
-/* Ring Buffer Ctrl Regs --- Start */
-/* AUD_FMM_BF_CTRL_SOURCECH_RINGBUF_X_RDADDR_REG_BASE */
+ 
+ 
 #define SRC_RBUF_0_RDADDR_OFFSET 0x500
 #define SRC_RBUF_1_RDADDR_OFFSET 0x518
 #define SRC_RBUF_2_RDADDR_OFFSET 0x530
@@ -35,7 +35,7 @@
 #define SRC_RBUF_5_RDADDR_OFFSET 0x578
 #define SRC_RBUF_6_RDADDR_OFFSET 0x590
 
-/* AUD_FMM_BF_CTRL_SOURCECH_RINGBUF_X_WRADDR_REG_BASE */
+ 
 #define SRC_RBUF_0_WRADDR_OFFSET 0x504
 #define SRC_RBUF_1_WRADDR_OFFSET 0x51c
 #define SRC_RBUF_2_WRADDR_OFFSET 0x534
@@ -44,7 +44,7 @@
 #define SRC_RBUF_5_WRADDR_OFFSET 0x57c
 #define SRC_RBUF_6_WRADDR_OFFSET 0x594
 
-/* AUD_FMM_BF_CTRL_SOURCECH_RINGBUF_X_BASEADDR_REG_BASE */
+ 
 #define SRC_RBUF_0_BASEADDR_OFFSET 0x508
 #define SRC_RBUF_1_BASEADDR_OFFSET 0x520
 #define SRC_RBUF_2_BASEADDR_OFFSET 0x538
@@ -53,7 +53,7 @@
 #define SRC_RBUF_5_BASEADDR_OFFSET 0x580
 #define SRC_RBUF_6_BASEADDR_OFFSET 0x598
 
-/* AUD_FMM_BF_CTRL_SOURCECH_RINGBUF_X_ENDADDR_REG_BASE */
+ 
 #define SRC_RBUF_0_ENDADDR_OFFSET 0x50c
 #define SRC_RBUF_1_ENDADDR_OFFSET 0x524
 #define SRC_RBUF_2_ENDADDR_OFFSET 0x53c
@@ -62,7 +62,7 @@
 #define SRC_RBUF_5_ENDADDR_OFFSET 0x584
 #define SRC_RBUF_6_ENDADDR_OFFSET 0x59c
 
-/* AUD_FMM_BF_CTRL_SOURCECH_RINGBUF_X_FREE_MARK_REG_BASE */
+ 
 #define SRC_RBUF_0_FREE_MARK_OFFSET 0x510
 #define SRC_RBUF_1_FREE_MARK_OFFSET 0x528
 #define SRC_RBUF_2_FREE_MARK_OFFSET 0x540
@@ -71,7 +71,7 @@
 #define SRC_RBUF_5_FREE_MARK_OFFSET 0x588
 #define SRC_RBUF_6_FREE_MARK_OFFSET 0x5a0
 
-/* AUD_FMM_BF_CTRL_DESTCH_RINGBUF_X_RDADDR_REG_BASE */
+ 
 #define DST_RBUF_0_RDADDR_OFFSET 0x5c0
 #define DST_RBUF_1_RDADDR_OFFSET 0x5d8
 #define DST_RBUF_2_RDADDR_OFFSET 0x5f0
@@ -79,7 +79,7 @@
 #define DST_RBUF_4_RDADDR_OFFSET 0x620
 #define DST_RBUF_5_RDADDR_OFFSET 0x638
 
-/* AUD_FMM_BF_CTRL_DESTCH_RINGBUF_X_WRADDR_REG_BASE */
+ 
 #define DST_RBUF_0_WRADDR_OFFSET 0x5c4
 #define DST_RBUF_1_WRADDR_OFFSET 0x5dc
 #define DST_RBUF_2_WRADDR_OFFSET 0x5f4
@@ -87,7 +87,7 @@
 #define DST_RBUF_4_WRADDR_OFFSET 0x624
 #define DST_RBUF_5_WRADDR_OFFSET 0x63c
 
-/* AUD_FMM_BF_CTRL_DESTCH_RINGBUF_X_BASEADDR_REG_BASE */
+ 
 #define DST_RBUF_0_BASEADDR_OFFSET 0x5c8
 #define DST_RBUF_1_BASEADDR_OFFSET 0x5e0
 #define DST_RBUF_2_BASEADDR_OFFSET 0x5f8
@@ -95,7 +95,7 @@
 #define DST_RBUF_4_BASEADDR_OFFSET 0x628
 #define DST_RBUF_5_BASEADDR_OFFSET 0x640
 
-/* AUD_FMM_BF_CTRL_DESTCH_RINGBUF_X_ENDADDR_REG_BASE */
+ 
 #define DST_RBUF_0_ENDADDR_OFFSET 0x5cc
 #define DST_RBUF_1_ENDADDR_OFFSET 0x5e4
 #define DST_RBUF_2_ENDADDR_OFFSET 0x5fc
@@ -103,71 +103,68 @@
 #define DST_RBUF_4_ENDADDR_OFFSET 0x62c
 #define DST_RBUF_5_ENDADDR_OFFSET 0x644
 
-/* AUD_FMM_BF_CTRL_DESTCH_RINGBUF_X_FULL_MARK_REG_BASE */
+ 
 #define DST_RBUF_0_FULL_MARK_OFFSET 0x5d0
 #define DST_RBUF_1_FULL_MARK_OFFSET 0x5e8
 #define DST_RBUF_2_FULL_MARK_OFFSET 0x600
 #define DST_RBUF_3_FULL_MARK_OFFSET 0x618
 #define DST_RBUF_4_FULL_MARK_OFFSET 0x630
 #define DST_RBUF_5_FULL_MARK_OFFSET 0x648
-/* Ring Buffer Ctrl Regs --- End */
+ 
 
-/* Error Status Regs --- Start */
-/* AUD_FMM_BF_ESR_ESRX_STATUS_REG_BASE */
+ 
+ 
 #define ESR0_STATUS_OFFSET 0x900
 #define ESR1_STATUS_OFFSET 0x918
 #define ESR2_STATUS_OFFSET 0x930
 #define ESR3_STATUS_OFFSET 0x948
 #define ESR4_STATUS_OFFSET 0x960
 
-/* AUD_FMM_BF_ESR_ESRX_STATUS_CLEAR_REG_BASE */
+ 
 #define ESR0_STATUS_CLR_OFFSET 0x908
 #define ESR1_STATUS_CLR_OFFSET 0x920
 #define ESR2_STATUS_CLR_OFFSET 0x938
 #define ESR3_STATUS_CLR_OFFSET 0x950
 #define ESR4_STATUS_CLR_OFFSET 0x968
 
-/* AUD_FMM_BF_ESR_ESRX_MASK_REG_BASE */
+ 
 #define ESR0_MASK_STATUS_OFFSET 0x90c
 #define ESR1_MASK_STATUS_OFFSET 0x924
 #define ESR2_MASK_STATUS_OFFSET 0x93c
 #define ESR3_MASK_STATUS_OFFSET 0x954
 #define ESR4_MASK_STATUS_OFFSET 0x96c
 
-/* AUD_FMM_BF_ESR_ESRX_MASK_SET_REG_BASE */
+ 
 #define ESR0_MASK_SET_OFFSET 0x910
 #define ESR1_MASK_SET_OFFSET 0x928
 #define ESR2_MASK_SET_OFFSET 0x940
 #define ESR3_MASK_SET_OFFSET 0x958
 #define ESR4_MASK_SET_OFFSET 0x970
 
-/* AUD_FMM_BF_ESR_ESRX_MASK_CLEAR_REG_BASE */
+ 
 #define ESR0_MASK_CLR_OFFSET 0x914
 #define ESR1_MASK_CLR_OFFSET 0x92c
 #define ESR2_MASK_CLR_OFFSET 0x944
 #define ESR3_MASK_CLR_OFFSET 0x95c
 #define ESR4_MASK_CLR_OFFSET 0x974
-/* Error Status Regs --- End */
+ 
 
-#define R5F_ESR0_SHIFT  0    /* esr0 = fifo underflow */
-#define R5F_ESR1_SHIFT  1    /* esr1 = ringbuf underflow */
-#define R5F_ESR2_SHIFT  2    /* esr2 = ringbuf overflow */
-#define R5F_ESR3_SHIFT  3    /* esr3 = freemark */
-#define R5F_ESR4_SHIFT  4    /* esr4 = fullmark */
+#define R5F_ESR0_SHIFT  0     
+#define R5F_ESR1_SHIFT  1     
+#define R5F_ESR2_SHIFT  2     
+#define R5F_ESR3_SHIFT  3     
+#define R5F_ESR4_SHIFT  4     
 
 
-/* Mask for R5F register.  Set all relevant interrupt for playback handler */
+ 
 #define ANY_PLAYBACK_IRQ  (BIT(R5F_ESR0_SHIFT) | \
 			   BIT(R5F_ESR1_SHIFT) | \
 			   BIT(R5F_ESR3_SHIFT))
 
-/* Mask for R5F register.  Set all relevant interrupt for capture handler */
+ 
 #define ANY_CAPTURE_IRQ   (BIT(R5F_ESR2_SHIFT) | BIT(R5F_ESR4_SHIFT))
 
-/*
- * PERIOD_BYTES_MIN is the number of bytes to at which the interrupt will tick.
- * This number should be a multiple of 256. Minimum value is 256
- */
+ 
 #define PERIOD_BYTES_MIN 0x100
 
 static const struct snd_pcm_hardware cygnus_pcm_hw = {
@@ -177,18 +174,15 @@ static const struct snd_pcm_hardware cygnus_pcm_hw = {
 	.formats = SNDRV_PCM_FMTBIT_S16_LE |
 			SNDRV_PCM_FMTBIT_S32_LE,
 
-	/* A period is basically an interrupt */
+	 
 	.period_bytes_min = PERIOD_BYTES_MIN,
 	.period_bytes_max = 0x10000,
 
-	/* period_min/max gives range of approx interrupts per buffer */
+	 
 	.periods_min = 2,
 	.periods_max = 8,
 
-	/*
-	 * maximum buffer size in bytes = period_bytes_max * periods_max
-	 * We allocate this amount of data for each enabled channel
-	 */
+	 
 	.buffer_bytes_max = 4 * 0x8000,
 };
 
@@ -212,28 +206,24 @@ static void ringbuf_set_initial(void __iomem *audio_io,
 	u32 initial_rd;
 	u32 initial_wr;
 	u32 end;
-	u32 fmark_val; /* free or full mark */
+	u32 fmark_val;  
 
 	p_rbuf->period_bytes = periodsize;
 	p_rbuf->buf_size = bufsize;
 
 	if (is_playback) {
-		/* Set the pointers to indicate full (flip uppermost bit) */
+		 
 		initial_rd = start;
 		initial_wr = initial_rd ^ BIT(31);
 	} else {
-		/* Set the pointers to indicate empty */
+		 
 		initial_wr = start;
 		initial_rd = initial_wr;
 	}
 
 	end = start + bufsize - 1;
 
-	/*
-	 * The interrupt will fire when free/full mark is *exceeded*
-	 * The fmark value must be multiple of PERIOD_BYTES_MIN so set fmark
-	 * to be PERIOD_BYTES_MIN less than the period size.
-	 */
+	 
 	fmark_val = periodsize - PERIOD_BYTES_MIN;
 
 	writel(start, audio_io + p_rbuf->baseaddr);
@@ -251,7 +241,7 @@ static int configure_ringbuf_regs(struct snd_pcm_substream *substream)
 
 	aio = cygnus_dai_get_dma_data(substream);
 
-	/* Map the ssp portnum to a set of ring buffers. */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		p_rbuf = &aio->play_rb_regs;
 
@@ -265,7 +255,7 @@ static int configure_ringbuf_regs(struct snd_pcm_substream *substream)
 		case 2:
 			*p_rbuf = RINGBUF_REG_PLAYBACK(4);
 			break;
-		case 3: /* SPDIF */
+		case 3:  
 			*p_rbuf = RINGBUF_REG_PLAYBACK(6);
 			break;
 		default:
@@ -314,15 +304,15 @@ static void enable_intr(struct snd_pcm_substream *substream)
 
 	aio = cygnus_dai_get_dma_data(substream);
 
-	/* The port number maps to the bit position to be cleared */
+	 
 	clear_mask = BIT(aio->portnum);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		/* Clear interrupt status before enabling them */
+		 
 		writel(clear_mask, aio->cygaud->audio + ESR0_STATUS_CLR_OFFSET);
 		writel(clear_mask, aio->cygaud->audio + ESR1_STATUS_CLR_OFFSET);
 		writel(clear_mask, aio->cygaud->audio + ESR3_STATUS_CLR_OFFSET);
-		/* Unmask the interrupts of the given port*/
+		 
 		writel(clear_mask, aio->cygaud->audio + ESR0_MASK_CLR_OFFSET);
 		writel(clear_mask, aio->cygaud->audio + ESR1_MASK_CLR_OFFSET);
 		writel(clear_mask, aio->cygaud->audio + ESR3_MASK_CLR_OFFSET);
@@ -351,11 +341,11 @@ static void disable_intr(struct snd_pcm_substream *substream)
 
 	dev_dbg(asoc_rtd_to_cpu(rtd, 0)->dev, "%s on port %d\n", __func__, aio->portnum);
 
-	/* The port number maps to the bit position to be set */
+	 
 	set_mask = BIT(aio->portnum);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		/* Mask the interrupts of the given port*/
+		 
 		writel(set_mask, aio->cygaud->audio + ESR0_MASK_SET_OFFSET);
 		writel(set_mask, aio->cygaud->audio + ESR1_MASK_SET_OFFSET);
 		writel(set_mask, aio->cygaud->audio + ESR3_MASK_SET_OFFSET);
@@ -398,31 +388,22 @@ static void cygnus_pcm_period_elapsed(struct snd_pcm_substream *substream)
 
 	p_rbuf = get_ringbuf(substream);
 
-	/*
-	 * If free/full mark interrupt occurs, provide timestamp
-	 * to ALSA and update appropriate idx by period_bytes
-	 */
+	 
 	snd_pcm_period_elapsed(substream);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		/* Set the ring buffer to full */
+		 
 		regval = readl(aio->cygaud->audio + p_rbuf->rdaddr);
 		regval = regval ^ BIT(31);
 		writel(regval, aio->cygaud->audio + p_rbuf->wraddr);
 	} else {
-		/* Set the ring buffer to empty */
+		 
 		regval = readl(aio->cygaud->audio + p_rbuf->wraddr);
 		writel(regval, aio->cygaud->audio + p_rbuf->rdaddr);
 	}
 }
 
-/*
- * ESR0/1/3 status  Description
- *  0x1	I2S0_out port caused interrupt
- *  0x2	I2S1_out port caused interrupt
- *  0x4	I2S2_out port caused interrupt
- *  0x8	SPDIF_out port caused interrupt
- */
+ 
 static void handle_playback_irq(struct cygnus_audio *cygaud)
 {
 	void __iomem *audio_io;
@@ -431,12 +412,7 @@ static void handle_playback_irq(struct cygnus_audio *cygaud)
 
 	audio_io = cygaud->audio;
 
-	/*
-	 * ESR status gets updates with/without interrupts enabled.
-	 * So, check the ESR mask, which provides interrupt enable/
-	 * disable status and use it to determine which ESR status
-	 * should be serviced.
-	 */
+	 
 	esr_status0 = readl(audio_io + ESR0_STATUS_OFFSET);
 	esr_status0 &= ~readl(audio_io + ESR0_MASK_STATUS_OFFSET);
 	esr_status1 = readl(audio_io + ESR1_STATUS_OFFSET);
@@ -447,23 +423,14 @@ static void handle_playback_irq(struct cygnus_audio *cygaud)
 	for (port = 0; port < CYGNUS_MAX_PLAYBACK_PORTS; port++) {
 		u32 esrmask = BIT(port);
 
-		/*
-		 * Ringbuffer or FIFO underflow
-		 * If we get this interrupt then, it is also true that we have
-		 * not yet responded to the freemark interrupt.
-		 * Log a debug message.  The freemark handler below will
-		 * handle getting everything going again.
-		 */
+		 
 		if ((esrmask & esr_status1) || (esrmask & esr_status0)) {
 			dev_dbg(cygaud->dev,
 				"Underrun: esr0=0x%x, esr1=0x%x esr3=0x%x\n",
 				esr_status0, esr_status1, esr_status3);
 		}
 
-		/*
-		 * Freemark is hit. This is the normal interrupt.
-		 * In typical operation the read and write regs will be equal
-		 */
+		 
 		if (esrmask & esr_status3) {
 			struct snd_pcm_substream *playstr;
 
@@ -472,20 +439,15 @@ static void handle_playback_irq(struct cygnus_audio *cygaud)
 		}
 	}
 
-	/* Clear ESR interrupt */
+	 
 	writel(esr_status0, audio_io + ESR0_STATUS_CLR_OFFSET);
 	writel(esr_status1, audio_io + ESR1_STATUS_CLR_OFFSET);
 	writel(esr_status3, audio_io + ESR3_STATUS_CLR_OFFSET);
-	/* Rearm freemark logic by writing 1 to the correct bit */
+	 
 	writel(esr_status3, audio_io + BF_REARM_FREE_MARK_OFFSET);
 }
 
-/*
- * ESR2/4 status  Description
- *  0x1	I2S0_in port caused interrupt
- *  0x2	I2S1_in port caused interrupt
- *  0x4	I2S2_in port caused interrupt
- */
+ 
 static void handle_capture_irq(struct cygnus_audio *cygaud)
 {
 	void __iomem *audio_io;
@@ -494,12 +456,7 @@ static void handle_capture_irq(struct cygnus_audio *cygaud)
 
 	audio_io = cygaud->audio;
 
-	/*
-	 * ESR status gets updates with/without interrupts enabled.
-	 * So, check the ESR mask, which provides interrupt enable/
-	 * disable status and use it to determine which ESR status
-	 * should be serviced.
-	 */
+	 
 	esr_status2 = readl(audio_io + ESR2_STATUS_OFFSET);
 	esr_status2 &= ~readl(audio_io + ESR2_MASK_STATUS_OFFSET);
 	esr_status4 = readl(audio_io + ESR4_STATUS_OFFSET);
@@ -508,13 +465,7 @@ static void handle_capture_irq(struct cygnus_audio *cygaud)
 	for (port = 0; port < CYGNUS_MAX_CAPTURE_PORTS; port++) {
 		u32 esrmask = BIT(port);
 
-		/*
-		 * Ringbuffer or FIFO overflow
-		 * If we get this interrupt then, it is also true that we have
-		 * not yet responded to the fullmark interrupt.
-		 * Log a debug message.  The fullmark handler below will
-		 * handle getting everything going again.
-		 */
+		 
 		if (esrmask & esr_status2)
 			dev_dbg(cygaud->dev,
 				"Overflow: esr2=0x%x\n", esr_status2);
@@ -529,7 +480,7 @@ static void handle_capture_irq(struct cygnus_audio *cygaud)
 
 	writel(esr_status2, audio_io + ESR2_STATUS_CLR_OFFSET);
 	writel(esr_status4, audio_io + ESR4_STATUS_CLR_OFFSET);
-	/* Rearm fullmark logic by writing 1 to the correct bit */
+	 
 	writel(esr_status4, audio_io + BF_REARM_FULL_MARK_OFFSET);
 }
 
@@ -538,27 +489,20 @@ static irqreturn_t cygnus_dma_irq(int irq, void *data)
 	u32 r5_status;
 	struct cygnus_audio *cygaud = data;
 
-	/*
-	 * R5 status bits	Description
-	 *  0		ESR0 (playback FIFO interrupt)
-	 *  1		ESR1 (playback rbuf interrupt)
-	 *  2		ESR2 (capture rbuf interrupt)
-	 *  3		ESR3 (Freemark play. interrupt)
-	 *  4		ESR4 (Fullmark capt. interrupt)
-	 */
+	 
 	r5_status = readl(cygaud->audio + INTH_R5F_STATUS_OFFSET);
 
 	if (!(r5_status & (ANY_PLAYBACK_IRQ | ANY_CAPTURE_IRQ)))
 		return IRQ_NONE;
 
-	/* If playback interrupt happened */
+	 
 	if (ANY_PLAYBACK_IRQ & r5_status) {
 		handle_playback_irq(cygaud);
 		writel(ANY_PLAYBACK_IRQ & r5_status,
 			cygaud->audio + INTH_R5F_CLEAR_OFFSET);
 	}
 
-	/* If  capture interrupt happened */
+	 
 	if (ANY_CAPTURE_IRQ & r5_status) {
 		handle_capture_irq(cygaud);
 		writel(ANY_CAPTURE_IRQ & r5_status,
@@ -593,10 +537,7 @@ static int cygnus_pcm_open(struct snd_soc_component *component,
 		SNDRV_PCM_HW_PARAM_BUFFER_BYTES, PERIOD_BYTES_MIN);
 	if (ret < 0)
 		return ret;
-	/*
-	 * Keep track of which substream belongs to which port.
-	 * This info is needed by snd_pcm_period_elapsed() in irq_handler
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		aio->play_stream = substream;
 	else
@@ -669,10 +610,7 @@ static snd_pcm_uframes_t cygnus_pcm_pointer(struct snd_soc_component *component,
 
 	aio = cygnus_dai_get_dma_data(substream);
 
-	/*
-	 * Get the offset of the current read (for playack) or write
-	 * index (for capture).  Report this value back to the asoc framework.
-	 */
+	 
 	p_rbuf = get_ringbuf(substream);
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		cur = readl(aio->cygaud->audio + p_rbuf->rdaddr);
@@ -681,10 +619,7 @@ static snd_pcm_uframes_t cygnus_pcm_pointer(struct snd_soc_component *component,
 
 	base = readl(aio->cygaud->audio + p_rbuf->baseaddr);
 
-	/*
-	 * Mask off the MSB of the rdaddr,wraddr and baseaddr
-	 * since MSB is not part of the address
-	 */
+	 
 	res = (cur & 0x7fffffff) - (base & 0x7fffffff);
 
 	return bytes_to_frames(substream->runtime, res);

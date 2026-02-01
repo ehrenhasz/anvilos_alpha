@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2023 Huawei. All rights reserved. */
+
+ 
 
 #include <linux/device.h>
 #include <linux/slab.h>

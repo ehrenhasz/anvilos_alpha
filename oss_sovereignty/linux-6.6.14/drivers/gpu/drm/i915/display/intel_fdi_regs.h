@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_FDI_REGS_H__
 #define __INTEL_FDI_REGS_H__
@@ -27,7 +25,7 @@
 #define  FDI_RX_PHASE_SYNC_POINTER_EN	(1 << 0)
 #define FDI_RX_CHICKEN(pipe)	_MMIO_PIPE(pipe, _FDI_RXA_CHICKEN, _FDI_RXB_CHICKEN)
 
-/* CPU: FDI_TX */
+ 
 #define _FDI_TXA_CTL            0x60100
 #define _FDI_TXB_CTL            0x61100
 #define FDI_TX_CTL(pipe)	_MMIO_PIPE(pipe, _FDI_TXA_CTL, _FDI_TXB_CTL)
@@ -45,14 +43,13 @@
 #define  FDI_LINK_TRAIN_PRE_EMPHASIS_1_5X (1 << 22)
 #define  FDI_LINK_TRAIN_PRE_EMPHASIS_2X   (2 << 22)
 #define  FDI_LINK_TRAIN_PRE_EMPHASIS_3X   (3 << 22)
-/* ILK always use 400mV 0dB for voltage swing and pre-emphasis level.
-   SNB has different settings. */
-/* SNB A-stepping */
+ 
+ 
 #define  FDI_LINK_TRAIN_400MV_0DB_SNB_A		(0x38 << 22)
 #define  FDI_LINK_TRAIN_400MV_6DB_SNB_A		(0x02 << 22)
 #define  FDI_LINK_TRAIN_600MV_3_5DB_SNB_A	(0x01 << 22)
 #define  FDI_LINK_TRAIN_800MV_0DB_SNB_A		(0x0 << 22)
-/* SNB B-stepping */
+ 
 #define  FDI_LINK_TRAIN_400MV_0DB_SNB_B		(0x0 << 22)
 #define  FDI_LINK_TRAIN_400MV_6DB_SNB_B		(0x3a << 22)
 #define  FDI_LINK_TRAIN_600MV_3_5DB_SNB_B	(0x39 << 22)
@@ -62,27 +59,27 @@
 #define  FDI_DP_PORT_WIDTH_MASK			(7 << FDI_DP_PORT_WIDTH_SHIFT)
 #define  FDI_DP_PORT_WIDTH(width)           (((width) - 1) << FDI_DP_PORT_WIDTH_SHIFT)
 #define  FDI_TX_ENHANCE_FRAME_ENABLE    (1 << 18)
-/* Ironlake: hardwired to 1 */
+ 
 #define  FDI_TX_PLL_ENABLE              (1 << 14)
 
-/* Ivybridge has different bits for lolz */
+ 
 #define  FDI_LINK_TRAIN_PATTERN_1_IVB       (0 << 8)
 #define  FDI_LINK_TRAIN_PATTERN_2_IVB       (1 << 8)
 #define  FDI_LINK_TRAIN_PATTERN_IDLE_IVB    (2 << 8)
 #define  FDI_LINK_TRAIN_NONE_IVB            (3 << 8)
 
-/* both Tx and Rx */
+ 
 #define  FDI_COMPOSITE_SYNC		(1 << 11)
 #define  FDI_LINK_TRAIN_AUTO		(1 << 10)
 #define  FDI_SCRAMBLING_ENABLE          (0 << 7)
 #define  FDI_SCRAMBLING_DISABLE         (1 << 7)
 
-/* FDI_RX, FDI_X is hard-wired to Transcoder_X */
+ 
 #define _FDI_RXA_CTL             0xf000c
 #define _FDI_RXB_CTL             0xf100c
 #define FDI_RX_CTL(pipe)	_MMIO_PIPE(pipe, _FDI_RXA_CTL, _FDI_RXB_CTL)
 #define  FDI_RX_ENABLE          (1 << 31)
-/* train, dp width same as FDI_TX */
+ 
 #define  FDI_FS_ERRC_ENABLE		(1 << 27)
 #define  FDI_FE_ERRC_ENABLE		(1 << 26)
 #define  FDI_RX_POLARITY_REVERSED_LPT	(1 << 16)
@@ -99,7 +96,7 @@
 #define  FDI_FE_ERR_REPORT_ENABLE       (1 << 8)
 #define  FDI_RX_ENHANCE_FRAME_ENABLE    (1 << 6)
 #define  FDI_PCDCLK	                (1 << 4)
-/* CPT */
+ 
 #define  FDI_AUTO_TRAINING			(1 << 10)
 #define  FDI_LINK_TRAIN_PATTERN_1_CPT		(0 << 8)
 #define  FDI_LINK_TRAIN_PATTERN_2_CPT		(1 << 8)
@@ -125,10 +122,10 @@
 #define FDI_RX_TUSIZE1(pipe)	_MMIO_PIPE(pipe, _FDI_RXA_TUSIZE1, _FDI_RXB_TUSIZE1)
 #define FDI_RX_TUSIZE2(pipe)	_MMIO_PIPE(pipe, _FDI_RXA_TUSIZE2, _FDI_RXB_TUSIZE2)
 
-/* FDI_RX interrupt register format */
+ 
 #define FDI_RX_INTER_LANE_ALIGN         (1 << 10)
-#define FDI_RX_SYMBOL_LOCK              (1 << 9) /* train 2 */
-#define FDI_RX_BIT_LOCK                 (1 << 8) /* train 1 */
+#define FDI_RX_SYMBOL_LOCK              (1 << 9)  
+#define FDI_RX_BIT_LOCK                 (1 << 8)  
 #define FDI_RX_TRAIN_PATTERN_2_FAIL     (1 << 7)
 #define FDI_RX_FS_CODE_ERR              (1 << 6)
 #define FDI_RX_FE_CODE_ERR              (1 << 5)
@@ -148,4 +145,4 @@
 #define FDI_PLL_CTL_1           _MMIO(0xfe000)
 #define FDI_PLL_CTL_2           _MMIO(0xfe004)
 
-#endif /* __INTEL_FDI_REGS_H__ */
+#endif  

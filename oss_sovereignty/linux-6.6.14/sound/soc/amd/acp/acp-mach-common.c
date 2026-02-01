@@ -1,17 +1,15 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
-//	    Vijendar Mukunda <Vijendar.Mukunda@amd.com>
-//
 
-/*
- * Machine Driver Interface for ACP HW block
- */
+
+
+
+
+
+
+
+
+
+
+ 
 
 #include <sound/core.h>
 #include <sound/jack.h>
@@ -41,7 +39,7 @@
 
 const struct dmi_system_id acp_quirk_table[] = {
 	{
-		/* Google skyrim proto-0 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_PRODUCT_FAMILY, "Google_Skyrim"),
 		},
@@ -80,7 +78,7 @@ static int acp_clk_enable(struct acp_card_drvdata *drvdata,
 	return clk_prepare_enable(drvdata->wclk);
 }
 
-/* Declare RT5682 codec components */
+ 
 SND_SOC_DAILINK_DEF(rt5682,
 	DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10EC5682:00", "rt5682-aif1")));
 
@@ -112,7 +110,7 @@ static const struct snd_soc_dapm_route rt5682_map[] = {
 	{ "IN1P", NULL, "Headset Mic" },
 };
 
-/* Define card ops for RT5682 CODEC */
+ 
 static int acp_card_rt5682_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_card *card = rtd->card;
@@ -252,9 +250,7 @@ static int acp_card_rt5682_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (drvdata->tdm_mode) {
-		/**
-		 * As codec supports slot 0 and slot 1 for playback and capture.
-		 */
+		 
 		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0x3, 0x3, 8, 16);
 		if (ret && ret != -ENOTSUPP) {
 			dev_err(rtd->dev, "set TDM slot err: %d\n", ret);
@@ -282,7 +278,7 @@ static int acp_card_rt5682_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Set tdm/i2s1 master bclk ratio */
+	 
 	ret = snd_soc_dai_set_bclk_ratio(codec_dai, ch * format);
 	if (ret < 0) {
 		dev_err(rtd->dev, "Failed to set rt5682 tdm bclk ratio: %d\n", ret);
@@ -306,7 +302,7 @@ static const struct snd_soc_ops acp_card_rt5682_ops = {
 	.hw_params = acp_card_rt5682_hw_params,
 };
 
-/* Define RT5682S CODEC component*/
+ 
 SND_SOC_DAILINK_DEF(rt5682s,
 		    DAILINK_COMP_ARRAY(COMP_CODEC("i2c-RTL5682:00", "rt5682s-aif1")));
 
@@ -434,9 +430,7 @@ static int acp_card_rt5682s_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (drvdata->tdm_mode) {
-		/**
-		 * As codec supports slot 0 and slot 1 for playback and capture.
-		 */
+		 
 		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0x3, 0x3, 8, 16);
 		if (ret && ret != -ENOTSUPP) {
 			dev_err(rtd->dev, "set TDM slot err: %d\n", ret);
@@ -464,7 +458,7 @@ static int acp_card_rt5682s_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Set tdm/i2s1 master bclk ratio */
+	 
 	ret = snd_soc_dai_set_bclk_ratio(codec_dai, ch * format);
 	if (ret < 0) {
 		dev_err(rtd->dev, "Failed to set rt5682 tdm bclk ratio: %d\n", ret);
@@ -508,7 +502,7 @@ static const struct snd_soc_ops acp_card_dmic_ops = {
 	.startup = acp_card_dmic_startup,
 };
 
-/* Declare RT1019 codec components */
+ 
 SND_SOC_DAILINK_DEF(rt1019,
 	DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10EC1019:00", "rt1019-aif"),
 			  COMP_CODEC("i2c-10EC1019:01", "rt1019-aif")));
@@ -601,9 +595,7 @@ static int acp_card_rt1019_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (drvdata->tdm_mode) {
-		/**
-		 * As codec supports slot 2 and slot 3 for playback.
-		 */
+		 
 		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0xC, 0, 8, 16);
 		if (ret && ret != -ENOTSUPP) {
 			dev_err(rtd->dev, "set TDM slot err: %d\n", ret);
@@ -638,18 +630,14 @@ static int acp_card_rt1019_hw_params(struct snd_pcm_substream *substream,
 				return ret;
 			}
 
-			/**
-			 * As codec supports slot 2 for left channel playback.
-			 */
+			 
 			if (!strcmp(codec_dai->component->name, "i2c-10EC1019:00")) {
 				ret = snd_soc_dai_set_tdm_slot(codec_dai, 0x4, 0x4, 8, 16);
 				if (ret < 0)
 					break;
 			}
 
-			/**
-			 * As codec supports slot 3 for right channel playback.
-			 */
+			 
 			if (!strcmp(codec_dai->component->name, "i2c-10EC1019:01")) {
 				ret = snd_soc_dai_set_tdm_slot(codec_dai, 0x8, 0x8, 8, 16);
 				if (ret < 0)
@@ -688,7 +676,7 @@ static const struct snd_soc_ops acp_card_rt1019_ops = {
 	.hw_params = acp_card_rt1019_hw_params,
 };
 
-/* Declare Maxim codec components */
+ 
 SND_SOC_DAILINK_DEF(max98360a,
 	DAILINK_COMP_ARRAY(COMP_CODEC("MX98360A:00", "HiFi")));
 
@@ -762,9 +750,7 @@ static int acp_card_maxim_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (drvdata->tdm_mode) {
-		/**
-		 * As codec supports slot 2 and slot 3 for playback.
-		 */
+		 
 		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0xC, 0, 8, 16);
 		if (ret && ret != -ENOTSUPP) {
 			dev_err(rtd->dev, "set TDM slot err: %d\n", ret);
@@ -854,7 +840,7 @@ static int acp_card_max98388_init(struct snd_soc_pcm_runtime *rtd)
 
 	if (ret) {
 		dev_err(rtd->dev, "unable to add widget dapm controls, ret %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 
@@ -893,7 +879,7 @@ static const struct snd_soc_ops acp_max98388_ops = {
 	.hw_params = acp_max98388_hw_params,
 };
 
-/* Declare nau8825 codec components */
+ 
 SND_SOC_DAILINK_DEF(nau8825,
 		    DAILINK_COMP_ARRAY(COMP_CODEC("i2c-10508825:00", "nau8825-hifi")));
 
@@ -1023,9 +1009,7 @@ static int acp_nau8825_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (drvdata->tdm_mode) {
-		/**
-		 * As codec supports slot 4 and slot 5 for playback and slot 6 for capture.
-		 */
+		 
 		ret = snd_soc_dai_set_tdm_slot(cpu_dai, 0x30, 0xC0, 8, 16);
 		if (ret && ret != -ENOTSUPP) {
 			dev_err(rtd->dev, "set TDM slot err: %d\n", ret);
@@ -1121,7 +1105,7 @@ static const struct snd_soc_dapm_widget nau8821_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route nau8821_audio_route[] = {
-	/* HP jack connectors - unknown if we have jack detection */
+	 
 	{ "Headphone Jack", NULL, "HPOL" },
 	{ "Headphone Jack", NULL, "HPOR" },
 	{ "MICL", NULL, "Headset Mic" },
@@ -1152,7 +1136,7 @@ static int acp_8821_init(struct snd_soc_pcm_runtime *rtd)
 					ARRAY_SIZE(nau8821_widgets));
 	if (ret) {
 		dev_err(rtd->dev, "unable to add widget dapm controls, ret %d\n", ret);
-		// Don't need to add routes if widget addition failed
+		 
 		return ret;
 	}
 
@@ -1243,11 +1227,11 @@ SND_SOC_DAILINK_DEF(nau8821,
 		    DAILINK_COMP_ARRAY(COMP_CODEC("i2c-NVTN2020:00",
 						  "nau8821-hifi")));
 
-/* Declare DMIC codec components */
+ 
 SND_SOC_DAILINK_DEF(dmic_codec,
 		DAILINK_COMP_ARRAY(COMP_CODEC("dmic-codec", "dmic-hifi")));
 
-/* Declare ACP CPU components */
+ 
 static struct snd_soc_dai_link_component platform_component[] = {
 	{
 		 .name = "acp_asoc_renoir.0",
@@ -1298,25 +1282,17 @@ static int acp_rtk_set_bias_level(struct snd_soc_card *card,
 	    strncmp(component->name, "i2c-10EC1019", 12))
 		return 0;
 
-	/*
-	 * For Realtek's codec and amplifier components,
-	 * the lrck and bclk must be enabled brfore their all dapms be powered on,
-	 * and must be disabled after their all dapms be powered down
-	 * to avoid any pop.
-	 */
+	 
 	switch (level) {
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_dapm_get_bias_level(dapm) == SND_SOC_BIAS_OFF) {
 
-			/* Increase bclk's enable_count */
+			 
 			ret = clk_prepare_enable(drvdata->bclk);
 			if (ret < 0)
 				dev_err(component->dev, "Failed to enable bclk %d\n", ret);
 		} else {
-			/*
-			 * Decrease bclk's enable_count.
-			 * While the enable_count is 0, the bclk would be closed.
-			 */
+			 
 			clk_disable_unprepare(drvdata->bclk);
 		}
 		break;
@@ -1357,7 +1333,7 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
 		links[i].nonatomic = true;
 		links[i].no_pcm = 1;
 		if (!drv_data->hs_codec_id) {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}
@@ -1394,7 +1370,7 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
 		links[i].nonatomic = true;
 		links[i].no_pcm = 1;
 		if (!drv_data->hs_codec_id) {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}
@@ -1424,7 +1400,7 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
 		links[i].nonatomic = true;
 		links[i].no_pcm = 1;
 		if (!drv_data->amp_codec_id) {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}
@@ -1456,7 +1432,7 @@ int acp_sofdsp_dai_links_create(struct snd_soc_card *card)
 		links[i].nonatomic = true;
 		links[i].no_pcm = 1;
 		if (!drv_data->amp_codec_id) {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}
@@ -1535,7 +1511,7 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
 		links[i].dpcm_playback = 1;
 		links[i].dpcm_capture = 1;
 		if (!drv_data->hs_codec_id) {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}
@@ -1569,7 +1545,7 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
 		links[i].dpcm_playback = 1;
 		links[i].dpcm_capture = 1;
 		if (!drv_data->hs_codec_id) {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}
@@ -1597,7 +1573,7 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
 		links[i].num_platforms = ARRAY_SIZE(platform_component);
 		links[i].dpcm_playback = 1;
 		if (!drv_data->amp_codec_id) {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}
@@ -1632,7 +1608,7 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
 		}
 		links[i].dpcm_playback = 1;
 		if (!drv_data->amp_codec_id) {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}
@@ -1660,7 +1636,7 @@ int acp_legacy_dai_links_create(struct snd_soc_card *card)
 			links[i].codecs = dmic_codec;
 			links[i].num_codecs = ARRAY_SIZE(dmic_codec);
 		} else {
-			/* Use dummy codec if codec id not specified */
+			 
 			links[i].codecs = &asoc_dummy_dlc;
 			links[i].num_codecs = 1;
 		}

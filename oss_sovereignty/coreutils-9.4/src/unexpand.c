@@ -1,37 +1,4 @@
-/* unexpand - convert blanks to tabs
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* By default, convert only maximal strings of initial blanks and tabs
-   into tabs.
-   Preserves backspace characters in the output; they decrement the
-   column count for tab calculations.
-   The default action is equivalent to -8.
-
-   Options:
-   --tabs=tab1[,tab2[,...]]
-   -t tab1[,tab2[,...]]
-   -tab1[,tab2[,...]]	If only one tab stop is given, set the tabs tab1
-                        columns apart instead of the default 8.  Otherwise,
-                        set the tabs at columns tab1, tab2, etc. (numbered from
-                        0); preserve any blanks beyond the tab stops given.
-   --all
-   -a			Use tabs wherever they would replace 2 or more blanks,
-                        not just at the beginnings of lines.
-
-   David MacKenzie <djm@gnu.ai.mit.edu> */
+ 
 
 #include <config.h>
 
@@ -41,15 +8,14 @@
 #include "system.h"
 #include "expand-common.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "unexpand"
 
 #define AUTHORS proper_name ("David MacKenzie")
 
 
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   CONVERT_FIRST_ONLY_OPTION = CHAR_MAX + 1

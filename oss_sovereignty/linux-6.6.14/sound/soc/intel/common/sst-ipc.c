@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel SST generic IPC Support
- *
- * Copyright (C) 2015, Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -23,12 +19,12 @@
 #include "sst-dsp-priv.h"
 #include "sst-ipc.h"
 
-/* IPC message timeout (msecs) */
+ 
 #define IPC_TIMEOUT_MSECS	300
 
 #define IPC_EMPTY_LIST_SIZE	8
 
-/* locks held by caller */
+ 
 static struct ipc_message *msg_get_empty(struct sst_generic_ipc *ipc)
 {
 	struct ipc_message *msg = NULL;
@@ -48,7 +44,7 @@ static int tx_wait_done(struct sst_generic_ipc *ipc,
 	unsigned long flags;
 	int ret;
 
-	/* wait for DSP completion (in all cases atm inc pending) */
+	 
 	ret = wait_event_timeout(msg->waitq, msg->complete,
 		msecs_to_jiffies(IPC_TIMEOUT_MSECS));
 
@@ -61,7 +57,7 @@ static int tx_wait_done(struct sst_generic_ipc *ipc,
 		ret = -ETIMEDOUT;
 	} else {
 
-		/* copy the data returned from DSP */
+		 
 		if (reply) {
 			reply->header = msg->rx.header;
 			if (reply->data)
@@ -158,10 +154,7 @@ static void ipc_tx_msgs(struct work_struct *work)
 	spin_lock_irq(&ipc->dsp->spinlock);
 
 	while (!list_empty(&ipc->tx_list) && !ipc->pending) {
-		/* if the DSP is busy, we will TX messages after IRQ.
-		 * also postpone if we are in the middle of processing
-		 * completion irq
-		 */
+		 
 		if (ipc->ops.is_dsp_busy && ipc->ops.is_dsp_busy(ipc->dsp)) {
 			dev_dbg(ipc->dev, "ipc_tx_msgs dsp busy\n");
 			break;
@@ -182,11 +175,7 @@ int sst_ipc_tx_message_wait(struct sst_generic_ipc *ipc,
 {
 	int ret;
 
-	/*
-	 * DSP maybe in lower power active state, so
-	 * check if the DSP supports DSP lp On method
-	 * if so invoke that before sending IPC
-	 */
+	 
 	if (ipc->ops.check_dsp_lp_on)
 		if (ipc->ops.check_dsp_lp_on(ipc->dsp, true))
 			return -EIO;
@@ -241,7 +230,7 @@ struct ipc_message *sst_ipc_reply_find_msg(struct sst_generic_ipc *ipc,
 }
 EXPORT_SYMBOL_GPL(sst_ipc_reply_find_msg);
 
-/* locks held by caller */
+ 
 void sst_ipc_tx_msg_reply_complete(struct sst_generic_ipc *ipc,
 	struct ipc_message *msg)
 {
@@ -288,7 +277,7 @@ void sst_ipc_fini(struct sst_generic_ipc *ipc)
 }
 EXPORT_SYMBOL_GPL(sst_ipc_fini);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Jin Yao");
 MODULE_DESCRIPTION("Intel SST IPC generic");
 MODULE_LICENSE("GPL v2");

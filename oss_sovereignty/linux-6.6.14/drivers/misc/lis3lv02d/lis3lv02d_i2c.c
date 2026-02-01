@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/hwmon/lis3lv02d_i2c.c
- *
- * Implements I2C interface for lis3lv02d (STMicroelectronics) accelerometer.
- * Driver is based on corresponding SPI driver written by Daniel Mack
- * (lis3lv02d_spi.c (C) 2009 Daniel Mack <daniel@caiaq.de> ).
- *
- * Copyright (C) 2009 Nokia Corporation and/or its subsidiary(-ies).
- *
- * Contact: Samu Onkalo <samu.p.onkalo@nokia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -37,7 +27,7 @@ static int lis3_reg_ctrl(struct lis3lv02d *lis3, bool state)
 	} else {
 		ret = regulator_bulk_enable(ARRAY_SIZE(lis3->regulators),
 					lis3->regulators);
-		/* Chip needs time to wakeup. Not mentioned in datasheet */
+		 
 		usleep_range(10000, 20000);
 	}
 	return ret;
@@ -60,7 +50,7 @@ static inline s32 lis3_i2c_blockread(struct lis3lv02d *lis3, int reg, int len,
 				u8 *v)
 {
 	struct i2c_client *c = lis3->bus_priv;
-	reg |= (1 << 7); /* 7th bit enables address auto incrementation */
+	reg |= (1 << 7);  
 	return i2c_smbus_read_i2c_block_data(c, reg, len, v);
 }
 
@@ -75,7 +65,7 @@ static int lis3_i2c_init(struct lis3lv02d *lis3)
 	if (reg != lis3->whoami)
 		printk(KERN_ERR "lis3: power on failure\n");
 
-	/* power up the device */
+	 
 	ret = lis3->read(lis3, CTRL_REG1, &reg);
 	if (ret < 0)
 		return ret;
@@ -88,7 +78,7 @@ static int lis3_i2c_init(struct lis3lv02d *lis3)
 	return lis3->write(lis3, CTRL_REG1, reg);
 }
 
-/* Default axis mapping but it can be overwritten by platform data */
+ 
 static union axis_conversion lis3lv02d_axis_map =
 	{ .as_array = { LIS3_DEV_X, LIS3_DEV_Y, LIS3_DEV_Z } };
 
@@ -156,7 +146,7 @@ static int lis3lv02d_i2c_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, &lis3_dev);
 
-	/* Provide power over the init call */
+	 
 	lis3_reg_ctrl(&lis3_dev, LIS3_REG_ON);
 
 	ret = lis3lv02d_init_device(&lis3_dev);
@@ -207,18 +197,14 @@ static int lis3lv02d_i2c_resume(struct device *dev)
 	struct i2c_client *client = to_i2c_client(dev);
 	struct lis3lv02d *lis3 = i2c_get_clientdata(client);
 
-	/*
-	 * pm_runtime documentation says that devices should always
-	 * be powered on at resume. Pm_runtime turns them off after system
-	 * wide resume is complete.
-	 */
+	 
 	if (!lis3->pdata || !lis3->pdata->wakeup_flags ||
 		pm_runtime_suspended(dev))
 		lis3lv02d_poweron(lis3);
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int lis3_i2c_runtime_suspend(struct device *dev)
@@ -238,7 +224,7 @@ static int lis3_i2c_runtime_resume(struct device *dev)
 	lis3lv02d_poweron(lis3);
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct i2c_device_id lis3lv02d_id[] = {
 	{"lis3lv02d", LIS3LV02D},

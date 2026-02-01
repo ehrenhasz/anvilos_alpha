@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L IRQC Driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation.
- *
- * Author: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -265,13 +259,7 @@ static int rzg2l_irqc_alloc(struct irq_domain *domain, unsigned int virq,
 	if (ret)
 		return ret;
 
-	/*
-	 * For TINT interrupts ie where pinctrl driver is child of irqc domain
-	 * the hwirq and TINT are encoded in fwspec->param[0].
-	 * hwirq for TINT range from 9-40, hwirq is embedded 0-15 bits and TINT
-	 * from 16-31 bits. TINT from the pinctrl driver needs to be programmed
-	 * in IRQC registers to enable a given gpio pin as interrupt.
-	 */
+	 
 	if (hwirq > IRQC_IRQ_COUNT) {
 		tint = TINT_EXTRACT_GPIOINT(hwirq);
 		hwirq = TINT_EXTRACT_HWIRQ(hwirq);

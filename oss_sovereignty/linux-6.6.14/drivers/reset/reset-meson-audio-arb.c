@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -124,7 +124,7 @@ static int meson_audio_arb_remove(struct platform_device *pdev)
 {
 	struct meson_audio_arb_data *arb = platform_get_drvdata(pdev);
 
-	/* Disable all access */
+	 
 	spin_lock(&arb->lock);
 	writel(0, arb->regs);
 	spin_unlock(&arb->lock);
@@ -167,11 +167,7 @@ static int meson_audio_arb_probe(struct platform_device *pdev)
 	arb->rstc.of_node = dev->of_node;
 	arb->rstc.owner = THIS_MODULE;
 
-	/*
-	 * Enable general :
-	 * In the initial state, all memory interfaces are disabled
-	 * and the general bit is on
-	 */
+	 
 	ret = clk_prepare_enable(arb->clk);
 	if (ret) {
 		dev_err(dev, "failed to enable arb clock\n");
@@ -179,7 +175,7 @@ static int meson_audio_arb_probe(struct platform_device *pdev)
 	}
 	writel(BIT(ARB_GENERAL_BIT), arb->regs);
 
-	/* Register reset controller */
+	 
 	ret = devm_reset_controller_register(dev, &arb->rstc);
 	if (ret) {
 		dev_err(dev, "failed to register arb reset controller\n");

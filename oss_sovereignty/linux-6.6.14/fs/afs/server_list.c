@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS fileserver list management.
- *
- * Copyright (C) 2017 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -21,9 +17,7 @@ void afs_put_serverlist(struct afs_net *net, struct afs_server_list *slist)
 	}
 }
 
-/*
- * Build a server list from a VLDB record.
- */
+ 
 struct afs_server_list *afs_alloc_server_list(struct afs_cell *cell,
 					      struct key *key,
 					      struct afs_vldb_entry *vldb,
@@ -47,7 +41,7 @@ struct afs_server_list *afs_alloc_server_list(struct afs_cell *cell,
 	for (i = 0; i < AFS_MAXTYPES; i++)
 		slist->vids[i] = vldb->vid[i];
 
-	/* Make sure a records exists for each server in the list. */
+	 
 	for (i = 0; i < vldb->nr_servers; i++) {
 		if (!(vldb->fs_mask[i] & type_mask))
 			continue;
@@ -62,7 +56,7 @@ struct afs_server_list *afs_alloc_server_list(struct afs_cell *cell,
 			goto error_2;
 		}
 
-		/* Insertion-sort by UUID */
+		 
 		for (j = 0; j < slist->nr_servers; j++)
 			if (memcmp(&slist->servers[j].server->uuid,
 				   &server->uuid,
@@ -97,9 +91,7 @@ error:
 	return ERR_PTR(ret);
 }
 
-/*
- * Copy the annotations from an old server list to its potential replacement.
- */
+ 
 bool afs_annotate_server_list(struct afs_server_list *new,
 			      struct afs_server_list *old)
 {
@@ -116,7 +108,7 @@ bool afs_annotate_server_list(struct afs_server_list *new,
 	return false;
 
 changed:
-	/* Maintain the same preferred server as before if possible. */
+	 
 	cur = old->servers[old->preferred].server;
 	for (j = 0; j < new->nr_servers; j++) {
 		if (new->servers[j].server == cur) {

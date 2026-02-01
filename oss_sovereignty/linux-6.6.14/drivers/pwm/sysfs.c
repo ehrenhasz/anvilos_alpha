@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A simple sysfs interface for the generic PWM framework
- *
- * Copyright (C) 2013 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * Based on previous work by Lars Poeschel <poeschel@lemonage.de>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/mutex.h>
@@ -299,7 +293,7 @@ static int pwm_unexport_child(struct device *parent, struct pwm_device *pwm)
 	kobject_uevent_env(&parent->kobj, KOBJ_CHANGE, pwm_prop);
 	kfree(pwm_prop[0]);
 
-	/* for device_find_child() */
+	 
 	put_device(child);
 	device_unregister(child);
 	pwm_put(pwm);
@@ -373,7 +367,7 @@ static struct attribute *pwm_chip_attrs[] = {
 };
 ATTRIBUTE_GROUPS(pwm_chip);
 
-/* takes export->lock on success */
+ 
 static struct pwm_export *pwm_class_get_state(struct device *parent,
 					      struct pwm_device *pwm,
 					      struct pwm_state *state)
@@ -389,7 +383,7 @@ static struct pwm_export *pwm_class_get_state(struct device *parent,
 		return NULL;
 
 	export = child_to_pwm_export(child);
-	put_device(child);	/* for device_find_child() */
+	put_device(child);	 
 
 	mutex_lock(&export->lock);
 	pwm_get_state(pwm, state);
@@ -403,7 +397,7 @@ static int pwm_class_apply_state(struct pwm_export *export,
 {
 	int ret = pwm_apply_state(pwm, state);
 
-	/* release lock taken in pwm_class_get_state */
+	 
 	mutex_unlock(&export->lock);
 
 	return ret;
@@ -424,9 +418,9 @@ static int pwm_class_resume_npwm(struct device *parent, unsigned int npwm)
 		if (!export)
 			continue;
 
-		/* If pwmchip was not enabled before suspend, do nothing. */
+		 
 		if (!export->suspend.enabled) {
-			/* release lock taken in pwm_class_get_state */
+			 
 			mutex_unlock(&export->lock);
 			continue;
 		}
@@ -455,13 +449,10 @@ static int pwm_class_suspend(struct device *parent)
 		if (!export)
 			continue;
 
-		/*
-		 * If pwmchip was not enabled before suspend, save
-		 * state for resume time and do nothing else.
-		 */
+		 
 		export->suspend = state;
 		if (!state.enabled) {
-			/* release lock taken in pwm_class_get_state */
+			 
 			mutex_unlock(&export->lock);
 			continue;
 		}
@@ -469,10 +460,7 @@ static int pwm_class_suspend(struct device *parent)
 		state.enabled = false;
 		ret = pwm_class_apply_state(export, pwm, &state);
 		if (ret < 0) {
-			/*
-			 * roll back the PWM devices that were disabled by
-			 * this suspend function.
-			 */
+			 
 			pwm_class_resume_npwm(parent, i);
 			break;
 		}
@@ -505,10 +493,7 @@ void pwmchip_sysfs_export(struct pwm_chip *chip)
 {
 	struct device *parent;
 
-	/*
-	 * If device_create() fails the pwm_chip is still usable by
-	 * the kernel it's just not exported.
-	 */
+	 
 	parent = device_create(&pwm_class, chip->dev, MKDEV(0, 0), chip,
 			       "pwmchip%d", chip->base);
 	if (IS_ERR(parent)) {

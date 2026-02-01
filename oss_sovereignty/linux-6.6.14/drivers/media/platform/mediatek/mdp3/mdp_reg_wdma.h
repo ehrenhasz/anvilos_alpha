@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Ping-Hsun Wu <ping-hsun.wu@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MDP_REG_WDMA_H__
 #define __MDP_REG_WDMA_H__
@@ -25,7 +22,7 @@
 #define WDMA_DST_U_ADDR         0xf04
 #define WDMA_DST_V_ADDR         0xf08
 
-/* MASK */
+ 
 #define WDMA_EN_MASK                0x00000001
 #define WDMA_RST_MASK               0x00000001
 #define WDMA_CFG_MASK               0xff03bff0
@@ -44,4 +41,4 @@
 #define WDMA_DST_U_ADDR_MASK        0xffffffff
 #define WDMA_DST_V_ADDR_MASK        0xffffffff
 
-#endif  // __MDP_REG_WDMA_H__
+#endif  

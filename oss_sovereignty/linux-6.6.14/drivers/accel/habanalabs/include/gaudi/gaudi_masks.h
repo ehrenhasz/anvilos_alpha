@@ -1,16 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #ifndef GAUDI_MASKS_H_
 #define GAUDI_MASKS_H_
 
 #include "asic_reg/gaudi_regs.h"
 
-/* Useful masks for bits in various registers */
+ 
 #define PCI_DMA_QMAN_ENABLE		(\
 	(FIELD_PREP(DMA0_QM_GLBL_CFG0_PQF_EN_MASK, 0xF)) | \
 	(FIELD_PREP(DMA0_QM_GLBL_CFG0_CQF_EN_MASK, 0xF)) | \
@@ -115,7 +110,7 @@
 
 #define QMAN_CGM1_PWR_GATE_EN	(FIELD_PREP(DMA0_QM_CGM_CFG1_MASK_TH_MASK, 0xA))
 
-/* RESET registers configuration */
+ 
 #define CFG_RST_L_PSOC_MASK		BIT_MASK(0)
 #define CFG_RST_L_PCIE_MASK		BIT_MASK(1)
 #define CFG_RST_L_PCIE_IF_MASK		BIT_MASK(2)
@@ -279,7 +274,7 @@
 					(1 << UNIT_RST_L_TPC_6_SHIFT) | \
 					(1 << UNIT_RST_L_TPC_7_SHIFT))
 
-/* CPU_CA53_CFG_ARM_RST_CONTROL */
+ 
 #define CPU_CA53_CFG_ARM_RST_CONTROL_NCPUPORESET_SHIFT               0
 #define CPU_CA53_CFG_ARM_RST_CONTROL_NCPUPORESET_MASK                0x3
 #define CPU_CA53_CFG_ARM_RST_CONTROL_NCORERESET_SHIFT                4
@@ -302,12 +297,12 @@
 			1 << CPU_CA53_CFG_ARM_RST_CONTROL_NL2RESET_SHIFT |\
 			1 << CPU_CA53_CFG_ARM_RST_CONTROL_NMBISTRESET_SHIFT)
 
-/* QM_IDLE_MASK is valid for all engines QM idle check */
+ 
 #define QM_IDLE_MASK	(DMA0_QM_GLBL_STS0_PQF_IDLE_MASK | \
 			DMA0_QM_GLBL_STS0_CQF_IDLE_MASK | \
 			DMA0_QM_GLBL_STS0_CP_IDLE_MASK)
 
-/* CGM_IDLE_MASK is valid for all engines CGM idle check */
+ 
 #define CGM_IDLE_MASK	DMA0_QM_CGM_STS_AGENT_IDLE_MASK
 
 #define TPC_IDLE_MASK	((1 << TPC0_CFG_STATUS_SCALAR_PIPE_EMPTY_SHIFT) | \
@@ -342,15 +337,15 @@ enum axi_id {
 	AXI_ID_MME,
 	AXI_ID_TPC,
 	AXI_ID_DMA,
-	AXI_ID_NIC,	/* Local NIC */
+	AXI_ID_NIC,	 
 	AXI_ID_PCI,
 	AXI_ID_CPU,
 	AXI_ID_PSOC,
 	AXI_ID_MMU,
-	AXI_ID_NIC_FT	/* Feed-Through NIC */
+	AXI_ID_NIC_FT	 
 };
 
-/* RAZWI initiator ID is built from the location in the chip and the AXI ID */
+ 
 
 #define RAZWI_INITIATOR_AXI_ID_SHIFT	20
 #define RAZWI_INITIATOR_AXI_ID_MASK	0xF
@@ -398,7 +393,7 @@ enum axi_id {
 #define PSOC_ETR_AXICTL_PROTCTRLBIT1_MASK	0x2
 #define PSOC_ETR_AXICTL_WRBURSTLEN_MASK		0xF00
 
-/* STLB_CACHE_INV */
+ 
 #define STLB_CACHE_INV_PRODUCER_INDEX_SHIFT                          0
 #define STLB_CACHE_INV_PRODUCER_INDEX_MASK                           0xFF
 #define STLB_CACHE_INV_INDEX_MASK_SHIFT                              8
@@ -413,7 +408,7 @@ enum axi_id {
 #define PCIE_WRAP_LBW_DRAIN_CFG_EN_SHIFT                             0
 #define PCIE_WRAP_HBW_DRAIN_CFG_EN_SHIFT                             0
 
-/* DMA_IF_HBM_CRED_EN */
+ 
 #define DMA_IF_HBM_CRED_EN_READ_CREDIT_EN_SHIFT                      0
 #define DMA_IF_HBM_CRED_EN_READ_CREDIT_EN_MASK                       0x1
 #define DMA_IF_HBM_CRED_EN_WRITE_CREDIT_EN_SHIFT                     1
@@ -430,11 +425,11 @@ enum axi_id {
 #define IF_RTR_CTRL_E2E_HBM_EN_VAL_SHIFT                             0
 #define IF_RTR_CTRL_E2E_PCI_EN_VAL_SHIFT                             0
 
-/* MMU_UP_PAGE_ERROR_CAPTURE */
+ 
 #define MMU_UP_PAGE_ERROR_CAPTURE_VA_49_32_MASK                      0x3FFFF
 #define MMU_UP_PAGE_ERROR_CAPTURE_ENTRY_VALID_MASK                   0x40000
 
-/* MMU_UP_ACCESS_ERROR_CAPTURE */
+ 
 #define MMU_UP_ACCESS_ERROR_CAPTURE_VA_49_32_MASK                    0x3FFFF
 #define MMU_UP_ACCESS_ERROR_CAPTURE_ENTRY_VALID_MASK                 0x40000
 
@@ -467,4 +462,4 @@ enum axi_id {
 #define TPC0_QM_CP_STS_0_FENCE_IN_PROGRESS_SHIFT                     22
 #define TPC0_QM_CP_STS_0_FENCE_IN_PROGRESS_MASK                      0x400000
 
-#endif /* GAUDI_MASKS_H_ */
+#endif  

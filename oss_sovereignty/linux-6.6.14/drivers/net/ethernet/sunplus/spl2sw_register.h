@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright Sunplus Technology Co., Ltd.
- *       All rights reserved.
- */
+ 
+ 
 
 #ifndef __SPL2SW_REGISTER_H__
 #define __SPL2SW_REGISTER_H__
 
-/* Register L2SW */
+ 
 #define L2SW_SW_INT_STATUS_0		0x0
 #define L2SW_SW_INT_MASK_0		0x4
 #define L2SW_FL_CNTL_TH			0x8

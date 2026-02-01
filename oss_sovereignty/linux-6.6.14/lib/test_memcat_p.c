@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test cases for memcat_p() in lib/memcat_p.c
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/string.h>
@@ -14,9 +12,9 @@ struct test_struct {
 };
 
 #define MAGIC		0xf00ff00f
-/* Size of each of the NULL-terminated input arrays */
+ 
 #define INPUT_MAX	128
-/* Expected number of non-NULL elements in the output array */
+ 
 #define EXPECT		(INPUT_MAX * 2 - 2)
 
 static int __init test_memcat_p_init(void)
@@ -43,7 +41,7 @@ static int __init test_memcat_p_init(void)
 			goto err_free_elements;
 		}
 
-		/* lifted from test_sort.c */
+		 
 		r = (r * 725861) % 6599;
 		in0[i]->num = r;
 		in1[i]->num = -r;

@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2015 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 #include <errno.h>
 #include <unistd.h>
 
@@ -30,21 +6,21 @@
 #define CHAR_CTRL_C (3)
 #endif
 
-// If threading is enabled, configure the atomic section.
+
 #if MICROPY_PY_THREAD
 #define MICROPY_BEGIN_ATOMIC_SECTION() (mp_thread_unix_begin_atomic_section(), 0xffffffff)
 #define MICROPY_END_ATOMIC_SECTION(x) (void)x; mp_thread_unix_end_atomic_section()
 #endif
 
-// In lieu of a WFI(), slow down polling from being a tight loop.
-//
-// Note that we don't delay for the full TIMEOUT_MS, as execution
-// can't be woken from the delay.
+
+
+
+
 #define MICROPY_INTERNAL_WFE(TIMEOUT_MS) mp_hal_delay_us(500)
 
 void mp_hal_set_interrupt_char(char c);
 
-#define mp_hal_stdio_poll unused // this is not implemented, nor needed
+#define mp_hal_stdio_poll unused 
 void mp_hal_stdio_mode_raw(void);
 void mp_hal_stdio_mode_orig(void);
 
@@ -65,7 +41,7 @@ static inline int mp_hal_readline(vstr_t *vstr, const char *p) {
 
 #include "py/misc.h"
 #include "shared/readline/readline.h"
-// For built-in input() we need to wrap the standard readline() to enable raw mode
+
 #define mp_hal_readline mp_hal_readline
 static inline int mp_hal_readline(vstr_t *vstr, const char *p) {
     mp_hal_stdio_mode_raw();
@@ -81,7 +57,7 @@ static inline void mp_hal_delay_us(mp_uint_t us) {
 }
 #define mp_hal_ticks_cpu() 0
 
-// This macro is used to implement PEP 475 to retry specified syscalls on EINTR
+
 #define MP_HAL_RETRY_SYSCALL(ret, syscall, raise) { \
         for (;;) { \
             MP_THREAD_GIL_EXIT(); \

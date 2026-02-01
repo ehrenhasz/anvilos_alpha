@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	ALSA driver for ICEnsemble VT1724 (Envy24HT)
- *
- *	Lowlevel functions for Ego Sys Waveterminal 192M
- *
- *		Copyright (c) 2006 Guedez Clement <klem.dev@gmail.com>
- *		Some functions are taken from the Prodigy192 driver
- *		source
- */
+
+ 
 
 
 
@@ -24,14 +16,12 @@
 #include "stac946x.h"
 
 struct wtm_spec {
-	/* rate change needs atomic mute/unmute of all dacs*/
+	 
 	struct mutex mute_mutex;
 };
 
 
-/*
- *	2*ADC 6*DAC no1 ringbuffer r/w on i2c bus
- */
+ 
 static inline void stac9460_put(struct snd_ice1712 *ice, int reg,
 						unsigned char val)
 {
@@ -43,9 +33,7 @@ static inline unsigned char stac9460_get(struct snd_ice1712 *ice, int reg)
 	return snd_vt1724_read_i2c(ice, STAC9460_I2C_ADDR, reg);
 }
 
-/*
- *	2*ADC 2*DAC no2 ringbuffer r/w on i2c bus
- */
+ 
 static inline void stac9460_2_put(struct snd_ice1712 *ice, int reg,
 						unsigned char val)
 {
@@ -58,16 +46,14 @@ static inline unsigned char stac9460_2_get(struct snd_ice1712 *ice, int reg)
 }
 
 
-/*
- *	DAC mute control
- */
+ 
 static void stac9460_dac_mute_all(struct snd_ice1712 *ice, unsigned char mute,
 				unsigned short int *change_mask)
 {
 	unsigned char new, old;
 	int id, idx, change;
 
-	/*stac9460 1*/
+	 
 	for (id = 0; id < 7; id++) {
 		if (*change_mask & (0x01 << id)) {
 			if (id == 0)
@@ -86,7 +72,7 @@ static void stac9460_dac_mute_all(struct snd_ice1712 *ice, unsigned char mute,
 		}
 	}
 
-	/*stac9460 2*/
+	 
 	for (id = 0; id < 3; id++) {
 		if (*change_mask & (0x01 << (id + 7))) {
 			if (id == 0)
@@ -175,16 +161,14 @@ static int stac9460_dac_mute_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/*
- * 	DAC volume attenuation mixer control
- */
+ 
 static int stac9460_dac_vol_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 1;
-	uinfo->value.integer.min = 0;			/* mute */
-	uinfo->value.integer.max = 0x7f;		/* 0dB */
+	uinfo->value.integer.min = 0;			 
+	uinfo->value.integer.max = 0x7f;		 
 	return 0;
 }
 
@@ -250,9 +234,7 @@ static int stac9460_dac_vol_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/*
- * ADC mute control
- */
+ 
 #define stac9460_adc_mute_info		snd_ctl_boolean_stereo_info
 
 static int stac9460_adc_mute_get(struct snd_kcontrol *kcontrol,
@@ -310,16 +292,14 @@ static int stac9460_adc_mute_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/*
- *ADC gain mixer control
- */
+ 
 static int stac9460_adc_vol_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
 	uinfo->type = SNDRV_CTL_ELEM_TYPE_INTEGER;
 	uinfo->count = 2;
-	uinfo->value.integer.min = 0;		/* 0dB */
-	uinfo->value.integer.max = 0x0f;	/* 22.5dB */
+	uinfo->value.integer.min = 0;		 
+	uinfo->value.integer.max = 0x0f;	 
 	return 0;
 }
 
@@ -380,9 +360,7 @@ static int stac9460_adc_vol_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/*
- * MIC / LINE switch fonction
- */
+ 
 static int stac9460_mic_sw_info(struct snd_kcontrol *kcontrol,
 				struct snd_ctl_elem_info *uinfo)
 {
@@ -432,51 +410,46 @@ static int stac9460_mic_sw_put(struct snd_kcontrol *kcontrol,
 }
 
 
-/*
- * Handler for setting correct codec rate - called when rate change is detected
- */
+ 
 static void stac9460_set_rate_val(struct snd_ice1712 *ice, unsigned int rate)
 {
 	unsigned char old, new;
 	unsigned short int changed;
 	struct wtm_spec *spec = ice->spec;
 
-	if (rate == 0)  /* no hint - S/PDIF input is master, simply return */
+	if (rate == 0)   
 		return;
 	else if (rate <= 48000)
-		new = 0x08;     /* 256x, base rate mode */
+		new = 0x08;      
 	else if (rate <= 96000)
-		new = 0x11;     /* 256x, mid rate mode */
+		new = 0x11;      
 	else
-		new = 0x12;     /* 128x, high rate mode */
+		new = 0x12;      
 
 	old = stac9460_get(ice, STAC946X_MASTER_CLOCKING);
 	if (old == new)
 		return;
-	/* change detected, setting master clock, muting first */
-	/* due to possible conflicts with mute controls - mutexing */
+	 
+	 
 	mutex_lock(&spec->mute_mutex);
-	/* we have to remember current mute status for each DAC */
+	 
 	changed = 0xFFFF;
 	stac9460_dac_mute_all(ice, 0, &changed);
-	/*printk(KERN_DEBUG "Rate change: %d, new MC: 0x%02x\n", rate, new);*/
+	 
 	stac9460_put(ice, STAC946X_MASTER_CLOCKING, new);
 	stac9460_2_put(ice, STAC946X_MASTER_CLOCKING, new);
 	udelay(10);
-	/* unmuting - only originally unmuted dacs -
-	* i.e. those changed when muting */
+	 
 	stac9460_dac_mute_all(ice, 1, &changed);
 	mutex_unlock(&spec->mute_mutex);
 }
 
 
-/*Limits value in dB for fader*/
+ 
 static const DECLARE_TLV_DB_SCALE(db_scale_dac, -19125, 75, 0);
 static const DECLARE_TLV_DB_SCALE(db_scale_adc, 0, 150, 0);
 
-/*
- * Control tabs
- */
+ 
 static const struct snd_kcontrol_new stac9640_controls[] = {
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_MIXER,
@@ -550,7 +523,7 @@ static const struct snd_kcontrol_new stac9640_controls[] = {
 
 
 
-/*INIT*/
+ 
 static int wtm_add_controls(struct snd_ice1712 *ice)
 {
 	unsigned int i;
@@ -575,12 +548,12 @@ static int wtm_init(struct snd_ice1712 *ice)
 	const unsigned short *p;
 	struct wtm_spec *spec;
 
-	/*WTM 192M*/
+	 
 	ice->num_total_dacs = 8;
 	ice->num_total_adcs = 4;
 	ice->force_rdma1 = 1;
 
-	/*init mutex for dac mute conflict*/
+	 
 	spec = kzalloc(sizeof(*spec), GFP_KERNEL);
 	if (!spec)
 		return -ENOMEM;
@@ -588,7 +561,7 @@ static int wtm_init(struct snd_ice1712 *ice)
 	mutex_init(&spec->mute_mutex);
 
 
-	/*initialize codec*/
+	 
 	p = stac_inits_wtm;
 	for (; *p != (unsigned short)-1; p += 2) {
 		stac9460_put(ice, p[0], p[1]);
@@ -600,11 +573,10 @@ static int wtm_init(struct snd_ice1712 *ice)
 
 
 static const unsigned char wtm_eeprom[] = {
-	[ICE_EEP2_SYSCONF]      = 0x67, /*SYSCONF: clock 192KHz, mpu401,
-							4ADC, 8DAC */
-	[ICE_EEP2_ACLINK]       = 0x80, /* ACLINK : I2S */
-	[ICE_EEP2_I2S]          = 0xf8, /* I2S: vol; 96k, 24bit, 192k */
-	[ICE_EEP2_SPDIF]        = 0xc1, /*SPDIF: out-en, spidf ext out*/
+	[ICE_EEP2_SYSCONF]      = 0x67,  
+	[ICE_EEP2_ACLINK]       = 0x80,  
+	[ICE_EEP2_I2S]          = 0xf8,  
+	[ICE_EEP2_SPDIF]        = 0xc1,  
 	[ICE_EEP2_GPIO_DIR]     = 0x9f,
 	[ICE_EEP2_GPIO_DIR1]    = 0xff,
 	[ICE_EEP2_GPIO_DIR2]    = 0x7f,
@@ -617,7 +589,7 @@ static const unsigned char wtm_eeprom[] = {
 };
 
 
-/*entry point*/
+ 
 struct snd_ice1712_card_info snd_vt1724_wtm_cards[] = {
 	{
 		.subvendor = VT1724_SUBDEVICE_WTM,
@@ -628,5 +600,5 @@ struct snd_ice1712_card_info snd_vt1724_wtm_cards[] = {
 		.eeprom_size = sizeof(wtm_eeprom),
 		.eeprom_data = wtm_eeprom,
 	},
-	{} /*terminator*/
+	{}  
 };

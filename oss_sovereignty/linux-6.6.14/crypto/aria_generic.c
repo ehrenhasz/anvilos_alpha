@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * ARIA Cipher Algorithm.
- *
- * Documentation of ARIA can be found in RFC 5794.
- * Copyright (c) 2022 Taehee Yoo <ap420073@gmail.com>
- *
- * Information for ARIA
- *     http://210.104.33.10/ARIA/index-e.html (English)
- *     http://seed.kisa.or.kr/ (Korean)
- *
- * Public domain version is distributed above.
- */
+
+ 
 
 #include <crypto/aria.h>
 

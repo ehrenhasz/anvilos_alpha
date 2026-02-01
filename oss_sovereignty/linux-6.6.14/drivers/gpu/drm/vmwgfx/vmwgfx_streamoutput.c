@@ -1,30 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright © 2018-2023 VMware, Inc., Palo Alto, CA., USA
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_binding.h"
 #include "vmwgfx_bo.h"
@@ -33,16 +8,7 @@
 
 #include <drm/ttm/ttm_placement.h>
 
-/**
- * struct vmw_dx_streamoutput - Streamoutput resource metadata.
- * @res: Base resource struct.
- * @ctx: Non-refcounted context to which @res belong.
- * @cotable: Refcounted cotable holding this Streamoutput.
- * @cotable_head: List head for cotable-so_res list.
- * @id: User-space provided identifier.
- * @size: User-space provided mob size.
- * @committed: Whether streamoutput is actually created or pending creation.
- */
+ 
 struct vmw_dx_streamoutput {
 	struct vmw_resource res;
 	struct vmw_resource *ctx;
@@ -69,7 +35,7 @@ static const struct vmw_res_func vmw_dx_streamoutput_func = {
 	.domain = VMW_BO_DOMAIN_MOB,
 	.busy_domain = VMW_BO_DOMAIN_MOB,
 	.create = vmw_dx_streamoutput_create,
-	.destroy = NULL, /* Command buffer managed resource. */
+	.destroy = NULL,  
 	.bind = vmw_dx_streamoutput_bind,
 	.unbind = vmw_dx_streamoutput_unbind,
 	.commit_notify = vmw_dx_streamoutput_commit_notify,
@@ -81,12 +47,7 @@ vmw_res_to_dx_streamoutput(struct vmw_resource *res)
 	return container_of(res, struct vmw_dx_streamoutput, res);
 }
 
-/**
- * vmw_dx_streamoutput_unscrub - Reattach the MOB to streamoutput.
- * @res: The streamoutput resource.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 static int vmw_dx_streamoutput_unscrub(struct vmw_resource *res)
 {
 	struct vmw_dx_streamoutput *so = vmw_res_to_dx_streamoutput(res);
@@ -152,12 +113,7 @@ static int vmw_dx_streamoutput_bind(struct vmw_resource *res,
 	return ret;
 }
 
-/**
- * vmw_dx_streamoutput_scrub - Unbind the MOB from streamoutput.
- * @res: The streamoutput resource.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 static int vmw_dx_streamoutput_scrub(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -237,13 +193,7 @@ static void vmw_dx_streamoutput_commit_notify(struct vmw_resource *res,
 	}
 }
 
-/**
- * vmw_dx_streamoutput_lookup - Do a streamoutput resource lookup by user key.
- * @man: Command buffer managed resource manager for current context.
- * @user_key: User-space identifier for lookup.
- *
- * Return: Valid refcounted vmw_resource on success, error pointer on failure.
- */
+ 
 struct vmw_resource *
 vmw_dx_streamoutput_lookup(struct vmw_cmdbuf_res_manager *man,
 			   u32 user_key)
@@ -262,19 +212,11 @@ static void vmw_dx_streamoutput_res_free(struct vmw_resource *res)
 
 static void vmw_dx_streamoutput_hw_destroy(struct vmw_resource *res)
 {
-	/* Destroyed by user-space cmd buf or as part of context takedown. */
+	 
 	res->id = -1;
 }
 
-/**
- * vmw_dx_streamoutput_add - Add a streamoutput as a cmd buf managed resource.
- * @man: Command buffer managed resource manager for current context.
- * @ctx: Pointer to context resource.
- * @user_key: The identifier for this streamoutput.
- * @list: The list of staged command buffer managed resources.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int vmw_dx_streamoutput_add(struct vmw_cmdbuf_res_manager *man,
 			    struct vmw_resource *ctx, u32 user_key,
 			    struct list_head *list)
@@ -316,11 +258,7 @@ out_resource_init:
 	return ret;
 }
 
-/**
- * vmw_dx_streamoutput_set_size - Sets streamoutput mob size in res struct.
- * @res: The streamoutput res for which need to set size.
- * @size: The size provided by user-space to set.
- */
+ 
 void vmw_dx_streamoutput_set_size(struct vmw_resource *res, u32 size)
 {
 	struct vmw_dx_streamoutput *so = vmw_res_to_dx_streamoutput(res);
@@ -328,14 +266,7 @@ void vmw_dx_streamoutput_set_size(struct vmw_resource *res, u32 size)
 	so->size = size;
 }
 
-/**
- * vmw_dx_streamoutput_remove - Stage streamoutput for removal.
- * @man: Command buffer managed resource manager for current context.
- * @user_key: The identifier for this streamoutput.
- * @list: The list of staged command buffer managed resources.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int vmw_dx_streamoutput_remove(struct vmw_cmdbuf_res_manager *man,
 			       u32 user_key,
 			       struct list_head *list)
@@ -346,12 +277,7 @@ int vmw_dx_streamoutput_remove(struct vmw_cmdbuf_res_manager *man,
 				     (u32)user_key, list, &r);
 }
 
-/**
- * vmw_dx_streamoutput_cotable_list_scrub - cotable unbind_func callback.
- * @dev_priv: Device private.
- * @list: The list of cotable resources.
- * @readback: Whether the call was part of a readback unbind.
- */
+ 
 void vmw_dx_streamoutput_cotable_list_scrub(struct vmw_private *dev_priv,
 					    struct list_head *list,
 					    bool readback)

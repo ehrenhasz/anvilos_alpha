@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include "main.h"
 #include "sec.h"
@@ -8,10 +7,7 @@
 
 int rtw_sec_get_free_cam(struct rtw_sec_desc *sec)
 {
-	/* if default key search is enabled, the first 4 cam entries
-	 * are used to direct map to group key with its key->key_idx, so
-	 * driver should use cam entries after 4 to install pairwise key
-	 */
+	 
 	if (sec->default_key_search)
 		return find_next_zero_bit(sec->cam_map, RTW_MAX_SEC_CAM_NUM,
 					  RTW_SEC_DEFAULT_KEY_NUM);
@@ -127,7 +123,7 @@ void rtw_sec_enable_sec_engine(struct rtw_dev *rtwdev)
 	u16 ctrl_reg;
 	u16 sec_config;
 
-	/* default use default key search for now */
+	 
 	sec->default_key_search = true;
 
 	ctrl_reg = rtw_read16(rtwdev, REG_CR);

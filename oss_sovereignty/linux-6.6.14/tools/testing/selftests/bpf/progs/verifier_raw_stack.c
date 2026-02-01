@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/raw_stack.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -17,7 +17,7 @@ __naked void stack_no_skb_load_bytes(void)
 	r6 += -8;					\
 	r3 = r6;					\
 	r4 = 8;						\
-	/* Call to skb_load_bytes() omitted. */		\
+	 		\
 	r0 = *(u64*)(r6 + 0);				\
 	exit;						\
 "	::: __clobber_all);

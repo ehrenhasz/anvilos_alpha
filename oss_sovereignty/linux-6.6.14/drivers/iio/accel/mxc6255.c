@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MXC6255 - MEMSIC orientation sensing accelerometer
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * IIO driver for MXC6255 (7-bit I2C slave address 0x15).
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -25,15 +19,7 @@
 
 #define MXC6255_CHIP_ID			0x05
 
-/*
- * MXC6255 has only one measurement range: +/- 2G.
- * The acceleration output is an 8-bit value.
- *
- * Scale is calculated as follows:
- * (2 + 2) * 9.80665 / (2^8 - 1) = 0.153829
- *
- * Scale value for +/- 2G measurement range
- */
+ 
 #define MXC6255_SCALE			153829
 
 enum mxc6255_axis {

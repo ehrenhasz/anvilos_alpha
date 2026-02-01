@@ -1,35 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Industrial I/O driver for Microchip digital potentiometers
- *
- * Copyright (c) 2016 Slawomir Stepien
- * Based on: Peter Rosin's code from mcp4531.c
- *
- * Datasheet: https://ww1.microchip.com/downloads/en/DeviceDoc/22060b.pdf
- *
- * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)
- * mcp4131	1	129		5, 10, 50, 100
- * mcp4132	1	129		5, 10, 50, 100
- * mcp4141	1	129		5, 10, 50, 100
- * mcp4142	1	129		5, 10, 50, 100
- * mcp4151	1	257		5, 10, 50, 100
- * mcp4152	1	257		5, 10, 50, 100
- * mcp4161	1	257		5, 10, 50, 100
- * mcp4162	1	257		5, 10, 50, 100
- * mcp4231	2	129		5, 10, 50, 100
- * mcp4232	2	129		5, 10, 50, 100
- * mcp4241	2	129		5, 10, 50, 100
- * mcp4242	2	129		5, 10, 50, 100
- * mcp4251	2	257		5, 10, 50, 100
- * mcp4252	2	257		5, 10, 50, 100
- * mcp4261	2	257		5, 10, 50, 100
- * mcp4262	2	257		5, 10, 50, 100
- */
 
-/*
- * TODO:
- * 1. Write wiper setting to EEPROM for EEPROM capable models.
- */
+ 
+
+ 
 
 #include <linux/cache.h>
 #include <linux/err.h>
@@ -149,7 +121,7 @@ static const struct iio_chan_spec mcp4131_channels[] = {
 static int mcp4131_read(struct spi_device *spi, void *buf, size_t len)
 {
 	struct spi_transfer t = {
-		.tx_buf = buf, /* We need to send addr, cmd and 12 bits */
+		.tx_buf = buf,  
 		.rx_buf	= buf,
 		.len = len,
 	};
@@ -182,7 +154,7 @@ static int mcp4131_read_raw(struct iio_dev *indio_dev,
 			return err;
 		}
 
-		/* Error, bad address/command combination */
+		 
 		if (!MCP4131_CMDERR(data->buf)) {
 			mutex_unlock(&data->lock);
 			return -EIO;
@@ -224,7 +196,7 @@ static int mcp4131_write_raw(struct iio_dev *indio_dev,
 
 	data->buf[0] = address << MCP4131_WIPER_SHIFT;
 	data->buf[0] |= MCP4131_WRITE | (val >> 8);
-	data->buf[1] = val & 0xFF; /* 8 bits here */
+	data->buf[1] = val & 0xFF;  
 
 	err = spi_write(data->spi, data->buf, 2);
 	mutex_unlock(&data->lock);

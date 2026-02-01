@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 Instituto Nokia de Tecnologia
- *
- * Authors:
- *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
- *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
- *
- * Vendor commands implementation based on net/wireless/nl80211.c
- * which is:
- *
- * Copyright 2006-2010	Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
 
@@ -511,7 +499,7 @@ int nfc_genl_se_transaction(struct nfc_dev *dev, u8 se_idx,
 		    evt_transaction->params))
 		goto nla_put_failure;
 
-	/* evt_transaction is no more used */
+	 
 	devm_kfree(&dev->dev, evt_transaction);
 
 	genlmsg_end(msg, hdr);
@@ -522,7 +510,7 @@ int nfc_genl_se_transaction(struct nfc_dev *dev, u8 se_idx,
 
 nla_put_failure:
 free_msg:
-	/* evt_transaction is no more used */
+	 
 	devm_kfree(&dev->dev, evt_transaction);
 	nlmsg_free(msg);
 	return -EMSGSIZE;
@@ -1617,11 +1605,11 @@ put_dev:
 	return err;
 }
 
-/* message building helper */
+ 
 static inline void *nfc_hdr_put(struct sk_buff *skb, u32 portid, u32 seq,
 				int flags, u8 cmd)
 {
-	/* since there is no private header just add the generic one */
+	 
 	return genlmsg_put(skb, portid, seq, &nfc_genl_family, flags, cmd);
 }
 
@@ -1681,7 +1669,7 @@ int nfc_vendor_cmd_reply(struct sk_buff *skb)
 	struct nfc_dev *dev = ((void **)skb->cb)[0];
 	void *hdr = ((void **)skb->cb)[1];
 
-	/* clear CB data for netlink core to own from now on */
+	 
 	memset(skb->cb, 0, sizeof(skb->cb));
 
 	if (WARN_ON(!dev->cur_cmd_info)) {
@@ -1902,11 +1890,7 @@ static struct notifier_block nl_notifier = {
 	.notifier_call  = nfc_genl_rcv_nl_event,
 };
 
-/**
- * nfc_genl_init() - Initialize netlink interface
- *
- * This initialization function registers the nfc netlink family.
- */
+ 
 int __init nfc_genl_init(void)
 {
 	int rc;
@@ -1920,11 +1904,7 @@ int __init nfc_genl_init(void)
 	return 0;
 }
 
-/**
- * nfc_genl_exit() - Deinitialize netlink interface
- *
- * This exit function unregisters the nfc netlink family.
- */
+ 
 void nfc_genl_exit(void)
 {
 	netlink_unregister_notifier(&nl_notifier);

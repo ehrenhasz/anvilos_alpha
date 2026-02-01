@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Owen Chen <owen.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -39,7 +36,7 @@ static const struct of_device_id of_match_clk_mt6765_img[] = {
 		.compatible = "mediatek,mt6765-imgsys",
 		.data = &img_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt6765_img);

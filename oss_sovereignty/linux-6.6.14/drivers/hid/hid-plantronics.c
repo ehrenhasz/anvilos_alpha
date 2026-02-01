@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Plantronics USB HID Driver
- *
- *  Copyright (c) 2014 JD Cole <jd.cole@plantronics.com>
- *  Copyright (c) 2015-2018 Terry Junge <terry.junge@plantronics.com>
- */
 
-/*
- */
+ 
+
+ 
 
 #include "hid-ids.h"
 
@@ -39,7 +33,7 @@
 
 #define PLT_QUIRK_DOUBLE_VOLUME_KEYS BIT(0)
 
-#define PLT_DOUBLE_KEY_TIMEOUT 5 /* ms */
+#define PLT_DOUBLE_KEY_TIMEOUT 5  
 
 struct plt_drv_data {
 	unsigned long device_type;
@@ -57,12 +51,12 @@ static int plantronics_input_mapping(struct hid_device *hdev,
 	struct plt_drv_data *drv_data = hid_get_drvdata(hdev);
 	unsigned long plt_type = drv_data->device_type;
 
-	/* special case for PTT products */
+	 
 	if (field->application == HID_GD_JOYSTICK)
 		goto defaulted;
 
-	/* handle volume up/down mapping */
-	/* non-standard types or multi-HID interfaces - plt_type is PID */
+	 
+	 
 	if (!(plt_type & HID_USAGE_PAGE)) {
 		switch (plt_type) {
 		case PLT_DA60:
@@ -74,15 +68,15 @@ static int plantronics_input_mapping(struct hid_device *hdev,
 				goto defaulted;
 		}
 	}
-	/* handle standard types - plt_type is 0xffa0uuuu or 0xffa2uuuu */
-	/* 'basic telephony compliant' - allow default consumer page map */
+	 
+	 
 	else if ((plt_type & HID_USAGE) >= PLT_BASIC_TELEPHONY &&
 		 (plt_type & HID_USAGE) != PLT_BASIC_EXCEPTION) {
 		if (PLT_ALLOW_CONSUMER)
 			goto defaulted;
 	}
-	/* not 'basic telephony' - apply legacy mapping */
-	/* only map if the field is in the device's primary vendor page */
+	 
+	 
 	else if (!((field->application ^ plt_type) & HID_USAGE_PAGE)) {
 		switch (usage->hid) {
 		case PLT1_VOL_UP:
@@ -96,11 +90,7 @@ static int plantronics_input_mapping(struct hid_device *hdev,
 		}
 	}
 
-/*
- * Future mapping of call control or other usages,
- * if and when keys are defined would go here
- * otherwise, ignore everything else that was not mapped
- */
+ 
 
 ignored:
 	return -1;
@@ -125,15 +115,15 @@ static int plantronics_event(struct hid_device *hdev, struct hid_field *field,
 	if (drv_data->quirks & PLT_QUIRK_DOUBLE_VOLUME_KEYS) {
 		unsigned long prev_ts, cur_ts;
 
-		/* Usages are filtered in plantronics_usages. */
+		 
 
-		if (!value) /* Handle key presses only. */
+		if (!value)  
 			return 0;
 
 		prev_ts = drv_data->last_volume_key_ts;
 		cur_ts = jiffies;
 		if (jiffies_to_msecs(cur_ts - prev_ts) <= PLT_DOUBLE_KEY_TIMEOUT)
-			return 1; /* Ignore the repeated key. */
+			return 1;  
 
 		drv_data->last_volume_key_ts = cur_ts;
 	}
@@ -146,11 +136,11 @@ static unsigned long plantronics_device_type(struct hid_device *hdev)
 	unsigned i, col_page;
 	unsigned long plt_type = hdev->product;
 
-	/* multi-HID interfaces? - plt_type is PID */
+	 
 	if (plt_type >= PLT_BT300_MIN && plt_type <= PLT_BT300_MAX)
 		goto exit;
 
-	/* determine primary vendor page */
+	 
 	for (i = 0; i < hdev->maxcollection; i++) {
 		col_page = hdev->collection[i].usage & HID_USAGE_PAGE;
 		if (col_page == PLT_HID_2_0_PAGE) {

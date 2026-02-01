@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ddbridge-mci.c: Digital Devices microcode interface
- *
- * Copyright (C) 2017-2018 Digital Devices GmbH
- *                         Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- */
+
+ 
 
 #include "ddbridge.h"
 #include "ddbridge-io.h"
@@ -20,7 +14,7 @@ static int mci_reset(struct mci *state)
 	u32 timeout = 40;
 
 	ddblwritel(link, MCI_CONTROL_RESET, MCI_CONTROL);
-	ddblwritel(link, 0, MCI_CONTROL + 4); /* 1= no internal init */
+	ddblwritel(link, 0, MCI_CONTROL + 4);  
 	msleep(300);
 	ddblwritel(link, 0, MCI_CONTROL);
 

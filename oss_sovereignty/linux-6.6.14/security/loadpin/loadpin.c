@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Module and Firmware Pinning Security Module
- *
- * Copyright 2011-2016 Google Inc.
- *
- * Author: Kees Cook <keescook@chromium.org>
- */
+
+ 
 
 #define pr_fmt(fmt) "LoadPin: " fmt
 
@@ -16,7 +10,7 @@
 #include <linux/mount.h>
 #include <linux/blkdev.h>
 #include <linux/path.h>
-#include <linux/sched.h>	/* current */
+#include <linux/sched.h>	 
 #include <linux/string_helpers.h>
 #include <linux/dm-verity-loadpin.h>
 #include <uapi/linux/loadpin.h>
@@ -67,10 +61,7 @@ static struct ctl_table loadpin_sysctl_table[] = {
 
 static void set_sysctl(bool is_writable)
 {
-	/*
-	 * If load pinning is not enforced via a read-only block
-	 * device, allow sysctl to change modes for testing.
-	 */
+	 
 	if (is_writable)
 		loadpin_sysctl_table[0].extra1 = SYSCTL_ZERO;
 	else
@@ -94,10 +85,7 @@ static void report_writable(struct super_block *mnt_sb, bool writable)
 		pr_info("load pinning engaged.\n");
 }
 
-/*
- * This must be called after early kernel init, since then the rootdev
- * is available.
- */
+ 
 static bool sb_is_writable(struct super_block *mnt_sb)
 {
 	bool writable = true;
@@ -110,12 +98,7 @@ static bool sb_is_writable(struct super_block *mnt_sb)
 
 static void loadpin_sb_free_security(struct super_block *mnt_sb)
 {
-	/*
-	 * When unmounting the filesystem we were using for load
-	 * pinning, we acknowledge the superblock release, but make sure
-	 * no other modules or firmware can be loaded when we are in
-	 * enforcing mode. Otherwise, allow the root to be reestablished.
-	 */
+	 
 	if (!IS_ERR_OR_NULL(pinned_root) && mnt_sb == pinned_root) {
 		if (enforce) {
 			pinned_root = ERR_PTR(-EIO);
@@ -133,14 +116,14 @@ static int loadpin_check(struct file *file, enum kernel_read_file_id id)
 	bool first_root_pin = false;
 	bool load_root_writable;
 
-	/* If the file id is excluded, ignore the pinning. */
+	 
 	if ((unsigned int)id < ARRAY_SIZE(ignore_read_file_id) &&
 	    ignore_read_file_id[id]) {
 		report_load(origin, file, "pinning-excluded");
 		return 0;
 	}
 
-	/* This handles the older init_module API that has a NULL file. */
+	 
 	if (!file) {
 		if (!enforce) {
 			report_load(origin, NULL, "old-api-pinning-ignored");
@@ -154,13 +137,9 @@ static int loadpin_check(struct file *file, enum kernel_read_file_id id)
 	load_root = file->f_path.mnt->mnt_sb;
 	load_root_writable = sb_is_writable(load_root);
 
-	/* First loaded module/firmware defines the root for all others. */
+	 
 	spin_lock(&pinned_root_spinlock);
-	/*
-	 * pinned_root is only NULL at startup or when the pinned root has
-	 * been unmounted while we are not in enforcing mode. Otherwise, it
-	 * is either a valid reference, or an ERR_PTR.
-	 */
+	 
 	if (!pinned_root) {
 		pinned_root = load_root;
 		first_root_pin = true;
@@ -190,21 +169,13 @@ static int loadpin_check(struct file *file, enum kernel_read_file_id id)
 static int loadpin_read_file(struct file *file, enum kernel_read_file_id id,
 			     bool contents)
 {
-	/*
-	 * LoadPin only cares about the _origin_ of a file, not its
-	 * contents, so we can ignore the "are full contents available"
-	 * argument here.
-	 */
+	 
 	return loadpin_check(file, id);
 }
 
 static int loadpin_load_data(enum kernel_load_data_id id, bool contents)
 {
-	/*
-	 * LoadPin only cares about the _origin_ of a file, not its
-	 * contents, so a NULL file is passed, and we can ignore the
-	 * state of "contents".
-	 */
+	 
 	return loadpin_check(NULL, (enum kernel_read_file_id) id);
 }
 
@@ -219,11 +190,7 @@ static void __init parse_exclude(void)
 	int i, j;
 	char *cur;
 
-	/*
-	 * Make sure all the arrays stay within expected sizes. This
-	 * is slightly weird because kernel_read_file_str[] includes
-	 * READING_MAX_ID, which isn't actually meaningful here.
-	 */
+	 
 	BUILD_BUG_ON(ARRAY_SIZE(exclude_read_files) !=
 		     ARRAY_SIZE(ignore_read_file_id));
 	BUILD_BUG_ON(ARRAY_SIZE(kernel_read_file_str) <
@@ -241,10 +208,7 @@ static void __init parse_exclude(void)
 				pr_info("excluding: %s\n",
 					kernel_read_file_str[j]);
 				ignore_read_file_id[j] = 1;
-				/*
-				 * Can not break, because one read_file_str
-				 * may map to more than on read_file_id.
-				 */
+				 
 			}
 		}
 	}
@@ -285,7 +249,7 @@ static int read_trusted_verity_root_digests(unsigned int fd)
 	if (deny_reading_verity_digests)
 		return -EPERM;
 
-	/* The list of trusted root digests can only be set up once */
+	 
 	if (!list_empty(&dm_verity_loadpin_trusted_root_digests))
 		return -EPERM;
 
@@ -313,7 +277,7 @@ static int read_trusted_verity_root_digests(unsigned int fd)
 		struct dm_verity_loadpin_trusted_root_digest *trd;
 
 		if (d == data) {
-			/* first line, validate header */
+			 
 			if (strcmp(d, VERITY_DIGEST_FILE_HEADER)) {
 				rc = -EPROTO;
 				goto err;
@@ -360,7 +324,7 @@ static int read_trusted_verity_root_digests(unsigned int fd)
 err:
 	kfree(data);
 
-	/* any failure in loading/parsing invalidates the entire list */
+	 
 	{
 		struct dm_verity_loadpin_trusted_root_digest *trd, *tmp;
 
@@ -370,7 +334,7 @@ err:
 		}
 	}
 
-	/* disallow further attempts after reading a corrupt/invalid file */
+	 
 	deny_reading_verity_digests = true;
 
 	fdput(f);
@@ -378,7 +342,7 @@ err:
 	return rc;
 }
 
-/******************************** securityfs ********************************/
+ 
 
 static long dm_verity_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 {
@@ -402,14 +366,7 @@ static const struct file_operations loadpin_dm_verity_ops = {
 	.compat_ioctl = compat_ptr_ioctl,
 };
 
-/**
- * init_loadpin_securityfs - create the securityfs directory for LoadPin
- *
- * We can not put this method normally under the loadpin_init() code path since
- * the security subsystem gets initialized before the vfs caches.
- *
- * Returns 0 if the securityfs directory creation was successful.
- */
+ 
 static int __init init_loadpin_securityfs(void)
 {
 	struct dentry *loadpin_dir, *dentry;
@@ -434,9 +391,9 @@ static int __init init_loadpin_securityfs(void)
 
 fs_initcall(init_loadpin_securityfs);
 
-#endif /* CONFIG_SECURITY_LOADPIN_VERITY */
+#endif  
 
-/* Should not be mutable after boot, so not listed in sysfs (perm == 0). */
+ 
 module_param(enforce, int, 0);
 MODULE_PARM_DESC(enforce, "Enforce module/firmware pinning");
 module_param_array_named(exclude, exclude_read_files, charp, NULL, 0);

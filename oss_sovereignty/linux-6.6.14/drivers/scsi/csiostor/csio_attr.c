@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2012 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -47,14 +15,7 @@
 static void
 csio_vport_set_state(struct csio_lnode *ln);
 
-/*
- * csio_reg_rnode - Register a remote port with FC transport.
- * @rn: Rnode representing remote port.
- *
- * Call fc_remote_port_add() to register this remote port with FC transport.
- * If remote port is Initiator OR Target OR both, change the role appropriately.
- *
- */
+ 
 void
 csio_reg_rnode(struct csio_rnode *rn)
 {
@@ -109,14 +70,7 @@ update_role:
 		rn->nport_id, ids.roles);
 }
 
-/*
- * csio_unreg_rnode - Unregister a remote port with FC transport.
- * @rn: Rnode representing remote port.
- *
- * Call fc_remote_port_delete() to unregister this remote port with FC
- * transport.
- *
- */
+ 
 void
 csio_unreg_rnode(struct csio_rnode *rn)
 {
@@ -130,37 +84,26 @@ csio_unreg_rnode(struct csio_rnode *rn)
 	csio_ln_dbg(ln, "Remote port x%x un-registered\n", rn->nport_id);
 }
 
-/*
- * csio_lnode_async_event - Async events from local port.
- * @ln: lnode representing local port.
- *
- * Async events from local node that FC transport/SCSI ML
- * should be made aware of (Eg: RSCN).
- */
+ 
 void
 csio_lnode_async_event(struct csio_lnode *ln, enum csio_ln_fc_evt fc_evt)
 {
 	switch (fc_evt) {
 	case CSIO_LN_FC_RSCN:
-		/* Get payload of rscn from ln */
-		/* For each RSCN entry */
-			/*
-			 * fc_host_post_event(shost,
-			 *		      fc_get_event_number(),
-			 *		      FCH_EVT_RSCN,
-			 *		      rscn_entry);
-			 */
+		 
+		 
+			 
 		break;
 	case CSIO_LN_FC_LINKUP:
-		/* send fc_host_post_event */
-		/* set vport state */
+		 
+		 
 		if (csio_is_npiv_ln(ln))
 			csio_vport_set_state(ln);
 
 		break;
 	case CSIO_LN_FC_LINKDOWN:
-		/* send fc_host_post_event */
-		/* set vport state */
+		 
+		 
 		if (csio_is_npiv_ln(ln))
 			csio_vport_set_state(ln);
 
@@ -173,11 +116,7 @@ csio_lnode_async_event(struct csio_lnode *ln, enum csio_ln_fc_evt fc_evt)
 	}
 }
 
-/*
- * csio_fchost_attr_init - Initialize FC transport attributes
- * @ln: Lnode.
- *
- */
+ 
 void
 csio_fchost_attr_init(struct csio_lnode *ln)
 {
@@ -202,10 +141,7 @@ csio_fchost_attr_init(struct csio_lnode *ln)
 	fc_host_active_fc4s(shost)[7] = 1;
 }
 
-/*
- * csio_get_host_port_id - sysfs entries for nport_id is
- * populated/cached from this function
- */
+ 
 static void
 csio_get_host_port_id(struct Scsi_Host *shost)
 {
@@ -217,11 +153,7 @@ csio_get_host_port_id(struct Scsi_Host *shost)
 	spin_unlock_irq(&hw->lock);
 }
 
-/*
- * csio_get_port_type - Return FC local port type.
- * @shost: scsi host.
- *
- */
+ 
 static void
 csio_get_host_port_type(struct Scsi_Host *shost)
 {
@@ -236,11 +168,7 @@ csio_get_host_port_type(struct Scsi_Host *shost)
 	spin_unlock_irq(&hw->lock);
 }
 
-/*
- * csio_get_port_state - Return FC local port state.
- * @shost: scsi host.
- *
- */
+ 
 static void
 csio_get_host_port_state(struct Scsi_Host *shost)
 {
@@ -261,11 +189,7 @@ csio_get_host_port_state(struct Scsi_Host *shost)
 	spin_unlock_irq(&hw->lock);
 }
 
-/*
- * csio_get_host_speed - Return link speed to FC transport.
- * @shost: scsi host.
- *
- */
+ 
 static void
 csio_get_host_speed(struct Scsi_Host *shost)
 {
@@ -299,11 +223,7 @@ csio_get_host_speed(struct Scsi_Host *shost)
 	spin_unlock_irq(&hw->lock);
 }
 
-/*
- * csio_get_host_fabric_name - Return fabric name
- * @shost: scsi host.
- *
- */
+ 
 static void
 csio_get_host_fabric_name(struct Scsi_Host *shost)
 {
@@ -320,11 +240,7 @@ csio_get_host_fabric_name(struct Scsi_Host *shost)
 	spin_unlock_irq(&hw->lock);
 }
 
-/*
- * csio_get_host_speed - Return FC transport statistics.
- * @ln: Lnode.
- *
- */
+ 
 static struct fc_host_statistics *
 csio_get_stats(struct Scsi_Host *shost)
 {
@@ -360,7 +276,7 @@ csio_get_stats(struct Scsi_Host *shost)
 	fhs->fcp_input_megabytes +=  ln->stats.n_input_bytes >> 20;
 	fhs->fcp_output_megabytes +=  ln->stats.n_output_bytes >> 20;
 	fhs->link_failure_count = ln->stats.n_link_down;
-	/* Reset stats for the device */
+	 
 	seconds = jiffies_to_msecs(jiffies) - hw->stats.n_reset_start;
 	do_div(seconds, 1000);
 	fhs->seconds_since_last_reset = seconds;
@@ -368,14 +284,7 @@ csio_get_stats(struct Scsi_Host *shost)
 	return fhs;
 }
 
-/*
- * csio_set_rport_loss_tmo - Set the rport dev loss timeout
- * @rport: fc rport.
- * @timeout: new value for dev loss tmo.
- *
- * If timeout is non zero set the dev_loss_tmo to timeout, else set
- * dev_loss_tmo to one.
- */
+ 
 static void
 csio_set_rport_loss_tmo(struct fc_rport *rport, uint32_t timeout)
 {
@@ -392,7 +301,7 @@ csio_vport_set_state(struct csio_lnode *ln)
 	struct csio_lnode  *pln = ln->pln;
 	char state[16];
 
-	/* Set fc vport state based on phyiscal lnode */
+	 
 	csio_lnode_state_to_str(pln, state);
 	if (strcmp(state, "READY")) {
 		fc_vport_set_state(fc_vport, FC_VPORT_LINKDOWN);
@@ -404,7 +313,7 @@ csio_vport_set_state(struct csio_lnode *ln)
 		return;
 	}
 
-	/* Set fc vport state based on virtual lnode */
+	 
 	csio_lnode_state_to_str(ln, state);
 	if (strcmp(state, "READY")) {
 		fc_vport_set_state(fc_vport, FC_VPORT_LINKDOWN);
@@ -422,8 +331,8 @@ csio_fcoe_alloc_vnp(struct csio_hw *hw, struct csio_lnode *ln)
 	int ret = 0;
 	int retry = 0;
 
-	/* Issue VNP cmd to alloc vport */
-	/* Allocate Mbox request */
+	 
+	 
 	spin_lock_irq(&hw->lock);
 	mbp = mempool_alloc(hw->mb_mempool, GFP_ATOMIC);
 	if (!mbp) {
@@ -441,16 +350,12 @@ csio_fcoe_alloc_vnp(struct csio_hw *hw, struct csio_lnode *ln)
 				    csio_ln_wwnn(ln), csio_ln_wwpn(ln), NULL);
 
 	for (retry = 0; retry < 3; retry++) {
-		/* FW is expected to complete vnp cmd in immediate mode
-		 * without much delay.
-		 * Otherwise, there will be increase in IO latency since HW
-		 * lock is held till completion of vnp mbox cmd.
-		 */
+		 
 		ret = csio_mb_issue(hw, mbp);
 		if (ret != -EBUSY)
 			break;
 
-		/* Retry if mbox returns busy */
+		 
 		spin_unlock_irq(&hw->lock);
 		msleep(2000);
 		spin_lock_irq(&hw->lock);
@@ -461,7 +366,7 @@ csio_fcoe_alloc_vnp(struct csio_hw *hw, struct csio_lnode *ln)
 		goto out_free;
 	}
 
-	/* Process Mbox response of VNP command */
+	 
 	rsp = (struct fw_fcoe_vnp_cmd *)(mbp->mb);
 	if (FW_CMD_RETVAL_G(ntohl(rsp->alloc_to_len16)) != FW_SUCCESS) {
 		csio_ln_err(ln, "FCOE VNP ALLOC cmd returned 0x%x!\n",
@@ -502,8 +407,8 @@ csio_fcoe_free_vnp(struct csio_hw *hw, struct csio_lnode *ln)
 	int ret = 0;
 	int retry = 0;
 
-	/* Issue VNP cmd to free vport */
-	/* Allocate Mbox request */
+	 
+	 
 
 	spin_lock_irq(&hw->lock);
 	mbp = mempool_alloc(hw->mb_mempool, GFP_ATOMIC);
@@ -522,7 +427,7 @@ csio_fcoe_free_vnp(struct csio_hw *hw, struct csio_lnode *ln)
 		if (ret != -EBUSY)
 			break;
 
-		/* Retry if mbox returns busy */
+		 
 		spin_unlock_irq(&hw->lock);
 		msleep(2000);
 		spin_lock_irq(&hw->lock);
@@ -533,7 +438,7 @@ csio_fcoe_free_vnp(struct csio_hw *hw, struct csio_lnode *ln)
 		goto out_free;
 	}
 
-	/* Process Mbox response of VNP command */
+	 
 	rsp = (struct fw_fcoe_vnp_cmd *)(mbp->mb);
 	if (FW_CMD_RETVAL_G(ntohl(rsp->alloc_to_len16)) != FW_SUCCESS) {
 		csio_ln_err(ln, "FCOE VNP FREE cmd returned 0x%x!\n",
@@ -627,7 +532,7 @@ csio_vport_delete(struct fc_vport *fc_vport)
 		return 0;
 	}
 
-	/* Quiesce ios and send remove event to lnode */
+	 
 	scsi_block_requests(shost);
 	spin_lock_irq(&hw->lock);
 	csio_scsim_cleanup_io_lnode(csio_hw_to_scsim(hw), ln);
@@ -635,7 +540,7 @@ csio_vport_delete(struct fc_vport *fc_vport)
 	spin_unlock_irq(&hw->lock);
 	scsi_unblock_requests(shost);
 
-	/* Free vnp */
+	 
 	if (fc_vport->vport_state !=  FC_VPORT_DISABLED)
 		csio_fcoe_free_vnp(hw, ln);
 
@@ -650,9 +555,9 @@ csio_vport_disable(struct fc_vport *fc_vport, bool disable)
 	struct Scsi_Host *shost = csio_ln_to_shost(ln);
 	struct csio_hw *hw = csio_lnode_to_hw(ln);
 
-	/* disable vport */
+	 
 	if (disable) {
-		/* Quiesce ios and send stop event to lnode */
+		 
 		scsi_block_requests(shost);
 		spin_lock_irq(&hw->lock);
 		csio_scsim_cleanup_io_lnode(csio_hw_to_scsim(hw), ln);
@@ -660,13 +565,13 @@ csio_vport_disable(struct fc_vport *fc_vport, bool disable)
 		spin_unlock_irq(&hw->lock);
 		scsi_unblock_requests(shost);
 
-		/* Free vnp */
+		 
 		csio_fcoe_free_vnp(hw, ln);
 		fc_vport_set_state(fc_vport, FC_VPORT_DISABLED);
 		csio_ln_err(ln, "vport disabled\n");
 		return 0;
 	} else {
-		/* enable vport */
+		 
 		fc_vport_set_state(fc_vport, FC_VPORT_INITIALIZING);
 		if (csio_fcoe_alloc_vnp(hw, ln)) {
 			csio_ln_err(ln, "vport enabled failed.\n");
@@ -690,7 +595,7 @@ csio_dev_loss_tmo_callbk(struct fc_rport *rport)
 
 	spin_lock_irq(&hw->lock);
 
-	/* return if driver is being removed or same rnode comes back online */
+	 
 	if (csio_is_hw_removing(hw) || csio_is_rnode_ready(rn))
 		goto out;
 
@@ -699,10 +604,7 @@ csio_dev_loss_tmo_callbk(struct fc_rport *rport)
 
 	CSIO_INC_STATS(ln, n_dev_loss_tmo);
 
-	/*
-	 * enqueue devloss event to event worker thread to serialize all
-	 * rnode events.
-	 */
+	 
 	if (csio_enqueue_evt(hw, CSIO_EVT_DEV_LOSS, &rn, sizeof(rn))) {
 		CSIO_INC_STATS(hw, n_evt_drop);
 		goto out;
@@ -719,7 +621,7 @@ out:
 	spin_unlock_irq(&hw->lock);
 }
 
-/* FC transport functions template - Physical port */
+ 
 struct fc_function_template csio_fc_transport_funcs = {
 	.show_host_node_name = 1,
 	.show_host_port_name = 1,
@@ -763,7 +665,7 @@ struct fc_function_template csio_fc_transport_funcs = {
 	.vport_delete = csio_vport_delete,
 };
 
-/* FC transport functions template - Virtual  port */
+ 
 struct fc_function_template csio_fc_transport_vport_funcs = {
 	.show_host_node_name = 1,
 	.show_host_port_name = 1,

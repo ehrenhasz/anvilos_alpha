@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vMTRR implementation
- *
- * Copyright (C) 2006 Qumranet, Inc.
- * Copyright 2010 Red Hat, Inc. and/or its affiliates.
- * Copyright(C) 2015 Intel Corporation.
- *
- * Authors:
- *   Yaniv Kamay  <yaniv@qumranet.com>
- *   Avi Kivity   <avi@qumranet.com>
- *   Marcelo Tosatti <mtosatti@redhat.com>
- *   Paolo Bonzini <pbonzini@redhat.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/kvm_host.h>
@@ -27,7 +14,7 @@
 
 static bool is_mtrr_base_msr(unsigned int msr)
 {
-	/* MTRR base MSRs use even numbers, masks use odd numbers. */
+	 
 	return !(msr & 0x1);
 }
 
@@ -62,7 +49,7 @@ static bool msr_mtrr_valid(unsigned msr)
 
 static bool valid_mtrr_type(unsigned t)
 {
-	return t < 8 && (1 << t) & 0x73; /* 0, 1, 4, 5, 6 */
+	return t < 8 && (1 << t) & 0x73;  
 }
 
 static bool kvm_mtrr_valid(struct kvm_vcpu *vcpu, u32 msr, u64 data)
@@ -84,18 +71,18 @@ static bool kvm_mtrr_valid(struct kvm_vcpu *vcpu, u32 msr, u64 data)
 		return true;
 	}
 
-	/* variable MTRRs */
+	 
 	WARN_ON(!(msr >= MTRRphysBase_MSR(0) &&
 		  msr <= MTRRphysMask_MSR(KVM_NR_VAR_MTRR - 1)));
 
 	mask = kvm_vcpu_reserved_gpa_bits_raw(vcpu);
 	if ((msr & 1) == 0) {
-		/* MTRR base */
+		 
 		if (!valid_mtrr_type(data & 0xff))
 			return false;
 		mask |= 0xf00;
 	} else
-		/* MTRR mask */
+		 
 		mask |= 0x7ff;
 
 	return (data & mask) == 0;
@@ -118,74 +105,51 @@ static u8 mtrr_default_type(struct kvm_mtrr *mtrr_state)
 
 static u8 mtrr_disabled_type(struct kvm_vcpu *vcpu)
 {
-	/*
-	 * Intel SDM 11.11.2.2: all MTRRs are disabled when
-	 * IA32_MTRR_DEF_TYPE.E bit is cleared, and the UC
-	 * memory type is applied to all of physical memory.
-	 *
-	 * However, virtual machines can be run with CPUID such that
-	 * there are no MTRRs.  In that case, the firmware will never
-	 * enable MTRRs and it is obviously undesirable to run the
-	 * guest entirely with UC memory and we use WB.
-	 */
+	 
 	if (guest_cpuid_has(vcpu, X86_FEATURE_MTRR))
 		return MTRR_TYPE_UNCACHABLE;
 	else
 		return MTRR_TYPE_WRBACK;
 }
 
-/*
-* Three terms are used in the following code:
-* - segment, it indicates the address segments covered by fixed MTRRs.
-* - unit, it corresponds to the MSR entry in the segment.
-* - range, a range is covered in one memory cache type.
-*/
+ 
 struct fixed_mtrr_segment {
 	u64 start;
 	u64 end;
 
 	int range_shift;
 
-	/* the start position in kvm_mtrr.fixed_ranges[]. */
+	 
 	int range_start;
 };
 
 static struct fixed_mtrr_segment fixed_seg_table[] = {
-	/* MSR_MTRRfix64K_00000, 1 unit. 64K fixed mtrr. */
+	 
 	{
 		.start = 0x0,
 		.end = 0x80000,
-		.range_shift = 16, /* 64K */
+		.range_shift = 16,  
 		.range_start = 0,
 	},
 
-	/*
-	 * MSR_MTRRfix16K_80000 ... MSR_MTRRfix16K_A0000, 2 units,
-	 * 16K fixed mtrr.
-	 */
+	 
 	{
 		.start = 0x80000,
 		.end = 0xc0000,
-		.range_shift = 14, /* 16K */
+		.range_shift = 14,  
 		.range_start = 8,
 	},
 
-	/*
-	 * MSR_MTRRfix4K_C0000 ... MSR_MTRRfix4K_F8000, 8 units,
-	 * 4K fixed mtrr.
-	 */
+	 
 	{
 		.start = 0xc0000,
 		.end = 0x100000,
-		.range_shift = 12, /* 12K */
+		.range_shift = 12,  
 		.range_start = 24,
 	}
 };
 
-/*
- * The size of unit is covered in one MSR, one MSR entry contains
- * 8 ranges so that unit size is always 8 * 2^range_shift.
- */
+ 
 static u64 fixed_mtrr_seg_unit_size(int seg)
 {
 	return 8 << fixed_seg_table[seg].range_shift;
@@ -234,7 +198,7 @@ static int fixed_mtrr_seg_unit_range_index(int seg, int unit)
 	WARN_ON(mtrr_seg->start + unit * fixed_mtrr_seg_unit_size(seg)
 		> mtrr_seg->end);
 
-	/* each unit has 8 ranges. */
+	 
 	return mtrr_seg->range_start + 8 * unit;
 }
 
@@ -309,9 +273,7 @@ static void var_mtrr_range(struct kvm_mtrr_range *range, u64 *start, u64 *end)
 
 	mask = range->mask & PAGE_MASK;
 
-	/* This cannot overflow because writing to the reserved bits of
-	 * variable MTRRs causes a #GP.
-	 */
+	 
 	*end = (*start | ~mask) + 1;
 }
 
@@ -326,7 +288,7 @@ static void update_mtrr(struct kvm_vcpu *vcpu, u32 msr)
 	if (!mtrr_is_enabled(mtrr_state) && msr != MSR_MTRRdefType)
 		return;
 
-	/* fixed MTRRs. */
+	 
 	if (fixed_msr_to_range(msr, &start, &end)) {
 		if (!fixed_mtrr_is_enabled(mtrr_state))
 			return;
@@ -334,7 +296,7 @@ static void update_mtrr(struct kvm_vcpu *vcpu, u32 msr)
 		start = 0x0;
 		end = ~0ULL;
 	} else {
-		/* variable range MTRRs. */
+		 
 		var_mtrr_range(var_mtrr_msr_to_range(vcpu, msr), &start, &end);
 	}
 
@@ -353,20 +315,17 @@ static void set_var_mtrr_msr(struct kvm_vcpu *vcpu, u32 msr, u64 data)
 
 	cur = var_mtrr_msr_to_range(vcpu, msr);
 
-	/* remove the entry if it's in the list. */
+	 
 	if (var_mtrr_range_is_valid(cur))
 		list_del(&cur->node);
 
-	/*
-	 * Set all illegal GPA bits in the mask, since those bits must
-	 * implicitly be 0.  The bits are then cleared when reading them.
-	 */
+	 
 	if (is_mtrr_base_msr(msr))
 		cur->base = data;
 	else
 		cur->mask = data | kvm_vcpu_reserved_gpa_bits_raw(vcpu);
 
-	/* add it to the list if it's enabled. */
+	 
 	if (var_mtrr_range_is_valid(cur)) {
 		list_for_each_entry(tmp, &mtrr_state->head, node)
 			if (cur->base >= tmp->base)
@@ -398,14 +357,9 @@ int kvm_mtrr_get_msr(struct kvm_vcpu *vcpu, u32 msr, u64 *pdata)
 {
 	int index;
 
-	/* MSR_MTRRcap is a readonly MSR. */
+	 
 	if (msr == MSR_MTRRcap) {
-		/*
-		 * SMRR = 0
-		 * WC = 1
-		 * FIX = 1
-		 * VCNT = KVM_NR_VAR_MTRR
-		 */
+		 
 		*pdata = 0x500 | KVM_NR_VAR_MTRR;
 		return 0;
 	}
@@ -419,7 +373,7 @@ int kvm_mtrr_get_msr(struct kvm_vcpu *vcpu, u32 msr, u64 *pdata)
 	} else if (msr == MSR_MTRRdefType) {
 		*pdata = vcpu->arch.mtrr_state.deftype;
 	} else {
-		/* Variable MTRRs */
+		 
 		if (is_mtrr_base_msr(msr))
 			*pdata = var_mtrr_msr_to_range(vcpu, msr)->base;
 		else
@@ -437,30 +391,30 @@ void kvm_vcpu_mtrr_init(struct kvm_vcpu *vcpu)
 }
 
 struct mtrr_iter {
-	/* input fields. */
+	 
 	struct kvm_mtrr *mtrr_state;
 	u64 start;
 	u64 end;
 
-	/* output fields. */
+	 
 	int mem_type;
-	/* mtrr is completely disabled? */
+	 
 	bool mtrr_disabled;
-	/* [start, end) is not fully covered in MTRRs? */
+	 
 	bool partial_map;
 
-	/* private fields. */
+	 
 	union {
-		/* used for fixed MTRRs. */
+		 
 		struct {
 			int index;
 			int seg;
 		};
 
-		/* used for var MTRRs. */
+		 
 		struct {
 			struct kvm_mtrr_range *range;
-			/* max address has been covered in var MTRRs. */
+			 
 			u64 start_max;
 		};
 	};
@@ -495,14 +449,10 @@ static bool match_var_range(struct mtrr_iter *iter,
 	if (!(start >= iter->end || end <= iter->start)) {
 		iter->range = range;
 
-		/*
-		 * the function is called when we do kvm_mtrr.head walking.
-		 * Range has the minimum base address which interleaves
-		 * [looker->start_max, looker->end).
-		 */
+		 
 		iter->partial_map |= iter->start_max < start;
 
-		/* update the max address has been covered. */
+		 
 		iter->start_max = max(iter->start_max, end);
 		return true;
 	}
@@ -536,7 +486,7 @@ static void mtrr_lookup_var_start(struct mtrr_iter *iter)
 
 static void mtrr_lookup_fixed_next(struct mtrr_iter *iter)
 {
-	/* terminate the lookup. */
+	 
 	if (fixed_mtrr_range_end_addr(iter->seg, iter->index) >= iter->end) {
 		iter->fixed = false;
 		iter->range = NULL;
@@ -545,11 +495,11 @@ static void mtrr_lookup_fixed_next(struct mtrr_iter *iter)
 
 	iter->index++;
 
-	/* have looked up for all fixed MTRRs. */
+	 
 	if (iter->index >= ARRAY_SIZE(iter->mtrr_state->fixed_ranges))
 		return mtrr_lookup_var_start(iter);
 
-	/* switch to next segment. */
+	 
 	if (iter->index > fixed_mtrr_seg_end_range_index(iter->seg))
 		iter->seg++;
 }
@@ -626,61 +576,42 @@ u8 kvm_mtrr_get_guest_memory_type(struct kvm_vcpu *vcpu, gfn_t gfn)
 	mtrr_for_each_mem_type(&iter, mtrr_state, start, end) {
 		int curr_type = iter.mem_type;
 
-		/*
-		 * Please refer to Intel SDM Volume 3: 11.11.4.1 MTRR
-		 * Precedences.
-		 */
+		 
 
 		if (type == -1) {
 			type = curr_type;
 			continue;
 		}
 
-		/*
-		 * If two or more variable memory ranges match and the
-		 * memory types are identical, then that memory type is
-		 * used.
-		 */
+		 
 		if (type == curr_type)
 			continue;
 
-		/*
-		 * If two or more variable memory ranges match and one of
-		 * the memory types is UC, the UC memory type used.
-		 */
+		 
 		if (curr_type == MTRR_TYPE_UNCACHABLE)
 			return MTRR_TYPE_UNCACHABLE;
 
-		/*
-		 * If two or more variable memory ranges match and the
-		 * memory types are WT and WB, the WT memory type is used.
-		 */
+		 
 		if (((1 << type) & wt_wb_mask) &&
 		      ((1 << curr_type) & wt_wb_mask)) {
 			type = MTRR_TYPE_WRTHROUGH;
 			continue;
 		}
 
-		/*
-		 * For overlaps not defined by the above rules, processor
-		 * behavior is undefined.
-		 */
+		 
 
-		/* We use WB for this undefined behavior. :( */
+		 
 		return MTRR_TYPE_WRBACK;
 	}
 
 	if (iter.mtrr_disabled)
 		return mtrr_disabled_type(vcpu);
 
-	/* not contained in any MTRRs. */
+	 
 	if (type == -1)
 		return mtrr_default_type(mtrr_state);
 
-	/*
-	 * We just check one page, partially covered by MTRRs is
-	 * impossible.
-	 */
+	 
 	WARN_ON(iter.partial_map);
 
 	return type;

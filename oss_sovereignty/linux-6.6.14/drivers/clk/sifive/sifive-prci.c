@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 SiFive, Inc.
- * Copyright (C) 2020 Zong Li
- */
+
+ 
 
 #include <linux/clkdev.h>
 #include <linux/delay.h>
@@ -12,23 +9,9 @@
 #include "fu540-prci.h"
 #include "fu740-prci.h"
 
-/*
- * Private functions
- */
+ 
 
-/**
- * __prci_readl() - read from a PRCI register
- * @pd: PRCI context
- * @offs: register offset to read from (in bytes, from PRCI base address)
- *
- * Read the register located at offset @offs from the base virtual
- * address of the PRCI register target described by @pd, and return
- * the value to the caller.
- *
- * Context: Any context.
- *
- * Return: the contents of the register described by @pd and @offs.
- */
+ 
 static u32 __prci_readl(struct __prci_data *pd, u32 offs)
 {
 	return readl_relaxed(pd->va + offs);
@@ -39,22 +22,9 @@ static void __prci_writel(u32 v, u32 offs, struct __prci_data *pd)
 	writel_relaxed(v, pd->va + offs);
 }
 
-/* WRPLL-related private functions */
+ 
 
-/**
- * __prci_wrpll_unpack() - unpack WRPLL configuration registers into parameters
- * @c: ptr to a struct wrpll_cfg record to write config into
- * @r: value read from the PRCI PLL configuration register
- *
- * Given a value @r read from an FU740 PRCI PLL configuration register,
- * split it into fields and populate it into the WRPLL configuration record
- * pointed to by @c.
- *
- * The COREPLLCFG0 macros are used below, but the other *PLLCFG0 macros
- * have the same register layout.
- *
- * Context: Any context.
- */
+ 
 static void __prci_wrpll_unpack(struct wrpll_cfg *c, u32 r)
 {
 	u32 v;
@@ -78,25 +48,11 @@ static void __prci_wrpll_unpack(struct wrpll_cfg *c, u32 r)
 	c->flags &=
 	    (WRPLL_FLAGS_INT_FEEDBACK_MASK | WRPLL_FLAGS_EXT_FEEDBACK_MASK);
 
-	/* external feedback mode not supported */
+	 
 	c->flags |= WRPLL_FLAGS_INT_FEEDBACK_MASK;
 }
 
-/**
- * __prci_wrpll_pack() - pack PLL configuration parameters into a register value
- * @c: pointer to a struct wrpll_cfg record containing the PLL's cfg
- *
- * Using a set of WRPLL configuration values pointed to by @c,
- * assemble a PRCI PLL configuration register value, and return it to
- * the caller.
- *
- * Context: Any context.  Caller must ensure that the contents of the
- *          record pointed to by @c do not change during the execution
- *          of this function.
- *
- * Returns: a value suitable for writing into a PRCI PLL configuration
- *          register
- */
+ 
 static u32 __prci_wrpll_pack(const struct wrpll_cfg *c)
 {
 	u32 r = 0;
@@ -106,44 +62,20 @@ static u32 __prci_wrpll_pack(const struct wrpll_cfg *c)
 	r |= c->divq << PRCI_COREPLLCFG0_DIVQ_SHIFT;
 	r |= c->range << PRCI_COREPLLCFG0_RANGE_SHIFT;
 
-	/* external feedback mode not supported */
+	 
 	r |= PRCI_COREPLLCFG0_FSE_MASK;
 
 	return r;
 }
 
-/**
- * __prci_wrpll_read_cfg0() - read the WRPLL configuration from the PRCI
- * @pd: PRCI context
- * @pwd: PRCI WRPLL metadata
- *
- * Read the current configuration of the PLL identified by @pwd from
- * the PRCI identified by @pd, and store it into the local configuration
- * cache in @pwd.
- *
- * Context: Any context.  Caller must prevent the records pointed to by
- *          @pd and @pwd from changing during execution.
- */
+ 
 static void __prci_wrpll_read_cfg0(struct __prci_data *pd,
 				   struct __prci_wrpll_data *pwd)
 {
 	__prci_wrpll_unpack(&pwd->c, __prci_readl(pd, pwd->cfg0_offs));
 }
 
-/**
- * __prci_wrpll_write_cfg0() - write WRPLL configuration into the PRCI
- * @pd: PRCI context
- * @pwd: PRCI WRPLL metadata
- * @c: WRPLL configuration record to write
- *
- * Write the WRPLL configuration described by @c into the WRPLL
- * configuration register identified by @pwd in the PRCI instance
- * described by @c.  Make a cached copy of the WRPLL's current
- * configuration so it can be used by other code.
- *
- * Context: Any context.  Caller must prevent the records pointed to by
- *          @pd and @pwd from changing during execution.
- */
+ 
 static void __prci_wrpll_write_cfg0(struct __prci_data *pd,
 				    struct __prci_wrpll_data *pwd,
 				    struct wrpll_cfg *c)
@@ -153,13 +85,7 @@ static void __prci_wrpll_write_cfg0(struct __prci_data *pd,
 	memcpy(&pwd->c, c, sizeof(*c));
 }
 
-/**
- * __prci_wrpll_write_cfg1() - write Clock enable/disable configuration
- * into the PRCI
- * @pd: PRCI context
- * @pwd: PRCI WRPLL metadata
- * @enable: Clock enable or disable value
- */
+ 
 static void __prci_wrpll_write_cfg1(struct __prci_data *pd,
 				    struct __prci_wrpll_data *pwd,
 				    u32 enable)
@@ -167,12 +93,7 @@ static void __prci_wrpll_write_cfg1(struct __prci_data *pd,
 	__prci_writel(enable, pwd->cfg1_offs, pd);
 }
 
-/*
- * Linux clock framework integration
- *
- * See the Linux clock framework documentation for more information on
- * these functions.
- */
+ 
 
 unsigned long sifive_prci_wrpll_recalc_rate(struct clk_hw *hw,
 					    unsigned long parent_rate)
@@ -268,7 +189,7 @@ void sifive_prci_clock_disable(struct clk_hw *hw)
 	__prci_wrpll_write_cfg1(pd, pwd, r);
 }
 
-/* TLCLKSEL clock integration */
+ 
 
 unsigned long sifive_prci_tlclksel_recalc_rate(struct clk_hw *hw,
 					       unsigned long parent_rate)
@@ -285,7 +206,7 @@ unsigned long sifive_prci_tlclksel_recalc_rate(struct clk_hw *hw,
 	return div_u64(parent_rate, div);
 }
 
-/* HFPCLK clock integration */
+ 
 
 unsigned long sifive_prci_hfpclkplldiv_recalc_rate(struct clk_hw *hw,
 						   unsigned long parent_rate)
@@ -297,19 +218,9 @@ unsigned long sifive_prci_hfpclkplldiv_recalc_rate(struct clk_hw *hw,
 	return div_u64(parent_rate, div + 2);
 }
 
-/*
- * Core clock mux control
- */
+ 
 
-/**
- * sifive_prci_coreclksel_use_hfclk() - switch the CORECLK mux to output HFCLK
- * @pd: struct __prci_data * for the PRCI containing the CORECLK mux reg
- *
- * Switch the CORECLK mux to the HFCLK input source; return once complete.
- *
- * Context: Any context.  Caller must prevent concurrent changes to the
- *          PRCI_CORECLKSEL_OFFSET register.
- */
+ 
 void sifive_prci_coreclksel_use_hfclk(struct __prci_data *pd)
 {
 	u32 r;
@@ -318,19 +229,10 @@ void sifive_prci_coreclksel_use_hfclk(struct __prci_data *pd)
 	r |= PRCI_CORECLKSEL_CORECLKSEL_MASK;
 	__prci_writel(r, PRCI_CORECLKSEL_OFFSET, pd);
 
-	r = __prci_readl(pd, PRCI_CORECLKSEL_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_CORECLKSEL_OFFSET);	 
 }
 
-/**
- * sifive_prci_coreclksel_use_corepll() - switch the CORECLK mux to output
- * COREPLL
- * @pd: struct __prci_data * for the PRCI containing the CORECLK mux reg
- *
- * Switch the CORECLK mux to the COREPLL output clock; return once complete.
- *
- * Context: Any context.  Caller must prevent concurrent changes to the
- *          PRCI_CORECLKSEL_OFFSET register.
- */
+ 
 void sifive_prci_coreclksel_use_corepll(struct __prci_data *pd)
 {
 	u32 r;
@@ -339,20 +241,10 @@ void sifive_prci_coreclksel_use_corepll(struct __prci_data *pd)
 	r &= ~PRCI_CORECLKSEL_CORECLKSEL_MASK;
 	__prci_writel(r, PRCI_CORECLKSEL_OFFSET, pd);
 
-	r = __prci_readl(pd, PRCI_CORECLKSEL_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_CORECLKSEL_OFFSET);	 
 }
 
-/**
- * sifive_prci_coreclksel_use_final_corepll() - switch the CORECLK mux to output
- * FINAL_COREPLL
- * @pd: struct __prci_data * for the PRCI containing the CORECLK mux reg
- *
- * Switch the CORECLK mux to the final COREPLL output clock; return once
- * complete.
- *
- * Context: Any context.  Caller must prevent concurrent changes to the
- *          PRCI_CORECLKSEL_OFFSET register.
- */
+ 
 void sifive_prci_coreclksel_use_final_corepll(struct __prci_data *pd)
 {
 	u32 r;
@@ -361,19 +253,10 @@ void sifive_prci_coreclksel_use_final_corepll(struct __prci_data *pd)
 	r &= ~PRCI_CORECLKSEL_CORECLKSEL_MASK;
 	__prci_writel(r, PRCI_CORECLKSEL_OFFSET, pd);
 
-	r = __prci_readl(pd, PRCI_CORECLKSEL_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_CORECLKSEL_OFFSET);	 
 }
 
-/**
- * sifive_prci_corepllsel_use_dvfscorepll() - switch the COREPLL mux to
- * output DVFS_COREPLL
- * @pd: struct __prci_data * for the PRCI containing the COREPLL mux reg
- *
- * Switch the COREPLL mux to the DVFSCOREPLL output clock; return once complete.
- *
- * Context: Any context.  Caller must prevent concurrent changes to the
- *          PRCI_COREPLLSEL_OFFSET register.
- */
+ 
 void sifive_prci_corepllsel_use_dvfscorepll(struct __prci_data *pd)
 {
 	u32 r;
@@ -382,19 +265,10 @@ void sifive_prci_corepllsel_use_dvfscorepll(struct __prci_data *pd)
 	r |= PRCI_COREPLLSEL_COREPLLSEL_MASK;
 	__prci_writel(r, PRCI_COREPLLSEL_OFFSET, pd);
 
-	r = __prci_readl(pd, PRCI_COREPLLSEL_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_COREPLLSEL_OFFSET);	 
 }
 
-/**
- * sifive_prci_corepllsel_use_corepll() - switch the COREPLL mux to
- * output COREPLL
- * @pd: struct __prci_data * for the PRCI containing the COREPLL mux reg
- *
- * Switch the COREPLL mux to the COREPLL output clock; return once complete.
- *
- * Context: Any context.  Caller must prevent concurrent changes to the
- *          PRCI_COREPLLSEL_OFFSET register.
- */
+ 
 void sifive_prci_corepllsel_use_corepll(struct __prci_data *pd)
 {
 	u32 r;
@@ -403,19 +277,10 @@ void sifive_prci_corepllsel_use_corepll(struct __prci_data *pd)
 	r &= ~PRCI_COREPLLSEL_COREPLLSEL_MASK;
 	__prci_writel(r, PRCI_COREPLLSEL_OFFSET, pd);
 
-	r = __prci_readl(pd, PRCI_COREPLLSEL_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_COREPLLSEL_OFFSET);	 
 }
 
-/**
- * sifive_prci_hfpclkpllsel_use_hfclk() - switch the HFPCLKPLL mux to
- * output HFCLK
- * @pd: struct __prci_data * for the PRCI containing the HFPCLKPLL mux reg
- *
- * Switch the HFPCLKPLL mux to the HFCLK input source; return once complete.
- *
- * Context: Any context.  Caller must prevent concurrent changes to the
- *          PRCI_HFPCLKPLLSEL_OFFSET register.
- */
+ 
 void sifive_prci_hfpclkpllsel_use_hfclk(struct __prci_data *pd)
 {
 	u32 r;
@@ -424,19 +289,10 @@ void sifive_prci_hfpclkpllsel_use_hfclk(struct __prci_data *pd)
 	r |= PRCI_HFPCLKPLLSEL_HFPCLKPLLSEL_MASK;
 	__prci_writel(r, PRCI_HFPCLKPLLSEL_OFFSET, pd);
 
-	r = __prci_readl(pd, PRCI_HFPCLKPLLSEL_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_HFPCLKPLLSEL_OFFSET);	 
 }
 
-/**
- * sifive_prci_hfpclkpllsel_use_hfpclkpll() - switch the HFPCLKPLL mux to
- * output HFPCLKPLL
- * @pd: struct __prci_data * for the PRCI containing the HFPCLKPLL mux reg
- *
- * Switch the HFPCLKPLL mux to the HFPCLKPLL output clock; return once complete.
- *
- * Context: Any context.  Caller must prevent concurrent changes to the
- *          PRCI_HFPCLKPLLSEL_OFFSET register.
- */
+ 
 void sifive_prci_hfpclkpllsel_use_hfpclkpll(struct __prci_data *pd)
 {
 	u32 r;
@@ -445,10 +301,10 @@ void sifive_prci_hfpclkpllsel_use_hfpclkpll(struct __prci_data *pd)
 	r &= ~PRCI_HFPCLKPLLSEL_HFPCLKPLLSEL_MASK;
 	__prci_writel(r, PRCI_HFPCLKPLLSEL_OFFSET, pd);
 
-	r = __prci_readl(pd, PRCI_HFPCLKPLLSEL_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_HFPCLKPLLSEL_OFFSET);	 
 }
 
-/* PCIE AUX clock APIs for enable, disable. */
+ 
 int sifive_prci_pcie_aux_clock_is_enabled(struct clk_hw *hw)
 {
 	struct __prci_clock *pc = clk_hw_to_prci_clock(hw);
@@ -473,7 +329,7 @@ int sifive_prci_pcie_aux_clock_enable(struct clk_hw *hw)
 		return 0;
 
 	__prci_writel(1, PRCI_PCIE_AUX_OFFSET, pd);
-	r = __prci_readl(pd, PRCI_PCIE_AUX_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_PCIE_AUX_OFFSET);	 
 
 	return 0;
 }
@@ -485,21 +341,11 @@ void sifive_prci_pcie_aux_clock_disable(struct clk_hw *hw)
 	u32 r __maybe_unused;
 
 	__prci_writel(0, PRCI_PCIE_AUX_OFFSET, pd);
-	r = __prci_readl(pd, PRCI_PCIE_AUX_OFFSET);	/* barrier */
+	r = __prci_readl(pd, PRCI_PCIE_AUX_OFFSET);	 
 
 }
 
-/**
- * __prci_register_clocks() - register clock controls in the PRCI
- * @dev: Linux struct device
- * @pd: The pointer for PRCI per-device instance data
- * @desc: The pointer for the information of clocks of each SoCs
- *
- * Register the list of clock controls described in __prci_init_clocks[] with
- * the Linux clock framework.
- *
- * Return: 0 upon success or a negative error code upon failure.
- */
+ 
 static int __prci_register_clocks(struct device *dev, struct __prci_data *pd,
 				  const struct prci_clk_desc *desc)
 {
@@ -514,7 +360,7 @@ static int __prci_register_clocks(struct device *dev, struct __prci_data *pd,
 		return -EINVAL;
 	}
 
-	/* Register PLLs */
+	 
 	for (i = 0; i < desc->num_clks; ++i) {
 		pic = &(desc->clks[i]);
 
@@ -558,12 +404,7 @@ static int __prci_register_clocks(struct device *dev, struct __prci_data *pd,
 	return 0;
 }
 
-/**
- * sifive_prci_probe() - initialize prci data and check parent count
- * @pdev: platform device pointer for the prci
- *
- * Return: 0 upon success or a negative error code upon failure.
- */
+ 
 static int sifive_prci_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;

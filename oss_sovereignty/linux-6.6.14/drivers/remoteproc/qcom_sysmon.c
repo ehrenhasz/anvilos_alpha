@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017, Linaro Ltd.
- */
+
+ 
 #include <linux/firmware.h>
 #include <linux/module.h>
 #include <linux/notifier.h>
@@ -72,11 +70,7 @@ struct sysmon_event {
 static DEFINE_MUTEX(sysmon_lock);
 static LIST_HEAD(sysmon_list);
 
-/**
- * sysmon_send_event() - send notification of other remote's SSR event
- * @sysmon:	sysmon context
- * @event:	sysmon event context
- */
+ 
 static void sysmon_send_event(struct qcom_sysmon *sysmon,
 			      const struct sysmon_event *event)
 {
@@ -113,12 +107,7 @@ out_unlock:
 	mutex_unlock(&sysmon->lock);
 }
 
-/**
- * sysmon_request_shutdown() - request graceful shutdown of remote
- * @sysmon:	sysmon context
- *
- * Return: boolean indicator of the remote processor acking the request
- */
+ 
 static bool sysmon_request_shutdown(struct qcom_sysmon *sysmon)
 {
 	char *req = "ssr:shutdown";
@@ -321,12 +310,7 @@ static bool ssctl_request_shutdown_wait(struct qcom_sysmon *sysmon)
 	return false;
 }
 
-/**
- * ssctl_request_shutdown() - request shutdown via SSCTL QMI service
- * @sysmon:	sysmon context
- *
- * Return: boolean indicator of the remote processor acking the request
- */
+ 
 static bool ssctl_request_shutdown(struct qcom_sysmon *sysmon)
 {
 	struct ssctl_shutdown_resp resp;
@@ -366,11 +350,7 @@ static bool ssctl_request_shutdown(struct qcom_sysmon *sysmon)
 	return acked;
 }
 
-/**
- * ssctl_send_event() - send notification of other remote's SSR event
- * @sysmon:	sysmon context
- * @event:	sysmon event context
- */
+ 
 static void ssctl_send_event(struct qcom_sysmon *sysmon,
 			     const struct sysmon_event *event)
 {
@@ -411,13 +391,7 @@ static void ssctl_send_event(struct qcom_sysmon *sysmon,
 		dev_dbg(sysmon->dev, "subsystem event accepted\n");
 }
 
-/**
- * ssctl_new_server() - QMI callback indicating a new service
- * @qmi:	QMI handle
- * @svc:	service information
- *
- * Return: 0 if we're interested in this service, -EINVAL otherwise.
- */
+ 
 static int ssctl_new_server(struct qmi_handle *qmi, struct qmi_service *svc)
 {
 	struct qcom_sysmon *sysmon = container_of(qmi, struct qcom_sysmon, qmi);
@@ -450,11 +424,7 @@ static int ssctl_new_server(struct qmi_handle *qmi, struct qmi_service *svc)
 	return 0;
 }
 
-/**
- * ssctl_del_server() - QMI callback indicating that @svc is removed
- * @qmi:	QMI handle
- * @svc:	service information
- */
+ 
 static void ssctl_del_server(struct qmi_handle *qmi, struct qmi_service *svc)
 {
 	struct qcom_sysmon *sysmon = svc->priv;
@@ -484,15 +454,7 @@ static int sysmon_prepare(struct rproc_subdev *subdev)
 	return 0;
 }
 
-/**
- * sysmon_start() - start callback for the sysmon remoteproc subdevice
- * @subdev:	instance of the sysmon subdevice
- *
- * Inform all the listners of sysmon notifications that the rproc associated
- * to @subdev has booted up. The rproc that booted up also needs to know
- * which rprocs are already up and running, so send start notifications
- * on behalf of all the online rprocs.
- */
+ 
 static int sysmon_start(struct rproc_subdev *subdev)
 {
 	struct qcom_sysmon *sysmon = container_of(subdev, struct qcom_sysmon,
@@ -546,7 +508,7 @@ static void sysmon_stop(struct rproc_subdev *subdev, bool crashed)
 	blocking_notifier_call_chain(&sysmon_notifiers, 0, (void *)&event);
 	mutex_unlock(&sysmon->state_lock);
 
-	/* Don't request graceful shutdown if we've crashed */
+	 
 	if (crashed)
 		return;
 
@@ -576,26 +538,21 @@ static void sysmon_unprepare(struct rproc_subdev *subdev)
 	mutex_unlock(&sysmon->state_lock);
 }
 
-/**
- * sysmon_notify() - notify sysmon target of another's SSR
- * @nb:		notifier_block associated with sysmon instance
- * @event:	unused
- * @data:	SSR identifier of the remote that is going down
- */
+ 
 static int sysmon_notify(struct notifier_block *nb, unsigned long event,
 			 void *data)
 {
 	struct qcom_sysmon *sysmon = container_of(nb, struct qcom_sysmon, nb);
 	struct sysmon_event *sysmon_event = data;
 
-	/* Skip non-running rprocs and the originating instance */
+	 
 	if (sysmon->state != SSCTL_SSR_EVENT_AFTER_POWERUP ||
 	    !strcmp(sysmon_event->subsys_name, sysmon->name)) {
 		dev_dbg(sysmon->dev, "not notifying %s\n", sysmon->name);
 		return NOTIFY_DONE;
 	}
 
-	/* Only SSCTL version 2 supports SSR events */
+	 
 	if (sysmon->ssctl_version == 2)
 		ssctl_send_event(sysmon, sysmon_event);
 	else if (sysmon->ept)
@@ -613,14 +570,7 @@ static irqreturn_t sysmon_shutdown_interrupt(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * qcom_add_sysmon_subdev() - create a sysmon subdev for the given remoteproc
- * @rproc:	rproc context to associate the subdev with
- * @name:	name of this subdev, to use in SSR
- * @ssctl_instance: instance id of the ssctl QMI service
- *
- * Return: A new qcom_sysmon object, or NULL on failure
- */
+ 
 struct qcom_sysmon *qcom_add_sysmon_subdev(struct rproc *rproc,
 					   const char *name,
 					   int ssctl_instance)
@@ -697,10 +647,7 @@ struct qcom_sysmon *qcom_add_sysmon_subdev(struct rproc *rproc,
 }
 EXPORT_SYMBOL_GPL(qcom_add_sysmon_subdev);
 
-/**
- * qcom_remove_sysmon_subdev() - release a qcom_sysmon
- * @sysmon:	sysmon context, as retrieved by qcom_add_sysmon_subdev()
- */
+ 
 void qcom_remove_sysmon_subdev(struct qcom_sysmon *sysmon)
 {
 	if (!sysmon)
@@ -720,31 +667,14 @@ void qcom_remove_sysmon_subdev(struct qcom_sysmon *sysmon)
 }
 EXPORT_SYMBOL_GPL(qcom_remove_sysmon_subdev);
 
-/**
- * qcom_sysmon_shutdown_acked() - query the success of the last shutdown
- * @sysmon:	sysmon context
- *
- * When sysmon is used to request a graceful shutdown of the remote processor
- * this can be used by the remoteproc driver to query the success, in order to
- * know if it should fall back to other means of requesting a shutdown.
- *
- * Return: boolean indicator of the success of the last shutdown request
- */
+ 
 bool qcom_sysmon_shutdown_acked(struct qcom_sysmon *sysmon)
 {
 	return sysmon && sysmon->shutdown_acked;
 }
 EXPORT_SYMBOL_GPL(qcom_sysmon_shutdown_acked);
 
-/**
- * sysmon_probe() - probe sys_mon channel
- * @rpdev:	rpmsg device handle
- *
- * Find the sysmon context associated with the ancestor remoteproc and assign
- * this rpmsg device with said sysmon context.
- *
- * Return: 0 on success, negative errno on failure.
- */
+ 
 static int sysmon_probe(struct rpmsg_device *rpdev)
 {
 	struct qcom_sysmon *sysmon;
@@ -776,12 +706,7 @@ found:
 	return 0;
 }
 
-/**
- * sysmon_remove() - sys_mon channel remove handler
- * @rpdev:	rpmsg device handle
- *
- * Disassociate the rpmsg device with the sysmon instance.
- */
+ 
 static void sysmon_remove(struct rpmsg_device *rpdev)
 {
 	struct qcom_sysmon *sysmon = rpdev->ept->priv;

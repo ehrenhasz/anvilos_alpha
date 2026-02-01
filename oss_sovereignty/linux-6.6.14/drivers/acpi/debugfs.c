@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * debugfs.c - ACPI debugfs interface to userspace.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/init.h>

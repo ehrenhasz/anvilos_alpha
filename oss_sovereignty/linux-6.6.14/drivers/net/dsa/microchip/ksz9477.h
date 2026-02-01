@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Microchip KSZ9477 series Header file
- *
- * Copyright (C) 2017-2022 Microchip Technology Inc.
- */
+ 
+ 
 
 #ifndef __KSZ9477_H
 #define __KSZ9477_H

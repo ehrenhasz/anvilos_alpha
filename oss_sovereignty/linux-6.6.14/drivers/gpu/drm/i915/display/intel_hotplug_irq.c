@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include "i915_drv.h"
 #include "i915_reg.h"
@@ -151,7 +149,7 @@ static void intel_hpd_init_pins(struct drm_i915_private *dev_priv)
 	else if (IS_GEMINILAKE(dev_priv) || IS_BROXTON(dev_priv))
 		hpd->hpd = hpd_bxt;
 	else if (DISPLAY_VER(dev_priv) == 9)
-		hpd->hpd = NULL; /* no north HPD on SKL */
+		hpd->hpd = NULL;  
 	else if (DISPLAY_VER(dev_priv) >= 8)
 		hpd->hpd = hpd_bdw;
 	else if (DISPLAY_VER(dev_priv) >= 7)
@@ -179,7 +177,7 @@ static void intel_hpd_init_pins(struct drm_i915_private *dev_priv)
 		MISSING_CASE(INTEL_PCH_TYPE(dev_priv));
 }
 
-/* For display hotplug interrupt */
+ 
 void i915_hotplug_interrupt_update_locked(struct drm_i915_private *dev_priv,
 					  u32 mask, u32 bits)
 {
@@ -189,18 +187,7 @@ void i915_hotplug_interrupt_update_locked(struct drm_i915_private *dev_priv,
 	intel_uncore_rmw(&dev_priv->uncore, PORT_HOTPLUG_EN, mask, bits);
 }
 
-/**
- * i915_hotplug_interrupt_update - update hotplug interrupt enable
- * @dev_priv: driver private
- * @mask: bits to update
- * @bits: bits to enable
- * NOTE: the HPD enable bits are modified both inside and outside
- * of an interrupt context. To avoid that read-modify-write cycles
- * interfer, these bits are protected by a spinlock. Since this
- * function is usually not called from a context where the lock is
- * held already, this function acquires the lock itself. A non-locking
- * version is also available.
- */
+ 
 void i915_hotplug_interrupt_update(struct drm_i915_private *dev_priv,
 				   u32 mask,
 				   u32 bits)
@@ -331,13 +318,7 @@ static bool i9xx_port_hotplug_long_detect(enum hpd_pin pin, u32 val)
 	}
 }
 
-/*
- * Get a bit mask of pins that have triggered, and which ones may be long.
- * This can be called multiple times with the same masks to accumulate
- * hotplug detection results from several registers.
- *
- * Note that the caller is expected to zero out the masks initially.
- */
+ 
 static void intel_get_hpd_pins(struct drm_i915_private *dev_priv,
 			       u32 *pin_mask, u32 *long_mask,
 			       u32 hotplug_trigger, u32 dig_hotplug_reg,
@@ -424,15 +405,7 @@ u32 i9xx_hpd_irq_ack(struct drm_i915_private *dev_priv)
 	else
 		hotplug_status_mask = HOTPLUG_INT_STATUS_I915;
 
-	/*
-	 * We absolutely have to clear all the pending interrupt
-	 * bits in PORT_HOTPLUG_STAT. Otherwise the ISR port
-	 * interrupt bit won't have an edge, and the i965/g4x
-	 * edge triggered IIR will not notice that an interrupt
-	 * is still pending. We can't use PORT_HOTPLUG_EN to
-	 * guarantee the edge as the act of toggling the enable
-	 * bits can itself generate a new hotplug interrupt :(
-	 */
+	 
 	for (i = 0; i < 10; i++) {
 		u32 tmp = intel_uncore_read(&dev_priv->uncore, PORT_HOTPLUG_STAT) & hotplug_status_mask;
 
@@ -480,12 +453,7 @@ void ibx_hpd_irq_handler(struct drm_i915_private *dev_priv, u32 hotplug_trigger)
 {
 	u32 dig_hotplug_reg, pin_mask = 0, long_mask = 0;
 
-	/*
-	 * Somehow the PCH doesn't seem to really ack the interrupt to the CPU
-	 * unless we touch the hotplug register, even if hotplug_trigger is
-	 * zero. Not acking leads to "The master control interrupt lied (SDE)!"
-	 * errors.
-	 */
+	 
 	dig_hotplug_reg = intel_uncore_read(&dev_priv->uncore, PCH_PORT_HOTPLUG);
 	if (!hotplug_trigger) {
 		u32 mask = PORTA_HOTPLUG_STATUS_MASK |
@@ -554,7 +522,7 @@ void icp_irq_handler(struct drm_i915_private *dev_priv, u32 pch_iir)
 	if (ddi_hotplug_trigger) {
 		u32 dig_hotplug_reg;
 
-		/* Locking due to DSI native GPIO sequences */
+		 
 		spin_lock(&dev_priv->irq_lock);
 		dig_hotplug_reg = intel_uncore_rmw(&dev_priv->uncore, SHOTPLUG_CTL_DDI, 0, 0);
 		spin_unlock(&dev_priv->irq_lock);
@@ -704,10 +672,7 @@ static u32 ibx_hotplug_enables(struct intel_encoder *encoder)
 
 	switch (encoder->hpd_pin) {
 	case HPD_PORT_A:
-		/*
-		 * When CPU and PCH are on the same package, port A
-		 * HPD must be enabled in both north and south.
-		 */
+		 
 		return HAS_PCH_LPT_LP(i915) ?
 			PORTA_HOTPLUG_ENABLE : 0;
 	case HPD_PORT_B:
@@ -726,11 +691,7 @@ static u32 ibx_hotplug_enables(struct intel_encoder *encoder)
 
 static void ibx_hpd_detection_setup(struct drm_i915_private *dev_priv)
 {
-	/*
-	 * Enable digital hotplug on the PCH, and configure the DP short pulse
-	 * duration to 2ms (which is the minimum in the Display Port spec).
-	 * The pulse duration bits are reserved on LPT+.
-	 */
+	 
 	intel_uncore_rmw(&dev_priv->uncore, PCH_PORT_HOTPLUG,
 			 intel_hpd_hotplug_mask(dev_priv, ibx_hotplug_mask),
 			 intel_hpd_hotplug_enables(dev_priv, ibx_hotplug_enables));
@@ -1161,13 +1122,13 @@ static u32 spt_hotplug2_enables(struct intel_encoder *encoder)
 
 static void spt_hpd_detection_setup(struct drm_i915_private *dev_priv)
 {
-	/* Display WA #1179 WaHardHangonHotPlug: cnp */
+	 
 	if (HAS_PCH_CNP(dev_priv)) {
 		intel_uncore_rmw(&dev_priv->uncore, SOUTH_CHICKEN1, CHASSIS_CLK_REQ_DURATION_MASK,
 				 CHASSIS_CLK_REQ_DURATION(0xf));
 	}
 
-	/* Enable digital hotplug on the PCH */
+	 
 	intel_uncore_rmw(&dev_priv->uncore, PCH_PORT_HOTPLUG,
 			 intel_hpd_hotplug_mask(dev_priv, spt_hotplug_mask),
 			 intel_hpd_hotplug_enables(dev_priv, spt_hotplug_enables));
@@ -1181,7 +1142,7 @@ static void spt_hpd_enable_detection(struct intel_encoder *encoder)
 {
 	struct drm_i915_private *i915 = to_i915(encoder->base.dev);
 
-	/* Display WA #1179 WaHardHangonHotPlug: cnp */
+	 
 	if (HAS_PCH_CNP(i915)) {
 		intel_uncore_rmw(&i915->uncore, SOUTH_CHICKEN1,
 				 CHASSIS_CLK_REQ_DURATION_MASK,
@@ -1236,11 +1197,7 @@ static u32 ilk_hotplug_enables(struct intel_encoder *encoder)
 
 static void ilk_hpd_detection_setup(struct drm_i915_private *dev_priv)
 {
-	/*
-	 * Enable digital hotplug on the CPU, and configure the DP short pulse
-	 * duration to 2ms (which is the minimum in the Display Port spec)
-	 * The pulse duration bits are reserved on HSW+.
-	 */
+	 
 	intel_uncore_rmw(&dev_priv->uncore, DIGITAL_PORT_HOTPLUG_CNTRL,
 			 intel_hpd_hotplug_mask(dev_priv, ilk_hotplug_mask),
 			 intel_hpd_hotplug_enables(dev_priv, ilk_hotplug_enables));
@@ -1346,7 +1303,7 @@ static void i915_hpd_enable_detection(struct intel_encoder *encoder)
 	struct drm_i915_private *i915 = to_i915(encoder->base.dev);
 	u32 hotplug_en = hpd_mask_i915[encoder->hpd_pin];
 
-	/* HPD sense and interrupt enable are one and the same */
+	 
 	i915_hotplug_interrupt_update(i915, hotplug_en, hotplug_en);
 }
 
@@ -1356,20 +1313,14 @@ static void i915_hpd_irq_setup(struct drm_i915_private *dev_priv)
 
 	lockdep_assert_held(&dev_priv->irq_lock);
 
-	/*
-	 * Note HDMI and DP share hotplug bits. Enable bits are the same for all
-	 * generations.
-	 */
+	 
 	hotplug_en = intel_hpd_enabled_irqs(dev_priv, hpd_mask_i915);
-	/*
-	 * Programming the CRT detection parameters tends to generate a spurious
-	 * hotplug event about three seconds later. So just do it once.
-	 */
+	 
 	if (IS_G4X(dev_priv))
 		hotplug_en |= CRT_HOTPLUG_ACTIVATION_PERIOD_64;
 	hotplug_en |= CRT_HOTPLUG_VOLTAGE_COMPARE_50;
 
-	/* Ignore TV since it's buggy */
+	 
 	i915_hotplug_interrupt_update_locked(dev_priv,
 					     HOTPLUG_INT_EN_MASK |
 					     CRT_HOTPLUG_VOLTAGE_COMPARE_MASK |
@@ -1378,9 +1329,9 @@ static void i915_hpd_irq_setup(struct drm_i915_private *dev_priv)
 }
 
 struct intel_hotplug_funcs {
-	/* Enable HPD sense and interrupts for all present encoders */
+	 
 	void (*hpd_irq_setup)(struct drm_i915_private *i915);
-	/* Enable HPD sense for a single encoder */
+	 
 	void (*hpd_enable_detection)(struct intel_encoder *encoder);
 };
 

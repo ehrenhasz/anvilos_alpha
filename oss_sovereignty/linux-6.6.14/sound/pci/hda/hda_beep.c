@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Digital Beep Input Interface for HD-audio codec
- *
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- * Copyright (c) 2008 Embedded Alley Solutions Inc
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -15,12 +10,12 @@
 #include "hda_local.h"
 
 enum {
-	DIGBEEP_HZ_STEP = 46875,	/* 46.875 Hz */
-	DIGBEEP_HZ_MIN = 93750,		/* 93.750 Hz */
-	DIGBEEP_HZ_MAX = 12000000,	/* 12 KHz */
+	DIGBEEP_HZ_STEP = 46875,	 
+	DIGBEEP_HZ_MIN = 93750,		 
+	DIGBEEP_HZ_MAX = 12000000,	 
 };
 
-/* generate or stop tone */
+ 
 static void generate_tone(struct hda_beep *beep, int tone)
 {
 	struct hda_codec *codec = beep->codec;
@@ -50,24 +45,18 @@ static void snd_hda_generate_beep(struct work_struct *work)
 		generate_tone(beep, beep->tone);
 }
 
-/* (non-standard) Linear beep tone calculation for IDT/STAC codecs 
- *
- * The tone frequency of beep generator on IDT/STAC codecs is
- * defined from the 8bit tone parameter, in Hz,
- *    freq = 48000 * (257 - tone) / 1024
- * that is from 12kHz to 93.75Hz in steps of 46.875 Hz
- */
+ 
 static int beep_linear_tone(struct hda_beep *beep, int hz)
 {
 	if (hz <= 0)
 		return 0;
-	hz *= 1000; /* fixed point */
+	hz *= 1000;  
 	hz = hz - DIGBEEP_HZ_MIN
-		+ DIGBEEP_HZ_STEP / 2; /* round to nearest step */
+		+ DIGBEEP_HZ_STEP / 2;  
 	if (hz < 0)
-		hz = 0; /* turn off PC beep*/
+		hz = 0;  
 	else if (hz >= (DIGBEEP_HZ_MAX - DIGBEEP_HZ_MIN))
-		hz = 1; /* max frequency */
+		hz = 1;  
 	else {
 		hz /= DIGBEEP_HZ_STEP;
 		hz = 255 - hz;
@@ -75,16 +64,11 @@ static int beep_linear_tone(struct hda_beep *beep, int hz)
 	return hz;
 }
 
-/* HD-audio standard beep tone parameter calculation
- *
- * The tone frequency in Hz is calculated as
- *   freq = 48000 / (tone * 4)
- * from 47Hz to 12kHz
- */
+ 
 static int beep_standard_tone(struct hda_beep *beep, int hz)
 {
 	if (hz <= 0)
-		return 0; /* disabled */
+		return 0;  
 	hz = 12000 / hz;
 	if (hz > 0xff)
 		return 0xff;
@@ -113,7 +97,7 @@ static int snd_hda_beep_event(struct input_dev *dev, unsigned int type,
 		return -1;
 	}
 
-	/* schedule beep event */
+	 
 	schedule_work(&beep->beep_work);
 	return 0;
 }
@@ -128,18 +112,14 @@ static void turn_off_beep(struct hda_beep *beep)
 {
 	cancel_work_sync(&beep->beep_work);
 	if (beep->playing) {
-		/* turn off beep */
+		 
 		generate_tone(beep, 0);
 	}
 	if (beep->keep_power_at_enable)
 		snd_hda_power_down_pm(beep->codec);
 }
 
-/**
- * snd_hda_enable_beep_device - Turn on/off beep sound
- * @codec: the HDA codec
- * @enable: flag to turn on/off
- */
+ 
 int snd_hda_enable_beep_device(struct hda_codec *codec, int enable)
 {
 	struct hda_beep *beep = codec->beep;
@@ -191,16 +171,7 @@ static int beep_dev_free(struct snd_device *device)
 	return 0;
 }
 
-/**
- * snd_hda_attach_beep_device - Attach a beep input device
- * @codec: the HDA codec
- * @nid: beep NID
- *
- * Attach a beep object to the given widget.  If beep hint is turned off
- * explicitly or beep_mode of the codec is turned off, this doesn't nothing.
- *
- * Currently, only one beep device is allowed to each codec.
- */
+ 
 int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 {
 	static const struct snd_device_ops ops = {
@@ -213,16 +184,16 @@ int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 	int err;
 
 	if (!snd_hda_get_bool_hint(codec, "beep"))
-		return 0; /* disabled explicitly by hints */
+		return 0;  
 	if (codec->beep_mode == HDA_BEEP_MODE_OFF)
-		return 0; /* disabled by module option */
+		return 0;  
 
 	beep = kzalloc(sizeof(*beep), GFP_KERNEL);
 	if (beep == NULL)
 		return -ENOMEM;
 	snprintf(beep->phys, sizeof(beep->phys),
 		"card%d/codec#%d/beep0", codec->card->number, codec->addr);
-	/* enable linear scale */
+	 
 	snd_hda_codec_write_cache(codec, nid, 0,
 		AC_VERB_SET_DIGI_CONVERT_2, 0x01);
 
@@ -239,7 +210,7 @@ int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 		goto err_free;
 	}
 
-	/* setup digital beep device */
+	 
 	input_dev->name = "HDA Digital PCBeep";
 	input_dev->phys = beep->phys;
 	input_dev->id.bustype = BUS_PCI;
@@ -271,10 +242,7 @@ int snd_hda_attach_beep_device(struct hda_codec *codec, int nid)
 }
 EXPORT_SYMBOL_GPL(snd_hda_attach_beep_device);
 
-/**
- * snd_hda_detach_beep_device - Detach the beep device
- * @codec: the HDA codec
- */
+ 
 void snd_hda_detach_beep_device(struct hda_codec *codec)
 {
 	if (!codec->bus->shutdown && codec->beep)
@@ -289,13 +257,9 @@ static bool ctl_has_mute(struct snd_kcontrol *kcontrol)
 			      get_amp_direction(kcontrol)) & AC_AMPCAP_MUTE;
 }
 
-/* get/put callbacks for beep mute mixer switches */
+ 
 
-/**
- * snd_hda_mixer_amp_switch_get_beep - Get callback for beep controls
- * @kcontrol: ctl element
- * @ucontrol: pointer to get/store the data
- */
+ 
 int snd_hda_mixer_amp_switch_get_beep(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {
@@ -314,11 +278,7 @@ int snd_hda_mixer_amp_switch_get_beep(struct snd_kcontrol *kcontrol,
 }
 EXPORT_SYMBOL_GPL(snd_hda_mixer_amp_switch_get_beep);
 
-/**
- * snd_hda_mixer_amp_switch_put_beep - Put callback for beep controls
- * @kcontrol: ctl element
- * @ucontrol: pointer to get/store the data
- */
+ 
 int snd_hda_mixer_amp_switch_put_beep(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_value *ucontrol)
 {

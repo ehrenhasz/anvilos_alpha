@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/kernel.h>
@@ -45,9 +43,7 @@ int cxl_afu_slbia(struct cxl_afu *afu)
 			dev_warn(&afu->dev, "WARNING: CXL AFU SLBIA timed out!\n");
 			return -EBUSY;
 		}
-		/* If the adapter has gone down, we can assume that we
-		 * will PERST it and that will invalidate everything.
-		 */
+		 
 		if (!cxl_ops->link_ok(afu->adapter, afu))
 			return -EIO;
 		cpu_relax();
@@ -84,7 +80,7 @@ static inline void cxl_slbia_core(struct mm_struct *mm)
 
 	spin_lock(&adapter_idr_lock);
 	idr_for_each_entry(&cxl_adapter_idr, adapter, card) {
-		/* XXX: Make this lookup faster with link from mm to ctx */
+		 
 		spin_lock(&adapter->afu_list_lock);
 		for (slice = 0; slice < adapter->slices; slice++) {
 			afu = adapter->afu[slice];
@@ -139,7 +135,7 @@ int cxl_alloc_sst(struct cxl_context *ctx)
 	else
 		ea_mask = 0xffffffff00ULL;
 
-	sstp0 |=  vsid >>     (50-14);  /*   Top 14 bits of VSID */
+	sstp0 |=  vsid >>     (50-14);   
 	sstp1 |= (vsid << (64-(50-14))) & ~ea_mask;
 	sstp1 |= (u64)ctx->sstp & ea_mask;
 	sstp1 |= CXL_SSTP1_An_V;
@@ -147,23 +143,20 @@ int cxl_alloc_sst(struct cxl_context *ctx)
 	pr_devel("Looked up %#llx: slbfee. %#llx (ssize: %x, vsid: %#lx), copied to SSTP0: %#llx, SSTP1: %#llx\n",
 			(u64)ctx->sstp, (u64)ctx->sstp & ESID_MASK, mmu_kernel_ssize, vsid, sstp0, sstp1);
 
-	/* Store calculated sstp hardware points for use later */
+	 
 	ctx->sstp0 = sstp0;
 	ctx->sstp1 = sstp1;
 
 	return 0;
 }
 
-/* print buffer content as integers when debugging */
+ 
 void cxl_dump_debug_buffer(void *buf, size_t buf_len)
 {
 #ifdef DEBUG
 	int i, *ptr;
 
-	/*
-	 * We want to regroup up to 4 integers per line, which means they
-	 * need to be in the same pr_devel() statement
-	 */
+	 
 	ptr = (int *) buf;
 	for (i = 0; i * 4 < buf_len; i += 4) {
 		if ((i + 3) * 4 < buf_len)
@@ -177,10 +170,10 @@ void cxl_dump_debug_buffer(void *buf, size_t buf_len)
 		else
 			pr_devel("%.8x\n", ptr[i]);
 	}
-#endif /* DEBUG */
+#endif  
 }
 
-/* Find a CXL adapter by it's number and increase it's refcount */
+ 
 struct cxl *get_cxl_adapter(int num)
 {
 	struct cxl *adapter;
@@ -230,7 +223,7 @@ struct cxl *cxl_alloc_adapter(void)
 	if (dev_set_name(&adapter->dev, "card%i", adapter->adapter_num))
 		goto err2;
 
-	/* start with context lock taken */
+	 
 	atomic_set(&adapter->contexts_num, -1);
 
 	return adapter;
@@ -271,7 +264,7 @@ int cxl_afu_select_best_mode(struct cxl_afu *afu)
 		return cxl_ops->afu_activate_mode(afu, CXL_MODE_DEDICATED);
 
 	dev_warn(&afu->dev, "No supported programming modes available\n");
-	/* We don't fail this so the user can inspect sysfs */
+	 
 	return 0;
 }
 
@@ -291,7 +284,7 @@ void cxl_adapter_context_put(struct cxl *adapter)
 int cxl_adapter_context_lock(struct cxl *adapter)
 {
 	int rc;
-	/* no active contexts -> contexts_num == 0 */
+	 
 	rc = atomic_cmpxchg(&adapter->contexts_num, 0, -1);
 	return rc ? -EBUSY : 0;
 }
@@ -300,12 +293,7 @@ void cxl_adapter_context_unlock(struct cxl *adapter)
 {
 	int val = atomic_cmpxchg(&adapter->contexts_num, -1, 0);
 
-	/*
-	 * contexts lock taken -> contexts_num == -1
-	 * If not true then show a warning and force reset the lock.
-	 * This will happen when context_unlock was requested without
-	 * doing a context_lock.
-	 */
+	 
 	if (val != -1) {
 		atomic_set(&adapter->contexts_num, 0);
 		WARN(1, "Adapter context unlocked with %d active contexts",
@@ -325,10 +313,7 @@ static int __init init_cxl(void)
 
 	cxl_debugfs_init();
 
-	/*
-	 * we don't register the callback on P9. slb callack is only
-	 * used for the PSL8 MMU and CX4.
-	 */
+	 
 	if (cxl_is_power8()) {
 		rc = register_cxl_calls(&cxl_calls);
 		if (rc)

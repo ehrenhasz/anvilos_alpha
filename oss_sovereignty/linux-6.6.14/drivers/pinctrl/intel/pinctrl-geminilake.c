@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Gemini Lake SoC pinctrl/GPIO driver
- *
- * Copyright (C) 2017 Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -23,7 +18,7 @@
 #define GLK_COMMUNITY(b, s, e)				\
 	INTEL_COMMUNITY_SIZE(b, s, e, 32, 4, GLK)
 
-/* GLK */
+ 
 static const struct pinctrl_pin_desc glk_northwest_pins[] = {
 	PINCTRL_PIN(0, "TCK"),
 	PINCTRL_PIN(1, "TRST_B"),

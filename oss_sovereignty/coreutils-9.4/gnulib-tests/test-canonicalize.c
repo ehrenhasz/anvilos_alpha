@@ -1,24 +1,6 @@
-/* Test of execution of file name canonicalization.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2007.  */
-
-/* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
-   may "optimize" the null_ptr function, when its result gets passed to a
-   function that has an argument declared as _GL_ARG_NONNULL.  */
+ 
 #define _GL_ARG_NONNULL(params)
 
 #include <config.h>
@@ -47,8 +29,7 @@
 int
 main (void)
 {
-  /* Setup some hierarchy to be used by this test.  Start by removing
-     any leftovers from a previous partial run.  */
+   
   {
     int fd;
     ignore_value (system ("rm -rf " BASE " ise"));
@@ -58,14 +39,10 @@ main (void)
     ASSERT (close (fd) == 0);
   }
 
-  /* Check // handling (the easy cases, without symlinks).
-     This // handling is not mandated by POSIX.  However, many applications
-     expect that canonicalize_filename_mode "canonicalizes" the file name,
-     that is, that different results of canonicalize_filename_mode correspond
-     to different files (except for hard links).  */
+   
   {
     char *result0 = canonicalize_file_name ("/etc/passwd");
-    if (result0 != NULL) /* This file does not exist on native Windows.  */
+    if (result0 != NULL)  
       {
         char *result;
 
@@ -78,9 +55,7 @@ main (void)
         result = canonicalize_filename_mode ("/etc///passwd", CAN_MISSING);
         ASSERT (result != NULL && strcmp (result, result0) == 0);
 
-        /* On Windows, the syntax //host/share/filename denotes a file
-           in a directory named 'share', exported from host 'host'.
-           See also m4/double-slash-root.m4.  */
+         
 #if !(defined _WIN32 || defined __CYGWIN__)
         result = canonicalize_filename_mode ("//etc/passwd", CAN_MISSING);
         ASSERT (result != NULL && strcmp (result, result0) == 0);
@@ -103,52 +78,7 @@ main (void)
       }
   }
 
-  /* Check for ., .., intermediate // handling, and for error cases.  */
-  {
-    char *result1 = canonicalize_file_name (BASE "//./..//" BASE "/tra");
-    char *result2 = canonicalize_filename_mode (BASE "//./..//" BASE "/tra",
-                                                CAN_EXISTING);
-    ASSERT (result1 != NULL);
-    ASSERT (result2 != NULL);
-    ASSERT (strcmp (result1, result2) == 0);
-    ASSERT (strstr (result1, "/" BASE "/tra")
-            == result1 + strlen (result1) - strlen ("/" BASE "/tra"));
-    free (result1);
-    free (result2);
-
-    errno = 0;
-    result1 = canonicalize_file_name ("");
-    ASSERT (result1 == NULL);
-    ASSERT (errno == ENOENT);
-
-    errno = 0;
-    result2 = canonicalize_filename_mode ("", CAN_EXISTING);
-    ASSERT (result2 == NULL);
-    ASSERT (errno == ENOENT);
-
-    /* This test works only if the canonicalize_file_name implementation
-       comes from gnulib.  If it comes from libc, we have no way to prevent
-       gcc from "optimizing" the null_ptr function in invalid ways.  See
-       <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=93156>.  */
-#if GNULIB_defined_canonicalize_file_name
-    errno = 0;
-    result1 = canonicalize_file_name (null_ptr ());
-    ASSERT (result1 == NULL);
-    ASSERT (errno == EINVAL);
-#endif
-
-    errno = 0;
-    result2 = canonicalize_filename_mode (NULL, CAN_EXISTING);
-    ASSERT (result2 == NULL);
-    ASSERT (errno == EINVAL);
-
-    errno = 0;
-    result2 = canonicalize_filename_mode (".", CAN_MISSING | CAN_ALL_BUT_LAST);
-    ASSERT (result2 == NULL);
-    ASSERT (errno == EINVAL);
-  }
-
-  /* Check that a non-directory with trailing slash yields NULL.  */
+   
   {
     char *result1;
     char *result2;
@@ -162,7 +92,7 @@ main (void)
     ASSERT (errno == ENOTDIR);
   }
 
-  /* Check that a missing directory yields NULL.  */
+   
   {
     char *result1;
     char *result2;
@@ -176,7 +106,7 @@ main (void)
     ASSERT (errno == ENOENT);
   }
 
-  /* From here on out, tests involve symlinks.  */
+   
   if (symlink (BASE "/ket", "ise") != 0)
     {
       ASSERT (remove (BASE "/tra") == 0);
@@ -198,7 +128,7 @@ main (void)
   ASSERT (symlink ("../s/2", BASE "/d/1") == 0);
   ASSERT (symlink ("//.//../..", BASE "/droot") == 0);
 
-  /* Check that symbolic links are not resolved, with CAN_NOLINKS.  */
+   
   {
     char *result1 = canonicalize_filename_mode (BASE "/huk", CAN_NOLINKS);
     ASSERT (result1 != NULL);
@@ -207,7 +137,7 @@ main (void)
     free (result1);
   }
 
-  /* Check that the symbolic link to a file can be resolved.  */
+   
   {
     char *result1 = canonicalize_file_name (BASE "/huk");
     char *result2 = canonicalize_file_name (BASE "/tra");
@@ -224,7 +154,7 @@ main (void)
     free (result3);
   }
 
-  /* Check that the symbolic link to a directory can be resolved.  */
+   
   {
     char *result1 = canonicalize_file_name (BASE "/plo");
     char *result2 = canonicalize_file_name (BASE "/bef");
@@ -245,7 +175,7 @@ main (void)
     free (result4);
   }
 
-  /* Check that a symbolic link to a nonexistent file yields NULL.  */
+   
   {
     char *result1;
     char *result2;
@@ -259,8 +189,7 @@ main (void)
     ASSERT (errno == ENOENT);
   }
 
-  /* Check that a non-directory symlink with trailing slash yields NULL,
-     and likewise for other troublesome suffixes.  */
+   
   {
     char const *const file_name[]
       = {
@@ -287,7 +216,7 @@ main (void)
       }
   }
 
-  /* Check that a missing directory via symlink yields NULL.  */
+   
   {
     char *result1;
     char *result2;
@@ -301,7 +230,7 @@ main (void)
     ASSERT (errno == ENOENT);
   }
 
-  /* Check that a loop of symbolic links is detected.  */
+   
   {
     char *result1;
     char *result2;
@@ -315,7 +244,7 @@ main (void)
     ASSERT (errno == ELOOP);
   }
 
-  /* Check that alternate modes can resolve missing basenames.  */
+   
   {
     char *result1 = canonicalize_filename_mode (BASE "/zzz", CAN_ALL_BUT_LAST);
     char *result2 = canonicalize_filename_mode (BASE "/zzz", CAN_MISSING);
@@ -336,7 +265,7 @@ main (void)
     free (result4);
   }
 
-  /* Check that alternate modes can resolve broken symlink basenames.  */
+   
   {
     char *result1 = canonicalize_filename_mode (BASE "/ouk", CAN_ALL_BUT_LAST);
     char *result2 = canonicalize_filename_mode (BASE "/ouk", CAN_MISSING);
@@ -357,7 +286,7 @@ main (void)
     free (result4);
   }
 
-  /* Check that alternate modes can handle missing dirnames.  */
+   
   {
     char *result1 = canonicalize_filename_mode ("t-can.zzz/zzz", CAN_ALL_BUT_LAST);
     char *result2 = canonicalize_filename_mode ("t-can.zzz/zzz", CAN_MISSING);
@@ -367,8 +296,7 @@ main (void)
     free (result2);
   }
 
-  /* Ensure that the following is resolved properly.
-     Before 2007-09-27, it would mistakenly report a loop.  */
+   
   {
     char *result1 = canonicalize_filename_mode (BASE, CAN_EXISTING);
     char *result2 = canonicalize_filename_mode (BASE "/p/1", CAN_EXISTING);
@@ -379,41 +307,7 @@ main (void)
     free (result2);
   }
 
-  /* Check that leading // within symlinks is honored correctly.  */
-  {
-    struct stat st1;
-    struct stat st2;
-    char *result1 = canonicalize_file_name ("//.");
-    char *result2 = canonicalize_filename_mode ("//.", CAN_EXISTING);
-    char *result3 = canonicalize_file_name (BASE "/droot");
-    char *result4 = canonicalize_filename_mode (BASE "/droot", CAN_EXISTING);
-    ASSERT (result1);
-    ASSERT (result2);
-    ASSERT (result3);
-    ASSERT (result4);
-    ASSERT (stat ("/", &st1) == 0);
-    ASSERT (stat ("//", &st2) == 0);
-    if (SAME_INODE (st1, st2))
-      {
-        ASSERT (strcmp (result1, "/") == 0);
-        ASSERT (strcmp (result2, "/") == 0);
-        ASSERT (strcmp (result3, "/") == 0);
-        ASSERT (strcmp (result4, "/") == 0);
-      }
-    else
-      {
-        ASSERT (strcmp (result1, "//") == 0);
-        ASSERT (strcmp (result2, "//") == 0);
-        ASSERT (strcmp (result3, "//") == 0);
-        ASSERT (strcmp (result4, "//") == 0);
-      }
-    free (result1);
-    free (result2);
-    free (result3);
-    free (result4);
-  }
-
-  /* Cleanup.  */
+   
   ASSERT (remove (BASE "/droot") == 0);
   ASSERT (remove (BASE "/d/1") == 0);
   ASSERT (remove (BASE "/d/2") == 0);

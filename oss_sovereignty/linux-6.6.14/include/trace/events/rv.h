@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rv
 
@@ -65,8 +65,8 @@ DEFINE_EVENT(event_da_monitor, event_wip,
 DEFINE_EVENT(error_da_monitor, error_wip,
 	     TP_PROTO(char *state, char *event),
 	     TP_ARGS(state, event));
-#endif /* CONFIG_RV_MON_WIP */
-#endif /* CONFIG_DA_MON_EVENTS_IMPLICIT */
+#endif  
+#endif  
 
 #ifdef CONFIG_DA_MON_EVENTS_ID
 DECLARE_EVENT_CLASS(event_da_monitor_id,
@@ -124,7 +124,7 @@ DECLARE_EVENT_CLASS(error_da_monitor_id,
 );
 
 #ifdef CONFIG_RV_MON_WWNR
-/* id is the pid of the task */
+ 
 DEFINE_EVENT(event_da_monitor_id, event_wwnr,
 	     TP_PROTO(int id, char *state, char *event, char *next_state, bool final_state),
 	     TP_ARGS(id, state, event, next_state, final_state));
@@ -132,11 +132,11 @@ DEFINE_EVENT(event_da_monitor_id, event_wwnr,
 DEFINE_EVENT(error_da_monitor_id, error_wwnr,
 	     TP_PROTO(int id, char *state, char *event),
 	     TP_ARGS(id, state, event));
-#endif /* CONFIG_RV_MON_WWNR */
+#endif  
 
-#endif /* CONFIG_DA_MON_EVENTS_ID */
-#endif /* _TRACE_RV_H */
+#endif  
+#endif  
 
-/* This part ust be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #include <trace/define_trace.h>

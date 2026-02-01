@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Unisoc SC9863A platform clocks
- *
- * Copyright (C) 2019, Unisoc Communications Inc.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_SC9863A_H_
 #define _DT_BINDINGS_CLK_SC9863A_H_
@@ -336,4 +332,4 @@
 #define CLK_I2C6_EB		20
 #define CLK_AP_APB_GATE_NUM	(CLK_I2C6_EB + 1)
 
-#endif /* _DT_BINDINGS_CLK_SC9863A_H_ */
+#endif  

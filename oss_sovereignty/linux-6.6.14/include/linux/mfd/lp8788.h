@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI LP8788 MFD Device
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+ 
+ 
 
 #ifndef __MFD_LP8788_H__
 #define __MFD_LP8788_H__
@@ -36,7 +30,7 @@
 #define LP8788_ALM_IRQ		"ALARM_IRQ"
 
 enum lp8788_int_id {
-	/* interrup register 1 : Addr 00h */
+	 
 	LP8788_INT_TSDL,
 	LP8788_INT_TSDH,
 	LP8788_INT_UVLO,
@@ -46,7 +40,7 @@ enum lp8788_int_id {
 	LP8788_INT_COMP1,
 	LP8788_INT_COMP2,
 
-	/* interrupt register 2 : Addr 01h */
+	 
 	LP8788_INT_CHG_INPUT_STATE,
 	LP8788_INT_CHG_STATE,
 	LP8788_INT_EOC,
@@ -55,7 +49,7 @@ enum lp8788_int_id {
 	LP8788_INT_FULLCHG_TIMEOUT,
 	LP8788_INT_PRECHG_TIMEOUT,
 
-	/* interrupt register 3 : Addr 02h */
+	 
 	LP8788_INT_RTC_ALARM1 = 17,
 	LP8788_INT_RTC_ALARM2,
 	LP8788_INT_ENTER_SYS_SUPPORT,
@@ -90,8 +84,8 @@ enum lp8788_charger_event {
 
 enum lp8788_bl_ctrl_mode {
 	LP8788_BL_REGISTER_ONLY,
-	LP8788_BL_COMB_PWM_BASED,	/* PWM + I2C, changed by PWM input */
-	LP8788_BL_COMB_REGISTER_BASED,	/* PWM + I2C, changed by I2C */
+	LP8788_BL_COMB_PWM_BASED,	 
+	LP8788_BL_COMB_REGISTER_BASED,	 
 };
 
 enum lp8788_bl_dim_mode {
@@ -157,45 +151,25 @@ enum lp8788_adc_id {
 
 struct lp8788;
 
-/*
- * lp8788_buck1_dvs
- * @gpio         : gpio pin number for dvs control
- * @vsel         : dvs selector for buck v1 register
- */
+ 
 struct lp8788_buck1_dvs {
 	int gpio;
 	enum lp8788_dvs_sel vsel;
 };
 
-/*
- * lp8788_buck2_dvs
- * @gpio         : two gpio pin numbers are used for dvs
- * @vsel         : dvs selector for buck v2 register
- */
+ 
 struct lp8788_buck2_dvs {
 	int gpio[LP8788_NUM_BUCK2_DVS];
 	enum lp8788_dvs_sel vsel;
 };
 
-/*
- * struct lp8788_chg_param
- * @addr         : charging control register address (range : 0x11 ~ 0x1C)
- * @val          : charging parameter value
- */
+ 
 struct lp8788_chg_param {
 	u8 addr;
 	u8 val;
 };
 
-/*
- * struct lp8788_charger_platform_data
- * @adc_vbatt         : adc channel name for battery voltage
- * @adc_batt_temp     : adc channel name for battery temperature
- * @max_vbatt_mv      : used for calculating battery capacity
- * @chg_params        : initial charging parameters
- * @num_chg_params    : numbers of charging parameters
- * @charger_event     : the charger event can be reported to the platform side
- */
+ 
 struct lp8788_charger_platform_data {
 	const char *adc_vbatt;
 	const char *adc_batt_temp;
@@ -206,19 +180,7 @@ struct lp8788_charger_platform_data {
 				enum lp8788_charger_event event);
 };
 
-/*
- * struct lp8788_backlight_platform_data
- * @name                  : backlight driver name. (default: "lcd-backlight")
- * @initial_brightness    : initial value of backlight brightness
- * @bl_mode               : brightness control by pwm or lp8788 register
- * @dim_mode              : dimming mode selection
- * @full_scale            : full scale current setting
- * @rise_time             : brightness ramp up step time
- * @fall_time             : brightness ramp down step time
- * @pwm_pol               : pwm polarity setting when bl_mode is pwm based
- * @period_ns             : platform specific pwm period value. unit is nano.
-			    Only valid when bl_mode is LP8788_BL_COMB_PWM_BASED
- */
+ 
 struct lp8788_backlight_platform_data {
 	char *name;
 	int initial_brightness;
@@ -231,13 +193,7 @@ struct lp8788_backlight_platform_data {
 	unsigned int period_ns;
 };
 
-/*
- * struct lp8788_led_platform_data
- * @name         : led driver name. (default: "keyboard-backlight")
- * @scale        : current scale
- * @num          : current sink number
- * @iout_code    : current output value (Addr 9Ah ~ 9Bh)
- */
+ 
 struct lp8788_led_platform_data {
 	char *name;
 	enum lp8788_isink_scale scale;
@@ -245,14 +201,7 @@ struct lp8788_led_platform_data {
 	int iout_code;
 };
 
-/*
- * struct lp8788_vib_platform_data
- * @name         : vibrator driver name
- * @scale        : current scale
- * @num          : current sink number
- * @iout_code    : current output value (Addr 9Ah ~ 9Bh)
- * @pwm_code     : PWM code value (Addr 9Ch ~ 9Eh)
- */
+ 
 struct lp8788_vib_platform_data {
 	char *name;
 	enum lp8788_isink_scale scale;
@@ -261,58 +210,36 @@ struct lp8788_vib_platform_data {
 	int pwm_code;
 };
 
-/*
- * struct lp8788_platform_data
- * @init_func    : used for initializing registers
- *                 before mfd driver is registered
- * @buck_data    : regulator initial data for buck
- * @dldo_data    : regulator initial data for digital ldo
- * @aldo_data    : regulator initial data for analog ldo
- * @buck1_dvs    : gpio configurations for buck1 dvs
- * @buck2_dvs    : gpio configurations for buck2 dvs
- * @chg_pdata    : platform data for charger driver
- * @alarm_sel    : rtc alarm selection (1 or 2)
- * @bl_pdata     : configurable data for backlight driver
- * @led_pdata    : configurable data for led driver
- * @vib_pdata    : configurable data for vibrator driver
- * @adc_pdata    : iio map data for adc driver
- */
+ 
 struct lp8788_platform_data {
-	/* general system information */
+	 
 	int (*init_func) (struct lp8788 *lp);
 
-	/* regulators */
+	 
 	struct regulator_init_data *buck_data[LP8788_NUM_BUCKS];
 	struct regulator_init_data *dldo_data[LP8788_NUM_DLDOS];
 	struct regulator_init_data *aldo_data[LP8788_NUM_ALDOS];
 	struct lp8788_buck1_dvs *buck1_dvs;
 	struct lp8788_buck2_dvs *buck2_dvs;
 
-	/* charger */
+	 
 	struct lp8788_charger_platform_data *chg_pdata;
 
-	/* rtc alarm */
+	 
 	enum lp8788_alarm_sel alarm_sel;
 
-	/* backlight */
+	 
 	struct lp8788_backlight_platform_data *bl_pdata;
 
-	/* current sinks */
+	 
 	struct lp8788_led_platform_data *led_pdata;
 	struct lp8788_vib_platform_data *vib_pdata;
 
-	/* adc iio map data */
+	 
 	struct iio_map *adc_pdata;
 };
 
-/*
- * struct lp8788
- * @dev          : parent device pointer
- * @regmap       : used for i2c communcation on accessing registers
- * @irqdm        : interrupt domain for handling nested interrupt
- * @irq          : pin number of IRQ_N
- * @pdata        : lp8788 platform specific data
- */
+ 
 struct lp8788 {
 	struct device *dev;
 	struct regmap *regmap;

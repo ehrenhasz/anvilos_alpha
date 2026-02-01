@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+ 
 
 #include "core.h"
 #include <linux/pds/pds_auxbus.h>

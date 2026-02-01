@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "ia_css_types.h"
 #include "sh_css_defs.h"
@@ -50,7 +38,7 @@ ia_css_ae_encode(
     unsigned int size)
 {
 	(void)size;
-	/* coefficients to calculate Y */
+	 
 	to->y_coef_r =
 	    uDIGIT_FITTING(from->ae_y_coef_r, 16, SH_CSS_AE_YCOEF_SHIFT);
 	to->y_coef_g =
@@ -66,7 +54,7 @@ ia_css_awb_encode(
     unsigned int size)
 {
 	(void)size;
-	/* AWB level gate */
+	 
 	to->lg_high_raw =
 	    uDIGIT_FITTING(from->awb_lg_high_raw, 16, s3a_raw_bit_depth);
 	to->lg_low =
@@ -84,7 +72,7 @@ ia_css_af_encode(
 	unsigned int i;
 	(void)size;
 
-	/* af fir coefficients */
+	 
 	for (i = 0; i < 7; ++i) {
 		to->fir1[i] =
 		    sDIGIT_FITTING(from->af_fir1_coef[i], 15,
@@ -230,7 +218,7 @@ ia_css_s3a_hmem_decode(
 	struct ia_css_3a_rgby_output	*out_ptr;
 	int			i;
 
-	/* pixel counts(BQ) for 3A area */
+	 
 	int count_for_3a;
 	int sum_r, diff;
 
@@ -246,18 +234,17 @@ ia_css_s3a_hmem_decode(
 
 	ia_css_bh_hmem_decode(out_ptr, hmem_buf);
 
-	/* Calculate sum of histogram of R,
-	   which should not be less than count_for_3a */
+	 
 	sum_r = 0;
 	for (i = 0; i < HMEM_UNIT_SIZE; i++) {
 		sum_r += out_ptr[i].r;
 	}
 	if (sum_r < count_for_3a) {
-		/* histogram is invalid */
+		 
 		return;
 	}
 
-	/* Verify for sum of histogram of R/G/B/Y */
+	 
 #if 0
 	{
 		int sum_g = 0;
@@ -270,18 +257,13 @@ ia_css_s3a_hmem_decode(
 			sum_y += out_ptr[i].y;
 		}
 		if (sum_g != sum_r || sum_b != sum_r || sum_y != sum_r) {
-			/* histogram is invalid */
+			 
 			return;
 		}
 	}
 #endif
 
-	/*
-	 * Limit the histogram area only to 3A area.
-	 * In DSP, the histogram of 0 is incremented for pixels
-	 * which are outside of 3A area. That amount should be subtracted here.
-	 *   hist[0] = hist[0] - ((sum of all hist[]) - (pixel count for 3A area))
-	 */
+	 
 	diff = sum_r - count_for_3a;
 	out_ptr[0].r -= diff;
 	out_ptr[0].g -= diff;
@@ -306,9 +288,7 @@ ia_css_s3a_dmem_decode(
 	height     = host_stats->grid.height;
 	host_ptr   = host_stats->data;
 
-	/* Getting 3A statistics from DMEM does not involve any
-	 * transformation (like the VMEM version), we just copy the data
-	 * using a different output width. */
+	 
 	for (i = 0; i < height; i++) {
 		memcpy(host_ptr, isp_stats, host_width * sizeof(*host_ptr));
 		isp_stats += isp_width;
@@ -316,7 +296,7 @@ ia_css_s3a_dmem_decode(
 	}
 }
 
-/* MW: this is an ISP function */
+ 
 static inline int
 merge_hi_lo_14(unsigned short hi, unsigned short lo)
 {

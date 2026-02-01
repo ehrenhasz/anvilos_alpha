@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  STM32 ALSA SoC Digital Audio Interface (I2S) driver.
- *
- * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
- * Author(s): Olivier Moysan <olivier.moysan@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -35,7 +30,7 @@
 #define STM32_I2S_IPIDR_REG	0x3F8
 #define STM32_I2S_SIDR_REG	0x3FC
 
-/* Bit definition for SPI2S_CR1 register */
+ 
 #define I2S_CR1_SPE		BIT(0)
 #define I2S_CR1_CSTART		BIT(9)
 #define I2S_CR1_CSUSP		BIT(10)
@@ -45,13 +40,13 @@
 #define I2S_CR1_RCRCI		BIT(14)
 #define I2S_CR1_TCRCI		BIT(15)
 
-/* Bit definition for SPI_CFG2 register */
+ 
 #define I2S_CFG2_IOSWP_SHIFT	15
 #define I2S_CFG2_IOSWP		BIT(I2S_CFG2_IOSWP_SHIFT)
 #define I2S_CFG2_LSBFRST	BIT(23)
 #define I2S_CFG2_AFCNTR		BIT(31)
 
-/* Bit definition for SPI_CFG1 register */
+ 
 #define I2S_CFG1_FTHVL_SHIFT	5
 #define I2S_CFG1_FTHVL_MASK	GENMASK(8, I2S_CFG1_FTHVL_SHIFT)
 #define I2S_CFG1_FTHVL_SET(x)	((x) << I2S_CFG1_FTHVL_SHIFT)
@@ -59,7 +54,7 @@
 #define I2S_CFG1_TXDMAEN	BIT(15)
 #define I2S_CFG1_RXDMAEN	BIT(14)
 
-/* Bit definition for SPI2S_IER register */
+ 
 #define I2S_IER_RXPIE		BIT(0)
 #define I2S_IER_TXPIE		BIT(1)
 #define I2S_IER_DPXPIE		BIT(2)
@@ -72,7 +67,7 @@
 #define I2S_IER_MODFIE		BIT(9)
 #define I2S_IER_TSERFIE		BIT(10)
 
-/* Bit definition for SPI2S_SR register */
+ 
 #define I2S_SR_RXP		BIT(0)
 #define I2S_SR_TXP		BIT(1)
 #define I2S_SR_DPXP		BIT(2)
@@ -91,7 +86,7 @@
 
 #define I2S_SR_MASK		GENMASK(15, 0)
 
-/* Bit definition for SPI_IFCR register */
+ 
 #define I2S_IFCR_EOTC		BIT(3)
 #define I2S_IFCR_TXTFC		BIT(4)
 #define I2S_IFCR_UDRC		BIT(5)
@@ -104,7 +99,7 @@
 
 #define I2S_IFCR_MASK		GENMASK(11, 3)
 
-/* Bit definition for SPI_I2SCGFR register */
+ 
 #define I2S_CGFR_I2SMOD		BIT(0)
 
 #define I2S_CGFR_I2SCFG_SHIFT	1
@@ -140,19 +135,19 @@
 #define I2S_CGFR_ODD		BIT(I2S_CGFR_ODD_SHIFT)
 #define I2S_CGFR_MCKOE		BIT(25)
 
-/* Registers below apply to I2S version 1.1 and more */
+ 
 
-/* Bit definition for SPI_HWCFGR register */
+ 
 #define I2S_HWCFGR_I2S_SUPPORT_MASK	GENMASK(15, 12)
 
-/* Bit definition for SPI_VERR register */
+ 
 #define I2S_VERR_MIN_MASK	GENMASK(3, 0)
 #define I2S_VERR_MAJ_MASK	GENMASK(7, 4)
 
-/* Bit definition for SPI_IPIDR register */
+ 
 #define I2S_IPIDR_ID_MASK	GENMASK(31, 0)
 
-/* Bit definition for SPI_SIDR register */
+ 
 #define I2S_SIDR_ID_MASK	GENMASK(31, 0)
 
 #define I2S_IPIDR_NUMBER	0x00130022
@@ -201,32 +196,7 @@ enum i2s_datlen {
 #define STM32_I2S_NAME_LEN		32
 #define STM32_I2S_RATE_11K		11025
 
-/**
- * struct stm32_i2s_data - private data of I2S
- * @regmap_conf: I2S register map configuration pointer
- * @regmap: I2S register map pointer
- * @pdev: device data pointer
- * @dai_drv: DAI driver pointer
- * @dma_data_tx: dma configuration data for tx channel
- * @dma_data_rx: dma configuration data for tx channel
- * @substream: PCM substream data pointer
- * @i2sclk: kernel clock feeding the I2S clock generator
- * @i2smclk: master clock from I2S mclk provider
- * @pclk: peripheral clock driving bus interface
- * @x8kclk: I2S parent clock for sampling frequencies multiple of 8kHz
- * @x11kclk: I2S parent clock for sampling frequencies multiple of 11kHz
- * @base:  mmio register base virtual address
- * @phys_addr: I2S registers physical base address
- * @lock_fd: lock to manage race conditions in full duplex mode
- * @irq_lock: prevent race condition with IRQ
- * @mclk_rate: master clock frequency (Hz)
- * @fmt: DAI protocol
- * @divider: prescaler division ratio
- * @div: prescaler div field
- * @odd: prescaler odd field
- * @refcount: keep count of opened streams on I2S
- * @ms_flg: master mode flag.
- */
+ 
 struct stm32_i2s_data {
 	const struct regmap_config *regmap_conf;
 	struct regmap *regmap;
@@ -242,8 +212,8 @@ struct stm32_i2s_data {
 	struct clk *x11kclk;
 	void __iomem *base;
 	dma_addr_t phys_addr;
-	spinlock_t lock_fd; /* Manage race conditions for full duplex */
-	spinlock_t irq_lock; /* used to prevent race condition with IRQ */
+	spinlock_t lock_fd;  
+	spinlock_t irq_lock;  
 	unsigned int mclk_rate;
 	unsigned int fmt;
 	unsigned int divider;
@@ -270,20 +240,20 @@ static int stm32_i2s_calc_clk_div(struct stm32_i2s_data *i2s,
 
 	ratio = DIV_ROUND_CLOSEST(input_rate, output_rate);
 
-	/* Check the parity of the divider */
+	 
 	odd = ratio & 0x1;
 
-	/* Compute the div prescaler */
+	 
 	div = ratio >> 1;
 
-	/* If div is 0 actual divider is 1 */
+	 
 	if (div) {
 		divider = ((2 * div) + odd);
 		dev_dbg(&i2s->pdev->dev, "Divider: 2*%d(div)+%d(odd) = %d\n",
 			div, odd, divider);
 	}
 
-	/* Division by three is not allowed by I2S prescaler */
+	 
 	if ((div == 1 && odd) || div > I2S_CGFR_I2SDIV_MAX) {
 		dev_err(&i2s->pdev->dev, "Wrong divider setting\n");
 		return -EINVAL;
@@ -423,10 +393,7 @@ static int stm32_i2s_add_mclk_provider(struct stm32_i2s_data *i2s)
 	if (!mclk_name)
 		return -ENOMEM;
 
-	/*
-	 * Forge mclk clock name from parent clock name and suffix.
-	 * String after "_" char is stripped in parent name.
-	 */
+	 
 	p = mclk_name;
 	while (*s && *s != '_' && (i < (STM32_I2S_NAME_LEN - 7))) {
 		*p++ = *s++;
@@ -446,7 +413,7 @@ static int stm32_i2s_add_mclk_provider(struct stm32_i2s_data *i2s)
 	}
 	i2s->i2smclk = hw->clk;
 
-	/* register mclk provider */
+	 
 	return devm_of_clk_add_hw_provider(dev, of_clk_hw_simple_get, hw);
 }
 
@@ -548,10 +515,7 @@ static int stm32_i2s_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 
 	dev_dbg(cpu_dai->dev, "fmt %x\n", fmt);
 
-	/*
-	 * winv = 0 : default behavior (high/low) for all standards
-	 * ckpol = 0 for all standards.
-	 */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		cgfr = I2S_CGFR_I2SSTD_SET(I2S_STD_I2S);
@@ -565,14 +529,14 @@ static int stm32_i2s_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 	case SND_SOC_DAIFMT_DSP_A:
 		cgfr = I2S_CGFR_I2SSTD_SET(I2S_STD_DSP);
 		break;
-	/* DSP_B not mapped on I2S PCM long format. 1 bit offset does not fit */
+	 
 	default:
 		dev_err(cpu_dai->dev, "Unsupported protocol %#x\n",
 			fmt & SND_SOC_DAIFMT_FORMAT_MASK);
 		return -EINVAL;
 	}
 
-	/* DAI clock strobing */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -592,7 +556,7 @@ static int stm32_i2s_set_dai_fmt(struct snd_soc_dai *cpu_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* DAI clock master masks */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BC_FC:
 		i2s->ms_flg = I2S_MS_SLAVE;
@@ -621,16 +585,16 @@ static int stm32_i2s_set_sysclk(struct snd_soc_dai *cpu_dai,
 		freq, STM32_I2S_IS_MASTER(i2s) ? "master" : "slave",
 		dir ? "output" : "input");
 
-	/* MCLK generation is available only in master mode */
+	 
 	if (dir == SND_SOC_CLOCK_OUT && STM32_I2S_IS_MASTER(i2s)) {
 		if (!i2s->i2smclk) {
 			dev_dbg(cpu_dai->dev, "No MCLK registered\n");
 			return 0;
 		}
 
-		/* Assume shutdown if requested frequency is 0Hz */
+		 
 		if (!freq) {
-			/* Release mclk rate only if rate was actually set */
+			 
 			if (i2s->mclk_rate) {
 				clk_rate_exclusive_put(i2s->i2smclk);
 				i2s->mclk_rate = 0;
@@ -639,7 +603,7 @@ static int stm32_i2s_set_sysclk(struct snd_soc_dai *cpu_dai,
 						  STM32_I2S_CGFR_REG,
 						  I2S_CGFR_MCKOE, 0);
 		}
-		/* If master clock is used, set parent clock now */
+		 
 		ret = stm32_i2s_set_parent_clock(i2s, freq);
 		if (ret)
 			return ret;
@@ -673,18 +637,7 @@ static int stm32_i2s_configure_clock(struct snd_soc_dai *cpu_dai,
 		clk_set_parent(i2s->i2sclk, i2s->x8kclk);
 	i2s_clock_rate = clk_get_rate(i2s->i2sclk);
 
-	/*
-	 * mckl = mclk_ratio x ws
-	 *   i2s mode : mclk_ratio = 256
-	 *   dsp mode : mclk_ratio = 128
-	 *
-	 * mclk on
-	 *   i2s mode : div = i2s_clk / (mclk_ratio * ws)
-	 *   dsp mode : div = i2s_clk / (mclk_ratio * ws)
-	 * mclk off
-	 *   i2s mode : div = i2s_clk / (nb_bits x ws)
-	 *   dsp mode : div = i2s_clk / (nb_bits x ws)
-	 */
+	 
 	if (i2s->mclk_rate) {
 		ret = stm32_i2s_calc_clk_div(i2s, i2s_clock_rate,
 					     i2s->mclk_rate);
@@ -696,7 +649,7 @@ static int stm32_i2s_configure_clock(struct snd_soc_dai *cpu_dai,
 		    SND_SOC_DAIFMT_DSP_A)
 			frame_len = 16;
 
-		/* master clock not enabled */
+		 
 		ret = regmap_read(i2s->regmap, STM32_I2S_CGFR_REG, &cgfr);
 		if (ret < 0)
 			return ret;
@@ -712,7 +665,7 @@ static int stm32_i2s_configure_clock(struct snd_soc_dai *cpu_dai,
 	if (ret < 0)
 		return ret;
 
-	/* Set bitclock and frameclock to their inactive state */
+	 
 	return regmap_update_bits(i2s->regmap, STM32_I2S_CFG2_REG,
 				  I2S_CFG2_AFCNTR, I2S_CFG2_AFCNTR);
 }
@@ -745,7 +698,7 @@ static int stm32_i2s_configure(struct snd_soc_dai *cpu_dai,
 	if (STM32_I2S_IS_SLAVE(i2s)) {
 		cfgr |= I2S_CGFR_I2SCFG_SET(I2S_I2SMOD_FD_SLAVE);
 
-		/* As data length is either 16 or 32 bits, fixch always set */
+		 
 		cfgr |= I2S_CGFR_FIXCH;
 		cfgr_mask |= I2S_CGFR_FIXCH;
 	} else {
@@ -821,7 +774,7 @@ static int stm32_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_RESUME:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
-		/* Enable i2s */
+		 
 		dev_dbg(cpu_dai->dev, "start I2S %s\n",
 			playback_flg ? "playback" : "capture");
 
@@ -854,7 +807,7 @@ static int stm32_i2s_trigger(struct snd_pcm_substream *substream, int cmd,
 			ier = I2S_IER_OVRIE;
 
 			if (STM32_I2S_IS_MASTER(i2s) && i2s->refcount == 1)
-				/* dummy write to gate bus clocks */
+				 
 				regmap_write(i2s->regmap,
 					     STM32_I2S_TXDR_REG, 0);
 		}
@@ -926,7 +879,7 @@ static int stm32_i2s_dai_probe(struct snd_soc_dai *cpu_dai)
 	struct snd_dmaengine_dai_dma_data *dma_data_tx = &i2s->dma_data_tx;
 	struct snd_dmaengine_dai_dma_data *dma_data_rx = &i2s->dma_data_rx;
 
-	/* Buswidth will be set by framework */
+	 
 	dma_data_tx->addr_width = DMA_SLAVE_BUSWIDTH_UNDEFINED;
 	dma_data_tx->addr = (dma_addr_t)(i2s->phys_addr) + STM32_I2S_TXDR_REG;
 	dma_data_tx->maxburst = 1;
@@ -1044,7 +997,7 @@ static int stm32_i2s_parse_dt(struct platform_device *pdev,
 
 	i2s->phys_addr = res->start;
 
-	/* Get clocks */
+	 
 	i2s->pclk = devm_clk_get(&pdev->dev, "pclk");
 	if (IS_ERR(i2s->pclk))
 		return dev_err_probe(&pdev->dev, PTR_ERR(i2s->pclk),
@@ -1065,14 +1018,14 @@ static int stm32_i2s_parse_dt(struct platform_device *pdev,
 		return dev_err_probe(&pdev->dev, PTR_ERR(i2s->x11kclk),
 				     "Could not get x11k parent clock\n");
 
-	/* Register mclk provider if requested */
+	 
 	if (of_property_present(np, "#clock-cells")) {
 		ret = stm32_i2s_add_mclk_provider(i2s);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* Get irqs */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -1084,7 +1037,7 @@ static int stm32_i2s_parse_dt(struct platform_device *pdev,
 		return ret;
 	}
 
-	/* Reset */
+	 
 	rst = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
 	if (IS_ERR(rst))
 		return dev_err_probe(&pdev->dev, PTR_ERR(rst),
@@ -1145,7 +1098,7 @@ static int stm32_i2s_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Set SPI/I2S in i2s mode */
+	 
 	ret = regmap_update_bits(i2s->regmap, STM32_I2S_CGFR_REG,
 				 I2S_CGFR_I2SMOD, I2S_CGFR_I2SMOD);
 	if (ret)
@@ -1206,7 +1159,7 @@ static int stm32_i2s_resume(struct device *dev)
 	regcache_cache_only(i2s->regmap, false);
 	return regcache_sync(i2s->regmap);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops stm32_i2s_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(stm32_i2s_suspend, stm32_i2s_resume)

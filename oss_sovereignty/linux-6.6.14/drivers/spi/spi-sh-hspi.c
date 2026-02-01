@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SuperH HSPI bus driver
- *
- * Copyright (C) 2011  Kuninori Morimoto
- *
- * Based on spi-sh.c:
- * Based on pxa2xx_spi.c:
- * Copyright (C) 2011 Renesas Solutions Corp.
- * Copyright (C) 2005 Stephen Street / StreetFire Sound Labs
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -30,7 +21,7 @@
 #define SPRBR	0x10
 #define SPCR2	0x14
 
-/* SPSR */
+ 
 #define RXFL	(1 << 2)
 
 struct hspi_priv {
@@ -40,9 +31,7 @@ struct hspi_priv {
 	struct clk *clk;
 };
 
-/*
- *		basic function
- */
+ 
 static void hspi_write(struct hspi_priv *hspi, int reg, u32 val)
 {
 	iowrite32(val, hspi->addr + reg);
@@ -63,9 +52,7 @@ static void hspi_bit_set(struct hspi_priv *hspi, int reg, u32 mask, u32 set)
 	hspi_write(hspi, reg, val);
 }
 
-/*
- *		transfer function
- */
+ 
 static int hspi_status_check_timeout(struct hspi_priv *hspi, u32 mask, u32 val)
 {
 	int t = 256;
@@ -81,9 +68,7 @@ static int hspi_status_check_timeout(struct hspi_priv *hspi, u32 mask, u32 val)
 	return -ETIMEDOUT;
 }
 
-/*
- *		spi host function
- */
+ 
 
 #define hspi_hw_cs_enable(hspi)		hspi_hw_cs_ctrl(hspi, 0)
 #define hspi_hw_cs_disable(hspi)	hspi_hw_cs_ctrl(hspi, 1)
@@ -101,25 +86,23 @@ static void hspi_hw_setup(struct hspi_priv *hspi,
 	u32 spcr, idiv_clk;
 	u32 rate, best_rate, min, tmp;
 
-	/*
-	 * find best IDIV/CLKCx settings
-	 */
+	 
 	min = ~0;
 	best_rate = 0;
 	spcr = 0;
 	for (idiv_clk = 0x00; idiv_clk <= 0x3F; idiv_clk++) {
 		rate = clk_get_rate(hspi->clk);
 
-		/* IDIV calculation */
+		 
 		if (idiv_clk & (1 << 5))
 			rate /= 128;
 		else
 			rate /= 16;
 
-		/* CLKCx calculation */
+		 
 		rate /= (((idiv_clk & 0x1F) + 1) * 2);
 
-		/* save best settings */
+		 
 		tmp = abs(t->speed_hz - rate);
 		if (tmp < min) {
 			min = tmp;
@@ -137,7 +120,7 @@ static void hspi_hw_setup(struct hspi_priv *hspi,
 
 	hspi_write(hspi, SPCR, spcr);
 	hspi_write(hspi, SPSR, 0x0);
-	hspi_write(hspi, SPSCR, 0x21);	/* master mode / CS control */
+	hspi_write(hspi, SPSCR, 0x21);	 
 }
 
 static int hspi_transfer_one_message(struct spi_controller *ctlr,
@@ -166,7 +149,7 @@ static int hspi_transfer_one_message(struct spi_controller *ctlr,
 
 		for (i = 0; i < t->len; i++) {
 
-			/* wait remains */
+			 
 			ret = hspi_status_check_timeout(hspi, 0x1, 0);
 			if (ret < 0)
 				break;
@@ -177,7 +160,7 @@ static int hspi_transfer_one_message(struct spi_controller *ctlr,
 
 			hspi_write(hspi, SPTBR, tx);
 
-			/* wait receive */
+			 
 			ret = hspi_status_check_timeout(hspi, 0x4, 0x4);
 			if (ret < 0)
 				break;
@@ -217,7 +200,7 @@ static int hspi_probe(struct platform_device *pdev)
 	struct clk *clk;
 	int ret;
 
-	/* get base addr */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "invalid resource\n");
@@ -238,7 +221,7 @@ static int hspi_probe(struct platform_device *pdev)
 	hspi = spi_controller_get_devdata(ctlr);
 	platform_set_drvdata(pdev, hspi);
 
-	/* init hspi */
+	 
 	hspi->ctlr	= ctlr;
 	hspi->dev	= &pdev->dev;
 	hspi->clk	= clk;
@@ -287,7 +270,7 @@ static void hspi_remove(struct platform_device *pdev)
 
 static const struct of_device_id hspi_of_match[] = {
 	{ .compatible = "renesas,hspi", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, hspi_of_match);
 

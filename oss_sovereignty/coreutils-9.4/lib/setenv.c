@@ -1,22 +1,4 @@
-/* Copyright (C) 1992, 1995-2003, 2005-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#if !_LIBC
-/* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
-   optimizes away the name == NULL test below.  */
+ 
 # define _GL_ARG_NONNULL(params)
 
 # define _GL_USE_STDLIB_ALLOC 1
@@ -25,7 +7,7 @@
 
 #include <alloca.h>
 
-/* Specification.  */
+ 
 #include <stdlib.h>
 
 #include <errno.h>
@@ -49,7 +31,7 @@
 #endif
 
 #if _LIBC
-/* This lock protects against simultaneous modifications of 'environ'.  */
+ 
 # include <bits/libc-lock.h>
 __libc_lock_define_initialized (static, envlock)
 # define LOCK   __libc_lock_lock (envlock)
@@ -59,7 +41,7 @@ __libc_lock_define_initialized (static, envlock)
 # define UNLOCK
 #endif
 
-/* In the GNU C library we must keep the namespace clean.  */
+ 
 #ifdef _LIBC
 # define setenv __setenv
 # define clearenv __clearenv
@@ -67,18 +49,14 @@ __libc_lock_define_initialized (static, envlock)
 # define tsearch __tsearch
 #endif
 
-/* In the GNU C library implementation we try to be more clever and
-   allow arbitrarily many changes of the environment given that the used
-   values are from a small set.  Outside glibc this will eat up all
-   memory after a while.  */
+ 
 #if defined _LIBC || (defined HAVE_SEARCH_H && defined HAVE_TSEARCH \
                       && (defined __GNUC__ || defined __clang__))
 # define USE_TSEARCH    1
 # include <search.h>
 typedef int (*compar_fn_t) (const void *, const void *);
 
-/* This is a pointer to the root of the search tree with the known
-   values.  */
+ 
 static void *known_values;
 
 # define KNOWN_VALUE(Str) \
@@ -98,17 +76,11 @@ static void *known_values;
 #endif
 
 
-/* If this variable is not a null pointer we allocated the current
-   environment.  */
+ 
 static char **last_environ;
 
 
-/* This function is used by 'setenv' and 'putenv'.  The difference between
-   the two functions is that for the former must create a new string which
-   is then placed in the environment, while the argument of 'putenv'
-   must be used directly.  This is all complicated by the fact that we try
-   to reuse values once generated for a 'setenv' call since we can never
-   free the strings.  */
+ 
 int
 __add_to_environ (const char *name, const char *value, const char *combined,
                   int replace)
@@ -120,8 +92,7 @@ __add_to_environ (const char *name, const char *value, const char *combined,
 
   LOCK;
 
-  /* We have to get the pointer now that we have the lock and not earlier
-     since another thread might have created a new environment.  */
+   
   ep = __environ;
 
   size = 0;
@@ -141,28 +112,26 @@ __add_to_environ (const char *name, const char *value, const char *combined,
       char *new_value;
 #endif
 
-      /* We allocated this space; we can extend it.  */
+       
       new_environ =
         (char **) (last_environ == NULL
                    ? malloc ((size + 2) * sizeof (char *))
                    : realloc (last_environ, (size + 2) * sizeof (char *)));
       if (new_environ == NULL)
         {
-          /* It's easier to set errno to ENOMEM than to rely on the
-             'malloc-posix' and 'realloc-posix' gnulib modules.  */
+           
           __set_errno (ENOMEM);
           UNLOCK;
           return -1;
         }
 
-      /* If the whole entry is given add it.  */
+       
       if (combined != NULL)
-        /* We must not add the string to the search tree since it belongs
-           to the user.  */
+         
         new_environ[size] = (char *) combined;
       else
         {
-          /* See whether the value is already known.  */
+           
 #ifdef USE_TSEARCH
 # ifdef _LIBC
           new_value = (char *) alloca (namelen + 1 + vallen);
@@ -203,9 +172,7 @@ __add_to_environ (const char *name, const char *value, const char *combined,
               new_environ[size][namelen] = '=';
               memcpy (&new_environ[size][namelen + 1], value, vallen);
 #endif
-              /* And save the value now.  We cannot do this when we remove
-                 the string since then we cannot decide whether it is a
-                 user string or not.  */
+               
               STORE_VALUE (new_environ[size]);
             }
 #if defined USE_TSEARCH && !defined _LIBC
@@ -225,7 +192,7 @@ __add_to_environ (const char *name, const char *value, const char *combined,
     {
       char *np;
 
-      /* Use the user string if given.  */
+       
       if (combined != NULL)
         np = (char *) combined;
       else
@@ -271,7 +238,7 @@ __add_to_environ (const char *name, const char *value, const char *combined,
               np[namelen] = '=';
               memcpy (&np[namelen + 1], value, vallen);
 #endif
-              /* And remember the value.  */
+               
               STORE_VALUE (np);
             }
 #if defined USE_TSEARCH && !defined _LIBC
@@ -299,9 +266,7 @@ setenv (const char *name, const char *value, int replace)
   return __add_to_environ (name, value, NULL, replace);
 }
 
-/* The 'clearenv' was planned to be added to POSIX.1 but probably
-   never made it.  Nevertheless the POSIX.9 standard (POSIX bindings
-   for Fortran 77) requires this function.  */
+ 
 int
 clearenv (void)
 {
@@ -309,12 +274,12 @@ clearenv (void)
 
   if (__environ == last_environ && __environ != NULL)
     {
-      /* We allocated this environment so we can free it.  */
+       
       free (__environ);
       last_environ = NULL;
     }
 
-  /* Clear the environment pointer removes the whole environment.  */
+   
   __environ = NULL;
 
   UNLOCK;
@@ -326,10 +291,10 @@ clearenv (void)
 static void
 free_mem (void)
 {
-  /* Remove all traces.  */
+   
   clearenv ();
 
-  /* Now remove the search tree.  */
+   
   __tdestroy (known_values, free);
   known_values = NULL;
 }
@@ -342,11 +307,9 @@ weak_alias (__setenv, setenv)
 weak_alias (__clearenv, clearenv)
 #endif
 
-#endif /* _LIBC || !HAVE_SETENV */
+#endif  
 
-/* The rest of this file is called into use when replacing an existing
-   but buggy setenv.  Known bugs include failure to diagnose invalid
-   name, and consuming a leading '=' from value.  */
+ 
 #if HAVE_SETENV
 
 # undef setenv
@@ -364,8 +327,7 @@ rpl_setenv (const char *name, const char *value, int replace)
       errno = EINVAL;
       return -1;
     }
-  /* Call the real setenv even if replace is 0, in case implementation
-     has underlying data to update, such as when environ changes.  */
+   
   result = setenv (name, value, replace);
   if (result == 0 && replace && *value == '=')
     {
@@ -380,7 +342,7 @@ rpl_setenv (const char *name, const char *value, int replace)
               errno = ENOMEM;
               return -1;
             }
-          /* Since leading '=' is eaten, double it up.  */
+           
           *tmp = '=';
           memcpy (tmp + 1, value, len + 1);
           result = setenv (name, tmp, replace);
@@ -392,4 +354,4 @@ rpl_setenv (const char *name, const char *value, int replace)
   return result;
 }
 
-#endif /* HAVE_SETENV */
+#endif  

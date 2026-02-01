@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "test_xdp_attach_fail.skel.h"
 
@@ -119,7 +119,7 @@ static void test_xdp_attach_fail(const char *file)
 	if (!ASSERT_EQ(err, 0, "test_xdp_attach_fail__attach"))
 		goto out_close;
 
-	/* set up perf buffer */
+	 
 	pb = perf_buffer__new(bpf_map__fd(skel->maps.xdp_errmsg_pb), 1,
 			      on_xdp_errmsg, NULL, &errmsg, NULL);
 	if (!ASSERT_OK_PTR(pb, "perf_buffer__new"))
@@ -129,18 +129,18 @@ static void test_xdp_attach_fail(const char *file)
 	if (!ASSERT_EQ(err, 0, "bpf_prog_test_load"))
 		goto out_close;
 
-	opts.flags = 0xFF; // invalid flags to fail to attach XDP prog
+	opts.flags = 0xFF; 
 	err = bpf_link_create(fd_xdp, IFINDEX_LO, BPF_XDP, &opts);
 	if (!ASSERT_EQ(err, -EINVAL, "bpf_link_create"))
 		goto out_close;
 
-	/* read perf buffer */
+	 
 	err = perf_buffer__poll(pb, 100);
 	if (!ASSERT_GT(err, -1, "perf_buffer__poll"))
 		goto out_close;
 
 	ASSERT_STRNEQ((const char *) errmsg.msg, tgt_errmsg,
-		      42 /* strlen(tgt_errmsg) */, "check error message");
+		      42  , "check error message");
 
 out_close:
 	perf_buffer__free(pb);

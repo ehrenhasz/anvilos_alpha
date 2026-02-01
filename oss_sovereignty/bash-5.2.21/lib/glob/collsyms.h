@@ -1,28 +1,8 @@
-/* collsyms.h -- collating symbol names and their corresponding characters
-		 (in ascii) as given by POSIX.2 in table 2.8. */
+ 
 
-/* Copyright (C) 1997-2002 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* The upper-case letters, lower-case letters, and digits are omitted from
-   this table.  The digits are not included in the table in the POSIX.2
-   spec.  The upper and lower case letters are translated by the code
-   in smatch.c:collsym(). */
+ 
 
 typedef struct _COLLSYM {
   XCHAR *name;
@@ -92,12 +72,12 @@ static __COLLSYM POSIXCOLL [] =
 	{  L("comma"),			L(',') },
 	{  L("hyphen"),			L('-') },
 	{  L("hyphen-minus"),		L('-') },
-	{  L("minus"),			L('-') },	/* extension from POSIX.2 */
-	{  L("dash"),			L('-') },	/* extension from POSIX.2 */
+	{  L("minus"),			L('-') },	 
+	{  L("dash"),			L('-') },	 
 	{  L("period"),			L('.') },
 	{  L("full-stop"),		L('.') },
 	{  L("slash"),			L('/') },
-	{  L("solidus"),		L('/') },	/* extension from POSIX.2 */
+	{  L("solidus"),		L('/') },	 
 	{  L("zero"),			L('0') },
 	{  L("one"),			L('1') },
 	{  L("two"),			L('2') },
@@ -115,20 +95,20 @@ static __COLLSYM POSIXCOLL [] =
 	{  L("greater-than-sign"),	L('>') },
 	{  L("question-mark"),		L('?') },
 	{  L("commercial-at"),		L('@') },
-	/* upper-case letters omitted */
+	 
 	{  L("left-square-bracket"),	L('[') },
 	{  L("backslash"),		L('\\') },
 	{  L("reverse-solidus"),	L('\\') },
 	{  L("right-square-bracket"),	L(']') },
 	{  L("circumflex"),		L('^') },
-	{  L("circumflex-accent"),	L('^') },	/* extension from POSIX.2 */
+	{  L("circumflex-accent"),	L('^') },	 
 	{  L("underscore"),		L('_') },
 	{  L("grave-accent"),		L('`') },
-	/* lower-case letters omitted */
-	{  L("left-brace"),		L('{') },	/* extension from POSIX.2 */
+	 
+	{  L("left-brace"),		L('{') },	 
 	{  L("left-curly-bracket"),	L('{') },
 	{  L("vertical-line"),		L('|') },
-	{  L("right-brace"),		L('}') },	/* extension from POSIX.2 */
+	{  L("right-brace"),		L('}') },	 
 	{  L("right-curly-bracket"),	L('}') },
 	{  L("tilde"),			L('~') },
 	{  L("DEL"),			L('\177') },

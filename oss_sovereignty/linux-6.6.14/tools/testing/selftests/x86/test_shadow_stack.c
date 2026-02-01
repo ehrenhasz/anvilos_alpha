@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This program test's basic kernel shadow stack support. It enables shadow
- * stack manual via the arch_prctl(), instead of relying on glibc. It's
- * Makefile doesn't compile with shadow stack support, so it doesn't rely on
- * any particular glibc. As a result it can't do any operations that require
- * special glibc shadow stack support (longjmp(), swapcontext(), etc). Just
- * stick to the basics and hope the compiler doesn't do anything strange.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -35,10 +28,7 @@
 #include <sys/signal.h>
 #include <linux/elf.h>
 
-/*
- * Define the ABI defines if needed, so people can run the tests
- * without building the headers.
- */
+ 
 #ifndef __NR_map_shadow_stack
 #define __NR_map_shadow_stack	453
 
@@ -81,16 +71,7 @@ static inline unsigned long __attribute__((always_inline)) get_ssp(void)
 	return ret;
 }
 
-/*
- * For use in inline enablement of shadow stack.
- *
- * The program can't return from the point where shadow stack gets enabled
- * because there will be no address on the shadow stack. So it can't use
- * syscall() for enablement, since it is a function.
- *
- * Based on code from nolibc.h. Keep a copy here because this can't pull in all
- * of nolibc.h.
- */
+ 
 #define ARCH_PRCTL(arg1, arg2)					\
 ({								\
 	long _ret;						\
@@ -143,7 +124,7 @@ void try_shstk(unsigned long new_ssp)
 	asm volatile("saveprevssp");
 	printf("[INFO]\tssp is now %lx\n", get_ssp());
 
-	/* Switch back to original shadow stack */
+	 
 	ssp -= 8;
 	asm volatile("rstorssp (%0)\n":: "r" (ssp));
 	asm volatile("saveprevssp");
@@ -168,16 +149,16 @@ int test_shstk_faults(void)
 {
 	unsigned long *shstk = create_shstk(0);
 
-	/* Read shadow stack, test if it's zero to not get read optimized out */
+	 
 	if (*shstk != 0)
 		goto err;
 
-	/* Wrss memory that was already read. */
+	 
 	write_shstk(shstk, 1);
 	if (*shstk != 1)
 		goto err;
 
-	/* Page out memory, so we can wrss it again. */
+	 
 	if (reset_shstk((void *)shstk))
 		goto err;
 
@@ -201,7 +182,7 @@ void __attribute__((noinline)) violate_ss(void)
 	saved_ssp = get_ssp();
 	saved_ssp_val = *(unsigned long *)saved_ssp;
 
-	/* Corrupt shadow stack */
+	 
 	printf("[INFO]\tCorrupting shadow stack\n");
 	write_shstk((void *)saved_ssp, 0);
 }
@@ -212,7 +193,7 @@ void segv_handler(int signum, siginfo_t *si, void *uc)
 
 	segv_triggered = true;
 
-	/* Fix shadow stack */
+	 
 	write_shstk((void *)saved_ssp, saved_ssp_val);
 }
 
@@ -227,7 +208,7 @@ int test_shstk_violation(void)
 
 	segv_triggered = false;
 
-	/* Make sure segv_triggered is set before violate_ss() */
+	 
 	asm volatile("" : : : "memory");
 
 	violate_ss();
@@ -239,7 +220,7 @@ int test_shstk_violation(void)
 	return !segv_triggered;
 }
 
-/* Gup test state */
+ 
 #define MAGIC_VAL 0x12345678
 bool is_shstk_access;
 void *shstk_ptr;
@@ -258,7 +239,7 @@ void test_access_fix_handler(int signum, siginfo_t *si, void *uc)
 
 	segv_triggered = true;
 
-	/* Fix shadow stack */
+	 
 	if (is_shstk_access) {
 		reset_test_shstk(shstk_ptr);
 		return;
@@ -359,7 +340,7 @@ int test_gup(void)
 
 	close(fd);
 
-	/* COW/gup test */
+	 
 	reset_test_shstk(0);
 	pid = fork();
 	if (!pid) {
@@ -406,35 +387,32 @@ int test_mprotect(void)
 
 	segv_triggered = false;
 
-	/* mprotect a shadow stack as read only */
+	 
 	reset_test_shstk(0);
 	if (mprotect(shstk_ptr, SS_SIZE, PROT_READ) < 0) {
 		printf("[FAIL]\tmprotect(PROT_READ) failed\n");
 		return 1;
 	}
 
-	/* try to wrss it and fail */
+	 
 	if (!test_shstk_access(shstk_ptr)) {
 		printf("[FAIL]\tShadow stack access to read-only memory succeeded\n");
 		return 1;
 	}
 
-	/*
-	 * The shadow stack was reset above to resolve the fault, make the new one
-	 * read-only.
-	 */
+	 
 	if (mprotect(shstk_ptr, SS_SIZE, PROT_READ) < 0) {
 		printf("[FAIL]\tmprotect(PROT_READ) failed\n");
 		return 1;
 	}
 
-	/* then back to writable */
+	 
 	if (mprotect(shstk_ptr, SS_SIZE, PROT_WRITE | PROT_READ) < 0) {
 		printf("[FAIL]\tmprotect(PROT_WRITE) failed\n");
 		return 1;
 	}
 
-	/* then wrss to it and succeed */
+	 
 	if (test_shstk_access(shstk_ptr)) {
 		printf("[FAIL]\tShadow stack access to mprotect() writable memory failed\n");
 		return 1;
@@ -537,25 +515,13 @@ err:
 	return 1;
 }
 
-/* Simple linked list for keeping track of mappings in test_guard_gap() */
+ 
 struct node {
 	struct node *next;
 	void *mapping;
 };
 
-/*
- * This tests whether mmap will place other mappings in a shadow stack's guard
- * gap. The steps are:
- *   1. Finds an empty place by mapping and unmapping something.
- *   2. Map a shadow stack in the middle of the known empty area.
- *   3. Map a bunch of PAGE_SIZE mappings. These will use the search down
- *      direction, filling any gaps until it encounters the shadow stack's
- *      guard gap.
- *   4. When a mapping lands below the shadow stack from step 2, then all
- *      of the above gaps are filled. The search down algorithm will have
- *      looked at the shadow stack gaps.
- *   5. See if it landed in the gap.
- */
+ 
 int test_guard_gap(void)
 {
 	void *free_area, *shstk, *test_map = (void *)0xFFFFFFFFFFFFFFFF;
@@ -598,16 +564,10 @@ int test_guard_gap(void)
 	return 0;
 }
 
-/*
- * Too complicated to pull it out of the 32 bit header, but also get the
- * 64 bit one needed above. Just define a copy here.
- */
+ 
 #define __NR_compat_sigaction 67
 
-/*
- * Call 32 bit signal handler to get 32 bit signals ABI. Make sure
- * to push the registers that will get clobbered.
- */
+ 
 int sigaction32(int signum, const struct sigaction *restrict act,
 		struct sigaction *restrict oldact)
 {
@@ -633,23 +593,18 @@ void segv_gp_handler(int signum, siginfo_t *si, void *uc)
 {
 	segv_triggered = true;
 
-	/*
-	 * To work with old glibc, this can't rely on siglongjmp working with
-	 * shadow stack enabled, so disable shadow stack before siglongjmp().
-	 */
+	 
 	ARCH_PRCTL(ARCH_SHSTK_DISABLE, ARCH_SHSTK_SHSTK);
 	siglongjmp(jmp_buffer, -1);
 }
 
-/*
- * Transition to 32 bit mode and check that a #GP triggers a segfault.
- */
+ 
 int test_32bit(void)
 {
 	struct sigaction sa = {};
 	struct sigaction *sa32;
 
-	/* Create sigaction in 32 bit address range */
+	 
 	sa32 = mmap(0, 4096, PROT_READ | PROT_WRITE,
 		    MAP_32BIT | MAP_PRIVATE | MAP_ANONYMOUS, 0, 0);
 	sa32->sa_flags = SA_SIGINFO;
@@ -662,12 +617,10 @@ int test_32bit(void)
 
 	segv_triggered = false;
 
-	/* Make sure segv_triggered is set before triggering the #GP */
+	 
 	asm volatile("" : : : "memory");
 
-	/*
-	 * Set handler to somewhere in 32 bit address space
-	 */
+	 
 	sa32->sa_handler = (void *)sa32;
 	if (sigaction32(SIGUSR1, sa32, NULL))
 		return 1;
@@ -683,7 +636,7 @@ int test_32bit(void)
 
 void segv_handler_ptrace(int signum, siginfo_t *si, void *uc)
 {
-	/* The SSP adjustment caused a segfault. */
+	 
 	exit(0);
 }
 
@@ -708,10 +661,7 @@ int test_ptrace(void)
 			return 1;
 
 		ptrace(PTRACE_TRACEME, NULL, NULL, NULL);
-		/*
-		 * The parent will tweak the SSP and return from this function
-		 * will #CP.
-		 */
+		 
 		raise(SIGTRAP);
 
 		exit(1);
@@ -755,10 +705,7 @@ int test_ptrace(void)
 		goto out_kill;
 	}
 
-	/*
-	 * Tweak the SSP so the child with #CP when it resumes and returns
-	 * from raise()
-	 */
+	 
 	ssp = saved_ssp + 8;
 	iov.iov_len = sizeof(ssp);
 	if (ptrace(PTRACE_SETREGSET, pid, NT_X86_SHSTK, &iov)) {
@@ -808,7 +755,7 @@ int main(int argc, char *argv[])
 		goto out;
 	}
 
-	/* Should have succeeded if here, but this is a test, so double check. */
+	 
 	if (!get_ssp()) {
 		printf("[FAIL]\tShadow stack disabled\n");
 		return 1;
@@ -870,10 +817,7 @@ int main(int argc, char *argv[])
 	return ret;
 
 out:
-	/*
-	 * Disable shadow stack before the function returns, or there will be a
-	 * shadow stack violation.
-	 */
+	 
 	if (ARCH_PRCTL(ARCH_SHSTK_DISABLE, ARCH_SHSTK_SHSTK)) {
 		ret = 1;
 		printf("[FAIL]\tDisabling shadow stack failed\n");

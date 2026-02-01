@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/slab.h>
 #include "messages.h"
@@ -6,82 +6,19 @@
 #include "subpage.h"
 #include "btrfs_inode.h"
 
-/*
- * Subpage (sectorsize < PAGE_SIZE) support overview:
- *
- * Limitations:
- *
- * - Only support 64K page size for now
- *   This is to make metadata handling easier, as 64K page would ensure
- *   all nodesize would fit inside one page, thus we don't need to handle
- *   cases where a tree block crosses several pages.
- *
- * - Only metadata read-write for now
- *   The data read-write part is in development.
- *
- * - Metadata can't cross 64K page boundary
- *   btrfs-progs and kernel have done that for a while, thus only ancient
- *   filesystems could have such problem.  For such case, do a graceful
- *   rejection.
- *
- * Special behavior:
- *
- * - Metadata
- *   Metadata read is fully supported.
- *   Meaning when reading one tree block will only trigger the read for the
- *   needed range, other unrelated range in the same page will not be touched.
- *
- *   Metadata write support is partial.
- *   The writeback is still for the full page, but we will only submit
- *   the dirty extent buffers in the page.
- *
- *   This means, if we have a metadata page like this:
- *
- *   Page offset
- *   0         16K         32K         48K        64K
- *   |/////////|           |///////////|
- *        \- Tree block A        \- Tree block B
- *
- *   Even if we just want to writeback tree block A, we will also writeback
- *   tree block B if it's also dirty.
- *
- *   This may cause extra metadata writeback which results more COW.
- *
- * Implementation:
- *
- * - Common
- *   Both metadata and data will use a new structure, btrfs_subpage, to
- *   record the status of each sector inside a page.  This provides the extra
- *   granularity needed.
- *
- * - Metadata
- *   Since we have multiple tree blocks inside one page, we can't rely on page
- *   locking anymore, or we will have greatly reduced concurrency or even
- *   deadlocks (hold one tree lock while trying to lock another tree lock in
- *   the same page).
- *
- *   Thus for metadata locking, subpage support relies on io_tree locking only.
- *   This means a slightly higher tree locking latency.
- */
+ 
 
 bool btrfs_is_subpage(const struct btrfs_fs_info *fs_info, struct page *page)
 {
 	if (fs_info->sectorsize >= PAGE_SIZE)
 		return false;
 
-	/*
-	 * Only data pages (either through DIO or compression) can have no
-	 * mapping. And if page->mapping->host is data inode, it's subpage.
-	 * As we have ruled our sectorsize >= PAGE_SIZE case already.
-	 */
+	 
 	if (!page->mapping || !page->mapping->host ||
 	    is_data_inode(page->mapping->host))
 		return true;
 
-	/*
-	 * Now the only remaining case is metadata, which we only go subpage
-	 * routine if nodesize < PAGE_SIZE.
-	 */
+	 
 	if (fs_info->nodesize < PAGE_SIZE)
 		return true;
 	return false;
@@ -120,14 +57,11 @@ int btrfs_attach_subpage(const struct btrfs_fs_info *fs_info,
 {
 	struct btrfs_subpage *subpage;
 
-	/*
-	 * We have cases like a dummy extent buffer page, which is not mapped
-	 * and doesn't need to be locked.
-	 */
+	 
 	if (page->mapping)
 		ASSERT(PageLocked(page));
 
-	/* Either not subpage, or the page already has private attached */
+	 
 	if (!btrfs_is_subpage(fs_info, page) || PagePrivate(page))
 		return 0;
 
@@ -144,7 +78,7 @@ void btrfs_detach_subpage(const struct btrfs_fs_info *fs_info,
 {
 	struct btrfs_subpage *subpage;
 
-	/* Either not subpage, or already detached */
+	 
 	if (!btrfs_is_subpage(fs_info, page) || !PagePrivate(page))
 		return;
 
@@ -182,15 +116,7 @@ void btrfs_free_subpage(struct btrfs_subpage *subpage)
 	kfree(subpage);
 }
 
-/*
- * Increase the eb_refs of current subpage.
- *
- * This is important for eb allocation, to prevent race with last eb freeing
- * of the same page.
- * With the eb_refs increased before the eb inserted into radix tree,
- * detach_extent_buffer_page() won't detach the page private while we're still
- * allocating the extent buffer.
- */
+ 
 void btrfs_page_inc_eb_refs(const struct btrfs_fs_info *fs_info,
 			    struct page *page)
 {
@@ -225,14 +151,11 @@ void btrfs_page_dec_eb_refs(const struct btrfs_fs_info *fs_info,
 static void btrfs_subpage_assert(const struct btrfs_fs_info *fs_info,
 		struct page *page, u64 start, u32 len)
 {
-	/* Basic checks */
+	 
 	ASSERT(PagePrivate(page) && page->private);
 	ASSERT(IS_ALIGNED(start, fs_info->sectorsize) &&
 	       IS_ALIGNED(len, fs_info->sectorsize));
-	/*
-	 * The range check only works for mapped page, we can still have
-	 * unmapped page like dummy extent buffer pages.
-	 */
+	 
 	if (page->mapping)
 		ASSERT(page_offset(page) <= start &&
 		       start + len <= page_offset(page) + PAGE_SIZE);
@@ -262,13 +185,7 @@ void btrfs_subpage_end_reader(const struct btrfs_fs_info *fs_info,
 	ASSERT(atomic_read(&subpage->readers) >= nbits);
 	last = atomic_sub_and_test(nbits, &subpage->readers);
 
-	/*
-	 * For data we need to unlock the page if the last read has finished.
-	 *
-	 * And please don't replace @last with atomic_sub_and_test() call
-	 * inside if () condition.
-	 * As we want the atomic_sub_and_test() to be always executed.
-	 */
+	 
 	if (is_data && last)
 		unlock_page(page);
 }
@@ -279,11 +196,7 @@ static void btrfs_subpage_clamp_range(struct page *page, u64 *start, u32 *len)
 	u32 orig_len = *len;
 
 	*start = max_t(u64, page_offset(page), orig_start);
-	/*
-	 * For certain call sites like btrfs_drop_pages(), we may have pages
-	 * beyond the target range. In that case, just set @len to 0, subpage
-	 * helpers can handle @len == 0 without any problem.
-	 */
+	 
 	if (page_offset(page) >= orig_start + orig_len)
 		*len = 0;
 	else
@@ -313,13 +226,7 @@ bool btrfs_subpage_end_and_test_writer(const struct btrfs_fs_info *fs_info,
 
 	btrfs_subpage_assert(fs_info, page, start, len);
 
-	/*
-	 * We have call sites passing @lock_page into
-	 * extent_clear_unlock_delalloc() for compression path.
-	 *
-	 * This @locked_page is locked by plain lock_page(), thus its
-	 * subpage::writers is 0.  Handle them in a special way.
-	 */
+	 
 	if (atomic_read(&subpage->writers) == 0)
 		return true;
 
@@ -327,16 +234,7 @@ bool btrfs_subpage_end_and_test_writer(const struct btrfs_fs_info *fs_info,
 	return atomic_sub_and_test(nbits, &subpage->writers);
 }
 
-/*
- * Lock a page for delalloc page writeback.
- *
- * Return -EAGAIN if the page is not properly initialized.
- * Return 0 with the page locked, and writer counter updated.
- *
- * Even with 0 returned, the page still need extra check to make sure
- * it's really the correct page, as the caller is using
- * filemap_get_folios_contig(), which can race with page invalidating.
- */
+ 
 int btrfs_page_start_writer_lock(const struct btrfs_fs_info *fs_info,
 		struct page *page, u64 start, u32 len)
 {
@@ -427,16 +325,7 @@ void btrfs_subpage_set_dirty(const struct btrfs_fs_info *fs_info,
 	set_page_dirty(page);
 }
 
-/*
- * Extra clear_and_test function for subpage dirty bitmap.
- *
- * Return true if we're the last bits in the dirty_bitmap and clear the
- * dirty_bitmap.
- * Return false otherwise.
- *
- * NOTE: Callers should manually clear page dirty for true case, as we have
- * extra handling for tree blocks.
- */
+ 
 bool btrfs_subpage_clear_and_test_dirty(const struct btrfs_fs_info *fs_info,
 		struct page *page, u64 start, u32 len)
 {
@@ -553,10 +442,7 @@ void btrfs_subpage_clear_checked(const struct btrfs_fs_info *fs_info,
 	spin_unlock_irqrestore(&subpage->lock, flags);
 }
 
-/*
- * Unlike set/clear which is dependent on each page status, for test all bits
- * are tested in the same way.
- */
+ 
 #define IMPLEMENT_BTRFS_SUBPAGE_TEST_OP(name)				\
 bool btrfs_subpage_test_##name(const struct btrfs_fs_info *fs_info,	\
 		struct page *page, u64 start, u32 len)			\
@@ -579,11 +465,7 @@ IMPLEMENT_BTRFS_SUBPAGE_TEST_OP(writeback);
 IMPLEMENT_BTRFS_SUBPAGE_TEST_OP(ordered);
 IMPLEMENT_BTRFS_SUBPAGE_TEST_OP(checked);
 
-/*
- * Note that, in selftests (extent-io-tests), we can have empty fs_info passed
- * in.  We only test sectorsize == PAGE_SIZE cases so far, thus we can fall
- * back to regular sectorsize branch.
- */
+ 
 #define IMPLEMENT_BTRFS_PAGE_OPS(name, set_page_func, clear_page_func,	\
 			       test_page_func)				\
 void btrfs_page_set_##name(const struct btrfs_fs_info *fs_info,		\
@@ -649,10 +531,7 @@ IMPLEMENT_BTRFS_PAGE_OPS(ordered, SetPageOrdered, ClearPageOrdered,
 			 PageOrdered);
 IMPLEMENT_BTRFS_PAGE_OPS(checked, SetPageChecked, ClearPageChecked, PageChecked);
 
-/*
- * Make sure not only the page dirty bit is cleared, but also subpage dirty bit
- * is cleared.
- */
+ 
 void btrfs_page_assert_not_dirty(const struct btrfs_fs_info *fs_info,
 				 struct page *page)
 {
@@ -669,46 +548,26 @@ void btrfs_page_assert_not_dirty(const struct btrfs_fs_info *fs_info,
 	ASSERT(subpage_test_bitmap_all_zero(fs_info, subpage, dirty));
 }
 
-/*
- * Handle different locked pages with different page sizes:
- *
- * - Page locked by plain lock_page()
- *   It should not have any subpage::writers count.
- *   Can be unlocked by unlock_page().
- *   This is the most common locked page for __extent_writepage() called
- *   inside extent_write_cache_pages().
- *   Rarer cases include the @locked_page from extent_write_locked_range().
- *
- * - Page locked by lock_delalloc_pages()
- *   There is only one caller, all pages except @locked_page for
- *   extent_write_locked_range().
- *   In this case, we have to call subpage helper to handle the case.
- */
+ 
 void btrfs_page_unlock_writer(struct btrfs_fs_info *fs_info, struct page *page,
 			      u64 start, u32 len)
 {
 	struct btrfs_subpage *subpage;
 
 	ASSERT(PageLocked(page));
-	/* For non-subpage case, we just unlock the page */
+	 
 	if (!btrfs_is_subpage(fs_info, page))
 		return unlock_page(page);
 
 	ASSERT(PagePrivate(page) && page->private);
 	subpage = (struct btrfs_subpage *)page->private;
 
-	/*
-	 * For subpage case, there are two types of locked page.  With or
-	 * without writers number.
-	 *
-	 * Since we own the page lock, no one else could touch subpage::writers
-	 * and we are safe to do several atomic operations without spinlock.
-	 */
+	 
 	if (atomic_read(&subpage->writers) == 0)
-		/* No writers, locked by plain lock_page() */
+		 
 		return unlock_page(page);
 
-	/* Have writers, use proper subpage helper to end it */
+	 
 	btrfs_page_end_writer_lock(fs_info, page, start, len);
 }
 

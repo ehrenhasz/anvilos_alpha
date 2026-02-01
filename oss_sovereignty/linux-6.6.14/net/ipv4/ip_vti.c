@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Linux NET3: IP/IP protocol decoder modified to support
- *		    virtual tunnel interface
- *
- *	Authors:
- *		Saurabh Mohan (saurabh.mohan@vyatta.com) 05/07/2012
- */
 
-/*
-   This version of net/ipv4/ip_vti.c is cloned of net/ipv4/ipip.c
+ 
 
-   For comments look at net/ipv4/ip_gre.c --ANK
- */
+ 
 
 
 #include <linux/capability.h>
@@ -147,9 +137,7 @@ static bool vti_state_check(const struct xfrm_state *x, __be32 dst, __be32 src)
 	xfrm_address_t *daddr = (xfrm_address_t *)&dst;
 	xfrm_address_t *saddr = (xfrm_address_t *)&src;
 
-	/* if there is no transform then this tunnel is not functional.
-	 * Or if the xfrm is not mode tunnel.
-	 */
+	 
 	if (!x || x->props.mode != XFRM_MODE_TUNNEL ||
 	    x->props.family != AF_INET)
 		return false;
@@ -169,7 +157,7 @@ static netdev_tx_t vti_xmit(struct sk_buff *skb, struct net_device *dev,
 	struct ip_tunnel *tunnel = netdev_priv(dev);
 	struct ip_tunnel_parm *parms = &tunnel->parms;
 	struct dst_entry *dst = skb_dst(skb);
-	struct net_device *tdev;	/* Device to other host */
+	struct net_device *tdev;	 
 	int pkt_len = skb->len;
 	int err;
 	int mtu;
@@ -272,9 +260,7 @@ tx_error:
 	return NETDEV_TX_OK;
 }
 
-/* This function assumes it is being called from dev_queue_xmit()
- * and that skb is filled properly by that function.
- */
+ 
 static netdev_tx_t vti_tunnel_xmit(struct sk_buff *skb, struct net_device *dev)
 {
 	struct ip_tunnel *tunnel = netdev_priv(dev);
@@ -298,7 +284,7 @@ static netdev_tx_t vti_tunnel_xmit(struct sk_buff *skb, struct net_device *dev)
 		goto tx_err;
 	}
 
-	/* override mark with tunnel output key */
+	 
 	fl.flowi_mark = be32_to_cpu(tunnel->parms.o_key);
 
 	return vti_xmit(skb, dev, &fl);
@@ -586,17 +572,17 @@ static int vti_changelink(struct net_device *dev, struct nlattr *tb[],
 static size_t vti_get_size(const struct net_device *dev)
 {
 	return
-		/* IFLA_VTI_LINK */
+		 
 		nla_total_size(4) +
-		/* IFLA_VTI_IKEY */
+		 
 		nla_total_size(4) +
-		/* IFLA_VTI_OKEY */
+		 
 		nla_total_size(4) +
-		/* IFLA_VTI_LOCAL */
+		 
 		nla_total_size(4) +
-		/* IFLA_VTI_REMOTE */
+		 
 		nla_total_size(4) +
-		/* IFLA_VTI_FWMARK */
+		 
 		nla_total_size(4) +
 		0;
 }

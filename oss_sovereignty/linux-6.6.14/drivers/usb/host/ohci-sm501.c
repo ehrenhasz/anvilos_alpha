@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * OHCI HCD (Host Controller Driver) for USB.
- *
- * (C) Copyright 1999 Roman Weissgaerber <weissg@vienna.at>
- * (C) Copyright 2000-2005 David Brownell
- * (C) Copyright 2002 Hewlett-Packard Company
- * (C) Copyright 2008 Magnus Damm
- *
- * SM501 Bus Glue - based on ohci-omap.c
- *
- * This file is licenced under the GPL.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/jiffies.h>
@@ -38,42 +27,32 @@ static int ohci_sm501_start(struct usb_hcd *hcd)
 	return ret;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static const struct hc_driver ohci_sm501_hc_driver = {
 	.description =		hcd_name,
 	.product_desc =		"SM501 OHCI",
 	.hcd_priv_size =	sizeof(struct ohci_hcd),
 
-	/*
-	 * generic hardware linkage
-	 */
+	 
 	.irq =			ohci_irq,
 	.flags =		HCD_USB11 | HCD_MEMORY,
 
-	/*
-	 * basic lifecycle operations
-	 */
+	 
 	.reset =		ohci_sm501_init,
 	.start =		ohci_sm501_start,
 	.stop =			ohci_stop,
 	.shutdown =		ohci_shutdown,
 
-	/*
-	 * managing i/o requests and associated device resources
-	 */
+	 
 	.urb_enqueue =		ohci_urb_enqueue,
 	.urb_dequeue =		ohci_urb_dequeue,
 	.endpoint_disable =	ohci_endpoint_disable,
 
-	/*
-	 * scheduling support
-	 */
+	 
 	.get_frame_number =	ohci_get_frame,
 
-	/*
-	 * root hub support
-	 */
+	 
 	.hub_status_data =	ohci_hub_status_data,
 	.hub_control =		ohci_hub_control,
 #ifdef	CONFIG_PM
@@ -83,7 +62,7 @@ static const struct hc_driver ohci_sm501_hc_driver = {
 	.start_port_reset =	ohci_start_port_reset,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int ohci_hcd_sm501_drv_probe(struct platform_device *pdev)
 {
@@ -110,7 +89,7 @@ static int ohci_hcd_sm501_drv_probe(struct platform_device *pdev)
 		goto err0;
 	}
 
-	/* allocate, reserve and remap resources for registers */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (res == NULL) {
 		dev_err(dev, "no resource definition for registers\n");
@@ -142,20 +121,7 @@ static int ohci_hcd_sm501_drv_probe(struct platform_device *pdev)
 
 	ohci_hcd_init(hcd_to_ohci(hcd));
 
-	/* The sm501 chip is equipped with local memory that may be used
-	 * by on-chip devices such as the video controller and the usb host.
-	 * This driver uses genalloc so that usb allocations with
-	 * gen_pool_dma_alloc() allocate from this local memory. The dma_handle
-	 * returned by gen_pool_dma_alloc() will be an offset starting from 0
-	 * for the first local memory byte.
-	 *
-	 * So as long as data is allocated using gen_pool_dma_alloc() all is
-	 * fine. This is however not always the case - buffers may be allocated
-	 * using kmalloc() - so the usb core needs to be told that it must copy
-	 * data into our local memory if the buffers happen to be placed in
-	 * regular memory. A non-null hcd->localmem_pool initialized by
-	 * the call to usb_hcd_setup_local_mem() below does just that.
-	 */
+	 
 
 	retval = usb_hcd_setup_local_mem(hcd, mem->start,
 					 mem->start - mem->parent->start,
@@ -167,7 +133,7 @@ static int ohci_hcd_sm501_drv_probe(struct platform_device *pdev)
 		goto err5;
 	device_wakeup_enable(hcd->self.controller);
 
-	/* enable power and unmask interrupts */
+	 
 
 	sm501_unit_power(dev->parent, SM501_GATE_USB_HOST, 1);
 	sm501_modify_reg(dev->parent, SM501_IRQ_MASK, 1 << 6, 0);
@@ -197,13 +163,13 @@ static void ohci_hcd_sm501_drv_remove(struct platform_device *pdev)
 	mem = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	release_mem_region(mem->start, resource_size(mem));
 
-	/* mask interrupts and disable power */
+	 
 
 	sm501_modify_reg(pdev->dev.parent, SM501_IRQ_MASK, 0, 1 << 6);
 	sm501_unit_power(pdev->dev.parent, SM501_GATE_USB_HOST, 0);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 #ifdef CONFIG_PM
 static int ohci_sm501_suspend(struct platform_device *pdev, pm_message_t msg)
@@ -245,11 +211,9 @@ static int ohci_sm501_resume(struct platform_device *pdev)
 #define ohci_sm501_resume NULL
 #endif
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/*
- * Driver definition to register with the SM501 bus
- */
+ 
 static struct platform_driver ohci_hcd_sm501_driver = {
 	.probe		= ohci_hcd_sm501_drv_probe,
 	.remove_new	= ohci_hcd_sm501_drv_remove,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 MediaTek Inc.
- * Author: Sam Shih <sam.shih@mediatek.com>
- * Author: Wenzhen Yu <wenzhen.yu@mediatek.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -23,37 +19,37 @@ static const struct mtk_fixed_clk top_fixed_clks[] = {
 };
 
 static const struct mtk_fixed_factor top_divs[] = {
-	/* XTAL */
+	 
 	FACTOR(CLK_TOP_XTAL_D2, "top_xtal_d2", "top_xtal", 1, 2),
 	FACTOR(CLK_TOP_RTC_32K, "top_rtc_32k", "top_xtal", 1, 1250),
 	FACTOR(CLK_TOP_RTC_32P7K, "top_rtc_32p7k", "top_xtal", 1, 1220),
-	/* MPLL */
+	 
 	FACTOR(CLK_TOP_MPLL_D2, "top_mpll_d2", "mpll", 1, 2),
 	FACTOR(CLK_TOP_MPLL_D4, "top_mpll_d4", "mpll", 1, 4),
 	FACTOR(CLK_TOP_MPLL_D8, "top_mpll_d8", "mpll", 1, 8),
 	FACTOR(CLK_TOP_MPLL_D8_D2, "top_mpll_d8_d2", "mpll", 1, 16),
 	FACTOR(CLK_TOP_MPLL_D3_D2, "top_mpll_d3_d2", "mpll", 1, 6),
-	/* MMPLL */
+	 
 	FACTOR(CLK_TOP_MMPLL_D2, "top_mmpll_d2", "mmpll", 1, 2),
 	FACTOR(CLK_TOP_MMPLL_D4, "top_mmpll_d4", "mmpll", 1, 4),
 	FACTOR(CLK_TOP_MMPLL_D8, "top_mmpll_d8", "mmpll", 1, 8),
 	FACTOR(CLK_TOP_MMPLL_D8_D2, "top_mmpll_d8_d2", "mmpll", 1, 16),
 	FACTOR(CLK_TOP_MMPLL_D3_D8, "top_mmpll_d3_d8", "mmpll", 1, 24),
 	FACTOR(CLK_TOP_MMPLL_U2PHY, "top_mmpll_u2phy", "mmpll", 1, 30),
-	/* APLL2 */
+	 
 	FACTOR(CLK_TOP_APLL2_D4, "top_apll2_d4", "apll2", 1, 4),
-	/* NET1PLL */
+	 
 	FACTOR(CLK_TOP_NET1PLL_D4, "top_net1pll_d4", "net1pll", 1, 4),
 	FACTOR(CLK_TOP_NET1PLL_D5, "top_net1pll_d5", "net1pll", 1, 5),
 	FACTOR(CLK_TOP_NET1PLL_D5_D2, "top_net1pll_d5_d2", "net1pll", 1, 10),
 	FACTOR(CLK_TOP_NET1PLL_D5_D4, "top_net1pll_d5_d4", "net1pll", 1, 20),
 	FACTOR(CLK_TOP_NET1PLL_D8_D2, "top_net1pll_d8_d2", "net1pll", 1, 16),
 	FACTOR(CLK_TOP_NET1PLL_D8_D4, "top_net1pll_d8_d4", "net1pll", 1, 32),
-	/* NET2PLL */
+	 
 	FACTOR(CLK_TOP_NET2PLL_D4, "top_net2pll_d4", "net2pll", 1, 4),
 	FACTOR(CLK_TOP_NET2PLL_D4_D2, "top_net2pll_d4_d2", "net2pll", 1, 8),
 	FACTOR(CLK_TOP_NET2PLL_D3_D2, "top_net2pll_d3_d2", "net2pll", 1, 2),
-	/* WEDMCUPLL */
+	 
 	FACTOR(CLK_TOP_WEDMCUPLL_D5_D2, "top_wedmcupll_d5_d2", "wedmcupll", 1,
 	       10),
 };
@@ -171,7 +167,7 @@ static const char *const da_u2_refsel_parents[] __initconst = {
 };
 
 static const struct mtk_mux top_muxes[] = {
-	/* CLK_CFG_0 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_NFI1X_SEL, "nfi1x_sel", nfi1x_parents,
 			     0x000, 0x004, 0x008, 0, 3, 7, 0x1C0, 0),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPINFI_SEL, "spinfi_sel", spinfi_parents,
@@ -180,7 +176,7 @@ static const struct mtk_mux top_muxes[] = {
 			     0x004, 0x008, 16, 3, 23, 0x1C0, 2),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_SPIM_MST_SEL, "spim_mst_sel", spi_parents,
 			     0x000, 0x004, 0x008, 24, 3, 31, 0x1C0, 3),
-	/* CLK_CFG_1 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_UART_SEL, "uart_sel", uart_parents, 0x010,
 			     0x014, 0x018, 0, 2, 7, 0x1C0, 4),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_PWM_SEL, "pwm_sel", pwm_parents, 0x010,
@@ -190,7 +186,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_PEXTP_TL_SEL, "pextp_tl_ck_sel",
 			     pextp_tl_ck_parents, 0x010, 0x014, 0x018, 24, 2,
 			     31, 0x1C0, 7),
-	/* CLK_CFG_2 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_EMMC_250M_SEL, "emmc_250m_sel",
 				   emmc_250m_parents, 0x020, 0x024, 0x028, 0, 1, 7,
 				   0x1C0, 8, 0),
@@ -204,7 +200,7 @@ static const struct mtk_mux top_muxes[] = {
 				   f_26m_adc_parents, 0x020, 0x024, 0x028,
 				   24, 1, 31, 0x1C0, 11,
 				   CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
-	/* CLK_CFG_3 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_DRAMC_MD32_SEL, "dramc_md32_sel",
 				   dramc_md32_parents, 0x030, 0x034, 0x038,
 				   0, 1, 7, 0x1C0, 12,
@@ -220,7 +216,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_ARM_DB_MAIN_SEL, "arm_db_main_sel",
 			     arm_db_main_parents, 0x030, 0x034, 0x038, 24, 1,
 			     31, 0x1C0, 15),
-	/* CLK_CFG_4 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_ARM_DB_JTSEL, "arm_db_jtsel",
 			     arm_db_jtsel_parents, 0x040, 0x044, 0x048, 0, 1, 7,
 			     0x1C0, 16),
@@ -232,7 +228,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_NETSYS_MCU_SEL, "netsys_mcu_sel",
 			     netsys_mcu_parents, 0x040, 0x044, 0x048, 24, 3, 31,
 			     0x1C0, 19),
-	/* CLK_CFG_5 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_NETSYS_2X_SEL, "netsys_2x_sel",
 			     netsys_2x_parents, 0x050, 0x054, 0x058, 0, 2, 7,
 			     0x1C0, 20),
@@ -245,7 +241,7 @@ static const struct mtk_mux top_muxes[] = {
 				   CLK_IS_CRITICAL | CLK_SET_RATE_PARENT),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_A1SYS_SEL, "a1sys_sel", a1sys_parents,
 			     0x050, 0x054, 0x058, 24, 1, 31, 0x1C0, 23),
-	/* CLK_CFG_6 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_CONN_MCUSYS_SEL, "conn_mcusys_sel",
 			     conn_mcusys_parents, 0x060, 0x064, 0x068, 0, 1, 7,
 			     0x1C0, 24),
@@ -257,7 +253,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_USB3_PHY_SEL, "usb3_phy_sel",
 			     f_26m_adc_parents, 0x060, 0x064, 0x068, 24, 1, 31,
 			     0x1C0, 27),
-	/* CLK_CFG_7 */
+	 
 	MUX_GATE_CLR_SET_UPD_FLAGS(CLK_TOP_F26M_SEL, "csw_f26m_sel",
 				   f_26m_adc_parents, 0x070, 0x074, 0x078,
 				   0, 1, 7, 0x1C0, 28,
@@ -269,7 +265,7 @@ static const struct mtk_mux top_muxes[] = {
 			     0x1C0, 30),
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_U2U3_SEL, "u2u3_sel", f_26m_adc_parents,
 			     0x070, 0x074, 0x078, 24, 1, 31, 0x1C4, 0),
-	/* CLK_CFG_8 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_U2U3_SYS_SEL, "u2u3_sys_sel",
 			     u2u3_sys_parents, 0x080, 0x084, 0x088, 0, 1, 7,
 			     0x1C4, 1),
@@ -282,7 +278,7 @@ static const struct mtk_mux top_muxes[] = {
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_DA_U2_CK_1P_SEL, "da_u2_ck_1p_sel",
 			     da_u2_refsel_parents, 0x080, 0x084, 0x088, 24, 1,
 			     31, 0x1C4, 4),
-	/* CLK_CFG_9 */
+	 
 	MUX_GATE_CLR_SET_UPD(CLK_TOP_AP2CNN_HOST_SEL, "ap2cnn_host_sel",
 			     sgm_reg_parents, 0x090, 0x094, 0x098, 0, 1, 7,
 			     0x1C4, 5),
@@ -300,7 +296,7 @@ static const struct mtk_clk_desc topck_desc = {
 
 static const struct of_device_id of_match_clk_mt7986_topckgen[] = {
 	{ .compatible = "mediatek,mt7986-topckgen", .data = &topck_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt7986_topckgen);
 

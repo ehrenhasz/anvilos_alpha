@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2016-2017 Socionext Inc.
-//   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -634,7 +634,7 @@ static const unsigned nand_pins[] = {3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14,
 				     15, 16, 17};
 static const int nand_muxvals[] = {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
 static const unsigned sd_pins[] = {10, 11, 12, 13, 14, 15, 16, 17};
-static const int sd_muxvals[] = {3, 3, 3, 3, 3, 3, 3, 3};  /* No SDVOLC */
+static const int sd_muxvals[] = {3, 3, 3, 3, 3, 3, 3, 3};   
 static const unsigned spi0_pins[] = {56, 57, 58, 59};
 static const int spi0_muxvals[] = {0, 0, 0, 0};
 static const unsigned spi1_pins[] = {169, 170, 171, 172};
@@ -670,34 +670,34 @@ static const int usb2_muxvals[] = {0, 0};
 static const unsigned usb3_pins[] = {52, 53};
 static const int usb3_muxvals[] = {0, 0};
 static const unsigned int gpio_range0_pins[] = {
-	168, 169, 170, 171, 172, 173, 174, 175,		/* PORT0x */
-	0, 1, 2, 3, 4, 5, 6, 7,				/* PORT1x */
-	8, 9, 10, 11, 12, 13, 14, 15,			/* PORT2x */
-	16, 17, 18, 30, 31, 32, 33, 34,			/* PORT3x */
-	35, 36, 37, 38, 39, 40, 41, 42,			/* PORT4x */
-	43, 44, 45, 46, 47, 48, 49, 50,			/* PORT5x */
-	51, 52, 53, 54, 55, 56, 57, 58,			/* PORT6x */
-	59, 60, 69, 70, 71, 72, 73, 74,			/* PORT7x */
-	75, 76, 77, 78, 79, 80, 81, 82,			/* PORT8x */
-	83, 84, 85, 86, 87, 88, 89, 90,			/* PORT9x */
-	91, 92, 93, 94, 95, 96, 97, 98,			/* PORT10x */
+	168, 169, 170, 171, 172, 173, 174, 175,		 
+	0, 1, 2, 3, 4, 5, 6, 7,				 
+	8, 9, 10, 11, 12, 13, 14, 15,			 
+	16, 17, 18, 30, 31, 32, 33, 34,			 
+	35, 36, 37, 38, 39, 40, 41, 42,			 
+	43, 44, 45, 46, 47, 48, 49, 50,			 
+	51, 52, 53, 54, 55, 56, 57, 58,			 
+	59, 60, 69, 70, 71, 72, 73, 74,			 
+	75, 76, 77, 78, 79, 80, 81, 82,			 
+	83, 84, 85, 86, 87, 88, 89, 90,			 
+	91, 92, 93, 94, 95, 96, 97, 98,			 
 };
 static const unsigned int gpio_range1_pins[] = {
-	99, 100, 101, 102, 103, 104, 105, 106,		/* PORT12x */
-	107, 108, 109, 110, 111, 112, 113, 114,		/* PORT13x */
-	115, 116, 117, 118, 119, 120, 121, 122,		/* PORT14x */
-	149, 150, 151, 152, 153, 154, 155, 156,		/* XIRQ0-7 */
-	157, 158, 159, 160, 85, 161, 162, 84,		/* XIRQ8-15 */
-	163, 164, 165, 166, 167, 146, 52, 53,		/* XIRQ16-23 */
-	61, 62, 63, 64, 65, 66, 67, 68,			/* PORT18x */
+	99, 100, 101, 102, 103, 104, 105, 106,		 
+	107, 108, 109, 110, 111, 112, 113, 114,		 
+	115, 116, 117, 118, 119, 120, 121, 122,		 
+	149, 150, 151, 152, 153, 154, 155, 156,		 
+	157, 158, 159, 160, 85, 161, 162, 84,		 
+	163, 164, 165, 166, 167, 146, 52, 53,		 
+	61, 62, 63, 64, 65, 66, 67, 68,			 
 };
 static const unsigned int gpio_range2_pins[] = {
-	123, 124, 125, 126, 127, 128, 129, 130,		/* PORT20x */
-	131, 132, 133, 134, 135, 136, 137, 138,		/* PORT21x */
-	139, 140, 141, 142, 143, 144, 145, 146,		/* PORT22x */
-	147, 148, 149, 150, 151, 152, 153, 154,		/* PORT23x */
-	155, 156, 157, 158, 159, 160, 161, 162,		/* PORT24x */
-	163, 164, 165, 166, 167,			/* PORT250-254 */
+	123, 124, 125, 126, 127, 128, 129, 130,		 
+	131, 132, 133, 134, 135, 136, 137, 138,		 
+	139, 140, 141, 142, 143, 144, 145, 146,		 
+	147, 148, 149, 150, 151, 152, 153, 154,		 
+	155, 156, 157, 158, 159, 160, 161, 162,		 
+	163, 164, 165, 166, 167,			 
 };
 
 static const struct uniphier_pinctrl_group uniphier_ld20_groups[] = {
@@ -859,10 +859,10 @@ static const struct uniphier_pinmux_function uniphier_ld20_functions[] = {
 static int uniphier_ld20_get_gpio_muxval(unsigned int pin,
 					 unsigned int gpio_offset)
 {
-	if (gpio_offset == 132 || gpio_offset == 135)	/* XIRQ12, 15 */
+	if (gpio_offset == 132 || gpio_offset == 135)	 
 		return 13;
 
-	if (gpio_offset >= 120 && gpio_offset <= 143)	/* XIRQx */
+	if (gpio_offset >= 120 && gpio_offset <= 143)	 
 		return 14;
 
 	return 15;
@@ -886,7 +886,7 @@ static int uniphier_ld20_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_ld20_pinctrl_match[] = {
 	{ .compatible = "socionext,uniphier-ld20-pinctrl" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver uniphier_ld20_pinctrl_driver = {

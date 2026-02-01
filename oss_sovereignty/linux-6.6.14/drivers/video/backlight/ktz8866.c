@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight driver for the Kinetic KTZ8866
- *
- * Copyright (C) 2022, 2023 Jianhua Lu <lujianhua000@gmail.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/err.h>
@@ -17,7 +13,7 @@
 #define MAX_BRIGHTNESS 2047
 #define REG_MAX 0x15
 
-/* reg */
+ 
 #define DEVICE_ID 0x01
 #define BL_CFG1 0x02
 #define BL_CFG2 0x03
@@ -38,7 +34,7 @@
 #define BL_DIMMING 0x14
 #define PWM_RAMP_TIME 0x15
 
-/* definition */
+ 
 #define BL_EN_BIT BIT(6)
 #define LCD_BIAS_EN 0x9F
 #define PWM_HYST 0x5
@@ -81,7 +77,7 @@ static int ktz8866_backlight_update_status(struct backlight_device *backlight_de
 		ktz->led_on = false;
 	}
 
-	/* Set brightness */
+	 
 	ktz8866_write(ktz, BL_BRT_LSB, brightness & 0x7);
 	ktz8866_write(ktz, BL_BRT_MSB, (brightness >> 3) & 0xFF);
 
@@ -100,7 +96,7 @@ static void ktz8866_init(struct ktz8866 *ktz)
 	if (of_property_read_u32(ktz->client->dev.of_node, "current-num-sinks", &val))
 		ktz8866_write(ktz, BL_EN, BIT(val) - 1);
 	else
-		/* Enable all 6 current sinks if the number of current sinks isn't specified. */
+		 
 		ktz8866_write(ktz, BL_EN, BIT(6) - 1);
 
 	if (of_property_read_u32(ktz->client->dev.of_node, "kinetic,current-ramp-delay-ms", &val)) {

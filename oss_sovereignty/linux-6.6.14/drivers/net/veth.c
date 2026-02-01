@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  drivers/net/veth.c
- *
- *  Copyright (C) 2007 OpenVZ http://openvz.org, SWsoft Inc
- *
- * Author: Pavel Emelianov <xemul@openvz.org>
- * Ethtool interface from: Eric W. Biederman <ebiederm@xmission.com>
- *
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/slab.h>
@@ -40,7 +32,7 @@
 
 struct veth_stats {
 	u64	rx_drops;
-	/* xdp */
+	 
 	u64	xdp_packets;
 	u64	xdp_bytes;
 	u64	xdp_redirect;
@@ -58,7 +50,7 @@ struct veth_rq_stats {
 
 struct veth_rq {
 	struct napi_struct	xdp_napi;
-	struct napi_struct __rcu *napi; /* points to xdp_napi when the latter is initialized */
+	struct napi_struct __rcu *napi;  
 	struct net_device	*dev;
 	struct bpf_prog __rcu	*xdp_prog;
 	struct xdp_mem_info	xdp_mem;
@@ -82,9 +74,7 @@ struct veth_xdp_tx_bq {
 	unsigned int count;
 };
 
-/*
- * ethtool interface
- */
+ 
 
 struct veth_q_stat_desc {
 	char	desc[ETH_GSTRING_LEN];
@@ -189,7 +179,7 @@ static void veth_get_page_pool_stats(struct net_device *dev, u64 *data)
 		page_pool_get_stats(priv->rq[i].page_pool, &pp_stats);
 	}
 	page_pool_ethtool_stats_get(data, &pp_stats);
-#endif /* CONFIG_PAGE_POOL_STATS */
+#endif  
 }
 
 static void veth_get_ethtool_stats(struct net_device *dev,
@@ -267,7 +257,7 @@ static const struct ethtool_ops veth_ethtool_ops = {
 	.set_channels		= veth_set_channels,
 };
 
-/* general routines */
+ 
 
 static bool veth_is_xdp_frame(void *ptr)
 {
@@ -294,7 +284,7 @@ static void veth_ptr_free(void *ptr)
 
 static void __veth_xdp_flush(struct veth_rq *rq)
 {
-	/* Write ptr_ring before reading rx_notify_masked */
+	 
 	smp_mb();
 	if (!READ_ONCE(rq->rx_notify_masked) &&
 	    napi_schedule_prep(&rq->xdp_napi)) {
@@ -321,16 +311,7 @@ static int veth_forward_skb(struct net_device *dev, struct sk_buff *skb,
 		__netif_rx(skb);
 }
 
-/* return true if the specified skb has chances of GRO aggregation
- * Don't strive for accuracy, but try to avoid GRO overhead in the most
- * common scenarios.
- * When XDP is enabled, all traffic is considered eligible, as the xmit
- * device has TSO off.
- * When TSO is enabled on the xmit device, we are likely interested only
- * in UDP aggregation, explicitly check for that if the skb is suspected
- * - the sock_wfree destructor is used by UDP, ICMP and XDP sockets -
- * to belong to locally generated UDP traffic.
- */
+ 
 static bool veth_skb_is_eligible_for_gro(const struct net_device *dev,
 					 const struct net_device *rcv,
 					 const struct sk_buff *skb)
@@ -362,10 +343,7 @@ static netdev_tx_t veth_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (rxq < rcv->real_num_rx_queues) {
 		rq = &rcv_priv->rq[rxq];
 
-		/* The napi pointer is available when an XDP program is
-		 * attached or when GRO is enabled
-		 * Don't bother with napi/GRO if the skb can't be aggregated
-		 */
+		 
 		use_napi = rcu_access_pointer(rq->napi) &&
 			   veth_skb_is_eligible_for_gro(dev, rcv, skb);
 	}
@@ -452,7 +430,7 @@ static void veth_get_stats64(struct net_device *dev,
 	rcu_read_unlock();
 }
 
-/* fake multicast ability */
+ 
 static void veth_set_multicast_list(struct net_device *dev)
 {
 }
@@ -466,7 +444,7 @@ static struct net_device *veth_peer_dev(struct net_device *dev)
 {
 	struct veth_priv *priv = netdev_priv(dev);
 
-	/* Callers must be under RCU read side. */
+	 
 	return rcu_dereference(priv->peer);
 }
 
@@ -490,9 +468,7 @@ static int veth_xdp_xmit(struct net_device *dev, int n,
 
 	rcv_priv = netdev_priv(rcv);
 	rq = &rcv_priv->rq[veth_select_rxq(rcv)];
-	/* The napi pointer is set if NAPI is enabled, which ensures that
-	 * xdp_ring is initialized on receive side and the peer device is up.
-	 */
+	 
 	if (!rcu_access_pointer(rq->napi))
 		goto out;
 
@@ -580,7 +556,7 @@ static void veth_xdp_flush(struct veth_rq *rq, struct veth_xdp_tx_bq *bq)
 
 	rcv_priv = netdev_priv(rcv);
 	rcv_rq = &rcv_priv->rq[veth_select_rxq(rcv)];
-	/* xdp_ring is initialized on receive side? */
+	 
 	if (unlikely(!rcu_access_pointer(rcv_rq->xdp_prog)))
 		goto out;
 
@@ -675,7 +651,7 @@ xdp_xmit:
 	return NULL;
 }
 
-/* frames array contains VETH_XDP_BATCH at most */
+ 
 static void veth_xdp_rcv_bulk_skb(struct veth_rq *rq, void **frames,
 				  int n_xdpf, struct veth_xdp_tx_bq *bq,
 				  struct veth_stats *stats)
@@ -734,18 +710,13 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
 		struct page *page;
 		int i, head_off;
 
-		/* We need a private copy of the skb and data buffers since
-		 * the ebpf program can modify it. We segment the original skb
-		 * into order-0 pages without linearize it.
-		 *
-		 * Make sure we have enough space for linear and paged area
-		 */
+		 
 		max_head_size = SKB_WITH_OVERHEAD(PAGE_SIZE -
 						  VETH_XDP_HEADROOM);
 		if (skb->len > PAGE_SIZE * MAX_SKB_FRAGS + max_head_size)
 			goto drop;
 
-		/* Allocate skb head */
+		 
 		page = page_pool_dev_alloc_pages(rq->page_pool);
 		if (!page)
 			goto drop;
@@ -770,7 +741,7 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
 		head_off = skb_headroom(nskb) - skb_headroom(skb);
 		skb_headers_offset_update(nskb, head_off);
 
-		/* Allocate paged area of new skb */
+		 
 		off = size;
 		len = skb->len - off;
 
@@ -797,7 +768,7 @@ static int veth_convert_skb_to_xdp_buff(struct veth_rq *rq,
 		skb = nskb;
 	}
 
-	/* SKB "head" area always have tailroom for skb_shared_info */
+	 
 	frame_sz = skb_end_pointer(skb) - skb->head;
 	frame_sz += SKB_DATA_ALIGN(sizeof(struct skb_shared_info));
 	xdp_init_buff(xdp, frame_sz, &rq->xdp_rxq);
@@ -889,7 +860,7 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
 	}
 	rcu_read_unlock();
 
-	/* check if bpf_xdp_adjust_head was used */
+	 
 	off = orig_data - xdp->data;
 	if (off > 0)
 		__skb_push(skb, off);
@@ -898,14 +869,12 @@ static struct sk_buff *veth_xdp_rcv_skb(struct veth_rq *rq,
 
 	skb_reset_mac_header(skb);
 
-	/* check if bpf_xdp_adjust_tail was used */
+	 
 	off = xdp->data_end - orig_data_end;
 	if (off != 0)
-		__skb_put(skb, off); /* positive on grow, negative on shrink */
+		__skb_put(skb, off);  
 
-	/* XDP frag metadata (e.g. nr_frags) are updated in eBPF helpers
-	 * (e.g. bpf_xdp_adjust_tail), we need to update data_len here.
-	 */
+	 
 	if (xdp_buff_has_frags(xdp))
 		skb->data_len = skb_shinfo(skb)->xdp_frags_size;
 	else
@@ -945,13 +914,13 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
 			break;
 
 		if (veth_is_xdp_frame(ptr)) {
-			/* ndo_xdp_xmit */
+			 
 			struct xdp_frame *frame = veth_ptr_to_xdp(ptr);
 
 			stats->xdp_bytes += xdp_get_frame_len(frame);
 			frame = veth_xdp_rcv_one(rq, frame, bq, stats);
 			if (frame) {
-				/* XDP_PASS */
+				 
 				xdpf[n_xdpf++] = frame;
 				if (n_xdpf == VETH_XDP_BATCH) {
 					veth_xdp_rcv_bulk_skb(rq, xdpf, n_xdpf,
@@ -960,7 +929,7 @@ static int veth_xdp_rcv(struct veth_rq *rq, int budget,
 				}
 			}
 		} else {
-			/* ndo_start_xmit */
+			 
 			struct sk_buff *skb = ptr;
 
 			stats->xdp_bytes += skb->len;
@@ -1006,7 +975,7 @@ static int veth_poll(struct napi_struct *napi, int budget)
 		xdp_do_flush();
 
 	if (done < budget && napi_complete_done(napi, done)) {
-		/* Write rx_notify_masked before reading ptr_ring */
+		 
 		smp_store_mb(rq->rx_notify_masked, false);
 		if (unlikely(!__ptr_ring_empty(&rq->xdp_ring))) {
 			if (napi_schedule_prep(&rq->xdp_napi)) {
@@ -1147,7 +1116,7 @@ static int veth_enable_xdp_range(struct net_device *dev, int start, int end,
 		if (err < 0)
 			goto err_reg_mem;
 
-		/* Save original mem info as it can be overwritten */
+		 
 		rq->xdp_mem = rq->xdp_rxq.mem;
 	}
 	return 0;
@@ -1202,9 +1171,7 @@ static int veth_enable_xdp(struct net_device *dev)
 			}
 
 			if (!veth_gro_requested(dev)) {
-				/* user-space did not require GRO, but adding XDP
-				 * is supposed to get GRO working
-				 */
+				 
 				dev->features |= NETIF_F_GRO;
 				netdev_features_change(dev);
 			}
@@ -1230,9 +1197,7 @@ static void veth_disable_xdp(struct net_device *dev)
 	if (!netif_running(dev) || !veth_gro_requested(dev)) {
 		veth_napi_del(dev);
 
-		/* if user-space did not require GRO, since adding XDP
-		 * enabled it, clear it now
-		 */
+		 
 		if (!veth_gro_requested(dev) && netif_running(dev)) {
 			dev->features &= ~NETIF_F_GRO;
 			netdev_features_change(dev);
@@ -1294,16 +1259,14 @@ static int veth_enable_range_safe(struct net_device *dev, int start, int end)
 		return 0;
 
 	if (priv->_xdp_prog) {
-		/* these channels are freshly initialized, napi is not on there even
-		 * when GRO is requeste
-		 */
+		 
 		err = veth_enable_xdp_range(dev, start, end, false);
 		if (err)
 			return err;
 
 		err = __veth_napi_enable_range(dev, start, end);
 		if (err) {
-			/* on error always delete the newly added napis */
+			 
 			veth_disable_xdp_range(dev, start, end, true);
 			return err;
 		}
@@ -1343,11 +1306,11 @@ static int veth_set_channels(struct net_device *dev,
 	struct net_device *peer;
 	int err;
 
-	/* sanity check. Upper bounds are already enforced by the caller */
+	 
 	if (!ch->rx_count || !ch->tx_count)
 		return -EINVAL;
 
-	/* avoid braking XDP, if that is enabled */
+	 
 	peer = rtnl_dereference(priv->peer);
 	peer_priv = peer ? netdev_priv(peer) : NULL;
 	if (priv->_xdp_prog && peer && ch->rx_count < peer->real_num_tx_queues)
@@ -1359,12 +1322,12 @@ static int veth_set_channels(struct net_device *dev,
 	old_rx_count = dev->real_num_rx_queues;
 	new_rx_count = ch->rx_count;
 	if (netif_running(dev)) {
-		/* turn device off */
+		 
 		netif_carrier_off(dev);
 		if (peer)
 			netif_carrier_off(peer);
 
-		/* try to allocate new resurces, as needed*/
+		 
 		err = veth_enable_range_safe(dev, old_rx_count, new_rx_count);
 		if (err)
 			goto out;
@@ -1378,11 +1341,7 @@ static int veth_set_channels(struct net_device *dev,
 	if (err) {
 		int err2 = netif_set_real_num_rx_queues(dev, old_rx_count);
 
-		/* this error condition could happen only if rx and tx change
-		 * in opposite directions (e.g. tx nr raises, rx nr decreases)
-		 * and we can't do anything to fully restore the original
-		 * status
-		 */
+		 
 		if (err2)
 			pr_warn("Can't restore rx queues config %d -> %d %d",
 				new_rx_count, old_rx_count, err2);
@@ -1392,16 +1351,14 @@ static int veth_set_channels(struct net_device *dev,
 
 out:
 	if (netif_running(dev)) {
-		/* note that we need to swap the arguments WRT the enable part
-		 * to identify the range we have to disable
-		 */
+		 
 		veth_disable_range_safe(dev, new_rx_count, old_rx_count);
 		netif_carrier_on(dev);
 		if (peer)
 			netif_carrier_on(peer);
 	}
 
-	/* update XDP supported features */
+	 
 	veth_set_xdp_features(dev);
 	if (peer)
 		veth_set_xdp_features(peer);
@@ -1502,17 +1459,9 @@ static void veth_dev_free(struct net_device *dev)
 #ifdef CONFIG_NET_POLL_CONTROLLER
 static void veth_poll_controller(struct net_device *dev)
 {
-	/* veth only receives frames when its peer sends one
-	 * Since it has nothing to do with disabling irqs, we are guaranteed
-	 * never to have pending data when we poll for it so
-	 * there is nothing to do here.
-	 *
-	 * We need this though so netpoll recognizes us as an interface that
-	 * supports polling, which enables bridge devices in virt setups to
-	 * still use netconsole
-	 */
+	 
 }
-#endif	/* CONFIG_NET_POLL_CONTROLLER */
+#endif	 
 
 static int veth_get_iflink(const struct net_device *dev)
 {
@@ -1619,9 +1568,7 @@ static int veth_xdp_set(struct net_device *dev, struct bpf_prog *prog,
 
 		max_mtu = SKB_WITH_OVERHEAD(PAGE_SIZE - VETH_XDP_HEADROOM) -
 			  peer->hard_header_len;
-		/* Allow increasing the max_mtu if the program supports
-		 * XDP fragments.
-		 */
+		 
 		if (prog->aux->xdp_has_frags)
 			max_mtu += PAGE_SIZE * MAX_SKB_FRAGS;
 
@@ -1777,9 +1724,7 @@ static void veth_setup(struct net_device *dev)
 	netif_set_tso_max_size(dev, GSO_MAX_SIZE);
 }
 
-/*
- * netlink interface
- */
+ 
 
 static int veth_validate(struct nlattr *tb[], struct nlattr *data[],
 			 struct netlink_ext_ack *extack)
@@ -1836,9 +1781,7 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 	struct ifinfomsg *ifmp;
 	struct net *net;
 
-	/*
-	 * create and register peer first
-	 */
+	 
 	if (data != NULL && data[VETH_INFO_PEER] != NULL) {
 		struct nlattr *nla_peer;
 
@@ -1891,9 +1834,7 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 	if (err < 0)
 		goto err_register_peer;
 
-	/* keep GRO disabled by default to be consistent with the established
-	 * veth behavior
-	 */
+	 
 	veth_disable_gro(peer);
 	netif_carrier_off(peer);
 
@@ -1901,12 +1842,7 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 	if (err < 0)
 		goto err_configure_peer;
 
-	/*
-	 * register dev last
-	 *
-	 * note, that since we've registered new device the dev's name
-	 * should be re-allocated
-	 */
+	 
 
 	if (tb[IFLA_ADDRESS] == NULL)
 		eth_hw_addr_random(dev);
@@ -1922,9 +1858,7 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 
 	netif_carrier_off(dev);
 
-	/*
-	 * tie the deviced together
-	 */
+	 
 
 	priv = netdev_priv(dev);
 	rcu_assign_pointer(priv->peer, peer);
@@ -1939,7 +1873,7 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 		goto err_queues;
 
 	veth_disable_gro(dev);
-	/* update XDP supported features */
+	 
 	veth_set_xdp_features(dev);
 	veth_set_xdp_features(peer);
 
@@ -1948,7 +1882,7 @@ static int veth_newlink(struct net *src_net, struct net_device *dev,
 err_queues:
 	unregister_netdevice(dev);
 err_register_dev:
-	/* nothing to do */
+	 
 err_configure_peer:
 	unregister_netdevice(peer);
 	return err;
@@ -1966,10 +1900,7 @@ static void veth_dellink(struct net_device *dev, struct list_head *head)
 	priv = netdev_priv(dev);
 	peer = rtnl_dereference(priv->peer);
 
-	/* Note : dellink() is called from default_device_exit_batch(),
-	 * before a rcu_synchronize() point. The devices are guaranteed
-	 * not being freed before one RCU grace period.
-	 */
+	 
 	RCU_INIT_POINTER(priv->peer, NULL);
 	unregister_netdevice_queue(dev, head);
 
@@ -1994,7 +1925,7 @@ static struct net *veth_get_link_net(const struct net_device *dev)
 
 static unsigned int veth_get_num_queues(void)
 {
-	/* enforce the same queue limit as rtnl_create_link */
+	 
 	int queues = num_possible_cpus();
 
 	if (queues > 4096)
@@ -2016,9 +1947,7 @@ static struct rtnl_link_ops veth_link_ops = {
 	.get_num_rx_queues	= veth_get_num_queues,
 };
 
-/*
- * init/fini
- */
+ 
 
 static __init int veth_init(void)
 {

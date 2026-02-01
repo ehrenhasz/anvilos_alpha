@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * QNAP Turbo NAS Board power off. Can also be used on Synology devices.
- *
- * Copyright (C) 2012 Andrew Lunn <andrew@lunn.ch>
- *
- * Based on the code from:
- *
- * Copyright (C) 2009  Martin Michlmayr <tbm@cyrius.com>
- * Copyright (C) 2008  Byron Bradley <byron.bbradley@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -56,7 +47,7 @@ static void qnap_power_off(void)
 
 	pr_err("%s: triggering power-off...\n", __func__);
 
-	/* hijack UART1 and reset into sane state */
+	 
 	writel(0x83, UART1_REG(LCR));
 	writel(divisor & 0xff, UART1_REG(DLL));
 	writel((divisor >> 8) & 0xff, UART1_REG(DLM));
@@ -65,7 +56,7 @@ static void qnap_power_off(void)
 	writel(0x00, UART1_REG(FCR));
 	writel(0x00, UART1_REG(MCR));
 
-	/* send the power-off command to PIC */
+	 
 	writel(cfg->cmd, UART1_REG(TX));
 }
 
@@ -91,7 +82,7 @@ static int qnap_power_off_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* We need to know tclk in order to calculate the UART divisor */
+	 
 	clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(clk)) {
 		dev_err(&pdev->dev, "Clk missing");
@@ -100,7 +91,7 @@ static int qnap_power_off_probe(struct platform_device *pdev)
 
 	tclk = clk_get_rate(clk);
 
-	/* Check that nothing else has already setup a handler */
+	 
 	if (pm_power_off) {
 		dev_err(&pdev->dev, "pm_power_off already claimed for %ps",
 			pm_power_off);

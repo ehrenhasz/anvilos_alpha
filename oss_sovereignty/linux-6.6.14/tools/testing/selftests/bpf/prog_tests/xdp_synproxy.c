@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1 OR BSD-2-Clause
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #define _GNU_SOURCE
 #include <test_progs.h>
@@ -17,7 +17,7 @@
 	f; \
 })
 
-/* out must be at least `size * 4 + 1` bytes long */
+ 
 static void escape_str(char *out, const char *in, size_t size)
 {
 	static const char *hex = "0123456789ABCDEF";
@@ -71,12 +71,10 @@ static void test_synproxy(bool xdp)
 	SYS(out, "ip link set tmp0 up");
 	SYS(out, "ip addr replace 198.18.0.1/24 dev tmp0");
 
-	/* When checksum offload is enabled, the XDP program sees wrong
-	 * checksums and drops packets.
-	 */
+	 
 	SYS(out, "ethtool -K tmp0 tx off");
 	if (xdp)
-		/* Workaround required for veth. */
+		 
 		SYS(out, "ip link set tmp0 xdp object xdp_dummy.bpf.o section xdp 2> /dev/null");
 
 	ns = open_netns("synproxy");

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Power Protocol
- *
- * Copyright (C) 2018-2022 ARM Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) "SCMI Notifications POWER - " fmt
 
@@ -126,10 +122,7 @@ scmi_power_domain_attributes_get(const struct scmi_protocol_handle *ph,
 	}
 	ph->xops->xfer_put(ph, t);
 
-	/*
-	 * If supported overwrite short name with the extended one;
-	 * on error just carry on and use already provided short name.
-	 */
+	 
 	if (!ret && PROTOCOL_REV_MAJOR(version) >= 0x3 &&
 	    SUPPORTS_EXTENDED_NAMES(flags)) {
 		ph->hops->extended_name_get(ph, POWER_DOMAIN_NAME_GET,

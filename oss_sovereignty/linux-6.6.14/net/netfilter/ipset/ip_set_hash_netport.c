@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2003-2013 Jozsef Kadlecsik <kadlec@netfilter.org> */
 
-/* Kernel module implementing an IP set type: the hash:net,port type */
+ 
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/module.h>
@@ -20,34 +20,31 @@
 #include <linux/netfilter/ipset/ip_set_hash.h>
 
 #define IPSET_TYPE_REV_MIN	0
-/*				1    SCTP and UDPLITE support added */
-/*				2    Range as input support for IPv4 added */
-/*				3    nomatch flag support added */
-/*				4    Counters support added */
-/*				5    Comments support added */
-/*				6    Forceadd support added */
-/*				7    skbinfo support added */
-#define IPSET_TYPE_REV_MAX	8 /* bucketsize, initval support added */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+#define IPSET_TYPE_REV_MAX	8  
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
 IP_SET_MODULE_DESC("hash:net,port", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_hash:net,port");
 
-/* Type specific function prefix */
+ 
 #define HTYPE		hash_netport
 #define IP_SET_HASH_WITH_PROTO
 #define IP_SET_HASH_WITH_NETS
 
-/* We squeeze the "nomatch" flag into cidr: we don't support cidr == 0
- * However this way we have to store internally cidr - 1,
- * dancing back and forth.
- */
+ 
 #define IP_SET_HASH_WITH_NETS_PACKED
 
-/* IPv4 variant */
+ 
 
-/* Member elements */
+ 
 struct hash_netport4_elem {
 	__be32 ip;
 	__be16 port;
@@ -56,7 +53,7 @@ struct hash_netport4_elem {
 	u8 nomatch:1;
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_netport4_data_equal(const struct hash_netport4_elem *ip1,
@@ -263,7 +260,7 @@ hash_netport4_uadt(struct ip_set *set, struct nlattr *tb[],
 	return ret;
 }
 
-/* IPv6 variant */
+ 
 
 struct hash_netport6_elem {
 	union nf_inet_addr ip;
@@ -273,7 +270,7 @@ struct hash_netport6_elem {
 	u8 nomatch:1;
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_netport6_data_equal(const struct hash_netport6_elem *ip1,

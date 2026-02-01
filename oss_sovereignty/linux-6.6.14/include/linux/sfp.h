@@ -217,15 +217,7 @@ struct sfp_eeprom_ext {
 	u8 cc_ext;
 } __packed;
 
-/**
- * struct sfp_eeprom_id - raw SFP module identification information
- * @base: base SFP module identification structure
- * @ext: extended SFP module identification structure
- *
- * See the SFF-8472 specification and related documents for the definition
- * of these structure members. This can be obtained from
- * https://www.snia.org/technology-communities/sff/specifications
- */
+ 
 struct sfp_eeprom_id {
 	struct sfp_eeprom_base base;
 	struct sfp_eeprom_ext ext;
@@ -275,7 +267,7 @@ struct sfp_diag {
 	__be16 cal_v_offset;
 } __packed;
 
-/* SFF8024 defined constants */
+ 
 enum {
 	SFF8024_ID_UNK			= 0x00,
 	SFF8024_ID_SFF_8472		= 0x02,
@@ -299,7 +291,7 @@ enum {
 	SFF8024_ENCODING_PAM4		= 0x08,
 
 	SFF8024_CONNECTOR_UNSPEC	= 0x00,
-	/* codes 01-05 not supportable on SFP, but some modules have single SC */
+	 
 	SFF8024_CONNECTOR_SC		= 0x01,
 	SFF8024_CONNECTOR_FIBERJACK	= 0x06,
 	SFF8024_CONNECTOR_LC		= 0x07,
@@ -330,7 +322,7 @@ enum {
 	SFF8024_ECC_2_5GBASE_T		= 0x1e,
 };
 
-/* SFP EEPROM registers */
+ 
 enum {
 	SFP_PHYS_ID			= 0,
 
@@ -364,7 +356,7 @@ enum {
 	SFP_CABLE_SPEC			= 60,
 	SFP_CC_BASE			= 63,
 
-	SFP_OPTIONS			= 64,	/* 2 bytes, MSB, LSB */
+	SFP_OPTIONS			= 64,	 
 	SFP_OPTIONS_HIGH_POWER_LEVEL	= BIT(13),
 	SFP_OPTIONS_PAGING_A2		= BIT(12),
 	SFP_OPTIONS_RETIMER		= BIT(11),
@@ -414,9 +406,9 @@ enum {
 	SFP_CC_EXT			= 95,
 };
 
-/* SFP Diagnostics */
+ 
 enum {
-	/* Alarm and warnings stored MSB at lower address then LSB */
+	 
 	SFP_TEMP_HIGH_ALARM		= 0,
 	SFP_TEMP_LOW_ALARM		= 2,
 	SFP_TEMP_HIGH_WARN		= 4,
@@ -515,25 +507,7 @@ struct ethtool_eeprom;
 struct ethtool_modinfo;
 struct sfp_bus;
 
-/**
- * struct sfp_upstream_ops - upstream operations structure
- * @attach: called when the sfp socket driver is bound to the upstream
- *   (mandatory).
- * @detach: called when the sfp socket driver is unbound from the upstream
- *   (mandatory).
- * @module_insert: called after a module has been detected to determine
- *   whether the module is supported for the upstream device.
- * @module_remove: called after the module has been removed.
- * @module_start: called after the PHY probe step
- * @module_stop: called before the PHY is removed
- * @link_down: called when the link is non-operational for whatever
- *   reason.
- * @link_up: called when the link is operational.
- * @connect_phy: called when an I2C accessible PHY has been detected
- *   on the module.
- * @disconnect_phy: called when a module with an I2C accessible PHY has
- *   been removed.
- */
+ 
 struct sfp_upstream_ops {
 	void (*attach)(void *priv, struct sfp_bus *bus);
 	void (*detach)(void *priv, struct sfp_bus *bus);

@@ -1,34 +1,10 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2015 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/objtuple.h"
 
 #if MICROPY_PY_ATTRTUPLE || MICROPY_PY_COLLECTIONS
 
-// this helper function is used by collections.namedtuple
+
 #if !MICROPY_PY_COLLECTIONS
 static
 #endif
@@ -57,7 +33,7 @@ static void mp_obj_attrtuple_print(const mp_print_t *print, mp_obj_t o_in, mp_pr
 
 static void mp_obj_attrtuple_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
     if (dest[0] == MP_OBJ_NULL) {
-        // load attribute
+        
         mp_obj_tuple_t *self = MP_OBJ_TO_PTR(self_in);
         size_t len = self->len;
         const qstr *fields = (const qstr *)MP_OBJ_TO_PTR(self->items[len]);
@@ -84,7 +60,7 @@ MP_DEFINE_CONST_OBJ_TYPE(
     mp_type_attrtuple,
     MP_QSTR_tuple,
     MP_TYPE_FLAG_ITER_IS_GETITER,
-    // reuse tuple to save on a qstr
+    
     print, mp_obj_attrtuple_print,
     unary_op, mp_obj_tuple_unary_op,
     binary_op, mp_obj_tuple_binary_op,
@@ -93,4 +69,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
     iter, mp_obj_tuple_getiter
     );
 
-#endif // MICROPY_PY_ATTRTUPLE
+#endif 

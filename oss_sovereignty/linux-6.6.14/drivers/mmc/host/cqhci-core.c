@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/highmem.h>
@@ -151,26 +150,12 @@ static void cqhci_dumpregs(struct cqhci_host *cq_host)
 		CQHCI_DUMP(": ===========================================\n");
 }
 
-/*
- * The allocated descriptor table for task, link & transfer descriptors
- * looks like:
- * |----------|
- * |task desc |  |->|----------|
- * |----------|  |  |trans desc|
- * |link desc-|->|  |----------|
- * |----------|          .
- *      .                .
- *  no. of slots      max-segs
- *      .           |----------|
- * |----------|
- * The idea here is to create the [task+trans] table and mark & point the
- * link desc to the transfer desc table on a per slot basis.
- */
+ 
 static int cqhci_host_alloc_tdl(struct cqhci_host *cq_host)
 {
 	int i = 0;
 
-	/* task descriptor can be 64/128 bit irrespective of arch */
+	 
 	if (cq_host->caps & CQHCI_TASK_DESC_SZ_128) {
 		cqhci_writel(cq_host, cqhci_readl(cq_host, CQHCI_CFG) |
 			       CQHCI_TASK_DESC_SZ, CQHCI_CFG);
@@ -179,11 +164,7 @@ static int cqhci_host_alloc_tdl(struct cqhci_host *cq_host)
 		cq_host->task_desc_len = 8;
 	}
 
-	/*
-	 * 96 bits length of transfer desc instead of 128 bits which means
-	 * ADMA would expect next valid descriptor at the 96th bit
-	 * or 128th bit
-	 */
+	 
 	if (cq_host->dma64) {
 		if (cq_host->quirks & CQHCI_QUIRK_SHORT_TXFR_DESC_SZ)
 			cq_host->trans_desc_len = 12;
@@ -195,7 +176,7 @@ static int cqhci_host_alloc_tdl(struct cqhci_host *cq_host)
 		cq_host->link_desc_len = 8;
 	}
 
-	/* total size of a slot: 1 task & 1 transfer (link) */
+	 
 	cq_host->slot_sz = cq_host->task_desc_len + cq_host->link_desc_len;
 
 	cq_host->desc_size = cq_host->slot_sz * cq_host->num_slots;
@@ -206,12 +187,7 @@ static int cqhci_host_alloc_tdl(struct cqhci_host *cq_host)
 		 mmc_hostname(cq_host->mmc), cq_host->desc_size, cq_host->data_size,
 		 cq_host->slot_sz);
 
-	/*
-	 * allocate a dma-mapped chunk of memory for the descriptors
-	 * allocate a dma-mapped chunk of memory for link descriptors
-	 * setup each link-desc memory offset per slot-number to
-	 * the descriptor table.
-	 */
+	 
 	cq_host->desc_base = dmam_alloc_coherent(mmc_dev(cq_host->mmc),
 						 cq_host->desc_size,
 						 &cq_host->desc_dma_base,
@@ -250,7 +226,7 @@ static void __cqhci_enable(struct cqhci_host *cq_host)
 
 	cqcfg = cqhci_readl(cq_host, CQHCI_CFG);
 
-	/* Configuration must not be changed while enabled */
+	 
 	if (cqcfg & CQHCI_ENABLE) {
 		cqcfg &= ~CQHCI_ENABLE;
 		cqhci_writel(cq_host, cqcfg, CQHCI_CFG);
@@ -290,7 +266,7 @@ static void __cqhci_enable(struct cqhci_host *cq_host)
 	if (cq_host->ops->enable)
 		cq_host->ops->enable(mmc);
 
-	/* Ensure all writes are done before interrupts are enabled */
+	 
 	wmb();
 
 	cqhci_set_irqs(cq_host, CQHCI_IS_MASK);
@@ -324,7 +300,7 @@ EXPORT_SYMBOL(cqhci_deactivate);
 
 int cqhci_resume(struct mmc_host *mmc)
 {
-	/* Re-enable is done upon first request */
+	 
 	return 0;
 }
 EXPORT_SYMBOL(cqhci_resume);
@@ -359,7 +335,7 @@ static int cqhci_enable(struct mmc_host *mmc, struct mmc_card *card)
 	return 0;
 }
 
-/* CQHCI is idle and should halt immediately, so set a small timeout */
+ 
 #define CQHCI_OFF_TIMEOUT 100
 
 static u32 cqhci_read_ctl(struct cqhci_host *cq_host)
@@ -601,7 +577,7 @@ static int cqhci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 		return -EINVAL;
 	}
 
-	/* First request after resume has to re-enable */
+	 
 	if (!cq_host->activated)
 		__cqhci_enable(cq_host);
 
@@ -644,7 +620,7 @@ static int cqhci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	cq_host->slot[tag].flags = 0;
 
 	cq_host->qcnt += 1;
-	/* Make sure descriptors are ready before ringing the doorbell */
+	 
 	wmb();
 	cqhci_writel(cq_host, 1 << tag, CQHCI_TDBR);
 	if (!(cqhci_readl(cq_host, CQHCI_TDBR) & (1 << tag)))
@@ -703,7 +679,7 @@ static void cqhci_error_irq(struct mmc_host *mmc, u32 status, int cmd_error,
 	pr_debug("%s: cqhci: error IRQ status: 0x%08x cmd error %d data error %d TERRI: 0x%08x\n",
 		 mmc_hostname(mmc), status, cmd_error, data_error, terri);
 
-	/* Forget about errors when recovery has already been triggered */
+	 
 	if (cq_host->recovery_halt)
 		goto out_unlock;
 
@@ -732,14 +708,7 @@ static void cqhci_error_irq(struct mmc_host *mmc, u32 status, int cmd_error,
 		}
 	}
 
-	/*
-	 * Handle ICCE ("Invalid Crypto Configuration Error").  This should
-	 * never happen, since the block layer ensures that all crypto-enabled
-	 * I/O requests have a valid keyslot before they reach the driver.
-	 *
-	 * Note that GCE ("General Crypto Error") is different; it already got
-	 * handled above by checking TERRI.
-	 */
+	 
 	if (status & CQHCI_IS_ICCE) {
 		tdpe = cqhci_readl(cq_host, CQHCI_TDPE);
 		WARN_ONCE(1,
@@ -757,10 +726,7 @@ static void cqhci_error_irq(struct mmc_host *mmc, u32 status, int cmd_error,
 	}
 
 	if (!cq_host->recovery_halt) {
-		/*
-		 * The only way to guarantee forward progress is to mark at
-		 * least one task in error, so if none is indicated, pick one.
-		 */
+		 
 		for (tag = 0; tag < NUM_SLOTS; tag++) {
 			slot = &cq_host->slot[tag];
 			if (!slot->mrq)
@@ -788,7 +754,7 @@ static void cqhci_finish_mrq(struct mmc_host *mmc, unsigned int tag)
 		return;
 	}
 
-	/* No completions allowed during recovery */
+	 
 	if (cq_host->recovery_halt) {
 		slot->flags |= CQHCI_COMPLETED;
 		return;
@@ -833,7 +799,7 @@ irqreturn_t cqhci_irq(struct mmc_host *mmc, u32 intmask, int cmd_error,
 	}
 
 	if (status & CQHCI_IS_TCC) {
-		/* read TCN and complete the request */
+		 
 		comp_status = cqhci_readl(cq_host, CQHCI_TCN);
 		cqhci_writel(cq_host, comp_status, CQHCI_TCN);
 		pr_debug("%s: cqhci: TCN: 0x%08lx\n",
@@ -842,7 +808,7 @@ irqreturn_t cqhci_irq(struct mmc_host *mmc, u32 intmask, int cmd_error,
 		spin_lock(&cq_host->lock);
 
 		for_each_set_bit(tag, &comp_status, cq_host->num_slots) {
-			/* complete the corresponding mrq */
+			 
 			pr_debug("%s: cqhci: completing tag %lu\n",
 				 mmc_hostname(mmc), tag);
 			cqhci_finish_mrq(mmc, tag);
@@ -981,12 +947,7 @@ static bool cqhci_halt(struct mmc_host *mmc, unsigned int timeout)
 	return ret;
 }
 
-/*
- * After halting we expect to be able to use the command line. We interpret the
- * failure to halt to mean the data lines might still be in use (and the upper
- * layers will need to send a STOP command), however failing to halt complicates
- * the recovery, so set a timeout that would reasonably allow I/O to complete.
- */
+ 
 #define CQHCI_START_HALT_TIMEOUT	500
 
 static void cqhci_recovery_start(struct mmc_host *mmc)
@@ -1010,7 +971,7 @@ static int cqhci_error_from_flags(unsigned int flags)
 	if (!flags)
 		return 0;
 
-	/* CRC errors might indicate re-tuning so prefer to report that */
+	 
 	if (flags & CQHCI_HOST_CRC)
 		return -EILSEQ;
 
@@ -1052,14 +1013,10 @@ static void cqhci_recover_mrqs(struct cqhci_host *cq_host)
 		cqhci_recover_mrq(cq_host, i);
 }
 
-/*
- * By now the command and data lines should be unused so there is no reason for
- * CQHCI to take a long time to halt, but if it doesn't halt there could be
- * problems clearing tasks, so be generous.
- */
+ 
 #define CQHCI_FINISH_HALT_TIMEOUT	20
 
-/* CQHCI could be expected to clear it's internal state pretty quickly */
+ 
 #define CQHCI_CLEAR_TIMEOUT		20
 
 static void cqhci_recovery_finish(struct mmc_host *mmc)
@@ -1075,16 +1032,11 @@ static void cqhci_recovery_finish(struct mmc_host *mmc)
 
 	ok = cqhci_halt(mmc, CQHCI_FINISH_HALT_TIMEOUT);
 
-	/*
-	 * The specification contradicts itself, by saying that tasks cannot be
-	 * cleared if CQHCI does not halt, but if CQHCI does not halt, it should
-	 * be disabled/re-enabled, but not to disable before clearing tasks.
-	 * Have a go anyway.
-	 */
+	 
 	if (!cqhci_clear_all_tasks(mmc, CQHCI_CLEAR_TIMEOUT))
 		ok = false;
 
-	/* Disable to make sure tasks really are cleared */
+	 
 	cqcfg = cqhci_readl(cq_host, CQHCI_CFG);
 	cqcfg &= ~CQHCI_ENABLE;
 	cqhci_writel(cq_host, cqcfg, CQHCI_CFG);
@@ -1108,7 +1060,7 @@ static void cqhci_recovery_finish(struct mmc_host *mmc)
 	mmc->cqe_on = false;
 	spin_unlock_irqrestore(&cq_host->lock, flags);
 
-	/* Ensure all writes are done before interrupts are re-enabled */
+	 
 	wmb();
 
 	cqhci_writel(cq_host, CQHCI_IS_HAC | CQHCI_IS_TCL, CQHCI_IS);
@@ -1135,7 +1087,7 @@ struct cqhci_host *cqhci_pltfm_init(struct platform_device *pdev)
 	struct cqhci_host *cq_host;
 	struct resource *cqhci_memres = NULL;
 
-	/* check and setup CMDQ interface */
+	 
 	cqhci_memres = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 						   "cqhci");
 	if (!cqhci_memres) {

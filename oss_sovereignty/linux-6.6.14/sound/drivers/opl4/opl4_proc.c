@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Functions for the OPL4 proc file
- * Copyright (c) 2003 by Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include "opl4_local.h"
 #include <linux/vmalloc.h>
@@ -90,11 +87,11 @@ int snd_opl4_create_proc(struct snd_opl4 *opl4)
 	entry = snd_info_create_card_entry(opl4->card, "opl4-mem", opl4->card->proc_root);
 	if (entry) {
 		if (opl4->hardware < OPL3_HW_OPL4_ML) {
-			/* OPL4 can access 4 MB external ROM/SRAM */
+			 
 			entry->mode |= 0200;
 			entry->size = 4 * 1024 * 1024;
 		} else {
-			/* OPL4-ML has 1 MB internal ROM */
+			 
 			entry->size = 1 * 1024 * 1024;
 		}
 		entry->content = SNDRV_INFO_CONTENT_DATA;

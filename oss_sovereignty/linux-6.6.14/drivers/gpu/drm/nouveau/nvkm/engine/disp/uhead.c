@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #define nvkm_uhead(p) container_of((p), struct nvkm_head, object)
 #include "head.h"
 #include <core/event.h>
@@ -58,10 +38,7 @@ nvkm_uhead_mthd_scanoutpos(struct nvkm_head *head, void *argv, u32 argc)
 	args->v0.hblanks = head->arm.hblanks;
 	args->v0.hblanke = head->arm.hblanke;
 
-	/* We don't support reading htotal/vtotal on pre-NV50 VGA,
-	 * so we have to give up and trigger the timestamping
-	 * fallback in the drm core.
-	 */
+	 
 	if (!args->v0.vtotal || !args->v0.htotal)
 		return -ENOTSUPP;
 

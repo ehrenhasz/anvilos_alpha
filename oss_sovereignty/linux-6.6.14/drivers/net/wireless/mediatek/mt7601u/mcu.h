@@ -1,15 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+ 
+ 
 
 #ifndef __MT7601U_MCU_H
 #define __MT7601U_MCU_H
 
 struct mt7601u_dev;
 
-/* Register definitions */
+ 
 #define MT_MCU_RESET_CTL		0x070C
 #define MT_MCU_INT_LEVEL		0x0718
 #define MT_MCU_COM_REG0			0x0730

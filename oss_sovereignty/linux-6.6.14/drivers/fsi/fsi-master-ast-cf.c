@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2018 IBM Corp
-/*
- * A FSI master controller, using a simple GPIO bit-banging interface
- */
+
+
+ 
 
 #include <linux/crc4.h>
 #include <linux/delay.h>
@@ -27,12 +25,12 @@
 
 #define FW_FILE_NAME	"cf-fsi-fw.bin"
 
-/* Common SCU based coprocessor control registers */
+ 
 #define SCU_COPRO_CTRL			0x100
 #define   SCU_COPRO_RESET			0x00000002
 #define   SCU_COPRO_CLK_EN			0x00000001
 
-/* AST2500 specific ones */
+ 
 #define SCU_2500_COPRO_SEG0		0x104
 #define SCU_2500_COPRO_SEG1		0x108
 #define SCU_2500_COPRO_SEG2		0x10c
@@ -69,17 +67,14 @@
 #define   SCU_2400_COPRO_SEG6_CACHE_EN		0x00000010
 #define   SCU_2400_COPRO_SEG8_CACHE_EN		0x00000020
 
-/* CVIC registers */
+ 
 #define CVIC_EN_REG			0x10
 #define CVIC_TRIG_REG			0x18
 
-/*
- * System register base address (needed for configuring the
- * coldfire maps)
- */
+ 
 #define SYSREG_BASE			0x1e600000
 
-/* Amount of SRAM required */
+ 
 #define SRAM_SIZE			0x1000
 
 #define LAST_ADDR_INVALID		0x1
@@ -88,12 +83,12 @@ struct fsi_master_acf {
 	struct fsi_master	master;
 	struct device		*dev;
 	struct regmap		*scu;
-	struct mutex		lock;	/* mutex for command ordering */
+	struct mutex		lock;	 
 	struct gpio_desc	*gpio_clk;
 	struct gpio_desc	*gpio_data;
-	struct gpio_desc	*gpio_trans;	/* Voltage translator */
-	struct gpio_desc	*gpio_enable;	/* FSI enable */
-	struct gpio_desc	*gpio_mux;	/* Mux control */
+	struct gpio_desc	*gpio_trans;	 
+	struct gpio_desc	*gpio_enable;	 
+	struct gpio_desc	*gpio_mux;	 
 	uint16_t		gpio_clk_vreg;
 	uint16_t		gpio_clk_dreg;
 	uint16_t       		gpio_dat_vreg;
@@ -141,10 +136,10 @@ static void msg_push_crc(struct fsi_msg *msg)
 
 	top = msg->bits & 0x3;
 
-	/* start bit, and any non-aligned top bits */
+	 
 	crc = crc4(0, 1 << top | msg->msg >> (msg->bits - top), top + 1);
 
-	/* aligned bits */
+	 
 	crc = crc4(crc, msg->msg, msg->bits - top);
 
 	msg_push_bits(msg, crc, 4);
@@ -152,14 +147,14 @@ static void msg_push_crc(struct fsi_msg *msg)
 
 static void msg_finish_cmd(struct fsi_msg *cmd)
 {
-	/* Left align message */
+	 
 	cmd->msg <<= (64 - cmd->bits);
 }
 
 static bool check_same_address(struct fsi_master_acf *master, int id,
 			       uint32_t addr)
 {
-	/* this will also handle LAST_ADDR_INVALID */
+	 
 	return master->last_addr == (((id & 0x3) << 21) | (addr & ~0x3));
 }
 
@@ -172,18 +167,14 @@ static bool check_relative_address(struct fsi_master_acf *master, int id,
 	if (last_addr == LAST_ADDR_INVALID)
 		return false;
 
-	/* We may be in 23-bit addressing mode, which uses the id as the
-	 * top two address bits. So, if we're referencing a different ID,
-	 * use absolute addresses.
-	 */
+	 
 	if (((last_addr >> 21) & 0x3) != id)
 		return false;
 
-	/* remove the top two bits from any 23-bit addressing */
+	 
 	last_addr &= (1 << 21) - 1;
 
-	/* We know that the addresses are limited to 21 bits, so this won't
-	 * overflow the signed rel_addr */
+	 
 	rel_addr = addr - last_addr;
 	if (rel_addr > 255 || rel_addr < -256)
 		return false;
@@ -202,9 +193,7 @@ static void last_address_update(struct fsi_master_acf *master,
 		master->last_addr = ((id & 0x3) << 21) | (addr & ~0x3);
 }
 
-/*
- * Encode an Absolute/Relative/Same Address command
- */
+ 
 static void build_ar_command(struct fsi_master_acf *master,
 			     struct fsi_msg *cmd, uint8_t id,
 			     uint32_t addr, size_t size,
@@ -218,21 +207,21 @@ static void build_ar_command(struct fsi_master_acf *master,
 	cmd->bits = 0;
 	cmd->msg = 0;
 
-	/* we have 21 bits of address max */
+	 
 	addr &= ((1 << 21) - 1);
 
-	/* cmd opcodes are variable length - SAME_AR is only two bits */
+	 
 	opcode_bits = 3;
 
 	if (check_same_address(master, id, addr)) {
-		/* we still address the byte offset within the word */
+		 
 		addr_bits = 2;
 		opcode_bits = 2;
 		opcode = FSI_CMD_SAME_AR;
 		trace_fsi_master_acf_cmd_same_addr(master);
 
 	} else if (check_relative_address(master, id, addr, &rel_addr)) {
-		/* 8 bits plus sign */
+		 
 		addr_bits = 9;
 		addr = rel_addr;
 		opcode = FSI_CMD_REL_AR;
@@ -244,16 +233,7 @@ static void build_ar_command(struct fsi_master_acf *master,
 		trace_fsi_master_acf_cmd_abs_addr(master, addr);
 	}
 
-	/*
-	 * The read/write size is encoded in the lower bits of the address
-	 * (as it must be naturally-aligned), and the following ds bit.
-	 *
-	 *	size	addr:1	addr:0	ds
-	 *	1	x	x	0
-	 *	2	x	0	1
-	 *	4	0	1	1
-	 *
-	 */
+	 
 	ds = size > 1 ? 1 : 0;
 	addr &= ~(size - 1);
 	if (size == 4)
@@ -311,14 +291,14 @@ static int do_copro_command(struct fsi_master_acf *master, uint32_t op)
 
 	trace_fsi_master_acf_copro_command(master, op);
 
-	/* Send command */
+	 
 	iowrite32be(op, master->sram + CMD_STAT_REG);
 
-	/* Ring doorbell if any */
+	 
 	if (master->cvic)
 		iowrite32(0x2, master->cvic + CVIC_TRIG_REG);
 
-	/* Wait for status to indicate completion (or error) */
+	 
 	do {
 		if (timeout-- == 0) {
 			dev_warn(master->dev,
@@ -362,7 +342,7 @@ static int send_request(struct fsi_master_acf *master, struct fsi_msg *cmd,
 
 	trace_fsi_master_acf_send_request(master, cmd, resp_bits);
 
-	/* Store message into SRAM */
+	 
 	iowrite32be((cmd->msg >> 32), master->sram + CMD_DATA);
 	iowrite32be((cmd->msg & 0xffffffff), master->sram + CMD_DATA + 4);
 
@@ -385,7 +365,7 @@ static int read_copro_response(struct fsi_master_acf *master, uint8_t size,
 
 	*tag = ack = rtag & 3;
 
-	/* we have a whole message now; check CRC */
+	 
 	crc = crc4(0, 1, 1);
 	crc = crc4(crc, rtag, 4);
 	if (ack == FSI_RESP_ACK && size) {
@@ -399,10 +379,7 @@ static int read_copro_response(struct fsi_master_acf *master, uint8_t size,
 	trace_fsi_master_acf_copro_response(master, rtag, rcrc, rdata, crc == 0);
 
 	if (crc) {
-		/*
-		 * Check if it's all 1's or all 0's, that probably means
-		 * the host is off
-		 */
+		 
 		if ((rtag == 0xf && rcrc == 0xf) || (rtag == 0 && rcrc == 0))
 			return -ENODEV;
 		dev_dbg(master->dev, "Bad response CRC !\n");
@@ -475,14 +452,11 @@ static int handle_response(struct fsi_master_acf *master,
 retry:
 	rc = read_copro_response(master, size, &response, &tag);
 
-	/* Handle retries on CRC errors */
+	 
 	if (rc == -EAGAIN) {
-		/* Too many retries ? */
+		 
 		if (crc_err_retries++ > FSI_CRC_ERR_RETRIES) {
-			/*
-			 * Pass it up as a -EIO otherwise upper level will retry
-			 * the whole command which isn't what we want here.
-			 */
+			 
 			rc = -EIO;
 			goto bail;
 		}
@@ -518,11 +492,7 @@ retry:
 		}
 		break;
 	case FSI_RESP_BUSY:
-		/*
-		 * Its necessary to clock slave before issuing
-		 * d-poll, not indicated in the hardware protocol
-		 * spec. < 20 clocks causes slave to hang, 21 ok.
-		 */
+		 
 		dev_dbg(master->dev, "Busy, retrying...\n");
 		if (master->trace_enabled)
 			dump_ucode_trace(master);
@@ -587,7 +557,7 @@ static int fsi_master_acf_xfer(struct fsi_master_acf *master, uint8_t slave,
 		rc = -EIO;
 		dev_dbg(master->dev, "ECRC retry %d\n", retries);
 
-		/* Pace it a bit before retry */
+		 
 		msleep(1);
 	}
 
@@ -681,7 +651,7 @@ static int fsi_master_acf_break(struct fsi_master *_master, int link)
 	last_address_update(master, 0, false, 0);
 	mutex_unlock(&master->lock);
 
-	/* Wait for logic reset to take effect */
+	 
 	udelay(200);
 
 	return rc;
@@ -702,55 +672,41 @@ static void start_cf(struct fsi_master_acf *master)
 
 static void setup_ast2500_cf_maps(struct fsi_master_acf *master)
 {
-	/*
-	 * Note about byteswap setting: the bus is wired backwards,
-	 * so setting the byteswap bit actually makes the ColdFire
-	 * work "normally" for a BE processor, ie, put the MSB in
-	 * the lowest address byte.
-	 *
-	 * We thus need to set the bit for our main memory which
-	 * contains our program code. We create two mappings for
-	 * the register, one with each setting.
-	 *
-	 * Segments 2 and 3 has a "swapped" mapping (BE)
-	 * and 6 and 7 have a non-swapped mapping (LE) which allows
-	 * us to avoid byteswapping register accesses since the
-	 * registers are all LE.
-	 */
+	 
 
-	/* Setup segment 0 to our memory region */
+	 
 	regmap_write(master->scu, SCU_2500_COPRO_SEG0, master->cf_mem_addr |
 		     SCU_2500_COPRO_SEG_SWAP);
 
-	/* Segments 2 and 3 to sysregs with byteswap (for SRAM) */
+	 
 	regmap_write(master->scu, SCU_2500_COPRO_SEG2, SYSREG_BASE |
 		     SCU_2500_COPRO_SEG_SWAP);
 	regmap_write(master->scu, SCU_2500_COPRO_SEG3, SYSREG_BASE | 0x100000 |
 		     SCU_2500_COPRO_SEG_SWAP);
 
-	/* And segment 6 and 7 to sysregs no byteswap */
+	 
 	regmap_write(master->scu, SCU_2500_COPRO_SEG6, SYSREG_BASE);
 	regmap_write(master->scu, SCU_2500_COPRO_SEG7, SYSREG_BASE | 0x100000);
 
-	/* Memory cachable, regs and SRAM not cachable */
+	 
 	regmap_write(master->scu, SCU_2500_COPRO_CACHE_CTL,
 		     SCU_2500_COPRO_SEG0_CACHE_EN | SCU_2500_COPRO_CACHE_EN);
 }
 
 static void setup_ast2400_cf_maps(struct fsi_master_acf *master)
 {
-	/* Setup segment 0 to our memory region */
+	 
 	regmap_write(master->scu, SCU_2400_COPRO_SEG0, master->cf_mem_addr |
 		     SCU_2400_COPRO_SEG_SWAP);
 
-	/* Segments 2 to sysregs with byteswap (for SRAM) */
+	 
 	regmap_write(master->scu, SCU_2400_COPRO_SEG2, SYSREG_BASE |
 		     SCU_2400_COPRO_SEG_SWAP);
 
-	/* And segment 6 to sysregs no byteswap */
+	 
 	regmap_write(master->scu, SCU_2400_COPRO_SEG6, SYSREG_BASE);
 
-	/* Memory cachable, regs and SRAM not cachable */
+	 
 	regmap_write(master->scu, SCU_2400_COPRO_CACHE_CTL,
 		     SCU_2400_COPRO_SEG0_CACHE_EN | SCU_2400_COPRO_CACHE_EN);
 }
@@ -790,11 +746,11 @@ static int setup_gpios_for_copro(struct fsi_master_acf *master)
 
 	int rc;
 
-	/* This aren't under ColdFire control, just set them up appropriately */
+	 
 	gpiod_direction_output(master->gpio_mux, 1);
 	gpiod_direction_output(master->gpio_enable, 1);
 
-	/* Those are under ColdFire control, let it configure them */
+	 
 	rc = aspeed_gpio_copro_grab_gpio(master->gpio_clk, &master->gpio_clk_vreg,
 					 &master->gpio_clk_dreg, &master->gpio_clk_bit);
 	if (rc) {
@@ -834,7 +790,7 @@ static int load_copro_firmware(struct fsi_master_acf *master)
 	size_t size = 0;
 	int rc;
 
-	/* Get the binary */
+	 
 	rc = request_firmware(&fw, FW_FILE_NAME, master->dev);
 	if (rc) {
 		dev_err(
@@ -843,14 +799,14 @@ static int load_copro_firmware(struct fsi_master_acf *master)
 		return rc;
 	}
 
-	/* Which image do we want ? (shared vs. split clock/data GPIOs) */
+	 
 	if (master->gpio_clk_vreg == master->gpio_dat_vreg)
 		wanted_sig = SYS_SIG_SHARED;
 	else
 		wanted_sig = SYS_SIG_SPLIT;
 	dev_dbg(master->dev, "Looking for image sig %04x\n", wanted_sig);
 
-	/* Try to find it */
+	 
 	for (data = fw->data; data < (fw->data + fw->size);) {
 		sig = be16_to_cpup((__be16 *)(data + HDR_OFFSET + HDR_SYS_SIG));
 		size = be32_to_cpup((__be32 *)(data + HDR_OFFSET + HDR_FW_SIZE));
@@ -886,7 +842,7 @@ static int check_firmware_image(struct fsi_master_acf *master)
 	fw_options = ioread32be(master->cf_mem + HDR_OFFSET + HDR_FW_OPTIONS);
 	master->trace_enabled = !!(fw_options & FW_OPTION_TRACE_EN);
 
-	/* Check version and signature */
+	 
 	dev_info(master->dev, "ColdFire initialized, firmware v%d API v%d.%d (trace %s)\n",
 		 fw_vers, fw_api >> 8, fw_api & 0xff,
 		 master->trace_enabled ? "enabled" : "disabled");
@@ -904,10 +860,7 @@ static int copro_enable_sw_irq(struct fsi_master_acf *master)
 	int timeout;
 	uint32_t val;
 
-	/*
-	 * Enable coprocessor interrupt input. I've had problems getting the
-	 * value to stick, so try in a loop
-	 */
+	 
 	for (timeout = 0; timeout < 10; timeout++) {
 		iowrite32(0x2, master->cvic + CVIC_EN_REG);
 		val = ioread32(master->cvic + CVIC_EN_REG);
@@ -927,31 +880,28 @@ static int fsi_master_acf_setup(struct fsi_master_acf *master)
 	int timeout, rc;
 	uint32_t val;
 
-	/* Make sure the ColdFire is stopped  */
+	 
 	reset_cf(master);
 
-	/*
-	 * Clear SRAM. This needs to happen before we setup the GPIOs
-	 * as we might start trying to arbitrate as soon as that happens.
-	 */
+	 
 	memset_io(master->sram, 0, SRAM_SIZE);
 
-	/* Configure GPIOs */
+	 
 	rc = setup_gpios_for_copro(master);
 	if (rc)
 		return rc;
 
-	/* Load the firmware into the reserved memory */
+	 
 	rc = load_copro_firmware(master);
 	if (rc)
 		return rc;
 
-	/* Read signature and check versions */
+	 
 	rc = check_firmware_image(master);
 	if (rc)
 		return rc;
 
-	/* Setup coldfire memory map */
+	 
 	if (master->is_ast2500) {
 		setup_ast2500_cf_maps(master);
 		setup_ast2500_fw_config(master);
@@ -960,12 +910,10 @@ static int fsi_master_acf_setup(struct fsi_master_acf *master)
 		setup_ast2400_fw_config(master);
 	}
 
-	/* Start the ColdFire */
+	 
 	start_cf(master);
 
-	/* Wait for status register to indicate command completion
-	 * which signals the initialization is complete
-	 */
+	 
 	for (timeout = 0; timeout < 10; timeout++) {
 		val = ioread8(master->sram + CF_STARTED);
 		if (val)
@@ -978,11 +926,11 @@ static int fsi_master_acf_setup(struct fsi_master_acf *master)
 		goto err;
 	}
 
-	/* Configure echo & send delay */
+	 
 	iowrite8(master->t_send_delay, master->sram + SEND_DLY_REG);
 	iowrite8(master->t_echo_delay, master->sram + ECHO_DLY_REG);
 
-	/* Enable SW interrupt to copro if any */
+	 
 	if (master->cvic) {
 		rc = copro_enable_sw_irq(master);
 		if (rc)
@@ -990,10 +938,10 @@ static int fsi_master_acf_setup(struct fsi_master_acf *master)
 	}
 	return 0;
  err:
-	/* An error occurred, don't leave the coprocessor running */
+	 
 	reset_cf(master);
 
-	/* Release the GPIOs */
+	 
 	release_copro_gpios(master);
 
 	return rc;
@@ -1004,34 +952,28 @@ static void fsi_master_acf_terminate(struct fsi_master_acf *master)
 {
 	unsigned long flags;
 
-	/*
-	 * A GPIO arbitration requestion could come in while this is
-	 * happening. To avoid problems, we disable interrupts so it
-	 * cannot preempt us on this CPU
-	 */
+	 
 
 	local_irq_save(flags);
 
-	/* Stop the coprocessor */
+	 
 	reset_cf(master);
 
-	/* We mark the copro not-started */
+	 
 	iowrite32(0, master->sram + CF_STARTED);
 
-	/* We mark the ARB register as having given up arbitration to
-	 * deal with a potential race with the arbitration request
-	 */
+	 
 	iowrite8(ARB_ARM_ACK, master->sram + ARB_REG);
 
 	local_irq_restore(flags);
 
-	/* Return the GPIOs to the ARM */
+	 
 	release_copro_gpios(master);
 }
 
 static void fsi_master_acf_setup_external(struct fsi_master_acf *master)
 {
-	/* Setup GPIOs for external FSI master (FSP box) */
+	 
 	gpiod_direction_output(master->gpio_mux, 0);
 	gpiod_direction_output(master->gpio_trans, 0);
 	gpiod_direction_output(master->gpio_enable, 1);
@@ -1131,23 +1073,12 @@ static int fsi_master_acf_gpio_request(void *data)
 	int timeout;
 	u8 val;
 
-	/* Note: This doesn't require holding out mutex */
+	 
 
-	/* Write request */
+	 
 	iowrite8(ARB_ARM_REQ, master->sram + ARB_REG);
 
-	/*
-	 * There is a race (which does happen at boot time) when we get an
-	 * arbitration request as we are either about to or just starting
-	 * the coprocessor.
-	 *
-	 * To handle it, we first check if we are running. If not yet we
-	 * check whether the copro is started in the SCU.
-	 *
-	 * If it's not started, we can basically just assume we have arbitration
-	 * and return. Otherwise, we wait normally expecting for the arbitration
-	 * to eventually complete.
-	 */
+	 
 	if (ioread32(master->sram + CF_STARTED) == 0) {
 		unsigned int reg = 0;
 
@@ -1156,7 +1087,7 @@ static int fsi_master_acf_gpio_request(void *data)
 			return 0;
 	}
 
-	/* Ring doorbell if any */
+	 
 	if (master->cvic)
 		iowrite32(0x2, master->cvic + CVIC_TRIG_REG);
 
@@ -1167,7 +1098,7 @@ static int fsi_master_acf_gpio_request(void *data)
 		udelay(1);
 	}
 
-	/* If it failed, override anyway */
+	 
 	if (val != ARB_ARM_ACK)
 		dev_warn(master->dev, "GPIO request arbitration timeout\n");
 
@@ -1178,10 +1109,10 @@ static int fsi_master_acf_gpio_release(void *data)
 {
 	struct fsi_master_acf *master = data;
 
-	/* Write release */
+	 
 	iowrite8(0, master->sram + ARB_REG);
 
-	/* Ring doorbell if any */
+	 
 	if (master->cvic)
 		iowrite32(0x2, master->cvic + CVIC_TRIG_REG);
 
@@ -1192,13 +1123,13 @@ static void fsi_master_acf_release(struct device *dev)
 {
 	struct fsi_master_acf *master = to_fsi_master_acf(to_fsi_master(dev));
 
-	/* Cleanup, stop coprocessor */
+	 
 	mutex_lock(&master->lock);
 	fsi_master_acf_terminate(master);
 	aspeed_gpio_copro_set_ops(NULL, NULL);
 	mutex_unlock(&master->lock);
 
-	/* Free resources */
+	 
 	gen_pool_free(master->sram_pool, (unsigned long)master->sram, SRAM_SIZE);
 	of_node_put(dev_of_node(master->dev));
 
@@ -1228,10 +1159,10 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
 	master->master.dev.parent = master->dev;
 	master->last_addr = LAST_ADDR_INVALID;
 
-	/* AST2400 vs. AST2500 */
+	 
 	master->is_ast2500 = of_device_is_compatible(mnode, "aspeed,ast2500-cf-fsi-master");
 
-	/* Grab the SCU, we'll need to access it to configure the coprocessor */
+	 
 	if (master->is_ast2500)
 		master->scu = syscon_regmap_lookup_by_compatible("aspeed,ast2500-scu");
 	else
@@ -1242,7 +1173,7 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
 		goto err_free;
 	}
 
-	/* Grab all the GPIOs we need */
+	 
 	gpio = devm_gpiod_get(&pdev->dev, "clock", 0);
 	if (IS_ERR(gpio)) {
 		dev_err(&pdev->dev, "failed to get clock gpio\n");
@@ -1259,7 +1190,7 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
 	}
 	master->gpio_data = gpio;
 
-	/* Optional GPIOs */
+	 
 	gpio = devm_gpiod_get_optional(&pdev->dev, "trans", 0);
 	if (IS_ERR(gpio)) {
 		dev_err(&pdev->dev, "failed to get trans gpio\n");
@@ -1284,7 +1215,7 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
 	}
 	master->gpio_mux = gpio;
 
-	/* Grab the reserved memory region (use DMA API instead ?) */
+	 
 	np = of_parse_phandle(mnode, "memory-region", 0);
 	if (!np) {
 		dev_err(&pdev->dev, "Didn't find reserved memory\n");
@@ -1313,9 +1244,9 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
 	}
 	dev_dbg(&pdev->dev, "DRAM allocation @%x\n", master->cf_mem_addr);
 
-	/* AST2500 has a SW interrupt to the coprocessor */
+	 
 	if (master->is_ast2500) {
-		/* Grab the CVIC (ColdFire interrupts controller) */
+		 
 		np = of_parse_phandle(mnode, "aspeed,cvic", 0);
 		if (!np) {
 			dev_err(&pdev->dev, "Didn't find CVIC\n");
@@ -1338,7 +1269,7 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Grab the SRAM */
+	 
 	master->sram_pool = of_gen_pool_get(dev_of_node(&pdev->dev), "aspeed,sram", 0);
 	if (!master->sram_pool) {
 		rc = -ENODEV;
@@ -1346,7 +1277,7 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
 		goto err_free;
 	}
 
-	/* Current microcode only deals with fixed location in SRAM */
+	 
 	gpdf.offset = 0;
 	master->sram = (void __iomem *)gen_pool_alloc_algo(master->sram_pool, SRAM_SIZE,
 							   gen_pool_fixed_alloc, &gpdf);
@@ -1359,13 +1290,10 @@ static int fsi_master_acf_probe(struct platform_device *pdev)
 		(unsigned long)gen_pool_virt_to_phys(master->sram_pool,
 						     (unsigned long)master->sram));
 
-	/*
-	 * Hookup with the GPIO driver for arbitration of GPIO banks
-	 * ownership.
-	 */
+	 
 	aspeed_gpio_copro_set_ops(&fsi_master_acf_gpio_ops, master);
 
-	/* Default FSI command delays */
+	 
 	master->t_send_delay = FSI_SEND_DELAY_CLOCKS;
 	master->t_echo_delay = FSI_ECHO_DELAY_CLOCKS;
 	master->master.n_links = 1;

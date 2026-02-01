@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulator driver for TI TPS65912x PMICs
- *
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- *
- * Based on the TPS65218 driver and the previous TPS65912 driver by
- * Margarita Olaya Cabrera <magi@slimlogic.co.uk>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -48,7 +40,7 @@ static const struct linear_range tps65912_ldo_ranges[] = {
 	REGULATOR_LINEAR_RANGE(3100000, 0x3d, 0x3f, 100000),
 };
 
-/* Operations permitted on DCDCx */
+ 
 static const struct regulator_ops tps65912_ops_dcdc = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -58,7 +50,7 @@ static const struct regulator_ops tps65912_ops_dcdc = {
 	.list_voltage		= regulator_list_voltage_linear_range,
 };
 
-/* Operations permitted on LDOx */
+ 
 static const struct regulator_ops tps65912_ops_ldo = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -143,7 +135,7 @@ static int tps65912_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id tps65912_regulator_id_table[] = {
 	{ "tps65912-regulator", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65912_regulator_id_table);
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * RDMA Transport Layer
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+
+ 
 #undef pr_fmt
 #define pr_fmt(fmt) KBUILD_MODNAME " L" __stringify(__LINE__) ": " fmt
 
@@ -172,10 +166,7 @@ int rtrs_iu_post_rdma_write_imm(struct rtrs_con *con, struct rtrs_iu *iu,
 		.wr.send_flags  = flags,
 	};
 
-	/*
-	 * If one of the sges has 0 size, the operation will fail with a
-	 * length error
-	 */
+	 
 	for (i = 0; i < num_sge; i++)
 		if (WARN_ONCE(sge[i].length == 0, "sg %d is zero length\n", i))
 			return -EINVAL;
@@ -364,7 +355,7 @@ static void hb_work(struct work_struct *work)
 		return;
 	}
 	if (path->hb_missed_cnt++) {
-		/* Reschedule work without sending hb */
+		 
 		schedule_hb(path);
 		return;
 	}
@@ -417,19 +408,13 @@ static int rtrs_str_gid_to_sockaddr(const char *addr, size_t len,
 	struct sockaddr_ib *dst_ib = (struct sockaddr_ib *)dst;
 	int ret;
 
-	/*
-	 * We can use some of the IPv6 functions since GID is a valid
-	 * IPv6 address format
-	 */
+	 
 	ret = in6_pton(addr, len, dst_ib->sib_addr.sib_raw, '\0', NULL);
 	if (ret == 0)
 		return -EINVAL;
 
 	dst_ib->sib_family = AF_IB;
-	/*
-	 * Use the same TCP server port number as the IB service ID
-	 * on the IB port space range
-	 */
+	 
 	dst_ib->sib_sid = cpu_to_be64(RDMA_IB_IP_PS_IB | port);
 	dst_ib->sib_sid_mask = cpu_to_be64(0xffffffffffffffffULL);
 	dst_ib->sib_pkey = cpu_to_be16(0xffff);
@@ -437,18 +422,7 @@ static int rtrs_str_gid_to_sockaddr(const char *addr, size_t len,
 	return 0;
 }
 
-/**
- * rtrs_str_to_sockaddr() - Convert rtrs address string to sockaddr
- * @addr:	String representation of an addr (IPv4, IPv6 or IB GID):
- *              - "ip:192.168.1.1"
- *              - "ip:fe80::200:5aee:feaa:20a2"
- *              - "gid:fe80::200:5aee:feaa:20a2"
- * @len:        String address length
- * @port:	Destination port
- * @dst:	Destination sockaddr structure
- *
- * Returns 0 if conversion successful. Non-zero on error.
- */
+ 
 static int rtrs_str_to_sockaddr(const char *addr, size_t len,
 				u16 port, struct sockaddr_storage *dst)
 {
@@ -470,15 +444,7 @@ static int rtrs_str_to_sockaddr(const char *addr, size_t len,
 	return -EPROTONOSUPPORT;
 }
 
-/**
- * sockaddr_to_str() - convert sockaddr to a string.
- * @addr:	the sockadddr structure to be converted.
- * @buf:	string containing socket addr.
- * @len:	string length.
- *
- * The return value is the number of characters written into buf not
- * including the trailing '\0'. If len is == 0 the function returns 0..
- */
+ 
 int sockaddr_to_str(const struct sockaddr *addr, char *buf, size_t len)
 {
 	switch (addr->sa_family) {
@@ -496,17 +462,7 @@ int sockaddr_to_str(const struct sockaddr *addr, char *buf, size_t len)
 }
 EXPORT_SYMBOL(sockaddr_to_str);
 
-/**
- * rtrs_addr_to_str() - convert rtrs_addr to a string "src@dst"
- * @addr:	the rtrs_addr structure to be converted
- * @buf:	string containing source and destination addr of a path
- *		separated by '@' I.e. "ip:1.1.1.1@ip:1.1.1.2"
- *		"ip:1.1.1.1@ip:1.1.1.2".
- * @len:	string length
- *
- * The return value is the number of characters written into buf not
- * including the trailing '\0'.
- */
+ 
 int rtrs_addr_to_str(const struct rtrs_addr *addr, char *buf, size_t len)
 {
 	int cnt;
@@ -520,20 +476,7 @@ int rtrs_addr_to_str(const struct rtrs_addr *addr, char *buf, size_t len)
 }
 EXPORT_SYMBOL(rtrs_addr_to_str);
 
-/**
- * rtrs_addr_to_sockaddr() - convert path string "src,dst" or "src@dst"
- * to sockaddreses
- * @str:	string containing source and destination addr of a path
- *		separated by ',' or '@' I.e. "ip:1.1.1.1,ip:1.1.1.2" or
- *		"ip:1.1.1.1@ip:1.1.1.2". If str contains only one address it's
- *		considered to be destination.
- * @len:	string length
- * @port:	Destination port number.
- * @addr:	will be set to the source/destination address or to NULL
- *		if str doesn't contain any source address.
- *
- * Returns zero if conversion successful. Non-zero otherwise.
- */
+ 
 int rtrs_addr_to_sockaddr(const char *str, size_t len, u16 port,
 			  struct rtrs_addr *addr)
 {

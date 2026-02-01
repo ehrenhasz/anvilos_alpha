@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020 Sartura Ltd.
- *
- * Driver for the TI TPS23861 PoE PSE.
- *
- * Author: Robert Marko <robert.marko@sartura.hr>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/debugfs.h>
@@ -79,9 +73,9 @@
 #define PORT_DETECT_RESERVED_2		7
 #define PORT_DETECT_MOSFET_FAULT	8
 #define PORT_DETECT_LEGACY		9
-/* Measurment beyond clamp voltage */
+ 
 #define PORT_DETECT_CAPACITANCE_INVALID_BEYOND	10
-/* Insufficient voltage delta */
+ 
 #define PORT_DETECT_CAPACITANCE_INVALID_DELTA	11
 #define PORT_DETECT_CAPACITANCE_OUT_OF_RANGE	12
 #define POE_PLUS			0x40
@@ -102,13 +96,13 @@
 #define TPS23861_GENERAL_MASK_1		0x17
 #define TPS23861_CURRENT_SHUNT_MASK	BIT(0)
 
-#define TEMPERATURE_LSB			652 /* 0.652 degrees Celsius */
-#define VOLTAGE_LSB			3662 /* 3.662 mV */
-#define SHUNT_RESISTOR_DEFAULT		255000 /* 255 mOhm */
-#define CURRENT_LSB_250			62260 /* 62.260 uA */
-#define CURRENT_LSB_255			61039 /* 61.039 uA */
-#define RESISTANCE_LSB			110966 /* 11.0966 Ohm*/
-#define RESISTANCE_LSB_LOW		157216 /* 15.7216 Ohm*/
+#define TEMPERATURE_LSB			652  
+#define VOLTAGE_LSB			3662  
+#define SHUNT_RESISTOR_DEFAULT		255000  
+#define CURRENT_LSB_250			62260  
+#define CURRENT_LSB_255			61039  
+#define RESISTANCE_LSB			110966  
+#define RESISTANCE_LSB_LOW		157216  
 
 struct tps23861_data {
 	struct regmap *regmap;

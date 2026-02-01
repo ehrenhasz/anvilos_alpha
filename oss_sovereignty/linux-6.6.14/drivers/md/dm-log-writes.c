@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Facebook. All rights reserved.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include <linux/device-mapper.h>
 
@@ -19,40 +15,7 @@
 
 #define DM_MSG_PREFIX "log-writes"
 
-/*
- * This target will sequentially log all writes to the target device onto the
- * log device.  This is helpful for replaying writes to check for fs consistency
- * at all times.  This target provides a mechanism to mark specific events to
- * check data at a later time.  So for example you would:
- *
- * write data
- * fsync
- * dmsetup message /dev/whatever mark mymark
- * unmount /mnt/test
- *
- * Then replay the log up to mymark and check the contents of the replay to
- * verify it matches what was written.
- *
- * We log writes only after they have been flushed, this makes the log describe
- * close to the order in which the data hits the actual disk, not its cache.  So
- * for example the following sequence (W means write, C means complete)
- *
- * Wa,Wb,Wc,Cc,Ca,FLUSH,FUAd,Cb,CFLUSH,CFUAd
- *
- * Would result in the log looking like this:
- *
- * c,a,b,flush,fuad,<other writes>,<next flush>
- *
- * This is meant to help expose problems where file systems do not properly wait
- * on data being written before invoking a FLUSH.  FUA bypasses cache so once it
- * completes it is added to the log as it should be on disk.
- *
- * We treat DISCARDs as if they don't bypass cache so that they are logged in
- * order of completion along with the normal writes.  If we didn't do it this
- * way we would process all the discards first and then write all the data, when
- * in fact we want to do the data and the discard in the order that they
- * completed.
- */
+ 
 #define LOG_FLUSH_FLAG		(1 << 0)
 #define LOG_FUA_FLAG		(1 << 1)
 #define LOG_DISCARD_FLAG	(1 << 2)
@@ -63,22 +26,9 @@
 #define WRITE_LOG_MAGIC 0x6a736677736872ULL
 #define WRITE_LOG_SUPER_SECTOR 0
 
-/*
- * The disk format for this is braindead simple.
- *
- * At byte 0 we have our super, followed by the following sequence for
- * nr_entries:
- *
- * [   1 sector    ][  entry->nr_sectors ]
- * [log_write_entry][    data written    ]
- *
- * The log_write_entry takes up a full sector so we can have arbitrary length
- * marks and it leaves us room for extra content in the future.
- */
+ 
 
-/*
- * Basic info about the log for userspace.
- */
+ 
 struct log_write_super {
 	__le64 magic;
 	__le64 version;
@@ -86,13 +36,7 @@ struct log_write_super {
 	__le32 sectorsize;
 };
 
-/*
- * sector - the sector we wrote.
- * nr_sectors - the number of sectors we wrote.
- * flags - flags for this log entry.
- * data_len - the size of the data in this log entry, this is for private log
- * entry stuff, the MARK data provided by userspace for example.
- */
+ 
 struct log_write_entry {
 	__le64 sector;
 	__le64 nr_sectors;
@@ -191,10 +135,7 @@ static void log_end_super(struct bio *bio)
 	log_end_io(bio);
 }
 
-/*
- * Meant to be called if there is an error, it will free all the pages
- * associated with the block.
- */
+ 
 static void free_pending_block(struct log_writes_c *lc,
 			       struct pending_block *block)
 {
@@ -343,7 +284,7 @@ static int log_one_block(struct log_writes_c *lc,
 			free_pending_block(lc, block);
 			return -1;
 		}
-		/* we don't support both inline data & bio data */
+		 
 		goto out;
 	}
 
@@ -359,10 +300,7 @@ static int log_one_block(struct log_writes_c *lc,
 	bio->bi_private = lc;
 
 	for (i = 0; i < block->vec_cnt; i++) {
-		/*
-		 * The page offset is always 0 because we allocate a new page
-		 * for every bvec in the original bio for simplicity sake.
-		 */
+		 
 		ret = bio_add_page(bio, block->vecs[i].bv_page,
 				   block->vecs[i].bv_len, 0);
 		if (ret != block->vecs[i].bv_len) {
@@ -413,10 +351,7 @@ static int log_super(struct log_writes_c *lc)
 		return -1;
 	}
 
-	/*
-	 * Super sector should be writen in-order, otherwise the
-	 * nr_entries could be rewritten incorrectly by an old bio.
-	 */
+	 
 	wait_for_completion_io(&lc->super_done);
 
 	return 0;
@@ -451,10 +386,7 @@ static int log_writes_kthread(void *arg)
 				lc->next_sector += dev_to_bio_sectors(lc, block->nr_sectors);
 			lc->next_sector += dev_to_bio_sectors(lc, 1);
 
-			/*
-			 * Apparently the size of the device may not be known
-			 * right away, so handle this properly.
-			 */
+			 
 			if (!lc->end_sector)
 				lc->end_sector = logdev_last_sector(lc);
 			if (lc->end_sector &&
@@ -499,10 +431,7 @@ next:
 	return 0;
 }
 
-/*
- * Construct a log-writes mapping:
- * log-writes <dev_path> <log_dev_path>
- */
+ 
 static int log_writes_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct log_writes_c *lc;
@@ -558,11 +487,7 @@ static int log_writes_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto bad;
 	}
 
-	/*
-	 * next_sector is in 512b sectors to correspond to what bi_sector expects.
-	 * The super starts at sector 0, and the next_sector is the next logical
-	 * one based on the sectorsize of the device.
-	 */
+	 
 	lc->next_sector = lc->sectorsize >> SECTOR_SHIFT;
 	lc->logging_enabled = true;
 	lc->end_sector = logdev_last_sector(lc);
@@ -616,10 +541,7 @@ static void log_writes_dtr(struct dm_target *ti)
 	list_splice_init(&lc->unflushed_blocks, &lc->logging_blocks);
 	spin_unlock_irq(&lc->blocks_lock);
 
-	/*
-	 * This is just nice to have since it'll update the super to include the
-	 * unflushed blocks, if it fails we don't really care.
-	 */
+	 
 	log_mark(lc, "dm-log-writes-end");
 	wake_up_process(lc->log_kthread);
 	wait_event(lc->wait, !atomic_read(&lc->io_blocks) &&
@@ -656,24 +578,19 @@ static int log_writes_map(struct dm_target *ti, struct bio *bio)
 
 	pb->block = NULL;
 
-	/* Don't bother doing anything if logging has been disabled */
+	 
 	if (!lc->logging_enabled)
 		goto map_bio;
 
-	/*
-	 * Map reads as normal.
-	 */
+	 
 	if (bio_data_dir(bio) == READ)
 		goto map_bio;
 
-	/* No sectors and not a flush?  Don't care */
+	 
 	if (!bio_sectors(bio) && !flush_bio)
 		goto map_bio;
 
-	/*
-	 * Discards will have bi_size set but there's no actual data, so just
-	 * allocate the size of the pending block.
-	 */
+	 
 	if (discard_bio)
 		alloc_size = sizeof(struct pending_block);
 	else
@@ -703,7 +620,7 @@ static int log_writes_map(struct dm_target *ti, struct bio *bio)
 	block->sector = bio_to_dev_sectors(lc, bio->bi_iter.bi_sector);
 	block->nr_sectors = bio_to_dev_sectors(lc, bio_sectors(bio));
 
-	/* We don't need the data, just submit */
+	 
 	if (discard_bio) {
 		WARN_ON(flush_bio || fua_bio);
 		if (lc->device_supports_discard)
@@ -712,7 +629,7 @@ static int log_writes_map(struct dm_target *ti, struct bio *bio)
 		return DM_MAPIO_SUBMITTED;
 	}
 
-	/* Flush bio, splice the unflushed blocks onto this list and submit */
+	 
 	if (flush_bio && !bio_sectors(bio)) {
 		spin_lock_irq(&lc->blocks_lock);
 		list_splice_init(&lc->unflushed_blocks, &block->list);
@@ -720,15 +637,7 @@ static int log_writes_map(struct dm_target *ti, struct bio *bio)
 		goto map_bio;
 	}
 
-	/*
-	 * We will write this bio somewhere else way later so we need to copy
-	 * the actual contents into new pages so we know the data will always be
-	 * there.
-	 *
-	 * We do this because this could be a bio from O_DIRECT in which case we
-	 * can't just hold onto the page until some later point, we have to
-	 * manually copy the contents.
-	 */
+	 
 	bio_for_each_segment(bv, bio, iter) {
 		struct page *page;
 		void *dst;
@@ -752,7 +661,7 @@ static int log_writes_map(struct dm_target *ti, struct bio *bio)
 		i++;
 	}
 
-	/* Had a flush with data in it, weird */
+	 
 	if (flush_bio) {
 		spin_lock_irq(&lc->blocks_lock);
 		list_splice_init(&lc->unflushed_blocks, &block->list);
@@ -789,9 +698,7 @@ static int normal_end_io(struct dm_target *ti, struct bio *bio,
 	return DM_ENDIO_DONE;
 }
 
-/*
- * INFO format: <logged entries> <highest allocated sector>
- */
+ 
 static void log_writes_status(struct dm_target *ti, status_type_t type,
 			      unsigned int status_flags, char *result,
 			      unsigned int maxlen)
@@ -824,9 +731,7 @@ static int log_writes_prepare_ioctl(struct dm_target *ti,
 	struct dm_dev *dev = lc->dev;
 
 	*bdev = dev->bdev;
-	/*
-	 * Only pass ioctls through if the device sizes match exactly.
-	 */
+	 
 	if (ti->len != bdev_nr_sectors(dev->bdev))
 		return 1;
 	return 0;
@@ -841,10 +746,7 @@ static int log_writes_iterate_devices(struct dm_target *ti,
 	return fn(ti, lc->dev, 0, ti->len, data);
 }
 
-/*
- * Messages supported:
- *   mark <mark data> - specify the marked data.
- */
+ 
 static int log_writes_message(struct dm_target *ti, unsigned int argc, char **argv,
 			      char *result, unsigned int maxlen)
 {

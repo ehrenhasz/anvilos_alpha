@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Allwinner Deinterlace driver
- *
- * Copyright (C) 2019 Jernej Skrabec <jernej.skrabec@siol.net>
- */
+ 
+ 
 
 #ifndef _SUN8I_DEINTERLACE_H_
 #define _SUN8I_DEINTERLACE_H_
@@ -74,7 +70,7 @@
 #define DEINTERLACE_STATUS_COEF_STATUS			BIT(11)
 #define DEINTERLACE_STATUS_WB_ERROR			BIT(12)
 
-#define DEINTERLACE_CSC_COEF			0x70 /* 12 registers */
+#define DEINTERLACE_CSC_COEF			0x70  
 
 #define DEINTERLACE_CTRL			0xa0
 #define DEINTERLACE_CTRL_EN				BIT(0)
@@ -167,15 +163,15 @@
 #define DEINTERLACE_CH1_HORZ_TAP0		0x220
 #define DEINTERLACE_CH1_HORZ_TAP1		0x224
 #define DEINTERLACE_CH1_VERT_TAP		0x228
-#define DEINTERLACE_CH0_HORZ_COEF0		0x400 /* 32 registers */
-#define DEINTERLACE_CH0_HORZ_COEF1		0x480 /* 32 registers */
-#define DEINTERLACE_CH0_VERT_COEF		0x500 /* 32 registers */
-#define DEINTERLACE_CH1_HORZ_COEF0		0x600 /* 32 registers */
-#define DEINTERLACE_CH1_HORZ_COEF1		0x680 /* 32 registers */
-#define DEINTERLACE_CH1_VERT_COEF		0x700 /* 32 registers */
-#define DEINTERLACE_CH3_HORZ_COEF0		0x800 /* 32 registers */
-#define DEINTERLACE_CH3_HORZ_COEF1		0x880 /* 32 registers */
-#define DEINTERLACE_CH3_VERT_COEF		0x900 /* 32 registers */
+#define DEINTERLACE_CH0_HORZ_COEF0		0x400  
+#define DEINTERLACE_CH0_HORZ_COEF1		0x480  
+#define DEINTERLACE_CH0_VERT_COEF		0x500  
+#define DEINTERLACE_CH1_HORZ_COEF0		0x600  
+#define DEINTERLACE_CH1_HORZ_COEF1		0x680  
+#define DEINTERLACE_CH1_VERT_COEF		0x700  
+#define DEINTERLACE_CH3_HORZ_COEF0		0x800  
+#define DEINTERLACE_CH3_HORZ_COEF1		0x880  
+#define DEINTERLACE_CH3_VERT_COEF		0x900  
 
 #define DEINTERLACE_MIN_WIDTH	2U
 #define DEINTERLACE_MIN_HEIGHT	2U
@@ -222,7 +218,7 @@ struct deinterlace_dev {
 	struct device		*dev;
 	struct v4l2_m2m_dev	*m2m_dev;
 
-	/* Device file mutex */
+	 
 	struct mutex		dev_mutex;
 
 	void __iomem		*base;

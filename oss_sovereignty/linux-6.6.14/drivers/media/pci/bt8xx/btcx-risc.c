@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-    btcx-risc.c
-
-    bt848/bt878/cx2388x risc code generator.
-
-    (c) 2000-03 Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]
-
-
-*/
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -33,8 +24,8 @@ MODULE_PARM_DESC(btcx_debug,"debug messages, default is 0 (no)");
 } while (0)
 
 
-/* ---------------------------------------------------------- */
-/* allocate/free risc memory                                  */
+ 
+ 
 
 static int memcnt;
 

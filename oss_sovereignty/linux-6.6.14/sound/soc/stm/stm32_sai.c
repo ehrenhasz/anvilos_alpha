@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STM32 ALSA SoC Digital Audio Interface (SAI) driver.
- *
- * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
- * Author(s): Olivier Moysan <olivier.moysan@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -25,11 +20,7 @@ static const struct stm32_sai_conf stm32_sai_conf_f4 = {
 	.has_spdif_pdm = false,
 };
 
-/*
- * Default settings for stm32 H7 socs and next.
- * These default settings will be overridden if the soc provides
- * support of hardware configuration registers.
- */
+ 
 static const struct stm32_sai_conf stm32_sai_conf_h7 = {
 	.version = STM_SAI_STM32H7,
 	.fifo_size = 8,
@@ -69,7 +60,7 @@ static int stm32_sai_sync_conf_client(struct stm32_sai_data *sai, int synci)
 {
 	int ret;
 
-	/* Enable peripheral clock to allow GCR register access */
+	 
 	ret = stm32_sai_pclk_enable(&sai->pdev->dev);
 	if (ret)
 		return ret;
@@ -86,7 +77,7 @@ static int stm32_sai_sync_conf_provider(struct stm32_sai_data *sai, int synco)
 	u32 prev_synco;
 	int ret;
 
-	/* Enable peripheral clock to allow GCR register access */
+	 
 	ret = stm32_sai_pclk_enable(&sai->pdev->dev);
 	if (ret)
 		return ret;
@@ -134,12 +125,12 @@ static int stm32_sai_set_sync(struct stm32_sai_data *sai_client,
 		goto error;
 	}
 
-	/* Configure sync client */
+	 
 	ret = stm32_sai_sync_conf_client(sai_client, synci);
 	if (ret < 0)
 		goto error;
 
-	/* Configure sync provider */
+	 
 	ret = stm32_sai_sync_conf_provider(sai_provider, synco);
 
 error:
@@ -188,12 +179,12 @@ static int stm32_sai_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(sai->clk_x11k),
 				     "missing x11k parent clock\n");
 
-	/* init irqs */
+	 
 	sai->irq = platform_get_irq(pdev, 0);
 	if (sai->irq < 0)
 		return sai->irq;
 
-	/* reset */
+	 
 	rst = devm_reset_control_get_optional_exclusive(&pdev->dev, NULL);
 	if (IS_ERR(rst))
 		return dev_err_probe(&pdev->dev, PTR_ERR(rst),
@@ -203,7 +194,7 @@ static int stm32_sai_probe(struct platform_device *pdev)
 	udelay(2);
 	reset_control_deassert(rst);
 
-	/* Enable peripheral clock to allow register access */
+	 
 	ret = clk_prepare_enable(sai->pclk);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to enable clock: %d\n", ret);
@@ -235,11 +226,7 @@ static int stm32_sai_probe(struct platform_device *pdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
-/*
- * When pins are shared by two sai sub instances, pins have to be defined
- * in sai parent node. In this case, pins state is not managed by alsa fw.
- * These pins are managed in suspend/resume callbacks.
- */
+ 
 static int stm32_sai_suspend(struct device *dev)
 {
 	struct stm32_sai_data *sai = dev_get_drvdata(dev);
@@ -269,7 +256,7 @@ static int stm32_sai_resume(struct device *dev)
 
 	return pinctrl_pm_select_default_state(dev);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops stm32_sai_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(stm32_sai_suspend, stm32_sai_resume)

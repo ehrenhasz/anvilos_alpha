@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics hts221 sensor driver
- *
- * Copyright 2016 STMicroelectronics Inc.
- *
- * Lorenzo Bianconi <lorenzo.bianconi@st.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -59,12 +53,7 @@ static irqreturn_t hts221_trigger_handler_thread(int irq, void *private)
 	if (err < 0)
 		return IRQ_HANDLED;
 
-	/*
-	 * H_DA bit (humidity data available) is routed to DRDY line.
-	 * Humidity sample is computed after temperature one.
-	 * Here we can assume data channels are both available if H_DA bit
-	 * is set in status register
-	 */
+	 
 	if (!(status & HTS221_RH_DRDY_MASK))
 		return IRQ_NONE;
 
@@ -167,7 +156,7 @@ static irqreturn_t hts221_buffer_handler_thread(int irq, void *p)
 	struct iio_chan_spec const *ch;
 	int err;
 
-	/* humidity data */
+	 
 	ch = &iio_dev->channels[HTS221_SENSOR_H];
 	err = regmap_bulk_read(hw->regmap, ch->address,
 			       &hw->scan.channels[0],
@@ -175,7 +164,7 @@ static irqreturn_t hts221_buffer_handler_thread(int irq, void *p)
 	if (err < 0)
 		goto out;
 
-	/* temperature data */
+	 
 	ch = &iio_dev->channels[HTS221_SENSOR_T];
 	err = regmap_bulk_read(hw->regmap, ch->address,
 			       &hw->scan.channels[1],

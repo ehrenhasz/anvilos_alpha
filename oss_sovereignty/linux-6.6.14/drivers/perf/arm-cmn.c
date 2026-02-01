@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2016-2020 Arm Limited
-// CMN-600 Coherent Mesh Network PMU driver
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/bitfield.h>
@@ -18,7 +18,7 @@
 #include <linux/slab.h>
 #include <linux/sort.h>
 
-/* Common register stuff */
+ 
 #define CMN_NODE_INFO			0x0000
 #define CMN_NI_NODE_TYPE		GENMASK_ULL(15, 0)
 #define CMN_NI_NODE_ID			GENMASK_ULL(31, 16)
@@ -43,7 +43,7 @@
 #define CMN_MAX_XPS			(CMN_MAX_DIMENSION * CMN_MAX_DIMENSION)
 #define CMN_MAX_DTMS			(CMN_MAX_XPS + (CMN_MAX_DIMENSION - 1) * 4)
 
-/* The CFG node has various info besides the discovery tree */
+ 
 #define CMN_CFGM_PERIPH_ID_01		0x0008
 #define CMN_CFGM_PID0_PART_0		GENMASK_ULL(7, 0)
 #define CMN_CFGM_PID1_PART_1		GENMASK_ULL(35, 32)
@@ -59,29 +59,29 @@
 #define CMN_INFO_SNP_VC_NUM		GENMASK_ULL(3, 2)
 #define CMN_INFO_REQ_VC_NUM		GENMASK_ULL(1, 0)
 
-/* XPs also have some local topology info which has uses too */
+ 
 #define CMN_MXP__CONNECT_INFO(p)	(0x0008 + 8 * (p))
 #define CMN__CONNECT_INFO_DEVICE_TYPE	GENMASK_ULL(4, 0)
 
 #define CMN_MAX_PORTS			6
 #define CI700_CONNECT_INFO_P2_5_OFFSET	0x10
 
-/* PMU registers occupy the 3rd 4KB page of each node's region */
+ 
 #define CMN_PMU_OFFSET			0x2000
 
-/* For most nodes, this is all there is */
+ 
 #define CMN_PMU_EVENT_SEL		0x000
 #define CMN__PMU_CBUSY_SNTHROTTLE_SEL	GENMASK_ULL(44, 42)
 #define CMN__PMU_SN_HOME_SEL		GENMASK_ULL(40, 39)
 #define CMN__PMU_HBT_LBT_SEL		GENMASK_ULL(38, 37)
 #define CMN__PMU_CLASS_OCCUP_ID		GENMASK_ULL(36, 35)
-/* Technically this is 4 bits wide on DNs, but we only use 2 there anyway */
+ 
 #define CMN__PMU_OCCUP1_ID		GENMASK_ULL(34, 32)
 
-/* HN-Ps are weird... */
+ 
 #define CMN_HNP_PMU_EVENT_SEL		0x008
 
-/* DTMs live in the PMU space of XP registers */
+ 
 #define CMN_DTM_WPn(n)			(0x1A0 + (n) * 0x18)
 #define CMN_DTM_WPn_CONFIG(n)		(CMN_DTM_WPn(n) + 0x00)
 #define CMN_DTM_WPn_CONFIG_WP_CHN_NUM	GENMASK_ULL(20, 19)
@@ -117,14 +117,14 @@
 #define CMN_DTM_UNIT_INFO_DTC_DOMAIN	GENMASK_ULL(1, 0)
 
 #define CMN_DTM_NUM_COUNTERS		4
-/* Want more local counters? Why not replicate the whole DTM! Ugh... */
+ 
 #define CMN_DTM_OFFSET(n)		((n) * 0x200)
 
-/* The DTC node is where the magic happens */
+ 
 #define CMN_DT_DTC_CTL			0x0a00
 #define CMN_DT_DTC_CTL_DT_EN		BIT(0)
 
-/* DTC counters are paired in 64-bit registers on a 16-byte stride. Yuck */
+ 
 #define _CMN_DT_CNT_REG(n)		((((n) / 2) * 4 + (n) % 2) * 4)
 #define CMN_DT_PMEVCNT(n)		(CMN_PMU_OFFSET + _CMN_DT_CNT_REG(n))
 #define CMN_DT_PMCCNTR			(CMN_PMU_OFFSET + 0x40)
@@ -149,16 +149,13 @@
 #define CMN_DT_NUM_COUNTERS		8
 #define CMN_MAX_DTCS			4
 
-/*
- * Even in the worst case a DTC counter can't wrap in fewer than 2^42 cycles,
- * so throwing away one bit to make overflow handling easy is no big deal.
- */
+ 
 #define CMN_COUNTER_INIT		0x80000000
-/* Similarly for the 40-bit cycle counter */
+ 
 #define CMN_CC_INIT			0x8000000000ULL
 
 
-/* Event attributes */
+ 
 #define CMN_CONFIG_TYPE			GENMASK_ULL(15, 0)
 #define CMN_CONFIG_EVENTID		GENMASK_ULL(26, 16)
 #define CMN_CONFIG_OCCUPID		GENMASK_ULL(30, 27)
@@ -174,7 +171,7 @@
 #define CMN_CONFIG_WP_COMBINE		GENMASK_ULL(30, 27)
 #define CMN_CONFIG_WP_DEV_SEL		GENMASK_ULL(50, 48)
 #define CMN_CONFIG_WP_CHN_SEL		GENMASK_ULL(55, 51)
-/* Note that we don't yet support the tertiary match group on newer IPs */
+ 
 #define CMN_CONFIG_WP_GRP		BIT_ULL(56)
 #define CMN_CONFIG_WP_EXCLUSIVE		BIT_ULL(57)
 #define CMN_CONFIG1_WP_VAL		GENMASK_ULL(63, 0)
@@ -188,24 +185,24 @@
 #define CMN_EVENT_WP_VAL(event)		FIELD_GET(CMN_CONFIG1_WP_VAL, (event)->attr.config1)
 #define CMN_EVENT_WP_MASK(event)	FIELD_GET(CMN_CONFIG2_WP_MASK, (event)->attr.config2)
 
-/* Made-up event IDs for watchpoint direction */
+ 
 #define CMN_WP_UP			0
 #define CMN_WP_DOWN			2
 
 
-/* Internal values for encoding event support */
+ 
 enum cmn_model {
 	CMN600 = 1,
 	CMN650 = 2,
 	CMN700 = 4,
 	CI700 = 8,
-	/* ...and then we can use bitmap tricks for commonality */
+	 
 	CMN_ANY = -1,
 	NOT_CMN600 = -2,
 	CMN_650ON = CMN650 | CMN700,
 };
 
-/* Actual part numbers and revision IDs defined by the hardware */
+ 
 enum cmn_part {
 	PART_CMN600 = 0x434,
 	PART_CMN650 = 0x436,
@@ -213,7 +210,7 @@ enum cmn_part {
 	PART_CI700 = 0x43a,
 };
 
-/* CMN-600 r0px shouldn't exist in silicon, thankfully */
+ 
 enum cmn_revision {
 	REV_CMN600_R1P0,
 	REV_CMN600_R1P1,
@@ -262,7 +259,7 @@ enum cmn_node_type {
 	CMN_TYPE_HNS = 0x200,
 	CMN_TYPE_HNS_MPAM_S,
 	CMN_TYPE_HNS_MPAM_NS,
-	/* Not a real node type */
+	 
 	CMN_TYPE_WP = 0x7770
 };
 
@@ -283,12 +280,12 @@ struct arm_cmn_node {
 
 	int dtm;
 	union {
-		/* DN/HN-F/CXHA */
+		 
 		struct {
 			u8 val : 4;
 			u8 count : 4;
 		} occupid[SEL_MAX];
-		/* XP */
+		 
 		u8 dtc;
 	};
 	union {
@@ -440,10 +437,7 @@ static u32 arm_cmn_device_connect_info(const struct arm_cmn *cmn,
 	if (port >= 2) {
 		if (cmn->part == PART_CMN600 || cmn->part == PART_CMN650)
 			return 0;
-		/*
-		 * CI-700 may have extra ports, but still has the
-		 * mesh_port_connect_info registers in the way.
-		 */
+		 
 		if (cmn->part == PART_CI700)
 			offset += CI700_CONNECT_INFO_P2_5_OFFSET;
 	}
@@ -499,7 +493,7 @@ static void arm_cmn_show_logid(struct seq_file *s, int x, int y, int p, int d)
 
 		if (dn->type == CMN_TYPE_XP)
 			continue;
-		/* Ignore the extra components that will overlap on some ports */
+		 
 		if (dn->type < CMN_TYPE_HNI)
 			continue;
 
@@ -684,11 +678,11 @@ static umode_t arm_cmn_event_attr_is_visible(struct kobject *kobj,
 	type = eattr->type;
 	eventid = eattr->eventid;
 
-	/* Watchpoints aren't nodes, so avoid confusion */
+	 
 	if (type == CMN_TYPE_WP)
 		return attr->mode;
 
-	/* Hide XP events for unused interfaces/channels */
+	 
 	if (type == CMN_TYPE_XP) {
 		unsigned int intf = (eventid >> 2) & 7;
 		unsigned int chan = eventid >> 5;
@@ -706,7 +700,7 @@ static umode_t arm_cmn_event_attr_is_visible(struct kobject *kobj,
 			return 0;
 	}
 
-	/* Revision-specific differences */
+	 
 	if (cmn->part == PART_CMN600) {
 		if (cmn->rev < REV_CMN600_R1P3) {
 			if (type == CMN_TYPE_CXRA && eventid > 0x10)
@@ -849,7 +843,7 @@ static umode_t arm_cmn_event_attr_is_visible(struct kobject *kobj,
 	_CMN_EVENT_XP_MESH(_name, _event),			\
 	_CMN_EVENT_XP_PORT(_name, _event)
 
-/* Good thing there are only 3 fundamental XP events... */
+ 
 #define CMN_EVENT_XP(_name, _event)				\
 	_CMN_EVENT_XP(req_##_name, (_event) | (0 << 5)),	\
 	_CMN_EVENT_XP(rsp_##_name, (_event) | (1 << 5)),	\
@@ -869,11 +863,7 @@ static umode_t arm_cmn_event_attr_is_visible(struct kobject *kobj,
 static struct attribute *arm_cmn_event_attrs[] = {
 	CMN_EVENT_DTC(cycles),
 
-	/*
-	 * DVM node events conflict with HN-I events in the equivalent PMU
-	 * slot, but our lazy short-cut of using the DTM counter index for
-	 * the PMU index as well happens to avoid that by construction.
-	 */
+	 
 	CMN_EVENT_DVM(CMN600, rxreq_dvmop,		0x01),
 	CMN_EVENT_DVM(CMN600, rxreq_dvmsync,		0x02),
 	CMN_EVENT_DVM(CMN600, rxreq_dvmop_vmid_filtered, 0x03),
@@ -968,11 +958,7 @@ static struct attribute *arm_cmn_event_attrs[] = {
 	CMN_EVENT_HNI(nonpcie_serialization,		0x31),
 	CMN_EVENT_HNI(pcie_serialization,		0x32),
 
-	/*
-	 * HN-P events squat on top of the HN-I similarly to DVM events, except
-	 * for being crammed into the same physical node as well. And of course
-	 * where would the fun be if the same events were in the same order...
-	 */
+	 
 	CMN_EVENT_HNP(rrt_wr_occ_cnt_ovfl,		0x01),
 	CMN_EVENT_HNP(rdt_wr_occ_cnt_ovfl,		0x02),
 	CMN_EVENT_HNP(wdb_occ_cnt_ovfl,			0x03),
@@ -992,7 +978,7 @@ static struct attribute *arm_cmn_event_attrs[] = {
 	CMN_EVENT_XP(txflit_valid,			0x01),
 	CMN_EVENT_XP(txflit_stall,			0x02),
 	CMN_EVENT_XP_DAT(partial_dat_flit,		0x03),
-	/* We treat watchpoints as a special made-up class of XP events */
+	 
 	CMN_EVENT_ATTR(CMN_ANY, watchpoint_up, CMN_TYPE_WP, CMN_WP_UP),
 	CMN_EVENT_ATTR(CMN_ANY, watchpoint_down, CMN_TYPE_WP, CMN_WP_DOWN),
 
@@ -1708,25 +1694,25 @@ static int arm_cmn_event_init(struct perf_event *event)
 		return -EINVAL;
 
 	type = CMN_EVENT_TYPE(event);
-	/* DTC events (i.e. cycles) already have everything they need */
+	 
 	if (type == CMN_TYPE_DTC)
 		return arm_cmn_validate_group(cmn, event);
 
 	eventid = CMN_EVENT_EVENTID(event);
-	/* For watchpoints we need the actual XP node here */
+	 
 	if (type == CMN_TYPE_WP) {
 		type = CMN_TYPE_XP;
-		/* ...and we need a "real" direction */
+		 
 		if (eventid != CMN_WP_UP && eventid != CMN_WP_DOWN)
 			return -EINVAL;
-		/* ...but the DTM may depend on which port we're watching */
+		 
 		if (cmn->multi_dtm)
 			hw->dtm_offset = CMN_EVENT_WP_DEV_SEL(event) / 2;
 	} else if (type == CMN_TYPE_XP && cmn->part == PART_CMN700) {
 		hw->wide_sel = true;
 	}
 
-	/* This is sufficiently annoying to recalculate, so cache it */
+	 
 	hw->filter_sel = arm_cmn_filter_sel(cmn, type, eventid);
 
 	bynodeid = CMN_EVENT_BYNODEID(event);
@@ -1752,11 +1738,7 @@ static int arm_cmn_event_init(struct perf_event *event)
 			nodeid, nid.x, nid.y, nid.port, nid.dev, type);
 		return -EINVAL;
 	}
-	/*
-	 * Keep assuming non-cycles events count in all DTC domains; turns out
-	 * it's hard to make a worthwhile optimisation around this, short of
-	 * going all-in with domain-local counter allocation as well.
-	 */
+	 
 	hw->dtcs_used = (1U << cmn->num_dtcs) - 1;
 
 	return arm_cmn_validate_group(cmn, event);
@@ -1811,7 +1793,7 @@ static int arm_cmn_event_add(struct perf_event *event, int flags)
 		return 0;
 	}
 
-	/* Grab a free global counter first... */
+	 
 	dtc_idx = 0;
 	while (dtc->counters[dtc_idx])
 		if (++dtc_idx == CMN_DT_NUM_COUNTERS)
@@ -1819,7 +1801,7 @@ static int arm_cmn_event_add(struct perf_event *event, int flags)
 
 	hw->dtc_idx = dtc_idx;
 
-	/* ...then the local counters to feed it. */
+	 
 	for_each_hw_dn(hw, dn, i) {
 		struct arm_cmn_dtm *dtm = &cmn->dtms[dn->dtm] + hw->dtm_offset;
 		unsigned int dtm_idx, shift;
@@ -1871,7 +1853,7 @@ static int arm_cmn_event_add(struct perf_event *event, int flags)
 		writeq_relaxed(reg, dtm->base + CMN_DTM_PMU_CONFIG);
 	}
 
-	/* Go go go! */
+	 
 	arm_cmn_init_counter(event);
 
 	if (flags & PERF_EF_START)
@@ -1898,12 +1880,7 @@ static void arm_cmn_event_del(struct perf_event *event, int flags)
 		arm_cmn_event_clear(cmn, event, hw->num_dns);
 }
 
-/*
- * We stop the PMU for both add and read, to avoid skew across DTM counters.
- * In theory we could use snapshots to read without stopping, but then it
- * becomes a lot trickier to deal with overlow and racing against interrupts,
- * plus it seems they don't work properly on some hardware anyway :(
- */
+ 
 static void arm_cmn_start_txn(struct pmu *pmu, unsigned int flags)
 {
 	arm_cmn_set_state(to_cmn(pmu), CMN_STATE_TXN);
@@ -2000,7 +1977,7 @@ static irqreturn_t arm_cmn_handle_irq(int irq, void *dev_id)
 	}
 }
 
-/* We can reasonably accommodate DTCs of the same CMN sharing IRQs */
+ 
 static int arm_cmn_init_irqs(struct arm_cmn *cmn)
 {
 	int i, j, irq, err;
@@ -2023,7 +2000,7 @@ static int arm_cmn_init_irqs(struct arm_cmn *cmn)
 		if (err)
 			return err;
 	next:
-		; /* isn't C great? */
+		;  
 	}
 	return 0;
 }
@@ -2097,7 +2074,7 @@ static int arm_cmn_init_dtcs(struct arm_cmn *cmn)
 
 		if (dn->type == CMN_TYPE_DTC) {
 			int err;
-			/* We do at least know that a DTC's XP must be in that DTC's domain */
+			 
 			if (xp->dtc == 0xf)
 				xp->dtc = 1 << dtc_idx;
 			err = arm_cmn_init_dtc(cmn, dn, dtc_idx++);
@@ -2105,11 +2082,11 @@ static int arm_cmn_init_dtcs(struct arm_cmn *cmn)
 				return err;
 		}
 
-		/* To the PMU, RN-Ds don't add anything over RN-Is, so smoosh them together */
+		 
 		if (dn->type == CMN_TYPE_RND)
 			dn->type = CMN_TYPE_RNI;
 
-		/* We split the RN-I off already, so let the CCLA part match CCLA events */
+		 
 		if (dn->type == CMN_TYPE_CCLA_RNI)
 			dn->type = CMN_TYPE_CCLA;
 	}
@@ -2212,7 +2189,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 	cmn->num_xps = child_count;
 	cmn->num_dns = cmn->num_xps;
 
-	/* Pass 1: visit the XPs, enumerate their children */
+	 
 	for (i = 0; i < cmn->num_xps; i++) {
 		reg = readq_relaxed(cfg_region + child_poff + i * 8);
 		xp_offset[i] = reg & CMN_CHILD_NODE_ADDR;
@@ -2221,17 +2198,13 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 		cmn->num_dns += FIELD_GET(CMN_CI_CHILD_COUNT, reg);
 	}
 
-	/*
-	 * Some nodes effectively have two separate types, which we'll handle
-	 * by creating one of each internally. For a (very) safe initial upper
-	 * bound, account for double the number of non-XP nodes.
-	 */
+	 
 	dn = devm_kcalloc(cmn->dev, cmn->num_dns * 2 - cmn->num_xps,
 			  sizeof(*dn), GFP_KERNEL);
 	if (!dn)
 		return -ENOMEM;
 
-	/* Initial safe upper bound on DTMs for any possible mesh layout */
+	 
 	i = cmn->num_xps;
 	if (cmn->multi_dtm)
 		i += cmn->num_xps + 1;
@@ -2239,7 +2212,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 	if (!dtm)
 		return -ENOMEM;
 
-	/* Pass 2: now we can actually populate the nodes */
+	 
 	cmn->dns = dn;
 	cmn->dtms = dtm;
 	for (i = 0; i < cmn->num_xps; i++) {
@@ -2248,12 +2221,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 		unsigned int xp_ports = 0;
 
 		arm_cmn_init_node_info(cmn, xp_offset[i], xp);
-		/*
-		 * Thanks to the order in which XP logical IDs seem to be
-		 * assigned, we can handily infer the mesh X dimension by
-		 * looking out for the XP at (0,1) without needing to know
-		 * the exact node ID format, which we can later derive.
-		 */
+		 
 		if (xp->id == (1 << 3))
 			cmn->mesh_x = xp->logid;
 
@@ -2264,13 +2232,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 
 		xp->dtm = dtm - cmn->dtms;
 		arm_cmn_init_dtm(dtm++, xp, 0);
-		/*
-		 * Keeping track of connected ports will let us filter out
-		 * unnecessary XP events easily. We can also reliably infer the
-		 * "extra device ports" configuration for the node ID format
-		 * from this, since in that case we will see at least one XP
-		 * with port 2 connected, for the HN-D.
-		 */
+		 
 		for (int p = 0; p < CMN_MAX_PORTS; p++)
 			if (arm_cmn_device_connect_info(cmn, xp, p))
 				xp_ports |= BIT(p);
@@ -2288,15 +2250,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 
 		for (j = 0; j < child_count; j++) {
 			reg = readq_relaxed(xp_region + child_poff + j * 8);
-			/*
-			 * Don't even try to touch anything external, since in general
-			 * we haven't a clue how to power up arbitrary CHI requesters.
-			 * As of CMN-600r1 these could only be RN-SAMs or CXLAs,
-			 * neither of which have any PMU events anyway.
-			 * (Actually, CXLAs do seem to have grown some events in r1p2,
-			 * but they don't go to regular XP DTMs, and they depend on
-			 * secure configuration which we can't easily deal with)
-			 */
+			 
 			if (reg & CMN_CHILD_NODE_EXTERNAL) {
 				dev_dbg(cmn->dev, "ignoring external node %llx\n", reg);
 				continue;
@@ -2309,7 +2263,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 				cmn->num_dtcs++;
 				dn++;
 				break;
-			/* These guys have PMU events */
+			 
 			case CMN_TYPE_DVM:
 			case CMN_TYPE_HNI:
 			case CMN_TYPE_HNF:
@@ -2325,7 +2279,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 			case CMN_TYPE_HNS:
 				dn++;
 				break;
-			/* Nothing to see here */
+			 
 			case CMN_TYPE_MPAM_S:
 			case CMN_TYPE_MPAM_NS:
 			case CMN_TYPE_RNSAM:
@@ -2333,12 +2287,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 			case CMN_TYPE_HNS_MPAM_S:
 			case CMN_TYPE_HNS_MPAM_NS:
 				break;
-			/*
-			 * Split "optimised" combination nodes into separate
-			 * types for the different event sets. Offsetting the
-			 * base address lets us handle the second pmu_event_sel
-			 * register via the normal mechanism later.
-			 */
+			 
 			case CMN_TYPE_HNP:
 			case CMN_TYPE_CCLA_RNI:
 				dn[1] = dn[0];
@@ -2346,7 +2295,7 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 				dn[1].type = arm_cmn_subtype(dn->type);
 				dn += 2;
 				break;
-			/* Something has gone horribly wrong */
+			 
 			default:
 				dev_err(cmn->dev, "invalid device node type: 0x%x\n", dn->type);
 				return -ENODEV;
@@ -2354,10 +2303,10 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 		}
 	}
 
-	/* Correct for any nodes we added or skipped */
+	 
 	cmn->num_dns = dn - cmn->dns;
 
-	/* Cheeky +1 to help terminate pointer-based iteration later */
+	 
 	sz = (void *)(dn + 1) - (void *)cmn->dns;
 	dn = devm_krealloc(cmn->dev, cmn->dns, sz, GFP_KERNEL);
 	if (dn)
@@ -2368,15 +2317,12 @@ static int arm_cmn_discover(struct arm_cmn *cmn, unsigned int rgn_offset)
 	if (dtm)
 		cmn->dtms = dtm;
 
-	/*
-	 * If mesh_x wasn't set during discovery then we never saw
-	 * an XP at (0,1), thus we must have an Nx1 configuration.
-	 */
+	 
 	if (!cmn->mesh_x)
 		cmn->mesh_x = cmn->num_xps;
 	cmn->mesh_y = cmn->num_xps / cmn->mesh_x;
 
-	/* 1x1 config plays havoc with XP event encodings */
+	 
 	if (cmn->num_xps == 1)
 		dev_warn(cmn->dev, "1x1 config not fully supported, translate XP events manually\n");
 
@@ -2403,12 +2349,7 @@ static int arm_cmn600_acpi_probe(struct platform_device *pdev, struct arm_cmn *c
 
 	if (!resource_contains(cfg, root))
 		swap(cfg, root);
-	/*
-	 * Note that devm_ioremap_resource() is dumb and won't let the platform
-	 * device claim cfg when the ACPI companion device has already claimed
-	 * root within it. But since they *are* already both claimed in the
-	 * appropriate name, we don't really need to do it again here anyway.
-	 */
+	 
 	cmn->base = devm_ioremap(cmn->dev, cfg->start, resource_size(cfg));
 	if (!cmn->base)
 		return -ENOMEM;

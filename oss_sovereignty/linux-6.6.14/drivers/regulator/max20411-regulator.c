@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Ltd.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/gpio/consumer.h>
@@ -16,8 +13,8 @@
 
 #define MAX20411_UV_STEP		6250
 #define MAX20411_BASE_UV		243750
-#define MAX20411_MIN_SEL		41 /* 0.5V */
-#define MAX20411_MAX_SEL		165 /* 1.275V */
+#define MAX20411_MIN_SEL		41  
+#define MAX20411_MAX_SEL		165  
 #define MAX20411_VID_OFFSET		0x7
 #define MAX20411_VID_MASK		0xff
 #define MAX20411_SLEW_OFFSET		0x6
@@ -39,7 +36,7 @@ static int max20411_enable_time(struct regulator_dev *rdev)
 	int voltage, rate, ret;
 	unsigned int val;
 
-	/* get voltage */
+	 
 	ret = regmap_read(rdev->regmap, rdev->desc->vsel_reg, &val);
 	if (ret)
 		return ret;
@@ -47,7 +44,7 @@ static int max20411_enable_time(struct regulator_dev *rdev)
 	val &= rdev->desc->vsel_mask;
 	voltage = regulator_list_voltage_linear(rdev, val);
 
-	/* get rate */
+	 
 	ret = regmap_read(rdev->regmap, MAX20411_SLEW_OFFSET, &val);
 	if (ret)
 		return ret;
@@ -78,10 +75,7 @@ static const struct regulator_desc max20411_desc = {
 	.supply_name = "vin",
 	.name = "max20411",
 
-	/*
-	 * voltage = 0.24375V + selector * 6.25mV
-	 * with valid selector between 41 to 165 (0.5V to 1.275V)
-	 */
+	 
 	.min_uV = MAX20411_BASE_UV,
 	.uV_step = MAX20411_UV_STEP,
 	.linear_min_sel = MAX20411_MIN_SEL,

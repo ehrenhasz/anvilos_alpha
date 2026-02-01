@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Handling of a single switch chip, part of a switch fabric
- *
- * Copyright (c) 2017 Savoir-faire Linux Inc.
- *	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
- */
+
+ 
 
 #include <linux/if_bridge.h>
 #include <linux/netdevice.h>
@@ -43,7 +38,7 @@ static int dsa_switch_ageing_time(struct dsa_switch *ds,
 	if (ds->ageing_time_max && ageing_time > ds->ageing_time_max)
 		return -ERANGE;
 
-	/* Program the fastest ageing time in case of multiple bridges */
+	 
 	ageing_time = dsa_switch_fastest_ageing_time(ds, ageing_time);
 
 	if (ds->ops->set_ageing_time)
@@ -125,10 +120,7 @@ static int dsa_switch_bridge_leave(struct dsa_switch *ds,
 	return 0;
 }
 
-/* Matches for all upstream-facing ports (the CPU port and all upstream-facing
- * DSA links) that sit between the targeted port on which the notifier was
- * emitted and its dedicated CPU port.
- */
+ 
 static bool dsa_port_host_address_match(struct dsa_port *dp,
 					const struct dsa_port *targeted_dp)
 {
@@ -164,7 +156,7 @@ static int dsa_port_do_mdb_add(struct dsa_port *dp,
 	int port = dp->index;
 	int err = 0;
 
-	/* No need to bother with refcounting for user ports */
+	 
 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp))) {
 		err = ds->ops->port_mdb_add(ds, port, mdb, db);
 		trace_dsa_mdb_add_hw(dp, mdb->addr, mdb->vid, &db, err);
@@ -216,7 +208,7 @@ static int dsa_port_do_mdb_del(struct dsa_port *dp,
 	int port = dp->index;
 	int err = 0;
 
-	/* No need to bother with refcounting for user ports */
+	 
 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp))) {
 		err = ds->ops->port_mdb_del(ds, port, mdb, db);
 		trace_dsa_mdb_del_hw(dp, mdb->addr, mdb->vid, &db, err);
@@ -263,7 +255,7 @@ static int dsa_port_do_fdb_add(struct dsa_port *dp, const unsigned char *addr,
 	int port = dp->index;
 	int err = 0;
 
-	/* No need to bother with refcounting for user ports */
+	 
 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp))) {
 		err = ds->ops->port_fdb_add(ds, port, addr, vid, db);
 		trace_dsa_fdb_add_hw(dp, addr, vid, &db, err);
@@ -313,7 +305,7 @@ static int dsa_port_do_fdb_del(struct dsa_port *dp, const unsigned char *addr,
 	int port = dp->index;
 	int err = 0;
 
-	/* No need to bother with refcounting for user ports */
+	 
 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp))) {
 		err = ds->ops->port_fdb_del(ds, port, addr, vid, db);
 		trace_dsa_fdb_del_hw(dp, addr, vid, &db, err);
@@ -519,7 +511,7 @@ static int dsa_switch_lag_fdb_add(struct dsa_switch *ds,
 	if (!ds->ops->lag_fdb_add)
 		return -EOPNOTSUPP;
 
-	/* Notify switch only if it has a port in this LAG */
+	 
 	dsa_switch_for_each_port(dp, ds)
 		if (dsa_port_offloads_lag(dp, info->lag))
 			return dsa_switch_do_lag_fdb_add(ds, info->lag,
@@ -537,7 +529,7 @@ static int dsa_switch_lag_fdb_del(struct dsa_switch *ds,
 	if (!ds->ops->lag_fdb_del)
 		return -EOPNOTSUPP;
 
-	/* Notify switch only if it has a port in this LAG */
+	 
 	dsa_switch_for_each_port(dp, ds)
 		if (dsa_port_offloads_lag(dp, info->lag))
 			return dsa_switch_do_lag_fdb_del(ds, info->lag,
@@ -652,16 +644,14 @@ static int dsa_switch_host_mdb_del(struct dsa_switch *ds,
 	return err;
 }
 
-/* Port VLANs match on the targeted port and on all DSA ports */
+ 
 static bool dsa_port_vlan_match(struct dsa_port *dp,
 				struct dsa_notifier_vlan_info *info)
 {
 	return dsa_port_is_dsa(dp) || dp == info->dp;
 }
 
-/* Host VLANs match on the targeted port's CPU port, and on all DSA ports
- * (upstream and downstream) of that switch and its upstream switches.
- */
+ 
 static bool dsa_port_host_vlan_match(struct dsa_port *dp,
 				     const struct dsa_port *targeted_dp)
 {
@@ -694,7 +684,7 @@ static int dsa_port_do_vlan_add(struct dsa_port *dp,
 	struct dsa_vlan *v;
 	int err = 0;
 
-	/* No need to bother with refcounting for user ports. */
+	 
 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp))) {
 		err = ds->ops->port_vlan_add(ds, port, vlan, extack);
 		trace_dsa_vlan_add_hw(dp, vlan, err);
@@ -702,11 +692,7 @@ static int dsa_port_do_vlan_add(struct dsa_port *dp,
 		return err;
 	}
 
-	/* No need to propagate on shared ports the existing VLANs that were
-	 * re-notified after just the flags have changed. This would cause a
-	 * refcount bump which we need to avoid, since it unbalances the
-	 * additions with the deletions.
-	 */
+	 
 	if (vlan->changed)
 		return 0;
 
@@ -750,7 +736,7 @@ static int dsa_port_do_vlan_del(struct dsa_port *dp,
 	struct dsa_vlan *v;
 	int err = 0;
 
-	/* No need to bother with refcounting for user ports */
+	 
 	if (!(dsa_port_is_cpu(dp) || dsa_port_is_dsa(dp))) {
 		err = ds->ops->port_vlan_del(ds, port, vlan);
 		trace_dsa_vlan_del_hw(dp, vlan, err);
@@ -889,31 +875,20 @@ static int dsa_switch_change_tag_proto(struct dsa_switch *ds,
 	dsa_switch_for_each_cpu_port(cpu_dp, ds)
 		dsa_port_set_tag_protocol(cpu_dp, tag_ops);
 
-	/* Now that changing the tag protocol can no longer fail, let's update
-	 * the remaining bits which are "duplicated for faster access", and the
-	 * bits that depend on the tagger, such as the MTU.
-	 */
+	 
 	dsa_switch_for_each_user_port(dp, ds) {
 		struct net_device *slave = dp->slave;
 
 		dsa_slave_setup_tagger(slave);
 
-		/* rtnl_mutex is held in dsa_tree_change_tag_proto */
+		 
 		dsa_slave_change_mtu(slave, slave->mtu);
 	}
 
 	return 0;
 }
 
-/* We use the same cross-chip notifiers to inform both the tagger side, as well
- * as the switch side, of connection and disconnection events.
- * Since ds->tagger_data is owned by the tagger, it isn't a hard error if the
- * switch side doesn't support connecting to this tagger, and therefore, the
- * fact that we don't disconnect the tagger side doesn't constitute a memory
- * leak: the tagger will still operate with persistent per-switch memory, just
- * with the switch side unconnected to it. What does constitute a hard error is
- * when the switch side supports connecting but fails.
- */
+ 
 static int
 dsa_switch_connect_tag_proto(struct dsa_switch *ds,
 			     struct dsa_notifier_tag_proto_info *info)
@@ -921,7 +896,7 @@ dsa_switch_connect_tag_proto(struct dsa_switch *ds,
 	const struct dsa_device_ops *tag_ops = info->tag_ops;
 	int err;
 
-	/* Notify the new tagger about the connection to this switch */
+	 
 	if (tag_ops->connect) {
 		err = tag_ops->connect(ds);
 		if (err)
@@ -931,10 +906,10 @@ dsa_switch_connect_tag_proto(struct dsa_switch *ds,
 	if (!ds->ops->connect_tag_protocol)
 		return -EOPNOTSUPP;
 
-	/* Notify the switch about the connection to the new tagger */
+	 
 	err = ds->ops->connect_tag_protocol(ds, tag_ops->proto);
 	if (err) {
-		/* Revert the new tagger's connection to this tree */
+		 
 		if (tag_ops->disconnect)
 			tag_ops->disconnect(ds);
 		return err;
@@ -949,13 +924,11 @@ dsa_switch_disconnect_tag_proto(struct dsa_switch *ds,
 {
 	const struct dsa_device_ops *tag_ops = info->tag_ops;
 
-	/* Notify the tagger about the disconnection from this switch */
+	 
 	if (tag_ops->disconnect && ds->tagger_data)
 		tag_ops->disconnect(ds);
 
-	/* No need to notify the switch, since it shouldn't have any
-	 * resources to tear down
-	 */
+	 
 	return 0;
 }
 
@@ -1071,16 +1044,7 @@ static int dsa_switch_event(struct notifier_block *nb,
 	return notifier_from_errno(err);
 }
 
-/**
- * dsa_tree_notify - Execute code for all switches in a DSA switch tree.
- * @dst: collection of struct dsa_switch devices to notify.
- * @e: event, must be of type DSA_NOTIFIER_*
- * @v: event-specific value.
- *
- * Given a struct dsa_switch_tree, this can be used to run a function once for
- * each member DSA switch. The other alternative of traversing the tree is only
- * through its ports list, which does not uniquely list the switches.
- */
+ 
 int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v)
 {
 	struct raw_notifier_head *nh = &dst->nh;
@@ -1091,18 +1055,7 @@ int dsa_tree_notify(struct dsa_switch_tree *dst, unsigned long e, void *v)
 	return notifier_to_errno(err);
 }
 
-/**
- * dsa_broadcast - Notify all DSA trees in the system.
- * @e: event, must be of type DSA_NOTIFIER_*
- * @v: event-specific value.
- *
- * Can be used to notify the switching fabric of events such as cross-chip
- * bridging between disjoint trees (such as islands of tagger-compatible
- * switches bridged by an incompatible middle switch).
- *
- * WARNING: this function is not reliable during probe time, because probing
- * between trees is asynchronous and not all DSA trees might have probed.
- */
+ 
 int dsa_broadcast(unsigned long e, void *v)
 {
 	struct dsa_switch_tree *dst;

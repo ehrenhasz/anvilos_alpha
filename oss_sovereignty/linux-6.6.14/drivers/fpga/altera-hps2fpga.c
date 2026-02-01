@@ -1,23 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FPGA to/from HPS Bridge Driver for Altera SoCFPGA Devices
- *
- *  Copyright (C) 2013-2016 Altera Corporation, All Rights Reserved.
- *
- * Includes this patch from the mailing list:
- *   fpga: altera-hps2fpga: fix HPS2FPGA bridge visibility to L3 masters
- *   Signed-off-by: Anatolij Gustschin <agust@denx.de>
- */
 
-/*
- * This driver manages bridges on a Altera SOCFPGA between the ARM host
- * processor system (HPS) and the embedded FPGA.
- *
- * This driver supports enabling and disabling of the configured ports, which
- * allows for safe reprogramming of the FPGA, assuming that the new FPGA image
- * uses the same port configuration.  Bridges must be disabled before
- * reprogramming the FPGA and re-enabled after the FPGA has been programmed.
- */
+ 
+
+ 
 
 #include <linux/clk.h>
 #include <linux/fpga/fpga-bridge.h>
@@ -53,7 +37,7 @@ static int alt_hps2fpga_enable_show(struct fpga_bridge *bridge)
 	return reset_control_status(priv->bridge_reset);
 }
 
-/* The L3 REMAP register is write only, so keep a cached value. */
+ 
 static unsigned int l3_remap_shadow;
 static DEFINE_SPINLOCK(l3_remap_lock);
 
@@ -63,7 +47,7 @@ static int _alt_hps2fpga_enable_set(struct altera_hps2fpga_data *priv,
 	unsigned long flags;
 	int ret;
 
-	/* bring bridge out of reset */
+	 
 	if (enable)
 		ret = reset_control_deassert(priv->bridge_reset);
 	else
@@ -71,7 +55,7 @@ static int _alt_hps2fpga_enable_set(struct altera_hps2fpga_data *priv,
 	if (ret)
 		return ret;
 
-	/* Allow bridge to be visible to L3 masters or not */
+	 
 	if (priv->remap_mask) {
 		spin_lock_irqsave(&l3_remap_lock, flags);
 		l3_remap_shadow |= ALT_L3_REMAP_MPUZERO_MSK;

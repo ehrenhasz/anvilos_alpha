@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Generic part shared by ipv4 and ipv6 backends.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

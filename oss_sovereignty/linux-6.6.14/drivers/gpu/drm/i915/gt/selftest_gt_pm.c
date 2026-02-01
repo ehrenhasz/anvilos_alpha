@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/sort.h>
 
@@ -40,7 +38,7 @@ static u32 read_timestamp(struct intel_engine_cs *engine)
 {
 	struct drm_i915_private *i915 = engine->i915;
 
-	/* On i965 the first read tends to give a stale value */
+	 
 	ENGINE_READ_FW(engine, RING_TIMESTAMP);
 
 	if (GRAPHICS_VER(i915) == 5 || IS_G4X(i915))
@@ -68,7 +66,7 @@ static void measure_clocks(struct intel_engine_cs *engine,
 		local_irq_enable();
 	}
 
-	/* Use the median of both cycle/dt; close enough */
+	 
 	sort(cycles, 5, sizeof(*cycles), cmp_u32, NULL);
 	*out_cycles = (cycles[1] + 2 * cycles[2] + cycles[3]) / 4;
 
@@ -83,12 +81,12 @@ static int live_gt_clocks(void *arg)
 	enum intel_engine_id id;
 	int err = 0;
 
-	if (!gt->clock_frequency) { /* unknown */
+	if (!gt->clock_frequency) {  
 		pr_info("CS_TIMESTAMP frequency unknown\n");
 		return 0;
 	}
 
-	if (GRAPHICS_VER(gt->i915) < 4) /* Any CS_TIMESTAMP? */
+	if (GRAPHICS_VER(gt->i915) < 4)  
 		return 0;
 
 	intel_gt_pm_get(gt);
@@ -139,7 +137,7 @@ static int live_gt_resume(void *arg)
 	IGT_TIMEOUT(end_time);
 	int err;
 
-	/* Do several suspend/resume cycles to check we don't explode! */
+	 
 	do {
 		intel_gt_suspend_prepare(gt);
 		intel_gt_suspend_late(gt);
@@ -197,11 +195,7 @@ int intel_gt_pm_live_selftests(struct drm_i915_private *i915)
 int intel_gt_pm_late_selftests(struct drm_i915_private *i915)
 {
 	static const struct i915_subtest tests[] = {
-		/*
-		 * These tests may leave the system in an undesirable state.
-		 * They are intended to be run last in CI and the system
-		 * rebooted afterwards.
-		 */
+		 
 		SUBTEST(live_rc6_ctx_wa),
 	};
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/file.h>
 #include <linux/fs.h>
 #include <linux/fsnotify_backend.h>
@@ -98,7 +98,7 @@ void inotify_show_fdinfo(struct seq_file *m, struct file *f)
 	show_fdinfo(m, f, inotify_fdinfo);
 }
 
-#endif /* CONFIG_INOTIFY_USER */
+#endif  
 
 #ifdef CONFIG_FANOTIFY
 
@@ -141,8 +141,8 @@ void fanotify_show_fdinfo(struct seq_file *m, struct file *f)
 	show_fdinfo(m, f, fanotify_fdinfo);
 }
 
-#endif /* CONFIG_FANOTIFY */
+#endif  
 
-#endif /* CONFIG_INOTIFY_USER || CONFIG_FANOTIFY */
+#endif  
 
-#endif /* CONFIG_PROC_FS */
+#endif  

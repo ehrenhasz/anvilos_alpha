@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 #include <linux/kernel.h>
 
 #include <drm/drm_atomic_helper.h>
@@ -23,7 +21,7 @@
 #include "intel_psr.h"
 #include "skl_watermark.h"
 
-/* Cursor formats */
+ 
 static const u32 intel_cursor_formats[] = {
 	DRM_FORMAT_ARGB8888,
 };
@@ -105,14 +103,11 @@ static int intel_cursor_check_surface(struct intel_plane_state *plane_state)
 		return -EINVAL;
 	}
 
-	/*
-	 * Put the final coordinates back so that the src
-	 * coordinate checks will see the right values.
-	 */
+	 
 	drm_rect_translate_to(&plane_state->uapi.src,
 			      src_x << 16, src_y << 16);
 
-	/* ILK+ do this automagically in hardware */
+	 
 	if (HAS_GMCH(dev_priv) && rotation & DRM_MODE_ROTATE_180) {
 		const struct drm_framebuffer *fb = plane_state->hw.fb;
 		int src_w = drm_rect_width(&plane_state->uapi.src) >> 16;
@@ -149,11 +144,11 @@ static int intel_check_cursor(struct intel_crtc_state *crtc_state,
 	if (ret)
 		return ret;
 
-	/* Use the unclipped src/dst rectangles, which we program to hw */
+	 
 	plane_state->uapi.src = src;
 	plane_state->uapi.dst = dst;
 
-	/* final plane coordinates will be relative to the plane's pipe */
+	 
 	drm_rect_translate(&plane_state->uapi.dst,
 			   -crtc_state->pipe_src.x1,
 			   -crtc_state->pipe_src.y1);
@@ -202,10 +197,7 @@ static bool i845_cursor_size_ok(const struct intel_plane_state *plane_state)
 {
 	int width = drm_rect_width(&plane_state->uapi.dst);
 
-	/*
-	 * 845g/865g are only limited by the width of their cursors,
-	 * the height is arbitrary up to the precision of the register.
-	 */
+	 
 	return intel_cursor_size_ok(plane_state) && IS_ALIGNED(width, 64);
 }
 
@@ -220,11 +212,11 @@ static int i845_check_cursor(struct intel_crtc_state *crtc_state,
 	if (ret)
 		return ret;
 
-	/* if we want to turn off the cursor ignore width and height */
+	 
 	if (!fb)
 		return 0;
 
-	/* Check for which cursor types we support */
+	 
 	if (!i845_cursor_size_ok(plane_state)) {
 		drm_dbg_kms(&i915->drm,
 			    "Cursor dimension %dx%d not supported\n",
@@ -253,7 +245,7 @@ static int i845_check_cursor(struct intel_crtc_state *crtc_state,
 	return 0;
 }
 
-/* TODO: split into noarm+arm pair */
+ 
 static void i845_cursor_update_arm(struct intel_plane *plane,
 				   const struct intel_crtc_state *crtc_state,
 				   const struct intel_plane_state *plane_state)
@@ -274,9 +266,7 @@ static void i845_cursor_update_arm(struct intel_plane *plane,
 		pos = intel_cursor_position(plane_state);
 	}
 
-	/* On these chipsets we can only modify the base/size/stride
-	 * whilst the cursor is disabled.
-	 */
+	 
 	if (plane->cursor.base != base ||
 	    plane->cursor.size != size ||
 	    plane->cursor.cntl != cntl) {
@@ -379,7 +369,7 @@ static u32 i9xx_cursor_ctl(const struct intel_crtc_state *crtc_state,
 	if (plane_state->hw.rotation & DRM_MODE_ROTATE_180)
 		cntl |= MCURSOR_ROTATE_180;
 
-	/* Wa_22012358565:adl-p */
+	 
 	if (DISPLAY_VER(dev_priv) == 13)
 		cntl |= MCURSOR_ARB_SLOTS(1);
 
@@ -396,7 +386,7 @@ static bool i9xx_cursor_size_ok(const struct intel_plane_state *plane_state)
 	if (!intel_cursor_size_ok(plane_state))
 		return false;
 
-	/* Cursor width is limited to a few power-of-two sizes */
+	 
 	switch (width) {
 	case 256:
 	case 128:
@@ -406,12 +396,7 @@ static bool i9xx_cursor_size_ok(const struct intel_plane_state *plane_state)
 		return false;
 	}
 
-	/*
-	 * IVB+ have CUR_FBC_CTL which allows an arbitrary cursor
-	 * height from 8 lines up to the cursor width, when the
-	 * cursor is not rotated. Everything else requires square
-	 * cursors.
-	 */
+	 
 	if (HAS_CUR_FBC(dev_priv) &&
 	    plane_state->hw.rotation & DRM_MODE_ROTATE_0) {
 		if (height < 8 || height > width)
@@ -437,11 +422,11 @@ static int i9xx_check_cursor(struct intel_crtc_state *crtc_state,
 	if (ret)
 		return ret;
 
-	/* if we want to turn off the cursor ignore width and height */
+	 
 	if (!fb)
 		return 0;
 
-	/* Check for which cursor types we support */
+	 
 	if (!i9xx_cursor_size_ok(plane_state)) {
 		drm_dbg(&dev_priv->drm,
 			"Cursor dimension %dx%d not supported\n",
@@ -462,16 +447,7 @@ static int i9xx_check_cursor(struct intel_crtc_state *crtc_state,
 		return -EINVAL;
 	}
 
-	/*
-	 * There's something wrong with the cursor on CHV pipe C.
-	 * If it straddles the left edge of the screen then
-	 * moving it away from the edge or disabling it often
-	 * results in a pipe underrun, and often that can lead to
-	 * dead pipe (constant underrun reported, and it scans
-	 * out just a solid color). To recover from that, the
-	 * display power well must be turned off and on again.
-	 * Refuse the put the cursor into that compromised position.
-	 */
+	 
 	if (IS_CHERRYVIEW(dev_priv) && pipe == PIPE_C &&
 	    plane_state->uapi.visible && plane_state->uapi.dst.x1 < 0) {
 		drm_dbg_kms(&dev_priv->drm,
@@ -484,7 +460,7 @@ static int i9xx_check_cursor(struct intel_crtc_state *crtc_state,
 	return 0;
 }
 
-/* TODO: split into noarm+arm pair */
+ 
 static void i9xx_cursor_update_arm(struct intel_plane *plane,
 				   const struct intel_crtc_state *crtc_state,
 				   const struct intel_plane_state *plane_state)
@@ -507,25 +483,7 @@ static void i9xx_cursor_update_arm(struct intel_plane *plane,
 		pos = intel_cursor_position(plane_state);
 	}
 
-	/*
-	 * On some platforms writing CURCNTR first will also
-	 * cause CURPOS to be armed by the CURBASE write.
-	 * Without the CURCNTR write the CURPOS write would
-	 * arm itself. Thus we always update CURCNTR before
-	 * CURPOS.
-	 *
-	 * On other platforms CURPOS always requires the
-	 * CURBASE write to arm the update. Additonally
-	 * a write to any of the cursor register will cancel
-	 * an already armed cursor update. Thus leaving out
-	 * the CURBASE write after CURPOS could lead to a
-	 * cursor that doesn't appear to move, or even change
-	 * shape. Thus we always write CURBASE.
-	 *
-	 * The other registers are armed by the CURBASE write
-	 * except when the plane is getting enabled at which time
-	 * the CURCNTR write arms the update.
-	 */
+	 
 
 	if (DISPLAY_VER(dev_priv) >= 9)
 		skl_write_cursor_wm(plane, crtc_state);
@@ -570,11 +528,7 @@ static bool i9xx_cursor_get_hw_state(struct intel_plane *plane,
 	bool ret;
 	u32 val;
 
-	/*
-	 * Not 100% correct for planes that can move between pipes,
-	 * but that's only the case for gen2-3 which don't have any
-	 * display power wells.
-	 */
+	 
 	power_domain = POWER_DOMAIN_PIPE(plane->pipe);
 	wakeref = intel_display_power_get_if_enabled(dev_priv, power_domain);
 	if (!wakeref)
@@ -623,35 +577,19 @@ intel_legacy_cursor_update(struct drm_plane *_plane,
 	struct intel_crtc_state *new_crtc_state;
 	int ret;
 
-	/*
-	 * When crtc is inactive or there is a modeset pending,
-	 * wait for it to complete in the slowpath.
-	 * PSR2 selective fetch also requires the slow path as
-	 * PSR2 plane and transcoder registers can only be updated during
-	 * vblank.
-	 *
-	 * FIXME bigjoiner fastpath would be good
-	 */
+	 
 	if (!crtc_state->hw.active ||
 	    intel_crtc_needs_modeset(crtc_state) ||
 	    intel_crtc_needs_fastset(crtc_state) ||
 	    crtc_state->bigjoiner_pipes)
 		goto slow;
 
-	/*
-	 * Don't do an async update if there is an outstanding commit modifying
-	 * the plane.  This prevents our async update's changes from getting
-	 * overridden by a previous synchronous update's state.
-	 */
+	 
 	if (old_plane_state->uapi.commit &&
 	    !try_wait_for_completion(&old_plane_state->uapi.commit->hw_done))
 		goto slow;
 
-	/*
-	 * If any parameters change that may affect watermarks,
-	 * take the slowpath. Only changing fb or position should be
-	 * in the fastpath.
-	 */
+	 
 	if (old_plane_state->uapi.crtc != &crtc->base ||
 	    old_plane_state->uapi.src_w != src_w ||
 	    old_plane_state->uapi.src_h != src_h ||
@@ -698,27 +636,13 @@ intel_legacy_cursor_update(struct drm_plane *_plane,
 				to_intel_frontbuffer(new_plane_state->hw.fb),
 				plane->frontbuffer_bit);
 
-	/* Swap plane state */
+	 
 	plane->base.state = &new_plane_state->uapi;
 
-	/*
-	 * We cannot swap crtc_state as it may be in use by an atomic commit or
-	 * page flip that's running simultaneously. If we swap crtc_state and
-	 * destroy the old state, we will cause a use-after-free there.
-	 *
-	 * Only update active_planes, which is needed for our internal
-	 * bookkeeping. Either value will do the right thing when updating
-	 * planes atomically. If the cursor was part of the atomic update then
-	 * we would have taken the slowpath.
-	 */
+	 
 	crtc_state->active_planes = new_crtc_state->active_planes;
 
-	/*
-	 * Technically we should do a vblank evasion here to make
-	 * sure all the cursor registers update on the same frame.
-	 * For now just make sure the register writes happen as
-	 * quickly as possible to minimize the race window.
-	 */
+	 
 	local_irq_disable();
 
 	if (new_plane_state->uapi.visible) {

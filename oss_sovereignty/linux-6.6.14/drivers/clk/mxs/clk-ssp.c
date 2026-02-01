@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 DENX Software Engineering, GmbH
- *
- * Pulled from code:
- * Portions copyright (C) 2003 Russell King, PXA MMCI Driver
- * Portions copyright (C) 2004-2005 Pierre Ossman, W83L51xD SD/MMC driver
- *
- * Copyright 2008 Embedded Alley Solutions, Inc.
- * Copyright 2009-2011 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AMD Platform Management Framework Driver
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/workqueue.h>
@@ -22,7 +15,7 @@ static void amd_pmf_dump_auto_mode_defaults(struct auto_mode_mode_config *data)
 
 	pr_debug("Auto Mode Data - BEGIN\n");
 
-	/* time constant */
+	 
 	pr_debug("balanced_to_perf: %u ms\n",
 		 data->transition[AUTO_TRANSITION_TO_PERFORMANCE].time_constant);
 	pr_debug("perf_to_balanced: %u ms\n",
@@ -32,12 +25,12 @@ static void amd_pmf_dump_auto_mode_defaults(struct auto_mode_mode_config *data)
 	pr_debug("balanced_to_quiet: %u ms\n",
 		 data->transition[AUTO_TRANSITION_TO_QUIET].time_constant);
 
-	/* power floor */
+	 
 	pr_debug("pfloor_perf: %u mW\n", data->mode_set[AUTO_PERFORMANCE].power_floor);
 	pr_debug("pfloor_balanced: %u mW\n", data->mode_set[AUTO_BALANCE].power_floor);
 	pr_debug("pfloor_quiet: %u mW\n", data->mode_set[AUTO_QUIET].power_floor);
 
-	/* Power delta for mode change */
+	 
 	pr_debug("pd_balanced_to_perf: %u mW\n",
 		 data->transition[AUTO_TRANSITION_TO_PERFORMANCE].power_delta);
 	pr_debug("pd_perf_to_balanced: %u mW\n",
@@ -47,7 +40,7 @@ static void amd_pmf_dump_auto_mode_defaults(struct auto_mode_mode_config *data)
 	pr_debug("pd_balanced_to_quiet: %u mW\n",
 		 data->transition[AUTO_TRANSITION_TO_QUIET].power_delta);
 
-	/* skin temperature limits */
+	 
 	its_mode = &data->mode_set[AUTO_PERFORMANCE_ON_LAP];
 	pr_debug("stt_apu_perf_on_lap: %u C\n",
 		 its_mode->power_control.stt_skin_temp[STT_TEMP_APU]);
@@ -70,7 +63,7 @@ static void amd_pmf_dump_auto_mode_defaults(struct auto_mode_mode_config *data)
 	pr_debug("stt_hs2_quiet: %u C\n", its_mode->power_control.stt_skin_temp[STT_TEMP_HS2]);
 	pr_debug("stt_min_limit_quiet: %u mW\n", its_mode->power_control.stt_min);
 
-	/* SPL based power limits */
+	 
 	its_mode = &data->mode_set[AUTO_PERFORMANCE_ON_LAP];
 	pr_debug("fppt_perf_on_lap: %u mW\n", its_mode->power_control.fppt);
 	pr_debug("sppt_perf_on_lap: %u mW\n", its_mode->power_control.sppt);
@@ -95,7 +88,7 @@ static void amd_pmf_dump_auto_mode_defaults(struct auto_mode_mode_config *data)
 	pr_debug("spl_quiet: %u mW\n", its_mode->power_control.spl);
 	pr_debug("sppt_apu_only_quiet: %u mW\n", its_mode->power_control.sppt_apu_only);
 
-	/* Fan ID */
+	 
 	pr_debug("fan_id_perf: %lu\n",
 		 data->mode_set[AUTO_PERFORMANCE].fan_control.fan_id);
 	pr_debug("fan_id_balanced: %lu\n",
@@ -153,7 +146,7 @@ void amd_pmf_trans_automode(struct amd_pmf_dev *dev, int socket_power, ktime_t t
 	bool update = false;
 	int i, j;
 
-	/* Get the average moving average computed by auto mode algorithm */
+	 
 	avg_power = amd_pmf_get_moving_avg(dev, socket_power);
 
 	for (i = 0; i < AUTO_TRANSITION_MAX; i++) {
@@ -209,7 +202,7 @@ void amd_pmf_trans_automode(struct amd_pmf_dev *dev, int socket_power, ktime_t t
 
 	if (update) {
 		for (j = 0; j < AUTO_TRANSITION_MAX; j++) {
-			/* Apply the mode with highest priority indentified */
+			 
 			if (config_store.transition[j].applied) {
 				if (config_store.current_mode !=
 				    config_store.transition[j].target_mode) {
@@ -306,7 +299,7 @@ static void amd_pmf_load_defaults_auto_mode(struct amd_pmf_dev *dev)
 	int i;
 
 	apmf_get_auto_mode_def(dev, &output);
-	/* time constant */
+	 
 	config_store.transition[AUTO_TRANSITION_TO_QUIET].time_constant =
 								output.balanced_to_quiet;
 	config_store.transition[AUTO_TRANSITION_TO_PERFORMANCE].time_constant =
@@ -316,13 +309,13 @@ static void amd_pmf_load_defaults_auto_mode(struct amd_pmf_dev *dev)
 	config_store.transition[AUTO_TRANSITION_FROM_PERFORMANCE_TO_BALANCE].time_constant =
 								output.perf_to_balanced;
 
-	/* power floor */
+	 
 	config_store.mode_set[AUTO_QUIET].power_floor = output.pfloor_quiet;
 	config_store.mode_set[AUTO_BALANCE].power_floor = output.pfloor_balanced;
 	config_store.mode_set[AUTO_PERFORMANCE].power_floor = output.pfloor_perf;
 	config_store.mode_set[AUTO_PERFORMANCE_ON_LAP].power_floor = output.pfloor_perf;
 
-	/* Power delta for mode change */
+	 
 	config_store.transition[AUTO_TRANSITION_TO_QUIET].power_delta =
 								output.pd_balanced_to_quiet;
 	config_store.transition[AUTO_TRANSITION_TO_PERFORMANCE].power_delta =
@@ -332,10 +325,10 @@ static void amd_pmf_load_defaults_auto_mode(struct amd_pmf_dev *dev)
 	config_store.transition[AUTO_TRANSITION_FROM_PERFORMANCE_TO_BALANCE].power_delta =
 								output.pd_perf_to_balanced;
 
-	/* Power threshold */
+	 
 	amd_pmf_get_power_threshold();
 
-	/* skin temperature limits */
+	 
 	pwr_ctrl = &config_store.mode_set[AUTO_QUIET].power_control;
 	pwr_ctrl->spl = output.spl_quiet;
 	pwr_ctrl->sppt = output.sppt_quiet;
@@ -372,7 +365,7 @@ static void amd_pmf_load_defaults_auto_mode(struct amd_pmf_dev *dev)
 	pwr_ctrl->stt_skin_temp[STT_TEMP_APU] = output.stt_apu_perf_on_lap;
 	pwr_ctrl->stt_skin_temp[STT_TEMP_HS2] = output.stt_hs2_perf_on_lap;
 
-	/* Fan ID */
+	 
 	config_store.mode_set[AUTO_QUIET].fan_control.fan_id = output.fan_id_quiet;
 	config_store.mode_set[AUTO_BALANCE].fan_control.fan_id = output.fan_id_balanced;
 	config_store.mode_set[AUTO_PERFORMANCE].fan_control.fan_id = output.fan_id_perf;
@@ -400,7 +393,7 @@ static void amd_pmf_load_defaults_auto_mode(struct amd_pmf_dev *dev)
 			config_store.mode_set[i].fan_control.manual = true;
 	}
 
-	/* set to initial default values */
+	 
 	config_store.current_mode = AUTO_BALANCE;
 	dev->socket_power_history_idx = -1;
 
@@ -409,13 +402,7 @@ static void amd_pmf_load_defaults_auto_mode(struct amd_pmf_dev *dev)
 
 int amd_pmf_reset_amt(struct amd_pmf_dev *dev)
 {
-	/*
-	 * OEM BIOS implementation guide says that if the auto mode is enabled
-	 * the platform_profile registration shall be done by the OEM driver.
-	 * There could be cases where both static slider and auto mode BIOS
-	 * functions are enabled, in that case enable static slider updates
-	 * only if it advertised as supported.
-	 */
+	 
 
 	if (is_apmf_func_supported(dev, APMF_FUNC_STATIC_SLIDER_GRANULAR)) {
 		dev_dbg(dev->dev, "resetting AMT thermals\n");

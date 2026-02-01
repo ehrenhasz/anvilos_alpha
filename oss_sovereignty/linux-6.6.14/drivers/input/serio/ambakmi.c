@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  linux/drivers/input/serio/ambakmi.c
- *
- *  Copyright (C) 2000-2003 Deep Blue Solutions Ltd.
- *  Copyright (C) 2002 Russell King.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/serio.h>
 #include <linux/errno.h>
@@ -50,7 +45,7 @@ static irqreturn_t amba_kmi_int(int irq, void *dev_id)
 static int amba_kmi_write(struct serio *io, unsigned char val)
 {
 	struct amba_kmi_port *kmi = io->port_data;
-	unsigned int timeleft = 10000; /* timeout in 100ms */
+	unsigned int timeleft = 10000;  
 
 	while ((readb(KMISTAT) & KMISTAT_TXEMPTY) == 0 && --timeleft)
 		udelay(10);
@@ -174,7 +169,7 @@ static int amba_kmi_resume(struct device *dev)
 {
 	struct amba_kmi_port *kmi = dev_get_drvdata(dev);
 
-	/* kick the serio layer to rescan this port */
+	 
 	serio_reconnect(kmi->io);
 
 	return 0;

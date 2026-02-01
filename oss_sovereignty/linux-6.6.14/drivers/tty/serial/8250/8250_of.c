@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Serial Port driver for Open Firmware platform devices
- *
- *    Copyright (C) 2006 Arnd Bergmann <arnd@arndb.de>, IBM Corp.
- */
+
+ 
 #include <linux/console.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -25,9 +21,7 @@ struct of_serial_info {
 	int line;
 };
 
-/*
- * Fill a struct uart_port for a given device node
- */
+ 
 static int of_platform_serial_setup(struct platform_device *ofdev,
 			int type, struct uart_8250_port *up,
 			struct of_serial_info *info)
@@ -45,7 +39,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 
 	if (of_property_read_u32(np, "clock-frequency", &clk)) {
 
-		/* Get clk rate through clk driver if present */
+		 
 		info->clk = devm_clk_get(&ofdev->dev, NULL);
 		if (IS_ERR(info->clk)) {
 			ret = PTR_ERR(info->clk);
@@ -61,7 +55,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 
 		clk = clk_get_rate(info->clk);
 	}
-	/* If current-speed was set, then try not to change it. */
+	 
 	if (of_property_read_u32(np, "current-speed", &spd) == 0)
 		port->custom_divisor = clk / (16 * spd);
 
@@ -82,7 +76,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 		port->mapbase = resource.start;
 		port->mapsize = resource_size(&resource);
 
-		/* Check for shifted address mapping */
+		 
 		if (of_property_read_u32(np, "reg-offset", &prop) == 0) {
 			if (prop >= port->mapsize) {
 				dev_warn(&ofdev->dev, "reg-offset %u exceeds region size %pa\n",
@@ -118,19 +112,19 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 		port->flags |= UPF_IOREMAP;
 	}
 
-	/* Compatibility with the deprecated pxa driver and 8250_pxa drivers. */
+	 
 	if (of_device_is_compatible(np, "mrvl,mmp-uart"))
 		port->regshift = 2;
 
-	/* Check for registers offset within the devices address range */
+	 
 	if (of_property_read_u32(np, "reg-shift", &prop) == 0)
 		port->regshift = prop;
 
-	/* Check for fifo size */
+	 
 	if (of_property_read_u32(np, "fifo-size", &prop) == 0)
 		port->fifosize = prop;
 
-	/* Check for a fixed line number */
+	 
 	ret = of_alias_get_id(np, "serial");
 	if (ret >= 0)
 		port->line = ret;
@@ -141,7 +135,7 @@ static int of_platform_serial_setup(struct platform_device *ofdev,
 			ret = -EPROBE_DEFER;
 			goto err_unprepare;
 		}
-		/* IRQ support not mandatory */
+		 
 		irq = 0;
 	}
 
@@ -193,9 +187,7 @@ err_pmruntime:
 	return ret;
 }
 
-/*
- * Try to register a serial port
- */
+ 
 static int of_platform_serial_probe(struct platform_device *ofdev)
 {
 	struct of_serial_info *info;
@@ -227,7 +219,7 @@ static int of_platform_serial_probe(struct platform_device *ofdev)
 	if (port8250.port.fifosize)
 		port8250.capabilities = UART_CAP_FIFO;
 
-	/* Check for TX FIFO threshold & set tx_loadsz */
+	 
 	if ((of_property_read_u32(ofdev->dev.of_node, "tx-threshold",
 				  &tx_threshold) == 0) &&
 	    (tx_threshold < port8250.port.fifosize))
@@ -259,9 +251,7 @@ err_free:
 	return ret;
 }
 
-/*
- * Release a line
- */
+ 
 static int of_platform_serial_remove(struct platform_device *ofdev)
 {
 	struct of_serial_info *info = platform_get_drvdata(ofdev);
@@ -310,9 +300,7 @@ static int of_serial_resume(struct device *dev)
 #endif
 static SIMPLE_DEV_PM_OPS(of_serial_pm_ops, of_serial_suspend, of_serial_resume);
 
-/*
- * A few common types, add more as needed.
- */
+ 
 static const struct of_device_id of_platform_serial_table[] = {
 	{ .compatible = "ns8250",   .data = (void *)PORT_8250, },
 	{ .compatible = "ns16450",  .data = (void *)PORT_16450, },
@@ -338,7 +326,7 @@ static const struct of_device_id of_platform_serial_table[] = {
 	{ .compatible = "ti,da830-uart", .data = (void *)PORT_DA830, },
 	{ .compatible = "nuvoton,wpcm450-uart", .data = (void *)PORT_NPCM, },
 	{ .compatible = "nuvoton,npcm750-uart", .data = (void *)PORT_NPCM, },
-	{ /* end of list */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, of_platform_serial_table);
 

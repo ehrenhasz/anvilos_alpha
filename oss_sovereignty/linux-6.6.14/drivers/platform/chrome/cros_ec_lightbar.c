@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Expose the Chromebook Pixel lightbar to userspace
-//
-// Copyright (C) 2014 Google, Inc.
+
+
+
+
 
 #include <linux/ctype.h>
 #include <linux/delay.h>
@@ -20,13 +20,10 @@
 
 #define DRV_NAME "cros-ec-lightbar"
 
-/* Rate-limit the lightbar interface to prevent DoS. */
+ 
 static unsigned long lb_interval_jiffies = 50 * HZ / 1000;
 
-/*
- * Whether or not we have given userspace control of the lightbar.
- * If this is true, we won't do anything during suspend/resume.
- */
+ 
 static bool userspace_control;
 
 static ssize_t interval_msec_show(struct device *dev,
@@ -52,7 +49,7 @@ static ssize_t interval_msec_store(struct device *dev,
 }
 
 static DEFINE_MUTEX(lb_mutex);
-/* Return 0 if able to throttle correctly, error otherwise */
+ 
 static int lb_throttle(void)
 {
 	static unsigned long last_access;
@@ -69,7 +66,7 @@ static int lb_throttle(void)
 		delay = (long)(next_timeslot) - (long)now;
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (schedule_timeout(delay) > 0) {
-			/* interrupted - just abort */
+			 
 			ret = -EINTR;
 			goto out;
 		}
@@ -127,7 +124,7 @@ static int get_lightbar_version(struct cros_ec_dev *ec,
 
 	switch (msg->result) {
 	case EC_RES_INVALID_PARAM:
-		/* Pixel had no version command. */
+		 
 		if (ver_ptr)
 			*ver_ptr = 0;
 		if (flg_ptr)
@@ -138,7 +135,7 @@ static int get_lightbar_version(struct cros_ec_dev *ec,
 	case EC_RES_SUCCESS:
 		resp = (struct ec_response_lightbar *)msg->data;
 
-		/* Future devices w/lightbars should implement this command */
+		 
 		if (ver_ptr)
 			*ver_ptr = resp->version.num;
 		if (flg_ptr)
@@ -147,7 +144,7 @@ static int get_lightbar_version(struct cros_ec_dev *ec,
 		goto exit;
 	}
 
-	/* Anything else (ie, EC_RES_INVALID_COMMAND) - no lightbar */
+	 
 	ret = 0;
 exit:
 	kfree(msg);
@@ -165,7 +162,7 @@ static ssize_t version_show(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* This should always succeed, because we check during init. */
+	 
 	if (!get_lightbar_version(ec, &version, &flags))
 		return -EIO;
 
@@ -207,13 +204,7 @@ exit:
 }
 
 
-/*
- * We expect numbers, and we'll keep reading until we find them, skipping over
- * any whitespace (sysfs guarantees that the input is null-terminated). Every
- * four numbers are sent to the lightbar as <LED,R,G,B>. We fail at the first
- * parsing error, if we don't parse any numbers, or if we have numbers left
- * over.
- */
+ 
 static ssize_t led_rgb_store(struct device *dev, struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
@@ -228,7 +219,7 @@ static ssize_t led_rgb_store(struct device *dev, struct device_attribute *attr,
 		return -ENOMEM;
 
 	do {
-		/* Skip any whitespace */
+		 
 		while (*buf && isspace(*buf))
 			buf++;
 
@@ -246,10 +237,7 @@ static ssize_t led_rgb_store(struct device *dev, struct device_attribute *attr,
 			param->set_rgb.red = val[1];
 			param->set_rgb.green = val[2];
 			param->set_rgb.blue = val[3];
-			/*
-			 * Throttle only the first of every four transactions,
-			 * so that the user can update all four LEDs at once.
-			 */
+			 
 			if ((j++ % 4) == 0) {
 				ret = lb_throttle();
 				if (ret)
@@ -264,7 +252,7 @@ static ssize_t led_rgb_store(struct device *dev, struct device_attribute *attr,
 			ok = 1;
 		}
 
-		/* Skip over the number we just read */
+		 
 		while (*buf && !isspace(*buf))
 			buf++;
 
@@ -427,13 +415,7 @@ static ssize_t program_store(struct device *dev, struct device_attribute *attr,
 	struct cros_ec_command *msg;
 	struct cros_ec_dev *ec = to_cros_ec_dev(dev);
 
-	/*
-	 * We might need to reject the program for size reasons. The EC
-	 * enforces a maximum program size, but we also don't want to try
-	 * and send a program that is too big for the protocol. In order
-	 * to ensure the latter, we also need to ensure we have extra bytes
-	 * to represent the rest of the packet.
-	 */
+	 
 	extra_bytes = sizeof(*param) - sizeof(param->set_program.data);
 	max_size = min(EC_LB_PROG_LEN, ec->ec_dev->max_request - extra_bytes);
 	if (count > max_size) {
@@ -459,11 +441,7 @@ static ssize_t program_store(struct device *dev, struct device_attribute *attr,
 	param->set_program.size = count;
 	memcpy(param->set_program.data, buf, count);
 
-	/*
-	 * We need to set the message size manually or else it will use
-	 * EC_LB_PROG_LEN. This might be too long, and the program
-	 * is unlikely to use all of the space.
-	 */
+	 
 	msg->outsize = count + extra_bytes;
 
 	ret = cros_ec_cmd_xfer_status(ec->ec_dev, msg);
@@ -501,7 +479,7 @@ static ssize_t userspace_control_store(struct device *dev,
 	return count;
 }
 
-/* Module initialization */
+ 
 
 static DEVICE_ATTR_RW(interval_msec);
 static DEVICE_ATTR_RO(version);
@@ -534,21 +512,15 @@ static int cros_ec_lightbar_probe(struct platform_device *pd)
 	struct device *dev = &pd->dev;
 	int ret;
 
-	/*
-	 * Only instantiate the lightbar if the EC name is 'cros_ec'. Other EC
-	 * devices like 'cros_pd' doesn't have a lightbar.
-	 */
+	 
 	if (strcmp(pdata->ec_name, CROS_EC_DEV_NAME) != 0)
 		return -ENODEV;
 
-	/*
-	 * Ask then for the lightbar version, if it's 0 then the 'cros_ec'
-	 * doesn't have a lightbar.
-	 */
+	 
 	if (!get_lightbar_version(ec_dev, NULL, NULL))
 		return -ENODEV;
 
-	/* Take control of the lightbar from the EC. */
+	 
 	lb_manual_suspend_ctrl(ec_dev, 1);
 
 	ret = sysfs_create_group(&ec_dev->class_dev.kobj,
@@ -567,7 +539,7 @@ static int cros_ec_lightbar_remove(struct platform_device *pd)
 	sysfs_remove_group(&ec_dev->class_dev.kobj,
 			   &cros_ec_lightbar_attr_group);
 
-	/* Let the EC take over the lightbar again. */
+	 
 	lb_manual_suspend_ctrl(ec_dev, 0);
 
 	return 0;

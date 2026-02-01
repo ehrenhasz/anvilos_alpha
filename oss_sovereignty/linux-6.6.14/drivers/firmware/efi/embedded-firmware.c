@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for extracting embedded firmware for peripherals from EFI code,
- *
- * Copyright (c) 2018 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/efi.h>
@@ -14,7 +10,7 @@
 #include <linux/vmalloc.h>
 #include <crypto/sha2.h>
 
-/* Exported for use by lib/test_firmware.c only */
+ 
 LIST_HEAD(efi_embedded_fw_list);
 EXPORT_SYMBOL_NS_GPL(efi_embedded_fw_list, TEST_FIRMWARE);
 bool efi_embedded_fw_checked;
@@ -27,13 +23,7 @@ static const struct dmi_system_id * const embedded_fw_table[] = {
 	NULL
 };
 
-/*
- * Note the efi_check_for_embedded_firmwares() code currently makes the
- * following 2 assumptions. This may needs to be revisited if embedded firmware
- * is found where this is not true:
- * 1) The firmware is only found in EFI_BOOT_SERVICES_CODE memory segments
- * 2) The firmware always starts at an offset which is a multiple of 8 bytes
- */
+ 
 static int __init efi_check_md_for_embedded_firmware(
 	efi_memory_desc_t *md, const struct efi_embedded_fw_desc *desc)
 {
@@ -98,11 +88,7 @@ void __init efi_check_for_embedded_firmwares(void)
 
 		fw_desc = dmi_id->driver_data;
 
-		/*
-		 * In some drivers the struct driver_data contains may contain
-		 * other driver specific data after the fw_desc struct; and
-		 * the fw_desc struct itself may be empty, skip these.
-		 */
+		 
 		if (!fw_desc->name)
 			continue;
 

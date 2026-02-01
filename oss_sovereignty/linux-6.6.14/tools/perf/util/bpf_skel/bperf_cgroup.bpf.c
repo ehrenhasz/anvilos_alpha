@@ -1,18 +1,18 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (c) 2021 Facebook
-// Copyright (c) 2021 Google
+
+
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_core_read.h>
 
-#define MAX_LEVELS  10  // max cgroup hierarchy level: arbitrary
-#define MAX_EVENTS  32  // max events per cgroup: arbitrary
+#define MAX_LEVELS  10  
+#define MAX_EVENTS  32  
 
-// NOTE: many of map and global data will be modified before loading
-//       from the userspace (perf tool) using the skeleton helpers.
 
-// single set of global perf events to measure
+
+
+
 struct {
 	__uint(type, BPF_MAP_TYPE_PERF_EVENT_ARRAY);
 	__uint(key_size, sizeof(__u32));
@@ -20,7 +20,7 @@ struct {
 	__uint(max_entries, 1);
 } events SEC(".maps");
 
-// from cgroup id to event index
+
 struct {
 	__uint(type, BPF_MAP_TYPE_HASH);
 	__uint(key_size, sizeof(__u64));
@@ -28,28 +28,28 @@ struct {
 	__uint(max_entries, 1);
 } cgrp_idx SEC(".maps");
 
-// per-cpu event snapshots to calculate delta
+
 struct {
 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
 	__uint(key_size, sizeof(__u32));
 	__uint(value_size, sizeof(struct bpf_perf_event_value));
 } prev_readings SEC(".maps");
 
-// aggregated event values for each cgroup (per-cpu)
-// will be read from the user-space
+
+
 struct {
 	__uint(type, BPF_MAP_TYPE_PERCPU_ARRAY);
 	__uint(key_size, sizeof(__u32));
 	__uint(value_size, sizeof(struct bpf_perf_event_value));
 } cgrp_readings SEC(".maps");
 
-/* new kernel cgroup definition */
+ 
 struct cgroup___new {
 	int level;
 	struct cgroup *ancestors[];
 } __attribute__((preserve_access_index));
 
-/* old kernel cgroup definition */
+ 
 struct cgroup___old {
 	int level;
 	u64 ancestor_ids[];
@@ -64,13 +64,13 @@ int perf_subsys_id = -1;
 
 static inline __u64 get_cgroup_v1_ancestor_id(struct cgroup *cgrp, int level)
 {
-	/* recast pointer to capture new type for compiler */
+	 
 	struct cgroup___new *cgrp_new = (void *)cgrp;
 
 	if (bpf_core_field_exists(cgrp_new->ancestors)) {
 		return BPF_CORE_READ(cgrp_new, ancestors[level], kn, id);
 	} else {
-		/* recast pointer to capture old type for compiler */
+		 
 		struct cgroup___old *cgrp_old = (void *)cgrp;
 
 		return BPF_CORE_READ(cgrp_old, ancestor_ids[level]);
@@ -103,7 +103,7 @@ static inline int get_cgroup_v1_idx(__u32 *cgrps, int size)
 		if (i > level)
 			break;
 
-		// convert cgroup-id to a map index
+		
 		cgrp_id = get_cgroup_v1_ancestor_id(cgrp, i);
 		elem = bpf_map_lookup_elem(&cgrp_idx, &cgrp_id);
 		if (!elem)
@@ -129,7 +129,7 @@ static inline int get_cgroup_v2_idx(__u32 *cgrps, int size)
 		if (cgrp_id == 0)
 			break;
 
-		// convert cgroup-id to a map index
+		
 		elem = bpf_map_lookup_elem(&cgrp_idx, &cgrp_id);
 		if (!elem)
 			continue;
@@ -144,7 +144,7 @@ static inline int get_cgroup_v2_idx(__u32 *cgrps, int size)
 
 static int bperf_cgroup_count(void)
 {
-	register __u32 idx = 0;  // to have it in a register to pass BPF verifier
+	register __u32 idx = 0;  
 	register int c = 0;
 	struct bpf_perf_event_value val, delta, *prev_val, *cgrp_val;
 	__u32 cpu = bpf_get_smp_processor_id();
@@ -162,9 +162,9 @@ static int bperf_cgroup_count(void)
 		if (idx == num_events)
 			break;
 
-		// XXX: do not pass idx directly (for verifier)
+		
 		key = idx;
-		// this is per-cpu array for diff
+		
 		prev_val = bpf_map_lookup_elem(&prev_readings, &key);
 		if (!prev_val) {
 			val.counter = val.enabled = val.running = 0;
@@ -175,7 +175,7 @@ static int bperf_cgroup_count(void)
 				continue;
 		}
 
-		// read from global perf_event array
+		
 		key = idx * num_cpus + cpu;
 		err = bpf_perf_event_read_value(&events, key, &val, sizeof(val));
 		if (err)
@@ -192,7 +192,7 @@ static int bperf_cgroup_count(void)
 
 				cgrp = cgrp_idx[c];
 
-				// aggregate the result by cgroup
+				
 				key = cgrp * num_events + idx;
 				cgrp_val = bpf_map_lookup_elem(&cgrp_readings, &key);
 				if (cgrp_val) {
@@ -211,7 +211,7 @@ static int bperf_cgroup_count(void)
 	return 0;
 }
 
-// This will be attached to cgroup-switches event for each cpu
+
 SEC("perf_event")
 int BPF_PROG(on_cgrp_switch)
 {

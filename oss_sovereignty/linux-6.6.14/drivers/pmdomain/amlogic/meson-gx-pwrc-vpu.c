@@ -1,9 +1,4 @@
-/*
- * Copyright (c) 2017 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- *
- * SPDX-License-Identifier: GPL-2.0+
- */
+ 
 
 #include <linux/platform_device.h>
 #include <linux/pm_domain.h>
@@ -15,14 +10,14 @@
 #include <linux/clk.h>
 #include <linux/module.h>
 
-/* AO Offsets */
+ 
 
 #define AO_RTI_GEN_PWR_SLEEP0		(0x3a << 2)
 
 #define GEN_PWR_VPU_HDMI		BIT(8)
 #define GEN_PWR_VPU_HDMI_ISO		BIT(9)
 
-/* HHI Offsets */
+ 
 
 #define HHI_MEM_PD_REG0			(0x40 << 2)
 #define HHI_VPU_MEM_PD_REG0		(0x41 << 2)
@@ -53,7 +48,7 @@ static int meson_gx_pwrc_vpu_power_off(struct generic_pm_domain *genpd)
 			   GEN_PWR_VPU_HDMI_ISO, GEN_PWR_VPU_HDMI_ISO);
 	udelay(20);
 
-	/* Power Down Memories */
+	 
 	for (i = 0; i < 32; i += 2) {
 		regmap_update_bits(pd->regmap_hhi, HHI_VPU_MEM_PD_REG0,
 				   0x3 << i, 0x3 << i);
@@ -91,7 +86,7 @@ static int meson_g12a_pwrc_vpu_power_off(struct generic_pm_domain *genpd)
 			   GEN_PWR_VPU_HDMI_ISO, GEN_PWR_VPU_HDMI_ISO);
 	udelay(20);
 
-	/* Power Down Memories */
+	 
 	for (i = 0; i < 32; i += 2) {
 		regmap_update_bits(pd->regmap_hhi, HHI_VPU_MEM_PD_REG0,
 				   0x3 << i, 0x3 << i);
@@ -150,7 +145,7 @@ static int meson_gx_pwrc_vpu_power_on(struct generic_pm_domain *genpd)
 			   GEN_PWR_VPU_HDMI, 0);
 	udelay(20);
 
-	/* Power Up Memories */
+	 
 	for (i = 0; i < 32; i += 2) {
 		regmap_update_bits(pd->regmap_hhi, HHI_VPU_MEM_PD_REG0,
 				   0x3 << i, 0);
@@ -198,7 +193,7 @@ static int meson_g12a_pwrc_vpu_power_on(struct generic_pm_domain *genpd)
 			   GEN_PWR_VPU_HDMI, 0);
 	udelay(20);
 
-	/* Power Up Memories */
+	 
 	for (i = 0; i < 32; i += 2) {
 		regmap_update_bits(pd->regmap_hhi, HHI_VPU_MEM_PD_REG0,
 				   0x3 << i, 0);
@@ -333,7 +328,7 @@ static int meson_gx_pwrc_vpu_probe(struct platform_device *pdev)
 
 	powered_off = meson_gx_pwrc_vpu_get_power(vpu_pd);
 
-	/* If already powered, sync the clock states */
+	 
 	if (!powered_off) {
 		ret = meson_gx_pwrc_vpu_setup_clk(vpu_pd);
 		if (ret)
@@ -363,7 +358,7 @@ static const struct of_device_id meson_gx_pwrc_vpu_match_table[] = {
 	  .compatible = "amlogic,meson-g12a-pwrc-vpu",
 	  .data = &vpu_hdmi_pd_g12a
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_gx_pwrc_vpu_match_table);
 

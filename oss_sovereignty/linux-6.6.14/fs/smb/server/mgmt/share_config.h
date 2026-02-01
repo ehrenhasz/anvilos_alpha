@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef __SHARE_CONFIG_MANAGEMENT_H__
 #define __SHARE_CONFIG_MANAGEMENT_H__
@@ -72,4 +70,4 @@ struct ksmbd_share_config *ksmbd_share_config_get(struct unicode_map *um,
 						  const char *name);
 bool ksmbd_share_veto_filename(struct ksmbd_share_config *share,
 			       const char *filename);
-#endif /* __SHARE_CONFIG_MANAGEMENT_H__ */
+#endif  

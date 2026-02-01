@@ -1,28 +1,4 @@
-/* cksum -- calculate and print POSIX checksums and sizes of files
-   Copyright (C) 1992-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <stdio.h>
-#include <sys/types.h>
-#include <stdint.h>
-#include <x86intrin.h>
-#include "system.h"
-
-/* Number of bytes to read at once.  */
+ 
 #define BUFLEN (1 << 16)
 
 extern uint_fast32_t const crctab[8][256];
@@ -30,7 +6,7 @@ extern uint_fast32_t const crctab[8][256];
 extern bool
 cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out);
 
-/* Calculate CRC32 using PCLMULQDQ CPU instruction found in x86/x64 CPUs */
+ 
 
 bool
 cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
@@ -46,13 +22,11 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
   if (!fp || !crc_out || !length_out)
     return false;
 
-  /* These constants and general algorithms are taken from the Intel whitepaper
-     "Fast CRC Computation for Generic Polynomials Using PCLMULQDQ Instruction"
-  */
+   
   single_mult_constant = _mm_set_epi64x (0xC5B9CD4C, 0xE8A45605);
   four_mult_constant = _mm_set_epi64x (0x8833794C, 0xE6228B11);
 
-  /* Constant to byteswap a full SSE register */
+   
   shuffle_constant = _mm_set_epi8 (0, 1, 2, 3, 4, 5, 6, 7, 8,
                                    9, 10, 11, 12, 13, 14, 15);
 
@@ -79,13 +53,12 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
 
       datap = (__m128i *)buf;
 
-      /* Fold in parallel eight 16-byte blocks into four 16-byte blocks */
+       
       if (bytes_read >= 16 * 8)
         {
           data = _mm_loadu_si128 (datap);
           data = _mm_shuffle_epi8 (data, shuffle_constant);
-          /* XOR in initial CRC value (for us 0 so no effect), or CRC value
-             calculated for previous BUFLEN buffer from fread */
+           
           xor_crc = _mm_set_epi32 (crc, 0, 0, 0);
           crc = 0;
           data = _mm_xor_si128 (data, xor_crc);
@@ -101,7 +74,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
             {
               datap += 4;
 
-              /* Do multiplication here for four consecutive 16 byte blocks */
+               
               data2 = _mm_clmulepi64_si128 (data, four_mult_constant, 0x00);
               data = _mm_clmulepi64_si128 (data, four_mult_constant, 0x11);
               data4 = _mm_clmulepi64_si128 (data3, four_mult_constant, 0x00);
@@ -111,11 +84,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
               data8 = _mm_clmulepi64_si128 (data7, four_mult_constant, 0x00);
               data7 = _mm_clmulepi64_si128 (data7, four_mult_constant, 0x11);
 
-              /* Now multiplication results for the four blocks is xor:ed with
-                 next four 16 byte blocks from the buffer. This effectively
-                 "consumes" the first four blocks from the buffer.
-                 Keep xor result in variables for multiplication in next
-                 round of loop. */
+               
               data = _mm_xor_si128 (data, data2);
               data2 = _mm_loadu_si128 (datap);
               data2 = _mm_shuffle_epi8 (data2, shuffle_constant);
@@ -138,8 +107,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
 
               bytes_read -= (16 * 4);
             }
-          /* At end of loop we write out results from variables back into
-             the buffer, for use in single fold loop */
+           
           data = _mm_shuffle_epi8 (data, shuffle_constant);
           _mm_storeu_si128 (datap, data);
           data3 = _mm_shuffle_epi8 (data3, shuffle_constant);
@@ -150,7 +118,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
           _mm_storeu_si128 (datap + 3, data7);
         }
 
-      /* Fold two 16-byte blocks into one 16-byte block */
+       
       if (bytes_read >= 32)
         {
           data = _mm_loadu_si128 (datap);
@@ -174,7 +142,7 @@ cksum_pclmul (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
           _mm_storeu_si128 (datap, data);
         }
 
-      /* And finish up last 0-31 bytes in a byte by byte fashion */
+       
       unsigned char *cp = (unsigned char *)datap;
       while (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];

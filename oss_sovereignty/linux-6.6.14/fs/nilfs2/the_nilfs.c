@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * the_nilfs shared structure.
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Ryusuke Konishi.
- *
- */
+
+ 
 
 #include <linux/buffer_head.h>
 #include <linux/slab.h>
@@ -46,13 +39,7 @@ void nilfs_set_last_segment(struct the_nilfs *nilfs,
 	spin_unlock(&nilfs->ns_last_segment_lock);
 }
 
-/**
- * alloc_nilfs - allocate a nilfs object
- * @sb: super block instance
- *
- * Return Value: On success, pointer to the_nilfs is returned.
- * On error, NULL is returned.
- */
+ 
 struct the_nilfs *alloc_nilfs(struct super_block *sb)
 {
 	struct the_nilfs *nilfs;
@@ -79,10 +66,7 @@ struct the_nilfs *alloc_nilfs(struct super_block *sb)
 	return nilfs;
 }
 
-/**
- * destroy_nilfs - destroy nilfs object
- * @nilfs: nilfs object to be released
- */
+ 
 void destroy_nilfs(struct the_nilfs *nilfs)
 {
 	might_sleep();
@@ -158,16 +142,7 @@ static void nilfs_clear_recovery_info(struct nilfs_recovery_info *ri)
 	nilfs_dispose_segment_list(&ri->ri_used_segments);
 }
 
-/**
- * nilfs_store_log_cursor - load log cursor from a super block
- * @nilfs: nilfs object
- * @sbp: buffer storing super block to be read
- *
- * nilfs_store_log_cursor() reads the last position of the log
- * containing a super root from a given super block, and initializes
- * relevant information on the nilfs object preparatory for log
- * scanning and recovery.
- */
+ 
 static int nilfs_store_log_cursor(struct the_nilfs *nilfs,
 				  struct nilfs_super_block *sbp)
 {
@@ -192,19 +167,7 @@ static int nilfs_store_log_cursor(struct the_nilfs *nilfs,
 	return ret;
 }
 
-/**
- * nilfs_get_blocksize - get block size from raw superblock data
- * @sb: super block instance
- * @sbp: superblock raw data buffer
- * @blocksize: place to store block size
- *
- * nilfs_get_blocksize() calculates the block size from the block size
- * exponent information written in @sbp and stores it in @blocksize,
- * or aborts with an error message if it's too large.
- *
- * Return Value: On success, 0 is returned. If the block size is too
- * large, -EINVAL is returned.
- */
+ 
 static int nilfs_get_blocksize(struct super_block *sb,
 			       struct nilfs_super_block *sbp, int *blocksize)
 {
@@ -220,15 +183,7 @@ static int nilfs_get_blocksize(struct super_block *sb,
 	return 0;
 }
 
-/**
- * load_nilfs - load and recover the nilfs
- * @nilfs: the_nilfs structure to be released
- * @sb: super block instance used to recover past segment
- *
- * load_nilfs() searches and load the latest super root,
- * attaches the last segment, and does recovery if needed.
- * The caller must call this exclusively for simultaneous mounts.
- */
+ 
 int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 {
 	struct nilfs_recovery_info ri;
@@ -264,15 +219,12 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 		}
 		nilfs_info(sb, "trying rollback from an earlier position");
 
-		/*
-		 * restore super block with its spare and reconfigure
-		 * relevant states of the nilfs object.
-		 */
+		 
 		memcpy(sbp[0], sbp[1], nilfs->ns_sbsize);
 		nilfs->ns_crc_seed = le32_to_cpu(sbp[0]->s_crc_seed);
 		nilfs->ns_sbwtime = le64_to_cpu(sbp[0]->s_wtime);
 
-		/* verify consistency between two super blocks */
+		 
 		err = nilfs_get_blocksize(sb, sbp[0], &blocksize);
 		if (err)
 			goto scan_error;
@@ -289,7 +241,7 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 		if (err)
 			goto scan_error;
 
-		/* drop clean flag to allow roll-forward and recovery */
+		 
 		nilfs->ns_mount_state &= ~NILFS_VALID_FS;
 		valid_fs = 0;
 
@@ -347,7 +299,7 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 		goto failed_unload;
 
 	down_write(&nilfs->ns_sem);
-	nilfs->ns_mount_state |= NILFS_VALID_FS; /* set "clean" flag */
+	nilfs->ns_mount_state |= NILFS_VALID_FS;  
 	err = nilfs_cleanup_super(sb);
 	up_write(&nilfs->ns_sem);
 
@@ -385,19 +337,15 @@ int load_nilfs(struct the_nilfs *nilfs, struct super_block *sb)
 static unsigned long long nilfs_max_size(unsigned int blkbits)
 {
 	unsigned int max_bits;
-	unsigned long long res = MAX_LFS_FILESIZE; /* page cache limit */
+	unsigned long long res = MAX_LFS_FILESIZE;  
 
-	max_bits = blkbits + NILFS_BMAP_KEY_BIT; /* bmap size limit */
+	max_bits = blkbits + NILFS_BMAP_KEY_BIT;  
 	if (max_bits < 64)
 		res = min_t(unsigned long long, res, (1ULL << max_bits) - 1);
 	return res;
 }
 
-/**
- * nilfs_nrsvsegs - calculate the number of reserved segments
- * @nilfs: nilfs object
- * @nsegs: total number of segments
- */
+ 
 unsigned long nilfs_nrsvsegs(struct the_nilfs *nilfs, unsigned long nsegs)
 {
 	return max_t(unsigned long, NILFS_MIN_NRSVSEGS,
@@ -405,10 +353,7 @@ unsigned long nilfs_nrsvsegs(struct the_nilfs *nilfs, unsigned long nsegs)
 				  100));
 }
 
-/**
- * nilfs_max_segment_count - calculate the maximum number of segments
- * @nilfs: nilfs object
- */
+ 
 static u64 nilfs_max_segment_count(struct the_nilfs *nilfs)
 {
 	u64 max_count = U64_MAX;
@@ -483,11 +428,7 @@ static int nilfs_store_disk_layout(struct the_nilfs *nilfs,
 	nblocks = sb_bdev_nr_blocks(nilfs->ns_sb);
 	if (nblocks) {
 		u64 min_block_count = nsegments * nilfs->ns_blocks_per_segment;
-		/*
-		 * To avoid failing to mount early device images without a
-		 * second superblock, exclude that block count from the
-		 * "min_block_count" calculation.
-		 */
+		 
 
 		if (nblocks < min_block_count) {
 			nilfs_err(nilfs->ns_sb,
@@ -523,19 +464,7 @@ static int nilfs_valid_sb(struct nilfs_super_block *sbp)
 	return crc == le32_to_cpu(sbp->s_sum);
 }
 
-/**
- * nilfs_sb2_bad_offset - check the location of the second superblock
- * @sbp: superblock raw data buffer
- * @offset: byte offset of second superblock calculated from device size
- *
- * nilfs_sb2_bad_offset() checks if the position on the second
- * superblock is valid or not based on the filesystem parameters
- * stored in @sbp.  If @offset points to a location within the segment
- * area, or if the parameters themselves are not normal, it is
- * determined to be invalid.
- *
- * Return Value: true if invalid, false if valid.
- */
+ 
 static bool nilfs_sb2_bad_offset(struct nilfs_super_block *sbp, u64 offset)
 {
 	unsigned int shift_bits = le32_to_cpu(sbp->s_log_block_size);
@@ -618,10 +547,7 @@ static int nilfs_load_super_block(struct the_nilfs *nilfs,
 			   blocksize);
 	}
 
-	/*
-	 * Compare two super blocks and set 1 in swp if the secondary
-	 * super block is valid and newer.  Otherwise, set 0 in swp.
-	 */
+	 
 	valid[0] = nilfs_valid_sb(sbp[0]);
 	valid[1] = nilfs_valid_sb(sbp[1]);
 	swp = valid[1] && (!valid[0] ||
@@ -655,19 +581,7 @@ static int nilfs_load_super_block(struct the_nilfs *nilfs,
 	return 0;
 }
 
-/**
- * init_nilfs - initialize a NILFS instance.
- * @nilfs: the_nilfs structure
- * @sb: super block
- * @data: mount options
- *
- * init_nilfs() performs common initialization per block device (e.g.
- * reading the super block, getting disk layout information, initializing
- * shared fields in the_nilfs).
- *
- * Return Value: On success, 0 is returned. On error, a negative error
- * code is returned.
- */
+ 
 int init_nilfs(struct the_nilfs *nilfs, struct super_block *sb, char *data)
 {
 	struct nilfs_super_block *sbp;
@@ -725,10 +639,7 @@ int init_nilfs(struct the_nilfs *nilfs, struct super_block *sb, char *data)
 		err = nilfs_load_super_block(nilfs, sb, blocksize, &sbp);
 		if (err)
 			goto out;
-			/*
-			 * Not to failed_sbh; sbh is released automatically
-			 * when reloading fails.
-			 */
+			 
 	}
 	nilfs->ns_blocksize_bits = sb->s_blocksize_bits;
 	nilfs->ns_blocksize = blocksize;

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Linaro Ltd
- */
+
+ 
 #include <linux/auxiliary_bus.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -33,12 +30,12 @@ struct pmic_glink {
 	struct auxiliary_device ps_aux;
 	struct auxiliary_device ucsi_aux;
 
-	/* serializing client_state and pdr_state updates */
+	 
 	struct mutex state_lock;
 	unsigned int client_state;
 	unsigned int pdr_state;
 
-	/* serializing clients list updates */
+	 
 	struct mutex client_lock;
 	struct list_head clients;
 };

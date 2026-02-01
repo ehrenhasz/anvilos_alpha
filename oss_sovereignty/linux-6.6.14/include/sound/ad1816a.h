@@ -1,12 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __SOUND_AD1816A_H
 #define __SOUND_AD1816A_H
 
-/*
-    ad1816a.h - definitions for ADI SoundPort AD1816A chip.
-    Copyright (C) 1999-2000 by Massimo Piccioni <dafastidio@libero.it>
-
-*/
+ 
 
 #include <sound/control.h>
 #include <sound/pcm.h>
@@ -166,4 +162,4 @@ extern void snd_ad1816a_suspend(struct snd_ad1816a *chip);
 extern void snd_ad1816a_resume(struct snd_ad1816a *chip);
 #endif
 
-#endif	/* __SOUND_AD1816A_H */
+#endif	 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011 STRATO.  All rights reserved.
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/rbtree.h>
@@ -21,7 +19,7 @@
 #include "relocation.h"
 #include "tree-checker.h"
 
-/* Just arbitrary numbers so we can be sure one of these happened. */
+ 
 #define BACKREF_FOUND_SHARED     6
 #define BACKREF_FOUND_NOT_SHARED 7
 
@@ -113,11 +111,7 @@ static int find_extent_in_eb(struct btrfs_backref_walk_ctx *ctx,
 	int extent_type;
 	int ret;
 
-	/*
-	 * from the shared data ref, we only have the leaf but we need
-	 * the key. thus, we must look into all items and see that we
-	 * find one (some) with a reference to our extent item.
-	 */
+	 
 	nritems = btrfs_header_nritems(eb);
 	for (slot = 0; slot < nritems; ++slot) {
 		btrfs_item_key_to_cpu(eb, &key, slot);
@@ -127,7 +121,7 @@ static int find_extent_in_eb(struct btrfs_backref_walk_ctx *ctx,
 		extent_type = btrfs_file_extent_type(eb, fi);
 		if (extent_type == BTRFS_FILE_EXTENT_INLINE)
 			continue;
-		/* don't skip BTRFS_FILE_EXTENT_PREALLOC, we can handle that */
+		 
 		disk_byte = btrfs_file_extent_disk_bytenr(eb, fi);
 		if (disk_byte != ctx->bytenr)
 			continue;
@@ -148,42 +142,21 @@ struct preftree {
 #define PREFTREE_INIT	{ .root = RB_ROOT_CACHED, .count = 0 }
 
 struct preftrees {
-	struct preftree direct;    /* BTRFS_SHARED_[DATA|BLOCK]_REF_KEY */
-	struct preftree indirect;  /* BTRFS_[TREE_BLOCK|EXTENT_DATA]_REF_KEY */
+	struct preftree direct;     
+	struct preftree indirect;   
 	struct preftree indirect_missing_keys;
 };
 
-/*
- * Checks for a shared extent during backref search.
- *
- * The share_count tracks prelim_refs (direct and indirect) having a
- * ref->count >0:
- *  - incremented when a ref->count transitions to >0
- *  - decremented when a ref->count transitions to <1
- */
+ 
 struct share_check {
 	struct btrfs_backref_share_check_ctx *ctx;
 	struct btrfs_root *root;
 	u64 inum;
 	u64 data_bytenr;
 	u64 data_extent_gen;
-	/*
-	 * Counts number of inodes that refer to an extent (different inodes in
-	 * the same root or different roots) that we could find. The sharedness
-	 * check typically stops once this counter gets greater than 1, so it
-	 * may not reflect the total number of inodes.
-	 */
+	 
 	int share_count;
-	/*
-	 * The number of times we found our inode refers to the data extent we
-	 * are determining the sharedness. In other words, how many file extent
-	 * items we could find for our inode that point to our target data
-	 * extent. The value we get here after finishing the extent sharedness
-	 * check may be smaller than reality, but if it ends up being greater
-	 * than 1, then we know for sure the inode has multiple file extent
-	 * items that point to our inode, and we can safely assume it's useful
-	 * to cache the sharedness check result.
-	 */
+	 
 	int self_ref_count;
 	bool have_delayed_delete_refs;
 };
@@ -217,11 +190,7 @@ static void free_pref(struct prelim_ref *ref)
 	kmem_cache_free(btrfs_prelim_ref_cache, ref);
 }
 
-/*
- * Return 0 when both refs are for the same block (and can be merged).
- * A -1 return indicates ref1 is a 'lower' block than ref2, while 1
- * indicates a 'higher' block.
- */
+ 
 static int prelim_ref_compare(struct prelim_ref *ref1,
 			      struct prelim_ref *ref2)
 {
@@ -270,11 +239,7 @@ static void update_share_count(struct share_check *sc, int oldcount,
 		sc->self_ref_count += newref->count;
 }
 
-/*
- * Add @newref to the @root rbtree, merging identical refs.
- *
- * Callers should assume that newref has been freed after calling.
- */
+ 
 static void prelim_ref_insert(const struct btrfs_fs_info *fs_info,
 			      struct preftree *preftree,
 			      struct prelim_ref *newref,
@@ -300,7 +265,7 @@ static void prelim_ref_insert(const struct btrfs_fs_info *fs_info,
 			p = &(*p)->rb_right;
 			leftmost = false;
 		} else {
-			/* Identical refs, merge them and free @newref */
+			 
 			struct extent_inode_elem *eie = ref->inode_list;
 
 			while (eie && eie->next)
@@ -312,11 +277,7 @@ static void prelim_ref_insert(const struct btrfs_fs_info *fs_info,
 				eie->next = newref->inode_list;
 			trace_btrfs_prelim_ref_merge(fs_info, ref, newref,
 						     preftree->count);
-			/*
-			 * A delayed ref can have newref->count < 0.
-			 * The ref->count is updated to follow any
-			 * BTRFS_[ADD|DROP]_DELAYED_REF actions.
-			 */
+			 
 			update_share_count(sc, ref->count,
 					   ref->count + newref->count, newref);
 			ref->count += newref->count;
@@ -332,10 +293,7 @@ static void prelim_ref_insert(const struct btrfs_fs_info *fs_info,
 	rb_insert_color_cached(&newref->rbnode, root, leftmost);
 }
 
-/*
- * Release the entire tree.  We don't care about internal consistency so
- * just free everything and then reset the tree root.
- */
+ 
 static void prelim_release(struct preftree *preftree)
 {
 	struct prelim_ref *ref, *next_ref;
@@ -350,44 +308,7 @@ static void prelim_release(struct preftree *preftree)
 	preftree->count = 0;
 }
 
-/*
- * the rules for all callers of this function are:
- * - obtaining the parent is the goal
- * - if you add a key, you must know that it is a correct key
- * - if you cannot add the parent or a correct key, then we will look into the
- *   block later to set a correct key
- *
- * delayed refs
- * ============
- *        backref type | shared | indirect | shared | indirect
- * information         |   tree |     tree |   data |     data
- * --------------------+--------+----------+--------+----------
- *      parent logical |    y   |     -    |    -   |     -
- *      key to resolve |    -   |     y    |    y   |     y
- *  tree block logical |    -   |     -    |    -   |     -
- *  root for resolving |    y   |     y    |    y   |     y
- *
- * - column 1:       we've the parent -> done
- * - column 2, 3, 4: we use the key to find the parent
- *
- * on disk refs (inline or keyed)
- * ==============================
- *        backref type | shared | indirect | shared | indirect
- * information         |   tree |     tree |   data |     data
- * --------------------+--------+----------+--------+----------
- *      parent logical |    y   |     -    |    y   |     -
- *      key to resolve |    -   |     -    |    -   |     y
- *  tree block logical |    y   |     y    |    y   |     y
- *  root for resolving |    -   |     y    |    y   |     y
- *
- * - column 1, 3: we've the parent -> done
- * - column 2:    we take the first key from the block to find the parent
- *                (see add_missing_keys)
- * - column 4:    we use the key to find the parent
- *
- * additional information that's available but not required to find the parent
- * block might help in merging entries to gain some speed.
- */
+ 
 static int add_prelim_ref(const struct btrfs_fs_info *fs_info,
 			  struct preftree *preftree, u64 root_id,
 			  const struct btrfs_key *key, int level, u64 parent,
@@ -418,7 +339,7 @@ static int add_prelim_ref(const struct btrfs_fs_info *fs_info,
 	return extent_is_shared(sc);
 }
 
-/* direct refs use root == 0, key == NULL */
+ 
 static int add_direct_ref(const struct btrfs_fs_info *fs_info,
 			  struct preftrees *preftrees, int level, u64 parent,
 			  u64 wanted_disk_byte, int count,
@@ -428,7 +349,7 @@ static int add_direct_ref(const struct btrfs_fs_info *fs_info,
 			      parent, wanted_disk_byte, count, sc, gfp_mask);
 }
 
-/* indirect refs use parent == 0 */
+ 
 static int add_indirect_ref(const struct btrfs_fs_info *fs_info,
 			    struct preftrees *preftrees, u64 root_id,
 			    const struct btrfs_key *key, int level,
@@ -495,16 +416,7 @@ static int add_all_parents(struct btrfs_backref_walk_ctx *ctx,
 		return 0;
 	}
 
-	/*
-	 * 1. We normally enter this function with the path already pointing to
-	 *    the first item to check. But sometimes, we may enter it with
-	 *    slot == nritems.
-	 * 2. We are searching for normal backref but bytenr of this leaf
-	 *    matches shared data backref
-	 * 3. The leaf owner is not equal to the root we are searching
-	 *
-	 * For these cases, go to the next leaf before we continue.
-	 */
+	 
 	eb = path->nodes[0];
 	if (path->slots[0] >= btrfs_header_nritems(eb) ||
 	    is_shared_data_backref(preftrees, eb->start) ||
@@ -525,11 +437,7 @@ static int add_all_parents(struct btrfs_backref_walk_ctx *ctx,
 		    key.type != BTRFS_EXTENT_DATA_KEY)
 			break;
 
-		/*
-		 * We are searching for normal backref but bytenr of this leaf
-		 * matches shared data backref, OR
-		 * the leaf owner is not equal to the root we are searching for
-		 */
+		 
 		if (slot == 0 &&
 		    (is_shared_data_backref(preftrees, eb->start) ||
 		     ref->root_id != btrfs_header_owner(eb))) {
@@ -587,10 +495,7 @@ next:
 	return ret;
 }
 
-/*
- * resolve an indirect backref in the form (root_id, key, level)
- * to a logical address
- */
+ 
 static int resolve_indirect_ref(struct btrfs_backref_walk_ctx *ctx,
 				struct btrfs_path *path,
 				struct preftrees *preftrees,
@@ -603,14 +508,7 @@ static int resolve_indirect_ref(struct btrfs_backref_walk_ctx *ctx,
 	int level = ref->level;
 	struct btrfs_key search_key = ref->key_for_search;
 
-	/*
-	 * If we're search_commit_root we could possibly be holding locks on
-	 * other tree nodes.  This happens when qgroups does backref walks when
-	 * adding new delayed refs.  To deal with this we need to look in cache
-	 * for the root, and if we don't find it then we need to search the
-	 * tree_root's commit root, thus the btrfs_get_fs_root_commit_root usage
-	 * here.
-	 */
+	 
 	if (path->search_commit_root)
 		root = btrfs_get_fs_root_commit_root(ctx->fs_info, path, ref->root_id);
 	else
@@ -641,25 +539,7 @@ static int resolve_indirect_ref(struct btrfs_backref_walk_ctx *ctx,
 	if (root_level + 1 == level)
 		goto out;
 
-	/*
-	 * We can often find data backrefs with an offset that is too large
-	 * (>= LLONG_MAX, maximum allowed file offset) due to underflows when
-	 * subtracting a file's offset with the data offset of its
-	 * corresponding extent data item. This can happen for example in the
-	 * clone ioctl.
-	 *
-	 * So if we detect such case we set the search key's offset to zero to
-	 * make sure we will find the matching file extent item at
-	 * add_all_parents(), otherwise we will miss it because the offset
-	 * taken form the backref is much larger then the offset of the file
-	 * extent item. This can make us scan a very large number of file
-	 * extent items, but at least it will not make us miss any.
-	 *
-	 * This is an ugly workaround for a behaviour that should have never
-	 * existed, but it does and a fix for the clone ioctl would touch a lot
-	 * of places, cause backwards incompatibility and would not fix the
-	 * problem for extents cloned with older kernels.
-	 */
+	 
 	if (search_key.type == BTRFS_EXTENT_DATA_KEY &&
 	    search_key.offset >= LLONG_MAX)
 		search_key.offset = 0;
@@ -716,22 +596,7 @@ static void free_leaf_list(struct ulist *ulist)
 	ulist_free(ulist);
 }
 
-/*
- * We maintain three separate rbtrees: one for direct refs, one for
- * indirect refs which have a key, and one for indirect refs which do not
- * have a key. Each tree does merge on insertion.
- *
- * Once all of the references are located, we iterate over the tree of
- * indirect refs with missing keys. An appropriate key is located and
- * the ref is moved onto the tree for indirect refs. After all missing
- * keys are thus located, we iterate over the indirect ref tree, resolve
- * each reference, and then insert the resolved reference onto the
- * direct tree (merging there too).
- *
- * New backrefs (i.e., for parent nodes) are added to the appropriate
- * rbtree as they are encountered. The new backrefs are subsequently
- * resolved as above.
- */
+ 
 static int resolve_indirect_refs(struct btrfs_backref_walk_ctx *ctx,
 				 struct btrfs_path *path,
 				 struct preftrees *preftrees,
@@ -748,12 +613,7 @@ static int resolve_indirect_refs(struct btrfs_backref_walk_ctx *ctx,
 	if (!parents)
 		return -ENOMEM;
 
-	/*
-	 * We could trade memory usage for performance here by iterating
-	 * the tree, allocating new refs for each insertion, and then
-	 * freeing the entire indirect tree when we're done.  In some test
-	 * cases, the tree can grow quite large (~200k objects).
-	 */
+	 
 	while ((rnode = rb_first_cached(&preftrees->indirect.root))) {
 		struct prelim_ref *ref;
 
@@ -778,10 +638,7 @@ static int resolve_indirect_refs(struct btrfs_backref_walk_ctx *ctx,
 			goto out;
 		}
 		err = resolve_indirect_ref(ctx, path, preftrees, ref, parents);
-		/*
-		 * we can only tolerate ENOENT,otherwise,we should catch error
-		 * and return directly.
-		 */
+		 
 		if (err == -ENOENT) {
 			prelim_ref_insert(ctx->fs_info, &preftrees->direct, ref,
 					  NULL);
@@ -792,13 +649,13 @@ static int resolve_indirect_refs(struct btrfs_backref_walk_ctx *ctx,
 			goto out;
 		}
 
-		/* we put the first parent into the ref at hand */
+		 
 		ULIST_ITER_INIT(&uiter);
 		node = ulist_next(parents, &uiter);
 		ref->parent = node ? node->val : 0;
 		ref->inode_list = unode_aux_to_inode_list(node);
 
-		/* Add a prelim_ref(s) for any other parent(s). */
+		 
 		while ((node = ulist_next(parents, &uiter))) {
 			struct prelim_ref *new_ref;
 
@@ -816,27 +673,19 @@ static int resolve_indirect_refs(struct btrfs_backref_walk_ctx *ctx,
 					  new_ref, NULL);
 		}
 
-		/*
-		 * Now it's a direct ref, put it in the direct tree. We must
-		 * do this last because the ref could be merged/freed here.
-		 */
+		 
 		prelim_ref_insert(ctx->fs_info, &preftrees->direct, ref, NULL);
 
 		ulist_reinit(parents);
 		cond_resched();
 	}
 out:
-	/*
-	 * We may have inode lists attached to refs in the parents ulist, so we
-	 * must free them before freeing the ulist and its refs.
-	 */
+	 
 	free_leaf_list(parents);
 	return ret;
 }
 
-/*
- * read tree blocks and add keys where required.
- */
+ 
 static int add_missing_keys(struct btrfs_fs_info *fs_info,
 			    struct preftrees *preftrees, bool lock)
 {
@@ -851,7 +700,7 @@ static int add_missing_keys(struct btrfs_fs_info *fs_info,
 		ref = rb_entry(node, struct prelim_ref, rbnode);
 		rb_erase_cached(node, &tree->root);
 
-		BUG_ON(ref->parent);	/* should not be a direct ref */
+		BUG_ON(ref->parent);	 
 		BUG_ON(ref->key_for_search.type);
 		BUG_ON(!ref->wanted_disk_byte);
 
@@ -884,10 +733,7 @@ static int add_missing_keys(struct btrfs_fs_info *fs_info,
 	return 0;
 }
 
-/*
- * add all currently queued delayed refs from this head whose seq nr is
- * smaller or equal that seq to the list
- */
+ 
 static int add_delayed_refs(const struct btrfs_fs_info *fs_info,
 			    struct btrfs_delayed_ref_head *head, u64 seq,
 			    struct preftrees *preftrees, struct share_check *sc)
@@ -921,7 +767,7 @@ static int add_delayed_refs(const struct btrfs_fs_info *fs_info,
 		}
 		switch (node->type) {
 		case BTRFS_TREE_BLOCK_REF_KEY: {
-			/* NORMAL INDIRECT METADATA backref */
+			 
 			struct btrfs_delayed_tree_ref *ref;
 			struct btrfs_key *key_ptr = NULL;
 
@@ -938,7 +784,7 @@ static int add_delayed_refs(const struct btrfs_fs_info *fs_info,
 			break;
 		}
 		case BTRFS_SHARED_BLOCK_REF_KEY: {
-			/* SHARED DIRECT METADATA backref */
+			 
 			struct btrfs_delayed_tree_ref *ref;
 
 			ref = btrfs_delayed_node_to_tree_ref(node);
@@ -949,7 +795,7 @@ static int add_delayed_refs(const struct btrfs_fs_info *fs_info,
 			break;
 		}
 		case BTRFS_EXTENT_DATA_REF_KEY: {
-			/* NORMAL INDIRECT DATA backref */
+			 
 			struct btrfs_delayed_data_ref *ref;
 			ref = btrfs_delayed_node_to_data_ref(node);
 
@@ -957,21 +803,7 @@ static int add_delayed_refs(const struct btrfs_fs_info *fs_info,
 			key.type = BTRFS_EXTENT_DATA_KEY;
 			key.offset = ref->offset;
 
-			/*
-			 * If we have a share check context and a reference for
-			 * another inode, we can't exit immediately. This is
-			 * because even if this is a BTRFS_ADD_DELAYED_REF
-			 * reference we may find next a BTRFS_DROP_DELAYED_REF
-			 * which cancels out this ADD reference.
-			 *
-			 * If this is a DROP reference and there was no previous
-			 * ADD reference, then we need to signal that when we
-			 * process references from the extent tree (through
-			 * add_inline_refs() and add_keyed_refs()), we should
-			 * not exit early if we find a reference for another
-			 * inode, because one of the delayed DROP references
-			 * may cancel that reference in the extent tree.
-			 */
+			 
 			if (sc && count < 0)
 				sc->have_delayed_delete_refs = true;
 
@@ -981,7 +813,7 @@ static int add_delayed_refs(const struct btrfs_fs_info *fs_info,
 			break;
 		}
 		case BTRFS_SHARED_DATA_REF_KEY: {
-			/* SHARED DIRECT FULL backref */
+			 
 			struct btrfs_delayed_data_ref *ref;
 
 			ref = btrfs_delayed_node_to_data_ref(node);
@@ -994,10 +826,7 @@ static int add_delayed_refs(const struct btrfs_fs_info *fs_info,
 		default:
 			WARN_ON(1);
 		}
-		/*
-		 * We must ignore BACKREF_FOUND_SHARED until all delayed
-		 * refs have been checked.
-		 */
+		 
 		if (ret && (ret != BACKREF_FOUND_SHARED))
 			break;
 	}
@@ -1008,11 +837,7 @@ static int add_delayed_refs(const struct btrfs_fs_info *fs_info,
 	return ret;
 }
 
-/*
- * add all inline backrefs for bytenr to the list
- *
- * Returns 0 on success, <0 on error, or BACKREF_FOUND_SHARED.
- */
+ 
 static int add_inline_refs(struct btrfs_backref_walk_ctx *ctx,
 			   struct btrfs_path *path,
 			   int *info_level, struct preftrees *preftrees,
@@ -1029,9 +854,7 @@ static int add_inline_refs(struct btrfs_backref_walk_ctx *ctx,
 	u64 flags;
 	u64 item_size;
 
-	/*
-	 * enumerate all inline refs
-	 */
+	 
 	leaf = path->nodes[0];
 	slot = path->slots[0];
 
@@ -1140,11 +963,7 @@ static int add_inline_refs(struct btrfs_backref_walk_ctx *ctx,
 	return 0;
 }
 
-/*
- * add all non-inline backrefs for bytenr to the list
- *
- * Returns 0 on success, <0 on error, or BACKREF_FOUND_SHARED.
- */
+ 
 static int add_keyed_refs(struct btrfs_backref_walk_ctx *ctx,
 			  struct btrfs_root *extent_root,
 			  struct btrfs_path *path,
@@ -1179,13 +998,13 @@ static int add_keyed_refs(struct btrfs_backref_walk_ctx *ctx,
 
 		switch (key.type) {
 		case BTRFS_SHARED_BLOCK_REF_KEY:
-			/* SHARED DIRECT METADATA backref */
+			 
 			ret = add_direct_ref(fs_info, preftrees,
 					     info_level + 1, key.offset,
 					     ctx->bytenr, 1, NULL, GFP_NOFS);
 			break;
 		case BTRFS_SHARED_DATA_REF_KEY: {
-			/* SHARED DIRECT FULL backref */
+			 
 			struct btrfs_shared_data_ref *sdref;
 			int count;
 
@@ -1198,13 +1017,13 @@ static int add_keyed_refs(struct btrfs_backref_walk_ctx *ctx,
 			break;
 		}
 		case BTRFS_TREE_BLOCK_REF_KEY:
-			/* NORMAL INDIRECT METADATA backref */
+			 
 			ret = add_indirect_ref(fs_info, preftrees, key.offset,
 					       NULL, info_level + 1, ctx->bytenr,
 					       1, NULL, GFP_NOFS);
 			break;
 		case BTRFS_EXTENT_DATA_REF_KEY: {
-			/* NORMAL INDIRECT DATA backref */
+			 
 			struct btrfs_extent_data_ref *dref;
 			int count;
 			u64 root;
@@ -1244,11 +1063,7 @@ static int add_keyed_refs(struct btrfs_backref_walk_ctx *ctx,
 	return ret;
 }
 
-/*
- * The caller has joined a transaction or is holding a read lock on the
- * fs_info->commit_root_sem semaphore, so no need to worry about the root's last
- * snapshot field changing while updating or checking the cache.
- */
+ 
 static bool lookup_backref_shared_cache(struct btrfs_backref_share_check_ctx *ctx,
 					struct btrfs_root *root,
 					u64 bytenr, int level, bool *is_shared)
@@ -1265,45 +1080,27 @@ static bool lookup_backref_shared_cache(struct btrfs_backref_share_check_ctx *ct
 	if (WARN_ON_ONCE(level >= BTRFS_MAX_LEVEL))
 		return false;
 
-	/*
-	 * Level -1 is used for the data extent, which is not reliable to cache
-	 * because its reference count can increase or decrease without us
-	 * realizing. We cache results only for extent buffers that lead from
-	 * the root node down to the leaf with the file extent item.
-	 */
+	 
 	ASSERT(level >= 0);
 
 	entry = &ctx->path_cache_entries[level];
 
-	/* Unused cache entry or being used for some other extent buffer. */
+	 
 	if (entry->bytenr != bytenr)
 		return false;
 
-	/*
-	 * We cached a false result, but the last snapshot generation of the
-	 * root changed, so we now have a snapshot. Don't trust the result.
-	 */
+	 
 	if (!entry->is_shared &&
 	    entry->gen != btrfs_root_last_snapshot(&root->root_item))
 		return false;
 
-	/*
-	 * If we cached a true result and the last generation used for dropping
-	 * a root changed, we can not trust the result, because the dropped root
-	 * could be a snapshot sharing this extent buffer.
-	 */
+	 
 	if (entry->is_shared &&
 	    entry->gen != btrfs_get_last_root_drop_gen(fs_info))
 		return false;
 
 	*is_shared = entry->is_shared;
-	/*
-	 * If the node at this level is shared, than all nodes below are also
-	 * shared. Currently some of the nodes below may be marked as not shared
-	 * because we have just switched from one leaf to another, and switched
-	 * also other nodes above the leaf and below the current level, so mark
-	 * them as shared.
-	 */
+	 
 	if (*is_shared) {
 		for (int i = 0; i < level; i++) {
 			ctx->path_cache_entries[i].is_shared = true;
@@ -1314,11 +1111,7 @@ static bool lookup_backref_shared_cache(struct btrfs_backref_share_check_ctx *ct
 	return true;
 }
 
-/*
- * The caller has joined a transaction or is holding a read lock on the
- * fs_info->commit_root_sem semaphore, so no need to worry about the root's last
- * snapshot field changing while updating or checking the cache.
- */
+ 
 static void store_backref_shared_cache(struct btrfs_backref_share_check_ctx *ctx,
 				       struct btrfs_root *root,
 				       u64 bytenr, int level, bool is_shared)
@@ -1336,12 +1129,7 @@ static void store_backref_shared_cache(struct btrfs_backref_share_check_ctx *ctx
 	if (WARN_ON_ONCE(level >= BTRFS_MAX_LEVEL))
 		return;
 
-	/*
-	 * Level -1 is used for the data extent, which is not reliable to cache
-	 * because its reference count can increase or decrease without us
-	 * realizing. We cache results only for extent buffers that lead from
-	 * the root node down to the leaf with the file extent item.
-	 */
+	 
 	ASSERT(level >= 0);
 
 	if (is_shared)
@@ -1354,13 +1142,7 @@ static void store_backref_shared_cache(struct btrfs_backref_share_check_ctx *ctx
 	entry->is_shared = is_shared;
 	entry->gen = gen;
 
-	/*
-	 * If we found an extent buffer is shared, set the cache result for all
-	 * extent buffers below it to true. As nodes in the path are COWed,
-	 * their sharedness is moved to their children, and if a leaf is COWed,
-	 * then the sharedness of a data extent becomes direct, the refcount of
-	 * data extent is increased in the extent item at the extent tree.
-	 */
+	 
 	if (is_shared) {
 		for (int i = 0; i < level; i++) {
 			entry = &ctx->path_cache_entries[i];
@@ -1370,20 +1152,7 @@ static void store_backref_shared_cache(struct btrfs_backref_share_check_ctx *ctx
 	}
 }
 
-/*
- * this adds all existing backrefs (inline backrefs, backrefs and delayed
- * refs) for the given bytenr to the refs list, merges duplicates and resolves
- * indirect refs to their parent bytenr.
- * When roots are found, they're added to the roots list
- *
- * @ctx:     Backref walking context object, must be not NULL.
- * @sc:      If !NULL, then immediately return BACKREF_FOUND_SHARED when a
- *           shared extent is detected.
- *
- * Otherwise this returns 0 for success and <0 for an error.
- *
- * FIXME some caching might speed things up
- */
+ 
 static int find_parent_nodes(struct btrfs_backref_walk_ctx *ctx,
 			     struct share_check *sc)
 {
@@ -1403,7 +1172,7 @@ static int find_parent_nodes(struct btrfs_backref_walk_ctx *ctx,
 		.indirect_missing_keys = PREFTREE_INIT
 	};
 
-	/* Roots ulist is not needed when using a sharedness check context. */
+	 
 	if (sc)
 		ASSERT(ctx->roots == NULL);
 
@@ -1432,7 +1201,7 @@ again:
 	if (ret < 0)
 		goto out;
 	if (ret == 0) {
-		/* This shouldn't happen, indicates a bug or fs corruption. */
+		 
 		ASSERT(ret != 0);
 		ret = -EUCLEAN;
 		goto out;
@@ -1440,12 +1209,7 @@ again:
 
 	if (ctx->trans && likely(ctx->trans->type != __TRANS_DUMMY) &&
 	    ctx->time_seq != BTRFS_SEQ_LAST) {
-		/*
-		 * We have a specific time_seq we care about and trans which
-		 * means we have the path lock, we need to grab the ref head and
-		 * lock it so we have a consistent view of the refs at the given
-		 * time.
-		 */
+		 
 		delayed_refs = &ctx->trans->transaction->delayed_refs;
 		spin_lock(&delayed_refs->lock);
 		head = btrfs_find_delayed_ref_head(delayed_refs, ctx->bytenr);
@@ -1456,10 +1220,7 @@ again:
 
 				btrfs_release_path(path);
 
-				/*
-				 * Mutex was contended, block until it's
-				 * released and try again
-				 */
+				 
 				mutex_lock(&head->mutex);
 				mutex_unlock(&head->mutex);
 				btrfs_put_delayed_ref_head(head);
@@ -1498,55 +1259,19 @@ again:
 		}
 	}
 
-	/*
-	 * If we have a share context and we reached here, it means the extent
-	 * is not directly shared (no multiple reference items for it),
-	 * otherwise we would have exited earlier with a return value of
-	 * BACKREF_FOUND_SHARED after processing delayed references or while
-	 * processing inline or keyed references from the extent tree.
-	 * The extent may however be indirectly shared through shared subtrees
-	 * as a result from creating snapshots, so we determine below what is
-	 * its parent node, in case we are dealing with a metadata extent, or
-	 * what's the leaf (or leaves), from a fs tree, that has a file extent
-	 * item pointing to it in case we are dealing with a data extent.
-	 */
+	 
 	ASSERT(extent_is_shared(sc) == 0);
 
-	/*
-	 * If we are here for a data extent and we have a share_check structure
-	 * it means the data extent is not directly shared (does not have
-	 * multiple reference items), so we have to check if a path in the fs
-	 * tree (going from the root node down to the leaf that has the file
-	 * extent item pointing to the data extent) is shared, that is, if any
-	 * of the extent buffers in the path is referenced by other trees.
-	 */
+	 
 	if (sc && ctx->bytenr == sc->data_bytenr) {
-		/*
-		 * If our data extent is from a generation more recent than the
-		 * last generation used to snapshot the root, then we know that
-		 * it can not be shared through subtrees, so we can skip
-		 * resolving indirect references, there's no point in
-		 * determining the extent buffers for the path from the fs tree
-		 * root node down to the leaf that has the file extent item that
-		 * points to the data extent.
-		 */
+		 
 		if (sc->data_extent_gen >
 		    btrfs_root_last_snapshot(&sc->root->root_item)) {
 			ret = BACKREF_FOUND_NOT_SHARED;
 			goto out;
 		}
 
-		/*
-		 * If we are only determining if a data extent is shared or not
-		 * and the corresponding file extent item is located in the same
-		 * leaf as the previous file extent item, we can skip resolving
-		 * indirect references for a data extent, since the fs tree path
-		 * is the same (same leaf, so same path). We skip as long as the
-		 * cached result for the leaf is valid and only if there's only
-		 * one file extent item pointing to the data extent, because in
-		 * the case of multiple file extent items, they may be located
-		 * in different leaves and therefore we have multiple paths.
-		 */
+		 
 		if (sc->ctx->curr_leaf_bytenr == sc->ctx->prev_leaf_bytenr &&
 		    sc->self_ref_count == 1) {
 			bool cached;
@@ -1579,29 +1304,14 @@ again:
 
 	WARN_ON(!RB_EMPTY_ROOT(&preftrees.indirect.root.rb_root));
 
-	/*
-	 * This walks the tree of merged and resolved refs. Tree blocks are
-	 * read in as needed. Unique entries are added to the ulist, and
-	 * the list of found roots is updated.
-	 *
-	 * We release the entire tree in one go before returning.
-	 */
+	 
 	node = rb_first_cached(&preftrees.direct.root);
 	while (node) {
 		ref = rb_entry(node, struct prelim_ref, rbnode);
 		node = rb_next(&ref->rbnode);
-		/*
-		 * ref->count < 0 can happen here if there are delayed
-		 * refs with a node->action of BTRFS_DROP_DELAYED_REF.
-		 * prelim_ref_insert() relies on this when merging
-		 * identical refs to keep the overall count correct.
-		 * prelim_ref_insert() will merge only those refs
-		 * which compare identically.  Any refs having
-		 * e.g. different offsets would not be merged,
-		 * and would retain their original ref->count < 0.
-		 */
+		 
 		if (ctx->roots && ref->count && ref->root_id && ref->parent == 0) {
-			/* no parent == root of tree */
+			 
 			ret = ulist_add(ctx->roots, ref->root_id, 0, GFP_NOFS);
 			if (ret < 0)
 				goto out;
@@ -1636,11 +1346,7 @@ again:
 				    ret < 0)
 					goto out;
 				ref->inode_list = eie;
-				/*
-				 * We transferred the list ownership to the ref,
-				 * so set to NULL to avoid a double free in case
-				 * an error happens after this.
-				 */
+				 
 				eie = NULL;
 			}
 			ret = ulist_add_merge_ptr(ctx->refs, ref->parent,
@@ -1649,14 +1355,7 @@ again:
 			if (ret < 0)
 				goto out;
 			if (!ret && !ctx->skip_inode_ref_list) {
-				/*
-				 * We've recorded that parent, so we must extend
-				 * its inode list here.
-				 *
-				 * However if there was corruption we may not
-				 * have found an eie, return an error in this
-				 * case.
-				 */
+				 
 				ASSERT(eie);
 				if (!eie) {
 					ret = -EUCLEAN;
@@ -1667,13 +1366,7 @@ again:
 				eie->next = ref->inode_list;
 			}
 			eie = NULL;
-			/*
-			 * We have transferred the inode list ownership from
-			 * this ref to the ref we added to the 'refs' ulist.
-			 * So set this ref's inode list to NULL to avoid
-			 * use-after-free when our caller uses it or double
-			 * frees in case an error happens before we return.
-			 */
+			 
 			ref->inode_list = NULL;
 		}
 		cond_resched();
@@ -1691,16 +1384,7 @@ out:
 	return ret;
 }
 
-/*
- * Finds all leaves with a reference to the specified combination of
- * @ctx->bytenr and @ctx->extent_item_pos. The bytenr of the found leaves are
- * added to the ulist at @ctx->refs, and that ulist is allocated by this
- * function. The caller should free the ulist with free_leaf_list() if
- * @ctx->ignore_extent_item_pos is false, otherwise a fimple ulist_free() is
- * enough.
- *
- * Returns 0 on success and < 0 on error. On error @ctx->refs is not allocated.
- */
+ 
 int btrfs_find_all_leafs(struct btrfs_backref_walk_ctx *ctx)
 {
 	int ret;
@@ -1722,25 +1406,7 @@ int btrfs_find_all_leafs(struct btrfs_backref_walk_ctx *ctx)
 	return 0;
 }
 
-/*
- * Walk all backrefs for a given extent to find all roots that reference this
- * extent. Walking a backref means finding all extents that reference this
- * extent and in turn walk the backrefs of those, too. Naturally this is a
- * recursive process, but here it is implemented in an iterative fashion: We
- * find all referencing extents for the extent in question and put them on a
- * list. In turn, we find all referencing extents for those, further appending
- * to the list. The way we iterate the list allows adding more elements after
- * the current while iterating. The process stops when we reach the end of the
- * list.
- *
- * Found roots are added to @ctx->roots, which is allocated by this function if
- * it points to NULL, in which case the caller is responsible for freeing it
- * after it's not needed anymore.
- * This function requires @ctx->refs to be NULL, as it uses it for allocating a
- * ulist to do temporary work, and frees it before returning.
- *
- * Returns 0 on success, < 0 on error.
- */
+ 
 static int btrfs_find_all_roots_safe(struct btrfs_backref_walk_ctx *ctx)
 {
 	const u64 orig_bytenr = ctx->bytenr;
@@ -1830,26 +1496,7 @@ void btrfs_free_backref_share_ctx(struct btrfs_backref_share_check_ctx *ctx)
 	kfree(ctx);
 }
 
-/*
- * Check if a data extent is shared or not.
- *
- * @inode:       The inode whose extent we are checking.
- * @bytenr:      Logical bytenr of the extent we are checking.
- * @extent_gen:  Generation of the extent (file extent item) or 0 if it is
- *               not known.
- * @ctx:         A backref sharedness check context.
- *
- * btrfs_is_data_extent_shared uses the backref walking code but will short
- * circuit as soon as it finds a root or inode that doesn't match the
- * one passed in. This provides a significant performance benefit for
- * callers (such as fiemap) which want to know whether the extent is
- * shared but do not need a ref count.
- *
- * This attempts to attach to the running transaction in order to account for
- * delayed refs, but continues on even when no running transaction exists.
- *
- * Return: 0 if extent is not shared, 1 if it is shared, < 0 on error.
- */
+ 
 int btrfs_is_data_extent_shared(struct btrfs_inode *inode, u64 bytenr,
 				u64 extent_gen,
 				struct btrfs_backref_share_check_ctx *ctx)
@@ -1898,13 +1545,7 @@ int btrfs_is_data_extent_shared(struct btrfs_inode *inode, u64 bytenr,
 
 	ctx->use_path_cache = true;
 
-	/*
-	 * We may have previously determined that the current leaf is shared.
-	 * If it is, then we have a data extent that is shared due to a shared
-	 * subtree (caused by snapshotting) and we don't need to check for data
-	 * backrefs. If the leaf is not shared, then we must do backref walking
-	 * to determine if the data extent is shared through reflinks.
-	 */
+	 
 	leaf_cached = lookup_backref_shared_cache(ctx, root,
 						  ctx->curr_leaf_bytenr, 0,
 						  &leaf_is_shared);
@@ -1918,7 +1559,7 @@ int btrfs_is_data_extent_shared(struct btrfs_inode *inode, u64 bytenr,
 	walk_ctx.fs_info = fs_info;
 	walk_ctx.refs = &ctx->refs;
 
-	/* -1 means we are in the bytenr of the data extent. */
+	 
 	level = -1;
 	ULIST_ITER_INIT(&uiter);
 	while (1) {
@@ -1928,7 +1569,7 @@ int btrfs_is_data_extent_shared(struct btrfs_inode *inode, u64 bytenr,
 		ret = find_parent_nodes(&walk_ctx, &shared);
 		if (ret == BACKREF_FOUND_SHARED ||
 		    ret == BACKREF_FOUND_NOT_SHARED) {
-			/* If shared must return 1, otherwise return 0. */
+			 
 			ret = (ret == BACKREF_FOUND_SHARED) ? 1 : 0;
 			if (level >= 0)
 				store_backref_shared_cache(ctx, root, bytenr,
@@ -1939,36 +1580,7 @@ int btrfs_is_data_extent_shared(struct btrfs_inode *inode, u64 bytenr,
 			break;
 		ret = 0;
 
-		/*
-		 * More than one extent buffer (bytenr) may have been added to
-		 * the ctx->refs ulist, in which case we have to check multiple
-		 * tree paths in case the first one is not shared, so we can not
-		 * use the path cache which is made for a single path. Multiple
-		 * extent buffers at the current level happen when:
-		 *
-		 * 1) level -1, the data extent: If our data extent was not
-		 *    directly shared (without multiple reference items), then
-		 *    it might have a single reference item with a count > 1 for
-		 *    the same offset, which means there are 2 (or more) file
-		 *    extent items that point to the data extent - this happens
-		 *    when a file extent item needs to be split and then one
-		 *    item gets moved to another leaf due to a b+tree leaf split
-		 *    when inserting some item. In this case the file extent
-		 *    items may be located in different leaves and therefore
-		 *    some of the leaves may be referenced through shared
-		 *    subtrees while others are not. Since our extent buffer
-		 *    cache only works for a single path (by far the most common
-		 *    case and simpler to deal with), we can not use it if we
-		 *    have multiple leaves (which implies multiple paths).
-		 *
-		 * 2) level >= 0, a tree node/leaf: We can have a mix of direct
-		 *    and indirect references on a b+tree node/leaf, so we have
-		 *    to check multiple paths, and the extent buffer (the
-		 *    current bytenr) may be shared or not. One example is
-		 *    during relocation as we may get a shared tree block ref
-		 *    (direct ref) and a non-shared tree block ref (indirect
-		 *    ref) for the same node/leaf.
-		 */
+		 
 		if ((ctx->refs.nnodes - prev_ref_count) > 1)
 			ctx->use_path_cache = false;
 
@@ -1996,13 +1608,7 @@ int btrfs_is_data_extent_shared(struct btrfs_inode *inode, u64 bytenr,
 		cond_resched();
 	}
 
-	/*
-	 * If the path cache is disabled, then it means at some tree level we
-	 * got multiple parents due to a mix of direct and indirect backrefs or
-	 * multiple leaves with file extent items pointing to the same data
-	 * extent. We have to invalidate the cache and cache only the sharedness
-	 * result for the levels where we got only one node/reference.
-	 */
+	 
 	if (!ctx->use_path_cache) {
 		int i = 0;
 
@@ -2018,10 +1624,7 @@ int btrfs_is_data_extent_shared(struct btrfs_inode *inode, u64 bytenr,
 			ctx->path_cache_entries[i].bytenr = 0;
 	}
 
-	/*
-	 * Cache the sharedness result for the data extent if we know our inode
-	 * has more than 1 file extent item that refers to the data extent.
-	 */
+	 
 	if (ret >= 0 && shared.self_ref_count > 1) {
 		int slot = ctx->prev_extents_cache_slot;
 
@@ -2070,15 +1673,7 @@ int btrfs_find_one_extref(struct btrfs_root *root, u64 inode_objectid,
 		leaf = path->nodes[0];
 		slot = path->slots[0];
 		if (slot >= btrfs_header_nritems(leaf)) {
-			/*
-			 * If the item at offset is not found,
-			 * btrfs_search_slot will point us to the slot
-			 * where it should be inserted. In our case
-			 * that will be the slot directly before the
-			 * next INODE_REF_KEY_V2 item. In the case
-			 * that we're pointing to the last slot in a
-			 * leaf, we must move one leaf over.
-			 */
+			 
 			ret = btrfs_next_leaf(root, path);
 			if (ret) {
 				if (ret >= 1)
@@ -2090,12 +1685,7 @@ int btrfs_find_one_extref(struct btrfs_root *root, u64 inode_objectid,
 
 		btrfs_item_key_to_cpu(leaf, &found_key, slot);
 
-		/*
-		 * Check that we're still looking at an extended ref key for
-		 * this particular objectid. If we have different
-		 * objectid or type then there are no more to be found
-		 * in the tree and we can exit.
-		 */
+		 
 		ret = -ENOENT;
 		if (found_key.objectid != inode_objectid)
 			break;
@@ -2114,20 +1704,7 @@ int btrfs_find_one_extref(struct btrfs_root *root, u64 inode_objectid,
 	return ret;
 }
 
-/*
- * this iterates to turn a name (from iref/extref) into a full filesystem path.
- * Elements of the path are separated by '/' and the path is guaranteed to be
- * 0-terminated. the path is only given within the current file system.
- * Therefore, it never starts with a '/'. the caller is responsible to provide
- * "size" bytes in "dest". the dest buffer will be filled backwards. finally,
- * the start point of the resulting string is returned. this pointer is within
- * dest, normally.
- * in case the path buffer would overflow, the pointer is decremented further
- * as if output was written to the buffer, though no more output is actually
- * generated. that way, the caller can determine how much space would be
- * required for the path to fit into the buffer. in that case, the returned
- * value will be smaller than dest. callers must check this!
- */
+ 
 char *btrfs_ref_to_path(struct btrfs_root *fs_root, struct btrfs_path *path,
 			u32 name_len, unsigned long name_off,
 			struct extent_buffer *eb_in, u64 parent,
@@ -2163,13 +1740,13 @@ char *btrfs_ref_to_path(struct btrfs_root *fs_root, struct btrfs_path *path,
 
 		next_inum = found_key.offset;
 
-		/* regular exit ahead */
+		 
 		if (parent == next_inum)
 			break;
 
 		slot = path->slots[0];
 		eb = path->nodes[0];
-		/* make sure we can use eb after releasing the path */
+		 
 		if (eb != eb_in) {
 			path->nodes[0] = NULL;
 			path->locks[0] = 0;
@@ -2194,11 +1771,7 @@ char *btrfs_ref_to_path(struct btrfs_root *fs_root, struct btrfs_path *path,
 	return dest + bytes_left;
 }
 
-/*
- * this makes the path point to (logical EXTENT_ITEM *)
- * returns BTRFS_EXTENT_FLAG_DATA for data, BTRFS_EXTENT_FLAG_TREE_BLOCK for
- * tree blocks and <0 on error.
- */
+ 
 int extent_from_logical(struct btrfs_fs_info *fs_info, u64 logical,
 			struct btrfs_path *path, struct btrfs_key *found_key,
 			u64 *flags_ret)
@@ -2268,14 +1841,7 @@ int extent_from_logical(struct btrfs_fs_info *fs_info, u64 logical,
 	return -EIO;
 }
 
-/*
- * helper function to iterate extent inline refs. ptr must point to a 0 value
- * for the first call and may be modified. it is used to track state.
- * if more refs exist, 0 is returned and the next call to
- * get_extent_inline_ref must pass the modified ptr parameter to get the
- * next ref. after the last ref was processed, 1 is returned.
- * returns <0 on error
- */
+ 
 static int get_extent_inline_ref(unsigned long *ptr,
 				 const struct extent_buffer *eb,
 				 const struct btrfs_key *key,
@@ -2289,11 +1855,11 @@ static int get_extent_inline_ref(unsigned long *ptr,
 	struct btrfs_tree_block_info *info;
 
 	if (!*ptr) {
-		/* first call */
+		 
 		flags = btrfs_extent_flags(eb, ei);
 		if (flags & BTRFS_EXTENT_FLAG_TREE_BLOCK) {
 			if (key->type == BTRFS_METADATA_ITEM_KEY) {
-				/* a skinny metadata extent */
+				 
 				*out_eiref =
 				     (struct btrfs_extent_inline_ref *)(ei + 1);
 			} else {
@@ -2320,18 +1886,12 @@ static int get_extent_inline_ref(unsigned long *ptr,
 	*ptr += btrfs_extent_inline_ref_size(*out_type);
 	WARN_ON(*ptr > end);
 	if (*ptr == end)
-		return 1; /* last */
+		return 1;  
 
 	return 0;
 }
 
-/*
- * reads the tree block backref for an extent. tree level and root are returned
- * through out_level and out_root. ptr must point to a 0 value for the first
- * call and may be modified (see get_extent_inline_ref comment).
- * returns 0 if data was provided, 1 if there was no more data to provide or
- * <0 on error.
- */
+ 
 int tree_backref_for_extent(unsigned long *ptr, struct extent_buffer *eb,
 			    struct btrfs_key *key, struct btrfs_extent_item *ei,
 			    u32 item_size, u64 *out_root, u8 *out_level)
@@ -2357,7 +1917,7 @@ int tree_backref_for_extent(unsigned long *ptr, struct extent_buffer *eb,
 			return 1;
 	}
 
-	/* we can treat both ref types equally here */
+	 
 	*out_root = btrfs_extent_inline_ref_offset(eb, eiref);
 
 	if (key->type == BTRFS_EXTENT_ITEM_KEY) {
@@ -2401,11 +1961,7 @@ static int iterate_leaf_refs(struct btrfs_fs_info *fs_info,
 	return ret;
 }
 
-/*
- * calls iterate() for every inode that references the extent identified by
- * the given parameters.
- * when the iterator function returns a non-zero value, iteration stops.
- */
+ 
 int iterate_extent_inodes(struct btrfs_backref_walk_ctx *ctx,
 			  bool search_commit_root,
 			  iterate_extent_inodes_t *iterate, void *user_ctx)
@@ -2619,7 +2175,7 @@ static int iterate_inode_refs(u64 inum, struct inode_fs_paths *ipath)
 
 		for (cur = 0; cur < btrfs_item_size(eb, slot); cur += len) {
 			name_len = btrfs_inode_ref_name_len(eb, iref);
-			/* path must be released before calling iterate()! */
+			 
 			btrfs_debug(fs_root->fs_info,
 				"following ref at offset %u for inode %llu in tree %llu",
 				cur, found_key.objectid,
@@ -2701,10 +2257,7 @@ static int iterate_inode_extrefs(u64 inum, struct inode_fs_paths *ipath)
 	return ret;
 }
 
-/*
- * returns 0 if the path could be dumped (probably truncated)
- * returns <0 in case of an error
- */
+ 
 static int inode_to_path(u64 inum, u32 name_len, unsigned long name_off,
 			 struct extent_buffer *eb, struct inode_fs_paths *ipath)
 {
@@ -2736,16 +2289,7 @@ static int inode_to_path(u64 inum, u32 name_len, unsigned long name_off,
 	return 0;
 }
 
-/*
- * this dumps all file system paths to the inode into the ipath struct, provided
- * is has been created large enough. each path is zero-terminated and accessed
- * from ipath->fspath->val[i].
- * when it returns, there are ipath->fspath->elem_cnt number of paths available
- * in ipath->fspath->val[]. when the allocated space wasn't sufficient, the
- * number of missed paths is recorded in ipath->fspath->elem_missed, otherwise,
- * it's zero. ipath->fspath->bytes_missing holds the number of bytes that would
- * have been needed to return all paths.
- */
+ 
 int paths_from_inode(u64 inum, struct inode_fs_paths *ipath)
 {
 	int ret;
@@ -2788,12 +2332,7 @@ struct btrfs_data_container *init_data_container(u32 total_bytes)
 	return data;
 }
 
-/*
- * allocates space to return multiple file system paths for an inode.
- * total_bytes to allocate are passed, note that space usable for actual path
- * information will be total_bytes - sizeof(struct inode_fs_paths).
- * the returned pointer must be freed with free_ipath() in the end.
- */
+ 
 struct inode_fs_paths *init_ipath(s32 total_bytes, struct btrfs_root *fs_root,
 					struct btrfs_path *path)
 {
@@ -2839,7 +2378,7 @@ struct btrfs_backref_iter *btrfs_backref_iter_alloc(struct btrfs_fs_info *fs_inf
 		return NULL;
 	}
 
-	/* Current backref iterator only supports iteration in commit root */
+	 
 	ret->path->search_commit_root = 1;
 	ret->path->skip_locking = 1;
 	ret->fs_info = fs_info;
@@ -2889,24 +2428,18 @@ int btrfs_backref_iter_start(struct btrfs_backref_iter *iter, u64 bytenr)
 	ei = btrfs_item_ptr(path->nodes[0], path->slots[0],
 			    struct btrfs_extent_item);
 
-	/*
-	 * Only support iteration on tree backref yet.
-	 *
-	 * This is an extra precaution for non skinny-metadata, where
-	 * EXTENT_ITEM is also used for tree blocks, that we can only use
-	 * extent flags to determine if it's a tree block.
-	 */
+	 
 	if (btrfs_extent_flags(path->nodes[0], ei) & BTRFS_EXTENT_FLAG_DATA) {
 		ret = -ENOTSUPP;
 		goto release;
 	}
 	iter->cur_ptr = (u32)(iter->item_ptr + sizeof(*ei));
 
-	/* If there is no inline backref, go search for keyed backref */
+	 
 	if (iter->cur_ptr >= iter->end_ptr) {
 		ret = btrfs_next_item(extent_root, path);
 
-		/* No inline nor keyed ref */
+		 
 		if (ret > 0) {
 			ret = -ENOENT;
 			goto release;
@@ -2935,16 +2468,7 @@ release:
 	return ret;
 }
 
-/*
- * Go to the next backref item of current bytenr, can be either inlined or
- * keyed.
- *
- * Caller needs to check whether it's inline ref or not by iter->cur_key.
- *
- * Return 0 if we get next backref without problem.
- * Return >0 if there is no extra backref for this bytenr.
- * Return <0 if there is something wrong happened.
- */
+ 
 int btrfs_backref_iter_next(struct btrfs_backref_iter *iter)
 {
 	struct extent_buffer *eb = btrfs_backref_get_eb(iter);
@@ -2955,14 +2479,14 @@ int btrfs_backref_iter_next(struct btrfs_backref_iter *iter)
 	u32 size;
 
 	if (btrfs_backref_iter_is_inline_ref(iter)) {
-		/* We're still inside the inline refs */
+		 
 		ASSERT(iter->cur_ptr < iter->end_ptr);
 
 		if (btrfs_backref_has_tree_block_info(iter)) {
-			/* First tree block info */
+			 
 			size = sizeof(struct btrfs_tree_block_info);
 		} else {
-			/* Use inline ref type to determine the size */
+			 
 			int type;
 
 			iref = (struct btrfs_extent_inline_ref *)
@@ -2975,10 +2499,10 @@ int btrfs_backref_iter_next(struct btrfs_backref_iter *iter)
 		if (iter->cur_ptr < iter->end_ptr)
 			return 0;
 
-		/* All inline items iterated, fall through */
+		 
 	}
 
-	/* We're at keyed items, there is no inline item, go to the next one */
+	 
 	extent_root = btrfs_extent_root(iter->fs_info, iter->bytenr);
 	ret = btrfs_next_item(extent_root, iter->path);
 	if (ret)
@@ -3046,13 +2570,7 @@ struct btrfs_backref_edge *btrfs_backref_alloc_edge(
 	return edge;
 }
 
-/*
- * Drop the backref node from cache, also cleaning up all its
- * upper edges and any uncached nodes in the path.
- *
- * This cleanup happens bottom up, thus the node should either
- * be the lowest node in the cache or a detached node.
- */
+ 
 void btrfs_backref_cleanup_node(struct btrfs_backref_cache *cache,
 				struct btrfs_backref_node *node)
 {
@@ -3071,10 +2589,7 @@ void btrfs_backref_cleanup_node(struct btrfs_backref_cache *cache,
 		list_del(&edge->list[UPPER]);
 		btrfs_backref_free_edge(cache, edge);
 
-		/*
-		 * Add the node to leaf node list if no other child block
-		 * cached.
-		 */
+		 
 		if (list_empty(&upper->lower)) {
 			list_add_tail(&upper->lower, &cache->leaves);
 			upper->lowest = 1;
@@ -3084,9 +2599,7 @@ void btrfs_backref_cleanup_node(struct btrfs_backref_cache *cache,
 	btrfs_backref_drop_node(cache, node);
 }
 
-/*
- * Release all nodes/edges from current cache
- */
+ 
 void btrfs_backref_release_cache(struct btrfs_backref_cache *cache)
 {
 	struct btrfs_backref_node *node;
@@ -3117,18 +2630,7 @@ void btrfs_backref_release_cache(struct btrfs_backref_cache *cache)
 	ASSERT(!cache->nr_edges);
 }
 
-/*
- * Handle direct tree backref
- *
- * Direct tree backref means, the backref item shows its parent bytenr
- * directly. This is for SHARED_BLOCK_REF backref (keyed or inlined).
- *
- * @ref_key:	The converted backref key.
- *		For keyed backref, it's the item key.
- *		For inlined backref, objectid is the bytenr,
- *		type is btrfs_inline_ref_type, offset is
- *		btrfs_inline_ref_offset.
- */
+ 
 static int handle_direct_tree_backref(struct btrfs_backref_cache *cache,
 				      struct btrfs_key *ref_key,
 				      struct btrfs_backref_node *cur)
@@ -3139,22 +2641,19 @@ static int handle_direct_tree_backref(struct btrfs_backref_cache *cache,
 
 	ASSERT(ref_key->type == BTRFS_SHARED_BLOCK_REF_KEY);
 
-	/* Only reloc root uses backref pointing to itself */
+	 
 	if (ref_key->objectid == ref_key->offset) {
 		struct btrfs_root *root;
 
 		cur->is_reloc_root = 1;
-		/* Only reloc backref cache cares about a specific root */
+		 
 		if (cache->is_reloc) {
 			root = find_reloc_root(cache->fs_info, cur->bytenr);
 			if (!root)
 				return -ENOENT;
 			cur->root = root;
 		} else {
-			/*
-			 * For generic purpose backref cache, reloc root node
-			 * is useless.
-			 */
+			 
 			list_add(&cur->list, &cache->useless_node);
 		}
 		return 0;
@@ -3166,7 +2665,7 @@ static int handle_direct_tree_backref(struct btrfs_backref_cache *cache,
 
 	rb_node = rb_simple_search(&cache->rb_root, ref_key->offset);
 	if (!rb_node) {
-		/* Parent node not yet cached */
+		 
 		upper = btrfs_backref_alloc_node(cache, ref_key->offset,
 					   cur->level + 1);
 		if (!upper) {
@@ -3174,13 +2673,10 @@ static int handle_direct_tree_backref(struct btrfs_backref_cache *cache,
 			return -ENOMEM;
 		}
 
-		/*
-		 *  Backrefs for the upper level block isn't cached, add the
-		 *  block to pending list
-		 */
+		 
 		list_add_tail(&edge->list[UPPER], &cache->pending_edge);
 	} else {
-		/* Parent node already cached */
+		 
 		upper = rb_entry(rb_node, struct btrfs_backref_node, rb_node);
 		ASSERT(upper->checked);
 		INIT_LIST_HEAD(&edge->list[UPPER]);
@@ -3189,19 +2685,7 @@ static int handle_direct_tree_backref(struct btrfs_backref_cache *cache,
 	return 0;
 }
 
-/*
- * Handle indirect tree backref
- *
- * Indirect tree backref means, we only know which tree the node belongs to.
- * We still need to do a tree search to find out the parents. This is for
- * TREE_BLOCK_REF backref (keyed or inlined).
- *
- * @trans:	Transaction handle.
- * @ref_key:	The same as @ref_key in  handle_direct_tree_backref()
- * @tree_key:	The first key of this tree block.
- * @path:	A clean (released) path, to avoid allocating path every time
- *		the function get called.
- */
+ 
 static int handle_indirect_tree_backref(struct btrfs_trans_handle *trans,
 					struct btrfs_backref_cache *cache,
 					struct btrfs_path *path,
@@ -3227,18 +2711,9 @@ static int handle_indirect_tree_backref(struct btrfs_trans_handle *trans,
 		cur->cowonly = 1;
 
 	if (btrfs_root_level(&root->root_item) == cur->level) {
-		/* Tree root */
+		 
 		ASSERT(btrfs_root_bytenr(&root->root_item) == cur->bytenr);
-		/*
-		 * For reloc backref cache, we may ignore reloc root.  But for
-		 * general purpose backref cache, we can't rely on
-		 * btrfs_should_ignore_reloc_root() as it may conflict with
-		 * current running relocation and lead to missing root.
-		 *
-		 * For general purpose backref cache, reloc root detection is
-		 * completely relying on direct backref (key->offset is parent
-		 * bytenr), thus only do such check for reloc cache.
-		 */
+		 
 		if (btrfs_should_ignore_reloc_root(root) && cache->is_reloc) {
 			btrfs_put_root(root);
 			list_add(&cur->list, &cache->useless_node);
@@ -3250,7 +2725,7 @@ static int handle_indirect_tree_backref(struct btrfs_trans_handle *trans,
 
 	level = cur->level + 1;
 
-	/* Search the tree to find parent blocks referring to the block */
+	 
 	path->search_commit_root = 1;
 	path->skip_locking = 1;
 	path->lowest_level = level;
@@ -3275,12 +2750,12 @@ static int handle_indirect_tree_backref(struct btrfs_trans_handle *trans,
 	}
 	lower = cur;
 
-	/* Add all nodes and edges in the path */
+	 
 	for (; level < BTRFS_MAX_LEVEL; level++) {
 		if (!path->nodes[level]) {
 			ASSERT(btrfs_root_bytenr(&root->root_item) ==
 			       lower->bytenr);
-			/* Same as previous should_ignore_reloc_root() call */
+			 
 			if (btrfs_should_ignore_reloc_root(root) &&
 			    cache->is_reloc) {
 				btrfs_put_root(root);
@@ -3313,20 +2788,13 @@ static int handle_indirect_tree_backref(struct btrfs_trans_handle *trans,
 			if (!test_bit(BTRFS_ROOT_SHAREABLE, &root->state))
 				upper->cowonly = 1;
 
-			/*
-			 * If we know the block isn't shared we can avoid
-			 * checking its backrefs.
-			 */
+			 
 			if (btrfs_block_can_be_shared(trans, root, eb))
 				upper->checked = 0;
 			else
 				upper->checked = 1;
 
-			/*
-			 * Add the block to pending list if we need to check its
-			 * backrefs, we only do this once while walking up a
-			 * tree as we will catch anything else later on.
-			 */
+			 
 			if (!upper->checked && need_check) {
 				need_check = false;
 				list_add_tail(&edge->list[UPPER],
@@ -3358,18 +2826,7 @@ out:
 	return ret;
 }
 
-/*
- * Add backref node @cur into @cache.
- *
- * NOTE: Even if the function returned 0, @cur is not yet cached as its upper
- *	 links aren't yet bi-directional. Needs to finish such links.
- *	 Use btrfs_backref_finish_upper_links() to finish such linkage.
- *
- * @trans:	Transaction handle.
- * @path:	Released path for indirect tree backref lookup
- * @iter:	Released backref iter for extent tree search
- * @node_key:	The first key of the tree block
- */
+ 
 int btrfs_backref_add_tree_node(struct btrfs_trans_handle *trans,
 				struct btrfs_backref_cache *cache,
 				struct btrfs_path *path,
@@ -3384,15 +2841,12 @@ int btrfs_backref_add_tree_node(struct btrfs_trans_handle *trans,
 	ret = btrfs_backref_iter_start(iter, cur->bytenr);
 	if (ret < 0)
 		return ret;
-	/*
-	 * We skip the first btrfs_tree_block_info, as we don't use the key
-	 * stored in it, but fetch it from the tree block
-	 */
+	 
 	if (btrfs_backref_has_tree_block_info(iter)) {
 		ret = btrfs_backref_iter_next(iter);
 		if (ret < 0)
 			goto out;
-		/* No extra backref? This means the tree block is corrupted */
+		 
 		if (ret > 0) {
 			ret = -EUCLEAN;
 			goto out;
@@ -3400,19 +2854,13 @@ int btrfs_backref_add_tree_node(struct btrfs_trans_handle *trans,
 	}
 	WARN_ON(cur->checked);
 	if (!list_empty(&cur->upper)) {
-		/*
-		 * The backref was added previously when processing backref of
-		 * type BTRFS_TREE_BLOCK_REF_KEY
-		 */
+		 
 		ASSERT(list_is_singular(&cur->upper));
 		edge = list_entry(cur->upper.next, struct btrfs_backref_edge,
 				  list[LOWER]);
 		ASSERT(list_empty(&edge->list[UPPER]));
 		exist = edge->node[UPPER];
-		/*
-		 * Add the upper level block to pending list if we need check
-		 * its backrefs
-		 */
+		 
 		if (!exist->checked)
 			list_add_tail(&edge->list[UPPER], &cache->pending_edge);
 	} else {
@@ -3431,7 +2879,7 @@ int btrfs_backref_add_tree_node(struct btrfs_trans_handle *trans,
 		if (btrfs_backref_iter_is_inline_ref(iter)) {
 			struct btrfs_extent_inline_ref *iref;
 
-			/* Update key for inline backref */
+			 
 			iref = (struct btrfs_extent_inline_ref *)
 				((unsigned long)iter->cur_ptr);
 			type = btrfs_get_extent_inline_ref_type(eb, iref,
@@ -3447,10 +2895,7 @@ int btrfs_backref_add_tree_node(struct btrfs_trans_handle *trans,
 			key.offset = iter->cur_key.offset;
 		}
 
-		/*
-		 * Parent node found and matches current inline ref, no need to
-		 * rebuild this node for this inline ref
-		 */
+		 
 		if (exist &&
 		    ((key.type == BTRFS_TREE_BLOCK_REF_KEY &&
 		      exist->owner == key.offset) ||
@@ -3460,26 +2905,19 @@ int btrfs_backref_add_tree_node(struct btrfs_trans_handle *trans,
 			continue;
 		}
 
-		/* SHARED_BLOCK_REF means key.offset is the parent bytenr */
+		 
 		if (key.type == BTRFS_SHARED_BLOCK_REF_KEY) {
 			ret = handle_direct_tree_backref(cache, &key, cur);
 			if (ret < 0)
 				goto out;
 		} else if (key.type == BTRFS_TREE_BLOCK_REF_KEY) {
-			/*
-			 * key.type == BTRFS_TREE_BLOCK_REF_KEY, inline ref
-			 * offset means the root objectid. We need to search
-			 * the tree to get its parent bytenr.
-			 */
+			 
 			ret = handle_indirect_tree_backref(trans, cache, path,
 							   &key, node_key, cur);
 			if (ret < 0)
 				goto out;
 		}
-		/*
-		 * Unrecognized tree backref items (if it can pass tree-checker)
-		 * would be ignored.
-		 */
+		 
 	}
 	ret = 0;
 	cur->checked = 1;
@@ -3489,9 +2927,7 @@ out:
 	return ret;
 }
 
-/*
- * Finish the upwards linkage created by btrfs_backref_add_tree_node()
- */
+ 
 int btrfs_backref_finish_upper_links(struct btrfs_backref_cache *cache,
 				     struct btrfs_backref_node *start)
 {
@@ -3502,7 +2938,7 @@ int btrfs_backref_finish_upper_links(struct btrfs_backref_cache *cache,
 
 	ASSERT(start->checked);
 
-	/* Insert this node to cache if it's not COW-only */
+	 
 	if (!start->cowonly) {
 		rb_node = rb_simple_insert(&cache->rb_root, start->bytenr,
 					   &start->rb_node);
@@ -3512,11 +2948,7 @@ int btrfs_backref_finish_upper_links(struct btrfs_backref_cache *cache,
 		list_add_tail(&start->lower, &cache->leaves);
 	}
 
-	/*
-	 * Use breadth first search to iterate all related edges.
-	 *
-	 * The starting points are all the edges of this node
-	 */
+	 
 	list_for_each_entry(edge, &start->upper, list[LOWER])
 		list_add_tail(&edge->list[UPPER], &pending_edge);
 
@@ -3530,24 +2962,18 @@ int btrfs_backref_finish_upper_links(struct btrfs_backref_cache *cache,
 		upper = edge->node[UPPER];
 		lower = edge->node[LOWER];
 
-		/* Parent is detached, no need to keep any edges */
+		 
 		if (upper->detached) {
 			list_del(&edge->list[LOWER]);
 			btrfs_backref_free_edge(cache, edge);
 
-			/* Lower node is orphan, queue for cleanup */
+			 
 			if (list_empty(&lower->upper))
 				list_add(&lower->list, useless_node);
 			continue;
 		}
 
-		/*
-		 * All new nodes added in current build_backref_tree() haven't
-		 * been linked to the cache rb tree.
-		 * So if we have upper->rb_node populated, this means a cache
-		 * hit. We only need to link the edge, as @upper and all its
-		 * parents have already been linked.
-		 */
+		 
 		if (!RB_EMPTY_NODE(&upper->rb_node)) {
 			if (upper->lowest) {
 				list_del_init(&upper->lower);
@@ -3558,19 +2984,19 @@ int btrfs_backref_finish_upper_links(struct btrfs_backref_cache *cache,
 			continue;
 		}
 
-		/* Sanity check, we shouldn't have any unchecked nodes */
+		 
 		if (!upper->checked) {
 			ASSERT(0);
 			return -EUCLEAN;
 		}
 
-		/* Sanity check, COW-only node has non-COW-only parent */
+		 
 		if (start->cowonly != upper->cowonly) {
 			ASSERT(0);
 			return -EUCLEAN;
 		}
 
-		/* Only cache non-COW-only (subvolume trees) tree blocks */
+		 
 		if (!upper->cowonly) {
 			rb_node = rb_simple_insert(&cache->rb_root, upper->bytenr,
 						   &upper->rb_node);
@@ -3583,10 +3009,7 @@ int btrfs_backref_finish_upper_links(struct btrfs_backref_cache *cache,
 
 		list_add_tail(&edge->list[UPPER], &upper->lower);
 
-		/*
-		 * Also queue all the parent edges of this uncached node
-		 * to finish the upper linkage
-		 */
+		 
 		list_for_each_entry(edge, &upper->upper, list[LOWER])
 			list_add_tail(&edge->list[UPPER], &pending_edge);
 	}
@@ -3614,10 +3037,7 @@ void btrfs_backref_error_cleanup(struct btrfs_backref_cache *cache,
 		upper = edge->node[UPPER];
 		btrfs_backref_free_edge(cache, edge);
 
-		/*
-		 * Lower is no longer linked to any upper backref nodes and
-		 * isn't in the cache, we can free it ourselves.
-		 */
+		 
 		if (list_empty(&lower->upper) &&
 		    RB_EMPTY_NODE(&lower->rb_node))
 			list_add(&lower->list, &cache->useless_node);
@@ -3625,7 +3045,7 @@ void btrfs_backref_error_cleanup(struct btrfs_backref_cache *cache,
 		if (!RB_EMPTY_NODE(&upper->rb_node))
 			continue;
 
-		/* Add this guy's upper edges to the list to process */
+		 
 		list_for_each_entry(edge, &upper->upper, list[LOWER])
 			list_add_tail(&edge->list[UPPER],
 				      &cache->pending_edge);

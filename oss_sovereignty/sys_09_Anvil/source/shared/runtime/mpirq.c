@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2015 Daniel Campora
- *               2018 Tobias Badertscher
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 
@@ -33,9 +8,7 @@
 
 #if MICROPY_ENABLE_SCHEDULER
 
-/******************************************************************************
- DECLARE PUBLIC DATA
- ******************************************************************************/
+ 
 
 const mp_arg_t mp_irq_init_args[] = {
     { MP_QSTR_handler, MP_ARG_OBJ, {.u_rom_obj = MP_ROM_NONE} },
@@ -43,13 +16,9 @@ const mp_arg_t mp_irq_init_args[] = {
     { MP_QSTR_hard, MP_ARG_BOOL, {.u_bool = false} },
 };
 
-/******************************************************************************
- DECLARE PRIVATE DATA
- ******************************************************************************/
+ 
 
-/******************************************************************************
- DEFINE PUBLIC FUNCTIONS
- ******************************************************************************/
+ 
 
 mp_irq_obj_t *mp_irq_new(const mp_irq_methods_t *methods, mp_obj_t parent) {
     mp_irq_obj_t *self = m_new0(mp_irq_obj_t, 1);
@@ -68,9 +37,9 @@ void mp_irq_init(mp_irq_obj_t *self, const mp_irq_methods_t *methods, mp_obj_t p
 void mp_irq_handler(mp_irq_obj_t *self) {
     if (self->handler != mp_const_none) {
         if (self->ishard) {
-            // When executing code within a handler we must lock the scheduler to
-            // prevent any scheduled callbacks from running, and lock the GC to
-            // prevent any memory allocations.
+            
+            
+            
             mp_sched_lock();
             gc_lock();
             nlr_buf_t nlr;
@@ -78,7 +47,7 @@ void mp_irq_handler(mp_irq_obj_t *self) {
                 mp_call_function_1(self->handler, self->parent);
                 nlr_pop();
             } else {
-                // Uncaught exception; disable the callback so that it doesn't run again
+                
                 self->methods->trigger(self->parent, 0);
                 self->handler = mp_const_none;
                 mp_printf(MICROPY_ERROR_PRINTER, "Uncaught exception in IRQ callback handler\n");
@@ -87,14 +56,14 @@ void mp_irq_handler(mp_irq_obj_t *self) {
             gc_unlock();
             mp_sched_unlock();
         } else {
-            // Schedule call to user function
+            
             mp_sched_schedule(self->handler, self->parent);
         }
     }
 }
 
-/******************************************************************************/
-// MicroPython bindings
+ 
+
 
 static mp_obj_t mp_irq_flags(mp_obj_t self_in) {
     mp_irq_obj_t *self = MP_OBJ_TO_PTR(self_in);
@@ -106,7 +75,7 @@ static mp_obj_t mp_irq_trigger(size_t n_args, const mp_obj_t *args) {
     mp_irq_obj_t *self = MP_OBJ_TO_PTR(args[0]);
     mp_obj_t ret_obj = mp_obj_new_int(self->methods->info(self->parent, MP_IRQ_INFO_TRIGGERS));
     if (n_args == 2) {
-        // Set trigger
+        
         self->methods->trigger(self->parent, mp_obj_get_int(args[1]));
     }
     return ret_obj;
@@ -133,4 +102,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &mp_irq_locals_dict
     );
 
-#endif // MICROPY_ENABLE_SCHEDULER
+#endif 

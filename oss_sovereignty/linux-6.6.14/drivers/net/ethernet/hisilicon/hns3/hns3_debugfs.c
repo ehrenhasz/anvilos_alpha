@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2018-2019 Hisilicon Limited. */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -32,7 +32,7 @@ static struct hns3_dbg_dentry_info hns3_dbg_dentry[] = {
 	{
 		.name = "fd"
 	},
-	/* keep common at the bottom and add new directory above */
+	 
 	{
 		.name = "common"
 	},
@@ -698,10 +698,7 @@ static int hns3_dbg_rx_queue_info(struct hnae3_handle *h,
 			      NULL, ARRAY_SIZE(rx_queue_info_items));
 	pos += scnprintf(buf + pos, len - pos, "%s", content);
 	for (i = 0; i < h->kinfo.num_tqps; i++) {
-		/* Each cycle needs to determine whether the instance is reset,
-		 * to prevent reference to invalid memory. And need to ensure
-		 * that the following code is executed within 100ms.
-		 */
+		 
 		if (!test_bit(HNS3_NIC_STATE_INITED, &priv->state) ||
 		    test_bit(HNS3_NIC_STATE_RESETTING, &priv->state))
 			return -EPERM;
@@ -802,10 +799,7 @@ static int hns3_dbg_tx_queue_info(struct hnae3_handle *h,
 	pos += scnprintf(buf + pos, len - pos, "%s", content);
 
 	for (i = 0; i < h->kinfo.num_tqps; i++) {
-		/* Each cycle needs to determine whether the instance is reset,
-		 * to prevent reference to invalid memory. And need to ensure
-		 * that the following code is executed within 100ms.
-		 */
+		 
 		if (!test_bit(HNS3_NIC_STATE_INITED, &priv->state) ||
 		    test_bit(HNS3_NIC_STATE_RESETTING, &priv->state))
 			return -EPERM;
@@ -1286,10 +1280,10 @@ static ssize_t hns3_dbg_read(struct file *filp, char __user *buffer,
 			goto out;
 		}
 
-		/* save the buffer addr until the last read operation */
+		 
 		*save_buf = read_buf;
 
-		/* get data ready for the first time to read */
+		 
 		ret = hns3_dbg_read_cmd(dbg_data, hns3_dbg_cmd[index].cmd,
 					read_buf, hns3_dbg_cmd[index].buf_len);
 		if (ret)
@@ -1304,7 +1298,7 @@ static ssize_t hns3_dbg_read(struct file *filp, char __user *buffer,
 	}
 
 out:
-	/* free the buffer for the last read operation */
+	 
 	if (*save_buf) {
 		kvfree(*save_buf);
 		*save_buf = NULL;

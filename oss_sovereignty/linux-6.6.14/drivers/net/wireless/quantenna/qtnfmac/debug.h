@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+ 
+ 
 
 #ifndef _QTN_FMAC_DEBUG_H_
 #define _QTN_FMAC_DEBUG_H_
@@ -32,6 +32,6 @@ qtnf_debugfs_add_entry(struct qtnf_bus *bus, const char *name,
 {
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
-#endif /* _QTN_FMAC_DEBUG_H_ */
+#endif  

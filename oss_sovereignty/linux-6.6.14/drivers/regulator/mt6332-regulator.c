@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2022 Collabora Ltd.
-// Author: AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
-//
-// Based on mt6323-regulator.c,
-//     Copyright (c) 2016 MediaTek Inc.
-//
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -21,17 +21,7 @@
 #define MT6332_LDO_MODE_NORMAL	0
 #define MT6332_LDO_MODE_LP	1
 
-/*
- * MT6332 regulators information
- *
- * @desc: standard fields of regulator description.
- * @qi: Mask for query enable signal status of regulators
- * @vselon_reg: Register sections for hardware control mode of bucks
- * @vselctrl_reg: Register for controlling the buck control mode.
- * @vselctrl_mask: Mask for query buck's voltage control mode.
- * @status_reg: Register for regulator enable status where qi unavailable
- * @status_mask: Mask for querying regulator enable status
- */
+ 
 struct mt6332_regulator_info {
 	struct regulator_desc desc;
 	u32 qi;
@@ -296,7 +286,7 @@ static const struct regulator_ops mt6332_volt_fixed_ops = {
 	.get_status = mt6332_get_status,
 };
 
-/* The array is indexed by id(MT6332_ID_XXX) */
+ 
 static struct mt6332_regulator_info mt6332_regulators[] = {
 	MT6332_BUCK("buck-vdram", VDRAM, 700000, 1493750, 6250, buck_volt_range,
 		    MT6332_EN_STATUS0, MT6332_VDRAM_CON11, GENMASK(6, 0),
@@ -361,11 +351,11 @@ static int mt6332_regulator_probe(struct platform_device *pdev)
 	int i;
 	u32 reg_value;
 
-	/* Query buck controller to select activated voltage register part */
+	 
 	if (mt6332_set_buck_vosel_reg(pdev))
 		return -EIO;
 
-	/* Read PMIC chip revision to update constraints and voltage table */
+	 
 	if (regmap_read(mt6332->regmap, MT6332_HWCID, &reg_value) < 0) {
 		dev_err(&pdev->dev, "Failed to read Chip ID\n");
 		return -EIO;
@@ -374,13 +364,7 @@ static int mt6332_regulator_probe(struct platform_device *pdev)
 
 	dev_info(&pdev->dev, "Chip ID = 0x%x\n", reg_value);
 
-	/*
-	 * ChipID 0x10 is "MT6332 E1", has a different voltage table and
-	 * it's currently not supported in this driver. Upon detection of
-	 * this ID, refuse to register the regulators, as we will wrongly
-	 * interpret the VSEL for this revision, potentially overvolting
-	 * some device.
-	 */
+	 
 	if (reg_value == 0x10) {
 		dev_err(&pdev->dev, "Chip version not supported. Bailing out.\n");
 		return -EINVAL;
@@ -403,7 +387,7 @@ static int mt6332_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id mt6332_platform_ids[] = {
 	{"mt6332-regulator", 0},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, mt6332_platform_ids);
 

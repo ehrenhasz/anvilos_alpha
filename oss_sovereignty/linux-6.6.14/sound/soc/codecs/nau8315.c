@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// nau8315.c  --  NAU8315 ALSA SoC Audio Amplifier Driver
-//
-// Copyright 2020 Nuvoton Technology Crop.
-//
-// Author: David Lin <ctlin0@nuvoton.com>
-//
-// Based on MAX98357A.c
+
+
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/device.h>

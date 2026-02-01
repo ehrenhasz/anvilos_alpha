@@ -1,24 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Midi Sequencer interface routines.
- *
- *  Copyright (C) 1999 Steve Ratcliffe
- *  Copyright (c) 1999-2000 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include "emux_voice.h"
 #include <linux/slab.h>
 #include <linux/module.h>
 
-/* Prototypes for static functions */
+ 
 static void free_port(void *private);
 static void snd_emux_init_port(struct snd_emux_port *p);
 static int snd_emux_use(void *private_data, struct snd_seq_port_subscribe *info);
 static int snd_emux_unuse(void *private_data, struct snd_seq_port_subscribe *info);
 
-/*
- * MIDI emulation operators
- */
+ 
 static const struct snd_midi_op emux_ops = {
 	.note_on = snd_emux_note_on,
 	.note_off = snd_emux_note_off,
@@ -30,14 +23,10 @@ static const struct snd_midi_op emux_ops = {
 };
 
 
-/*
- * number of MIDI channels
- */
+ 
 #define MIDI_CHANNELS		16
 
-/*
- * type flags for MIDI sequencer port
- */
+ 
 #define DEFAULT_MIDI_TYPE	(SNDRV_SEQ_PORT_TYPE_MIDI_GENERIC |\
 				 SNDRV_SEQ_PORT_TYPE_MIDI_GM |\
 				 SNDRV_SEQ_PORT_TYPE_MIDI_GS |\
@@ -45,12 +34,7 @@ static const struct snd_midi_op emux_ops = {
 				 SNDRV_SEQ_PORT_TYPE_HARDWARE |\
 				 SNDRV_SEQ_PORT_TYPE_SYNTHESIZER)
 
-/*
- * Initialise the EMUX Synth by creating a client and registering
- * a series of ports.
- * Each of the ports will contain the 16 midi channels.  Applications
- * can connect to these ports to play midi data.
- */
+ 
 int
 snd_emux_init_seq(struct snd_emux *emu, struct snd_card *card, int index)
 {
@@ -101,10 +85,7 @@ snd_emux_init_seq(struct snd_emux *emu, struct snd_card *card, int index)
 }
 
 
-/*
- * Detach from the ports that were set up for this synthesizer and
- * destroy the kernel client.
- */
+ 
 void
 snd_emux_detach_seq(struct snd_emux *emu)
 {
@@ -118,9 +99,7 @@ snd_emux_detach_seq(struct snd_emux *emu)
 }
 
 
-/*
- * create a sequencer port and channel_set
- */
+ 
 
 struct snd_emux_port *
 snd_emux_create_port(struct snd_emux *emu, char *name,
@@ -130,7 +109,7 @@ snd_emux_create_port(struct snd_emux *emu, char *name,
 	struct snd_emux_port *p;
 	int i, type, cap;
 
-	/* Allocate structures for this channel */
+	 
 	p = kzalloc(sizeof(*p), GFP_KERNEL);
 	if (!p)
 		return NULL;
@@ -169,9 +148,7 @@ snd_emux_create_port(struct snd_emux *emu, char *name,
 }
 
 
-/*
- * release memory block for port
- */
+ 
 static void
 free_port(void *private_data)
 {
@@ -190,9 +167,7 @@ free_port(void *private_data)
 
 #define DEFAULT_DRUM_FLAGS	(1<<9)
 
-/*
- * initialize the port specific parameters
- */
+ 
 static void
 snd_emux_init_port(struct snd_emux_port *p)
 {
@@ -203,15 +178,13 @@ snd_emux_init_port(struct snd_emux_port *p)
 }
 
 
-/*
- * reset port
- */
+ 
 void
 snd_emux_reset_port(struct snd_emux_port *port)
 {
 	int i;
 
-	/* stop all sounds */
+	 
 	snd_emux_sounds_off_all(port);
 
 	snd_midi_channel_set_clear(&port->chset);
@@ -220,7 +193,7 @@ snd_emux_reset_port(struct snd_emux_port *port)
 	snd_emux_clear_effect(port);
 #endif
 
-	/* set port specific control parameters */
+	 
 	port->ctrls[EMUX_MD_DEF_BANK] = 0;
 	port->ctrls[EMUX_MD_DEF_DRUM] = 0;
 	port->ctrls[EMUX_MD_REALTIME_PAN] = 1;
@@ -232,9 +205,7 @@ snd_emux_reset_port(struct snd_emux_port *port)
 }
 
 
-/*
- * input sequencer event
- */
+ 
 int
 snd_emux_event_input(struct snd_seq_event *ev, int direct, void *private_data,
 		     int atomic, int hop)
@@ -251,9 +222,7 @@ snd_emux_event_input(struct snd_seq_event *ev, int direct, void *private_data,
 }
 
 
-/*
- * increment usage count
- */
+ 
 static int
 __snd_emux_inc_count(struct snd_emux *emu)
 {
@@ -279,9 +248,7 @@ int snd_emux_inc_count(struct snd_emux *emu)
 	return ret;
 }
 
-/*
- * decrease usage count
- */
+ 
 static void
 __snd_emux_dec_count(struct snd_emux *emu)
 {
@@ -299,9 +266,7 @@ void snd_emux_dec_count(struct snd_emux *emu)
 	mutex_unlock(&emu->register_mutex);
 }
 
-/*
- * Routine that is called upon a first use of a particular port
- */
+ 
 static int
 snd_emux_use(void *private_data, struct snd_seq_port_subscribe *info)
 {
@@ -322,9 +287,7 @@ snd_emux_use(void *private_data, struct snd_seq_port_subscribe *info)
 	return 0;
 }
 
-/*
- * Routine that is called upon the last unuse() of a particular port.
- */
+ 
 static int
 snd_emux_unuse(void *private_data, struct snd_seq_port_subscribe *info)
 {
@@ -346,9 +309,7 @@ snd_emux_unuse(void *private_data, struct snd_seq_port_subscribe *info)
 }
 
 
-/*
- * attach virtual rawmidi devices
- */
+ 
 int snd_emux_init_virmidi(struct snd_emux *emu, struct snd_card *card)
 {
 	int i;
@@ -376,12 +337,12 @@ int snd_emux_init_virmidi(struct snd_emux *emu, struct snd_card *card)
 			goto __error;
 		}
 		emu->vmidi[i] = rmidi;
-		/* snd_printk(KERN_DEBUG "virmidi %d ok\n", i); */
+		 
 	}
 	return 0;
 
 __error:
-	/* snd_printk(KERN_DEBUG "error init..\n"); */
+	 
 	snd_emux_delete_virmidi(emu);
 	return -ENOMEM;
 }

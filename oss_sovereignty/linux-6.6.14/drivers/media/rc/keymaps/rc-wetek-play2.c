@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (C) 2019 Christian Hewitt <christianshewitt@gmail.com>
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-//
-// Keytable for the WeTek Play 2 STB remote control
-//
+
+
+
 
 static struct rc_map_table wetek_play2[] = {
 	{ 0x5e5f02, KEY_POWER },
-	{ 0x5e5f46, KEY_SLEEP }, // tv
+	{ 0x5e5f46, KEY_SLEEP }, 
 	{ 0x5e5f10, KEY_MUTE },
 
 	{ 0x5e5f22, KEY_1 },
@@ -30,15 +30,15 @@ static struct rc_map_table wetek_play2[] = {
 	{ 0x5e5f21, KEY_0 },
 	{ 0x5e5f72, KEY_CAPSLOCK },
 
-	// outer ring clockwide from top
+	
 	{ 0x5e5f03, KEY_HOME },
 	{ 0x5e5f61, KEY_BACK },
-	{ 0x5e5f77, KEY_CONFIG }, // mouse
+	{ 0x5e5f77, KEY_CONFIG }, 
 	{ 0x5e5f83, KEY_EPG },
-	{ 0x5e5f84, KEY_SCREEN }, // square
+	{ 0x5e5f84, KEY_SCREEN }, 
 	{ 0x5e5f48, KEY_MENU },
 
-	// inner ring
+	
 	{ 0x5e5f50, KEY_UP },
 	{ 0x5e5f4b, KEY_DOWN },
 	{ 0x5e5f4c, KEY_LEFT },
@@ -48,7 +48,7 @@ static struct rc_map_table wetek_play2[] = {
 	{ 0x5e5f44, KEY_VOLUMEUP },
 	{ 0x5e5f43, KEY_VOLUMEDOWN },
 	{ 0x5e5f4f, KEY_FAVORITES },
-	{ 0x5e5f82, KEY_SUBTITLE }, // txt
+	{ 0x5e5f82, KEY_SUBTITLE }, 
 	{ 0x5e5f41, KEY_PAGEUP },
 	{ 0x5e5f42, KEY_PAGEDOWN },
 

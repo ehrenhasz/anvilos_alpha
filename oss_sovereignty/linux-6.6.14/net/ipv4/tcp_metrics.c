@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/rcupdate.h>
 #include <linux/spinlock.h>
 #include <linux/jiffies.h>
@@ -27,15 +27,13 @@ static struct tcp_metrics_block *__tcp_get_metrics(const struct inetpeer_addr *s
 
 struct tcp_fastopen_metrics {
 	u16	mss;
-	u16	syn_loss:10,		/* Recurring Fast Open SYN losses */
-		try_exp:2;		/* Request w/ exp. option (once) */
-	unsigned long	last_syn_loss;	/* Last Fast Open SYN loss */
+	u16	syn_loss:10,		 
+		try_exp:2;		 
+	unsigned long	last_syn_loss;	 
 	struct	tcp_fastopen_cookie	cookie;
 };
 
-/* TCP_METRIC_MAX includes 2 extra fields for userspace compatibility
- * Kernel only stores RTT and RTTVAR in usec resolution
- */
+ 
 #define TCP_METRIC_MAX_KERNEL (TCP_METRIC_MAX - 2)
 
 struct tcp_metrics_block {
@@ -53,21 +51,21 @@ struct tcp_metrics_block {
 
 static inline struct net *tm_net(const struct tcp_metrics_block *tm)
 {
-	/* Paired with the WRITE_ONCE() in tcpm_new() */
+	 
 	return READ_ONCE(tm->tcpm_net);
 }
 
 static bool tcp_metric_locked(struct tcp_metrics_block *tm,
 			      enum tcp_metric_index idx)
 {
-	/* Paired with WRITE_ONCE() in tcpm_suck_dst() */
+	 
 	return READ_ONCE(tm->tcpm_lock) & (1 << idx);
 }
 
 static u32 tcp_metric_get(const struct tcp_metrics_block *tm,
 			  enum tcp_metric_index idx)
 {
-	/* Paired with WRITE_ONCE() in tcp_metric_set() */
+	 
 	return READ_ONCE(tm->tcpm_vals[idx]);
 }
 
@@ -75,7 +73,7 @@ static void tcp_metric_set(struct tcp_metrics_block *tm,
 			   enum tcp_metric_index idx,
 			   u32 val)
 {
-	/* Paired with READ_ONCE() in tcp_metric_get() */
+	 
 	WRITE_ONCE(tm->tcpm_vals[idx], val);
 }
 
@@ -115,7 +113,7 @@ static void tcpm_suck_dst(struct tcp_metrics_block *tm,
 		val |= 1 << TCP_METRIC_CWND;
 	if (dst_metric_locked(dst, RTAX_REORDERING))
 		val |= 1 << TCP_METRIC_REORDERING;
-	/* Paired with READ_ONCE() in tcp_metric_locked() */
+	 
 	WRITE_ONCE(tm->tcpm_lock, val);
 
 	msval = dst_metric_raw(dst, RTAX_RTT);
@@ -172,9 +170,7 @@ static struct tcp_metrics_block *tcpm_new(struct dst_entry *dst,
 	spin_lock_bh(&tcp_metrics_lock);
 	net = dev_net(dst->dev);
 
-	/* While waiting for the spin-lock the cache might have been populated
-	 * with this entry and so we have to check again.
-	 */
+	 
 	tm = __tcp_get_metrics(saddr, daddr, net, hash);
 	if (tm == TCP_METRICS_RECLAIM_PTR) {
 		reclaim = true;
@@ -201,7 +197,7 @@ static struct tcp_metrics_block *tcpm_new(struct dst_entry *dst,
 		if (!tm)
 			goto out_unlock;
 	}
-	/* Paired with the READ_ONCE() in tm_net() */
+	 
 	WRITE_ONCE(tm->tcpm_net, net);
 
 	tm->tcpm_saddr = *saddr;
@@ -333,10 +329,7 @@ static struct tcp_metrics_block *tcp_get_metrics(struct sock *sk,
 	return tm;
 }
 
-/* Save metrics learned by this TCP session.  This function is called
- * only, when TCP finishes successfully i.e. when it enters TIME-WAIT
- * or goes from LAST-ACK to CLOSE.
- */
+ 
 void tcp_update_metrics(struct sock *sk)
 {
 	const struct inet_connection_sock *icsk = inet_csk(sk);
@@ -354,10 +347,7 @@ void tcp_update_metrics(struct sock *sk)
 
 	rcu_read_lock();
 	if (icsk->icsk_backoff || !tp->srtt_us) {
-		/* This session failed to estimate rtt. Why?
-		 * Probably, no packets returned in time.  Reset our
-		 * results.
-		 */
+		 
 		tm = tcp_get_metrics(sk, dst, false);
 		if (tm && !tcp_metric_locked(tm, TCP_METRIC_RTT))
 			tcp_metric_set(tm, TCP_METRIC_RTT, 0);
@@ -371,10 +361,7 @@ void tcp_update_metrics(struct sock *sk)
 	rtt = tcp_metric_get(tm, TCP_METRIC_RTT);
 	m = rtt - tp->srtt_us;
 
-	/* If newly calculated rtt larger than stored one, store new
-	 * one. Otherwise, use EWMA. Remember, rtt overestimation is
-	 * always better than underestimation.
-	 */
+	 
 	if (!tcp_metric_locked(tm, TCP_METRIC_RTT)) {
 		if (m <= 0)
 			rtt = tp->srtt_us;
@@ -389,7 +376,7 @@ void tcp_update_metrics(struct sock *sk)
 		if (m < 0)
 			m = -m;
 
-		/* Scale deviation to rttvar fixed point */
+		 
 		m >>= 1;
 		if (m < tp->mdev_us)
 			m = tp->mdev_us;
@@ -404,7 +391,7 @@ void tcp_update_metrics(struct sock *sk)
 	}
 
 	if (tcp_in_initial_slowstart(tp)) {
-		/* Slow start still did not finish. */
+		 
 		if (!READ_ONCE(net->ipv4.sysctl_tcp_no_ssthresh_metrics_save) &&
 		    !tcp_metric_locked(tm, TCP_METRIC_SSTHRESH)) {
 			val = tcp_metric_get(tm, TCP_METRIC_SSTHRESH);
@@ -420,7 +407,7 @@ void tcp_update_metrics(struct sock *sk)
 		}
 	} else if (!tcp_in_slow_start(tp) &&
 		   icsk->icsk_ca_state == TCP_CA_Open) {
-		/* Cong. avoidance phase, cwnd is reliable. */
+		 
 		if (!READ_ONCE(net->ipv4.sysctl_tcp_no_ssthresh_metrics_save) &&
 		    !tcp_metric_locked(tm, TCP_METRIC_SSTHRESH))
 			tcp_metric_set(tm, TCP_METRIC_SSTHRESH,
@@ -430,9 +417,7 @@ void tcp_update_metrics(struct sock *sk)
 			tcp_metric_set(tm, TCP_METRIC_CWND, (val + tcp_snd_cwnd(tp)) >> 1);
 		}
 	} else {
-		/* Else slow start did not finish, cwnd is non-sense,
-		 * ssthresh may be also invalid.
-		 */
+		 
 		if (!tcp_metric_locked(tm, TCP_METRIC_CWND)) {
 			val = tcp_metric_get(tm, TCP_METRIC_CWND);
 			tcp_metric_set(tm, TCP_METRIC_CWND,
@@ -459,7 +444,7 @@ out_unlock:
 	rcu_read_unlock();
 }
 
-/* Initialize metrics on socket. */
+ 
 
 void tcp_init_metrics(struct sock *sk)
 {
@@ -467,12 +452,10 @@ void tcp_init_metrics(struct sock *sk)
 	struct tcp_sock *tp = tcp_sk(sk);
 	struct net *net = sock_net(sk);
 	struct tcp_metrics_block *tm;
-	u32 val, crtt = 0; /* cached RTT scaled by 8 */
+	u32 val, crtt = 0;  
 
 	sk_dst_confirm(sk);
-	/* ssthresh may have been reduced unnecessarily during.
-	 * 3WHS. Restore it back to its initial default.
-	 */
+	 
 	tp->snd_ssthresh = TCP_INFINITE_SSTHRESH;
 	if (!dst)
 		goto reset;
@@ -501,37 +484,13 @@ void tcp_init_metrics(struct sock *sk)
 	crtt = tcp_metric_get(tm, TCP_METRIC_RTT);
 	rcu_read_unlock();
 reset:
-	/* The initial RTT measurement from the SYN/SYN-ACK is not ideal
-	 * to seed the RTO for later data packets because SYN packets are
-	 * small. Use the per-dst cached values to seed the RTO but keep
-	 * the RTT estimator variables intact (e.g., srtt, mdev, rttvar).
-	 * Later the RTO will be updated immediately upon obtaining the first
-	 * data RTT sample (tcp_rtt_estimator()). Hence the cached RTT only
-	 * influences the first RTO but not later RTT estimation.
-	 *
-	 * But if RTT is not available from the SYN (due to retransmits or
-	 * syn cookies) or the cache, force a conservative 3secs timeout.
-	 *
-	 * A bit of theory. RTT is time passed after "normal" sized packet
-	 * is sent until it is ACKed. In normal circumstances sending small
-	 * packets force peer to delay ACKs and calculation is correct too.
-	 * The algorithm is adaptive and, provided we follow specs, it
-	 * NEVER underestimate RTT. BUT! If peer tries to make some clever
-	 * tricks sort of "quick acks" for time long enough to decrease RTT
-	 * to low value, and then abruptly stops to do it and starts to delay
-	 * ACKs, wait for troubles.
-	 */
+	 
 	if (crtt > tp->srtt_us) {
-		/* Set RTO like tcp_rtt_estimator(), but from cached RTT. */
+		 
 		crtt /= 8 * USEC_PER_SEC / HZ;
 		inet_csk(sk)->icsk_rto = crtt + max(2 * crtt, tcp_rto_min(sk));
 	} else if (tp->srtt_us == 0) {
-		/* RFC6298: 5.7 We've failed to get a valid RTT sample from
-		 * 3WHS. This is most likely due to retransmission,
-		 * including spurious one. Reset the RTO back to 3secs
-		 * from the more aggressive 1sec to avoid more spurious
-		 * retransmission.
-		 */
+		 
 		tp->rttvar_us = jiffies_to_usecs(TCP_TIMEOUT_FALLBACK);
 		tp->mdev_us = tp->mdev_max_us = tp->rttvar_us;
 
@@ -619,9 +578,7 @@ static const struct nla_policy tcp_metrics_nl_policy[TCP_METRICS_ATTR_MAX + 1] =
 	[TCP_METRICS_ATTR_ADDR_IPV4]	= { .type = NLA_U32, },
 	[TCP_METRICS_ATTR_ADDR_IPV6]	= { .type = NLA_BINARY,
 					    .len = sizeof(struct in6_addr), },
-	/* Following attributes are not received for GET/DEL,
-	 * we keep them for reference
-	 */
+	 
 #if 0
 	[TCP_METRICS_ATTR_AGE]		= { .type = NLA_MSECS, },
 	[TCP_METRICS_ATTR_TW_TSVAL]	= { .type = NLA_U32, },
@@ -635,7 +592,7 @@ static const struct nla_policy tcp_metrics_nl_policy[TCP_METRICS_ATTR_MAX + 1] =
 #endif
 };
 
-/* Add attributes, caller cancels its header on failure */
+ 
 static int tcp_metrics_fill_info(struct sk_buff *msg,
 				 struct tcp_metrics_block *tm)
 {

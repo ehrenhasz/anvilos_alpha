@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2016 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/sizes.h>
 #include <linux/slab.h>

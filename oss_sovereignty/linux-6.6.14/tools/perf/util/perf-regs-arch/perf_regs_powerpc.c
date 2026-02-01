@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #ifdef HAVE_PERF_REGS_SUPPORT
 

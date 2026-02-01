@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "core_types.h"
@@ -48,10 +25,7 @@ void dccg31_update_dpp_dto(struct dccg *dccg, int dpp_inst, int req_dppclk)
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
 	if (dccg->dpp_clock_gated[dpp_inst]) {
-		/*
-		 * Do not update the DPPCLK DTO if the clock is stopped.
-		 * It is treated the same as if the pipe itself were in PG.
-		 */
+		 
 		return;
 	}
 
@@ -59,8 +33,8 @@ void dccg31_update_dpp_dto(struct dccg *dccg, int dpp_inst, int req_dppclk)
 		int ref_dppclk = dccg->ref_dppclk;
 		int modulo, phase;
 
-		// phase / modulo = dpp pipe clk / dpp global clk
-		modulo = 0xff;   // use FF at the end
+		
+		modulo = 0xff;   
 		phase = ((modulo * req_dppclk) + ref_dppclk - 1) / ref_dppclk;
 
 		if (phase > 0xff) {
@@ -98,7 +72,7 @@ static void dccg31_enable_dpstreamclk(struct dccg *dccg, int otg_inst)
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
-	/* enabled to select one of the DTBCLKs for pipe */
+	 
 	switch (otg_inst) {
 	case 0:
 		REG_UPDATE(DPSTREAMCLK_CNTL,
@@ -179,7 +153,7 @@ void dccg31_enable_symclk32_se(
 
 	phyd32clk = get_phy_mux_symclk(dccg_dcn, phyd32clk);
 
-	/* select one of the PHYD32CLKs as the source for symclk32_se */
+	 
 	switch (hpo_se_inst) {
 	case 0:
 		if (dccg->ctx->dc->debug.root_clock_optimization.bits.symclk32_se)
@@ -229,7 +203,7 @@ void dccg31_disable_symclk32_se(
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
-	/* set refclk as the source for symclk32_se */
+	 
 	switch (hpo_se_inst) {
 	case 0:
 		REG_UPDATE_2(SYMCLK32_SE_CNTL,
@@ -282,7 +256,7 @@ void dccg31_enable_symclk32_le(
 
 	phyd32clk = get_phy_mux_symclk(dccg_dcn, phyd32clk);
 
-	/* select one of the PHYD32CLKs as the source for symclk32_le */
+	 
 	switch (hpo_le_inst) {
 	case 0:
 		REG_UPDATE_2(SYMCLK32_LE_CNTL,
@@ -306,7 +280,7 @@ void dccg31_disable_symclk32_le(
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
-	/* set refclk as the source for symclk32_le */
+	 
 	switch (hpo_le_inst) {
 	case 0:
 		REG_UPDATE_2(SYMCLK32_LE_CNTL,
@@ -357,7 +331,7 @@ void dccg31_disable_dscclk(struct dccg *dccg, int inst)
 
 	if (!dccg->ctx->dc->debug.root_clock_optimization.bits.dsc)
 		return;
-	//DTO must be enabled to generate a 0 Hz clock output
+	
 	switch (inst) {
 	case 0:
 		REG_UPDATE(DSCCLK_DTO_CTRL,
@@ -401,7 +375,7 @@ void dccg31_enable_dscclk(struct dccg *dccg, int inst)
 
 	if (!dccg->ctx->dc->debug.root_clock_optimization.bits.dsc)
 		return;
-	//Disable DTO
+	
 	switch (inst) {
 	case 0:
 		REG_UPDATE_2(DSCCLK0_DTO_PARAM,
@@ -447,7 +421,7 @@ void dccg31_set_physymclk(
 {
 	struct dcn_dccg *dccg_dcn = TO_DCN_DCCG(dccg);
 
-	/* Force PHYSYMCLK on and Select phyd32clk as the source of clock which is output to PHY through DCIO */
+	 
 	switch (phy_inst) {
 	case 0:
 		if (force_enable) {
@@ -540,7 +514,7 @@ void dccg31_set_physymclk(
 	}
 }
 
-/* Controls the generation of pixel valid for OTG in (OTG -> HPO case) */
+ 
 void dccg31_set_dtbclk_dto(
 		struct dccg *dccg,
 		const struct dtbclk_dto_params *params)
@@ -549,14 +523,7 @@ void dccg31_set_dtbclk_dto(
 	int req_dtbclk_khz = params->pixclk_khz;
 	uint32_t dtbdto_div;
 
-	/* Mode	                DTBDTO Rate       DTBCLK_DTO<x>_DIV Register
-	 * ODM 4:1 combine      pixel rate/4      2
-	 * ODM 2:1 combine      pixel rate/2      4
-	 * non-DSC 4:2:0 mode   pixel rate/2      4
-	 * DSC native 4:2:0     pixel rate/2      4
-	 * DSC native 4:2:2     pixel rate/2      4
-	 * Other modes          pixel rate        8
-	 */
+	 
 	if (params->num_odm_segments == 4) {
 		dtbdto_div = 2;
 		req_dtbclk_khz = params->pixclk_khz / 4;
@@ -572,7 +539,7 @@ void dccg31_set_dtbclk_dto(
 	if (params->ref_dtbclk_khz && req_dtbclk_khz) {
 		uint32_t modulo, phase;
 
-		// phase / modulo = dtbclk / dtbclk ref
+		
 		modulo = params->ref_dtbclk_khz * 1000;
 		phase = div_u64((((unsigned long long)modulo * req_dtbclk_khz) + params->ref_dtbclk_khz - 1),
 				params->ref_dtbclk_khz);
@@ -590,10 +557,7 @@ void dccg31_set_dtbclk_dto(
 				DTBCLKDTO_ENABLE_STATUS[params->otg_inst], 1,
 				1, 100);
 
-		/* The recommended programming sequence to enable DTBCLK DTO to generate
-		 * valid pixel HPO DPSTREAM ENCODER, specifies that DTO source select should
-		 * be set only after DTO is enabled
-		 */
+		 
 		REG_UPDATE(OTG_PIXEL_RATE_CNTL[params->otg_inst],
 				PIPE_DTO_SRC_SEL[params->otg_inst], 1);
 	} else {
@@ -616,7 +580,7 @@ void dccg31_set_audio_dtbclk_dto(
 	if (params->ref_dtbclk_khz && params->req_audio_dtbclk_khz) {
 		uint32_t modulo, phase;
 
-		// phase / modulo = dtbclk / dtbclk ref
+		
 		modulo = params->ref_dtbclk_khz * 1000;
 		phase = div_u64((((unsigned long long)modulo * params->req_audio_dtbclk_khz) + params->ref_dtbclk_khz - 1),
 			params->ref_dtbclk_khz);
@@ -625,17 +589,17 @@ void dccg31_set_audio_dtbclk_dto(
 		REG_WRITE(DCCG_AUDIO_DTBCLK_DTO_MODULO, modulo);
 		REG_WRITE(DCCG_AUDIO_DTBCLK_DTO_PHASE, phase);
 
-		//REG_UPDATE(DCCG_AUDIO_DTO_SOURCE,
-		//		DCCG_AUDIO_DTBCLK_DTO_USE_512FBR_DTO, 1);
+		
+		
 
 		REG_UPDATE(DCCG_AUDIO_DTO_SOURCE,
-				DCCG_AUDIO_DTO_SEL, 4);  //  04 - DCCG_AUDIO_DTO_SEL_AUDIO_DTO_DTBCLK
+				DCCG_AUDIO_DTO_SEL, 4);  
 	} else {
 		REG_WRITE(DCCG_AUDIO_DTBCLK_DTO_PHASE, 0);
 		REG_WRITE(DCCG_AUDIO_DTBCLK_DTO_MODULO, 0);
 
 		REG_UPDATE(DCCG_AUDIO_DTO_SOURCE,
-				DCCG_AUDIO_DTO_SEL, 3);  //  03 - DCCG_AUDIO_DTO_SEL_NO_AUDIO_DTO
+				DCCG_AUDIO_DTO_SEL, 3);  
 	}
 }
 
@@ -643,10 +607,7 @@ void dccg31_get_dccg_ref_freq(struct dccg *dccg,
 		unsigned int xtalin_freq_inKhz,
 		unsigned int *dccg_ref_freq_inKhz)
 {
-	/*
-	 * Assume refclk is sourced from xtalin
-	 * expect 24MHz
-	 */
+	 
 	*dccg_ref_freq_inKhz = xtalin_freq_inKhz;
 	return;
 }
@@ -663,10 +624,7 @@ void dccg31_set_dispclk_change_mode(
 
 void dccg31_init(struct dccg *dccg)
 {
-	/* Set HPO stream encoder to use refclk to avoid case where PHY is
-	 * disabled and SYMCLK32 for HPO SE is sourced from PHYD32CLK which
-	 * will cause DCN to hang.
-	 */
+	 
 	dccg31_disable_symclk32_se(dccg, 0);
 	dccg31_disable_symclk32_se(dccg, 1);
 	dccg31_disable_symclk32_se(dccg, 2);

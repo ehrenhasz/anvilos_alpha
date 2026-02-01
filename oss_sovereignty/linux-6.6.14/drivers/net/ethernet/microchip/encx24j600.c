@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Microchip ENCX24J600 ethernet driver
- *
- * Copyright (C) 2015 Gridpoint
- * Author: Jon Ringle <jringle@gridpoint.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -28,11 +23,7 @@ static int debug = -1;
 module_param(debug, int, 0000);
 MODULE_PARM_DESC(debug, "Debug level (0=none,...,16=all)");
 
-/* SRAM memory layout:
- *
- * 0x0000-0x05ff TX buffers  1.5KB  (1*1536) reside in the GP area in SRAM
- * 0x0600-0x5fff RX buffers 22.5KB (15*1536) reside in the RX area in SRAM
- */
+ 
 #define ENC_TX_BUF_START 0x0000U
 #define ENC_RX_BUF_START 0x0600U
 #define ENC_RX_BUF_END   0x5fffU
@@ -46,7 +37,7 @@ enum {
 
 struct encx24j600_priv {
 	struct net_device        *ndev;
-	struct mutex              lock; /* device access lock */
+	struct mutex              lock;  
 	struct encx24j600_context ctx;
 	struct sk_buff           *tx_skb;
 	struct task_struct       *kworker_task;
@@ -215,7 +206,7 @@ static void encx24j600_update_phcon1(struct encx24j600_priv *priv)
 	encx24j600_write_phy(priv, PHCON1, phcon1);
 }
 
-/* Waits for autonegotiation to complete. */
+ 
 static int encx24j600_wait_for_autoneg(struct encx24j600_priv *priv)
 {
 	struct net_device *dev = priv->ndev;
@@ -253,14 +244,14 @@ static int encx24j600_wait_for_autoneg(struct encx24j600_priv *priv)
 	} else {
 		encx24j600_clr_bits(priv, MACON2, FULDPX);
 		encx24j600_write_reg(priv, MABBIPG, 0x12);
-		/* Max retransmittions attempt  */
+		 
 		encx24j600_write_reg(priv, MACLCON, 0x370f);
 	}
 
 	return 0;
 }
 
-/* Access the PHY to determine link status */
+ 
 static void encx24j600_check_link_status(struct encx24j600_priv *priv)
 {
 	struct net_device *dev = priv->ndev;
@@ -277,9 +268,7 @@ static void encx24j600_check_link_status(struct encx24j600_priv *priv)
 	} else {
 		netif_info(priv, ifdown, dev, "link down\n");
 
-		/* Re-enable autoneg since we won't know what we might be
-		 * connected to when the link is brought back up again.
-		 */
+		 
 		priv->autoneg  = AUTONEG_ENABLE;
 		priv->full_duplex = true;
 		priv->speed = SPEED_100;
@@ -347,7 +336,7 @@ static int encx24j600_receive_packet(struct encx24j600_priv *priv,
 	skb->protocol = eth_type_trans(skb, dev);
 	skb->ip_summed = CHECKSUM_COMPLETE;
 
-	/* Maintain stats */
+	 
 	dev->stats.rx_packets++;
 	dev->stats.rx_bytes += rsv->len;
 
@@ -403,7 +392,7 @@ static irqreturn_t encx24j600_isr(int irq, void *dev_id)
 	struct net_device *dev = priv->ndev;
 	int eir;
 
-	/* Clear interrupts */
+	 
 	encx24j600_cmd(priv, CLREIE);
 
 	eir = encx24j600_read_reg(priv, EIR);
@@ -419,7 +408,7 @@ static irqreturn_t encx24j600_isr(int irq, void *dev_id)
 
 	if (eir & RXABTIF) {
 		if (eir & PCFULIF) {
-			/* Packet counter is full */
+			 
 			netif_err(priv, rx_err, dev, "Packet counter full\n");
 		}
 		dev->stats.rx_dropped++;
@@ -440,7 +429,7 @@ static irqreturn_t encx24j600_isr(int irq, void *dev_id)
 		mutex_unlock(&priv->lock);
 	}
 
-	/* Enable interrupts */
+	 
 	encx24j600_cmd(priv, SETEIE);
 
 	return IRQ_HANDLED;
@@ -452,7 +441,7 @@ static int encx24j600_soft_reset(struct encx24j600_priv *priv)
 	int timeout;
 	u16 eudast;
 
-	/* Write and verify a test value to EUDAST */
+	 
 	regcache_cache_bypass(priv->ctx.regmap, true);
 	timeout = 10;
 	do {
@@ -467,7 +456,7 @@ static int encx24j600_soft_reset(struct encx24j600_priv *priv)
 		goto err_out;
 	}
 
-	/* Wait for CLKRDY to become set */
+	 
 	timeout = 10;
 	while (!(encx24j600_read_reg(priv, ESTAT) & CLKRDY) && --timeout)
 		usleep_range(25, 100);
@@ -477,17 +466,17 @@ static int encx24j600_soft_reset(struct encx24j600_priv *priv)
 		goto err_out;
 	}
 
-	/* Issue a System Reset command */
+	 
 	encx24j600_cmd(priv, SETETHRST);
 	usleep_range(25, 100);
 
-	/* Confirm that EUDAST has 0000h after system reset */
+	 
 	if (encx24j600_read_reg(priv, EUDAST) != 0) {
 		ret = -EINVAL;
 		goto err_out;
 	}
 
-	/* Wait for PHY register and status bits to become available */
+	 
 	usleep_range(256, 1000);
 
 err_out:
@@ -513,13 +502,13 @@ static void encx24j600_reset_hw_tx(struct encx24j600_priv *priv)
 
 static void encx24j600_hw_init_tx(struct encx24j600_priv *priv)
 {
-	/* Reset TX */
+	 
 	encx24j600_reset_hw_tx(priv);
 
-	/* Clear the TXIF flag if were previously set */
+	 
 	encx24j600_clr_bits(priv, EIR, TXIF | TXABTIF);
 
-	/* Write the Tx Buffer pointer */
+	 
 	encx24j600_write_reg(priv, EGPWRPT, ENC_TX_BUF_START);
 }
 
@@ -527,22 +516,22 @@ static void encx24j600_hw_init_rx(struct encx24j600_priv *priv)
 {
 	encx24j600_cmd(priv, DISABLERX);
 
-	/* Set up RX packet start address in the SRAM */
+	 
 	encx24j600_write_reg(priv, ERXST, ENC_RX_BUF_START);
 
-	/* Preload the RX Data pointer to the beginning of the RX area */
+	 
 	encx24j600_write_reg(priv, ERXRDPT, ENC_RX_BUF_START);
 
 	priv->next_packet = ENC_RX_BUF_START;
 
-	/* Set up RX end address in the SRAM */
+	 
 	encx24j600_write_reg(priv, ERXTAIL, ENC_SRAM_SIZE - 2);
 
-	/* Reset the  user data pointers    */
+	 
 	encx24j600_write_reg(priv, EUDAST, ENC_SRAM_SIZE);
 	encx24j600_write_reg(priv, EUDAND, ENC_SRAM_SIZE + 1);
 
-	/* Set Max Frame length */
+	 
 	encx24j600_write_reg(priv, MAMXFL, MAX_FRAMELEN);
 }
 
@@ -551,7 +540,7 @@ static void encx24j600_dump_config(struct encx24j600_priv *priv,
 {
 	pr_info(DRV_NAME ": %s\n", msg);
 
-	/* CHIP configuration */
+	 
 	pr_info(DRV_NAME " ECON1:   %04X\n", encx24j600_read_reg(priv, ECON1));
 	pr_info(DRV_NAME " ECON2:   %04X\n", encx24j600_read_reg(priv, ECON2));
 	pr_info(DRV_NAME " ERXFCON: %04X\n", encx24j600_read_reg(priv,
@@ -560,7 +549,7 @@ static void encx24j600_dump_config(struct encx24j600_priv *priv,
 	pr_info(DRV_NAME " EIR:     %04X\n", encx24j600_read_reg(priv, EIR));
 	pr_info(DRV_NAME " EIDLED:  %04X\n", encx24j600_read_reg(priv, EIDLED));
 
-	/* MAC layer configuration */
+	 
 	pr_info(DRV_NAME " MACON1:  %04X\n", encx24j600_read_reg(priv, MACON1));
 	pr_info(DRV_NAME " MACON2:  %04X\n", encx24j600_read_reg(priv, MACON2));
 	pr_info(DRV_NAME " MAIPG:   %04X\n", encx24j600_read_reg(priv, MAIPG));
@@ -569,7 +558,7 @@ static void encx24j600_dump_config(struct encx24j600_priv *priv,
 	pr_info(DRV_NAME " MABBIPG: %04X\n", encx24j600_read_reg(priv,
 								 MABBIPG));
 
-	/* PHY configuation */
+	 
 	pr_info(DRV_NAME " PHCON1:  %04X\n", encx24j600_read_phy(priv, PHCON1));
 	pr_info(DRV_NAME " PHCON2:  %04X\n", encx24j600_read_phy(priv, PHCON2));
 	pr_info(DRV_NAME " PHANA:   %04X\n", encx24j600_read_phy(priv, PHANA));
@@ -609,19 +598,16 @@ static void encx24j600_hw_init(struct encx24j600_priv *priv)
 
 	priv->hw_enabled = false;
 
-	/* PHY Leds: link status,
-	 * LEDA: Link State + collision events
-	 * LEDB: Link State + transmit/receive events
-	 */
+	 
 	encx24j600_update_reg(priv, EIDLED, 0xff00, 0xcb00);
 
-	/* Loopback disabled */
+	 
 	encx24j600_write_reg(priv, MACON1, 0x9);
 
-	/* interpacket gap value */
+	 
 	encx24j600_write_reg(priv, MAIPG, 0x0c12);
 
-	/* Write the auto negotiation pattern */
+	 
 	encx24j600_write_phy(priv, PHANA, PHANA_DEFAULT);
 
 	encx24j600_update_phcon1(priv);
@@ -636,13 +622,13 @@ static void encx24j600_hw_init(struct encx24j600_priv *priv)
 	priv->rxfilter = RXFILTER_NORMAL;
 	encx24j600_set_rxfilter_mode(priv);
 
-	/* Program the Maximum frame length */
+	 
 	encx24j600_write_reg(priv, MAMXFL, MAX_FRAMELEN);
 
-	/* Init Tx pointers */
+	 
 	encx24j600_hw_init_tx(priv);
 
-	/* Init Rx pointers */
+	 
 	encx24j600_hw_init_rx(priv);
 
 	if (netif_msg_hw(priv))
@@ -651,15 +637,15 @@ static void encx24j600_hw_init(struct encx24j600_priv *priv)
 
 static void encx24j600_hw_enable(struct encx24j600_priv *priv)
 {
-	/* Clear the interrupt flags in case was set */
+	 
 	encx24j600_clr_bits(priv, EIR, (PCFULIF | RXABTIF | TXABTIF | TXIF |
 					PKTIF | LINKIF));
 
-	/* Enable the interrupts */
+	 
 	encx24j600_write_reg(priv, EIE, (PCFULIE | RXABTIE | TXABTIE | TXIE |
 					 PKTIE | LINKIE | INTIE));
 
-	/* Enable RX */
+	 
 	encx24j600_cmd(priv, ENABLERX);
 
 	priv->hw_enabled = true;
@@ -667,10 +653,10 @@ static void encx24j600_hw_enable(struct encx24j600_priv *priv)
 
 static void encx24j600_hw_disable(struct encx24j600_priv *priv)
 {
-	/* Disable all interrupts */
+	 
 	encx24j600_write_reg(priv, EIE, 0);
 
-	/* Disable RX */
+	 
 	encx24j600_cmd(priv, DISABLERX);
 
 	priv->hw_enabled = false;
@@ -683,17 +669,15 @@ static int encx24j600_setlink(struct net_device *dev, u8 autoneg, u16 speed,
 	int ret = 0;
 
 	if (!priv->hw_enabled) {
-		/* link is in low power mode now; duplex setting
-		 * will take effect on next encx24j600_hw_init()
-		 */
+		 
 		if (speed == SPEED_10 || speed == SPEED_100) {
 			priv->autoneg = (autoneg == AUTONEG_ENABLE);
 			priv->full_duplex = (duplex == DUPLEX_FULL);
 			priv->speed = (speed == SPEED_100);
 		} else {
 			netif_warn(priv, link, dev, "unsupported link speed setting\n");
-			/*speeds other than SPEED_10 and SPEED_100 */
-			/*are not supported by chip */
+			 
+			 
 			ret = -EOPNOTSUPP;
 		}
 	} else {
@@ -724,7 +708,7 @@ static void encx24j600_hw_get_macaddr(struct encx24j600_priv *priv,
 	ethaddr[5] = (val & 0xff00U) >> 8;
 }
 
-/* Program the hardware MAC address from dev->dev_addr.*/
+ 
 static int encx24j600_set_hw_macaddr(struct net_device *dev)
 {
 	struct encx24j600_priv *priv = netdev_priv(dev);
@@ -751,7 +735,7 @@ static int encx24j600_set_hw_macaddr(struct net_device *dev)
 	return 0;
 }
 
-/* Store the new hardware address in dev->dev_addr, and update the MAC.*/
+ 
 static int encx24j600_set_mac_address(struct net_device *dev, void *addr)
 {
 	struct sockaddr *address = addr;
@@ -837,26 +821,26 @@ static void encx24j600_hw_tx(struct encx24j600_priv *priv)
 		dump_packet("TX", priv->tx_skb->len, priv->tx_skb->data);
 
 	if (encx24j600_read_reg(priv, EIR) & TXABTIF)
-		/* Last transmition aborted due to error. Reset TX interface */
+		 
 		encx24j600_reset_hw_tx(priv);
 
-	/* Clear the TXIF flag if were previously set */
+	 
 	encx24j600_clr_bits(priv, EIR, TXIF);
 
-	/* Set the data pointer to the TX buffer address in the SRAM */
+	 
 	encx24j600_write_reg(priv, EGPWRPT, ENC_TX_BUF_START);
 
-	/* Copy the packet into the SRAM */
+	 
 	encx24j600_raw_write(priv, WGPDATA, (u8 *)priv->tx_skb->data,
 			     priv->tx_skb->len);
 
-	/* Program the Tx buffer start pointer */
+	 
 	encx24j600_write_reg(priv, ETXST, ENC_TX_BUF_START);
 
-	/* Program the packet length */
+	 
 	encx24j600_write_reg(priv, ETXLEN, priv->tx_skb->len);
 
-	/* Start the transmission */
+	 
 	encx24j600_cmd(priv, SETTXRTS);
 }
 
@@ -876,10 +860,10 @@ static netdev_tx_t encx24j600_tx(struct sk_buff *skb, struct net_device *dev)
 
 	netif_stop_queue(dev);
 
-	/* save the timestamp */
+	 
 	netif_trans_update(dev);
 
-	/* Remember the skb for deferred processing */
+	 
 	priv->tx_skb = skb;
 
 	kthread_queue_work(&priv->kworker, &priv->tx_work);
@@ -887,7 +871,7 @@ static netdev_tx_t encx24j600_tx(struct sk_buff *skb, struct net_device *dev)
 	return NETDEV_TX_OK;
 }
 
-/* Deal with a transmit timeout */
+ 
 static void encx24j600_tx_timeout(struct net_device *dev, unsigned int txqueue)
 {
 	struct encx24j600_priv *priv = netdev_priv(dev);
@@ -915,7 +899,7 @@ static void encx24j600_get_regs(struct net_device *dev,
 	mutex_lock(&priv->lock);
 	for (reg = 0; reg < SFR_REG_COUNT; reg += 2) {
 		unsigned int val = 0;
-		/* ignore errors for unreadable registers */
+		 
 		regmap_read(priv->ctx.regmap, reg, &val);
 		buff[reg] = val & 0xffff;
 	}
@@ -1018,7 +1002,7 @@ static int encx24j600_spi_probe(struct spi_device *spi)
 	priv->msg_enable = netif_msg_init(debug, DEFAULT_MSG_ENABLE);
 	priv->ndev = ndev;
 
-	/* Default configuration PHY configuration */
+	 
 	priv->full_duplex = true;
 	priv->autoneg = AUTONEG_ENABLE;
 	priv->speed = SPEED_100;
@@ -1033,7 +1017,7 @@ static int encx24j600_spi_probe(struct spi_device *spi)
 
 	mutex_init(&priv->lock);
 
-	/* Reset device and check if it is connected */
+	 
 	if (encx24j600_hw_reset(priv)) {
 		netif_err(priv, probe, ndev,
 			  DRV_NAME ": Chip is not detected\n");
@@ -1041,7 +1025,7 @@ static int encx24j600_spi_probe(struct spi_device *spi)
 		goto out_free;
 	}
 
-	/* Initialize the device HW to the consistent state */
+	 
 	encx24j600_hw_init(priv);
 
 	kthread_init_worker(&priv->kworker);
@@ -1056,7 +1040,7 @@ static int encx24j600_spi_probe(struct spi_device *spi)
 		goto out_free;
 	}
 
-	/* Get the MAC address from the chip */
+	 
 	encx24j600_hw_get_macaddr(priv, addr);
 	eth_hw_addr_set(ndev, addr);
 
@@ -1105,7 +1089,7 @@ static void encx24j600_spi_remove(struct spi_device *spi)
 
 static const struct spi_device_id encx24j600_spi_id_table[] = {
 	{ .name = "encx24j600" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(spi, encx24j600_spi_id_table);
 

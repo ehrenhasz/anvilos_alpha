@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for VGXY61 global shutter sensor family driver
- *
- * Copyright (C) 2022 STMicroelectronics SA
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -210,10 +206,7 @@ static const char * const vgxy61_supply_name[] = {
 };
 
 static const s64 link_freq[] = {
-	/*
-	 * MIPI output freq is 804Mhz / 2, as it uses both rising edge and
-	 * falling edges to send data
-	 */
+	 
 	402000000ULL
 };
 
@@ -399,7 +392,7 @@ struct vgxy61_dev {
 	u16 line_length;
 	u16 rot_term;
 	bool gpios_polarity;
-	/* Lock to protect all members below */
+	 
 	struct mutex lock;
 	struct v4l2_ctrl_handler ctrl_handler;
 	struct v4l2_ctrl *pixel_rate_ctrl;
@@ -437,7 +430,7 @@ static u8 get_bpp_by_code(__u32 code)
 		if (vgxy61_supported_codes[i].code == code)
 			return vgxy61_supported_codes[i].bpp;
 	}
-	/* Should never happen */
+	 
 	WARN(1, "Unsupported code %d. default to 8 bpp", code);
 	return 8;
 }
@@ -450,7 +443,7 @@ static u8 get_data_type_by_code(__u32 code)
 		if (vgxy61_supported_codes[i].code == code)
 			return vgxy61_supported_codes[i].data_type;
 	}
-	/* Should never happen */
+	 
 	WARN(1, "Unsupported code %d. default to MIPI_CSI2_DT_RAW8 data type",
 	     code);
 	return MIPI_CSI2_DT_RAW8;
@@ -461,10 +454,7 @@ static void compute_pll_parameters_by_freq(u32 freq, u8 *prediv, u8 *mult)
 	const unsigned int predivs[] = {1, 2, 4};
 	unsigned int i;
 
-	/*
-	 * Freq range is [6Mhz-27Mhz] already checked.
-	 * Output of divider should be in [6Mhz-12Mhz[.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(predivs); i++) {
 		*prediv = predivs[i];
 		if (freq / *prediv < 12 * HZ_PER_MHZ)
@@ -472,10 +462,7 @@ static void compute_pll_parameters_by_freq(u32 freq, u8 *prediv, u8 *mult)
 	}
 	WARN_ON(i == ARRAY_SIZE(predivs));
 
-	/*
-	 * Target freq is 804Mhz. Don't change this as it will impact image
-	 * quality.
-	 */
+	 
 	*mult = ((804 * HZ_PER_MHZ) * (*prediv) + freq / 2) / freq;
 }
 
@@ -634,12 +621,7 @@ static int vgxy61_wait_state(struct vgxy61_dev *sensor, int state,
 
 static int vgxy61_check_bw(struct vgxy61_dev *sensor)
 {
-	/*
-	 * Simplification of time needed to send short packets and for the MIPI
-	 * to add transition times (EoT, LPS, and SoT packet delimiters) needed
-	 * by the protocol to go in low power between 2 packets of data. This
-	 * is a mipi IP constant for the sensor.
-	 */
+	 
 	const unsigned int mipi_margin = 1056;
 	unsigned int binning_scale = sensor->current_mode->crop.height /
 				     sensor->current_mode->height;
@@ -660,7 +642,7 @@ static int vgxy61_apply_exposure(struct vgxy61_dev *sensor)
 {
 	int ret = 0;
 
-	 /* We first set expo to zero to avoid forbidden parameters couple */
+	  
 	vgxy61_write_reg(sensor, VGXY61_REG_COARSE_EXPOSURE_SHORT, 0, &ret);
 	vgxy61_write_reg(sensor, VGXY61_REG_COARSE_EXPOSURE_LONG,
 			 sensor->expo_long, &ret);
@@ -797,7 +779,7 @@ static u16 vgxy61_get_vblank_min(struct vgxy61_dev *sensor,
 {
 	u16 min_vblank =  VGXY61_MIN_FRAME_LENGTH -
 			  sensor->current_mode->crop.height;
-	/* Ensure the first rule of thumb can't be negative */
+	 
 	u16 min_vblank_hdr =  VGXY61_MIN_EXPOSURE + sensor->rot_term + 1;
 
 	if (hdr != VGXY61_NO_HDR)
@@ -837,11 +819,7 @@ static int vgxy61_apply_digital_gain(struct vgxy61_dev *sensor,
 {
 	int ret = 0;
 
-	/*
-	 * For a monochrome version, configuring DIGITAL_GAIN_LONG_CH0 and
-	 * DIGITAL_GAIN_SHORT_CH0 is enough to configure the gain of all
-	 * four sub pixels.
-	 */
+	 
 	vgxy61_write_reg(sensor, VGXY61_REG_DIGITAL_GAIN_LONG, digital_gain,
 			 &ret);
 	vgxy61_write_reg(sensor, VGXY61_REG_DIGITAL_GAIN_SHORT, digital_gain,
@@ -913,7 +891,7 @@ static int vgxy61_update_gpios_strobe_mode(struct vgxy61_dev *sensor,
 		sensor->strobe_mode = VGXY61_STROBE_LONG;
 		break;
 	default:
-		/* Should never happen */
+		 
 		WARN_ON(true);
 		break;
 	}
@@ -955,30 +933,21 @@ static u32 vgxy61_get_expo_long_max(struct vgxy61_dev *sensor,
 {
 	u32 first_rot_max_expo, second_rot_max_expo, third_rot_max_expo;
 
-	/* Apply sensor's rules of thumb */
-	/*
-	 * Short exposure + height must be less than frame length to avoid bad
-	 * pixel line at the botom of the image
-	 */
+	 
+	 
 	first_rot_max_expo =
 		((sensor->frame_length - sensor->current_mode->crop.height -
 		sensor->rot_term) * short_expo_ratio) - 1;
 
-	/*
-	 * Total exposition time must be less than frame length to avoid sensor
-	 * crash
-	 */
+	 
 	second_rot_max_expo =
 		(((sensor->frame_length - VGXY61_EXPOS_ROT_TERM) *
 		short_expo_ratio) / (short_expo_ratio + 1)) - 1;
 
-	/*
-	 * Short exposure times 71 must be less than frame length to avoid
-	 * sensor crash
-	 */
+	 
 	third_rot_max_expo = (sensor->frame_length / 71) * short_expo_ratio;
 
-	/* Take the minimum from all rules */
+	 
 	return min(min(first_rot_max_expo, second_rot_max_expo),
 		   third_rot_max_expo);
 }
@@ -992,13 +961,10 @@ static int vgxy61_update_exposure(struct vgxy61_dev *sensor, u16 new_expo_long,
 	u16 expo_long_min = VGXY61_MIN_EXPOSURE;
 	u16 expo_long_max = 0;
 
-	/* Compute short exposure according to hdr mode and long exposure */
+	 
 	switch (hdr) {
 	case VGXY61_HDR_LINEAR:
-		/*
-		 * Take ratio into account for minimal exposures in
-		 * VGXY61_HDR_LINEAR
-		 */
+		 
 		expo_long_min = VGXY61_MIN_EXPOSURE * VGXY61_HDR_LINEAR_RATIO;
 		new_expo_long = max(expo_long_min, new_expo_long);
 
@@ -1016,26 +982,23 @@ static int vgxy61_update_exposure(struct vgxy61_dev *sensor, u16 new_expo_long,
 		new_expo_long = max(expo_long_min, new_expo_long);
 
 		expo_long_max = vgxy61_get_expo_long_max(sensor, 1);
-		/* Short and long are the same in VGXY61_HDR_SUB */
+		 
 		expo_short_max = expo_long_max;
 		new_expo_short = new_expo_long;
 		break;
 	case VGXY61_NO_HDR:
 		new_expo_long = max(expo_long_min, new_expo_long);
 
-		/*
-		 * As short expo is 0 here, only the second rule of thumb
-		 * applies, see vgxy61_get_expo_long_max for more
-		 */
+		 
 		expo_long_max = sensor->frame_length - VGXY61_EXPOS_ROT_TERM;
 		break;
 	default:
-		/* Should never happen */
+		 
 		WARN_ON(true);
 		break;
 	}
 
-	/* If this happens, something is wrong with formulas */
+	 
 	WARN_ON(expo_long_min > expo_long_max);
 
 	if (new_expo_long > expo_long_max) {
@@ -1071,7 +1034,7 @@ static int vgxy61_update_vblank(struct vgxy61_dev *sensor, u16 vblank,
 	sensor->frame_length = sensor->current_mode->crop.height +
 			       sensor->vblank;
 
-	/* Update exposure according to vblank */
+	 
 	ret = vgxy61_update_exposure(sensor, sensor->expo_long, hdr);
 	if (ret)
 		return ret;
@@ -1095,16 +1058,12 @@ static int vgxy61_update_hdr(struct vgxy61_dev *sensor,
 {
 	int ret;
 
-	/*
-	 * vblank and short exposure change according to HDR mode, do it first
-	 * as it can violate sensors 'rule of thumbs' and therefore will require
-	 * to change the long exposure.
-	 */
+	 
 	ret = vgxy61_update_vblank(sensor, sensor->vblank, index);
 	if (ret)
 		return ret;
 
-	/* Update strobe mode according to HDR */
+	 
 	ret = vgxy61_update_gpios_strobe_mode(sensor, index);
 	if (ret)
 		return ret;
@@ -1176,7 +1135,7 @@ static int vgxy61_stream_enable(struct vgxy61_dev *sensor)
 		return ret;
 	}
 
-	/* pm_runtime_get_sync() can return 1 as a valid return code */
+	 
 	ret = 0;
 
 	vgxy61_write_reg(sensor, VGXY61_REG_FORMAT_CTRL,
@@ -1214,7 +1173,7 @@ static int vgxy61_stream_enable(struct vgxy61_dev *sensor)
 	if (ret)
 		goto err_rpm_put;
 
-	/* vflip and hflip cannot change during streaming */
+	 
 	__v4l2_ctrl_grab(sensor->vflip_ctrl, true);
 	__v4l2_ctrl_grab(sensor->hflip_ctrl, true);
 
@@ -1303,13 +1262,13 @@ static int vgxy61_set_fmt(struct v4l2_subdev *sd,
 
 		sensor->current_mode = new_mode;
 
-		/* Reset vblank and framelength to default */
+		 
 		ret = vgxy61_update_vblank(sensor,
 					   VGXY61_FRAME_LENGTH_DEF -
 					   new_mode->crop.height,
 					   sensor->hdr);
 
-		/* Update controls to reflect new mode */
+		 
 		__v4l2_ctrl_s_ctrl_int64(sensor->pixel_rate_ctrl,
 					 get_pixel_rate(sensor));
 		__v4l2_ctrl_modify_range(sensor->vblank_ctrl,
@@ -1375,7 +1334,7 @@ static int vgxy61_s_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	case V4L2_CID_HDR_SENSOR_MODE:
 		ret = vgxy61_update_hdr(sensor, ctrl->val);
-		/* Update vblank and exposure controls to match new hdr */
+		 
 		__v4l2_ctrl_modify_range(sensor->vblank_ctrl,
 					 sensor->vblank_min,
 					 0xffff - cur_mode->crop.height,
@@ -1386,7 +1345,7 @@ static int vgxy61_s_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	case V4L2_CID_VBLANK:
 		ret = vgxy61_update_vblank(sensor, ctrl->val, sensor->hdr);
-		/* Update exposure control to match new vblank */
+		 
 		__v4l2_ctrl_modify_range(sensor->expo_ctrl, sensor->expo_min,
 					 sensor->expo_max, 1,
 					 sensor->expo_long);
@@ -1412,7 +1371,7 @@ static int vgxy61_init_controls(struct vgxy61_dev *sensor)
 	int ret;
 
 	v4l2_ctrl_handler_init(hdl, 16);
-	/* We can use our own mutex for the ctrl lock */
+	 
 	hdl->lock = &sensor->lock;
 	v4l2_ctrl_new_std(hdl, ops, V4L2_CID_ANALOGUE_GAIN, 0, 0x1c, 1,
 			  sensor->analog_gain);
@@ -1434,10 +1393,7 @@ static int vgxy61_init_controls(struct vgxy61_dev *sensor)
 				     ARRAY_SIZE(vgxy61_hdr_mode_menu) - 1, 0,
 				     VGXY61_NO_HDR, vgxy61_hdr_mode_menu);
 
-	/*
-	 * Keep a pointer to these controls as we need to update them when
-	 * setting the format
-	 */
+	 
 	sensor->pixel_rate_ctrl = v4l2_ctrl_new_std(hdl, ops,
 						    V4L2_CID_PIXEL_RATE, 1,
 						    INT_MAX, 1,
@@ -1514,17 +1470,14 @@ static int vgxy61_tx_from_ep(struct vgxy61_dev *sensor,
 		goto error_ep;
 	}
 
-	/* Build log2phy, phy2log and polarities from ep info */
+	 
 	log2phy[0] = ep.bus.mipi_csi2.clock_lane;
 	phy2log[log2phy[0]] = 0;
 	for (l = 1; l < l_nb + 1; l++) {
 		log2phy[l] = ep.bus.mipi_csi2.data_lanes[l - 1];
 		phy2log[log2phy[l]] = l;
 	}
-	/*
-	 * Then fill remaining slots for every physical slot to have something
-	 * valid for hardware stuff.
-	 */
+	 
 	for (p = 0; p < VGXY61_NB_POLARITIES; p++) {
 		if (phy2log[p] != ~0)
 			continue;
@@ -1574,9 +1527,9 @@ static int vgxy61_configure(struct vgxy61_dev *sensor)
 
 	compute_pll_parameters_by_freq(sensor->clk_freq, &prediv, &mult);
 	sensor_freq = (mult * sensor->clk_freq) / prediv;
-	/* Frequency to data rate is 1:1 ratio for MIPI */
+	 
 	sensor->data_rate_in_mbps = sensor_freq;
-	/* Video timing ISP path (pixel clock)  requires 804/5 mhz = 160 mhz */
+	 
 	sensor->pclk = sensor_freq / 5;
 
 	line_length = vgxy61_read_reg(sensor, VGXY61_REG_LINE_LENGTH);
@@ -1592,7 +1545,7 @@ static int vgxy61_configure(struct vgxy61_dev *sensor)
 	if (ret)
 		return ret;
 	vgxy61_update_gpios_strobe_polarity(sensor, sensor->gpios_polarity);
-	/* Set pattern generator solid to middle value */
+	 
 	vgxy61_write_reg(sensor, VGXY61_REG_PATGEN_LONG_DATA_GR, 0x800, &ret);
 	vgxy61_write_reg(sensor, VGXY61_REG_PATGEN_LONG_DATA_R, 0x800, &ret);
 	vgxy61_write_reg(sensor, VGXY61_REG_PATGEN_LONG_DATA_B, 0x800, &ret);
@@ -1705,7 +1658,7 @@ static int vgxy61_detect(struct vgxy61_dev *sensor)
 	return 0;
 }
 
-/* Power/clock management functions */
+ 
 static int vgxy61_power_on(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -1792,7 +1745,7 @@ static void vgxy61_fill_sensor_param(struct vgxy61_dev *sensor)
 		sensor->default_mode = &vgx661_mode_data[VGX661_DEFAULT_MODE];
 		sensor->rot_term = VGX661_SHORT_ROT_TERM;
 	} else {
-		/* Should never happen */
+		 
 		WARN_ON(true);
 	}
 	sensor->current_mode = sensor->default_mode;
@@ -1889,7 +1842,7 @@ static int vgxy61_probe(struct i2c_client *client)
 		goto error_handler_free;
 	}
 
-	/* Enable runtime PM and turn off the device */
+	 
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
 	pm_runtime_idle(dev);
@@ -1937,7 +1890,7 @@ static void vgxy61_remove(struct i2c_client *client)
 
 static const struct of_device_id vgxy61_dt_ids[] = {
 	{ .compatible = "st,st-vgxy61" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, vgxy61_dt_ids);
 

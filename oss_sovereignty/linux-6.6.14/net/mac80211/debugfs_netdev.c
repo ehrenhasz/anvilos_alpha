@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2006	Jiri Benc <jbenc@suse.cz>
- * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -168,7 +164,7 @@ static ssize_t ieee80211_if_write_##name(struct file *file,		\
 	IEEE80211_IF_FMT_##format(name, struct ieee80211_sub_if_data, field) \
 	IEEE80211_IF_FILE_R(name)
 
-/* Same but with a link_ prefix in the ops variable name and different type */
+ 
 #define IEEE80211_IF_LINK_FILE_R(name)					\
 	_IEEE80211_IF_FILE_R_FN(name, struct ieee80211_link_data *)	\
 	_IEEE80211_IF_FILE_OPS(link_##name, ieee80211_if_read_##name, NULL)
@@ -187,7 +183,7 @@ static ssize_t ieee80211_if_write_##name(struct file *file,		\
 	IEEE80211_IF_FMT_##format(name, struct ieee80211_link_data, field) \
 	IEEE80211_IF_LINK_FILE_R(name)
 
-/* common attributes */
+ 
 IEEE80211_IF_FILE(rc_rateidx_mask_2ghz, rc_rateidx_mask[NL80211_BAND_2GHZ],
 		  HEX);
 IEEE80211_IF_FILE(rc_rateidx_mask_5ghz, rc_rateidx_mask[NL80211_BAND_5GHZ],
@@ -255,7 +251,7 @@ ieee80211_if_fmt_hw_queues(const struct ieee80211_sub_if_data *sdata,
 }
 IEEE80211_IF_FILE_R(hw_queues);
 
-/* STA attributes */
+ 
 IEEE80211_IF_FILE(bssid, deflink.u.mgd.bssid, MAC);
 IEEE80211_IF_FILE(aid, vif.cfg.aid, DEC);
 IEEE80211_IF_FILE(beacon_timeout, u.mgd.beacon_timeout, JIFFIES_TO_MS);
@@ -274,7 +270,7 @@ static int ieee80211_set_smps(struct ieee80211_link_data *link,
 	    smps_mode == IEEE80211_SMPS_STATIC)
 		return -EINVAL;
 
-	/* auto should be dynamic if in PS mode */
+	 
 	if (!(local->hw.wiphy->features & NL80211_FEATURE_DYNAMIC_SMPS) &&
 	    (smps_mode == IEEE80211_SMPS_DYNAMIC ||
 	     smps_mode == IEEE80211_SMPS_AUTOMATIC))
@@ -351,14 +347,14 @@ static ssize_t ieee80211_if_parse_tkip_mic_test(
 	switch (sdata->vif.type) {
 	case NL80211_IFTYPE_AP:
 		fc |= cpu_to_le16(IEEE80211_FCTL_FROMDS);
-		/* DA BSSID SA */
+		 
 		memcpy(hdr->addr1, addr, ETH_ALEN);
 		memcpy(hdr->addr2, sdata->vif.addr, ETH_ALEN);
 		memcpy(hdr->addr3, sdata->vif.addr, ETH_ALEN);
 		break;
 	case NL80211_IFTYPE_STATION:
 		fc |= cpu_to_le16(IEEE80211_FCTL_TODS);
-		/* BSSID SA DA */
+		 
 		sdata_lock(sdata);
 		if (!sdata->u.mgd.associated) {
 			sdata_unlock(sdata);
@@ -376,11 +372,7 @@ static ssize_t ieee80211_if_parse_tkip_mic_test(
 	}
 	hdr->frame_control = fc;
 
-	/*
-	 * Add some length to the test frame to make it look bit more valid.
-	 * The exact contents does not matter since the recipient is required
-	 * to drop this because of the Michael MIC failure.
-	 */
+	 
 	skb_put_zero(skb, 50);
 
 	IEEE80211_SKB_CB(skb)->flags |= IEEE80211_TX_INTFL_TKIP_MIC_FAILURE;
@@ -487,7 +479,7 @@ static ssize_t ieee80211_if_parse_tdls_wider_bw(
 }
 IEEE80211_IF_FILE_RW(tdls_wider_bw);
 
-/* AP attributes */
+ 
 IEEE80211_IF_FILE(num_mcast_sta, u.ap.num_mcast_sta, ATOMIC);
 IEEE80211_IF_FILE(num_sta_ps, u.ap.ps.num_sta_ps, ATOMIC);
 IEEE80211_IF_FILE(dtim_count, u.ap.ps.dtim_count, DEC);
@@ -540,7 +532,7 @@ IEEE80211_IF_FILE_R(aqm);
 
 IEEE80211_IF_FILE(multicast_to_unicast, u.ap.multicast_to_unicast, HEX);
 
-/* IBSS attributes */
+ 
 static ssize_t ieee80211_if_fmt_tsf(
 	const struct ieee80211_sub_if_data *sdata, char *buf, int buflen)
 {
@@ -628,7 +620,7 @@ IEEE80211_IF_LINK_FILE(addr, conf->addr, MAC);
 #ifdef CONFIG_MAC80211_MESH
 IEEE80211_IF_FILE(estab_plinks, u.mesh.estab_plinks, ATOMIC);
 
-/* Mesh stats attributes */
+ 
 IEEE80211_IF_FILE(fwded_mcast, u.mesh.mshstats.fwded_mcast, DEC);
 IEEE80211_IF_FILE(fwded_unicast, u.mesh.mshstats.fwded_unicast, DEC);
 IEEE80211_IF_FILE(fwded_frames, u.mesh.mshstats.fwded_frames, DEC);
@@ -636,7 +628,7 @@ IEEE80211_IF_FILE(dropped_frames_ttl, u.mesh.mshstats.dropped_frames_ttl, DEC);
 IEEE80211_IF_FILE(dropped_frames_no_route,
 		  u.mesh.mshstats.dropped_frames_no_route, DEC);
 
-/* Mesh parameters */
+ 
 IEEE80211_IF_FILE(dot11MeshMaxRetries,
 		  u.mesh.mshcfg.dot11MeshMaxRetries, DEC);
 IEEE80211_IF_FILE(dot11MeshRetryTimeout,
@@ -750,7 +742,7 @@ static void add_ap_files(struct ieee80211_sub_if_data *sdata)
 
 static void add_vlan_files(struct ieee80211_sub_if_data *sdata)
 {
-	/* add num_mcast_sta_vlan using name num_mcast_sta */
+	 
 	debugfs_create_file("num_mcast_sta", 0400, sdata->vif.debugfs_dir,
 			    sdata, &num_mcast_sta_vlan_ops);
 }
@@ -931,7 +923,7 @@ void ieee80211_link_debugfs_add(struct ieee80211_link_data *link)
 	if (WARN_ON(!link->sdata->vif.debugfs_dir))
 		return;
 
-	/* For now, this should not be called for non-MLO capable drivers */
+	 
 	if (WARN_ON(!(link->sdata->local->hw.wiphy->flags & WIPHY_FLAG_SUPPORTS_MLO)))
 		return;
 
@@ -980,7 +972,7 @@ void ieee80211_link_debugfs_drv_remove(struct ieee80211_link_data *link)
 	if (WARN_ON(link->debugfs_dir == link->sdata->vif.debugfs_dir))
 		return;
 
-	/* Recreate the directory excluding the driver data */
+	 
 	debugfs_remove_recursive(link->debugfs_dir);
 	link->debugfs_dir = NULL;
 

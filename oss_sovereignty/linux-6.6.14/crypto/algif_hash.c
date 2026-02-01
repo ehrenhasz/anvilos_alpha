@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * algif_hash: User-space interface for hash algorithms
- *
- * This file provides the user-space API for hash algorithms.
- *
- * Copyright (c) 2010 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/hash.h>
 #include <crypto/if_alg.h>
@@ -78,16 +72,13 @@ static int hash_sendmsg(struct socket *sock, struct msghdr *msg,
 	continuing = ctx->more;
 
 	if (!continuing) {
-		/* Discard a previous request that wasn't marked MSG_MORE. */
+		 
 		hash_free_result(sk, ctx);
 		if (!msg_data_left(msg))
-			goto done; /* Zero-length; don't start new req */
+			goto done;  
 		need_init = true;
 	} else if (!msg_data_left(msg)) {
-		/*
-		 * No data - finalise the prev req if MSG_MORE so any error
-		 * comes out here.
-		 */
+		 
 		if (!(msg->msg_flags & MSG_MORE)) {
 			err = hash_alloc_result(sk, ctx);
 			if (err)

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * netprio_cgroup.h			Control Group Priority set
- *
- * Authors:	Neil Horman <nhorman@tuxdriver.com>
- */
+ 
+ 
 
 #ifndef _NETPRIO_CGROUP_H
 #define _NETPRIO_CGROUP_H
@@ -39,7 +35,7 @@ static inline void sock_update_netprioidx(struct sock_cgroup_data *skcd)
 	sock_cgroup_set_prioidx(skcd, task_netprioidx(current));
 }
 
-#else /* !CONFIG_CGROUP_NET_PRIO */
+#else  
 
 static inline u32 task_netprioidx(struct task_struct *p)
 {
@@ -50,5 +46,5 @@ static inline void sock_update_netprioidx(struct sock_cgroup_data *skcd)
 {
 }
 
-#endif /* CONFIG_CGROUP_NET_PRIO */
-#endif  /* _NET_CLS_CGROUP_H */
+#endif  
+#endif   

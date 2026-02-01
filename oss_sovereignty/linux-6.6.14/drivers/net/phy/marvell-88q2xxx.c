@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell 88Q2XXX automotive 100BASE-T1/1000BASE-T1 PHY driver
- */
+
+ 
 #include <linux/ethtool_netlink.h>
 #include <linux/marvell_phy.h>
 #include <linux/phy.h>
@@ -48,20 +46,13 @@ static int mv88q2xxx_read_link_gbit(struct phy_device *phydev)
 	int ret;
 	bool link = false;
 
-	/* Read vendor specific Auto-Negotiation status register to get local
-	 * and remote receiver status according to software initialization
-	 * guide.
-	 */
+	 
 	ret = phy_read_mmd(phydev, MDIO_MMD_AN, MDIO_MMD_AN_MV_STAT);
 	if (ret < 0) {
 		return ret;
 	} else if ((ret & MDIO_MMD_AN_MV_STAT_LOCAL_RX) &&
 		   (ret & MDIO_MMD_AN_MV_STAT_REMOTE_RX)) {
-		/* The link state is latched low so that momentary link
-		 * drops can be detected. Do not double-read the status
-		 * in polling mode to detect such short link drops except
-		 * the link was already down.
-		 */
+		 
 		if (!phy_polling_mode(phydev) || !phydev->link) {
 			ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_PCS_1000BT1_STAT);
 			if (ret < 0)
@@ -88,12 +79,7 @@ static int mv88q2xxx_read_link_100m(struct phy_device *phydev)
 {
 	int ret;
 
-	/* The link state is latched low so that momentary link
-	 * drops can be detected. Do not double-read the status
-	 * in polling mode to detect such short link drops except
-	 * the link was already down. In case we are not polling,
-	 * we always read the realtime status.
-	 */
+	 
 	if (!phy_polling_mode(phydev) || !phydev->link) {
 		ret = phy_read_mmd(phydev, MDIO_MMD_PCS, MDIO_MMD_PCS_MV_100BT1_STAT1);
 		if (ret < 0)
@@ -107,7 +93,7 @@ static int mv88q2xxx_read_link_100m(struct phy_device *phydev)
 		return ret;
 
 out:
-	/* Check if we have link and if the remote and local receiver are ok */
+	 
 	if ((ret & MDIO_MMD_PCS_MV_100BT1_STAT1_LINK) &&
 	    (ret & MDIO_MMD_PCS_MV_100BT1_STAT1_LOCAL_RX) &&
 	    (ret & MDIO_MMD_PCS_MV_100BT1_STAT1_REMOTE_RX))
@@ -122,10 +108,7 @@ static int mv88q2xxx_read_link(struct phy_device *phydev)
 {
 	int ret;
 
-	/* The 88Q2XXX PHYs do not have the PMA/PMD status register available,
-	 * therefore we need to read the link status from the vendor specific
-	 * registers depending on the speed.
-	 */
+	 
 	if (phydev->speed == SPEED_1000)
 		ret = mv88q2xxx_read_link_gbit(phydev);
 	else
@@ -153,19 +136,12 @@ static int mv88q2xxx_get_features(struct phy_device *phydev)
 	if (ret)
 		return ret;
 
-	/* We need to read the baset1 extended abilities manually because the
-	 * PHY does not signalize it has the extended abilities register
-	 * available.
-	 */
+	 
 	ret = genphy_c45_pma_baset1_read_abilities(phydev);
 	if (ret)
 		return ret;
 
-	/* The PHY signalizes it supports autonegotiation. Unfortunately, so
-	 * far it was not possible to get a link even when following the init
-	 * sequence provided by Marvell. Disable it for now until a proper
-	 * workaround is found or a new PHY revision is released.
-	 */
+	 
 	linkmode_clear_bit(ETHTOOL_LINK_MODE_Autoneg_BIT, phydev->supported);
 
 	return 0;
@@ -186,13 +162,10 @@ static int mv88q2xxx_config_init(struct phy_device *phydev)
 {
 	int ret;
 
-	/* The 88Q2XXX PHYs do have the extended ability register available, but
-	 * register MDIO_PMA_EXTABLE where they should signalize it does not
-	 * work according to specification. Therefore, we force it here.
-	 */
+	 
 	phydev->pma_extable = MDIO_PMA_EXTABLE_BT1;
 
-	/* Read the current PHY configuration */
+	 
 	ret = genphy_c45_read_pma(phydev);
 	if (ret)
 		return ret;
@@ -205,19 +178,14 @@ static int mv88q2xxxx_get_sqi(struct phy_device *phydev)
 	int ret;
 
 	if (phydev->speed == SPEED_100) {
-		/* Read the SQI from the vendor specific receiver status
-		 * register
-		 */
+		 
 		ret = phy_read_mmd(phydev, MDIO_MMD_PCS, 0x8230);
 		if (ret < 0)
 			return ret;
 
 		ret = ret >> 12;
 	} else {
-		/* Read from vendor specific registers, they are not documented
-		 * but can be found in the Software Initialization Guide. Only
-		 * revisions >= A0 are supported.
-		 */
+		 
 		ret = phy_modify_mmd(phydev, MDIO_MMD_PCS, 0xFC5D, 0x00FF, 0x00AC);
 		if (ret < 0)
 			return ret;
@@ -255,7 +223,7 @@ module_phy_driver(mv88q2xxx_driver);
 
 static struct mdio_device_id __maybe_unused mv88q2xxx_tbl[] = {
 	{ MARVELL_PHY_ID_88Q2110, MARVELL_PHY_ID_MASK },
-	{ /*sentinel*/ }
+	{   }
 };
 MODULE_DEVICE_TABLE(mdio, mv88q2xxx_tbl);
 

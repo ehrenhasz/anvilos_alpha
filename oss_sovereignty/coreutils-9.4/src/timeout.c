@@ -1,48 +1,4 @@
-/* timeout -- run a command with bounded time
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-
-/* timeout - Start a command, and kill it if the specified timeout expires
-
-   We try to behave like a shell starting a single (foreground) job,
-   and will kill the job if we receive the alarm signal we setup.
-   The exit status of the job is returned, or one of these errors:
-     EXIT_TIMEDOUT      124      job timed out
-     EXIT_CANCELED      125      internal error
-     EXIT_CANNOT_INVOKE 126      error executing job
-     EXIT_ENOENT        127      couldn't find job to exec
-
-   Caveats:
-     If user specifies the KILL (9) signal is to be sent on timeout,
-     the monitor is killed and so exits with 128+9 rather than 124.
-
-     If you start a command in the background, which reads from the tty
-     and so is immediately sent SIGTTIN to stop, then the timeout
-     process will ignore this so it can timeout the command as expected.
-     This can be seen with 'timeout 10 dd&' for example.
-     However if one brings this group to the foreground with the 'fg'
-     command before the timer expires, the command will remain
-     in the stop state as the shell doesn't send a SIGCONT
-     because the timeout process (group leader) is already running.
-     To get the command running again one can Ctrl-Z, and do fg again.
-     Note one can Ctrl-C the whole job when in this state.
-     I think this could be fixed but I'm not sure the extra
-     complication is justified for this scenario.
-
-   Written by Pádraig Brady.  */
+ 
 
 #include <config.h>
 #include <getopt.h>
@@ -62,12 +18,11 @@
 #include "quote.h"
 
 #if HAVE_SETRLIMIT
-/* FreeBSD 5.0 at least needs <sys/types.h> and <sys/time.h> included
-   before <sys/resource.h>.  Currently "system.h" includes <sys/time.h>.  */
+ 
 # include <sys/resource.h>
 #endif
 
-/* NonStop circa 2011 lacks both SA_RESTART and siginterrupt.  */
+ 
 #ifndef SA_RESTART
 # define SA_RESTART 0
 #endif
@@ -77,15 +32,15 @@
 #define AUTHORS proper_name_lite ("Padraig Brady", "P\303\241draig Brady")
 
 static int timed_out;
-static int term_signal = SIGTERM;  /* same default as kill command.  */
+static int term_signal = SIGTERM;   
 static pid_t monitored_pid;
 static double kill_after;
-static bool foreground;      /* whether to use another program group.  */
-static bool preserve_status; /* whether to use a timeout status or not.  */
-static bool verbose;         /* whether to diagnose timeouts or not.  */
+static bool foreground;       
+static bool preserve_status;  
+static bool verbose;          
 static char const *command;
 
-/* for long options with no corresponding short option, use enum */
+ 
 enum
 {
       FOREGROUND_OPTION = CHAR_MAX + 1,
@@ -104,17 +59,13 @@ static struct option const long_options[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Start the timeout after which we'll receive a SIGALRM.
-   Round DURATION up to the next representable value.
-   Treat out-of-range values as if they were maximal,
-   as that's more useful in practice than reporting an error.
-   '0' means don't timeout.  */
+ 
 static void
 settimeout (double duration, bool warn)
 {
 
 #if HAVE_TIMER_SETTIME
-  /* timer_settime() provides potentially nanosecond resolution.  */
+   
 
   struct timespec ts = dtotimespec (duration);
   struct itimerspec its = { {0, 0}, ts };
@@ -134,8 +85,7 @@ settimeout (double duration, bool warn)
     error (0, errno, _("warning: timer_create"));
 
 #elif HAVE_SETITIMER
-  /* setitimer() is more portable (to Darwin for example),
-     but only provides microsecond resolution.  */
+   
 
   struct timeval tv;
   struct timespec ts = dtotimespec (duration);
@@ -161,7 +111,7 @@ settimeout (double duration, bool warn)
     }
 #endif
 
-  /* fallback to single second resolution provided by alarm().  */
+   
 
   unsigned int timeint;
   if (UINT_MAX <= duration)
@@ -174,25 +124,18 @@ settimeout (double duration, bool warn)
   alarm (timeint);
 }
 
-/* send SIG avoiding the current process.  */
+ 
 
 static int
 send_sig (pid_t where, int sig)
 {
-  /* If sending to the group, then ignore the signal,
-     so we don't go into a signal loop.  Note that this will ignore any of the
-     signals registered in install_cleanup(), that are sent after we
-     propagate the first one, which hopefully won't be an issue.  Note this
-     process can be implicitly multithreaded due to some timer_settime()
-     implementations, therefore a signal sent to the group, can be sent
-     multiple times to this process.  */
+   
   if (where == 0)
     signal (sig, SIG_IGN);
   return kill (where, sig);
 }
 
-/* Signal handler which is required for sigsuspend() to be interrupted
-   whenever SIGCHLD is received.  */
+ 
 static void
 chld (int sig)
 {
@@ -211,17 +154,15 @@ cleanup (int sig)
     {
       if (kill_after)
         {
-          int saved_errno = errno; /* settimeout may reset.  */
-          /* Start a new timeout after which we'll send SIGKILL.  */
+          int saved_errno = errno;  
+           
           term_signal = SIGKILL;
           settimeout (kill_after, false);
-          kill_after = 0; /* Don't let later signals reset kill alarm.  */
+          kill_after = 0;  
           errno = saved_errno;
         }
 
-      /* Send the signal directly to the monitored child,
-         in case it has itself become group leader,
-         or is not running in a separate group.  */
+       
       if (verbose)
         {
           char signame[MAX (SIG2STR_MAX, INT_BUFSIZE_BOUND (int))];
@@ -232,8 +173,7 @@ cleanup (int sig)
         }
       send_sig (monitored_pid, sig);
 
-      /* The normal case is the job has remained in our
-         newly created process group, so send to all processes in that.  */
+       
       if (!foreground)
         {
           send_sig (0, sig);
@@ -244,7 +184,7 @@ cleanup (int sig)
             }
         }
     }
-  else /* we're the child or the child is not exec'd yet.  */
+  else  
     _exit (128 + sig);
 }
 

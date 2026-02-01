@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Capella Microsystems Inc.
- * Author: Kevin Tsai <ktsai@capellamicro.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -18,7 +15,7 @@
 #include <linux/iio/events.h>
 #include <linux/init.h>
 
-/* Registers Address */
+ 
 #define CM32181_REG_ADDR_CMD		0x00
 #define CM32181_REG_ADDR_WH		0x01
 #define CM32181_REG_ADDR_WL		0x02
@@ -27,10 +24,10 @@
 #define CM32181_REG_ADDR_STATUS		0x06
 #define CM32181_REG_ADDR_ID		0x07
 
-/* Number of Configurable Registers */
+ 
 #define CM32181_CONF_REG_NUM		4
 
-/* CMD register */
+ 
 #define CM32181_CMD_ALS_DISABLE		BIT(0)
 #define CM32181_CMD_ALS_INT_EN		BIT(1)
 #define CM32181_CMD_ALS_THRES_WINDOW	BIT(2)
@@ -47,28 +44,28 @@
 #define CM32181_CMD_ALS_SM_MASK		(0x03 << CM32181_CMD_ALS_SM_SHIFT)
 #define CM32181_CMD_ALS_SM_DEFAULT	(0x01 << CM32181_CMD_ALS_SM_SHIFT)
 
-#define CM32181_LUX_PER_BIT		500	/* ALS_SM=01 IT=800ms */
+#define CM32181_LUX_PER_BIT		500	 
 #define CM32181_LUX_PER_BIT_RESOLUTION	100000
-#define CM32181_LUX_PER_BIT_BASE_IT	800000	/* Based on IT=800ms */
+#define CM32181_LUX_PER_BIT_BASE_IT	800000	 
 #define CM32181_CALIBSCALE_DEFAULT	100000
 #define CM32181_CALIBSCALE_RESOLUTION	100000
 
 #define SMBUS_ALERT_RESPONSE_ADDRESS	0x0c
 
-/* CPM0 Index 0: device-id (3218 or 32181), 1: Unknown, 2: init_regs_bitmap */
+ 
 #define CPM0_REGS_BITMAP		2
 #define CPM0_HEADER_SIZE		3
 
-/* CPM1 Index 0: lux_per_bit, 1: calibscale, 2: resolution (100000) */
+ 
 #define CPM1_LUX_PER_BIT		0
 #define CPM1_CALIBSCALE			1
 #define CPM1_SIZE			3
 
-/* CM3218 Family */
+ 
 static const int cm3218_als_it_bits[] = { 0, 1, 2, 3 };
 static const int cm3218_als_it_values[] = { 100000, 200000, 400000, 800000 };
 
-/* CM32181 Family */
+ 
 static const int cm32181_als_it_bits[] = { 12, 8, 0, 1, 2, 3 };
 static const int cm32181_als_it_values[] = {
 	25000, 50000, 100000, 200000, 400000, 800000
@@ -91,17 +88,7 @@ struct cm32181_chip {
 static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val2);
 
 #ifdef CONFIG_ACPI
-/**
- * cm32181_acpi_get_cpm() - Get CPM object from ACPI
- * @dev:	pointer of struct device.
- * @obj_name:	pointer of ACPI object name.
- * @values:	pointer of array for return elements.
- * @count:	maximum size of return array.
- *
- * Convert ACPI CPM table to array.
- *
- * Return: -ENODEV for fail.  Otherwise is number of elements.
- */
+ 
 static int cm32181_acpi_get_cpm(struct device *dev, char *obj_name,
 				u64 *values, int count)
 {
@@ -160,28 +147,21 @@ static void cm32181_acpi_parse_cpm_tables(struct cm32181_chip *cm32181)
 
 	cm32181->lux_per_bit = vals[CPM1_LUX_PER_BIT];
 
-	/* Check for uncalibrated devices */
+	 
 	if (vals[CPM1_CALIBSCALE] == CM32181_CALIBSCALE_DEFAULT)
 		return;
 
 	cm32181->calibscale = vals[CPM1_CALIBSCALE];
-	/* CPM1 lux_per_bit is for the current it value */
+	 
 	cm32181_read_als_it(cm32181, &cm32181->lux_per_bit_base_it);
 }
 #else
 static void cm32181_acpi_parse_cpm_tables(struct cm32181_chip *cm32181)
 {
 }
-#endif /* CONFIG_ACPI */
+#endif  
 
-/**
- * cm32181_reg_init() - Initialize CM32181 registers
- * @cm32181:	pointer of struct cm32181.
- *
- * Initialize CM32181 ambient light sensor register to default values.
- *
- * Return: 0 for success; otherwise for error code.
- */
+ 
 static int cm32181_reg_init(struct cm32181_chip *cm32181)
 {
 	struct i2c_client *client = cm32181->client;
@@ -192,15 +172,15 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
 	if (ret < 0)
 		return ret;
 
-	/* check device ID */
+	 
 	switch (ret & 0xFF) {
-	case 0x18: /* CM3218 */
+	case 0x18:  
 		cm32181->num_als_it = ARRAY_SIZE(cm3218_als_it_bits);
 		cm32181->als_it_bits = cm3218_als_it_bits;
 		cm32181->als_it_values = cm3218_als_it_values;
 		break;
-	case 0x81: /* CM32181 */
-	case 0x82: /* CM32182, fully compat. with CM32181 */
+	case 0x81:  
+	case 0x82:  
 		cm32181->num_als_it = ARRAY_SIZE(cm32181_als_it_bits);
 		cm32181->als_it_bits = cm32181_als_it_bits;
 		cm32181->als_it_values = cm32181_als_it_values;
@@ -209,7 +189,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
 		return -ENODEV;
 	}
 
-	/* Default Values */
+	 
 	cm32181->conf_regs[CM32181_REG_ADDR_CMD] =
 			CM32181_CMD_ALS_IT_DEFAULT | CM32181_CMD_ALS_SM_DEFAULT;
 	cm32181->init_regs_bitmap = BIT(CM32181_REG_ADDR_CMD);
@@ -220,7 +200,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
 	if (ACPI_HANDLE(cm32181->dev))
 		cm32181_acpi_parse_cpm_tables(cm32181);
 
-	/* Initialize registers*/
+	 
 	for_each_set_bit(i, &cm32181->init_regs_bitmap, CM32181_CONF_REG_NUM) {
 		ret = i2c_smbus_write_word_data(client, i,
 						cm32181->conf_regs[i]);
@@ -231,15 +211,7 @@ static int cm32181_reg_init(struct cm32181_chip *cm32181)
 	return 0;
 }
 
-/**
- *  cm32181_read_als_it() - Get sensor integration time (ms)
- *  @cm32181:	pointer of struct cm32181
- *  @val2:	pointer of int to load the als_it value.
- *
- *  Report the current integration time in milliseconds.
- *
- *  Return: IIO_VAL_INT_PLUS_MICRO for success, otherwise -EINVAL.
- */
+ 
 static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val2)
 {
 	u16 als_it;
@@ -258,15 +230,7 @@ static int cm32181_read_als_it(struct cm32181_chip *cm32181, int *val2)
 	return -EINVAL;
 }
 
-/**
- * cm32181_write_als_it() - Write sensor integration time
- * @cm32181:	pointer of struct cm32181.
- * @val:	integration time by millisecond.
- *
- * Convert integration time (ms) to sensor value.
- *
- * Return: i2c_smbus_write_word_data command return value.
- */
+ 
 static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
 {
 	struct i2c_client *client = cm32181->client;
@@ -295,15 +259,7 @@ static int cm32181_write_als_it(struct cm32181_chip *cm32181, int val)
 	return ret;
 }
 
-/**
- * cm32181_get_lux() - report current lux value
- * @cm32181:	pointer of struct cm32181.
- *
- * Convert sensor raw data to lux.  It depends on integration
- * time and calibscale variable.
- *
- * Return: Positive value is lux, otherwise is error code.
- */
+ 
 static int cm32181_get_lux(struct cm32181_chip *cm32181)
 {
 	struct i2c_client *client = cm32181->client;
@@ -379,16 +335,7 @@ static int cm32181_write_raw(struct iio_dev *indio_dev,
 	return -EINVAL;
 }
 
-/**
- * cm32181_get_it_available() - Get available ALS IT value
- * @dev:	pointer of struct device.
- * @attr:	pointer of struct device_attribute.
- * @buf:	pointer of return string buffer.
- *
- * Display the available integration time values by millisecond.
- *
- * Return: string length.
- */
+ 
 static ssize_t cm32181_get_it_available(struct device *dev,
 			struct device_attribute *attr, char *buf)
 {
@@ -433,7 +380,7 @@ static void cm32181_unregister_dummy_client(void *data)
 {
 	struct i2c_client *client = data;
 
-	/* Unregister the dummy client */
+	 
 	i2c_unregister_device(client);
 }
 
@@ -450,16 +397,7 @@ static int cm32181_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, indio_dev);
 
-	/*
-	 * Some ACPI systems list 2 I2C resources for the CM3218 sensor, the
-	 * SMBus Alert Response Address (ARA, 0x0c) and the actual I2C address.
-	 * Detect this and take the following step to deal with it:
-	 * 1. When a SMBus Alert capable sensor has an Alert asserted, it will
-	 *    not respond on its actual I2C address. Read a byte from the ARA
-	 *    to clear any pending Alerts.
-	 * 2. Create a "dummy" client for the actual I2C address and
-	 *    use that client to communicate with the sensor.
-	 */
+	 
 	if (ACPI_HANDLE(dev) && client->addr == SMBUS_ALERT_RESPONSE_ADDRESS) {
 		struct i2c_board_info board_info = { .type = "dummy" };
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C)2003,2004 USAGI/WIDE Project
- *
- * Authors	Mitsuru KANDA  <mk@linux-ipv6.org>
- *		YOSHIFUJI Hideaki <yoshfuji@linux-ipv6.org>
- *
- * Based on net/ipv4/xfrm4_tunnel.c
- */
+
+ 
 #include <linux/module.h>
 #include <linux/xfrm.h>
 #include <linux/slab.h>
@@ -37,10 +30,7 @@ static inline struct xfrm6_tunnel_net *xfrm6_tunnel_pernet(struct net *net)
 	return net_generic(net, xfrm6_tunnel_net_id);
 }
 
-/*
- * xfrm_tunnel_spi things are for allocating unique id ("spi")
- * per xfrm_address_t.
- */
+ 
 struct xfrm6_tunnel_spi {
 	struct hlist_node	list_byaddr;
 	struct hlist_node	list_byspi;
@@ -232,7 +222,7 @@ static int xfrm6_tunnel_rcv(struct sk_buff *skb)
 static int xfrm6_tunnel_err(struct sk_buff *skb, struct inet6_skb_parm *opt,
 			    u8 type, u8 code, int offset, __be32 info)
 {
-	/* xfrm6_tunnel native err handling */
+	 
 	switch (type) {
 	case ICMPV6_DEST_UNREACH:
 		switch (code) {
@@ -392,9 +382,7 @@ static void __exit xfrm6_tunnel_fini(void)
 	xfrm6_tunnel_deregister(&xfrm6_tunnel_handler, AF_INET6);
 	xfrm_unregister_type(&xfrm6_tunnel_type, AF_INET6);
 	unregister_pernet_subsys(&xfrm6_tunnel_net_ops);
-	/* Someone maybe has gotten the xfrm6_tunnel_spi.
-	 * So need to wait it.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(xfrm6_tunnel_spi_kmem);
 }

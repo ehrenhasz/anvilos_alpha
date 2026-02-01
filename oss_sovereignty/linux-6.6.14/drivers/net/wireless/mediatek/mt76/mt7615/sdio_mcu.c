@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2020 MediaTek Inc.
- *
- * Author: Felix Fietkau <nbd@nbd.name>
- *	   Lorenzo Bianconi <lorenzo@kernel.org>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/mmc/sdio_func.h>
 #include <linux/module.h>

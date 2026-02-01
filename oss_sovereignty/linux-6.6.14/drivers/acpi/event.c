@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * event.c - exporting ACPI events via procfs
- *
- *  Copyright (C) 2001, 2002 Andy Grover <andrew.grover@intel.com>
- *  Copyright (C) 2001, 2002 Paul Diefenbaugh <paul.s.diefenbaugh@intel.com>
- *
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -21,7 +15,7 @@
 
 #include "internal.h"
 
-/* ACPI notifier chain */
+ 
 static BLOCKING_NOTIFIER_HEAD(acpi_chain_head);
 
 int acpi_notifier_call_chain(struct acpi_device *dev, u32 type, u32 data)
@@ -58,18 +52,18 @@ struct acpi_genl_event {
 	u32 data;
 };
 
-/* attributes of acpi_genl_family */
+ 
 enum {
 	ACPI_GENL_ATTR_UNSPEC,
-	ACPI_GENL_ATTR_EVENT,	/* ACPI event info needed by user space */
+	ACPI_GENL_ATTR_EVENT,	 
 	__ACPI_GENL_ATTR_MAX,
 };
 #define ACPI_GENL_ATTR_MAX (__ACPI_GENL_ATTR_MAX - 1)
 
-/* commands supported by the acpi_genl_family */
+ 
 enum {
 	ACPI_GENL_CMD_UNSPEC,
-	ACPI_GENL_CMD_EVENT,	/* kernel->user notifications for ACPI events */
+	ACPI_GENL_CMD_EVENT,	 
 	__ACPI_GENL_CMD_MAX,
 };
 #define ACPI_GENL_CMD_MAX (__ACPI_GENL_CMD_MAX - 1)
@@ -101,7 +95,7 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 	void *msg_header;
 	int size;
 
-	/* allocate memory */
+	 
 	size = nla_total_size(sizeof(struct acpi_genl_event)) +
 	    nla_total_size(0);
 
@@ -109,7 +103,7 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 	if (!skb)
 		return -ENOMEM;
 
-	/* add the genetlink message header */
+	 
 	msg_header = genlmsg_put(skb, 0, acpi_event_seqnum++,
 				 &acpi_event_genl_family, 0,
 				 ACPI_GENL_CMD_EVENT);
@@ -118,7 +112,7 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 		return -ENOMEM;
 	}
 
-	/* fill the data */
+	 
 	attr =
 	    nla_reserve(skb, ACPI_GENL_ATTR_EVENT,
 			sizeof(struct acpi_genl_event));
@@ -135,7 +129,7 @@ int acpi_bus_generate_netlink_event(const char *device_class,
 	event->type = type;
 	event->data = data;
 
-	/* send multicast genetlink message */
+	 
 	genlmsg_end(skb, msg_header);
 
 	genlmsg_multicast(&acpi_event_genl_family, skb, 0, 0, GFP_ATOMIC);
@@ -172,7 +166,7 @@ static int __init acpi_event_init(void)
 	if (acpi_disabled)
 		return 0;
 
-	/* create genetlink for acpi event */
+	 
 	error = acpi_event_genetlink_init();
 	if (error)
 		pr_warn("Failed to create genetlink family for ACPI event\n");

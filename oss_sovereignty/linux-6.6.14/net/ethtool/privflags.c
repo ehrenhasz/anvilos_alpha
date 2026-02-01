@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -41,11 +41,7 @@ static int ethnl_get_priv_flags_info(struct net_device *dev,
 		ops->get_strings(dev, ETH_SS_PRIV_FLAGS, (u8 *)*names);
 	}
 
-	/* We can pass more than 32 private flags to userspace via netlink but
-	 * we cannot get more with ethtool_ops::get_priv_flags(). Note that we
-	 * must not adjust nflags before allocating the space for flag names
-	 * as the buffer must be large enough for all flags.
-	 */
+	 
 	if (WARN_ONCE(nflags > 32,
 		      "device %s reports more than 32 private flags (%d)\n",
 		      netdev_name(dev), nflags))
@@ -118,7 +114,7 @@ static void privflags_cleanup_data(struct ethnl_reply_data *reply_data)
 	kfree(data->priv_flag_names);
 }
 
-/* PRIVFLAGS_SET */
+ 
 
 const struct nla_policy ethnl_privflags_set_policy[] = {
 	[ETHTOOL_A_PRIVFLAGS_HEADER]		=

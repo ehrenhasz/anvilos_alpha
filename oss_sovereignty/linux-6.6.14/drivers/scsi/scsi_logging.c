@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * scsi_logging.c
- *
- * Copyright (C) 2014 SUSE Linux Products GmbH
- * Copyright (C) 2014 Hannes Reinecke <hare@suse.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/atomic.h>
@@ -166,7 +161,7 @@ size_t __scsi_format_command(char *logbuf, size_t logbuf_len,
 	len = scsi_command_size(cdb);
 	if (cdb_len < len)
 		len = cdb_len;
-	/* print out all bytes in cdb */
+	 
 	for (k = 0; k < len; ++k) {
 		if (off > logbuf_len - 3)
 			break;
@@ -200,9 +195,9 @@ void scsi_print_command(struct scsi_cmnd *cmd)
 	if (off >= logbuf_len)
 		goto out_printk;
 
-	/* print out all bytes in cdb */
+	 
 	if (cmd->cmd_len > 16) {
-		/* Print opcode in one line and use separate lines for CDB */
+		 
 		off += scnprintf(logbuf + off, logbuf_len - off, "\n");
 		dev_printk(KERN_INFO, &cmd->device->sdev_gendev, "%s", logbuf);
 		for (k = 0; k < cmd->cmd_len; k += 16) {
@@ -351,9 +346,7 @@ scsi_log_print_sense(const struct scsi_device *sdev, const char *name, int tag,
 		scsi_log_dump_sense(sdev, name, tag, sense_buffer, sense_len);
 }
 
-/*
- * Print normalized SCSI sense header with a prefix.
- */
+ 
 void
 scsi_print_sense_hdr(const struct scsi_device *sdev, const char *name,
 		     const struct scsi_sense_hdr *sshdr)
@@ -362,7 +355,7 @@ scsi_print_sense_hdr(const struct scsi_device *sdev, const char *name,
 }
 EXPORT_SYMBOL(scsi_print_sense_hdr);
 
-/* Normalize and print sense buffer with name prefix */
+ 
 void __scsi_print_sense(const struct scsi_device *sdev, const char *name,
 			const unsigned char *sense_buffer, int sense_len)
 {
@@ -370,7 +363,7 @@ void __scsi_print_sense(const struct scsi_device *sdev, const char *name,
 }
 EXPORT_SYMBOL(__scsi_print_sense);
 
-/* Normalize and print sense buffer in SCSI command */
+ 
 void scsi_print_sense(const struct scsi_cmnd *cmd)
 {
 	scsi_log_print_sense(cmd->device, scmd_name(cmd),

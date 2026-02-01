@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Powercap Protocol
- *
- * Copyright (C) 2022 ARM Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) "SCMI Notifications POWERCAP - " fmt
 
@@ -264,10 +260,7 @@ scmi_powercap_domain_attributes_get(const struct scmi_protocol_handle *ph,
 clean:
 	ph->xops->xfer_put(ph, t);
 
-	/*
-	 * If supported overwrite short name with the extended one;
-	 * on error just carry on and use already provided short name.
-	 */
+	 
 	if (!ret && SUPPORTS_EXTENDED_NAMES(flags))
 		ph->hops->extended_name_get(ph, POWERCAP_DOMAIN_NAME_GET,
 					    domain, dom_info->name,
@@ -414,7 +407,7 @@ static int __scmi_powercap_cap_set(const struct scmi_protocol_handle *ph,
 						 ignore_dresp);
 	}
 
-	/* Save the last explicitly set non-zero powercap value */
+	 
 	if (PROTOCOL_REV_MAJOR(pi->version) >= 0x2 && !ret && power_cap)
 		pi->states[domain_id].last_pcap = power_cap;
 
@@ -427,14 +420,11 @@ static int scmi_powercap_cap_set(const struct scmi_protocol_handle *ph,
 {
 	struct powercap_info *pi = ph->get_priv(ph);
 
-	/*
-	 * Disallow zero as a possible explicitly requested powercap:
-	 * there are enable/disable operations for this.
-	 */
+	 
 	if (!power_cap)
 		return -EINVAL;
 
-	/* Just log the last set request if acting on a disabled domain */
+	 
 	if (PROTOCOL_REV_MAJOR(pi->version) >= 0x2 &&
 	    !pi->states[domain_id].enabled) {
 		pi->states[domain_id].last_pcap = power_cap;
@@ -591,7 +581,7 @@ scmi_powercap_measurements_threshold_set(const struct scmi_protocol_handle *ph,
 	    power_thresh_low > power_thresh_high)
 		return -EINVAL;
 
-	/* Anything to do ? */
+	 
 	if (THRESH_LOW(pi, domain_id) == power_thresh_low &&
 	    THRESH_HIGH(pi, domain_id) == power_thresh_high)
 		return ret;
@@ -600,7 +590,7 @@ scmi_powercap_measurements_threshold_set(const struct scmi_protocol_handle *ph,
 		(FIELD_PREP(GENMASK_ULL(31, 0), power_thresh_low) |
 		 FIELD_PREP(GENMASK_ULL(63, 32), power_thresh_high));
 
-	/* Update thresholds if notification already enabled */
+	 
 	if (pi->states[domain_id].meas_notif_enabled)
 		ret = scmi_powercap_notify(ph, domain_id,
 					   POWERCAP_MEASUREMENTS_NOTIFY,
@@ -623,7 +613,7 @@ static int scmi_powercap_cap_enable_set(const struct scmi_protocol_handle *ph,
 		return 0;
 
 	if (enable) {
-		/* Cannot enable with a zero powercap. */
+		 
 		if (!pi->states[domain_id].last_pcap)
 			return -EINVAL;
 
@@ -637,11 +627,7 @@ static int scmi_powercap_cap_enable_set(const struct scmi_protocol_handle *ph,
 	if (ret)
 		return ret;
 
-	/*
-	 * Update our internal state to reflect final platform state: the SCMI
-	 * server could have ignored a disable request and kept enforcing some
-	 * powercap limit requested by other agents.
-	 */
+	 
 	ret = scmi_powercap_cap_get(ph, domain_id, &power_cap);
 	if (!ret)
 		pi->states[domain_id].enabled = !!power_cap;
@@ -660,15 +646,12 @@ static int scmi_powercap_cap_enable_get(const struct scmi_protocol_handle *ph,
 	if (PROTOCOL_REV_MAJOR(pi->version) < 0x2)
 		return 0;
 
-	/*
-	 * Report always real platform state; platform could have ignored
-	 * a previous disable request. Default true on any error.
-	 */
+	 
 	ret = scmi_powercap_cap_get(ph, domain_id, &power_cap);
 	if (!ret)
 		*enable = !!power_cap;
 
-	/* Update internal state with current real platform state */
+	 
 	pi->states[domain_id].enabled = *enable;
 
 	return 0;
@@ -744,13 +727,7 @@ static int scmi_powercap_notify(const struct scmi_protocol_handle *ph,
 		u32 low, high;
 		struct scmi_msg_powercap_notify_thresh *notify;
 
-		/*
-		 * Note that we have to pick the most recently configured
-		 * thresholds to build a proper POWERCAP_MEASUREMENTS_NOTIFY
-		 * enable request and we fail, complaining, if no thresholds
-		 * were ever set, since this is an indication the API has been
-		 * used wrongly.
-		 */
+		 
 		ret = scmi_powercap_measurements_threshold_get(ph, domain,
 							       &low, &high);
 		if (ret)
@@ -801,23 +778,7 @@ scmi_powercap_set_notify_enabled(const struct scmi_protocol_handle *ph,
 		pr_debug("FAIL_ENABLED - evt[%X] dom[%d] - ret:%d\n",
 			 evt_id, src_id, ret);
 	else if (cmd_id == POWERCAP_MEASUREMENTS_NOTIFY)
-		/*
-		 * On success save the current notification enabled state, so
-		 * as to be able to properly update the notification thresholds
-		 * when they are modified on a domain for which measurement
-		 * notifications were currently enabled.
-		 *
-		 * This is needed because the SCMI Notification core machinery
-		 * and API does not support passing per-notification custom
-		 * arguments at callback registration time.
-		 *
-		 * Note that this can be done here with a simple flag since the
-		 * SCMI core Notifications code takes care of keeping proper
-		 * per-domain enables refcounting, so that this helper function
-		 * will be called only once (for enables) when the first user
-		 * registers a callback on this domain and once more (disable)
-		 * when the last user de-registers its callback.
-		 */
+		 
 		pi->states[src_id].meas_notif_enabled = enable;
 
 	return ret;
@@ -946,12 +907,7 @@ scmi_powercap_protocol_init(const struct scmi_protocol_handle *ph)
 	if (!pinfo->states)
 		return -ENOMEM;
 
-	/*
-	 * Note that any failure in retrieving any domain attribute leads to
-	 * the whole Powercap protocol initialization failure: this way the
-	 * reported Powercap domains are all assured, when accessed, to be well
-	 * formed and correlated by sane parent-child relationship (if any).
-	 */
+	 
 	for (domain = 0; domain < pinfo->num_domains; domain++) {
 		ret = scmi_powercap_domain_attributes_get(ph, pinfo, domain);
 		if (ret)
@@ -961,7 +917,7 @@ scmi_powercap_protocol_init(const struct scmi_protocol_handle *ph)
 			scmi_powercap_domain_init_fc(ph, domain,
 						     &pinfo->powercaps[domain].fc_info);
 
-		/* Grab initial state when disable is supported. */
+		 
 		if (PROTOCOL_REV_MAJOR(version) >= 0x2) {
 			ret = __scmi_powercap_cap_get(ph,
 						      &pinfo->powercaps[domain],

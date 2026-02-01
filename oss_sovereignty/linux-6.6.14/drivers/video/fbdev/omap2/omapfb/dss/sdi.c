@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/dss/sdi.c
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "SDI"
 
@@ -73,12 +68,7 @@ static int sdi_calc_clock_div(unsigned long pclk,
 	int i;
 	struct sdi_clk_calc_ctx ctx;
 
-	/*
-	 * DSS fclk gives us very few possibilities, so finding a good pixel
-	 * clock may not be possible. We try multiple times to find the clock,
-	 * each time widening the pixel clock range we look for, up to
-	 * +/- 1MHz.
-	 */
+	 
 
 	for (i = 0; i < 10; ++i) {
 		bool ok;
@@ -138,7 +128,7 @@ static int sdi_display_enable(struct omap_dss_device *dssdev)
 	if (r)
 		goto err_get_dispc;
 
-	/* 15.5.9.1.2 */
+	 
 	t->data_pclk_edge = OMAPDSS_DRIVE_SIG_RISING_EDGE;
 	t->sync_pclk_edge = OMAPDSS_DRIVE_SIG_RISING_EDGE;
 
@@ -166,17 +156,7 @@ static int sdi_display_enable(struct omap_dss_device *dssdev)
 
 	sdi_config_lcd_manager(dssdev);
 
-	/*
-	 * LCLK and PCLK divisors are located in shadow registers, and we
-	 * normally write them to DISPC registers when enabling the output.
-	 * However, SDI uses pck-free as source clock for its PLL, and pck-free
-	 * is affected by the divisors. And as we need the PLL before enabling
-	 * the output, we need to write the divisors early.
-	 *
-	 * It seems just writing to the DISPC register is enough, and we don't
-	 * need to care about the shadow register mechanism for pck-free. The
-	 * exact reason for this is unknown.
-	 */
+	 
 	dispc_mgr_set_clock_div(out->manager->id, &sdi.mgr_config.clock_info);
 
 	dss_sdi_init(sdi.datapairs);
@@ -332,7 +312,7 @@ static void sdi_init_output(struct platform_device *pdev)
 	out->output_type = OMAP_DISPLAY_TYPE_SDI;
 	out->name = "sdi.0";
 	out->dispc_channel = OMAP_DSS_CHANNEL_LCD;
-	/* We have SDI only on OMAP3, where it's on port 1 */
+	 
 	out->port_num = 1;
 	out->ops.sdi = &sdi_ops;
 	out->owner = THIS_MODULE;

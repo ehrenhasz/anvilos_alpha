@@ -1,25 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * comedi/drivers/adv_pci_dio.c
- *
- * Author: Michal Dobes <dobes@tesnet.cz>
- *
- *  Hardware driver for Advantech PCI DIO cards.
- */
 
-/*
- * Driver: adv_pci_dio
- * Description: Advantech Digital I/O Cards
- * Devices: [Advantech] PCI-1730 (adv_pci_dio), PCI-1733,
- *   PCI-1734, PCI-1735U, PCI-1736UP, PCI-1739U, PCI-1750,
- *   PCI-1751, PCI-1752, PCI-1753, PCI-1753+PCI-1753E,
- *   PCI-1754, PCI-1756, PCI-1761, PCI-1762
- * Author: Michal Dobes <dobes@tesnet.cz>
- * Updated: Fri, 25 Aug 2017 07:23:06 +0300
- * Status: untested
- *
- * Configuration Options: not applicable, uses PCI auto config
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -27,47 +9,45 @@
 #include <linux/comedi/comedi_8255.h>
 #include <linux/comedi/comedi_8254.h>
 
-/*
- * Register offset definitions
- */
+ 
 
-/* PCI-1730, PCI-1733, PCI-1736 interrupt control registers */
-#define PCI173X_INT_EN_REG	0x0008	/* R/W: enable/disable */
-#define PCI173X_INT_RF_REG	0x000c	/* R/W: falling/rising edge */
-#define PCI173X_INT_FLAG_REG	0x0010	/* R: status */
-#define PCI173X_INT_CLR_REG	0x0010	/* W: clear */
+ 
+#define PCI173X_INT_EN_REG	0x0008	 
+#define PCI173X_INT_RF_REG	0x000c	 
+#define PCI173X_INT_FLAG_REG	0x0010	 
+#define PCI173X_INT_CLR_REG	0x0010	 
 
-#define PCI173X_INT_IDI0 0x01  /* IDI0 edge occurred */
-#define PCI173X_INT_IDI1 0x02  /* IDI1 edge occurred */
-#define PCI173X_INT_DI0  0x04  /* DI0 edge occurred */
-#define PCI173X_INT_DI1  0x08  /* DI1 edge occurred */
+#define PCI173X_INT_IDI0 0x01   
+#define PCI173X_INT_IDI1 0x02   
+#define PCI173X_INT_DI0  0x04   
+#define PCI173X_INT_DI1  0x08   
 
-/* PCI-1739U, PCI-1750, PCI1751 interrupt control registers */
-#define PCI1750_INT_REG		0x20	/* R/W: status/control */
+ 
+#define PCI1750_INT_REG		0x20	 
 
-/* PCI-1753, PCI-1753E interrupt control registers */
-#define PCI1753_INT_REG(x)	(0x10 + (x)) /* R/W: control group 0 to 3 */
-#define PCI1753E_INT_REG(x)	(0x30 + (x)) /* R/W: control group 0 to 3 */
+ 
+#define PCI1753_INT_REG(x)	(0x10 + (x))  
+#define PCI1753E_INT_REG(x)	(0x30 + (x))  
 
-/* PCI-1754, PCI-1756 interrupt control registers */
-#define PCI1754_INT_REG(x)	(0x08 + (x) * 2) /* R/W: control group 0 to 3 */
+ 
+#define PCI1754_INT_REG(x)	(0x08 + (x) * 2)  
 
-/* PCI-1752, PCI-1756 special registers */
-#define PCI1752_CFC_REG		0x12	/* R/W: channel freeze function */
+ 
+#define PCI1752_CFC_REG		0x12	 
 
-/* PCI-1761 interrupt control registers */
-#define PCI1761_INT_EN_REG	0x03	/* R/W: enable/disable interrupts */
-#define PCI1761_INT_RF_REG	0x04	/* R/W: falling/rising edge */
-#define PCI1761_INT_CLR_REG	0x05	/* R/W: clear interrupts */
+ 
+#define PCI1761_INT_EN_REG	0x03	 
+#define PCI1761_INT_RF_REG	0x04	 
+#define PCI1761_INT_CLR_REG	0x05	 
 
-/* PCI-1762 interrupt control registers */
-#define PCI1762_INT_REG		0x06	/* R/W: status/control */
+ 
+#define PCI1762_INT_REG		0x06	 
 
-/* maximum number of subdevice descriptions in the boardinfo */
-#define PCI_DIO_MAX_DI_SUBDEVS	2	/* 2 x 8/16/32 input channels max */
-#define PCI_DIO_MAX_DO_SUBDEVS	2	/* 2 x 8/16/32 output channels max */
-#define PCI_DIO_MAX_DIO_SUBDEVG	2	/* 2 x any number of 8255 devices max */
-#define PCI_DIO_MAX_IRQ_SUBDEVS	4	/* 4 x 1 input IRQ channels max */
+ 
+#define PCI_DIO_MAX_DI_SUBDEVS	2	 
+#define PCI_DIO_MAX_DO_SUBDEVS	2	 
+#define PCI_DIO_MAX_DIO_SUBDEVG	2	 
+#define PCI_DIO_MAX_IRQ_SUBDEVS	4	 
 
 enum pci_dio_boardid {
 	TYPE_PCI1730,
@@ -88,17 +68,17 @@ enum pci_dio_boardid {
 };
 
 struct diosubd_data {
-	int chans;		/*  num of chans or 8255 devices */
-	unsigned long addr;	/*  PCI address offset */
+	int chans;		 
+	unsigned long addr;	 
 };
 
 struct dio_irq_subd_data {
-	unsigned short int_en;		/* interrupt enable/status bit */
-	unsigned long addr;		/* PCI address offset */
+	unsigned short int_en;		 
+	unsigned long addr;		 
 };
 
 struct dio_boardtype {
-	const char *name;	/*  board name */
+	const char *name;	 
 	int nsubdevs;
 	struct diosubd_data sdi[PCI_DIO_MAX_DI_SUBDEVS];
 	struct diosubd_data sdo[PCI_DIO_MAX_DO_SUBDEVS];
@@ -112,110 +92,110 @@ struct dio_boardtype {
 static const struct dio_boardtype boardtypes[] = {
 	[TYPE_PCI1730] = {
 		.name		= "pci1730",
-		/* DI, IDI, DO, IDO, ID, IRQ_DI0, IRQ_DI1, IRQ_IDI0, IRQ_IDI1 */
+		 
 		.nsubdevs	= 9,
-		.sdi[0]		= { 16, 0x02, },	/* DI 0-15 */
-		.sdi[1]		= { 16, 0x00, },	/* ISO DI 0-15 */
-		.sdo[0]		= { 16, 0x02, },	/* DO 0-15 */
-		.sdo[1]		= { 16, 0x00, },	/* ISO DO 0-15 */
+		.sdi[0]		= { 16, 0x02, },	 
+		.sdi[1]		= { 16, 0x00, },	 
+		.sdo[0]		= { 16, 0x02, },	 
+		.sdo[1]		= { 16, 0x00, },	 
 		.id_reg		= 0x04,
-		.sdirq[0]	= { PCI173X_INT_DI0,  0x02, },	/* DI 0 */
-		.sdirq[1]	= { PCI173X_INT_DI1,  0x02, },	/* DI 1 */
-		.sdirq[2]	= { PCI173X_INT_IDI0, 0x00, },	/* ISO DI 0 */
-		.sdirq[3]	= { PCI173X_INT_IDI1, 0x00, },	/* ISO DI 1 */
+		.sdirq[0]	= { PCI173X_INT_DI0,  0x02, },	 
+		.sdirq[1]	= { PCI173X_INT_DI1,  0x02, },	 
+		.sdirq[2]	= { PCI173X_INT_IDI0, 0x00, },	 
+		.sdirq[3]	= { PCI173X_INT_IDI1, 0x00, },	 
 	},
 	[TYPE_PCI1733] = {
 		.name		= "pci1733",
 		.nsubdevs	= 2,
-		.sdi[1]		= { 32, 0x00, },	/* ISO DI 0-31 */
+		.sdi[1]		= { 32, 0x00, },	 
 		.id_reg		= 0x04,
 	},
 	[TYPE_PCI1734] = {
 		.name		= "pci1734",
 		.nsubdevs	= 2,
-		.sdo[1]		= { 32, 0x00, },	/* ISO DO 0-31 */
+		.sdo[1]		= { 32, 0x00, },	 
 		.id_reg		= 0x04,
 	},
 	[TYPE_PCI1735] = {
 		.name		= "pci1735",
 		.nsubdevs	= 4,
-		.sdi[0]		= { 32, 0x00, },	/* DI 0-31 */
-		.sdo[0]		= { 32, 0x00, },	/* DO 0-31 */
+		.sdi[0]		= { 32, 0x00, },	 
+		.sdo[0]		= { 32, 0x00, },	 
 		.id_reg		= 0x08,
 		.timer_regbase	= 0x04,
 	},
 	[TYPE_PCI1736] = {
 		.name		= "pci1736",
 		.nsubdevs	= 3,
-		.sdi[1]		= { 16, 0x00, },	/* ISO DI 0-15 */
-		.sdo[1]		= { 16, 0x00, },	/* ISO DO 0-15 */
+		.sdi[1]		= { 16, 0x00, },	 
+		.sdo[1]		= { 16, 0x00, },	 
 		.id_reg		= 0x04,
 	},
 	[TYPE_PCI1739] = {
 		.name		= "pci1739",
 		.nsubdevs	= 3,
-		.sdio[0]	= { 2, 0x00, },		/* 8255 DIO */
+		.sdio[0]	= { 2, 0x00, },		 
 		.id_reg		= 0x08,
 	},
 	[TYPE_PCI1750] = {
 		.name		= "pci1750",
 		.nsubdevs	= 2,
-		.sdi[1]		= { 16, 0x00, },	/* ISO DI 0-15 */
-		.sdo[1]		= { 16, 0x00, },	/* ISO DO 0-15 */
+		.sdi[1]		= { 16, 0x00, },	 
+		.sdo[1]		= { 16, 0x00, },	 
 	},
 	[TYPE_PCI1751] = {
 		.name		= "pci1751",
 		.nsubdevs	= 3,
-		.sdio[0]	= { 2, 0x00, },		/* 8255 DIO */
+		.sdio[0]	= { 2, 0x00, },		 
 		.timer_regbase	= 0x18,
 	},
 	[TYPE_PCI1752] = {
 		.name		= "pci1752",
 		.nsubdevs	= 3,
-		.sdo[0]		= { 32, 0x00, },	/* DO 0-31 */
-		.sdo[1]		= { 32, 0x04, },	/* DO 32-63 */
+		.sdo[0]		= { 32, 0x00, },	 
+		.sdo[1]		= { 32, 0x04, },	 
 		.id_reg		= 0x10,
 		.is_16bit	= 1,
 	},
 	[TYPE_PCI1753] = {
 		.name		= "pci1753",
 		.nsubdevs	= 4,
-		.sdio[0]	= { 4, 0x00, },		/* 8255 DIO */
+		.sdio[0]	= { 4, 0x00, },		 
 	},
 	[TYPE_PCI1753E] = {
 		.name		= "pci1753e",
 		.nsubdevs	= 8,
-		.sdio[0]	= { 4, 0x00, },		/* 8255 DIO */
-		.sdio[1]	= { 4, 0x20, },		/* 8255 DIO */
+		.sdio[0]	= { 4, 0x00, },		 
+		.sdio[1]	= { 4, 0x20, },		 
 	},
 	[TYPE_PCI1754] = {
 		.name		= "pci1754",
 		.nsubdevs	= 3,
-		.sdi[0]		= { 32, 0x00, },	/* DI 0-31 */
-		.sdi[1]		= { 32, 0x04, },	/* DI 32-63 */
+		.sdi[0]		= { 32, 0x00, },	 
+		.sdi[1]		= { 32, 0x04, },	 
 		.id_reg		= 0x10,
 		.is_16bit	= 1,
 	},
 	[TYPE_PCI1756] = {
 		.name		= "pci1756",
 		.nsubdevs	= 3,
-		.sdi[1]		= { 32, 0x00, },	/* DI 0-31 */
-		.sdo[1]		= { 32, 0x04, },	/* DO 0-31 */
+		.sdi[1]		= { 32, 0x00, },	 
+		.sdo[1]		= { 32, 0x04, },	 
 		.id_reg		= 0x10,
 		.is_16bit	= 1,
 	},
 	[TYPE_PCI1761] = {
 		.name		= "pci1761",
 		.nsubdevs	= 3,
-		.sdi[1]		= { 8, 0x01 },		/* ISO DI 0-7 */
-		.sdo[1]		= { 8, 0x00 },		/* RELAY DO 0-7 */
+		.sdi[1]		= { 8, 0x01 },		 
+		.sdo[1]		= { 8, 0x00 },		 
 		.id_reg		= 0x02,
 	},
 	[TYPE_PCI1762] = {
 		.name		= "pci1762",
 		.nsubdevs	= 3,
-		.sdi[1]		= { 16, 0x02, },	/* ISO DI 0-15 */
-		.sdo[1]		= { 16, 0x00, },	/* ISO DO 0-15 */
+		.sdi[1]		= { 16, 0x02, },	 
+		.sdo[1]		= { 16, 0x00, },	 
 		.id_reg		= 0x04,
 		.is_16bit	= 1,
 	},
@@ -229,7 +209,7 @@ struct pci_dio_dev_private_data {
 };
 
 struct pci_dio_sd_private_data {
-	spinlock_t subd_slock;		/* spin-lock for cmd_running */
+	spinlock_t subd_slock;		 
 	unsigned long port_offset;
 	short int cmd_running;
 };
@@ -263,12 +243,12 @@ static irqreturn_t pci_dio_interrupt(int irq, void *p_device)
 	int i;
 
 	if (!dev->attached) {
-		/* Ignore interrupt before device fully attached. */
-		/* Might not even have allocated subdevices yet! */
+		 
+		 
 		return IRQ_NONE;
 	}
 
-	/* Check if we are source of interrupt */
+	 
 	spin_lock_irqsave(&dev->spinlock, cpu_flags);
 	irqflags = inb(dev->iobase + PCI173X_INT_FLAG_REG);
 	if (!(irqflags & 0x0F)) {
@@ -276,11 +256,11 @@ static irqreturn_t pci_dio_interrupt(int irq, void *p_device)
 		return IRQ_NONE;
 	}
 
-	/* clear all current interrupt flags */
+	 
 	outb(irqflags, dev->iobase + PCI173X_INT_CLR_REG);
 	spin_unlock_irqrestore(&dev->spinlock, cpu_flags);
 
-	/* check irq subdevice triggers */
+	 
 	for (i = 0; i < PCI_DIO_MAX_IRQ_SUBDEVS; i++) {
 		if (irqflags & board->sdirq[i].int_en)
 			process_irq(dev, dev_private->irq_subd + i, irqflags);
@@ -295,7 +275,7 @@ static int pci_dio_asy_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_EXT);
@@ -306,17 +286,13 @@ static int pci_dio_asy_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
-	/*
-	 * For scan_begin_arg, the trigger number must be 0 and the only
-	 * allowed flags are CR_EDGE and CR_INVERT.  CR_EDGE is ignored,
-	 * CR_INVERT sets the trigger to falling edge.
-	 */
+	 
 	if (cmd->scan_begin_arg & ~(CR_EDGE | CR_INVERT)) {
 		cmd->scan_begin_arg &= (CR_EDGE | CR_INVERT);
 		err |= -EINVAL;
@@ -329,9 +305,9 @@ static int pci_dio_asy_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -350,11 +326,11 @@ static int pci_dio_asy_cmd(struct comedi_device *dev,
 
 	spin_lock_irqsave(&dev->spinlock, cpu_flags);
 	if (cmd->scan_begin_arg & CR_INVERT)
-		dev_private->int_rf |= int_en;	/* falling edge */
+		dev_private->int_rf |= int_en;	 
 	else
-		dev_private->int_rf &= ~int_en;	/* rising edge */
+		dev_private->int_rf &= ~int_en;	 
 	outb(dev_private->int_rf, dev->iobase + PCI173X_INT_RF_REG);
-	dev_private->int_ctrl |= int_en;	/* enable interrupt source */
+	dev_private->int_ctrl |= int_en;	 
 	outb(dev_private->int_ctrl, dev->iobase + PCI173X_INT_EN_REG);
 	spin_unlock_irqrestore(&dev->spinlock, cpu_flags);
 
@@ -388,7 +364,7 @@ static int pci_dio_asy_cancel(struct comedi_device *dev,
 	return 0;
 }
 
-/* same as _insn_bits_di_ because the IRQ-pins are the DI-ports  */
+ 
 static int pci_dio_insn_bits_dirq_b(struct comedi_device *dev,
 				    struct comedi_subdevice *s,
 				    struct comedi_insn *insn,
@@ -482,20 +458,20 @@ static int pci_dio_insn_bits_do_w(struct comedi_device *dev,
 static int pci_dio_reset(struct comedi_device *dev, unsigned long cardtype)
 {
 	struct pci_dio_dev_private_data *dev_private = dev->private;
-	/* disable channel freeze function on the PCI-1752/1756 boards */
+	 
 	if (cardtype == TYPE_PCI1752 || cardtype == TYPE_PCI1756)
 		outw(0, dev->iobase + PCI1752_CFC_REG);
 
-	/* disable and clear interrupts */
+	 
 	switch (cardtype) {
 	case TYPE_PCI1730:
 	case TYPE_PCI1733:
 	case TYPE_PCI1736:
 		dev_private->int_ctrl = 0x00;
 		outb(dev_private->int_ctrl, dev->iobase + PCI173X_INT_EN_REG);
-		/* Reset all 4 Int Flags */
+		 
 		outb(0x0f, dev->iobase + PCI173X_INT_CLR_REG);
-		/* Rising Edge => IRQ . On all 4 Pins */
+		 
 		dev_private->int_rf = 0x00;
 		outb(dev_private->int_rf, dev->iobase + PCI173X_INT_RF_REG);
 		break;
@@ -527,11 +503,11 @@ static int pci_dio_reset(struct comedi_device *dev, unsigned long cardtype)
 		}
 		break;
 	case TYPE_PCI1761:
-		/* disable interrupts */
+		 
 		outb(0, dev->iobase + PCI1761_INT_EN_REG);
-		/* clear interrupts */
+		 
 		outb(0xff, dev->iobase + PCI1761_INT_CLR_REG);
-		/* set rising edge trigger */
+		 
 		outb(0, dev->iobase + PCI1761_INT_RF_REG);
 		break;
 	case TYPE_PCI1762:
@@ -575,7 +551,7 @@ static int pci_dio_auto_attach(struct comedi_device *dev,
 	dev_private->boardtype = context;
 	pci_dio_reset(dev, context);
 
-	/* request IRQ if device has irq subdevices */
+	 
 	if (board->sdirq[0].int_en && pcidev->irq) {
 		ret = request_irq(pcidev->irq, pci_dio_interrupt, IRQF_SHARED,
 				  dev->board_name, dev);
@@ -620,7 +596,7 @@ static int pci_dio_auto_attach(struct comedi_device *dev,
 						: pci_dio_insn_bits_do_b;
 			s->private	= (void *)d->addr;
 
-			/* reset all outputs to 0 */
+			 
 			if (board->is_16bit) {
 				outw(0, dev->iobase + d->addr);
 				if (s->n_chan > 16)
@@ -673,7 +649,7 @@ static int pci_dio_auto_attach(struct comedi_device *dev,
 		comedi_8254_subdevice_init(s, dev->pacer);
 	}
 
-	dev_private->irq_subd = subdev; /* first interrupt subdevice index */
+	dev_private->irq_subd = subdev;  
 	for (i = 0; i < PCI_DIO_MAX_IRQ_SUBDEVS; ++i) {
 		struct pci_dio_sd_private_data *sd_priv = NULL;
 		const struct dio_irq_subd_data *d = &board->sdirq[i];
@@ -729,21 +705,13 @@ static struct comedi_driver adv_pci_dio_driver = {
 static unsigned long pci_dio_override_cardtype(struct pci_dev *pcidev,
 					       unsigned long cardtype)
 {
-	/*
-	 * Change cardtype from TYPE_PCI1753 to TYPE_PCI1753E if expansion
-	 * board available.  Need to enable PCI device and request the main
-	 * registers PCI BAR temporarily to perform the test.
-	 */
+	 
 	if (cardtype != TYPE_PCI1753)
 		return cardtype;
 	if (pci_enable_device(pcidev) < 0)
 		return cardtype;
 	if (pci_request_region(pcidev, 2, "adv_pci_dio") == 0) {
-		/*
-		 * This test is based on Advantech's "advdaq" driver source
-		 * (which declares its module licence as "GPL" although the
-		 * driver source does not include a "COPYING" file).
-		 */
+		 
 		unsigned long reg = pci_resource_start(pcidev, 2) + 53;
 
 		outb(0x05, reg);

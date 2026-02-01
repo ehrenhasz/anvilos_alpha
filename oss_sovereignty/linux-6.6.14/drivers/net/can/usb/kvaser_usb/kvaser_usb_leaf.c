@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Parts of this driver are based on the following:
- *  - Kvaser linux leaf driver (version 4.78)
- *  - CAN driver for esd CAN-USB/2
- *  - Kvaser linux usbcanII driver (version 5.3)
- *
- * Copyright (C) 2002-2018 KVASER AB, Sweden. All rights reserved.
- * Copyright (C) 2010 Matthias Fuchs <matthias.fuchs@esd.eu>, esd gmbh
- * Copyright (C) 2012 Olivier Sobrie <olivier@sobrie.be>
- * Copyright (C) 2015 Valeo S.A.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -32,10 +23,10 @@
 
 #define MAX_USBCAN_NET_DEVICES		2
 
-/* Command header size */
+ 
 #define CMD_HEADER_LEN			2
 
-/* Kvaser CAN message flags */
+ 
 #define MSG_FLAG_ERROR_FRAME		BIT(0)
 #define MSG_FLAG_OVERRUN		BIT(1)
 #define MSG_FLAG_NERR			BIT(2)
@@ -45,13 +36,13 @@
 #define MSG_FLAG_TX_ACK			BIT(6)
 #define MSG_FLAG_TX_REQUEST		BIT(7)
 
-/* CAN states (M16C CxSTRH register) */
+ 
 #define M16C_STATE_BUS_RESET		BIT(0)
 #define M16C_STATE_BUS_ERROR		BIT(4)
 #define M16C_STATE_BUS_PASSIVE		BIT(5)
 #define M16C_STATE_BUS_OFF		BIT(6)
 
-/* Leaf/usbcan command ids */
+ 
 #define CMD_RX_STD_MESSAGE		12
 #define CMD_TX_STD_MESSAGE		13
 #define CMD_RX_EXT_MESSAGE		14
@@ -84,7 +75,7 @@
 
 #define CMD_LEAF_LOG_MESSAGE		106
 
-/* Leaf frequency options */
+ 
 #define KVASER_USB_LEAF_SWOPTION_FREQ_MASK 0x60
 #define KVASER_USB_LEAF_SWOPTION_FREQ_16_MHZ_CLK 0
 #define KVASER_USB_LEAF_SWOPTION_FREQ_32_MHZ_CLK BIT(5)
@@ -92,7 +83,7 @@
 
 #define KVASER_USB_LEAF_SWOPTION_EXT_CAP BIT(12)
 
-/* error factors */
+ 
 #define M16C_EF_ACKE			BIT(0)
 #define M16C_EF_CRCE			BIT(1)
 #define M16C_EF_FORME			BIT(2)
@@ -102,21 +93,19 @@
 #define M16C_EF_RCVE			BIT(6)
 #define M16C_EF_TRE			BIT(7)
 
-/* Only Leaf-based devices can report M16C error factors,
- * thus define our own error status flags for USBCANII
- */
+ 
 #define USBCAN_ERROR_STATE_NONE		0
 #define USBCAN_ERROR_STATE_TX_ERROR	BIT(0)
 #define USBCAN_ERROR_STATE_RX_ERROR	BIT(1)
 #define USBCAN_ERROR_STATE_BUSERROR	BIT(2)
 
-/* ctrl modes */
+ 
 #define KVASER_CTRL_MODE_NORMAL		1
 #define KVASER_CTRL_MODE_SILENT		2
 #define KVASER_CTRL_MODE_SELFRECEPTION	3
 #define KVASER_CTRL_MODE_OFF		4
 
-/* Extended CAN identifier flag */
+ 
 #define KVASER_EXTENDED_FRAME		BIT(31)
 
 struct kvaser_cmd_simple {
@@ -259,7 +248,7 @@ struct usbcan_cmd_can_error_event {
 	__le16 time;
 } __packed;
 
-/* CMD_ERROR_EVENT error codes */
+ 
 #define KVASER_USB_LEAF_ERROR_EVENT_TX_QUEUE_FULL 0x8
 #define KVASER_USB_LEAF_ERROR_EVENT_PARAM 0x9
 
@@ -305,7 +294,7 @@ struct leaf_cmd_log_message {
 	u8 data[8];
 } __packed;
 
-/* Sub commands for cap_req and cap_res */
+ 
 #define KVASER_USB_LEAF_CAP_CMD_LISTEN_MODE 0x02
 #define KVASER_USB_LEAF_CAP_CMD_ERR_REPORT 0x05
 struct kvaser_cmd_cap_req {
@@ -315,7 +304,7 @@ struct kvaser_cmd_cap_req {
 	__le16 channel;
 } __packed;
 
-/* Status codes for cap_res */
+ 
 #define KVASER_USB_LEAF_CAP_STAT_OK 0x00
 #define KVASER_USB_LEAF_CAP_STAT_NOT_IMPL 0x01
 #define KVASER_USB_LEAF_CAP_STAT_UNAVAIL 0x02
@@ -380,7 +369,7 @@ static const u8 kvaser_usb_leaf_cmd_sizes_leaf[] = {
 	[CMD_GET_CAPABILITIES_RESP]	= kvaser_fsize(u.leaf.cap_res),
 	[CMD_GET_BUS_PARAMS_REPLY]	= kvaser_fsize(u.busparams),
 	[CMD_ERROR_EVENT]		= kvaser_fsize(u.leaf.error_event),
-	/* ignored events: */
+	 
 	[CMD_FLUSH_QUEUE_REPLY]		= CMD_SIZE_ANY,
 };
 
@@ -395,20 +384,11 @@ static const u8 kvaser_usb_leaf_cmd_sizes_usbcan[] = {
 	[CMD_CHIP_STATE_EVENT]		= kvaser_fsize(u.usbcan.chip_state_event),
 	[CMD_CAN_ERROR_EVENT]		= kvaser_fsize(u.usbcan.can_error_event),
 	[CMD_ERROR_EVENT]		= kvaser_fsize(u.usbcan.error_event),
-	/* ignored events: */
+	 
 	[CMD_USBCAN_CLOCK_OVERFLOW_EVENT] = CMD_SIZE_ANY,
 };
 
-/* Summary of a kvaser error event, for a unified Leaf/Usbcan error
- * handling. Some discrepancies between the two families exist:
- *
- * - USBCAN firmware does not report M16C "error factors"
- * - USBCAN controllers has difficulties reporting if the raised error
- *   event is for ch0 or ch1. They leave such arbitration to the OS
- *   driver by letting it compare error counters with previous values
- *   and decide the error event's channel. Thus for USBCAN, the channel
- *   field is only advisory.
- */
+ 
 struct kvaser_usb_err_summary {
 	u8 channel, status, txerr, rxerr;
 	union {
@@ -427,7 +407,7 @@ struct kvaser_usb_net_leaf_priv {
 
 	struct delayed_work chip_state_req_work;
 
-	/* started but not reported as bus-on yet */
+	 
 	bool joining_bus;
 };
 
@@ -457,7 +437,7 @@ static const struct can_bittiming_const kvaser_usb_leaf_m32c_bittiming_const = {
 
 static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_usbcan_dev_cfg = {
 	.clock = {
-		.freq = 8 * MEGA /* Hz */,
+		.freq = 8 * MEGA  ,
 	},
 	.timestamp_freq = 1,
 	.bittiming_const = &kvaser_usb_leaf_m16c_bittiming_const,
@@ -465,7 +445,7 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_usbcan_dev_cfg = {
 
 static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_m32c_dev_cfg = {
 	.clock = {
-		.freq = 16 * MEGA /* Hz */,
+		.freq = 16 * MEGA  ,
 	},
 	.timestamp_freq = 1,
 	.bittiming_const = &kvaser_usb_leaf_m32c_bittiming_const,
@@ -473,7 +453,7 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_m32c_dev_cfg = {
 
 static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_16mhz = {
 	.clock = {
-		.freq = 16 * MEGA /* Hz */,
+		.freq = 16 * MEGA  ,
 	},
 	.timestamp_freq = 1,
 	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
@@ -481,7 +461,7 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_16mhz = {
 
 static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_24mhz = {
 	.clock = {
-		.freq = 24 * MEGA /* Hz */,
+		.freq = 24 * MEGA  ,
 	},
 	.timestamp_freq = 1,
 	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
@@ -489,7 +469,7 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_24mhz = {
 
 static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_32mhz = {
 	.clock = {
-		.freq = 32 * MEGA /* Hz */,
+		.freq = 32 * MEGA  ,
 	},
 	.timestamp_freq = 1,
 	.bittiming_const = &kvaser_usb_flexc_bittiming_const,
@@ -498,7 +478,7 @@ static const struct kvaser_usb_dev_cfg kvaser_usb_leaf_imx_dev_cfg_32mhz = {
 static int kvaser_usb_leaf_verify_size(const struct kvaser_usb *dev,
 				       const struct kvaser_cmd *cmd)
 {
-	/* buffer size >= cmd->len ensured by caller */
+	 
 	u8 min_size = 0;
 
 	switch (dev->driver_info->family) {
@@ -539,7 +519,7 @@ kvaser_usb_leaf_frame_to_cmd(const struct kvaser_usb_net_priv *priv,
 {
 	struct kvaser_usb *dev = priv->dev;
 	struct kvaser_cmd *cmd;
-	u8 *cmd_tx_can_flags = NULL;		/* GCC */
+	u8 *cmd_tx_can_flags = NULL;		 
 	struct can_frame *cf = (struct can_frame *)skb->data;
 
 	cmd = kmalloc(sizeof(*cmd), GFP_ATOMIC);
@@ -606,10 +586,7 @@ static int kvaser_usb_leaf_wait_cmd(const struct kvaser_usb *dev, u8 id,
 		while (pos <= actual_len - CMD_HEADER_LEN) {
 			tmp = buf + pos;
 
-			/* Handle commands crossing the USB endpoint max packet
-			 * size boundary. Check kvaser_usb_read_bulk_callback()
-			 * for further details.
-			 */
+			 
 			if (tmp->len == 0) {
 				pos = round_up(pos,
 					       le16_to_cpu
@@ -676,9 +653,7 @@ static void kvaser_usb_leaf_get_software_info_leaf(struct kvaser_usb *dev,
 		dev->card_data.capabilities |= KVASER_USB_CAP_EXT_CAP;
 
 	if (dev->driver_info->quirks & KVASER_USB_QUIRK_IGNORE_CLK_FREQ) {
-		/* Firmware expects bittiming parameters calculated for 16MHz
-		 * clock, regardless of the actual clock
-		 */
+		 
 		dev->cfg = &kvaser_usb_leaf_m32c_dev_cfg;
 	} else {
 		switch (sw_options & KVASER_USB_LEAF_SWOPTION_FREQ_MASK) {
@@ -728,11 +703,7 @@ static int kvaser_usb_leaf_get_software_info(struct kvaser_usb *dev)
 	int err;
 	int retry = 3;
 
-	/* On some x86 laptops, plugging a Kvaser device again after
-	 * an unplug makes the firmware always ignore the very first
-	 * command. For such a case, provide some room for retries
-	 * instead of completely exiting the driver.
-	 */
+	 
 	do {
 		err = kvaser_usb_leaf_get_software_info_inner(dev);
 	} while (--retry && err == -ETIMEDOUT);
@@ -899,7 +870,7 @@ static void kvaser_usb_leaf_tx_acknowledge(const struct kvaser_usb *dev,
 
 	context = &priv->tx_contexts[tid % dev->max_tx_urbs];
 
-	/* Sometimes the state change doesn't come after a bus-off event */
+	 
 	if (priv->can.restart_ms && priv->can.state == CAN_STATE_BUS_OFF) {
 		struct sk_buff *skb;
 		struct can_frame *cf;
@@ -984,7 +955,7 @@ kvaser_usb_leaf_rx_error_update_can_state(struct kvaser_usb_net_priv *priv,
 		new_state = CAN_STATE_ERROR_PASSIVE;
 	} else if ((es->status & M16C_STATE_BUS_ERROR) &&
 		   cur_state >= CAN_STATE_BUS_OFF) {
-		/* Guard against spurious error events after a busoff */
+		 
 	} else if (es->txerr >= 128 || es->rxerr >= 128) {
 		new_state = CAN_STATE_ERROR_PASSIVE;
 	} else if (es->txerr >= 96 || es->rxerr >= 96) {
@@ -993,13 +964,7 @@ kvaser_usb_leaf_rx_error_update_can_state(struct kvaser_usb_net_priv *priv,
 		new_state = CAN_STATE_ERROR_ACTIVE;
 	}
 
-	/* 0bfd:0124 FW 4.18.778 was observed to send the initial
-	 * CMD_CHIP_STATE_EVENT after CMD_START_CHIP with M16C_STATE_BUS_OFF
-	 * bit set if the channel was bus-off when it was last stopped (even
-	 * across chip resets). This bit will clear shortly afterwards, without
-	 * triggering a second unsolicited chip state event.
-	 * Ignore this initial bus-off.
-	 */
+	 
 	if (leaf->joining_bus) {
 		if (new_state == CAN_STATE_BUS_OFF) {
 			netdev_dbg(priv->netdev, "ignoring bus-off during startup");
@@ -1064,29 +1029,16 @@ static void kvaser_usb_leaf_rx_error(const struct kvaser_usb *dev,
 	leaf = priv->sub_priv;
 	stats = &priv->netdev->stats;
 
-	/* Ignore e.g. state change to bus-off reported just after stopping */
+	 
 	if (!netif_running(priv->netdev))
 		return;
 
-	/* Update all of the CAN interface's state and error counters before
-	 * trying any memory allocation that can actually fail with -ENOMEM.
-	 *
-	 * We send a temporary stack-allocated error CAN frame to
-	 * can_change_state() for the very same reason.
-	 *
-	 * TODO: Split can_change_state() responsibility between updating the
-	 * CAN interface's state and counters, and the setting up of CAN error
-	 * frame ID and data to userspace. Remove stack allocation afterwards.
-	 */
+	 
 	old_state = priv->can.state;
 	kvaser_usb_leaf_rx_error_update_can_state(priv, es, &tmp_cf);
 	new_state = priv->can.state;
 
-	/* If there are errors, request status updates periodically as we do
-	 * not get automatic notifications of improved state.
-	 * Also request updates if we saw a stale BUS_OFF during startup
-	 * (joining_bus).
-	 */
+	 
 	if (new_state < CAN_STATE_BUS_OFF &&
 	    (es->rxerr || es->txerr || new_state == CAN_STATE_ERROR_PASSIVE ||
 	     leaf->joining_bus))
@@ -1153,9 +1105,7 @@ static void kvaser_usb_leaf_rx_error(const struct kvaser_usb *dev,
 	netif_rx(skb);
 }
 
-/* For USBCAN, report error to userspace if the channels's errors counter
- * has changed, or we're the only channel seeing a bus error state.
- */
+ 
 static void
 kvaser_usb_leaf_usbcan_conditionally_rx_error(const struct kvaser_usb *dev,
 					      struct kvaser_usb_err_summary *es)
@@ -1198,7 +1148,7 @@ static void kvaser_usb_leaf_usbcan_rx_error(const struct kvaser_usb *dev,
 	struct kvaser_usb_err_summary es = { };
 
 	switch (cmd->id) {
-	/* Sometimes errors are sent as unsolicited chip state events */
+	 
 	case CMD_CHIP_STATE_EVENT:
 		es.channel = cmd->u.usbcan.chip_state_event.channel;
 		es.status = cmd->u.usbcan.chip_state_event.status;
@@ -1216,9 +1166,7 @@ static void kvaser_usb_leaf_usbcan_rx_error(const struct kvaser_usb *dev,
 			cmd->u.usbcan.can_error_event.status_ch1;
 		kvaser_usb_leaf_usbcan_conditionally_rx_error(dev, &es);
 
-		/* The USBCAN firmware supports up to 2 channels.
-		 * Now that ch0 was checked, check if ch1 has any errors.
-		 */
+		 
 		if (dev->nchannels == MAX_USBCAN_NET_DEVICES) {
 			es.channel = 1;
 			es.status = cmd->u.usbcan.can_error_event.status_ch1;
@@ -1298,7 +1246,7 @@ static void kvaser_usb_leaf_rx_can_msg(const struct kvaser_usb *dev,
 	struct sk_buff *skb;
 	struct net_device_stats *stats;
 	u8 channel = cmd->u.rx_can_header.channel;
-	const u8 *rx_data = NULL;	/* GCC */
+	const u8 *rx_data = NULL;	 
 
 	if (channel >= dev->nchannels) {
 		dev_err(&dev->intf->dev,
@@ -1395,7 +1343,7 @@ static void kvaser_usb_leaf_error_event_parameter(const struct kvaser_usb *dev,
 		break;
 	}
 
-	/* info1 will contain the offending cmd_no */
+	 
 	switch (info1) {
 	case CMD_SET_CTRL_MODE:
 		dev_warn(&dev->intf->dev,
@@ -1431,10 +1379,7 @@ static void kvaser_usb_leaf_error_event(const struct kvaser_usb *dev,
 
 	switch (error_code) {
 	case KVASER_USB_LEAF_ERROR_EVENT_TX_QUEUE_FULL:
-		/* Received additional CAN message, when firmware TX queue is
-		 * already full. Something is wrong with the driver.
-		 * This should never happen!
-		 */
+		 
 		dev_err(&dev->intf->dev,
 			"Received error event TX_QUEUE_FULL\n");
 		break;
@@ -1554,7 +1499,7 @@ static void kvaser_usb_leaf_handle_command(const struct kvaser_usb *dev,
 		kvaser_usb_leaf_get_busparams_reply(dev, cmd);
 		break;
 
-	/* Ignored commands */
+	 
 	case CMD_USBCAN_CLOCK_OVERFLOW_EVENT:
 		if (dev->driver_info->family != KVASER_USBCAN)
 			goto warn;
@@ -1580,15 +1525,7 @@ static void kvaser_usb_leaf_read_bulk_callback(struct kvaser_usb *dev,
 	while (pos <= len - CMD_HEADER_LEN) {
 		cmd = buf + pos;
 
-		/* The Kvaser firmware can only read and write commands that
-		 * does not cross the USB's endpoint wMaxPacketSize boundary.
-		 * If a follow-up command crosses such boundary, firmware puts
-		 * a placeholder zero-length command in its place then aligns
-		 * the real command to the next max packet size.
-		 *
-		 * Handle such cases or we're going to miss a significant
-		 * number of events in case of a heavy rx load on the bus.
-		 */
+		 
 		if (cmd->len == 0) {
 			pos = round_up(pos, le16_to_cpu
 						(dev->bulk_in->wMaxPacketSize));
@@ -1830,7 +1767,7 @@ static int kvaser_usb_leaf_setup_endpoints(struct kvaser_usb *dev)
 		if (!dev->bulk_out && usb_endpoint_is_bulk_out(endpoint))
 			dev->bulk_out = endpoint;
 
-		/* use first bulk endpoint for in and out */
+		 
 		if (dev->bulk_in && dev->bulk_out)
 			return 0;
 	}

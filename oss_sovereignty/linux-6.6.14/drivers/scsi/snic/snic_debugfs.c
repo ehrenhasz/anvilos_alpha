@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2014 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -7,15 +7,7 @@
 
 #include "snic.h"
 
-/*
- * snic_debugfs_init - Initialize debugfs for snic debug logging
- *
- * Description:
- * When Debugfs is configured this routine sets up fnic debugfs
- * filesystem. If not already created. this routine will crate the
- * fnic directory and statistics directory for trace buffer and
- * stats logging
- */
+ 
 void snic_debugfs_init(void)
 {
 	snic_glob->trc_root = debugfs_create_dir("snic", NULL);
@@ -24,13 +16,7 @@ void snic_debugfs_init(void)
 						   snic_glob->trc_root);
 }
 
-/*
- * snic_debugfs_term - Tear down debugfs intrastructure
- *
- * Description:
- * When Debufs is configured this routine removes debugfs file system
- * elements that are specific to snic
- */
+ 
 void
 snic_debugfs_term(void)
 {
@@ -41,9 +27,7 @@ snic_debugfs_term(void)
 	snic_glob->trc_root = NULL;
 }
 
-/*
- * snic_reset_stats_open - Open the reset_stats file
- */
+ 
 static int
 snic_reset_stats_open(struct inode *inode, struct file *filp)
 {
@@ -53,21 +37,7 @@ snic_reset_stats_open(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/*
- * snic_reset_stats_read - Read a reset_stats debugfs file
- * @filp: The file pointer to read from.
- * @ubuf: The buffer tocopy the data to.
- * @cnt: The number of bytes to read.
- * @ppos: The position in the file to start reading frm.
- *
- * Description:
- * This routine reads value of variable reset_stats
- * and stores into local @buf. It will start reading file @ppos and
- * copy up to @cnt of data to @ubuf from @buf.
- *
- * Returns:
- * This function returns the amount of data that was read.
- */
+ 
 static ssize_t
 snic_reset_stats_read(struct file *filp,
 		      char __user *ubuf,
@@ -83,20 +53,7 @@ snic_reset_stats_read(struct file *filp,
 	return simple_read_from_buffer(ubuf, cnt, ppos, buf, len);
 }
 
-/*
- * snic_reset_stats_write - Write to reset_stats debugfs file
- * @filp: The file pointer to write from
- * @ubuf: The buffer to copy the data from.
- * @cnt: The number of bytes to write.
- * @ppos: The position in the file to start writing to.
- *
- * Description:
- * This routine writes data from user buffer @ubuf to buffer @buf and
- * resets cumulative stats of snic.
- *
- * Returns:
- * This function returns the amount of data that was written.
- */
+ 
 static ssize_t
 snic_reset_stats_write(struct file *filp,
 		       const char __user *ubuf,
@@ -126,10 +83,7 @@ snic_reset_stats_write(struct file *filp,
 	snic->reset_stats = val;
 
 	if (snic->reset_stats) {
-		/* Skip variable is used to avoid descrepancies to Num IOs
-		 * and IO Completions stats. Skip incrementing No IO Compls
-		 * for pending active IOs after reset_stats
-		 */
+		 
 		atomic64_set(&snic->io_cmpl_skip,
 			     atomic64_read(&stats->io.active));
 		memset(&stats->abts, 0, sizeof(struct snic_abort_stats));
@@ -158,9 +112,7 @@ snic_reset_stats_release(struct inode *inode, struct file *filp)
 	return 0;
 }
 
-/*
- * snic_stats_show - Formats and prints per host specific driver stats.
- */
+ 
 static int
 snic_stats_show(struct seq_file *sfp, void *data)
 {
@@ -170,7 +122,7 @@ snic_stats_show(struct seq_file *sfp, void *data)
 	u64 maxio_tm;
 	int i;
 
-	/* Dump IO Stats */
+	 
 	seq_printf(sfp,
 		   "------------------------------------------\n"
 		   "\t\t IO Statistics\n"
@@ -219,7 +171,7 @@ snic_stats_show(struct seq_file *sfp, void *data)
 			seq_puts(sfp, "\n");
 	}
 
-	/* Dump Abort Stats */
+	 
 	seq_printf(sfp,
 		   "\n-------------------------------------------\n"
 		   "\t\t Abort Statistics\n"
@@ -239,7 +191,7 @@ snic_stats_show(struct seq_file *sfp, void *data)
 		   (u64) atomic64_read(&stats->abts.io_not_found),
 		   (u64) atomic64_read(&stats->abts.q_fail));
 
-	/* Dump Reset Stats */
+	 
 	seq_printf(sfp,
 		   "\n-------------------------------------------\n"
 		   "\t\t Reset Statistics\n"
@@ -253,7 +205,7 @@ snic_stats_show(struct seq_file *sfp, void *data)
 		   (u64) atomic64_read(&stats->reset.hba_reset_cmpl),
 		   (u64) atomic64_read(&stats->reset.hba_reset_fail));
 
-	/* Dump Firmware Stats */
+	 
 	seq_printf(sfp,
 		   "\n-------------------------------------------\n"
 		   "\t\t Firmware Statistics\n"
@@ -272,7 +224,7 @@ snic_stats_show(struct seq_file *sfp, void *data)
 		(u64) atomic64_read(&stats->fw.scsi_errs));
 
 
-	/* Dump Miscellenous Stats */
+	 
 	seq_printf(sfp,
 		   "\n---------------------------------------------\n"
 		   "\t\t Other Statistics\n"
@@ -330,15 +282,7 @@ static const struct file_operations snic_reset_stats_fops = {
 	.release = snic_reset_stats_release,
 };
 
-/*
- * snic_stats_init - Initialize stats struct and create stats file
- * per snic
- *
- * Description:
- * When debugfs is cofigured this routine sets up the stats file per snic
- * It will create file stats and reset_stats under statistics/host# directory
- * to log per snic stats
- */
+ 
 void snic_stats_debugfs_init(struct snic *snic)
 {
 	char name[16];
@@ -357,13 +301,7 @@ void snic_stats_debugfs_init(struct snic *snic)
 						     &snic_reset_stats_fops);
 }
 
-/*
- * snic_stats_debugfs_remove - Tear down debugfs infrastructure of stats
- *
- * Description:
- * When Debufs is configured this routine removes debugfs file system
- * elements that are specific to to snic stats
- */
+ 
 void
 snic_stats_debugfs_remove(struct snic *snic)
 {
@@ -377,7 +315,7 @@ snic_stats_debugfs_remove(struct snic *snic)
 	snic->stats_host = NULL;
 }
 
-/* Trace Facility related API */
+ 
 static void *
 snic_trc_seq_start(struct seq_file *sfp, loff_t *pos)
 {
@@ -418,10 +356,7 @@ DEFINE_SEQ_ATTRIBUTE(snic_trc);
 
 #define TRC_ENABLE_FILE	"tracing_enable"
 #define TRC_FILE	"trace"
-/*
- * snic_trc_debugfs_init : creates trace/tracing_enable files for trace
- * under debugfs
- */
+ 
 void snic_trc_debugfs_init(void)
 {
 	debugfs_create_bool(TRC_ENABLE_FILE, S_IFREG | S_IRUGO | S_IWUSR,
@@ -431,9 +366,7 @@ void snic_trc_debugfs_init(void)
 			    snic_glob->trc_root, NULL, &snic_trc_fops);
 }
 
-/*
- * snic_trc_debugfs_term : cleans up the files created for trace under debugfs
- */
+ 
 void
 snic_trc_debugfs_term(void)
 {

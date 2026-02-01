@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulator driver for RICOH RC5T583 power management chip.
- *
- * Copyright (c) 2011-2012, NVIDIA CORPORATION.  All rights reserved.
- * Author: Laxman dewangan <ldewangan@nvidia.com>
- *
- * based on code
- *      Copyright (C) 2011 RICOH COMPANY,LTD
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -21,15 +13,15 @@
 struct rc5t583_regulator_info {
 	int			deepsleep_id;
 
-	/* Regulator register address.*/
+	 
 	uint8_t			reg_disc_reg;
 	uint8_t			disc_bit;
 	uint8_t			deepsleep_reg;
 
-	/* Regulator specific turn-on delay  and voltage settling time*/
+	 
 	int			enable_uv_per_us;
 
-	/* Used by regulator core */
+	 
 	struct regulator_desc	desc;
 };
 
@@ -121,10 +113,7 @@ static int rc5t583_regulator_probe(struct platform_device *pdev)
 				ri->deepsleep_id,
 				pdata->regulator_ext_pwr_control[id],
 				pdata->regulator_deepsleep_slot[id]);
-		/*
-		 * Configuring external control is not a major issue,
-		 * just give warning.
-		 */
+		 
 		if (ret < 0)
 			dev_warn(&pdev->dev,
 				"Failed to configure ext control %d\n", id);

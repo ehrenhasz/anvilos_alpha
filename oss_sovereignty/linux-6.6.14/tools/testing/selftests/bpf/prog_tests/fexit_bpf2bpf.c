@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Facebook */
+
+ 
 #include <test_progs.h>
 #include <network_helpers.h>
 #include <bpf/btf.h>
@@ -17,7 +17,7 @@ static int check_data_map(struct bpf_object *obj, int prog_cnt, bool reset)
 	__u32 duration = 0;
 	int ret = -1, i;
 
-	result = malloc((prog_cnt + 32 /* spare */) * sizeof(__u64));
+	result = malloc((prog_cnt + 32  ) * sizeof(__u64));
 	if (CHECK(!result, "alloc_memory", "failed to alloc memory"))
 		return -ENOMEM;
 
@@ -294,7 +294,7 @@ static void test_fmod_ret_freplace(void)
 
 	err = bpf_prog_test_load(tgt_name, BPF_PROG_TYPE_UNSPEC,
 			    &pkt_obj, &pkt_fd);
-	/* the target prog should load fine */
+	 
 	if (CHECK(err, "tgt_prog_load", "file %s err %d errno %d\n",
 		  tgt_name, err, errno))
 		return;
@@ -350,10 +350,7 @@ static void test_func_sockmap_update(void)
 static void test_obj_load_failure_common(const char *obj_file,
 					 const char *target_obj_file)
 {
-	/*
-	 * standalone test that asserts failure to load freplace prog
-	 * because of invalid return code.
-	 */
+	 
 	struct bpf_object *obj = NULL, *pkt_obj;
 	struct bpf_program *prog;
 	int err, pkt_fd;
@@ -361,7 +358,7 @@ static void test_obj_load_failure_common(const char *obj_file,
 
 	err = bpf_prog_test_load(target_obj_file, BPF_PROG_TYPE_UNSPEC,
 			    &pkt_obj, &pkt_fd);
-	/* the target prog should load fine */
+	 
 	if (CHECK(err, "tgt_prog_load", "file %s err %d errno %d\n",
 		  target_obj_file, err, errno))
 		return;
@@ -374,7 +371,7 @@ static void test_obj_load_failure_common(const char *obj_file,
 	err = bpf_program__set_attach_target(prog, pkt_fd, NULL);
 	ASSERT_OK(err, "set_attach_target");
 
-	/* It should fail to load the program */
+	 
 	err = bpf_object__load(obj);
 	if (CHECK(!err, "bpf_obj_load should fail", "err %d\n", err))
 		goto close_prog;
@@ -386,14 +383,14 @@ close_prog:
 
 static void test_func_replace_return_code(void)
 {
-	/* test invalid return code in the replaced program */
+	 
 	test_obj_load_failure_common("./freplace_connect_v4_prog.bpf.o",
 				     "./connect4_prog.bpf.o");
 }
 
 static void test_func_map_prog_compatibility(void)
 {
-	/* test with spin lock map value in the replaced program */
+	 
 	test_obj_load_failure_common("./freplace_attach_probe.bpf.o",
 				     "./test_attach_probe.bpf.o");
 }
@@ -483,9 +480,7 @@ static void test_fentry_to_cgroup_bpf(void)
 	if (!ASSERT_GE(fentry_fd, 0, "load_fentry"))
 		goto cleanup;
 
-	/* Make sure bpf_prog_get_info_by_fd works correctly when attaching
-	 * to another BPF program.
-	 */
+	 
 
 	ASSERT_OK(bpf_prog_get_info_by_fd(fentry_fd, &info, &info_len),
 		  "bpf_prog_get_info_by_fd");
@@ -528,14 +523,7 @@ static void test_func_replace_progmap(void)
 	if (!ASSERT_OK(err, "obj_load"))
 		goto out;
 
-	/* Prior to fixing the kernel, loading the PROG_TYPE_EXT 'redirect'
-	 * program above will cause the map owner type of 'cpumap' to be set to
-	 * PROG_TYPE_EXT. This in turn will cause the bpf_map_update_elem()
-	 * below to fail, because the program we are inserting into the map is
-	 * of PROG_TYPE_XDP. After fixing the kernel, the initial ownership will
-	 * be correctly resolved to the *target* of the PROG_TYPE_EXT program
-	 * (i.e., PROG_TYPE_XDP) and the map update will succeed.
-	 */
+	 
 	value.bpf_prog.fd = bpf_program__fd(skel->progs.xdp_drop_prog);
 	err = bpf_map_update_elem(bpf_map__fd(skel->maps.cpu_map),
 				  &key, &value, 0);
@@ -546,7 +534,7 @@ out:
 	freplace_progmap__destroy(skel);
 }
 
-/* NOTE: affect other tests, must run in serial mode */
+ 
 void serial_test_fexit_bpf2bpf(void)
 {
 	if (test__start_subtest("target_no_callees"))

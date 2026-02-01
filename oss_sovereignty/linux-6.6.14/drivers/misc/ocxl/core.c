@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2019 IBM Corp.
+
+
 #include <linux/idr.h>
 #include "ocxl_internal.h"
 
@@ -57,10 +57,7 @@ static int assign_afu_actag(struct ocxl_afu *afu)
 	int actag_count, actag_offset;
 	struct pci_dev *pci_dev = to_pci_dev(fn->dev.parent);
 
-	/*
-	 * if there were not enough actags for the function, each afu
-	 * reduces its count as well
-	 */
+	 
 	actag_count = afu->config.actag_supported *
 		fn->actag_enabled / fn->actag_supported;
 	actag_offset = ocxl_actag_afu_alloc(fn, actag_count);
@@ -95,10 +92,7 @@ static int assign_afu_pasid(struct ocxl_afu *afu)
 	int pasid_count, pasid_offset;
 	struct pci_dev *pci_dev = to_pci_dev(fn->dev.parent);
 
-	/*
-	 * We only support the case where the function configuration
-	 * requested enough PASIDs to cover all AFUs.
-	 */
+	 
 	pasid_count = 1 << afu->config.pasid_supported_log;
 	pasid_offset = ocxl_pasid_afu_alloc(fn, pasid_count);
 	if (pasid_offset < 0) {
@@ -190,10 +184,7 @@ static int map_mmio_areas(struct ocxl_afu *afu)
 		return -ENOMEM;
 	}
 
-	/*
-	 * Leave an empty page between the per-process mmio area and
-	 * the AFU interrupt mappings
-	 */
+	 
 	afu->irq_base_offset = afu->config.pp_mmio_stride + PAGE_SIZE;
 	return 0;
 }
@@ -293,7 +284,7 @@ static void remove_afu(struct ocxl_afu *afu)
 	ocxl_context_detach_all(afu);
 	deactivate_afu(afu);
 	deconfigure_afu(afu);
-	ocxl_afu_put(afu); // matches the implicit get in alloc_afu
+	ocxl_afu_put(afu); 
 }
 
 static struct ocxl_fn *alloc_function(void)
@@ -358,7 +349,7 @@ static int set_function_pasid(struct ocxl_fn *fn)
 	struct pci_dev *dev = to_pci_dev(fn->dev.parent);
 	int rc, desired_count, max_count;
 
-	/* A function may not require any PASID */
+	 
 	if (fn->config.max_pasid_log < 0)
 		return 0;
 
@@ -389,27 +380,7 @@ static int configure_function(struct ocxl_fn *fn, struct pci_dev *dev)
 		return rc;
 	}
 
-	/*
-	 * Once it has been confirmed to work on our hardware, we
-	 * should reset the function, to force the adapter to restart
-	 * from scratch.
-	 * A function reset would also reset all its AFUs.
-	 *
-	 * Some hints for implementation:
-	 *
-	 * - there's not status bit to know when the reset is done. We
-	 *   should try reading the config space to know when it's
-	 *   done.
-	 * - probably something like:
-	 *	Reset
-	 *	wait 100ms
-	 *	issue config read
-	 *	allow device up to 1 sec to return success on config
-	 *	read before declaring it broken
-	 *
-	 * Some shared logic on the card (CFG, TLX) won't be reset, so
-	 * there's no guarantee that it will be enough.
-	 */
+	 
 	rc = ocxl_config_read_function(dev, &fn->config);
 	if (rc)
 		return rc;
@@ -470,7 +441,7 @@ static struct ocxl_fn *init_function(struct pci_dev *dev)
 	return fn;
 }
 
-// Device detection & initialisation
+
 
 struct ocxl_fn *ocxl_function_open(struct pci_dev *dev)
 {
@@ -545,7 +516,7 @@ void ocxl_function_close(struct ocxl_fn *fn)
 }
 EXPORT_SYMBOL_GPL(ocxl_function_close);
 
-// AFU Metadata
+
 
 struct ocxl_afu_config *ocxl_afu_config(struct ocxl_afu *afu)
 {

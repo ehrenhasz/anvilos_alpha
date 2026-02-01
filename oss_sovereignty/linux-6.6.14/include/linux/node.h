@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * include/linux/node.h - generic node definition
- *
- * This is mainly for topological representation. We define the
- * basic 'struct node' here, which can be embedded in per-arch
- * definitions of processors.
- *
- * Basic handling of the devices is done in drivers/base/node.c
- * and system devices are handled in drivers/base/sys.c.
- *
- * Nodes are exported via driverfs in the class/node/devices/
- * directory.
- */
+ 
+ 
 #ifndef _LINUX_NODE_H_
 #define _LINUX_NODE_H_
 
@@ -19,14 +7,7 @@
 #include <linux/cpumask.h>
 #include <linux/list.h>
 
-/**
- * struct node_hmem_attrs - heterogeneous memory performance attributes
- *
- * @read_bandwidth:	Read bandwidth in MB/s
- * @write_bandwidth:	Write bandwidth in MB/s
- * @read_latency:	Read latency in nanoseconds
- * @write_latency:	Write latency in nanoseconds
- */
+ 
 struct node_hmem_attrs {
 	unsigned int read_bandwidth;
 	unsigned int write_bandwidth;
@@ -46,15 +27,7 @@ enum cache_write_policy {
 	NODE_CACHE_WRITE_OTHER,
 };
 
-/**
- * struct node_cache_attrs - system memory caching attributes
- *
- * @indexing:		The ways memory blocks may be placed in cache
- * @write_policy:	Write back or write through policy
- * @size:		Total size of cache in bytes
- * @line_size:		Number of bytes fetched on a cache miss
- * @level:		The cache hierarchy level
- */
+ 
 struct node_cache_attrs {
 	enum cache_indexing indexing;
 	enum cache_write_policy write_policy;
@@ -107,10 +80,10 @@ static inline void register_memory_blocks_under_node(int nid, unsigned long star
 extern void unregister_node(struct node *node);
 #ifdef CONFIG_NUMA
 extern void node_dev_init(void);
-/* Core of the node registration - only memory hotplug should use this */
+ 
 extern int __register_one_node(int nid);
 
-/* Registers an online node */
+ 
 static inline int register_one_node(int nid)
 {
 	int error = 0;
@@ -169,4 +142,4 @@ static inline void unregister_memory_block_under_nodes(struct memory_block *mem_
 
 #define to_node(device) container_of(device, struct node, dev)
 
-#endif /* _LINUX_NODE_H_ */
+#endif  

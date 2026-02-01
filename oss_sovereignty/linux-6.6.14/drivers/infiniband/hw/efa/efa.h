@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause */
-/*
- * Copyright 2018-2021 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef _EFA_H_
 #define _EFA_H_
@@ -32,7 +30,7 @@ struct efa_irq {
 	char name[EFA_IRQNAME_SIZE];
 };
 
-/* Don't use anything other than atomic64 */
+ 
 struct efa_stats {
 	atomic64_t alloc_pd_err;
 	atomic64_t create_qp_err;
@@ -62,11 +60,11 @@ struct efa_dev {
 
 	struct efa_stats stats;
 
-	/* Array of completion EQs */
+	 
 	struct efa_eq *eqs;
 	unsigned int neqs;
 
-	/* Only stores CQs with interrupts enabled */
+	 
 	struct xarray cqs_xa;
 };
 
@@ -94,7 +92,7 @@ struct efa_cq {
 	struct rdma_user_mmap_entry *db_mmap_entry;
 	size_t size;
 	u16 cq_idx;
-	/* NULL when no interrupts requested */
+	 
 	struct efa_eq *eq;
 };
 
@@ -105,7 +103,7 @@ struct efa_qp {
 	size_t rq_size;
 	enum ib_qp_state state;
 
-	/* Used for saving mmap_xa entries */
+	 
 	struct rdma_user_mmap_entry *sq_db_mmap_entry;
 	struct rdma_user_mmap_entry *llq_desc_mmap_entry;
 	struct rdma_user_mmap_entry *rq_db_mmap_entry;
@@ -122,7 +120,7 @@ struct efa_qp {
 struct efa_ah {
 	struct ib_ah ibah;
 	u16 ah;
-	/* dest_addr */
+	 
 	u8 id[EFA_GID_SIZE];
 };
 
@@ -179,4 +177,4 @@ struct rdma_hw_stats *efa_alloc_hw_device_stats(struct ib_device *ibdev);
 int efa_get_hw_stats(struct ib_device *ibdev, struct rdma_hw_stats *stats,
 		     u32 port_num, int index);
 
-#endif /* _EFA_H_ */
+#endif  

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: MIT
-/* utility to create the register check tables
- * this includes inlined list.h safe for userspace.
- *
- * Copyright 2009 Jerome Glisse
- * Copyright 2009 Red Hat Inc.
- *
- * Authors:
- * 	Jerome Glisse
- * 	Dave Airlie
- */
+
+ 
 
 #include <sys/types.h>
 #include <stdlib.h>
@@ -18,26 +9,12 @@
 #include <libgen.h>
 
 #define offsetof(TYPE, MEMBER) ((size_t) &((TYPE *)0)->MEMBER)
-/**
- * container_of - cast a member of a structure out to the containing structure
- * @ptr:    the pointer to the member.
- * @type:   the type of the container struct this is embedded in.
- * @member: the name of the member within the struct.
- *
- */
+ 
 #define container_of(ptr, type, member) ({          \
 	const typeof(((type *)0)->member)*__mptr = (ptr);    \
 		     (type *)((char *)__mptr - offsetof(type, member)); })
 
-/*
- * Simple doubly linked list implementation.
- *
- * Some of the internal functions ("__xxx") are useful when
- * manipulating whole lists rather than single entries, as
- * sometimes we already know the next/prev entries and we can
- * generate better code by using them directly rather than
- * using the generic single-entry routines.
- */
+ 
 
 struct list_head {
 	struct list_head *next, *prev;
@@ -50,12 +27,7 @@ static inline void INIT_LIST_HEAD(struct list_head *list)
 	list->prev = list;
 }
 
-/*
- * Insert a new entry between two known consecutive entries.
- *
- * This is only for internal list manipulation where we know
- * the prev/next entries already!
- */
+ 
 #ifndef CONFIG_DEBUG_LIST
 static inline void __list_add(struct list_head *new,
 			      struct list_head *prev, struct list_head *next)
@@ -70,34 +42,17 @@ extern void __list_add(struct list_head *new,
 		       struct list_head *prev, struct list_head *next);
 #endif
 
-/**
- * list_add_tail - add a new entry
- * @new: new entry to be added
- * @head: list head to add it before
- *
- * Insert a new entry before the specified head.
- * This is useful for implementing queues.
- */
+ 
 static inline void list_add_tail(struct list_head *new, struct list_head *head)
 {
 	__list_add(new, head->prev, head);
 }
 
-/**
- * list_entry - get the struct for this entry
- * @ptr:	the &struct list_head pointer.
- * @type:	the type of the struct this is embedded in.
- * @member:	the name of the list_head within the struct.
- */
+ 
 #define list_entry(ptr, type, member) \
 	container_of(ptr, type, member)
 
-/**
- * list_for_each_entry	-	iterate over list of given type
- * @pos:	the type * to use as a loop cursor.
- * @head:	the head for your list.
- * @member:	the name of the list_head within the struct.
- */
+ 
 #define list_for_each_entry(pos, head, member)				\
 	for (pos = list_entry((head)->next, typeof(*pos), member);	\
 	     &pos->member != (head); 	\
@@ -215,14 +170,13 @@ static int parser_auth(struct table *t, const char *filename)
 	end = ftell(file);
 	fseek(file, 0, SEEK_SET);
 
-	/* get header */
+	 
 	if (fgets(buf, 1024, file) == NULL) {
 		fclose(file);
 		return -1;
 	}
 
-	/* first line will contain the last register
-	 * and gpu name */
+	 
 	sscanf(buf, "%9s %9s", gpu_name, last_reg_s);
 	t->gpu_prefix = gpu_name;
 	last_reg = strtol(last_reg_s, NULL, 16);

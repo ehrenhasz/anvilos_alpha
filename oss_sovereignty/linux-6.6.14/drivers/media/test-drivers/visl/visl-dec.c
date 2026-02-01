@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Contains the virtual decoder logic. The functions here control the
- * tracing/TPG on a per-frame basis
- */
+
+ 
 
 #include "visl.h"
 #include "visl-debugfs.h"
@@ -423,7 +420,7 @@ void visl_device_run(void *priv)
 	run.src = v4l2_m2m_next_src_buf(ctx->fh.m2m_ctx);
 	run.dst = v4l2_m2m_next_dst_buf(ctx->fh.m2m_ctx);
 
-	/* Apply request(s) controls if needed. */
+	 
 	src_req = run.src->vb2_buf.req_obj.req;
 
 	if (src_req)
@@ -487,7 +484,7 @@ void visl_device_run(void *priv)
 	    run.dst->sequence < bitstream_trace_frame_start + bitstream_trace_nframes)
 		visl_trace_bitstream(ctx, &run);
 
-	/* Complete request(s) controls if needed. */
+	 
 	if (src_req)
 		v4l2_ctrl_request_complete(src_req, &ctx->hdl);
 

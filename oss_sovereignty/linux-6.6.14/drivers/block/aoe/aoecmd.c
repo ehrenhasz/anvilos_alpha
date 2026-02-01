@@ -1,8 +1,5 @@
-/* Copyright (c) 2013 Coraid, Inc.  See COPYING for GPL terms. */
-/*
- * aoecmd.c
- * Filesystem request handling methods
- */
+ 
+ 
 
 #include <linux/ata.h>
 #include <linux/slab.h>
@@ -18,7 +15,7 @@
 #include <linux/uio.h>
 #include "aoe.h"
 
-#define MAXIOC (8192)	/* default meant to avoid most soft lockups */
+#define MAXIOC (8192)	 
 
 static void ktcomplete(struct frame *, struct sk_buff *);
 static int count_targets(struct aoedev *d, int *untainted);
@@ -34,22 +31,16 @@ module_param(aoe_maxout, int, 0644);
 MODULE_PARM_DESC(aoe_maxout,
 	"Only aoe_maxout outstanding packets for every MAC on eX.Y.");
 
-/* The number of online cpus during module initialization gives us a
- * convenient heuristic cap on the parallelism used for ktio threads
- * doing I/O completion.  It is not important that the cap equal the
- * actual number of running CPUs at any given time, but because of CPU
- * hotplug, we take care to use ncpus instead of using
- * num_online_cpus() after module initialization.
- */
+ 
 static int ncpus;
 
-/* mutex lock used for synchronization while thread spawning */
+ 
 static DEFINE_MUTEX(ktio_spawn_lock);
 
 static wait_queue_head_t *ktiowq;
 static struct ktstate *kts;
 
-/* io completion queue */
+ 
 struct iocq_ktio {
 	struct list_head head;
 	spinlock_t lock;
@@ -110,11 +101,7 @@ getframe(struct aoedev *d, u32 tag)
 	return NULL;
 }
 
-/*
- * Leave the top bit clear so we have tagspace for userland.
- * The bottom 16 bits are the xmit tick for rexmit/rttavg processing.
- * This driver reserves tag -1 to mean "unused frame."
- */
+ 
 static int
 newtag(struct aoedev *d)
 {
@@ -258,7 +245,7 @@ newframe(struct aoedev *d)
 		printk(KERN_ERR "aoe: NULL TARGETS!\n");
 		return NULL;
 	}
-	tt = d->tgt;	/* last used target */
+	tt = d->tgt;	 
 	for (use_tainted = 0, has_untainted = 0;;) {
 		tt++;
 		if (tt >= &d->targets[d->ntargets] || !*tt)
@@ -278,7 +265,7 @@ newframe(struct aoedev *d)
 				return f;
 			}
 		}
-		if (tt == d->tgt) {	/* we've looped and found nada */
+		if (tt == d->tgt) {	 
 			if (!use_tainted && !has_untainted)
 				use_tainted = 1;
 			else
@@ -338,7 +325,7 @@ ata_rw_frameinit(struct frame *f)
 	f->waited = 0;
 	f->waited_total = 0;
 
-	/* set up ata header */
+	 
 	ah->scnt = f->iter.bi_size >> 9;
 	put_lba(ah, f->iter.bi_sector);
 	if (t->d->flags & DEVFL_EXT) {
@@ -346,7 +333,7 @@ ata_rw_frameinit(struct frame *f)
 	} else {
 		extbit = 0;
 		ah->lba3 &= 0x0f;
-		ah->lba3 |= 0xe0;	/* LBA bit + obsolete 0xa0 */
+		ah->lba3 |= 0xe0;	 
 	}
 	if (f->buf && bio_data_dir(f->buf->bio) == WRITE) {
 		skb_fillup(skb, f->buf->bio, f->iter);
@@ -379,7 +366,7 @@ aoecmd_ata_rw(struct aoedev *d)
 	if (f == NULL)
 		return 0;
 
-	/* initialize the headers & frame */
+	 
 	f->buf = buf;
 	f->iter = buf->iter;
 	f->iter.bi_size = min_t(unsigned long,
@@ -390,7 +377,7 @@ aoecmd_ata_rw(struct aoedev *d)
 	if (!buf->iter.bi_size)
 		d->ip.buf = NULL;
 
-	/* mark all tracking fields and load out */
+	 
 	buf->nframesout += 1;
 
 	ata_rw_frameinit(f);
@@ -405,9 +392,7 @@ aoecmd_ata_rw(struct aoedev *d)
 	return 1;
 }
 
-/* some callers cannot sleep, and they can call this function,
- * transmitting the packets later, when interrupts are on
- */
+ 
 static void
 aoecmd_cfg_pkts(ushort aoemajor, unsigned char aoeminor, struct sk_buff_head *queue)
 {
@@ -461,7 +446,7 @@ resend(struct aoedev *d, struct frame *f)
 	n = newtag(d);
 	skb = f->skb;
 	if (ifrotate(t) == NULL) {
-		/* probably can't happen, but set it up to fail anyway */
+		 
 		pr_info("aoe: resend: no interfaces to rotate to.\n");
 		ktcomplete(f, NULL);
 		return;
@@ -498,11 +483,11 @@ tsince_hr(struct frame *f)
 {
 	u64 delta = ktime_to_ns(ktime_sub(ktime_get(), f->sent));
 
-	/* delta is normally under 4.2 seconds, avoid 64-bit division */
+	 
 	if (likely(delta <= UINT_MAX))
 		return (u32)delta / NSEC_PER_USEC;
 
-	/* avoid overflow after 71 minutes */
+	 
 	if (delta > ((u64)INT_MAX * NSEC_PER_USEC))
 		return INT_MAX;
 
@@ -665,17 +650,17 @@ rexmit_deferred(struct aoedev *d)
 					t = f->t;
 				}
 			} else if (untainted < 1) {
-				/* don't probe w/o other untainted aoetgts */
+				 
 				goto stop_probe;
 			} else if (tsince_hr(f) < t->taint * rto(d)) {
-				/* reprobe slowly when taint is high */
+				 
 				continue;
 			}
 		} else if (f->flags & FFL_PROBE) {
-stop_probe:		/* don't probe untainted aoetgts */
+stop_probe:		 
 			list_del(pos);
 			aoe_freetframe(f);
-			/* leaving d->kicked, because this is routine */
+			 
 			f->t->d->flags |= DEVFL_KICKME;
 			continue;
 		}
@@ -692,9 +677,7 @@ stop_probe:		/* don't probe untainted aoetgts */
 	}
 }
 
-/* An aoetgt accumulates demerits quickly, and successful
- * probing redeems the aoetgt slowly.
- */
+ 
 static void
 scorn(struct aoetgt *t)
 {
@@ -734,14 +717,14 @@ rexmit_timer(struct timer_list *timer)
 	register long timeout;
 	ulong flags, n;
 	int i;
-	int utgts;	/* number of aoetgt descriptors (not slots) */
+	int utgts;	 
 	int since;
 
 	d = from_timer(d, timer, timer);
 
 	spin_lock_irqsave(&d->lock, flags);
 
-	/* timeout based on observed timings and variations */
+	 
 	timeout = rto(d);
 
 	utgts = count_targets(d, NULL);
@@ -751,19 +734,19 @@ rexmit_timer(struct timer_list *timer)
 		return;
 	}
 
-	/* collect all frames to rexmit into flist */
+	 
 	for (i = 0; i < NFACTIVE; i++) {
 		head = &d->factive[i];
 		list_for_each_safe(pos, nx, head) {
 			f = list_entry(pos, struct frame, head);
 			if (tsince_hr(f) < timeout)
-				break;	/* end of expired frames */
-			/* move to flist for later processing */
+				break;	 
+			 
 			list_move_tail(pos, &flist);
 		}
 	}
 
-	/* process expired frames */
+	 
 	while (!list_empty(&flist)) {
 		pos = flist.next;
 		f = list_entry(pos, struct frame, head);
@@ -773,10 +756,7 @@ rexmit_timer(struct timer_list *timer)
 		if (aoe_deadsecs
 		&& n > aoe_deadsecs
 		&& !(f->flags & FFL_PROBE)) {
-			/* Waited too long.  Device failure.
-			 * Hang all frames on first hash bucket for downdev
-			 * to clean up.
-			 */
+			 
 			list_splice(&flist, &d->factive[0]);
 			aoedev_downdev(d);
 			goto out;
@@ -787,7 +767,7 @@ rexmit_timer(struct timer_list *timer)
 		n /= USEC_PER_SEC;
 		if (aoe_deadsecs && utgts > 0
 		&& (n > aoe_deadsecs / utgts || n > HARD_SCORN_SECS))
-			scorn(t); /* avoid this target */
+			scorn(t);  
 
 		if (t->maxout != 1) {
 			t->ssthresh = t->maxout / 2;
@@ -841,7 +821,7 @@ nextbuf(struct aoedev *d)
 
 	q = d->blkq;
 	if (q == NULL)
-		return NULL;	/* initializing */
+		return NULL;	 
 	if (d->ip.buf)
 		return d->ip.buf;
 	rq = d->ip.rq;
@@ -874,7 +854,7 @@ nextbuf(struct aoedev *d)
 	return d->ip.buf = buf;
 }
 
-/* enters with d->lock held */
+ 
 void
 aoecmd_work(struct aoedev *d)
 {
@@ -883,8 +863,7 @@ aoecmd_work(struct aoedev *d)
 		;
 }
 
-/* this function performs work that has been deferred until sleeping is OK
- */
+ 
 void
 aoecmd_sleepwork(struct work_struct *work)
 {
@@ -920,19 +899,19 @@ ataid_complete(struct aoedev *d, struct aoetgt *t, unsigned char *id)
 	u64 ssize;
 	u16 n;
 
-	/* word 83: command set supported */
+	 
 	n = get_unaligned_le16(&id[83 << 1]);
 
-	/* word 86: command set/feature enabled */
+	 
 	n |= get_unaligned_le16(&id[86 << 1]);
 
-	if (n & (1<<10)) {	/* bit 10: LBA 48 */
+	if (n & (1<<10)) {	 
 		d->flags |= DEVFL_EXT;
 
-		/* word 100: number lba48 sectors */
+		 
 		ssize = get_unaligned_le64(&id[100 << 1]);
 
-		/* set as in ide-disk.c:init_idedisk_capacity */
+		 
 		d->geo.cylinders = ssize;
 		d->geo.cylinders /= (255 * 63);
 		d->geo.heads = 255;
@@ -940,18 +919,18 @@ ataid_complete(struct aoedev *d, struct aoetgt *t, unsigned char *id)
 	} else {
 		d->flags &= ~DEVFL_EXT;
 
-		/* number lba28 sectors */
+		 
 		ssize = get_unaligned_le32(&id[60 << 1]);
 
-		/* NOTE: obsolete in ATA 6 */
+		 
 		d->geo.cylinders = get_unaligned_le16(&id[54 << 1]);
 		d->geo.heads = get_unaligned_le16(&id[55 << 1]);
 		d->geo.sectors = get_unaligned_le16(&id[56 << 1]);
 	}
 
-	ata_ident_fixstring((u16 *) &id[10<<1], 10);	/* serial */
-	ata_ident_fixstring((u16 *) &id[23<<1], 4);	/* firmware */
-	ata_ident_fixstring((u16 *) &id[27<<1], 20);	/* model */
+	ata_ident_fixstring((u16 *) &id[10<<1], 10);	 
+	ata_ident_fixstring((u16 *) &id[23<<1], 4);	 
+	ata_ident_fixstring((u16 *) &id[27<<1], 20);	 
 	memcpy(d->ident, id, sizeof(d->ident));
 
 	if (d->ssize != ssize)
@@ -978,7 +957,7 @@ calc_rttavg(struct aoedev *d, struct aoetgt *t, int rtt)
 
 	n = rtt;
 
-	/* cf. Congestion Avoidance and Control, Jacobson & Karels, 1988 */
+	 
 	n -= d->rttavg >> RTTSCALE;
 	d->rttavg += n;
 	if (n < 0)
@@ -1045,47 +1024,7 @@ aoe_end_request(struct aoedev *d, struct request *rq, int fastfail)
 
 	__blk_mq_end_request(rq, err);
 
-	/* cf. https://lore.kernel.org/lkml/20061031071040.GS14055@kernel.dk/ */
-	if (!fastfail)
-		blk_mq_run_hw_queues(q, true);
-}
-
-static void
-aoe_end_buf(struct aoedev *d, struct buf *buf)
-{
-	struct request *rq = buf->rq;
-	struct aoe_req *req = blk_mq_rq_to_pdu(rq);
-
-	if (buf == d->ip.buf)
-		d->ip.buf = NULL;
-	mempool_free(buf, d->bufpool);
-	if (--req->nr_bios == 0)
-		aoe_end_request(d, rq, 0);
-}
-
-static void
-ktiocomplete(struct frame *f)
-{
-	struct aoe_hdr *hin, *hout;
-	struct aoe_atahdr *ahin, *ahout;
-	struct buf *buf;
-	struct sk_buff *skb;
-	struct aoetgt *t;
-	struct aoeif *ifp;
-	struct aoedev *d;
-	long n;
-	int untainted;
-
-	if (f == NULL)
-		return;
-
-	t = f->t;
-	d = t->d;
-	skb = f->r_skb;
-	buf = f->buf;
-	if (f->flags & FFL_PROBE)
-		goto out;
-	if (!skb)		/* just fail the buf. */
+	 
 		goto noskb;
 
 	hout = (struct aoe_hdr *) skb_mac_header(f->skb);
@@ -1095,7 +1034,7 @@ ktiocomplete(struct frame *f)
 	skb_pull(skb, sizeof(*hin));
 	ahin = (struct aoe_atahdr *) skb->data;
 	skb_pull(skb, sizeof(*ahin));
-	if (ahin->cmdstat & 0xa9) {	/* these bits cleared on success */
+	if (ahin->cmdstat & 0xa9) {	 
 		pr_err("aoe: ata error cmd=%2.2Xh stat=%2.2Xh from e%ld.%d\n",
 			ahout->cmdstat, ahin->cmdstat,
 			d->aoemajor, d->aoeminor);
@@ -1176,9 +1115,7 @@ out:
 	dev_kfree_skb(skb);
 }
 
-/* Enters with iocq.lock held.
- * Returns true iff responses needing processing remain.
- */
+ 
 static int
 ktio(int id)
 {
@@ -1198,7 +1135,7 @@ ktio(int id)
 		spin_unlock_irq(&iocq[id].lock);
 		ktiocomplete(f);
 
-		/* Figure out if extra threads are required. */
+		 
 		actual_id = f->t->d->aoeminor % ncpus;
 
 		if (!kts[actual_id].active) {
@@ -1223,7 +1160,7 @@ kthread(void *vp)
 	k = vp;
 	current->flags |= PF_NOFREEZE;
 	set_user_nice(current, -10);
-	complete(&k->rendez);	/* tell spawner we're running */
+	complete(&k->rendez);	 
 	do {
 		spin_lock_irq(k->lock);
 		more = k->fn(k->id);
@@ -1238,7 +1175,7 @@ kthread(void *vp)
 		} else
 			cond_resched();
 	} while (!kthread_should_stop());
-	complete(&k->rendez);	/* tell spawner we're stopping */
+	complete(&k->rendez);	 
 	return 0;
 }
 
@@ -1259,12 +1196,12 @@ aoe_ktstart(struct ktstate *k)
 	if (task == NULL || IS_ERR(task))
 		return -ENOMEM;
 	k->task = task;
-	wait_for_completion(&k->rendez); /* allow kthread to start */
-	init_completion(&k->rendez);	/* for waiting for exit later */
+	wait_for_completion(&k->rendez);  
+	init_completion(&k->rendez);	 
 	return 0;
 }
 
-/* pass it off to kthreads for processing */
+ 
 static void
 ktcomplete(struct frame *f, struct sk_buff *skb)
 {
@@ -1276,10 +1213,7 @@ ktcomplete(struct frame *f, struct sk_buff *skb)
 	spin_lock_irqsave(&iocq[id].lock, flags);
 	if (!kts[id].active) {
 		spin_unlock_irqrestore(&iocq[id].lock, flags);
-		/* The thread with id has not been spawned yet,
-		 * so delegate the work to the main thread and
-		 * try spawning a new thread.
-		 */
+		 
 		id = 0;
 		spin_lock_irqsave(&iocq[id].lock, flags);
 	}
@@ -1346,10 +1280,7 @@ aoecmd_ata_rsp(struct sk_buff *skb)
 
 	ktcomplete(f, skb);
 
-	/*
-	 * Note here that we do not perform an aoedev_put, as we are
-	 * leaving this reference for the ktio to release.
-	 */
+	 
 	return NULL;
 }
 
@@ -1378,7 +1309,7 @@ aoecmd_ata_id(struct aoedev *d)
 
 	t = *d->tgt;
 
-	/* initialize the headers & frame */
+	 
 	skb = f->skb;
 	h = (struct aoe_hdr *) skb_mac_header(skb);
 	ah = (struct aoe_atahdr *) (h+1);
@@ -1390,7 +1321,7 @@ aoecmd_ata_id(struct aoedev *d)
 	f->waited = 0;
 	f->waited_total = 0;
 
-	/* set up ata header */
+	 
 	ah->scnt = 1;
 	ah->cmdstat = ATA_CMD_ID_ATA;
 	ah->lba3 = 0xa0;
@@ -1491,12 +1422,12 @@ setifbcnt(struct aoetgt *t, struct net_device *nd, int bcnt)
 	e = p + NAOEIFS;
 	for (; p < e; p++) {
 		if (p->nd == NULL)
-			break;		/* end of the valid interfaces */
+			break;		 
 		if (p->nd == nd) {
-			p->bcnt = bcnt;	/* we're updating */
+			p->bcnt = bcnt;	 
 			nd = NULL;
 		} else if (minbcnt > p->bcnt)
-			minbcnt = p->bcnt; /* find the min interface */
+			minbcnt = p->bcnt;  
 	}
 	if (nd) {
 		if (p == e) {
@@ -1527,10 +1458,7 @@ aoecmd_cfg_rsp(struct sk_buff *skb)
 	h = (struct aoe_hdr *) skb_mac_header(skb);
 	ch = (struct aoe_cfghdr *) (h+1);
 
-	/*
-	 * Enough people have their dip switches set backwards to
-	 * warrant a loud message for this special case.
-	 */
+	 
 	aoemajor = get_unaligned_be16(&h->major);
 	if (aoemajor == 0xfff) {
 		printk(KERN_ERR "aoe: Warning: shelf address is all ones.  "
@@ -1549,7 +1477,7 @@ aoecmd_cfg_rsp(struct sk_buff *skb)
 	}
 
 	n = be16_to_cpu(ch->bufcnt);
-	if (n > aoe_maxout)	/* keep it reasonable */
+	if (n > aoe_maxout)	 
 		n = aoe_maxout;
 
 	d = aoedev_by_aoeaddr(aoemajor, h->minor, 1);
@@ -1578,7 +1506,7 @@ aoecmd_cfg_rsp(struct sk_buff *skb)
 	n = n ? n * 512 : DEFAULTBCNT;
 	setifbcnt(t, skb->dev, n);
 
-	/* don't change users' perspective */
+	 
 	if (d->nopen == 0) {
 		d->fw_ver = be16_to_cpu(ch->fwver);
 		sl = aoecmd_ata_id(d);
@@ -1676,7 +1604,7 @@ aoecmd_init(void)
 	int i;
 	int ret;
 
-	/* get_zeroed_page returns page with ref count 1 */
+	 
 	p = (void *) get_zeroed_page(GFP_KERNEL);
 	if (!p)
 		return -ENOMEM;
@@ -1739,9 +1667,7 @@ aoecmd_exit(void)
 
 	aoe_flush_iocq();
 
-	/* Free up the iocq and thread speicific configuration
-	* allocated during startup.
-	*/
+	 
 	kfree(iocq);
 	kfree(kts);
 	kfree(ktiowq);

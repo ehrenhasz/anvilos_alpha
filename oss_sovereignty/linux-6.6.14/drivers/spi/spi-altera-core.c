@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Altera SPI driver
- *
- * Copyright (C) 2008 Thomas Chou <thomas@wytron.com.tw>
- *
- * Based on spi_s3c24xx.c, which is:
- * Copyright (c) 2006 Ben Dooks
- * Copyright (c) 2006 Simtec Electronics
- *	Ben Dooks <ben@simtec.co.uk>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/module.h>
@@ -152,11 +143,11 @@ static int altera_spi_txrx(struct spi_controller *host,
 	hw->len = t->len / hw->bytes_per_word;
 
 	if (hw->irq >= 0) {
-		/* enable receive interrupt */
+		 
 		hw->imr |= ALTERA_SPI_CONTROL_IRRDY_MSK;
 		altr_spi_writel(hw, ALTERA_SPI_CONTROL, hw->imr);
 
-		/* send the first byte */
+		 
 		altera_spi_tx_word(hw);
 
 		return 1;
@@ -190,7 +181,7 @@ irqreturn_t altera_spi_irq(int irq, void *dev)
 	if (hw->count < hw->len) {
 		altera_spi_tx_word(hw);
 	} else {
-		/* disable receive interrupt */
+		 
 		hw->imr &= ~ALTERA_SPI_CONTROL_IRRDY_MSK;
 		altr_spi_writel(hw, ALTERA_SPI_CONTROL, hw->imr);
 
@@ -209,13 +200,13 @@ void altera_spi_init_host(struct spi_controller *host)
 	host->transfer_one = altera_spi_txrx;
 	host->set_cs = altera_spi_set_cs;
 
-	/* program defaults into the registers */
-	hw->imr = 0;		/* disable spi interrupts */
+	 
+	hw->imr = 0;		 
 	altr_spi_writel(hw, ALTERA_SPI_CONTROL, hw->imr);
-	altr_spi_writel(hw, ALTERA_SPI_STATUS, 0);	/* clear status reg */
+	altr_spi_writel(hw, ALTERA_SPI_STATUS, 0);	 
 	altr_spi_readl(hw, ALTERA_SPI_STATUS, &val);
 	if (val & ALTERA_SPI_STATUS_RRDY_MSK)
-		altr_spi_readl(hw, ALTERA_SPI_RXDATA, &val); /* flush rxdata */
+		altr_spi_readl(hw, ALTERA_SPI_RXDATA, &val);  
 }
 EXPORT_SYMBOL_GPL(altera_spi_init_host);
 

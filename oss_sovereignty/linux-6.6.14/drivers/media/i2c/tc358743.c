@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * tc358743 - Toshiba HDMI to CSI-2 bridge
- *
- * Copyright 2015 Cisco Systems, Inc. and/or its affiliates. All rights
- * reserved.
- */
 
-/*
- * References (c = chapter, p = page):
- * REF_01 - Toshiba, TC358743XBG (H2C), Functional Specification, Rev 0.60
- * REF_02 - Toshiba, TC358743XBG_HDMI-CSI_Tv11p_nm.xls
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -56,9 +47,9 @@ MODULE_LICENSE("GPL");
 
 static const struct v4l2_dv_timings_cap tc358743_timings_cap = {
 	.type = V4L2_DV_BT_656_1120,
-	/* keep this initialization for compatibility with GCC < 4.4.6 */
+	 
 	.reserved = { 0 },
-	/* Pixel clock from REF_01 p. 20. Min/max height/width are unknown */
+	 
 	V4L2_INIT_BT_TIMINGS(640, 1920, 350, 1200, 13000000, 165000000,
 			V4L2_DV_BT_STD_CEA861 | V4L2_DV_BT_STD_DMT |
 			V4L2_DV_BT_STD_GTF | V4L2_DV_BT_STD_CVT,
@@ -74,10 +65,10 @@ struct tc358743_state {
 	struct media_pad pad;
 	struct v4l2_ctrl_handler hdl;
 	struct i2c_client *i2c_client;
-	/* CONFCTL is modified in ops and tc358743_hdmi_sys_int_handler */
+	 
 	struct mutex confctl_mutex;
 
-	/* controls */
+	 
 	struct v4l2_ctrl *detect_tx_5v_ctrl;
 	struct v4l2_ctrl *audio_sampling_rate_ctrl;
 	struct v4l2_ctrl *audio_present_ctrl;
@@ -87,7 +78,7 @@ struct tc358743_state {
 	struct timer_list timer;
 	struct work_struct work_i2c_poll;
 
-	/* edid  */
+	 
 	u8 edid_blocks_written;
 
 	struct v4l2_dv_timings timings;
@@ -108,7 +99,7 @@ static inline struct tc358743_state *to_state(struct v4l2_subdev *sd)
 	return container_of(sd, struct tc358743_state, sd);
 }
 
-/* --------------- I2C --------------- */
+ 
 
 static void i2c_rd(struct v4l2_subdev *sd, u16 reg, u8 *values, u32 n)
 {
@@ -249,7 +240,7 @@ static void i2c_wr32(struct v4l2_subdev *sd, u16 reg, u32 val)
 	i2c_wrreg(sd, reg, val, 4);
 }
 
-/* --------------- STATUS --------------- */
+ 
 
 static inline bool is_hdmi(struct v4l2_subdev *sd)
 {
@@ -283,14 +274,14 @@ static int get_audio_sampling_rate(struct v4l2_subdev *sd)
 		88200, 768000, 96000, 705600, 176400, 0, 192000, 0
 	};
 
-	/* Register FS_SET is not cleared when the cable is disconnected */
+	 
 	if (no_signal(sd))
 		return 0;
 
 	return code_to_rate[i2c_rd8(sd, FS_SET) & MASK_FS];
 }
 
-/* --------------- TIMINGS --------------- */
+ 
 
 static inline unsigned fps(const struct v4l2_bt_timings *t)
 {
@@ -330,8 +321,7 @@ static int tc358743_get_detected_timings(struct v4l2_subdev *sd,
 		i2c_rd8(sd, H_SIZE_LO);
 	frame_height = (((i2c_rd8(sd, V_SIZE_HI) & 0x3f) << 8) +
 		i2c_rd8(sd, V_SIZE_LO)) / 2;
-	/* frame interval in milliseconds * 10
-	 * Require SYS_FREQ0 and SYS_FREQ1 are precisely set */
+	 
 	frame_interval = ((i2c_rd8(sd, FV_CNT_HI) & 0x3) << 8) +
 		i2c_rd8(sd, FV_CNT_LO);
 	fps = (frame_interval > 0) ?
@@ -351,7 +341,7 @@ static int tc358743_get_detected_timings(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* --------------- HOTPLUG / HDCP / EDID --------------- */
+ 
 
 static void tc358743_delayed_work_enable_hotplug(struct work_struct *work)
 {
@@ -395,8 +385,7 @@ static void tc358743_disable_edid(struct v4l2_subdev *sd)
 
 	cancel_delayed_work_sync(&state->delayed_work_enable_hotplug);
 
-	/* DDC access to EDID is also disabled when hotplug is disabled. See
-	 * register DDC_CTL */
+	 
 	i2c_wr8_and_or(sd, HPD_CTL, ~MASK_HPD_OUT0, 0x0);
 }
 
@@ -412,8 +401,7 @@ static void tc358743_enable_edid(struct v4l2_subdev *sd)
 
 	v4l2_dbg(2, debug, sd, "%s:\n", __func__);
 
-	/* Enable hotplug after 100 ms. DDC access to EDID is also enabled when
-	 * hotplug is enabled. See register DDC_CTL */
+	 
 	schedule_delayed_work(&state->delayed_work_enable_hotplug, HZ / 10);
 
 	tc358743_enable_interrupts(sd, true);
@@ -428,7 +416,7 @@ static void tc358743_erase_bksv(struct v4l2_subdev *sd)
 		i2c_wr8(sd, BKSV + i, 0);
 }
 
-/* --------------- AVI infoframe --------------- */
+ 
 
 static void print_avi_infoframe(struct v4l2_subdev *sd)
 {
@@ -452,7 +440,7 @@ static void print_avi_infoframe(struct v4l2_subdev *sd)
 	hdmi_infoframe_log(KERN_INFO, dev, &frame);
 }
 
-/* --------------- CTRLS --------------- */
+ 
 
 static int tc358743_s_ctrl_detect_tx_5v(struct v4l2_subdev *sd)
 {
@@ -489,7 +477,7 @@ static int tc358743_update_controls(struct v4l2_subdev *sd)
 	return ret;
 }
 
-/* --------------- INIT --------------- */
+ 
 
 static void tc358743_reset_phy(struct v4l2_subdev *sd)
 {
@@ -521,17 +509,14 @@ static inline void enable_stream(struct v4l2_subdev *sd, bool enable)
 			__func__, enable ? "en" : "dis");
 
 	if (enable) {
-		/* It is critical for CSI receiver to see lane transition
-		 * LP11->HS. Set to non-continuous mode to enable clock lane
-		 * LP11 state. */
+		 
 		i2c_wr32(sd, TXOPTIONCNTRL, 0);
-		/* Set to continuous mode to trigger LP11->HS transition */
+		 
 		i2c_wr32(sd, TXOPTIONCNTRL, MASK_CONTCLKMODE);
-		/* Unmute video */
+		 
 		i2c_wr8(sd, VI_MUTE, MASK_AUTO_MUTE);
 	} else {
-		/* Mute video so that all data lanes go to LSP11 state.
-		 * No data is output to CSI Tx block. */
+		 
 		i2c_wr8(sd, VI_MUTE, MASK_AUTO_MUTE | MASK_VI_MUTE);
 	}
 
@@ -553,8 +538,7 @@ static void tc358743_set_pll(struct v4l2_subdev *sd)
 
 	v4l2_dbg(2, debug, sd, "%s:\n", __func__);
 
-	/* Only rewrite when needed (new value or disabled), since rewriting
-	 * triggers another format change event. */
+	 
 	if ((pllctl0 != pllctl0_new) || ((pllctl1 & MASK_PLL_EN) == 0)) {
 		u16 pll_frs;
 
@@ -574,7 +558,7 @@ static void tc358743_set_pll(struct v4l2_subdev *sd)
 				~(MASK_PLL_FRS | MASK_RESETB | MASK_PLL_EN),
 				(SET_PLL_FRS(pll_frs) | MASK_RESETB |
 				 MASK_PLL_EN));
-		udelay(10); /* REF_02, Sheet "Source HDMI" */
+		udelay(10);  
 		i2c_wr16_and_or(sd, PLLCTL1, ~MASK_CKEN, MASK_CKEN);
 		tc358743_sleep_mode(sd, false);
 	}
@@ -619,11 +603,7 @@ static void tc358743_set_ref_clk(struct v4l2_subdev *sd)
 			(pdata->refclk_hz == 27000000) ?
 			MASK_NCO_F0_MOD_27MHZ : 0x0);
 
-	/*
-	 * Trial and error suggests that the default register value
-	 * of 656 is for a 42 MHz reference clock. Use that to derive
-	 * a new value based on the actual reference clock.
-	 */
+	 
 	cec_freq = (656 * sys_freq) / 4200;
 	i2c_wr16(sd, CECHCLK, cec_freq);
 	i2c_wr16(sd, CECLCLK, cec_freq);
@@ -745,8 +725,7 @@ static void tc358743_set_hdmi_phy(struct v4l2_subdev *sd)
 	struct tc358743_state *state = to_state(sd);
 	struct tc358743_platform_data *pdata = &state->pdata;
 
-	/* Default settings from REF_02, sheet "Source HDMI"
-	 * and custom settings as platform data */
+	 
 	i2c_wr8_and_or(sd, PHY_EN, ~MASK_ENABLE_PHY, 0x0);
 	i2c_wr8(sd, PHY_CTL1, SET_PHY_AUTO_RST1_US(1600) |
 			SET_FREQ_RANGE_MODE_CYCLES(1));
@@ -774,7 +753,7 @@ static void tc358743_set_hdmi_audio(struct v4l2_subdev *sd)
 {
 	struct tc358743_state *state = to_state(sd);
 
-	/* Default settings from REF_02, sheet "Source HDMI" */
+	 
 	i2c_wr8(sd, FORCE_MUTE, 0x00);
 	i2c_wr8(sd, AUTO_CMD0, MASK_AUTO_MUTE7 | MASK_AUTO_MUTE6 |
 			MASK_AUTO_MUTE5 | MASK_AUTO_MUTE4 |
@@ -798,7 +777,7 @@ static void tc358743_set_hdmi_audio(struct v4l2_subdev *sd)
 
 static void tc358743_set_hdmi_info_frame_mode(struct v4l2_subdev *sd)
 {
-	/* Default settings from REF_02, sheet "Source HDMI" */
+	 
 	i2c_wr8(sd, PK_INT_MODE, MASK_ISRC2_INT_MODE | MASK_ISRC_INT_MODE |
 			MASK_ACP_INT_MODE | MASK_VS_INT_MODE |
 			MASK_SPD_INT_MODE | MASK_MS_INT_MODE |
@@ -815,10 +794,7 @@ static void tc358743_initial_setup(struct v4l2_subdev *sd)
 	struct tc358743_state *state = to_state(sd);
 	struct tc358743_platform_data *pdata = &state->pdata;
 
-	/*
-	 * IR is not supported by this driver.
-	 * CEC is only enabled if needed.
-	 */
+	 
 	i2c_wr16_and_or(sd, SYSCTL, ~(MASK_IRRST | MASK_CECRST),
 				     (MASK_IRRST | MASK_CECRST));
 
@@ -841,7 +817,7 @@ static void tc358743_initial_setup(struct v4l2_subdev *sd)
 	tc358743_set_hdmi_audio(sd);
 	tc358743_set_hdmi_info_frame_mode(sd);
 
-	/* All CE and IT formats are detected as RGB full range in DVI mode */
+	 
 	i2c_wr8_and_or(sd, VI_MODE, ~MASK_RGB_DVI, 0);
 
 	i2c_wr8_and_or(sd, VOUT_SET2, ~MASK_VOUTCOLORMODE,
@@ -849,7 +825,7 @@ static void tc358743_initial_setup(struct v4l2_subdev *sd)
 	i2c_wr8(sd, VOUT_SET3, MASK_VOUT_EXTCNT);
 }
 
-/* --------------- CEC --------------- */
+ 
 
 #ifdef CONFIG_VIDEO_TC358743_CEC
 static int tc358743_cec_adap_enable(struct cec_adapter *adap, bool enable)
@@ -946,10 +922,7 @@ static void tc358743_cec_handler(struct v4l2_subdev *sd, u16 intstatus,
 			cec_transmit_attempt_done(state->cec_adap,
 						  CEC_TX_STATUS_NACK);
 		else if (cec_txint & MASK_CECTIUR) {
-			/*
-			 * Not sure when this bit is set. Treat
-			 * it as an error for now.
-			 */
+			 
 			cec_transmit_attempt_done(state->cec_adap,
 						  CEC_TX_STATUS_ERROR);
 		}
@@ -980,7 +953,7 @@ static void tc358743_cec_handler(struct v4l2_subdev *sd, u16 intstatus,
 
 #endif
 
-/* --------------- IRQ --------------- */
+ 
 
 static void tc358743_format_change(struct v4l2_subdev *sd)
 {
@@ -1014,7 +987,7 @@ static void tc358743_init_interrupts(struct v4l2_subdev *sd)
 {
 	u16 i;
 
-	/* clear interrupt status registers */
+	 
 	for (i = SYS_INT; i <= KEY_INT; i++)
 		i2c_wr8(sd, i, 0xff);
 
@@ -1076,9 +1049,7 @@ static void tc358743_hdmi_misc_int_handler(struct v4l2_subdev *sd,
 	v4l2_dbg(3, debug, sd, "%s: MISC_INT = 0x%02x\n", __func__, misc_int);
 
 	if (misc_int & MASK_I_SYNC_CHG) {
-		/* Reset the HDMI PHY to try to trigger proper lock on the
-		 * incoming video format. Erase BKSV to prevent that old keys
-		 * are used when a new source is connected. */
+		 
 		if (no_sync(sd) || no_signal(sd)) {
 			tc358743_reset_phy(sd);
 			tc358743_erase_bksv(sd);
@@ -1140,7 +1111,7 @@ static void tc358743_hdmi_clk_int_handler(struct v4l2_subdev *sd, bool *handled)
 	u8 clk_int_mask = i2c_rd8(sd, CLK_INTM);
 	u8 clk_int = i2c_rd8(sd, CLK_INT) & ~clk_int_mask;
 
-	/* Bit 7 and bit 6 are set even when they are masked */
+	 
 	i2c_wr8(sd, CLK_INT, clk_int | 0x80 | MASK_I_OUT_H_CHG);
 
 	v4l2_dbg(3, debug, sd, "%s: CLK_INT = 0x%02x\n", __func__, clk_int);
@@ -1150,12 +1121,7 @@ static void tc358743_hdmi_clk_int_handler(struct v4l2_subdev *sd, bool *handled)
 		v4l2_dbg(1, debug, sd, "%s: DE size or position has changed\n",
 				__func__);
 
-		/* If the source switch to a new resolution with the same pixel
-		 * frequency as the existing (e.g. 1080p25 -> 720p50), the
-		 * I_SYNC_CHG interrupt is not always triggered, while the
-		 * I_IN_DE_CHG interrupt seems to work fine. Format change
-		 * notifications are only sent when the signal is stable to
-		 * reduce the number of notifications. */
+		 
 		if (!no_signal(sd) && !no_sync(sd))
 			tc358743_format_change(sd);
 
@@ -1205,9 +1171,7 @@ static void tc358743_hdmi_sys_int_handler(struct v4l2_subdev *sd, bool *handled)
 		v4l2_dbg(1, debug, sd, "%s: HDMI->DVI change detected\n",
 				__func__);
 
-		/* Reset the HDMI PHY to try to trigger proper lock on the
-		 * incoming video format. Erase BKSV to prevent that old keys
-		 * are used when a new source is connected. */
+		 
 		if (no_sync(sd) || no_signal(sd)) {
 			tc358743_reset_phy(sd);
 			tc358743_erase_bksv(sd);
@@ -1222,7 +1186,7 @@ static void tc358743_hdmi_sys_int_handler(struct v4l2_subdev *sd, bool *handled)
 		v4l2_dbg(1, debug, sd, "%s: DVI->HDMI change detected\n",
 				__func__);
 
-		/* Register is reset in DVI mode (REF_01, c. 6.6.41) */
+		 
 		i2c_wr8(sd, ANA_CTL, MASK_APPL_PCSX_NORMAL | MASK_ANALOG_ON);
 
 		sys_int &= ~MASK_I_HDMI;
@@ -1236,7 +1200,7 @@ static void tc358743_hdmi_sys_int_handler(struct v4l2_subdev *sd, bool *handled)
 	}
 }
 
-/* --------------- CORE OPS --------------- */
+ 
 
 static int tc358743_log_status(struct v4l2_subdev *sd)
 {
@@ -1355,7 +1319,7 @@ static void tc358743_print_register_map(struct v4l2_subdev *sd)
 
 static int tc358743_get_reg_size(u16 address)
 {
-	/* REF_01 p. 66-72 */
+	 
 	if (address <= 0x00ff)
 		return 2;
 	else if ((address >= 0x0100) && (address <= 0x06FF))
@@ -1389,12 +1353,7 @@ static int tc358743_s_register(struct v4l2_subdev *sd,
 		return -EINVAL;
 	}
 
-	/* It should not be possible for the user to enable HDCP with a simple
-	 * v4l2-dbg command.
-	 *
-	 * DO NOT REMOVE THIS unless all other issues with HDCP have been
-	 * resolved.
-	 */
+	 
 	if (reg->reg == HDCP_MODE ||
 	    reg->reg == HDCP_REG1 ||
 	    reg->reg == HDCP_REG2 ||
@@ -1478,10 +1437,7 @@ static void tc358743_irq_poll_timer(struct timer_list *t)
 	unsigned int msecs;
 
 	schedule_work(&state->work_i2c_poll);
-	/*
-	 * If CEC is present, then we need to poll more frequently,
-	 * otherwise we will miss CEC messages.
-	 */
+	 
 	msecs = state->cec_adap ? POLL_INTERVAL_CEC_MS : POLL_INTERVAL_MS;
 	mod_timer(&state->timer, jiffies + msecs_to_jiffies(msecs));
 }
@@ -1508,7 +1464,7 @@ static int tc358743_subscribe_event(struct v4l2_subdev *sd, struct v4l2_fh *fh,
 	}
 }
 
-/* --------------- VIDEO OPS --------------- */
+ 
 
 static int tc358743_g_input_status(struct v4l2_subdev *sd, u32 *status)
 {
@@ -1614,7 +1570,7 @@ static int tc358743_get_mbus_config(struct v4l2_subdev *sd,
 
 	cfg->type = V4L2_MBUS_CSI2_DPHY;
 
-	/* Support for non-continuous CSI-2 clock is missing in the driver */
+	 
 	cfg->bus.mipi_csi2.flags = 0;
 	cfg->bus.mipi_csi2.num_data_lanes = state->csi_lanes_in_use;
 
@@ -1625,14 +1581,14 @@ static int tc358743_s_stream(struct v4l2_subdev *sd, int enable)
 {
 	enable_stream(sd, enable);
 	if (!enable) {
-		/* Put all lanes in LP-11 state (STOPSTATE) */
+		 
 		tc358743_set_csi(sd);
 	}
 
 	return 0;
 }
 
-/* --------------- PAD OPS --------------- */
+ 
 
 static int tc358743_enum_mbus_code(struct v4l2_subdev *sd,
 		struct v4l2_subdev_state *sd_state,
@@ -1693,7 +1649,7 @@ static int tc358743_set_fmt(struct v4l2_subdev *sd,
 {
 	struct tc358743_state *state = to_state(sd);
 
-	u32 code = format->format.code; /* is overwritten by get_fmt */
+	u32 code = format->format.code;  
 	int ret = tc358743_get_fmt(sd, sd_state, format);
 
 	format->format.code = code;
@@ -1807,7 +1763,7 @@ static int tc358743_s_edid(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_subdev_core_ops tc358743_core_ops = {
 	.log_status = tc358743_log_status,
@@ -1845,7 +1801,7 @@ static const struct v4l2_subdev_ops tc358743_ops = {
 	.pad = &tc358743_pad_ops,
 };
 
-/* --------------- CUSTOM CTRLS --------------- */
+ 
 
 static const struct v4l2_ctrl_config tc358743_ctrl_audio_sampling_rate = {
 	.id = TC358743_CID_AUDIO_SAMPLING_RATE,
@@ -1869,7 +1825,7 @@ static const struct v4l2_ctrl_config tc358743_ctrl_audio_present = {
 	.flags = V4L2_CTRL_FLAG_READ_ONLY,
 };
 
-/* --------------- PROBE / REMOVE --------------- */
+ 
 
 #ifdef CONFIG_OF
 static void tc358743_gpio_reset(struct tc358743_state *state)
@@ -1932,12 +1888,9 @@ static int tc358743_probe_of(struct tc358743_state *state)
 	state->pdata.refclk_hz = clk_get_rate(refclk);
 	state->pdata.ddc5v_delay = DDC5V_DELAY_100_MS;
 	state->pdata.enable_hdcp = false;
-	/* A FIFO level of 16 should be enough for 2-lane 720p60 at 594 MHz. */
+	 
 	state->pdata.fifo_level = 16;
-	/*
-	 * The PLL input clock is obtained by dividing refclk by pll_prd.
-	 * It must be between 6 MHz and 40 MHz, lower frequency is better.
-	 */
+	 
 	switch (state->pdata.refclk_hz) {
 	case 26000000:
 	case 27000000:
@@ -1950,10 +1903,7 @@ static int tc358743_probe_of(struct tc358743_state *state)
 		goto disable_clk;
 	}
 
-	/*
-	 * The CSI bps per lane must be between 62.5 Mbps and 1 Gbps.
-	 * The default is 594 Mbps for 4-lane 1080p60 or 2-lane 720p60.
-	 */
+	 
 	bps_pr_lane = 2 * endpoint.link_frequencies[0];
 	if (bps_pr_lane < 62500000U || bps_pr_lane > 1000000000U) {
 		dev_err(dev, "unsupported bps per lane: %u bps\n", bps_pr_lane);
@@ -1961,23 +1911,19 @@ static int tc358743_probe_of(struct tc358743_state *state)
 		goto disable_clk;
 	}
 
-	/* The CSI speed per lane is refclk / pll_prd * pll_fbd */
+	 
 	state->pdata.pll_fbd = bps_pr_lane /
 			       state->pdata.refclk_hz * state->pdata.pll_prd;
 
-	/*
-	 * FIXME: These timings are from REF_02 for 594 Mbps per lane (297 MHz
-	 * link frequency). In principle it should be possible to calculate
-	 * them based on link frequency and resolution.
-	 */
+	 
 	if (bps_pr_lane != 594000000U)
 		dev_warn(dev, "untested bps per lane: %u bps\n", bps_pr_lane);
 	state->pdata.lineinitcnt = 0xe80;
 	state->pdata.lptxtimecnt = 0x003;
-	/* tclk-preparecnt: 3, tclk-zerocnt: 20 */
+	 
 	state->pdata.tclk_headercnt = 0x1403;
 	state->pdata.tclk_trailcnt = 0x00;
-	/* ths-preparecnt: 3, ths-zerocnt: 1 */
+	 
 	state->pdata.ths_headercnt = 0x0103;
 	state->pdata.twakeup = 0x4882;
 	state->pdata.tclk_postcnt = 0x008;
@@ -2035,7 +1981,7 @@ static int tc358743_probe(struct i2c_client *client)
 
 	state->i2c_client = client;
 
-	/* platform data */
+	 
 	if (pdata) {
 		state->pdata = *pdata;
 		state->bus.flags = 0;
@@ -2051,20 +1997,20 @@ static int tc358743_probe(struct i2c_client *client)
 	v4l2_i2c_subdev_init(sd, client, &tc358743_ops);
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE | V4L2_SUBDEV_FL_HAS_EVENTS;
 
-	/* i2c access */
+	 
 	if ((i2c_rd16(sd, CHIPID) & MASK_CHIPID) != 0) {
 		v4l2_info(sd, "not a TC358743 on address 0x%x\n",
 			  client->addr << 1);
 		return -ENODEV;
 	}
 
-	/* control handlers */
+	 
 	v4l2_ctrl_handler_init(&state->hdl, 3);
 
 	state->detect_tx_5v_ctrl = v4l2_ctrl_new_std(&state->hdl, NULL,
 			V4L2_CID_DV_RX_POWER_PRESENT, 0, 1, 0, 0);
 
-	/* custom controls */
+	 
 	state->audio_sampling_rate_ctrl = v4l2_ctrl_new_custom(&state->hdl,
 			&tc358743_ctrl_audio_sampling_rate, NULL);
 

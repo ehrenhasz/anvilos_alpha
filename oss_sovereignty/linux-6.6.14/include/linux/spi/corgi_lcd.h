@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_SPI_CORGI_LCD_H
 #define __LINUX_SPI_CORGI_LCD_H
 
@@ -17,4 +17,4 @@ struct corgi_lcd_platform_data {
 
 void corgi_lcd_limit_intensity(int limit);
 
-#endif /* __LINUX_SPI_CORGI_LCD_H */
+#endif  

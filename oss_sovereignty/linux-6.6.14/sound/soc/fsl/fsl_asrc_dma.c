@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Freescale ASRC ALSA SoC Platform (DMA) driver
-//
-// Copyright (C) 2014 Freescale Semiconductor, Inc.
-//
-// Author: Nicolin Chen <nicoleotsuka@gmail.com>
+
+
+
+
+
+
+
 
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
@@ -23,7 +23,7 @@ static struct snd_pcm_hardware snd_imx_hardware = {
 		SNDRV_PCM_INFO_MMAP_VALID,
 	.buffer_bytes_max = FSL_ASRC_DMABUF_SIZE,
 	.period_bytes_min = 128,
-	.period_bytes_max = 65535, /* Limited by SDMA engine */
+	.period_bytes_max = 65535,  
 	.periods_min = 2,
 	.periods_max = 255,
 	.fifo_size = 0,
@@ -61,7 +61,7 @@ static int fsl_asrc_dma_prepare_and_submit(struct snd_pcm_substream *substream,
 	struct device *dev = component->dev;
 	unsigned long flags = DMA_CTRL_ACK;
 
-	/* Prepare and submit Front-End DMA channel */
+	 
 	if (!substream->runtime->no_period_wakeup)
 		flags |= DMA_PREP_INTERRUPT;
 
@@ -81,7 +81,7 @@ static int fsl_asrc_dma_prepare_and_submit(struct snd_pcm_substream *substream,
 
 	dmaengine_submit(pair->desc[!dir]);
 
-	/* Prepare and submit Back-End DMA channel */
+	 
 	pair->desc[dir] = dmaengine_prep_dma_cyclic(
 			pair->dma_chan[dir], 0xffff, 64, 64, DMA_DEV_TO_DEV, 0);
 	if (!pair->desc[dir]) {
@@ -152,7 +152,7 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
 	dma_cap_mask_t mask;
 	int ret, width;
 
-	/* Fetch the Back-End dma_data from DPCM */
+	 
 	for_each_dpcm_be(rtd, stream, dpcm) {
 		struct snd_soc_pcm_runtime *be = dpcm->be;
 		struct snd_pcm_substream *substream_be;
@@ -172,7 +172,7 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 
-	/* Override dma_data of the Front-End and config its dmaengine */
+	 
 	dma_params_fe = snd_soc_dai_get_dma_data(asoc_rtd_to_cpu(rtd, 0), substream);
 	dma_params_fe->addr = asrc->paddr + asrc->get_fifo_addr(!dir, index);
 	dma_params_fe->maxburst = dma_params_be->maxburst;
@@ -195,15 +195,12 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
 		return ret;
 	}
 
-	/* Request and config DMA channel for Back-End */
+	 
 	dma_cap_zero(mask);
 	dma_cap_set(DMA_SLAVE, mask);
 	dma_cap_set(DMA_CYCLIC, mask);
 
-	/*
-	 * The Back-End device might have already requested a DMA channel,
-	 * so try to reuse it first, and then request a new one upon NULL.
-	 */
+	 
 	component_be = snd_soc_lookup_component_nolocked(dev_be, SND_DMAENGINE_PCM_DRV_NAME);
 	if (component_be) {
 		be_chan = soc_component_to_pcm(component_be)->chan[substream->stream];
@@ -217,21 +214,16 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
 		}
 	}
 
-	/*
-	 * An EDMA DEV_TO_DEV channel is fixed and bound with DMA event of each
-	 * peripheral, unlike SDMA channel that is allocated dynamically. So no
-	 * need to configure dma_request and dma_request2, but get dma_chan of
-	 * Back-End device directly via dma_request_chan.
-	 */
+	 
 	if (!asrc->use_edma) {
-		/* Get DMA request of Back-End */
+		 
 		tmp_data = tmp_chan->private;
 		pair->dma_data.dma_request = tmp_data->dma_request;
 		be_peripheral_type = tmp_data->peripheral_type;
 		if (!be_chan)
 			dma_release_channel(tmp_chan);
 
-		/* Get DMA request of Front-End */
+		 
 		tmp_chan = asrc->get_dma_channel(pair, dir);
 		tmp_data = tmp_chan->private;
 		pair->dma_data.dma_request2 = tmp_data->dma_request;
@@ -246,7 +238,7 @@ static int fsl_asrc_dma_hw_params(struct snd_soc_component *component,
 		pair->req_dma_chan = true;
 	} else {
 		pair->dma_chan[dir] = tmp_chan;
-		/* Do not flag to release if we are reusing the Back-End one */
+		 
 		pair->req_dma_chan = !be_chan;
 	}
 
@@ -316,7 +308,7 @@ static int fsl_asrc_dma_hw_free(struct snd_soc_component *component,
 	if (pair->dma_chan[!dir])
 		dma_release_channel(pair->dma_chan[!dir]);
 
-	/* release dev_to_dev chan if we aren't reusing the Back-End one */
+	 
 	if (pair->dma_chan[dir] && pair->req_dma_chan)
 		dma_release_channel(pair->dma_chan[dir]);
 
@@ -357,17 +349,14 @@ static int fsl_asrc_dma_startup(struct snd_soc_component *component,
 
 	runtime->private_data = pair;
 
-	/* Request a dummy pair, which will be released later.
-	 * Request pair function needs channel num as input, for this
-	 * dummy pair, we just request "1" channel temporarily.
-	 */
+	 
 	ret = asrc->request_pair(1, pair);
 	if (ret < 0) {
 		dev_err(dev, "failed to request asrc pair\n");
 		goto req_pair_err;
 	}
 
-	/* Request a dummy dma channel, which will be released later. */
+	 
 	tmp_chan = asrc->get_dma_channel(pair, dir);
 	if (!tmp_chan) {
 		dev_err(dev, "failed to get dma channel\n");
@@ -377,7 +366,7 @@ static int fsl_asrc_dma_startup(struct snd_soc_component *component,
 
 	dma_data = snd_soc_dai_get_dma_data(asoc_rtd_to_cpu(rtd, 0), substream);
 
-	/* Refine the snd_imx_hardware according to caps of DMA. */
+	 
 	ret = snd_dmaengine_pcm_refine_runtime_hwparams(substream,
 							dma_data,
 							&snd_imx_hardware,

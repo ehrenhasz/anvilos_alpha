@@ -1,67 +1,45 @@
-/*******************************************************************
- * This file is part of the Emulex Linux Device Driver for         *
- * Fibre Channel Host Bus Adapters.                                *
- * Copyright (C) 2017-2022 Broadcom. All Rights Reserved. The term *
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.     *
- * Copyright (C) 2007-2011 Emulex.  All rights reserved.           *
- * EMULEX and SLI are trademarks of Emulex.                        *
- * www.broadcom.com                                                *
- *                                                                 *
- * This program is free software; you can redistribute it and/or   *
- * modify it under the terms of version 2 of the GNU General       *
- * Public License as published by the Free Software Foundation.    *
- * This program is distributed in the hope that it will be useful. *
- * ALL EXPRESS OR IMPLIED CONDITIONS, REPRESENTATIONS AND          *
- * WARRANTIES, INCLUDING ANY IMPLIED WARRANTY OF MERCHANTABILITY,  *
- * FITNESS FOR A PARTICULAR PURPOSE, OR NON-INFRINGEMENT, ARE      *
- * DISCLAIMED, EXCEPT TO THE EXTENT THAT SUCH DISCLAIMERS ARE HELD *
- * TO BE LEGALLY INVALID.  See the GNU General Public License for  *
- * more details, a copy of which can be found in the file COPYING  *
- * included with this package.                                     *
- *******************************************************************/
+ 
 
 #ifndef _H_LPFC_DEBUG_FS
 #define _H_LPFC_DEBUG_FS
 
 #ifdef CONFIG_SCSI_LPFC_DEBUG_FS
 
-/* size of output line, for discovery_trace and slow_ring_trace */
+ 
 #define LPFC_DEBUG_TRC_ENTRY_SIZE 100
 
-/* nodelist output buffer size */
+ 
 #define LPFC_NODELIST_SIZE 8192
 #define LPFC_NODELIST_ENTRY_SIZE 120
 
-/* dumpHBASlim output buffer size */
+ 
 #define LPFC_DUMPHBASLIM_SIZE 4096
 
-/* dumpHostSlim output buffer size */
+ 
 #define LPFC_DUMPHOSTSLIM_SIZE 4096
 
-/* dumpSLIqinfo output buffer size */
+ 
 #define	LPFC_DUMPSLIQINFO_SIZE 4096
 
-/* hbqinfo output buffer size */
+ 
 #define LPFC_HBQINFO_SIZE 8192
 
-/* nvmestat output buffer size */
+ 
 #define LPFC_NVMESTAT_SIZE 8192
 #define LPFC_IOKTIME_SIZE 8192
 #define LPFC_NVMEIO_TRC_SIZE 8192
 
-/* scsistat output buffer size */
+ 
 #define LPFC_SCSISTAT_SIZE 8192
 
-/* Congestion Info Buffer size */
+ 
 #define LPFC_CGN_BUF_SIZE 8192
 
 #define LPFC_DEBUG_OUT_LINE_SZ	80
 
-/*
- * For SLI4 iDiag debugfs diagnostics tool
- */
+ 
 
-/* pciConf */
+ 
 #define LPFC_PCI_CFG_BROWSE 0xffff
 #define LPFC_PCI_CFG_RD_CMD_ARG 2
 #define LPFC_PCI_CFG_WR_CMD_ARG 3
@@ -72,7 +50,7 @@
 #define IDIAG_PCICFG_COUNT_INDX 1
 #define IDIAG_PCICFG_VALUE_INDX 2
 
-/* barAcc */
+ 
 #define LPFC_PCI_BAR_BROWSE 0xffff
 #define LPFC_PCI_BAR_RD_CMD_ARG 3
 #define LPFC_PCI_BAR_WR_CMD_ARG 3
@@ -102,10 +80,10 @@
 
 #define SINGLE_WORD 1
 
-/* queue info */
+ 
 #define LPFC_QUE_INFO_GET_BUF_SIZE 4096
 
-/* queue acc */
+ 
 #define LPFC_QUE_ACC_BROWSE 0xffff
 #define LPFC_QUE_ACC_RD_CMD_ARG 4
 #define LPFC_QUE_ACC_WR_CMD_ARG 6
@@ -125,7 +103,7 @@
 #define IDIAG_QUEACC_OFFST_INDX 4
 #define IDIAG_QUEACC_VALUE_INDX 5
 
-/* doorbell register acc */
+ 
 #define LPFC_DRB_ACC_ALL 0xffff
 #define LPFC_DRB_ACC_RD_CMD_ARG 1
 #define LPFC_DRB_ACC_WR_CMD_ARG 2
@@ -142,7 +120,7 @@
 #define IDIAG_DRBACC_REGID_INDX 0
 #define IDIAG_DRBACC_VALUE_INDX 1
 
-/* control register acc */
+ 
 #define LPFC_CTL_ACC_ALL 0xffff
 #define LPFC_CTL_ACC_RD_CMD_ARG 1
 #define LPFC_CTL_ACC_WR_CMD_ARG 2
@@ -160,7 +138,7 @@
 #define IDIAG_CTLACC_REGID_INDX 0
 #define IDIAG_CTLACC_VALUE_INDX 1
 
-/* mailbox access */
+ 
 #define LPFC_MBX_DMP_ARG 4
 
 #define LPFC_MBX_ACC_BUF_SIZE 512
@@ -187,7 +165,7 @@
 #define IDIAG_MBXACC_DPCNT_INDX 2
 #define IDIAG_MBXACC_WDCNT_INDX 3
 
-/* extents access */
+ 
 #define LPFC_EXT_ACC_CMD_ARG 1
 #define LPFC_EXT_ACC_BUF_SIZE 4096
 
@@ -295,7 +273,7 @@ struct lpfc_rx_monitor_debug {
 
 #endif
 
-/* multixripool output buffer size */
+ 
 #define LPFC_DUMP_MULTIXRIPOOL_SIZE 8192
 
 enum {
@@ -305,38 +283,26 @@ enum {
 	DUMP_NVMELS,
 };
 
-/* Mask for discovery_trace */
-#define LPFC_DISC_TRC_ELS_CMD		0x1	/* Trace ELS commands */
-#define LPFC_DISC_TRC_ELS_RSP		0x2	/* Trace ELS response */
-#define LPFC_DISC_TRC_ELS_UNSOL		0x4	/* Trace ELS rcv'ed   */
-#define LPFC_DISC_TRC_ELS_ALL		0x7	/* Trace ELS */
-#define LPFC_DISC_TRC_MBOX_VPORT	0x8	/* Trace vport MBOXs */
-#define LPFC_DISC_TRC_MBOX		0x10	/* Trace other MBOXs */
-#define LPFC_DISC_TRC_MBOX_ALL		0x18	/* Trace all MBOXs */
-#define LPFC_DISC_TRC_CT		0x20	/* Trace disc CT requests */
-#define LPFC_DISC_TRC_DSM		0x40    /* Trace DSM events */
-#define LPFC_DISC_TRC_RPORT		0x80    /* Trace rport events */
-#define LPFC_DISC_TRC_NODE		0x100   /* Trace ndlp state changes */
+ 
+#define LPFC_DISC_TRC_ELS_CMD		0x1	 
+#define LPFC_DISC_TRC_ELS_RSP		0x2	 
+#define LPFC_DISC_TRC_ELS_UNSOL		0x4	 
+#define LPFC_DISC_TRC_ELS_ALL		0x7	 
+#define LPFC_DISC_TRC_MBOX_VPORT	0x8	 
+#define LPFC_DISC_TRC_MBOX		0x10	 
+#define LPFC_DISC_TRC_MBOX_ALL		0x18	 
+#define LPFC_DISC_TRC_CT		0x20	 
+#define LPFC_DISC_TRC_DSM		0x40     
+#define LPFC_DISC_TRC_RPORT		0x80     
+#define LPFC_DISC_TRC_NODE		0x100    
 
-#define LPFC_DISC_TRC_DISCOVERY		0xef    /* common mask for general
-						 * discovery */
-#endif /* H_LPFC_DEBUG_FS */
+#define LPFC_DISC_TRC_DISCOVERY		0xef     
+#endif  
 
 
-/*
- * Driver debug utility routines outside of debugfs. The debug utility
- * routines implemented here is intended to be used in the instrumented
- * debug driver for debugging host or port issues.
- */
+ 
 
-/**
- * lpfc_debug_dump_qe - dump an specific entry from a queue
- * @q: Pointer to the queue descriptor.
- * @idx: Index to the entry on the queue.
- *
- * This function dumps an entry indexed by @idx from a queue specified by the
- * queue descriptor @q.
- **/
+ 
 static void
 lpfc_debug_dump_qe(struct lpfc_queue *q, uint32_t idx)
 {
@@ -344,7 +310,7 @@ lpfc_debug_dump_qe(struct lpfc_queue *q, uint32_t idx)
 	int i, esize, qe_word_cnt, len;
 	uint32_t *pword;
 
-	/* sanity checks */
+	 
 	if (!q)
 		return;
 	if (idx >= q->entry_count)
@@ -378,19 +344,13 @@ lpfc_debug_dump_qe(struct lpfc_queue *q, uint32_t idx)
 		printk(KERN_ERR "%s\n", line_buf);
 }
 
-/**
- * lpfc_debug_dump_q - dump all entries from an specific queue
- * @q: Pointer to the queue descriptor.
- *
- * This function dumps all entries from a queue specified by the queue
- * descriptor @q.
- **/
+ 
 static inline void
 lpfc_debug_dump_q(struct lpfc_queue *q)
 {
 	int idx, entry_count;
 
-	/* sanity check */
+	 
 	if (!q)
 		return;
 
@@ -408,14 +368,7 @@ lpfc_debug_dump_q(struct lpfc_queue *q)
 	printk(KERN_ERR "\n");
 }
 
-/**
- * lpfc_debug_dump_wq - dump all entries from the fcp or nvme work queue
- * @phba: Pointer to HBA context object.
- * @wqidx: Index to a FCP or NVME work queue.
- *
- * This function dumps all entries from a FCP or NVME work queue specified
- * by the wqidx.
- **/
+ 
 static inline void
 lpfc_debug_dump_wq(struct lpfc_hba *phba, int qtype, int wqidx)
 {
@@ -447,15 +400,7 @@ lpfc_debug_dump_wq(struct lpfc_hba *phba, int qtype, int wqidx)
 	lpfc_debug_dump_q(wq);
 }
 
-/**
- * lpfc_debug_dump_cq - dump all entries from a fcp or nvme work queue's
- * cmpl queue
- * @phba: Pointer to HBA context object.
- * @wqidx: Index to a FCP work queue.
- *
- * This function dumps all entries from a FCP or NVME completion queue
- * which is associated to the work queue specified by the @wqidx.
- **/
+ 
 static inline void
 lpfc_debug_dump_cq(struct lpfc_hba *phba, int qtype, int wqidx)
 {
@@ -463,7 +408,7 @@ lpfc_debug_dump_cq(struct lpfc_hba *phba, int qtype, int wqidx)
 	char *qtypestr;
 	int eqidx;
 
-	/* io wq and cq are 1:1, thus same indexes */
+	 
 	eq = NULL;
 
 	if (qtype == DUMP_IO) {
@@ -510,14 +455,7 @@ lpfc_debug_dump_cq(struct lpfc_hba *phba, int qtype, int wqidx)
 	lpfc_debug_dump_q(cq);
 }
 
-/**
- * lpfc_debug_dump_hba_eq - dump all entries from a fcp work queue's evt queue
- * @phba: Pointer to HBA context object.
- * @fcp_wqidx: Index to a FCP work queue.
- *
- * This function dumps all entries from a FCP event queue which is
- * associated to the FCP work queue specified by the @fcp_wqidx.
- **/
+ 
 static inline void
 lpfc_debug_dump_hba_eq(struct lpfc_hba *phba, int qidx)
 {
@@ -530,12 +468,7 @@ lpfc_debug_dump_hba_eq(struct lpfc_hba *phba, int qidx)
 	lpfc_debug_dump_q(qp);
 }
 
-/**
- * lpfc_debug_dump_dat_rq - dump all entries from the receive data queue
- * @phba: Pointer to HBA context object.
- *
- * This function dumps all entries from the receive data queue.
- **/
+ 
 static inline void
 lpfc_debug_dump_dat_rq(struct lpfc_hba *phba)
 {
@@ -544,12 +477,7 @@ lpfc_debug_dump_dat_rq(struct lpfc_hba *phba)
 	lpfc_debug_dump_q(phba->sli4_hba.dat_rq);
 }
 
-/**
- * lpfc_debug_dump_hdr_rq - dump all entries from the receive header queue
- * @phba: Pointer to HBA context object.
- *
- * This function dumps all entries from the receive header queue.
- **/
+ 
 static inline void
 lpfc_debug_dump_hdr_rq(struct lpfc_hba *phba)
 {
@@ -558,14 +486,7 @@ lpfc_debug_dump_hdr_rq(struct lpfc_hba *phba)
 	lpfc_debug_dump_q(phba->sli4_hba.hdr_rq);
 }
 
-/**
- * lpfc_debug_dump_wq_by_id - dump all entries from a work queue by queue id
- * @phba: Pointer to HBA context object.
- * @qid: Work queue identifier.
- *
- * This function dumps all entries from a work queue identified by the queue
- * identifier.
- **/
+ 
 static inline void
 lpfc_debug_dump_wq_by_id(struct lpfc_hba *phba, int qid)
 {
@@ -592,14 +513,7 @@ lpfc_debug_dump_wq_by_id(struct lpfc_hba *phba, int qid)
 	}
 }
 
-/**
- * lpfc_debug_dump_mq_by_id - dump all entries from a mbox queue by queue id
- * @phba: Pointer to HBA context object.
- * @qid: Mbox work queue identifier.
- *
- * This function dumps all entries from a mbox work queue identified by the
- * queue identifier.
- **/
+ 
 static inline void
 lpfc_debug_dump_mq_by_id(struct lpfc_hba *phba, int qid)
 {
@@ -609,14 +523,7 @@ lpfc_debug_dump_mq_by_id(struct lpfc_hba *phba, int qid)
 	}
 }
 
-/**
- * lpfc_debug_dump_rq_by_id - dump all entries from a receive queue by queue id
- * @phba: Pointer to HBA context object.
- * @qid: Receive queue identifier.
- *
- * This function dumps all entries from a receive queue identified by the
- * queue identifier.
- **/
+ 
 static inline void
 lpfc_debug_dump_rq_by_id(struct lpfc_hba *phba, int qid)
 {
@@ -631,14 +538,7 @@ lpfc_debug_dump_rq_by_id(struct lpfc_hba *phba, int qid)
 	}
 }
 
-/**
- * lpfc_debug_dump_cq_by_id - dump all entries from a cmpl queue by queue id
- * @phba: Pointer to HBA context object.
- * @qid: Complete queue identifier.
- *
- * This function dumps all entries from a complete queue identified by the
- * queue identifier.
- **/
+ 
 static inline void
 lpfc_debug_dump_cq_by_id(struct lpfc_hba *phba, int qid)
 {
@@ -672,14 +572,7 @@ lpfc_debug_dump_cq_by_id(struct lpfc_hba *phba, int qid)
 	}
 }
 
-/**
- * lpfc_debug_dump_eq_by_id - dump all entries from an event queue by queue id
- * @phba: Pointer to HBA context object.
- * @qid: Complete queue identifier.
- *
- * This function dumps all entries from an event queue identified by the
- * queue identifier.
- **/
+ 
 static inline void
 lpfc_debug_dump_eq_by_id(struct lpfc_hba *phba, int qid)
 {

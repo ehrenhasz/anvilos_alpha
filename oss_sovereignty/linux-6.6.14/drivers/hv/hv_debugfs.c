@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Authors:
- *   Branden Bonaby <brandonbonaby94@gmail.com>
- */
+
+ 
 
 #include <linux/hyperv.h>
 #include <linux/debugfs.h>
@@ -50,7 +47,7 @@ static int hv_debugfs_state_set(void *data, u64 val)
 DEFINE_DEBUGFS_ATTRIBUTE(hv_debugfs_state_fops, hv_debugfs_state_get,
 			 hv_debugfs_state_set, "%llu\n");
 
-/* Setup delay files to store test values */
+ 
 static int hv_debug_delay_files(struct hv_device *dev, struct dentry *root)
 {
 	struct vmbus_channel *channel = dev->channel;
@@ -79,7 +76,7 @@ static int hv_debug_delay_files(struct hv_device *dev, struct dentry *root)
 	return 0;
 }
 
-/* Setup test state value for vmbus device */
+ 
 static int hv_debug_set_test_state(struct hv_device *dev, struct dentry *root)
 {
 	struct vmbus_channel *channel = dev->channel;
@@ -98,14 +95,14 @@ static int hv_debug_set_test_state(struct hv_device *dev, struct dentry *root)
 	return 0;
 }
 
-/* Bind hv device to a dentry for debugfs */
+ 
 static void hv_debug_set_dir_dentry(struct hv_device *dev, struct dentry *root)
 {
 	if (hv_debug_root)
 		dev->debug_dir = root;
 }
 
-/* Create all test dentry's and names for fuzz testing */
+ 
 int hv_debug_add_dev_dir(struct hv_device *dev)
 {
 	const char *device = dev_name(&dev->device);
@@ -137,20 +134,20 @@ int hv_debug_add_dev_dir(struct hv_device *dev)
 	return PTR_ERR(hv_debug_root);
 }
 
-/* Remove dentry associated with released hv device */
+ 
 void hv_debug_rm_dev_dir(struct hv_device *dev)
 {
 	if (!IS_ERR(hv_debug_root))
 		debugfs_remove_recursive(dev->debug_dir);
 }
 
-/* Remove all dentrys associated with vmbus testing */
+ 
 void hv_debug_rm_all_dir(void)
 {
 	debugfs_remove_recursive(hv_debug_root);
 }
 
-/* Delay buffer/message reads on a vmbus channel */
+ 
 void hv_debug_delay_test(struct vmbus_channel *channel, enum delay delay_type)
 {
 	struct vmbus_channel *test_channel =    channel->primary_channel ?
@@ -166,7 +163,7 @@ void hv_debug_delay_test(struct vmbus_channel *channel, enum delay delay_type)
 	}
 }
 
-/* Initialize top dentry for vmbus testing */
+ 
 int hv_debug_init(void)
 {
 	hv_debug_root = debugfs_create_dir("hyperv", NULL);

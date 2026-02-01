@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * cs5345 Cirrus Logic 24-bit, 192 kHz Stereo Audio ADC
- * Copyright (C) 2007 Hans Verkuil
- */
+
+ 
 
 
 #include <linux/module.h>
@@ -38,7 +35,7 @@ static inline struct v4l2_subdev *to_sd(struct v4l2_ctrl *ctrl)
 	return &container_of(ctrl->handler, struct cs5345_state, hdl)->sd;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static inline int cs5345_write(struct v4l2_subdev *sd, u8 reg, u8 value)
 {
@@ -111,7 +108,7 @@ static int cs5345_log_status(struct v4l2_subdev *sd)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct v4l2_ctrl_ops cs5345_ctrl_ops = {
 	.s_ctrl = cs5345_s_ctrl,
@@ -134,14 +131,14 @@ static const struct v4l2_subdev_ops cs5345_ops = {
 	.audio = &cs5345_audio_ops,
 };
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static int cs5345_probe(struct i2c_client *client)
 {
 	struct cs5345_state *state;
 	struct v4l2_subdev *sd;
 
-	/* Check if the adapter supports the needed features */
+	 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -EIO;
 
@@ -166,7 +163,7 @@ static int cs5345_probe(struct i2c_client *client)
 		v4l2_ctrl_handler_free(&state->hdl);
 		return err;
 	}
-	/* set volume/mute */
+	 
 	v4l2_ctrl_handler_setup(&state->hdl);
 
 	cs5345_write(sd, 0x02, 0x00);
@@ -175,7 +172,7 @@ static int cs5345_probe(struct i2c_client *client)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static void cs5345_remove(struct i2c_client *client)
 {
@@ -186,7 +183,7 @@ static void cs5345_remove(struct i2c_client *client)
 	v4l2_ctrl_handler_free(&state->hdl);
 }
 
-/* ----------------------------------------------------------------------- */
+ 
 
 static const struct i2c_device_id cs5345_id[] = {
 	{ "cs5345", 0 },

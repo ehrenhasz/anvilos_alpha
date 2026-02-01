@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Meson G12A MIPI DSI Analog PHY
- *
- * Copyright (C) 2018 Amlogic, Inc. All rights reserved
- * Copyright (C) 2022 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
 #include <linux/module.h>
@@ -129,7 +123,7 @@ static int phy_g12a_mipi_dphy_analog_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* Get the hhi system controller node */
+	 
 	parent_np = of_get_parent(np);
 	map = syscon_node_to_regmap(parent_np);
 	of_node_put(parent_np);
@@ -154,7 +148,7 @@ static const struct of_device_id phy_g12a_mipi_dphy_analog_of_match[] = {
 	{
 		.compatible = "amlogic,g12a-mipi-dphy-analog",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, phy_g12a_mipi_dphy_analog_of_match);
 

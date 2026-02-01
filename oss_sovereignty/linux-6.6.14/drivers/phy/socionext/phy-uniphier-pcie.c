@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * phy-uniphier-pcie.c - PHY driver for UniPhier PCIe controller
- * Copyright 2018, Socionext Inc.
- * Author: Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bitfield.h>
@@ -18,7 +14,7 @@
 #include <linux/reset.h>
 #include <linux/resource.h>
 
-/* PHY */
+ 
 #define PCL_PHY_CLKCTRL		0x0000
 #define PORT_SEL_MASK		GENMASK(11, 9)
 #define PORT_SEL_1		FIELD_PREP(PORT_SEL_MASK, 1)
@@ -33,27 +29,27 @@
 #define TESTO_DAT_MASK		GENMASK(7, 0)
 
 #define PCL_PHY_RESET		0x200c
-#define PCL_PHY_RESET_N_MNMODE	BIT(8)	/* =1:manual */
-#define PCL_PHY_RESET_N		BIT(0)	/* =1:deasssert */
+#define PCL_PHY_RESET_N_MNMODE	BIT(8)	 
+#define PCL_PHY_RESET_N		BIT(0)	 
 
-/* SG */
+ 
 #define SG_USBPCIESEL		0x590
 #define SG_USBPCIESEL_PCIE	BIT(0)
 
-/* SC */
+ 
 #define SC_US3SRCSEL		0x2244
 #define SC_US3SRCSEL_2LANE	GENMASK(9, 8)
 
 #define PCL_PHY_R00		0
-#define   RX_EQ_ADJ_EN		BIT(3)		/* enable for EQ adjustment */
+#define   RX_EQ_ADJ_EN		BIT(3)		 
 #define PCL_PHY_R06		6
-#define   RX_EQ_ADJ		GENMASK(5, 0)	/* EQ adjustment value */
+#define   RX_EQ_ADJ		GENMASK(5, 0)	 
 #define   RX_EQ_ADJ_VAL		0
 #define PCL_PHY_R26		26
-#define   VCO_CTRL		GENMASK(7, 4)	/* Tx VCO adjustment value */
+#define   VCO_CTRL		GENMASK(7, 4)	 
 #define   VCO_CTRL_INIT_VAL	5
 #define PCL_PHY_R28		28
-#define   VCOPLL_CLMP		GENMASK(3, 2)	/* Tx VCOPLL clamp mode */
+#define   VCOPLL_CLMP		GENMASK(3, 2)	 
 #define   VCOPLL_CLMP_VAL	0
 
 struct uniphier_pciephy_priv {
@@ -76,7 +72,7 @@ static void uniphier_pciephy_testio_write(struct uniphier_pciephy_priv *priv,
 	if (id)
 		data <<= TESTIO_PHY_SHIFT;
 
-	/* need to read TESTO twice after accessing TESTI */
+	 
 	writel(data, priv->base + PCL_PHY_TEST_I);
 	readl(priv->base + PCL_PHY_TEST_O);
 	readl(priv->base + PCL_PHY_TEST_O);
@@ -97,13 +93,13 @@ static void uniphier_pciephy_set_param(struct uniphier_pciephy_priv *priv,
 {
 	u32 val;
 
-	/* read previous data */
+	 
 	val  = FIELD_PREP(TESTI_DAT_MASK, 1);
 	val |= FIELD_PREP(TESTI_ADR_MASK, reg);
 	uniphier_pciephy_testio_write(priv, id, val);
 	val = uniphier_pciephy_testio_read(priv, id);
 
-	/* update value */
+	 
 	val &= ~mask;
 	val |= mask & param;
 	val = FIELD_PREP(TESTI_DAT_MASK, val);
@@ -112,7 +108,7 @@ static void uniphier_pciephy_set_param(struct uniphier_pciephy_priv *priv,
 	uniphier_pciephy_testio_write(priv, id, val | TESTI_WR_EN);
 	uniphier_pciephy_testio_write(priv, id, val);
 
-	/* read current data as dummy */
+	 
 	val  = FIELD_PREP(TESTI_DAT_MASK, 1);
 	val |= FIELD_PREP(TESTI_ADR_MASK, reg);
 	uniphier_pciephy_testio_write(priv, id, val);
@@ -160,13 +156,13 @@ static int uniphier_pciephy_init(struct phy *phy)
 	if (ret)
 		goto out_rst_assert;
 
-	/* support only 1 port */
+	 
 	val = readl(priv->base + PCL_PHY_CLKCTRL);
 	val &= ~PORT_SEL_MASK;
 	val |= PORT_SEL_1;
 	writel(val, priv->base + PCL_PHY_CLKCTRL);
 
-	/* legacy controller doesn't have phy_reset and parameters */
+	 
 	if (priv->data->is_legacy)
 		return 0;
 
@@ -331,7 +327,7 @@ static const struct of_device_id uniphier_pciephy_match[] = {
 		.compatible = "socionext,uniphier-nx1-pcie-phy",
 		.data = &uniphier_nx1_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, uniphier_pciephy_match);
 

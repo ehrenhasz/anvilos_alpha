@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <limits.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -149,10 +149,7 @@ static int perf_env__lookup_binutils_path(struct perf_env *env,
 	const char *const *path_list;
 	char *buf = NULL;
 
-	/*
-	 * We don't need to try to find objdump path for native system.
-	 * Just use default binutils path (e.g.: "objdump").
-	 */
+	 
 	if (!strcmp(perf_env__arch(NULL), arch))
 		goto out;
 
@@ -220,21 +217,14 @@ out_error:
 
 int perf_env__lookup_objdump(struct perf_env *env, char **path)
 {
-	/*
-	 * For live mode, env->arch will be NULL and we can use
-	 * the native objdump tool.
-	 */
+	 
 	if (env->arch == NULL)
 		return 0;
 
 	return perf_env__lookup_binutils_path(env, "objdump", path);
 }
 
-/*
- * Some architectures have a single address space for kernel and user addresses,
- * which makes it possible to determine if an address is in kernel space or user
- * space.
- */
+ 
 bool perf_env__single_address_space(struct perf_env *env)
 {
 	return strcmp(perf_env__arch(env), "sparc");

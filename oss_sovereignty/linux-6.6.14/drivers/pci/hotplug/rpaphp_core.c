@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCI Hot Plug Controller Driver for RPA-compliant PPC64 platform.
- * Copyright (C) 2003 Linda Xie <lxie@us.ibm.com>
- *
- * All rights reserved.
- *
- * Send feedback to <lxie@us.ibm.com>
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -18,12 +10,12 @@
 #include <linux/init.h>
 #include <linux/vmalloc.h>
 #include <asm/firmware.h>
-#include <asm/eeh.h>       /* for eeh_add_device() */
-#include <asm/rtas.h>		/* rtas_call */
-#include <asm/pci-bridge.h>	/* for pci_controller */
+#include <asm/eeh.h>        
+#include <asm/rtas.h>		 
+#include <asm/pci-bridge.h>	 
 #include <asm/prom.h>
-#include "../pci.h"		/* for pci_add_new_bus */
-				/* and pci_do_scan_bus */
+#include "../pci.h"		 
+				 
 #include "rpaphp.h"
 
 bool rpaphp_debug;
@@ -42,15 +34,7 @@ MODULE_LICENSE("GPL");
 
 module_param_named(debug, rpaphp_debug, bool, 0644);
 
-/**
- * set_attention_status - set attention LED
- * @hotplug_slot: target &hotplug_slot
- * @value: LED control value
- *
- * echo 0 > attention -- set LED OFF
- * echo 1 > attention -- set LED ON
- * echo 2 > attention -- set LED ID(identify, light is blinking)
- */
+ 
 static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 value)
 {
 	int rc;
@@ -73,11 +57,7 @@ static int set_attention_status(struct hotplug_slot *hotplug_slot, u8 value)
 	return rc;
 }
 
-/**
- * get_power_status - get power status of a slot
- * @hotplug_slot: slot to get status
- * @value: pointer to store status
- */
+ 
 static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	int retval, level;
@@ -89,11 +69,7 @@ static int get_power_status(struct hotplug_slot *hotplug_slot, u8 *value)
 	return retval;
 }
 
-/**
- * get_attention_status - get attention LED status
- * @hotplug_slot: slot to get status
- * @value: pointer to store status
- */
+ 
 static int get_attention_status(struct hotplug_slot *hotplug_slot, u8 *value)
 {
 	struct slot *slot = to_slot(hotplug_slot);
@@ -130,7 +106,7 @@ static enum pci_bus_speed get_max_bus_speed(struct slot *slot)
 	case 4:
 	case 5:
 	case 6:
-		speed = PCI_SPEED_33MHz;	/* speed for case 1-6 */
+		speed = PCI_SPEED_33MHz;	 
 		break;
 	case 7:
 	case 8:
@@ -168,16 +144,16 @@ static int get_children_props(struct device_node *dn, const __be32 **drc_indexes
 	domains = of_get_property(dn, "ibm,drc-power-domains", NULL);
 
 	if (!indexes || !names || !types || !domains) {
-		/* Slot does not have dynamically-removable children */
+		 
 		return -EINVAL;
 	}
 	if (drc_indexes)
 		*drc_indexes = indexes;
 	if (drc_names)
-		/* &drc_names[1] contains NULL terminated slot names */
+		 
 		*drc_names = names;
 	if (drc_types)
-		/* &drc_types[1] contains NULL terminated slot types */
+		 
 		*drc_types = types;
 	if (drc_power_domains)
 		*drc_power_domains = domains;
@@ -186,11 +162,7 @@ static int get_children_props(struct device_node *dn, const __be32 **drc_indexes
 }
 
 
-/* Verify the existence of 'drc_name' and/or 'drc_type' within the
- * current node.  First obtain its my-drc-index property.  Next,
- * obtain the DRC info from its parent.  Use the my-drc-index for
- * correlation, and obtain/validate the requested properties.
- */
+ 
 
 static int rpaphp_check_drc_props_v1(struct device_node *dn, char *drc_name,
 				char *drc_type, unsigned int my_index)
@@ -208,7 +180,7 @@ static int rpaphp_check_drc_props_v1(struct device_node *dn, char *drc_name,
 	name_tmp = (char *) &names[1];
 	type_tmp = (char *) &types[1];
 
-	/* Iterate through parent properties, looking for my-drc-index */
+	 
 	for (i = 0; i < be32_to_cpu(indexes[0]); i++) {
 		if (be32_to_cpu(indexes[i + 1]) == my_index)
 			break;
@@ -247,9 +219,9 @@ static int rpaphp_check_drc_props_v2(struct device_node *dn, char *drc_name,
 	for (j = 0; j < entries; j++) {
 		of_read_drc_info_cell(&info, &value, &drc);
 
-		/* Should now know end of current entry */
+		 
 
-		/* Found it */
+		 
 		if (my_index >= drc.drc_index_start && my_index <= drc.last_drc_index) {
 			int index = my_index - drc.drc_index_start;
 			sprintf(cell_drc_name, "%s%d", drc.drc_name_prefix,
@@ -274,7 +246,7 @@ int rpaphp_check_drc_props(struct device_node *dn, char *drc_name,
 
 	my_index = of_get_property(dn, "ibm,my-drc-index", NULL);
 	if (!my_index) {
-		/* Node isn't DLPAR/hotplug capable */
+		 
 		return -EINVAL;
 	}
 
@@ -292,7 +264,7 @@ static int is_php_type(char *drc_type)
 {
 	char *endptr;
 
-	/* PCI Hotplug nodes have an integer for drc_type */
+	 
 	simple_strtoul(drc_type, &endptr, 10);
 	if (endptr == drc_type)
 		return 0;
@@ -300,19 +272,7 @@ static int is_php_type(char *drc_type)
 	return 1;
 }
 
-/**
- * is_php_dn() - return 1 if this is a hotpluggable pci slot, else 0
- * @dn: target &device_node
- * @indexes: passed to get_children_props()
- * @names: passed to get_children_props()
- * @types: returned from get_children_props()
- * @power_domains:
- *
- * This routine will return true only if the device node is
- * a hotpluggable slot. This routine will return false
- * for built-in pci slots (even when the built-in slots are
- * dlparable.)
- */
+ 
 static int is_php_dn(struct device_node *dn, const __be32 **indexes,
 		     const __be32 **names, const __be32 **types,
 		     const __be32 **power_domains)
@@ -380,13 +340,13 @@ static int rpaphp_drc_add_slot(struct device_node *dn)
 	const __be32 *indexes, *names, *types, *power_domains;
 	char *name, *type;
 
-	/* If this is not a hotplug slot, return without doing anything. */
+	 
 	if (!is_php_dn(dn, &indexes, &names, &types, &power_domains))
 		return 0;
 
 	dbg("Entry %s: dn=%pOF\n", __func__, dn);
 
-	/* register PCI devices */
+	 
 	name = (char *) &names[1];
 	type = (char *) &types[1];
 	for (i = 0; i < be32_to_cpu(indexes[0]); i++) {
@@ -415,26 +375,11 @@ static int rpaphp_drc_add_slot(struct device_node *dn)
 	}
 	dbg("%s - Exit: rc[%d]\n", __func__, retval);
 
-	/* XXX FIXME: reports a failure only if last entry in loop failed */
+	 
 	return retval;
 }
 
-/**
- * rpaphp_add_slot -- declare a hotplug slot to the hotplug subsystem.
- * @dn: device node of slot
- *
- * This subroutine will register a hotpluggable slot with the
- * PCI hotplug infrastructure. This routine is typically called
- * during boot time, if the hotplug slots are present at boot time,
- * or is called later, by the dlpar add code, if the slot is
- * being dynamically added during runtime.
- *
- * If the device node points at an embedded (built-in) slot, this
- * routine will just return without doing anything, since embedded
- * slots cannot be hotplugged.
- *
- * To remove a slot, it suffices to call rpaphp_deregister_slot().
- */
+ 
 int rpaphp_add_slot(struct device_node *dn)
 {
 	if (!of_node_name_eq(dn, "pci"))
@@ -451,10 +396,7 @@ static void __exit cleanup_slots(void)
 {
 	struct slot *slot, *next;
 
-	/*
-	 * Unregister all of our slots with the pci_hotplug subsystem,
-	 * and free up all memory that we had allocated.
-	 */
+	 
 
 	list_for_each_entry_safe(slot, next, &rpaphp_slot_head,
 				 rpaphp_slot_list) {

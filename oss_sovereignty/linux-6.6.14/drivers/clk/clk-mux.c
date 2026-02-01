@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2011 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
- * Copyright (C) 2011 Richard Zhao, Linaro <richard.zhao@linaro.org>
- * Copyright (C) 2011-2012 Mike Turquette, Linaro Ltd <mturquette@linaro.org>
- *
- * Simple multiplexer clock implementation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -14,15 +8,7 @@
 #include <linux/io.h>
 #include <linux/err.h>
 
-/*
- * DOC: basic adjustable multiplexer clock that cannot gate
- *
- * Traits of this clock:
- * prepare - clk_prepare only ensures that parents are prepared
- * enable - clk_enable only ensures that parents are enabled
- * rate - rate is only affected by parent switching.  No clk_set_rate support
- * parent - parent is adjustable through clk_set_parent
- */
+ 
 
 static inline u32 clk_mux_readl(struct clk_mux *mux)
 {
@@ -168,7 +154,7 @@ struct clk_hw *__clk_hw_register_mux(struct device *dev, struct device_node *np,
 		}
 	}
 
-	/* allocate the mux */
+	 
 	mux = kzalloc(sizeof(*mux), GFP_KERNEL);
 	if (!mux)
 		return ERR_PTR(-ENOMEM);
@@ -184,7 +170,7 @@ struct clk_hw *__clk_hw_register_mux(struct device *dev, struct device_node *np,
 	init.parent_hws = parent_hws;
 	init.num_parents = num_parents;
 
-	/* struct clk_mux assignments */
+	 
 	mux->reg = reg;
 	mux->shift = shift;
 	mux->mask = mask;

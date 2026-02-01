@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/i2c.h>
@@ -10,30 +8,30 @@
 #include <linux/module.h>
 #include <linux/platform_device.h>
 
-#define UNIPHIER_I2C_DTRM	0x00	/* TX register */
-#define     UNIPHIER_I2C_DTRM_IRQEN	BIT(11)	/* enable interrupt */
-#define     UNIPHIER_I2C_DTRM_STA	BIT(10)	/* start condition */
-#define     UNIPHIER_I2C_DTRM_STO	BIT(9)	/* stop condition */
-#define     UNIPHIER_I2C_DTRM_NACK	BIT(8)	/* do not return ACK */
-#define     UNIPHIER_I2C_DTRM_RD	BIT(0)	/* read transaction */
-#define UNIPHIER_I2C_DREC	0x04	/* RX register */
-#define     UNIPHIER_I2C_DREC_MST	BIT(14)	/* 1 = master, 0 = slave */
-#define     UNIPHIER_I2C_DREC_TX	BIT(13)	/* 1 = transmit, 0 = receive */
-#define     UNIPHIER_I2C_DREC_STS	BIT(12)	/* stop condition detected */
-#define     UNIPHIER_I2C_DREC_LRB	BIT(11)	/* no ACK */
-#define     UNIPHIER_I2C_DREC_LAB	BIT(9)	/* arbitration lost */
-#define     UNIPHIER_I2C_DREC_BBN	BIT(8)	/* bus not busy */
-#define UNIPHIER_I2C_MYAD	0x08	/* slave address */
-#define UNIPHIER_I2C_CLK	0x0c	/* clock frequency control */
-#define UNIPHIER_I2C_BRST	0x10	/* bus reset */
-#define     UNIPHIER_I2C_BRST_FOEN	BIT(1)	/* normal operation */
-#define     UNIPHIER_I2C_BRST_RSCL	BIT(0)	/* release SCL */
-#define UNIPHIER_I2C_HOLD	0x14	/* hold time control */
-#define UNIPHIER_I2C_BSTS	0x18	/* bus status monitor */
-#define     UNIPHIER_I2C_BSTS_SDA	BIT(1)	/* readback of SDA line */
-#define     UNIPHIER_I2C_BSTS_SCL	BIT(0)	/* readback of SCL line */
-#define UNIPHIER_I2C_NOISE	0x1c	/* noise filter control */
-#define UNIPHIER_I2C_SETUP	0x20	/* setup time control */
+#define UNIPHIER_I2C_DTRM	0x00	 
+#define     UNIPHIER_I2C_DTRM_IRQEN	BIT(11)	 
+#define     UNIPHIER_I2C_DTRM_STA	BIT(10)	 
+#define     UNIPHIER_I2C_DTRM_STO	BIT(9)	 
+#define     UNIPHIER_I2C_DTRM_NACK	BIT(8)	 
+#define     UNIPHIER_I2C_DTRM_RD	BIT(0)	 
+#define UNIPHIER_I2C_DREC	0x04	 
+#define     UNIPHIER_I2C_DREC_MST	BIT(14)	 
+#define     UNIPHIER_I2C_DREC_TX	BIT(13)	 
+#define     UNIPHIER_I2C_DREC_STS	BIT(12)	 
+#define     UNIPHIER_I2C_DREC_LRB	BIT(11)	 
+#define     UNIPHIER_I2C_DREC_LAB	BIT(9)	 
+#define     UNIPHIER_I2C_DREC_BBN	BIT(8)	 
+#define UNIPHIER_I2C_MYAD	0x08	 
+#define UNIPHIER_I2C_CLK	0x0c	 
+#define UNIPHIER_I2C_BRST	0x10	 
+#define     UNIPHIER_I2C_BRST_FOEN	BIT(1)	 
+#define     UNIPHIER_I2C_BRST_RSCL	BIT(0)	 
+#define UNIPHIER_I2C_HOLD	0x14	 
+#define UNIPHIER_I2C_BSTS	0x18	 
+#define     UNIPHIER_I2C_BSTS_SDA	BIT(1)	 
+#define     UNIPHIER_I2C_BSTS_SCL	BIT(0)	 
+#define UNIPHIER_I2C_NOISE	0x1c	 
+#define UNIPHIER_I2C_SETUP	0x20	 
 
 struct uniphier_i2c_priv {
 	struct completion comp;
@@ -48,11 +46,7 @@ static irqreturn_t uniphier_i2c_interrupt(int irq, void *dev_id)
 {
 	struct uniphier_i2c_priv *priv = dev_id;
 
-	/*
-	 * This hardware uses edge triggered interrupt.  Do not touch the
-	 * hardware registers in this handler to make sure to catch the next
-	 * interrupt edge.  Just send a complete signal and return.
-	 */
+	 
 	complete(&priv->comp);
 
 	return IRQ_HANDLED;
@@ -166,11 +160,11 @@ static int uniphier_i2c_master_xfer_one(struct i2c_adapter *adap,
 	else
 		ret = uniphier_i2c_tx(adap, msg->addr, msg->len, msg->buf);
 
-	if (ret == -EAGAIN) /* could not acquire bus. bail out without STOP */
+	if (ret == -EAGAIN)  
 		return ret;
 
 	if (ret == -ETIMEDOUT) {
-		/* This error is fatal.  Needs recovery. */
+		 
 		stop = false;
 		recovery = true;
 	}
@@ -179,7 +173,7 @@ static int uniphier_i2c_master_xfer_one(struct i2c_adapter *adap,
 		int ret2 = uniphier_i2c_stop(adap);
 
 		if (ret2) {
-			/* Failed to issue STOP.  The bus needs recovery. */
+			 
 			recovery = true;
 			ret = ret ?: ret2;
 		}
@@ -198,10 +192,7 @@ static int uniphier_i2c_check_bus_busy(struct i2c_adapter *adap)
 	if (!(readl(priv->membase + UNIPHIER_I2C_DREC) &
 						UNIPHIER_I2C_DREC_BBN)) {
 		if (priv->busy_cnt++ > 3) {
-			/*
-			 * If bus busy continues too long, it is probably
-			 * in a wrong state.  Try bus recovery.
-			 */
+			 
 			i2c_recover_bus(adap);
 			priv->busy_cnt = 0;
 		}
@@ -224,7 +215,7 @@ static int uniphier_i2c_master_xfer(struct i2c_adapter *adap,
 		return ret;
 
 	for (msg = msgs; msg < emsg; msg++) {
-		/* Emit STOP if it is the last message or I2C_M_STOP is set. */
+		 
 		bool stop = (msg + 1 == emsg) || (msg->flags & I2C_M_STOP);
 
 		ret = uniphier_i2c_master_xfer_one(adap, msg, stop);
@@ -296,12 +287,7 @@ static void uniphier_i2c_hw_init(struct uniphier_i2c_priv *priv)
 
 	uniphier_i2c_reset(priv, true);
 
-	/*
-	 * Bit30-16: clock cycles of tLOW.
-	 *  Standard-mode: tLOW = 4.7 us, tHIGH = 4.0 us
-	 *  Fast-mode:     tLOW = 1.3 us, tHIGH = 0.6 us
-	 * "tLow/tHIGH = 5/4" meets both.
-	 */
+	 
 	writel((cyc * 5 / 9 << 16) | cyc, priv->membase + UNIPHIER_I2C_CLK);
 
 	uniphier_i2c_reset(priv, false);
@@ -406,7 +392,7 @@ static const struct dev_pm_ops uniphier_i2c_pm_ops = {
 
 static const struct of_device_id uniphier_i2c_match[] = {
 	{ .compatible = "socionext,uniphier-i2c" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_i2c_match);
 

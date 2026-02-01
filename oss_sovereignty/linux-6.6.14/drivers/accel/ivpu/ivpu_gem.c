@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/highmem.h>
@@ -28,13 +26,13 @@ static struct lock_class_key prime_bo_lock_class_key;
 
 static int __must_check prime_alloc_pages_locked(struct ivpu_bo *bo)
 {
-	/* Pages are managed by the underlying dma-buf */
+	 
 	return 0;
 }
 
 static void prime_free_pages_locked(struct ivpu_bo *bo)
 {
-	/* Pages are managed by the underlying dma-buf */
+	 
 }
 
 static int prime_map_pages_locked(struct ivpu_bo *bo)
@@ -231,13 +229,7 @@ static void ivpu_bo_unmap_and_free_pages(struct ivpu_bo *bo)
 	mutex_unlock(&bo->lock);
 }
 
-/*
- * ivpu_bo_pin() - pin the backing physical pages and map them to VPU.
- *
- * This function pins physical memory pages, then maps the physical pages
- * to IOMMU address space and finally updates the VPU MMU page tables
- * to allow the VPU to translate VPU address to IOMMU address.
- */
+ 
 int __must_check ivpu_bo_pin(struct ivpu_bo *bo)
 {
 	struct ivpu_device *vdev = ivpu_bo_to_vdev(bo);
@@ -441,7 +433,7 @@ static int ivpu_bo_mmap(struct drm_gem_object *obj, struct vm_area_struct *vma)
 		 bo->ctx->id, bo->handle, bo->vpu_addr, bo->base.size, bo->ops->name);
 
 	if (obj->import_attach) {
-		/* Drop the reference drm_gem_mmap_obj() acquired.*/
+		 
 		drm_gem_object_put(obj);
 		vma->vm_private_data = NULL;
 		return dma_buf_mmap(obj->dma_buf, vma, 0);
@@ -493,7 +485,7 @@ static vm_fault_t ivpu_vm_fault(struct vm_fault *vmf)
 		}
 	}
 
-	/* We don't use vmf->pgoff since that has the fake offset */
+	 
 	page_offset = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
 	if (page_offset >= npages) {
 		ret = VM_FAULT_SIGBUS;

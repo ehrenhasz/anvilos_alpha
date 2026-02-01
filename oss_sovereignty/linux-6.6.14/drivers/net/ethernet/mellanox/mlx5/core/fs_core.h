@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef _MLX5_FS_CORE_
 #define _MLX5_FS_CORE_
@@ -43,7 +13,7 @@
 #define FDB_FT_CHAIN (FDB_TC_MAX_CHAIN + 1)
 #define FDB_TC_SLOW_PATH_CHAIN (FDB_FT_CHAIN + 1)
 
-/* The index of the last real chain (FT) + 1 as chain zero is valid as well */
+ 
 #define FDB_NUM_CHAINS (FDB_FT_CHAIN + 1)
 
 #define FDB_TC_MAX_PRIO 16
@@ -70,7 +40,7 @@ struct mlx5_modify_hdr {
 
 struct mlx5_pkt_reformat {
 	enum mlx5_flow_namespace_type ns_type;
-	int reformat_type; /* from mlx5_ifc */
+	int reformat_type;  
 	enum mlx5_flow_resource_owner owner;
 	union {
 		struct mlx5_fs_dr_action action;
@@ -78,16 +48,7 @@ struct mlx5_pkt_reformat {
 	};
 };
 
-/* FS_TYPE_PRIO_CHAINS is a PRIO that will have namespaces only,
- * and those are in parallel to one another when going over them to connect
- * a new flow table. Meaning the last flow table in a TYPE_PRIO prio in one
- * parallel namespace will not automatically connect to the first flow table
- * found in any prio in any next namespace, but skip the entire containing
- * TYPE_PRIO_CHAINS prio.
- *
- * This is used to implement tc chains, each chain of prios is a different
- * namespace inside a containing TYPE_PRIO_CHAINS prio.
- */
+ 
 
 enum fs_node_type {
 	FS_TYPE_NAMESPACE,
@@ -159,7 +120,7 @@ struct fs_node {
 	enum fs_node_type	type;
 	struct fs_node		*parent;
 	struct fs_node		*root;
-	/* lock the node for writing and traversing */
+	 
 	struct rw_semaphore	lock;
 	refcount_t		refcount;
 	bool			active;
@@ -172,9 +133,7 @@ struct mlx5_flow_rule {
 	struct fs_node				node;
 	struct mlx5_flow_table			*ft;
 	struct mlx5_flow_destination		dest_attr;
-	/* next_ft should be accessed under chain_lock and only of
-	 * destination type is FWD_NEXT_fT.
-	 */
+	 
 	struct list_head			next_ft;
 	u32					sw_action;
 };
@@ -184,7 +143,7 @@ struct mlx5_flow_handle {
 	struct mlx5_flow_rule *rule[];
 };
 
-/* Type of children is mlx5_flow_group */
+ 
 struct mlx5_flow_table {
 	struct fs_node			node;
 	struct mlx5_fs_dr_table		fs_dr_table;
@@ -201,9 +160,9 @@ struct mlx5_flow_table {
 		unsigned int		num_groups;
 		unsigned int		max_fte;
 	} autogroup;
-	/* Protect fwd_rules */
+	 
 	struct mutex			lock;
-	/* FWD rules that point on this flow table */
+	 
 	struct list_head		fwd_rules;
 	u32				flags;
 	struct rhltable			fgs_hash;
@@ -217,9 +176,7 @@ struct mlx5_ft_underlay_qp {
 };
 
 #define MLX5_FTE_MATCH_PARAM_RESERVED	reserved_at_e00
-/* Calculate the fte_match_param length and without the reserved length.
- * Make sure the reserved field is the last.
- */
+ 
 #define MLX5_ST_SZ_DW_MATCH_PARAM					    \
 	((MLX5_BYTE_OFF(fte_match_param, MLX5_FTE_MATCH_PARAM_RESERVED) / sizeof(u32)) + \
 	 BUILD_BUG_ON_ZERO(MLX5_ST_SZ_BYTES(fte_match_param) !=		     \
@@ -228,7 +185,7 @@ struct mlx5_ft_underlay_qp {
 			   MLX5_BYTE_OFF(fte_match_param,		     \
 					 MLX5_FTE_MATCH_PARAM_RESERVED)))
 
-/* Type of children is mlx5_flow_rule */
+ 
 struct fs_fte {
 	struct fs_node			node;
 	struct mlx5_fs_dr_rule		fs_dr_rule;
@@ -244,7 +201,7 @@ struct fs_fte {
 	int				modify_mask;
 };
 
-/* Type of children is mlx5_flow_table/namespace */
+ 
 struct fs_prio {
 	struct fs_node			node;
 	unsigned int			num_levels;
@@ -253,9 +210,9 @@ struct fs_prio {
 	unsigned int			num_ft;
 };
 
-/* Type of children is fs_prio */
+ 
 struct mlx5_flow_namespace {
-	/* parent == NULL => root ns */
+	 
 	struct	fs_node			node;
 	enum mlx5_flow_table_miss_action def_miss_action;
 };
@@ -265,7 +222,7 @@ struct mlx5_flow_group_mask {
 	u32	match_criteria[MLX5_ST_SZ_DW_MATCH_PARAM];
 };
 
-/* Type of children is fs_fte */
+ 
 struct mlx5_flow_group {
 	struct fs_node			node;
 	struct mlx5_fs_dr_matcher	fs_dr_matcher;
@@ -285,7 +242,7 @@ struct mlx5_flow_root_namespace {
 	enum   fs_flow_table_type	table_type;
 	struct mlx5_core_dev		*dev;
 	struct mlx5_flow_table		*root_ft;
-	/* Should be held when chaining flow tables */
+	 
 	struct mutex			chain_lock;
 	struct list_head		underlay_qpns;
 	const struct mlx5_flow_cmds	*cmds;

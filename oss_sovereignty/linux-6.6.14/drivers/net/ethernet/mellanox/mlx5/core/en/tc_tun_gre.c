@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2018 Mellanox Technologies. */
+
+ 
 
 #include <net/gre.h>
 #include "en/tc_tun.h"
@@ -35,13 +35,13 @@ static int mlx5e_gen_ip_tunnel_header_gretap(char buf[],
 
 	*ip_proto = IPPROTO_GRE;
 
-	/* the HW does not calculate GRE csum or sequences */
+	 
 	if (tun_key->tun_flags & (TUNNEL_CSUM | TUNNEL_SEQ))
 		return -EOPNOTSUPP;
 
 	greh->protocol = htons(ETH_P_TEB);
 
-	/* GRE key */
+	 
 	hdr_len	= mlx5e_tc_tun_calc_hlen_gretap(e);
 	greh->flags = gre_tnl_flags_to_gre_flags(tun_key->tun_flags);
 	if (tun_key->tun_flags & TUNNEL_KEY) {
@@ -65,11 +65,11 @@ static int mlx5e_tc_tun_parse_gretap(struct mlx5e_priv *priv,
 	MLX5_SET_TO_ONES(fte_match_set_lyr_2_4, headers_c, ip_protocol);
 	MLX5_SET(fte_match_set_lyr_2_4, headers_v, ip_protocol, IPPROTO_GRE);
 
-	/* gre protocol */
+	 
 	MLX5_SET_TO_ONES(fte_match_set_misc, misc_c, gre_protocol);
 	MLX5_SET(fte_match_set_misc, misc_v, gre_protocol, ETH_P_TEB);
 
-	/* gre key */
+	 
 	if (flow_rule_match_key(rule, FLOW_DISSECTOR_KEY_ENC_KEYID)) {
 		struct flow_match_enc_keyid enc_keyid;
 

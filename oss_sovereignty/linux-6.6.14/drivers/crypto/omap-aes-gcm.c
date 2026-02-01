@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Cryptographic API.
- *
- * Support for OMAP AES GCM HW acceleration.
- *
- * Copyright (c) 2016 Texas Instruments Incorporated
- */
+
+ 
 
 #include <crypto/aes.h>
 #include <crypto/engine.h>

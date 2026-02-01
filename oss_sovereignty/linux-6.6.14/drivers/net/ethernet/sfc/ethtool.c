@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/ethtool.h>
@@ -22,14 +18,9 @@
 
 #define EFX_ETHTOOL_EEPROM_MAGIC 0xEFAB
 
-/**************************************************************************
- *
- * Ethtool operations
- *
- **************************************************************************
- */
+ 
 
-/* Identify device by flashing LEDs */
+ 
 static int efx_ethtool_phys_id(struct net_device *net_dev,
 			       enum ethtool_phys_id_state state)
 {
@@ -47,7 +38,7 @@ static int efx_ethtool_phys_id(struct net_device *net_dev,
 		mode = EFX_LED_DEFAULT;
 		break;
 	case ETHTOOL_ID_ACTIVE:
-		return 1;	/* cycle on/off once per second */
+		return 1;	 
 	}
 
 	return efx_mcdi_set_id_led(efx, mode);
@@ -67,34 +58,7 @@ static void efx_ethtool_get_regs(struct net_device *net_dev,
 	efx_nic_get_regs(efx, buf);
 }
 
-/*
- * Each channel has a single IRQ and moderation timer, started by any
- * completion (or other event).  Unless the module parameter
- * separate_tx_channels is set, IRQs and moderation are therefore
- * shared between RX and TX completions.  In this case, when RX IRQ
- * moderation is explicitly changed then TX IRQ moderation is
- * automatically changed too, but otherwise we fail if the two values
- * are requested to be different.
- *
- * The hardware does not support a limit on the number of completions
- * before an IRQ, so we do not use the max_frames fields.  We should
- * report and require that max_frames == (usecs != 0), but this would
- * invalidate existing user documentation.
- *
- * The hardware does not have distinct settings for interrupt
- * moderation while the previous IRQ is being handled, so we should
- * not use the 'irq' fields.  However, an earlier developer
- * misunderstood the meaning of the 'irq' fields and the driver did
- * not support the standard fields.  To avoid invalidating existing
- * user documentation, we report and accept changes through either the
- * standard or 'irq' fields.  If both are changed at the same time, we
- * prefer the standard field.
- *
- * We implement adaptive IRQ moderation, but use a different algorithm
- * from that assumed in the definition of struct ethtool_coalesce.
- * Therefore we do not use any of the adaptive moderation parameters
- * in it.
- */
+ 
 
 static int efx_ethtool_get_coalesce(struct net_device *net_dev,
 				    struct ethtool_coalesce *coalesce,
@@ -136,9 +100,7 @@ static int efx_ethtool_set_coalesce(struct net_device *net_dev,
 
 	adaptive = coalesce->use_adaptive_rx_coalesce;
 
-	/* If channels are shared, TX IRQ moderation can be quietly
-	 * overridden unless it is changed from its old value.
-	 */
+	 
 	rx_may_override_tx = (coalesce->tx_coalesce_usecs == tx_usecs &&
 			      coalesce->tx_coalesce_usecs_irq == tx_usecs);
 	if (coalesce->tx_coalesce_usecs != tx_usecs)
@@ -230,7 +192,7 @@ static int efx_ethtool_get_ts_info(struct net_device *net_dev,
 {
 	struct efx_nic *efx = efx_netdev_priv(net_dev);
 
-	/* Software capabilities */
+	 
 	ts_info->so_timestamping = (SOF_TIMESTAMPING_RX_SOFTWARE |
 				    SOF_TIMESTAMPING_SOFTWARE);
 	ts_info->phc_index = -1;

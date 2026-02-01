@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) 2007 by Sebastian Claßen <sebastian.classen@freenet.ag>
- * (C) 2007-2010 by Jan Engelhardt <jengelh@medozas.de>
- *
- * Extracted from xt_TEE.c
- */
+
+ 
 #include <linux/module.h>
 #include <linux/percpu.h>
 #include <linux/skbuff.h>

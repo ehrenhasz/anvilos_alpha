@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -47,11 +26,7 @@
 #include "amdgpu_ras.h"
 #include "smu_cmn.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -74,7 +49,7 @@
 	FEATURE_DPM_FCLK_MASK | \
 	FEATURE_DPM_XGMI_MASK)
 
-/* possible frequency drift (1Mhz) */
+ 
 #define EPSILON				1
 
 #define smnPCIE_ESM_CTRL			0x111003D0
@@ -318,7 +293,7 @@ arcturus_get_allowed_feature_mask(struct smu_context *smu,
 	if (num > 2)
 		return -EINVAL;
 
-	/* pptable will handle the features to enable */
+	 
 	memset(feature_mask, 0xFF, sizeof(uint32_t) * num);
 
 	return 0;
@@ -331,7 +306,7 @@ static int arcturus_set_default_dpm_table(struct smu_context *smu)
 	struct smu_11_0_dpm_table *dpm_table = NULL;
 	int ret = 0;
 
-	/* socclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.soc_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_SOCCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -349,7 +324,7 @@ static int arcturus_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* gfxclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.gfx_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -367,7 +342,7 @@ static int arcturus_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* memclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.uclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_UCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -385,7 +360,7 @@ static int arcturus_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* fclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.fclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_FCLK_BIT)) {
 		ret = smu_v11_0_set_single_dpm_table(smu,
@@ -429,7 +404,7 @@ static void arcturus_check_fan_support(struct smu_context *smu)
 	struct smu_table_context *table_context = &smu->smu_table;
 	PPTable_t *pptable = table_context->driver_pptable;
 
-	/* No sort of fan control possible if PPTable has it disabled */
+	 
 	smu->adev->pm.no_fan =
 		!(pptable->FeaturesToRun[0] & FEATURE_FAN_CONTROL_MASK);
 	if (smu->adev->pm.no_fan)
@@ -710,12 +685,7 @@ static int arcturus_get_current_clk_freq_by_table(struct smu_context *smu,
 
 	switch (clk_id) {
 	case PPCLK_GFXCLK:
-		/*
-		 * CurrClock[clk_id] can provide accurate
-		 *   output only when the dpm feature is enabled.
-		 * We can use Average_* for dpm disabled case.
-		 *   But this is available for gfxclk/uclk/socclk/vclk/dclk.
-		 */
+		 
 		if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT))
 			member_type = METRICS_CURR_GFXCLK;
 		else
@@ -792,10 +762,7 @@ static int arcturus_print_clk_levels(struct smu_context *smu,
 			return ret;
 		}
 
-		/*
-		 * For DPM disabled case, there will be only one clock level.
-		 * And it's safe to assume that is always the current clock.
-		 */
+		 
 		for (i = 0; i < clocks.num_levels; i++)
 			size += sysfs_emit_at(buf, size, "%d: %uMhz %s\n", i,
 					clocks.data[i].clocks_in_khz / 1000,
@@ -1055,10 +1022,7 @@ static int arcturus_force_clk_levels(struct smu_context *smu,
 	case SMU_MCLK:
 	case SMU_SOCCLK:
 	case SMU_FCLK:
-		/*
-		 * Should not arrive here since Arcturus does not
-		 * support mclk/socclk/fclk softmin/softmax settings
-		 */
+		 
 		ret = -EINVAL;
 		break;
 
@@ -1156,7 +1120,7 @@ static int arcturus_read_sensor(struct smu_context *smu,
 		break;
 	case AMDGPU_PP_SENSOR_GFX_MCLK:
 		ret = arcturus_get_current_clk_freq_by_table(smu, SMU_UCLK, (uint32_t *)data);
-		/* the output clock frequency in 10K unit */
+		 
 		*(uint32_t *)data *= 100;
 		*size = 4;
 		break;
@@ -1212,11 +1176,7 @@ static int arcturus_get_fan_speed_rpm(struct smu_context *smu,
 						    speed);
 		break;
 	default:
-		/*
-		 * For pre Sienna Cichlid ASICs, the 0 RPM may be not correctly
-		 * detected via register retrieving. To workaround this, we will
-		 * report the fan speed as 0 RPM if user just requested such.
-		 */
+		 
 		if ((smu->user_dpm_profile.flags & SMU_CUSTOM_FAN_SPEED_RPM)
 		     && !smu->user_dpm_profile.fan_speed_rpm) {
 			*speed = 0;
@@ -1267,10 +1227,7 @@ static int arcturus_set_fan_speed_rpm(struct smu_context *smu,
 				      uint32_t speed)
 {
 	struct amdgpu_device *adev = smu->adev;
-	/*
-	 * crystal_clock_freq used for fan speed rpm calculation is
-	 * always 25Mhz. So, hardcode it as 2500(in 10K unit).
-	 */
+	 
 	uint32_t crystal_clock_freq = 2500;
 	uint32_t tach_period;
 
@@ -1290,11 +1247,7 @@ static int arcturus_get_fan_speed_pwm(struct smu_context *smu,
 	uint32_t duty100, duty;
 	uint64_t tmp64;
 
-	/*
-	 * For pre Sienna Cichlid ASICs, the 0 RPM may be not correctly
-	 * detected via register retrieving. To workaround this, we will
-	 * report the fan speed as 0 PWM if user just requested such.
-	 */
+	 
 	if ((smu->user_dpm_profile.flags & SMU_CUSTOM_FAN_SPEED_PWM)
 	     && !smu->user_dpm_profile.fan_speed_pwm) {
 		*speed = 0;
@@ -1337,7 +1290,7 @@ static int arcturus_get_power_limit(struct smu_context *smu,
 	uint32_t power_limit, od_percent;
 
 	if (smu_v11_0_get_current_power_limit(smu, &power_limit)) {
-		/* the last hope to figure out the ppt limit */
+		 
 		if (!pptable) {
 			dev_err(smu->adev->dev, "Cannot get PPT limit due to pptable missing!");
 			return -EINVAL;
@@ -1404,10 +1357,7 @@ static int arcturus_get_power_profile_mode(struct smu_context *smu,
 			title[0]);
 
 	for (i = 0; i <= PP_SMC_POWER_PROFILE_CUSTOM; i++) {
-		/*
-		 * Conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT
-		 * Not all profile modes are supported on arcturus.
-		 */
+		 
 		workload_type = smu_cmn_to_asic_specific_index(smu,
 							       CMN2ASIC_MAPPING_WORKLOAD,
 							       i);
@@ -1495,7 +1445,7 @@ static int arcturus_set_power_profile_mode(struct smu_context *smu,
 		}
 
 		switch (input[0]) {
-		case 0: /* Gfxclk */
+		case 0:  
 			activity_monitor.Gfx_FPS = input[1];
 			activity_monitor.Gfx_UseRlcBusy = input[2];
 			activity_monitor.Gfx_MinActiveFreqType = input[3];
@@ -1506,7 +1456,7 @@ static int arcturus_set_power_profile_mode(struct smu_context *smu,
 			activity_monitor.Gfx_PD_Data_error_coeff = input[8];
 			activity_monitor.Gfx_PD_Data_error_rate_coeff = input[9];
 			break;
-		case 1: /* Uclk */
+		case 1:  
 			activity_monitor.Mem_FPS = input[1];
 			activity_monitor.Mem_UseRlcBusy = input[2];
 			activity_monitor.Mem_MinActiveFreqType = input[3];
@@ -1530,10 +1480,7 @@ static int arcturus_set_power_profile_mode(struct smu_context *smu,
 		}
 	}
 
-	/*
-	 * Conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT
-	 * Not all profile modes are supported on arcturus.
-	 */
+	 
 	workload_type = smu_cmn_to_asic_specific_index(smu,
 						       CMN2ASIC_MAPPING_WORKLOAD,
 						       profile_mode);
@@ -2078,7 +2025,7 @@ static int arcturus_i2c_xfer(struct i2c_adapter *i2c_adap,
 
 	req->I2CcontrollerPort = smu_i2c->port;
 	req->I2CSpeed = I2C_SPEED_FAST_400K;
-	req->SlaveAddress = msg[0].addr << 1; /* wants an 8-bit address */
+	req->SlaveAddress = msg[0].addr << 1;  
 	dir = msg[0].flags & I2C_M_RD;
 
 	for (c = i = 0; i < num_msgs; i++) {
@@ -2086,25 +2033,20 @@ static int arcturus_i2c_xfer(struct i2c_adapter *i2c_adap,
 			SwI2cCmd_t *cmd = &req->SwI2cCmds[c];
 
 			if (!(msg[i].flags & I2C_M_RD)) {
-				/* write */
+				 
 				cmd->Cmd = I2C_CMD_WRITE;
 				cmd->RegisterAddr = msg[i].buf[j];
 			}
 
 			if ((dir ^ msg[i].flags) & I2C_M_RD) {
-				/* The direction changes.
-				 */
+				 
 				dir = msg[i].flags & I2C_M_RD;
 				cmd->CmdConfig |= CMDCONFIG_RESTART_MASK;
 			}
 
 			req->NumCmds++;
 
-			/*
-			 * Insert STOP if we are at the last byte of either last
-			 * message for the transaction or the client explicitly
-			 * requires a STOP at this particular message.
-			 */
+			 
 			if ((j == msg[i].len - 1) &&
 			    ((i == num_msgs - 1) || (msg[i].flags & I2C_M_STOP))) {
 				cmd->CmdConfig &= ~CMDCONFIG_RESTART_MASK;
@@ -2222,21 +2164,19 @@ static void arcturus_get_unique_id(struct smu_context *smu)
 		return;
 	}
 
-	/* PPSMC_MSG_ReadSerial* is supported by 54.23.0 and onwards */
+	 
 	if (smu_version < 0x361700) {
 		dev_warn(adev->dev, "ReadSerial is only supported by PMFW 54.23.0 and onwards\n");
 		return;
 	}
 
-	/* Get the SN to turn into a Unique ID */
+	 
 	smu_cmn_send_smc_msg(smu, SMU_MSG_ReadSerialNumTop32, &top32);
 	smu_cmn_send_smc_msg(smu, SMU_MSG_ReadSerialNumBottom32, &bottom32);
 
 	id = ((uint64_t)bottom32 << 32) | top32;
 	adev->unique_id = id;
-	/* For Arcturus-and-later, unique_id == serial_number, so convert it to a
-	 * 16-digit HEX string for convenience and backwards-compatibility
-	 */
+	 
 	sprintf(adev->serial, "%llx", id);
 }
 
@@ -2247,10 +2187,7 @@ static int arcturus_set_df_cstate(struct smu_context *smu,
 	uint32_t smu_version;
 	int ret;
 
-	/*
-	 * Arcturus does not need the cstate disablement
-	 * prerequisite for gpu reset.
-	 */
+	 
 	if (amdgpu_in_reset(adev) || adev->in_suspend)
 		return 0;
 
@@ -2260,7 +2197,7 @@ static int arcturus_set_df_cstate(struct smu_context *smu,
 		return ret;
 	}
 
-	/* PPSMC_MSG_DFCstateControl is supported by 54.15.0 and onwards */
+	 
 	if (smu_version < 0x360F00) {
 		dev_err(smu->adev->dev, "DFCstateControl is only supported by PMFW 54.15.0 and onwards\n");
 		return -EINVAL;
@@ -2280,7 +2217,7 @@ static int arcturus_allow_xgmi_power_down(struct smu_context *smu, bool en)
 		return ret;
 	}
 
-	/* PPSMC_MSG_GmiPwrDnControl is supported by 54.23.0 and onwards */
+	 
 	if (smu_version < 0x00361700) {
 		dev_err(smu->adev->dev, "XGMI power down control is only supported by PMFW 54.23.0 and onwards\n");
 		return -EINVAL;
@@ -2354,7 +2291,7 @@ static uint16_t arcturus_get_current_pcie_link_speed(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 	uint32_t esm_ctrl;
 
-	/* TODO: confirm this on real target */
+	 
 	esm_ctrl = RREG32_PCIE(smnPCIE_ESM_CTRL);
 	if ((esm_ctrl >> 15) & 0x1FFFF)
 		return (uint16_t)(((esm_ctrl >> 8) & 0x3F) + 128);
@@ -2425,11 +2362,11 @@ static ssize_t arcturus_get_gpu_metrics(struct smu_context *smu,
 }
 
 static const struct pptable_funcs arcturus_ppt_funcs = {
-	/* init dpm */
+	 
 	.get_allowed_feature_mask = arcturus_get_allowed_feature_mask,
-	/* btc */
+	 
 	.run_btc = arcturus_run_btc,
-	/* dpm/clk tables */
+	 
 	.set_default_dpm_table = arcturus_set_default_dpm_table,
 	.populate_umd_state_clk = arcturus_populate_umd_state_clk,
 	.get_thermal_temperature_range = arcturus_get_thermal_temperature_range,
@@ -2441,7 +2378,7 @@ static const struct pptable_funcs arcturus_ppt_funcs = {
 	.get_power_profile_mode = arcturus_get_power_profile_mode,
 	.set_power_profile_mode = arcturus_set_power_profile_mode,
 	.set_performance_level = arcturus_set_performance_level,
-	/* debug (internal used) */
+	 
 	.dump_pptable = arcturus_dump_pptable,
 	.get_power_limit = arcturus_get_power_limit,
 	.is_dpm_running = arcturus_is_dpm_running,
@@ -2457,7 +2394,7 @@ static const struct pptable_funcs arcturus_ppt_funcs = {
 	.init_power = smu_v11_0_init_power,
 	.fini_power = smu_v11_0_fini_power,
 	.check_fw_status = smu_v11_0_check_fw_status,
-	/* pptable related */
+	 
 	.setup_pptable = arcturus_setup_pptable,
 	.get_vbios_bootup_values = smu_v11_0_get_vbios_bootup_values,
 	.check_fw_version = smu_v11_0_check_fw_version,

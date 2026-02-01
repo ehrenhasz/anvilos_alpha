@@ -1,24 +1,6 @@
-/* getdelim.c --- Implementation of replacement getdelim function.
-   Copyright (C) 1994, 1996-1998, 2001, 2003, 2005-2023 Free Software
-   Foundation, Inc.
+ 
 
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Ported from glibc by Simon Josefsson. */
-
-/* Don't use __attribute__ __nonnull__ in this compilation unit.  Otherwise gcc
-   optimizes away the lineptr == NULL || n == NULL || fp == NULL tests below.  */
+ 
 #define _GL_ARG_NONNULL(params)
 
 #include <config.h>
@@ -47,17 +29,12 @@ static void
 alloc_failed (void)
 {
 #if defined _WIN32 && ! defined __CYGWIN__
-  /* Avoid errno problem without using the realloc module; see:
-     https://lists.gnu.org/r/bug-gnulib/2016-08/msg00025.html  */
+   
   errno = ENOMEM;
 #endif
 }
 
-/* Read up to (and including) a DELIMITER from FP into *LINEPTR (and
-   NUL-terminate it).  *LINEPTR is a pointer returned from malloc (or
-   NULL), pointing to *N characters of space.  It is realloc'ed as
-   necessary.  Returns the number of characters read (not including
-   the null terminator), or -1 on error or EOF.  */
+ 
 
 ssize_t
 getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
@@ -98,12 +75,12 @@ getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
           break;
         }
 
-      /* Make enough space for len+1 (for final NUL) bytes.  */
+       
       if (cur_len + 1 >= *n)
         {
           size_t needed_max =
             SSIZE_MAX < SIZE_MAX ? (size_t) SSIZE_MAX + 1 : SIZE_MAX;
-          size_t needed = 2 * *n + 1;   /* Be generous. */
+          size_t needed = 2 * *n + 1;    
           char *new_lineptr;
 
           if (needed_max < needed)
@@ -137,7 +114,7 @@ getdelim (char **lineptr, size_t *n, int delimiter, FILE *fp)
   result = cur_len ? cur_len : result;
 
  unlock_return:
-  funlockfile (fp); /* doesn't set errno */
+  funlockfile (fp);  
 
   return result;
 }

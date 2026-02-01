@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Linaro Ltd.
- *
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- *
- * Implements PM domains using the generic PM domain for ux500.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -19,25 +13,13 @@
 
 static int pd_power_off(struct generic_pm_domain *domain)
 {
-	/*
-	 * Handle the gating of the PM domain regulator here.
-	 *
-	 * Drivers/subsystems handling devices in the PM domain needs to perform
-	 * register context save/restore from their respective runtime PM
-	 * callbacks, to be able to enable PM domain gating/ungating.
-	 */
+	 
 	return 0;
 }
 
 static int pd_power_on(struct generic_pm_domain *domain)
 {
-	/*
-	 * Handle the ungating of the PM domain regulator here.
-	 *
-	 * Drivers/subsystems handling devices in the PM domain needs to perform
-	 * register context save/restore from their respective runtime PM
-	 * callbacks, to be able to enable PM domain gating/ungating.
-	 */
+	 
 	return 0;
 }
 

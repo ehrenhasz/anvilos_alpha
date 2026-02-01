@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2023, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/firmware/qcom/qcom_scm.h>
 #include <linux/mod_devicetable.h>
@@ -9,12 +7,7 @@
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 
-/**
- * struct sec_qfprom - structure holding secure qfprom attributes
- *
- * @base: starting physical address for secure qfprom corrected address space.
- * @dev: qfprom device structure.
- */
+ 
 struct sec_qfprom {
 	phys_addr_t base;
 	struct device *dev;
@@ -80,7 +73,7 @@ static int sec_qfprom_probe(struct platform_device *pdev)
 
 static const struct of_device_id sec_qfprom_of_match[] = {
 	{ .compatible = "qcom,sec-qfprom" },
-	{/* sentinel */},
+	{ },
 };
 MODULE_DEVICE_TABLE(of, sec_qfprom_of_match);
 

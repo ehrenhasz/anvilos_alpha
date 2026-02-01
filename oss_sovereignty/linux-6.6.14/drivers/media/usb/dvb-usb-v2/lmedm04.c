@@ -1,57 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB compliant linux driver for
- *
- * DM04/QQBOX DVB-S USB BOX	LME2510C + SHARP:BS2F7HZ7395
- *				LME2510C + LG TDQY-P001F
- *				LME2510C + BS2F7HZ0194
- *				LME2510 + LG TDQY-P001F
- *				LME2510 + BS2F7HZ0194
- *
- * MVB7395 (LME2510C+SHARP:BS2F7HZ7395)
- * SHARP:BS2F7HZ7395 = (STV0288+Sharp IX2505V)
- *
- * MV001F (LME2510+LGTDQY-P001F)
- * LG TDQY - P001F =(TDA8263 + TDA10086H)
- *
- * MVB0001F (LME2510C+LGTDQT-P001F)
- *
- * MV0194 (LME2510+SHARP:BS2F7HZ0194)
- * SHARP:BS2F7HZ0194 = (STV0299+IX2410)
- *
- * MVB0194 (LME2510C+SHARP0194)
- *
- * LME2510C + M88RS2000
- *
- * For firmware see Documentation/admin-guide/media/lmedm04.rst
- *
- * I2C addresses:
- * 0xd0 - STV0288	- Demodulator
- * 0xc0 - Sharp IX2505V	- Tuner
- * --
- * 0x1c - TDA10086   - Demodulator
- * 0xc0 - TDA8263    - Tuner
- * --
- * 0xd0 - STV0299	- Demodulator
- * 0xc0 - IX2410	- Tuner
- *
- * VID = 3344  PID LME2510=1122 LME2510C=1120
- *
- * Copyright (C) 2010 Malcolm Priestley (tvboxspy@gmail.com)
- * LME2510(C)(C) Leaguerme (Shenzhen) MicroElectronics Co., Ltd.
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- *
- * Known Issues :
- *	LME2510: Non Intel USB chipsets fail to maintain High Speed on
- * Boot or Hot Plug.
- *
- * QQbox suffers from noise on LNB voltage.
- *
- *	LME2510: SHARP:BS2F7HZ0194(MV0194) cannot cold reset and share system
- * with other tuners. After a cold reset streaming will not start.
- *
- * M88RS2000 suffers from loss of lock.
- */
+
+ 
 #define DVB_USB_LOG_PREFIX "LME2510(C)"
 #include <linux/usb.h>
 #include <linux/usb/input.h>
@@ -77,7 +25,7 @@
 #define LME2510_LG	"dvb-usb-lme2510-lg.fw";
 #define LME2510_S0194	"dvb-usb-lme2510-s0194.fw";
 
-/* debug */
+ 
 static int dvb_usb_lme2510_debug;
 #define lme_debug(var, level, args...) do { \
 	if ((var >= level)) \
@@ -127,7 +75,7 @@ struct lme2510_state {
 	u8 int_buffer[128];
 	struct urb *lme_urb;
 	u8 usb_buffer[64];
-	/* Frontend original calls */
+	 
 	int (*fe_read_status)(struct dvb_frontend *, enum fe_status *);
 	int (*fe_read_signal_strength)(struct dvb_frontend *, u16 *);
 	int (*fe_read_snr)(struct dvb_frontend *, u16 *);
@@ -172,7 +120,7 @@ static int lme2510_stream_restart(struct dvb_usb_device *d)
 	if (st->pid_off)
 		lme2510_usb_talk(d, all_pids, sizeof(all_pids),
 				 rbuff, sizeof(rbuff));
-	/*Restart Stream Command*/
+	 
 	return lme2510_usb_talk(d, stream_on, sizeof(stream_on),
 				rbuff, sizeof(rbuff));
 }
@@ -208,7 +156,7 @@ static int lme2510_enable_pid(struct dvb_usb_device *d, u8 index, u16 pid_out)
 	return ret;
 }
 
-/* Convert range from 0x00-0xff to 0x0000-0xffff */
+ 
 #define reg_to_16bits(x)	((x) | ((x) << 8))
 
 static void lme2510_update_stats(struct dvb_usb_adapter *adap)
@@ -321,7 +269,7 @@ static void lme2510_int_response(struct urb *lme_urb)
 				break;
 			case TUNER_S7395:
 			case TUNER_S0194:
-				/* Tweak for earlier firmware*/
+				 
 				if (ibuf[1] == 0x03) {
 					signal_lock = ibuf[2] & BIT(4);
 					st->signal_level = ibuf[3];
@@ -341,7 +289,7 @@ static void lme2510_int_response(struct urb *lme_urb)
 				break;
 			}
 
-			/* Interrupt will also throw just BIT 0 as lock */
+			 
 			signal_lock |= ibuf[2] & BIT(0);
 
 			if (!signal_lock)
@@ -362,9 +310,7 @@ static void lme2510_int_response(struct urb *lme_urb)
 
 	usb_submit_urb(lme_urb, GFP_ATOMIC);
 
-	/* Interrupt urb is due every 48 msecs while streaming the buffer
-	 * stores up to 4 periods if missed. Allow 200 msec for next interrupt.
-	 */
+	 
 	st->int_urb_due = jiffies + msecs_to_jiffies(200);
 }
 
@@ -388,7 +334,7 @@ static int lme2510_int_read(struct dvb_usb_adapter *adap)
 			 adap,
 			 8);
 
-	/* Quirk of pipe reporting PIPE_BULK but behaves as interrupt */
+	 
 	ep = usb_pipe_endpoint(d->udev, lme_int->lme_urb->pipe);
 
 	if (usb_endpoint_type(&ep->desc) == USB_ENDPOINT_XFER_BULK)
@@ -565,12 +511,12 @@ static int lme2510_streaming_ctrl(struct dvb_frontend *fe, int onoff)
 
 	deb_info(1, "STM  (%02x)", onoff);
 
-	/* Streaming is started by FE_HAS_LOCK */
+	 
 	if (onoff == 1)
 		st->stream_on = 1;
 	else {
 		deb_info(1, "STM Steam Off");
-		/* mutex is here only to avoid collision with I2C */
+		 
 		mutex_lock(&d->i2c_mutex);
 
 		ret = lme2510_usb_talk(d, clear_reg_3,
@@ -860,7 +806,7 @@ static int dm04_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		return ret;
 	}
 
-	/* Timeout of interrupt reached on RS2000 */
+	 
 	if (st->tuner_config == TUNER_RS2000 &&
 	    time_after(jiffies, st->int_urb_due))
 		st->lock_status &= ~FE_HAS_LOCK;
@@ -1096,7 +1042,7 @@ static int dm04_lme2510_tuner(struct dvb_usb_adapter *adap)
 		return -ENODEV;
 	}
 
-	/* Start the Interrupt*/
+	 
 	ret = lme2510_int_read(adap);
 	if (ret < 0) {
 		info("INT Unable to start Interrupt Service");
@@ -1160,7 +1106,7 @@ static int lme2510_get_stream_config(struct dvb_frontend *fe, u8 *ts_type,
 
 	d = adap_to_d(adap);
 
-	/* Turn PID filter on the fly by module option */
+	 
 	if (pid_filter == 2) {
 		adap->pid_filtering  = true;
 		adap->max_feed_count = 15;
@@ -1235,7 +1181,7 @@ static const struct usb_device_id lme2510_id_table[] = {
 		"DM04_LME2510C_DVB-S", RC_MAP_LME2510)	},
 	{	DVB_USB_DEVICE(0x3344, 0x22f0, &lme2510_props,
 		"DM04_LME2510C_DVB-S RS2000", RC_MAP_LME2510)	},
-	{}		/* Terminating entry */
+	{}		 
 };
 
 MODULE_DEVICE_TABLE(usb, lme2510_id_table);

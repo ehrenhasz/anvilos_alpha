@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight driver for the Kinetic KTD253
- * Based on code and know-how from the Samsung GT-S7710
- * Gareth Phillips <gareth.phillips@samsung.com>
- */
+
+ 
 #include <linux/backlight.h>
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -18,14 +14,14 @@
 #include <linux/property.h>
 #include <linux/slab.h>
 
-/* Current ratio is n/32 from 1/32 to 32/32 */
+ 
 #define KTD253_MIN_RATIO 1
 #define KTD253_MAX_RATIO 32
 #define KTD253_DEFAULT_RATIO 13
 
-#define KTD253_T_LOW_NS (200 + 10) /* Additional 10ns as safety factor */
-#define KTD253_T_HIGH_NS (200 + 10) /* Additional 10ns as safety factor */
-#define KTD253_T_OFF_CRIT_NS 100000 /* 100 us, now it doesn't look good */
+#define KTD253_T_LOW_NS (200 + 10)  
+#define KTD253_T_HIGH_NS (200 + 10)  
+#define KTD253_T_OFF_CRIT_NS 100000  
 #define KTD253_T_OFF_MS 3
 
 struct ktd253_backlight {
@@ -39,24 +35,12 @@ static void ktd253_backlight_set_max_ratio(struct ktd253_backlight *ktd253)
 {
 	gpiod_set_value_cansleep(ktd253->gpiod, 1);
 	ndelay(KTD253_T_HIGH_NS);
-	/* We always fall back to this when we power on */
+	 
 }
 
 static int ktd253_backlight_stepdown(struct ktd253_backlight *ktd253)
 {
-	/*
-	 * These GPIO operations absolutely can NOT sleep so no _cansleep
-	 * suffixes, and no using GPIO expanders on slow buses for this!
-	 *
-	 * The maximum number of cycles of the loop is 32  so the time taken
-	 * should nominally be:
-	 * (T_LOW_NS + T_HIGH_NS + loop_time) * 32
-	 *
-	 * Architectures do not always support ndelay() and we will get a few us
-	 * instead. If we get to a critical time limit an interrupt has likely
-	 * occured in the low part of the loop and we need to restart from the
-	 * top so we have the backlight in a known state.
-	 */
+	 
 	u64 ns;
 
 	ns = ktime_get_ns();
@@ -85,15 +69,12 @@ static int ktd253_backlight_update_status(struct backlight_device *bl)
 	target_ratio = brightness;
 
 	if (target_ratio == current_ratio)
-		/* This is already right */
+		 
 		return 0;
 
 	if (target_ratio == 0) {
 		gpiod_set_value_cansleep(ktd253->gpiod, 0);
-		/*
-		 * We need to keep the GPIO low for at least this long
-		 * to actually switch the KTD253 off.
-		 */
+		 
 		msleep(KTD253_T_OFF_MS);
 		ktd253->ratio = 0;
 		return 0;
@@ -105,24 +86,16 @@ static int ktd253_backlight_update_status(struct backlight_device *bl)
 	}
 
 	while (current_ratio != target_ratio) {
-		/*
-		 * These GPIO operations absolutely can NOT sleep so no
-		 * _cansleep suffixes, and no using GPIO expanders on
-		 * slow buses for this!
-		 */
+		 
 		ret = ktd253_backlight_stepdown(ktd253);
 		if (ret == -EAGAIN) {
-			/*
-			 * Something disturbed the backlight setting code when
-			 * running so we need to bring the PWM back to a known
-			 * state. This shouldn't happen too much.
-			 */
+			 
 			gpiod_set_value_cansleep(ktd253->gpiod, 0);
 			msleep(KTD253_T_OFF_MS);
 			ktd253_backlight_set_max_ratio(ktd253);
 			current_ratio = KTD253_MAX_RATIO;
 		} else if (current_ratio == KTD253_MIN_RATIO) {
-			/* After 1/32 we loop back to 32/32 */
+			 
 			current_ratio = KTD253_MAX_RATIO;
 		} else {
 			current_ratio--;
@@ -158,7 +131,7 @@ static int ktd253_backlight_probe(struct platform_device *pdev)
 	if (ret)
 		max_brightness = KTD253_MAX_RATIO;
 	if (max_brightness > KTD253_MAX_RATIO) {
-		/* Clamp brightness to hardware max */
+		 
 		dev_err(dev, "illegal max brightness specified\n");
 		max_brightness = KTD253_MAX_RATIO;
 	}
@@ -167,7 +140,7 @@ static int ktd253_backlight_probe(struct platform_device *pdev)
 	if (ret)
 		brightness = KTD253_DEFAULT_RATIO;
 	if (brightness > max_brightness) {
-		/* Clamp default brightness to max brightness */
+		 
 		dev_err(dev, "default brightness exceeds max brightness\n");
 		brightness = max_brightness;
 	}
@@ -177,7 +150,7 @@ static int ktd253_backlight_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(ktd253->gpiod),
 				     "gpio line missing or invalid.\n");
 	gpiod_set_consumer_name(ktd253->gpiod, dev_name(dev));
-	/* Bring backlight to a known off state */
+	 
 	msleep(KTD253_T_OFF_MS);
 
 	bl = devm_backlight_device_register(dev, dev_name(dev), dev, ktd253,
@@ -187,7 +160,7 @@ static int ktd253_backlight_probe(struct platform_device *pdev)
 		return PTR_ERR(bl);
 	}
 	bl->props.max_brightness = max_brightness;
-	/* When we just enable the GPIO line we set max brightness */
+	 
 	if (brightness) {
 		bl->props.brightness = brightness;
 		bl->props.power = FB_BLANK_UNBLANK;
@@ -206,7 +179,7 @@ static int ktd253_backlight_probe(struct platform_device *pdev)
 static const struct of_device_id ktd253_backlight_of_match[] = {
 	{ .compatible = "kinetic,ktd253" },
 	{ .compatible = "kinetic,ktd259" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ktd253_backlight_of_match);
 

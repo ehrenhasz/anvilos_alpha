@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Convert integer string representation to an integer.
- * If an integer doesn't fit into specified type, -E is returned.
- *
- * Integer starts with optional sign.
- * kstrtou*() functions do not accept sign "-".
- *
- * Radix 0 means autodetection: leading "0x" implies radix 16,
- * leading "0" implies radix 8, otherwise radix is 10.
- * Autodetection hints work after optional sign, but not before.
- *
- * If -E is returned, result is not touched.
- */
+
+ 
 #include <linux/ctype.h>
 #include <linux/errno.h>
 #include <linux/export.h>
@@ -39,15 +27,7 @@ const char *_parse_integer_fixup_radix(const char *s, unsigned int *base)
 	return s;
 }
 
-/*
- * Convert non-negative integer string representation in explicitly given radix
- * to an integer. A maximum of max_chars characters will be converted.
- *
- * Return number of characters consumed maybe or-ed with overflow bit.
- * If overflow occurs, result integer (incorrect) is still returned.
- *
- * Don't you dare use this function.
- */
+ 
 noinline
 unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned long long *p,
 				  size_t max_chars)
@@ -71,10 +51,7 @@ unsigned int _parse_integer_limit(const char *s, unsigned int base, unsigned lon
 
 		if (val >= base)
 			break;
-		/*
-		 * Check for overflow only if we are within range of
-		 * it in the max base we support (16)
-		 */
+		 
 		if (unlikely(res & (~0ull << 60))) {
 			if (res > div_u64(ULLONG_MAX - val, base))
 				rv |= KSTRTOX_OVERFLOW;
@@ -113,21 +90,7 @@ static int _kstrtoull(const char *s, unsigned int base, unsigned long long *res)
 	return 0;
 }
 
-/**
- * kstrtoull - convert a string to an unsigned long long
- * @s: The start of the string. The string must be null-terminated, and may also
- *  include a single newline before its terminating null. The first character
- *  may also be a plus sign, but not a minus sign.
- * @base: The number base to use. The maximum supported base is 16. If base is
- *  given as 0, then the base of the string is automatically detected with the
- *  conventional semantics - If it begins with 0x the number will be parsed as a
- *  hexadecimal (case insensitive), if it otherwise begins with 0, it will be
- *  parsed as an octal number. Otherwise it will be parsed as a decimal.
- * @res: Where to write the result of the conversion on success.
- *
- * Returns 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
- * Preferred over simple_strtoull(). Return code must be checked.
- */
+ 
 noinline
 int kstrtoull(const char *s, unsigned int base, unsigned long long *res)
 {
@@ -137,21 +100,7 @@ int kstrtoull(const char *s, unsigned int base, unsigned long long *res)
 }
 EXPORT_SYMBOL(kstrtoull);
 
-/**
- * kstrtoll - convert a string to a long long
- * @s: The start of the string. The string must be null-terminated, and may also
- *  include a single newline before its terminating null. The first character
- *  may also be a plus sign or a minus sign.
- * @base: The number base to use. The maximum supported base is 16. If base is
- *  given as 0, then the base of the string is automatically detected with the
- *  conventional semantics - If it begins with 0x the number will be parsed as a
- *  hexadecimal (case insensitive), if it otherwise begins with 0, it will be
- *  parsed as an octal number. Otherwise it will be parsed as a decimal.
- * @res: Where to write the result of the conversion on success.
- *
- * Returns 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
- * Preferred over simple_strtoll(). Return code must be checked.
- */
+ 
 noinline
 int kstrtoll(const char *s, unsigned int base, long long *res)
 {
@@ -177,7 +126,7 @@ int kstrtoll(const char *s, unsigned int base, long long *res)
 }
 EXPORT_SYMBOL(kstrtoll);
 
-/* Internal, do not use. */
+ 
 int _kstrtoul(const char *s, unsigned int base, unsigned long *res)
 {
 	unsigned long long tmp;
@@ -193,7 +142,7 @@ int _kstrtoul(const char *s, unsigned int base, unsigned long *res)
 }
 EXPORT_SYMBOL(_kstrtoul);
 
-/* Internal, do not use. */
+ 
 int _kstrtol(const char *s, unsigned int base, long *res)
 {
 	long long tmp;
@@ -209,21 +158,7 @@ int _kstrtol(const char *s, unsigned int base, long *res)
 }
 EXPORT_SYMBOL(_kstrtol);
 
-/**
- * kstrtouint - convert a string to an unsigned int
- * @s: The start of the string. The string must be null-terminated, and may also
- *  include a single newline before its terminating null. The first character
- *  may also be a plus sign, but not a minus sign.
- * @base: The number base to use. The maximum supported base is 16. If base is
- *  given as 0, then the base of the string is automatically detected with the
- *  conventional semantics - If it begins with 0x the number will be parsed as a
- *  hexadecimal (case insensitive), if it otherwise begins with 0, it will be
- *  parsed as an octal number. Otherwise it will be parsed as a decimal.
- * @res: Where to write the result of the conversion on success.
- *
- * Returns 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
- * Preferred over simple_strtoul(). Return code must be checked.
- */
+ 
 noinline
 int kstrtouint(const char *s, unsigned int base, unsigned int *res)
 {
@@ -240,21 +175,7 @@ int kstrtouint(const char *s, unsigned int base, unsigned int *res)
 }
 EXPORT_SYMBOL(kstrtouint);
 
-/**
- * kstrtoint - convert a string to an int
- * @s: The start of the string. The string must be null-terminated, and may also
- *  include a single newline before its terminating null. The first character
- *  may also be a plus sign or a minus sign.
- * @base: The number base to use. The maximum supported base is 16. If base is
- *  given as 0, then the base of the string is automatically detected with the
- *  conventional semantics - If it begins with 0x the number will be parsed as a
- *  hexadecimal (case insensitive), if it otherwise begins with 0, it will be
- *  parsed as an octal number. Otherwise it will be parsed as a decimal.
- * @res: Where to write the result of the conversion on success.
- *
- * Returns 0 on success, -ERANGE on overflow and -EINVAL on parsing error.
- * Preferred over simple_strtol(). Return code must be checked.
- */
+ 
 noinline
 int kstrtoint(const char *s, unsigned int base, int *res)
 {
@@ -335,15 +256,7 @@ int kstrtos8(const char *s, unsigned int base, s8 *res)
 }
 EXPORT_SYMBOL(kstrtos8);
 
-/**
- * kstrtobool - convert common user inputs into boolean values
- * @s: input string
- * @res: result
- *
- * This routine returns 0 iff the first character is one of 'YyTt1NnFf0', or
- * [oO][NnFf] for "on" and "off". Otherwise it will return -EINVAL.  Value
- * pointed to by res is updated upon finding a match.
- */
+ 
 noinline
 int kstrtobool(const char *s, bool *res)
 {
@@ -388,13 +301,10 @@ int kstrtobool(const char *s, bool *res)
 }
 EXPORT_SYMBOL(kstrtobool);
 
-/*
- * Since "base" would be a nonsense argument, this open-codes the
- * _from_user helper instead of using the helper macro below.
- */
+ 
 int kstrtobool_from_user(const char __user *s, size_t count, bool *res)
 {
-	/* Longest string needed to differentiate, newline, terminator */
+	 
 	char buf[4];
 
 	count = min(count, sizeof(buf) - 1);
@@ -408,7 +318,7 @@ EXPORT_SYMBOL(kstrtobool_from_user);
 #define kstrto_from_user(f, g, type)					\
 int f(const char __user *s, size_t count, unsigned int base, type *res)	\
 {									\
-	/* sign, base 2 representation, newline, terminator */		\
+	 		\
 	char buf[1 + sizeof(type) * 8 + 1 + 1];				\
 									\
 	count = min(count, sizeof(buf) - 1);				\

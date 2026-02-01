@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include "debugfs.h"
 
@@ -22,12 +16,12 @@
 #include "tx.h"
 #include "hw_ops.h"
 
-/* ms */
+ 
 #define WL1271_DEBUGFS_STATS_LIFETIME 1000
 
 #define WLCORE_MAX_BLOCK_SIZE ((size_t)(4*PAGE_SIZE))
 
-/* debugfs macros idea from mac80211 */
+ 
 int wl1271_format_buffer(char __user *userbuf, size_t count,
 			 loff_t *ppos, char *fmt, ...)
 {
@@ -278,9 +272,7 @@ static ssize_t dynamic_ps_timeout_write(struct file *file,
 	if (ret < 0)
 		goto out;
 
-	/* In case we're already in PSM, trigger it again to set new timeout
-	 * immediately without waiting for re-association
-	 */
+	 
 
 	wl12xx_for_each_wlvif_sta(wl, wlvif) {
 		if (test_bit(WLVIF_FLAG_IN_PS, &wlvif->flags))
@@ -346,9 +338,7 @@ static ssize_t forced_ps_write(struct file *file,
 	if (ret < 0)
 		goto out;
 
-	/* In case we're already in PSM, trigger it again to switch mode
-	 * immediately without waiting for re-association
-	 */
+	 
 
 	ps_mode = value ? STATION_POWER_SAVE_MODE : STATION_AUTO_PS_MODE;
 
@@ -484,7 +474,7 @@ static ssize_t driver_state_read(struct file *file, char __user *user_buf,
 	DRIVER_STATE_PRINT_LHEX(ap_ps_map);
 	DRIVER_STATE_PRINT_HEX(quirks);
 	DRIVER_STATE_PRINT_HEX(irq);
-	/* TODO: ref_clock and tcxo_clock were moved to wl12xx priv */
+	 
 	DRIVER_STATE_PRINT_HEX(hw_pg_ver);
 	DRIVER_STATE_PRINT_HEX(irq_flags);
 	DRIVER_STATE_PRINT_HEX(chip.id);
@@ -660,16 +650,13 @@ static ssize_t dtim_interval_write(struct file *file,
 	mutex_lock(&wl->mutex);
 
 	wl->conf.conn.listen_interval = value;
-	/* for some reason there are different event types for 1 and >1 */
+	 
 	if (value == 1)
 		wl->conf.conn.wake_up_event = CONF_WAKE_UP_EVENT_DTIM;
 	else
 		wl->conf.conn.wake_up_event = CONF_WAKE_UP_EVENT_N_DTIM;
 
-	/*
-	 * we don't reconfigure ACX_WAKE_UP_CONDITIONS now, so it will only
-	 * take effect on the next time we enter psm.
-	 */
+	 
 	mutex_unlock(&wl->mutex);
 	return count;
 }
@@ -721,7 +708,7 @@ static ssize_t suspend_dtim_interval_write(struct file *file,
 	mutex_lock(&wl->mutex);
 
 	wl->conf.conn.suspend_listen_interval = value;
-	/* for some reason there are different event types for 1 and >1 */
+	 
 	if (value == 1)
 		wl->conf.conn.suspend_wake_up_event = CONF_WAKE_UP_EVENT_DTIM;
 	else
@@ -776,16 +763,13 @@ static ssize_t beacon_interval_write(struct file *file,
 	mutex_lock(&wl->mutex);
 
 	wl->conf.conn.listen_interval = value;
-	/* for some reason there are different event types for 1 and >1 */
+	 
 	if (value == 1)
 		wl->conf.conn.wake_up_event = CONF_WAKE_UP_EVENT_BEACON;
 	else
 		wl->conf.conn.wake_up_event = CONF_WAKE_UP_EVENT_N_BEACONS;
 
-	/*
-	 * we don't reconfigure ACX_WAKE_UP_CONDITIONS now, so it will only
-	 * take effect on the next time we enter psm.
-	 */
+	 
 	mutex_unlock(&wl->mutex);
 	return count;
 }
@@ -812,7 +796,7 @@ static ssize_t rx_streaming_interval_write(struct file *file,
 		return -EINVAL;
 	}
 
-	/* valid values: 0, 10-100 */
+	 
 	if (value && (value < 10 || value > 100)) {
 		wl1271_warning("value is not in range!");
 		return -ERANGE;
@@ -868,7 +852,7 @@ static ssize_t rx_streaming_always_write(struct file *file,
 		return -EINVAL;
 	}
 
-	/* valid values: 0, 10-100 */
+	 
 	if (!(value == 0 || value == 1)) {
 		wl1271_warning("value is not in valid!");
 		return -EINVAL;
@@ -1001,7 +985,7 @@ static ssize_t sleep_auth_write(struct file *file,
 	wl->conf.conn.sta_sleep_auth = value;
 
 	if (unlikely(wl->state != WLCORE_STATE_ON)) {
-		/* this will show up on "read" in case we are off */
+		 
 		wl->sleep_auth = value;
 		goto out;
 	}
@@ -1039,14 +1023,14 @@ static ssize_t dev_mem_read(struct file *file,
 	int ret;
 	char *buf;
 
-	/* only requests of dword-aligned size and offset are supported */
+	 
 	if (bytes % 4)
 		return -EINVAL;
 
 	if (*ppos % 4)
 		return -EINVAL;
 
-	/* function should return in reasonable time */
+	 
 	bytes = min(bytes, WLCORE_MAX_BLOCK_SIZE);
 
 	if (bytes == 0)
@@ -1067,13 +1051,10 @@ static ssize_t dev_mem_read(struct file *file,
 		goto skip_read;
 	}
 
-	/*
-	 * Don't fail if elp_wakeup returns an error, so the device's memory
-	 * could be read even if the FW crashed
-	 */
+	 
 	pm_runtime_get_sync(wl->dev);
 
-	/* store current partition and switch partition */
+	 
 	memcpy(&old_part, &wl->curr_part, sizeof(old_part));
 	ret = wlcore_set_partition(wl, &part);
 	if (ret < 0)
@@ -1084,7 +1065,7 @@ static ssize_t dev_mem_read(struct file *file,
 		goto read_err;
 
 read_err:
-	/* recover partition */
+	 
 	ret = wlcore_set_partition(wl, &old_part);
 	if (ret < 0)
 		goto part_err;
@@ -1121,14 +1102,14 @@ static ssize_t dev_mem_write(struct file *file, const char __user *user_buf,
 	int ret;
 	char *buf;
 
-	/* only requests of dword-aligned size and offset are supported */
+	 
 	if (bytes % 4)
 		return -EINVAL;
 
 	if (*ppos % 4)
 		return -EINVAL;
 
-	/* function should return in reasonable time */
+	 
 	bytes = min(bytes, WLCORE_MAX_BLOCK_SIZE);
 
 	if (bytes == 0)
@@ -1149,13 +1130,10 @@ static ssize_t dev_mem_write(struct file *file, const char __user *user_buf,
 		goto skip_write;
 	}
 
-	/*
-	 * Don't fail if elp_wakeup returns an error, so the device's memory
-	 * could be read even if the FW crashed
-	 */
+	 
 	pm_runtime_get_sync(wl->dev);
 
-	/* store current partition and switch partition */
+	 
 	memcpy(&old_part, &wl->curr_part, sizeof(old_part));
 	ret = wlcore_set_partition(wl, &part);
 	if (ret < 0)
@@ -1166,7 +1144,7 @@ static ssize_t dev_mem_write(struct file *file, const char __user *user_buf,
 		goto write_err;
 
 write_err:
-	/* recover partition */
+	 
 	ret = wlcore_set_partition(wl, &old_part);
 	if (ret < 0)
 		goto part_err;
@@ -1188,7 +1166,7 @@ skip_write:
 
 static loff_t dev_mem_seek(struct file *file, loff_t offset, int orig)
 {
-	/* only requests of dword-aligned size and offset are supported */
+	 
 	if (offset % 4)
 		return -EINVAL;
 

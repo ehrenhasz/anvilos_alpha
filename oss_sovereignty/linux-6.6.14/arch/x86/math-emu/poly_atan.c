@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*---------------------------------------------------------------------------+
- |  poly_atan.c                                                              |
- |                                                                           |
- | Compute the arctan of a FPU_REG, using a polynomial approximation.        |
- |                                                                           |
- | Copyright (C) 1992,1993,1994,1997                                         |
- |                  W. Metzenthen, 22 Parker St, Ormond, Vic 3163, Australia |
- |                  E-mail   billm@suburbia.net                              |
- |                                                                           |
- |                                                                           |
- +---------------------------------------------------------------------------*/
+
+ 
 
 #include "exception.h"
 #include "reg_constant.h"
@@ -19,9 +9,9 @@
 #include "control_w.h"
 #include "poly.h"
 
-#define	HIPOWERon	6	/* odd poly, negative terms */
+#define	HIPOWERon	6	 
 static const unsigned long long oddnegterms[HIPOWERon] = {
-	0x0000000000000000LL,	/* Dummy (not for - 1.0) */
+	0x0000000000000000LL,	 
 	0x015328437f756467LL,
 	0x0005dda27b73dec6LL,
 	0x0000226bf2bfb91aLL,
@@ -29,9 +19,9 @@ static const unsigned long long oddnegterms[HIPOWERon] = {
 	0x0000000355438407LL
 };
 
-#define	HIPOWERop	6	/* odd poly, positive terms */
+#define	HIPOWERop	6	 
 static const unsigned long long oddplterms[HIPOWERop] = {
-/*  0xaaaaaaaaaaaaaaabLL,  transferred to fixedpterm[] */
+ 
 	0x0db55a71875c9ac2LL,
 	0x0029fce2d67880b0LL,
 	0x0000dfd3908b4596LL,
@@ -46,9 +36,7 @@ static const Xsig fixedpterm = MK_XSIG(0xaaaaaaaa, 0xaaaaaaaa, 0xaaaaaaaa);
 
 static const Xsig pi_signif = MK_XSIG(0xc90fdaa2, 0x2168c234, 0xc4c6628b);
 
-/*--- poly_atan() -----------------------------------------------------------+
- |                                                                           |
- +---------------------------------------------------------------------------*/
+ 
 void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 	       FPU_REG *st1_ptr, u_char st1_tag)
 {
@@ -63,14 +51,14 @@ void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 	if (st0_tag == TAG_Valid) {
 		exponent = exponent(st0_ptr);
 	} else {
-		/* This gives non-compatible stack contents... */
+		 
 		FPU_to_exp16(st0_ptr, st0_ptr);
 		exponent = exponent16(st0_ptr);
 	}
 	if (st1_tag == TAG_Valid) {
 		exponent -= exponent(st1_ptr);
 	} else {
-		/* This gives non-compatible stack contents... */
+		 
 		FPU_to_exp16(st1_ptr, st1_ptr);
 		exponent -= exponent16(st1_ptr);
 	}
@@ -95,8 +83,8 @@ void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 
 	if ((exponent >= -1)
 	    || ((exponent == -2) && (argSignif.msw > 0xd413ccd0))) {
-		/* The argument is greater than sqrt(2)-1 (=0.414213562...) */
-		/* Convert the argument by an identity for atan */
+		 
+		 
 		transformed = 1;
 
 		if (exponent >= 0) {
@@ -104,11 +92,11 @@ void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 			if (!((exponent == 0) &&
 			      (argSignif.lsw == 0) && (argSignif.midw == 0) &&
 			      (argSignif.msw == 0x80000000))) {
-				EXCEPTION(EX_INTERNAL | 0x104);	/* There must be a logic error */
+				EXCEPTION(EX_INTERNAL | 0x104);	 
 				return;
 			}
-#endif /* PARANOID */
-			argSignif.msw = 0;	/* Make the transformed arg -> 0.0 */
+#endif  
+			argSignif.msw = 0;	 
 		} else {
 			Numer.lsw = Denom.lsw = argSignif.lsw;
 			XSIG_LL(Numer) = XSIG_LL(Denom) = XSIG_LL(argSignif);
@@ -144,10 +132,9 @@ void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 	shr_Xsig(&argSq, 2 * (-1 - exponent - 1));
 	shr_Xsig(&argSqSq, 4 * (-1 - exponent - 1));
 
-	/* Now have argSq etc with binary point at the left
-	   .1xxxxxxxx */
+	 
 
-	/* Do the basic fixed point polynomial evaluation */
+	 
 	accumulator.msw = accumulator.midw = accumulator.lsw = 0;
 	polynomial_Xsig(&accumulator, &XSIG_LL(argSqSq),
 			oddplterms, HIPOWERop - 1);
@@ -172,7 +159,7 @@ void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 	add_Xsig_Xsig(&accumulator, &argSignif);
 
 	if (transformed) {
-		/* compute pi/4 - accumulator */
+		 
 		shr_Xsig(&accumulator, -1 - exponent);
 		negate_Xsig(&accumulator);
 		add_Xsig_Xsig(&accumulator, &pi_signif);
@@ -180,7 +167,7 @@ void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 	}
 
 	if (inverted) {
-		/* compute pi/2 - accumulator */
+		 
 		shr_Xsig(&accumulator, -exponent);
 		negate_Xsig(&accumulator);
 		add_Xsig_Xsig(&accumulator, &pi_signif);
@@ -188,7 +175,7 @@ void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 	}
 
 	if (sign1) {
-		/* compute pi - accumulator */
+		 
 		shr_Xsig(&accumulator, 1 - exponent);
 		negate_Xsig(&accumulator);
 		add_Xsig_Xsig(&accumulator, &pi_signif);
@@ -203,7 +190,6 @@ void poly_atan(FPU_REG *st0_ptr, u_char st0_tag,
 	tag = FPU_round(st1_ptr, 1, 0, FULL_PRECISION, sign2);
 	FPU_settagi(1, tag);
 
-	set_precision_flag_up();	/* We do not really know if up or down,
-					   use this as the default. */
+	set_precision_flag_up();	 
 
 }

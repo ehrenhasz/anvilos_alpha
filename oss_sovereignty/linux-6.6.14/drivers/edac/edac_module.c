@@ -1,15 +1,4 @@
-/*
- * edac_module.c
- *
- * (C) 2007 www.softwarebitmaker.com
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- *
- * Author: Doug Thompson <dougthompson@xmission.com>
- *
- */
+ 
 #include <linux/edac.h>
 
 #include "edac_mc.h"
@@ -35,7 +24,7 @@ static int edac_set_debug_level(const char *buf,
 	return param_set_int(buf, kp);
 }
 
-/* Values of 0 to 4 will generate output */
+ 
 int edac_debug_level = 2;
 EXPORT_SYMBOL_GPL(edac_debug_level);
 
@@ -44,9 +33,7 @@ module_param_call(edac_debug_level, edac_set_debug_level, param_get_int,
 MODULE_PARM_DESC(edac_debug_level, "EDAC debug level: [0-4], default: 2");
 #endif
 
-/*
- * edac_op_state_to_string()
- */
+ 
 char *edac_op_state_to_string(int opstate)
 {
 	if (opstate == OP_RUNNING_POLL)
@@ -63,10 +50,7 @@ char *edac_op_state_to_string(int opstate)
 	return "UNKNOWN";
 }
 
-/*
- * sysfs object: /sys/devices/system/edac
- *	need to export to other files
- */
+ 
 static struct bus_type edac_subsys = {
 	.name = "edac",
 	.dev_name = "edac",
@@ -76,7 +60,7 @@ static int edac_subsys_init(void)
 {
 	int err;
 
-	/* create the /sys/devices/system/edac directory */
+	 
 	err = subsys_system_register(&edac_subsys, NULL);
 	if (err)
 		printk(KERN_ERR "Error registering toplevel EDAC sysfs dir\n");
@@ -89,16 +73,13 @@ static void edac_subsys_exit(void)
 	bus_unregister(&edac_subsys);
 }
 
-/* return pointer to the 'edac' node in sysfs */
+ 
 struct bus_type *edac_get_sysfs_subsys(void)
 {
 	return &edac_subsys;
 }
 EXPORT_SYMBOL_GPL(edac_get_sysfs_subsys);
-/*
- * edac_init
- *      module initialization entry point
- */
+ 
 static int __init edac_init(void)
 {
 	int err = 0;
@@ -109,13 +90,7 @@ static int __init edac_init(void)
 	if (err)
 		return err;
 
-	/*
-	 * Harvest and clear any boot/initialization PCI parity errors
-	 *
-	 * FIXME: This only clears errors logged by devices present at time of
-	 *      module initialization.  We should also do an initial clear
-	 *      of each newly hotplugged device.
-	 */
+	 
 	edac_pci_clear_parity_errors();
 
 	err = edac_mc_sysfs_init();
@@ -142,24 +117,19 @@ err_sysfs:
 	return err;
 }
 
-/*
- * edac_exit()
- *      module exit/termination function
- */
+ 
 static void __exit edac_exit(void)
 {
 	edac_dbg(0, "\n");
 
-	/* tear down the various subsystems */
+	 
 	edac_workqueue_teardown();
 	edac_mc_sysfs_exit();
 	edac_debugfs_exit();
 	edac_subsys_exit();
 }
 
-/*
- * Inform the kernel of our entry and exit points
- */
+ 
 subsys_initcall(edac_init);
 module_exit(edac_exit);
 

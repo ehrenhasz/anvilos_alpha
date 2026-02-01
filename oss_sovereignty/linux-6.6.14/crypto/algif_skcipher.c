@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * algif_skcipher: User-space interface for skcipher algorithms
- *
- * This file provides the user-space API for symmetric key ciphers.
- *
- * Copyright (c) 2010 Herbert Xu <herbert@gondor.apana.org.au>
- *
- * The following concept of the memory management is used:
- *
- * The kernel maintains two SGLs, the TX SGL and the RX SGL. The TX SGL is
- * filled by user space with the data submitted via sendmsg. Filling up the TX
- * SGL does not cause a crypto operation -- the data will only be tracked by
- * the kernel. Upon receipt of one recvmsg call, the caller must provide a
- * buffer which is tracked with the RX SGL.
- *
- * During the processing of the recvmsg operation, the cipher request is
- * allocated and prepared. As part of the recvmsg operation, the processed
- * TX buffers are extracted from the TX SGL into a separate SGL.
- *
- * After the completion of the crypto operation, the RX SGL and the cipher
- * request is released. The extracted TX SGL parts are released together with
- * the RX SGL release.
- */
+
+ 
 
 #include <crypto/scatterwalk.h>
 #include <crypto/skcipher.h>
@@ -67,28 +45,22 @@ static int _skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
 			return err;
 	}
 
-	/* Allocate cipher request for current operation. */
+	 
 	areq = af_alg_alloc_areq(sk, sizeof(struct af_alg_async_req) +
 				     crypto_skcipher_reqsize(tfm));
 	if (IS_ERR(areq))
 		return PTR_ERR(areq);
 
-	/* convert iovecs of output buffers into RX SGL */
+	 
 	err = af_alg_get_rsgl(sk, msg, flags, areq, ctx->used, &len);
 	if (err)
 		goto free;
 
-	/*
-	 * If more buffers are to be expected to be processed, process only
-	 * full block size buffers.
-	 */
+	 
 	if (ctx->more || len < ctx->used)
 		len -= len % bs;
 
-	/*
-	 * Create a per request TX SGL for this request which tracks the
-	 * SG entries from the global TX SGL.
-	 */
+	 
 	areq->tsgl_entries = af_alg_count_tsgl(sk, len, 0);
 	if (!areq->tsgl_entries)
 		areq->tsgl_entries = 1;
@@ -102,17 +74,17 @@ static int _skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
 	sg_init_table(areq->tsgl, areq->tsgl_entries);
 	af_alg_pull_tsgl(sk, len, areq->tsgl, 0);
 
-	/* Initialize the crypto operation */
+	 
 	skcipher_request_set_tfm(&areq->cra_u.skcipher_req, tfm);
 	skcipher_request_set_crypt(&areq->cra_u.skcipher_req, areq->tsgl,
 				   areq->first_rsgl.sgl.sgt.sgl, len, ctx->iv);
 
 	if (msg->msg_iocb && !is_sync_kiocb(msg->msg_iocb)) {
-		/* AIO operation */
+		 
 		sock_hold(sk);
 		areq->iocb = msg->msg_iocb;
 
-		/* Remember output size that will be generated. */
+		 
 		areq->outlen = len;
 
 		skcipher_request_set_callback(&areq->cra_u.skcipher_req,
@@ -122,13 +94,13 @@ static int _skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
 			crypto_skcipher_encrypt(&areq->cra_u.skcipher_req) :
 			crypto_skcipher_decrypt(&areq->cra_u.skcipher_req);
 
-		/* AIO operation in progress */
+		 
 		if (err == -EINPROGRESS)
 			return -EIOCBQUEUED;
 
 		sock_put(sk);
 	} else {
-		/* Synchronous operation */
+		 
 		skcipher_request_set_callback(&areq->cra_u.skcipher_req,
 					      CRYPTO_TFM_REQ_MAY_SLEEP |
 					      CRYPTO_TFM_REQ_MAY_BACKLOG,
@@ -156,14 +128,7 @@ static int skcipher_recvmsg(struct socket *sock, struct msghdr *msg,
 	while (msg_data_left(msg)) {
 		int err = _skcipher_recvmsg(sock, msg, ignored, flags);
 
-		/*
-		 * This error covers -EIOCBQUEUED which implies that we can
-		 * only handle one AIO request. If the caller wants to have
-		 * multiple AIO requests in parallel, he must make multiple
-		 * separate AIO calls.
-		 *
-		 * Also return the error if no data has been processed so far.
-		 */
+		 
 		if (err <= 0) {
 			if (err == -EIOCBQUEUED || !ret)
 				ret = err;

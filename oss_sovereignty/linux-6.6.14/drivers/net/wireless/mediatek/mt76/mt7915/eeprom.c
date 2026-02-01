@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc. */
+
+ 
 
 #include <linux/firmware.h>
 #include "mt7915.h"
@@ -55,7 +55,7 @@ static char *mt7915_eeprom_name(struct mt7915_dev *dev)
 		return dev->dbdc_support ?
 		       MT7915_EEPROM_DEFAULT_DBDC : MT7915_EEPROM_DEFAULT;
 	case 0x7981:
-		/* mt7981 only supports mt7976 and only in DBDC mode */
+		 
 		return MT7981_EEPROM_MT7976_DEFAULT_DBDC;
 	case 0x7986:
 		switch (mt7915_check_adie(dev, true)) {
@@ -124,11 +124,11 @@ static int mt7915_eeprom_load(struct mt7915_dev *dev)
 		if (ret < 0)
 			return ret;
 
-		/* efuse info isn't enough */
+		 
 		if (free_block_num >= 29)
 			return -EINVAL;
 
-		/* read eeprom data from efuse */
+		 
 		block_num = DIV_ROUND_UP(eeprom_size, eeprom_blk_size);
 		for (i = 0; i < block_num; i++) {
 			ret = mt7915_mcu_get_eeprom(dev, i * eeprom_blk_size);
@@ -193,7 +193,7 @@ void mt7915_eeprom_parse_hw_cap(struct mt7915_dev *dev,
 
 	mt7915_eeprom_parse_band_config(phy);
 
-	/* read tx/rx path from eeprom */
+	 
 	if (is_mt7915(&dev->mt76)) {
 		path = FIELD_GET(MT_EE_WIFI_CONF0_TX_PATH,
 				 eeprom[MT_EE_WIFI_CONF]);
@@ -205,7 +205,7 @@ void mt7915_eeprom_parse_hw_cap(struct mt7915_dev *dev,
 	if (!path || path > 4)
 		path = 4;
 
-	/* read tx/rx stream */
+	 
 	nss = path;
 	if (dev->dbdc_support) {
 		if (is_mt7915(&dev->mt76)) {

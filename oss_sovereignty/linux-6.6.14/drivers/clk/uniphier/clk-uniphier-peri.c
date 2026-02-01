@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Socionext Inc.
- *   Author: Masahiro Yamada <yamada.masahiro@socionext.com>
- */
+
+ 
 
 #include "clk-uniphier.h"
 
@@ -36,7 +33,7 @@ const struct uniphier_clk_data uniphier_ld4_peri_clk_data[] = {
 	UNIPHIER_PERI_CLK_I2C(7, 3),
 	UNIPHIER_PERI_CLK_I2C(8, 4),
 	UNIPHIER_PERI_CLK_SCSSI(11, 0),
-	{ /* sentinel */ }
+	{   }
 };
 
 const struct uniphier_clk_data uniphier_pro4_peri_clk_data[] = {
@@ -56,5 +53,5 @@ const struct uniphier_clk_data uniphier_pro4_peri_clk_data[] = {
 	UNIPHIER_PERI_CLK_SCSSI(13, 2),
 	UNIPHIER_PERI_CLK_SCSSI(14, 3),
 	UNIPHIER_PERI_CLK_MCSSI(15),
-	{ /* sentinel */ }
+	{   }
 };

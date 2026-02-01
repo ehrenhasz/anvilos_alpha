@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014-2016, Fuzhou Rockchip Electronics Co., Ltd
- * Caesar Wang <wxt@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -19,31 +16,19 @@
 #include <linux/mfd/syscon.h>
 #include <linux/pinctrl/consumer.h>
 
-/*
- * If the temperature over a period of time High,
- * the resulting TSHUT gave CRU module,let it reset the entire chip,
- * or via GPIO give PMIC.
- */
+ 
 enum tshut_mode {
 	TSHUT_MODE_CRU = 0,
 	TSHUT_MODE_GPIO,
 };
 
-/*
- * The system Temperature Sensors tshut(tshut) polarity
- * the bit 8 is tshut polarity.
- * 0: low active, 1: high active
- */
+ 
 enum tshut_polarity {
 	TSHUT_LOW_ACTIVE = 0,
 	TSHUT_HIGH_ACTIVE,
 };
 
-/*
- * The conversion table has the adc value and temperature.
- * ADC_DECREMENT: the adc value is of diminishing.(e.g. rk3288_code_table)
- * ADC_INCREMENT: the adc value is incremental.(e.g. rk3368_code_table)
- */
+ 
 enum adc_sort_mode {
 	ADC_DECREMENT = 0,
 	ADC_INCREMENT,
@@ -51,13 +36,7 @@ enum adc_sort_mode {
 
 #include "thermal_hwmon.h"
 
-/**
- * struct chip_tsadc_table - hold information about chip-specific differences
- * @id: conversion table
- * @length: size of conversion table
- * @data_mask: mask to apply on data inputs
- * @mode: sort mode of this adc variant (incrementing or decrementing)
- */
+ 
 struct chip_tsadc_table {
 	const struct tsadc_table *id;
 	unsigned int length;
@@ -65,39 +44,24 @@ struct chip_tsadc_table {
 	enum adc_sort_mode mode;
 };
 
-/**
- * struct rockchip_tsadc_chip - hold the private data of tsadc chip
- * @chn_offset: the channel offset of the first channel
- * @chn_num: the channel number of tsadc chip
- * @tshut_temp: the hardware-controlled shutdown temperature value
- * @tshut_mode: the hardware-controlled shutdown mode (0:CRU 1:GPIO)
- * @tshut_polarity: the hardware-controlled active polarity (0:LOW 1:HIGH)
- * @initialize: SoC special initialize tsadc controller method
- * @irq_ack: clear the interrupt
- * @control: enable/disable method for the tsadc controller
- * @get_temp: get the temperature
- * @set_alarm_temp: set the high temperature interrupt
- * @set_tshut_temp: set the hardware-controlled shutdown temperature
- * @set_tshut_mode: set the hardware-controlled shutdown mode
- * @table: the chip-specific conversion table
- */
+ 
 struct rockchip_tsadc_chip {
-	/* The sensor id of chip correspond to the ADC channel */
+	 
 	int chn_offset;
 	int chn_num;
 
-	/* The hardware-controlled tshut property */
+	 
 	int tshut_temp;
 	enum tshut_mode tshut_mode;
 	enum tshut_polarity tshut_polarity;
 
-	/* Chip-wide methods */
+	 
 	void (*initialize)(struct regmap *grf,
 			   void __iomem *reg, enum tshut_polarity p);
 	void (*irq_ack)(void __iomem *reg);
 	void (*control)(void __iomem *reg, bool on);
 
-	/* Per-sensor methods */
+	 
 	int (*get_temp)(const struct chip_tsadc_table *table,
 			int chn, void __iomem *reg, int *temp);
 	int (*set_alarm_temp)(const struct chip_tsadc_table *table,
@@ -106,36 +70,18 @@ struct rockchip_tsadc_chip {
 			      int chn, void __iomem *reg, int temp);
 	void (*set_tshut_mode)(int chn, void __iomem *reg, enum tshut_mode m);
 
-	/* Per-table methods */
+	 
 	struct chip_tsadc_table table;
 };
 
-/**
- * struct rockchip_thermal_sensor - hold the information of thermal sensor
- * @thermal:  pointer to the platform/configuration data
- * @tzd: pointer to a thermal zone
- * @id: identifier of the thermal sensor
- */
+ 
 struct rockchip_thermal_sensor {
 	struct rockchip_thermal_data *thermal;
 	struct thermal_zone_device *tzd;
 	int id;
 };
 
-/**
- * struct rockchip_thermal_data - hold the private data of thermal driver
- * @chip: pointer to the platform/configuration data
- * @pdev: platform device of thermal
- * @reset: the reset controller of tsadc
- * @sensors: array of thermal sensors
- * @clk: the controller clock is divided by the exteral 24MHz
- * @pclk: the advanced peripherals bus clock
- * @grf: the general register file will be used to do static set by software
- * @regs: the base address of tsadc controller
- * @tshut_temp: the hardware-controlled shutdown temperature value
- * @tshut_mode: the hardware-controlled shutdown mode (0:CRU 1:GPIO)
- * @tshut_polarity: the hardware-controlled active polarity (0:LOW 1:HIGH)
- */
+ 
 struct rockchip_thermal_data {
 	const struct rockchip_tsadc_chip *chip;
 	struct platform_device *pdev;
@@ -154,13 +100,7 @@ struct rockchip_thermal_data {
 	enum tshut_polarity tshut_polarity;
 };
 
-/*
- * TSADC Sensor Register description:
- *
- * TSADCV2_* are used for RK3288 SoCs, the other chips can reuse it.
- * TSADCV3_* are used for newer SoCs than RK3288. (e.g: RK3228, RK3399)
- *
- */
+ 
 #define TSADCV2_USER_CON			0x00
 #define TSADCV2_AUTO_CON			0x04
 #define TSADCV2_INT_EN				0x08
@@ -211,18 +151,18 @@ struct rockchip_thermal_data {
 
 #define TSADCV2_HIGHT_INT_DEBOUNCE_COUNT	4
 #define TSADCV2_HIGHT_TSHUT_DEBOUNCE_COUNT	4
-#define TSADCV2_AUTO_PERIOD_TIME		250 /* 250ms */
-#define TSADCV2_AUTO_PERIOD_HT_TIME		50  /* 50ms */
-#define TSADCV3_AUTO_PERIOD_TIME		1875 /* 2.5ms */
-#define TSADCV3_AUTO_PERIOD_HT_TIME		1875 /* 2.5ms */
+#define TSADCV2_AUTO_PERIOD_TIME		250  
+#define TSADCV2_AUTO_PERIOD_HT_TIME		50   
+#define TSADCV3_AUTO_PERIOD_TIME		1875  
+#define TSADCV3_AUTO_PERIOD_HT_TIME		1875  
 
-#define TSADCV5_AUTO_PERIOD_TIME		1622 /* 2.5ms */
-#define TSADCV5_AUTO_PERIOD_HT_TIME		1622 /* 2.5ms */
-#define TSADCV6_AUTO_PERIOD_TIME		5000 /* 2.5ms */
-#define TSADCV6_AUTO_PERIOD_HT_TIME		5000 /* 2.5ms */
+#define TSADCV5_AUTO_PERIOD_TIME		1622  
+#define TSADCV5_AUTO_PERIOD_HT_TIME		1622  
+#define TSADCV6_AUTO_PERIOD_TIME		5000  
+#define TSADCV6_AUTO_PERIOD_HT_TIME		5000  
 
-#define TSADCV2_USER_INTER_PD_SOC		0x340 /* 13 clocks */
-#define TSADCV5_USER_INTER_PD_SOC		0xfc0 /* 97us, at least 90us */
+#define TSADCV2_USER_INTER_PD_SOC		0x340  
+#define TSADCV5_USER_INTER_PD_SOC		0xfc0  
 
 #define GRF_SARADC_TESTBIT			0x0e644
 #define GRF_TSADC_TESTBIT_L			0x0e648
@@ -249,16 +189,7 @@ struct rockchip_thermal_data {
 
 #define GRF_CON_TSADC_CH_INV			(0x10001 << 1)
 
-/**
- * struct tsadc_table - code to temperature conversion table
- * @code: the value of adc channel
- * @temp: the temperature
- * Note:
- * code to temperature mapping of the temperature sensor is a piece wise linear
- * curve.Any temperature, code faling between to 2 give temperatures can be
- * linearly interpolated.
- * Code to Temperature mapping should be updated based on manufacturer results.
- */
+ 
 struct tsadc_table {
 	u32 code;
 	int temp;
@@ -554,10 +485,10 @@ static u32 rk_tsadcv2_temp_to_code(const struct chip_tsadc_table *table,
 	u32 error = table->data_mask;
 
 	low = 0;
-	high = (table->length - 1) - 1; /* ignore the last check for table */
+	high = (table->length - 1) - 1;  
 	mid = (high + low) / 2;
 
-	/* Return mask code data when the temp is over table range */
+	 
 	if (temp < table->id[low].temp || temp > table->id[high].temp)
 		goto exit;
 
@@ -571,12 +502,7 @@ static u32 rk_tsadcv2_temp_to_code(const struct chip_tsadc_table *table,
 		mid = (low + high) / 2;
 	}
 
-	/*
-	 * The conversion code granularity provided by the table. Let's
-	 * assume that the relationship between temperature and
-	 * analog value between 2 table entries is linear and interpolate
-	 * to produce less granular result.
-	 */
+	 
 	num = abs(table->id[mid + 1].code - table->id[mid].code);
 	num *= temp - table->id[mid].temp;
 	denom = table->id[mid + 1].temp - table->id[mid].temp;
@@ -612,7 +538,7 @@ static int rk_tsadcv2_code_to_temp(const struct chip_tsadc_table *table,
 	case ADC_DECREMENT:
 		code &= table->data_mask;
 		if (code <= table->id[high].code)
-			return -EAGAIN;		/* Incorrect reading */
+			return -EAGAIN;		 
 
 		while (low <= high) {
 			if (code >= table->id[mid].code &&
@@ -629,7 +555,7 @@ static int rk_tsadcv2_code_to_temp(const struct chip_tsadc_table *table,
 	case ADC_INCREMENT:
 		code &= table->data_mask;
 		if (code < table->id[low].code)
-			return -EAGAIN;		/* Incorrect reading */
+			return -EAGAIN;		 
 
 		while (low <= high) {
 			if (code <= table->id[mid].code &&
@@ -648,12 +574,7 @@ static int rk_tsadcv2_code_to_temp(const struct chip_tsadc_table *table,
 		return -EINVAL;
 	}
 
-	/*
-	 * The 5C granularity provided by the table is too much. Let's
-	 * assume that the relationship between sensor readings and
-	 * temperature between 2 table entries is linear and interpolate
-	 * to produce less granular result.
-	 */
+	 
 	num = table->id[mid].temp - table->id[mid - 1].temp;
 	num *= abs(table->id[mid - 1].code - code);
 	denom = abs(table->id[mid - 1].code - table->id[mid].code);
@@ -662,24 +583,7 @@ static int rk_tsadcv2_code_to_temp(const struct chip_tsadc_table *table,
 	return 0;
 }
 
-/**
- * rk_tsadcv2_initialize - initialize TASDC Controller.
- * @grf: the general register file will be used to do static set by software
- * @regs: the base address of tsadc controller
- * @tshut_polarity: the hardware-controlled active polarity (0:LOW 1:HIGH)
- *
- * (1) Set TSADC_V2_AUTO_PERIOD:
- *     Configure the interleave between every two accessing of
- *     TSADC in normal operation.
- *
- * (2) Set TSADCV2_AUTO_PERIOD_HT:
- *     Configure the interleave between every two accessing of
- *     TSADC after the temperature is higher than COM_SHUT or COM_INT.
- *
- * (3) Set TSADCV2_HIGH_INT_DEBOUNCE and TSADC_HIGHT_TSHUT_DEBOUNCE:
- *     If the temperature is higher than COMP_INT or COMP_SHUT for
- *     "debounce" times, TSADC controller will generate interrupt or TSHUT.
- */
+ 
 static void rk_tsadcv2_initialize(struct regmap *grf, void __iomem *regs,
 				  enum tshut_polarity tshut_polarity)
 {
@@ -699,32 +603,13 @@ static void rk_tsadcv2_initialize(struct regmap *grf, void __iomem *regs,
 		       regs + TSADCV2_HIGHT_TSHUT_DEBOUNCE);
 }
 
-/**
- * rk_tsadcv3_initialize - initialize TASDC Controller.
- * @grf: the general register file will be used to do static set by software
- * @regs: the base address of tsadc controller
- * @tshut_polarity: the hardware-controlled active polarity (0:LOW 1:HIGH)
- *
- * (1) The tsadc control power sequence.
- *
- * (2) Set TSADC_V2_AUTO_PERIOD:
- *     Configure the interleave between every two accessing of
- *     TSADC in normal operation.
- *
- * (2) Set TSADCV2_AUTO_PERIOD_HT:
- *     Configure the interleave between every two accessing of
- *     TSADC after the temperature is higher than COM_SHUT or COM_INT.
- *
- * (3) Set TSADCV2_HIGH_INT_DEBOUNCE and TSADC_HIGHT_TSHUT_DEBOUNCE:
- *     If the temperature is higher than COMP_INT or COMP_SHUT for
- *     "debounce" times, TSADC controller will generate interrupt or TSHUT.
- */
+ 
 static void rk_tsadcv3_initialize(struct regmap *grf, void __iomem *regs,
 				  enum tshut_polarity tshut_polarity)
 {
-	/* The tsadc control power sequence */
+	 
 	if (IS_ERR(grf)) {
-		/* Set interleave value to workround ic time sync issue */
+		 
 		writel_relaxed(TSADCV2_USER_INTER_PD_SOC, regs +
 			       TSADCV2_USER_CON);
 
@@ -738,14 +623,14 @@ static void rk_tsadcv3_initialize(struct regmap *grf, void __iomem *regs,
 			       regs + TSADCV2_HIGHT_TSHUT_DEBOUNCE);
 
 	} else {
-		/* Enable the voltage common mode feature */
+		 
 		regmap_write(grf, GRF_TSADC_TESTBIT_L, GRF_TSADC_VCM_EN_L);
 		regmap_write(grf, GRF_TSADC_TESTBIT_H, GRF_TSADC_VCM_EN_H);
 
-		usleep_range(15, 100); /* The spec note says at least 15 us */
+		usleep_range(15, 100);  
 		regmap_write(grf, GRF_SARADC_TESTBIT, GRF_SARADC_TESTBIT_ON);
 		regmap_write(grf, GRF_TSADC_TESTBIT_H, GRF_TSADC_TESTBIT_H_ON);
-		usleep_range(90, 200); /* The spec note says at least 90 us */
+		usleep_range(90, 200);  
 
 		writel_relaxed(TSADCV3_AUTO_PERIOD_TIME,
 			       regs + TSADCV2_AUTO_PERIOD);
@@ -791,26 +676,16 @@ static void rk_tsadcv7_initialize(struct regmap *grf, void __iomem *regs,
 		writel_relaxed(0U & ~TSADCV2_AUTO_TSHUT_POLARITY_HIGH,
 			       regs + TSADCV2_AUTO_CON);
 
-	/*
-	 * The general register file will is optional
-	 * and might not be available.
-	 */
+	 
 	if (!IS_ERR(grf)) {
 		regmap_write(grf, RK3568_GRF_TSADC_CON, RK3568_GRF_TSADC_TSEN);
-		/*
-		 * RK3568 TRM, section 18.5. requires a delay no less
-		 * than 10us between the rising edge of tsadc_tsen_en
-		 * and the rising edge of tsadc_ana_reg_0/1/2.
-		 */
+		 
 		udelay(15);
 		regmap_write(grf, RK3568_GRF_TSADC_CON, RK3568_GRF_TSADC_ANA_REG0);
 		regmap_write(grf, RK3568_GRF_TSADC_CON, RK3568_GRF_TSADC_ANA_REG1);
 		regmap_write(grf, RK3568_GRF_TSADC_CON, RK3568_GRF_TSADC_ANA_REG2);
 
-		/*
-		 * RK3568 TRM, section 18.5. requires a delay no less
-		 * than 90us after the rising edge of tsadc_ana_reg_0/1/2.
-		 */
+		 
 		usleep_range(100, 200);
 	}
 }
@@ -874,15 +749,7 @@ static void rk_tsadcv2_control(void __iomem *regs, bool enable)
 	writel_relaxed(val, regs + TSADCV2_AUTO_CON);
 }
 
-/**
- * rk_tsadcv3_control - the tsadc controller is enabled or disabled.
- * @regs: the base address of tsadc controller
- * @enable: boolean flag to enable the controller
- *
- * NOTE: TSADC controller works at auto mode, and some SoCs need set the
- * tsadc_q_sel bit on TSADCV2_AUTO_CON[1]. The (1024 - tsadc_q) as output
- * adc value if setting this bit to enable.
- */
+ 
 static void rk_tsadcv3_control(void __iomem *regs, bool enable)
 {
 	u32 val;
@@ -934,12 +801,7 @@ static int rk_tsadcv2_alarm_temp(const struct chip_tsadc_table *table,
 	u32 alarm_value;
 	u32 int_en, int_clr;
 
-	/*
-	 * In some cases, some sensors didn't need the trip points, the
-	 * set_trips will pass {-INT_MAX, INT_MAX} to trigger tsadc alarm
-	 * in the end, ignore this case and disable the high temperature
-	 * interrupt.
-	 */
+	 
 	if (temp == INT_MAX) {
 		int_clr = readl_relaxed(regs + TSADCV2_INT_EN);
 		int_clr &= ~TSADCV2_INT_SRC_EN(chn);
@@ -947,7 +809,7 @@ static int rk_tsadcv2_alarm_temp(const struct chip_tsadc_table *table,
 		return 0;
 	}
 
-	/* Make sure the value is valid */
+	 
 	alarm_value = rk_tsadcv2_temp_to_code(table, temp);
 	if (alarm_value == table->data_mask)
 		return -ERANGE;
@@ -967,18 +829,13 @@ static int rk_tsadcv3_alarm_temp(const struct chip_tsadc_table *table,
 {
 	u32 alarm_value;
 
-	/*
-	 * In some cases, some sensors didn't need the trip points, the
-	 * set_trips will pass {-INT_MAX, INT_MAX} to trigger tsadc alarm
-	 * in the end, ignore this case and disable the high temperature
-	 * interrupt.
-	 */
+	 
 	if (temp == INT_MAX) {
 		writel_relaxed(TSADCV2_INT_SRC_EN_MASK(chn),
 			       regs + TSADCV3_HT_INT_EN);
 		return 0;
 	}
-	/* Make sure the value is valid */
+	 
 	alarm_value = rk_tsadcv2_temp_to_code(table, temp);
 	if (alarm_value == table->data_mask)
 		return -ERANGE;
@@ -994,14 +851,14 @@ static int rk_tsadcv2_tshut_temp(const struct chip_tsadc_table *table,
 {
 	u32 tshut_value, val;
 
-	/* Make sure the value is valid */
+	 
 	tshut_value = rk_tsadcv2_temp_to_code(table, temp);
 	if (tshut_value == table->data_mask)
 		return -ERANGE;
 
 	writel_relaxed(tshut_value, regs + TSADCV2_COMP_SHUT(chn));
 
-	/* TSHUT will be valid */
+	 
 	val = readl_relaxed(regs + TSADCV2_AUTO_CON);
 	writel_relaxed(val | TSADCV2_AUTO_SRC_EN(chn), regs + TSADCV2_AUTO_CON);
 
@@ -1013,14 +870,14 @@ static int rk_tsadcv3_tshut_temp(const struct chip_tsadc_table *table,
 {
 	u32 tshut_value;
 
-	/* Make sure the value is valid */
+	 
 	tshut_value = rk_tsadcv2_temp_to_code(table, temp);
 	if (tshut_value == table->data_mask)
 		return -ERANGE;
 
 	writel_relaxed(tshut_value, regs + TSADCV3_COMP_SHUT(chn));
 
-	/* TSHUT will be valid */
+	 
 	writel_relaxed(TSADCV3_AUTO_SRC_EN(chn) | TSADCV3_AUTO_SRC_EN_MASK(chn),
 		       regs + TSADCV3_AUTO_SRC_CON);
 
@@ -1061,11 +918,11 @@ static void rk_tsadcv3_tshut_mode(int chn, void __iomem *regs,
 }
 
 static const struct rockchip_tsadc_chip px30_tsadc_data = {
-	/* cpu, gpu */
+	 
 	.chn_offset = 0,
-	.chn_num = 2, /* 2 channels for tsadc */
+	.chn_num = 2,  
 
-	.tshut_mode = TSHUT_MODE_CRU, /* default TSHUT via CRU */
+	.tshut_mode = TSHUT_MODE_CRU,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv4_initialize,
@@ -1085,12 +942,12 @@ static const struct rockchip_tsadc_chip px30_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rv1108_tsadc_data = {
-	/* cpu */
+	 
 	.chn_offset = 0,
-	.chn_num = 1, /* one channel for tsadc */
+	.chn_num = 1,  
 
-	.tshut_mode = TSHUT_MODE_GPIO, /* default TSHUT via GPIO give PMIC */
-	.tshut_polarity = TSHUT_LOW_ACTIVE, /* default TSHUT LOW ACTIVE */
+	.tshut_mode = TSHUT_MODE_GPIO,  
+	.tshut_polarity = TSHUT_LOW_ACTIVE,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv2_initialize,
@@ -1110,12 +967,12 @@ static const struct rockchip_tsadc_chip rv1108_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rk3228_tsadc_data = {
-	/* cpu */
+	 
 	.chn_offset = 0,
-	.chn_num = 1, /* one channel for tsadc */
+	.chn_num = 1,  
 
-	.tshut_mode = TSHUT_MODE_GPIO, /* default TSHUT via GPIO give PMIC */
-	.tshut_polarity = TSHUT_LOW_ACTIVE, /* default TSHUT LOW ACTIVE */
+	.tshut_mode = TSHUT_MODE_GPIO,  
+	.tshut_polarity = TSHUT_LOW_ACTIVE,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv2_initialize,
@@ -1135,12 +992,12 @@ static const struct rockchip_tsadc_chip rk3228_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rk3288_tsadc_data = {
-	/* cpu, gpu */
+	 
 	.chn_offset = 1,
-	.chn_num = 2, /* two channels for tsadc */
+	.chn_num = 2,  
 
-	.tshut_mode = TSHUT_MODE_GPIO, /* default TSHUT via GPIO give PMIC */
-	.tshut_polarity = TSHUT_LOW_ACTIVE, /* default TSHUT LOW ACTIVE */
+	.tshut_mode = TSHUT_MODE_GPIO,  
+	.tshut_polarity = TSHUT_LOW_ACTIVE,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv2_initialize,
@@ -1160,11 +1017,11 @@ static const struct rockchip_tsadc_chip rk3288_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rk3328_tsadc_data = {
-	/* cpu */
+	 
 	.chn_offset = 0,
-	.chn_num = 1, /* one channels for tsadc */
+	.chn_num = 1,  
 
-	.tshut_mode = TSHUT_MODE_CRU, /* default TSHUT via CRU */
+	.tshut_mode = TSHUT_MODE_CRU,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv2_initialize,
@@ -1184,12 +1041,12 @@ static const struct rockchip_tsadc_chip rk3328_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rk3366_tsadc_data = {
-	/* cpu, gpu */
+	 
 	.chn_offset = 0,
-	.chn_num = 2, /* two channels for tsadc */
+	.chn_num = 2,  
 
-	.tshut_mode = TSHUT_MODE_GPIO, /* default TSHUT via GPIO give PMIC */
-	.tshut_polarity = TSHUT_LOW_ACTIVE, /* default TSHUT LOW ACTIVE */
+	.tshut_mode = TSHUT_MODE_GPIO,  
+	.tshut_polarity = TSHUT_LOW_ACTIVE,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv3_initialize,
@@ -1209,12 +1066,12 @@ static const struct rockchip_tsadc_chip rk3366_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rk3368_tsadc_data = {
-	/* cpu, gpu */
+	 
 	.chn_offset = 0,
-	.chn_num = 2, /* two channels for tsadc */
+	.chn_num = 2,  
 
-	.tshut_mode = TSHUT_MODE_GPIO, /* default TSHUT via GPIO give PMIC */
-	.tshut_polarity = TSHUT_LOW_ACTIVE, /* default TSHUT LOW ACTIVE */
+	.tshut_mode = TSHUT_MODE_GPIO,  
+	.tshut_polarity = TSHUT_LOW_ACTIVE,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv2_initialize,
@@ -1234,12 +1091,12 @@ static const struct rockchip_tsadc_chip rk3368_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rk3399_tsadc_data = {
-	/* cpu, gpu */
+	 
 	.chn_offset = 0,
-	.chn_num = 2, /* two channels for tsadc */
+	.chn_num = 2,  
 
-	.tshut_mode = TSHUT_MODE_GPIO, /* default TSHUT via GPIO give PMIC */
-	.tshut_polarity = TSHUT_LOW_ACTIVE, /* default TSHUT LOW ACTIVE */
+	.tshut_mode = TSHUT_MODE_GPIO,  
+	.tshut_polarity = TSHUT_LOW_ACTIVE,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv3_initialize,
@@ -1259,12 +1116,12 @@ static const struct rockchip_tsadc_chip rk3399_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rk3568_tsadc_data = {
-	/* cpu, gpu */
+	 
 	.chn_offset = 0,
-	.chn_num = 2, /* two channels for tsadc */
+	.chn_num = 2,  
 
-	.tshut_mode = TSHUT_MODE_GPIO, /* default TSHUT via GPIO give PMIC */
-	.tshut_polarity = TSHUT_LOW_ACTIVE, /* default TSHUT LOW ACTIVE */
+	.tshut_mode = TSHUT_MODE_GPIO,  
+	.tshut_polarity = TSHUT_LOW_ACTIVE,  
 	.tshut_temp = 95000,
 
 	.initialize = rk_tsadcv7_initialize,
@@ -1284,11 +1141,11 @@ static const struct rockchip_tsadc_chip rk3568_tsadc_data = {
 };
 
 static const struct rockchip_tsadc_chip rk3588_tsadc_data = {
-	/* top, big_core0, big_core1, little_core, center, gpu, npu */
+	 
 	.chn_offset = 0,
-	.chn_num = 7, /* seven channels for tsadc */
-	.tshut_mode = TSHUT_MODE_GPIO, /* default TSHUT via GPIO give PMIC */
-	.tshut_polarity = TSHUT_LOW_ACTIVE, /* default TSHUT LOW ACTIVE */
+	.chn_num = 7,  
+	.tshut_mode = TSHUT_MODE_GPIO,  
+	.tshut_polarity = TSHUT_LOW_ACTIVE,  
 	.tshut_temp = 95000,
 	.initialize = rk_tsadcv8_initialize,
 	.irq_ack = rk_tsadcv4_irq_ack,
@@ -1345,7 +1202,7 @@ static const struct of_device_id of_rockchip_thermal_match[] = {
 		.compatible = "rockchip,rk3588-tsadc",
 		.data = (void *)&rk3588_tsadc_data,
 	},
-	{ /* end */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, of_rockchip_thermal_match);
 
@@ -1459,9 +1316,7 @@ static int rockchip_configure_from_dt(struct device *dev,
 		return -EINVAL;
 	}
 
-	/* The tsadc wont to handle the error in here since some SoCs didn't
-	 * need this property.
-	 */
+	 
 	thermal->grf = syscon_regmap_lookup_by_phandle(np, "rockchip,grf");
 	if (IS_ERR(thermal->grf))
 		dev_warn(dev, "Missing rockchip,grf property\n");
@@ -1500,10 +1355,7 @@ rockchip_thermal_register_sensor(struct platform_device *pdev,
 	return 0;
 }
 
-/**
- * rockchip_thermal_reset_controller - Reset TSADC Controller, reset all tsadc registers.
- * @reset: the reset controller of tsadc
- */
+ 
 static void rockchip_thermal_reset_controller(struct reset_control *reset)
 {
 	reset_control_assert(reset);

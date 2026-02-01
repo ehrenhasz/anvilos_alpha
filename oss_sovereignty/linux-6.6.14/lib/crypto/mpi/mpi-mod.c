@@ -1,23 +1,18 @@
-/* mpi-mod.c -  Modular reduction
- * Copyright (C) 1998, 1999, 2001, 2002, 2003,
- *               2007  Free Software Foundation, Inc.
- *
- * This file is part of Libgcrypt.
- */
+ 
 
 
 #include "mpi-internal.h"
 #include "longlong.h"
 
-/* Context used with Barrett reduction.  */
+ 
 struct barrett_ctx_s {
-	MPI m;   /* The modulus - may not be modified. */
-	int m_copied;   /* If true, M needs to be released.  */
+	MPI m;    
+	int m_copied;    
 	int k;
 	MPI y;
-	MPI r1;  /* Helper MPI. */
-	MPI r2;  /* Helper MPI. */
-	MPI r3;  /* Helper MPI allocated on demand. */
+	MPI r1;   
+	MPI r2;   
+	MPI r3;   
 };
 
 
@@ -27,12 +22,7 @@ void mpi_mod(MPI rem, MPI dividend, MPI divisor)
 	mpi_fdiv_r(rem, dividend, divisor);
 }
 
-/* This function returns a new context for Barrett based operations on
- * the modulus M.  This context needs to be released using
- * _gcry_mpi_barrett_free.  If COPY is true M will be transferred to
- * the context and the user may change M.  If COPY is false, M may not
- * be changed until gcry_mpi_barrett_free has been called.
- */
+ 
 mpi_barrett_t mpi_barrett_init(MPI m, int copy)
 {
 	mpi_barrett_t ctx;
@@ -52,7 +42,7 @@ mpi_barrett_t mpi_barrett_init(MPI m, int copy)
 	ctx->k = mpi_get_nlimbs(m);
 	tmp = mpi_alloc(ctx->k + 1);
 
-	/* Barrett precalculation: y = floor(b^(2k) / m). */
+	 
 	mpi_set_ui(tmp, 1);
 	mpi_lshift_limbs(tmp, 2 * ctx->k);
 	mpi_fdiv_q(tmp, tmp, m);
@@ -79,19 +69,7 @@ void mpi_barrett_free(mpi_barrett_t ctx)
 }
 
 
-/* R = X mod M
- *
- * Using Barrett reduction.  Before using this function
- * _gcry_mpi_barrett_init must have been called to do the
- * precalculations.  CTX is the context created by this precalculation
- * and also conveys M.  If the Barret reduction could no be done a
- * straightforward reduction method is used.
- *
- * We assume that these conditions are met:
- * Input:  x =(x_2k-1 ...x_0)_b
- *     m =(m_k-1 ....m_0)_b	  with m_k-1 != 0
- * Output: r = x mod m
- */
+ 
 void mpi_mod_barrett(MPI r, MPI x, mpi_barrett_t ctx)
 {
 	MPI m = ctx->m;
@@ -110,26 +88,18 @@ void mpi_mod_barrett(MPI r, MPI x, mpi_barrett_t ctx)
 	sign = x->sign;
 	x->sign = 0;
 
-	/* 1. q1 = floor( x / b^k-1)
-	 *    q2 = q1 * y
-	 *    q3 = floor( q2 / b^k+1 )
-	 * Actually, we don't need qx, we can work direct on r2
-	 */
+	 
 	mpi_set(r2, x);
 	mpi_rshift_limbs(r2, k-1);
 	mpi_mul(r2, r2, y);
 	mpi_rshift_limbs(r2, k+1);
 
-	/* 2. r1 = x mod b^k+1
-	 *	r2 = q3 * m mod b^k+1
-	 *	r  = r1 - r2
-	 * 3. if r < 0 then  r = r + b^k+1
-	 */
+	 
 	mpi_set(r1, x);
-	if (r1->nlimbs > k+1) /* Quick modulo operation.  */
+	if (r1->nlimbs > k+1)  
 		r1->nlimbs = k+1;
 	mpi_mul(r2, r2, m);
-	if (r2->nlimbs > k+1) /* Quick modulo operation. */
+	if (r2->nlimbs > k+1)  
 		r2->nlimbs = k+1;
 	mpi_sub(r, r1, r2);
 
@@ -142,7 +112,7 @@ void mpi_mod_barrett(MPI r, MPI x, mpi_barrett_t ctx)
 		mpi_add(r, r, ctx->r3);
 	}
 
-	/* 4. while r >= m do r = r - m */
+	 
 	while (mpi_cmp(r, m) >= 0)
 		mpi_sub(r, r, m);
 

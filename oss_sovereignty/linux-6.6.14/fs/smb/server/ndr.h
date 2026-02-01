@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2020 Samsung Electronics Co., Ltd.
- *   Author(s): Namjae Jeon <linkinjeon@kernel.org>
- */
+ 
+ 
 
 struct ndr {
 	char	*data;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * A virtual codec example device.
- *
- * Copyright 2018 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- *
- * This is a virtual codec device driver for testing the codec framework.
- * It simulates a device that uses memory buffers for both source and
- * destination and encodes or decodes the data.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -55,7 +47,7 @@ struct pixfmt_info {
 	unsigned int sizeimage_div;
 	unsigned int luma_step;
 	unsigned int chroma_step;
-	/* Chroma plane subsampling */
+	 
 	unsigned int width_div;
 	unsigned int height_div;
 };
@@ -77,7 +69,7 @@ static struct platform_device vicodec_pdev = {
 	.dev.release	= vicodec_dev_release,
 };
 
-/* Per-queue, driver-specific private data */
+ 
 struct vicodec_q_data {
 	unsigned int		coded_width;
 	unsigned int		coded_height;
@@ -121,7 +113,7 @@ struct vicodec_ctx {
 
 	struct v4l2_ctrl_handler hdl;
 
-	/* Source and destination queue data */
+	 
 	struct vicodec_q_data   q_data[2];
 	struct v4l2_fwht_state	state;
 
@@ -274,10 +266,7 @@ static int device_process(struct vicodec_ctx *ctx,
 
 		ctx->state.header.size =
 			htonl(vb2_get_plane_payload(&src_vb->vb2_buf, 0));
-		/*
-		 * set the reference buffer from the reference timestamp
-		 * only if this is a P-frame
-		 */
+		 
 		if (!(ntohl(ctx->state.header.flags) & V4L2_FWHT_FL_I_FRAME)) {
 			struct vb2_buffer *ref_vb2_buf;
 			struct vb2_queue *vq_cap =
@@ -335,9 +324,7 @@ static int device_process(struct vicodec_ctx *ctx,
 	return ret;
 }
 
-/*
- * mem2mem callbacks
- */
+ 
 static enum vb2_buffer_state get_next_header(struct vicodec_ctx *ctx,
 					     u8 **pp, u32 sz)
 {
@@ -396,7 +383,7 @@ static enum vb2_buffer_state get_next_header(struct vicodec_ctx *ctx,
 	return state;
 }
 
-/* device_run() - prepares and starts the device */
+ 
 static void device_run(void *priv)
 {
 	struct vicodec_ctx *ctx = priv;
@@ -521,10 +508,7 @@ static void update_capture_data_from_header(struct vicodec_ctx *ctx)
 	unsigned int hdr_width_div = (flags & V4L2_FWHT_FL_CHROMA_FULL_WIDTH) ? 1 : 2;
 	unsigned int hdr_height_div = (flags & V4L2_FWHT_FL_CHROMA_FULL_HEIGHT) ? 1 : 2;
 
-	/*
-	 * This function should not be used by a stateless codec since
-	 * it changes values in q_data that are not request specific
-	 */
+	 
 	WARN_ON(ctx->is_stateless);
 
 	q_dst->info = info;
@@ -606,13 +590,7 @@ restart:
 
 	comp_frame_size = ntohl(ctx->state.header.size);
 
-	/*
-	 * The current scanned frame might be the first frame of a new
-	 * resolution so its size might be larger than ctx->comp_max_size.
-	 * In that case it is copied up to the current buffer capacity and
-	 * the copy will continue after allocating new large enough buffer
-	 * when restreaming
-	 */
+	 
 	max_to_copy = min(comp_frame_size, ctx->comp_max_size);
 
 	if (ctx->comp_size < max_to_copy) {
@@ -646,10 +624,7 @@ restart:
 		if (!memcmp(p, magic, sizeof(magic)))
 			ctx->comp_has_next_frame = remaining >= frame_size;
 	}
-	/*
-	 * if the header is invalid the device_run will just drop the frame
-	 * with an error
-	 */
+	 
 	if (!is_header_valid(&ctx->state.header) && ctx->comp_has_frame)
 		return 1;
 	flags = ntohl(ctx->state.header.flags);
@@ -678,9 +653,7 @@ restart:
 	return 1;
 }
 
-/*
- * video ioctls
- */
+ 
 
 static const struct v4l2_fwht_pixfmt_info *find_fmt(u32 fmt)
 {
@@ -1138,10 +1111,7 @@ static int vidioc_g_selection(struct file *file, void *priv,
 	q_data = get_q_data(ctx, s->type);
 	if (!q_data)
 		return -EINVAL;
-	/*
-	 * encoder supports only cropping on the OUTPUT buffer
-	 * decoder supports only composing on the CAPTURE buffer
-	 */
+	 
 	if (ctx->is_enc && s->type == V4L2_BUF_TYPE_VIDEO_OUTPUT) {
 		switch (s->target) {
 		case V4L2_SEL_TGT_CROP:
@@ -1357,9 +1327,7 @@ static const struct v4l2_ioctl_ops vicodec_ioctl_ops = {
 };
 
 
-/*
- * Queue operations
- */
+ 
 
 static int vicodec_queue_setup(struct vb2_queue *vq, unsigned int *nbuffers,
 			       unsigned int *nplanes, unsigned int sizes[],
@@ -1450,25 +1418,19 @@ static void vicodec_buf_queue(struct vb2_buffer *vb)
 		return;
 	}
 
-	/* buf_queue handles only the first source change event */
+	 
 	if (ctx->first_source_change_sent) {
 		v4l2_m2m_buf_queue(ctx->fh.m2m_ctx, vbuf);
 		return;
 	}
 
-	/*
-	 * if both queues are streaming, the source change event is
-	 * handled in job_ready
-	 */
+	 
 	if (vb2_is_streaming(vq_cap) && vb2_is_streaming(vq_out)) {
 		v4l2_m2m_buf_queue(ctx->fh.m2m_ctx, vbuf);
 		return;
 	}
 
-	/*
-	 * source change event is relevant only for the stateful decoder
-	 * in the compressed stream
-	 */
+	 
 	if (ctx->is_stateless || ctx->is_enc ||
 	    V4L2_TYPE_IS_CAPTURE(vb->vb2_queue->type)) {
 		v4l2_m2m_buf_queue(ctx->fh.m2m_ctx, vbuf);
@@ -1484,11 +1446,7 @@ static void vicodec_buf_queue(struct vb2_buffer *vb)
 			return;
 		}
 		header_valid = is_header_valid(&ctx->state.header);
-		/*
-		 * p points right after the end of the header in the
-		 * buffer. If the header is invalid we set p to point
-		 * to the next byte after the start of the header
-		 */
+		 
 		if (!header_valid) {
 			p = p - sizeof(struct fwht_cframe_hdr) + 1;
 			if (p < p_src)
@@ -1599,10 +1557,7 @@ static int vicodec_start_streaming(struct vb2_queue *q,
 		vicodec_return_bufs(q, VB2_BUF_STATE_QUEUED);
 		return -ENOMEM;
 	}
-	/*
-	 * if state->compressed_frame was already allocated then
-	 * it contain data of the first frame of the new resolution
-	 */
+	 
 	if (state->compressed_frame) {
 		if (ctx->comp_size > ctx->comp_max_size)
 			ctx->comp_size = ctx->comp_max_size;
@@ -1810,9 +1765,7 @@ static const struct v4l2_ctrl_config vicodec_ctrl_stateless_state = {
 	.elem_size      = sizeof(struct v4l2_ctrl_fwht_params),
 };
 
-/*
- * File operations
- */
+ 
 static int vicodec_open(struct file *file)
 {
 	const struct v4l2_fwht_pixfmt_info *info = v4l2_fwht_get_pixfmt(0);

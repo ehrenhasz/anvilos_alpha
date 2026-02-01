@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// AMD ALSA SoC PDM Driver
-//
-//Copyright 2020 Advanced Micro Devices, Inc.
+
+
+
+
+
 
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -182,14 +182,14 @@ static void config_acp_dma(struct pdm_stream_instance *rtd, int direction)
 	addr = rtd->dma_addr;
 	val = 0;
 
-	/* Group Enable */
+	 
 	rn_writel(ACP_SRAM_PTE_OFFSET | BIT(31), rtd->acp_base +
 		  ACPAXI2AXI_ATU_BASE_ADDR_GRP_1);
 	rn_writel(PAGE_SIZE_4K_ENABLE, rtd->acp_base +
 		  ACPAXI2AXI_ATU_PAGE_SIZE_GRP_1);
 
 	for (page_idx = 0; page_idx < rtd->num_pages; page_idx++) {
-		/* Load the low address of page int ACP SRAM through SRBM */
+		 
 		low = lower_32_bits(addr);
 		high = upper_32_bits(addr);
 

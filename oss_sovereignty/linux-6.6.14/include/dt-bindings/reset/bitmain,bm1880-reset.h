@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 2018 Bitmain Ltd.
- * Copyright (c) 2019 Linaro Ltd.
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_BM1880_RESET_H
 #define _DT_BINDINGS_BM1880_RESET_H
@@ -48,4 +45,4 @@
 #define BM1880_RST_AHB_ROM		38
 #define BM1880_RST_SPIC			39
 
-#endif /* _DT_BINDINGS_BM1880_RESET_H */
+#endif  

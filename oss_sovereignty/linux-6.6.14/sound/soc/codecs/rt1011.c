@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * rt1011.c -- rt1011 ALSA SoC amplifier component driver
- *
- * Copyright(c) 2019 Realtek Semiconductor Corp.
- *
- * Author: Shuming Fan <shumingf@realtek.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -1060,7 +1053,7 @@ static int rt1011_recv_spk_mode_put(struct snd_kcontrol *kcontrol,
 
 		if (rt1011->recv_spk_mode) {
 
-			/* 1: recevier mode on */
+			 
 			snd_soc_component_update_bits(component,
 				RT1011_CLASSD_INTERNAL_SET_3,
 				RT1011_REG_GAIN_CLASSD_RI_SPK_MASK,
@@ -1070,7 +1063,7 @@ static int rt1011_recv_spk_mode_put(struct snd_kcontrol *kcontrol,
 				RT1011_RECV_MODE_SPK_MASK,
 				RT1011_RECV_MODE);
 		} else {
-			/* 0: speaker mode on */
+			 
 			snd_soc_component_update_bits(component,
 				RT1011_CLASSD_INTERNAL_SET_3,
 				RT1011_REG_GAIN_CLASSD_RI_SPK_MASK,
@@ -1239,7 +1232,7 @@ static int rt1011_r0_load(struct rt1011_priv *rt1011)
 	if (!rt1011->r0_reg)
 		return -EINVAL;
 
-	/* write R0 to register */
+	 
 	regmap_write(rt1011->regmap, RT1011_INIT_RECIPROCAL_REG_24_16,
 		((rt1011->r0_reg>>16) & 0x1ff));
 	regmap_write(rt1011->regmap, RT1011_INIT_RECIPROCAL_REG_15_0,
@@ -1278,7 +1271,7 @@ static int rt1011_r0_load_mode_put(struct snd_kcontrol *kcontrol,
 	if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
 		rt1011->r0_reg = ucontrol->value.integer.value[0];
 
-		format = 2147483648U; /* 2^24 * 128 */
+		format = 2147483648U;  
 		r0_integer = format / rt1011->r0_reg / 128;
 		r0_factor = ((format / rt1011->r0_reg * 100) / 128)
 						- (r0_integer * 100);
@@ -1359,44 +1352,44 @@ static int rt1011_i2s_ref_get(struct snd_kcontrol *kcontrol,
 }
 
 static const struct snd_kcontrol_new rt1011_snd_controls[] = {
-	/* I2S Data In Selection */
+	 
 	SOC_ENUM("DIN Source", rt1011_din_source_enum),
 
-	/* TDM Data In Selection */
+	 
 	SOC_ENUM("TDM1 DIN Source", rt1011_tdm1_l_dac1_enum),
 	SOC_ENUM("TDM2 DIN Source", rt1011_tdm2_l_dac1_enum),
 
-	/* TDM1 Data Out Selection */
+	 
 	SOC_ENUM("TDM1 DOUT Source", rt1011_tdm1_adc1_dat_enum),
 	SOC_ENUM("TDM1 DOUT Location", rt1011_tdm1_adc1_loc_enum),
 	SOC_ENUM("TDM1 ADC1DAT Swap Select", rt1011_tdm_adc1_1_enum),
 	SOC_ENUM("TDM1 ADC2DAT Swap Select", rt1011_tdm_adc2_1_enum),
 
-	/* Data Out Mode */
+	 
 	SOC_ENUM("I2S ADC DOUT Mode", rt1011_adc_dout_mode_enum),
 	SOC_ENUM("TDM1 DOUT Length", rt1011_tdm1_dout_len_enum),
 	SOC_ENUM("TDM2 DOUT Length", rt1011_tdm2_dout_len_enum),
 
-	/* Speaker/Receiver Mode */
+	 
 	SOC_SINGLE_EXT("RECV SPK Mode", SND_SOC_NOPM, 0, 1, 0,
 		rt1011_recv_spk_mode_get, rt1011_recv_spk_mode_put),
 
-	/* BiQuad/DRC/SmartBoost Settings */
+	 
 	RT1011_BQ_DRC("AdvanceMode Initial Set"),
 	RT1011_BQ_DRC("AdvanceMode SEP BQ Coeff"),
 	RT1011_BQ_DRC("AdvanceMode EQ BQ Coeff"),
 	RT1011_BQ_DRC("AdvanceMode BQ UI Coeff"),
 	RT1011_BQ_DRC("AdvanceMode SmartBoost Coeff"),
 
-	/* R0 */
+	 
 	SOC_SINGLE_EXT("R0 Calibration", SND_SOC_NOPM, 0, 1, 0,
 		rt1011_r0_cali_get, rt1011_r0_cali_put),
 	RT1011_R0_LOAD("R0 Load Mode"),
 
-	/* R0 temperature */
+	 
 	SOC_SINGLE("R0 Temperature", RT1011_STP_INITIAL_RESISTANCE_TEMP,
 		2, 255, 0),
-	/* I2S Reference */
+	 
 	SOC_ENUM_EXT("I2S Reference", rt1011_i2s_ref_enum,
 		rt1011_i2s_ref_get, rt1011_i2s_ref_put),
 };
@@ -1503,9 +1496,9 @@ static const struct snd_soc_dapm_widget rt1011_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("TEMP REG", RT1011_A_TEMP_SEN,
 		RT1011_POW_TEMP_REG_BIT, 0, NULL, 0),
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SUPPLY("DAC Power", RT1011_POWER_1,
 		RT1011_POW_DAC_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("CLK12M", RT1011_POWER_1,
@@ -1514,7 +1507,7 @@ static const struct snd_soc_dapm_widget rt1011_dapm_widgets[] = {
 		RT1011_DA_MUTE_EN_SFT, 1, rt1011_dac_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("SPO"),
 };
 
@@ -1736,7 +1729,7 @@ static int rt1011_set_component_sysclk(struct snd_soc_component *component,
 	if (freq == rt1011->sysclk && clk_id == rt1011->sysclk_src)
 		return 0;
 
-	/* disable MCLK detect in default */
+	 
 	snd_soc_component_update_bits(component, RT1011_CLK_DET,
 			RT1011_EN_MCLK_DET_MASK, 0);
 
@@ -1894,7 +1887,7 @@ static int rt1011_set_tdm_slot(struct snd_soc_dai *dai,
 		goto _set_tdm_err_;
 	}
 
-	/* Rx slot configuration */
+	 
 	rx_slotnum = hweight_long(rx_mask);
 	if (rx_slotnum > 1 || !rx_slotnum) {
 		ret = -EINVAL;
@@ -1937,7 +1930,7 @@ static int rt1011_set_tdm_slot(struct snd_soc_dai *dai,
 		goto _set_tdm_err_;
 	}
 
-	/* Tx slot configuration */
+	 
 	tx_slotnum = hweight_long(tx_mask);
 	if (tx_slotnum > 2 || !tx_slotnum) {
 		ret = -EINVAL;
@@ -2214,7 +2207,7 @@ MODULE_DEVICE_TABLE(i2c, rt1011_i2c_id);
 static int rt1011_calibrate(struct rt1011_priv *rt1011, unsigned char cali_flag)
 {
 	unsigned int value, count = 0, r0[3];
-	unsigned int chk_cnt = 50; /* DONT change this */
+	unsigned int chk_cnt = 50;  
 	unsigned int dc_offset;
 	unsigned int r0_integer, r0_factor, format;
 	struct device *dev = regmap_get_device(rt1011->regmap);
@@ -2229,44 +2222,44 @@ static int rt1011_calibrate(struct rt1011_priv *rt1011, unsigned char cali_flag)
 	regmap_write(rt1011->regmap, RT1011_SYSTEM_RESET_3, 0x740f);
 	regmap_write(rt1011->regmap, RT1011_SYSTEM_RESET_3, 0x770f);
 
-	/* RC clock */
+	 
 	regmap_write(rt1011->regmap, RT1011_CLK_2, 0x9400);
 	regmap_write(rt1011->regmap, RT1011_PLL_1, 0x0800);
 	regmap_write(rt1011->regmap, RT1011_PLL_2, 0x0020);
 	regmap_write(rt1011->regmap, RT1011_CLK_DET, 0x0800);
 
-	/* ADC/DAC setting */
+	 
 	regmap_write(rt1011->regmap, RT1011_ADC_SET_5, 0x0a20);
 	regmap_write(rt1011->regmap, RT1011_DAC_SET_2, 0xe232);
 	regmap_write(rt1011->regmap, RT1011_ADC_SET_4, 0xc000);
 
-	/* DC detection */
+	 
 	regmap_write(rt1011->regmap, RT1011_SPK_PRO_DC_DET_1, 0xb00c);
 	regmap_write(rt1011->regmap, RT1011_SPK_PRO_DC_DET_2, 0xcccc);
 
-	/* Power */
+	 
 	regmap_write(rt1011->regmap, RT1011_POWER_1, 0xe0e0);
 	regmap_write(rt1011->regmap, RT1011_POWER_3, 0x5003);
 	regmap_write(rt1011->regmap, RT1011_POWER_9, 0xa860);
 	regmap_write(rt1011->regmap, RT1011_DAC_SET_2, 0xa032);
 
-	/* POW_PLL / POW_BG / POW_BG_MBIAS_LV / POW_V/I */
+	 
 	regmap_write(rt1011->regmap, RT1011_POWER_2, 0x0007);
 	regmap_write(rt1011->regmap, RT1011_POWER_3, 0x5ff7);
 	regmap_write(rt1011->regmap, RT1011_A_TEMP_SEN, 0x7f44);
 	regmap_write(rt1011->regmap, RT1011_A_TIMING_1, 0x4054);
 	regmap_write(rt1011->regmap, RT1011_BAT_GAIN_1, 0x309c);
 
-	/* DC offset from EFUSE */
+	 
 	regmap_write(rt1011->regmap, RT1011_DC_CALIB_CLASSD_3, 0xcb00);
 	regmap_write(rt1011->regmap, RT1011_BOOST_CON_1, 0xe080);
 	regmap_write(rt1011->regmap, RT1011_POWER_4, 0x16f2);
 	regmap_write(rt1011->regmap, RT1011_POWER_6, 0x36ad);
 
-	/* mixer */
+	 
 	regmap_write(rt1011->regmap, RT1011_MIXER_1, 0x3f1d);
 
-	/* EFUSE read */
+	 
 	regmap_write(rt1011->regmap, RT1011_EFUSE_CONTROL_1, 0x0d0a);
 	msleep(30);
 
@@ -2289,12 +2282,12 @@ static int rt1011_calibrate(struct rt1011_priv *rt1011, unsigned char cali_flag)
 	if (cali_flag) {
 
 		regmap_write(rt1011->regmap, RT1011_ADC_SET_1, 0x2925);
-		/* Class D on */
+		 
 		regmap_write(rt1011->regmap, RT1011_CLASS_D_POS, 0x010e);
 		regmap_write(rt1011->regmap,
 			RT1011_CLASSD_INTERNAL_SET_1, 0x1701);
 
-		/* STP enable */
+		 
 		regmap_write(rt1011->regmap, RT1011_SPK_TEMP_PROTECT_0, 0x8000);
 		regmap_write(rt1011->regmap, RT1011_SPK_TEMP_PROTECT_7, 0xf000);
 		regmap_write(rt1011->regmap, RT1011_SPK_TEMP_PROTECT_4, 0x4040);
@@ -2323,7 +2316,7 @@ static int rt1011_calibrate(struct rt1011_priv *rt1011, unsigned char cali_flag)
 			dev_err(dev, "Calibrate R0 Failure\n");
 			ret = -EAGAIN;
 		} else {
-			format = 2147483648U; /* 2^24 * 128 */
+			format = 2147483648U;  
 			r0_integer = format / r0[0] / 128;
 			r0_factor = ((format / r0[0] * 100) / 128)
 							- (r0_integer * 100);
@@ -2334,7 +2327,7 @@ static int rt1011_calibrate(struct rt1011_priv *rt1011, unsigned char cali_flag)
 		}
 	}
 
-	/* depop */
+	 
 	regmap_write(rt1011->regmap, RT1011_SPK_TEMP_PROTECT_0, 0x0000);
 	msleep(400);
 	regmap_write(rt1011->regmap, RT1011_POWER_9, 0xa840);
@@ -2383,17 +2376,13 @@ static void rt1011_calibration_work(struct work_struct *work)
 	else
 		rt1011_calibrate(rt1011, 1);
 
-	/*
-	 * This flag should reset after booting.
-	 * The factory test will do calibration again and use this flag to check
-	 * whether the calibration completed
-	 */
+	 
 	rt1011->cali_done = 0;
 
-	/* initial */
+	 
 	rt1011_reg_init(component);
 
-	/* Apply temperature and calibration data from device property */
+	 
 	if (rt1011->temperature_calib <= 0xff &&
 		rt1011->temperature_calib > 0) {
 		snd_soc_component_update_bits(component,
@@ -2404,7 +2393,7 @@ static void rt1011_calibration_work(struct work_struct *work)
 	if (rt1011->r0_calib) {
 		rt1011->r0_reg = rt1011->r0_calib;
 
-		format = 2147483648U; /* 2^24 * 128 */
+		format = 2147483648U;  
 		r0_integer = format / rt1011->r0_reg / 128;
 		r0_factor = ((format / rt1011->r0_reg * 100) / 128)
 						- (r0_integer * 100);

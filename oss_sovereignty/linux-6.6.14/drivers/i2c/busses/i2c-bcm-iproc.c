@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
+
+
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -150,10 +150,7 @@
 
 #define IE_S_ALL_INTERRUPT_SHIFT     21
 #define IE_S_ALL_INTERRUPT_MASK      0x3f
-/*
- * It takes ~18us to reading 10bytes of data, hence to keep tasklet
- * running for less time, max slave read per tasklet is set to 10 bytes.
- */
+ 
 #define MAX_SLAVE_RX_PER_INT         10
 
 enum i2c_slave_read_status {
@@ -183,7 +180,7 @@ struct bcm_iproc_i2c_dev {
 
 	u32 ape_addr_mask;
 
-	/* lock for indirect access through IDM */
+	 
 	spinlock_t idm_lock;
 
 	struct i2c_adapter adapter;
@@ -196,9 +193,9 @@ struct bcm_iproc_i2c_dev {
 
 	struct i2c_client *slave;
 
-	/* bytes that have been transferred */
+	 
 	unsigned int tx_bytes;
-	/* bytes that have been read */
+	 
 	unsigned int rx_bytes;
 	unsigned int thld_bytes;
 
@@ -210,12 +207,10 @@ struct bcm_iproc_i2c_dev {
 	struct tasklet_struct slave_rx_tasklet;
 };
 
-/* tasklet to process slave rx data */
+ 
 static void slave_rx_tasklet_fn(unsigned long);
 
-/*
- * Can be expanded in the future if more interrupt status bits are utilized
- */
+ 
 #define ISR_MASK (BIT(IS_M_START_BUSY_SHIFT) | BIT(IS_M_TX_UNDERRUN_SHIFT)\
 		| BIT(IS_M_RX_THLD_SHIFT))
 
@@ -271,46 +266,46 @@ static void bcm_iproc_i2c_slave_init(
 
 	iproc_i2c->tx_underrun = 0;
 	if (need_reset) {
-		/* put controller in reset */
+		 
 		val = iproc_i2c_rd_reg(iproc_i2c, CFG_OFFSET);
 		val |= BIT(CFG_RESET_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, CFG_OFFSET, val);
 
-		/* wait 100 usec per spec */
+		 
 		udelay(100);
 
-		/* bring controller out of reset */
+		 
 		val &= ~(BIT(CFG_RESET_SHIFT));
 		iproc_i2c_wr_reg(iproc_i2c, CFG_OFFSET, val);
 	}
 
-	/* flush TX/RX FIFOs */
+	 
 	val = (BIT(S_FIFO_RX_FLUSH_SHIFT) | BIT(S_FIFO_TX_FLUSH_SHIFT));
 	iproc_i2c_wr_reg(iproc_i2c, S_FIFO_CTRL_OFFSET, val);
 
-	/* Maximum slave stretch time */
+	 
 	val = iproc_i2c_rd_reg(iproc_i2c, TIM_CFG_OFFSET);
 	val &= ~(TIM_RAND_SLAVE_STRETCH_MASK << TIM_RAND_SLAVE_STRETCH_SHIFT);
 	val |= (SLAVE_CLOCK_STRETCH_TIME << TIM_RAND_SLAVE_STRETCH_SHIFT);
 	iproc_i2c_wr_reg(iproc_i2c, TIM_CFG_OFFSET, val);
 
-	/* Configure the slave address */
+	 
 	val = iproc_i2c_rd_reg(iproc_i2c, S_CFG_SMBUS_ADDR_OFFSET);
 	val |= BIT(S_CFG_EN_NIC_SMB_ADDR3_SHIFT);
 	val &= ~(S_CFG_NIC_SMB_ADDR3_MASK << S_CFG_NIC_SMB_ADDR3_SHIFT);
 	val |= (iproc_i2c->slave->addr << S_CFG_NIC_SMB_ADDR3_SHIFT);
 	iproc_i2c_wr_reg(iproc_i2c, S_CFG_SMBUS_ADDR_OFFSET, val);
 
-	/* clear all pending slave interrupts */
+	 
 	iproc_i2c_wr_reg(iproc_i2c, IS_OFFSET, ISR_MASK_SLAVE);
 
-	/* Enable interrupt register to indicate a valid byte in receive fifo */
+	 
 	val = BIT(IE_S_RX_EVENT_SHIFT);
-	/* Enable interrupt register to indicate Slave Rx FIFO Full */
+	 
 	val |= BIT(IE_S_RX_FIFO_FULL_SHIFT);
-	/* Enable interrupt register to indicate a Master read transaction */
+	 
 	val |= BIT(IE_S_RD_EVENT_SHIFT);
-	/* Enable interrupt register for the Slave BUSY command */
+	 
 	val |= BIT(IE_S_START_BUSY_SHIFT);
 	iproc_i2c->slave_int_mask = val;
 	iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, val);
@@ -322,10 +317,10 @@ static bool bcm_iproc_i2c_check_slave_status
 	u32 val;
 	bool recover = false;
 
-	/* check slave transmit status only if slave is transmitting */
+	 
 	if (!iproc_i2c->slave_rx_only) {
 		val = iproc_i2c_rd_reg(iproc_i2c, S_CMD_OFFSET);
-		/* status is valid only when START_BUSY is cleared */
+		 
 		if (!(val & BIT(S_CMD_START_BUSY_SHIFT))) {
 			val = (val >> S_CMD_STATUS_SHIFT) & S_CMD_STATUS_MASK;
 			if (val == S_CMD_STATUS_TIMEOUT ||
@@ -339,7 +334,7 @@ static bool bcm_iproc_i2c_check_slave_status
 		}
 	}
 
-	/* RX_EVENT is not valid when START_BUSY is set */
+	 
 	if ((status & BIT(IS_S_RX_EVENT_SHIFT)) &&
 	    (status & BIT(IS_S_START_BUSY_SHIFT))) {
 		dev_warn(iproc_i2c->device, "Slave aborted read transaction\n");
@@ -347,7 +342,7 @@ static bool bcm_iproc_i2c_check_slave_status
 	}
 
 	if (recover) {
-		/* re-initialize i2c for recovery */
+		 
 		bcm_iproc_i2c_enable_disable(iproc_i2c, false);
 		bcm_iproc_i2c_slave_init(iproc_i2c, true);
 		bcm_iproc_i2c_enable_disable(iproc_i2c, true);
@@ -368,19 +363,19 @@ static void bcm_iproc_i2c_slave_read(struct bcm_iproc_i2c_dev *iproc_i2c)
 		rx_data = ((val >> S_RX_DATA_SHIFT) & S_RX_DATA_MASK);
 
 		if (rx_status == I2C_SLAVE_RX_START) {
-			/* Start of SMBUS Master write */
+			 
 			i2c_slave_event(iproc_i2c->slave,
 					I2C_SLAVE_WRITE_REQUESTED, &rx_data);
 			iproc_i2c->rx_start_rcvd = true;
 			iproc_i2c->slave_read_complete = false;
 		} else if (rx_status == I2C_SLAVE_RX_DATA &&
 			   iproc_i2c->rx_start_rcvd) {
-			/* Middle of SMBUS Master write */
+			 
 			i2c_slave_event(iproc_i2c->slave,
 					I2C_SLAVE_WRITE_RECEIVED, &rx_data);
 		} else if (rx_status == I2C_SLAVE_RX_END &&
 			   iproc_i2c->rx_start_rcvd) {
-			/* End of SMBUS Master write */
+			 
 			if (iproc_i2c->slave_rx_only)
 				i2c_slave_event(iproc_i2c->slave,
 						I2C_SLAVE_WRITE_RECEIVED,
@@ -405,30 +400,21 @@ static void slave_rx_tasklet_fn(unsigned long data)
 
 	bcm_iproc_i2c_slave_read(iproc_i2c);
 
-	/* clear pending IS_S_RX_EVENT_SHIFT interrupt */
+	 
 	int_clr = BIT(IS_S_RX_EVENT_SHIFT);
 
 	if (!iproc_i2c->slave_rx_only && iproc_i2c->slave_read_complete) {
-		/*
-		 * In case of single byte master-read request,
-		 * IS_S_TX_UNDERRUN_SHIFT event is generated before
-		 * IS_S_START_BUSY_SHIFT event. Hence start slave data send
-		 * from first IS_S_TX_UNDERRUN_SHIFT event.
-		 *
-		 * This means don't send any data from slave when
-		 * IS_S_RD_EVENT_SHIFT event is generated else it will increment
-		 * eeprom or other backend slave driver read pointer twice.
-		 */
+		 
 		iproc_i2c->tx_underrun = 0;
 		iproc_i2c->slave_int_mask |= BIT(IE_S_TX_UNDERRUN_SHIFT);
 
-		/* clear IS_S_RD_EVENT_SHIFT interrupt */
+		 
 		int_clr |= BIT(IS_S_RD_EVENT_SHIFT);
 	}
 
-	/* clear slave interrupt */
+	 
 	iproc_i2c_wr_reg(iproc_i2c, IS_OFFSET, int_clr);
-	/* enable slave interrupts */
+	 
 	iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, iproc_i2c->slave_int_mask);
 }
 
@@ -442,94 +428,77 @@ static bool bcm_iproc_i2c_slave_isr(struct bcm_iproc_i2c_dev *iproc_i2c,
 	if (status & BIT(IS_S_TX_UNDERRUN_SHIFT)) {
 		iproc_i2c->tx_underrun++;
 		if (iproc_i2c->tx_underrun == 1)
-			/* Start of SMBUS for Master Read */
+			 
 			i2c_slave_event(iproc_i2c->slave,
 					I2C_SLAVE_READ_REQUESTED,
 					&value);
 		else
-			/* Master read other than start */
+			 
 			i2c_slave_event(iproc_i2c->slave,
 					I2C_SLAVE_READ_PROCESSED,
 					&value);
 
 		iproc_i2c_wr_reg(iproc_i2c, S_TX_OFFSET, value);
-		/* start transfer */
+		 
 		val = BIT(S_CMD_START_BUSY_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, S_CMD_OFFSET, val);
 
-		/* clear interrupt */
+		 
 		iproc_i2c_wr_reg(iproc_i2c, IS_OFFSET,
 				 BIT(IS_S_TX_UNDERRUN_SHIFT));
 	}
 
-	/* Stop received from master in case of master read transaction */
+	 
 	if (status & BIT(IS_S_START_BUSY_SHIFT)) {
-		/*
-		 * Disable interrupt for TX FIFO becomes empty and
-		 * less than PKT_LENGTH bytes were output on the SMBUS
-		 */
+		 
 		iproc_i2c->slave_int_mask &= ~BIT(IE_S_TX_UNDERRUN_SHIFT);
 		val = iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
 		val &= ~BIT(IE_S_TX_UNDERRUN_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, val);
 
-		/* End of SMBUS for Master Read */
+		 
 		val = BIT(S_TX_WR_STATUS_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, S_TX_OFFSET, val);
 
 		val = BIT(S_CMD_START_BUSY_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, S_CMD_OFFSET, val);
 
-		/* flush TX FIFOs */
+		 
 		val = iproc_i2c_rd_reg(iproc_i2c, S_FIFO_CTRL_OFFSET);
 		val |= (BIT(S_FIFO_TX_FLUSH_SHIFT));
 		iproc_i2c_wr_reg(iproc_i2c, S_FIFO_CTRL_OFFSET, val);
 
 		i2c_slave_event(iproc_i2c->slave, I2C_SLAVE_STOP, &value);
 
-		/* clear interrupt */
+		 
 		iproc_i2c_wr_reg(iproc_i2c, IS_OFFSET,
 				 BIT(IS_S_START_BUSY_SHIFT));
 	}
 
-	/* if the controller has been reset, immediately return from the ISR */
+	 
 	if (bcm_iproc_i2c_check_slave_status(iproc_i2c, status))
 		return true;
 
-	/*
-	 * Slave events in case of master-write, master-write-read and,
-	 * master-read
-	 *
-	 * Master-write     : only IS_S_RX_EVENT_SHIFT event
-	 * Master-write-read: both IS_S_RX_EVENT_SHIFT and IS_S_RD_EVENT_SHIFT
-	 *                    events
-	 * Master-read      : both IS_S_RX_EVENT_SHIFT and IS_S_RD_EVENT_SHIFT
-	 *                    events or only IS_S_RD_EVENT_SHIFT
-	 *
-	 * iproc has a slave rx fifo size of 64 bytes. Rx fifo full interrupt
-	 * (IS_S_RX_FIFO_FULL_SHIFT) will be generated when RX fifo becomes
-	 * full. This can happen if Master issues write requests of more than
-	 * 64 bytes.
-	 */
+	 
 	if (status & BIT(IS_S_RX_EVENT_SHIFT) ||
 	    status & BIT(IS_S_RD_EVENT_SHIFT) ||
 	    status & BIT(IS_S_RX_FIFO_FULL_SHIFT)) {
-		/* disable slave interrupts */
+		 
 		val = iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
 		val &= ~iproc_i2c->slave_int_mask;
 		iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, val);
 
 		if (status & BIT(IS_S_RD_EVENT_SHIFT))
-			/* Master-write-read request */
+			 
 			iproc_i2c->slave_rx_only = false;
 		else
-			/* Master-write request only */
+			 
 			iproc_i2c->slave_rx_only = true;
 
-		/* schedule tasklet to read data later */
+		 
 		tasklet_schedule(&iproc_i2c->slave_rx_tasklet);
 
-		/* clear IS_S_RX_FIFO_FULL_SHIFT interrupt */
+		 
 		if (status & BIT(IS_S_RX_FIFO_FULL_SHIFT)) {
 			val = BIT(IS_S_RX_FIFO_FULL_SHIFT);
 			iproc_i2c_wr_reg(iproc_i2c, IS_OFFSET, val);
@@ -544,11 +513,11 @@ static void bcm_iproc_i2c_read_valid_bytes(struct bcm_iproc_i2c_dev *iproc_i2c)
 	struct i2c_msg *msg = iproc_i2c->msg;
 	uint32_t val;
 
-	/* Read valid data from RX FIFO */
+	 
 	while (iproc_i2c->rx_bytes < msg->len) {
 		val = iproc_i2c_rd_reg(iproc_i2c, M_RX_OFFSET);
 
-		/* rx fifo empty */
+		 
 		if (!((val >> M_RX_STATUS_SHIFT) & M_RX_STATUS_MASK))
 			break;
 
@@ -565,25 +534,22 @@ static void bcm_iproc_i2c_send(struct bcm_iproc_i2c_dev *iproc_i2c)
 	unsigned int i;
 	u32 val;
 
-	/* can only fill up to the FIFO size */
+	 
 	tx_bytes = min_t(unsigned int, tx_bytes, M_TX_RX_FIFO_SIZE);
 	for (i = 0; i < tx_bytes; i++) {
-		/* start from where we left over */
+		 
 		unsigned int idx = iproc_i2c->tx_bytes + i;
 
 		val = msg->buf[idx];
 
-		/* mark the last byte */
+		 
 		if (idx == msg->len - 1) {
 			val |= BIT(M_TX_WR_STATUS_SHIFT);
 
 			if (iproc_i2c->irq) {
 				u32 tmp;
 
-				/*
-				 * Since this is the last byte, we should now
-				 * disable TX FIFO underrun interrupt
-				 */
+				 
 				tmp = iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
 				tmp &= ~BIT(IE_M_TX_UNDERRUN_SHIFT);
 				iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET,
@@ -591,11 +557,11 @@ static void bcm_iproc_i2c_send(struct bcm_iproc_i2c_dev *iproc_i2c)
 			}
 		}
 
-		/* load data into TX FIFO */
+		 
 		iproc_i2c_wr_reg(iproc_i2c, M_TX_OFFSET, val);
 	}
 
-	/* update number of transferred bytes */
+	 
 	iproc_i2c->tx_bytes += tx_bytes;
 }
 
@@ -608,38 +574,34 @@ static void bcm_iproc_i2c_read(struct bcm_iproc_i2c_dev *iproc_i2c)
 	bytes_left = msg->len - iproc_i2c->rx_bytes;
 	if (bytes_left == 0) {
 		if (iproc_i2c->irq) {
-			/* finished reading all data, disable rx thld event */
+			 
 			val = iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
 			val &= ~BIT(IS_M_RX_THLD_SHIFT);
 			iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, val);
 		}
 	} else if (bytes_left < iproc_i2c->thld_bytes) {
-		/* set bytes left as threshold */
+		 
 		val = iproc_i2c_rd_reg(iproc_i2c, M_FIFO_CTRL_OFFSET);
 		val &= ~(M_FIFO_RX_THLD_MASK << M_FIFO_RX_THLD_SHIFT);
 		val |= (bytes_left << M_FIFO_RX_THLD_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, M_FIFO_CTRL_OFFSET, val);
 		iproc_i2c->thld_bytes = bytes_left;
 	}
-	/*
-	 * bytes_left >= iproc_i2c->thld_bytes,
-	 * hence no need to change the THRESHOLD SET.
-	 * It will remain as iproc_i2c->thld_bytes itself
-	 */
+	 
 }
 
 static void bcm_iproc_i2c_process_m_event(struct bcm_iproc_i2c_dev *iproc_i2c,
 					  u32 status)
 {
-	/* TX FIFO is empty and we have more data to send */
+	 
 	if (status & BIT(IS_M_TX_UNDERRUN_SHIFT))
 		bcm_iproc_i2c_send(iproc_i2c);
 
-	/* RX FIFO threshold is reached and data needs to be read out */
+	 
 	if (status & BIT(IS_M_RX_THLD_SHIFT))
 		bcm_iproc_i2c_read(iproc_i2c);
 
-	/* transfer is done */
+	 
 	if (status & BIT(IS_M_START_BUSY_SHIFT)) {
 		iproc_i2c->xfer_is_done = 1;
 		if (iproc_i2c->irq)
@@ -655,7 +617,7 @@ static irqreturn_t bcm_iproc_i2c_isr(int irq, void *data)
 	bool ret;
 
 	status = iproc_i2c_rd_reg(iproc_i2c, IS_OFFSET);
-	/* process only slave interrupt which are enabled */
+	 
 	slave_status = status & iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET) &
 		       ISR_MASK_SLAVE;
 
@@ -671,7 +633,7 @@ static irqreturn_t bcm_iproc_i2c_isr(int irq, void *data)
 	if (!status)
 		return IRQ_NONE;
 
-	/* process all master based events */
+	 
 	bcm_iproc_i2c_process_m_event(iproc_i2c, status);
 	iproc_i2c_wr_reg(iproc_i2c, IS_OFFSET, status);
 
@@ -682,29 +644,29 @@ static int bcm_iproc_i2c_init(struct bcm_iproc_i2c_dev *iproc_i2c)
 {
 	u32 val;
 
-	/* put controller in reset */
+	 
 	val = iproc_i2c_rd_reg(iproc_i2c, CFG_OFFSET);
 	val |= BIT(CFG_RESET_SHIFT);
 	val &= ~(BIT(CFG_EN_SHIFT));
 	iproc_i2c_wr_reg(iproc_i2c, CFG_OFFSET, val);
 
-	/* wait 100 usec per spec */
+	 
 	udelay(100);
 
-	/* bring controller out of reset */
+	 
 	val &= ~(BIT(CFG_RESET_SHIFT));
 	iproc_i2c_wr_reg(iproc_i2c, CFG_OFFSET, val);
 
-	/* flush TX/RX FIFOs and set RX FIFO threshold to zero */
+	 
 	val = (BIT(M_FIFO_RX_FLUSH_SHIFT) | BIT(M_FIFO_TX_FLUSH_SHIFT));
 	iproc_i2c_wr_reg(iproc_i2c, M_FIFO_CTRL_OFFSET, val);
-	/* disable all interrupts */
+	 
 	val = iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
 	val &= ~(IE_M_ALL_INTERRUPT_MASK <<
 			IE_M_ALL_INTERRUPT_SHIFT);
 	iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, val);
 
-	/* clear all pending interrupts */
+	 
 	iproc_i2c_wr_reg(iproc_i2c, IS_OFFSET, 0xffffffff);
 
 	return 0;
@@ -762,7 +724,7 @@ static int bcm_iproc_i2c_check_status(struct bcm_iproc_i2c_dev *iproc_i2c,
 	default:
 		dev_dbg(iproc_i2c->device, "unknown error code=%d\n", val);
 
-		/* re-initialize i2c for recovery */
+		 
 		bcm_iproc_i2c_enable_disable(iproc_i2c, false);
 		bcm_iproc_i2c_init(iproc_i2c);
 		bcm_iproc_i2c_enable_disable(iproc_i2c, true);
@@ -784,14 +746,14 @@ static int bcm_iproc_i2c_xfer_wait(struct bcm_iproc_i2c_dev *iproc_i2c,
 	if (iproc_i2c->irq) {
 		time_left = wait_for_completion_timeout(&iproc_i2c->done,
 							time_left);
-		/* disable all interrupts */
+		 
 		iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, 0);
-		/* read it back to flush the write */
+		 
 		iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
-		/* make sure the interrupt handler isn't running */
+		 
 		synchronize_irq(iproc_i2c->irq);
 
-	} else { /* polling mode */
+	} else {  
 		unsigned long timeout = jiffies + time_left;
 
 		do {
@@ -813,7 +775,7 @@ static int bcm_iproc_i2c_xfer_wait(struct bcm_iproc_i2c_dev *iproc_i2c,
 	if (!time_left && !iproc_i2c->xfer_is_done) {
 		dev_err(iproc_i2c->device, "transaction timed out\n");
 
-		/* flush both TX/RX FIFOs */
+		 
 		val = BIT(M_FIFO_RX_FLUSH_SHIFT) | BIT(M_FIFO_TX_FLUSH_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, M_FIFO_CTRL_OFFSET, val);
 		return -ETIMEDOUT;
@@ -821,7 +783,7 @@ static int bcm_iproc_i2c_xfer_wait(struct bcm_iproc_i2c_dev *iproc_i2c,
 
 	ret = bcm_iproc_i2c_check_status(iproc_i2c, msg);
 	if (ret) {
-		/* flush both TX/RX FIFOs */
+		 
 		val = BIT(M_FIFO_RX_FLUSH_SHIFT) | BIT(M_FIFO_TX_FLUSH_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, M_FIFO_CTRL_OFFSET, val);
 		return ret;
@@ -830,12 +792,7 @@ static int bcm_iproc_i2c_xfer_wait(struct bcm_iproc_i2c_dev *iproc_i2c,
 	return 0;
 }
 
-/*
- * If 'process_call' is true, then this is a multi-msg transfer that requires
- * a repeated start between the messages.
- * More specifically, it must be a write (reg) followed by a read (data).
- * The i2c quirks are set to enforce this rule.
- */
+ 
 static int bcm_iproc_i2c_xfer_internal(struct bcm_iproc_i2c_dev *iproc_i2c,
 					struct i2c_msg *msgs, bool process_call)
 {
@@ -845,7 +802,7 @@ static int bcm_iproc_i2c_xfer_internal(struct bcm_iproc_i2c_dev *iproc_i2c,
 	unsigned int tx_bytes;
 	struct i2c_msg *msg = &msgs[0];
 
-	/* check if bus is busy */
+	 
 	if (!!(iproc_i2c_rd_reg(iproc_i2c,
 				M_CMD_OFFSET) & BIT(M_CMD_START_BUSY_SHIFT))) {
 		dev_warn(iproc_i2c->device, "bus is busy\n");
@@ -854,21 +811,17 @@ static int bcm_iproc_i2c_xfer_internal(struct bcm_iproc_i2c_dev *iproc_i2c,
 
 	iproc_i2c->msg = msg;
 
-	/* format and load slave address into the TX FIFO */
+	 
 	addr = i2c_8bit_addr_from_msg(msg);
 	iproc_i2c_wr_reg(iproc_i2c, M_TX_OFFSET, addr);
 
-	/*
-	 * For a write transaction, load data into the TX FIFO. Only allow
-	 * loading up to TX FIFO size - 1 bytes of data since the first byte
-	 * has been used up by the slave address
-	 */
+	 
 	tx_bytes = min_t(unsigned int, msg->len, M_TX_RX_FIFO_SIZE - 1);
 	if (!(msg->flags & I2C_M_RD)) {
 		for (i = 0; i < tx_bytes; i++) {
 			val = msg->buf[i];
 
-			/* mark the last byte */
+			 
 			if (!process_call && (i == msg->len - 1))
 				val |= BIT(M_TX_WR_STATUS_SHIFT);
 
@@ -877,51 +830,37 @@ static int bcm_iproc_i2c_xfer_internal(struct bcm_iproc_i2c_dev *iproc_i2c,
 		iproc_i2c->tx_bytes = tx_bytes;
 	}
 
-	/* Process the read message if this is process call */
+	 
 	if (process_call) {
 		msg++;
-		iproc_i2c->msg = msg;  /* point to second msg */
+		iproc_i2c->msg = msg;   
 
-		/*
-		 * The last byte to be sent out should be a slave
-		 * address with read operation
-		 */
+		 
 		addr = i2c_8bit_addr_from_msg(msg);
-		/* mark it the last byte out */
+		 
 		val = addr | BIT(M_TX_WR_STATUS_SHIFT);
 		iproc_i2c_wr_reg(iproc_i2c, M_TX_OFFSET, val);
 	}
 
-	/* mark as incomplete before starting the transaction */
+	 
 	if (iproc_i2c->irq)
 		reinit_completion(&iproc_i2c->done);
 
 	iproc_i2c->xfer_is_done = 0;
 
-	/*
-	 * Enable the "start busy" interrupt, which will be triggered after the
-	 * transaction is done, i.e., the internal start_busy bit, transitions
-	 * from 1 to 0.
-	 */
+	 
 	val_intr_en = BIT(IE_M_START_BUSY_SHIFT);
 
-	/*
-	 * If TX data size is larger than the TX FIFO, need to enable TX
-	 * underrun interrupt, which will be triggerred when the TX FIFO is
-	 * empty. When that happens we can then pump more data into the FIFO
-	 */
+	 
 	if (!process_call && !(msg->flags & I2C_M_RD) &&
 	    msg->len > iproc_i2c->tx_bytes)
 		val_intr_en |= BIT(IE_M_TX_UNDERRUN_SHIFT);
 
-	/*
-	 * Now we can activate the transfer. For a read operation, specify the
-	 * number of bytes to read
-	 */
+	 
 	val = BIT(M_CMD_START_BUSY_SHIFT);
 
 	if (msg->len == 0) {
-		/* SMBUS QUICK Command (Read/Write) */
+		 
 		val |= (M_CMD_PROTOCOL_QUICK << M_CMD_PROTOCOL_SHIFT);
 	} else if (msg->flags & I2C_M_RD) {
 		u32 protocol;
@@ -932,13 +871,13 @@ static int bcm_iproc_i2c_xfer_internal(struct bcm_iproc_i2c_dev *iproc_i2c,
 		else
 			iproc_i2c->thld_bytes = msg->len;
 
-		/* set threshold value */
+		 
 		tmp = iproc_i2c_rd_reg(iproc_i2c, M_FIFO_CTRL_OFFSET);
 		tmp &= ~(M_FIFO_RX_THLD_MASK << M_FIFO_RX_THLD_SHIFT);
 		tmp |= iproc_i2c->thld_bytes << M_FIFO_RX_THLD_SHIFT;
 		iproc_i2c_wr_reg(iproc_i2c, M_FIFO_CTRL_OFFSET, tmp);
 
-		/* enable the RX threshold interrupt */
+		 
 		val_intr_en |= BIT(IE_M_RX_THLD_SHIFT);
 
 		protocol = process_call ?
@@ -964,7 +903,7 @@ static int bcm_iproc_i2c_xfer(struct i2c_adapter *adapter,
 	int ret;
 
 	if (num == 2) {
-		/* Repeated start, use process call */
+		 
 		process_call = true;
 		if (msgs[1].flags & I2C_M_NOSTART) {
 			dev_err(iproc_i2c->device, "Invalid repeated start\n");
@@ -1078,7 +1017,7 @@ static int bcm_iproc_i2c_probe(struct platform_device *pdev)
 
 		spin_lock_init(&iproc_i2c->idm_lock);
 
-		/* no slave support */
+		 
 		bcm_iproc_algo.reg_slave = NULL;
 		bcm_iproc_algo.unreg_slave = NULL;
 	}
@@ -1128,10 +1067,7 @@ static void bcm_iproc_i2c_remove(struct platform_device *pdev)
 	struct bcm_iproc_i2c_dev *iproc_i2c = platform_get_drvdata(pdev);
 
 	if (iproc_i2c->irq) {
-		/*
-		 * Make sure there's no pending interrupt when we remove the
-		 * adapter
-		 */
+		 
 		iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, 0);
 		iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
 		synchronize_irq(iproc_i2c->irq);
@@ -1146,16 +1082,13 @@ static int bcm_iproc_i2c_suspend(struct device *dev)
 	struct bcm_iproc_i2c_dev *iproc_i2c = dev_get_drvdata(dev);
 
 	if (iproc_i2c->irq) {
-		/*
-		 * Make sure there's no pending interrupt when we go into
-		 * suspend
-		 */
+		 
 		iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, 0);
 		iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
 		synchronize_irq(iproc_i2c->irq);
 	}
 
-	/* now disable the controller */
+	 
 	bcm_iproc_i2c_enable_disable(iproc_i2c, false);
 
 	return 0;
@@ -1167,15 +1100,12 @@ static int bcm_iproc_i2c_resume(struct device *dev)
 	int ret;
 	u32 val;
 
-	/*
-	 * Power domain could have been shut off completely in system deep
-	 * sleep, so re-initialize the block here
-	 */
+	 
 	ret = bcm_iproc_i2c_init(iproc_i2c);
 	if (ret)
 		return ret;
 
-	/* configure to the desired bus speed */
+	 
 	val = iproc_i2c_rd_reg(iproc_i2c, TIM_CFG_OFFSET);
 	val &= ~BIT(TIM_CFG_MODE_400_SHIFT);
 	val |= (iproc_i2c->bus_speed == I2C_MAX_FAST_MODE_FREQ) << TIM_CFG_MODE_400_SHIFT;
@@ -1222,22 +1152,22 @@ static int bcm_iproc_i2c_unreg_slave(struct i2c_client *slave)
 
 	tasklet_kill(&iproc_i2c->slave_rx_tasklet);
 
-	/* disable all slave interrupts */
+	 
 	tmp = iproc_i2c_rd_reg(iproc_i2c, IE_OFFSET);
 	tmp &= ~(IE_S_ALL_INTERRUPT_MASK <<
 			IE_S_ALL_INTERRUPT_SHIFT);
 	iproc_i2c_wr_reg(iproc_i2c, IE_OFFSET, tmp);
 
-	/* Erase the slave address programmed */
+	 
 	tmp = iproc_i2c_rd_reg(iproc_i2c, S_CFG_SMBUS_ADDR_OFFSET);
 	tmp &= ~BIT(S_CFG_EN_NIC_SMB_ADDR3_SHIFT);
 	iproc_i2c_wr_reg(iproc_i2c, S_CFG_SMBUS_ADDR_OFFSET, tmp);
 
-	/* flush TX/RX FIFOs */
+	 
 	tmp = (BIT(S_FIFO_RX_FLUSH_SHIFT) | BIT(S_FIFO_TX_FLUSH_SHIFT));
 	iproc_i2c_wr_reg(iproc_i2c, S_FIFO_CTRL_OFFSET, tmp);
 
-	/* clear all pending slave interrupts */
+	 
 	iproc_i2c_wr_reg(iproc_i2c, IS_OFFSET, ISR_MASK_SLAVE);
 
 	iproc_i2c->slave = NULL;
@@ -1255,7 +1185,7 @@ static const struct of_device_id bcm_iproc_i2c_of_match[] = {
 		.compatible = "brcm,iproc-nic-i2c",
 		.data = (int *)IPROC_I2C_NIC,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, bcm_iproc_i2c_of_match);
 

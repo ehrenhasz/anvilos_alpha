@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2018 Quantenna Communications */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/firmware.h>
@@ -190,7 +190,7 @@ static int topaz_alloc_bd_table(struct qtnf_pcie_topaz_state *ts,
 	int len;
 	int i;
 
-	/* bd table */
+	 
 
 	len = priv->tx_bd_num * sizeof(struct qtnf_topaz_tx_bd) +
 		priv->rx_bd_num * sizeof(struct qtnf_topaz_rx_bd) +
@@ -200,7 +200,7 @@ static int topaz_alloc_bd_table(struct qtnf_pcie_topaz_state *ts,
 	if (!vaddr)
 		return -ENOMEM;
 
-	/* tx bd */
+	 
 
 	ts->tx_bd_vbase = vaddr;
 	qtnf_non_posted_write(paddr, &bda->bda_rc_tx_bd_base);
@@ -213,7 +213,7 @@ static int topaz_alloc_bd_table(struct qtnf_pcie_topaz_state *ts,
 	priv->tx_bd_r_index = 0;
 	priv->tx_bd_w_index = 0;
 
-	/* rx bd */
+	 
 
 	vaddr = ((struct qtnf_topaz_tx_bd *)vaddr) + priv->tx_bd_num;
 	paddr += priv->tx_bd_num * sizeof(struct qtnf_topaz_tx_bd);
@@ -223,7 +223,7 @@ static int topaz_alloc_bd_table(struct qtnf_pcie_topaz_state *ts,
 
 	pr_debug("RX descriptor table: vaddr=0x%p paddr=%pad\n", vaddr, &paddr);
 
-	/* extra shared params */
+	 
 
 	vaddr = ((struct qtnf_topaz_rx_bd *)vaddr) + priv->rx_bd_num;
 	paddr += priv->rx_bd_num * sizeof(struct qtnf_topaz_rx_bd);
@@ -290,7 +290,7 @@ static int topaz_alloc_rx_buffers(struct qtnf_pcie_topaz_state *ts)
 	return ret;
 }
 
-/* all rx/tx activity should have ceased before calling this function */
+ 
 static void qtnf_topaz_free_xfer_buffers(struct qtnf_pcie_topaz_state *ts)
 {
 	struct qtnf_pcie_bus_priv *priv = &ts->base;
@@ -300,7 +300,7 @@ static void qtnf_topaz_free_xfer_buffers(struct qtnf_pcie_topaz_state *ts)
 	dma_addr_t paddr;
 	int i;
 
-	/* free rx buffers */
+	 
 	for (i = 0; i < priv->rx_bd_num; i++) {
 		if (priv->rx_skb && priv->rx_skb[i]) {
 			rxbd = &ts->rx_bd_vbase[i];
@@ -315,7 +315,7 @@ static void qtnf_topaz_free_xfer_buffers(struct qtnf_pcie_topaz_state *ts)
 		}
 	}
 
-	/* free tx buffers */
+	 
 	for (i = 0; i < priv->tx_bd_num; i++) {
 		if (priv->tx_skb && priv->tx_skb[i]) {
 			txbd = &ts->tx_bd_vbase[i];
@@ -342,7 +342,7 @@ static int qtnf_pcie_topaz_init_xfer(struct qtnf_pcie_topaz_state *ts,
 	if (tx_bd_size == 0)
 		tx_bd_size = TOPAZ_TX_BD_SIZE_DEFAULT;
 
-	/* check TX BD queue max length according to struct qtnf_topaz_bda */
+	 
 	if (tx_bd_size > QTN_PCIE_RC_TX_QUEUE_LEN) {
 		pr_warn("TX BD queue cannot exceed %d\n",
 			QTN_PCIE_RC_TX_QUEUE_LEN);
@@ -453,14 +453,14 @@ static void qtnf_try_stop_xmit(struct qtnf_bus *bus, struct net_device *ndev)
 
 	writel(0x0, ts->txqueue_wake);
 
-	/* sync up tx queue status before generating interrupt */
+	 
 	dma_wmb();
 
-	/* send irq to card: tx stopped */
+	 
 	writel(TOPAZ_IPC_IRQ_WORD(TOPAZ_RC_TX_STOP_IRQ),
 	       TOPAZ_LH_IPC4_INT(ts->base.sysctl_bar));
 
-	/* schedule reclaim attempt */
+	 
 	tasklet_hi_schedule(&ts->base.reclaim_tq);
 }
 
@@ -473,7 +473,7 @@ static void qtnf_try_wake_xmit(struct qtnf_bus *bus, struct net_device *ndev)
 	if (ready) {
 		netif_wake_queue(ndev);
 	} else {
-		/* re-send irq to card: tx stopped */
+		 
 		writel(TOPAZ_IPC_IRQ_WORD(TOPAZ_RC_TX_STOP_IRQ),
 		       TOPAZ_LH_IPC4_INT(ts->base.sysctl_bar));
 	}
@@ -535,10 +535,10 @@ static int qtnf_pcie_data_tx(struct qtnf_bus *bus, struct sk_buff *skb,
 	writel(QTN_HOST_LO32(skb_paddr), &bda->request[i].addr);
 	writel(len | QTN_PCIE_TX_VALID_PKT, &bda->request[i].info);
 
-	/* sync up descriptor updates before generating interrupt */
+	 
 	dma_wmb();
 
-	/* generate irq to card: tx done */
+	 
 	writel(TOPAZ_IPC_IRQ_WORD(TOPAZ_RC_TX_DONE_IRQ),
 	       TOPAZ_LH_IPC4_INT(priv->sysctl_bar));
 
@@ -677,7 +677,7 @@ static int qtnf_topaz_rx_poll(struct napi_struct *napi, int budget)
 			}
 		}
 
-		/* notify card about recv packets once per several packets */
+		 
 		if (((++ts->rx_pkt_count) & RX_DONE_INTR_MSK) == 0)
 			writel(TOPAZ_IPC_IRQ_WORD(TOPAZ_RC_RX_DONE_IRQ),
 			       TOPAZ_LH_IPC4_INT(priv->sysctl_bar));
@@ -688,7 +688,7 @@ static int qtnf_topaz_rx_poll(struct napi_struct *napi, int budget)
 
 		priv->rx_bd_r_index = r_idx;
 
-		/* repalce processed buffer by a new one */
+		 
 		w_idx = priv->rx_bd_w_index;
 		while (CIRC_SPACE(priv->rx_bd_w_index, priv->rx_bd_r_index,
 				  priv->rx_bd_num) > 0) {
@@ -742,10 +742,10 @@ static void qtnf_pcie_data_rx_stop(struct qtnf_bus *bus)
 }
 
 static struct qtnf_bus_ops qtnf_pcie_topaz_bus_ops = {
-	/* control path methods */
+	 
 	.control_tx	= qtnf_pcie_control_tx,
 
-	/* data path methods */
+	 
 	.data_tx		= qtnf_pcie_data_tx,
 	.data_tx_timeout	= qtnf_pcie_data_tx_timeout,
 	.data_rx_start		= qtnf_pcie_data_rx_start,
@@ -817,7 +817,7 @@ static int qtnf_pcie_endian_detect(struct qtnf_pcie_topaz_state *ts)
 
 	writel(QTN_PCI_ENDIAN_DETECT_DATA, &bda->bda_pci_endian);
 
-	/* flush endian modifications before status update */
+	 
 	dma_wmb();
 
 	writel(QTN_PCI_ENDIAN_VALID_STATUS, &bda->bda_pci_pre_status);
@@ -832,7 +832,7 @@ static int qtnf_pcie_endian_detect(struct qtnf_pcie_topaz_state *ts)
 		}
 	}
 
-	/* do not read before status is updated */
+	 
 	dma_rmb();
 
 	endian = readl(&bda->bda_pci_endian);
@@ -863,7 +863,7 @@ static int qtnf_pre_init_ep(struct qtnf_bus *bus)
 	writeb(ts->base.msi_enabled, &ts->bda->bda_rc_msi_enabled);
 	qtnf_reset_dma_offset(ts);
 
-	/* notify card about driver type and boot mode */
+	 
 	flags = readl(&bda->bda_flags) | QTN_BDA_HOST_QLINK_DRV;
 
 	if (ts->base.flashboot)
@@ -970,7 +970,7 @@ qtnf_ep_fw_load(struct qtnf_pcie_topaz_state *ts, const u8 *fw, u32 fw_size)
 		curr += size;
 	}
 
-	/* upload completion mark: zero-sized block */
+	 
 	qtnf_non_posted_write(0, &bda->bda_img);
 	qtnf_non_posted_write(0, &bda->bda_img_size);
 
@@ -982,7 +982,7 @@ qtnf_ep_fw_load(struct qtnf_pcie_topaz_state *ts, const u8 *fw, u32 fw_size)
 		goto fw_load_map;
 	}
 
-	/* RC is done */
+	 
 	qtnf_set_state(&ts->bda->bda_bootstate, QTN_BDA_FW_BLOCK_END);
 	if (qtnf_poll_state(&ts->bda->bda_bootstate, QTN_BDA_FW_LOAD_DONE,
 			    QTN_FW_DL_TIMEOUT_MS)) {
@@ -1130,7 +1130,7 @@ static int qtnf_pcie_topaz_probe(struct qtnf_bus *bus,
 	INIT_WORK(&bus->fw_work, qtnf_topaz_fw_work_handler);
 	ts->bda = ts->base.epmem_bar;
 
-	/* assign host msi irq before card init */
+	 
 	if (ts->base.msi_enabled)
 		irqflags = IRQF_NOBALANCING;
 	else

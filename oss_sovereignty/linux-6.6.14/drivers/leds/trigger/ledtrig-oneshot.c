@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * One-shot LED Trigger
- *
- * Copyright 2012, Fabio Baltieri <fabio.baltieri@gmail.com>
- *
- * Based on ledtrig-timer.c by Richard Purdie <rpurdie@openedhand.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -32,7 +26,7 @@ static ssize_t led_shot(struct device *dev,
 			&led_cdev->blink_delay_on, &led_cdev->blink_delay_off,
 			oneshot_data->invert);
 
-	/* content is ignored */
+	 
 	return size;
 }
 static ssize_t led_invert_show(struct device *dev,
@@ -167,10 +161,7 @@ static int oneshot_trig_activate(struct led_classdev *led_cdev)
 
 	if (led_cdev->flags & LED_INIT_DEFAULT_TRIGGER) {
 		pattern_init(led_cdev);
-		/*
-		 * Mark as initialized even on pattern_init() error because
-		 * any consecutive call to it would produce the same error.
-		 */
+		 
 		led_cdev->flags &= ~LED_INIT_DEFAULT_TRIGGER;
 	}
 
@@ -183,7 +174,7 @@ static void oneshot_trig_deactivate(struct led_classdev *led_cdev)
 
 	kfree(oneshot_data);
 
-	/* Stop blinking */
+	 
 	led_set_brightness(led_cdev, LED_OFF);
 }
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DDR Self-Refresh Power Down (SRPD) support for Broadcom STB SoCs
- *
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/io.h>
@@ -49,7 +46,7 @@ static int brcmstb_memc_srpd_config(struct brcmstb_memc *memc,
 	void __iomem *cfg = memc->ddr_ctrl + memc->srpd_offset;
 	u32 val;
 
-	/* Max timeout supported in HW */
+	 
 	if (cycles > INACT_COUNT_MASK)
 		return -EINVAL;
 
@@ -60,7 +57,7 @@ static int brcmstb_memc_srpd_config(struct brcmstb_memc *memc,
 		val |= BIT(SRPD_EN_SHIFT);
 
 	writel_relaxed(val, cfg);
-	/* Ensure the write is committed to the controller */
+	 
 	(void)readl_relaxed(cfg);
 
 	return 0;
@@ -89,11 +86,7 @@ static ssize_t srpd_store(struct device *dev, struct device_attribute *attr,
 	unsigned int val;
 	int ret;
 
-	/*
-	 * Cannot change the inactivity timeout on LPDDR4 chips because the
-	 * dynamic tuning process will also get affected by the inactivity
-	 * timeout, thus making it non functional.
-	 */
+	 
 	if (brcmstb_memc_uses_lpddr4(memc))
 		return -EOPNOTSUPP;
 
@@ -241,7 +234,7 @@ static const struct of_device_id brcmstb_memc_of_match[] = {
 		.compatible = "brcm,brcmstb-memc-ddr-rev-c.1.4",
 		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V21]
 	},
-	/* default to the original offset */
+	 
 	{
 		.compatible = "brcm,brcmstb-memc-ddr",
 		.data = &brcmstb_memc_versions[BRCMSTB_MEMC_V1X]
@@ -258,15 +251,11 @@ static int brcmstb_memc_suspend(struct device *dev)
 	if (memc->timeout_cycles == 0)
 		return 0;
 
-	/*
-	 * Disable SRPD prior to suspending the system since that can
-	 * cause issues with other memory clients managed by the ARM
-	 * trusted firmware to access memory.
-	 */
+	 
 	val = readl_relaxed(cfg);
 	val &= ~BIT(SRPD_EN_SHIFT);
 	writel_relaxed(val, cfg);
-	/* Ensure the write is committed to the controller */
+	 
 	(void)readl_relaxed(cfg);
 
 	return 0;

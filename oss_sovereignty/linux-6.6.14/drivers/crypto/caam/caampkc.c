@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/*
- * caam - Freescale FSL CAAM support for Public Key Cryptography
- *
- * Copyright 2016 Freescale Semiconductor, Inc.
- * Copyright 2018-2019, 2023 NXP
- *
- * There is no Shared Descriptor for PKC so that the Job Descriptor must carry
- * all the desired key parameters, input and output pointers.
- */
+
+ 
 #include "compat.h"
 #include "regs.h"
 #include "intern.h"
@@ -30,15 +22,12 @@
 				 SIZEOF_RSA_PRIV_F2_PDB)
 #define DESC_RSA_PRIV_F3_LEN	(2 * CAAM_CMD_SZ + \
 				 SIZEOF_RSA_PRIV_F3_PDB)
-#define CAAM_RSA_MAX_INPUT_SIZE	512 /* for a 4096-bit modulus */
+#define CAAM_RSA_MAX_INPUT_SIZE	512  
 
-/* buffer filled with zeros, used for padding */
+ 
 static u8 *zero_buffer;
 
-/*
- * variable used to avoid double free of resources in case
- * algorithm registration was unsuccessful
- */
+ 
 static bool init_done;
 
 struct caam_akcipher_alg {
@@ -119,7 +108,7 @@ static void rsa_priv_f3_unmap(struct device *dev, struct rsa_edesc *edesc,
 	dma_unmap_single(dev, pdb->tmp2_dma, q_sz, DMA_BIDIRECTIONAL);
 }
 
-/* RSA Job Completion handler */
+ 
 static void rsa_pub_done(struct device *dev, u32 *desc, u32 err, void *context)
 {
 	struct akcipher_request *req = context;
@@ -139,10 +128,7 @@ static void rsa_pub_done(struct device *dev, u32 *desc, u32 err, void *context)
 	rsa_io_unmap(dev, edesc, req);
 	kfree(edesc);
 
-	/*
-	 * If no backlog flag, the completion of the request is done
-	 * by CAAM, not crypto engine.
-	 */
+	 
 	if (!has_bklog)
 		akcipher_request_complete(req, ecode);
 	else
@@ -182,24 +168,14 @@ static void rsa_priv_f_done(struct device *dev, u32 *desc, u32 err,
 	rsa_io_unmap(dev, edesc, req);
 	kfree(edesc);
 
-	/*
-	 * If no backlog flag, the completion of the request is done
-	 * by CAAM, not crypto engine.
-	 */
+	 
 	if (!has_bklog)
 		akcipher_request_complete(req, ecode);
 	else
 		crypto_finalize_akcipher_request(jrp->engine, req, ecode);
 }
 
-/**
- * caam_rsa_count_leading_zeros - Count leading zeros, need it to strip,
- *                                from a given scatterlist
- *
- * @sgl   : scatterlist to count zeros from
- * @nbytes: number of zeros, in bytes, to strip
- * @flags : operation flags
- */
+ 
 static int caam_rsa_count_leading_zeros(struct scatterlist *sgl,
 					unsigned int nbytes,
 					unsigned int flags)
@@ -219,7 +195,7 @@ static int caam_rsa_count_leading_zeros(struct scatterlist *sgl,
 	lzeros = 0;
 	len = 0;
 	while (nbytes > 0) {
-		/* do not strip more than given bytes */
+		 
 		while (len && !*buff && lzeros < nbytes) {
 			lzeros++;
 			len--;
@@ -265,10 +241,7 @@ static struct rsa_edesc *rsa_edesc_alloc(struct akcipher_request *req,
 	int lzeros;
 
 	if (req->src_len > key->n_sz) {
-		/*
-		 * strip leading zeros and
-		 * return the number of zeros to skip
-		 */
+		 
 		lzeros = caam_rsa_count_leading_zeros(req->src, req->src_len -
 						      key->n_sz, sg_flags);
 		if (lzeros < 0)
@@ -278,10 +251,7 @@ static struct rsa_edesc *rsa_edesc_alloc(struct akcipher_request *req,
 						      lzeros);
 		req_ctx->fixup_src_len = req->src_len - lzeros;
 	} else {
-		/*
-		 * input src is less then n key modulus,
-		 * so there will be zero padding
-		 */
+		 
 		diff_size = key->n_sz - req->src_len;
 		req_ctx->fixup_src = req->src;
 		req_ctx->fixup_src_len = req->src_len;
@@ -305,7 +275,7 @@ static struct rsa_edesc *rsa_edesc_alloc(struct akcipher_request *req,
 	}
 
 	if (!diff_size && mapped_src_nents == 1)
-		sec4_sg_len = 0; /* no need for an input hw s/g table */
+		sec4_sg_len = 0;  
 	else
 		sec4_sg_len = mapped_src_nents + !!diff_size;
 	sec4_sg_index = sec4_sg_len;
@@ -317,7 +287,7 @@ static struct rsa_edesc *rsa_edesc_alloc(struct akcipher_request *req,
 
 	sec4_sg_bytes = sec4_sg_len * sizeof(struct sec4_sg_entry);
 
-	/* allocate space for base edesc, hw desc commands and link tables */
+	 
 	edesc = kzalloc(sizeof(*edesc) + desclen + sec4_sg_bytes, flags);
 	if (!edesc)
 		goto dst_fail;
@@ -335,7 +305,7 @@ static struct rsa_edesc *rsa_edesc_alloc(struct akcipher_request *req,
 		sg_to_sec4_sg_last(req->dst, req->dst_len,
 				   edesc->sec4_sg + sec4_sg_index, 0);
 
-	/* Save nents for later use in Job Descriptor */
+	 
 	edesc->src_nents = src_nents;
 	edesc->dst_nents = dst_nents;
 
@@ -679,11 +649,7 @@ static int akcipher_enqueue_req(struct device *jrdev,
 	int ret;
 
 	req_ctx->akcipher_op_done = cbk;
-	/*
-	 * Only the backlog request are sent to crypto-engine since the others
-	 * can be handled by CAAM, if free, especially since JR has up to 1024
-	 * entries (more than the 10 entries from crypto-engine).
-	 */
+	 
 	if (req->base.flags & CRYPTO_TFM_REQ_MAY_BACKLOG)
 		ret = crypto_transfer_akcipher_request_to_engine(jrpriv->engine,
 								 req);
@@ -729,17 +695,17 @@ static int caam_rsa_enc(struct akcipher_request *req)
 		return -EOVERFLOW;
 	}
 
-	/* Allocate extended descriptor */
+	 
 	edesc = rsa_edesc_alloc(req, DESC_RSA_PUB_LEN);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* Set RSA Encrypt Protocol Data Block */
+	 
 	ret = set_rsa_pub_pdb(req, edesc);
 	if (ret)
 		goto init_fail;
 
-	/* Initialize Job Descriptor */
+	 
 	init_rsa_pub_desc(edesc->hw_desc, &edesc->pdb.pub);
 
 	return akcipher_enqueue_req(jrdev, rsa_pub_done, req);
@@ -758,17 +724,17 @@ static int caam_rsa_dec_priv_f1(struct akcipher_request *req)
 	struct rsa_edesc *edesc;
 	int ret;
 
-	/* Allocate extended descriptor */
+	 
 	edesc = rsa_edesc_alloc(req, DESC_RSA_PRIV_F1_LEN);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* Set RSA Decrypt Protocol Data Block - Private Key Form #1 */
+	 
 	ret = set_rsa_priv_f1_pdb(req, edesc);
 	if (ret)
 		goto init_fail;
 
-	/* Initialize Job Descriptor */
+	 
 	init_rsa_priv_f1_desc(edesc->hw_desc, &edesc->pdb.priv_f1);
 
 	return akcipher_enqueue_req(jrdev, rsa_priv_f_done, req);
@@ -787,17 +753,17 @@ static int caam_rsa_dec_priv_f2(struct akcipher_request *req)
 	struct rsa_edesc *edesc;
 	int ret;
 
-	/* Allocate extended descriptor */
+	 
 	edesc = rsa_edesc_alloc(req, DESC_RSA_PRIV_F2_LEN);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* Set RSA Decrypt Protocol Data Block - Private Key Form #2 */
+	 
 	ret = set_rsa_priv_f2_pdb(req, edesc);
 	if (ret)
 		goto init_fail;
 
-	/* Initialize Job Descriptor */
+	 
 	init_rsa_priv_f2_desc(edesc->hw_desc, &edesc->pdb.priv_f2);
 
 	return akcipher_enqueue_req(jrdev, rsa_priv_f_done, req);
@@ -816,17 +782,17 @@ static int caam_rsa_dec_priv_f3(struct akcipher_request *req)
 	struct rsa_edesc *edesc;
 	int ret;
 
-	/* Allocate extended descriptor */
+	 
 	edesc = rsa_edesc_alloc(req, DESC_RSA_PRIV_F3_LEN);
 	if (IS_ERR(edesc))
 		return PTR_ERR(edesc);
 
-	/* Set RSA Decrypt Protocol Data Block - Private Key Form #3 */
+	 
 	ret = set_rsa_priv_f3_pdb(req, edesc);
 	if (ret)
 		goto init_fail;
 
-	/* Initialize Job Descriptor */
+	 
 	init_rsa_priv_f3_desc(edesc->hw_desc, &edesc->pdb.priv_f3);
 
 	return akcipher_enqueue_req(jrdev, rsa_priv_f_done, req);
@@ -886,17 +852,7 @@ static void caam_rsa_drop_leading_zeros(const u8 **ptr, size_t *nbytes)
 	}
 }
 
-/**
- * caam_read_rsa_crt - Used for reading dP, dQ, qInv CRT members.
- * dP, dQ and qInv could decode to less than corresponding p, q length, as the
- * BER-encoding requires that the minimum number of bytes be used to encode the
- * integer. dP, dQ, qInv decoded values have to be zero-padded to appropriate
- * length.
- *
- * @ptr   : pointer to {dP, dQ, qInv} CRT member
- * @nbytes: length in bytes of {dP, dQ, qInv} CRT member
- * @dstlen: length in bytes of corresponding p or q prime factor
- */
+ 
 static u8 *caam_read_rsa_crt(const u8 *ptr, size_t nbytes, size_t dstlen)
 {
 	u8 *dst;
@@ -914,15 +870,7 @@ static u8 *caam_read_rsa_crt(const u8 *ptr, size_t nbytes, size_t dstlen)
 	return dst;
 }
 
-/**
- * caam_read_raw_data - Read a raw byte stream as a positive integer.
- * The function skips buffer's leading zeros, copies the remained data
- * to a buffer allocated in the GFP_KERNEL zone and returns
- * the address of the new buffer.
- *
- * @buf   : The data to read
- * @nbytes: The amount of data to read
- */
+ 
 static inline u8 *caam_read_raw_data(const u8 *buf, size_t *nbytes)
 {
 
@@ -948,24 +896,19 @@ static int caam_rsa_set_pub_key(struct crypto_akcipher *tfm, const void *key,
 	struct caam_rsa_key *rsa_key = &ctx->key;
 	int ret;
 
-	/* Free the old RSA key if any */
+	 
 	caam_rsa_free_key(rsa_key);
 
 	ret = rsa_parse_pub_key(&raw_key, key, keylen);
 	if (ret)
 		return ret;
 
-	/* Copy key in DMA zone */
+	 
 	rsa_key->e = kmemdup(raw_key.e, raw_key.e_sz, GFP_KERNEL);
 	if (!rsa_key->e)
 		goto err;
 
-	/*
-	 * Skip leading zeros and copy the positive integer to a buffer
-	 * allocated in the GFP_KERNEL zone. The decryption descriptor
-	 * expects a positive integer for the RSA modulus and uses its length as
-	 * decryption output length.
-	 */
+	 
 	rsa_key->n = caam_read_raw_data(raw_key.n, &raw_key.n_sz);
 	if (!rsa_key->n)
 		goto err;
@@ -1053,14 +996,14 @@ static int caam_rsa_set_priv_key(struct crypto_akcipher *tfm, const void *key,
 	struct caam_rsa_key *rsa_key = &ctx->key;
 	int ret;
 
-	/* Free the old RSA key if any */
+	 
 	caam_rsa_free_key(rsa_key);
 
 	ret = rsa_parse_priv_key(&raw_key, key, keylen);
 	if (ret)
 		return ret;
 
-	/* Copy key in DMA zone */
+	 
 	rsa_key->d = kmemdup(raw_key.d, raw_key.d_sz, GFP_KERNEL);
 	if (!rsa_key->d)
 		goto err;
@@ -1069,12 +1012,7 @@ static int caam_rsa_set_priv_key(struct crypto_akcipher *tfm, const void *key,
 	if (!rsa_key->e)
 		goto err;
 
-	/*
-	 * Skip leading zeros and copy the positive integer to a buffer
-	 * allocated in the GFP_KERNEL zone. The decryption descriptor
-	 * expects a positive integer for the RSA modulus and uses its length as
-	 * decryption output length.
-	 */
+	 
 	rsa_key->n = caam_read_raw_data(raw_key.n, &raw_key.n_sz);
 	if (!rsa_key->n)
 		goto err;
@@ -1104,7 +1042,7 @@ static unsigned int caam_rsa_max_size(struct crypto_akcipher *tfm)
 	return ctx->key.n_sz;
 }
 
-/* Per session pkc's driver context creation function */
+ 
 static int caam_rsa_init_tfm(struct crypto_akcipher *tfm)
 {
 	struct caam_rsa_ctx *ctx = akcipher_tfm_ctx_dma(tfm);
@@ -1130,7 +1068,7 @@ static int caam_rsa_init_tfm(struct crypto_akcipher *tfm)
 	return 0;
 }
 
-/* Per session pkc's driver context cleanup function */
+ 
 static void caam_rsa_exit_tfm(struct crypto_akcipher *tfm)
 {
 	struct caam_rsa_ctx *ctx = akcipher_tfm_ctx_dma(tfm);
@@ -1165,7 +1103,7 @@ static struct caam_akcipher_alg caam_rsa = {
 	},
 };
 
-/* Public Key Cryptography module initialization handler */
+ 
 int caam_pkc_init(struct device *ctrldev)
 {
 	struct caam_drv_private *priv = dev_get_drvdata(ctrldev);
@@ -1173,7 +1111,7 @@ int caam_pkc_init(struct device *ctrldev)
 	int err;
 	init_done = false;
 
-	/* Determine public key hardware accelerator presence. */
+	 
 	if (priv->era < 10) {
 		pk_inst = (rd_reg32(&priv->jr[0]->perfmon.cha_num_ls) &
 			   CHA_ID_LS_PK_MASK) >> CHA_ID_LS_PK_SHIFT;
@@ -1181,21 +1119,16 @@ int caam_pkc_init(struct device *ctrldev)
 		pkha = rd_reg32(&priv->jr[0]->vreg.pkha);
 		pk_inst = pkha & CHA_VER_NUM_MASK;
 
-		/*
-		 * Newer CAAMs support partially disabled functionality. If this is the
-		 * case, the number is non-zero, but this bit is set to indicate that
-		 * no encryption or decryption is supported. Only signing and verifying
-		 * is supported.
-		 */
+		 
 		if (pkha & CHA_VER_MISC_PKHA_NO_CRYPT)
 			pk_inst = 0;
 	}
 
-	/* Do not register algorithms if PKHA is not present. */
+	 
 	if (!pk_inst)
 		return 0;
 
-	/* allocate zero buffer, used for padding input */
+	 
 	zero_buffer = kzalloc(CAAM_RSA_MAX_INPUT_SIZE - 1, GFP_KERNEL);
 	if (!zero_buffer)
 		return -ENOMEM;

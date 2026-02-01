@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OCB mode implementation
- *
- * Copyright: (c) 2014 Czech Technical University in Prague
- *            (c) 2014 Volkswagen Group Research
- * Copyright (C) 2022 - 2023 Intel Corporation
- * Author:    Rostislav Lisovy <rostislav.lisovy@fel.cvut.cz>
- * Funded by: Volkswagen Group Research
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/if_ether.h>
@@ -26,12 +18,7 @@
 #define IEEE80211_OCB_PEER_INACTIVITY_LIMIT		(240 * HZ)
 #define IEEE80211_OCB_MAX_STA_ENTRIES			128
 
-/**
- * enum ocb_deferred_task_flags - mac80211 OCB deferred tasks
- * @OCB_WORK_HOUSEKEEPING: run the periodic OCB housekeeping tasks
- *
- * These flags are used in @wrkq_flags field of &struct ieee80211_if_ocb
- */
+ 
 enum ocb_deferred_task_flags {
 	OCB_WORK_HOUSEKEEPING,
 };
@@ -48,9 +35,7 @@ void ieee80211_ocb_rx_no_sta(struct ieee80211_sub_if_data *sdata,
 	struct sta_info *sta;
 	int band;
 
-	/* XXX: Consider removing the least recently used entry and
-	 *      allow new one to be added.
-	 */
+	 
 	if (local->num_sta >= IEEE80211_OCB_MAX_STA_ENTRIES) {
 		net_info_ratelimited("%s: No room for a new OCB STA entry %pM\n",
 				     sdata->name, addr);
@@ -73,7 +58,7 @@ void ieee80211_ocb_rx_no_sta(struct ieee80211_sub_if_data *sdata,
 	if (!sta)
 		return;
 
-	/* Add only mandatory rates for now */
+	 
 	sband = local->hw.wiphy->bands[band];
 	sta->sta.deflink.supp_rates[band] =
 		ieee80211_mandatory_rates(sband, scan_width);
@@ -101,7 +86,7 @@ static struct sta_info *ieee80211_ocb_finish_sta(struct sta_info *sta)
 
 	rate_control_rate_init(sta);
 
-	/* If it fails, maybe we raced another insertion? */
+	 
 	if (sta_info_insert_rcu(sta))
 		return sta_info_get(sdata, addr);
 	return sta;
@@ -235,12 +220,7 @@ int ieee80211_ocb_leave(struct ieee80211_sub_if_data *sdata)
 	skb_queue_purge(&sdata->skb_queue);
 
 	del_timer_sync(&sdata->u.ocb.housekeeping_timer);
-	/* If the timer fired while we waited for it, it will have
-	 * requeued the work. Now the work will be running again
-	 * but will not rearm the timer again because it checks
-	 * whether we are connected to the network or not -- at this
-	 * point we shouldn't be anymore.
-	 */
+	 
 
 	return 0;
 }

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device handling thread implementation for mac80211 ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- *
- * Based on:
- * ST-Ericsson UMAC CW1200 driver, which is
- * Copyright (c) 2010, ST-Ericsson
- * Author: Ajitpal Singh <ajitpal.singh@stericsson.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <net/mac80211.h>
@@ -27,14 +17,12 @@
 static int cw1200_bh(void *arg);
 
 #define DOWNLOAD_BLOCK_SIZE_WR	(0x1000 - 4)
-/* an SPI message cannot be bigger than (2"12-1)*2 bytes
- * "*2" to cvt to bytes
- */
+ 
 #define MAX_SZ_RD_WR_BUFFERS	(DOWNLOAD_BLOCK_SIZE_WR*2)
 #define PIGGYBACK_CTRL_REG	(2)
 #define EFFECTIVE_BUF_SIZE	(MAX_SZ_RD_WR_BUFFERS - PIGGYBACK_CTRL_REG)
 
-/* Suspend state privates */
+ 
 enum cw1200_bh_pm_state {
 	CW1200_BH_RESUMED = 0,
 	CW1200_BH_SUSPEND,
@@ -52,7 +40,7 @@ static void cw1200_bh_work(struct work_struct *work)
 int cw1200_register_bh(struct cw1200_common *priv)
 {
 	int err = 0;
-	/* Realtime workqueue */
+	 
 	priv->bh_workqueue = alloc_workqueue("cw1200_bh",
 				WQ_MEM_RECLAIM | WQ_HIGHPRI
 				| WQ_CPU_INTENSIVE, 1);
@@ -95,11 +83,11 @@ void cw1200_irq_handler(struct cw1200_common *priv)
 {
 	pr_debug("[BH] irq.\n");
 
-	/* Disable Interrupts! */
-	/* NOTE:  hwbus_ops->lock already held */
+	 
+	 
 	__cw1200_irq_enable(priv, 0);
 
-	if (/* WARN_ON */(priv->bh_error))
+	if ( (priv->bh_error))
 		return;
 
 	if (atomic_inc_return(&priv->bh_rx) == 1)
@@ -193,13 +181,13 @@ static int cw1200_device_wakeup(struct cw1200_common *priv)
 
 	pr_debug("[BH] Device wakeup.\n");
 
-	/* First, set the dpll register */
+	 
 	ret = cw1200_reg_write_32(priv, ST90TDS_TSET_GEN_R_W_REG_ID,
 				  cw1200_dpll_from_clk(priv->hw_refclk));
 	if (WARN_ON(ret))
 		return ret;
 
-	/* To force the device to be always-on, the host sets WLAN_UP to 1 */
+	 
 	ret = cw1200_reg_write_16(priv, ST90TDS_CONTROL_REG_ID,
 			ST90TDS_CONT_WUP_BIT);
 	if (WARN_ON(ret))
@@ -209,9 +197,7 @@ static int cw1200_device_wakeup(struct cw1200_common *priv)
 	if (WARN_ON(ret))
 		return ret;
 
-	/* If the device returns WLAN_RDY as 1, the device is active and will
-	 * remain active.
-	 */
+	 
 	if (ctrl_reg & ST90TDS_CONT_RDY_BIT) {
 		pr_debug("[BH] Device awake.\n");
 		return 1;
@@ -220,7 +206,7 @@ static int cw1200_device_wakeup(struct cw1200_common *priv)
 	return 0;
 }
 
-/* Must be called from BH thraed. */
+ 
 void cw1200_enable_powersave(struct cw1200_common *priv,
 			     bool enable)
 {
@@ -246,7 +232,7 @@ static int cw1200_bh_rx_helper(struct cw1200_common *priv,
 
 	read_len = (*ctrl_reg & ST90TDS_CONT_NEXT_LEN_MASK) * 2;
 	if (!read_len)
-		return 0; /* No more work */
+		return 0;  
 
 	if (WARN_ON((read_len < sizeof(struct wsm_hdr)) ||
 		    (read_len > EFFECTIVE_BUF_SIZE))) {
@@ -255,15 +241,13 @@ static int cw1200_bh_rx_helper(struct cw1200_common *priv,
 		goto err;
 	}
 
-	/* Add SIZE of PIGGYBACK reg (CONTROL Reg)
-	 * to the NEXT Message length + 2 Bytes for SKB
-	 */
+	 
 	read_len = read_len + 2;
 
 	alloc_len = priv->hwbus_ops->align_size(
 		priv->hwbus_priv, read_len);
 
-	/* Check if not exceeding CW1200 capabilities */
+	 
 	if (WARN_ON_ONCE(alloc_len > EFFECTIVE_BUF_SIZE)) {
 		pr_debug("Read aligned len: %zu\n",
 			 alloc_len);
@@ -284,7 +268,7 @@ static int cw1200_bh_rx_helper(struct cw1200_common *priv,
 		goto err;
 	}
 
-	/* Piggyback */
+	 
 	*ctrl_reg = __le16_to_cpu(
 		((__le16 *)data)[alloc_len / 2 - 1]);
 
@@ -323,7 +307,7 @@ static int cw1200_bh_rx_helper(struct cw1200_common *priv,
 			*tx = 1;
 	}
 
-	/* cw1200_wsm_rx takes care on SKB livetime */
+	 
 	if (WARN_ON(wsm_handle_rx(priv, wsm_id, wsm, &skb_rx)))
 		goto err;
 
@@ -347,12 +331,12 @@ static int cw1200_bh_tx_helper(struct cw1200_common *priv,
 
 	if (priv->device_can_sleep) {
 		ret = cw1200_device_wakeup(priv);
-		if (WARN_ON(ret < 0)) { /* Error in wakeup */
+		if (WARN_ON(ret < 0)) {  
 			*pending_tx = 1;
 			return 0;
-		} else if (ret) { /* Woke up */
+		} else if (ret) {  
 			priv->device_can_sleep = false;
-		} else { /* Did not awake */
+		} else {  
 			*pending_tx = 1;
 			return 0;
 		}
@@ -363,8 +347,8 @@ static int cw1200_bh_tx_helper(struct cw1200_common *priv,
 	if (ret <= 0) {
 		wsm_release_tx_buffer(priv, 1);
 		if (WARN_ON(ret < 0))
-			return ret; /* Error */
-		return 0; /* No work */
+			return ret;  
+		return 0;  
 	}
 
 	wsm = (struct wsm_hdr *)data;
@@ -376,7 +360,7 @@ static int cw1200_bh_tx_helper(struct cw1200_common *priv,
 	tx_len = priv->hwbus_ops->align_size(
 		priv->hwbus_priv, tx_len);
 
-	/* Check if not exceeding CW1200 capabilities */
+	 
 	if (WARN_ON_ONCE(tx_len > EFFECTIVE_BUF_SIZE))
 		pr_debug("Write aligned len: %zu\n", tx_len);
 
@@ -386,7 +370,7 @@ static int cw1200_bh_tx_helper(struct cw1200_common *priv,
 	if (WARN_ON(cw1200_data_write(priv, data, tx_len))) {
 		pr_err("tx blew up, len %zu\n", tx_len);
 		wsm_release_tx_buffer(priv, 1);
-		return -1; /* Error */
+		return -1;  
 	}
 
 	if (priv->wsm_enable_wsm_dumps)
@@ -400,7 +384,7 @@ static int cw1200_bh_tx_helper(struct cw1200_common *priv,
 
 	if (*tx_burst > 1) {
 		cw1200_debug_tx_burst(priv);
-		return 1; /* Work remains */
+		return 1;  
 	}
 
 	return 0;
@@ -428,13 +412,13 @@ static int cw1200_bh(void *arg)
 			cw1200_reg_write_16(priv, ST90TDS_CONTROL_REG_ID, 0);
 			priv->device_can_sleep = true;
 		} else if (priv->hw_bufs_used) {
-			/* Interrupt loss detection */
+			 
 			status = 1 * HZ;
 		} else {
 			status = MAX_SCHEDULE_TIMEOUT;
 		}
 
-		/* Dummy Read for SDIO retry mechanism*/
+		 
 		if ((priv->hw_type != -1) &&
 		    (atomic_read(&priv->bh_rx) == 0) &&
 		    (atomic_read(&priv->bh_tx) == 0))
@@ -454,41 +438,38 @@ static int cw1200_bh(void *arg)
 		pr_debug("[BH] - rx: %d, tx: %d, term: %d, bh_err: %d, suspend: %d, status: %ld\n",
 			 rx, tx, term, suspend, priv->bh_error, status);
 
-		/* Did an error occur? */
+		 
 		if ((status < 0 && status != -ERESTARTSYS) ||
 		    term || priv->bh_error) {
 			break;
 		}
-		if (!status) {  /* wait_event timed out */
+		if (!status) {   
 			unsigned long timestamp = jiffies;
 			long timeout;
 			int pending = 0;
 			int i;
 
-			/* Check to see if we have any outstanding frames */
+			 
 			if (priv->hw_bufs_used && (!rx || !tx)) {
 				wiphy_warn(priv->hw->wiphy,
 					   "Missed interrupt? (%d frames outstanding)\n",
 					   priv->hw_bufs_used);
 				rx = 1;
 
-				/* Get a timestamp of "oldest" frame */
+				 
 				for (i = 0; i < 4; ++i)
 					pending += cw1200_queue_get_xmit_timestamp(
 						&priv->tx_queue[i],
 						&timestamp,
 						priv->pending_frame_id);
 
-				/* Check if frame transmission is timed out.
-				 * Add an extra second with respect to possible
-				 * interrupt loss.
-				 */
+				 
 				timeout = timestamp +
 					WSM_CMD_LAST_CHANCE_TIMEOUT +
 					1 * HZ  -
 					jiffies;
 
-				/* And terminate BH thread if the frame is "stuck" */
+				 
 				if (pending && timeout < 0) {
 					wiphy_warn(priv->hw->wiphy,
 						   "Timeout waiting for TX confirm (%d/%d pending, %ld vs %lu).\n",
@@ -537,12 +518,12 @@ static int cw1200_bh(void *arg)
 		if (cw1200_bh_read_ctrl_reg(priv, &ctrl_reg))
 			break;
 
-		/* Don't bother trying to rx unless we have data to read */
+		 
 		if (ctrl_reg & ST90TDS_CONT_NEXT_LEN_MASK) {
 			ret = cw1200_bh_rx_helper(priv, &ctrl_reg, &tx);
 			if (ret < 0)
 				break;
-			/* Double up here if there's more data.. */
+			 
 			if (ctrl_reg & ST90TDS_CONT_NEXT_LEN_MASK) {
 				ret = cw1200_bh_rx_helper(priv, &ctrl_reg, &tx);
 				if (ret < 0)
@@ -559,19 +540,17 @@ static int cw1200_bh(void *arg)
 			tx_allowed = tx_burst > 0;
 
 			if (!tx_allowed) {
-				/* Buffers full.  Ensure we process tx
-				 * after we handle rx..
-				 */
+				 
 				pending_tx = tx;
 				goto done_rx;
 			}
 			ret = cw1200_bh_tx_helper(priv, &pending_tx, &tx_burst);
 			if (ret < 0)
 				break;
-			if (ret > 0) /* More to transmit */
+			if (ret > 0)  
 				tx = ret;
 
-			/* Re-read ctrl reg */
+			 
 			if (cw1200_bh_read_ctrl_reg(priv, &ctrl_reg))
 				break;
 		}
@@ -585,13 +564,13 @@ static int cw1200_bh(void *arg)
 			goto tx;
 
 	done:
-		/* Re-enable device interrupts */
+		 
 		priv->hwbus_ops->lock(priv->hwbus_priv);
 		__cw1200_irq_enable(priv, 1);
 		priv->hwbus_ops->unlock(priv->hwbus_priv);
 	}
 
-	/* Explicitly disable device interrupts */
+	 
 	priv->hwbus_ops->lock(priv->hwbus_priv);
 	__cw1200_irq_enable(priv, 0);
 	priv->hwbus_ops->unlock(priv->hwbus_priv);
@@ -599,7 +578,7 @@ static int cw1200_bh(void *arg)
 	if (!term) {
 		pr_err("[BH] Fatal error, exiting.\n");
 		priv->bh_error = 1;
-		/* TODO: schedule_work(recovery) */
+		 
 	}
 	return 0;
 }

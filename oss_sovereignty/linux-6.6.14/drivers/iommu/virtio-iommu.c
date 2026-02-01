@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Virtio driver for the paravirtualized IOMMU
- *
- * Copyright (C) 2019 Arm Limited
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -43,12 +39,12 @@ struct viommu_dev {
 	struct list_head		requests;
 	void				*evts;
 
-	/* Device configuration */
+	 
 	struct iommu_domain_geometry	geometry;
 	u64				pgsize_bitmap;
 	u32				first_domain;
 	u32				last_domain;
-	/* Supported MAP flags */
+	 
 	u32				map_flags;
 	u32				probe_size;
 };
@@ -62,7 +58,7 @@ struct viommu_mapping {
 struct viommu_domain {
 	struct iommu_domain		domain;
 	struct viommu_dev		*viommu;
-	struct mutex			mutex; /* protects viommu pointer */
+	struct mutex			mutex;  
 	unsigned int			id;
 	u32				map_flags;
 
@@ -145,12 +141,7 @@ static off_t viommu_get_write_desc_offset(struct viommu_dev *viommu,
 	return len - tail_size;
 }
 
-/*
- * __viommu_sync_req - Complete all in-flight requests
- *
- * Wait for all added requests to complete. When this function returns, all
- * requests that were in-flight at the time of the call have completed.
- */
+ 
 static int __viommu_sync_req(struct viommu_dev *viommu)
 {
 	unsigned int len;
@@ -198,22 +189,7 @@ static int viommu_sync_req(struct viommu_dev *viommu)
 	return ret;
 }
 
-/*
- * __viommu_add_request - Add one request to the queue
- * @buf: pointer to the request buffer
- * @len: length of the request buffer
- * @writeback: copy data back to the buffer when the request completes.
- *
- * Add a request to the queue. Only synchronize the queue if it's already full.
- * Otherwise don't kick the queue nor wait for requests to complete.
- *
- * When @writeback is true, data written by the device, including the request
- * status, is copied into @buf after the request completes. This is unsafe if
- * the caller allocates @buf on stack and drops the lock between add_req() and
- * sync_req().
- *
- * Return 0 if the request was successfully added to the queue.
- */
+ 
 static int __viommu_add_req(struct viommu_dev *viommu, void *buf, size_t len,
 			    bool writeback)
 {
@@ -246,7 +222,7 @@ static int __viommu_add_req(struct viommu_dev *viommu, void *buf, size_t len,
 
 	ret = virtqueue_add_sgs(vq, sg, 1, 1, req, GFP_ATOMIC);
 	if (ret == -ENOSPC) {
-		/* If the queue is full, sync and retry */
+		 
 		if (!__viommu_sync_req(viommu))
 			ret = virtqueue_add_sgs(vq, sg, 1, 1, req, GFP_ATOMIC);
 	}
@@ -275,10 +251,7 @@ static int viommu_add_req(struct viommu_dev *viommu, void *buf, size_t len)
 	return ret;
 }
 
-/*
- * Send a request and wait for it to complete. Return the request status (as an
- * errno)
- */
+ 
 static int viommu_send_req_sync(struct viommu_dev *viommu, void *buf,
 				size_t len)
 {
@@ -296,7 +269,7 @@ static int viommu_send_req_sync(struct viommu_dev *viommu, void *buf,
 	ret = __viommu_sync_req(viommu);
 	if (ret) {
 		dev_dbg(viommu->dev, "could not sync requests (%d)\n", ret);
-		/* Fall-through (get the actual request status) */
+		 
 	}
 
 	ret = viommu_get_req_errno(buf, len);
@@ -305,11 +278,7 @@ out_unlock:
 	return ret;
 }
 
-/*
- * viommu_add_mapping - add a mapping to the internal tree
- *
- * On success, return the new mapping. Otherwise return NULL.
- */
+ 
 static int viommu_add_mapping(struct viommu_domain *vdomain, u64 iova, u64 end,
 			      phys_addr_t paddr, u32 flags)
 {
@@ -332,15 +301,7 @@ static int viommu_add_mapping(struct viommu_domain *vdomain, u64 iova, u64 end,
 	return 0;
 }
 
-/*
- * viommu_del_mappings - remove mappings from the internal tree
- *
- * @vdomain: the domain
- * @iova: start of the range
- * @end: end of the range
- *
- * On success, returns the number of unmapped bytes
- */
+ 
 static size_t viommu_del_mappings(struct viommu_domain *vdomain,
 				  u64 iova, u64 end)
 {
@@ -356,14 +317,11 @@ static size_t viommu_del_mappings(struct viommu_domain *vdomain,
 		mapping = container_of(node, struct viommu_mapping, iova);
 		next = interval_tree_iter_next(node, iova, end);
 
-		/* Trying to split a mapping? */
+		 
 		if (mapping->iova.start < iova)
 			break;
 
-		/*
-		 * Virtio-iommu doesn't allow UNMAP to split a mapping created
-		 * with a single MAP request, so remove the full mapping.
-		 */
+		 
 		unmapped += mapping->iova.last - mapping->iova.start + 1;
 
 		interval_tree_remove(node, &vdomain->mappings);
@@ -374,10 +332,7 @@ static size_t viommu_del_mappings(struct viommu_domain *vdomain,
 	return unmapped;
 }
 
-/*
- * Fill the domain with identity mappings, skipping the device's reserved
- * regions.
- */
+ 
 static int viommu_domain_map_identity(struct viommu_endpoint *vdev,
 				      struct viommu_domain *vdomain)
 {
@@ -396,7 +351,7 @@ static int viommu_domain_map_identity(struct viommu_endpoint *vdev,
 		u64 resv_end = ALIGN(resv->start + resv->length, granule) - 1;
 
 		if (resv_end < iova || resv_start > limit)
-			/* No overlap */
+			 
 			continue;
 
 		if (resv_start > iova) {
@@ -423,13 +378,7 @@ err_unmap:
 	return ret;
 }
 
-/*
- * viommu_replay_mappings - re-send MAP requests
- *
- * When reattaching a domain that was previously detached from all endpoints,
- * mappings were deleted from the device. Re-create the mappings available in
- * the internal tree.
- */
+ 
 static int viommu_replay_mappings(struct viommu_domain *vdomain)
 {
 	int ret = 0;
@@ -476,7 +425,7 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
 	end = end64 = le64_to_cpu(mem->end);
 	size = end64 - start64 + 1;
 
-	/* Catch any overflow, including the unlikely end64 - start64 + 1 = 0 */
+	 
 	if (start != start64 || end != end64 || size < end64 - start64)
 		return -EOVERFLOW;
 
@@ -502,7 +451,7 @@ static int viommu_add_resv_mem(struct viommu_endpoint *vdev,
 	if (!region)
 		return -ENOMEM;
 
-	/* Keep the list sorted */
+	 
 	list_for_each_entry(next, &vdev->resv_regions, list) {
 		if (next->start > region->start)
 			break;
@@ -532,10 +481,7 @@ static int viommu_probe_endpoint(struct viommu_dev *viommu, struct device *dev)
 		return -ENOMEM;
 
 	probe->head.type = VIRTIO_IOMMU_T_PROBE;
-	/*
-	 * For now, assume that properties of an endpoint that outputs multiple
-	 * IDs are consistent. Only probe the first one.
-	 */
+	 
 	probe->endpoint = cpu_to_le32(fwspec->ids[0]);
 
 	ret = viommu_send_req_sync(viommu, probe, probe_len);
@@ -596,7 +542,7 @@ static int viommu_fault_handler(struct viommu_dev *viommu,
 		break;
 	}
 
-	/* TODO: find EP by ID and report_iommu_fault */
+	 
 	if (flags & VIRTIO_IOMMU_FAULT_F_ADDRESS)
 		dev_err_ratelimited(viommu->dev, "%s fault from EP %u at %#llx [%s%s%s]\n",
 				    reason_str, endpoint, address,
@@ -635,7 +581,7 @@ static void viommu_event_handler(struct virtqueue *vq)
 	virtqueue_kick(vq);
 }
 
-/* IOMMU API */
+ 
 
 static struct iommu_domain *viommu_domain_alloc(unsigned type)
 {
@@ -708,7 +654,7 @@ static void viommu_domain_free(struct iommu_domain *domain)
 {
 	struct viommu_domain *vdomain = to_viommu_domain(domain);
 
-	/* Free all remaining mappings */
+	 
 	viommu_del_mappings(vdomain, 0, ULLONG_MAX);
 
 	if (vdomain->viommu)
@@ -728,10 +674,7 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
 
 	mutex_lock(&vdomain->mutex);
 	if (!vdomain->viommu) {
-		/*
-		 * Properly initialize the domain now that we know which viommu
-		 * owns it.
-		 */
+		 
 		ret = viommu_domain_finalise(vdev, domain);
 	} else if (vdomain->viommu != vdev->viommu) {
 		ret = -EINVAL;
@@ -741,18 +684,7 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
 	if (ret)
 		return ret;
 
-	/*
-	 * In the virtio-iommu device, when attaching the endpoint to a new
-	 * domain, it is detached from the old one and, if as a result the
-	 * old domain isn't attached to any endpoint, all mappings are removed
-	 * from the old domain and it is freed.
-	 *
-	 * In the driver the old domain still exists, and its mappings will be
-	 * recreated if it gets reattached to an endpoint. Otherwise it will be
-	 * freed explicitly.
-	 *
-	 * vdev->vdomain is protected by group->mutex
-	 */
+	 
 	if (vdev->vdomain)
 		vdev->vdomain->nr_endpoints--;
 
@@ -773,10 +705,7 @@ static int viommu_attach_dev(struct iommu_domain *domain, struct device *dev)
 	}
 
 	if (!vdomain->nr_endpoints) {
-		/*
-		 * This endpoint is the first to be attached to the domain.
-		 * Replay existing mappings (e.g. SW MSI).
-		 */
+		 
 		ret = viommu_replay_mappings(vdomain);
 		if (ret)
 			return ret;
@@ -869,7 +798,7 @@ static size_t viommu_unmap_pages(struct iommu_domain *domain, unsigned long iova
 	if (unmapped < size)
 		return 0;
 
-	/* Device already removed all mappings after detach. */
+	 
 	if (!vdomain->nr_endpoints)
 		return unmapped;
 
@@ -928,10 +857,7 @@ static void viommu_get_resv_regions(struct device *dev, struct list_head *head)
 		list_add_tail(&new_entry->list, head);
 	}
 
-	/*
-	 * If the device didn't register any bypass MSI window, add a
-	 * software-mapped region.
-	 */
+	 
 	if (!msi) {
 		msi = iommu_alloc_resv_region(MSI_IOVA_BASE, MSI_IOVA_LENGTH,
 					      prot, IOMMU_RESV_SW_MSI,
@@ -986,7 +912,7 @@ static struct iommu_device *viommu_probe_device(struct device *dev)
 	dev_iommu_priv_set(dev, vdev);
 
 	if (viommu->probe_size) {
-		/* Get additional information for this endpoint */
+		 
 		ret = viommu_probe_endpoint(viommu, dev);
 		if (ret)
 			goto err_free_dev;
@@ -1004,7 +930,7 @@ err_free_dev:
 static void viommu_probe_finalize(struct device *dev)
 {
 #ifndef CONFIG_ARCH_HAS_SETUP_DMA_OPS
-	/* First clear the DMA ops in case we're switching from a DMA domain */
+	 
 	set_dma_ops(dev, NULL);
 	iommu_setup_dma_ops(dev, 0, U64_MAX);
 #endif
@@ -1067,7 +993,7 @@ static int viommu_init_vqs(struct viommu_dev *viommu)
 	struct virtio_device *vdev = dev_to_virtio(viommu->dev);
 	const char *names[] = { "request", "event" };
 	vq_callback_t *callbacks[] = {
-		NULL, /* No async requests */
+		NULL,  
 		viommu_event_handler,
 	};
 
@@ -1136,7 +1062,7 @@ static int viommu_probe(struct virtio_device *vdev)
 	viommu->map_flags = VIRTIO_IOMMU_MAP_F_READ | VIRTIO_IOMMU_MAP_F_WRITE;
 	viommu->last_domain = ~0U;
 
-	/* Optional features */
+	 
 	virtio_cread_le_feature(vdev, VIRTIO_IOMMU_F_INPUT_RANGE,
 				struct virtio_iommu_config, input_range.start,
 				&input_start);
@@ -1170,7 +1096,7 @@ static int viommu_probe(struct virtio_device *vdev)
 
 	virtio_device_ready(vdev);
 
-	/* Populate the event queue with buffers */
+	 
 	ret = viommu_fill_evtq(viommu);
 	if (ret)
 		goto err_free_vqs;
@@ -1203,7 +1129,7 @@ static void viommu_remove(struct virtio_device *vdev)
 	iommu_device_sysfs_remove(&viommu->iommu);
 	iommu_device_unregister(&viommu->iommu);
 
-	/* Stop all virtqueues */
+	 
 	virtio_reset_device(vdev);
 	vdev->config->del_vqs(vdev);
 

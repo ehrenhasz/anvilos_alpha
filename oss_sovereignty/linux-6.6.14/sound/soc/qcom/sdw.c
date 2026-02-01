@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018, Linaro Limited.
-// Copyright (c) 2018, The Linux Foundation. All rights reserved.
+
+
+
 
 #include <linux/module.h>
 #include <sound/soc.h>
@@ -39,13 +39,7 @@ int qcom_snd_sdw_prepare(struct snd_pcm_substream *substream,
 	if (ret)
 		return ret;
 
-	/**
-	 * NOTE: there is a strict hw requirement about the ordering of port
-	 * enables and actual WSA881x PA enable. PA enable should only happen
-	 * after soundwire ports are enabled if not DC on the line is
-	 * accumulated resulting in Click/Pop Noise
-	 * PA enable/mute are handled as part of codec DAPM and digital mute.
-	 */
+	 
 
 	ret = sdw_enable_stream(sruntime);
 	if (ret) {

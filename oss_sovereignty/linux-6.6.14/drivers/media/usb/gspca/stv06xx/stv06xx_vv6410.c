@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2001 Jean-Fredric Clere, Nikolas Zimmermann, Georg Acher
- *		      Mark Cave-Ayland, Carlo E Prelz, Dick Streefland
- * Copyright (c) 2002, 2003 Tuukka Toivonen
- * Copyright (c) 2008 Erik Andrén
- *
- * P/N 861037:      Sensor HDCS1000        ASIC STV0600
- * P/N 861050-0010: Sensor HDCS1000        ASIC STV0600
- * P/N 861050-0020: Sensor Photobit PB100  ASIC STV0600-1 - QuickCam Express
- * P/N 861055:      Sensor ST VV6410       ASIC STV0610   - LEGO cam
- * P/N 861075-0040: Sensor HDCS1000        ASIC
- * P/N 961179-0700: Sensor ST VV6410       ASIC STV0602   - Dexxa WebCam USB
- * P/N 861040-0000: Sensor ST VV6410       ASIC STV0610   - QuickCam Web
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -86,13 +73,11 @@ static int vv6410_init_controls(struct sd *sd)
 	struct v4l2_ctrl_handler *hdl = &sd->gspca_dev.ctrl_handler;
 
 	v4l2_ctrl_handler_init(hdl, 2);
-	/* Disable the hardware VFLIP and HFLIP as we currently lack a
-	   mechanism to adjust the image offset in such a way that
-	   we don't need to renegotiate the announced format */
-	/* v4l2_ctrl_new_std(hdl, &vv6410_ctrl_ops, */
-	/*		V4L2_CID_HFLIP, 0, 1, 1, 0); */
-	/* v4l2_ctrl_new_std(hdl, &vv6410_ctrl_ops, */
-	/*		V4L2_CID_VFLIP, 0, 1, 1, 0); */
+	 
+	 
+	 
+	 
+	 
 	v4l2_ctrl_new_std(hdl, &vv6410_ctrl_ops,
 			V4L2_CID_EXPOSURE, 0, 32768, 1, 20000);
 	v4l2_ctrl_new_std(hdl, &vv6410_ctrl_ops,
@@ -132,7 +117,7 @@ static int vv6410_start(struct sd *sd)
 
 	}
 
-	/* Turn on LED */
+	 
 	err = stv06xx_write_bridge(sd, STV_LED_CTRL, LED_ON);
 	if (err < 0)
 		return err;
@@ -151,7 +136,7 @@ static int vv6410_stop(struct sd *sd)
 	struct gspca_dev *gspca_dev = (struct gspca_dev *)sd;
 	int err;
 
-	/* Turn off LED */
+	 
 	err = stv06xx_write_bridge(sd, STV_LED_CTRL, LED_OFF);
 	if (err < 0)
 		return err;

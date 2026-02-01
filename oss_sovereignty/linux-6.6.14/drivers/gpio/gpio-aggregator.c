@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// GPIO Aggregator
-//
-// Copyright (C) 2019-2020 Glider bv
+
+
+
+
+
 
 #define DRV_NAME       "gpio-aggregator"
 #define pr_fmt(fmt)	DRV_NAME ": " fmt
@@ -29,9 +29,7 @@
 
 #define AGGREGATOR_MAX_GPIOS 512
 
-/*
- * GPIO Aggregator sysfs interface
- */
+ 
 
 struct gpio_aggregator {
 	struct gpiod_lookup_table *lookups;
@@ -39,7 +37,7 @@ struct gpio_aggregator {
 	char args[];
 };
 
-static DEFINE_MUTEX(gpio_aggregator_lock);	/* protects idr */
+static DEFINE_MUTEX(gpio_aggregator_lock);	 
 static DEFINE_IDR(gpio_aggregator_idr);
 
 static int aggr_add_gpio(struct gpio_aggregator *aggr, const char *key,
@@ -79,7 +77,7 @@ static int aggr_parse(struct gpio_aggregator *aggr)
 
 		p = get_options(offsets, 0, &error);
 		if (error == 0 || *p) {
-			/* Named GPIO line */
+			 
 			error = aggr_add_gpio(aggr, name, U16_MAX, &n);
 			if (error)
 				goto free_bitmap;
@@ -88,7 +86,7 @@ static int aggr_parse(struct gpio_aggregator *aggr)
 			continue;
 		}
 
-		/* GPIO chip + offset(s) */
+		 
 		error = bitmap_parselist(offsets, bitmap, AGGREGATOR_MAX_GPIOS);
 		if (error) {
 			pr_err("Cannot parse %s: %d\n", offsets, error);
@@ -121,7 +119,7 @@ static ssize_t new_device_store(struct device_driver *driver, const char *buf,
 	struct platform_device *pdev;
 	int res, id;
 
-	/* kernfs guarantees string termination, so count + 1 is safe */
+	 
 	aggr = kzalloc(sizeof(*aggr) + count + 1, GFP_KERNEL);
 	if (!aggr)
 		return -ENOMEM;
@@ -238,9 +236,7 @@ static void __exit gpio_aggregator_remove_all(void)
 }
 
 
-/*
- *  GPIO Forwarder
- */
+ 
 
 struct gpiochip_fwd_timing {
 	u32 ramp_up_us;
@@ -251,11 +247,11 @@ struct gpiochip_fwd {
 	struct gpio_chip chip;
 	struct gpio_desc **descs;
 	union {
-		struct mutex mlock;	/* protects tmp[] if can_sleep */
-		spinlock_t slock;	/* protects tmp[] if !can_sleep */
+		struct mutex mlock;	 
+		spinlock_t slock;	 
 	};
 	struct gpiochip_fwd_timing *delay_timings;
-	unsigned long tmp[];		/* values and descs for multiple ops */
+	unsigned long tmp[];		 
 };
 
 #define fwd_tmp_values(fwd)	&(fwd)->tmp[0]
@@ -423,12 +419,7 @@ static int gpio_fwd_to_irq(struct gpio_chip *chip, unsigned int offset)
 	return gpiod_to_irq(fwd->descs[offset]);
 }
 
-/*
- * The GPIO delay provides a way to configure platform specific delays
- * for the GPIO ramp-up or ramp-down delays. This can serve the following
- * purposes:
- *   - Open-drain output using an RC filter
- */
+ 
 #define FWD_FEATURE_DELAY		BIT(0)
 
 #ifdef CONFIG_OF_GPIO
@@ -474,23 +465,9 @@ static int gpiochip_fwd_setup_delay_line(struct device *dev, struct gpio_chip *c
 {
 	return 0;
 }
-#endif	/* !CONFIG_OF_GPIO */
+#endif	 
 
-/**
- * gpiochip_fwd_create() - Create a new GPIO forwarder
- * @dev: Parent device pointer
- * @ngpios: Number of GPIOs in the forwarder.
- * @descs: Array containing the GPIO descriptors to forward to.
- *         This array must contain @ngpios entries, and must not be deallocated
- *         before the forwarder has been destroyed again.
- * @features: Bitwise ORed features as defined with FWD_FEATURE_*.
- *
- * This function creates a new gpiochip, which forwards all GPIO operations to
- * the passed GPIO descriptors.
- *
- * Return: An opaque object pointer, or an ERR_PTR()-encoded negative error
- *         code on failure.
- */
+ 
 static struct gpiochip_fwd *gpiochip_fwd_create(struct device *dev,
 						unsigned int ngpios,
 						struct gpio_desc *descs[],
@@ -509,12 +486,7 @@ static struct gpiochip_fwd *gpiochip_fwd_create(struct device *dev,
 
 	chip = &fwd->chip;
 
-	/*
-	 * If any of the GPIO lines are sleeping, then the entire forwarder
-	 * will be sleeping.
-	 * If any of the chips support .set_config(), then the forwarder will
-	 * support setting configs.
-	 */
+	 
 	for (i = 0; i < ngpios; i++) {
 		struct gpio_chip *parent = gpiod_to_chip(descs[i]);
 
@@ -561,9 +533,7 @@ static struct gpiochip_fwd *gpiochip_fwd_create(struct device *dev,
 }
 
 
-/*
- *  GPIO Aggregator platform device
- */
+ 
 
 static int gpio_aggregator_probe(struct platform_device *pdev)
 {
@@ -601,10 +571,7 @@ static const struct of_device_id gpio_aggregator_dt_ids[] = {
 		.compatible = "gpio-delay",
 		.data = (void *)FWD_FEATURE_DELAY,
 	},
-	/*
-	 * Add GPIO-operated devices controlled from userspace below,
-	 * or use "driver_override" in sysfs.
-	 */
+	 
 	{}
 };
 MODULE_DEVICE_TABLE(of, gpio_aggregator_dt_ids);

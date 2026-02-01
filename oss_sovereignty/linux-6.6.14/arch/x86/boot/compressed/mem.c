@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "error.h"
 #include "misc.h"
@@ -6,12 +6,7 @@
 #include "sev.h"
 #include <asm/shared/tdx.h>
 
-/*
- * accept_memory() and process_unaccepted_memory() called from EFI stub which
- * runs before decompresser and its early_tdx_detect().
- *
- * Enumerate TDX directly from the early users.
- */
+ 
 static bool early_is_tdx_guest(void)
 {
 	static bool once;
@@ -34,7 +29,7 @@ static bool early_is_tdx_guest(void)
 
 void arch_accept_memory(phys_addr_t start, phys_addr_t end)
 {
-	/* Platform-specific memory-acceptance call goes here */
+	 
 	if (early_is_tdx_guest()) {
 		if (!tdx_accept_memory(start, end))
 			panic("TDX: Failed to accept memory\n");
@@ -72,14 +67,7 @@ bool init_unaccepted_memory(void)
 	if (table->version != 1)
 		error("Unknown version of unaccepted memory table\n");
 
-	/*
-	 * In many cases unaccepted_table is already set by EFI stub, but it
-	 * has to be initialized again to cover cases when the table is not
-	 * allocated by EFI stub or EFI stub copied the kernel image with
-	 * efi_relocate_kernel() before the variable is set.
-	 *
-	 * It must be initialized before the first usage of accept_memory().
-	 */
+	 
 	unaccepted_table = table;
 
 	return true;

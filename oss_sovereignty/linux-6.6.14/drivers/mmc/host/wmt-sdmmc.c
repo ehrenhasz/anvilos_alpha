@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  WM8505/WM8650 SD/MMC Host Controller
- *
- *  Copyright (C) 2010 Tony Prisk
- *  Copyright (C) 2008 WonderMedia Technologies, Inc.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -32,7 +27,7 @@
 #define DRIVER_NAME "wmt-sdhc"
 
 
-/* MMC/SD controller registers */
+ 
 #define SDMMC_CTLR			0x00
 #define SDMMC_CMD			0x01
 #define SDMMC_RSPTYPE			0x02
@@ -49,18 +44,18 @@
 #define SDMMC_STS2			0x2A
 #define SDMMC_STS3			0x2B
 #define SDMMC_RSPTIMEOUT		0x2C
-#define SDMMC_CLK			0x30	/* VT8500 only */
+#define SDMMC_CLK			0x30	 
 #define SDMMC_EXTCTRL			0x34
 #define SDMMC_SBLKLEN			0x38
 #define SDMMC_DMATIMEOUT		0x3C
 
 
-/* SDMMC_CTLR bit fields */
+ 
 #define CTLR_CMD_START			0x01
 #define CTLR_CMD_WRITE			0x04
 #define CTLR_FIFO_RESET			0x08
 
-/* SDMMC_BUSMODE bit fields */
+ 
 #define BM_SPI_MODE			0x01
 #define BM_FOURBIT_MODE			0x02
 #define BM_EIGHTBIT_MODE		0x04
@@ -69,20 +64,20 @@
 #define BM_SD_POWER			0x40
 #define BM_SOFT_RESET			0x80
 
-/* SDMMC_BLKLEN bit fields */
+ 
 #define BLKL_CRCERR_ABORT		0x0800
 #define BLKL_CD_POL_HIGH		0x1000
 #define BLKL_GPI_CD			0x2000
 #define BLKL_DATA3_CD			0x4000
 #define BLKL_INT_ENABLE			0x8000
 
-/* SDMMC_INTMASK0 bit fields */
+ 
 #define INT0_MBLK_TRAN_DONE_INT_EN	0x10
 #define INT0_BLK_TRAN_DONE_INT_EN	0x20
 #define INT0_CD_INT_EN			0x40
 #define INT0_DI_INT_EN			0x80
 
-/* SDMMC_INTMASK1 bit fields */
+ 
 #define INT1_CMD_RES_TRAN_DONE_INT_EN	0x02
 #define INT1_CMD_RES_TOUT_INT_EN	0x04
 #define INT1_MBLK_AUTO_STOP_INT_EN	0x08
@@ -91,7 +86,7 @@
 #define INT1_RCRC_ERR_INT_EN		0x40
 #define INT1_WCRC_ERR_INT_EN		0x80
 
-/* SDMMC_STS0 bit fields */
+ 
 #define STS0_WRITE_PROTECT		0x02
 #define STS0_CD_DATA3			0x04
 #define STS0_CD_GPI			0x08
@@ -100,7 +95,7 @@
 #define STS0_CARD_DETECT		0x40
 #define STS0_DEVICE_INS			0x80
 
-/* SDMMC_STS1 bit fields */
+ 
 #define STS1_SDIO_INT			0x01
 #define STS1_CMDRSP_DONE		0x02
 #define STS1_RSP_TIMEOUT		0x04
@@ -110,15 +105,15 @@
 #define STS1_RCRC_ERR			0x40
 #define STS1_WCRC_ERR			0x80
 
-/* SDMMC_STS2 bit fields */
+ 
 #define STS2_CMD_RES_BUSY		0x10
 #define STS2_DATARSP_BUSY		0x20
 #define STS2_DIS_FORCECLK		0x80
 
-/* SDMMC_EXTCTRL bit fields */
+ 
 #define EXT_EIGHTBIT			0x04
 
-/* MMC/SD DMA Controller Registers */
+ 
 #define SDDMA_GCR			0x100
 #define SDDMA_IER			0x104
 #define SDDMA_ISR			0x108
@@ -130,26 +125,26 @@
 #define SDDMA_CCR			0x120
 
 
-/* SDDMA_GCR bit fields */
+ 
 #define DMA_GCR_DMA_EN			0x00000001
 #define DMA_GCR_SOFT_RESET		0x00000100
 
-/* SDDMA_IER bit fields */
+ 
 #define DMA_IER_INT_EN			0x00000001
 
-/* SDDMA_ISR bit fields */
+ 
 #define DMA_ISR_INT_STS			0x00000001
 
-/* SDDMA_RBR bit fields */
+ 
 #define DMA_RBR_FORMAT			0x40000000
 #define DMA_RBR_END			0x80000000
 
-/* SDDMA_CCR bit fields */
+ 
 #define DMA_CCR_RUN			0x00000080
 #define DMA_CCR_IF_TO_PERIPHERAL	0x00000000
 #define DMA_CCR_PERIPHERAL_TO_IF	0x00400000
 
-/* SDDMA_CCR event status */
+ 
 #define DMA_CCR_EVT_NO_STATUS		0x00000000
 #define DMA_CCR_EVT_UNDERRUN		0x00000001
 #define DMA_CCR_EVT_OVERRUN		0x00000002
@@ -258,25 +253,25 @@ static int wmt_mci_send_command(struct mmc_host *mmc, u8 command, u8 cmdtype,
 
 	priv = mmc_priv(mmc);
 
-	/* write command, arg, resptype registers */
+	 
 	writeb(command, priv->sdmmc_base + SDMMC_CMD);
 	writel(arg, priv->sdmmc_base + SDMMC_ARG);
 	writeb(rsptype, priv->sdmmc_base + SDMMC_RSPTYPE);
 
-	/* reset response FIFO */
+	 
 	reg_tmp = readb(priv->sdmmc_base + SDMMC_CTLR);
 	writeb(reg_tmp | CTLR_FIFO_RESET, priv->sdmmc_base + SDMMC_CTLR);
 
-	/* ensure clock enabled - VT3465 */
+	 
 	wmt_set_sd_power(priv, WMT_SD_POWER_ON);
 
-	/* clear status bits */
+	 
 	writeb(0xFF, priv->sdmmc_base + SDMMC_STS0);
 	writeb(0xFF, priv->sdmmc_base + SDMMC_STS1);
 	writeb(0xFF, priv->sdmmc_base + SDMMC_STS2);
 	writeb(0xFF, priv->sdmmc_base + SDMMC_STS3);
 
-	/* set command type */
+	 
 	reg_tmp = readb(priv->sdmmc_base + SDMMC_CTLR);
 	writeb((reg_tmp & 0x0F) | (cmdtype << 4),
 	       priv->sdmmc_base + SDMMC_CTLR);
@@ -297,7 +292,7 @@ static void wmt_complete_data_request(struct wmt_mci_priv *priv)
 
 	req->data->bytes_xfered = req->data->blksz * req->data->blocks;
 
-	/* unmap the DMA pages used for write data */
+	 
 	if (req->data->flags & MMC_DATA_WRITE)
 		dma_unmap_sg(mmc_dev(priv->mmc), req->data->sg,
 			     req->data->sg_len, DMA_TO_DEVICE);
@@ -305,20 +300,16 @@ static void wmt_complete_data_request(struct wmt_mci_priv *priv)
 		dma_unmap_sg(mmc_dev(priv->mmc), req->data->sg,
 			     req->data->sg_len, DMA_FROM_DEVICE);
 
-	/* Check if the DMA ISR returned a data error */
+	 
 	if ((req->cmd->error) || (req->data->error))
 		mmc_request_done(priv->mmc, req);
 	else {
 		wmt_mci_read_response(priv->mmc);
 		if (!req->data->stop) {
-			/* single-block read/write requests end here */
+			 
 			mmc_request_done(priv->mmc, req);
 		} else {
-			/*
-			 * we change the priv->cmd variable so the response is
-			 * stored in the stop struct rather than the original
-			 * calling command struct
-			 */
+			 
 			priv->comp_cmd = &priv->cmdcomp;
 			init_completion(priv->comp_cmd);
 			priv->cmd = req->data->stop;
@@ -354,11 +345,7 @@ static irqreturn_t wmt_mci_dma_isr(int irq_num, void *data)
 
 	if (priv->comp_cmd) {
 		if (completion_done(priv->comp_cmd)) {
-			/*
-			 * if the command (regular) interrupt has already
-			 * completed, finish off the request otherwise we wait
-			 * for the command interrupt and finish from there.
-			 */
+			 
 			wmt_complete_data_request(priv);
 		}
 	}
@@ -381,7 +368,7 @@ static irqreturn_t wmt_mci_regular_isr(int irq_num, void *data)
 	status1 = readb(priv->sdmmc_base + SDMMC_STS1);
 	status2 = readb(priv->sdmmc_base + SDMMC_STS2);
 
-	/* Check for card insertion */
+	 
 	reg_tmp = readb(priv->sdmmc_base + SDMMC_INTMASK0);
 	if ((reg_tmp & INT0_DI_INT_EN) && (status0 & STS0_DEVICE_INS)) {
 		mmc_detect_change(priv->mmc, 0);
@@ -399,7 +386,7 @@ static irqreturn_t wmt_mci_regular_isr(int irq_num, void *data)
 
 	if ((!priv->req->data) ||
 	    ((priv->req->data->stop) && (priv->cmd == priv->req->data->stop))) {
-		/* handle non-data & stop_transmission requests */
+		 
 		if (status1 & STS1_CMDRSP_DONE) {
 			priv->cmd->error = 0;
 			cmd_done = 1;
@@ -420,7 +407,7 @@ static irqreturn_t wmt_mci_regular_isr(int irq_num, void *data)
 			mmc_request_done(priv->mmc, priv->req);
 		}
 	} else {
-		/* handle data requests */
+		 
 		if (status1 & STS1_CMDRSP_DONE) {
 			if (priv->cmd)
 				priv->cmd->error = 0;
@@ -441,11 +428,7 @@ static irqreturn_t wmt_mci_regular_isr(int irq_num, void *data)
 		}
 
 		if (priv->comp_dma) {
-			/*
-			 * If the dma interrupt has already completed, finish
-			 * off the request; otherwise we wait for the DMA
-			 * interrupt and finish from there.
-			 */
+			 
 			if (completion_done(priv->comp_dma))
 				wmt_complete_data_request(priv);
 		}
@@ -465,35 +448,35 @@ static void wmt_reset_hardware(struct mmc_host *mmc)
 
 	priv = mmc_priv(mmc);
 
-	/* reset controller */
+	 
 	reg_tmp = readb(priv->sdmmc_base + SDMMC_BUSMODE);
 	writeb(reg_tmp | BM_SOFT_RESET, priv->sdmmc_base + SDMMC_BUSMODE);
 
-	/* reset response FIFO */
+	 
 	reg_tmp = readb(priv->sdmmc_base + SDMMC_CTLR);
 	writeb(reg_tmp | CTLR_FIFO_RESET, priv->sdmmc_base + SDMMC_CTLR);
 
-	/* enable GPI pin to detect card */
+	 
 	writew(BLKL_INT_ENABLE | BLKL_GPI_CD, priv->sdmmc_base + SDMMC_BLKLEN);
 
-	/* clear interrupt status */
+	 
 	writeb(0xFF, priv->sdmmc_base + SDMMC_STS0);
 	writeb(0xFF, priv->sdmmc_base + SDMMC_STS1);
 
-	/* setup interrupts */
+	 
 	writeb(INT0_CD_INT_EN | INT0_DI_INT_EN, priv->sdmmc_base +
 	       SDMMC_INTMASK0);
 	writeb(INT1_DATA_TOUT_INT_EN | INT1_CMD_RES_TRAN_DONE_INT_EN |
 	       INT1_CMD_RES_TOUT_INT_EN, priv->sdmmc_base + SDMMC_INTMASK1);
 
-	/* set the DMA timeout */
+	 
 	writew(8191, priv->sdmmc_base + SDMMC_DMATIMEOUT);
 
-	/* auto clock freezing enable */
+	 
 	reg_tmp = readb(priv->sdmmc_base + SDMMC_STS2);
 	writeb(reg_tmp | STS2_DIS_FORCECLK, priv->sdmmc_base + SDMMC_STS2);
 
-	/* set a default clock speed of 400Khz */
+	 
 	clk_set_rate(priv->clk_sdmmc, 400000);
 }
 
@@ -528,10 +511,10 @@ static void wmt_dma_config(struct mmc_host *mmc, u32 descaddr, u8 dir)
 
 	priv = mmc_priv(mmc);
 
-	/* Enable DMA Interrupts */
+	 
 	writel(DMA_IER_INT_EN, priv->sdmmc_base + SDDMA_IER);
 
-	/* Write DMA Descriptor Pointer Register */
+	 
 	writel(descaddr, priv->sdmmc_base + SDDMA_DESPR);
 
 	writel(0x00, priv->sdmmc_base + SDDMA_CCR);
@@ -575,11 +558,7 @@ static void wmt_mci_request(struct mmc_host *mmc, struct mmc_request *req)
 	priv = mmc_priv(mmc);
 	priv->req = req;
 
-	/*
-	 * Use the cmd variable to pass a pointer to the resp[] structure
-	 * This is required on multi-block requests to pass the pointer to the
-	 * stop command
-	 */
+	 
 	priv->cmd = req->cmd;
 
 	command = req->cmd->opcode;
@@ -587,17 +566,17 @@ static void wmt_mci_request(struct mmc_host *mmc, struct mmc_request *req)
 	rsptype = mmc_resp_type(req->cmd);
 	cmdtype = 0;
 
-	/* rsptype=7 only valid for SPI commands - should be =2 for SD */
+	 
 	if (rsptype == 7)
 		rsptype = 2;
-	/* rsptype=21 is R1B, convert for controller */
+	 
 	if (rsptype == 21)
 		rsptype = 9;
 
 	if (!req->data) {
 		wmt_mci_send_command(mmc, command, cmdtype, arg, rsptype);
 		wmt_mci_start_command(priv);
-		/* completion is now handled in the regular_isr() */
+		 
 	}
 	if (req->data) {
 		priv->comp_cmd = &priv->cmdcomp;
@@ -605,12 +584,12 @@ static void wmt_mci_request(struct mmc_host *mmc, struct mmc_request *req)
 
 		wmt_dma_init(mmc);
 
-		/* set controller data length */
+		 
 		reg_tmp = readw(priv->sdmmc_base + SDMMC_BLKLEN);
 		writew((reg_tmp & 0xF800) | (req->data->blksz - 1),
 		       priv->sdmmc_base + SDMMC_BLKLEN);
 
-		/* set controller block count */
+		 
 		writew(req->data->blocks, priv->sdmmc_base + SDMMC_BLKCNT);
 
 		desc = (struct wmt_dma_descriptor *)priv->dma_desc_buffer;
@@ -728,7 +707,7 @@ static const struct mmc_host_ops wmt_mci_ops = {
 	.get_cd = wmt_mci_get_cd,
 };
 
-/* Controller capabilities */
+ 
 static struct wmt_mci_caps wm8505_caps = {
 	.f_min = 390425,
 	.f_max = 50000000,
@@ -742,7 +721,7 @@ static struct wmt_mci_caps wm8505_caps = {
 
 static const struct of_device_id wmt_mci_dt_ids[] = {
 	{ .compatible = "wm,wm8505-sdhc", .data = &wm8505_caps },
-	{ /* Sentinel */ },
+	{   },
 };
 
 static int wmt_mci_probe(struct platform_device *pdev)
@@ -826,7 +805,7 @@ static int wmt_mci_probe(struct platform_device *pdev)
 		goto fail4;
 	}
 
-	/* alloc some DMA buffers for descriptors/transfers */
+	 
 	priv->dma_desc_buffer = dma_alloc_coherent(&pdev->dev,
 						   mmc->max_blk_count * 16,
 						   &priv->dma_desc_device_addr,
@@ -850,7 +829,7 @@ static int wmt_mci_probe(struct platform_device *pdev)
 	if (ret)
 		goto fail6;
 
-	/* configure the controller to a known 'ready' state */
+	 
 	wmt_reset_hardware(mmc);
 
 	ret = mmc_add_host(mmc);
@@ -889,7 +868,7 @@ static void wmt_mci_remove(struct platform_device *pdev)
 	mmc = platform_get_drvdata(pdev);
 	priv = mmc_priv(mmc);
 
-	/* reset SD controller */
+	 
 	reg_tmp = readb(priv->sdmmc_base + SDMMC_BUSMODE);
 	writel(reg_tmp | BM_SOFT_RESET, priv->sdmmc_base + SDMMC_BUSMODE);
 	reg_tmp = readw(priv->sdmmc_base + SDMMC_BLKLEN);
@@ -897,7 +876,7 @@ static void wmt_mci_remove(struct platform_device *pdev)
 	writeb(0xFF, priv->sdmmc_base + SDMMC_STS0);
 	writeb(0xFF, priv->sdmmc_base + SDMMC_STS1);
 
-	/* release the dma buffers */
+	 
 	dma_free_coherent(&pdev->dev, priv->mmc->max_blk_count * 16,
 			  priv->dma_desc_buffer, priv->dma_desc_device_addr);
 
@@ -978,7 +957,7 @@ static const struct dev_pm_ops wmt_mci_pm = {
 
 #define wmt_mci_pm_ops (&wmt_mci_pm)
 
-#else	/* !CONFIG_PM */
+#else	 
 
 #define wmt_mci_pm_ops NULL
 

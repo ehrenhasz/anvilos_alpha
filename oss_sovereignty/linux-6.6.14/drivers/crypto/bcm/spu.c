@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2016 Broadcom
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -16,7 +14,7 @@ char *hash_alg_name[] = { "None", "md5", "sha1", "sha224", "sha256", "aes",
 
 char *aead_alg_name[] = { "ccm(aes)", "gcm(aes)", "authenc" };
 
-/* Assumes SPU-M messages are in big endian */
+ 
 void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 {
 	u8 *ptr = buf;
@@ -34,13 +32,13 @@ void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 	u32 hash_alg;
 	u32 hash_mode;
 	u32 hash_type;
-	u32 sctx_size;   /* SCTX length in words */
-	u32 sctx_pl_len; /* SCTX payload length in bytes */
+	u32 sctx_size;    
+	u32 sctx_pl_len;  
 
 	packet_log("\n");
 	packet_log("SPU Message header %p len: %u\n", buf, buf_len);
 
-	/* ========== Decode MH ========== */
+	 
 	packet_log("  MH 0x%08x\n", be32_to_cpup((__be32 *)ptr));
 	if (spuh->mh.flags & MH_SCTX_PRES)
 		packet_log("    SCTX  present\n");
@@ -56,9 +54,9 @@ void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 		packet_log("    SUPDT present\n");
 	packet_log("    Opcode 0x%02x\n", spuh->mh.op_code);
 
-	ptr += sizeof(spuh->mh) + sizeof(spuh->emh);  /* skip emh. unused */
+	ptr += sizeof(spuh->mh) + sizeof(spuh->emh);   
 
-	/* ========== Decode SCTX ========== */
+	 
 	if (spuh->mh.flags & MH_SCTX_PRES) {
 		pflags = be32_to_cpu(spuh->sa.proto_flags);
 		packet_log("  SCTX[0] 0x%08x\n", pflags);
@@ -245,7 +243,7 @@ void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 			packet_log("    Cipher Key Type:%s Length:%u Bytes\n",
 				   name, cipher_key_len);
 
-			/* XTS has two keys */
+			 
 			if (cipher_mode == CIPHER_MODE_XTS) {
 				packet_dump("    KEY2: ", ptr, cipher_key_len);
 				ptr += cipher_key_len;
@@ -271,7 +269,7 @@ void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 		}
 	}
 
-	/* ========== Decode BDESC ========== */
+	 
 	if (spuh->mh.flags & MH_BDESC_PRES) {
 		struct BDESC_HEADER *bdesc = (struct BDESC_HEADER *)ptr;
 
@@ -294,7 +292,7 @@ void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 		ptr += sizeof(u32);
 	}
 
-	/* ========== Decode BD ========== */
+	 
 	if (spuh->mh.flags & MH_BD_PRES) {
 		struct BD_HEADER *bd = (struct BD_HEADER *)ptr;
 
@@ -304,7 +302,7 @@ void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 		ptr += 4;
 	}
 
-	/* Double check sanity */
+	 
 	if (buf + buf_len != ptr) {
 		packet_log(" Packet parsed incorrectly. ");
 		packet_log("buf:%p buf_len:%u buf+buf_len:%p ptr:%p\n",
@@ -314,19 +312,7 @@ void spum_dump_msg_hdr(u8 *buf, unsigned int buf_len)
 	packet_log("\n");
 }
 
-/**
- * spum_ns2_ctx_max_payload() - Determine the max length of the payload for a
- * SPU message for a given cipher and hash alg context.
- * @cipher_alg:		The cipher algorithm
- * @cipher_mode:	The cipher mode
- * @blocksize:		The size of a block of data for this algo
- *
- * The max payload must be a multiple of the blocksize so that if a request is
- * too large to fit in a single SPU message, the request can be broken into
- * max_payload sized chunks. Each chunk must be a multiple of blocksize.
- *
- * Return: Max payload length in bytes
- */
+ 
 u32 spum_ns2_ctx_max_payload(enum spu_cipher_alg cipher_alg,
 			     enum spu_cipher_mode cipher_mode,
 			     unsigned int blocksize)
@@ -334,7 +320,7 @@ u32 spum_ns2_ctx_max_payload(enum spu_cipher_alg cipher_alg,
 	u32 max_payload = SPUM_NS2_MAX_PAYLOAD;
 	u32 excess;
 
-	/* In XTS on SPU-M, we'll need to insert tweak before input data */
+	 
 	if (cipher_mode == CIPHER_MODE_XTS)
 		max_payload -= SPU_XTS_TWEAK_SIZE;
 
@@ -343,19 +329,7 @@ u32 spum_ns2_ctx_max_payload(enum spu_cipher_alg cipher_alg,
 	return max_payload - excess;
 }
 
-/**
- * spum_nsp_ctx_max_payload() - Determine the max length of the payload for a
- * SPU message for a given cipher and hash alg context.
- * @cipher_alg:		The cipher algorithm
- * @cipher_mode:	The cipher mode
- * @blocksize:		The size of a block of data for this algo
- *
- * The max payload must be a multiple of the blocksize so that if a request is
- * too large to fit in a single SPU message, the request can be broken into
- * max_payload sized chunks. Each chunk must be a multiple of blocksize.
- *
- * Return: Max payload length in bytes
- */
+ 
 u32 spum_nsp_ctx_max_payload(enum spu_cipher_alg cipher_alg,
 			     enum spu_cipher_mode cipher_mode,
 			     unsigned int blocksize)
@@ -363,7 +337,7 @@ u32 spum_nsp_ctx_max_payload(enum spu_cipher_alg cipher_alg,
 	u32 max_payload = SPUM_NSP_MAX_PAYLOAD;
 	u32 excess;
 
-	/* In XTS on SPU-M, we'll need to insert tweak before input data */
+	 
 	if (cipher_mode == CIPHER_MODE_XTS)
 		max_payload -= SPU_XTS_TWEAK_SIZE;
 
@@ -372,35 +346,20 @@ u32 spum_nsp_ctx_max_payload(enum spu_cipher_alg cipher_alg,
 	return max_payload - excess;
 }
 
-/** spum_payload_length() - Given a SPU-M message header, extract the payload
- * length.
- * @spu_hdr:	Start of SPU header
- *
- * Assumes just MH, EMH, BD (no SCTX, BDESC. Works for response frames.
- *
- * Return: payload length in bytes
- */
+ 
 u32 spum_payload_length(u8 *spu_hdr)
 {
 	struct BD_HEADER *bd;
 	u32 pl_len;
 
-	/* Find BD header.  skip MH, EMH */
+	 
 	bd = (struct BD_HEADER *)(spu_hdr + 8);
 	pl_len = be16_to_cpu(bd->size);
 
 	return pl_len;
 }
 
-/**
- * spum_response_hdr_len() - Given the length of the hash key and encryption
- * key, determine the expected length of a SPU response header.
- * @auth_key_len:	authentication key length (bytes)
- * @enc_key_len:	encryption key length (bytes)
- * @is_hash:		true if response message is for a hash operation
- *
- * Return: length of SPU response header (bytes)
- */
+ 
 u16 spum_response_hdr_len(u16 auth_key_len, u16 enc_key_len, bool is_hash)
 {
 	if (is_hash)
@@ -409,18 +368,7 @@ u16 spum_response_hdr_len(u16 auth_key_len, u16 enc_key_len, bool is_hash)
 		return SPU_RESP_HDR_LEN;
 }
 
-/**
- * spum_hash_pad_len() - Calculate the length of hash padding required to extend
- * data to a full block size.
- * @hash_alg:   hash algorithm
- * @hash_mode:       hash mode
- * @chunksize:  length of data, in bytes
- * @hash_block_size:  size of a block of data for hash algorithm
- *
- * Reserve space for 1 byte (0x80) start of pad and the total length as u64
- *
- * Return:  length of hash pad in bytes
- */
+ 
 u16 spum_hash_pad_len(enum hash_alg hash_alg, enum hash_mode hash_mode,
 		      u32 chunksize, u16 hash_block_size)
 {
@@ -428,7 +376,7 @@ u16 spum_hash_pad_len(enum hash_alg hash_alg, enum hash_mode hash_mode,
 	unsigned int used_space_last_block;
 	int hash_pad_len;
 
-	/* AES-XCBC hash requires just padding to next block boundary */
+	 
 	if ((hash_alg == HASH_ALG_AES) && (hash_mode == HASH_MODE_XCBC)) {
 		used_space_last_block = chunksize % hash_block_size;
 		hash_pad_len = hash_block_size - used_space_last_block;
@@ -452,13 +400,7 @@ u16 spum_hash_pad_len(enum hash_alg hash_alg, enum hash_mode hash_mode,
 	return hash_pad_len;
 }
 
-/**
- * spum_gcm_ccm_pad_len() - Determine the required length of GCM or CCM padding.
- * @cipher_mode:	Algo type
- * @data_size:		Length of plaintext (bytes)
- *
- * Return: Length of padding, in bytes
- */
+ 
 u32 spum_gcm_ccm_pad_len(enum spu_cipher_mode cipher_mode,
 			 unsigned int data_size)
 {
@@ -472,16 +414,7 @@ u32 spum_gcm_ccm_pad_len(enum spu_cipher_mode cipher_mode,
 	return pad_len;
 }
 
-/**
- * spum_assoc_resp_len() - Determine the size of the receive buffer required to
- * catch associated data.
- * @cipher_mode:	cipher mode
- * @assoc_len:		length of associated data (bytes)
- * @iv_len:		length of IV (bytes)
- * @is_encrypt:		true if encrypting. false if decrypting.
- *
- * Return: length of associated data in response message (bytes)
- */
+ 
 u32 spum_assoc_resp_len(enum spu_cipher_mode cipher_mode,
 			unsigned int assoc_len, unsigned int iv_len,
 			bool is_encrypt)
@@ -493,15 +426,12 @@ u32 spum_assoc_resp_len(enum spu_cipher_mode cipher_mode,
 		buflen = assoc_len;
 
 	if (cipher_mode == CIPHER_MODE_GCM) {
-		/* AAD needs to be padded in responses too */
+		 
 		pad = spum_gcm_ccm_pad_len(cipher_mode, buflen);
 		buflen += pad;
 	}
 	if (cipher_mode == CIPHER_MODE_CCM) {
-		/*
-		 * AAD needs to be padded in responses too
-		 * for CCM, len + 2 needs to be 128-bit aligned.
-		 */
+		 
 		pad = spum_gcm_ccm_pad_len(cipher_mode, buflen + 2);
 		buflen += pad;
 	}
@@ -509,56 +439,25 @@ u32 spum_assoc_resp_len(enum spu_cipher_mode cipher_mode,
 	return buflen;
 }
 
-/**
- * spum_aead_ivlen() - Calculate the length of the AEAD IV to be included
- * in a SPU request after the AAD and before the payload.
- * @cipher_mode:  cipher mode
- * @iv_len:   initialization vector length in bytes
- *
- * In Linux ~4.2 and later, the assoc_data sg includes the IV. So no need
- * to include the IV as a separate field in the SPU request msg.
- *
- * Return: Length of AEAD IV in bytes
- */
+ 
 u8 spum_aead_ivlen(enum spu_cipher_mode cipher_mode, u16 iv_len)
 {
 	return 0;
 }
 
-/**
- * spum_hash_type() - Determine the type of hash operation.
- * @src_sent:  The number of bytes in the current request that have already
- *             been sent to the SPU to be hashed.
- *
- * We do not use HASH_TYPE_FULL for requests that fit in a single SPU message.
- * Using FULL causes failures (such as when the string to be hashed is empty).
- * For similar reasons, we never use HASH_TYPE_FIN. Instead, submit messages
- * as INIT or UPDT and do the hash padding in sw.
- */
+ 
 enum hash_type spum_hash_type(u32 src_sent)
 {
 	return src_sent ? HASH_TYPE_UPDT : HASH_TYPE_INIT;
 }
 
-/**
- * spum_digest_size() - Determine the size of a hash digest to expect the SPU to
- * return.
- * @alg_digest_size: Number of bytes in the final digest for the given algo
- * @alg:             The hash algorithm
- * @htype:           Type of hash operation (init, update, full, etc)
- *
- * When doing incremental hashing for an algorithm with a truncated hash
- * (e.g., SHA224), the SPU returns the full digest so that it can be fed back as
- * a partial result for the next chunk.
- */
+ 
 u32 spum_digest_size(u32 alg_digest_size, enum hash_alg alg,
 		     enum hash_type htype)
 {
 	u32 digestsize = alg_digest_size;
 
-	/* SPU returns complete digest when doing incremental hash and truncated
-	 * hash algo.
-	 */
+	 
 	if ((htype == HASH_TYPE_INIT) || (htype == HASH_TYPE_UPDT)) {
 		if (alg == HASH_ALG_SHA224)
 			digestsize = SHA256_DIGEST_SIZE;
@@ -568,21 +467,7 @@ u32 spum_digest_size(u32 alg_digest_size, enum hash_alg alg,
 	return digestsize;
 }
 
-/**
- * spum_create_request() - Build a SPU request message header, up to and
- * including the BD header. Construct the message starting at spu_hdr. Caller
- * should allocate this buffer in DMA-able memory at least SPU_HEADER_ALLOC_LEN
- * bytes long.
- * @spu_hdr: Start of buffer where SPU request header is to be written
- * @req_opts: SPU request message options
- * @cipher_parms: Parameters related to cipher algorithm
- * @hash_parms:   Parameters related to hash algorithm
- * @aead_parms:   Parameters related to AEAD operation
- * @data_size:    Length of data to be encrypted or authenticated. If AEAD, does
- *		  not include length of AAD.
- *
- * Return: the length of the SPU header in bytes. 0 if an error occurs.
- */
+ 
 u32 spum_create_request(u8 *spu_hdr,
 			struct spu_request_opts *req_opts,
 			struct spu_cipher_parms *cipher_parms,
@@ -601,15 +486,15 @@ u32 spum_create_request(u8 *spu_hdr,
 	u8 sctx_words = 0;
 	unsigned int buf_len = 0;
 
-	/* size of the cipher payload */
+	 
 	unsigned int cipher_len = hash_parms->prebuf_len + data_size +
 				hash_parms->pad_len;
 
-	/* offset of prebuf or data from end of BD header */
+	 
 	unsigned int cipher_offset = aead_parms->assoc_size +
 		aead_parms->iv_len + aead_parms->aad_pad_len;
 
-	/* total size of the DB data (without STAT word padding) */
+	 
 	unsigned int real_db_size = spu_real_db_size(aead_parms->assoc_size,
 						 aead_parms->iv_len,
 						 hash_parms->prebuf_len,
@@ -621,7 +506,7 @@ u32 spum_create_request(u8 *spu_hdr,
 	unsigned int auth_offset = 0;
 	unsigned int offset_iv = 0;
 
-	/* size/offset of the auth payload */
+	 
 	unsigned int auth_len;
 
 	auth_len = real_db_size;
@@ -662,12 +547,12 @@ u32 spum_create_request(u8 *spu_hdr,
 		 auth_offset, auth_len, cipher_offset, cipher_len);
 	flow_log("  aead_iv: %u\n", aead_parms->iv_len);
 
-	/* starting out: zero the header (plus some) */
+	 
 	ptr = spu_hdr;
 	memset(ptr, 0, sizeof(struct SPUHEADER));
 
-	/* format master header word */
-	/* Do not set the next bit even though the datasheet says to */
+	 
+	 
 	spuh = (struct SPUHEADER *)ptr;
 	ptr += sizeof(struct SPUHEADER);
 	buf_len += sizeof(struct SPUHEADER);
@@ -675,31 +560,28 @@ u32 spum_create_request(u8 *spu_hdr,
 	spuh->mh.op_code = SPU_CRYPTO_OPERATION_GENERIC;
 	spuh->mh.flags |= (MH_SCTX_PRES | MH_BDESC_PRES | MH_BD_PRES);
 
-	/* Format sctx word 0 (protocol_bits) */
-	sctx_words = 3;		/* size in words */
+	 
+	sctx_words = 3;		 
 
-	/* Format sctx word 1 (cipher_bits) */
+	 
 	if (req_opts->is_inbound)
 		cipher_bits |= CIPHER_INBOUND;
 	if (req_opts->auth_first)
 		cipher_bits |= CIPHER_ORDER;
 
-	/* Set the crypto parameters in the cipher.flags */
+	 
 	cipher_bits |= cipher_parms->alg << CIPHER_ALG_SHIFT;
 	cipher_bits |= cipher_parms->mode << CIPHER_MODE_SHIFT;
 	cipher_bits |= cipher_parms->type << CIPHER_TYPE_SHIFT;
 
-	/* Set the auth parameters in the cipher.flags */
+	 
 	cipher_bits |= hash_parms->alg << HASH_ALG_SHIFT;
 	cipher_bits |= hash_parms->mode << HASH_MODE_SHIFT;
 	cipher_bits |= hash_parms->type << HASH_TYPE_SHIFT;
 
-	/*
-	 * Format sctx extensions if required, and update main fields if
-	 * required)
-	 */
+	 
 	if (hash_parms->alg) {
-		/* Write the authentication key material if present */
+		 
 		if (hash_parms->key_len) {
 			memcpy(ptr, hash_parms->key_buf, hash_parms->key_len);
 			ptr += hash_parms->key_len;
@@ -709,10 +591,10 @@ u32 spum_create_request(u8 *spu_hdr,
 
 		if ((cipher_parms->mode == CIPHER_MODE_GCM) ||
 		    (cipher_parms->mode == CIPHER_MODE_CCM))
-			/* unpadded length */
+			 
 			offset_iv = aead_parms->assoc_size;
 
-		/* if GCM/CCM we need to write ICV into the payload */
+		 
 		if (!req_opts->is_inbound) {
 			if ((cipher_parms->mode == CIPHER_MODE_GCM) ||
 			    (cipher_parms->mode == CIPHER_MODE_CCM))
@@ -721,7 +603,7 @@ u32 spum_create_request(u8 *spu_hdr,
 			ecf_bits |= CHECK_ICV;
 		}
 
-		/* Inform the SPU of the ICV size (in words) */
+		 
 		if (hash_parms->digestsize == 64)
 			cipher_bits |= ICV_IS_512;
 		else
@@ -732,7 +614,7 @@ u32 spum_create_request(u8 *spu_hdr,
 	if (req_opts->bd_suppress)
 		ecf_bits |= BD_SUPPRESS;
 
-	/* copy the encryption keys in the SAD entry */
+	 
 	if (cipher_parms->alg) {
 		if (cipher_parms->key_len) {
 			memcpy(ptr, cipher_parms->key_buf,
@@ -742,15 +624,12 @@ u32 spum_create_request(u8 *spu_hdr,
 			sctx_words += cipher_parms->key_len / 4;
 		}
 
-		/*
-		 * if encrypting then set IV size, use SCTX IV unless no IV
-		 * given here
-		 */
+		 
 		if (cipher_parms->iv_buf && cipher_parms->iv_len) {
-			/* Use SCTX IV */
+			 
 			ecf_bits |= SCTX_IV;
 
-			/* cipher iv provided so put it in here */
+			 
 			memcpy(ptr, cipher_parms->iv_buf, cipher_parms->iv_len);
 
 			ptr += cipher_parms->iv_len;
@@ -759,10 +638,7 @@ u32 spum_create_request(u8 *spu_hdr,
 		}
 	}
 
-	/*
-	 * RFC4543 (GMAC/ESP) requires data to be sent as part of AAD
-	 * so we need to override the BDESC parameters.
-	 */
+	 
 	if (req_opts->is_rfc4543) {
 		if (req_opts->is_inbound)
 			data_size -= hash_parms->digestsize;
@@ -772,15 +648,15 @@ u32 spum_create_request(u8 *spu_hdr,
 		auth_len = cipher_offset + aead_parms->data_pad_len;
 	}
 
-	/* write in the total sctx length now that we know it */
+	 
 	protocol_bits |= sctx_words;
 
-	/* Endian adjust the SCTX */
+	 
 	spuh->sa.proto_flags = cpu_to_be32(protocol_bits);
 	spuh->sa.cipher_flags = cpu_to_be32(cipher_bits);
 	spuh->sa.ecf = cpu_to_be32(ecf_bits);
 
-	/* === create the BDESC section === */
+	 
 	bdesc = (struct BDESC_HEADER *)ptr;
 
 	bdesc->offset_mac = cpu_to_be16(auth_offset);
@@ -788,10 +664,7 @@ u32 spum_create_request(u8 *spu_hdr,
 	bdesc->offset_crypto = cpu_to_be16(cipher_offset);
 	bdesc->length_crypto = cpu_to_be16(cipher_len);
 
-	/*
-	 * CCM in SPU-M requires that ICV not be in same 32-bit word as data or
-	 * padding.  So account for padding as necessary.
-	 */
+	 
 	if (cipher_parms->mode == CIPHER_MODE_CCM)
 		auth_len += spum_wordalign_padlen(auth_len);
 
@@ -801,11 +674,11 @@ u32 spum_create_request(u8 *spu_hdr,
 	ptr += sizeof(struct BDESC_HEADER);
 	buf_len += sizeof(struct BDESC_HEADER);
 
-	/* === no MFM section === */
+	 
 
-	/* === create the BD section === */
+	 
 
-	/* add the BD header */
+	 
 	bd = (struct BD_HEADER *)ptr;
 	bd->size = cpu_to_be16(real_db_size);
 	bd->prev_length = 0;
@@ -818,17 +691,7 @@ u32 spum_create_request(u8 *spu_hdr,
 	return buf_len;
 }
 
-/**
- * spum_cipher_req_init() - Build a SPU request message header, up to and
- * including the BD header.
- * @spu_hdr:      Start of SPU request header (MH)
- * @cipher_parms: Parameters that describe the cipher request
- *
- * Construct the message starting at spu_hdr. Caller should allocate this buffer
- * in DMA-able memory at least SPU_HEADER_ALLOC_LEN bytes long.
- *
- * Return: the length of the SPU header in bytes. 0 if an error occurs.
- */
+ 
 u16 spum_cipher_req_init(u8 *spu_hdr, struct spu_cipher_parms *cipher_parms)
 {
 	struct SPUHEADER *spuh;
@@ -845,55 +708,52 @@ u16 spum_cipher_req_init(u8 *spu_hdr, struct spu_cipher_parms *cipher_parms)
 	flow_log("    key: %d\n", cipher_parms->key_len);
 	flow_dump("    key: ", cipher_parms->key_buf, cipher_parms->key_len);
 
-	/* starting out: zero the header (plus some) */
+	 
 	memset(spu_hdr, 0, sizeof(struct SPUHEADER));
 	ptr += sizeof(struct SPUHEADER);
 
-	/* format master header word */
-	/* Do not set the next bit even though the datasheet says to */
+	 
+	 
 	spuh = (struct SPUHEADER *)spu_hdr;
 
 	spuh->mh.op_code = SPU_CRYPTO_OPERATION_GENERIC;
 	spuh->mh.flags |= (MH_SCTX_PRES | MH_BDESC_PRES | MH_BD_PRES);
 
-	/* Format sctx word 0 (protocol_bits) */
-	sctx_words = 3;		/* size in words */
+	 
+	sctx_words = 3;		 
 
-	/* copy the encryption keys in the SAD entry */
+	 
 	if (cipher_parms->alg) {
 		if (cipher_parms->key_len) {
 			ptr += cipher_parms->key_len;
 			sctx_words += cipher_parms->key_len / 4;
 		}
 
-		/*
-		 * if encrypting then set IV size, use SCTX IV unless no IV
-		 * given here
-		 */
+		 
 		if (cipher_parms->iv_len) {
-			/* Use SCTX IV */
+			 
 			ecf_bits |= SCTX_IV;
 			ptr += cipher_parms->iv_len;
 			sctx_words += cipher_parms->iv_len / 4;
 		}
 	}
 
-	/* Set the crypto parameters in the cipher.flags */
+	 
 	cipher_bits |= cipher_parms->alg << CIPHER_ALG_SHIFT;
 	cipher_bits |= cipher_parms->mode << CIPHER_MODE_SHIFT;
 	cipher_bits |= cipher_parms->type << CIPHER_TYPE_SHIFT;
 
-	/* copy the encryption keys in the SAD entry */
+	 
 	if (cipher_parms->alg && cipher_parms->key_len)
 		memcpy(spuh + 1, cipher_parms->key_buf, cipher_parms->key_len);
 
-	/* write in the total sctx length now that we know it */
+	 
 	protocol_bits |= sctx_words;
 
-	/* Endian adjust the SCTX */
+	 
 	spuh->sa.proto_flags = cpu_to_be32(protocol_bits);
 
-	/* Endian adjust the SCTX */
+	 
 	spuh->sa.cipher_flags = cpu_to_be32(cipher_bits);
 	spuh->sa.ecf = cpu_to_be32(ecf_bits);
 
@@ -905,20 +765,7 @@ u16 spum_cipher_req_init(u8 *spu_hdr, struct spu_cipher_parms *cipher_parms)
 		sizeof(struct BD_HEADER);
 }
 
-/**
- * spum_cipher_req_finish() - Finish building a SPU request message header for a
- * block cipher request. Assumes much of the header was already filled in at
- * setkey() time in spu_cipher_req_init().
- * @spu_hdr:         Start of the request message header (MH field)
- * @spu_req_hdr_len: Length in bytes of the SPU request header
- * @is_inbound:      0 encrypt, 1 decrypt
- * @cipher_parms:    Parameters describing cipher operation to be performed
- * @data_size:       Length of the data in the BD field
- *
- * Assumes much of the header was already filled in at setkey() time in
- * spum_cipher_req_init().
- * spum_cipher_req_init() fills in the encryption key.
- */
+ 
 void spum_cipher_req_finish(u8 *spu_hdr,
 			    u16 spu_req_hdr_len,
 			    unsigned int is_inbound,
@@ -938,13 +785,7 @@ void spum_cipher_req_finish(u8 *spu_hdr,
 	flow_log(" cipher alg: %u, cipher_type: %u\n", cipher_parms->alg,
 		 cipher_parms->type);
 
-	/*
-	 * In XTS mode, API puts "i" parameter (block tweak) in IV.  For
-	 * SPU-M, should be in start of the BD; tx_sg_create() copies it there.
-	 * IV in SPU msg for SPU-M should be 0, since that's the "j" parameter
-	 * (block ctr within larger data unit) - given we can send entire disk
-	 * block (<= 4KB) in 1 SPU msg, don't need to use this parameter.
-	 */
+	 
 	if (cipher_parms->mode == CIPHER_MODE_XTS)
 		memset(cipher_parms->iv_buf, 0, cipher_parms->iv_len);
 
@@ -952,33 +793,33 @@ void spum_cipher_req_finish(u8 *spu_hdr,
 	flow_dump("    iv: ", cipher_parms->iv_buf, cipher_parms->iv_len);
 	flow_log(" data_size: %u\n", data_size);
 
-	/* format master header word */
-	/* Do not set the next bit even though the datasheet says to */
+	 
+	 
 	spuh = (struct SPUHEADER *)spu_hdr;
 
-	/* cipher_bits was initialized at setkey time */
+	 
 	cipher_bits = be32_to_cpu(spuh->sa.cipher_flags);
 
-	/* Format sctx word 1 (cipher_bits) */
+	 
 	if (is_inbound)
 		cipher_bits |= CIPHER_INBOUND;
 	else
 		cipher_bits &= ~CIPHER_INBOUND;
 
 	if (cipher_parms->alg && cipher_parms->iv_buf && cipher_parms->iv_len)
-		/* cipher iv provided so put it in here */
+		 
 		memcpy(bdesc_ptr - cipher_parms->iv_len, cipher_parms->iv_buf,
 		       cipher_parms->iv_len);
 
 	spuh->sa.cipher_flags = cpu_to_be32(cipher_bits);
 
-	/* === create the BDESC section === */
+	 
 	bdesc = (struct BDESC_HEADER *)bdesc_ptr;
 	bdesc->offset_mac = 0;
 	bdesc->length_mac = 0;
 	bdesc->offset_crypto = 0;
 
-	/* XTS mode, data_size needs to include tweak parameter */
+	 
 	if (cipher_parms->mode == CIPHER_MODE_XTS)
 		bdesc->length_crypto = cpu_to_be16(data_size +
 						  SPU_XTS_TWEAK_SIZE);
@@ -988,14 +829,14 @@ void spum_cipher_req_finish(u8 *spu_hdr,
 	bdesc->offset_icv = 0;
 	bdesc->offset_iv = 0;
 
-	/* === no MFM section === */
+	 
 
-	/* === create the BD section === */
-	/* add the BD header */
+	 
+	 
 	bd = (struct BD_HEADER *)(bdesc_ptr + sizeof(struct BDESC_HEADER));
 	bd->size = cpu_to_be16(data_size);
 
-	/* XTS mode, data_size needs to include tweak parameter */
+	 
 	if (cipher_parms->mode == CIPHER_MODE_XTS)
 		bd->size = cpu_to_be16(data_size + SPU_XTS_TWEAK_SIZE);
 	else
@@ -1006,22 +847,7 @@ void spum_cipher_req_finish(u8 *spu_hdr,
 	packet_dump("  SPU request header: ", spu_hdr, spu_req_hdr_len);
 }
 
-/**
- * spum_request_pad() - Create pad bytes at the end of the data.
- * @pad_start:		Start of buffer where pad bytes are to be written
- * @gcm_ccm_padding:	length of GCM/CCM padding, in bytes
- * @hash_pad_len:	Number of bytes of padding extend data to full block
- * @auth_alg:		authentication algorithm
- * @auth_mode:		authentication mode
- * @total_sent:		length inserted at end of hash pad
- * @status_padding:	Number of bytes of padding to align STATUS word
- *
- * There may be three forms of pad:
- *  1. GCM/CCM pad - for GCM/CCM mode ciphers, pad to 16-byte alignment
- *  2. hash pad - pad to a block length, with 0x80 data terminator and
- *                size at the end
- *  3. STAT pad - to ensure the STAT field is 4-byte aligned
- */
+ 
 void spum_request_pad(u8 *pad_start,
 		      u32 gcm_ccm_padding,
 		      u32 hash_pad_len,
@@ -1031,7 +857,7 @@ void spum_request_pad(u8 *pad_start,
 {
 	u8 *ptr = pad_start;
 
-	/* fix data alignent for GCM/CCM */
+	 
 	if (gcm_ccm_padding > 0) {
 		flow_log("  GCM: padding to 16 byte alignment: %u bytes\n",
 			 gcm_ccm_padding);
@@ -1040,28 +866,28 @@ void spum_request_pad(u8 *pad_start,
 	}
 
 	if (hash_pad_len > 0) {
-		/* clear the padding section */
+		 
 		memset(ptr, 0, hash_pad_len);
 
 		if ((auth_alg == HASH_ALG_AES) &&
 		    (auth_mode == HASH_MODE_XCBC)) {
-			/* AES/XCBC just requires padding to be 0s */
+			 
 			ptr += hash_pad_len;
 		} else {
-			/* terminate the data */
+			 
 			*ptr = 0x80;
 			ptr += (hash_pad_len - sizeof(u64));
 
-			/* add the size at the end as required per alg */
+			 
 			if (auth_alg == HASH_ALG_MD5)
 				*(__le64 *)ptr = cpu_to_le64(total_sent * 8ull);
-			else		/* SHA1, SHA2-224, SHA2-256 */
+			else		 
 				*(__be64 *)ptr = cpu_to_be64(total_sent * 8ull);
 			ptr += sizeof(u64);
 		}
 	}
 
-	/* pad to a 4byte alignment for STAT */
+	 
 	if (status_padding > 0) {
 		flow_log("  STAT: padding to 4 byte alignment: %u bytes\n",
 			 status_padding);
@@ -1071,46 +897,25 @@ void spum_request_pad(u8 *pad_start,
 	}
 }
 
-/**
- * spum_xts_tweak_in_payload() - Indicate that SPUM DOES place the XTS tweak
- * field in the packet payload (rather than using IV)
- *
- * Return: 1
- */
+ 
 u8 spum_xts_tweak_in_payload(void)
 {
 	return 1;
 }
 
-/**
- * spum_tx_status_len() - Return the length of the STATUS field in a SPU
- * response message.
- *
- * Return: Length of STATUS field in bytes.
- */
+ 
 u8 spum_tx_status_len(void)
 {
 	return SPU_TX_STATUS_LEN;
 }
 
-/**
- * spum_rx_status_len() - Return the length of the STATUS field in a SPU
- * response message.
- *
- * Return: Length of STATUS field in bytes.
- */
+ 
 u8 spum_rx_status_len(void)
 {
 	return SPU_RX_STATUS_LEN;
 }
 
-/**
- * spum_status_process() - Process the status from a SPU response message.
- * @statp:  start of STATUS word
- * Return:
- *   0 - if status is good and response should be processed
- *   !0 - status indicates an error and response is invalid
- */
+ 
 int spum_status_process(u8 *statp)
 {
 	u32 status;
@@ -1127,17 +932,7 @@ int spum_status_process(u8 *statp)
 	return 0;
 }
 
-/**
- * spum_ccm_update_iv() - Update the IV as per the requirements for CCM mode.
- *
- * @digestsize:		Digest size of this request
- * @cipher_parms:	(pointer to) cipher parmaeters, includes IV buf & IV len
- * @assoclen:		Length of AAD data
- * @chunksize:		length of input data to be sent in this req
- * @is_encrypt:		true if this is an output/encrypt operation
- * @is_esp:		true if this is an ESP / RFC4309 operation
- *
- */
+ 
 void spum_ccm_update_iv(unsigned int digestsize,
 			struct spu_cipher_parms *cipher_parms,
 			unsigned int assoclen,
@@ -1145,8 +940,8 @@ void spum_ccm_update_iv(unsigned int digestsize,
 			bool is_encrypt,
 			bool is_esp)
 {
-	u8 L;		/* L from CCM algorithm, length of plaintext data */
-	u8 mprime;	/* M' from CCM algo, (M - 2) / 2, where M=authsize */
+	u8 L;		 
+	u8 mprime;	 
 	u8 adata;
 
 	if (cipher_parms->iv_len != CCM_AES_IV_SIZE) {
@@ -1155,59 +950,33 @@ void spum_ccm_update_iv(unsigned int digestsize,
 		return;
 	}
 
-	/*
-	 * IV needs to be formatted as follows:
-	 *
-	 * |          Byte 0               | Bytes 1 - N | Bytes (N+1) - 15 |
-	 * | 7 | 6 | 5 | 4 | 3 | 2 | 1 | 0 | Bits 7 - 0  |    Bits 7 - 0    |
-	 * | 0 |Ad?|(M - 2) / 2|   L - 1   |    Nonce    | Plaintext Length |
-	 *
-	 * Ad? = 1 if AAD present, 0 if not present
-	 * M = size of auth field, 8, 12, or 16 bytes (SPU-M) -or-
-	 *                         4, 6, 8, 10, 12, 14, 16 bytes (SPU2)
-	 * L = Size of Plaintext Length field; Nonce size = 15 - L
-	 *
-	 * It appears that the crypto API already expects the L-1 portion
-	 * to be set in the first byte of the IV, which implicitly determines
-	 * the nonce size, and also fills in the nonce.  But the other bits
-	 * in byte 0 as well as the plaintext length need to be filled in.
-	 *
-	 * In rfc4309/esp mode, L is not already in the supplied IV and
-	 * we need to fill it in, as well as move the IV data to be after
-	 * the salt
-	 */
+	 
 	if (is_esp) {
-		L = CCM_ESP_L_VALUE;	/* RFC4309 has fixed L */
+		L = CCM_ESP_L_VALUE;	 
 	} else {
-		/* L' = plaintext length - 1 so Plaintext length is L' + 1 */
+		 
 		L = ((cipher_parms->iv_buf[0] & CCM_B0_L_PRIME) >>
 		      CCM_B0_L_PRIME_SHIFT) + 1;
 	}
 
-	mprime = (digestsize - 2) >> 1;  /* M' = (M - 2) / 2 */
-	adata = (assoclen > 0);  /* adata = 1 if any associated data */
+	mprime = (digestsize - 2) >> 1;   
+	adata = (assoclen > 0);   
 
 	cipher_parms->iv_buf[0] = (adata << CCM_B0_ADATA_SHIFT) |
 				  (mprime << CCM_B0_M_PRIME_SHIFT) |
 				  ((L - 1) << CCM_B0_L_PRIME_SHIFT);
 
-	/* Nonce is already filled in by crypto API, and is 15 - L bytes */
+	 
 
-	/* Don't include digest in plaintext size when decrypting */
+	 
 	if (!is_encrypt)
 		chunksize -= digestsize;
 
-	/* Fill in length of plaintext, formatted to be L bytes long */
+	 
 	format_value_ccm(chunksize, &cipher_parms->iv_buf[15 - L + 1], L);
 }
 
-/**
- * spum_wordalign_padlen() - Given the length of a data field, determine the
- * padding required to align the data following this field on a 4-byte boundary.
- * @data_size: length of data field in bytes
- *
- * Return: length of status field padding, in bytes
- */
+ 
 u32 spum_wordalign_padlen(u32 data_size)
 {
 	return ((data_size + 3) & ~3) - data_size;

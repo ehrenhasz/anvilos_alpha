@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Regulator driver for DA9055 PMIC
-//
-// Copyright(c) 2012 Dialog Semiconductor Ltd.
-//
-// Author: David Dajun Chen <dchen@diasemi.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -31,7 +31,7 @@
 #define DA9055_BUCK_MODE_SYNC	2
 #define DA9055_BUCK_MODE_AUTO	3
 
-/* DA9055 REGULATOR IDs */
+ 
 #define DA9055_ID_BUCK1	0
 #define DA9055_ID_BUCK2	1
 #define DA9055_ID_LDO1		2
@@ -41,7 +41,7 @@
 #define DA9055_ID_LDO5		6
 #define DA9055_ID_LDO6		7
 
-/* DA9055 BUCK current limit */
+ 
 static const unsigned int da9055_current_limits[] = {
 	500000, 600000, 700000, 800000
 };
@@ -172,18 +172,14 @@ static int da9055_regulator_get_voltage_sel(struct regulator_dev *rdev)
 	struct da9055_volt_reg volt = info->volt;
 	int ret, sel;
 
-	/*
-	 * There are two voltage register set A & B for voltage ramping but
-	 * either one of then can be active therefore we first determine
-	 * the active register set.
-	 */
+	 
 	ret = da9055_reg_read(regulator->da9055, info->conf.reg);
 	if (ret < 0)
 		return ret;
 
 	ret &= info->conf.sel_mask;
 
-	/* Get the voltage for the active register set A/B */
+	 
 	if (ret == DA9055_REGUALTOR_SET_A)
 		ret = da9055_reg_read(regulator->da9055, volt.reg_a);
 	else
@@ -203,34 +199,27 @@ static int da9055_regulator_set_voltage_sel(struct regulator_dev *rdev,
 	struct da9055_regulator_info *info = regulator->info;
 	int ret;
 
-	/*
-	 * Regulator register set A/B is not selected through GPIO therefore
-	 * we use default register set A for voltage ramping.
-	 */
+	 
 	if (regulator->reg_rselect == NO_GPIO) {
-		/* Select register set A */
+		 
 		ret = da9055_reg_update(regulator->da9055, info->conf.reg,
 					info->conf.sel_mask, DA9055_SEL_REG_A);
 		if (ret < 0)
 			return ret;
 
-		/* Set the voltage */
+		 
 		return da9055_reg_update(regulator->da9055, info->volt.reg_a,
 					 info->volt.v_mask, selector);
 	}
 
-	/*
-	 * Here regulator register set A/B is selected through GPIO.
-	 * Therefore we first determine the selected register set A/B and
-	 * then set the desired voltage for that register set A/B.
-	 */
+	 
 	ret = da9055_reg_read(regulator->da9055, info->conf.reg);
 	if (ret < 0)
 		return ret;
 
 	ret &= info->conf.sel_mask;
 
-	/* Set the voltage */
+	 
 	if (ret == DA9055_REGUALTOR_SET_A)
 		return da9055_reg_update(regulator->da9055, info->volt.reg_a,
 					 info->volt.v_mask, selector);
@@ -246,7 +235,7 @@ static int da9055_regulator_set_suspend_voltage(struct regulator_dev *rdev,
 	struct da9055_regulator_info *info = regulator->info;
 	int ret;
 
-	/* Select register set B for suspend voltage ramping. */
+	 
 	if (regulator->reg_rselect == NO_GPIO) {
 		ret = da9055_reg_update(regulator->da9055, info->conf.reg,
 					info->conf.sel_mask, DA9055_SEL_REG_B);
@@ -267,7 +256,7 @@ static int da9055_suspend_enable(struct regulator_dev *rdev)
 	struct da9055_regulator *regulator = rdev_get_drvdata(rdev);
 	struct da9055_regulator_info *info = regulator->info;
 
-	/* Select register set B for voltage ramping. */
+	 
 	if (regulator->reg_rselect == NO_GPIO)
 		return da9055_reg_update(regulator->da9055, info->conf.reg,
 					info->conf.sel_mask, DA9055_SEL_REG_B);
@@ -280,7 +269,7 @@ static int da9055_suspend_disable(struct regulator_dev *rdev)
 	struct da9055_regulator *regulator = rdev_get_drvdata(rdev);
 	struct da9055_regulator_info *info = regulator->info;
 
-	/* Diselect register set B. */
+	 
 	if (regulator->reg_rselect == NO_GPIO)
 		return da9055_reg_update(regulator->da9055, info->conf.reg,
 					info->conf.sel_mask, DA9055_SEL_REG_A);
@@ -408,11 +397,7 @@ static struct da9055_regulator_info da9055_regulator_info[] = {
 	DA9055_LDO(LDO6, 20, 900, 3300, 7, 0),
 };
 
-/*
- * Configures regulator to be controlled either through GPIO 1 or 2.
- * GPIO can control regulator state and/or select the regulator register
- * set A/B for voltage ramping.
- */
+ 
 static int da9055_gpio_init(struct da9055_regulator *regulator,
 			    struct regulator_config *config,
 			    struct da9055_pdata *pdata, int id)
@@ -429,20 +414,14 @@ static int da9055_gpio_init(struct da9055_regulator *regulator,
 
 		config->ena_gpiod = pdata->ena_gpiods[id];
 
-		/*
-		 * GPI pin is muxed with regulator to control the
-		 * regulator state.
-		 */
+		 
 		sprintf(name, "DA9055 GPI %d", gpio_mux);
 		ret = devm_gpio_request_one(config->dev, gpio_mux, GPIOF_DIR_IN,
 					    name);
 		if (ret < 0)
 			goto err;
 
-		/*
-		 * Let the regulator know that its state is controlled
-		 * through GPI.
-		 */
+		 
 		ret = da9055_reg_update(regulator->da9055, info->conf.reg,
 					DA9055_E_GPI_MASK,
 					pdata->reg_ren[id]
@@ -457,20 +436,14 @@ static int da9055_gpio_init(struct da9055_regulator *regulator,
 
 		regulator->reg_rselect = pdata->reg_rsel[id];
 
-		/*
-		 * GPI pin is muxed with regulator to select the
-		 * regulator register set A/B for voltage ramping.
-		 */
+		 
 		sprintf(name, "DA9055 GPI %d", gpio_mux);
 		ret = devm_gpio_request_one(config->dev, gpio_mux, GPIOF_DIR_IN,
 					    name);
 		if (ret < 0)
 			goto err;
 
-		/*
-		 * Let the regulator know that its register set A/B
-		 * will be selected through GPI for voltage ramping.
-		 */
+		 
 		ret = da9055_reg_update(regulator->da9055, info->conf.reg,
 					DA9055_V_GPI_MASK,
 					pdata->reg_rsel[id]
@@ -545,7 +518,7 @@ static int da9055_regulator_probe(struct platform_device *pdev)
 		return PTR_ERR(regulator->rdev);
 	}
 
-	/* Only LDO 5 and 6 has got the over current interrupt */
+	 
 	if (pdev->id == DA9055_ID_LDO5 || pdev->id ==  DA9055_ID_LDO6) {
 		irq = platform_get_irq_byname(pdev, "REGULATOR");
 		if (irq < 0)

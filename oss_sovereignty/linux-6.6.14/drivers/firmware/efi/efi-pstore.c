@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/efi.h>
 #include <linux/module.h>
@@ -86,11 +86,7 @@ static int efi_pstore_read_func(struct pstore_record *record,
 		record->ecc_notice_size = 0;
 	} else if (sscanf(name, "dump-type%u-%u-%llu",
 			  &record->type, &part, &time) == 3) {
-		/*
-		 * Check if an old format,
-		 * which doesn't support holding
-		 * multiple logs, remains.
-		 */
+		 
 		record->id = generic_id(time, part, 0);
 		record->part = part;
 		record->count = 0;
@@ -112,11 +108,7 @@ static int efi_pstore_read_func(struct pstore_record *record,
 		return -EIO;
 	}
 
-	/*
-	 * Store the name of the variable in the pstore_record priv field, so
-	 * we can reuse it later if we need to delete the EFI variable from the
-	 * variable store.
-	 */
+	 
 	wlen = (ucs2_strnlen(varname, DUMP_NAME_LEN) + 1) * sizeof(efi_char16_t);
 	record->priv = kmemdup(varname, wlen, GFP_KERNEL);
 	if (!record->priv) {
@@ -137,18 +129,7 @@ static ssize_t efi_pstore_read(struct pstore_record *record)
 	for (;;) {
 		varname_size = 1024;
 
-		/*
-		 * If this is the first read() call in the pstore enumeration,
-		 * varname will be the empty string, and the GetNextVariable()
-		 * runtime service call will return the first EFI variable in
-		 * its own enumeration order, ignoring the guid argument.
-		 *
-		 * Subsequent calls to GetNextVariable() must pass the name and
-		 * guid values returned by the previous call, which is why we
-		 * store varname in record->psi->data. Given that we only
-		 * enumerate variables with the efi-pstore GUID, there is no
-		 * need to record the guid return value.
-		 */
+		 
 		status = efivar_get_next_variable(&varname_size, varname, &guid);
 		if (status == EFI_NOT_FOUND)
 			return 0;
@@ -156,7 +137,7 @@ static ssize_t efi_pstore_read(struct pstore_record *record)
 		if (status != EFI_SUCCESS)
 			return -EIO;
 
-		/* skip variables that don't concern us */
+		 
 		if (efi_guidcmp(guid, LINUX_EFI_CRASH_GUID))
 			continue;
 
@@ -174,7 +155,7 @@ static int efi_pstore_write(struct pstore_record *record)
 	record->id = generic_id(record->time.tv_sec, record->part,
 				record->count);
 
-	/* Since we copy the entire length of name, make sure it is wiped. */
+	 
 	memset(name, 0, sizeof(name));
 
 	snprintf(name, sizeof(name), "dump-type%u-%u-%d-%lld-%c",
@@ -226,12 +207,7 @@ static __init int efivars_pstore_init(void)
 	if (efivars_pstore_disable)
 		return 0;
 
-	/*
-	 * Notice that 1024 is the minimum here to prevent issues with
-	 * decompression algorithms that were spotted during tests;
-	 * even in the case of not using compression, smaller values would
-	 * just pollute more the pstore FS with many small collected files.
-	 */
+	 
 	if (record_size < 1024)
 		record_size = 1024;
 

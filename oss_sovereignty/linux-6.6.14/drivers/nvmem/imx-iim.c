@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * i.MX IIM driver
- *
- * Copyright (c) 2017 Pengutronix, Michael Grzeschik <m.grzeschik@pengutronix.de>
- *
- * Based on the barebox iim driver,
- * Copyright (c) 2010 Baruch Siach <baruch@tkos.co.il>,
- *	Orex Computed Radiography
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -88,7 +80,7 @@ static const struct of_device_id imx_iim_dt_ids[] = {
 		.compatible = "fsl,imx53-iim",
 		.data = &imx53_drvdata,
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, imx_iim_dt_ids);

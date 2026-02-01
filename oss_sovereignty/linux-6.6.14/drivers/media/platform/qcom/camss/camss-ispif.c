@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-ispif.c
- *
- * Qualcomm MSM Camera Subsystem - ISPIF (ISP Interface) Module
- *
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/completion.h>
 #include <linux/interrupt.h>
@@ -78,7 +71,7 @@
 					(0x254 + 0x200 * (m) + 0x4 * (n))
 #define ISPIF_VFE_m_RDI_INTF_n_CID_MASK(m, n)	\
 					(0x264 + 0x200 * (m) + 0x4 * (n))
-/* PACK_CFG registers are 8x96 only */
+ 
 #define ISPIF_VFE_m_RDI_INTF_n_PACK_CFG_0(m, n)	\
 					(0x270 + 0x200 * (m) + 0x4 * (n))
 #define ISPIF_VFE_m_RDI_INTF_n_PACK_CFG_1(m, n)	\
@@ -151,13 +144,7 @@ static const u32 ispif_formats_8x96[] = {
 	MEDIA_BUS_FMT_Y10_2X8_PADHI_LE,
 };
 
-/*
- * ispif_isr_8x96 - ISPIF module interrupt handler for 8x96
- * @irq: Interrupt line
- * @dev: ISPIF device
- *
- * Return IRQ_HANDLED on success
- */
+ 
 static irqreturn_t ispif_isr_8x96(int irq, void *dev)
 {
 	struct ispif_device *ispif = dev;
@@ -219,13 +206,7 @@ static irqreturn_t ispif_isr_8x96(int irq, void *dev)
 	return IRQ_HANDLED;
 }
 
-/*
- * ispif_isr_8x16 - ISPIF module interrupt handler for 8x16
- * @irq: Interrupt line
- * @dev: ISPIF device
- *
- * Return IRQ_HANDLED on success
- */
+ 
 static irqreturn_t ispif_isr_8x16(int irq, void *dev)
 {
 	struct ispif_device *ispif = dev;
@@ -312,12 +293,7 @@ static int ispif_vfe_reset(struct ispif_device *ispif, u8 vfe_id)
 	return 0;
 }
 
-/*
- * ispif_reset - Trigger reset on ISPIF module and wait to complete
- * @ispif: ISPIF device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int ispif_reset(struct ispif_device *ispif, u8 vfe_id)
 {
 	struct camss *camss = ispif->camss;
@@ -349,13 +325,7 @@ static int ispif_reset(struct ispif_device *ispif, u8 vfe_id)
 	return ret;
 }
 
-/*
- * ispif_set_power - Power on/off ISPIF module
- * @sd: ISPIF V4L2 subdevice
- * @on: Requested power state
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int ispif_set_power(struct v4l2_subdev *sd, int on)
 {
 	struct ispif_line *line = v4l2_get_subdevdata(sd);
@@ -367,7 +337,7 @@ static int ispif_set_power(struct v4l2_subdev *sd, int on)
 
 	if (on) {
 		if (ispif->power_count) {
-			/* Power is already on */
+			 
 			ispif->power_count++;
 			goto exit;
 		}
@@ -411,14 +381,7 @@ exit:
 	return ret;
 }
 
-/*
- * ispif_select_clk_mux - Select clock for PIX/RDI interface
- * @ispif: ISPIF device
- * @intf: VFE interface
- * @csid: CSID HW module id
- * @vfe: VFE HW module id
- * @enable: enable or disable the selected clock
- */
+ 
 static void ispif_select_clk_mux(struct ispif_device *ispif,
 				 enum ispif_intf intf, u8 csid,
 				 u8 vfe, u8 enable)
@@ -470,14 +433,7 @@ static void ispif_select_clk_mux(struct ispif_device *ispif,
 	mb();
 }
 
-/*
- * ispif_validate_intf_status - Validate current status of PIX/RDI interface
- * @ispif: ISPIF device
- * @intf: VFE interface
- * @vfe: VFE HW module id
- *
- * Return 0 when interface is idle or -EBUSY otherwise
- */
+ 
 static int ispif_validate_intf_status(struct ispif_device *ispif,
 				      enum ispif_intf intf, u8 vfe)
 {
@@ -516,14 +472,7 @@ static int ispif_validate_intf_status(struct ispif_device *ispif,
 	return ret;
 }
 
-/*
- * ispif_wait_for_stop - Wait for PIX/RDI interface to stop
- * @ispif: ISPIF device
- * @intf: VFE interface
- * @vfe: VFE HW module id
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int ispif_wait_for_stop(struct ispif_device *ispif,
 			       enum ispif_intf intf, u8 vfe)
 {
@@ -561,14 +510,7 @@ static int ispif_wait_for_stop(struct ispif_device *ispif,
 	return ret;
 }
 
-/*
- * ispif_select_csid - Select CSID HW module for input from
- * @ispif: ISPIF device
- * @intf: VFE interface
- * @csid: CSID HW module id
- * @vfe: VFE HW module id
- * @enable: enable or disable the selected input
- */
+ 
 static void ispif_select_csid(struct ispif_device *ispif, enum ispif_intf intf,
 			      u8 csid, u8 vfe, u8 enable)
 {
@@ -606,14 +548,7 @@ static void ispif_select_csid(struct ispif_device *ispif, enum ispif_intf intf,
 	writel(val, ispif->base + ISPIF_VFE_m_INTF_INPUT_SEL(vfe));
 }
 
-/*
- * ispif_select_cid - Enable/disable desired CID
- * @ispif: ISPIF device
- * @intf: VFE interface
- * @cid: desired CID to enable/disable
- * @vfe: VFE HW module id
- * @enable: enable or disable the desired CID
- */
+ 
 static void ispif_select_cid(struct ispif_device *ispif, enum ispif_intf intf,
 			     u8 cid, u8 vfe, u8 enable)
 {
@@ -648,13 +583,7 @@ static void ispif_select_cid(struct ispif_device *ispif, enum ispif_intf intf,
 	writel(val, ispif->base + addr);
 }
 
-/*
- * ispif_config_irq - Enable/disable interrupts for PIX/RDI interface
- * @ispif: ISPIF device
- * @intf: VFE interface
- * @vfe: VFE HW module id
- * @enable: enable or disable
- */
+ 
 static void ispif_config_irq(struct ispif_device *ispif, enum ispif_intf intf,
 			     u8 vfe, u8 enable)
 {
@@ -711,15 +640,7 @@ static void ispif_config_irq(struct ispif_device *ispif, enum ispif_intf intf,
 	writel(0x1, ispif->base + ISPIF_IRQ_GLOBAL_CLEAR_CMD);
 }
 
-/*
- * ispif_config_pack - Config packing for PRDI mode
- * @ispif: ISPIF device
- * @code: media bus format code
- * @intf: VFE interface
- * @cid: desired CID to handle
- * @vfe: VFE HW module id
- * @enable: enable or disable
- */
+ 
 static void ispif_config_pack(struct ispif_device *ispif, u32 code,
 			      enum ispif_intf intf, u8 cid, u8 vfe, u8 enable)
 {
@@ -760,14 +681,7 @@ static void ispif_config_pack(struct ispif_device *ispif, u32 code,
 	writel_relaxed(val, ispif->base + addr);
 }
 
-/*
- * ispif_set_intf_cmd - Set command to enable/disable interface
- * @ispif: ISPIF device
- * @cmd: interface command
- * @intf: VFE interface
- * @vfe: VFE HW module id
- * @vc: virtual channel
- */
+ 
 static void ispif_set_intf_cmd(struct ispif_device *ispif, u8 cmd,
 			       enum ispif_intf intf, u8 vfe, u8 vc)
 {
@@ -790,15 +704,7 @@ static void ispif_set_intf_cmd(struct ispif_device *ispif, u8 cmd,
 	}
 }
 
-/*
- * ispif_set_stream - Enable/disable streaming on ISPIF module
- * @sd: ISPIF V4L2 subdevice
- * @enable: Requested streaming state
- *
- * Main configuration of ISPIF module is also done here.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int ispif_set_stream(struct v4l2_subdev *sd, int enable)
 {
 	struct ispif_line *line = v4l2_get_subdevdata(sd);
@@ -807,15 +713,15 @@ static int ispif_set_stream(struct v4l2_subdev *sd, int enable)
 	enum ispif_intf intf = line->interface;
 	u8 csid = line->csid_id;
 	u8 vfe = line->vfe_id;
-	u8 vc = 0; /* Virtual Channel 0 */
-	u8 cid = vc * 4; /* id of Virtual Channel and Data Type set */
+	u8 vc = 0;  
+	u8 cid = vc * 4;  
 	int ret;
 
 	if (enable) {
 		if (!media_pad_remote_pad_first(&line->pads[MSM_ISPIF_PAD_SINK]))
 			return -ENOLINK;
 
-		/* Config */
+		 
 
 		mutex_lock(&ispif->config_lock);
 		ispif_select_clk_mux(ispif, intf, csid, vfe, 1);
@@ -863,15 +769,7 @@ static int ispif_set_stream(struct v4l2_subdev *sd, int enable)
 	return 0;
 }
 
-/*
- * __ispif_get_format - Get pointer to format structure
- * @ispif: ISPIF line
- * @cfg: V4L2 subdev pad configuration
- * @pad: pad from which format is requested
- * @which: TRY or ACTIVE format
- *
- * Return pointer to TRY or ACTIVE format structure
- */
+ 
 static struct v4l2_mbus_framefmt *
 __ispif_get_format(struct ispif_line *line,
 		   struct v4l2_subdev_state *sd_state,
@@ -885,14 +783,7 @@ __ispif_get_format(struct ispif_line *line,
 	return &line->fmt[pad];
 }
 
-/*
- * ispif_try_format - Handle try format by pad subdev method
- * @ispif: ISPIF line
- * @cfg: V4L2 subdev pad configuration
- * @pad: pad on which format is requested
- * @fmt: pointer to v4l2 format structure
- * @which: wanted subdev format
- */
+ 
 static void ispif_try_format(struct ispif_line *line,
 			     struct v4l2_subdev_state *sd_state,
 			     unsigned int pad,
@@ -903,13 +794,13 @@ static void ispif_try_format(struct ispif_line *line,
 
 	switch (pad) {
 	case MSM_ISPIF_PAD_SINK:
-		/* Set format on sink pad */
+		 
 
 		for (i = 0; i < line->nformats; i++)
 			if (fmt->code == line->formats[i])
 				break;
 
-		/* If not found, use UYVY as default */
+		 
 		if (i >= line->nformats)
 			fmt->code = MEDIA_BUS_FMT_UYVY8_2X8;
 
@@ -922,7 +813,7 @@ static void ispif_try_format(struct ispif_line *line,
 		break;
 
 	case MSM_ISPIF_PAD_SRC:
-		/* Set and return a format same as sink pad */
+		 
 
 		*fmt = *__ispif_get_format(line, sd_state, MSM_ISPIF_PAD_SINK,
 					   which);
@@ -933,13 +824,7 @@ static void ispif_try_format(struct ispif_line *line,
 	fmt->colorspace = V4L2_COLORSPACE_SRGB;
 }
 
-/*
- * ispif_enum_mbus_code - Handle pixel format enumeration
- * @sd: ISPIF V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @code: pointer to v4l2_subdev_mbus_code_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int ispif_enum_mbus_code(struct v4l2_subdev *sd,
 				struct v4l2_subdev_state *sd_state,
 				struct v4l2_subdev_mbus_code_enum *code)
@@ -966,13 +851,7 @@ static int ispif_enum_mbus_code(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ispif_enum_frame_size - Handle frame size enumeration
- * @sd: ISPIF V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fse: pointer to v4l2_subdev_frame_size_enum structure
- * return -EINVAL or zero on success
- */
+ 
 static int ispif_enum_frame_size(struct v4l2_subdev *sd,
 				 struct v4l2_subdev_state *sd_state,
 				 struct v4l2_subdev_frame_size_enum *fse)
@@ -1003,14 +882,7 @@ static int ispif_enum_frame_size(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ispif_get_format - Handle get format by pads subdev method
- * @sd: ISPIF V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fmt: pointer to v4l2 subdev format structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int ispif_get_format(struct v4l2_subdev *sd,
 			    struct v4l2_subdev_state *sd_state,
 			    struct v4l2_subdev_format *fmt)
@@ -1027,14 +899,7 @@ static int ispif_get_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ispif_set_format - Handle set format by pads subdev method
- * @sd: ISPIF V4L2 subdevice
- * @cfg: V4L2 subdev pad configuration
- * @fmt: pointer to v4l2 subdev format structure
- *
- * Return -EINVAL or zero on success
- */
+ 
 static int ispif_set_format(struct v4l2_subdev *sd,
 			    struct v4l2_subdev_state *sd_state,
 			    struct v4l2_subdev_format *fmt)
@@ -1049,7 +914,7 @@ static int ispif_set_format(struct v4l2_subdev *sd,
 	ispif_try_format(line, sd_state, fmt->pad, &fmt->format, fmt->which);
 	*format = fmt->format;
 
-	/* Propagate the format from sink to source */
+	 
 	if (fmt->pad == MSM_ISPIF_PAD_SINK) {
 		format = __ispif_get_format(line, sd_state, MSM_ISPIF_PAD_SRC,
 					    fmt->which);
@@ -1062,15 +927,7 @@ static int ispif_set_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * ispif_init_formats - Initialize formats on all pads
- * @sd: ISPIF V4L2 subdevice
- * @fh: V4L2 subdev file handle
- *
- * Initialize all pad formats with default values.
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 static int ispif_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_subdev_format format = {
@@ -1087,13 +944,7 @@ static int ispif_init_formats(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	return ispif_set_format(sd, fh ? fh->state : NULL, &format);
 }
 
-/*
- * msm_ispif_subdev_init - Initialize ISPIF device structure and resources
- * @ispif: ISPIF device
- * @res: ISPIF module resources table
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int msm_ispif_subdev_init(struct camss *camss,
 			  const struct resources_ispif *res)
 {
@@ -1108,7 +959,7 @@ int msm_ispif_subdev_init(struct camss *camss,
 
 	ispif->camss = camss;
 
-	/* Number of ISPIF lines - same as number of CSID hardware modules */
+	 
 	if (camss->version == CAMSS_8x16)
 		ispif->line_num = 2;
 	else if (camss->version == CAMSS_8x96 ||
@@ -1140,7 +991,7 @@ int msm_ispif_subdev_init(struct camss *camss,
 		}
 	}
 
-	/* Memory */
+	 
 
 	ispif->base = devm_platform_ioremap_resource_byname(pdev, res->reg[0]);
 	if (IS_ERR(ispif->base))
@@ -1150,7 +1001,7 @@ int msm_ispif_subdev_init(struct camss *camss,
 	if (IS_ERR(ispif->base_clk_mux))
 		return PTR_ERR(ispif->base_clk_mux);
 
-	/* Interrupt */
+	 
 
 	ret = platform_get_irq_byname(pdev, res->interrupt);
 	if (ret < 0)
@@ -1174,7 +1025,7 @@ int msm_ispif_subdev_init(struct camss *camss,
 		return ret;
 	}
 
-	/* Clocks */
+	 
 
 	ispif->nclocks = 0;
 	while (res->clock[ispif->nclocks])
@@ -1230,12 +1081,7 @@ int msm_ispif_subdev_init(struct camss *camss,
 	return 0;
 }
 
-/*
- * ispif_get_intf - Get ISPIF interface to use by VFE line id
- * @line_id: VFE line id that the ISPIF line is connected to
- *
- * Return ISPIF interface to use
- */
+ 
 static enum ispif_intf ispif_get_intf(enum vfe_line_id line_id)
 {
 	switch (line_id) {
@@ -1252,11 +1098,7 @@ static enum ispif_intf ispif_get_intf(enum vfe_line_id line_id)
 	}
 }
 
-/*
- * ispif_get_vfe_id - Get VFE HW module id
- * @entity: Pointer to VFE media entity structure
- * @id: Return CSID HW module id here
- */
+ 
 static void ispif_get_vfe_id(struct media_entity *entity, u8 *id)
 {
 	struct v4l2_subdev *sd;
@@ -1270,11 +1112,7 @@ static void ispif_get_vfe_id(struct media_entity *entity, u8 *id)
 	*id = vfe->id;
 }
 
-/*
- * ispif_get_vfe_line_id - Get VFE line id by media entity
- * @entity: Pointer to VFE media entity structure
- * @id: Return VFE line id here
- */
+ 
 static void ispif_get_vfe_line_id(struct media_entity *entity,
 				  enum vfe_line_id *id)
 {
@@ -1287,15 +1125,7 @@ static void ispif_get_vfe_line_id(struct media_entity *entity,
 	*id = line->id;
 }
 
-/*
- * ispif_link_setup - Setup ISPIF connections
- * @entity: Pointer to media entity structure
- * @local: Pointer to local pad
- * @remote: Pointer to remote pad
- * @flags: Link flags
- *
- * Return 0 on success
- */
+ 
 static int ispif_link_setup(struct media_entity *entity,
 			    const struct media_pad *local,
 			    const struct media_pad *remote, u32 flags)
@@ -1312,7 +1142,7 @@ static int ispif_link_setup(struct media_entity *entity,
 			line = v4l2_get_subdevdata(sd);
 
 			msm_csid_get_csid_id(remote->entity, &line->csid_id);
-		} else { /* MEDIA_PAD_FL_SOURCE */
+		} else {  
 			struct v4l2_subdev *sd;
 			struct ispif_line *line;
 			enum vfe_line_id id;
@@ -1359,13 +1189,7 @@ static const struct media_entity_operations ispif_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/*
- * msm_ispif_register_entities - Register subdev node for ISPIF module
- * @ispif: ISPIF device
- * @v4l2_dev: V4L2 device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int msm_ispif_register_entities(struct ispif_device *ispif,
 				struct v4l2_device *v4l2_dev)
 {
@@ -1430,10 +1254,7 @@ error:
 	return ret;
 }
 
-/*
- * msm_ispif_unregister_entities - Unregister ISPIF module subdev node
- * @ispif: ISPIF device
- */
+ 
 void msm_ispif_unregister_entities(struct ispif_device *ispif)
 {
 	int i;

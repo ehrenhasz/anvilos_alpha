@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2011 Texas Instruments Inc
- */
+ 
+ 
 #ifndef _VPIF_TYPES_H
 #define _VPIF_TYPES_H
 
@@ -75,4 +73,4 @@ struct vpif_capture_config {
 	struct v4l2_async_connection *asd[VPIF_CAPTURE_MAX_CHANNELS];
 	int asd_sizes[VPIF_CAPTURE_MAX_CHANNELS];
 };
-#endif /* _VPIF_TYPES_H */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- * Copyright (C) 2018-2022 Intel Corporation
- */
+
+ 
 #include <linux/etherdevice.h>
 #include <linux/math64.h>
 #include <net/cfg80211.h>
@@ -67,11 +64,7 @@ int iwl_mvm_ftm_add_pasn_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 		goto out;
 	}
 
-	/*
-	 * If associated to this AP and already have security context,
-	 * the TK is already configured for this station, so it
-	 * shouldn't be set again here.
-	 */
+	 
 	if (vif->cfg.assoc) {
 		struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
 		struct ieee80211_bss_conf *link_conf;
@@ -231,16 +224,13 @@ static void iwl_mvm_ftm_cmd_v5(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 	cmd->request_id = req->cookie;
 	cmd->num_of_ap = req->n_peers;
 
-	/* use maximum for "no timeout" or bigger than what we can do */
+	 
 	if (!req->timeout || req->timeout > 255 * 100)
 		cmd->req_timeout = 255;
 	else
 		cmd->req_timeout = DIV_ROUND_UP(req->timeout, 100);
 
-	/*
-	 * We treat it always as random, since if not we'll
-	 * have filled our local address there instead.
-	 */
+	 
 	cmd->macaddr_random = 1;
 	memcpy(cmd->macaddr_template, req->mac_addr, ETH_ALEN);
 	for (i = 0; i < ETH_ALEN; i++)
@@ -265,10 +255,7 @@ static void iwl_mvm_ftm_cmd_common(struct iwl_mvm *mvm,
 	cmd->request_id = req->cookie;
 	cmd->num_of_ap = req->n_peers;
 
-	/*
-	 * Use a large value for "no timeout". Don't use the maximum value
-	 * because of fw limitations.
-	 */
+	 
 	if (req->timeout)
 		cmd->req_timeout_ms = cpu_to_le32(req->timeout);
 	else
@@ -281,7 +268,7 @@ static void iwl_mvm_ftm_cmd_common(struct iwl_mvm *mvm,
 	if (vif->cfg.assoc) {
 		memcpy(cmd->range_req_bssid, vif->bss_conf.bssid, ETH_ALEN);
 
-		/* AP's TSF is only relevant if associated */
+		 
 		for (i = 0; i < req->n_peers; i++) {
 			if (req->peers[i].report_ap_tsf) {
 				struct iwl_mvm_vif *mvmvif =
@@ -295,7 +282,7 @@ static void iwl_mvm_ftm_cmd_common(struct iwl_mvm *mvm,
 		eth_broadcast_addr(cmd->range_req_bssid);
 	}
 
-	/* Don't report AP's TSF */
+	 
 	cmd->tsf_mac_id = cpu_to_le32(0xff);
 }
 
@@ -386,7 +373,7 @@ iwl_mvm_ftm_target_chandef_v2(struct iwl_mvm *mvm,
 		return -EINVAL;
 	}
 
-	/* non EDCA based measurement must use HE preamble */
+	 
 	if (peer->ftm.trigger_based || peer->ftm.non_trigger_based)
 		*format_bw |= IWL_LOCATION_FRAME_FORMAT_HE;
 
@@ -414,7 +401,7 @@ iwl_mvm_ftm_put_target_v2(struct iwl_mvm *mvm,
 		cpu_to_le16(peer->ftm.burst_period);
 	target->samples_per_burst = peer->ftm.ftms_per_burst;
 	target->num_of_bursts = peer->ftm.num_bursts_exp;
-	target->measure_type = 0; /* regular two-sided FTM */
+	target->measure_type = 0;  
 	target->retries_per_sample = peer->ftm.ftmr_retries;
 	target->asap_mode = peer->ftm.asap;
 	target->enable_dyn_ack = IWL_MVM_FTM_INITIATOR_DYNACK;
@@ -485,10 +472,7 @@ iwl_mvm_ftm_put_target_v3(struct iwl_mvm *mvm,
 	if (ret)
 		return ret;
 
-	/*
-	 * Versions 3 and 4 has some common fields, so
-	 * iwl_mvm_ftm_put_target_common() can be used for version 7 too.
-	 */
+	 
 	iwl_mvm_ftm_put_target_common(mvm, peer, (void *)target);
 
 	return 0;
@@ -555,10 +539,7 @@ iwl_mvm_ftm_put_target(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 		target->sta_id = IWL_MVM_INVALID_STA;
 	}
 
-	/*
-	 * TODO: Beacon interval is currently unknown, so use the common value
-	 * of 100 TUs.
-	 */
+	 
 	target->beacon_interval = cpu_to_le16(100);
 	return 0;
 }
@@ -616,10 +597,7 @@ static int iwl_mvm_ftm_start_v7(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 	u8 i;
 	int err;
 
-	/*
-	 * Versions 7 and 8 has the same structure except from the responders
-	 * list, so iwl_mvm_ftm_cmd() can be used for version 7 too.
-	 */
+	 
 	iwl_mvm_ftm_cmd_v8(mvm, vif, (void *)&cmd_v7, req);
 
 	for (i = 0; i < cmd_v7.num_of_ap; i++) {
@@ -792,7 +770,7 @@ static void
 iwl_mvm_ftm_set_ndp_params(struct iwl_mvm *mvm,
 			   struct iwl_tof_range_req_ap_entry_v8 *target)
 {
-	/* Only 2 STS are supported on Tx */
+	 
 	u32 i2r_max_sts = IWL_MVM_FTM_I2R_MAX_STS > 1 ? 1 :
 		IWL_MVM_FTM_I2R_MAX_STS;
 
@@ -817,9 +795,7 @@ iwl_mvm_ftm_put_target_v8(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 
 	iwl_mvm_ftm_set_ndp_params(mvm, target);
 
-	/*
-	 * If secure LTF is turned off, replace the flag with PMF only
-	 */
+	 
 	flags = le32_to_cpu(target->initiator_ap_flags);
 	if ((flags & IWL_INITIATOR_AP_FLAGS_SECURED) &&
 	    !IWL_MVM_FTM_INITIATOR_SECURE_LTF) {
@@ -1021,7 +997,7 @@ static void iwl_mvm_ftm_get_lci_civic(struct iwl_mvm *mvm,
 			res->ftm.civicloc = entry->buf + entry->lci_len;
 		}
 
-		/* we found the entry we needed */
+		 
 		break;
 	}
 }
@@ -1096,7 +1072,7 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
 		goto update_time;
 	}
 
-	/* Smooth the results based on the tracked RTT average */
+	 
 	undershoot = IWL_MVM_FTM_INITIATOR_SMOOTH_UNDERSHOOT;
 	overshoot = IWL_MVM_FTM_INITIATOR_SMOOTH_OVERSHOOT;
 	alpha = IWL_MVM_FTM_INITIATOR_SMOOTH_ALPHA;
@@ -1107,13 +1083,10 @@ static void iwl_mvm_ftm_rtt_smoothing(struct iwl_mvm *mvm,
 		       "%pM: prev rtt_avg=%lld, new rtt_avg=%lld, rtt=%lld\n",
 		       resp->addr, resp->rtt_avg, rtt_avg, rtt);
 
-	/*
-	 * update the responder's average RTT results regardless of
-	 * the under/over shoot logic below
-	 */
+	 
 	resp->rtt_avg = rtt_avg;
 
-	/* smooth the results */
+	 
 	if (rtt_avg > rtt && (rtt_avg - rtt) > undershoot) {
 		res->ftm.rtt_avg = rtt_avg;
 
@@ -1175,14 +1148,14 @@ static u8 iwl_mvm_ftm_get_range_resp_ver(struct iwl_mvm *mvm)
 			IWL_UCODE_TLV_API_FTM_NEW_RANGE_REQ))
 		return 5;
 
-	/* Starting from version 8, the FW advertises the version */
+	 
 	if (mvm->cmd_ver.range_resp >= 8)
 		return mvm->cmd_ver.range_resp;
 	else if (fw_has_api(&mvm->fw->ucode_capa,
 			    IWL_UCODE_TLV_API_FTM_RTT_ACCURACY))
 		return 7;
 
-	/* The first version of the new range request API */
+	 
 	return 6;
 }
 
@@ -1266,13 +1239,9 @@ void iwl_mvm_ftm_range_resp(struct iwl_mvm *mvm, struct iwl_rx_cmd_buffer *rxb)
 			result.ap_tsf = le32_to_cpu(fw_ap->start_tsf);
 			result.ap_tsf_valid = 1;
 		} else {
-			/* the first part is the same for old and new APIs */
+			 
 			fw_ap = (void *)&fw_resp_v5->ap[i];
-			/*
-			 * FIXME: the firmware needs to report this, we don't
-			 * even know the number of bursts the responder picked
-			 * (if we asked it to)
-			 */
+			 
 			result.final = 0;
 		}
 

@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pkey table
- *
- * SELinux must keep a mapping of Infinband PKEYs to labels/SIDs.  This
- * mapping is maintained as part of the normal policy but a fast cache is
- * needed to reduce the lookup overhead.
- *
- * This code is heavily based on the "netif" and "netport" concept originally
- * developed by
- * James Morris <jmorris@redhat.com> and
- * Paul Moore <paul@paul-moore.com>
- *   (see security/selinux/netif.c and security/selinux/netport.c for more
- *   information)
- */
 
-/*
- * (c) Mellanox Technologies, 2016
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/rcupdate.h>
@@ -43,30 +28,13 @@ struct sel_ib_pkey {
 static DEFINE_SPINLOCK(sel_ib_pkey_lock);
 static struct sel_ib_pkey_bkt sel_ib_pkey_hash[SEL_PKEY_HASH_SIZE];
 
-/**
- * sel_ib_pkey_hashfn - Hashing function for the pkey table
- * @pkey: pkey number
- *
- * Description:
- * This is the hashing function for the pkey table, it returns the bucket
- * number for the given pkey.
- *
- */
+ 
 static unsigned int sel_ib_pkey_hashfn(u16 pkey)
 {
 	return (pkey & (SEL_PKEY_HASH_SIZE - 1));
 }
 
-/**
- * sel_ib_pkey_find - Search for a pkey record
- * @subnet_prefix: subnet_prefix
- * @pkey_num: pkey_num
- *
- * Description:
- * Search the pkey table and return the matching record.  If an entry
- * can not be found in the table return NULL.
- *
- */
+ 
 static struct sel_ib_pkey *sel_ib_pkey_find(u64 subnet_prefix, u16 pkey_num)
 {
 	unsigned int idx;
@@ -82,21 +50,12 @@ static struct sel_ib_pkey *sel_ib_pkey_find(u64 subnet_prefix, u16 pkey_num)
 	return NULL;
 }
 
-/**
- * sel_ib_pkey_insert - Insert a new pkey into the table
- * @pkey: the new pkey record
- *
- * Description:
- * Add a new pkey record to the hash table.
- *
- */
+ 
 static void sel_ib_pkey_insert(struct sel_ib_pkey *pkey)
 {
 	unsigned int idx;
 
-	/* we need to impose a limit on the growth of the hash table so check
-	 * this bucket to make sure it is within the specified bounds
-	 */
+	 
 	idx = sel_ib_pkey_hashfn(pkey->psec.pkey);
 	list_add_rcu(&pkey->list, &sel_ib_pkey_hash[idx].list);
 	if (sel_ib_pkey_hash[idx].size == SEL_PKEY_HASH_BKT_LIMIT) {
@@ -114,18 +73,7 @@ static void sel_ib_pkey_insert(struct sel_ib_pkey *pkey)
 	}
 }
 
-/**
- * sel_ib_pkey_sid_slow - Lookup the SID of a pkey using the policy
- * @subnet_prefix: subnet prefix
- * @pkey_num: pkey number
- * @sid: pkey SID
- *
- * Description:
- * This function determines the SID of a pkey by querying the security
- * policy.  The result is added to the pkey table to speedup future
- * queries.  Returns zero on success, negative values on failure.
- *
- */
+ 
 static int sel_ib_pkey_sid_slow(u64 subnet_prefix, u16 pkey_num, u32 *sid)
 {
 	int ret;
@@ -146,9 +94,7 @@ static int sel_ib_pkey_sid_slow(u64 subnet_prefix, u16 pkey_num, u32 *sid)
 	if (ret)
 		goto out;
 
-	/* If this memory allocation fails still return 0. The SID
-	 * is valid, it just won't be added to the cache.
-	 */
+	 
 	new = kzalloc(sizeof(*new), GFP_ATOMIC);
 	if (!new) {
 		ret = -ENOMEM;
@@ -165,19 +111,7 @@ out:
 	return ret;
 }
 
-/**
- * sel_ib_pkey_sid - Lookup the SID of a PKEY
- * @subnet_prefix: subnet_prefix
- * @pkey_num: pkey number
- * @sid: pkey SID
- *
- * Description:
- * This function determines the SID of a PKEY using the fastest method
- * possible.  First the pkey table is queried, but if an entry can't be found
- * then the policy is queried and the result is added to the table to speedup
- * future queries.  Returns zero on success, negative values on failure.
- *
- */
+ 
 int sel_ib_pkey_sid(u64 subnet_prefix, u16 pkey_num, u32 *sid)
 {
 	struct sel_ib_pkey *pkey;
@@ -194,13 +128,7 @@ int sel_ib_pkey_sid(u64 subnet_prefix, u16 pkey_num, u32 *sid)
 	return sel_ib_pkey_sid_slow(subnet_prefix, pkey_num, sid);
 }
 
-/**
- * sel_ib_pkey_flush - Flush the entire pkey table
- *
- * Description:
- * Remove all entries from the pkey table
- *
- */
+ 
 void sel_ib_pkey_flush(void)
 {
 	unsigned int idx;

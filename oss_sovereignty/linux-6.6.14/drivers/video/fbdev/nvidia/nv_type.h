@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NV_TYPE_H__
 #define __NV_TYPE_H__
 
@@ -173,4 +173,4 @@ struct nvidia_par {
 	volatile u32 __iomem *PRAMDAC;
 };
 
-#endif				/* __NV_TYPE_H__ */
+#endif				 

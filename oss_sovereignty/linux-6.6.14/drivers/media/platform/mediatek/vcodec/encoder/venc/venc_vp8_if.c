@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: Daniel Hsiao <daniel.hsiao@mediatek.com>
- *         PoChun Lin <pochun.lin@mediatek.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -20,12 +16,10 @@
 #define VENC_BITSTREAM_FRAME_SIZE 0x0098
 #define VENC_BITSTREAM_HEADER_LEN 0x00e8
 
-/* This ac_tag is vp8 frame tag. */
+ 
 #define MAX_AC_TAG_SIZE 10
 
-/*
- * enum venc_vp8_vpu_work_buf - vp8 encoder buffer index
- */
+ 
 enum venc_vp8_vpu_work_buf {
 	VENC_VP8_VPU_WORK_BUF_LUMA,
 	VENC_VP8_VPU_WORK_BUF_LUMA2,
@@ -43,24 +37,7 @@ enum venc_vp8_vpu_work_buf {
 	VENC_VP8_VPU_WORK_BUF_MAX,
 };
 
-/*
- * struct venc_vp8_vpu_config - Structure for vp8 encoder configuration
- *                              AP-W/R : AP is writer/reader on this item
- *                              VPU-W/R: VPU is write/reader on this item
- * @input_fourcc: input fourcc
- * @bitrate: target bitrate (in bps)
- * @pic_w: picture width. Picture size is visible stream resolution, in pixels,
- *         to be used for display purposes; must be smaller or equal to buffer
- *         size.
- * @pic_h: picture height
- * @buf_w: buffer width (with 16 alignment). Buffer size is stream resolution
- *         in pixels aligned to hardware requirements.
- * @buf_h: buffer height (with 16 alignment)
- * @gop_size: group of picture size (key frame)
- * @framerate: frame rate in fps
- * @ts_mode: temporal scalability mode (0: disable, 1: enable)
- *	     support three temporal layers - 0: 7.5fps 1: 7.5fps 2: 15fps.
- */
+ 
 struct venc_vp8_vpu_config {
 	u32 input_fourcc;
 	u32 bitrate;
@@ -73,53 +50,20 @@ struct venc_vp8_vpu_config {
 	u32 ts_mode;
 };
 
-/*
- * struct venc_vp8_vpu_buf - Structure for buffer information
- *                           AP-W/R : AP is writer/reader on this item
- *                           VPU-W/R: VPU is write/reader on this item
- * @iova: IO virtual address
- * @vpua: VPU side memory addr which is used by RC_CODE
- * @size: buffer size (in bytes)
- */
+ 
 struct venc_vp8_vpu_buf {
 	u32 iova;
 	u32 vpua;
 	u32 size;
 };
 
-/*
- * struct venc_vp8_vsi - Structure for VPU driver control and info share
- *                       AP-W/R : AP is writer/reader on this item
- *                       VPU-W/R: VPU is write/reader on this item
- * This structure is allocated in VPU side and shared to AP side.
- * @config: vp8 encoder configuration
- * @work_bufs: working buffer information in VPU side
- * The work_bufs here is for storing the 'size' info shared to AP side.
- * The similar item in struct venc_vp8_inst is for memory allocation
- * in AP side. The AP driver will copy the 'size' from here to the one in
- * struct mtk_vcodec_mem, then invoke mtk_vcodec_mem_alloc to allocate
- * the buffer. After that, bypass the 'dma_addr' to the 'iova' field here for
- * register setting in VPU side.
- */
+ 
 struct venc_vp8_vsi {
 	struct venc_vp8_vpu_config config;
 	struct venc_vp8_vpu_buf work_bufs[VENC_VP8_VPU_WORK_BUF_MAX];
 };
 
-/*
- * struct venc_vp8_inst - vp8 encoder AP driver instance
- * @hw_base: vp8 encoder hardware register base
- * @work_bufs: working buffer
- * @work_buf_allocated: working buffer allocated flag
- * @frm_cnt: encoded frame count, it's used for I-frame judgement and
- *	     reset when force intra cmd received.
- * @ts_mode: temporal scalability mode (0: disable, 1: enable)
- *	     support three temporal layers - 0: 7.5fps 1: 7.5fps 2: 15fps.
- * @vpu_inst: VPU instance to exchange information between AP and VPU
- * @vsi: driver structure allocated by VPU side and shared to AP side for
- *	 control and info share
- * @ctx: context for v4l2 layer integration
- */
+ 
 struct venc_vp8_inst {
 	void __iomem *hw_base;
 	struct mtk_vcodec_mem work_bufs[VENC_VP8_VPU_WORK_BUF_MAX];
@@ -140,7 +84,7 @@ static void vp8_enc_free_work_buf(struct venc_vp8_inst *inst)
 {
 	int i;
 
-	/* Buffers need to be freed by AP. */
+	 
 	for (i = 0; i < VENC_VP8_VPU_WORK_BUF_MAX; i++) {
 		if (inst->work_bufs[i].size == 0)
 			continue;
@@ -157,27 +101,14 @@ static int vp8_enc_alloc_work_buf(struct venc_vp8_inst *inst)
 	for (i = 0; i < VENC_VP8_VPU_WORK_BUF_MAX; i++) {
 		if (wb[i].size == 0)
 			continue;
-		/*
-		 * This 'wb' structure is set by VPU side and shared to AP for
-		 * buffer allocation and IO virtual addr mapping. For most of
-		 * the buffers, AP will allocate the buffer according to 'size'
-		 * field and store the IO virtual addr in 'iova' field. For the
-		 * RC_CODEx buffers, they are pre-allocated in the VPU side
-		 * because they are inside VPU SRAM, and save the VPU addr in
-		 * the 'vpua' field. The AP will translate the VPU addr to the
-		 * corresponding IO virtual addr and store in 'iova' field.
-		 */
+		 
 		inst->work_bufs[i].size = wb[i].size;
 		ret = mtk_vcodec_mem_alloc(inst->ctx, &inst->work_bufs[i]);
 		if (ret) {
 			mtk_venc_err(inst->ctx, "cannot alloc work_bufs[%d]", i);
 			goto err_alloc;
 		}
-		/*
-		 * This RC_CODEx is pre-allocated by VPU and saved in VPU addr.
-		 * So we need use memcpy to copy RC_CODEx from VPU addr into IO
-		 * virtual addr in 'iova' field for reg setting in VPU side.
-		 */
+		 
 		if (i == VENC_VP8_VPU_WORK_BUF_RC_CODE ||
 		    i == VENC_VP8_VPU_WORK_BUF_RC_CODE2 ||
 		    i == VENC_VP8_VPU_WORK_BUF_RC_CODE3) {
@@ -218,10 +149,7 @@ static unsigned int vp8_enc_wait_venc_done(struct venc_vp8_inst *inst)
 	return irq_status;
 }
 
-/*
- * Compose ac_tag, bitstream header and bitstream payload into
- * one bitstream buffer.
- */
+ 
 static int vp8_enc_compose_one_frame(struct venc_vp8_inst *inst,
 				     struct mtk_vcodec_mem *bs_buf,
 				     unsigned int *bs_size)
@@ -236,14 +164,14 @@ static int vp8_enc_compose_one_frame(struct venc_vp8_inst *inst,
 	bs_frm_size = vp8_enc_read_reg(inst, VENC_BITSTREAM_FRAME_SIZE);
 	bs_hdr_len = vp8_enc_read_reg(inst, VENC_BITSTREAM_HEADER_LEN);
 
-	/* if a frame is key frame, not_key is 0 */
+	 
 	not_key = !inst->vpu_inst.is_key_frm;
 	tag = (bs_hdr_len << 5) | 0x10 | not_key;
 	ac_tag[0] = tag & 0xff;
 	ac_tag[1] = (tag >> 8) & 0xff;
 	ac_tag[2] = (tag >> 16) & 0xff;
 
-	/* key frame */
+	 
 	if (not_key == 0) {
 		ac_tag_size = MAX_AC_TAG_SIZE;
 		ac_tag[3] = 0x9d;
@@ -262,13 +190,7 @@ static int vp8_enc_compose_one_frame(struct venc_vp8_inst *inst,
 		return -EINVAL;
 	}
 
-	/*
-	* (1) The vp8 bitstream header and body are generated by the HW vp8
-	* encoder separately at the same time. We cannot know the bitstream
-	* header length in advance.
-	* (2) From the vp8 spec, there is no stuffing byte allowed between the
-	* ac tag, bitstream header and bitstream body.
-	*/
+	 
 	memmove(bs_buf->va + bs_hdr_len + ac_tag_size,
 		bs_buf->va, bs_frm_size);
 	memcpy(bs_buf->va + ac_tag_size,
@@ -403,9 +325,7 @@ static int vp8_enc_set_param(void *handle,
 		inst->work_buf_allocated = true;
 		break;
 
-	/*
-	 * VENC_SET_PARAM_TS_MODE must be called before VENC_SET_PARAM_ENC
-	 */
+	 
 	case VENC_SET_PARAM_TS_MODE:
 		inst->ts_mode = 1;
 		mtk_venc_debug(inst->ctx, "set ts_mode");

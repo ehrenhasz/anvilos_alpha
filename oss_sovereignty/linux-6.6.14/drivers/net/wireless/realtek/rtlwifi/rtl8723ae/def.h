@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8723E_DEF_H__
 #define __RTL8723E_DEF_H__
@@ -26,7 +26,7 @@
 #define E_CUT_VERSION		BIT(14)
 #define	RF_RL_ID		(BIT(31)|BIT(30)|BIT(29)|BIT(28))
 
-/* MASK */
+ 
 #define IC_TYPE_MASK		(BIT(0)|BIT(1)|BIT(2))
 #define CHIP_TYPE_MASK		BIT(3)
 #define RF_TYPE_MASK		(BIT(4)|BIT(5)|BIT(6))
@@ -34,7 +34,7 @@
 #define ROM_VERSION_MASK	(BIT(11)|BIT(10)|BIT(9)|BIT(8))
 #define CUT_VERSION_MASK	(BIT(15)|BIT(14)|BIT(13)|BIT(12))
 
-/* Get element */
+ 
 #define GET_CVID_IC_TYPE(version)	((version) & IC_TYPE_MASK)
 #define GET_CVID_CHIP_TYPE(version)	((version) & CHIP_TYPE_MASK)
 #define GET_CVID_RF_TYPE(version)	((version) & RF_TYPE_MASK)

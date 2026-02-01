@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018 Oracle.  All rights reserved.
- *
- * Trace point definitions for the "rpcgss" subsystem.
- */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rpcgss
@@ -15,9 +11,7 @@
 
 #include <trace/misc/sunrpc.h>
 
-/**
- ** GSS-API related trace events
- **/
+ 
 
 TRACE_DEFINE_ENUM(RPC_GSS_SVC_NONE);
 TRACE_DEFINE_ENUM(RPC_GSS_SVC_INTEGRITY);
@@ -335,9 +329,7 @@ TRACE_EVENT(rpcgss_svc_authenticate,
 );
 
 
-/**
- ** GSS auth unwrap failures
- **/
+ 
 
 TRACE_EVENT(rpcgss_unwrap_failed,
 	TP_PROTO(
@@ -547,9 +539,7 @@ TRACE_EVENT(rpcgss_svc_seqno_low,
 		__entry->xid, __entry->seqno, __entry->min, __entry->max)
 );
 
-/**
- ** gssd upcall related trace events
- **/
+ 
 
 TRACE_EVENT(rpcgss_upcall_msg,
 	TP_PROTO(
@@ -627,9 +617,7 @@ TRACE_EVENT(rpcgss_context,
 );
 
 
-/**
- ** Miscellaneous events
- */
+ 
 
 TRACE_DEFINE_ENUM(RPC_AUTH_GSS_KRB5);
 TRACE_DEFINE_ENUM(RPC_AUTH_GSS_KRB5I);
@@ -683,6 +671,6 @@ TRACE_EVENT(rpcgss_oid_to_mech,
 	TP_printk("mech for oid %s was not found", __get_str(oid))
 );
 
-#endif	/* _TRACE_RPCGSS_H */
+#endif	 
 
 #include <trace/define_trace.h>

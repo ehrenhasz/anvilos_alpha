@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Implement 802.11d. */
+
+ 
 
 #include "dot11d.h"
 
@@ -17,15 +17,15 @@ void rtl8192u_dot11d_init(struct ieee80211_device *ieee)
 }
 EXPORT_SYMBOL(rtl8192u_dot11d_init);
 
-/* Reset to the state as we are just entering a regulatory domain. */
+ 
 void dot11d_reset(struct ieee80211_device *ieee)
 {
 	u32 i;
 	struct rt_dot11d_info *dot11d_info = GET_DOT11D_INFO(ieee);
-	/* Clear old channel map */
+	 
 	memset(dot11d_info->channel_map, 0, MAX_CHANNEL_NUMBER + 1);
 	memset(dot11d_info->max_tx_pwr_dbm_list, 0xFF, MAX_CHANNEL_NUMBER + 1);
-	/* Set new channel map */
+	 
 	for (i = 1; i <= 11; i++)
 		(dot11d_info->channel_map)[i] = 1;
 
@@ -38,15 +38,7 @@ void dot11d_reset(struct ieee80211_device *ieee)
 }
 EXPORT_SYMBOL(dot11d_reset);
 
-/*
- * Update country IE from Beacon or Probe Resopnse and configure PHY for
- * operation in the regulatory domain.
- *
- * TODO: Configure Tx power.
- * Assumption:
- * 1. IS_DOT11D_ENABLE() is TRUE.
- * 2. Input IE is an valid one.
- */
+ 
 void dot11d_update_country_ie(struct ieee80211_device *dev, u8 *pTaddr,
 			    u16 CoutryIeLen, u8 *pCoutryIe)
 {
@@ -57,20 +49,16 @@ void dot11d_update_country_ie(struct ieee80211_device *dev, u8 *pTaddr,
 	memset(dot11d_info->channel_map, 0, MAX_CHANNEL_NUMBER + 1);
 	memset(dot11d_info->max_tx_pwr_dbm_list, 0xFF, MAX_CHANNEL_NUMBER + 1);
 	MaxChnlNum = 0;
-	NumTriples = (CoutryIeLen - 3) / 3; /* skip 3-byte country string. */
+	NumTriples = (CoutryIeLen - 3) / 3;  
 	pTriple = (struct chnl_txpower_triple *)(pCoutryIe + 3);
 	for (i = 0; i < NumTriples; i++) {
 		if (MaxChnlNum >= pTriple->first_channel) {
-			/* It is not in a monotonically increasing order, so
-			 * stop processing.
-			 */
+			 
 			netdev_err(dev->dev, "%s: Invalid country IE, skip it 1\n", __func__);
 			return;
 		}
 		if (MAX_CHANNEL_NUMBER < (pTriple->first_channel + pTriple->num_channels)) {
-			/* It is not a valid set of channel id, so stop
-			 * processing.
-			 */
+			 
 			netdev_err(dev->dev, "%s: Invalid country IE, skip it 2\n", __func__);
 			return;
 		}
@@ -124,7 +112,7 @@ void dot11d_scan_complete(struct ieee80211_device *dev)
 
 	case DOT11D_STATE_DONE:
 		if (GET_CIE_WATCHDOG(dev) == 0) {
-			/* Reset country IE if previous one is gone. */
+			 
 			dot11d_reset(dev);
 		}
 		break;

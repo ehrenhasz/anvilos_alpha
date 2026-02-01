@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2019, Linaro Ltd
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_TURING_QCS404_H
 #define _DT_BINDINGS_CLK_TURING_QCS404_H

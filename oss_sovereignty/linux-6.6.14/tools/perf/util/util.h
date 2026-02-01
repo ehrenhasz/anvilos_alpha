@@ -1,9 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_UTIL_H
 #define __PERF_UTIL_H
 
 #define _BSD_SOURCE 1
-/* glibc 2.20 deprecates _BSD_SOURCE in favour of _DEFAULT_SOURCE */
+ 
 #define _DEFAULT_SOURCE 1
 
 #include <fcntl.h>
@@ -23,7 +23,7 @@ extern const char *input_name;
 extern bool perf_host;
 extern bool perf_guest;
 
-/* General helper functions */
+ 
 void usage(const char *err) __noreturn;
 void die(const char *err, ...) __noreturn __printf(1, 2);
 
@@ -112,7 +112,7 @@ static inline bool host_is_bigendian(void)
 #else
 #error "Unrecognized __BYTE_ORDER__"
 #endif
-#else /* !__BYTE_ORDER__ */
+#else  
 	unsigned char str[] = { 0x1, 0x2, 0x3, 0x4, 0x0, 0x0, 0x0, 0x0};
 	unsigned int *ptr;
 
@@ -121,4 +121,4 @@ static inline bool host_is_bigendian(void)
 #endif
 }
 
-#endif /* __PERF_UTIL_H */
+#endif  

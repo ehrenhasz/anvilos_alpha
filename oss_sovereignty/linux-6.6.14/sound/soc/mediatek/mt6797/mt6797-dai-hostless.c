@@ -1,22 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI Hostless Control
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
+
+
+
+
+
+
 
 #include "mt6797-afe-common.h"
 
-/* dai component */
+ 
 static const struct snd_soc_dapm_route mtk_dai_hostless_routes[] = {
-	/* Hostless ADDA Loopback */
+	 
 	{"ADDA_DL_CH1", "ADDA_UL_CH1", "Hostless LPBK DL"},
 	{"ADDA_DL_CH1", "ADDA_UL_CH2", "Hostless LPBK DL"},
 	{"ADDA_DL_CH2", "ADDA_UL_CH1", "Hostless LPBK DL"},
 	{"ADDA_DL_CH2", "ADDA_UL_CH2", "Hostless LPBK DL"},
 	{"Hostless LPBK UL", NULL, "ADDA Capture"},
 
-	/* Hostless Speech */
+	 
 	{"ADDA_DL_CH1", "PCM_1_CAP_CH1", "Hostless Speech DL"},
 	{"ADDA_DL_CH2", "PCM_1_CAP_CH1", "Hostless Speech DL"},
 	{"ADDA_DL_CH2", "PCM_1_CAP_CH2", "Hostless Speech DL"},
@@ -33,7 +33,7 @@ static const struct snd_soc_dapm_route mtk_dai_hostless_routes[] = {
 	{"Hostless Speech UL", NULL, "ADDA Capture"},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_hostless_startup(struct snd_pcm_substream *substream,
 				    struct snd_soc_dai *dai)
 {
@@ -46,7 +46,7 @@ static const struct snd_soc_dai_ops mtk_dai_hostless_ops = {
 	.startup = mtk_dai_hostless_startup,
 };
 
-/* dai driver */
+ 
 #define MTK_HOSTLESS_RATES (SNDRV_PCM_RATE_8000_48000 |\
 			   SNDRV_PCM_RATE_88200 |\
 			   SNDRV_PCM_RATE_96000 |\

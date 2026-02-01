@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * net/dsa/tag_ksz.c - Microchip KSZ Switch tag format handling
- * Copyright (c) 2017 Microchip Technology
- */
+
+ 
 
 #include <linux/dsa/ksz_common.h>
 #include <linux/etherdevice.h>
@@ -17,7 +14,7 @@
 #define KSZ9893_NAME "ksz9893"
 #define LAN937X_NAME "lan937x"
 
-/* Typically only one byte is used for tail tag. */
+ 
 #define KSZ_PTP_TAG_LEN			4
 #define KSZ_EGRESS_TAG_LEN		1
 #define KSZ_INGRESS_TAG_LEN		1
@@ -25,7 +22,7 @@
 #define KSZ_HWTS_EN  0
 
 struct ksz_tagger_private {
-	struct ksz_tagger_data data; /* Must be first */
+	struct ksz_tagger_data data;  
 	unsigned long state;
 	struct kthread_worker *xmit_worker;
 };
@@ -75,7 +72,7 @@ static int ksz_connect(struct dsa_switch *ds)
 	}
 
 	priv->xmit_worker = xmit_worker;
-	/* Export functions for switch driver use */
+	 
 	tagger_data = &priv->data;
 	tagger_data->hwtstamp_set_state = ksz_hwtstamp_set_state;
 	ds->tagger_data = priv;
@@ -99,20 +96,7 @@ static struct sk_buff *ksz_common_rcv(struct sk_buff *skb,
 	return skb;
 }
 
-/*
- * For Ingress (Host -> KSZ8795), 1 byte is added before FCS.
- * ---------------------------------------------------------------------------
- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag(1byte)|FCS(4bytes)
- * ---------------------------------------------------------------------------
- * tag : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x10=port5)
- *
- * For Egress (KSZ8795 -> Host), 1 byte is added before FCS.
- * ---------------------------------------------------------------------------
- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|tag0(1byte)|FCS(4bytes)
- * ---------------------------------------------------------------------------
- * tag0 : zero-based value represents port
- *	  (eg, 0x00=port1, 0x02=port3, 0x06=port7)
- */
+ 
 
 #define KSZ8795_TAIL_TAG_OVERRIDE	BIT(6)
 #define KSZ8795_TAIL_TAG_LOOKUP		BIT(7)
@@ -126,7 +110,7 @@ static struct sk_buff *ksz8795_xmit(struct sk_buff *skb, struct net_device *dev)
 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
 		return NULL;
 
-	/* Tag encoding */
+	 
 	tag = skb_put(skb, KSZ_INGRESS_TAG_LEN);
 	hdr = skb_eth_hdr(skb);
 
@@ -155,24 +139,7 @@ static const struct dsa_device_ops ksz8795_netdev_ops = {
 DSA_TAG_DRIVER(ksz8795_netdev_ops);
 MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ8795, KSZ8795_NAME);
 
-/*
- * For Ingress (Host -> KSZ9477), 2/6 bytes are added before FCS.
- * ---------------------------------------------------------------------------
- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|tag1(1byte)|
- * FCS(4bytes)
- * ---------------------------------------------------------------------------
- * ts   : time stamp (Present only if PTP is enabled in the Hardware)
- * tag0 : Prioritization (not used now)
- * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x10=port5)
- *
- * For Egress (KSZ9477 -> Host), 1/5 bytes is added before FCS.
- * ---------------------------------------------------------------------------
- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|FCS(4bytes)
- * ---------------------------------------------------------------------------
- * ts   : time stamp (Present only if bit 7 of tag0 is set)
- * tag0 : zero-based value represents port
- *	  (eg, 0x00=port1, 0x02=port3, 0x06=port7)
- */
+ 
 
 #define KSZ9477_INGRESS_TAG_LEN		2
 #define KSZ9477_PTP_TAG_LEN		4
@@ -191,9 +158,7 @@ static void ksz_rcv_timestamp(struct sk_buff *skb, u8 *tag)
 	KSZ_SKB_CB(skb)->tstamp = tstamp;
 }
 
-/* Time stamp tag *needs* to be inserted if PTP is enabled in hardware.
- * Regardless of Whether it is a PTP frame or not.
- */
+ 
 static void ksz_xmit_timestamp(struct dsa_port *dp, struct sk_buff *skb)
 {
 	struct ksz_tagger_private *priv;
@@ -224,7 +189,7 @@ static void ksz_xmit_timestamp(struct dsa_port *dp, struct sk_buff *skb)
 		ts = ns_to_timespec64(-correction >> 16);
 		tstamp_raw = ((ts.tv_sec & 3) << 30) | ts.tv_nsec;
 
-		/* Set correction field to 0 and update UDP checksum */
+		 
 		ptp_header_update_correction(skb, ptp_type, ptp_hdr, 0);
 	}
 
@@ -232,7 +197,7 @@ output_tag:
 	put_unaligned_be32(tstamp_raw, skb_put(skb, KSZ_PTP_TAG_LEN));
 }
 
-/* Defer transmit if waiting for egress time stamp is required.  */
+ 
 static struct sk_buff *ksz_defer_xmit(struct dsa_port *dp, struct sk_buff *skb)
 {
 	struct ksz_tagger_data *tagger_data = ksz_tagger_data(dp->ds);
@@ -243,7 +208,7 @@ static struct sk_buff *ksz_defer_xmit(struct dsa_port *dp, struct sk_buff *skb)
 	struct kthread_worker *xmit_worker;
 
 	if (!clone)
-		return skb;  /* no deferred xmit for this packet */
+		return skb;   
 
 	xmit_work_fn = tagger_data->xmit_work_fn;
 	xmit_worker = priv->xmit_worker;
@@ -256,9 +221,7 @@ static struct sk_buff *ksz_defer_xmit(struct dsa_port *dp, struct sk_buff *skb)
 		return NULL;
 
 	kthread_init_work(&xmit_work->work, xmit_work_fn);
-	/* Increase refcount so the kfree_skb in dsa_slave_xmit
-	 * won't really free the packet.
-	 */
+	 
 	xmit_work->dp = dp;
 	xmit_work->skb = skb_get(skb);
 
@@ -280,7 +243,7 @@ static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
 		return NULL;
 
-	/* Tag encoding */
+	 
 	ksz_xmit_timestamp(dp, skb);
 
 	tag = skb_put(skb, KSZ9477_INGRESS_TAG_LEN);
@@ -300,12 +263,12 @@ static struct sk_buff *ksz9477_xmit(struct sk_buff *skb,
 
 static struct sk_buff *ksz9477_rcv(struct sk_buff *skb, struct net_device *dev)
 {
-	/* Tag decoding */
+	 
 	u8 *tag = skb_tail_pointer(skb) - KSZ_EGRESS_TAG_LEN;
 	unsigned int port = tag[0] & 7;
 	unsigned int len = KSZ_EGRESS_TAG_LEN;
 
-	/* Extra 4-bytes PTP timestamp */
+	 
 	if (tag[0] & KSZ9477_PTP_TAG_INDICATION) {
 		ksz_rcv_timestamp(skb, tag);
 		len += KSZ_PTP_TAG_LEN;
@@ -343,7 +306,7 @@ static struct sk_buff *ksz9893_xmit(struct sk_buff *skb,
 	if (skb->ip_summed == CHECKSUM_PARTIAL && skb_checksum_help(skb))
 		return NULL;
 
-	/* Tag encoding */
+	 
 	ksz_xmit_timestamp(dp, skb);
 
 	tag = skb_put(skb, KSZ_INGRESS_TAG_LEN);
@@ -372,23 +335,7 @@ static const struct dsa_device_ops ksz9893_netdev_ops = {
 DSA_TAG_DRIVER(ksz9893_netdev_ops);
 MODULE_ALIAS_DSA_TAG_DRIVER(DSA_TAG_PROTO_KSZ9893, KSZ9893_NAME);
 
-/* For xmit, 2/6 bytes are added before FCS.
- * ---------------------------------------------------------------------------
- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|tag1(1byte)|
- * FCS(4bytes)
- * ---------------------------------------------------------------------------
- * ts   : time stamp (Present only if PTP is enabled in the Hardware)
- * tag0 : represents tag override, lookup and valid
- * tag1 : each bit represents port (eg, 0x01=port1, 0x02=port2, 0x80=port8)
- *
- * For rcv, 1/5 bytes is added before FCS.
- * ---------------------------------------------------------------------------
- * DA(6bytes)|SA(6bytes)|....|Data(nbytes)|ts(4bytes)|tag0(1byte)|FCS(4bytes)
- * ---------------------------------------------------------------------------
- * ts   : time stamp (Present only if bit 7 of tag0 is set)
- * tag0 : zero-based value represents port
- *	  (eg, 0x00=port1, 0x02=port3, 0x07=port8)
- */
+ 
 #define LAN937X_EGRESS_TAG_LEN		2
 
 #define LAN937X_TAIL_TAG_BLOCKING_OVERRIDE	BIT(11)
@@ -421,7 +368,7 @@ static struct sk_buff *lan937x_xmit(struct sk_buff *skb,
 	if (is_link_local_ether_addr(hdr->h_dest))
 		val |= LAN937X_TAIL_TAG_BLOCKING_OVERRIDE;
 
-	/* Tail tag valid bit - This bit should always be set by the CPU */
+	 
 	val |= LAN937X_TAIL_TAG_VALID;
 
 	put_unaligned_be16(val, tag);

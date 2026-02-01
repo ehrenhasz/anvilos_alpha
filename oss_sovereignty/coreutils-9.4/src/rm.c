@@ -1,22 +1,4 @@
-/* 'rm' file deletion utility for GNU.
-   Copyright (C) 1988-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Initially written by Paul Rubin, David MacKenzie, and Richard Stallman.
-   Reworked to use chdir and avoid recursion, and later, rewritten
-   once again, to use fts, by Jim Meyering.  */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -31,7 +13,7 @@
 #include "yesno.h"
 #include "priv-set.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "rm"
 
 #define AUTHORS \
@@ -40,8 +22,7 @@
   proper_name ("Richard M. Stallman"), \
   proper_name ("Jim Meyering")
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   INTERACTIVE_OPTION = CHAR_MAX + 1,
@@ -53,9 +34,9 @@ enum
 
 enum interactive_type
   {
-    interactive_never,		/* 0: no option or --interactive=never */
-    interactive_once,		/* 1: -I or --interactive=once */
-    interactive_always		/* 2: default, -i or --interactive=always */
+    interactive_never,		 
+    interactive_once,		 
+    interactive_always		 
   };
 
 static struct option const long_opts[] =
@@ -67,10 +48,8 @@ static struct option const long_opts[] =
   {"no-preserve-root", no_argument, nullptr, NO_PRESERVE_ROOT},
   {"preserve-root", optional_argument, nullptr, PRESERVE_ROOT},
 
-  /* This is solely for testing.  Do not document.  */
-  /* It is relatively difficult to ensure that there is a tty on stdin.
-     Since rm acts differently depending on that, without this option,
-     it'd be harder to test the parts of rm that depend on that setting.  */
+   
+   
   {"-presume-input-tty", no_argument, nullptr, PRESUME_INPUT_TTY_OPTION},
 
   {"recursive", no_argument, nullptr, 'r'},
@@ -95,14 +74,12 @@ static enum interactive_type const interactive_types[] =
 };
 ARGMATCH_VERIFY (interactive_args, interactive_types);
 
-/* Advise the user about invalid usages like "rm -foo" if the file
-   "-foo" exists, assuming ARGC and ARGV are as with 'main'.  */
+ 
 
 static void
 diagnose_leading_hyphen (int argc, char **argv)
 {
-  /* OPTIND is unreliable, so iterate through the arguments looking
-     for a file name that looks like an option.  */
+   
 
   for (int i = 1; i < argc; i++)
     {

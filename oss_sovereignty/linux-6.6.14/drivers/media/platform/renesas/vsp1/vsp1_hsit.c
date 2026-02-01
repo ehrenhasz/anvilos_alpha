@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_hsit.c  --  R-Car VSP1 Hue Saturation value (Inverse) Transform
- *
- * Copyright (C) 2013 Renesas Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -19,9 +13,7 @@
 #define HSIT_MIN_SIZE				4U
 #define HSIT_MAX_SIZE				8190U
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline void vsp1_hsit_write(struct vsp1_hsit *hsit,
 				   struct vsp1_dl_body *dlb, u32 reg, u32 data)
@@ -29,9 +21,7 @@ static inline void vsp1_hsit_write(struct vsp1_hsit *hsit,
 	vsp1_dl_body_write(dlb, reg, data);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static int hsit_enum_mbus_code(struct v4l2_subdev *subdev,
 			       struct v4l2_subdev_state *sd_state,
@@ -82,10 +72,7 @@ static int hsit_set_format(struct v4l2_subdev *subdev,
 	format = vsp1_entity_get_pad_format(&hsit->entity, config, fmt->pad);
 
 	if (fmt->pad == HSIT_PAD_SOURCE) {
-		/*
-		 * The HST and HSI output format code and resolution can't be
-		 * modified.
-		 */
+		 
 		fmt->format = *format;
 		goto done;
 	}
@@ -101,7 +88,7 @@ static int hsit_set_format(struct v4l2_subdev *subdev,
 
 	fmt->format = *format;
 
-	/* Propagate the format to the source pad. */
+	 
 	format = vsp1_entity_get_pad_format(&hsit->entity, config,
 					    HSIT_PAD_SOURCE);
 	*format = fmt->format;
@@ -125,9 +112,7 @@ static const struct v4l2_subdev_ops hsit_ops = {
 	.pad    = &hsit_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void hsit_configure_stream(struct vsp1_entity *entity,
 				  struct vsp1_pipeline *pipe,
@@ -146,9 +131,7 @@ static const struct vsp1_entity_operations hsit_entity_ops = {
 	.configure_stream = hsit_configure_stream,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 struct vsp1_hsit *vsp1_hsit_create(struct vsp1_device *vsp1, bool inverse)
 {

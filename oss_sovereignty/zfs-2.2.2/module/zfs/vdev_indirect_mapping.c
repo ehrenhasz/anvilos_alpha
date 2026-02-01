@@ -1,21 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2015, 2017 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/dmu_tx.h>
 #include <sys/dsl_pool.h>
@@ -90,52 +75,14 @@ vdev_indirect_mapping_bytes_mapped(vdev_indirect_mapping_t *vim)
 	return (vim->vim_phys->vimp_bytes_mapped);
 }
 
-/*
- * The length (in bytes) of the mapping object array in memory and
- * (logically) on disk.
- *
- * Note that unlike most of our accessor functions,
- * we don't assert that the struct is consistent; therefore it can be
- * called while there may be concurrent changes, if we don't care about
- * the value being immediately stale (e.g. from spa_removal_get_stats()).
- */
+ 
 uint64_t
 vdev_indirect_mapping_size(vdev_indirect_mapping_t *vim)
 {
 	return (vim->vim_phys->vimp_num_entries * sizeof (*vim->vim_entries));
 }
 
-/*
- * Compare an offset with an indirect mapping entry; there are three
- * possible scenarios:
- *
- *     1. The offset is "less than" the mapping entry; meaning the
- *        offset is less than the source offset of the mapping entry. In
- *        this case, there is no overlap between the offset and the
- *        mapping entry and -1 will be returned.
- *
- *     2. The offset is "greater than" the mapping entry; meaning the
- *        offset is greater than the mapping entry's source offset plus
- *        the entry's size. In this case, there is no overlap between
- *        the offset and the mapping entry and 1 will be returned.
- *
- *        NOTE: If the offset is actually equal to the entry's offset
- *        plus size, this is considered to be "greater" than the entry,
- *        and this case applies (i.e. 1 will be returned). Thus, the
- *        entry's "range" can be considered to be inclusive at its
- *        start, but exclusive at its end: e.g. [src, src + size).
- *
- *     3. The last case to consider is if the offset actually falls
- *        within the mapping entry's range. If this is the case, the
- *        offset is considered to be "equal to" the mapping entry and
- *        0 will be returned.
- *
- *        NOTE: If the offset is equal to the entry's source offset,
- *        this case applies and 0 will be returned. If the offset is
- *        equal to the entry's source plus its size, this case does
- *        *not* apply (see "NOTE" above for scenario 2), and 1 will be
- *        returned.
- */
+ 
 static int
 dva_mapping_overlap_compare(const void *v_key, const void *v_array_elem)
 {
@@ -153,25 +100,7 @@ dva_mapping_overlap_compare(const void *v_key, const void *v_array_elem)
 	}
 }
 
-/*
- * Returns the mapping entry for the given offset.
- *
- * It's possible that the given offset will not be in the mapping table
- * (i.e. no mapping entries contain this offset), in which case, the
- * return value value depends on the "next_if_missing" parameter.
- *
- * If the offset is not found in the table and "next_if_missing" is
- * B_FALSE, then NULL will always be returned. The behavior is intended
- * to allow consumers to get the entry corresponding to the offset
- * parameter, iff the offset overlaps with an entry in the table.
- *
- * If the offset is not found in the table and "next_if_missing" is
- * B_TRUE, then the entry nearest to the given offset will be returned,
- * such that the entry's source offset is greater than the offset
- * passed in (i.e. the "next" mapping entry in the table is returned, if
- * the offset is missing from the table). If there are no entries whose
- * source offset is greater than the passed in offset, NULL is returned.
- */
+ 
 static vdev_indirect_mapping_entry_phys_t *
 vdev_indirect_mapping_entry_for_offset_impl(vdev_indirect_mapping_t *vim,
     uint64_t offset, boolean_t next_if_missing)
@@ -184,10 +113,7 @@ vdev_indirect_mapping_entry_for_offset_impl(vdev_indirect_mapping_t *vim,
 	uint64_t last = vim->vim_phys->vimp_num_entries - 1;
 	uint64_t base = 0;
 
-	/*
-	 * We don't define these inside of the while loop because we use
-	 * their value in the case that offset isn't in the mapping.
-	 */
+	 
 	uint64_t mid;
 	int result;
 
@@ -212,18 +138,7 @@ vdev_indirect_mapping_entry_for_offset_impl(vdev_indirect_mapping_t *vim,
 		ASSERT(mid == base || mid == last);
 		ASSERT3S(result, !=, 0);
 
-		/*
-		 * The offset we're looking for isn't actually contained
-		 * in the mapping table, thus we need to return the
-		 * closest mapping entry that is greater than the
-		 * offset. We reuse the result of the last comparison,
-		 * comparing the mapping entry at index "mid" and the
-		 * offset. The offset is guaranteed to lie between
-		 * indices one less than "mid", and one greater than
-		 * "mid"; we just need to determine if offset is greater
-		 * than, or less than the mapping entry contained at
-		 * index "mid".
-		 */
+		 
 
 		uint64_t index;
 		if (result < 0)
@@ -234,29 +149,14 @@ vdev_indirect_mapping_entry_for_offset_impl(vdev_indirect_mapping_t *vim,
 		ASSERT3U(index, <=, vim->vim_phys->vimp_num_entries);
 
 		if (index == vim->vim_phys->vimp_num_entries) {
-			/*
-			 * If "index" is past the end of the entries
-			 * array, then not only is the offset not in the
-			 * mapping table, but it's actually greater than
-			 * all entries in the table. In this case, we
-			 * can't return a mapping entry greater than the
-			 * offset (since none exist), so we return NULL.
-			 */
+			 
 
 			ASSERT3S(dva_mapping_overlap_compare(&offset,
 			    &vim->vim_entries[index - 1]), >, 0);
 
 			return (NULL);
 		} else {
-			/*
-			 * Just to be safe, we verify the offset falls
-			 * in between the mapping entries at index and
-			 * one less than index. Since we know the offset
-			 * doesn't overlap an entry, and we're supposed
-			 * to return the entry just greater than the
-			 * offset, both of the following tests must be
-			 * true.
-			 */
+			 
 			ASSERT3S(dva_mapping_overlap_compare(&offset,
 			    &vim->vim_entries[index]), <, 0);
 			IMPLY(index >= 1, dva_mapping_overlap_compare(&offset,
@@ -383,12 +283,7 @@ vdev_indirect_mapping_free(objset_t *os, uint64_t object, dmu_tx_t *tx)
 	VERIFY0(dmu_object_free(os, object, tx));
 }
 
-/*
- * Append the list of vdev_indirect_mapping_entry_t's to the on-disk
- * mapping object.  Also remove the entries from the list and free them.
- * This also implicitly extends the max_offset of the mapping (to the end
- * of the last entry).
- */
+ 
 void
 vdev_indirect_mapping_add_entries(vdev_indirect_mapping_t *vim,
     list_t *list, dmu_tx_t *tx)
@@ -419,10 +314,7 @@ vdev_indirect_mapping_add_entries(vdev_indirect_mapping_t *vim,
 	}
 	while (!list_is_empty(list)) {
 		uint64_t i;
-		/*
-		 * Write entries from the list to the
-		 * vdev_im_object in batches of size SPA_OLD_MAXBLOCKSIZE.
-		 */
+		 
 		for (i = 0; i < SPA_OLD_MAXBLOCKSIZE / sizeof (*mapbuf); i++) {
 			vdev_indirect_mapping_entry_t *entry =
 			    list_remove_head(list);
@@ -434,10 +326,7 @@ vdev_indirect_mapping_add_entries(vdev_indirect_mapping_t *vim,
 			uint64_t src_offset =
 			    DVA_MAPPING_GET_SRC_OFFSET(&entry->vime_mapping);
 
-			/*
-			 * We shouldn't be adding an entry which is fully
-			 * obsolete.
-			 */
+			 
 			ASSERT3U(entry->vime_obsolete_count, <, size);
 			IMPLY(entry->vime_obsolete_count != 0,
 			    vim->vim_havecounts);
@@ -472,10 +361,7 @@ vdev_indirect_mapping_add_entries(vdev_indirect_mapping_t *vim,
 	if (vim->vim_havecounts)
 		vmem_free(countbuf, SPA_OLD_MAXBLOCKSIZE);
 
-	/*
-	 * Update the entry array to reflect the new entries. First, copy
-	 * over any old entries then read back the new entries we just wrote.
-	 */
+	 
 	uint64_t new_size = vdev_indirect_mapping_size(vim);
 	ASSERT3U(new_size, >, old_size);
 	ASSERT3U(new_size - old_size, ==,
@@ -497,11 +383,7 @@ vdev_indirect_mapping_add_entries(vdev_indirect_mapping_t *vim,
 	    (u_longlong_t)vim->vim_phys->vimp_max_offset);
 }
 
-/*
- * Increment the relevant counts for the specified offset and length.
- * The counts array must be obtained from
- * vdev_indirect_mapping_load_obsolete_counts().
- */
+ 
 void
 vdev_indirect_mapping_increment_obsolete_count(vdev_indirect_mapping_t *vim,
     uint64_t offset, uint64_t length, uint32_t *counts)
@@ -552,9 +434,7 @@ load_obsolete_sm_callback(space_map_entry_t *sme, void *arg)
 	return (0);
 }
 
-/*
- * Modify the counts (increment them) based on the spacemap.
- */
+ 
 void
 vdev_indirect_mapping_load_obsolete_spacemap(vdev_indirect_mapping_t *vim,
     uint32_t *counts, space_map_t *obsolete_space_sm)
@@ -567,9 +447,7 @@ vdev_indirect_mapping_load_obsolete_spacemap(vdev_indirect_mapping_t *vim,
 	    load_obsolete_sm_callback, &losma));
 }
 
-/*
- * Read the obsolete counts from disk, returning them in an array.
- */
+ 
 uint32_t *
 vdev_indirect_mapping_load_obsolete_counts(vdev_indirect_mapping_t *vim)
 {

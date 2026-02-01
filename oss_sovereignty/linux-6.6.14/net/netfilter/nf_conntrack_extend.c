@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Structure dynamic extension infrastructure
- * Copyright (C) 2004 Rusty Russell IBM Corporation
- * Copyright (C) 2007 Netfilter Core Team <coreteam@netfilter.org>
- * Copyright (C) 2007 USAGI/WIDE Project <http://www.linux-ipv6.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/kmemleak.h>
 #include <linux/module.h>
@@ -25,7 +21,7 @@
 #include <net/netfilter/nf_conntrack_act_ct.h>
 #include <net/netfilter/nf_nat.h>
 
-#define NF_CT_EXT_PREALLOC	128u /* conntrack events are on by default */
+#define NF_CT_EXT_PREALLOC	128u  
 
 atomic_t nf_conntrack_ext_genid __read_mostly = ATOMIC_INIT(1);
 
@@ -58,7 +54,7 @@ static const u8 nf_ct_ext_type_len[NF_CT_EXT_NUM] = {
 
 static __always_inline unsigned int total_extension_size(void)
 {
-	/* remember to add new extensions below */
+	 
 	BUILD_BUG_ON(NF_CT_EXT_NUM > 10);
 
 	return sizeof(struct nf_ct_ext) +
@@ -94,10 +90,10 @@ void *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_id id, gfp_t gfp)
 	unsigned int newlen, newoff, oldlen, alloc;
 	struct nf_ct_ext *new;
 
-	/* Conntrack must not be confirmed to avoid races on reallocation. */
+	 
 	WARN_ON(nf_ct_is_confirmed(ct));
 
-	/* struct nf_ct_ext uses u8 to store offsets/size */
+	 
 	BUILD_BUG_ON(total_extension_size() > 255u);
 
 	if (ct->ext) {
@@ -132,7 +128,7 @@ void *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_id id, gfp_t gfp)
 }
 EXPORT_SYMBOL(nf_ct_ext_add);
 
-/* Use nf_ct_ext_find wrapper. This is only useful for unconfirmed entries. */
+ 
 void *__nf_ct_ext_find(const struct nf_ct_ext *ext, u8 id)
 {
 	unsigned int gen_id = atomic_read(&nf_conntrack_ext_genid);

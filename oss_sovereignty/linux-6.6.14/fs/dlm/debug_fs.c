@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) 2005-2009 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+ 
 
 #include <linux/pagemap.h>
 #include <linux/seq_file.h>
@@ -101,7 +94,7 @@ static void print_format1(struct dlm_rsb *res, struct seq_file *s)
 	if (seq_has_overflowed(s))
 		goto out;
 
-	/* Print the LVB: */
+	 
 	if (res->res_lvbptr) {
 		seq_puts(s, "LVB: ");
 		for (i = 0; i < lvblen; i++) {
@@ -126,7 +119,7 @@ static void print_format1(struct dlm_rsb *res, struct seq_file *s)
 			   res->res_flags, res->res_recover_locks_count);
 	}
 
-	/* Print the locks attached to this resource */
+	 
 	seq_puts(s, "Granted Queue\n");
 	list_for_each_entry(lkb, &res->res_grantqueue, lkb_statequeue) {
 		print_format1_lock(s, lkb, res);
@@ -176,11 +169,10 @@ static void print_format2_lock(struct seq_file *s, struct dlm_lkb *lkb,
 			xid = lkb->lkb_ua->xid;
 	}
 
-	/* microseconds since lkb was added to current queue */
+	 
 	us = ktime_to_us(ktime_sub(ktime_get(), lkb->lkb_timestamp));
 
-	/* id nodeid remid pid xid exflags flags sts grmode rqmode time_us
-	   r_nodeid r_len r_name */
+	 
 
 	seq_printf(s, "%x %d %x %u %llu %x %x %d %d %d %llu %u %d \"%s\"\n",
 		   lkb->lkb_id,
@@ -370,7 +362,7 @@ static void print_format5_lock(struct seq_file *s, struct dlm_lkb *lkb)
 {
 	struct dlm_callback *cb;
 
-	/* lkb_id lkb_flags mode flags sb_status sb_flags */
+	 
 
 	spin_lock(&lkb->lkb_cb_lock);
 	list_for_each_entry(cb, &lkb->lkb_callbacks, list) {
@@ -419,12 +411,7 @@ struct rsbtbl_iter {
 	int header;
 };
 
-/*
- * If the buffer is full, seq_printf can be called again, but it
- * does nothing.  So, the these printing routines periodically check
- * seq_has_overflowed to avoid wasting too much time trying to print to
- * a full buffer.
- */
+ 
 
 static int table_seq_show(struct seq_file *seq, void *iter_ptr)
 {
@@ -523,11 +510,9 @@ static void *table_seq_start(struct seq_file *seq, loff_t *pos)
 	}
 	spin_unlock(&ls->ls_rsbtbl[bucket].lock);
 
-	/*
-	 * move to the first rsb in the next non-empty bucket
-	 */
+	 
 
-	/* zero the entry */
+	 
 	n &= ~((1LL << 32) - 1);
 
 	while (1) {
@@ -568,9 +553,7 @@ static void *table_seq_next(struct seq_file *seq, void *iter_ptr, loff_t *pos)
 
 	bucket = n >> 32;
 
-	/*
-	 * move to the next rsb in the same bucket
-	 */
+	 
 
 	spin_lock(&ls->ls_rsbtbl[bucket].lock);
 	rp = ri->rsb;
@@ -588,11 +571,9 @@ static void *table_seq_next(struct seq_file *seq, void *iter_ptr, loff_t *pos)
 	spin_unlock(&ls->ls_rsbtbl[bucket].lock);
 	dlm_put_rsb(rp);
 
-	/*
-	 * move to the first rsb in the next non-empty bucket
-	 */
+	 
 
-	/* zero the entry */
+	 
 	n &= ~((1LL << 32) - 1);
 
 	while (1) {
@@ -682,7 +663,7 @@ static int table_open1(struct inode *inode, struct file *file)
 		return ret;
 
 	seq = file->private_data;
-	seq->private = inode->i_private; /* the dlm_ls */
+	seq->private = inode->i_private;  
 	return 0;
 }
 
@@ -696,7 +677,7 @@ static int table_open2(struct inode *inode, struct file *file)
 		return ret;
 
 	seq = file->private_data;
-	seq->private = inode->i_private; /* the dlm_ls */
+	seq->private = inode->i_private;  
 	return 0;
 }
 
@@ -739,7 +720,7 @@ static int table_open3(struct inode *inode, struct file *file)
 		return ret;
 
 	seq = file->private_data;
-	seq->private = inode->i_private; /* the dlm_ls */
+	seq->private = inode->i_private;  
 	return 0;
 }
 
@@ -753,7 +734,7 @@ static int table_open4(struct inode *inode, struct file *file)
 		return ret;
 
 	seq = file->private_data;
-	seq->private = inode->i_private; /* the dlm_ls */
+	seq->private = inode->i_private;  
 	return 0;
 }
 
@@ -767,7 +748,7 @@ static int table_open5(struct inode *inode, struct file *file)
 		return ret;
 
 	seq = file->private_data;
-	seq->private = inode->i_private; /* the dlm_ls */
+	seq->private = inode->i_private;  
 	return 0;
 }
 
@@ -812,9 +793,7 @@ static const struct file_operations format5_fops = {
 	.release = seq_release
 };
 
-/*
- * dump lkb's on the ls_waiters list
- */
+ 
 static ssize_t waiters_read(struct file *file, char __user *userbuf,
 			    size_t count, loff_t *ppos)
 {
@@ -973,10 +952,10 @@ void dlm_delete_debug_comms_file(void *ctx)
 
 void dlm_create_debug_file(struct dlm_ls *ls)
 {
-	/* Reserve enough space for the longest file name */
+	 
 	char name[DLM_LOCKSPACE_LEN + sizeof("_queued_asts")];
 
-	/* format 1 */
+	 
 
 	ls->ls_debug_rsb_dentry = debugfs_create_file(ls->ls_name,
 						      S_IFREG | S_IRUGO,
@@ -984,7 +963,7 @@ void dlm_create_debug_file(struct dlm_ls *ls)
 						      ls,
 						      &format1_fops);
 
-	/* format 2 */
+	 
 
 	memset(name, 0, sizeof(name));
 	snprintf(name, sizeof(name), "%s_locks", ls->ls_name);
@@ -995,7 +974,7 @@ void dlm_create_debug_file(struct dlm_ls *ls)
 							ls,
 							&format2_fops);
 
-	/* format 3 */
+	 
 
 	memset(name, 0, sizeof(name));
 	snprintf(name, sizeof(name), "%s_all", ls->ls_name);
@@ -1006,7 +985,7 @@ void dlm_create_debug_file(struct dlm_ls *ls)
 						      ls,
 						      &format3_fops);
 
-	/* format 4 */
+	 
 
 	memset(name, 0, sizeof(name));
 	snprintf(name, sizeof(name), "%s_toss", ls->ls_name);
@@ -1026,7 +1005,7 @@ void dlm_create_debug_file(struct dlm_ls *ls)
 							  ls,
 							  &waiters_fops);
 
-	/* format 5 */
+	 
 
 	memset(name, 0, sizeof(name));
 	snprintf(name, sizeof(name), "%s_queued_asts", ls->ls_name);

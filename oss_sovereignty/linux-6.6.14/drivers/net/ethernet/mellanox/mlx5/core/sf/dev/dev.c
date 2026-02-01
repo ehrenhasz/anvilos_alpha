@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Ltd */
+
+ 
 
 #include <linux/mlx5/driver.h>
 #include <linux/mlx5/device.h>
@@ -18,7 +18,7 @@ struct mlx5_sf_dev_table {
 	phys_addr_t base_address;
 	u64 sf_bar_length;
 	struct notifier_block nb;
-	struct mutex table_lock; /* Serializes sf life cycle and vhca state change handler */
+	struct mutex table_lock;  
 	struct workqueue_struct *active_wq;
 	struct work_struct work;
 	u8 stop_active_wq:1;
@@ -210,7 +210,7 @@ static int mlx5_sf_dev_vhca_arm_all(struct mlx5_sf_dev_table *table)
 
 	max_functions = mlx5_sf_max_functions(dev);
 	function_id = mlx5_sf_start_function_id(dev);
-	/* Arm the vhca context as the vhca event notifier */
+	 
 	for (i = 0; i < max_functions; i++) {
 		err = mlx5_vhca_event_arm(dev, function_id);
 		if (err)
@@ -240,9 +240,7 @@ static void mlx5_sf_dev_add_active_work(struct work_struct *work)
 			return;
 		err = mlx5_cmd_query_vhca_state(dev, function_id, out, sizeof(out));
 		if (err)
-			/* A failure of specific vhca doesn't mean others will
-			 * fail as well.
-			 */
+			 
 			continue;
 		state = MLX5_GET(query_vhca_state_out, out, vhca_state_context.vhca_state);
 		if (state != MLX5_VHCA_STATE_ACTIVE)
@@ -250,33 +248,21 @@ static void mlx5_sf_dev_add_active_work(struct work_struct *work)
 
 		sw_func_id = MLX5_GET(query_vhca_state_out, out, vhca_state_context.sw_function_id);
 		mutex_lock(&table->table_lock);
-		/* Don't probe device which is already probe */
+		 
 		if (!xa_load(&table->devices, i))
 			mlx5_sf_dev_add(dev, i, function_id, sw_func_id);
-		/* There is a race where SF got inactive after the query
-		 * above. e.g.: the query returns that the state of the
-		 * SF is active, and after that the eswitch manager set it to
-		 * inactive.
-		 * This case cannot be managed in SW, since the probing of the
-		 * SF is on one system, and the inactivation is on a different
-		 * system.
-		 * If the inactive is done after the SF perform init_hca(),
-		 * the SF will fully probe and then removed. If it was
-		 * done before init_hca(), the SF probe will fail.
-		 */
+		 
 		mutex_unlock(&table->table_lock);
 	}
 }
 
-/* In case SFs are generated externally, probe active SFs */
+ 
 static int mlx5_sf_dev_queue_active_work(struct mlx5_sf_dev_table *table)
 {
 	if (MLX5_CAP_GEN(table->dev, eswitch_manager))
-		return 0; /* the table is local */
+		return 0;  
 
-	/* Use a workqueue to probe active SFs, which are in large
-	 * quantity and may take up to minutes to probe.
-	 */
+	 
 	table->active_wq = create_singlethread_workqueue("mlx5_active_sf");
 	if (!table->active_wq)
 		return -ENOMEM;
@@ -369,9 +355,7 @@ void mlx5_sf_dev_table_destroy(struct mlx5_core_dev *dev)
 	mlx5_vhca_event_notifier_unregister(dev, &table->nb);
 	mutex_destroy(&table->table_lock);
 
-	/* Now that event handler is not running, it is safe to destroy
-	 * the sf device without race.
-	 */
+	 
 	mlx5_sf_dev_destroy_all(table);
 
 	WARN_ON(!xa_empty(&table->devices));

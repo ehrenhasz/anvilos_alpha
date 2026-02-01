@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SN Platform GRU Driver
- *
- *              FILE OPERATIONS & DRIVER INITIALIZATION
- *
- * This file supports the user system call for file open, close, mmap, etc.
- * This also incudes the driver initialization code.
- *
- *  (C) Copyright 2020 Hewlett Packard Enterprise Development LP
- *  Copyright (c) 2008-2014 Silicon Graphics, Inc.  All Rights Reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -41,7 +31,7 @@ unsigned long gru_end_paddr __read_mostly;
 unsigned int gru_max_gids __read_mostly;
 struct gru_stats_s gru_stats;
 
-/* Guaranteed user available resources on each node */
+ 
 static int max_user_cbrs, max_user_dsr_bytes;
 
 static struct miscdevice gru_miscdev;
@@ -52,12 +42,7 @@ static int gru_supported(void)
 		(uv_hub_info->hub_revision < UV3_HUB_REVISION_BASE);
 }
 
-/*
- * gru_vma_close
- *
- * Called when unmapping a device mapping. Frees all gru resources
- * and tables belonging to the vma.
- */
+ 
 static void gru_vma_close(struct vm_area_struct *vma)
 {
 	struct gru_vma_data *vdata;
@@ -85,13 +70,7 @@ static void gru_vma_close(struct vm_area_struct *vma)
 	STAT(vdata_free);
 }
 
-/*
- * gru_file_mmap
- *
- * Called when mmapping the device.  Initializes the vma with a fault handler
- * and private data structure necessary to allocate, track, and free the
- * underlying pages.
- */
+ 
 static int gru_file_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	if ((vma->vm_flags & (VM_SHARED | VM_WRITE)) != (VM_SHARED | VM_WRITE))
@@ -115,9 +94,7 @@ static int gru_file_mmap(struct file *file, struct vm_area_struct *vma)
 	return 0;
 }
 
-/*
- * Create a new GRU context
- */
+ 
 static int gru_create_new_context(unsigned long arg)
 {
 	struct gru_create_context_req req;
@@ -152,9 +129,7 @@ static int gru_create_new_context(unsigned long arg)
 	return ret;
 }
 
-/*
- * Get GRU configuration info (temp - for emulator testing)
- */
+ 
 static long gru_get_config_info(unsigned long arg)
 {
 	struct gru_config_info info;
@@ -176,11 +151,7 @@ static long gru_get_config_info(unsigned long arg)
 	return 0;
 }
 
-/*
- * gru_file_unlocked_ioctl
- *
- * Called to update file attributes via IOCTL calls.
- */
+ 
 static long gru_file_unlocked_ioctl(struct file *file, unsigned int req,
 				    unsigned long arg)
 {
@@ -223,10 +194,7 @@ static long gru_file_unlocked_ioctl(struct file *file, unsigned int req,
 	return err;
 }
 
-/*
- * Called at init time to build tables for all GRUs that are present in the
- * system.
- */
+ 
 static void gru_init_chiplet(struct gru_state *gru, unsigned long paddr,
 			     void *vaddr, int blade_id, int chiplet_id)
 {
@@ -263,7 +231,7 @@ static int gru_init_tables(unsigned long gru_base_paddr, void *gru_base_vaddr)
 	max_user_dsr_bytes = GRU_NUM_DSR_BYTES;
 	for_each_possible_blade(bid) {
 		pnode = uv_blade_to_pnode(bid);
-		nid = uv_blade_to_memory_nid(bid);/* -1 if no memory on blade */
+		nid = uv_blade_to_memory_nid(bid); 
 		page = alloc_pages_node(nid, GFP_KERNEL, order);
 		if (!page)
 			goto fail;
@@ -313,12 +281,7 @@ static unsigned long gru_chiplet_cpu_to_mmr(int chiplet, int cpu, int *corep)
 	unsigned long mmr = 0;
 	int core;
 
-	/*
-	 * We target the cores of a blade and not the hyperthreads themselves.
-	 * There is a max of 8 cores per socket and 2 sockets per blade,
-	 * making for a max total of 16 cores (i.e., 16 CPUs without
-	 * hyperthreading and 32 CPUs with hyperthreading).
-	 */
+	 
 	core = uv_cpu_core_number(cpu) + UV_MAX_INT_CORES * uv_cpu_socket_number(cpu);
 	if (core >= GRU_NUM_TFM || uv_cpu_ht_number(cpu))
 		return 0;
@@ -502,11 +465,7 @@ exit1:
 	return ret;
 }
 
-/*
- * gru_init
- *
- * Called at boot or module load time to initialize the GRUs.
- */
+ 
 static int __init gru_init(void)
 {
 	int ret;
@@ -515,7 +474,7 @@ static int __init gru_init(void)
 		return 0;
 
 #if defined CONFIG_IA64
-	gru_start_paddr = 0xd000000000UL; /* ZZZZZZZZZZZZZZZZZZZ fixme */
+	gru_start_paddr = 0xd000000000UL;  
 #else
 	gru_start_paddr = uv_read_local_mmr(UVH_RH_GAM_GRU_OVERLAY_CONFIG) &
 				0x7fffffffffffUL;

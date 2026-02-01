@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * nokia-modem.c
- *
- * HSI client driver for Nokia N900 modem.
- *
- * Copyright (C) 2014 Sebastian Reichel <sre@kernel.org>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/hsi/hsi.h>

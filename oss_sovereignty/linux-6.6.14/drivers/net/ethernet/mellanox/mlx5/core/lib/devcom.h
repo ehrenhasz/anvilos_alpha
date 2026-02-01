@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2018 Mellanox Technologies */
+ 
+ 
 
 #ifndef __LIB_MLX5_DEVCOM_H__
 #define __LIB_MLX5_DEVCOM_H__
@@ -51,4 +51,4 @@ void *mlx5_devcom_get_next_peer_data_rcu(struct mlx5_devcom_comp_dev *devcom,
 	     data;								  \
 	     data = mlx5_devcom_get_next_peer_data_rcu(devcom, &pos))
 
-#endif /* __LIB_MLX5_DEVCOM_H__ */
+#endif  

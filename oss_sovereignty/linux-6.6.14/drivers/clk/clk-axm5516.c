@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/clk/clk-axm5516.c
- *
- * Provides clock implementations for three different types of clock devices on
- * the Axxia device: PLL clock, a clock divider and a clock mux.
- *
- * Copyright (C) 2014 LSI Corporation
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -18,32 +11,21 @@
 #include <dt-bindings/clock/lsi,axm5516-clks.h>
 
 
-/**
- * struct axxia_clk - Common struct to all Axxia clocks.
- * @hw: clk_hw for the common clk framework
- * @regmap: Regmap for the clock control registers
- */
+ 
 struct axxia_clk {
 	struct clk_hw hw;
 	struct regmap *regmap;
 };
 #define to_axxia_clk(_hw) container_of(_hw, struct axxia_clk, hw)
 
-/**
- * struct axxia_pllclk - Axxia PLL generated clock.
- * @aclk: Common struct
- * @reg: Offset into regmap for PLL control register
- */
+ 
 struct axxia_pllclk {
 	struct axxia_clk aclk;
 	u32 reg;
 };
 #define to_axxia_pllclk(_aclk) container_of(_aclk, struct axxia_pllclk, aclk)
 
-/**
- * axxia_pllclk_recalc - Calculate the PLL generated clock rate given the
- * parent clock rate.
- */
+ 
 static unsigned long
 axxia_pllclk_recalc(struct clk_hw *hw, unsigned long parent_rate)
 {
@@ -65,13 +47,7 @@ static const struct clk_ops axxia_pllclk_ops = {
 	.recalc_rate = axxia_pllclk_recalc,
 };
 
-/**
- * struct axxia_divclk - Axxia clock divider
- * @aclk: Common struct
- * @reg: Offset into regmap for PLL control register
- * @shift: Bit position for divider value
- * @width: Number of bits in divider value
- */
+ 
 struct axxia_divclk {
 	struct axxia_clk aclk;
 	u32 reg;
@@ -80,9 +56,7 @@ struct axxia_divclk {
 };
 #define to_axxia_divclk(_aclk) container_of(_aclk, struct axxia_divclk, aclk)
 
-/**
- * axxia_divclk_recalc_rate - Calculate clock divider output rage
- */
+ 
 static unsigned long
 axxia_divclk_recalc_rate(struct clk_hw *hw, unsigned long parent_rate)
 {
@@ -100,13 +74,7 @@ static const struct clk_ops axxia_divclk_ops = {
 	.recalc_rate = axxia_divclk_recalc_rate,
 };
 
-/**
- * struct axxia_clkmux - Axxia clock mux
- * @aclk: Common struct
- * @reg: Offset into regmap for PLL control register
- * @shift: Bit position for selection value
- * @width: Number of bits in selection value
- */
+ 
 struct axxia_clkmux {
 	struct axxia_clk aclk;
 	u32 reg;
@@ -115,9 +83,7 @@ struct axxia_clkmux {
 };
 #define to_axxia_clkmux(_aclk) container_of(_aclk, struct axxia_clkmux, aclk)
 
-/**
- * axxia_clkmux_get_parent - Return the index of selected parent clock
- */
+ 
 static u8 axxia_clkmux_get_parent(struct clk_hw *hw)
 {
 	struct axxia_clk *aclk = to_axxia_clk(hw);
@@ -135,9 +101,7 @@ static const struct clk_ops axxia_clkmux_ops = {
 };
 
 
-/*
- * PLLs
- */
+ 
 
 static struct axxia_pllclk clk_fab_pll = {
 	.aclk.hw.init = &(struct clk_init_data){
@@ -199,9 +163,7 @@ static struct axxia_pllclk clk_sm1_pll = {
 	.reg   = 0x03800,
 };
 
-/*
- * Clock dividers
- */
+ 
 
 static struct axxia_divclk clk_cpu0_div = {
 	.aclk.hw.init = &(struct clk_init_data){
@@ -329,9 +291,7 @@ static struct axxia_divclk clk_mmc_div = {
 	.width = 4,
 };
 
-/*
- * Clock MUXes
- */
+ 
 
 static struct axxia_clkmux clk_cpu0_mux = {
 	.aclk.hw.init = &(struct clk_init_data){
@@ -482,9 +442,7 @@ static struct axxia_clkmux clk_mmc_mux = {
 	.width = 1,
 };
 
-/* Table of all supported clocks indexed by the clock identifiers from the
- * device tree binding
- */
+ 
 static struct axxia_clk *axmclk_clocks[] = {
 	[AXXIA_CLK_FAB_PLL]  = &clk_fab_pll.aclk,
 	[AXXIA_CLK_CPU_PLL]  = &clk_cpu_pll.aclk,
@@ -557,9 +515,7 @@ static int axmclk_probe(struct platform_device *pdev)
 	num_clks = ARRAY_SIZE(axmclk_clocks);
 	pr_info("axmclk: supporting %zu clocks\n", num_clks);
 
-	/* Update each entry with the allocated regmap and register the clock
-	 * with the common clock framework
-	 */
+	 
 	for (i = 0; i < num_clks; i++) {
 		axmclk_clocks[i]->regmap = regmap;
 		ret = devm_clk_hw_register(dev, &axmclk_clocks[i]->hw);

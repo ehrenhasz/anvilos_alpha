@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -10,17 +8,17 @@
 #include "mt76x2u.h"
 
 static const struct usb_device_id mt76x2u_device_table[] = {
-	{ USB_DEVICE(0x0b05, 0x1833) },	/* Asus USB-AC54 */
-	{ USB_DEVICE(0x0b05, 0x17eb) },	/* Asus USB-AC55 */
-	{ USB_DEVICE(0x0b05, 0x180b) },	/* Asus USB-N53 B1 */
-	{ USB_DEVICE(0x0e8d, 0x7612) },	/* Aukey USBAC1200 - Alfa AWUS036ACM */
-	{ USB_DEVICE(0x057c, 0x8503) },	/* Avm FRITZ!WLAN AC860 */
-	{ USB_DEVICE(0x7392, 0xb711) },	/* Edimax EW 7722 UAC */
-	{ USB_DEVICE(0x0e8d, 0x7632) },	/* HC-M7662BU1 */
-	{ USB_DEVICE(0x2c4e, 0x0103) },	/* Mercury UD13 */
-	{ USB_DEVICE(0x0846, 0x9053) },	/* Netgear A6210 */
-	{ USB_DEVICE(0x045e, 0x02e6) },	/* XBox One Wireless Adapter */
-	{ USB_DEVICE(0x045e, 0x02fe) },	/* XBox One Wireless Adapter */
+	{ USB_DEVICE(0x0b05, 0x1833) },	 
+	{ USB_DEVICE(0x0b05, 0x17eb) },	 
+	{ USB_DEVICE(0x0b05, 0x180b) },	 
+	{ USB_DEVICE(0x0e8d, 0x7612) },	 
+	{ USB_DEVICE(0x057c, 0x8503) },	 
+	{ USB_DEVICE(0x7392, 0xb711) },	 
+	{ USB_DEVICE(0x0e8d, 0x7632) },	 
+	{ USB_DEVICE(0x2c4e, 0x0103) },	 
+	{ USB_DEVICE(0x0846, 0x9053) },	 
+	{ USB_DEVICE(0x045e, 0x02e6) },	 
+	{ USB_DEVICE(0x045e, 0x02fe) },	 
 	{ },
 };
 
@@ -140,7 +138,7 @@ static struct usb_driver mt76x2u_driver = {
 	.suspend	= mt76x2u_suspend,
 	.resume		= mt76x2u_resume,
 	.reset_resume	= mt76x2u_resume,
-#endif /* CONFIG_PM */
+#endif  
 	.soft_unbind	= 1,
 	.disable_hub_initiated_lpm = 1,
 };

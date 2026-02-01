@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Driver for the IMX SNVS ON/OFF Power Key
-// Copyright (C) 2015 Freescale Semiconductor, Inc. All Rights Reserved.
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -21,8 +21,8 @@
 #include <linux/regmap.h>
 
 #define SNVS_HPVIDR1_REG	0xBF8
-#define SNVS_LPSR_REG		0x4C	/* LP Status Register */
-#define SNVS_LPCR_REG		0x38	/* LP Control Register */
+#define SNVS_LPSR_REG		0x4C	 
+#define SNVS_LPCR_REG		0x38	 
 #define SNVS_HPSR_REG		0x14
 #define SNVS_HPSR_BTN		BIT(6)
 #define SNVS_LPSR_SPO		BIT(18)
@@ -35,7 +35,7 @@ struct pwrkey_drv_data {
 	struct regmap *snvs;
 	int irq;
 	int keycode;
-	int keystate;  /* 1:pressed */
+	int keystate;   
 	int wakeup;
 	struct timer_list check_timer;
 	struct input_dev *input;
@@ -51,7 +51,7 @@ static void imx_imx_snvs_check_for_events(struct timer_list *t)
 	regmap_read(pdata->snvs, SNVS_HPSR_REG, &state);
 	state = state & SNVS_HPSR_BTN ? 1 : 0;
 
-	/* only report new event if status changed */
+	 
 	if (state ^ pdata->keystate) {
 		pdata->keystate = state;
 		input_event(input, EV_KEY, pdata->keycode, state);
@@ -59,7 +59,7 @@ static void imx_imx_snvs_check_for_events(struct timer_list *t)
 		pm_relax(pdata->input->dev.parent);
 	}
 
-	/* repeat check if pressed long */
+	 
 	if (state) {
 		mod_timer(&pdata->check_timer,
 			  jiffies + msecs_to_jiffies(REPEAT_INTERVAL));
@@ -78,11 +78,7 @@ static irqreturn_t imx_snvs_pwrkey_interrupt(int irq, void *dev_id)
 	regmap_read(pdata->snvs, SNVS_LPSR_REG, &lp_status);
 	if (lp_status & SNVS_LPSR_SPO) {
 		if (pdata->minor_rev == 0) {
-			/*
-			 * The first generation i.MX6 SoCs only sends an
-			 * interrupt on button release. To mimic power-key
-			 * usage, we'll prepend a press event.
-			 */
+			 
 			input_report_key(input, pdata->keycode, 1);
 			input_sync(input);
 			input_report_key(input, pdata->keycode, 0);
@@ -94,7 +90,7 @@ static irqreturn_t imx_snvs_pwrkey_interrupt(int irq, void *dev_id)
 		}
 	}
 
-	/* clear SPO status */
+	 
 	regmap_write(pdata->snvs, SNVS_LPSR_REG, SNVS_LPSR_SPO);
 
 	return IRQ_HANDLED;
@@ -121,7 +117,7 @@ static int imx_snvs_pwrkey_probe(struct platform_device *pdev)
 	int error;
 	u32 vid;
 
-	/* Get SNVS register Page */
+	 
 	np = pdev->dev.of_node;
 	if (!np)
 		return -ENODEV;
@@ -174,7 +170,7 @@ static int imx_snvs_pwrkey_probe(struct platform_device *pdev)
 
 	regmap_update_bits(pdata->snvs, SNVS_LPCR_REG, SNVS_LPCR_DEP_EN, SNVS_LPCR_DEP_EN);
 
-	/* clear the unexpected interrupt before driver ready */
+	 
 	regmap_write(pdata->snvs, SNVS_LPSR_REG, SNVS_LPSR_SPO);
 
 	timer_setup(&pdata->check_timer, imx_imx_snvs_check_for_events, 0);
@@ -191,7 +187,7 @@ static int imx_snvs_pwrkey_probe(struct platform_device *pdev)
 
 	input_set_capability(input, EV_KEY, pdata->keycode);
 
-	/* input customer action to cancel release timer */
+	 
 	error = devm_add_action(&pdev->dev, imx_snvs_pwrkey_act, pdata);
 	if (error) {
 		dev_err(&pdev->dev, "failed to register remove action\n");
@@ -226,7 +222,7 @@ static int imx_snvs_pwrkey_probe(struct platform_device *pdev)
 
 static const struct of_device_id imx_snvs_pwrkey_ids[] = {
 	{ .compatible = "fsl,sec-v4.0-pwrkey" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_snvs_pwrkey_ids);
 

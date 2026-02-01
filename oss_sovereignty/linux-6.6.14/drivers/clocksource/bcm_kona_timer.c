@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2012 Broadcom Corporation
+
+
 
 #include <linux/init.h>
 #include <linux/irq.h>
@@ -33,23 +33,17 @@ static struct kona_bcm_timers timers;
 
 static u32 arch_timer_rate;
 
-/*
- * We use the peripheral timers for system tick, the cpu global timer for
- * profile tick
- */
+ 
 static void kona_timer_disable_and_clear(void __iomem *base)
 {
 	uint32_t reg;
 
-	/*
-	 * clear and disable interrupts
-	 * We are using compare/match register 0 for our system interrupts
-	 */
+	 
 	reg = readl(base + KONA_GPTIMER_STCS_OFFSET);
 
-	/* Clear compare (0) interrupt */
+	 
 	reg |= 1 << KONA_GPTIMER_STCS_TIMER_MATCH_SHIFT;
-	/* disable compare */
+	 
 	reg &= ~(1 << KONA_GPTIMER_STCS_COMPARE_ENABLE_SHIFT);
 
 	writel(reg, base + KONA_GPTIMER_STCS_OFFSET);
@@ -61,17 +55,7 @@ kona_timer_get_counter(void __iomem *timer_base, uint32_t *msw, uint32_t *lsw)
 {
 	int loop_limit = 3;
 
-	/*
-	 * Read 64-bit free running counter
-	 * 1. Read hi-word
-	 * 2. Read low-word
-	 * 3. Read hi-word again
-	 * 4.1
-	 *      if new hi-word is not equal to previously read hi-word, then
-	 *      start from #1
-	 * 4.2
-	 *      if new hi-word is equal to previously read hi-word then stop.
-	 */
+	 
 
 	do {
 		*msw = readl(timer_base + KONA_GPTIMER_STCHI_OFFSET);
@@ -91,15 +75,7 @@ kona_timer_get_counter(void __iomem *timer_base, uint32_t *msw, uint32_t *lsw)
 static int kona_timer_set_next_event(unsigned long clc,
 				  struct clock_event_device *unused)
 {
-	/*
-	 * timer (0) is disabled by the timer interrupt already
-	 * so, here we reload the next event value and re-enable
-	 * the timer.
-	 *
-	 * This way, we are potentially losing the time between
-	 * timer-interrupt->set_next_event. CPU local timers, when
-	 * they come in should get rid of skew.
-	 */
+	 
 
 	uint32_t lsw, msw;
 	uint32_t reg;
@@ -109,10 +85,10 @@ static int kona_timer_set_next_event(unsigned long clc,
 	if (ret)
 		return ret;
 
-	/* Load the "next" event tick value */
+	 
 	writel(lsw + clc, timers.tmr_regs + KONA_GPTIMER_STCM0_OFFSET);
 
-	/* Enable compare */
+	 
 	reg = readl(timers.tmr_regs + KONA_GPTIMER_STCS_OFFSET);
 	reg |= (1 << KONA_GPTIMER_STCS_COMPARE_ENABLE_SHIFT);
 	writel(reg, timers.tmr_regs + KONA_GPTIMER_STCS_OFFSET);
@@ -167,10 +143,10 @@ static int __init kona_timer_init(struct device_node *node)
 		return -EINVAL;
 	}
 
-	/* Setup IRQ numbers */
+	 
 	timers.tmr_irq = irq_of_parse_and_map(node, 0);
 
-	/* Setup IO addresses */
+	 
 	timers.tmr_regs = of_iomap(node, 0);
 
 	kona_timer_disable_and_clear(timers.tmr_regs);
@@ -185,8 +161,5 @@ static int __init kona_timer_init(struct device_node *node)
 }
 
 TIMER_OF_DECLARE(brcm_kona, "brcm,kona-timer", kona_timer_init);
-/*
- * bcm,kona-timer is deprecated by brcm,kona-timer
- * being kept here for driver compatibility
- */
+ 
 TIMER_OF_DECLARE(bcm_kona, "bcm,kona-timer", kona_timer_init);

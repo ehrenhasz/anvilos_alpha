@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung Exynos SoC series PCIe PHY driver
- *
- * Phy provider for PCIe controller on Exynos SoC series
- *
- * Copyright (C) 2017-2020 Samsung Electronics Co., Ltd.
- * Jaehoon Chung <jh80.chung@samsung.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/mfd/syscon.h>
@@ -17,7 +10,7 @@
 
 #define PCIE_PHY_OFFSET(x)		((x) * 0x4)
 
-/* Sysreg FSYS register offsets and bits for Exynos5433 */
+ 
 #define PCIE_EXYNOS5433_PHY_MAC_RESET		0x0208
 #define PCIE_MAC_RESET_MASK			0xFF
 #define PCIE_MAC_RESET				BIT(4)
@@ -31,10 +24,10 @@
 #define PCIE_REFCLK_MASK			0x16
 #define PCIE_APP_REQ_EXIT_L1_MODE		BIT(5)
 
-/* PMU PCIE PHY isolation control */
+ 
 #define EXYNOS5433_PMU_PCIE_PHY_OFFSET		0x730
 
-/* For Exynos pcie phy */
+ 
 struct exynos_pcie_phy {
 	void __iomem *base;
 	struct regmap *pmureg;
@@ -46,7 +39,7 @@ static void exynos_pcie_phy_writel(void __iomem *base, u32 val, u32 offset)
 	writel(val, base + offset);
 }
 
-/* Exynos5433 specific functions */
+ 
 static int exynos5433_pcie_phy_init(struct phy *phy)
 {
 	struct exynos_pcie_phy *ep = phy_get_drvdata(phy);
@@ -63,7 +56,7 @@ static int exynos5433_pcie_phy_init(struct phy *phy)
 	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_MAC_RESET,
 			   PCIE_MAC_RESET, 0);
 
-	/* PHY refclk 24MHz */
+	 
 	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_GLOBAL_RESET,
 			   PCIE_REFCLK_MASK, PCIE_REFCLK);
 	regmap_update_bits(ep->fsysreg, PCIE_EXYNOS5433_PHY_GLOBAL_RESET,
@@ -72,11 +65,11 @@ static int exynos5433_pcie_phy_init(struct phy *phy)
 
 	exynos_pcie_phy_writel(ep->base, 0x11, PCIE_PHY_OFFSET(0x3));
 
-	/* band gap reference on */
+	 
 	exynos_pcie_phy_writel(ep->base, 0, PCIE_PHY_OFFSET(0x20));
 	exynos_pcie_phy_writel(ep->base, 0, PCIE_PHY_OFFSET(0x4b));
 
-	/* jitter tuning */
+	 
 	exynos_pcie_phy_writel(ep->base, 0x34, PCIE_PHY_OFFSET(0x4));
 	exynos_pcie_phy_writel(ep->base, 0x02, PCIE_PHY_OFFSET(0x7));
 	exynos_pcie_phy_writel(ep->base, 0x41, PCIE_PHY_OFFSET(0x21));
@@ -84,10 +77,10 @@ static int exynos5433_pcie_phy_init(struct phy *phy)
 	exynos_pcie_phy_writel(ep->base, 0xC0, PCIE_PHY_OFFSET(0x15));
 	exynos_pcie_phy_writel(ep->base, 0x61, PCIE_PHY_OFFSET(0x36));
 
-	/* D0 uninit.. */
+	 
 	exynos_pcie_phy_writel(ep->base, 0x44, PCIE_PHY_OFFSET(0x3D));
 
-	/* 24MHz */
+	 
 	exynos_pcie_phy_writel(ep->base, 0x94, PCIE_PHY_OFFSET(0x8));
 	exynos_pcie_phy_writel(ep->base, 0xA7, PCIE_PHY_OFFSET(0x9));
 	exynos_pcie_phy_writel(ep->base, 0x93, PCIE_PHY_OFFSET(0xA));

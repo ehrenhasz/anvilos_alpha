@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "nv31.h"
 
 #include <core/client.h>
@@ -31,9 +9,7 @@
 
 #include <nvif/class.h>
 
-/*******************************************************************************
- * MPEG object classes
- ******************************************************************************/
+ 
 
 static int
 nv31_mpeg_object_bind(struct nvkm_object *object, struct nvkm_gpuobj *parent,
@@ -57,9 +33,7 @@ nv31_mpeg_object = {
 	.bind = nv31_mpeg_object_bind,
 };
 
-/*******************************************************************************
- * PMPEG context
- ******************************************************************************/
+ 
 
 static void *
 nv31_mpeg_chan_dtor(struct nvkm_object *object)
@@ -105,9 +79,7 @@ nv31_mpeg_chan_new(struct nvkm_chan *fifoch, const struct nvkm_oclass *oclass,
 	return ret;
 }
 
-/*******************************************************************************
- * PMPEG engine/subdev functions
- ******************************************************************************/
+ 
 
 void
 nv31_mpeg_tile(struct nvkm_engine *engine, int i, struct nvkm_fb_tile *tile)
@@ -132,7 +104,7 @@ nv31_mpeg_mthd_dma(struct nvkm_device *device, u32 mthd, u32 data)
 	u32 base = (dma2 & 0xfffff000) | (dma0 >> 20);
 	u32 size = dma1 + 1;
 
-	/* only allow linear DMA objects */
+	 
 	if (!(dma0 & 0x00002000)) {
 		nvkm_error(subdev, "inst %08x dma0 %08x dma1 %08x dma2 %08x\n",
 			   inst, dma0, dma1, dma2);
@@ -140,20 +112,20 @@ nv31_mpeg_mthd_dma(struct nvkm_device *device, u32 mthd, u32 data)
 	}
 
 	if (mthd == 0x0190) {
-		/* DMA_CMD */
+		 
 		nvkm_mask(device, 0x00b300, 0x00010000,
 				  (dma0 & 0x00030000) ? 0x00010000 : 0);
 		nvkm_wr32(device, 0x00b334, base);
 		nvkm_wr32(device, 0x00b324, size);
 	} else
 	if (mthd == 0x01a0) {
-		/* DMA_DATA */
+		 
 		nvkm_mask(device, 0x00b300, 0x00020000,
 				  (dma0 & 0x00030000) ? 0x00020000 : 0);
 		nvkm_wr32(device, 0x00b360, base);
 		nvkm_wr32(device, 0x00b364, size);
 	} else {
-		/* DMA_IMAGE, VRAM only */
+		 
 		if (dma0 & 0x00030000)
 			return false;
 
@@ -195,7 +167,7 @@ nv31_mpeg_intr(struct nvkm_engine *engine)
 	spin_lock_irqsave(&mpeg->engine.lock, flags);
 
 	if (stat & 0x01000000) {
-		/* happens on initial binding of the object */
+		 
 		if (type == 0x00000020 && mthd == 0x0000) {
 			nvkm_mask(device, 0x00b308, 0x00000000, 0x00000000);
 			show &= ~0x01000000;
@@ -226,11 +198,11 @@ nv31_mpeg_init(struct nvkm_engine *mpeg)
 	struct nvkm_subdev *subdev = &mpeg->subdev;
 	struct nvkm_device *device = subdev->device;
 
-	/* VPE init */
-	nvkm_wr32(device, 0x00b0e0, 0x00000020); /* nvidia: rd 0x01, wr 0x20 */
-	nvkm_wr32(device, 0x00b0e8, 0x00000020); /* nvidia: rd 0x01, wr 0x20 */
+	 
+	nvkm_wr32(device, 0x00b0e0, 0x00000020);  
+	nvkm_wr32(device, 0x00b0e8, 0x00000020);  
 
-	/* PMPEG init */
+	 
 	nvkm_wr32(device, 0x00b32c, 0x00000000);
 	nvkm_wr32(device, 0x00b314, 0x00000100);
 	nvkm_wr32(device, 0x00b220, 0x00000031);

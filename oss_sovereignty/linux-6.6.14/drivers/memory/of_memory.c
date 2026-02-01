@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OpenFirmware helpers for memory drivers
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- * Copyright (C) 2019 Samsung Electronics Co., Ltd.
- * Copyright (C) 2020 Krzysztof Kozlowski <krzk@kernel.org>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/of.h>
@@ -15,16 +9,7 @@
 #include "jedec_ddr.h"
 #include "of_memory.h"
 
-/**
- * of_get_min_tck() - extract min timing values for ddr
- * @np: pointer to ddr device tree node
- * @dev: device requesting for min timing values
- *
- * Populates the lpddr2_min_tck structure by extracting data
- * from device tree node. Returns a pointer to the populated
- * structure. If any error in populating the structure, returns
- * default min timings provided by JEDEC.
- */
+ 
 const struct lpddr2_min_tck *of_get_min_tck(struct device_node *np,
 					    struct device *dev)
 {
@@ -88,19 +73,7 @@ static int of_do_get_timings(struct device_node *np,
 	return ret;
 }
 
-/**
- * of_get_ddr_timings() - extracts the ddr timings and updates no of
- * frequencies available.
- * @np_ddr: Pointer to ddr device tree node
- * @dev: Device requesting for ddr timings
- * @device_type: Type of ddr(LPDDR2 S2/S4)
- * @nr_frequencies: No of frequencies available for ddr
- * (updated by this function)
- *
- * Populates lpddr2_timings structure by extracting data from device
- * tree node. Returns pointer to populated structure. If any error
- * while populating, returns default timings provided by JEDEC.
- */
+ 
 const struct lpddr2_timings *of_get_ddr_timings(struct device_node *np_ddr,
 						struct device *dev,
 						u32 device_type,
@@ -153,15 +126,7 @@ default_timings:
 }
 EXPORT_SYMBOL(of_get_ddr_timings);
 
-/**
- * of_lpddr3_get_min_tck() - extract min timing values for lpddr3
- * @np: pointer to ddr device tree node
- * @dev: device requesting for min timing values
- *
- * Populates the lpddr3_min_tck structure by extracting data
- * from device tree node. Returns a pointer to the populated
- * structure. If any error in populating the structure, returns NULL.
- */
+ 
 const struct lpddr3_min_tck *of_lpddr3_get_min_tck(struct device_node *np,
 						   struct device *dev)
 {
@@ -215,7 +180,7 @@ static int of_lpddr3_do_get_timings(struct device_node *np,
 
 	ret = of_property_read_u32(np, "max-freq", &tim->max_freq);
 	if (ret)
-		/* Deprecated way of passing max-freq as 'reg' */
+		 
 		ret = of_property_read_u32(np, "reg", &tim->max_freq);
 	ret |= of_property_read_u32(np, "min-freq", &tim->min_freq);
 	ret |= of_property_read_u32(np, "tRFC", &tim->tRFC);
@@ -240,19 +205,7 @@ static int of_lpddr3_do_get_timings(struct device_node *np,
 	return ret;
 }
 
-/**
- * of_lpddr3_get_ddr_timings() - extracts the lpddr3 timings and updates no of
- * frequencies available.
- * @np_ddr: Pointer to ddr device tree node
- * @dev: Device requesting for ddr timings
- * @device_type: Type of ddr
- * @nr_frequencies: No of frequencies available for ddr
- * (updated by this function)
- *
- * Populates lpddr3_timings structure by extracting data from device
- * tree node. Returns pointer to populated structure. If any error
- * while populating, returns NULL.
- */
+ 
 const struct lpddr3_timings
 *of_lpddr3_get_ddr_timings(struct device_node *np_ddr, struct device *dev,
 			   u32 device_type, u32 *nr_frequencies)
@@ -303,16 +256,7 @@ default_timings:
 }
 EXPORT_SYMBOL(of_lpddr3_get_ddr_timings);
 
-/**
- * of_lpddr2_get_info() - extracts information about the lpddr2 chip.
- * @np: Pointer to device tree node containing lpddr2 info
- * @dev: Device requesting info
- *
- * Populates lpddr2_info structure by extracting data from device
- * tree node. Returns pointer to populated structure. If error
- * happened while populating, returns NULL. If property is missing
- * in a device-tree, then the corresponding value is set to -ENOENT.
- */
+ 
 const struct lpddr2_info
 *of_lpddr2_get_info(struct device_node *np, struct device *dev)
 {

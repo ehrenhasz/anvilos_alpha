@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Allwinner sun8i deinterlacer with scaler driver
- *
- * Copyright (C) 2019 Jernej Skrabec <jernej.skrabec@siol.net>
- *
- * Based on vim2m driver.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -189,7 +183,7 @@ static void deinterlace_job_abort(void *priv)
 {
 	struct deinterlace_ctx *ctx = priv;
 
-	/* Will cancel the transaction in the next interrupt handler */
+	 
 	ctx->aborting = 1;
 }
 
@@ -286,7 +280,7 @@ static void deinterlace_init(struct deinterlace_dev *dev)
 				 DEINTERLACE_CHROMA_DIFF_TH_MSK,
 				 DEINTERLACE_CHROMA_DIFF_TH(5));
 
-	/* neutral filter coefficients */
+	 
 	deinterlace_set_bits(dev, DEINTERLACE_FRM_CTRL,
 			     DEINTERLACE_FRM_CTRL_COEF_ACCESS);
 	readl_poll_timeout(dev->base + DEINTERLACE_STATUS, val,
@@ -336,9 +330,9 @@ static void deinterlace_prepare_format(struct v4l2_pix_format *pix_fmt)
 		       DEINTERLACE_MAX_HEIGHT);
 
 	bytesperline = ALIGN(width, 2);
-	/* luma */
+	 
 	sizeimage = bytesperline * height;
-	/* chroma */
+	 
 	sizeimage += bytesperline * height / 2;
 
 	pix_fmt->width = width;
@@ -477,7 +471,7 @@ static int deinterlace_s_fmt_vid_out(struct file *file, void *priv,
 
 	ctx->src_fmt = f->fmt.pix;
 
-	/* Propagate colorspace information to capture. */
+	 
 	ctx->dst_fmt.colorspace = f->fmt.pix.colorspace;
 	ctx->dst_fmt.xfer_func = f->fmt.pix.xfer_func;
 	ctx->dst_fmt.ycbcr_enc = f->fmt.pix.ycbcr_enc;
@@ -717,14 +711,14 @@ static int deinterlace_open(struct file *file)
 		return -ENOMEM;
 	}
 
-	/* default output format */
+	 
 	ctx->src_fmt.pixelformat = deinterlace_formats[0];
 	ctx->src_fmt.field = V4L2_FIELD_INTERLACED;
 	ctx->src_fmt.width = 640;
 	ctx->src_fmt.height = 480;
 	deinterlace_prepare_format(&ctx->src_fmt);
 
-	/* default capture format */
+	 
 	ctx->dst_fmt.pixelformat = deinterlace_formats[0];
 	ctx->dst_fmt.field = V4L2_FIELD_NONE;
 	ctx->dst_fmt.width = 640;
@@ -989,7 +983,7 @@ static int deinterlace_runtime_suspend(struct device *device)
 
 static const struct of_device_id deinterlace_dt_match[] = {
 	{ .compatible = "allwinner,sun8i-h3-deinterlace" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, deinterlace_dt_match);
 

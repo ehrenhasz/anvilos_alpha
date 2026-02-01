@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021, Red Hat Inc.
- *
- * Generic tests for KVM CPUID set/get ioctls
- */
+
+ 
 #include <asm/kvm_para.h>
 #include <linux/kvm_para.h>
 #include <stdint.h>
@@ -12,15 +8,12 @@
 #include "kvm_util.h"
 #include "processor.h"
 
-/* CPUIDs known to differ */
+ 
 struct {
 	u32 function;
 	u32 index;
 } mangled_cpuids[] = {
-	/*
-	 * These entries depend on the vCPU's XCR0 register and IA32_XSS MSR,
-	 * which are not controlled for by this test.
-	 */
+	 
 	{.function = 0xd, .index = 0},
 	{.function = 0xd, .index = 1},
 };
@@ -141,11 +134,11 @@ static void set_cpuid_after_run(struct kvm_vcpu *vcpu)
 	int rc;
 	u32 eax, ebx, x;
 
-	/* Setting unmodified CPUID is allowed */
+	 
 	rc = __vcpu_set_cpuid(vcpu);
 	TEST_ASSERT(!rc, "Setting unmodified CPUID after KVM_RUN failed: %d", rc);
 
-	/* Changing CPU features is forbidden */
+	 
 	ent = vcpu_get_cpuid_entry(vcpu, 0x7);
 	ebx = ent->ebx;
 	ent->ebx--;
@@ -153,7 +146,7 @@ static void set_cpuid_after_run(struct kvm_vcpu *vcpu)
 	TEST_ASSERT(rc, "Changing CPU features should fail");
 	ent->ebx = ebx;
 
-	/* Changing MAXPHYADDR is forbidden */
+	 
 	ent = vcpu_get_cpuid_entry(vcpu, 0x80000008);
 	eax = ent->eax;
 	x = eax & 0xff;

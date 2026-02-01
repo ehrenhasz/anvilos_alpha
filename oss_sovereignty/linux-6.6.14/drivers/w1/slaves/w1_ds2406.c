@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * w1_ds2406.c - w1 family 12 (DS2406) driver
- * based on w1_ds2413.c by Mariusz Bialonczyk <manio@skyboo.net>
- *
- * Copyright (c) 2014 Scott Alfter <scott@alfter.us>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -49,7 +44,7 @@ static ssize_t w1_f12_read_state(
 	w1_read_block(sl->master, w1_buf+3, 3);
 	for (i = 0; i < 6; i++)
 		crc = crc16_byte(crc, w1_buf[i]);
-	if (crc == 0xb001) /* good read? */
+	if (crc == 0xb001)  
 		*buf = ((w1_buf[3]>>5)&3)|0x30;
 	else
 		rtnval = -EIO;
@@ -85,7 +80,7 @@ static ssize_t w1_f12_write_output(
 	w1_read_block(sl->master, w1_buf+4, 2);
 	for (i = 0; i < 6; i++)
 		crc = crc16_byte(crc, w1_buf[i]);
-	if (crc == 0xb001) /* good read? */
+	if (crc == 0xb001)  
 		w1_write_8(sl->master, 0xFF);
 	else
 		rtnval = -EIO;

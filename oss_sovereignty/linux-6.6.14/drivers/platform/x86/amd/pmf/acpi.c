@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AMD Platform Management Framework Driver
- *
- * Copyright (c) 2022, Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Author: Shyam Sundar S K <Shyam-sundar.S-k@amd.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include "pmf.h"
@@ -92,7 +85,7 @@ out:
 
 int is_apmf_func_supported(struct amd_pmf_dev *pdev, unsigned long index)
 {
-	/* If bit-n is set, that indicates function n+1 is supported */
+	 
 	return !!(pdev->supported_func & BIT(index - 1));
 }
 
@@ -207,7 +200,7 @@ static void apmf_event_handler(acpi_handle handle, u32 event, void *data)
 		dev_dbg(pmf_dev->dev, "CQL is supported and notifications %s\n",
 			req.cql_event ? "Enabled" : "Disabled");
 
-		/* update the target mode information */
+		 
 		if (pmf_dev->amt_enabled)
 			amd_pmf_update_2_cql(pmf_dev, req.cql_event);
 	}
@@ -269,7 +262,7 @@ int apmf_install_handler(struct amd_pmf_dev *pmf_dev)
 	acpi_handle ahandle = ACPI_HANDLE(pmf_dev->dev);
 	acpi_status status;
 
-	/* Install the APMF Notify handler */
+	 
 	if (is_apmf_func_supported(pmf_dev, APMF_FUNC_AUTO_MODE) &&
 	    is_apmf_func_supported(pmf_dev, APMF_FUNC_SBIOS_REQUESTS)) {
 		status = acpi_install_notify_handler(ahandle, ACPI_ALL_NOTIFY,
@@ -279,7 +272,7 @@ int apmf_install_handler(struct amd_pmf_dev *pmf_dev)
 			return -ENODEV;
 		}
 
-		/* Call the handler once manually to catch up with possibly missed notifies. */
+		 
 		apmf_event_handler(ahandle, 0, pmf_dev);
 	}
 
@@ -315,7 +308,7 @@ int apmf_acpi_init(struct amd_pmf_dev *pmf_dev)
 	}
 
 	if (pmf_dev->hb_interval) {
-		/* send heartbeats only if the interval is not zero */
+		 
 		INIT_DELAYED_WORK(&pmf_dev->heart_beat, apmf_sbios_heartbeat_notify);
 		schedule_delayed_work(&pmf_dev->heart_beat, 0);
 	}

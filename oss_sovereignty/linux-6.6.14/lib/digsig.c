@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Nokia Corporation
- * Copyright (C) 2011 Intel Corporation
- *
- * Author:
- * Dmitry Kasatkin <dmitry.kasatkin@nokia.com>
- *                 <dmitry.kasatkin@intel.com>
- *
- * File: sign.c
- *	implements signature (RSA) verification
- *	pkcs decoding is based on LibTomCrypt code
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -36,11 +25,11 @@ static const char *pkcs_1_v1_5_decode_emsa(const unsigned char *msg,
 
 	modulus_len = (modulus_bitlen >> 3) + (modulus_bitlen & 7 ? 1 : 0);
 
-	/* test message size */
+	 
 	if ((msglen > modulus_len) || (modulus_len < 11))
 		return NULL;
 
-	/* separate encoded message */
+	 
 	if (msg[0] != 0x00 || msg[1] != 0x01)
 		return NULL;
 
@@ -48,10 +37,9 @@ static const char *pkcs_1_v1_5_decode_emsa(const unsigned char *msg,
 		if (msg[i] != 0xFF)
 			break;
 
-	/* separator check */
+	 
 	if (msg[i] != 0)
-		/* There was no octet with hexadecimal value 0x00
-		to separate ps from m. */
+		 
 		return NULL;
 
 	ps_len = i - 2;
@@ -61,9 +49,7 @@ static const char *pkcs_1_v1_5_decode_emsa(const unsigned char *msg,
 	return msg + 2 + ps_len + 1;
 }
 
-/*
- * RSA Signature verification with public key
- */
+ 
 static int digsig_verify_rsa(struct key *key,
 		    const char *sig, int siglen,
 		       const char *h, int hlen)
@@ -85,7 +71,7 @@ static int digsig_verify_rsa(struct key *key,
 	ukp = user_key_payload_locked(key);
 
 	if (!ukp) {
-		/* key was revoked before we acquired its semaphore */
+		 
 		err = -EKEYREVOKED;
 		goto err1;
 	}
@@ -181,21 +167,7 @@ err1:
 	return err;
 }
 
-/**
- * digsig_verify() - digital signature verification with public key
- * @keyring:	keyring to search key in
- * @sig:	digital signature
- * @siglen:	length of the signature
- * @data:	data
- * @datalen:	length of the data
- *
- * Returns 0 on success, -EINVAL otherwise
- *
- * Verifies data integrity against digital signature.
- * Currently only RSA is supported.
- * Normally hash of the content is used as a data for this function.
- *
- */
+ 
 int digsig_verify(struct key *keyring, const char *sig, int siglen,
 						const char *data, int datalen)
 {
@@ -215,7 +187,7 @@ int digsig_verify(struct key *keyring, const char *sig, int siglen,
 	sprintf(name, "%llX", __be64_to_cpup((uint64_t *)sh->keyid));
 
 	if (keyring) {
-		/* search in specific keyring */
+		 
 		key_ref_t kref;
 		kref = keyring_search(make_key_ref(keyring, 1UL),
 				      &key_type_user, name, true);
@@ -245,7 +217,7 @@ int digsig_verify(struct key *keyring, const char *sig, int siglen,
 
 	kfree(desc);
 
-	/* pass signature mpis address */
+	 
 	err = digsig_verify_rsa(key, sig + sizeof(*sh), siglen - sizeof(*sh),
 			     hash, sizeof(hash));
 

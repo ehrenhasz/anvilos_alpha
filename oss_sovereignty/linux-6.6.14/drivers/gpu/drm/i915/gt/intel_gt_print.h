@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_GT_PRINT__
 #define __INTEL_GT_PRINT__
@@ -51,4 +49,4 @@
 #define gt_WARN_ON_ONCE(_gt, _condition) \
 	gt_WARN_ONCE(_gt, _condition, "%s", "gt_WARN_ONCE(" __stringify(_condition) ")")
 
-#endif /* __INTEL_GT_PRINT_H__ */
+#endif  

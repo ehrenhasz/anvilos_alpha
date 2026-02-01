@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl12xx
- *
- * Copyright (C) 2009-2010 Nokia Corporation
- * Copyright (C) 2011 Texas Instruments Inc.
- */
+
+ 
 
 #include "../wlcore/cmd.h"
 #include "../wlcore/debug.h"
@@ -71,14 +66,14 @@ int wl1271_cmd_general_parms(struct wl1271 *wl)
 
 	memcpy(&gen_parms->general_params, gp, sizeof(*gp));
 
-	/* If we started in PLT FEM_DETECT mode, force auto detect */
+	 
 	if (wl->plt_mode == PLT_FEM_DETECT)
 		gen_parms->general_params.tx_bip_fem_auto_detect = true;
 
 	if (gen_parms->general_params.tx_bip_fem_auto_detect)
 		answer = true;
 
-	/* Override the REF CLK from the NVS with the one from platform data */
+	 
 	gen_parms->general_params.ref_clock = priv->ref_clock;
 
 	ret = wl1271_cmd_test(wl, gen_parms, sizeof(*gen_parms), answer);
@@ -96,7 +91,7 @@ int wl1271_cmd_general_parms(struct wl1271 *wl)
 		goto out;
 	}
 
-	/* If we are in calibrator based fem auto detect - save fem nr */
+	 
 	if (wl->plt_mode == PLT_FEM_DETECT)
 		wl->fem_manuf = gp->tx_bip_fem_manufacturer;
 
@@ -138,14 +133,14 @@ int wl128x_cmd_general_parms(struct wl1271 *wl)
 
 	memcpy(&gen_parms->general_params, gp, sizeof(*gp));
 
-	/* If we started in PLT FEM_DETECT mode, force auto detect */
+	 
 	if (wl->plt_mode == PLT_FEM_DETECT)
 		gen_parms->general_params.tx_bip_fem_auto_detect = true;
 
 	if (gen_parms->general_params.tx_bip_fem_auto_detect)
 		answer = true;
 
-	/* Replace REF and TCXO CLKs with the ones from platform data */
+	 
 	gen_parms->general_params.ref_clock = priv->ref_clock;
 	gen_parms->general_params.tcxo_ref_clock = priv->tcxo_clock;
 
@@ -164,7 +159,7 @@ int wl128x_cmd_general_parms(struct wl1271 *wl)
 		goto out;
 	}
 
-	/* If we are in calibrator based fem auto detect - save fem nr */
+	 
 	if (wl->plt_mode == PLT_FEM_DETECT)
 		wl->fem_manuf = gp->tx_bip_fem_manufacturer;
 
@@ -199,14 +194,14 @@ int wl1271_cmd_radio_parms(struct wl1271 *wl)
 
 	fem_idx = WL12XX_FEM_TO_NVS_ENTRY(gp->tx_bip_fem_manufacturer);
 
-	/* 2.4GHz parameters */
+	 
 	memcpy(&radio_parms->static_params_2, &nvs->stat_radio_params_2,
 	       sizeof(struct wl1271_ini_band_params_2));
 	memcpy(&radio_parms->dyn_params_2,
 	       &nvs->dyn_radio_params_2[fem_idx].params,
 	       sizeof(struct wl1271_ini_fem_params_2));
 
-	/* 5GHz parameters */
+	 
 	memcpy(&radio_parms->static_params_5,
 	       &nvs->stat_radio_params_5,
 	       sizeof(struct wl1271_ini_band_params_5));
@@ -243,14 +238,14 @@ int wl128x_cmd_radio_parms(struct wl1271 *wl)
 
 	fem_idx = WL12XX_FEM_TO_NVS_ENTRY(gp->tx_bip_fem_manufacturer);
 
-	/* 2.4GHz parameters */
+	 
 	memcpy(&radio_parms->static_params_2, &nvs->stat_radio_params_2,
 	       sizeof(struct wl128x_ini_band_params_2));
 	memcpy(&radio_parms->dyn_params_2,
 	       &nvs->dyn_radio_params_2[fem_idx].params,
 	       sizeof(struct wl128x_ini_fem_params_2));
 
-	/* 5GHz parameters */
+	 
 	memcpy(&radio_parms->static_params_5,
 	       &nvs->stat_radio_params_5,
 	       sizeof(struct wl128x_ini_band_params_5));
@@ -291,8 +286,8 @@ int wl12xx_cmd_channel_switch(struct wl1271 *wl,
 	cmd->switch_time = ch_switch->count;
 	cmd->stop_tx = ch_switch->block_tx;
 
-	/* FIXME: control from mac80211 in the future */
-	/* Enable TX on the target channel */
+	 
+	 
 	cmd->post_switch_tx_disable = 0;
 
 	ret = wl1271_cmd_send(wl, CMD_CHANNEL_SWITCH, cmd, sizeof(*cmd), 0);

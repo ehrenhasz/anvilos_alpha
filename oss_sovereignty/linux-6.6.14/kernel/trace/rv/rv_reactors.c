@@ -1,73 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019-2022 Red Hat, Inc. Daniel Bristot de Oliveira <bristot@kernel.org>
- *
- * Runtime reactor interface.
- *
- * A runtime monitor can cause a reaction to the detection of an
- * exception on the model's execution. By default, the monitors have
- * tracing reactions, printing the monitor output via tracepoints.
- * But other reactions can be added (on-demand) via this interface.
- *
- * == Registering reactors ==
- *
- * The struct rv_reactor defines a callback function to be executed
- * in case of a model exception happens. The callback function
- * receives a message to be (optionally) printed before executing
- * the reaction.
- *
- * A RV reactor is registered via:
- *   int rv_register_reactor(struct rv_reactor *reactor)
- * And unregistered via:
- *   int rv_unregister_reactor(struct rv_reactor *reactor)
- *
- * These functions are exported to modules, enabling reactors to be
- * dynamically loaded.
- *
- * == User interface ==
- *
- * The user interface resembles the kernel tracing interface and
- * presents these files:
- *
- *  "available_reactors"
- *    - List the available reactors, one per line.
- *
- *    For example:
- *      # cat available_reactors
- *      nop
- *      panic
- *      printk
- *
- *  "reacting_on"
- *    - It is an on/off general switch for reactors, disabling
- *    all reactions.
- *
- *  "monitors/MONITOR/reactors"
- *    - List available reactors, with the select reaction for the given
- *    MONITOR inside []. The default one is the nop (no operation)
- *    reactor.
- *    - Writing the name of an reactor enables it to the given
- *    MONITOR.
- *
- *    For example:
- *      # cat monitors/wip/reactors
- *      [nop]
- *      panic
- *      printk
- *      # echo panic > monitors/wip/reactors
- *      # cat monitors/wip/reactors
- *      nop
- *      [panic]
- *      printk
- */
+
+ 
 
 #include <linux/slab.h>
 
 #include "rv.h"
 
-/*
- * Interface for the reactor register.
- */
+ 
 static LIST_HEAD(rv_reactors_list);
 
 static struct rv_reactor_def *get_reactor_rdef_by_name(char *name)
@@ -81,9 +19,7 @@ static struct rv_reactor_def *get_reactor_rdef_by_name(char *name)
 	return NULL;
 }
 
-/*
- * Available reactors seq functions.
- */
+ 
 static int reactors_show(struct seq_file *m, void *p)
 {
 	struct rv_reactor_def *rea_def = p;
@@ -108,9 +44,7 @@ static void *reactors_next(struct seq_file *m, void *p, loff_t *pos)
 	return seq_list_next(p, &rv_reactors_list, pos);
 }
 
-/*
- * available_reactors seq definition.
- */
+ 
 static const struct seq_operations available_reactors_seq_ops = {
 	.start	= reactors_start,
 	.next	= reactors_next,
@@ -118,9 +52,7 @@ static const struct seq_operations available_reactors_seq_ops = {
 	.show	= reactors_show
 };
 
-/*
- * available_reactors interface.
- */
+ 
 static int available_reactors_open(struct inode *inode, struct file *file)
 {
 	return seq_open(file, &available_reactors_seq_ops);
@@ -133,9 +65,7 @@ static const struct file_operations available_reactors_ops = {
 	.release = seq_release
 };
 
-/*
- * Monitor's reactor file.
- */
+ 
 static int monitor_reactor_show(struct seq_file *m, void *p)
 {
 	struct rv_monitor_def *mdef = m->private;
@@ -148,9 +78,7 @@ static int monitor_reactor_show(struct seq_file *m, void *p)
 	return 0;
 }
 
-/*
- * available_reactors seq definition.
- */
+ 
 static const struct seq_operations monitor_reactors_seq_ops = {
 	.start	= reactors_start,
 	.next	= reactors_next,
@@ -163,7 +91,7 @@ static void monitor_swap_reactors(struct rv_monitor_def *mdef, struct rv_reactor
 {
 	bool monitor_enabled;
 
-	/* nothing to do */
+	 
 	if (mdef->rdef == rdef)
 		return;
 
@@ -171,7 +99,7 @@ static void monitor_swap_reactors(struct rv_monitor_def *mdef, struct rv_reactor
 	if (monitor_enabled)
 		rv_disable_monitor(mdef);
 
-	/* swap reactor's usage */
+	 
 	mdef->rdef->counter--;
 	rdef->counter++;
 
@@ -211,9 +139,7 @@ monitor_reactors_write(struct file *file, const char __user *user_buf,
 	if (!len)
 		return count;
 
-	/*
-	 * See monitor_reactors_open()
-	 */
+	 
 	seq_f = file->private_data;
 	mdef = seq_f->private;
 
@@ -241,9 +167,7 @@ monitor_reactors_write(struct file *file, const char __user *user_buf,
 	return retval;
 }
 
-/*
- * available_reactors interface.
- */
+ 
 static int monitor_reactors_open(struct inode *inode, struct file *file)
 {
 	struct rv_monitor_def *mdef = inode->i_private;
@@ -254,14 +178,10 @@ static int monitor_reactors_open(struct inode *inode, struct file *file)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * seq_open stores the seq_file on the file->private data.
-	 */
+	 
 	seq_f = file->private_data;
 
-	/*
-	 * Copy the create file "private" data to the seq_file private data.
-	 */
+	 
 	seq_f->private = mdef;
 
 	return 0;
@@ -298,12 +218,7 @@ static int __rv_register_reactor(struct rv_reactor *reactor)
 	return 0;
 }
 
-/**
- * rv_register_reactor - register a rv reactor.
- * @reactor:	The rv_reactor to be registered.
- *
- * Returns 0 if successful, error otherwise.
- */
+ 
 int rv_register_reactor(struct rv_reactor *reactor)
 {
 	int retval = 0;
@@ -320,12 +235,7 @@ int rv_register_reactor(struct rv_reactor *reactor)
 	return retval;
 }
 
-/**
- * rv_unregister_reactor - unregister a rv reactor.
- * @reactor:	The rv_reactor to be unregistered.
- *
- * Returns 0 if successful, error otherwise.
- */
+ 
 int rv_unregister_reactor(struct rv_reactor *reactor)
 {
 	struct rv_reactor_def *ptr, *next;
@@ -354,19 +264,13 @@ int rv_unregister_reactor(struct rv_reactor *reactor)
 	return ret;
 }
 
-/*
- * reacting_on interface.
- */
+ 
 static bool __read_mostly reacting_on;
 
-/**
- * rv_reacting_on - checks if reacting is on
- *
- * Returns 1 if on, 0 otherwise.
- */
+ 
 bool rv_reacting_on(void)
 {
-	/* Ensures that concurrent monitors read consistent reacting_on */
+	 
 	smp_rmb();
 	return READ_ONCE(reacting_on);
 }
@@ -385,14 +289,14 @@ static ssize_t reacting_on_read_data(struct file *filp,
 static void turn_reacting_off(void)
 {
 	WRITE_ONCE(reacting_on, false);
-	/* Ensures that concurrent monitors read consistent reacting_on */
+	 
 	smp_wmb();
 }
 
 static void turn_reacting_on(void)
 {
 	WRITE_ONCE(reacting_on, true);
-	/* Ensures that concurrent monitors read consistent reacting_on */
+	 
 	smp_wmb();
 }
 
@@ -413,10 +317,7 @@ static ssize_t reacting_on_write_data(struct file *filp, const char __user *user
 	else
 		turn_reacting_off();
 
-	/*
-	 * Wait for the execution of all events to finish
-	 * before returning to user-space.
-	 */
+	 
 	tracepoint_synchronize_unregister();
 
 	mutex_unlock(&rv_interface_lock);
@@ -431,12 +332,7 @@ static const struct file_operations reacting_on_fops = {
 	.read   = reacting_on_read_data,
 };
 
-/**
- * reactor_populate_monitor - creates per monitor reactors file
- * @mdef:	monitor's definition.
- *
- * Returns 0 if successful, error otherwise.
- */
+ 
 int reactor_populate_monitor(struct rv_monitor_def *mdef)
 {
 	struct dentry *tmp;
@@ -445,9 +341,7 @@ int reactor_populate_monitor(struct rv_monitor_def *mdef)
 	if (!tmp)
 		return -ENOMEM;
 
-	/*
-	 * Configure as the rv_nop reactor.
-	 */
+	 
 	mdef->rdef = get_reactor_rdef_by_name("nop");
 	mdef->rdef->counter++;
 	mdef->reacting = false;
@@ -455,10 +349,7 @@ int reactor_populate_monitor(struct rv_monitor_def *mdef)
 	return 0;
 }
 
-/**
- * reactor_cleanup_monitor - cleanup a monitor reference
- * @mdef:       monitor's definition.
- */
+ 
 void reactor_cleanup_monitor(struct rv_monitor_def *mdef)
 {
 	lockdep_assert_held(&rv_interface_lock);
@@ -466,9 +357,7 @@ void reactor_cleanup_monitor(struct rv_monitor_def *mdef)
 	WARN_ON_ONCE(mdef->rdef->counter < 0);
 }
 
-/*
- * Nop reactor register
- */
+ 
 static void rv_nop_reaction(char *msg)
 {
 }

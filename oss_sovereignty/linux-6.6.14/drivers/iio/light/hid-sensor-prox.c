@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -30,7 +27,7 @@ static const u32 prox_sensitivity_addresses[] = {
 	HID_USAGE_SENSOR_DATA_PRESENCE,
 };
 
-/* Channel definitions */
+ 
 static const struct iio_chan_spec prox_channels[] = {
 	{
 		.type = IIO_PROXIMITY,
@@ -43,18 +40,18 @@ static const struct iio_chan_spec prox_channels[] = {
 	}
 };
 
-/* Adjust channel real bits based on report descriptor */
+ 
 static void prox_adjust_channel_bit_mask(struct iio_chan_spec *channels,
 					int channel, int size)
 {
 	channels[channel].scan_type.sign = 's';
-	/* Real storage bits will change based on the report desc. */
+	 
 	channels[channel].scan_type.realbits = size * 8;
-	/* Maximum size of a sample to capture is u32 */
+	 
 	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
 }
 
-/* Channel read_raw handler */
+ 
 static int prox_read_raw(struct iio_dev *indio_dev,
 			      struct iio_chan_spec const *chan,
 			      int *val, int *val2,
@@ -122,7 +119,7 @@ static int prox_read_raw(struct iio_dev *indio_dev,
 	return ret_type;
 }
 
-/* Channel write_raw handler */
+ 
 static int prox_write_raw(struct iio_dev *indio_dev,
 			       struct iio_chan_spec const *chan,
 			       int val,
@@ -153,7 +150,7 @@ static const struct iio_info prox_info = {
 	.write_raw = &prox_write_raw,
 };
 
-/* Function to push data to buffer */
+ 
 static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data,
 					int len)
 {
@@ -161,7 +158,7 @@ static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data,
 	iio_push_to_buffers(indio_dev, data);
 }
 
-/* Callback handler to send event after all samples are received and captured */
+ 
 static int prox_proc_event(struct hid_sensor_hub_device *hsdev,
 				unsigned usage_id,
 				void *priv)
@@ -178,7 +175,7 @@ static int prox_proc_event(struct hid_sensor_hub_device *hsdev,
 	return 0;
 }
 
-/* Capture samples in local storage */
+ 
 static int prox_capture_sample(struct hid_sensor_hub_device *hsdev,
 				unsigned usage_id,
 				size_t raw_len, char *raw_data,
@@ -206,7 +203,7 @@ static int prox_capture_sample(struct hid_sensor_hub_device *hsdev,
 	return ret;
 }
 
-/* Parse report which is specific to an usage id*/
+ 
 static int prox_parse_report(struct platform_device *pdev,
 				struct hid_sensor_hub_device *hsdev,
 				struct iio_chan_spec *channels,
@@ -230,7 +227,7 @@ static int prox_parse_report(struct platform_device *pdev,
 	return ret;
 }
 
-/* Function to initialize the processing for usage id */
+ 
 static int hid_prox_probe(struct platform_device *pdev)
 {
 	int ret = 0;
@@ -312,7 +309,7 @@ error_remove_trigger:
 	return ret;
 }
 
-/* Function to deinitialize the processing for usage id */
+ 
 static int hid_prox_remove(struct platform_device *pdev)
 {
 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
@@ -328,14 +325,14 @@ static int hid_prox_remove(struct platform_device *pdev)
 
 static const struct platform_device_id hid_prox_ids[] = {
 	{
-		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+		 
 		.name = "HID-SENSOR-200011",
 	},
 	{
-		/* Format: HID-SENSOR-tag-usage_id_in_hex_lowercase */
+		 
 		.name = "HID-SENSOR-LISS-0226",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, hid_prox_ids);
 

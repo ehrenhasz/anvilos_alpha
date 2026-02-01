@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- * Copyright (c) 2019-2020. Linaro Limited.
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/gpio/consumer.h>
@@ -36,7 +33,7 @@ struct lt9611uxc {
 	struct drm_connector connector;
 
 	struct regmap *regmap;
-	/* Protects all accesses to registers by stopping the on-chip MCU */
+	 
 	struct mutex ocm_lock;
 
 	struct wait_queue_head wq;
@@ -57,7 +54,7 @@ struct lt9611uxc {
 
 	bool hpd_supported;
 	bool edid_read;
-	/* can be accessed from different threads, so protect this with ocm_lock */
+	 
 	bool hdmi_connected;
 	uint8_t fw_version;
 };
@@ -91,10 +88,7 @@ struct lt9611uxc_mode {
 	u8 vrefresh;
 };
 
-/*
- * This chip supports only a fixed set of modes.
- * Enumerate them here to check whether the mode is supported.
- */
+ 
 static struct lt9611uxc_mode lt9611uxc_modes[] = {
 	{ 1920, 1080, 60 },
 	{ 1920, 1080, 30 },
@@ -229,7 +223,7 @@ static int lt9611uxc_regulator_enable(struct lt9611uxc *lt9611uxc)
 	if (ret < 0)
 		return ret;
 
-	usleep_range(1000, 10000); /* 50000 according to dtsi */
+	usleep_range(1000, 10000);  
 
 	ret = regulator_enable(lt9611uxc->supplies[1].consumer);
 	if (ret < 0) {
@@ -595,10 +589,7 @@ static int lt9611uxc_hdmi_hw_params(struct device *dev, void *data,
 				    struct hdmi_codec_daifmt *fmt,
 				    struct hdmi_codec_params *hparms)
 {
-	/*
-	 * LT9611UXC will automatically detect rate and sample size, so no need
-	 * to setup anything here.
-	 */
+	 
 	return 0;
 }
 
@@ -616,10 +607,7 @@ static int lt9611uxc_hdmi_i2s_get_dai_id(struct snd_soc_component *component,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * HDMI sound should be located as reg = <2>
-	 * Then, it is sound port 0
-	 */
+	 
 	if (of_ep.port == 2)
 		return 0;
 
@@ -765,10 +753,7 @@ static int lt9611uxc_firmware_update(struct lt9611uxc *lt9611uxc)
 
 	regmap_multi_reg_write(lt9611uxc->regmap, seq_setup, ARRAY_SIZE(seq_setup));
 
-	/*
-	 * Need erase block 2 timess here. Sometimes, block erase can fail.
-	 * This is a workaroud.
-	 */
+	 
 	regmap_multi_reg_write(lt9611uxc->regmap, seq_block_erase, ARRAY_SIZE(seq_block_erase));
 	msleep(3000);
 	regmap_multi_reg_write(lt9611uxc->regmap, seq_block_erase, ARRAY_SIZE(seq_block_erase));
@@ -948,14 +933,14 @@ retry:
 
 	drm_bridge_add(&lt9611uxc->bridge);
 
-	/* Attach primary DSI */
+	 
 	lt9611uxc->dsi0 = lt9611uxc_attach_dsi(lt9611uxc, lt9611uxc->dsi0_node);
 	if (IS_ERR(lt9611uxc->dsi0)) {
 		ret = PTR_ERR(lt9611uxc->dsi0);
 		goto err_remove_bridge;
 	}
 
-	/* Attach secondary DSI, if specified */
+	 
 	if (lt9611uxc->dsi1_node) {
 		lt9611uxc->dsi1 = lt9611uxc_attach_dsi(lt9611uxc, lt9611uxc->dsi1_node);
 		if (IS_ERR(lt9611uxc->dsi1)) {
@@ -1000,12 +985,12 @@ static void lt9611uxc_remove(struct i2c_client *client)
 
 static struct i2c_device_id lt9611uxc_id[] = {
 	{ "lontium,lt9611uxc", 0 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct of_device_id lt9611uxc_match_table[] = {
 	{ .compatible = "lontium,lt9611uxc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, lt9611uxc_match_table);
 

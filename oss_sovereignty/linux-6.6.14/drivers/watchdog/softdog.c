@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	SoftDog:	A Software Watchdog Device
- *
- *	(c) Copyright 1996 Alan Cox <alan@lxorguk.ukuu.org.uk>,
- *							All Rights Reserved.
- *
- *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
- *	warranty for any of this software. This material is provided
- *	"AS-IS" and at no charge.
- *
- *	(c) Copyright 1995    Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- *	Software only watchdog driver. Unlike its big brother the WDT501P
- *	driver this won't always recover a failed machine.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,8 +14,8 @@
 #include <linux/watchdog.h>
 #include <linux/workqueue.h>
 
-#define TIMER_MARGIN	60		/* Default is 60 seconds */
-static unsigned int soft_margin = TIMER_MARGIN;	/* in seconds */
+#define TIMER_MARGIN	60		 
+static unsigned int soft_margin = TIMER_MARGIN;	 
 module_param(soft_margin, uint, 0);
 MODULE_PARM_DESC(soft_margin,
 	"Watchdog soft_margin in seconds. (0 < soft_margin < 65536, default="
@@ -67,7 +53,7 @@ static struct hrtimer softdog_preticktock;
 static int reboot_kthread_fn(void *data)
 {
 	kernel_restart(soft_reboot_cmd);
-	return -EPERM; /* Should not reach here */
+	return -EPERM;  
 }
 
 static void reboot_work_fn(struct work_struct *unused)
@@ -89,24 +75,7 @@ static enum hrtimer_restart softdog_fire(struct hrtimer *timer)
 		pr_crit("Initiating system reboot\n");
 		if (!soft_reboot_fired && soft_reboot_cmd != NULL) {
 			static DECLARE_WORK(reboot_work, reboot_work_fn);
-			/*
-			 * The 'kernel_restart' is a 'might-sleep' operation.
-			 * Also, executing it in system-wide workqueues blocks
-			 * any driver from using the same workqueue in its
-			 * shutdown callback function. Thus, we should execute
-			 * the 'kernel_restart' in a standalone kernel thread.
-			 * But since starting a kernel thread is also a
-			 * 'might-sleep' operation, so the 'reboot_work' is
-			 * required as a launcher of the kernel thread.
-			 *
-			 * After request the reboot, restart the timer to
-			 * schedule an 'emergency_restart' reboot after
-			 * 'TIMER_MARGIN' seconds. It's because if the softdog
-			 * hangs, it might be because of scheduling issues. And
-			 * if that is the case, both 'schedule_work' and
-			 * 'kernel_restart' may possibly be malfunctional at the
-			 * same time.
-			 */
+			 
 			soft_reboot_fired = true;
 			schedule_work(&reboot_work);
 			hrtimer_add_expires_ns(timer,

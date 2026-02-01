@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat, Inc.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm.h"
 #include "dm-bio-prison-v1.h"
@@ -14,7 +10,7 @@
 #include <linux/module.h>
 #include <linux/slab.h>
 
-/*----------------------------------------------------------------*/
+ 
 
 #define MIN_CELLS 1024
 
@@ -31,12 +27,9 @@ struct dm_bio_prison {
 
 static struct kmem_cache *_cell_cache;
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * @nr_cells should be the number of cells you want in use _concurrently_.
- * Don't confuse it with the number of distinct keys.
- */
+ 
 struct dm_bio_prison *dm_bio_prison_create(void)
 {
 	int ret;
@@ -207,9 +200,7 @@ int dm_get_cell(struct dm_bio_prison *prison,
 }
 EXPORT_SYMBOL_GPL(dm_get_cell);
 
-/*
- * @inmates must have been initialised prior to this call
- */
+ 
 static void __cell_release(struct rb_root *root,
 			   struct dm_bio_prison_cell *cell,
 			   struct bio_list *inmates)
@@ -235,9 +226,7 @@ void dm_cell_release(struct dm_bio_prison *prison,
 }
 EXPORT_SYMBOL_GPL(dm_cell_release);
 
-/*
- * Sometimes we don't want the holder, just the additional bios.
- */
+ 
 static void __cell_release_no_holder(struct rb_root *root,
 				     struct dm_bio_prison_cell *cell,
 				     struct bio_list *inmates)
@@ -314,7 +303,7 @@ int dm_cell_promote_or_release(struct dm_bio_prison *prison,
 }
 EXPORT_SYMBOL_GPL(dm_cell_promote_or_release);
 
-/*----------------------------------------------------------------*/
+ 
 
 #define DEFERRED_SET_SIZE 64
 
@@ -402,9 +391,7 @@ void dm_deferred_entry_dec(struct dm_deferred_entry *entry, struct list_head *he
 }
 EXPORT_SYMBOL_GPL(dm_deferred_entry_dec);
 
-/*
- * Returns 1 if deferred or 0 if no pending items to delay job.
- */
+ 
 int dm_deferred_set_add_work(struct dm_deferred_set *ds, struct list_head *work)
 {
 	int r = 1;
@@ -426,7 +413,7 @@ int dm_deferred_set_add_work(struct dm_deferred_set *ds, struct list_head *work)
 }
 EXPORT_SYMBOL_GPL(dm_deferred_set_add_work);
 
-/*----------------------------------------------------------------*/
+ 
 
 static int __init dm_bio_prison_init_v1(void)
 {
@@ -482,9 +469,7 @@ static void __exit dm_bio_prison_exit(void)
 		_exits[i]();
 }
 
-/*
- * module hooks
- */
+ 
 module_init(dm_bio_prison_init);
 module_exit(dm_bio_prison_exit);
 

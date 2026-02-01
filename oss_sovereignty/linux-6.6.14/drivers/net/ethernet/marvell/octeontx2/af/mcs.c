@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell MCS driver
- *
- * Copyright (C) 2022 Marvell.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -19,7 +16,7 @@
 
 static const struct pci_device_id mcs_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, PCI_DEVID_CN10K_MCS) },
-	{ 0, }  /* end of table */
+	{ 0, }   
 };
 
 static LIST_HEAD(mcs_list);
@@ -299,28 +296,28 @@ int mcs_clear_all_stats(struct mcs *mcs, u16 pcifunc, int dir)
 	else
 		map = &mcs->tx;
 
-	/* Clear FLOWID stats */
+	 
 	for (id = 0; id < map->flow_ids.max; id++) {
 		if (map->flowid2pf_map[id] != pcifunc)
 			continue;
 		mcs_clear_stats(mcs, MCS_FLOWID_STATS, id, dir);
 	}
 
-	/* Clear SECY stats */
+	 
 	for (id = 0; id < map->secy.max; id++) {
 		if (map->secy2pf_map[id] != pcifunc)
 			continue;
 		mcs_clear_stats(mcs, MCS_SECY_STATS, id, dir);
 	}
 
-	/* Clear SC stats */
+	 
 	for (id = 0; id < map->secy.max; id++) {
 		if (map->sc2pf_map[id] != pcifunc)
 			continue;
 		mcs_clear_stats(mcs, MCS_SC_STATS, id, dir);
 	}
 
-	/* Clear SA stats */
+	 
 	for (id = 0; id < map->sa.max; id++) {
 		if (map->sa2pf_map[id] != pcifunc)
 			continue;
@@ -407,7 +404,7 @@ void mcs_rx_sc_cam_write(struct mcs *mcs, u64 sci, u64 secy, int sc_id)
 {
 	mcs_reg_write(mcs, MCSX_CPM_RX_SLAVE_SC_CAMX(0, sc_id), sci);
 	mcs_reg_write(mcs, MCSX_CPM_RX_SLAVE_SC_CAMX(1, sc_id), secy);
-	/* Enable SC CAM */
+	 
 	mcs_ena_dis_sc_cam_entry(mcs, sc_id, true);
 }
 
@@ -455,7 +452,7 @@ void mcs_ena_dis_flowid_entry(struct mcs *mcs, int flow_id, int dir, int ena)
 			reg = MCSX_CPM_TX_SLAVE_FLOWID_TCAM_ENA_1;
 	}
 
-	/* Enable/Disable the tcam entry */
+	 
 	if (ena)
 		val = mcs_reg_read(mcs, reg) | BIT_ULL(flow_id);
 	else
@@ -496,7 +493,7 @@ int mcs_install_flowid_bypass_entry(struct mcs *mcs)
 	struct secy_mem_map map;
 	u64 reg, plcy = 0;
 
-	/* Flow entry */
+	 
 	flow_id = mcs->hw->tcam_entries - MCS_RSRC_RSVD_CNT;
 	__set_bit(flow_id, mcs->rx.flow_ids.bmap);
 	__set_bit(flow_id, mcs->tx.flow_ids.bmap);
@@ -509,24 +506,24 @@ int mcs_install_flowid_bypass_entry(struct mcs *mcs)
 		reg = MCSX_CPM_TX_SLAVE_FLOWID_TCAM_MASKX(reg_id, flow_id);
 		mcs_reg_write(mcs, reg, GENMASK_ULL(63, 0));
 	}
-	/* secy */
+	 
 	secy_id = mcs->hw->secy_entries - MCS_RSRC_RSVD_CNT;
 	__set_bit(secy_id, mcs->rx.secy.bmap);
 	__set_bit(secy_id, mcs->tx.secy.bmap);
 
-	/* Set validate frames to NULL and enable control port */
+	 
 	plcy = 0x7ull;
 	if (mcs->hw->mcs_blks > 1)
 		plcy = BIT_ULL(0) | 0x3ull << 4;
 	mcs_secy_plcy_write(mcs, plcy, secy_id, MCS_RX);
 
-	/* Enable control port and set mtu to max */
+	 
 	plcy = BIT_ULL(0) | GENMASK_ULL(43, 28);
 	if (mcs->hw->mcs_blks > 1)
 		plcy = BIT_ULL(0) | GENMASK_ULL(63, 48);
 	mcs_secy_plcy_write(mcs, plcy, secy_id, MCS_TX);
 
-	/* Map flowid to secy */
+	 
 	map.secy = secy_id;
 	map.ctrl_pkt = 0;
 	map.flow_id = flow_id;
@@ -534,7 +531,7 @@ int mcs_install_flowid_bypass_entry(struct mcs *mcs)
 	map.sc = secy_id;
 	mcs->mcs_ops->mcs_flowid_secy_map(mcs, &map, MCS_TX);
 
-	/* Enable Flowid entry */
+	 
 	mcs_ena_dis_flowid_entry(mcs, flow_id, MCS_RX, true);
 	mcs_ena_dis_flowid_entry(mcs, flow_id, MCS_TX, true);
 
@@ -551,10 +548,10 @@ void mcs_clear_secy_plcy(struct mcs *mcs, int secy_id, int dir)
 	else
 		map = &mcs->tx;
 
-	/* Clear secy memory to zero */
+	 
 	mcs_secy_plcy_write(mcs, 0, secy_id, dir);
 
-	/* Disable the tcam entry using this secy */
+	 
 	for (flow_id = 0; flow_id < map->flow_ids.max; flow_id++) {
 		if (map->flowid2secy_map[flow_id] != secy_id)
 			continue;
@@ -699,7 +696,7 @@ int mcs_ctrlpktrule_write(struct mcs *mcs, struct mcs_ctrl_pkt_rule_write_req *r
 
 int mcs_free_rsrc(struct rsrc_bmap *rsrc, u16 *pf_map, int rsrc_id, u16 pcifunc)
 {
-	/* Check if the rsrc_id is mapped to PF/VF */
+	 
 	if (pf_map[rsrc_id] != pcifunc)
 		return -EINVAL;
 
@@ -708,7 +705,7 @@ int mcs_free_rsrc(struct rsrc_bmap *rsrc, u16 *pf_map, int rsrc_id, u16 pcifunc)
 	return 0;
 }
 
-/* Free all the cam resources mapped to pf */
+ 
 int mcs_free_all_rsrc(struct mcs *mcs, int dir, u16 pcifunc)
 {
 	struct mcs_rsrc_map *map;
@@ -719,7 +716,7 @@ int mcs_free_all_rsrc(struct mcs *mcs, int dir, u16 pcifunc)
 	else
 		map = &mcs->tx;
 
-	/* free tcam entries */
+	 
 	for (id = 0; id < map->flow_ids.max; id++) {
 		if (map->flowid2pf_map[id] != pcifunc)
 			continue;
@@ -728,7 +725,7 @@ int mcs_free_all_rsrc(struct mcs *mcs, int dir, u16 pcifunc)
 		mcs_ena_dis_flowid_entry(mcs, id, dir, false);
 	}
 
-	/* free secy entries */
+	 
 	for (id = 0; id < map->secy.max; id++) {
 		if (map->secy2pf_map[id] != pcifunc)
 			continue;
@@ -737,18 +734,18 @@ int mcs_free_all_rsrc(struct mcs *mcs, int dir, u16 pcifunc)
 		mcs_clear_secy_plcy(mcs, id, dir);
 	}
 
-	/* free sc entries */
+	 
 	for (id = 0; id < map->secy.max; id++) {
 		if (map->sc2pf_map[id] != pcifunc)
 			continue;
 		mcs_free_rsrc(&map->sc, map->sc2pf_map, id, pcifunc);
 
-		/* Disable SC CAM only on RX side */
+		 
 		if (dir == MCS_RX)
 			mcs_ena_dis_sc_cam_entry(mcs, id, false);
 	}
 
-	/* free sa entries */
+	 
 	for (id = 0; id < map->sa.max; id++) {
 		if (map->sa2pf_map[id] != pcifunc)
 			continue;
@@ -823,10 +820,10 @@ static void cn10kb_mcs_tx_pn_wrapped_handler(struct mcs *mcs)
 		val = mcs_reg_read(mcs, MCSX_CPM_TX_SLAVE_SA_MAP_MEM_0X(sc));
 
 		if (mcs->tx_sa_active[sc])
-			/* SA_index1 was used and got expired */
+			 
 			event.sa_id = (val >> 9) & 0xFF;
 		else
-			/* SA_index0 was used and got expired */
+			 
 			event.sa_id = val & 0xFF;
 
 		event.pcifunc = mcs->tx.sa2pf_map[event.sa_id];
@@ -846,23 +843,19 @@ static void cn10kb_mcs_tx_pn_thresh_reached_handler(struct mcs *mcs)
 	event.mcs_id = mcs->mcs_id;
 	event.intr_mask = MCS_CPM_TX_PN_THRESH_REACHED_INT;
 
-	/* TX SA interrupt is raised only if autorekey is enabled.
-	 * MCS_CPM_TX_SLAVE_SA_MAP_MEM_0X[sc].tx_sa_active bit gets toggled if
-	 * one of two SAs mapped to SC gets expired. If tx_sa_active=0 implies
-	 * SA in SA_index1 got expired else SA in SA_index0 got expired.
-	 */
+	 
 	for_each_set_bit(sc, sc_bmap->bmap, mcs->hw->sc_entries) {
 		val = mcs_reg_read(mcs, MCSX_CPM_TX_SLAVE_SA_MAP_MEM_0X(sc));
-		/* Auto rekey is enable */
+		 
 		if (!((val >> 18) & 0x1))
 			continue;
 
 		status = (val >> 21) & 0x1;
 
-		/* Check if tx_sa_active status had changed */
+		 
 		if (status == mcs->tx_sa_active[sc])
 			continue;
-		/* SA_index0 is expired */
+		 
 		if (status)
 			event.sa_id = val & 0xFF;
 		else
@@ -879,11 +872,9 @@ static void mcs_rx_pn_thresh_reached_handler(struct mcs *mcs)
 	int sa, reg;
 	u64 intr;
 
-	/* Check expired SAs */
+	 
 	for (reg = 0; reg < (mcs->hw->sa_entries / 64); reg++) {
-		/* Bit high in *PN_THRESH_REACHEDX implies
-		 * corresponding SAs are expired.
-		 */
+		 
 		intr = mcs_reg_read(mcs, MCSX_CPM_RX_SLAVE_PN_THRESH_REACHEDX(reg));
 		for (sa = 0; sa < 64; sa++) {
 			if (!(intr & BIT_ULL(sa)))
@@ -953,7 +944,7 @@ void cn10kb_mcs_bbe_intr_handler(struct mcs *mcs, u64 intr,
 					MCSX_BBE_TX_SLAVE_PLFIFO_OVERFLOW_0;
 	val = mcs_reg_read(mcs, reg);
 
-	/* policy/data over flow occurred */
+	 
 	for (lmac = 0; lmac < mcs->hw->lmac_cnt; lmac++) {
 		if (!(val & BIT_ULL(lmac)))
 			continue;
@@ -980,15 +971,15 @@ static irqreturn_t mcs_ip_intr_handler(int irq, void *mcs_irq)
 	struct mcs *mcs = (struct mcs *)mcs_irq;
 	u64 intr, cpm_intr, bbe_intr, pab_intr;
 
-	/* Disable  the interrupt */
+	 
 	mcs_reg_write(mcs, MCSX_IP_INT_ENA_W1C, BIT_ULL(0));
 
-	/* Check which block has interrupt*/
+	 
 	intr = mcs_reg_read(mcs, MCSX_TOP_SLAVE_INT_SUM);
 
-	/* CPM RX */
+	 
 	if (intr & MCS_CPM_RX_INT_ENA) {
-		/* Check for PN thresh interrupt bit */
+		 
 		cpm_intr = mcs_reg_read(mcs, MCSX_CPM_RX_SLAVE_RX_INT);
 
 		if (cpm_intr & MCS_CPM_RX_INT_PN_THRESH_REACHED)
@@ -997,11 +988,11 @@ static irqreturn_t mcs_ip_intr_handler(int irq, void *mcs_irq)
 		if (cpm_intr & MCS_CPM_RX_INT_ALL)
 			mcs_rx_misc_intr_handler(mcs, cpm_intr);
 
-		/* Clear the interrupt */
+		 
 		mcs_reg_write(mcs, MCSX_CPM_RX_SLAVE_RX_INT, cpm_intr);
 	}
 
-	/* CPM TX */
+	 
 	if (intr & MCS_CPM_TX_INT_ENA) {
 		cpm_intr = mcs_reg_read(mcs, MCSX_CPM_TX_SLAVE_TX_INT);
 
@@ -1021,51 +1012,51 @@ static irqreturn_t mcs_ip_intr_handler(int irq, void *mcs_irq)
 			else
 				cn10kb_mcs_tx_pn_wrapped_handler(mcs);
 		}
-		/* Clear the interrupt */
+		 
 		mcs_reg_write(mcs, MCSX_CPM_TX_SLAVE_TX_INT, cpm_intr);
 	}
 
-	/* BBE RX */
+	 
 	if (intr & MCS_BBE_RX_INT_ENA) {
 		bbe_intr = mcs_reg_read(mcs, MCSX_BBE_RX_SLAVE_BBE_INT);
 		mcs->mcs_ops->mcs_bbe_intr_handler(mcs, bbe_intr, MCS_RX);
 
-		/* Clear the interrupt */
+		 
 		mcs_reg_write(mcs, MCSX_BBE_RX_SLAVE_BBE_INT_INTR_RW, 0);
 		mcs_reg_write(mcs, MCSX_BBE_RX_SLAVE_BBE_INT, bbe_intr);
 	}
 
-	/* BBE TX */
+	 
 	if (intr & MCS_BBE_TX_INT_ENA) {
 		bbe_intr = mcs_reg_read(mcs, MCSX_BBE_TX_SLAVE_BBE_INT);
 		mcs->mcs_ops->mcs_bbe_intr_handler(mcs, bbe_intr, MCS_TX);
 
-		/* Clear the interrupt */
+		 
 		mcs_reg_write(mcs, MCSX_BBE_TX_SLAVE_BBE_INT_INTR_RW, 0);
 		mcs_reg_write(mcs, MCSX_BBE_TX_SLAVE_BBE_INT, bbe_intr);
 	}
 
-	/* PAB RX */
+	 
 	if (intr & MCS_PAB_RX_INT_ENA) {
 		pab_intr = mcs_reg_read(mcs, MCSX_PAB_RX_SLAVE_PAB_INT);
 		mcs->mcs_ops->mcs_pab_intr_handler(mcs, pab_intr, MCS_RX);
 
-		/* Clear the interrupt */
+		 
 		mcs_reg_write(mcs, MCSX_PAB_RX_SLAVE_PAB_INT_INTR_RW, 0);
 		mcs_reg_write(mcs, MCSX_PAB_RX_SLAVE_PAB_INT, pab_intr);
 	}
 
-	/* PAB TX */
+	 
 	if (intr & MCS_PAB_TX_INT_ENA) {
 		pab_intr = mcs_reg_read(mcs, MCSX_PAB_TX_SLAVE_PAB_INT);
 		mcs->mcs_ops->mcs_pab_intr_handler(mcs, pab_intr, MCS_TX);
 
-		/* Clear the interrupt */
+		 
 		mcs_reg_write(mcs, MCSX_PAB_TX_SLAVE_PAB_INT_INTR_RW, 0);
 		mcs_reg_write(mcs, MCSX_PAB_TX_SLAVE_PAB_INT, pab_intr);
 	}
 
-	/* Clear and enable the interrupt */
+	 
 	mcs_reg_write(mcs, MCSX_IP_INT, BIT_ULL(0));
 	mcs_reg_write(mcs, MCSX_IP_INT_ENA_W1S, BIT_ULL(0));
 
@@ -1155,10 +1146,10 @@ static int mcs_register_interrupts(struct mcs *mcs)
 		goto exit;
 	}
 
-	/* MCS enable IP interrupts */
+	 
 	mcs_reg_write(mcs, MCSX_IP_INT_ENA_W1S, BIT_ULL(0));
 
-	/* Enable CPM Rx/Tx interrupts */
+	 
 	mcs_reg_write(mcs, MCSX_TOP_SLAVE_INT_SUM_ENB,
 		      MCS_CPM_RX_INT_ENA | MCS_CPM_TX_INT_ENA |
 		      MCS_BBE_RX_INT_ENA | MCS_BBE_TX_INT_ENA |
@@ -1194,7 +1185,7 @@ int mcs_get_blkcnt(void)
 	struct mcs *mcs;
 	int idmax = -ENODEV;
 
-	/* Check MCS block is present in hardware */
+	 
 	if (!pci_dev_present(mcs_id_table))
 		return 0;
 
@@ -1324,7 +1315,7 @@ void mcs_reset_port(struct mcs *mcs, u8 port_id, u8 reset)
 	mcs_reg_write(mcs, reg, reset & 0x1);
 }
 
-/* Set lmac to bypass/operational mode */
+ 
 void mcs_set_lmac_mode(struct mcs *mcs, int lmac_id, u8 mode)
 {
 	u64 reg;
@@ -1352,23 +1343,23 @@ void cn10kb_mcs_parser_cfg(struct mcs *mcs)
 {
 	u64 reg, val;
 
-	/* VLAN CTag */
+	 
 	val = BIT_ULL(0) | (0x8100ull & 0xFFFF) << 1 | BIT_ULL(17);
-	/* RX */
+	 
 	reg = MCSX_PEX_RX_SLAVE_VLAN_CFGX(0);
 	mcs_reg_write(mcs, reg, val);
 
-	/* TX */
+	 
 	reg = MCSX_PEX_TX_SLAVE_VLAN_CFGX(0);
 	mcs_reg_write(mcs, reg, val);
 
-	/* VLAN STag */
+	 
 	val = BIT_ULL(0) | (0x88a8ull & 0xFFFF) << 1 | BIT_ULL(18);
-	/* RX */
+	 
 	reg = MCSX_PEX_RX_SLAVE_VLAN_CFGX(1);
 	mcs_reg_write(mcs, reg, val);
 
-	/* TX */
+	 
 	reg = MCSX_PEX_TX_SLAVE_VLAN_CFGX(1);
 	mcs_reg_write(mcs, reg, val);
 }
@@ -1377,7 +1368,7 @@ static void mcs_lmac_init(struct mcs *mcs, int lmac_id)
 {
 	u64 reg;
 
-	/* Port mode 25GB */
+	 
 	reg = MCSX_PAB_RX_SLAVE_PORT_CFGX(lmac_id);
 	mcs_reg_write(mcs, reg, 0);
 
@@ -1417,12 +1408,12 @@ static int mcs_x2p_calibration(struct mcs *mcs)
 	int i, err = 0;
 	u64 val;
 
-	/* set X2P calibration */
+	 
 	val = mcs_reg_read(mcs, MCSX_MIL_GLOBAL);
 	val |= BIT_ULL(5);
 	mcs_reg_write(mcs, MCSX_MIL_GLOBAL, val);
 
-	/* Wait for calibration to complete */
+	 
 	while (!(mcs_reg_read(mcs, MCSX_MIL_RX_GBL_STATUS) & BIT_ULL(0))) {
 		if (time_before(jiffies, timeout)) {
 			usleep_range(80, 100);
@@ -1441,7 +1432,7 @@ static int mcs_x2p_calibration(struct mcs *mcs)
 		err = -EBUSY;
 		dev_err(mcs->dev, "MCS:%d didn't respond to X2P calibration\n", i);
 	}
-	/* Clear X2P calibrate */
+	 
 	mcs_reg_write(mcs, MCSX_MIL_GLOBAL, mcs_reg_read(mcs, MCSX_MIL_GLOBAL) & ~BIT_ULL(5));
 
 	return err;
@@ -1451,7 +1442,7 @@ static void mcs_set_external_bypass(struct mcs *mcs, bool bypass)
 {
 	u64 val;
 
-	/* Set MCS to external bypass */
+	 
 	val = mcs_reg_read(mcs, MCSX_MIL_GLOBAL);
 	if (bypass)
 		val |= BIT_ULL(6);
@@ -1463,14 +1454,14 @@ static void mcs_set_external_bypass(struct mcs *mcs, bool bypass)
 
 static void mcs_global_cfg(struct mcs *mcs)
 {
-	/* Disable external bypass */
+	 
 	mcs_set_external_bypass(mcs, false);
 
-	/* Reset TX/RX stats memory */
+	 
 	mcs_reg_write(mcs, MCSX_CSE_RX_SLAVE_STATS_CLEAR, 0x1F);
 	mcs_reg_write(mcs, MCSX_CSE_TX_SLAVE_STATS_CLEAR, 0x1F);
 
-	/* Set MCS to perform standard IEEE802.1AE macsec processing */
+	 
 	if (mcs->hw->mcs_blks == 1) {
 		mcs_reg_write(mcs, MCSX_IP_MODE, BIT_ULL(3));
 		return;
@@ -1484,14 +1475,14 @@ void cn10kb_mcs_set_hw_capabilities(struct mcs *mcs)
 {
 	struct hwinfo *hw = mcs->hw;
 
-	hw->tcam_entries = 128;		/* TCAM entries */
-	hw->secy_entries  = 128;	/* SecY entries */
-	hw->sc_entries = 128;		/* SC CAM entries */
-	hw->sa_entries = 256;		/* SA entries */
-	hw->lmac_cnt = 20;		/* lmacs/ports per mcs block */
-	hw->mcs_x2p_intf = 5;		/* x2p clabration intf */
-	hw->mcs_blks = 1;		/* MCS blocks */
-	hw->ip_vec = MCS_CN10KB_INT_VEC_IP; /* IP vector */
+	hw->tcam_entries = 128;		 
+	hw->secy_entries  = 128;	 
+	hw->sc_entries = 128;		 
+	hw->sa_entries = 256;		 
+	hw->lmac_cnt = 20;		 
+	hw->mcs_x2p_intf = 5;		 
+	hw->mcs_blks = 1;		 
+	hw->ip_vec = MCS_CN10KB_INT_VEC_IP;  
 }
 
 static struct mcs_ops cn10kb_mcs_ops = {
@@ -1547,12 +1538,12 @@ static int mcs_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	else
 		mcs->mcs_ops = cnf10kb_get_mac_ops();
 
-	/* Set hardware capabilities */
+	 
 	mcs->mcs_ops->mcs_set_hw_capabilities(mcs);
 
 	mcs_global_cfg(mcs);
 
-	/* Perform X2P clibration */
+	 
 	err = mcs_x2p_calibration(mcs);
 	if (err)
 		goto err_x2p;
@@ -1560,21 +1551,21 @@ static int mcs_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	mcs->mcs_id = (pci_resource_start(pdev, PCI_CFG_REG_BAR_NUM) >> 24)
 			& MCS_ID_MASK;
 
-	/* Set mcs tx side resources */
+	 
 	err = mcs_alloc_struct_mem(mcs, &mcs->tx);
 	if (err)
 		goto err_x2p;
 
-	/* Set mcs rx side resources */
+	 
 	err = mcs_alloc_struct_mem(mcs, &mcs->rx);
 	if (err)
 		goto err_x2p;
 
-	/* per port config */
+	 
 	for (lmac = 0; lmac < mcs->hw->lmac_cnt; lmac++)
 		mcs_lmac_init(mcs, lmac);
 
-	/* Parser configuration */
+	 
 	mcs->mcs_ops->mcs_parser_cfg(mcs);
 
 	err = mcs_register_interrupts(mcs);
@@ -1587,7 +1578,7 @@ static int mcs_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	return 0;
 
 err_x2p:
-	/* Enable external bypass */
+	 
 	mcs_set_external_bypass(mcs, true);
 exit:
 	pci_release_regions(pdev);
@@ -1600,7 +1591,7 @@ static void mcs_remove(struct pci_dev *pdev)
 {
 	struct mcs *mcs = pci_get_drvdata(pdev);
 
-	/* Set MCS to external bypass */
+	 
 	mcs_set_external_bypass(mcs, true);
 	free_irq(pci_irq_vector(pdev, mcs->hw->ip_vec), mcs);
 	pci_free_irq_vectors(pdev);

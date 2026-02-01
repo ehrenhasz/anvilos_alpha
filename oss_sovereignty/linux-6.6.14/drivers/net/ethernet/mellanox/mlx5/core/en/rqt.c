@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021, Mellanox Technologies inc. All rights reserved. */
+
+ 
 
 #include "rqt.h"
 #include <linux/mlx5/transobj.h>
@@ -77,9 +77,7 @@ static int mlx5e_calc_indir_rqns(u32 *rss_rqns, u32 *rqns, unsigned int num_rqns
 		ix = indir->table[ix];
 
 		if (WARN_ON(ix >= num_rqns))
-			/* Could be a bug in the driver or in the kernel part of
-			 * ethtool: indir table refers to non-existent RQs.
-			 */
+			 
 			return -EINVAL;
 		rss_rqns[i] = rqns[ix];
 	}

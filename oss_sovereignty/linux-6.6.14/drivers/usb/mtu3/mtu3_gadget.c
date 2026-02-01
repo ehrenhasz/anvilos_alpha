@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mtu3_gadget.c - MediaTek usb3 DRD peripheral support
- *
- * Copyright (C) 2016 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+ 
 
 #include "mtu3.h"
 #include "mtu3_trace.h"
@@ -24,7 +18,7 @@ __acquires(mep->mtu->lock)
 
 	trace_mtu3_req_complete(mreq);
 
-	/* ep0 makes use of PIO, needn't unmap it */
+	 
 	if (mep->epnum)
 		usb_gadget_unmap_request(&mtu->g, req, mep->is_in);
 
@@ -45,7 +39,7 @@ static void nuke(struct mtu3_ep *mep, const int status)
 
 	dev_dbg(mep->mtu->dev, "abort %s's req: sts %d\n", mep->name, status);
 
-	/* exclude EP0 */
+	 
 	if (mep->epnum)
 		mtu3_qmu_flush(mep);
 
@@ -101,7 +95,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
 
 		break;
 	default:
-		break; /*others are ignored */
+		break;  
 	}
 
 	dev_dbg(mtu->dev, "%s maxp:%d, interval:%d, burst:%d, mult:%d\n",
@@ -111,7 +105,7 @@ static int mtu3_ep_enable(struct mtu3_ep *mep)
 	mep->ep.desc = desc;
 	mep->ep.comp_desc = comp_desc;
 
-	/* slot mainly affects bulk/isoc transfer, so ignore int */
+	 
 	mep->slot = usb_endpoint_xfer_int(desc) ? 0 : mtu->slot;
 
 	ret = mtu3_config_ep(mtu, mep, interval, burst, mult);
@@ -133,7 +127,7 @@ static int mtu3_ep_disable(struct mtu3_ep *mep)
 {
 	struct mtu3 *mtu = mep->mtu;
 
-	/* abort all pending requests */
+	 
 	nuke(mep, -ESHUTDOWN);
 	mtu3_qmu_stop(mep);
 	mtu3_deconfig_ep(mtu, mep);
@@ -168,7 +162,7 @@ static int mtu3_gadget_ep_enable(struct usb_ep *ep,
 	mep = to_mtu3_ep(ep);
 	mtu = mep->mtu;
 
-	/* check ep number and direction against endpoint */
+	 
 	if (usb_endpoint_num(desc) != mep->epnum)
 		return -EINVAL;
 
@@ -283,7 +277,7 @@ static int mtu3_gadget_queue(struct usb_ep *ep,
 		return -EOPNOTSUPP;
 	}
 
-	/* don't queue if the ep is down */
+	 
 	if (!mep->desc) {
 		dev_dbg(mtu->dev, "req=%p queued to %s while it's disabled\n",
 			req, ep->name);
@@ -345,7 +339,7 @@ static int mtu3_gadget_dequeue(struct usb_ep *ep, struct usb_request *req)
 		goto done;
 	}
 
-	mtu3_qmu_flush(mep);  /* REVISIT: set BPS ?? */
+	mtu3_qmu_flush(mep);   
 	mtu3_req_complete(mep, req, -ECONNRESET);
 	mtu3_qmu_start(mep);
 
@@ -355,10 +349,7 @@ done:
 	return ret;
 }
 
-/*
- * Set or clear the halt bit of an EP.
- * A halted EP won't TX/RX any data but will queue requests.
- */
+ 
 static int mtu3_gadget_ep_set_halt(struct usb_ep *ep, int value)
 {
 	struct mtu3_ep *mep = to_mtu3_ep(ep);
@@ -378,11 +369,7 @@ static int mtu3_gadget_ep_set_halt(struct usb_ep *ep, int value)
 
 	mreq = next_request(mep);
 	if (value) {
-		/*
-		 * If there is not request for TX-EP, QMU will not transfer
-		 * data to TX-FIFO, so no need check whether TX-FIFO
-		 * holds bytes or not here
-		 */
+		 
 		if (mreq) {
 			dev_dbg(mtu->dev, "req in progress, cannot halt %s\n",
 				ep->name);
@@ -404,7 +391,7 @@ done:
 	return ret;
 }
 
-/* Sets the halt feature with the clear requests ignored */
+ 
 static int mtu3_gadget_ep_set_wedge(struct usb_ep *ep)
 {
 	struct mtu3_ep *mep = to_mtu3_ep(ep);
@@ -446,23 +433,15 @@ static int mtu3_gadget_wakeup(struct usb_gadget *gadget)
 
 	dev_dbg(mtu->dev, "%s\n", __func__);
 
-	/* remote wakeup feature is not enabled by host */
+	 
 	if (!mtu->may_wakeup)
 		return  -EOPNOTSUPP;
 
 	spin_lock_irqsave(&mtu->lock, flags);
 	if (mtu->g.speed >= USB_SPEED_SUPER) {
-		/*
-		 * class driver may do function wakeup even UFP is in U0,
-		 * and UX_EXIT only takes effect in U1/U2/U3;
-		 */
+		 
 		mtu3_setbits(mtu->mac_base, U3D_LINK_POWER_CONTROL, UX_EXIT);
-		/*
-		 * Assume there's only one function on the composite device
-		 * and enable remote wake for the first interface.
-		 * FIXME if the IAD (interface association descriptor) shows
-		 * there is more than one function.
-		 */
+		 
 		function_wake_notif(mtu, 0);
 	} else {
 		mtu3_setbits(mtu->mac_base, U3D_POWER_MANAGEMENT, RESUME);
@@ -494,12 +473,12 @@ static int mtu3_gadget_pullup(struct usb_gadget *gadget, int is_on)
 
 	pm_runtime_get_sync(mtu->dev);
 
-	/* we'd rather not pullup unless the device is active. */
+	 
 	spin_lock_irqsave(&mtu->lock, flags);
 
 	is_on = !!is_on;
 	if (!mtu->is_active) {
-		/* save it for mtu3_start() to process the request */
+		 
 		mtu->softconnect = is_on;
 	} else if (is_on != mtu->softconnect) {
 		mtu->softconnect = is_on;
@@ -546,22 +525,19 @@ static void stop_activity(struct mtu3 *mtu)
 	struct usb_gadget_driver *driver = mtu->gadget_driver;
 	int i;
 
-	/* don't disconnect if it's not connected */
+	 
 	if (mtu->g.speed == USB_SPEED_UNKNOWN)
 		driver = NULL;
 	else
 		mtu->g.speed = USB_SPEED_UNKNOWN;
 
-	/* deactivate the hardware */
+	 
 	if (mtu->softconnect) {
 		mtu->softconnect = 0;
 		mtu3_dev_on_off(mtu, 0);
 	}
 
-	/*
-	 * killing any outstanding requests will quiesce the driver;
-	 * then report disconnect
-	 */
+	 
 	nuke(mtu->ep0, -ESHUTDOWN);
 	for (i = 1; i < mtu->num_eps; i++) {
 		nuke(mtu->in_eps + i, -ESHUTDOWN);
@@ -658,7 +634,7 @@ static void init_hw_ep(struct mtu3 *mtu, struct mtu3_ep *mep,
 	mep->ep.name = mep->name;
 	INIT_LIST_HEAD(&mep->ep.ep_list);
 
-	/* initialize maxpacket as SS */
+	 
 	if (!epnum) {
 		usb_ep_set_maxpacket_limit(&mep->ep, 512);
 		mep->ep.caps.type_control = true;
@@ -690,7 +666,7 @@ static void mtu3_gadget_init_eps(struct mtu3 *mtu)
 {
 	u8 epnum;
 
-	/* initialize endpoint list just once */
+	 
 	INIT_LIST_HEAD(&(mtu->g.ep_list));
 
 	dev_dbg(mtu->dev, "%s num_eps(1 for a pair of tx&rx ep)=%d\n",
@@ -734,7 +710,7 @@ void mtu3_gadget_resume(struct mtu3 *mtu)
 	}
 }
 
-/* called when SOF packets stop for 3+ msec or enters U3 */
+ 
 void mtu3_gadget_suspend(struct mtu3 *mtu)
 {
 	dev_dbg(mtu->dev, "gadget SUSPEND\n");
@@ -745,7 +721,7 @@ void mtu3_gadget_suspend(struct mtu3 *mtu)
 	}
 }
 
-/* called when VBUS drops below session threshold, and in other cases */
+ 
 void mtu3_gadget_disconnect(struct mtu3 *mtu)
 {
 	dev_dbg(mtu->dev, "gadget DISCONNECT\n");
@@ -763,7 +739,7 @@ void mtu3_gadget_reset(struct mtu3 *mtu)
 {
 	dev_dbg(mtu->dev, "gadget RESET\n");
 
-	/* report disconnect, if we didn't flush EP state */
+	 
 	if (mtu->g.speed != USB_SPEED_UNKNOWN)
 		mtu3_gadget_disconnect(mtu);
 	else

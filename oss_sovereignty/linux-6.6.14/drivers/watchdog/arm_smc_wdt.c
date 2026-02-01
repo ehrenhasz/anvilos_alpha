@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ARM Secure Monitor Call watchdog driver
- *
- * Copyright 2020 Google LLC.
- * Julius Werner <jwerner@chromium.org>
- * Based on mtk_wdt.c
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/err.h>
@@ -130,7 +124,7 @@ static int smcwd_probe(struct platform_device *pdev)
 		return err;
 
 	wdd->info = &smcwd_info;
-	/* get_timeleft is optional */
+	 
 	if (smcwd_call(wdd, SMCWD_GET_TIMELEFT, 0, NULL))
 		wdd->ops = &smcwd_ops;
 	else

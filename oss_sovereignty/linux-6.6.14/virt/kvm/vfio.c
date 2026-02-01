@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO-KVM bridge pseudo device
- *
- * Copyright (C) 2013 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/file.h>
@@ -109,14 +104,7 @@ static void kvm_spapr_tce_release_vfio_group(struct kvm *kvm,
 }
 #endif
 
-/*
- * Groups/devices can use the same or different IOMMU domains. If the same
- * then adding a new group/device may change the coherency of groups/devices
- * we've previously been told about. We don't want to care about any of
- * that so we retest each group/device and bail as soon as we find one that's
- * noncoherent.  This means we only ever [un]register_noncoherent_dma once
- * for the whole device.
- */
+ 
 static void kvm_vfio_update_coherency(struct kvm_device *dev)
 {
 	struct kvm_vfio *kv = dev->private;
@@ -151,7 +139,7 @@ static int kvm_vfio_file_add(struct kvm_device *dev, unsigned int fd)
 	if (!filp)
 		return -EBADF;
 
-	/* Ensure the FD is a vfio FD. */
+	 
 	if (!kvm_vfio_file_is_valid(filp)) {
 		ret = -EINVAL;
 		goto out_fput;
@@ -348,7 +336,7 @@ static void kvm_vfio_release(struct kvm_device *dev)
 	kvm_vfio_update_coherency(dev);
 
 	kfree(kv);
-	kfree(dev); /* alloc by kvm_ioctl_create_device, free by .release */
+	kfree(dev);  
 }
 
 static int kvm_vfio_create(struct kvm_device *dev, u32 type);
@@ -366,7 +354,7 @@ static int kvm_vfio_create(struct kvm_device *dev, u32 type)
 	struct kvm_device *tmp;
 	struct kvm_vfio *kv;
 
-	/* Only one VFIO "device" per VM */
+	 
 	list_for_each_entry(tmp, &dev->kvm->devices, vm_node)
 		if (tmp->ops == &kvm_vfio_ops)
 			return -EBUSY;

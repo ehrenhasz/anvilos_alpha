@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -63,7 +63,7 @@ static int sun20i_ppu_pd_set_power(const struct sun20i_ppu_pd *pd, bool power_on
 	if (sun20i_ppu_pd_is_on(pd) == power_on)
 		return 0;
 
-	/* Wait for the power controller to be idle. */
+	 
 	ret = readl_poll_timeout(pd->base + PD_STATUS_REG, status,
 				 !(status & PD_STATUS_BUSY), 100, 1000);
 	if (ret)
@@ -72,14 +72,14 @@ static int sun20i_ppu_pd_set_power(const struct sun20i_ppu_pd *pd, bool power_on
 	state = power_on ? PD_STATE_ON : PD_STATE_OFF;
 	writel(state, pd->base + PD_COMMAND_REG);
 
-	/* Wait for the state transition to complete. */
+	 
 	ret = readl_poll_timeout(pd->base + PD_STATUS_REG, status,
 				 FIELD_GET(PD_STATUS_STATE, status) == state &&
 				 (status & PD_STATUS_COMPLETE), 100, 1000);
 	if (ret)
 		return ret;
 
-	/* Clear the completion flag. */
+	 
 	writel(status, pd->base + PD_STATUS_REG);
 
 	return 0;
@@ -196,7 +196,7 @@ static struct platform_driver sun20i_ppu_driver = {
 	.driver	= {
 		.name			= "sun20i-ppu",
 		.of_match_table		= sun20i_ppu_of_match,
-		/* Power domains cannot be removed while they are in use. */
+		 
 		.suppress_bind_attrs	= true,
 	},
 };

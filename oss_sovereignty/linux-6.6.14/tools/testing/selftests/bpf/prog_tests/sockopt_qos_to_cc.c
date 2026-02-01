@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <test_progs.h>
 #include <netinet/tcp.h>
 #include "sockopt_qos_to_cc.skel.h"
@@ -7,7 +7,7 @@
 static void run_setsockopt_test(int cg_fd, int sock_fd)
 {
 	socklen_t optlen;
-	char cc[16]; /* TCP_CA_NAME_MAX */
+	char cc[16];  
 	int buf;
 	int err = -1;
 
@@ -16,7 +16,7 @@ static void run_setsockopt_test(int cg_fd, int sock_fd)
 	if (!ASSERT_OK(err, "setsockopt(sock_fd, IPV6_TCLASS)"))
 		return;
 
-	/* Verify the setsockopt cc change */
+	 
 	optlen = sizeof(cc);
 	err = getsockopt(sock_fd, SOL_TCP, TCP_CONGESTION, cc, &optlen);
 	if (!ASSERT_OK(err, "getsockopt(sock_fd, TCP_CONGESTION)"))
@@ -29,7 +29,7 @@ static void run_setsockopt_test(int cg_fd, int sock_fd)
 void test_sockopt_qos_to_cc(void)
 {
 	struct sockopt_qos_to_cc *skel;
-	char cc_cubic[16] = "cubic"; /* TCP_CA_NAME_MAX */
+	char cc_cubic[16] = "cubic";  
 	int cg_fd = -1;
 	int sock_fd = -1;
 	int err;
@@ -67,6 +67,6 @@ done:
 		close(sock_fd);
 	if (cg_fd != -1)
 		close(cg_fd);
-	/* destroy can take null and error pointer */
+	 
 	sockopt_qos_to_cc__destroy(skel);
 }

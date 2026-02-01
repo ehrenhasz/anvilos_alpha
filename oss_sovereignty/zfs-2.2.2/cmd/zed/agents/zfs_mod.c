@@ -1,71 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2007, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012 by Delphix. All rights reserved.
- * Copyright 2014 Nexenta Systems, Inc. All rights reserved.
- * Copyright (c) 2016, 2017, Intel Corporation.
- * Copyright (c) 2017 Open-E, Inc. All Rights Reserved.
- * Copyright (c) 2023, Klara Inc.
- */
+ 
+ 
 
-/*
- * ZFS syseventd module.
- *
- * file origin: openzfs/usr/src/cmd/syseventd/modules/zfs_mod/zfs_mod.c
- *
- * The purpose of this module is to identify when devices are added to the
- * system, and appropriately online or replace the affected vdevs.
- *
- * When a device is added to the system:
- *
- * 	1. Search for any vdevs whose devid matches that of the newly added
- *	   device.
- *
- * 	2. If no vdevs are found, then search for any vdevs whose udev path
- *	   matches that of the new device.
- *
- *	3. If no vdevs match by either method, then ignore the event.
- *
- * 	4. Attempt to online the device with a flag to indicate that it should
- *	   be unspared when resilvering completes.  If this succeeds, then the
- *	   same device was inserted and we should continue normally.
- *
- *	5. If the pool does not have the 'autoreplace' property set, attempt to
- *	   online the device again without the unspare flag, which will
- *	   generate a FMA fault.
- *
- *	6. If the pool has the 'autoreplace' property set, and the matching vdev
- *	   is a whole disk, then label the new disk and attempt a 'zpool
- *	   replace'.
- *
- * The module responds to EC_DEV_ADD events.  The special ESC_ZFS_VDEV_CHECK
- * event indicates that a device failed to open during pool load, but the
- * autoreplace property was set.  In this case, we deferred the associated
- * FMA fault until our module had a chance to process the autoreplace logic.
- * If the device could not be replaced, then the second online attempt will
- * trigger the FMA fault that we skipped earlier.
- *
- * On Linux udev provides a disk insert for both the disk and the partition.
- */
+ 
 
 #include <ctype.h>
 #include <fcntl.h>
@@ -95,11 +31,11 @@
 typedef void (*zfs_process_func_t)(zpool_handle_t *, nvlist_t *, boolean_t);
 
 libzfs_handle_t *g_zfshdl;
-list_t g_pool_list;	/* list of unavailable pools at initialization */
-list_t g_device_list;	/* list of disks with asynchronous label request */
+list_t g_pool_list;	 
+list_t g_device_list;	 
 tpool_t *g_tpool;
 boolean_t g_enumeration_done;
-pthread_t g_zfs_tid;	/* zfs_enum_pools() thread */
+pthread_t g_zfs_tid;	 
 
 typedef struct unavailpool {
 	zpool_handle_t	*uap_zhp;
@@ -147,9 +83,7 @@ zfs_unavail_pool(zpool_handle_t *zhp, void *data)
 	return (0);
 }
 
-/*
- * Write an array of strings to the zed log
- */
+ 
 static void lines_to_zed_log_msg(char **lines, int lines_cnt)
 {
 	int i;
@@ -158,40 +92,9 @@ static void lines_to_zed_log_msg(char **lines, int lines_cnt)
 	}
 }
 
-/*
- * Two stage replace on Linux
- * since we get disk notifications
- * we can wait for partitioned disk slice to show up!
- *
- * First stage tags the disk, initiates async partitioning, and returns
- * Second stage finds the tag and proceeds to ZFS labeling/replace
- *
- * disk-add --> label-disk + tag-disk --> partition-add --> zpool_vdev_attach
- *
- * 1. physical match with no fs, no partition
- *	tag it top, partition disk
- *
- * 2. physical match again, see partition and tag
- *
- */
+ 
 
-/*
- * The device associated with the given vdev (either by devid or physical path)
- * has been added to the system.  If 'isdisk' is set, then we only attempt a
- * replacement if it's a whole disk.  This also implies that we should label the
- * disk first.
- *
- * First, we attempt to online the device (making sure to undo any spare
- * operation when finished).  If this succeeds, then we're done.  If it fails,
- * and the new state is VDEV_CANT_OPEN, it indicates that the device was opened,
- * but that the label was not what we expected.  If the 'autoreplace' property
- * is enabled, then we relabel the disk (if specified), and attempt a 'zpool
- * replace'.  If the online is successful, but the new state is something else
- * (REMOVED or FAULTED), it indicates that we're out of sync or in some sort of
- * race, and we should avoid attempting to relabel the disk.
- *
- * Also can arrive here from a ESC_ZFS_VDEV_CHECK event
- */
+ 
 static void
 zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 {
@@ -215,15 +118,11 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 	char **lines = NULL;
 	int lines_cnt = 0;
 
-	/*
-	 * Get the persistent path, typically under the '/dev/disk/by-id' or
-	 * '/dev/disk/by-vdev' directories.  Note that this path can change
-	 * when a vdev is replaced with a new disk.
-	 */
+	 
 	if (nvlist_lookup_string(vdev, ZPOOL_CONFIG_PATH, &path) != 0)
 		return;
 
-	/* Skip healthy disks */
+	 
 	verify(nvlist_lookup_uint64_array(vdev, ZPOOL_CONFIG_VDEV_STATS,
 	    (uint64_t **)&vs, &c) == 0);
 	if (vs->vs_state == VDEV_STATE_HEALTHY) {
@@ -242,53 +141,17 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 	(void) nvlist_lookup_uint64(vdev, ZPOOL_CONFIG_GUID, &guid);
 	(void) nvlist_lookup_uint64(vdev, ZPOOL_CONFIG_IS_SPARE, &is_spare);
 
-	/*
-	 * Special case:
-	 *
-	 * We've seen times where a disk won't have a ZPOOL_CONFIG_PHYS_PATH
-	 * entry in their config. For example, on this force-faulted disk:
-	 *
-	 *	children[0]:
-	 *	   type: 'disk'
-	 *	   id: 0
-	 *	   guid: 14309659774640089719
-	 *        path: '/dev/disk/by-vdev/L28'
-	 *        whole_disk: 0
-	 *        DTL: 654
-	 *        create_txg: 4
-	 *        com.delphix:vdev_zap_leaf: 1161
-	 *        faulted: 1
-	 *        aux_state: 'external'
-	 *	children[1]:
-	 *        type: 'disk'
-	 *        id: 1
-	 *        guid: 16002508084177980912
-	 *        path: '/dev/disk/by-vdev/L29'
-	 *        devid: 'dm-uuid-mpath-35000c500a61d68a3'
-	 *        phys_path: 'L29'
-	 *        vdev_enc_sysfs_path: '/sys/class/enclosure/0:0:1:0/SLOT 30 32'
-	 *        whole_disk: 0
-	 *        DTL: 1028
-	 *        create_txg: 4
-	 *        com.delphix:vdev_zap_leaf: 131
-	 *
-	 * If the disk's path is a /dev/disk/by-vdev/ path, then we can infer
-	 * the ZPOOL_CONFIG_PHYS_PATH from the by-vdev disk name.
-	 */
+	 
 	if (physpath == NULL && path != NULL) {
-		/* If path begins with "/dev/disk/by-vdev/" ... */
+		 
 		if (strncmp(path, DEV_BYVDEV_PATH,
 		    strlen(DEV_BYVDEV_PATH)) == 0) {
-			/* Set physpath to the char after "/dev/disk/by-vdev" */
+			 
 			physpath = &path[strlen(DEV_BYVDEV_PATH)];
 		}
 	}
 
-	/*
-	 * We don't want to autoreplace offlined disks.  However, we do want to
-	 * replace force-faulted disks (`zpool offline -f`).  Force-faulted
-	 * disks have both offline=1 and faulted=1 in the nvlist.
-	 */
+	 
 	if (offline && !faulted) {
 		zed_log_msg(LOG_INFO, "%s: %s is offline, skip autoreplace",
 		    __func__, path);
@@ -307,16 +170,12 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 	    enc_sysfs_path,
 	    (long long unsigned int)guid);
 
-	/*
-	 * The VDEV guid is preferred for identification (gets passed in path)
-	 */
+	 
 	if (guid != 0) {
 		(void) snprintf(fullpath, sizeof (fullpath), "%llu",
 		    (long long unsigned int)guid);
 	} else {
-		/*
-		 * otherwise use path sans partition suffix for whole disks
-		 */
+		 
 		(void) strlcpy(fullpath, path, sizeof (fullpath));
 		if (wholedisk) {
 			char *spath = zfs_strip_partition(fullpath);
@@ -334,9 +193,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 	if (is_spare)
 		online_flag |= ZFS_ONLINE_SPARE;
 
-	/*
-	 * Attempt to online the device.
-	 */
+	 
 	if (zpool_vdev_online(zhp, fullpath, online_flag, &newstate) == 0 &&
 	    (newstate == VDEV_STATE_HEALTHY ||
 	    newstate == VDEV_STATE_DEGRADED)) {
@@ -347,17 +204,11 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 		return;
 	}
 
-	/*
-	 * vdev_id alias rule for using scsi_debug devices (FMA automated
-	 * testing)
-	 */
+	 
 	if (physpath != NULL && strcmp("scsidebug", physpath) == 0)
 		is_sd = B_TRUE;
 
-	/*
-	 * If the pool doesn't have the autoreplace property set, then use
-	 * vdev online to trigger a FMA fault by posting an ereport.
-	 */
+	 
 	if (!zpool_get_prop_int(zhp, ZPOOL_PROP_AUTOREPLACE, NULL) ||
 	    !(wholedisk || is_mpath_wholedisk) || (physpath == NULL)) {
 		(void) zpool_vdev_online(zhp, fullpath, ZFS_ONLINE_FORCEFAULT,
@@ -368,11 +219,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 		return;
 	}
 
-	/*
-	 * Convert physical path into its current device node.  Rawpath
-	 * needs to be /dev/disk/by-vdev for a scsi_debug device since
-	 * /dev/disk/by-path will not be present.
-	 */
+	 
 	(void) snprintf(rawpath, sizeof (rawpath), "%s%s",
 	    is_sd ? DEV_BYVDEV_PATH : DEV_BYPATH_PATH, physpath);
 
@@ -390,7 +237,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 		return;
 	}
 
-	/* Only autoreplace bad disks */
+	 
 	if ((vs->vs_state != VDEV_STATE_DEGRADED) &&
 	    (vs->vs_state != VDEV_STATE_FAULTED) &&
 	    (vs->vs_state != VDEV_STATE_REMOVED) &&
@@ -403,7 +250,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 	nvlist_lookup_string(vdev, "new_devid", &new_devid);
 
 	if (is_mpath_wholedisk) {
-		/* Don't label device mapper or multipath disks. */
+		 
 		zed_log_msg(LOG_INFO,
 		    "  it's a multipath wholedisk, don't label");
 		if (zpool_prepare_disk(zhp, vdev, "autoreplace", &lines,
@@ -421,27 +268,13 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 			return;
 		}
 	} else if (!labeled) {
-		/*
-		 * we're auto-replacing a raw disk, so label it first
-		 */
+		 
 		char *leafname;
 
-		/*
-		 * If this is a request to label a whole disk, then attempt to
-		 * write out the label.  Before we can label the disk, we need
-		 * to map the physical string that was matched on to the under
-		 * lying device node.
-		 *
-		 * If any part of this process fails, then do a force online
-		 * to trigger a ZFS fault for the device (and any hot spare
-		 * replacement).
-		 */
+		 
 		leafname = strrchr(pathbuf, '/') + 1;
 
-		/*
-		 * If this is a request to label a whole disk, then attempt to
-		 * write out the label.
-		 */
+		 
 		if (zpool_prepare_and_label_disk(g_zfshdl, zhp, leafname,
 		    vdev, "autoreplace", &lines, &lines_cnt) != 0) {
 			zed_log_msg(LOG_WARNING,
@@ -460,12 +293,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 			return;
 		}
 
-		/*
-		 * The disk labeling is asynchronous on Linux. Just record
-		 * this label request and return as there will be another
-		 * disk add event for the partition after the labeling is
-		 * completed.
-		 */
+		 
 		device = malloc(sizeof (pendingdev_t));
 		if (device == NULL) {
 			perror("malloc");
@@ -479,13 +307,11 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 		zed_log_msg(LOG_NOTICE, "  zpool_label_disk: async '%s' (%llu)",
 		    leafname, (u_longlong_t)guid);
 
-		return;	/* resumes at EC_DEV_ADD.ESC_DISK for partition */
+		return;	 
 
-	} else /* labeled */ {
+	} else   {
 		boolean_t found = B_FALSE;
-		/*
-		 * match up with request above to label the disk
-		 */
+		 
 		for (device = list_head(&g_device_list); device != NULL;
 		    device = list_next(&g_device_list, device)) {
 			if (strcmp(physpath, device->pd_physpath) == 0) {
@@ -498,7 +324,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 			    physpath, device->pd_physpath);
 		}
 		if (!found) {
-			/* unexpected partition slice encountered */
+			 
 			zed_log_msg(LOG_WARNING, "labeled disk %s was "
 			    "unexpected here", fullpath);
 			(void) zpool_vdev_online(zhp, fullpath,
@@ -509,10 +335,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 		zed_log_msg(LOG_INFO, "  zpool_label_disk: resume '%s' (%llu)",
 		    physpath, (u_longlong_t)guid);
 
-		/*
-		 * Paths that begin with '/dev/disk/by-id/' will change and so
-		 * they must be updated before calling zpool_vdev_attach().
-		 */
+		 
 		if (strncmp(path, DEV_BYID_PATH, strlen(DEV_BYID_PATH)) == 0) {
 			(void) snprintf(pathbuf, sizeof (pathbuf), "%s%s",
 			    DEV_BYID_PATH, new_devid);
@@ -524,11 +347,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 
 	libzfs_free_str_array(lines, lines_cnt);
 
-	/*
-	 * Construct the root vdev to pass to zpool_vdev_attach().  While adding
-	 * the entire vdev structure is harmless, we construct a reduced set of
-	 * path/physpath/wholedisk to keep it simple.
-	 */
+	 
 	if (nvlist_alloc(&nvroot, NV_UNIQUE_NAME, 0) != 0) {
 		zed_log_msg(LOG_WARNING, "zfs_mod: nvlist_alloc out of memory");
 		return;
@@ -558,10 +377,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 
 	nvlist_free(newvd);
 
-	/*
-	 * Wait for udev to verify the links exist, then auto-replace
-	 * the leaf disk at same physical location.
-	 */
+	 
 	if (zpool_label_disk_wait(path, DISK_LABEL_WAIT) != 0) {
 		zed_log_msg(LOG_WARNING, "zfs_mod: pool '%s', after labeling "
 		    "replacement disk, the expected disk partition link '%s' "
@@ -571,10 +387,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 		return;
 	}
 
-	/*
-	 * Prefer sequential resilvering when supported (mirrors and dRAID),
-	 * otherwise fallback to a traditional healing resilver.
-	 */
+	 
 	ret = zpool_vdev_attach(zhp, fullpath, path, nvroot, B_TRUE, B_TRUE);
 	if (ret != 0) {
 		ret = zpool_vdev_attach(zhp, fullpath, path, nvroot,
@@ -588,9 +401,7 @@ zfs_process_add(zpool_handle_t *zhp, nvlist_t *vdev, boolean_t labeled)
 	nvlist_free(nvroot);
 }
 
-/*
- * Utility functions to find a vdev matching given criteria.
- */
+ 
 typedef struct dev_data {
 	const char		*dd_compare;
 	const char		*dd_prop;
@@ -614,18 +425,14 @@ zfs_iter_vdev(zpool_handle_t *zhp, nvlist_t *nvl, void *data)
 	uint64_t guid = 0;
 	uint64_t isspare = 0;
 
-	/*
-	 * First iterate over any children.
-	 */
+	 
 	if (nvlist_lookup_nvlist_array(nvl, ZPOOL_CONFIG_CHILDREN,
 	    &child, &children) == 0) {
 		for (c = 0; c < children; c++)
 			zfs_iter_vdev(zhp, child[c], data);
 	}
 
-	/*
-	 * Iterate over any spares and cache devices
-	 */
+	 
 	if (nvlist_lookup_nvlist_array(nvl, ZPOOL_CONFIG_SPARES,
 	    &child, &children) == 0) {
 		for (c = 0; c < children; c++)
@@ -637,14 +444,12 @@ zfs_iter_vdev(zpool_handle_t *zhp, nvlist_t *nvl, void *data)
 			zfs_iter_vdev(zhp, child[c], data);
 	}
 
-	/* once a vdev was matched and processed there is nothing left to do */
+	 
 	if (dp->dd_found && dp->dd_num_spares == 0)
 		return;
 	(void) nvlist_lookup_uint64(nvl, ZPOOL_CONFIG_GUID, &guid);
 
-	/*
-	 * Match by GUID if available otherwise fallback to devid or physical
-	 */
+	 
 	if (dp->dd_vdev_guid != 0) {
 		if (guid != dp->dd_vdev_guid)
 			return;
@@ -652,18 +457,7 @@ zfs_iter_vdev(zpool_handle_t *zhp, nvlist_t *nvl, void *data)
 		dp->dd_found = B_TRUE;
 
 	} else if (dp->dd_compare != NULL) {
-		/*
-		 * NOTE: On Linux there is an event for partition, so unlike
-		 * illumos, substring matching is not required to accommodate
-		 * the partition suffix. An exact match will be present in
-		 * the dp->dd_compare value.
-		 * If the attached disk already contains a vdev GUID, it means
-		 * the disk is not clean. In such a scenario, the physical path
-		 * would be a match that makes the disk faulted when trying to
-		 * online it. So, we would only want to proceed if either GUID
-		 * matches with the last attached disk or the disk is in clean
-		 * state.
-		 */
+		 
 		if (nvlist_lookup_string(nvl, dp->dd_prop, &path) != 0 ||
 		    strcmp(dp->dd_compare, path) != 0) {
 			return;
@@ -679,7 +473,7 @@ zfs_iter_vdev(zpool_handle_t *zhp, nvlist_t *nvl, void *data)
 		    dp->dd_prop, path);
 		dp->dd_found = B_TRUE;
 
-		/* pass the new devid for use by auto-replacing code */
+		 
 		if (dp->dd_new_devid != NULL) {
 			(void) nvlist_add_string(nvl, "new_devid",
 			    dp->dd_new_devid);
@@ -714,9 +508,7 @@ zfs_iter_pool(zpool_handle_t *zhp, void *data)
 	zed_log_msg(LOG_INFO, "zfs_iter_pool: evaluating vdevs on %s (by %s)",
 	    zpool_get_name(zhp), dp->dd_vdev_guid ? "GUID" : dp->dd_prop);
 
-	/*
-	 * For each vdev in this pool, look for a match to apply dd_func
-	 */
+	 
 	if ((config = zpool_get_config(zhp, NULL)) != NULL) {
 		if (dp->dd_pool_guid == 0 ||
 		    (nvlist_lookup_uint64(config, ZPOOL_CONFIG_POOL_GUID,
@@ -729,10 +521,7 @@ zfs_iter_pool(zpool_handle_t *zhp, void *data)
 		zed_log_msg(LOG_INFO, "%s: no config\n", __func__);
 	}
 
-	/*
-	 * if this pool was originally unavailable,
-	 * then enable its datasets asynchronously
-	 */
+	 
 	if (g_enumeration_done)  {
 		for (pool = list_head(&g_pool_list); pool != NULL;
 		    pool = list_next(&g_pool_list, pool)) {
@@ -751,14 +540,11 @@ zfs_iter_pool(zpool_handle_t *zhp, void *data)
 
 	zpool_close(zhp);
 
-	/* cease iteration after a match */
+	 
 	return (dp->dd_found && dp->dd_num_spares == 0);
 }
 
-/*
- * Given a physical device location, iterate over all
- * (pool, vdev) pairs which correspond to that location.
- */
+ 
 static boolean_t
 devphys_iter(const char *physical, const char *devid, zfs_process_func_t func,
     boolean_t is_slice, uint64_t new_vdev_guid)
@@ -770,7 +556,7 @@ devphys_iter(const char *physical, const char *devid, zfs_process_func_t func,
 	data.dd_prop = ZPOOL_CONFIG_PHYS_PATH;
 	data.dd_found = B_FALSE;
 	data.dd_islabeled = is_slice;
-	data.dd_new_devid = devid;	/* used by auto replace code */
+	data.dd_new_devid = devid;	 
 	data.dd_new_vdev_guid = new_vdev_guid;
 
 	(void) zpool_iter(g_zfshdl, zfs_iter_pool, &data);
@@ -778,48 +564,7 @@ devphys_iter(const char *physical, const char *devid, zfs_process_func_t func,
 	return (data.dd_found);
 }
 
-/*
- * Given a device identifier, find any vdevs with a matching by-vdev
- * path.  Normally we shouldn't need this as the comparison would be
- * made earlier in the devphys_iter().  For example, if we were replacing
- * /dev/disk/by-vdev/L28, normally devphys_iter() would match the
- * ZPOOL_CONFIG_PHYS_PATH of "L28" from the old disk config to "L28"
- * of the new disk config.  However, we've seen cases where
- * ZPOOL_CONFIG_PHYS_PATH was not in the config for the old disk.  Here's
- * an example of a real 2-disk mirror pool where one disk was force
- * faulted:
- *
- *       com.delphix:vdev_zap_top: 129
- *           children[0]:
- *               type: 'disk'
- *               id: 0
- *               guid: 14309659774640089719
- *               path: '/dev/disk/by-vdev/L28'
- *               whole_disk: 0
- *               DTL: 654
- *               create_txg: 4
- *               com.delphix:vdev_zap_leaf: 1161
- *               faulted: 1
- *               aux_state: 'external'
- *           children[1]:
- *               type: 'disk'
- *               id: 1
- *               guid: 16002508084177980912
- *               path: '/dev/disk/by-vdev/L29'
- *               devid: 'dm-uuid-mpath-35000c500a61d68a3'
- *               phys_path: 'L29'
- *               vdev_enc_sysfs_path: '/sys/class/enclosure/0:0:1:0/SLOT 30 32'
- *               whole_disk: 0
- *               DTL: 1028
- *               create_txg: 4
- *               com.delphix:vdev_zap_leaf: 131
- *
- * So in the case above, the only thing we could compare is the path.
- *
- * We can do this because we assume by-vdev paths are authoritative as physical
- * paths.  We could not assume this for normal paths like /dev/sda since the
- * physical location /dev/sda points to could change over time.
- */
+ 
 static boolean_t
 by_vdev_path_iter(const char *by_vdev_path, const char *devid,
     zfs_process_func_t func, boolean_t is_slice)
@@ -835,7 +580,7 @@ by_vdev_path_iter(const char *by_vdev_path, const char *devid,
 
 	if (strncmp(by_vdev_path, DEV_BYVDEV_PATH,
 	    strlen(DEV_BYVDEV_PATH)) != 0) {
-		/* by_vdev_path doesn't start with "/dev/disk/by-vdev/" */
+		 
 		return (B_FALSE);
 	}
 
@@ -844,10 +589,7 @@ by_vdev_path_iter(const char *by_vdev_path, const char *devid,
 	return (data.dd_found);
 }
 
-/*
- * Given a device identifier, find any vdevs with a matching devid.
- * On Linux we can match devid directly which is always a whole disk.
- */
+ 
 static boolean_t
 devid_iter(const char *devid, zfs_process_func_t func, boolean_t is_slice)
 {
@@ -865,9 +607,7 @@ devid_iter(const char *devid, zfs_process_func_t func, boolean_t is_slice)
 	return (data.dd_found);
 }
 
-/*
- * Given a device guid, find any vdevs with a matching guid.
- */
+ 
 static boolean_t
 guid_iter(uint64_t pool_guid, uint64_t vdev_guid, const char *devid,
     zfs_process_func_t func, boolean_t is_slice)
@@ -886,25 +626,7 @@ guid_iter(uint64_t pool_guid, uint64_t vdev_guid, const char *devid,
 	return (data.dd_found);
 }
 
-/*
- * Handle a EC_DEV_ADD.ESC_DISK event.
- *
- * illumos
- *	Expects: DEV_PHYS_PATH string in schema
- *	Matches: vdev's ZPOOL_CONFIG_PHYS_PATH or ZPOOL_CONFIG_DEVID
- *
- *      path: '/dev/dsk/c0t1d0s0' (persistent)
- *     devid: 'id1,sd@SATA_____Hitachi_HDS72101______JP2940HZ3H74MC/a'
- * phys_path: '/pci@0,0/pci103c,1609@11/disk@1,0:a'
- *
- * linux
- *	provides: DEV_PHYS_PATH and DEV_IDENTIFIER strings in schema
- *	Matches: vdev's ZPOOL_CONFIG_PHYS_PATH or ZPOOL_CONFIG_DEVID
- *
- *      path: '/dev/sdc1' (not persistent)
- *     devid: 'ata-SAMSUNG_HD204UI_S2HGJD2Z805891-part1'
- * phys_path: 'pci-0000:04:00.0-sas-0x4433221106000000-lun-0'
- */
+ 
 static int
 zfs_deliver_add(nvlist_t *nvl)
 {
@@ -912,9 +634,7 @@ zfs_deliver_add(nvlist_t *nvl)
 	uint64_t pool_guid = 0, vdev_guid = 0;
 	boolean_t is_slice;
 
-	/*
-	 * Expecting a devid string and an optional physical location and guid
-	 */
+	 
 	if (nvlist_lookup_string(nvl, DEV_IDENTIFIER, &devid) != 0) {
 		zed_log_msg(LOG_INFO, "%s: no dev identifier\n", __func__);
 		return (-1);
@@ -929,14 +649,7 @@ zfs_deliver_add(nvlist_t *nvl)
 	zed_log_msg(LOG_INFO, "zfs_deliver_add: adding %s (%s) (is_slice %d)",
 	    devid, devpath ? devpath : "NULL", is_slice);
 
-	/*
-	 * Iterate over all vdevs looking for a match in the following order:
-	 * 1. ZPOOL_CONFIG_DEVID (identifies the unique disk)
-	 * 2. ZPOOL_CONFIG_PHYS_PATH (identifies disk physical location).
-	 * 3. ZPOOL_CONFIG_GUID (identifies unique vdev).
-	 * 4. ZPOOL_CONFIG_PATH for /dev/disk/by-vdev devices only (since
-	 *    by-vdev paths represent physical paths).
-	 */
+	 
 	if (devid_iter(devid, zfs_process_add, is_slice))
 		return (0);
 	if (devpath != NULL && devphys_iter(devpath, devid, zfs_process_add,
@@ -947,7 +660,7 @@ zfs_deliver_add(nvlist_t *nvl)
 		    is_slice);
 
 	if (devpath != NULL) {
-		/* Can we match a /dev/disk/by-vdev/ path? */
+		 
 		char by_vdev_path[MAXPATHLEN];
 		snprintf(by_vdev_path, sizeof (by_vdev_path),
 		    "/dev/disk/by-vdev/%s", devpath);
@@ -959,11 +672,7 @@ zfs_deliver_add(nvlist_t *nvl)
 	return (0);
 }
 
-/*
- * Called when we receive a VDEV_CHECK event, which indicates a device could not
- * be opened during initial pool open, but the autoreplace property was set on
- * the pool.  In this case, we treat it as if it were an add event.
- */
+ 
 static int
 zfs_deliver_check(nvlist_t *nvl)
 {
@@ -986,12 +695,7 @@ zfs_deliver_check(nvlist_t *nvl)
 	return (0);
 }
 
-/*
- * Given a path to a vdev, lookup the vdev's physical size from its
- * config nvlist.
- *
- * Returns the vdev's physical size in bytes on success, 0 on error.
- */
+ 
 static uint64_t
 vdev_size_from_config(zpool_handle_t *zhp, const char *vdev_path)
 {
@@ -1015,16 +719,7 @@ vdev_size_from_config(zpool_handle_t *zhp, const char *vdev_path)
 	return (vs->vs_pspace);
 }
 
-/*
- * Given a path to a vdev, lookup if the vdev is a "whole disk" in the
- * config nvlist.  "whole disk" means that ZFS was passed a whole disk
- * at pool creation time, which it partitioned up and has full control over.
- * Thus a partition with wholedisk=1 set tells us that zfs created the
- * partition at creation time.  A partition without whole disk set would have
- * been created by externally (like with fdisk) and passed to ZFS.
- *
- * Returns the whole disk value (either 0 or 1).
- */
+ 
 static uint64_t
 vdev_whole_disk_from_config(zpool_handle_t *zhp, const char *vdev_path)
 {
@@ -1041,9 +736,7 @@ vdev_whole_disk_from_config(zpool_handle_t *zhp, const char *vdev_path)
 	return (wholedisk);
 }
 
-/*
- * If the device size grew more than 1% then return true.
- */
+ 
 #define	DEVICE_GREW(oldsize, newsize) \
 		    ((newsize > oldsize) && \
 		    ((newsize / (newsize - oldsize)) <= 100))
@@ -1105,12 +798,7 @@ zfsdle_vdev_online(zpool_handle_t *zhp, void *data)
 			(void) strlcpy(fullpath, tmp, sizeof (fullpath));
 			free(tmp);
 
-			/*
-			 * We need to reopen the pool associated with this
-			 * device so that the kernel can update the size of
-			 * the expanded device.  When expanding there is no
-			 * need to restart the scrub from the beginning.
-			 */
+			 
 			boolean_t scrub_restart = B_FALSE;
 			(void) zpool_reopen_one(zhp, &scrub_restart);
 		} else {
@@ -1121,29 +809,17 @@ zfsdle_vdev_online(zpool_handle_t *zhp, void *data)
 			vdev_state_t newstate;
 
 			if (zpool_get_state(zhp) != POOL_STATE_UNAVAIL) {
-				/*
-				 * If this disk size has not changed, then
-				 * there's no need to do an autoexpand.  To
-				 * check we look at the disk's size in its
-				 * config, and compare it to the disk size
-				 * that udev is reporting.
-				 */
+				 
 				uint64_t udev_size = 0, conf_size = 0,
 				    wholedisk = 0, udev_parent_size = 0;
 
-				/*
-				 * Get the size of our disk that udev is
-				 * reporting.
-				 */
+				 
 				if (nvlist_lookup_uint64(udev_nvl, DEV_SIZE,
 				    &udev_size) != 0) {
 					udev_size = 0;
 				}
 
-				/*
-				 * Get the size of our disk's parent device
-				 * from udev (where sda1's parent is sda).
-				 */
+				 
 				if (nvlist_lookup_uint64(udev_nvl,
 				    DEV_PARENT_SIZE, &udev_parent_size) != 0) {
 					udev_parent_size = 0;
@@ -1155,28 +831,7 @@ zfsdle_vdev_online(zpool_handle_t *zhp, void *data)
 				wholedisk = vdev_whole_disk_from_config(zhp,
 				    fullpath);
 
-				/*
-				 * Only attempt an autoexpand if the vdev size
-				 * changed.  There are two different cases
-				 * to consider.
-				 *
-				 * 1. wholedisk=1
-				 * If you do a 'zpool create' on a whole disk
-				 * (like /dev/sda), then zfs will create
-				 * partitions on the disk (like /dev/sda1).  In
-				 * that case, wholedisk=1 will be set in the
-				 * partition's nvlist config.  So zed will need
-				 * to see if your parent device (/dev/sda)
-				 * expanded in size, and if so, then attempt
-				 * the autoexpand.
-				 *
-				 * 2. wholedisk=0
-				 * If you do a 'zpool create' on an existing
-				 * partition, or a device that doesn't allow
-				 * partitions, then wholedisk=0, and you will
-				 * simply need to check if the device itself
-				 * expanded in size.
-				 */
+				 
 				if (DEVICE_GREW(conf_size, udev_size) ||
 				    (wholedisk && DEVICE_GREW(conf_size,
 				    udev_parent_size))) {
@@ -1199,12 +854,7 @@ zfsdle_vdev_online(zpool_handle_t *zhp, void *data)
 	return (0);
 }
 
-/*
- * This function handles the ESC_DEV_DLE device change event.  Use the
- * provided vdev guid when looking up a disk or partition, when the guid
- * is not present assume the entire disk is owned by ZFS and append the
- * expected -part1 partition information then lookup by physical path.
- */
+ 
 static int
 zfs_deliver_dle(nvlist_t *nvl)
 {
@@ -1231,17 +881,7 @@ zfs_deliver_dle(nvlist_t *nvl)
 	return (0);
 }
 
-/*
- * syseventd daemon module event handler
- *
- * Handles syseventd daemon zfs device related events:
- *
- *	EC_DEV_ADD.ESC_DISK
- *	EC_DEV_STATUS.ESC_DEV_DLE
- *	EC_ZFS.ESC_ZFS_VDEV_CHECK
- *
- * Note: assumes only one thread active at a time (not thread safe)
- */
+ 
 static int
 zfs_slm_deliver_event(const char *class, const char *subclass, nvlist_t *nvl)
 {
@@ -1249,10 +889,7 @@ zfs_slm_deliver_event(const char *class, const char *subclass, nvlist_t *nvl)
 	boolean_t is_check = B_FALSE, is_dle = B_FALSE;
 
 	if (strcmp(class, EC_DEV_ADD) == 0) {
-		/*
-		 * We're mainly interested in disk additions, but we also listen
-		 * for new loop devices, to allow for simplified testing.
-		 */
+		 
 		if (strcmp(subclass, ESC_DISK) != 0 &&
 		    strcmp(subclass, ESC_LOFI) != 0)
 			return (0);
@@ -1260,11 +897,7 @@ zfs_slm_deliver_event(const char *class, const char *subclass, nvlist_t *nvl)
 		is_check = B_FALSE;
 	} else if (strcmp(class, EC_ZFS) == 0 &&
 	    strcmp(subclass, ESC_ZFS_VDEV_CHECK) == 0) {
-		/*
-		 * This event signifies that a device failed to open
-		 * during pool load, but the 'autoreplace' property was
-		 * set, so we should pretend it's just been added.
-		 */
+		 
 		is_check = B_TRUE;
 	} else if (strcmp(class, EC_DEV_STATUS) == 0 &&
 	    strcmp(subclass, ESC_DEV_DLE) == 0) {
@@ -1289,32 +922,19 @@ zfs_enum_pools(void *arg)
 	(void) arg;
 
 	(void) zpool_iter(g_zfshdl, zfs_unavail_pool, (void *)&g_pool_list);
-	/*
-	 * Linux - instead of using a thread pool, each list entry
-	 * will spawn a thread when an unavailable pool transitions
-	 * to available. zfs_slm_fini will wait for these threads.
-	 */
+	 
 	g_enumeration_done = B_TRUE;
 	return (NULL);
 }
 
-/*
- * called from zed daemon at startup
- *
- * sent messages from zevents or udev monitor
- *
- * For now, each agent has its own libzfs instance
- */
+ 
 int
 zfs_slm_init(void)
 {
 	if ((g_zfshdl = libzfs_init()) == NULL)
 		return (-1);
 
-	/*
-	 * collect a list of unavailable pools (asynchronously,
-	 * since this can take a while)
-	 */
+	 
 	list_create(&g_pool_list, sizeof (struct unavailpool),
 	    offsetof(struct unavailpool, uap_node));
 
@@ -1337,9 +957,9 @@ zfs_slm_fini(void)
 	unavailpool_t *pool;
 	pendingdev_t *device;
 
-	/* wait for zfs_enum_pools thread to complete */
+	 
 	(void) pthread_join(g_zfs_tid, NULL);
-	/* destroy the thread pool */
+	 
 	if (g_tpool != NULL) {
 		tpool_wait(g_tpool);
 		tpool_destroy(g_tpool);

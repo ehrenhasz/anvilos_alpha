@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DRM_MCDE_DSI_REGS
 #define __DRM_MCDE_DSI_REGS
 
@@ -382,4 +382,4 @@
 
 #define DSI_ID_REG	0x00000FF0
 
-#endif /* __DRM_MCDE_DSI_REGS */
+#endif  

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  intel-nhlt.h - Intel HDA Platform NHLT header
- *
- *  Copyright (c) 2015-2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_NHLT_H__
 #define __INTEL_NHLT_H__
@@ -107,7 +103,7 @@ struct nhlt_dmic_array_config {
 struct nhlt_vendor_dmic_array_config {
 	struct nhlt_dmic_array_config dmic_config;
 	u8 nb_mics;
-	/* TODO add vendor mic config */
+	 
 } __packed;
 
 enum {

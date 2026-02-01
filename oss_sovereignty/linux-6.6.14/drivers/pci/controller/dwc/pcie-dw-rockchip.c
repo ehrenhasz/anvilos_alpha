@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Rockchip SoCs.
- *
- * Copyright (C) 2021 Rockchip Electronics Co., Ltd.
- *		http://www.rock-chips.com
- *
- * Author: Simon Xue <xxm@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/gpio/consumer.h>
@@ -23,10 +16,7 @@
 
 #include "pcie-designware.h"
 
-/*
- * The upper 16 bits of PCIE_CLIENT_CONFIG are a write
- * mask for the lower 16 bits.
- */
+ 
 #define HIWORD_UPDATE(mask, val) (((mask) << 16) | (val))
 #define HIWORD_UPDATE_BIT(val)	HIWORD_UPDATE(val, val)
 #define HIWORD_DISABLE_BIT(val)	HIWORD_UPDATE(val, ~val)
@@ -166,20 +156,12 @@ static int rockchip_pcie_start_link(struct dw_pcie *pci)
 {
 	struct rockchip_pcie *rockchip = to_rockchip_pcie(pci);
 
-	/* Reset device */
+	 
 	gpiod_set_value_cansleep(rockchip->rst_gpio, 0);
 
 	rockchip_pcie_enable_ltssm(rockchip);
 
-	/*
-	 * PCIe requires the refclk to be stable for 100µs prior to releasing
-	 * PERST. See table 2-4 in section 2.6.2 AC Specifications of the PCI
-	 * Express Card Electromechanical Specification, 1.1. However, we don't
-	 * know if the refclk is coming from RC's PHY or external OSC. If it's
-	 * from RC, so enabling LTSSM is the just right place to release #PERST.
-	 * We need more extra time as before, rather than setting just
-	 * 100us as we don't know how long should the device need to reset.
-	 */
+	 
 	msleep(100);
 	gpiod_set_value_cansleep(rockchip->rst_gpio, 1);
 
@@ -205,7 +187,7 @@ static int rockchip_pcie_host_init(struct dw_pcie_rp *pp)
 	irq_set_chained_handler_and_data(irq, rockchip_pcie_legacy_int_handler,
 					 rockchip);
 
-	/* LTSSM enable control mode */
+	 
 	rockchip_pcie_writel_apb(rockchip, val, PCIE_CLIENT_HOT_RESET_CTRL);
 
 	rockchip_pcie_writel_apb(rockchip, PCIE_CLIENT_RC_MODE,
@@ -311,7 +293,7 @@ static int rockchip_pcie_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* DON'T MOVE ME: must be enable before PHY init */
+	 
 	rockchip->vpcie3v3 = devm_regulator_get_optional(dev, "vpcie3v3");
 	if (IS_ERR(rockchip->vpcie3v3)) {
 		if (PTR_ERR(rockchip->vpcie3v3) != -ENODEV)

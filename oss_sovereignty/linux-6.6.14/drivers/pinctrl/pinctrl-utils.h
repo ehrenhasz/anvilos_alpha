@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Utils functions to implement the pincontrol driver.
- *
- * Copyright (c) 2013, NVIDIA Corporation.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+ 
+ 
 #ifndef __PINCTRL_UTILS_H__
 #define __PINCTRL_UTILS_H__
 
@@ -32,4 +26,4 @@ int pinctrl_utils_add_config(struct pinctrl_dev *pctldev,
 void pinctrl_utils_free_map(struct pinctrl_dev *pctldev,
 		struct pinctrl_map *map, unsigned num_maps);
 
-#endif /* __PINCTRL_UTILS_H__ */
+#endif  

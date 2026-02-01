@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Panasonic MN88472 DVB-T/T2/C demodulator driver
- *
- * Copyright (C) 2013 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef MN88472_PRIV_H
 #define MN88472_PRIV_H

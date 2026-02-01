@@ -1,34 +1,9 @@
-/* A GNU-like <sched.h>.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#ifndef _@GUARD_PREFIX@_SCHED_H
-
-#if __GNUC__ >= 3
-@PRAGMA_SYSTEM_HEADER@
-#endif
-@PRAGMA_COLUMNS@
-
-/* This file uses #include_next of a system file that defines time_t.
-   For the 'year2038' module to work right, <config.h> needs to have been
-   included before.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* The include_next requires a split double-inclusion guard.  */
+ 
 #if @HAVE_SCHED_H@
 # if @HAVE_SYS_CDEFS_H@
 #  include <sys/cdefs.h>
@@ -39,30 +14,27 @@
 #ifndef _@GUARD_PREFIX@_SCHED_H
 #define _@GUARD_PREFIX@_SCHED_H
 
-/* This file uses GNULIB_POSIXCHECK, HAVE_RAW_DECL_*.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
 
-/* Get pid_t.
-   This is needed on glibc 2.11 (see
-   glibc bug <https://sourceware.org/bugzilla/show_bug.cgi?id=13198>)
-   and Mac OS X 10.5.  */
+ 
 #include <sys/types.h>
 
 #ifdef __KLIBC__
-/* On OS/2 kLIBC, struct sched_param is in spawn.h.  */
+ 
 # include <spawn.h>
 #endif
 
 #ifdef __VMS
-/* On OpenVMS, struct sched_param is in <pthread.h>.  */
+ 
 # include <pthread.h>
 #endif
 
-/* The definitions of _GL_FUNCDECL_RPL etc. are copied here.  */
+ 
 
-/* The definition of _GL_WARN_ON_USE is copied here.  */
+ 
 
 #if !@HAVE_STRUCT_SCHED_PARAM@
 
@@ -107,5 +79,5 @@ _GL_WARN_ON_USE (sched_yield, "sched_yield is not portable - "
 # endif
 #endif
 
-#endif /* _@GUARD_PREFIX@_SCHED_H */
-#endif /* _@GUARD_PREFIX@_SCHED_H */
+#endif  
+#endif  

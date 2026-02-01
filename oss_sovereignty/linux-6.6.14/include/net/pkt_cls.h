@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_PKT_CLS_H
 #define __NET_PKT_CLS_H
 
@@ -8,10 +8,10 @@
 #include <net/act_api.h>
 #include <net/net_namespace.h>
 
-/* TC action not accessible from user space */
+ 
 #define TC_ACT_CONSUMED		(TC_ACT_VALUE_MAX + 1)
 
-/* Basic packet classifier frontend definitions. */
+ 
 
 struct tcf_walker {
 	int	stop;
@@ -170,9 +170,7 @@ tcf_bind_filter(struct tcf_proto *tp, struct tcf_result *r, unsigned long base)
 {
 	struct Qdisc *q = tp->chain->block->q;
 
-	/* Check q as it is not set for shared blocks. In that case,
-	 * setting class is not supported.
-	 */
+	 
 	if (!q)
 		return;
 	sch_tree_lock(q);
@@ -213,16 +211,14 @@ static inline void tc_cls_bind_class(u32 classid, unsigned long cl,
 
 struct tcf_exts {
 #ifdef CONFIG_NET_CLS_ACT
-	__u32	type; /* for backward compat(TCA_OLD_COMPAT) */
+	__u32	type;  
 	int nr_actions;
 	struct tc_action **actions;
 	struct net	*net;
 	netns_tracker	ns_tracker;
 	struct tcf_exts_miss_cookie_node *miss_cookie_node;
 #endif
-	/* Map to export classifier specific extension TLV types to the
-	 * generic extensions API. Unsupported extensions must be set to 0.
-	 */
+	 
 	int action;
 	int police;
 };
@@ -237,10 +233,7 @@ static inline int tcf_exts_init(struct tcf_exts *exts, struct net *net,
 #endif
 }
 
-/* Return false if the netns is being destroyed in cleanup_net(). Callers
- * need to do cleanup synchronously in this case, otherwise may race with
- * tc_action_net_exit(). Return true for other cases.
- */
+ 
 static inline bool tcf_exts_get_net(struct tcf_exts *exts)
 {
 #ifdef CONFIG_NET_CLS_ACT
@@ -304,12 +297,7 @@ tcf_exts_hw_stats_update(const struct tcf_exts *exts,
 #endif
 }
 
-/**
- * tcf_exts_has_actions - check if at least one action is present
- * @exts: tc filter extensions handle
- *
- * Returns true if at least one action is present.
- */
+ 
 static inline bool tcf_exts_has_actions(struct tcf_exts *exts)
 {
 #ifdef CONFIG_NET_CLS_ACT
@@ -319,17 +307,7 @@ static inline bool tcf_exts_has_actions(struct tcf_exts *exts)
 #endif
 }
 
-/**
- * tcf_exts_exec - execute tc filter extensions
- * @skb: socket buffer
- * @exts: tc filter extensions handle
- * @res: desired result
- *
- * Executes all configured extensions. Returns TC_ACT_OK on a normal execution,
- * a negative number if the filter must be considered unmatched or
- * a positive action code (TC_ACT_*) which must be returned to the
- * underlying layer.
- */
+ 
 static inline int
 tcf_exts_exec(struct sk_buff *skb, struct tcf_exts *exts,
 	      struct tcf_result *res)
@@ -365,12 +343,7 @@ int tcf_exts_dump(struct sk_buff *skb, struct tcf_exts *exts);
 int tcf_exts_terse_dump(struct sk_buff *skb, struct tcf_exts *exts);
 int tcf_exts_dump_stats(struct sk_buff *skb, struct tcf_exts *exts);
 
-/**
- * struct tcf_pkt_info - packet information
- *
- * @ptr: start of the pkt data
- * @nexthdr: offset of the next header
- */
+ 
 struct tcf_pkt_info {
 	unsigned char *		ptr;
 	int			nexthdr;
@@ -380,16 +353,7 @@ struct tcf_pkt_info {
 
 struct tcf_ematch_ops;
 
-/**
- * struct tcf_ematch - extended match (ematch)
- * 
- * @matchid: identifier to allow userspace to reidentify a match
- * @flags: flags specifying attributes and the relation to other matches
- * @ops: the operations lookup table of the corresponding ematch module
- * @datalen: length of the ematch specific configuration data
- * @data: ematch specific data
- * @net: the network namespace
- */
+ 
 struct tcf_ematch {
 	struct tcf_ematch_ops * ops;
 	unsigned long		data;
@@ -433,30 +397,14 @@ static inline int tcf_em_early_end(struct tcf_ematch *em, int result)
 	return 0;
 }
 	
-/**
- * struct tcf_ematch_tree - ematch tree handle
- *
- * @hdr: ematch tree header supplied by userspace
- * @matches: array of ematches
- */
+ 
 struct tcf_ematch_tree {
 	struct tcf_ematch_tree_hdr hdr;
 	struct tcf_ematch *	matches;
 	
 };
 
-/**
- * struct tcf_ematch_ops - ematch module operations
- * 
- * @kind: identifier (kind) of this ematch module
- * @datalen: length of expected configuration data (optional)
- * @change: called during validation (optional)
- * @match: called during ematch tree evaluation, must return 1/0
- * @destroy: called during destroyage (optional)
- * @dump: called during dumping process (optional)
- * @owner: owner, must be set to THIS_MODULE
- * @link: link to previous/next ematch module (internal use)
- */
+ 
 struct tcf_ematch_ops {
 	int			kind;
 	int			datalen;
@@ -479,20 +427,7 @@ int tcf_em_tree_dump(struct sk_buff *, struct tcf_ematch_tree *, int);
 int __tcf_em_tree_match(struct sk_buff *, struct tcf_ematch_tree *,
 			struct tcf_pkt_info *);
 
-/**
- * tcf_em_tree_match - evaulate an ematch tree
- *
- * @skb: socket buffer of the packet in question
- * @tree: ematch tree to be used for evaluation
- * @info: packet information examined by classifier
- *
- * This function matches @skb against the ematch tree in @tree by going
- * through all ematches respecting their logic relations returning
- * as soon as the result is obvious.
- *
- * Returns 1 if the ematch tree as-one matches, no ematches are configured
- * or ematch is not enabled in the kernel, otherwise 0 is returned.
- */
+ 
 static inline int tcf_em_tree_match(struct sk_buff *skb,
 				    struct tcf_ematch_tree *tree,
 				    struct tcf_pkt_info *info)
@@ -505,7 +440,7 @@ static inline int tcf_em_tree_match(struct sk_buff *skb,
 
 #define MODULE_ALIAS_TCF_EMATCH(kind)	MODULE_ALIAS("ematch-kind-" __stringify(kind))
 
-#else /* CONFIG_NET_EMATCH */
+#else  
 
 struct tcf_ematch_tree {
 };
@@ -515,7 +450,7 @@ struct tcf_ematch_tree {
 #define tcf_em_tree_dump(skb, t, tlv) (0)
 #define tcf_em_tree_match(skb, t, info) ((void)(info), 1)
 
-#endif /* CONFIG_NET_EMATCH */
+#endif  
 
 static inline unsigned char * tcf_get_base_ptr(struct sk_buff *skb, int layer)
 {
@@ -669,7 +604,7 @@ enum tc_clsu32_command {
 
 struct tc_cls_u32_offload {
 	struct flow_cls_common_offload common;
-	/* knode values */
+	 
 	enum tc_clsu32_command command;
 	union {
 		struct tc_cls_u32_knode knode;
@@ -717,7 +652,7 @@ static inline bool tc_skip_sw(u32 flags)
 	return (flags & TCA_CLS_FLAGS_SKIP_SW) ? true : false;
 }
 
-/* SKIP_HW and SKIP_SW are mutually exclusive flags. */
+ 
 static inline bool tc_flags_valid(u32 flags)
 {
 	if (flags & ~(TCA_CLS_FLAGS_SKIP_HW | TCA_CLS_FLAGS_SKIP_SW |
@@ -789,9 +724,7 @@ struct tc_cls_bpf_offload {
 	bool exts_integrated;
 };
 
-/* This structure holds cookie structure that is passed from user
- * to the kernel for actions and classifiers
- */
+ 
 struct tc_cookie {
 	u8  *data;
 	u32 len;
@@ -825,26 +758,26 @@ struct tc_mq_qopt_offload {
 };
 
 enum tc_htb_command {
-	/* Root */
-	TC_HTB_CREATE, /* Initialize HTB offload. */
-	TC_HTB_DESTROY, /* Destroy HTB offload. */
+	 
+	TC_HTB_CREATE,  
+	TC_HTB_DESTROY,  
 
-	/* Classes */
-	/* Allocate qid and create leaf. */
+	 
+	 
 	TC_HTB_LEAF_ALLOC_QUEUE,
-	/* Convert leaf to inner, preserve and return qid, create new leaf. */
+	 
 	TC_HTB_LEAF_TO_INNER,
-	/* Delete leaf, while siblings remain. */
+	 
 	TC_HTB_LEAF_DEL,
-	/* Delete leaf, convert parent to leaf, preserving qid. */
+	 
 	TC_HTB_LEAF_DEL_LAST,
-	/* TC_HTB_LEAF_DEL_LAST, but delete driver data on hardware errors. */
+	 
 	TC_HTB_LEAF_DEL_LAST_FORCE,
-	/* Modify parameters of a node. */
+	 
 	TC_HTB_NODE_MODIFY,
 
-	/* Class qdisc */
-	TC_HTB_LEAF_QUERY_QUEUE, /* Query qid by classid. */
+	 
+	TC_HTB_LEAF_QUERY_QUEUE,  
 };
 
 struct tc_htb_qopt_offload {
@@ -907,7 +840,7 @@ struct tc_gred_vq_qopt_offload_params {
 	bool is_ecn;
 	bool is_harddrop;
 	u32 probability;
-	/* Only need backlog, see struct tc_prio_qopt_offload_params */
+	 
 	u32 *backlog;
 };
 
@@ -946,9 +879,7 @@ enum tc_prio_command {
 struct tc_prio_qopt_offload_params {
 	int bands;
 	u8 priomap[TC_PRIO_MAX + 1];
-	/* At the point of un-offloading the Qdisc, the reported backlog and
-	 * qlen need to be reduced by the portion that is in HW.
-	 */
+	 
 	struct gnet_stats_queue *qstats;
 };
 
@@ -988,7 +919,7 @@ enum tc_ets_command {
 struct tc_ets_qopt_offload_replace_params {
 	unsigned int bands;
 	u8 priomap[TC_PRIO_MAX + 1];
-	unsigned int quanta[TCQ_ETS_MAX_BANDS];	/* 0 for strict bands. */
+	unsigned int quanta[TCQ_ETS_MAX_BANDS];	 
 	unsigned int weights[TCQ_ETS_MAX_BANDS];
 	struct gnet_stats_queue *qstats;
 };
@@ -1053,7 +984,7 @@ DECLARE_STATIC_KEY_FALSE(tc_skb_ext_tc);
 void tc_skb_ext_tc_enable(void);
 void tc_skb_ext_tc_disable(void);
 #define tc_skb_ext_tc_enabled() static_branch_unlikely(&tc_skb_ext_tc)
-#else /* CONFIG_NET_CLS_ACT */
+#else  
 static inline void tc_skb_ext_tc_enable(void) { }
 static inline void tc_skb_ext_tc_disable(void) { }
 #define tc_skb_ext_tc_enabled() false

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Mailbox: Common code for Mailbox controllers and users
- *
- * Copyright (C) 2013-2014 Linaro Ltd.
- * Author: Jassi Brar <jassisinghbrar@gmail.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/spinlock.h>
@@ -31,7 +26,7 @@ static int add_to_rbuf(struct mbox_chan *chan, void *mssg)
 
 	spin_lock_irqsave(&chan->lock, flags);
 
-	/* See if there is any space left */
+	 
 	if (chan->msg_count == MBOX_TX_QUEUE_LEN) {
 		spin_unlock_irqrestore(&chan->lock, flags);
 		return -ENOBUFS;
@@ -74,7 +69,7 @@ static void msg_submit(struct mbox_chan *chan)
 
 	if (chan->cl->tx_prepare)
 		chan->cl->tx_prepare(chan->cl, data);
-	/* Try to submit a message to the MBOX controller */
+	 
 	err = chan->mbox->ops->send_data(chan, data);
 	if (!err) {
 		chan->active_req = data;
@@ -84,7 +79,7 @@ exit:
 	spin_unlock_irqrestore(&chan->lock, flags);
 
 	if (!err && (chan->txdone_method & TXDONE_BY_POLL)) {
-		/* kick start the timer immediately to avoid delays */
+		 
 		spin_lock_irqsave(&chan->mbox->poll_hrt_lock, flags);
 		hrtimer_start(&chan->mbox->poll_hrt, 0, HRTIMER_MODE_REL);
 		spin_unlock_irqrestore(&chan->mbox->poll_hrt_lock, flags);
@@ -101,13 +96,13 @@ static void tx_tick(struct mbox_chan *chan, int r)
 	chan->active_req = NULL;
 	spin_unlock_irqrestore(&chan->lock, flags);
 
-	/* Submit next message */
+	 
 	msg_submit(chan);
 
 	if (!mssg)
 		return;
 
-	/* Notify the client */
+	 
 	if (chan->cl->tx_done)
 		chan->cl->tx_done(chan->cl, mssg, r);
 
@@ -146,34 +141,16 @@ static enum hrtimer_restart txdone_hrtimer(struct hrtimer *hrtimer)
 	return HRTIMER_NORESTART;
 }
 
-/**
- * mbox_chan_received_data - A way for controller driver to push data
- *				received from remote to the upper layer.
- * @chan: Pointer to the mailbox channel on which RX happened.
- * @mssg: Client specific message typecasted as void *
- *
- * After startup and before shutdown any data received on the chan
- * is passed on to the API via atomic mbox_chan_received_data().
- * The controller should ACK the RX only after this call returns.
- */
+ 
 void mbox_chan_received_data(struct mbox_chan *chan, void *mssg)
 {
-	/* No buffering the received data */
+	 
 	if (chan->cl->rx_callback)
 		chan->cl->rx_callback(chan->cl, mssg);
 }
 EXPORT_SYMBOL_GPL(mbox_chan_received_data);
 
-/**
- * mbox_chan_txdone - A way for controller driver to notify the
- *			framework that the last TX has completed.
- * @chan: Pointer to the mailbox chan on which TX happened.
- * @r: Status of last TX - OK or ERROR
- *
- * The controller that has IRQ for TX ACK calls this atomic API
- * to tick the TX state machine. It works only if txdone_irq
- * is set by the controller.
- */
+ 
 void mbox_chan_txdone(struct mbox_chan *chan, int r)
 {
 	if (unlikely(!(chan->txdone_method & TXDONE_BY_IRQ))) {
@@ -186,15 +163,7 @@ void mbox_chan_txdone(struct mbox_chan *chan, int r)
 }
 EXPORT_SYMBOL_GPL(mbox_chan_txdone);
 
-/**
- * mbox_client_txdone - The way for a client to run the TX state machine.
- * @chan: Mailbox channel assigned to this client.
- * @r: Success status of last transmission.
- *
- * The client/protocol had received some 'ACK' packet and it notifies
- * the API that the last packet was sent successfully. This only works
- * if the controller can't sense TX-Done.
- */
+ 
 void mbox_client_txdone(struct mbox_chan *chan, int r)
 {
 	if (unlikely(!(chan->txdone_method & TXDONE_BY_ACK))) {
@@ -206,21 +175,7 @@ void mbox_client_txdone(struct mbox_chan *chan, int r)
 }
 EXPORT_SYMBOL_GPL(mbox_client_txdone);
 
-/**
- * mbox_client_peek_data - A way for client driver to pull data
- *			received from remote by the controller.
- * @chan: Mailbox channel assigned to this client.
- *
- * A poke to controller driver for any received data.
- * The data is actually passed onto client via the
- * mbox_chan_received_data()
- * The call can be made from atomic context, so the controller's
- * implementation of peek_data() must not sleep.
- *
- * Return: True, if controller has, and is going to push after this,
- *          some data.
- *         False, if controller doesn't have any data to be read.
- */
+ 
 bool mbox_client_peek_data(struct mbox_chan *chan)
 {
 	if (chan->mbox->ops->peek_data)
@@ -230,30 +185,7 @@ bool mbox_client_peek_data(struct mbox_chan *chan)
 }
 EXPORT_SYMBOL_GPL(mbox_client_peek_data);
 
-/**
- * mbox_send_message -	For client to submit a message to be
- *				sent to the remote.
- * @chan: Mailbox channel assigned to this client.
- * @mssg: Client specific message typecasted.
- *
- * For client to submit data to the controller destined for a remote
- * processor. If the client had set 'tx_block', the call will return
- * either when the remote receives the data or when 'tx_tout' millisecs
- * run out.
- *  In non-blocking mode, the requests are buffered by the API and a
- * non-negative token is returned for each queued request. If the request
- * is not queued, a negative token is returned. Upon failure or successful
- * TX, the API calls 'tx_done' from atomic context, from which the client
- * could submit yet another request.
- * The pointer to message should be preserved until it is sent
- * over the chan, i.e, tx_done() is made.
- * This function could be called from atomic context as it simply
- * queues the data and returns a token against the request.
- *
- * Return: Non-negative integer for successful submission (non-blocking mode)
- *	or transmission over chan (blocking mode).
- *	Negative value denotes failure.
- */
+ 
 int mbox_send_message(struct mbox_chan *chan, void *mssg)
 {
 	int t;
@@ -273,7 +205,7 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
 		unsigned long wait;
 		int ret;
 
-		if (!chan->cl->tx_tout) /* wait forever */
+		if (!chan->cl->tx_tout)  
 			wait = msecs_to_jiffies(3600000);
 		else
 			wait = msecs_to_jiffies(chan->cl->tx_tout);
@@ -289,20 +221,7 @@ int mbox_send_message(struct mbox_chan *chan, void *mssg)
 }
 EXPORT_SYMBOL_GPL(mbox_send_message);
 
-/**
- * mbox_flush - flush a mailbox channel
- * @chan: mailbox channel to flush
- * @timeout: time, in milliseconds, to allow the flush operation to succeed
- *
- * Mailbox controllers that need to work in atomic context can implement the
- * ->flush() callback to busy loop until a transmission has been completed.
- * The implementation must call mbox_chan_txdone() upon success. Clients can
- * call the mbox_flush() function at any time after mbox_send_message() to
- * flush the transmission. After the function returns success, the mailbox
- * transmission is guaranteed to have completed.
- *
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int mbox_flush(struct mbox_chan *chan, unsigned long timeout)
 {
 	int ret;
@@ -354,23 +273,7 @@ static int __mbox_bind_client(struct mbox_chan *chan, struct mbox_client *cl)
 	return 0;
 }
 
-/**
- * mbox_bind_client - Request a mailbox channel.
- * @chan: The mailbox channel to bind the client to.
- * @cl: Identity of the client requesting the channel.
- *
- * The Client specifies its requirements and capabilities while asking for
- * a mailbox channel. It can't be called from atomic context.
- * The channel is exclusively allocated and can't be used by another
- * client before the owner calls mbox_free_channel.
- * After assignment, any packet received on this channel will be
- * handed over to the client via the 'rx_callback'.
- * The framework holds reference to the client, so the mbox_client
- * structure shouldn't be modified until the mbox_free_channel returns.
- *
- * Return: 0 if the channel was assigned to the client successfully.
- *         <0 for request failure.
- */
+ 
 int mbox_bind_client(struct mbox_chan *chan, struct mbox_client *cl)
 {
 	int ret;
@@ -383,23 +286,7 @@ int mbox_bind_client(struct mbox_chan *chan, struct mbox_client *cl)
 }
 EXPORT_SYMBOL_GPL(mbox_bind_client);
 
-/**
- * mbox_request_channel - Request a mailbox channel.
- * @cl: Identity of the client requesting the channel.
- * @index: Index of mailbox specifier in 'mboxes' property.
- *
- * The Client specifies its requirements and capabilities while asking for
- * a mailbox channel. It can't be called from atomic context.
- * The channel is exclusively allocated and can't be used by another
- * client before the owner calls mbox_free_channel.
- * After assignment, any packet received on this channel will be
- * handed over to the client via the 'rx_callback'.
- * The framework holds reference to the client, so the mbox_client
- * structure shouldn't be modified until the mbox_free_channel returns.
- *
- * Return: Pointer to the channel assigned to the client if successful.
- *		ERR_PTR for request failure.
- */
+ 
 struct mbox_chan *mbox_request_channel(struct mbox_client *cl, int index)
 {
 	struct device *dev = cl->dev;
@@ -477,11 +364,7 @@ struct mbox_chan *mbox_request_channel_byname(struct mbox_client *cl,
 }
 EXPORT_SYMBOL_GPL(mbox_request_channel_byname);
 
-/**
- * mbox_free_channel - The client relinquishes control of a mailbox
- *			channel by this call.
- * @chan: The mailbox channel to be freed.
- */
+ 
 void mbox_free_channel(struct mbox_chan *chan)
 {
 	unsigned long flags;
@@ -492,7 +375,7 @@ void mbox_free_channel(struct mbox_chan *chan)
 	if (chan->mbox->ops->shutdown)
 		chan->mbox->ops->shutdown(chan);
 
-	/* The queued TX requests are simply aborted, no callbacks are made */
+	 
 	spin_lock_irqsave(&chan->lock, flags);
 	chan->cl = NULL;
 	chan->active_req = NULL;
@@ -516,17 +399,12 @@ of_mbox_index_xlate(struct mbox_controller *mbox,
 	return &mbox->chans[ind];
 }
 
-/**
- * mbox_controller_register - Register the mailbox controller
- * @mbox:	Pointer to the mailbox controller.
- *
- * The controller driver registers its communication channels
- */
+ 
 int mbox_controller_register(struct mbox_controller *mbox)
 {
 	int i, txdone;
 
-	/* Sanity check */
+	 
 	if (!mbox || !mbox->dev || !mbox->ops || !mbox->num_chans)
 		return -EINVAL;
 
@@ -534,7 +412,7 @@ int mbox_controller_register(struct mbox_controller *mbox)
 		txdone = TXDONE_BY_IRQ;
 	else if (mbox->txdone_poll)
 		txdone = TXDONE_BY_POLL;
-	else /* It has to be ACK then */
+	else  
 		txdone = TXDONE_BY_ACK;
 
 	if (txdone == TXDONE_BY_POLL) {
@@ -570,10 +448,7 @@ int mbox_controller_register(struct mbox_controller *mbox)
 }
 EXPORT_SYMBOL_GPL(mbox_controller_register);
 
-/**
- * mbox_controller_unregister - Unregister the mailbox controller
- * @mbox:	Pointer to the mailbox controller.
- */
+ 
 void mbox_controller_unregister(struct mbox_controller *mbox)
 {
 	int i;
@@ -612,18 +487,7 @@ static int devm_mbox_controller_match(struct device *dev, void *res, void *data)
 	return *mbox == data;
 }
 
-/**
- * devm_mbox_controller_register() - managed mbox_controller_register()
- * @dev: device owning the mailbox controller being registered
- * @mbox: mailbox controller being registered
- *
- * This function adds a device-managed resource that will make sure that the
- * mailbox controller, which is registered using mbox_controller_register()
- * as part of this function, will be unregistered along with the rest of
- * device-managed resources upon driver probe failure or driver removal.
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 int devm_mbox_controller_register(struct device *dev,
 				  struct mbox_controller *mbox)
 {
@@ -648,16 +512,7 @@ int devm_mbox_controller_register(struct device *dev,
 }
 EXPORT_SYMBOL_GPL(devm_mbox_controller_register);
 
-/**
- * devm_mbox_controller_unregister() - managed mbox_controller_unregister()
- * @dev: device owning the mailbox controller being unregistered
- * @mbox: mailbox controller being unregistered
- *
- * This function unregisters the mailbox controller and removes the device-
- * managed resource that was set up to automatically unregister the mailbox
- * controller on driver probe failure or driver removal. It's typically not
- * necessary to call this function.
- */
+ 
 void devm_mbox_controller_unregister(struct device *dev, struct mbox_controller *mbox)
 {
 	WARN_ON(devres_release(dev, __devm_mbox_controller_unregister,

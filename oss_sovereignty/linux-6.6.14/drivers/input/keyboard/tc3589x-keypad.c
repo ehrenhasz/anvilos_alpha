@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Jayeeta Banerjee <jayeeta.banerjee@stericsson.com>
- * Author: Sundar Iyer <sundar.iyer@stericsson.com>
- *
- * TC35893 MFD Keypad Controller driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -18,22 +11,22 @@
 #include <linux/mfd/tc3589x.h>
 #include <linux/device.h>
 
-/* Maximum supported keypad matrix row/columns size */
+ 
 #define TC3589x_MAX_KPROW               8
 #define TC3589x_MAX_KPCOL               12
 
-/* keypad related Constants */
+ 
 #define TC3589x_MAX_DEBOUNCE_SETTLE     0xFF
 #define DEDICATED_KEY_VAL		0xFF
 
-/* Pull up/down masks */
+ 
 #define TC3589x_NO_PULL_MASK		0x0
 #define TC3589x_PULL_DOWN_MASK		0x1
 #define TC3589x_PULL_UP_MASK		0x2
 #define TC3589x_PULLUP_ALL_MASK		0xAA
 #define TC3589x_IO_PULL_VAL(index, mask)	((mask)<<((index)%4)*2)
 
-/* Bit masks for IOCFG register */
+ 
 #define IOCFG_BALLCFG		0x01
 #define IOCFG_IG		0x08
 
@@ -45,41 +38,31 @@
 
 #define KP_NO_VALID_KEY_MASK	0x7F
 
-/* bit masks for RESTCTRL register */
+ 
 #define TC3589x_KBDRST		0x2
 #define TC3589x_IRQRST		0x10
 #define TC3589x_RESET_ALL	0x1B
 
-/* KBDMFS register bit mask */
+ 
 #define TC3589x_KBDMFS_EN	0x1
 
-/* CLKEN register bitmask */
+ 
 #define KPD_CLK_EN		0x1
 
-/* RSTINTCLR register bit mask */
+ 
 #define IRQ_CLEAR		0x1
 
-/* bit masks for keyboard interrupts*/
+ 
 #define TC3589x_EVT_LOSS_INT	0x8
 #define TC3589x_EVT_INT		0x4
 #define TC3589x_KBD_LOSS_INT	0x2
 #define TC3589x_KBD_INT		0x1
 
-/* bit masks for keyboard interrupt clear*/
+ 
 #define TC3589x_EVT_INT_CLR	0x2
 #define TC3589x_KBD_INT_CLR	0x1
 
-/**
- * struct tc3589x_keypad_platform_data - platform specific keypad data
- * @keymap_data:        matrix scan code table for keycodes
- * @krow:               mask for available rows, value is 0xFF
- * @kcol:               mask for available columns, value is 0xFF
- * @debounce_period:    platform specific debounce time
- * @settle_time:        platform specific settle down time
- * @irqtype:            type of interrupt, falling or rising edge
- * @enable_wakeup:      specifies if keypad event can wake up system from sleep
- * @no_autorepeat:      flag for auto repetition
- */
+ 
 struct tc3589x_keypad_platform_data {
 	const struct matrix_keymap_data *keymap_data;
 	u8                      krow;
@@ -91,16 +74,7 @@ struct tc3589x_keypad_platform_data {
 	bool                    no_autorepeat;
 };
 
-/**
- * struct tc_keypad - data structure used by keypad driver
- * @tc3589x:    pointer to tc35893
- * @input:      pointer to input device object
- * @board:      keypad platform device
- * @krow:	number of rows
- * @kcol:	number of columns
- * @keymap:     matrix scan code table for keycodes
- * @keypad_stopped: holds keypad status
- */
+ 
 struct tc_keypad {
 	struct tc3589x *tc3589x;
 	struct input_dev *input;
@@ -117,17 +91,17 @@ static int tc3589x_keypad_init_key_hardware(struct tc_keypad *keypad)
 	struct tc3589x *tc3589x = keypad->tc3589x;
 	const struct tc3589x_keypad_platform_data *board = keypad->board;
 
-	/* validate platform configuration */
+	 
 	if (board->kcol > TC3589x_MAX_KPCOL || board->krow > TC3589x_MAX_KPROW)
 		return -EINVAL;
 
-	/* configure KBDSIZE 4 LSbits for cols and 4 MSbits for rows */
+	 
 	ret = tc3589x_reg_write(tc3589x, TC3589x_KBDSIZE,
 			(board->krow << KP_ROW_SHIFT) | board->kcol);
 	if (ret < 0)
 		return ret;
 
-	/* configure dedicated key config, no dedicated key selected */
+	 
 	ret = tc3589x_reg_write(tc3589x, TC3589x_KBCFG_LSB, DEDICATED_KEY_VAL);
 	if (ret < 0)
 		return ret;
@@ -136,24 +110,24 @@ static int tc3589x_keypad_init_key_hardware(struct tc_keypad *keypad)
 	if (ret < 0)
 		return ret;
 
-	/* Configure settle time */
+	 
 	ret = tc3589x_reg_write(tc3589x, TC3589x_KBDSETTLE_REG,
 				board->settle_time);
 	if (ret < 0)
 		return ret;
 
-	/* Configure debounce time */
+	 
 	ret = tc3589x_reg_write(tc3589x, TC3589x_KBDBOUNCE,
 				board->debounce_period);
 	if (ret < 0)
 		return ret;
 
-	/* Start of initialise keypad GPIOs */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_IOCFG, 0x0, IOCFG_IG);
 	if (ret < 0)
 		return ret;
 
-	/* Configure pull-up resistors for all row GPIOs */
+	 
 	ret = tc3589x_reg_write(tc3589x, TC3589x_IOPULLCFG0_LSB,
 					TC3589x_PULLUP_ALL_MASK);
 	if (ret < 0)
@@ -164,7 +138,7 @@ static int tc3589x_keypad_init_key_hardware(struct tc_keypad *keypad)
 	if (ret < 0)
 		return ret;
 
-	/* Configure pull-up resistors for all column GPIOs */
+	 
 	ret = tc3589x_reg_write(tc3589x, TC3589x_IOPULLCFG1_LSB,
 			TC3589x_PULLUP_ALL_MASK);
 	if (ret < 0)
@@ -196,12 +170,12 @@ static irqreturn_t tc3589x_keypad_irq(int irq, void *dev)
 	for (i = 0; i < TC35893_DATA_REGS * 2; i++) {
 		kbd_code = tc3589x_reg_read(tc3589x, TC3589x_EVTCODE_FIFO);
 
-		/* loop till fifo is empty and no more keys are pressed */
+		 
 		if (kbd_code == TC35893_KEYCODE_FIFO_EMPTY ||
 				kbd_code == TC35893_KEYCODE_FIFO_CLEAR)
 			continue;
 
-		/* valid key is found */
+		 
 		col_index = kbd_code & KP_EVCODE_COL_MASK;
 		row_index = (kbd_code & KP_EVCODE_ROW_MASK) >> KP_ROW_SHIFT;
 		code = MATRIX_SCAN_CODE(row_index, col_index,
@@ -213,10 +187,10 @@ static irqreturn_t tc3589x_keypad_irq(int irq, void *dev)
 		input_sync(keypad->input);
 	}
 
-	/* clear IRQ */
+	 
 	tc3589x_set_bits(tc3589x, TC3589x_KBDIC,
 			0x0, TC3589x_EVT_INT_CLR | TC3589x_KBD_INT_CLR);
-	/* enable IRQ */
+	 
 	tc3589x_set_bits(tc3589x, TC3589x_KBDMSK,
 			0x0, TC3589x_EVT_LOSS_INT | TC3589x_EVT_INT);
 
@@ -228,27 +202,27 @@ static int tc3589x_keypad_enable(struct tc_keypad *keypad)
 	struct tc3589x *tc3589x = keypad->tc3589x;
 	int ret;
 
-	/* pull the keypad module out of reset */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_RSTCTRL, TC3589x_KBDRST, 0x0);
 	if (ret < 0)
 		return ret;
 
-	/* configure KBDMFS */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_KBDMFS, 0x0, TC3589x_KBDMFS_EN);
 	if (ret < 0)
 		return ret;
 
-	/* enable the keypad clock */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_CLKEN, 0x0, KPD_CLK_EN);
 	if (ret < 0)
 		return ret;
 
-	/* clear pending IRQs */
+	 
 	ret =  tc3589x_set_bits(tc3589x, TC3589x_RSTINTCLR, 0x0, 0x1);
 	if (ret < 0)
 		return ret;
 
-	/* enable the IRQs */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_KBDMSK, 0x0,
 					TC3589x_EVT_LOSS_INT | TC3589x_EVT_INT);
 	if (ret < 0)
@@ -264,24 +238,24 @@ static int tc3589x_keypad_disable(struct tc_keypad *keypad)
 	struct tc3589x *tc3589x = keypad->tc3589x;
 	int ret;
 
-	/* clear IRQ */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_KBDIC,
 			0x0, TC3589x_EVT_INT_CLR | TC3589x_KBD_INT_CLR);
 	if (ret < 0)
 		return ret;
 
-	/* disable all interrupts */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_KBDMSK,
 			~(TC3589x_EVT_LOSS_INT | TC3589x_EVT_INT), 0x0);
 	if (ret < 0)
 		return ret;
 
-	/* disable the keypad module */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_CLKEN, 0x1, 0x0);
 	if (ret < 0)
 		return ret;
 
-	/* put the keypad module into reset */
+	 
 	ret = tc3589x_set_bits(tc3589x, TC3589x_RSTCTRL, TC3589x_KBDRST, 0x1);
 
 	keypad->keypad_stopped = true;
@@ -294,7 +268,7 @@ static int tc3589x_keypad_open(struct input_dev *input)
 	int error;
 	struct tc_keypad *keypad = input_get_drvdata(input);
 
-	/* enable the keypad module */
+	 
 	error = tc3589x_keypad_enable(keypad);
 	if (error < 0) {
 		dev_err(&input->dev, "failed to enable keypad module\n");
@@ -314,7 +288,7 @@ static void tc3589x_keypad_close(struct input_dev *input)
 {
 	struct tc_keypad *keypad = input_get_drvdata(input);
 
-	/* disable the keypad module */
+	 
 	tc3589x_keypad_disable(keypad);
 }
 
@@ -354,10 +328,10 @@ tc3589x_keypad_of_probe(struct device *dev)
 	plat->no_autorepeat = of_property_read_bool(np, "linux,no-autorepeat");
 
 	plat->enable_wakeup = of_property_read_bool(np, "wakeup-source") ||
-			      /* legacy name */
+			       
 			      of_property_read_bool(np, "linux,wakeup");
 
-	/* The custom delay format is ms/16 */
+	 
 	of_property_read_u32(np, "debounce-delay-ms", &debounce_ms);
 	if (debounce_ms)
 		plat->debounce_period = debounce_ms * 16;
@@ -365,7 +339,7 @@ tc3589x_keypad_of_probe(struct device *dev)
 		plat->debounce_period = TC_KPD_DEBOUNCE_PERIOD;
 
 	plat->settle_time = TC_KPD_SETTLE_TIME;
-	/* FIXME: should be property of the IRQ resource? */
+	 
 	plat->irqtype = IRQF_TRIGGER_FALLING;
 
 	return plat;
@@ -446,7 +420,7 @@ static int tc3589x_keypad_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* let platform decide if keypad is a wakeup source or not */
+	 
 	device_init_wakeup(&pdev->dev, plat->enable_wakeup);
 	device_set_wakeup_capable(&pdev->dev, plat->enable_wakeup);
 
@@ -461,11 +435,11 @@ static int tc3589x_keypad_suspend(struct device *dev)
 	struct tc_keypad *keypad = platform_get_drvdata(pdev);
 	int irq = platform_get_irq(pdev, 0);
 
-	/* keypad is already off; we do nothing */
+	 
 	if (keypad->keypad_stopped)
 		return 0;
 
-	/* if device is not a wakeup source, disable it for powersave */
+	 
 	if (!device_may_wakeup(&pdev->dev))
 		tc3589x_keypad_disable(keypad);
 	else
@@ -483,7 +457,7 @@ static int tc3589x_keypad_resume(struct device *dev)
 	if (!keypad->keypad_stopped)
 		return 0;
 
-	/* enable the device to resume normal operations */
+	 
 	if (!device_may_wakeup(&pdev->dev))
 		tc3589x_keypad_enable(keypad);
 	else

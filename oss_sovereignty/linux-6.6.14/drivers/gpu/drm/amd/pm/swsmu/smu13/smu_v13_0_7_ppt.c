@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -47,11 +26,7 @@
 #include "smu_cmn.h"
 #include "amdgpu_ras.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -354,10 +329,7 @@ static int smu_v13_0_7_check_powerplay_table(struct smu_context *smu)
 	    !overdrive_upperlimits->FeatureCtrlMask)
 		smu->od_enabled = false;
 
-	/*
-	 * Instead of having its own buffer space and get overdrive_table copied,
-	 * smu->od_settings just points to the actual overdrive_table
-	 */
+	 
 	smu->od_settings = &powerplay_table->overdrive_table;
 #else
 	smu->od_enabled = false;
@@ -456,11 +428,7 @@ static int smu_v13_0_7_setup_pptable(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 	int ret = 0;
 
-	/*
-	 * With SCPM enabled, the pptable used will be signed. It cannot
-	 * be used directly by driver. To get the raw pptable, we need to
-	 * rely on the combo pptable(and its revelant SMU message).
-	 */
+	 
 	ret = smu_v13_0_7_get_pptable_from_pmfw(smu,
 						&smu_table->power_play_table,
 						&smu_table->power_play_table_size);
@@ -471,10 +439,7 @@ static int smu_v13_0_7_setup_pptable(struct smu_context *smu)
 	if (ret)
 		return ret;
 
-	/*
-	 * With SCPM enabled, the operation below will be handled
-	 * by PSP. Driver involvment is unnecessary and useless.
-	 */
+	 
 	if (!adev->scpm_enabled) {
 		ret = smu_v13_0_7_append_powerplay_table(smu);
 		if (ret)
@@ -575,7 +540,7 @@ static int smu_v13_0_7_set_default_dpm_table(struct smu_context *smu)
 	uint32_t link_level;
 	int ret = 0;
 
-	/* socclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.soc_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_SOCCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -591,7 +556,7 @@ static int smu_v13_0_7_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* gfxclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.gfx_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -615,7 +580,7 @@ static int smu_v13_0_7_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* uclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.uclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_UCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -631,7 +596,7 @@ static int smu_v13_0_7_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* fclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.fclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_FCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -647,7 +612,7 @@ static int smu_v13_0_7_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* vclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.vclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_VCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -663,7 +628,7 @@ static int smu_v13_0_7_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* dclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.dclk_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_DCLK_BIT)) {
 		ret = smu_v13_0_set_single_dpm_table(smu,
@@ -679,7 +644,7 @@ static int smu_v13_0_7_set_default_dpm_table(struct smu_context *smu)
 		dpm_table->max = dpm_table->dpm_levels[0].value;
 	}
 
-	/* lclk dpm table setup */
+	 
 	pcie_table = &dpm_context->dpm_tables.pcie_table;
 	pcie_table->num_of_link_levels = 0;
 	for (link_level = 0; link_level < NUM_LINK_LEVELS; link_level++) {
@@ -872,30 +837,30 @@ static int smu_v13_0_7_get_dpm_ultimate_freq(struct smu_context *smu,
 	switch (clk_type) {
 	case SMU_MCLK:
 	case SMU_UCLK:
-		/* uclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.uclk_table;
 		break;
 	case SMU_GFXCLK:
 	case SMU_SCLK:
-		/* gfxclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.gfx_table;
 		break;
 	case SMU_SOCCLK:
-		/* socclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.soc_table;
 		break;
 	case SMU_FCLK:
-		/* fclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.fclk_table;
 		break;
 	case SMU_VCLK:
 	case SMU_VCLK1:
-		/* vclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.vclk_table;
 		break;
 	case SMU_DCLK:
 	case SMU_DCLK1:
-		/* dclk dpm table */
+		 
 		dpm_table = &dpm_context->dpm_tables.dclk_table;
 		break;
 	default:
@@ -1197,17 +1162,7 @@ static int smu_v13_0_7_print_clk_levels(struct smu_context *smu,
 		}
 
 		if (single_dpm_table->is_fine_grained) {
-			/*
-			 * For fine grained dpms, there are only two dpm levels:
-			 *   - level 0 -> min clock freq
-			 *   - level 1 -> max clock freq
-			 * And the current clock frequency can be any value between them.
-			 * So, if the current clock frequency is not at level 0 or level 1,
-			 * we will fake it as three dpm levels:
-			 *   - level 0 -> min clock freq
-			 *   - level 1 -> current actual clock freq
-			 *   - level 2 -> max clock freq
-			 */
+			 
 			if ((single_dpm_table->dpm_levels[0].value != curr_freq) &&
 			     (single_dpm_table->dpm_levels[1].value != curr_freq)) {
 				size += sysfs_emit_at(buf, size, "0: %uMhz\n",
@@ -1519,13 +1474,7 @@ static int smu_v13_0_7_od_edit_dpm_table(struct smu_context *smu,
 		fallthrough;
 
 	case PP_OD_COMMIT_DPM_TABLE:
-		/*
-		 * The member below instructs PMFW the settings focused in
-		 * this single operation.
-		 * `uint32_t FeatureCtrlMask;`
-		 * It does not contain actual informations about user's custom
-		 * settings. Thus we do not cache it.
-		 */
+		 
 		offset_of_voltageoffset = offsetof(OverDriveTable_t, VoltageOffsetPerZoneBoundary);
 		if (memcmp((u8 *)od_table + offset_of_voltageoffset,
 			   table_context->user_overdrive_table + offset_of_voltageoffset,
@@ -1612,7 +1561,7 @@ static int smu_v13_0_7_force_clk_levels(struct smu_context *smu,
 	case SMU_DCLK:
 	case SMU_DCLK1:
 		if (single_dpm_table->is_fine_grained) {
-			/* There is only 2 levels for fine grained DPM */
+			 
 			soft_max_level = (soft_max_level >= 1 ? 1 : 0);
 			soft_min_level = (soft_min_level >= 1 ? 1 : 0);
 		} else {
@@ -1777,10 +1726,7 @@ static int smu_v13_0_7_set_default_od_settings(struct smu_context *smu)
 	       boot_od_table,
 	       sizeof(OverDriveTableExternal_t));
 
-	/*
-	 * For S3/S4/Runpm resume, we need to setup those overdrive tables again,
-	 * but we have to preserve user defined values in "user_od_table".
-	 */
+	 
 	if (!smu->adev->in_suspend) {
 		memcpy(user_od_table,
 		       boot_od_table,
@@ -1902,7 +1848,7 @@ static int smu_v13_0_7_get_fan_speed_pwm(struct smu_context *smu,
 		return ret;
 	}
 
-	/* Convert the PMFW output which is in percent to pwm(255) based */
+	 
 	*speed = MIN(*speed * 255 / 100, 255);
 
 	return 0;
@@ -1925,10 +1871,7 @@ static int smu_v13_0_7_enable_mgpu_fan_boost(struct smu_context *smu)
 	PPTable_t *pptable = table_context->driver_pptable;
 	SkuTable_t *skutable = &pptable->SkuTable;
 
-	/*
-	 * Skip the MGpuFanBoost setting for those ASICs
-	 * which do not support it
-	 */
+	 
 	if (skutable->MGpuAcousticLimitRpmThreshold == 0)
 		return 0;
 
@@ -1999,7 +1942,7 @@ static int smu_v13_0_7_get_power_profile_mode(struct smu_context *smu, char *buf
 	size += sysfs_emit_at(buf, size, "\n");
 
 	for (i = 0; i <= PP_SMC_POWER_PROFILE_WINDOW3D; i++) {
-		/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+		 
 		workload_type = smu_cmn_to_asic_specific_index(smu,
 							       CMN2ASIC_MAPPING_WORKLOAD,
 							       i);
@@ -2075,7 +2018,7 @@ static int smu_v13_0_7_set_power_profile_mode(struct smu_context *smu, long *inp
 		}
 
 		switch (input[0]) {
-		case 0: /* Gfxclk */
+		case 0:  
 			activity_monitor->Gfx_ActiveHystLimit = input[1];
 			activity_monitor->Gfx_IdleHystLimit = input[2];
 			activity_monitor->Gfx_FPS = input[3];
@@ -2084,7 +2027,7 @@ static int smu_v13_0_7_set_power_profile_mode(struct smu_context *smu, long *inp
 			activity_monitor->Gfx_MinActiveFreq = input[6];
 			activity_monitor->Gfx_BoosterFreq = input[7];
 			break;
-		case 1: /* Fclk */
+		case 1:  
 			activity_monitor->Fclk_ActiveHystLimit = input[1];
 			activity_monitor->Fclk_IdleHystLimit = input[2];
 			activity_monitor->Fclk_FPS = input[3];
@@ -2104,7 +2047,7 @@ static int smu_v13_0_7_set_power_profile_mode(struct smu_context *smu, long *inp
 		}
 	}
 
-	/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+	 
 	workload_type = smu_cmn_to_asic_specific_index(smu,
 						       CMN2ASIC_MAPPING_WORKLOAD,
 						       smu->power_profile_mode);
@@ -2126,7 +2069,7 @@ static int smu_v13_0_7_set_mp1_state(struct smu_context *smu,
 		ret = smu_cmn_set_mp1_state(smu, mp1_state);
 		break;
 	default:
-		/* Ignore others */
+		 
 		ret = 0;
 	}
 
@@ -2151,7 +2094,7 @@ static int smu_v13_0_7_baco_exit(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 
 	if (adev->in_runpm && smu_cmn_is_audio_func_enabled(adev)) {
-		/* Wait for PMFW handling for the Dstate change */
+		 
 		usleep_range(10000, 11000);
 		return smu_v13_0_baco_set_armd3_sequence(smu, BACO_SEQ_ULPS);
 	} else {
@@ -2163,7 +2106,7 @@ static bool smu_v13_0_7_is_mode1_reset_supported(struct smu_context *smu)
 {
 	struct amdgpu_device *adev = smu->adev;
 
-	/* SRIOV does not support SMU mode1 reset */
+	 
 	if (amdgpu_sriov_vf(adev))
 		return false;
 

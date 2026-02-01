@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -89,9 +89,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	if (num_possible_nodes() > 1 && dev_to_node(&pdev->dev) < 0) {
-		/* If the accelerator is connected to a node with no memory
-		 * there is no point in using the accelerator since the remote
-		 * memory transaction will be very slow. */
+		 
 		dev_err(&pdev->dev, "Invalid NUMA configuration.\n");
 		return -EINVAL;
 	}
@@ -105,8 +103,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	accel_pci_dev = &accel_dev->accel_pci_dev;
 	accel_pci_dev->pci_dev = pdev;
 
-	/* Add accel device to accel table.
-	 * This should be called before adf_cleanup_accel is called */
+	 
 	if (adf_devmgr_add_dev(accel_dev, NULL)) {
 		dev_err(&pdev->dev, "Failed to add new accelerator device.\n");
 		kfree(accel_dev);
@@ -114,7 +111,7 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	}
 
 	accel_dev->owner = THIS_MODULE;
-	/* Allocate and configure device configuration structure */
+	 
 	hw_data = kzalloc_node(sizeof(*hw_data), GFP_KERNEL,
 			       dev_to_node(&pdev->dev));
 	if (!hw_data) {
@@ -130,11 +127,11 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	pci_read_config_dword(pdev, ADF_C3XXX_SOFTSTRAP_CSR_OFFSET,
 			      &hw_data->straps);
 
-	/* Get Accelerators and Accelerators Engines masks */
+	 
 	hw_data->accel_mask = hw_data->get_accel_mask(hw_data);
 	hw_data->ae_mask = hw_data->get_ae_mask(hw_data);
 	accel_pci_dev->sku = hw_data->get_sku(hw_data);
-	/* If the device has no acceleration engines then ignore it. */
+	 
 	if (!hw_data->accel_mask || !hw_data->ae_mask ||
 	    ((~hw_data->ae_mask) & 0x01)) {
 		dev_err(&pdev->dev, "No acceleration units found");
@@ -142,18 +139,18 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out_err;
 	}
 
-	/* Create device configuration table */
+	 
 	ret = adf_cfg_dev_add(accel_dev);
 	if (ret)
 		goto out_err;
 
-	/* enable PCI device */
+	 
 	if (pci_enable_device(pdev)) {
 		ret = -EFAULT;
 		goto out_err;
 	}
 
-	/* set dma identifier */
+	 
 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(48));
 	if (ret) {
 		dev_err(&pdev->dev, "No usable DMA configuration\n");
@@ -165,10 +162,10 @@ static int adf_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto out_err_disable;
 	}
 
-	/* Get accelerator capabilities mask */
+	 
 	hw_data->accel_capabilities_mask = hw_data->get_accel_cap(accel_dev);
 
-	/* Find and map all the device's BARS */
+	 
 	i = 0;
 	bar_mask = pci_select_bars(pdev, IORESOURCE_MEM);
 	for_each_set_bit(bar_nr, &bar_mask, ADF_PCI_MAX_BARS * 2) {

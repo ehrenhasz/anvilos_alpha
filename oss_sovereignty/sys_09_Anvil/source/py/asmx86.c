@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdint.h>
 #include <stdio.h>
@@ -31,62 +7,62 @@
 
 #include "py/mpconfig.h"
 
-// wrapper around everything in this file
+
 #if MICROPY_EMIT_X86
 
 #include "py/asmx86.h"
 
-/* all offsets are measured in multiples of 4 bytes */
+ 
 #define WORD_SIZE                (4)
 
 #define OPCODE_NOP               (0x90)
 #define OPCODE_PUSH_R32          (0x50)
-// #define OPCODE_PUSH_I32          (0x68)
-// #define OPCODE_PUSH_M32          (0xff) /* /6 */
+
+
 #define OPCODE_POP_R32           (0x58)
 #define OPCODE_RET               (0xc3)
-// #define OPCODE_MOV_I8_TO_R8      (0xb0) /* +rb */
+
 #define OPCODE_MOV_I32_TO_R32    (0xb8)
-// #define OPCODE_MOV_I32_TO_RM32   (0xc7)
-#define OPCODE_MOV_R8_TO_RM8     (0x88) /* /r */
-#define OPCODE_MOV_R32_TO_RM32   (0x89) /* /r */
-#define OPCODE_MOV_RM32_TO_R32   (0x8b) /* /r */
-#define OPCODE_MOVZX_RM8_TO_R32  (0xb6) /* 0x0f 0xb6/r */
-#define OPCODE_MOVZX_RM16_TO_R32 (0xb7) /* 0x0f 0xb7/r */
-#define OPCODE_LEA_MEM_TO_R32    (0x8d) /* /r */
-#define OPCODE_NOT_RM32          (0xf7) /* /2 */
-#define OPCODE_NEG_RM32          (0xf7) /* /3 */
-#define OPCODE_AND_R32_TO_RM32   (0x21) /* /r */
-#define OPCODE_OR_R32_TO_RM32    (0x09) /* /r */
-#define OPCODE_XOR_R32_TO_RM32   (0x31) /* /r */
+
+#define OPCODE_MOV_R8_TO_RM8     (0x88)  
+#define OPCODE_MOV_R32_TO_RM32   (0x89)  
+#define OPCODE_MOV_RM32_TO_R32   (0x8b)  
+#define OPCODE_MOVZX_RM8_TO_R32  (0xb6)  
+#define OPCODE_MOVZX_RM16_TO_R32 (0xb7)  
+#define OPCODE_LEA_MEM_TO_R32    (0x8d)  
+#define OPCODE_NOT_RM32          (0xf7)  
+#define OPCODE_NEG_RM32          (0xf7)  
+#define OPCODE_AND_R32_TO_RM32   (0x21)  
+#define OPCODE_OR_R32_TO_RM32    (0x09)  
+#define OPCODE_XOR_R32_TO_RM32   (0x31)  
 #define OPCODE_ADD_R32_TO_RM32   (0x01)
-#define OPCODE_ADD_I32_TO_RM32   (0x81) /* /0 */
-#define OPCODE_ADD_I8_TO_RM32    (0x83) /* /0 */
+#define OPCODE_ADD_I32_TO_RM32   (0x81)  
+#define OPCODE_ADD_I8_TO_RM32    (0x83)  
 #define OPCODE_SUB_R32_FROM_RM32 (0x29)
-#define OPCODE_SUB_I32_FROM_RM32 (0x81) /* /5 */
-#define OPCODE_SUB_I8_FROM_RM32  (0x83) /* /5 */
-// #define OPCODE_SHL_RM32_BY_I8    (0xc1) /* /4 */
-// #define OPCODE_SHR_RM32_BY_I8    (0xc1) /* /5 */
-// #define OPCODE_SAR_RM32_BY_I8    (0xc1) /* /7 */
-#define OPCODE_SHL_RM32_CL       (0xd3) /* /4 */
-#define OPCODE_SHR_RM32_CL       (0xd3) /* /5 */
-#define OPCODE_SAR_RM32_CL       (0xd3) /* /7 */
-// #define OPCODE_CMP_I32_WITH_RM32 (0x81) /* /7 */
-// #define OPCODE_CMP_I8_WITH_RM32  (0x83) /* /7 */
+#define OPCODE_SUB_I32_FROM_RM32 (0x81)  
+#define OPCODE_SUB_I8_FROM_RM32  (0x83)  
+
+
+
+#define OPCODE_SHL_RM32_CL       (0xd3)  
+#define OPCODE_SHR_RM32_CL       (0xd3)  
+#define OPCODE_SAR_RM32_CL       (0xd3)  
+
+
 #define OPCODE_CMP_R32_WITH_RM32 (0x39)
-// #define OPCODE_CMP_RM32_WITH_R32 (0x3b)
-#define OPCODE_TEST_R8_WITH_RM8  (0x84) /* /r */
-#define OPCODE_TEST_R32_WITH_RM32 (0x85) /* /r */
+
+#define OPCODE_TEST_R8_WITH_RM8  (0x84)  
+#define OPCODE_TEST_R32_WITH_RM32 (0x85)  
 #define OPCODE_JMP_REL8          (0xeb)
 #define OPCODE_JMP_REL32         (0xe9)
-#define OPCODE_JMP_RM32          (0xff) /* /4 */
-#define OPCODE_JCC_REL8          (0x70) /* | jcc type */
+#define OPCODE_JMP_RM32          (0xff)  
+#define OPCODE_JCC_REL8          (0x70)  
 #define OPCODE_JCC_REL32_A       (0x0f)
-#define OPCODE_JCC_REL32_B       (0x80) /* | jcc type */
+#define OPCODE_JCC_REL32_B       (0x80)  
 #define OPCODE_SETCC_RM8_A       (0x0f)
-#define OPCODE_SETCC_RM8_B       (0x90) /* | jcc type, /0 */
+#define OPCODE_SETCC_RM8_B       (0x90)  
 #define OPCODE_CALL_REL32        (0xe8)
-#define OPCODE_CALL_RM32         (0xff) /* /2 */
+#define OPCODE_CALL_RM32         (0xff)  
 #define OPCODE_LEAVE             (0xc9)
 
 #define MODRM_R32(x)    ((x) << 3)
@@ -150,7 +126,7 @@ static void asm_x86_write_r32_disp(asm_x86_t *as, int r32, int disp_r32, int dis
     }
     asm_x86_write_byte_1(as, MODRM_R32(r32) | rm_disp | MODRM_RM_R32(disp_r32));
     if (disp_r32 == ASM_X86_REG_ESP) {
-        // Special case for esp, it needs a SIB byte
+        
         asm_x86_write_byte_1(as, 0x24);
     }
     if (rm_disp == MODRM_RM_DISP8) {
@@ -298,23 +274,23 @@ void asm_x86_sub_r32_r32(asm_x86_t *as, int dest_r32, int src_r32) {
 
 static void asm_x86_sub_r32_i32(asm_x86_t *as, int dest_r32, int src_i32) {
     if (SIGNED_FIT8(src_i32)) {
-        // defaults to 32 bit operation
+        
         asm_x86_write_byte_2(as, OPCODE_SUB_I8_FROM_RM32, MODRM_R32(5) | MODRM_RM_REG | MODRM_RM_R32(dest_r32));
         asm_x86_write_byte_1(as, src_i32 & 0xff);
     } else {
-        // defaults to 32 bit operation
+        
         asm_x86_write_byte_2(as, OPCODE_SUB_I32_FROM_RM32, MODRM_R32(5) | MODRM_RM_REG | MODRM_RM_R32(dest_r32));
         asm_x86_write_word32(as, src_i32);
     }
 }
 
 void asm_x86_mul_r32_r32(asm_x86_t *as, int dest_r32, int src_r32) {
-    // imul reg32, reg/mem32 -- 0x0f 0xaf /r
+    
     asm_x86_write_byte_3(as, 0x0f, 0xaf, MODRM_R32(dest_r32) | MODRM_RM_REG | MODRM_RM_R32(src_r32));
 }
 
 #if 0
-/* shifts not tested */
+ 
 void asm_x86_shl_r32_by_imm(asm_x86_t *as, int r32, int imm) {
     asm_x86_write_byte_2(as, OPCODE_SHL_RM32_BY_I8, MODRM_R32(4) | MODRM_RM_REG | MODRM_RM_R32(r32));
     asm_x86_write_byte_1(as, imm);
@@ -372,8 +348,8 @@ void asm_x86_jmp_label(asm_x86_t *as, mp_uint_t label) {
     mp_uint_t dest = get_label_dest(as, label);
     mp_int_t rel = dest - as->base.code_offset;
     if (dest != (mp_uint_t)-1 && rel < 0) {
-        // is a backwards jump, so we know the size of the jump on the first pass
-        // calculate rel assuming 8 bit relative jump
+        
+        
         rel -= 2;
         if (SIGNED_FIT8(rel)) {
             asm_x86_write_byte_2(as, OPCODE_JMP_REL8, rel & 0xff);
@@ -382,7 +358,7 @@ void asm_x86_jmp_label(asm_x86_t *as, mp_uint_t label) {
             goto large_jump;
         }
     } else {
-        // is a forwards jump, so need to assume it's large
+        
     large_jump:
         rel -= 5;
         asm_x86_write_byte_1(as, OPCODE_JMP_REL32);
@@ -394,8 +370,8 @@ void asm_x86_jcc_label(asm_x86_t *as, mp_uint_t jcc_type, mp_uint_t label) {
     mp_uint_t dest = get_label_dest(as, label);
     mp_int_t rel = dest - as->base.code_offset;
     if (dest != (mp_uint_t)-1 && rel < 0) {
-        // is a backwards jump, so we know the size of the jump on the first pass
-        // calculate rel assuming 8 bit relative jump
+        
+        
         rel -= 2;
         if (SIGNED_FIT8(rel)) {
             asm_x86_write_byte_2(as, OPCODE_JCC_REL8 | jcc_type, rel & 0xff);
@@ -404,7 +380,7 @@ void asm_x86_jcc_label(asm_x86_t *as, mp_uint_t jcc_type, mp_uint_t label) {
             goto large_jump;
         }
     } else {
-        // is a forwards jump, so need to assume it's large
+        
     large_jump:
         rel -= 6;
         asm_x86_write_byte_2(as, OPCODE_JCC_REL32_A, OPCODE_JCC_REL32_B | jcc_type);
@@ -418,7 +394,7 @@ void asm_x86_entry(asm_x86_t *as, int num_locals) {
     asm_x86_push_r32(as, ASM_X86_REG_EBX);
     asm_x86_push_r32(as, ASM_X86_REG_ESI);
     asm_x86_push_r32(as, ASM_X86_REG_EDI);
-    num_locals |= 3; // make it odd so stack is aligned on 16 byte boundary
+    num_locals |= 3; 
     asm_x86_sub_r32_i32(as, ASM_X86_REG_ESP, num_locals * WORD_SIZE);
     as->num_locals = num_locals;
 }
@@ -433,7 +409,7 @@ void asm_x86_exit(asm_x86_t *as) {
 }
 
 static int asm_x86_arg_offset_from_esp(asm_x86_t *as, size_t arg_num) {
-    // Above esp are: locals, 4 saved registers, return eip, arguments
+    
     return (as->num_locals + 4 + 1 + arg_num) * WORD_SIZE;
 }
 
@@ -453,20 +429,20 @@ void asm_x86_mov_r32_to_arg(asm_x86_t *as, int src_r32, int dest_arg_num) {
 }
 #endif
 
-// locals:
-//  - stored on the stack in ascending order
-//  - numbered 0 through as->num_locals-1
-//  - ESP points to the first local
-//
-//  | ESP
-//  v
-//  l0  l1  l2  ...  l(n-1)
-//  ^                ^
-//  | low address    | high address in RAM
-//
+
+
+
+
+
+
+
+
+
+
+
 static int asm_x86_local_offset_from_esp(asm_x86_t *as, int local_num) {
     (void)as;
-    // Stack is full descending, ESP points to local0
+    
     return local_num * WORD_SIZE;
 }
 
@@ -493,7 +469,7 @@ void asm_x86_mov_reg_pcrel(asm_x86_t *as, int dest_r32, mp_uint_t label) {
     mp_uint_t dest = get_label_dest(as, label);
     mp_int_t rel = dest - as->base.code_offset;
     asm_x86_pop_r32(as, dest_r32);
-    // PC rel is usually a forward reference, so need to assume it's large
+    
     asm_x86_write_byte_2(as, OPCODE_ADD_I32_TO_RM32, MODRM_R32(0) | MODRM_RM_REG | MODRM_RM_R32(dest_r32));
     asm_x86_write_word32(as, rel);
 }
@@ -513,7 +489,7 @@ void asm_x86_push_local_addr(asm_x86_t *as, int local_num, int temp_r32) {
 void asm_x86_call_ind(asm_x86_t *as, size_t fun_id, mp_uint_t n_args, int temp_r32) {
     assert(n_args <= 4);
 
-    // Align stack on 16-byte boundary during the call
+    
     unsigned int align = ((n_args + 3) & ~3) - n_args;
     if (align) {
         asm_x86_sub_r32_i32(as, ASM_X86_REG_ESP, align * WORD_SIZE);
@@ -532,14 +508,14 @@ void asm_x86_call_ind(asm_x86_t *as, size_t fun_id, mp_uint_t n_args, int temp_r
         asm_x86_push_r32(as, ASM_X86_REG_ARG_1);
     }
 
-    // Load the pointer to the function and make the call
+    
     asm_x86_mov_mem32_to_r32(as, ASM_X86_REG_FUN_TABLE, fun_id * WORD_SIZE, temp_r32);
     asm_x86_write_byte_2(as, OPCODE_CALL_RM32, MODRM_R32(2) | MODRM_RM_REG | MODRM_RM_R32(temp_r32));
 
-    // the caller must clean up the stack
+    
     if (n_args > 0) {
         asm_x86_add_i32_to_r32(as, (n_args + align) * WORD_SIZE, ASM_X86_REG_ESP);
     }
 }
 
-#endif // MICROPY_EMIT_X86
+#endif 

@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Intel Corporation
 
-/*
- *  sof_sdw_rt715_sdca - Helpers to handle RT715-SDCA from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>

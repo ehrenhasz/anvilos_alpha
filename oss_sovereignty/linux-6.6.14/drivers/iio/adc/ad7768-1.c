@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Analog Devices AD7768-1 SPI ADC driver
- *
- * Copyright 2017 Analog Devices Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -23,7 +19,7 @@
 #include <linux/iio/triggered_buffer.h>
 #include <linux/iio/trigger_consumer.h>
 
-/* AD7768 registers definition */
+ 
 #define AD7768_REG_CHIP_TYPE		0x3
 #define AD7768_REG_PROD_ID_L		0x4
 #define AD7768_REG_PROD_ID_H		0x5
@@ -60,19 +56,19 @@
 #define AD7768_REG_DIG_DIAG_STATUS	0x30
 #define AD7768_REG_MCLK_COUNTER		0x31
 
-/* AD7768_REG_POWER_CLOCK */
+ 
 #define AD7768_PWR_MCLK_DIV_MSK		GENMASK(5, 4)
 #define AD7768_PWR_MCLK_DIV(x)		FIELD_PREP(AD7768_PWR_MCLK_DIV_MSK, x)
 #define AD7768_PWR_PWRMODE_MSK		GENMASK(1, 0)
 #define AD7768_PWR_PWRMODE(x)		FIELD_PREP(AD7768_PWR_PWRMODE_MSK, x)
 
-/* AD7768_REG_DIGITAL_FILTER */
+ 
 #define AD7768_DIG_FIL_FIL_MSK		GENMASK(6, 4)
 #define AD7768_DIG_FIL_FIL(x)		FIELD_PREP(AD7768_DIG_FIL_FIL_MSK, x)
 #define AD7768_DIG_FIL_DEC_MSK		GENMASK(2, 0)
 #define AD7768_DIG_FIL_DEC_RATE(x)	FIELD_PREP(AD7768_DIG_FIL_DEC_MSK, x)
 
-/* AD7768_REG_CONVERSION */
+ 
 #define AD7768_CONV_MODE_MSK		GENMASK(2, 0)
 #define AD7768_CONV_MODE(x)		FIELD_PREP(AD7768_CONV_MODE_MSK, x)
 
@@ -162,10 +158,7 @@ struct ad7768_state {
 	struct iio_trigger *trig;
 	struct gpio_desc *gpio_sync_in;
 	const char *labels[ARRAY_SIZE(ad7768_channels)];
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	union {
 		struct {
 			__be32 chan;
@@ -237,10 +230,7 @@ static int ad7768_scan_direct(struct iio_dev *indio_dev)
 	readval = ad7768_spi_reg_read(st, AD7768_REG_ADC_DATA, 3);
 	if (readval < 0)
 		return readval;
-	/*
-	 * Any SPI configuration of the AD7768-1 can only be
-	 * performed in continuous conversion mode.
-	 */
+	 
 	ret = ad7768_set_mode(st, AD7768_CONTINUOUS);
 	if (ret < 0)
 		return ret;
@@ -287,7 +277,7 @@ static int ad7768_set_dig_fil(struct ad7768_state *st,
 	if (ret < 0)
 		return ret;
 
-	/* A sync-in pulse is required every time the filter dec rate changes */
+	 
 	gpiod_set_value(st->gpio_sync_in, 1);
 	gpiod_set_value(st->gpio_sync_in, 0);
 
@@ -305,7 +295,7 @@ static int ad7768_set_freq(struct ad7768_state *st,
 
 	res = DIV_ROUND_CLOSEST(st->mclk_freq, freq);
 
-	/* Find the closest match for the desired sampling frequency */
+	 
 	for (i = 0; i < ARRAY_SIZE(ad7768_clk_config); i++) {
 		diff_new = abs(res - ad7768_clk_config[i].clk_div);
 		if (diff_new < diff_old) {
@@ -314,10 +304,7 @@ static int ad7768_set_freq(struct ad7768_state *st,
 		}
 	}
 
-	/*
-	 * Set both the mclk_div and pwrmode with a single write to the
-	 * POWER_CLOCK register
-	 */
+	 
 	pwr_mode = AD7768_PWR_MCLK_DIV(ad7768_clk_config[idx].mclk_div) |
 		   AD7768_PWR_PWRMODE(ad7768_clk_config[idx].pwrmode);
 	ret = ad7768_spi_reg_write(st, AD7768_REG_POWER_CLOCK, pwr_mode);
@@ -441,12 +428,7 @@ static int ad7768_setup(struct ad7768_state *st)
 {
 	int ret;
 
-	/*
-	 * Two writes to the SPI_RESET[1:0] bits are required to initiate
-	 * a software reset. The bits must first be set to 11, and then
-	 * to 10. When the sequence is detected, the reset occurs.
-	 * See the datasheet, page 70.
-	 */
+	 
 	ret = ad7768_spi_reg_write(st, AD7768_REG_SYNC_RESET, 0x3);
 	if (ret)
 		return ret;
@@ -460,7 +442,7 @@ static int ad7768_setup(struct ad7768_state *st)
 	if (IS_ERR(st->gpio_sync_in))
 		return PTR_ERR(st->gpio_sync_in);
 
-	/* Set the default sampling frequency to 32000 kSPS */
+	 
 	return ad7768_set_freq(st, 32000);
 }
 
@@ -504,11 +486,7 @@ static int ad7768_buffer_postenable(struct iio_dev *indio_dev)
 {
 	struct ad7768_state *st = iio_priv(indio_dev);
 
-	/*
-	 * Write a 1 to the LSB of the INTERFACE_FORMAT register to enter
-	 * continuous read mode. Subsequent data reads do not require an
-	 * initial 8-bit write to query the ADC_DATA register.
-	 */
+	 
 	return ad7768_spi_reg_write(st, AD7768_REG_INTERFACE_FORMAT, 0x01);
 }
 
@@ -516,10 +494,7 @@ static int ad7768_buffer_predisable(struct iio_dev *indio_dev)
 {
 	struct ad7768_state *st = iio_priv(indio_dev);
 
-	/*
-	 * To exit continuous read mode, perform a single read of the ADC_DATA
-	 * reg (0x2C), which allows further configuration of the device.
-	 */
+	 
 	return ad7768_spi_reg_read(st, AD7768_REG_ADC_DATA, 3);
 }
 

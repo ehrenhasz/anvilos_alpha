@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
+ 
+ 
 #if !defined(__RVT_TRACE_MR_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __RVT_TRACE_MR_H
 
@@ -173,7 +171,7 @@ TRACE_EVENT(
 	)
 );
 
-#endif /* __RVT_TRACE_MR_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

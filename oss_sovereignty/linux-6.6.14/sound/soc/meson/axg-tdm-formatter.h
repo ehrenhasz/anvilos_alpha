@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT)
- *
- * Copyright (c) 2018 Baylibre SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+ 
 
 #ifndef _MESON_AXG_TDM_FORMATTER_H
 #define _MESON_AXG_TDM_FORMATTER_H
@@ -42,4 +38,4 @@ int axg_tdm_formatter_event(struct snd_soc_dapm_widget *w,
 			    int event);
 int axg_tdm_formatter_probe(struct platform_device *pdev);
 
-#endif /* _MESON_AXG_TDM_FORMATTER_H */
+#endif  

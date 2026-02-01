@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register map access API - W1 (1-Wire) support
-//
-// Copyright (c) 2017 Radioavionica Corporation
-// Author: Alex A. Mihaylov <minimumlaw@rambler.ru>
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <linux/module.h>
@@ -14,9 +14,7 @@
 #define W1_CMD_READ_DATA	0x69
 #define W1_CMD_WRITE_DATA	0x6C
 
-/*
- * 1-Wire slaves registers with addess 8 bit and data 8 bit
- */
+ 
 
 static int w1_reg_a8_v8_read(void *context, unsigned int reg, unsigned int *val)
 {
@@ -62,9 +60,7 @@ static int w1_reg_a8_v8_write(void *context, unsigned int reg, unsigned int val)
 	return ret;
 }
 
-/*
- * 1-Wire slaves registers with addess 8 bit and data 16 bit
- */
+ 
 
 static int w1_reg_a8_v16_read(void *context, unsigned int reg,
 				unsigned int *val)
@@ -114,9 +110,7 @@ static int w1_reg_a8_v16_write(void *context, unsigned int reg,
 	return ret;
 }
 
-/*
- * 1-Wire slaves registers with addess 16 bit and data 16 bit
- */
+ 
 
 static int w1_reg_a16_v16_read(void *context, unsigned int reg,
 				unsigned int *val)
@@ -168,9 +162,7 @@ static int w1_reg_a16_v16_write(void *context, unsigned int reg,
 	return ret;
 }
 
-/*
- * Various types of supported bus addressing
- */
+ 
 
 static const struct regmap_bus regmap_w1_bus_a8_v8 = {
 	.reg_read = w1_reg_a8_v8_read,

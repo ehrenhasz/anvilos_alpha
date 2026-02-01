@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2018-2019 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Ricky WU <ricky_wu@realtek.com>
- *   Rui FENG <rui_feng@realsil.com.cn>
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -63,7 +55,7 @@ static void rtsx5228_fetch_vendor_settings(struct rtsx_pcr *pcr)
 	struct pci_dev *pdev = pcr->pci;
 	u32 reg;
 
-	/* 0x724~0x727 */
+	 
 	pci_read_config_dword(pdev, PCR_SETTING_REG1, &reg);
 	pcr_dbg(pcr, "Cfg 0x%x: 0x%x\n", PCR_SETTING_REG1, reg);
 
@@ -74,7 +66,7 @@ static void rtsx5228_fetch_vendor_settings(struct rtsx_pcr *pcr)
 	pcr->sd30_drive_sel_1v8 = rtsx_reg_to_sd30_drive_sel_1v8(reg);
 	pcr->aspm_en = rtsx_reg_to_aspm(reg);
 
-	/* 0x814~0x817 */
+	 
 	pci_read_config_dword(pdev, PCR_SETTING_REG2, &reg);
 	pcr_dbg(pcr, "Cfg 0x%x: 0x%x\n", PCR_SETTING_REG2, reg);
 
@@ -93,7 +85,7 @@ static int rts5228_optimize_phy(struct rtsx_pcr *pcr)
 
 static void rts5228_force_power_down(struct rtsx_pcr *pcr, u8 pm_state, bool runtime)
 {
-	/* Set relink_time to 0 */
+	 
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 1, MASK_8_BIT_DEF, 0);
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 2, MASK_8_BIT_DEF, 0);
 	rtsx_pci_write_register(pcr, AUTOLOAD_CFG_BASE + 3,
@@ -138,26 +130,14 @@ static int rts5228_turn_off_led(struct rtsx_pcr *pcr)
 		0x02, 0x00);
 }
 
-/* SD Pull Control Enable:
- *     SD_DAT[3:0] ==> pull up
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull up
- *     SD_CMD      ==> pull up
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5228_sd_pull_ctl_enable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0xAA),
 	RTSX_REG_PAIR(CARD_PULL_CTL3, 0xE9),
 	0,
 };
 
-/* SD Pull Control Disable:
- *     SD_DAT[3:0] ==> pull down
- *     SD_CD       ==> pull up
- *     SD_WP       ==> pull down
- *     SD_CMD      ==> pull down
- *     SD_CLK      ==> pull down
- */
+ 
 static const u32 rts5228_sd_pull_ctl_disable_tbl[] = {
 	RTSX_REG_PAIR(CARD_PULL_CTL2, 0x55),
 	RTSX_REG_PAIR(CARD_PULL_CTL3, 0xD5),
@@ -203,7 +183,7 @@ static int rts5228_card_power_on(struct rtsx_pcr *pcr, int card)
 
 	rtsx_pci_write_register(pcr, CARD_OE, SD_OUTPUT_EN, SD_OUTPUT_EN);
 
-	/* Initialize SD_CFG1 register */
+	 
 	rtsx_pci_write_register(pcr, SD_CFG1, 0xFF,
 			SD_CLK_DIVIDE_128 | SD_20_MODE | SD_BUS_WIDTH_1BIT);
 
@@ -213,7 +193,7 @@ static int rts5228_card_power_on(struct rtsx_pcr *pcr, int card)
 	rtsx_pci_write_register(pcr, CARD_STOP, SD_STOP | SD_CLR_ERR,
 			SD_STOP | SD_CLR_ERR);
 
-	/* Reset SD_CFG3 register */
+	 
 	rtsx_pci_write_register(pcr, SD_CFG3, SD30_CLK_END_EN, 0);
 	rtsx_pci_write_register(pcr, REG_SD_STOP_SDCLK_CFG,
 			SD30_CLK_STOP_CFG_EN | SD30_CLK_STOP_CFG1 |
@@ -263,7 +243,7 @@ static int rts5228_switch_output_voltage(struct rtsx_pcr *pcr, u8 voltage)
 		return -EINVAL;
 	}
 
-	/* set pad drive */
+	 
 	rts5228_fill_driving(pcr, voltage);
 
 	return 0;
@@ -424,10 +404,10 @@ static int rts5228_extra_init_hw(struct rtsx_pcr *pcr)
 	rtsx_pci_write_register(pcr, PM_EVENT_DEBUG, PME_DEBUG_0, PME_DEBUG_0);
 	rtsx_pci_write_register(pcr, PM_CLK_FORCE_CTL, CLK_PM_EN, CLK_PM_EN);
 
-	/* LED shine disabled, set initial shine cycle period */
+	 
 	rtsx_pci_write_register(pcr, OLT_LED_CTL, 0x0F, 0x02);
 
-	/* Configure driving */
+	 
 	rts5228_fill_driving(pcr, OUTPUT_3V3);
 
 	if (pcr->flags & PCR_REVERSE_SOCKET)
@@ -435,10 +415,7 @@ static int rts5228_extra_init_hw(struct rtsx_pcr *pcr)
 	else
 		rtsx_pci_write_register(pcr, PETXCFG, 0x30, 0x00);
 
-	/*
-	 * If u_force_clkreq_0 is enabled, CLKREQ# PIN will be forced
-	 * to drive low, and we forcibly request clock.
-	 */
+	 
 	if (option->force_clkreq_0)
 		rtsx_pci_write_register(pcr, PETXCFG,
 				 FORCE_CLKREQ_DELINK_MASK, FORCE_CLKREQ_LOW);
@@ -514,11 +491,11 @@ static void rts5228_set_l1off_cfg_sub_d0(struct rtsx_pcr *pcr, int active)
 	aspm_L1_2 = rtsx_check_dev_flag(pcr, ASPM_L1_2_EN);
 
 	if (active) {
-		/* run, latency: 60us */
+		 
 		if (aspm_L1_1)
 			val = option->ltr_l1off_snooze_sspwrgate;
 	} else {
-		/* l1off, latency: 300us */
+		 
 		if (aspm_L1_2)
 			val = option->ltr_l1off_sspwrgate;
 	}
@@ -568,7 +545,7 @@ int rts5228_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
 	};
 
 	if (initial_mode) {
-		/* We use 250k(around) here, in initial stage */
+		 
 		clk_divider = SD_CLK_DIVIDE_128;
 		card_clock = 30000000;
 	} else {
@@ -669,7 +646,7 @@ int rts5228_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
 	if (err < 0)
 		return err;
 
-	/* Wait SSC clock stable */
+	 
 	udelay(SSC_CLOCK_STABLE_WAIT);
 	err = rtsx_pci_write_register(pcr, CLK_CTL, CLK_LOW_FREQ, 0);
 	if (err < 0)
@@ -708,7 +685,7 @@ void rts5228_init_params(struct rtsx_pcr *pcr)
 				| LTR_L1SS_PWR_GATE_EN);
 	option->ltr_en = true;
 
-	/* init latency of active, idle, L1OFF to 60us, 300us, 3ms */
+	 
 	option->ltr_active_latency = LTR_ACTIVE_LATENCY_DEF;
 	option->ltr_idle_latency = LTR_IDLE_LATENCY_DEF;
 	option->ltr_l1off_latency = LTR_L1OFF_LATENCY_DEF;

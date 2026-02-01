@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic serial GNSS receiver driver
- *
- * Copyright (C) 2018 Johan Hovold <johan@kernel.org>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/gnss.h>
@@ -63,12 +59,12 @@ static int gnss_serial_write_raw(struct gnss_device *gdev,
 	struct serdev_device *serdev = gserial->serdev;
 	int ret;
 
-	/* write is only buffered synchronously */
+	 
 	ret = serdev_device_write(serdev, buf, count, MAX_SCHEDULE_TIMEOUT);
 	if (ret < 0 || ret < count)
 		return ret;
 
-	/* FIXME: determine if interrupted? */
+	 
 	serdev_device_wait_until_sent(serdev, 0);
 
 	return count;
@@ -103,10 +99,7 @@ static int gnss_serial_set_power(struct gnss_serial *gserial,
 	return gserial->ops->set_power(gserial, state);
 }
 
-/*
- * FIXME: need to provide subdriver defaults or separate dt parsing from
- * allocation.
- */
+ 
 static int gnss_serial_parse_dt(struct serdev_device *serdev)
 {
 	struct gnss_serial *gserial = serdev_device_get_drvdata(serdev);
@@ -224,7 +217,7 @@ static int gnss_serial_runtime_resume(struct device *dev)
 
 	return gnss_serial_set_power(gserial, GNSS_SERIAL_ACTIVE);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static int gnss_serial_prepare(struct device *dev)
 {
@@ -240,11 +233,7 @@ static int gnss_serial_suspend(struct device *dev)
 	struct gnss_serial *gserial = dev_get_drvdata(dev);
 	int ret = 0;
 
-	/*
-	 * FIXME: serdev currently lacks support for managing the underlying
-	 * device's wakeup settings. A workaround would be to close the serdev
-	 * device here if it is open.
-	 */
+	 
 
 	if (!pm_runtime_suspended(dev))
 		ret = gnss_serial_set_power(gserial, GNSS_SERIAL_STANDBY);
@@ -262,7 +251,7 @@ static int gnss_serial_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 const struct dev_pm_ops gnss_serial_pm_ops = {
 	.prepare	= gnss_serial_prepare,

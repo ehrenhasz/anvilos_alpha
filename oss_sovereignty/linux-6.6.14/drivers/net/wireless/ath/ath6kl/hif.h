@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2004-2011 Atheros Communications Inc.
- * Copyright (c) 2011 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef HIF_H
 #define HIF_H
@@ -35,32 +20,32 @@
 #define MAX_SCATTER_ENTRIES_PER_REQ      16
 #define MAX_SCATTER_REQ_TRANSFER_SIZE    (32 * 1024)
 
-/* Mailbox address in SDIO address space */
+ 
 #define HIF_MBOX_BASE_ADDR                 0x800
 #define HIF_MBOX_WIDTH                     0x800
 
 #define HIF_MBOX_END_ADDR  (HTC_MAILBOX_NUM_MAX * HIF_MBOX_WIDTH - 1)
 
-/* version 1 of the chip has only a 12K extended mbox range */
+ 
 #define HIF_MBOX0_EXT_BASE_ADDR  0x4000
 #define HIF_MBOX0_EXT_WIDTH      (12*1024)
 
-/* GMBOX addresses */
+ 
 #define HIF_GMBOX_BASE_ADDR                0x7000
 #define HIF_GMBOX_WIDTH                    0x4000
 
-/* interrupt mode register */
+ 
 #define CCCR_SDIO_IRQ_MODE_REG         0xF0
 
-/* mode to enable special 4-bit interrupt assertion without clock */
+ 
 #define SDIO_IRQ_MODE_ASYNC_4BIT_IRQ   (1 << 0)
 
-/* HTC runs over mailbox 0 */
+ 
 #define HTC_MAILBOX	0
 
 #define ATH6KL_TARGET_DEBUG_INTR_MASK     0x01
 
-/* FIXME: are these duplicates with MAX_SCATTER_ values in hif.h? */
+ 
 #define ATH6KL_SCATTER_ENTRIES_PER_REQ            16
 #define ATH6KL_MAX_TRANSFER_SIZE_PER_SCATTER      (16 * 1024)
 #define ATH6KL_SCATTER_REQS                       4
@@ -70,7 +55,7 @@
 struct bus_request {
 	struct list_head list;
 
-	/* request data */
+	 
 	u32 address;
 
 	u8 *buffer;
@@ -79,49 +64,26 @@ struct bus_request {
 	struct htc_packet *packet;
 	int status;
 
-	/* this is a scatter request */
+	 
 	struct hif_scatter_req *scat_req;
 };
 
-/* direction of transfer (read/write) */
+ 
 #define HIF_READ                    0x00000001
 #define HIF_WRITE                   0x00000002
 #define HIF_DIR_MASK                (HIF_READ | HIF_WRITE)
 
-/*
- *     emode - This indicates the whether the command is to be executed in a
- *             blocking or non-blocking fashion (HIF_SYNCHRONOUS/
- *             HIF_ASYNCHRONOUS). The read/write data paths in HTC have been
- *             implemented using the asynchronous mode allowing the bus
- *             driver to indicate the completion of operation through the
- *             registered callback routine. The requirement primarily comes
- *             from the contexts these operations get called from (a driver's
- *             transmit context or the ISR context in case of receive).
- *             Support for both of these modes is essential.
- */
+ 
 #define HIF_SYNCHRONOUS             0x00000010
 #define HIF_ASYNCHRONOUS            0x00000020
 #define HIF_EMODE_MASK              (HIF_SYNCHRONOUS | HIF_ASYNCHRONOUS)
 
-/*
- *     dmode - An interface may support different kinds of commands based on
- *             the tradeoff between the amount of data it can carry and the
- *             setup time. Byte and Block modes are supported (HIF_BYTE_BASIS/
- *             HIF_BLOCK_BASIS). In case of latter, the data is rounded off
- *             to the nearest block size by padding. The size of the block is
- *             configurable at compile time using the HIF_BLOCK_SIZE and is
- *             negotiated with the target during initialization after the
- *             ATH6KL interrupts are enabled.
- */
+ 
 #define HIF_BYTE_BASIS              0x00000040
 #define HIF_BLOCK_BASIS             0x00000080
 #define HIF_DMODE_MASK              (HIF_BYTE_BASIS | HIF_BLOCK_BASIS)
 
-/*
- *     amode - This indicates if the address has to be incremented on ATH6KL
- *             after every read/write operation (HIF?FIXED_ADDRESS/
- *             HIF_INCREMENTAL_ADDRESS).
- */
+ 
 #define HIF_FIXED_ADDRESS           0x00000100
 #define HIF_INCREMENTAL_ADDRESS     0x00000200
 #define HIF_AMODE_MASK		  (HIF_FIXED_ADDRESS | HIF_INCREMENTAL_ADDRESS)
@@ -170,13 +132,13 @@ struct hif_scatter_item {
 
 struct hif_scatter_req {
 	struct list_head list;
-	/* address for the read/write operation */
+	 
 	u32 addr;
 
-	/* request flags */
+	 
 	u32 req;
 
-	/* total length of entire transfer */
+	 
 	u32 len;
 
 	bool virt_scat;
@@ -188,7 +150,7 @@ struct hif_scatter_req {
 	struct bus_request *busrequest;
 	struct scatterlist *sgentries;
 
-	/* bounce buffer for upper layers to copy to/from */
+	 
 	u8 *virt_dma_buf;
 
 	u32 scat_q_depth;
@@ -217,7 +179,7 @@ struct ath6kl_irq_enable_reg {
 } __packed;
 
 struct ath6kl_device {
-	/* protects irq_proc_reg and irq_en_reg below */
+	 
 	spinlock_t lock;
 	struct ath6kl_irq_proc_registers irq_proc_reg;
 	struct ath6kl_irq_enable_reg irq_en_reg;
@@ -269,7 +231,7 @@ int ath6kl_hif_disable_intrs(struct ath6kl_device *dev);
 int ath6kl_hif_rw_comp_handler(void *context, int status);
 int ath6kl_hif_intr_bh_handler(struct ath6kl *ar);
 
-/* Scatter Function and Definitions */
+ 
 int ath6kl_hif_submit_scat_req(struct ath6kl_device *dev,
 			       struct hif_scatter_req *scat_req, bool read);
 

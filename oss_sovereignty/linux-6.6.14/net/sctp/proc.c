@@ -1,23 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * Copyright (c) 2003 International Business Machines, Corp.
- *
- * This file is part of the SCTP kernel implementation
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    Sridhar Samudrala <sri@us.ibm.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/seq_file.h>
 #include <linux/init.h>
 #include <linux/export.h>
 #include <net/sctp/sctp.h>
-#include <net/ip.h> /* for snmp_fold_field */
+#include <net/ip.h>  
 
 static const struct snmp_mib sctp_snmp_list[] = {
 	SNMP_MIB_ITEM("SctpCurrEstab", SCTP_MIB_CURRESTAB),
@@ -55,7 +44,7 @@ static const struct snmp_mib sctp_snmp_list[] = {
 	SNMP_MIB_SENTINEL
 };
 
-/* Display sctp snmp mib statistics(/proc/net/sctp/snmp). */
+ 
 static int sctp_snmp_seq_show(struct seq_file *seq, void *v)
 {
 	unsigned long buff[SCTP_MIB_MAX];
@@ -73,7 +62,7 @@ static int sctp_snmp_seq_show(struct seq_file *seq, void *v)
 	return 0;
 }
 
-/* Dump local addresses of an association/endpoint. */
+ 
 static void sctp_seq_dump_local_addrs(struct seq_file *seq, struct sctp_ep_common *epb)
 {
 	struct sctp_association *asoc;
@@ -109,7 +98,7 @@ static void sctp_seq_dump_local_addrs(struct seq_file *seq, struct sctp_ep_commo
 	rcu_read_unlock();
 }
 
-/* Dump remote addresses of an association. */
+ 
 static void sctp_seq_dump_remote_addrs(struct seq_file *seq, struct sctp_association *assoc)
 {
 	struct sctp_transport *transport;
@@ -157,7 +146,7 @@ static void *sctp_eps_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 }
 
 
-/* Display sctp endpoints (/proc/net/sctp/eps). */
+ 
 static int sctp_eps_seq_show(struct seq_file *seq, void *v)
 {
 	struct sctp_hashbucket *head;
@@ -237,7 +226,7 @@ static void *sctp_transport_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 	return sctp_transport_get_next(seq_file_net(seq), &iter->hti);
 }
 
-/* Display sctp associations (/proc/net/sctp/assocs). */
+ 
 static int sctp_assocs_seq_show(struct seq_file *seq, void *v)
 {
 	struct sctp_transport *transport;
@@ -313,50 +302,28 @@ static int sctp_remaddr_seq_show(struct seq_file *seq, void *v)
 
 	list_for_each_entry_rcu(tsp, &assoc->peer.transport_addr_list,
 				transports) {
-		/*
-		 * The remote address (ADDR)
-		 */
+		 
 		tsp->af_specific->seq_dump_addr(seq, &tsp->ipaddr);
 		seq_printf(seq, " ");
-		/*
-		 * The association ID (ASSOC_ID)
-		 */
+		 
 		seq_printf(seq, "%d ", tsp->asoc->assoc_id);
 
-		/*
-		 * If the Heartbeat is active (HB_ACT)
-		 * Note: 1 = Active, 0 = Inactive
-		 */
+		 
 		seq_printf(seq, "%d ", timer_pending(&tsp->hb_timer));
 
-		/*
-		 * Retransmit time out (RTO)
-		 */
+		 
 		seq_printf(seq, "%lu ", tsp->rto);
 
-		/*
-		 * Maximum path retransmit count (PATH_MAX_RTX)
-		 */
+		 
 		seq_printf(seq, "%d ", tsp->pathmaxrxt);
 
-		/*
-		 * remote address retransmit count (REM_ADDR_RTX)
-		 * Note: We don't have a way to tally this at the moment
-		 * so lets just leave it as zero for the moment
-		 */
+		 
 		seq_puts(seq, "0 ");
 
-		/*
-		 * remote address start time (START).  This is also not
-		 * currently implemented, but we can record it with a
-		 * jiffies marker in a subsequent patch
-		 */
+		 
 		seq_puts(seq, "0 ");
 
-		/*
-		 * The current state of this destination. I.e.
-		 * SCTP_ACTIVE, SCTP_INACTIVE, ...
-		 */
+		 
 		seq_printf(seq, "%d", tsp->state);
 
 		seq_printf(seq, "\n");
@@ -372,7 +339,7 @@ static const struct seq_operations sctp_remaddr_ops = {
 	.show  = sctp_remaddr_seq_show,
 };
 
-/* Set up the proc fs entry for the SCTP protocol. */
+ 
 int __net_init sctp_proc_init(struct net *net)
 {
 	net->sctp.proc_net_sctp = proc_net_mkdir(net, "sctp", net->proc_net);

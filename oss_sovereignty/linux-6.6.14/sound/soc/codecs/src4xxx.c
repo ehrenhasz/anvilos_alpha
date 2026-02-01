@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// TI SRC4xxx Audio Codec driver
-//
-// Copyright 2021-2022 Deqx Pty Ltd
-// Author: Matt Flax <flatmax@flatmax.com>
+
+
+
+
+
+
 
 #include <linux/module.h>
 
@@ -21,7 +21,7 @@ struct src4xxx {
 
 enum {SRC4XXX_PORTA, SRC4XXX_PORTB};
 
-/* SRC attenuation */
+ 
 static const DECLARE_TLV_DB_SCALE(src_tlv, -12750, 50, 0);
 
 static const struct snd_kcontrol_new src4xxx_controls[] = {
@@ -29,7 +29,7 @@ static const struct snd_kcontrol_new src4xxx_controls[] = {
 		SRC4XXX_SCR_CTL_30, SRC4XXX_SCR_CTL_31, 0, 255, 1, src_tlv),
 };
 
-/* I2S port control */
+ 
 static const char * const port_out_src_text[] = {
 	"loopback", "other_port", "DIR", "SRC"
 };
@@ -42,19 +42,19 @@ static const struct snd_kcontrol_new porta_out_control =
 static const struct snd_kcontrol_new portb_out_control =
 	SOC_DAPM_ENUM("Port B source select", portb_out_src_enum);
 
-/* Digital audio transmitter control */
+ 
 static const char * const dit_mux_text[] = {"Port A", "Port B", "DIR", "SRC"};
 static SOC_ENUM_SINGLE_DECL(dit_mux_enum, SRC4XXX_TX_CTL_07, 3, dit_mux_text);
 static const struct snd_kcontrol_new dit_mux_control =
 	SOC_DAPM_ENUM("DIT source", dit_mux_enum);
 
-/* SRC control */
+ 
 static const char * const src_in_text[] = {"Port A", "Port B", "DIR"};
 static SOC_ENUM_SINGLE_DECL(src_in_enum, SRC4XXX_SCR_CTL_2D, 0, src_in_text);
 static const struct snd_kcontrol_new src_in_control =
 	SOC_DAPM_ENUM("SRC source select", src_in_enum);
 
-/* DIR control */
+ 
 static const char * const dir_in_text[] = {"Ch 1", "Ch 2", "Ch 3", "Ch 4"};
 static SOC_ENUM_SINGLE_DECL(dir_in_enum, SRC4XXX_RCV_CTL_0D, 0, dir_in_text);
 static const struct snd_kcontrol_new dir_in_control =
@@ -79,13 +79,13 @@ static const struct snd_soc_dapm_widget src4xxx_dapm_widgets[] = {
 	SND_SOC_DAPM_INPUT("Port_B"),
 	SND_SOC_DAPM_INPUT("DIR_"),
 
-	/* Digital audio receivers and transmitters */
+	 
 	SND_SOC_DAPM_OUTPUT("DIR_OUT"),
 	SND_SOC_DAPM_OUTPUT("SRC_OUT"),
 	SND_SOC_DAPM_MUX("DIT Out Src", SRC4XXX_PWR_RST_01,
 		SRC4XXX_ENABLE_DIT_SHIFT, 1, &dit_mux_control),
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF_A_RX", "Playback A", 0,
 		SRC4XXX_PWR_RST_01, SRC4XXX_ENABLE_PORT_A_SHIFT, 1),
 	SND_SOC_DAPM_AIF_OUT("AIF_A_TX", "Capture A", 0,
@@ -110,7 +110,7 @@ static const struct snd_soc_dapm_widget src4xxx_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route src4xxx_audio_routes[] = {
-	/* I2S Input to Output Routing */
+	 
 	{"Port A source", "loopback", "loopback_A"},
 	{"Port A source", "other_port", "other_port_A"},
 	{"Port A source", "DIR", "DIR_A"},
@@ -119,21 +119,21 @@ static const struct snd_soc_dapm_route src4xxx_audio_routes[] = {
 	{"Port B source", "other_port", "other_port_B"},
 	{"Port B source", "DIR", "DIR_B"},
 	{"Port B source", "SRC", "SRC_B"},
-	/* DIT muxing */
+	 
 	{"DIT Out Src", "Port A", "Capture A"},
 	{"DIT Out Src", "Port B", "Capture B"},
 	{"DIT Out Src", "DIR", "DIR_OUT"},
 	{"DIT Out Src", "SRC", "SRC_OUT"},
 
-	/* SRC input selection */
+	 
 	{"SRC source", "Port A", "Port_A"},
 	{"SRC source", "Port B", "Port_B"},
 	{"SRC source", "DIR", "DIR_"},
-	/* SRC mclk selection */
+	 
 	{"SRC mclk source", "Master (MCLK)", "MCLK"},
 	{"SRC mclk source", "Master (RXCLKI)", "RXMCLKI"},
 	{"SRC mclk source", "Recovered receiver clk", "RXMCLKO"},
-	/* DIR input selection */
+	 
 	{"Digital Input", "Ch 1", "RX1"},
 	{"Digital Input", "Ch 2", "RX2"},
 	{"Digital Input", "Ch 3", "RX3"},
@@ -253,7 +253,7 @@ static int src4xxx_hw_params(struct snd_pcm_substream *substream,
 			return -EINVAL;
 		}
 
-		/* set the TX DIV */
+		 
 		ret = regmap_update_bits(src4xxx->regmap,
 			SRC4XXX_TX_CTL_07, SRC4XXX_TX_MCLK_DIV_MASK,
 			val<<SRC4XXX_TX_MCLK_DIV_SHIFT);
@@ -265,7 +265,7 @@ static int src4xxx_hw_params(struct snd_pcm_substream *substream,
 			return ret;
 		}
 
-		/* set the PLL for the digital receiver */
+		 
 		switch (src4xxx->mclk_hz) {
 		case 24576000:
 			pj = 0x22;
@@ -278,11 +278,7 @@ static int src4xxx_hw_params(struct snd_pcm_substream *substream,
 			d = 0xa3;
 			break;
 		default:
-			/* don't error out here,
-			 * other parts of the chip are still functional
-			 * Dummy initialize variables to avoid
-			 * -Wsometimes-uninitialized from clang.
-			 */
+			 
 			dev_info(component->dev,
 				"Couldn't set the RCV PLL as this master clock rate is unknown. Chosen regmap values may not match real world values.\n");
 			pj = 0x0;
@@ -381,7 +377,7 @@ static struct snd_soc_dai_driver src4xxx_dai_driver[] = {
 };
 
 static const struct reg_default src4xxx_reg_defaults[] = {
-	{ SRC4XXX_PWR_RST_01,		0x00 }, /* all powered down intially */
+	{ SRC4XXX_PWR_RST_01,		0x00 },  
 	{ SRC4XXX_PORTA_CTL_03,		0x00 },
 	{ SRC4XXX_PORTA_CTL_04,		0x00 },
 	{ SRC4XXX_PORTB_CTL_05,		0x00 },
@@ -393,9 +389,9 @@ static const struct reg_default src4xxx_reg_defaults[] = {
 	{ SRC4XXX_SRC_DIT_IRQ_MODE_0C,	0x00 },
 	{ SRC4XXX_RCV_CTL_0D,		0x00 },
 	{ SRC4XXX_RCV_CTL_0E,		0x00 },
-	{ SRC4XXX_RCV_PLL_0F,		0x00 }, /* not spec. in the datasheet */
-	{ SRC4XXX_RCV_PLL_10,		0xff }, /* not spec. in the datasheet */
-	{ SRC4XXX_RCV_PLL_11,		0xff }, /* not spec. in the datasheet */
+	{ SRC4XXX_RCV_PLL_0F,		0x00 },  
+	{ SRC4XXX_RCV_PLL_10,		0xff },  
+	{ SRC4XXX_RCV_PLL_11,		0xff },  
 	{ SRC4XXX_RVC_IRQ_MSK_16,	0x00 },
 	{ SRC4XXX_RVC_IRQ_MSK_17,	0x00 },
 	{ SRC4XXX_RVC_IRQ_MODE_18,	0x00 },
@@ -427,31 +423,31 @@ int src4xxx_probe(struct device *dev, struct regmap *regmap,
 
 	src4xxx->regmap = regmap;
 	src4xxx->dev = dev;
-	src4xxx->mclk_hz = 0; /* mclk has not been configured yet */
+	src4xxx->mclk_hz = 0;  
 	dev_set_drvdata(dev, src4xxx);
 
 	ret = regmap_write(regmap, SRC4XXX_PWR_RST_01, SRC4XXX_RESET);
 	if (ret < 0)
 		dev_err(dev, "Failed to issue reset: %d\n", ret);
-	usleep_range(1, 500); /* sleep for more then 500 ns */
+	usleep_range(1, 500);  
 	ret = regmap_write(regmap, SRC4XXX_PWR_RST_01, SRC4XXX_POWER_DOWN);
 	if (ret < 0)
 		dev_err(dev, "Failed to decommission reset: %d\n", ret);
-	usleep_range(500, 1000); /* sleep for 500 us or more */
+	usleep_range(500, 1000);  
 
 	ret = regmap_update_bits(src4xxx->regmap, SRC4XXX_PWR_RST_01,
 		SRC4XXX_POWER_ENABLE, SRC4XXX_POWER_ENABLE);
 	if (ret < 0)
 		dev_err(dev, "Failed to port A and B : %d\n", ret);
 
-	/* set receiver to use master clock (rcv mclk is most likely jittery) */
+	 
 	ret = regmap_update_bits(src4xxx->regmap, SRC4XXX_RCV_CTL_0D,
 		SRC4XXX_RXCLK_MCLK,	SRC4XXX_RXCLK_MCLK);
 	if (ret < 0)
 		dev_err(dev,
 			"Failed to enable mclk as the PLL1 DIR reference : %d\n", ret);
 
-	/* default to leaving the PLL2 running on loss of lock, divide by 8 */
+	 
 	ret = regmap_update_bits(src4xxx->regmap, SRC4XXX_RCV_CTL_0E,
 		SRC4XXX_PLL2_DIV_8 | SRC4XXX_REC_MCLK_EN | SRC4XXX_PLL2_LOL,
 		SRC4XXX_PLL2_DIV_8 | SRC4XXX_REC_MCLK_EN | SRC4XXX_PLL2_LOL);

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * EHCI HCD (Host Controller Driver) for USB.
- *
- * Bus Glue for PPC On-Chip EHCI driver on the of_platform bus
- * Tested on AMCC PPC 440EPx
- *
- * Valentine Barshak <vbarshak@ru.mvista.com>
- *
- * Based on "ehci-ppc-soc.c" by Stefan Roese <sr@denx.de>
- * and "ohci-ppc-of.c" by Sylvain Munaut <tnt@246tNt.com>
- *
- * This file is licenced under the GPL.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/signal.h>
@@ -27,36 +15,26 @@ static const struct hc_driver ehci_ppc_of_hc_driver = {
 	.product_desc		= "OF EHCI",
 	.hcd_priv_size		= sizeof(struct ehci_hcd),
 
-	/*
-	 * generic hardware linkage
-	 */
+	 
 	.irq			= ehci_irq,
 	.flags			= HCD_MEMORY | HCD_DMA | HCD_USB2 | HCD_BH,
 
-	/*
-	 * basic lifecycle operations
-	 */
+	 
 	.reset			= ehci_setup,
 	.start			= ehci_run,
 	.stop			= ehci_stop,
 	.shutdown		= ehci_shutdown,
 
-	/*
-	 * managing i/o requests and associated device resources
-	 */
+	 
 	.urb_enqueue		= ehci_urb_enqueue,
 	.urb_dequeue		= ehci_urb_dequeue,
 	.endpoint_disable	= ehci_endpoint_disable,
 	.endpoint_reset		= ehci_endpoint_reset,
 
-	/*
-	 * scheduling support
-	 */
+	 
 	.get_frame_number	= ehci_get_frame,
 
-	/*
-	 * root hub support
-	 */
+	 
 	.hub_status_data	= ehci_hub_status_data,
 	.hub_control		= ehci_hub_control,
 #ifdef	CONFIG_PM
@@ -70,10 +48,7 @@ static const struct hc_driver ehci_ppc_of_hc_driver = {
 };
 
 
-/*
- * 440EPx Errata USBH_3
- * Fix: Enable Break Memory Transfer (BMT) in INSNREG3
- */
+ 
 #define PPC440EPX_EHCI0_INSREG_BMT	(0x1 << 0)
 static int
 ppc44x_enable_bmt(struct device_node *dn)
@@ -135,7 +110,7 @@ static int ehci_hcd_ppc_of_probe(struct platform_device *op)
 	ehci = hcd_to_ehci(hcd);
 	np = of_find_compatible_node(NULL, NULL, "ibm,usb-ohci-440epx");
 	if (np != NULL) {
-		/* claim we really affected by usb23 erratum */
+		 
 		if (!of_address_to_resource(np, 0, &res))
 			ehci->ohci_hcctrl_reg =
 				devm_ioremap(&op->dev,
@@ -198,9 +173,7 @@ static void ehci_hcd_ppc_of_remove(struct platform_device *op)
 
 	irq_dispose_mapping(hcd->irq);
 
-	/* use request_mem_region to test if the ohci driver is loaded.  if so
-	 * ensure the ohci core is operational.
-	 */
+	 
 	if (ehci->has_amcc_usb23) {
 		np = of_find_compatible_node(NULL, NULL, "ibm,usb-ohci-440epx");
 		if (np != NULL) {

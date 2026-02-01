@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * net/sunrpc/rpc_pipe.c
- *
- * Userland/kernel interface for rpcauth_gss.
- * Code shamelessly plagiarized from fs/nfsd/nfsctl.c
- * and fs/sysfs/inode.c
- *
- * Copyright (c) 2002, Trond Myklebust <trond.myklebust@fys.uio.no>
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -121,16 +112,7 @@ ssize_t rpc_pipe_generic_upcall(struct file *filp, struct rpc_pipe_msg *msg,
 }
 EXPORT_SYMBOL_GPL(rpc_pipe_generic_upcall);
 
-/**
- * rpc_queue_upcall - queue an upcall message to userspace
- * @pipe: upcall pipe on which to queue given message
- * @msg: message to queue
- *
- * Call with an @inode created by rpc_mkpipe() to queue an upcall.
- * A userspace process may then later read the upcall by performing a
- * read on an open file for this inode.  It is up to the caller to
- * initialize the fields of @msg (other than @msg->list) appropriately.
- */
+ 
 int
 rpc_queue_upcall(struct rpc_pipe *pipe, struct rpc_pipe_msg *msg)
 {
@@ -307,7 +289,7 @@ rpc_pipe_read(struct file *filp, char __user *buf, size_t len, loff_t *offset)
 		if (msg == NULL)
 			goto out_unlock;
 	}
-	/* NOTE: it is up to the callback to update msg->copied */
+	 
 	res = pipe->ops->upcall(filp, msg, buf, len);
 	if (res < 0 || msg->len == msg->copied) {
 		filp->private_data = NULL;
@@ -455,9 +437,7 @@ static const struct file_operations rpc_info_operations = {
 };
 
 
-/*
- * Description of fs contents.
- */
+ 
 struct rpc_filelist {
 	const char *name;
 	const struct file_operations *i_fop;
@@ -644,9 +624,7 @@ static struct dentry *__rpc_lookup_create_exclusive(struct dentry *parent,
 	return ERR_PTR(-EEXIST);
 }
 
-/*
- * FIXME: This probably has races.
- */
+ 
 static void __rpc_depopulate(struct dentry *parent,
 			     const struct rpc_filelist *files,
 			     int start, int eof)
@@ -781,25 +759,7 @@ static int rpc_rmdir_depopulate(struct dentry *dentry,
 	return error;
 }
 
-/**
- * rpc_mkpipe_dentry - make an rpc_pipefs file for kernel<->userspace
- *		       communication
- * @parent: dentry of directory to create new "pipe" in
- * @name: name of pipe
- * @private: private data to associate with the pipe, for the caller's use
- * @pipe: &rpc_pipe containing input parameters
- *
- * Data is made available for userspace to read by calls to
- * rpc_queue_upcall().  The actual reads will result in calls to
- * @ops->upcall, which will be called with the file pointer,
- * message, and userspace buffer to copy to.
- *
- * Writes can come at any time, and do not necessarily have to be
- * responses to upcalls.  They will result in calls to @msg->downcall.
- *
- * The @private argument passed here will be available to all these methods
- * from the file pointer, via RPC_I(file_inode(file))->private.
- */
+ 
 struct dentry *rpc_mkpipe_dentry(struct dentry *parent, const char *name,
 				 void *private, struct rpc_pipe *pipe)
 {
@@ -833,14 +793,7 @@ out_err:
 }
 EXPORT_SYMBOL_GPL(rpc_mkpipe_dentry);
 
-/**
- * rpc_unlink - remove a pipe
- * @dentry: dentry for the pipe, as returned from rpc_mkpipe
- *
- * After this call, lookups will no longer find the pipe, and any
- * attempts to read or write using preexisting opens of the pipe will
- * return -EPIPE.
- */
+ 
 int
 rpc_unlink(struct dentry *dentry)
 {
@@ -858,10 +811,7 @@ rpc_unlink(struct dentry *dentry)
 }
 EXPORT_SYMBOL_GPL(rpc_unlink);
 
-/**
- * rpc_init_pipe_dir_head - initialise a struct rpc_pipe_dir_head
- * @pdh: pointer to struct rpc_pipe_dir_head
- */
+ 
 void rpc_init_pipe_dir_head(struct rpc_pipe_dir_head *pdh)
 {
 	INIT_LIST_HEAD(&pdh->pdh_entries);
@@ -869,12 +819,7 @@ void rpc_init_pipe_dir_head(struct rpc_pipe_dir_head *pdh)
 }
 EXPORT_SYMBOL_GPL(rpc_init_pipe_dir_head);
 
-/**
- * rpc_init_pipe_dir_object - initialise a struct rpc_pipe_dir_object
- * @pdo: pointer to struct rpc_pipe_dir_object
- * @pdo_ops: pointer to const struct rpc_pipe_dir_object_ops
- * @pdo_data: pointer to caller-defined data
- */
+ 
 void rpc_init_pipe_dir_object(struct rpc_pipe_dir_object *pdo,
 		const struct rpc_pipe_dir_object_ops *pdo_ops,
 		void *pdo_data)
@@ -909,13 +854,7 @@ rpc_remove_pipe_dir_object_locked(struct net *net,
 	list_del_init(&pdo->pdo_head);
 }
 
-/**
- * rpc_add_pipe_dir_object - associate a rpc_pipe_dir_object to a directory
- * @net: pointer to struct net
- * @pdh: pointer to struct rpc_pipe_dir_head
- * @pdo: pointer to struct rpc_pipe_dir_object
- *
- */
+ 
 int
 rpc_add_pipe_dir_object(struct net *net,
 		struct rpc_pipe_dir_head *pdh,
@@ -934,13 +873,7 @@ rpc_add_pipe_dir_object(struct net *net,
 }
 EXPORT_SYMBOL_GPL(rpc_add_pipe_dir_object);
 
-/**
- * rpc_remove_pipe_dir_object - remove a rpc_pipe_dir_object from a directory
- * @net: pointer to struct net
- * @pdh: pointer to struct rpc_pipe_dir_head
- * @pdo: pointer to struct rpc_pipe_dir_object
- *
- */
+ 
 void
 rpc_remove_pipe_dir_object(struct net *net,
 		struct rpc_pipe_dir_head *pdh,
@@ -956,15 +889,7 @@ rpc_remove_pipe_dir_object(struct net *net,
 }
 EXPORT_SYMBOL_GPL(rpc_remove_pipe_dir_object);
 
-/**
- * rpc_find_or_alloc_pipe_dir_object
- * @net: pointer to struct net
- * @pdh: pointer to struct rpc_pipe_dir_head
- * @match: match struct rpc_pipe_dir_object to data
- * @alloc: allocate a new struct rpc_pipe_dir_object
- * @data: user defined data for match() and alloc()
- *
- */
+ 
 struct rpc_pipe_dir_object *
 rpc_find_or_alloc_pipe_dir_object(struct net *net,
 		struct rpc_pipe_dir_head *pdh,
@@ -1036,17 +961,7 @@ static void rpc_clntdir_depopulate(struct dentry *dentry)
 	rpc_depopulate(dentry, authfiles, RPCAUTH_info, RPCAUTH_EOF);
 }
 
-/**
- * rpc_create_client_dir - Create a new rpc_client directory in rpc_pipefs
- * @dentry: the parent of new directory
- * @name: the name of new directory
- * @rpc_client: rpc client to associate with this directory
- *
- * This creates a directory at the given @path associated with
- * @rpc_clnt, which will contain a file named "info" with some basic
- * information about the client, together with any "pipes" that may
- * later be created using rpc_mkpipe().
- */
+ 
 struct dentry *rpc_create_client_dir(struct dentry *dentry,
 				   const char *name,
 				   struct rpc_clnt *rpc_client)
@@ -1062,10 +977,7 @@ struct dentry *rpc_create_client_dir(struct dentry *dentry,
 	return ret;
 }
 
-/**
- * rpc_remove_client_dir - Remove a directory created with rpc_create_client_dir()
- * @rpc_client: rpc_client for the pipe
- */
+ 
 int rpc_remove_client_dir(struct rpc_clnt *rpc_client)
 {
 	struct dentry *dentry = rpc_client->cl_pipedir_objects.pdh_dentry;
@@ -1119,9 +1031,7 @@ void rpc_remove_cache_dir(struct dentry *dentry)
 	rpc_rmdir_depopulate(dentry, rpc_cachedir_depopulate);
 }
 
-/*
- * populate the filesystem
- */
+ 
 static const struct super_operations s_ops = {
 	.alloc_inode	= rpc_alloc_inode,
 	.free_inode	= rpc_free_inode,
@@ -1130,9 +1040,7 @@ static const struct super_operations s_ops = {
 
 #define RPCAUTH_GSSMAGIC 0x67596969
 
-/*
- * We have a single directory with 1 node in it.
- */
+ 
 enum {
 	RPCAUTH_lockd,
 	RPCAUTH_mount,
@@ -1185,9 +1093,7 @@ static const struct rpc_filelist files[] = {
 	},
 };
 
-/*
- * This call can be used only in RPC pipefs mount notification hooks.
- */
+ 
 struct dentry *rpc_d_lookup_sb(const struct super_block *sb,
 			       const unsigned char *dir_name)
 {
@@ -1216,12 +1122,7 @@ void rpc_pipefs_exit_net(struct net *net)
 	rpc_destroy_pipe_data(sn->gssd_dummy);
 }
 
-/*
- * This call will be used for per network namespace operations calls.
- * Note: Function will be returned with pipefs_sb_lock taken if superblock was
- * found. This lock have to be released by rpc_put_sb_net() when all operations
- * will be completed.
- */
+ 
 struct super_block *rpc_get_sb_net(const struct net *net)
 {
 	struct sunrpc_net *sn = net_generic(net, sunrpc_net_id);
@@ -1261,11 +1162,7 @@ static const struct rpc_pipe_ops gssd_dummy_pipe_ops = {
 	.downcall	= dummy_downcall,
 };
 
-/*
- * Here we present a bogus "info" file to keep rpc.gssd happy. We don't expect
- * that it will ever use this info to handle an upcall, but rpc.gssd expects
- * that this file will be there and have a certain format.
- */
+ 
 static int
 rpc_dummy_info_show(struct seq_file *m, void *v)
 {
@@ -1286,14 +1183,7 @@ static const struct rpc_filelist gssd_dummy_info_file[] = {
 	},
 };
 
-/**
- * rpc_gssd_dummy_populate - create a dummy gssd pipe
- * @root:	root of the rpc_pipefs filesystem
- * @pipe_data:	pipe data created when netns is initialized
- *
- * Create a dummy set of directories and a pipe that gssd can hold open to
- * indicate that it is up and running.
- */
+ 
 static struct dentry *
 rpc_gssd_dummy_populate(struct dentry *root, struct rpc_pipe *pipe_data)
 {
@@ -1304,7 +1194,7 @@ rpc_gssd_dummy_populate(struct dentry *root, struct rpc_pipe *pipe_data)
 	struct qstr q = QSTR_INIT(files[RPCAUTH_gssd].name,
 				  strlen(files[RPCAUTH_gssd].name));
 
-	/* We should never get this far if "gssd" doesn't exist */
+	 
 	gssd_dentry = d_hash_and_lookup(root, &q);
 	if (!gssd_dentry)
 		return ERR_PTR(-ENOENT);

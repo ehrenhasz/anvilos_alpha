@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm-dp] %s: " fmt, __func__
 
@@ -21,8 +19,8 @@
 #include "dp_link.h"
 
 #define DP_KHZ_TO_HZ 1000
-#define IDLE_PATTERN_COMPLETION_TIMEOUT_JIFFIES	(30 * HZ / 1000) /* 30 ms */
-#define PSR_OPERATION_COMPLETION_TIMEOUT_JIFFIES       (300 * HZ / 1000) /* 300 ms */
+#define IDLE_PATTERN_COMPLETION_TIMEOUT_JIFFIES	(30 * HZ / 1000)  
+#define PSR_OPERATION_COMPLETION_TIMEOUT_JIFFIES       (300 * HZ / 1000)  
 #define WAIT_FOR_VIDEO_READY_TIMEOUT_JIFFIES (HZ / 2)
 
 #define DP_CTRL_INTR_READY_FOR_VIDEO     BIT(0)
@@ -41,24 +39,24 @@ enum {
 };
 
 struct dp_tu_calc_input {
-	u64 lclk;        /* 162, 270, 540 and 810 */
-	u64 pclk_khz;    /* in KHz */
-	u64 hactive;     /* active h-width */
-	u64 hporch;      /* bp + fp + pulse */
-	int nlanes;      /* no.of.lanes */
-	int bpp;         /* bits */
-	int pixel_enc;   /* 444, 420, 422 */
-	int dsc_en;     /* dsc on/off */
-	int async_en;   /* async mode */
-	int fec_en;     /* fec */
-	int compress_ratio; /* 2:1 = 200, 3:1 = 300, 3.75:1 = 375 */
-	int num_of_dsc_slices; /* number of slices per line */
+	u64 lclk;         
+	u64 pclk_khz;     
+	u64 hactive;      
+	u64 hporch;       
+	int nlanes;       
+	int bpp;          
+	int pixel_enc;    
+	int dsc_en;      
+	int async_en;    
+	int fec_en;      
+	int compress_ratio;  
+	int num_of_dsc_slices;  
 };
 
 struct dp_vc_tu_mapping_table {
 	u32 vic;
 	u8 lanes;
-	u8 lrate; /* DP_LINK_RATE -> 162(6), 270(10), 540(20), 810 (30) */
+	u8 lrate;  
 	u8 bpp;
 	u8 valid_boundary_link;
 	u16 delay_start_link;
@@ -125,10 +123,10 @@ static void dp_ctrl_config_ctrl(struct dp_ctrl_private *ctrl)
 	u32 config = 0, tbd;
 	const u8 *dpcd = ctrl->panel->dpcd;
 
-	/* Default-> LSCLK DIV: 1/4 LCLK  */
+	 
 	config |= (2 << DP_CONFIGURATION_CTRL_LSCLK_DIV_SHIFT);
 
-	/* Scrambler reset enable */
+	 
 	if (drm_dp_alternate_scrambler_reset_cap(dpcd))
 		config |= DP_CONFIGURATION_CTRL_ASSR;
 
@@ -142,16 +140,16 @@ static void dp_ctrl_config_ctrl(struct dp_ctrl_private *ctrl)
 
 	config |= tbd << DP_CONFIGURATION_CTRL_BPC_SHIFT;
 
-	/* Num of Lanes */
+	 
 	config |= ((ctrl->link->link_params.num_lanes - 1)
 			<< DP_CONFIGURATION_CTRL_NUM_OF_LANES_SHIFT);
 
 	if (drm_dp_enhanced_frame_cap(dpcd))
 		config |= DP_CONFIGURATION_CTRL_ENHANCED_FRAMING;
 
-	config |= DP_CONFIGURATION_CTRL_P_INTERLACED; /* progressive video */
+	config |= DP_CONFIGURATION_CTRL_P_INTERLACED;  
 
-	/* sync clock & static Mvid */
+	 
 	config |= DP_CONFIGURATION_CTRL_STATIC_DYNAMIC_CN;
 	config |= DP_CONFIGURATION_CTRL_SYNC_ASYNC_CLK;
 
@@ -177,11 +175,7 @@ static void dp_ctrl_configure_source_params(struct dp_ctrl_private *ctrl)
 	dp_panel_timing_cfg(ctrl->panel);
 }
 
-/*
- * The structure and few functions present below are IP/Hardware
- * specific implementation. Most of the implementation will not
- * have coding comments
- */
+ 
 struct tu_algo_data {
 	s64 lclk_fp;
 	s64 pclk_fp;
@@ -281,12 +275,12 @@ static int _tu_param_compare(s64 a, s64 b)
 	else if (b_sign > a_sign)
 		return 1;
 
-	if (!a_sign && !b_sign) { /* positive */
+	if (!a_sign && !b_sign) {  
 		if (a > b)
 			return 1;
 		else
 			return 2;
-	} else { /* negative */
+	} else {  
 		a_temp = drm_fixp_mul(a, minus_1);
 		b_temp = drm_fixp_mul(b, minus_1);
 
@@ -391,14 +385,14 @@ static void dp_panel_update_tu_timings(struct dp_tu_calc_input *in,
 	temp2_fp = drm_fixp_mul(tu->hbp_relative_to_pclk_fp, temp1_fp);
 	hbp_dsc_fp = temp2_fp;
 
-	/* output */
+	 
 	tu->pclk_fp = pclk_dsc_fp;
 	tu->lwidth_fp = dwidth_dsc_fp;
 	tu->hbp_relative_to_pclk_fp = hbp_dsc_fp;
 
 fec_check:
 	if (in->fec_en) {
-		temp1_fp = drm_fixp_from_fraction(976, 1000); /* 0.976 */
+		temp1_fp = drm_fixp_from_fraction(976, 1000);  
 		tu->lclk_fp = drm_fixp_mul(tu->lclk_fp, temp1_fp);
 	}
 }
@@ -618,13 +612,13 @@ static void _dp_ctrl_calc_tu(struct dp_ctrl_private *ctrl,
 	u64 temp = 0;
 	s64 temp_fp = 0, temp1_fp = 0, temp2_fp = 0;
 
-	s64 LCLK_FAST_SKEW_fp = drm_fixp_from_fraction(6, 10000); /* 0.0006 */
-	s64 const_p49_fp = drm_fixp_from_fraction(49, 100); /* 0.49 */
-	s64 const_p56_fp = drm_fixp_from_fraction(56, 100); /* 0.56 */
+	s64 LCLK_FAST_SKEW_fp = drm_fixp_from_fraction(6, 10000);  
+	s64 const_p49_fp = drm_fixp_from_fraction(49, 100);  
+	s64 const_p56_fp = drm_fixp_from_fraction(56, 100);  
 	s64 RATIO_SCALE_fp = drm_fixp_from_fraction(1001, 1000);
 
 	u8 DP_BRUTE_FORCE = 1;
-	s64 BRUTE_FORCE_THRESHOLD_fp = drm_fixp_from_fraction(1, 10); /* 0.1 */
+	s64 BRUTE_FORCE_THRESHOLD_fp = drm_fixp_from_fraction(1, 10);  
 	uint EXTRA_PIXCLK_CYCLE_DELAY = 4;
 	uint HBLANK_MARGIN = 4;
 
@@ -634,7 +628,7 @@ static void _dp_ctrl_calc_tu(struct dp_ctrl_private *ctrl,
 
 	dp_panel_update_tu_timings(in, tu);
 
-	tu->err_fp = drm_fixp_from_fraction(1000, 1); /* 1000 */
+	tu->err_fp = drm_fixp_from_fraction(1000, 1);  
 
 	temp1_fp = drm_fixp_from_fraction(4, 1);
 	temp2_fp = drm_fixp_mul(temp1_fp, tu->lclk_fp);
@@ -789,7 +783,7 @@ tu_size_calc:
 
 	compare_result_1 = _tu_param_compare(tu->hbp_time_fp,
 					tu->delay_start_time_fp);
-	if (compare_result_1 == 2) /* if (hbp_time_fp < delay_start_time_fp) */
+	if (compare_result_1 == 2)  
 		tu->min_hblank_violated = 1;
 
 	tu->hactive_time_fp = drm_fixp_div(tu->lwidth_fp, tu->pclk_fp);
@@ -801,7 +795,7 @@ tu_size_calc:
 
 	tu->delay_start_time_fp = 0;
 
-	/* brute force */
+	 
 
 	tu->delay_start_link_extra_pixclk = EXTRA_PIXCLK_CYCLE_DELAY;
 	tu->diff_abs_fp = tu->resulting_valid_fp - tu->ratio_by_tu_fp;
@@ -810,7 +804,7 @@ tu_size_calc:
 	if (!temp && tu->diff_abs_fp <= 0xffff)
 		tu->diff_abs_fp = 0;
 
-	/* if(diff_abs < 0) diff_abs *= -1 */
+	 
 	if (tu->diff_abs_fp < 0)
 		tu->diff_abs_fp = drm_fixp_mul(tu->diff_abs_fp, -1);
 
@@ -916,7 +910,7 @@ tu_size_calc:
 	temp1_fp = drm_fixp_from_fraction(tu->delay_start_link, 1);
 	tu->delay_start_time_fp = drm_fixp_div(temp1_fp, tu->lclk_fp);
 
-	/* OUTPUTS */
+	 
 	tu_table->valid_boundary_link       = tu->valid_boundary_link;
 	tu_table->delay_start_link          = tu->delay_start_link;
 	tu_table->boundary_moderation_en    = tu->boundary_moderation_en;
@@ -1263,7 +1257,7 @@ static int dp_ctrl_link_train(struct dp_ctrl_private *ctrl,
 	if (drm_dp_max_downspread(dpcd))
 		encoding[0] |= DP_SPREAD_AMP_0_5;
 
-	/* config DOWNSPREAD_CTRL and MAIN_LINK_CHANNEL_CODING_SET */
+	 
 	drm_dp_dpcd_write(ctrl->aux, DP_DOWNSPREAD_CTRL, encoding, 2);
 
 	if (drm_dp_alternate_scrambler_reset_cap(dpcd)) {
@@ -1278,7 +1272,7 @@ static int dp_ctrl_link_train(struct dp_ctrl_private *ctrl,
 		goto end;
 	}
 
-	/* print success info as this is a result of user initiated action */
+	 
 	drm_dbg_dp(ctrl->drm_dev, "link training #1 successful\n");
 
 	ret = dp_ctrl_link_train_2(ctrl, training_step);
@@ -1287,7 +1281,7 @@ static int dp_ctrl_link_train(struct dp_ctrl_private *ctrl,
 		goto end;
 	}
 
-	/* print success info as this is a result of user initiated action */
+	 
 	drm_dbg_dp(ctrl->drm_dev, "link training #2 successful\n");
 
 end:
@@ -1306,11 +1300,7 @@ static int dp_ctrl_setup_main_link(struct dp_ctrl_private *ctrl,
 	if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN)
 		return ret;
 
-	/*
-	 * As part of previous calls, DP controller state might have
-	 * transitioned to PUSH_IDLE. In order to start transmitting
-	 * a link training pattern, we have to first do soft reset.
-	 */
+	 
 
 	ret = dp_ctrl_link_train(ctrl, training_step);
 
@@ -1371,12 +1361,7 @@ void dp_ctrl_reset_irq_ctrl(struct dp_ctrl *dp_ctrl, bool enable)
 
 	dp_catalog_ctrl_reset(ctrl->catalog);
 
-	/*
-	 * all dp controller programmable registers will not
-	 * be reset to default value after DP_SW_RESET
-	 * therefore interrupt mask bits have to be updated
-	 * to enable/disable interrupts
-	 */
+	 
 	dp_catalog_ctrl_enable_irq(ctrl->catalog, enable);
 }
 
@@ -1403,16 +1388,7 @@ void dp_ctrl_set_psr(struct dp_ctrl *dp_ctrl, bool enter)
 	if (!ctrl->panel->psr_cap.version)
 		return;
 
-	/*
-	 * When entering PSR,
-	 * 1. Send PSR enter SDP and wait for the PSR_UPDATE_INT
-	 * 2. Turn off video
-	 * 3. Disable the mainlink
-	 *
-	 * When exiting PSR,
-	 * 1. Enable the mainlink
-	 * 2. Send the PSR exit SDP
-	 */
+	 
 	if (enter) {
 		reinit_completion(&ctrl->psr_op_comp);
 		dp_catalog_ctrl_set_psr(ctrl->catalog, true);
@@ -1475,10 +1451,7 @@ static bool dp_ctrl_use_fixed_nvid(struct dp_ctrl_private *ctrl)
 {
 	const u8 *dpcd = ctrl->panel->dpcd;
 
-	/*
-	 * For better interop experience, used a fixed NVID=0x8000
-	 * whenever connected to a VGA dongle downstream.
-	 */
+	 
 	if (drm_dp_is_branch(dpcd))
 		return (drm_dp_has_quirk(&ctrl->panel->desc,
 					 DP_DPCD_QUIRK_CONSTANT_N));
@@ -1496,11 +1469,7 @@ static int dp_ctrl_reinitialize_mainlink(struct dp_ctrl_private *ctrl)
 	dp_catalog_ctrl_mainlink_ctrl(ctrl->catalog, false);
 	opts_dp->lanes = ctrl->link->link_params.num_lanes;
 	phy_configure(phy, &dp_io->phy_opts);
-	/*
-	 * Disable and re-enable the mainlink clock since the
-	 * link clock might have been adjusted as part of the
-	 * link maintenance.
-	 */
+	 
 	dev_pm_opp_set_rate(ctrl->dev, 0);
 	ret = dp_power_clk_enable(ctrl->power, DP_CTRL_PM, false);
 	if (ret) {
@@ -1508,7 +1477,7 @@ static int dp_ctrl_reinitialize_mainlink(struct dp_ctrl_private *ctrl)
 		return ret;
 	}
 	phy_power_off(phy);
-	/* hw recommended delay before re-enabling clocks */
+	 
 	msleep(20);
 
 	ret = dp_ctrl_enable_mainlink_clocks(ctrl);
@@ -1541,7 +1510,7 @@ static int dp_ctrl_deinitialize_mainlink(struct dp_ctrl_private *ctrl)
 
 	phy_power_off(phy);
 
-	/* aux channel down, reinit phy */
+	 
 	phy_exit(phy);
 	phy_init(phy);
 
@@ -1636,11 +1605,7 @@ static int dp_ctrl_process_phy_test_request(struct dp_ctrl_private *ctrl)
 		return 0;
 	}
 
-	/*
-	 * The global reset will need DP link related clocks to be
-	 * running. Add the global reset just before disabling the
-	 * link clocks and core clocks.
-	 */
+	 
 	ret = dp_ctrl_off(&ctrl->dp_ctrl);
 	if (ret) {
 		DRM_ERROR("failed to disable DP controller\n");
@@ -1713,11 +1678,7 @@ static bool dp_ctrl_clock_recovery_any_ok(
 	if (lane_count <= 1)
 		return false;
 
-	/*
-	 * only interested in the lane number after reduced
-	 * lane_count = 4, then only interested in 2 lanes
-	 * lane_count = 2, then only interested in 1 lane
-	 */
+	 
 	reduced_cnt = lane_count >> 1;
 
 	return drm_dp_clock_recovery_ok(link_status, reduced_cnt);
@@ -1777,35 +1738,32 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
 		training_step = DP_TRAINING_NONE;
 		rc = dp_ctrl_setup_main_link(ctrl, &training_step);
 		if (rc == 0) {
-			/* training completed successfully */
+			 
 			break;
 		} else if (training_step == DP_TRAINING_1) {
-			/* link train_1 failed */
+			 
 			if (!dp_catalog_link_is_connected(ctrl->catalog))
 				break;
 
 			dp_ctrl_read_link_status(ctrl, link_status);
 
 			rc = dp_ctrl_link_rate_down_shift(ctrl);
-			if (rc < 0) { /* already in RBR = 1.6G */
+			if (rc < 0) {  
 				if (dp_ctrl_clock_recovery_any_ok(link_status,
 					ctrl->link->link_params.num_lanes)) {
-					/*
-					 * some lanes are ready,
-					 * reduce lane number
-					 */
+					 
 					rc = dp_ctrl_link_lane_down_shift(ctrl);
-					if (rc < 0) { /* lane == 1 already */
-						/* end with failure */
+					if (rc < 0) {  
+						 
 						break;
 					}
 				} else {
-					/* end with failure */
-					break; /* lane == 1 already */
+					 
+					break;  
 				}
 			}
 		} else if (training_step == DP_TRAINING_2) {
-			/* link train_2 failed */
+			 
 			if (!dp_catalog_link_is_connected(ctrl->catalog))
 				break;
 
@@ -1818,11 +1776,11 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
 				rc = dp_ctrl_link_lane_down_shift(ctrl);
 
 			if (rc < 0) {
-				/* end with failure */
-				break; /* lane == 1 already */
+				 
+				break;  
 			}
 
-			/* stop link training before start re training  */
+			 
 			dp_ctrl_clear_training_pattern(ctrl);
 		}
 
@@ -1836,17 +1794,10 @@ int dp_ctrl_on_link(struct dp_ctrl *dp_ctrl)
 	if (ctrl->link->sink_request & DP_TEST_LINK_PHY_TEST_PATTERN)
 		return rc;
 
-	if (rc == 0) {  /* link train successfully */
-		/*
-		 * do not stop train pattern here
-		 * stop link training at on_stream
-		 * to pass compliance test
-		 */
+	if (rc == 0) {   
+		 
 	} else  {
-		/*
-		 * link training failed
-		 * end txing train pattern here
-		 */
+		 
 		dp_ctrl_clear_training_pattern(ctrl);
 
 		dp_ctrl_deinitialize_mainlink(ctrl);
@@ -1885,7 +1836,7 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train)
 		ctrl->link->link_params.rate,
 		ctrl->link->link_params.num_lanes, pixel_rate);
 
-	if (!dp_power_clk_status(ctrl->power, DP_CTRL_PM)) { /* link clk is off */
+	if (!dp_power_clk_status(ctrl->power, DP_CTRL_PM)) {  
 		ret = dp_ctrl_enable_mainlink_clocks(ctrl);
 		if (ret) {
 			DRM_ERROR("Failed to start link clocks. ret=%d\n", ret);
@@ -1904,13 +1855,10 @@ int dp_ctrl_on_stream(struct dp_ctrl *dp_ctrl, bool force_link_train)
 	if (force_link_train || !dp_ctrl_channel_eq_ok(ctrl))
 		dp_ctrl_link_retrain(ctrl);
 
-	/* stop txing train pattern to end link training */
+	 
 	dp_ctrl_clear_training_pattern(ctrl);
 
-	/*
-	 * Set up transfer unit values and set controller state to send
-	 * video.
-	 */
+	 
 	reinit_completion(&ctrl->video_comp);
 
 	dp_ctrl_configure_source_params(ctrl);
@@ -1946,7 +1894,7 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
 	dp_io = &ctrl->parser->io;
 	phy = dp_io->phy;
 
-	/* set dongle to D3 (power off) mode */
+	 
 	dp_link_psm_config(ctrl->link, &ctrl->panel->link_info, true);
 
 	dp_catalog_ctrl_mainlink_ctrl(ctrl->catalog, false);
@@ -1968,7 +1916,7 @@ int dp_ctrl_off_link_stream(struct dp_ctrl *dp_ctrl)
 
 	phy_power_off(phy);
 
-	/* aux channel down, reinit phy */
+	 
 	phy_exit(phy);
 	phy_init(phy);
 
@@ -2109,11 +2057,11 @@ struct dp_ctrl *dp_ctrl_get(struct device *dev, struct dp_link *link,
 	ret = devm_pm_opp_set_clkname(dev, "ctrl_link");
 	if (ret) {
 		dev_err(dev, "invalid DP OPP table in device tree\n");
-		/* caller do PTR_ERR(opp_table) */
+		 
 		return (struct dp_ctrl *)ERR_PTR(ret);
 	}
 
-	/* OPP table is optional */
+	 
 	ret = devm_pm_opp_of_add_table(dev);
 	if (ret)
 		dev_err(dev, "failed to add DP OPP table\n");
@@ -2122,7 +2070,7 @@ struct dp_ctrl *dp_ctrl_get(struct device *dev, struct dp_link *link,
 	init_completion(&ctrl->psr_op_comp);
 	init_completion(&ctrl->video_comp);
 
-	/* in parameters */
+	 
 	ctrl->parser   = parser;
 	ctrl->panel    = panel;
 	ctrl->power    = power;

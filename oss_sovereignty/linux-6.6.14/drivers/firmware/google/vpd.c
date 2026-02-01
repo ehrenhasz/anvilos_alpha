@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vpd.c
- *
- * Driver for exporting VPD content to sysfs.
- *
- * Copyright 2017 Google Inc.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/init.h>
@@ -38,11 +32,11 @@ struct vpd_cbmem {
 struct vpd_section {
 	bool enabled;
 	const char *name;
-	char *raw_name;                /* the string name_raw */
-	struct kobject *kobj;          /* vpd/name directory */
+	char *raw_name;                 
+	struct kobject *kobj;           
 	char *baseaddr;
-	struct bin_attribute bin_attr; /* vpd/name_raw bin_attribute */
-	struct list_head attribs;      /* key/value in vpd_attrib_info list */
+	struct bin_attribute bin_attr;  
+	struct list_head attribs;       
 };
 
 struct vpd_attrib_info {
@@ -65,19 +59,7 @@ static ssize_t vpd_attrib_read(struct file *filp, struct kobject *kobp,
 				       info->bin_attr.size);
 }
 
-/*
- * vpd_section_check_key_name()
- *
- * The VPD specification supports only [a-zA-Z0-9_]+ characters in key names but
- * old firmware versions may have entries like "S/N" which are problematic when
- * exporting them as sysfs attributes. These keys present in old firmwares are
- * ignored.
- *
- * Returns VPD_OK for a valid key name, VPD_FAIL otherwise.
- *
- * @key: The key name to check
- * @key_len: key name length
- */
+ 
 static int vpd_section_check_key_name(const u8 *key, s32 key_len)
 {
 	int c;
@@ -100,10 +82,7 @@ static int vpd_section_attrib_add(const u8 *key, u32 key_len,
 	struct vpd_section *sec = arg;
 	struct vpd_attrib_info *info;
 
-	/*
-	 * Return VPD_OK immediately to decode next entry if the current key
-	 * name contains invalid characters.
-	 */
+	 
 	if (vpd_section_check_key_name(key, key_len) != VPD_OK)
 		return VPD_OK;
 
@@ -190,7 +169,7 @@ static int vpd_section_init(const char *name, struct vpd_section *sec,
 
 	sec->name = name;
 
-	/* We want to export the raw partition with name ${name}_raw */
+	 
 	sec->raw_name = kasprintf(GFP_KERNEL, "%s_raw", name);
 	if (!sec->raw_name) {
 		err = -ENOMEM;

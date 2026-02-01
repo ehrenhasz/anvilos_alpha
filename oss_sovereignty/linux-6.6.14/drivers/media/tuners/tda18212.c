@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NXP TDA18212HN silicon tuner driver
- *
- * Copyright (C) 2011 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "tda18212.h"
 #include <linux/regmap.h>
@@ -34,7 +30,7 @@ static int tda18212_set_params(struct dvb_frontend *fe)
 	#define ATSC_VSB 8
 	#define ATSC_QAM 9
 	static const u8 bw_params[][3] = {
-		     /* reg:   0f    13    23 */
+		      
 		[DVBT_6]  = { 0xb3, 0x20, 0x03 },
 		[DVBT_7]  = { 0xb3, 0x31, 0x01 },
 		[DVBT_8]  = { 0xb3, 0x22, 0x01 },
@@ -53,7 +49,7 @@ static int tda18212_set_params(struct dvb_frontend *fe)
 			c->bandwidth_hz);
 
 	if (fe->ops.i2c_gate_ctrl)
-		fe->ops.i2c_gate_ctrl(fe, 1); /* open I2C-gate */
+		fe->ops.i2c_gate_ctrl(fe, 1);  
 
 	switch (c->delivery_system) {
 	case SYS_ATSC:
@@ -126,7 +122,7 @@ static int tda18212_set_params(struct dvb_frontend *fe)
 
 	buf[0] = 0x02;
 	buf[1] = bw_params[i][1];
-	buf[2] = 0x03; /* default value */
+	buf[2] = 0x03;  
 	buf[3] = DIV_ROUND_CLOSEST(if_khz, 50);
 	buf[4] = ((c->frequency / 1000) >> 16) & 0xff;
 	buf[5] = ((c->frequency / 1000) >>  8) & 0xff;
@@ -137,12 +133,12 @@ static int tda18212_set_params(struct dvb_frontend *fe)
 	if (ret)
 		goto error;
 
-	/* actual IF rounded as it is on register */
+	 
 	dev->if_frequency = buf[3] * 50 * 1000;
 
 exit:
 	if (fe->ops.i2c_gate_ctrl)
-		fe->ops.i2c_gate_ctrl(fe, 0); /* close I2C-gate */
+		fe->ops.i2c_gate_ctrl(fe, 0);  
 
 	return ret;
 
@@ -201,25 +197,25 @@ static int tda18212_probe(struct i2c_client *client)
 		goto err;
 	}
 
-	/* check if the tuner is there */
+	 
 	if (fe->ops.i2c_gate_ctrl)
-		fe->ops.i2c_gate_ctrl(fe, 1); /* open I2C-gate */
+		fe->ops.i2c_gate_ctrl(fe, 1);  
 
 	ret = regmap_read(dev->regmap, 0x00, &chip_id);
 	dev_dbg(&dev->client->dev, "chip_id=%02x\n", chip_id);
 
 	if (fe->ops.i2c_gate_ctrl)
-		fe->ops.i2c_gate_ctrl(fe, 0); /* close I2C-gate */
+		fe->ops.i2c_gate_ctrl(fe, 0);  
 
 	if (ret)
 		goto err;
 
 	switch (chip_id) {
 	case 0xc7:
-		version = "M"; /* master */
+		version = "M";  
 		break;
 	case 0x47:
-		version = "S"; /* slave */
+		version = "S";  
 		break;
 	default:
 		ret = -ENODEV;

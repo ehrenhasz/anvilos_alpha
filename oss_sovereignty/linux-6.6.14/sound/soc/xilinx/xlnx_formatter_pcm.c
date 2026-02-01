@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Xilinx ASoC audio formatter support
-//
-// Copyright (C) 2018 Xilinx, Inc.
-//
-// Author: Maruthi Srinivas Bayyavarapu <maruthis@xilinx.com>
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -87,14 +87,7 @@ struct xlnx_pcm_drv_data {
 	unsigned int sysclk;
 };
 
-/*
- * struct xlnx_pcm_stream_param - stream configuration
- * @mmio: base address offset
- * @interleaved: audio channels arrangement in buffer
- * @xfer_mode: data formatting mode during transfer
- * @ch_limit: Maximum channels supported
- * @buffer_size: stream ring buffer size
- */
+ 
 struct xlnx_pcm_stream_param {
 	void __iomem *mmio;
 	bool interleaved;
@@ -253,7 +246,7 @@ static int xlnx_formatter_pcm_reset(void __iomem *mmio_base)
 	writel(val, mmio_base + XLNX_AUD_CTRL);
 
 	val = readl(mmio_base + XLNX_AUD_CTRL);
-	/* Poll for maximum timeout of approximately 100ms (1 * 100)*/
+	 
 	while ((val & AUD_CTRL_RESET_MASK) && (retries < 100)) {
 		mdelay(1);
 		retries++;
@@ -379,7 +372,7 @@ static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
 	snd_soc_set_runtime_hwparams(substream, &xlnx_pcm_hardware);
 	runtime->private_data = stream_data;
 
-	/* Resize the period bytes as divisible by 64 */
+	 
 	err = snd_pcm_hw_constraint_step(runtime, 0,
 					 SNDRV_PCM_HW_PARAM_PERIOD_BYTES,
 					 XLNX_AUD_ALIGN_BYTES);
@@ -389,7 +382,7 @@ static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
 		return err;
 	}
 
-	/* Resize the buffer bytes as divisible by 64 */
+	 
 	err = snd_pcm_hw_constraint_step(runtime, 0,
 					 SNDRV_PCM_HW_PARAM_BUFFER_BYTES,
 					 XLNX_AUD_ALIGN_BYTES);
@@ -399,7 +392,7 @@ static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
 		return err;
 	}
 
-	/* Set periods as integer multiple */
+	 
 	err = snd_pcm_hw_constraint_integer(runtime,
 					    SNDRV_PCM_HW_PARAM_PERIODS);
 	if (err < 0) {
@@ -408,7 +401,7 @@ static int xlnx_formatter_pcm_open(struct snd_soc_component *component,
 		return err;
 	}
 
-	/* enable DMA IOC irq */
+	 
 	val = readl(stream_data->mmio + XLNX_AUD_CTRL);
 	val |= AUD_CTRL_IOC_IRQ_MASK;
 	writel(val, stream_data->mmio + XLNX_AUD_CTRL);
@@ -695,7 +688,7 @@ static void xlnx_formatter_pcm_remove(struct platform_device *pdev)
 	if (adata->s2mm_presence)
 		ret = xlnx_formatter_pcm_reset(adata->mmio + XLNX_S2MM_OFFSET);
 
-	/* Try MM2S reset, even if S2MM  reset fails */
+	 
 	if (adata->mm2s_presence)
 		ret = xlnx_formatter_pcm_reset(adata->mmio + XLNX_MM2S_OFFSET);
 

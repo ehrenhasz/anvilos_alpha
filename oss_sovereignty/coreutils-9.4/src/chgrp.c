@@ -1,20 +1,4 @@
-/* chgrp -- change group ownership of files
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by David MacKenzie <djm@gnu.ai.mit.edu>. */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -29,7 +13,7 @@
 #include "root-dev-ino.h"
 #include "xstrtol.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "chgrp"
 
 #define AUTHORS \
@@ -40,12 +24,10 @@
 # define endgrent() ((void) 0)
 #endif
 
-/* The argument to the --reference option.  Use the group ID of this file.
-   This file must exist.  */
+ 
 static char *reference_file;
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   DEREFERENCE_OPTION = CHAR_MAX + 1,
@@ -71,7 +53,7 @@ static struct option const long_options[] =
   {nullptr, 0, nullptr, 0}
 };
 
-/* Return the group ID of NAME, or -1 if no name was specified.  */
+ 
 
 static gid_t
 parse_group (char const *name)
@@ -92,7 +74,7 @@ parse_group (char const *name)
                    quote (name));
           gid = tmp;
         }
-      endgrent ();		/* Save a file descriptor. */
+      endgrent ();		 
     }
 
   return gid;

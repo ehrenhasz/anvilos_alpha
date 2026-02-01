@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2021, Mellanox Technologies inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _MLX5_IB_DM_H
 #define _MLX5_IB_DM_H
@@ -65,4 +63,4 @@ void mlx5_cmd_dealloc_memic(struct mlx5_dm *dm, phys_addr_t addr,
 void mlx5_cmd_dealloc_memic_op(struct mlx5_dm *dm, phys_addr_t addr,
 			       u8 operation);
 
-#endif /* _MLX5_IB_DM_H */
+#endif  

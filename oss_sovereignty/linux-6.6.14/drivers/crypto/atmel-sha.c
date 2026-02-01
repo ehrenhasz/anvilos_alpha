@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cryptographic API.
- *
- * Support for ATMEL SHA1/SHA256 HW acceleration.
- *
- * Copyright (c) 2012 Eukréa Electromatique - ATMEL
- * Author: Nicolas Royer <nicolas@eukrea.com>
- *
- * Some ideas are from omap-sham.c drivers.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -42,7 +33,7 @@
 
 #define ATMEL_SHA_PRIORITY	300
 
-/* SHA flags */
+ 
 #define SHA_FLAGS_BUSY			BIT(0)
 #define	SHA_FLAGS_FINAL			BIT(1)
 #define SHA_FLAGS_DMA_ACTIVE	BIT(2)
@@ -52,7 +43,7 @@
 #define SHA_FLAGS_DMA_READY		BIT(6)
 #define SHA_FLAGS_DUMP_REG	BIT(7)
 
-/* bits[11:8] are reserved. */
+ 
 
 #define SHA_FLAGS_FINUP		BIT(16)
 #define SHA_FLAGS_SG		BIT(17)
@@ -82,10 +73,7 @@ struct atmel_sha_caps {
 
 struct atmel_sha_dev;
 
-/*
- * .statesize = sizeof(struct atmel_sha_reqctx) must be <= PAGE_SIZE / 8 as
- * tested by the ahash_prepare_alg() function.
- */
+ 
 struct atmel_sha_reqctx {
 	struct atmel_sha_dev	*dd;
 	unsigned long	flags;
@@ -97,10 +85,10 @@ struct atmel_sha_reqctx {
 	size_t	buflen;
 	dma_addr_t	dma_addr;
 
-	/* walk state */
+	 
 	struct scatterlist	*sg;
-	unsigned int	offset;	/* offset in current sg */
-	unsigned int	total;	/* total request */
+	unsigned int	offset;	 
+	unsigned int	total;	 
 
 	size_t block_size;
 	size_t hash_size;
@@ -248,7 +236,7 @@ static const char *atmel_sha_reg_name(u32 offset, char *tmp, size_t sz, bool wr)
 	return tmp;
 }
 
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 static inline u32 atmel_sha_read(struct atmel_sha_dev *dd, u32 offset)
 {
@@ -261,7 +249,7 @@ static inline u32 atmel_sha_read(struct atmel_sha_dev *dd, u32 offset)
 		dev_vdbg(dd->dev, "read 0x%08x from %s\n", value,
 			 atmel_sha_reg_name(offset, tmp, sizeof(tmp), false));
 	}
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 	return value;
 }
@@ -276,7 +264,7 @@ static inline void atmel_sha_write(struct atmel_sha_dev *dd,
 		dev_vdbg(dd->dev, "write 0x%08x into %s\n", value,
 			 atmel_sha_reg_name(offset, tmp, sizeof(tmp), true));
 	}
-#endif /* VERBOSE_DEBUG */
+#endif  
 
 	writel_relaxed(value, dd->io_base + offset);
 }
@@ -294,7 +282,7 @@ static inline int atmel_sha_complete(struct atmel_sha_dev *dd, int err)
 	if ((dd->is_async || dd->force_complete) && req->base.complete)
 		ahash_request_complete(req, err);
 
-	/* handle new request */
+	 
 	tasklet_schedule(&dd->queue_task);
 
 	return err;
@@ -309,12 +297,7 @@ static size_t atmel_sha_append_sg(struct atmel_sha_reqctx *ctx)
 		count = min(count, ctx->buflen - ctx->bufcnt);
 
 		if (count <= 0) {
-			/*
-			* Check if count <= 0 because the buffer is full or
-			* because the sg length is 0. In the latest case,
-			* check if there is another sg in the list, a 0 length
-			* sg doesn't necessarily mean the end of the sg list.
-			*/
+			 
 			if ((ctx->sg->length == 0) && !sg_is_last(ctx->sg)) {
 				ctx->sg = sg_next(ctx->sg);
 				continue;
@@ -342,22 +325,7 @@ static size_t atmel_sha_append_sg(struct atmel_sha_reqctx *ctx)
 	return 0;
 }
 
-/*
- * The purpose of this padding is to ensure that the padded message is a
- * multiple of 512 bits (SHA1/SHA224/SHA256) or 1024 bits (SHA384/SHA512).
- * The bit "1" is appended at the end of the message followed by
- * "padlen-1" zero bits. Then a 64 bits block (SHA1/SHA224/SHA256) or
- * 128 bits block (SHA384/SHA512) equals to the message length in bits
- * is appended.
- *
- * For SHA1/SHA224/SHA256, padlen is calculated as followed:
- *  - if message length < 56 bytes then padlen = 56 - message length
- *  - else padlen = 64 + 56 - message length
- *
- * For SHA384/SHA512, padlen is calculated as followed:
- *  - if message length < 112 bytes then padlen = 112 - message length
- *  - else padlen = 128 + 112 - message length
- */
+ 
 static void atmel_sha_fill_padding(struct atmel_sha_reqctx *ctx, int length)
 {
 	unsigned int index, padlen;
@@ -516,18 +484,13 @@ static void atmel_sha_write_ctrl(struct atmel_sha_dev *dd, int dma)
 		break;
 	}
 
-	/* Setting CR_FIRST only for the first iteration */
+	 
 	if (!(ctx->digcnt[0] || ctx->digcnt[1])) {
 		atmel_sha_write(dd, SHA_CR, SHA_CR_FIRST);
 	} else if (dd->caps.has_uihv && (ctx->flags & SHA_FLAGS_RESTORE)) {
 		const u32 *hash = (const u32 *)ctx->digest;
 
-		/*
-		 * Restore the hardware context: update the User Initialize
-		 * Hash Value (UIHV) with the value saved when the latest
-		 * 'update' operation completed on this very same crypto
-		 * request.
-		 */
+		 
 		ctx->flags &= ~SHA_FLAGS_RESTORE;
 		atmel_sha_write(dd, SHA_CR, SHA_CR_WUIHV);
 		for (i = 0; i < hashsize / sizeof(u32); ++i)
@@ -535,12 +498,7 @@ static void atmel_sha_write_ctrl(struct atmel_sha_dev *dd, int dma)
 		atmel_sha_write(dd, SHA_CR, SHA_CR_FIRST);
 		valmr |= SHA_MR_UIHV;
 	}
-	/*
-	 * WARNING: If the UIHV feature is not available, the hardware CANNOT
-	 * process concurrent requests: the internal registers used to store
-	 * the hash/digest are still set to the partial digest output values
-	 * computed during the latest round.
-	 */
+	 
 
 	atmel_sha_write(dd, SHA_MR, valmr);
 }
@@ -570,13 +528,13 @@ static int atmel_sha_xmit_cpu(struct atmel_sha_dev *dd, const u8 *buf,
 
 	atmel_sha_write_ctrl(dd, 0);
 
-	/* should be non-zero before next lines to disable clocks later */
+	 
 	ctx->digcnt[0] += length;
 	if (ctx->digcnt[0] < length)
 		ctx->digcnt[1]++;
 
 	if (final)
-		dd->flags |= SHA_FLAGS_FINAL; /* catch last interrupt */
+		dd->flags |= SHA_FLAGS_FINAL;  
 
 	len32 = DIV_ROUND_UP(length, sizeof(u32));
 
@@ -608,17 +566,17 @@ static int atmel_sha_xmit_pdc(struct atmel_sha_dev *dd, dma_addr_t dma_addr1,
 
 	atmel_sha_write_ctrl(dd, 1);
 
-	/* should be non-zero before next lines to disable clocks later */
+	 
 	ctx->digcnt[0] += length1;
 	if (ctx->digcnt[0] < length1)
 		ctx->digcnt[1]++;
 
 	if (final)
-		dd->flags |= SHA_FLAGS_FINAL; /* catch last interrupt */
+		dd->flags |= SHA_FLAGS_FINAL;  
 
 	dd->flags |=  SHA_FLAGS_DMA_ACTIVE;
 
-	/* Start DMA transfer */
+	 
 	atmel_sha_write(dd, SHA_PTCR, SHA_PTCR_TXTEN);
 
 	return -EINPROGRESS;
@@ -630,7 +588,7 @@ static void atmel_sha_dma_callback(void *data)
 
 	dd->is_async = true;
 
-	/* dma_lch_in - completed - wait DATRDY */
+	 
 	atmel_sha_write(dd, SHA_IER, SHA_INT_DATARDY);
 }
 
@@ -672,17 +630,17 @@ static int atmel_sha_xmit_dma(struct atmel_sha_dev *dd, dma_addr_t dma_addr1,
 
 	atmel_sha_write_ctrl(dd, 1);
 
-	/* should be non-zero before next lines to disable clocks later */
+	 
 	ctx->digcnt[0] += length1;
 	if (ctx->digcnt[0] < length1)
 		ctx->digcnt[1]++;
 
 	if (final)
-		dd->flags |= SHA_FLAGS_FINAL; /* catch last interrupt */
+		dd->flags |= SHA_FLAGS_FINAL;  
 
 	dd->flags |=  SHA_FLAGS_DMA_ACTIVE;
 
-	/* Start DMA transfer */
+	 
 	dmaengine_submit(in_desc);
 	dma_async_issue_pending(dd->dma_lch_in.chan);
 
@@ -727,7 +685,7 @@ static int atmel_sha_xmit_dma_map(struct atmel_sha_dev *dd,
 
 	ctx->flags &= ~SHA_FLAGS_SG;
 
-	/* next call does not fail... so no unmap in the case of error */
+	 
 	return atmel_sha_xmit_start(dd, ctx->dma_addr, length, 0, 0, final);
 }
 
@@ -778,30 +736,30 @@ static int atmel_sha_update_dma_start(struct atmel_sha_dev *dd)
 		return atmel_sha_update_dma_slow(dd);
 
 	if (!sg_is_last(sg) && !IS_ALIGNED(sg->length, ctx->block_size))
-		/* size is not ctx->block_size aligned */
+		 
 		return atmel_sha_update_dma_slow(dd);
 
 	length = min(ctx->total, sg->length);
 
 	if (sg_is_last(sg)) {
 		if (!(ctx->flags & SHA_FLAGS_FINUP)) {
-			/* not last sg must be ctx->block_size aligned */
+			 
 			tail = length & (ctx->block_size - 1);
 			length -= tail;
 		}
 	}
 
 	ctx->total -= length;
-	ctx->offset = length; /* offset where to start slow */
+	ctx->offset = length;  
 
 	final = (ctx->flags & SHA_FLAGS_FINUP) && !ctx->total;
 
-	/* Add padding */
+	 
 	if (final) {
 		tail = length & (ctx->block_size - 1);
 		length -= tail;
 		ctx->total += tail;
-		ctx->offset = length; /* offset where to start slow */
+		ctx->offset = length;  
 
 		sg = ctx->sg;
 		atmel_sha_append_sg(ctx);
@@ -846,7 +804,7 @@ static int atmel_sha_update_dma_start(struct atmel_sha_dev *dd)
 
 	ctx->flags |= SHA_FLAGS_SG;
 
-	/* next call does not fail... so no unmap in the case of error */
+	 
 	return atmel_sha_xmit_start(dd, sg_dma_address(ctx->sg), length, 0,
 								0, final);
 }
@@ -886,7 +844,7 @@ static int atmel_sha_update_req(struct atmel_sha_dev *dd)
 	else
 		err = atmel_sha_update_dma_start(dd);
 
-	/* wait for dma completion before can take more data */
+	 
 	dev_dbg(dd->dev, "update: err: %d, digcnt: 0x%llx 0%llx\n",
 			err, ctx->digcnt[1], ctx->digcnt[0]);
 
@@ -906,7 +864,7 @@ static int atmel_sha_final_req(struct atmel_sha_dev *dd)
 		ctx->bufcnt = 0;
 		err = atmel_sha_xmit_dma_map(dd, ctx, count, 1);
 	}
-	/* faster to handle last block with cpu */
+	 
 	else {
 		atmel_sha_fill_padding(ctx, 0);
 		count = ctx->bufcnt;
@@ -941,7 +899,7 @@ static void atmel_sha_copy_hash(struct ahash_request *req)
 		break;
 
 	default:
-		/* Should not happen... */
+		 
 		return;
 	}
 
@@ -1008,7 +966,7 @@ static void atmel_sha_finish_req(struct ahash_request *req, int err)
 		ctx->flags |= SHA_FLAGS_ERROR;
 	}
 
-	/* atomic operation is not needed here */
+	 
 	(void)atmel_sha_complete(dd, err);
 }
 
@@ -1089,7 +1047,7 @@ static int atmel_sha_handle_queue(struct atmel_sha_dev *dd,
 	dd->is_async = start_async;
 	dd->force_complete = false;
 
-	/* WARNING: ctx->start() MAY change dd->is_async. */
+	 
 	err = ctx->start(dd);
 	return (start_async) ? ret : err;
 }
@@ -1109,37 +1067,20 @@ static int atmel_sha_start(struct atmel_sha_dev *dd)
 	if (err)
 		return atmel_sha_complete(dd, err);
 
-	/*
-	 * atmel_sha_update_req() and atmel_sha_final_req() can return either:
-	 *  -EINPROGRESS: the hardware is busy and the SHA driver will resume
-	 *                its job later in the done_task.
-	 *                This is the main path.
-	 *
-	 * 0: the SHA driver can continue its job then release the hardware
-	 *    later, if needed, with atmel_sha_finish_req().
-	 *    This is the alternate path.
-	 *
-	 * < 0: an error has occurred so atmel_sha_complete(dd, err) has already
-	 *      been called, hence the hardware has been released.
-	 *      The SHA driver must stop its job without calling
-	 *      atmel_sha_finish_req(), otherwise atmel_sha_complete() would be
-	 *      called a second time.
-	 *
-	 * Please note that currently, atmel_sha_final_req() never returns 0.
-	 */
+	 
 
 	dd->resume = atmel_sha_done;
 	if (ctx->op == SHA_OP_UPDATE) {
 		err = atmel_sha_update_req(dd);
 		if (!err && (ctx->flags & SHA_FLAGS_FINUP))
-			/* no final() after finup() */
+			 
 			err = atmel_sha_final_req(dd);
 	} else if (ctx->op == SHA_OP_FINAL) {
 		err = atmel_sha_final_req(dd);
 	}
 
 	if (!err)
-		/* done_task will not finish it, so do it here */
+		 
 		atmel_sha_finish_req(req, err);
 
 	dev_dbg(dd->dev, "exit, err: %d\n", err);
@@ -1171,7 +1112,7 @@ static int atmel_sha_update(struct ahash_request *req)
 
 	if (ctx->flags & SHA_FLAGS_FINUP) {
 		if (ctx->bufcnt + ctx->total < ATMEL_SHA_DMA_THRESHOLD)
-			/* faster to use CPU for short transfers */
+			 
 			ctx->flags |= SHA_FLAGS_CPU;
 	} else if (ctx->bufcnt + ctx->total < ctx->buflen) {
 		atmel_sha_append_sg(ctx);
@@ -1187,10 +1128,10 @@ static int atmel_sha_final(struct ahash_request *req)
 	ctx->flags |= SHA_FLAGS_FINUP;
 
 	if (ctx->flags & SHA_FLAGS_ERROR)
-		return 0; /* uncompleted hash is not needed */
+		return 0;  
 
 	if (ctx->flags & SHA_FLAGS_PAD)
-		/* copy ready hash (+ finalize hmac) */
+		 
 		return atmel_sha_finish(req);
 
 	return atmel_sha_enqueue(req, SHA_OP_FINAL);
@@ -1209,10 +1150,7 @@ static int atmel_sha_finup(struct ahash_request *req)
 				CRYPTO_TFM_REQ_MAY_BACKLOG)))
 		return err1;
 
-	/*
-	 * final() has to be always called to cleanup resources
-	 * even if udpate() failed, except EINPROGRESS
-	 */
+	 
 	err2 = atmel_sha_final(req);
 
 	return err1 ?: err2;
@@ -1336,7 +1274,7 @@ static int atmel_sha_done(struct atmel_sha_dev *dd)
 			atmel_sha_update_dma_stop(dd);
 		}
 		if (SHA_FLAGS_OUTPUT_READY & dd->flags) {
-			/* hash or semi-hash ready */
+			 
 			dd->flags &= ~(SHA_FLAGS_DMA_READY |
 						SHA_FLAGS_OUTPUT_READY);
 			err = atmel_sha_update_dma_start(dd);
@@ -1347,7 +1285,7 @@ static int atmel_sha_done(struct atmel_sha_dev *dd)
 	return err;
 
 finish:
-	/* finish curent request */
+	 
 	atmel_sha_finish_req(dd->req, err);
 
 	return err;
@@ -1384,7 +1322,7 @@ static irqreturn_t atmel_sha_irq(int irq, void *dev_id)
 }
 
 
-/* DMA transfer functions */
+ 
 
 static bool atmel_sha_dma_check_aligned(struct atmel_sha_dev *dd,
 					struct scatterlist *sg,
@@ -1400,10 +1338,7 @@ static bool atmel_sha_dma_check_aligned(struct atmel_sha_dev *dd,
 		if (!IS_ALIGNED(sg->offset, sizeof(u32)))
 			return false;
 
-		/*
-		 * This is the last sg, the only one that is allowed to
-		 * have an unaligned length.
-		 */
+		 
 		if (len <= sg->length) {
 			dma->nents = nents + 1;
 			dma->last_sg_length = sg->length;
@@ -1411,7 +1346,7 @@ static bool atmel_sha_dma_check_aligned(struct atmel_sha_dev *dd,
 			return true;
 		}
 
-		/* All other sg lengths MUST be aligned to the block size. */
+		 
 		if (!IS_ALIGNED(sg->length, bs))
 			return false;
 
@@ -1454,10 +1389,7 @@ static int atmel_sha_dma_start(struct atmel_sha_dev *dd,
 
 	dd->resume = resume;
 
-	/*
-	 * dma->nents has already been initialized by
-	 * atmel_sha_dma_check_aligned().
-	 */
+	 
 	dma->sg = src;
 	sg_len = dma_map_sg(dd->dev, dma->sg, dma->nents, DMA_TO_DEVICE);
 	if (!sg_len) {
@@ -1496,7 +1428,7 @@ exit:
 }
 
 
-/* CPU transfer functions */
+ 
 
 static int atmel_sha_cpu_transfer(struct atmel_sha_dev *dd)
 {
@@ -1508,7 +1440,7 @@ static int atmel_sha_cpu_transfer(struct atmel_sha_dev *dd)
 
 	din_inc = (ctx->flags & SHA_FLAGS_IDATAR0) ? 0 : 1;
 	for (;;) {
-		/* Write data into the Input Data Registers. */
+		 
 		num_words = DIV_ROUND_UP(ctx->bufcnt, sizeof(u32));
 		for (i = 0, din = 0; i < num_words; ++i, din += din_inc)
 			atmel_sha_write(dd, SHA_REG_DIN(din), words[i]);
@@ -1519,22 +1451,15 @@ static int atmel_sha_cpu_transfer(struct atmel_sha_dev *dd)
 		if (!ctx->total)
 			break;
 
-		/*
-		 * Prepare next block:
-		 * Fill ctx->buffer now with the next data to be written into
-		 * IDATARx: it gives time for the SHA hardware to process
-		 * the current data so the SHA_INT_DATARDY flag might be set
-		 * in SHA_ISR when polling this register at the beginning of
-		 * the next loop.
-		 */
+		 
 		ctx->bufcnt = min_t(size_t, ctx->block_size, ctx->total);
 		scatterwalk_map_and_copy(ctx->buffer, ctx->sg,
 					 ctx->offset, ctx->bufcnt, 0);
 
-		/* Wait for hardware to be ready again. */
+		 
 		isr = atmel_sha_read(dd, SHA_ISR);
 		if (!(isr & SHA_INT_DATARDY)) {
-			/* Not ready yet. */
+			 
 			dd->resume = atmel_sha_cpu_transfer;
 			atmel_sha_write(dd, SHA_IER, SHA_INT_DATARDY);
 			return -EINPROGRESS;
@@ -1572,7 +1497,7 @@ static int atmel_sha_cpu_start(struct atmel_sha_dev *dd,
 	ctx->total = len;
 	ctx->offset = 0;
 
-	/* Prepare the first block to be written. */
+	 
 	ctx->bufcnt = min_t(size_t, ctx->block_size, ctx->total);
 	scatterwalk_map_and_copy(ctx->buffer, ctx->sg,
 				 ctx->offset, ctx->bufcnt, 0);
@@ -1605,7 +1530,7 @@ static int atmel_sha_cpu_hash(struct atmel_sha_dev *dd,
 }
 
 
-/* hmac functions */
+ 
 
 struct atmel_sha_hmac_key {
 	bool			valid;
@@ -1727,11 +1652,11 @@ static int atmel_sha_hmac_setup(struct atmel_sha_dev *dd,
 	if (likely(!atmel_sha_hmac_key_get(&hmac->hkey, &key, &keylen)))
 		return resume(dd);
 
-	/* Compute K' from K. */
+	 
 	if (unlikely(keylen > bs))
 		return atmel_sha_hmac_prehash_key(dd, key, keylen);
 
-	/* Prepare ipad. */
+	 
 	memcpy((u8 *)hmac->ipad, key, keylen);
 	memset((u8 *)hmac->ipad + keylen, 0, bs - keylen);
 	return atmel_sha_hmac_compute_ipad_hash(dd);
@@ -1754,7 +1679,7 @@ static int atmel_sha_hmac_prehash_key_done(struct atmel_sha_dev *dd)
 	size_t bs = ctx->block_size;
 	size_t i, num_words = ds / sizeof(u32);
 
-	/* Prepare ipad. */
+	 
 	for (i = 0; i < num_words; ++i)
 		hmac->ipad[i] = atmel_sha_read(dd, SHA_REG_DIGEST(i));
 	memset((u8 *)hmac->ipad + ds, 0, bs - ds);
@@ -1897,12 +1822,12 @@ static int atmel_sha_hmac_final(struct atmel_sha_dev *dd)
 	size_t i, num_words;
 	u32 mr;
 
-	/* Save d = SHA((K' + ipad) | msg). */
+	 
 	num_words = ds / sizeof(u32);
 	for (i = 0; i < num_words; ++i)
 		digest[i] = atmel_sha_read(dd, SHA_REG_DIGEST(i));
 
-	/* Restore context to finish computing SHA((K' + opad) | d). */
+	 
 	atmel_sha_write(dd, SHA_CR, SHA_CR_WUIHV);
 	num_words = hs / sizeof(u32);
 	for (i = 0; i < num_words; ++i)
@@ -1922,11 +1847,7 @@ static int atmel_sha_hmac_final(struct atmel_sha_dev *dd)
 
 static int atmel_sha_hmac_final_done(struct atmel_sha_dev *dd)
 {
-	/*
-	 * req->result might not be sizeof(u32) aligned, so copy the
-	 * digest into ctx->digest[] before memcpy() the data into
-	 * req->result.
-	 */
+	 
 	atmel_sha_copy_hash(dd->req);
 	atmel_sha_copy_ready_hash(dd->req);
 	return atmel_sha_complete(dd, 0);
@@ -1955,7 +1876,7 @@ static int atmel_sha_hmac_digest2(struct atmel_sha_dev *dd)
 	bool use_dma = false;
 	u32 mr;
 
-	/* Special case for empty message. */
+	 
 	if (!req->nbytes) {
 		req->nbytes = 0;
 		ctx->bufcnt = 0;
@@ -1976,12 +1897,12 @@ static int atmel_sha_hmac_digest2(struct atmel_sha_dev *dd)
 		sg_init_one(&dd->tmp, ctx->buffer, ctx->bufcnt);
 	}
 
-	/* Check DMA threshold and alignment. */
+	 
 	if (req->nbytes > ATMEL_SHA_DMA_THRESHOLD &&
 	    atmel_sha_dma_check_aligned(dd, req->src, req->nbytes))
 		use_dma = true;
 
-	/* Write both initial hash values to compute a HMAC. */
+	 
 	atmel_sha_write(dd, SHA_CR, SHA_CR_WUIHV);
 	for (i = 0; i < num_words; ++i)
 		atmel_sha_write(dd, SHA_REG_DIN(i), hmac->ipad[i]);
@@ -1990,7 +1911,7 @@ static int atmel_sha_hmac_digest2(struct atmel_sha_dev *dd)
 	for (i = 0; i < num_words; ++i)
 		atmel_sha_write(dd, SHA_REG_DIN(i), hmac->opad[i]);
 
-	/* Write the Mode, Message Size, Bytes Count then Control Registers. */
+	 
 	mr = (SHA_MR_HMAC | SHA_MR_DUALBUFF);
 	mr |= ctx->flags & SHA_FLAGS_ALGO_MASK;
 	if (use_dma)
@@ -2004,7 +1925,7 @@ static int atmel_sha_hmac_digest2(struct atmel_sha_dev *dd)
 
 	atmel_sha_write(dd, SHA_CR, SHA_CR_FIRST);
 
-	/* Special case for empty message. */
+	 
 	if (!req->nbytes) {
 		sgbuf = &dd->tmp;
 		req->nbytes = ctx->bufcnt;
@@ -2012,7 +1933,7 @@ static int atmel_sha_hmac_digest2(struct atmel_sha_dev *dd)
 		sgbuf = req->src;
 	}
 
-	/* Process data. */
+	 
 	if (use_dma)
 		return atmel_sha_dma_start(dd, sgbuf, req->nbytes,
 					   atmel_sha_hmac_final_done);
@@ -2099,7 +2020,7 @@ static struct ahash_alg sha_hmac_algs[] = {
 };
 
 #if IS_ENABLED(CONFIG_CRYPTO_DEV_ATMEL_AUTHENC)
-/* authenc functions */
+ 
 
 static int atmel_sha_authenc_init2(struct atmel_sha_dev *dd);
 static int atmel_sha_authenc_init_done(struct atmel_sha_dev *dd);
@@ -2116,12 +2037,12 @@ struct atmel_sha_authenc_reqctx {
 	atmel_aes_authenc_fn_t	cb;
 	struct atmel_aes_dev	*aes_dev;
 
-	/* _init() parameters. */
+	 
 	struct scatterlist	*assoc;
 	u32			assoclen;
 	u32			textlen;
 
-	/* _final() parameters. */
+	 
 	u32			*digest;
 	unsigned int		digestlen;
 };
@@ -2140,10 +2061,7 @@ static int atmel_sha_authenc_start(struct atmel_sha_dev *dd)
 	struct atmel_sha_authenc_reqctx *authctx = ahash_request_ctx(req);
 	int err;
 
-	/*
-	 * Force atmel_sha_complete() to call req->base.complete(), ie
-	 * atmel_sha_authenc_complete(), which in turn calls authctx->cb().
-	 */
+	 
 	dd->force_complete = true;
 
 	err = atmel_sha_hw_init(dd);
@@ -2253,15 +2171,15 @@ int atmel_sha_authenc_schedule(struct ahash_request *req,
 	struct atmel_sha_ctx *tctx = crypto_ahash_ctx(tfm);
 	struct atmel_sha_dev *dd;
 
-	/* Reset request context (MUST be done first). */
+	 
 	memset(authctx, 0, sizeof(*authctx));
 
-	/* Get SHA device. */
+	 
 	dd = atmel_sha_find_dev(tctx);
 	if (!dd)
 		return cb(aes_dev, -ENODEV, false);
 
-	/* Init request context. */
+	 
 	ctx->dd = dd;
 	ctx->buflen = SHA_BUFFER_LEN;
 	authctx->cb = cb;
@@ -2330,7 +2248,7 @@ static int atmel_sha_authenc_init2(struct atmel_sha_dev *dd)
 
 	atmel_sha_write(dd, SHA_CR, SHA_CR_FIRST);
 
-	/* Process assoc data. */
+	 
 	return atmel_sha_cpu_start(dd, authctx->assoc, authctx->assoclen,
 				   true, false,
 				   atmel_sha_authenc_init_done);
@@ -2406,14 +2324,14 @@ void atmel_sha_authenc_abort(struct ahash_request *req)
 	struct atmel_sha_reqctx *ctx = &authctx->base;
 	struct atmel_sha_dev *dd = ctx->dd;
 
-	/* Prevent atmel_sha_complete() from calling req->base.complete(). */
+	 
 	dd->is_async = false;
 	dd->force_complete = false;
 	(void)atmel_sha_complete(dd, 0);
 }
 EXPORT_SYMBOL_GPL(atmel_sha_authenc_abort);
 
-#endif /* CONFIG_CRYPTO_DEV_ATMEL_AUTHENC */
+#endif  
 
 
 static void atmel_sha_unregister_algs(struct atmel_sha_dev *dd)
@@ -2478,7 +2396,7 @@ static int atmel_sha_register_algs(struct atmel_sha_dev *dd)
 
 	return 0;
 
-	/*i = ARRAY_SIZE(sha_hmac_algs);*/
+	 
 err_sha_hmac_algs:
 	for (j = 0; j < i; j++)
 		crypto_unregister_ahash(&sha_hmac_algs[j]);
@@ -2532,7 +2450,7 @@ static void atmel_sha_get_cap(struct atmel_sha_dev *dd)
 	dd->caps.has_uihv = 0;
 	dd->caps.has_hmac = 0;
 
-	/* keep only major version number */
+	 
 	switch (dd->hw_version & 0xff0) {
 	case 0x700:
 	case 0x600:
@@ -2573,7 +2491,7 @@ static void atmel_sha_get_cap(struct atmel_sha_dev *dd)
 
 static const struct of_device_id atmel_sha_dt_ids[] = {
 	{ .compatible = "atmel,at91sam9g46-sha" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, atmel_sha_dt_ids);
@@ -2610,7 +2528,7 @@ static int atmel_sha_probe(struct platform_device *pdev)
 	}
 	sha_dd->phys_base = sha_res->start;
 
-	/* Get the IRQ */
+	 
 	sha_dd->irq = platform_get_irq(pdev,  0);
 	if (sha_dd->irq < 0) {
 		err = sha_dd->irq;
@@ -2624,7 +2542,7 @@ static int atmel_sha_probe(struct platform_device *pdev)
 		goto err_tasklet_kill;
 	}
 
-	/* Initializing the clock */
+	 
 	sha_dd->iclk = devm_clk_get(&pdev->dev, "sha_clk");
 	if (IS_ERR(sha_dd->iclk)) {
 		dev_err(dev, "clock initialization failed.\n");

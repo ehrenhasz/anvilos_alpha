@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,7 +45,7 @@ int main(int argc, char *argv[])
 	daddr.sin_addr.s_addr = inet_addr(argv[4]);
 	daddr.sin_port = htons(atoi(argv[5]));
 
-	/* make test shorter than 25s */
+	 
 	ret = setsockopt(sd, SOL_SOCKET, SO_RCVTIMEO, &tv, sizeof(tv));
 	if (ret < 0) {
 		printf("Failed to setsockopt SO_RCVTIMEO\n");
@@ -53,7 +53,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (!strcmp(argv[1], "server")) {
-		sleep(1); /* wait a bit for client's INIT */
+		sleep(1);  
 		ret = connect(sd, (struct sockaddr *)&daddr, len);
 		if (ret < 0) {
 			printf("Failed to connect to peer\n");
@@ -73,13 +73,13 @@ int main(int argc, char *argv[])
 	}
 
 	if (!strcmp(argv[1], "client")) {
-		usleep(300000); /* wait a bit for server's listening */
+		usleep(300000);  
 		ret = connect(sd, (struct sockaddr *)&daddr, len);
 		if (ret < 0) {
 			printf("Failed to connect to peer\n");
 			goto out;
 		}
-		sleep(1); /* wait a bit for server's delayed INIT_ACK to reproduce the issue */
+		sleep(1);  
 		ret = sendto(sd, buf, strlen(buf) + 1, 0, (struct sockaddr *)&daddr, len);
 		if (ret < 0) {
 			printf("Failed to send msg %d\n", ret);

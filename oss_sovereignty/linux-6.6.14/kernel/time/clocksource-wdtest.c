@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Unit test for the clocksource watchdog.
- *
- * Copyright (C) 2021 Facebook, Inc.
- *
- * Author: Paul E. McKenney <paulmck@kernel.org>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/device.h>
 #include <linux/clocksource.h>
 #include <linux/init.h>
 #include <linux/module.h>
-#include <linux/sched.h> /* for spin_unlock_irq() using preempt_count() m68k */
+#include <linux/sched.h>  
 #include <linux/tick.h>
 #include <linux/kthread.h>
 #include <linux/delay.h>
@@ -28,7 +22,7 @@ static int holdoff = IS_BUILTIN(CONFIG_TEST_CLOCKSOURCE_WATCHDOG) ? 10 : 0;
 module_param(holdoff, int, 0444);
 MODULE_PARM_DESC(holdoff, "Time to wait to start test (s).");
 
-/* Watchdog kthread's task_struct pointer for debug purposes. */
+ 
 static struct task_struct *wdtest_task;
 
 static u64 wdtest_jiffies_read(struct clocksource *cs)
@@ -38,12 +32,12 @@ static u64 wdtest_jiffies_read(struct clocksource *cs)
 
 static struct clocksource clocksource_wdtest_jiffies = {
 	.name			= "wdtest-jiffies",
-	.rating			= 1, /* lowest valid rating*/
+	.rating			= 1,  
 	.uncertainty_margin	= TICK_NSEC,
 	.read			= wdtest_jiffies_read,
 	.mask			= CLOCKSOURCE_MASK(32),
 	.flags			= CLOCK_SOURCE_MUST_VERIFY,
-	.mult			= TICK_NSEC << JIFFIES_SHIFT, /* details above */
+	.mult			= TICK_NSEC << JIFFIES_SHIFT,  
 	.shift			= JIFFIES_SHIFT,
 	.max_cycles		= 10,
 };
@@ -89,7 +83,7 @@ static struct clocksource clocksource_wdtest_ktime = {
 	.list			= LIST_HEAD_INIT(clocksource_wdtest_ktime.list),
 };
 
-/* Reset the clocksource if needed. */
+ 
 static void wdtest_ktime_clocksource_reset(void)
 {
 	if (clocksource_wdtest_ktime.flags & CLOCK_SOURCE_UNSTABLE) {
@@ -100,7 +94,7 @@ static void wdtest_ktime_clocksource_reset(void)
 	}
 }
 
-/* Run the specified series of watchdog tests. */
+ 
 static int wdtest_func(void *arg)
 {
 	unsigned long j1, j2;
@@ -109,10 +103,7 @@ static int wdtest_func(void *arg)
 
 	schedule_timeout_uninterruptible(holdoff * HZ);
 
-	/*
-	 * Verify that jiffies-like clocksources get the manually
-	 * specified uncertainty margin.
-	 */
+	 
 	pr_info("--- Verify jiffies-like uncertainty margin.\n");
 	__clocksource_register(&clocksource_wdtest_jiffies);
 	WARN_ON_ONCE(clocksource_wdtest_jiffies.uncertainty_margin != TICK_NSEC);
@@ -124,10 +115,7 @@ static int wdtest_func(void *arg)
 
 	clocksource_unregister(&clocksource_wdtest_jiffies);
 
-	/*
-	 * Verify that tsc-like clocksources are assigned a reasonable
-	 * uncertainty margin.
-	 */
+	 
 	pr_info("--- Verify tsc-like uncertainty margin.\n");
 	clocksource_register_khz(&clocksource_wdtest_ktime, 1000 * 1000);
 	WARN_ON_ONCE(clocksource_wdtest_ktime.uncertainty_margin < NSEC_PER_USEC);
@@ -138,7 +126,7 @@ static int wdtest_func(void *arg)
 	pr_info("--- tsc-like times: %lu - %lu = %lu.\n", j2, j1, j2 - j1);
 	WARN_ON_ONCE(time_before(j2, j1 + NSEC_PER_USEC));
 
-	/* Verify tsc-like stability with various numbers of errors injected. */
+	 
 	for (i = 0; i <= max_cswd_read_retries + 1; i++) {
 		if (i <= 1 && i < max_cswd_read_retries)
 			s = "";
@@ -155,7 +143,7 @@ static int wdtest_func(void *arg)
 		wdtest_ktime_clocksource_reset();
 	}
 
-	/* Verify tsc-like stability with clock-value-fuzz error injection. */
+	 
 	pr_info("--- Watchdog clock-value-fuzz error injection, expect clock skew and per-CPU mismatches.\n");
 	WRITE_ONCE(wdtest_ktime_read_fuzz, true);
 	schedule_timeout_uninterruptible(2 * HZ);
@@ -174,7 +162,7 @@ static void wdtest_print_module_parms(void)
 	pr_alert("--- holdoff=%d\n", holdoff);
 }
 
-/* Cleanup function. */
+ 
 static void clocksource_wdtest_cleanup(void)
 {
 }
@@ -185,7 +173,7 @@ static int __init clocksource_wdtest_init(void)
 
 	wdtest_print_module_parms();
 
-	/* Create watchdog-test task. */
+	 
 	wdtest_task = kthread_run(wdtest_func, NULL, "wdtest");
 	if (IS_ERR(wdtest_task)) {
 		ret = PTR_ERR(wdtest_task);

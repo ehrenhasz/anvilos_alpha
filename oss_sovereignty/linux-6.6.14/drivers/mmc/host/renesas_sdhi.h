@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Renesas Mobile SDHI
- *
- * Copyright (C) 2017 Horms Solutions Ltd., Simon Horman
- * Copyright (C) 2017-19 Renesas Electronics Corporation
- */
+ 
+ 
 
 #ifndef RENESAS_SDHI_H
 #define RENESAS_SDHI_H
@@ -13,9 +8,9 @@
 #include "tmio_mmc.h"
 
 struct renesas_sdhi_scc {
-	unsigned long clk_rate;	/* clock rate for SDR104 */
-	u32 tap;		/* sampling clock position for SDR104/HS400 (8 TAP) */
-	u32 tap_hs400_4tap;	/* sampling clock position for HS400 (4 TAP) */
+	unsigned long clk_rate;	 
+	u32 tap;		 
+	u32 tap_hs400_4tap;	 
 };
 
 #define SDHI_FLAG_NEED_CLKH_FALLBACK	BIT(0)
@@ -56,7 +51,7 @@ struct renesas_sdhi_of_data_with_quirks {
 	const struct renesas_sdhi_quirks *quirks;
 };
 
-/* We want both end_flags to be set before we mark DMA as finished */
+ 
 #define SDHI_DMA_END_FLAG_DMA		0
 #define SDHI_DMA_END_FLAG_ACCESS	1
 
@@ -84,9 +79,9 @@ struct renesas_sdhi {
 	const u8 *adjust_hs400_calib_table;
 	bool needs_adjust_hs400;
 
-	/* Tuning values: 1 for success, 0 for failure */
+	 
 	DECLARE_BITMAP(taps, BITS_PER_LONG);
-	/* Sampling data comparison: 1 for match, 0 for mismatch */
+	 
 	DECLARE_BITMAP(smpcmp, BITS_PER_LONG);
 	unsigned int tap_num;
 	unsigned int tap_set;

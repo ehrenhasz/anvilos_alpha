@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Driver for the LID cover switch of the Surface 3
- *
- *  Copyright (c) 2016 Red Hat Inc.
- */
+
+ 
 
 
 #include <linux/kernel.h>
@@ -139,17 +135,17 @@ static int s3_wmi_check_platform_device(struct device *dev, void *data)
 	struct acpi_device *ts_adev = NULL;
 	acpi_status status;
 
-	/* ignore non ACPI devices */
+	 
 	if (!adev)
 		return 0;
 
-	/* check for LID ACPI switch */
+	 
 	if (!strcmp(ACPI_BUTTON_HID_LID, acpi_device_hid(adev))) {
 		s3_wmi.pnp0c0d_adev = adev;
 		return 0;
 	}
 
-	/* ignore non SPI controllers */
+	 
 	if (strncmp(acpi_device_bid(adev), SPI_CTL_OBJ_NAME,
 	    strlen(SPI_CTL_OBJ_NAME)))
 		return 0;
@@ -228,10 +224,10 @@ static int __init s3_wmi_probe(struct platform_device *pdev)
 
 static int s3_wmi_remove(struct platform_device *device)
 {
-	/* remove the hotplug context from the acpi device */
+	 
 	s3_wmi.touchscreen_adev->hp = NULL;
 
-	/* reinstall the actual PNPC0C0D LID default handle */
+	 
 	acpi_bus_scan(s3_wmi.pnp0c0d_adev->handle);
 	return 0;
 }

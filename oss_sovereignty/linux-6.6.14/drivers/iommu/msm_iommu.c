@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2010-2011, Code Aurora Forum. All rights reserved.
- *
- * Author: Stepan Moskovchenko <stepanm@codeaurora.org>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 #include <linux/kernel.h>
@@ -30,7 +27,7 @@ __asm__ __volatile__ (							\
 "   mrc   "   #processor "," #op1 ", %0,"  #crn "," #crm "," #op2 "\n"  \
 : "=r" (reg))
 
-/* bitmap of the page sizes currently supported */
+ 
 #define MSM_IOMMU_PGSIZES	(SZ_4K | SZ_64K | SZ_1M | SZ_16M)
 
 static DEFINE_SPINLOCK(msm_iommu_lock);
@@ -43,7 +40,7 @@ struct msm_priv {
 	struct io_pgtable_cfg	cfg;
 	struct io_pgtable_ops	*iop;
 	struct device		*dev;
-	spinlock_t		pgtlock; /* pagetable lock */
+	spinlock_t		pgtlock;  
 };
 
 static struct msm_priv *to_msm_priv(struct iommu_domain *dom)
@@ -215,19 +212,19 @@ static void config_mids(struct msm_iommu_dev *iommu,
 		SET_M2VCBR_N(iommu->base, mid, 0);
 		SET_CBACR_N(iommu->base, ctx, 0);
 
-		/* Set VMID = 0 */
+		 
 		SET_VMID(iommu->base, mid, 0);
 
-		/* Set the context number for that MID to this context */
+		 
 		SET_CBNDX(iommu->base, mid, ctx);
 
-		/* Set MID associated with this context bank to 0*/
+		 
 		SET_CBVMID(iommu->base, ctx, 0);
 
-		/* Set the ASID for TLB tagging for this context */
+		 
 		SET_CONTEXTIDR_ASID(iommu->base, ctx, ctx);
 
-		/* Set security bit override to be Non-secure */
+		 
 		SET_NSCFG(iommu->base, mid, 3);
 	}
 }
@@ -259,46 +256,46 @@ static void __program_context(void __iomem *base, int ctx,
 {
 	__reset_context(base, ctx);
 
-	/* Turn on TEX Remap */
+	 
 	SET_TRE(base, ctx, 1);
 	SET_AFE(base, ctx, 1);
 
-	/* Set up HTW mode */
-	/* TLB miss configuration: perform HTW on miss */
+	 
+	 
 	SET_TLBMCFG(base, ctx, 0x3);
 
-	/* V2P configuration: HTW for access */
+	 
 	SET_V2PCFG(base, ctx, 0x3);
 
 	SET_TTBCR(base, ctx, priv->cfg.arm_v7s_cfg.tcr);
 	SET_TTBR0(base, ctx, priv->cfg.arm_v7s_cfg.ttbr);
 	SET_TTBR1(base, ctx, 0);
 
-	/* Set prrr and nmrr */
+	 
 	SET_PRRR(base, ctx, priv->cfg.arm_v7s_cfg.prrr);
 	SET_NMRR(base, ctx, priv->cfg.arm_v7s_cfg.nmrr);
 
-	/* Invalidate the TLB for this context */
+	 
 	SET_CTX_TLBIALL(base, ctx, 0);
 
-	/* Set interrupt number to "secure" interrupt */
+	 
 	SET_IRPTNDX(base, ctx, 0);
 
-	/* Enable context fault interrupt */
+	 
 	SET_CFEIE(base, ctx, 1);
 
-	/* Stall access on a context fault and let the handler deal with it */
+	 
 	SET_CFCFG(base, ctx, 1);
 
-	/* Redirect all cacheable requests to L2 slave port. */
+	 
 	SET_RCISH(base, ctx, 1);
 	SET_RCOSH(base, ctx, 1);
 	SET_RCNSH(base, ctx, 1);
 
-	/* Turn on BFB prefetch */
+	 
 	SET_BFBDFE(base, ctx, 1);
 
-	/* Enable the MMU */
+	 
 	SET_M(base, ctx, 1);
 }
 
@@ -360,7 +357,7 @@ static int msm_iommu_domain_config(struct msm_priv *priv)
 	return 0;
 }
 
-/* Must be called under msm_iommu_lock */
+ 
 static struct msm_iommu_dev *find_iommu_for_dev(struct device *dev)
 {
 	struct msm_iommu_dev *iommu, *ret = NULL;
@@ -537,16 +534,16 @@ static phys_addr_t msm_iommu_iova_to_phys(struct iommu_domain *domain,
 	if (ret)
 		goto fail;
 
-	/* Invalidate context TLB */
+	 
 	SET_CTX_TLBIALL(iommu->base, master->num, 0);
 	SET_V2PPR(iommu->base, master->num, va & V2Pxx_VA);
 
 	par = GET_PAR(iommu->base, master->num);
 
-	/* We are dealing with a supersection */
+	 
 	if (GET_NOFAULT_SS(iommu->base, master->num))
 		ret = (par & 0xFF000000) | (va & 0x00FFFFFF);
-	else	/* Upper 20 bits from PAR, lower 12 from VA */
+	else	 
 		ret = (par & 0xFFFFF000) | (va & 0x00000FFF);
 
 	if (GET_FAULT(iommu->base, master->num))
@@ -685,12 +682,7 @@ static struct iommu_ops msm_iommu_ops = {
 		.attach_dev	= msm_iommu_attach_dev,
 		.map_pages	= msm_iommu_map,
 		.unmap_pages	= msm_iommu_unmap,
-		/*
-		 * Nothing is needed here, the barrier to guarantee
-		 * completion of the tlb sync operation is implicitly
-		 * taken care when the iommu client does a writel before
-		 * kick starting the other master.
-		 */
+		 
 		.iotlb_sync	= NULL,
 		.iotlb_sync_map	= msm_iommu_sync_map,
 		.iova_to_phys	= msm_iommu_iova_to_phys,

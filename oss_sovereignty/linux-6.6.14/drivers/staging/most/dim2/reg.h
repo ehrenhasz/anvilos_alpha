@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * reg.h - Definitions for registers of DIM2
- * (MediaLB, Device Interface Macro IP, OS62420)
- *
- * Copyright (C) 2015, Microchip Technology Germany II GmbH & Co. KG
- */
+ 
+ 
 
 #ifndef DIM2_OS62420_H
 #define	DIM2_OS62420_H
@@ -12,48 +7,48 @@
 #include <linux/types.h>
 
 struct dim2_regs {
-	u32 MLBC0;       /* 0x00 */
-	u32 rsvd0[1];    /* 0x01 */
-	u32 MLBPC0;      /* 0x02 */
-	u32 MS0;         /* 0x03 */
-	u32 rsvd1[1];    /* 0x04 */
-	u32 MS1;         /* 0x05 */
-	u32 rsvd2[2];    /* 0x06 */
-	u32 MSS;         /* 0x08 */
-	u32 MSD;         /* 0x09 */
-	u32 rsvd3[1];    /* 0x0A */
-	u32 MIEN;        /* 0x0B */
-	u32 rsvd4[1];    /* 0x0C */
-	u32 MLBPC2;      /* 0x0D */
-	u32 MLBPC1;      /* 0x0E */
-	u32 MLBC1;       /* 0x0F */
-	u32 rsvd5[0x10]; /* 0x10 */
-	u32 HCTL;        /* 0x20 */
-	u32 rsvd6[1];    /* 0x21 */
-	u32 HCMR0;       /* 0x22 */
-	u32 HCMR1;       /* 0x23 */
-	u32 HCER0;       /* 0x24 */
-	u32 HCER1;       /* 0x25 */
-	u32 HCBR0;       /* 0x26 */
-	u32 HCBR1;       /* 0x27 */
-	u32 rsvd7[8];    /* 0x28 */
-	u32 MDAT0;       /* 0x30 */
-	u32 MDAT1;       /* 0x31 */
-	u32 MDAT2;       /* 0x32 */
-	u32 MDAT3;       /* 0x33 */
-	u32 MDWE0;       /* 0x34 */
-	u32 MDWE1;       /* 0x35 */
-	u32 MDWE2;       /* 0x36 */
-	u32 MDWE3;       /* 0x37 */
-	u32 MCTL;        /* 0x38 */
-	u32 MADR;        /* 0x39 */
-	u32 rsvd8[0xb6]; /* 0x3A */
-	u32 ACTL;        /* 0xF0 */
-	u32 rsvd9[3];    /* 0xF1 */
-	u32 ACSR0;       /* 0xF4 */
-	u32 ACSR1;       /* 0xF5 */
-	u32 ACMR0;       /* 0xF6 */
-	u32 ACMR1;       /* 0xF7 */
+	u32 MLBC0;        
+	u32 rsvd0[1];     
+	u32 MLBPC0;       
+	u32 MS0;          
+	u32 rsvd1[1];     
+	u32 MS1;          
+	u32 rsvd2[2];     
+	u32 MSS;          
+	u32 MSD;          
+	u32 rsvd3[1];     
+	u32 MIEN;         
+	u32 rsvd4[1];     
+	u32 MLBPC2;       
+	u32 MLBPC1;       
+	u32 MLBC1;        
+	u32 rsvd5[0x10];  
+	u32 HCTL;         
+	u32 rsvd6[1];     
+	u32 HCMR0;        
+	u32 HCMR1;        
+	u32 HCER0;        
+	u32 HCER1;        
+	u32 HCBR0;        
+	u32 HCBR1;        
+	u32 rsvd7[8];     
+	u32 MDAT0;        
+	u32 MDAT1;        
+	u32 MDAT2;        
+	u32 MDAT3;        
+	u32 MDWE0;        
+	u32 MDWE1;        
+	u32 MDWE2;        
+	u32 MDWE3;        
+	u32 MCTL;         
+	u32 MADR;         
+	u32 rsvd8[0xb6];  
+	u32 ACTL;         
+	u32 rsvd9[3];     
+	u32 ACSR0;        
+	u32 ACSR1;        
+	u32 ACMR0;        
+	u32 ACMR1;        
 };
 
 #define DIM2_MASK(n)  (~((~(u32)0) << (n)))
@@ -154,4 +149,4 @@ enum {
 	CAT_CL_MASK = DIM2_MASK(6)
 };
 
-#endif	/* DIM2_OS62420_H */
+#endif	 

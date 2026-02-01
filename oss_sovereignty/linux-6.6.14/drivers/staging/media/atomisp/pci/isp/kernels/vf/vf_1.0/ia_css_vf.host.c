@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "atomisp_internal.h"
 
@@ -43,17 +31,14 @@ int ia_css_vf_config(struct sh_css_isp_vf_isp_config      *to,
 			return ret;
 		to->dma.width_a_over_b = elems_a / to->dma.port_b.elems;
 
-		/* Assume divisiblity here, may need to generalize to fixed point. */
+		 
 		if (elems_a % to->dma.port_b.elems != 0)
 			return -EINVAL;
 	}
 	return 0;
 }
 
-/* compute the log2 of the downscale factor needed to get closest
- * to the requested viewfinder resolution on the upper side. The output cannot
- * be smaller than the requested viewfinder resolution.
- */
+ 
 int
 sh_css_vf_downscale_log2(
     const struct ia_css_frame_info *out_info,
@@ -70,19 +55,16 @@ sh_css_vf_downscale_log2(
 	if (out_width == 0)
 		return -EINVAL;
 
-	/* downscale until width smaller than the viewfinder width. We don't
-	* test for the height since the vmem buffers only put restrictions on
-	* the width of a line, not on the number of lines in a frame.
-	*/
+	 
 	while (out_width >= vf_info->res.width)
 	{
 		ds_log2++;
 		out_width /= 2;
 	}
-	/* now width is smaller, so we go up one step */
+	 
 	if ((ds_log2 > 0) && (out_width < ia_css_binary_max_vf_width()))
 		ds_log2--;
-	/* TODO: use actual max input resolution of vf_pp binary */
+	 
 	if ((out_info->res.width >> ds_log2) >= 2 * ia_css_binary_max_vf_width())
 		return -EINVAL;
 	*downscale_log2 = ds_log2;
@@ -99,7 +81,7 @@ configure_kernel(
 	int err;
 	unsigned int vf_log_ds = 0;
 
-	/* First compute value */
+	 
 	if (vf_info)
 	{
 		err = sh_css_vf_downscale_log2(out_info, vf_info, &vf_log_ds);
@@ -109,7 +91,7 @@ configure_kernel(
 	vf_log_ds = min(vf_log_ds, info->vf_dec.max_log_downscale);
 	*downscale_log2 = vf_log_ds;
 
-	/* Then store it in isp config section */
+	 
 	config->vf_downscale_bits = vf_log_ds;
 	return 0;
 }

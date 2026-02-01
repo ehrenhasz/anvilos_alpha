@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Russell King, Deep Blue Solutions Ltd.
- *
- * Partly derived from CP110 comphy driver by Antoine Tenart
- * <antoine.tenart@bootlin.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/iopoll.h>
 #include <linux/module.h>
@@ -106,10 +101,7 @@ static int a38x_comphy_poll(struct a38x_comphy_lane *lane,
 	return ret;
 }
 
-/*
- * We only support changing the speed for comphys configured for GBE.
- * Since that is all we do, we only poll for PLL ready status.
- */
+ 
 static int a38x_comphy_set_mode(struct phy *phy, enum phy_mode mode, int sub)
 {
 	struct a38x_comphy_lane *lane = phy_get_drvdata(phy);
@@ -206,7 +198,7 @@ static int a38x_comphy_probe(struct platform_device *pdev)
 	priv->dev = &pdev->dev;
 	priv->base = base;
 
-	/* Optional */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "conf");
 	if (res) {
 		priv->conf = devm_ioremap_resource(&pdev->dev, res);

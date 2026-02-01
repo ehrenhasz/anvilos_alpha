@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 	atalk_proc.c - proc support for Appletalk
- *
- * 	Copyright(c) Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/proc_fs.h>

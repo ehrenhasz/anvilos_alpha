@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Marvell 88E6xxx SERDES manipulation, via SMI bus
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2016 Andrew Lunn <andrew@lunn.ch>
- */
+ 
+ 
 
 #ifndef _MV88E6XXX_SERDES_H
 #define _MV88E6XXX_SERDES_H
@@ -43,7 +37,7 @@ struct phylink_link_state;
 #define MV88E6390_PORT10_LANE2		0x16
 #define MV88E6390_PORT10_LANE3		0x17
 
-/* 10GBASE-R and 10GBASE-X4/X2 */
+ 
 #define MV88E6390_10G_CTRL1		(0x1000 + MDIO_CTRL1)
 #define MV88E6390_10G_STAT1		(0x1000 + MDIO_STAT1)
 #define MV88E6390_10G_INT_ENABLE	0x9001
@@ -54,11 +48,11 @@ struct phylink_link_state;
 #define MV88E6393X_10G_INT_LINK_CHANGE	BIT(2)
 #define MV88E6393X_10G_INT_STATUS	0x9001
 
-/* USXGMII */
+ 
 #define MV88E6390_USXGMII_LP_STATUS       0xf0a2
 #define MV88E6390_USXGMII_PHY_STATUS      0xf0a6
 
-/* 1000BASE-X and SGMII */
+ 
 #define MV88E6390_SGMII_BMCR		(0x2000 + MII_BMCR)
 #define MV88E6390_SGMII_BMSR		(0x2000 + MII_BMSR)
 #define MV88E6390_SGMII_ADVERTISE	(0x2000 + MII_ADVERTISE)
@@ -84,7 +78,7 @@ struct phylink_link_state;
 #define MV88E6390_SGMII_PHY_STATUS_TX_PAUSE	BIT(3)
 #define MV88E6390_SGMII_PHY_STATUS_RX_PAUSE	BIT(2)
 
-/* Packet generator pad packet checker */
+ 
 #define MV88E6390_PG_CONTROL		0xf010
 #define MV88E6390_PG_CONTROL_ENABLE_PC		BIT(0)
 
@@ -92,7 +86,7 @@ struct phylink_link_state;
 #define MV88E6393X_PORT9_LANE			0x09
 #define MV88E6393X_PORT10_LANE			0x0a
 
-/* Port Operational Configuration */
+ 
 #define MV88E6393X_SERDES_POC			0xf002
 #define MV88E6393X_SERDES_POC_PCS_1000BASEX	0x0000
 #define MV88E6393X_SERDES_POC_PCS_2500BASEX	0x0001
@@ -143,7 +137,7 @@ void mv88e6390_serdes_get_regs(struct mv88e6xxx_chip *chip, int port, void *_p);
 int mv88e6352_serdes_set_tx_amplitude(struct mv88e6xxx_chip *chip, int port,
 				      int val);
 
-/* Return the (first) SERDES lane address a port is using, -errno otherwise. */
+ 
 static inline int mv88e6xxx_serdes_get_lane(struct mv88e6xxx_chip *chip,
 					    int port)
 {

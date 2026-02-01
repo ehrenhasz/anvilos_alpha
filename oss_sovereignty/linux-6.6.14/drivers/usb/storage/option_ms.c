@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Option High Speed Mobile Devices.
- *
- *   (c) 2008 Dan Williams <dcbw@redhat.com>
- *
- * Inspiration taken from sierra_ms.c by Kevin Lloyd <klloyd@sierrawireless.com>
- */
+
+ 
 
 #include <linux/usb.h>
 #include <linux/slab.h>
@@ -52,15 +46,12 @@ static int option_rezero(struct us_data *us)
 		goto out;
 	}
 
-	/*
-	 * Some of the devices need to be asked for a response, but we don't
-	 * care what that response is.
-	 */
+	 
 	usb_stor_bulk_transfer_buf(us,
 			us->recv_bulk_pipe,
 			buffer, RESPONSE_LEN, NULL);
 
-	/* Read the CSW */
+	 
 	usb_stor_bulk_transfer_buf(us,
 			us->recv_bulk_pipe,
 			buffer, 13, NULL);
@@ -111,7 +102,7 @@ static int option_inquiry(struct us_data *us)
 	if (result != 0)
 		result = memcmp(buffer+8, "ZCOPTION", 8);
 
-	/* Read the CSW */
+	 
 	usb_stor_bulk_transfer_buf(us,
 			us->recv_bulk_pipe,
 			buffer, 13, NULL);
@@ -128,10 +119,7 @@ int option_ms_init(struct us_data *us)
 
 	usb_stor_dbg(us, "Option MS: %s\n", "option_ms_init called");
 
-	/*
-	 * Additional test for vendor information via INQUIRY,
-	 * because some vendor/product IDs are ambiguous
-	 */
+	 
 	result = option_inquiry(us);
 	if (result != 0) {
 		usb_stor_dbg(us, "Option MS: %s\n",
@@ -141,7 +129,7 @@ int option_ms_init(struct us_data *us)
 		usb_stor_dbg(us, "Option MS: %s\n",
 			     "this is a genuine Option device, proceeding");
 
-	/* Force Modem mode */
+	 
 	if (option_zero_cd == ZCD_FORCE_MODEM) {
 		usb_stor_dbg(us, "Option MS: %s\n", "Forcing Modem Mode");
 		result = option_rezero(us);
@@ -150,7 +138,7 @@ int option_ms_init(struct us_data *us)
 				     "Failed to switch to modem mode");
 		return -EIO;
 	} else if (option_zero_cd == ZCD_ALLOW_MS) {
-		/* Allow Mass Storage mode (keep CD-Rom) */
+		 
 		usb_stor_dbg(us, "Option MS: %s\n",
 			     "Allowing Mass Storage Mode if device requests it");
 	}

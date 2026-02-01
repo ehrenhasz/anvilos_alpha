@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 #ifndef __R600_REG_H__
 #define __R600_REG_H__
 
@@ -151,22 +125,20 @@
 #define R600_BIOS_6_SCRATCH               0x173c
 #define R600_BIOS_7_SCRATCH               0x1740
 
-/* Audio, these regs were reverse enginered,
- * so the chance is high that the naming is wrong
- * R6xx+ ??? */
+ 
 
-/* Audio clocks */
+ 
 #define R600_AUDIO_PLL1_MUL               0x0514
 #define R600_AUDIO_PLL1_DIV               0x0518
 #define R600_AUDIO_PLL2_MUL               0x0524
 #define R600_AUDIO_PLL2_DIV               0x0528
 #define R600_AUDIO_CLK_SRCSEL             0x0534
 
-/* Audio general */
+ 
 #define R600_AUDIO_ENABLE                 0x7300
 #define R600_AUDIO_TIMING                 0x7344
 
-/* Audio params */
+ 
 #define R600_AUDIO_VENDOR_ID              0x7380
 #define R600_AUDIO_REVISION_ID            0x7384
 #define R600_AUDIO_ROOT_NODE_COUNT        0x7388
@@ -179,11 +151,11 @@
 #define R600_AUDIO_NID3_CAPS              0x73a4
 #define R600_AUDIO_NID3_PIN_CAPS          0x73a8
 
-/* Audio conn list */
+ 
 #define R600_AUDIO_CONN_LIST_LEN          0x73ac
 #define R600_AUDIO_CONN_LIST              0x73b0
 
-/* Audio verbs */
+ 
 #define R600_AUDIO_RATE_BPS_CHANNEL       0x73c0
 #define R600_AUDIO_PLAYING                0x73c4
 #define R600_AUDIO_IMPLEMENTATION_ID      0x73c8
@@ -194,7 +166,7 @@
 
 #define DCE2_HDMI_OFFSET0		(0x7400 - 0x7400)
 #define DCE2_HDMI_OFFSET1		(0x7700 - 0x7400)
-/* DCE3.2 second instance starts at 0x7800 */
+ 
 #define DCE3_HDMI_OFFSET0		(0x7400 - 0x7400)
 #define DCE3_HDMI_OFFSET1		(0x7800 - 0x7400)
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/module.h>
 #include <linux/i2c.h>
 #include <linux/dmi.h>
@@ -26,10 +26,10 @@ enum clock_rate {
 #define CLK_RATE_19_2MHZ	19200000
 #define CLK_RATE_25_0MHZ	25000000
 
-/* Valid clock number range from 0 to 5 */
+ 
 #define MAX_CLK_COUNT                   5
 
-/* X-Powers AXP288 register set */
+ 
 #define ALDO1_SEL_REG	0x28
 #define ALDO1_CTRL3_REG	0x13
 #define ALDO1_2P8V	0x16
@@ -45,18 +45,18 @@ enum clock_rate {
 #define ELDO2_1P8V	0x16
 #define ELDO2_CTRL_SHIFT 0x01
 
-/* TI SND9039 PMIC register set */
+ 
 #define LDO9_REG	0x49
 #define LDO10_REG	0x4a
 #define LDO11_REG	0x4b
 
-#define LDO_2P8V_ON	0x2f /* 0x2e selects 2.85V ...      */
-#define LDO_2P8V_OFF	0x2e /* ... bottom bit is "enabled" */
+#define LDO_2P8V_ON	0x2f  
+#define LDO_2P8V_OFF	0x2e  
 
-#define LDO_1P8V_ON	0x59 /* 0x58 selects 1.80V ...      */
-#define LDO_1P8V_OFF	0x58 /* ... bottom bit is "enabled" */
+#define LDO_1P8V_ON	0x59  
+#define LDO_1P8V_OFF	0x58  
 
-/* CRYSTAL COVE PMIC register set */
+ 
 #define CRYSTAL_BYT_1P8V_REG	0x5d
 #define CRYSTAL_BYT_2P8V_REG	0x66
 
@@ -92,17 +92,17 @@ struct gmin_subdev {
 
 	u8 pwm_i2c_addr;
 
-	/* For PMIC AXP */
+	 
 	int eldo1_sel_reg, eldo1_1p6v, eldo1_ctrl_shift;
 	int eldo2_sel_reg, eldo2_1p8v, eldo2_ctrl_shift;
 };
 
 static struct gmin_subdev gmin_subdevs[MAX_SUBDEVS];
 
-/* ACPI HIDs for the PMICs that could be used by this driver */
-#define PMIC_ACPI_AXP		"INT33F4"	/* XPower AXP288 PMIC */
-#define PMIC_ACPI_TI		"INT33F5"	/* Dollar Cove TI PMIC */
-#define PMIC_ACPI_CRYSTALCOVE	"INT33FD"	/* Crystal Cove PMIC */
+ 
+#define PMIC_ACPI_AXP		"INT33F4"	 
+#define PMIC_ACPI_TI		"INT33F5"	 
+#define PMIC_ACPI_CRYSTALCOVE	"INT33FD"	 
 
 #define PMIC_PLATFORM_TI	"intel_soc_pmic_chtdc_ti"
 
@@ -126,7 +126,7 @@ static DEFINE_MUTEX(gmin_regulator_mutex);
 static int gmin_v1p8_enable_count;
 static int gmin_v2p8_enable_count;
 
-/* The atomisp uses type==0 for the end-of-list marker, so leave space. */
+ 
 static struct intel_v4l2_subdev_table pdata_subdevs[MAX_SUBDEVS + 1];
 
 static const struct atomisp_platform_data pdata = {
@@ -155,19 +155,9 @@ int atomisp_register_i2c_module(struct v4l2_subdev *subdev,
 
 	dev_info(&client->dev, "register atomisp i2c module type %d\n", type);
 
-	/* The windows driver model (and thus most BIOSes by default)
-	 * uses ACPI runtime power management for camera devices, but
-	 * we don't.  Disable it, or else the rails will be needlessly
-	 * tickled during suspend/resume.  This has caused power and
-	 * performance issues on multiple devices.
-	 */
+	 
 
-	/*
-	 * Turn off the device before disabling ACPI power resources
-	 * (the sensor driver has already probed it at this point).
-	 * This avoids leaking the reference count of the (possibly shared)
-	 * ACPI power resources which were enabled/referenced before probe().
-	 */
+	 
 	acpi_device_set_power(adev, ACPI_STATE_D3_COLD);
 	adev->power.flags.power_resources = 0;
 
@@ -178,11 +168,7 @@ int atomisp_register_i2c_module(struct v4l2_subdev *subdev,
 	if (pdata.subdevs[i].type)
 		return -ENOMEM;
 
-	/* Note subtlety of initialization order: at the point where
-	 * this registration API gets called, the platform data
-	 * callbacks have probably already been invoked, so the
-	 * gmin_subdev struct is already initialized for us.
-	 */
+	 
 	gs = find_gmin_subdev(subdev);
 	if (!gs)
 		return -ENODEV;
@@ -239,9 +225,7 @@ static struct gmin_cfg_var ffrd8_vars[] = {
 	{},
 };
 
-/* Cribbed from MCG defaults in the mt9m114 driver, not actually verified
- * vs. T100 hardware
- */
+ 
 static struct gmin_cfg_var t100_vars[] = {
 	{ "INT33F0:00_CsiPort",  "0" },
 	{ "INT33F0:00_CsiLanes", "1" },
@@ -293,9 +277,7 @@ static struct gmin_cfg_var i8880_vars[] = {
 	{},
 };
 
-/*
- * Surface 3 does not describe CsiPort/CsiLanes in both DSDT and EFI.
- */
+ 
 static struct gmin_cfg_var surface3_vars[] = {
 	{"APTA0330:00_CsiPort", "0"},
 	{"APTA0330:00_CsiLanes", "2"},
@@ -306,16 +288,13 @@ static struct gmin_cfg_var surface3_vars[] = {
 };
 
 static struct gmin_cfg_var lenovo_ideapad_miix_310_vars[] = {
-	/* _DSM contains the wrong CsiPort! */
+	 
 	{ "OVTI2680:01_CsiPort", "0" },
 	{}
 };
 
 static const struct dmi_system_id gmin_vars[] = {
-	/*
-	 * These DMI IDs were present when the atomisp driver was merged into
-	 * drivers/staging and it is unclear if they are really necessary.
-	 */
+	 
 	{
 		.ident = "BYT-T FFD8",
 		.matches = {
@@ -352,7 +331,7 @@ static const struct dmi_system_id gmin_vars[] = {
 		},
 		.driver_data = i8880_vars,
 	},
-	/* Later added DMI ids, these are confirmed to really be necessary! */
+	 
 	{
 		.ident = "Surface 3",
 		.matches = {
@@ -381,7 +360,7 @@ static const guid_t atomisp_dsm_guid = GUID_INIT(0xdc2f6c4f, 0x045b, 0x4f1d,
 
 #define CFG_VAR_NAME_MAX 64
 
-#define GMIN_PMC_CLK_NAME 14 /* "pmc_plt_clk_[0..5]" */
+#define GMIN_PMC_CLK_NAME 14  
 static char gmin_pmc_clk_name[GMIN_PMC_CLK_NAME];
 
 static struct i2c_client *gmin_i2c_dev_exists(struct device *dev, char *name,
@@ -412,12 +391,7 @@ static int gmin_i2c_write(struct device *dev, u16 i2c_addr, u8 reg,
 {
 	int ret;
 
-	/*
-	 * FIXME: Right now, the intel_pmic driver just write values
-	 * directly at the regmap, instead of properly implementing
-	 * i2c_transfer() mechanism. Let's use the same interface here,
-	 * as otherwise we may face issues.
-	 */
+	 
 
 	dev_dbg(dev,
 		"I2C write, addr: 0x%02x, reg: 0x%02x, value: 0x%02x, mask: 0x%02x\n",
@@ -473,10 +447,7 @@ static int atomisp_get_acpi_power(struct device *dev)
 			if (name[3] >= '0' && name[3] <= '4')
 				clock_num = name[3] - '0';
 #if 0
-			/*
-			 * We could abort here, but let's parse all resources,
-			 * as this is helpful for debugging purposes
-			 */
+			 
 			if (clock_num >= 0)
 				break;
 #endif
@@ -531,18 +502,15 @@ static int gmin_subdev_add(struct gmin_subdev *gs)
 
 	dev_info(dev, "%s: ACPI path is %pfw\n", __func__, dev_fwnode(dev));
 
-	/*WA:CHT requires XTAL clock as PLL is not stable.*/
+	 
 	gs->clock_src = gmin_get_var_int(dev, false, "ClkSrc",
 				         VLV2_CLK_PLL_19P2MHZ);
 
-	/*
-	 * Get ACPI _PR0 derived clock here already because it is used
-	 * to determine the csi_port default.
-	 */
+	 
 	if (acpi_device_power_manageable(adev))
 		clock_num = atomisp_get_acpi_power(dev);
 
-	/* Compare clock to CsiPort 1 pmc-clock used in the CHT/BYT reference designs */
+	 
 	if (IS_ISP2401)
 		default_val = clock_num == 4 ? 1 : 0;
 	else
@@ -563,45 +531,12 @@ static int gmin_subdev_add(struct gmin_subdev *gs)
 	else
 		dev_info(dev, "will handle gpio1 via ACPI\n");
 
-	/*
-	 * Those are used only when there is an external regulator apart
-	 * from the PMIC that would be providing power supply, like on the
-	 * two cases below:
-	 *
-	 * The ECS E7 board drives camera 2.8v from an external regulator
-	 * instead of the PMIC.  There's a gmin_CamV2P8 config variable
-	 * that specifies the GPIO to handle this particular case,
-	 * but this needs a broader architecture for handling camera power.
-	 *
-	 * The CHT RVP board drives camera 1.8v from an* external regulator
-	 * instead of the PMIC just like ECS E7 board.
-	 */
+	 
 
 	gs->v1p8_gpio = gmin_get_var_int(dev, true, "V1P8GPIO", -1);
 	gs->v2p8_gpio = gmin_get_var_int(dev, true, "V2P8GPIO", -1);
 
-	/*
-	 * FIXME:
-	 *
-	 * The ACPI handling code checks for the _PR? tables in order to
-	 * know what is required to switch the device from power state
-	 * D0 (_PR0) up to D3COLD (_PR3).
-	 *
-	 * The adev->flags.power_manageable is set to true if the device
-	 * has a _PR0 table, which can be checked by calling
-	 * acpi_device_power_manageable(adev).
-	 *
-	 * However, this only says that the device can be set to power off
-	 * mode.
-	 *
-	 * At least on the DSDT tables we've seen so far, there's no _PR3,
-	 * nor _PS3 (which would have a somewhat similar effect).
-	 * So, using ACPI for power management won't work, except if adding
-	 * an ACPI override logic somewhere.
-	 *
-	 * So, at least for the existing devices we know, the check below
-	 * will always be false.
-	 */
+	 
 	if (acpi_device_can_wakeup(adev) &&
 	    acpi_device_can_poweroff(adev)) {
 		dev_info(dev,
@@ -609,27 +544,11 @@ static int gmin_subdev_add(struct gmin_subdev *gs)
 		return 0;
 	}
 
-	/*
-	 * The code below is here due to backward compatibility with devices
-	 * whose ACPI BIOS may not contain everything that would be needed
-	 * in order to set clocks and do power management.
-	 */
+	 
 
-	/*
-	 * According with :
-	 *   https://github.com/projectceladon/hardware-intel-kernelflinger/blob/master/doc/fastboot.md
-	 *
-	 * The "CamClk" EFI var is set via fastboot on some Android devices,
-	 * and seems to contain the number of the clock used to feed the
-	 * sensor.
-	 *
-	 * On systems with a proper ACPI table, this is given via the _PR0
-	 * power resource table. The logic below should first check if there
-	 * is a power resource already, falling back to the EFI vars detection
-	 * otherwise.
-	 */
+	 
 
-	/* If getting the clock from _PR0 above failed, fall-back to EFI and/or DMI match */
+	 
 	if (clock_num < 0)
 		clock_num = gmin_get_var_int(dev, false, "CamClk", 0);
 
@@ -649,16 +568,7 @@ static int gmin_subdev_add(struct gmin_subdev *gs)
 	}
 	dev_info(dev, "Will use CLK%d (%s)\n", clock_num, gmin_pmc_clk_name);
 
-	/*
-	 * The firmware might enable the clock at
-	 * boot (this information may or may not
-	 * be reflected in the enable clock register).
-	 * To change the rate we must disable the clock
-	 * first to cover these cases. Due to common
-	 * clock framework restrictions that do not allow
-	 * to disable a clock that has not been enabled,
-	 * we need to enable the clock first.
-	 */
+	 
 	ret = clk_prepare_enable(gs->pmc_clk);
 	if (!ret)
 		clk_disable_unprepare(gs->pmc_clk);
@@ -671,13 +581,7 @@ static int gmin_subdev_add(struct gmin_subdev *gs)
 		gs->v1p2_reg = regulator_get(dev, "V1P2A");
 		gs->v2p8_vcm_reg = regulator_get(dev, "VPROG4B");
 
-		/* Note: ideally we would initialize v[12]p8_on to the
-		 * output of regulator_is_enabled(), but sadly that
-		 * API is broken with the current drivers, returning
-		 * "1" for a regulator that will then emit a
-		 * "unbalanced disable" WARNing if we try to disable
-		 * it.
-		 */
+		 
 		break;
 
 	case PMIC_AXP:
@@ -748,11 +652,7 @@ static int axp_regulator_set(struct device *dev, struct gmin_subdev *gs,
 	return 0;
 }
 
-/*
- * Some boards contain a hw-bug where turning eldo2 back on after having turned
- * it off causes the CPLM3218 ambient-light-sensor on the image-sensor's I2C bus
- * to crash, hanging the bus. Do not turn eldo2 off on these systems.
- */
+ 
 static const struct dmi_system_id axp_leave_eldo2_on_ids[] = {
 	{
 		.matches = {
@@ -772,10 +672,7 @@ static int axp_v1p8_on(struct device *dev, struct gmin_subdev *gs)
 	if (ret)
 		return ret;
 
-	/*
-	 * This sleep comes out of the gc2235 driver, which is the
-	 * only one I currently see that wants to set both 1.8v rails.
-	 */
+	 
 	usleep_range(110, 150);
 
 	ret = axp_regulator_set(dev, gs, gs->eldo1_sel_reg, gs->eldo1_1p6v,
@@ -830,7 +727,7 @@ static int gmin_v1p2_ctrl(struct v4l2_subdev *subdev, int on)
 		return 0;
 	gs->v1p2_on = on;
 
-	/* use regulator for PMIC */
+	 
 	if (gs->v1p2_reg) {
 		if (on)
 			return regulator_enable(gs->v1p2_reg);
@@ -838,7 +735,7 @@ static int gmin_v1p2_ctrl(struct v4l2_subdev *subdev, int on)
 			return regulator_disable(gs->v1p2_reg);
 	}
 
-	/* TODO:v1p2 may need to extend to other PMICs */
+	 
 
 	return -EINVAL;
 }
@@ -870,11 +767,11 @@ static int gmin_v1p8_ctrl(struct v4l2_subdev *subdev, int on)
 	if (on) {
 		gmin_v1p8_enable_count++;
 		if (gmin_v1p8_enable_count > 1)
-			goto out; /* Already on */
+			goto out;  
 	} else {
 		gmin_v1p8_enable_count--;
 		if (gmin_v1p8_enable_count > 0)
-			goto out; /* Still needed */
+			goto out;  
 	}
 
 	if (gs->v1p8_gpio >= 0)
@@ -953,11 +850,11 @@ static int gmin_v2p8_ctrl(struct v4l2_subdev *subdev, int on)
 	if (on) {
 		gmin_v2p8_enable_count++;
 		if (gmin_v2p8_enable_count > 1)
-			goto out; /* Already on */
+			goto out;  
 	} else {
 		gmin_v2p8_enable_count--;
 		if (gmin_v2p8_enable_count > 0)
-			goto out; /* Still needed */
+			goto out;  
 	}
 
 	if (gs->v2p8_gpio >= 0)
@@ -1013,7 +910,7 @@ static int gmin_acpi_pm_ctrl(struct v4l2_subdev *subdev, int on)
 	struct i2c_client *client = v4l2_get_subdevdata(subdev);
 	struct acpi_device *adev = ACPI_COMPANION(&client->dev);
 
-	/* Use the ACPI power management to control it */
+	 
 	on = !!on;
 	if (gs->clock_on == on)
 		return 0;
@@ -1121,11 +1018,11 @@ int atomisp_register_sensor_no_gmin(struct v4l2_subdev *subdev, u32 lanes,
 	int i, ret, clock_num, port = 0;
 
 	if (adev) {
-		/* Get ACPI _PR0 derived clock to determine the csi_port default */
+		 
 		if (acpi_device_power_manageable(adev)) {
 			clock_num = atomisp_get_acpi_power(&client->dev);
 
-			/* Compare clock to CsiPort 1 pmc-clock used in the CHT/BYT reference designs */
+			 
 			if (IS_ISP2401)
 				port = clock_num == 4 ? 1 : 0;
 			else
@@ -1291,19 +1188,11 @@ static int gmin_get_config_dsm_var(struct device *dev,
 	union acpi_object *obj, *cur = NULL;
 	int i;
 
-	/*
-	 * The data reported by "CamClk" seems to be either 0 or 1 at the
-	 * _DSM table.
-	 *
-	 * At the ACPI tables we looked so far, this is not related to the
-	 * actual clock source for the sensor, which is given by the
-	 * _PR0 ACPI table. So, ignore it, as otherwise this will be
-	 * set to a wrong value.
-	 */
+	 
 	if (!strcmp(var, "CamClk"))
 		return -EINVAL;
 
-	/* Return on unexpected object type */
+	 
 	obj = acpi_evaluate_dsm_typed(handle, &atomisp_dsm_guid, 0, 0, NULL,
 				      ACPI_TYPE_PACKAGE);
 	if (!obj) {
@@ -1311,7 +1200,7 @@ static int gmin_get_config_dsm_var(struct device *dev,
 		return -EINVAL;
 	}
 
-#if 0 /* Just for debugging purposes */
+#if 0  
 	for (i = 0; i < obj->package.count; i++) {
 		union acpi_object *cur = &obj->package.elements[i];
 
@@ -1327,11 +1216,11 @@ static int gmin_get_config_dsm_var(struct device *dev,
 	}
 #endif
 
-	/* Seek for the desired var */
+	 
 	for (i = 0; i < obj->package.count - 1; i += 2) {
 		if (obj->package.elements[i].type == ACPI_TYPE_STRING &&
 		    !strcmp(obj->package.elements[i].string.pointer, var)) {
-			/* Next element should be the required value */
+			 
 			cur = &obj->package.elements[i + 1];
 			break;
 		}
@@ -1343,13 +1232,7 @@ static int gmin_get_config_dsm_var(struct device *dev,
 		return -EINVAL;
 	}
 
-	/*
-	 * While it could be possible to have an ACPI_TYPE_INTEGER,
-	 * and read the value from cur->integer.value, the table
-	 * seen so far uses the string type. So, produce a warning
-	 * if it founds something different than string, letting it
-	 * to fall back to the old code.
-	 */
+	 
 	if (cur && cur->type != ACPI_TYPE_STRING) {
 		dev_info(dev, "found non-string _DSM entry for '%s'\n", var);
 		ACPI_FREE(obj);
@@ -1365,10 +1248,7 @@ static int gmin_get_config_dsm_var(struct device *dev,
 	return 0;
 }
 
-/* Retrieves a device-specific configuration variable.  The dev
- * argument should be a device with an ACPI companion, as all
- * configuration is based on firmware ID.
- */
+ 
 static int gmin_get_config_var(struct device *maindev,
 			       bool is_gmin,
 			       const char *var,
@@ -1389,7 +1269,7 @@ static int gmin_get_config_var(struct device *maindev,
 	if (ret < 0 || ret >= sizeof(var8) - 1)
 		return -EINVAL;
 
-	/* DMI based quirks override both the _DSM table and EFI variables */
+	 
 	id = dmi_first_match(gmin_vars);
 	if (id) {
 		ret = gmin_get_hardcoded_var(maindev, id->driver_data, var8,
@@ -1398,16 +1278,14 @@ static int gmin_get_config_var(struct device *maindev,
 			return 0;
 	}
 
-	/* For sensors, try first to use the _DSM table */
+	 
 	if (!is_gmin) {
 		ret = gmin_get_config_dsm_var(maindev, var, out, out_len);
 		if (!ret)
 			return 0;
 	}
 
-	/* Our variable names are ASCII by construction, but EFI names
-	 * are wide chars.  Convert and zero-pad.
-	 */
+	 
 	memset(var16, 0, sizeof(var16));
 	for (i = 0; i < sizeof(var8) && var8[i]; i++)
 		var16[i] = var8[i];
@@ -1446,11 +1324,7 @@ int gmin_get_var_int(struct device *dev, bool is_gmin, const char *var, int def)
 }
 EXPORT_SYMBOL_GPL(gmin_get_var_int);
 
-/* PCI quirk: The BYT ISP advertises PCI runtime PM but it doesn't
- * work.  Disable so the kernel framework doesn't hang the device
- * trying.  The driver itself does direct calls to the PUNIT to manage
- * ISP power.
- */
+ 
 static void isp_pm_cap_fixup(struct pci_dev *pdev)
 {
 	dev_info(&pdev->dev, "Disabling PCI power management on camera ISP\n");

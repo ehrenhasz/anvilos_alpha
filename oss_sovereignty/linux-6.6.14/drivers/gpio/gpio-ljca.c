@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel La Jolla Cove Adapter USB-GPIO driver
- *
- * Copyright (c) 2023, Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitfield.h>
@@ -19,7 +15,7 @@
 #include <linux/slab.h>
 #include <linux/types.h>
 
-/* GPIO commands */
+ 
 #define LJCA_GPIO_CONFIG	1
 #define LJCA_GPIO_READ		2
 #define LJCA_GPIO_WRITE		3
@@ -39,7 +35,7 @@
 #define LJCA_GPIO_CONF_EDGE	FIELD_PREP(LJCA_GPIO_INT_TYPE, 1)
 #define LJCA_GPIO_CONF_LEVEL	FIELD_PREP(LJCA_GPIO_INT_TYPE, 0)
 
-/* Intentional overlap with PULLUP / PULLDOWN */
+ 
 #define LJCA_GPIO_CONF_SET	BIT(3)
 #define LJCA_GPIO_CONF_CLR	BIT(4)
 
@@ -62,10 +58,10 @@ struct ljca_gpio_dev {
 	DECLARE_BITMAP(enabled_irqs, LJCA_MAX_GPIO_NUM);
 	DECLARE_BITMAP(reenable_irqs, LJCA_MAX_GPIO_NUM);
 	u8 *connect_mode;
-	/* mutex to protect irq bus */
+	 
 	struct mutex irq_lock;
 	struct work_struct work;
-	/* lock to protect package transfer to Hardware */
+	 
 	struct mutex trans_lock;
 
 	u8 obuf[LJCA_GPIO_BUF_SIZE];
@@ -435,7 +431,7 @@ static int ljca_gpio_remove(struct platform_device *pdev)
 #define LJCA_GPIO_DRV_NAME "ljca-gpio"
 static const struct platform_device_id ljca_gpio_id[] = {
 	{ LJCA_GPIO_DRV_NAME, 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, ljca_gpio_id);
 

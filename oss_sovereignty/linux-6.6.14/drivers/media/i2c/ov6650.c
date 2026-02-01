@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * V4L2 subdevice driver for OmniVision OV6650 Camera Sensor
- *
- * Copyright (C) 2010 Janusz Krzysztofik <jkrzyszt@tis.icnet.pl>
- *
- * Based on OmniVision OV96xx Camera Driver
- * Copyright (C) 2009 Marek Vasut <marek.vasut@gmail.com>
- *
- * Based on ov772x camera driver:
- * Copyright (C) 2008 Renesas Solutions Corp.
- * Kuninori Morimoto <morimoto.kuninori@renesas.com>
- *
- * Based on ov7670 and soc_camera_platform driver,
- * Copyright 2006-7 Jonathan Corbet <corbet@lwn.net>
- * Copyright (C) 2008 Magnus Damm
- * Copyright (C) 2008, Guennadi Liakhovetski <kernel@pengutronix.de>
- *
- * Hardware specific bits initially based on former work by Matt Callow
- * drivers/media/video/omap/sensor_ov6650.c
- * Copyright (C) 2006 Matt Callow
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -32,12 +12,12 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 
-/* Register definitions */
-#define REG_GAIN		0x00	/* range 00 - 3F */
+ 
+#define REG_GAIN		0x00	 
 #define REG_BLUE		0x01
 #define REG_RED			0x02
-#define REG_SAT			0x03	/* [7:4] saturation [0:3] reserved */
-#define REG_HUE			0x04	/* [7:6] rsrvd [5] hue en [4:0] hue */
+#define REG_SAT			0x03	 
+#define REG_HUE			0x04	 
 
 #define REG_BRT			0x06
 
@@ -45,11 +25,11 @@
 #define REG_PIDL		0x0b
 
 #define REG_AECH		0x10
-#define REG_CLKRC		0x11	/* Data Format and Internal Clock */
-					/* [7:6] Input system clock (MHz)*/
-					/*   00=8, 01=12, 10=16, 11=24 */
-					/* [5:0]: Internal Clock Pre-Scaler */
-#define REG_COMA		0x12	/* [7] Reset */
+#define REG_CLKRC		0x11	 
+					 
+					 
+					 
+#define REG_COMA		0x12	 
 #define REG_COMB		0x13
 #define REG_COMC		0x14
 #define REG_COMD		0x15
@@ -103,11 +83,11 @@
 #define REG_BMCO		0x6e
 
 
-/* Register bits, values, etc. */
-#define OV6650_PIDH		0x66	/* high byte of product ID number */
-#define OV6650_PIDL		0x50	/* low byte of product ID number */
-#define OV6650_MIDH		0x7F	/* high byte of mfg ID */
-#define OV6650_MIDL		0xA2	/* low byte of mfg ID */
+ 
+#define OV6650_PIDH		0x66	 
+#define OV6650_PIDL		0x50	 
+#define OV6650_MIDH		0x7F	 
+#define OV6650_MIDL		0xA2	 
 
 #define DEF_GAIN		0x00
 #define DEF_BLUE		0x80
@@ -161,7 +141,7 @@
 #define COMJ_PCLK_RISING	BIT(4)
 #define COMJ_VSYNC_HIGH		BIT(0)
 
-/* supported resolutions */
+ 
 #define W_QCIF			(DEF_HSTOP - DEF_HSTRT)
 #define W_CIF			(W_QCIF << 1)
 #define H_QCIF			(DEF_VSTOP - DEF_VSTRT)
@@ -179,25 +159,25 @@ struct ov6650 {
 	struct v4l2_subdev	subdev;
 	struct v4l2_ctrl_handler hdl;
 	struct {
-		/* exposure/autoexposure cluster */
+		 
 		struct v4l2_ctrl *autoexposure;
 		struct v4l2_ctrl *exposure;
 	};
 	struct {
-		/* gain/autogain cluster */
+		 
 		struct v4l2_ctrl *autogain;
 		struct v4l2_ctrl *gain;
 	};
 	struct {
-		/* blue/red/autowhitebalance cluster */
+		 
 		struct v4l2_ctrl *autowb;
 		struct v4l2_ctrl *blue;
 		struct v4l2_ctrl *red;
 	};
 	struct clk		*clk;
-	bool			half_scale;	/* scale down output by 2 */
-	struct v4l2_rect	rect;		/* sensor cropping window */
-	struct v4l2_fract	tpf;		/* as requested with s_frame_interval */
+	bool			half_scale;	 
+	struct v4l2_rect	rect;		 
+	struct v4l2_fract	tpf;		 
 	u32 code;
 };
 
@@ -245,7 +225,7 @@ static const struct v4l2_mbus_framefmt ov6650_def_fmt = {
 	.xfer_func	= V4L2_XFER_FUNC_DEFAULT,
 };
 
-/* read a register */
+ 
 static int ov6650_reg_read(struct i2c_client *client, u8 reg, u8 *val)
 {
 	int ret;
@@ -274,7 +254,7 @@ err:
 	return ret;
 }
 
-/* write a register */
+ 
 static int ov6650_reg_write(struct i2c_client *client, u8 reg, u8 val)
 {
 	int ret;
@@ -297,7 +277,7 @@ static int ov6650_reg_write(struct i2c_client *client, u8 reg, u8 val)
 }
 
 
-/* Read a register, alter its bits, write it back */
+ 
 static int ov6650_reg_rmw(struct i2c_client *client, u8 reg, u8 set, u8 mask)
 {
 	u8 val;
@@ -328,13 +308,13 @@ static struct ov6650 *to_ov6650(const struct i2c_client *client)
 	return container_of(i2c_get_clientdata(client), struct ov6650, subdev);
 }
 
-/* Start/Stop streaming from the device */
+ 
 static int ov6650_s_stream(struct v4l2_subdev *sd, int enable)
 {
 	return 0;
 }
 
-/* Get status of additional camera capabilities */
+ 
 static int ov6550_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct ov6650 *priv = container_of(ctrl->handler, struct ov6650, hdl);
@@ -367,7 +347,7 @@ static int ov6550_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 	return -EINVAL;
 }
 
-/* Set status of additional camera capabilities */
+ 
 static int ov6550_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct ov6650 *priv = container_of(ctrl->handler, struct ov6650, hdl);
@@ -475,11 +455,11 @@ static int ov6650_get_selection(struct v4l2_subdev *sd,
 	struct v4l2_rect *rect;
 
 	if (sel->which == V4L2_SUBDEV_FORMAT_TRY) {
-		/* pre-select try crop rectangle */
+		 
 		rect = &sd_state->pads->try_crop;
 
 	} else {
-		/* pre-select active crop rectangle */
+		 
 		rect = &priv->rect;
 	}
 
@@ -492,7 +472,7 @@ static int ov6650_get_selection(struct v4l2_subdev *sd,
 		return 0;
 
 	case V4L2_SEL_TGT_CROP:
-		/* use selected crop rectangle */
+		 
 		sel->r = *rect;
 		return 0;
 
@@ -533,22 +513,22 @@ static int ov6650_set_selection(struct v4l2_subdev *sd,
 	if (sel->which == V4L2_SUBDEV_FORMAT_TRY) {
 		struct v4l2_rect *crop = &sd_state->pads->try_crop;
 		struct v4l2_mbus_framefmt *mf = &sd_state->pads->try_fmt;
-		/* detect current pad config scaling factor */
+		 
 		bool half_scale = !is_unscaled_ok(mf->width, mf->height, crop);
 
-		/* store new crop rectangle */
+		 
 		*crop = sel->r;
 
-		/* adjust frame size */
+		 
 		mf->width = crop->width >> half_scale;
 		mf->height = crop->height >> half_scale;
 
 		return 0;
 	}
 
-	/* V4L2_SUBDEV_FORMAT_ACTIVE */
+	 
 
-	/* apply new crop rectangle */
+	 
 	ret = ov6650_reg_write(client, REG_HSTRT, sel->r.left >> 1);
 	if (!ret) {
 		priv->rect.width += priv->rect.left - sel->r.left;
@@ -583,10 +563,10 @@ static int ov6650_get_fmt(struct v4l2_subdev *sd,
 	if (format->pad)
 		return -EINVAL;
 
-	/* initialize response with default media bus frame format */
+	 
 	*mf = ov6650_def_fmt;
 
-	/* update media bus format code and frame size */
+	 
 	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
 		mf->width = sd_state->pads->try_fmt.width;
 		mf->height = sd_state->pads->try_fmt.height;
@@ -602,7 +582,7 @@ static int ov6650_get_fmt(struct v4l2_subdev *sd,
 
 #define to_clkrc(div)	((div) - 1)
 
-/* set the format we will capture in */
+ 
 static int ov6650_s_fmt(struct v4l2_subdev *sd, u32 code, bool half_scale)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
@@ -610,7 +590,7 @@ static int ov6650_s_fmt(struct v4l2_subdev *sd, u32 code, bool half_scale)
 	u8 coma_set = 0, coma_mask = 0, coml_set, coml_mask;
 	int ret;
 
-	/* select color matrix configuration for given color encoding */
+	 
 	switch (code) {
 	case MEDIA_BUS_FMT_Y8_1X8:
 		dev_dbg(&client->dev, "pixel format GREY8_1X8\n");
@@ -724,12 +704,12 @@ static int ov6650_set_fmt(struct v4l2_subdev *sd,
 	half_scale = !is_unscaled_ok(mf->width, mf->height, crop);
 
 	if (format->which == V4L2_SUBDEV_FORMAT_TRY) {
-		/* store new mbus frame format code and size in pad config */
+		 
 		sd_state->pads->try_fmt.width = crop->width >> half_scale;
 		sd_state->pads->try_fmt.height = crop->height >> half_scale;
 		sd_state->pads->try_fmt.code = mf->code;
 
-		/* return default mbus frame format updated with pad config */
+		 
 		*mf = ov6650_def_fmt;
 		mf->width = sd_state->pads->try_fmt.width;
 		mf->height = sd_state->pads->try_fmt.height;
@@ -738,13 +718,13 @@ static int ov6650_set_fmt(struct v4l2_subdev *sd,
 	} else {
 		int ret = 0;
 
-		/* apply new media bus frame format and scaling if changed */
+		 
 		if (mf->code != priv->code || half_scale != priv->half_scale)
 			ret = ov6650_s_fmt(sd, mf->code, half_scale);
 		if (ret)
 			return ret;
 
-		/* return default format updated with active size and code */
+		 
 		*mf = ov6650_def_fmt;
 		mf->width = priv->rect.width >> priv->half_scale;
 		mf->height = priv->rect.height >> priv->half_scale;
@@ -770,7 +750,7 @@ static int ov6650_enum_frame_interval(struct v4l2_subdev *sd,
 {
 	int i;
 
-	/* enumerate supported frame intervals not exceeding 1 second */
+	 
 	if (fie->index > CLKRC_DIV_MASK ||
 	    GET_CLKRC_DIV(fie->index) > FRAME_RATE_MAX)
 		return -EINVAL;
@@ -814,7 +794,7 @@ static int ov6650_s_frame_interval(struct v4l2_subdev *sd,
 	int div, ret;
 
 	if (tpf->numerator == 0 || tpf->denominator == 0)
-		div = 1;  /* Reset to full rate */
+		div = 1;   
 	else
 		div = (tpf->numerator * FRAME_RATE_MAX) / tpf->denominator;
 
@@ -834,7 +814,7 @@ static int ov6650_s_frame_interval(struct v4l2_subdev *sd,
 	return ret;
 }
 
-/* Soft reset the camera. This has nothing to do with the RESET pin! */
+ 
 static int ov6650_reset(struct i2c_client *client)
 {
 	int ret;
@@ -849,14 +829,14 @@ static int ov6650_reset(struct i2c_client *client)
 	return ret;
 }
 
-/* program default register values */
+ 
 static int ov6650_prog_dflt(struct i2c_client *client, u8 clkrc)
 {
 	int ret;
 
 	dev_dbg(&client->dev, "initializing\n");
 
-	ret = ov6650_reg_write(client, REG_COMA, 0);	/* ~COMA_RESET */
+	ret = ov6650_reg_write(client, REG_COMA, 0);	 
 	if (!ret)
 		ret = ov6650_reg_write(client, REG_CLKRC, clkrc);
 	if (!ret)
@@ -914,9 +894,7 @@ static int ov6650_video_probe(struct v4l2_subdev *sd)
 
 	msleep(20);
 
-	/*
-	 * check and show product ID and manufacturer ID
-	 */
+	 
 	ret = ov6650_reg_read(client, REG_PIDH, &pidh);
 	if (!ret)
 		ret = ov6650_reg_read(client, REG_PIDL, &pidl);
@@ -943,7 +921,7 @@ static int ov6650_video_probe(struct v4l2_subdev *sd)
 	if (!ret)
 		ret = ov6650_prog_dflt(client, xclk->clkrc);
 	if (!ret) {
-		/* driver default frame format, no scaling */
+		 
 		ret = ov6650_s_fmt(sd, ov6650_def_fmt.code, false);
 	}
 	if (!ret)
@@ -967,7 +945,7 @@ static const struct v4l2_subdev_core_ops ov6650_core_ops = {
 	.s_power		= ov6650_s_power,
 };
 
-/* Request bus settings on camera side */
+ 
 static int ov6650_get_mbus_config(struct v4l2_subdev *sd,
 				  unsigned int pad,
 				  struct v4l2_mbus_config *cfg)
@@ -1022,9 +1000,7 @@ static const struct v4l2_subdev_internal_ops ov6650_internal_ops = {
 	.registered = ov6650_video_probe,
 };
 
-/*
- * i2c_driver function
- */
+ 
 static int ov6650_probe(struct i2c_client *client)
 {
 	struct ov6650 *priv;
@@ -1080,7 +1056,7 @@ static int ov6650_probe(struct i2c_client *client)
 	priv->rect.width  = W_CIF;
 	priv->rect.height = H_CIF;
 
-	/* Hardware default frame interval */
+	 
 	priv->tpf.numerator   = GET_CLKRC_DIV(DEF_CLKRC);
 	priv->tpf.denominator = FRAME_RATE_MAX;
 

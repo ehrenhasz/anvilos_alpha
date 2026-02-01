@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2017 Oracle and/or its affiliates. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 #include <linux/kernel.h>
 #include <linux/in.h>
 #include <net/tcp.h>
@@ -55,17 +24,12 @@ void rds_tcp_state_change(struct sock *sk)
 	rdsdebug("sock %p state_change to %d\n", tc->t_sock, sk->sk_state);
 
 	switch (sk->sk_state) {
-	/* ignore connecting sockets as they make progress */
+	 
 	case TCP_SYN_SENT:
 	case TCP_SYN_RECV:
 		break;
 	case TCP_ESTABLISHED:
-		/* Force the peer to reconnect so that we have the
-		 * TCP ports going from <smaller-ip>.<transient> to
-		 * <larger-ip>.<RDS_TCP_PORT>. We avoid marking the
-		 * RDS connection as RDS_CONN_UP until the reconnect,
-		 * to avoid RDS datagram loss.
-		 */
+		 
 		if (rds_addr_cmp(&cp->cp_conn->c_laddr,
 				 &cp->cp_conn->c_faddr) >= 0 &&
 		    rds_conn_path_transition(cp, RDS_CONN_CONNECTING,
@@ -99,9 +63,7 @@ int rds_tcp_conn_path_connect(struct rds_conn_path *cp)
 	struct rds_connection *conn = cp->cp_conn;
 	struct rds_tcp_connection *tc = cp->cp_transport_data;
 
-	/* for multipath rds,we only trigger the connection after
-	 * the handshake probe has determined the number of paths.
-	 */
+	 
 	if (cp->cp_index > 0 && cp->cp_conn->c_npaths < 2)
 		return -EAGAIN;
 
@@ -168,10 +130,7 @@ int rds_tcp_conn_path_connect(struct rds_conn_path *cp)
 		addrlen = sizeof(sin);
 	}
 
-	/*
-	 * once we call connect() we can start getting callbacks and they
-	 * own the socket
-	 */
+	 
 	rds_tcp_set_callbacks(sock, cp);
 	ret = kernel_connect(sock, addr, addrlen, O_NONBLOCK);
 
@@ -192,15 +151,7 @@ out:
 	return ret;
 }
 
-/*
- * Before killing the tcp socket this needs to serialize with callbacks.  The
- * caller has already grabbed the sending sem so we're serialized with other
- * senders.
- *
- * TCP calls the callbacks with the sock lock so we hold it while we reset the
- * callbacks to those set by TCP.  Our callbacks won't execute again once we
- * hold the sock lock.
- */
+ 
 void rds_tcp_conn_path_shutdown(struct rds_conn_path *cp)
 {
 	struct rds_tcp_connection *tc = cp->cp_transport_data;
@@ -214,7 +165,7 @@ void rds_tcp_conn_path_shutdown(struct rds_conn_path *cp)
 			sock_no_linger(sock->sk);
 		sock->ops->shutdown(sock, RCV_SHUTDOWN | SEND_SHUTDOWN);
 		lock_sock(sock->sk);
-		rds_tcp_restore_callbacks(sock, tc); /* tc->tc_sock = NULL */
+		rds_tcp_restore_callbacks(sock, tc);  
 
 		release_sock(sock->sk);
 		sock_release(sock);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backlight driver for Marvell Semiconductor 88PM8606
- *
- * Copyright (C) 2009 Marvell International Ltd.
- *	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -89,17 +84,17 @@ static int pm860x_backlight_set(struct backlight_device *bl, int brightness)
 				goto out;
 		}
 		if (brightness == MAX_BRIGHTNESS) {
-			/* set WLED_ON bit as 100% */
+			 
 			ret = pm860x_set_bits(data->i2c, data->reg_always_on,
 					      PM8606_WLED_ON, PM8606_WLED_ON);
 		}
 	} else {
 		if (brightness == MAX_BRIGHTNESS) {
-			/* set WLED_ON bit as 100% */
+			 
 			ret = pm860x_set_bits(data->i2c, data->reg_always_on,
 					      PM8606_WLED_ON, PM8606_WLED_ON);
 		} else {
-			/* clear WLED_ON bit since it's not 100% */
+			 
 			ret = pm860x_set_bits(data->i2c, data->reg_always_on,
 					      PM8606_WLED_ON, 0);
 		}
@@ -237,7 +232,7 @@ static int pm860x_backlight_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, bl);
 
-	/* read current backlight */
+	 
 	ret = pm860x_backlight_get_brightness(bl);
 	if (ret < 0)
 		return ret;

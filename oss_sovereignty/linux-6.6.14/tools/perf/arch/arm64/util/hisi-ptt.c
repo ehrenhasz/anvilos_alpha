@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HiSilicon PCIe Trace and Tuning (PTT) support
- * Copyright (c) 2022 HiSilicon Technologies Co., Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -11,7 +8,7 @@
 #include <linux/zalloc.h>
 #include <time.h>
 
-#include <internal/lib.h> // page_size
+#include <internal/lib.h> 
 #include "../../../util/auxtrace.h"
 #include "../../../util/cpumap.h"
 #include "../../../util/debug.h"
@@ -78,7 +75,7 @@ static int hisi_ptt_set_auxtrace_mmap_page(struct record_opts *opts)
 		}
 	}
 
-	/* Validate auxtrace_mmap_pages */
+	 
 	if (opts->auxtrace_mmap_pages) {
 		size_t sz = opts->auxtrace_mmap_pages * (size_t)page_size;
 		size_t min_sz = KiB(8);
@@ -122,14 +119,11 @@ static int hisi_ptt_recording_options(struct auxtrace_record *itr,
 	err = hisi_ptt_set_auxtrace_mmap_page(opts);
 	if (err)
 		return err;
-	/*
-	 * To obtain the auxtrace buffer file descriptor, the auxtrace event
-	 * must come first.
-	 */
+	 
 	evlist__to_front(evlist, hisi_ptt_evsel);
 	evsel__set_sample_bit(hisi_ptt_evsel, TIME);
 
-	/* Add dummy event to keep tracking */
+	 
 	err = parse_event(evlist, "dummy:u");
 	if (err)
 		return err;

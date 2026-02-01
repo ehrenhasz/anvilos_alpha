@@ -1,11 +1,4 @@
-/*
- * Broadcom BCM63XX High Speed SPI Controller driver
- *
- * Copyright 2000-2010 Broadcom Corporation
- * Copyright 2012-2013 Jonas Gorski <jonas.gorski@gmail.com>
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -95,25 +88,18 @@
 
 #define HSSPI_MAX_PREPEND_LEN			15
 
-/*
- * Some chip require 30MHz but other require 25MHz. Use smaller value to cover
- * both cases.
- */
+ 
 #define HSSPI_MAX_SYNC_CLOCK			25000000
 
 #define HSSPI_SPI_MAX_CS			8
-#define HSSPI_BUS_NUM				1 /* 0 is legacy SPI */
+#define HSSPI_BUS_NUM				1  
 #define HSSPI_POLL_STATUS_TIMEOUT_MS	100
 
 #define HSSPI_WAIT_MODE_POLLING		0
 #define HSSPI_WAIT_MODE_INTR		1
 #define HSSPI_WAIT_MODE_MAX			HSSPI_WAIT_MODE_INTR
 
-/*
- * Default transfer mode is auto. If the msg is prependable, use the prepend
- * mode.  If not, falls back to use the dummy cs workaround mode but limit the
- * clock to 25MHz to make sure it works in all board design.
- */
+ 
 #define HSSPI_XFER_MODE_AUTO		0
 #define HSSPI_XFER_MODE_PREPEND		1
 #define HSSPI_XFER_MODE_DUMMYCS		2
@@ -171,7 +157,7 @@ static ssize_t wait_mode_store(struct device *dev, struct device_attribute *attr
 
 	mutex_lock(&bs->msg_mutex);
 	bs->wait_mode = val;
-	/* clear interrupt status to avoid spurious int on next transfer */
+	 
 	if (val == HSSPI_WAIT_MODE_INTR)
 		__raw_writel(HSSPI_INT_CLEAR_ALL, bs->regs + HSSPI_INT_STATUS_REG);
 	mutex_unlock(&bs->msg_mutex);
@@ -242,7 +228,7 @@ static int bcm63xx_hsspi_wait_cmd(struct bcm63xx_hsspi *bs)
 		if (wait_for_completion_timeout(&bs->done, HZ) == 0)
 			rc = 1;
 	} else {
-		/* polling mode checks for status busy bit */
+		 
 		limit = jiffies + msecs_to_jiffies(HSSPI_POLL_STATUS_TIMEOUT_MS);
 
 		while (!time_after(jiffies, limit)) {
@@ -271,14 +257,7 @@ static bool bcm63xx_prepare_prepend_transfer(struct spi_controller *host,
 	bool tx_only = false;
 	struct spi_transfer *t;
 
-	/*
-	 * Multiple transfers within a message may be combined into one transfer
-	 * to the controller using its prepend feature. A SPI message is prependable
-	 * only if the following are all true:
-	 *   1. One or more half duplex write transfer in single bit mode
-	 *   2. Optional full duplex read/write at the end
-	 *   3. No delay and cs_change between transfers
-	 */
+	 
 	bs->prepend_cnt = 0;
 	list_for_each_entry(t, &msg->transfers, transfer_list) {
 		if ((spi_delay_to_ns(&t->delay, t) > 0) || t->cs_change) {
@@ -320,19 +299,12 @@ static bool bcm63xx_prepare_prepend_transfer(struct spi_controller *host,
 			memcpy(t_prepend, t, sizeof(struct spi_transfer));
 
 			if (tx_only && t->tx_nbits == SPI_NBITS_SINGLE) {
-				/*
-				 * if the last one is also a single bit tx only transfer, merge
-				 * all of them into one single tx transfer
-				 */
+				 
 				t_prepend->len = bs->prepend_cnt;
 				t_prepend->tx_buf = bs->prepend_buf;
 				bs->prepend_cnt = 0;
 			} else {
-				/*
-				 * if the last one is not a tx only transfer or dual tx xfer, all
-				 * the previous transfers are sent through prepend bytes and
-				 * make sure it does not exceed the max prepend len
-				 */
+				 
 				if (bs->prepend_cnt > HSSPI_MAX_PREPEND_LEN) {
 					bcm63xx_prepend_printk_on_checkfail(bs,
 						"exceed max prepend len, abort prepending transfers!\n");
@@ -355,10 +327,7 @@ static int bcm63xx_hsspi_do_prepend_txrx(struct spi_device *spi,
 	u8 *rx = t->rx_buf;
 	u32 reg = 0;
 
-	/*
-	 * shouldn't happen as we set the max_message_size in the probe.
-	 * but check it again in case some driver does not honor the max size
-	 */
+	 
 	if (t->len + bs->prepend_cnt > (HSSPI_BUFFER_LEN - HSSPI_OPCODE_LEN)) {
 		dev_warn(&bs->pdev->dev,
 			 "Prepend message large than fifo size len %d prepend %d\n",
@@ -403,11 +372,11 @@ static int bcm63xx_hsspi_do_prepend_txrx(struct spi_device *spi,
 
 	*(__be16 *)(&val) = cpu_to_be16(opcode | t->len);
 	__raw_writew(val, bs->fifo);
-	/* enable interrupt */
+	 
 	if (bs->wait_mode == HSSPI_WAIT_MODE_INTR)
 		__raw_writel(HSSPI_PINGx_CMD_DONE(0), bs->regs + HSSPI_INT_MASK_REG);
 
-	/* start the transfer */
+	 
 	reg = chip_select << PINGPONG_CMD_SS_SHIFT |
 	    chip_select << PINGPONG_CMD_PROFILE_SHIFT |
 	    PINGPONG_COMMAND_START_NOW;
@@ -456,7 +425,7 @@ static void bcm63xx_hsspi_set_clk(struct bcm63xx_hsspi *bs,
 	__raw_writel(reg, bs->regs + HSSPI_PROFILE_SIGNAL_CTRL_REG(profile));
 
 	mutex_lock(&bs->bus_mutex);
-	/* setup clock polarity */
+	 
 	reg = __raw_readl(bs->regs + HSSPI_GLOBAL_CTRL_REG);
 	reg &= ~GLOBAL_CTRL_CLK_POLARITY;
 	if (spi->mode & SPI_CPOL)
@@ -515,7 +484,7 @@ static int bcm63xx_hsspi_do_txrx(struct spi_device *spi, struct spi_transfer *t)
 		*(__be16 *)(&val) = cpu_to_be16(opcode | curr_step);
 		__raw_writew(val, bs->fifo);
 
-		/* enable interrupt */
+		 
 		if (bs->wait_mode == HSSPI_WAIT_MODE_INTR)
 			__raw_writel(HSSPI_PINGx_CMD_DONE(0),
 				     bs->regs + HSSPI_INT_MASK_REG);
@@ -557,7 +526,7 @@ static int bcm63xx_hsspi_setup(struct spi_device *spi)
 	mutex_lock(&bs->bus_mutex);
 	reg = __raw_readl(bs->regs + HSSPI_GLOBAL_CTRL_REG);
 
-	/* only change actual polarities if there is no transfer */
+	 
 	if ((reg & GLOBAL_CTRL_CS_POLARITY_MASK) == bs->cs_polarity) {
 		if (spi->mode & SPI_CS_HIGH)
 			reg |= BIT(spi_get_chipselect(spi, 0));
@@ -585,31 +554,13 @@ static int bcm63xx_hsspi_do_dummy_cs_txrx(struct spi_device *spi,
 	bool keep_cs = false;
 	struct spi_transfer *t;
 
-	/*
-	 * This controller does not support keeping CS active during idle.
-	 * To work around this, we use the following ugly hack:
-	 *
-	 * a. Invert the target chip select's polarity so it will be active.
-	 * b. Select a "dummy" chip select to use as the hardware target.
-	 * c. Invert the dummy chip select's polarity so it will be inactive
-	 *    during the actual transfers.
-	 * d. Tell the hardware to send to the dummy chip select. Thanks to
-	 *    the multiplexed nature of SPI the actual target will receive
-	 *    the transfer and we see its response.
-	 *
-	 * e. At the end restore the polarities again to their default values.
-	 */
+	 
 
 	dummy_cs = !spi_get_chipselect(spi, 0);
 	bcm63xx_hsspi_set_cs(bs, dummy_cs, true);
 
 	list_for_each_entry(t, &msg->transfers, transfer_list) {
-		/*
-		 * We are here because one of reasons below:
-		 * a. Message is not prependable and in default auto xfer mode. This mean
-		 *    we fallback to dummy cs mode at maximum 25MHz safe clock rate.
-		 * b. User set to use the dummy cs mode.
-		 */
+		 
 		if (bs->xfer_mode == HSSPI_XFER_MODE_AUTO) {
 			if (t->speed_hz > HSSPI_MAX_SYNC_CLOCK) {
 				t->speed_hz = HSSPI_MAX_SYNC_CLOCK;
@@ -627,7 +578,7 @@ static int bcm63xx_hsspi_do_dummy_cs_txrx(struct spi_device *spi,
 
 		spi_transfer_delay_exec(t);
 
-		/* use existing cs change logic from spi_transfer_one_message */
+		 
 		if (t->cs_change) {
 			if (list_is_last(&t->transfer_list, &msg->transfers)) {
 				keep_cs = true;
@@ -692,7 +643,7 @@ static bool bcm63xx_hsspi_mem_supports_op(struct spi_mem *mem,
 	if (!spi_mem_default_supports_op(mem, op))
 		return false;
 
-	/* Controller doesn't support spi mem dual io mode */
+	 
 	if ((op->cmd.opcode == SPINOR_OP_READ_1_2_2) ||
 		(op->cmd.opcode == SPINOR_OP_READ_1_2_2_4B) ||
 		(op->cmd.opcode == SPINOR_OP_READ_1_2_2_DTR) ||
@@ -827,13 +778,13 @@ static int bcm63xx_hsspi_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, host);
 
-	/* Initialize the hardware */
+	 
 	__raw_writel(0, bs->regs + HSSPI_INT_MASK_REG);
 
-	/* clean up any pending interrupts */
+	 
 	__raw_writel(HSSPI_INT_CLEAR_ALL, bs->regs + HSSPI_INT_STATUS_REG);
 
-	/* read out default CS polarities */
+	 
 	reg = __raw_readl(bs->regs + HSSPI_GLOBAL_CTRL_REG);
 	bs->cs_polarity = reg & GLOBAL_CTRL_CS_POLARITY_MASK;
 	__raw_writel(reg | GLOBAL_CTRL_CLK_GATE_SSOFF,
@@ -855,7 +806,7 @@ static int bcm63xx_hsspi_probe(struct platform_device *pdev)
 		goto out_pm_disable;
 	}
 
-	/* register and we are done */
+	 
 	ret = devm_spi_register_controller(dev, host);
 	if (ret)
 		goto out_sysgroup_disable;
@@ -883,7 +834,7 @@ static void bcm63xx_hsspi_remove(struct platform_device *pdev)
 	struct spi_controller *host = platform_get_drvdata(pdev);
 	struct bcm63xx_hsspi *bs = spi_controller_get_devdata(host);
 
-	/* reset the hardware and block queue progress */
+	 
 	__raw_writel(0, bs->regs + HSSPI_INT_MASK_REG);
 	clk_disable_unprepare(bs->pll_clk);
 	clk_disable_unprepare(bs->clk);

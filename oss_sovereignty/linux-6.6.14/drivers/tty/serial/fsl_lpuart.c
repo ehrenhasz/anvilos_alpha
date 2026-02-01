@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Freescale lpuart serial port driver
- *
- *  Copyright 2012-2014 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -26,7 +22,7 @@
 #include <linux/slab.h>
 #include <linux/tty_flip.h>
 
-/* All registers are 8-bit width */
+ 
 #define UARTBDH			0x00
 #define UARTBDL			0x01
 #define UARTCR1			0x02
@@ -115,12 +111,10 @@
 #define UARTSFIFO_TXOF		0x02
 #define UARTSFIFO_RXUF		0x01
 
-/* 32-bit global registers only for i.MX7ULP/i.MX8x
- * Used to reset all internal logic and registers, except the Global Register.
- */
+ 
 #define UART_GLOBAL		0x8
 
-/* 32-bit register definition */
+ 
 #define UARTBAUD		0x00
 #define UARTSTAT		0x04
 #define UARTCTRL		0x08
@@ -236,7 +230,7 @@
 #define GLOBAL_RST_MIN_US	20
 #define GLOBAL_RST_MAX_US	40
 
-/* Rx DMA timeout in ms, which is used to calculate Rx ring buffer size */
+ 
 #define DMA_RX_TIMEOUT		(10)
 #define DMA_RX_IDLE_CHARS	8
 #define UART_AUTOSUSPEND_TIMEOUT	3000
@@ -245,7 +239,7 @@
 #define DEV_NAME	"ttyLP"
 #define UART_NR		8
 
-/* IMX lpuart has four extra unused regs located at the beginning */
+ 
 #define IMX_REG_OFF	0x10
 
 enum lpuart_type {
@@ -286,8 +280,8 @@ struct lpuart_port {
 	int                     last_residue;
 	unsigned int		dma_tx_nents;
 	wait_queue_head_t	dma_wait;
-	bool			is_cs7; /* Set to true when character size is 7 */
-					/* and the parity is enabled		*/
+	bool			is_cs7;  
+					 
 	bool			dma_idle_int;
 };
 
@@ -334,7 +328,7 @@ static struct lpuart_soc_data imx8qxp_data = {
 	.devtype = IMX8QXP_LPUART,
 	.iotype = UPIO_MEM32,
 	.reg_off = IMX_REG_OFF,
-	.rx_watermark = 7, /* A lower watermark is ideal for low baud rates. */
+	.rx_watermark = 7,  
 };
 static struct lpuart_soc_data imxrt1050_data = {
 	.devtype = IMXRT1050_LPUART,
@@ -351,11 +345,11 @@ static const struct of_device_id lpuart_dt_ids[] = {
 	{ .compatible = "fsl,imx8ulp-lpuart",	.data = &imx8ulp_data, },
 	{ .compatible = "fsl,imx8qxp-lpuart",	.data = &imx8qxp_data, },
 	{ .compatible = "fsl,imxrt1050-lpuart",	.data = &imxrt1050_data},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, lpuart_dt_ids);
 
-/* Forward declare this for the dma callbacks*/
+ 
 static void lpuart_dma_tx_complete(void *arg);
 
 static inline bool is_layerscape_lpuart(struct lpuart_port *sport)
@@ -652,19 +646,19 @@ static int lpuart_poll_init(struct uart_port *port)
 	sport->port.fifosize = 0;
 
 	spin_lock_irqsave(&sport->port.lock, flags);
-	/* Disable Rx & Tx */
+	 
 	writeb(0, sport->port.membase + UARTCR2);
 
 	temp = readb(sport->port.membase + UARTPFIFO);
-	/* Enable Rx and Tx FIFO */
+	 
 	writeb(temp | UARTPFIFO_RXFE | UARTPFIFO_TXFE,
 			sport->port.membase + UARTPFIFO);
 
-	/* flush Tx and Rx FIFO */
+	 
 	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
 			sport->port.membase + UARTCFIFO);
 
-	/* explicitly clear RDRF */
+	 
 	if (readb(sport->port.membase + UARTSR1) & UARTSR1_RDRF) {
 		readb(sport->port.membase + UARTDR);
 		writeb(UARTSFIFO_RXUF, sport->port.membase + UARTSFIFO);
@@ -673,7 +667,7 @@ static int lpuart_poll_init(struct uart_port *port)
 	writeb(0, sport->port.membase + UARTTWFIFO);
 	writeb(1, sport->port.membase + UARTRWFIFO);
 
-	/* Enable Rx and Tx */
+	 
 	writeb(UARTCR2_RE | UARTCR2_TE, sport->port.membase + UARTCR2);
 	spin_unlock_irqrestore(&sport->port.lock, flags);
 
@@ -682,7 +676,7 @@ static int lpuart_poll_init(struct uart_port *port)
 
 static void lpuart_poll_put_char(struct uart_port *port, unsigned char c)
 {
-	/* drain */
+	 
 	lpuart_wait_bit_set(port, UARTSR1, UARTSR1_TDRE);
 	writeb(c, port->membase + UARTDR);
 }
@@ -705,24 +699,24 @@ static int lpuart32_poll_init(struct uart_port *port)
 
 	spin_lock_irqsave(&sport->port.lock, flags);
 
-	/* Disable Rx & Tx */
+	 
 	lpuart32_write(&sport->port, 0, UARTCTRL);
 
 	temp = lpuart32_read(&sport->port, UARTFIFO);
 
-	/* Enable Rx and Tx FIFO */
+	 
 	lpuart32_write(&sport->port, temp | UARTFIFO_RXFE | UARTFIFO_TXFE, UARTFIFO);
 
-	/* flush Tx and Rx FIFO */
+	 
 	lpuart32_write(&sport->port, UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH, UARTFIFO);
 
-	/* explicitly clear RDRF */
+	 
 	if (lpuart32_read(&sport->port, UARTSTAT) & UARTSTAT_RDRF) {
 		lpuart32_read(&sport->port, UARTDATA);
 		lpuart32_write(&sport->port, UARTFIFO_RXUF, UARTFIFO);
 	}
 
-	/* Enable Rx and Tx */
+	 
 	lpuart32_write(&sport->port, UARTCTRL_RE | UARTCTRL_TE, UARTCTRL);
 	spin_unlock_irqrestore(&sport->port.lock, flags);
 
@@ -838,7 +832,7 @@ lpuart_uart_pm(struct uart_port *port, unsigned int state, unsigned int oldstate
 	}
 }
 
-/* return TIOCSER_TEMT when transmitter is not busy */
+ 
 static unsigned int lpuart_tx_empty(struct uart_port *port)
 {
 	struct lpuart_port *sport = container_of(port,
@@ -866,11 +860,7 @@ static unsigned int lpuart32_tx_empty(struct uart_port *port)
 	if (sport->dma_tx_in_progress)
 		return 0;
 
-	/*
-	 * LPUART Transmission Complete Flag may never be set while queuing a break
-	 * character, so avoid checking for transmission complete when UARTCTRL_SBK
-	 * is asserted.
-	 */
+	 
 	if ((stat & UARTSTAT_TC && sfifo & UARTFIFO_TXEMPT) || ctrl & UARTCTRL_SBK)
 		return TIOCSER_TEMT;
 
@@ -895,10 +885,7 @@ static void lpuart_rxint(struct lpuart_port *sport)
 	while (!(readb(sport->port.membase + UARTSFIFO) & UARTSFIFO_RXEMPT)) {
 		flg = TTY_NORMAL;
 		sport->port.icount.rx++;
-		/*
-		 * to clear the FE, OR, NF, FE, PE flags,
-		 * read SR1 then read DR
-		 */
+		 
 		sr = readb(sport->port.membase + UARTSR1);
 		rx = readb(sport->port.membase + UARTDR);
 
@@ -941,10 +928,7 @@ out:
 	if (overrun) {
 		sport->port.icount.overrun += overrun;
 
-		/*
-		 * Overruns cause FIFO pointers to become missaligned.
-		 * Flushing the receive FIFO reinitializes the pointers.
-		 */
+		 
 		writeb(UARTCFIFO_RXFLUSH, sport->port.membase + UARTCFIFO);
 		writeb(UARTSFIFO_RXOF, sport->port.membase + UARTSFIFO);
 	}
@@ -973,18 +957,12 @@ static void lpuart32_rxint(struct lpuart_port *sport)
 	while (!(lpuart32_read(&sport->port, UARTFIFO) & UARTFIFO_RXEMPT)) {
 		flg = TTY_NORMAL;
 		sport->port.icount.rx++;
-		/*
-		 * to clear the FE, OR, NF, FE, PE flags,
-		 * read STAT then read DATA reg
-		 */
+		 
 		sr = lpuart32_read(&sport->port, UARTSTAT);
 		rx = lpuart32_read(&sport->port, UARTDATA);
 		rx &= UARTDATA_MASK;
 
-		/*
-		 * The LPUART can't distinguish between a break and a framing error,
-		 * thus we assume it is a break if the received data is zero.
-		 */
+		 
 		is_break = (sr & UARTSTAT_FE) && !rx;
 
 		if (is_break && uart_handle_break(&sport->port))
@@ -1047,11 +1025,11 @@ static irqreturn_t lpuart_int(int irq, void *dev_id)
 
 	sts = readb(sport->port.membase + UARTSR1);
 
-	/* SysRq, using dma, check for linebreak by framing err. */
+	 
 	if (sts & UARTSR1_FE && sport->lpuart_dma_rx_use) {
 		readb(sport->port.membase + UARTDR);
 		uart_handle_break(&sport->port);
-		/* linebreak produces some garbage, removing it */
+		 
 		writeb(UARTCFIFO_RXFLUSH, sport->port.membase + UARTCFIFO);
 		return IRQ_HANDLED;
 	}
@@ -1120,7 +1098,7 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
 		unsigned long sr = lpuart32_read(&sport->port, UARTSTAT);
 
 		if (sr & (UARTSTAT_PE | UARTSTAT_FE)) {
-			/* Clear the error flags */
+			 
 			lpuart32_write(&sport->port, sr, UARTSTAT);
 
 			if (sr & UARTSTAT_PE)
@@ -1134,27 +1112,19 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
 		if (sr & (UARTSR1_PE | UARTSR1_FE)) {
 			unsigned char cr2;
 
-			/* Disable receiver during this operation... */
+			 
 			cr2 = readb(sport->port.membase + UARTCR2);
 			cr2 &= ~UARTCR2_RE;
 			writeb(cr2, sport->port.membase + UARTCR2);
 
-			/* Read DR to clear the error flags */
+			 
 			readb(sport->port.membase + UARTDR);
 
 			if (sr & UARTSR1_PE)
 				sport->port.icount.parity++;
 			else if (sr & UARTSR1_FE)
 				sport->port.icount.frame++;
-			/*
-			 * At this point parity/framing error is
-			 * cleared However, since the DMA already read
-			 * the data register and we had to read it
-			 * again after reading the status register to
-			 * properly clear the flags, the FIFO actually
-			 * underflowed... This requires a clearing of
-			 * the FIFO...
-			 */
+			 
 			if (readb(sport->port.membase + UARTSFIFO) &
 			    UARTSFIFO_RXUF) {
 				writeb(UARTSFIFO_RXUF,
@@ -1179,40 +1149,21 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
 		return;
 	}
 
-	/* CPU claims ownership of RX DMA buffer */
+	 
 	dma_sync_sg_for_cpu(chan->device->dev, &sport->rx_sgl, 1,
 			    DMA_FROM_DEVICE);
 
-	/*
-	 * ring->head points to the end of data already written by the DMA.
-	 * ring->tail points to the beginning of data to be read by the
-	 * framework.
-	 * The current transfer size should not be larger than the dma buffer
-	 * length.
-	 */
+	 
 	ring->head = sport->rx_sgl.length - state.residue;
 	BUG_ON(ring->head > sport->rx_sgl.length);
 
-	/*
-	 * Silent handling of keys pressed in the sysrq timeframe
-	 */
+	 
 	if (sport->port.sysrq) {
 		lpuart_handle_sysrq(sport);
 		goto exit;
 	}
 
-	/*
-	 * At this point ring->head may point to the first byte right after the
-	 * last byte of the dma buffer:
-	 * 0 <= ring->head <= sport->rx_sgl.length
-	 *
-	 * However ring->tail must always points inside the dma buffer:
-	 * 0 <= ring->tail <= sport->rx_sgl.length - 1
-	 *
-	 * Since we use a ring buffer, we have to handle the case
-	 * where head is lower than tail. In such a case, we first read from
-	 * tail to the end of the buffer then reset tail.
-	 */
+	 
 	if (ring->head < ring->tail) {
 		count = sport->rx_sgl.length - ring->tail;
 
@@ -1224,14 +1175,14 @@ static void lpuart_copy_rx_to_tty(struct lpuart_port *sport)
 		sport->port.icount.rx += copied;
 	}
 
-	/* Finally we read data from tail to head */
+	 
 	if (ring->tail < ring->head) {
 		count = ring->head - ring->tail;
 		copied = lpuart_tty_insert_flip_string(port, ring->buf + ring->tail,
 					count, sport->is_cs7);
 		if (copied != count)
 			sport->port.icount.buf_overrun++;
-		/* Wrap ring->head if needed */
+		 
 		if (ring->head >= sport->rx_sgl.length)
 			ring->head = 0;
 		ring->tail = ring->head;
@@ -1275,7 +1226,7 @@ static void lpuart32_dma_idleint(struct lpuart_port *sport)
 	ring->head = sport->rx_sgl.length - state.residue;
 	count = CIRC_CNT(ring->head, ring->tail, sport->rx_sgl.length);
 
-	/* Check if new data received before copying */
+	 
 	if (count)
 		lpuart_copy_rx_to_tty(sport);
 }
@@ -1302,13 +1253,7 @@ static irqreturn_t lpuart32_int(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Timer function to simulate the hardware EOP (End Of Package) event.
- * The timer callback is to check for new RX data and copy to TTY buffer.
- * If no new data are received since last interval, the EOP condition is
- * met, complete the DMA transfer by copying the data. Otherwise, just
- * restart timer.
- */
+ 
 static void lpuart_timer_func(struct timer_list *t)
 {
 	struct lpuart_port *sport = from_timer(sport, t, lpuart_timer);
@@ -1328,7 +1273,7 @@ static void lpuart_timer_func(struct timer_list *t)
 	ring->head = sport->rx_sgl.length - state.residue;
 	count = CIRC_CNT(ring->head, ring->tail, sport->rx_sgl.length);
 
-	/* Check if new data received before copying */
+	 
 	if ((count != 0) && (sport->last_residue == state.residue))
 		lpuart_copy_rx_to_tty(sport);
 	else
@@ -1353,19 +1298,13 @@ static inline int lpuart_start_rx_dma(struct lpuart_port *sport)
 	unsigned int bits = tty_get_frame_size(termios->c_cflag);
 	unsigned int baud = tty_get_baud_rate(tty);
 
-	/*
-	 * Calculate length of one DMA buffer size to keep latency below
-	 * 10ms at any baud rate.
-	 */
+	 
 	sport->rx_dma_rng_buf_len = (DMA_RX_TIMEOUT * baud /  bits / 1000) * 2;
 	sport->rx_dma_rng_buf_len = (1 << fls(sport->rx_dma_rng_buf_len));
 	sport->rx_dma_rng_buf_len = max_t(int,
 					  sport->rxfifo_size * 2,
 					  sport->rx_dma_rng_buf_len);
-	/*
-	 * Keep this condition check in case rxfifo_size is unavailable
-	 * for some SoCs.
-	 */
+	 
 	if (sport->rx_dma_rng_buf_len < 16)
 		sport->rx_dma_rng_buf_len = 16;
 
@@ -1461,15 +1400,10 @@ static int lpuart_config_rs485(struct uart_port *port, struct ktermios *termios,
 	writeb(modem, sport->port.membase + UARTMODEM);
 
 	if (rs485->flags & SER_RS485_ENABLED) {
-		/* Enable auto RS-485 RTS mode */
+		 
 		modem |= UARTMODEM_TXRTSE;
 
-		/*
-		 * The hardware defaults to RTS logic HIGH while transfer.
-		 * Switch polarity in case RTS shall be logic HIGH
-		 * after transfer.
-		 * Note: UART is assumed to be active high.
-		 */
+		 
 		if (rs485->flags & SER_RS485_RTS_ON_SEND)
 			modem |= UARTMODEM_TXRTSPOL;
 		else if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
@@ -1491,15 +1425,10 @@ static int lpuart32_config_rs485(struct uart_port *port, struct ktermios *termio
 	lpuart32_write(&sport->port, modem, UARTMODIR);
 
 	if (rs485->flags & SER_RS485_ENABLED) {
-		/* Enable auto RS-485 RTS mode */
+		 
 		modem |= UARTMODIR_TXRTSE;
 
-		/*
-		 * The hardware defaults to RTS logic HIGH while transfer.
-		 * Switch polarity in case RTS shall be logic HIGH
-		 * after transfer.
-		 * Note: UART is assumed to be active high.
-		 */
+		 
 		if (rs485->flags & SER_RS485_RTS_ON_SEND)
 			modem |= UARTMODIR_TXRTSPOL;
 		else if (rs485->flags & SER_RS485_RTS_AFTER_SEND)
@@ -1540,7 +1469,7 @@ static void lpuart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 
 	reg = readb(port->membase + UARTCR1);
 
-	/* for internal loopback we need LOOPS=1 and RSRC=0 */
+	 
 	reg &= ~(UARTCR1_LOOPS | UARTCR1_RSRC);
 	if (mctrl & TIOCM_LOOP)
 		reg |= UARTCR1_LOOPS;
@@ -1554,7 +1483,7 @@ static void lpuart32_set_mctrl(struct uart_port *port, unsigned int mctrl)
 
 	reg = lpuart32_read(port, UARTCTRL);
 
-	/* for internal loopback we need LOOPS=1 and RSRC=0 */
+	 
 	reg &= ~(UARTCTRL_LOOPS | UARTCTRL_RSRC);
 	if (mctrl & TIOCM_LOOP)
 		reg |= UARTCTRL_LOOPS;
@@ -1580,27 +1509,15 @@ static void lpuart32_break_ctl(struct uart_port *port, int break_state)
 
 	temp = lpuart32_read(port, UARTCTRL);
 
-	/*
-	 * LPUART IP now has two known bugs, one is CTS has higher priority than the
-	 * break signal, which causes the break signal sending through UARTCTRL_SBK
-	 * may impacted by the CTS input if the HW flow control is enabled. It
-	 * exists on all platforms we support in this driver.
-	 * Another bug is i.MX8QM LPUART may have an additional break character
-	 * being sent after SBK was cleared.
-	 * To avoid above two bugs, we use Transmit Data Inversion function to send
-	 * the break signal instead of UARTCTRL_SBK.
-	 */
+	 
 	if (break_state != 0) {
-		/*
-		 * Disable the transmitter to prevent any data from being sent out
-		 * during break, then invert the TX line to send break.
-		 */
+		 
 		temp &= ~UARTCTRL_TE;
 		lpuart32_write(port, temp, UARTCTRL);
 		temp |= UARTCTRL_TXINV;
 		lpuart32_write(port, temp, UARTCTRL);
 	} else {
-		/* Disable the TXINV to turn off break and re-enable transmitter. */
+		 
 		temp &= ~UARTCTRL_TXINV;
 		lpuart32_write(port, temp, UARTCTRL);
 		temp |= UARTCTRL_TE;
@@ -1623,11 +1540,11 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
 	writeb(val | UARTPFIFO_TXFE | UARTPFIFO_RXFE,
 			sport->port.membase + UARTPFIFO);
 
-	/* flush Tx and Rx FIFO */
+	 
 	writeb(UARTCFIFO_TXFLUSH | UARTCFIFO_RXFLUSH,
 			sport->port.membase + UARTCFIFO);
 
-	/* explicitly clear RDRF */
+	 
 	if (readb(sport->port.membase + UARTSR1) & UARTSR1_RDRF) {
 		readb(sport->port.membase + UARTDR);
 		writeb(UARTSFIFO_RXUF, sport->port.membase + UARTSFIFO);
@@ -1638,7 +1555,7 @@ static void lpuart_setup_watermark(struct lpuart_port *sport)
 	writeb(0, sport->port.membase + UARTTWFIFO);
 	writeb(sport->rx_watermark, sport->port.membase + UARTRWFIFO);
 
-	/* Restore cr2 */
+	 
 	writeb(cr2_saved, sport->port.membase + UARTCR2);
 }
 
@@ -1664,28 +1581,28 @@ static void lpuart32_setup_watermark(struct lpuart_port *sport)
 			UARTCTRL_RIE | UARTCTRL_RE | UARTCTRL_ILIE);
 	lpuart32_write(&sport->port, ctrl, UARTCTRL);
 
-	/* enable FIFO mode */
+	 
 	val = lpuart32_read(&sport->port, UARTFIFO);
 	val |= UARTFIFO_TXFE | UARTFIFO_RXFE;
 	val |= UARTFIFO_TXFLUSH | UARTFIFO_RXFLUSH;
 	val |= FIELD_PREP(UARTFIFO_RXIDEN, 0x3);
 	lpuart32_write(&sport->port, val, UARTFIFO);
 
-	/* set the watermark */
+	 
 	if (uart_console(&sport->port))
 		sport->rx_watermark = 1;
 	val = (sport->rx_watermark << UARTWATER_RXWATER_OFF) |
 	      (0x0 << UARTWATER_TXWATER_OFF);
 	lpuart32_write(&sport->port, val, UARTWATER);
 
-	/* set RTS watermark */
+	 
 	if (!uart_console(&sport->port)) {
 		val = lpuart32_read(&sport->port, UARTMODIR);
 		val |= FIELD_PREP(UARTMODIR_RTSWATER, sport->rxfifo_size >> 1);
 		lpuart32_write(&sport->port, val, UARTMODIR);
 	}
 
-	/* Restore cr2 */
+	 
 	lpuart32_write(&sport->port, ctrl_saved, UARTCTRL);
 }
 
@@ -1773,7 +1690,7 @@ static void lpuart_rx_dma_startup(struct lpuart_port *sport)
 	if (!sport->dma_rx_chan)
 		goto err;
 
-	/* set default Rx DMA timeout */
+	 
 	sport->dma_rx_timeout = msecs_to_jiffies(DMA_RX_TIMEOUT);
 
 	ret = lpuart_start_rx_dma(sport);
@@ -1817,7 +1734,7 @@ static int lpuart_startup(struct uart_port *port)
 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
 	unsigned char temp;
 
-	/* determine FIFO size and enable FIFO mode */
+	 
 	temp = readb(sport->port.membase + UARTPFIFO);
 
 	sport->txfifo_size = UARTFIFO_DEPTH((temp >> UARTPFIFO_TXSIZE_OFF) &
@@ -1877,7 +1794,7 @@ static int lpuart32_startup(struct uart_port *port)
 	struct lpuart_port *sport = container_of(port, struct lpuart_port, port);
 	unsigned long temp;
 
-	/* determine FIFO size */
+	 
 	temp = lpuart32_read(&sport->port, UARTFIFO);
 
 	sport->txfifo_size = UARTFIFO_DEPTH((temp >> UARTFIFO_TXSIZE_OFF) &
@@ -1887,11 +1804,7 @@ static int lpuart32_startup(struct uart_port *port)
 	sport->rxfifo_size = UARTFIFO_DEPTH((temp >> UARTFIFO_RXSIZE_OFF) &
 					    UARTFIFO_FIFOSIZE_MASK);
 
-	/*
-	 * The LS1021A and LS1028A have a fixed FIFO depth of 16 words.
-	 * Although they support the RX/TXSIZE fields, their encoding is
-	 * different. Eg the reference manual states 0b101 is 16 words.
-	 */
+	 
 	if (is_layerscape_lpuart(sport)) {
 		sport->rxfifo_size = 16;
 		sport->txfifo_size = 16;
@@ -1934,7 +1847,7 @@ static void lpuart_shutdown(struct uart_port *port)
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* disable Rx/Tx and interrupts */
+	 
 	temp = readb(port->membase + UARTCR2);
 	temp &= ~(UARTCR2_TE | UARTCR2_RE |
 			UARTCR2_TIE | UARTCR2_TCIE | UARTCR2_RIE);
@@ -1954,16 +1867,16 @@ static void lpuart32_shutdown(struct uart_port *port)
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* clear status */
+	 
 	temp = lpuart32_read(&sport->port, UARTSTAT);
 	lpuart32_write(&sport->port, temp, UARTSTAT);
 
-	/* disable Rx/Tx DMA */
+	 
 	temp = lpuart32_read(port, UARTBAUD);
 	temp &= ~(UARTBAUD_TDMAE | UARTBAUD_RDMAE);
 	lpuart32_write(port, temp, UARTBAUD);
 
-	/* disable Rx/Tx and interrupts and break condition */
+	 
 	temp = lpuart32_read(port, UARTCTRL);
 	temp &= ~(UARTCTRL_TE | UARTCTRL_RE | UARTCTRL_ILIE |
 			UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE | UARTCTRL_SBK);
@@ -1991,14 +1904,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
 	cr4 = readb(sport->port.membase + UARTCR4);
 	bdh = readb(sport->port.membase + UARTBDH);
 	modem = readb(sport->port.membase + UARTMODEM);
-	/*
-	 * only support CS8 and CS7, and for CS7 must enable PE.
-	 * supported mode:
-	 *  - (7,e/o,1)
-	 *  - (8,n,1)
-	 *  - (8,m/s,1)
-	 *  - (8,e/o,1)
-	 */
+	 
 	while ((termios->c_cflag & CSIZE) != CS8 &&
 		(termios->c_cflag & CSIZE) != CS7) {
 		termios->c_cflag &= ~CSIZE;
@@ -2018,10 +1924,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
 		cr1 |= UARTCR1_M;
 	}
 
-	/*
-	 * When auto RS-485 RTS mode is enabled,
-	 * hardware flow control need to be disabled.
-	 */
+	 
 	if (sport->port.rs485.flags & SER_RS485_ENABLED)
 		termios->c_cflag &= ~CRTSCTS;
 
@@ -2032,7 +1935,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
 
 	termios->c_cflag &= ~CSTOPB;
 
-	/* parity must be enabled when CS7 to match 8-bits format */
+	 
 	if ((termios->c_cflag & CSIZE) == CS7)
 		termios->c_cflag |= PARENB;
 
@@ -2056,16 +1959,10 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
 		cr1 &= ~UARTCR1_PE;
 	}
 
-	/* ask the core to calculate the divisor */
+	 
 	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 16);
 
-	/*
-	 * Need to update the Ring buffer length according to the selected
-	 * baud rate and restart Rx DMA path.
-	 *
-	 * Since timer function acqures sport->port.lock, need to stop before
-	 * acquring same lock because otherwise del_timer_sync() can deadlock.
-	 */
+	 
 	if (old && sport->lpuart_dma_rx_use)
 		lpuart_dma_rx_free(&sport->port);
 
@@ -2077,27 +1974,24 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		sport->port.read_status_mask |= UARTSR1_FE;
 
-	/* characters to ignore */
+	 
 	sport->port.ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		sport->port.ignore_status_mask |= UARTSR1_PE;
 	if (termios->c_iflag & IGNBRK) {
 		sport->port.ignore_status_mask |= UARTSR1_FE;
-		/*
-		 * if we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (termios->c_iflag & IGNPAR)
 			sport->port.ignore_status_mask |= UARTSR1_OR;
 	}
 
-	/* update the per-port timeout */
+	 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
-	/* wait transmit engin complete */
+	 
 	lpuart_wait_bit_set(&sport->port, UARTSR1, UARTSR1_TC);
 
-	/* disable transmit and receive */
+	 
 	writeb(old_cr2 & ~(UARTCR2_TE | UARTCR2_RE),
 			sport->port.membase + UARTCR2);
 
@@ -2114,7 +2008,7 @@ lpuart_set_termios(struct uart_port *port, struct ktermios *termios,
 	writeb(cr1, sport->port.membase + UARTCR1);
 	writeb(modem, sport->port.membase + UARTMODEM);
 
-	/* restore control register */
+	 
 	writeb(old_cr2, sport->port.membase + UARTCR2);
 
 	if (old && sport->lpuart_dma_rx_use) {
@@ -2134,32 +2028,21 @@ static void __lpuart32_serial_setbrg(struct uart_port *port,
 	u32 sbr, osr, baud_diff, tmp_osr, tmp_sbr, tmp_diff, tmp;
 	u32 clk = port->uartclk;
 
-	/*
-	 * The idea is to use the best OSR (over-sampling rate) possible.
-	 * Note, OSR is typically hard-set to 16 in other LPUART instantiations.
-	 * Loop to find the best OSR value possible, one that generates minimum
-	 * baud_diff iterate through the rest of the supported values of OSR.
-	 *
-	 * Calculation Formula:
-	 *  Baud Rate = baud clock / ((OSR+1) × SBR)
-	 */
+	 
 	baud_diff = baudrate;
 	osr = 0;
 	sbr = 0;
 
 	for (tmp_osr = 4; tmp_osr <= 32; tmp_osr++) {
-		/* calculate the temporary sbr value  */
+		 
 		tmp_sbr = (clk / (baudrate * tmp_osr));
 		if (tmp_sbr == 0)
 			tmp_sbr = 1;
 
-		/*
-		 * calculate the baud rate difference based on the temporary
-		 * osr and sbr values
-		 */
+		 
 		tmp_diff = clk / (tmp_osr * tmp_sbr) - baudrate;
 
-		/* select best values between sbr and sbr+1 */
+		 
 		tmp = clk / (tmp_osr * (tmp_sbr + 1));
 		if (tmp_diff > (baudrate - tmp)) {
 			tmp_diff = baudrate - tmp;
@@ -2179,7 +2062,7 @@ static void __lpuart32_serial_setbrg(struct uart_port *port,
 		}
 	}
 
-	/* handle buadrate outside acceptable rate */
+	 
 	if (baud_diff > ((baudrate / 100) * 3))
 		dev_warn(port->dev,
 			 "unacceptable baud rate difference of more than 3%%\n");
@@ -2226,14 +2109,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
 	bd = lpuart32_read(&sport->port, UARTBAUD);
 	modem = lpuart32_read(&sport->port, UARTMODIR);
 	sport->is_cs7 = false;
-	/*
-	 * only support CS8 and CS7, and for CS7 must enable PE.
-	 * supported mode:
-	 *  - (7,e/o,1)
-	 *  - (8,n,1)
-	 *  - (8,m/s,1)
-	 *  - (8,e/o,1)
-	 */
+	 
 	while ((termios->c_cflag & CSIZE) != CS8 &&
 		(termios->c_cflag & CSIZE) != CS7) {
 		termios->c_cflag &= ~CSIZE;
@@ -2253,10 +2129,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
 		ctrl |= UARTCTRL_M;
 	}
 
-	/*
-	 * When auto RS-485 RTS mode is enabled,
-	 * hardware flow control need to be disabled.
-	 */
+	 
 	if (sport->port.rs485.flags & SER_RS485_ENABLED)
 		termios->c_cflag &= ~CRTSCTS;
 
@@ -2270,7 +2143,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
 	else
 		bd &= ~UARTBAUD_SBNS;
 
-	/* parity must be enabled when CS7 to match 8-bits format */
+	 
 	if ((termios->c_cflag & CSIZE) == CS7)
 		termios->c_cflag |= PARENB;
 
@@ -2291,16 +2164,10 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
 		ctrl &= ~UARTCTRL_PE;
 	}
 
-	/* ask the core to calculate the divisor */
+	 
 	baud = uart_get_baud_rate(port, termios, old, 50, port->uartclk / 4);
 
-	/*
-	 * Need to update the Ring buffer length according to the selected
-	 * baud rate and restart Rx DMA path.
-	 *
-	 * Since timer function acqures sport->port.lock, need to stop before
-	 * acquring same lock because otherwise del_timer_sync() can deadlock.
-	 */
+	 
 	if (old && sport->lpuart_dma_rx_use)
 		lpuart_dma_rx_free(&sport->port);
 
@@ -2312,34 +2179,27 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
 	if (termios->c_iflag & (IGNBRK | BRKINT | PARMRK))
 		sport->port.read_status_mask |= UARTSTAT_FE;
 
-	/* characters to ignore */
+	 
 	sport->port.ignore_status_mask = 0;
 	if (termios->c_iflag & IGNPAR)
 		sport->port.ignore_status_mask |= UARTSTAT_PE;
 	if (termios->c_iflag & IGNBRK) {
 		sport->port.ignore_status_mask |= UARTSTAT_FE;
-		/*
-		 * if we're ignoring parity and break indicators,
-		 * ignore overruns too (for real raw support).
-		 */
+		 
 		if (termios->c_iflag & IGNPAR)
 			sport->port.ignore_status_mask |= UARTSTAT_OR;
 	}
 
-	/* update the per-port timeout */
+	 
 	uart_update_timeout(port, termios->c_cflag, baud);
 
-	/*
-	 * LPUART Transmission Complete Flag may never be set while queuing a break
-	 * character, so skip waiting for transmission complete when UARTCTRL_SBK is
-	 * asserted.
-	 */
+	 
 	if (!(old_ctrl & UARTCTRL_SBK)) {
 		lpuart32_write(&sport->port, 0, UARTMODIR);
 		lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
 	}
 
-	/* disable transmit and receive */
+	 
 	lpuart32_write(&sport->port, old_ctrl & ~(UARTCTRL_TE | UARTCTRL_RE),
 		       UARTCTRL);
 
@@ -2347,7 +2207,7 @@ lpuart32_set_termios(struct uart_port *port, struct ktermios *termios,
 	lpuart32_serial_setbrg(sport, baud);
 	lpuart32_write(&sport->port, modem, UARTMODIR);
 	lpuart32_write(&sport->port, ctrl, UARTCTRL);
-	/* restore control register */
+	 
 
 	if ((ctrl & (UARTCTRL_PE | UARTCTRL_M)) == UARTCTRL_PE)
 		sport->is_cs7 = true;
@@ -2369,7 +2229,7 @@ static const char *lpuart_type(struct uart_port *port)
 
 static void lpuart_release_port(struct uart_port *port)
 {
-	/* nothing to do */
+	 
 }
 
 static int lpuart_request_port(struct uart_port *port)
@@ -2377,7 +2237,7 @@ static int lpuart_request_port(struct uart_port *port)
 	return  0;
 }
 
-/* configure/autoconfigure the port */
+ 
 static void lpuart_config_port(struct uart_port *port, int flags)
 {
 	if (flags & UART_CONFIG_TYPE)
@@ -2481,7 +2341,7 @@ lpuart_console_write(struct console *co, const char *s, unsigned int count)
 	else
 		spin_lock_irqsave(&sport->port.lock, flags);
 
-	/* first save CR2 and then disable interrupts */
+	 
 	cr2 = old_cr2 = readb(sport->port.membase + UARTCR2);
 	cr2 |= UARTCR2_TE | UARTCR2_RE;
 	cr2 &= ~(UARTCR2_TIE | UARTCR2_TCIE | UARTCR2_RIE);
@@ -2489,7 +2349,7 @@ lpuart_console_write(struct console *co, const char *s, unsigned int count)
 
 	uart_console_write(&sport->port, s, count, lpuart_console_putchar);
 
-	/* wait for transmitter finish complete and restore CR2 */
+	 
 	lpuart_wait_bit_set(&sport->port, UARTSR1, UARTSR1_TC);
 
 	writeb(old_cr2, sport->port.membase + UARTCR2);
@@ -2511,7 +2371,7 @@ lpuart32_console_write(struct console *co, const char *s, unsigned int count)
 	else
 		spin_lock_irqsave(&sport->port.lock, flags);
 
-	/* first save CR2 and then disable interrupts */
+	 
 	cr = old_cr = lpuart32_read(&sport->port, UARTCTRL);
 	cr |= UARTCTRL_TE | UARTCTRL_RE;
 	cr &= ~(UARTCTRL_TIE | UARTCTRL_TCIE | UARTCTRL_RIE);
@@ -2519,7 +2379,7 @@ lpuart32_console_write(struct console *co, const char *s, unsigned int count)
 
 	uart_console_write(&sport->port, s, count, lpuart32_console_putchar);
 
-	/* wait for transmitter finish complete and restore CR2 */
+	 
 	lpuart32_wait_bit_set(&sport->port, UARTSTAT, UARTSTAT_TC);
 
 	lpuart32_write(&sport->port, old_cr, UARTCTRL);
@@ -2528,10 +2388,7 @@ lpuart32_console_write(struct console *co, const char *s, unsigned int count)
 		spin_unlock_irqrestore(&sport->port.lock, flags);
 }
 
-/*
- * if the port was already initialised (eg, by a boot loader),
- * try to determine the current setup.
- */
+ 
 static void __init
 lpuart_console_get_options(struct lpuart_port *sport, int *baud,
 			   int *parity, int *bits)
@@ -2544,7 +2401,7 @@ lpuart_console_get_options(struct lpuart_port *sport, int *baud,
 	if (!cr)
 		return;
 
-	/* ok, the port was enabled */
+	 
 
 	cr = readb(sport->port.membase + UARTCR1);
 
@@ -2571,9 +2428,7 @@ lpuart_console_get_options(struct lpuart_port *sport, int *baud,
 	brfa &= UARTCR4_BRFA_MASK;
 
 	uartclk = lpuart_get_baud_clk_rate(sport);
-	/*
-	 * baud = mod_clk/(16*(sbr[13]+(brfa)/32)
-	 */
+	 
 	baud_raw = uartclk / (16 * (sbr + brfa / 32));
 
 	if (*baud != baud_raw)
@@ -2593,7 +2448,7 @@ lpuart32_console_get_options(struct lpuart_port *sport, int *baud,
 	if (!cr)
 		return;
 
-	/* ok, the port was enabled */
+	 
 
 	cr = lpuart32_read(&sport->port, UARTCTRL);
 
@@ -2617,9 +2472,7 @@ lpuart32_console_get_options(struct lpuart_port *sport, int *baud,
 
 	sbr = bd;
 	uartclk = lpuart_get_baud_clk_rate(sport);
-	/*
-	 * baud = mod_clk/(16*(sbr[13]+(brfa)/32)
-	 */
+	 
 	baud_raw = uartclk / (16 * sbr);
 
 	if (*baud != baud_raw)
@@ -2635,11 +2488,7 @@ static int __init lpuart_console_setup(struct console *co, char *options)
 	int parity = 'n';
 	int flow = 'n';
 
-	/*
-	 * check whether an invalid uart number has been specified, and
-	 * if so, search for the first available port that does have
-	 * console support.
-	 */
+	 
 	if (co->index == -1 || co->index >= ARRAY_SIZE(lpuart_ports))
 		co->index = 0;
 
@@ -2732,12 +2581,12 @@ static int __init ls1028a_early_console_setup(struct earlycon_device *device,
 	device->port.iotype = UPIO_MEM32;
 	device->con->write = lpuart32_early_write;
 
-	/* set the baudrate */
+	 
 	if (device->port.uartclk && device->baud)
 		__lpuart32_serial_setbrg(&device->port, device->baud,
 					 false, false);
 
-	/* enable transmitter */
+	 
 	cr = lpuart32_read(&device->port, UARTCTRL);
 	cr |= UARTCTRL_TE;
 	lpuart32_write(&device->port, cr, UARTCTRL);
@@ -2784,7 +2633,7 @@ static struct uart_driver lpuart_reg = {
 
 static const struct serial_rs485 lpuart_rs485_supported = {
 	.flags = SER_RS485_ENABLED | SER_RS485_RTS_ON_SEND | SER_RS485_RTS_AFTER_SEND,
-	/* delay_rts_* and RX_DURING_TX are not supported */
+	 
 };
 
 static int lpuart_global_reset(struct lpuart_port *sport)
@@ -2802,10 +2651,7 @@ static int lpuart_global_reset(struct lpuart_port *sport)
 	}
 
 	if (is_imx7ulp_lpuart(sport) || is_imx8ulp_lpuart(sport) || is_imx8qxp_lpuart(sport)) {
-		/*
-		 * If the transmitter is used by earlycon, wait for transmit engine to
-		 * complete and then reset.
-		 */
+		 
 		ctrl = lpuart32_read(port, UARTCTRL);
 		if (ctrl & UARTCTRL_TE) {
 			bd = lpuart32_read(&sport->port, UARTBAUD);
@@ -2824,7 +2670,7 @@ static int lpuart_global_reset(struct lpuart_port *sport)
 		writel(0, global_addr);
 		usleep_range(GLOBAL_RST_MIN_US, GLOBAL_RST_MAX_US);
 
-		/* Recover the transmitter for earlycon. */
+		 
 		if (ctrl & UARTCTRL_TE) {
 			lpuart32_write(port, bd, UARTBAUD);
 			lpuart32_write(port, ctrl, UARTCTRL);
@@ -3005,10 +2851,10 @@ static void serial_lpuart_enable_wakeup(struct lpuart_port *sport, bool on)
 		val = lpuart32_read(&sport->port, UARTCTRL);
 		baud = lpuart32_read(&sport->port, UARTBAUD);
 		if (on) {
-			/* set rx_watermark to 0 in wakeup source mode */
+			 
 			lpuart32_write(&sport->port, 0, UARTWATER);
 			val |= UARTCTRL_RIE;
-			/* clear RXEDGIF flag before enable RXEDGIE interrupt */
+			 
 			lpuart32_write(&sport->port, UARTSTAT_RXEDGIF, UARTSTAT);
 			baud |= UARTBAUD_RXEDGIE;
 		} else {
@@ -3071,7 +2917,7 @@ static int lpuart_resume_noirq(struct device *dev)
 	if (lpuart_uport_is_active(sport)) {
 		serial_lpuart_enable_wakeup(sport, false);
 
-		/* clear the wakeup flags */
+		 
 		if (lpuart_is_32(sport)) {
 			val = lpuart32_read(&sport->port, UARTSTAT);
 			lpuart32_write(&sport->port, val, UARTSTAT);
@@ -3091,12 +2937,12 @@ static int lpuart_suspend(struct device *dev)
 	if (lpuart_uport_is_active(sport)) {
 		spin_lock_irqsave(&sport->port.lock, flags);
 		if (lpuart_is_32(sport)) {
-			/* disable Rx/Tx and interrupts */
+			 
 			temp = lpuart32_read(&sport->port, UARTCTRL);
 			temp &= ~(UARTCTRL_TE | UARTCTRL_TIE | UARTCTRL_TCIE);
 			lpuart32_write(&sport->port, temp, UARTCTRL);
 		} else {
-			/* disable Rx/Tx and interrupts */
+			 
 			temp = readb(sport->port.membase + UARTCR2);
 			temp &= ~(UARTCR2_TE | UARTCR2_TIE | UARTCR2_TCIE);
 			writeb(temp, sport->port.membase + UARTCR2);
@@ -3104,16 +2950,10 @@ static int lpuart_suspend(struct device *dev)
 		spin_unlock_irqrestore(&sport->port.lock, flags);
 
 		if (sport->lpuart_dma_rx_use) {
-			/*
-			 * EDMA driver during suspend will forcefully release any
-			 * non-idle DMA channels. If port wakeup is enabled or if port
-			 * is console port or 'no_console_suspend' is set the Rx DMA
-			 * cannot resume as expected, hence gracefully release the
-			 * Rx DMA path before suspend and start Rx DMA path on resume.
-			 */
+			 
 			lpuart_dma_rx_free(&sport->port);
 
-			/* Disable Rx DMA to use UART port as wakeup source */
+			 
 			spin_lock_irqsave(&sport->port.lock, flags);
 			if (lpuart_is_32(sport)) {
 				temp = lpuart32_read(&sport->port, UARTBAUD);
@@ -3156,13 +2996,7 @@ static void lpuart_console_fixup(struct lpuart_port *sport)
 	struct uart_port *uport = &sport->port;
 	struct ktermios termios;
 
-	/* i.MX7ULP enter VLLS mode that lpuart module power off and registers
-	 * all lost no matter the port is wakeup source.
-	 * For console port, console baud rate setting lost and print messy
-	 * log when enable the console port as wakeup source. To avoid the
-	 * issue happen, user should not enable uart port as wakeup source
-	 * in VLLS mode, or restore console setting here.
-	 */
+	 
 	if (is_imx7ulp_lpuart(sport) && lpuart_uport_is_active(sport) &&
 	    console_suspend_enabled && uart_console(&sport->port)) {
 

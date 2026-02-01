@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * rt1318-sdw.h -- RT1318 SDCA ALSA SoC audio driver header
- *
- * Copyright(c) 2022 Realtek Semiconductor Corp.
- */
+ 
+ 
 
 #ifndef __RT1318_SDW_H__
 #define __RT1318_SDW_H__
@@ -14,7 +10,7 @@
 #include <linux/soundwire/sdw_registers.h>
 #include <sound/soc.h>
 
-/* imp-defined registers */
+ 
 #define RT1318_SAPU_SM 0x3203
 
 #define R1318_TCON	0xc203
@@ -51,10 +47,10 @@
 #define RT1318_STP_INITIAL_RS_TEMP_H 0xdd93
 #define RT1318_STP_INITIAL_RS_TEMP_L 0xdd94
 
-/* RT1318 SDCA Control - function number */
+ 
 #define FUNC_NUM_SMART_AMP 0x04
 
-/* RT1318 SDCA entity */
+ 
 #define RT1318_SDCA_ENT_PDE23 0x31
 #define RT1318_SDCA_ENT_XU24 0x24
 #define RT1318_SDCA_ENT_FU21 0x03
@@ -62,7 +58,7 @@
 #define RT1318_SDCA_ENT_CS21 0x21
 #define RT1318_SDCA_ENT_SAPU 0x29
 
-/* RT1318 SDCA control */
+ 
 #define RT1318_SDCA_CTL_SAMPLE_FREQ_INDEX 0x10
 #define RT1318_SDCA_CTL_REQ_POWER_STATE 0x01
 #define RT1318_SDCA_CTL_FU_MUTE 0x01
@@ -71,11 +67,11 @@
 #define RT1318_SDCA_CTL_SAPU_PROTECTION_MODE 0x10
 #define RT1318_SDCA_CTL_SAPU_PROTECTION_STATUS 0x11
 
-/* RT1318 SDCA channel */
+ 
 #define CH_L 0x01
 #define CH_R 0x02
 
-/* sample frequency index */
+ 
 #define RT1318_SDCA_RATE_16000HZ		0x04
 #define RT1318_SDCA_RATE_32000HZ		0x07
 #define RT1318_SDCA_RATE_44100HZ		0x08
@@ -93,4 +89,4 @@ struct rt1318_sdw_priv {
 	bool first_hw_init;
 };
 
-#endif /* __RT1318_SDW_H__ */
+#endif  

@@ -1,35 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Eddie Dong <eddie.dong@intel.com>
- *    Kevin Tian <kevin.tian@intel.com>
- *
- * Contributors:
- *    Ping Gao <ping.a.gao@intel.com>
- *    Zhi Wang <zhi.a.wang@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *
- */
+ 
 
 #include "i915_drv.h"
 #include "gvt.h"
@@ -38,7 +7,7 @@
 void populate_pvinfo_page(struct intel_vgpu *vgpu)
 {
 	struct drm_i915_private *i915 = vgpu->gvt->gt->i915;
-	/* setup the ballooning information */
+	 
 	vgpu_vreg64_t(vgpu, vgtif_reg(magic)) = VGT_MAGIC;
 	vgpu_vreg_t(vgpu, vgtif_reg(version_major)) = 1;
 	vgpu_vreg_t(vgpu, vgtif_reg(version_minor)) = 0;
@@ -73,16 +42,7 @@ void populate_pvinfo_page(struct intel_vgpu *vgpu)
 	drm_WARN_ON(&i915->drm, sizeof(struct vgt_if) != VGT_PVINFO_SIZE);
 }
 
-/*
- * vGPU type name is defined as GVTg_Vx_y which contains the physical GPU
- * generation type (e.g V4 as BDW server, V5 as SKL server).
- *
- * Depening on the physical SKU resource, we might see vGPU types like
- * GVTg_V4_8, GVTg_V4_4, GVTg_V4_2, etc. We can create different types of
- * vGPU on same physical GPU depending on available resource. Each vGPU
- * type will have a different number of avail_instance to indicate how
- * many vGPU instance can be created for this type.
- */
+ 
 #define VGPU_MAX_WEIGHT 16
 #define VGPU_WEIGHT(vgpu_num)	\
 	(VGPU_MAX_WEIGHT / (vgpu_num))
@@ -94,13 +54,7 @@ static const struct intel_vgpu_config intel_vgpu_configs[] = {
 	{ MB_TO_BYTES(512), MB_TO_BYTES(2048), 4, VGPU_WEIGHT(1), GVT_EDID_1920_1200, "1" },
 };
 
-/**
- * intel_gvt_init_vgpu_types - initialize vGPU type list
- * @gvt : GVT device
- *
- * Initialize vGPU type list based on available resource.
- *
- */
+ 
 int intel_gvt_init_vgpu_types(struct intel_gvt *gvt)
 {
 	unsigned int low_avail = gvt_aperture_sz(gvt) - HOST_LOW_GM_SIZE;
@@ -157,26 +111,13 @@ void intel_gvt_clean_vgpu_types(struct intel_gvt *gvt)
 	kfree(gvt->types);
 }
 
-/**
- * intel_gvt_activate_vgpu - activate a virtual GPU
- * @vgpu: virtual GPU
- *
- * This function is called when user wants to activate a virtual GPU.
- *
- */
+ 
 void intel_gvt_activate_vgpu(struct intel_vgpu *vgpu)
 {
 	set_bit(INTEL_VGPU_STATUS_ACTIVE, vgpu->status);
 }
 
-/**
- * intel_gvt_deactivate_vgpu - deactivate a virtual GPU
- * @vgpu: virtual GPU
- *
- * This function is called when user wants to deactivate a virtual GPU.
- * The virtual GPU will be stopped.
- *
- */
+ 
 void intel_gvt_deactivate_vgpu(struct intel_vgpu *vgpu)
 {
 	mutex_lock(&vgpu->vgpu_lock);
@@ -194,15 +135,7 @@ void intel_gvt_deactivate_vgpu(struct intel_vgpu *vgpu)
 	mutex_unlock(&vgpu->vgpu_lock);
 }
 
-/**
- * intel_gvt_release_vgpu - release a virtual GPU
- * @vgpu: virtual GPU
- *
- * This function is called when user wants to release a virtual GPU.
- * The virtual GPU will be stopped and all runtime information will be
- * destroyed.
- *
- */
+ 
 void intel_gvt_release_vgpu(struct intel_vgpu *vgpu)
 {
 	intel_gvt_deactivate_vgpu(vgpu);
@@ -214,13 +147,7 @@ void intel_gvt_release_vgpu(struct intel_vgpu *vgpu)
 	mutex_unlock(&vgpu->vgpu_lock);
 }
 
-/**
- * intel_gvt_destroy_vgpu - destroy a virtual GPU
- * @vgpu: virtual GPU
- *
- * This function is called when user wants to destroy a virtual GPU.
- *
- */
+ 
 void intel_gvt_destroy_vgpu(struct intel_vgpu *vgpu)
 {
 	struct intel_gvt *gvt = vgpu->gvt;
@@ -229,10 +156,7 @@ void intel_gvt_destroy_vgpu(struct intel_vgpu *vgpu)
 	drm_WARN(&i915->drm, test_bit(INTEL_VGPU_STATUS_ACTIVE, vgpu->status),
 		 "vGPU is still active!\n");
 
-	/*
-	 * remove idr first so later clean can judge if need to stop
-	 * service if no active vgpu.
-	 */
+	 
 	mutex_lock(&gvt->lock);
 	idr_remove(&gvt->vgpu_idr, vgpu->id);
 	mutex_unlock(&gvt->lock);
@@ -254,15 +178,7 @@ void intel_gvt_destroy_vgpu(struct intel_vgpu *vgpu)
 
 #define IDLE_VGPU_IDR 0
 
-/**
- * intel_gvt_create_idle_vgpu - create an idle virtual GPU
- * @gvt: GVT device
- *
- * This function is called when user wants to create an idle virtual GPU.
- *
- * Returns:
- * pointer to intel_vgpu, error pointer if failed.
- */
+ 
 struct intel_vgpu *intel_gvt_create_idle_vgpu(struct intel_gvt *gvt)
 {
 	struct intel_vgpu *vgpu;
@@ -292,13 +208,7 @@ out_free_vgpu:
 	return ERR_PTR(ret);
 }
 
-/**
- * intel_gvt_destroy_idle_vgpu - destroy an idle virtual GPU
- * @vgpu: virtual GPU
- *
- * This function is called when user wants to destroy an idle virtual GPU.
- *
- */
+ 
 void intel_gvt_destroy_idle_vgpu(struct intel_vgpu *vgpu)
 {
 	mutex_lock(&vgpu->vgpu_lock);
@@ -403,34 +313,7 @@ out_unlock:
 	return ret;
 }
 
-/**
- * intel_gvt_reset_vgpu_locked - reset a virtual GPU by DMLR or GT reset
- * @vgpu: virtual GPU
- * @dmlr: vGPU Device Model Level Reset or GT Reset
- * @engine_mask: engines to reset for GT reset
- *
- * This function is called when user wants to reset a virtual GPU through
- * device model reset or GT reset. The caller should hold the vgpu lock.
- *
- * vGPU Device Model Level Reset (DMLR) simulates the PCI level reset to reset
- * the whole vGPU to default state as when it is created. This vGPU function
- * is required both for functionary and security concerns.The ultimate goal
- * of vGPU FLR is that reuse a vGPU instance by virtual machines. When we
- * assign a vGPU to a virtual machine we must isse such reset first.
- *
- * Full GT Reset and Per-Engine GT Reset are soft reset flow for GPU engines
- * (Render, Blitter, Video, Video Enhancement). It is defined by GPU Spec.
- * Unlike the FLR, GT reset only reset particular resource of a vGPU per
- * the reset request. Guest driver can issue a GT reset by programming the
- * virtual GDRST register to reset specific virtual GPU engine or all
- * engines.
- *
- * The parameter dev_level is to identify if we will do DMLR or GT reset.
- * The parameter engine_mask is to specific the engines that need to be
- * resetted. If value ALL_ENGINES is given for engine_mask, it means
- * the caller requests a full GT reset that we will reset all virtual
- * GPU engines. For FLR, engine_mask is ignored.
- */
+ 
 void intel_gvt_reset_vgpu_locked(struct intel_vgpu *vgpu, bool dmlr,
 				 intel_engine_mask_t engine_mask)
 {
@@ -445,10 +328,7 @@ void intel_gvt_reset_vgpu_locked(struct intel_vgpu *vgpu, bool dmlr,
 	vgpu->resetting_eng = resetting_eng;
 
 	intel_vgpu_stop_schedule(vgpu);
-	/*
-	 * The current_vgpu will set to NULL after stopping the
-	 * scheduler when the reset is triggered by current vgpu.
-	 */
+	 
 	if (scheduler->current_vgpu == NULL) {
 		mutex_unlock(&vgpu->vgpu_lock);
 		intel_gvt_wait_vgpu_idle(vgpu);
@@ -456,12 +336,12 @@ void intel_gvt_reset_vgpu_locked(struct intel_vgpu *vgpu, bool dmlr,
 	}
 
 	intel_vgpu_reset_submission(vgpu, resetting_eng);
-	/* full GPU reset or device model level reset */
+	 
 	if (engine_mask == ALL_ENGINES || dmlr) {
 		intel_vgpu_select_submission_ops(vgpu, ALL_ENGINES, 0);
 		if (engine_mask == ALL_ENGINES)
 			intel_vgpu_invalidate_ppgtt(vgpu);
-		/*fence will not be reset during virtual reset */
+		 
 		if (dmlr) {
 			if(!vgpu->d3_entered) {
 				intel_vgpu_invalidate_ppgtt(vgpu);
@@ -477,12 +357,9 @@ void intel_gvt_reset_vgpu_locked(struct intel_vgpu *vgpu, bool dmlr,
 		if (dmlr) {
 			intel_vgpu_reset_display(vgpu);
 			intel_vgpu_reset_cfg_space(vgpu);
-			/* only reset the failsafe mode when dmlr reset */
+			 
 			vgpu->failsafe = false;
-			/*
-			 * PCI_D0 is set before dmlr, so reset d3_entered here
-			 * after done using.
-			 */
+			 
 			if(vgpu->d3_entered)
 				vgpu->d3_entered = false;
 			else
@@ -495,13 +372,7 @@ void intel_gvt_reset_vgpu_locked(struct intel_vgpu *vgpu, bool dmlr,
 	gvt_dbg_core("------------------------------------------\n");
 }
 
-/**
- * intel_gvt_reset_vgpu - reset a virtual GPU (Function Level)
- * @vgpu: virtual GPU
- *
- * This function is called when user wants to reset a virtual GPU.
- *
- */
+ 
 void intel_gvt_reset_vgpu(struct intel_vgpu *vgpu)
 {
 	mutex_lock(&vgpu->vgpu_lock);

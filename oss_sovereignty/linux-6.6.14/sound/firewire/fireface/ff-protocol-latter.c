@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// ff-protocol-latter.c - a part of driver for RME Fireface series
-//
-// Copyright (c) 2019 Takashi Sakamoto
+
+
+
+
 
 #include <linux/delay.h>
 
@@ -13,61 +13,61 @@
 #define LATTER_FETCH_MODE	0xffff00000010ULL
 #define LATTER_SYNC_STATUS	0x0000801c0000ULL
 
-// The content of sync status register differs between models.
-//
-// Fireface UCX:
-//  0xf0000000: (unidentified)
-//  0x0f000000: effective rate of sampling clock
-//  0x00f00000: detected rate of word clock on BNC interface
-//  0x000f0000: detected rate of ADAT or S/PDIF on optical interface
-//  0x0000f000: detected rate of S/PDIF on coaxial interface
-//  0x00000e00: effective source of sampling clock
-//    0x00000e00: Internal
-//    0x00000800: (unidentified)
-//    0x00000600: Word clock on BNC interface
-//    0x00000400: ADAT on optical interface
-//    0x00000200: S/PDIF on coaxial or optical interface
-//  0x00000100: Optical interface is used for ADAT signal
-//  0x00000080: (unidentified)
-//  0x00000040: Synchronized to word clock on BNC interface
-//  0x00000020: Synchronized to ADAT or S/PDIF on optical interface
-//  0x00000010: Synchronized to S/PDIF on coaxial interface
-//  0x00000008: (unidentified)
-//  0x00000004: Lock word clock on BNC interface
-//  0x00000002: Lock ADAT or S/PDIF on optical interface
-//  0x00000001: Lock S/PDIF on coaxial interface
-//
-// Fireface 802 (and perhaps UFX):
-//   0xf0000000: effective rate of sampling clock
-//   0x0f000000: detected rate of ADAT-B on 2nd optical interface
-//   0x00f00000: detected rate of ADAT-A on 1st optical interface
-//   0x000f0000: detected rate of AES/EBU on XLR or coaxial interface
-//   0x0000f000: detected rate of word clock on BNC interface
-//   0x00000e00: effective source of sampling clock
-//     0x00000e00: internal
-//     0x00000800: ADAT-B
-//     0x00000600: ADAT-A
-//     0x00000400: AES/EBU
-//     0x00000200: Word clock
-//   0x00000080: Synchronized to ADAT-B on 2nd optical interface
-//   0x00000040: Synchronized to ADAT-A on 1st optical interface
-//   0x00000020: Synchronized to AES/EBU on XLR or 2nd optical interface
-//   0x00000010: Synchronized to word clock on BNC interface
-//   0x00000008: Lock ADAT-B on 2nd optical interface
-//   0x00000004: Lock ADAT-A on 1st optical interface
-//   0x00000002: Lock AES/EBU on XLR or 2nd optical interface
-//   0x00000001: Lock word clock on BNC interface
-//
-// The pattern for rate bits:
-//   0x00: 32.0 kHz
-//   0x01: 44.1 kHz
-//   0x02: 48.0 kHz
-//   0x04: 64.0 kHz
-//   0x05: 88.2 kHz
-//   0x06: 96.0 kHz
-//   0x08: 128.0 kHz
-//   0x09: 176.4 kHz
-//   0x0a: 192.0 kHz
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 static int parse_clock_bits(u32 data, unsigned int *rate,
 			    enum snd_ff_clock_src *src,
 			    enum snd_ff_unit_version unit_version)
@@ -178,7 +178,7 @@ static int latter_allocate_resources(struct snd_ff *ff, unsigned int rate)
 	int i;
 	int err;
 
-	// Set the number of data blocks transferred in a second.
+	
 	if (rate % 48000 == 0)
 		code = 0x04;
 	else if (rate % 44100 == 0)
@@ -199,7 +199,7 @@ static int latter_allocate_resources(struct snd_ff *ff, unsigned int rate)
 	if (err < 0)
 		return err;
 
-	// Confirm to shift transmission clock.
+	
 	count = 0;
 	while (count++ < 10) {
 		unsigned int curr_rate;
@@ -226,7 +226,7 @@ static int latter_allocate_resources(struct snd_ff *ff, unsigned int rate)
 	if (err < 0)
 		return err;
 
-	// Keep resources for in-stream.
+	
 	ff->tx_resources.channels_mask = 0x00000000000000ffuLL;
 	err = fw_iso_resources_allocate(&ff->tx_resources,
 			amdtp_stream_get_max_payload(&ff->tx_stream),
@@ -234,7 +234,7 @@ static int latter_allocate_resources(struct snd_ff *ff, unsigned int rate)
 	if (err < 0)
 		return err;
 
-	// Keep resources for out-stream.
+	
 	ff->rx_resources.channels_mask = 0x00000000000000ffuLL;
 	err = fw_iso_resources_allocate(&ff->rx_resources,
 			amdtp_stream_get_max_payload(&ff->rx_stream),
@@ -254,8 +254,8 @@ static int latter_begin_session(struct snd_ff *ff, unsigned int rate)
 	int err;
 
 	if (ff->unit_version == SND_FF_UNIT_VERSION_UCX) {
-		// For Fireface UCX. Always use the maximum number of data
-		// channels in data block of packet.
+		
+		
 		if (rate >= 32000 && rate <= 48000)
 			flag = 0x92;
 		else if (rate >= 64000 && rate <= 96000)
@@ -265,9 +265,9 @@ static int latter_begin_session(struct snd_ff *ff, unsigned int rate)
 		else
 			return -EINVAL;
 	} else {
-		// For Fireface UFX and 802. Due to bandwidth limitation on
-		// IEEE 1394a (400 Mbps), Analog 1-12 and AES are available
-		// without any ADAT at quadruple speed.
+		
+		
+		
 		if (rate >= 32000 && rate <= 48000)
 			flag = 0x9e;
 		else if (rate >= 64000 && rate <= 96000)
@@ -373,26 +373,26 @@ static void latter_dump_status(struct snd_ff *ff, struct snd_info_buffer *buffer
 	snd_iprintf(buffer, "Referred clock: %s %d\n", label, rate);
 }
 
-// NOTE: transactions are transferred within 0x00-0x7f in allocated range of
-// address. This seems to be for check of discontinuity in receiver side.
-//
-// Like Fireface 400, drivers can select one of 4 options for lower 4 bytes of
-// destination address by bit flags in quadlet register (little endian) at
-// 0x'ffff'0000'0014:
-//
-// bit flags: offset of destination address
-// - 0x00002000: 0x'....'....'0000'0000
-// - 0x00004000: 0x'....'....'0000'0080
-// - 0x00008000: 0x'....'....'0000'0100
-// - 0x00010000: 0x'....'....'0000'0180
-//
-// Drivers can suppress the device to transfer asynchronous transactions by
-// clear these bit flags.
-//
-// Actually, the register is write-only and includes the other settings such as
-// input attenuation. This driver allocates for the first option
-// (0x'....'....'0000'0000) and expects userspace application to configure the
-// register for it.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 static void latter_handle_midi_msg(struct snd_ff *ff, unsigned int offset, const __le32 *buf,
 				   size_t length, u32 tstamp)
 {
@@ -433,46 +433,42 @@ static void latter_handle_midi_msg(struct snd_ff *ff, unsigned int offset, const
 		snd_rawmidi_receive(substream, byte, len);
 }
 
-/*
- * When return minus value, given argument is not MIDI status.
- * When return 0, given argument is a beginning of system exclusive.
- * When return the others, given argument is MIDI data.
- */
+ 
 static inline int calculate_message_bytes(u8 status)
 {
 	switch (status) {
-	case 0xf6:	/* Tune request. */
-	case 0xf8:	/* Timing clock. */
-	case 0xfa:	/* Start. */
-	case 0xfb:	/* Continue. */
-	case 0xfc:	/* Stop. */
-	case 0xfe:	/* Active sensing. */
-	case 0xff:	/* System reset. */
+	case 0xf6:	 
+	case 0xf8:	 
+	case 0xfa:	 
+	case 0xfb:	 
+	case 0xfc:	 
+	case 0xfe:	 
+	case 0xff:	 
 		return 1;
-	case 0xf1:	/* MIDI time code quarter frame. */
-	case 0xf3:	/* Song select. */
+	case 0xf1:	 
+	case 0xf3:	 
 		return 2;
-	case 0xf2:	/* Song position pointer. */
+	case 0xf2:	 
 		return 3;
-	case 0xf0:	/* Exclusive. */
+	case 0xf0:	 
 		return 0;
-	case 0xf7:	/* End of exclusive. */
+	case 0xf7:	 
 		break;
-	case 0xf4:	/* Undefined. */
-	case 0xf5:	/* Undefined. */
-	case 0xf9:	/* Undefined. */
-	case 0xfd:	/* Undefined. */
+	case 0xf4:	 
+	case 0xf5:	 
+	case 0xf9:	 
+	case 0xfd:	 
 		break;
 	default:
 		switch (status & 0xf0) {
-		case 0x80:	/* Note on. */
-		case 0x90:	/* Note off. */
-		case 0xa0:	/* Polyphonic key pressure. */
-		case 0xb0:	/* Control change and Mode change. */
-		case 0xe0:	/* Pitch bend change. */
+		case 0x80:	 
+		case 0x90:	 
+		case 0xa0:	 
+		case 0xb0:	 
+		case 0xe0:	 
 			return 3;
-		case 0xc0:	/* Program change. */
-		case 0xd0:	/* Channel pressure. */
+		case 0xc0:	 
+		case 0xd0:	 
 			return 2;
 		default:
 		break;
@@ -501,7 +497,7 @@ static int latter_fill_midi_msg(struct snd_ff *ff,
 			if (consumed < calculate_message_bytes(buf[1]))
 				return 0;
 		} else {
-			// The beginning of exclusives.
+			
 			ff->on_sysex[port] = true;
 		}
 
@@ -509,13 +505,13 @@ static int latter_fill_midi_msg(struct snd_ff *ff,
 	} else {
 		if (buf[1] != 0xf7) {
 			if (buf[2] == 0xf7 || buf[3] == 0xf7) {
-				// Transfer end code at next time.
+				
 				consumed -= 1;
 			}
 
 			buf[0] |= consumed;
 		} else {
-			// The end of exclusives.
+			
 			ff->on_sysex[port] = false;
 			consumed = 1;
 			buf[0] |= 0x0f;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright 2020 NXP */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -77,7 +77,7 @@ static enum hrtimer_restart gate_timer_func(struct hrtimer *timer)
 
 	next = gact->next_entry;
 
-	/* cycle start, clear pending bit, clear total octets */
+	 
 	gact->current_gate_status = next->gate_state ? GATE_ACT_GATE_OPEN : 0;
 	gact->current_entry_octets = 0;
 	gact->current_max_octets = next->maxoctets;
@@ -448,9 +448,7 @@ chain_put:
 	if (goto_ch)
 		tcf_chain_put_by_act(goto_ch);
 release_idr:
-	/* action is not inserted in any list: it's safe to init hitimer
-	 * without taking tcf_lock.
-	 */
+	 
 	if (ret == ACT_P_CREATED)
 		gate_setup_timer(gact, gact->param.tcfg_basetime,
 				 gact->tk_offset, gact->param.tcfg_clockid,

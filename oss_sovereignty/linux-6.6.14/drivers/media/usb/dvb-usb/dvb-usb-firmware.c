@@ -1,21 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-/* dvb-usb-firmware.c is part of the DVB USB library.
- *
- * Copyright (C) 2004-6 Patrick Boettcher (patrick.boettcher@posteo.de)
- * see dvb-usb-init.c for copyright information.
- *
- * This file contains functions for downloading the firmware to Cypress FX 1 and 2 based devices.
- *
- * FIXME: This part does actually not belong to dvb-usb, but to the usb-subsystem.
- */
+
+ 
 #include "dvb-usb-common.h"
 
 #include <linux/usb.h>
 
 struct usb_cypress_controller {
 	int id;
-	const char *name;       /* name of the usb controller */
-	u16 cpu_cs_register;    /* needs to be restarted, when the firmware has been downloaded. */
+	const char *name;        
+	u16 cpu_cs_register;     
 };
 
 static struct usb_cypress_controller cypress[] = {
@@ -25,9 +17,7 @@ static struct usb_cypress_controller cypress[] = {
 	{ .id = CYPRESS_FX2,     .name = "Cypress FX2",     .cpu_cs_register = 0xe600 },
 };
 
-/*
- * load a firmware packet to the device
- */
+ 
 static int usb_cypress_writemem(struct usb_device *udev,u16 addr,u8 *data, u8 len)
 {
 	return usb_control_msg(udev, usb_sndctrlpipe(udev,0),
@@ -46,7 +36,7 @@ int usb_cypress_load_firmware(struct usb_device *udev, const struct firmware *fw
 		return -ENOMEM;
 	hx = (struct hexline *)buf;
 
-	/* stop the CPU */
+	 
 	buf[0] = 1;
 	if (usb_cypress_writemem(udev, cpu_cs_register, buf, 1) != 1)
 		err("could not stop the USB controller CPU.");
@@ -69,7 +59,7 @@ int usb_cypress_load_firmware(struct usb_device *udev, const struct firmware *fw
 	}
 
 	if (ret == 0) {
-		/* restart the CPU */
+		 
 		buf[0] = 0;
 		if (usb_cypress_writemem(udev, cpu_cs_register, buf, 1) != 1) {
 			err("could not restart the USB controller CPU.");
@@ -140,10 +130,9 @@ int dvb_usb_get_hexline(const struct firmware *fw, struct hexline *hx,
 	hx->type = b[3];
 
 	if (hx->type == 0x04) {
-		/* b[4] and b[5] are the Extended linear address record data field */
+		 
 		hx->addr |= (b[4] << 24) | (b[5] << 16);
-/*		hx->len -= 2;
-		data_offs += 2; */
+ 
 	}
 	memcpy(hx->data,&b[data_offs],hx->len);
 	hx->chk = b[hx->len + data_offs];

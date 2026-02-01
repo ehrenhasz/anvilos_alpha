@@ -1,17 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_PROJID_H
 #define _LINUX_PROJID_H
 
-/*
- * A set of types for the internal kernel types representing project ids.
- *
- * The types defined in this header allow distinguishing which project ids in
- * the kernel are values used by userspace and which project id values are
- * the internal kernel values.  With the addition of user namespaces the values
- * can be different.  Using the type system makes it possible for the compiler
- * to detect when we overlook these differences.
- *
- */
+ 
 #include <linux/types.h>
 
 struct user_namespace;
@@ -85,6 +76,6 @@ static inline bool kprojid_has_mapping(struct user_namespace *ns, kprojid_t proj
 	return true;
 }
 
-#endif /* CONFIG_USER_NS */
+#endif  
 
-#endif /* _LINUX_PROJID_H */
+#endif  

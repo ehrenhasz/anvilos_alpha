@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Implement functions for 802.11i Key management
- *
- * Author: Jerry Chen
- *
- * Date: May 29, 2003
- *
- */
+
+ 
 
 #include "key.h"
 #include "mac.h"
@@ -45,7 +35,7 @@ static int vnt_set_keymode(struct ieee80211_hw *hw, u8 *mac_addr,
 
 	switch (key_type) {
 	case VNT_KEY_DEFAULTKEY:
-		/* default key last entry */
+		 
 		entry = MAX_KEY_TABLE - 1;
 		key->hw_key_idx = entry;
 		fallthrough;

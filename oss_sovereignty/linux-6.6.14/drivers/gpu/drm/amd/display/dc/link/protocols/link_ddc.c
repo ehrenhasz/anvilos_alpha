@@ -1,35 +1,6 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- *
- * This file implements generic display communication protocols such as i2c, aux
- * and scdc. The file should not contain any specific applications of these
- * protocols such as display capability query, detection, or handshaking such as
- * link training.
- */
+ 
 #include "link_ddc.h"
 #include "vector.h"
 #include "dce/dce_aux.h"
@@ -41,7 +12,7 @@
 #define DC_LOGGER_INIT(logger)
 
 static const uint8_t DP_VGA_DONGLE_BRANCH_DEV_NAME[] = "DpVga";
-/* DP to Dual link DVI converter */
+ 
 static const uint8_t DP_DVI_CONVERTER_ID_4[] = "m2DVIa";
 static const uint8_t DP_DVI_CONVERTER_ID_5[] = "3393N2";
 
@@ -262,7 +233,7 @@ uint32_t link_get_aux_defer_delay(struct ddc_service *ddc)
 			defer_delay =
 				defer_delay_converter_wa(ddc, defer_delay);
 
-		} else /*sink has a delay different from an Active Converter*/
+		} else  
 			defer_delay = 0;
 		break;
 	case DDC_TRANSACTION_TYPE_I2C_OVER_AUX_WITH_DEFER:
@@ -298,7 +269,7 @@ static bool submit_aux_command(struct ddc_service *ddc,
 		current_payload.defer_delay = payload->defer_delay;
 		current_payload.i2c_over_aux = payload->i2c_over_aux;
 		current_payload.length = payload_length;
-		/* set mot (middle of transaction) to false if it is the last payload */
+		 
 		current_payload.mot = is_end_of_payload ? payload->mot:true;
 		current_payload.write_status_update = false;
 		current_payload.reply = payload->reply;
@@ -347,9 +318,7 @@ bool link_query_ddc_data(
 
 		if (write_size != 0) {
 			payload.write = true;
-			/* should not set mot (middle of transaction) to 0
-			 * if there are pending read payloads
-			 */
+			 
 			payload.mot = !(read_size == 0);
 			payload.length = write_size;
 			payload.data = write_buf;
@@ -359,9 +328,7 @@ bool link_query_ddc_data(
 
 		if (read_size != 0 && success) {
 			payload.write = false;
-			/* should set mot (middle of transaction) to 0
-			 * since it is the last payload to send
-			 */
+			 
 			payload.mot = false;
 			payload.length = read_size;
 			payload.data = read_buf;
@@ -418,28 +385,28 @@ uint32_t link_get_fixed_vs_pe_retimer_write_address(struct dc_link *link)
 	uint8_t offset;
 
 	switch (link->dpcd_caps.lttpr_caps.phy_repeater_cnt) {
-	case 0x80: // 1 lttpr repeater
+	case 0x80: 
 		offset =  1;
 		break;
-	case 0x40: // 2 lttpr repeaters
+	case 0x40: 
 		offset = 2;
 		break;
-	case 0x20: // 3 lttpr repeaters
+	case 0x20: 
 		offset = 3;
 		break;
-	case 0x10: // 4 lttpr repeaters
+	case 0x10: 
 		offset = 4;
 		break;
-	case 0x08: // 5 lttpr repeaters
+	case 0x08: 
 		offset = 5;
 		break;
-	case 0x04: // 6 lttpr repeaters
+	case 0x04: 
 		offset = 6;
 		break;
-	case 0x02: // 7 lttpr repeaters
+	case 0x02: 
 		offset = 7;
 		break;
-	case 0x01: // 8 lttpr repeaters
+	case 0x01: 
 		offset = 8;
 		break;
 	default:
@@ -510,7 +477,7 @@ bool try_to_configure_aux_timeout(struct ddc_service *ddc,
 	if ((ddc->link->chip_caps & EXT_DISPLAY_PATH_CAPS__DP_FIXED_VS_EN) &&
 			!ddc->link->dc->debug.disable_fixed_vs_aux_timeout_wa &&
 			ddc->ctx->dce_version == DCN_VERSION_3_1) {
-		/* Fixed VS workaround for AUX timeout */
+		 
 		const uint32_t fixed_vs_address = 0xF004F;
 		const uint8_t fixed_vs_data[4] = {0x1, 0x22, 0x63, 0xc};
 
@@ -522,7 +489,7 @@ bool try_to_configure_aux_timeout(struct ddc_service *ddc,
 		timeout = 3072;
 	}
 
-	/* Do not try to access nonexistent DDC pin. */
+	 
 	if (ddc->link->ep_type != DISPLAY_ENDPOINT_PHY)
 		return true;
 
@@ -548,7 +515,7 @@ void write_scdc_data(struct ddc_service *ddc_service,
 	uint8_t offset = HDMI_SCDC_SINK_VERSION;
 	uint8_t sink_version = 0;
 	uint8_t write_buffer[2] = {0};
-	/*Lower than 340 Scramble bit from SCDC caps*/
+	 
 
 	if (ddc_service->link->local_sink &&
 		ddc_service->link->local_sink->edid_caps.panel_patch.skip_scdc_overwrite)
@@ -557,12 +524,12 @@ void write_scdc_data(struct ddc_service *ddc_service,
 	link_query_ddc_data(ddc_service, slave_address, &offset,
 			sizeof(offset), &sink_version, sizeof(sink_version));
 	if (sink_version == 1) {
-		/*Source Version = 1*/
+		 
 		write_buffer[0] = HDMI_SCDC_SOURCE_VERSION;
 		write_buffer[1] = 1;
 		link_query_ddc_data(ddc_service, slave_address,
 				write_buffer, sizeof(write_buffer), NULL, 0);
-		/*Read Request from SCDC caps*/
+		 
 	}
 	write_buffer[0] = HDMI_SCDC_TMDS_CONFIG;
 

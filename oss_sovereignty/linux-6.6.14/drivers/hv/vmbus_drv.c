@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2009, Microsoft Corporation.
- *
- * Authors:
- *   Haiyang Zhang <haiyangz@microsoft.com>
- *   Hank Janssen  <hjanssen@microsoft.com>
- *   K. Y. Srinivasan <kys@microsoft.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/init.h>
@@ -51,19 +44,11 @@ static int hyperv_cpuhp_online;
 
 static long __percpu *vmbus_evt;
 
-/* Values parsed from ACPI DSDT */
+ 
 int vmbus_irq;
 int vmbus_interrupt;
 
-/*
- * The panic notifier below is responsible solely for unloading the
- * vmbus connection, which is necessary in a panic event.
- *
- * Notice an intrincate relation of this notifier with Hyper-V
- * framebuffer panic notifier exists - we need vmbus connection alive
- * there in order to succeed, so we need to order both with each other
- * [see hvfb_on_panic()] - this is done using notifiers' priorities.
- */
+ 
 static int hv_panic_vmbus_unload(struct notifier_block *nb, unsigned long val,
 			      void *args)
 {
@@ -72,7 +57,7 @@ static int hv_panic_vmbus_unload(struct notifier_block *nb, unsigned long val,
 }
 static struct notifier_block hyperv_panic_vmbus_unload_block = {
 	.notifier_call	= hv_panic_vmbus_unload,
-	.priority	= INT_MIN + 1, /* almost the latest one to execute */
+	.priority	= INT_MIN + 1,  
 };
 
 static const char *fb_mmio_name = "fb_range";
@@ -558,7 +543,7 @@ static ssize_t driver_override_show(struct device *dev,
 }
 static DEVICE_ATTR_RW(driver_override);
 
-/* Set up per device attributes in /sys/bus/vmbus/devices/<bus device> */
+ 
 static struct attribute *vmbus_dev_attrs[] = {
 	&dev_attr_id.attr,
 	&dev_attr_state.attr,
@@ -592,17 +577,14 @@ static struct attribute *vmbus_dev_attrs[] = {
 	NULL,
 };
 
-/*
- * Device-level attribute_group callback function. Returns the permission for
- * each attribute, and returns 0 if an attribute is not visible.
- */
+ 
 static umode_t vmbus_dev_attr_is_visible(struct kobject *kobj,
 					 struct attribute *attr, int idx)
 {
 	struct device *dev = kobj_to_dev(kobj);
 	const struct hv_device *hv_dev = device_to_hv_device(dev);
 
-	/* Hide the monitor attributes if the monitor mechanism is not used. */
+	 
 	if (!hv_dev->channel->offermsg.monitor_allocated &&
 	    (attr == &dev_attr_monitor_id.attr ||
 	     attr == &dev_attr_server_monitor_pending.attr ||
@@ -622,7 +604,7 @@ static const struct attribute_group vmbus_dev_group = {
 };
 __ATTRIBUTE_GROUPS(vmbus_dev);
 
-/* Set up the attribute for /sys/bus/vmbus/hibernation */
+ 
 static ssize_t hibernation_show(const struct bus_type *bus, char *buf)
 {
 	return sprintf(buf, "%d\n", !!hv_is_hibernation_supported());
@@ -639,17 +621,7 @@ static const struct attribute_group vmbus_bus_group = {
 };
 __ATTRIBUTE_GROUPS(vmbus_bus);
 
-/*
- * vmbus_uevent - add uevent for our device
- *
- * This routine is invoked when a device is added or removed on the vmbus to
- * generate a uevent to udev in the userspace. The udev will then look at its
- * rule and the uevent generated here to load the appropriate driver
- *
- * The alias string will be of the form vmbus:guid where guid is the string
- * representation of the device guid (each byte of the guid will be
- * represented with two hex characters.
- */
+ 
 static int vmbus_uevent(const struct device *device, struct kobj_uevent_env *env)
 {
 	const struct hv_device *dev = device_to_hv_device(device);
@@ -662,7 +634,7 @@ static const struct hv_vmbus_device_id *
 hv_vmbus_dev_match(const struct hv_vmbus_device_id *id, const guid_t *guid)
 {
 	if (id == NULL)
-		return NULL; /* empty device table */
+		return NULL;  
 
 	for (; !guid_is_null(&id->guid); id++)
 		if (guid_equal(&id->guid, guid))
@@ -691,33 +663,30 @@ hv_vmbus_dynid_match(struct hv_driver *drv, const guid_t *guid)
 
 static const struct hv_vmbus_device_id vmbus_device_null;
 
-/*
- * Return a matching hv_vmbus_device_id pointer.
- * If there is no match, return NULL.
- */
+ 
 static const struct hv_vmbus_device_id *hv_vmbus_get_id(struct hv_driver *drv,
 							struct hv_device *dev)
 {
 	const guid_t *guid = &dev->dev_type;
 	const struct hv_vmbus_device_id *id;
 
-	/* When driver_override is set, only bind to the matching driver */
+	 
 	if (dev->driver_override && strcmp(dev->driver_override, drv->name))
 		return NULL;
 
-	/* Look at the dynamic ids first, before the static ones */
+	 
 	id = hv_vmbus_dynid_match(drv, guid);
 	if (!id)
 		id = hv_vmbus_dev_match(drv->id_table, guid);
 
-	/* driver_override will always match, send a dummy id */
+	 
 	if (!id && dev->driver_override)
 		id = &vmbus_device_null;
 
 	return id;
 }
 
-/* vmbus_add_dynid - add a new device ID to this driver and re-probe devices */
+ 
 static int vmbus_add_dynid(struct hv_driver *drv, guid_t *guid)
 {
 	struct vmbus_dynid *dynid;
@@ -747,11 +716,7 @@ static void vmbus_free_dynids(struct hv_driver *drv)
 	spin_unlock(&drv->dynids.lock);
 }
 
-/*
- * store_new_id - sysfs frontend to vmbus_add_dynid()
- *
- * Allow GUIDs to be added to an existing driver via sysfs.
- */
+ 
 static ssize_t new_id_store(struct device_driver *driver, const char *buf,
 			    size_t count)
 {
@@ -773,11 +738,7 @@ static ssize_t new_id_store(struct device_driver *driver, const char *buf,
 }
 static DRIVER_ATTR_WO(new_id);
 
-/*
- * store_remove_id - remove a PCI device ID from this driver
- *
- * Removes a dynamic pci device ID to this driver.
- */
+ 
 static ssize_t remove_id_store(struct device_driver *driver, const char *buf,
 			       size_t count)
 {
@@ -816,15 +777,13 @@ static struct attribute *vmbus_drv_attrs[] = {
 ATTRIBUTE_GROUPS(vmbus_drv);
 
 
-/*
- * vmbus_match - Attempt to match the specified device to the specified driver
- */
+ 
 static int vmbus_match(struct device *device, struct device_driver *driver)
 {
 	struct hv_driver *drv = drv_to_hv_drv(driver);
 	struct hv_device *hv_dev = device_to_hv_device(device);
 
-	/* The hv_sock driver handles all hv_sock offers. */
+	 
 	if (is_hvsock_channel(hv_dev->channel))
 		return drv->hvsock;
 
@@ -834,9 +793,7 @@ static int vmbus_match(struct device *device, struct device_driver *driver)
 	return 0;
 }
 
-/*
- * vmbus_probe - Add the new vmbus's child device
- */
+ 
 static int vmbus_probe(struct device *child_device)
 {
 	int ret = 0;
@@ -860,24 +817,16 @@ static int vmbus_probe(struct device *child_device)
 	return ret;
 }
 
-/*
- * vmbus_dma_configure -- Configure DMA coherence for VMbus device
- */
+ 
 static int vmbus_dma_configure(struct device *child_device)
 {
-	/*
-	 * On ARM64, propagate the DMA coherence setting from the top level
-	 * VMbus ACPI device to the child VMbus device being added here.
-	 * On x86/x64 coherence is assumed and these calls have no effect.
-	 */
+	 
 	hv_setup_dma_ops(child_device,
 		device_get_dma_attr(hv_dev) == DEV_DMA_COHERENT);
 	return 0;
 }
 
-/*
- * vmbus_remove - Remove a vmbus device
- */
+ 
 static void vmbus_remove(struct device *child_device)
 {
 	struct hv_driver *drv;
@@ -890,16 +839,14 @@ static void vmbus_remove(struct device *child_device)
 	}
 }
 
-/*
- * vmbus_shutdown - Shutdown a vmbus device
- */
+ 
 static void vmbus_shutdown(struct device *child_device)
 {
 	struct hv_driver *drv;
 	struct hv_device *dev = device_to_hv_device(child_device);
 
 
-	/* The device may not be attached yet */
+	 
 	if (!child_device->driver)
 		return;
 
@@ -910,15 +857,13 @@ static void vmbus_shutdown(struct device *child_device)
 }
 
 #ifdef CONFIG_PM_SLEEP
-/*
- * vmbus_suspend - Suspend a vmbus device
- */
+ 
 static int vmbus_suspend(struct device *child_device)
 {
 	struct hv_driver *drv;
 	struct hv_device *dev = device_to_hv_device(child_device);
 
-	/* The device may not be attached yet */
+	 
 	if (!child_device->driver)
 		return 0;
 
@@ -929,15 +874,13 @@ static int vmbus_suspend(struct device *child_device)
 	return drv->suspend(dev);
 }
 
-/*
- * vmbus_resume - Resume a vmbus device
- */
+ 
 static int vmbus_resume(struct device *child_device)
 {
 	struct hv_driver *drv;
 	struct hv_device *dev = device_to_hv_device(child_device);
 
-	/* The device may not be attached yet */
+	 
 	if (!child_device->driver)
 		return 0;
 
@@ -950,11 +893,9 @@ static int vmbus_resume(struct device *child_device)
 #else
 #define vmbus_suspend NULL
 #define vmbus_resume NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
-/*
- * vmbus_device_release - Final callback release of the vmbus child device
- */
+ 
 static void vmbus_device_release(struct device *device)
 {
 	struct hv_device *hv_dev = device_to_hv_device(device);
@@ -968,15 +909,7 @@ static void vmbus_device_release(struct device *device)
 	kfree(hv_dev);
 }
 
-/*
- * Note: we must use the "noirq" ops: see the comment before vmbus_bus_pm.
- *
- * suspend_noirq/resume_noirq are set to NULL to support Suspend-to-Idle: we
- * shouldn't suspend the vmbus devices upon Suspend-to-Idle, otherwise there
- * is no way to wake up a Generation-2 VM.
- *
- * The other 4 ops are for hibernation.
- */
+ 
 
 static const struct dev_pm_ops vmbus_pm = {
 	.suspend_noirq	= NULL,
@@ -987,7 +920,7 @@ static const struct dev_pm_ops vmbus_pm = {
 	.restore_noirq	= vmbus_resume,
 };
 
-/* The one and only one */
+ 
 static struct bus_type  hv_bus = {
 	.name =		"vmbus",
 	.match =		vmbus_match,
@@ -1014,7 +947,7 @@ static void vmbus_onmessage_work(struct work_struct *work)
 {
 	struct onmessage_work_context *ctx;
 
-	/* Do not process messages if we're in DISCONNECTED state */
+	 
 	if (vmbus_connection.conn_state == DISCONNECTED)
 		return;
 
@@ -1038,24 +971,15 @@ void vmbus_on_msg_dpc(unsigned long data)
 	__u8 payload_size;
 	u32 message_type;
 
-	/*
-	 * 'enum vmbus_channel_message_type' is supposed to always be 'u32' as
-	 * it is being used in 'struct vmbus_channel_message_header' definition
-	 * which is supposed to match hypervisor ABI.
-	 */
+	 
 	BUILD_BUG_ON(sizeof(enum vmbus_channel_message_type) != sizeof(u32));
 
-	/*
-	 * Since the message is in memory shared with the host, an erroneous or
-	 * malicious Hyper-V could modify the message while vmbus_on_msg_dpc()
-	 * or individual message handlers are executing; to prevent this, copy
-	 * the message into private memory.
-	 */
+	 
 	memcpy(&msg_copy, msg, sizeof(struct hv_message));
 
 	message_type = msg_copy.header.message_type;
 	if (message_type == HVMSG_NONE)
-		/* no msg */
+		 
 		return;
 
 	hdr = (struct vmbus_channel_message_header *)msg_copy.u.payload;
@@ -1093,61 +1017,17 @@ void vmbus_on_msg_dpc(unsigned long data)
 		ctx->msg.header = msg_copy.header;
 		memcpy(&ctx->msg.payload, msg_copy.u.payload, payload_size);
 
-		/*
-		 * The host can generate a rescind message while we
-		 * may still be handling the original offer. We deal with
-		 * this condition by relying on the synchronization provided
-		 * by offer_in_progress and by channel_mutex.  See also the
-		 * inline comments in vmbus_onoffer_rescind().
-		 */
+		 
 		switch (msgtype) {
 		case CHANNELMSG_RESCIND_CHANNELOFFER:
-			/*
-			 * If we are handling the rescind message;
-			 * schedule the work on the global work queue.
-			 *
-			 * The OFFER message and the RESCIND message should
-			 * not be handled by the same serialized work queue,
-			 * because the OFFER handler may call vmbus_open(),
-			 * which tries to open the channel by sending an
-			 * OPEN_CHANNEL message to the host and waits for
-			 * the host's response; however, if the host has
-			 * rescinded the channel before it receives the
-			 * OPEN_CHANNEL message, the host just silently
-			 * ignores the OPEN_CHANNEL message; as a result,
-			 * the guest's OFFER handler hangs for ever, if we
-			 * handle the RESCIND message in the same serialized
-			 * work queue: the RESCIND handler can not start to
-			 * run before the OFFER handler finishes.
-			 */
+			 
 			if (vmbus_connection.ignore_any_offer_msg)
 				break;
 			queue_work(vmbus_connection.rescind_work_queue, &ctx->work);
 			break;
 
 		case CHANNELMSG_OFFERCHANNEL:
-			/*
-			 * The host sends the offer message of a given channel
-			 * before sending the rescind message of the same
-			 * channel.  These messages are sent to the guest's
-			 * connect CPU; the guest then starts processing them
-			 * in the tasklet handler on this CPU:
-			 *
-			 * VMBUS_CONNECT_CPU
-			 *
-			 * [vmbus_on_msg_dpc()]
-			 * atomic_inc()  // CHANNELMSG_OFFERCHANNEL
-			 * queue_work()
-			 * ...
-			 * [vmbus_on_msg_dpc()]
-			 * schedule_work()  // CHANNELMSG_RESCIND_CHANNELOFFER
-			 *
-			 * We rely on the memory-ordering properties of the
-			 * queue_work() and schedule_work() primitives, which
-			 * guarantee that the atomic increment will be visible
-			 * to the CPUs which will execute the offer & rescind
-			 * works by the time these works will start execution.
-			 */
+			 
 			if (vmbus_connection.ignore_any_offer_msg)
 				break;
 			atomic_inc(&vmbus_connection.offer_in_progress);
@@ -1164,10 +1044,7 @@ msg_handled:
 }
 
 #ifdef CONFIG_PM_SLEEP
-/*
- * Fake RESCIND_CHANNEL messages to clean up hv_sock channels by force for
- * hibernation, because hv_sock connections can not persist across hibernation.
- */
+ 
 static void vmbus_force_channel_rescinded(struct vmbus_channel *channel)
 {
 	struct onmessage_work_context *ctx;
@@ -1175,21 +1052,15 @@ static void vmbus_force_channel_rescinded(struct vmbus_channel *channel)
 
 	WARN_ON(!is_hvsock_channel(channel));
 
-	/*
-	 * Allocation size is small and the allocation should really not fail,
-	 * otherwise the state of the hv_sock connections ends up in limbo.
-	 */
+	 
 	ctx = kzalloc(sizeof(*ctx) + sizeof(*rescind),
 		      GFP_KERNEL | __GFP_NOFAIL);
 
-	/*
-	 * So far, these are not really used by Linux. Just set them to the
-	 * reasonable values conforming to the definitions of the fields.
-	 */
+	 
 	ctx->msg.header.message_type = 1;
 	ctx->msg.header.payload_size = sizeof(*rescind);
 
-	/* These values are actually used by Linux. */
+	 
 	rescind = (struct vmbus_channel_rescind_offer *)ctx->msg.payload;
 	rescind->header.msgtype = CHANNELMSG_RESCIND_CHANNELOFFER;
 	rescind->child_relid = channel->offermsg.child_relid;
@@ -1198,20 +1069,15 @@ static void vmbus_force_channel_rescinded(struct vmbus_channel *channel)
 
 	queue_work(vmbus_connection.work_queue, &ctx->work);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
-/*
- * Schedule all channels with events pending
- */
+ 
 static void vmbus_chan_sched(struct hv_per_cpu_context *hv_cpu)
 {
 	unsigned long *recv_int_page;
 	u32 maxbits, relid;
 
-	/*
-	 * The event page can be directly checked to get the id of
-	 * the channel that has the interrupt pending.
-	 */
+	 
 	void *page_addr = hv_cpu->synic_event_page;
 	union hv_synic_event_flags *event
 		= (union hv_synic_event_flags *)page_addr +
@@ -1230,19 +1096,14 @@ static void vmbus_chan_sched(struct hv_per_cpu_context *hv_cpu)
 		if (!sync_test_and_clear_bit(relid, recv_int_page))
 			continue;
 
-		/* Special case - vmbus channel protocol msg */
+		 
 		if (relid == 0)
 			continue;
 
-		/*
-		 * Pairs with the kfree_rcu() in vmbus_chan_release().
-		 * Guarantees that the channel data structure doesn't
-		 * get freed while the channel pointer below is being
-		 * dereferenced.
-		 */
+		 
 		rcu_read_lock();
 
-		/* Find channel based on relid */
+		 
 		channel = relid2channel(relid);
 		if (channel == NULL)
 			goto sched_unlock_rcu;
@@ -1250,13 +1111,7 @@ static void vmbus_chan_sched(struct hv_per_cpu_context *hv_cpu)
 		if (channel->rescind)
 			goto sched_unlock_rcu;
 
-		/*
-		 * Make sure that the ring buffer data structure doesn't get
-		 * freed while we dereference the ring buffer pointer.  Test
-		 * for the channel's onchannel_callback being NULL within a
-		 * sched_lock critical section.  See also the inline comments
-		 * in vmbus_reset_channel_cb().
-		 */
+		 
 		spin_lock(&channel->sched_lock);
 
 		callback_fn = channel->onchannel_callback;
@@ -1298,7 +1153,7 @@ static void vmbus_isr(void)
 	page_addr = hv_cpu->synic_message_page;
 	msg = (struct hv_message *)page_addr + VMBUS_MESSAGE_SINT;
 
-	/* Check if there are actual msgs to be processed */
+	 
 	if (msg->header.message_type != HVMSG_NONE) {
 		if (msg->header.message_type == HVMSG_TIMER_EXPIRED) {
 			hv_stimer0_isr();
@@ -1316,14 +1171,7 @@ static irqreturn_t vmbus_percpu_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * vmbus_bus_init -Main vmbus driver initialization routine.
- *
- * Here, we
- *	- initialize the vmbus driver context
- *	- invoke the vmbus hv main init routine
- *	- retrieve the channel offers
- */
+ 
 static int vmbus_bus_init(void)
 {
 	int ret;
@@ -1338,14 +1186,7 @@ static int vmbus_bus_init(void)
 	if (ret)
 		return ret;
 
-	/*
-	 * VMbus interrupts are best modeled as per-cpu interrupts. If
-	 * on an architecture with support for per-cpu IRQs (e.g. ARM64),
-	 * allocate a per-cpu IRQ using standard Linux kernel functionality.
-	 * If not on such an architecture (e.g., x86/x64), then rely on
-	 * code in the arch-specific portion of the code tree to connect
-	 * the VMbus interrupt handler.
-	 */
+	 
 
 	if (vmbus_irq == -1) {
 		hv_setup_vmbus_handler(vmbus_isr);
@@ -1365,10 +1206,7 @@ static int vmbus_bus_init(void)
 	if (ret)
 		goto err_alloc;
 
-	/*
-	 * Initialize the per-cpu interrupt state and stimer state.
-	 * Then connect to the host.
-	 */
+	 
 	ret = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "hyperv/vmbus:online",
 				hv_synic_init, hv_synic_cleanup);
 	if (ret < 0)
@@ -1379,10 +1217,7 @@ static int vmbus_bus_init(void)
 	if (ret)
 		goto err_connect;
 
-	/*
-	 * Always register the vmbus unload panic notifier because we
-	 * need to shut the VMbus channel connection on panic.
-	 */
+	 
 	atomic_notifier_chain_register(&panic_notifier_list,
 			       &hyperv_panic_vmbus_unload_block);
 
@@ -1405,17 +1240,7 @@ err_setup:
 	return ret;
 }
 
-/**
- * __vmbus_driver_register() - Register a vmbus's driver
- * @hv_driver: Pointer to driver structure you want to register
- * @owner: owner module of the drv
- * @mod_name: module name string
- *
- * Registers the given driver with Linux through the 'driver_register()' call
- * and sets up the hyper-v vmbus handling for this driver.
- * It will return the state of the 'driver_register()' call.
- *
- */
+ 
 int __vmbus_driver_register(struct hv_driver *hv_driver, struct module *owner, const char *mod_name)
 {
 	int ret;
@@ -1440,14 +1265,7 @@ int __vmbus_driver_register(struct hv_driver *hv_driver, struct module *owner, c
 }
 EXPORT_SYMBOL_GPL(__vmbus_driver_register);
 
-/**
- * vmbus_driver_unregister() - Unregister a vmbus's driver
- * @hv_driver: Pointer to driver structure you want to
- *             un-register
- *
- * Un-register the given driver that was previous registered with a call to
- * vmbus_driver_register()
- */
+ 
 void vmbus_driver_unregister(struct hv_driver *hv_driver)
 {
 	pr_info("unregistering driver %s\n", hv_driver->name);
@@ -1460,9 +1278,7 @@ void vmbus_driver_unregister(struct hv_driver *hv_driver)
 EXPORT_SYMBOL_GPL(vmbus_driver_unregister);
 
 
-/*
- * Called when last reference to channel is gone.
- */
+ 
 static void vmbus_chan_release(struct kobject *kobj)
 {
 	struct vmbus_channel *channel
@@ -1605,14 +1421,14 @@ static ssize_t target_cpu_store(struct vmbus_channel *channel,
 	if (sscanf(buf, "%uu", &target_cpu) != 1)
 		return -EIO;
 
-	/* Validate target_cpu for the cpumask_test_cpu() operation below. */
+	 
 	if (target_cpu >= nr_cpumask_bits)
 		return -EINVAL;
 
 	if (!cpumask_test_cpu(target_cpu, housekeeping_cpumask(HK_TYPE_MANAGED_IRQ)))
 		return -EINVAL;
 
-	/* No CPUs should come up or down during this. */
+	 
 	cpus_read_lock();
 
 	if (!cpu_online(target_cpu)) {
@@ -1620,34 +1436,10 @@ static ssize_t target_cpu_store(struct vmbus_channel *channel,
 		return -EINVAL;
 	}
 
-	/*
-	 * Synchronizes target_cpu_store() and channel closure:
-	 *
-	 * { Initially: state = CHANNEL_OPENED }
-	 *
-	 * CPU1				CPU2
-	 *
-	 * [target_cpu_store()]		[vmbus_disconnect_ring()]
-	 *
-	 * LOCK channel_mutex		LOCK channel_mutex
-	 * LOAD r1 = state		LOAD r2 = state
-	 * IF (r1 == CHANNEL_OPENED)	IF (r2 == CHANNEL_OPENED)
-	 *   SEND MODIFYCHANNEL		  STORE state = CHANNEL_OPEN
-	 *   [...]			  SEND CLOSECHANNEL
-	 * UNLOCK channel_mutex		UNLOCK channel_mutex
-	 *
-	 * Forbids: r1 == r2 == CHANNEL_OPENED (i.e., CPU1's LOCK precedes
-	 * 		CPU2's LOCK) && CPU2's SEND precedes CPU1's SEND
-	 *
-	 * Note.  The host processes the channel messages "sequentially", in
-	 * the order in which they are received on a per-partition basis.
-	 */
+	 
 	mutex_lock(&vmbus_connection.channel_mutex);
 
-	/*
-	 * Hyper-V will ignore MODIFYCHANNEL messages for "non-open" channels;
-	 * avoid sending the message and fail here for such channels.
-	 */
+	 
 	if (channel->state != CHANNEL_OPENED_STATE) {
 		ret = -EIO;
 		goto cpu_store_unlock;
@@ -1663,28 +1455,15 @@ static ssize_t target_cpu_store(struct vmbus_channel *channel,
 		goto cpu_store_unlock;
 	}
 
-	/*
-	 * For version before VERSION_WIN10_V5_3, the following warning holds:
-	 *
-	 * Warning.  At this point, there is *no* guarantee that the host will
-	 * have successfully processed the vmbus_send_modifychannel() request.
-	 * See the header comment of vmbus_send_modifychannel() for more info.
-	 *
-	 * Lags in the processing of the above vmbus_send_modifychannel() can
-	 * result in missed interrupts if the "old" target CPU is taken offline
-	 * before Hyper-V starts sending interrupts to the "new" target CPU.
-	 * But apart from this offlining scenario, the code tolerates such
-	 * lags.  It will function correctly even if a channel interrupt comes
-	 * in on a CPU that is different from the channel target_cpu value.
-	 */
+	 
 
 	channel->target_cpu = target_cpu;
 
-	/* See init_vp_index(). */
+	 
 	if (hv_is_perf_channel(channel))
 		hv_update_allocated_cpus(origin_cpu, target_cpu);
 
-	/* Currently set only for storvsc channels. */
+	 
 	if (channel->change_target_cpu_callback) {
 		(*channel->change_target_cpu_callback)(channel,
 				origin_cpu, target_cpu);
@@ -1793,17 +1572,14 @@ static struct attribute *vmbus_chan_attrs[] = {
 	NULL
 };
 
-/*
- * Channel-level attribute_group callback function. Returns the permission for
- * each attribute, and returns 0 if an attribute is not visible.
- */
+ 
 static umode_t vmbus_chan_attr_is_visible(struct kobject *kobj,
 					  struct attribute *attr, int idx)
 {
 	const struct vmbus_channel *channel =
 		container_of(kobj, struct vmbus_channel, kobj);
 
-	/* Hide the monitor attributes if the monitor mechanism is not used. */
+	 
 	if (!channel->offermsg.monitor_allocated &&
 	    (attr == &chan_attr_pending.attr ||
 	     attr == &chan_attr_latency.attr ||
@@ -1823,9 +1599,7 @@ static struct kobj_type vmbus_chan_ktype = {
 	.release = vmbus_chan_release,
 };
 
-/*
- * vmbus_add_channel_kobj - setup a sub-directory under device/channels
- */
+ 
 int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
 {
 	const struct device *device = &dev->device;
@@ -1844,10 +1618,7 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
 	ret = sysfs_create_group(kobj, &vmbus_chan_group);
 
 	if (ret) {
-		/*
-		 * The calling functions' error handling paths will cleanup the
-		 * empty channel directory.
-		 */
+		 
 		kobject_put(kobj);
 		dev_err(device, "Unable to set up channel sysfs files\n");
 		return ret;
@@ -1858,18 +1629,13 @@ int vmbus_add_channel_kobj(struct hv_device *dev, struct vmbus_channel *channel)
 	return 0;
 }
 
-/*
- * vmbus_remove_channel_attr_group - remove the channel's attribute group
- */
+ 
 void vmbus_remove_channel_attr_group(struct vmbus_channel *channel)
 {
 	sysfs_remove_group(&channel->kobj, &vmbus_chan_group);
 }
 
-/*
- * vmbus_device_create - Creates and registers a new child device
- * on the vmbus.
- */
+ 
 struct hv_device *vmbus_device_create(const guid_t *type,
 				      const guid_t *instance,
 				      struct vmbus_channel *channel)
@@ -1890,9 +1656,7 @@ struct hv_device *vmbus_device_create(const guid_t *type,
 	return child_device_obj;
 }
 
-/*
- * vmbus_device_register - Register the child device
- */
+ 
 int vmbus_device_register(struct hv_device *child_device_obj)
 {
 	struct kobject *kobj = &child_device_obj->device.kobj;
@@ -1909,10 +1673,7 @@ int vmbus_device_register(struct hv_device *child_device_obj)
 	child_device_obj->device.dma_mask = &child_device_obj->dma_mask;
 	dma_set_mask(&child_device_obj->device, DMA_BIT_MASK(64));
 
-	/*
-	 * Register with the LDM. This will kick off the driver/device
-	 * binding...which will eventually call vmbus_match() and vmbus_probe()
-	 */
+	 
 	ret = device_register(&child_device_obj->device);
 	if (ret) {
 		pr_err("Unable to register child device\n");
@@ -1945,10 +1706,7 @@ err_dev_unregister:
 	return ret;
 }
 
-/*
- * vmbus_device_unregister - Remove the specified child device
- * from the vmbus.
- */
+ 
 void vmbus_device_unregister(struct hv_device *device_obj)
 {
 	pr_debug("child device %s unregistered\n",
@@ -1956,18 +1714,12 @@ void vmbus_device_unregister(struct hv_device *device_obj)
 
 	kset_unregister(device_obj->channels_kset);
 
-	/*
-	 * Kick off the process of unregistering the device.
-	 * This will call vmbus_remove() and eventually vmbus_device_release()
-	 */
+	 
 	device_unregister(&device_obj->device);
 }
 
 #ifdef CONFIG_ACPI
-/*
- * VMBUS is an acpi enumerated device. Get the information we
- * need from DSDT.
- */
+ 
 static acpi_status vmbus_walk_resources(struct acpi_resource *res, void *ctx)
 {
 	resource_size_t start = 0;
@@ -1979,11 +1731,7 @@ static acpi_status vmbus_walk_resources(struct acpi_resource *res, void *ctx)
 
 	switch (res->type) {
 
-	/*
-	 * "Address" descriptors are for bus windows. Ignore
-	 * "memory" descriptors, which are for registers on
-	 * devices.
-	 */
+	 
 	case ACPI_RESOURCE_TYPE_ADDRESS32:
 		start = res->data.address32.address.minimum;
 		end = res->data.address32.address.maximum;
@@ -1994,32 +1742,24 @@ static acpi_status vmbus_walk_resources(struct acpi_resource *res, void *ctx)
 		end = res->data.address64.address.maximum;
 		break;
 
-	/*
-	 * The IRQ information is needed only on ARM64, which Hyper-V
-	 * sets up in the extended format. IRQ information is present
-	 * on x86/x64 in the non-extended format but it is not used by
-	 * Linux. So don't bother checking for the non-extended format.
-	 */
+	 
 	case ACPI_RESOURCE_TYPE_EXTENDED_IRQ:
 		if (!acpi_dev_resource_interrupt(res, 0, &r)) {
 			pr_err("Unable to parse Hyper-V ACPI interrupt\n");
 			return AE_ERROR;
 		}
-		/* ARM64 INTID for VMbus */
+		 
 		vmbus_interrupt = res->data.extended_irq.interrupts[0];
-		/* Linux IRQ number */
+		 
 		vmbus_irq = r.start;
 		return AE_OK;
 
 	default:
-		/* Unused resource type */
+		 
 		return AE_OK;
 
 	}
-	/*
-	 * Ignore ranges that are below 1MB, as they're not
-	 * necessary or useful here.
-	 */
+	 
 	if (end < 0x100000)
 		return AE_OK;
 
@@ -2027,7 +1767,7 @@ static acpi_status vmbus_walk_resources(struct acpi_resource *res, void *ctx)
 	if (!new_res)
 		return AE_NO_MEMORY;
 
-	/* If this range overlaps the virtual TPM, truncate it. */
+	 
 	if (end > VTPM_BASE_ADDRESS && start < VTPM_BASE_ADDRESS)
 		end = VTPM_BASE_ADDRESS;
 
@@ -2036,9 +1776,7 @@ static acpi_status vmbus_walk_resources(struct acpi_resource *res, void *ctx)
 	new_res->start = start;
 	new_res->end = end;
 
-	/*
-	 * If two ranges are adjacent, merge them.
-	 */
+	 
 	do {
 		if (!*old_res) {
 			*old_res = new_res;
@@ -2099,11 +1837,11 @@ static void __maybe_unused vmbus_reserve_fb(void)
 	struct pci_dev *pdev;
 
 	if (efi_enabled(EFI_BOOT)) {
-		/* Gen2 VM: get FB base from EFI framebuffer */
+		 
 		start = screen_info.lfb_base;
 		size = max_t(__u32, screen_info.lfb_size, 0x800000);
 	} else {
-		/* Gen1 VM: get FB base from PCI */
+		 
 		pdev = pci_get_device(PCI_VENDOR_ID_MICROSOFT,
 				      PCI_DEVICE_ID_HYPERV_VIDEO, NULL);
 		if (!pdev)
@@ -2114,49 +1852,19 @@ static void __maybe_unused vmbus_reserve_fb(void)
 			size = pci_resource_len(pdev, 0);
 		}
 
-		/*
-		 * Release the PCI device so hyperv_drm or hyperv_fb driver can
-		 * grab it later.
-		 */
+		 
 		pci_dev_put(pdev);
 	}
 
 	if (!start)
 		return;
 
-	/*
-	 * Make a claim for the frame buffer in the resource tree under the
-	 * first node, which will be the one below 4GB.  The length seems to
-	 * be underreported, particularly in a Generation 1 VM.  So start out
-	 * reserving a larger area and make it smaller until it succeeds.
-	 */
+	 
 	for (; !fb_mmio && (size >= 0x100000); size >>= 1)
 		fb_mmio = __request_region(hyperv_mmio, start, size, fb_mmio_name, 0);
 }
 
-/**
- * vmbus_allocate_mmio() - Pick a memory-mapped I/O range.
- * @new:		If successful, supplied a pointer to the
- *			allocated MMIO space.
- * @device_obj:		Identifies the caller
- * @min:		Minimum guest physical address of the
- *			allocation
- * @max:		Maximum guest physical address
- * @size:		Size of the range to be allocated
- * @align:		Alignment of the range to be allocated
- * @fb_overlap_ok:	Whether this allocation can be allowed
- *			to overlap the video frame buffer.
- *
- * This function walks the resources granted to VMBus by the
- * _CRS object in the ACPI namespace underneath the parent
- * "bridge" whether that's a root PCI bus in the Generation 1
- * case or a Module Device in the Generation 2 case.  It then
- * attempts to allocate from the global MMIO pool in a way that
- * matches the constraints supplied in these parameters and by
- * that _CRS.
- *
- * Return: 0 on success, -errno on failure
- */
+ 
 int vmbus_allocate_mmio(struct resource **new, struct hv_device *device_obj,
 			resource_size_t min, resource_size_t max,
 			resource_size_t size, resource_size_t align,
@@ -2170,11 +1878,7 @@ int vmbus_allocate_mmio(struct resource **new, struct hv_device *device_obj,
 	retval = -ENXIO;
 	mutex_lock(&hyperv_mmio_lock);
 
-	/*
-	 * If overlaps with frame buffers are allowed, then first attempt to
-	 * make the allocation from within the reserved region.  Because it
-	 * is already reserved, no shadow allocation is necessary.
-	 */
+	 
 	if (fb_overlap_ok && fb_mmio && !(min > fb_mmio->end) &&
 	    !(max < fb_mmio->start)) {
 
@@ -2200,7 +1904,7 @@ int vmbus_allocate_mmio(struct resource **new, struct hv_device *device_obj,
 		for (; start + size - 1 <= range_max; start += align) {
 			end = start + size - 1;
 
-			/* Skip the whole fb_mmio region if not fb_overlap_ok */
+			 
 			if (!fb_overlap_ok && fb_mmio &&
 			    (((start >= fb_mmio->start) && (start <= fb_mmio->end)) ||
 			     ((end >= fb_mmio->start) && (end <= fb_mmio->end))))
@@ -2228,14 +1932,7 @@ exit:
 }
 EXPORT_SYMBOL_GPL(vmbus_allocate_mmio);
 
-/**
- * vmbus_free_mmio() - Free a memory-mapped I/O range.
- * @start:		Base address of region to release.
- * @size:		Size of the range to be allocated
- *
- * This function releases anything requested by
- * vmbus_mmio_allocate().
- */
+ 
 void vmbus_free_mmio(resource_size_t start, resource_size_t size)
 {
 	struct resource *iter;
@@ -2263,13 +1960,7 @@ static int vmbus_acpi_add(struct platform_device *pdev)
 
 	hv_dev = &device->dev;
 
-	/*
-	 * Older versions of Hyper-V for ARM64 fail to include the _CCA
-	 * method on the top level VMbus device in the DSDT. But devices
-	 * are hardware coherent in all current Hyper-V use cases, so fix
-	 * up the ACPI device to behave as if _CCA is present and indicates
-	 * hardware coherence.
-	 */
+	 
 	ACPI_COMPANION_SET(&device->dev, device);
 	if (IS_ENABLED(CONFIG_ACPI_CCA_REQUIRED) &&
 	    device_get_dma_attr(&device->dev) == DEV_DMA_NOT_SUPPORTED) {
@@ -2283,10 +1974,7 @@ static int vmbus_acpi_add(struct platform_device *pdev)
 
 	if (ACPI_FAILURE(result))
 		goto acpi_walk_err;
-	/*
-	 * Some ancestor of the vmbus acpi device (Gen1 or Gen2
-	 * firmware) is the VMOD that has the mmio ranges. Get that.
-	 */
+	 
 	for (ancestor = acpi_dev_parent(device);
 	     ancestor && ancestor->handle != ACPI_ROOT_OBJECT;
 	     ancestor = acpi_dev_parent(ancestor)) {
@@ -2372,10 +2060,10 @@ static int vmbus_bus_suspend(struct device *dev)
 
 	tasklet_disable(&hv_cpu->msg_dpc);
 	vmbus_connection.ignore_any_offer_msg = true;
-	/* The tasklet_enable() takes care of providing a memory barrier */
+	 
 	tasklet_enable(&hv_cpu->msg_dpc);
 
-	/* Drain all the workqueues as we are in suspend */
+	 
 	drain_workqueue(vmbus_connection.rescind_work_queue);
 	drain_workqueue(vmbus_connection.work_queue);
 	drain_workqueue(vmbus_connection.handle_primary_chan_wq);
@@ -2390,20 +2078,7 @@ static int vmbus_bus_suspend(struct device *dev)
 	}
 	mutex_unlock(&vmbus_connection.channel_mutex);
 
-	/*
-	 * Wait until all the sub-channels and hv_sock channels have been
-	 * cleaned up. Sub-channels should be destroyed upon suspend, otherwise
-	 * they would conflict with the new sub-channels that will be created
-	 * in the resume path. hv_sock channels should also be destroyed, but
-	 * a hv_sock channel of an established hv_sock connection can not be
-	 * really destroyed since it may still be referenced by the userspace
-	 * application, so we just force the hv_sock channel to be rescinded
-	 * by vmbus_force_channel_rescinded(), and the userspace application
-	 * will thoroughly destroy the channel after hibernation.
-	 *
-	 * Note: the counter nr_chan_close_on_suspend may never go above 0 if
-	 * the VM has no sub-channel and hv_sock channel, e.g. a 1-vCPU VM.
-	 */
+	 
 	if (atomic_read(&vmbus_connection.nr_chan_close_on_suspend) > 0)
 		wait_for_completion(&vmbus_connection.ready_for_suspend_event);
 
@@ -2415,12 +2090,7 @@ static int vmbus_bus_suspend(struct device *dev)
 	mutex_lock(&vmbus_connection.channel_mutex);
 
 	list_for_each_entry(channel, &vmbus_connection.chn_list, listentry) {
-		/*
-		 * Remove the channel from the array of channels and invalidate
-		 * the channel's relid.  Upon resume, vmbus_onoffer() will fix
-		 * up the relid (and other fields, if necessary) and add the
-		 * channel back to the array.
-		 */
+		 
 		vmbus_channel_unmap_relid(channel);
 		channel->offermsg.child_relid = INVALID_RELID;
 
@@ -2444,7 +2114,7 @@ static int vmbus_bus_suspend(struct device *dev)
 
 	vmbus_initiate_unload(false);
 
-	/* Reset the event for the next resume. */
+	 
 	reinit_completion(&vmbus_connection.ready_for_resume_event);
 
 	return 0;
@@ -2458,10 +2128,7 @@ static int vmbus_bus_resume(struct device *dev)
 
 	vmbus_connection.ignore_any_offer_msg = false;
 
-	/*
-	 * We only use the 'vmbus_proto_version', which was in use before
-	 * hibernation, to re-negotiate with the host.
-	 */
+	 
 	if (!vmbus_proto_version) {
 		pr_err("Invalid proto version = 0x%x\n", vmbus_proto_version);
 		return -EINVAL;
@@ -2490,7 +2157,7 @@ static int vmbus_bus_resume(struct device *dev)
 		&vmbus_connection.ready_for_resume_event, 10 * HZ) == 0)
 		pr_err("Some vmbus device is missing after suspending?\n");
 
-	/* Reset the event for the next suspend. */
+	 
 	reinit_completion(&vmbus_connection.ready_for_suspend_event);
 
 	return 0;
@@ -2498,14 +2165,14 @@ static int vmbus_bus_resume(struct device *dev)
 #else
 #define vmbus_bus_suspend NULL
 #define vmbus_bus_resume NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const __maybe_unused struct of_device_id vmbus_of_match[] = {
 	{
 		.compatible = "microsoft,vmbus",
 	},
 	{
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, vmbus_of_match);
@@ -2517,17 +2184,7 @@ static const __maybe_unused struct acpi_device_id vmbus_acpi_device_ids[] = {
 };
 MODULE_DEVICE_TABLE(acpi, vmbus_acpi_device_ids);
 
-/*
- * Note: we must use the "no_irq" ops, otherwise hibernation can not work with
- * PCI device assignment, because "pci_dev_pm_ops" uses the "noirq" ops: in
- * the resume path, the pci "noirq" restore op runs before "non-noirq" op (see
- * resume_target_kernel() -> dpm_resume_start(), and hibernation_restore() ->
- * dpm_resume_end()). This means vmbus_bus_resume() and the pci-hyperv's
- * resume callback must also run via the "noirq" ops.
- *
- * Set suspend_noirq/resume_noirq to NULL for Suspend-to-Idle: see the comment
- * earlier in this file before vmbus_pm.
- */
+ 
 
 static const struct dev_pm_ops vmbus_bus_pm = {
 	.suspend_noirq	= NULL,
@@ -2554,7 +2211,7 @@ static void hv_kexec_handler(void)
 {
 	hv_stimer_global_cleanup();
 	vmbus_initiate_unload(false);
-	/* Make sure conn_state is set as hv_synic_cleanup checks for it */
+	 
 	mb();
 	cpuhp_remove_state(hyperv_cpuhp_online);
 };
@@ -2564,11 +2221,7 @@ static void hv_crash_handler(struct pt_regs *regs)
 	int cpu;
 
 	vmbus_initiate_unload(true);
-	/*
-	 * In crash handler we can't schedule synic cleanup for all CPUs,
-	 * doing the cleanup for current CPU only. This should be sufficient
-	 * for kdump.
-	 */
+	 
 	cpu = smp_processor_id();
 	hv_stimer_cleanup(cpu);
 	hv_synic_disable_regs(cpu);
@@ -2576,25 +2229,7 @@ static void hv_crash_handler(struct pt_regs *regs)
 
 static int hv_synic_suspend(void)
 {
-	/*
-	 * When we reach here, all the non-boot CPUs have been offlined.
-	 * If we're in a legacy configuration where stimer Direct Mode is
-	 * not enabled, the stimers on the non-boot CPUs have been unbound
-	 * in hv_synic_cleanup() -> hv_stimer_legacy_cleanup() ->
-	 * hv_stimer_cleanup() -> clockevents_unbind_device().
-	 *
-	 * hv_synic_suspend() only runs on CPU0 with interrupts disabled.
-	 * Here we do not call hv_stimer_legacy_cleanup() on CPU0 because:
-	 * 1) it's unnecessary as interrupts remain disabled between
-	 * syscore_suspend() and syscore_resume(): see create_image() and
-	 * resume_target_kernel()
-	 * 2) the stimer on CPU0 is automatically disabled later by
-	 * syscore_suspend() -> timekeeping_suspend() -> tick_suspend() -> ...
-	 * -> clockevents_shutdown() -> ... -> hv_ce_shutdown()
-	 * 3) a warning would be triggered if we call
-	 * clockevents_unbind_device(), which may sleep, in an
-	 * interrupts-disabled context.
-	 */
+	 
 
 	hv_synic_disable_regs(0);
 
@@ -2605,14 +2240,10 @@ static void hv_synic_resume(void)
 {
 	hv_synic_enable_regs(0);
 
-	/*
-	 * Note: we don't need to call hv_stimer_init(0), because the timer
-	 * on CPU0 is not unbound in hv_synic_suspend(), and the timer is
-	 * automatically re-enabled in timekeeping_resume().
-	 */
+	 
 }
 
-/* The callbacks run only on CPU0, with irqs_disabled. */
+ 
 static struct syscore_ops hv_synic_syscore_ops = {
 	.suspend = hv_synic_suspend,
 	.resume = hv_synic_resume,
@@ -2628,9 +2259,7 @@ static int __init hv_acpi_init(void)
 	if (hv_root_partition && !hv_nested)
 		return 0;
 
-	/*
-	 * Get ACPI resources first.
-	 */
+	 
 	ret = platform_driver_register(&vmbus_platform_driver);
 	if (ret)
 		return ret;
@@ -2640,12 +2269,7 @@ static int __init hv_acpi_init(void)
 		goto cleanup;
 	}
 
-	/*
-	 * If we're on an architecture with a hardcoded hypervisor
-	 * vector (i.e. x86/x64), override the VMbus interrupt found
-	 * in the ACPI tables. Ensure vmbus_irq is not set since the
-	 * normal Linux IRQ mechanism is not used in this case.
-	 */
+	 
 #ifdef HYPERVISOR_CALLBACK_VECTOR
 	vmbus_interrupt = HYPERVISOR_CALLBACK_VECTOR;
 	vmbus_irq = -1;
@@ -2698,10 +2322,7 @@ static void __exit vmbus_exit(void)
 	vmbus_free_channels();
 	kfree(vmbus_connection.channels);
 
-	/*
-	 * The vmbus panic notifier is always registered, hence we should
-	 * also unconditionally unregister it here as well.
-	 */
+	 
 	atomic_notifier_chain_unregister(&panic_notifier_list,
 					&hyperv_panic_vmbus_unload_block);
 

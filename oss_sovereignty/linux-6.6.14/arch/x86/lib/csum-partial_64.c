@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * arch/x86_64/lib/csum-partial.c
- *
- * This file contains network checksum routines that are better done
- * in an architecture-specific manner due to speed.
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/export.h>
@@ -30,22 +25,12 @@ static inline unsigned long update_csum_40b(unsigned long sum, const unsigned lo
 	return sum;
 }
 
-/*
- * Do a checksum on an arbitrary memory area.
- * Returns a 32bit checksum.
- *
- * This isn't as time critical as it used to be because many NICs
- * do hardware checksumming these days.
- *
- * Still, with CHECKSUM_COMPLETE this is called to compute
- * checksums on IPv6 headers (40 bytes) and other small parts.
- * it's best to have buff aligned on a 64-bit boundary
- */
+ 
 __wsum csum_partial(const void *buff, int len, __wsum sum)
 {
 	u64 temp64 = (__force u64)sum;
 
-	/* Do two 40-byte chunks in parallel to get better ILP */
+	 
 	if (likely(len >= 80)) {
 		u64 temp64_2 = 0;
 		do {
@@ -60,10 +45,7 @@ __wsum csum_partial(const void *buff, int len, __wsum sum)
 		    :"+r" (temp64): "r" (temp64_2));
 	}
 
-	/*
-	 * len == 40 is the hot case due to IPv6 headers, so return
-	 * early for that exact case without checking the tail bytes.
-	 */
+	 
 	if (len >= 40) {
 		temp64 = update_csum_40b(temp64, buff);
 		len -= 40;
@@ -112,10 +94,7 @@ __wsum csum_partial(const void *buff, int len, __wsum sum)
 }
 EXPORT_SYMBOL(csum_partial);
 
-/*
- * this routine is used for miscellaneous IP-like checksums, mainly
- * in icmp.c
- */
+ 
 __sum16 ip_compute_csum(const void *buff, int len)
 {
 	return csum_fold(csum_partial(buff, len, 0));

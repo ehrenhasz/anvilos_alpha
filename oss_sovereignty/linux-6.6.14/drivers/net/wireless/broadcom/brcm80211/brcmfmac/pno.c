@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2016 Broadcom
- */
+
+ 
 #include <linux/netdevice.h>
 #include <linux/gcd.h>
 #include <net/cfg80211.h>
@@ -57,16 +55,16 @@ static int brcmf_pno_remove_request(struct brcmf_pno_info *pi, u64 reqid)
 
 	mutex_lock(&pi->req_lock);
 
-	/* Nothing to do if we have no requests */
+	 
 	if (pi->n_reqs == 0)
 		goto done;
 
-	/* find request */
+	 
 	for (i = 0; i < pi->n_reqs; i++) {
 		if (pi->reqs[i]->reqid == reqid)
 			break;
 	}
-	/* request not found */
+	 
 	if (WARN(i == pi->n_reqs, "reqid not found\n")) {
 		err = -ENOENT;
 		goto done;
@@ -75,11 +73,11 @@ static int brcmf_pno_remove_request(struct brcmf_pno_info *pi, u64 reqid)
 	brcmf_dbg(SCAN, "reqid=%llu\n", reqid);
 	pi->n_reqs--;
 
-	/* if last we are done */
+	 
 	if (!pi->n_reqs || i == pi->n_reqs)
 		goto done;
 
-	/* fill the gap with remaining requests */
+	 
 	while (i <= pi->n_reqs - 1) {
 		pi->reqs[i] = pi->reqs[i + 1];
 		i++;
@@ -111,25 +109,25 @@ static int brcmf_pno_config(struct brcmf_if *ifp, u32 scan_freq,
 	memset(&pfn_param, 0, sizeof(pfn_param));
 	pfn_param.version = cpu_to_le32(BRCMF_PNO_VERSION);
 
-	/* set extra pno params */
+	 
 	flags = BIT(BRCMF_PNO_IMMEDIATE_SCAN_BIT) |
 		BIT(BRCMF_PNO_ENABLE_ADAPTSCAN_BIT);
 	pfn_param.repeat = BRCMF_PNO_REPEAT;
 	pfn_param.exp = BRCMF_PNO_FREQ_EXPO_MAX;
 
-	/* set up pno scan fr */
+	 
 	pfn_param.scan_freq = cpu_to_le32(scan_freq);
 
 	if (mscan) {
 		pfnmem = bestn;
 
-		/* set bestn in firmware */
+		 
 		err = brcmf_fil_iovar_int_set(ifp, "pfnmem", pfnmem);
 		if (err < 0) {
 			bphy_err(drvr, "failed to set pfnmem\n");
 			goto exit;
 		}
-		/* get max mscan which the firmware supports */
+		 
 		err = brcmf_fil_iovar_int_get(ifp, "pfnmem", &pfnmem);
 		if (err < 0) {
 			bphy_err(drvr, "failed to get pfnmem\n");
@@ -167,7 +165,7 @@ static int brcmf_pno_set_random(struct brcmf_if *ifp, struct brcmf_pno_info *pi)
 			break;
 		}
 
-	/* no random mac requested */
+	 
 	if (!mac_addr)
 		return 0;
 
@@ -179,9 +177,9 @@ static int brcmf_pno_set_random(struct brcmf_if *ifp, struct brcmf_pno_info *pi)
 		pfn_mac.mac[i] &= mac_mask[i];
 		pfn_mac.mac[i] |= get_random_u8() & ~(mac_mask[i]);
 	}
-	/* Clear multi bit */
+	 
 	pfn_mac.mac[0] &= 0xFE;
-	/* Set locally administered */
+	 
 	pfn_mac.mac[0] |= 0x02;
 
 	brcmf_dbg(SCAN, "enabling random mac: reqid=%llu mac=%pM\n",
@@ -258,10 +256,10 @@ static int brcmf_pno_clean(struct brcmf_if *ifp)
 	struct brcmf_pub *drvr = ifp->drvr;
 	int ret;
 
-	/* Disable pfn */
+	 
 	ret = brcmf_fil_iovar_int_set(ifp, "pfn", 0);
 	if (ret == 0) {
-		/* clear pfn */
+		 
 		ret = brcmf_fil_iovar_data_set(ifp, "pfnclear", NULL, 0);
 	}
 	if (ret < 0)
@@ -286,7 +284,7 @@ static int brcmf_pno_get_bucket_channels(struct cfg80211_sched_scan_request *r,
 		brcmf_dbg(SCAN, "[%d] Chan : %u\n", n_chan, chan);
 		pno_cfg->channel_list[n_chan++] = cpu_to_le16(chan);
 	}
-	/* return number of channels */
+	 
 	err = n_chan;
 done:
 	pno_cfg->channel_num = cpu_to_le32(n_chan);
@@ -306,10 +304,7 @@ static int brcmf_pno_prep_fwconfig(struct brcmf_pno_info *pi,
 	if (WARN_ON(!pi->n_reqs))
 		return -ENODATA;
 
-	/*
-	 * actual scan period is determined using gcd() for each
-	 * scheduled scan period.
-	 */
+	 
 	*scan_freq = pi->reqs[0]->scan_plans[0].interval;
 	for (i = 1; i < pi->n_reqs; i++) {
 		sr = pi->reqs[i];
@@ -336,7 +331,7 @@ static int brcmf_pno_prep_fwconfig(struct brcmf_pno_info *pi,
 		fw_buckets[i].bucket_end_index = chidx - 1;
 		fw_buckets[i].bucket_freq_multiple =
 			sr->scan_plans[0].interval / *scan_freq;
-		/* assure period is non-zero */
+		 
 		if (!fw_buckets[i].bucket_freq_multiple)
 			fw_buckets[i].bucket_freq_multiple = 1;
 		fw_buckets[i].flag = BRCMF_PNO_REPORT_NO_BATCH;
@@ -412,14 +407,14 @@ static int brcmf_pno_config_sched_scans(struct brcmf_if *ifp)
 		goto free_buckets;
 	}
 
-	/* clean up everything */
+	 
 	err = brcmf_pno_clean(ifp);
 	if  (err < 0) {
 		bphy_err(drvr, "failed error=%d\n", err);
 		goto free_gscan;
 	}
 
-	/* configure pno */
+	 
 	err = brcmf_pno_config(ifp, scan_freq, 0, 0);
 	if (err < 0)
 		goto free_gscan;
@@ -442,7 +437,7 @@ static int brcmf_pno_config_sched_scans(struct brcmf_if *ifp)
 	if (err < 0)
 		goto clean;
 
-	/* configure random mac */
+	 
 	err = brcmf_pno_set_random(ifp, pi);
 	if (err < 0)
 		goto clean;
@@ -451,7 +446,7 @@ static int brcmf_pno_config_sched_scans(struct brcmf_if *ifp)
 	if (err < 0)
 		goto clean;
 
-	/* Enable the PNO */
+	 
 	err = brcmf_fil_iovar_int_set(ifp, "pfn", 1);
 
 clean:
@@ -496,7 +491,7 @@ int brcmf_pno_stop_sched_scan(struct brcmf_if *ifp, u64 reqid)
 
 	pi = ifp_to_pno(ifp);
 
-	/* No PNO request */
+	 
 	if (!pi->n_reqs)
 		return 0;
 
@@ -541,7 +536,7 @@ void brcmf_pno_detach(struct brcmf_cfg80211_info *cfg)
 
 void brcmf_pno_wiphy_params(struct wiphy *wiphy, bool gscan)
 {
-	/* scheduled scan settings */
+	 
 	wiphy->max_sched_scan_reqs = gscan ? BRCMF_PNO_MAX_BUCKETS : 1;
 	wiphy->max_sched_scan_ssids = BRCMF_PNO_MAX_PFN_COUNT;
 	wiphy->max_match_sets = BRCMF_PNO_MAX_PFN_COUNT;

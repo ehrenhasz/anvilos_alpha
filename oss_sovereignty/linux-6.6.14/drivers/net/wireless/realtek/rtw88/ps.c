@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include "main.h"
 #include "reg.h"
@@ -74,14 +73,14 @@ void rtw_power_mode_change(struct rtw_dev *rtwdev, bool enter)
 	request = rtw_read8(rtwdev, rtwdev->hci.rpwm_addr);
 	confirm = rtw_read8(rtwdev, rtwdev->hci.cpwm_addr);
 
-	/* toggle to request power mode, others remain 0 */
+	 
 	request ^= request | BIT_RPWM_TOGGLE;
 	if (enter) {
 		request |= POWER_MODE_LCLK;
 		if (rtw_get_lps_deep_mode(rtwdev) == LPS_DEEP_MODE_PG)
 			request |= POWER_MODE_PG;
 	}
-	/* Each request require an ack from firmware */
+	 
 	request |= POWER_MODE_ACK;
 
 	if (rtw_fw_feature_check(&rtwdev->fw, FW_FEATURE_TX_WAKE))
@@ -89,19 +88,13 @@ void rtw_power_mode_change(struct rtw_dev *rtwdev, bool enter)
 
 	rtw_write8(rtwdev, rtwdev->hci.rpwm_addr, request);
 
-	/* Check firmware get the power requset and ack via cpwm register */
+	 
 	ret = read_poll_timeout_atomic(rtw_read8, polling,
 				       (polling ^ confirm) & BIT_RPWM_TOGGLE,
 				       100, 15000, true, rtwdev,
 				       rtwdev->hci.cpwm_addr);
 	if (ret) {
-		/* Hit here means that driver failed to get an ack from firmware.
-		 * The reason could be that hardware is locked at Deep sleep,
-		 * so most of the hardware circuits are not working, even
-		 * register read/write; or firmware is locked in some state and
-		 * cannot get the request. It should be treated as fatal error
-		 * and requires an entire analysis about the firmware/hardware.
-		 */
+		 
 		WARN(1, "firmware failed to ack driver for %s Deep Power mode\n",
 		     enter ? "entering" : "leaving");
 	}
@@ -117,18 +110,7 @@ static int __rtw_fw_leave_lps_check_reg(struct rtw_dev *rtwdev)
 {
 	int i;
 
-	/* Driver needs to wait for firmware to leave LPS state
-	 * successfully. Firmware will send null packet to inform AP,
-	 * and see if AP sends an ACK back, then firmware will restore
-	 * the REG_TCR register.
-	 *
-	 * If driver does not wait for firmware, null packet with
-	 * PS bit could be sent due to incorrect REG_TCR setting.
-	 *
-	 * In our test, 100ms should be enough for firmware to finish
-	 * the flow. If REG_TCR Register is still incorrect after 100ms,
-	 * just modify it directly, and throw a warn message.
-	 */
+	 
 	for (i = 0 ; i < LEAVE_LPS_TRY_CNT; i++) {
 		if (rtw_read32_mask(rtwdev, REG_TCR, BIT_PWRMGT_HWDATA_EN) == 0)
 			return 0;

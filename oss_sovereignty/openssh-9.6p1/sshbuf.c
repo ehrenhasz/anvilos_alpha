@@ -1,19 +1,5 @@
-/*	$OpenBSD: sshbuf.c,v 1.19 2022/12/02 04:40:27 djm Exp $	*/
-/*
- * Copyright (c) 2011 Damien Miller
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -40,15 +26,15 @@
 #endif
 
 struct sshbuf {
-	u_char *d;		/* Data */
-	const u_char *cd;	/* Const data */
-	size_t off;		/* First available byte is buf->d + buf->off */
-	size_t size;		/* Last byte is buf->d + buf->size - 1 */
-	size_t max_size;	/* Maximum size of buffer */
-	size_t alloc;		/* Total bytes allocated to buf->d */
-	int readonly;		/* Refers to external, const data */
-	u_int refcount;		/* Tracks self and number of child buffers */
-	struct sshbuf *parent;	/* If child, pointer to parent */
+	u_char *d;		 
+	const u_char *cd;	 
+	size_t off;		 
+	size_t size;		 
+	size_t max_size;	 
+	size_t alloc;		 
+	int readonly;		 
+	u_int refcount;		 
+	struct sshbuf *parent;	 
 };
 
 static inline int
@@ -63,7 +49,7 @@ sshbuf_check_sanity(const struct sshbuf *buf)
 	    buf->alloc > buf->max_size ||
 	    buf->size > buf->alloc ||
 	    buf->off > buf->size)) {
-		/* Do not try to recover from corrupted buffer internals */
+		 
 		SSHBUF_DBG(("SSH_ERR_INTERNAL_ERROR"));
 		ssh_signal(SIGSEGV, SIG_DFL);
 		raise(SIGSEGV);
@@ -160,28 +146,16 @@ sshbuf_free(struct sshbuf *buf)
 {
 	if (buf == NULL)
 		return;
-	/*
-	 * The following will leak on insane buffers, but this is the safest
-	 * course of action - an invalid pointer or already-freed pointer may
-	 * have been passed to us and continuing to scribble over memory would
-	 * be bad.
-	 */
+	 
 	if (sshbuf_check_sanity(buf) != 0)
 		return;
 
-	/*
-	 * If we are a parent with still-extant children, then don't free just
-	 * yet. The last child's call to sshbuf_free should decrement our
-	 * refcount to 0 and trigger the actual free.
-	 */
+	 
 	buf->refcount--;
 	if (buf->refcount > 0)
 		return;
 
-	/*
-	 * If we are a child, the free our parent to decrement its reference
-	 * count and possibly free it.
-	 */
+	 
 	sshbuf_free(buf->parent);
 	buf->parent = NULL;
 
@@ -198,7 +172,7 @@ sshbuf_reset(struct sshbuf *buf)
 	u_char *d;
 
 	if (buf->readonly || buf->refcount > 1) {
-		/* Nonsensical. Just make buffer appear empty */
+		 
 		buf->off = buf->size;
 		return;
 	}
@@ -255,7 +229,7 @@ sshbuf_set_max_size(struct sshbuf *buf, size_t max_size)
 		return SSH_ERR_BUFFER_READ_ONLY;
 	if (max_size > SSHBUF_SIZE_MAX)
 		return SSH_ERR_NO_BUFFER_SPACE;
-	/* pack and realloc if necessary */
+	 
 	sshbuf_maybe_pack(buf, max_size < buf->size);
 	if (max_size < buf->alloc && max_size > buf->size) {
 		if (buf->size < SSHBUF_SIZE_INIT)
@@ -319,7 +293,7 @@ sshbuf_check_reserve(const struct sshbuf *buf, size_t len)
 	if (buf->readonly || buf->refcount > 1)
 		return SSH_ERR_BUFFER_READ_ONLY;
 	SSHBUF_TELL("check");
-	/* Check that len is reasonable and that max_size + available < len */
+	 
 	if (len > buf->max_size || buf->max_size - len < buf->size - buf->off)
 		return SSH_ERR_NO_BUFFER_SPACE;
 	return 0;
@@ -335,19 +309,13 @@ sshbuf_allocate(struct sshbuf *buf, size_t len)
 	SSHBUF_DBG(("allocate buf = %p len = %zu", buf, len));
 	if ((r = sshbuf_check_reserve(buf, len)) != 0)
 		return r;
-	/*
-	 * If the requested allocation appended would push us past max_size
-	 * then pack the buffer, zeroing buf->off.
-	 */
+	 
 	sshbuf_maybe_pack(buf, buf->size + len > buf->max_size);
 	SSHBUF_TELL("allocate");
 	if (len + buf->size <= buf->alloc)
-		return 0; /* already have it. */
+		return 0;  
 
-	/*
-	 * Prefer to alloc in SSHBUF_SIZE_INC units, but
-	 * allocate less if doing so would overflow max_size.
-	 */
+	 
 	need = len + buf->size - buf->alloc;
 	rlen = ROUNDUP(buf->alloc + need, SSHBUF_SIZE_INC);
 	SSHBUF_DBG(("need %zu initial rlen %zu", need, rlen));
@@ -361,7 +329,7 @@ sshbuf_allocate(struct sshbuf *buf, size_t len)
 	buf->alloc = rlen;
 	buf->cd = buf->d = dp;
 	if ((r = sshbuf_check_reserve(buf, len)) < 0) {
-		/* shouldn't fail */
+		 
 		return r;
 	}
 	SSHBUF_TELL("done");
@@ -401,7 +369,7 @@ sshbuf_consume(struct sshbuf *buf, size_t len)
 	if (len > sshbuf_len(buf))
 		return SSH_ERR_MESSAGE_INCOMPLETE;
 	buf->off += len;
-	/* deal with empty buffer */
+	 
 	if (buf->off == buf->size)
 		buf->off = buf->size = 0;
 	SSHBUF_TELL("done");

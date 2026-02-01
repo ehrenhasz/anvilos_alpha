@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Naveen Krishna Ch <naveenkrishna.ch@gmail.com>
-*/
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/of.h>
@@ -10,7 +7,7 @@
 #include "clk.h"
 #include <dt-bindings/clock/exynos7-clk.h>
 
-/* Register Offset definitions for CMU_TOPC (0x10570000) */
+ 
 #define CC_PLL_LOCK		0x0000
 #define BUS0_PLL_LOCK		0x0004
 #define BUS1_DPLL_LOCK		0x0008
@@ -41,7 +38,7 @@ static const struct samsung_fixed_factor_clock topc_fixed_factor_clks[] __initco
 	FFACTOR(0, "ffac_topc_mfc_pll_div2", "mout_topc_mfc_pll", 1, 2, 0),
 };
 
-/* List of parent clocks for Muxes in CMU_TOPC */
+ 
 PNAME(mout_topc_aud_pll_ctrl_p)	= { "fin_pll", "fout_aud_pll" };
 PNAME(mout_topc_bus0_pll_ctrl_p)	= { "fin_pll", "fout_bus0_pll" };
 PNAME(mout_topc_bus1_pll_ctrl_p)	= { "fin_pll", "fout_bus1_pll" };
@@ -207,7 +204,7 @@ static void __init exynos7_clk_topc_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_topc, "samsung,exynos7-clock-topc",
 	exynos7_clk_topc_init);
 
-/* Register Offset definitions for CMU_TOP0 (0x105D0000) */
+ 
 #define MUX_SEL_TOP00			0x0200
 #define MUX_SEL_TOP01			0x0204
 #define MUX_SEL_TOP03			0x020C
@@ -226,7 +223,7 @@ CLK_OF_DECLARE(exynos7_clk_topc, "samsung,exynos7-clock-topc",
 #define ENABLE_SCLK_TOP0_PERIC2		0x0A38
 #define ENABLE_SCLK_TOP0_PERIC3		0x0A3C
 
-/* List of parent clocks for Muxes in CMU_TOP0 */
+ 
 PNAME(mout_top0_bus0_pll_user_p)	= { "fin_pll", "sclk_bus0_pll_a" };
 PNAME(mout_top0_bus1_pll_user_p)	= { "fin_pll", "sclk_bus1_pll_a" };
 PNAME(mout_top0_cc_pll_user_p)	= { "fin_pll", "sclk_cc_pll_a" };
@@ -399,7 +396,7 @@ static void __init exynos7_clk_top0_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_top0, "samsung,exynos7-clock-top0",
 	exynos7_clk_top0_init);
 
-/* Register Offset definitions for CMU_TOP1 (0x105E0000) */
+ 
 #define MUX_SEL_TOP10			0x0200
 #define MUX_SEL_TOP11			0x0204
 #define MUX_SEL_TOP13			0x020C
@@ -415,7 +412,7 @@ CLK_OF_DECLARE(exynos7_clk_top0, "samsung,exynos7-clock-top0",
 #define ENABLE_SCLK_TOP1_FSYS1		0x0A28
 #define ENABLE_SCLK_TOP1_FSYS11		0x0A2C
 
-/* List of parent clocks for Muxes in CMU_TOP1 */
+ 
 PNAME(mout_top1_bus0_pll_user_p)	= { "fin_pll", "sclk_bus0_pll_b" };
 PNAME(mout_top1_bus1_pll_user_p)	= { "fin_pll", "sclk_bus1_pll_b" };
 PNAME(mout_top1_cc_pll_user_p)	= { "fin_pll", "sclk_cc_pll_b" };
@@ -537,10 +534,7 @@ static const struct samsung_gate_clock top1_gate_clks[] __initconst = {
 	GATE(CLK_ACLK_FSYS0_200, "aclk_fsys0_200", "dout_aclk_fsys0_200",
 		ENABLE_ACLK_TOP13, 28, CLK_SET_RATE_PARENT |
 		CLK_IS_CRITICAL, 0),
-	/*
-	 * This clock is required for the CMU_FSYS1 registers access, keep it
-	 * enabled permanently until proper runtime PM support is added.
-	 */
+	 
 	GATE(CLK_ACLK_FSYS1_200, "aclk_fsys1_200", "dout_aclk_fsys1_200",
 		ENABLE_ACLK_TOP13, 24, CLK_SET_RATE_PARENT |
 		CLK_IS_CRITICAL, 0),
@@ -581,16 +575,14 @@ static void __init exynos7_clk_top1_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_top1, "samsung,exynos7-clock-top1",
 	exynos7_clk_top1_init);
 
-/* Register Offset definitions for CMU_CCORE (0x105B0000) */
+ 
 #define MUX_SEL_CCORE			0x0200
 #define DIV_CCORE			0x0600
 #define ENABLE_ACLK_CCORE0		0x0800
 #define ENABLE_ACLK_CCORE1		0x0804
 #define ENABLE_PCLK_CCORE		0x0900
 
-/*
- * List of parent clocks for Muxes in CMU_CCORE
- */
+ 
 PNAME(mout_aclk_ccore_133_user_p)	= { "fin_pll", "aclk_ccore_133" };
 
 static const unsigned long ccore_clk_regs[] __initconst = {
@@ -626,12 +618,12 @@ static void __init exynos7_clk_ccore_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_ccore, "samsung,exynos7-clock-ccore",
 	exynos7_clk_ccore_init);
 
-/* Register Offset definitions for CMU_PERIC0 (0x13610000) */
+ 
 #define MUX_SEL_PERIC0			0x0200
 #define ENABLE_PCLK_PERIC0		0x0900
 #define ENABLE_SCLK_PERIC0		0x0A00
 
-/* List of parent clocks for Muxes in CMU_PERIC0 */
+ 
 PNAME(mout_aclk_peric0_66_user_p)	= { "fin_pll", "aclk_peric0_66" };
 PNAME(mout_sclk_uart0_user_p)	= { "fin_pll", "sclk_uart0" };
 
@@ -690,7 +682,7 @@ static void __init exynos7_clk_peric0_init(struct device_node *np)
 	samsung_cmu_register_one(np, &peric0_cmu_info);
 }
 
-/* Register Offset definitions for CMU_PERIC1 (0x14C80000) */
+ 
 #define MUX_SEL_PERIC10			0x0200
 #define MUX_SEL_PERIC11			0x0204
 #define MUX_SEL_PERIC12			0x0208
@@ -700,7 +692,7 @@ static void __init exynos7_clk_peric0_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_peric0, "samsung,exynos7-clock-peric0",
 	exynos7_clk_peric0_init);
 
-/* List of parent clocks for Muxes in CMU_PERIC1 */
+ 
 PNAME(mout_aclk_peric1_66_user_p)	= { "fin_pll", "aclk_peric1_66" };
 PNAME(mout_sclk_uart1_user_p)	= { "fin_pll", "sclk_uart1" };
 PNAME(mout_sclk_uart2_user_p)	= { "fin_pll", "sclk_uart2" };
@@ -817,14 +809,14 @@ static void __init exynos7_clk_peric1_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_peric1, "samsung,exynos7-clock-peric1",
 	exynos7_clk_peric1_init);
 
-/* Register Offset definitions for CMU_PERIS (0x10040000) */
+ 
 #define MUX_SEL_PERIS			0x0200
 #define ENABLE_PCLK_PERIS		0x0900
 #define ENABLE_PCLK_PERIS_SECURE_CHIPID	0x0910
 #define ENABLE_SCLK_PERIS		0x0A00
 #define ENABLE_SCLK_PERIS_SECURE_CHIPID	0x0A10
 
-/* List of parent clocks for Muxes in CMU_PERIS */
+ 
 PNAME(mout_aclk_peris_66_user_p) = { "fin_pll", "aclk_peris_66" };
 
 static const unsigned long peris_clk_regs[] __initconst = {
@@ -872,7 +864,7 @@ static void __init exynos7_clk_peris_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_peris, "samsung,exynos7-clock-peris",
 	exynos7_clk_peris_init);
 
-/* Register Offset definitions for CMU_FSYS0 (0x10E90000) */
+ 
 #define MUX_SEL_FSYS00			0x0200
 #define MUX_SEL_FSYS01			0x0204
 #define MUX_SEL_FSYS02			0x0208
@@ -882,9 +874,7 @@ CLK_OF_DECLARE(exynos7_clk_peris, "samsung,exynos7-clock-peris",
 #define ENABLE_SCLK_FSYS02		0x0A08
 #define ENABLE_SCLK_FSYS04		0x0A10
 
-/*
- * List of parent clocks for Muxes in CMU_FSYS0
- */
+ 
 PNAME(mout_aclk_fsys0_200_user_p)	= { "fin_pll", "aclk_fsys0_200" };
 PNAME(mout_sclk_mmc2_user_p)		= { "fin_pll", "sclk_mmc2" };
 
@@ -894,7 +884,7 @@ PNAME(mout_phyclk_usbdrd300_udrd30_phyclk_user_p)	= { "fin_pll",
 PNAME(mout_phyclk_usbdrd300_udrd30_pipe_pclk_user_p)	= { "fin_pll",
 				"phyclk_usbdrd300_udrd30_pipe_pclk" };
 
-/* fixed rate clocks used in the FSYS0 block */
+ 
 static const struct samsung_fixed_rate_clock fixed_rate_clks_fsys0[] __initconst = {
 	FRATE(0, "phyclk_usbdrd300_udrd30_phyclock", NULL, 0, 60000000),
 	FRATE(0, "phyclk_usbdrd300_udrd30_pipe_pclk", NULL, 0, 125000000),
@@ -982,7 +972,7 @@ static void __init exynos7_clk_fsys0_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_fsys0, "samsung,exynos7-clock-fsys0",
 	exynos7_clk_fsys0_init);
 
-/* Register Offset definitions for CMU_FSYS1 (0x156E0000) */
+ 
 #define MUX_SEL_FSYS10			0x0200
 #define MUX_SEL_FSYS11			0x0204
 #define MUX_SEL_FSYS12			0x0208
@@ -993,9 +983,7 @@ CLK_OF_DECLARE(exynos7_clk_fsys0, "samsung,exynos7-clock-fsys0",
 #define ENABLE_SCLK_FSYS12              0x0A08
 #define ENABLE_SCLK_FSYS13              0x0A0C
 
-/*
- * List of parent clocks for Muxes in CMU_FSYS1
- */
+ 
 PNAME(mout_aclk_fsys1_200_user_p)	= { "fin_pll", "aclk_fsys1_200" };
 PNAME(mout_fsys1_group_p)	= { "fin_pll", "fin_pll_26m",
 				"sclk_phy_fsys1_26m" };
@@ -1006,7 +994,7 @@ PNAME(mout_phyclk_ufs20_tx0_user_p) = { "fin_pll", "phyclk_ufs20_tx0_symbol" };
 PNAME(mout_phyclk_ufs20_rx0_user_p) = { "fin_pll", "phyclk_ufs20_rx0_symbol" };
 PNAME(mout_phyclk_ufs20_rx1_user_p) = { "fin_pll", "phyclk_ufs20_rx1_symbol" };
 
-/* fixed rate clocks used in the FSYS1 block */
+ 
 static const struct samsung_fixed_rate_clock fixed_rate_clks_fsys1[] __initconst = {
 	FRATE(PHYCLK_UFS20_TX0_SYMBOL, "phyclk_ufs20_tx0_symbol", NULL,
 			0, 300000000),
@@ -1118,7 +1106,7 @@ CLK_OF_DECLARE(exynos7_clk_fsys1, "samsung,exynos7-clock-fsys1",
 #define ENABLE_ACLK_MSCL		0x0800
 #define ENABLE_PCLK_MSCL		0x0900
 
-/* List of parent clocks for Muxes in CMU_MSCL */
+ 
 PNAME(mout_aclk_mscl_532_user_p)	= { "fin_pll", "aclk_mscl_532" };
 
 static const unsigned long mscl_clk_regs[] __initconst = {
@@ -1226,7 +1214,7 @@ static void __init exynos7_clk_mscl_init(struct device_node *np)
 CLK_OF_DECLARE(exynos7_clk_mscl, "samsung,exynos7-clock-mscl",
 		exynos7_clk_mscl_init);
 
-/* Register Offset definitions for CMU_AUD (0x114C0000) */
+ 
 #define	MUX_SEL_AUD			0x0200
 #define	DIV_AUD0			0x0600
 #define	DIV_AUD1			0x0604
@@ -1234,9 +1222,7 @@ CLK_OF_DECLARE(exynos7_clk_mscl, "samsung,exynos7-clock-mscl",
 #define	ENABLE_PCLK_AUD			0x0900
 #define	ENABLE_SCLK_AUD			0x0A00
 
-/*
- * List of parent clocks for Muxes in CMU_AUD
- */
+ 
 PNAME(mout_aud_pll_user_p) = { "fin_pll", "fout_aud_pll" };
 PNAME(mout_aud_group_p) = { "dout_aud_cdclk", "ioclk_audiocdclk0" };
 

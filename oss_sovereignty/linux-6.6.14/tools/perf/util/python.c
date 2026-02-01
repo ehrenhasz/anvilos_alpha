@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <Python.h>
 #include <structmember.h>
 #include <inttypes.h>
@@ -50,18 +50,13 @@
 #define Py_TYPE(ob) (((PyObject*)(ob))->ob_type)
 #endif
 
-/*
- * Avoid bringing in event parsing.
- */
+ 
 int parse_event(struct evlist *evlist __maybe_unused, const char *str __maybe_unused)
 {
 	return 0;
 }
 
-/*
- * Provide these two so that we don't have to link against callchain.c and
- * start dragging hist.c, etc.
- */
+ 
 struct callchain_param callchain_param;
 
 int parse_callchain_record(const char *arg __maybe_unused,
@@ -70,9 +65,7 @@ int parse_callchain_record(const char *arg __maybe_unused,
 	return 0;
 }
 
-/*
- * Add these not to drag util/env.c
- */
+ 
 struct perf_env perf_env;
 
 const char *perf_env__cpuid(struct perf_env *env __maybe_unused)
@@ -80,19 +73,13 @@ const char *perf_env__cpuid(struct perf_env *env __maybe_unused)
 	return NULL;
 }
 
-// This one is a bit easier, wouldn't drag too much, but leave it as a stub we need it here
+ 
 const char *perf_env__arch(struct perf_env *env __maybe_unused)
 {
 	return NULL;
 }
 
-/*
- * These ones are needed not to drag the PMU bandwagon, jevents generated
- * pmu_sys_event_tables, etc and evsel__find_pmu() is used so far just for
- * doing per PMU perf_event_attr.exclude_guest handling, not really needed, so
- * far, for the perf python binding known usecases, revisit if this become
- * necessary.
- */
+ 
 struct perf_pmu *evsel__find_pmu(const struct evsel *evsel __maybe_unused)
 {
 	return NULL;
@@ -118,9 +105,7 @@ bool perf_pmus__supports_extended_type(void)
 	return false;
 }
 
-/*
- * Add this one here not to drag util/metricgroup.c
- */
+ 
 int metricgroup__copy_metric_events(struct evlist *evlist, struct cgroup *cgrp,
 				    struct rblist *new_metric_events,
 				    struct rblist *old_metric_events)
@@ -128,23 +113,13 @@ int metricgroup__copy_metric_events(struct evlist *evlist, struct cgroup *cgrp,
 	return 0;
 }
 
-/*
- * Add this one here not to drag util/trace-event-info.c
- */
+ 
 char *tracepoint_id_to_name(u64 config)
 {
 	return NULL;
 }
 
-/*
- * XXX: All these evsel destructors need some better mechanism, like a linked
- * list of destructors registered when the relevant code indeed is used instead
- * of having more and more calls in perf_evsel__delete(). -- acme
- *
- * For now, add some more:
- *
- * Not to drag the BPF bandwagon...
- */
+ 
 void bpf_counter__destroy(struct evsel *evsel);
 int bpf_counter__install_pe(struct evsel *evsel, int cpu, int fd);
 int bpf_counter__disable(struct evsel *evsel);
@@ -163,7 +138,7 @@ int bpf_counter__disable(struct evsel *evsel __maybe_unused)
 	return 0;
 }
 
-// not to drag util/bpf-filter.c
+
 #ifdef HAVE_BPF_SKEL
 int perf_bpf_filter__prepare(struct evsel *evsel __maybe_unused)
 {
@@ -176,10 +151,7 @@ int perf_bpf_filter__destroy(struct evsel *evsel __maybe_unused)
 }
 #endif
 
-/*
- * Support debug printing even though util/debug.c is not linked.  That means
- * implementing 'verbose' and 'eprintf'.
- */
+ 
 int verbose;
 int debug_peo_args;
 
@@ -199,7 +171,7 @@ int eprintf(int level, int var, const char *fmt, ...)
 	return ret;
 }
 
-/* Define PyVarObject_HEAD_INIT for python 2.5 */
+ 
 #ifndef PyVarObject_HEAD_INIT
 # define PyVarObject_HEAD_INIT(type, size) PyObject_HEAD_INIT(type) size,
 #endif
@@ -426,10 +398,7 @@ static PyObject *pyrf_read_event__repr(struct pyrf_event *pevent)
 	return _PyUnicode_FromFormat("{ type: read, pid: %u, tid: %u }",
 				   pevent->event.read.pid,
 				   pevent->event.read.tid);
-	/*
- 	 * FIXME: return the array of read values,
- 	 * making this method useful ;-)
- 	 */
+	 
 }
 
 static PyTypeObject pyrf_read_event__type = {
@@ -534,7 +503,7 @@ get_tracepoint_field(struct pyrf_event *pevent, PyObject *attr_name)
 
 	return tracepoint_field(pevent, field);
 }
-#endif /* HAVE_LIBTRACEEVENT */
+#endif  
 
 static PyObject*
 pyrf_sample_event__getattro(struct pyrf_event *pevent, PyObject *attr_name)
@@ -888,14 +857,14 @@ static int pyrf_evsel__init(struct pyrf_evsel *pevsel,
 					 &attr.bp_addr, &attr.bp_len, &idx))
 		return -1;
 
-	/* union... */
+	 
 	if (sample_period != 0) {
 		if (attr.sample_freq != 0)
-			return -1; /* FIXME: throw right exception */
+			return -1;  
 		attr.sample_period = sample_period;
 	}
 
-	/* Bitfields */
+	 
 	attr.disabled	    = disabled;
 	attr.inherit	    = inherit;
 	attr.pinned	    = pinned;
@@ -948,10 +917,7 @@ static PyObject *pyrf_evsel__open(struct pyrf_evsel *pevsel,
 		cpus = ((struct pyrf_cpu_map *)pcpus)->cpus;
 
 	evsel->core.attr.inherit = inherit;
-	/*
-	 * This will group just the fds for this single evsel, to group
-	 * multiple events, use evlist.open().
-	 */
+	 
 	if (evsel__open(evsel, cpus, threads) < 0) {
 		PyErr_SetFromErrno(PyExc_OSError);
 		return NULL;
@@ -1168,7 +1134,7 @@ static PyObject *pyrf_evlist__read_on_cpu(struct pyrf_evlist *pevlist,
 
 		err = evsel__parse_sample(evsel, event, &pevent->sample);
 
-		/* Consume the even only after we parsed it out. */
+		 
 		perf_mmap__consume(&md->core);
 
 		if (err)
@@ -1386,7 +1352,7 @@ static PyObject *pyrf__tracepoint(struct pyrf_evsel *pevsel,
 		return _PyLong_FromLong(-1);
 
 	return _PyLong_FromLong(tp_format->id);
-#endif // HAVE_LIBTRACEEVENT
+#endif 
 }
 
 static PyMethodDef perf__methods[] = {
@@ -1413,14 +1379,14 @@ PyMODINIT_FUNC PyInit_perf(void)
 #else
 	static struct PyModuleDef moduledef = {
 		PyModuleDef_HEAD_INIT,
-		"perf",			/* m_name */
-		"",			/* m_doc */
-		-1,			/* m_size */
-		perf__methods,		/* m_methods */
-		NULL,			/* m_reload */
-		NULL,			/* m_traverse */
-		NULL,			/* m_clear */
-		NULL,			/* m_free */
+		"perf",			 
+		"",			 
+		-1,			 
+		perf__methods,		 
+		NULL,			 
+		NULL,			 
+		NULL,			 
+		NULL,			 
 	};
 	PyObject *module = PyModule_Create(&moduledef);
 #endif
@@ -1437,7 +1403,7 @@ PyMODINIT_FUNC PyInit_perf(void)
 		return module;
 #endif
 
-	/* The page_size is placed in util object. */
+	 
 	page_size = sysconf(_SC_PAGE_SIZE);
 
 	Py_INCREF(&pyrf_evlist__type);
@@ -1499,10 +1465,7 @@ error:
 #endif
 }
 
-/*
- * Dummy, to avoid dragging all the test_attr infrastructure in the python
- * binding.
- */
+ 
 void test_attr__open(struct perf_event_attr *attr, pid_t pid, struct perf_cpu cpu,
                      int fd, int group_fd, unsigned long flags)
 {

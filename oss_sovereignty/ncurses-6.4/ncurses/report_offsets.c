@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 2017 Free Software Foundation, Inc.                            *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -50,23 +21,23 @@ MODULE_ID("$Id: report_offsets.c,v 1.22 2021/08/19 19:51:33 tom Exp $")
 #if NCURSES_WIDECHAR && NCURSES_EXT_COLORS
 #define show_COLORS(type,member) { flag = "c"; show_offset(type,member); }
 #else
-#define show_COLORS(type,member)	/* nothing */
+#define show_COLORS(type,member)	 
 #endif
 
 #ifdef USE_TERM_DRIVER
 #define show_DRIVER(type,member) { flag = "d"; show_offset(type,member); }
 #else
-#define show_DRIVER(type,member)	/* nothing */
+#define show_DRIVER(type,member)	 
 #endif
 
 #if NO_LEAKS
 #define show_MLEAKS(type,member) { flag = "L"; show_offset(type,member); }
 #else
-#define show_MLEAKS(type,member)	/* nothing */
+#define show_MLEAKS(type,member)	 
 #endif
 
 #ifdef USE_TERM_DRIVER
-#define show_NORMAL(type,member)	/* nothing */
+#define show_NORMAL(type,member)	 
 #else
 #define show_NORMAL(type,member) { flag = "n"; show_offset(type,member); }
 #endif
@@ -76,31 +47,31 @@ MODULE_ID("$Id: report_offsets.c,v 1.22 2021/08/19 19:51:33 tom Exp $")
 #if USE_REENTRANT
 #define show_REENTR(type,member) { flag = "r"; show_offset(type,member); }
 #else
-#define show_REENTR(type,member)	/* nothing */
+#define show_REENTR(type,member)	 
 #endif
 
 #if NCURSES_SP_FUNCS
 #define show_SPFUNC(type,member) { flag = "s"; show_offset(type,member); }
 #else
-#define show_SPFUNC(type,member)	/* nothing */
+#define show_SPFUNC(type,member)	 
 #endif
 
 #ifdef USE_PTHREADS
 #define show_THREAD(type,member) { flag = "t"; show_offset(type,member); }
 #else
-#define show_THREAD(type,member)	/* nothing */
+#define show_THREAD(type,member)	 
 #endif
 
 #ifdef TRACE
 #define show_TRACES(type,member) { flag = "T"; show_offset(type,member); }
 #else
-#define show_TRACES(type,member)	/* nothing */
+#define show_TRACES(type,member)	 
 #endif
 
 #if USE_WIDEC_SUPPORT
 #define show_WIDECH(type,member) { flag = "w"; show_offset(type,member); }
 #else
-#define show_WIDECH(type,member)	/* nothing */
+#define show_WIDECH(type,member)	 
 #endif
 
 int

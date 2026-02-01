@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 Carlos Neira cneirabustos@gmail.com */
+
+ 
 
 #include <linux/bpf.h>
 #include <stdint.h>

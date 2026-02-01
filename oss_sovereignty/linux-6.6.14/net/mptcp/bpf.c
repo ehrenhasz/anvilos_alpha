@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Multipath TCP
- *
- * Copyright (c) 2020, Tessares SA.
- * Copyright (c) 2022, SUSE.
- *
- * Author: Nicolas Rybowski <nicolas.rybowski@tessares.net>
- */
+
+ 
 
 #define pr_fmt(fmt) "MPTCP: " fmt
 

@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * virtio-snd: Virtio sound device
- * Copyright (C) 2021 OpenSynergy GmbH
- */
+
+ 
 #include <linux/virtio_config.h>
 
 #include "virtio_card.h"
 
-/* VirtIO->ALSA channel position map */
+ 
 static const u8 g_v2a_position_map[] = {
 	[VIRTIO_SND_CHMAP_NONE] = SNDRV_CHMAP_UNKNOWN,
 	[VIRTIO_SND_CHMAP_NA] = SNDRV_CHMAP_NA,
@@ -48,15 +45,7 @@ static const u8 g_v2a_position_map[] = {
 	[VIRTIO_SND_CHMAP_BRC] = SNDRV_CHMAP_BRC
 };
 
-/**
- * virtsnd_chmap_parse_cfg() - Parse the channel map configuration.
- * @snd: VirtIO sound device.
- *
- * This function is called during initial device initialization.
- *
- * Context: Any context that permits to sleep.
- * Return: 0 on success, -errno on failure.
- */
+ 
 int virtsnd_chmap_parse_cfg(struct virtio_snd *snd)
 {
 	struct virtio_device *vdev = snd->vdev;
@@ -78,7 +67,7 @@ int virtsnd_chmap_parse_cfg(struct virtio_snd *snd)
 	if (rc)
 		return rc;
 
-	/* Count the number of channel maps per each PCM device/stream. */
+	 
 	for (i = 0; i < snd->nchmaps; ++i) {
 		struct virtio_snd_chmap_info *info = &snd->chmaps[i];
 		u32 nid = le32_to_cpu(info->hdr.hda_fn_nid);
@@ -109,15 +98,7 @@ int virtsnd_chmap_parse_cfg(struct virtio_snd *snd)
 	return 0;
 }
 
-/**
- * virtsnd_chmap_add_ctls() - Create an ALSA control for channel maps.
- * @pcm: ALSA PCM device.
- * @direction: PCM stream direction (SNDRV_PCM_STREAM_XXX).
- * @vs: VirtIO PCM stream.
- *
- * Context: Any context.
- * Return: 0 on success, -errno on failure.
- */
+ 
 static int virtsnd_chmap_add_ctls(struct snd_pcm *pcm, int direction,
 				  struct virtio_pcm_stream *vs)
 {
@@ -132,13 +113,7 @@ static int virtsnd_chmap_add_ctls(struct snd_pcm *pcm, int direction,
 				      0, NULL);
 }
 
-/**
- * virtsnd_chmap_build_devs() - Build ALSA controls for channel maps.
- * @snd: VirtIO sound device.
- *
- * Context: Any context.
- * Return: 0 on success, -errno on failure.
- */
+ 
 int virtsnd_chmap_build_devs(struct virtio_snd *snd)
 {
 	struct virtio_device *vdev = snd->vdev;
@@ -147,7 +122,7 @@ int virtsnd_chmap_build_devs(struct virtio_snd *snd)
 	u32 i;
 	int rc;
 
-	/* Allocate channel map elements per each PCM device/stream. */
+	 
 	list_for_each_entry(vpcm, &snd->pcm_list, list) {
 		for (i = 0; i < ARRAY_SIZE(vpcm->streams); ++i) {
 			vs = &vpcm->streams[i];
@@ -165,7 +140,7 @@ int virtsnd_chmap_build_devs(struct virtio_snd *snd)
 		}
 	}
 
-	/* Initialize channel maps per each PCM device/stream. */
+	 
 	for (i = 0; i < snd->nchmaps; ++i) {
 		struct virtio_snd_chmap_info *info = &snd->chmaps[i];
 		unsigned int channels = info->channels;
@@ -198,7 +173,7 @@ int virtsnd_chmap_build_devs(struct virtio_snd *snd)
 		}
 	}
 
-	/* Create an ALSA control per each PCM device/stream. */
+	 
 	list_for_each_entry(vpcm, &snd->pcm_list, list) {
 		if (!vpcm->pcm)
 			continue;

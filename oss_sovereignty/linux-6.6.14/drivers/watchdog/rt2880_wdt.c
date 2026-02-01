@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ralink RT288x/RT3xxx/MT76xx built-in hardware watchdog timer
- *
- * Copyright (C) 2011 Gabor Juhos <juhosg@openwrt.org>
- * Copyright (C) 2013 John Crispin <john@phrozen.org>
- *
- * This driver was based on: drivers/watchdog/softdog.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/reset.h>

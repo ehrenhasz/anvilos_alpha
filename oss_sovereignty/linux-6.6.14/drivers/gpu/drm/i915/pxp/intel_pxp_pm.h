@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright(c) 2020, Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __INTEL_PXP_PM_H__
 #define __INTEL_PXP_PM_H__
@@ -34,4 +32,4 @@ static inline void intel_pxp_runtime_resume(struct intel_pxp *pxp)
 {
 	intel_pxp_resume_complete(pxp);
 }
-#endif /* __INTEL_PXP_PM_H__ */
+#endif  

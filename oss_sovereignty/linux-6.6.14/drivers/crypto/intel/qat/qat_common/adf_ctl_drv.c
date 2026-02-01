@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 
 #include <crypto/algapi.h>
 #include <linux/module.h>
@@ -95,7 +95,7 @@ static int adf_ctl_alloc_resources(struct adf_user_cfg_ctl_data **ctl_data,
 	if (!cfg_data)
 		return -ENOMEM;
 
-	/* Initialize device id to NO DEVICE as 0 is a valid device id */
+	 
 	cfg_data->device_id = ADF_CFG_NO_DEVICE;
 
 	if (copy_from_user(cfg_data, (void __user *)arg, sizeof(*cfg_data))) {
@@ -240,7 +240,7 @@ static void adf_ctl_stop_devices(u32 id)
 			if (!adf_dev_started(accel_dev))
 				continue;
 
-			/* First stop all VFs */
+			 
 			if (!accel_dev->is_vf)
 				continue;
 

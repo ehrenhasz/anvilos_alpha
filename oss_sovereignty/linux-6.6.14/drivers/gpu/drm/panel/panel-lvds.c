@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Generic LVDS panel driver
- *
- * Copyright (C) 2016 Laurent Pinchart
- * Copyright (C) 2016 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -100,10 +93,7 @@ static int panel_lvds_get_modes(struct drm_panel *panel,
 					 &lvds->bus_format, 1);
 	connector->display_info.bus_flags = lvds->bus_flags;
 
-	/*
-	 * TODO: Remove once all drm drivers call
-	 * drm_connector_set_orientation_from_panel()
-	 */
+	 
 	drm_connector_set_panel_orientation(connector, lvds->orientation);
 
 	return 1;
@@ -188,7 +178,7 @@ static int panel_lvds_probe(struct platform_device *pdev)
 		lvds->supply = NULL;
 	}
 
-	/* Get GPIOs and backlight controller. */
+	 
 	lvds->enable_gpio = devm_gpiod_get_optional(lvds->dev, "enable",
 						     GPIOD_OUT_LOW);
 	if (IS_ERR(lvds->enable_gpio)) {
@@ -207,14 +197,9 @@ static int panel_lvds_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * TODO: Handle all power supplies specified in the DT node in a generic
-	 * way for panels that don't care about power supply ordering. LVDS
-	 * panels that require a specific power sequence will need a dedicated
-	 * driver.
-	 */
+	 
 
-	/* Register the panel. */
+	 
 	drm_panel_init(&lvds->panel, lvds->dev, &panel_lvds_funcs,
 		       DRM_MODE_CONNECTOR_LVDS);
 
@@ -239,7 +224,7 @@ static void panel_lvds_remove(struct platform_device *pdev)
 
 static const struct of_device_id panel_lvds_of_table[] = {
 	{ .compatible = "panel-lvds", },
-	{ /* Sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, panel_lvds_of_table);

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2021 Hisilicon Limited.
+ 
+
 
 #ifndef __HNS3_ETHTOOL_H
 #define __HNS3_ETHTOOL_H

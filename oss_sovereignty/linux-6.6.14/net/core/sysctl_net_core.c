@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* -*- linux-c -*-
- * sysctl_net_core.c: sysctl interface to net core subsystem.
- *
- * Begun April 1, 1996, Mike Shaver.
- * Added /proc/sys/net/core directory entry (empty =) ). [MS]
- */
+
+ 
 
 #include <linux/filter.h>
 #include <linux/mm.h>
@@ -31,18 +26,12 @@ static int min_sndbuf = SOCK_MIN_SNDBUF;
 static int min_rcvbuf = SOCK_MIN_RCVBUF;
 static int max_skb_frags = MAX_SKB_FRAGS;
 
-static int net_msg_warn;	/* Unused, but still a sysctl */
+static int net_msg_warn;	 
 
 int sysctl_fb_tunnels_only_for_init_net __read_mostly = 0;
 EXPORT_SYMBOL(sysctl_fb_tunnels_only_for_init_net);
 
-/* 0 - Keep current behavior:
- *     IPv4: inherit all current settings from init_net
- *     IPv6: reset all settings to default
- * 1 - Both inherit all current settings from init_net
- * 2 - Both reset all settings to default
- * 3 - Both inherit all settings from current netns
- */
+ 
 int sysctl_devconf_inherit_init_net __read_mostly;
 EXPORT_SYMBOL(sysctl_devconf_inherit_init_net);
 
@@ -86,7 +75,7 @@ static struct cpumask *rps_default_mask_cow_alloc(struct net *net)
 	if (!rps_default_mask)
 		return NULL;
 
-	/* pairs with READ_ONCE in rx_queue_default_mask() */
+	 
 	WRITE_ONCE(net->core.rps_default_mask, rps_default_mask);
 	return rps_default_mask;
 }
@@ -146,7 +135,7 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 	if (write) {
 		if (size) {
 			if (size > 1<<29) {
-				/* Enforce limit to prevent overflow */
+				 
 				mutex_unlock(&sock_flow_mutex);
 				return -EINVAL;
 			}
@@ -186,7 +175,7 @@ static int rps_sock_flow_sysctl(struct ctl_table *table, int write,
 
 	return ret;
 }
-#endif /* CONFIG_RPS */
+#endif  
 
 #ifdef CONFIG_NET_FLOW_LIMIT
 static DEFINE_MUTEX(flow_limit_update_mutex);
@@ -220,7 +209,7 @@ static int flow_limit_cpu_sysctl(struct ctl_table *table, int write,
 				cur = kzalloc_node(len, GFP_KERNEL,
 						   cpu_to_node(i));
 				if (!cur) {
-					/* not unwinding previous changes */
+					 
 					ret = -ENOMEM;
 					goto write_unlock;
 				}
@@ -267,7 +256,7 @@ static int flow_limit_table_len_sysctl(struct ctl_table *table, int write,
 	mutex_unlock(&flow_limit_update_mutex);
 	return ret;
 }
-#endif /* CONFIG_NET_FLOW_LIMIT */
+#endif  
 
 #ifdef CONFIG_NET_SCHED
 static int set_default_qdisc(struct ctl_table *table, int write,
@@ -361,7 +350,7 @@ proc_dointvec_minmax_bpf_restricted(struct ctl_table *table, int write,
 
 	return proc_dointvec_minmax(table, write, buffer, lenp, ppos);
 }
-# endif /* CONFIG_HAVE_EBPF_JIT */
+# endif  
 
 static int
 proc_dolongvec_minmax_bpf_restricted(struct ctl_table *table, int write,
@@ -545,7 +534,7 @@ static struct ctl_table net_core_table[] = {
 		.mode		= 0644,
 		.proc_handler	= flow_limit_table_len_sysctl
 	},
-#endif /* CONFIG_NET_FLOW_LIMIT */
+#endif  
 #ifdef CONFIG_NET_RX_BUSY_POLL
 	{
 		.procname	= "busy_poll",
@@ -687,10 +676,10 @@ static struct ctl_table netns_core_table[] = {
 
 static int __init fb_tunnels_only_for_init_net_sysctl_setup(char *str)
 {
-	/* fallback tunnels for initns only */
+	 
 	if (!strncmp(str, "initns", 6))
 		sysctl_fb_tunnels_only_for_init_net = 1;
-	/* no fallback tunnels anywhere */
+	 
 	else if (!strncmp(str, "none", 4))
 		sysctl_fb_tunnels_only_for_init_net = 2;
 

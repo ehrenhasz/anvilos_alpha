@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/ethernet/ibm/emac/tah.c
- *
- * Driver for PowerPC 4xx on-chip ethernet controller, TAH support.
- *
- * Copyright 2007 Benjamin Herrenschmidt, IBM Corp.
- *                <benh@kernel.crashing.org>
- *
- * Based on the arch/ppc version of the driver:
- *
- * Copyright 2004 MontaVista Software, Inc.
- * Matt Porter <mporter@kernel.crashing.org>
- *
- * Copyright (c) 2005 Eugene Surovegin <ebs@ebshome.net>
- */
+
+ 
 #include <linux/mod_devicetable.h>
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
@@ -27,7 +13,7 @@ int tah_attach(struct platform_device *ofdev, int channel)
 	struct tah_instance *dev = platform_get_drvdata(ofdev);
 
 	mutex_lock(&dev->lock);
-	/* Reset has been done at probe() time... nothing else to do for now */
+	 
 	++dev->users;
 	mutex_unlock(&dev->lock);
 
@@ -49,7 +35,7 @@ void tah_reset(struct platform_device *ofdev)
 	struct tah_regs __iomem *p = dev->base;
 	int n;
 
-	/* Reset TAH */
+	 
 	out_be32(&p->mr, TAH_MR_SR);
 	n = 100;
 	while ((in_be32(&p->mr) & TAH_MR_SR) && n)
@@ -58,7 +44,7 @@ void tah_reset(struct platform_device *ofdev)
 	if (unlikely(!n))
 		printk(KERN_ERR "%pOF: reset timeout\n", ofdev->dev.of_node);
 
-	/* 10KB TAH TX FIFO accommodates the max MTU of 9000 */
+	 
 	out_be32(&p->mr,
 		 TAH_MR_CVR | TAH_MR_ST_768 | TAH_MR_TFS_10KB | TAH_MR_DTFP |
 		 TAH_MR_DIG);
@@ -77,10 +63,7 @@ void *tah_dump_regs(struct platform_device *ofdev, void *buf)
 	struct tah_regs *regs = (struct tah_regs *)(hdr + 1);
 
 	hdr->version = 0;
-	hdr->index = 0; /* for now, are there chips with more than one
-			 * zmii ? if yes, then we'll add a cell_index
-			 * like we do for emac
-			 */
+	hdr->index = 0;  
 	memcpy_fromio(regs, dev->base, sizeof(struct tah_regs));
 	return regs + 1;
 }
@@ -116,7 +99,7 @@ static int tah_probe(struct platform_device *ofdev)
 
 	platform_set_drvdata(ofdev, dev);
 
-	/* Initialize TAH and enable IPv4 checksum verification, no TSO yet */
+	 
 	tah_reset(ofdev);
 
 	printk(KERN_INFO "TAH %pOF initialized\n", ofdev->dev.of_node);
@@ -147,7 +130,7 @@ static const struct of_device_id tah_match[] =
 	{
 		.compatible	= "ibm,tah",
 	},
-	/* For backward compat with old DT */
+	 
 	{
 		.type		= "tah",
 	},

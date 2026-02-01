@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
+
+ 
+ 
+ 
 
 #include <linux/module.h>
 #include <net/addrconf.h>
@@ -58,19 +58,13 @@ static int erdma_enum_and_get_netdev(struct erdma_dev *dev)
 	struct net_device *netdev;
 	int ret = -EPROBE_DEFER;
 
-	/* Already binded to a net_device, so we skip. */
+	 
 	if (dev->netdev)
 		return 0;
 
 	rtnl_lock();
 	for_each_netdev(&init_net, netdev) {
-		/*
-		 * In erdma, the paired netdev and ibdev should have the same
-		 * MAC address. erdma can get the value from its PCIe bar
-		 * registers. Since erdma can not get the paired netdev
-		 * reference directly, we do a traverse here to get the paired
-		 * netdev.
-		 */
+		 
 		if (ether_addr_equal_unaligned(netdev->perm_addr,
 					       dev->attrs.peer_addr)) {
 			ret = ib_device_set_netdev(&dev->ibdev, netdev, 1);
@@ -262,7 +256,7 @@ static int erdma_probe_dev(struct pci_dev *pdev)
 
 	version = erdma_reg_read32(dev, ERDMA_REGS_VERSION_REG);
 	if (version == 0) {
-		/* we knows that it is a non-functional function. */
+		 
 		err = -ENODEV;
 		goto err_iounmap_func_bar;
 	}
@@ -506,11 +500,7 @@ static int erdma_ib_device_add(struct pci_dev *pdev)
 	ibdev->node_type = RDMA_NODE_RNIC;
 	memcpy(ibdev->node_desc, ERDMA_NODE_DESC, sizeof(ERDMA_NODE_DESC));
 
-	/*
-	 * Current model (one-to-one device association):
-	 * One ERDMA device per net_device or, equivalently,
-	 * per physical port.
-	 */
+	 
 	ibdev->phys_port_cnt = 1;
 	ibdev->num_comp_vectors = dev->attrs.irq_num - 1;
 

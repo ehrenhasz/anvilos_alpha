@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __DRM_BUDDY_H__
 #define __DRM_BUDDY_H__
@@ -31,7 +29,7 @@ struct drm_buddy_block {
 #define   DRM_BUDDY_ALLOCATED	   (1 << 10)
 #define   DRM_BUDDY_FREE	   (2 << 10)
 #define   DRM_BUDDY_SPLIT	   (3 << 10)
-/* Free to be used, if needed in the future */
+ 
 #define DRM_BUDDY_HEADER_UNUSED GENMASK_ULL(9, 6)
 #define DRM_BUDDY_HEADER_ORDER  GENMASK_ULL(5, 0)
 	u64 header;
@@ -40,48 +38,29 @@ struct drm_buddy_block {
 	struct drm_buddy_block *right;
 	struct drm_buddy_block *parent;
 
-	void *private; /* owned by creator */
+	void *private;  
 
-	/*
-	 * While the block is allocated by the user through drm_buddy_alloc*,
-	 * the user has ownership of the link, for example to maintain within
-	 * a list, if so desired. As soon as the block is freed with
-	 * drm_buddy_free* ownership is given back to the mm.
-	 */
+	 
 	struct list_head link;
 	struct list_head tmp_link;
 };
 
-/* Order-zero must be at least PAGE_SIZE */
+ 
 #define DRM_BUDDY_MAX_ORDER (63 - PAGE_SHIFT)
 
-/*
- * Binary Buddy System.
- *
- * Locking should be handled by the user, a simple mutex around
- * drm_buddy_alloc* and drm_buddy_free* should suffice.
- */
+ 
 struct drm_buddy {
-	/* Maintain a free list for each order. */
+	 
 	struct list_head *free_list;
 
-	/*
-	 * Maintain explicit binary tree(s) to track the allocation of the
-	 * address space. This gives us a simple way of finding a buddy block
-	 * and performing the potentially recursive merge step when freeing a
-	 * block.  Nodes are either allocated or free, in which case they will
-	 * also exist on the respective free list.
-	 */
+	 
 	struct drm_buddy_block **roots;
 
-	/*
-	 * Anything from here is public, and remains static for the lifetime of
-	 * the mm. Everything above is considered do-not-touch.
-	 */
+	 
 	unsigned int n_roots;
 	unsigned int max_order;
 
-	/* Must be at least PAGE_SIZE */
+	 
 	u64 chunk_size;
 	u64 size;
 	u64 avail;

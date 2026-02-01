@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2000-2002 Vojtech Pavlik <vojtech@ucw.cz>
- *  Copyright (c) 2001-2002, 2007 Johann Deneux <johann.deneux@gmail.com>
- *
- *  USB/RS232 I-Force joysticks and wheels.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include "iforce.h"
@@ -21,21 +16,17 @@ void iforce_dump_packet(struct iforce *iforce, char *msg, u16 cmd, unsigned char
 		__func__, msg, cmd, LO(cmd), data);
 }
 
-/*
- * Send a packet of bytes to the device
- */
+ 
 int iforce_send_packet(struct iforce *iforce, u16 cmd, unsigned char* data)
 {
-	/* Copy data to buffer */
+	 
 	int n = LO(cmd);
 	int c;
 	int empty;
 	int head, tail;
 	unsigned long flags;
 
-/*
- * Update head and tail of xmit buffer
- */
+ 
 	spin_lock_irqsave(&iforce->xmit_lock, flags);
 
 	head = iforce->xmit.head;
@@ -52,9 +43,7 @@ int iforce_send_packet(struct iforce *iforce, u16 cmd, unsigned char* data)
 	empty = head == tail;
 	XMIT_INC(iforce->xmit.head, n+2);
 
-/*
- * Store packet in xmit buffer
- */
+ 
 	iforce->xmit.buf[head] = HI(cmd);
 	XMIT_INC(head, 1);
 	iforce->xmit.buf[head] = LO(cmd);
@@ -74,9 +63,7 @@ int iforce_send_packet(struct iforce *iforce, u16 cmd, unsigned char* data)
 	XMIT_INC(head, n);
 
 	spin_unlock_irqrestore(&iforce->xmit_lock, flags);
-/*
- * If necessary, start the transmission
- */
+ 
 	if (empty)
 		iforce->xport_ops->xmit(iforce);
 
@@ -84,7 +71,7 @@ int iforce_send_packet(struct iforce *iforce, u16 cmd, unsigned char* data)
 }
 EXPORT_SYMBOL(iforce_send_packet);
 
-/* Start or stop an effect */
+ 
 int iforce_control_playback(struct iforce* iforce, u16 id, unsigned int value)
 {
 	unsigned char data[3];
@@ -95,8 +82,7 @@ int iforce_control_playback(struct iforce* iforce, u16 id, unsigned int value)
 	return iforce_send_packet(iforce, FF_CMD_PLAY, data);
 }
 
-/* Mark an effect that was being updated as ready. That means it can be updated
- * again */
+ 
 static int mark_core_as_ready(struct iforce *iforce, unsigned short addr)
 {
 	int i;
@@ -128,7 +114,7 @@ static void iforce_report_hats_buttons(struct iforce *iforce, u8 *data)
 		input_report_key(dev, iforce->type->btn[i],
 				 data[(i >> 3) + 5] & (1 << (i & 7)));
 
-	/* If there are untouched bits left, interpret them as the second hat */
+	 
 	if (i <= 8) {
 		u8 btns = data[6];
 
@@ -160,7 +146,7 @@ void iforce_process_packet(struct iforce *iforce,
 
 	switch (packet_id) {
 
-	case 0x01:	/* joystick position data */
+	case 0x01:	 
 		input_report_abs(dev, ABS_X,
 				 (__s16) get_unaligned_le16(data));
 		input_report_abs(dev, ABS_Y,
@@ -175,7 +161,7 @@ void iforce_process_packet(struct iforce *iforce,
 		input_sync(dev);
 		break;
 
-	case 0x03:	/* wheel position data */
+	case 0x03:	 
 		input_report_abs(dev, ABS_WHEEL,
 				 (__s16) get_unaligned_le16(data));
 		input_report_abs(dev, ABS_GAS,   255 - data[2]);
@@ -186,19 +172,19 @@ void iforce_process_packet(struct iforce *iforce,
 		input_sync(dev);
 		break;
 
-	case 0x02:	/* status report */
+	case 0x02:	 
 		input_report_key(dev, BTN_DEAD, data[0] & 0x02);
 		input_sync(dev);
 
-		/* Check if an effect was just started or stopped */
+		 
 		i = data[1] & 0x7f;
 		if (data[1] & 0x80) {
 			if (!test_and_set_bit(FF_CORE_IS_PLAYED, iforce->core_effects[i].flags)) {
-				/* Report play event */
+				 
 				input_report_ff_status(dev, i, FF_STATUS_PLAYING);
 			}
 		} else if (test_and_clear_bit(FF_CORE_IS_PLAYED, iforce->core_effects[i].flags)) {
-			/* Report stop event */
+			 
 			input_report_ff_status(dev, i, FF_STATUS_STOPPED);
 		}
 

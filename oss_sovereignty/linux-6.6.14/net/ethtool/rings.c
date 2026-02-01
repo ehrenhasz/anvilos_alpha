@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -47,21 +47,21 @@ static int rings_prepare_data(const struct ethnl_req_info *req_base,
 static int rings_reply_size(const struct ethnl_req_info *req_base,
 			    const struct ethnl_reply_data *reply_base)
 {
-	return nla_total_size(sizeof(u32)) +	/* _RINGS_RX_MAX */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX_MINI_MAX */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX_JUMBO_MAX */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_TX_MAX */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX_MINI */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX_JUMBO */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_TX */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_RX_BUF_LEN */
-	       nla_total_size(sizeof(u8))  +	/* _RINGS_TCP_DATA_SPLIT */
-	       nla_total_size(sizeof(u32)  +	/* _RINGS_CQE_SIZE */
-	       nla_total_size(sizeof(u8))  +	/* _RINGS_TX_PUSH */
-	       nla_total_size(sizeof(u8))) +	/* _RINGS_RX_PUSH */
-	       nla_total_size(sizeof(u32)) +	/* _RINGS_TX_PUSH_BUF_LEN */
-	       nla_total_size(sizeof(u32));	/* _RINGS_TX_PUSH_BUF_LEN_MAX */
+	return nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u8))  +	 
+	       nla_total_size(sizeof(u32)  +	 
+	       nla_total_size(sizeof(u8))  +	 
+	       nla_total_size(sizeof(u8))) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32));	 
 }
 
 static int rings_fill_reply(struct sk_buff *skb,
@@ -114,7 +114,7 @@ static int rings_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* RINGS_SET */
+ 
 
 const struct nla_policy ethnl_rings_set_policy[] = {
 	[ETHTOOL_A_RINGS_HEADER]		=
@@ -213,7 +213,7 @@ ethnl_set_rings(struct ethnl_req_info *req_info, struct genl_info *info)
 	if (!mod)
 		return 0;
 
-	/* ensure new ring parameters are within limits */
+	 
 	if (ringparam.rx_pending > ringparam.rx_max_pending)
 		err_attr = tb[ETHTOOL_A_RINGS_RX];
 	else if (ringparam.rx_mini_pending > ringparam.rx_mini_max_pending)

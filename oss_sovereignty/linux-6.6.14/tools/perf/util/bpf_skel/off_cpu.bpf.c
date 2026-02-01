@@ -1,18 +1,18 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-// Copyright (c) 2022 Google
+
+
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_core_read.h>
 
-/* task->flags for off-cpu analysis */
-#define PF_KTHREAD   0x00200000  /* I am a kernel thread */
+ 
+#define PF_KTHREAD   0x00200000   
 
-/* task->state for off-cpu analysis */
+ 
 #define TASK_INTERRUPTIBLE	0x0001
 #define TASK_UNINTERRUPTIBLE	0x0002
 
-/* create a new thread */
+ 
 #define CLONE_THREAD  0x10000
 
 #define MAX_STACKS   32
@@ -74,12 +74,12 @@ struct {
 	__uint(max_entries, 1);
 } cgroup_filter SEC(".maps");
 
-/* new kernel task_struct definition */
+ 
 struct task_struct___new {
 	long __state;
 } __attribute__((preserve_access_index));
 
-/* old kernel task_struct definition */
+ 
 struct task_struct___old {
 	long state;
 } __attribute__((preserve_access_index));
@@ -96,21 +96,16 @@ const volatile bool uses_cgroup_v1 = false;
 
 int perf_subsys_id = -1;
 
-/*
- * Old kernel used to call it task_struct->state and now it's '__state'.
- * Use BPF CO-RE "ignored suffix rule" to deal with it like below:
- *
- * https://nakryiko.com/posts/bpf-core-reference-guide/#handling-incompatible-field-and-type-changes
- */
+ 
 static inline int get_task_state(struct task_struct *t)
 {
-	/* recast pointer to capture new type for compiler */
+	 
 	struct task_struct___new *t_new = (void *)t;
 
 	if (bpf_core_field_exists(t_new->__state)) {
 		return BPF_CORE_READ(t_new, __state);
 	} else {
-		/* recast pointer to capture old type for compiler */
+		 
 		struct task_struct___old *t_old = (void *)t;
 
 		return BPF_CORE_READ(t_old, state);
@@ -139,7 +134,7 @@ static inline __u64 get_cgroup_id(struct task_struct *t)
 
 static inline int can_record(struct task_struct *t, int state)
 {
-	/* kernel threads don't have user stack */
+	 
 	if (t->flags & PF_KTHREAD)
 		return 0;
 
@@ -226,7 +221,7 @@ next:
 		else
 			bpf_map_update_elem(&off_cpu, &key, &delta, BPF_ANY);
 
-		/* prevent to reuse the timestamp later */
+		 
 		pelem->timestamp = 0;
 	}
 

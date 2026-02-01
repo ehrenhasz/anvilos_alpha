@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013 Texas Instruments Inc.
- *
- * David Griego, <dagriego@biglakesoftware.com>
- * Dale Farnsworth, <dale@farnsworth.org>
- * Archit Taneja, <archit@ti.com>
- */
+ 
+ 
 
 #ifndef __TI_VPE_REGS_H
 #define __TI_VPE_REGS_H
 
-/* VPE register offsets and field selectors */
+ 
 
-/* VPE top level regs */
+ 
 #define VPE_PID				0x0000
 #define VPE_PID_MINOR_MASK		0x3f
 #define VPE_PID_MINOR_SHIFT		0
@@ -118,7 +112,7 @@
 #define VPE_RANGE_MAP_ON		BIT(6)
 #define VPE_RANGE_REDUCTION_ON		BIT(28)
 
-/* VPE chrominance upsampler regs */
+ 
 #define VPE_US1_R0			0x0304
 #define VPE_US2_R0			0x0404
 #define VPE_US3_R0			0x0504
@@ -189,7 +183,7 @@
 #define VPE_INTERP_FID0_C2_MASK		0x3fff
 #define VPE_INTERP_FID0_C2_SHIFT	18
 
-/* VPE de-interlacer regs */
+ 
 #define VPE_DEI_FRAME_SIZE		0x0600
 #define VPE_DEI_WIDTH_MASK		0x07ff
 #define VPE_DEI_WIDTH_SHIFT		0

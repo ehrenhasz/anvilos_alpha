@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test cases for <linux/hash.h> and <linux/stringhash.h>
- * This just verifies that various ways of computing a hash
- * produce the same thing and, for cases where a k-bit hash
- * value is requested, is of the requested size.
- *
- * We fill a buffer with a 255-byte null-terminated string,
- * and use both full_name_hash() and hashlen_string() to hash the
- * substrings from i to j, where 0 <= i < j < 256.
- *
- * The returned values are used to check that __hash_32() and
- * __hash_32_generic() compute the same thing.  Likewise hash_32()
- * and hash_64().
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/types.h>
@@ -21,7 +8,7 @@
 #include <linux/stringhash.h>
 #include <kunit/test.h>
 
-/* 32-bit XORSHIFT generator.  Seed must not be zero. */
+ 
 static u32 __attribute_const__
 xorshift(u32 seed)
 {
@@ -31,18 +18,18 @@ xorshift(u32 seed)
 	return seed;
 }
 
-/* Given a non-zero x, returns a non-zero byte. */
+ 
 static u8 __attribute_const__
 mod255(u32 x)
 {
-	x = (x & 0xffff) + (x >> 16);	/* 1 <= x <= 0x1fffe */
-	x = (x & 0xff) + (x >> 8);	/* 1 <= x <= 0x2fd */
-	x = (x & 0xff) + (x >> 8);	/* 1 <= x <= 0x100 */
-	x = (x & 0xff) + (x >> 8);	/* 1 <= x <= 0xff */
+	x = (x & 0xffff) + (x >> 16);	 
+	x = (x & 0xff) + (x >> 8);	 
+	x = (x & 0xff) + (x >> 8);	 
+	x = (x & 0xff) + (x >> 8);	 
 	return x;
 }
 
-/* Fill the buffer with non-zero bytes. */
+ 
 static void fill_buf(char *buf, size_t len, u32 seed)
 {
 	size_t i;
@@ -53,17 +40,17 @@ static void fill_buf(char *buf, size_t len, u32 seed)
 	}
 }
 
-/* Holds most testing variables for the int test. */
+ 
 struct test_hash_params {
-        /* Pointer to integer to be hashed. */
+         
 	unsigned long long *h64;
-        /* Low 32-bits of integer to be hashed. */
+         
 	u32 h0;
-        /* Arch-specific hash result. */
+         
 	u32 h1;
-        /* Generic hash result. */
+         
 	u32 h2;
-        /* ORed hashes of given size (in bits). */
+         
 	u32 (*hash_or)[33];
 };
 
@@ -97,38 +84,30 @@ test_int_hash_64(struct kunit *test, struct test_hash_params *params, u32 const 
 }
 #endif
 
-/*
- * Test the various integer hash functions.  h64 (or its low-order bits)
- * is the integer to hash.  hash_or accumulates the OR of the hash values,
- * which are later checked to see that they cover all the requested bits.
- *
- * Because these functions (as opposed to the string hashes) are all
- * inline, the code being tested is actually in the module, and you can
- * recompile and re-test the module without rebooting.
- */
+ 
 static void
 test_int_hash(struct kunit *test, unsigned long long h64, u32 hash_or[2][33])
 {
 	int k;
 	struct test_hash_params params = { &h64, (u32)h64, 0, 0, hash_or };
 
-	/* Test __hash32 */
+	 
 	hash_or[0][0] |= params.h1 = __hash_32(params.h0);
 #ifdef HAVE_ARCH__HASH_32
 	test_int__hash_32(test, &params);
 #endif
 
-	/* Test k = 1..32 bits */
+	 
 	for (k = 1; k <= 32; k++) {
-		u32 const m = ((u32)2 << (k-1)) - 1;	/* Low k bits set */
+		u32 const m = ((u32)2 << (k-1)) - 1;	 
 
-		/* Test hash_32 */
+		 
 		hash_or[0][k] |= params.h1 = hash_32(params.h0, k);
 		KUNIT_EXPECT_LE_MSG(test, params.h1, m,
 				    "hash_32(%#x, %d) = %#x > %#x",
 				    params.h0, k, params.h1, m);
 
-		/* Test hash_64 */
+		 
 		hash_or[1][k] |= params.h1 = hash_64(h64, k);
 		KUNIT_EXPECT_LE_MSG(test, params.h1, m,
 				    "hash_64(%#llx, %d) = %#x > %#x",
@@ -139,7 +118,7 @@ test_int_hash(struct kunit *test, unsigned long long h64, u32 hash_or[2][33])
 	}
 }
 
-#define SIZE 256	/* Run time is cubic in SIZE */
+#define SIZE 256	 
 
 static void test_string_or(struct kunit *test)
 {
@@ -149,7 +128,7 @@ static void test_string_or(struct kunit *test)
 
 	fill_buf(buf, SIZE, 1);
 
-	/* Test every possible non-empty substring in the buffer. */
+	 
 	for (j = SIZE; j > 0; --j) {
 		buf[j] = '\0';
 
@@ -157,10 +136,10 @@ static void test_string_or(struct kunit *test)
 			u32 h0 = full_name_hash(buf+i, buf+i, j-i);
 
 			string_or |= h0;
-		} /* i */
-	} /* j */
+		}  
+	}  
 
-	/* The OR of all the hash values should cover all the bits */
+	 
 	KUNIT_EXPECT_EQ_MSG(test, string_or, -1u,
 			    "OR of all string hash results = %#x != %#x",
 			    string_or, -1u);
@@ -175,7 +154,7 @@ static void test_hash_or(struct kunit *test)
 
 	fill_buf(buf, SIZE, 1);
 
-	/* Test every possible non-empty substring in the buffer. */
+	 
 	for (j = SIZE; j > 0; --j) {
 		buf[j] = '\0';
 
@@ -183,34 +162,34 @@ static void test_hash_or(struct kunit *test)
 			u64 hashlen = hashlen_string(buf+i, buf+i);
 			u32 h0 = full_name_hash(buf+i, buf+i, j-i);
 
-			/* Check that hashlen_string gets the length right */
+			 
 			KUNIT_EXPECT_EQ_MSG(test, hashlen_len(hashlen), j-i,
 					    "hashlen_string(%d..%d) returned length %u, expected %d",
 					    i, j, hashlen_len(hashlen), j-i);
-			/* Check that the hashes match */
+			 
 			KUNIT_EXPECT_EQ_MSG(test, hashlen_hash(hashlen), h0,
 					    "hashlen_string(%d..%d) = %08x != full_name_hash() = %08x",
 					    i, j, hashlen_hash(hashlen), h0);
 
-			h64 = h64 << 32 | h0;	/* For use with hash_64 */
+			h64 = h64 << 32 | h0;	 
 			test_int_hash(test, h64, hash_or);
-		} /* i */
-	} /* j */
+		}  
+	}  
 
 	KUNIT_EXPECT_EQ_MSG(test, hash_or[0][0], -1u,
 			    "OR of all __hash_32 results = %#x != %#x",
 			    hash_or[0][0], -1u);
 #ifdef HAVE_ARCH__HASH_32
-#if HAVE_ARCH__HASH_32 != 1	/* Test is pointless if results match */
+#if HAVE_ARCH__HASH_32 != 1	 
 	KUNIT_EXPECT_EQ_MSG(test, hash_or[1][0], -1u,
 			    "OR of all __hash_32_generic results = %#x != %#x",
 			    hash_or[1][0], -1u);
 #endif
 #endif
 
-	/* Likewise for all the i-bit hash values */
+	 
 	for (i = 1; i <= 32; i++) {
-		u32 const m = ((u32)2 << (i-1)) - 1;	/* Low i bits set */
+		u32 const m = ((u32)2 << (i-1)) - 1;	 
 
 		KUNIT_EXPECT_EQ_MSG(test, hash_or[0][i], m,
 				    "OR of all hash_32(%d) results = %#x (%#x expected)",

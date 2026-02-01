@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 
 #include <linux/seq_file.h>
 #include <linux/slab.h>
@@ -38,7 +12,7 @@
 #include "rv515_reg_safe.h"
 #include "rv515d.h"
 
-/* This files gather functions specifics to: rv515 */
+ 
 static void rv515_gpu_init(struct radeon_device *rdev);
 int rv515_mc_wait_for_idle(struct radeon_device *rdev);
 
@@ -122,7 +96,7 @@ int rv515_mc_wait_for_idle(struct radeon_device *rdev)
 	uint32_t tmp;
 
 	for (i = 0; i < rdev->usec_timeout; i++) {
-		/* read MC_STATUS */
+		 
 		tmp = RREG32_MC(MC_STATUS);
 		if (tmp & MC_STATUS_IDLE) {
 			return 0;
@@ -273,9 +247,9 @@ void rv515_mc_stop(struct radeon_device *rdev, struct rv515_mc_save *save)
 	save->vga_render_control = RREG32(R_000300_VGA_RENDER_CONTROL);
 	save->vga_hdp_control = RREG32(R_000328_VGA_HDP_CONTROL);
 
-	/* disable VGA render */
+	 
 	WREG32(R_000300_VGA_RENDER_CONTROL, 0);
-	/* blank the display controllers */
+	 
 	for (i = 0; i < rdev->num_crtc; i++) {
 		crtc_enabled = RREG32(AVIVO_D1CRTC_CONTROL + crtc_offsets[i]) & AVIVO_CRTC_EN;
 		if (crtc_enabled) {
@@ -288,7 +262,7 @@ void rv515_mc_stop(struct radeon_device *rdev, struct rv515_mc_save *save)
 				WREG32(AVIVO_D1CRTC_CONTROL + crtc_offsets[i], tmp);
 				WREG32(AVIVO_D1CRTC_UPDATE_LOCK + crtc_offsets[i], 0);
 			}
-			/* wait for the next frame */
+			 
 			frame_count = radeon_get_vblank_counter(rdev, i);
 			for (j = 0; j < rdev->usec_timeout; j++) {
 				if (radeon_get_vblank_counter(rdev, i) != frame_count)
@@ -296,14 +270,14 @@ void rv515_mc_stop(struct radeon_device *rdev, struct rv515_mc_save *save)
 				udelay(1);
 			}
 
-			/* XXX this is a hack to avoid strange behavior with EFI on certain systems */
+			 
 			WREG32(AVIVO_D1CRTC_UPDATE_LOCK + crtc_offsets[i], 1);
 			tmp = RREG32(AVIVO_D1CRTC_CONTROL + crtc_offsets[i]);
 			tmp &= ~AVIVO_CRTC_EN;
 			WREG32(AVIVO_D1CRTC_CONTROL + crtc_offsets[i], tmp);
 			WREG32(AVIVO_D1CRTC_UPDATE_LOCK + crtc_offsets[i], 0);
 			save->crtc_enabled[i] = false;
-			/* ***** */
+			 
 		} else {
 			save->crtc_enabled[i] = false;
 		}
@@ -317,9 +291,9 @@ void rv515_mc_stop(struct radeon_device *rdev, struct rv515_mc_save *save)
 		else
 			blackout = RREG32(R600_CITF_CNTL);
 		if ((blackout & R600_BLACKOUT_MASK) != R600_BLACKOUT_MASK) {
-			/* Block CPU access */
+			 
 			WREG32(R600_BIF_FB_EN, 0);
-			/* blackout the MC */
+			 
 			blackout |= R600_BLACKOUT_MASK;
 			if (rdev->family >= CHIP_RV770)
 				WREG32(R700_MC_CITF_CNTL, blackout);
@@ -327,10 +301,10 @@ void rv515_mc_stop(struct radeon_device *rdev, struct rv515_mc_save *save)
 				WREG32(R600_CITF_CNTL, blackout);
 		}
 	}
-	/* wait for the MC to settle */
+	 
 	udelay(100);
 
-	/* lock double buffered regs */
+	 
 	for (i = 0; i < rdev->num_crtc; i++) {
 		if (save->crtc_enabled[i]) {
 			tmp = RREG32(AVIVO_D1GRPH_UPDATE + crtc_offsets[i]);
@@ -352,7 +326,7 @@ void rv515_mc_resume(struct radeon_device *rdev, struct rv515_mc_save *save)
 	u32 tmp, frame_count;
 	int i, j;
 
-	/* update crtc base addresses */
+	 
 	for (i = 0; i < rdev->num_crtc; i++) {
 		if (rdev->family >= CHIP_RV770) {
 			if (i == 0) {
@@ -374,7 +348,7 @@ void rv515_mc_resume(struct radeon_device *rdev, struct rv515_mc_save *save)
 	}
 	WREG32(R_000310_VGA_MEMORY_BASE_ADDRESS, (u32)rdev->mc.vram_start);
 
-	/* unlock regs and wait for update */
+	 
 	for (i = 0; i < rdev->num_crtc; i++) {
 		if (save->crtc_enabled[i]) {
 			tmp = RREG32(AVIVO_D1MODE_MASTER_UPDATE_MODE + crtc_offsets[i]);
@@ -403,7 +377,7 @@ void rv515_mc_resume(struct radeon_device *rdev, struct rv515_mc_save *save)
 	}
 
 	if (rdev->family >= CHIP_R600) {
-		/* unblackout the MC */
+		 
 		if (rdev->family >= CHIP_RV770)
 			tmp = RREG32(R700_MC_CITF_CNTL);
 		else
@@ -413,7 +387,7 @@ void rv515_mc_resume(struct radeon_device *rdev, struct rv515_mc_save *save)
 			WREG32(R700_MC_CITF_CNTL, tmp);
 		else
 			WREG32(R600_CITF_CNTL, tmp);
-		/* allow CPU access */
+		 
 		WREG32(R600_BIF_FB_EN, R600_FB_READ_EN | R600_FB_WRITE_EN);
 	}
 
@@ -422,7 +396,7 @@ void rv515_mc_resume(struct radeon_device *rdev, struct rv515_mc_save *save)
 			tmp = RREG32(AVIVO_D1CRTC_CONTROL + crtc_offsets[i]);
 			tmp &= ~AVIVO_CRTC_DISP_READ_REQUEST_DISABLE;
 			WREG32(AVIVO_D1CRTC_CONTROL + crtc_offsets[i], tmp);
-			/* wait for the next frame */
+			 
 			frame_count = radeon_get_vblank_counter(rdev, i);
 			for (j = 0; j < rdev->usec_timeout; j++) {
 				if (radeon_get_vblank_counter(rdev, i) != frame_count)
@@ -431,7 +405,7 @@ void rv515_mc_resume(struct radeon_device *rdev, struct rv515_mc_save *save)
 			}
 		}
 	}
-	/* Unlock vga access */
+	 
 	WREG32(R_000328_VGA_HDP_CONTROL, save->vga_hdp_control);
 	mdelay(1);
 	WREG32(R_000300_VGA_RENDER_CONTROL, save->vga_render_control);
@@ -441,15 +415,15 @@ static void rv515_mc_program(struct radeon_device *rdev)
 {
 	struct rv515_mc_save save;
 
-	/* Stops all mc clients */
+	 
 	rv515_mc_stop(rdev, &save);
 
-	/* Wait for mc idle */
+	 
 	if (rv515_mc_wait_for_idle(rdev))
 		dev_warn(rdev->dev, "Wait MC idle timeout before updating MC.\n");
-	/* Write VRAM size in case we are limiting it */
+	 
 	WREG32(R_0000F8_CONFIG_MEMSIZE, rdev->mc.real_vram_size);
-	/* Program MC, should be a 32bits limited address space */
+	 
 	WREG32_MC(R_000001_MC_FB_LOCATION,
 			S_000001_MC_FB_START(rdev->mc.vram_start >> 16) |
 			S_000001_MC_FB_TOP(rdev->mc.vram_end >> 16));
@@ -475,7 +449,7 @@ void rv515_clock_startup(struct radeon_device *rdev)
 {
 	if (radeon_dynclks != -1 && radeon_dynclks)
 		radeon_atom_set_clock_gating(rdev, 1);
-	/* We need to force on some of the block */
+	 
 	WREG32_PLL(R_00000F_CP_DYN_CNTL,
 		RREG32_PLL(R_00000F_CP_DYN_CNTL) | S_00000F_CP_FORCEON(1));
 	WREG32_PLL(R_000011_E2_DYN_CNTL,
@@ -489,19 +463,18 @@ static int rv515_startup(struct radeon_device *rdev)
 	int r;
 
 	rv515_mc_program(rdev);
-	/* Resume clock */
+	 
 	rv515_clock_startup(rdev);
-	/* Initialize GPU configuration (# pipes, ...) */
+	 
 	rv515_gpu_init(rdev);
-	/* Initialize GART (initialize after TTM so we can allocate
-	 * memory through TTM but finalize after TTM) */
+	 
 	if (rdev->flags & RADEON_IS_PCIE) {
 		r = rv370_pcie_gart_enable(rdev);
 		if (r)
 			return r;
 	}
 
-	/* allocate wb buffer */
+	 
 	r = radeon_wb_init(rdev);
 	if (r)
 		return r;
@@ -512,7 +485,7 @@ static int rv515_startup(struct radeon_device *rdev)
 		return r;
 	}
 
-	/* Enable IRQ */
+	 
 	if (!rdev->irq.installed) {
 		r = radeon_irq_kms_init(rdev);
 		if (r)
@@ -521,7 +494,7 @@ static int rv515_startup(struct radeon_device *rdev)
 
 	rs600_irq_set(rdev);
 	rdev->config.r300.hdp_cntl = RREG32(RADEON_HOST_PATH_CNTL);
-	/* 1M ring buffer */
+	 
 	r = r100_cp_init(rdev, 1024 * 1024);
 	if (r) {
 		dev_err(rdev->dev, "failed initializing CP (%d).\n", r);
@@ -541,22 +514,22 @@ int rv515_resume(struct radeon_device *rdev)
 {
 	int r;
 
-	/* Make sur GART are not working */
+	 
 	if (rdev->flags & RADEON_IS_PCIE)
 		rv370_pcie_gart_disable(rdev);
-	/* Resume clock before doing reset */
+	 
 	rv515_clock_startup(rdev);
-	/* Reset gpu before posting otherwise ATOM will enter infinite loop */
+	 
 	if (radeon_asic_reset(rdev)) {
 		dev_warn(rdev->dev, "GPU reset failed ! (0xE40=0x%08X, 0x7C0=0x%08X)\n",
 			RREG32(R_000E40_RBBM_STATUS),
 			RREG32(R_0007C0_CP_STAT));
 	}
-	/* post */
+	 
 	atom_asic_init(rdev->mode_info.atom_context);
-	/* Resume clock after posting */
+	 
 	rv515_clock_startup(rdev);
-	/* Initialize surface registers */
+	 
 	radeon_surface_init(rdev);
 
 	rdev->accel_working = true;
@@ -605,14 +578,14 @@ int rv515_init(struct radeon_device *rdev)
 {
 	int r;
 
-	/* Initialize scratch registers */
+	 
 	radeon_scratch_init(rdev);
-	/* Initialize surface registers */
+	 
 	radeon_surface_init(rdev);
-	/* TODO: disable VGA need to use VGA request */
-	/* restore some register to sane defaults */
+	 
+	 
 	r100_restore_sanity(rdev);
-	/* BIOS*/
+	 
 	if (!radeon_get_bios(rdev)) {
 		if (ASIC_IS_AVIVO(rdev))
 			return -EINVAL;
@@ -625,31 +598,31 @@ int rv515_init(struct radeon_device *rdev)
 		dev_err(rdev->dev, "Expecting atombios for RV515 GPU\n");
 		return -EINVAL;
 	}
-	/* Reset gpu before posting otherwise ATOM will enter infinite loop */
+	 
 	if (radeon_asic_reset(rdev)) {
 		dev_warn(rdev->dev,
 			"GPU reset failed ! (0xE40=0x%08X, 0x7C0=0x%08X)\n",
 			RREG32(R_000E40_RBBM_STATUS),
 			RREG32(R_0007C0_CP_STAT));
 	}
-	/* check if cards are posted or not */
+	 
 	if (radeon_boot_test_post_card(rdev) == false)
 		return -EINVAL;
-	/* Initialize clocks */
+	 
 	radeon_get_clock_info(rdev->ddev);
-	/* initialize AGP */
+	 
 	if (rdev->flags & RADEON_IS_AGP) {
 		r = radeon_agp_init(rdev);
 		if (r) {
 			radeon_agp_disable(rdev);
 		}
 	}
-	/* initialize memory controller */
+	 
 	rv515_mc_init(rdev);
 	rv515_debugfs(rdev);
-	/* Fence driver */
+	 
 	radeon_fence_driver_init(rdev);
-	/* Memory manager */
+	 
 	r = radeon_bo_init(rdev);
 	if (r)
 		return r;
@@ -658,13 +631,13 @@ int rv515_init(struct radeon_device *rdev)
 		return r;
 	rv515_set_safe_registers(rdev);
 
-	/* Initialize power management */
+	 
 	radeon_pm_init(rdev);
 
 	rdev->accel_working = true;
 	r = rv515_startup(rdev);
 	if (r) {
-		/* Somethings want wront with the accel init stop accel */
+		 
 		dev_err(rdev->dev, "Disabling GPU acceleration\n");
 		r100_cp_fini(rdev);
 		radeon_wb_fini(rdev);
@@ -933,19 +906,19 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 	u32 selected_sclk;
 
 	if (!crtc->base.enabled) {
-		/* FIXME: wouldn't it better to set priority mark to maximum */
+		 
 		wm->lb_request_fifo_depth = 4;
 		return;
 	}
 
-	/* rv6xx, rv7xx */
+	 
 	if ((rdev->family >= CHIP_RV610) &&
 	    (rdev->pm.pm_method == PM_METHOD_DPM) && rdev->pm.dpm_enabled)
 		selected_sclk = radeon_dpm_get_sclk(rdev, low);
 	else
 		selected_sclk = rdev->pm.current_sclk;
 
-	/* sclk in Mhz */
+	 
 	a.full = dfixed_const(100);
 	sclk.full = dfixed_const(selected_sclk);
 	sclk.full = dfixed_div(sclk, a);
@@ -966,12 +939,7 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 		wm->lb_request_fifo_depth = dfixed_trunc(request_fifo_depth);
 	}
 
-	/* Determine consumption rate
-	 *  pclk = pixel clock period(ns) = 1000 / (mode.clock / 1000)
-	 *  vtaps = number of vertical taps,
-	 *  vsc = vertical scaling ratio, defined as source/destination
-	 *  hsc = horizontal scaling ration, defined as source/destination
-	 */
+	 
 	a.full = dfixed_const(mode->clock);
 	b.full = dfixed_const(1000);
 	a.full = dfixed_div(a, b);
@@ -991,41 +959,22 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 	wm->consumption_rate.full = dfixed_div(a, consumption_time);
 
 
-	/* Determine line time
-	 *  LineTime = total time for one line of displayhtotal
-	 *  LineTime = total number of horizontal pixels
-	 *  pclk = pixel clock period(ns)
-	 */
+	 
 	a.full = dfixed_const(crtc->base.mode.crtc_htotal);
 	line_time.full = dfixed_mul(a, pclk);
 
-	/* Determine active time
-	 *  ActiveTime = time of active region of display within one line,
-	 *  hactive = total number of horizontal active pixels
-	 *  htotal = total number of horizontal pixels
-	 */
+	 
 	a.full = dfixed_const(crtc->base.mode.crtc_htotal);
 	b.full = dfixed_const(crtc->base.mode.crtc_hdisplay);
 	wm->active_time.full = dfixed_mul(line_time, b);
 	wm->active_time.full = dfixed_div(wm->active_time, a);
 
-	/* Determine chunk time
-	 * ChunkTime = the time it takes the DCP to send one chunk of data
-	 * to the LB which consists of pipeline delay and inter chunk gap
-	 * sclk = system clock(Mhz)
-	 */
+	 
 	a.full = dfixed_const(600 * 1000);
 	chunk_time.full = dfixed_div(a, sclk);
 	read_delay_latency.full = dfixed_const(1000);
 
-	/* Determine the worst case latency
-	 * NumLinePair = Number of line pairs to request(1=2 lines, 2=4 lines)
-	 * WorstCaseLatency = worst case time from urgent to when the MC starts
-	 *                    to return data
-	 * READ_DELAY_IDLE_MAX = constant of 1us
-	 * ChunkTime = time it takes the DCP to send one chunk of data to the LB
-	 *             which consists of pipeline delay and inter chunk gap
-	 */
+	 
 	if (dfixed_trunc(wm->num_line_pair) > 1) {
 		a.full = dfixed_const(3);
 		wm->worst_case_latency.full = dfixed_mul(a, chunk_time);
@@ -1034,16 +983,7 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 		wm->worst_case_latency.full = chunk_time.full + read_delay_latency.full;
 	}
 
-	/* Determine the tolerable latency
-	 * TolerableLatency = Any given request has only 1 line time
-	 *                    for the data to be returned
-	 * LBRequestFifoDepth = Number of chunk requests the LB can
-	 *                      put into the request FIFO for a display
-	 *  LineTime = total time for one line of display
-	 *  ChunkTime = the time it takes the DCP to send one chunk
-	 *              of data to the LB which consists of
-	 *  pipeline delay and inter chunk gap
-	 */
+	 
 	if ((2+wm->lb_request_fifo_depth) >= dfixed_trunc(request_fifo_depth)) {
 		tolerable_latency.full = line_time.full;
 	} else {
@@ -1052,18 +992,16 @@ static void rv515_crtc_bandwidth_compute(struct radeon_device *rdev,
 		tolerable_latency.full = dfixed_mul(tolerable_latency, chunk_time);
 		tolerable_latency.full = line_time.full - tolerable_latency.full;
 	}
-	/* We assume worst case 32bits (4 bytes) */
+	 
 	wm->dbpp.full = dfixed_const(2 * 16);
 
-	/* Determine the maximum priority mark
-	 *  width = viewport width in pixels
-	 */
+	 
 	a.full = dfixed_const(16);
 	wm->priority_mark_max.full = dfixed_const(crtc->base.mode.crtc_hdisplay);
 	wm->priority_mark_max.full = dfixed_div(wm->priority_mark_max, a);
 	wm->priority_mark_max.full = dfixed_ceil(wm->priority_mark_max);
 
-	/* Determine estimated width */
+	 
 	estimated_width.full = tolerable_latency.full - wm->worst_case_latency.full;
 	estimated_width.full = dfixed_div(estimated_width, consumption_time);
 	if (dfixed_trunc(estimated_width) > crtc->base.mode.crtc_hdisplay) {
@@ -1256,11 +1194,7 @@ void rv515_bandwidth_update(struct radeon_device *rdev)
 		mode0 = &rdev->mode_info.crtcs[0]->base.mode;
 	if (rdev->mode_info.crtcs[1]->base.enabled)
 		mode1 = &rdev->mode_info.crtcs[1]->base.mode;
-	/*
-	 * Set display0/1 priority up in the memory controller for
-	 * modes if the user specifies HIGH for displaypriority
-	 * option.
-	 */
+	 
 	if ((rdev->disp_priority == 2) &&
 	    (rdev->family == CHIP_RV515)) {
 		tmp = RREG32_MC(MC_MISC_LAT_TIMER);

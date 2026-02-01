@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <test_progs.h>
 #include <network_helpers.h>
 #include "kfunc_call_fail.skel.h"
@@ -11,7 +11,7 @@
 
 #include "cap_helpers.h"
 
-static size_t log_buf_sz = 1048576; /* 1 MB */
+static size_t log_buf_sz = 1048576;  
 static char obj_log_buf[1048576];
 
 enum kfunc_test_type {
@@ -40,7 +40,7 @@ struct kfunc_test_params {
 #define __BPF_TEST_FAIL(name, __retval, type, error_msg) \
 	{ \
 	  .prog_name = #name, \
-	  .lskel_prog_desc_offset = 0 /* unused when test is failing */, \
+	  .lskel_prog_desc_offset = 0  , \
 	  .retval = __retval, \
 	  .test_type = type, \
 	  .expected_err_msg = error_msg, \
@@ -55,12 +55,7 @@ struct kfunc_test_params {
 	__BPF_TEST_FAIL(name, retval, syscall_null_ctx_test, error_msg)
 
 static struct kfunc_test_params kfunc_tests[] = {
-	/* failure cases:
-	 * if retval is 0 -> the program will fail to load and the error message is an error
-	 * if retval is not 0 -> the program can be loaded but running it will gives the
-	 *                       provided return value. The error message is thus the one
-	 *                       from a successful load
-	 */
+	 
 	SYSCALL_NULL_CTX_FAIL(kfunc_syscall_test_fail, -EINVAL, "processed 4 insns"),
 	SYSCALL_NULL_CTX_FAIL(kfunc_syscall_test_null_fail, -EINVAL, "processed 4 insns"),
 	TC_FAIL(kfunc_call_test_get_mem_fail_rdonly, 0, "R0 cannot write into rdonly_mem"),
@@ -69,7 +64,7 @@ static struct kfunc_test_params kfunc_tests[] = {
 	TC_FAIL(kfunc_call_test_get_mem_fail_not_const, 0, "is not a const"),
 	TC_FAIL(kfunc_call_test_mem_acquire_fail, 0, "acquire kernel function does not return PTR_TO_BTF_ID"),
 
-	/* success cases */
+	 
 	TC_TEST(kfunc_call_test1, 12),
 	TC_TEST(kfunc_call_test2, 3),
 	TC_TEST(kfunc_call_test4, -1234),
@@ -101,7 +96,7 @@ static void verify_success(struct kfunc_test_params *param)
 	case syscall_test:
 		topts.ctx_in = &args;
 		topts.ctx_size_in = sizeof(args);
-		/* fallthrough */
+		 
 	case syscall_null_ctx_test:
 		break;
 	case tc_test:
@@ -111,7 +106,7 @@ static void verify_success(struct kfunc_test_params *param)
 		break;
 	}
 
-	/* first test with normal libbpf */
+	 
 	skel = kfunc_call_test__open_and_load();
 	if (!ASSERT_OK_PTR(skel, "skel"))
 		return;
@@ -128,7 +123,7 @@ static void verify_success(struct kfunc_test_params *param)
 	if (!ASSERT_EQ(topts.retval, param->retval, "retval"))
 		goto cleanup;
 
-	/* second test with light skeletons */
+	 
 	lskel = kfunc_call_test_lskel__open_and_load();
 	if (!ASSERT_OK_PTR(lskel, "lskel"))
 		goto cleanup;
@@ -167,7 +162,7 @@ static void verify_fail(struct kfunc_test_params *param)
 	case syscall_test:
 		topts.ctx_in = &args;
 		topts.ctx_size_in = sizeof(args);
-		/* fallthrough */
+		 
 	case syscall_null_ctx_test:
 		break;
 	case tc_test:
@@ -189,12 +184,12 @@ static void verify_fail(struct kfunc_test_params *param)
 
 	err = kfunc_call_fail__load(skel);
 	if (!param->retval) {
-		/* the verifier is supposed to complain and refuses to load */
+		 
 		if (!ASSERT_ERR(err, "unexpected load success"))
 			goto out_err;
 
 	} else {
-		/* the program is loaded but must dynamically fail */
+		 
 		if (!ASSERT_OK(err, "unexpected load error"))
 			goto out_err;
 

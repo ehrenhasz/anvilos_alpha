@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
+ 
 
 #ifndef _DT_BINDINGS_CLOCK_AIROHA_EN7523_H_
 #define _DT_BINDINGS_CLOCK_AIROHA_EN7523_H_
@@ -14,4 +14,4 @@
 
 #define EN7523_NUM_CLOCKS	8
 
-#endif /* _DT_BINDINGS_CLOCK_AIROHA_EN7523_H_ */
+#endif  

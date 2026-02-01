@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    interrupt handling
-    Copyright (C) 2003-2004  Kevin Thayer <nufan_wfk at yahoo.com>
-    Copyright (C) 2004  Chris Kennedy <c@groovy.org>
-    Copyright (C) 2005-2007  Hans Verkuil <hverkuil@xs4all.nl>
-
- */
+ 
+ 
 
 #ifndef IVTV_IRQ_H
 #define IVTV_IRQ_H
@@ -25,7 +19,7 @@
 #define IVTV_IRQ_DMA_READ		BIT(16)
 #define IVTV_IRQ_DEC_VSYNC		BIT(10)
 
-/* IRQ Masks */
+ 
 #define IVTV_IRQ_MASK_INIT (IVTV_IRQ_DMA_ERR|IVTV_IRQ_ENC_DMA_COMPLETE|\
 		IVTV_IRQ_DMA_READ|IVTV_IRQ_ENC_PIO_COMPLETE)
 

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Anybus-S client adapter definitions
- *
- * Copyright 2018 Arcx Inc
- */
+ 
+ 
 
 #ifndef __LINUX_ANYBUSS_CLIENT_H__
 #define __LINUX_ANYBUSS_CLIENT_H__
@@ -12,7 +8,7 @@
 #include <linux/types.h>
 #include <linux/poll.h>
 
-/* move to <linux/fieldbus_dev.h> when taking this out of staging */
+ 
 #include "../fieldbus_dev.h"
 
 struct anybuss_host;
@@ -21,10 +17,7 @@ struct anybuss_client {
 	struct device dev;
 	struct anybuss_host *host;
 	__be16 anybus_id;
-	/*
-	 * these can be optionally set by the client to receive event
-	 * notifications from the host.
-	 */
+	 
 	void (*on_area_updated)(struct anybuss_client *client);
 	void (*on_online_changed)(struct anybuss_client *client, bool online);
 };
@@ -88,7 +81,7 @@ int anybuss_send_ext(struct anybuss_client *client, u16 cmd_num,
 int anybuss_recv_msg(struct anybuss_client *client, u16 cmd_num,
 		     void *buf, size_t count);
 
-/* these help clients make a struct file_operations */
+ 
 int anybuss_write_input(struct anybuss_client *client,
 			const char __user *buf, size_t size,
 				loff_t *offset);
@@ -96,4 +89,4 @@ int anybuss_read_output(struct anybuss_client *client,
 			char __user *buf, size_t size,
 				loff_t *offset);
 
-#endif /* __LINUX_ANYBUSS_CLIENT_H__ */
+#endif  

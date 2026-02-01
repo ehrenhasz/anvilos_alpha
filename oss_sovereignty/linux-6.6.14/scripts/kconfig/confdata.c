@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- */
+
+ 
 
 #include <sys/mman.h>
 #include <sys/stat.h>
@@ -20,7 +18,7 @@
 
 #include "lkc.h"
 
-/* return true if 'path' exists, false otherwise */
+ 
 static bool is_present(const char *path)
 {
 	struct stat st;
@@ -28,7 +26,7 @@ static bool is_present(const char *path)
 	return !stat(path, &st);
 }
 
-/* return true if 'path' exists and it is a directory, false otherwise */
+ 
 static bool is_dir(const char *path)
 {
 	struct stat st;
@@ -39,7 +37,7 @@ static bool is_dir(const char *path)
 	return S_ISDIR(st.st_mode);
 }
 
-/* return true if the given two files are the same, false otherwise */
+ 
 static bool is_same(const char *file1, const char *file2)
 {
 	int fd1, fd2;
@@ -85,11 +83,7 @@ close1:
 	return ret;
 }
 
-/*
- * Create the parent directory of the given path.
- *
- * For example, if 'include/config/auto.conf' is given, create 'include/config'.
- */
+ 
 static int make_parent_dir(const char *path)
 {
 	char tmp[PATH_MAX + 1];
@@ -98,13 +92,13 @@ static int make_parent_dir(const char *path)
 	strncpy(tmp, path, sizeof(tmp));
 	tmp[sizeof(tmp) - 1] = 0;
 
-	/* Remove the base name. Just return if nothing is left */
+	 
 	p = strrchr(tmp, '/');
 	if (!p)
 		return 0;
 	*(p + 1) = 0;
 
-	/* Just in case it is an absolute path */
+	 
 	p = tmp;
 	while (*p == '/')
 		p++;
@@ -112,7 +106,7 @@ static int make_parent_dir(const char *path)
 	while ((p = strchr(p, '/'))) {
 		*p = 0;
 
-		/* skip if the directory exists */
+		 
 		if (!is_dir(tmp) && mkdir(tmp, 0755))
 			return -1;
 
@@ -127,12 +121,12 @@ static int make_parent_dir(const char *path)
 static char depfile_path[PATH_MAX];
 static size_t depfile_prefix_len;
 
-/* touch depfile for symbol 'name' */
+ 
 static int conf_touch_dep(const char *name)
 {
 	int fd;
 
-	/* check overflow: prefix + name + '\0' must fit in buffer. */
+	 
 	if (depfile_prefix_len + strlen(name) + 1 > sizeof(depfile_path))
 		return -1;
 
@@ -234,7 +228,7 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 			sym->flags |= def_flags;
 			break;
 		}
-		/* fall through */
+		 
 	case S_BOOLEAN:
 		if (p[0] == 'y') {
 			sym->def[def].tri = yes;
@@ -251,7 +245,7 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 				     p, sym->name);
 		return 1;
 	case S_STRING:
-		/* No escaping for S_DEF_AUTO (include/config/auto.conf) */
+		 
 		if (def != S_DEF_AUTO) {
 			if (*p++ != '"')
 				break;
@@ -267,7 +261,7 @@ static int conf_set_sym_val(struct symbol *sym, int def, int def_flags, char *p)
 				return 1;
 			}
 		}
-		/* fall through */
+		 
 	case S_INT:
 	case S_HEX:
 		if (sym_string_valid(sym, p)) {
@@ -320,7 +314,7 @@ static ssize_t compat_getline(char **lineptr, size_t *n, FILE *stream)
 			if (add_byte(c, &line, slen, n) < 0)
 				goto e_out;
 			slen++;
-			/* fall through */
+			 
 		case EOF:
 			if (add_byte('\0', &line, slen, n) < 0)
 				goto e_out;
@@ -419,7 +413,7 @@ load:
 		case S_STRING:
 			if (sym->def[def].val)
 				free(sym->def[def].val);
-			/* fall through */
+			 
 		default:
 			sym->def[def].val = NULL;
 			sym->def[def].tri = no;
@@ -480,12 +474,7 @@ load:
 			sym = sym_find(line + strlen(CONFIG_));
 			if (!sym) {
 				if (def == S_DEF_AUTO) {
-					/*
-					 * Reading from include/config/auto.conf
-					 * If CONFIG_FOO previously existed in
-					 * auto.conf but it is missing now,
-					 * include/config/FOO must be touched.
-					 */
+					 
 					conf_touch_dep(line + strlen(CONFIG_));
 				} else {
 					if (warn_unknown)
@@ -559,7 +548,7 @@ int conf_read(const char *name)
 		if (sym_is_choice(sym) || (sym->flags & SYMBOL_NO_WRITE))
 			continue;
 		if (sym_has_value(sym) && (sym->flags & SYMBOL_WRITE)) {
-			/* check that calculated value agrees with saved value */
+			 
 			switch (sym->type) {
 			case S_BOOLEAN:
 			case S_TRISTATE:
@@ -572,26 +561,22 @@ int conf_read(const char *name)
 				break;
 			}
 		} else if (!sym_has_value(sym) && !(sym->flags & SYMBOL_WRITE))
-			/* no previous value and not saved */
+			 
 			continue;
 		conf_unsaved++;
-		/* maybe print value in verbose mode... */
+		 
 	}
 
 	for_all_symbols(i, sym) {
 		if (sym_has_value(sym) && !sym_is_choice_value(sym)) {
-			/* Reset values of generates values, so they'll appear
-			 * as new, if they should become visible, but that
-			 * doesn't quite work if the Kconfig and the saved
-			 * configuration disagree.
-			 */
+			 
 			if (sym->visible == no && !conf_unsaved)
 				sym->flags &= ~SYMBOL_DEF_USER;
 			switch (sym->type) {
 			case S_STRING:
 			case S_INT:
 			case S_HEX:
-				/* Reset a string value if it's out of range */
+				 
 				if (sym_string_within_range(sym, sym->def[S_DEF_USER].val))
 					break;
 				sym->flags &= ~(SYMBOL_VALID|SYMBOL_DEF_USER);
@@ -642,7 +627,7 @@ static void conf_write_heading(FILE *fp, const struct comment_style *cs)
 	fprintf(fp, "%s\n", cs->postfix);
 }
 
-/* The returned pointer must be freed on the caller side */
+ 
 static char *escape_string_value(const char *in)
 {
 	const char *p;
@@ -750,7 +735,7 @@ static void print_symbol_for_c(FILE *fp, struct symbol *sym)
 			return;
 		case 'm':
 			sym_suffix = "_MODULE";
-			/* fall through */
+			 
 		default:
 			val = "1";
 		}
@@ -788,22 +773,11 @@ static void print_symbol_for_rustccfg(FILE *fp, struct symbol *sym)
 	switch (sym->type) {
 	case S_BOOLEAN:
 	case S_TRISTATE:
-		/*
-		 * We do not care about disabled ones, i.e. no need for
-		 * what otherwise are "comments" in other printers.
-		 */
+		 
 		if (*val == 'n')
 			return;
 
-		/*
-		 * To have similar functionality to the C macro `IS_ENABLED()`
-		 * we provide an empty `--cfg CONFIG_X` here in both `y`
-		 * and `m` cases.
-		 *
-		 * Then, the common `fprintf()` below will also give us
-		 * a `--cfg CONFIG_X="y"` or `--cfg CONFIG_X="m"`, which can
-		 * be used as the equivalent of `IS_BUILTIN()`/`IS_MODULE()`.
-		 */
+		 
 		fprintf(fp, "--cfg=%s%s\n", CONFIG_, sym->name);
 		break;
 	case S_HEX:
@@ -821,7 +795,7 @@ static void print_symbol_for_rustccfg(FILE *fp, struct symbol *sym)
 		val = val_prefixed;
 	}
 
-	/* All values get escaped: the `--cfg` option only takes strings */
+	 
 	escaped = escape_string_value(val);
 	val = escaped;
 
@@ -831,10 +805,7 @@ static void print_symbol_for_rustccfg(FILE *fp, struct symbol *sym)
 	free(val_prefixed);
 }
 
-/*
- * Write out a minimal config.
- * All values that has default values are skipped as this is redundant.
- */
+ 
 int conf_write_defconfig(const char *filename)
 {
 	struct symbol *sym;
@@ -847,7 +818,7 @@ int conf_write_defconfig(const char *filename)
 
 	sym_clear_all_valid();
 
-	/* Traverse all menus to find all relevant symbols */
+	 
 	menu = rootmenu.list;
 
 	while (menu != NULL)
@@ -861,20 +832,14 @@ int conf_write_defconfig(const char *filename)
 			if (!(sym->flags & SYMBOL_WRITE))
 				goto next_menu;
 			sym->flags &= ~SYMBOL_WRITE;
-			/* If we cannot change the symbol - skip */
+			 
 			if (!sym_is_changeable(sym))
 				goto next_menu;
-			/* If symbol equals to default value - skip */
+			 
 			if (strcmp(sym_get_string_value(sym), sym_get_string_default(sym)) == 0)
 				goto next_menu;
 
-			/*
-			 * If symbol is a choice value and equals to the
-			 * default for a choice - skip.
-			 * But only if value is bool and equal to "y" and
-			 * choice is not "optional".
-			 * (If choice is "optional" then all values can be "n")
-			 */
+			 
 			if (sym_is_choice_value(sym)) {
 				struct symbol *cs;
 				struct symbol *ds;
@@ -1024,7 +989,7 @@ end_check:
 	return 0;
 }
 
-/* write a dependency file as used by kbuild to track dependencies */
+ 
 static int conf_write_autoconf_cmd(const char *autoconf_name)
 {
 	char name[PATH_MAX], tmp[PATH_MAX];
@@ -1033,14 +998,14 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
 	int ret;
 
 	ret = snprintf(name, sizeof(name), "%s.cmd", autoconf_name);
-	if (ret >= sizeof(name)) /* check truncation */
+	if (ret >= sizeof(name))  
 		return -1;
 
 	if (make_parent_dir(name))
 		return -1;
 
 	ret = snprintf(tmp, sizeof(tmp), "%s.cmd.tmp", autoconf_name);
-	if (ret >= sizeof(tmp)) /* check truncation */
+	if (ret >= sizeof(tmp))  
 		return -1;
 
 	out = fopen(tmp, "w");
@@ -1060,7 +1025,7 @@ static int conf_write_autoconf_cmd(const char *autoconf_name)
 	fprintf(out, "\n$(deps_config): ;\n");
 
 	fflush(out);
-	ret = ferror(out); /* error check for all fprintf() calls */
+	ret = ferror(out);  
 	fclose(out);
 	if (ret)
 		return -1;
@@ -1097,10 +1062,7 @@ static int conf_touch_deps(void)
 			continue;
 		if (sym->flags & SYMBOL_WRITE) {
 			if (sym->flags & SYMBOL_DEF_AUTO) {
-				/*
-				 * symbol has old and new value,
-				 * so compare them...
-				 */
+				 
 				switch (sym->type) {
 				case S_BOOLEAN:
 				case S_TRISTATE:
@@ -1119,10 +1081,7 @@ static int conf_touch_deps(void)
 					break;
 				}
 			} else {
-				/*
-				 * If there is no old value, only 'no' (unset)
-				 * is allowed as new value.
-				 */
+				 
 				switch (sym->type) {
 				case S_BOOLEAN:
 				case S_TRISTATE:
@@ -1134,13 +1093,9 @@ static int conf_touch_deps(void)
 				}
 			}
 		} else if (!(sym->flags & SYMBOL_DEF_AUTO))
-			/* There is neither an old nor a new value. */
+			 
 			continue;
-		/* else
-		 *	There is an old value, but no new value ('no' (unset)
-		 *	isn't saved in auto.conf, so the old value is always
-		 *	different from 'no').
-		 */
+		 
 
 		res = conf_touch_dep(sym->name);
 		if (res)
@@ -1163,7 +1118,7 @@ static int __conf_write_autoconf(const char *filename,
 		return -1;
 
 	ret = snprintf(tmp, sizeof(tmp), "%s.tmp", filename);
-	if (ret >= sizeof(tmp)) /* check truncation */
+	if (ret >= sizeof(tmp))  
 		return -1;
 
 	file = fopen(tmp, "w");
@@ -1179,7 +1134,7 @@ static int __conf_write_autoconf(const char *filename,
 			print_symbol(file, sym);
 
 	fflush(file);
-	/* check possible errors in conf_write_heading() and print_symbol() */
+	 
 	ret = ferror(file);
 	fclose(file);
 	if (ret)
@@ -1224,11 +1179,7 @@ int conf_write_autoconf(int overwrite)
 	if (ret)
 		return ret;
 
-	/*
-	 * Create include/config/auto.conf. This must be the last step because
-	 * Kbuild has a dependency on auto.conf and this marks the successful
-	 * completion of the previous steps.
-	 */
+	 
 	ret = __conf_write_autoconf(conf_get_autoconfig_name(),
 				    print_symbol_for_autoconf,
 				    &comment_style_pound);
@@ -1269,14 +1220,12 @@ void set_all_choice_values(struct symbol *csym)
 
 	prop = sym_get_choice_prop(csym);
 
-	/*
-	 * Set all non-assinged choice values to no
-	 */
+	 
 	expr_list_for_each_sym(prop->expr, e, sym) {
 		if (!sym_has_value(sym))
 			sym->def[S_DEF_USER].tri = no;
 	}
 	csym->flags |= SYMBOL_DEF_USER;
-	/* clear VALID to get value calculated */
+	 
 	csym->flags &= ~(SYMBOL_VALID | SYMBOL_NEED_SET_CHOICE_VALUES);
 }

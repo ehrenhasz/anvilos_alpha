@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rl6231.c - RL6231 class device shared support
- *
- * Copyright 2014 Realtek Semiconductor Corp.
- *
- * Author: Oder Chiou <oder_chiou@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/regmap.h>
@@ -13,16 +7,7 @@
 #include <linux/gcd.h>
 #include "rl6231.h"
 
-/**
- * rl6231_get_pre_div - Return the value of pre divider.
- *
- * @map: map for setting.
- * @reg: register.
- * @sft: shift.
- *
- * Return the value of pre divider from given register value.
- * Return negative error code for unexpected register value.
- */
+ 
 int rl6231_get_pre_div(struct regmap *map, unsigned int reg, int sft)
 {
 	int pd, val;
@@ -59,14 +44,7 @@ int rl6231_get_pre_div(struct regmap *map, unsigned int reg, int sft)
 }
 EXPORT_SYMBOL_GPL(rl6231_get_pre_div);
 
-/**
- * rl6231_calc_dmic_clk - Calculate the frequency divider parameter of dmic.
- *
- * @rate: base clock rate.
- *
- * Choose divider parameter that gives the highest possible DMIC frequency in
- * 1MHz - 3MHz range.
- */
+ 
 int rl6231_calc_dmic_clk(int rate)
 {
 	static const int div[] = {2, 3, 4, 6, 8, 12};
@@ -80,7 +58,7 @@ int rl6231_calc_dmic_clk(int rate)
 	for (i = 0; i < ARRAY_SIZE(div); i++) {
 		if ((div[i] % 3) == 0)
 			continue;
-		/* find divider that gives DMIC frequency below 1.536MHz */
+		 
 		if (1536000 * div[i] >= rate)
 			return i;
 	}
@@ -127,16 +105,7 @@ static unsigned int find_best_div(unsigned int in,
 	return d;
 }
 
-/**
- * rl6231_pll_calc - Calcualte PLL M/N/K code.
- * @freq_in: external clock provided to codec.
- * @freq_out: target clock which codec works on.
- * @pll_code: Pointer to structure with M, N, K, m_bypass and k_bypass flag.
- *
- * Calcualte M/N/K code to configure PLL for codec.
- *
- * Returns 0 for success or negative error code.
- */
+ 
 int rl6231_pll_calc(const unsigned int freq_in,
 	const unsigned int freq_out, struct rl6231_pll_code *pll_code)
 {

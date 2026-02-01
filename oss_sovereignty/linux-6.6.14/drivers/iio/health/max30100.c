@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * max30100.c - Support for MAX30100 heart rate and pulse oximeter sensor
- *
- * Copyright (C) 2015, 2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- *
- * TODO: enable pulse length controls via device tree properties
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -73,7 +66,7 @@ struct max30100_data {
 	struct mutex lock;
 	struct regmap *regmap;
 
-	__be16 buffer[2]; /* 2 16-bit channels */
+	__be16 buffer[2];  
 };
 
 static bool max30100_is_volatile_reg(struct device *dev, unsigned int reg)
@@ -203,7 +196,7 @@ static inline int max30100_fifo_count(struct max30100_data *data)
 	if (ret)
 		return ret;
 
-	/* FIFO is almost full */
+	 
 	if (val & MAX30100_REG_INT_STATUS_FIFO_RDY)
 		return MAX30100_REG_FIFO_DATA_ENTRY_COUNT - 1;
 
@@ -248,7 +241,7 @@ static int max30100_get_current_idx(unsigned int val, int *reg)
 {
 	int idx;
 
-	/* LED turned off */
+	 
 	if (val == 0) {
 		*reg = 0;
 		return 0;
@@ -273,7 +266,7 @@ static int max30100_led_init(struct max30100_data *data)
 	ret = device_property_read_u32_array(dev, "maxim,led-current-microamp",
 					(unsigned int *) &val, 2);
 	if (ret) {
-		/* Default to 24 mA RED LED, 50 mA IR LED */
+		 
 		reg = (MAX30100_REG_LED_CONFIG_24MA <<
 			MAX30100_REG_LED_CONFIG_RED_LED_SHIFT) |
 			MAX30100_REG_LED_CONFIG_50MA;
@@ -282,7 +275,7 @@ static int max30100_led_init(struct max30100_data *data)
 		return regmap_write(data->regmap, MAX30100_REG_LED_CONFIG, reg);
 	}
 
-	/* RED LED current */
+	 
 	ret = max30100_get_current_idx(val[0], &reg);
 	if (ret) {
 		dev_err(dev, "invalid RED current setting %d", val[0]);
@@ -296,7 +289,7 @@ static int max30100_led_init(struct max30100_data *data)
 	if (ret)
 		return ret;
 
-	/* IR LED current */
+	 
 	ret = max30100_get_current_idx(val[1], &reg);
 	if (ret) {
 		dev_err(dev, "invalid IR current setting %d", val[1]);
@@ -311,19 +304,19 @@ static int max30100_chip_init(struct max30100_data *data)
 {
 	int ret;
 
-	/* setup LED current settings */
+	 
 	ret = max30100_led_init(data);
 	if (ret)
 		return ret;
 
-	/* enable hi-res SPO2 readings at 100Hz */
+	 
 	ret = regmap_write(data->regmap, MAX30100_REG_SPO2_CONFIG,
 				 MAX30100_REG_SPO2_CONFIG_HI_RES_EN |
 				 MAX30100_REG_SPO2_CONFIG_100HZ);
 	if (ret)
 		return ret;
 
-	/* enable SPO2 mode */
+	 
 	ret = regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
 				 MAX30100_REG_MODE_CONFIG_MODE_MASK,
 				 MAX30100_REG_MODE_CONFIG_MODE_HR_EN |
@@ -331,7 +324,7 @@ static int max30100_chip_init(struct max30100_data *data)
 	if (ret)
 		return ret;
 
-	/* enable FIFO interrupt */
+	 
 	return regmap_update_bits(data->regmap, MAX30100_REG_INT_ENABLE,
 				 MAX30100_REG_INT_ENABLE_MASK,
 				 MAX30100_REG_INT_ENABLE_FIFO_EN
@@ -362,7 +355,7 @@ static int max30100_get_temp(struct max30100_data *data, int *val)
 {
 	int ret;
 
-	/* start acquisition */
+	 
 	ret = regmap_update_bits(data->regmap, MAX30100_REG_MODE_CONFIG,
 				 MAX30100_REG_MODE_CONFIG_TEMP_EN,
 				 MAX30100_REG_MODE_CONFIG_TEMP_EN);
@@ -383,17 +376,9 @@ static int max30100_read_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_RAW:
-		/*
-		 * Temperature reading can only be acquired while engine
-		 * is running
-		 */
+		 
 		if (iio_device_claim_buffer_mode(indio_dev)) {
-			/*
-			 * Replacing -EBUSY or other error code
-			 * returned by iio_device_claim_buffer_mode()
-			 * because user space may rely on the current
-			 * one.
-			 */
+			 
 			ret = -EAGAIN;
 		} else {
 			ret = max30100_get_temp(data, val);
@@ -404,7 +389,7 @@ static int max30100_read_raw(struct iio_dev *indio_dev,
 		}
 		break;
 	case IIO_CHAN_INFO_SCALE:
-		*val = 1;  /* 0.0625 */
+		*val = 1;   
 		*val2 = 16;
 		ret = IIO_VAL_FRACTIONAL;
 		break;

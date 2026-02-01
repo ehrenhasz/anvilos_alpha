@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -17,7 +15,7 @@
 			gpio##id##_pins, 		\
 			ARRAY_SIZE(gpio##id##_pins)),	\
 		.funcs = (int[]){			\
-			msm_mux_gpio, /* gpio mode */	\
+			msm_mux_gpio,  	\
 			msm_mux_##f1,			\
 			msm_mux_##f2,			\
 			msm_mux_##f3,			\
@@ -778,11 +776,7 @@ static const struct pinfunction sdx65_functions[] = {
 	MSM_PIN_FUNCTION(vsense_trigger),
 };
 
-/* Every pin is maintained as a single group, and missing or non-existing pin
- * would be maintained as dummy group to synchronize pin group index with
- * pin descriptor registered with pinctrl core.
- * Clients would not be able to request these dummy pin groups.
- */
+ 
 static const struct msm_pingroup sdx65_groups[] = {
 	[0] = PINGROUP(0, uim2_data, blsp_uart1, ebi0_wrcdc, _, _, _, _, _, _),
 	[1] = PINGROUP(1, uim2_present, blsp_uart1, _, _, _, _, _, _, _),

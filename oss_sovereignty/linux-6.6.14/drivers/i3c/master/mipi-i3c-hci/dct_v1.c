@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/*
- * Copyright (c) 2020, MIPI Alliance, Inc.
- *
- * Author: Nicolas Pitre <npitre@baylibre.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/bitfield.h>
@@ -13,9 +9,7 @@
 #include "hci.h"
 #include "dct.h"
 
-/*
- * Device Characteristic Table
- */
+ 
 
 void i3c_hci_dct_get_val(struct i3c_hci *hci, unsigned int dct_idx,
 			 u64 *pid, unsigned int *dcr, unsigned int *bcr)

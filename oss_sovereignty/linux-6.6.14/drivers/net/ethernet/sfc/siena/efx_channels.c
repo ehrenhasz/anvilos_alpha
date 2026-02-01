@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2018 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "net_driver.h"
 #include <linux/module.h>
@@ -20,20 +13,10 @@
 #include "sriov.h"
 #include "workarounds.h"
 
-/* This is the first interrupt mode to try out of:
- * 0 => MSI-X
- * 1 => MSI
- * 2 => legacy
- */
+ 
 unsigned int efx_siena_interrupt_mode = EFX_INT_MODE_MSIX;
 
-/* This is the requested number of CPUs to use for Receive-Side Scaling (RSS),
- * i.e. the number of CPUs among which we may distribute simultaneous
- * interrupt handling.
- *
- * Cards without MSI-X will only target one CPU via legacy or MSI interrupt.
- * The default (0) means to assign an interrupt to each core.
- */
+ 
 unsigned int efx_siena_rss_cpus;
 
 static unsigned int irq_adapt_low_thresh = 8000;
@@ -48,9 +31,7 @@ MODULE_PARM_DESC(irq_adapt_high_thresh,
 
 static const struct efx_channel_type efx_default_channel_type;
 
-/*************
- * INTERRUPTS
- *************/
+ 
 
 static unsigned int count_online_cores(struct efx_nic *efx, bool local_node)
 {
@@ -89,7 +70,7 @@ static unsigned int efx_wanted_parallelism(struct efx_nic *efx)
 	} else {
 		count = count_online_cores(efx, true);
 
-		/* If no online CPUs in local node, fallback to any online CPUs */
+		 
 		if (count == 0)
 			count = count_online_cores(efx, false);
 	}
@@ -102,9 +83,7 @@ static unsigned int efx_wanted_parallelism(struct efx_nic *efx)
 		count = EFX_MAX_RX_QUEUES;
 	}
 
-	/* If RSS is requested for the PF *and* VFs then we can't write RSS
-	 * table entries that are inaccessible to VFs
-	 */
+	 
 #ifdef CONFIG_SFC_SIENA_SRIOV
 	if (efx->type->sriov_wanted) {
 		if (efx->type->sriov_wanted(efx) && efx_vf_size(efx) > 1 &&
@@ -137,11 +116,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
 		n_channels *= 2;
 	n_channels += extra_channels;
 
-	/* To allow XDP transmit to happen from arbitrary NAPI contexts
-	 * we allocate a TX queue per CPU. We share event queues across
-	 * multiple tx queues, assuming tx and ev queues are both
-	 * maximum size.
-	 */
+	 
 	tx_per_ev = EFX_MAX_EVQ_SIZE / EFX_TXQ_MAX_ENT(efx);
 	tx_per_ev = min(tx_per_ev, EFX_MAX_TXQ_PER_CHANNEL);
 	n_xdp_tx = num_possible_cpus();
@@ -153,10 +128,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
 
 	max_channels = min_t(unsigned int, vec_count, max_channels);
 
-	/* Check resources.
-	 * We need a channel per event queue, plus a VI per tx queue.
-	 * This may be more pessimistic than it needs to be.
-	 */
+	 
 	if (n_channels >= max_channels) {
 		efx->xdp_txq_queues_mode = EFX_XDP_TX_QUEUES_BORROWED;
 		netif_warn(efx, drv, efx->net_dev,
@@ -212,7 +184,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
 
 	efx->n_channels = n_channels;
 
-	/* Ignore XDP tx channels when creating rx channels. */
+	 
 	n_channels -= efx->n_xdp_channels;
 
 	if (efx_siena_separate_tx_channels) {
@@ -242,9 +214,7 @@ static int efx_allocate_msix_channels(struct efx_nic *efx,
 	return efx->n_channels;
 }
 
-/* Probe the number and type of interrupts we are able to obtain, and
- * the resulting numbers of channels and RX queues.
- */
+ 
 int efx_siena_probe_interrupts(struct efx_nic *efx)
 {
 	unsigned int extra_channels = 0;
@@ -271,7 +241,7 @@ int efx_siena_probe_interrupts(struct efx_nic *efx)
 						   n_channels);
 		}
 		if (rc < 0) {
-			/* Fall back to single channel MSI */
+			 
 			netif_err(efx, drv, efx->net_dev,
 				  "could not enable MSI-X\n");
 			if (efx->type->min_interrupt_mode >= EFX_INT_MODE_MSI)
@@ -294,7 +264,7 @@ int efx_siena_probe_interrupts(struct efx_nic *efx)
 		}
 	}
 
-	/* Try single interrupt MSI */
+	 
 	if (efx->interrupt_mode == EFX_INT_MODE_MSI) {
 		efx->n_channels = 1;
 		efx->n_rx_channels = 1;
@@ -316,7 +286,7 @@ int efx_siena_probe_interrupts(struct efx_nic *efx)
 		}
 	}
 
-	/* Assume legacy interrupts */
+	 
 	if (efx->interrupt_mode == EFX_INT_MODE_LEGACY) {
 		efx->n_channels = 1 + (efx_siena_separate_tx_channels ? 1 : 0);
 		efx->n_rx_channels = 1;
@@ -328,7 +298,7 @@ int efx_siena_probe_interrupts(struct efx_nic *efx)
 		efx->legacy_irq = efx->pci_dev->irq;
 	}
 
-	/* Assign extra channels if possible, before XDP channels */
+	 
 	efx->n_extra_tx_channels = 0;
 	j = efx->xdp_channel_offset;
 	for (i = 0; i < EFX_MAX_EXTRA_CHANNELS; i++) {
@@ -346,7 +316,7 @@ int efx_siena_probe_interrupts(struct efx_nic *efx)
 	}
 
 	rss_spread = efx->n_rx_channels;
-	/* RSS might be usable on VFs even if it is disabled on the PF */
+	 
 #ifdef CONFIG_SFC_SIENA_SRIOV
 	if (efx->type->sriov_wanted) {
 		efx->rss_spread = ((rss_spread > 1 ||
@@ -367,7 +337,7 @@ void efx_siena_set_interrupt_affinity(struct efx_nic *efx)
 	struct efx_channel *channel;
 	unsigned int cpu;
 
-	/* If no online CPUs in local node, fallback to any online CPU */
+	 
 	if (cpumask_first_and(cpu_online_mask, numa_mask) >= nr_cpu_ids)
 		numa_mask = cpu_online_mask;
 
@@ -397,31 +367,25 @@ void
 efx_siena_clear_interrupt_affinity(struct efx_nic *efx __always_unused)
 {
 }
-#endif /* CONFIG_SMP */
+#endif  
 
 void efx_siena_remove_interrupts(struct efx_nic *efx)
 {
 	struct efx_channel *channel;
 
-	/* Remove MSI/MSI-X interrupts */
+	 
 	efx_for_each_channel(channel, efx)
 		channel->irq = 0;
 	pci_disable_msi(efx->pci_dev);
 	pci_disable_msix(efx->pci_dev);
 
-	/* Remove legacy interrupt */
+	 
 	efx->legacy_irq = 0;
 }
 
-/***************
- * EVENT QUEUES
- ***************/
+ 
 
-/* Create event queue
- * Event queue memory allocations are done only once.  If the channel
- * is reset, the memory buffer will be reused; this guards against
- * errors during channel reset and also simplifies interrupt handling.
- */
+ 
 static int efx_probe_eventq(struct efx_channel *channel)
 {
 	struct efx_nic *efx = channel->efx;
@@ -430,9 +394,7 @@ static int efx_probe_eventq(struct efx_channel *channel)
 	netif_dbg(efx, probe, efx->net_dev,
 		  "chan %d create event queue\n", channel->channel);
 
-	/* Build an event queue with room for one event per tx and rx buffer,
-	 * plus some extra for link state events and MCDI completions.
-	 */
+	 
 	entries = roundup_pow_of_two(efx->rxq_entries + efx->txq_entries + 128);
 	EFX_WARN_ON_PARANOID(entries > EFX_MAX_EVQ_SIZE);
 	channel->eventq_mask = max(entries, EFX_MIN_EVQ_SIZE) - 1;
@@ -440,7 +402,7 @@ static int efx_probe_eventq(struct efx_channel *channel)
 	return efx_nic_probe_eventq(channel);
 }
 
-/* Prepare channel's event queue */
+ 
 static int efx_init_eventq(struct efx_channel *channel)
 {
 	struct efx_nic *efx = channel->efx;
@@ -460,13 +422,13 @@ static int efx_init_eventq(struct efx_channel *channel)
 	return rc;
 }
 
-/* Enable event queue processing and NAPI */
+ 
 void efx_siena_start_eventq(struct efx_channel *channel)
 {
 	netif_dbg(channel->efx, ifup, channel->efx->net_dev,
 		  "chan %d start event queue\n", channel->channel);
 
-	/* Make sure the NAPI handler sees the enabled flag set */
+	 
 	channel->enabled = true;
 	smp_wmb();
 
@@ -474,7 +436,7 @@ void efx_siena_start_eventq(struct efx_channel *channel)
 	efx_nic_eventq_read_ack(channel);
 }
 
-/* Disable event queue processing and NAPI */
+ 
 void efx_siena_stop_eventq(struct efx_channel *channel)
 {
 	if (!channel->enabled)
@@ -504,11 +466,7 @@ static void efx_remove_eventq(struct efx_channel *channel)
 	efx_nic_remove_eventq(channel);
 }
 
-/**************************************************************************
- *
- * Channel handling
- *
- *************************************************************************/
+ 
 
 #ifdef CONFIG_RFS_ACCEL
 static void efx_filter_rfs_expire(struct work_struct *data)
@@ -523,12 +481,12 @@ static void efx_filter_rfs_expire(struct work_struct *data)
 	if (quota >= 20 && __efx_siena_filter_rfs_expire(channel,
 					min(channel->rfs_filter_count, quota)))
 		channel->rfs_last_expiry += time;
-	/* Ensure we do more work eventually even if NAPI poll is not happening */
+	 
 	schedule_delayed_work(dwork, 30 * HZ);
 }
 #endif
 
-/* Allocate and initialise a channel structure. */
+ 
 static struct efx_channel *efx_alloc_channel(struct efx_nic *efx, int i)
 {
 	struct efx_rx_queue *rx_queue;
@@ -575,7 +533,7 @@ int efx_siena_init_channels(struct efx_nic *efx)
 		efx->msi_context[i].index = i;
 	}
 
-	/* Higher numbered interrupt modes are less capable! */
+	 
 	efx->interrupt_mode = min(efx->type->min_interrupt_mode,
 				  efx_siena_interrupt_mode);
 
@@ -596,9 +554,7 @@ void efx_siena_fini_channels(struct efx_nic *efx)
 		}
 }
 
-/* Allocate and initialise a channel structure, copying parameters
- * (but not resources) from an old channel structure.
- */
+ 
 static
 struct efx_channel *efx_copy_channel(const struct efx_channel *old_channel)
 {
@@ -716,14 +672,10 @@ int efx_siena_probe_channels(struct efx_nic *efx)
 	struct efx_channel *channel;
 	int rc;
 
-	/* Restart special buffer allocation */
+	 
 	efx->next_buffer_table = 0;
 
-	/* Probe channels in reverse, so that any 'extra' channels
-	 * use the start of the buffer table. This allows the traffic
-	 * channels to be resized without moving them or wasting the
-	 * entries before them.
-	 */
+	 
 	efx_for_each_channel_rev(channel, efx) {
 		rc = efx_probe_channel(channel);
 		if (rc) {
@@ -790,10 +742,7 @@ static void efx_set_xdp_channels(struct efx_nic *efx)
 	int xdp_queue_number = 0;
 	int rc;
 
-	/* We need to mark which channels really have RX and TX
-	 * queues, and adjust the TX queue numbers if we have separate
-	 * RX-only and TX-only channels.
-	 */
+	 
 	efx_for_each_channel(channel, efx) {
 		if (channel->channel < efx->tx_channel_offset)
 			continue;
@@ -815,11 +764,7 @@ static void efx_set_xdp_channels(struct efx_nic *efx)
 					  tx_queue->queue);
 			}
 
-			/* If XDP is borrowing queues from net stack, it must
-			 * use the queue with no csum offload, which is the
-			 * first one of the channel
-			 * (note: tx_queue_by_type is not initialized yet)
-			 */
+			 
 			if (efx->xdp_txq_queues_mode ==
 			    EFX_XDP_TX_QUEUES_BORROWED) {
 				tx_queue = &channel->tx_queue[0];
@@ -835,9 +780,7 @@ static void efx_set_xdp_channels(struct efx_nic *efx)
 	WARN_ON(efx->xdp_txq_queues_mode != EFX_XDP_TX_QUEUES_DEDICATED &&
 		xdp_queue_number > efx->xdp_tx_queue_count);
 
-	/* If we have more CPUs than assigned XDP TX queues, assign the already
-	 * existing queues to the exceeding CPUs
-	 */
+	 
 	next_queue = 0;
 	while (xdp_queue_number < efx->xdp_tx_queue_count) {
 		tx_queue = efx->xdp_tx_queues[next_queue++];
@@ -864,9 +807,7 @@ int efx_siena_realloc_channels(struct efx_nic *efx, u32 rxq_entries,
 	if (rc)
 		return rc;
 
-	/* Not all channels should be reallocated. We must avoid
-	 * reallocating their buffer table entries.
-	 */
+	 
 	efx_for_each_channel(channel, efx) {
 		struct efx_rx_queue *rx_queue;
 		struct efx_tx_queue *tx_queue;
@@ -890,7 +831,7 @@ int efx_siena_realloc_channels(struct efx_nic *efx, u32 rxq_entries,
 	efx_siena_stop_all(efx);
 	efx_soft_disable_interrupts(efx);
 
-	/* Clone channels (where possible) */
+	 
 	memset(other_channel, 0, sizeof(other_channel));
 	for (i = 0; i < efx->n_channels; i++) {
 		channel = efx->channel[i];
@@ -903,7 +844,7 @@ int efx_siena_realloc_channels(struct efx_nic *efx, u32 rxq_entries,
 		other_channel[i] = channel;
 	}
 
-	/* Swap entry counts and channel pointers */
+	 
 	old_rxq_entries = efx->rxq_entries;
 	old_txq_entries = efx->txq_entries;
 	efx->rxq_entries = rxq_entries;
@@ -911,7 +852,7 @@ int efx_siena_realloc_channels(struct efx_nic *efx, u32 rxq_entries,
 	for (i = 0; i < efx->n_channels; i++)
 		swap(efx->channel[i], other_channel[i]);
 
-	/* Restart buffer table allocation */
+	 
 	efx->next_buffer_table = next_buffer_table;
 
 	for (i = 0; i < efx->n_channels; i++) {
@@ -926,7 +867,7 @@ int efx_siena_realloc_channels(struct efx_nic *efx, u32 rxq_entries,
 
 	efx_set_xdp_channels(efx);
 out:
-	/* Destroy unused channel structures */
+	 
 	for (i = 0; i < efx->n_channels; i++) {
 		channel = other_channel[i];
 		if (channel && channel->type->copy) {
@@ -949,7 +890,7 @@ out:
 	return rc;
 
 rollback:
-	/* Swap back */
+	 
 	efx->rxq_entries = old_rxq_entries;
 	efx->txq_entries = old_txq_entries;
 	for (i = 0; i < efx->n_channels; i++)
@@ -965,7 +906,7 @@ int efx_siena_set_channels(struct efx_nic *efx)
 	if (efx->xdp_tx_queue_count) {
 		EFX_WARN_ON_PARANOID(efx->xdp_tx_queues);
 
-		/* Allocate array for XDP TX queue lookup. */
+		 
 		efx->xdp_tx_queues = kcalloc(efx->xdp_tx_queue_count,
 					     sizeof(*efx->xdp_tx_queues),
 					     GFP_KERNEL);
@@ -994,9 +935,7 @@ static bool efx_default_channel_want_txqs(struct efx_channel *channel)
 		channel->efx->n_tx_channels;
 }
 
-/*************
- * START/STOP
- *************/
+ 
 
 static int efx_soft_enable_interrupts(struct efx_nic *efx)
 {
@@ -1057,7 +996,7 @@ static void efx_soft_disable_interrupts(struct efx_nic *efx)
 			efx_fini_eventq(channel);
 	}
 
-	/* Flush the asynchronous MCDI request queue */
+	 
 	efx_siena_mcdi_flush_async(efx);
 }
 
@@ -1066,7 +1005,7 @@ int efx_siena_enable_interrupts(struct efx_nic *efx)
 	struct efx_channel *channel, *end_channel;
 	int rc;
 
-	/* TODO: Is this really a bug? */
+	 
 	BUG_ON(efx->state == STATE_DISABLED);
 
 	if (efx->eeh_disabled_legacy_irq) {
@@ -1149,19 +1088,14 @@ void efx_siena_stop_channels(struct efx_nic *efx)
 	struct efx_channel *channel;
 	int rc = 0;
 
-	/* Stop RX refill */
+	 
 	efx_for_each_channel(channel, efx) {
 		efx_for_each_channel_rx_queue(rx_queue, channel)
 			rx_queue->refill_enabled = false;
 	}
 
 	efx_for_each_channel(channel, efx) {
-		/* RX packet processing is pipelined, so wait for the
-		 * NAPI handler to complete.  At least event queue 0
-		 * might be kept active by non-data events, so don't
-		 * use napi_synchronize() but actually disable NAPI
-		 * temporarily.
-		 */
+		 
 		if (efx_channel_has_rx_queue(channel)) {
 			efx_siena_stop_eventq(channel);
 			efx_siena_start_eventq(channel);
@@ -1186,19 +1120,9 @@ void efx_siena_stop_channels(struct efx_nic *efx)
 	}
 }
 
-/**************************************************************************
- *
- * NAPI interface
- *
- *************************************************************************/
+ 
 
-/* Process channel's event queue
- *
- * This function is responsible for processing the event queue of a
- * single channel.  The caller must guarantee that this function will
- * never be concurrently called more than once on the same channel,
- * though different channels may be being processed concurrently.
- */
+ 
 static int efx_process_channel(struct efx_channel *channel, int budget)
 {
 	struct efx_tx_queue *tx_queue;
@@ -1208,7 +1132,7 @@ static int efx_process_channel(struct efx_channel *channel, int budget)
 	if (unlikely(!channel->enabled))
 		return 0;
 
-	/* Prepare the batch receive list */
+	 
 	EFX_WARN_ON_PARANOID(channel->rx_list != NULL);
 	INIT_LIST_HEAD(&rx_list);
 	channel->rx_list = &rx_list;
@@ -1227,7 +1151,7 @@ static int efx_process_channel(struct efx_channel *channel, int budget)
 		efx_siena_fast_push_rx_descriptors(rx_queue, true);
 	}
 
-	/* Update BQL */
+	 
 	efx_for_each_channel_tx_queue(tx_queue, channel) {
 		if (tx_queue->bytes_compl) {
 			netdev_tx_completed_queue(tx_queue->core_txq,
@@ -1236,7 +1160,7 @@ static int efx_process_channel(struct efx_channel *channel, int budget)
 		}
 	}
 
-	/* Receive any packets we queued up */
+	 
 	netif_receive_skb_list(channel->rx_list);
 	channel->rx_list = NULL;
 
@@ -1264,11 +1188,7 @@ static void efx_update_irq_mod(struct efx_nic *efx, struct efx_channel *channel)
 	channel->irq_mod_score = 0;
 }
 
-/* NAPI poll handler
- *
- * NAPI guarantees serialisation of polls of the same device, which
- * provides the guarantee required by efx_process_channel().
- */
+ 
 static int efx_poll(struct napi_struct *napi, int budget)
 {
 	struct efx_channel *channel =
@@ -1295,18 +1215,14 @@ static int efx_poll(struct napi_struct *napi, int budget)
 		}
 
 #ifdef CONFIG_RFS_ACCEL
-		/* Perhaps expire some ARFS filters */
+		 
 		time = jiffies - channel->rfs_last_expiry;
-		/* Would our quota be >= 20? */
+		 
 		if (channel->rfs_filter_count * time >= 600 * HZ)
 			mod_delayed_work(system_wq, &channel->filter_work, 0);
 #endif
 
-		/* There is no race here; although napi_disable() will
-		 * only wait for napi_complete(), this isn't a problem
-		 * since efx_nic_eventq_read_ack() will have no effect if
-		 * interrupts have already been disabled.
-		 */
+		 
 		if (napi_complete_done(napi, spent))
 			efx_nic_eventq_read_ack(channel);
 	}
@@ -1346,9 +1262,7 @@ void efx_siena_fini_napi(struct efx_nic *efx)
 		efx_fini_napi_channel(channel);
 }
 
-/***************
- * Housekeeping
- ***************/
+ 
 
 static int efx_channel_dummy_op_int(struct efx_channel *channel)
 {

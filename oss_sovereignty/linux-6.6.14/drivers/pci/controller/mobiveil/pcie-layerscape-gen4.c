@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe Gen4 host controller driver for NXP Layerscape SoCs
- *
- * Copyright 2019-2020 NXP
- *
- * Author: Zhiqiang Hou <Zhiqiang.Hou@nxp.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
@@ -22,7 +16,7 @@
 
 #include "pcie-mobiveil.h"
 
-/* LUT and PF control registers */
+ 
 #define PCIE_LUT_OFF			0x80000
 #define PCIE_PF_OFF			0xc0000
 #define PCIE_PF_INT_STAT		0x18
@@ -30,7 +24,7 @@
 
 #define PCIE_PF_DBG			0x7fc
 #define PF_DBG_LTSSM_MASK		0x3f
-#define PF_DBG_LTSSM_L0			0x2d /* L0 state */
+#define PF_DBG_LTSSM_L0			0x2d  
 #define PF_DBG_WE			BIT(31)
 #define PF_DBG_PABR			BIT(27)
 
@@ -79,7 +73,7 @@ static void ls_g4_pcie_enable_interrupt(struct ls_g4_pcie *pcie)
 	struct mobiveil_pcie *mv_pci = &pcie->pci;
 	u32 val;
 
-	/* Clear the interrupt status */
+	 
 	mobiveil_csr_writel(mv_pci, 0xffffffff, PAB_INTP_AMBA_MISC_STAT);
 
 	val = PAB_INTP_INTX_MASK | PAB_INTP_MSI | PAB_INTP_RESET |
@@ -94,7 +88,7 @@ static int ls_g4_pcie_reinit_hw(struct ls_g4_pcie *pcie)
 	u32 val, act_stat;
 	int to = 100;
 
-	/* Poll for pab_csb_reset to set and PAB activity to clear */
+	 
 	do {
 		usleep_range(10, 15);
 		val = ls_g4_pcie_pf_readl(pcie, PCIE_PF_INT_STAT);
@@ -105,7 +99,7 @@ static int ls_g4_pcie_reinit_hw(struct ls_g4_pcie *pcie)
 		return -EIO;
 	}
 
-	/* clear PEX_RESET bit in PEX_PF0_DBG register */
+	 
 	val = ls_g4_pcie_pf_readl(pcie, PCIE_PF_DBG);
 	val |= PF_DBG_WE;
 	ls_g4_pcie_pf_writel(pcie, PCIE_PF_DBG, val);

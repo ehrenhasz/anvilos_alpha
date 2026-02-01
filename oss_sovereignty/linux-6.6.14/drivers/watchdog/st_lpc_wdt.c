@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ST's LPC Watchdog
- *
- * Copyright (C) 2014 STMicroelectronics -- All Rights Reserved
- *
- * Author: David Paris <david.paris@st.com> for STMicroelectronics
- *         Lee Jones <lee.jones@linaro.org> for STMicroelectronics
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -22,11 +15,11 @@
 
 #include <dt-bindings/mfd/st-lpc.h>
 
-/* Low Power Alarm */
+ 
 #define LPC_LPA_LSB_OFF			0x410
 #define LPC_LPA_START_OFF		0x418
 
-/* LPC as WDT */
+ 
 #define LPC_WDT_OFF			0x510
 
 static struct watchdog_device st_wdog_dev;
@@ -64,14 +57,14 @@ MODULE_DEVICE_TABLE(of, st_wdog_match);
 
 static void st_wdog_setup(struct st_wdog *st_wdog, bool enable)
 {
-	/* Type of watchdog reset - 0: Cold 1: Warm */
+	 
 	if (st_wdog->syscfg->reset_type_reg)
 		regmap_update_bits(st_wdog->regmap,
 				   st_wdog->syscfg->reset_type_reg,
 				   st_wdog->syscfg->reset_type_mask,
 				   st_wdog->warm_reset);
 
-	/* Mask/unmask watchdog reset */
+	 
 	regmap_update_bits(st_wdog->regmap,
 			   st_wdog->syscfg->enable_reg,
 			   st_wdog->syscfg->enable_mask,
@@ -165,7 +158,7 @@ static int st_wdog_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* LPC can either run as a Clocksource or in RTC or WDT mode */
+	 
 	if (mode != ST_LPC_MODE_WDT)
 		return -ENODEV;
 
@@ -222,7 +215,7 @@ static int st_wdog_probe(struct platform_device *pdev)
 	watchdog_set_drvdata(&st_wdog_dev, st_wdog);
 	watchdog_set_nowayout(&st_wdog_dev, WATCHDOG_NOWAYOUT);
 
-	/* Init Watchdog timeout with value in DT */
+	 
 	ret = watchdog_init_timeout(&st_wdog_dev, 0, dev);
 	if (ret)
 		return ret;

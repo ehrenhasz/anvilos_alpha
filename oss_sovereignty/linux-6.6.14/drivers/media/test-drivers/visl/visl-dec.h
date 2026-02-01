@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Contains the virtual decoder logic. The functions here control the
- * tracing/TPG on a per-frame basis
- */
+ 
+ 
 
 #ifndef _VISL_DEC_H_
 #define _VISL_DEC_H_
@@ -64,4 +61,4 @@ int visl_dec_stop(struct visl_ctx *ctx);
 int visl_job_ready(void *priv);
 void visl_device_run(void *priv);
 
-#endif /* _VISL_DEC_H_ */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -57,7 +57,7 @@ __naked void ldsx_s8_range_priv(void)
 	call %[bpf_get_prandom_u32];			\
 	*(u64 *)(r10 - 8) = r0;				\
 	r1 = *(s8 *)(r10 - 8);				\
-	/* r1 with s8 range */				\
+	 				\
 	if r1 s> 0x7f goto l0_%=;			\
 	if r1 s< -0x80 goto l0_%=;			\
 	r0 = 1;						\
@@ -80,7 +80,7 @@ __naked void ldsx_s16_range(void)
 	call %[bpf_get_prandom_u32];			\
 	*(u64 *)(r10 - 8) = r0;				\
 	r1 = *(s16 *)(r10 - 8);				\
-	/* r1 with s16 range */				\
+	 				\
 	if r1 s> 0x7fff goto l0_%=;			\
 	if r1 s< -0x8000 goto l0_%=;			\
 	r0 = 1;						\
@@ -103,7 +103,7 @@ __naked void ldsx_s32_range(void)
 	call %[bpf_get_prandom_u32];			\
 	*(u64 *)(r10 - 8) = r0;				\
 	r1 = *(s32 *)(r10 - 8);				\
-	/* r1 with s16 range */				\
+	 				\
 	if r1 s> 0x7fffFFFF goto l0_%=;			\
 	if r1 s< -0x80000000 goto l0_%=;		\
 	r0 = 1;						\

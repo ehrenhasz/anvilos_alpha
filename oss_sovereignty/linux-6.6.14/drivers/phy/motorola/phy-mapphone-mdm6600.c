@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Motorola Mapphone MDM6600 modem GPIO controlled USB PHY driver
- * Copyright (C) 2018 Tony Lindgren <tony@atomide.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -18,22 +15,22 @@
 #include <linux/phy/phy.h>
 #include <linux/pinctrl/consumer.h>
 
-#define PHY_MDM6600_PHY_DELAY_MS	4000	/* PHY enable 2.2s to 3.5s */
-#define PHY_MDM6600_ENABLED_DELAY_MS	8000	/* 8s more total for MDM6600 */
-#define PHY_MDM6600_WAKE_KICK_MS	600	/* time on after GPIO toggle */
-#define MDM6600_MODEM_IDLE_DELAY_MS	1000	/* modem after USB suspend */
-#define MDM6600_MODEM_WAKE_DELAY_MS	200	/* modem response after idle */
+#define PHY_MDM6600_PHY_DELAY_MS	4000	 
+#define PHY_MDM6600_ENABLED_DELAY_MS	8000	 
+#define PHY_MDM6600_WAKE_KICK_MS	600	 
+#define MDM6600_MODEM_IDLE_DELAY_MS	1000	 
+#define MDM6600_MODEM_WAKE_DELAY_MS	200	 
 
 enum phy_mdm6600_ctrl_lines {
-	PHY_MDM6600_ENABLE,			/* USB PHY enable */
-	PHY_MDM6600_POWER,			/* Device power */
-	PHY_MDM6600_RESET,			/* Device reset */
+	PHY_MDM6600_ENABLE,			 
+	PHY_MDM6600_POWER,			 
+	PHY_MDM6600_RESET,			 
 	PHY_MDM6600_NR_CTRL_LINES,
 };
 
 enum phy_mdm6600_bootmode_lines {
-	PHY_MDM6600_MODE0,			/* out USB mode0 and OOB wake */
-	PHY_MDM6600_MODE1,			/* out USB mode1, in OOB wake */
+	PHY_MDM6600_MODE0,			 
+	PHY_MDM6600_MODE1,			 
 	PHY_MDM6600_NR_MODE_LINES,
 };
 
@@ -51,31 +48,25 @@ enum phy_mdm6600_status_lines {
 	PHY_MDM6600_NR_STATUS_LINES,
 };
 
-/*
- * MDM6600 command codes. These are based on Motorola Mapphone Linux
- * kernel tree.
- */
+ 
 enum phy_mdm6600_cmd {
 	PHY_MDM6600_CMD_BP_PANIC_ACK,
-	PHY_MDM6600_CMD_DATA_ONLY_BYPASS,	/* Reroute USB to CPCAP PHY */
-	PHY_MDM6600_CMD_FULL_BYPASS,		/* Reroute USB to CPCAP PHY */
-	PHY_MDM6600_CMD_NO_BYPASS,		/* Request normal USB mode */
-	PHY_MDM6600_CMD_BP_SHUTDOWN_REQ,	/* Request device power off */
+	PHY_MDM6600_CMD_DATA_ONLY_BYPASS,	 
+	PHY_MDM6600_CMD_FULL_BYPASS,		 
+	PHY_MDM6600_CMD_NO_BYPASS,		 
+	PHY_MDM6600_CMD_BP_SHUTDOWN_REQ,	 
 	PHY_MDM6600_CMD_BP_UNKNOWN_5,
 	PHY_MDM6600_CMD_BP_UNKNOWN_6,
 	PHY_MDM6600_CMD_UNDEFINED,
 };
 
-/*
- * MDM6600 status codes. These are based on Motorola Mapphone Linux
- * kernel tree.
- */
+ 
 enum phy_mdm6600_status {
-	PHY_MDM6600_STATUS_PANIC,		/* Seems to be really off */
+	PHY_MDM6600_STATUS_PANIC,		 
 	PHY_MDM6600_STATUS_PANIC_BUSY_WAIT,
 	PHY_MDM6600_STATUS_QC_DLOAD,
-	PHY_MDM6600_STATUS_RAM_DOWNLOADER,	/* MDM6600 USB flashing mode */
-	PHY_MDM6600_STATUS_PHONE_CODE_AWAKE,	/* MDM6600 normal USB mode */
+	PHY_MDM6600_STATUS_RAM_DOWNLOADER,	 
+	PHY_MDM6600_STATUS_PHONE_CODE_AWAKE,	 
 	PHY_MDM6600_STATUS_PHONE_CODE_ASLEEP,
 	PHY_MDM6600_STATUS_SHUTDOWN_ACK,
 	PHY_MDM6600_STATUS_UNDEFINED,
@@ -99,9 +90,9 @@ struct phy_mdm6600 {
 	struct delayed_work status_work;
 	struct delayed_work modem_wake_work;
 	struct completion ack;
-	bool enabled;				/* mdm6600 phy enabled */
-	bool running;				/* mdm6600 boot done */
-	bool awake;				/* mdm6600 respnds on n_gsm */
+	bool enabled;				 
+	bool running;				 
+	bool awake;				 
 	int status;
 };
 
@@ -128,7 +119,7 @@ static int phy_mdm6600_power_on(struct phy *x)
 
 	gpiod_set_value_cansleep(enable_gpio, 1);
 
-	/* Allow aggressive PM for USB, it's only needed for n_gsm port */
+	 
 	if (pm_runtime_enabled(&x->dev))
 		phy_pm_runtime_put(x);
 
@@ -144,7 +135,7 @@ static int phy_mdm6600_power_off(struct phy *x)
 	if (!ddata->enabled)
 		return -ENODEV;
 
-	/* Paired with phy_pm_runtime_put() in phy_mdm6600_power_on() */
+	 
 	if (pm_runtime_enabled(&x->dev)) {
 		error = phy_pm_runtime_get(x);
 		if (error < 0 && error != -EINPROGRESS)
@@ -164,13 +155,7 @@ static const struct phy_ops gpio_usb_ops = {
 	.owner = THIS_MODULE,
 };
 
-/**
- * phy_mdm6600_cmd() - send a command request to mdm6600
- * @ddata: device driver data
- * @val: value of cmd to be set
- *
- * Configures the three command request GPIOs to the specified value.
- */
+ 
 static void phy_mdm6600_cmd(struct phy_mdm6600 *ddata, int val)
 {
 	DECLARE_BITMAP(values, PHY_MDM6600_NR_CMD_LINES);
@@ -182,10 +167,7 @@ static void phy_mdm6600_cmd(struct phy_mdm6600 *ddata, int val)
 				       ddata->cmd_gpios->info, values);
 }
 
-/**
- * phy_mdm6600_status() - read mdm6600 status lines
- * @work: work structure
- */
+ 
 static void phy_mdm6600_status(struct work_struct *work)
 {
 	struct phy_mdm6600 *ddata;
@@ -220,16 +202,7 @@ static irqreturn_t phy_mdm6600_irq_thread(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * phy_mdm6600_wakeirq_thread - handle mode1 line OOB wake after booting
- * @irq: interrupt
- * @data: interrupt handler data
- *
- * GPIO mode1 is used initially as output to configure the USB boot
- * mode for mdm6600. After booting it is used as input for OOB wake
- * signal from mdm6600 to the SoC. Just use it for debug info only
- * for now.
- */
+ 
 static irqreturn_t phy_mdm6600_wakeirq_thread(int irq, void *data)
 {
 	struct phy_mdm6600 *ddata = data;
@@ -249,17 +222,14 @@ static irqreturn_t phy_mdm6600_wakeirq_thread(int irq, void *data)
 		return IRQ_NONE;
 	}
 
-	/* Just wake-up and kick the autosuspend timer */
+	 
 	pm_runtime_mark_last_busy(ddata->dev);
 	pm_runtime_put_autosuspend(ddata->dev);
 
 	return IRQ_HANDLED;
 }
 
-/**
- * phy_mdm6600_init_irq() - initialize mdm6600 status IRQ lines
- * @ddata: device driver data
- */
+ 
 static void phy_mdm6600_init_irq(struct phy_mdm6600 *ddata)
 {
 	struct device *dev = ddata->dev;
@@ -293,21 +263,18 @@ struct phy_mdm6600_map {
 
 static const struct phy_mdm6600_map
 phy_mdm6600_ctrl_gpio_map[PHY_MDM6600_NR_CTRL_LINES] = {
-	{ "enable", GPIOD_OUT_LOW, },		/* low = phy disabled */
-	{ "power", GPIOD_OUT_LOW, },		/* low = off */
-	{ "reset", GPIOD_OUT_HIGH, },		/* high = reset */
+	{ "enable", GPIOD_OUT_LOW, },		 
+	{ "power", GPIOD_OUT_LOW, },		 
+	{ "reset", GPIOD_OUT_HIGH, },		 
 };
 
-/**
- * phy_mdm6600_init_lines() - initialize mdm6600 GPIO lines
- * @ddata: device driver data
- */
+ 
 static int phy_mdm6600_init_lines(struct phy_mdm6600 *ddata)
 {
 	struct device *dev = ddata->dev;
 	int i;
 
-	/* MDM6600 control lines */
+	 
 	for (i = 0; i < ARRAY_SIZE(phy_mdm6600_ctrl_gpio_map); i++) {
 		const struct phy_mdm6600_map *map =
 			&phy_mdm6600_ctrl_gpio_map[i];
@@ -321,7 +288,7 @@ static int phy_mdm6600_init_lines(struct phy_mdm6600 *ddata)
 		}
 	}
 
-	/* MDM6600 USB start-up mode output lines */
+	 
 	ddata->mode_gpios = devm_gpiod_get_array(dev, "motorola,mode",
 						 GPIOD_OUT_LOW);
 	if (IS_ERR(ddata->mode_gpios))
@@ -330,7 +297,7 @@ static int phy_mdm6600_init_lines(struct phy_mdm6600 *ddata)
 	if (ddata->mode_gpios->ndescs != PHY_MDM6600_NR_MODE_LINES)
 		return -EINVAL;
 
-	/* MDM6600 status input lines */
+	 
 	ddata->status_gpios = devm_gpiod_get_array(dev, "motorola,status",
 						   GPIOD_IN);
 	if (IS_ERR(ddata->status_gpios))
@@ -339,7 +306,7 @@ static int phy_mdm6600_init_lines(struct phy_mdm6600 *ddata)
 	if (ddata->status_gpios->ndescs != PHY_MDM6600_NR_STATUS_LINES)
 		return -EINVAL;
 
-	/* MDM6600 cmd output lines */
+	 
 	ddata->cmd_gpios = devm_gpiod_get_array(dev, "motorola,cmd",
 						GPIOD_OUT_LOW);
 	if (IS_ERR(ddata->cmd_gpios))
@@ -351,16 +318,7 @@ static int phy_mdm6600_init_lines(struct phy_mdm6600 *ddata)
 	return 0;
 }
 
-/**
- * phy_mdm6600_device_power_on() - power on mdm6600 device
- * @ddata: device driver data
- *
- * To get the integrated USB phy in MDM6600 takes some hoops. We must ensure
- * the shared USB bootmode GPIOs are configured, then request modem start-up,
- * reset and power-up.. And then we need to recycle the shared USB bootmode
- * GPIOs as they are also used for Out of Band (OOB) wake for the USB and
- * TS 27.010 serial mux.
- */
+ 
 static int phy_mdm6600_device_power_on(struct phy_mdm6600 *ddata)
 {
 	struct gpio_desc *mode_gpio0, *mode_gpio1, *reset_gpio, *power_gpio;
@@ -371,37 +329,27 @@ static int phy_mdm6600_device_power_on(struct phy_mdm6600 *ddata)
 	reset_gpio = ddata->ctrl_gpios[PHY_MDM6600_RESET];
 	power_gpio = ddata->ctrl_gpios[PHY_MDM6600_POWER];
 
-	/*
-	 * Shared GPIOs must be low for normal USB mode. After booting
-	 * they are used for OOB wake signaling. These can be also used
-	 * to configure USB flashing mode later on based on a module
-	 * parameter.
-	 */
+	 
 	gpiod_set_value_cansleep(mode_gpio0, 0);
 	gpiod_set_value_cansleep(mode_gpio1, 0);
 
-	/* Request start-up mode */
+	 
 	phy_mdm6600_cmd(ddata, PHY_MDM6600_CMD_NO_BYPASS);
 
-	/* Request a reset first */
+	 
 	gpiod_set_value_cansleep(reset_gpio, 0);
 	msleep(100);
 
-	/* Toggle power GPIO to request mdm6600 to start */
+	 
 	gpiod_set_value_cansleep(power_gpio, 1);
 	msleep(100);
 	gpiod_set_value_cansleep(power_gpio, 0);
 
-	/*
-	 * Looks like the USB PHY needs between 2.2 to 4 seconds.
-	 * If we try to use it before that, we will get L3 errors
-	 * from omap-usb-host trying to access the PHY. See also
-	 * phy_mdm6600_init() for -EPROBE_DEFER.
-	 */
+	 
 	msleep(PHY_MDM6600_PHY_DELAY_MS);
 	ddata->enabled = true;
 
-	/* Booting up the rest of MDM6600 will take total about 8 seconds */
+	 
 	dev_info(ddata->dev, "Waiting for power up request to complete..\n");
 	if (wait_for_completion_timeout(&ddata->ack,
 			msecs_to_jiffies(PHY_MDM6600_ENABLED_DELAY_MS))) {
@@ -414,7 +362,7 @@ static int phy_mdm6600_device_power_on(struct phy_mdm6600 *ddata)
 		dev_err(ddata->dev, "Timed out powering up\n");
 	}
 
-	/* Reconfigure mode1 GPIO as input for OOB wake */
+	 
 	gpiod_direction_input(mode_gpio1);
 
 	wakeirq = gpiod_to_irq(mode_gpio1);
@@ -437,10 +385,7 @@ static int phy_mdm6600_device_power_on(struct phy_mdm6600 *ddata)
 	return error;
 }
 
-/**
- * phy_mdm6600_device_power_off() - power off mdm6600 device
- * @ddata: device driver data
- */
+ 
 static void phy_mdm6600_device_power_off(struct phy_mdm6600 *ddata)
 {
 	struct gpio_desc *reset_gpio =
@@ -462,12 +407,7 @@ static void phy_mdm6600_device_power_off(struct phy_mdm6600 *ddata)
 		dev_err(ddata->dev, "Timed out powering down\n");
 	}
 
-	/*
-	 * Keep reset gpio high with padconf internal pull-up resistor to
-	 * prevent modem from waking up during deeper SoC idle states. The
-	 * gpio bank lines can have glitches if not in the always-on wkup
-	 * domain.
-	 */
+	 
 	error = pinctrl_pm_select_sleep_state(ddata->dev);
 	if (error)
 		dev_warn(ddata->dev, "%s: error with sleep_state: %i\n",
@@ -486,13 +426,7 @@ static void phy_mdm6600_deferred_power_on(struct work_struct *work)
 		dev_err(ddata->dev, "Device not functional\n");
 }
 
-/*
- * USB suspend puts mdm6600 into low power mode. For any n_gsm using apps,
- * we need to keep the modem awake by kicking it's mode0 GPIO. This will
- * keep the modem awake for about 1.2 seconds. When no n_gsm apps are using
- * the modem, runtime PM auto mode can be enabled so modem can enter low
- * power mode.
- */
+ 
 static void phy_mdm6600_wake_modem(struct phy_mdm6600 *ddata)
 {
 	struct gpio_desc *mode_gpio0;
@@ -514,11 +448,7 @@ static void phy_mdm6600_modem_wake(struct work_struct *work)
 	ddata = container_of(work, struct phy_mdm6600, modem_wake_work.work);
 	phy_mdm6600_wake_modem(ddata);
 
-	/*
-	 * The modem does not always stay awake 1.2 seconds after toggling
-	 * the wake GPIO, and sometimes it idles after about some 600 ms
-	 * making writes time out.
-	 */
+	 
 	schedule_delayed_work(&ddata->modem_wake_work,
 			      msecs_to_jiffies(PHY_MDM6600_WAKE_KICK_MS));
 }
@@ -579,19 +509,10 @@ static int phy_mdm6600_probe(struct platform_device *pdev)
 	phy_mdm6600_init_irq(ddata);
 	schedule_delayed_work(&ddata->bootup_work, 0);
 
-	/*
-	 * See phy_mdm6600_device_power_on(). We should be able
-	 * to remove this eventually when ohci-platform can deal
-	 * with -EPROBE_DEFER.
-	 */
+	 
 	msleep(PHY_MDM6600_PHY_DELAY_MS + 500);
 
-	/*
-	 * Enable PM runtime only after PHY has been powered up properly.
-	 * It is currently only needed after USB suspends mdm6600 and n_gsm
-	 * needs to access the device. We don't want to do this earlier as
-	 * gpio mode0 pin doubles as mdm6600 wake-up gpio.
-	 */
+	 
 	pm_runtime_use_autosuspend(ddata->dev);
 	pm_runtime_set_autosuspend_delay(ddata->dev,
 					 MDM6600_MODEM_IDLE_DELAY_MS);

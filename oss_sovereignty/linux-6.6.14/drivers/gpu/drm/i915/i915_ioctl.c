@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include "gt/intel_engine_regs.h"
 
@@ -12,12 +10,7 @@
 #include "intel_runtime_pm.h"
 #include "intel_uncore.h"
 
-/*
- * This file is for small ioctl functions that are out of place everywhere else,
- * and not big enough to warrant a file of their own.
- *
- * This is not the dumping ground for random ioctls.
- */
+ 
 
 struct reg_whitelist {
 	i915_reg_t offset_ldw;

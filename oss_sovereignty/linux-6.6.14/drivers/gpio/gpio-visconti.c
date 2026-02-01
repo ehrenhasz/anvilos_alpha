@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Toshiba Visconti GPIO Support
- *
- * (C) Copyright 2020 Toshiba Electronic Devices & Storage Corporation
- * (C) Copyright 2020 TOSHIBA CORPORATION
- *
- * Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/init.h>
@@ -18,7 +11,7 @@
 #include <linux/seq_file.h>
 #include <linux/bitops.h>
 
-/* register offset */
+ 
 #define GPIO_DIR	0x00
 #define GPIO_IDATA	0x08
 #define GPIO_ODATA	0x10
@@ -30,7 +23,7 @@
 
 struct visconti_gpio {
 	void __iomem *base;
-	spinlock_t lock; /* protect gpio register */
+	spinlock_t lock;  
 	struct gpio_chip gpio_chip;
 	struct device *dev;
 };
@@ -94,9 +87,9 @@ static int visconti_gpio_child_to_parent_hwirq(struct gpio_chip *gc,
 					       unsigned int *parent,
 					       unsigned int *parent_type)
 {
-	/* Interrupts 0..15 mapped to interrupts 24..39 on the GIC */
+	 
 	if (child < 16) {
-		/* All these interrupts are level high in the CPU */
+		 
 		*parent_type = IRQ_TYPE_LEVEL_HIGH;
 		*parent = child + BASE_HW_IRQ;
 		return 0;
@@ -214,7 +207,7 @@ static int visconti_gpio_probe(struct platform_device *pdev)
 
 static const struct of_device_id visconti_gpio_of_match[] = {
 	{ .compatible = "toshiba,gpio-tmpv7708", },
-	{ /* end of table */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, visconti_gpio_of_match);
 

@@ -1,27 +1,4 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  Solaris Porting Layer (SPL) Credential Implementation.
- */
+ 
 
 #include <sys/condvar.h>
 #include <sys/time.h>
@@ -102,7 +79,7 @@ __cv_destroy(kcondvar_t *cvp)
 	cvp->cv_magic = CV_DESTROY;
 	atomic_dec(&cvp->cv_refs);
 
-	/* Block until all waiters are woken and references dropped. */
+	 
 	while (cv_destroy_wakeup(cvp) == 0)
 		wait_event_timeout(cvp->cv_destroy, cv_destroy_wakeup(cvp), 1);
 
@@ -128,29 +105,22 @@ cv_wait_common(kcondvar_t *cvp, kmutex_t *mp, int state, int io)
 	m = READ_ONCE(cvp->cv_mutex);
 	if (!m)
 		m = xchg(&cvp->cv_mutex, mp);
-	/* Ensure the same mutex is used by all callers */
+	 
 	ASSERT(m == NULL || m == mp);
 
 	prepare_to_wait_exclusive(&cvp->cv_event, &wait, state);
 	atomic_inc(&cvp->cv_waiters);
 
-	/*
-	 * Mutex should be dropped after prepare_to_wait() this
-	 * ensures we're linked in to the waiters list and avoids the
-	 * race where 'cvp->cv_waiters > 0' but the list is empty.
-	 */
+	 
 	mutex_exit(mp);
 	if (io)
 		io_schedule();
 	else
 		schedule();
 
-	/* No more waiters a different mutex could be used */
+	 
 	if (atomic_dec_and_test(&cvp->cv_waiters)) {
-		/*
-		 * This is set without any lock, so it's racy. But this is
-		 * just for debug anyway, so make it best-effort
-		 */
+		 
 		cvp->cv_mutex = NULL;
 		wake_up(&cvp->cv_destroy);
 	}
@@ -158,10 +128,7 @@ cv_wait_common(kcondvar_t *cvp, kmutex_t *mp, int state, int io)
 	finish_wait(&cvp->cv_event, &wait);
 	atomic_dec(&cvp->cv_refs);
 
-	/*
-	 * Hold mutex after we release the cvp, otherwise we could dead lock
-	 * with a thread holding the mutex and call cv_destroy.
-	 */
+	 
 	mutex_enter(mp);
 }
 
@@ -251,10 +218,7 @@ spl_io_schedule_timeout(long time_left)
 }
 #endif
 
-/*
- * 'expire_time' argument is an absolute wall clock time in jiffies.
- * Return value is time left (expire_time - now) or -1 if timeout occurred.
- */
+ 
 static clock_t
 __cv_timedwait_common(kcondvar_t *cvp, kmutex_t *mp, clock_t expire_time,
     int state, int io)
@@ -268,7 +232,7 @@ __cv_timedwait_common(kcondvar_t *cvp, kmutex_t *mp, clock_t expire_time,
 	ASSERT(cvp->cv_magic == CV_MAGIC);
 	ASSERT(mutex_owned(mp));
 
-	/* XXX - Does not handle jiffie wrap properly */
+	 
 	time_left = expire_time - jiffies;
 	if (time_left <= 0)
 		return (-1);
@@ -277,29 +241,22 @@ __cv_timedwait_common(kcondvar_t *cvp, kmutex_t *mp, clock_t expire_time,
 	m = READ_ONCE(cvp->cv_mutex);
 	if (!m)
 		m = xchg(&cvp->cv_mutex, mp);
-	/* Ensure the same mutex is used by all callers */
+	 
 	ASSERT(m == NULL || m == mp);
 
 	prepare_to_wait_exclusive(&cvp->cv_event, &wait, state);
 	atomic_inc(&cvp->cv_waiters);
 
-	/*
-	 * Mutex should be dropped after prepare_to_wait() this
-	 * ensures we're linked in to the waiters list and avoids the
-	 * race where 'cvp->cv_waiters > 0' but the list is empty.
-	 */
+	 
 	mutex_exit(mp);
 	if (io)
 		time_left = spl_io_schedule_timeout(time_left);
 	else
 		time_left = schedule_timeout(time_left);
 
-	/* No more waiters a different mutex could be used */
+	 
 	if (atomic_dec_and_test(&cvp->cv_waiters)) {
-		/*
-		 * This is set without any lock, so it's racy. But this is
-		 * just for debug anyway, so make it best-effort
-		 */
+		 
 		cvp->cv_mutex = NULL;
 		wake_up(&cvp->cv_destroy);
 	}
@@ -307,10 +264,7 @@ __cv_timedwait_common(kcondvar_t *cvp, kmutex_t *mp, clock_t expire_time,
 	finish_wait(&cvp->cv_event, &wait);
 	atomic_dec(&cvp->cv_refs);
 
-	/*
-	 * Hold mutex after we release the cvp, otherwise we could dead lock
-	 * with a thread holding the mutex and call cv_destroy.
-	 */
+	 
 	mutex_enter(mp);
 	return (time_left > 0 ? 1 : -1);
 }
@@ -356,10 +310,7 @@ __cv_timedwait_idle(kcondvar_t *cvp, kmutex_t *mp, clock_t exp_time)
 	return (rc);
 }
 EXPORT_SYMBOL(__cv_timedwait_idle);
-/*
- * 'expire_time' argument is an absolute clock time in nanoseconds.
- * Return value is time left (expire_time - now) or -1 if timeout occurred.
- */
+ 
 static clock_t
 __cv_timedwait_hires(kcondvar_t *cvp, kmutex_t *mp, hrtime_t expire_time,
     hrtime_t res, int state)
@@ -384,17 +335,13 @@ __cv_timedwait_hires(kcondvar_t *cvp, kmutex_t *mp, hrtime_t expire_time,
 	m = READ_ONCE(cvp->cv_mutex);
 	if (!m)
 		m = xchg(&cvp->cv_mutex, mp);
-	/* Ensure the same mutex is used by all callers */
+	 
 	ASSERT(m == NULL || m == mp);
 
 	prepare_to_wait_exclusive(&cvp->cv_event, &wait, state);
 	atomic_inc(&cvp->cv_waiters);
 
-	/*
-	 * Mutex should be dropped after prepare_to_wait() this
-	 * ensures we're linked in to the waiters list and avoids the
-	 * race where 'cvp->cv_waiters > 0' but the list is empty.
-	 */
+	 
 	mutex_exit(mp);
 
 	ktime_left = ktime_set(0, time_left);
@@ -402,12 +349,9 @@ __cv_timedwait_hires(kcondvar_t *cvp, kmutex_t *mp, hrtime_t expire_time,
 	    MAX_HRTIMEOUT_SLACK_US * NSEC_PER_USEC);
 	rc = schedule_hrtimeout_range(&ktime_left, slack, HRTIMER_MODE_REL);
 
-	/* No more waiters a different mutex could be used */
+	 
 	if (atomic_dec_and_test(&cvp->cv_waiters)) {
-		/*
-		 * This is set without any lock, so it's racy. But this is
-		 * just for debug anyway, so make it best-effort
-		 */
+		 
 		cvp->cv_mutex = NULL;
 		wake_up(&cvp->cv_destroy);
 	}
@@ -419,9 +363,7 @@ __cv_timedwait_hires(kcondvar_t *cvp, kmutex_t *mp, hrtime_t expire_time,
 	return (rc == -EINTR ? 1 : -1);
 }
 
-/*
- * Compatibility wrapper for the cv_timedwait_hires() Illumos interface.
- */
+ 
 static int
 cv_timedwait_hires_common(kcondvar_t *cvp, kmutex_t *mp, hrtime_t tim,
     hrtime_t res, int flag, int state)
@@ -477,12 +419,7 @@ __cv_signal(kcondvar_t *cvp)
 	ASSERT(cvp->cv_magic == CV_MAGIC);
 	atomic_inc(&cvp->cv_refs);
 
-	/*
-	 * All waiters are added with WQ_FLAG_EXCLUSIVE so only one
-	 * waiter will be set runnable with each call to wake_up().
-	 * Additionally wake_up() holds a spin_lock associated with
-	 * the wait queue to ensure we don't race waking up processes.
-	 */
+	 
 	if (atomic_read(&cvp->cv_waiters) > 0)
 		wake_up(&cvp->cv_event);
 
@@ -497,10 +434,7 @@ __cv_broadcast(kcondvar_t *cvp)
 	ASSERT(cvp->cv_magic == CV_MAGIC);
 	atomic_inc(&cvp->cv_refs);
 
-	/*
-	 * Wake_up_all() will wake up all waiters even those which
-	 * have the WQ_FLAG_EXCLUSIVE flag set.
-	 */
+	 
 	if (atomic_read(&cvp->cv_waiters) > 0)
 		wake_up_all(&cvp->cv_event);
 

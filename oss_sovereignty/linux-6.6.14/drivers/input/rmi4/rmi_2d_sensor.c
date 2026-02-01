@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2016 Synaptics Incorporated
- * Copyright (c) 2011 Unixphere
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -16,7 +13,7 @@
 #define RMI_2D_REL_POS_MIN		-128
 #define RMI_2D_REL_POS_MAX		127
 
-/* maximum ABS_MT_POSITION displacement (in mm) */
+ 
 #define DMAX 10
 
 void rmi_2d_sensor_abs_process(struct rmi_2d_sensor *sensor,
@@ -25,7 +22,7 @@ void rmi_2d_sensor_abs_process(struct rmi_2d_sensor *sensor,
 {
 	struct rmi_2d_axis_alignment *axis_align = &sensor->axis_align;
 
-	/* we keep the previous values if the finger is released */
+	 
 	if (obj->type == RMI_2D_OBJECT_NONE)
 		return;
 
@@ -38,14 +35,7 @@ void rmi_2d_sensor_abs_process(struct rmi_2d_sensor *sensor,
 	if (axis_align->swap_axes)
 		swap(obj->x, obj->y);
 
-	/*
-	 * Here checking if X offset or y offset are specified is
-	 * redundant. We just add the offsets or clip the values.
-	 *
-	 * Note: offsets need to be applied before clipping occurs,
-	 * or we could get funny values that are outside of
-	 * clipping boundaries.
-	 */
+	 
 	obj->x += axis_align->offset_x;
 	obj->y += axis_align->offset_y;
 

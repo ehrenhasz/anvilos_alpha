@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Marvell
- *
- * Authors:
- *   Igal Liberman <igall@marvell.com>
- *   Miquèl Raynal <miquel.raynal@bootlin.com>
- *
- * Marvell A3700 UTMI PHY driver
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -18,7 +10,7 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* Armada 3700 UTMI PHY registers */
+ 
 #define USB2_PHY_PLL_CTRL_REG0			0x0
 #define   PLL_REF_DIV_OFF			0
 #define   PLL_REF_DIV_MASK			GENMASK(6, 0)
@@ -45,7 +37,7 @@
 #define   PHY_ENSWITCH_DP			BIT(12)
 #define   PHY_ENSWITCH_DM			BIT(13)
 
-/* Armada 3700 USB miscellaneous registers */
+ 
 #define USB2_PHY_CTRL(usb32)			(usb32 ? 0x20 : 0x4)
 #define   RB_USB2PHY_PU				BIT(0)
 #define   USB2_DP_PULLDN_DEV_MODE		BIT(5)
@@ -55,27 +47,13 @@
 #define PLL_LOCK_DELAY_US			10000
 #define PLL_LOCK_TIMEOUT_US			1000000
 
-/**
- * struct mvebu_a3700_utmi_caps - PHY capabilities
- *
- * @usb32: Flag indicating which PHY is in use (impacts the register map):
- *           - The UTMI PHY wired to the USB3/USB2 controller (otg)
- *           - The UTMI PHY wired to the USB2 controller (host only)
- * @ops: PHY operations
- */
+ 
 struct mvebu_a3700_utmi_caps {
 	int usb32;
 	const struct phy_ops *ops;
 };
 
-/**
- * struct mvebu_a3700_utmi - PHY driver data
- *
- * @regs: PHY registers
- * @usb_misc: Regmap with USB miscellaneous registers including PHY ones
- * @caps: PHY capabilities
- * @phy: PHY handle
- */
+ 
 struct mvebu_a3700_utmi {
 	void __iomem *regs;
 	struct regmap *usb_misc;
@@ -91,40 +69,37 @@ static int mvebu_a3700_utmi_phy_power_on(struct phy *phy)
 	int ret = 0;
 	u32 reg;
 
-	/*
-	 * Setup PLL. 40MHz clock used to be the default, being 25MHz now.
-	 * See "PLL Settings for Typical REFCLK" table.
-	 */
+	 
 	reg = readl(utmi->regs + USB2_PHY_PLL_CTRL_REG0);
 	reg &= ~(PLL_REF_DIV_MASK | PLL_FB_DIV_MASK | PLL_SEL_LPFR_MASK);
 	reg |= (PLL_REF_DIV_5 << PLL_REF_DIV_OFF) |
 	       (PLL_FB_DIV_96 << PLL_FB_DIV_OFF);
 	writel(reg, utmi->regs + USB2_PHY_PLL_CTRL_REG0);
 
-	/* Enable PHY pull up and disable USB2 suspend */
+	 
 	regmap_update_bits(utmi->usb_misc, USB2_PHY_CTRL(usb32),
 			   RB_USB2PHY_SUSPM(usb32) | RB_USB2PHY_PU,
 			   RB_USB2PHY_SUSPM(usb32) | RB_USB2PHY_PU);
 
 	if (usb32) {
-		/* Power up OTG module */
+		 
 		reg = readl(utmi->regs + USB2_PHY_OTG_CTRL);
 		reg |= PHY_PU_OTG;
 		writel(reg, utmi->regs + USB2_PHY_OTG_CTRL);
 
-		/* Disable PHY charger detection */
+		 
 		reg = readl(utmi->regs + USB2_PHY_CHRGR_DETECT);
 		reg &= ~(PHY_CDP_EN | PHY_DCP_EN | PHY_PD_EN | PHY_PU_CHRG_DTC |
 			 PHY_CDP_DM_AUTO | PHY_ENSWITCH_DP | PHY_ENSWITCH_DM);
 		writel(reg, utmi->regs + USB2_PHY_CHRGR_DETECT);
 
-		/* Disable PHY DP/DM pull-down (used for device mode) */
+		 
 		regmap_update_bits(utmi->usb_misc, USB2_PHY_CTRL(usb32),
 				   USB2_DP_PULLDN_DEV_MODE |
 				   USB2_DM_PULLDN_DEV_MODE, 0);
 	}
 
-	/* Wait for PLL calibration */
+	 
 	ret = readl_poll_timeout(utmi->regs + USB2_PHY_CAL_CTRL, reg,
 				 reg & PHY_PLLCAL_DONE,
 				 PLL_LOCK_DELAY_US, PLL_LOCK_TIMEOUT_US);
@@ -133,7 +108,7 @@ static int mvebu_a3700_utmi_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Wait for impedance calibration */
+	 
 	ret = readl_poll_timeout(utmi->regs + USB2_PHY_CAL_CTRL, reg,
 				 reg & PHY_IMPCAL_DONE,
 				 PLL_LOCK_DELAY_US, PLL_LOCK_TIMEOUT_US);
@@ -142,7 +117,7 @@ static int mvebu_a3700_utmi_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Wait for squelch calibration */
+	 
 	ret = readl_poll_timeout(utmi->regs + USB2_RX_CHAN_CTRL1, reg,
 				 reg & USB2PHY_SQCAL_DONE,
 				 PLL_LOCK_DELAY_US, PLL_LOCK_TIMEOUT_US);
@@ -151,7 +126,7 @@ static int mvebu_a3700_utmi_phy_power_on(struct phy *phy)
 		return ret;
 	}
 
-	/* Wait for PLL to be locked */
+	 
 	ret = readl_poll_timeout(utmi->regs + USB2_PHY_PLL_CTRL_REG0, reg,
 				 reg & PLL_READY,
 				 PLL_LOCK_DELAY_US, PLL_LOCK_TIMEOUT_US);
@@ -167,12 +142,12 @@ static int mvebu_a3700_utmi_phy_power_off(struct phy *phy)
 	int usb32 = utmi->caps->usb32;
 	u32 reg;
 
-	/* Disable PHY pull-up and enable USB2 suspend */
+	 
 	reg = readl(utmi->regs + USB2_PHY_CTRL(usb32));
 	reg &= ~(RB_USB2PHY_PU | RB_USB2PHY_SUSPM(usb32));
 	writel(reg, utmi->regs + USB2_PHY_CTRL(usb32));
 
-	/* Power down OTG module */
+	 
 	if (usb32) {
 		reg = readl(utmi->regs + USB2_PHY_OTG_CTRL);
 		reg &= ~PHY_PU_OTG;
@@ -221,12 +196,12 @@ static int mvebu_a3700_utmi_phy_probe(struct platform_device *pdev)
 	if (!utmi)
 		return -ENOMEM;
 
-	/* Get UTMI memory region */
+	 
 	utmi->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(utmi->regs))
 		return PTR_ERR(utmi->regs);
 
-	/* Get miscellaneous Host/PHY region */
+	 
 	utmi->usb_misc = syscon_regmap_lookup_by_phandle(dev->of_node,
 							 "marvell,usb-misc-reg");
 	if (IS_ERR(utmi->usb_misc)) {
@@ -235,10 +210,10 @@ static int mvebu_a3700_utmi_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(utmi->usb_misc);
 	}
 
-	/* Retrieve PHY capabilities */
+	 
 	utmi->caps = of_device_get_match_data(dev);
 
-	/* Instantiate the PHY */
+	 
 	utmi->phy = devm_phy_create(dev, NULL, utmi->caps->ops);
 	if (IS_ERR(utmi->phy)) {
 		dev_err(dev, "Failed to create the UTMI PHY\n");
@@ -247,7 +222,7 @@ static int mvebu_a3700_utmi_phy_probe(struct platform_device *pdev)
 
 	phy_set_drvdata(utmi->phy, utmi);
 
-	/* Ensure the PHY is powered off */
+	 
 	utmi->caps->ops->power_off(utmi->phy);
 
 	provider = devm_of_phy_provider_register(dev, of_phy_simple_xlate);

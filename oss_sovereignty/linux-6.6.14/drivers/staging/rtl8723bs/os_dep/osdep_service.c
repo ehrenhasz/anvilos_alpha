@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 #include <drv_types.h>
 #include <rtw_debug.h>
 
-/*
-* Translate the OS dependent @param error_code to OS independent RTW_STATUS_CODE
-* @return: one of RTW_STATUS_CODE
-*/
+ 
 inline int RTW_STATUS_CODE(int error_code)
 {
 	if (error_code >= 0)
@@ -132,7 +125,7 @@ void rtw_buf_update(u8 **buf, u32 *buf_len, u8 *src, u32 src_len)
 	if (!src || !src_len)
 		goto keep_ori;
 
-	/* duplicate src */
+	 
 	dup = rtw_malloc(src_len);
 	if (dup) {
 		dup_len = src_len;
@@ -143,47 +136,30 @@ keep_ori:
 	ori = *buf;
 	ori_len = *buf_len;
 
-	/* replace buf with dup */
+	 
 	*buf_len = 0;
 	*buf = dup;
 	*buf_len = dup_len;
 
-	/* free ori */
+	 
 	if (ori && ori_len > 0)
 		kfree(ori);
 }
 
 
-/**
- * rtw_cbuf_full - test if cbuf is full
- * @cbuf: pointer of struct rtw_cbuf
- *
- * Returns: true if cbuf is full
- */
+ 
 inline bool rtw_cbuf_full(struct rtw_cbuf *cbuf)
 {
 	return (cbuf->write == cbuf->read - 1) ? true : false;
 }
 
-/**
- * rtw_cbuf_empty - test if cbuf is empty
- * @cbuf: pointer of struct rtw_cbuf
- *
- * Returns: true if cbuf is empty
- */
+ 
 inline bool rtw_cbuf_empty(struct rtw_cbuf *cbuf)
 {
 	return (cbuf->write == cbuf->read) ? true : false;
 }
 
-/**
- * rtw_cbuf_push - push a pointer into cbuf
- * @cbuf: pointer of struct rtw_cbuf
- * @buf: pointer to push in
- *
- * Lock free operation, be careful of the use scheme
- * Returns: true push success
- */
+ 
 bool rtw_cbuf_push(struct rtw_cbuf *cbuf, void *buf)
 {
 	if (rtw_cbuf_full(cbuf))
@@ -195,13 +171,7 @@ bool rtw_cbuf_push(struct rtw_cbuf *cbuf, void *buf)
 	return _SUCCESS;
 }
 
-/**
- * rtw_cbuf_pop - pop a pointer from cbuf
- * @cbuf: pointer of struct rtw_cbuf
- *
- * Lock free operation, be careful of the use scheme
- * Returns: pointer popped out
- */
+ 
 void *rtw_cbuf_pop(struct rtw_cbuf *cbuf)
 {
 	void *buf;
@@ -214,12 +184,7 @@ void *rtw_cbuf_pop(struct rtw_cbuf *cbuf)
 	return buf;
 }
 
-/**
- * rtw_cbuf_alloc - allocate a rtw_cbuf with given size and do initialization
- * @size: size of pointer
- *
- * Returns: pointer of srtuct rtw_cbuf, NULL for allocation failure
- */
+ 
 struct rtw_cbuf *rtw_cbuf_alloc(u32 size)
 {
 	struct rtw_cbuf *cbuf;

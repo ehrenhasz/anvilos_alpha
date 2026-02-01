@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __FIRMWARE_LOADER_H
 #define __FIRMWARE_LOADER_H
 
@@ -9,30 +9,7 @@
 #include <linux/list.h>
 #include <linux/completion.h>
 
-/**
- * enum fw_opt - options to control firmware loading behaviour
- *
- * @FW_OPT_UEVENT: Enables the fallback mechanism to send a kobject uevent
- *	when the firmware is not found. Userspace is in charge to load the
- *	firmware using the sysfs loading facility.
- * @FW_OPT_NOWAIT: Used to describe the firmware request is asynchronous.
- * @FW_OPT_USERHELPER: Enable the fallback mechanism, in case the direct
- *	filesystem lookup fails at finding the firmware.  For details refer to
- *	firmware_fallback_sysfs().
- * @FW_OPT_NO_WARN: Quiet, avoid printing warning messages.
- * @FW_OPT_NOCACHE: Disables firmware caching. Firmware caching is used to
- *	cache the firmware upon suspend, so that upon resume races against the
- *	firmware file lookup on storage is avoided. Used for calls where the
- *	file may be too big, or where the driver takes charge of its own
- *	firmware caching mechanism.
- * @FW_OPT_NOFALLBACK_SYSFS: Disable the sysfs fallback mechanism. Takes
- *	precedence over &FW_OPT_UEVENT and &FW_OPT_USERHELPER.
- * @FW_OPT_FALLBACK_PLATFORM: Enable fallback to device fw copy embedded in
- *	the platform's main firmware. If both this fallback and the sysfs
- *      fallback are enabled, then this fallback will be tried first.
- * @FW_OPT_PARTIAL: Allow partial read of firmware instead of needing to read
- *	entire file.
- */
+ 
 enum fw_opt {
 	FW_OPT_UEVENT			= BIT(0),
 	FW_OPT_NOWAIT			= BIT(1),
@@ -51,11 +28,7 @@ enum fw_status {
 	FW_STATUS_ABORTED,
 };
 
-/*
- * Concurrent request_firmware() for the same firmware need to be
- * serialized.  struct fw_state is simple state machine which hold the
- * state of the firmware loading.
- */
+ 
 struct fw_state {
 	struct completion completion;
 	enum fw_status status;
@@ -118,10 +91,7 @@ static inline void __fw_state_set(struct fw_priv *fw_priv,
 
 	if (status == FW_STATUS_DONE || status == FW_STATUS_ABORTED) {
 #ifdef CONFIG_FW_LOADER_USER_HELPER
-		/*
-		 * Doing this here ensures that the fw_priv is deleted from
-		 * the pending list in all abort/done paths.
-		 */
+		 
 		list_del_init(&fw_priv->pending_list);
 #endif
 		complete_all(&fw_st->completion);
@@ -169,7 +139,7 @@ void fw_state_init(struct fw_priv *fw_priv);
 bool firmware_is_builtin(const struct firmware *fw);
 bool firmware_request_builtin_buf(struct firmware *fw, const char *name,
 				  void *buf, size_t size);
-#else /* module case */
+#else  
 static inline bool firmware_is_builtin(const struct firmware *fw)
 {
 	return false;
@@ -194,4 +164,4 @@ static inline int fw_map_paged_buf(struct fw_priv *fw_priv) { return -ENXIO; }
 static inline bool fw_is_paged_buf(struct fw_priv *fw_priv) { return false; }
 #endif
 
-#endif /* __FIRMWARE_LOADER_H */
+#endif  

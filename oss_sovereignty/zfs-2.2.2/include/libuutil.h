@@ -1,26 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2004, 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef	_LIBUUTIL_H
 #define	_LIBUUTIL_H
@@ -33,52 +12,40 @@
 extern "C" {
 #endif
 
-/*
- * Standard flags codes.
- */
+ 
 #define	UU_DEFAULT		0
 
-/*
- * Standard error codes.
- */
-#define	UU_ERROR_NONE		0	/* no error */
-#define	UU_ERROR_INVALID_ARGUMENT 1	/* invalid argument */
-#define	UU_ERROR_UNKNOWN_FLAG	2	/* passed flag invalid */
-#define	UU_ERROR_NO_MEMORY	3	/* out of memory */
-#define	UU_ERROR_CALLBACK_FAILED 4	/* callback-initiated error */
-#define	UU_ERROR_NOT_SUPPORTED	5	/* operation not supported */
-#define	UU_ERROR_EMPTY		6	/* no value provided */
-#define	UU_ERROR_UNDERFLOW	7	/* value is too small */
-#define	UU_ERROR_OVERFLOW	8	/* value is too value */
-#define	UU_ERROR_INVALID_CHAR	9	/* value contains unexpected char */
-#define	UU_ERROR_INVALID_DIGIT	10	/* value contains digit not in base */
+ 
+#define	UU_ERROR_NONE		0	 
+#define	UU_ERROR_INVALID_ARGUMENT 1	 
+#define	UU_ERROR_UNKNOWN_FLAG	2	 
+#define	UU_ERROR_NO_MEMORY	3	 
+#define	UU_ERROR_CALLBACK_FAILED 4	 
+#define	UU_ERROR_NOT_SUPPORTED	5	 
+#define	UU_ERROR_EMPTY		6	 
+#define	UU_ERROR_UNDERFLOW	7	 
+#define	UU_ERROR_OVERFLOW	8	 
+#define	UU_ERROR_INVALID_CHAR	9	 
+#define	UU_ERROR_INVALID_DIGIT	10	 
 
-#define	UU_ERROR_SYSTEM		99	/* underlying system error */
-#define	UU_ERROR_UNKNOWN	100	/* error status not known */
+#define	UU_ERROR_SYSTEM		99	 
+#define	UU_ERROR_UNKNOWN	100	 
 
-/*
- * Exit status profiles.
- */
+ 
 #define	UU_PROFILE_DEFAULT	0
 #define	UU_PROFILE_LAUNCHER	1
 
-/*
- * Error reporting functions.
- */
+ 
 uint32_t uu_error(void);
 const char *uu_strerror(uint32_t);
 
-/*
- * Identifier test flags and function.
- */
-#define	UU_NAME_DOMAIN		0x1	/* allow SUNW, or com.sun, prefix */
-#define	UU_NAME_PATH		0x2	/* allow '/'-delimited paths */
+ 
+#define	UU_NAME_DOMAIN		0x1	 
+#define	UU_NAME_PATH		0x2	 
 
 int uu_check_name(const char *, uint_t);
 
-/*
- * Convenience functions.
- */
+ 
 #define	UU_NELEM(a)	(sizeof (a) / sizeof ((a)[0]))
 
 extern char *uu_msprintf(const char *format, ...)
@@ -93,40 +60,26 @@ extern char *uu_strndup(const char *s, size_t n);
 extern boolean_t uu_strbw(const char *a, const char *b);
 extern void *uu_memdup(const void *buf, size_t sz);
 
-/*
- * Comparison function type definition.
- *   Developers should be careful in their use of the _private argument. If you
- *   break interface guarantees, you get undefined behavior.
- */
+ 
 typedef int uu_compare_fn_t(const void *__left, const void *__right,
     void *__private);
 
-/*
- * Walk variant flags.
- *   A data structure need not provide support for all variants and
- *   combinations.  Refer to the appropriate documentation.
- */
-#define	UU_WALK_ROBUST		0x00000001	/* walk can survive removes */
-#define	UU_WALK_REVERSE		0x00000002	/* reverse walk order */
+ 
+#define	UU_WALK_ROBUST		0x00000001	 
+#define	UU_WALK_REVERSE		0x00000002	 
 
-#define	UU_WALK_PREORDER	0x00000010	/* walk tree in pre-order */
-#define	UU_WALK_POSTORDER	0x00000020	/* walk tree in post-order */
+#define	UU_WALK_PREORDER	0x00000010	 
+#define	UU_WALK_POSTORDER	0x00000020	 
 
-/*
- * Walk callback function return codes.
- */
+ 
 #define	UU_WALK_ERROR		-1
 #define	UU_WALK_NEXT		0
 #define	UU_WALK_DONE		1
 
-/*
- * Walk callback function type definition.
- */
+ 
 typedef int uu_walk_fn_t(void *_elem, void *_private);
 
-/*
- * lists: opaque structures
- */
+ 
 typedef struct uu_list_pool uu_list_pool_t;
 typedef struct uu_list uu_list_t;
 
@@ -138,60 +91,22 @@ typedef struct uu_list_walk uu_list_walk_t;
 
 typedef uintptr_t uu_list_index_t;
 
-/*
- * lists: interface
- *
- * basic usage:
- *	typedef struct foo {
- *		...
- *		uu_list_node_t foo_node;
- *		...
- *	} foo_t;
- *
- *	static int
- *	foo_compare(void *l_arg, void *r_arg, void *private)
- *	{
- *		foo_t *l = l_arg;
- *		foo_t *r = r_arg;
- *
- *		if (... l greater than r ...)
- *			return (1);
- *		if (... l less than r ...)
- *			return (-1);
- *		return (0);
- *	}
- *
- *	...
- *		// at initialization time
- *		foo_pool = uu_list_pool_create("foo_pool",
- *		    sizeof (foo_t), offsetof(foo_t, foo_node), foo_compare,
- *		    debugging? 0 : UU_AVL_POOL_DEBUG);
- *	...
- */
+ 
 uu_list_pool_t *uu_list_pool_create(const char *, size_t, size_t,
     uu_compare_fn_t *, uint32_t);
 #define	UU_LIST_POOL_DEBUG	0x00000001
 
 void uu_list_pool_destroy(uu_list_pool_t *);
 
-/*
- * usage:
- *
- *	foo_t *a;
- *	a = malloc(sizeof (*a));
- *	uu_list_node_init(a, &a->foo_list, pool);
- *	...
- *	uu_list_node_fini(a, &a->foo_list, pool);
- *	free(a);
- */
+ 
 void uu_list_node_init(void *, uu_list_node_t *, uu_list_pool_t *);
 void uu_list_node_fini(void *, uu_list_node_t *, uu_list_pool_t *);
 
 uu_list_t *uu_list_create(uu_list_pool_t *, void *_parent, uint32_t);
 #define	UU_LIST_DEBUG	0x00000001
-#define	UU_LIST_SORTED	0x00000002	/* list is sorted */
+#define	UU_LIST_SORTED	0x00000002	 
 
-void uu_list_destroy(uu_list_t *);	/* list must be empty */
+void uu_list_destroy(uu_list_t *);	 
 
 size_t uu_list_numnodes(uu_list_t *);
 
@@ -217,15 +132,11 @@ void *uu_list_teardown(uu_list_t *, void **);
 
 void uu_list_remove(uu_list_t *, void *);
 
-/*
- * lists: interfaces for non-sorted lists only
- */
+ 
 int uu_list_insert_before(uu_list_t *, void *_target, void *_elem);
 int uu_list_insert_after(uu_list_t *, void *_target, void *_elem);
 
-/*
- * avl trees: opaque structures
- */
+ 
 typedef struct uu_avl_pool uu_avl_pool_t;
 typedef struct uu_avl uu_avl_t;
 
@@ -241,59 +152,21 @@ typedef struct uu_avl_walk uu_avl_walk_t;
 
 typedef uintptr_t uu_avl_index_t;
 
-/*
- * avl trees: interface
- *
- * basic usage:
- *	typedef struct foo {
- *		...
- *		uu_avl_node_t foo_node;
- *		...
- *	} foo_t;
- *
- *	static int
- *	foo_compare(void *l_arg, void *r_arg, void *private)
- *	{
- *		foo_t *l = l_arg;
- *		foo_t *r = r_arg;
- *
- *		if (... l greater than r ...)
- *			return (1);
- *		if (... l less than r ...)
- *			return (-1);
- *		return (0);
- *	}
- *
- *	...
- *		// at initialization time
- *		foo_pool = uu_avl_pool_create("foo_pool",
- *		    sizeof (foo_t), offsetof(foo_t, foo_node), foo_compare,
- *		    debugging? 0 : UU_AVL_POOL_DEBUG);
- *	...
- */
+ 
 uu_avl_pool_t *uu_avl_pool_create(const char *, size_t, size_t,
     uu_compare_fn_t *, uint32_t);
 #define	UU_AVL_POOL_DEBUG	0x00000001
 
 void uu_avl_pool_destroy(uu_avl_pool_t *);
 
-/*
- * usage:
- *
- *	foo_t *a;
- *	a = malloc(sizeof (*a));
- *	uu_avl_node_init(a, &a->foo_avl, pool);
- *	...
- *	uu_avl_node_fini(a, &a->foo_avl, pool);
- *	free(a);
- */
+ 
 void uu_avl_node_init(void *, uu_avl_node_t *, uu_avl_pool_t *);
 void uu_avl_node_fini(void *, uu_avl_node_t *, uu_avl_pool_t *);
 
 uu_avl_t *uu_avl_create(uu_avl_pool_t *, void *_parent, uint32_t);
 #define	UU_AVL_DEBUG	0x00000001
 
-void uu_avl_destroy(uu_avl_t *);	/* list must be empty */
+void uu_avl_destroy(uu_avl_t *);	 
 
 size_t uu_avl_numnodes(uu_avl_t *);
 
@@ -323,4 +196,4 @@ void uu_avl_remove(uu_avl_t *, void *);
 }
 #endif
 
-#endif	/* _LIBUUTIL_H */
+#endif	 

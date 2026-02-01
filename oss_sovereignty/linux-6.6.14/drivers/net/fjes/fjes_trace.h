@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015-2016 FUJITSU LIMITED
- */
+ 
+ 
 
 #if !defined(FJES_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define FJES_TRACE_H_
@@ -13,7 +10,7 @@
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM fjes
 
-/* tracepoints for fjes_hw.c */
+ 
 
 TRACE_EVENT(fjes_hw_issue_request_command,
 	TP_PROTO(union REG_CR *cr, union REG_CS *cs, int timeout,
@@ -263,7 +260,7 @@ TRACE_EVENT(fjes_hw_stop_debug_err,
 	TP_printk("%s", __get_str(err))
 );
 
-/* tracepoints for fjes_main.c */
+ 
 
 TRACE_EVENT(fjes_txrx_stop_req_irq_pre,
 	TP_PROTO(struct fjes_hw *hw, int src_epid,
@@ -354,12 +351,12 @@ TRACE_EVENT(fjes_stop_req_irq_post,
 		  __entry->txrx_stop_req_bit, __entry->rx_status)
 );
 
-#endif /* FJES_TRACE_H_ */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_PATH ../../../drivers/net/fjes
 #define TRACE_INCLUDE_FILE fjes_trace
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

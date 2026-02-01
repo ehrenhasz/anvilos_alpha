@@ -8,13 +8,13 @@
 #include "py/mphal.h"
 #include "py/objstr.h"
 
-// anvil.check_output(cmd_str)
-// Returns bytes containing stdout. Raises OSError on failure or non-zero exit.
+
+
 static mp_obj_t anvil_check_output(mp_obj_t cmd_in) {
     const char *cmd = mp_obj_str_get_str(cmd_in);
 
-    // We use popen to read stdout.
-    // NOTE: This does not capture stderr.
+    
+    
     FILE *fp = popen(cmd, "r");
     if (fp == NULL) {
         mp_raise_OSError(errno);
@@ -38,12 +38,12 @@ static mp_obj_t anvil_check_output(mp_obj_t cmd_in) {
     if (WIFEXITED(status)) {
         exit_code = WEXITSTATUS(status);
     } else {
-        exit_code = -1; // Terminated by signal
+        exit_code = -1; 
     }
 
     if (exit_code != 0) {
         vstr_clear(&vstr);
-        // Raise OSError with the exit code as the error code.
+        
         mp_raise_OSError(exit_code);
     }
 

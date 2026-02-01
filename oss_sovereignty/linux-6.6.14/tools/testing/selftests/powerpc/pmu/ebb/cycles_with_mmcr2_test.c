@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -10,13 +8,11 @@
 #include "ebb.h"
 
 
-/*
- * Test of counting cycles while manipulating the user accessible bits in MMCR2.
- */
+ 
 
-/* We use two values because the first freezes PMC1 and so we would get no EBBs */
-#define MMCR2_EXPECTED_1 0x4020100804020000UL /* (FC1P|FC2P|FC3P|FC4P|FC5P|FC6P) */
-#define MMCR2_EXPECTED_2 0x0020100804020000UL /* (     FC2P|FC3P|FC4P|FC5P|FC6P) */
+ 
+#define MMCR2_EXPECTED_1 0x4020100804020000UL  
+#define MMCR2_EXPECTED_2 0x0020100804020000UL  
 
 
 int cycles_with_mmcr2(void)
@@ -45,14 +41,14 @@ int cycles_with_mmcr2(void)
 
 	mtspr(SPRN_PMC1, pmc_sample_period(sample_period));
 
-	/* XXX Set of MMCR2 must be after enable */
+	 
 	expected[0] = MMCR2_EXPECTED_1;
 	expected[1] = MMCR2_EXPECTED_2;
 	i = 0;
 	bad_mmcr2 = false;
 	actual = 0;
 
-	/* Make sure we loop until we take at least one EBB */
+	 
 	while ((ebb_state.stats.ebb_count < 20 && !bad_mmcr2) ||
 		ebb_state.stats.ebb_count < 1)
 	{

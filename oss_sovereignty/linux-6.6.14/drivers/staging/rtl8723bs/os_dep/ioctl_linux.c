@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/etherdevice.h>
 #include <drv_types.h>
@@ -30,7 +26,7 @@ static int wpa_set_auth_algs(struct net_device *dev, u32 value)
 		padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeShared;
 		padapter->securitypriv.dot11AuthAlgrthm = dot11AuthAlgrthm_Shared;
 	} else if (value & IW_AUTH_ALG_OPEN_SYSTEM) {
-		/* padapter->securitypriv.ndisencryptstatus = Ndis802_11EncryptionDisabled; */
+		 
 		if (padapter->securitypriv.ndisauthtype < Ndis802_11AuthModeWPAPSK) {
 			padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeOpen;
 			padapter->securitypriv.dot11AuthAlgrthm = dot11AuthAlgrthm_Open;
@@ -89,7 +85,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 		if (wep_key_len > 0) {
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
 			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, key_material);
-			/* Allocate a full structure to avoid potentially running off the end. */
+			 
 			pwep = kzalloc(sizeof(*pwep), GFP_KERNEL);
 			if (!pwep) {
 				ret = -ENOMEM;
@@ -117,8 +113,8 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 			if (rtw_set_802_11_add_wep(padapter, pwep) == (u8)_FAIL)
 				ret = -EOPNOTSUPP;
 		} else {
-			/* don't update "psecuritypriv->dot11PrivacyAlgrthm" and */
-			/* psecuritypriv->dot11PrivacyKeyIndex =keyid", but can rtw_set_key to fw/cam */
+			 
+			 
 
 			if (wep_key_idx >= WEP_KEYS) {
 				ret = -EOPNOTSUPP;
@@ -133,16 +129,16 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 		goto exit;
 	}
 
-	if (padapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X) { /*  802_1x */
+	if (padapter->securitypriv.dot11AuthAlgrthm == dot11AuthAlgrthm_8021X) {  
 		struct sta_info *psta, *pbcmc_sta;
 		struct sta_priv *pstapriv = &padapter->stapriv;
 
-		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE | WIFI_MP_STATE) == true) { /* sta mode */
+		if (check_fwstate(pmlmepriv, WIFI_STATION_STATE | WIFI_MP_STATE) == true) {  
 			psta = rtw_get_stainfo(pstapriv, get_bssid(pmlmepriv));
 			if (!psta) {
-				/* DEBUG_ERR(("Set wpa_set_encryption: Obtain Sta_info fail\n")); */
+				 
 			} else {
-				/* Jeff: don't disable ieee8021x_blocked while clearing key */
+				 
 				if (strcmp(param->u.crypt.alg, "none") != 0)
 					psta->ieee8021x_blocked = false;
 
@@ -151,23 +147,23 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 					psta->dot118021XPrivacy = padapter->securitypriv.dot11PrivacyAlgrthm;
 				}
 
-				if (param->u.crypt.set_tx == 1) { /* pairwise key */
+				if (param->u.crypt.set_tx == 1) {  
 					memcpy(psta->dot118021x_UncstKey.skey, param->u.crypt.key, (param->u.crypt.key_len > 16 ? 16 : param->u.crypt.key_len));
 
-					if (strcmp(param->u.crypt.alg, "TKIP") == 0) { /* set mic key */
-						/* DEBUG_ERR(("\nset key length :param->u.crypt.key_len =%d\n", param->u.crypt.key_len)); */
+					if (strcmp(param->u.crypt.alg, "TKIP") == 0) {  
+						 
 						memcpy(psta->dot11tkiptxmickey.skey, &param->u.crypt.key[16], 8);
 						memcpy(psta->dot11tkiprxmickey.skey, &param->u.crypt.key[24], 8);
 
 						padapter->securitypriv.busetkipkey = false;
-						/* _set_timer(&padapter->securitypriv.tkip_timer, 50); */
+						 
 					}
 
 					rtw_setstakey_cmd(padapter, psta, true, true);
-				} else { /* group key */
+				} else {  
 					if (strcmp(param->u.crypt.alg, "TKIP") == 0 || strcmp(param->u.crypt.alg, "CCMP") == 0) {
 						memcpy(padapter->securitypriv.dot118021XGrpKey[param->u.crypt.idx].skey, param->u.crypt.key, (param->u.crypt.key_len > 16 ? 16 : param->u.crypt.key_len));
-						/* only TKIP group key need to install this */
+						 
 						if (param->u.crypt.key_len > 16) {
 							memcpy(padapter->securitypriv.dot118021XGrptxmickey[param->u.crypt.idx].skey, &param->u.crypt.key[16], 8);
 							memcpy(padapter->securitypriv.dot118021XGrprxmickey[param->u.crypt.idx].skey, &param->u.crypt.key[24], 8);
@@ -178,13 +174,10 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 						rtw_set_key(padapter, &padapter->securitypriv, param->u.crypt.idx, 1, true);
 					} else if (strcmp(param->u.crypt.alg, "BIP") == 0) {
-						/* printk("BIP key_len =%d , index =%d @@@@@@@@@@@@@@@@@@\n", param->u.crypt.key_len, param->u.crypt.idx); */
-						/* save the IGTK key, length 16 bytes */
+						 
+						 
 						memcpy(padapter->securitypriv.dot11wBIPKey[param->u.crypt.idx].skey, param->u.crypt.key, (param->u.crypt.key_len > 16 ? 16 : param->u.crypt.key_len));
-						/*printk("IGTK key below:\n");
-						for (no = 0;no<16;no++)
-							printk(" %02x ", padapter->securitypriv.dot11wBIPKey[param->u.crypt.idx].skey[no]);
-						printk("\n");*/
+						 
 						padapter->securitypriv.dot11wBIPKeyid = param->u.crypt.idx;
 						padapter->securitypriv.binstallBIPkey = true;
 					}
@@ -193,9 +186,9 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 			pbcmc_sta = rtw_get_bcmc_stainfo(padapter);
 			if (!pbcmc_sta) {
-				/* DEBUG_ERR(("Set OID_802_11_ADD_KEY: bcmc stainfo is null\n")); */
+				 
 			} else {
-				/* Jeff: don't disable ieee8021x_blocked while clearing key */
+				 
 				if (strcmp(param->u.crypt.alg, "none") != 0)
 					pbcmc_sta->ieee8021x_blocked = false;
 
@@ -205,7 +198,7 @@ static int wpa_set_encryption(struct net_device *dev, struct ieee_param *param, 
 				}
 			}
 		} else if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE)) {
-			/* adhoc mode */
+			 
 		}
 	}
 
@@ -308,7 +301,7 @@ static int rtw_set_wpa_ie(struct adapter *padapter, char *pie, unsigned short ie
 		}
 
 		_clr_fwstate_(&padapter->mlmepriv, WIFI_UNDER_WPS);
-		{/* set wps_ie */
+		{ 
 			u16 cnt = 0;
 			u8 eid, wps_oui[4] = {0x0, 0x50, 0xf2, 0x04};
 
@@ -326,18 +319,18 @@ static int rtw_set_wpa_ie(struct adapter *padapter, char *pie, unsigned short ie
 
 					break;
 				} else {
-					cnt += buf[cnt + 1] + 2; /* goto next */
+					cnt += buf[cnt + 1] + 2;  
 				}
 			}
 		}
 	}
 
-	/* TKIP and AES disallow multicast packets until installing group key */
+	 
 	if (padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_ ||
 	    padapter->securitypriv.dot11PrivacyAlgrthm == _TKIP_WTMIC_ ||
 	    padapter->securitypriv.dot11PrivacyAlgrthm == _AES_)
-		/* WPS open need to enable multicast */
-		/*  check_fwstate(&padapter->mlmepriv, WIFI_UNDER_WPS) == true) */
+		 
+		 
 		rtw_hal_set_hwreg(padapter, HW_VAR_OFF_RCR_AM, null_addr);
 
 exit:
@@ -355,17 +348,17 @@ static int wpa_set_param(struct net_device *dev, u8 name, u32 value)
 	switch (name) {
 	case IEEE_PARAM_WPA_ENABLED:
 
-		padapter->securitypriv.dot11AuthAlgrthm = dot11AuthAlgrthm_8021X; /* 802.1x */
+		padapter->securitypriv.dot11AuthAlgrthm = dot11AuthAlgrthm_8021X;  
 
-		/* ret = ieee80211_wpa_enable(ieee, value); */
+		 
 
 		switch ((value) & 0xff) {
-		case 1: /* WPA */
-			padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeWPAPSK; /* WPA_PSK */
+		case 1:  
+			padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeWPAPSK;  
 			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption2Enabled;
 			break;
-		case 2: /* WPA2 */
-			padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeWPA2PSK; /* WPA2_PSK */
+		case 2:  
+			padapter->securitypriv.ndisauthtype = Ndis802_11AuthModeWPA2PSK;  
 			padapter->securitypriv.ndisencryptstatus = Ndis802_11Encryption3Enabled;
 			break;
 		}
@@ -373,27 +366,17 @@ static int wpa_set_param(struct net_device *dev, u8 name, u32 value)
 		break;
 
 	case IEEE_PARAM_TKIP_COUNTERMEASURES:
-		/* ieee->tkip_countermeasures =value; */
+		 
 		break;
 
 	case IEEE_PARAM_DROP_UNENCRYPTED:
 	{
-		/* HACK:
-		 *
-		 * wpa_supplicant calls set_wpa_enabled when the driver
-		 * is loaded and unloaded, regardless of if WPA is being
-		 * used.  No other calls are made which can be used to
-		 * determine if encryption will be used or not prior to
-		 * association being expected.  If encryption is not being
-		 * used, drop_unencrypted is set to false, else true -- we
-		 * can use this to determine if the CAP_PRIVACY_ON bit should
-		 * be set.
-		 */
+		 
 		break;
 	}
 	case IEEE_PARAM_PRIVACY_INVOKED:
 
-		/* ieee->privacy_invoked =value; */
+		 
 
 		break;
 
@@ -405,19 +388,14 @@ static int wpa_set_param(struct net_device *dev, u8 name, u32 value)
 
 	case IEEE_PARAM_IEEE_802_1X:
 
-		/* ieee->ieee802_1x =value; */
+		 
 
 		break;
 
 	case IEEE_PARAM_WPAX_SELECT:
 
-		/*  added for WPA2 mixed mode */
-		/*
-		spin_lock_irqsave(&ieee->wpax_suitlist_lock, flags);
-		ieee->wpax_type_set = 1;
-		ieee->wpax_type_notify = value;
-		spin_unlock_irqrestore(&ieee->wpax_suitlist_lock, flags);
-		*/
+		 
+		 
 
 		break;
 
@@ -464,7 +442,7 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 	struct ieee_param *param;
 	uint ret = 0;
 
-	/* down(&ieee->wx_sem); */
+	 
 
 	if (!p->pointer || p->length != sizeof(struct ieee_param))
 		return -EINVAL;
@@ -484,7 +462,7 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 		break;
 
 	case IEEE_CMD_SET_WPA_IE:
-		/* ret = wpa_set_wpa_ie(dev, param, p->length); */
+		 
 		ret =  rtw_set_wpa_ie(rtw_netdev_priv(dev), (char *)param->u.wpa_ie.data, (u16)param->u.wpa_ie.len);
 		break;
 
@@ -506,7 +484,7 @@ static int wpa_supplicant_ioctl(struct net_device *dev, struct iw_point *p)
 
 	kfree(param);
 
-	/* up(&ieee->wx_sem); */
+	 
 	return ret;
 }
 
@@ -527,8 +505,8 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 	param->u.crypt.err = 0;
 	param->u.crypt.alg[IEEE_CRYPT_ALG_NAME_LEN - 1] = '\0';
 
-	/* sizeof(struct ieee_param) = 64 bytes; */
-	/* if (param_len !=  (u32) ((u8 *) param->u.crypt.key - (u8 *) param) + param->u.crypt.key_len) */
+	 
+	 
 	if (param_len !=  sizeof(struct ieee_param) + param->u.crypt.key_len) {
 		ret =  -EINVAL;
 		goto exit;
@@ -544,12 +522,12 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 	} else {
 		psta = rtw_get_stainfo(pstapriv, param->sta_addr);
 		if (!psta)
-			/* ret = -EINVAL; */
+			 
 			goto exit;
 	}
 
 	if (strcmp(param->u.crypt.alg, "none") == 0 && !psta) {
-		/* todo:clear default encryption keys */
+		 
 
 		psecuritypriv->dot11AuthAlgrthm = dot11AuthAlgrthm_Open;
 		psecuritypriv->ndisencryptstatus = Ndis802_11EncryptionDisabled;
@@ -571,7 +549,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 		if (wep_key_len > 0) {
 			wep_key_len = wep_key_len <= 5 ? 5 : 13;
 			wep_total_len = wep_key_len + FIELD_OFFSET(struct ndis_802_11_wep, key_material);
-			/* Allocate a full structure to avoid potentially running off the end. */
+			 
 			pwep = kzalloc(sizeof(*pwep), GFP_KERNEL);
 			if (!pwep)
 				goto exit;
@@ -603,8 +581,8 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 			rtw_ap_set_wep_key(padapter, pwep->key_material, pwep->key_length, wep_key_idx, 1);
 		} else {
-			/* don't update "psecuritypriv->dot11PrivacyAlgrthm" and */
-			/* psecuritypriv->dot11PrivacyKeyIndex =keyid", but can rtw_set_key to cam */
+			 
+			 
 
 			memcpy(&psecuritypriv->dot11DefKey[wep_key_idx].skey[0], pwep->key_material, pwep->key_length);
 
@@ -616,7 +594,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 		goto exit;
 	}
 
-	if (!psta && check_fwstate(pmlmepriv, WIFI_AP_STATE)) { /*  group key */
+	if (!psta && check_fwstate(pmlmepriv, WIFI_AP_STATE)) {  
 		if (param->u.crypt.set_tx == 1) {
 			if (strcmp(param->u.crypt.alg, "WEP") == 0) {
 				memcpy(grpkey, param->u.crypt.key, (param->u.crypt.key_len > 16 ? 16 : param->u.crypt.key_len));
@@ -630,8 +608,8 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 				memcpy(grpkey, param->u.crypt.key, (param->u.crypt.key_len > 16 ? 16 : param->u.crypt.key_len));
 
-				/* DEBUG_ERR("set key length :param->u.crypt.key_len =%d\n", param->u.crypt.key_len); */
-				/* set mic key */
+				 
+				 
 				memcpy(txkey, &param->u.crypt.key[16], 8);
 				memcpy(psecuritypriv->dot118021XGrprxmickey[param->u.crypt.idx].skey, &param->u.crypt.key[24], 8);
 
@@ -649,21 +627,21 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 			psecuritypriv->binstallGrpkey = true;
 
-			psecuritypriv->dot11PrivacyAlgrthm = psecuritypriv->dot118021XGrpPrivacy;/*  */
+			psecuritypriv->dot11PrivacyAlgrthm = psecuritypriv->dot118021XGrpPrivacy; 
 
 			rtw_ap_set_group_key(padapter, param->u.crypt.key, psecuritypriv->dot118021XGrpPrivacy, param->u.crypt.idx);
 
 			pbcmc_sta = rtw_get_bcmc_stainfo(padapter);
 			if (pbcmc_sta) {
 				pbcmc_sta->ieee8021x_blocked = false;
-				pbcmc_sta->dot118021XPrivacy = psecuritypriv->dot118021XGrpPrivacy;/* rx will use bmc_sta's dot118021XPrivacy */
+				pbcmc_sta->dot118021XPrivacy = psecuritypriv->dot118021XGrpPrivacy; 
 			}
 		}
 
 		goto exit;
 	}
 
-	if (psecuritypriv->dot11AuthAlgrthm == dot11AuthAlgrthm_8021X && psta) { /*  psk/802_1x */
+	if (psecuritypriv->dot11AuthAlgrthm == dot11AuthAlgrthm_8021X && psta) {  
 		if (check_fwstate(pmlmepriv, WIFI_AP_STATE)) {
 			if (param->u.crypt.set_tx == 1)	{
 				memcpy(psta->dot118021x_UncstKey.skey, param->u.crypt.key, (param->u.crypt.key_len > 16 ? 16 : param->u.crypt.key_len));
@@ -675,8 +653,8 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 				} else if (strcmp(param->u.crypt.alg, "TKIP") == 0) {
 					psta->dot118021XPrivacy = _TKIP_;
 
-					/* DEBUG_ERR("set key length :param->u.crypt.key_len =%d\n", param->u.crypt.key_len); */
-					/* set mic key */
+					 
+					 
 					memcpy(psta->dot11tkiptxmickey.skey, &param->u.crypt.key[16], 8);
 					memcpy(psta->dot11tkiprxmickey.skey, &param->u.crypt.key[24], 8);
 
@@ -692,7 +670,7 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 				psta->ieee8021x_blocked = false;
 
-			} else { /* group key??? */
+			} else {  
 				if (strcmp(param->u.crypt.alg, "WEP") == 0) {
 					memcpy(grpkey, param->u.crypt.key, (param->u.crypt.key_len > 16 ? 16 : param->u.crypt.key_len));
 
@@ -704,8 +682,8 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 					memcpy(grpkey, param->u.crypt.key, (param->u.crypt.key_len > 16 ? 16 : param->u.crypt.key_len));
 
-					/* DEBUG_ERR("set key length :param->u.crypt.key_len =%d\n", param->u.crypt.key_len); */
-					/* set mic key */
+					 
+					 
 					memcpy(txkey, &param->u.crypt.key[16], 8);
 					memcpy(rxkey, &param->u.crypt.key[24], 8);
 
@@ -723,14 +701,14 @@ static int rtw_set_encryption(struct net_device *dev, struct ieee_param *param, 
 
 				psecuritypriv->binstallGrpkey = true;
 
-				psecuritypriv->dot11PrivacyAlgrthm = psecuritypriv->dot118021XGrpPrivacy;/*  */
+				psecuritypriv->dot11PrivacyAlgrthm = psecuritypriv->dot118021XGrpPrivacy; 
 
 				rtw_ap_set_group_key(padapter, param->u.crypt.key, psecuritypriv->dot118021XGrpPrivacy, param->u.crypt.idx);
 
 				pbcmc_sta = rtw_get_bcmc_stainfo(padapter);
 				if (pbcmc_sta) {
 					pbcmc_sta->ieee8021x_blocked = false;
-					pbcmc_sta->dot118021XPrivacy = psecuritypriv->dot118021XGrpPrivacy;/* rx will use bmc_sta's dot118021XPrivacy */
+					pbcmc_sta->dot118021XPrivacy = psecuritypriv->dot118021XGrpPrivacy; 
 				}
 			}
 		}
@@ -758,7 +736,7 @@ static int rtw_set_beacon(struct net_device *dev, struct ieee_param *param, int 
 	if ((pstapriv->max_num_sta > NUM_STA) || (pstapriv->max_num_sta <= 0))
 		pstapriv->max_num_sta = NUM_STA;
 
-	if (rtw_check_beacon_data(padapter, pbuf,  (len - 12 - 2)) == _SUCCESS)/*  12 = param header, 2:no packed */
+	if (rtw_check_beacon_data(padapter, pbuf,  (len - 12 - 2)) == _SUCCESS) 
 		ret = 0;
 	else
 		ret = -EINVAL;
@@ -768,13 +746,13 @@ static int rtw_set_beacon(struct net_device *dev, struct ieee_param *param, int 
 
 static void rtw_hostapd_sta_flush(struct net_device *dev)
 {
-	/* _irqL irqL; */
-	/* struct list_head	*phead, *plist; */
-	/* struct sta_info *psta = NULL; */
+	 
+	 
+	 
 	struct adapter *padapter = rtw_netdev_priv(dev);
-	/* struct sta_priv *pstapriv = &padapter->stapriv; */
+	 
 
-	flush_all_cam_entry(padapter);	/* clear CAM */
+	flush_all_cam_entry(padapter);	 
 
 	rtw_sta_flush(padapter);
 }
@@ -796,25 +774,17 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 		return -EINVAL;
 	}
 
-/*
-	psta = rtw_get_stainfo(pstapriv, param->sta_addr);
-	if (psta)
-	{
-		rtw_free_stainfo(padapter,  psta);
-
-		psta = NULL;
-	}
-*/
-	/* psta = rtw_alloc_stainfo(pstapriv, param->sta_addr); */
+ 
+	 
 	psta = rtw_get_stainfo(pstapriv, param->sta_addr);
 	if (psta) {
 		int flags = param->u.add_sta.flags;
 
-		psta->aid = param->u.add_sta.aid;/* aid = 1~2007 */
+		psta->aid = param->u.add_sta.aid; 
 
 		memcpy(psta->bssrateset, param->u.add_sta.tx_supp_rates, 16);
 
-		/* check wmm cap. */
+		 
 		if (WLAN_STA_WME & flags)
 			psta->qos_option = 1;
 		else
@@ -823,7 +793,7 @@ static int rtw_add_sta(struct net_device *dev, struct ieee_param *param)
 		if (pmlmepriv->qospriv.qos_option == 0)
 			psta->qos_option = 0;
 
-		/* chec 802.11n ht cap. */
+		 
 		if (WLAN_STA_HT & flags) {
 			psta->htpriv.ht_option = true;
 			psta->qos_option = 1;
@@ -906,14 +876,7 @@ static int rtw_ioctl_get_sta_data(struct net_device *dev, struct ieee_param *par
 		psta_data->capability = psta->capability;
 		psta_data->flags = psta->flags;
 
-/*
-		nonerp_set : BIT(0)
-		no_short_slot_time_set : BIT(1)
-		no_short_preamble_set : BIT(2)
-		no_ht_gf_set : BIT(3)
-		no_ht_set : BIT(4)
-		ht_20mhz_set : BIT(5)
-*/
+ 
 
 		psta_data->sta_set = ((psta->nonerp_set) |
 							 (psta->no_short_slot_time_set << 1) |
@@ -990,7 +953,7 @@ static int rtw_set_wps_beacon(struct net_device *dev, struct ieee_param *param, 
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
-	ie_len = len - 12 - 2;/*  12 = param header, 2:no packed */
+	ie_len = len - 12 - 2; 
 
 	kfree(pmlmepriv->wps_beacon_ie);
 	pmlmepriv->wps_beacon_ie = NULL;
@@ -1021,7 +984,7 @@ static int rtw_set_wps_probe_resp(struct net_device *dev, struct ieee_param *par
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
-	ie_len = len - 12 - 2;/*  12 = param header, 2:no packed */
+	ie_len = len - 12 - 2; 
 
 	kfree(pmlmepriv->wps_probe_resp_ie);
 	pmlmepriv->wps_probe_resp_ie = NULL;
@@ -1048,7 +1011,7 @@ static int rtw_set_wps_assoc_resp(struct net_device *dev, struct ieee_param *par
 	if (check_fwstate(pmlmepriv, WIFI_AP_STATE) != true)
 		return -EINVAL;
 
-	ie_len = len - 12 - 2;/*  12 = param header, 2:no packed */
+	ie_len = len - 12 - 2; 
 
 	kfree(pmlmepriv->wps_assoc_resp_ie);
 	pmlmepriv->wps_assoc_resp_ie = NULL;
@@ -1086,7 +1049,7 @@ static int rtw_set_hidden_ssid(struct net_device *dev, struct ieee_param *param,
 
 	mlmeinfo->hidden_ssid_mode = ignore_broadcast_ssid = param->u.bcn_ie.reserved[1];
 
-	ie_len = len - 12 - 2;/*  12 = param header, 2:no packed */
+	ie_len = len - 12 - 2; 
 	ssid_ie = rtw_get_ie(param->u.bcn_ie.buf,  WLAN_EID_SSID, &ssid_len, ie_len);
 
 	if (ssid_ie && ssid_len > 0 && ssid_len <= NDIS_802_11_LENGTH_SSID) {
@@ -1160,10 +1123,7 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
 	int ret = 0;
 	struct adapter *padapter = rtw_netdev_priv(dev);
 
-	/*
-	 * this function is expect to call in master mode, which allows no power saving
-	 * so, we just check hw_init_completed
-	 */
+	 
 
 	if (!padapter->hw_init_completed)
 		return -EPERM;
@@ -1277,7 +1237,7 @@ static int rtw_hostapd_ioctl(struct net_device *dev, struct iw_point *p)
 	return ret;
 }
 
-/*  copy from net/wireless/wext.c end */
+ 
 
 int rtw_ioctl(struct net_device *dev, struct ifreq *rq, int cmd)
 {

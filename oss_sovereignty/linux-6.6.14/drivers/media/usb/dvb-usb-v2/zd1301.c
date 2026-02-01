@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ZyDAS ZD1301 driver (USB interface)
- *
- * Copyright (C) 2015 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "dvb_usb.h"
 #include "zd1301_demod.h"
@@ -15,7 +11,7 @@ DVB_DEFINE_MOD_OPT_ADAPTER_NR(adapter_nr);
 
 struct zd1301_dev {
 	#define BUF_LEN 8
-	u8 buf[BUF_LEN]; /* bulk USB control message */
+	u8 buf[BUF_LEN];  
 	struct zd1301_demod_platform_data demod_pdata;
 	struct mt2060_platform_data mt2060_pdata;
 	struct platform_device *platform_device_demod;
@@ -54,10 +50,7 @@ static int zd1301_ctrl_msg(struct dvb_usb_device *d, const u8 *wbuf,
 		dev_dbg(&intf->dev, "<<< %*ph\n", actual_length, dev->buf);
 
 		if (actual_length != rlen) {
-			/*
-			 * Chip replies often with 3 byte len stub. On that case
-			 * we have to query new reply.
-			 */
+			 
 			dev_dbg(&intf->dev, "repeating reply message\n");
 
 			ret = usb_bulk_msg(d->udev,
@@ -134,7 +127,7 @@ static int zd1301_frontend_attach(struct dvb_usb_adapter *adap)
 
 	dev_dbg(&intf->dev, "\n");
 
-	/* Add platform demod */
+	 
 	dev->demod_pdata.reg_priv = d;
 	dev->demod_pdata.reg_read = zd1301_demod_rreg;
 	dev->demod_pdata.reg_write = zd1301_demod_wreg;
@@ -164,7 +157,7 @@ static int zd1301_frontend_attach(struct dvb_usb_adapter *adap)
 		goto err_module_put_demod;
 	}
 
-	/* Add I2C tuner */
+	 
 	dev->mt2060_pdata.i2c_write_max = 9;
 	dev->mt2060_pdata.dvb_frontend = frontend;
 	memset(&board_info, 0, sizeof(board_info));
@@ -211,13 +204,13 @@ static int zd1301_frontend_detach(struct dvb_usb_adapter *adap)
 	client = dev->i2c_client_tuner;
 	pdev = dev->platform_device_demod;
 
-	/* Remove I2C tuner */
+	 
 	if (client) {
 		module_put(client->dev.driver->owner);
 		i2c_unregister_device(client);
 	}
 
-	/* Remove platform demod */
+	 
 	if (pdev) {
 		module_put(pdev->dev.driver->owner);
 		platform_device_unregister(pdev);
@@ -270,7 +263,7 @@ static const struct usb_device_id zd1301_id_table[] = {
 };
 MODULE_DEVICE_TABLE(usb, zd1301_id_table);
 
-/* Usb specific object needed to register this driver with the usb subsystem */
+ 
 static struct usb_driver zd1301_usb_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = zd1301_id_table,

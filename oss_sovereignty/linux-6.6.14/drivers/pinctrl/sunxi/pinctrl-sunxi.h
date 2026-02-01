@@ -1,14 +1,4 @@
-/*
- * Allwinner A1X SoCs pinctrl driver.
- *
- * Copyright (C) 2012 Maxime Ripard
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #ifndef __PINCTRL_SUNXI_H
 #define __PINCTRL_SUNXI_H
@@ -92,7 +82,7 @@
 #define PINCTRL_SUN8I_R40	BIT(8)
 #define PINCTRL_SUN8I_V3	BIT(9)
 #define PINCTRL_SUN8I_V3S	BIT(10)
-/* Variants below here have an updated register layout. */
+ 
 #define PINCTRL_SUN20I_D1	BIT(11)
 
 #define PIO_POW_MOD_SEL_REG	0x340
@@ -100,21 +90,11 @@
 
 enum sunxi_desc_bias_voltage {
 	BIAS_VOLTAGE_NONE,
-	/*
-	 * Bias voltage configuration is done through
-	 * Pn_GRP_CONFIG registers, as seen on A80 SoC.
-	 */
+	 
 	BIAS_VOLTAGE_GRP_CONFIG,
-	/*
-	 * Bias voltage is set through PIO_POW_MOD_SEL_REG
-	 * register, as seen on H6 SoC, for example.
-	 */
+	 
 	BIAS_VOLTAGE_PIO_POW_MODE_SEL,
-	/*
-	 * Bias voltage is set through PIO_POW_MOD_SEL_REG
-	 * and PIO_POW_MOD_CTL_REG register, as seen on
-	 * A100 and D1 SoC, for example.
-	 */
+	 
 	BIAS_VOLTAGE_PIO_POW_MODE_CTL,
 };
 
@@ -306,4 +286,4 @@ int sunxi_pinctrl_init_with_variant(struct platform_device *pdev,
 #define sunxi_pinctrl_init(_dev, _desc) \
 	sunxi_pinctrl_init_with_variant(_dev, _desc, 0)
 
-#endif /* __PINCTRL_SUNXI_H */
+#endif  

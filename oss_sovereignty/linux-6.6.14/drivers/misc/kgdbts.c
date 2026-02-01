@@ -1,86 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * kgdbts is a test suite for kgdb for the sole purpose of validating
- * that key pieces of the kgdb internals are working properly such as
- * HW/SW breakpoints, single stepping, and NMI.
- *
- * Created by: Jason Wessel <jason.wessel@windriver.com>
- *
- * Copyright (c) 2008 Wind River Systems, Inc.
- */
-/* Information about the kgdb test suite.
- * -------------------------------------
- *
- * The kgdb test suite is designed as a KGDB I/O module which
- * simulates the communications that a debugger would have with kgdb.
- * The tests are broken up in to a line by line and referenced here as
- * a "get" which is kgdb requesting input and "put" which is kgdb
- * sending a response.
- *
- * The kgdb suite can be invoked from the kernel command line
- * arguments system or executed dynamically at run time.  The test
- * suite uses the variable "kgdbts" to obtain the information about
- * which tests to run and to configure the verbosity level.  The
- * following are the various characters you can use with the kgdbts=
- * line:
- *
- * When using the "kgdbts=" you only choose one of the following core
- * test types:
- * A = Run all the core tests silently
- * V1 = Run all the core tests with minimal output
- * V2 = Run all the core tests in debug mode
- *
- * You can also specify optional tests:
- * N## = Go to sleep with interrupts of for ## seconds
- *       to test the HW NMI watchdog
- * F## = Break at kernel_clone for ## iterations
- * S## = Break at sys_open for ## iterations
- * I## = Run the single step test ## iterations
- *
- * NOTE: that the kernel_clone and sys_open tests are mutually exclusive.
- *
- * To invoke the kgdb test suite from boot you use a kernel start
- * argument as follows:
- * 	kgdbts=V1 kgdbwait
- * Or if you wanted to perform the NMI test for 6 seconds and kernel_clone
- * test for 100 forks, you could use:
- * 	kgdbts=V1N6F100 kgdbwait
- *
- * The test suite can also be invoked at run time with:
- *	echo kgdbts=V1N6F100 > /sys/module/kgdbts/parameters/kgdbts
- * Or as another example:
- *	echo kgdbts=V2 > /sys/module/kgdbts/parameters/kgdbts
- *
- * When developing a new kgdb arch specific implementation or
- * using these tests for the purpose of regression testing,
- * several invocations are required.
- *
- * 1) Boot with the test suite enabled by using the kernel arguments
- *       "kgdbts=V1F100 kgdbwait"
- *    ## If kgdb arch specific implementation has NMI use
- *       "kgdbts=V1N6F100
- *
- * 2) After the system boot run the basic test.
- * echo kgdbts=V1 > /sys/module/kgdbts/parameters/kgdbts
- *
- * 3) Run the concurrency tests.  It is best to use n+1
- *    while loops where n is the number of cpus you have
- *    in your system.  The example below uses only two
- *    loops.
- *
- * ## This tests break points on sys_open
- * while [ 1 ] ; do find / > /dev/null 2>&1 ; done &
- * while [ 1 ] ; do find / > /dev/null 2>&1 ; done &
- * echo kgdbts=V1S10000 > /sys/module/kgdbts/parameters/kgdbts
- * fg # and hit control-c
- * fg # and hit control-c
- * ## This tests break points on kernel_clone
- * while [ 1 ] ; do date > /dev/null ; done &
- * while [ 1 ] ; do date > /dev/null ; done &
- * echo kgdbts=V1F1000 > /sys/module/kgdbts/parameters/kgdbts
- * fg # and hit control-c
- *
- */
+
+ 
+ 
 
 #include <linux/kernel.h>
 #include <linux/kgdb.h>
@@ -140,13 +60,13 @@ static unsigned long sstep_addr;
 static int restart_from_top_after_write;
 static int sstep_state;
 
-/* Storage for the registers, in GDB format. */
+ 
 static unsigned long kgdbts_gdb_regs[(NUMREGBYTES +
 					sizeof(unsigned long) - 1) /
 					sizeof(unsigned long)];
 static struct pt_regs kgdbts_regs;
 
-/* -1 = init not run yet, 0 = unconfigured, 1 = configured. */
+ 
 static int configured		= -1;
 
 #ifdef CONFIG_KGDB_TESTS_BOOT_STRING
@@ -180,12 +100,10 @@ static struct test_state ts;
 
 static int kgdbts_unreg_thread(void *ptr)
 {
-	/* Wait until the tests are complete and then ungresiter the I/O
-	 * driver.
-	 */
+	 
 	while (!final_ack)
 		msleep_interruptible(1500);
-	/* Pause for any other threads to exit after final ack. */
+	 
 	msleep_interruptible(1000);
 	if (configured)
 		kgdb_unregister_io_module(&kgdbts_io_ops);
@@ -194,26 +112,13 @@ static int kgdbts_unreg_thread(void *ptr)
 	return 0;
 }
 
-/* This is noinline such that it can be used for a single location to
- * place a breakpoint
- */
+ 
 static noinline void kgdbts_break_test(void)
 {
 	v2printk("kgdbts: breakpoint complete\n");
 }
 
-/*
- * This is a cached wrapper for kallsyms_lookup_name().
- *
- * The cache is a big win for several tests. For example it more the doubles
- * the cycles per second during the sys_open test. This is not theoretic,
- * the performance improvement shows up at human scale, especially when
- * testing using emulators.
- *
- * Obviously neither re-entrant nor thread-safe but that is OK since it
- * can only be called from the debug trap (and therefore all other CPUs
- * are halted).
- */
+ 
 static unsigned long lookup_addr(char *arg)
 {
 	static char cached_arg[KSYM_NAME_LEN];
@@ -314,7 +219,7 @@ static int check_and_rewind_pc(char *put_str, char *arg)
 	ip = instruction_pointer(&kgdbts_regs);
 	v2printk("Stopped at IP: %lx\n", ip);
 #ifdef GDB_ADJUSTS_BREAK_OFFSET
-	/* On some arches, a breakpoint stop requires it to be decremented */
+	 
 	if (addr + BREAK_INSTR_SIZE == ip)
 		offset = -BREAK_INSTR_SIZE;
 #endif
@@ -322,7 +227,7 @@ static int check_and_rewind_pc(char *put_str, char *arg)
 	if (arch_needs_sstep_emulation && sstep_addr &&
 	    ip + offset == sstep_addr &&
 	    ((!strcmp(arg, "do_sys_openat2") || !strcmp(arg, "kernel_clone")))) {
-		/* This is special case for emulated single step */
+		 
 		v2printk("Emul: rewind hit single step bp\n");
 		restart_from_top_after_write = 1;
 	} else if (strcmp(arg, "silent") && ip + offset != addr) {
@@ -330,7 +235,7 @@ static int check_and_rewind_pc(char *put_str, char *arg)
 			   ip + offset, addr);
 		return 1;
 	}
-	/* Readjust the instruction pointer if needed */
+	 
 	ip += offset;
 	cont_addr = ip;
 #ifdef GDB_ADJUSTS_BREAK_OFFSET
@@ -344,10 +249,7 @@ static int check_single_step(char *put_str, char *arg)
 	unsigned long addr = lookup_addr(arg);
 	static int matched_id;
 
-	/*
-	 * From an arch indepent point of view the instruction pointer
-	 * should be on a different instruction
-	 */
+	 
 	kgdb_hex2mem(&put_str[1], (char *)kgdbts_gdb_regs,
 		 NUMREGBYTES);
 	gdb_regs_to_pt_regs(kgdbts_gdb_regs, &kgdbts_regs);
@@ -355,11 +257,7 @@ static int check_single_step(char *put_str, char *arg)
 		   instruction_pointer(&kgdbts_regs));
 
 	if (sstep_thread_id != cont_thread_id) {
-		/*
-		 * Ensure we stopped in the same thread id as before, else the
-		 * debugger should continue until the original thread that was
-		 * single stepped is scheduled again, emulating gdb's behavior.
-		 */
+		 
 		v2printk("ThrID does not match: %lx\n", cont_thread_id);
 		if (arch_needs_sstep_emulation) {
 			if (matched_id &&
@@ -423,13 +321,13 @@ static int got_break(char *put_str, char *arg)
 
 static void get_cont_catch(char *arg)
 {
-	/* Always send detach because the test is completed at this point */
+	 
 	fill_get_buf("D");
 }
 
 static int put_cont_catch(char *put_str, char *arg)
 {
-	/* This is at the end of the test and we catch any and all input */
+	 
 	v2printk("kgdbts: cleanup task: %lx\n", sstep_thread_id);
 	ts.idx--;
 	return 0;
@@ -460,19 +358,19 @@ static void emul_sstep_get(char *arg)
 	switch (sstep_state) {
 	case 0:
 		v2printk("Emulate single step\n");
-		/* Start by looking at the current PC */
+		 
 		fill_get_buf("g");
 		break;
 	case 1:
-		/* set breakpoint */
+		 
 		break_helper("Z0", NULL, sstep_addr);
 		break;
 	case 2:
-		/* Continue */
+		 
 		fill_get_buf("c");
 		break;
 	case 3:
-		/* Clear breakpoint */
+		 
 		break_helper("z0", NULL, sstep_addr);
 		break;
 	default:
@@ -492,13 +390,13 @@ static int emul_sstep_put(char *put_str, char *arg)
 	}
 	switch (sstep_state) {
 	case 1:
-		/* validate the "g" packet to get the IP */
+		 
 		kgdb_hex2mem(&put_str[1], (char *)kgdbts_gdb_regs,
 			 NUMREGBYTES);
 		gdb_regs_to_pt_regs(kgdbts_gdb_regs, &kgdbts_regs);
 		v2printk("Stopped at IP: %lx\n",
 			 instruction_pointer(&kgdbts_regs));
-		/* Want to stop at IP + break instruction size by default */
+		 
 		sstep_addr = cont_addr + BREAK_INSTR_SIZE;
 		break;
 	case 2:
@@ -521,14 +419,14 @@ static int emul_sstep_put(char *put_str, char *arg)
 			eprintk("kgdbts: failed sstep break unset\n");
 			return 1;
 		}
-		/* Single step is complete so continue on! */
+		 
 		sstep_state = 0;
 		return 0;
 	default:
 		eprintk("kgdbts: ERROR failed sstep put emulation\n");
 	}
 
-	/* Continue on the same test line until emulation is complete */
+	 
 	ts.idx--;
 	return 0;
 }
@@ -540,162 +438,137 @@ static int final_ack_set(char *put_str, char *arg)
 	final_ack = 1;
 	return 0;
 }
-/*
- * Test to plant a breakpoint and detach, which should clear out the
- * breakpoint and restore the original instruction.
- */
+ 
 static struct test_struct plant_and_detach_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "kgdbts_break_test", "OK", sw_break, }, /* set sw breakpoint */
-	{ "D", "OK" }, /* Detach */
+	{ "?", "S0*" },  
+	{ "kgdbts_break_test", "OK", sw_break, },  
+	{ "D", "OK" },  
 	{ "", "" },
 };
 
-/*
- * Simple test to write in a software breakpoint, check for the
- * correct stop location and detach.
- */
+ 
 static struct test_struct sw_breakpoint_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "kgdbts_break_test", "OK", sw_break, }, /* set sw breakpoint */
-	{ "c", "T0*", }, /* Continue */
+	{ "?", "S0*" },  
+	{ "kgdbts_break_test", "OK", sw_break, },  
+	{ "c", "T0*", },  
 	{ "g", "kgdbts_break_test", NULL, check_and_rewind_pc },
 	{ "write", "OK", write_regs },
-	{ "kgdbts_break_test", "OK", sw_rem_break }, /*remove breakpoint */
-	{ "D", "OK" }, /* Detach */
-	{ "D", "OK", NULL,  got_break }, /* On success we made it here */
+	{ "kgdbts_break_test", "OK", sw_rem_break },  
+	{ "D", "OK" },  
+	{ "D", "OK", NULL,  got_break },  
 	{ "", "" },
 };
 
-/*
- * Test a known bad memory read location to test the fault handler and
- * read bytes 1-8 at the bad address
- */
+ 
 static struct test_struct bad_read_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "m0,1", "E*" }, /* read 1 byte at address 1 */
-	{ "m0,2", "E*" }, /* read 1 byte at address 2 */
-	{ "m0,3", "E*" }, /* read 1 byte at address 3 */
-	{ "m0,4", "E*" }, /* read 1 byte at address 4 */
-	{ "m0,5", "E*" }, /* read 1 byte at address 5 */
-	{ "m0,6", "E*" }, /* read 1 byte at address 6 */
-	{ "m0,7", "E*" }, /* read 1 byte at address 7 */
-	{ "m0,8", "E*" }, /* read 1 byte at address 8 */
-	{ "D", "OK" }, /* Detach which removes all breakpoints and continues */
+	{ "?", "S0*" },  
+	{ "m0,1", "E*" },  
+	{ "m0,2", "E*" },  
+	{ "m0,3", "E*" },  
+	{ "m0,4", "E*" },  
+	{ "m0,5", "E*" },  
+	{ "m0,6", "E*" },  
+	{ "m0,7", "E*" },  
+	{ "m0,8", "E*" },  
+	{ "D", "OK" },  
 	{ "", "" },
 };
 
-/*
- * Test for hitting a breakpoint, remove it, single step, plant it
- * again and detach.
- */
+ 
 static struct test_struct singlestep_break_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "kgdbts_break_test", "OK", sw_break, }, /* set sw breakpoint */
-	{ "c", "T0*", NULL, get_thread_id_continue }, /* Continue */
-	{ "kgdbts_break_test", "OK", sw_rem_break }, /*remove breakpoint */
+	{ "?", "S0*" },  
+	{ "kgdbts_break_test", "OK", sw_break, },  
+	{ "c", "T0*", NULL, get_thread_id_continue },  
+	{ "kgdbts_break_test", "OK", sw_rem_break },  
 	{ "g", "kgdbts_break_test", NULL, check_and_rewind_pc },
-	{ "write", "OK", write_regs }, /* Write registers */
-	{ "s", "T0*", emul_sstep_get, emul_sstep_put }, /* Single step */
+	{ "write", "OK", write_regs },  
+	{ "s", "T0*", emul_sstep_get, emul_sstep_put },  
 	{ "g", "kgdbts_break_test", NULL, check_single_step },
-	{ "kgdbts_break_test", "OK", sw_break, }, /* set sw breakpoint */
-	{ "c", "T0*", }, /* Continue */
+	{ "kgdbts_break_test", "OK", sw_break, },  
+	{ "c", "T0*", },  
 	{ "g", "kgdbts_break_test", NULL, check_and_rewind_pc },
-	{ "write", "OK", write_regs }, /* Write registers */
-	{ "D", "OK" }, /* Remove all breakpoints and continues */
+	{ "write", "OK", write_regs },  
+	{ "D", "OK" },  
 	{ "", "" },
 };
 
-/*
- * Test for hitting a breakpoint at kernel_clone for what ever the number
- * of iterations required by the variable repeat_test.
- */
+ 
 static struct test_struct do_kernel_clone_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "kernel_clone", "OK", sw_break, }, /* set sw breakpoint */
-	{ "c", "T0*", NULL, get_thread_id_continue }, /* Continue */
-	{ "kernel_clone", "OK", sw_rem_break }, /*remove breakpoint */
-	{ "g", "kernel_clone", NULL, check_and_rewind_pc }, /* check location */
-	{ "write", "OK", write_regs, emul_reset }, /* Write registers */
-	{ "s", "T0*", emul_sstep_get, emul_sstep_put }, /* Single step */
+	{ "?", "S0*" },  
+	{ "kernel_clone", "OK", sw_break, },  
+	{ "c", "T0*", NULL, get_thread_id_continue },  
+	{ "kernel_clone", "OK", sw_rem_break },  
+	{ "g", "kernel_clone", NULL, check_and_rewind_pc },  
+	{ "write", "OK", write_regs, emul_reset },  
+	{ "s", "T0*", emul_sstep_get, emul_sstep_put },  
 	{ "g", "kernel_clone", NULL, check_single_step },
-	{ "kernel_clone", "OK", sw_break, }, /* set sw breakpoint */
-	{ "7", "T0*", skip_back_repeat_test }, /* Loop based on repeat_test */
-	{ "D", "OK", NULL, final_ack_set }, /* detach and unregister I/O */
+	{ "kernel_clone", "OK", sw_break, },  
+	{ "7", "T0*", skip_back_repeat_test },  
+	{ "D", "OK", NULL, final_ack_set },  
 	{ "", "", get_cont_catch, put_cont_catch },
 };
 
-/* Test for hitting a breakpoint at sys_open for what ever the number
- * of iterations required by the variable repeat_test.
- */
+ 
 static struct test_struct sys_open_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "do_sys_openat2", "OK", sw_break, }, /* set sw breakpoint */
-	{ "c", "T0*", NULL, get_thread_id_continue }, /* Continue */
-	{ "do_sys_openat2", "OK", sw_rem_break }, /*remove breakpoint */
-	{ "g", "do_sys_openat2", NULL, check_and_rewind_pc }, /* check location */
-	{ "write", "OK", write_regs, emul_reset }, /* Write registers */
-	{ "s", "T0*", emul_sstep_get, emul_sstep_put }, /* Single step */
+	{ "?", "S0*" },  
+	{ "do_sys_openat2", "OK", sw_break, },  
+	{ "c", "T0*", NULL, get_thread_id_continue },  
+	{ "do_sys_openat2", "OK", sw_rem_break },  
+	{ "g", "do_sys_openat2", NULL, check_and_rewind_pc },  
+	{ "write", "OK", write_regs, emul_reset },  
+	{ "s", "T0*", emul_sstep_get, emul_sstep_put },  
 	{ "g", "do_sys_openat2", NULL, check_single_step },
-	{ "do_sys_openat2", "OK", sw_break, }, /* set sw breakpoint */
-	{ "7", "T0*", skip_back_repeat_test }, /* Loop based on repeat_test */
-	{ "D", "OK", NULL, final_ack_set }, /* detach and unregister I/O */
+	{ "do_sys_openat2", "OK", sw_break, },  
+	{ "7", "T0*", skip_back_repeat_test },  
+	{ "D", "OK", NULL, final_ack_set },  
 	{ "", "", get_cont_catch, put_cont_catch },
 };
 
-/*
- * Test for hitting a simple hw breakpoint
- */
+ 
 static struct test_struct hw_breakpoint_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "kgdbts_break_test", "OK", hw_break, }, /* set hw breakpoint */
-	{ "c", "T0*", }, /* Continue */
+	{ "?", "S0*" },  
+	{ "kgdbts_break_test", "OK", hw_break, },  
+	{ "c", "T0*", },  
 	{ "g", "kgdbts_break_test", NULL, check_and_rewind_pc },
 	{ "write", "OK", write_regs },
-	{ "kgdbts_break_test", "OK", hw_rem_break }, /*remove breakpoint */
-	{ "D", "OK" }, /* Detach */
-	{ "D", "OK", NULL,  got_break }, /* On success we made it here */
+	{ "kgdbts_break_test", "OK", hw_rem_break },  
+	{ "D", "OK" },  
+	{ "D", "OK", NULL,  got_break },  
 	{ "", "" },
 };
 
-/*
- * Test for hitting a hw write breakpoint
- */
+ 
 static struct test_struct hw_write_break_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "hw_break_val", "OK", hw_write_break, }, /* set hw breakpoint */
-	{ "c", "T0*", NULL, got_break }, /* Continue */
+	{ "?", "S0*" },  
+	{ "hw_break_val", "OK", hw_write_break, },  
+	{ "c", "T0*", NULL, got_break },  
 	{ "g", "silent", NULL, check_and_rewind_pc },
 	{ "write", "OK", write_regs },
-	{ "hw_break_val", "OK", hw_rem_write_break }, /*remove breakpoint */
-	{ "D", "OK" }, /* Detach */
-	{ "D", "OK", NULL,  got_break }, /* On success we made it here */
+	{ "hw_break_val", "OK", hw_rem_write_break },  
+	{ "D", "OK" },  
+	{ "D", "OK", NULL,  got_break },  
 	{ "", "" },
 };
 
-/*
- * Test for hitting a hw access breakpoint
- */
+ 
 static struct test_struct hw_access_break_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "hw_break_val", "OK", hw_access_break, }, /* set hw breakpoint */
-	{ "c", "T0*", NULL, got_break }, /* Continue */
+	{ "?", "S0*" },  
+	{ "hw_break_val", "OK", hw_access_break, },  
+	{ "c", "T0*", NULL, got_break },  
 	{ "g", "silent", NULL, check_and_rewind_pc },
 	{ "write", "OK", write_regs },
-	{ "hw_break_val", "OK", hw_rem_access_break }, /*remove breakpoint */
-	{ "D", "OK" }, /* Detach */
-	{ "D", "OK", NULL,  got_break }, /* On success we made it here */
+	{ "hw_break_val", "OK", hw_rem_access_break },  
+	{ "D", "OK" },  
+	{ "D", "OK", NULL,  got_break },  
 	{ "", "" },
 };
 
-/*
- * Test for hitting a hw access breakpoint
- */
+ 
 static struct test_struct nmi_sleep_test[] = {
-	{ "?", "S0*" }, /* Clear break points */
-	{ "c", "T0*", NULL, got_break }, /* Continue */
-	{ "D", "OK" }, /* Detach */
-	{ "D", "OK", NULL,  got_break }, /* On success we made it here */
+	{ "?", "S0*" },  
+	{ "c", "T0*", NULL, got_break },  
+	{ "D", "OK" },  
+	{ "D", "OK", NULL,  got_break },  
 	{ "", "" },
 };
 
@@ -731,9 +604,7 @@ static int validate_simple_test(char *put_str)
 		put_str++;
 
 	while (*chk_str != '\0' && *put_str != '\0') {
-		/* If someone does a * to match the rest of the string, allow
-		 * it, or stop if the received string is complete.
-		 */
+		 
 		if (*put_str == '#' || *chk_str == '*')
 			return 0;
 		if (*put_str != *chk_str)
@@ -752,16 +623,12 @@ static int run_simple_test(int is_get_char, int chr)
 {
 	int ret = 0;
 	if (is_get_char) {
-		/* Send an ACK on the get if a prior put completed and set the
-		 * send ack variable
-		 */
+		 
 		if (send_ack) {
 			send_ack = 0;
 			return '+';
 		}
-		/* On the first get char, fill the transmit buffer and then
-		 * take from the get_string.
-		 */
+		 
 		if (get_buf_cnt == 0) {
 			if (ts.tst[ts.idx].get_handler)
 				ts.tst[ts.idx].get_handler(ts.tst[ts.idx].get);
@@ -780,9 +647,7 @@ static int run_simple_test(int is_get_char, int chr)
 		return ret;
 	}
 
-	/* This callback is a put char which is when kgdb sends data to
-	 * this I/O module.
-	 */
+	 
 	if (ts.tst[ts.idx].get[0] == '\0' && ts.tst[ts.idx].put[0] == '\0' &&
 	    !ts.tst[ts.idx].get_handler) {
 		eprintk("kgdbts: ERROR: beyond end of test on"
@@ -796,14 +661,14 @@ static int run_simple_test(int is_get_char, int chr)
 		put_buf_cnt = 0;
 		return 0;
 	}
-	/* Ignore everything until the first valid packet start '$' */
+	 
 	if (put_buf_cnt == 0 && chr != '$')
 		return 0;
 
 	put_buf[put_buf_cnt] = chr;
 	put_buf_cnt++;
 
-	/* End of packet == #XX so look for the '#' */
+	 
 	if (put_buf_cnt > 3 && put_buf[put_buf_cnt - 3] == '#') {
 		if (put_buf_cnt >= BUFMAX) {
 			eprintk("kgdbts: ERROR: put buffer overflow on"
@@ -813,7 +678,7 @@ static int run_simple_test(int is_get_char, int chr)
 		}
 		put_buf[put_buf_cnt] = '\0';
 		v2printk("put%i: %s\n", ts.idx, put_buf);
-		/* Trigger check here */
+		 
 		if (ts.validate_put && ts.validate_put(put_buf)) {
 			eprintk("kgdbts: ERROR PUT: end of test "
 			   "buffer on '%s' line %i expected %s got %s\n",
@@ -844,7 +709,7 @@ static void run_plant_and_detach_test(int is_early)
 	init_simple_test();
 	ts.tst = plant_and_detach_test;
 	ts.name = "plant_and_detach_test";
-	/* Activate test with initial breakpoint */
+	 
 	if (!is_early)
 		kgdb_breakpoint();
 	copy_from_kernel_nofault(after, (char *)kgdbts_break_test,
@@ -854,7 +719,7 @@ static void run_plant_and_detach_test(int is_early)
 		panic("kgdb memory corruption");
 	}
 
-	/* complete the detach test */
+	 
 	if (!is_early)
 		kgdbts_break_test();
 }
@@ -870,9 +735,9 @@ static void run_breakpoint_test(int is_hw_breakpoint)
 		ts.tst = sw_breakpoint_test;
 		ts.name = "sw_breakpoint_test";
 	}
-	/* Activate test with initial breakpoint */
+	 
 	kgdb_breakpoint();
-	/* run code with the break point in it */
+	 
 	kgdbts_break_test();
 	kgdb_breakpoint();
 
@@ -895,7 +760,7 @@ static void run_hw_break_test(int is_write_test)
 		ts.tst = hw_access_break_test;
 		ts.name = "hw_access_break_test";
 	}
-	/* Activate test with initial breakpoint */
+	 
 	kgdb_breakpoint();
 	hw_break_val_access();
 	if (is_write_test) {
@@ -922,7 +787,7 @@ static void run_nmi_sleep_test(int nmi_sleep)
 	init_simple_test();
 	ts.tst = nmi_sleep_test;
 	ts.name = "nmi_sleep_test";
-	/* Activate test with initial breakpoint */
+	 
 	kgdb_breakpoint();
 	local_irq_save(flags);
 	mdelay(nmi_sleep*1000);
@@ -942,7 +807,7 @@ static void run_bad_read_test(void)
 	init_simple_test();
 	ts.tst = bad_read_test;
 	ts.name = "bad_read_test";
-	/* Activate test with initial breakpoint */
+	 
 	kgdb_breakpoint();
 }
 
@@ -951,7 +816,7 @@ static void run_kernel_clone_test(void)
 	init_simple_test();
 	ts.tst = do_kernel_clone_test;
 	ts.name = "do_kernel_clone_test";
-	/* Activate test with initial breakpoint */
+	 
 	kgdb_breakpoint();
 }
 
@@ -960,7 +825,7 @@ static void run_sys_open_test(void)
 	init_simple_test();
 	ts.tst = sys_open_test;
 	ts.name = "sys_open_test";
-	/* Activate test with initial breakpoint */
+	 
 	kgdb_breakpoint();
 }
 
@@ -969,7 +834,7 @@ static void run_singlestep_break_test(void)
 	init_simple_test();
 	ts.tst = singlestep_break_test;
 	ts.name = "singlestep_breakpoint_test";
-	/* Activate test with initial breakpoint */
+	 
 	kgdb_breakpoint();
 	kgdbts_break_test();
 	kgdbts_break_test();
@@ -1003,7 +868,7 @@ static void kgdbts_run_tests(void)
 	if (ptr)
 		sstep_test = simple_strtol(ptr+1, NULL, 10);
 
-	/* All HW break point tests */
+	 
 	if (arch_kgdb_ops.flags & KGDB_HW_BREAKPOINT) {
 		hwbreaks_ok = 1;
 		v1printk("kgdbts:RUN hw breakpoint test\n");
@@ -1014,7 +879,7 @@ static void kgdbts_run_tests(void)
 		run_hw_break_test(0);
 	}
 
-	/* required internal KGDB tests */
+	 
 	v1printk("kgdbts:RUN plant and detach test\n");
 	run_plant_and_detach_test(0);
 	v1printk("kgdbts:RUN sw breakpoint test\n");
@@ -1029,17 +894,14 @@ static void kgdbts_run_tests(void)
 				 i, sstep_test);
 	}
 
-	/* ===Optional tests=== */
+	 
 
 	if (nmi_sleep) {
 		v1printk("kgdbts:RUN NMI sleep %i seconds test\n", nmi_sleep);
 		run_nmi_sleep_test(nmi_sleep);
 	}
 
-	/* If the kernel_clone test is run it will be the last test that is
-	 * executed because a kernel thread will be spawned at the very
-	 * end to unregister the debug hooks.
-	 */
+	 
 	if (clone_test) {
 		repeat_test = clone_test;
 		printk(KERN_INFO "kgdbts:RUN kernel_clone for %i breakpoints\n",
@@ -1049,10 +911,7 @@ static void kgdbts_run_tests(void)
 		return;
 	}
 
-	/* If the sys_open test is run it will be the last test that is
-	 * executed because a kernel thread will be spawned at the very
-	 * end to unregister the debug hooks.
-	 */
+	 
 	if (do_sys_open_test) {
 		repeat_test = do_sys_open_test;
 		printk(KERN_INFO "kgdbts:RUN sys_open for %i breakpoints\n",
@@ -1061,7 +920,7 @@ static void kgdbts_run_tests(void)
 		run_sys_open_test();
 		return;
 	}
-	/* Shutdown and unregister */
+	 
 	kgdb_unregister_io_module(&kgdbts_io_ops);
 	configured = 0;
 }
@@ -1107,7 +966,7 @@ noconfig:
 
 static int __init init_kgdbts(void)
 {
-	/* Already configured? */
+	 
 	if (configured == 1)
 		return 0;
 
@@ -1141,7 +1000,7 @@ static int param_set_kgdbts_var(const char *kmessage,
 		return -ENOSPC;
 	}
 
-	/* Only copy in the string if the init function has not run yet */
+	 
 	if (configured < 0) {
 		strcpy(config, kmessage);
 		return 0;
@@ -1153,24 +1012,24 @@ static int param_set_kgdbts_var(const char *kmessage,
 	}
 
 	strcpy(config, kmessage);
-	/* Chop out \n char as a result of echo */
+	 
 	if (len && config[len - 1] == '\n')
 		config[len - 1] = '\0';
 
-	/* Go and configure with the new params. */
+	 
 	return configure_kgdbts();
 }
 
 static void kgdbts_pre_exp_handler(void)
 {
-	/* Increment the module count when the debugger is active */
+	 
 	if (!kgdb_connected)
 		try_module_get(THIS_MODULE);
 }
 
 static void kgdbts_post_exp_handler(void)
 {
-	/* decrement the module count when the debugger detaches */
+	 
 	if (!kgdb_connected)
 		module_put(THIS_MODULE);
 }
@@ -1183,9 +1042,6 @@ static struct kgdb_io kgdbts_io_ops = {
 	.post_exception		= kgdbts_post_exp_handler,
 };
 
-/*
- * not really modular, but the easiest way to keep compat with existing
- * bootargs behaviour is to continue using module_param here.
- */
+ 
 module_param_call(kgdbts, param_set_kgdbts_var, param_get_string, &kps, 0644);
 MODULE_PARM_DESC(kgdbts, "<A|V1|V2>[F#|S#][N#]");

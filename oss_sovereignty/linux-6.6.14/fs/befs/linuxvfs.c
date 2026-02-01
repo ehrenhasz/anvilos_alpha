@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/fs/befs/linuxvfs.c
- *
- * Copyright (C) 2001 Will Dyson <will_dyson@pobox.com
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -35,7 +30,7 @@ MODULE_DESCRIPTION("BeOS File System (BeFS) driver");
 MODULE_AUTHOR("Will Dyson");
 MODULE_LICENSE("GPL");
 
-/* The units the vfs expects inode->i_blocks to be in */
+ 
 #define VFS_BLOCK_SIZE 512
 
 static int befs_readdir(struct file *, struct dir_context *);
@@ -65,15 +60,15 @@ static struct dentry *befs_fh_to_parent(struct super_block *sb,
 static struct dentry *befs_get_parent(struct dentry *child);
 
 static const struct super_operations befs_sops = {
-	.alloc_inode	= befs_alloc_inode,	/* allocate a new inode */
-	.free_inode	= befs_free_inode, /* deallocate an inode */
-	.put_super	= befs_put_super,	/* uninit super */
-	.statfs		= befs_statfs,	/* statfs */
+	.alloc_inode	= befs_alloc_inode,	 
+	.free_inode	= befs_free_inode,  
+	.put_super	= befs_put_super,	 
+	.statfs		= befs_statfs,	 
 	.remount_fs	= befs_remount,
 	.show_options	= befs_show_options,
 };
 
-/* slab cache for befs_inode_info objects */
+ 
 static struct kmem_cache *befs_inode_cachep;
 
 static const struct file_operations befs_dir_operations = {
@@ -101,13 +96,7 @@ static const struct export_operations befs_export_operations = {
 	.get_parent	= befs_get_parent,
 };
 
-/*
- * Called by generic_file_read() to read a folio of data
- *
- * In turn, simply calls a generic block read function and
- * passes it the address of befs_get_block, for mapping file
- * positions to disk blocks.
- */
+ 
 static int befs_read_folio(struct file *file, struct folio *folio)
 {
 	return block_read_full_folio(folio, befs_get_block);
@@ -119,14 +108,7 @@ befs_bmap(struct address_space *mapping, sector_t block)
 	return generic_block_bmap(mapping, block, befs_get_block);
 }
 
-/*
- * Generic function to map a file position (block) to a
- * disk offset (passed back in bh_result).
- *
- * Used by many higher level functions.
- *
- * Calls befs_fblock2brun() in datastream.c to do the real work.
- */
+ 
 
 static int
 befs_get_block(struct inode *inode, sector_t block,
@@ -182,7 +164,7 @@ befs_lookup(struct inode *dir, struct dentry *dentry, unsigned int flags)
 	befs_debug(sb, "---> %s name %pd inode %ld", __func__,
 		   dentry, dir->i_ino);
 
-	/* Convert to UTF-8 */
+	 
 	if (BEFS_SB(sb)->nls) {
 		ret =
 		    befs_nls2utf(sb, name, strlen(name), &utfname, &utfnamelen);
@@ -244,7 +226,7 @@ befs_readdir(struct file *file, struct dir_context *ctx)
 			return 0;
 		}
 
-		/* Convert to NLS */
+		 
 		if (BEFS_SB(sb)->nls) {
 			char *nlsname;
 			int nlsnamelen;
@@ -312,7 +294,7 @@ static struct inode *befs_iget(struct super_block *sb, unsigned long ino)
 
 	befs_ino = BEFS_I(inode);
 
-	/* convert from vfs's inode number to befs's inode number */
+	 
 	befs_ino->i_inode_num = blockno2iaddr(sb, inode->i_ino);
 
 	befs_debug(sb, "  real inode number [%u, %hu, %hu]",
@@ -337,10 +319,7 @@ static struct inode *befs_iget(struct super_block *sb, unsigned long ino)
 
 	inode->i_mode = (umode_t) fs32_to_cpu(sb, raw_inode->mode);
 
-	/*
-	 * set uid and gid.  But since current BeOS is single user OS, so
-	 * you can change by "uid" or "gid" options.
-	 */
+	 
 
 	inode->i_uid = befs_sb->mount_opts.use_uid ?
 		befs_sb->mount_opts.uid :
@@ -351,18 +330,11 @@ static struct inode *befs_iget(struct super_block *sb, unsigned long ino)
 
 	set_nlink(inode, 1);
 
-	/*
-	 * BEFS's time is 64 bits, but current VFS is 32 bits...
-	 * BEFS don't have access time. Nor inode change time. VFS
-	 * doesn't have creation time.
-	 * Also, the lower 16 bits of the last_modified_time and
-	 * create_time are just a counter to help ensure uniqueness
-	 * for indexing purposes. (PFD, page 54)
-	 */
+	 
 
 	inode->i_mtime.tv_sec =
 	    fs64_to_cpu(sb, raw_inode->last_modified_time) >> 16;
-	inode->i_mtime.tv_nsec = 0;   /* lower 16 bits are not a time */
+	inode->i_mtime.tv_nsec = 0;    
 	inode_set_ctime_to_ts(inode, inode->i_mtime);
 	inode->i_atime = inode->i_mtime;
 
@@ -425,10 +397,7 @@ unacquire_none:
 	return ERR_PTR(-EIO);
 }
 
-/* Initialize the inode cache. Called at fs setup.
- *
- * Taken from NFS implementation by Al Viro.
- */
+ 
 static int __init
 befs_init_inodecache(void)
 {
@@ -447,26 +416,16 @@ befs_init_inodecache(void)
 	return 0;
 }
 
-/* Called at fs teardown.
- *
- * Taken from NFS implementation by Al Viro.
- */
+ 
 static void
 befs_destroy_inodecache(void)
 {
-	/*
-	 * Make sure all delayed rcu free inodes are flushed before we
-	 * destroy cache.
-	 */
+	 
 	rcu_barrier();
 	kmem_cache_destroy(befs_inode_cachep);
 }
 
-/*
- * The inode of symbolic link is different to data stream.
- * The data stream become link name. Unless the LONG_SYMLINK
- * flag is set.
- */
+ 
 static int befs_symlink_read_folio(struct file *unused, struct folio *folio)
 {
 	struct inode *inode = folio->mapping->host;
@@ -496,11 +455,7 @@ fail:
 	return -EIO;
 }
 
-/*
- * UTF-8 to NLS charset convert routine
- *
- * Uses uni2char() / char2uni() rather than the nls tables directly
- */
+ 
 static int
 befs_utf2nls(struct super_block *sb, const char *in,
 	     int in_len, char **out, int *out_len)
@@ -510,10 +465,7 @@ befs_utf2nls(struct super_block *sb, const char *in,
 	unicode_t uni;
 	int unilen, utflen;
 	char *result;
-	/* The utf8->nls conversion won't make the final nls string bigger
-	 * than the utf one, but if the string is pure ascii they'll have the
-	 * same width and an extra char is needed to save the additional \0
-	 */
+	 
 	int maxlen = in_len + 1;
 
 	befs_debug(sb, "---> %s", __func__);
@@ -529,12 +481,12 @@ befs_utf2nls(struct super_block *sb, const char *in,
 
 	for (i = o = 0; i < in_len; i += utflen, o += unilen) {
 
-		/* convert from UTF-8 to Unicode */
+		 
 		utflen = utf8_to_utf32(&in[i], in_len - i, &uni);
 		if (utflen < 0)
 			goto conv_err;
 
-		/* convert from Unicode to nls */
+		 
 		if (uni > MAX_WCHAR_T)
 			goto conv_err;
 		unilen = nls->uni2char(uni, &result[o], in_len - o);
@@ -556,27 +508,7 @@ conv_err:
 	return -EILSEQ;
 }
 
-/**
- * befs_nls2utf - Convert NLS string to utf8 encodeing
- * @sb: Superblock
- * @in: Input string buffer in NLS format
- * @in_len: Length of input string in bytes
- * @out: The output string in UTF-8 format
- * @out_len: Length of the output buffer
- *
- * Converts input string @in, which is in the format of the loaded NLS map,
- * into a utf8 string.
- *
- * The destination string @out is allocated by this function and the caller is
- * responsible for freeing it with kfree()
- *
- * On return, *@out_len is the length of @out in bytes.
- *
- * On success, the return value is the number of utf8 characters written to
- * the output buffer @out.
- *
- * On Failure, a negative number coresponding to the error code is returned.
- */
+ 
 
 static int
 befs_nls2utf(struct super_block *sb, const char *in,
@@ -587,11 +519,7 @@ befs_nls2utf(struct super_block *sb, const char *in,
 	wchar_t uni;
 	int unilen, utflen;
 	char *result;
-	/*
-	 * There are nls characters that will translate to 3-chars-wide UTF-8
-	 * characters, an additional byte is needed to save the final \0
-	 * in special cases
-	 */
+	 
 	int maxlen = (3 * in_len) + 1;
 
 	befs_debug(sb, "---> %s\n", __func__);
@@ -610,12 +538,12 @@ befs_nls2utf(struct super_block *sb, const char *in,
 
 	for (i = o = 0; i < in_len; i += unilen, o += utflen) {
 
-		/* convert from nls to unicode */
+		 
 		unilen = nls->char2uni(&in[i], in_len - i, &uni);
 		if (unilen < 0)
 			goto conv_err;
 
-		/* convert from unicode to UTF-8 */
+		 
 		utflen = utf32_to_utf8(uni, &result[o], 3);
 		if (utflen <= 0)
 			goto conv_err;
@@ -639,13 +567,11 @@ conv_err:
 static struct inode *befs_nfs_get_inode(struct super_block *sb, uint64_t ino,
 					 uint32_t generation)
 {
-	/* No need to handle i_generation */
+	 
 	return befs_iget(sb, ino);
 }
 
-/*
- * Map a NFS file handle to a corresponding dentry
- */
+ 
 static struct dentry *befs_fh_to_dentry(struct super_block *sb,
 				struct fid *fid, int fh_len, int fh_type)
 {
@@ -653,9 +579,7 @@ static struct dentry *befs_fh_to_dentry(struct super_block *sb,
 				    befs_nfs_get_inode);
 }
 
-/*
- * Find the parent for a file specified by NFS handle
- */
+ 
 static struct dentry *befs_fh_to_parent(struct super_block *sb,
 				struct fid *fid, int fh_len, int fh_type)
 {
@@ -697,7 +621,7 @@ parse_options(char *options, struct befs_mount_options *opts)
 	kuid_t uid;
 	kgid_t gid;
 
-	/* Initialize options */
+	 
 	opts->uid = GLOBAL_ROOT_UID;
 	opts->gid = GLOBAL_ROOT_GID;
 	opts->use_uid = 0;
@@ -783,11 +707,7 @@ static int befs_show_options(struct seq_file *m, struct dentry *root)
 	return 0;
 }
 
-/* This function has the responsibiltiy of getting the
- * filesystem ready for unmounting.
- * Basically, we free everything that we allocated in
- * befs_read_inode
- */
+ 
 static void
 befs_put_super(struct super_block *sb)
 {
@@ -798,12 +718,7 @@ befs_put_super(struct super_block *sb)
 	sb->s_fs_info = NULL;
 }
 
-/* Allocate private field of the superblock, fill it.
- *
- * Finish filling the public superblock fields
- * Make the root directory
- * Load a set of NLS translations if needed.
- */
+ 
 static int
 befs_fill_super(struct super_block *sb, void *data, int silent)
 {
@@ -836,14 +751,7 @@ befs_fill_super(struct super_block *sb, void *data, int silent)
 		sb->s_flags |= SB_RDONLY;
 	}
 
-	/*
-	 * Set dummy blocksize to read super block.
-	 * Will be set to real fs blocksize later.
-	 *
-	 * Linux 2.4.10 and later refuse to read blocks smaller than
-	 * the logical block size for the device. But we also need to read at
-	 * least 1k to get the second 512 bytes of the volume.
-	 */
+	 
 	blocksize = sb_min_blocksize(sb, 1024);
 	if (!blocksize) {
 		if (!silent)
@@ -858,7 +766,7 @@ befs_fill_super(struct super_block *sb, void *data, int silent)
 		goto unacquire_priv_sbp;
 	}
 
-	/* account for offset of super block on x86 */
+	 
 	disk_sb = (befs_super_block *) bh->b_data;
 	if ((disk_sb->magic1 == BEFS_SUPER_MAGIC1_LE) ||
 	    (disk_sb->magic1 == BEFS_SUPER_MAGIC1_BE)) {
@@ -884,12 +792,9 @@ befs_fill_super(struct super_block *sb, void *data, int silent)
 		goto unacquire_priv_sbp;
 	}
 
-	/*
-	 * set up enough so that it can read an inode
-	 * Fill in kernel superblock fields from private sb
-	 */
+	 
 	sb->s_magic = BEFS_SUPER_MAGIC;
-	/* Set real blocksize of fs */
+	 
 	sb_set_blocksize(sb, (ulong) befs_sb->block_size);
 	sb->s_op = &befs_sops;
 	sb->s_export_op = &befs_export_operations;
@@ -907,7 +812,7 @@ befs_fill_super(struct super_block *sb, void *data, int silent)
 		goto unacquire_priv_sbp;
 	}
 
-	/* load nls library */
+	 
 	if (befs_sb->mount_opts.iocharset) {
 		befs_debug(sb, "Loading nls: %s",
 			   befs_sb->mount_opts.iocharset);
@@ -918,7 +823,7 @@ befs_fill_super(struct super_block *sb, void *data, int silent)
 					befs_sb->mount_opts.iocharset);
 			befs_sb->nls = load_nls_default();
 		}
-	/* load default nls if none is specified  in mount options */
+	 
 	} else {
 		befs_debug(sb, "Loading default nls");
 		befs_sb->nls = load_nls_default();
@@ -960,8 +865,8 @@ befs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_blocks = BEFS_SB(sb)->num_blocks;
 	buf->f_bfree = BEFS_SB(sb)->num_blocks - BEFS_SB(sb)->used_blocks;
 	buf->f_bavail = buf->f_bfree;
-	buf->f_files = 0;	/* UNKNOWN */
-	buf->f_ffree = 0;	/* UNKNOWN */
+	buf->f_files = 0;	 
+	buf->f_ffree = 0;	 
 	buf->f_fsid = u64_to_fsid(id);
 	buf->f_namelen = BEFS_NAME_LEN;
 
@@ -1018,10 +923,6 @@ exit_befs_fs(void)
 	unregister_filesystem(&befs_fs_type);
 }
 
-/*
- * Macros that typecheck the init and exit functions,
- * ensures that they are called at init and cleanup,
- * and eliminates warnings about unused functions.
- */
+ 
 module_init(init_befs_fs)
 module_exit(exit_befs_fs)

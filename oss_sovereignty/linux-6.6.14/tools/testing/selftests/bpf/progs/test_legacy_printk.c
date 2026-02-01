@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include <linux/bpf.h>
 #define BPF_NO_GLOBAL_DATA
@@ -42,11 +42,7 @@ int handle_legacy(void *ctx)
 		return 1;
 
 	if (*my_res == 0)
-		/* use bpf_printk() in combination with BPF_NO_GLOBAL_DATA to
-		 * force .rodata.str1.1 section that previously caused
-		 * problems on old kernels due to libbpf always tried to
-		 * create a global data map for it
-		 */
+		 
 		bpf_printk("Legacy-case bpf_printk test, pid %d\n", cur_pid);
 	*my_res = 1;
 
@@ -63,9 +59,7 @@ int handle_modern(void *ctx)
 		return 1;
 
 	if (res_var == 0)
-		/* we need bpf_printk() to validate libbpf logic around unused
-		 * global maps and legacy kernels; see comment in handle_legacy()
-		 */
+		 
 		bpf_printk("Modern-case bpf_printk test, pid %d\n", cur_pid);
 	res_var = 1;
 

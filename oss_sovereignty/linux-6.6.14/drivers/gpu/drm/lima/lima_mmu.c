@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/* Copyright 2017-2019 Qiang Yu <yuq825@gmail.com> */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/iopoll.h>
@@ -33,7 +33,7 @@ static irqreturn_t lima_mmu_irq_handler(int irq, void *data)
 	u32 status = mmu_read(LIMA_MMU_INT_STATUS);
 	struct lima_sched_pipe *pipe;
 
-	/* for shared irq case */
+	 
 	if (!status)
 		return IRQ_NONE;
 
@@ -49,7 +49,7 @@ static irqreturn_t lima_mmu_irq_handler(int irq, void *data)
 	if (status & LIMA_MMU_INT_READ_BUS_ERROR)
 		dev_err(dev->dev, "mmu %s irq bus error\n", lima_ip_name(ip));
 
-	/* mask all interrupts before resume */
+	 
 	mmu_write(LIMA_MMU_INT_MASK, 0);
 	mmu_write(LIMA_MMU_INT_CLEAR, status);
 
@@ -137,7 +137,7 @@ void lima_mmu_switch_vm(struct lima_ip *ip, struct lima_vm *vm)
 
 	mmu_write(LIMA_MMU_DTE_ADDR, vm->pd.dma);
 
-	/* flush the TLB */
+	 
 	mmu_write(LIMA_MMU_COMMAND, LIMA_MMU_COMMAND_ZAP_CACHE);
 
 	lima_mmu_send_command(LIMA_MMU_COMMAND_DISABLE_STALL,

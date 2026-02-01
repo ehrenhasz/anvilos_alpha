@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// sy8106a-regulator.c - Regulator device driver for SY8106A
-//
-// Copyright (C) 2016 Ondřej Jirman <megous@megous.com>
-// Copyright (c) 2017-2018 Icenowy Zheng <icenowy@aosc.io>
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -16,10 +16,7 @@
 #define SY8106A_REG_VOUT_COM		0x02
 #define SY8106A_REG_VOUT1_SEL_MASK	0x7f
 #define SY8106A_DISABLE_REG		BIT(0)
-/*
- * The I2C controlled voltage will only work when this bit is set; otherwise
- * it will behave like a fixed regulator.
- */
+ 
 #define SY8106A_GO_BIT			BIT(7)
 
 static const struct regmap_config sy8106a_regmap_config = {
@@ -32,10 +29,10 @@ static const struct regulator_ops sy8106a_ops = {
 	.set_voltage_time_sel = regulator_set_voltage_time_sel,
 	.get_voltage_sel = regulator_get_voltage_sel_regmap,
 	.list_voltage = regulator_list_voltage_linear,
-	/* Enabling/disabling the regulator is not yet implemented */
+	 
 };
 
-/* Default limits measured in millivolts */
+ 
 #define SY8106A_MIN_MV		680
 #define SY8106A_MAX_MV		1950
 #define SY8106A_STEP_MV		10
@@ -50,17 +47,12 @@ static const struct regulator_desc sy8106a_reg = {
 	.uV_step = (SY8106A_STEP_MV * 1000),
 	.vsel_reg = SY8106A_REG_VOUT1_SEL,
 	.vsel_mask = SY8106A_REG_VOUT1_SEL_MASK,
-	/*
-	 * This ramp_delay is a conservative default value which works on
-	 * H3/H5 boards VDD-CPUX situations.
-	 */
+	 
 	.ramp_delay = 200,
 	.owner = THIS_MODULE,
 };
 
-/*
- * I2C driver interface functions
- */
+ 
 static int sy8106a_i2c_probe(struct i2c_client *i2c)
 {
 	struct device *dev = &i2c->dev;
@@ -97,7 +89,7 @@ static int sy8106a_i2c_probe(struct i2c_client *i2c)
 	if (!config.init_data)
 		return -ENOMEM;
 
-	/* Ensure GO_BIT is enabled when probing */
+	 
 	error = regmap_read(regmap, SY8106A_REG_VOUT1_SEL, &reg);
 	if (error)
 		return error;
@@ -112,7 +104,7 @@ static int sy8106a_i2c_probe(struct i2c_client *i2c)
 			return error;
 	}
 
-	/* Probe regulator */
+	 
 	rdev = devm_regulator_register(&i2c->dev, &sy8106a_reg, &config);
 	if (IS_ERR(rdev)) {
 		error = PTR_ERR(rdev);

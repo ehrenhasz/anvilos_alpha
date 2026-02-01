@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Chen Zhong <chen.zhong@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MFD_MT6323_CORE_H__
 #define __MFD_MT6323_CORE_H__
@@ -30,4 +28,4 @@ enum MT6323_IRQ_STATUS_numbers {
 	MT6323_IRQ_STATUS_NR,
 };
 
-#endif /* __MFD_MT6323_CORE_H__ */
+#endif  

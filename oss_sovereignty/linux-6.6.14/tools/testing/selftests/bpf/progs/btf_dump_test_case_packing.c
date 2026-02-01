@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
 
-/*
- * BTF-to-C dumper tests for struct packing determination.
- *
- * Copyright (c) 2019 Facebook
- */
-/* ----- START-EXPECTED-OUTPUT ----- */
+
+ 
+ 
 struct packed_trailing_space {
 	int a;
 	short b;
@@ -58,20 +54,9 @@ union jump_code_union {
 	} __attribute__((packed));
 };
 
-/* ----- START-EXPECTED-OUTPUT ----- */
-/*
- *struct nested_packed_but_aligned_struct {
- *	int x1;
- *	int x2;
- *};
- *
- *struct outer_implicitly_packed_struct {
- *	char y1;
- *	struct nested_packed_but_aligned_struct y2;
- *} __attribute__((packed));
- *
- */
-/* ------ END-EXPECTED-OUTPUT ------ */
+ 
+ 
+ 
 
 struct nested_packed_but_aligned_struct {
 	int x1;
@@ -82,24 +67,9 @@ struct outer_implicitly_packed_struct {
 	char y1;
 	struct nested_packed_but_aligned_struct y2;
 };
-/* ----- START-EXPECTED-OUTPUT ----- */
-/*
- *struct usb_ss_ep_comp_descriptor {
- *	char: 8;
- *	char bDescriptorType;
- *	char bMaxBurst;
- *	short wBytesPerInterval;
- *};
- *
- *struct usb_host_endpoint {
- *	long: 64;
- *	char: 8;
- *	struct usb_ss_ep_comp_descriptor ss_ep_comp;
- *	long: 0;
- *} __attribute__((packed));
- *
- */
-/* ------ END-EXPECTED-OUTPUT ------ */
+ 
+ 
+ 
 
 struct usb_ss_ep_comp_descriptor {
 	char: 8;
@@ -116,7 +86,7 @@ struct usb_host_endpoint {
 	long: 0;
 };
 
-/* ----- START-EXPECTED-OUTPUT ----- */
+ 
 struct nested_packed_struct {
 	int a;
 	char b;
@@ -132,7 +102,7 @@ struct outer_packed_struct {
 	struct nested_packed_struct b;
 } __attribute__((packed));
 
-/* ------ END-EXPECTED-OUTPUT ------ */
+ 
 
 int f(struct {
 	struct packed_trailing_space _1;

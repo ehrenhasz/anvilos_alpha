@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2020-2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/sched/task.h>
@@ -45,9 +25,7 @@
 
 #define AMDGPU_SVM_RANGE_RESTORE_DELAY_MS 1
 
-/* Long enough to ensure no retry fault comes after svm range is restored and
- * page table is updated.
- */
+ 
 #define AMDGPU_SVM_RANGE_RETRY_FAULT_PENDING	(2UL * NSEC_PER_MSEC)
 #if IS_ENABLED(CONFIG_DYNAMIC_DEBUG)
 #define dynamic_svm_range_dump(svms) \
@@ -57,10 +35,7 @@
 	do { if (0) svm_range_debug_dump(svms); } while (0)
 #endif
 
-/* Giant svm range split into smaller ranges based on this, it is decided using
- * minimum of all dGPU/APU 1/32 VRAM size, between 2MB to 1GB and alignment to
- * power of 2MB.
- */
+ 
 static uint64_t max_svm_range_pages;
 
 struct criu_svm_metadata {
@@ -80,15 +55,7 @@ static const struct mmu_interval_notifier_ops svm_range_mn_ops = {
 	.invalidate = svm_range_cpu_invalidate_pagetables,
 };
 
-/**
- * svm_range_unlink - unlink svm_range from lists and interval tree
- * @prange: svm range structure to be removed
- *
- * Remove the svm_range from the svms and svm_bo lists and the svms
- * interval tree.
- *
- * Context: The caller must hold svms->lock
- */
+ 
 static void svm_range_unlink(struct svm_range *prange)
 {
 	pr_debug("svms 0x%p prange 0x%p [0x%lx 0x%lx]\n", prange->svms,
@@ -117,14 +84,7 @@ svm_range_add_notifier_locked(struct mm_struct *mm, struct svm_range *prange)
 				     &svm_range_mn_ops);
 }
 
-/**
- * svm_range_add_to_svms - add svm range to svms
- * @prange: svm range structure to be added
- *
- * Add the svm range to svms interval tree and link list
- *
- * Context: The caller must hold svms->lock
- */
+ 
 static void svm_range_add_to_svms(struct svm_range *prange)
 {
 	pr_debug("svms 0x%p prange 0x%p [0x%lx 0x%lx]\n", prange->svms,
@@ -376,9 +336,7 @@ static void svm_range_bo_release(struct kref *kref)
 		struct svm_range *prange =
 				list_first_entry(&svm_bo->range_list,
 						struct svm_range, svm_bo_list);
-		/* list_del_init tells a concurrent svm_range_vram_node_new when
-		 * it's safe to reuse the svm_bo pointer and svm_bo_list head.
-		 */
+		 
 		list_del_init(&prange->svm_bo_list);
 		spin_unlock(&svm_bo->list_lock);
 
@@ -392,10 +350,7 @@ static void svm_range_bo_release(struct kref *kref)
 	}
 	spin_unlock(&svm_bo->list_lock);
 	if (!dma_fence_is_signaled(&svm_bo->eviction_fence->base)) {
-		/* We're not in the eviction worker.
-		 * Signal the fence and synchronize with any
-		 * pending eviction work.
-		 */
+		 
 		dma_fence_signal(&svm_bo->eviction_fence->base);
 		cancel_work_sync(&svm_bo->eviction_work);
 	}
@@ -442,16 +397,12 @@ svm_range_validate_svm_bo(struct kfd_node *node, struct svm_range *prange)
 		return false;
 	}
 	if (prange->ttm_res) {
-		/* We still have a reference, all is well */
+		 
 		mutex_unlock(&prange->lock);
 		return true;
 	}
 	if (svm_bo_ref_unless_zero(prange->svm_bo)) {
-		/*
-		 * Migrate from GPU to GPU, remove range from source svm_bo->node
-		 * range list, and return false to allocate svm_bo from destination
-		 * node.
-		 */
+		 
 		if (prange->svm_bo->node != node) {
 			mutex_unlock(&prange->lock);
 
@@ -465,22 +416,16 @@ svm_range_validate_svm_bo(struct kfd_node *node, struct svm_range *prange)
 		if (READ_ONCE(prange->svm_bo->evicting)) {
 			struct dma_fence *f;
 			struct svm_range_bo *svm_bo;
-			/* The BO is getting evicted,
-			 * we need to get a new one
-			 */
+			 
 			mutex_unlock(&prange->lock);
 			svm_bo = prange->svm_bo;
 			f = dma_fence_get(&svm_bo->eviction_fence->base);
 			svm_range_bo_unref(prange->svm_bo);
-			/* wait for the fence to avoid long spin-loop
-			 * at list_empty_careful
-			 */
+			 
 			dma_fence_wait(f, false);
 			dma_fence_put(f);
 		} else {
-			/* The BO was still around and we got
-			 * a new reference to it
-			 */
+			 
 			mutex_unlock(&prange->lock);
 			pr_debug("reuse old bo svms 0x%p [0x%lx 0x%lx]\n",
 				 prange->svms, prange->start, prange->last);
@@ -493,11 +438,7 @@ svm_range_validate_svm_bo(struct kfd_node *node, struct svm_range *prange)
 		mutex_unlock(&prange->lock);
 	}
 
-	/* We need a new svm_bo. Spin-loop to wait for concurrent
-	 * svm_range_bo_release to finish removing this range from
-	 * its range list and set prange->svm_bo to null. After this,
-	 * it is safe to reuse the svm_bo pointer and svm_bo_list head.
-	 */
+	 
 	while (!list_empty_careful(&prange->svm_bo_list) || prange->svm_bo)
 		cond_resched();
 
@@ -628,9 +569,9 @@ create_bo_failed:
 
 void svm_range_vram_node_free(struct svm_range *prange)
 {
-	/* serialize prange->svm_bo unref */
+	 
 	mutex_lock(&prange->lock);
-	/* prange->svm_bo has not been unref */
+	 
 	if (prange->ttm_res) {
 		prange->ttm_res = NULL;
 		mutex_unlock(&prange->lock);
@@ -789,9 +730,7 @@ svm_range_is_same_attrs(struct kfd_process *p, struct svm_range *prange,
 				return false;
 			break;
 		case KFD_IOCTL_SVM_ATTR_PREFETCH_LOC:
-			/* Prefetch should always trigger a migration even
-			 * if the value of the attribute didn't change.
-			 */
+			 
 			return false;
 		case KFD_IOCTL_SVM_ATTR_ACCESS:
 		case KFD_IOCTL_SVM_ATTR_ACCESS_IN_PLACE:
@@ -830,15 +769,7 @@ svm_range_is_same_attrs(struct kfd_process *p, struct svm_range *prange,
 	return true;
 }
 
-/**
- * svm_range_debug_dump - print all range information from svms
- * @svms: svm range list header
- *
- * debug output svm range start, end, prefetch location from svms
- * interval tree and link list
- *
- * Context: The caller must hold svms->lock
- */
+ 
 static void svm_range_debug_dump(struct svm_range_list *svms)
 {
 	struct interval_tree_node *node;
@@ -973,21 +904,7 @@ svm_range_split_nodes(struct svm_range *new, struct svm_range *old,
 	return 0;
 }
 
-/**
- * svm_range_split_adjust - split range and adjust
- *
- * @new: new range
- * @old: the old range
- * @start: the old range adjust to start address in pages
- * @last: the old range adjust to last address in pages
- *
- * Copy system memory dma_addr or vram ttm_res in old range to new
- * range from new_start up to size new->npages, the remaining old range is from
- * start to last
- *
- * Return:
- * 0 - OK, -ENOMEM - out of memory
- */
+ 
 static int
 svm_range_split_adjust(struct svm_range *new, struct svm_range *old,
 		      uint64_t start, uint64_t last)
@@ -1028,26 +945,7 @@ svm_range_split_adjust(struct svm_range *new, struct svm_range *old,
 	return 0;
 }
 
-/**
- * svm_range_split - split a range in 2 ranges
- *
- * @prange: the svm range to split
- * @start: the remaining range start address in pages
- * @last: the remaining range last address in pages
- * @new: the result new range generated
- *
- * Two cases only:
- * case 1: if start == prange->start
- *         prange ==> prange[start, last]
- *         new range [last + 1, prange->last]
- *
- * case 2: if last == prange->last
- *         prange ==> prange[start, last]
- *         new range [prange->start, start - 1]
- *
- * Return:
- * 0 - OK, -ENOMEM - out of memory, -EINVAL - invalid start, last
- */
+ 
 static int
 svm_range_split(struct svm_range *prange, uint64_t start, uint64_t last,
 		struct svm_range **new)
@@ -1120,23 +1018,7 @@ svm_range_add_child(struct svm_range *prange, struct mm_struct *mm,
 	list_add_tail(&pchild->child_list, &prange->child_list);
 }
 
-/**
- * svm_range_split_by_granularity - collect ranges within granularity boundary
- *
- * @p: the process with svms list
- * @mm: mm structure
- * @addr: the vm fault address in pages, to split the prange
- * @parent: parent range if prange is from child list
- * @prange: prange to split
- *
- * Trims @prange to be a single aligned block of prange->granularity if
- * possible. The head and tail are added to the child_list in @parent.
- *
- * Context: caller must hold mmap_read_lock and prange->lock
- *
- * Return:
- * 0 - OK, otherwise error code
- */
+ 
 int
 svm_range_split_by_granularity(struct kfd_process *p, struct mm_struct *mm,
 			       unsigned long addr, struct svm_range *parent,
@@ -1146,10 +1028,7 @@ svm_range_split_by_granularity(struct kfd_process *p, struct mm_struct *mm,
 	unsigned long start, last, size;
 	int r;
 
-	/* Align splited range start and size to granularity size, then a single
-	 * PTE will be used for whole range, this reduces the number of PTE
-	 * updated and the L1 TLB space used for translation.
-	 */
+	 
 	size = 1UL << prange->granularity;
 	start = ALIGN_DOWN(addr, size);
 	last = ALIGN(addr + 1, size) - 1;
@@ -1171,7 +1050,7 @@ svm_range_split_by_granularity(struct kfd_process *p, struct mm_struct *mm,
 		svm_range_add_child(parent, mm, tail, SVM_OP_ADD_RANGE);
 	}
 
-	/* xnack on, update mapping on GPUs with ACCESS_IN_PLACE */
+	 
 	if (p->xnack_enabled && prange->work_item.op == SVM_OP_ADD_RANGE) {
 		prange->work_item.op = SVM_OP_ADD_RANGE_AND_MAP;
 		pr_debug("change prange 0x%p [0x%lx 0x%lx] op %d\n",
@@ -1197,7 +1076,7 @@ svm_range_get_pte_flags(struct kfd_node *node,
 	uint64_t pte_flags;
 	bool snoop = (domain != SVM_RANGE_VRAM_DOMAIN);
 	bool coherent = flags & KFD_IOCTL_SVM_FLAG_COHERENT;
-	bool uncached = false; /*flags & KFD_IOCTL_SVM_FLAG_UNCACHED;*/
+	bool uncached = false;  
 	unsigned int mtype_local;
 
 	if (domain == SVM_RANGE_VRAM_DOMAIN)
@@ -1245,26 +1124,24 @@ svm_range_get_pte_flags(struct kfd_node *node,
 		if (uncached) {
 			mapping_flags |= AMDGPU_VM_MTYPE_UC;
 		} else if (domain == SVM_RANGE_VRAM_DOMAIN) {
-			/* local HBM region close to partition */
+			 
 			if (bo_node->adev == node->adev &&
 			    (!bo_node->xcp || !node->xcp || bo_node->xcp->mem_id == node->xcp->mem_id))
 				mapping_flags |= mtype_local;
-			/* local HBM region far from partition or remote XGMI GPU */
+			 
 			else if (svm_nodes_in_same_hive(bo_node, node))
 				mapping_flags |= AMDGPU_VM_MTYPE_NC;
-			/* PCIe P2P */
+			 
 			else
 				mapping_flags |= AMDGPU_VM_MTYPE_UC;
-		/* system memory accessed by the APU */
+		 
 		} else if (node->adev->flags & AMD_IS_APU) {
-			/* On NUMA systems, locality is determined per-page
-			 * in amdgpu_gmc_override_vm_pte_flags
-			 */
+			 
 			if (num_possible_nodes() <= 1)
 				mapping_flags |= mtype_local;
 			else
 				mapping_flags |= AMDGPU_VM_MTYPE_NC;
-		/* system memory accessed by the dGPU */
+		 
 		} else {
 			mapping_flags |= AMDGPU_VM_MTYPE_UC;
 		}
@@ -1382,9 +1259,7 @@ svm_range_map_to_gpu(struct kfd_process_device *pdd, struct svm_range *prange,
 		last_domain = dma_addr[i] & SVM_RANGE_VRAM_DOMAIN;
 		dma_addr[i] &= ~SVM_RANGE_VRAM_DOMAIN;
 
-		/* Collect all pages in the same address range and memory domain
-		 * that can be mapped with a single call to update mapping.
-		 */
+		 
 		if (i < offset + npages - 1 &&
 		    last_domain == (dma_addr[i + 1] & SVM_RANGE_VRAM_DOMAIN))
 			continue;
@@ -1401,10 +1276,7 @@ svm_range_map_to_gpu(struct kfd_process_device *pdd, struct svm_range *prange,
 			 (last_domain == SVM_RANGE_VRAM_DOMAIN) ? 1 : 0,
 			 pte_flags);
 
-		/* For dGPU mode, we use same vm_manager to allocate VRAM for
-		 * different memory partition based on fpfn/lpfn, we should use
-		 * same vm_manager.vram_base_offset regardless memory partition.
-		 */
+		 
 		r = amdgpu_vm_update_range(adev, vm, false, false, flush_tlb, NULL,
 					   last_start, prange->start + i,
 					   pte_flags,
@@ -1568,30 +1440,7 @@ static void *kfd_svm_page_owner(struct kfd_process *p, int32_t gpuidx)
 	return SVM_ADEV_PGMAP_OWNER(pdd->dev->adev);
 }
 
-/*
- * Validation+GPU mapping with concurrent invalidation (MMU notifiers)
- *
- * To prevent concurrent destruction or change of range attributes, the
- * svm_read_lock must be held. The caller must not hold the svm_write_lock
- * because that would block concurrent evictions and lead to deadlocks. To
- * serialize concurrent migrations or validations of the same range, the
- * prange->migrate_mutex must be held.
- *
- * For VRAM ranges, the SVM BO must be allocated and valid (protected by its
- * eviction fence.
- *
- * The following sequence ensures race-free validation and GPU mapping:
- *
- * 1. Reserve page table (and SVM BO if range is in VRAM)
- * 2. hmm_range_fault to get page addresses (if system memory)
- * 3. DMA-map pages (if system memory)
- * 4-a. Take notifier lock
- * 4-b. Check that pages still valid (mmu_interval_read_retry)
- * 4-c. Check that the range was not split or otherwise invalidated
- * 4-d. Update GPU page table
- * 4.e. Release notifier lock
- * 5. Release page table (and SVM BO) reservation
- */
+ 
 static int svm_range_validate_and_map(struct mm_struct *mm,
 				      struct svm_range *prange, int32_t gpuidx,
 				      bool intr, bool wait, bool flush_tlb)
@@ -1616,10 +1465,7 @@ static int svm_range_validate_and_map(struct mm_struct *mm,
 	} else if (ctx->process->xnack_enabled) {
 		bitmap_copy(ctx->bitmap, prange->bitmap_aip, MAX_GPU_INSTANCE);
 
-		/* If prefetch range to GPU, or GPU retry fault migrate range to
-		 * GPU, which has ACCESS attribute to the range, create mapping
-		 * on that GPU.
-		 */
+		 
 		if (prange->actual_loc) {
 			gpuidx = kfd_process_gpuidx_from_gpuid(ctx->process,
 							prange->actual_loc);
@@ -1633,10 +1479,7 @@ static int svm_range_validate_and_map(struct mm_struct *mm,
 				bitmap_set(ctx->bitmap, gpuidx, 1);
 		}
 
-		/*
-		 * If prange is already mapped or with always mapped flag,
-		 * update mapping on GPUs with ACCESS attribute
-		 */
+		 
 		if (bitmap_empty(ctx->bitmap, MAX_GPU_INSTANCE)) {
 			if (prange->mapped_to_gpu ||
 			    prange->flags & KFD_IOCTL_SVM_FLAG_GPU_ALWAYS_MAPPED)
@@ -1653,9 +1496,7 @@ static int svm_range_validate_and_map(struct mm_struct *mm,
 	}
 
 	if (prange->actual_loc && !prange->ttm_res) {
-		/* This should never happen. actual_loc gets set by
-		 * svm_migrate_ram_to_vram after allocating a BO.
-		 */
+		 
 		WARN_ONCE(1, "VRAM BO missing during validation\n");
 		r = -EINVAL;
 		goto free_ctx;
@@ -1744,15 +1585,7 @@ free_ctx:
 	return r;
 }
 
-/**
- * svm_range_list_lock_and_flush_work - flush pending deferred work
- *
- * @svms: the svm range list
- * @mm: the mm structure
- *
- * Context: Returns with mmap write lock held, pending deferred work flushed
- *
- */
+ 
 void
 svm_range_list_lock_and_flush_work(struct svm_range_list *svms,
 				   struct mm_struct *mm)
@@ -1790,7 +1623,7 @@ static void svm_range_restore_work(struct work_struct *work)
 	p = container_of(svms, struct kfd_process, svms);
 	process_info = p->kgd_process_info;
 
-	/* Keep mm reference when svm_range_validate_and_map ranges */
+	 
 	mm = get_task_mm(p->lead_thread);
 	if (!mm) {
 		pr_debug("svms 0x%p process mm gone\n", svms);
@@ -1812,9 +1645,7 @@ static void svm_range_restore_work(struct work_struct *work)
 			 prange->svms, prange, prange->start, prange->last,
 			 invalid);
 
-		/*
-		 * If range is migrating, wait for migration is done.
-		 */
+		 
 		mutex_lock(&prange->migrate_mutex);
 
 		r = svm_range_validate_and_map(mm, prange, MAX_GPU_INSTANCE,
@@ -1839,9 +1670,7 @@ static void svm_range_restore_work(struct work_struct *work)
 
 	r = kgd2kfd_resume_mm(mm);
 	if (r) {
-		/* No recovery from this failure. Probably the CP is
-		 * hanging. No point trying again.
-		 */
+		 
 		pr_debug("failed %d to resume KFD\n", r);
 	}
 
@@ -1852,7 +1681,7 @@ out_reschedule:
 	mmap_write_unlock(mm);
 	mutex_unlock(&process_info->lock);
 
-	/* If validation failed, reschedule another attempt */
+	 
 	if (evicted_ranges) {
 		pr_debug("reschedule to restore svm range\n");
 		schedule_delayed_work(&svms->restore_work,
@@ -1863,22 +1692,7 @@ out_reschedule:
 	mmput(mm);
 }
 
-/**
- * svm_range_evict - evict svm range
- * @prange: svm range structure
- * @mm: current process mm_struct
- * @start: starting process queue number
- * @last: last process queue number
- * @event: mmu notifier event when range is evicted or migrated
- *
- * Stop all queues of the process to ensure GPU doesn't access the memory, then
- * return to let CPU evict the buffer and proceed CPU pagetable update.
- *
- * Don't need use lock to sync cpu pagetable invalidation with GPU execution.
- * If invalidation happens while restore work is running, restore work will
- * restart to ensure to get the latest CPU pages mapping to GPU, then start
- * the queues.
- */
+ 
 static int
 svm_range_evict(struct svm_range *prange, struct mm_struct *mm,
 		unsigned long start, unsigned long last,
@@ -1925,7 +1739,7 @@ svm_range_evict(struct svm_range *prange, struct mm_struct *mm,
 		pr_debug("evicting svms 0x%p range [0x%lx 0x%lx]\n",
 			 prange->svms, prange->start, prange->last);
 
-		/* First eviction, stop the queues */
+		 
 		r = kgd2kfd_quiesce_mm(mm, KFD_QUEUE_EVICTION_TRIGGER_SVM);
 		if (r)
 			pr_debug("failed to quiesce KFD\n");
@@ -2041,35 +1855,7 @@ svm_range_split_new(struct svm_range_list *svms, uint64_t start, uint64_t last,
 	return 0;
 }
 
-/**
- * svm_range_add - add svm range and handle overlap
- * @p: the range add to this process svms
- * @start: page size aligned
- * @size: page size aligned
- * @nattr: number of attributes
- * @attrs: array of attributes
- * @update_list: output, the ranges need validate and update GPU mapping
- * @insert_list: output, the ranges need insert to svms
- * @remove_list: output, the ranges are replaced and need remove from svms
- *
- * Check if the virtual address range has overlap with any existing ranges,
- * split partly overlapping ranges and add new ranges in the gaps. All changes
- * should be applied to the range_list and interval tree transactionally. If
- * any range split or allocation fails, the entire update fails. Therefore any
- * existing overlapping svm_ranges are cloned and the original svm_ranges left
- * unchanged.
- *
- * If the transaction succeeds, the caller can update and insert clones and
- * new ranges, then free the originals.
- *
- * Otherwise the caller can free the clones and new ranges, while the old
- * svm_ranges remain unchanged.
- *
- * Context: Process context, caller must hold svms->lock
- *
- * Return:
- * 0 - OK, otherwise error code
- */
+ 
 static int
 svm_range_add(struct kfd_process *p, uint64_t start, uint64_t size,
 	      uint32_t nattr, struct kfd_ioctl_svm_attribute *attrs,
@@ -2105,12 +1891,9 @@ svm_range_add(struct kfd_process *p, uint64_t start, uint64_t size,
 
 		if (svm_range_is_same_attrs(p, prange, nattr, attrs) &&
 		    prange->mapped_to_gpu) {
-			/* nothing to do */
+			 
 		} else if (node->start < start || node->last > last) {
-			/* node intersects the update range and its attributes
-			 * will change. Clone and split it, apply updates only
-			 * to the overlapping part
-			 */
+			 
 			struct svm_range *old = prange;
 
 			prange = svm_range_clone(old);
@@ -2138,13 +1921,11 @@ svm_range_add(struct kfd_process *p, uint64_t start, uint64_t size,
 					goto out;
 			}
 		} else {
-			/* The node is contained within start..last,
-			 * just update it
-			 */
+			 
 			list_add(&prange->update_list, update_list);
 		}
 
-		/* insert a new node if needed */
+		 
 		if (node->start > start) {
 			r = svm_range_split_new(svms, start, node->start - 1,
 						READ_ONCE(max_svm_range_pages),
@@ -2157,7 +1938,7 @@ svm_range_add(struct kfd_process *p, uint64_t start, uint64_t size,
 		start = next_start;
 	}
 
-	/* add a final range at the end if needed */
+	 
 	if (start <= last)
 		r = svm_range_split_new(svms, start, last,
 					READ_ONCE(max_svm_range_pages),
@@ -2229,7 +2010,7 @@ svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange,
 		pr_debug("update and map 0x%p prange 0x%p [0x%lx 0x%lx]\n",
 			 svms, prange, prange->start, prange->last);
 		svm_range_update_notifier_and_interval_tree(mm, prange);
-		/* TODO: implement deferred validation and mapping */
+		 
 		break;
 	case SVM_OP_ADD_RANGE:
 		pr_debug("add 0x%p prange 0x%p [0x%lx 0x%lx]\n", svms, prange,
@@ -2242,7 +2023,7 @@ svm_range_handle_list_op(struct svm_range_list *svms, struct svm_range *prange,
 			 prange, prange->start, prange->last);
 		svm_range_add_to_svms(prange);
 		svm_range_add_notifier_locked(mm, prange);
-		/* TODO: implement deferred validation and mapping */
+		 
 		break;
 	default:
 		WARN_ONCE(1, "Unknown prange 0x%p work op %d\n", prange,
@@ -2309,23 +2090,14 @@ static void svm_range_deferred_list_work(struct work_struct *work)
 retry:
 		mmap_write_lock(mm);
 
-		/* Checking for the need to drain retry faults must be inside
-		 * mmap write lock to serialize with munmap notifiers.
-		 */
+		 
 		if (unlikely(atomic_read(&svms->drain_pagefaults))) {
 			mmap_write_unlock(mm);
 			svm_range_drain_retry_fault(svms);
 			goto retry;
 		}
 
-		/* Remove from deferred_list must be inside mmap write lock, for
-		 * two race cases:
-		 * 1. unmap_from_cpu may change work_item.op and add the range
-		 *    to deferred_list again, cause use after free bug.
-		 * 2. svm_range_list_lock_and_flush_work may hold mmap write
-		 *    lock and continue because deferred_list is empty, but
-		 *    deferred_list work is actually waiting for mmap lock.
-		 */
+		 
 		spin_lock(&svms->deferred_list_lock);
 		list_del_init(&prange->deferred_list);
 		spin_unlock(&svms->deferred_list_lock);
@@ -2348,7 +2120,7 @@ retry:
 		mutex_unlock(&svms->lock);
 		mmap_write_unlock(mm);
 
-		/* Pairs with mmget in svm_range_add_list_work */
+		 
 		mmput(mm);
 
 		spin_lock(&svms->deferred_list_lock);
@@ -2362,7 +2134,7 @@ svm_range_add_list_work(struct svm_range_list *svms, struct svm_range *prange,
 			struct mm_struct *mm, enum svm_work_list_ops op)
 {
 	spin_lock(&svms->deferred_list_lock);
-	/* if prange is on the deferred list */
+	 
 	if (!list_empty(&prange->deferred_list)) {
 		pr_debug("update exist prange 0x%p work op %d\n", prange, op);
 		WARN_ONCE(prange->work_item.mm != mm, "unmatch mm\n");
@@ -2372,7 +2144,7 @@ svm_range_add_list_work(struct svm_range_list *svms, struct svm_range *prange,
 	} else {
 		prange->work_item.op = op;
 
-		/* Pairs with mmput in deferred_list_work */
+		 
 		mmget(mm);
 		prange->work_item.mm = mm;
 		list_add_tail(&prange->deferred_list,
@@ -2444,10 +2216,7 @@ svm_range_unmap_from_cpu(struct mm_struct *mm, struct svm_range *prange,
 	pr_debug("svms 0x%p prange 0x%p [0x%lx 0x%lx] [0x%lx 0x%lx]\n", svms,
 		 prange, prange->start, prange->last, start, last);
 
-	/* Make sure pending page faults are drained in the deferred worker
-	 * before the range is freed to avoid straggler interrupts on
-	 * unmapped memory causing "phantom faults".
-	 */
+	 
 	atomic_inc(&svms->drain_pagefaults);
 
 	unmap_parent = start <= prange->start && last >= prange->last;
@@ -2477,26 +2246,7 @@ svm_range_unmap_from_cpu(struct mm_struct *mm, struct svm_range *prange,
 	kfd_unref_process(p);
 }
 
-/**
- * svm_range_cpu_invalidate_pagetables - interval notifier callback
- * @mni: mmu_interval_notifier struct
- * @range: mmu_notifier_range struct
- * @cur_seq: value to pass to mmu_interval_set_seq()
- *
- * If event is MMU_NOTIFY_UNMAP, this is from CPU unmap range, otherwise, it
- * is from migration, or CPU page invalidation callback.
- *
- * For unmap event, unmap range from GPUs, remove prange from svms in a delayed
- * work thread, and split prange if only part of prange is unmapped.
- *
- * For invalidation event, if GPU retry fault is not enabled, evict the queues,
- * then schedule svm_range_restore_work to update GPU mapping and resume queues.
- * If GPU retry fault is enabled, unmap the svm range from GPU, retry fault will
- * update GPU mapping to recover.
- *
- * Context: mmap lock, notifier_invalidate_start lock are held
- *          for invalidate event, prange lock is held if this is from migration
- */
+ 
 static bool
 svm_range_cpu_invalidate_pagetables(struct mmu_interval_notifier *mni,
 				    const struct mmu_notifier_range *range,
@@ -2541,16 +2291,7 @@ svm_range_cpu_invalidate_pagetables(struct mmu_interval_notifier *mni,
 	return true;
 }
 
-/**
- * svm_range_from_addr - find svm range from fault address
- * @svms: svm range list header
- * @addr: address to search range interval tree, in pages
- * @parent: parent range if range is on child list
- *
- * Context: The caller must hold svms->lock
- *
- * Return: the svm_range found or NULL
- */
+ 
 struct svm_range *
 svm_range_from_addr(struct svm_range_list *svms, unsigned long addr,
 		    struct svm_range **parent)
@@ -2584,27 +2325,7 @@ svm_range_from_addr(struct svm_range_list *svms, unsigned long addr,
 	return NULL;
 }
 
-/* svm_range_best_restore_location - decide the best fault restore location
- * @prange: svm range structure
- * @adev: the GPU on which vm fault happened
- *
- * This is only called when xnack is on, to decide the best location to restore
- * the range mapping after GPU vm fault. Caller uses the best location to do
- * migration if actual loc is not best location, then update GPU page table
- * mapping to the best location.
- *
- * If the preferred loc is accessible by faulting GPU, use preferred loc.
- * If vm fault gpu idx is on range ACCESSIBLE bitmap, best_loc is vm fault gpu
- * If vm fault gpu idx is on range ACCESSIBLE_IN_PLACE bitmap, then
- *    if range actual loc is cpu, best_loc is cpu
- *    if vm fault gpu is on xgmi same hive of range actual loc gpu, best_loc is
- *    range actual loc.
- * Otherwise, GPU no access, best_loc is -1.
- *
- * Return:
- * -1 means vm fault GPU no access
- * 0 for CPU or GPU id
- */
+ 
 static int32_t
 svm_range_best_restore_location(struct svm_range *prange,
 				struct kfd_node *node,
@@ -2633,7 +2354,7 @@ svm_range_best_restore_location(struct svm_range *prange,
 		preferred_node = svm_range_get_node_by_id(prange, prange->preferred_loc);
 		if (preferred_node && svm_nodes_in_same_hive(node, preferred_node))
 			return prange->preferred_loc;
-		/* fall through */
+		 
 	}
 
 	if (test_bit(*gpuidx, prange->bitmap_access))
@@ -2674,17 +2395,15 @@ svm_range_get_range_boundaries(struct kfd_process *p, int64_t addr,
 		      (unsigned long)ALIGN_DOWN(addr, 2UL << 8));
 	end_limit = min(vma->vm_end >> PAGE_SHIFT,
 		    (unsigned long)ALIGN(addr + 1, 2UL << 8));
-	/* First range that starts after the fault address */
+	 
 	node = interval_tree_iter_first(&p->svms.objects, addr + 1, ULONG_MAX);
 	if (node) {
 		end_limit = min(end_limit, node->start);
-		/* Last range that ends before the fault address */
+		 
 		node = container_of(rb_prev(&node->rb),
 				    struct interval_tree_node, rb);
 	} else {
-		/* Last range must end before addr because
-		 * there was no range after addr
-		 */
+		 
 		node = container_of(rb_last(&p->svms.objects.rb_root),
 				    struct interval_tree_node, rb);
 	}
@@ -2728,7 +2447,7 @@ svm_range_check_vm_userptr(struct kfd_process *p, uint64_t start, uint64_t last,
 		if (r)
 			return r;
 
-		/* Check userptr by searching entire vm->va interval tree */
+		 
 		node = interval_tree_iter_first(&vm->va, 0, ~0ULL);
 		while (node) {
 			mapping = container_of((struct rb_node *)node,
@@ -2783,7 +2502,7 @@ svm_range *svm_range_create_unregistered_range(struct kfd_node *node,
 		if (addr >= bo_s && addr <= bo_l)
 			return NULL;
 
-		/* Create one page svm range if 2MB range overlapping */
+		 
 		start = addr;
 		last = addr;
 	}
@@ -2808,18 +2527,7 @@ svm_range *svm_range_create_unregistered_range(struct kfd_node *node,
 	return prange;
 }
 
-/* svm_range_skip_recover - decide if prange can be recovered
- * @prange: svm range structure
- *
- * GPU vm retry fault handle skip recover the range for cases:
- * 1. prange is on deferred list to be removed after unmap, it is stale fault,
- *    deferred list work will drain the stale fault before free the prange.
- * 2. prange is on deferred list to add interval notifier after split, or
- * 3. prange is child range, it is split from parent prange, recover later
- *    after interval notifier is added.
- *
- * Return: true to skip recover, false to recover
- */
+ 
 static bool svm_range_skip_recover(struct svm_range *prange)
 {
 	struct svm_range_list *svms = prange->svms;
@@ -2852,10 +2560,7 @@ svm_range_count_fault(struct kfd_node *node, struct kfd_process *p,
 {
 	struct kfd_process_device *pdd;
 
-	/* fault is on different page of same range
-	 * or fault is skipped to recover later
-	 * or fault is on invalid virtual address
-	 */
+	 
 	if (gpuidx == MAX_GPU_INSTANCE) {
 		uint32_t gpuid;
 		int r;
@@ -2865,9 +2570,7 @@ svm_range_count_fault(struct kfd_node *node, struct kfd_process *p,
 			return;
 	}
 
-	/* fault is recovered
-	 * or fault cannot recover because GPU no access on the range
-	 */
+	 
 	pdd = kfd_process_device_from_gpuidx(p, gpuidx);
 	if (pdd)
 		WRITE_ONCE(pdd->faults, pdd->faults + 1);
@@ -2930,9 +2633,7 @@ svm_range_restore_pages(struct amdgpu_device *adev, unsigned int pasid,
 		goto out;
 	}
 
-	/* p->lead_thread is available as kfd_process_wq_release flush the work
-	 * before releasing task ref.
-	 */
+	 
 	mm = get_task_mm(p->lead_thread);
 	if (!mm) {
 		pr_debug("svms 0x%p failed to get mm\n", svms);
@@ -2955,10 +2656,7 @@ retry_write_locked:
 		pr_debug("failed to find prange svms 0x%p address [0x%llx]\n",
 			 svms, addr);
 		if (!write_locked) {
-			/* Need the write lock to create new range with MMU notifier.
-			 * Also flush pending deferred work to make sure the interval
-			 * tree is up to date before we add a new range
-			 */
+			 
 			mutex_unlock(&svms->lock);
 			mmap_read_unlock(mm);
 			mmap_write_lock(mm);
@@ -2985,7 +2683,7 @@ retry_write_locked:
 		goto out_unlock_range;
 	}
 
-	/* skip duplicate vm fault on different pages of same range */
+	 
 	if (ktime_before(timestamp, ktime_add_ns(prange->validate_timestamp,
 				AMDGPU_SVM_RANGE_RETRY_FAULT_PENDING))) {
 		pr_debug("svms 0x%p [0x%lx %lx] already restored\n",
@@ -2994,9 +2692,7 @@ retry_write_locked:
 		goto out_unlock_range;
 	}
 
-	/* __do_munmap removed VMA, return success as we are handling stale
-	 * retry fault.
-	 */
+	 
 	vma = vma_lookup(mm, addr << PAGE_SHIFT);
 	if (!vma) {
 		pr_debug("address 0x%llx VMA is removed\n", addr);
@@ -3034,9 +2730,7 @@ retry_write_locked:
 			if (r) {
 				pr_debug("svm_migrate_to_vram failed (%d) at %llx, falling back to system memory\n",
 					 r, addr);
-				/* Fallback to system memory if migration to
-				 * VRAM failed
-				 */
+				 
 				if (prange->actual_loc)
 					r = svm_migrate_vram_to_ram(prange, mm,
 					   KFD_MIGRATE_TRIGGER_PAGEFAULT_GPU,
@@ -3133,9 +2827,7 @@ out_unlock:
 		amdgpu_amdkfd_unreserve_mem_limit(NULL, reserved_size,
 					KFD_IOC_ALLOC_MEM_FLAGS_USERPTR, 0);
 	else
-		/* Change xnack mode must be inside svms lock, to avoid race with
-		 * svm_range_deferred_list_work unreserve memory in parallel.
-		 */
+		 
 		p->xnack_enabled = xnack_enabled;
 
 	mutex_unlock(&p->svms.lock);
@@ -3151,13 +2843,10 @@ void svm_range_list_fini(struct kfd_process *p)
 
 	cancel_delayed_work_sync(&p->svms.restore_work);
 
-	/* Ensure list work is finished before process is destroyed */
+	 
 	flush_work(&p->svms.deferred_list_work);
 
-	/*
-	 * Ensure no retry fault comes in afterwards, as page fault handler will
-	 * not find kfd process and take mm lock to recover fault.
-	 */
+	 
 	atomic_inc(&p->svms.drain_pagefaults);
 	svm_range_drain_retry_fault(&p->svms);
 
@@ -3195,26 +2884,7 @@ int svm_range_list_init(struct kfd_process *p)
 	return 0;
 }
 
-/**
- * svm_range_check_vm - check if virtual address range mapped already
- * @p: current kfd_process
- * @start: range start address, in pages
- * @last: range last address, in pages
- * @bo_s: mapping start address in pages if address range already mapped
- * @bo_l: mapping last address in pages if address range already mapped
- *
- * The purpose is to avoid virtual address ranges already allocated by
- * kfd_ioctl_alloc_memory_of_gpu ioctl.
- * It looks for each pdd in the kfd_process.
- *
- * Context: Process context
- *
- * Return 0 - OK, if the range is not mapped.
- * Otherwise error code:
- * -EADDRINUSE - if address is mapped already by kfd_ioctl_alloc_memory_of_gpu
- * -ERESTARTSYS - A wait for the buffer to become unreserved was interrupted by
- * a signal. Release all buffer reservations and return to user-space.
- */
+ 
 static int
 svm_range_check_vm(struct kfd_process *p, uint64_t start, uint64_t last,
 		   uint64_t *bo_s, uint64_t *bo_l)
@@ -3254,19 +2924,7 @@ svm_range_check_vm(struct kfd_process *p, uint64_t start, uint64_t last,
 	return 0;
 }
 
-/**
- * svm_range_is_valid - check if virtual address range is valid
- * @p: current kfd_process
- * @start: range start address, in pages
- * @size: range size, in pages
- *
- * Valid virtual address range means it belongs to one or more VMAs
- *
- * Context: Process context
- *
- * Return:
- *  0 - OK, otherwise error code
- */
+ 
 static int
 svm_range_is_valid(struct kfd_process *p, uint64_t start, uint64_t size)
 {
@@ -3288,32 +2946,7 @@ svm_range_is_valid(struct kfd_process *p, uint64_t start, uint64_t size)
 				  NULL);
 }
 
-/**
- * svm_range_best_prefetch_location - decide the best prefetch location
- * @prange: svm range structure
- *
- * For xnack off:
- * If range map to single GPU, the best prefetch location is prefetch_loc, which
- * can be CPU or GPU.
- *
- * If range is ACCESS or ACCESS_IN_PLACE by mGPUs, only if mGPU connection on
- * XGMI same hive, the best prefetch location is prefetch_loc GPU, othervise
- * the best prefetch location is always CPU, because GPU can not have coherent
- * mapping VRAM of other GPUs even with large-BAR PCIe connection.
- *
- * For xnack on:
- * If range is not ACCESS_IN_PLACE by mGPUs, the best prefetch location is
- * prefetch_loc, other GPU access will generate vm fault and trigger migration.
- *
- * If range is ACCESS_IN_PLACE by mGPUs, only if mGPU connection on XGMI same
- * hive, the best prefetch location is prefetch_loc GPU, otherwise the best
- * prefetch location is always CPU.
- *
- * Context: Process context
- *
- * Return:
- * 0 for CPU or GPU id
- */
+ 
 static uint32_t
 svm_range_best_prefetch_location(struct svm_range *prange)
 {
@@ -3371,30 +3004,7 @@ out:
 	return best_loc;
 }
 
-/* svm_range_trigger_migration - start page migration if prefetch loc changed
- * @mm: current process mm_struct
- * @prange: svm range structure
- * @migrated: output, true if migration is triggered
- *
- * If range perfetch_loc is GPU, actual loc is cpu 0, then migrate the range
- * from ram to vram.
- * If range prefetch_loc is cpu 0, actual loc is GPU, then migrate the range
- * from vram to ram.
- *
- * If GPU vm fault retry is not enabled, migration interact with MMU notifier
- * and restore work:
- * 1. migrate_vma_setup invalidate pages, MMU notifier callback svm_range_evict
- *    stops all queues, schedule restore work
- * 2. svm_range_restore_work wait for migration is done by
- *    a. svm_range_validate_vram takes prange->migrate_mutex
- *    b. svm_range_validate_ram HMM get pages wait for CPU fault handle returns
- * 3. restore work update mappings of GPU, resume all queues.
- *
- * Context: Process context
- *
- * Return:
- * 0 - OK, otherwise - error code of migration
- */
+ 
 static int
 svm_range_trigger_migration(struct mm_struct *mm, struct svm_range *prange,
 			    bool *migrated)
@@ -3446,7 +3056,7 @@ static void svm_range_evict_svm_bo_worker(struct work_struct *work)
 
 	svm_bo = container_of(work, struct svm_range_bo, eviction_work);
 	if (!svm_bo_ref_unless_zero(svm_bo))
-		return; /* svm_bo was freed while eviction was pending */
+		return;  
 
 	if (mmget_not_zero(svm_bo->eviction_fence->mm)) {
 		mm = svm_bo->eviction_fence->mm;
@@ -3493,9 +3103,7 @@ static void svm_range_evict_svm_bo_worker(struct work_struct *work)
 
 	dma_fence_signal(&svm_bo->eviction_fence->base);
 
-	/* This is the last reference to svm_bo, after svm_range_vram_node_free
-	 * has been called in svm_migrate_vram_to_ram
-	 */
+	 
 	WARN_ONCE(!r && kref_read(&svm_bo->kref) != 1, "This was not the last reference\n");
 	svm_range_bo_unref(svm_bo);
 }
@@ -3538,7 +3146,7 @@ svm_range_set_attr(struct kfd_process *p, struct mm_struct *mm,
 
 	mutex_lock(&svms->lock);
 
-	/* Add new range and split existing ranges as needed */
+	 
 	r = svm_range_add(p, start, size, nattr, attrs, &update_list,
 			  &insert_list, &remove_list);
 	if (r) {
@@ -3546,14 +3154,14 @@ svm_range_set_attr(struct kfd_process *p, struct mm_struct *mm,
 		mmap_write_unlock(mm);
 		goto out;
 	}
-	/* Apply changes as a transaction */
+	 
 	list_for_each_entry_safe(prange, next, &insert_list, list) {
 		svm_range_add_to_svms(prange);
 		svm_range_add_notifier_locked(mm, prange);
 	}
 	list_for_each_entry(prange, &update_list, update_list) {
 		svm_range_apply_attrs(p, prange, nattr, attrs, &update_mapping);
-		/* TODO: unmap ranges from GPU that lost access */
+		 
 	}
 	list_for_each_entry_safe(prange, next, &remove_list, update_list) {
 		pr_debug("unlink old 0x%p prange 0x%p [0x%lx 0x%lx]\n",
@@ -3565,11 +3173,7 @@ svm_range_set_attr(struct kfd_process *p, struct mm_struct *mm,
 	}
 
 	mmap_write_downgrade(mm);
-	/* Trigger migrations and revalidate and map to GPUs as needed. If
-	 * this fails we may be left with partially completed actions. There
-	 * is no clean way of rolling back to the previous state in such a
-	 * case because the rollback wouldn't be guaranteed to work either.
-	 */
+	 
 	list_for_each_entry(prange, &update_list, update_list) {
 		bool migrated;
 
@@ -3646,12 +3250,7 @@ svm_range_get_attr(struct kfd_process *p, struct mm_struct *mm,
 	pr_debug("svms 0x%p [0x%llx 0x%llx] nattr 0x%x\n", &p->svms, start,
 		 start + size - 1, nattr);
 
-	/* Flush pending deferred work to avoid racing with deferred actions from
-	 * previous memory map changes (e.g. munmap). Concurrent memory map changes
-	 * can still race with get_attr because we don't hold the mmap lock. But that
-	 * would be a race condition in the application anyway, and undefined
-	 * behaviour is acceptable in that case.
-	 */
+	 
 	flush_work(&p->svms.deferred_list_work);
 
 	mmap_read_lock(mm);
@@ -3830,16 +3429,7 @@ int kfd_criu_resume_svm(struct kfd_process *p)
 				 i, j, criu_svm_md->data.attrs[j].type,
 				 i, j, criu_svm_md->data.attrs[j].value);
 			switch (criu_svm_md->data.attrs[j].type) {
-			/* During Checkpoint operation, the query for
-			 * KFD_IOCTL_SVM_ATTR_PREFETCH_LOC attribute might
-			 * return KFD_IOCTL_SVM_LOCATION_UNDEFINED if they were
-			 * not used by the range which was checkpointed. Care
-			 * must be taken to not restore with an invalid value
-			 * otherwise the gpuidx value will be invalid and
-			 * set_attr would eventually fail so just replace those
-			 * with another dummy attribute such as
-			 * KFD_IOCTL_SVM_ATTR_SET_FLAGS.
-			 */
+			 
 			case KFD_IOCTL_SVM_ATTR_PREFETCH_LOC:
 				if (criu_svm_md->data.attrs[j].value ==
 				    KFD_IOCTL_SVM_LOCATION_UNDEFINED) {
@@ -3856,10 +3446,7 @@ int kfd_criu_resume_svm(struct kfd_process *p)
 			}
 		}
 
-		/* CLR_FLAGS is not available via get_attr during checkpoint but
-		 * it needs to be inserted before restoring the ranges so
-		 * allocate extra space for it before calling set_attr
-		 */
+		 
 		set_attr_size = sizeof(struct kfd_ioctl_svm_attribute) *
 						(num_attrs + 1);
 		set_attr_new = krealloc(set_attr, set_attr_size,
@@ -3911,10 +3498,7 @@ int kfd_criu_restore_svm(struct kfd_process *p,
 	int ret = 0;
 
 	num_devices = p->n_pdds;
-	/* Handle one SVM range object at a time, also the number of gpus are
-	 * assumed to be same on the restore node, checking must be done while
-	 * evaluating the topology earlier
-	 */
+	 
 
 	svm_attrs_size = sizeof(struct kfd_ioctl_svm_attribute) *
 		(nattr_common + nattr_accessibility * num_devices);
@@ -3977,22 +3561,7 @@ int svm_range_get_info(struct kfd_process *p, uint32_t *num_svm_ranges,
 	mutex_unlock(&svms->lock);
 
 	*num_svm_ranges = count;
-	/* Only the accessbility attributes need to be queried for all the gpus
-	 * individually, remaining ones are spanned across the entire process
-	 * regardless of the various gpu nodes. Of the remaining attributes,
-	 * KFD_IOCTL_SVM_ATTR_CLR_FLAGS need not be saved.
-	 *
-	 * KFD_IOCTL_SVM_ATTR_PREFERRED_LOC
-	 * KFD_IOCTL_SVM_ATTR_PREFETCH_LOC
-	 * KFD_IOCTL_SVM_ATTR_SET_FLAGS
-	 * KFD_IOCTL_SVM_ATTR_GRANULARITY
-	 *
-	 * ** ACCESSBILITY ATTRIBUTES **
-	 * (Considered as one, type is altered during query, value is gpuid)
-	 * KFD_IOCTL_SVM_ATTR_ACCESS
-	 * KFD_IOCTL_SVM_ATTR_ACCESS_IN_PLACE
-	 * KFD_IOCTL_SVM_ATTR_NO_ACCESS
-	 */
+	 
 	if (*num_svm_ranges > 0) {
 		common_attr_size = sizeof(struct kfd_ioctl_svm_attribute) *
 			nattr_common;

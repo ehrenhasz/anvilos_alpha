@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx Zynq Ultrascale+ MPSoC Real Time Clock Driver
- *
- * Copyright (C) 2015 Xilinx, Inc.
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -15,7 +10,7 @@
 #include <linux/platform_device.h>
 #include <linux/rtc.h>
 
-/* RTC Registers */
+ 
 #define RTC_SET_TM_WR		0x00
 #define RTC_SET_TM_RD		0x04
 #define RTC_CALIB_WR		0x08
@@ -61,23 +56,12 @@ static int xlnx_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	struct xlnx_rtc_dev *xrtcdev = dev_get_drvdata(dev);
 	unsigned long new_time;
 
-	/*
-	 * The value written will be updated after 1 sec into the
-	 * seconds read register, so we need to program time +1 sec
-	 * to get the correct time on read.
-	 */
+	 
 	new_time = rtc_tm_to_time64(tm) + 1;
 
 	writel(new_time, xrtcdev->reg_base + RTC_SET_TM_WR);
 
-	/*
-	 * Clear the rtc interrupt status register after setting the
-	 * time. During a read_time function, the code should read the
-	 * RTC_INT_STATUS register and if bit 0 is still 0, it means
-	 * that one second has not elapsed yet since RTC was set and
-	 * the current time should be read from SET_TIME_READ register;
-	 * otherwise, CURRENT_TIME register is read to report the time
-	 */
+	 
 	writel(RTC_INT_SEC, xrtcdev->reg_base + RTC_INT_STS);
 
 	return 0;
@@ -92,19 +76,10 @@ static int xlnx_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	status = readl(xrtcdev->reg_base + RTC_INT_STS);
 
 	if (status & RTC_INT_SEC) {
-		/*
-		 * RTC has updated the CURRENT_TIME with the time written into
-		 * SET_TIME_WRITE register.
-		 */
+		 
 		read_time = readl(xrtcdev->reg_base + RTC_CUR_TM);
 	} else {
-		/*
-		 * Time written in SET_TIME_WRITE has not yet updated into
-		 * the seconds read register, so read the time from the
-		 * SET_TIME_WRITE instead of CURRENT_TIME register.
-		 * Since we add +1 sec while writing, we need to -1 sec while
-		 * reading.
-		 */
+		 
 		read_time = readl(xrtcdev->reg_base + RTC_SET_TM_RD) - 1;
 	}
 	rtc_time64_to_tm(read_time, tm);
@@ -169,7 +144,7 @@ static void xlnx_init_rtc(struct xlnx_rtc_dev *xrtcdev)
 {
 	u32 rtc_ctrl;
 
-	/* Enable RTC switch to battery when VCC_PSAUX is not available */
+	 
 	rtc_ctrl = readl(xrtcdev->reg_base + RTC_CTRL);
 	rtc_ctrl |= RTC_BATT_EN;
 	writel(rtc_ctrl, xrtcdev->reg_base + RTC_CTRL);
@@ -184,12 +159,12 @@ static int xlnx_rtc_read_offset(struct device *dev, long *offset)
 	long offset_val;
 
 	calibval = readl(xrtcdev->reg_base + RTC_CALIB_RD);
-	/* Offset with seconds ticks */
+	 
 	offset_val = calibval & RTC_TICK_MASK;
 	offset_val = offset_val - RTC_CALIB_DEF;
 	offset_val = offset_val * tick_mult;
 
-	/* Offset with fractional ticks */
+	 
 	if (calibval & RTC_FR_EN)
 		offset_val += ((calibval & RTC_FR_MASK) >> RTC_FR_DATSHIFT)
 			* (tick_mult / RTC_FR_MAX_TICKS);
@@ -211,10 +186,10 @@ static int xlnx_rtc_set_offset(struct device *dev, long offset)
 	if (offset < RTC_MIN_OFFSET || offset > RTC_MAX_OFFSET)
 		return -ERANGE;
 
-	/* Number ticks for given offset */
+	 
 	max_tick = div_s64_rem(offset, tick_mult, &fract_offset);
 
-	/* Number fractional ticks for given offset */
+	 
 	if (fract_offset) {
 		if (fract_offset < 0) {
 			fract_offset = fract_offset + tick_mult;
@@ -230,9 +205,7 @@ static int xlnx_rtc_set_offset(struct device *dev, long offset)
 		}
 	}
 
-	/* Zynqmp RTC uses second and fractional tick
-	 * counters for compensation
-	 */
+	 
 	calibval = max_tick + RTC_CALIB_DEF;
 
 	if (fract_tick)
@@ -261,11 +234,11 @@ static irqreturn_t xlnx_rtc_interrupt(int irq, void *id)
 	unsigned int status;
 
 	status = readl(xrtcdev->reg_base + RTC_INT_STS);
-	/* Check if interrupt asserted */
+	 
 	if (!(status & (RTC_INT_SEC | RTC_INT_ALRM)))
 		return IRQ_NONE;
 
-	/* Disable RTC_INT_ALRM interrupt only */
+	 
 	writel(RTC_INT_ALRM, xrtcdev->reg_base + RTC_INT_DIS);
 
 	if (status & RTC_INT_ALRM)
@@ -318,7 +291,7 @@ static int xlnx_rtc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Getting the rtc_clk info */
+	 
 	xrtcdev->rtc_clk = devm_clk_get_optional(&pdev->dev, "rtc_clk");
 	if (IS_ERR(xrtcdev->rtc_clk)) {
 		if (PTR_ERR(xrtcdev->rtc_clk) != -EPROBE_DEFER)

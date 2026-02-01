@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -72,7 +72,7 @@ static int rt6160_disable(struct regulator_dev *rdev)
 	if (!priv->enable_gpio)
 		return -EINVAL;
 
-	/* Mark regcache as dirty and cache only before HW disabled */
+	 
 	regcache_cache_only(priv->regmap, true);
 	regcache_mark_dirty(priv->regmap);
 

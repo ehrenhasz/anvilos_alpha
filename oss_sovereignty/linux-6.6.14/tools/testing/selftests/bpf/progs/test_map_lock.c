@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Facebook
+
+
 #include <linux/bpf.h>
 #include <linux/version.h>
 #include <bpf/bpf_helpers.h>
@@ -41,13 +41,13 @@ int bpf_map_lock_test(struct __sk_buff *skb)
 	val = bpf_map_lookup_elem(&hash_map, &key);
 	if (!val)
 		goto err;
-	/* spin_lock in hash map */
+	 
 	bpf_spin_lock(&val->lock);
 	for (i = 0; i < VAR_NUM; i++)
 		val->var[i] = rnd;
 	bpf_spin_unlock(&val->lock);
 
-	/* spin_lock in array */
+	 
 	q = bpf_map_lookup_elem(&array_map, &key);
 	if (!q)
 		goto err;

@@ -1,34 +1,23 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OSS compatible sequencer driver
- *
- * Timer control routines
- *
- * Copyright (C) 1998,99 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include "seq_oss_timer.h"
 #include "seq_oss_event.h"
 #include <sound/seq_oss_legacy.h>
 #include <linux/slab.h>
 
-/*
- */
+ 
 #define MIN_OSS_TEMPO		8
 #define MAX_OSS_TEMPO		360
 #define MIN_OSS_TIMEBASE	1
 #define MAX_OSS_TIMEBASE	1000
 
-/*
- */
+ 
 static void calc_alsa_tempo(struct seq_oss_timer *timer);
 static int send_timer_event(struct seq_oss_devinfo *dp, int type, int value);
 
 
-/*
- * create and register a new timer.
- * if queue is not started yet, start it.
- */
+ 
 struct seq_oss_timer *
 snd_seq_oss_timer_new(struct seq_oss_devinfo *dp)
 {
@@ -50,10 +39,7 @@ snd_seq_oss_timer_new(struct seq_oss_devinfo *dp)
 }
 
 
-/*
- * delete timer.
- * if no more timer exists, stop the queue.
- */
+ 
 void
 snd_seq_oss_timer_delete(struct seq_oss_timer *rec)
 {
@@ -64,11 +50,7 @@ snd_seq_oss_timer_delete(struct seq_oss_timer *rec)
 }
 
 
-/*
- * process one timing event
- * return 1 : event proceseed -- skip this event
- *        0 : not a timer event -- enqueue this event
- */
+ 
 int
 snd_seq_oss_process_timer_event(struct seq_oss_timer *rec, union evrec *ev)
 {
@@ -87,7 +69,7 @@ snd_seq_oss_process_timer_event(struct seq_oss_timer *rec, union evrec *ev)
 				rec->realtime = 0;
 				rec->cur_tick = parm;
 			}
-			return 1;	/* skip this event */
+			return 1;	 
 			
 		case TMR_START:
 			snd_seq_oss_timer_start(rec);
@@ -95,10 +77,10 @@ snd_seq_oss_process_timer_event(struct seq_oss_timer *rec, union evrec *ev)
 
 		}
 	} else if (ev->s.code == SEQ_WAIT) {
-		/* time = from 1 to 3 bytes */
+		 
 		parm = (ev->echo >> 8) & 0xffffff;
 		if (parm > rec->cur_tick) {
-			/* set next event time */
+			 
 			rec->cur_tick = parm;
 			rec->realtime = 0;
 		}
@@ -109,9 +91,7 @@ snd_seq_oss_process_timer_event(struct seq_oss_timer *rec, union evrec *ev)
 }
 
 
-/*
- * convert tempo units
- */
+ 
 static void
 calc_alsa_tempo(struct seq_oss_timer *timer)
 {
@@ -120,9 +100,7 @@ calc_alsa_tempo(struct seq_oss_timer *timer)
 }
 
 
-/*
- * dispatch a timer event
- */
+ 
 static int
 send_timer_event(struct seq_oss_devinfo *dp, int type, int value)
 {
@@ -140,9 +118,7 @@ send_timer_event(struct seq_oss_devinfo *dp, int type, int value)
 	return snd_seq_kernel_client_dispatch(dp->cseq, &ev, 1, 0);
 }
 
-/*
- * set queue tempo and start queue
- */
+ 
 int
 snd_seq_oss_timer_start(struct seq_oss_timer *timer)
 {
@@ -165,9 +141,7 @@ snd_seq_oss_timer_start(struct seq_oss_timer *timer)
 }
 
 
-/*
- * stop queue
- */
+ 
 int
 snd_seq_oss_timer_stop(struct seq_oss_timer *timer)
 {
@@ -179,9 +153,7 @@ snd_seq_oss_timer_stop(struct seq_oss_timer *timer)
 }
 
 
-/*
- * continue queue
- */
+ 
 int
 snd_seq_oss_timer_continue(struct seq_oss_timer *timer)
 {
@@ -193,9 +165,7 @@ snd_seq_oss_timer_continue(struct seq_oss_timer *timer)
 }
 
 
-/*
- * change queue tempo
- */
+ 
 int
 snd_seq_oss_timer_tempo(struct seq_oss_timer *timer, int value)
 {
@@ -211,16 +181,14 @@ snd_seq_oss_timer_tempo(struct seq_oss_timer *timer, int value)
 }
 
 
-/*
- * ioctls
- */
+ 
 int
 snd_seq_oss_timer_ioctl(struct seq_oss_timer *timer, unsigned int cmd, int __user *arg)
 {
 	int value;
 
 	if (cmd == SNDCTL_SEQ_CTRLRATE) {
-		/* if *arg == 0, just return the current rate */
+		 
 		if (get_user(value, arg))
 			return -EFAULT;
 		if (value)
@@ -257,7 +225,7 @@ snd_seq_oss_timer_ioctl(struct seq_oss_timer *timer, unsigned int cmd, int __use
 	case SNDCTL_TMR_METRONOME:
 	case SNDCTL_TMR_SELECT:
 	case SNDCTL_TMR_SOURCE:
-		/* not supported */
+		 
 		return 0;
 	}
 	return 0;

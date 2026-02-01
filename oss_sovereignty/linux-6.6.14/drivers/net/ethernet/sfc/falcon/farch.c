@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2006-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -20,39 +16,25 @@
 #include "io.h"
 #include "workarounds.h"
 
-/* Falcon-architecture (SFC4000) support */
+ 
 
-/**************************************************************************
- *
- * Configurable values
- *
- **************************************************************************
- */
+ 
 
-/* This is set to 16 for a good reason.  In summary, if larger than
- * 16, the descriptor cache holds more than a default socket
- * buffer's worth of packets (for UDP we can only have at most one
- * socket buffer's worth outstanding).  This combined with the fact
- * that we only get 1 TX event per descriptor cache means the NIC
- * goes idle.
- */
+ 
 #define TX_DC_ENTRIES 16
 #define TX_DC_ENTRIES_ORDER 1
 
 #define RX_DC_ENTRIES 64
 #define RX_DC_ENTRIES_ORDER 3
 
-/* If EF4_MAX_INT_ERRORS internal errors occur within
- * EF4_INT_ERROR_EXPIRE seconds, we consider the NIC broken and
- * disable it.
- */
+ 
 #define EF4_INT_ERROR_EXPIRE 3600
 #define EF4_MAX_INT_ERRORS 5
 
-/* Depth of RX flush request fifo */
+ 
 #define EF4_RX_FLUSH_COUNT 4
 
-/* Driver generated events */
+ 
 #define _EF4_CHANNEL_MAGIC_TEST		0x000101
 #define _EF4_CHANNEL_MAGIC_FILL		0x000102
 #define _EF4_CHANNEL_MAGIC_RX_DRAIN	0x000103
@@ -75,11 +57,7 @@
 
 static void ef4_farch_magic_event(struct ef4_channel *channel, u32 magic);
 
-/**************************************************************************
- *
- * Hardware access
- *
- **************************************************************************/
+ 
 
 static inline void ef4_write_buf_tbl(struct ef4_nic *efx, ef4_qword_t *value,
 				     unsigned int index)
@@ -110,12 +88,12 @@ int ef4_farch_test_registers(struct ef4_nic *efx,
 
 		ef4_reado(efx, &original, address);
 
-		/* bit sweep on and off */
+		 
 		for (j = 0; j < 128; j++) {
 			if (!EF4_EXTRACT_OWORD32(mask, j, j))
 				continue;
 
-			/* Test this testable bit can be set in isolation */
+			 
 			EF4_AND_OWORD(reg, original, mask);
 			EF4_SET_OWORD32(reg, j, j, 1);
 
@@ -125,7 +103,7 @@ int ef4_farch_test_registers(struct ef4_nic *efx,
 			if (ef4_masked_compare_oword(&reg, &buf, &mask))
 				goto fail;
 
-			/* Test this testable bit can be cleared in isolation */
+			 
 			EF4_OR_OWORD(reg, original, mask);
 			EF4_SET_OWORD32(reg, j, j, 0);
 
@@ -149,21 +127,9 @@ fail:
 	return -EIO;
 }
 
-/**************************************************************************
- *
- * Special buffer handling
- * Special buffers are used for event queues and the TX and RX
- * descriptor rings.
- *
- *************************************************************************/
+ 
 
-/*
- * Initialise a special buffer
- *
- * This will define a buffer (previously allocated via
- * ef4_alloc_special_buffer()) in the buffer table, allowing
- * it to be used for event queues, descriptor rings etc.
- */
+ 
 static void
 ef4_init_special_buffer(struct ef4_nic *efx, struct ef4_special_buffer *buffer)
 {
@@ -174,7 +140,7 @@ ef4_init_special_buffer(struct ef4_nic *efx, struct ef4_special_buffer *buffer)
 
 	EF4_BUG_ON_PARANOID(!buffer->buf.addr);
 
-	/* Write buffer descriptors to NIC */
+	 
 	for (i = 0; i < buffer->entries; i++) {
 		index = buffer->index + i;
 		dma_addr = buffer->buf.dma_addr + (i * EF4_BUF_SIZE);
@@ -189,7 +155,7 @@ ef4_init_special_buffer(struct ef4_nic *efx, struct ef4_special_buffer *buffer)
 	}
 }
 
-/* Unmaps a buffer and clears the buffer table entries */
+ 
 static void
 ef4_fini_special_buffer(struct ef4_nic *efx, struct ef4_special_buffer *buffer)
 {
@@ -211,15 +177,7 @@ ef4_fini_special_buffer(struct ef4_nic *efx, struct ef4_special_buffer *buffer)
 	ef4_writeo(efx, &buf_tbl_upd, FR_AZ_BUF_TBL_UPD);
 }
 
-/*
- * Allocate a new special buffer
- *
- * This allocates memory for a new buffer, clears it and allocates a
- * new buffer ID range.  It does not write into the buffer table.
- *
- * This call will allocate 4KB buffers, since 8KB buffers can't be
- * used for event queues and descriptor rings.
- */
+ 
 static int ef4_alloc_special_buffer(struct ef4_nic *efx,
 				    struct ef4_special_buffer *buffer,
 				    unsigned int len)
@@ -231,7 +189,7 @@ static int ef4_alloc_special_buffer(struct ef4_nic *efx,
 	buffer->entries = len / EF4_BUF_SIZE;
 	BUG_ON(buffer->buf.dma_addr & (EF4_BUF_SIZE - 1));
 
-	/* Select new buffer ID */
+	 
 	buffer->index = efx->next_buffer_table;
 	efx->next_buffer_table += buffer->entries;
 
@@ -262,13 +220,9 @@ ef4_free_special_buffer(struct ef4_nic *efx, struct ef4_special_buffer *buffer)
 	buffer->entries = 0;
 }
 
-/**************************************************************************
- *
- * TX path
- *
- **************************************************************************/
+ 
 
-/* This writes to the TX_DESC_WPTR; write pointer for TX descriptor ring */
+ 
 static inline void ef4_farch_notify_tx_desc(struct ef4_tx_queue *tx_queue)
 {
 	unsigned write_ptr;
@@ -280,7 +234,7 @@ static inline void ef4_farch_notify_tx_desc(struct ef4_tx_queue *tx_queue)
 			FR_AZ_TX_DESC_UPD_DWORD_P0, tx_queue->queue);
 }
 
-/* Write pointer and first descriptor for TX descriptor ring */
+ 
 static inline void ef4_farch_push_tx_desc(struct ef4_tx_queue *tx_queue,
 					  const ef4_qword_t *txd)
 {
@@ -299,10 +253,7 @@ static inline void ef4_farch_push_tx_desc(struct ef4_tx_queue *tx_queue,
 }
 
 
-/* For each entry inserted into the software descriptor ring, create a
- * descriptor in the hardware TX descriptor ring (in host memory), and
- * write a doorbell.
- */
+ 
 void ef4_farch_tx_write(struct ef4_tx_queue *tx_queue)
 {
 	struct ef4_tx_buffer *buffer;
@@ -322,7 +273,7 @@ void ef4_farch_tx_write(struct ef4_tx_queue *tx_queue)
 
 		EF4_BUG_ON_PARANOID(buffer->flags & EF4_TX_BUF_OPTION);
 
-		/* Create TX descriptor ring entry */
+		 
 		BUILD_BUG_ON(EF4_TX_BUF_CONT != 1);
 		EF4_POPULATE_QWORD_4(*txd,
 				     FSF_AZ_TX_KER_CONT,
@@ -332,7 +283,7 @@ void ef4_farch_tx_write(struct ef4_tx_queue *tx_queue)
 				     FSF_AZ_TX_KER_BUF_ADDR, buffer->dma_addr);
 	} while (tx_queue->write_count != tx_queue->insert_count);
 
-	wmb(); /* Ensure descriptors are written before they are fetched */
+	wmb();  
 
 	if (ef4_nic_may_push_tx_desc(tx_queue, old_write_count)) {
 		txd = ef4_tx_desc(tx_queue,
@@ -347,7 +298,7 @@ void ef4_farch_tx_write(struct ef4_tx_queue *tx_queue)
 unsigned int ef4_farch_tx_limit_len(struct ef4_tx_queue *tx_queue,
 				    dma_addr_t dma_addr, unsigned int len)
 {
-	/* Don't cross 4K boundaries with descriptors. */
+	 
 	unsigned int limit = (~dma_addr & (EF4_PAGE_SIZE - 1)) + 1;
 
 	len = min(limit, len);
@@ -359,7 +310,7 @@ unsigned int ef4_farch_tx_limit_len(struct ef4_tx_queue *tx_queue,
 }
 
 
-/* Allocate hardware resources for a TX queue */
+ 
 int ef4_farch_tx_probe(struct ef4_tx_queue *tx_queue)
 {
 	struct ef4_nic *efx = tx_queue->efx;
@@ -375,10 +326,10 @@ void ef4_farch_tx_init(struct ef4_tx_queue *tx_queue)
 	struct ef4_nic *efx = tx_queue->efx;
 	ef4_oword_t reg;
 
-	/* Pin TX descriptor ring */
+	 
 	ef4_init_special_buffer(efx, &tx_queue->txd);
 
-	/* Push TX descriptor ring to card */
+	 
 	EF4_POPULATE_OWORD_10(reg,
 			      FRF_AZ_TX_DESCQ_EN, 1,
 			      FRF_AZ_TX_ISCSI_DDIG_EN, 0,
@@ -404,7 +355,7 @@ void ef4_farch_tx_init(struct ef4_tx_queue *tx_queue)
 			 tx_queue->queue);
 
 	if (ef4_nic_rev(efx) < EF4_REV_FALCON_B0) {
-		/* Only 128 bits in this register */
+		 
 		BUILD_BUG_ON(EF4_MAX_TX_QUEUES > 128);
 
 		ef4_reado(efx, &reg, FR_AA_TX_CHKSM_CFG);
@@ -445,28 +396,24 @@ void ef4_farch_tx_fini(struct ef4_tx_queue *tx_queue)
 	struct ef4_nic *efx = tx_queue->efx;
 	ef4_oword_t tx_desc_ptr;
 
-	/* Remove TX descriptor ring from card */
+	 
 	EF4_ZERO_OWORD(tx_desc_ptr);
 	ef4_writeo_table(efx, &tx_desc_ptr, efx->type->txd_ptr_tbl_base,
 			 tx_queue->queue);
 
-	/* Unpin TX descriptor ring */
+	 
 	ef4_fini_special_buffer(efx, &tx_queue->txd);
 }
 
-/* Free buffers backing TX queue */
+ 
 void ef4_farch_tx_remove(struct ef4_tx_queue *tx_queue)
 {
 	ef4_free_special_buffer(tx_queue->efx, &tx_queue->txd);
 }
 
-/**************************************************************************
- *
- * RX path
- *
- **************************************************************************/
+ 
 
-/* This creates an entry in the RX descriptor queue */
+ 
 static inline void
 ef4_farch_build_rx_desc(struct ef4_rx_queue *rx_queue, unsigned index)
 {
@@ -483,9 +430,7 @@ ef4_farch_build_rx_desc(struct ef4_rx_queue *rx_queue, unsigned index)
 			     FSF_AZ_RX_KER_BUF_ADDR, rx_buf->dma_addr);
 }
 
-/* This writes to the RX_DESC_WPTR register for the specified receive
- * descriptor ring.
- */
+ 
 void ef4_farch_rx_write(struct ef4_rx_queue *rx_queue)
 {
 	struct ef4_nic *efx = rx_queue->efx;
@@ -524,11 +469,7 @@ void ef4_farch_rx_init(struct ef4_rx_queue *rx_queue)
 	bool iscsi_digest_en = is_b0;
 	bool jumbo_en;
 
-	/* For kernel-mode queues in Falcon A1, the JUMBO flag enables
-	 * DMA to continue after a PCIe page boundary (and scattering
-	 * is not possible).  In Falcon B0 and Siena, it enables
-	 * scatter.
-	 */
+	 
 	jumbo_en = !is_b0 || efx->rx_scatter;
 
 	netif_dbg(efx, hw, efx->net_dev,
@@ -538,10 +479,10 @@ void ef4_farch_rx_init(struct ef4_rx_queue *rx_queue)
 
 	rx_queue->scatter_n = 0;
 
-	/* Pin RX descriptor ring */
+	 
 	ef4_init_special_buffer(efx, &rx_queue->rxd);
 
-	/* Push RX descriptor ring to card */
+	 
 	EF4_POPULATE_OWORD_10(rx_desc_ptr,
 			      FRF_AZ_RX_ISCSI_DDIG_EN, iscsi_digest_en,
 			      FRF_AZ_RX_ISCSI_HDIG_EN, iscsi_digest_en,
@@ -553,7 +494,7 @@ void ef4_farch_rx_init(struct ef4_rx_queue *rx_queue)
 			      ef4_rx_queue_index(rx_queue),
 			      FRF_AZ_RX_DESCQ_SIZE,
 			      __ffs(rx_queue->rxd.entries),
-			      FRF_AZ_RX_DESCQ_TYPE, 0 /* kernel queue */ ,
+			      FRF_AZ_RX_DESCQ_TYPE, 0   ,
 			      FRF_AZ_RX_DESCQ_JUMBO, jumbo_en,
 			      FRF_AZ_RX_DESCQ_EN, 1);
 	ef4_writeo_table(efx, &rx_desc_ptr, efx->type->rxd_ptr_tbl_base,
@@ -577,33 +518,27 @@ void ef4_farch_rx_fini(struct ef4_rx_queue *rx_queue)
 	ef4_oword_t rx_desc_ptr;
 	struct ef4_nic *efx = rx_queue->efx;
 
-	/* Remove RX descriptor ring from card */
+	 
 	EF4_ZERO_OWORD(rx_desc_ptr);
 	ef4_writeo_table(efx, &rx_desc_ptr, efx->type->rxd_ptr_tbl_base,
 			 ef4_rx_queue_index(rx_queue));
 
-	/* Unpin RX descriptor ring */
+	 
 	ef4_fini_special_buffer(efx, &rx_queue->rxd);
 }
 
-/* Free buffers backing RX queue */
+ 
 void ef4_farch_rx_remove(struct ef4_rx_queue *rx_queue)
 {
 	ef4_free_special_buffer(rx_queue->efx, &rx_queue->rxd);
 }
 
-/**************************************************************************
- *
- * Flush handling
- *
- **************************************************************************/
+ 
 
-/* ef4_farch_flush_queues() must be woken up when all flushes are completed,
- * or more RX flushes can be kicked off.
- */
+ 
 static bool ef4_farch_flush_wake(struct ef4_nic *efx)
 {
-	/* Ensure that all updates are visible to ef4_farch_flush_queues() */
+	 
 	smp_mb();
 
 	return (atomic_read(&efx->active_queues) == 0 ||
@@ -632,16 +567,11 @@ static bool ef4_check_tx_flush_complete(struct ef4_nic *efx)
 				i = false;
 			} else if (atomic_cmpxchg(&tx_queue->flush_outstanding,
 						  1, 0)) {
-				/* The flush is complete, but we didn't
-				 * receive a flush completion event
-				 */
+				 
 				netif_dbg(efx, hw, efx->net_dev,
 					  "flush complete on TXQ %d, so drain "
 					  "the queue\n", tx_queue->queue);
-				/* Don't need to increment active_queues as it
-				 * has already been incremented for the queues
-				 * which did not drain
-				 */
+				 
 				ef4_farch_magic_event(channel,
 						      EF4_CHANNEL_MAGIC_TX_DRAIN(
 							      tx_queue));
@@ -652,12 +582,10 @@ static bool ef4_check_tx_flush_complete(struct ef4_nic *efx)
 	return i;
 }
 
-/* Flush all the transmit queues, and continue flushing receive queues until
- * they're all flushed. Wait for the DRAIN events to be received so that there
- * are no more RX and TX events left on any channel. */
+ 
 static int ef4_farch_do_flush(struct ef4_nic *efx)
 {
-	unsigned timeout = msecs_to_jiffies(5000); /* 5s for all flushes and drains */
+	unsigned timeout = msecs_to_jiffies(5000);  
 	struct ef4_channel *channel;
 	struct ef4_rx_queue *rx_queue;
 	struct ef4_tx_queue *tx_queue;
@@ -674,10 +602,7 @@ static int ef4_farch_do_flush(struct ef4_nic *efx)
 	}
 
 	while (timeout && atomic_read(&efx->active_queues) > 0) {
-		/* The hardware supports four concurrent rx flushes, each of
-		 * which may need to be retried if there is an outstanding
-		 * descriptor fetch
-		 */
+		 
 		ef4_for_each_channel(channel, efx) {
 			ef4_for_each_channel_rx_queue(rx_queue, channel) {
 				if (atomic_read(&efx->rxq_flush_outstanding) >=
@@ -721,9 +646,9 @@ int ef4_farch_fini_dmaq(struct ef4_nic *efx)
 	struct ef4_rx_queue *rx_queue;
 	int rc = 0;
 
-	/* Do not attempt to write to the NIC during EEH recovery */
+	 
 	if (efx->state != STATE_RECOVERY) {
-		/* Only perform flush if DMA is enabled */
+		 
 		if (efx->pci_dev->is_busmaster) {
 			efx->type->prepare_flush(efx);
 			rc = ef4_farch_do_flush(efx);
@@ -741,20 +666,7 @@ int ef4_farch_fini_dmaq(struct ef4_nic *efx)
 	return rc;
 }
 
-/* Reset queue and flush accounting after FLR
- *
- * One possible cause of FLR recovery is that DMA may be failing (eg. if bus
- * mastering was disabled), in which case we don't receive (RXQ) flush
- * completion events.  This means that efx->rxq_flush_outstanding remained at 4
- * after the FLR; also, efx->active_queues was non-zero (as no flush completion
- * events were received, and we didn't go through ef4_check_tx_flush_complete())
- * If we don't fix this up, on the next call to ef4_realloc_channels() we won't
- * flush any RX queues because efx->rxq_flush_outstanding is at the limit of 4
- * for batched flush requests; and the efx->active_queues gets messed up because
- * we keep incrementing for the newly initialised queues, but it never went to
- * zero previously.  Then we get a timeout every time we try to restart the
- * queues, as it doesn't go back to zero when we should be flushing the queues.
- */
+ 
 void ef4_farch_finish_flr(struct ef4_nic *efx)
 {
 	atomic_set(&efx->rxq_flush_pending, 0);
@@ -763,18 +675,9 @@ void ef4_farch_finish_flr(struct ef4_nic *efx)
 }
 
 
-/**************************************************************************
- *
- * Event queue processing
- * Event queues are processed by per-channel tasklets.
- *
- **************************************************************************/
+ 
 
-/* Update a channel's event queue's read pointer (RPTR) register
- *
- * This writes the EVQ_RPTR_REG register for the specified channel's
- * event queue.
- */
+ 
 void ef4_farch_ev_read_ack(struct ef4_channel *channel)
 {
 	ef4_dword_t reg;
@@ -783,15 +686,13 @@ void ef4_farch_ev_read_ack(struct ef4_channel *channel)
 	EF4_POPULATE_DWORD_1(reg, FRF_AZ_EVQ_RPTR,
 			     channel->eventq_read_ptr & channel->eventq_mask);
 
-	/* For Falcon A1, EVQ_RPTR_KER is documented as having a step size
-	 * of 4 bytes, but it is really 16 bytes just like later revisions.
-	 */
+	 
 	ef4_writed(efx, &reg,
 		   efx->type->evq_rptr_tbl_base +
 		   FR_BZ_EVQ_RPTR_STEP * channel->channel);
 }
 
-/* Use HW to insert a SW defined event */
+ 
 void ef4_farch_generate_event(struct ef4_nic *efx, unsigned int evq,
 			      ef4_qword_t *event)
 {
@@ -817,11 +718,7 @@ static void ef4_farch_magic_event(struct ef4_channel *channel, u32 magic)
 	ef4_farch_generate_event(channel->efx, channel->channel, &event);
 }
 
-/* Handle a transmit completion event
- *
- * The NIC batches TX completion events; the message we receive is of
- * the form "complete all TX events up to this index".
- */
+ 
 static int
 ef4_farch_handle_tx_event(struct ef4_channel *channel, ef4_qword_t *event)
 {
@@ -835,7 +732,7 @@ ef4_farch_handle_tx_event(struct ef4_channel *channel, ef4_qword_t *event)
 		return 0;
 
 	if (likely(EF4_QWORD_FIELD(*event, FSF_AZ_TX_EV_COMP))) {
-		/* Transmit completion */
+		 
 		tx_ev_desc_ptr = EF4_QWORD_FIELD(*event, FSF_AZ_TX_EV_DESC_PTR);
 		tx_ev_q_label = EF4_QWORD_FIELD(*event, FSF_AZ_TX_EV_Q_LABEL);
 		tx_queue = ef4_channel_get_tx_queue(
@@ -844,7 +741,7 @@ ef4_farch_handle_tx_event(struct ef4_channel *channel, ef4_qword_t *event)
 			      tx_queue->ptr_mask);
 		ef4_xmit_done(tx_queue, tx_ev_desc_ptr);
 	} else if (EF4_QWORD_FIELD(*event, FSF_AZ_TX_EV_WQ_FF_FULL)) {
-		/* Rewrite the FIFO write pointer */
+		 
 		tx_ev_q_label = EF4_QWORD_FIELD(*event, FSF_AZ_TX_EV_Q_LABEL);
 		tx_queue = ef4_channel_get_tx_queue(
 			channel, tx_ev_q_label % EF4_TXQ_TYPES);
@@ -864,7 +761,7 @@ ef4_farch_handle_tx_event(struct ef4_channel *channel, ef4_qword_t *event)
 	return tx_packets;
 }
 
-/* Detect errors included in the rx_evt_pkt_ok bit. */
+ 
 static u16 ef4_farch_handle_rx_not_ok(struct ef4_rx_queue *rx_queue,
 				      const ef4_qword_t *event)
 {
@@ -889,8 +786,7 @@ static u16 ef4_farch_handle_rx_not_ok(struct ef4_rx_queue *rx_queue,
 	rx_ev_pause_frm = EF4_QWORD_FIELD(*event, FSF_AZ_RX_EV_PAUSE_FRM_ERR);
 
 
-	/* Count errors that are not in MAC stats.  Ignore expected
-	 * checksum errors during self-test. */
+	 
 	if (rx_ev_frm_trunc)
 		++channel->n_rx_frm_trunc;
 	else if (rx_ev_tobe_disc)
@@ -902,13 +798,10 @@ static u16 ef4_farch_handle_rx_not_ok(struct ef4_rx_queue *rx_queue,
 			++channel->n_rx_tcp_udp_chksum_err;
 	}
 
-	/* TOBE_DISC is expected on unicast mismatches; don't print out an
-	 * error message.  FRM_TRUNC indicates RXDP dropped the packet due
-	 * to a FIFO overflow.
-	 */
+	 
 #ifdef DEBUG
 	{
-	/* Every error apart from tobe_disc and pause_frm */
+	 
 
 	bool rx_ev_other_err = (rx_ev_drib_nib | rx_ev_tcp_udp_chksum_err |
 				rx_ev_buf_owner_id_err | rx_ev_eth_crc_err |
@@ -933,16 +826,13 @@ static u16 ef4_farch_handle_rx_not_ok(struct ef4_rx_queue *rx_queue,
 	}
 #endif
 
-	/* The frame must be discarded if any of these are true. */
+	 
 	return (rx_ev_eth_crc_err | rx_ev_frm_trunc | rx_ev_drib_nib |
 		rx_ev_tobe_disc | rx_ev_pause_frm) ?
 		EF4_RX_PKT_DISCARD : 0;
 }
 
-/* Handle receive events that are not in-order. Return true if this
- * can be handled as a partial packet discard, false if it's more
- * serious.
- */
+ 
 static bool
 ef4_farch_handle_rx_bad_index(struct ef4_rx_queue *rx_queue, unsigned index)
 {
@@ -968,13 +858,7 @@ ef4_farch_handle_rx_bad_index(struct ef4_rx_queue *rx_queue, unsigned index)
 	return false;
 }
 
-/* Handle a packet received event
- *
- * The NIC gives a "discard" flag if it's a unicast packet with the
- * wrong destination address
- * Also "is multicast" and "matches multicast filter" flags can be used to
- * discard non-matching multicast packets.
- */
+ 
 static void
 ef4_farch_handle_rx_event(struct ef4_channel *channel, const ef4_qword_t *event)
 {
@@ -1000,14 +884,14 @@ ef4_farch_handle_rx_event(struct ef4_channel *channel, const ef4_qword_t *event)
 	expected_ptr = ((rx_queue->removed_count + rx_queue->scatter_n) &
 			rx_queue->ptr_mask);
 
-	/* Check for partial drops and other errors */
+	 
 	if (unlikely(rx_ev_desc_ptr != expected_ptr) ||
 	    unlikely(rx_ev_sop != (rx_queue->scatter_n == 0))) {
 		if (rx_ev_desc_ptr != expected_ptr &&
 		    !ef4_farch_handle_rx_bad_index(rx_queue, rx_ev_desc_ptr))
 			return;
 
-		/* Discard all pending fragments */
+		 
 		if (rx_queue->scatter_n) {
 			ef4_rx_packet(
 				rx_queue,
@@ -1017,11 +901,11 @@ ef4_farch_handle_rx_event(struct ef4_channel *channel, const ef4_qword_t *event)
 			rx_queue->scatter_n = 0;
 		}
 
-		/* Return if there is no new fragment */
+		 
 		if (rx_ev_desc_ptr != expected_ptr)
 			return;
 
-		/* Discard new fragment if not SOP */
+		 
 		if (!rx_ev_sop) {
 			ef4_rx_packet(
 				rx_queue,
@@ -1041,9 +925,7 @@ ef4_farch_handle_rx_event(struct ef4_channel *channel, const ef4_qword_t *event)
 	rx_ev_hdr_type = EF4_QWORD_FIELD(*event, FSF_AZ_RX_EV_HDR_TYPE);
 
 	if (likely(rx_ev_pkt_ok)) {
-		/* If packet is marked as OK then we can rely on the
-		 * hardware checksum and classification.
-		 */
+		 
 		flags = 0;
 		switch (rx_ev_hdr_type) {
 		case FSE_CZ_RX_EV_HDR_TYPE_IPV4V6_TCP:
@@ -1060,7 +942,7 @@ ef4_farch_handle_rx_event(struct ef4_channel *channel, const ef4_qword_t *event)
 		flags = ef4_farch_handle_rx_not_ok(rx_queue, event);
 	}
 
-	/* Detect multicast packets that didn't match the filter */
+	 
 	rx_ev_mcast_pkt = EF4_QWORD_FIELD(*event, FSF_AZ_RX_EV_MCAST_PKT);
 	if (rx_ev_mcast_pkt) {
 		unsigned int rx_ev_mcast_hash_match =
@@ -1074,7 +956,7 @@ ef4_farch_handle_rx_event(struct ef4_channel *channel, const ef4_qword_t *event)
 
 	channel->irq_mod_score += 2;
 
-	/* Handle received packet */
+	 
 	ef4_rx_packet(rx_queue,
 		      rx_queue->removed_count & rx_queue->ptr_mask,
 		      rx_queue->scatter_n, rx_ev_byte_cnt, flags);
@@ -1082,10 +964,7 @@ ef4_farch_handle_rx_event(struct ef4_channel *channel, const ef4_qword_t *event)
 	rx_queue->scatter_n = 0;
 }
 
-/* If this flush done event corresponds to a &struct ef4_tx_queue, then
- * send an %EF4_CHANNEL_MAGIC_TX_DRAIN event to drain the event queue
- * of all transmit completions.
- */
+ 
 static void
 ef4_farch_handle_tx_flush_done(struct ef4_nic *efx, ef4_qword_t *event)
 {
@@ -1103,10 +982,7 @@ ef4_farch_handle_tx_flush_done(struct ef4_nic *efx, ef4_qword_t *event)
 	}
 }
 
-/* If this flush done event corresponds to a &struct ef4_rx_queue: If the flush
- * was successful then send an %EF4_CHANNEL_MAGIC_RX_DRAIN, otherwise add
- * the RX queue back to the mask of RX queues in need of flushing.
- */
+ 
 static void
 ef4_farch_handle_rx_flush_done(struct ef4_nic *efx, ef4_qword_t *event)
 {
@@ -1164,9 +1040,7 @@ static void ef4_farch_handle_generated_event(struct ef4_channel *channel,
 	if (magic == EF4_CHANNEL_MAGIC_TEST(channel)) {
 		channel->event_test_cpu = raw_smp_processor_id();
 	} else if (rx_queue && magic == EF4_CHANNEL_MAGIC_FILL(rx_queue)) {
-		/* The queue must be empty, so we won't receive any rx
-		 * events, so ef4_process_channel() won't refill the
-		 * queue. Refill it here */
+		 
 		ef4_fast_push_rx_descriptors(rx_queue, true);
 	} else if (rx_queue && magic == EF4_CHANNEL_MAGIC_RX_DRAIN(rx_queue)) {
 		ef4_farch_handle_drain_event(channel);
@@ -1271,14 +1145,14 @@ int ef4_farch_ev_process(struct ef4_channel *channel, int budget)
 		event = *p_event;
 
 		if (!ef4_event_present(&event))
-			/* End of events */
+			 
 			break;
 
 		netif_vdbg(channel->efx, intr, channel->efx->net_dev,
 			   "channel %d event is "EF4_QWORD_FMT"\n",
 			   channel->channel, EF4_QWORD_VAL(event));
 
-		/* Clear this event by marking it all ones */
+		 
 		EF4_SET_QWORD(*p_event);
 
 		++read_ptr;
@@ -1323,7 +1197,7 @@ out:
 	return spent;
 }
 
-/* Allocate buffer table entries for event queue */
+ 
 int ef4_farch_ev_probe(struct ef4_channel *channel)
 {
 	struct ef4_nic *efx = channel->efx;
@@ -1344,13 +1218,13 @@ int ef4_farch_ev_init(struct ef4_channel *channel)
 		  channel->channel, channel->eventq.index,
 		  channel->eventq.index + channel->eventq.entries - 1);
 
-	/* Pin event queue buffer */
+	 
 	ef4_init_special_buffer(efx, &channel->eventq);
 
-	/* Fill event queue with all ones (i.e. empty events) */
+	 
 	memset(channel->eventq.buf.addr, 0xff, channel->eventq.buf.len);
 
-	/* Push event queue to card */
+	 
 	EF4_POPULATE_OWORD_3(reg,
 			     FRF_AZ_EVQ_EN, 1,
 			     FRF_AZ_EVQ_SIZE, __ffs(channel->eventq.entries),
@@ -1366,16 +1240,16 @@ void ef4_farch_ev_fini(struct ef4_channel *channel)
 	ef4_oword_t reg;
 	struct ef4_nic *efx = channel->efx;
 
-	/* Remove event queue from card */
+	 
 	EF4_ZERO_OWORD(reg);
 	ef4_writeo_table(efx, &reg, efx->type->evq_ptr_tbl_base,
 			 channel->channel);
 
-	/* Unpin event queue */
+	 
 	ef4_fini_special_buffer(efx, &channel->eventq);
 }
 
-/* Free buffers backing event queue */
+ 
 void ef4_farch_ev_remove(struct ef4_channel *channel)
 {
 	ef4_free_special_buffer(channel->efx, &channel->eventq);
@@ -1393,15 +1267,9 @@ void ef4_farch_rx_defer_refill(struct ef4_rx_queue *rx_queue)
 			      EF4_CHANNEL_MAGIC_FILL(rx_queue));
 }
 
-/**************************************************************************
- *
- * Hardware interrupts
- * The hardware interrupt handler does very little work; all the event
- * queue processing is carried out by per-channel tasklets.
- *
- **************************************************************************/
+ 
 
-/* Enable/disable/generate interrupts */
+ 
 static inline void ef4_farch_interrupts(struct ef4_nic *efx,
 				      bool enabled, bool force)
 {
@@ -1417,30 +1285,25 @@ static inline void ef4_farch_interrupts(struct ef4_nic *efx,
 void ef4_farch_irq_enable_master(struct ef4_nic *efx)
 {
 	EF4_ZERO_OWORD(*((ef4_oword_t *) efx->irq_status.addr));
-	wmb(); /* Ensure interrupt vector is clear before interrupts enabled */
+	wmb();  
 
 	ef4_farch_interrupts(efx, true, false);
 }
 
 void ef4_farch_irq_disable_master(struct ef4_nic *efx)
 {
-	/* Disable interrupts */
+	 
 	ef4_farch_interrupts(efx, false, false);
 }
 
-/* Generate a test interrupt
- * Interrupt must already have been enabled, otherwise nasty things
- * may happen.
- */
+ 
 int ef4_farch_irq_test_generate(struct ef4_nic *efx)
 {
 	ef4_farch_interrupts(efx, true, true);
 	return 0;
 }
 
-/* Process a fatal interrupt
- * Disable bus mastering ASAP and schedule a reset
- */
+ 
 irqreturn_t ef4_farch_fatal_interrupt(struct ef4_nic *efx)
 {
 	struct falcon_nic_data *nic_data = efx->nic_data;
@@ -1456,7 +1319,7 @@ irqreturn_t ef4_farch_fatal_interrupt(struct ef4_nic *efx)
 		  EF4_OWORD_VAL(fatal_intr),
 		  error ? "disabling bus mastering" : "no recognised error");
 
-	/* If this is a memory parity error dump which blocks are offending */
+	 
 	mem_perr = (EF4_OWORD_FIELD(fatal_intr, FRF_AZ_MEM_PERR_INT_KER) ||
 		    EF4_OWORD_FIELD(fatal_intr, FRF_AZ_SRM_PERR_INT_KER));
 	if (mem_perr) {
@@ -1467,13 +1330,13 @@ irqreturn_t ef4_farch_fatal_interrupt(struct ef4_nic *efx)
 			  EF4_OWORD_VAL(reg));
 	}
 
-	/* Disable both devices */
+	 
 	pci_clear_master(efx->pci_dev);
 	if (ef4_nic_is_dual_func(efx))
 		pci_clear_master(nic_data->pci_dev2);
 	ef4_farch_irq_disable_master(efx);
 
-	/* Count errors and reset or disable the NIC accordingly */
+	 
 	if (efx->int_error_count == 0 ||
 	    time_after(jiffies, efx->int_error_expire)) {
 		efx->int_error_count = 0;
@@ -1494,9 +1357,7 @@ irqreturn_t ef4_farch_fatal_interrupt(struct ef4_nic *efx)
 	return IRQ_HANDLED;
 }
 
-/* Handle a legacy interrupt
- * Acknowledges the interrupt and schedule event queue processing.
- */
+ 
 irqreturn_t ef4_farch_legacy_interrupt(int irq, void *dev_id)
 {
 	struct ef4_nic *efx = dev_id;
@@ -1508,21 +1369,18 @@ irqreturn_t ef4_farch_legacy_interrupt(int irq, void *dev_id)
 	u32 queues;
 	int syserr;
 
-	/* Read the ISR which also ACKs the interrupts */
+	 
 	ef4_readd(efx, &reg, FR_BZ_INT_ISR0);
 	queues = EF4_EXTRACT_DWORD(reg, 0, 31);
 
-	/* Legacy interrupts are disabled too late by the EEH kernel
-	 * code. Disable them earlier.
-	 * If an EEH error occurred, the read will have returned all ones.
-	 */
+	 
 	if (EF4_DWORD_IS_ALL_ONES(reg) && ef4_try_recovery(efx) &&
 	    !efx->eeh_disabled_legacy_irq) {
 		disable_irq_nosync(efx->legacy_irq);
 		efx->eeh_disabled_legacy_irq = true;
 	}
 
-	/* Handle non-event-queue sources */
+	 
 	if (queues & (1U << efx->irq_level) && soft_enabled) {
 		syserr = EF4_OWORD_FIELD(*int_ker, FSF_AZ_NET_IVEC_FATAL_INT);
 		if (unlikely(syserr))
@@ -1533,7 +1391,7 @@ irqreturn_t ef4_farch_legacy_interrupt(int irq, void *dev_id)
 	if (queues != 0) {
 		efx->irq_zero_count = 0;
 
-		/* Schedule processing of any interrupting queues */
+		 
 		if (likely(soft_enabled)) {
 			ef4_for_each_channel(channel, efx) {
 				if (queues & 1)
@@ -1546,14 +1404,13 @@ irqreturn_t ef4_farch_legacy_interrupt(int irq, void *dev_id)
 	} else {
 		ef4_qword_t *event;
 
-		/* Legacy ISR read can return zero once (SF bug 15783) */
+		 
 
-		/* We can't return IRQ_HANDLED more than once on seeing ISR=0
-		 * because this might be a shared interrupt. */
+		 
 		if (efx->irq_zero_count++ == 0)
 			result = IRQ_HANDLED;
 
-		/* Ensure we schedule or rearm all event queues */
+		 
 		if (likely(soft_enabled)) {
 			ef4_for_each_channel(channel, efx) {
 				event = ef4_event(channel,
@@ -1574,13 +1431,7 @@ irqreturn_t ef4_farch_legacy_interrupt(int irq, void *dev_id)
 	return result;
 }
 
-/* Handle an MSI interrupt
- *
- * Handle an MSI hardware interrupt.  This routine schedules event
- * queue processing.  No interrupt acknowledgement cycle is necessary.
- * Also, we never need to check that the interrupt is for us, since
- * MSI interrupts cannot be shared.
- */
+ 
 irqreturn_t ef4_farch_msi_interrupt(int irq, void *dev_id)
 {
 	struct ef4_msi_context *context = dev_id;
@@ -1595,7 +1446,7 @@ irqreturn_t ef4_farch_msi_interrupt(int irq, void *dev_id)
 	if (!likely(READ_ONCE(efx->irq_soft_enabled)))
 		return IRQ_HANDLED;
 
-	/* Handle non-event-queue sources */
+	 
 	if (context->index == efx->irq_level) {
 		syserr = EF4_OWORD_FIELD(*int_ker, FSF_AZ_NET_IVEC_FATAL_INT);
 		if (unlikely(syserr))
@@ -1603,15 +1454,13 @@ irqreturn_t ef4_farch_msi_interrupt(int irq, void *dev_id)
 		efx->last_irq_cpu = raw_smp_processor_id();
 	}
 
-	/* Schedule processing of the channel */
+	 
 	ef4_schedule_channel_irq(efx->channel[context->index]);
 
 	return IRQ_HANDLED;
 }
 
-/* Setup RSS indirection table.
- * This maps from the hash value of the packet to RXQ
- */
+ 
 void ef4_farch_rx_push_indir_table(struct ef4_nic *efx)
 {
 	size_t i = 0;
@@ -1631,22 +1480,12 @@ void ef4_farch_rx_push_indir_table(struct ef4_nic *efx)
 	}
 }
 
-/* Looks at available SRAM resources and works out how many queues we
- * can support, and where things like descriptor caches should live.
- *
- * SRAM is split up as follows:
- * 0                          buftbl entries for channels
- * efx->vf_buftbl_base        buftbl entries for SR-IOV
- * efx->rx_dc_base            RX descriptor caches
- * efx->tx_dc_base            TX descriptor caches
- */
+ 
 void ef4_farch_dimension_resources(struct ef4_nic *efx, unsigned sram_lim_qw)
 {
 	unsigned vi_count;
 
-	/* Account for the buffer table entries backing the datapath channels
-	 * and the descriptor caches for those channels.
-	 */
+	 
 	vi_count = max(efx->n_channels, efx->n_tx_channels * EF4_TXQ_TYPES);
 
 	efx->tx_dc_base = sram_lim_qw - vi_count * TX_DC_ENTRIES;
@@ -1664,42 +1503,35 @@ void ef4_farch_init_common(struct ef4_nic *efx)
 {
 	ef4_oword_t temp;
 
-	/* Set positions of descriptor caches in SRAM. */
+	 
 	EF4_POPULATE_OWORD_1(temp, FRF_AZ_SRM_TX_DC_BASE_ADR, efx->tx_dc_base);
 	ef4_writeo(efx, &temp, FR_AZ_SRM_TX_DC_CFG);
 	EF4_POPULATE_OWORD_1(temp, FRF_AZ_SRM_RX_DC_BASE_ADR, efx->rx_dc_base);
 	ef4_writeo(efx, &temp, FR_AZ_SRM_RX_DC_CFG);
 
-	/* Set TX descriptor cache size. */
+	 
 	BUILD_BUG_ON(TX_DC_ENTRIES != (8 << TX_DC_ENTRIES_ORDER));
 	EF4_POPULATE_OWORD_1(temp, FRF_AZ_TX_DC_SIZE, TX_DC_ENTRIES_ORDER);
 	ef4_writeo(efx, &temp, FR_AZ_TX_DC_CFG);
 
-	/* Set RX descriptor cache size.  Set low watermark to size-8, as
-	 * this allows most efficient prefetching.
-	 */
+	 
 	BUILD_BUG_ON(RX_DC_ENTRIES != (8 << RX_DC_ENTRIES_ORDER));
 	EF4_POPULATE_OWORD_1(temp, FRF_AZ_RX_DC_SIZE, RX_DC_ENTRIES_ORDER);
 	ef4_writeo(efx, &temp, FR_AZ_RX_DC_CFG);
 	EF4_POPULATE_OWORD_1(temp, FRF_AZ_RX_DC_PF_LWM, RX_DC_ENTRIES - 8);
 	ef4_writeo(efx, &temp, FR_AZ_RX_DC_PF_WM);
 
-	/* Program INT_KER address */
+	 
 	EF4_POPULATE_OWORD_2(temp,
 			     FRF_AZ_NORM_INT_VEC_DIS_KER,
 			     EF4_INT_MODE_USE_MSI(efx),
 			     FRF_AZ_INT_ADR_KER, efx->irq_status.dma_addr);
 	ef4_writeo(efx, &temp, FR_AZ_INT_ADR_KER);
 
-	/* Use a valid MSI-X vector */
+	 
 	efx->irq_level = 0;
 
-	/* Enable all the genuinely fatal interrupts.  (They are still
-	 * masked by the overall interrupt mask, controlled by
-	 * falcon_interrupts()).
-	 *
-	 * Note: All other fatal interrupts are enabled
-	 */
+	 
 	EF4_POPULATE_OWORD_3(temp,
 			     FRF_AZ_ILL_ADR_INT_KER_EN, 1,
 			     FRF_AZ_RBUF_OWN_INT_KER_EN, 1,
@@ -1707,62 +1539,47 @@ void ef4_farch_init_common(struct ef4_nic *efx)
 	EF4_INVERT_OWORD(temp);
 	ef4_writeo(efx, &temp, FR_AZ_FATAL_INTR_KER);
 
-	/* Disable the ugly timer-based TX DMA backoff and allow TX DMA to be
-	 * controlled by the RX FIFO fill level. Set arbitration to one pkt/Q.
-	 */
+	 
 	ef4_reado(efx, &temp, FR_AZ_TX_RESERVED);
 	EF4_SET_OWORD_FIELD(temp, FRF_AZ_TX_RX_SPACER, 0xfe);
 	EF4_SET_OWORD_FIELD(temp, FRF_AZ_TX_RX_SPACER_EN, 1);
 	EF4_SET_OWORD_FIELD(temp, FRF_AZ_TX_ONE_PKT_PER_Q, 1);
 	EF4_SET_OWORD_FIELD(temp, FRF_AZ_TX_PUSH_EN, 1);
 	EF4_SET_OWORD_FIELD(temp, FRF_AZ_TX_DIS_NON_IP_EV, 1);
-	/* Enable SW_EV to inherit in char driver - assume harmless here */
+	 
 	EF4_SET_OWORD_FIELD(temp, FRF_AZ_TX_SOFT_EVT_EN, 1);
-	/* Prefetch threshold 2 => fetch when descriptor cache half empty */
+	 
 	EF4_SET_OWORD_FIELD(temp, FRF_AZ_TX_PREF_THRESHOLD, 2);
-	/* Disable hardware watchdog which can misfire */
+	 
 	EF4_SET_OWORD_FIELD(temp, FRF_AZ_TX_PREF_WD_TMR, 0x3fffff);
-	/* Squash TX of packets of 16 bytes or less */
+	 
 	if (ef4_nic_rev(efx) >= EF4_REV_FALCON_B0)
 		EF4_SET_OWORD_FIELD(temp, FRF_BZ_TX_FLUSH_MIN_LEN_EN, 1);
 	ef4_writeo(efx, &temp, FR_AZ_TX_RESERVED);
 
 	if (ef4_nic_rev(efx) >= EF4_REV_FALCON_B0) {
 		EF4_POPULATE_OWORD_4(temp,
-				     /* Default values */
+				      
 				     FRF_BZ_TX_PACE_SB_NOT_AF, 0x15,
 				     FRF_BZ_TX_PACE_SB_AF, 0xb,
 				     FRF_BZ_TX_PACE_FB_BASE, 0,
-				     /* Allow large pace values in the
-				      * fast bin. */
+				      
 				     FRF_BZ_TX_PACE_BIN_TH,
 				     FFE_BZ_TX_PACE_RESERVED);
 		ef4_writeo(efx, &temp, FR_BZ_TX_PACE);
 	}
 }
 
-/**************************************************************************
- *
- * Filter tables
- *
- **************************************************************************
- */
+ 
 
-/* "Fudge factors" - difference between programmed value and actual depth.
- * Due to pipelined implementation we need to program H/W with a value that
- * is larger than the hop limit we want.
- */
+ 
 #define EF4_FARCH_FILTER_CTL_SRCH_FUDGE_WILD 3
 #define EF4_FARCH_FILTER_CTL_SRCH_FUDGE_FULL 1
 
-/* Hard maximum search limit.  Hardware will time-out beyond 200-something.
- * We also need to avoid infinite loops in ef4_farch_filter_search() when the
- * table is full.
- */
+ 
 #define EF4_FARCH_FILTER_CTL_SRCH_MAX 200
 
-/* Don't try very hard to find space for performance hints, as this is
- * counter-productive. */
+ 
 #define EF4_FARCH_FILTER_CTL_SRCH_HINT_MAX 5
 
 enum ef4_farch_filter_type {
@@ -1774,7 +1591,7 @@ enum ef4_farch_filter_type {
 	EF4_FARCH_FILTER_MAC_WILD,
 	EF4_FARCH_FILTER_UC_DEF = 8,
 	EF4_FARCH_FILTER_MC_DEF,
-	EF4_FARCH_FILTER_TYPE_COUNT,		/* number of specific types */
+	EF4_FARCH_FILTER_TYPE_COUNT,		 
 };
 
 enum ef4_farch_filter_table_id {
@@ -1801,10 +1618,10 @@ struct ef4_farch_filter_spec {
 
 struct ef4_farch_filter_table {
 	enum ef4_farch_filter_table_id id;
-	u32		offset;		/* address of table relative to BAR */
-	unsigned	size;		/* number of entries */
-	unsigned	step;		/* step between entries */
-	unsigned	used;		/* number currently used */
+	u32		offset;		 
+	unsigned	size;		 
+	unsigned	step;		 
+	unsigned	used;		 
 	unsigned long	*used_bitmap;
 	struct ef4_farch_filter_spec *spec;
 	unsigned	search_limit[EF4_FARCH_FILTER_TYPE_COUNT];
@@ -1819,24 +1636,22 @@ ef4_farch_filter_table_clear_entry(struct ef4_nic *efx,
 				   struct ef4_farch_filter_table *table,
 				   unsigned int filter_idx);
 
-/* The filter hash function is LFSR polynomial x^16 + x^3 + 1 of a 32-bit
- * key derived from the n-tuple.  The initial LFSR state is 0xffff. */
+ 
 static u16 ef4_farch_filter_hash(u32 key)
 {
 	u16 tmp;
 
-	/* First 16 rounds */
+	 
 	tmp = 0x1fff ^ key >> 16;
 	tmp = tmp ^ tmp >> 3 ^ tmp >> 6;
 	tmp = tmp ^ tmp >> 9;
-	/* Last 16 rounds */
+	 
 	tmp = tmp ^ tmp << 13 ^ key;
 	tmp = tmp ^ tmp >> 3 ^ tmp >> 6;
 	return tmp ^ tmp >> 9;
 }
 
-/* To allow for hash collisions, filter search continues at these
- * increments from the first possible entry selected by the hash. */
+ 
 static u16 ef4_farch_filter_increment(u32 key)
 {
 	return key * 2 - 1;
@@ -1913,21 +1728,14 @@ static void ef4_farch_filter_push_rx_config(struct ef4_nic *efx)
 			!!(table->spec[EF4_FARCH_FILTER_INDEX_MC_DEF].flags &
 			   EF4_FILTER_FLAG_RX_RSS));
 
-		/* There is a single bit to enable RX scatter for all
-		 * unmatched packets.  Only set it if scatter is
-		 * enabled in both filter specs.
-		 */
+		 
 		EF4_SET_OWORD_FIELD(
 			filter_ctl, FRF_BZ_SCATTER_ENBL_NO_MATCH_Q,
 			!!(table->spec[EF4_FARCH_FILTER_INDEX_UC_DEF].flags &
 			   table->spec[EF4_FARCH_FILTER_INDEX_MC_DEF].flags &
 			   EF4_FILTER_FLAG_RX_SCATTER));
 	} else if (ef4_nic_rev(efx) >= EF4_REV_FALCON_B0) {
-		/* We don't expose 'default' filters because unmatched
-		 * packets always go to the queue number found in the
-		 * RSS table.  But we still need to set the RX scatter
-		 * bit here.
-		 */
+		 
 		EF4_SET_OWORD_FIELD(
 			filter_ctl, FRF_BZ_SCATTER_ENBL_NO_MATCH_Q,
 			efx->rx_scatter);
@@ -2004,11 +1812,7 @@ ef4_farch_filter_from_gen_spec(struct ef4_farch_filter_spec *spec,
 			return -EPROTONOSUPPORT;
 		}
 
-		/* Filter is constructed in terms of source and destination,
-		 * with the odd wrinkle that the ports are swapped in a UDP
-		 * wildcard filter.  We need to convert from local and remote
-		 * (= zero for wildcard) addresses.
-		 */
+		 
 		rhost = is_full ? gen_spec->rem_host[0] : 0;
 		rport = is_full ? gen_spec->rem_port : 0;
 		host1 = rhost;
@@ -2046,7 +1850,7 @@ ef4_farch_filter_from_gen_spec(struct ef4_farch_filter_spec *spec,
 		spec->type = (is_multicast_ether_addr(gen_spec->loc_mac) ?
 			      EF4_FARCH_FILTER_MC_DEF :
 			      EF4_FARCH_FILTER_UC_DEF);
-		memset(spec->data, 0, sizeof(spec->data)); /* ensure equality */
+		memset(spec->data, 0, sizeof(spec->data));  
 		break;
 
 	default:
@@ -2062,10 +1866,7 @@ ef4_farch_filter_to_gen_spec(struct ef4_filter_spec *gen_spec,
 {
 	bool is_full = false;
 
-	/* *gen_spec should be completely initialised, to be consistent
-	 * with ef4_filter_init_{rx,tx}() and in case we want to copy
-	 * it back to userland.
-	 */
+	 
 	memset(gen_spec, 0, sizeof(*gen_spec));
 
 	gen_spec->priority = spec->priority;
@@ -2150,9 +1951,7 @@ static void
 ef4_farch_filter_init_rx_auto(struct ef4_nic *efx,
 			      struct ef4_farch_filter_spec *spec)
 {
-	/* If there's only one channel then disable RSS for non VF
-	 * traffic, thereby allowing VFs to use RSS when the PF can't.
-	 */
+	 
 	spec->priority = EF4_FILTER_PRI_AUTO;
 	spec->flags = (EF4_FILTER_FLAG_RX |
 		       (ef4_rss_enabled(efx) ? EF4_FILTER_FLAG_RX_RSS : 0) |
@@ -2160,7 +1959,7 @@ ef4_farch_filter_init_rx_auto(struct ef4_nic *efx,
 	spec->dmaq_id = 0;
 }
 
-/* Build a filter entry and return its n-tuple key. */
+ 
 static u32 ef4_farch_filter_build(ef4_oword_t *filter,
 				  struct ef4_farch_filter_spec *spec)
 {
@@ -2235,14 +2034,7 @@ static bool ef4_farch_filter_equal(const struct ef4_farch_filter_spec *left,
 	return true;
 }
 
-/*
- * Construct/deconstruct external filter IDs.  At least the RX filter
- * IDs must be ordered by matching priority, for RX NFC semantics.
- *
- * Deconstruction needs to be robust against invalid IDs so that
- * ef4_filter_remove_id_safe() and ef4_filter_get_filter_safe() can
- * accept user-provided IDs.
- */
+ 
 
 #define EF4_FARCH_FILTER_MATCH_PRI_COUNT	5
 
@@ -2258,13 +2050,13 @@ static const u8 ef4_farch_filter_type_match_pri[EF4_FARCH_FILTER_TYPE_COUNT] = {
 };
 
 static const enum ef4_farch_filter_table_id ef4_farch_filter_range_table[] = {
-	EF4_FARCH_FILTER_TABLE_RX_IP,	/* RX match pri 0 */
+	EF4_FARCH_FILTER_TABLE_RX_IP,	 
 	EF4_FARCH_FILTER_TABLE_RX_IP,
 	EF4_FARCH_FILTER_TABLE_RX_MAC,
 	EF4_FARCH_FILTER_TABLE_RX_MAC,
-	EF4_FARCH_FILTER_TABLE_RX_DEF,	/* RX match pri 4 */
-	EF4_FARCH_FILTER_TABLE_TX_MAC,	/* TX match pri 0 */
-	EF4_FARCH_FILTER_TABLE_TX_MAC,	/* TX match pri 1 */
+	EF4_FARCH_FILTER_TABLE_RX_DEF,	 
+	EF4_FARCH_FILTER_TABLE_TX_MAC,	 
+	EF4_FARCH_FILTER_TABLE_TX_MAC,	 
 };
 
 #define EF4_FARCH_FILTER_INDEX_WIDTH 13
@@ -2291,7 +2083,7 @@ ef4_farch_filter_id_table_id(u32 id)
 	if (range < ARRAY_SIZE(ef4_farch_filter_range_table))
 		return ef4_farch_filter_range_table[range];
 	else
-		return EF4_FARCH_FILTER_TABLE_COUNT; /* invalid */
+		return EF4_FARCH_FILTER_TABLE_COUNT;  
 }
 
 static inline unsigned int ef4_farch_filter_id_index(u32 id)
@@ -2340,7 +2132,7 @@ s32 ef4_farch_filter_insert(struct ef4_nic *efx,
 		   table->search_limit[spec.type]);
 
 	if (table->id == EF4_FARCH_FILTER_TABLE_RX_DEF) {
-		/* One filter spec per type */
+		 
 		BUILD_BUG_ON(EF4_FARCH_FILTER_INDEX_UC_DEF != 0);
 		BUILD_BUG_ON(EF4_FARCH_FILTER_INDEX_MC_DEF !=
 			     EF4_FARCH_FILTER_MC_DEF - EF4_FARCH_FILTER_UC_DEF);
@@ -2349,21 +2141,7 @@ s32 ef4_farch_filter_insert(struct ef4_nic *efx,
 
 		spin_lock_bh(&efx->filter_lock);
 	} else {
-		/* Search concurrently for
-		 * (1) a filter to be replaced (rep_index): any filter
-		 *     with the same match values, up to the current
-		 *     search depth for this type, and
-		 * (2) the insertion point (ins_index): (1) or any
-		 *     free slot before it or up to the maximum search
-		 *     depth for this priority
-		 * We fail if we cannot find (2).
-		 *
-		 * We can stop once either
-		 * (a) we find (1), in which case we have definitely
-		 *     found (2) as well; or
-		 * (b) we have searched exhaustively for (1), and have
-		 *     either found (2) or searched exhaustively for it
-		 */
+		 
 		u32 key = ef4_farch_filter_build(&filter, &spec);
 		unsigned int hash = ef4_farch_filter_hash(key);
 		unsigned int incr = ef4_farch_filter_increment(key);
@@ -2385,7 +2163,7 @@ s32 ef4_farch_filter_insert(struct ef4_nic *efx,
 					ins_index = i;
 			} else if (ef4_farch_filter_equal(&spec,
 							  &table->spec[i])) {
-				/* Case (a) */
+				 
 				if (ins_index < 0)
 					ins_index = i;
 				rep_index = i;
@@ -2394,7 +2172,7 @@ s32 ef4_farch_filter_insert(struct ef4_nic *efx,
 
 			if (depth >= max_rep_depth &&
 			    (ins_index >= 0 || depth >= max_ins_depth)) {
-				/* Case (b) */
+				 
 				if (ins_index < 0) {
 					rc = -EBUSY;
 					goto out;
@@ -2408,9 +2186,7 @@ s32 ef4_farch_filter_insert(struct ef4_nic *efx,
 		}
 	}
 
-	/* If we found a filter to be replaced, check whether we
-	 * should do so
-	 */
+	 
 	if (rep_index >= 0) {
 		struct ef4_farch_filter_spec *saved_spec =
 			&table->spec[rep_index];
@@ -2428,7 +2204,7 @@ s32 ef4_farch_filter_insert(struct ef4_nic *efx,
 			spec.flags |= EF4_FILTER_FLAG_RX_OVER_AUTO;
 	}
 
-	/* Insert the filter */
+	 
 	if (ins_index != rep_index) {
 		__set_bit(ins_index, table->used_bitmap);
 		++table->used;
@@ -2449,9 +2225,7 @@ s32 ef4_farch_filter_insert(struct ef4_nic *efx,
 		ef4_writeo(efx, &filter,
 			   table->offset + table->step * ins_index);
 
-		/* If we were able to replace a filter by inserting
-		 * at a lower depth, clear the replaced filter
-		 */
+		 
 		if (ins_index != rep_index && rep_index >= 0)
 			ef4_farch_filter_table_clear_entry(efx, table,
 							   rep_index);
@@ -2475,7 +2249,7 @@ ef4_farch_filter_table_clear_entry(struct ef4_nic *efx,
 	static ef4_oword_t filter;
 
 	EF4_WARN_ON_PARANOID(!test_bit(filter_idx, table->used_bitmap));
-	BUG_ON(table->offset == 0); /* can't clear MAC default filters */
+	BUG_ON(table->offset == 0);  
 
 	__clear_bit(filter_idx, table->used_bitmap);
 	--table->used;
@@ -2483,12 +2257,7 @@ ef4_farch_filter_table_clear_entry(struct ef4_nic *efx,
 
 	ef4_writeo(efx, &filter, table->offset + table->step * filter_idx);
 
-	/* If this filter required a greater search depth than
-	 * any other, the search limit for its type can now be
-	 * decreased.  However, it is hard to determine that
-	 * unless the table has become completely empty - in
-	 * which case, all its search limits can be set to 0.
-	 */
+	 
 	if (unlikely(table->used == 0)) {
 		memset(table->search_limit, 0, sizeof(table->search_limit));
 		if (table->id == EF4_FARCH_FILTER_TABLE_TX_MAC)
@@ -2672,7 +2441,7 @@ out:
 	return count;
 }
 
-/* Restore filter stater after reset */
+ 
 void ef4_farch_filter_table_restore(struct ef4_nic *efx)
 {
 	struct ef4_farch_filter_state *state = efx->filter_state;
@@ -2686,7 +2455,7 @@ void ef4_farch_filter_table_restore(struct ef4_nic *efx)
 	for (table_id = 0; table_id < EF4_FARCH_FILTER_TABLE_COUNT; table_id++) {
 		table = &state->table[table_id];
 
-		/* Check whether this is a regular register table */
+		 
 		if (table->step == 0)
 			continue;
 
@@ -2751,7 +2520,7 @@ int ef4_farch_filter_table_probe(struct ef4_nic *efx)
 
 	table = &state->table[EF4_FARCH_FILTER_TABLE_RX_DEF];
 	if (table->size) {
-		/* RX default filters must always exist */
+		 
 		struct ef4_farch_filter_spec *spec;
 		unsigned i;
 
@@ -2772,7 +2541,7 @@ fail:
 	return -ENOMEM;
 }
 
-/* Update scatter enable flags for filters pointing to our own RX queues */
+ 
 void ef4_farch_filter_update_rx_scatter(struct ef4_nic *efx)
 {
 	struct ef4_farch_filter_state *state = efx->filter_state;
@@ -2802,7 +2571,7 @@ void ef4_farch_filter_update_rx_scatter(struct ef4_nic *efx)
 					~EF4_FILTER_FLAG_RX_SCATTER;
 
 			if (table_id == EF4_FARCH_FILTER_TABLE_RX_DEF)
-				/* Pushed by ef4_farch_filter_push_rx_config() */
+				 
 				continue;
 
 			ef4_farch_filter_build(&filter, &table->spec[filter_idx]);
@@ -2842,7 +2611,7 @@ bool ef4_farch_filter_rfs_expire_one(struct ef4_nic *efx, u32 flow_id,
 	return false;
 }
 
-#endif /* CONFIG_RFS_ACCEL */
+#endif  
 
 void ef4_farch_filter_sync_rx_mode(struct ef4_nic *efx)
 {
@@ -2859,7 +2628,7 @@ void ef4_farch_filter_sync_rx_mode(struct ef4_nic *efx)
 
 	efx->unicast_filter = !(net_dev->flags & IFF_PROMISC);
 
-	/* Build multicast hash table */
+	 
 	if (net_dev->flags & (IFF_PROMISC | IFF_ALLMULTI)) {
 		memset(mc_hash, 0xff, sizeof(*mc_hash));
 	} else {
@@ -2870,10 +2639,7 @@ void ef4_farch_filter_sync_rx_mode(struct ef4_nic *efx)
 			__set_bit_le(bit, mc_hash);
 		}
 
-		/* Broadcast packets go through the multicast hash filter.
-		 * ether_crc_le() of the broadcast address is 0xbe2612ff
-		 * so we always add bit 0xff to the mask.
-		 */
+		 
 		__set_bit_le(0xff, mc_hash);
 	}
 

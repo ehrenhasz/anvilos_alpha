@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2022, 2023 Linaro Ltd.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -17,7 +15,7 @@
 #include "clk-alpha-pll.h"
 #include "clk-regmap.h"
 
-/* Need to match the order of clocks in DT binding */
+ 
 enum {
 	DT_XO,
 	DT_APCS_AUX,
@@ -172,7 +170,7 @@ static struct clk_cbf_8996_mux cbf_mux = {
 		.parent_data = cbf_mux_parent_data,
 		.num_parents = ARRAY_SIZE(cbf_mux_parent_data),
 		.ops = &clk_cbf_8996_mux_ops,
-		/* CPU clock is critical and should never be gated */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_IS_CRITICAL,
 	},
 };
@@ -184,20 +182,13 @@ static int cbf_clk_notifier_cb(struct notifier_block *nb, unsigned long event,
 
 	switch (event) {
 	case PRE_RATE_CHANGE:
-		/*
-		 * Avoid overvolting. clk_core_set_rate_nolock() walks from top
-		 * to bottom, so it will change the rate of the PLL before
-		 * chaging the parent of PMUX. This can result in pmux getting
-		 * clocked twice the expected rate.
-		 *
-		 * Manually switch to PLL/2 here.
-		 */
+		 
 		if (cnd->old_rate > DIV_THRESHOLD &&
 		    cnd->new_rate < DIV_THRESHOLD)
 			clk_cbf_8996_mux_set_parent(&cbf_mux.clkr.hw, CBF_DIV_INDEX);
 		break;
 	case ABORT_RATE_CHANGE:
-		/* Revert manual change */
+		 
 		if (cnd->new_rate < DIV_THRESHOLD &&
 		    cnd->old_rate > DIV_THRESHOLD)
 			clk_cbf_8996_mux_set_parent(&cbf_mux.clkr.hw, CBF_PLL_INDEX);
@@ -229,7 +220,7 @@ static const struct regmap_config cbf_msm8996_regmap_config = {
 
 #ifdef CONFIG_INTERCONNECT
 
-/* Random ID that doesn't clash with main qnoc and OSM */
+ 
 #define CBF_MASTER_NODE 2000
 
 static int qcom_msm8996_cbf_icc_register(struct platform_device *pdev, struct clk_hw *cbf_hw)
@@ -285,31 +276,31 @@ static int qcom_msm8996_cbf_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Select GPLL0 for 300MHz for the CBF clock */
+	 
 	regmap_write(regmap, CBF_MUX_OFFSET, 0x3);
 
-	/* Ensure write goes through before PLLs are reconfigured */
+	 
 	udelay(5);
 
-	/* Set the auto clock sel always-on source to GPLL0/2 (300MHz) */
+	 
 	regmap_update_bits(regmap, CBF_MUX_OFFSET,
 			   CBF_MUX_AUTO_CLK_SEL_ALWAYS_ON_MASK,
 			   CBF_MUX_AUTO_CLK_SEL_ALWAYS_ON_GPLL0_SEL);
 
 	clk_alpha_pll_configure(&cbf_pll, regmap, &cbfpll_config);
 
-	/* Wait for PLL(s) to lock */
+	 
 	udelay(50);
 
-	/* Enable auto clock selection for CBF */
+	 
 	regmap_update_bits(regmap, CBF_MUX_OFFSET,
 			   CBF_MUX_AUTO_CLK_SEL_BIT,
 			   CBF_MUX_AUTO_CLK_SEL_BIT);
 
-	/* Ensure write goes through before muxes are switched */
+	 
 	udelay(5);
 
-	/* Switch CBF to use the primary PLL */
+	 
 	regmap_update_bits(regmap, CBF_MUX_OFFSET, CBF_MUX_PARENT_MASK, 0x1);
 
 	if (of_device_is_compatible(dev->of_node, "qcom,msm8996pro-cbf")) {
@@ -348,7 +339,7 @@ static int qcom_msm8996_cbf_remove(struct platform_device *pdev)
 static const struct of_device_id qcom_msm8996_cbf_match_table[] = {
 	{ .compatible = "qcom,msm8996-cbf" },
 	{ .compatible = "qcom,msm8996pro-cbf" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, qcom_msm8996_cbf_match_table);
 
@@ -362,7 +353,7 @@ static struct platform_driver qcom_msm8996_cbf_driver = {
 	},
 };
 
-/* Register early enough to fix the clock to be used for other cores */
+ 
 static int __init qcom_msm8996_cbf_init(void)
 {
 	return platform_driver_register(&qcom_msm8996_cbf_driver);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Broadcom UniMAC MDIO bus controller driver
- *
- * Copyright (C) 2014-2017 Broadcom
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -46,9 +42,7 @@ struct unimac_mdio_priv {
 
 static inline u32 unimac_mdio_readl(struct unimac_mdio_priv *priv, u32 offset)
 {
-	/* MIPS chips strapped for BE will automagically configure the
-	 * peripheral registers for CPU-native byte order.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		return __raw_readl(priv->base + offset);
 	else
@@ -99,11 +93,11 @@ static int unimac_mdio_read(struct mii_bus *bus, int phy_id, int reg)
 	int ret;
 	u32 cmd;
 
-	/* Prepare the read operation */
+	 
 	cmd = MDIO_RD | (phy_id << MDIO_PMD_SHIFT) | (reg << MDIO_REG_SHIFT);
 	unimac_mdio_writel(priv, cmd, MDIO_CMD);
 
-	/* Start MDIO transaction */
+	 
 	unimac_mdio_start(priv);
 
 	ret = priv->wait_func(priv->wait_func_data);
@@ -112,11 +106,7 @@ static int unimac_mdio_read(struct mii_bus *bus, int phy_id, int reg)
 
 	cmd = unimac_mdio_readl(priv, MDIO_CMD);
 
-	/* Some broken devices are known not to release the line during
-	 * turn-around, e.g: Broadcom BCM53125 external switches, so check for
-	 * that condition here and ignore the MDIO controller read failure
-	 * indication.
-	 */
+	 
 	if (!(bus->phy_ignore_ta_mask & 1 << phy_id) && (cmd & MDIO_READ_FAIL))
 		return -EIO;
 
@@ -129,7 +119,7 @@ static int unimac_mdio_write(struct mii_bus *bus, int phy_id,
 	struct unimac_mdio_priv *priv = bus->priv;
 	u32 cmd;
 
-	/* Prepare the write operation */
+	 
 	cmd = MDIO_WR | (phy_id << MDIO_PMD_SHIFT) |
 		(reg << MDIO_REG_SHIFT) | (0xffff & val);
 	unimac_mdio_writel(priv, cmd, MDIO_CMD);
@@ -139,21 +129,7 @@ static int unimac_mdio_write(struct mii_bus *bus, int phy_id,
 	return priv->wait_func(priv->wait_func_data);
 }
 
-/* Workaround for integrated BCM7xxx Gigabit PHYs which have a problem with
- * their internal MDIO management controller making them fail to successfully
- * be read from or written to for the first transaction.  We insert a dummy
- * BMSR read here to make sure that phy_get_device() and get_phy_id() can
- * correctly read the PHY MII_PHYSID1/2 registers and successfully register a
- * PHY device for this peripheral.
- *
- * Once the PHY driver is registered, we can workaround subsequent reads from
- * there (e.g: during system-wide power management).
- *
- * bus->reset is invoked before mdiobus_scan during mdiobus_register and is
- * therefore the right location to stick that workaround. Since we do not want
- * to read from non-existing PHYs, we either use bus->phy_mask or do a manual
- * Device Tree scan to limit the search area.
- */
+ 
 static int unimac_mdio_reset(struct mii_bus *bus)
 {
 	struct device_node *np = bus->dev.of_node;
@@ -188,7 +164,7 @@ static void unimac_mdio_clk_set(struct unimac_mdio_priv *priv)
 	unsigned long rate;
 	u32 reg, div;
 
-	/* Keep the hardware default values */
+	 
 	if (!priv->clk_freq)
 		return;
 
@@ -203,9 +179,7 @@ static void unimac_mdio_clk_set(struct unimac_mdio_priv *priv)
 		return;
 	}
 
-	/* The MDIO clock is the reference clock (typically 250Mhz) divided by
-	 * 2 x (MDIO_CLK_DIV + 1)
-	 */
+	 
 	reg = unimac_mdio_readl(priv, MDIO_CFG);
 	reg &= ~(MDIO_CLK_DIV_MASK << MDIO_CLK_DIV_SHIFT);
 	reg |= div << MDIO_CLK_DIV_SHIFT;
@@ -231,9 +205,7 @@ static int unimac_mdio_probe(struct platform_device *pdev)
 	if (!r)
 		return -EINVAL;
 
-	/* Just ioremap, as this MDIO block is usually integrated into an
-	 * Ethernet MAC controller register range
-	 */
+	 
 	priv->base = devm_ioremap(&pdev->dev, r->start, resource_size(r));
 	if (!priv->base) {
 		dev_err(&pdev->dev, "failed to remap register\n");
@@ -342,7 +314,7 @@ static const struct of_device_id unimac_mdio_ids[] = {
 	{ .compatible = "brcm,genet-mdio-v2", },
 	{ .compatible = "brcm,genet-mdio-v1", },
 	{ .compatible = "brcm,unimac-mdio", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, unimac_mdio_ids);
 

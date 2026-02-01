@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "include/vector.h"
@@ -35,7 +12,7 @@ bool dal_vector_construct(
 	vector->container = NULL;
 
 	if (!struct_size || !capacity) {
-		/* Container must be non-zero size*/
+		 
 		BREAK_TO_DEBUGGER();
 		return false;
 	}
@@ -61,7 +38,7 @@ static bool dal_vector_presized_costruct(struct vector *vector,
 	vector->container = NULL;
 
 	if (!struct_size || !count) {
-		/* Container must be non-zero size*/
+		 
 		BREAK_TO_DEBUGGER();
 		return false;
 	}
@@ -71,9 +48,7 @@ static bool dal_vector_presized_costruct(struct vector *vector,
 	if (vector->container == NULL)
 		return false;
 
-	/* If caller didn't supply initial value then the default
-	 * of all zeros is expected, which is exactly what dal_alloc()
-	 * initialises the memory to. */
+	 
 	if (NULL != initial_value) {
 		for (i = 0; i < count; ++i)
 			memmove(
@@ -244,24 +219,19 @@ struct vector *dal_vector_clone(
 	struct vector *vec_cloned;
 	uint32_t count;
 
-	/* create new vector */
+	 
 	count = dal_vector_get_count(vector);
 
 	if (count == 0)
-		/* when count is 0 we still want to create clone of the vector
-		 */
+		 
 		vec_cloned = dal_vector_create(
 			vector->ctx,
 			vector->capacity,
 			vector->struct_size);
 	else
-		/* Call "presized create" version, independently of how the
-		 * original vector was created.
-		 * The owner of original vector must know how to treat the new
-		 * vector - as "presized" or as "regular".
-		 * But from vector point of view it doesn't matter. */
+		 
 		vec_cloned = dal_vector_presized_create(vector->ctx, count,
-			NULL,/* no initial value */
+			NULL, 
 			vector->struct_size);
 
 	if (NULL == vec_cloned) {
@@ -269,7 +239,7 @@ struct vector *dal_vector_clone(
 		return NULL;
 	}
 
-	/* copy vector's data */
+	 
 	memmove(vec_cloned->container, vector->container,
 			vec_cloned->struct_size * vec_cloned->capacity);
 

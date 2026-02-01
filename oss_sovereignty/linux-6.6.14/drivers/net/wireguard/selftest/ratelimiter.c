@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #ifdef DEBUG
 
@@ -211,7 +209,7 @@ err_nofree:
 	wg_ratelimiter_uninit();
 	wg_ratelimiter_uninit();
 	wg_ratelimiter_uninit();
-	/* Uninit one extra time to check underflow detection. */
+	 
 	wg_ratelimiter_uninit();
 out:
 	if (success)

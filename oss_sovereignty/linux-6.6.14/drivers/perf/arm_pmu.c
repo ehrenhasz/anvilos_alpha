@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #undef DEBUG
 
-/*
- * ARM performance counter support.
- *
- * Copyright (C) 2009 picoChip Designs, Ltd., Jamie Iles
- * Copyright (C) 2010 ARM Ltd., Will Deacon <will.deacon@arm.com>
- *
- * This code is based on the sparc64 perf event code, which is in turn based
- * on the x86 code.
- */
+ 
 #define pr_fmt(fmt) "hw perfevents: " fmt
 
 #include <linux/bitmap.h>
@@ -221,12 +213,7 @@ int armpmu_event_set_period(struct perf_event *event)
 		ret = 1;
 	}
 
-	/*
-	 * Limit the maximum period to prevent the counter value
-	 * from overtaking the one we are about to program. In
-	 * effect we are reducing max_period to account for
-	 * interrupt latency (and we are being very conservative).
-	 */
+	 
 	if (left > (max_period >> 1))
 		left = (max_period >> 1);
 
@@ -274,10 +261,7 @@ armpmu_stop(struct perf_event *event, int flags)
 	struct arm_pmu *armpmu = to_arm_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
 
-	/*
-	 * ARM pmu always has to update the counter, so ignore
-	 * PERF_EF_UPDATE, see comments in armpmu_start().
-	 */
+	 
 	if (!(hwc->state & PERF_HES_STOPPED)) {
 		armpmu->disable(event);
 		armpmu_event_update(event);
@@ -290,21 +274,12 @@ static void armpmu_start(struct perf_event *event, int flags)
 	struct arm_pmu *armpmu = to_arm_pmu(event->pmu);
 	struct hw_perf_event *hwc = &event->hw;
 
-	/*
-	 * ARM pmu always has to reprogram the period, so ignore
-	 * PERF_EF_RELOAD, see the comment below.
-	 */
+	 
 	if (flags & PERF_EF_RELOAD)
 		WARN_ON_ONCE(!(hwc->state & PERF_HES_UPTODATE));
 
 	hwc->state = 0;
-	/*
-	 * Set the period again. Some counters can't be stopped, so when we
-	 * were stopped we simply disabled the IRQ source and the counter
-	 * may have been left counting. If we don't do this step then we may
-	 * get an interrupt too soon or *way* too late if the overflow has
-	 * happened since disabling.
-	 */
+	 
 	armpmu_event_set_period(event);
 	armpmu->enable(event);
 }
@@ -321,7 +296,7 @@ armpmu_del(struct perf_event *event, int flags)
 	hw_events->events[idx] = NULL;
 	armpmu->clear_event_idx(hw_events, event);
 	perf_event_update_userpage(event);
-	/* Clear the allocated counter */
+	 
 	hwc->idx = -1;
 }
 
@@ -333,19 +308,16 @@ armpmu_add(struct perf_event *event, int flags)
 	struct hw_perf_event *hwc = &event->hw;
 	int idx;
 
-	/* An event following a process won't be stopped earlier */
+	 
 	if (!cpumask_test_cpu(smp_processor_id(), &armpmu->supported_cpus))
 		return -ENOENT;
 
-	/* If we don't have a space for the counter then finish early. */
+	 
 	idx = armpmu->get_event_idx(hw_events, event);
 	if (idx < 0)
 		return idx;
 
-	/*
-	 * If there is an event in the counter we are going to use then make
-	 * sure it is disabled.
-	 */
+	 
 	event->hw.idx = idx;
 	armpmu->disable(event);
 	hw_events->events[idx] = event;
@@ -354,7 +326,7 @@ armpmu_add(struct perf_event *event, int flags)
 	if (flags & PERF_EF_START)
 		armpmu_start(event, PERF_EF_RELOAD);
 
-	/* Propagate our changes to the userspace mapping. */
+	 
 	perf_event_update_userpage(event);
 
 	return 0;
@@ -369,11 +341,7 @@ validate_event(struct pmu *pmu, struct pmu_hw_events *hw_events,
 	if (is_software_event(event))
 		return 1;
 
-	/*
-	 * Reject groups spanning multiple HW PMUs (e.g. CPU + CCI). The
-	 * core perf code won't check that the pmu->ctx == leader->ctx
-	 * until after pmu->event_init(event).
-	 */
+	 
 	if (event->pmu != pmu)
 		return 0;
 
@@ -393,10 +361,7 @@ validate_group(struct perf_event *event)
 	struct perf_event *sibling, *leader = event->group_leader;
 	struct pmu_hw_events fake_pmu;
 
-	/*
-	 * Initialise the fake PMU. We only need to populate the
-	 * used_mask for the purposes of validation.
-	 */
+	 
 	memset(&fake_pmu.used_mask, 0, sizeof(fake_pmu.used_mask));
 
 	if (!validate_event(event->pmu, &fake_pmu, leader))
@@ -422,12 +387,7 @@ static irqreturn_t armpmu_dispatch_irq(int irq, void *dev)
 	int ret;
 	u64 start_clock, finish_clock;
 
-	/*
-	 * we request the IRQ with a (possibly percpu) struct arm_pmu**, but
-	 * the handlers expect a struct arm_pmu*. The percpu_irq framework will
-	 * do any necessary shifting, we just need to perform the first
-	 * dereference.
-	 */
+	 
 	armpmu = *(void **)dev;
 	if (WARN_ON_ONCE(!armpmu))
 		return IRQ_NONE;
@@ -456,20 +416,13 @@ __hw_perf_event_init(struct perf_event *event)
 		return mapping;
 	}
 
-	/*
-	 * We don't assign an index until we actually place the event onto
-	 * hardware. Use -1 to signify that we haven't decided where to put it
-	 * yet. For SMP systems, each core has it's own PMU so we can't do any
-	 * clever allocation or constraints checking at this point.
-	 */
+	 
 	hwc->idx		= -1;
 	hwc->config_base	= 0;
 	hwc->config		= 0;
 	hwc->event_base		= 0;
 
-	/*
-	 * Check whether we need to exclude the counter from certain modes.
-	 */
+	 
 	if (armpmu->set_event_filter &&
 	    armpmu->set_event_filter(hwc, &event->attr)) {
 		pr_debug("ARM performance counters do not support "
@@ -477,18 +430,11 @@ __hw_perf_event_init(struct perf_event *event)
 		return -EOPNOTSUPP;
 	}
 
-	/*
-	 * Store the event encoding into the config_base field.
-	 */
+	 
 	hwc->config_base	    |= (unsigned long)mapping;
 
 	if (!is_sampling_event(event)) {
-		/*
-		 * For non-sampling runs, limit the sample_period to half
-		 * of the counter width. That way, the new counter value
-		 * is far less likely to overtake the previous one unless
-		 * you have some serious IRQ latency issues.
-		 */
+		 
 		hwc->sample_period  = arm_pmu_event_max_period(event) >> 1;
 		hwc->last_period    = hwc->sample_period;
 		local64_set(&hwc->period_left, hwc->sample_period);
@@ -501,18 +447,12 @@ static int armpmu_event_init(struct perf_event *event)
 {
 	struct arm_pmu *armpmu = to_arm_pmu(event->pmu);
 
-	/*
-	 * Reject CPU-affine events for CPUs that are of a different class to
-	 * that which this PMU handles. Process-following events (where
-	 * event->cpu == -1) can be migrated between CPUs, and thus we have to
-	 * reject them later (in armpmu_add) if they're scheduled on a
-	 * different class of CPU.
-	 */
+	 
 	if (event->cpu != -1 &&
 		!cpumask_test_cpu(event->cpu, &armpmu->supported_cpus))
 		return -ENOENT;
 
-	/* does not support taken branch sampling */
+	 
 	if (has_branch_stack(event))
 		return -EOPNOTSUPP;
 
@@ -525,7 +465,7 @@ static void armpmu_enable(struct pmu *pmu)
 	struct pmu_hw_events *hw_events = this_cpu_ptr(armpmu->hw_events);
 	bool enabled = !bitmap_empty(hw_events->used_mask, armpmu->num_events);
 
-	/* For task-bound events we may be called on other CPUs */
+	 
 	if (!cpumask_test_cpu(smp_processor_id(), &armpmu->supported_cpus))
 		return;
 
@@ -537,18 +477,14 @@ static void armpmu_disable(struct pmu *pmu)
 {
 	struct arm_pmu *armpmu = to_arm_pmu(pmu);
 
-	/* For task-bound events we may be called on other CPUs */
+	 
 	if (!cpumask_test_cpu(smp_processor_id(), &armpmu->supported_cpus))
 		return;
 
 	armpmu->stop(armpmu);
 }
 
-/*
- * In heterogeneous systems, events are specific to a particular
- * microarchitecture, and aren't suitable for another. Thus, only match CPUs of
- * the same microarchitecture.
- */
+ 
 static bool armpmu_filter(struct pmu *pmu, int cpu)
 {
 	struct arm_pmu *armpmu = to_arm_pmu(pmu);
@@ -642,7 +578,7 @@ int armpmu_request_irq(int irq, int cpu)
 		err = request_nmi(irq, handler, irq_flags, "arm-pmu",
 				  per_cpu_ptr(&cpu_armpmu, cpu));
 
-		/* If cannot get an NMI, get a normal interrupt */
+		 
 		if (err) {
 			err = request_irq(irq, handler, irq_flags, "arm-pmu",
 					  per_cpu_ptr(&cpu_armpmu, cpu));
@@ -654,7 +590,7 @@ int armpmu_request_irq(int irq, int cpu)
 	} else if (armpmu_count_irq_users(irq) == 0) {
 		err = request_percpu_nmi(irq, handler, "arm-pmu", &cpu_armpmu);
 
-		/* If cannot get an NMI, get a normal interrupt */
+		 
 		if (err) {
 			err = request_percpu_irq(irq, handler, "arm-pmu",
 						 &cpu_armpmu);
@@ -664,7 +600,7 @@ int armpmu_request_irq(int irq, int cpu)
 			irq_ops = &percpu_pmunmi_ops;
 		}
 	} else {
-		/* Per cpudevid irq was already requested by another CPU */
+		 
 		irq_ops = armpmu_find_irq_ops(irq);
 
 		if (WARN_ON(!irq_ops))
@@ -694,12 +630,7 @@ bool arm_pmu_irq_is_nmi(void)
 	return has_nmi;
 }
 
-/*
- * PMU hardware loses all context when a CPU goes offline.
- * When a CPU is hotplugged back in, since some hardware registers are
- * UNKNOWN at reset, the PMU must be explicitly reset to avoid reading
- * junk values out of them.
- */
+ 
 static int arm_perf_starting_cpu(unsigned int cpu, struct hlist_node *node)
 {
 	struct arm_pmu *pmu = hlist_entry_safe(node, struct arm_pmu, node);
@@ -750,16 +681,12 @@ static void cpu_pm_pmu_setup(struct arm_pmu *armpmu, unsigned long cmd)
 
 		switch (cmd) {
 		case CPU_PM_ENTER:
-			/*
-			 * Stop and update the counter
-			 */
+			 
 			armpmu_stop(event, PERF_EF_UPDATE);
 			break;
 		case CPU_PM_EXIT:
 		case CPU_PM_ENTER_FAILED:
-			 /*
-			  * Restore and enable the counter.
-			  */
+			  
 			armpmu_start(event, PERF_EF_RELOAD);
 			break;
 		default:
@@ -778,10 +705,7 @@ static int cpu_pm_pmu_notify(struct notifier_block *b, unsigned long cmd,
 	if (!cpumask_test_cpu(smp_processor_id(), &armpmu->supported_cpus))
 		return NOTIFY_DONE;
 
-	/*
-	 * Always reset the PMU registers on power-up even if
-	 * there are no events running.
-	 */
+	 
 	if (cmd == CPU_PM_EXIT && armpmu->reset)
 		armpmu->reset(armpmu);
 
@@ -875,13 +799,7 @@ struct arm_pmu *armpmu_alloc(void)
 		.read		= armpmu_read,
 		.filter		= armpmu_filter,
 		.attr_groups	= pmu->attr_groups,
-		/*
-		 * This is a CPU PMU potentially in a heterogeneous
-		 * configuration (e.g. big.LITTLE) so
-		 * PERF_PMU_CAP_EXTENDED_HW_TYPE is required to open
-		 * PERF_TYPE_HARDWARE and PERF_TYPE_HW_CACHE events on a
-		 * specific PMU.
-		 */
+		 
 		.capabilities	= PERF_PMU_CAP_EXTENDED_REGS |
 				  PERF_PMU_CAP_EXTENDED_HW_TYPE,
 	};

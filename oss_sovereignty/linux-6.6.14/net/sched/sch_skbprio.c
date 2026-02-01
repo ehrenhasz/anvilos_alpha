@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_skbprio.c  SKB Priority Queue.
- *
- * Authors:	Nishanth Devarajan, <ndev2021@gmail.com>
- *		Cody Doucette, <doucette@bu.edu>
- *	        original idea by Michel Machado, Cody Doucette, and Qiaobin Fu
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/module.h>
@@ -18,19 +12,10 @@
 #include <net/sch_generic.h>
 #include <net/inet_ecn.h>
 
-/*		SKB Priority Queue
- *	=================================
- *
- * Skbprio (SKB Priority Queue) is a queueing discipline that prioritizes
- * packets according to their skb->priority field. Under congestion,
- * Skbprio drops already-enqueued lower priority packets to make space
- * available for higher priority packets; it was conceived as a solution
- * for denial-of-service defenses that need to route packets with different
- * priorities as a mean to overcome DoS attacks.
- */
+ 
 
 struct skbprio_sched_data {
-	/* Queue state. */
+	 
 	struct sk_buff_head qdiscs[SKBPRIO_MAX_PRIORITY];
 	struct gnet_stats_queue qstats[SKBPRIO_MAX_PRIORITY];
 	u16 highest_prio;
@@ -46,7 +31,7 @@ static u16 calc_new_high_prio(const struct skbprio_sched_data *q)
 			return prio;
 	}
 
-	/* SKB queue is empty, return 0 (default highest priority setting). */
+	 
 	return 0;
 }
 
@@ -59,9 +44,7 @@ static u16 calc_new_low_prio(const struct skbprio_sched_data *q)
 			return prio;
 	}
 
-	/* SKB queue is empty, return SKBPRIO_MAX_PRIORITY - 1
-	 * (default lowest priority setting).
-	 */
+	 
 	return SKBPRIO_MAX_PRIORITY - 1;
 }
 
@@ -75,7 +58,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	struct sk_buff *to_drop;
 	u16 prio, lp;
 
-	/* Obtain the priority of @skb. */
+	 
 	prio = min(skb->priority, max_priority);
 
 	qdisc = &q->qdiscs[prio];
@@ -84,7 +67,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		qdisc_qstats_backlog_inc(sch, skb);
 		q->qstats[prio].backlog += qdisc_pkt_len(skb);
 
-		/* Check to update highest and lowest priorities. */
+		 
 		if (prio > q->highest_prio)
 			q->highest_prio = prio;
 
@@ -95,7 +78,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		return NET_XMIT_SUCCESS;
 	}
 
-	/* If this packet has the lowest priority, drop it. */
+	 
 	lp = q->lowest_prio;
 	if (prio <= lp) {
 		q->qstats[prio].drops++;
@@ -107,7 +90,7 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	qdisc_qstats_backlog_inc(sch, skb);
 	q->qstats[prio].backlog += qdisc_pkt_len(skb);
 
-	/* Drop the packet at the tail of the lowest priority qdisc. */
+	 
 	lp_qdisc = &q->qdiscs[lp];
 	to_drop = __skb_dequeue_tail(lp_qdisc);
 	BUG_ON(!to_drop);
@@ -118,10 +101,10 @@ static int skbprio_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 	q->qstats[lp].drops++;
 	q->qstats[lp].overlimits++;
 
-	/* Check to update highest and lowest priorities. */
+	 
 	if (skb_queue_empty(lp_qdisc)) {
 		if (q->lowest_prio == q->highest_prio) {
-			/* The incoming packet is the only packet in queue. */
+			 
 			BUG_ON(sch->q.qlen != 1);
 			q->lowest_prio = prio;
 			q->highest_prio = prio;
@@ -151,7 +134,7 @@ static struct sk_buff *skbprio_dequeue(struct Qdisc *sch)
 
 	q->qstats[q->highest_prio].backlog -= qdisc_pkt_len(skb);
 
-	/* Update highest priority field. */
+	 
 	if (skb_queue_empty(hpq)) {
 		if (q->lowest_prio == q->highest_prio) {
 			BUG_ON(sch->q.qlen);
@@ -182,7 +165,7 @@ static int skbprio_init(struct Qdisc *sch, struct nlattr *opt,
 	struct skbprio_sched_data *q = qdisc_priv(sch);
 	int prio;
 
-	/* Initialise all queues, one for each possible priority. */
+	 
 	for (prio = 0; prio < SKBPRIO_MAX_PRIORITY; prio++)
 		__skb_queue_head_init(&q->qdiscs[prio]);
 

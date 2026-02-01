@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Intel Corporation
+
+
 
 #include <linux/acpi.h>
 #include <linux/delay.h>
@@ -11,25 +11,14 @@
 #include <media/v4l2-device.h>
 
 #define DW9807_MAX_FOCUS_POS	1023
-/*
- * This sets the minimum granularity for the focus positions.
- * A value of 1 gives maximum accuracy for a desired focus position.
- */
+ 
 #define DW9807_FOCUS_STEPS	1
-/*
- * This acts as the minimum granularity of lens movement.
- * Keep this value power of 2, so the control steps can be
- * uniformly adjusted for gradual lens movement, with desired
- * number of control steps.
- */
+ 
 #define DW9807_CTRL_STEPS	16
 #define DW9807_CTRL_DELAY_US	1000
 
 #define DW9807_CTL_ADDR		0x02
-/*
- * DW9807 separates two registers to control the VCM position.
- * One for MSB value, another is LSB value.
- */
+ 
 #define DW9807_MSB_ADDR		0x03
 #define DW9807_LSB_ADDR		0x04
 #define DW9807_STATUS_ADDR	0x05
@@ -80,11 +69,7 @@ static int dw9807_set_dac(struct i2c_client *client, u16 data)
 	};
 	int val, ret;
 
-	/*
-	 * According to the datasheet, need to check the bus status before we
-	 * write VCM position. This ensure that we really write the value
-	 * into the register
-	 */
+	 
 	ret = readx_poll_timeout(dw9807_i2c_check, client, val, val <= 0,
 			DW9807_CTRL_DELAY_US, MAX_RETRY * DW9807_CTRL_DELAY_US);
 
@@ -97,7 +82,7 @@ static int dw9807_set_dac(struct i2c_client *client, u16 data)
 		return ret ? -EBUSY : val;
 	}
 
-	/* Write VCM position to registers */
+	 
 	ret = i2c_master_send(client, tx_data, sizeof(tx_data));
 	if (ret < 0) {
 		dev_err(&client->dev,
@@ -226,11 +211,7 @@ static void dw9807_remove(struct i2c_client *client)
 	dw9807_subdev_cleanup(dw9807_dev);
 }
 
-/*
- * This function sets the vcm position, so it consumes least current
- * The lens position is gradually moved in units of DW9807_CTRL_STEPS,
- * to make the movements smoothly.
- */
+ 
 static int __maybe_unused dw9807_vcm_suspend(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -247,7 +228,7 @@ static int __maybe_unused dw9807_vcm_suspend(struct device *dev)
 		usleep_range(DW9807_CTRL_DELAY_US, DW9807_CTRL_DELAY_US + 10);
 	}
 
-	/* Power down */
+	 
 	ret = i2c_master_send(client, tx_data, sizeof(tx_data));
 	if (ret < 0) {
 		dev_err(&client->dev, "I2C write CTL fail ret = %d\n", ret);
@@ -257,12 +238,7 @@ static int __maybe_unused dw9807_vcm_suspend(struct device *dev)
 	return 0;
 }
 
-/*
- * This function sets the vcm position to the value set by the user
- * through v4l2_ctrl_ops s_ctrl handler
- * The lens position is gradually moved in units of DW9807_CTRL_STEPS,
- * to make the movements smoothly.
- */
+ 
 static int  __maybe_unused dw9807_vcm_resume(struct device *dev)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -271,7 +247,7 @@ static int  __maybe_unused dw9807_vcm_resume(struct device *dev)
 	const char tx_data[2] = { DW9807_CTL_ADDR, 0x00 };
 	int ret, val;
 
-	/* Power on */
+	 
 	ret = i2c_master_send(client, tx_data, sizeof(tx_data));
 	if (ret < 0) {
 		dev_err(&client->dev, "I2C write CTL fail ret = %d\n", ret);
@@ -293,9 +269,9 @@ static int  __maybe_unused dw9807_vcm_resume(struct device *dev)
 
 static const struct of_device_id dw9807_of_table[] = {
 	{ .compatible = "dongwoon,dw9807-vcm" },
-	/* Compatibility for older firmware, NEVER USE THIS IN FIRMWARE! */
+	 
 	{ .compatible = "dongwoon,dw9807" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dw9807_of_table);
 

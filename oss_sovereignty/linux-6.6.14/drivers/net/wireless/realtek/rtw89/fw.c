@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "cam.h"
 #include "chan.h"
@@ -122,7 +121,7 @@ static int rtw89_fw_hdr_parser_v0(struct rtw89_dev *rtwdev, const u8 *fw, u32 le
 
 	bin = fw + info->hdr_len;
 
-	/* jump to section header */
+	 
 	section_info = info->section_info;
 	for (i = 0; i < info->section_num; i++) {
 		section = &fw_hdr->sections[i];
@@ -187,7 +186,7 @@ static int rtw89_fw_hdr_parser_v1(struct rtw89_dev *rtwdev, const u8 *fw, u32 le
 
 	bin = fw + info->hdr_len;
 
-	/* jump to section header */
+	 
 	section_info = info->section_info;
 	for (i = 0; i < info->section_num; i++) {
 		section = &fw_hdr->sections[i];
@@ -257,7 +256,7 @@ int rtw89_mfw_recognize(struct rtw89_dev *rtwdev, enum rtw89_fw_type type,
 
 	if (mfw_hdr->sig != RTW89_MFW_SIG) {
 		rtw89_debug(rtwdev, RTW89_DBG_FW, "use legacy firmware\n");
-		/* legacy firmware support normal type only */
+		 
 		if (type != RTW89_FW_NORMAL)
 			return -EINVAL;
 		fw_suit->data = mfw;
@@ -408,9 +407,9 @@ static bool __fw_feat_cond_ ## __cond(u32 suit_ver_code, u32 comp_ver_code) \
 	return suit_ver_code __op comp_ver_code; \
 }
 
-__DEF_FW_FEAT_COND(ge, >=); /* greater or equal */
-__DEF_FW_FEAT_COND(le, <=); /* less or equal */
-__DEF_FW_FEAT_COND(lt, <); /* less than */
+__DEF_FW_FEAT_COND(ge, >=);  
+__DEF_FW_FEAT_COND(le, <=);  
+__DEF_FW_FEAT_COND(lt, <);  
 
 struct __fw_feat_cfg {
 	enum rtw89_core_chip_id chip_id;
@@ -532,10 +531,10 @@ int rtw89_fw_recognize(struct rtw89_dev *rtwdev)
 		return ret;
 
 normal_done:
-	/* It still works if wowlan firmware isn't existing. */
+	 
 	__rtw89_fw_recognize(rtwdev, RTW89_FW_WOWLAN, false);
 
-	/* It still works if log format file isn't existing. */
+	 
 	__rtw89_fw_recognize(rtwdev, RTW89_FW_LOGFMT, true);
 
 	rtw89_fw_recognize_features(rtwdev);
@@ -1018,9 +1017,7 @@ void rtw89_unload_firmware(struct rtw89_dev *rtwdev)
 	if (fw->req.firmware) {
 		release_firmware(fw->req.firmware);
 
-		/* assign NULL back in case rtw89_free_ieee80211_hw()
-		 * try to release the same one again.
-		 */
+		 
 		fw->req.firmware = NULL;
 	}
 
@@ -1257,9 +1254,7 @@ int rtw89_fw_h2c_ba_cam(struct rtw89_dev *rtwdev, struct rtw89_sta *rtwsta,
 	      rtw89_core_acquire_sta_ba_entry(rtwdev, rtwsta, params->tid, &entry_idx) :
 	      rtw89_core_release_sta_ba_entry(rtwdev, rtwsta, params->tid, &entry_idx);
 	if (ret) {
-		/* it still works even if we don't have static BA CAM, because
-		 * hardware can create dynamic BA CAM automatically.
-		 */
+		 
 		rtw89_debug(rtwdev, RTW89_DBG_TXRX,
 			    "failed to %s entry tid=%d for h2c ba cam\n",
 			    valid ? "alloc" : "free", params->tid);
@@ -1285,7 +1280,7 @@ int rtw89_fw_h2c_ba_cam(struct rtw89_dev *rtwdev, struct rtw89_sta *rtwsta,
 		SET_BA_CAM_BMAP_SIZE(skb->data, 4);
 	else
 		SET_BA_CAM_BMAP_SIZE(skb->data, 0);
-	/* If init req is set, hw will set the ssn */
+	 
 	SET_BA_CAM_INIT_REQ(skb->data, 1);
 	SET_BA_CAM_SSN(skb->data, params->ssn);
 
@@ -3039,7 +3034,7 @@ int rtw89_fw_h2c_scan_list_offload(struct rtw89_dev *rtwdev, int len,
 	cmd = skb->data;
 
 	RTW89_SET_FWCMD_SCANOFLD_CH_NUM(cmd, len);
-	/* in unit of 4 bytes */
+	 
 	RTW89_SET_FWCMD_SCANOFLD_CH_SIZE(cmd, RTW89_MAC_CHINFO_SIZE / 4);
 
 	list_for_each_entry(ch_info, chan_list, list) {
@@ -3941,7 +3936,7 @@ int rtw89_hw_scan_offload(struct rtw89_dev *rtwdev, struct ieee80211_vif *vif,
 	if (!rtwvif)
 		return -EINVAL;
 
-	/* This variable implies connected or during attempt to connect */
+	 
 	connected = !is_zero_ether_addr(rtwvif->bssid);
 	opt.enable = enable;
 	opt.target_ch_mode = connected;
@@ -4287,11 +4282,7 @@ fail:
 	return ret;
 }
 
-/* Return < 0, if failures happen during waiting for the condition.
- * Return 0, when waiting for the condition succeeds.
- * Return > 0, if the wait is considered unreachable due to driver/FW design,
- * where 1 means during SER.
- */
+ 
 static int rtw89_h2c_tx_and_wait(struct rtw89_dev *rtwdev, struct sk_buff *skb,
 				 struct rtw89_wait_info *wait, unsigned int cond)
 {

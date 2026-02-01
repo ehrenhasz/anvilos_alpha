@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018 Facebook */
+ 
+ 
 
 #include <linux/bpf.h>
 #include <linux/btf.h>
@@ -51,7 +51,7 @@ static struct btf_header hdr_tmpl = {
 	.hdr_len = sizeof(struct btf_header),
 };
 
-/* several different mapv kinds(types) supported by pprint */
+ 
 enum pprint_mapv_kind_t {
 	PPRINT_MAPV_KIND_BASIC = 0,
 	PPRINT_MAPV_KIND_INT128,
@@ -86,44 +86,30 @@ struct btf_raw_test {
 	.str_sec = str, .str_sec_size = sizeof(str)
 
 static struct btf_raw_test raw_tests[] = {
-/* enum E {
- *     E0,
- *     E1,
- * };
- *
- * struct A {
- *	unsigned long long m;
- *	int n;
- *	char o;
- *	[3 bytes hole]
- *	int p[8];
- *	int q[4][8];
- *	enum E r;
- * };
- */
+ 
 {
 	.descr = "struct test #1",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 6), 180),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		BTF_MEMBER_ENC(NAME_TBD, 6, 384),/* int q[4][8]		*/
-		BTF_MEMBER_ENC(NAME_TBD, 7, 1408), /* enum E r		*/
-		/* } */
-		/* int[4][8] */
-		BTF_TYPE_ARRAY_ENC(4, 1, 4),			/* [6] */
-		/* enum E */					/* [7] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		BTF_MEMBER_ENC(NAME_TBD, 6, 384), 
+		BTF_MEMBER_ENC(NAME_TBD, 7, 1408),  
+		 
+		 
+		BTF_TYPE_ARRAY_ENC(4, 1, 4),			 
+		 					 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 2), sizeof(int)),
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_ENUM_ENC(NAME_TBD, 1),
@@ -140,47 +126,35 @@ static struct btf_raw_test raw_tests[] = {
 	.max_entries = 4,
 },
 
-/* typedef struct b Struct_B;
- *
- * struct A {
- *     int m;
- *     struct b n[4];
- *     const Struct_B o[4];
- * };
- *
- * struct B {
- *     int m;
- *     int n;
- * };
- */
+ 
 {
 	.descr = "struct test #2",
 	.raw_types = {
-		/* int */					/* [1] */
+		 					 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* struct b [4] */				/* [2] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(4, 1, 4),
 
-		/* struct A { */				/* [3] */
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 3), 68),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int m;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 2, 32),/* struct B n[4]	*/
-		BTF_MEMBER_ENC(NAME_TBD, 8, 288),/* const Struct_B o[4];*/
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 2, 32), 
+		BTF_MEMBER_ENC(NAME_TBD, 8, 288), 
+		 
 
-		/* struct B { */				/* [4] */
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 8),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int m; */
-		BTF_MEMBER_ENC(NAME_TBD, 1, 32),/* int n; */
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 32), 
+		 
 
-		/* const int */					/* [5] */
+		 					 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 1),
-		/* typedef struct b Struct_B */	/* [6] */
+		 	 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0), 4),
-		/* const Struct_B */				/* [7] */
+		 				 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 6),
-		/* const Struct_B [4] */			/* [8] */
+		 			 
 		BTF_TYPE_ARRAY_ENC(7, 1, 4),
 		BTF_END_RAW,
 	},
@@ -197,16 +171,16 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct test #3 Invalid member offset",
 	.raw_types = {
-		/* int */					/* [1] */
+		 					 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int64 */					/* [2] */
+		 					 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 64, 8),
 
-		/* struct A { */				/* [3] */
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 16),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),	/* int m;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),		/* int64 n; */
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64),	 
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),		 
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0m\0n\0",
@@ -221,33 +195,25 @@ static struct btf_raw_test raw_tests[] = {
 	.btf_load_err = true,
 	.err_str = "Invalid member bits_offset",
 },
-/*
- * struct A {
- *	unsigned long long m;
- *	int n;
- *	char o;
- *	[3 bytes hole]
- *	int p[8];
- * };
- */
+ 
 {
 	.descr = "global data test #1",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0m\0n\0o\0p",
@@ -260,37 +226,28 @@ static struct btf_raw_test raw_tests[] = {
 	.value_type_id = 5,
 	.max_entries = 4,
 },
-/*
- * struct A {
- *	unsigned long long m;
- *	int n;
- *	char o;
- *	[3 bytes hole]
- *	int p[8];
- * };
- * static struct A t; <- in .bss
- */
+ 
 {
 	.descr = "global data test #2",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
-		/* static struct A t */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
-		/* .bss section */				/* [7] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
+		 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 48),
 		BTF_VAR_SECINFO_ENC(6, 0, 48),
 		BTF_END_RAW,
@@ -308,11 +265,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #3",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* static int t */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
-		/* .bss section */				/* [3] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(2, 0, 4),
 		BTF_END_RAW,
@@ -330,11 +287,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #4, unsupported linkage",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* static int t */
-		BTF_VAR_ENC(NAME_TBD, 1, 2),			/* [2] */
-		/* .bss section */				/* [3] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 2),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(2, 0, 4),
 		BTF_END_RAW,
@@ -354,9 +311,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #5, invalid var type",
 	.raw_types = {
-		/* static void t */
-		BTF_VAR_ENC(NAME_TBD, 0, 0),			/* [1] */
-		/* .bss section */				/* [2] */
+		 
+		BTF_VAR_ENC(NAME_TBD, 0, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(1, 0, 4),
 		BTF_END_RAW,
@@ -376,12 +333,12 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #6, invalid var type (fwd type)",
 	.raw_types = {
-		/* union A */
+		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_FWD, 1, 0), 0), /* [1] */
-		/* static union A t */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
-		/* .bss section */				/* [3] */
+			     BTF_INFO_ENC(BTF_KIND_FWD, 1, 0), 0),  
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(2, 0, 4),
 		BTF_END_RAW,
@@ -401,12 +358,12 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #7, invalid var type (fwd type)",
 	.raw_types = {
-		/* union A */
+		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_FWD, 1, 0), 0), /* [1] */
-		/* static union A t */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
-		/* .bss section */				/* [3] */
+			     BTF_INFO_ENC(BTF_KIND_FWD, 1, 0), 0),  
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(1, 0, 4),
 		BTF_END_RAW,
@@ -426,24 +383,24 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #8, invalid var size",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
-		/* static struct A t */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
-		/* .bss section */				/* [7] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
+		 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 48),
 		BTF_VAR_SECINFO_ENC(6, 0, 47),
 		BTF_END_RAW,
@@ -463,24 +420,24 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #9, invalid var size",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
-		/* static struct A t */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
-		/* .bss section */				/* [7] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
+		 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 46),
 		BTF_VAR_SECINFO_ENC(6, 0, 48),
 		BTF_END_RAW,
@@ -500,24 +457,24 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #10, invalid var size",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
-		/* static struct A t */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
-		/* .bss section */				/* [7] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
+		 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 46),
 		BTF_VAR_SECINFO_ENC(6, 0, 46),
 		BTF_END_RAW,
@@ -537,26 +494,26 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #11, multiple section members",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
-		/* static struct A t */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
-		/* static int u */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [7] */
-		/* .bss section */				/* [8] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
+		 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 2), 62),
 		BTF_VAR_SECINFO_ENC(6, 10, 48),
 		BTF_VAR_SECINFO_ENC(7, 58, 4),
@@ -575,26 +532,26 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #12, invalid offset",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
-		/* static struct A t */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
-		/* static int u */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [7] */
-		/* .bss section */				/* [8] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
+		 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 2), 62),
 		BTF_VAR_SECINFO_ENC(6, 10, 48),
 		BTF_VAR_SECINFO_ENC(7, 60, 4),
@@ -615,26 +572,26 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #13, invalid offset",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
-		/* static struct A t */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
-		/* static int u */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [7] */
-		/* .bss section */				/* [8] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
+		 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 2), 62),
 		BTF_VAR_SECINFO_ENC(6, 10, 48),
 		BTF_VAR_SECINFO_ENC(7, 12, 4),
@@ -655,26 +612,26 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #14, invalid offset",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* unsigned long long */
-		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		/* [2] */
-		/* char */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	/* [3] */
-		/* int[8] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 8),			/* [4] */
-		/* struct A { */				/* [5] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPE_INT_ENC(0, 0, 0, 64, 8),		 
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),	 
+		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 8),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 4), 48),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* unsigned long long m;*/
-		BTF_MEMBER_ENC(NAME_TBD, 1, 64),/* int n;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 96),/* char o;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 4, 128),/* int p[8]		*/
-		/* } */
-		/* static struct A t */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
-		/* static int u */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [7] */
-		/* .bss section */				/* [8] */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 64), 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 96), 
+		BTF_MEMBER_ENC(NAME_TBD, 4, 128), 
+		 
+		 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 2), 62),
 		BTF_VAR_SECINFO_ENC(7, 58, 4),
 		BTF_VAR_SECINFO_ENC(6, 10, 48),
@@ -695,10 +652,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #15, not var kind",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
-		/* .bss section */				/* [3] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(1, 0, 4),
 		BTF_END_RAW,
@@ -718,17 +675,17 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #16, invalid var referencing sec",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [2] */
-		BTF_VAR_ENC(NAME_TBD, 2, 0),			/* [3] */
-		/* a section */					/* [4] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
+		BTF_VAR_ENC(NAME_TBD, 2, 0),			 
+		 					 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(3, 0, 4),
-		/* a section */					/* [5] */
+		 					 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(6, 0, 4),
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [6] */
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0t\0s\0a\0a",
@@ -746,11 +703,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #17, invalid var referencing var",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
-		BTF_VAR_ENC(NAME_TBD, 2, 0),			/* [3] */
-		/* a section */					/* [4] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		BTF_VAR_ENC(NAME_TBD, 2, 0),			 
+		 					 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(3, 0, 4),
 		BTF_END_RAW,
@@ -770,10 +727,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #18, invalid var loop",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 2, 0),			/* [2] */
-		/* .bss section */				/* [3] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 2, 0),			 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 		BTF_VAR_SECINFO_ENC(2, 0, 4),
 		BTF_END_RAW,
@@ -793,10 +750,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #19, invalid var referencing var",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 3, 0),			/* [2] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [3] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 3, 0),			 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0t\0s\0a\0a",
@@ -814,11 +771,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #20, invalid ptr referencing var",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* PTR type_id=3	*/			/* [2] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 3),
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [3] */
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0t\0s\0a\0a",
@@ -836,14 +793,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #21, var included in struct",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* struct A { */				/* [2] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), sizeof(int) * 2),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int m; */
-		BTF_MEMBER_ENC(NAME_TBD, 3, 32),/* VAR type_id=3; */
-		/* } */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [3] */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 32), 
+		 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0t\0s\0a\0a",
@@ -861,10 +818,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "global data test #22, array of var",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_ARRAY_ENC(3, 1, 4),			/* [2] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [3] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_ARRAY_ENC(3, 1, 4),			 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0t\0s\0a\0a",
@@ -882,19 +839,19 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "var after datasec, ptr followed by modifier",
 	.raw_types = {
-		/* .bss section */				/* [1] */
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 2),
 			sizeof(void*)+4),
 		BTF_VAR_SECINFO_ENC(4, 0, sizeof(void*)),
 		BTF_VAR_SECINFO_ENC(6, sizeof(void*), 4),
-		/* int */					/* [2] */
+		 					 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int* */					/* [3] */
+		 					 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 2),
-		BTF_VAR_ENC(NAME_TBD, 3, 0),			/* [4] */
-		/* const int */					/* [5] */
+		BTF_VAR_ENC(NAME_TBD, 3, 0),			 
+		 					 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 2),
-		BTF_VAR_ENC(NAME_TBD, 5, 0),			/* [6] */
+		BTF_VAR_ENC(NAME_TBD, 5, 0),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0a\0b\0c\0",
@@ -907,23 +864,17 @@ static struct btf_raw_test raw_tests[] = {
 	.value_type_id = 1,
 	.max_entries = 1,
 },
-/* Test member exceeds the size of struct.
- *
- * struct A {
- *     int m;
- *     int n;
- * };
- */
+ 
 {
 	.descr = "size check test #1",
 	.raw_types = {
-		/* int */					/* [1] */
+		 					 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* struct A { */				/* [2] */
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), sizeof(int) * 2 -  1),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int m; */
-		BTF_MEMBER_ENC(NAME_TBD, 1, 32),/* int n; */
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 1, 32), 
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0m\0n",
@@ -939,25 +890,19 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Member exceeds struct_size",
 },
 
-/* Test member exceeds the size of struct
- *
- * struct A {
- *     int m;
- *     int n[2];
- * };
- */
+ 
 {
 	.descr = "size check test #2",
 	.raw_types = {
-		/* int */					/* [1] */
+		 					 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, sizeof(int)),
-		/* int[2] */					/* [2] */
+		 					 
 		BTF_TYPE_ARRAY_ENC(1, 1, 2),
-		/* struct A { */				/* [3] */
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), sizeof(int) * 3 - 1),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int m; */
-		BTF_MEMBER_ENC(NAME_TBD, 2, 32),/* int n[2]; */
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 2, 32), 
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0m\0n",
@@ -973,25 +918,19 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Member exceeds struct_size",
 },
 
-/* Test member exceeds the size of struct
- *
- * struct A {
- *     int m;
- *     void *n;
- * };
- */
+ 
 {
 	.descr = "size check test #3",
 	.raw_types = {
-		/* int */					/* [1] */
+		 					 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, sizeof(int)),
-		/* void* */					/* [2] */
+		 					 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 0),
-		/* struct A { */				/* [3] */
+		 				 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), sizeof(int) + sizeof(void *) - 1),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int m; */
-		BTF_MEMBER_ENC(NAME_TBD, 2, 32),/* void *n; */
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 2, 32), 
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0m\0n",
@@ -1007,33 +946,22 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Member exceeds struct_size",
 },
 
-/* Test member exceeds the size of struct
- *
- * enum E {
- *     E0,
- *     E1,
- * };
- *
- * struct A {
- *     int m;
- *     enum E n;
- * };
- */
+ 
 {
 	.descr = "size check test #4",
 	.raw_types = {
-		/* int */			/* [1] */
+		 			 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, sizeof(int)),
-		/* enum E { */			/* [2] */
+		 			 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 2), sizeof(int)),
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_ENUM_ENC(NAME_TBD, 1),
-		/* } */
-		/* struct A { */		/* [3] */
+		 
+		 		 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), sizeof(int) * 2 - 1),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int m; */
-		BTF_MEMBER_ENC(NAME_TBD, 2, 32),/* enum E n; */
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 2, 32), 
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0E\0E0\0E1\0A\0m\0n",
@@ -1049,35 +977,24 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Member exceeds struct_size",
 },
 
-/* Test member unexceeds the size of struct
- *
- * enum E {
- *     E0,
- *     E1,
- * };
- *
- * struct A {
- *     char m;
- *     enum E __attribute__((packed)) n;
- * };
- */
+ 
 {
 	.descr = "size check test #5",
 	.raw_types = {
-		/* int */			/* [1] */
+		 			 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, sizeof(int)),
-		/* char */			/* [2] */
+		 			 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 8, 1),
-		/* enum E { */			/* [3] */
+		 			 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 2), 1),
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_ENUM_ENC(NAME_TBD, 1),
-		/* } */
-		/* struct A { */		/* [4] */
+		 
+		 		 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 2),
-		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	/* char m; */
-		BTF_MEMBER_ENC(NAME_TBD, 3, 8),/* enum E __attribute__((packed)) n; */
-		/* } */
+		BTF_MEMBER_ENC(NAME_TBD, 2, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 8), 
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0E\0E0\0E1\0A\0m\0n",
@@ -1091,27 +1008,23 @@ static struct btf_raw_test raw_tests[] = {
 	.max_entries = 4,
 },
 
-/* typedef const void * const_void_ptr;
- * struct A {
- *	const_void_ptr m;
- * };
- */
+ 
 {
 	.descr = "void test #1",
 	.raw_types = {
-		/* int */		/* [1] */
+		 		 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* const void */	/* [2] */
+		 	 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 0),
-		/* const void* */	/* [3] */
+		 	 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 2),
-		/* typedef const void * const_void_ptr */
-		BTF_TYPEDEF_ENC(NAME_TBD, 3),	/* [4] */
-		/* struct A { */	/* [5] */
+		 
+		BTF_TYPEDEF_ENC(NAME_TBD, 3),	 
+		 	 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), sizeof(void *)),
-		/* const_void_ptr m; */
+		 
 		BTF_MEMBER_ENC(NAME_TBD, 4, 0),
-		/* } */
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0const_void_ptr\0A\0m",
@@ -1125,22 +1038,19 @@ static struct btf_raw_test raw_tests[] = {
 	.max_entries = 4,
 },
 
-/* struct A {
- *     const void m;
- * };
- */
+ 
 {
 	.descr = "void test #2",
 	.raw_types = {
-		/* int */		/* [1] */
+		 		 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* const void */	/* [2] */
+		 	 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 0),
-		/* struct A { */	/* [3] */
+		 	 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 8),
-		/* const void m; */
+		 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 0),
-		/* } */
+		 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0m",
@@ -1156,22 +1066,20 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Invalid member",
 },
 
-/* typedef const void * const_void_ptr;
- * const_void_ptr[4]
- */
+ 
 {
 	.descr = "void test #3",
 	.raw_types = {
-		/* int */		/* [1] */
+		 		 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* const void */	/* [2] */
+		 	 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 0),
-		/* const void* */	/* [3] */
+		 	 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 2),
-		/* typedef const void * const_void_ptr */
-		BTF_TYPEDEF_ENC(NAME_TBD, 3),	/* [4] */
-		/* const_void_ptr[4] */
-		BTF_TYPE_ARRAY_ENC(4, 1, 4),	/* [5] */
+		 
+		BTF_TYPEDEF_ENC(NAME_TBD, 3),	 
+		 
+		BTF_TYPE_ARRAY_ENC(4, 1, 4),	 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0const_void_ptr",
@@ -1185,15 +1093,15 @@ static struct btf_raw_test raw_tests[] = {
 	.max_entries = 4,
 },
 
-/* const void[4]  */
+ 
 {
 	.descr = "void test #4",
 	.raw_types = {
-		/* int */		/* [1] */
+		 		 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* const void */	/* [2] */
+		 	 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 0),
-		/* const void[4] */	/* [3] */
+		 	 
 		BTF_TYPE_ARRAY_ENC(2, 1, 4),
 		BTF_END_RAW,
 	},
@@ -1210,21 +1118,15 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Invalid elem",
 },
 
-/* Array_A  <------------------+
- *     elem_type == Array_B    |
- *                    |        |
- *                    |        |
- * Array_B  <-------- +        |
- *      elem_type == Array A --+
- */
+ 
 {
 	.descr = "loop test #1",
 	.raw_types = {
-		/* int */			/* [1] */
+		 			 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* Array_A */			/* [2] */
+		 			 
 		BTF_TYPE_ARRAY_ENC(3, 1, 8),
-		/* Array_B */			/* [3] */
+		 			 
 		BTF_TYPE_ARRAY_ENC(2, 1, 8),
 		BTF_END_RAW,
 	},
@@ -1241,28 +1143,18 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Loop detected",
 },
 
-/* typedef is _before_ the BTF type of Array_A and Array_B
- *
- * typedef Array_B int_array;
- *
- * Array_A  <------------------+
- *     elem_type == int_array  |
- *                    |        |
- *                    |        |
- * Array_B  <-------- +        |
- *      elem_type == Array_A --+
- */
+ 
 {
 	.descr = "loop test #2",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* typedef Array_B int_array */
-		BTF_TYPEDEF_ENC(1, 4),				/* [2] */
-		/* Array_A */
-		BTF_TYPE_ARRAY_ENC(2, 1, 8),			/* [3] */
-		/* Array_B */
-		BTF_TYPE_ARRAY_ENC(3, 1, 8),			/* [4] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_TYPEDEF_ENC(1, 4),				 
+		 
+		BTF_TYPE_ARRAY_ENC(2, 1, 8),			 
+		 
+		BTF_TYPE_ARRAY_ENC(3, 1, 8),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0int_array\0",
@@ -1278,21 +1170,15 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Loop detected",
 },
 
-/* Array_A  <------------------+
- *     elem_type == Array_B    |
- *                    |        |
- *                    |        |
- * Array_B  <-------- +        |
- *      elem_type == Array_A --+
- */
+ 
 {
 	.descr = "loop test #3",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* Array_A */				/* [2] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(3, 1, 8),
-		/* Array_B */				/* [3] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(2, 1, 8),
 		BTF_END_RAW,
 	},
@@ -1309,27 +1195,17 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Loop detected",
 },
 
-/* typedef is _between_ the BTF type of Array_A and Array_B
- *
- * typedef Array_B int_array;
- *
- * Array_A  <------------------+
- *     elem_type == int_array  |
- *                    |        |
- *                    |        |
- * Array_B  <-------- +        |
- *      elem_type == Array_A --+
- */
+ 
 {
 	.descr = "loop test #4",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* Array_A */				/* [2] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(3, 1, 8),
-		/* typedef Array_B int_array */		/* [3] */
+		 		 
 		BTF_TYPEDEF_ENC(NAME_TBD, 4),
-		/* Array_B */				/* [4] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(2, 1, 8),
 		BTF_END_RAW,
 	},
@@ -1346,33 +1222,22 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Loop detected",
 },
 
-/* typedef struct B Struct_B
- *
- * struct A {
- *     int x;
- *     Struct_B y;
- * };
- *
- * struct B {
- *     int x;
- *     struct A y;
- * };
- */
+ 
 {
 	.descr = "loop test #5",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* struct A */					/* [2] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 					 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 8),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int x;	*/
-		BTF_MEMBER_ENC(NAME_TBD, 3, 32),/* Struct_B y;	*/
-		/* typedef struct B Struct_B */
-		BTF_TYPEDEF_ENC(NAME_TBD, 4),			/* [3] */
-		/* struct B */					/* [4] */
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 3, 32), 
+		 
+		BTF_TYPEDEF_ENC(NAME_TBD, 4),			 
+		 					 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 8),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int x;	*/
-		BTF_MEMBER_ENC(NAME_TBD, 2, 32),/* struct A y;	*/
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 2, 32), 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0x\0y\0Struct_B\0B\0x\0y",
@@ -1388,21 +1253,17 @@ static struct btf_raw_test raw_tests[] = {
 	.err_str = "Loop detected",
 },
 
-/* struct A {
- *     int x;
- *     struct A array_a[4];
- * };
- */
+ 
 {
 	.descr = "loop test #6",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_ARRAY_ENC(3, 1, 4),			/* [2] */
-		/* struct A */					/* [3] */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_ARRAY_ENC(3, 1, 4),			 
+		 					 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 2), 8),
-		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	/* int x;		*/
-		BTF_MEMBER_ENC(NAME_TBD, 2, 32),/* struct A array_a[4];	*/
+		BTF_MEMBER_ENC(NAME_TBD, 1, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 2, 32), 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0A\0x\0y",
@@ -1421,15 +1282,15 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "loop test #7",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* struct A { */			/* [2] */
+		 			 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), sizeof(void *)),
-		/*     const void *m;	*/
+		 
 		BTF_MEMBER_ENC(NAME_TBD, 3, 0),
-		/* CONST type_id=3	*/		/* [3] */
+		 		 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 4),
-		/* PTR type_id=2	*/		/* [4] */
+		 		 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 3),
 		BTF_END_RAW,
 	},
@@ -1449,23 +1310,23 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "loop test #8",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* struct A { */			/* [2] */
+		 			 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), sizeof(void *)),
-		/*     const void *m;	*/
+		 
 		BTF_MEMBER_ENC(NAME_TBD, 4, 0),
-		/* struct B { */			/* [3] */
+		 			 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), sizeof(void *)),
-		/*     const void *n;	*/
+		 
 		BTF_MEMBER_ENC(NAME_TBD, 6, 0),
-		/* CONST type_id=5	*/		/* [4] */
+		 		 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 5),
-		/* PTR type_id=6	*/		/* [5] */
+		 		 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 6),
-		/* CONST type_id=7	*/		/* [6] */
+		 		 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 7),
-		/* PTR type_id=4	*/		/* [7] */
+		 		 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 4),
 		BTF_END_RAW,
 	},
@@ -1485,7 +1346,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "string section does not end with null",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -1505,7 +1366,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "empty string section",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -1543,7 +1404,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "btf_header test. Longer hdr_len",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -1564,7 +1425,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "btf_header test. Gap between hdr and type",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -1585,7 +1446,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "btf_header test. Gap between type and str",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -1606,7 +1467,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "btf_header test. Overlap between type and str",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -1627,7 +1488,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "btf_header test. Larger BTF size",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -1648,7 +1509,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "btf_header test. Smaller BTF size",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -1669,9 +1530,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. index_type/elem_type \"int\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int[16] */				/* [2] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(1, 1, 16),
 		BTF_END_RAW,
 	},
@@ -1689,11 +1550,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. index_type/elem_type \"const int\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int[16] */				/* [2] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(3, 3, 16),
-		/* CONST type_id=1 */			/* [3] */
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 1),
 		BTF_END_RAW,
 	},
@@ -1711,13 +1572,13 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. index_type \"const int:31\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int:31 */				/* [2] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 31, 4),
-		/* int[16] */				/* [3] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(1, 4, 16),
-		/* CONST type_id=2 */			/* [4] */
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 2),
 		BTF_END_RAW,
 	},
@@ -1737,13 +1598,13 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. elem_type \"const int:31\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int:31 */				/* [2] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 31, 4),
-		/* int[16] */				/* [3] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(4, 1, 16),
-		/* CONST type_id=2 */			/* [4] */
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 2),
 		BTF_END_RAW,
 	},
@@ -1763,9 +1624,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. index_type \"void\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int[16] */				/* [2] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(1, 0, 16),
 		BTF_END_RAW,
 	},
@@ -1785,11 +1646,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. index_type \"const void\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int[16] */				/* [2] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(1, 3, 16),
-		/* CONST type_id=0 (void) */		/* [3] */
+		 		 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 0),
 		BTF_END_RAW,
 	},
@@ -1809,11 +1670,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. elem_type \"const void\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int[16] */				/* [2] */
+		 				 
 		BTF_TYPE_ARRAY_ENC(3, 1, 16),
-		/* CONST type_id=0 (void) */		/* [3] */
+		 		 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 0),
 		BTF_END_RAW,
 	},
@@ -1833,13 +1694,13 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. elem_type \"const void *\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* const void *[16] */			/* [2] */
+		 			 
 		BTF_TYPE_ARRAY_ENC(3, 1, 16),
-		/* CONST type_id=4 */			/* [3] */
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 4),
-		/* void* */				/* [4] */
+		 				 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 0),
 		BTF_END_RAW,
 	},
@@ -1857,13 +1718,13 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. index_type \"const void *\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* const void *[16] */			/* [2] */
+		 			 
 		BTF_TYPE_ARRAY_ENC(3, 3, 16),
-		/* CONST type_id=4 */			/* [3] */
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 4),
-		/* void* */				/* [4] */
+		 				 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 0),
 		BTF_END_RAW,
 	},
@@ -1883,9 +1744,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array test. t->size != 0\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* int[16] */				/* [2] */
+		 				 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ARRAY, 0, 0), 1),
 		BTF_ARRAY_ENC(1, 1, 16),
 		BTF_END_RAW,
@@ -1926,7 +1787,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid BTF_INFO",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_TYPE_ENC(0, 0x20000000, 4),
 		BTF_END_RAW,
@@ -1947,9 +1808,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "fwd test. t->type != 0\"",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* fwd type */				/* [2] */
+		 				 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FWD, 0, 0), 1),
 		BTF_END_RAW,
 	},
@@ -1969,8 +1830,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "typedef (invalid name, name_off = 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPEDEF_ENC(0, 1),				/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPEDEF_ENC(0, 1),				 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0__int",
@@ -1989,8 +1850,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "typedef (invalid name, invalid identifier)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPEDEF_ENC(NAME_TBD, 1),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0__!int",
@@ -2009,9 +1870,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "ptr type (invalid name, name_off <> 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 1),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 1),	 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0__int",
@@ -2030,9 +1891,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "volatile type (invalid name, name_off <> 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_VOLATILE, 0, 0), 1),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_VOLATILE, 0, 0), 1),	 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0__int",
@@ -2051,9 +1912,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "const type (invalid name, name_off <> 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 1),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 1),	 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0__int",
@@ -2072,10 +1933,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "restrict type (invalid name, name_off <> 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 1),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 1),	 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_RESTRICT, 0, 0), 2),	/* [3] */
+			     BTF_INFO_ENC(BTF_KIND_RESTRICT, 0, 0), 2),	 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0__int",
@@ -2094,8 +1955,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "fwd type (invalid name, name_off = 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FWD, 0, 0), 0),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FWD, 0, 0), 0),	 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0__skb",
@@ -2114,9 +1975,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "fwd type (invalid name, invalid identifier)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_FWD, 0, 0), 0),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_FWD, 0, 0), 0),	 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0__!skb",
@@ -2135,9 +1996,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "array type (invalid name, name_off <> 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_ARRAY, 0, 0), 0),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_ARRAY, 0, 0), 0),	 
 		BTF_ARRAY_ENC(1, 1, 4),
 		BTF_END_RAW,
 	},
@@ -2157,9 +2018,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct type (name_off = 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(0,
-			     BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_END_RAW,
 	},
@@ -2177,9 +2038,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct type (invalid name, invalid identifier)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_END_RAW,
 	},
@@ -2199,9 +2060,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct member (name_off = 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(0,
-			     BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_END_RAW,
 	},
@@ -2219,9 +2080,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct member (invalid name, invalid identifier)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_END_RAW,
 	},
@@ -2241,10 +2102,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "enum type (name_off = 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(0,
 			     BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1),
-			     sizeof(int)),				/* [2] */
+			     sizeof(int)),				 
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_END_RAW,
 	},
@@ -2262,10 +2123,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "enum type (invalid name, invalid identifier)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
 			     BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1),
-			     sizeof(int)),				/* [2] */
+			     sizeof(int)),				 
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_END_RAW,
 	},
@@ -2285,10 +2146,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "enum member (invalid name, name_off = 0)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(0,
 			     BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1),
-			     sizeof(int)),				/* [2] */
+			     sizeof(int)),				 
 		BTF_ENUM_ENC(0, 0),
 		BTF_END_RAW,
 	},
@@ -2308,10 +2169,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "enum member (invalid name, invalid identifier)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(0,
 			     BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1),
-			     sizeof(int)),				/* [2] */
+			     sizeof(int)),				 
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_END_RAW,
 	},
@@ -2330,9 +2191,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "arraymap invalid btf key (a bit field)",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* 32 bit int with 32 bit offset */	/* [2] */
+		 	 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 32, 32, 8),
 		BTF_END_RAW,
 	},
@@ -2351,9 +2212,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "arraymap invalid btf key (!= 32 bits)",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* 16 bit int with 0 bit offset */	/* [2] */
+		 	 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 16, 2),
 		BTF_END_RAW,
 	},
@@ -2372,7 +2233,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "arraymap invalid btf value (too small)",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -2381,7 +2242,7 @@ static struct btf_raw_test raw_tests[] = {
 	.map_type = BPF_MAP_TYPE_ARRAY,
 	.map_name = "array_map_check_btf",
 	.key_size = sizeof(int),
-	/* btf_value_size < map->value_size */
+	 
 	.value_size = sizeof(__u64),
 	.key_type_id = 1,
 	.value_type_id = 1,
@@ -2392,7 +2253,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "arraymap invalid btf value (too big)",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -2401,7 +2262,7 @@ static struct btf_raw_test raw_tests[] = {
 	.map_type = BPF_MAP_TYPE_ARRAY,
 	.map_name = "array_map_check_btf",
 	.key_size = sizeof(int),
-	/* btf_value_size > map->value_size */
+	 
 	.value_size = sizeof(__u16),
 	.key_type_id = 1,
 	.value_type_id = 1,
@@ -2412,10 +2273,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (int (*)(int, unsigned int))",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* int (*)(int, unsigned int) */
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(0, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0, 2),
 		BTF_END_RAW,
@@ -2434,10 +2295,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (vararg)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int, unsigned int, ...) */
-		BTF_FUNC_PROTO_ENC(0, 3),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 3),			 
 			BTF_FUNC_PROTO_ARG_ENC(0, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0, 2),
 			BTF_FUNC_PROTO_ARG_ENC(0, 0),
@@ -2457,10 +2318,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (vararg with name)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, unsigned int b, ... c) */
-		BTF_FUNC_PROTO_ENC(0, 3),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 3),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 0),
@@ -2482,10 +2343,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (arg after vararg)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, ..., unsigned int b) */
-		BTF_FUNC_PROTO_ENC(0, 3),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 3),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0, 0),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
@@ -2507,14 +2368,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (CONST=>TYPEDEF=>PTR=>FUNC_PROTO)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* typedef void (*func_ptr)(int, unsigned int) */
-		BTF_TYPEDEF_ENC(NAME_TBD, 5),			/* [3] */
-		/* const func_ptr */
-		BTF_CONST_ENC(3),				/* [4] */
-		BTF_PTR_ENC(6),					/* [5] */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [6] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_TYPEDEF_ENC(NAME_TBD, 5),			 
+		 
+		BTF_CONST_ENC(3),				 
+		BTF_PTR_ENC(6),					 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(0, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0, 2),
 		BTF_END_RAW,
@@ -2533,10 +2394,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (TYPEDEF=>FUNC_PROTO)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 4),			/* [3] */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [4] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		BTF_TYPEDEF_ENC(NAME_TBD, 4),			 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(0, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0, 2),
 		BTF_END_RAW,
@@ -2555,12 +2416,12 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (btf_resolve(arg))",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* void (*)(const void *) */
-		BTF_FUNC_PROTO_ENC(0, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
+		BTF_FUNC_PROTO_ENC(0, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(0, 3),
-		BTF_CONST_ENC(4),				/* [3] */
-		BTF_PTR_ENC(0),					/* [4] */
+		BTF_CONST_ENC(4),				 
+		BTF_PTR_ENC(0),					 
 		BTF_END_RAW,
 	},
 	.str_sec = "",
@@ -2577,10 +2438,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (Not all arg has name)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int, unsigned int b) */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(0, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
 		BTF_END_RAW,
@@ -2599,10 +2460,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (Bad arg name_off)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, unsigned int <bad_name_off>) */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0x0fffffff, 2),
 		BTF_END_RAW,
@@ -2623,10 +2484,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (Bad arg name)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, unsigned int !!!) */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
 		BTF_END_RAW,
@@ -2647,10 +2508,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (Invalid return type)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* <bad_ret_type> (*)(int, unsigned int) */
-		BTF_FUNC_PROTO_ENC(100, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(100, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(0, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0, 2),
 		BTF_END_RAW,
@@ -2671,10 +2532,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (with func name)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void func_proto(int, unsigned int) */
-		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 2), 0),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 2), 0),	 
 			BTF_FUNC_PROTO_ARG_ENC(0, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0, 2),
 		BTF_END_RAW,
@@ -2695,12 +2556,12 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func proto (const void arg)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(const void) */
-		BTF_FUNC_PROTO_ENC(0, 1),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(0, 4),
-		BTF_CONST_ENC(0),				/* [4] */
+		BTF_CONST_ENC(0),				 
 		BTF_END_RAW,
 	},
 	.str_sec = "",
@@ -2719,14 +2580,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func (void func(int a, unsigned int b))",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, unsigned int b) */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
-		/* void func(int a, unsigned int b) */
-		BTF_FUNC_ENC(NAME_TBD, 3),			/* [4] */
+		 
+		BTF_FUNC_ENC(NAME_TBD, 3),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0a\0b\0func",
@@ -2743,14 +2604,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func (No func name)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, unsigned int b) */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
-		/* void <no_name>(int a, unsigned int b) */
-		BTF_FUNC_ENC(0, 3),				/* [4] */
+		 
+		BTF_FUNC_ENC(0, 3),				 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0a\0b",
@@ -2769,14 +2630,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func (Invalid func name)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, unsigned int b) */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
-		/* void !!!(int a, unsigned int b) */
-		BTF_FUNC_ENC(NAME_TBD, 3),			/* [4] */
+		 
+		BTF_FUNC_ENC(NAME_TBD, 3),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0a\0b\0!!!",
@@ -2795,14 +2656,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func (Some arg has no name)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, unsigned int) */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(0, 2),
-		/* void func(int a, unsigned int) */
-		BTF_FUNC_ENC(NAME_TBD, 3),			/* [4] */
+		 
+		BTF_FUNC_ENC(NAME_TBD, 3),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0a\0func",
@@ -2821,14 +2682,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func (Non zero vlen)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		/* [2] */
-		/* void (*)(int a, unsigned int b) */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),		 
+		 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
-		/* void func(int a, unsigned int b) */
-		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 2), 3), 	/* [4] */
+		 
+		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_FUNC, 0, 2), 3), 	 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0a\0b\0func",
@@ -2847,8 +2708,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "func (Not referring to FUNC_PROTO)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_ENC(NAME_TBD, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_ENC(NAME_TBD, 1),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0func",
@@ -2867,8 +2728,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid int kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_INT, 1, 0), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_INT, 1, 0), 4),	 
 		BTF_INT_ENC(0, 0, 32),
 		BTF_END_RAW,
 	},
@@ -2887,8 +2748,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid ptr kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 1, 0), 1),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 1, 0), 1),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC(""),
@@ -2906,8 +2767,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid array kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ARRAY, 1, 0), 0),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ARRAY, 1, 0), 0),	 
 		BTF_ARRAY_ENC(1, 1, 1),
 		BTF_END_RAW,
 	},
@@ -2926,9 +2787,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "valid fwd kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_FWD, 1, 0), 0),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_FWD, 1, 0), 0),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0A"),
@@ -2944,9 +2805,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid typedef kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
 		BTF_TYPE_ENC(NAME_TBD,
-			     BTF_INFO_ENC(BTF_KIND_TYPEDEF, 1, 0), 1),	/* [2] */
+			     BTF_INFO_ENC(BTF_KIND_TYPEDEF, 1, 0), 1),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0A"),
@@ -2964,8 +2825,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid volatile kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_VOLATILE, 1, 0), 1),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_VOLATILE, 1, 0), 1),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC(""),
@@ -2983,8 +2844,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid const kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 1, 0), 1),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 1, 0), 1),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC(""),
@@ -3002,8 +2863,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid restrict kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_RESTRICT, 1, 0), 1),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_RESTRICT, 1, 0), 1),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC(""),
@@ -3021,9 +2882,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid func kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 0), 0),	/* [2] */
-		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_FUNC, 1, 0), 2),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 0, 0), 0),	 
+		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_FUNC, 1, 0), 2),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0A"),
@@ -3041,8 +2902,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid func_proto kind_flag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 1, 0), 0),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_FUNC_PROTO, 1, 0), 0),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC(""),
@@ -3060,8 +2921,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "valid struct, kind_flag, bitfield_size = 0",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 8),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 8),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(0, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(0, 32)),
 		BTF_END_RAW,
@@ -3079,8 +2940,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "valid struct, kind_flag, int member, bitfield_size != 0",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(4, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(4, 4)),
 		BTF_END_RAW,
@@ -3098,8 +2959,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "valid union, kind_flag, int member, bitfield_size != 0",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 1, 2), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 1, 2), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(4, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(4, 0)),
 		BTF_END_RAW,
@@ -3117,10 +2978,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "valid struct, kind_flag, enum member, bitfield_size != 0",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	 
 		BTF_ENUM_ENC(NAME_TBD, 0),
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),/* [3] */
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4), 
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(4, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(4, 4)),
 		BTF_END_RAW,
@@ -3138,10 +2999,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "valid union, kind_flag, enum member, bitfield_size != 0",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	 
 		BTF_ENUM_ENC(NAME_TBD, 0),
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 1, 2), 4),	/* [3] */
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 1, 2), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(4, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(4, 0)),
 		BTF_END_RAW,
@@ -3159,14 +3020,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "valid struct, kind_flag, typedef member, bitfield_size != 0",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	 
 		BTF_ENUM_ENC(NAME_TBD, 0),
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),/* [3] */
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4), 
 		BTF_MEMBER_ENC(NAME_TBD, 4, BTF_MEMBER_OFFSET(4, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 5, BTF_MEMBER_OFFSET(4, 4)),
-		BTF_TYPEDEF_ENC(NAME_TBD, 1),				/* [4] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 2),				/* [5] */
+		BTF_TYPEDEF_ENC(NAME_TBD, 1),				 
+		BTF_TYPEDEF_ENC(NAME_TBD, 2),				 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0A\0B\0C\0D\0E"),
@@ -3182,14 +3043,14 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "valid union, kind_flag, typedef member, bitfield_size != 0",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	 
 		BTF_ENUM_ENC(NAME_TBD, 0),
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 1, 2), 4),	/* [3] */
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 1, 2), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 4, BTF_MEMBER_OFFSET(4, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 5, BTF_MEMBER_OFFSET(4, 0)),
-		BTF_TYPEDEF_ENC(NAME_TBD, 1),				/* [4] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 2),				/* [5] */
+		BTF_TYPEDEF_ENC(NAME_TBD, 1),				 
+		BTF_TYPEDEF_ENC(NAME_TBD, 2),				 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0A\0B\0C\0D\0E"),
@@ -3205,8 +3066,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid struct, kind_flag, bitfield_size greater than struct size",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(20, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(20, 20)),
 		BTF_END_RAW,
@@ -3226,9 +3087,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid struct, kind_flag, bitfield base_type int not regular",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 20, 4),			/* [2] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 20, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(20, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(20, 20)),
 		BTF_END_RAW,
@@ -3248,9 +3109,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid struct, kind_flag, base_type int not regular",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 12, 4),			/* [2] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 12, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 4),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(8, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(8, 8)),
 		BTF_END_RAW,
@@ -3270,8 +3131,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid union, kind_flag, bitfield_size greater than struct size",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 1, 2), 2),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 1, 2), 2),	 
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(8, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 1, BTF_MEMBER_OFFSET(20, 0)),
 		BTF_END_RAW,
@@ -3291,9 +3152,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid struct, kind_flag, int member, bitfield_size = 0, wrong byte alignment",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [2] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 12),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 12),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 36)),
 		BTF_END_RAW,
@@ -3313,11 +3174,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "invalid struct, kind_flag, enum member, bitfield_size = 0, wrong byte alignment",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [2] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),	 
 		BTF_ENUM_ENC(NAME_TBD, 0),
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 12),	/* [3] */
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 2), 12),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 0)),
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 36)),
 		BTF_END_RAW,
@@ -3337,8 +3198,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "128-bit int",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 128, 16),		/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 128, 16),		 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0A"),
@@ -3354,9 +3215,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct, 128-bit int member",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 128, 16),		/* [2] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 16),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 128, 16),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 16),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 0),
 		BTF_END_RAW,
 	},
@@ -3373,9 +3234,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct, 120-bit int member bitfield",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 120, 16),		/* [2] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 16),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 120, 16),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 1), 16),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 0),
 		BTF_END_RAW,
 	},
@@ -3392,9 +3253,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct, kind_flag, 128-bit int member",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 128, 16),		/* [2] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 16),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 128, 16),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 16),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 0)),
 		BTF_END_RAW,
 	},
@@ -3411,9 +3272,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "struct, kind_flag, 120-bit int member bitfield",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 128, 16),		/* [2] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 16),	/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 128, 16),		 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 16),	 
 		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(120, 0)),
 		BTF_END_RAW,
 	},
@@ -3426,21 +3287,16 @@ static struct btf_raw_test raw_tests[] = {
 	.value_type_id = 1,
 	.max_entries = 4,
 },
-/*
- * typedef int arr_t[16];
- * struct s {
- *	arr_t *a;
- * };
- */
+ 
 {
 	.descr = "struct->ptr->typedef->array->int size resolution",
 	.raw_types = {
-		BTF_STRUCT_ENC(NAME_TBD, 1, 8),			/* [1] */
+		BTF_STRUCT_ENC(NAME_TBD, 1, 8),			 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 0),
-		BTF_PTR_ENC(3),					/* [2] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 4),			/* [3] */
-		BTF_TYPE_ARRAY_ENC(5, 5, 16),			/* [4] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [5] */
+		BTF_PTR_ENC(3),					 
+		BTF_TYPEDEF_ENC(NAME_TBD, 4),			 
+		BTF_TYPE_ARRAY_ENC(5, 5, 16),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0s\0a\0arr_t"),
@@ -3448,27 +3304,22 @@ static struct btf_raw_test raw_tests[] = {
 	.map_name = "ptr_mod_chain_size_resolve_map",
 	.key_size = sizeof(int),
 	.value_size = sizeof(int) * 16,
-	.key_type_id = 5 /* int */,
-	.value_type_id = 3 /* arr_t */,
+	.key_type_id = 5  ,
+	.value_type_id = 3  ,
 	.max_entries = 4,
 },
-/*
- * typedef int arr_t[16][8][4];
- * struct s {
- *	arr_t *a;
- * };
- */
+ 
 {
 	.descr = "struct->ptr->typedef->multi-array->int size resolution",
 	.raw_types = {
-		BTF_STRUCT_ENC(NAME_TBD, 1, 8),			/* [1] */
+		BTF_STRUCT_ENC(NAME_TBD, 1, 8),			 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 0),
-		BTF_PTR_ENC(3),					/* [2] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 4),			/* [3] */
-		BTF_TYPE_ARRAY_ENC(5, 7, 16),			/* [4] */
-		BTF_TYPE_ARRAY_ENC(6, 7, 8),			/* [5] */
-		BTF_TYPE_ARRAY_ENC(7, 7, 4),			/* [6] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [7] */
+		BTF_PTR_ENC(3),					 
+		BTF_TYPEDEF_ENC(NAME_TBD, 4),			 
+		BTF_TYPE_ARRAY_ENC(5, 7, 16),			 
+		BTF_TYPE_ARRAY_ENC(6, 7, 8),			 
+		BTF_TYPE_ARRAY_ENC(7, 7, 4),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0s\0a\0arr_t"),
@@ -3476,33 +3327,25 @@ static struct btf_raw_test raw_tests[] = {
 	.map_name = "multi_arr_size_resolve_map",
 	.key_size = sizeof(int),
 	.value_size = sizeof(int) * 16 * 8 * 4,
-	.key_type_id = 7 /* int */,
-	.value_type_id = 3 /* arr_t */,
+	.key_type_id = 7  ,
+	.value_type_id = 3  ,
 	.max_entries = 4,
 },
-/*
- * typedef int int_t;
- * typedef int_t arr3_t[4];
- * typedef arr3_t arr2_t[8];
- * typedef arr2_t arr1_t[16];
- * struct s {
- *	arr1_t *a;
- * };
- */
+ 
 {
 	.descr = "typedef/multi-arr mix size resolution",
 	.raw_types = {
-		BTF_STRUCT_ENC(NAME_TBD, 1, 8),			/* [1] */
+		BTF_STRUCT_ENC(NAME_TBD, 1, 8),			 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 0),
-		BTF_PTR_ENC(3),					/* [2] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 4),			/* [3] */
-		BTF_TYPE_ARRAY_ENC(5, 10, 16),			/* [4] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 6),			/* [5] */
-		BTF_TYPE_ARRAY_ENC(7, 10, 8),			/* [6] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 8),			/* [7] */
-		BTF_TYPE_ARRAY_ENC(9, 10, 4),			/* [8] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 10),			/* [9] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [10] */
+		BTF_PTR_ENC(3),					 
+		BTF_TYPEDEF_ENC(NAME_TBD, 4),			 
+		BTF_TYPE_ARRAY_ENC(5, 10, 16),			 
+		BTF_TYPEDEF_ENC(NAME_TBD, 6),			 
+		BTF_TYPE_ARRAY_ENC(7, 10, 8),			 
+		BTF_TYPEDEF_ENC(NAME_TBD, 8),			 
+		BTF_TYPE_ARRAY_ENC(9, 10, 4),			 
+		BTF_TYPEDEF_ENC(NAME_TBD, 10),			 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0s\0a\0arr1_t\0arr2_t\0arr3_t\0int_t"),
@@ -3510,21 +3353,19 @@ static struct btf_raw_test raw_tests[] = {
 	.map_name = "typedef_arra_mix_size_resolve_map",
 	.key_size = sizeof(int),
 	.value_size = sizeof(int) * 16 * 8 * 4,
-	.key_type_id = 10 /* int */,
-	.value_type_id = 3 /* arr_t */,
+	.key_type_id = 10  ,
+	.value_type_id = 3  ,
 	.max_entries = 4,
 },
-/*
- * elf .rodata section size 4 and btf .rodata section vlen 0.
- */
+ 
 {
 	.descr = "datasec: vlen == 0",
 	.raw_types = {
-		/* int */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		/* .rodata section */
+		 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		 
 		BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 0), 4),
-								 /* [2] */
+								  
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0.rodata"),
@@ -3540,13 +3381,13 @@ static struct btf_raw_test raw_tests[] = {
 	.descr = "float test #1, well-formed",
 	.raw_types = {
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-								/* [1] */
-		BTF_TYPE_FLOAT_ENC(NAME_TBD, 2),		/* [2] */
-		BTF_TYPE_FLOAT_ENC(NAME_TBD, 4),		/* [3] */
-		BTF_TYPE_FLOAT_ENC(NAME_TBD, 8),		/* [4] */
-		BTF_TYPE_FLOAT_ENC(NAME_TBD, 12),		/* [5] */
-		BTF_TYPE_FLOAT_ENC(NAME_TBD, 16),		/* [6] */
-		BTF_STRUCT_ENC(NAME_TBD, 5, 48),		/* [7] */
+								 
+		BTF_TYPE_FLOAT_ENC(NAME_TBD, 2),		 
+		BTF_TYPE_FLOAT_ENC(NAME_TBD, 4),		 
+		BTF_TYPE_FLOAT_ENC(NAME_TBD, 8),		 
+		BTF_TYPE_FLOAT_ENC(NAME_TBD, 12),		 
+		BTF_TYPE_FLOAT_ENC(NAME_TBD, 16),		 
+		BTF_STRUCT_ENC(NAME_TBD, 5, 48),		 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 0),
 		BTF_MEMBER_ENC(NAME_TBD, 3, 32),
 		BTF_MEMBER_ENC(NAME_TBD, 4, 64),
@@ -3568,9 +3409,9 @@ static struct btf_raw_test raw_tests[] = {
 	.descr = "float test #2, invalid vlen",
 	.raw_types = {
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-								/* [1] */
+								 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_FLOAT, 0, 1), 4),
-								/* [2] */
+								 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0float"),
@@ -3588,9 +3429,9 @@ static struct btf_raw_test raw_tests[] = {
 	.descr = "float test #3, invalid kind_flag",
 	.raw_types = {
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-								/* [1] */
+								 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_FLOAT, 1, 0), 4),
-								/* [2] */
+								 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0float"),
@@ -3608,9 +3449,9 @@ static struct btf_raw_test raw_tests[] = {
 	.descr = "float test #4, member does not fit",
 	.raw_types = {
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-								/* [1] */
-		BTF_TYPE_FLOAT_ENC(NAME_TBD, 4),		/* [2] */
-		BTF_STRUCT_ENC(NAME_TBD, 1, 2),			/* [3] */
+								 
+		BTF_TYPE_FLOAT_ENC(NAME_TBD, 4),		 
+		BTF_STRUCT_ENC(NAME_TBD, 1, 2),			 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 0),
 		BTF_END_RAW,
 	},
@@ -3629,9 +3470,9 @@ static struct btf_raw_test raw_tests[] = {
 	.descr = "float test #5, member is not properly aligned",
 	.raw_types = {
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-								/* [1] */
-		BTF_TYPE_FLOAT_ENC(NAME_TBD, 4),		/* [2] */
-		BTF_STRUCT_ENC(NAME_TBD, 1, 8),			/* [3] */
+								 
+		BTF_TYPE_FLOAT_ENC(NAME_TBD, 4),		 
+		BTF_STRUCT_ENC(NAME_TBD, 1, 8),			 
 		BTF_MEMBER_ENC(NAME_TBD, 2, 8),
 		BTF_END_RAW,
 	},
@@ -3650,8 +3491,8 @@ static struct btf_raw_test raw_tests[] = {
 	.descr = "float test #6, invalid size",
 	.raw_types = {
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-								/* [1] */
-		BTF_TYPE_FLOAT_ENC(NAME_TBD, 6),		/* [2] */
+								 
+		BTF_TYPE_FLOAT_ENC(NAME_TBD, 6),		 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0float"),
@@ -3669,8 +3510,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #1, struct/member, well-formed",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_STRUCT_ENC(0, 2, 8),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_STRUCT_ENC(0, 2, 8),			 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_MEMBER_ENC(NAME_TBD, 1, 32),
 		BTF_DECL_TAG_ENC(NAME_TBD, 2, -1),
@@ -3690,8 +3531,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #2, union/member, well-formed",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_UNION_ENC(NAME_TBD, 2, 4),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_UNION_ENC(NAME_TBD, 2, 4),			 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_DECL_TAG_ENC(NAME_TBD, 2, -1),
@@ -3711,9 +3552,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #3, variable, well-formed",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
-		BTF_VAR_ENC(NAME_TBD, 1, 1),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
+		BTF_VAR_ENC(NAME_TBD, 1, 1),			 
 		BTF_DECL_TAG_ENC(NAME_TBD, 2, -1),
 		BTF_DECL_TAG_ENC(NAME_TBD, 3, -1),
 		BTF_END_RAW,
@@ -3730,11 +3571,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #4, func/parameter, well-formed",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_DECL_TAG_ENC(NAME_TBD, 3, -1),
 		BTF_DECL_TAG_ENC(NAME_TBD, 3, 0),
 		BTF_DECL_TAG_ENC(NAME_TBD, 3, 1),
@@ -3752,8 +3593,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #5, invalid value",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_DECL_TAG_ENC(0, 2, -1),
 		BTF_END_RAW,
 	},
@@ -3771,7 +3612,7 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #6, invalid target type",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_DECL_TAG_ENC(NAME_TBD, 1, -1),
 		BTF_END_RAW,
 	},
@@ -3789,8 +3630,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #7, invalid vlen",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DECL_TAG, 0, 1), 2), (0),
 		BTF_END_RAW,
 	},
@@ -3808,8 +3649,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #8, invalid kflag",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DECL_TAG, 1, 0), 2), (-1),
 		BTF_END_RAW,
 	},
@@ -3827,8 +3668,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #9, var, invalid component_idx",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),			 
 		BTF_DECL_TAG_ENC(NAME_TBD, 2, 0),
 		BTF_END_RAW,
 	},
@@ -3846,8 +3687,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #10, struct member, invalid component_idx",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_STRUCT_ENC(0, 2, 8),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_STRUCT_ENC(0, 2, 8),			 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_MEMBER_ENC(NAME_TBD, 1, 32),
 		BTF_DECL_TAG_ENC(NAME_TBD, 2, 2),
@@ -3867,11 +3708,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #11, func parameter, invalid component_idx",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_DECL_TAG_ENC(NAME_TBD, 3, 2),
 		BTF_END_RAW,
 	},
@@ -3889,11 +3730,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #12, < -1 component_idx",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(0, 2),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(0, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_DECL_TAG_ENC(NAME_TBD, 3, -2),
 		BTF_END_RAW,
 	},
@@ -3911,8 +3752,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #13, typedef, well-formed",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPEDEF_ENC(NAME_TBD, 1),			 
 		BTF_DECL_TAG_ENC(NAME_TBD, 2, -1),
 		BTF_END_RAW,
 	},
@@ -3928,8 +3769,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #14, typedef, invalid component_idx",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPEDEF_ENC(NAME_TBD, 1),			 
 		BTF_DECL_TAG_ENC(NAME_TBD, 2, 0),
 		BTF_END_RAW,
 	},
@@ -3947,9 +3788,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #15, func, invalid func proto",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_DECL_TAG_ENC(NAME_TBD, 3, 0),		/* [2] */
-		BTF_FUNC_ENC(NAME_TBD, 8),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_DECL_TAG_ENC(NAME_TBD, 3, 0),		 
+		BTF_FUNC_ENC(NAME_TBD, 8),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0tag\0func"),
@@ -3966,10 +3807,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #16, func proto, return type",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),				/* [1] */
-		BTF_VAR_ENC(NAME_TBD, 1, 0),						/* [2] */
-		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DECL_TAG, 0, 0), 2), (-1),	/* [3] */
-		BTF_FUNC_PROTO_ENC(3, 0),						/* [4] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),				 
+		BTF_VAR_ENC(NAME_TBD, 1, 0),						 
+		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DECL_TAG, 0, 0), 2), (-1),	 
+		BTF_FUNC_PROTO_ENC(3, 0),						 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0local\0tag1"),
@@ -3979,11 +3820,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #17, func proto, argument",
 	.raw_types = {
-		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DECL_TAG, 0, 0), 4), (-1),	/* [1] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 0), /* [2] */
-		BTF_FUNC_PROTO_ENC(0, 1),			/* [3] */
+		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_DECL_TAG, 0, 0), 4), (-1),	 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_PTR, 0, 0), 0),  
+		BTF_FUNC_PROTO_ENC(0, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_VAR_ENC(NAME_TBD, 2, 0),			/* [4] */
+		BTF_VAR_ENC(NAME_TBD, 2, 0),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0local\0tag1\0var"),
@@ -3993,11 +3834,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #18, decl_tag as the map key type",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_STRUCT_ENC(0, 2, 8),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_STRUCT_ENC(0, 2, 8),			 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_MEMBER_ENC(NAME_TBD, 1, 32),
-		BTF_DECL_TAG_ENC(NAME_TBD, 2, -1),		/* [3] */
+		BTF_DECL_TAG_ENC(NAME_TBD, 2, -1),		 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0m1\0m2\0tag"),
@@ -4013,11 +3854,11 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "decl_tag test #19, decl_tag as the map value type",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_STRUCT_ENC(0, 2, 8),			/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_STRUCT_ENC(0, 2, 8),			 
 		BTF_MEMBER_ENC(NAME_TBD, 1, 0),
 		BTF_MEMBER_ENC(NAME_TBD, 1, 32),
-		BTF_DECL_TAG_ENC(NAME_TBD, 2, -1),		/* [3] */
+		BTF_DECL_TAG_ENC(NAME_TBD, 2, -1),		 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0m1\0m2\0tag"),
@@ -4033,9 +3874,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "type_tag test #1",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_TAG_ENC(NAME_TBD, 1),			/* [2] */
-		BTF_PTR_ENC(2),					/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_TAG_ENC(NAME_TBD, 1),			 
+		BTF_PTR_ENC(2),					 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0tag"),
@@ -4050,9 +3891,9 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "type_tag test #2, type tag order",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_CONST_ENC(3),				/* [2] */
-		BTF_TYPE_TAG_ENC(NAME_TBD, 1),			/* [3] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_CONST_ENC(3),				 
+		BTF_TYPE_TAG_ENC(NAME_TBD, 1),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0tag"),
@@ -4069,10 +3910,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "type_tag test #3, type tag order",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_TAG_ENC(NAME_TBD, 3),			/* [2] */
-		BTF_CONST_ENC(4),				/* [3] */
-		BTF_TYPE_TAG_ENC(NAME_TBD, 1),			/* [4] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_TAG_ENC(NAME_TBD, 3),			 
+		BTF_CONST_ENC(4),				 
+		BTF_TYPE_TAG_ENC(NAME_TBD, 1),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0tag\0tag"),
@@ -4089,10 +3930,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "type_tag test #4, type tag order",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 3),			/* [2] */
-		BTF_CONST_ENC(4),				/* [3] */
-		BTF_TYPE_TAG_ENC(NAME_TBD, 1),			/* [4] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPEDEF_ENC(NAME_TBD, 3),			 
+		BTF_CONST_ENC(4),				 
+		BTF_TYPE_TAG_ENC(NAME_TBD, 1),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0tag\0tag"),
@@ -4109,10 +3950,10 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "type_tag test #5, type tag order",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_TAG_ENC(NAME_TBD, 3),			/* [2] */
-		BTF_CONST_ENC(1),				/* [3] */
-		BTF_TYPE_TAG_ENC(NAME_TBD, 2),			/* [4] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_TAG_ENC(NAME_TBD, 3),			 
+		BTF_CONST_ENC(1),				 
+		BTF_TYPE_TAG_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0tag\0tag"),
@@ -4127,12 +3968,12 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "type_tag test #6, type tag order",
 	.raw_types = {
-		BTF_PTR_ENC(2),					/* [1] */
-		BTF_TYPE_TAG_ENC(NAME_TBD, 3),			/* [2] */
-		BTF_CONST_ENC(4),				/* [3] */
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  /* [4] */
-		BTF_PTR_ENC(6),					/* [5] */
-		BTF_CONST_ENC(2),				/* [6] */
+		BTF_PTR_ENC(2),					 
+		BTF_TYPE_TAG_ENC(NAME_TBD, 3),			 
+		BTF_CONST_ENC(4),				 
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),   
+		BTF_PTR_ENC(6),					 
+		BTF_CONST_ENC(2),				 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0tag"),
@@ -4149,8 +3990,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "enum64 test #1, unsigned, size 8",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 2), 8),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 2), 8),	 
 		BTF_ENUM64_ENC(NAME_TBD, 0, 0),
 		BTF_ENUM64_ENC(NAME_TBD, 1, 1),
 		BTF_END_RAW,
@@ -4167,8 +4008,8 @@ static struct btf_raw_test raw_tests[] = {
 {
 	.descr = "enum64 test #2, signed, size 4",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			/* [1] */
-		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM64, 1, 2), 4),	/* [2] */
+		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),			 
+		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM64, 1, 2), 4),	 
 		BTF_ENUM64_ENC(NAME_TBD, -1, 0),
 		BTF_ENUM64_ENC(NAME_TBD, 1, 0),
 		BTF_END_RAW,
@@ -4183,7 +4024,7 @@ static struct btf_raw_test raw_tests[] = {
 	.max_entries = 1,
 },
 
-}; /* struct btf_raw_test raw_tests[] */
+};  
 
 static const char *get_next_str(const char *start, const char *end)
 {
@@ -4227,11 +4068,11 @@ static void *btf_raw_create(const struct btf_header *hdr,
 	if (CHECK(!raw_btf, "Cannot allocate memory for raw_btf"))
 		return NULL;
 
-	/* Copy header */
+	 
 	memcpy(raw_btf, hdr, sizeof(*hdr));
 	offset = sizeof(*hdr);
 
-	/* Index strings */
+	 
 	while ((next_str = get_next_str(next_str, end_str))) {
 		if (strs_cnt == strs_cap) {
 			strs_cap += max(16, strs_cap / 2);
@@ -4248,7 +4089,7 @@ static void *btf_raw_create(const struct btf_header *hdr,
 		next_str += strlen(next_str);
 	}
 
-	/* Copy type section */
+	 
 	ret_types = raw_btf + offset;
 	for (i = 0; i < type_sec_size / sizeof(raw_types[0]); i++) {
 		if (raw_types[i] == NAME_TBD) {
@@ -4275,7 +4116,7 @@ static void *btf_raw_create(const struct btf_header *hdr,
 	}
 	offset += type_sec_size;
 
-	/* Copy string section */
+	 
 	memcpy(raw_btf + offset, str, str_sec_size);
 
 	ret_hdr = (struct btf_header *)raw_btf;
@@ -4398,7 +4239,7 @@ const struct btf_get_info_test get_info_tests[] = {
 {
 	.descr = "== raw_btf_size+1",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -4409,7 +4250,7 @@ const struct btf_get_info_test get_info_tests[] = {
 {
 	.descr = "== raw_btf_size-3",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -4420,7 +4261,7 @@ const struct btf_get_info_test get_info_tests[] = {
 {
 	.descr = "Large bpf_btf_info",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -4431,9 +4272,9 @@ const struct btf_get_info_test get_info_tests[] = {
 {
 	.descr = "BTF ID",
 	.raw_types = {
-		/* int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),
-		/* unsigned int */			/* [2] */
+		 			 
 		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),
 		BTF_END_RAW,
 	},
@@ -4479,10 +4320,7 @@ static int test_big_btf_info(unsigned int test_num)
 		goto done;
 	}
 
-	/*
-	 * GET_INFO should error out if the userspace info
-	 * has non zero tailing bytes.
-	 */
+	 
 	info = &info_garbage.info;
 	memset(info, 0, sizeof(*info));
 	info_garbage.garbage = 0xdeadbeef;
@@ -4496,12 +4334,7 @@ static int test_big_btf_info(unsigned int test_num)
 		goto done;
 	}
 
-	/*
-	 * GET_INFO should succeed even info_len is larger than
-	 * the kernel supported as long as tailing bytes are zero.
-	 * The kernel supported info len should also be returned
-	 * to userspace.
-	 */
+	 
 	info_garbage.garbage = 0;
 	err = bpf_btf_get_info_by_fd(btf_fd, info, &info_len);
 	if (CHECK(err || info_len != sizeof(*info),
@@ -4565,7 +4398,7 @@ static int test_btf_id(unsigned int test_num)
 		goto done;
 	}
 
-	/* Test BPF_OBJ_GET_INFO_BY_ID on btf_id */
+	 
 	info_len = sizeof(info[0]);
 	err = bpf_btf_get_info_by_fd(btf_fd[0], &info[0], &info_len);
 	if (CHECK(err, "errno:%d", errno)) {
@@ -4591,7 +4424,7 @@ static int test_btf_id(unsigned int test_num)
 		goto done;
 	}
 
-	/* Test btf members in struct bpf_map_info */
+	 
 	opts.btf_fd = btf_fd[0];
 	opts.btf_key_type_id = 1;
 	opts.btf_value_type_id = 2;
@@ -4618,7 +4451,7 @@ static int test_btf_id(unsigned int test_num)
 		btf_fd[i] = -1;
 	}
 
-	/* Test BTF ID is removed from the kernel */
+	 
 	btf_fd[0] = bpf_btf_get_fd_by_id(map_info.btf_id);
 	if (CHECK(btf_fd[0] < 0, "errno:%d", errno)) {
 		err = -1;
@@ -4627,7 +4460,7 @@ static int test_btf_id(unsigned int test_num)
 	close(btf_fd[0]);
 	btf_fd[0] = -1;
 
-	/* The map holds the last ref to BTF and its btf_id */
+	 
 	close(map_fd);
 	map_fd = -1;
 	btf_fd[0] = bpf_btf_get_fd_by_id(map_info.btf_id);
@@ -4786,7 +4619,7 @@ static void do_test_file(unsigned int test_num)
 	has_btf_ext = btf_ext != NULL;
 	btf_ext__free(btf_ext);
 
-	/* temporary disable LIBBPF_STRICT_MAP_DEFINITIONS to test legacy maps */
+	 
 	libbpf_set_strict_mode(LIBBPF_STRICT_ALL & ~LIBBPF_STRICT_MAP_DEFINITIONS);
 	obj = bpf_object__open(test->file);
 	err = libbpf_get_error(obj);
@@ -4821,7 +4654,7 @@ static void do_test_file(unsigned int test_num)
 	if (!has_btf_ext)
 		goto skip;
 
-	/* get necessary program info */
+	 
 	info_len = sizeof(struct bpf_prog_info);
 	err = bpf_prog_get_info_by_fd(prog_fd, &info, &info_len);
 
@@ -4849,7 +4682,7 @@ static void do_test_file(unsigned int test_num)
 		goto done;
 	}
 
-	/* reset info to only retrieve func_info related data */
+	 
 	memset(&info, 0, sizeof(info));
 	info.nr_func_info = 3;
 	info.func_info_rec_size = rec_size;
@@ -4880,7 +4713,7 @@ static void do_test_file(unsigned int test_num)
 	if (CHECK(err, "cannot get btf from kernel, err: %d", err))
 		goto done;
 
-	/* check three functions */
+	 
 	finfo = func_info;
 	for (i = 0; i < 3; i++) {
 		const struct btf_type *t;
@@ -4895,9 +4728,7 @@ static void do_test_file(unsigned int test_num)
 
 		fname = btf__name_by_offset(btf, t->name_off);
 		err = strcmp(fname, expected_fnames[i]);
-		/* for the second and third functions in .text section,
-		 * the compiler may order them either way.
-		 */
+		 
 		if (i && err)
 			err = strcmp(fname, expected_fnames[3 - i]);
 		if (CHECK(err, "incorrect fname %s", fname ? : "")) {
@@ -4929,7 +4760,7 @@ const char *pprint_enum_str[] = {
 struct pprint_mapv {
 	uint32_t ui32;
 	uint16_t ui16;
-	/* 2 bytes hole */
+	 
 	int32_t si32;
 	uint32_t unused_bits2a:2,
 		bits28:28,
@@ -4962,220 +4793,206 @@ struct pprint_mapv_int128 {
 static struct btf_raw_test pprint_test_template[] = {
 {
 	.raw_types = {
-		/* unsighed char */			/* [1] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 8, 1),
-		/* unsigned short */			/* [2] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 16, 2),
-		/* unsigned int */			/* [3] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),
-		/* int */				/* [4] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-		/* unsigned long long */		/* [5] */
+		 		 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 64, 8),
-		/* 2 bits */				/* [6] */
+		 				 
 		BTF_TYPE_INT_ENC(0, 0, 0, 2, 2),
-		/* 28 bits */				/* [7] */
+		 				 
 		BTF_TYPE_INT_ENC(0, 0, 0, 28, 4),
-		/* uint8_t[8] */			/* [8] */
+		 			 
 		BTF_TYPE_ARRAY_ENC(9, 1, 8),
-		/* typedef unsigned char uint8_t */	/* [9] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 1),
-		/* typedef unsigned short uint16_t */	/* [10] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 2),
-		/* typedef unsigned int uint32_t */	/* [11] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 3),
-		/* typedef int int32_t */		/* [12] */
+		 		 
 		BTF_TYPEDEF_ENC(NAME_TBD, 4),
-		/* typedef unsigned long long uint64_t *//* [13] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 5),
-		/* union (anon) */			/* [14] */
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 0, 2), 8),
-		BTF_MEMBER_ENC(NAME_TBD, 13, 0),/* uint64_t ui64; */
-		BTF_MEMBER_ENC(NAME_TBD, 8, 0),	/* uint8_t ui8a[8]; */
-		/* enum (anon) */			/* [15] */
+		BTF_MEMBER_ENC(NAME_TBD, 13, 0), 
+		BTF_MEMBER_ENC(NAME_TBD, 8, 0),	 
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 4), 4),
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_ENUM_ENC(NAME_TBD, 1),
 		BTF_ENUM_ENC(NAME_TBD, 2),
 		BTF_ENUM_ENC(NAME_TBD, 3),
-		/* struct pprint_mapv */		/* [16] */
+		 		 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 0, 11), 40),
-		BTF_MEMBER_ENC(NAME_TBD, 11, 0),	/* uint32_t ui32 */
-		BTF_MEMBER_ENC(NAME_TBD, 10, 32),	/* uint16_t ui16 */
-		BTF_MEMBER_ENC(NAME_TBD, 12, 64),	/* int32_t si32 */
-		BTF_MEMBER_ENC(NAME_TBD, 6, 96),	/* unused_bits2a */
-		BTF_MEMBER_ENC(NAME_TBD, 7, 98),	/* bits28 */
-		BTF_MEMBER_ENC(NAME_TBD, 6, 126),	/* unused_bits2b */
-		BTF_MEMBER_ENC(0, 14, 128),		/* union (anon) */
-		BTF_MEMBER_ENC(NAME_TBD, 15, 192),	/* aenum */
-		BTF_MEMBER_ENC(NAME_TBD, 11, 224),	/* uint32_t ui32b */
-		BTF_MEMBER_ENC(NAME_TBD, 6, 256),	/* bits2c */
-		BTF_MEMBER_ENC(NAME_TBD, 17, 264),	/* si8_4 */
-		BTF_TYPE_ARRAY_ENC(18, 1, 2),		/* [17] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 2),		/* [18] */
+		BTF_MEMBER_ENC(NAME_TBD, 11, 0),	 
+		BTF_MEMBER_ENC(NAME_TBD, 10, 32),	 
+		BTF_MEMBER_ENC(NAME_TBD, 12, 64),	 
+		BTF_MEMBER_ENC(NAME_TBD, 6, 96),	 
+		BTF_MEMBER_ENC(NAME_TBD, 7, 98),	 
+		BTF_MEMBER_ENC(NAME_TBD, 6, 126),	 
+		BTF_MEMBER_ENC(0, 14, 128),		 
+		BTF_MEMBER_ENC(NAME_TBD, 15, 192),	 
+		BTF_MEMBER_ENC(NAME_TBD, 11, 224),	 
+		BTF_MEMBER_ENC(NAME_TBD, 6, 256),	 
+		BTF_MEMBER_ENC(NAME_TBD, 17, 264),	 
+		BTF_TYPE_ARRAY_ENC(18, 1, 2),		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 2),		 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0unsigned char\0unsigned short\0unsigned int\0int\0unsigned long long\0uint8_t\0uint16_t\0uint32_t\0int32_t\0uint64_t\0ui64\0ui8a\0ENUM_ZERO\0ENUM_ONE\0ENUM_TWO\0ENUM_THREE\0pprint_mapv\0ui32\0ui16\0si32\0unused_bits2a\0bits28\0unused_bits2b\0aenum\0ui32b\0bits2c\0si8_4"),
 	.key_size = sizeof(unsigned int),
 	.value_size = sizeof(struct pprint_mapv),
-	.key_type_id = 3,	/* unsigned int */
-	.value_type_id = 16,	/* struct pprint_mapv */
+	.key_type_id = 3,	 
+	.value_type_id = 16,	 
 	.max_entries = 128,
 },
 
 {
-	/* this type will have the same type as the
-	 * first .raw_types definition, but struct type will
-	 * be encoded with kind_flag set.
-	 */
+	 
 	.raw_types = {
-		/* unsighed char */			/* [1] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 8, 1),
-		/* unsigned short */			/* [2] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 16, 2),
-		/* unsigned int */			/* [3] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),
-		/* int */				/* [4] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-		/* unsigned long long */		/* [5] */
+		 		 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 64, 8),
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),	/* [6] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),	/* [7] */
-		/* uint8_t[8] */			/* [8] */
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),	 
+		 			 
 		BTF_TYPE_ARRAY_ENC(9, 1, 8),
-		/* typedef unsigned char uint8_t */	/* [9] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 1),
-		/* typedef unsigned short uint16_t */	/* [10] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 2),
-		/* typedef unsigned int uint32_t */	/* [11] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 3),
-		/* typedef int int32_t */		/* [12] */
+		 		 
 		BTF_TYPEDEF_ENC(NAME_TBD, 4),
-		/* typedef unsigned long long uint64_t *//* [13] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 5),
-		/* union (anon) */			/* [14] */
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 0, 2), 8),
-		BTF_MEMBER_ENC(NAME_TBD, 13, 0),/* uint64_t ui64; */
-		BTF_MEMBER_ENC(NAME_TBD, 8, 0),	/* uint8_t ui8a[8]; */
-		/* enum (anon) */			/* [15] */
+		BTF_MEMBER_ENC(NAME_TBD, 13, 0), 
+		BTF_MEMBER_ENC(NAME_TBD, 8, 0),	 
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 4), 4),
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_ENUM_ENC(NAME_TBD, 1),
 		BTF_ENUM_ENC(NAME_TBD, 2),
 		BTF_ENUM_ENC(NAME_TBD, 3),
-		/* struct pprint_mapv */		/* [16] */
+		 		 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 11), 40),
-		BTF_MEMBER_ENC(NAME_TBD, 11, BTF_MEMBER_OFFSET(0, 0)),	/* uint32_t ui32 */
-		BTF_MEMBER_ENC(NAME_TBD, 10, BTF_MEMBER_OFFSET(0, 32)),	/* uint16_t ui16 */
-		BTF_MEMBER_ENC(NAME_TBD, 12, BTF_MEMBER_OFFSET(0, 64)),	/* int32_t si32 */
-		BTF_MEMBER_ENC(NAME_TBD, 6, BTF_MEMBER_OFFSET(2, 96)),	/* unused_bits2a */
-		BTF_MEMBER_ENC(NAME_TBD, 7, BTF_MEMBER_OFFSET(28, 98)),	/* bits28 */
-		BTF_MEMBER_ENC(NAME_TBD, 6, BTF_MEMBER_OFFSET(2, 126)),	/* unused_bits2b */
-		BTF_MEMBER_ENC(0, 14, BTF_MEMBER_OFFSET(0, 128)),	/* union (anon) */
-		BTF_MEMBER_ENC(NAME_TBD, 15, BTF_MEMBER_OFFSET(0, 192)),	/* aenum */
-		BTF_MEMBER_ENC(NAME_TBD, 11, BTF_MEMBER_OFFSET(0, 224)),	/* uint32_t ui32b */
-		BTF_MEMBER_ENC(NAME_TBD, 6, BTF_MEMBER_OFFSET(2, 256)),	/* bits2c */
-		BTF_MEMBER_ENC(NAME_TBD, 17, 264),	/* si8_4 */
-		BTF_TYPE_ARRAY_ENC(18, 1, 2),		/* [17] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 2),		/* [18] */
+		BTF_MEMBER_ENC(NAME_TBD, 11, BTF_MEMBER_OFFSET(0, 0)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 10, BTF_MEMBER_OFFSET(0, 32)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 12, BTF_MEMBER_OFFSET(0, 64)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 6, BTF_MEMBER_OFFSET(2, 96)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 7, BTF_MEMBER_OFFSET(28, 98)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 6, BTF_MEMBER_OFFSET(2, 126)),	 
+		BTF_MEMBER_ENC(0, 14, BTF_MEMBER_OFFSET(0, 128)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 15, BTF_MEMBER_OFFSET(0, 192)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 11, BTF_MEMBER_OFFSET(0, 224)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 6, BTF_MEMBER_OFFSET(2, 256)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 17, 264),	 
+		BTF_TYPE_ARRAY_ENC(18, 1, 2),		 
+		BTF_TYPE_ARRAY_ENC(1, 1, 2),		 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0unsigned char\0unsigned short\0unsigned int\0int\0unsigned long long\0uint8_t\0uint16_t\0uint32_t\0int32_t\0uint64_t\0ui64\0ui8a\0ENUM_ZERO\0ENUM_ONE\0ENUM_TWO\0ENUM_THREE\0pprint_mapv\0ui32\0ui16\0si32\0unused_bits2a\0bits28\0unused_bits2b\0aenum\0ui32b\0bits2c\0si8_4"),
 	.key_size = sizeof(unsigned int),
 	.value_size = sizeof(struct pprint_mapv),
-	.key_type_id = 3,	/* unsigned int */
-	.value_type_id = 16,	/* struct pprint_mapv */
+	.key_type_id = 3,	 
+	.value_type_id = 16,	 
 	.max_entries = 128,
 },
 
 {
-	/* this type will have the same layout as the
-	 * first .raw_types definition. The struct type will
-	 * be encoded with kind_flag set, bitfield members
-	 * are added typedef/const/volatile, and bitfield members
-	 * will have both int and enum types.
-	 */
+	 
 	.raw_types = {
-		/* unsighed char */			/* [1] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 8, 1),
-		/* unsigned short */			/* [2] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 16, 2),
-		/* unsigned int */			/* [3] */
+		 			 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),
-		/* int */				/* [4] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),
-		/* unsigned long long */		/* [5] */
+		 		 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 64, 8),
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),	/* [6] */
-		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),	/* [7] */
-		/* uint8_t[8] */			/* [8] */
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(0, 0, 0, 32, 4),	 
+		 			 
 		BTF_TYPE_ARRAY_ENC(9, 1, 8),
-		/* typedef unsigned char uint8_t */	/* [9] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 1),
-		/* typedef unsigned short uint16_t */	/* [10] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 2),
-		/* typedef unsigned int uint32_t */	/* [11] */
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 3),
-		/* typedef int int32_t */		/* [12] */
+		 		 
 		BTF_TYPEDEF_ENC(NAME_TBD, 4),
-		/* typedef unsigned long long uint64_t *//* [13] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 5),
-		/* union (anon) */			/* [14] */
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_UNION, 0, 2), 8),
-		BTF_MEMBER_ENC(NAME_TBD, 13, 0),/* uint64_t ui64; */
-		BTF_MEMBER_ENC(NAME_TBD, 8, 0),	/* uint8_t ui8a[8]; */
-		/* enum (anon) */			/* [15] */
+		BTF_MEMBER_ENC(NAME_TBD, 13, 0), 
+		BTF_MEMBER_ENC(NAME_TBD, 8, 0),	 
+		 			 
 		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 4), 4),
 		BTF_ENUM_ENC(NAME_TBD, 0),
 		BTF_ENUM_ENC(NAME_TBD, 1),
 		BTF_ENUM_ENC(NAME_TBD, 2),
 		BTF_ENUM_ENC(NAME_TBD, 3),
-		/* struct pprint_mapv */		/* [16] */
+		 		 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 11), 40),
-		BTF_MEMBER_ENC(NAME_TBD, 11, BTF_MEMBER_OFFSET(0, 0)),	/* uint32_t ui32 */
-		BTF_MEMBER_ENC(NAME_TBD, 10, BTF_MEMBER_OFFSET(0, 32)),	/* uint16_t ui16 */
-		BTF_MEMBER_ENC(NAME_TBD, 12, BTF_MEMBER_OFFSET(0, 64)),	/* int32_t si32 */
-		BTF_MEMBER_ENC(NAME_TBD, 17, BTF_MEMBER_OFFSET(2, 96)),	/* unused_bits2a */
-		BTF_MEMBER_ENC(NAME_TBD, 7, BTF_MEMBER_OFFSET(28, 98)),	/* bits28 */
-		BTF_MEMBER_ENC(NAME_TBD, 19, BTF_MEMBER_OFFSET(2, 126)),/* unused_bits2b */
-		BTF_MEMBER_ENC(0, 14, BTF_MEMBER_OFFSET(0, 128)),	/* union (anon) */
-		BTF_MEMBER_ENC(NAME_TBD, 15, BTF_MEMBER_OFFSET(0, 192)),	/* aenum */
-		BTF_MEMBER_ENC(NAME_TBD, 11, BTF_MEMBER_OFFSET(0, 224)),	/* uint32_t ui32b */
-		BTF_MEMBER_ENC(NAME_TBD, 17, BTF_MEMBER_OFFSET(2, 256)),	/* bits2c */
-		BTF_MEMBER_ENC(NAME_TBD, 20, BTF_MEMBER_OFFSET(0, 264)),	/* si8_4 */
-		/* typedef unsigned int ___int */	/* [17] */
+		BTF_MEMBER_ENC(NAME_TBD, 11, BTF_MEMBER_OFFSET(0, 0)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 10, BTF_MEMBER_OFFSET(0, 32)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 12, BTF_MEMBER_OFFSET(0, 64)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 17, BTF_MEMBER_OFFSET(2, 96)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 7, BTF_MEMBER_OFFSET(28, 98)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 19, BTF_MEMBER_OFFSET(2, 126)), 
+		BTF_MEMBER_ENC(0, 14, BTF_MEMBER_OFFSET(0, 128)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 15, BTF_MEMBER_OFFSET(0, 192)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 11, BTF_MEMBER_OFFSET(0, 224)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 17, BTF_MEMBER_OFFSET(2, 256)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 20, BTF_MEMBER_OFFSET(0, 264)),	 
+		 	 
 		BTF_TYPEDEF_ENC(NAME_TBD, 18),
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_VOLATILE, 0, 0), 6),	/* [18] */
-		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 15),	/* [19] */
-		BTF_TYPE_ARRAY_ENC(21, 1, 2),					/* [20] */
-		BTF_TYPE_ARRAY_ENC(1, 1, 2),					/* [21] */
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_VOLATILE, 0, 0), 6),	 
+		BTF_TYPE_ENC(0, BTF_INFO_ENC(BTF_KIND_CONST, 0, 0), 15),	 
+		BTF_TYPE_ARRAY_ENC(21, 1, 2),					 
+		BTF_TYPE_ARRAY_ENC(1, 1, 2),					 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0unsigned char\0unsigned short\0unsigned int\0int\0unsigned long long\0uint8_t\0uint16_t\0uint32_t\0int32_t\0uint64_t\0ui64\0ui8a\0ENUM_ZERO\0ENUM_ONE\0ENUM_TWO\0ENUM_THREE\0pprint_mapv\0ui32\0ui16\0si32\0unused_bits2a\0bits28\0unused_bits2b\0aenum\0ui32b\0bits2c\0___int\0si8_4"),
 	.key_size = sizeof(unsigned int),
 	.value_size = sizeof(struct pprint_mapv),
-	.key_type_id = 3,	/* unsigned int */
-	.value_type_id = 16,	/* struct pprint_mapv */
+	.key_type_id = 3,	 
+	.value_type_id = 16,	 
 	.max_entries = 128,
 },
 
 #ifdef __SIZEOF_INT128__
 {
-	/* test int128 */
+	 
 	.raw_types = {
-		/* unsigned int */				/* [1] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),
-		/* __int128 */					/* [2] */
+		 					 
 		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 128, 16),
-		/* unsigned __int128 */				/* [3] */
+		 				 
 		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 128, 16),
-		/* struct pprint_mapv_int128 */			/* [4] */
+		 			 
 		BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 5), 64),
-		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 0)),		/* si128a */
-		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 128)),		/* si128b */
-		BTF_MEMBER_ENC(NAME_TBD, 3, BTF_MEMBER_OFFSET(3, 256)),		/* bits3 */
-		BTF_MEMBER_ENC(NAME_TBD, 3, BTF_MEMBER_OFFSET(80, 259)),	/* bits80 */
-		BTF_MEMBER_ENC(NAME_TBD, 3, BTF_MEMBER_OFFSET(0, 384)),		/* ui128 */
+		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 0)),		 
+		BTF_MEMBER_ENC(NAME_TBD, 2, BTF_MEMBER_OFFSET(0, 128)),		 
+		BTF_MEMBER_ENC(NAME_TBD, 3, BTF_MEMBER_OFFSET(3, 256)),		 
+		BTF_MEMBER_ENC(NAME_TBD, 3, BTF_MEMBER_OFFSET(80, 259)),	 
+		BTF_MEMBER_ENC(NAME_TBD, 3, BTF_MEMBER_OFFSET(0, 384)),		 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0unsigned int\0__int128\0unsigned __int128\0pprint_mapv_int128\0si128a\0si128b\0bits3\0bits80\0ui128"),
@@ -5463,7 +5280,7 @@ static void do_test_pprint(int test_num)
 		goto done;
 	}
 
-	/* Skip lines start with '#' */
+	 
 	while ((nread = getline(&line, &line_len, pin_file)) > 0 &&
 	       *line == '#')
 		;
@@ -5488,16 +5305,7 @@ static void do_test_pprint(int test_num)
 
 		for (cpu = 0; cpu < num_cpus; cpu++) {
 			if (percpu_map) {
-				/* for percpu map, the format looks like:
-				 * <key>: {
-				 *	cpu0: <value_on_cpu0>
-				 *	cpu1: <value_on_cpu1>
-				 *	...
-				 *	cpun: <value_on_cpun>
-				 * }
-				 *
-				 * let us verify the line containing the key here.
-				 */
+				 
 				if (cpu == 0) {
 					nexpected_line = snprintf(expected_line,
 								  sizeof(expected_line),
@@ -5510,7 +5318,7 @@ static void do_test_pprint(int test_num)
 						goto done;
 				}
 
-				/* read value@cpu */
+				 
 				nread = getline(&line, &line_len, pin_file);
 				if (nread < 0)
 					break;
@@ -5529,7 +5337,7 @@ static void do_test_pprint(int test_num)
 		}
 
 		if (percpu_map) {
-			/* skip the last bracket for the percpu map */
+			 
 			nread = getline(&line, &line_len, pin_file);
 			if (nread < 0)
 				break;
@@ -5574,7 +5382,7 @@ static void test_pprint(void)
 {
 	unsigned int i;
 
-	/* test various maps with the first test template */
+	 
 	for (i = 0; i < ARRAY_SIZE(pprint_tests_meta); i++) {
 		pprint_test_template[0].descr = pprint_tests_meta[i].descr;
 		pprint_test_template[0].map_type = pprint_tests_meta[i].map_type;
@@ -5586,7 +5394,7 @@ static void test_pprint(void)
 		do_test_pprint(0);
 	}
 
-	/* test rest test templates with the first map */
+	 
 	for (i = 1; i < ARRAY_SIZE(pprint_test_template); i++) {
 		pprint_test_template[i].descr = pprint_tests_meta[0].descr;
 		pprint_test_template[i].map_type = pprint_tests_meta[0].map_type;
@@ -5624,16 +5432,16 @@ static struct prog_info_raw_test {
 {
 	.descr = "func_type (main func + one sub)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),	/* [2] */
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [4] */
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 3),			/* [5] */
-		BTF_FUNC_ENC(NAME_TBD, 4),			/* [6] */
+		BTF_FUNC_ENC(NAME_TBD, 3),			 
+		BTF_FUNC_ENC(NAME_TBD, 4),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0int\0unsigned int\0a\0b\0c\0d\0funcA\0funcB",
@@ -5655,16 +5463,16 @@ static struct prog_info_raw_test {
 {
 	.descr = "func_type (Incorrect func_info_rec_size)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),	/* [2] */
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [4] */
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 3),			/* [5] */
-		BTF_FUNC_ENC(NAME_TBD, 4),			/* [6] */
+		BTF_FUNC_ENC(NAME_TBD, 3),			 
+		BTF_FUNC_ENC(NAME_TBD, 4),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0int\0unsigned int\0a\0b\0c\0d\0funcA\0funcB",
@@ -5687,16 +5495,16 @@ static struct prog_info_raw_test {
 {
 	.descr = "func_type (Incorrect func_info_cnt)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),	/* [2] */
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [4] */
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 3),			/* [5] */
-		BTF_FUNC_ENC(NAME_TBD, 4),			/* [6] */
+		BTF_FUNC_ENC(NAME_TBD, 3),			 
+		BTF_FUNC_ENC(NAME_TBD, 4),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0int\0unsigned int\0a\0b\0c\0d\0funcA\0funcB",
@@ -5719,16 +5527,16 @@ static struct prog_info_raw_test {
 {
 	.descr = "func_type (Incorrect bpf_func_info.insn_off)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),	/* [2] */
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
-		BTF_FUNC_PROTO_ENC(1, 2),			/* [4] */
+		BTF_FUNC_PROTO_ENC(1, 2),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 2),
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 3),			/* [5] */
-		BTF_FUNC_ENC(NAME_TBD, 4),			/* [6] */
+		BTF_FUNC_ENC(NAME_TBD, 3),			 
+		BTF_FUNC_ENC(NAME_TBD, 4),			 
 		BTF_END_RAW,
 	},
 	.str_sec = "\0int\0unsigned int\0a\0b\0c\0d\0funcA\0funcB",
@@ -5751,7 +5559,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (No subprog)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1;\0int b=2;\0return a + b;\0return a + b;"),
@@ -5777,7 +5585,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (No subprog. insn_off >= prog->len)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1;\0int b=2;\0return a + b;\0return a + b;"),
@@ -5806,9 +5614,9 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (Zero bpf insn code)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 64, 8),	/* [2] */
-		BTF_TYPEDEF_ENC(NAME_TBD, 2),			/* [3] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_TYPE_INT_ENC(NAME_TBD, 0, 0, 64, 8),	 
+		BTF_TYPEDEF_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0unsigned long\0u64\0u64 a=1;\0return a;"),
@@ -5833,7 +5641,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (No subprog. zero tailing line_info",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1;\0int b=2;\0return a + b;\0return a + b;"),
@@ -5859,7 +5667,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (No subprog. nonzero tailing line_info)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1;\0int b=2;\0return a + b;\0return a + b;"),
@@ -5887,7 +5695,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (subprog)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1+1;\0return func(a);\0b+=1;\0return b;"),
@@ -5917,11 +5725,11 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (subprog + func_info)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(1, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [4] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0x\0sub\0main\0int a=1+1;\0return func(a);\0b+=1;\0return b;"),
@@ -5953,7 +5761,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (subprog. missing 1st func line info)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1+1;\0return func(a);\0b+=1;\0return b;"),
@@ -5985,7 +5793,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (subprog. missing 2nd func line info)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1+1;\0return func(a);\0b+=1;\0return b;"),
@@ -6017,7 +5825,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (subprog. unordered insn offset)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1+1;\0return func(a);\0b+=1;\0return b;"),
@@ -6049,7 +5857,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (dead start)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0/* dead jmp */\0int a=1;\0int b=2;\0return a + b;\0return a + b;"),
@@ -6079,7 +5887,7 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (dead end)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0int a=1;\0int b=2;\0return a + b;\0/* dead jmp */\0return a + b;\0/* dead exit */"),
@@ -6111,11 +5919,11 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (dead code + subprog + func_info)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(1, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [4] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0x\0sub\0main\0int a=1+1;\0/* dead jmp */"
@@ -6170,12 +5978,12 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (dead subprog)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(1, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [4] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [5] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0x\0dead\0main\0func\0int a=1+1;\0/* live call */"
@@ -6224,11 +6032,11 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (dead last subprog)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(1, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [5] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0x\0dead\0main\0int a=1+1;\0/* live call */"
@@ -6265,12 +6073,12 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (dead subprog + dead start)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(1, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [4] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [5] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0x\0dead\0main\0func\0int a=1+1;\0/* dead */"
@@ -6323,12 +6131,12 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (dead subprog + dead start w/ move)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(1, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [4] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [5] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0x\0dead\0main\0func\0int a=1+1;\0/* live call */"
@@ -6378,11 +6186,11 @@ static struct prog_info_raw_test {
 {
 	.descr = "line_info (dead end + subprog start w/ no linfo)",
 	.raw_types = {
-		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-		BTF_FUNC_PROTO_ENC(1, 1),			/* [2] */
+		BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 4),	 
+		BTF_FUNC_PROTO_ENC(1, 1),			 
 			BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [3] */
-		BTF_FUNC_ENC(NAME_TBD, 2),			/* [4] */
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
+		BTF_FUNC_ENC(NAME_TBD, 2),			 
 		BTF_END_RAW,
 	},
 	BTF_STR_SEC("\0int\0x\0main\0func\0/* main linfo */\0/* func linfo */"),
@@ -6471,7 +6279,7 @@ static int test_get_finfo(const struct prog_info_raw_test *test,
 	__u32 nr_func_info;
 	int err;
 
-	/* get necessary lens */
+	 
 	info_len = sizeof(struct bpf_prog_info);
 	err = bpf_prog_get_info_by_fd(prog_fd, &info, &info_len);
 	if (CHECK(err < 0, "invalid get info (1st) errno:%d", errno)) {
@@ -6498,7 +6306,7 @@ static int test_get_finfo(const struct prog_info_raw_test *test,
 	if (CHECK(!func_info, "out of memory"))
 		return -1;
 
-	/* reset info to only retrieve func_info related data */
+	 
 	memset(&info, 0, sizeof(info));
 	info.nr_func_info = nr_func_info;
 	info.func_info_rec_size = rec_size;
@@ -6574,7 +6382,7 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
 	}
 
 	if (!info.jited_prog_len) {
-		/* prog is not jited */
+		 
 		jited_cnt = 0;
 		nr_jited_ksyms = 1;
 		nr_jited_func_lens = 1;
@@ -6643,10 +6451,7 @@ static int test_get_linfo(const struct prog_info_raw_test *test,
 
 	err = bpf_prog_get_info_by_fd(prog_fd, &info, &info_len);
 
-	/*
-	 * Only recheck the info.*line_info* fields.
-	 * Other fields are not the concern of this test.
-	 */
+	 
 	if (CHECK(err < 0 ||
 		  info.nr_line_info != cnt ||
 		  (jited_cnt && !info.jited_line_info) ||
@@ -6913,79 +6718,72 @@ static struct btf_dedup_test dedup_tests[] = {
 },
 {
 	.descr = "dedup: struct example #1",
-	/*
-	 * struct s {
-	 *	struct s *next;
-	 *	const int *a;
-	 *	int b[16];
-	 *	int c;
-	 * }
-	 */
+	 
 	.input = {
 		.raw_types = {
-			/* int */
-			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			/* int[16] */
-			BTF_TYPE_ARRAY_ENC(1, 1, 16),					/* [2] */
-			/* struct s { */
-			BTF_STRUCT_ENC(NAME_NTH(2), 5, 88),				/* [3] */
-				BTF_MEMBER_ENC(NAME_NTH(3), 4, 0),	/* struct s *next;	*/
-				BTF_MEMBER_ENC(NAME_NTH(4), 5, 64),	/* const int *a;	*/
-				BTF_MEMBER_ENC(NAME_NTH(5), 2, 128),	/* int b[16];		*/
-				BTF_MEMBER_ENC(NAME_NTH(6), 1, 640),	/* int c;		*/
-				BTF_MEMBER_ENC(NAME_NTH(8), 15, 672),	/* float d;		*/
-			/* ptr -> [3] struct s */
-			BTF_PTR_ENC(3),							/* [4] */
-			/* ptr -> [6] const int */
-			BTF_PTR_ENC(6),							/* [5] */
-			/* const -> [1] int */
-			BTF_CONST_ENC(1),						/* [6] */
-			/* tag -> [3] struct s */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, -1),				/* [7] */
-			/* tag -> [3] struct s, member 1 */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, 1),				/* [8] */
+			 
+			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 32, 4),	 
+			 
+			BTF_TYPE_ARRAY_ENC(1, 1, 16),					 
+			 
+			BTF_STRUCT_ENC(NAME_NTH(2), 5, 88),				 
+				BTF_MEMBER_ENC(NAME_NTH(3), 4, 0),	 
+				BTF_MEMBER_ENC(NAME_NTH(4), 5, 64),	 
+				BTF_MEMBER_ENC(NAME_NTH(5), 2, 128),	 
+				BTF_MEMBER_ENC(NAME_NTH(6), 1, 640),	 
+				BTF_MEMBER_ENC(NAME_NTH(8), 15, 672),	 
+			 
+			BTF_PTR_ENC(3),							 
+			 
+			BTF_PTR_ENC(6),							 
+			 
+			BTF_CONST_ENC(1),						 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, -1),				 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, 1),				 
 
-			/* full copy of the above */
-			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 32, 4),	/* [9] */
-			BTF_TYPE_ARRAY_ENC(9, 9, 16),					/* [10] */
-			BTF_STRUCT_ENC(NAME_NTH(2), 5, 88),				/* [11] */
+			 
+			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_ARRAY_ENC(9, 9, 16),					 
+			BTF_STRUCT_ENC(NAME_NTH(2), 5, 88),				 
 				BTF_MEMBER_ENC(NAME_NTH(3), 12, 0),
 				BTF_MEMBER_ENC(NAME_NTH(4), 13, 64),
 				BTF_MEMBER_ENC(NAME_NTH(5), 10, 128),
 				BTF_MEMBER_ENC(NAME_NTH(6), 9, 640),
 				BTF_MEMBER_ENC(NAME_NTH(8), 15, 672),
-			BTF_PTR_ENC(11),						/* [12] */
-			BTF_PTR_ENC(14),						/* [13] */
-			BTF_CONST_ENC(9),						/* [14] */
-			BTF_TYPE_FLOAT_ENC(NAME_NTH(7), 4),				/* [15] */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 11, -1),				/* [16] */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 11, 1),				/* [17] */
+			BTF_PTR_ENC(11),						 
+			BTF_PTR_ENC(14),						 
+			BTF_CONST_ENC(9),						 
+			BTF_TYPE_FLOAT_ENC(NAME_NTH(7), 4),				 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 11, -1),				 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 11, 1),				 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0int\0s\0next\0a\0b\0c\0float\0d"),
 	},
 	.expect = {
 		.raw_types = {
-			/* int */
-			BTF_TYPE_INT_ENC(NAME_NTH(5), BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			/* int[16] */
-			BTF_TYPE_ARRAY_ENC(1, 1, 16),					/* [2] */
-			/* struct s { */
-			BTF_STRUCT_ENC(NAME_NTH(8), 5, 88),				/* [3] */
-				BTF_MEMBER_ENC(NAME_NTH(7), 4, 0),	/* struct s *next;	*/
-				BTF_MEMBER_ENC(NAME_NTH(1), 5, 64),	/* const int *a;	*/
-				BTF_MEMBER_ENC(NAME_NTH(2), 2, 128),	/* int b[16];		*/
-				BTF_MEMBER_ENC(NAME_NTH(3), 1, 640),	/* int c;		*/
-				BTF_MEMBER_ENC(NAME_NTH(4), 9, 672),	/* float d;		*/
-			/* ptr -> [3] struct s */
-			BTF_PTR_ENC(3),							/* [4] */
-			/* ptr -> [6] const int */
-			BTF_PTR_ENC(6),							/* [5] */
-			/* const -> [1] int */
-			BTF_CONST_ENC(1),						/* [6] */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, -1),				/* [7] */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, 1),				/* [8] */
-			BTF_TYPE_FLOAT_ENC(NAME_NTH(7), 4),				/* [9] */
+			 
+			BTF_TYPE_INT_ENC(NAME_NTH(5), BTF_INT_SIGNED, 0, 32, 4),	 
+			 
+			BTF_TYPE_ARRAY_ENC(1, 1, 16),					 
+			 
+			BTF_STRUCT_ENC(NAME_NTH(8), 5, 88),				 
+				BTF_MEMBER_ENC(NAME_NTH(7), 4, 0),	 
+				BTF_MEMBER_ENC(NAME_NTH(1), 5, 64),	 
+				BTF_MEMBER_ENC(NAME_NTH(2), 2, 128),	 
+				BTF_MEMBER_ENC(NAME_NTH(3), 1, 640),	 
+				BTF_MEMBER_ENC(NAME_NTH(4), 9, 672),	 
+			 
+			BTF_PTR_ENC(3),							 
+			 
+			BTF_PTR_ENC(6),							 
+			 
+			BTF_CONST_ENC(1),						 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, -1),				 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, 1),				 
+			BTF_TYPE_FLOAT_ENC(NAME_NTH(7), 4),				 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0a\0b\0c\0d\0int\0float\0next\0s"),
@@ -6993,29 +6791,18 @@ static struct btf_dedup_test dedup_tests[] = {
 },
 {
 	.descr = "dedup: struct <-> fwd resolution w/ hash collision",
-	/*
-	 * // CU 1:
-	 * struct x;
-	 * struct s {
-	 *	struct x *x;
-	 * };
-	 * // CU 2:
-	 * struct x {};
-	 * struct s {
-	 *	struct x *x;
-	 * };
-	 */
+	 
 	.input = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_FWD_ENC(NAME_TBD, 0 /* struct fwd */),	/* [1] fwd x      */
-			BTF_PTR_ENC(1),					/* [2] ptr -> [1] */
-			BTF_STRUCT_ENC(NAME_TBD, 1, 8),			/* [3] struct s   */
+			 
+			BTF_FWD_ENC(NAME_TBD, 0  ),	 
+			BTF_PTR_ENC(1),					 
+			BTF_STRUCT_ENC(NAME_TBD, 1, 8),			 
 				BTF_MEMBER_ENC(NAME_TBD, 2, 0),
-			/* CU 2 */
-			BTF_STRUCT_ENC(NAME_TBD, 0, 0),			/* [4] struct x   */
-			BTF_PTR_ENC(4),					/* [5] ptr -> [4] */
-			BTF_STRUCT_ENC(NAME_TBD, 1, 8),			/* [6] struct s   */
+			 
+			BTF_STRUCT_ENC(NAME_TBD, 0, 0),			 
+			BTF_PTR_ENC(4),					 
+			BTF_STRUCT_ENC(NAME_TBD, 1, 8),			 
 				BTF_MEMBER_ENC(NAME_TBD, 5, 0),
 			BTF_END_RAW,
 		},
@@ -7023,40 +6810,31 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			BTF_PTR_ENC(3),					/* [1] ptr -> [3] */
-			BTF_STRUCT_ENC(NAME_TBD, 1, 8),			/* [2] struct s   */
+			BTF_PTR_ENC(3),					 
+			BTF_STRUCT_ENC(NAME_TBD, 1, 8),			 
 				BTF_MEMBER_ENC(NAME_TBD, 1, 0),
-			BTF_STRUCT_ENC(NAME_NTH(2), 0, 0),		/* [3] struct x   */
+			BTF_STRUCT_ENC(NAME_NTH(2), 0, 0),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0s\0x"),
 	},
 	.opts = {
-		.force_collisions = true, /* force hash collisions */
+		.force_collisions = true,  
 	},
 },
 {
 	.descr = "dedup: void equiv check",
-	/*
-	 * // CU 1:
-	 * struct s {
-	 *	struct {} *x;
-	 * };
-	 * // CU 2:
-	 * struct s {
-	 *	int *x;
-	 * };
-	 */
+	 
 	.input = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_STRUCT_ENC(0, 0, 1),				/* [1] struct {}  */
-			BTF_PTR_ENC(1),						/* [2] ptr -> [1] */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 8),			/* [3] struct s   */
+			 
+			BTF_STRUCT_ENC(0, 0, 1),				 
+			BTF_PTR_ENC(1),						 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 8),			 
 				BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			/* CU 2 */
-			BTF_PTR_ENC(0),						/* [4] ptr -> void */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 8),			/* [5] struct s   */
+			 
+			BTF_PTR_ENC(0),						 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 8),			 
 				BTF_MEMBER_ENC(NAME_NTH(2), 4, 0),
 			BTF_END_RAW,
 		},
@@ -7064,52 +6842,52 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_STRUCT_ENC(0, 0, 1),				/* [1] struct {}  */
-			BTF_PTR_ENC(1),						/* [2] ptr -> [1] */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 8),			/* [3] struct s   */
+			 
+			BTF_STRUCT_ENC(0, 0, 1),				 
+			BTF_PTR_ENC(1),						 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 8),			 
 				BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			/* CU 2 */
-			BTF_PTR_ENC(0),						/* [4] ptr -> void */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 8),			/* [5] struct s   */
+			 
+			BTF_PTR_ENC(0),						 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 8),			 
 				BTF_MEMBER_ENC(NAME_NTH(2), 4, 0),
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0s\0x"),
 	},
 	.opts = {
-		.force_collisions = true, /* force hash collisions */
+		.force_collisions = true,  
 	},
 },
 {
 	.descr = "dedup: all possible kinds (no duplicates)",
 	.input = {
 		.raw_types = {
-			BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 8),		/* [1] int */
-			BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 2), 4),	/* [2] enum */
+			BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 8),		 
+			BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 2), 4),	 
 				BTF_ENUM_ENC(NAME_TBD, 0),
 				BTF_ENUM_ENC(NAME_TBD, 1),
-			BTF_FWD_ENC(NAME_TBD, 1 /* union kind_flag */),			/* [3] fwd */
-			BTF_TYPE_ARRAY_ENC(2, 1, 7),					/* [4] array */
-			BTF_STRUCT_ENC(NAME_TBD, 1, 4),					/* [5] struct */
+			BTF_FWD_ENC(NAME_TBD, 1  ),			 
+			BTF_TYPE_ARRAY_ENC(2, 1, 7),					 
+			BTF_STRUCT_ENC(NAME_TBD, 1, 4),					 
 				BTF_MEMBER_ENC(NAME_TBD, 1, 0),
-			BTF_UNION_ENC(NAME_TBD, 1, 4),					/* [6] union */
+			BTF_UNION_ENC(NAME_TBD, 1, 4),					 
 				BTF_MEMBER_ENC(NAME_TBD, 1, 0),
-			BTF_TYPEDEF_ENC(NAME_TBD, 1),					/* [7] typedef */
-			BTF_PTR_ENC(0),							/* [8] ptr */
-			BTF_CONST_ENC(8),						/* [9] const */
-			BTF_VOLATILE_ENC(8),						/* [10] volatile */
-			BTF_RESTRICT_ENC(8),						/* [11] restrict */
-			BTF_FUNC_PROTO_ENC(1, 2),					/* [12] func_proto */
+			BTF_TYPEDEF_ENC(NAME_TBD, 1),					 
+			BTF_PTR_ENC(0),							 
+			BTF_CONST_ENC(8),						 
+			BTF_VOLATILE_ENC(8),						 
+			BTF_RESTRICT_ENC(8),						 
+			BTF_FUNC_PROTO_ENC(1, 2),					 
 				BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 				BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 18),
-			BTF_FUNC_ENC(NAME_TBD, 12),					/* [13] func */
-			BTF_TYPE_FLOAT_ENC(NAME_TBD, 2),				/* [14] float */
-			BTF_DECL_TAG_ENC(NAME_TBD, 13, -1),				/* [15] decl_tag */
-			BTF_DECL_TAG_ENC(NAME_TBD, 13, 1),				/* [16] decl_tag */
-			BTF_DECL_TAG_ENC(NAME_TBD, 7, -1),				/* [17] decl_tag */
-			BTF_TYPE_TAG_ENC(NAME_TBD, 8),					/* [18] type_tag */
-			BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 2), 8),	/* [19] enum64 */
+			BTF_FUNC_ENC(NAME_TBD, 12),					 
+			BTF_TYPE_FLOAT_ENC(NAME_TBD, 2),				 
+			BTF_DECL_TAG_ENC(NAME_TBD, 13, -1),				 
+			BTF_DECL_TAG_ENC(NAME_TBD, 13, 1),				 
+			BTF_DECL_TAG_ENC(NAME_TBD, 7, -1),				 
+			BTF_TYPE_TAG_ENC(NAME_TBD, 8),					 
+			BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 2), 8),	 
 				BTF_ENUM64_ENC(NAME_TBD, 0, 0),
 				BTF_ENUM64_ENC(NAME_TBD, 1, 1),
 			BTF_END_RAW,
@@ -7118,31 +6896,31 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 8),		/* [1] int */
-			BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 2), 4),	/* [2] enum */
+			BTF_TYPE_INT_ENC(NAME_TBD, BTF_INT_SIGNED, 0, 32, 8),		 
+			BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM, 0, 2), 4),	 
 				BTF_ENUM_ENC(NAME_TBD, 0),
 				BTF_ENUM_ENC(NAME_TBD, 1),
-			BTF_FWD_ENC(NAME_TBD, 1 /* union kind_flag */),			/* [3] fwd */
-			BTF_TYPE_ARRAY_ENC(2, 1, 7),					/* [4] array */
-			BTF_STRUCT_ENC(NAME_TBD, 1, 4),					/* [5] struct */
+			BTF_FWD_ENC(NAME_TBD, 1  ),			 
+			BTF_TYPE_ARRAY_ENC(2, 1, 7),					 
+			BTF_STRUCT_ENC(NAME_TBD, 1, 4),					 
 				BTF_MEMBER_ENC(NAME_TBD, 1, 0),
-			BTF_UNION_ENC(NAME_TBD, 1, 4),					/* [6] union */
+			BTF_UNION_ENC(NAME_TBD, 1, 4),					 
 				BTF_MEMBER_ENC(NAME_TBD, 1, 0),
-			BTF_TYPEDEF_ENC(NAME_TBD, 1),					/* [7] typedef */
-			BTF_PTR_ENC(0),							/* [8] ptr */
-			BTF_CONST_ENC(8),						/* [9] const */
-			BTF_VOLATILE_ENC(8),						/* [10] volatile */
-			BTF_RESTRICT_ENC(8),						/* [11] restrict */
-			BTF_FUNC_PROTO_ENC(1, 2),					/* [12] func_proto */
+			BTF_TYPEDEF_ENC(NAME_TBD, 1),					 
+			BTF_PTR_ENC(0),							 
+			BTF_CONST_ENC(8),						 
+			BTF_VOLATILE_ENC(8),						 
+			BTF_RESTRICT_ENC(8),						 
+			BTF_FUNC_PROTO_ENC(1, 2),					 
 				BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 1),
 				BTF_FUNC_PROTO_ARG_ENC(NAME_TBD, 18),
-			BTF_FUNC_ENC(NAME_TBD, 12),					/* [13] func */
-			BTF_TYPE_FLOAT_ENC(NAME_TBD, 2),				/* [14] float */
-			BTF_DECL_TAG_ENC(NAME_TBD, 13, -1),				/* [15] decl_tag */
-			BTF_DECL_TAG_ENC(NAME_TBD, 13, 1),				/* [16] decl_tag */
-			BTF_DECL_TAG_ENC(NAME_TBD, 7, -1),				/* [17] decl_tag */
-			BTF_TYPE_TAG_ENC(NAME_TBD, 8),					/* [18] type_tag */
-			BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 2), 8),	/* [19] enum64 */
+			BTF_FUNC_ENC(NAME_TBD, 12),					 
+			BTF_TYPE_FLOAT_ENC(NAME_TBD, 2),				 
+			BTF_DECL_TAG_ENC(NAME_TBD, 13, -1),				 
+			BTF_DECL_TAG_ENC(NAME_TBD, 13, 1),				 
+			BTF_DECL_TAG_ENC(NAME_TBD, 7, -1),				 
+			BTF_TYPE_TAG_ENC(NAME_TBD, 8),					 
+			BTF_TYPE_ENC(NAME_TBD, BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 2), 8),	 
 				BTF_ENUM64_ENC(NAME_TBD, 0, 0),
 				BTF_ENUM64_ENC(NAME_TBD, 1, 1),
 			BTF_END_RAW,
@@ -7155,18 +6933,18 @@ static struct btf_dedup_test dedup_tests[] = {
 	.input = {
 		.raw_types = {
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 32, 8),
-			/* different name */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(2), BTF_INT_SIGNED, 0, 32, 8),
-			/* different encoding */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_CHAR, 0, 32, 8),
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_BOOL, 0, 32, 8),
-			/* different bit offset */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 8, 32, 8),
-			/* different bit size */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 27, 8),
-			/* different byte size */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 32, 4),
-			/* all allowed sizes */
+			 
 			BTF_TYPE_FLOAT_ENC(NAME_NTH(3), 2),
 			BTF_TYPE_FLOAT_ENC(NAME_NTH(3), 4),
 			BTF_TYPE_FLOAT_ENC(NAME_NTH(3), 8),
@@ -7179,18 +6957,18 @@ static struct btf_dedup_test dedup_tests[] = {
 	.expect = {
 		.raw_types = {
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 32, 8),
-			/* different name */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(2), BTF_INT_SIGNED, 0, 32, 8),
-			/* different encoding */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_CHAR, 0, 32, 8),
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_BOOL, 0, 32, 8),
-			/* different bit offset */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 8, 32, 8),
-			/* different bit size */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 27, 8),
-			/* different byte size */
+			 
 			BTF_TYPE_INT_ENC(NAME_NTH(1), BTF_INT_SIGNED, 0, 32, 4),
-			/* all allowed sizes */
+			 
 			BTF_TYPE_FLOAT_ENC(NAME_NTH(3), 2),
 			BTF_TYPE_FLOAT_ENC(NAME_NTH(3), 4),
 			BTF_TYPE_FLOAT_ENC(NAME_NTH(3), 8),
@@ -7205,19 +6983,19 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: enum fwd resolution",
 	.input = {
 		.raw_types = {
-			/* [1] fwd enum 'e1' before full enum */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 0), 4),
-			/* [2] full enum 'e1' after fwd */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 123),
-			/* [3] full enum 'e2' before fwd */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(4), 456),
-			/* [4] fwd enum 'e2' after full enum */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 0), 4),
-			/* [5] fwd enum with different size, size does not matter for fwd */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 0), 1),
-			/* [6] incompatible full enum with different value */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 321),
 			BTF_END_RAW,
@@ -7226,13 +7004,13 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* [1] full enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 123),
-			/* [2] full enum 'e2' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(4), 456),
-			/* [3] incompatible full enum with different value */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 321),
 			BTF_END_RAW,
@@ -7244,18 +7022,18 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: datasec and vars pass-through",
 	.input = {
 		.raw_types = {
-			/* int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			/* static int t */
-			BTF_VAR_ENC(NAME_NTH(2), 1, 0),			/* [2] */
-			/* .bss section */				/* [3] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			 
+			BTF_VAR_ENC(NAME_NTH(2), 1, 0),			 
+			 				 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 			BTF_VAR_SECINFO_ENC(2, 0, 4),
-			/* int, referenced from [5] */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [4] */
-			/* another static int t */
-			BTF_VAR_ENC(NAME_NTH(2), 4, 0),			/* [5] */
-			/* another .bss section */			/* [6] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			 
+			BTF_VAR_ENC(NAME_NTH(2), 4, 0),			 
+			 			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 			BTF_VAR_SECINFO_ENC(5, 0, 4),
 			BTF_END_RAW,
@@ -7264,16 +7042,16 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			/* static int t */
-			BTF_VAR_ENC(NAME_NTH(2), 1, 0),			/* [2] */
-			/* .bss section */				/* [3] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			 
+			BTF_VAR_ENC(NAME_NTH(2), 1, 0),			 
+			 				 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 			BTF_VAR_SECINFO_ENC(2, 0, 4),
-			/* another static int t */
-			BTF_VAR_ENC(NAME_NTH(2), 1, 0),			/* [4] */
-			/* another .bss section */			/* [5] */
+			 
+			BTF_VAR_ENC(NAME_NTH(2), 1, 0),			 
+			 			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_DATASEC, 0, 1), 4),
 			BTF_VAR_SECINFO_ENC(4, 0, 4),
 			BTF_END_RAW,
@@ -7288,39 +7066,39 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: func/func_arg/var tags",
 	.input = {
 		.raw_types = {
-			/* int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			/* static int t */
-			BTF_VAR_ENC(NAME_NTH(1), 1, 0),			/* [2] */
-			/* void f(int a1, int a2) */
-			BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			 
+			BTF_VAR_ENC(NAME_NTH(1), 1, 0),			 
+			 
+			BTF_FUNC_PROTO_ENC(0, 2),			 
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(2), 1),
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(3), 1),
-			BTF_FUNC_ENC(NAME_NTH(4), 2),			/* [4] */
-			/* tag -> t */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		/* [5] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		/* [6] */
-			/* tag -> func */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, -1),		/* [7] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, -1),		/* [8] */
-			/* tag -> func arg a1 */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, 1),		/* [9] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, 1),		/* [10] */
+			BTF_FUNC_ENC(NAME_NTH(4), 2),			 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, -1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, 1),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0t\0a1\0a2\0f\0tag"),
 	},
 	.expect = {
 		.raw_types = {
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_VAR_ENC(NAME_NTH(1), 1, 0),			/* [2] */
-			BTF_FUNC_PROTO_ENC(0, 2),			/* [3] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_VAR_ENC(NAME_NTH(1), 1, 0),			 
+			BTF_FUNC_PROTO_ENC(0, 2),			 
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(2), 1),
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(3), 1),
-			BTF_FUNC_ENC(NAME_NTH(4), 2),			/* [4] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		/* [5] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, -1),		/* [6] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, 1),		/* [7] */
+			BTF_FUNC_ENC(NAME_NTH(4), 2),			 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 4, 1),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0t\0a1\0a2\0f\0tag"),
@@ -7330,47 +7108,47 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: func/func_param tags",
 	.input = {
 		.raw_types = {
-			/* int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			/* void f(int a1, int a2) */
-			BTF_FUNC_PROTO_ENC(0, 2),			/* [2] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			 
+			BTF_FUNC_PROTO_ENC(0, 2),			 
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(1), 1),
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(2), 1),
-			BTF_FUNC_ENC(NAME_NTH(3), 2),			/* [3] */
-			/* void f(int a1, int a2) */
-			BTF_FUNC_PROTO_ENC(0, 2),			/* [4] */
+			BTF_FUNC_ENC(NAME_NTH(3), 2),			 
+			 
+			BTF_FUNC_PROTO_ENC(0, 2),			 
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(1), 1),
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(2), 1),
-			BTF_FUNC_ENC(NAME_NTH(3), 4),			/* [5] */
-			/* tag -> f: tag1, tag2 */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, -1),		/* [6] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 3, -1),		/* [7] */
-			/* tag -> f/a2: tag1, tag2 */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, 1),		/* [8] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 3, 1),		/* [9] */
-			/* tag -> f: tag1, tag3 */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 5, -1),		/* [10] */
-			BTF_DECL_TAG_ENC(NAME_NTH(6), 5, -1),		/* [11] */
-			/* tag -> f/a2: tag1, tag3 */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 5, 1),		/* [12] */
-			BTF_DECL_TAG_ENC(NAME_NTH(6), 5, 1),		/* [13] */
+			BTF_FUNC_ENC(NAME_NTH(3), 4),			 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 3, -1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 3, 1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 5, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(6), 5, -1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 5, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(6), 5, 1),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0a1\0a2\0f\0tag1\0tag2\0tag3"),
 	},
 	.expect = {
 		.raw_types = {
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_FUNC_PROTO_ENC(0, 2),			/* [2] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_FUNC_PROTO_ENC(0, 2),			 
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(1), 1),
 				BTF_FUNC_PROTO_ARG_ENC(NAME_NTH(2), 1),
-			BTF_FUNC_ENC(NAME_NTH(3), 2),			/* [3] */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, -1),		/* [4] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 3, -1),		/* [5] */
-			BTF_DECL_TAG_ENC(NAME_NTH(6), 3, -1),		/* [6] */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, 1),		/* [7] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 3, 1),		/* [8] */
-			BTF_DECL_TAG_ENC(NAME_NTH(6), 3, 1),		/* [9] */
+			BTF_FUNC_ENC(NAME_NTH(3), 2),			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 3, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(6), 3, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 3, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(6), 3, 1),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0a1\0a2\0f\0tag1\0tag2\0tag3"),
@@ -7380,42 +7158,42 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: struct/struct_member tags",
 	.input = {
 		.raw_types = {
-			/* int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),		/* [2] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),		 
 				BTF_MEMBER_ENC(NAME_NTH(2), 1, 0),
 				BTF_MEMBER_ENC(NAME_NTH(3), 1, 32),
-			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),		/* [3] */
+			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),		 
 				BTF_MEMBER_ENC(NAME_NTH(2), 1, 0),
 				BTF_MEMBER_ENC(NAME_NTH(3), 1, 32),
-			/* tag -> t: tag1, tag2 */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, -1),		/* [4] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		/* [5] */
-			/* tag -> t/m2: tag1, tag2 */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, 1),		/* [6] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, 1),		/* [7] */
-			/* tag -> t: tag1, tag3 */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, -1),		/* [8] */
-			BTF_DECL_TAG_ENC(NAME_NTH(6), 3, -1),		/* [9] */
-			/* tag -> t/m2: tag1, tag3 */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, 1),		/* [10] */
-			BTF_DECL_TAG_ENC(NAME_NTH(6), 3, 1),		/* [11] */
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, 1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(6), 3, -1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(6), 3, 1),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0t\0m1\0m2\0tag1\0tag2\0tag3"),
 	},
 	.expect = {
 		.raw_types = {
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),		/* [2] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),		 
 				BTF_MEMBER_ENC(NAME_NTH(2), 1, 0),
 				BTF_MEMBER_ENC(NAME_NTH(3), 1, 32),
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, -1),		/* [3] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		/* [4] */
-			BTF_DECL_TAG_ENC(NAME_NTH(6), 2, -1),		/* [5] */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, 1),		/* [6] */
-			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, 1),		/* [7] */
-			BTF_DECL_TAG_ENC(NAME_NTH(6), 2, 1),		/* [8] */
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(6), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(5), 2, 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(6), 2, 1),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0t\0m1\0m2\0tag1\0tag2\0tag3"),
@@ -7425,27 +7203,27 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: typedef tags",
 	.input = {
 		.raw_types = {
-			/* int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPEDEF_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_TYPEDEF_ENC(NAME_NTH(1), 1),		/* [3] */
-			/* tag -> t: tag1, tag2 */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 2, -1),		/* [4] */
-			BTF_DECL_TAG_ENC(NAME_NTH(3), 2, -1),		/* [5] */
-			/* tag -> t: tag1, tag3 */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, -1),		/* [6] */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, -1),		/* [7] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPEDEF_ENC(NAME_NTH(1), 1),		 
+			BTF_TYPEDEF_ENC(NAME_NTH(1), 1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(3), 2, -1),		 
+			 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 3, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 3, -1),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0t\0tag1\0tag2\0tag3"),
 	},
 	.expect = {
 		.raw_types = {
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPEDEF_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_DECL_TAG_ENC(NAME_NTH(2), 2, -1),		/* [3] */
-			BTF_DECL_TAG_ENC(NAME_NTH(3), 2, -1),		/* [4] */
-			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, -1),		/* [5] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPEDEF_ENC(NAME_NTH(1), 1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(2), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(3), 2, -1),		 
+			BTF_DECL_TAG_ENC(NAME_NTH(4), 2, -1),		 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0t\0tag1\0tag2\0tag3"),
@@ -7455,31 +7233,31 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: btf_type_tag #1",
 	.input = {
 		.raw_types = {
-			/* ptr -> tag2 -> tag1 -> int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		/* [3] */
-			BTF_PTR_ENC(3),					/* [4] */
-			/* ptr -> tag2 -> tag1 -> int */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [5] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 5),		/* [6] */
-			BTF_PTR_ENC(6),					/* [7] */
-			/* ptr -> tag1 -> int */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [8] */
-			BTF_PTR_ENC(8),					/* [9] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		 
+			BTF_PTR_ENC(3),					 
+			 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 5),		 
+			BTF_PTR_ENC(6),					 
+			 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_PTR_ENC(8),					 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0tag1\0tag2"),
 	},
 	.expect = {
 		.raw_types = {
-			/* ptr -> tag2 -> tag1 -> int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		/* [3] */
-			BTF_PTR_ENC(3),					/* [4] */
-			/* ptr -> tag1 -> int */
-			BTF_PTR_ENC(2),					/* [5] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		 
+			BTF_PTR_ENC(3),					 
+			 
+			BTF_PTR_ENC(2),					 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0tag1\0tag2"),
@@ -7489,28 +7267,28 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: btf_type_tag #2",
 	.input = {
 		.raw_types = {
-			/* ptr -> tag2 -> tag1 -> int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		/* [3] */
-			BTF_PTR_ENC(3),					/* [4] */
-			/* ptr -> tag2 -> int */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 1),		/* [5] */
-			BTF_PTR_ENC(5),					/* [6] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		 
+			BTF_PTR_ENC(3),					 
+			 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 1),		 
+			BTF_PTR_ENC(5),					 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0tag1\0tag2"),
 	},
 	.expect = {
 		.raw_types = {
-			/* ptr -> tag2 -> tag1 -> int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		/* [3] */
-			BTF_PTR_ENC(3),					/* [4] */
-			/* ptr -> tag2 -> int */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 1),		/* [5] */
-			BTF_PTR_ENC(5),					/* [6] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		 
+			BTF_PTR_ENC(3),					 
+			 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 1),		 
+			BTF_PTR_ENC(5),					 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0tag1\0tag2"),
@@ -7520,30 +7298,30 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: btf_type_tag #3",
 	.input = {
 		.raw_types = {
-			/* ptr -> tag2 -> tag1 -> int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		/* [3] */
-			BTF_PTR_ENC(3),					/* [4] */
-			/* ptr -> tag1 -> tag2 -> int */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 1),		/* [5] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 5),		/* [6] */
-			BTF_PTR_ENC(6),					/* [7] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		 
+			BTF_PTR_ENC(3),					 
+			 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 5),		 
+			BTF_PTR_ENC(6),					 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0tag1\0tag2"),
 	},
 	.expect = {
 		.raw_types = {
-			/* ptr -> tag2 -> tag1 -> int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		/* [3] */
-			BTF_PTR_ENC(3),					/* [4] */
-			/* ptr -> tag1 -> tag2 -> int */
-			BTF_TYPE_TAG_ENC(NAME_NTH(2), 1),		/* [5] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 5),		/* [6] */
-			BTF_PTR_ENC(6),					/* [7] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 2),		 
+			BTF_PTR_ENC(3),					 
+			 
+			BTF_TYPE_TAG_ENC(NAME_NTH(2), 1),		 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 5),		 
+			BTF_PTR_ENC(6),					 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0tag1\0tag2"),
@@ -7553,28 +7331,28 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: btf_type_tag #4",
 	.input = {
 		.raw_types = {
-			/* ptr -> tag1 -> int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_PTR_ENC(2),					/* [3] */
-			/* ptr -> tag1 -> long */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 64, 8),	/* [4] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 4),		/* [5] */
-			BTF_PTR_ENC(5),					/* [6] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_PTR_ENC(2),					 
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 64, 8),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 4),		 
+			BTF_PTR_ENC(5),					 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0tag1"),
 	},
 	.expect = {
 		.raw_types = {
-			/* ptr -> tag1 -> int */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		/* [2] */
-			BTF_PTR_ENC(2),					/* [3] */
-			/* ptr -> tag1 -> long */
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 64, 8),	/* [4] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 4),		/* [5] */
-			BTF_PTR_ENC(5),					/* [6] */
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),		 
+			BTF_PTR_ENC(2),					 
+			 
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 64, 8),	 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 4),		 
+			BTF_PTR_ENC(5),					 
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0tag1"),
@@ -7584,12 +7362,12 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: btf_type_tag #5, struct",
 	.input = {
 		.raw_types = {
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),				/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),					/* [2] */
-			BTF_TYPE_ENC(NAME_NTH(2), BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 4),	/* [3] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),				 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),					 
+			BTF_TYPE_ENC(NAME_NTH(2), BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 4),	 
 			BTF_MEMBER_ENC(NAME_NTH(3), 2, BTF_MEMBER_OFFSET(0, 0)),
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),					/* [4] */
-			BTF_TYPE_ENC(NAME_NTH(2), BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 4),	/* [5] */
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),					 
+			BTF_TYPE_ENC(NAME_NTH(2), BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 4),	 
 			BTF_MEMBER_ENC(NAME_NTH(3), 4, BTF_MEMBER_OFFSET(0, 0)),
 			BTF_END_RAW,
 		},
@@ -7597,9 +7375,9 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),				/* [1] */
-			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),					/* [2] */
-			BTF_TYPE_ENC(NAME_NTH(2), BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 4),	/* [3] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),				 
+			BTF_TYPE_TAG_ENC(NAME_NTH(1), 1),					 
+			BTF_TYPE_ENC(NAME_NTH(2), BTF_INFO_ENC(BTF_KIND_STRUCT, 1, 1), 4),	 
 			BTF_MEMBER_ENC(NAME_NTH(3), 2, BTF_MEMBER_OFFSET(0, 0)),
 			BTF_END_RAW,
 		},
@@ -7631,17 +7409,17 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: enum64, fwd resolution",
 	.input = {
 		.raw_types = {
-			/* [1] fwd enum64 'e1' before full enum */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 0), 8),
-			/* [2] full enum64 'e1' after fwd */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 8),
 				BTF_ENUM64_ENC(NAME_NTH(2), 1, 123),
-			/* [3] full enum64 'e2' before fwd */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 8),
 				BTF_ENUM64_ENC(NAME_NTH(4), 0, 456),
-			/* [4] fwd enum64 'e2' after full enum */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 0), 8),
-			/* [5] incompatible full enum64 with different value */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 8),
 				BTF_ENUM64_ENC(NAME_NTH(2), 0, 321),
 			BTF_END_RAW,
@@ -7650,13 +7428,13 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* [1] full enum64 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 8),
 				BTF_ENUM64_ENC(NAME_NTH(2), 1, 123),
-			/* [2] full enum64 'e2' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 8),
 				BTF_ENUM64_ENC(NAME_NTH(4), 0, 456),
-			/* [3] incompatible full enum64 with different value */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 8),
 				BTF_ENUM64_ENC(NAME_NTH(2), 0, 321),
 			BTF_END_RAW,
@@ -7668,10 +7446,10 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: enum and enum64, no dedup",
 	.input = {
 		.raw_types = {
-			/* [1] enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 1),
-			/* [2] enum64 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 4),
 				BTF_ENUM64_ENC(NAME_NTH(2), 1, 0),
 			BTF_END_RAW,
@@ -7680,10 +7458,10 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* [1] enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 1),
-			/* [2] enum64 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 4),
 				BTF_ENUM64_ENC(NAME_NTH(2), 1, 0),
 			BTF_END_RAW,
@@ -7695,10 +7473,10 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: enum of different size: no dedup",
 	.input = {
 		.raw_types = {
-			/* [1] enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 1),
-			/* [2] enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 2),
 				BTF_ENUM_ENC(NAME_NTH(2), 1),
 			BTF_END_RAW,
@@ -7707,10 +7485,10 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* [1] enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 1),
-			/* [2] enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 2),
 				BTF_ENUM_ENC(NAME_NTH(2), 1),
 			BTF_END_RAW,
@@ -7722,12 +7500,12 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: enum fwd to enum64",
 	.input = {
 		.raw_types = {
-			/* [1] enum64 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 8),
 				BTF_ENUM64_ENC(NAME_NTH(2), 1, 0),
-			/* [2] enum 'e1' fwd */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 0), 4),
-			/* [3] typedef enum 'e1' td */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0), 2),
 			BTF_END_RAW,
 		},
@@ -7735,10 +7513,10 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* [1] enum64 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 1), 8),
 				BTF_ENUM64_ENC(NAME_NTH(2), 1, 0),
-			/* [2] typedef enum 'e1' td */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0), 1),
 			BTF_END_RAW,
 		},
@@ -7749,12 +7527,12 @@ static struct btf_dedup_test dedup_tests[] = {
 	.descr = "dedup: enum64 fwd to enum",
 	.input = {
 		.raw_types = {
-			/* [1] enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 1),
-			/* [2] enum64 'e1' fwd */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM64, 0, 0), 8),
-			/* [3] typedef enum 'e1' td */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0), 2),
 			BTF_END_RAW,
 		},
@@ -7762,10 +7540,10 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* [1] enum 'e1' */
+			 
 			BTF_TYPE_ENC(NAME_NTH(1), BTF_INFO_ENC(BTF_KIND_ENUM, 0, 1), 4),
 				BTF_ENUM_ENC(NAME_NTH(2), 1),
-			/* [2] typedef enum 'e1' td */
+			 
 			BTF_TYPE_ENC(NAME_NTH(3), BTF_INFO_ENC(BTF_KIND_TYPEDEF, 0, 0), 1),
 			BTF_END_RAW,
 		},
@@ -7774,38 +7552,28 @@ static struct btf_dedup_test dedup_tests[] = {
 },
 {
 	.descr = "dedup: standalone fwd declaration struct",
-	/*
-	 * Verify that CU1:foo and CU2:foo would be unified and that
-	 * typedef/ptr would be updated to point to CU1:foo.
-	 *
-	 * // CU 1:
-	 * struct foo { int x; };
-	 *
-	 * // CU 2:
-	 * struct foo;
-	 * typedef struct foo *foo_ptr;
-	 */
+	 
 	.input = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),             /* [1] */
+			 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),              
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [2] */
-			/* CU 2 */
-			BTF_FWD_ENC(NAME_NTH(1), 0),                   /* [3] */
-			BTF_PTR_ENC(3),                                /* [4] */
-			BTF_TYPEDEF_ENC(NAME_NTH(3), 4),               /* [5] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+			 
+			BTF_FWD_ENC(NAME_NTH(1), 0),                    
+			BTF_PTR_ENC(3),                                 
+			BTF_TYPEDEF_ENC(NAME_NTH(3), 4),                
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0foo\0x\0foo_ptr"),
 	},
 	.expect = {
 		.raw_types = {
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),             /* [1] */
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),              
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [2] */
-			BTF_PTR_ENC(1),                                /* [3] */
-			BTF_TYPEDEF_ENC(NAME_NTH(3), 3),               /* [4] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+			BTF_PTR_ENC(1),                                 
+			BTF_TYPEDEF_ENC(NAME_NTH(3), 3),                
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0foo\0x\0foo_ptr"),
@@ -7813,39 +7581,28 @@ static struct btf_dedup_test dedup_tests[] = {
 },
 {
 	.descr = "dedup: standalone fwd declaration union",
-	/*
-	 * Verify that CU1:foo and CU2:foo would be unified and that
-	 * typedef/ptr would be updated to point to CU1:foo.
-	 * Same as "dedup: standalone fwd declaration struct" but for unions.
-	 *
-	 * // CU 1:
-	 * union foo { int x; };
-	 *
-	 * // CU 2:
-	 * union foo;
-	 * typedef union foo *foo_ptr;
-	 */
+	 
 	.input = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_UNION_ENC(NAME_NTH(1), 1, 4),              /* [1] */
+			 
+			BTF_UNION_ENC(NAME_NTH(1), 1, 4),               
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [2] */
-			/* CU 2 */
-			BTF_FWD_ENC(NAME_TBD, 1),                      /* [3] */
-			BTF_PTR_ENC(3),                                /* [4] */
-			BTF_TYPEDEF_ENC(NAME_NTH(3), 4),               /* [5] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+			 
+			BTF_FWD_ENC(NAME_TBD, 1),                       
+			BTF_PTR_ENC(3),                                 
+			BTF_TYPEDEF_ENC(NAME_NTH(3), 4),                
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0foo\0x\0foo_ptr"),
 	},
 	.expect = {
 		.raw_types = {
-			BTF_UNION_ENC(NAME_NTH(1), 1, 4),              /* [1] */
+			BTF_UNION_ENC(NAME_NTH(1), 1, 4),               
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [2] */
-			BTF_PTR_ENC(1),                                /* [3] */
-			BTF_TYPEDEF_ENC(NAME_NTH(3), 3),               /* [4] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+			BTF_PTR_ENC(1),                                 
+			BTF_TYPEDEF_ENC(NAME_NTH(3), 3),                
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0foo\0x\0foo_ptr"),
@@ -7853,42 +7610,31 @@ static struct btf_dedup_test dedup_tests[] = {
 },
 {
 	.descr = "dedup: standalone fwd declaration wrong kind",
-	/*
-	 * Negative test for btf_dedup_resolve_fwds:
-	 * - CU1:foo is a struct, C2:foo is a union, thus CU2:foo is not deduped;
-	 * - typedef/ptr should remain unchanged as well.
-	 *
-	 * // CU 1:
-	 * struct foo { int x; };
-	 *
-	 * // CU 2:
-	 * union foo;
-	 * typedef union foo *foo_ptr;
-	 */
+	 
 	.input = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),             /* [1] */
+			 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),              
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [2] */
-			/* CU 2 */
-			BTF_FWD_ENC(NAME_NTH(3), 1),                   /* [3] */
-			BTF_PTR_ENC(3),                                /* [4] */
-			BTF_TYPEDEF_ENC(NAME_NTH(3), 4),               /* [5] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+			 
+			BTF_FWD_ENC(NAME_NTH(3), 1),                    
+			BTF_PTR_ENC(3),                                 
+			BTF_TYPEDEF_ENC(NAME_NTH(3), 4),                
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0foo\0x\0foo_ptr"),
 	},
 	.expect = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),             /* [1] */
+			 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),              
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [2] */
-			/* CU 2 */
-			BTF_FWD_ENC(NAME_NTH(3), 1),                   /* [3] */
-			BTF_PTR_ENC(3),                                /* [4] */
-			BTF_TYPEDEF_ENC(NAME_NTH(3), 4),               /* [5] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+			 
+			BTF_FWD_ENC(NAME_NTH(3), 1),                    
+			BTF_PTR_ENC(3),                                 
+			BTF_TYPEDEF_ENC(NAME_NTH(3), 4),                
 			BTF_END_RAW,
 		},
 		BTF_STR_SEC("\0foo\0x\0foo_ptr"),
@@ -7896,33 +7642,19 @@ static struct btf_dedup_test dedup_tests[] = {
 },
 {
 	.descr = "dedup: standalone fwd declaration name conflict",
-	/*
-	 * Negative test for btf_dedup_resolve_fwds:
-	 * - two candidates for CU2:foo dedup, thus it is unchanged;
-	 * - typedef/ptr should remain unchanged as well.
-	 *
-	 * // CU 1:
-	 * struct foo { int x; };
-	 *
-	 * // CU 2:
-	 * struct foo;
-	 * typedef struct foo *foo_ptr;
-	 *
-	 * // CU 3:
-	 * struct foo { int x; int y; };
-	 */
+	 
 	.input = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),             /* [1] */
+			 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),              
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [2] */
-			/* CU 2 */
-			BTF_FWD_ENC(NAME_NTH(1), 0),                   /* [3] */
-			BTF_PTR_ENC(3),                                /* [4] */
-			BTF_TYPEDEF_ENC(NAME_NTH(4), 4),               /* [5] */
-			/* CU 3 */
-			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),             /* [6] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+			 
+			BTF_FWD_ENC(NAME_NTH(1), 0),                    
+			BTF_PTR_ENC(3),                                 
+			BTF_TYPEDEF_ENC(NAME_NTH(4), 4),                
+			 
+			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),              
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
 			BTF_MEMBER_ENC(NAME_NTH(3), 2, 0),
 			BTF_END_RAW,
@@ -7931,16 +7663,16 @@ static struct btf_dedup_test dedup_tests[] = {
 	},
 	.expect = {
 		.raw_types = {
-			/* CU 1 */
-			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),             /* [1] */
+			 
+			BTF_STRUCT_ENC(NAME_NTH(1), 1, 4),              
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
-			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4), /* [2] */
-			/* CU 2 */
-			BTF_FWD_ENC(NAME_NTH(1), 0),                   /* [3] */
-			BTF_PTR_ENC(3),                                /* [4] */
-			BTF_TYPEDEF_ENC(NAME_NTH(4), 4),               /* [5] */
-			/* CU 3 */
-			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),             /* [6] */
+			BTF_TYPE_INT_ENC(0, BTF_INT_SIGNED, 0, 32, 4),  
+			 
+			BTF_FWD_ENC(NAME_NTH(1), 0),                    
+			BTF_PTR_ENC(3),                                 
+			BTF_TYPEDEF_ENC(NAME_NTH(4), 4),                
+			 
+			BTF_STRUCT_ENC(NAME_NTH(1), 2, 8),              
 			BTF_MEMBER_ENC(NAME_NTH(2), 2, 0),
 			BTF_MEMBER_ENC(NAME_NTH(3), 2, 0),
 			BTF_END_RAW,

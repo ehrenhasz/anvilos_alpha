@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Test IPV6_FLOWINFO cmsg on send and recv */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -22,7 +22,7 @@
 #include <sys/types.h>
 #include <unistd.h>
 
-/* uapi/glibc weirdness may leave this undefined */
+ 
 #ifndef IPV6_FLOWINFO
 #define IPV6_FLOWINFO 11
 #endif
@@ -181,7 +181,7 @@ static void flowlabel_get(int fd, uint32_t label, uint8_t share, uint16_t flags)
 		.flr_share = share,
 	};
 
-	/* do not pass IPV6_ADDR_ANY or IPV6_ADDR_MAPPED */
+	 
 	req.flr_dst.s6_addr[0] = 0xfd;
 	req.flr_dst.s6_addr[15] = 0x1;
 

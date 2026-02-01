@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <string.h>
 
@@ -20,7 +20,7 @@ int main(int argc, char **argv)
 	if (!ys)
 		return 1;
 
-	creq._present.header = 1; /* ethtool needs an empty nest, sigh */
+	creq._present.header = 1;  
 	channels = ethtool_channels_get_dump(ys, &creq);
 	if (!channels)
 		goto err_close;
@@ -38,7 +38,7 @@ int main(int argc, char **argv)
 	}
 	ethtool_channels_get_list_free(channels);
 
-	rreq._present.header = 1; /* ethtool needs an empty nest.. */
+	rreq._present.header = 1;  
 	rings = ethtool_rings_get_dump(ys, &rreq);
 	if (!rings)
 		goto err_close;

@@ -1,14 +1,4 @@
-/*
- * videobuf2-dma-sg.c - dma scatter/gather memory allocator for videobuf2
- *
- * Copyright (C) 2010 Samsung Electronics
- *
- * Author: Andrzej Pietrasiewicz <andrzejtp2010@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/mm.h>
@@ -39,11 +29,7 @@ struct vb2_dma_sg_buf {
 	int				offset;
 	enum dma_data_direction		dma_dir;
 	struct sg_table			sg_table;
-	/*
-	 * This will point to sg_table when used with the MMAP or USERPTR
-	 * memory model, and to the dma_buf sglist when used with the
-	 * DMABUF memory model.
-	 */
+	 
 	struct sg_table			*dma_sgt;
 	size_t				size;
 	unsigned int			num_pages;
@@ -69,7 +55,7 @@ static int vb2_dma_sg_alloc_compacted(struct vb2_dma_sg_buf *buf,
 		int i;
 
 		order = get_order(size);
-		/* Don't over allocate*/
+		 
 		if ((PAGE_SIZE << order) > size)
 			order--;
 
@@ -117,15 +103,11 @@ static void *vb2_dma_sg_alloc(struct vb2_buffer *vb, struct device *dev,
 	buf->dma_dir = vb->vb2_queue->dma_dir;
 	buf->offset = 0;
 	buf->size = size;
-	/* size is already page aligned */
+	 
 	buf->num_pages = size >> PAGE_SHIFT;
 	buf->dma_sgt = &buf->sg_table;
 
-	/*
-	 * NOTE: dma-sg allocates memory using the page allocator directly, so
-	 * there is no memory consistency guarantee, hence dma-sg ignores DMA
-	 * attributes passed from the upper layer.
-	 */
+	 
 	buf->pages = kvcalloc(buf->num_pages, sizeof(struct page *), GFP_KERNEL);
 	if (!buf->pages)
 		goto fail_pages_array_alloc;
@@ -139,14 +121,11 @@ static void *vb2_dma_sg_alloc(struct vb2_buffer *vb, struct device *dev,
 	if (ret)
 		goto fail_table_alloc;
 
-	/* Prevent the device from being released while the buffer is used */
+	 
 	buf->dev = get_device(dev);
 
 	sgt = &buf->sg_table;
-	/*
-	 * No need to sync to the device, this will happen later when the
-	 * prepare() memop is called.
-	 */
+	 
 	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
 			    DMA_ATTR_SKIP_CPU_SYNC))
 		goto fail_map;
@@ -258,10 +237,7 @@ static void *vb2_dma_sg_get_userptr(struct vb2_buffer *vb, struct device *dev,
 		goto userptr_fail_sgtable;
 
 	sgt = &buf->sg_table;
-	/*
-	 * No need to sync to the device, this will happen later when the
-	 * prepare() memop is called.
-	 */
+	 
 	if (dma_map_sgtable(buf->dev, sgt, buf->dma_dir,
 			    DMA_ATTR_SKIP_CPU_SYNC))
 		goto userptr_fail_map;
@@ -277,10 +253,7 @@ userptr_fail_pfnvec:
 	return ERR_PTR(-ENOMEM);
 }
 
-/*
- * @put_userptr: inform the allocator that a USERPTR buffer will no longer
- *		 be used
- */
+ 
 static void vb2_dma_sg_put_userptr(void *buf_priv)
 {
 	struct vb2_dma_sg_buf *buf = buf_priv;
@@ -318,7 +291,7 @@ static void *vb2_dma_sg_vaddr(struct vb2_buffer *vb, void *buf_priv)
 		}
 	}
 
-	/* add offset in case userptr is not page-aligned */
+	 
 	return buf->vaddr ? buf->vaddr + buf->offset : NULL;
 }
 
@@ -345,9 +318,7 @@ static int vb2_dma_sg_mmap(void *buf_priv, struct vm_area_struct *vma)
 		return err;
 	}
 
-	/*
-	 * Use common vm_area operations to track buffer refcount.
-	 */
+	 
 	vma->vm_private_data	= &buf->handler;
 	vma->vm_ops		= &vb2_common_vm_ops;
 
@@ -356,9 +327,9 @@ static int vb2_dma_sg_mmap(void *buf_priv, struct vm_area_struct *vma)
 	return 0;
 }
 
-/*********************************************/
-/*         DMABUF ops for exporters          */
-/*********************************************/
+ 
+ 
+ 
 
 struct vb2_dma_sg_attachment {
 	struct sg_table sgt;
@@ -380,9 +351,7 @@ static int vb2_dma_sg_dmabuf_ops_attach(struct dma_buf *dbuf,
 		return -ENOMEM;
 
 	sgt = &attach->sgt;
-	/* Copy the buf->base_sgt scatter list to the attachment, as we can't
-	 * map the same scatter list to multiple attachments at the same time.
-	 */
+	 
 	ret = sg_alloc_table(sgt, buf->dma_sgt->orig_nents, GFP_KERNEL);
 	if (ret) {
 		kfree(attach);
@@ -414,7 +383,7 @@ static void vb2_dma_sg_dmabuf_ops_detach(struct dma_buf *dbuf,
 
 	sgt = &attach->sgt;
 
-	/* release the scatterlist cache */
+	 
 	if (attach->dma_dir != DMA_NONE)
 		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
 	sg_free_table(sgt);
@@ -429,17 +398,17 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
 	struct sg_table *sgt;
 
 	sgt = &attach->sgt;
-	/* return previously mapped sg table */
+	 
 	if (attach->dma_dir == dma_dir)
 		return sgt;
 
-	/* release any previous cache */
+	 
 	if (attach->dma_dir != DMA_NONE) {
 		dma_unmap_sgtable(db_attach->dev, sgt, attach->dma_dir, 0);
 		attach->dma_dir = DMA_NONE;
 	}
 
-	/* mapping to the client with new direction */
+	 
 	if (dma_map_sgtable(db_attach->dev, sgt, dma_dir, 0)) {
 		pr_err("failed to map scatterlist\n");
 		return ERR_PTR(-EIO);
@@ -453,12 +422,12 @@ static struct sg_table *vb2_dma_sg_dmabuf_ops_map(
 static void vb2_dma_sg_dmabuf_ops_unmap(struct dma_buf_attachment *db_attach,
 	struct sg_table *sgt, enum dma_data_direction dma_dir)
 {
-	/* nothing to be done here */
+	 
 }
 
 static void vb2_dma_sg_dmabuf_ops_release(struct dma_buf *dbuf)
 {
-	/* drop reference obtained in vb2_dma_sg_get_dmabuf */
+	 
 	vb2_dma_sg_put(dbuf->priv);
 }
 
@@ -532,15 +501,15 @@ static struct dma_buf *vb2_dma_sg_get_dmabuf(struct vb2_buffer *vb,
 	if (IS_ERR(dbuf))
 		return NULL;
 
-	/* dmabuf keeps reference to vb2 buffer */
+	 
 	refcount_inc(&buf->refcount);
 
 	return dbuf;
 }
 
-/*********************************************/
-/*       callbacks for DMABUF buffers        */
-/*********************************************/
+ 
+ 
+ 
 
 static int vb2_dma_sg_map_dmabuf(void *mem_priv)
 {
@@ -557,7 +526,7 @@ static int vb2_dma_sg_map_dmabuf(void *mem_priv)
 		return 0;
 	}
 
-	/* get the associated scatterlist for this buffer */
+	 
 	sgt = dma_buf_map_attachment_unlocked(buf->db_attach, buf->dma_dir);
 	if (IS_ERR(sgt)) {
 		pr_err("Error getting dmabuf scatterlist\n");
@@ -599,11 +568,11 @@ static void vb2_dma_sg_detach_dmabuf(void *mem_priv)
 {
 	struct vb2_dma_sg_buf *buf = mem_priv;
 
-	/* if vb2 works correctly you should never detach mapped buffer */
+	 
 	if (WARN_ON(buf->dma_sgt))
 		vb2_dma_sg_unmap_dmabuf(buf);
 
-	/* detach this attachment */
+	 
 	dma_buf_detach(buf->db_attach->dmabuf, buf->db_attach);
 	kfree(buf);
 }
@@ -625,7 +594,7 @@ static void *vb2_dma_sg_attach_dmabuf(struct vb2_buffer *vb, struct device *dev,
 		return ERR_PTR(-ENOMEM);
 
 	buf->dev = dev;
-	/* create attachment for the dmabuf with the user device */
+	 
 	dba = dma_buf_attach(dbuf, buf->dev);
 	if (IS_ERR(dba)) {
 		pr_err("failed to attach dmabuf\n");

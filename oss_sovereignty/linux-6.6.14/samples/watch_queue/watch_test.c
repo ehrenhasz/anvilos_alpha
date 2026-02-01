@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Use watch_queue API to watch for notifications.
- *
- * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <stdbool.h>
@@ -58,9 +54,7 @@ static void saw_key_change(struct watch_notification *n, size_t len)
 	       k->key_id, n->subtype, key_subtypes[n->subtype], k->aux);
 }
 
-/*
- * Consume and display events.
- */
+ 
 static void consumer(int fd)
 {
 	unsigned char buffer[433], *p, *end;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Dave DNET Ethernet Controller driver
- *
- * Copyright (C) 2008 Dave S.r.l. <www.dave.eu>
- * Copyright (C) 2009 Ilya Yanok, Emcraft Systems Ltd, <yanok@emcraft.com>
- */
+
+ 
 #include <linux/io.h>
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -23,36 +18,34 @@
 
 #undef DEBUG
 
-/* function for reading internal MAC register */
+ 
 static u16 dnet_readw_mac(struct dnet *bp, u16 reg)
 {
 	u16 data_read;
 
-	/* issue a read */
+	 
 	dnet_writel(bp, reg, MACREG_ADDR);
 
-	/* since a read/write op to the MAC is very slow,
-	 * we must wait before reading the data */
+	 
 	ndelay(500);
 
-	/* read data read from the MAC register */
+	 
 	data_read = dnet_readl(bp, MACREG_DATA);
 
-	/* all done */
+	 
 	return data_read;
 }
 
-/* function for writing internal MAC register */
+ 
 static void dnet_writew_mac(struct dnet *bp, u16 reg, u16 val)
 {
-	/* load data to write */
+	 
 	dnet_writel(bp, val, MACREG_DATA);
 
-	/* issue a write */
+	 
 	dnet_writel(bp, reg | DNET_INTERNAL_WRITE, MACREG_ADDR);
 
-	/* since a read/write op to the MAC is very slow,
-	 * we must wait before exiting */
+	 
 	ndelay(500);
 }
 
@@ -73,18 +66,7 @@ static void dnet_get_hwaddr(struct dnet *bp)
 	u16 tmp;
 	u8 addr[6];
 
-	/*
-	 * from MAC docs:
-	 * "Note that the MAC address is stored in the registers in Hexadecimal
-	 * form. For example, to set the MAC Address to: AC-DE-48-00-00-80
-	 * would require writing 0xAC (octet 0) to address 0x0B (high byte of
-	 * Mac_addr[15:0]), 0xDE (octet 1) to address 0x0A (Low byte of
-	 * Mac_addr[15:0]), 0x48 (octet 2) to address 0x0D (high byte of
-	 * Mac_addr[15:0]), 0x00 (octet 3) to address 0x0C (Low byte of
-	 * Mac_addr[15:0]), 0x00 (octet 4) to address 0x0F (high byte of
-	 * Mac_addr[15:0]), and 0x80 (octet 5) to address * 0x0E (Low byte of
-	 * Mac_addr[15:0]).
-	 */
+	 
 	tmp = dnet_readw_mac(bp, DNET_INTERNAL_MAC_ADDR_0_REG);
 	*((__be16 *)addr) = cpu_to_be16(tmp);
 	tmp = dnet_readw_mac(bp, DNET_INTERNAL_MAC_ADDR_1_REG);
@@ -105,18 +87,18 @@ static int dnet_mdio_read(struct mii_bus *bus, int mii_id, int regnum)
 				& DNET_INTERNAL_GMII_MNG_CMD_FIN))
 		cpu_relax();
 
-	/* only 5 bits allowed for phy-addr and reg_offset */
+	 
 	mii_id &= 0x1f;
 	regnum &= 0x1f;
 
-	/* prepare reg_value for a read */
+	 
 	value = (mii_id << 8);
 	value |= regnum;
 
-	/* write control word */
+	 
 	dnet_writew_mac(bp, DNET_INTERNAL_GMII_MNG_CTL_REG, value);
 
-	/* wait for end of transfer */
+	 
 	while (!(dnet_readw_mac(bp, DNET_INTERNAL_GMII_MNG_CTL_REG)
 				& DNET_INTERNAL_GMII_MNG_CMD_FIN))
 		cpu_relax();
@@ -140,24 +122,24 @@ static int dnet_mdio_write(struct mii_bus *bus, int mii_id, int regnum,
 				& DNET_INTERNAL_GMII_MNG_CMD_FIN))
 		cpu_relax();
 
-	/* prepare for a write operation */
+	 
 	tmp = (1 << 13);
 
-	/* only 5 bits allowed for phy-addr and reg_offset */
+	 
 	mii_id &= 0x1f;
 	regnum &= 0x1f;
 
-	/* only 16 bits on data */
+	 
 	value &= 0xffff;
 
-	/* prepare reg_value for a write */
+	 
 	tmp |= (mii_id << 8);
 	tmp |= regnum;
 
-	/* write data to write first */
+	 
 	dnet_writew_mac(bp, DNET_INTERNAL_GMII_MNG_DAT_REG, value);
 
-	/* write control word */
+	 
 	dnet_writew_mac(bp, DNET_INTERNAL_GMII_MNG_CTL_REG, tmp);
 
 	while (!(dnet_readw_mac(bp, DNET_INTERNAL_GMII_MNG_CTL_REG)
@@ -253,7 +235,7 @@ static int dnet_mii_probe(struct net_device *dev)
 	struct dnet *bp = netdev_priv(dev);
 	struct phy_device *phydev = NULL;
 
-	/* find the first phy */
+	 
 	phydev = phy_find_first(bp->mii_bus);
 
 	if (!phydev) {
@@ -261,9 +243,9 @@ static int dnet_mii_probe(struct net_device *dev)
 		return -ENODEV;
 	}
 
-	/* TODO : add pin_irq */
+	 
 
-	/* attach the mac to the phy */
+	 
 	if (bp->capabilities & DNET_HAS_RMII) {
 		phydev = phy_connect(dev, phydev_name(phydev),
 				     &dnet_handle_link_change,
@@ -279,7 +261,7 @@ static int dnet_mii_probe(struct net_device *dev)
 		return PTR_ERR(phydev);
 	}
 
-	/* mask with MAC supported features */
+	 
 	if (bp->capabilities & DNET_HAS_GIGABIT)
 		phy_set_max_speed(phydev, SPEED_1000);
 	else
@@ -330,7 +312,7 @@ err_out:
 	return err;
 }
 
-/* For Neptune board: LINK1000 as Link LED and TX as activity LED */
+ 
 static int dnet_phy_marvell_fixup(struct phy_device *phydev)
 {
 	return phy_write(phydev, 0x18, 0x4148);
@@ -372,10 +354,7 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 	int i;
 
 	while (npackets < budget) {
-		/*
-		 * break out of while loop if there are no more
-		 * packets waiting
-		 */
+		 
 		if (!(dnet_readl(bp, RX_FIFO_WCNT) >> 16))
 			break;
 
@@ -388,12 +367,9 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 
 		skb = netdev_alloc_skb(dev, pkt_len + 5);
 		if (skb != NULL) {
-			/* Align IP on 16 byte boundaries */
+			 
 			skb_reserve(skb, 2);
-			/*
-			 * 'skb_put()' points to the start of sk_buff
-			 * data area.
-			 */
+			 
 			data_ptr = skb_put(skb, pkt_len);
 			for (i = 0; i < (pkt_len + 3) >> 2; i++)
 				*data_ptr++ = dnet_readl(bp, RX_DATA_FIFO);
@@ -407,9 +383,7 @@ static int dnet_poll(struct napi_struct *napi, int budget)
 	}
 
 	if (npackets < budget) {
-		/* We processed all packets available.  Tell NAPI it can
-		 * stop polling then re-enable rx interrupts.
-		 */
+		 
 		napi_complete_done(napi, npackets);
 		int_enable = dnet_readl(bp, INTR_ENB);
 		int_enable |= DNET_INTR_SRC_RX_CMDFIFOAF;
@@ -429,12 +403,12 @@ static irqreturn_t dnet_interrupt(int irq, void *dev_id)
 
 	spin_lock_irqsave(&bp->lock, flags);
 
-	/* read and clear the DNET irq (clear on read) */
+	 
 	int_src = dnet_readl(bp, INTR_SRC);
 	int_enable = dnet_readl(bp, INTR_ENB);
 	int_current = int_src & int_enable;
 
-	/* restart the queue if we had stopped it for TX fifo almost full */
+	 
 	if (int_current & DNET_INTR_SRC_TX_FIFOAE) {
 		int_enable = dnet_readl(bp, INTR_ENB);
 		int_enable &= ~DNET_INTR_ENB_TX_FIFOAE;
@@ -443,24 +417,24 @@ static irqreturn_t dnet_interrupt(int irq, void *dev_id)
 		handled = 1;
 	}
 
-	/* RX FIFO error checking */
+	 
 	if (int_current &
 	    (DNET_INTR_SRC_RX_CMDFIFOFF | DNET_INTR_SRC_RX_DATAFIFOFF)) {
 		printk(KERN_ERR "%s: RX fifo error %x, irq %x\n", __func__,
 		       dnet_readl(bp, RX_STATUS), int_current);
-		/* we can only flush the RX FIFOs */
+		 
 		dnet_writel(bp, DNET_SYS_CTL_RXFIFOFLUSH, SYS_CTL);
 		ndelay(500);
 		dnet_writel(bp, 0, SYS_CTL);
 		handled = 1;
 	}
 
-	/* TX FIFO error checking */
+	 
 	if (int_current &
 	    (DNET_INTR_SRC_TX_FIFOFULL | DNET_INTR_SRC_TX_DISCFRM)) {
 		printk(KERN_ERR "%s: TX fifo error %x, irq %x\n", __func__,
 		       dnet_readl(bp, TX_STATUS), int_current);
-		/* we can only flush the TX FIFOs */
+		 
 		dnet_writel(bp, DNET_SYS_CTL_TXFIFOFLUSH, SYS_CTL);
 		ndelay(500);
 		dnet_writel(bp, 0, SYS_CTL);
@@ -469,11 +443,8 @@ static irqreturn_t dnet_interrupt(int irq, void *dev_id)
 
 	if (int_current & DNET_INTR_SRC_RX_CMDFIFOAF) {
 		if (napi_schedule_prep(&bp->napi)) {
-			/*
-			 * There's no point taking any more interrupts
-			 * until we have processed the buffers
-			 */
-			/* Disable Rx interrupts and schedule NAPI poll */
+			 
+			 
 			int_enable = dnet_readl(bp, INTR_ENB);
 			int_enable &= ~DNET_INTR_SRC_RX_CMDFIFOAF;
 			dnet_writel(bp, int_enable, INTR_ENB);
@@ -528,15 +499,12 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	wrsz >>= 2;
 	tx_cmd = ((((unsigned long)(skb->data)) & 0x03) << 16) | (u32) skb->len;
 
-	/* check if there is enough room for the current frame */
+	 
 	if (wrsz < (DNET_FIFO_SIZE - dnet_readl(bp, TX_FIFO_WCNT))) {
 		for (i = 0; i < wrsz; i++)
 			dnet_writel(bp, *bufp++, TX_DATA_FIFO);
 
-		/*
-		 * inform MAC that a packet's written and ready to be
-		 * shipped out
-		 */
+		 
 		dnet_writel(bp, tx_cmd, TX_LEN_FIFO);
 	}
 
@@ -552,7 +520,7 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	spin_unlock_irqrestore(&bp->lock, flags);
 
-	/* free the buffer */
+	 
 	dev_kfree_skb(skb);
 
 	return NETDEV_TX_OK;
@@ -560,21 +528,15 @@ static netdev_tx_t dnet_start_xmit(struct sk_buff *skb, struct net_device *dev)
 
 static void dnet_reset_hw(struct dnet *bp)
 {
-	/* put ts_mac in IDLE state i.e. disable rx/tx */
+	 
 	dnet_writew_mac(bp, DNET_INTERNAL_MODE_REG, DNET_INTERNAL_MODE_FCEN);
 
-	/*
-	 * RX FIFO almost full threshold: only cmd FIFO almost full is
-	 * implemented for RX side
-	 */
+	 
 	dnet_writel(bp, DNET_FIFO_RX_CMD_AF_TH, RX_FIFO_TH);
-	/*
-	 * TX FIFO almost empty threshold: only data FIFO almost empty
-	 * is implemented for TX side
-	 */
+	 
 	dnet_writel(bp, DNET_FIFO_TX_DATA_AE_TH, TX_FIFO_TH);
 
-	/* flush rx/tx fifos */
+	 
 	dnet_writel(bp, DNET_SYS_CTL_RXFIFOFLUSH | DNET_SYS_CTL_TXFIFOFLUSH,
 			SYS_CTL);
 	msleep(1);
@@ -591,10 +553,10 @@ static void dnet_init_hw(struct dnet *bp)
 	config = dnet_readw_mac(bp, DNET_INTERNAL_RXTX_CONTROL_REG);
 
 	if (bp->dev->flags & IFF_PROMISC)
-		/* Copy All Frames */
+		 
 		config |= DNET_INTERNAL_RXTX_CONTROL_ENPROMISC;
 	if (!(bp->dev->flags & IFF_BROADCAST))
-		/* No BroadCast */
+		 
 		config |= DNET_INTERNAL_RXTX_CONTROL_RXMULTICAST;
 
 	config |= DNET_INTERNAL_RXTX_CONTROL_RXPAUSE |
@@ -604,10 +566,10 @@ static void dnet_init_hw(struct dnet *bp)
 
 	dnet_writew_mac(bp, DNET_INTERNAL_RXTX_CONTROL_REG, config);
 
-	/* clear irq before enabling them */
+	 
 	config = dnet_readl(bp, INTR_SRC);
 
-	/* enable RX/TX interrupt, recv packet ready interrupt */
+	 
 	dnet_writel(bp, DNET_INTR_ENB_GLOBAL_ENABLE | DNET_INTR_ENB_RX_SUMMARY |
 			DNET_INTR_ENB_TX_SUMMARY | DNET_INTR_ENB_RX_FIFOERR |
 			DNET_INTR_ENB_RX_ERROR | DNET_INTR_ENB_RX_FIFOFULL |
@@ -619,7 +581,7 @@ static int dnet_open(struct net_device *dev)
 {
 	struct dnet *bp = netdev_priv(dev);
 
-	/* if the phy is not yet register, retry later */
+	 
 	if (!dev->phydev)
 		return -EAGAIN;
 
@@ -628,7 +590,7 @@ static int dnet_open(struct net_device *dev)
 
 	phy_start_aneg(dev->phydev);
 
-	/* schedule a link state check */
+	 
 	phy_start(dev->phydev);
 
 	netif_start_queue(dev);
@@ -692,14 +654,13 @@ static struct net_device_stats *dnet_get_stats(struct net_device *dev)
 	struct net_device_stats *nstat = &dev->stats;
 	struct dnet_stats *hwstat = &bp->hw_stats;
 
-	/* read stats from hardware */
+	 
 	dnet_update_stats(bp);
 
-	/* Convert HW stats into netdevice stats */
+	 
 	nstat->rx_errors = (hwstat->rx_len_chk_err +
 			    hwstat->rx_lng_frm + hwstat->rx_shrt_frm +
-			    /* ignore IGP violation error
-			    hwstat->rx_ipg_viol + */
+			     
 			    hwstat->rx_crc_err +
 			    hwstat->rx_pre_shrink +
 			    hwstat->rx_drib_nib + hwstat->rx_unsup_opcd);
@@ -762,7 +723,7 @@ static int dnet_probe(struct platform_device *pdev)
 	if (!dev)
 		return -ENOMEM;
 
-	/* TODO: Actually, we have some interesting features... */
+	 
 	dev->features |= 0;
 
 	bp = netdev_priv(dev);
@@ -798,7 +759,7 @@ static int dnet_probe(struct platform_device *pdev)
 	dnet_get_hwaddr(bp);
 
 	if (!is_valid_ether_addr(dev->dev_addr)) {
-		/* choose a random ethernet address */
+		 
 		eth_hw_addr_random(dev);
 		__dnet_set_hwaddr(bp);
 	}
@@ -809,10 +770,10 @@ static int dnet_probe(struct platform_device *pdev)
 		goto err_out_free_irq;
 	}
 
-	/* register the PHY board fixup (for Marvell 88E1111) */
+	 
 	err = phy_register_fixup_for_uid(0x01410cc0, 0xfffffff0,
 					 dnet_phy_marvell_fixup);
-	/* we can live without it, so just issue a warning */
+	 
 	if (err)
 		dev_warn(&pdev->dev, "Cannot register PHY board fixup.\n");
 

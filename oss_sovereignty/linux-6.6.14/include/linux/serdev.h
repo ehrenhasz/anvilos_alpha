@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2016-2017 Linaro Ltd., Rob Herring <robh@kernel.org>
- */
+ 
+ 
 #ifndef _LINUX_SERDEV_H
 #define _LINUX_SERDEV_H
 
@@ -15,31 +13,15 @@
 struct serdev_controller;
 struct serdev_device;
 
-/*
- * serdev device structures
- */
+ 
 
-/**
- * struct serdev_device_ops - Callback operations for a serdev device
- * @receive_buf:	Function called with data received from device;
- *			returns number of bytes accepted; may sleep.
- * @write_wakeup:	Function called when ready to transmit more data; must
- *			not sleep.
- */
+ 
 struct serdev_device_ops {
 	int (*receive_buf)(struct serdev_device *, const unsigned char *, size_t);
 	void (*write_wakeup)(struct serdev_device *);
 };
 
-/**
- * struct serdev_device - Basic representation of an serdev device
- * @dev:	Driver model representation of the device.
- * @nr:		Device number on serdev bus.
- * @ctrl:	serdev controller managing this device.
- * @ops:	Device operations.
- * @write_comp	Completion used by serdev_device_write() internally
- * @write_lock	Lock to serialize access when writing data
- */
+ 
 struct serdev_device {
 	struct device dev;
 	int nr;
@@ -54,13 +36,7 @@ static inline struct serdev_device *to_serdev_device(struct device *d)
 	return container_of(d, struct serdev_device, dev);
 }
 
-/**
- * struct serdev_device_driver - serdev slave device driver
- * @driver:	serdev device drivers should initialize name field of this
- *		structure.
- * @probe:	binds this driver to a serdev device.
- * @remove:	unbinds this driver from the serdev device.
- */
+ 
 struct serdev_device_driver {
 	struct device_driver driver;
 	int	(*probe)(struct serdev_device *);
@@ -78,9 +54,7 @@ enum serdev_parity {
 	SERDEV_PARITY_ODD,
 };
 
-/*
- * serdev controller structures
- */
+ 
 struct serdev_controller_ops {
 	int (*write_buf)(struct serdev_controller *, const unsigned char *, size_t);
 	void (*write_flush)(struct serdev_controller *);
@@ -96,13 +70,7 @@ struct serdev_controller_ops {
 	int (*break_ctl)(struct serdev_controller *ctrl, unsigned int break_state);
 };
 
-/**
- * struct serdev_controller - interface to the serdev controller
- * @dev:	Driver model representation of the device.
- * @nr:		number identifier for this controller/bus.
- * @serdev:	Pointer to slave device for this controller.
- * @ops:	Controller operations.
- */
+ 
 struct serdev_controller {
 	struct device		dev;
 	unsigned int		nr;
@@ -125,10 +93,7 @@ static inline void serdev_device_set_drvdata(struct serdev_device *serdev, void 
 	dev_set_drvdata(&serdev->dev, data);
 }
 
-/**
- * serdev_device_put() - decrement serdev device refcount
- * @serdev	serdev device.
- */
+ 
 static inline void serdev_device_put(struct serdev_device *serdev)
 {
 	if (serdev)
@@ -153,10 +118,7 @@ static inline void serdev_controller_set_drvdata(struct serdev_controller *ctrl,
 	dev_set_drvdata(&ctrl->dev, data);
 }
 
-/**
- * serdev_controller_put() - decrement controller refcount
- * @ctrl	serdev controller.
- */
+ 
 static inline void serdev_controller_put(struct serdev_controller *ctrl)
 {
 	if (ctrl)
@@ -210,17 +172,12 @@ int serdev_device_write(struct serdev_device *, const unsigned char *, size_t, l
 void serdev_device_write_flush(struct serdev_device *);
 int serdev_device_write_room(struct serdev_device *);
 
-/*
- * serdev device driver functions
- */
+ 
 int __serdev_device_driver_register(struct serdev_device_driver *, struct module *);
 #define serdev_device_driver_register(sdrv) \
 	__serdev_device_driver_register(sdrv, THIS_MODULE)
 
-/**
- * serdev_device_driver_unregister() - unregister an serdev client driver
- * @sdrv:	the driver to unregister
- */
+ 
 static inline void serdev_device_driver_unregister(struct serdev_device_driver *sdrv)
 {
 	if (sdrv)
@@ -276,7 +233,7 @@ static inline int serdev_device_write_room(struct serdev_device *sdev)
 #define serdev_device_driver_register(x)
 #define serdev_device_driver_unregister(x)
 
-#endif /* CONFIG_SERIAL_DEV_BUS */
+#endif  
 
 static inline bool serdev_device_get_cts(struct serdev_device *serdev)
 {
@@ -303,9 +260,7 @@ static inline int serdev_device_set_rts(struct serdev_device *serdev, bool enabl
 int serdev_device_set_parity(struct serdev_device *serdev,
 			     enum serdev_parity parity);
 
-/*
- * serdev hooks into TTY core
- */
+ 
 struct tty_port;
 struct tty_driver;
 
@@ -325,7 +280,7 @@ static inline int serdev_tty_port_unregister(struct tty_port *port)
 {
 	return -ENODEV;
 }
-#endif /* CONFIG_SERIAL_DEV_CTRL_TTYPORT */
+#endif  
 
 struct acpi_resource;
 struct acpi_resource_uart_serialbus;
@@ -339,6 +294,6 @@ static inline bool serdev_acpi_get_uart_resource(struct acpi_resource *ares,
 {
 	return false;
 }
-#endif /* CONFIG_ACPI */
+#endif  
 
-#endif /*_LINUX_SERDEV_H */
+#endif  

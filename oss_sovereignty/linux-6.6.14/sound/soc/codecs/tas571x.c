@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TAS571x amplifier audio driver
- *
- * Copyright (C) 2015 Google, Inc.
- * Copyright (c) 2013 Daniel Mack <zonque@gmail.com>
- *
- * TAS5721 support:
- * Copyright (C) 2016 Petr Kulhavy, Barix AG <petr@barix.com>
- *
- * TAS5707 support:
- * Copyright (C) 2018 Jerome Brunet, Baylibre SAS <jbrunet@baylibre.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -139,9 +128,7 @@ static int tas571x_reg_read(void *context, unsigned int reg,
 	return 0;
 }
 
-/*
- * register write for 8- and 20-byte registers
- */
+ 
 static int tas571x_reg_write_multiword(struct i2c_client *client,
 		unsigned int reg, const long values[], size_t len)
 {
@@ -170,9 +157,7 @@ static int tas571x_reg_write_multiword(struct i2c_client *client,
 		return -EIO;
 }
 
-/*
- * register read for 8- and 20-byte registers
- */
+ 
 static int tas571x_reg_read_multiword(struct i2c_client *client,
 		unsigned int reg, long values[], size_t len)
 {
@@ -215,16 +200,7 @@ err_ret:
 	return ret;
 }
 
-/*
- * Integer array controls for setting biquad, mixer, DRC coefficients.
- * According to the datasheet each coefficient is effectively 26bits,
- * i.e. stored as 32bits, where bits [31:26] are ignored.
- * TI's TAS57xx Graphical Development Environment tool however produces
- * coefficients with more than 26 bits. For this reason we allow values
- * in the full 32-bits reange.
- * The coefficients are ordered as given in the TAS571x data sheet:
- * b0, b1, b2, a1, a2
- */
+ 
 
 static int tas571x_coefficient_info(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_info *uinfo)
@@ -560,7 +536,7 @@ static const char *const tas5717_supply_names[] = {
 static const DECLARE_TLV_DB_SCALE(tas5717_volume_tlv, -10375, 25, 0);
 
 static const struct snd_kcontrol_new tas5717_controls[] = {
-	/* MVOL LSB is ignored - see comments in tas571x_i2c_probe() */
+	 
 	SOC_SINGLE_TLV("Master Volume",
 		       TAS571X_MVOL_REG, 1, 0x1ff, 1,
 		       tas5717_volume_tlv),
@@ -582,11 +558,7 @@ static const struct snd_kcontrol_new tas5717_controls[] = {
 			   TAS5717_CH2_RIGHT_CH_MIX_REG,
 			   16, 0, 0x80, 0),
 
-	/*
-	 * The biquads are named according to the register names.
-	 * Please note that TI's TAS57xx Graphical Development Environment
-	 * tool names them different.
-	 */
+	 
 	BIQUAD_COEFS("CH1 - Biquad 0", TAS5717_CH1_BQ0_REG),
 	BIQUAD_COEFS("CH1 - Biquad 1", TAS5717_CH1_BQ1_REG),
 	BIQUAD_COEFS("CH1 - Biquad 2", TAS5717_CH1_BQ2_REG),
@@ -647,7 +619,7 @@ static const struct regmap_config tas5717_regmap_config = {
 	.volatile_table			= &tas571x_volatile_regs,
 };
 
-/* This entry is reused for tas5719 as the software interface is identical. */
+ 
 static const struct tas571x_chip tas5717_chip = {
 	.supply_names			= tas5717_supply_names,
 	.num_supply_names		= ARRAY_SIZE(tas5717_supply_names),
@@ -901,7 +873,7 @@ static int tas571x_i2c_probe(struct i2c_client *client)
 		ret = PTR_ERR(priv->reset_gpio);
 		goto disable_regs;
 	} else if (priv->reset_gpio) {
-		/* pulse the active low reset line for ~100us */
+		 
 		usleep_range(100, 200);
 		gpiod_set_value(priv->reset_gpio, 0);
 		usleep_range(13500, 20000);
@@ -918,11 +890,7 @@ static int tas571x_i2c_probe(struct i2c_client *client)
 	priv->component_driver.num_controls = priv->chip->num_controls;
 
 	if (priv->chip->vol_reg_size == 2) {
-		/*
-		 * The master volume defaults to 0x3ff (mute), but we ignore
-		 * (zero) the LSB because the hardware step size is 0.125 dB
-		 * and TLV_DB_SCALE_ITEM has a resolution of 0.01 dB.
-		 */
+		 
 		ret = regmap_update_bits(priv->regmap, TAS571X_MVOL_REG, 1, 0);
 		if (ret)
 			goto disable_regs;

@@ -1,30 +1,4 @@
-/*
- *  Linux MegaRAID driver for SAS based RAID controllers
- *
- *  Copyright (c) 2003-2018  LSI Corporation.
- *  Copyright (c) 2003-2018  Avago Technologies.
- *  Copyright (c) 2003-2018  Broadcom Inc.
- *
- *  This program is free software; you can redistribute it and/or
- *  modify it under the terms of the GNU General Public License
- *  as published by the Free Software Foundation; either version 2
- *  of the License, or (at your option) any later version.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  Authors: Broadcom Inc.
- *           Kashyap Desai <kashyap.desai@broadcom.com>
- *           Sumit Saxena <sumit.saxena@broadcom.com>
- *           Shivasharan S <shivasharan.srikanteshwara@broadcom.com>
- *
- *  Send feedback to: megaraidlinux.pdl@broadcom.com
- */
+ 
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/pci.h>
@@ -96,9 +70,7 @@ static const struct file_operations megasas_debugfs_raidmap_fops = {
 	.release        = megasas_debugfs_release,
 };
 
-/*
- * megasas_init_debugfs :	Create debugfs root for megaraid_sas driver
- */
+ 
 void megasas_init_debugfs(void)
 {
 	megasas_debugfs_root = debugfs_create_dir("megaraid_sas", NULL);
@@ -106,18 +78,13 @@ void megasas_init_debugfs(void)
 		pr_info("Cannot create debugfs root\n");
 }
 
-/*
- * megasas_exit_debugfs :	Remove debugfs root for megaraid_sas driver
- */
+ 
 void megasas_exit_debugfs(void)
 {
 	debugfs_remove_recursive(megasas_debugfs_root);
 }
 
-/*
- * megasas_setup_debugfs :	Setup debugfs per Fusion adapter
- * instance:				Soft instance of adapter
- */
+ 
 void
 megasas_setup_debugfs(struct megasas_instance *instance)
 {
@@ -154,10 +121,7 @@ megasas_setup_debugfs(struct megasas_instance *instance)
 
 }
 
-/*
- * megasas_destroy_debugfs :	Destroy debugfs per Fusion adapter
- * instance:					Soft instance of adapter
- */
+ 
 void megasas_destroy_debugfs(struct megasas_instance *instance)
 {
 	debugfs_remove_recursive(instance->debugfs_root);
@@ -176,4 +140,4 @@ void megasas_setup_debugfs(struct megasas_instance *instance)
 void megasas_destroy_debugfs(struct megasas_instance *instance)
 {
 }
-#endif /*CONFIG_DEBUG_FS*/
+#endif  

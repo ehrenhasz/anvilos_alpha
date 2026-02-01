@@ -1,24 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_DCORE0_DEC0_CMD_REGS_H_
 #define ASIC_REG_DCORE0_DEC0_CMD_REGS_H_
 
-/*
- *****************************************
- *   DCORE0_DEC0_CMD
- *   (Prototype: VSI_CMD)
- *****************************************
- */
+ 
 
 #define mmDCORE0_DEC0_CMD_SWREG0 0x41E0000
 
@@ -82,4 +69,4 @@
 
 #define mmDCORE0_DEC0_CMD_SWREG67 0x41E010C
 
-#endif /* ASIC_REG_DCORE0_DEC0_CMD_REGS_H_ */
+#endif  

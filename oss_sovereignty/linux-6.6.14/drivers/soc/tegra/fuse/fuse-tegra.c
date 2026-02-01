@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013-2023, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -91,7 +89,7 @@ static const struct of_device_id tegra_fuse_match[] = {
 #ifdef CONFIG_ARCH_TEGRA_2x_SOC
 	{ .compatible = "nvidia,tegra20-efuse", .data = &tegra20_fuse_soc },
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 
 static int tegra_fuse_read(void *priv, unsigned int offset, void *value,
@@ -124,7 +122,7 @@ static int tegra_fuse_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* take over the memory region from the early initialization */
+	 
 	fuse->base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(fuse->base))
 		return PTR_ERR(fuse->base);
@@ -186,10 +184,7 @@ static int tegra_fuse_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/*
-	 * FUSE clock is enabled at a boot time, hence this resume/suspend
-	 * disables the clock besides the h/w resetting.
-	 */
+	 
 	err = pm_runtime_resume_and_get(&pdev->dev);
 	if (err)
 		return err;
@@ -202,7 +197,7 @@ static int tegra_fuse_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* release the early I/O memory mapping */
+	 
 	iounmap(base);
 
 	return 0;
@@ -232,10 +227,7 @@ static int __maybe_unused tegra_fuse_suspend(struct device *dev)
 {
 	int ret;
 
-	/*
-	 * Critical for RAM re-repair operation, which must occur on resume
-	 * from LP1 system suspend and as part of CCPLEX cluster switching.
-	 */
+	 
 	if (fuse->soc->clk_suspend_on)
 		ret = pm_runtime_resume_and_get(dev);
 	else
@@ -307,10 +299,7 @@ static void tegra_enable_fuse_clk(void __iomem *base)
 	reg |= 1 << 28;
 	writel(reg, base + 0x48);
 
-	/*
-	 * Enable FUSE clock. This needs to be hardcoded because the clock
-	 * subsystem is not active during early boot.
-	 */
+	 
 	reg = readl(base + 0x14);
 	reg |= 1 << 7;
 	writel(reg, base + 0x14);
@@ -347,12 +336,7 @@ const struct attribute_group tegra_soc_attr_group = {
 static ssize_t platform_show(struct device *dev, struct device_attribute *attr,
 			     char *buf)
 {
-	/*
-	 * Displays the value in the 'pre_si_platform' field of the HIDREV
-	 * register for Tegra194 devices. A value of 0 indicates that the
-	 * platform type is silicon and all other non-zero values indicate
-	 * the type of simulation platform is being used.
-	 */
+	 
 	return sprintf(buf, "%d\n", tegra_get_platform());
 }
 
@@ -412,14 +396,7 @@ static int __init tegra_init_fuse(void)
 
 	np = of_find_matching_node_and_match(NULL, tegra_fuse_match, &match);
 	if (!np) {
-		/*
-		 * Fall back to legacy initialization for 32-bit ARM only. All
-		 * 64-bit ARM device tree files for Tegra are required to have
-		 * a FUSE node.
-		 *
-		 * This is for backwards-compatibility with old device trees
-		 * that didn't contain a FUSE node.
-		 */
+		 
 		if (IS_ENABLED(CONFIG_ARM) && soc_is_tegra()) {
 			u8 chip = tegra_get_chip_id();
 
@@ -457,17 +434,11 @@ static int __init tegra_init_fuse(void)
 				break;
 			}
 		} else {
-			/*
-			 * At this point we're not running on Tegra, so play
-			 * nice with multi-platform kernels.
-			 */
+			 
 			return 0;
 		}
 	} else {
-		/*
-		 * Extract information from the device tree if we've found a
-		 * matching node.
-		 */
+		 
 		if (of_address_to_resource(np, 0, &regs) < 0) {
 			pr_err("failed to get FUSE register\n");
 			return -ENXIO;
@@ -522,7 +493,7 @@ static int __init tegra_init_soc(void)
 	struct device_node *np;
 	struct device *soc;
 
-	/* make sure we're running on Tegra */
+	 
 	np = of_find_matching_node(NULL, tegra_fuse_match);
 	if (!np)
 		return 0;

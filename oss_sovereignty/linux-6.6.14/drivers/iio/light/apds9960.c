@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * apds9960.c - Support for Avago APDS9960 gesture/RGB/ALS/proximity sensor
- *
- * Copyright (C) 2015, 2018
- * Author: Matt Ranostay <matt.ranostay@konsulko.com>
- *
- * TODO: gesture + proximity calib offsets
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -122,7 +115,7 @@ struct apds9960_data {
 	struct iio_dev *indio_dev;
 	struct mutex lock;
 
-	/* regmap fields */
+	 
 	struct regmap *regmap;
 	struct regmap_field *reg_int_als;
 	struct regmap_field *reg_int_ges;
@@ -132,24 +125,24 @@ struct apds9960_data {
 	struct regmap_field *reg_enable_ges;
 	struct regmap_field *reg_enable_pxs;
 
-	/* state */
+	 
 	int als_int;
 	int pxs_int;
 	int gesture_mode_running;
 
-	/* gain values */
+	 
 	int als_gain;
 	int pxs_gain;
 
-	/* integration time value in us */
+	 
 	int als_adc_int_us;
 
-	/* gesture buffer */
-	u8 buffer[4]; /* 4 8-bit channels */
+	 
+	u8 buffer[4];  
 };
 
 static const struct reg_default apds9960_reg_defaults[] = {
-	/* Default ALS integration time = 2.48ms */
+	 
 	{ APDS9960_REG_ATIME, 0xff },
 };
 
@@ -291,12 +284,12 @@ static const struct iio_chan_spec apds9960_channels[] = {
 		.event_spec = apds9960_pxs_event_spec,
 		.num_event_specs = ARRAY_SIZE(apds9960_pxs_event_spec),
 	},
-	/* Gesture Sensor */
+	 
 	APDS9960_GESTURE_CHANNEL(UP, 0),
 	APDS9960_GESTURE_CHANNEL(DOWN, 1),
 	APDS9960_GESTURE_CHANNEL(LEFT, 2),
 	APDS9960_GESTURE_CHANNEL(RIGHT, 3),
-	/* ALS */
+	 
 	{
 		.type = IIO_INTENSITY,
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
@@ -310,13 +303,13 @@ static const struct iio_chan_spec apds9960_channels[] = {
 		.event_spec = apds9960_als_event_spec,
 		.num_event_specs = ARRAY_SIZE(apds9960_als_event_spec),
 	},
-	/* RGB Sensor */
+	 
 	APDS9960_INTENSITY_CHANNEL(RED),
 	APDS9960_INTENSITY_CHANNEL(GREEN),
 	APDS9960_INTENSITY_CHANNEL(BLUE),
 };
 
-/* integration time in us */
+ 
 static const int apds9960_int_time[][2] = {
 	{ 28000, 246},
 	{100000, 219},
@@ -324,7 +317,7 @@ static const int apds9960_int_time[][2] = {
 	{700000,   0}
 };
 
-/* gain mapping */
+ 
 static const int apds9960_pxs_gain_map[] = {1, 2, 4, 8};
 static const int apds9960_als_gain_map[] = {1, 4, 16, 64};
 
@@ -388,7 +381,7 @@ static int apds9960_set_pxs_gain(struct apds9960_data *data, int val)
 
 	for (idx = 0; idx < ARRAY_SIZE(apds9960_pxs_gain_map); idx++) {
 		if (apds9960_pxs_gain_map[idx] == val) {
-			/* pxs + gesture gains are mirrored */
+			 
 			mutex_lock(&data->lock);
 			ret = regmap_update_bits(data->regmap,
 				APDS9960_REG_CONTROL,
@@ -448,7 +441,7 @@ static int apds9960_set_power_state(struct apds9960_data *data, bool on)
 		suspended = pm_runtime_suspended(dev);
 		ret = pm_runtime_get_sync(dev);
 
-		/* Allow one integration cycle before allowing a reading */
+		 
 		if (suspended)
 			usleep_range(data->als_adc_int_us,
 				     APDS9960_MAX_INT_TIME_IN_US);
@@ -502,7 +495,7 @@ static int apds9960_read_raw(struct iio_dev *indio_dev,
 		apds9960_set_power_state(data, false);
 		break;
 	case IIO_CHAN_INFO_INT_TIME:
-		/* RGB + ALS sensors only have integration time */
+		 
 		mutex_lock(&data->lock);
 		switch (chan->type) {
 		case IIO_INTENSITY:
@@ -544,7 +537,7 @@ static int apds9960_write_raw(struct iio_dev *indio_dev,
 
 	switch (mask) {
 	case IIO_CHAN_INFO_INT_TIME:
-		/* RGB + ALS sensors only have int time */
+		 
 		switch (chan->type) {
 		case IIO_INTENSITY:
 			if (val != 0)
@@ -921,60 +914,54 @@ static int apds9960_chip_init(struct apds9960_data *data)
 {
 	int ret;
 
-	/* Default IT for ALS of 28 ms */
+	 
 	ret = apds9960_set_it_time(data, 28000);
 	if (ret)
 		return ret;
 
-	/* Ensure gesture interrupt is OFF */
+	 
 	ret = regmap_field_write(data->reg_int_ges, 0);
 	if (ret)
 		return ret;
 
-	/* Disable gesture sensor, since polling is useless from user-space */
+	 
 	ret = regmap_field_write(data->reg_enable_ges, 0);
 	if (ret)
 		return ret;
 
-	/* Ensure proximity interrupt is OFF */
+	 
 	ret = regmap_field_write(data->reg_int_pxs, 0);
 	if (ret)
 		return ret;
 
-	/* Enable proximity sensor for polling */
+	 
 	ret = regmap_field_write(data->reg_enable_pxs, 1);
 	if (ret)
 		return ret;
 
-	/* Ensure ALS interrupt is OFF */
+	 
 	ret = regmap_field_write(data->reg_int_als, 0);
 	if (ret)
 		return ret;
 
-	/* Enable ALS sensor for polling */
+	 
 	ret = regmap_field_write(data->reg_enable_als, 1);
 	if (ret)
 		return ret;
-	/*
-	 * When enabled trigger an interrupt after 3 readings
-	 * outside threshold for ALS + PXS
-	 */
+	 
 	ret = regmap_write(data->regmap, APDS9960_REG_PERS,
 			   APDS9960_DEFAULT_PERS);
 	if (ret)
 		return ret;
 
-	/*
-	 * Wait for 4 event outside gesture threshold to prevent interrupt
-	 * flooding.
-	 */
+	 
 	ret = regmap_update_bits(data->regmap, APDS9960_REG_GCONF_1,
 			APDS9960_REG_GCONF_1_GFIFO_THRES_MASK,
 			BIT(0) << APDS9960_REG_GCONF_1_GFIFO_THRES_MASK_SHIFT);
 	if (ret)
 		return ret;
 
-	/* Default ENTER and EXIT thresholds for the GESTURE engine. */
+	 
 	ret = regmap_write(data->regmap, APDS9960_REG_GPENTH,
 			   APDS9960_DEFAULT_GPENTH);
 	if (ret)

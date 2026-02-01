@@ -1,34 +1,4 @@
-/* QLogic qedr NIC Driver
- * Copyright (c) 2015-2016  QLogic Corporation
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and /or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/dma-mapping.h>
 #include <linux/crc32.h>
 #include <linux/iommu.h>
@@ -106,7 +76,7 @@ static void qedr_ll2_complete_rx_packet(void *cxt,
 	qp->rqe_wr_id[qp->rq.gsi_cons].rc = data->u.data_length_error ?
 		-EINVAL : 0;
 	qp->rqe_wr_id[qp->rq.gsi_cons].vlan = data->vlan;
-	/* note: length stands for data length i.e. GRH is excluded */
+	 
 	qp->rqe_wr_id[qp->rq.gsi_cons].sg_list[0].length =
 		data->length.data_length;
 	*((u32 *)&qp->rqe_wr_id[qp->rq.gsi_cons].smac[0]) =
@@ -126,7 +96,7 @@ static void qedr_ll2_release_rx_packet(void *cxt, u8 connection_handle,
 				       void *cookie, dma_addr_t rx_buf_addr,
 				       bool b_last_packet)
 {
-	/* Do nothing... */
+	 
 }
 
 static void qedr_destroy_gsi_cq(struct qedr_dev *dev,
@@ -142,7 +112,7 @@ static void qedr_destroy_gsi_cq(struct qedr_dev *dev,
 	dev->ops->common->chain_free(dev->cdev, &cq->pbl);
 
 	cq = get_qedr_cq(attrs->recv_cq);
-	/* if a dedicated recv_cq was used, delete it too */
+	 
 	if (iparams.icid != cq->icid) {
 		iparams.icid = cq->icid;
 		dev->ops->rdma_destroy_cq(dev->rdma_ctx, &iparams, &oparams);
@@ -193,7 +163,7 @@ static int qedr_ll2_post_tx(struct qedr_dev *dev,
 	if (pkt->roce_mode == ROCE_V2_IPV4)
 		ll2_tx_pkt.enable_ip_cksum = 1;
 
-	ll2_tx_pkt.num_of_bds = 1 /* hdr */  + pkt->n_seg;
+	ll2_tx_pkt.num_of_bds = 1    + pkt->n_seg;
 	ll2_tx_pkt.vlan = 0;
 	ll2_tx_pkt.tx_dest = pkt->tx_dest;
 	ll2_tx_pkt.qed_roce_flavor = roce_flavor;
@@ -201,12 +171,12 @@ static int qedr_ll2_post_tx(struct qedr_dev *dev,
 	ll2_tx_pkt.first_frag_len = pkt->header.len;
 	ll2_tx_pkt.cookie = pkt;
 
-	/* tx header */
+	 
 	rc = dev->ops->ll2_prepare_tx_packet(dev->rdma_ctx,
 					     dev->gsi_ll2_handle,
 					     &ll2_tx_pkt, 1);
 	if (rc) {
-		/* TX failed while posting header - release resources */
+		 
 		dma_free_coherent(&dev->pdev->dev, pkt->header.len,
 				  pkt->header.vaddr, pkt->header.baddr);
 		kfree(pkt);
@@ -215,7 +185,7 @@ static int qedr_ll2_post_tx(struct qedr_dev *dev,
 		return rc;
 	}
 
-	/* tx payload */
+	 
 	for (i = 0; i < pkt->n_seg; i++) {
 		rc = dev->ops->ll2_set_fragment_of_tx_packet(
 			dev->rdma_ctx,
@@ -224,10 +194,7 @@ static int qedr_ll2_post_tx(struct qedr_dev *dev,
 			pkt->payload[i].len);
 
 		if (rc) {
-			/* if failed not much to do here, partial packet has
-			 * been posted we can't free memory, will need to wait
-			 * for completion
-			 */
+			 
 			DP_ERR(dev, "ll2 tx: payload failed (rc=%d)\n", rc);
 			return rc;
 		}
@@ -243,7 +210,7 @@ static int qedr_ll2_stop(struct qedr_dev *dev)
 	if (dev->gsi_ll2_handle == QED_LL2_UNUSED_HANDLE)
 		return 0;
 
-	/* remove LL2 MAC address filter */
+	 
 	rc = dev->ops->ll2_set_mac_filter(dev->cdev,
 					  dev->gsi_ll2_mac_address, NULL);
 
@@ -266,7 +233,7 @@ static int qedr_ll2_start(struct qedr_dev *dev,
 	struct qed_ll2_cbs cbs;
 	int rc;
 
-	/* configure and start LL2 */
+	 
 	cbs.rx_comp_cb = qedr_ll2_complete_rx_packet;
 	cbs.tx_comp_cb = qedr_ll2_complete_tx_packet;
 	cbs.rx_release_cb = qedr_ll2_release_rx_packet;
@@ -334,7 +301,7 @@ int qedr_create_gsi_qp(struct qedr_dev *dev, struct ib_qp_init_attr *attrs,
 		return rc;
 	}
 
-	/* create QP */
+	 
 	qp->ibqp.qp_num = 1;
 	qp->rq.max_wr = attrs->cap.max_recv_wr;
 	qp->sq.max_wr = attrs->cap.max_send_wr;
@@ -351,7 +318,7 @@ int qedr_create_gsi_qp(struct qedr_dev *dev, struct ib_qp_init_attr *attrs,
 	qedr_store_gsi_qp_cq(dev, qp, attrs);
 	ether_addr_copy(dev->gsi_ll2_mac_address, dev->ndev->dev_addr);
 
-	/* the GSI CQ is handled by the driver so remove it from the FW */
+	 
 	qedr_destroy_gsi_cq(dev, attrs);
 	dev->gsi_rqcq->cq_type = QEDR_CQ_TYPE_GSI;
 
@@ -408,17 +375,17 @@ static inline int qedr_gsi_build_header(struct qedr_dev *dev,
 
 	has_udp = (sgid_attr->gid_type == IB_GID_TYPE_ROCE_UDP_ENCAP);
 	if (!has_udp) {
-		/* RoCE v1 */
+		 
 		ether_type = ETH_P_IBOE;
 		*roce_mode = ROCE_V1;
 	} else if (ipv6_addr_v4mapped((struct in6_addr *)&sgid_attr->gid)) {
-		/* RoCE v2 IPv4 */
+		 
 		ip_ver = 4;
 		ether_type = ETH_P_IP;
 		has_grh_ipv6 = false;
 		*roce_mode = ROCE_V2_IPV4;
 	} else {
-		/* RoCE v2 IPv6 */
+		 
 		ip_ver = 6;
 		ether_type = ETH_P_IPV6;
 		*roce_mode = ROCE_V2_IPV6;
@@ -431,7 +398,7 @@ static inline int qedr_gsi_build_header(struct qedr_dev *dev,
 		return rc;
 	}
 
-	/* ENET + VLAN headers */
+	 
 	ether_addr_copy(udh->eth.dmac_h, ah_attr->roce.dmac);
 	ether_addr_copy(udh->eth.smac_h, dev->ndev->dev_addr);
 	if (has_vlan) {
@@ -442,19 +409,19 @@ static inline int qedr_gsi_build_header(struct qedr_dev *dev,
 		udh->eth.type = htons(ether_type);
 	}
 
-	/* BTH */
+	 
 	udh->bth.solicited_event = !!(swr->send_flags & IB_SEND_SOLICITED);
 	udh->bth.pkey = QEDR_ROCE_PKEY_DEFAULT;
 	udh->bth.destination_qpn = htonl(ud_wr(swr)->remote_qpn);
 	udh->bth.psn = htonl((qp->sq_psn++) & ((1 << 24) - 1));
 	udh->bth.opcode = IB_OPCODE_UD_SEND_ONLY;
 
-	/* DETH */
+	 
 	udh->deth.qkey = htonl(0x80010000);
 	udh->deth.source_qpn = htonl(QEDR_GSI_QPN);
 
 	if (has_grh_ipv6) {
-		/* GRH / IPv6 header */
+		 
 		udh->grh.traffic_class = grh->traffic_class;
 		udh->grh.flow_label = grh->flow_label;
 		udh->grh.hop_limit = grh->hop_limit;
@@ -462,7 +429,7 @@ static inline int qedr_gsi_build_header(struct qedr_dev *dev,
 		memcpy(&udh->grh.source_gid.raw, sgid_attr->gid.raw,
 		       sizeof(udh->grh.source_gid.raw));
 	} else {
-		/* IPv4 header */
+		 
 		u32 ipv4_addr;
 
 		udh->ip4.protocol = IPPROTO_UDP;
@@ -474,15 +441,15 @@ static inline int qedr_gsi_build_header(struct qedr_dev *dev,
 		udh->ip4.saddr = ipv4_addr;
 		ipv4_addr = qedr_get_ipv4_from_gid(grh->dgid.raw);
 		udh->ip4.daddr = ipv4_addr;
-		/* note: checksum is calculated by the device */
+		 
 	}
 
-	/* UDP */
+	 
 	if (has_udp) {
 		udh->udp.sport = htons(QEDR_ROCE_V2_UDP_SPORT);
 		udh->udp.dport = htons(ROCE_V2_UDP_DPORT);
 		udh->udp.csum = 0;
-		/* UDP length is untouched hence is zero */
+		 
 	}
 	return 0;
 }
@@ -639,8 +606,8 @@ int qedr_gsi_post_recv(struct ib_qp *ibqp, const struct ib_recv_wr *wr,
 						  dev->gsi_ll2_handle,
 						  wr->sg_list[0].addr,
 						  wr->sg_list[0].length,
-						  NULL /* cookie */,
-						  1 /* notify_fw */);
+						  NULL  ,
+						  1  );
 		if (rc) {
 			DP_ERR(dev,
 			       "gsi post recv: failed to post rx buffer (rc=%d)\n",
@@ -687,7 +654,7 @@ int qedr_gsi_poll_cq(struct ib_cq *ibcq, int num_entries, struct ib_wc *wc)
 		wc[i].pkey_index = 0;
 		wc[i].status = (qp->rqe_wr_id[qp->rq.cons].rc) ?
 		    IB_WC_GENERAL_ERR : IB_WC_SUCCESS;
-		/* 0 - currently only one recv sg is supported */
+		 
 		wc[i].byte_len = qp->rqe_wr_id[qp->rq.cons].sg_list[0].length;
 		wc[i].wc_flags |= IB_WC_GRH | IB_WC_IP_CSUM_OK;
 		ether_addr_copy(wc[i].smac, qp->rqe_wr_id[qp->rq.cons].smac);

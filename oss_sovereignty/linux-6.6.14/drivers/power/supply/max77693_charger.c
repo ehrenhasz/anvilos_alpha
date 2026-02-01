@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max77693_charger.c - Battery charger driver for the Maxim 77693
-//
-// Copyright (C) 2014 Samsung Electronics
-// Krzysztof Kozlowski <krzk@kernel.org>
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -46,7 +46,7 @@ static int max77693_get_charger_state(struct regmap *regmap, int *val)
 	case MAX77693_CHARGING_FAST_CONST_CURRENT:
 	case MAX77693_CHARGING_FAST_CONST_VOLTAGE:
 	case MAX77693_CHARGING_TOP_OFF:
-	/* In high temp the charging current is reduced, but still charging */
+	 
 	case MAX77693_CHARGING_HIGH_TEMP:
 		*val = POWER_SUPPLY_STATUS_CHARGING;
 		break;
@@ -84,16 +84,13 @@ static int max77693_get_charge_type(struct regmap *regmap, int *val)
 
 	switch (data) {
 	case MAX77693_CHARGING_PREQUALIFICATION:
-	/*
-	 * Top-off: trickle or fast? In top-off the current varies between
-	 * 100 and 250 mA. It is higher than prequalification current.
-	 */
+	 
 	case MAX77693_CHARGING_TOP_OFF:
 		*val = POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
 		break;
 	case MAX77693_CHARGING_FAST_CONST_CURRENT:
 	case MAX77693_CHARGING_FAST_CONST_VOLTAGE:
-	/* In high temp the charging current is reduced, but still charging */
+	 
 	case MAX77693_CHARGING_HIGH_TEMP:
 		*val = POWER_SUPPLY_CHARGE_TYPE_FAST;
 		break;
@@ -113,15 +110,7 @@ static int max77693_get_charge_type(struct regmap *regmap, int *val)
 	return 0;
 }
 
-/*
- * Supported health statuses:
- *  - POWER_SUPPLY_HEALTH_DEAD
- *  - POWER_SUPPLY_HEALTH_GOOD
- *  - POWER_SUPPLY_HEALTH_OVERVOLTAGE
- *  - POWER_SUPPLY_HEALTH_SAFETY_TIMER_EXPIRE
- *  - POWER_SUPPLY_HEALTH_UNKNOWN
- *  - POWER_SUPPLY_HEALTH_UNSPEC_FAILURE
- */
+ 
 static int max77693_get_battery_health(struct regmap *regmap, int *val)
 {
 	int ret;
@@ -144,10 +133,7 @@ static int max77693_get_battery_health(struct regmap *regmap, int *val)
 		*val = POWER_SUPPLY_HEALTH_GOOD;
 		break;
 	case MAX77693_BATTERY_TIMER_EXPIRED:
-		/*
-		 * Took longer to charge than expected, charging suspended.
-		 * Damaged battery?
-		 */
+		 
 		*val = POWER_SUPPLY_HEALTH_SAFETY_TIMER_EXPIRE;
 		break;
 	case MAX77693_BATTERY_OVERVOLTAGE:
@@ -170,10 +156,7 @@ static int max77693_get_present(struct regmap *regmap, int *val)
 	unsigned int data;
 	int ret;
 
-	/*
-	 * Read CHG_INT_OK register. High DETBAT bit here should be
-	 * equal to value 0x0 in CHG_DETAILS_01/BAT field.
-	 */
+	 
 	ret = regmap_read(regmap, MAX77693_CHG_REG_CHG_INT_OK, &data);
 	if (ret < 0)
 		return ret;
@@ -287,7 +270,7 @@ static ssize_t fast_charge_timer_show(struct device *dev,
 	data >>= CHG_CNFG_01_FCHGTIME_SHIFT;
 	switch (data) {
 	case 0x1 ... 0x7:
-		/* Starting from 4 hours, step by 2 hours */
+		 
 		val = 4 + (data - 1) * 2;
 		break;
 	case 0x0:
@@ -304,20 +287,13 @@ static int max77693_set_fast_charge_timer(struct max77693_charger *chg,
 {
 	unsigned int data;
 
-	/*
-	 * 0x00 - disable
-	 * 0x01 - 4h
-	 * 0x02 - 6h
-	 * ...
-	 * 0x07 - 16h
-	 * Round down odd values.
-	 */
+	 
 	switch (hours) {
 	case 4 ... 16:
 		data = (hours - 4) / 2 + 1;
 		break;
 	case 0:
-		/* Disable */
+		 
 		data = 0;
 		break;
 	default:
@@ -371,7 +347,7 @@ static int max77693_set_top_off_threshold_current(struct max77693_charger *chg,
 	if (uamp <= 200000)
 		data = (uamp - 100000) / 25000;
 	else
-		/* (200000, 350000> */
+		 
 		data = uamp / 50000;
 
 	data <<= CHG_CNFG_03_TOITH_SHIFT;
@@ -440,16 +416,7 @@ static int max77693_set_constant_volt(struct max77693_charger *chg,
 {
 	unsigned int data;
 
-	/*
-	 * 0x00 - 3.650 V
-	 * 0x01 - 3.675 V
-	 * ...
-	 * 0x1b - 4.325 V
-	 * 0x1c - 4.340 V
-	 * 0x1d - 4.350 V
-	 * 0x1e - 4.375 V
-	 * 0x1f - 4.400 V
-	 */
+	 
 	if (uvolt >= 3650000 && uvolt < 4340000)
 		data = (uvolt - 3650000) / 25000;
 	else if (uvolt >= 4340000 && uvolt < 4350000)
@@ -533,7 +500,7 @@ static int max77693_set_batttery_overcurrent(struct max77693_charger *chg,
 	if (uamp)
 		data = ((uamp - 2000000) / 250000) + 1;
 	else
-		data = 0; /* disable */
+		data = 0;  
 
 	data <<= CHG_CNFG_12_B2SOVRC_SHIFT;
 
@@ -573,15 +540,13 @@ static int max77693_set_charge_input_threshold_volt(struct max77693_charger *chg
 			CHG_CNFG_12_VCHGINREG_MASK, data);
 }
 
-/*
- * Sets charger registers to proper and safe default values.
- */
+ 
 static int max77693_reg_init(struct max77693_charger *chg)
 {
 	int ret;
 	unsigned int data;
 
-	/* Unlock charger register protection */
+	 
 	data = (0x3 << CHG_CNFG_06_CHGPROT_SHIFT);
 	ret = regmap_update_bits(chg->max77693->regmap,
 				MAX77693_CHG_REG_CHG_CNFG_06,
@@ -658,12 +623,12 @@ static int max77693_dt_init(struct device *dev, struct max77693_charger *chg)
 
 	return 0;
 }
-#else /* CONFIG_OF */
+#else  
 static int max77693_dt_init(struct device *dev, struct max77693_charger *chg)
 {
 	return 0;
 }
-#endif /* CONFIG_OF */
+#endif  
 
 static int max77693_charger_probe(struct platform_device *pdev)
 {

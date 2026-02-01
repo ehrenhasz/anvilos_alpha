@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MPS2 UART driver
- *
- * Copyright (C) 2015 ARM Limited
- *
- * Author: Vladimir Murzin <vladimir.murzin@arm.com>
- *
- * TODO: support for SysRq
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -52,9 +44,7 @@
 #define UARTn_BAUDDIV				0x10
 #define UARTn_BAUDDIV_MASK			GENMASK(20, 0)
 
-/*
- * Helpers to make typical enable/disable operations more readable.
- */
+ 
 #define UARTn_CTRL_TX_GRP	(UARTn_CTRL_TX_ENABLE		 |\
 				 UARTn_CTRL_TX_INT_ENABLE	 |\
 				 UARTn_CTRL_TX_OVERRUN_INT_ENABLE)
@@ -143,12 +133,7 @@ static void mps2_uart_start_tx(struct uart_port *port)
 
 	mps2_uart_write8(port, control, UARTn_CTRL);
 
-	/*
-	 * We've just unmasked the TX IRQ and now slow-starting via
-	 * polling; if there is enough data to fill up the internal
-	 * write buffer in one go, the TX IRQ should assert, at which
-	 * point we switch to fully interrupt-driven TX.
-	 */
+	 
 
 	mps2_uart_tx_chars(port);
 }
@@ -234,11 +219,7 @@ static irqreturn_t mps2_uart_oerrirq(int irq, void *data)
 		handled = IRQ_HANDLED;
 	}
 
-	/*
-	 * It's never been seen in practice and it never *should* happen since
-	 * we check if there is enough room in TX buffer before sending data.
-	 * So we keep this check in case something suspicious has happened.
-	 */
+	 
 	if (irqflag & UARTn_INT_TX_OVERRUN) {
 		mps2_uart_write8(port, UARTn_INT_TX_OVERRUN, UARTn_INT);
 		handled = IRQ_HANDLED;
@@ -523,7 +504,7 @@ static int mps2_of_get_port(struct platform_device *pdev,
 	if (id < 0)
 		return id;
 
-	/* Only combined irq is presesnt */
+	 
 	if (platform_irq_count(pdev) == 1)
 		mps_port->flags |= UART_PORT_COMBINED_IRQ;
 

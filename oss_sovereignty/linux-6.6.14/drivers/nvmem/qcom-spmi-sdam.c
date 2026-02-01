@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, 2020-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -24,7 +22,7 @@ struct sdam_chip {
 	unsigned int			size;
 };
 
-/* read only register offsets */
+ 
 static const u8 sdam_ro_map[] = {
 	REGISTER_MAP_ID,
 	REGISTER_MAP_VERSION,

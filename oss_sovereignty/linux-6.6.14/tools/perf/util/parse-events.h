@@ -1,9 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __PERF_PARSE_EVENTS_H
 #define __PERF_PARSE_EVENTS_H
-/*
- * Parse symbolic events/counts passed in as options:
- */
+ 
 
 #include <linux/list.h>
 #include <stdbool.h>
@@ -22,7 +20,7 @@ struct strbuf;
 
 const char *event_type(int type);
 
-/* Arguments encoded in opt->value. */
+ 
 struct parse_events_option_args {
 	struct evlist **evlistp;
 	const char *pmu_filter;
@@ -38,8 +36,8 @@ __attribute__((nonnull(1, 2, 3)))
 static inline int parse_events(struct evlist *evlist, const char *str,
 			       struct parse_events_error *err)
 {
-	return __parse_events(evlist, str, /*pmu_filter=*/NULL, err, /*fake_pmu=*/NULL,
-			      /*warn_if_reordered=*/true);
+	return __parse_events(evlist, str,  NULL, err,  NULL,
+			       true);
 }
 
 int parse_event(struct evlist *evlist, const char *str);
@@ -84,80 +82,59 @@ enum parse_events__term_type {
 };
 
 struct parse_events_term {
-	/** @list: The term list the term is a part of. */
+	 
 	struct list_head list;
-	/**
-	 * @config: The left-hand side of a term assignment, so the term
-	 * "event=8" would have the config be "event"
-	 */
+	 
 	const char *config;
-	/**
-	 * @val: The right-hand side of a term assignment that can either be a
-	 * string or a number depending on type_val.
-	 */
+	 
 	union {
 		char *str;
 		u64  num;
 	} val;
-	/** @type_val: The union variable in val to be used for the term. */
+	 
 	enum parse_events__term_val_type type_val;
-	/**
-	 * @type_term: A predefined term type or PARSE_EVENTS__TERM_TYPE_USER
-	 * when not inbuilt.
-	 */
+	 
 	enum parse_events__term_type type_term;
-	/**
-	 * @err_term: The column index of the term from parsing, used during
-	 * error output.
-	 */
+	 
 	int err_term;
-	/**
-	 * @err_val: The column index of the val from parsing, used during error
-	 * output.
-	 */
+	 
 	int err_val;
-	/** @used: Was the term used during parameterized-eval. */
+	 
 	bool used;
-	/**
-	 * @weak: A term from the sysfs or json encoding of an event that
-	 * shouldn't override terms coming from the command line.
-	 */
+	 
 	bool weak;
-	/**
-	 * @no_value: Is there no value. If a numeric term has no value then the
-	 * value is assumed to be 1. An event name also has no value.
-	 */
+	 
 	bool no_value;
 };
 
 struct parse_events_error {
-	int   num_errors;       /* number of errors encountered */
-	int   idx;	/* index in the parsed string */
-	char *str;      /* string to display at the index */
-	char *help;	/* optional help string */
-	int   first_idx;/* as above, but for the first encountered error */
+	int   num_errors;        
+	int   idx;	 
+	char *str;       
+	char *help;	 
+	int   first_idx; 
 	char *first_str;
 	char *first_help;
 };
 
 struct parse_events_state {
-	/* The list parsed events are placed on. */
+	 
 	struct list_head	   list;
-	/* The updated index used by entries as they are added. */
+	 
 	int			   idx;
-	/* Error information. */
+	 
 	struct parse_events_error *error;
-	/* Holds returned terms for term parsing. */
+	 
 	struct list_head	  *terms;
-	/* Start token. */
+	 
 	int			   stoken;
-	/* Special fake PMU marker for testing. */
+	 
 	struct perf_pmu		  *fake_pmu;
-	/* If non-null, when wildcard matching only match the given PMU. */
+	 
 	const char		  *pmu_filter;
-	/* Should PE_LEGACY_NAME tokens be generated for config terms? */
+	 
 	bool			   match_legacy_cache_terms;
-	/* Were multiple PMUs scanned to find events? */
+	 
 	bool			   wild_card_pmus;
 };
 
@@ -247,11 +224,7 @@ void parse_events_error__print(struct parse_events_error *err,
 			       const char *event);
 
 #ifdef HAVE_LIBELF_SUPPORT
-/*
- * If the probe point starts with '%',
- * or starts with "sdt_" and has a ':' but no '=',
- * then it should be a SDT/cached probe point.
- */
+ 
 static inline bool is_sdt_event(char *str)
 {
 	return (str[0] == '%' ||
@@ -263,6 +236,6 @@ static inline bool is_sdt_event(char *str __maybe_unused)
 {
 	return false;
 }
-#endif /* HAVE_LIBELF_SUPPORT */
+#endif  
 
-#endif /* __PERF_PARSE_EVENTS_H */
+#endif  

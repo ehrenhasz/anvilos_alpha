@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * core.c - DesignWare USB3 DRD Controller Core file
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com
- *
- * Authors: Felipe Balbi <balbi@ti.com>,
- *	    Sebastian Andrzej Siewior <bigeasy@linutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/version.h>
@@ -40,12 +33,9 @@
 
 #include "debug.h"
 
-#define DWC3_DEFAULT_AUTOSUSPEND_DELAY	5000 /* ms */
+#define DWC3_DEFAULT_AUTOSUSPEND_DELAY	5000  
 
-/**
- * dwc3_get_dr_mode - Validates and sets dr_mode
- * @dwc: pointer to our context structure
- */
+ 
 static int dwc3_get_dr_mode(struct dwc3 *dwc)
 {
 	enum usb_dr_mode mode;
@@ -81,11 +71,7 @@ static int dwc3_get_dr_mode(struct dwc3 *dwc)
 		else if (IS_ENABLED(CONFIG_USB_DWC3_GADGET))
 			mode = USB_DR_MODE_PERIPHERAL;
 
-		/*
-		 * DWC_usb31 and DWC_usb3 v3.30a and higher do not support OTG
-		 * mode. If the controller supports DRD but the dr_mode is not
-		 * specified or set to OTG, then set the mode to peripheral.
-		 */
+		 
 		if (mode == USB_DR_MODE_OTG && !dwc->edev &&
 		    (!IS_ENABLED(CONFIG_USB_ROLE_SWITCH) ||
 		     !device_property_read_bool(dwc->dev, "usb-role-switch")) &&
@@ -162,10 +148,7 @@ static void __dwc3_set_mode(struct work_struct *work)
 		break;
 	}
 
-	/*
-	 * When current_dr_role is not set, there's no role switching.
-	 * Only perform GCTL.CoreSoftReset when there's DRD role switching.
-	 */
+	 
 	if (dwc->current_dr_role && ((DWC3_IP_IS(DWC3) ||
 			DWC3_VER_IS_PRIOR(DWC31, 190A)) &&
 			desired_dr_role != DWC3_GCTL_PRTCAP_OTG)) {
@@ -173,12 +156,7 @@ static void __dwc3_set_mode(struct work_struct *work)
 		reg |= DWC3_GCTL_CORESOFTRESET;
 		dwc3_writel(dwc->regs, DWC3_GCTL, reg);
 
-		/*
-		 * Wait for internal clocks to synchronized. DWC_usb31 and
-		 * DWC_usb32 may need at least 50ms (less for DWC_usb3). To
-		 * keep it consistent across different IPs, let's wait up to
-		 * 100ms before clearing GCTL.CORESOFTRESET.
-		 */
+		 
 		msleep(100);
 
 		reg = dwc3_readl(dwc->regs, DWC3_GCTL);
@@ -265,20 +243,13 @@ u32 dwc3_core_fifo_space(struct dwc3_ep *dep, u8 type)
 	return DWC3_GDBGFIFOSPACE_SPACE_AVAILABLE(reg);
 }
 
-/**
- * dwc3_core_soft_reset - Issues core soft reset and PHY reset
- * @dwc: pointer to our context structure
- */
+ 
 int dwc3_core_soft_reset(struct dwc3 *dwc)
 {
 	u32		reg;
 	int		retries = 1000;
 
-	/*
-	 * We're resetting only the device side because, if we're in host mode,
-	 * XHCI driver will reset the host block. If dwc3 was configured for
-	 * host-only mode, then we can return early.
-	 */
+	 
 	if (dwc->current_dr_role == DWC3_GCTL_PRTCAP_HOST)
 		return 0;
 
@@ -287,12 +258,7 @@ int dwc3_core_soft_reset(struct dwc3 *dwc)
 	reg &= ~DWC3_DCTL_RUN_STOP;
 	dwc3_gadget_dctl_write_safe(dwc, reg);
 
-	/*
-	 * For DWC_usb31 controller 1.90a and later, the DCTL.CSFRST bit
-	 * is cleared only after all the clocks are synchronized. This can
-	 * take a little more than 50ms. Set the polling rate at 20ms
-	 * for 10 times instead.
-	 */
+	 
 	if (DWC3_VER_IS_WITHIN(DWC31, 190A, ANY) || DWC3_IP_IS(DWC32))
 		retries = 10;
 
@@ -311,21 +277,14 @@ int dwc3_core_soft_reset(struct dwc3 *dwc)
 	return -ETIMEDOUT;
 
 done:
-	/*
-	 * For DWC_usb31 controller 1.80a and prior, once DCTL.CSFRST bit
-	 * is cleared, we must wait at least 50ms before accessing the PHY
-	 * domain (synchronization delay).
-	 */
+	 
 	if (DWC3_VER_IS_WITHIN(DWC31, ANY, 180A))
 		msleep(50);
 
 	return 0;
 }
 
-/*
- * dwc3_frame_length_adjustment - Adjusts frame length if required
- * @dwc3: Pointer to our controller context structure
- */
+ 
 static void dwc3_frame_length_adjustment(struct dwc3 *dwc)
 {
 	u32 reg;
@@ -346,14 +305,7 @@ static void dwc3_frame_length_adjustment(struct dwc3 *dwc)
 	}
 }
 
-/**
- * dwc3_ref_clk_period - Reference clock period configuration
- *		Default reference clock period depends on hardware
- *		configuration. For systems with reference clock that differs
- *		from the default, this will set clock period in DWC3_GUCTL
- *		register.
- * @dwc: Pointer to our controller context structure
- */
+ 
 static void dwc3_ref_clk_period(struct dwc3 *dwc)
 {
 	unsigned long period;
@@ -382,27 +334,11 @@ static void dwc3_ref_clk_period(struct dwc3 *dwc)
 	if (DWC3_VER_IS_PRIOR(DWC3, 250A))
 		return;
 
-	/*
-	 * The calculation below is
-	 *
-	 * 125000 * (NSEC_PER_SEC / (rate * period) - 1)
-	 *
-	 * but rearranged for fixed-point arithmetic. The division must be
-	 * 64-bit because 125000 * NSEC_PER_SEC doesn't fit in 32 bits (and
-	 * neither does rate * period).
-	 *
-	 * Note that rate * period ~= NSEC_PER_SECOND, minus the number of
-	 * nanoseconds of error caused by the truncation which happened during
-	 * the division when calculating rate or period (whichever one was
-	 * derived from the other). We first calculate the relative error, then
-	 * scale it to units of 8 ppm.
-	 */
+	 
 	fladj = div64_u64(125000ULL * NSEC_PER_SEC, (u64)rate * period);
 	fladj -= 125000;
 
-	/*
-	 * The documented 240MHz constant is scaled by 2 to get PLS1 as well.
-	 */
+	 
 	decr = 480000000 / rate;
 
 	reg = dwc3_readl(dwc->regs, DWC3_GFLADJ);
@@ -419,25 +355,14 @@ static void dwc3_ref_clk_period(struct dwc3 *dwc)
 	dwc3_writel(dwc->regs, DWC3_GFLADJ, reg);
 }
 
-/**
- * dwc3_free_one_event_buffer - Frees one event buffer
- * @dwc: Pointer to our controller context structure
- * @evt: Pointer to event buffer to be freed
- */
+ 
 static void dwc3_free_one_event_buffer(struct dwc3 *dwc,
 		struct dwc3_event_buffer *evt)
 {
 	dma_free_coherent(dwc->sysdev, evt->length, evt->buf, evt->dma);
 }
 
-/**
- * dwc3_alloc_one_event_buffer - Allocates one event buffer structure
- * @dwc: Pointer to our controller context structure
- * @length: size of the event buffer
- *
- * Returns a pointer to the allocated event buffer structure on success
- * otherwise ERR_PTR(errno).
- */
+ 
 static struct dwc3_event_buffer *dwc3_alloc_one_event_buffer(struct dwc3 *dwc,
 		unsigned int length)
 {
@@ -461,10 +386,7 @@ static struct dwc3_event_buffer *dwc3_alloc_one_event_buffer(struct dwc3 *dwc,
 	return evt;
 }
 
-/**
- * dwc3_free_event_buffers - frees all allocated event buffers
- * @dwc: Pointer to our controller context structure
- */
+ 
 static void dwc3_free_event_buffers(struct dwc3 *dwc)
 {
 	struct dwc3_event_buffer	*evt;
@@ -474,14 +396,7 @@ static void dwc3_free_event_buffers(struct dwc3 *dwc)
 		dwc3_free_one_event_buffer(dwc, evt);
 }
 
-/**
- * dwc3_alloc_event_buffers - Allocates @num event buffers of size @length
- * @dwc: pointer to our controller context structure
- * @length: size of event buffer
- *
- * Returns 0 on success otherwise negative errno. In the error case, dwc
- * may contain some buffers allocated but not all which were requested.
- */
+ 
 static int dwc3_alloc_event_buffers(struct dwc3 *dwc, unsigned int length)
 {
 	struct dwc3_event_buffer *evt;
@@ -496,12 +411,7 @@ static int dwc3_alloc_event_buffers(struct dwc3 *dwc, unsigned int length)
 	return 0;
 }
 
-/**
- * dwc3_event_buffers_setup - setup our allocated event buffers
- * @dwc: pointer to our controller context structure
- *
- * Returns 0 on success otherwise negative errno.
- */
+ 
 int dwc3_event_buffers_setup(struct dwc3 *dwc)
 {
 	struct dwc3_event_buffer	*evt;
@@ -575,14 +485,7 @@ static int dwc3_core_ulpi_init(struct dwc3 *dwc)
 	return ret;
 }
 
-/**
- * dwc3_phy_setup - Configure USB PHY Interface of DWC3 Core
- * @dwc: Pointer to our controller context structure
- *
- * Returns 0 on success. The USB PHY interfaces are configured but not
- * initialized. The PHY interfaces and the PHYs get initialized together with
- * the core in dwc3_core_init.
- */
+ 
 static int dwc3_phy_setup(struct dwc3 *dwc)
 {
 	unsigned int hw_mode;
@@ -592,26 +495,14 @@ static int dwc3_phy_setup(struct dwc3 *dwc)
 
 	reg = dwc3_readl(dwc->regs, DWC3_GUSB3PIPECTL(0));
 
-	/*
-	 * Make sure UX_EXIT_PX is cleared as that causes issues with some
-	 * PHYs. Also, this bit is not supposed to be used in normal operation.
-	 */
+	 
 	reg &= ~DWC3_GUSB3PIPECTL_UX_EXIT_PX;
 
-	/*
-	 * Above 1.94a, it is recommended to set DWC3_GUSB3PIPECTL_SUSPHY
-	 * to '0' during coreConsultant configuration. So default value
-	 * will be '0' when the core is reset. Application needs to set it
-	 * to '1' after the core initialization is completed.
-	 */
+	 
 	if (!DWC3_VER_IS_WITHIN(DWC3, ANY, 194A))
 		reg |= DWC3_GUSB3PIPECTL_SUSPHY;
 
-	/*
-	 * For DRD controllers, GUSB3PIPECTL.SUSPENDENABLE must be cleared after
-	 * power-on reset, and it can be set after core initialization, which is
-	 * after device soft-reset during initialization.
-	 */
+	 
 	if (hw_mode == DWC3_GHWPARAMS0_MODE_DRD)
 		reg &= ~DWC3_GUSB3PIPECTL_SUSPHY;
 
@@ -649,7 +540,7 @@ static int dwc3_phy_setup(struct dwc3 *dwc)
 
 	reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
 
-	/* Select the HS PHY interface */
+	 
 	switch (DWC3_GHWPARAMS3_HSPHY_IFC(dwc->hwparams.hwparams3)) {
 	case DWC3_GHWPARAMS3_HSPHY_IFC_UTMI_ULPI:
 		if (dwc->hsphy_interface &&
@@ -661,7 +552,7 @@ static int dwc3_phy_setup(struct dwc3 *dwc)
 			reg |= DWC3_GUSB2PHYCFG_ULPI_UTMI;
 			dwc3_writel(dwc->regs, DWC3_GUSB2PHYCFG(0), reg);
 		} else {
-			/* Relying on default value. */
+			 
 			if (!(reg & DWC3_GUSB2PHYCFG_ULPI_UTMI))
 				break;
 		}
@@ -688,20 +579,11 @@ static int dwc3_phy_setup(struct dwc3 *dwc)
 		break;
 	}
 
-	/*
-	 * Above 1.94a, it is recommended to set DWC3_GUSB2PHYCFG_SUSPHY to
-	 * '0' during coreConsultant configuration. So default value will
-	 * be '0' when the core is reset. Application needs to set it to
-	 * '1' after the core initialization is completed.
-	 */
+	 
 	if (!DWC3_VER_IS_WITHIN(DWC3, ANY, 194A))
 		reg |= DWC3_GUSB2PHYCFG_SUSPHY;
 
-	/*
-	 * For DRD controllers, GUSB2PHYCFG.SUSPHY must be cleared after
-	 * power-on reset, and it can be set after core initialization, which is
-	 * after device soft-reset during initialization.
-	 */
+	 
 	if (hw_mode == DWC3_GHWPARAMS0_MODE_DRD)
 		reg &= ~DWC3_GUSB2PHYCFG_SUSPHY;
 
@@ -716,13 +598,7 @@ static int dwc3_phy_setup(struct dwc3 *dwc)
 	if (dwc->dis_u2_freeclk_exists_quirk || dwc->gfladj_refclk_lpm_sel)
 		reg &= ~DWC3_GUSB2PHYCFG_U2_FREECLK_EXISTS;
 
-	/*
-	 * Some ULPI USB PHY does not support internal VBUS supply, to drive
-	 * the CPEN pin requires the configuration of the ULPI DRVVBUSEXTERNAL
-	 * bit of OTG_CTRL register. Controller configures the USB2 PHY
-	 * ULPIEXTVBUSDRV bit[17] of the GUSB2PHYCFG register to drive vBus
-	 * with an external supply.
-	 */
+	 
 	if (dwc->ulpi_ext_vbus_drv)
 		reg |= DWC3_GUSB2PHYCFG_ULPIEXTVBUSDRV;
 
@@ -849,7 +725,7 @@ static bool dwc3_core_is_valid(struct dwc3 *dwc)
 	reg = dwc3_readl(dwc->regs, DWC3_GSNPSID);
 	dwc->ip = DWC3_GSNPS_ID(reg);
 
-	/* This should read as U3 followed by revision number */
+	 
 	if (DWC3_IP_IS(DWC3)) {
 		dwc->revision = reg;
 	} else if (DWC3_IP_IS(DWC31) || DWC3_IP_IS(DWC32)) {
@@ -871,18 +747,7 @@ static void dwc3_core_setup_global_control(struct dwc3 *dwc)
 
 	switch (DWC3_GHWPARAMS1_EN_PWROPT(dwc->hwparams.hwparams1)) {
 	case DWC3_GHWPARAMS1_EN_PWROPT_CLK:
-		/**
-		 * WORKAROUND: DWC3 revisions between 2.10a and 2.50a have an
-		 * issue which would cause xHCI compliance tests to fail.
-		 *
-		 * Because of that we cannot enable clock gating on such
-		 * configurations.
-		 *
-		 * Refers to:
-		 *
-		 * STAR#9000588375: Clock Gating, SOF Issues when ref_clk-Based
-		 * SOF/ITP Mode Used
-		 */
+		 
 		if ((dwc->dr_mode == USB_DR_MODE_HOST ||
 				dwc->dr_mode == USB_DR_MODE_OTG) &&
 				DWC3_VER_IS_WITHIN(DWC3, 210A, 250A))
@@ -891,18 +756,15 @@ static void dwc3_core_setup_global_control(struct dwc3 *dwc)
 			reg &= ~DWC3_GCTL_DSBLCLKGTNG;
 		break;
 	case DWC3_GHWPARAMS1_EN_PWROPT_HIB:
-		/*
-		 * REVISIT Enabling this bit so that host-mode hibernation
-		 * will work. Device-mode hibernation is not yet implemented.
-		 */
+		 
 		reg |= DWC3_GCTL_GBLHIBERNATIONEN;
 		break;
 	default:
-		/* nothing */
+		 
 		break;
 	}
 
-	/* check if current dwc3 is on simulation board */
+	 
 	if (dwc->hwparams.hwparams6 & DWC3_GHWPARAMS6_EN_FPGA) {
 		dev_info(dwc->dev, "Running with FPGA optimizations\n");
 		dwc->is_fpga = true;
@@ -919,12 +781,7 @@ static void dwc3_core_setup_global_control(struct dwc3 *dwc)
 	if (dwc->u2exit_lfps_quirk)
 		reg |= DWC3_GCTL_U2EXIT_LFPS;
 
-	/*
-	 * WORKAROUND: DWC3 revisions <1.90a have a bug
-	 * where the device can fail to connect at SuperSpeed
-	 * and falls back to high-speed mode which causes
-	 * the device to enter a Connect/Disconnect loop
-	 */
+	 
 	if (DWC3_VER_IS_PRIOR(DWC3, 190A))
 		reg |= DWC3_GCTL_U2RSTECN;
 
@@ -934,13 +791,13 @@ static void dwc3_core_setup_global_control(struct dwc3 *dwc)
 static int dwc3_core_get_phy(struct dwc3 *dwc);
 static int dwc3_core_ulpi_init(struct dwc3 *dwc);
 
-/* set global incr burst type configuration registers */
+ 
 static void dwc3_set_incr_burst_type(struct dwc3 *dwc)
 {
 	struct device *dev = dwc->dev;
-	/* incrx_mode : for INCR burst type. */
+	 
 	bool incrx_mode;
-	/* incrx_size : for size of INCRX burst. */
+	 
 	u32 incrx_size;
 	u32 *vals;
 	u32 cfg;
@@ -950,13 +807,7 @@ static void dwc3_set_incr_burst_type(struct dwc3 *dwc)
 
 	cfg = dwc3_readl(dwc->regs, DWC3_GSBUSCFG0);
 
-	/*
-	 * Handle property "snps,incr-burst-type-adjustment".
-	 * Get the number of value from this property:
-	 * result <= 0, means this property is not supported.
-	 * result = 1, means INCRx burst mode supported.
-	 * result > 1, means undefined length burst mode supported.
-	 */
+	 
 	ntype = device_property_count_u32(dev, "snps,incr-burst-type-adjustment");
 	if (ntype <= 0)
 		return;
@@ -965,7 +816,7 @@ static void dwc3_set_incr_burst_type(struct dwc3 *dwc)
 	if (!vals)
 		return;
 
-	/* Get INCR burst type, and parse it */
+	 
 	ret = device_property_read_u32_array(dev,
 			"snps,incr-burst-type-adjustment", vals, ntype);
 	if (ret) {
@@ -977,20 +828,20 @@ static void dwc3_set_incr_burst_type(struct dwc3 *dwc)
 	incrx_size = *vals;
 
 	if (ntype > 1) {
-		/* INCRX (undefined length) burst mode */
+		 
 		incrx_mode = INCRX_UNDEF_LENGTH_BURST_MODE;
 		for (i = 1; i < ntype; i++) {
 			if (vals[i] > incrx_size)
 				incrx_size = vals[i];
 		}
 	} else {
-		/* INCRX burst mode */
+		 
 		incrx_mode = INCRX_BURST_MODE;
 	}
 
 	kfree(vals);
 
-	/* Enable Undefined Length INCR Burst and Enable INCRx Burst */
+	 
 	cfg &= ~DWC3_GSBUSCFG0_INCRBRST_MASK;
 	if (incrx_mode)
 		cfg |= DWC3_GSBUSCFG0_INCRBRSTENA;
@@ -1034,19 +885,7 @@ static void dwc3_set_power_down_clk_scale(struct dwc3 *dwc)
 	if (!dwc->susp_clk)
 		return;
 
-	/*
-	 * The power down scale field specifies how many suspend_clk
-	 * periods fit into a 16KHz clock period. When performing
-	 * the division, round up the remainder.
-	 *
-	 * The power down scale value is calculated using the fastest
-	 * frequency of the suspend_clk. If it isn't fixed (but within
-	 * the accuracy requirement), the driver may not know the max
-	 * rate of the suspend_clk, so only update the power down scale
-	 * if the default is less than the calculated value from
-	 * clk_get_rate() or if the default is questionably high
-	 * (3x or more) to be within the requirement.
-	 */
+	 
 	scale = DIV_ROUND_UP(clk_get_rate(dwc->susp_clk), 16000);
 	reg = dwc3_readl(dwc->regs, DWC3_GCTL);
 	if ((reg & DWC3_GCTL_PWRDNSCALE_MASK) < DWC3_GCTL_PWRDNSCALE(scale) ||
@@ -1065,10 +904,7 @@ static void dwc3_config_threshold(struct dwc3 *dwc)
 	u8 tx_thr_num;
 	u8 tx_maxburst;
 
-	/*
-	 * Must config both number of packets and max burst settings to enable
-	 * RX and/or TX threshold.
-	 */
+	 
 	if (!DWC3_IP_IS(DWC3) && dwc->dr_mode == USB_DR_MODE_HOST) {
 		rx_thr_num = dwc->rx_thr_num_pkt_prd;
 		rx_maxburst = dwc->rx_max_burst_prd;
@@ -1162,12 +998,7 @@ static void dwc3_config_threshold(struct dwc3 *dwc)
 	}
 }
 
-/**
- * dwc3_core_init - Low-level initialization of DWC3 Core
- * @dwc: Pointer to our controller context structure
- *
- * Returns 0 on success otherwise negative errno.
- */
+ 
 static int dwc3_core_init(struct dwc3 *dwc)
 {
 	unsigned int		hw_mode;
@@ -1176,10 +1007,7 @@ static int dwc3_core_init(struct dwc3 *dwc)
 
 	hw_mode = DWC3_GHWPARAMS0_MODE(dwc->hwparams.hwparams0);
 
-	/*
-	 * Write Linux Version Code to our GUID register so it's easy to figure
-	 * out which kernel version a bug was found.
-	 */
+	 
 	dwc3_writel(dwc->regs, DWC3_GUID, LINUX_VERSION_CODE);
 
 	ret = dwc3_phy_setup(dwc);
@@ -1231,13 +1059,13 @@ static int dwc3_core_init(struct dwc3 *dwc)
 	dwc3_core_setup_global_control(dwc);
 	dwc3_core_num_eps(dwc);
 
-	/* Set power down scale of suspend_clk */
+	 
 	dwc3_set_power_down_clk_scale(dwc);
 
-	/* Adjust Frame Length */
+	 
 	dwc3_frame_length_adjustment(dwc);
 
-	/* Adjust Reference Clock Period */
+	 
 	dwc3_ref_clk_period(dwc);
 
 	dwc3_set_incr_burst_type(dwc);
@@ -1252,26 +1080,14 @@ static int dwc3_core_init(struct dwc3 *dwc)
 		goto err_power_off_phy;
 	}
 
-	/*
-	 * ENDXFER polling is available on version 3.10a and later of
-	 * the DWC_usb3 controller. It is NOT available in the
-	 * DWC_usb31 controller.
-	 */
+	 
 	if (DWC3_VER_IS_WITHIN(DWC3, 310A, ANY)) {
 		reg = dwc3_readl(dwc->regs, DWC3_GUCTL2);
 		reg |= DWC3_GUCTL2_RST_ACTBITLATER;
 		dwc3_writel(dwc->regs, DWC3_GUCTL2, reg);
 	}
 
-	/*
-	 * When configured in HOST mode, after issuing U3/L2 exit controller
-	 * fails to send proper CRC checksum in CRC5 feild. Because of this
-	 * behaviour Transaction Error is generated, resulting in reset and
-	 * re-enumeration of usb device attached. All the termsel, xcvrsel,
-	 * opmode becomes 0 during end of resume. Enabling bit 10 of GUCTL1
-	 * will correct this problem. This option is to support certain
-	 * legacy ULPI PHYs.
-	 */
+	 
 	if (dwc->resume_hs_terminations) {
 		reg = dwc3_readl(dwc->regs, DWC3_GUCTL1);
 		reg |= DWC3_GUCTL1_RESUME_OPMODE_HS_HOST;
@@ -1281,19 +1097,11 @@ static int dwc3_core_init(struct dwc3 *dwc)
 	if (!DWC3_VER_IS_PRIOR(DWC3, 250A)) {
 		reg = dwc3_readl(dwc->regs, DWC3_GUCTL1);
 
-		/*
-		 * Enable hardware control of sending remote wakeup
-		 * in HS when the device is in the L1 state.
-		 */
+		 
 		if (!DWC3_VER_IS_PRIOR(DWC3, 290A))
 			reg |= DWC3_GUCTL1_DEV_L1_EXIT_BY_HW;
 
-		/*
-		 * Decouple USB 2.0 L1 & L2 events which will allow for
-		 * gadget driver to only receive U3/L2 suspend & wakeup
-		 * events and prevent the more frequent L1 LPM transitions
-		 * from interrupting the driver.
-		 */
+		 
 		if (!DWC3_VER_IS_PRIOR(DWC3, 300A))
 			reg |= DWC3_GUCTL1_DEV_DECOUPLE_L1L2_EVT;
 
@@ -1436,11 +1244,11 @@ static void dwc3_core_exit_mode(struct dwc3 *dwc)
 		dwc3_drd_exit(dwc);
 		break;
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 
-	/* de-assert DRVVBUS for HOST and OTG mode */
+	 
 	dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_DEVICE);
 }
 
@@ -1462,23 +1270,16 @@ static void dwc3_get_properties(struct dwc3 *dwc)
 	const char		*usb_psy_name;
 	int			ret;
 
-	/* default to highest possible threshold */
+	 
 	lpm_nyet_threshold = 0xf;
 
-	/* default to -3.5dB de-emphasis */
+	 
 	tx_de_emphasis = 1;
 
-	/*
-	 * default to assert utmi_sleep_n and use maximum allowed HIRD
-	 * threshold value of 0b1100
-	 */
+	 
 	hird_threshold = 12;
 
-	/*
-	 * default to a TXFIFO size large enough to fit 6 max packets.  This
-	 * allows for systems with larger bus latencies to have some headroom
-	 * for endpoints that have a large bMaxBurst value.
-	 */
+	 
 	tx_fifo_resize_max_num = 6;
 
 	dwc->maximum_speed = usb_get_maximum_speed(dev);
@@ -1622,7 +1423,7 @@ static void dwc3_get_properties(struct dwc3 *dwc)
 	dwc->tx_fifo_resize_max_num = tx_fifo_resize_max_num;
 }
 
-/* check whether the core supports IMOD */
+ 
 bool dwc3_has_imod(struct dwc3 *dwc)
 {
 	return DWC3_VER_IS_WITHIN(DWC3, 300A, ANY) ||
@@ -1636,24 +1437,18 @@ static void dwc3_check_params(struct dwc3 *dwc)
 	unsigned int hwparam_gen =
 		DWC3_GHWPARAMS3_SSPHY_IFC(dwc->hwparams.hwparams3);
 
-	/* Check for proper value of imod_interval */
+	 
 	if (dwc->imod_interval && !dwc3_has_imod(dwc)) {
 		dev_warn(dwc->dev, "Interrupt moderation not supported\n");
 		dwc->imod_interval = 0;
 	}
 
-	/*
-	 * Workaround for STAR 9000961433 which affects only version
-	 * 3.00a of the DWC_usb3 core. This prevents the controller
-	 * interrupt from being masked while handling events. IMOD
-	 * allows us to work around this issue. Enable it for the
-	 * affected version.
-	 */
+	 
 	if (!dwc->imod_interval &&
 	    DWC3_VER_IS(DWC3, 300A))
 		dwc->imod_interval = 1;
 
-	/* Check the maximum_speed parameter */
+	 
 	switch (dwc->maximum_speed) {
 	case USB_SPEED_FULL:
 	case USB_SPEED_HIGH:
@@ -1694,13 +1489,7 @@ static void dwc3_check_params(struct dwc3 *dwc)
 		break;
 	}
 
-	/*
-	 * Currently the controller does not have visibility into the HW
-	 * parameter to determine the maximum number of lanes the HW supports.
-	 * If the number of lanes is not specified in the device property, then
-	 * set the default to support dual-lane for DWC_usb32 and single-lane
-	 * for DWC_usb31 for super-speed-plus.
-	 */
+	 
 	if (dwc->maximum_speed == USB_SPEED_SUPER_PLUS) {
 		switch (dwc->max_ssp_rate) {
 		case USB_SSP_GEN_2x1:
@@ -1741,32 +1530,16 @@ static struct extcon_dev *dwc3_get_extcon(struct dwc3 *dwc)
 	if (device_property_read_bool(dev, "extcon"))
 		return extcon_get_edev_by_phandle(dev, 0);
 
-	/*
-	 * Device tree platforms should get extcon via phandle.
-	 * On ACPI platforms, we get the name from a device property.
-	 * This device property is for kernel internal use only and
-	 * is expected to be set by the glue code.
-	 */
+	 
 	if (device_property_read_string(dev, "linux,extcon-name", &name) == 0)
 		return extcon_get_extcon_dev(name);
 
-	/*
-	 * Check explicitly if "usb-role-switch" is used since
-	 * extcon_find_edev_by_node() can not be used to check the absence of
-	 * an extcon device. In the absence of an device it will always return
-	 * EPROBE_DEFER.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_USB_ROLE_SWITCH) &&
 	    device_property_read_bool(dev, "usb-role-switch"))
 		return NULL;
 
-	/*
-	 * Try to get an extcon device from the USB PHY controller's "port"
-	 * node. Check if it has the "port" node first, to avoid printing the
-	 * error message from underlying code, as it's a valid case: extcon
-	 * device (and "port" node) may be missing in case of "usb-role-switch"
-	 * or OTG mode.
-	 */
+	 
 	np_phy = of_parse_phandle(dev->of_node, "phys", 0);
 	if (of_graph_is_present(np_phy)) {
 		struct device_node *np_conn;
@@ -1788,12 +1561,7 @@ static int dwc3_get_clocks(struct dwc3 *dwc)
 	if (!dev->of_node)
 		return 0;
 
-	/*
-	 * Clocks are optional, but new DT platforms should support all clocks
-	 * as required by the DT-binding.
-	 * Some devices have different clock names in legacy device trees,
-	 * check for them to retain backwards compatibility.
-	 */
+	 
 	dwc->bus_clk = devm_clk_get_optional(dev, "bus_early");
 	if (IS_ERR(dwc->bus_clk)) {
 		return dev_err_probe(dev, PTR_ERR(dwc->bus_clk),
@@ -1865,10 +1633,7 @@ static int dwc3_probe(struct platform_device *pdev)
 	dwc->xhci_resources[0].flags = res->flags;
 	dwc->xhci_resources[0].name = res->name;
 
-	/*
-	 * Request memory region but exclude xHCI regs,
-	 * since it will be requested by the xhci-plat driver.
-	 */
+	 
 	dwc_res = *res;
 	dwc_res.start += DWC3_GLOBALS_REGS_START;
 
@@ -2014,10 +1779,7 @@ static void dwc3_remove(struct platform_device *pdev)
 	pm_runtime_disable(&pdev->dev);
 	pm_runtime_dont_use_autosuspend(&pdev->dev);
 	pm_runtime_put_noidle(&pdev->dev);
-	/*
-	 * HACK: Clear the driver data, which is currently accessed by parent
-	 * glue drivers, before allowing the parent to suspend.
-	 */
+	 
 	platform_set_drvdata(pdev, NULL);
 	pm_runtime_set_suspended(&pdev->dev);
 
@@ -2073,7 +1835,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
 			break;
 		}
 
-		/* Let controller to suspend HSPHY before PHY driver suspends */
+		 
 		if (dwc->dis_u2_susphy_quirk ||
 		    dwc->dis_enblslpm_quirk) {
 			reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
@@ -2081,7 +1843,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
 				DWC3_GUSB2PHYCFG_SUSPHY;
 			dwc3_writel(dwc->regs, DWC3_GUSB2PHYCFG(0), reg);
 
-			/* Give some time for USB2 PHY to suspend */
+			 
 			usleep_range(5000, 6000);
 		}
 
@@ -2089,7 +1851,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
 		phy_pm_runtime_put_sync(dwc->usb3_generic_phy);
 		break;
 	case DWC3_GCTL_PRTCAP_OTG:
-		/* do nothing during runtime_suspend */
+		 
 		if (PMSG_IS_AUTO(msg))
 			break;
 
@@ -2104,7 +1866,7 @@ static int dwc3_suspend_common(struct dwc3 *dwc, pm_message_t msg)
 		dwc3_core_exit(dwc);
 		break;
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 
@@ -2134,7 +1896,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
 			dwc3_set_prtcap(dwc, DWC3_GCTL_PRTCAP_HOST);
 			break;
 		}
-		/* Restore GUSB2PHYCFG bits that were modified in suspend */
+		 
 		reg = dwc3_readl(dwc->regs, DWC3_GUSB2PHYCFG(0));
 		if (dwc->dis_u2_susphy_quirk)
 			reg &= ~DWC3_GUSB2PHYCFG_SUSPHY;
@@ -2148,7 +1910,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
 		phy_pm_runtime_get_sync(dwc->usb3_generic_phy);
 		break;
 	case DWC3_GCTL_PRTCAP_OTG:
-		/* nothing to do on runtime_resume */
+		 
 		if (PMSG_IS_AUTO(msg))
 			break;
 
@@ -2169,7 +1931,7 @@ static int dwc3_resume_common(struct dwc3 *dwc, pm_message_t msg)
 
 		break;
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 
@@ -2185,7 +1947,7 @@ static int dwc3_runtime_checks(struct dwc3 *dwc)
 		break;
 	case DWC3_GCTL_PRTCAP_HOST:
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 
@@ -2222,7 +1984,7 @@ static int dwc3_runtime_resume(struct device *dev)
 		break;
 	case DWC3_GCTL_PRTCAP_HOST:
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 
@@ -2242,7 +2004,7 @@ static int dwc3_runtime_idle(struct device *dev)
 		break;
 	case DWC3_GCTL_PRTCAP_HOST:
 	default:
-		/* do nothing */
+		 
 		break;
 	}
 
@@ -2251,7 +2013,7 @@ static int dwc3_runtime_idle(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 #ifdef CONFIG_PM_SLEEP
 static int dwc3_suspend(struct device *dev)
@@ -2300,7 +2062,7 @@ static void dwc3_complete(struct device *dev)
 }
 #else
 #define dwc3_complete NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops dwc3_dev_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(dwc3_suspend, dwc3_resume)

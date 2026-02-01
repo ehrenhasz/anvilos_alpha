@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * descriptor table internals; you almost certainly want file.h instead.
- */
+ 
+ 
 
 #ifndef __LINUX_FDTABLE_H
 #define __LINUX_FDTABLE_H
@@ -17,16 +15,13 @@
 
 #include <linux/atomic.h>
 
-/*
- * The default fd array needs to be at least BITS_PER_LONG,
- * as this is the granularity returned by copy_fdset().
- */
+ 
 #define NR_OPEN_DEFAULT BITS_PER_LONG
 #define NR_OPEN_MAX ~0U
 
 struct fdtable {
 	unsigned int max_fds;
-	struct file __rcu **fd;      /* current fd array */
+	struct file __rcu **fd;       
 	unsigned long *close_on_exec;
 	unsigned long *open_fds;
 	unsigned long *full_fds_bits;
@@ -43,22 +38,16 @@ static inline bool fd_is_open(unsigned int fd, const struct fdtable *fdt)
 	return test_bit(fd, fdt->open_fds);
 }
 
-/*
- * Open file table structure
- */
+ 
 struct files_struct {
-  /*
-   * read mostly part
-   */
+   
 	atomic_t count;
 	bool resize_in_progress;
 	wait_queue_head_t resize_wait;
 
 	struct fdtable __rcu *fdt;
 	struct fdtable fdtab;
-  /*
-   * written part on a separate cache line in SMP
-   */
+   
 	spinlock_t file_lock ____cacheline_aligned_in_smp;
 	unsigned int next_fd;
 	unsigned long close_on_exec_init[1];
@@ -77,9 +66,7 @@ struct dentry;
 #define files_fdtable(files) \
 	rcu_dereference_check_fdtable((files), (files)->fdt)
 
-/*
- * The caller must ensure that fd table isn't shared or hold rcu or file lock
- */
+ 
 static inline struct file *files_lookup_fd_raw(struct files_struct *files, unsigned int fd)
 {
 	struct fdtable *fdt = rcu_dereference_raw(files->fdt);
@@ -131,4 +118,4 @@ extern int unshare_fd(unsigned long unshare_flags, unsigned int max_fds,
 
 extern struct kmem_cache *files_cachep;
 
-#endif /* __LINUX_FDTABLE_H */
+#endif  

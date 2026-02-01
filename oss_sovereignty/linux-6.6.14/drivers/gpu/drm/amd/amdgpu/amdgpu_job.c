@@ -1,26 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- *
- */
+ 
 #include <linux/kthread.h>
 #include <linux/wait.h>
 #include <linux/sched.h>
@@ -44,7 +22,7 @@ static enum drm_gpu_sched_stat amdgpu_job_timedout(struct drm_sched_job *s_job)
 		DRM_INFO("%s - device unplugged skipping recovery on scheduler:%s",
 			 __func__, s_job->sched->name);
 
-		/* Effectively the job is aborted as the device is gone */
+		 
 		return DRM_GPU_SCHED_STAT_ENODEV;
 	}
 
@@ -101,10 +79,7 @@ int amdgpu_job_alloc(struct amdgpu_device *adev, struct amdgpu_vm *vm,
 	if (!*job)
 		return -ENOMEM;
 
-	/*
-	 * Initialize the scheduler to at least some ring so that we always
-	 * have a pointer to adev.
-	 */
+	 
 	(*job)->base.sched = &adev->rings[0]->sched;
 	(*job)->vm = vm;
 
@@ -163,7 +138,7 @@ void amdgpu_job_free_resources(struct amdgpu_job *job)
 	struct dma_fence *f;
 	unsigned i;
 
-	/* Check if any fences where initialized */
+	 
 	if (job->base.s_fence && job->base.s_fence->finished.ops)
 		f = &job->base.s_fence->finished;
 	else if (job->hw_fence.ops)
@@ -183,7 +158,7 @@ static void amdgpu_job_free_cb(struct drm_sched_job *s_job)
 
 	amdgpu_sync_free(&job->explicit_sync);
 
-	/* only put the hw fence if has embedded fence */
+	 
 	if (!job->hw_fence.ops)
 		kfree(job);
 	else
@@ -197,10 +172,7 @@ void amdgpu_job_set_gang_leader(struct amdgpu_job *job,
 
 	WARN_ON(job->gang_submit);
 
-	/*
-	 * Don't add a reference when we are the gang leader to avoid circle
-	 * dependency.
-	 */
+	 
 	if (job != leader)
 		dma_fence_get(fence);
 	job->gang_submit = fence;
@@ -258,7 +230,7 @@ amdgpu_job_prepare_job(struct drm_sched_job *sched_job,
 	struct dma_fence *fence = NULL;
 	int r;
 
-	/* Ignore soft recovered fences here */
+	 
 	r = drm_sched_entity_error(s_entity);
 	if (r && r != -ENODATA)
 		goto error;
@@ -294,7 +266,7 @@ static struct dma_fence *amdgpu_job_run(struct drm_sched_job *sched_job)
 
 	trace_amdgpu_sched_run_job(job);
 
-	/* Skip job if VRAM is lost and never resubmit gangs */
+	 
 	if (job->generation != amdgpu_vm_generation(adev, job->vm) ||
 	    (job->job_run_counter && job->gang_submit))
 		dma_fence_set_error(finished, -ECANCELED);
@@ -324,7 +296,7 @@ void amdgpu_job_stop_all_jobs_on_sched(struct drm_gpu_scheduler *sched)
 	struct drm_sched_entity *s_entity = NULL;
 	int i;
 
-	/* Signal all jobs not yet scheduled */
+	 
 	for (i = DRM_SCHED_PRIORITY_COUNT - 1; i >= DRM_SCHED_PRIORITY_MIN; i--) {
 		struct drm_sched_rq *rq = &sched->sched_rq[i];
 		spin_lock(&rq->lock);
@@ -340,7 +312,7 @@ void amdgpu_job_stop_all_jobs_on_sched(struct drm_gpu_scheduler *sched)
 		spin_unlock(&rq->lock);
 	}
 
-	/* Signal all jobs already scheduled to HW */
+	 
 	list_for_each_entry(s_job, &sched->pending_list, list) {
 		struct drm_sched_fence *s_fence = s_job->s_fence;
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2022 AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+ 
+ 
 
 #ifndef __MFD_MT6332_CORE_H__
 #define __MFD_MT6332_CORE_H__
@@ -62,4 +60,4 @@ enum mt6332_irq_status_numbers {
 #define MT6332_IRQ_CON3_BASE	MT6332_IRQ_STATUS_VDRAM_OC
 #define MT6332_IRQ_CON3_BITS	(MT6332_IRQ_STATUS_LDO_OC - MT6332_IRQ_STATUS_VDRAM_OC + 1)
 
-#endif /* __MFD_MT6332_CORE_H__ */
+#endif  

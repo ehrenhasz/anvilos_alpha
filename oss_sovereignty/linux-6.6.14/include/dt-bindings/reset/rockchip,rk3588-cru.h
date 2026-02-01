@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/*
- * Copyright (c) 2021 Rockchip Electronics Co. Ltd.
- * Copyright (c) 2022 Collabora Ltd.
- *
- * Author: Elaine Zhang <zhangqing@rock-chips.com>
- * Author: Sebastian Reichel <sebastian.reichel@collabora.com>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_RESET_ROCKCHIP_RK3588_H
 #define _DT_BINDINGS_RESET_ROCKCHIP_RK3588_H

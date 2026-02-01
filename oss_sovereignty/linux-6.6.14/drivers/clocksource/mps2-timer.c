@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 ARM Limited
- *
- * Author: Vladimir Murzin <vladimir.murzin@arm.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -154,7 +150,7 @@ static int __init mps2_clockevent_init(struct device_node *np)
 	ce->clkevt.set_state_oneshot	= mps2_timer_shutdown;
 	ce->clkevt.set_next_event	= mps2_timer_set_next_event;
 
-	/* Ensure timer is disabled */
+	 
 	writel_relaxed(0, base + TIMER_CTRL);
 
 	ret = request_irq(irq, mps2_timer_interrupt, IRQF_TIMER, name, ce);
@@ -172,7 +168,7 @@ out_kfree:
 out_iounmap:
 	iounmap(base);
 out_clk_disable:
-	/* clk_{disable, unprepare, put}() can handle NULL as a parameter */
+	 
 	clk_disable_unprepare(clk);
 out_clk_put:
 	clk_put(clk);
@@ -213,10 +209,10 @@ static int __init mps2_clocksource_init(struct device_node *np)
 		goto out_clk_disable;
 	}
 
-	/* Ensure timer is disabled */
+	 
 	writel_relaxed(0, base + TIMER_CTRL);
 
-	/* ... and set it up as free-running clocksource */
+	 
 	writel_relaxed(0xffffffff, base + TIMER_VALUE);
 	writel_relaxed(0xffffffff, base + TIMER_RELOAD);
 
@@ -238,7 +234,7 @@ static int __init mps2_clocksource_init(struct device_node *np)
 out_iounmap:
 	iounmap(base);
 out_clk_disable:
-	/* clk_{disable, unprepare, put}() can handle NULL as a parameter */
+	 
 	clk_disable_unprepare(clk);
 out_clk_put:
 	clk_put(clk);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom BCMBCA High Speed SPI Controller driver
- *
- * Copyright 2000-2010 Broadcom Corporation
- * Copyright 2012-2013 Jonas Gorski <jonas.gorski@gmail.com>
- * Copyright 2019-2022 Broadcom Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -96,7 +90,7 @@
 #define HSSPI_MAX_SYNC_CLOCK			30000000
 
 #define HSSPI_SPI_MAX_CS			8
-#define HSSPI_BUS_NUM				1	/* 0 is legacy SPI */
+#define HSSPI_BUS_NUM				1	 
 #define HSSPI_POLL_STATUS_TIMEOUT_MS	100
 
 #define HSSPI_WAIT_MODE_POLLING		0
@@ -149,7 +143,7 @@ static ssize_t wait_mode_store(struct device *dev, struct device_attribute *attr
 
 	mutex_lock(&bs->msg_mutex);
 	bs->wait_mode = val;
-	/* clear interrupt status to avoid spurious int on next transfer */
+	 
 	if (val == HSSPI_WAIT_MODE_INTR)
 		__raw_writel(HSSPI_INT_CLEAR_ALL, bs->regs + HSSPI_INT_STATUS_REG);
 	mutex_unlock(&bs->msg_mutex);
@@ -173,7 +167,7 @@ static void bcmbca_hsspi_set_cs(struct bcmbca_hsspi *bs, unsigned int cs,
 {
 	u32 reg;
 
-	/* No cs orerriden needed for SS7 internal cs on pcm based voice dev */
+	 
 	if (cs == 7)
 		return;
 
@@ -208,7 +202,7 @@ static void bcmbca_hsspi_set_clk(struct bcmbca_hsspi *bs,
 	__raw_writel(reg, bs->regs + HSSPI_PROFILE_SIGNAL_CTRL_REG(profile));
 
 	mutex_lock(&bs->bus_mutex);
-	/* setup clock polarity */
+	 
 	reg = __raw_readl(bs->regs + HSSPI_GLOBAL_CTRL_REG);
 	reg &= ~GLOBAL_CTRL_CLK_POLARITY;
 	if (spi->mode & SPI_CPOL)
@@ -296,13 +290,13 @@ static int bcmbca_hsspi_do_txrx(struct spi_device *spi, struct spi_transfer *t,
 		*(__be16 *)(&val) = cpu_to_be16(opcode | curr_step);
 		__raw_writew(val, bs->fifo);
 
-		/* enable interrupt */
+		 
 		if (bs->wait_mode == HSSPI_WAIT_MODE_INTR)
 			__raw_writel(HSSPI_PINGx_CMD_DONE(0),
 			    bs->regs + HSSPI_INT_MASK_REG);
 
 		if (!cs_act) {
-			/* must apply cs signal as close as the cmd starts */
+			 
 			bcmbca_hsspi_set_cs(bs, chip_select, true);
 			cs_act = 1;
 		}
@@ -527,13 +521,13 @@ static int bcmbca_hsspi_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, host);
 
-	/* Initialize the hardware */
+	 
 	__raw_writel(0, bs->regs + HSSPI_INT_MASK_REG);
 
-	/* clean up any pending interrupts */
+	 
 	__raw_writel(HSSPI_INT_CLEAR_ALL, bs->regs + HSSPI_INT_STATUS_REG);
 
-	/* read out default CS polarities */
+	 
 	reg = __raw_readl(bs->regs + HSSPI_GLOBAL_CTRL_REG);
 	bs->cs_polarity = reg & GLOBAL_CTRL_CS_POLARITY_MASK;
 	__raw_writel(reg | GLOBAL_CTRL_CLK_GATE_SSOFF,
@@ -554,7 +548,7 @@ static int bcmbca_hsspi_probe(struct platform_device *pdev)
 		goto out_pm_disable;
 	}
 
-	/* register and we are done */
+	 
 	ret = devm_spi_register_controller(dev, host);
 	if (ret)
 		goto out_sysgroup_disable;
@@ -581,7 +575,7 @@ static void bcmbca_hsspi_remove(struct platform_device *pdev)
 	struct spi_controller *host = platform_get_drvdata(pdev);
 	struct bcmbca_hsspi *bs = spi_controller_get_devdata(host);
 
-	/* reset the hardware and block queue progress */
+	 
 	__raw_writel(0, bs->regs + HSSPI_INT_MASK_REG);
 	clk_disable_unprepare(bs->pll_clk);
 	clk_disable_unprepare(bs->clk);

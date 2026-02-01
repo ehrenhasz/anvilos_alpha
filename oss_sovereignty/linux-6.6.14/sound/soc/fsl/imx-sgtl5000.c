@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright 2012 Freescale Semiconductor, Inc.
-// Copyright 2012 Linaro Ltd.
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -70,10 +70,7 @@ static int imx_sgtl5000_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * The port numbering in the hardware manual starts at 1, while
-	 * the audmux API expects it starts at 0.
-	 */
+	 
 	int_port--;
 	ext_port--;
 	ret = imx_audmux_v2_configure_port(int_port,
@@ -203,7 +200,7 @@ static void imx_sgtl5000_remove(struct platform_device *pdev)
 
 static const struct of_device_id imx_sgtl5000_dt_ids[] = {
 	{ .compatible = "fsl,imx-audio-sgtl5000", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx_sgtl5000_dt_ids);
 

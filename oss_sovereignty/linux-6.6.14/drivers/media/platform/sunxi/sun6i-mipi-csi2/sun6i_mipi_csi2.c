@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2020-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -20,7 +17,7 @@
 #include "sun6i_mipi_csi2.h"
 #include "sun6i_mipi_csi2_reg.h"
 
-/* Format */
+ 
 
 static const struct sun6i_mipi_csi2_format sun6i_mipi_csi2_formats[] = {
 	{
@@ -77,7 +74,7 @@ sun6i_mipi_csi2_format_find(u32 mbus_code)
 	return NULL;
 }
 
-/* Controller */
+ 
 
 static void sun6i_mipi_csi2_enable(struct sun6i_mipi_csi2_device *csi2_dev)
 {
@@ -109,18 +106,7 @@ static void sun6i_mipi_csi2_configure(struct sun6i_mipi_csi2_device *csi2_dev)
 	if (WARN_ON(!format))
 		return;
 
-	/*
-	 * The enable flow in the Allwinner BSP is a bit different: the enable
-	 * and reset bits are set together before starting the CSI controller.
-	 *
-	 * In mainline we enable the CSI controller first (due to subdev logic).
-	 * One reliable way to make this work is to deassert reset, configure
-	 * registers and enable the controller when everything's ready.
-	 *
-	 * However, setting the version enable bit and removing it afterwards
-	 * appears necessary for capture to work reliably, while replacing it
-	 * with a delay doesn't do the trick.
-	 */
+	 
 	regmap_write(regmap, SUN6I_MIPI_CSI2_CTL_REG,
 		     SUN6I_MIPI_CSI2_CTL_RESET_N |
 		     SUN6I_MIPI_CSI2_CTL_VERSION_EN |
@@ -137,22 +123,7 @@ static void sun6i_mipi_csi2_configure(struct sun6i_mipi_csi2_device *csi2_dev)
 		     SUN6I_MIPI_CSI2_CFG_CHANNEL_MODE(1) |
 		     SUN6I_MIPI_CSI2_CFG_LANE_COUNT(lanes_count));
 
-	/*
-	 * Only a single virtual channel (index 0) is currently supported.
-	 * While the registers do mention multiple physical channels being
-	 * available (which can be configured to match a specific virtual
-	 * channel or data type), it's unclear whether channels > 0 are actually
-	 * connected and available and the reference source code only makes use
-	 * of channel 0.
-	 *
-	 * Using extra channels would also require matching channels to be
-	 * available on the CSI (and ISP) side, which is also unsure although
-	 * some CSI implementations are said to support multiple channels for
-	 * BT656 time-sharing.
-	 *
-	 * We still configure virtual channel numbers to ensure that virtual
-	 * channel 0 only goes to channel 0.
-	 */
+	 
 
 	regmap_write(regmap, SUN6I_MIPI_CSI2_VCDT_RX_REG,
 		     SUN6I_MIPI_CSI2_VCDT_RX_CH_VC(3, 3) |
@@ -165,7 +136,7 @@ static void sun6i_mipi_csi2_configure(struct sun6i_mipi_csi2_device *csi2_dev)
 		     SUN6I_MIPI_CSI2_CH_INT_PD_CLEAR);
 }
 
-/* V4L2 Subdev */
+ 
 
 static int sun6i_mipi_csi2_s_stream(struct v4l2_subdev *subdev, int on)
 {
@@ -192,13 +163,13 @@ static int sun6i_mipi_csi2_s_stream(struct v4l2_subdev *subdev, int on)
 		goto disable;
 	}
 
-	/* Runtime PM */
+	 
 
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret < 0)
 		return ret;
 
-	/* Sensor Pixel Rate */
+	 
 
 	ctrl = v4l2_ctrl_find(source_subdev->ctrl_handler, V4L2_CID_PIXEL_RATE);
 	if (!ctrl) {
@@ -214,7 +185,7 @@ static int sun6i_mipi_csi2_s_stream(struct v4l2_subdev *subdev, int on)
 		goto error_pm;
 	}
 
-	/* D-PHY */
+	 
 
 	if (!lanes_count) {
 		dev_err(dev, "missing (zero) MIPI CSI-2 lanes count\n");
@@ -231,15 +202,7 @@ static int sun6i_mipi_csi2_s_stream(struct v4l2_subdev *subdev, int on)
 	phy_mipi_dphy_get_default_config(pixel_rate, format->bpp, lanes_count,
 					 dphy_cfg);
 
-	/*
-	 * Note that our hardware is using DDR, which is not taken in account by
-	 * phy_mipi_dphy_get_default_config when calculating hs_clk_rate from
-	 * the pixel rate, lanes count and bpp.
-	 *
-	 * The resulting clock rate is basically the symbol rate over the whole
-	 * link. The actual clock rate is calculated with division by two since
-	 * DDR samples both on rising and falling edges.
-	 */
+	 
 
 	dev_dbg(dev, "A31 MIPI CSI-2 config:\n");
 	dev_dbg(dev, "%ld pixels/s, %u bits/pixel, %u lanes, %lu Hz clock\n",
@@ -258,12 +221,12 @@ static int sun6i_mipi_csi2_s_stream(struct v4l2_subdev *subdev, int on)
 		goto error_pm;
 	}
 
-	/* Controller */
+	 
 
 	sun6i_mipi_csi2_configure(csi2_dev);
 	sun6i_mipi_csi2_enable(csi2_dev);
 
-	/* D-PHY */
+	 
 
 	ret = phy_power_on(dphy);
 	if (ret) {
@@ -271,7 +234,7 @@ static int sun6i_mipi_csi2_s_stream(struct v4l2_subdev *subdev, int on)
 		goto error_pm;
 	}
 
-	/* Source */
+	 
 
 	ret = v4l2_subdev_call(source_subdev, video, s_stream, 1);
 	if (ret && ret != -ENOIOCTLCMD)
@@ -396,13 +359,13 @@ static const struct v4l2_subdev_ops sun6i_mipi_csi2_subdev_ops = {
 	.pad	= &sun6i_mipi_csi2_pad_ops,
 };
 
-/* Media Entity */
+ 
 
 static const struct media_entity_operations sun6i_mipi_csi2_entity_ops = {
 	.link_validate	= v4l2_subdev_link_validate,
 };
 
-/* V4L2 Async */
+ 
 
 static int
 sun6i_mipi_csi2_notifier_bound(struct v4l2_async_notifier *notifier,
@@ -454,7 +417,7 @@ sun6i_mipi_csi2_notifier_ops = {
 	.bound	= sun6i_mipi_csi2_notifier_bound,
 };
 
-/* Bridge */
+ 
 
 static int
 sun6i_mipi_csi2_bridge_source_setup(struct sun6i_mipi_csi2_device *csi2_dev)
@@ -501,7 +464,7 @@ static int sun6i_mipi_csi2_bridge_setup(struct sun6i_mipi_csi2_device *csi2_dev)
 
 	mutex_init(&bridge->lock);
 
-	/* V4L2 Subdev */
+	 
 
 	v4l2_subdev_init(subdev, &sun6i_mipi_csi2_subdev_ops);
 	strscpy(subdev->name, SUN6I_MIPI_CSI2_NAME, sizeof(subdev->name));
@@ -511,12 +474,12 @@ static int sun6i_mipi_csi2_bridge_setup(struct sun6i_mipi_csi2_device *csi2_dev)
 
 	v4l2_set_subdevdata(subdev, csi2_dev);
 
-	/* Media Entity */
+	 
 
 	subdev->entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;
 	subdev->entity.ops = &sun6i_mipi_csi2_entity_ops;
 
-	/* Media Pads */
+	 
 
 	pads[SUN6I_MIPI_CSI2_PAD_SINK].flags = MEDIA_PAD_FL_SINK |
 					       MEDIA_PAD_FL_MUST_CONNECT;
@@ -528,7 +491,7 @@ static int sun6i_mipi_csi2_bridge_setup(struct sun6i_mipi_csi2_device *csi2_dev)
 	if (ret)
 		return ret;
 
-	/* V4L2 Async */
+	 
 
 	v4l2_async_subdev_nf_init(notifier, subdev);
 	notifier->ops = &sun6i_mipi_csi2_notifier_ops;
@@ -537,7 +500,7 @@ static int sun6i_mipi_csi2_bridge_setup(struct sun6i_mipi_csi2_device *csi2_dev)
 	if (ret && ret != -ENODEV)
 		goto error_v4l2_notifier_cleanup;
 
-	/* Only register the notifier when a sensor is connected. */
+	 
 	if (ret != -ENODEV) {
 		ret = v4l2_async_nf_register(notifier);
 		if (ret < 0)
@@ -546,7 +509,7 @@ static int sun6i_mipi_csi2_bridge_setup(struct sun6i_mipi_csi2_device *csi2_dev)
 		notifier_registered = true;
 	}
 
-	/* V4L2 Subdev */
+	 
 
 	ret = v4l2_async_register_subdev(subdev);
 	if (ret < 0)
@@ -578,7 +541,7 @@ sun6i_mipi_csi2_bridge_cleanup(struct sun6i_mipi_csi2_device *csi2_dev)
 	media_entity_cleanup(&subdev->entity);
 }
 
-/* Platform */
+ 
 
 static int sun6i_mipi_csi2_suspend(struct device *dev)
 {
@@ -635,7 +598,7 @@ sun6i_mipi_csi2_resources_setup(struct sun6i_mipi_csi2_device *csi2_dev,
 	void __iomem *io_base;
 	int ret;
 
-	/* Registers */
+	 
 
 	io_base = devm_platform_ioremap_resource(platform_dev, 0);
 	if (IS_ERR(io_base))
@@ -649,7 +612,7 @@ sun6i_mipi_csi2_resources_setup(struct sun6i_mipi_csi2_device *csi2_dev,
 		return PTR_ERR(csi2_dev->regmap);
 	}
 
-	/* Clock */
+	 
 
 	csi2_dev->clock_mod = devm_clk_get(dev, "mod");
 	if (IS_ERR(csi2_dev->clock_mod)) {
@@ -663,7 +626,7 @@ sun6i_mipi_csi2_resources_setup(struct sun6i_mipi_csi2_device *csi2_dev,
 		return ret;
 	}
 
-	/* Reset */
+	 
 
 	csi2_dev->reset = devm_reset_control_get_shared(dev, NULL);
 	if (IS_ERR(csi2_dev->reset)) {
@@ -672,7 +635,7 @@ sun6i_mipi_csi2_resources_setup(struct sun6i_mipi_csi2_device *csi2_dev,
 		goto error_clock_rate_exclusive;
 	}
 
-	/* D-PHY */
+	 
 
 	csi2_dev->dphy = devm_phy_get(dev, "dphy");
 	if (IS_ERR(csi2_dev->dphy)) {
@@ -687,7 +650,7 @@ sun6i_mipi_csi2_resources_setup(struct sun6i_mipi_csi2_device *csi2_dev,
 		goto error_clock_rate_exclusive;
 	}
 
-	/* Runtime PM */
+	 
 
 	pm_runtime_enable(dev);
 

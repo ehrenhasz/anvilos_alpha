@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * IIO accel driver for Freescale MMA7455L 3-axis 10-bit accelerometer
- * Copyright 2015 Joachim Eastwood <manabian@gmail.com>
- */
+ 
+ 
 
 #ifndef __MMA7455_H
 #define __MMA7455_H

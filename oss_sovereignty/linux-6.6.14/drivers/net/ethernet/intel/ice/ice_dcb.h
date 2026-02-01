@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2019, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_DCB_H_
 #define _ICE_DCB_H_
@@ -35,7 +35,7 @@
 #define ICE_CEE_SUBTYPE_PFC_CFG		3
 #define ICE_CEE_SUBTYPE_APP_PRI		4
 #define ICE_CEE_MAX_FEAT_TYPE		3
-/* Defines for LLDP TLV header */
+ 
 #define ICE_LLDP_TLV_LEN_S		0
 #define ICE_LLDP_TLV_LEN_M		(0x01FF << ICE_LLDP_TLV_LEN_S)
 #define ICE_LLDP_TLV_TYPE_S		9
@@ -45,7 +45,7 @@
 #define ICE_LLDP_TLV_OUI_S		8
 #define ICE_LLDP_TLV_OUI_M		(0xFFFFFFUL << ICE_LLDP_TLV_OUI_S)
 
-/* Defines for IEEE ETS TLV */
+ 
 #define ICE_IEEE_ETS_MAXTC_S	0
 #define ICE_IEEE_ETS_MAXTC_M		(0x7 << ICE_IEEE_ETS_MAXTC_S)
 #define ICE_IEEE_ETS_CBS_S		6
@@ -62,11 +62,11 @@
 #define ICE_CEE_PGID_PRIO_1_M		(0xF << ICE_CEE_PGID_PRIO_1_S)
 #define ICE_CEE_PGID_STRICT		15
 
-/* Defines for IEEE TSA types */
+ 
 #define ICE_IEEE_TSA_STRICT		0
 #define ICE_IEEE_TSA_ETS		2
 
-/* Defines for IEEE PFC TLV */
+ 
 #define ICE_IEEE_PFC_CAP_S		0
 #define ICE_IEEE_PFC_CAP_M		(0xF << ICE_IEEE_PFC_CAP_S)
 #define ICE_IEEE_PFC_MBC_S		6
@@ -74,13 +74,13 @@
 #define ICE_IEEE_PFC_WILLING_S		7
 #define ICE_IEEE_PFC_WILLING_M		BIT(ICE_IEEE_PFC_WILLING_S)
 
-/* Defines for IEEE APP TLV */
+ 
 #define ICE_IEEE_APP_SEL_S		0
 #define ICE_IEEE_APP_SEL_M		(0x7 << ICE_IEEE_APP_SEL_S)
 #define ICE_IEEE_APP_PRIO_S		5
 #define ICE_IEEE_APP_PRIO_M		(0x7 << ICE_IEEE_APP_PRIO_S)
 
-/* TLV definitions for preparing MIB */
+ 
 #define ICE_IEEE_TLV_ID_ETS_CFG		3
 #define ICE_IEEE_TLV_ID_ETS_REC		4
 #define ICE_IEEE_TLV_ID_PFC_CFG		5
@@ -101,7 +101,7 @@
 #define ICE_DSCP_TC_BW_TLV_LEN		25
 #define ICE_DSCP_PFC_TLV_LEN		6
 
-/* IEEE 802.1AB LLDP Organization specific TLV */
+ 
 struct ice_lldp_org_tlv {
 	__be16 typelen;
 	__be32 ouisubtype;
@@ -122,7 +122,7 @@ struct ice_cee_ctrl_tlv {
 
 struct ice_cee_feat_tlv {
 	struct ice_cee_tlv_hdr hdr;
-	u8 en_will_err; /* Bits: |En|Will|Err|Reserved(5)| */
+	u8 en_will_err;  
 #define ICE_CEE_FEAT_TLV_ENA_M		0x80
 #define ICE_CEE_FEAT_TLV_WILLING_M	0x40
 #define ICE_CEE_FEAT_TLV_ERR_M		0x20
@@ -132,7 +132,7 @@ struct ice_cee_feat_tlv {
 
 struct ice_cee_app_prio {
 	__be16 protocol;
-	u8 upper_oui_sel; /* Bits: |Upper OUI(6)|Selector(2)| */
+	u8 upper_oui_sel;  
 #define ICE_CEE_APP_SELECTOR_M	0x03
 	__be16 lower_oui;
 	u8 prio_map;
@@ -160,7 +160,7 @@ int
 ice_aq_start_stop_dcbx(struct ice_hw *hw, bool start_dcbx_agent,
 		       bool *dcbx_agent_status, struct ice_sq_cd *cd);
 int ice_cfg_lldp_mib_change(struct ice_hw *hw, bool ena_mib);
-#else /* CONFIG_DCB */
+#else  
 static inline int
 ice_aq_stop_lldp(struct ice_hw __always_unused *hw,
 		 bool __always_unused shutdown_lldp_agent,
@@ -196,5 +196,5 @@ ice_cfg_lldp_mib_change(struct ice_hw __always_unused *hw,
 	return 0;
 }
 
-#endif /* CONFIG_DCB */
-#endif /* _ICE_DCB_H_ */
+#endif  
+#endif  

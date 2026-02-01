@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Copyright (C) 2015 Broadcom Corporation
-*
-*/
-/*
- * DESCRIPTION: The Broadcom iProc RNG200 Driver
- */
+
+ 
+ 
 
 #include <linux/hw_random.h>
 #include <linux/init.h>
@@ -16,7 +11,7 @@
 #include <linux/platform_device.h>
 #include <linux/delay.h>
 
-/* Registers */
+ 
 #define RNG_CTRL_OFFSET					0x00
 #define RNG_CTRL_RNG_RBGEN_MASK				0x00001FFF
 #define RNG_CTRL_RNG_RBGEN_ENABLE			0x00000001
@@ -64,10 +59,10 @@ static void iproc_rng200_restart(void __iomem *rng_base)
 
 	iproc_rng200_enable_set(rng_base, false);
 
-	/* Clear all interrupt status */
+	 
 	iowrite32(0xFFFFFFFFUL, rng_base + RNG_INT_STATUS_OFFSET);
 
-	/* Reset RNG and RBG */
+	 
 	val = ioread32(rng_base + RBG_SOFT_RESET_OFFSET);
 	val |= RBG_SOFT_RESET;
 	iowrite32(val, rng_base + RBG_SOFT_RESET_OFFSET);
@@ -102,7 +97,7 @@ static int iproc_rng200_read(struct hwrng *rng, void *buf, size_t max,
 
 	while ((num_remaining > 0) && time_before(jiffies, idle_endtime)) {
 
-		/* Is RNG sane? If not, reset it. */
+		 
 		status = ioread32(priv->base + RNG_INT_STATUS_OFFSET);
 		if ((status & (RNG_INT_STATUS_MASTER_FAIL_LOCKOUT_IRQ_MASK |
 			RNG_INT_STATUS_NIST_FAIL_IRQ_MASK)) != 0) {
@@ -114,18 +109,18 @@ static int iproc_rng200_read(struct hwrng *rng, void *buf, size_t max,
 			num_resets++;
 		}
 
-		/* Are there any random numbers available? */
+		 
 		if ((ioread32(priv->base + RNG_FIFO_COUNT_OFFSET) &
 				RNG_FIFO_COUNT_RNG_FIFO_COUNT_MASK) > 0) {
 
 			if (num_remaining >= sizeof(uint32_t)) {
-				/* Buffer has room to store entire word */
+				 
 				*(uint32_t *)buf = ioread32(priv->base +
 							RNG_FIFO_DATA_OFFSET);
 				buf += sizeof(uint32_t);
 				num_remaining -= sizeof(uint32_t);
 			} else {
-				/* Buffer can only store partial word */
+				 
 				uint32_t rnd_number = ioread32(priv->base +
 							RNG_FIFO_DATA_OFFSET);
 				memcpy(buf, &rnd_number, num_remaining);
@@ -133,14 +128,14 @@ static int iproc_rng200_read(struct hwrng *rng, void *buf, size_t max,
 				num_remaining = 0;
 			}
 
-			/* Reset the IDLE timeout */
+			 
 			idle_endtime = jiffies + MAX_IDLE_TIME;
 		} else {
 			if (!wait)
-				/* Cannot wait, return immediately */
+				 
 				return max - num_remaining;
 
-			/* Can wait, give others chance to run */
+			 
 			usleep_range(min(num_remaining * 10, 500U), 500);
 		}
 	}
@@ -174,7 +169,7 @@ static int iproc_rng200_probe(struct platform_device *pdev)
 	if (!priv)
 		return -ENOMEM;
 
-	/* Map peripheral */
+	 
 	priv->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(priv->base)) {
 		dev_err(dev, "failed to remap rng regs\n");
@@ -188,7 +183,7 @@ static int iproc_rng200_probe(struct platform_device *pdev)
 	priv->rng.init = iproc_rng200_init;
 	priv->rng.cleanup = iproc_rng200_cleanup;
 
-	/* Register driver */
+	 
 	ret = devm_hwrng_register(dev, &priv->rng);
 	if (ret) {
 		dev_err(dev, "hwrng registration failed\n");

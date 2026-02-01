@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for PenMount touchscreens
- *
- *  Copyright (c) 2014 Christian Gmeiner <christian.gmeiner <at> gmail.com>
- *
- *  based on hid-penmount copyrighted by
- *    PenMount Touch Solutions <penmount <at> seed.net.tw>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/hid.h>

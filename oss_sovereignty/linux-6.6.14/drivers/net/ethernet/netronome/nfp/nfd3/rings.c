@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/seq_file.h>
 
@@ -31,13 +31,7 @@ static void nfp_nfd3_xsk_tx_bufs_free(struct nfp_net_tx_ring *tx_ring)
 	}
 }
 
-/**
- * nfp_nfd3_tx_ring_reset() - Free any untransmitted buffers and reset pointers
- * @dp:		NFP Net data path struct
- * @tx_ring:	TX ring structure
- *
- * Assumes that the device is stopped, must be idempotent.
- */
+ 
 static void
 nfp_nfd3_tx_ring_reset(struct nfp_net_dp *dp, struct nfp_net_tx_ring *tx_ring)
 {
@@ -56,17 +50,17 @@ nfp_nfd3_tx_ring_reset(struct nfp_net_dp *dp, struct nfp_net_tx_ring *tx_ring)
 		nr_frags = skb_shinfo(skb)->nr_frags;
 
 		if (tx_buf->fidx == -1) {
-			/* unmap head */
+			 
 			dma_unmap_single(dp->dev, tx_buf->dma_addr,
 					 skb_headlen(skb), DMA_TO_DEVICE);
 		} else {
-			/* unmap fragment */
+			 
 			frag = &skb_shinfo(skb)->frags[tx_buf->fidx];
 			dma_unmap_page(dp->dev, tx_buf->dma_addr,
 				       skb_frag_size(frag), DMA_TO_DEVICE);
 		}
 
-		/* check for last gather fragment */
+		 
 		if (tx_buf->fidx == nr_frags - 1)
 			dev_kfree_skb_any(skb);
 
@@ -94,10 +88,7 @@ nfp_nfd3_tx_ring_reset(struct nfp_net_dp *dp, struct nfp_net_tx_ring *tx_ring)
 	netdev_tx_reset_queue(nd_q);
 }
 
-/**
- * nfp_nfd3_tx_ring_free() - Free resources allocated to a TX ring
- * @tx_ring:   TX ring to free
- */
+ 
 static void nfp_nfd3_tx_ring_free(struct nfp_net_tx_ring *tx_ring)
 {
 	struct nfp_net_r_vector *r_vec = tx_ring->r_vec;
@@ -116,13 +107,7 @@ static void nfp_nfd3_tx_ring_free(struct nfp_net_tx_ring *tx_ring)
 	tx_ring->size = 0;
 }
 
-/**
- * nfp_nfd3_tx_ring_alloc() - Allocate resource for a TX ring
- * @dp:        NFP Net data path struct
- * @tx_ring:   TX Ring structure to allocate
- *
- * Return: 0 on success, negative errno otherwise.
- */
+ 
 static int
 nfp_nfd3_tx_ring_alloc(struct nfp_net_dp *dp, struct nfp_net_tx_ring *tx_ring)
 {

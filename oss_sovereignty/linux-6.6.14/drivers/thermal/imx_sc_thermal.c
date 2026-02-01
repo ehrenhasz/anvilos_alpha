@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2018-2020 NXP.
- */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 #include <linux/err.h>
@@ -94,20 +92,12 @@ static int imx_sc_thermal_probe(struct platform_device *pdev)
 		sensor->tzd = devm_thermal_of_zone_register(&pdev->dev, sensor->resource_id,
 							    sensor, &imx_sc_thermal_ops);
 		if (IS_ERR(sensor->tzd)) {
-			/*
-			 * Save the error value before freeing the
-			 * sensor pointer, otherwise we endup with a
-			 * use-after-free error
-			 */
+			 
 			ret = PTR_ERR(sensor->tzd);
 
 			devm_kfree(&pdev->dev, sensor);
 
-			/*
-			 * The thermal framework notifies us there is
-			 * no thermal zone description for such a
-			 * sensor id
-			 */
+			 
 			if (ret == -ENODEV)
 				continue;
 

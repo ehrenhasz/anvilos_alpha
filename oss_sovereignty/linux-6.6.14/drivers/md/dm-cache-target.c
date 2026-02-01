@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat. All rights reserved.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm.h"
 #include "dm-bio-prison-v2.h"
@@ -26,25 +22,13 @@
 DECLARE_DM_KCOPYD_THROTTLE_WITH_MODULE_PARM(cache_copy_throttle,
 	"A percentage of time allocated for copying to and/or from cache");
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Glossary:
- *
- * oblock: index of an origin block
- * cblock: index of a cache block
- * promotion: movement of a block from origin to cache
- * demotion: movement of a block from cache to origin
- * migration: movement of a block between the origin and cache device,
- *	      either direction
- */
+ 
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Represents a chunk of future work.  'input' allows continuations to pass
- * values between themselves, typically error values.
- */
+ 
 struct continuation {
 	struct work_struct ws;
 	blk_status_t input;
@@ -63,29 +47,19 @@ static inline void queue_continuation(struct workqueue_struct *wq,
 	queue_work(wq, &k->ws);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * The batcher collects together pieces of work that need a particular
- * operation to occur before they can proceed (typically a commit).
- */
+ 
 struct batcher {
-	/*
-	 * The operation that everyone is waiting for.
-	 */
+	 
 	blk_status_t (*commit_op)(void *context);
 	void *commit_context;
 
-	/*
-	 * This is how bios should be issued once the commit op is complete
-	 * (accounted_request).
-	 */
+	 
 	void (*issue_op)(struct bio *bio, void *context);
 	void *issue_context;
 
-	/*
-	 * Queued work gets put on here after commit.
-	 */
+	 
 	struct workqueue_struct *wq;
 
 	spinlock_t lock;
@@ -109,10 +83,7 @@ static void __commit(struct work_struct *_ws)
 	INIT_LIST_HEAD(&work_items);
 	bio_list_init(&bios);
 
-	/*
-	 * We have to grab these before the commit_op to avoid a race
-	 * condition.
-	 */
+	 
 	spin_lock_irq(&b->lock);
 	list_splice_init(&b->work_items, &work_items);
 	bio_list_merge(&bios, &b->bios);
@@ -125,7 +96,7 @@ static void __commit(struct work_struct *_ws)
 	list_for_each_entry_safe(ws, tmp, &work_items, entry) {
 		k = container_of(ws, struct continuation, ws);
 		k->input = r;
-		INIT_LIST_HEAD(&ws->entry); /* to avoid a WARN_ON */
+		INIT_LIST_HEAD(&ws->entry);  
 		queue_work(b->wq, ws);
 	}
 
@@ -176,9 +147,7 @@ static void continue_after_commit(struct batcher *b, struct continuation *k)
 		async_commit(b);
 }
 
-/*
- * Bios are errored if commit failed.
- */
+ 
 static void issue_after_commit(struct batcher *b, struct bio *bio)
 {
 	bool commit_scheduled;
@@ -192,9 +161,7 @@ static void issue_after_commit(struct batcher *b, struct bio *bio)
 		async_commit(b);
 }
 
-/*
- * Call this if some urgent work is waiting for the commit to complete.
- */
+ 
 static void schedule_commit(struct batcher *b)
 {
 	bool immediate;
@@ -208,11 +175,7 @@ static void schedule_commit(struct batcher *b)
 		async_commit(b);
 }
 
-/*
- * There are a couple of places where we let a bio run, but want to do some
- * work before calling its endio function.  We do this by temporarily
- * changing the endio fn.
- */
+ 
 struct dm_hook_info {
 	bio_end_io_t *bi_end_io;
 };
@@ -231,45 +194,30 @@ static void dm_unhook_bio(struct dm_hook_info *h, struct bio *bio)
 	bio->bi_end_io = h->bi_end_io;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 #define MIGRATION_POOL_SIZE 128
 #define COMMIT_PERIOD HZ
 #define MIGRATION_COUNT_WINDOW 10
 
-/*
- * The block size of the device holding cache data must be
- * between 32KB and 1GB.
- */
+ 
 #define DATA_DEV_BLOCK_SIZE_MIN_SECTORS (32 * 1024 >> SECTOR_SHIFT)
 #define DATA_DEV_BLOCK_SIZE_MAX_SECTORS (1024 * 1024 * 1024 >> SECTOR_SHIFT)
 
 enum cache_metadata_mode {
-	CM_WRITE,		/* metadata may be changed */
-	CM_READ_ONLY,		/* metadata may not be changed */
+	CM_WRITE,		 
+	CM_READ_ONLY,		 
 	CM_FAIL
 };
 
 enum cache_io_mode {
-	/*
-	 * Data is written to cached blocks only.  These blocks are marked
-	 * dirty.  If you lose the cache device you will lose data.
-	 * Potential performance increase for both reads and writes.
-	 */
+	 
 	CM_IO_WRITEBACK,
 
-	/*
-	 * Data is written to both cache and origin.  Blocks are never
-	 * dirty.  Potential performance benfit for reads only.
-	 */
+	 
 	CM_IO_WRITETHROUGH,
 
-	/*
-	 * A degraded mode useful for various cache coherency situations
-	 * (eg, rolling back snapshots).  Reads and writes always go to the
-	 * origin.  If a write goes to a cached oblock, then the cache
-	 * block is invalidated.
-	 */
+	 
 	CM_IO_PASSTHROUGH
 };
 
@@ -298,43 +246,29 @@ struct cache {
 	struct dm_target *ti;
 	spinlock_t lock;
 
-	/*
-	 * Fields for converting from sectors to blocks.
-	 */
+	 
 	int sectors_per_block_shift;
 	sector_t sectors_per_block;
 
 	struct dm_cache_metadata *cmd;
 
-	/*
-	 * Metadata is written to this device.
-	 */
+	 
 	struct dm_dev *metadata_dev;
 
-	/*
-	 * The slower of the two data devices.  Typically a spindle.
-	 */
+	 
 	struct dm_dev *origin_dev;
 
-	/*
-	 * The faster of the two data devices.  Typically an SSD.
-	 */
+	 
 	struct dm_dev *cache_dev;
 
-	/*
-	 * Size of the origin device in _complete_ blocks and native sectors.
-	 */
+	 
 	dm_oblock_t origin_blocks;
 	sector_t origin_sectors;
 
-	/*
-	 * Size of the cache device in blocks.
-	 */
+	 
 	dm_cblock_t cache_size;
 
-	/*
-	 * Invalidation fields.
-	 */
+	 
 	spinlock_t invalidation_lock;
 	struct list_head invalidation_requests;
 
@@ -342,27 +276,19 @@ struct cache {
 	wait_queue_head_t migration_wait;
 	atomic_t nr_allocated_migrations;
 
-	/*
-	 * The number of in flight migrations that are performing
-	 * background io. eg, promotion, writeback.
-	 */
+	 
 	atomic_t nr_io_migrations;
 
 	struct bio_list deferred_bios;
 
 	struct rw_semaphore quiesce_lock;
 
-	/*
-	 * origin_blocks entries, discarded if set.
-	 */
+	 
 	dm_dblock_t discard_nr_blocks;
 	unsigned long *discard_bitset;
-	uint32_t discard_block_size; /* a power of 2 times sectors per block */
+	uint32_t discard_block_size;  
 
-	/*
-	 * Rather than reconstructing the table line for the status we just
-	 * save it and regurgitate.
-	 */
+	 
 	unsigned int nr_ctr_args;
 	const char **ctr_args;
 
@@ -373,18 +299,14 @@ struct cache {
 	struct delayed_work waker;
 	struct dm_bio_prison_v2 *prison;
 
-	/*
-	 * cache_size entries, dirty if set
-	 */
+	 
 	unsigned long *dirty_bitset;
 	atomic_t nr_dirty;
 
 	unsigned int policy_nr_args;
 	struct dm_cache_policy *policy;
 
-	/*
-	 * Cache features such as write-through.
-	 */
+	 
 	struct cache_features features;
 
 	struct cache_stats stats;
@@ -428,7 +350,7 @@ struct dm_cache_migration {
 	dm_oblock_t invalidate_oblock;
 };
 
-/*----------------------------------------------------------------*/
+ 
 
 static bool writethrough_mode(struct cache *cache)
 {
@@ -445,7 +367,7 @@ static inline bool passthrough_mode(struct cache *cache)
 	return unlikely(cache->features.io_mode == CM_IO_PASSTHROUGH);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static void wake_deferred_bio_worker(struct cache *cache)
 {
@@ -460,7 +382,7 @@ static void wake_migration_worker(struct cache *cache)
 	queue_work(cache->wq, &cache->migration_worker);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static struct dm_bio_prison_cell_v2 *alloc_prison_cell(struct cache *cache)
 {
@@ -496,7 +418,7 @@ static void free_migration(struct dm_cache_migration *mg)
 	mempool_free(mg, &cache->migration_pool);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static inline dm_oblock_t oblock_succ(dm_oblock_t b)
 {
@@ -511,10 +433,7 @@ static void build_key(dm_oblock_t begin, dm_oblock_t end, struct dm_cell_key_v2 
 	key->block_end = from_oblock(end);
 }
 
-/*
- * We have two lock levels.  Level 0, which is used to prevent WRITEs, and
- * level 1 which prevents *both* READs and WRITEs.
- */
+ 
 #define WRITE_LOCK_LEVEL 0
 #define READ_WRITE_LOCK_LEVEL 1
 
@@ -525,11 +444,7 @@ static unsigned int lock_level(struct bio *bio)
 		READ_WRITE_LOCK_LEVEL;
 }
 
-/*
- *--------------------------------------------------------------
- * Per bio data
- *--------------------------------------------------------------
- */
+ 
 
 static struct per_bio_data *get_per_bio_data(struct bio *bio)
 {
@@ -551,7 +466,7 @@ static struct per_bio_data *init_per_bio_data(struct bio *bio)
 	return pb;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static void defer_bio(struct cache *cache, struct bio *bio)
 {
@@ -572,7 +487,7 @@ static void defer_bios(struct cache *cache, struct bio_list *bios)
 	wake_deferred_bio_worker(cache);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static bool bio_detain_shared(struct cache *cache, dm_oblock_t oblock, struct bio *bio)
 {
@@ -582,14 +497,12 @@ static bool bio_detain_shared(struct cache *cache, dm_oblock_t oblock, struct bi
 	dm_oblock_t end = to_oblock(from_oblock(oblock) + 1ULL);
 	struct dm_bio_prison_cell_v2 *cell_prealloc, *cell;
 
-	cell_prealloc = alloc_prison_cell(cache); /* FIXME: allow wait if calling from worker */
+	cell_prealloc = alloc_prison_cell(cache);  
 
 	build_key(oblock, end, &key);
 	r = dm_cell_get_v2(cache->prison, &key, lock_level(bio), bio, cell_prealloc, &cell);
 	if (!r) {
-		/*
-		 * Failed to get the lock.
-		 */
+		 
 		free_prison_cell(cache, cell_prealloc);
 		return r;
 	}
@@ -603,7 +516,7 @@ static bool bio_detain_shared(struct cache *cache, dm_oblock_t oblock, struct bi
 	return r;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static bool is_dirty(struct cache *cache, dm_cblock_t b)
 {
@@ -618,10 +531,7 @@ static void set_dirty(struct cache *cache, dm_cblock_t cblock)
 	}
 }
 
-/*
- * These two are called when setting after migrations to force the policy
- * and dirty bitset to be in sync.
- */
+ 
 static void force_set_dirty(struct cache *cache, dm_cblock_t cblock)
 {
 	if (!test_and_set_bit(from_cblock(cblock), cache->dirty_bitset))
@@ -639,7 +549,7 @@ static void force_clear_dirty(struct cache *cache, dm_cblock_t cblock)
 	policy_clear_dirty(cache->policy, cblock);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static bool block_size_is_power_of_two(struct cache *cache)
 {
@@ -711,11 +621,7 @@ static bool is_discarded_oblock(struct cache *cache, dm_oblock_t b)
 	return r;
 }
 
-/*
- * -------------------------------------------------------------
- * Remapping
- *--------------------------------------------------------------
- */
+ 
 static void remap_to_origin(struct cache *cache, struct bio *bio)
 {
 	bio_set_dev(bio, cache->origin_dev->bdev);
@@ -755,7 +661,7 @@ static void check_if_tick_bio_needed(struct cache *cache, struct bio *bio)
 static void remap_to_origin_clear_discard(struct cache *cache, struct bio *bio,
 					  dm_oblock_t oblock)
 {
-	// FIXME: check_if_tick_bio_needed() is called way too much through this interface
+	
 	check_if_tick_bio_needed(cache, bio);
 	remap_to_origin(cache, bio);
 	if (bio_data_dir(bio) == WRITE)
@@ -821,10 +727,7 @@ static void issue_op(struct bio *bio, void *context)
 	accounted_request(cache, bio);
 }
 
-/*
- * When running in writethrough mode we need to send writes to clean blocks
- * to both the cache and origin devices.  Clone the bio and send them in parallel.
- */
+ 
 static void remap_to_origin_and_cache(struct cache *cache, struct bio *bio,
 				      dm_oblock_t oblock, dm_cblock_t cblock)
 {
@@ -842,11 +745,7 @@ static void remap_to_origin_and_cache(struct cache *cache, struct bio *bio,
 	remap_to_cache(cache, bio, cblock);
 }
 
-/*
- *--------------------------------------------------------------
- * Failure modes
- *--------------------------------------------------------------
- */
+ 
 static enum cache_metadata_mode get_cache_mode(struct cache *cache)
 {
 	return cache->features.mode;
@@ -890,7 +789,7 @@ static void set_cache_mode(struct cache *cache, enum cache_metadata_mode new_mod
 			new_mode = CM_READ_ONLY;
 	}
 
-	/* Never move out of fail mode */
+	 
 	if (old_mode == CM_FAIL)
 		new_mode = CM_FAIL;
 
@@ -938,7 +837,7 @@ static void metadata_operation_failed(struct cache *cache, const char *op, int r
 	set_cache_mode(cache, CM_READ_ONLY);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static void load_stats(struct cache *cache)
 {
@@ -983,14 +882,7 @@ static void update_stats(struct cache_stats *stats, enum policy_operation op)
 	}
 }
 
-/*
- *---------------------------------------------------------------------
- * Migration processing
- *
- * Migration covers moving data from the origin device to the cache, or
- * vice versa.
- *---------------------------------------------------------------------
- */
+ 
 static void inc_io_migrations(struct cache *cache)
 {
 	atomic_inc(&cache->nr_io_migrations);
@@ -1020,7 +912,7 @@ static void calc_discard_block_range(struct cache *cache, struct bio *bio,
 		*e = to_dblock(block_div(se, cache->discard_block_size));
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static void prevent_background_work(struct cache *cache)
 {
@@ -1054,7 +946,7 @@ static void background_work_end(struct cache *cache)
 	lockdep_on();
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static bool bio_writes_complete_block(struct cache *cache, struct bio *bio)
 {
@@ -1142,10 +1034,7 @@ static void overwrite(struct dm_cache_migration *mg,
 
 	dm_hook_bio(&pb->hook_info, bio, overwrite_endio, mg);
 
-	/*
-	 * The overwrite bio is part of the copy operation, as such it does
-	 * not set/clear discard or dirty flags.
-	 */
+	 
 	if (mg->op->op == POLICY_PROMOTE)
 		remap_to_cache(mg->cache, bio, mg->op->cblock);
 	else
@@ -1155,17 +1044,7 @@ static void overwrite(struct dm_cache_migration *mg,
 	accounted_request(mg->cache, bio);
 }
 
-/*
- * Migration steps:
- *
- * 1) exclusive lock preventing WRITEs
- * 2) quiesce
- * 3) copy or issue overwrite bio
- * 4) upgrade to exclusive lock preventing READs and WRITEs
- * 5) quiesce
- * 6) update metadata and commit
- * 7) unlock
- */
+ 
 static void mg_complete(struct dm_cache_migration *mg, bool success)
 {
 	struct bio_list bios;
@@ -1197,9 +1076,7 @@ static void mg_complete(struct dm_cache_migration *mg, bool success)
 		break;
 
 	case POLICY_DEMOTE:
-		/*
-		 * We clear dirty here to update the nr_dirty counter.
-		 */
+		 
 		if (success)
 			force_clear_dirty(cache, cblock);
 		policy_complete_background_work(cache->policy, op, success);
@@ -1266,25 +1143,7 @@ static void mg_update_metadata(struct work_struct *ws)
 			return;
 		}
 
-		/*
-		 * It would be nice if we only had to commit when a REQ_FLUSH
-		 * comes through.  But there's one scenario that we have to
-		 * look out for:
-		 *
-		 * - vblock x in a cache block
-		 * - domotion occurs
-		 * - cache block gets reallocated and over written
-		 * - crash
-		 *
-		 * When we recover, because there was no commit the cache will
-		 * rollback to having the data for vblock x in the cache block.
-		 * But the cache block has since been overwritten, so it'll end
-		 * up pointing to data that was never in 'x' during the history
-		 * of the device.
-		 *
-		 * To avoid this issue we require a commit as part of the
-		 * demotion operation.
-		 */
+		 
 		init_continuation(&mg->k, mg_success);
 		continue_after_commit(&cache->committer, &mg->k);
 		schedule_commit(&cache->committer);
@@ -1300,9 +1159,7 @@ static void mg_update_metadata_after_copy(struct work_struct *ws)
 {
 	struct dm_cache_migration *mg = ws_to_mg(ws);
 
-	/*
-	 * Did the copy succeed?
-	 */
+	 
 	if (mg->k.input)
 		mg_complete(mg, false);
 	else
@@ -1314,16 +1171,12 @@ static void mg_upgrade_lock(struct work_struct *ws)
 	int r;
 	struct dm_cache_migration *mg = ws_to_mg(ws);
 
-	/*
-	 * Did the copy succeed?
-	 */
+	 
 	if (mg->k.input)
 		mg_complete(mg, false);
 
 	else {
-		/*
-		 * Now we want the lock to prevent both reads and writes.
-		 */
+		 
 		r = dm_cell_lock_promote_v2(mg->cache->prison, mg->cell,
 					    READ_WRITE_LOCK_LEVEL);
 		if (r < 0)
@@ -1359,31 +1212,19 @@ static void mg_copy(struct work_struct *ws)
 	struct dm_cache_migration *mg = ws_to_mg(ws);
 
 	if (mg->overwrite_bio) {
-		/*
-		 * No exclusive lock was held when we last checked if the bio
-		 * was optimisable.  So we have to check again in case things
-		 * have changed (eg, the block may no longer be discarded).
-		 */
+		 
 		if (!optimisable_bio(mg->cache, mg->overwrite_bio, mg->op->oblock)) {
-			/*
-			 * Fallback to a real full copy after doing some tidying up.
-			 */
+			 
 			bool rb = bio_detain_shared(mg->cache, mg->op->oblock, mg->overwrite_bio);
 
-			BUG_ON(rb); /* An exclussive lock must _not_ be held for this block */
+			BUG_ON(rb);  
 			mg->overwrite_bio = NULL;
 			inc_io_migrations(mg->cache);
 			mg_full_copy(ws);
 			return;
 		}
 
-		/*
-		 * It's safe to do this here, even though it's new data
-		 * because all IO has been locked out of the block.
-		 *
-		 * mg_lock_writes() already took READ_WRITE_LOCK_LEVEL
-		 * so _not_ using mg_upgrade_lock() as continutation.
-		 */
+		 
 		overwrite(mg, mg_update_metadata_after_copy);
 
 	} else
@@ -1399,11 +1240,7 @@ static int mg_lock_writes(struct dm_cache_migration *mg)
 
 	prealloc = alloc_prison_cell(cache);
 
-	/*
-	 * Prevent writes to the block, but allow reads to continue.
-	 * Unless we're using an overwrite bio, in which case we lock
-	 * everything.
-	 */
+	 
 	build_key(mg->op->oblock, oblock_succ(mg->op->oblock), &key);
 	r = dm_cell_lock_v2(cache->prison, &key,
 			    mg->overwrite_bio ?  READ_WRITE_LOCK_LEVEL : WRITE_LOCK_LEVEL,
@@ -1445,11 +1282,7 @@ static int mg_start(struct cache *cache, struct policy_work *op, struct bio *bio
 	return mg_lock_writes(mg);
 }
 
-/*
- *--------------------------------------------------------------
- * invalidation processing
- *--------------------------------------------------------------
- */
+ 
 
 static void invalidate_complete(struct dm_cache_migration *mg, bool success)
 {
@@ -1490,9 +1323,7 @@ static int invalidate_cblock(struct cache *cache, dm_cblock_t cblock)
 		}
 
 	} else if (r == -ENODATA) {
-		/*
-		 * Harmless, already unmapped.
-		 */
+		 
 		r = 0;
 
 	} else
@@ -1545,10 +1376,7 @@ static int invalidate_lock(struct dm_cache_migration *mg)
 		quiesce(mg, invalidate_remove);
 
 	else {
-		/*
-		 * We can't call invalidate_remove() directly here because we
-		 * might still be in request context.
-		 */
+		 
 		init_continuation(&mg->k, invalidate_remove);
 		queue_work(cache->wq, &mg->k.ws);
 	}
@@ -1573,11 +1401,7 @@ static int invalidate_start(struct cache *cache, dm_cblock_t cblock,
 	return invalidate_lock(mg);
 }
 
-/*
- *--------------------------------------------------------------
- * bio processing
- *--------------------------------------------------------------
- */
+ 
 
 enum busy {
 	IDLE,
@@ -1608,7 +1432,7 @@ static void inc_miss_counter(struct cache *cache, struct bio *bio)
 		   &cache->stats.read_miss : &cache->stats.write_miss);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static int map_bio(struct cache *cache, struct bio *bio, dm_oblock_t block,
 		   bool *commit_needed)
@@ -1621,12 +1445,7 @@ static int map_bio(struct cache *cache, struct bio *bio, dm_oblock_t block,
 
 	rb = bio_detain_shared(cache, block, bio);
 	if (!rb) {
-		/*
-		 * An exclusive lock is held for this block, so we have to
-		 * wait.  We set the commit_needed flag so the current
-		 * transaction will be committed asap, allowing this lock
-		 * to be dropped.
-		 */
+		 
 		*commit_needed = true;
 		return DM_MAPIO_SUBMITTED;
 	}
@@ -1666,31 +1485,21 @@ static int map_bio(struct cache *cache, struct bio *bio, dm_oblock_t block,
 	if (r == -ENOENT) {
 		struct per_bio_data *pb = get_per_bio_data(bio);
 
-		/*
-		 * Miss.
-		 */
+		 
 		inc_miss_counter(cache, bio);
 		if (pb->req_nr == 0) {
 			accounted_begin(cache, bio);
 			remap_to_origin_clear_discard(cache, bio, block);
 		} else {
-			/*
-			 * This is a duplicate writethrough io that is no
-			 * longer needed because the block has been demoted.
-			 */
+			 
 			bio_endio(bio);
 			return DM_MAPIO_SUBMITTED;
 		}
 	} else {
-		/*
-		 * Hit.
-		 */
+		 
 		inc_hit_counter(cache, bio);
 
-		/*
-		 * Passthrough always maps to the origin, invalidating any
-		 * cache blocks that are written to.
-		 */
+		 
 		if (passthrough_mode(cache)) {
 			if (bio_data_dir(bio) == WRITE) {
 				bio_drop_shared_lock(cache, bio);
@@ -1708,14 +1517,9 @@ static int map_bio(struct cache *cache, struct bio *bio, dm_oblock_t block,
 		}
 	}
 
-	/*
-	 * dm core turns FUA requests into a separate payload and FLUSH req.
-	 */
+	 
 	if (bio->bi_opf & REQ_FUA) {
-		/*
-		 * issue_after_commit will call accounted_begin a second time.  So
-		 * we call accounted_complete() to avoid double accounting.
-		 */
+		 
 		accounted_complete(cache, bio);
 		issue_after_commit(&cache->committer, bio);
 		*commit_needed = true;
@@ -1735,9 +1539,7 @@ static bool process_bio(struct cache *cache, struct bio *bio)
 	return commit_needed;
 }
 
-/*
- * A non-zero return indicates read_only or fail_io mode.
- */
+ 
 static int commit(struct cache *cache, bool clean_shutdown)
 {
 	int r;
@@ -1753,9 +1555,7 @@ static int commit(struct cache *cache, bool clean_shutdown)
 	return r;
 }
 
-/*
- * Used by the batcher.
- */
+ 
 static blk_status_t commit_op(void *context)
 {
 	struct cache *cache = context;
@@ -1766,7 +1566,7 @@ static blk_status_t commit_op(void *context)
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static bool process_flush_bio(struct cache *cache, struct bio *bio)
 {
@@ -1785,11 +1585,7 @@ static bool process_discard_bio(struct cache *cache, struct bio *bio)
 {
 	dm_dblock_t b, e;
 
-	/*
-	 * FIXME: do we need to lock the region?  Or can we just assume the
-	 * user wont be so foolish as to issue discard concurrently with
-	 * other IO?
-	 */
+	 
 	calc_discard_block_range(cache, bio, &b, &e);
 	while (b != e) {
 		set_discard(cache, b);
@@ -1836,11 +1632,7 @@ static void process_deferred_bios(struct work_struct *ws)
 		schedule_commit(&cache->committer);
 }
 
-/*
- *--------------------------------------------------------------
- * Main worker loop
- *--------------------------------------------------------------
- */
+ 
 static void requeue_deferred_bios(struct cache *cache)
 {
 	struct bio *bio;
@@ -1857,10 +1649,7 @@ static void requeue_deferred_bios(struct cache *cache)
 	}
 }
 
-/*
- * We want to commit periodically so that not too much
- * unwritten metadata builds up.
- */
+ 
 static void do_waker(struct work_struct *ws)
 {
 	struct cache *cache = container_of(to_delayed_work(ws), struct cache, waker);
@@ -1899,16 +1688,9 @@ static void check_migrations(struct work_struct *ws)
 	}
 }
 
-/*
- *--------------------------------------------------------------
- * Target methods
- *--------------------------------------------------------------
- */
+ 
 
-/*
- * This function gets called on the error paths of the constructor, so we
- * have to cope with a partially initialised struct.
- */
+ 
 static void destroy(struct cache *cache)
 {
 	unsigned int i;
@@ -1967,37 +1749,9 @@ static sector_t get_dev_size(struct dm_dev *dev)
 	return bdev_nr_sectors(dev->bdev);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
-/*
- * Construct a cache device mapping.
- *
- * cache <metadata dev> <cache dev> <origin dev> <block size>
- *       <#feature args> [<feature arg>]*
- *       <policy> <#policy args> [<policy arg>]*
- *
- * metadata dev    : fast device holding the persistent metadata
- * cache dev	   : fast device holding cached data blocks
- * origin dev	   : slow device holding original data blocks
- * block size	   : cache unit size in sectors
- *
- * #feature args   : number of feature arguments passed
- * feature args    : writethrough.  (The default is writeback.)
- *
- * policy	   : the replacement policy to use
- * #policy args    : an even number of policy arguments corresponding
- *		     to key/value pairs passed to the policy
- * policy args	   : key/value pairs passed to the policy
- *		     E.g. 'sequential_threshold 1024'
- *		     See cache-policies.txt for details.
- *
- * Optional feature arguments are:
- *   writethrough  : write through caching that prohibits cache block
- *		     content from being different from origin block content.
- *		     Without this argument, the default behaviour is to write
- *		     back cache block contents later for performance reasons,
- *		     so they may differ from the corresponding origin blocks.
- */
+ 
 struct cache_args {
 	struct dm_target *ti;
 
@@ -2259,7 +2013,7 @@ static int parse_cache_args(struct cache_args *ca, int argc, char **argv,
 	return 0;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static struct kmem_cache *migration_cache;
 
@@ -2331,10 +2085,7 @@ static int create_cache_policy(struct cache *cache, struct cache_args *ca,
 	return 0;
 }
 
-/*
- * We want the discard block size to be at least the size of the cache
- * block size and have no more than 2^14 discard blocks across the origin.
- */
+ 
 #define MAX_DISCARD_BLOCKS (1 << 14)
 
 static bool too_many_discard_blocks(sector_t discard_block_size,
@@ -2399,7 +2150,7 @@ static int cache_create(struct cache_args *ca, struct cache **result)
 
 	cache->features = ca->features;
 	if (writethrough_mode(cache)) {
-		/* Create bioset for writethrough bios issued to origin */
+		 
 		r = bioset_init(&cache->bs, BIO_POOL_SIZE, 0, 0);
 		if (r)
 			goto bad;
@@ -2626,7 +2377,7 @@ out:
 	return r;
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static int cache_map(struct dm_target *ti, struct bio *bio)
 {
@@ -2638,11 +2389,7 @@ static int cache_map(struct dm_target *ti, struct bio *bio)
 
 	init_per_bio_data(bio);
 	if (unlikely(from_oblock(block) >= from_oblock(cache->origin_blocks))) {
-		/*
-		 * This can only occur if the io goes to a partial block at
-		 * the end of the origin device.  We don't cache these.
-		 * Just remap to the origin and carry on.
-		 */
+		 
 		remap_to_origin(cache, bio);
 		accounted_begin(cache, bio);
 		return DM_MAPIO_REMAPPED;
@@ -2737,9 +2484,7 @@ static int write_hints(struct cache *cache)
 	return 0;
 }
 
-/*
- * returns true on success
- */
+ 
 static bool sync_metadata(struct cache *cache)
 {
 	int r1, r2, r3, r4;
@@ -2758,11 +2503,7 @@ static bool sync_metadata(struct cache *cache)
 	if (r3)
 		DMERR("%s: could not write hints", cache_device_name(cache));
 
-	/*
-	 * If writing the above metadata failed, we still commit, but don't
-	 * set the clean shutdown flag.  This will effectively force every
-	 * dirty bit to be set on reload.
-	 */
+	 
 	r4 = commit(cache, !r1 && !r2 && !r3);
 	if (r4)
 		DMERR("%s: could not write cache metadata", cache_device_name(cache));
@@ -2781,10 +2522,7 @@ static void cache_postsuspend(struct dm_target *ti)
 	drain_workqueue(cache->wq);
 	WARN_ON(cache->tracker.in_flight);
 
-	/*
-	 * If it's a flush suspend there won't be any deferred bios, so this
-	 * call is harmless.
-	 */
+	 
 	requeue_deferred_bios(cache);
 
 	if (get_cache_mode(cache) == CM_WRITE)
@@ -2805,19 +2543,11 @@ static int load_mapping(void *context, dm_oblock_t oblock, dm_cblock_t cblock,
 	return policy_load_mapping(cache->policy, oblock, cblock, dirty, hint, hint_valid);
 }
 
-/*
- * The discard block size in the on disk metadata is not
- * necessarily the same as we're currently using.  So we have to
- * be careful to only set the discarded attribute if we know it
- * covers a complete block of the new size.
- */
+ 
 struct discard_load_info {
 	struct cache *cache;
 
-	/*
-	 * These blocks are sized using the on disk dblock size, rather
-	 * than the current one.
-	 */
+	 
 	dm_block_t block_size;
 	dm_block_t discard_begin, discard_end;
 };
@@ -2836,22 +2566,15 @@ static void set_discard_range(struct discard_load_info *li)
 	if (li->discard_begin == li->discard_end)
 		return;
 
-	/*
-	 * Convert to sectors.
-	 */
+	 
 	b = li->discard_begin * li->block_size;
 	e = li->discard_end * li->block_size;
 
-	/*
-	 * Then convert back to the current dblock size.
-	 */
+	 
 	b = dm_sector_div_up(b, li->cache->discard_block_size);
 	sector_div(e, li->cache->discard_block_size);
 
-	/*
-	 * The origin may have shrunk, so we need to check we're still in
-	 * bounds.
-	 */
+	 
 	if (e > from_dblock(li->cache->discard_nr_blocks))
 		e = from_dblock(li->cache->discard_nr_blocks);
 
@@ -2868,15 +2591,11 @@ static int load_discard(void *context, sector_t discard_block_size,
 
 	if (discard) {
 		if (from_dblock(dblock) == li->discard_end)
-			/*
-			 * We're already in a discard range, just extend it.
-			 */
+			 
 			li->discard_end = li->discard_end + 1ULL;
 
 		else {
-			/*
-			 * Emit the old range and start a new one.
-			 */
+			 
 			set_discard_range(li);
 			li->discard_begin = from_dblock(dblock);
 			li->discard_end = li->discard_begin + 1ULL;
@@ -2906,9 +2625,7 @@ static bool can_resize(struct cache *cache, dm_cblock_t new_size)
 		}
 	}
 
-	/*
-	 * We can't drop a dirty block when shrinking the cache.
-	 */
+	 
 	while (from_cblock(new_size) < from_cblock(cache->cache_size)) {
 		new_size = to_cblock(from_cblock(new_size) + 1);
 		if (is_dirty(cache, new_size)) {
@@ -2944,9 +2661,7 @@ static int cache_preresume(struct dm_target *ti)
 	struct cache *cache = ti->private;
 	dm_cblock_t csize = get_cache_dev_size(cache);
 
-	/*
-	 * Check to see if the cache has resized.
-	 */
+	 
 	if (!cache->sized) {
 		r = resize_cache_dev(cache, csize);
 		if (r)
@@ -2978,11 +2693,7 @@ static int cache_preresume(struct dm_target *ti)
 	if (!cache->loaded_discards) {
 		struct discard_load_info li;
 
-		/*
-		 * The discard bitset could have been resized, or the
-		 * discard block size changed.  To be safe we start by
-		 * setting every dblock to not discarded.
-		 */
+		 
 		clear_bitset(cache->discard_bitset, from_dblock(cache->discard_nr_blocks));
 
 		discard_load_info_init(cache, &li);
@@ -3042,17 +2753,7 @@ static void emit_flags(struct cache *cache, char *result,
 	*sz_ptr = sz;
 }
 
-/*
- * Status format:
- *
- * <metadata block size> <#used metadata blocks>/<#total metadata blocks>
- * <cache block size> <#used cache blocks>/<#total cache blocks>
- * <#read hits> <#read misses> <#write hits> <#write misses>
- * <#demotions> <#promotions> <#dirty>
- * <#features> <features>*
- * <#core args> <core args>
- * <policy name> <#policy args> <policy args>* <cache metadata mode> <needs_check>
- */
+ 
 static void cache_status(struct dm_target *ti, status_type_t type,
 			 unsigned int status_flags, char *result, unsigned int maxlen)
 {
@@ -3073,7 +2774,7 @@ static void cache_status(struct dm_target *ti, status_type_t type,
 			break;
 		}
 
-		/* Commit to ensure statistics aren't out-of-date */
+		 
 		if (!(status_flags & DM_STATUS_NOFLUSH_FLAG) && !dm_suspended(ti))
 			(void) commit(cache, false);
 
@@ -3178,21 +2879,13 @@ err:
 	DMEMIT("Error");
 }
 
-/*
- * Defines a range of cblocks, begin to (end - 1) are in the range.  end is
- * the one-past-the-end value.
- */
+ 
 struct cblock_range {
 	dm_cblock_t begin;
 	dm_cblock_t end;
 };
 
-/*
- * A cache block range can take two forms:
- *
- * i) A single cblock, eg. '3456'
- * ii) A begin and end cblock with a dash between, eg. 123-234
- */
+ 
 static int parse_cblock_range(struct cache *cache, const char *str,
 			      struct cblock_range *result)
 {
@@ -3200,9 +2893,7 @@ static int parse_cblock_range(struct cache *cache, const char *str,
 	uint64_t b, e;
 	int r;
 
-	/*
-	 * Try and parse form (ii) first.
-	 */
+	 
 	r = sscanf(str, "%llu-%llu%c", &b, &e, &dummy);
 	if (r < 0)
 		return r;
@@ -3213,9 +2904,7 @@ static int parse_cblock_range(struct cache *cache, const char *str,
 		return 0;
 	}
 
-	/*
-	 * That didn't work, try form (i).
-	 */
+	 
 	r = sscanf(str, "%llu%c", &b, &dummy);
 	if (r < 0)
 		return r;
@@ -3266,12 +2955,7 @@ static int request_invalidation(struct cache *cache, struct cblock_range *range)
 {
 	int r = 0;
 
-	/*
-	 * We don't need to do any locking here because we know we're in
-	 * passthrough mode.  There's is potential for a race between an
-	 * invalidation triggered by an io and an invalidation message.  This
-	 * is harmless, we must not worry if the policy call fails.
-	 */
+	 
 	while (range->begin != range->end) {
 		r = invalidate_cblock(cache, range->begin);
 		if (r)
@@ -3306,9 +2990,7 @@ static int process_invalidate_cblocks_message(struct cache *cache, unsigned int 
 		if (r)
 			break;
 
-		/*
-		 * Pass begin and end origin blocks to the worker and wake it.
-		 */
+		 
 		r = request_invalidation(cache, &range);
 		if (r)
 			break;
@@ -3317,14 +2999,7 @@ static int process_invalidate_cblocks_message(struct cache *cache, unsigned int 
 	return r;
 }
 
-/*
- * Supports
- *	"<key> <value>"
- * and
- *     "invalidate_cblocks [(<begin>)|(<begin>-<end>)]*
- *
- * The key migration_threshold is supported by the cache target core.
- */
+ 
 static int cache_message(struct dm_target *ti, unsigned int argc, char **argv,
 			 char *result, unsigned int maxlen)
 {
@@ -3361,10 +3036,7 @@ static int cache_iterate_devices(struct dm_target *ti,
 	return r;
 }
 
-/*
- * If discard_passdown was enabled verify that the origin device
- * supports discards.  Disable discard_passdown if not.
- */
+ 
 static void disable_passdown_if_not_supported(struct cache *cache)
 {
 	struct block_device *origin_bdev = cache->origin_dev->bdev;
@@ -3393,17 +3065,14 @@ static void set_discard_limits(struct cache *cache, struct queue_limits *limits)
 	struct queue_limits *origin_limits = &bdev_get_queue(origin_bdev)->limits;
 
 	if (!cache->features.discard_passdown) {
-		/* No passdown is done so setting own virtual limits */
+		 
 		limits->max_discard_sectors = min_t(sector_t, cache->discard_block_size * 1024,
 						    cache->origin_sectors);
 		limits->discard_granularity = cache->discard_block_size << SECTOR_SHIFT;
 		return;
 	}
 
-	/*
-	 * cache_iterate_devices() is stacking both origin and fast device limits
-	 * but discards aren't passed to fast device, so inherit origin's limits.
-	 */
+	 
 	limits->max_discard_sectors = origin_limits->max_discard_sectors;
 	limits->max_hw_discard_sectors = origin_limits->max_hw_discard_sectors;
 	limits->discard_granularity = origin_limits->discard_granularity;
@@ -3416,10 +3085,7 @@ static void cache_io_hints(struct dm_target *ti, struct queue_limits *limits)
 	struct cache *cache = ti->private;
 	uint64_t io_opt_sectors = limits->io_opt >> SECTOR_SHIFT;
 
-	/*
-	 * If the system-determined stacked limits are compatible with the
-	 * cache's blocksize (io_opt is a factor) do not override them.
-	 */
+	 
 	if (io_opt_sectors < cache->sectors_per_block ||
 	    do_div(io_opt_sectors, cache->sectors_per_block)) {
 		blk_limits_io_min(limits, cache->sectors_per_block << SECTOR_SHIFT);
@@ -3430,7 +3096,7 @@ static void cache_io_hints(struct dm_target *ti, struct queue_limits *limits)
 	set_discard_limits(cache, limits);
 }
 
-/*----------------------------------------------------------------*/
+ 
 
 static struct target_type cache_target = {
 	.name = "cache",

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8737.c  --  WM8737 ALSA SoC Audio driver
- *
- * Copyright 2010 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -36,7 +30,7 @@ static const char *wm8737_supply_names[WM8737_NUM_SUPPLIES] = {
 	"MVDD",
 };
 
-/* codec private data */
+ 
 struct wm8737_priv {
 	struct regmap *regmap;
 	struct regulator_bulk_data supplies[WM8737_NUM_SUPPLIES];
@@ -44,21 +38,21 @@ struct wm8737_priv {
 };
 
 static const struct reg_default wm8737_reg_defaults[] = {
-	{  0, 0x00C3 },     /* R0  - Left PGA volume */
-	{  1, 0x00C3 },     /* R1  - Right PGA volume */
-	{  2, 0x0007 },     /* R2  - AUDIO path L */
-	{  3, 0x0007 },     /* R3  - AUDIO path R */
-	{  4, 0x0000 },     /* R4  - 3D Enhance */
-	{  5, 0x0000 },     /* R5  - ADC Control */
-	{  6, 0x0000 },     /* R6  - Power Management */
-	{  7, 0x000A },     /* R7  - Audio Format */
-	{  8, 0x0000 },     /* R8  - Clocking */
-	{  9, 0x000F },     /* R9  - MIC Preamp Control */
-	{ 10, 0x0003 },     /* R10 - Misc Bias Control */
-	{ 11, 0x0000 },     /* R11 - Noise Gate */
-	{ 12, 0x007C },     /* R12 - ALC1 */
-	{ 13, 0x0000 },     /* R13 - ALC2 */
-	{ 14, 0x0032 },     /* R14 - ALC3 */
+	{  0, 0x00C3 },      
+	{  1, 0x00C3 },      
+	{  2, 0x0007 },      
+	{  3, 0x0007 },      
+	{  4, 0x0000 },      
+	{  5, 0x0000 },      
+	{  6, 0x0000 },      
+	{  7, 0x000A },      
+	{  8, 0x0000 },      
+	{  9, 0x000F },      
+	{ 10, 0x0003 },      
+	{ 11, 0x0000 },      
+	{ 12, 0x007C },      
+	{ 13, 0x0000 },      
+	{ 14, 0x0032 },      
 };
 
 static bool wm8737_volatile(struct device *dev, unsigned int reg)
@@ -273,7 +267,7 @@ static const struct snd_soc_dapm_route intercon[] = {
 	{ "AIF", NULL, "ADCR" },
 };
 
-/* codec mclk clock divider coefficients */
+ 
 static const struct {
 	u32 mclk;
 	u32 rate;
@@ -459,7 +453,7 @@ static int wm8737_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-		/* VMID at 2*75k */
+		 
 		snd_soc_component_update_bits(component, WM8737_MISC_BIAS_CONTROL,
 				    WM8737_VMIDSEL_MASK, 0);
 		break;
@@ -477,12 +471,12 @@ static int wm8737_set_bias_level(struct snd_soc_component *component,
 
 			regcache_sync(wm8737->regmap);
 
-			/* Fast VMID ramp at 2*2.5k */
+			 
 			snd_soc_component_update_bits(component, WM8737_MISC_BIAS_CONTROL,
 					    WM8737_VMIDSEL_MASK,
 					    2 << WM8737_VMIDSEL_SHIFT);
 
-			/* Bring VMID up */
+			 
 			snd_soc_component_update_bits(component, WM8737_POWER_MANAGEMENT,
 					    WM8737_VMID_MASK |
 					    WM8737_VREF_MASK,
@@ -492,7 +486,7 @@ static int wm8737_set_bias_level(struct snd_soc_component *component,
 			msleep(500);
 		}
 
-		/* VMID at 2*300k */
+		 
 		snd_soc_component_update_bits(component, WM8737_MISC_BIAS_CONTROL,
 				    WM8737_VMIDSEL_MASK,
 				    1 << WM8737_VMIDSEL_SHIFT);
@@ -526,7 +520,7 @@ static struct snd_soc_dai_driver wm8737_dai = {
 	.name = "wm8737",
 	.capture = {
 		.stream_name = "Capture",
-		.channels_min = 2,  /* Mono modes not yet supported */
+		.channels_min = 2,   
 		.channels_max = 2,
 		.rates = WM8737_RATES,
 		.formats = WM8737_FORMATS,
@@ -559,7 +553,7 @@ static int wm8737_probe(struct snd_soc_component *component)
 
 	snd_soc_component_force_bias_level(component, SND_SOC_BIAS_STANDBY);
 
-	/* Bias level configuration will have done an extra enable */
+	 
 	regulator_bulk_disable(ARRAY_SIZE(wm8737->supplies), wm8737->supplies);
 
 	return 0;
@@ -694,7 +688,7 @@ static struct spi_driver wm8737_spi_driver = {
 	},
 	.probe		= wm8737_spi_probe,
 };
-#endif /* CONFIG_SPI_MASTER */
+#endif  
 
 static int __init wm8737_modinit(void)
 {

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Atheros AR71xx/AR724x/AR913x MISC interrupt controller
- *
- *  Copyright (C) 2015 Alban Bedel <albeu@free.fr>
- *  Copyright (C) 2010-2011 Jaiganesh Narayanan <jnarayanan@atheros.com>
- *  Copyright (C) 2008-2011 Gabor Juhos <juhosg@openwrt.org>
- *  Copyright (C) 2008 Imre Kaloz <kaloz@openwrt.org>
- *
- *  Parts of this file are based on Atheros' 2.6.15/2.6.31 BSP
- */
+
+ 
 
 #include <linux/irqchip.h>
 #include <linux/irqchip/chained_irq.h>
@@ -66,7 +57,7 @@ static void ar71xx_misc_irq_unmask(struct irq_data *d)
 	t = __raw_readl(base + AR71XX_RESET_REG_MISC_INT_ENABLE);
 	__raw_writel(t | BIT(irq), base + AR71XX_RESET_REG_MISC_INT_ENABLE);
 
-	/* flush write */
+	 
 	__raw_readl(base + AR71XX_RESET_REG_MISC_INT_ENABLE);
 }
 
@@ -79,7 +70,7 @@ static void ar71xx_misc_irq_mask(struct irq_data *d)
 	t = __raw_readl(base + AR71XX_RESET_REG_MISC_INT_ENABLE);
 	__raw_writel(t & ~BIT(irq), base + AR71XX_RESET_REG_MISC_INT_ENABLE);
 
-	/* flush write */
+	 
 	__raw_readl(base + AR71XX_RESET_REG_MISC_INT_ENABLE);
 }
 
@@ -92,7 +83,7 @@ static void ar724x_misc_irq_ack(struct irq_data *d)
 	t = __raw_readl(base + AR71XX_RESET_REG_MISC_INT_STATUS);
 	__raw_writel(t & ~BIT(irq), base + AR71XX_RESET_REG_MISC_INT_STATUS);
 
-	/* flush write */
+	 
 	__raw_readl(base + AR71XX_RESET_REG_MISC_INT_STATUS);
 }
 
@@ -121,7 +112,7 @@ static void __init ath79_misc_intc_domain_init(
 
 	ath79_perfcount_irq = irq_create_mapping(domain, ATH79_MISC_PERF_IRQ);
 
-	/* Disable and clear all interrupts */
+	 
 	__raw_writel(0, base + AR71XX_RESET_REG_MISC_INT_ENABLE);
 	__raw_writel(0, base + AR71XX_RESET_REG_MISC_INT_STATUS);
 

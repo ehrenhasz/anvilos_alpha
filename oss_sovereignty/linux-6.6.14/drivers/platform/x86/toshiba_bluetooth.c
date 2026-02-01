@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Toshiba Bluetooth Enable Driver
- *
- * Copyright (C) 2009 Jes Sorensen <Jes.Sorensen@gmail.com>
- * Copyright (C) 2015 Azael Avalos <coproscefalo@gmail.com>
- *
- * Thanks to Matthew Garrett for background info on ACPI innards which
- * normal people aren't meant to understand :-)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -68,11 +60,7 @@ static int toshiba_bluetooth_present(acpi_handle handle)
 	acpi_status result;
 	u64 bt_present;
 
-	/*
-	 * Some Toshiba laptops may have a fake TOS6205 device in
-	 * their ACPI BIOS, so query the _STA method to see if there
-	 * is really anything there.
-	 */
+	 
 	result = acpi_evaluate_integer(handle, "_STA", NULL, &bt_present);
 	if (ACPI_FAILURE(result)) {
 		pr_err("ACPI call to query Bluetooth presence failed\n");
@@ -139,7 +127,7 @@ static int toshiba_bluetooth_disable(acpi_handle handle)
 	return 0;
 }
 
-/* Helper function */
+ 
 static int toshiba_bluetooth_sync_status(struct toshiba_bluetooth_dev *bt_dev)
 {
 	int status;
@@ -160,7 +148,7 @@ static int toshiba_bluetooth_sync_status(struct toshiba_bluetooth_dev *bt_dev)
 	return 0;
 }
 
-/* RFKill handlers */
+ 
 static int bt_rfkill_set_block(void *data, bool blocked)
 {
 	struct toshiba_bluetooth_dev *bt_dev = data;
@@ -188,13 +176,7 @@ static void bt_rfkill_poll(struct rfkill *rfkill, void *data)
 	if (toshiba_bluetooth_sync_status(bt_dev))
 		return;
 
-	/*
-	 * Note the Toshiba Bluetooth RFKill switch seems to be a strange
-	 * fish. It only provides a BT event when the switch is flipped to
-	 * the 'on' position. When flipping it to 'off', the USB device is
-	 * simply pulled away underneath us, without any BT event being
-	 * delivered.
-	 */
+	 
 	rfkill_set_hw_state(bt_dev->rfk, !bt_dev->killswitch);
 }
 
@@ -203,7 +185,7 @@ static const struct rfkill_ops rfk_ops = {
 	.poll = bt_rfkill_poll,
 };
 
-/* ACPI driver functions */
+ 
 static void toshiba_bt_rfkill_notify(struct acpi_device *device, u32 event)
 {
 	struct toshiba_bluetooth_dev *bt_dev = acpi_driver_data(device);
@@ -283,7 +265,7 @@ static void toshiba_bt_rfkill_remove(struct acpi_device *device)
 {
 	struct toshiba_bluetooth_dev *bt_dev = acpi_driver_data(device);
 
-	/* clean up */
+	 
 	if (bt_dev->rfk) {
 		rfkill_unregister(bt_dev->rfk);
 		rfkill_destroy(bt_dev->rfk);

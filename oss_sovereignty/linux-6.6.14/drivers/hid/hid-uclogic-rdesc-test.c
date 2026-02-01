@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- *  HID driver for UC-Logic devices not fully compliant with HID standard
- *
- *  Copyright (c) 2022 José Expósito <jose.exposito89@gmail.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include "./hid-uclogic-rdesc.h"

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell PXA25x family pin control
- *
- * Copyright (C) 2016 Robert Jarzmik
- */
+
+ 
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/of.h>

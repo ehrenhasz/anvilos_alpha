@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+ 
+ 
 
 #ifndef __MT7996_REGS_H
 #define __MT7996_REGS_H
@@ -16,7 +14,7 @@ struct __base {
 	u32 band_base[__MT_MAX_BAND];
 };
 
-/* used to differentiate between generations */
+ 
 struct mt7996_reg_desc {
 	const struct __base *base;
 	const struct __map *map;
@@ -44,7 +42,7 @@ enum base_rev {
 #define MT_MCU_INT_EVENT_DMA_INIT		BIT(1)
 #define MT_MCU_INT_EVENT_RESET_DONE		BIT(3)
 
-/* PLE */
+ 
 #define MT_PLE_BASE				0x820c0000
 #define MT_PLE(ofs)				(MT_PLE_BASE + (ofs))
 
@@ -61,14 +59,14 @@ enum base_rev {
 #define MT_PLE_AC_QEMPTY(ac, n)			MT_PLE(0x600 +	0x80 * (ac) + ((n) << 2))
 #define MT_PLE_AMSDU_PACK_MSDU_CNT(n)		MT_PLE(0x10e0 + ((n) << 2))
 
-/* WF MDP TOP */
+ 
 #define MT_MDP_BASE				0x820cc000
 #define MT_MDP(ofs)				(MT_MDP_BASE + (ofs))
 
 #define MT_MDP_DCR2				MT_MDP(0x8e8)
 #define MT_MDP_DCR2_RX_TRANS_SHORT		BIT(2)
 
-/* TMAC: band 0(0x820e4000), band 1(0x820f4000), band 2(0x830e4000) */
+ 
 #define MT_WF_TMAC_BASE(_band)			__BASE(WF_TMAC_BASE, (_band))
 #define MT_WF_TMAC(_band, ofs)			(MT_WF_TMAC_BASE(_band) + (ofs))
 
@@ -89,7 +87,7 @@ enum base_rev {
 #define MT_TMAC_ICR1(_band)			MT_WF_TMAC(_band, 0x018)
 #define MT_IFS_EIFS_CCK				GENMASK(8, 0)
 
-/* WF DMA TOP: band 0(0x820e7000), band 1(0x820f7000), band 2(0x830e7000) */
+ 
 #define MT_WF_DMA_BASE(_band)			__BASE(WF_DMA_BASE, (_band))
 #define MT_WF_DMA(_band, ofs)			(MT_WF_DMA_BASE(_band) + (ofs))
 
@@ -99,7 +97,7 @@ enum base_rev {
 #define MT_DMA_TCRF1(_band)			MT_WF_DMA(_band, 0x054)
 #define MT_DMA_TCRF1_QIDX			GENMASK(15, 13)
 
-/* WTBLOFF TOP: band 0(0x820e9000), band 1(0x820f9000), band 2(0x830e9000) */
+ 
 #define MT_WTBLOFF_BASE(_band)			__BASE(WF_WTBLOFF_BASE, (_band))
 #define MT_WTBLOFF(_band, ofs)			(MT_WTBLOFF_BASE(_band) + (ofs))
 
@@ -107,7 +105,7 @@ enum base_rev {
 #define MT_WTBLOFF_RSCR_RCPI_MODE		GENMASK(31, 30)
 #define MT_WTBLOFF_RSCR_RCPI_PARAM		GENMASK(25, 24)
 
-/* ETBF: band 0(0x820ea000), band 1(0x820fa000), band 2(0x830ea000) */
+ 
 #define MT_WF_ETBF_BASE(_band)			__BASE(WF_ETBF_BASE, (_band))
 #define MT_WF_ETBF(_band, ofs)			(MT_WF_ETBF_BASE(_band) + (ofs))
 
@@ -116,7 +114,7 @@ enum base_rev {
 #define MT_ETBF_RX_FB_NC			GENMASK(7, 4)
 #define MT_ETBF_RX_FB_NR			GENMASK(3, 0)
 
-/* LPON: band 0(0x820eb000), band 1(0x820fb000), band 2(0x830eb000) */
+ 
 #define MT_WF_LPON_BASE(_band)			__BASE(WF_LPON_BASE, (_band))
 #define MT_WF_LPON(_band, ofs)			(MT_WF_LPON_BASE(_band) + (ofs))
 
@@ -130,13 +128,8 @@ enum base_rev {
 #define MT_LPON_TCR_SW_ADJUST			BIT(1)
 #define MT_LPON_TCR_SW_READ			GENMASK(1, 0)
 
-/* MIB: band 0(0x820ed000), band 1(0x820fd000), band 2(0x830ed000)*/
-/* These counters are (mostly?) clear-on-read.  So, some should not
- * be read at all in case firmware is already reading them.  These
- * are commented with 'DNR' below. The DNR stats will be read by querying
- * the firmware API for the appropriate message.  For counters the driver
- * does read, the driver should accumulate the counters.
- */
+ 
+ 
 #define MT_WF_MIB_BASE(_band)			__BASE(WF_MIB_BASE, (_band))
 #define MT_WF_MIB(_band, ofs)			(MT_WF_MIB_BASE(_band) + (ofs))
 
@@ -155,7 +148,7 @@ enum base_rev {
 #define MT_MIB_TSCR7(_band)			MT_WF_MIB(_band, 0x6d0)
 
 #define MT_MIB_RSCR1(_band)			MT_WF_MIB(_band, 0x7ac)
-/* rx mpdu counter, full 32 bits */
+ 
 #define MT_MIB_RSCR31(_band)			MT_WF_MIB(_band, 0x964)
 #define MT_MIB_RSCR33(_band)			MT_WF_MIB(_band, 0x96c)
 
@@ -167,29 +160,29 @@ enum base_rev {
 #define MT_MIB_RSCR35(_band)			MT_WF_MIB(_band, 0x974)
 #define MT_MIB_RSCR36(_band)			MT_WF_MIB(_band, 0x978)
 
-/* tx ampdu cnt, full 32 bits */
+ 
 #define MT_MIB_TSCR0(_band)			MT_WF_MIB(_band, 0x6b0)
 #define MT_MIB_TSCR2(_band)			MT_WF_MIB(_band, 0x6b8)
 
-/* counts all mpdus in ampdu, regardless of success */
+ 
 #define MT_MIB_TSCR3(_band)			MT_WF_MIB(_band, 0x6bc)
 
-/* counts all successfully tx'd mpdus in ampdu */
+ 
 #define MT_MIB_TSCR4(_band)			MT_WF_MIB(_band, 0x6c0)
 
-/* rx ampdu count, 32-bit */
+ 
 #define MT_MIB_RSCR27(_band)			MT_WF_MIB(_band, 0x954)
 
-/* rx ampdu bytes count, 32-bit */
+ 
 #define MT_MIB_RSCR28(_band)			MT_WF_MIB(_band, 0x958)
 
-/* rx ampdu valid subframe count */
+ 
 #define MT_MIB_RSCR29(_band)			MT_WF_MIB(_band, 0x95c)
 
-/* rx ampdu valid subframe bytes count, 32bits */
+ 
 #define MT_MIB_RSCR30(_band)			MT_WF_MIB(_band, 0x960)
 
-/* remaining windows protected stats */
+ 
 #define MT_MIB_SDR27(_band)			MT_WF_MIB(_band, 0x080)
 #define MT_MIB_SDR27_TX_RWP_FAIL_CNT		GENMASK(15, 0)
 
@@ -198,7 +191,7 @@ enum base_rev {
 
 #define MT_MIB_RVSR1(_band)			MT_WF_MIB(_band, 0x724)
 
-/* rx blockack count, 32 bits */
+ 
 #define MT_MIB_TSCR1(_band)			MT_WF_MIB(_band, 0x6b4)
 
 #define MT_MIB_BTSCR0(_band)			MT_WF_MIB(_band, 0x5e0)
@@ -211,13 +204,13 @@ enum base_rev {
 #define MT_MIB_ARNG(_band, n)			MT_WF_MIB(_band, 0x0b0 + ((n) << 2))
 #define MT_MIB_ARNCR_RANGE(val, n)		(((val) >> ((n) << 4)) & GENMASK(9, 0))
 
-/* UMIB */
+ 
 #define MT_WF_UMIB_BASE				0x820cd000
 #define MT_WF_UMIB(ofs)				(MT_WF_UMIB_BASE + (ofs))
 
 #define MT_UMIB_RPDCR(_band)			(MT_WF_UMIB(0x594) + (_band) * 0x164)
 
-/* WTBLON TOP */
+ 
 #define MT_WTBLON_TOP_BASE			0x820d4000
 #define MT_WTBLON_TOP(ofs)			(MT_WTBLON_TOP_BASE + (ofs))
 #define MT_WTBLON_TOP_WDUCR			MT_WTBLON_TOP(0x370)
@@ -235,7 +228,7 @@ enum base_rev {
 #define MT_WTBL_ITDR1				MT_WTBLON_TOP(0x3bc)
 #define MT_WTBL_SPE_IDX_SEL			BIT(6)
 
-/* WTBL */
+ 
 #define MT_WTBL_BASE				0x820d8000
 #define MT_WTBL_LMAC_ID				GENMASK(14, 8)
 #define MT_WTBL_LMAC_DW				GENMASK(7, 2)
@@ -243,7 +236,7 @@ enum base_rev {
 						 FIELD_PREP(MT_WTBL_LMAC_ID, _id) | \
 						 FIELD_PREP(MT_WTBL_LMAC_DW, _dw))
 
-/* ARB: band 0(0x820e3000), band 1(0x820f3000), band 2(0x830e3000) */
+ 
 #define MT_WF_ARB_BASE(_band)			__BASE(WF_ARB_BASE, (_band))
 #define MT_WF_ARB(_band, ofs)			(MT_WF_ARB_BASE(_band) + (ofs))
 
@@ -251,7 +244,7 @@ enum base_rev {
 #define MT_ARB_SCR_TX_DISABLE			BIT(8)
 #define MT_ARB_SCR_RX_DISABLE			BIT(9)
 
-/* RMAC: band 0(0x820e5000), band 1(0x820f5000), band 2(0x830e5000), */
+ 
 #define MT_WF_RMAC_BASE(_band)			__BASE(WF_RMAC_BASE, (_band))
 #define MT_WF_RMAC(_band, ofs)			(MT_WF_RMAC_BASE(_band) + (ofs))
 
@@ -301,14 +294,14 @@ enum base_rev {
 #define MT_WF_RMAC_RSVD0(_band)			MT_WF_RMAC(_band, 0x03e0)
 #define MT_WF_RMAC_RSVD0_EIFS_CLR		BIT(21)
 
-/* RATE: band 0(0x820ee000), band 1(0x820fe000), band 2(0x830ee000) */
+ 
 #define MT_WF_RATE_BASE(_band)			__BASE(WF_RATE_BASE, (_band))
 #define MT_WF_RATE(_band, ofs)			(MT_WF_RATE_BASE(_band) + (ofs))
 
 #define MT_RATE_HRCR0(_band)			MT_WF_RATE(_band, 0x050)
 #define MT_RATE_HRCR0_CFEND_RATE		GENMASK(14, 0)
 
-/* WFDMA0 */
+ 
 #define MT_WFDMA0_BASE				0xd4000
 #define MT_WFDMA0(ofs)				(MT_WFDMA0_BASE + (ofs))
 
@@ -346,10 +339,10 @@ enum base_rev {
 #define MT_WFDMA0_PRI_DLY_INT_CFG1		MT_WFDMA0(0x2f4)
 #define MT_WFDMA0_PRI_DLY_INT_CFG2		MT_WFDMA0(0x2f8)
 
-/* WFDMA1 */
+ 
 #define MT_WFDMA1_BASE				0xd5000
 
-/* WFDMA CSR */
+ 
 #define MT_WFDMA_EXT_CSR_BASE			0xd7000
 #define MT_WFDMA_EXT_CSR(ofs)			(MT_WFDMA_EXT_CSR_BASE + (ofs))
 
@@ -363,7 +356,7 @@ enum base_rev {
 #define MT_PCIE_RECOG_ID_MASK			GENMASK(30, 0)
 #define MT_PCIE_RECOG_ID_SEM			BIT(31)
 
-/* WFDMA0 PCIE1 */
+ 
 #define MT_WFDMA0_PCIE1_BASE			0xd8000
 #define MT_WFDMA0_PCIE1(ofs)			(MT_WFDMA0_PCIE1_BASE + (ofs))
 
@@ -372,7 +365,7 @@ enum base_rev {
 #define MT_WFDMA0_PCIE1_BUSY_ENA_TX_FIFO1	BIT(1)
 #define MT_WFDMA0_PCIE1_BUSY_ENA_RX_FIFO	BIT(2)
 
-/* WFDMA COMMON */
+ 
 #define __RXQ(q)				((q) + __MT_MCUQ_MAX)
 #define __TXQ(q)				(__RXQ(q) + __MT_RXQ_MAX)
 
@@ -457,7 +450,7 @@ enum base_rev {
 #define MT_MCU_CMD_WM_WDT			BIT(30)
 #define MT_MCU_CMD_WDT_MASK			GENMASK(31, 30)
 
-/* l1/l2 remap */
+ 
 #define MT_HIF_REMAP_L1				0x155024
 #define MT_HIF_REMAP_L1_MASK			GENMASK(31, 16)
 #define MT_HIF_REMAP_L1_OFFSET			GENMASK(15, 0)
@@ -480,7 +473,7 @@ enum base_rev {
 #define MT_INFRA_MCU_START			0x7c000000
 #define MT_INFRA_MCU_END			0x7c3fffff
 
-/* FW MODE SYNC */
+ 
 #define MT_FW_ASSERT_CNT			0x02208274
 #define MT_FW_DUMP_STATE			0x02209e90
 
@@ -503,7 +496,7 @@ enum base_rev {
 #define MT_SWDEF_LAMC_WISR7_BN1_STATS		MT_SWDEF(0x068)
 #define MT_SWDEF_LAMC_WISR7_BN2_STATS		MT_SWDEF(0x06c)
 
-/* LED */
+ 
 #define MT_LED_TOP_BASE				0x18013000
 #define MT_LED_PHYS(_n)				(MT_LED_TOP_BASE + (_n))
 
@@ -518,18 +511,18 @@ enum base_rev {
 
 #define MT_LED_EN(_n)				MT_LED_PHYS(0x40 + ((_n) * 4))
 
-/* CONN DBG */
+ 
 #define MT_CONN_DBG_CTL_BASE			0x18023000
 #define MT_CONN_DBG_CTL(ofs)			(MT_CONN_DBG_CTL_BASE + (ofs))
 #define MT_CONN_DBG_CTL_OUT_SEL			MT_CONN_DBG_CTL(0x604)
 #define MT_CONN_DBG_CTL_PC_LOG_SEL		MT_CONN_DBG_CTL(0x60c)
 #define MT_CONN_DBG_CTL_PC_LOG			MT_CONN_DBG_CTL(0x610)
 
-#define MT_LED_GPIO_MUX2			0x70005058 /* GPIO 18 */
-#define MT_LED_GPIO_MUX3			0x7000505C /* GPIO 26 */
+#define MT_LED_GPIO_MUX2			0x70005058  
+#define MT_LED_GPIO_MUX3			0x7000505C  
 #define MT_LED_GPIO_SEL_MASK			GENMASK(11, 8)
 
-/* MT TOP */
+ 
 #define MT_TOP_BASE				0xe0000
 #define MT_TOP(ofs)				(MT_TOP_BASE + (ofs))
 
@@ -547,7 +540,7 @@ enum base_rev {
 #define MT_HW_REV				0x70010204
 #define MT_WF_SUBSYS_RST			0x70028600
 
-/* PCIE MAC */
+ 
 #define MT_PCIE_MAC_BASE			0x74030000
 #define MT_PCIE_MAC(ofs)			(MT_PCIE_MAC_BASE + (ofs))
 #define MT_PCIE_MAC_INT_ENABLE			MT_PCIE_MAC(0x188)
@@ -557,14 +550,14 @@ enum base_rev {
 
 #define MT_PCIE1_MAC_INT_ENABLE			MT_PCIE1_MAC(0x188)
 
-/* PHYRX CSD */
+ 
 #define MT_WF_PHYRX_CSD_BASE			0x83000000
 #define MT_WF_PHYRX_CSD(_band, _wf, ofs)	(MT_WF_PHYRX_CSD_BASE + \
 						 ((_band) << 20) + \
 						 ((_wf) << 16) + (ofs))
 #define MT_WF_PHYRX_CSD_IRPI(_band, _wf)	MT_WF_PHYRX_CSD(_band, _wf, 0x1000)
 
-/* PHYRX CTRL */
+ 
 #define MT_WF_PHYRX_BAND_BASE			0x83080000
 #define MT_WF_PHYRX_BAND(_band, ofs)		(MT_WF_PHYRX_BAND_BASE + \
 						 ((_band) << 20) + (ofs))
@@ -580,12 +573,12 @@ enum base_rev {
 #define MT_WF_PHYRX_BAND_RX_CTRL1_IPI_EN	GENMASK(2, 0)
 #define MT_WF_PHYRX_BAND_RX_CTRL1_STSCNT_EN	GENMASK(11, 9)
 
-/* PHYRX CSD BAND */
+ 
 #define MT_WF_PHYRX_CSD_BAND_RXTD12(_band)		MT_WF_PHYRX_BAND(_band, 0x8230)
 #define MT_WF_PHYRX_CSD_BAND_RXTD12_IRPI_SW_CLR_ONLY	BIT(18)
 #define MT_WF_PHYRX_CSD_BAND_RXTD12_IRPI_SW_CLR		BIT(29)
 
-/* CONN MCU EXCP CON */
+ 
 #define MT_MCU_WM_EXCP_BASE			0x89050000
 #define MT_MCU_WM_EXCP(ofs)			(MT_MCU_WM_EXCP_BASE + (ofs))
 #define MT_MCU_WM_EXCP_PC_CTRL			MT_MCU_WM_EXCP(0x100)

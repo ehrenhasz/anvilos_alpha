@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2019 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7615_MAC_H
 #define __MT7615_MAC_H
@@ -217,7 +217,7 @@ enum tx_phy_bandwidth {
 #define MT_TXD6_FIXED_BW		BIT(2)
 #define MT_TXD6_BW			GENMASK(1, 0)
 
-/* MT7663 DW7 HW-AMSDU */
+ 
 #define MT_TXD7_HW_AMSDU_CAP		BIT(30)
 #define MT_TXD7_TYPE			GENMASK(21, 20)
 #define MT_TXD7_SUB_TYPE		GENMASK(19, 16)
@@ -286,13 +286,13 @@ enum tx_phy_bandwidth {
 #define MT_TXS6_F1_RCPI_0		GENMASK(7, 0)
 
 struct mt7615_dfs_pulse {
-	u32 max_width;		/* us */
-	int max_pwr;		/* dbm */
-	int min_pwr;		/* dbm */
-	u32 min_stgr_pri;	/* us */
-	u32 max_stgr_pri;	/* us */
-	u32 min_cr_pri;		/* us */
-	u32 max_cr_pri;		/* us */
+	u32 max_width;		 
+	int max_pwr;		 
+	int min_pwr;		 
+	u32 min_stgr_pri;	 
+	u32 max_stgr_pri;	 
+	u32 min_cr_pri;		 
+	u32 max_cr_pri;		 
 };
 
 struct mt7615_dfs_pattern {

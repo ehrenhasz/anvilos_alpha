@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017~2018 NXP
- *
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
@@ -36,10 +32,7 @@ static int pcc_gate_enable(struct clk_hw *hw)
 		return ret;
 
 	spin_lock_irqsave(gate->lock, flags);
-	/*
-	 * release the sw reset for peripherals associated with
-	 * with this pcc clock.
-	 */
+	 
 	val = readl(gate->reg);
 	val |= SW_RST;
 	writel(val, gate->reg);
@@ -119,15 +112,7 @@ static struct clk_hw *imx_ulp_clk_hw_composite(const char *name,
 		gate->bit_idx = PCG_CGC_SHIFT;
 		if (has_swrst)
 			gate->lock = &imx_ccm_lock;
-		/*
-		 * make sure clock is gated during clock tree initialization,
-		 * the HW ONLY allow clock parent/rate changed with clock gated,
-		 * during clock tree initialization, clocks could be enabled
-		 * by bootloader, so the HW status will mismatch with clock tree
-		 * prepare count, then clock core driver will allow parent/rate
-		 * change since the prepare count is zero, but HW actually
-		 * prevent the parent/rate change due to the clock is enabled.
-		 */
+		 
 		val = readl_relaxed(reg);
 		val &= ~(1 << PCG_CGC_SHIFT);
 		writel_relaxed(val, reg);

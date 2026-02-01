@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2018 Etnaviv Project
- */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -24,7 +22,7 @@ static const struct {
 	u16 size;
 } etnaviv_sensitive_states[] __initconst = {
 #define ST(start, num) { (start) >> 2, (num) }
-	/* 2D */
+	 
 	ST(0x1200, 1),
 	ST(0x1228, 1),
 	ST(0x1238, 1),
@@ -41,7 +39,7 @@ static const struct {
 	ST(0x12b40, 8),
 	ST(0x12b80, 8),
 	ST(0x12ce0, 8),
-	/* 3D */
+	 
 	ST(0x0644, 1),
 	ST(0x064c, 1),
 	ST(0x0680, 8),

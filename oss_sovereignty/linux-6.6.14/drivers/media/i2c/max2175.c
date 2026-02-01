@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Maxim Integrated MAX2175 RF to Bits tuner driver
- *
- * This driver & most of the hard coded values are based on the reference
- * application delivered by Maxim for this device.
- *
- * Copyright (C) 2016 Maxim Integrated Products
- * Copyright (C) 2017 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -30,35 +22,32 @@
 #define mxm_dbg(ctx, fmt, arg...) dev_dbg(&ctx->client->dev, fmt, ## arg)
 #define mxm_err(ctx, fmt, arg...) dev_err(&ctx->client->dev, fmt, ## arg)
 
-/* Rx mode */
+ 
 struct max2175_rxmode {
-	enum max2175_band band;		/* Associated band */
-	u32 freq;			/* Default freq in Hz */
-	u8 i2s_word_size;		/* Bit value */
+	enum max2175_band band;		 
+	u32 freq;			 
+	u8 i2s_word_size;		 
 };
 
-/* Register map to define preset values */
+ 
 struct max2175_reg_map {
-	u8 idx;				/* Register index */
-	u8 val;				/* Register value */
+	u8 idx;				 
+	u8 val;				 
 };
 
 static const struct max2175_rxmode eu_rx_modes[] = {
-	/* EU modes */
+	 
 	[MAX2175_EU_FM_1_2] = { MAX2175_BAND_FM, 98256000, 1 },
 	[MAX2175_DAB_1_2]   = { MAX2175_BAND_VHF, 182640000, 0 },
 };
 
 static const struct max2175_rxmode na_rx_modes[] = {
-	/* NA modes */
+	 
 	[MAX2175_NA_FM_1_0] = { MAX2175_BAND_FM, 98255520, 1 },
 	[MAX2175_NA_FM_2_0] = { MAX2175_BAND_FM, 98255520, 6 },
 };
 
-/*
- * Preset values:
- * Based on Maxim MAX2175 Register Table revision: 130p10
- */
+ 
 static const u8 full_fm_eu_1p0[] = {
 	0x15, 0x04, 0xb8, 0xe3, 0x35, 0x18, 0x7c, 0x00,
 	0x00, 0x7d, 0x40, 0x08, 0x70, 0x7a, 0x88, 0x91,
@@ -103,7 +92,7 @@ static const u8 full_fm_na_1p0[] = {
 	0x1b,
 };
 
-/* DAB1.2 settings */
+ 
 static const struct max2175_reg_map dab12_map[] = {
 	{ 0x01, 0x13 }, { 0x02, 0x0d }, { 0x03, 0x15 }, { 0x04, 0x55 },
 	{ 0x05, 0x0a }, { 0x06, 0xa0 }, { 0x07, 0x40 }, { 0x08, 0x00 },
@@ -120,7 +109,7 @@ static const struct max2175_reg_map dab12_map[] = {
 	{ 0x86, 0x20 },
 };
 
-/* EU FM 1.2 settings */
+ 
 static const struct max2175_reg_map fmeu1p2_map[] = {
 	{ 0x01, 0x15 }, { 0x02, 0x04 }, { 0x03, 0xb8 }, { 0x04, 0xe3 },
 	{ 0x05, 0x35 }, { 0x06, 0x18 }, { 0x07, 0x7c }, { 0x08, 0x00 },
@@ -137,7 +126,7 @@ static const struct max2175_reg_map fmeu1p2_map[] = {
 	{ 0x86, 0x3f },
 };
 
-/* FM NA 1.0 settings */
+ 
 static const struct max2175_reg_map fmna1p0_map[] = {
 	{ 0x01, 0x13 }, { 0x02, 0x08 }, { 0x03, 0x8d }, { 0x04, 0xc0 },
 	{ 0x05, 0x35 }, { 0x06, 0x18 }, { 0x07, 0x7d }, { 0x08, 0x3f },
@@ -154,7 +143,7 @@ static const struct max2175_reg_map fmna1p0_map[] = {
 	{ 0x86, 0x3f },
 };
 
-/* FM NA 2.0 settings */
+ 
 static const struct max2175_reg_map fmna2p0_map[] = {
 	{ 0x01, 0x13 }, { 0x02, 0x08 }, { 0x03, 0x8d }, { 0x04, 0xc0 },
 	{ 0x05, 0x35 }, { 0x06, 0x18 }, { 0x07, 0x7c }, { 0x08, 0x54 },
@@ -214,7 +203,7 @@ static const u8 adc_presets[2][23] = {
 	},
 };
 
-/* Tuner bands */
+ 
 static const struct v4l2_frequency_band eu_bands_rf = {
 	.tuner = 0,
 	.type = V4L2_TUNER_RF,
@@ -233,7 +222,7 @@ static const struct v4l2_frequency_band na_bands_rf = {
 	.rangehigh  = 108000000,
 };
 
-/* Regmap settings */
+ 
 static const struct regmap_range max2175_regmap_volatile_range[] = {
 	regmap_reg_range(0x30, 0x35),
 	regmap_reg_range(0x3a, 0x45),
@@ -261,39 +250,39 @@ static const struct regmap_config max2175_regmap_config = {
 };
 
 struct max2175 {
-	struct v4l2_subdev sd;		/* Sub-device */
-	struct i2c_client *client;	/* I2C client */
+	struct v4l2_subdev sd;		 
+	struct i2c_client *client;	 
 
-	/* Controls */
+	 
 	struct v4l2_ctrl_handler ctrl_hdl;
-	struct v4l2_ctrl *lna_gain;	/* LNA gain value */
-	struct v4l2_ctrl *if_gain;	/* I/F gain value */
-	struct v4l2_ctrl *pll_lock;	/* PLL lock */
-	struct v4l2_ctrl *i2s_en;	/* I2S output enable */
-	struct v4l2_ctrl *hsls;		/* High-side/Low-side polarity */
-	struct v4l2_ctrl *rx_mode;	/* Receive mode */
+	struct v4l2_ctrl *lna_gain;	 
+	struct v4l2_ctrl *if_gain;	 
+	struct v4l2_ctrl *pll_lock;	 
+	struct v4l2_ctrl *i2s_en;	 
+	struct v4l2_ctrl *hsls;		 
+	struct v4l2_ctrl *rx_mode;	 
 
-	/* Regmap */
+	 
 	struct regmap *regmap;
 
-	/* Cached configuration */
-	u32 freq;			/* Tuned freq In Hz */
-	const struct max2175_rxmode *rx_modes;		/* EU or NA modes */
-	const struct v4l2_frequency_band *bands_rf;	/* EU or NA bands */
+	 
+	u32 freq;			 
+	const struct max2175_rxmode *rx_modes;		 
+	const struct v4l2_frequency_band *bands_rf;	 
 
-	/* Device settings */
-	unsigned long xtal_freq;	/* Ref Oscillator freq in Hz */
+	 
+	unsigned long xtal_freq;	 
 	u32 decim_ratio;
-	bool master;			/* Master/Slave */
-	bool am_hiz;			/* AM Hi-Z filter */
+	bool master;			 
+	bool am_hiz;			 
 
-	/* ROM values */
+	 
 	u8 rom_bbf_bw_am;
 	u8 rom_bbf_bw_fm;
 	u8 rom_bbf_bw_dab;
 
-	/* Driver private variables */
-	bool mode_resolved;		/* Flag to sanity check settings */
+	 
+	bool mode_resolved;		 
 };
 
 static inline struct max2175 *max2175_from_sd(struct v4l2_subdev *sd)
@@ -306,13 +295,13 @@ static inline struct max2175 *max2175_from_ctrl_hdl(struct v4l2_ctrl_handler *h)
 	return container_of(h, struct max2175, ctrl_hdl);
 }
 
-/* Get bitval of a given val */
+ 
 static inline u8 max2175_get_bitval(u8 val, u8 msb, u8 lsb)
 {
 	return (val & GENMASK(msb, lsb)) >> lsb;
 }
 
-/* Read/Write bit(s) on top of regmap */
+ 
 static int max2175_read(struct max2175 *ctx, u8 idx, u8 *val)
 {
 	u32 regval;
@@ -366,7 +355,7 @@ static int max2175_write_bit(struct max2175 *ctx, u8 idx, u8 bit, u8 newval)
 	return max2175_write_bits(ctx, idx, bit, bit, newval);
 }
 
-/* Checks expected pattern every msec until timeout */
+ 
 static int max2175_poll_timeout(struct max2175 *ctx, u8 idx, u8 msb, u8 lsb,
 				u8 exp_bitval, u32 timeout_us)
 {
@@ -416,10 +405,10 @@ static int max2175_band_from_freq(u32 freq)
 static void max2175_i2s_enable(struct max2175 *ctx, bool enable)
 {
 	if (enable)
-		/* Stuff bits are zeroed */
+		 
 		max2175_write_bits(ctx, 104, 3, 0, 2);
 	else
-		/* Keep SCK alive */
+		 
 		max2175_write_bits(ctx, 104, 3, 0, 9);
 	mxm_dbg(ctx, "i2s %sabled\n", enable ? "en" : "dis");
 }
@@ -454,7 +443,7 @@ static void max2175_load_fmeu_1p2(struct max2175 *ctx)
 
 	ctx->decim_ratio = 36;
 
-	/* Load the Channel Filter Coefficients into channel filter bank #2 */
+	 
 	max2175_set_filter_coeffs(ctx, MAX2175_CH_MSEL, 0, ch_coeff_fmeu);
 	max2175_set_filter_coeffs(ctx, MAX2175_EQ_MSEL, 0,
 				  eq_coeff_fmeu1_ra02_m6db);
@@ -469,7 +458,7 @@ static void max2175_load_dab_1p2(struct max2175 *ctx)
 
 	ctx->decim_ratio = 1;
 
-	/* Load the Channel Filter Coefficients into channel filter bank #2 */
+	 
 	max2175_set_filter_coeffs(ctx, MAX2175_CH_MSEL, 2, ch_coeff_dab1);
 }
 
@@ -514,15 +503,12 @@ static int max2175_set_csm_mode(struct max2175 *ctx,
 	max2175_write_bits(ctx, 0, 2, 0, new_mode);
 	mxm_dbg(ctx, "set csm new mode %d\n", new_mode);
 
-	/* Wait for a fixed settle down time depending on new mode */
+	 
 	switch (new_mode) {
 	case MAX2175_PRESET_TUNE:
-		usleep_range(51100, 51500);	/* 51.1ms */
+		usleep_range(51100, 51500);	 
 		break;
-	/*
-	 * Other mode switches need different sleep values depending on band &
-	 * mode
-	 */
+	 
 	default:
 		break;
 	}
@@ -537,7 +523,7 @@ static int max2175_csm_action(struct max2175 *ctx,
 
 	mxm_dbg(ctx, "csm_action: %d\n", action);
 
-	/* Other actions can be added in future when needed */
+	 
 	ret = max2175_set_csm_mode(ctx, MAX2175_LOAD_TO_BUFFER);
 	if (ret)
 		return ret;
@@ -594,7 +580,7 @@ static int max2175_set_lo_freq(struct max2175 *ctx, u32 lo_freq)
 	frac_desired = div64_ul((u64)(lo_freq % ctx->xtal_freq) << 20,
 				ctx->xtal_freq);
 
-	/* Check CSM is not busy */
+	 
 	ret = max2175_poll_csm_ready(ctx);
 	if (ret)
 		return ret;
@@ -602,7 +588,7 @@ static int max2175_set_lo_freq(struct max2175 *ctx, u32 lo_freq)
 	mxm_dbg(ctx, "lo_mult %u int %u  frac %u\n",
 		lo_mult, int_desired, frac_desired);
 
-	/* Write the calculated values to the appropriate registers */
+	 
 	max2175_write(ctx, 1, int_desired);
 	max2175_write_bits(ctx, 2, 3, 0, (frac_desired >> 16) & 0xf);
 	max2175_write(ctx, 3, frac_desired >> 8);
@@ -613,10 +599,7 @@ static int max2175_set_lo_freq(struct max2175 *ctx, u32 lo_freq)
 	return ret;
 }
 
-/*
- * Helper similar to DIV_ROUND_CLOSEST but an inline function that accepts s64
- * dividend and s32 divisor
- */
+ 
 static inline s64 max2175_round_closest(s64 dividend, s32 divisor)
 {
 	if ((dividend > 0 && divisor > 0) || (dividend < 0 && divisor < 0))
@@ -645,7 +628,7 @@ static int max2175_set_nco_freq(struct max2175 *ctx, s32 nco_freq)
 	if (nco_freq < 0)
 		nco_reg += 0x200000;
 
-	/* Check CSM is not busy */
+	 
 	ret = max2175_poll_csm_ready(ctx);
 	if (ret)
 		return ret;
@@ -653,7 +636,7 @@ static int max2175_set_nco_freq(struct max2175 *ctx, s32 nco_freq)
 	mxm_dbg(ctx, "freq %d desired %lld reg %u\n",
 		nco_freq, nco_val_desired, nco_reg);
 
-	/* Write the calculated values to the appropriate registers */
+	 
 	max2175_write_bits(ctx, 7, 4, 0, (nco_reg >> 16) & 0x1f);
 	max2175_write(ctx, 8, nco_reg >> 8);
 	max2175_write(ctx, 9, nco_reg);
@@ -741,7 +724,7 @@ static void max2175_set_eu_rx_mode(struct max2175 *ctx, u32 rx_mode)
 		max2175_load_dab_1p2(ctx);
 		break;
 	}
-	/* Master is the default setting */
+	 
 	if (!ctx->master)
 		max2175_write_bit(ctx, 30, 7, 1);
 }
@@ -756,13 +739,13 @@ static void max2175_set_na_rx_mode(struct max2175 *ctx, u32 rx_mode)
 		max2175_load_fmna_2p0(ctx);
 		break;
 	}
-	/* Master is the default setting */
+	 
 	if (!ctx->master)
 		max2175_write_bit(ctx, 30, 7, 1);
 
 	ctx->decim_ratio = 27;
 
-	/* Load the Channel Filter Coefficients into channel filter bank #2 */
+	 
 	max2175_set_filter_coeffs(ctx, MAX2175_CH_MSEL, 0, ch_coeff_fmna);
 	max2175_set_filter_coeffs(ctx, MAX2175_EQ_MSEL, 0,
 				  eq_coeff_fmna1_ra02_m6db);
@@ -784,13 +767,13 @@ static int max2175_set_rx_mode(struct max2175 *ctx, u32 rx_mode)
 		max2175_write_bits(ctx, 80, 5, 0, 33);
 	}
 
-	/* Load BB filter trim values saved in ROM */
+	 
 	max2175_set_bbfilter(ctx);
 
-	/* Set HSLS */
+	 
 	max2175_set_hsls(ctx, ctx->hsls->cur.val);
 
-	/* Use i2s enable settings */
+	 
 	max2175_i2s_enable(ctx, ctx->i2s_en->cur.val);
 
 	ctx->mode_resolved = true;
@@ -803,7 +786,7 @@ static int max2175_rx_mode_from_freq(struct max2175 *ctx, u32 freq, u32 *mode)
 	unsigned int i;
 	int band = max2175_band_from_freq(freq);
 
-	/* Pick the first match always */
+	 
 	for (i = 0; i <= ctx->rx_mode->maximum; i++) {
 		if (ctx->rx_modes[i].band == band) {
 			*mode = i;
@@ -837,12 +820,12 @@ static int max2175_init_power_manager(struct max2175 *ctx)
 {
 	int ret;
 
-	/* Execute on-chip power-up/calibration */
+	 
 	max2175_write_bit(ctx, 99, 2, 0);
 	usleep_range(1000, 1500);
 	max2175_write_bit(ctx, 99, 2, 1);
 
-	/* Wait for the power manager to finish. */
+	 
 	ret = max2175_poll_timeout(ctx, 69, 7, 7, 1, 50000);
 	if (ret)
 		mxm_err(ctx, "init pm failed\n");
@@ -854,7 +837,7 @@ static int max2175_recalibrate_adc(struct max2175 *ctx)
 {
 	int ret;
 
-	/* ADC Re-calibration */
+	 
 	max2175_write(ctx, 150, 0xff);
 	max2175_write(ctx, 205, 0xff);
 	max2175_write(ctx, 147, 0x20);
@@ -946,50 +929,50 @@ static int max2175_core_init(struct max2175 *ctx, u32 refout_bits)
 {
 	int ret;
 
-	/* MAX2175 uses 36.864MHz clock for EU & 40.154MHz for NA region */
+	 
 	if (ctx->xtal_freq == MAX2175_EU_XTAL_FREQ)
 		max2175_load_full_fm_eu_1p0(ctx);
 	else
 		max2175_load_full_fm_na_1p0(ctx);
 
-	/* The default settings assume master */
+	 
 	if (!ctx->master)
 		max2175_write_bit(ctx, 30, 7, 1);
 
 	mxm_dbg(ctx, "refout_bits %u\n", refout_bits);
 
-	/* Set REFOUT */
+	 
 	max2175_write_bits(ctx, 56, 7, 5, refout_bits);
 
-	/* ADC Reset */
+	 
 	max2175_write_bit(ctx, 99, 1, 0);
 	usleep_range(1000, 1500);
 	max2175_write_bit(ctx, 99, 1, 1);
 
-	/* Load ADC preset values */
+	 
 	max2175_load_adc_presets(ctx);
 
-	/* Initialize the power management state machine */
+	 
 	ret = max2175_init_power_manager(ctx);
 	if (ret)
 		return ret;
 
-	/* Recalibrate ADC */
+	 
 	ret = max2175_recalibrate_adc(ctx);
 	if (ret)
 		return ret;
 
-	/* Load ROM values to appropriate registers */
+	 
 	max2175_load_from_rom(ctx);
 
 	if (ctx->xtal_freq == MAX2175_EU_XTAL_FREQ) {
-		/* Load FIR coefficients into bank 0 */
+		 
 		max2175_set_filter_coeffs(ctx, MAX2175_CH_MSEL, 0,
 					  ch_coeff_fmeu);
 		max2175_set_filter_coeffs(ctx, MAX2175_EQ_MSEL, 0,
 					  eq_coeff_fmeu1_ra02_m6db);
 	} else {
-		/* Load FIR coefficients into bank 0 */
+		 
 		max2175_set_filter_coeffs(ctx, MAX2175_CH_MSEL, 0,
 					  ch_coeff_fmna);
 		max2175_set_filter_coeffs(ctx, MAX2175_EQ_MSEL, 0,
@@ -1002,16 +985,16 @@ static int max2175_core_init(struct max2175 *ctx, u32 refout_bits)
 
 static void max2175_s_ctrl_rx_mode(struct max2175 *ctx, u32 rx_mode)
 {
-	/* Load mode. Range check already done */
+	 
 	max2175_set_rx_mode(ctx, rx_mode);
 
 	mxm_dbg(ctx, "s_ctrl_rx_mode: %u curr freq %u\n", rx_mode, ctx->freq);
 
-	/* Check if current freq valid for mode & update */
+	 
 	if (max2175_freq_rx_mode_valid(ctx, rx_mode, ctx->freq))
 		max2175_tune_rf_freq(ctx, ctx->freq, ctx->hsls->cur.val);
 	else
-		/* Use default freq of mode if current freq is not valid */
+		 
 		max2175_tune_rf_freq(ctx, ctx->rx_modes[rx_mode].freq,
 				     ctx->hsls->cur.val);
 }
@@ -1076,18 +1059,18 @@ static int max2175_set_freq_and_mode(struct max2175 *ctx, u32 freq)
 	u32 rx_mode;
 	int ret;
 
-	/* Get band from frequency */
+	 
 	ret = max2175_rx_mode_from_freq(ctx, freq, &rx_mode);
 	if (ret)
 		return ret;
 
 	mxm_dbg(ctx, "set_freq_and_mode: freq %u rx_mode %d\n", freq, rx_mode);
 
-	/* Load mode */
+	 
 	max2175_set_rx_mode(ctx, rx_mode);
 	ctx->rx_mode->cur.val = rx_mode;
 
-	/* Tune to the new freq given */
+	 
 	return max2175_tune_rf_freq(ctx, freq, ctx->hsls->cur.val);
 }
 
@@ -1107,12 +1090,12 @@ static int max2175_s_frequency(struct v4l2_subdev *sd,
 	freq = clamp(vf->frequency, ctx->bands_rf->rangelow,
 		     ctx->bands_rf->rangehigh);
 
-	/* Check new freq valid for rx_mode if already resolved */
+	 
 	if (ctx->mode_resolved &&
 	    max2175_freq_rx_mode_valid(ctx, ctx->rx_mode->cur.val, freq))
 		ret = max2175_tune_rf_freq(ctx, freq, ctx->hsls->cur.val);
 	else
-		/* Find default rx_mode for freq and tune to it */
+		 
 		ret = max2175_set_freq_and_mode(ctx, freq);
 
 	mxm_dbg(ctx, "s_freq: ret %d curr %u mode_resolved %d mode %u\n",
@@ -1129,7 +1112,7 @@ static int max2175_g_frequency(struct v4l2_subdev *sd,
 	if (vf->tuner != 0)
 		return -EINVAL;
 
-	/* RF freq */
+	 
 	vf->type = V4L2_TUNER_RF;
 	vf->frequency = ctx->freq;
 
@@ -1167,7 +1150,7 @@ static int max2175_g_tuner(struct v4l2_subdev *sd, struct v4l2_tuner *vt)
 
 static int max2175_s_tuner(struct v4l2_subdev *sd, const struct v4l2_tuner *vt)
 {
-	/* Check tuner index is valid */
+	 
 	if (vt->index > 0)
 		return -EINVAL;
 
@@ -1191,10 +1174,7 @@ static const struct v4l2_ctrl_ops max2175_ctrl_ops = {
 	.g_volatile_ctrl = max2175_g_volatile_ctrl,
 };
 
-/*
- * I2S output enable/disable configuration. This is a private control.
- * Refer to Documentation/userspace-api/media/drivers/max2175.rst for more details.
- */
+ 
 static const struct v4l2_ctrl_config max2175_i2s_en = {
 	.ops = &max2175_ctrl_ops,
 	.id = V4L2_CID_MAX2175_I2S_ENABLE,
@@ -1207,10 +1187,7 @@ static const struct v4l2_ctrl_config max2175_i2s_en = {
 	.is_private = 1,
 };
 
-/*
- * HSLS value control LO freq adjacent location configuration.
- * Refer to Documentation/userspace-api/media/drivers/max2175.rst for more details.
- */
+ 
 static const struct v4l2_ctrl_config max2175_hsls = {
 	.ops = &max2175_ctrl_ops,
 	.id = V4L2_CID_MAX2175_HSLS,
@@ -1222,11 +1199,7 @@ static const struct v4l2_ctrl_config max2175_hsls = {
 	.def = 1,
 };
 
-/*
- * Rx modes below are a set of preset configurations that decides the tuner's
- * sck and sample rate of transmission. They are separate for EU & NA regions.
- * Refer to Documentation/userspace-api/media/drivers/max2175.rst for more details.
- */
+ 
 static const char * const max2175_ctrl_eu_rx_modes[] = {
 	[MAX2175_EU_FM_1_2]	= "EU FM 1.2",
 	[MAX2175_DAB_1_2]	= "DAB 1.2",
@@ -1273,7 +1246,7 @@ static int max2175_refout_load_to_bits(struct i2c_client *client, u32 load,
 static int max2175_probe(struct i2c_client *client)
 {
 	bool master = true, am_hiz = false;
-	u32 refout_load, refout_bits = 0;	/* REFOUT disabled */
+	u32 refout_load, refout_bits = 0;	 
 	struct v4l2_ctrl_handler *hdl;
 	struct fwnode_handle *fwnode;
 	struct device_node *np;
@@ -1283,10 +1256,10 @@ static int max2175_probe(struct i2c_client *client)
 	struct clk *clk;
 	int ret;
 
-	/* Parse DT properties */
+	 
 	np = of_parse_phandle(client->dev.of_node, "maxim,master", 0);
 	if (np) {
-		master = false;			/* Slave tuner */
+		master = false;			 
 		of_node_put(np);
 	}
 
@@ -1319,7 +1292,7 @@ static int max2175_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/* Alloc tuner context */
+	 
 	ctx = devm_kzalloc(&client->dev, sizeof(*ctx), GFP_KERNEL);
 	if (ctx == NULL)
 		return -ENOMEM;
@@ -1337,7 +1310,7 @@ static int max2175_probe(struct i2c_client *client)
 
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 
-	/* Controls */
+	 
 	hdl = &ctx->ctrl_hdl;
 	ret = v4l2_ctrl_handler_init(hdl, 7);
 	if (ret)
@@ -1374,17 +1347,17 @@ static int max2175_probe(struct i2c_client *client)
 	}
 	ctx->sd.ctrl_handler = &ctx->ctrl_hdl;
 
-	/* Set the defaults */
+	 
 	ctx->freq = ctx->bands_rf->rangelow;
 
-	/* Register subdev */
+	 
 	ret = v4l2_async_register_subdev(sd);
 	if (ret) {
 		dev_err(&client->dev, "register subdev failed\n");
 		goto err_reg;
 	}
 
-	/* Initialize device */
+	 
 	ret = max2175_core_init(ctx, refout_bits);
 	if (ret)
 		goto err_init;

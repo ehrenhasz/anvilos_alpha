@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-/* Copyright (C) 2018 KVASER AB, Sweden. All rights reserved.
- * Parts of this driver are based on the following:
- *  - Kvaser linux pciefd driver (version 5.42)
- *  - PEAK linux canfd driver
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/can/dev.h>
@@ -33,27 +29,27 @@ MODULE_DESCRIPTION("CAN driver for Kvaser CAN/PCIe devices");
 #define KVASER_PCIEFD_DMA_SIZE (4U * 1024U)
 
 #define KVASER_PCIEFD_VENDOR 0x1a07
-/* Altera based devices */
+ 
 #define KVASER_PCIEFD_4HS_DEVICE_ID 0x000d
 #define KVASER_PCIEFD_2HS_V2_DEVICE_ID 0x000e
 #define KVASER_PCIEFD_HS_V2_DEVICE_ID 0x000f
 #define KVASER_PCIEFD_MINIPCIE_HS_V2_DEVICE_ID 0x0010
 #define KVASER_PCIEFD_MINIPCIE_2HS_V2_DEVICE_ID 0x0011
 
-/* SmartFusion2 based devices */
+ 
 #define KVASER_PCIEFD_2CAN_V3_DEVICE_ID 0x0012
 #define KVASER_PCIEFD_1CAN_V3_DEVICE_ID 0x0013
 #define KVASER_PCIEFD_4CAN_V2_DEVICE_ID 0x0014
 #define KVASER_PCIEFD_MINIPCIE_2CAN_V3_DEVICE_ID 0x0015
 #define KVASER_PCIEFD_MINIPCIE_1CAN_V3_DEVICE_ID 0x0016
 
-/* Altera SerDes Enable 64-bit DMA address translation */
+ 
 #define KVASER_PCIEFD_ALTERA_DMA_64BIT BIT(0)
 
-/* SmartFusion2 SerDes LSB address translation mask */
+ 
 #define KVASER_PCIEFD_SF2_DMA_LSB_MASK GENMASK(31, 12)
 
-/* Kvaser KCAN CAN controller registers */
+ 
 #define KVASER_PCIEFD_KCAN_FIFO_REG 0x100
 #define KVASER_PCIEFD_KCAN_FIFO_LAST_REG 0x180
 #define KVASER_PCIEFD_KCAN_CTRL_REG 0x2c0
@@ -67,14 +63,14 @@ MODULE_DESCRIPTION("CAN driver for Kvaser CAN/PCIe devices");
 #define KVASER_PCIEFD_KCAN_BUS_LOAD_REG 0x424
 #define KVASER_PCIEFD_KCAN_BTRD_REG 0x428
 #define KVASER_PCIEFD_KCAN_PWM_REG 0x430
-/* System identification and information registers */
+ 
 #define KVASER_PCIEFD_SYSID_VERSION_REG 0x8
 #define KVASER_PCIEFD_SYSID_CANFREQ_REG 0xc
 #define KVASER_PCIEFD_SYSID_BUSFREQ_REG 0x10
 #define KVASER_PCIEFD_SYSID_BUILD_REG 0x14
-/* Shared receive buffer FIFO registers */
+ 
 #define KVASER_PCIEFD_SRB_FIFO_LAST_REG 0x1f4
-/* Shared receive buffer registers */
+ 
 #define KVASER_PCIEFD_SRB_CMD_REG 0x0
 #define KVASER_PCIEFD_SRB_IEN_REG 0x04
 #define KVASER_PCIEFD_SRB_IRQ_REG 0x0c
@@ -82,125 +78,125 @@ MODULE_DESCRIPTION("CAN driver for Kvaser CAN/PCIe devices");
 #define KVASER_PCIEFD_SRB_RX_NR_PACKETS_REG 0x14
 #define KVASER_PCIEFD_SRB_CTRL_REG 0x18
 
-/* System build information fields */
+ 
 #define KVASER_PCIEFD_SYSID_VERSION_NR_CHAN_MASK GENMASK(31, 24)
 #define KVASER_PCIEFD_SYSID_VERSION_MAJOR_MASK GENMASK(23, 16)
 #define KVASER_PCIEFD_SYSID_VERSION_MINOR_MASK GENMASK(7, 0)
 #define KVASER_PCIEFD_SYSID_BUILD_SEQ_MASK GENMASK(15, 1)
 
-/* Reset DMA buffer 0, 1 and FIFO offset */
+ 
 #define KVASER_PCIEFD_SRB_CMD_RDB1 BIT(5)
 #define KVASER_PCIEFD_SRB_CMD_RDB0 BIT(4)
 #define KVASER_PCIEFD_SRB_CMD_FOR BIT(0)
 
-/* DMA underflow, buffer 0 and 1 */
+ 
 #define KVASER_PCIEFD_SRB_IRQ_DUF1 BIT(13)
 #define KVASER_PCIEFD_SRB_IRQ_DUF0 BIT(12)
-/* DMA overflow, buffer 0 and 1 */
+ 
 #define KVASER_PCIEFD_SRB_IRQ_DOF1 BIT(11)
 #define KVASER_PCIEFD_SRB_IRQ_DOF0 BIT(10)
-/* DMA packet done, buffer 0 and 1 */
+ 
 #define KVASER_PCIEFD_SRB_IRQ_DPD1 BIT(9)
 #define KVASER_PCIEFD_SRB_IRQ_DPD0 BIT(8)
 
-/* Got DMA support */
+ 
 #define KVASER_PCIEFD_SRB_STAT_DMA BIT(24)
-/* DMA idle */
+ 
 #define KVASER_PCIEFD_SRB_STAT_DI BIT(15)
 
-/* SRB current packet level */
+ 
 #define KVASER_PCIEFD_SRB_RX_NR_PACKETS_MASK GENMASK(7, 0)
 
-/* DMA Enable */
+ 
 #define KVASER_PCIEFD_SRB_CTRL_DMA_ENABLE BIT(0)
 
-/* KCAN CTRL packet types */
+ 
 #define KVASER_PCIEFD_KCAN_CTRL_TYPE_MASK GENMASK(31, 29)
 #define KVASER_PCIEFD_KCAN_CTRL_TYPE_EFLUSH 0x4
 #define KVASER_PCIEFD_KCAN_CTRL_TYPE_EFRAME 0x5
 
-/* Command sequence number */
+ 
 #define KVASER_PCIEFD_KCAN_CMD_SEQ_MASK GENMASK(23, 16)
-/* Command bits */
+ 
 #define KVASER_PCIEFD_KCAN_CMD_MASK GENMASK(5, 0)
-/* Abort, flush and reset */
+ 
 #define KVASER_PCIEFD_KCAN_CMD_AT BIT(1)
-/* Request status packet */
+ 
 #define KVASER_PCIEFD_KCAN_CMD_SRQ BIT(0)
 
-/* Transmitter unaligned */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_TAL BIT(17)
-/* Tx FIFO empty */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_TE BIT(16)
-/* Tx FIFO overflow */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_TOF BIT(15)
-/* Tx buffer flush done */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_TFD BIT(14)
-/* Abort done */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_ABD BIT(13)
-/* Rx FIFO overflow */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_ROF BIT(5)
-/* FDF bit when controller is in classic CAN mode */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_FDIC BIT(3)
-/* Bus parameter protection error */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_BPP BIT(2)
-/* Tx FIFO unaligned end */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_TAE BIT(1)
-/* Tx FIFO unaligned read */
+ 
 #define KVASER_PCIEFD_KCAN_IRQ_TAR BIT(0)
 
-/* Tx FIFO size */
+ 
 #define KVASER_PCIEFD_KCAN_TX_NR_PACKETS_MAX_MASK GENMASK(23, 16)
-/* Tx FIFO current packet level */
+ 
 #define KVASER_PCIEFD_KCAN_TX_NR_PACKETS_CURRENT_MASK GENMASK(7, 0)
 
-/* Current status packet sequence number */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_SEQNO_MASK GENMASK(31, 24)
-/* Controller got CAN FD capability */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_FD BIT(19)
-/* Controller got one-shot capability */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_CAP BIT(16)
-/* Controller in reset mode */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_IRM BIT(15)
-/* Reset mode request */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_RMR BIT(14)
-/* Bus off */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_BOFF BIT(11)
-/* Idle state. Controller in reset mode and no abort or flush pending */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_IDLE BIT(10)
-/* Abort request */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_AR BIT(7)
-/* Controller is bus off */
+ 
 #define KVASER_PCIEFD_KCAN_STAT_BUS_OFF_MASK \
 	(KVASER_PCIEFD_KCAN_STAT_AR | KVASER_PCIEFD_KCAN_STAT_BOFF | \
 	 KVASER_PCIEFD_KCAN_STAT_RMR | KVASER_PCIEFD_KCAN_STAT_IRM)
 
-/* Classic CAN mode */
+ 
 #define KVASER_PCIEFD_KCAN_MODE_CCM BIT(31)
-/* Active error flag enable. Clear to force error passive */
+ 
 #define KVASER_PCIEFD_KCAN_MODE_EEN BIT(23)
-/* Acknowledgment packet type */
+ 
 #define KVASER_PCIEFD_KCAN_MODE_APT BIT(20)
-/* CAN FD non-ISO */
+ 
 #define KVASER_PCIEFD_KCAN_MODE_NIFDEN BIT(15)
-/* Error packet enable */
+ 
 #define KVASER_PCIEFD_KCAN_MODE_EPEN BIT(12)
-/* Listen only mode */
+ 
 #define KVASER_PCIEFD_KCAN_MODE_LOM BIT(9)
-/* Reset mode */
+ 
 #define KVASER_PCIEFD_KCAN_MODE_RM BIT(8)
 
-/* BTRN and BTRD fields */
+ 
 #define KVASER_PCIEFD_KCAN_BTRN_TSEG2_MASK GENMASK(30, 26)
 #define KVASER_PCIEFD_KCAN_BTRN_TSEG1_MASK GENMASK(25, 17)
 #define KVASER_PCIEFD_KCAN_BTRN_SJW_MASK GENMASK(16, 13)
 #define KVASER_PCIEFD_KCAN_BTRN_BRP_MASK GENMASK(12, 0)
 
-/* PWM Control fields */
+ 
 #define KVASER_PCIEFD_KCAN_PWM_TOP_MASK GENMASK(23, 16)
 #define KVASER_PCIEFD_KCAN_PWM_TRIGGER_MASK GENMASK(7, 0)
 
-/* KCAN packet type IDs */
+ 
 #define KVASER_PCIEFD_PACK_TYPE_DATA 0x0
 #define KVASER_PCIEFD_PACK_TYPE_ACK 0x1
 #define KVASER_PCIEFD_PACK_TYPE_TXRQ 0x2
@@ -211,46 +207,46 @@ MODULE_DESCRIPTION("CAN driver for Kvaser CAN/PCIe devices");
 #define KVASER_PCIEFD_PACK_TYPE_STATUS 0x8
 #define KVASER_PCIEFD_PACK_TYPE_BUS_LOAD 0x9
 
-/* Common KCAN packet definitions, second word */
+ 
 #define KVASER_PCIEFD_PACKET_TYPE_MASK GENMASK(31, 28)
 #define KVASER_PCIEFD_PACKET_CHID_MASK GENMASK(27, 25)
 #define KVASER_PCIEFD_PACKET_SEQ_MASK GENMASK(7, 0)
 
-/* KCAN Transmit/Receive data packet, first word */
+ 
 #define KVASER_PCIEFD_RPACKET_IDE BIT(30)
 #define KVASER_PCIEFD_RPACKET_RTR BIT(29)
 #define KVASER_PCIEFD_RPACKET_ID_MASK GENMASK(28, 0)
-/* KCAN Transmit data packet, second word */
+ 
 #define KVASER_PCIEFD_TPACKET_AREQ BIT(31)
 #define KVASER_PCIEFD_TPACKET_SMS BIT(16)
-/* KCAN Transmit/Receive data packet, second word */
+ 
 #define KVASER_PCIEFD_RPACKET_FDF BIT(15)
 #define KVASER_PCIEFD_RPACKET_BRS BIT(14)
 #define KVASER_PCIEFD_RPACKET_ESI BIT(13)
 #define KVASER_PCIEFD_RPACKET_DLC_MASK GENMASK(11, 8)
 
-/* KCAN Transmit acknowledge packet, first word */
+ 
 #define KVASER_PCIEFD_APACKET_NACK BIT(11)
 #define KVASER_PCIEFD_APACKET_ABL BIT(10)
 #define KVASER_PCIEFD_APACKET_CT BIT(9)
 #define KVASER_PCIEFD_APACKET_FLU BIT(8)
 
-/* KCAN Status packet, first word */
+ 
 #define KVASER_PCIEFD_SPACK_RMCD BIT(22)
 #define KVASER_PCIEFD_SPACK_IRM BIT(21)
 #define KVASER_PCIEFD_SPACK_IDET BIT(20)
 #define KVASER_PCIEFD_SPACK_BOFF BIT(16)
 #define KVASER_PCIEFD_SPACK_RXERR_MASK GENMASK(15, 8)
 #define KVASER_PCIEFD_SPACK_TXERR_MASK GENMASK(7, 0)
-/* KCAN Status packet, second word */
+ 
 #define KVASER_PCIEFD_SPACK_EPLR BIT(24)
 #define KVASER_PCIEFD_SPACK_EWLR BIT(23)
 #define KVASER_PCIEFD_SPACK_AUTO BIT(21)
 
-/* KCAN Error detected packet, second word */
+ 
 #define KVASER_PCIEFD_EPACK_DIR_TX BIT(0)
 
-/* Macros for calculating addresses of registers */
+ 
 #define KVASER_PCIEFD_GET_BLOCK_ADDR(pcie, block) \
 	((pcie)->reg_base + (pcie)->driver_data->address_offset->block)
 #define KVASER_PCIEFD_PCI_IEN_ADDR(pcie) \
@@ -375,8 +371,8 @@ struct kvaser_pciefd_can {
 	u8 cmd_seq;
 	int err_rep_cnt;
 	int echo_idx;
-	spinlock_t lock; /* Locks sensitive registers (e.g. MODE) */
-	spinlock_t echo_lock; /* Locks the message echo buffer */
+	spinlock_t lock;  
+	spinlock_t echo_lock;  
 	struct timer_list bec_poll_timer;
 	struct completion start_comp, flush_comp;
 };
@@ -549,7 +545,7 @@ static void kvaser_pciefd_setup_controller(struct kvaser_pciefd_can *can)
 		mode &= ~KVASER_PCIEFD_KCAN_MODE_LOM;
 	mode |= KVASER_PCIEFD_KCAN_MODE_EEN;
 	mode |= KVASER_PCIEFD_KCAN_MODE_EPEN;
-	/* Use ACK packet type */
+	 
 	mode &= ~KVASER_PCIEFD_KCAN_MODE_APT;
 	mode &= ~KVASER_PCIEFD_KCAN_MODE_RM;
 	iowrite32(mode, can->reg_base + KVASER_PCIEFD_KCAN_MODE_REG);
@@ -568,12 +564,12 @@ static void kvaser_pciefd_start_controller_flush(struct kvaser_pciefd_can *can)
 		  can->reg_base + KVASER_PCIEFD_KCAN_IEN_REG);
 	status = ioread32(can->reg_base + KVASER_PCIEFD_KCAN_STAT_REG);
 	if (status & KVASER_PCIEFD_KCAN_STAT_IDLE) {
-		/* If controller is already idle, run abort, flush and reset */
+		 
 		kvaser_pciefd_abort_flush_reset(can);
 	} else if (!(status & KVASER_PCIEFD_KCAN_STAT_RMR)) {
 		u32 mode;
 
-		/* Put controller in reset mode */
+		 
 		mode = ioread32(can->reg_base + KVASER_PCIEFD_KCAN_MODE_REG);
 		mode |= KVASER_PCIEFD_KCAN_MODE_RM;
 		iowrite32(mode, can->reg_base + KVASER_PCIEFD_KCAN_MODE_REG);
@@ -611,7 +607,7 @@ static int kvaser_pciefd_bus_on(struct kvaser_pciefd_can *can)
 		netdev_err(can->can.dev, "Timeout during bus on reset\n");
 		return -ETIMEDOUT;
 	}
-	/* Reset interrupt handling */
+	 
 	iowrite32(0, can->reg_base + KVASER_PCIEFD_KCAN_IEN_REG);
 	iowrite32(GENMASK(31, 0), can->reg_base + KVASER_PCIEFD_KCAN_IRQ_REG);
 
@@ -635,7 +631,7 @@ static void kvaser_pciefd_pwm_stop(struct kvaser_pciefd_can *can)
 	spin_lock_irqsave(&can->lock, irq);
 	pwm_ctrl = ioread32(can->reg_base + KVASER_PCIEFD_KCAN_PWM_REG);
 	top = FIELD_GET(KVASER_PCIEFD_KCAN_PWM_TOP_MASK, pwm_ctrl);
-	/* Set duty cycle to zero */
+	 
 	pwm_ctrl |= FIELD_PREP(KVASER_PCIEFD_KCAN_PWM_TRIGGER_MASK, top);
 	iowrite32(pwm_ctrl, can->reg_base + KVASER_PCIEFD_KCAN_PWM_REG);
 	spin_unlock_irqrestore(&can->lock, irq);
@@ -649,14 +645,14 @@ static void kvaser_pciefd_pwm_start(struct kvaser_pciefd_can *can)
 
 	kvaser_pciefd_pwm_stop(can);
 	spin_lock_irqsave(&can->lock, irq);
-	/* Set frequency to 500 KHz */
+	 
 	top = can->kv_pcie->bus_freq / (2 * 500000) - 1;
 
 	pwm_ctrl = FIELD_PREP(KVASER_PCIEFD_KCAN_PWM_TRIGGER_MASK, top);
 	pwm_ctrl |= FIELD_PREP(KVASER_PCIEFD_KCAN_PWM_TOP_MASK, top);
 	iowrite32(pwm_ctrl, can->reg_base + KVASER_PCIEFD_KCAN_PWM_REG);
 
-	/* Set duty cycle to 95 */
+	 
 	trigger = (100 * top - 95 * (top + 1) + 50) / 100;
 	pwm_ctrl = FIELD_PREP(KVASER_PCIEFD_KCAN_PWM_TRIGGER_MASK, trigger);
 	pwm_ctrl |= FIELD_PREP(KVASER_PCIEFD_KCAN_PWM_TOP_MASK, top);
@@ -687,7 +683,7 @@ static int kvaser_pciefd_stop(struct net_device *netdev)
 	struct kvaser_pciefd_can *can = netdev_priv(netdev);
 	int ret = 0;
 
-	/* Don't interrupt ongoing flush */
+	 
 	if (!completion_done(&can->flush_comp))
 		kvaser_pciefd_start_controller_flush(can);
 
@@ -763,13 +759,13 @@ static netdev_tx_t kvaser_pciefd_start_xmit(struct sk_buff *skb,
 	nr_words = kvaser_pciefd_prepare_tx_packet(&packet, can, skb);
 
 	spin_lock_irqsave(&can->echo_lock, irq_flags);
-	/* Prepare and save echo skb in internal slot */
+	 
 	can_put_echo_skb(skb, netdev, can->echo_idx, 0);
 
-	/* Move echo index to the next slot */
+	 
 	can->echo_idx = (can->echo_idx + 1) % can->can.echo_skb_max;
 
-	/* Write header to fifo */
+	 
 	iowrite32(packet.header[0],
 		  can->reg_base + KVASER_PCIEFD_KCAN_FIFO_REG);
 	iowrite32(packet.header[1],
@@ -778,24 +774,22 @@ static netdev_tx_t kvaser_pciefd_start_xmit(struct sk_buff *skb,
 	if (nr_words) {
 		u32 data_last = ((u32 *)packet.data)[nr_words - 1];
 
-		/* Write data to fifo, except last word */
+		 
 		iowrite32_rep(can->reg_base +
 			      KVASER_PCIEFD_KCAN_FIFO_REG, packet.data,
 			      nr_words - 1);
-		/* Write last word to end of fifo */
+		 
 		__raw_writel(data_last, can->reg_base +
 			     KVASER_PCIEFD_KCAN_FIFO_LAST_REG);
 	} else {
-		/* Complete write to fifo */
+		 
 		__raw_writel(0, can->reg_base +
 			     KVASER_PCIEFD_KCAN_FIFO_LAST_REG);
 	}
 
 	count = FIELD_GET(KVASER_PCIEFD_KCAN_TX_NR_PACKETS_CURRENT_MASK,
 			  ioread32(can->reg_base + KVASER_PCIEFD_KCAN_TX_NR_PACKETS_REG));
-	/* No room for a new message, stop the queue until at least one
-	 * successful transmit
-	 */
+	 
 	if (count >= can->can.echo_skb_max || can->can.echo_skb[can->echo_idx])
 		netif_stop_queue(netdev);
 	spin_unlock_irqrestore(&can->echo_lock, irq_flags);
@@ -822,11 +816,11 @@ static int kvaser_pciefd_set_bittiming(struct kvaser_pciefd_can *can, bool data)
 
 	spin_lock_irqsave(&can->lock, irq_flags);
 	mode = ioread32(can->reg_base + KVASER_PCIEFD_KCAN_MODE_REG);
-	/* Put the circuit in reset mode */
+	 
 	iowrite32(mode | KVASER_PCIEFD_KCAN_MODE_RM,
 		  can->reg_base + KVASER_PCIEFD_KCAN_MODE_REG);
 
-	/* Can only set bittiming if in reset mode */
+	 
 	ret = readl_poll_timeout(can->reg_base + KVASER_PCIEFD_KCAN_MODE_REG,
 				 test, test & KVASER_PCIEFD_KCAN_MODE_RM, 0, 10);
 	if (ret) {
@@ -838,7 +832,7 @@ static int kvaser_pciefd_set_bittiming(struct kvaser_pciefd_can *can, bool data)
 		iowrite32(btrn, can->reg_base + KVASER_PCIEFD_KCAN_BTRD_REG);
 	else
 		iowrite32(btrn, can->reg_base + KVASER_PCIEFD_KCAN_BTRN_REG);
-	/* Restore previous reset mode status */
+	 
 	iowrite32(mode, can->reg_base + KVASER_PCIEFD_KCAN_MODE_REG);
 	spin_unlock_irqrestore(&can->lock, irq_flags);
 
@@ -932,7 +926,7 @@ static int kvaser_pciefd_setup_can_ctrls(struct kvaser_pciefd *pcie)
 		init_completion(&can->flush_comp);
 		timer_setup(&can->bec_poll_timer, kvaser_pciefd_bec_poll_timer, 0);
 
-		/* Disable Bus load reporting */
+		 
 		iowrite32(0, can->reg_base + KVASER_PCIEFD_KCAN_BUS_LOAD_REG);
 
 		tx_nr_packets_max =
@@ -992,7 +986,7 @@ static int kvaser_pciefd_reg_candev(struct kvaser_pciefd *pcie)
 		if (err) {
 			int j;
 
-			/* Unregister all successfully registered devices. */
+			 
 			for (j = 0; j < i; j++)
 				unregister_candev(pcie->can[j]->can.dev);
 			return err;
@@ -1042,7 +1036,7 @@ static int kvaser_pciefd_setup_dma(struct kvaser_pciefd *pcie)
 	u32 srb_packet_count;
 	dma_addr_t dma_addr[KVASER_PCIEFD_DMA_COUNT];
 
-	/* Disable the DMA */
+	 
 	iowrite32(0, KVASER_PCIEFD_SRB_ADDR(pcie) + KVASER_PCIEFD_SRB_CTRL_REG);
 	for (i = 0; i < KVASER_PCIEFD_DMA_COUNT; i++) {
 		pcie->dma_data[i] = dmam_alloc_coherent(&pcie->pci->dev,
@@ -1058,17 +1052,17 @@ static int kvaser_pciefd_setup_dma(struct kvaser_pciefd *pcie)
 		pcie->driver_data->ops->kvaser_pciefd_write_dma_map(pcie, dma_addr[i], i);
 	}
 
-	/* Reset Rx FIFO, and both DMA buffers */
+	 
 	iowrite32(KVASER_PCIEFD_SRB_CMD_FOR | KVASER_PCIEFD_SRB_CMD_RDB0 |
 		  KVASER_PCIEFD_SRB_CMD_RDB1,
 		  KVASER_PCIEFD_SRB_ADDR(pcie) + KVASER_PCIEFD_SRB_CMD_REG);
-	/* Empty Rx FIFO */
+	 
 	srb_packet_count =
 		FIELD_GET(KVASER_PCIEFD_SRB_RX_NR_PACKETS_MASK,
 			  ioread32(KVASER_PCIEFD_SRB_ADDR(pcie) +
 				   KVASER_PCIEFD_SRB_RX_NR_PACKETS_REG));
 	while (srb_packet_count) {
-		/* Drop current packet in FIFO */
+		 
 		ioread32(KVASER_PCIEFD_SRB_FIFO_ADDR(pcie) + KVASER_PCIEFD_SRB_FIFO_LAST_REG);
 		srb_packet_count--;
 	}
@@ -1079,7 +1073,7 @@ static int kvaser_pciefd_setup_dma(struct kvaser_pciefd *pcie)
 		return -EIO;
 	}
 
-	/* Enable the DMA */
+	 
 	iowrite32(KVASER_PCIEFD_SRB_CTRL_DMA_ENABLE,
 		  KVASER_PCIEFD_SRB_ADDR(pcie) + KVASER_PCIEFD_SRB_CTRL_REG);
 
@@ -1111,7 +1105,7 @@ static int kvaser_pciefd_setup_board(struct kvaser_pciefd *pcie)
 	pcie->freq_to_ticks_div = pcie->freq / 1000000;
 	if (pcie->freq_to_ticks_div == 0)
 		pcie->freq_to_ticks_div = 1;
-	/* Turn off all loopback functionality */
+	 
 	iowrite32(0, KVASER_PCIEFD_LOOPBACK_ADDR(pcie));
 
 	return 0;
@@ -1185,7 +1179,7 @@ static void kvaser_pciefd_change_state(struct kvaser_pciefd_can *can,
 		spin_lock_irqsave(&can->lock, irq_flags);
 		netif_stop_queue(can->can.dev);
 		spin_unlock_irqrestore(&can->lock, irq_flags);
-		/* Prevent CAN controller from auto recover from bus off */
+		 
 		if (!can->can.restart_ms) {
 			kvaser_pciefd_start_controller_flush(can);
 			can_bus_off(ndev);
@@ -1283,9 +1277,9 @@ static int kvaser_pciefd_handle_error_packet(struct kvaser_pciefd *pcie,
 	can = pcie->can[ch_id];
 	kvaser_pciefd_rx_error_frame(can, p);
 	if (can->err_rep_cnt >= KVASER_PCIEFD_MAX_ERR_REP)
-		/* Do not report more errors, until bec_poll_timer expires */
+		 
 		kvaser_pciefd_disable_err_gen(can);
-	/* Start polling the error counters */
+	 
 	mod_timer(&can->bec_poll_timer, KVASER_PCIEFD_BEC_POLL_FREQ);
 
 	return 0;
@@ -1331,7 +1325,7 @@ static int kvaser_pciefd_handle_status_resp(struct kvaser_pciefd_can *can,
 	}
 	can->bec.txerr = bec.txerr;
 	can->bec.rxerr = bec.rxerr;
-	/* Check if we need to poll the error counters */
+	 
 	if (bec.txerr || bec.rxerr)
 		mod_timer(&can->bec_poll_timer, KVASER_PCIEFD_BEC_POLL_FREQ);
 
@@ -1354,7 +1348,7 @@ static int kvaser_pciefd_handle_status_packet(struct kvaser_pciefd *pcie,
 	status = ioread32(can->reg_base + KVASER_PCIEFD_KCAN_STAT_REG);
 	cmdseq = FIELD_GET(KVASER_PCIEFD_KCAN_STAT_SEQNO_MASK, status);
 
-	/* Reset done, start abort and flush */
+	 
 	if (p->header[0] & KVASER_PCIEFD_SPACK_IRM &&
 	    p->header[0] & KVASER_PCIEFD_SPACK_RMCD &&
 	    p->header[1] & KVASER_PCIEFD_SPACK_AUTO &&
@@ -1367,7 +1361,7 @@ static int kvaser_pciefd_handle_status_packet(struct kvaser_pciefd *pcie,
 		   p->header[0] & KVASER_PCIEFD_SPACK_IRM &&
 		   cmdseq == FIELD_GET(KVASER_PCIEFD_PACKET_SEQ_MASK, p->header[1]) &&
 		   status & KVASER_PCIEFD_KCAN_STAT_IDLE) {
-		/* Reset detected, send end of flush if no packet are in FIFO */
+		 
 		u8 count;
 
 		count = FIELD_GET(KVASER_PCIEFD_KCAN_TX_NR_PACKETS_CURRENT_MASK,
@@ -1378,7 +1372,7 @@ static int kvaser_pciefd_handle_status_packet(struct kvaser_pciefd *pcie,
 				  can->reg_base + KVASER_PCIEFD_KCAN_CTRL_REG);
 	} else if (!(p->header[1] & KVASER_PCIEFD_SPACK_AUTO) &&
 		   cmdseq == FIELD_GET(KVASER_PCIEFD_PACKET_SEQ_MASK, p->header[1])) {
-		/* Response to status request received */
+		 
 		kvaser_pciefd_handle_status_resp(can, p);
 		if (can->can.state != CAN_STATE_BUS_OFF &&
 		    can->can.state != CAN_STATE_ERROR_ACTIVE) {
@@ -1386,7 +1380,7 @@ static int kvaser_pciefd_handle_status_packet(struct kvaser_pciefd *pcie,
 		}
 	} else if (p->header[0] & KVASER_PCIEFD_SPACK_RMCD &&
 		   !(status & KVASER_PCIEFD_KCAN_STAT_BUS_OFF_MASK)) {
-		/* Reset to bus on detected */
+		 
 		if (!completion_done(&can->start_comp))
 			complete(&can->start_comp);
 	}
@@ -1431,7 +1425,7 @@ static int kvaser_pciefd_handle_ack_packet(struct kvaser_pciefd *pcie,
 		return -EIO;
 
 	can = pcie->can[ch_id];
-	/* Ignore control packet ACK */
+	 
 	if (p->header[0] & KVASER_PCIEFD_APACKET_CT)
 		return 0;
 
@@ -1505,7 +1499,7 @@ static int kvaser_pciefd_read_packet(struct kvaser_pciefd *pcie, int *start_pos,
 	p->header[0] = le32_to_cpu(buffer[pos++]);
 	p->header[1] = le32_to_cpu(buffer[pos++]);
 
-	/* Read 64-bit timestamp */
+	 
 	memcpy(&timestamp, &buffer[pos], sizeof(__le64));
 	pos += 2;
 	p->timestamp = le64_to_cpu(timestamp);
@@ -1556,13 +1550,11 @@ static int kvaser_pciefd_read_packet(struct kvaser_pciefd *pcie, int *start_pos,
 	if (ret)
 		return ret;
 
-	/* Position does not point to the end of the package,
-	 * corrupted packet size?
-	 */
+	 
 	if ((*start_pos + size) != pos)
 		return -EIO;
 
-	/* Point to the next packet header, if any */
+	 
 	*start_pos = pos;
 
 	return ret;
@@ -1586,14 +1578,14 @@ static void kvaser_pciefd_receive_irq(struct kvaser_pciefd *pcie)
 
 	if (irq & KVASER_PCIEFD_SRB_IRQ_DPD0) {
 		kvaser_pciefd_read_buffer(pcie, 0);
-		/* Reset DMA buffer 0 */
+		 
 		iowrite32(KVASER_PCIEFD_SRB_CMD_RDB0,
 			  KVASER_PCIEFD_SRB_ADDR(pcie) + KVASER_PCIEFD_SRB_CMD_REG);
 	}
 
 	if (irq & KVASER_PCIEFD_SRB_IRQ_DPD1) {
 		kvaser_pciefd_read_buffer(pcie, 1);
-		/* Reset DMA buffer 1 */
+		 
 		iowrite32(KVASER_PCIEFD_SRB_CMD_RDB1,
 			  KVASER_PCIEFD_SRB_ADDR(pcie) + KVASER_PCIEFD_SRB_CMD_REG);
 	}
@@ -1647,7 +1639,7 @@ static irqreturn_t kvaser_pciefd_irq_handler(int irq, void *dev)
 			break;
 		}
 
-		/* Check that mask matches channel (i) IRQ mask */
+		 
 		if (board_irq & irq_mask->kcan_tx[i])
 			kvaser_pciefd_transmit_irq(pcie->can[i]);
 	}
@@ -1728,10 +1720,10 @@ static int kvaser_pciefd_probe(struct pci_dev *pdev,
 		  KVASER_PCIEFD_SRB_IRQ_DUF0 | KVASER_PCIEFD_SRB_IRQ_DUF1,
 		  KVASER_PCIEFD_SRB_ADDR(pcie) + KVASER_PCIEFD_SRB_IEN_REG);
 
-	/* Enable PCI interrupts */
+	 
 	irq_en_base = KVASER_PCIEFD_PCI_IEN_ADDR(pcie);
 	iowrite32(irq_mask->all, irq_en_base);
-	/* Ready the DMA buffers */
+	 
 	iowrite32(KVASER_PCIEFD_SRB_CMD_RDB0,
 		  KVASER_PCIEFD_SRB_ADDR(pcie) + KVASER_PCIEFD_SRB_CMD_REG);
 	iowrite32(KVASER_PCIEFD_SRB_CMD_RDB1,
@@ -1744,7 +1736,7 @@ static int kvaser_pciefd_probe(struct pci_dev *pdev,
 	return 0;
 
 err_free_irq:
-	/* Disable PCI interrupts */
+	 
 	iowrite32(0, irq_en_base);
 	free_irq(pcie->pci->irq, pcie);
 
@@ -1788,7 +1780,7 @@ static void kvaser_pciefd_remove(struct pci_dev *pdev)
 
 	kvaser_pciefd_remove_all_ctrls(pcie);
 
-	/* Disable interrupts */
+	 
 	iowrite32(0, KVASER_PCIEFD_SRB_ADDR(pcie) + KVASER_PCIEFD_SRB_CTRL_REG);
 	iowrite32(0, KVASER_PCIEFD_PCI_IEN_ADDR(pcie));
 

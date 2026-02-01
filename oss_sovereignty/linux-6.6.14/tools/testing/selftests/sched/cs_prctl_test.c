@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Use the core scheduling prctl() to test core scheduling cookies control.
- *
- * Copyright (c) 2021 Oracle and/or its affiliates.
- * Author: Chris Hyser <chris.hyser@oracle.com>
- *
- *
- * This library is free software; you can redistribute it and/or modify it
- * under the terms of version 2.1 of the GNU Lesser General Public License as
- * published by the Free Software Foundation.
- *
- * This library is distributed in the hope that it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU Lesser General Public License
- * for more details.
- *
- * You should have received a copy of the GNU Lesser General Public License
- * along with this library; if not, see <http://www.gnu.org/licenses>.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <sys/eventfd.h>
@@ -43,9 +25,9 @@ static pid_t gettid(void)
 #ifndef PR_SCHED_CORE
 #define PR_SCHED_CORE			62
 # define PR_SCHED_CORE_GET		0
-# define PR_SCHED_CORE_CREATE		1 /* create unique core_sched cookie */
-# define PR_SCHED_CORE_SHARE_TO		2 /* push core_sched cookie to pid */
-# define PR_SCHED_CORE_SHARE_FROM	3 /* pull core_sched cookie to pid */
+# define PR_SCHED_CORE_CREATE		1  
+# define PR_SCHED_CORE_SHARE_TO		2  
+# define PR_SCHED_CORE_SHARE_FROM	3  
 # define PR_SCHED_CORE_MAX		4
 #endif
 
@@ -272,7 +254,7 @@ int main(int argc, char *argv[])
 
 	srand(time(NULL));
 
-	/* put into separate process group */
+	 
 	if (setpgid(0, 0) != 0)
 		handle_error("process group");
 
@@ -289,7 +271,7 @@ int main(int argc, char *argv[])
 
 	validate(get_cs_cookie(0) != 0);
 
-	/* get a random process pid */
+	 
 	pidx = rand() % num_processes;
 	pid = procs[pidx].cpid;
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_NVENC_PRIV_H__
 #define __NVKM_NVENC_PRIV_H__
 #include <engine/nvenc.h>

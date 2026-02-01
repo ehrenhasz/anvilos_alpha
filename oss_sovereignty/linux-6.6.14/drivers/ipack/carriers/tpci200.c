@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * driver for the TEWS TPCI-200 device
- *
- * Copyright (C) 2009-2012 CERN (www.cern.ch)
- * Author: Nicolas Serafini, EIC2 SA
- * Author: Samuel Iglesias Gonsalvez <siglesias@igalia.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -133,14 +127,14 @@ static irqreturn_t tpci200_interrupt(int irq, void *dev_id)
 	u16 status_reg;
 	int i;
 
-	/* Read status register */
+	 
 	status_reg = ioread16(&tpci200->info->interface_regs->status);
 
-	/* Did we cause the interrupt? */
+	 
 	if (!(status_reg & TPCI200_SLOT_INT_MASK))
 		return IRQ_NONE;
 
-	/* callback to the IRQ handler for the corresponding slot */
+	 
 	rcu_read_lock();
 	for (i = 0; i < TPCI200_NB_SLOT; i++) {
 		if (!(status_reg & ((TPCI200_A_INT0 | TPCI200_A_INT1) << (2 * i))))
@@ -178,7 +172,7 @@ static int tpci200_free_irq(struct ipack_device *dev)
 
 	tpci200_disable_irq(tpci200, dev->slot);
 	slot_irq = tpci200->slots[dev->slot].irq;
-	/* uninstall handler */
+	 
 	RCU_INIT_POINTER(tpci200->slots[dev->slot].irq, NULL);
 	synchronize_rcu();
 	kfree(slot_irq);
@@ -218,12 +212,7 @@ static int tpci200_request_irq(struct ipack_device *dev,
 		goto out_unlock;
 	}
 
-	/*
-	 * WARNING: Setup Interrupt Vector in the IndustryPack device
-	 * before an IRQ request.
-	 * Read the User Manual of your IndustryPack device to know
-	 * where to write the vector in memory.
-	 */
+	 
 	slot_irq->handler = handler;
 	slot_irq->arg = arg;
 	slot_irq->holder = dev;
@@ -246,7 +235,7 @@ static int tpci200_register(struct tpci200_board *tpci200)
 	if (pci_enable_device(tpci200->info->pdev) < 0)
 		return -ENODEV;
 
-	/* Request IP interface register (Bar 2) */
+	 
 	res = pci_request_region(tpci200->info->pdev, TPCI200_IP_INTERFACE_BAR,
 				 "Carrier IP interface registers");
 	if (res) {
@@ -257,7 +246,7 @@ static int tpci200_register(struct tpci200_board *tpci200)
 		goto err_disable_device;
 	}
 
-	/* Request IO ID INT space (Bar 3) */
+	 
 	res = pci_request_region(tpci200->info->pdev,
 				 TPCI200_IO_ID_INT_SPACES_BAR,
 				 "Carrier IO ID INT space");
@@ -269,7 +258,7 @@ static int tpci200_register(struct tpci200_board *tpci200)
 		goto err_ip_interface_bar;
 	}
 
-	/* Request MEM8 space (Bar 5) */
+	 
 	res = pci_request_region(tpci200->info->pdev, TPCI200_MEM8_SPACE_BAR,
 				 "Carrier MEM8 space");
 	if (res) {
@@ -280,7 +269,7 @@ static int tpci200_register(struct tpci200_board *tpci200)
 		goto err_io_id_int_spaces_bar;
 	}
 
-	/* Request MEM16 space (Bar 4) */
+	 
 	res = pci_request_region(tpci200->info->pdev, TPCI200_MEM16_SPACE_BAR,
 				 "Carrier MEM16 space");
 	if (res) {
@@ -291,7 +280,7 @@ static int tpci200_register(struct tpci200_board *tpci200)
 		goto err_mem8_space_bar;
 	}
 
-	/* Map internal tpci200 driver user space */
+	 
 	tpci200->info->interface_regs =
 		ioremap(pci_resource_start(tpci200->info->pdev,
 					   TPCI200_IP_INTERFACE_BAR),
@@ -305,7 +294,7 @@ static int tpci200_register(struct tpci200_board *tpci200)
 		goto err_mem16_space_bar;
 	}
 
-	/* Initialize lock that protects interface_regs */
+	 
 	spin_lock_init(&tpci200->regs_lock);
 
 	ioidint_base = pci_resource_start(tpci200->info->pdev,
@@ -321,14 +310,7 @@ static int tpci200_register(struct tpci200_board *tpci200)
 		pci_resource_start(tpci200->info->pdev,
 				   TPCI200_MEM16_SPACE_BAR);
 
-	/* Set the default parameters of the slot
-	 * INT0 disabled, level sensitive
-	 * INT1 disabled, level sensitive
-	 * error interrupt disabled
-	 * timeout interrupt disabled
-	 * recover time disabled
-	 * clock rate 8 MHz
-	 */
+	 
 	slot_ctrl = 0;
 	for (i = 0; i < TPCI200_NB_SLOT; i++)
 		writew(slot_ctrl, &tpci200->info->interface_regs->control[i]);
@@ -533,7 +515,7 @@ static int tpci200_pci_probe(struct pci_dev *pdev,
 
 	pci_dev_get(pdev);
 
-	/* Obtain a mapping of the carrier's PCI configuration registers */
+	 
 	ret = pci_request_region(pdev, TPCI200_CFG_MEM_BAR,
 				 KBUILD_MODNAME " Configuration Memory");
 	if (ret) {
@@ -550,9 +532,7 @@ static int tpci200_pci_probe(struct pci_dev *pdev,
 		goto err_request_region;
 	}
 
-	/* Disable byte swapping for 16 bit IP module access. This will ensure
-	 * that the Industrypack big endian byte order is preserved by the
-	 * carrier. */
+	 
 	reg32 = ioread32(tpci200->info->cfg_regs + LAS1_DESC);
 	reg32 |= 1 << LAS_BIT_BIGENDIAN;
 	iowrite32(reg32, tpci200->info->cfg_regs + LAS1_DESC);
@@ -561,11 +541,11 @@ static int tpci200_pci_probe(struct pci_dev *pdev,
 	reg32 |= 1 << LAS_BIT_BIGENDIAN;
 	iowrite32(reg32, tpci200->info->cfg_regs + LAS2_DESC);
 
-	/* Save struct pci_dev pointer */
+	 
 	tpci200->info->pdev = pdev;
 	tpci200->info->id_table = (struct pci_device_id *)id;
 
-	/* register the device and initialize it */
+	 
 	ret = tpci200_install(tpci200);
 	if (ret) {
 		dev_err(&pdev->dev, "error during tpci200 install\n");
@@ -573,7 +553,7 @@ static int tpci200_pci_probe(struct pci_dev *pdev,
 		goto err_cfg_regs;
 	}
 
-	/* Register the carrier in the industry pack bus driver */
+	 
 	tpci200->info->ipack_bus = ipack_bus_register(&pdev->dev,
 						      TPCI200_NB_SLOT,
 						      &tpci200_bus_ops,
@@ -585,7 +565,7 @@ static int tpci200_pci_probe(struct pci_dev *pdev,
 		goto err_tpci200_install;
 	}
 
-	/* save the bus number given by ipack to logging purpose */
+	 
 	tpci200->number = tpci200->info->ipack_bus->bus_nr;
 	dev_set_drvdata(&pdev->dev, tpci200);
 

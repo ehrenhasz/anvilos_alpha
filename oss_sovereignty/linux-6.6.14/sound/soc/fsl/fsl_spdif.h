@@ -1,55 +1,45 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * fsl_spdif.h - ALSA S/PDIF interface for the Freescale i.MX SoC
- *
- * Copyright (C) 2013 Freescale Semiconductor, Inc.
- *
- * Author: Nicolin Chen <b42378@freescale.com>
- *
- * Based on fsl_ssi.h
- * Author: Timur Tabi <timur@freescale.com>
- * Copyright 2007-2008 Freescale Semiconductor, Inc.
- */
+ 
+ 
 
 #ifndef _FSL_SPDIF_DAI_H
 #define _FSL_SPDIF_DAI_H
 
-/* S/PDIF Register Map */
-#define REG_SPDIF_SCR 			0x0	/* SPDIF Configuration Register */
-#define REG_SPDIF_SRCD		 	0x4	/* CDText Control Register */
-#define REG_SPDIF_SRPC			0x8	/* PhaseConfig Register */
-#define REG_SPDIF_SIE			0xc	/* InterruptEn Register */
-#define REG_SPDIF_SIS			0x10	/* InterruptStat Register */
-#define REG_SPDIF_SIC			0x10	/* InterruptClear Register */
-#define REG_SPDIF_SRL			0x14	/* SPDIFRxLeft Register */
-#define REG_SPDIF_SRR			0x18	/* SPDIFRxRight Register */
-#define REG_SPDIF_SRCSH			0x1c	/* SPDIFRxCChannel_h Register */
-#define REG_SPDIF_SRCSL			0x20	/* SPDIFRxCChannel_l Register */
-#define REG_SPDIF_SRU			0x24	/* UchannelRx Register */
-#define REG_SPDIF_SRQ			0x28	/* QchannelRx Register */
-#define REG_SPDIF_STL			0x2C	/* SPDIFTxLeft Register */
-#define REG_SPDIF_STR			0x30	/* SPDIFTxRight Register */
-#define REG_SPDIF_STCSCH		0x34	/* SPDIFTxCChannelCons_h Register */
-#define REG_SPDIF_STCSCL		0x38	/* SPDIFTxCChannelCons_l Register */
-#define REG_SPDIF_STCSPH		0x3C	/* SPDIFTxCChannel_Prof_h Register */
-#define REG_SPDIF_STCSPL		0x40	/* SPDIFTxCChannel_Prof_l Register */
-#define REG_SPDIF_SRFM			0x44	/* FreqMeas Register */
-#define REG_SPDIF_STC			0x50	/* SPDIFTxClk Register */
+ 
+#define REG_SPDIF_SCR 			0x0	 
+#define REG_SPDIF_SRCD		 	0x4	 
+#define REG_SPDIF_SRPC			0x8	 
+#define REG_SPDIF_SIE			0xc	 
+#define REG_SPDIF_SIS			0x10	 
+#define REG_SPDIF_SIC			0x10	 
+#define REG_SPDIF_SRL			0x14	 
+#define REG_SPDIF_SRR			0x18	 
+#define REG_SPDIF_SRCSH			0x1c	 
+#define REG_SPDIF_SRCSL			0x20	 
+#define REG_SPDIF_SRU			0x24	 
+#define REG_SPDIF_SRQ			0x28	 
+#define REG_SPDIF_STL			0x2C	 
+#define REG_SPDIF_STR			0x30	 
+#define REG_SPDIF_STCSCH		0x34	 
+#define REG_SPDIF_STCSCL		0x38	 
+#define REG_SPDIF_STCSPH		0x3C	 
+#define REG_SPDIF_STCSPL		0x40	 
+#define REG_SPDIF_SRFM			0x44	 
+#define REG_SPDIF_STC			0x50	 
 
-#define REG_SPDIF_SRCCA_31_0		0x60	/* SPDIF receive C channel register, bits 31-0 */
-#define REG_SPDIF_SRCCA_63_32		0x64	/* SPDIF receive C channel register, bits 63-32 */
-#define REG_SPDIF_SRCCA_95_64		0x68	/* SPDIF receive C channel register, bits 95-64 */
-#define REG_SPDIF_SRCCA_127_96		0x6C	/* SPDIF receive C channel register, bits 127-96 */
-#define REG_SPDIF_SRCCA_159_128		0x70	/* SPDIF receive C channel register, bits 159-128 */
-#define REG_SPDIF_SRCCA_191_160		0x74	/* SPDIF receive C channel register, bits 191-160 */
-#define REG_SPDIF_STCCA_31_0		0x78	/* SPDIF transmit C channel register, bits 31-0 */
-#define REG_SPDIF_STCCA_63_32		0x7C	/* SPDIF transmit C channel register, bits 63-32 */
-#define REG_SPDIF_STCCA_95_64		0x80	/* SPDIF transmit C channel register, bits 95-64 */
-#define REG_SPDIF_STCCA_127_96		0x84	/* SPDIF transmit C channel register, bits 127-96 */
-#define REG_SPDIF_STCCA_159_128		0x88	/* SPDIF transmit C channel register, bits 159-128 */
-#define REG_SPDIF_STCCA_191_160		0x8C	/* SPDIF transmit C channel register, bits 191-160 */
+#define REG_SPDIF_SRCCA_31_0		0x60	 
+#define REG_SPDIF_SRCCA_63_32		0x64	 
+#define REG_SPDIF_SRCCA_95_64		0x68	 
+#define REG_SPDIF_SRCCA_127_96		0x6C	 
+#define REG_SPDIF_SRCCA_159_128		0x70	 
+#define REG_SPDIF_SRCCA_191_160		0x74	 
+#define REG_SPDIF_STCCA_31_0		0x78	 
+#define REG_SPDIF_STCCA_63_32		0x7C	 
+#define REG_SPDIF_STCCA_95_64		0x80	 
+#define REG_SPDIF_STCCA_127_96		0x84	 
+#define REG_SPDIF_STCCA_159_128		0x88	 
+#define REG_SPDIF_STCCA_191_160		0x8C	 
 
-/* SPDIF Configuration register */
+ 
 #define SCR_RXFIFO_CTL_OFFSET		23
 #define SCR_RXFIFO_CTL_MASK		(1 << SCR_RXFIFO_CTL_OFFSET)
 #define SCR_RXFIFO_CTL_ZERO		(1 << SCR_RXFIFO_CTL_OFFSET)
@@ -107,11 +97,11 @@
 
 #define SCR_DMA_xX_EN(tx)		(tx ? SCR_DMA_TX_EN : SCR_DMA_RX_EN)
 
-/* SPDIF CDText control */
+ 
 #define SRCD_CD_USER_OFFSET		1
 #define SRCD_CD_USER			(1 << SRCD_CD_USER_OFFSET)
 
-/* SPDIF Phase Configuration register */
+ 
 #define SRPC_DPLL_LOCKED		(1 << 6)
 #define SRPC_CLKSRC_SEL_OFFSET		7
 #define SRPC_CLKSRC_SEL_MASK		(0xf << SRPC_CLKSRC_SEL_OFFSET)
@@ -136,7 +126,7 @@ enum spdif_gainsel {
 #define GAINSEL_MULTI_MAX		(GAINSEL_MULTI_3 + 1)
 #define SPDIF_DEFAULT_GAINSEL		GAINSEL_MULTI_8
 
-/* SPDIF interrupt mask define */
+ 
 #define INT_DPLL_LOCKED			(1 << 20)
 #define INT_TXFIFO_UNOV			(1 << 19)
 #define INT_TXFIFO_RESYNC		(1 << 18)
@@ -156,7 +146,7 @@ enum spdif_gainsel {
 #define INT_TX_EM			(1 << 1)
 #define INT_RXFIFO_FUL			(1 << 0)
 
-/* SPDIF Clock register */
+ 
 #define STC_SYSCLK_DF_OFFSET		11
 #define STC_SYSCLK_DF_MASK		(0x1ff << STC_SYSCLK_DF_OFFSET)
 #define STC_SYSCLK_DF(x)		((((x) - 1) << STC_SYSCLK_DF_OFFSET) & STC_SYSCLK_DF_MASK)
@@ -173,7 +163,7 @@ enum spdif_gainsel {
 
 #define STC_TXCLK_SPDIF_ROOT		1
 
-/* SPDIF tx rate */
+ 
 enum spdif_txrate {
 	SPDIF_TXRATE_22050 = 0,
 	SPDIF_TXRATE_32000,
@@ -217,4 +207,4 @@ enum spdif_txrate {
 
 #define FSL_SPDIF_FORMATS_CAPTURE	(SNDRV_PCM_FMTBIT_S24_LE)
 
-#endif /* _FSL_SPDIF_DAI_H */
+#endif  

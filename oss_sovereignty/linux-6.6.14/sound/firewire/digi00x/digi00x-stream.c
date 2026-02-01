@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * digi00x-stream.c - a part of driver for Digidesign Digi 002/003 family
- *
- * Copyright (c) 2014-2015 Takashi Sakamoto
- */
+
+ 
 
 #include "digi00x.h"
 
@@ -16,13 +12,13 @@ const unsigned int snd_dg00x_stream_rates[SND_DG00X_RATE_COUNT] = {
 	[SND_DG00X_RATE_96000] = 96000,
 };
 
-/* Multi Bit Linear Audio data channels for each sampling transfer frequency. */
+ 
 const unsigned int
 snd_dg00x_stream_pcm_channels[SND_DG00X_RATE_COUNT] = {
-	/* Analog/ADAT/SPDIF */
+	 
 	[SND_DG00X_RATE_44100] = (8 + 8 + 2),
 	[SND_DG00X_RATE_48000] = (8 + 8 + 2),
-	/* Analog/SPDIF */
+	 
 	[SND_DG00X_RATE_88200] = (8 + 2),
 	[SND_DG00X_RATE_96000] = (8 + 2),
 };
@@ -115,7 +111,7 @@ int snd_dg00x_stream_get_external_rate(struct snd_dg00x *dg00x,
 	data = be32_to_cpu(reg) & 0x0f;
 	if (data < ARRAY_SIZE(snd_dg00x_stream_rates))
 		*rate = snd_dg00x_stream_rates[data];
-	/* This means desync. */
+	 
 	else
 		err = -EBUSY;
 
@@ -131,14 +127,14 @@ static void finish_session(struct snd_dg00x *dg00x)
 			   DG00X_ADDR_BASE + DG00X_OFFSET_STREAMING_SET,
 			   &data, sizeof(data), 0);
 
-	// Unregister isochronous channels for both direction.
+	
 	data = 0;
 	snd_fw_transaction(dg00x->unit, TCODE_WRITE_QUADLET_REQUEST,
 			   DG00X_ADDR_BASE + DG00X_OFFSET_ISOC_CHANNELS,
 			   &data, sizeof(data), 0);
 
-	// Just after finishing the session, the device may lost transmitting
-	// functionality for a short time.
+	
+	
 	msleep(50);
 }
 
@@ -148,7 +144,7 @@ static int begin_session(struct snd_dg00x *dg00x)
 	u32 curr;
 	int err;
 
-	// Register isochronous channels for both direction.
+	
 	data = cpu_to_be32((dg00x->tx_resources.channel << 16) |
 			   dg00x->rx_resources.channel);
 	err = snd_fw_transaction(dg00x->unit, TCODE_WRITE_QUADLET_REQUEST,
@@ -192,7 +188,7 @@ static int keep_resources(struct snd_dg00x *dg00x, struct amdtp_stream *stream,
 	int i;
 	int err;
 
-	// Check sampling rate.
+	
 	for (i = 0; i < SND_DG00X_RATE_COUNT; i++) {
 		if (snd_dg00x_stream_rates[i] == rate)
 			break;
@@ -273,10 +269,7 @@ int snd_dg00x_stream_init_duplex(struct snd_dg00x *dg00x)
 	return err;
 }
 
-/*
- * This function should be called before starting streams or after stopping
- * streams.
- */
+ 
 void snd_dg00x_stream_destroy_duplex(struct snd_dg00x *dg00x)
 {
 	amdtp_domain_destroy(&dg00x->domain);
@@ -356,10 +349,7 @@ int snd_dg00x_stream_start_duplex(struct snd_dg00x *dg00x)
 			goto error;
 	}
 
-	/*
-	 * No packets are transmitted without receiving packets, reagardless of
-	 * which source of clock is used.
-	 */
+	 
 	if (!amdtp_stream_running(&dg00x->rx_stream)) {
 		int spd = fw_parent_device(dg00x->unit)->max_speed;
 
@@ -377,10 +367,10 @@ int snd_dg00x_stream_start_duplex(struct snd_dg00x *dg00x)
 		if (err < 0)
 			goto error;
 
-		// NOTE: The device doesn't start packet transmission till receiving any packet.
-		// It ignores presentation time expressed by the value of syt field of CIP header
-		// in received packets. The sequence of the number of data blocks per packet is
-		// important for media clock recovery.
+		
+		
+		
+		
 		err = amdtp_domain_start(&dg00x->domain, 0, true, true);
 		if (err < 0)
 			goto error;
@@ -431,13 +421,13 @@ int snd_dg00x_stream_lock_try(struct snd_dg00x *dg00x)
 
 	spin_lock_irq(&dg00x->lock);
 
-	/* user land lock this */
+	 
 	if (dg00x->dev_lock_count < 0) {
 		err = -EBUSY;
 		goto end;
 	}
 
-	/* this is the first time */
+	 
 	if (dg00x->dev_lock_count++ == 0)
 		snd_dg00x_stream_lock_changed(dg00x);
 	err = 0;

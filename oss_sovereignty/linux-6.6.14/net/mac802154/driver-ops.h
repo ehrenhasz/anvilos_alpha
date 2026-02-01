@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __MAC802154_DRIVER_OPS
 #define __MAC802154_DRIVER_OPS
 
@@ -137,7 +137,7 @@ static inline int drv_start(struct ieee802154_local *local,
 
 	might_sleep();
 
-	/* setup receive mode parameters e.g. address mode */
+	 
 	if (local->hw.flags & IEEE802154_HW_AFILT) {
 		ret = drv_set_pan_id(local, addr_filt->pan_id);
 		if (ret < 0)
@@ -158,9 +158,7 @@ static inline int drv_start(struct ieee802154_local *local,
 	case IEEE802154_FILTERING_1_FCS:
 		fallthrough;
 	case IEEE802154_FILTERING_2_PROMISCUOUS:
-		/* TODO: Requires a different receive mode setup e.g.
-		 * at86rf233 hardware.
-		 */
+		 
 		fallthrough;
 	case IEEE802154_FILTERING_3_SCAN:
 		if (local->hw.flags & IEEE802154_HW_PROMISCUOUS) {
@@ -171,26 +169,11 @@ static inline int drv_start(struct ieee802154_local *local,
 			return -EOPNOTSUPP;
 		}
 
-		/* In practice other filtering levels can be requested, but as
-		 * for now most hardware/drivers only support
-		 * IEEE802154_FILTERING_NONE, we fallback to this actual
-		 * filtering level in hardware and make our own additional
-		 * filtering in mac802154 receive path.
-		 *
-		 * TODO: Move this logic to the device drivers as hardware may
-		 * support more higher level filters. Hardware may also require
-		 * a different order how register are set, which could currently
-		 * be buggy, so all received parameters need to be moved to the
-		 * start() callback and let the driver go into the mode before
-		 * it will turn on receive handling.
-		 */
+		 
 		local->phy->filtering = IEEE802154_FILTERING_NONE;
 		break;
 	case IEEE802154_FILTERING_4_FRAME_FIELDS:
-		/* Do not error out if IEEE802154_HW_PROMISCUOUS because we
-		 * expect the hardware to operate at the level
-		 * IEEE802154_FILTERING_4_FRAME_FIELDS anyway.
-		 */
+		 
 		if (local->hw.flags & IEEE802154_HW_PROMISCUOUS) {
 			ret = drv_set_promiscuous_mode(local, false);
 			if (ret < 0)
@@ -220,7 +203,7 @@ static inline void drv_stop(struct ieee802154_local *local)
 	local->ops->stop(&local->hw);
 	trace_802154_drv_return_void(local);
 
-	/* sync away all work on the tasklet before clearing started */
+	 
 	tasklet_disable(&local->tasklet);
 	tasklet_enable(&local->tasklet);
 
@@ -351,4 +334,4 @@ drv_set_max_frame_retries(struct ieee802154_local *local, s8 max_frame_retries)
 	return ret;
 }
 
-#endif /* __MAC802154_DRIVER_OPS */
+#endif  

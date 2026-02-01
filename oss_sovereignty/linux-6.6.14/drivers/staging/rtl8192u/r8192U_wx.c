@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * This file contains wireless extension handlers.
- *
- * This is part of rtl8180 OpenSource driver.
- * Copyright (C) Andrea Merello 2004-2005  <andrea.merello@gmail.com>
- *
- * Parts of this driver are based on the GPL part
- * of the official realtek driver.
- *
- * Parts of this driver are based on the rtl8180 driver skeleton
- * from Patric Schenke & Andres Salomon.
- *
- * Parts of this driver are based on the Intel Pro Wireless 2100 GPL driver.
- *
- * We want to thank the Authors of those projects and the Ndiswrapper
- * project Authors.
- *
- *****************************************************************************/
+
+ 
 
 #include <linux/string.h>
 #include "r8192U.h"
@@ -196,24 +178,19 @@ static int r8192_wx_set_mode(struct net_device *dev, struct iw_request_info *a,
 }
 
 struct  iw_range_with_scan_capa {
-	/* Informative stuff (to choose between different interface) */
-	__u32           throughput;     /* To give an idea... */
-	/* In theory this value should be the maximum benchmarked
-	 * TCP/IP throughput, because with most of these devices the
-	 * bit rate is meaningless (overhead an co) to estimate how
-	 * fast the connection will go and pick the fastest one.
-	 * I suggest people to play with Netperf or any benchmark...
-	 */
+	 
+	__u32           throughput;      
+	 
 
-	/* NWID (or domain id) */
-	__u32           min_nwid;       /* Minimal NWID we are able to set */
-	__u32           max_nwid;       /* Maximal NWID we are able to set */
+	 
+	__u32           min_nwid;        
+	__u32           max_nwid;        
 
-	/* Old Frequency (backward compat - moved lower ) */
+	 
 	__u16           old_num_channels;
 	__u8            old_num_frequency;
 
-	/* Scan capabilities */
+	 
 	__u8            scan_capa;
 };
 
@@ -230,40 +207,36 @@ static int rtl8180_wx_get_range(struct net_device *dev,
 	wrqu->data.length = sizeof(*range);
 	memset(range, 0, sizeof(*range));
 
-	/* Let's try to keep this struct in the same order as in
-	 * linux/include/wireless.h
-	 */
+	 
 
-	/* TODO: See what values we can set, and remove the ones we can't
-	 * set, or fill them with some default data.
-	 */
+	 
 
-	/* ~5 Mb/s real (802.11b) */
+	 
 	range->throughput = 5 * 1000 * 1000;
 
-	/* TODO: Not used in 802.11b? */
-	/* range->min_nwid; */	/* Minimal NWID we are able to set */
-	/* TODO: Not used in 802.11b? */
-	/* range->max_nwid; */	/* Maximal NWID we are able to set */
+	 
+	 	 
+	 
+	 	 
 
-	/* Old Frequency (backward compat - moved lower ) */
-	/* range->old_num_channels; */
-	/* range->old_num_frequency; */
-	/* range->old_freq[6]; */ /* Filler to keep "version" at the same offset */
+	 
+	 
+	 
+	   
 	if (priv->rf_set_sens)
-		range->sensitivity = priv->max_sens;	/* signal level threshold range */
+		range->sensitivity = priv->max_sens;	 
 
 	range->max_qual.qual = 100;
-	/* TODO: Find real max RSSI and stick here */
+	 
 	range->max_qual.level = 0;
 	range->max_qual.noise = 0x100 - 98;
-	range->max_qual.updated = 7; /* Updated all three */
+	range->max_qual.updated = 7;  
 
-	range->avg_qual.qual = 92; /* > 8% missed beacons is 'bad' */
-	/* TODO: Find real 'good' to 'bad' threshold value for RSSI */
+	range->avg_qual.qual = 92;  
+	 
 	range->avg_qual.level = 0x100 - 78;
 	range->avg_qual.noise = 0;
-	range->avg_qual.updated = 7; /* Updated all three */
+	range->avg_qual.updated = 7;  
 
 	range->num_bitrates = RATE_COUNT;
 
@@ -284,24 +257,24 @@ static int rtl8180_wx_get_range(struct net_device *dev,
 	range->we_version_compiled = WIRELESS_EXT;
 	range->we_version_source = 16;
 
-	/* range->retry_capa; */	/* What retry options are supported */
-	/* range->retry_flags; */	/* How to decode max/min retry limit */
-	/* range->r_time_flags; */	/* How to decode max/min retry life */
-	/* range->min_retry; */		/* Minimal number of retries */
-	/* range->max_retry; */		/* Maximal number of retries */
-	/* range->min_r_time; */	/* Minimal retry lifetime */
-	/* range->max_r_time; */	/* Maximal retry lifetime */
+	 	 
+	 	 
+	 	 
+	 		 
+	 		 
+	 	 
+	 	 
 
 	for (i = 0, val = 0; i < 14; i++) {
-		/* Include only legal frequencies for some countries */
+		 
 		if ((GET_DOT11D_INFO(priv->ieee80211)->channel_map)[i + 1]) {
 			range->freq[val].i = i + 1;
 			range->freq[val].m = ieee80211_wlan_frequencies[i] * 100000;
 			range->freq[val].e = 1;
 			val++;
 		} else {
-			/* FIXME: do we need to set anything for channels */
-			/* we don't use ? */
+			 
+			 
 		}
 
 		if (val == IW_MAX_FREQUENCIES)
@@ -449,7 +422,7 @@ static int r8192_wx_get_frag(struct net_device *dev,
 	struct r8192_priv *priv = ieee80211_priv(dev);
 
 	wrqu->frag.value = priv->ieee80211->fts;
-	wrqu->frag.fixed = 0;	/* no auto select */
+	wrqu->frag.fixed = 0;	 
 	wrqu->frag.disabled = (wrqu->frag.value == DEFAULT_FRAG_THRESHOLD);
 
 	return 0;
@@ -462,7 +435,7 @@ static int r8192_wx_set_wap(struct net_device *dev,
 {
 	int ret;
 	struct r8192_priv *priv = ieee80211_priv(dev);
-	/* struct sockaddr *temp = (struct sockaddr *)awrq; */
+	 
 	mutex_lock(&priv->wx_mutex);
 
 	ret = ieee80211_wx_set_wap(priv->ieee80211, info, awrq, extra);
@@ -516,7 +489,7 @@ static int r8192_wx_set_enc(struct net_device *dev,
 
 	mutex_unlock(&priv->wx_mutex);
 
-	/* sometimes, the length is zero while we do not type key value */
+	 
 	if (wrqu->encoding.length != 0) {
 		for (i = 0; i < 4; i++) {
 			hwkey[i] |=  key[4 * i + 0] & mask;
@@ -557,23 +530,23 @@ static int r8192_wx_set_enc(struct net_device *dev,
 			EnableHWSecurityConfig8192(dev);
 
 			setKey(dev,
-			       key_idx,                /* EntryNo */
-			       key_idx,                /* KeyIndex */
-			       KEY_TYPE_WEP40,         /* KeyType */
+			       key_idx,                 
+			       key_idx,                 
+			       KEY_TYPE_WEP40,          
 			       zero_addr[key_idx],
-			       0,                      /* DefaultKey */
-			       hwkey);                 /* KeyContent */
+			       0,                       
+			       hwkey);                  
 		} else if (wrqu->encoding.length == 0xd) {
 			ieee->pairwise_key_type = KEY_TYPE_WEP104;
 			EnableHWSecurityConfig8192(dev);
 
 			setKey(dev,
-			       key_idx,                /* EntryNo */
-			       key_idx,                /* KeyIndex */
-			       KEY_TYPE_WEP104,        /* KeyType */
+			       key_idx,                 
+			       key_idx,                 
+			       KEY_TYPE_WEP104,         
 			       zero_addr[key_idx],
-			       0,                      /* DefaultKey */
-			       hwkey);                 /* KeyContent */
+			       0,                       
+			       hwkey);                  
 		} else {
 			netdev_warn(dev, "wrong type in WEP, not WEP40 and WEP104\n");
 		}
@@ -626,11 +599,7 @@ static int r8192_wx_set_retry(struct net_device *dev,
 		DMESG("Setting retry for non RTS/CTS data to %d", wrqu->retry.value);
 	}
 
-	/* FIXME !
-	 * We might try to write directly the TX config register
-	 * or to restart just the (R)TX process.
-	 * I'm unsure if whole reset is really needed
-	 */
+	 
 
 	rtl8192_commit(dev);
 exit:
@@ -645,7 +614,7 @@ static int r8192_wx_get_retry(struct net_device *dev,
 {
 	struct r8192_priv *priv = ieee80211_priv(dev);
 
-	wrqu->retry.disabled = 0; /* can't be disabled */
+	wrqu->retry.disabled = 0;  
 
 	if ((wrqu->retry.flags & IW_RETRY_TYPE) ==
 	    IW_RETRY_LIFETIME)
@@ -669,7 +638,7 @@ static int r8192_wx_get_sens(struct net_device *dev,
 	struct r8192_priv *priv = ieee80211_priv(dev);
 
 	if (!priv->rf_set_sens)
-		return -1; /* we have not this support for this radio */
+		return -1;  
 	wrqu->sens.value = priv->sens;
 	return 0;
 }
@@ -683,7 +652,7 @@ static int r8192_wx_set_sens(struct net_device *dev,
 
 	mutex_lock(&priv->wx_mutex);
 	if (!priv->rf_set_sens) {
-		err = -1; /* we have not this support for this radio */
+		err = -1;  
 		goto exit;
 	}
 	if (priv->rf_set_sens(dev, wrqu->sens.value) == 0)
@@ -697,7 +666,7 @@ exit:
 	return err;
 }
 
-/* hw security need to reorganized. */
+ 
 static int r8192_wx_set_enc_ext(struct net_device *dev,
 				struct iw_request_info *info,
 				union iwreq_data *wrqu, char *extra)
@@ -718,10 +687,10 @@ static int r8192_wx_set_enc_ext(struct net_device *dev,
 		u8 idx = 0, alg = 0, group = 0;
 
 		if ((encoding->flags & IW_ENCODE_DISABLED) || ext->alg == IW_ENCODE_ALG_NONE)
-			/* none is not allowed to use hwsec WB 2008.07.01 */
+			 
 			goto end_hw_sec;
 
-		/* as IW_ENCODE_ALG_CCMP is defined to be 3 and KEY_TYPE_CCMP is defined to 4; */
+		 
 		alg =  (ext->alg == IW_ENCODE_ALG_CCMP) ? KEY_TYPE_CCMP : ext->alg;
 		idx = encoding->flags & IW_ENCODE_INDEX;
 		if (idx)
@@ -734,33 +703,33 @@ static int r8192_wx_set_enc_ext(struct net_device *dev,
 			ieee->pairwise_key_type = alg;
 			EnableHWSecurityConfig8192(dev);
 		}
-		memcpy((u8 *)key, ext->key, 16); /* we only get 16 bytes key.why? WB 2008.7.1 */
+		memcpy((u8 *)key, ext->key, 16);  
 
 		if ((alg & KEY_TYPE_WEP40) && (ieee->auth_mode != 2)) {
 			setKey(dev,
-			       idx,	/* EntryNao */
-			       idx,	/* KeyIndex */
-			       alg,	/* KeyType */
-			       zero,	/* MacAddr */
-			       0,	/* DefaultKey */
-			       key);	/* KeyContent */
+			       idx,	 
+			       idx,	 
+			       alg,	 
+			       zero,	 
+			       0,	 
+			       key);	 
 		} else if (group) {
 			ieee->group_key_type = alg;
 			setKey(dev,
-			       idx,	/* EntryNo */
-			       idx,	/* KeyIndex */
-			       alg,	/* KeyType */
-			       broadcast_addr,	/* MacAddr */
-			       0,		/* DefaultKey */
-			       key);		/* KeyContent */
-		} else {	/* pairwise key */
+			       idx,	 
+			       idx,	 
+			       alg,	 
+			       broadcast_addr,	 
+			       0,		 
+			       key);		 
+		} else {	 
 			setKey(dev,
-			       4,	/* EntryNo */
-			       idx,	/* KeyIndex */
-			       alg,	/* KeyType */
-			       (u8 *)ieee->ap_mac_addr,/* MacAddr */
-			       0,			/* DefaultKey */
-			       key);			/* KeyContent */
+			       4,	 
+			       idx,	 
+			       alg,	 
+			       (u8 *)ieee->ap_mac_addr, 
+			       0,			 
+			       key);			 
 		}
 	}
 
@@ -817,63 +786,62 @@ static int dummy(struct net_device *dev, struct iw_request_info *a,
 }
 
 static iw_handler r8192_wx_handlers[] = {
-	NULL,                     /* SIOCSIWCOMMIT */
-	r8192_wx_get_name,	  /* SIOCGIWNAME */
-	dummy,                    /* SIOCSIWNWID */
-	dummy,                    /* SIOCGIWNWID */
-	r8192_wx_set_freq,        /* SIOCSIWFREQ */
-	r8192_wx_get_freq,        /* SIOCGIWFREQ */
-	r8192_wx_set_mode,        /* SIOCSIWMODE */
-	r8192_wx_get_mode,        /* SIOCGIWMODE */
-	r8192_wx_set_sens,        /* SIOCSIWSENS */
-	r8192_wx_get_sens,        /* SIOCGIWSENS */
-	NULL,                     /* SIOCSIWRANGE */
-	rtl8180_wx_get_range,	  /* SIOCGIWRANGE */
-	NULL,                     /* SIOCSIWPRIV */
-	NULL,                     /* SIOCGIWPRIV */
-	NULL,                     /* SIOCSIWSTATS */
-	NULL,                     /* SIOCGIWSTATS */
-	dummy,                    /* SIOCSIWSPY */
-	dummy,                    /* SIOCGIWSPY */
-	NULL,                     /* SIOCGIWTHRSPY */
-	NULL,                     /* SIOCWIWTHRSPY */
-	r8192_wx_set_wap,	  /* SIOCSIWAP */
-	r8192_wx_get_wap,         /* SIOCGIWAP */
-	r8192_wx_set_mlme,                     /* MLME-- */
-	dummy,                     /* SIOCGIWAPLIST -- deprecated */
-	r8192_wx_set_scan,        /* SIOCSIWSCAN */
-	r8192_wx_get_scan,        /* SIOCGIWSCAN */
-	r8192_wx_set_essid,       /* SIOCSIWESSID */
-	r8192_wx_get_essid,       /* SIOCGIWESSID */
-	dummy,                    /* SIOCSIWNICKN */
-	dummy,                    /* SIOCGIWNICKN */
-	NULL,                     /* -- hole -- */
-	NULL,                     /* -- hole -- */
-	r8192_wx_set_rate,        /* SIOCSIWRATE */
-	r8192_wx_get_rate,        /* SIOCGIWRATE */
-	r8192_wx_set_rts,                    /* SIOCSIWRTS */
-	r8192_wx_get_rts,                    /* SIOCGIWRTS */
-	r8192_wx_set_frag,        /* SIOCSIWFRAG */
-	r8192_wx_get_frag,        /* SIOCGIWFRAG */
-	dummy,                    /* SIOCSIWTXPOW */
-	dummy,                    /* SIOCGIWTXPOW */
-	r8192_wx_set_retry,       /* SIOCSIWRETRY */
-	r8192_wx_get_retry,       /* SIOCGIWRETRY */
-	r8192_wx_set_enc,         /* SIOCSIWENCODE */
-	r8192_wx_get_enc,         /* SIOCGIWENCODE */
-	r8192_wx_set_power,                    /* SIOCSIWPOWER */
-	r8192_wx_get_power,                    /* SIOCGIWPOWER */
-	NULL,			/*---hole---*/
-	NULL,			/*---hole---*/
-	r8192_wx_set_gen_ie, /* NULL, */		/* SIOCSIWGENIE */
-	NULL,			/* SIOCSIWGENIE */
+	NULL,                      
+	r8192_wx_get_name,	   
+	dummy,                     
+	dummy,                     
+	r8192_wx_set_freq,         
+	r8192_wx_get_freq,         
+	r8192_wx_set_mode,         
+	r8192_wx_get_mode,         
+	r8192_wx_set_sens,         
+	r8192_wx_get_sens,         
+	NULL,                      
+	rtl8180_wx_get_range,	   
+	NULL,                      
+	NULL,                      
+	NULL,                      
+	NULL,                      
+	dummy,                     
+	dummy,                     
+	NULL,                      
+	NULL,                      
+	r8192_wx_set_wap,	   
+	r8192_wx_get_wap,          
+	r8192_wx_set_mlme,                      
+	dummy,                      
+	r8192_wx_set_scan,         
+	r8192_wx_get_scan,         
+	r8192_wx_set_essid,        
+	r8192_wx_get_essid,        
+	dummy,                     
+	dummy,                     
+	NULL,                      
+	NULL,                      
+	r8192_wx_set_rate,         
+	r8192_wx_get_rate,         
+	r8192_wx_set_rts,                     
+	r8192_wx_get_rts,                     
+	r8192_wx_set_frag,         
+	r8192_wx_get_frag,         
+	dummy,                     
+	dummy,                     
+	r8192_wx_set_retry,        
+	r8192_wx_get_retry,        
+	r8192_wx_set_enc,          
+	r8192_wx_get_enc,          
+	r8192_wx_set_power,                     
+	r8192_wx_get_power,                     
+	NULL,			 
+	NULL,			 
+	r8192_wx_set_gen_ie,  		 
+	NULL,			 
 
-	r8192_wx_set_auth,/* NULL, */			/* SIOCSIWAUTH */
-	NULL,/* r8192_wx_get_auth, */ /* NULL, */	/* SIOCSIWAUTH */
-	r8192_wx_set_enc_ext,			/* SIOCSIWENCODEEXT */
-	NULL,/* r8192_wx_get_enc_ext, *//* NULL, */			/* SIOCSIWENCODEEXT */
-	NULL,			/* SIOCSIWPMKSA */
-	NULL,			 /*---hole---*/
+	r8192_wx_set_auth, 			 
+	NULL,   	 
+	r8192_wx_set_enc_ext,			 
+	NULL, 
+	NULL,			  
 
 };
 

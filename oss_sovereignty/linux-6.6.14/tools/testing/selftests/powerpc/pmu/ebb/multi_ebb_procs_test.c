@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <stdbool.h>
 #include <stdio.h>
@@ -11,10 +9,7 @@
 #include "ebb.h"
 
 
-/*
- * Test running multiple EBB using processes at once on a single CPU. They
- * should all run happily without interfering with each other.
- */
+ 
 
 static bool child_should_exit;
 
@@ -87,14 +82,14 @@ int multi_ebb_procs(void)
 			exit(cycles_child());
 	}
 
-	/* Have them all run for "a while" */
+	 
 	sleep(10);
 
 	rc = 0;
 	for (i = 0; i < NR_CHILDREN; i++) {
-		/* Tell them to stop */
+		 
 		kill(pids[i], SIGINT);
-		/* And wait */
+		 
 		rc |= wait_for_child(pids[i]);
 	}
 

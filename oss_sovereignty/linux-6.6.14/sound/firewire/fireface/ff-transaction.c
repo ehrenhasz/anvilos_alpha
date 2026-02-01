@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ff-transaction.c - a part of driver for RME Fireface series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto
- */
+
+ 
 
 #include "ff.h"
 
@@ -19,7 +15,7 @@ static void finish_transmit_midi_msg(struct snd_ff *ff, unsigned int port,
 	}
 
 	if (rcode != RCODE_COMPLETE) {
-		/* Transfer the message again, immediately. */
+		 
 		ff->next_ktime[port] = 0;
 		schedule_work(&ff->rx_midi_work[port]);
 		return;
@@ -68,7 +64,7 @@ static void transmit_midi_msg(struct snd_ff *ff, unsigned int port)
 	if (ff->rx_bytes[port] > 0 || ff->rx_midi_error[port])
 		return;
 
-	/* Do it in next chance. */
+	 
 	if (ktime_after(ff->next_ktime[port], ktime_get())) {
 		schedule_work(&ff->rx_midi_work[port]);
 		return;
@@ -86,7 +82,7 @@ static void transmit_midi_msg(struct snd_ff *ff, unsigned int port)
 		callback = finish_transmit_midi1_msg;
 	}
 
-	/* Set interval to next transaction. */
+	 
 	ff->next_ktime[port] = ktime_add_ns(ktime_get(),
 			ff->rx_bytes[port] * 8 * (NSEC_PER_SEC / 31250));
 
@@ -95,14 +91,7 @@ static void transmit_midi_msg(struct snd_ff *ff, unsigned int port)
 	else
 		tcode = TCODE_WRITE_BLOCK_REQUEST;
 
-	/*
-	 * In Linux FireWire core, when generation is updated with memory
-	 * barrier, node id has already been updated. In this module, After
-	 * this smp_rmb(), load/store instructions to memory are completed.
-	 * Thus, both of generation and node id are available with recent
-	 * values. This is a light-serialization solution to handle bus reset
-	 * events on IEEE 1394 bus.
-	 */
+	 
 	generation = fw_dev->generation;
 	smp_rmb();
 	fw_send_request(fw_dev->card, &ff->transactions[port], tcode,
@@ -157,7 +146,7 @@ static int allocate_own_address(struct snd_ff *ff, int i)
 
 	err = fw_core_add_address_handler(&ff->async_handler, &midi_msg_region);
 	if (err >= 0) {
-		/* Controllers are allowed to register this region. */
+		 
 		if (ff->async_handler.offset & 0x0000ffffffff) {
 			fw_core_remove_address_handler(&ff->async_handler);
 			err = -EAGAIN;
@@ -167,23 +156,20 @@ static int allocate_own_address(struct snd_ff *ff, int i)
 	return err;
 }
 
-// Controllers are allowed to register higher 4 bytes of destination address to
-// receive asynchronous transactions for MIDI messages, while the way to
-// register lower 4 bytes of address is different depending on protocols. For
-// details, please refer to comments in protocol implementations.
-//
-// This driver expects userspace applications to configure registers for the
-// lower address because in most cases such registers has the other settings.
+
+
+
+
+
+
+
 int snd_ff_transaction_reregister(struct snd_ff *ff)
 {
 	struct fw_card *fw_card = fw_parent_device(ff->unit)->card;
 	u32 addr;
 	__le32 reg;
 
-	/*
-	 * Controllers are allowed to register its node ID and upper 2 byte of
-	 * local address to listen asynchronous transactions.
-	 */
+	 
 	addr = (fw_card->node_id << 16) | (ff->async_handler.offset >> 32);
 	reg = cpu_to_le32(addr);
 	return snd_fw_transaction(ff->unit, TCODE_WRITE_QUADLET_REQUEST,
@@ -195,10 +181,7 @@ int snd_ff_transaction_register(struct snd_ff *ff)
 {
 	int i, err;
 
-	/*
-	 * Allocate in Memory Space of IEC 13213, but lower 4 byte in LSB should
-	 * be zero due to device specification.
-	 */
+	 
 	for (i = 0; i < 0xffff; i++) {
 		err = allocate_own_address(ff, i);
 		if (err != -EBUSY && err != -EAGAIN)
@@ -225,7 +208,7 @@ void snd_ff_transaction_unregister(struct snd_ff *ff)
 		return;
 	ff->async_handler.callback_data = NULL;
 
-	/* Release higher 4 bytes of address. */
+	 
 	reg = cpu_to_le32(0x00000000);
 	snd_fw_transaction(ff->unit, TCODE_WRITE_QUADLET_REQUEST,
 			   ff->spec->midi_high_addr,

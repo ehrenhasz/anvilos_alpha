@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Free Electrons
- * Copyright (C) 2015 NextThing Co
- *
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -291,7 +286,7 @@ static void sun4i_tv_enable(struct drm_encoder *encoder,
 
 	DRM_DEBUG_DRIVER("Enabling the TV Output\n");
 
-	/* Enable and map the DAC to the output */
+	 
 	regmap_update_bits(tv->regs, SUN4I_TVE_EN_REG,
 			   SUN4I_TVE_EN_DAC_MAP_MASK,
 			   SUN4I_TVE_EN_DAC_MAP(0, 1) |
@@ -299,7 +294,7 @@ static void sun4i_tv_enable(struct drm_encoder *encoder,
 			   SUN4I_TVE_EN_DAC_MAP(2, 3) |
 			   SUN4I_TVE_EN_DAC_MAP(3, 4));
 
-	/* Set PAL settings */
+	 
 	regmap_write(tv->regs, SUN4I_TVE_CFG0_REG,
 		     tv_mode->mode |
 		     (tv_mode->yc_en ? SUN4I_TVE_CFG0_YC_EN : 0) |
@@ -308,7 +303,7 @@ static void sun4i_tv_enable(struct drm_encoder *encoder,
 		     SUN4I_TVE_CFG0_CORE_DATAPATH_54M |
 		     SUN4I_TVE_CFG0_CORE_CONTROL_54M);
 
-	/* Configure the DAC for a composite output */
+	 
 	regmap_write(tv->regs, SUN4I_TVE_DAC0_REG,
 		     SUN4I_TVE_DAC0_DAC_EN(0) |
 		     (tv_mode->dac3_en ? SUN4I_TVE_DAC0_DAC_EN(3) : 0) |
@@ -319,7 +314,7 @@ static void sun4i_tv_enable(struct drm_encoder *encoder,
 		     (tv_mode->dac_bit25_en ? BIT(25) : 0) |
 		     BIT(30));
 
-	/* Configure the sample delay between DAC0 and the other DAC */
+	 
 	regmap_write(tv->regs, SUN4I_TVE_NOTCH_REG,
 		     SUN4I_TVE_NOTCH_DAC0_TO_DAC_DLY(1, 0) |
 		     SUN4I_TVE_NOTCH_DAC0_TO_DAC_DLY(2, 0));
@@ -327,12 +322,12 @@ static void sun4i_tv_enable(struct drm_encoder *encoder,
 	regmap_write(tv->regs, SUN4I_TVE_CHROMA_FREQ_REG,
 		     tv_mode->chroma_freq);
 
-	/* Set the front and back porch */
+	 
 	regmap_write(tv->regs, SUN4I_TVE_PORCH_REG,
 		     SUN4I_TVE_PORCH_BACK(tv_mode->back_porch) |
 		     SUN4I_TVE_PORCH_FRONT(tv_mode->front_porch));
 
-	/* Set the lines setup */
+	 
 	regmap_write(tv->regs, SUN4I_TVE_LINE_REG,
 		     SUN4I_TVE_LINE_FIRST(22) |
 		     SUN4I_TVE_LINE_NUMBER(mode->vtotal));
@@ -351,7 +346,7 @@ static void sun4i_tv_enable(struct drm_encoder *encoder,
 		     SUN4I_TVE_CB_CR_LVL_CB_BURST(tv_mode->burst_levels->cb) |
 		     SUN4I_TVE_CB_CR_LVL_CR_BURST(tv_mode->burst_levels->cr));
 
-	/* Set burst width for a composite output */
+	 
 	regmap_write(tv->regs, SUN4I_TVE_BURST_WIDTH_REG,
 		     SUN4I_TVE_BURST_WIDTH_HSYNC_WIDTH(126) |
 		     SUN4I_TVE_BURST_WIDTH_BURST_WIDTH(68) |
@@ -368,7 +363,7 @@ static void sun4i_tv_enable(struct drm_encoder *encoder,
 	regmap_write(tv->regs, SUN4I_TVE_ACTIVE_LINE_REG,
 		     SUN4I_TVE_ACTIVE_LINE(1440));
 
-	/* Set composite chroma gain to 50 % */
+	 
 	regmap_write(tv->regs, SUN4I_TVE_CHROMA_REG,
 		     SUN4I_TVE_CHROMA_COMP_GAIN_50);
 

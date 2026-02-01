@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Texas Instruments Incorporated - http://www.ti.com/
- *
- * A generic driver to read multiple gpio lines and translate the
- * encoded numeric value into an input event.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gpio/consumer.h>

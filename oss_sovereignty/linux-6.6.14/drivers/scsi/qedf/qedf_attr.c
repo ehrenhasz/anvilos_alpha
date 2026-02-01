@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  QLogic FCoE Offload Driver
- *  Copyright (c) 2016-2018 Cavium Inc.
- */
+
+ 
 #include "qedf.h"
 
 inline bool qedf_is_vport(struct qedf_ctx *qedf)
@@ -10,7 +7,7 @@ inline bool qedf_is_vport(struct qedf_ctx *qedf)
 	return qedf->lport->vport != NULL;
 }
 
-/* Get base qedf for physical port from vport */
+ 
 static struct qedf_ctx *qedf_get_base_qedf(struct qedf_ctx *qedf)
 {
 	struct fc_lport *lport;
@@ -81,7 +78,7 @@ void qedf_capture_grc_dump(struct qedf_ctx *qedf)
 {
 	struct qedf_ctx *base_qedf;
 
-	/* Make sure we use the base qedf to take the GRC dump */
+	 
 	if (qedf_is_vport(qedf))
 		base_qedf = qedf_get_base_qedf(qedf);
 	else

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <rdma/uverbs_std_types.h>
 #include "rdma_core.h"
@@ -17,13 +15,7 @@ static int uverbs_free_qp(struct ib_uobject *uobject,
 		container_of(uobject, struct ib_uqp_object, uevent.uobject);
 	int ret;
 
-	/*
-	 * If this is a user triggered destroy then do not allow destruction
-	 * until the user cleans up all the mcast bindings. Unlike in other
-	 * places we forcibly clean up the mcast attachments for !DESTROY
-	 * because the mcast attaches are not ubojects and will not be
-	 * destroyed by anything else during cleanup processing.
-	 */
+	 
 	if (why == RDMA_REMOVE_DESTROY) {
 		if (!list_empty(&uqp->mcast_list))
 			return -EBUSY;
@@ -163,7 +155,7 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QP_CREATE)(
 					UVERBS_ATTR_CREATE_QP_SRQ_HANDLE))
 				return -EINVAL;
 
-			/* send_cq is optional */
+			 
 			if (cap.max_send_wr) {
 				send_cq = uverbs_attr_get_obj(attrs,
 					UVERBS_ATTR_CREATE_QP_SEND_CQ_HANDLE);
@@ -235,10 +227,7 @@ static int UVERBS_HANDLER(UVERBS_METHOD_QP_CREATE)(
 	attr.recv_cq = recv_cq;
 	attr.xrcd = xrcd;
 	if (attr.create_flags & IB_UVERBS_QP_CREATE_SQ_SIG_ALL) {
-		/* This creation bit is uverbs one, need to mask before
-		 * calling drivers. It was added to prevent an extra user attr
-		 * only for that when using ioctl.
-		 */
+		 
 		attr.create_flags &= ~IB_UVERBS_QP_CREATE_SQ_SIG_ALL;
 		attr.sq_sig_type = IB_SIGNAL_ALL_WR;
 	} else {

@@ -1,37 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013-2017 by PaX Team <pageexec@freemail.hu>
- *
- * Note: the choice of the license means that the compilation process is
- *       NOT 'eligible' as defined by gcc's library exception to the GPL v3,
- *       but for the kernel it doesn't matter since it doesn't link against
- *       any of the gcc libraries
- *
- * gcc plugin to forcibly initialize certain local variables that could
- * otherwise leak kernel stack to userland if they aren't properly initialized
- * by later code
- *
- * Homepage: https://pax.grsecurity.net/
- *
- * Options:
- * -fplugin-arg-structleak_plugin-disable
- * -fplugin-arg-structleak_plugin-verbose
- * -fplugin-arg-structleak_plugin-byref
- * -fplugin-arg-structleak_plugin-byref-all
- *
- * Usage:
- * $ # for 4.5/4.6/C based 4.7
- * $ gcc -I`gcc -print-file-name=plugin`/include -I`gcc -print-file-name=plugin`/include/c-family -fPIC -shared -O2 -o structleak_plugin.so structleak_plugin.c
- * $ # for C++ based 4.7/4.8+
- * $ g++ -I`g++ -print-file-name=plugin`/include -I`g++ -print-file-name=plugin`/include/c-family -fPIC -shared -O2 -o structleak_plugin.so structleak_plugin.c
- * $ gcc -fplugin=./structleak_plugin.so test.c -O2
- *
- * TODO: eliminate redundant initializers
- */
+
+ 
 
 #include "gcc-common.h"
 
-/* unused C type flag in all versions 4.5-6 */
+ 
 #define TYPE_USERSPACE(TYPE) TYPE_LANG_FLAG_5(TYPE)
 
 __visible int plugin_is_GPL_compatible;
@@ -54,7 +26,7 @@ static tree handle_user_attribute(tree *node, tree name, tree args, int flags, b
 {
 	*no_add_attrs = true;
 
-	/* check for types? for now accept everything linux has to offer */
+	 
 	if (TREE_CODE(*node) != FIELD_DECL)
 		return NULL_TREE;
 
@@ -121,44 +93,44 @@ static void initialize(tree var)
 	gimple init_stmt;
 	tree type;
 
-	/* this is the original entry bb before the forced split */
+	 
 	bb = single_succ(ENTRY_BLOCK_PTR_FOR_FN(cfun));
 
-	/* first check if variable is already initialized, warn otherwise */
+	 
 	for (gsi = gsi_start_bb(bb); !gsi_end_p(gsi); gsi_next(&gsi)) {
 		gimple stmt = gsi_stmt(gsi);
 		tree rhs1;
 
-		/* we're looking for an assignment of a single rhs... */
+		 
 		if (!gimple_assign_single_p(stmt))
 			continue;
 		rhs1 = gimple_assign_rhs1(stmt);
-		/* ... of a non-clobbering expression... */
+		 
 		if (TREE_CLOBBER_P(rhs1))
 			continue;
-		/* ... to our variable... */
+		 
 		if (gimple_get_lhs(stmt) != var)
 			continue;
-		/* if it's an initializer then we're good */
+		 
 		if (TREE_CODE(rhs1) == CONSTRUCTOR)
 			return;
 	}
 
-	/* these aren't the 0days you're looking for */
+	 
 	if (verbose)
 		inform(DECL_SOURCE_LOCATION(var),
 			"%s variable will be forcibly initialized",
 			(byref && TREE_ADDRESSABLE(var)) ? "byref"
 							 : "userspace");
 
-	/* build the initializer expression */
+	 
 	type = TREE_TYPE(var);
 	if (AGGREGATE_TYPE_P(type))
 		initializer = build_constructor(type, NULL);
 	else
 		initializer = fold_convert(type, integer_zero_node);
 
-	/* build the initializer stmt */
+	 
 	init_stmt = gimple_build_assign(var, initializer);
 	gsi = gsi_after_labels(single_succ(ENTRY_BLOCK_PTR_FOR_FN(cfun)));
 	gsi_insert_before(&gsi, init_stmt, GSI_NEW_STMT);
@@ -171,7 +143,7 @@ static unsigned int structleak_execute(void)
 	tree var;
 	unsigned int i;
 
-	/* split the first bb where we can put the forced initializers */
+	 
 	gcc_assert(single_succ_p(ENTRY_BLOCK_PTR_FOR_FN(cfun)));
 	bb = single_succ(ENTRY_BLOCK_PTR_FOR_FN(cfun));
 	if (!single_pred_p(bb)) {
@@ -179,7 +151,7 @@ static unsigned int structleak_execute(void)
 		gcc_assert(single_succ_p(ENTRY_BLOCK_PTR_FOR_FN(cfun)));
 	}
 
-	/* enumerate all local variables and forcibly initialize our targets */
+	 
 	FOR_EACH_LOCAL_DECL(cfun, i, var) {
 		tree type = TREE_TYPE(var);
 
@@ -187,11 +159,11 @@ static unsigned int structleak_execute(void)
 		if (!auto_var_in_fn_p(var, current_function_decl))
 			continue;
 
-		/* only care about structure types unless byref-all */
+		 
 		if (byref != BYREF_ALL && TREE_CODE(type) != RECORD_TYPE && TREE_CODE(type) != UNION_TYPE)
 			continue;
 
-		/* if the type is of interest, examine the variable */
+		 
 		if (TYPE_USERSPACE(type) ||
 		    (byref && TREE_ADDRESSABLE(var)))
 			initialize(var);

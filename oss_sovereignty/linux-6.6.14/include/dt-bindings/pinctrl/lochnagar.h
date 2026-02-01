@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Device Tree defines for Lochnagar pinctrl
- *
- * Copyright (c) 2018 Cirrus Logic, Inc. and
- *                    Cirrus Logic International Semiconductor Ltd.
- *
- * Author: Charles Keepax <ckeepax@opensource.cirrus.com>
- */
+ 
+ 
 
 #ifndef DT_BINDINGS_PINCTRL_LOCHNAGAR_H
 #define DT_BINDINGS_PINCTRL_LOCHNAGAR_H

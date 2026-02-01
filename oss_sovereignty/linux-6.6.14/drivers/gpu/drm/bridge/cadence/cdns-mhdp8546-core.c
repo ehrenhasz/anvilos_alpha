@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence MHDP8546 DP bridge driver.
- *
- * Copyright (C) 2020 Cadence Design Systems, Inc.
- *
- * Authors: Quentin Schulz <quentin.schulz@free-electrons.com>
- *          Swapnil Jakhade <sjakhade@cadence.com>
- *          Yuti Amonkar <yamonkar@cadence.com>
- *          Tomi Valkeinen <tomi.valkeinen@ti.com>
- *          Jyri Sarha <jsarha@ti.com>
- *
- * TODO:
- *     - Implement optimized mailbox communication using mailbox interrupts
- *     - Add support for power management
- *     - Add support for features like audio, MST and fast link training
- *     - Implement request_fw_cancel to handle HW_STATE
- *     - Fix asynchronous loading of firmware implementation
- *     - Add DRM helper function for cdns_mhdp_lower_link_rate
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -57,7 +39,7 @@ static void cdns_mhdp_bridge_hpd_enable(struct drm_bridge *bridge)
 {
 	struct cdns_mhdp_device *mhdp = bridge_to_mhdp(bridge);
 
-	/* Enable SW event interrupts */
+	 
 	if (mhdp->bridge_attached)
 		writel(readl(mhdp->regs + CDNS_APB_INT_MASK) &
 		       ~CDNS_APB_INT_MASK_SW_EVENT_INT,
@@ -113,7 +95,7 @@ static int cdns_mhdp_mailbox_recv_header(struct cdns_mhdp_device *mhdp,
 	u8 header[4];
 	int ret;
 
-	/* read the header of the message */
+	 
 	for (i = 0; i < sizeof(header); i++) {
 		ret = cdns_mhdp_mailbox_read(mhdp);
 		if (ret < 0)
@@ -126,10 +108,7 @@ static int cdns_mhdp_mailbox_recv_header(struct cdns_mhdp_device *mhdp,
 
 	if (opcode != header[0] || module_id != header[1] ||
 	    req_size != mbox_size) {
-		/*
-		 * If the message in mailbox is not what we want, we need to
-		 * clear the mailbox by reading its contents.
-		 */
+		 
 		for (i = 0; i < mbox_size; i++)
 			if (cdns_mhdp_mailbox_read(mhdp) < 0)
 				break;
@@ -208,7 +187,7 @@ int cdns_mhdp_reg_read(struct cdns_mhdp_device *mhdp, u32 addr, u32 *value)
 	if (ret)
 		goto out;
 
-	/* Returned address value should be the same as requested */
+	 
 	if (memcmp(msg, resp, sizeof(msg))) {
 		ret = -EINVAL;
 		goto out;
@@ -359,7 +338,7 @@ int cdns_mhdp_set_firmware_active(struct cdns_mhdp_device *mhdp, bool enable)
 			goto out;
 	}
 
-	/* read the firmware state */
+	 
 	ret = cdns_mhdp_mailbox_recv_data(mhdp, msg, sizeof(msg));
 	if (ret)
 		goto out;
@@ -496,7 +475,7 @@ int cdns_mhdp_adjust_lt(struct cdns_mhdp_device *mhdp, unsigned int nlanes,
 			u8 link_status[DP_LINK_STATUS_SIZE])
 {
 	u8 payload[7];
-	u8 hdr[5]; /* For DPCD read response header */
+	u8 hdr[5];  
 	u32 addr;
 	int ret;
 
@@ -518,7 +497,7 @@ int cdns_mhdp_adjust_lt(struct cdns_mhdp_device *mhdp, unsigned int nlanes,
 	if (ret)
 		goto out;
 
-	/* Yes, read the DPCD read command response */
+	 
 	ret = cdns_mhdp_mailbox_recv_header(mhdp, MB_MODULE_ID_DP_TX,
 					    DPTX_READ_DPCD,
 					    sizeof(hdr) + DP_LINK_STATUS_SIZE);
@@ -545,20 +524,14 @@ out:
 	return ret;
 }
 
-/**
- * cdns_mhdp_link_power_up() - power up a DisplayPort link
- * @aux: DisplayPort AUX channel
- * @link: pointer to a structure containing the link configuration
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 static
 int cdns_mhdp_link_power_up(struct drm_dp_aux *aux, struct cdns_mhdp_link *link)
 {
 	u8 value;
 	int err;
 
-	/* DP_SET_POWER register is only available on DPCD v1.1 and later */
+	 
 	if (link->revision < 0x11)
 		return 0;
 
@@ -573,23 +546,13 @@ int cdns_mhdp_link_power_up(struct drm_dp_aux *aux, struct cdns_mhdp_link *link)
 	if (err < 0)
 		return err;
 
-	/*
-	 * According to the DP 1.1 specification, a "Sink Device must exit the
-	 * power saving state within 1 ms" (Section 2.5.3.1, Table 5-52, "Sink
-	 * Control Field" (register 0x600).
-	 */
+	 
 	usleep_range(1000, 2000);
 
 	return 0;
 }
 
-/**
- * cdns_mhdp_link_power_down() - power down a DisplayPort link
- * @aux: DisplayPort AUX channel
- * @link: pointer to a structure containing the link configuration
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 static
 int cdns_mhdp_link_power_down(struct drm_dp_aux *aux,
 			      struct cdns_mhdp_link *link)
@@ -597,7 +560,7 @@ int cdns_mhdp_link_power_down(struct drm_dp_aux *aux,
 	u8 value;
 	int err;
 
-	/* DP_SET_POWER register is only available on DPCD v1.1 and later */
+	 
 	if (link->revision < 0x11)
 		return 0;
 
@@ -615,13 +578,7 @@ int cdns_mhdp_link_power_down(struct drm_dp_aux *aux,
 	return 0;
 }
 
-/**
- * cdns_mhdp_link_configure() - configure a DisplayPort link
- * @aux: DisplayPort AUX channel
- * @link: pointer to a structure containing the link configuration
- *
- * Returns 0 on success or a negative error code on failure.
- */
+ 
 static
 int cdns_mhdp_link_configure(struct drm_dp_aux *aux,
 			     struct cdns_mhdp_link *link)
@@ -659,7 +616,7 @@ static u8 cdns_mhdp_eq_training_pattern_supported(struct cdns_mhdp_device *mhdp)
 
 static bool cdns_mhdp_get_ssc_supported(struct cdns_mhdp_device *mhdp)
 {
-	/* Check if SSC is supported by both sides */
+	 
 	return mhdp->host.ssc && mhdp->sink.ssc;
 }
 
@@ -685,11 +642,7 @@ static int cdns_mhdp_check_fw_version(struct cdns_mhdp_device *mhdp)
 		| readl(mhdp->regs + CDNS_LIB_L_ADDR);
 
 	if (lib_ver < 33984) {
-		/*
-		 * Older FW versions with major number 1, used to store FW
-		 * version information by storing repository revision number
-		 * in registers. This is for identifying these FW versions.
-		 */
+		 
 		major_num = 1;
 		minor_num = 2;
 		if (fw_ver == 26098) {
@@ -702,7 +655,7 @@ static int cdns_mhdp_check_fw_version(struct cdns_mhdp_device *mhdp)
 			return -ENODEV;
 		}
 	} else {
-		/* To identify newer FW versions with major number 2 onwards. */
+		 
 		major_num = fw_ver / 10000;
 		minor_num = (fw_ver / 100) % 100;
 		revision = (fw_ver % 10000) % 100;
@@ -719,18 +672,15 @@ static int cdns_mhdp_fw_activate(const struct firmware *fw,
 	unsigned int reg;
 	int ret;
 
-	/* Release uCPU reset and stall it. */
+	 
 	writel(CDNS_CPU_STALL, mhdp->regs + CDNS_APB_CTRL);
 
 	memcpy_toio(mhdp->regs + CDNS_MHDP_IMEM, fw->data, fw->size);
 
-	/* Leave debug mode, release stall */
+	 
 	writel(0, mhdp->regs + CDNS_APB_CTRL);
 
-	/*
-	 * Wait for the KEEP_ALIVE "message" on the first 8 bits.
-	 * Updated each sched "tick" (~2ms)
-	 */
+	 
 	ret = readl_poll_timeout(mhdp->regs + CDNS_KEEP_ALIVE, reg,
 				 reg & CDNS_KEEP_ALIVE_MASK, 500,
 				 CDNS_KEEP_ALIVE_TIMEOUT);
@@ -744,13 +694,13 @@ static int cdns_mhdp_fw_activate(const struct firmware *fw,
 	if (ret)
 		return ret;
 
-	/* Init events to 0 as it's not cleared by FW at boot but on read */
+	 
 	readl(mhdp->regs + CDNS_SW_EVENT0);
 	readl(mhdp->regs + CDNS_SW_EVENT1);
 	readl(mhdp->regs + CDNS_SW_EVENT2);
 	readl(mhdp->regs + CDNS_SW_EVENT3);
 
-	/* Activate uCPU */
+	 
 	ret = cdns_mhdp_set_firmware_active(mhdp, true);
 	if (ret)
 		return ret;
@@ -759,15 +709,7 @@ static int cdns_mhdp_fw_activate(const struct firmware *fw,
 
 	mhdp->hw_state = MHDP_HW_READY;
 
-	/*
-	 * Here we must keep the lock while enabling the interrupts
-	 * since it would otherwise be possible that interrupt enable
-	 * code is executed after the bridge is detached. The similar
-	 * situation is not possible in attach()/detach() callbacks
-	 * since the hw_state changes from MHDP_HW_READY to
-	 * MHDP_HW_STOPPED happens only due to driver removal when
-	 * bridge should already be detached.
-	 */
+	 
 	cdns_mhdp_bridge_hpd_enable(&mhdp->bridge);
 
 	spin_unlock(&mhdp->start_lock);
@@ -798,14 +740,7 @@ static void cdns_mhdp_fw_cb(const struct firmware *fw, void *context)
 	if (ret)
 		return;
 
-	/*
-	 *  XXX how to make sure the bridge is still attached when
-	 *      calling drm_kms_helper_hotplug_event() after releasing
-	 *      the lock? We should not hold the spin lock when
-	 *      calling drm_kms_helper_hotplug_event() since it may
-	 *      cause a dead lock. FB-dev console calls detect from the
-	 *      same thread just down the call stack started here.
-	 */
+	 
 	spin_lock(&mhdp->start_lock);
 	bridge_attached = mhdp->bridge_attached;
 	spin_unlock(&mhdp->start_lock);
@@ -882,7 +817,7 @@ static int cdns_mhdp_link_training_init(struct cdns_mhdp_device *mhdp)
 	drm_dp_dpcd_writeb(&mhdp->aux, DP_TRAINING_PATTERN_SET,
 			   DP_TRAINING_PATTERN_DISABLE);
 
-	/* Reset PHY configuration */
+	 
 	reg32 = CDNS_PHY_COMMON_CONFIG | CDNS_PHY_TRAINING_TYPE(1);
 	if (!mhdp->host.scrambler)
 		reg32 |= CDNS_PHY_SCRAMBLER_BYPASS;
@@ -939,7 +874,7 @@ static void cdns_mhdp_get_adjust_train(struct cdns_mhdp_device *mhdp,
 	max_volt_swing = CDNS_VOLT_SWING(mhdp->host.volt_swing);
 
 	for (i = 0; i < mhdp->link.num_lanes; i++) {
-		/* Check if Voltage swing and pre-emphasis are within limits */
+		 
 		adjust = drm_dp_get_adjust_request_voltage(link_status, i);
 		set_volt = min(adjust, max_volt_swing);
 
@@ -947,11 +882,7 @@ static void cdns_mhdp_get_adjust_train(struct cdns_mhdp_device *mhdp,
 		set_pre = min(adjust, max_pre_emph)
 			  >> DP_TRAIN_PRE_EMPHASIS_SHIFT;
 
-		/*
-		 * Voltage swing level and pre-emphasis level combination is
-		 * not allowed: leaving pre-emphasis as-is, and adjusting
-		 * voltage swing.
-		 */
+		 
 		if (set_volt + set_pre > 3)
 			set_volt = 3 - set_pre;
 
@@ -1053,7 +984,7 @@ static bool cdns_mhdp_link_training_channel_eq(struct cdns_mhdp_device *mhdp,
 
 	dev_dbg(mhdp->dev, "Starting EQ phase\n");
 
-	/* Enable link training TPS[eq_tps] in PHY */
+	 
 	reg32 = CDNS_PHY_COMMON_CONFIG | CDNS_PHY_TRAINING_EN |
 		CDNS_PHY_TRAINING_TYPE(eq_tps);
 	if (eq_tps != 4)
@@ -1158,7 +1089,7 @@ void cdns_mhdp_validate_cr(struct cdns_mhdp_device *mhdp, bool *cr_done,
 		if (same_pre && same_volt)
 			*same_before_adjust = true;
 
-		/* 3.1.5.2 in DP Standard v1.4. Table 3-1 */
+		 
 		if (!*cr_done && req_volt[i] + req_pre[i] >= 3) {
 			*max_swing_reached = true;
 			return;
@@ -1222,7 +1153,7 @@ static bool cdns_mhdp_link_training_cr(struct cdns_mhdp_device *mhdp)
 			return true;
 		}
 
-		/* Not all CR_DONE bits set */
+		 
 		fail_counter_cr_long++;
 
 		if (same_before_adjust) {
@@ -1231,10 +1162,7 @@ static bool cdns_mhdp_link_training_cr(struct cdns_mhdp_device *mhdp)
 		}
 
 		fail_counter_short = 0;
-		/*
-		 * Voltage swing/pre-emphasis adjust requested
-		 * during CR phase
-		 */
+		 
 		cdns_mhdp_adjust_requested_cr(mhdp, link_status,
 					      requested_adjust_volt_swing,
 					      requested_adjust_pre_emphasis);
@@ -1335,7 +1263,7 @@ static int cdns_mhdp_link_training(struct cdns_mhdp_device *mhdp,
 	reg32 |= CDNS_DP_FRAMER_EN;
 	cdns_mhdp_reg_write(mhdp, CDNS_DP_FRAMER_GLOBAL_CONFIG, reg32);
 
-	/* Reset PHY config */
+	 
 	reg32 = CDNS_PHY_COMMON_CONFIG | CDNS_PHY_TRAINING_TYPE(1);
 	if (!mhdp->host.scrambler)
 		reg32 |= CDNS_PHY_SCRAMBLER_BYPASS;
@@ -1343,7 +1271,7 @@ static int cdns_mhdp_link_training(struct cdns_mhdp_device *mhdp,
 
 	return 0;
 err:
-	/* Reset PHY config */
+	 
 	reg32 = CDNS_PHY_COMMON_CONFIG | CDNS_PHY_TRAINING_TYPE(1);
 	if (!mhdp->host.scrambler)
 		reg32 |= CDNS_PHY_SCRAMBLER_BYPASS;
@@ -1371,7 +1299,7 @@ static void cdns_mhdp_fill_host_caps(struct cdns_mhdp_device *mhdp)
 {
 	unsigned int link_rate;
 
-	/* Get source capabilities based on PHY attributes */
+	 
 
 	mhdp->host.lanes_cnt = mhdp->phy->attrs.bus_width;
 	if (!mhdp->host.lanes_cnt)
@@ -1381,7 +1309,7 @@ static void cdns_mhdp_fill_host_caps(struct cdns_mhdp_device *mhdp)
 	if (!link_rate)
 		link_rate = drm_dp_bw_code_to_link_rate(DP_LINK_BW_8_1);
 	else
-		/* PHY uses Mb/s, DRM uses tens of kb/s. */
+		 
 		link_rate *= 100;
 
 	mhdp->host.link_rate = link_rate;
@@ -1405,18 +1333,18 @@ static void cdns_mhdp_fill_sink_caps(struct cdns_mhdp_device *mhdp,
 	mhdp->sink.enhanced = !!(mhdp->link.capabilities &
 				 DP_LINK_CAP_ENHANCED_FRAMING);
 
-	/* Set SSC support */
+	 
 	mhdp->sink.ssc = !!(dpcd[DP_MAX_DOWNSPREAD] &
 				  DP_MAX_DOWNSPREAD_0_5);
 
-	/* Set TPS support */
+	 
 	mhdp->sink.pattern_supp = CDNS_SUPPORT_TPS(1) | CDNS_SUPPORT_TPS(2);
 	if (drm_dp_tps3_supported(dpcd))
 		mhdp->sink.pattern_supp |= CDNS_SUPPORT_TPS(3);
 	if (drm_dp_tps4_supported(dpcd))
 		mhdp->sink.pattern_supp |= CDNS_SUPPORT_TPS(4);
 
-	/* Set fast link support */
+	 
 	mhdp->sink.fast_link = !!(dpcd[DP_MAX_DOWNSPREAD] &
 				  DP_NO_AUX_HANDSHAKE_LINK_TRAINING);
 }
@@ -1460,7 +1388,7 @@ static int cdns_mhdp_link_up(struct cdns_mhdp_device *mhdp)
 	mhdp->link.rate = cdns_mhdp_max_link_rate(mhdp);
 	mhdp->link.num_lanes = cdns_mhdp_max_num_lanes(mhdp);
 
-	/* Disable framer for link training */
+	 
 	err = cdns_mhdp_reg_read(mhdp, CDNS_DP_FRAMER_GLOBAL_CONFIG, &resp);
 	if (err < 0) {
 		dev_err(mhdp->dev,
@@ -1472,7 +1400,7 @@ static int cdns_mhdp_link_up(struct cdns_mhdp_device *mhdp)
 	resp &= ~CDNS_DP_FRAMER_EN;
 	cdns_mhdp_reg_write(mhdp, CDNS_DP_FRAMER_GLOBAL_CONFIG, resp);
 
-	/* Spread AMP if required, enable 8b/10b coding */
+	 
 	amp[0] = cdns_mhdp_get_ssc_supported(mhdp) ? DP_SPREAD_AMP_0_5 : 0;
 	amp[1] = DP_SET_ANSI_8B10B;
 	drm_dp_dpcd_write(&mhdp->aux, DP_DOWNSPREAD_CTRL, amp, 2);
@@ -1533,10 +1461,7 @@ static int cdns_mhdp_get_modes(struct drm_connector *connector)
 	num_modes = drm_add_edid_modes(connector, edid);
 	kfree(edid);
 
-	/*
-	 * HACK: Warn about unsupported display formats until we deal
-	 *       with them correctly.
-	 */
+	 
 	if (connector->display_info.color_formats &&
 	    !(connector->display_info.color_formats &
 	      mhdp->display_fmt.color_format))
@@ -1594,12 +1519,7 @@ bool cdns_mhdp_bandwidth_ok(struct cdns_mhdp_device *mhdp,
 {
 	u32 max_bw, req_bw, bpp;
 
-	/*
-	 * mode->clock is expressed in kHz. Multiplying by bpp and dividing by 8
-	 * we get the number of kB/s. DisplayPort applies a 8b-10b encoding, the
-	 * value thus equals the bandwidth in 10kb/s units, which matches the
-	 * units of the rate parameter.
-	 */
+	 
 
 	bpp = cdns_mhdp_get_bpp(&mhdp->display_fmt);
 	req_bw = mode->clock * bpp / 8;
@@ -1755,7 +1675,7 @@ static int cdns_mhdp_attach(struct drm_bridge *bridge,
 
 	spin_unlock(&mhdp->start_lock);
 
-	/* Enable SW event interrupts */
+	 
 	if (hw_ready)
 		cdns_mhdp_bridge_hpd_enable(bridge);
 
@@ -1780,10 +1700,7 @@ static void cdns_mhdp_configure_video(struct cdns_mhdp_device *mhdp,
 	pxlfmt = mhdp->display_fmt.color_format;
 	bpc = mhdp->display_fmt.bpc;
 
-	/*
-	 * If YCBCR supported and stream not SD, use ITU709
-	 * Need to handle ITU version with YCBCR420 when supported
-	 */
+	 
 	if ((pxlfmt == DRM_COLOR_FORMAT_YCBCR444 ||
 	     pxlfmt == DRM_COLOR_FORMAT_YCBCR422) && mode->crtc_vdisplay >= 720)
 		misc0 = DP_YCBCR_COEFFICIENTS_ITU709;
@@ -1898,7 +1815,7 @@ static void cdns_mhdp_configure_video(struct cdns_mhdp_device *mhdp,
 		misc1 = DP_TEST_INTERLACED;
 	if (mhdp->display_fmt.y_only)
 		misc1 |= CDNS_DP_TEST_COLOR_FORMAT_RAW_Y_ONLY;
-	/* Use VSC SDP for Y420 */
+	 
 	if (pxlfmt == DRM_COLOR_FORMAT_YCBCR420)
 		misc1 = CDNS_DP_TEST_VSC_SDP;
 
@@ -1945,7 +1862,7 @@ static void cdns_mhdp_sst_enable(struct cdns_mhdp_device *mhdp,
 	u32 tu_size = 64;
 	u32 bpp;
 
-	/* Get rate in MSymbols per second per lane */
+	 
 	rate = mhdp->link.rate / 1000;
 
 	bpp = cdns_mhdp_get_bpp(&mhdp->display_fmt);
@@ -2008,7 +1925,7 @@ static void cdns_mhdp_atomic_enable(struct drm_bridge *bridge,
 	if (mhdp->info && mhdp->info->ops && mhdp->info->ops->enable)
 		mhdp->info->ops->enable(mhdp);
 
-	/* Enable VIF clock for stream 0 */
+	 
 	ret = cdns_mhdp_reg_read(mhdp, CDNS_DPTX_CAR, &resp);
 	if (ret < 0) {
 		dev_err(mhdp->dev, "Failed to read CDNS_DPTX_CAR %d\n", ret);
@@ -2090,7 +2007,7 @@ static void cdns_mhdp_atomic_disable(struct drm_bridge *bridge,
 
 	cdns_mhdp_link_down(mhdp);
 
-	/* Disable VIF clock for stream 0 */
+	 
 	cdns_mhdp_reg_read(mhdp, CDNS_DPTX_CAR, &resp);
 	cdns_mhdp_reg_write(mhdp, CDNS_DPTX_CAR,
 			    resp & ~(CDNS_VIF_CLK_EN | CDNS_VIF_CLK_RSTN));
@@ -2202,10 +2119,7 @@ static int cdns_mhdp_atomic_check(struct drm_bridge *bridge,
 		return -EINVAL;
 	}
 
-	/*
-	 * There might be flags negotiation supported in future.
-	 * Set the bus flags in atomic_check statically for now.
-	 */
+	 
 	if (mhdp->info)
 		bridge_state->input_bus_cfg.flags = *mhdp->info->input_bus_flags;
 
@@ -2252,7 +2166,7 @@ static bool cdns_mhdp_detect_hpd(struct cdns_mhdp_device *mhdp, bool *hpd_pulse)
 
 	hpd_event = cdns_mhdp_read_hpd_event(mhdp);
 
-	/* Getting event bits failed, bail out */
+	 
 	if (hpd_event < 0) {
 		dev_warn(mhdp->dev, "%s: read event failed: %d\n",
 			 __func__, hpd_event);
@@ -2293,25 +2207,17 @@ static int cdns_mhdp_update_link_status(struct cdns_mhdp_device *mhdp)
 		goto out;
 	}
 
-	/*
-	 * If we get a HPD pulse event and we were and still are connected,
-	 * check the link status. If link status is ok, there's nothing to do
-	 * as we don't handle DP interrupts. If link status is bad, continue
-	 * with full link setup.
-	 */
+	 
 	if (hpd_pulse && old_plugged == mhdp->plugged) {
 		ret = drm_dp_dpcd_read_link_status(&mhdp->aux, status);
 
-		/*
-		 * If everything looks fine, just return, as we don't handle
-		 * DP IRQs.
-		 */
+		 
 		if (ret > 0 &&
 		    drm_dp_channel_eq_ok(status, mhdp->link.num_lanes) &&
 		    drm_dp_clock_recovery_ok(status, mhdp->link.num_lanes))
 			goto out;
 
-		/* If link is bad, mark link as down so that we do a new LT */
+		 
 		mhdp->link_up = false;
 	}
 
@@ -2365,17 +2271,14 @@ static void cdns_mhdp_modeset_retry_fn(struct work_struct *work)
 
 	conn = &mhdp->connector;
 
-	/* Grab the locks before changing connector property */
+	 
 	mutex_lock(&conn->dev->mode_config.mutex);
 
-	/*
-	 * Set connector link status to BAD and send a Uevent to notify
-	 * userspace to do a modeset.
-	 */
+	 
 	drm_connector_set_link_status_property(conn, DRM_MODE_LINK_STATUS_BAD);
 	mutex_unlock(&conn->dev->mode_config.mutex);
 
-	/* Send Hotplug uevent so userspace can reprobe */
+	 
 	drm_kms_helper_hotplug_event(mhdp->bridge.dev);
 }
 
@@ -2391,12 +2294,7 @@ static irqreturn_t cdns_mhdp_irq_handler(int irq, void *data)
 
 	sw_ev0 = readl(mhdp->regs + CDNS_SW_EVENT0);
 
-	/*
-	 *  Calling drm_kms_helper_hotplug_event() when not attached
-	 *  to drm device causes an oops because the drm_bridge->dev
-	 *  is NULL. See cdns_mhdp_fw_cb() comments for details about the
-	 *  problems related drm_kms_helper_hotplug_event() call.
-	 */
+	 
 	spin_lock(&mhdp->start_lock);
 	bridge_attached = mhdp->bridge_attached;
 	spin_unlock(&mhdp->start_lock);
@@ -2543,11 +2441,11 @@ static int cdns_mhdp_probe(struct platform_device *pdev)
 
 	cdns_mhdp_fill_host_caps(mhdp);
 
-	/* Initialize link rate and num of lanes to host values */
+	 
 	mhdp->link.rate = mhdp->host.link_rate;
 	mhdp->link.num_lanes = mhdp->host.lanes_cnt;
 
-	/* The only currently supported format */
+	 
 	mhdp->display_fmt.y_only = false;
 	mhdp->display_fmt.color_format = DRM_COLOR_FORMAT_RGB444;
 	mhdp->display_fmt.bpc = 8;
@@ -2564,7 +2462,7 @@ static int cdns_mhdp_probe(struct platform_device *pdev)
 		goto plat_fini;
 	}
 
-	/* Initialize the work for modeset in case of link train failure */
+	 
 	INIT_WORK(&mhdp->modeset_retry_work, cdns_mhdp_modeset_retry_fn);
 	INIT_WORK(&mhdp->hpd_work, cdns_mhdp_hpd_work);
 
@@ -2631,7 +2529,7 @@ static int cdns_mhdp_remove(struct platform_device *pdev)
 
 	cancel_work_sync(&mhdp->modeset_retry_work);
 	flush_work(&mhdp->hpd_work);
-	/* Ignoring mhdp->hdcp.check_work and mhdp->hdcp.prop_work here. */
+	 
 
 	clk_disable_unprepare(mhdp->clk);
 
@@ -2648,7 +2546,7 @@ static const struct of_device_id mhdp_ids[] = {
 	  },
 	},
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mhdp_ids);
 

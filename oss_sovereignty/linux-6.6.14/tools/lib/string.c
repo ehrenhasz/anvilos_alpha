@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/tools/lib/string.c
- *
- *  Copied from linux/lib/string.c, where it is:
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  More specifically, the first copied function was strtobool, which
- *  was introduced by:
- *
- *  d0f1fed29e6e ("Add a strtobool function matching semantics of existing in kernel equivalents")
- *  Author: Jonathan Cameron <jic23@cam.ac.uk>
- */
+
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -20,12 +8,7 @@
 #include <linux/ctype.h>
 #include <linux/compiler.h>
 
-/**
- * memdup - duplicate region of memory
- *
- * @src: memory region to duplicate
- * @len: memory region length
- */
+ 
 void *memdup(const void *src, size_t len)
 {
 	void *p = malloc(len);
@@ -36,15 +19,7 @@ void *memdup(const void *src, size_t len)
 	return p;
 }
 
-/**
- * strtobool - convert common user inputs into boolean values
- * @s: input string
- * @res: result
- *
- * This routine returns 0 iff the first character is one of 'Yy1Nn0', or
- * [oO][NnFf] for "on" and "off". Otherwise it will return -EINVAL.  Value
- * pointed to by res is updated upon finding a match.
- */
+ 
 int strtobool(const char *s, bool *res)
 {
 	if (!s)
@@ -82,20 +57,7 @@ int strtobool(const char *s, bool *res)
 	return -EINVAL;
 }
 
-/**
- * strlcpy - Copy a C-string into a sized buffer
- * @dest: Where to copy the string to
- * @src: Where to copy the string from
- * @size: size of destination buffer
- *
- * Compatible with *BSD: the result is always a valid
- * NUL-terminated string that fits in the buffer (unless,
- * of course, the buffer size is zero). It does not pad
- * out the result like strncpy() does.
- *
- * If libc has strlcpy() then that version will override this
- * implementation:
- */
+ 
 #ifdef __clang__
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wignored-attributes"
@@ -115,12 +77,7 @@ size_t __weak strlcpy(char *dest, const char *src, size_t size)
 #pragma clang diagnostic pop
 #endif
 
-/**
- * skip_spaces - Removes leading whitespace from @str.
- * @str: The string to be stripped.
- *
- * Returns a pointer to the first non-whitespace character in @str.
- */
+ 
 char *skip_spaces(const char *str)
 {
 	while (isspace(*str))
@@ -128,14 +85,7 @@ char *skip_spaces(const char *str)
 	return (char *)str;
 }
 
-/**
- * strim - Removes leading and trailing whitespace from @s.
- * @s: The string to be stripped.
- *
- * Note that the first trailing whitespace is replaced with a %NUL-terminator
- * in the given string @s. Returns a pointer to the first non-whitespace
- * character in @s.
- */
+ 
 char *strim(char *s)
 {
 	size_t size;
@@ -153,14 +103,7 @@ char *strim(char *s)
 	return skip_spaces(s);
 }
 
-/**
- * strreplace - Replace all occurrences of character in string.
- * @s: The string to operate on.
- * @old: The character being replaced.
- * @new: The character @old is replaced with.
- *
- * Returns pointer to the nul byte at the end of @s.
- */
+ 
 char *strreplace(char *s, char old, char new)
 {
 	for (; *s; ++s)
@@ -180,15 +123,7 @@ static void *check_bytes8(const u8 *start, u8 value, unsigned int bytes)
 	return NULL;
 }
 
-/**
- * memchr_inv - Find an unmatching character in an area of memory.
- * @start: The memory area
- * @c: Find a character other than c
- * @bytes: The size of the area.
- *
- * returns the address of the first character other than @c, or %NULL
- * if the whole buffer contains just @c.
- */
+ 
 void *memchr_inv(const void *start, int c, size_t bytes)
 {
 	u8 value = c;

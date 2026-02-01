@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2003-2005	Devicescape Software, Inc.
- * Copyright (c) 2006	Jiri Benc <jbenc@suse.cz>
- * Copyright 2007	Johannes Berg <johannes@sipsolutions.net>
- * Copyright (C) 2015	Intel Deutschland GmbH
- * Copyright (C) 2021-2022   Intel Corporation
- */
+
+ 
 
 #include <linux/kobject.h>
 #include <linux/slab.h>
@@ -92,7 +86,7 @@ static ssize_t key_tx_spec_write(struct file *file, const char __user *userbuf,
 	case WLAN_CIPHER_SUITE_WEP104:
 		return -EINVAL;
 	case WLAN_CIPHER_SUITE_TKIP:
-		/* not supported yet */
+		 
 		return -EOPNOTSUPP;
 	case WLAN_CIPHER_SUITE_CCMP:
 	case WLAN_CIPHER_SUITE_CCMP_256:
@@ -105,7 +99,7 @@ static ssize_t key_tx_spec_write(struct file *file, const char __user *userbuf,
 		ret = kstrtou64_from_user(userbuf, count, 16, &pn);
 		if (ret)
 			return ret;
-		/* PN is a 48-bit counter */
+		 
 		if (pn >= (1ULL << 48))
 			return -ERANGE;
 		atomic64_set(&key->conf.tx_pn, pn);

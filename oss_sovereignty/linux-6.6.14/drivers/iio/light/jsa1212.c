@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * JSA1212 Ambient Light & Proximity Sensor Driver
- *
- * Copyright (c) 2014, Intel Corporation.
- *
- * JSA1212 I2C slave address: 0x44(ADDR tied to GND), 0x45(ADDR tied to VDD)
- *
- * TODO: Interrupt support, thresholds, range support.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -20,7 +12,7 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* JSA1212 reg address */
+ 
 #define JSA1212_CONF_REG		0x01
 #define JSA1212_INT_REG			0x02
 #define JSA1212_PXS_LT_REG		0x03
@@ -34,7 +26,7 @@
 #define JSA1212_ALS_RNG_REG		0x0B
 #define JSA1212_MAX_REG			0x0C
 
-/* JSA1212 reg masks */
+ 
 #define JSA1212_CONF_MASK		0xFF
 #define JSA1212_INT_MASK		0xFF
 #define JSA1212_PXS_LT_MASK		0xFF
@@ -49,7 +41,7 @@
 #define JSA1212_ALS_DT2_MASK		0x0F
 #define JSA1212_ALS_RNG_MASK		0x07
 
-/* JSA1212 CONF REG bits */
+ 
 #define JSA1212_CONF_PXS_MASK		0x80
 #define JSA1212_CONF_PXS_ENABLE		0x80
 #define JSA1212_CONF_PXS_DISABLE	0x00
@@ -57,7 +49,7 @@
 #define JSA1212_CONF_ALS_ENABLE		0x04
 #define JSA1212_CONF_ALS_DISABLE	0x00
 #define JSA1212_CONF_IRDR_MASK		0x08
-/* Proxmity sensing IRDR current sink settings */
+ 
 #define JSA1212_CONF_IRDR_200MA		0x08
 #define JSA1212_CONF_IRDR_100MA		0x00
 #define JSA1212_CONF_PXS_SLP_MASK	0x70
@@ -70,7 +62,7 @@
 #define JSA1212_CONF_PXS_SLP_400MS	0x10
 #define JSA1212_CONF_PXS_SLP_800MS	0x00
 
-/* JSA1212 INT REG bits */
+ 
 #define JSA1212_INT_CTRL_MASK		0x01
 #define JSA1212_INT_CTRL_EITHER		0x00
 #define JSA1212_INT_CTRL_BOTH		0x01
@@ -89,14 +81,14 @@
 #define JSA1212_INT_PXS_FLAG_MASK	0x80
 #define JSA1212_INT_PXS_FLAG_CLR	0x00
 
-/* JSA1212 ALS RNG REG bits */
+ 
 #define JSA1212_ALS_RNG_0_2048		0x00
 #define JSA1212_ALS_RNG_0_1024		0x01
 #define JSA1212_ALS_RNG_0_512		0x02
 #define JSA1212_ALS_RNG_0_256		0x03
 #define JSA1212_ALS_RNG_0_128		0x04
 
-/* JSA1212 INT threshold range */
+ 
 #define JSA1212_ALS_TH_MIN	0x0000
 #define JSA1212_ALS_TH_MAX	0x0FFF
 #define JSA1212_PXS_TH_MIN	0x00
@@ -117,16 +109,16 @@ struct jsa1212_data {
 	struct i2c_client *client;
 	struct mutex lock;
 	u8 als_rng_idx;
-	bool als_en; /* ALS enable status */
-	bool pxs_en; /* proximity enable status */
+	bool als_en;  
+	bool pxs_en;  
 	struct regmap *regmap;
 };
 
-/* ALS range idx to val mapping */
+ 
 static const int jsa1212_als_range_val[] = {2048, 1024, 512, 256, 128,
 						128, 128, 128};
 
-/* Enables or disables ALS function based on status */
+ 
 static int jsa1212_als_enable(struct jsa1212_data *data, u8 status)
 {
 	int ret;
@@ -142,7 +134,7 @@ static int jsa1212_als_enable(struct jsa1212_data *data, u8 status)
 	return 0;
 }
 
-/* Enables or disables PXS function based on status */
+ 
 static int jsa1212_pxs_enable(struct jsa1212_data *data, u8 status)
 {
 	int ret;
@@ -168,10 +160,10 @@ static int jsa1212_read_als_data(struct jsa1212_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Delay for data output */
+	 
 	msleep(JSA1212_ALS_DELAY_MS);
 
-	/* Read 12 bit data */
+	 
 	ret = regmap_bulk_read(data->regmap, JSA1212_ALS_DT1_REG, &als_data, 2);
 	if (ret < 0) {
 		dev_err(&data->client->dev, "als data read err\n");
@@ -194,10 +186,10 @@ static int jsa1212_read_pxs_data(struct jsa1212_data *data,
 	if (ret < 0)
 		return ret;
 
-	/* Delay for data output */
+	 
 	msleep(JSA1212_PXS_DELAY_MS);
 
-	/* Read out all data */
+	 
 	ret = regmap_read(data->regmap, JSA1212_PXS_DATA_REG, &pxs_data);
 	if (ret < 0) {
 		dev_err(&data->client->dev, "pxs data read err\n");
@@ -237,7 +229,7 @@ static int jsa1212_read_raw(struct iio_dev *indio_dev,
 		switch (chan->type) {
 		case IIO_LIGHT:
 			*val = jsa1212_als_range_val[data->als_rng_idx];
-			*val2 = BIT(12); /* Max 12 bit value */
+			*val2 = BIT(12);  
 			return IIO_VAL_FRACTIONAL;
 		default:
 			break;
@@ -351,7 +343,7 @@ static int jsa1212_probe(struct i2c_client *client)
 	return ret;
 }
 
- /* power off the device */
+  
 static int jsa1212_power_off(struct jsa1212_data *data)
 {
 	int ret;

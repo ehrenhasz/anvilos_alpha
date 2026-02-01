@@ -1,32 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+
+ 
 
 #include "kfd_mqd_manager.h"
 #include "amdgpu_amdkfd.h"
 #include "kfd_device_queue_manager.h"
 
-/* Mapping queue priority to pipe priority, indexed by queue priority */
+ 
 int pipe_priority_map[] = {
 	KFD_PIPE_PRIORITY_CS_LOW,
 	KFD_PIPE_PRIORITY_CS_LOW,
@@ -114,10 +93,7 @@ void mqd_symmetrically_map_cu_mask(struct mqd_manager *mm,
 	if (cu_mask_count > cu_active_per_node)
 		cu_mask_count = cu_active_per_node;
 
-	/* Exceeding these bounds corrupts the stack and indicates a coding error.
-	 * Returning with no CU's enabled will hang the queue, which should be
-	 * attention grabbing.
-	 */
+	 
 	if (cu_info.num_shader_engines > KFD_MAX_NUM_SE) {
 		pr_err("Exceeded KFD_MAX_NUM_SE, chip reports %d\n", cu_info.num_shader_engines);
 		return;
@@ -131,59 +107,14 @@ void mqd_symmetrically_map_cu_mask(struct mqd_manager *mm,
 	cu_bitmap_sh_mul = (KFD_GC_VERSION(mm->dev) >= IP_VERSION(11, 0, 0) &&
 			    KFD_GC_VERSION(mm->dev) < IP_VERSION(12, 0, 0)) ? 2 : 1;
 
-	/* Count active CUs per SH.
-	 *
-	 * Some CUs in an SH may be disabled.	HW expects disabled CUs to be
-	 * represented in the high bits of each SH's enable mask (the upper and lower
-	 * 16 bits of se_mask) and will take care of the actual distribution of
-	 * disabled CUs within each SH automatically.
-	 * Each half of se_mask must be filled only on bits 0-cu_per_sh[se][sh]-1.
-	 *
-	 * See note on Arcturus cu_bitmap layout in gfx_v9_0_get_cu_info.
-	 * See note on GFX11 cu_bitmap layout in gfx_v11_0_get_cu_info.
-	 */
+	 
 	for (se = 0; se < cu_info.num_shader_engines; se++)
 		for (sh = 0; sh < cu_info.num_shader_arrays_per_engine; sh++)
 			cu_per_sh[se][sh] = hweight32(
 				cu_info.cu_bitmap[xcc_inst][se % 4][sh + (se / 4) *
 				cu_bitmap_sh_mul]);
 
-	/* Symmetrically map cu_mask to all SEs & SHs:
-	 * se_mask programs up to 2 SH in the upper and lower 16 bits.
-	 *
-	 * Examples
-	 * Assuming 1 SH/SE, 4 SEs:
-	 * cu_mask[0] bit0 -> se_mask[0] bit0
-	 * cu_mask[0] bit1 -> se_mask[1] bit0
-	 * ...
-	 * cu_mask[0] bit4 -> se_mask[0] bit1
-	 * ...
-	 *
-	 * Assuming 2 SH/SE, 4 SEs
-	 * cu_mask[0] bit0 -> se_mask[0] bit0 (SE0,SH0,CU0)
-	 * cu_mask[0] bit1 -> se_mask[1] bit0 (SE1,SH0,CU0)
-	 * ...
-	 * cu_mask[0] bit4 -> se_mask[0] bit16 (SE0,SH1,CU0)
-	 * cu_mask[0] bit5 -> se_mask[1] bit16 (SE1,SH1,CU0)
-	 * ...
-	 * cu_mask[0] bit8 -> se_mask[0] bit1 (SE0,SH0,CU1)
-	 * ...
-	 *
-	 * For GFX 9.4.3, the following code only looks at a
-	 * subset of the cu_mask corresponding to the inst parameter.
-	 * If we have n XCCs under one GPU node
-	 * cu_mask[0] bit0 -> XCC0 se_mask[0] bit0 (XCC0,SE0,SH0,CU0)
-	 * cu_mask[0] bit1 -> XCC1 se_mask[0] bit0 (XCC1,SE0,SH0,CU0)
-	 * ..
-	 * cu_mask[0] bitn -> XCCn se_mask[0] bit0 (XCCn,SE0,SH0,CU0)
-	 * cu_mask[0] bit n+1 -> XCC0 se_mask[1] bit0 (XCC0,SE1,SH0,CU0)
-	 *
-	 * For example, if there are 6 XCCs under 1 KFD node, this code
-	 * running for each inst, will look at the bits as:
-	 * inst, inst + 6, inst + 12...
-	 *
-	 * First ensure all CUs are disabled, then enable user specified CUs.
-	 */
+	 
 	for (i = 0; i < cu_info.num_shader_engines; i++)
 		se_mask[i] = 0;
 
@@ -247,10 +178,7 @@ int kfd_load_mqd_sdma(struct mqd_manager *mm, void *mqd,
 						mms);
 }
 
-/*
- * preempt type here is ignored because there is only one way
- * to preempt sdma queue
- */
+ 
 int kfd_destroy_mqd_sdma(struct mqd_manager *mm, void *mqd,
 		     enum kfd_preempt_type type,
 		     unsigned int timeout, uint32_t pipe_id,

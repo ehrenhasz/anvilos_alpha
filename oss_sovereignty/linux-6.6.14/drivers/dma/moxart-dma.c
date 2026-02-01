@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MOXA ART SoCs DMA Engine support.
- *
- * Copyright (C) 2013 Jonas Jensen
- *
- * Jonas Jensen <jonas.jensen@gmail.com>
- */
+
+ 
 
 #include <linux/dmaengine.h>
 #include <linux/dma-mapping.h>
@@ -42,10 +36,7 @@
 #define APB_DMA_ERR_INT_STS			BIT(4)
 #define APB_DMA_ERR_INT_EN			BIT(5)
 
-/*
- * Unset: APB
- * Set:   AHB
- */
+ 
 #define APB_DMA_SOURCE_SELECT			0x40
 #define APB_DMA_DEST_SELECT			0x80
 
@@ -55,15 +46,7 @@
 #define APB_DMA_SOURCE_MASK			0x700
 #define APB_DMA_DEST_MASK			0x7000
 
-/*
- * 000: No increment
- * 001: +1 (Burst=0), +4  (Burst=1)
- * 010: +2 (Burst=0), +8  (Burst=1)
- * 011: +4 (Burst=0), +16 (Burst=1)
- * 101: -1 (Burst=0), -4  (Burst=1)
- * 110: -2 (Burst=0), -8  (Burst=1)
- * 111: -4 (Burst=0), -16 (Burst=1)
- */
+ 
 #define APB_DMA_SOURCE_INC_0			0
 #define APB_DMA_SOURCE_INC_1_4			0x100
 #define APB_DMA_SOURCE_INC_2_8			0x200
@@ -79,15 +62,7 @@
 #define APB_DMA_DEST_DEC_2_8			0x6000
 #define APB_DMA_DEST_DEC_4_16			0x7000
 
-/*
- * Request signal select source/destination address for DMA hardware handshake.
- *
- * The request line number is a property of the DMA controller itself,
- * e.g. MMC must always request channels where dma_slave_config->slave_id is 5.
- *
- * 0:    No request / Grant signal
- * 1-15: Request    / Grant signal
- */
+ 
 #define APB_DMA_SOURCE_REQ_NO			0x1000000
 #define APB_DMA_SOURCE_REQ_NO_MASK		0xf000000
 #define APB_DMA_DEST_REQ_NO			0x10000
@@ -95,13 +70,7 @@
 
 #define APB_DMA_DATA_WIDTH			0x100000
 #define APB_DMA_DATA_WIDTH_MASK			0x300000
-/*
- * Data width of transfer:
- *
- * 00: Word
- * 01: Half
- * 10: Byte
- */
+ 
 #define APB_DMA_DATA_WIDTH_4			0
 #define APB_DMA_DATA_WIDTH_2			0x100000
 #define APB_DMA_DATA_WIDTH_1			0x200000
@@ -379,10 +348,7 @@ static void moxart_set_transfer_params(struct moxart_chan *ch, unsigned int len)
 
 	d->dma_cycles = len >> sglen_div;
 
-	/*
-	 * There are 4 cycles on 64 bytes copied, i.e. one cycle copies 16
-	 * bytes ( when width is APB_DMAB_DATA_WIDTH_4 ).
-	 */
+	 
 	writel(d->dma_cycles, ch->base + REG_OFF_CYCLES);
 
 	dev_dbg(chan2dev(&ch->vc.chan), "%s: set %u DMA cycles (len=%u)\n",
@@ -481,9 +447,7 @@ static enum dma_status moxart_tx_status(struct dma_chan *chan,
 	enum dma_status ret;
 	unsigned long flags;
 
-	/*
-	 * dma_cookie_status() assigns initial residue value.
-	 */
+	 
 	ret = dma_cookie_status(chan, cookie, txstate);
 
 	spin_lock_irqsave(&ch->vc.lock, flags);

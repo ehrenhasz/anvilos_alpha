@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2017 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/slab.h>
@@ -10,9 +8,9 @@
 #include <media/cec-pin.h>
 #include "cec-pin-priv.h"
 
-/* All timings are in microseconds */
+ 
 
-/* start bit timings */
+ 
 #define CEC_TIM_START_BIT_LOW		3700
 #define CEC_TIM_START_BIT_LOW_MIN	3500
 #define CEC_TIM_START_BIT_LOW_MAX	3900
@@ -20,7 +18,7 @@
 #define CEC_TIM_START_BIT_TOTAL_MIN	4300
 #define CEC_TIM_START_BIT_TOTAL_MAX	4700
 
-/* data bit timings */
+ 
 #define CEC_TIM_DATA_BIT_0_LOW		1500
 #define CEC_TIM_DATA_BIT_0_LOW_MIN	1300
 #define CEC_TIM_DATA_BIT_0_LOW_MAX	1700
@@ -30,35 +28,29 @@
 #define CEC_TIM_DATA_BIT_TOTAL		2400
 #define CEC_TIM_DATA_BIT_TOTAL_MIN	2050
 #define CEC_TIM_DATA_BIT_TOTAL_MAX	2750
-/* earliest safe time to sample the bit state */
+ 
 #define CEC_TIM_DATA_BIT_SAMPLE		850
-/* earliest time the bit is back to 1 (T7 + 50) */
+ 
 #define CEC_TIM_DATA_BIT_HIGH		1750
 
-/* when idle, sample once per millisecond */
+ 
 #define CEC_TIM_IDLE_SAMPLE		1000
-/* when processing the start bit, sample twice per millisecond */
+ 
 #define CEC_TIM_START_BIT_SAMPLE	500
-/* when polling for a state change, sample once every 50 microseconds */
+ 
 #define CEC_TIM_SAMPLE			50
 
 #define CEC_TIM_LOW_DRIVE_ERROR		(1.5 * CEC_TIM_DATA_BIT_TOTAL)
 
-/*
- * Total data bit time that is too short/long for a valid bit,
- * used for error injection.
- */
+ 
 #define CEC_TIM_DATA_BIT_TOTAL_SHORT	1800
 #define CEC_TIM_DATA_BIT_TOTAL_LONG	2900
 
-/*
- * Total start bit time that is too short/long for a valid bit,
- * used for error injection.
- */
+ 
 #define CEC_TIM_START_BIT_TOTAL_SHORT	4100
 #define CEC_TIM_START_BIT_TOTAL_LONG	5000
 
-/* Data bits are 0-7, EOM is bit 8 and ACK is bit 9 */
+ 
 #define EOM_BIT				8
 #define ACK_BIT				9
 
@@ -322,10 +314,7 @@ static bool tx_low_drive(struct cec_pin *pin)
 
 static void cec_pin_to_idle(struct cec_pin *pin)
 {
-	/*
-	 * Reset all status fields, release the bus and
-	 * go to idle state.
-	 */
+	 
 	pin->rx_bit = pin->tx_bit = 0;
 	pin->rx_msg.len = 0;
 	memset(pin->rx_msg.msg, 0, sizeof(pin->rx_msg.msg));
@@ -341,32 +330,7 @@ static void cec_pin_to_idle(struct cec_pin *pin)
 	pin->state = CEC_ST_IDLE;
 }
 
-/*
- * Handle Transmit-related states
- *
- * Basic state changes when transmitting:
- *
- * Idle -> Tx Wait (waiting for the end of signal free time) ->
- *	Tx Start Bit Low -> Tx Start Bit High ->
- *
- *   Regular data bits + EOM:
- *	Tx Data 0 Low -> Tx Data 0 High ->
- *   or:
- *	Tx Data 1 Low -> Tx Data 1 High ->
- *
- *   First 4 data bits or Ack bit:
- *	Tx Data 0 Low -> Tx Data 0 High ->
- *   or:
- *	Tx Data 1 Low -> Tx Data 1 High -> Tx Data 1 Pre Sample ->
- *		Tx Data 1 Post Sample ->
- *
- *   After the last Ack go to Idle.
- *
- * If it detects a Low Drive condition then:
- *	Tx Wait For High -> Idle
- *
- * If it loses arbitration, then it switches to state Rx Data Post Sample.
- */
+ 
 static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 {
 	bool v;
@@ -380,27 +344,21 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 
 	case CEC_ST_TX_START_BIT_LOW:
 		if (tx_short_start(pin)) {
-			/*
-			 * Error Injection: send an invalid (too short)
-			 * start pulse.
-			 */
+			 
 			pin->state = CEC_ST_TX_START_BIT_HIGH_SHORT;
 		} else if (tx_long_start(pin)) {
-			/*
-			 * Error Injection: send an invalid (too long)
-			 * start pulse.
-			 */
+			 
 			pin->state = CEC_ST_TX_START_BIT_HIGH_LONG;
 		} else {
 			pin->state = CEC_ST_TX_START_BIT_HIGH;
 		}
-		/* Generate start bit */
+		 
 		cec_pin_high(pin);
 		break;
 
 	case CEC_ST_TX_START_BIT_LOW_CUSTOM:
 		pin->state = CEC_ST_TX_START_BIT_HIGH_CUSTOM;
-		/* Generate start bit */
+		 
 		cec_pin_high(pin);
 		break;
 
@@ -424,19 +382,9 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 	case CEC_ST_TX_DATA_BIT_1_HIGH:
 	case CEC_ST_TX_DATA_BIT_1_HIGH_SHORT:
 	case CEC_ST_TX_DATA_BIT_1_HIGH_LONG:
-		/*
-		 * If the read value is 1, then all is OK, otherwise we have a
-		 * low drive condition.
-		 *
-		 * Special case: when we generate a poll message due to an
-		 * Arbitration Lost error injection, then ignore this since
-		 * the pin can actually be low in that case.
-		 */
+		 
 		if (!cec_pin_read(pin) && !pin->tx_generated_poll) {
-			/*
-			 * It's 0, so someone detected an error and pulled the
-			 * line low for 1.5 times the nominal bit period.
-			 */
+			 
 			pin->tx_msg.len = 0;
 			pin->state = CEC_ST_TX_WAIT_FOR_HIGH;
 			pin->work_tx_ts = ts;
@@ -448,7 +396,7 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 		fallthrough;
 	case CEC_ST_TX_DATA_BIT_HIGH_CUSTOM:
 		if (tx_last_bit(pin)) {
-			/* Error Injection: just stop sending after this bit */
+			 
 			cec_pin_to_idle(pin);
 			pin->tx_msg.len = 0;
 			if (pin->tx_generated_poll)
@@ -465,7 +413,7 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 	case CEC_ST_TX_START_BIT_HIGH_LONG:
 	case CEC_ST_TX_START_BIT_HIGH_CUSTOM:
 		if (tx_low_drive(pin)) {
-			/* Error injection: go to low drive */
+			 
 			cec_pin_low(pin);
 			pin->state = CEC_ST_TX_LOW_DRIVE;
 			pin->tx_msg.len = 0;
@@ -490,12 +438,7 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 
 		switch (pin->tx_bit % 10) {
 		default: {
-			/*
-			 * In the CEC_ERROR_INJ_TX_ADD_BYTES case we transmit
-			 * extra bytes, so pin->tx_bit / 10 can become >= 16.
-			 * Generate bit values for those extra bytes instead
-			 * of reading them from the transmit buffer.
-			 */
+			 
 			unsigned int idx = (pin->tx_bit / 10);
 			u8 val = idx;
 
@@ -515,11 +458,11 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 			v = !pin->tx_post_eom && tx_byte_idx == tot_len - 1;
 			if (tot_len > 1 && tx_byte_idx == tot_len - 2 &&
 			    tx_early_eom(pin)) {
-				/* Error injection: set EOM one byte early */
+				 
 				v = true;
 				pin->tx_post_eom = true;
 			} else if (v && tx_no_eom(pin)) {
-				/* Error injection: no EOM */
+				 
 				v = false;
 			}
 			pin->state = v ? CEC_ST_TX_DATA_BIT_1_LOW :
@@ -542,11 +485,11 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 		if (v && (pin->tx_bit < 4 || is_ack_bit)) {
 			pin->state = CEC_ST_TX_DATA_BIT_1_HIGH_PRE_SAMPLE;
 		} else if (!is_ack_bit && tx_short_bit(pin)) {
-			/* Error Injection: send an invalid (too short) bit */
+			 
 			pin->state = v ? CEC_ST_TX_DATA_BIT_1_HIGH_SHORT :
 					 CEC_ST_TX_DATA_BIT_0_HIGH_SHORT;
 		} else if (!is_ack_bit && tx_long_bit(pin)) {
-			/* Error Injection: send an invalid (too long) bit */
+			 
 			pin->state = v ? CEC_ST_TX_DATA_BIT_1_HIGH_LONG :
 					 CEC_ST_TX_DATA_BIT_0_HIGH_LONG;
 		} else {
@@ -562,17 +505,10 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 		break;
 
 	case CEC_ST_TX_DATA_BIT_1_HIGH_PRE_SAMPLE:
-		/* Read the CEC value at the sample time */
+		 
 		v = cec_pin_read(pin);
 		is_ack_bit = pin->tx_bit % 10 == ACK_BIT;
-		/*
-		 * If v == 0 and we're within the first 4 bits
-		 * of the initiator, then someone else started
-		 * transmitting and we lost the arbitration
-		 * (i.e. the logical address of the other
-		 * transmitter has more leading 0 bits in the
-		 * initiator).
-		 */
+		 
 		if (!v && !is_ack_bit && !pin->tx_generated_poll) {
 			pin->tx_msg.len = 0;
 			pin->work_tx_ts = ts;
@@ -591,31 +527,20 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 		}
 		pin->state = CEC_ST_TX_DATA_BIT_1_HIGH_POST_SAMPLE;
 		if (!is_ack_bit && tx_short_bit(pin)) {
-			/* Error Injection: send an invalid (too short) bit */
+			 
 			pin->state = CEC_ST_TX_DATA_BIT_1_HIGH_POST_SAMPLE_SHORT;
 		} else if (!is_ack_bit && tx_long_bit(pin)) {
-			/* Error Injection: send an invalid (too long) bit */
+			 
 			pin->state = CEC_ST_TX_DATA_BIT_1_HIGH_POST_SAMPLE_LONG;
 		}
 		if (!is_ack_bit)
 			break;
-		/* Was the message ACKed? */
+		 
 		ack = cec_msg_is_broadcast(&pin->tx_msg) ? v : !v;
 		if (!ack && (!pin->tx_ignore_nack_until_eom ||
 		    pin->tx_bit / 10 == pin->tx_msg.len - 1) &&
 		    !pin->tx_post_eom) {
-			/*
-			 * Note: the CEC spec is ambiguous regarding
-			 * what action to take when a NACK appears
-			 * before the last byte of the payload was
-			 * transmitted: either stop transmitting
-			 * immediately, or wait until the last byte
-			 * was transmitted.
-			 *
-			 * Most CEC implementations appear to stop
-			 * immediately, and that's what we do here
-			 * as well.
-			 */
+			 
 			pin->tx_nacked = true;
 		}
 		break;
@@ -634,21 +559,7 @@ static void cec_pin_tx_states(struct cec_pin *pin, ktime_t ts)
 	}
 }
 
-/*
- * Handle Receive-related states
- *
- * Basic state changes when receiving:
- *
- *	Rx Start Bit Low -> Rx Start Bit High ->
- *   Regular data bits + EOM:
- *	Rx Data Sample -> Rx Data Post Sample -> Rx Data High ->
- *   Ack bit 0:
- *	Rx Ack Low -> Rx Ack Low Post -> Rx Data High ->
- *   Ack bit 1:
- *	Rx Ack High Post -> Rx Data High ->
- *   Ack bit 0 && EOM:
- *	Rx Ack Low -> Rx Ack Low Post -> Rx Ack Finish -> Idle
- */
+ 
 static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 {
 	s32 delta;
@@ -659,14 +570,14 @@ static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 	u8 poll;
 
 	switch (pin->state) {
-	/* Receive states */
+	 
 	case CEC_ST_RX_START_BIT_LOW:
 		v = cec_pin_read(pin);
 		if (!v)
 			break;
 		pin->state = CEC_ST_RX_START_BIT_HIGH;
 		delta = ktime_us_delta(ts, pin->ts);
-		/* Start bit low is too short, go back to idle */
+		 
 		if (delta < CEC_TIM_START_BIT_LOW_MIN - CEC_TIM_IDLE_SAMPLE) {
 			if (!pin->rx_start_bit_low_too_short_cnt++) {
 				pin->rx_start_bit_low_too_short_ts = ktime_to_ns(pin->ts);
@@ -687,10 +598,7 @@ static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 	case CEC_ST_RX_START_BIT_HIGH:
 		v = cec_pin_read(pin);
 		delta = ktime_us_delta(ts, pin->ts);
-		/*
-		 * Unfortunately the spec does not specify when to give up
-		 * and go to idle. We just pick TOTAL_LONG.
-		 */
+		 
 		if (v && delta > CEC_TIM_START_BIT_TOTAL_LONG) {
 			pin->rx_start_bit_too_long_cnt++;
 			cec_pin_to_idle(pin);
@@ -698,7 +606,7 @@ static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 		}
 		if (v)
 			break;
-		/* Start bit is too short, go back to idle */
+		 
 		if (delta < CEC_TIM_START_BIT_TOTAL_MIN - CEC_TIM_IDLE_SAMPLE) {
 			if (!pin->rx_start_bit_too_short_cnt++) {
 				pin->rx_start_bit_too_short_ts = ktime_to_ns(pin->ts);
@@ -708,7 +616,7 @@ static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 			break;
 		}
 		if (rx_low_drive(pin)) {
-			/* Error injection: go to low drive */
+			 
 			cec_pin_low(pin);
 			pin->state = CEC_ST_RX_LOW_DRIVE;
 			pin->rx_low_drive_cnt++;
@@ -745,10 +653,7 @@ static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 	case CEC_ST_RX_DATA_WAIT_FOR_LOW:
 		v = cec_pin_read(pin);
 		delta = ktime_us_delta(ts, pin->ts);
-		/*
-		 * Unfortunately the spec does not specify when to give up
-		 * and go to idle. We just pick TOTAL_LONG.
-		 */
+		 
 		if (v && delta > CEC_TIM_DATA_BIT_TOTAL_LONG) {
 			pin->rx_data_bit_too_long_cnt++;
 			cec_pin_to_idle(pin);
@@ -758,17 +663,14 @@ static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 			break;
 
 		if (rx_low_drive(pin)) {
-			/* Error injection: go to low drive */
+			 
 			cec_pin_low(pin);
 			pin->state = CEC_ST_RX_LOW_DRIVE;
 			pin->rx_low_drive_cnt++;
 			break;
 		}
 
-		/*
-		 * Go to low drive state when the total bit time is
-		 * too short.
-		 */
+		 
 		if (delta < CEC_TIM_DATA_BIT_TOTAL_MIN) {
 			if (!pin->rx_data_bit_too_short_cnt++) {
 				pin->rx_data_bit_too_short_ts = ktime_to_ns(pin->ts);
@@ -787,18 +689,18 @@ static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 
 		dest = cec_msg_destination(&pin->rx_msg);
 		bcast = dest == CEC_LOG_ADDR_BROADCAST;
-		/* for_us == broadcast or directed to us */
+		 
 		for_us = bcast || (pin->la_mask & (1 << dest));
-		/* ACK bit value */
+		 
 		ack = bcast ? 1 : !for_us;
 
 		if (for_us && rx_nack(pin)) {
-			/* Error injection: toggle the ACK bit */
+			 
 			ack = !ack;
 		}
 
 		if (ack) {
-			/* No need to write to the bus, just wait */
+			 
 			pin->state = CEC_ST_RX_ACK_HIGH_POST;
 			break;
 		}
@@ -835,10 +737,7 @@ static void cec_pin_rx_states(struct cec_pin *pin, ktime_t ts)
 	}
 }
 
-/*
- * Main timer function
- *
- */
+ 
 static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 {
 	struct cec_pin *pin = container_of(timer, struct cec_pin, timer);
@@ -852,7 +751,7 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 		delta = ktime_us_delta(ts, pin->timer_ts);
 		pin->timer_cnt++;
 		if (delta > 100 && pin->state != CEC_ST_IDLE) {
-			/* Keep track of timer overruns */
+			 
 			pin->timer_sum_overrun += delta;
 			pin->timer_100us_overruns++;
 			if (delta > 300)
@@ -865,10 +764,7 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 		cec_pin_read(pin);
 
 	if (pin->wait_usecs) {
-		/*
-		 * If we are monitoring the pin, then we have to
-		 * sample at regular intervals.
-		 */
+		 
 		if (pin->wait_usecs > 150) {
 			pin->wait_usecs -= 100;
 			pin->timer_ts = ktime_add_us(ts, 100);
@@ -890,7 +786,7 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 	}
 
 	switch (pin->state) {
-	/* Transmit states */
+	 
 	case CEC_ST_TX_WAIT_FOR_HIGH:
 	case CEC_ST_TX_START_BIT_LOW:
 	case CEC_ST_TX_START_BIT_HIGH:
@@ -917,7 +813,7 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 		cec_pin_tx_states(pin, ts);
 		break;
 
-	/* Receive states */
+	 
 	case CEC_ST_RX_START_BIT_LOW:
 	case CEC_ST_RX_START_BIT_HIGH:
 	case CEC_ST_RX_DATA_SAMPLE:
@@ -933,16 +829,10 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 	case CEC_ST_IDLE:
 	case CEC_ST_TX_WAIT:
 		if (!cec_pin_high(pin)) {
-			/* Start bit, switch to receive state */
+			 
 			pin->ts = ts;
 			pin->state = CEC_ST_RX_START_BIT_LOW;
-			/*
-			 * If a transmit is pending, then that transmit should
-			 * use a signal free time of no more than
-			 * CEC_SIGNAL_FREE_TIME_NEW_INITIATOR since it will
-			 * have a new initiator due to the receive that is now
-			 * starting.
-			 */
+			 
 			if (pin->tx_msg.len && pin->tx_signal_free_time >
 			    CEC_SIGNAL_FREE_TIME_NEW_INITIATOR)
 				pin->tx_signal_free_time =
@@ -952,10 +842,7 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 		if (ktime_to_ns(pin->ts) == 0)
 			pin->ts = ts;
 		if (pin->tx_msg.len) {
-			/*
-			 * Check if the bus has been free for long enough
-			 * so we can kick off the pending transmit.
-			 */
+			 
 			delta = ktime_us_delta(ts, pin->ts);
 			if (delta / CEC_TIM_DATA_BIT_TOTAL >=
 			    pin->tx_signal_free_time) {
@@ -964,7 +851,7 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 					pin->state = CEC_ST_TX_START_BIT_LOW_CUSTOM;
 				else
 					pin->state = CEC_ST_TX_START_BIT_LOW;
-				/* Generate start bit */
+				 
 				cec_pin_low(pin);
 				break;
 			}
@@ -975,7 +862,7 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 		}
 		if (pin->tx_custom_pulse && pin->state == CEC_ST_IDLE) {
 			pin->tx_custom_pulse = false;
-			/* Generate custom pulse */
+			 
 			cec_pin_low(pin);
 			pin->state = CEC_ST_TX_PULSE_LOW_CUSTOM;
 			break;
@@ -984,7 +871,7 @@ static enum hrtimer_restart cec_pin_timer(struct hrtimer *timer)
 		    pin->enable_irq_failed || adap->is_configuring ||
 		    adap->is_configured || adap->monitor_all_cnt || !adap->monitor_pin_cnt)
 			break;
-		/* Switch to interrupt mode */
+		 
 		atomic_set(&pin->work_irq_change, CEC_PIN_IRQ_ENABLE);
 		pin->state = CEC_ST_RX_IRQ;
 		wake_up_interruptible(&pin->kthread_waitq);
@@ -1052,11 +939,11 @@ static int cec_pin_thread_func(void *_adap)
 
 			if (msg->len > 1 && msg->len < CEC_MAX_MSG_SIZE &&
 			    rx_add_byte(pin)) {
-				/* Error injection: add byte to the message */
+				 
 				msg->msg[msg->len++] = 0x55;
 			}
 			if (msg->len > 2 && rx_remove_byte(pin)) {
-				/* Error injection: remove byte from message */
+				 
 				msg->len--;
 			}
 			if (msg->len > CEC_MAX_MSG_SIZE)
@@ -1188,11 +1075,7 @@ static int cec_pin_adap_transmit(struct cec_adapter *adap, u8 attempts,
 {
 	struct cec_pin *pin = adap->pin;
 
-	/*
-	 * If a receive is in progress, then this transmit should use
-	 * a signal free time of max CEC_SIGNAL_FREE_TIME_NEW_INITIATOR
-	 * since when it starts transmitting it will have a new initiator.
-	 */
+	 
 	if (pin->state != CEC_ST_IDLE &&
 	    signal_free_time > CEC_SIGNAL_FREE_TIME_NEW_INITIATOR)
 		signal_free_time = CEC_SIGNAL_FREE_TIME_NEW_INITIATOR;
@@ -1201,11 +1084,11 @@ static int cec_pin_adap_transmit(struct cec_adapter *adap, u8 attempts,
 	pin->tx_extra_bytes = 0;
 	pin->tx_msg = *msg;
 	if (msg->len > 1) {
-		/* Error injection: add byte to the message */
+		 
 		pin->tx_extra_bytes = tx_add_bytes(pin);
 	}
 	if (msg->len > 2 && tx_remove_byte(pin)) {
-		/* Error injection: remove byte from the message */
+		 
 		pin->tx_msg.len--;
 	}
 	pin->work_tx_status = 0;

@@ -1,49 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Octeon Watchdog driver
- *
- * Copyright (C) 2007-2017 Cavium, Inc.
- *
- * Converted to use WATCHDOG_CORE by Aaro Koskinen <aaro.koskinen@iki.fi>.
- *
- * Some parts derived from wdt.c
- *
- *	(c) Copyright 1996-1997 Alan Cox <alan@lxorguk.ukuu.org.uk>,
- *						All Rights Reserved.
- *
- *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
- *	warranty for any of this software. This material is provided
- *	"AS-IS" and at no charge.
- *
- *	(c) Copyright 1995    Alan Cox <alan@lxorguk.ukuu.org.uk>
- *
- * The OCTEON watchdog has a maximum timeout of 2^32 * io_clock.
- * For most systems this is less than 10 seconds, so to allow for
- * software to request longer watchdog heartbeats, we maintain software
- * counters to count multiples of the base rate.  If the system locks
- * up in such a manner that we can not run the software counters, the
- * only result is a watchdog reset sooner than was requested.  But
- * that is OK, because in this case userspace would likely not be able
- * to do anything anyhow.
- *
- * The hardware watchdog interval we call the period.  The OCTEON
- * watchdog goes through several stages, after the first period an
- * irq is asserted, then if it is not reset, after the next period NMI
- * is asserted, then after an additional period a chip wide soft reset.
- * So for the software counters, we reset watchdog after each period
- * and decrement the counter.  But for the last two periods we need to
- * let the watchdog progress to the NMI stage so we disable the irq
- * and let it proceed.  Once in the NMI, we print the register state
- * to the serial port and then wait for the reset.
- *
- * A watchdog is maintained for each CPU in the system, that way if
- * one CPU suffers a lockup, we also get a register dump and reset.
- * The userspace ping resets the watchdog on all CPUs.
- *
- * Before userspace opens the watchdog device, we still run the
- * watchdogs to catch any lockups that may be kernel related.
- *
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -64,28 +20,28 @@
 #include <asm/octeon/cvmx-ciu2-defs.h>
 #include <asm/octeon/cvmx-rst-defs.h>
 
-/* Watchdog interrupt major block number (8 MSBs of intsn) */
+ 
 #define WD_BLOCK_NUMBER		0x01
 
 static int divisor;
 
-/* The count needed to achieve timeout_sec. */
+ 
 static unsigned int timeout_cnt;
 
-/* The maximum period supported. */
+ 
 static unsigned int max_timeout_sec;
 
-/* The current period.  */
+ 
 static unsigned int timeout_sec;
 
-/* Set to non-zero when userspace countdown mode active */
+ 
 static bool do_countdown;
 static unsigned int countdown_reset;
 static unsigned int per_cpu_countdown[NR_CPUS];
 
 static cpumask_t irq_enabled_cpus;
 
-#define WD_TIMO 60			/* Default heartbeat = 60 seconds */
+#define WD_TIMO 60			 
 
 #define CVMX_GSERX_SCRATCH(offset) (CVMX_ADD_IO_SEG(0x0001180090000020ull) + ((offset) & 15) * 0x1000000ull)
 
@@ -119,14 +75,7 @@ static int cpu2core(int cpu)
 #endif
 }
 
-/**
- * octeon_wdt_poke_irq - Poke the watchdog when an interrupt is received
- *
- * @cpl:
- * @dev_id:
- *
- * Returns
- */
+ 
 static irqreturn_t octeon_wdt_poke_irq(int cpl, void *dev_id)
 {
 	int cpu = raw_smp_processor_id();
@@ -135,42 +84,33 @@ static irqreturn_t octeon_wdt_poke_irq(int cpl, void *dev_id)
 
 	if (do_countdown) {
 		if (per_cpu_countdown[cpu] > 0) {
-			/* We're alive, poke the watchdog */
+			 
 			cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
 			per_cpu_countdown[cpu]--;
 		} else {
-			/* Bad news, you are about to reboot. */
+			 
 			disable_irq_nosync(cpl);
 			cpumask_clear_cpu(cpu, &irq_enabled_cpus);
 		}
 	} else {
-		/* Not open, just ping away... */
+		 
 		cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
 	}
 	return IRQ_HANDLED;
 }
 
-/* From setup.c */
+ 
 extern int prom_putchar(char c);
 
-/**
- * octeon_wdt_write_string - Write a string to the uart
- *
- * @str:        String to write
- */
+ 
 static void octeon_wdt_write_string(const char *str)
 {
-	/* Just loop writing one byte at a time */
+	 
 	while (*str)
 		prom_putchar(*str++);
 }
 
-/**
- * octeon_wdt_write_hex() - Write a hex number out of the uart
- *
- * @value:      Number to display
- * @digits:     Number of digits to print (1 to 16)
- */
+ 
 static void octeon_wdt_write_hex(u64 value, int digits)
 {
 	int d;
@@ -192,36 +132,19 @@ static const char reg_name[][3] = {
 	"t8", "t9", "k0", "k1", "gp", "sp", "s8", "ra"
 };
 
-/**
- * octeon_wdt_nmi_stage3:
- *
- * NMI stage 3 handler. NMIs are handled in the following manner:
- * 1) The first NMI handler enables CVMSEG and transfers from
- * the bootbus region into normal memory. It is careful to not
- * destroy any registers.
- * 2) The second stage handler uses CVMSEG to save the registers
- * and create a stack for C code. It then calls the third level
- * handler with one argument, a pointer to the register values.
- * 3) The third, and final, level handler is the following C
- * function that prints out some useful infomration.
- *
- * @reg:    Pointer to register state before the NMI
- */
+ 
 void octeon_wdt_nmi_stage3(u64 reg[32])
 {
 	u64 i;
 
 	unsigned int coreid = cvmx_get_core_num();
-	/*
-	 * Save status and cause early to get them before any changes
-	 * might happen.
-	 */
+	 
 	u64 cp0_cause = read_c0_cause();
 	u64 cp0_status = read_c0_status();
 	u64 cp0_error_epc = read_c0_errorepc();
 	u64 cp0_epc = read_c0_epc();
 
-	/* Delay so output from all cores output is not jumbled together. */
+	 
 	udelay(85000 * coreid);
 
 	octeon_wdt_write_string("\r\n*** NMI Watchdog interrupt on Core 0x");
@@ -248,7 +171,7 @@ void octeon_wdt_nmi_stage3(u64 reg[32])
 	octeon_wdt_write_hex(cp0_cause, 16);
 	octeon_wdt_write_string("\r\n");
 
-	/* The CIU register is different for each Octeon model. */
+	 
 	if (OCTEON_IS_MODEL(OCTEON_CN68XX)) {
 		octeon_wdt_write_string("\tsrc_wd\t0x");
 		octeon_wdt_write_hex(cvmx_read_csr(CVMX_CIU2_SRC_PPX_IP2_WDOG(coreid)), 16);
@@ -273,27 +196,20 @@ void octeon_wdt_nmi_stage3(u64 reg[32])
 
 	octeon_wdt_write_string("*** Chip soft reset soon ***\r\n");
 
-	/*
-	 * G-30204: We must trigger a soft reset before watchdog
-	 * does an incomplete job of doing it.
-	 */
+	 
 	if (OCTEON_IS_OCTEON3() && !OCTEON_IS_MODEL(OCTEON_CN70XX)) {
 		u64 scr;
 		unsigned int node = cvmx_get_node_num();
 		unsigned int lcore = cvmx_get_local_core_num();
 		union cvmx_ciu_wdogx ciu_wdog;
 
-		/*
-		 * Wait for other cores to print out information, but
-		 * not too long.  Do the soft reset before watchdog
-		 * can trigger it.
-		 */
+		 
 		do {
 			ciu_wdog.u64 = cvmx_read_csr_node(node, CVMX_CIU_WDOGX(lcore));
 		} while (ciu_wdog.s.cnt > 0x10000);
 
 		scr = cvmx_read_csr_node(0, CVMX_GSERX_SCRATCH(0));
-		scr |= 1 << 11; /* Indicate watchdog in bit 11 */
+		scr |= 1 << 11;  
 		cvmx_write_csr_node(0, CVMX_GSERX_SCRATCH(0), scr);
 		cvmx_write_csr_node(0, CVMX_RST_SOFT_RST, 1);
 	}
@@ -332,10 +248,10 @@ static int octeon_wdt_cpu_pre_down(unsigned int cpu)
 
 	node = cpu_to_node(cpu);
 
-	/* Poke the watchdog to clear out its state */
+	 
 	cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
 
-	/* Disable the hardware. */
+	 
 	ciu_wdog.u64 = 0;
 	cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), ciu_wdog.u64);
 
@@ -357,17 +273,17 @@ static int octeon_wdt_cpu_online(unsigned int cpu)
 
 	octeon_wdt_bootvector[core].target_ptr = (u64)octeon_wdt_nmi_stage2;
 
-	/* Disable it before doing anything with the interrupts. */
+	 
 	ciu_wdog.u64 = 0;
 	cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), ciu_wdog.u64);
 
 	per_cpu_countdown[cpu] = countdown_reset;
 
 	if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
-		/* Must get the domain for the watchdog block */
+		 
 		domain = octeon_irq_get_block_domain(node, WD_BLOCK_NUMBER);
 
-		/* Get a irq for the wd intsn (hardware interrupt) */
+		 
 		hwirq = WD_BLOCK_NUMBER << 12 | 0x200 | core;
 		irq = irq_create_mapping(domain, hwirq);
 		irqd_set_trigger_type(irq_get_irq_data(irq),
@@ -379,7 +295,7 @@ static int octeon_wdt_cpu_online(unsigned int cpu)
 			IRQF_NO_THREAD, "octeon_wdt", octeon_wdt_poke_irq))
 		panic("octeon_wdt: Couldn't obtain irq %d", irq);
 
-	/* Must set the irq affinity here */
+	 
 	if (octeon_has_feature(OCTEON_FEATURE_CIU3)) {
 		cpumask_t mask;
 
@@ -390,13 +306,13 @@ static int octeon_wdt_cpu_online(unsigned int cpu)
 
 	cpumask_set_cpu(cpu, &irq_enabled_cpus);
 
-	/* Poke the watchdog to clear out its state */
+	 
 	cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(core), 1);
 
-	/* Finally enable the watchdog now that all handlers are installed */
+	 
 	ciu_wdog.u64 = 0;
 	ciu_wdog.s.len = timeout_cnt;
-	ciu_wdog.s.mode = 3;	/* 3 = Interrupt + NMI + Soft-Reset */
+	ciu_wdog.s.mode = 3;	 
 	cvmx_write_csr_node(node, CVMX_CIU_WDOGX(core), ciu_wdog.u64);
 
 	return 0;
@@ -418,7 +334,7 @@ static int octeon_wdt_ping(struct watchdog_device __always_unused *wdog)
 		per_cpu_countdown[cpu] = countdown_reset;
 		if ((countdown_reset || !do_countdown) &&
 		    !cpumask_test_cpu(cpu, &irq_enabled_cpus)) {
-			/* We have to enable the irq */
+			 
 			enable_irq(octeon_wdt_cpu_to_irq(cpu));
 			cpumask_set_cpu(cpu, &irq_enabled_cpus);
 		}
@@ -433,19 +349,13 @@ static void octeon_wdt_calc_parameters(int t)
 	timeout_sec = max_timeout_sec;
 
 
-	/*
-	 * Find the largest interrupt period, that can evenly divide
-	 * the requested heartbeat time.
-	 */
+	 
 	while ((t % timeout_sec) != 0)
 		timeout_sec--;
 
 	periods = t / timeout_sec;
 
-	/*
-	 * The last two periods are after the irq is disabled, and
-	 * then to the nmi, so we subtract them off.
-	 */
+	 
 
 	countdown_reset = periods > 2 ? periods - 2 : 0;
 	heartbeat = t;
@@ -474,11 +384,11 @@ static int octeon_wdt_set_timeout(struct watchdog_device *wdog,
 		cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(coreid), 1);
 		ciu_wdog.u64 = 0;
 		ciu_wdog.s.len = timeout_cnt;
-		ciu_wdog.s.mode = 3;	/* 3 = Interrupt + NMI + Soft-Reset */
+		ciu_wdog.s.mode = 3;	 
 		cvmx_write_csr_node(node, CVMX_CIU_WDOGX(coreid), ciu_wdog.u64);
 		cvmx_write_csr_node(node, CVMX_CIU_PP_POKEX(coreid), 1);
 	}
-	octeon_wdt_ping(wdog); /* Get the irqs back on. */
+	octeon_wdt_ping(wdog);  
 	return 0;
 }
 
@@ -515,11 +425,7 @@ static struct watchdog_device octeon_wdt = {
 };
 
 static enum cpuhp_state octeon_wdt_online;
-/**
- * octeon_wdt_init - Module/ driver initialization.
- *
- * Returns Zero on success
- */
+ 
 static int __init octeon_wdt_init(void)
 {
 	int ret;
@@ -537,14 +443,7 @@ static int __init octeon_wdt_init(void)
 	else
 		divisor = 0x100;
 
-	/*
-	 * Watchdog time expiration length = The 16 bits of LEN
-	 * represent the most significant bits of a 24 bit decrementer
-	 * that decrements every divisor cycle.
-	 *
-	 * Try for a timeout of 5 sec, if that fails a smaller number
-	 * of even seconds,
-	 */
+	 
 	max_timeout_sec = 6;
 	do {
 		max_timeout_sec--;
@@ -587,9 +486,7 @@ err:
 	return ret;
 }
 
-/**
- * octeon_wdt_cleanup - Module / driver shutdown
- */
+ 
 static void __exit octeon_wdt_cleanup(void)
 {
 	watchdog_unregister_device(&octeon_wdt);
@@ -599,10 +496,7 @@ static void __exit octeon_wdt_cleanup(void)
 
 	cpuhp_remove_state(octeon_wdt_online);
 
-	/*
-	 * Disable the boot-bus memory, the code it points to is soon
-	 * to go missing.
-	 */
+	 
 	cvmx_write_csr(CVMX_MIO_BOOT_LOC_CFGX(0), 0);
 }
 

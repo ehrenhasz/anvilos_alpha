@@ -1,26 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for the mt9m111 sensor
- *
- * Copyright (C) 2008 Erik Andrén
- * Copyright (C) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (C) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- *
- * Some defines taken from the mt9m111 sensor driver
- * Copyright (C) 2008, Robert Jarzmik <robert.jarzmik@free.fr>
- */
+ 
+ 
 
 #ifndef M5602_MT9M111_H_
 #define M5602_MT9M111_H_
 
 #include "m5602_sensor.h"
 
-/*****************************************************************************/
+ 
 
 #define MT9M111_SC_CHIPVER			0x00
 #define MT9M111_SC_ROWSTART			0x01
@@ -98,9 +84,9 @@
 #define MT9M111_BLUE_GAIN_DEFAULT		0x20
 #define MT9M111_RED_GAIN_DEFAULT		0x20
 
-/*****************************************************************************/
+ 
 
-/* Kernel module parameters */
+ 
 extern int force_sensor;
 extern bool dump_sensor;
 

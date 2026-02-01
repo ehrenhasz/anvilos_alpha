@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (C) 2014-2018 Broadcom */
 
-/**
- * DOC: Interrupt management for the V3D engine
- *
- * When we take a bin, render, TFU done, or CSD done interrupt, we
- * need to signal the fence for that job so that the scheduler can
- * queue up the next one and unblock any waiters.
- *
- * When we take the binner out of memory interrupt, we need to
- * allocate some new memory and pass it to the binner so that the
- * current job can make progress.
- */
+ 
+
+ 
 
 #include <linux/platform_device.h>
 
@@ -39,7 +29,7 @@ v3d_overflow_mem_work(struct work_struct *work)
 	struct v3d_dev *v3d =
 		container_of(work, struct v3d_dev, overflow_mem_work);
 	struct drm_device *dev = &v3d->drm;
-	struct v3d_bo *bo = v3d_bo_create(dev, NULL /* XXX: GMP */, 256 * 1024);
+	struct v3d_bo *bo = v3d_bo_create(dev, NULL  , 256 * 1024);
 	struct drm_gem_object *obj;
 	unsigned long irqflags;
 
@@ -49,15 +39,7 @@ v3d_overflow_mem_work(struct work_struct *work)
 	}
 	obj = &bo->base.base;
 
-	/* We lost a race, and our work task came in after the bin job
-	 * completed and exited.  This can happen because the HW
-	 * signals OOM before it's fully OOM, so the binner might just
-	 * barely complete.
-	 *
-	 * If we lose the race and our work task comes in after a new
-	 * bin job got scheduled, that's fine.  We'll just give them
-	 * some binner pool anyway.
-	 */
+	 
 	spin_lock_irqsave(&v3d->job_lock, irqflags);
 	if (!v3d->bin_job) {
 		spin_unlock_irqrestore(&v3d->job_lock, irqflags);
@@ -84,15 +66,11 @@ v3d_irq(int irq, void *arg)
 
 	intsts = V3D_CORE_READ(0, V3D_CTL_INT_STS);
 
-	/* Acknowledge the interrupts we're handling here. */
+	 
 	V3D_CORE_WRITE(0, V3D_CTL_INT_CLR, intsts);
 
 	if (intsts & V3D_INT_OUTOMEM) {
-		/* Note that the OOM status is edge signaled, so the
-		 * interrupt won't happen again until the we actually
-		 * add more memory.  Also, as of V3D 4.1, FLDONE won't
-		 * be reported until any OOM state has been cleared.
-		 */
+		 
 		schedule_work(&v3d->overflow_mem_work);
 		status = IRQ_HANDLED;
 	}
@@ -124,15 +102,11 @@ v3d_irq(int irq, void *arg)
 		status = IRQ_HANDLED;
 	}
 
-	/* We shouldn't be triggering these if we have GMP in
-	 * always-allowed mode.
-	 */
+	 
 	if (intsts & V3D_INT_GMPV)
 		dev_err(v3d->drm.dev, "GMP violation\n");
 
-	/* V3D 4.2 wires the hub and core IRQs together, so if we &
-	 * didn't see the common one then check hub for MMU IRQs.
-	 */
+	 
 	if (v3d->single_irq_line && status == IRQ_NONE)
 		return v3d_hub_irq(irq, arg);
 
@@ -148,7 +122,7 @@ v3d_hub_irq(int irq, void *arg)
 
 	intsts = V3D_READ(V3D_HUB_INT_STS);
 
-	/* Acknowledge the interrupts we're handling here. */
+	 
 	V3D_WRITE(V3D_HUB_INT_CLR, intsts);
 
 	if (intsts & V3D_HUB_INT_TFUC) {
@@ -207,9 +181,7 @@ v3d_irq_init(struct v3d_dev *v3d)
 
 	INIT_WORK(&v3d->overflow_mem_work, v3d_overflow_mem_work);
 
-	/* Clear any pending interrupts someone might have left around
-	 * for us.
-	 */
+	 
 	for (core = 0; core < v3d->cores; core++)
 		V3D_CORE_WRITE(core, V3D_CTL_INT_CLR, V3D_CORE_IRQS);
 	V3D_WRITE(V3D_HUB_INT_CLR, V3D_HUB_IRQS);
@@ -254,7 +226,7 @@ v3d_irq_enable(struct v3d_dev *v3d)
 {
 	int core;
 
-	/* Enable our set of interrupts, masking out any others. */
+	 
 	for (core = 0; core < v3d->cores; core++) {
 		V3D_CORE_WRITE(core, V3D_CTL_INT_MSK_SET, ~V3D_CORE_IRQS);
 		V3D_CORE_WRITE(core, V3D_CTL_INT_MSK_CLR, V3D_CORE_IRQS);
@@ -269,12 +241,12 @@ v3d_irq_disable(struct v3d_dev *v3d)
 {
 	int core;
 
-	/* Disable all interrupts. */
+	 
 	for (core = 0; core < v3d->cores; core++)
 		V3D_CORE_WRITE(core, V3D_CTL_INT_MSK_SET, ~0);
 	V3D_WRITE(V3D_HUB_INT_MSK_SET, ~0);
 
-	/* Clear any pending interrupts we might have left. */
+	 
 	for (core = 0; core < v3d->cores; core++)
 		V3D_CORE_WRITE(core, V3D_CTL_INT_CLR, V3D_CORE_IRQS);
 	V3D_WRITE(V3D_HUB_INT_CLR, V3D_HUB_IRQS);
@@ -282,7 +254,7 @@ v3d_irq_disable(struct v3d_dev *v3d)
 	cancel_work_sync(&v3d->overflow_mem_work);
 }
 
-/** Reinitializes interrupt registers when a GPU reset is performed. */
+ 
 void v3d_irq_reset(struct v3d_dev *v3d)
 {
 	v3d_irq_enable(v3d);

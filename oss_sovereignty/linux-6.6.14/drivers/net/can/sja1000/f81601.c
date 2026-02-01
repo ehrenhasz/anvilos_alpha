@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Fintek F81601 PCIE to 2 CAN controller driver
- *
- * Copyright (C) 2019 Peter Hong <peter_hong@fintek.com.tw>
- * Copyright (C) 2019 Linux Foundation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,14 +29,14 @@
 
 struct f81601_pci_card {
 	void __iomem *addr;
-	spinlock_t lock;	/* use this spin lock only for write access */
+	spinlock_t lock;	 
 	struct pci_dev *dev;
 	struct net_device *net_dev[F81601_PCI_MAX_CHAN];
 };
 
 static const struct pci_device_id f81601_pci_tbl[] = {
 	{ PCI_DEVICE(0x1c29, 0x1703) },
-	{ /* sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(pci, f81601_pci_tbl);
@@ -88,9 +84,7 @@ static void f81601_pci_remove(struct pci_dev *pdev)
 	}
 }
 
-/* Probe F81601 based device for the SJA1000 chips and register each
- * available CAN channel to SJA1000 Socket-CAN subsystem.
- */
+ 
 static int f81601_pci_probe(struct pci_dev *pdev,
 			    const struct pci_device_id *ent)
 {
@@ -141,7 +135,7 @@ static int f81601_pci_probe(struct pci_dev *pdev,
 		goto failure_cleanup;
 	}
 
-	/* read CAN2_HW_EN strap pin to detect how many CANBUS do we have */
+	 
 	count = ARRAY_SIZE(card->net_dev);
 	pci_read_config_byte(pdev, F81601_TRAP_REG, &tmp);
 	if (!(tmp & F81601_CAN2_HAS_EN))
@@ -173,7 +167,7 @@ static int f81601_pci_probe(struct pci_dev *pdev,
 		dev->dev_id = i;
 		dev->irq = pdev->irq;
 
-		/* Register SJA1000 device */
+		 
 		err = register_sja1000dev(dev);
 		if (err) {
 			dev_err(&pdev->dev,

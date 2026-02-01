@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ADDRCONF_H
 #define _ADDRCONF_H
 
-#define MAX_RTR_SOLICITATIONS		-1		/* unlimited */
+#define MAX_RTR_SOLICITATIONS		-1		 
 #define RTR_SOLICITATION_INTERVAL	(4*HZ)
-#define RTR_SOLICITATION_MAX_INTERVAL	(3600*HZ)	/* 1 hour */
+#define RTR_SOLICITATION_MAX_INTERVAL	(3600*HZ)	 
 
-#define MIN_VALID_LIFETIME		(2*3600)	/* 2 hours */
+#define MIN_VALID_LIFETIME		(2*3600)	 
 
 #define TEMP_VALID_LIFETIME		(7*86400)
 #define TEMP_PREFERRED_LIFETIME		(86400)
@@ -54,7 +54,7 @@ struct prefix_info {
 	struct in6_addr		prefix;
 };
 
-/* rfc4861 4.6.2: IPv6 PIO is 32 bytes in size */
+ 
 static_assert(sizeof(struct prefix_info) == 32);
 
 #include <linux/ipv6.h>
@@ -156,19 +156,7 @@ static inline int addrconf_ifid_eui48(u8 *eui, struct net_device *dev)
 	if (dev->addr_len != ETH_ALEN)
 		return -1;
 
-	/*
-	 * The zSeries OSA network cards can be shared among various
-	 * OS instances, but the OSA cards have only one MAC address.
-	 * This leads to duplicate address conflicts in conjunction
-	 * with IPv6 if more than one instance uses the same card.
-	 *
-	 * The driver for these cards can deliver a unique 16-bit
-	 * identifier for each instance sharing the same card.  It is
-	 * placed instead of 0xFFFE in the interface identifier.  The
-	 * "u" bit of the interface identifier is not inverted in this
-	 * case.  Hence the resulting interface identifier has local
-	 * scope according to RFC2373.
-	 */
+	 
 
 	addrconf_addr_eui48_base(eui, dev->dev_addr);
 
@@ -188,11 +176,7 @@ static inline unsigned long addrconf_timeout_fixup(u32 timeout,
 	if (timeout == 0xffffffff)
 		return ~0UL;
 
-	/*
-	 * Avoid arithmetic overflow.
-	 * Assuming unit is constant and non-zero, this "if" statement
-	 * will go away on 64bit archs.
-	 */
+	 
 	if (0xfffffffe > LONG_MAX / unit && timeout > LONG_MAX / unit)
 		return LONG_MAX / unit;
 
@@ -204,18 +188,14 @@ static inline int addrconf_finite_timeout(unsigned long timeout)
 	return ~timeout;
 }
 
-/*
- *	IPv6 Address Label subsystem (addrlabel.c)
- */
+ 
 int ipv6_addr_label_init(void);
 void ipv6_addr_label_cleanup(void);
 int ipv6_addr_label_rtnl_register(void);
 u32 ipv6_addr_label(struct net *net, const struct in6_addr *addr,
 		    int type, int ifindex);
 
-/*
- *	multicast prototypes (mcast.c)
- */
+ 
 static inline bool ipv6_mc_may_pull(struct sk_buff *skb,
 				    unsigned int len)
 {
@@ -251,9 +231,7 @@ bool ipv6_chk_mcast_addr(struct net_device *dev, const struct in6_addr *group,
 
 void ipv6_mc_dad_complete(struct inet6_dev *idev);
 
-/*
- * identify MLD packets for MLD filter exceptions
- */
+ 
 static inline bool ipv6_is_mld(struct sk_buff *skb, int nexthdr, int offset)
 {
 	struct icmp6hdr *hdr;
@@ -279,9 +257,7 @@ static inline bool ipv6_is_mld(struct sk_buff *skb, int nexthdr, int offset)
 void addrconf_prefix_rcv(struct net_device *dev,
 			 u8 *opt, int len, bool sllao);
 
-/*
- *	anycast prototypes (anycast.c)
- */
+ 
 int ipv6_sock_ac_join(struct sock *sk, int ifindex,
 		      const struct in6_addr *addr);
 int ipv6_sock_ac_drop(struct sock *sk, int ifindex,
@@ -299,7 +275,7 @@ bool ipv6_chk_acast_addr_src(struct net *net, struct net_device *dev,
 int ipv6_anycast_init(void);
 void ipv6_anycast_cleanup(void);
 
-/* Device notifier */
+ 
 int register_inet6addr_notifier(struct notifier_block *nb);
 int unregister_inet6addr_notifier(struct notifier_block *nb);
 int inet6addr_notifier_call_chain(unsigned long val, void *v);
@@ -311,26 +287,13 @@ int inet6addr_validator_notifier_call_chain(unsigned long val, void *v);
 void inet6_netconf_notify_devconf(struct net *net, int event, int type,
 				  int ifindex, struct ipv6_devconf *devconf);
 
-/**
- * __in6_dev_get - get inet6_dev pointer from netdevice
- * @dev: network device
- *
- * Caller must hold rcu_read_lock or RTNL, because this function
- * does not take a reference on the inet6_dev.
- */
+ 
 static inline struct inet6_dev *__in6_dev_get(const struct net_device *dev)
 {
 	return rcu_dereference_rtnl(dev->ip6_ptr);
 }
 
-/**
- * __in6_dev_stats_get - get inet6_dev pointer for stats
- * @dev: network device
- * @skb: skb for original incoming interface if neeeded
- *
- * Caller must hold rcu_read_lock or RTNL, because this function
- * does not take a reference on the inet6_dev.
- */
+ 
 static inline struct inet6_dev *__in6_dev_stats_get(const struct net_device *dev,
 						    const struct sk_buff *skb)
 {
@@ -339,12 +302,7 @@ static inline struct inet6_dev *__in6_dev_stats_get(const struct net_device *dev
 	return __in6_dev_get(dev);
 }
 
-/**
- * __in6_dev_get_safely - get inet6_dev pointer from netdevice
- * @dev: network device
- *
- * This is a safer version of __in6_dev_get
- */
+ 
 static inline struct inet6_dev *__in6_dev_get_safely(const struct net_device *dev)
 {
 	if (likely(dev))
@@ -353,14 +311,7 @@ static inline struct inet6_dev *__in6_dev_get_safely(const struct net_device *de
 		return NULL;
 }
 
-/**
- * in6_dev_get - get inet6_dev pointer from netdevice
- * @dev: network device
- *
- * This version can be used in any context, and takes a reference
- * on the inet6_dev. Callers must use in6_dev_put() later to
- * release this reference.
- */
+ 
 static inline struct inet6_dev *in6_dev_get(const struct net_device *dev)
 {
 	struct inet6_dev *idev;
@@ -408,7 +359,7 @@ static inline void in6_dev_hold(struct inet6_dev *idev)
 	refcount_inc(&idev->refcnt);
 }
 
-/* called with rcu_read_lock held */
+ 
 static inline bool ip6_ignore_linkdown(const struct net_device *dev)
 {
 	const struct inet6_dev *idev = __in6_dev_get(dev);
@@ -438,9 +389,7 @@ static inline void in6_ifa_hold(struct inet6_ifaddr *ifp)
 }
 
 
-/*
- *	compute link-local solicited-node multicast address
- */
+ 
 
 static inline void addrconf_addr_solict_mult(const struct in6_addr *addr,
 					     struct in6_addr *solicited)

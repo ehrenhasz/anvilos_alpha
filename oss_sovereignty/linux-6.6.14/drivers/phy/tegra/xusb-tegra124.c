@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -1492,11 +1490,7 @@ static int tegra124_usb3_port_enable(struct tegra_xusb_port *port)
 	value |= XUSB_PADCTL_SS_PORT_MAP_PORTX_MAP(index, usb3->port);
 	padctl_writel(padctl, value, XUSB_PADCTL_SS_PORT_MAP);
 
-	/*
-	 * TODO: move this code into the PCIe/SATA PHY ->power_on() callbacks
-	 * and conditionalize based on mux function? This seems to work, but
-	 * might not be the exact proper sequence.
-	 */
+	 
 	value = padctl_readl(padctl, XUSB_PADCTL_IOPHY_USB3_PADX_CTL2(index));
 	value &= ~((XUSB_PADCTL_IOPHY_USB3_PAD_CTL2_RX_WANDER_MASK <<
 		    XUSB_PADCTL_IOPHY_USB3_PAD_CTL2_RX_WANDER_SHIFT) |
@@ -1560,7 +1554,7 @@ static int tegra124_usb3_port_enable(struct tegra_xusb_port *port)
 	value |= XUSB_PADCTL_IOPHY_MISC_PAD_CTL5_RX_QEYE_EN;
 	padctl_writel(padctl, value, offset);
 
-	/* Enable SATA PHY when SATA lane is used */
+	 
 	if (lane->pad == padctl->sata) {
 		value = padctl_readl(padctl, XUSB_PADCTL_IOPHY_PLL_S0_CTL1);
 		value &= ~(XUSB_PADCTL_IOPHY_PLL_S0_CTL1_PLL0_REFCLK_NDIV_MASK <<

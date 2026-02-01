@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MLO link handling
- *
- * Copyright (C) 2022-2023 Intel Corporation
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/kernel.h>
 #include <net/mac80211.h>
@@ -57,7 +53,7 @@ void ieee80211_link_init(struct ieee80211_sub_if_data *sdata,
 			WARN_ON(!(sdata->wdev.valid_links & BIT(link_id)));
 			break;
 		case NL80211_IFTYPE_STATION:
-			/* station sets the bssid in ieee80211_mgd_setup_link */
+			 
 			break;
 		default:
 			WARN_ON(1);
@@ -159,10 +155,10 @@ static void ieee80211_set_vif_links_bitmaps(struct ieee80211_sub_if_data *sdata,
 
 	switch (sdata->vif.type) {
 	case NL80211_IFTYPE_AP:
-		/* in an AP all links are always active */
+		 
 		sdata->vif.active_links = valid_links;
 
-		/* AP links are not expected to be disabled */
+		 
 		WARN_ON(dormant_links);
 		break;
 	case NL80211_IFTYPE_STATION:
@@ -189,7 +185,7 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
 	struct link_container *links[IEEE80211_MLD_MAX_NUM_LINKS] = {}, *link;
 	struct ieee80211_bss_conf *old[IEEE80211_MLD_MAX_NUM_LINKS];
 	struct ieee80211_link_data *old_data[IEEE80211_MLD_MAX_NUM_LINKS];
-	bool use_deflink = old_links == 0; /* set for error case */
+	bool use_deflink = old_links == 0;  
 
 	sdata_assert_lock(sdata);
 
@@ -198,11 +194,11 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
 	if (old_links == new_links && dormant_links == sdata->vif.dormant_links)
 		return 0;
 
-	/* if there were no old links, need to clear the pointers to deflink */
+	 
 	if (!old_links)
 		rem |= BIT(0);
 
-	/* allocate new link structures first */
+	 
 	for_each_set_bit(link_id, &add, IEEE80211_MLD_MAX_NUM_LINKS) {
 		link = kzalloc(sizeof(*link), GFP_KERNEL);
 		if (!link) {
@@ -212,20 +208,17 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
 		links[link_id] = link;
 	}
 
-	/* keep track of the old pointers for the driver */
+	 
 	BUILD_BUG_ON(sizeof(old) != sizeof(sdata->vif.link_conf));
 	memcpy(old, sdata->vif.link_conf, sizeof(old));
-	/* and for us in error cases */
+	 
 	BUILD_BUG_ON(sizeof(old_data) != sizeof(sdata->link));
 	memcpy(old_data, sdata->link, sizeof(old_data));
 
-	/* grab old links to free later */
+	 
 	for_each_set_bit(link_id, &rem, IEEE80211_MLD_MAX_NUM_LINKS) {
 		if (rcu_access_pointer(sdata->link[link_id]) != &sdata->deflink) {
-			/*
-			 * we must have allocated the data through this path so
-			 * we know we can free both at the same time
-			 */
+			 
 			to_free[link_id] = container_of(rcu_access_pointer(sdata->link[link_id]),
 							typeof(*links[link_id]),
 							data);
@@ -235,7 +228,7 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
 		RCU_INIT_POINTER(sdata->vif.link_conf[link_id], NULL);
 	}
 
-	/* link them into data structures */
+	 
 	for_each_set_bit(link_id, &add, IEEE80211_MLD_MAX_NUM_LINKS) {
 		WARN_ON(!use_deflink &&
 			rcu_access_pointer(sdata->link[link_id]) == &sdata->deflink);
@@ -251,12 +244,12 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
 
 	ret = ieee80211_check_dup_link_addrs(sdata);
 	if (!ret) {
-		/* for keys we will not be able to undo this */
+		 
 		ieee80211_tear_down_links(sdata, to_free, rem);
 
 		ieee80211_set_vif_links_bitmaps(sdata, new_links, dormant_links);
 
-		/* tell the driver */
+		 
 		ret = drv_change_vif_links(sdata->local, sdata,
 					   old_links & old_active,
 					   new_links & sdata->vif.active_links,
@@ -264,21 +257,21 @@ static int ieee80211_vif_update_links(struct ieee80211_sub_if_data *sdata,
 	}
 
 	if (ret) {
-		/* restore config */
+		 
 		memcpy(sdata->link, old_data, sizeof(old_data));
 		memcpy(sdata->vif.link_conf, old, sizeof(old));
 		ieee80211_set_vif_links_bitmaps(sdata, old_links, dormant_links);
-		/* and free (only) the newly allocated links */
+		 
 		memset(to_free, 0, sizeof(links));
 		goto free;
 	}
 
-	/* use deflink/bss_conf again if and only if there are no more links */
+	 
 	use_deflink = new_links == 0;
 
 	goto deinit;
 free:
-	/* if we failed during allocation, only free all */
+	 
 	for (link_id = 0; link_id < IEEE80211_MLD_MAX_NUM_LINKS; link_id++) {
 		kfree(links[link_id]);
 		links[link_id] = NULL;
@@ -307,11 +300,7 @@ void ieee80211_vif_clear_links(struct ieee80211_sub_if_data *sdata)
 {
 	struct link_container *links[IEEE80211_MLD_MAX_NUM_LINKS];
 
-	/*
-	 * The locking here is different because when we free links
-	 * in the station case we need to be able to cancel_work_sync()
-	 * something that also takes the lock.
-	 */
+	 
 
 	sdata_lock(sdata);
 	ieee80211_vif_update_links(sdata, links, 0, 0);
@@ -341,7 +330,7 @@ static int _ieee80211_set_active_links(struct ieee80211_sub_if_data *sdata,
 	if (active_links & ~ieee80211_vif_usable_links(&sdata->vif))
 		return -EINVAL;
 
-	/* nothing to do */
+	 
 	if (old_active == active_links)
 		return 0;
 
@@ -366,7 +355,7 @@ static int _ieee80211_set_active_links(struct ieee80211_sub_if_data *sdata,
 
 		link = sdata_dereference(sdata->link[link_id], sdata);
 
-		/* FIXME: kill TDLS connections on the link */
+		 
 
 		ieee80211_link_release_channel(link);
 	}
@@ -375,7 +364,7 @@ static int _ieee80211_set_active_links(struct ieee80211_sub_if_data *sdata,
 		if (sdata != sta->sdata)
 			continue;
 
-		/* this is very temporary, but do it anyway */
+		 
 		__ieee80211_sta_recalc_aggregates(sta,
 						  old_active | active_links);
 
@@ -399,13 +388,7 @@ static int _ieee80211_set_active_links(struct ieee80211_sub_if_data *sdata,
 					   active_links);
 		WARN_ON_ONCE(ret);
 
-		/*
-		 * Do it again, just in case - the driver might very
-		 * well have called ieee80211_sta_recalc_aggregates()
-		 * from there when filling in the new links, which
-		 * would set it wrong since the vif's active links are
-		 * not switched yet...
-		 */
+		 
 		__ieee80211_sta_recalc_aggregates(sta, active_links);
 	}
 
@@ -460,17 +443,13 @@ int __ieee80211_set_active_links(struct ieee80211_vif *vif, u16 active_links)
 	mutex_lock(&local->key_mtx);
 	old_active = sdata->vif.active_links;
 	if (old_active & active_links) {
-		/*
-		 * if there's at least one link that stays active across
-		 * the change then switch to it (to those) first, and
-		 * then enable the additional links
-		 */
+		 
 		ret = _ieee80211_set_active_links(sdata,
 						  old_active & active_links);
 		if (!ret)
 			ret = _ieee80211_set_active_links(sdata, active_links);
 	} else {
-		/* otherwise switch directly */
+		 
 		ret = _ieee80211_set_active_links(sdata, active_links);
 	}
 	mutex_unlock(&local->key_mtx);
@@ -507,7 +486,7 @@ void ieee80211_set_active_links_async(struct ieee80211_vif *vif,
 	if (active_links & ~ieee80211_vif_usable_links(&sdata->vif))
 		return;
 
-	/* nothing to do */
+	 
 	if (sdata->vif.active_links == active_links)
 		return;
 

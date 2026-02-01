@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_cache.h>
 #include <linux/string_helpers.h>
@@ -32,7 +30,7 @@ static inline struct drm_i915_private *slpc_to_i915(struct intel_guc_slpc *slpc)
 
 static bool __detect_slpc_supported(struct intel_guc *guc)
 {
-	/* GuC SLPC is unavailable for pre-Gen12 */
+	 
 	return guc->submission_supported &&
 		GRAPHICS_VER(guc_to_gt(guc)->i915) >= 12;
 }
@@ -57,10 +55,7 @@ static void slpc_mem_set_param(struct slpc_shared_data *data,
 			       u32 id, u32 value)
 {
 	GEM_BUG_ON(id >= SLPC_MAX_OVERRIDE_PARAMETERS);
-	/*
-	 * When the flag bit is set, corresponding value will be read
-	 * and applied by SLPC.
-	 */
+	 
 	data->override_params.bits[id >> 5] |= (1 << (id % 32));
 	data->override_params.values[id] = value;
 }
@@ -68,10 +63,7 @@ static void slpc_mem_set_param(struct slpc_shared_data *data,
 static void slpc_mem_set_enabled(struct slpc_shared_data *data,
 				 u8 enable_id, u8 disable_id)
 {
-	/*
-	 * Enabling a param involves setting the enable_id
-	 * to 1 and disable_id to 0.
-	 */
+	 
 	slpc_mem_set_param(data, enable_id, 1);
 	slpc_mem_set_param(data, disable_id, 0);
 }
@@ -79,10 +71,7 @@ static void slpc_mem_set_enabled(struct slpc_shared_data *data,
 static void slpc_mem_set_disabled(struct slpc_shared_data *data,
 				  u8 enable_id, u8 disable_id)
 {
-	/*
-	 * Disabling a param involves setting the enable_id
-	 * to 0 and disable_id to 1.
-	 */
+	 
 	slpc_mem_set_param(data, disable_id, 1);
 	slpc_mem_set_param(data, enable_id, 0);
 }
@@ -220,16 +209,10 @@ static int slpc_force_min_freq(struct intel_guc_slpc *slpc, u32 freq)
 	if (!intel_guc_is_ready(guc))
 		return -ENODEV;
 
-	/*
-	 * This function is a little different as compared to
-	 * intel_guc_slpc_set_min_freq(). Softlimit will not be updated
-	 * here since this is used to temporarily change min freq,
-	 * for example, during a waitboost. Caller is responsible for
-	 * checking bounds.
-	 */
+	 
 
 	with_intel_runtime_pm(&i915->runtime_pm, wakeref) {
-		/* Non-blocking request will avoid stalls */
+		 
 		ret = slpc_set_param_nb(slpc,
 					SLPC_PARAM_GLOBAL_MIN_GT_UNSLICE_FREQ_MHZ,
 					freq);
@@ -246,12 +229,7 @@ static void slpc_boost_work(struct work_struct *work)
 	struct intel_guc_slpc *slpc = container_of(work, typeof(*slpc), boost_work);
 	int err;
 
-	/*
-	 * Raise min freq to boost. It's possible that
-	 * this is greater than current max. But it will
-	 * certainly be limited by RP0. An error setting
-	 * the min param is not fatal.
-	 */
+	 
 	mutex_lock(&slpc->lock);
 	if (atomic_read(&slpc->num_waiters)) {
 		err = slpc_force_min_freq(slpc, slpc->boost_freq);
@@ -383,7 +361,7 @@ static void slpc_shared_data_reset(struct slpc_shared_data *data)
 
 	data->header.size = sizeof(struct slpc_shared_data);
 
-	/* Enable only GTPERF task, disable others */
+	 
 	slpc_mem_set_enabled(data, SLPC_PARAM_TASK_ENABLE_GTPERF,
 			     SLPC_PARAM_TASK_DISABLE_GTPERF);
 
@@ -394,16 +372,7 @@ static void slpc_shared_data_reset(struct slpc_shared_data *data)
 			      SLPC_PARAM_TASK_DISABLE_DCC);
 }
 
-/**
- * intel_guc_slpc_set_max_freq() - Set max frequency limit for SLPC.
- * @slpc: pointer to intel_guc_slpc.
- * @val: frequency (MHz)
- *
- * This function will invoke GuC SLPC action to update the max frequency
- * limit for unslice.
- *
- * Return: 0 on success, non-zero error code on failure.
- */
+ 
 int intel_guc_slpc_set_max_freq(struct intel_guc_slpc *slpc, u32 val)
 {
 	struct drm_i915_private *i915 = slpc_to_i915(slpc);
@@ -420,7 +389,7 @@ int intel_guc_slpc_set_max_freq(struct intel_guc_slpc *slpc, u32 val)
 				     SLPC_PARAM_GLOBAL_MAX_GT_UNSLICE_FREQ_MHZ,
 				     val);
 
-		/* Return standardized err code for sysfs calls */
+		 
 		if (ret)
 			ret = -EIO;
 	}
@@ -431,16 +400,7 @@ int intel_guc_slpc_set_max_freq(struct intel_guc_slpc *slpc, u32 val)
 	return ret;
 }
 
-/**
- * intel_guc_slpc_get_max_freq() - Get max frequency limit for SLPC.
- * @slpc: pointer to intel_guc_slpc.
- * @val: pointer to val which will hold max frequency (MHz)
- *
- * This function will invoke GuC SLPC action to read the max frequency
- * limit for unslice.
- *
- * Return: 0 on success, non-zero error code on failure.
- */
+ 
 int intel_guc_slpc_get_max_freq(struct intel_guc_slpc *slpc, u32 *val)
 {
 	struct drm_i915_private *i915 = slpc_to_i915(slpc);
@@ -448,7 +408,7 @@ int intel_guc_slpc_get_max_freq(struct intel_guc_slpc *slpc, u32 *val)
 	int ret = 0;
 
 	with_intel_runtime_pm(&i915->runtime_pm, wakeref) {
-		/* Force GuC to update task data */
+		 
 		ret = slpc_query_task_state(slpc);
 
 		if (!ret)
@@ -476,7 +436,7 @@ int intel_guc_slpc_set_ignore_eff_freq(struct intel_guc_slpc *slpc, bool val)
 	} else {
 		slpc->ignore_eff_freq = val;
 
-		/* Set min to RPn when we disable efficient freq */
+		 
 		if (val)
 			ret = slpc_set_param(slpc,
 					     SLPC_PARAM_GLOBAL_MIN_GT_UNSLICE_FREQ_MHZ,
@@ -488,16 +448,7 @@ int intel_guc_slpc_set_ignore_eff_freq(struct intel_guc_slpc *slpc, bool val)
 	return ret;
 }
 
-/**
- * intel_guc_slpc_set_min_freq() - Set min frequency limit for SLPC.
- * @slpc: pointer to intel_guc_slpc.
- * @val: frequency (MHz)
- *
- * This function will invoke GuC SLPC action to update the min unslice
- * frequency.
- *
- * Return: 0 on success, non-zero error code on failure.
- */
+ 
 int intel_guc_slpc_set_min_freq(struct intel_guc_slpc *slpc, u32 val)
 {
 	struct drm_i915_private *i915 = slpc_to_i915(slpc);
@@ -509,7 +460,7 @@ int intel_guc_slpc_set_min_freq(struct intel_guc_slpc *slpc, u32 val)
 	    val > slpc->max_freq_softlimit)
 		return -EINVAL;
 
-	/* Need a lock now since waitboost can be modifying min as well */
+	 
 	mutex_lock(&slpc->lock);
 	wakeref = intel_runtime_pm_get(&i915->runtime_pm);
 
@@ -523,23 +474,14 @@ int intel_guc_slpc_set_min_freq(struct intel_guc_slpc *slpc, u32 val)
 	intel_runtime_pm_put(&i915->runtime_pm, wakeref);
 	mutex_unlock(&slpc->lock);
 
-	/* Return standardized err code for sysfs calls */
+	 
 	if (ret)
 		ret = -EIO;
 
 	return ret;
 }
 
-/**
- * intel_guc_slpc_get_min_freq() - Get min frequency limit for SLPC.
- * @slpc: pointer to intel_guc_slpc.
- * @val: pointer to val which will hold min frequency (MHz)
- *
- * This function will invoke GuC SLPC action to read the min frequency
- * limit for unslice.
- *
- * Return: 0 on success, non-zero error code on failure.
- */
+ 
 int intel_guc_slpc_get_min_freq(struct intel_guc_slpc *slpc, u32 *val)
 {
 	struct drm_i915_private *i915 = slpc_to_i915(slpc);
@@ -547,7 +489,7 @@ int intel_guc_slpc_get_min_freq(struct intel_guc_slpc *slpc, u32 *val)
 	int ret = 0;
 
 	with_intel_runtime_pm(&i915->runtime_pm, wakeref) {
-		/* Force GuC to update task data */
+		 
 		ret = slpc_query_task_state(slpc);
 
 		if (!ret)
@@ -577,11 +519,7 @@ void intel_guc_pm_intrmsk_enable(struct intel_gt *gt)
 {
 	u32 pm_intrmsk_mbz = 0;
 
-	/*
-	 * Allow GuC to receive ARAT timer expiry event.
-	 * This interrupt register is setup by RPS code
-	 * when host based Turbo is enabled.
-	 */
+	 
 	pm_intrmsk_mbz |= ARAT_EXPIRED_INTRMSK;
 
 	intel_uncore_rmw(gt->uncore,
@@ -592,11 +530,7 @@ static int slpc_set_softlimits(struct intel_guc_slpc *slpc)
 {
 	int ret = 0;
 
-	/*
-	 * Softlimits are initially equivalent to platform limits
-	 * unless they have deviated from defaults, in which case,
-	 * we retain the values and set min/max accordingly.
-	 */
+	 
 	if (!slpc->max_freq_softlimit) {
 		slpc->max_freq_softlimit = slpc->rp0_freq;
 		slpc_to_gt(slpc)->defaults.max_freq = slpc->max_freq_softlimit;
@@ -609,7 +543,7 @@ static int slpc_set_softlimits(struct intel_guc_slpc *slpc)
 		return ret;
 
 	if (!slpc->min_freq_softlimit) {
-		/* Min softlimit is initialized to RPn */
+		 
 		slpc->min_freq_softlimit = slpc->min_freq;
 		slpc_to_gt(slpc)->defaults.min_freq = slpc->min_freq_softlimit;
 	} else {
@@ -639,9 +573,7 @@ static bool is_slpc_min_freq_rpmax(struct intel_guc_slpc *slpc)
 
 static void update_server_min_softlimit(struct intel_guc_slpc *slpc)
 {
-	/* For server parts, SLPC min will be at RPMax.
-	 * Use min softlimit to clamp it to RP0 instead.
-	 */
+	 
 	if (!slpc->min_freq_softlimit &&
 	    is_slpc_min_freq_rpmax(slpc)) {
 		slpc->min_is_rpmax = true;
@@ -652,7 +584,7 @@ static void update_server_min_softlimit(struct intel_guc_slpc *slpc)
 
 static int slpc_use_fused_rp0(struct intel_guc_slpc *slpc)
 {
-	/* Force SLPC to used platform rp0 */
+	 
 	return slpc_set_param(slpc,
 			      SLPC_PARAM_GLOBAL_MAX_GT_UNSLICE_FREQ_MHZ,
 			      slpc->rp0_freq);
@@ -672,15 +604,7 @@ static void slpc_get_rp_values(struct intel_guc_slpc *slpc)
 		slpc->boost_freq = slpc->rp0_freq;
 }
 
-/**
- * intel_guc_slpc_override_gucrc_mode() - override GUCRC mode
- * @slpc: pointer to intel_guc_slpc.
- * @mode: new value of the mode.
- *
- * This function will override the GUCRC mode.
- *
- * Return: 0 on success, non-zero error code on failure.
- */
+ 
 int intel_guc_slpc_override_gucrc_mode(struct intel_guc_slpc *slpc, u32 mode)
 {
 	int ret;
@@ -715,19 +639,7 @@ int intel_guc_slpc_unset_gucrc_mode(struct intel_guc_slpc *slpc)
 	return ret;
 }
 
-/*
- * intel_guc_slpc_enable() - Start SLPC
- * @slpc: pointer to intel_guc_slpc.
- *
- * SLPC is enabled by setting up the shared data structure and
- * sending reset event to GuC SLPC. Initial data is setup in
- * intel_guc_slpc_init. Here we send the reset event. We do
- * not currently need a slpc_disable since this is taken care
- * of automatically when a reset/suspend occurs and the GuC
- * CTB is destroyed.
- *
- * Return: 0 on success, non-zero error code on failure.
- */
+ 
 int intel_guc_slpc_enable(struct intel_guc_slpc *slpc)
 {
 	struct intel_guc *guc = slpc_to_guc(slpc);
@@ -751,27 +663,27 @@ int intel_guc_slpc_enable(struct intel_guc_slpc *slpc)
 
 	slpc_get_rp_values(slpc);
 
-	/* Handle the case where min=max=RPmax */
+	 
 	update_server_min_softlimit(slpc);
 
-	/* Set SLPC max limit to RP0 */
+	 
 	ret = slpc_use_fused_rp0(slpc);
 	if (unlikely(ret)) {
 		guc_probe_error(guc, "Failed to set SLPC max to RP0: %pe\n", ERR_PTR(ret));
 		return ret;
 	}
 
-	/* Set cached value of ignore efficient freq */
+	 
 	intel_guc_slpc_set_ignore_eff_freq(slpc, slpc->ignore_eff_freq);
 
-	/* Revert SLPC min/max to softlimits if necessary */
+	 
 	ret = slpc_set_softlimits(slpc);
 	if (unlikely(ret)) {
 		guc_probe_error(guc, "Failed to set SLPC softlimits: %pe\n", ERR_PTR(ret));
 		return ret;
 	}
 
-	/* Set cached media freq ratio mode */
+	 
 	intel_guc_slpc_set_media_ratio_mode(slpc, slpc->media_ratio_mode);
 
 	return 0;
@@ -787,7 +699,7 @@ int intel_guc_slpc_set_boost_freq(struct intel_guc_slpc *slpc, u32 val)
 	mutex_lock(&slpc->lock);
 
 	if (slpc->boost_freq != val) {
-		/* Apply only if there are active waiters */
+		 
 		if (atomic_read(&slpc->num_waiters)) {
 			ret = slpc_force_min_freq(slpc, val);
 			if (ret) {
@@ -806,12 +718,7 @@ done:
 
 void intel_guc_slpc_dec_waiters(struct intel_guc_slpc *slpc)
 {
-	/*
-	 * Return min back to the softlimit.
-	 * This is called during request retire,
-	 * so we don't need to fail that if the
-	 * set_param fails.
-	 */
+	 
 	mutex_lock(&slpc->lock);
 	if (atomic_dec_and_test(&slpc->num_waiters))
 		slpc_force_min_freq(slpc, slpc->min_freq_softlimit);

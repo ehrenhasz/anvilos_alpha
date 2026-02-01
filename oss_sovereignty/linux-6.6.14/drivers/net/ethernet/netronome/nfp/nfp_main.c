@@ -1,13 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2015-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_main.c
- * Authors: Jakub Kicinski <jakub.kicinski@netronome.com>
- *          Alejandro Lucero <alejandro.lucero@netronome.com>
- *          Jason McMullan <jason.mcmullan@netronome.com>
- *          Rolf Neugebauer <rolf.neugebauer@netronome.com>
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -65,7 +59,7 @@ static const struct pci_device_id nfp_pci_device_ids[] = {
 	  PCI_VENDOR_ID_CORIGINE, PCI_ANY_ID,
 	  PCI_ANY_ID, 0, NFP_DEV_NFP6000,
 	},
-	{ 0, } /* Required last entry. */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, nfp_pci_device_ids);
 
@@ -101,7 +95,7 @@ nfp_pf_map_rtsym(struct nfp_pf *pf, const char *name, const char *sym_fmt,
 	return nfp_rtsym_map(pf->rtbl, pf_symbol, name, min_size, area);
 }
 
-/* Callers should hold the devlink instance lock */
+ 
 int nfp_mbox_cmd(struct nfp_pf *pf, u32 cmd, void *in_data, u64 in_length,
 		 void *out_data, u64 out_length)
 {
@@ -115,7 +109,7 @@ int nfp_mbox_cmd(struct nfp_pf *pf, u32 cmd, void *in_data, u64 in_length,
 
 	max_data_sz = nfp_rtsym_size(pf->mbox) - NFP_MBOX_SYM_MIN_SIZE;
 
-	/* Check if cmd field is clear */
+	 
 	err = nfp_rtsym_readl(pf->cpp, pf->mbox, NFP_MBOX_CMD, &val);
 	if (err || val) {
 		nfp_warn(pf->cpp, "failed to issue command (%u): %u, err: %d\n",
@@ -128,24 +122,24 @@ int nfp_mbox_cmd(struct nfp_pf *pf, u32 cmd, void *in_data, u64 in_length,
 			    in_length);
 	if (n != in_length)
 		return -EIO;
-	/* Write data_len and wipe reserved */
+	 
 	err = nfp_rtsym_writeq(pf->cpp, pf->mbox, NFP_MBOX_DATA_LEN, in_length);
 	if (err)
 		return err;
 
-	/* Read back for ordering */
+	 
 	err = nfp_rtsym_readl(pf->cpp, pf->mbox, NFP_MBOX_DATA_LEN, &val);
 	if (err)
 		return err;
 
-	/* Write cmd and wipe return value */
+	 
 	err = nfp_rtsym_writeq(pf->cpp, pf->mbox, NFP_MBOX_CMD, cmd);
 	if (err)
 		return err;
 
 	err_at = jiffies + 5 * HZ;
 	while (true) {
-		/* Wait for command to go to 0 (NFP_MBOX_NO_CMD) */
+		 
 		err = nfp_rtsym_readl(pf->cpp, pf->mbox, NFP_MBOX_CMD, &val);
 		if (err)
 			return err;
@@ -158,7 +152,7 @@ int nfp_mbox_cmd(struct nfp_pf *pf, u32 cmd, void *in_data, u64 in_length,
 		msleep(5);
 	}
 
-	/* Copy output if any (could be error info, do it before reading ret) */
+	 
 	err = nfp_rtsym_readl(pf->cpp, pf->mbox, NFP_MBOX_DATA_LEN, &val);
 	if (err)
 		return err;
@@ -169,7 +163,7 @@ int nfp_mbox_cmd(struct nfp_pf *pf, u32 cmd, void *in_data, u64 in_length,
 	if (n != out_length)
 		return -EIO;
 
-	/* Check if there is an error */
+	 
 	err = nfp_rtsym_readl(pf->cpp, pf->mbox, NFP_MBOX_RET, &val);
 	if (err)
 		return err;
@@ -210,7 +204,7 @@ static int nfp_pf_board_state_wait(struct nfp_pf *pf)
 		if (msleep_interruptible(500))
 			return -ERESTARTSYS;
 
-		/* Refresh cached information */
+		 
 		kfree(pf->hwinfo);
 		pf->hwinfo = nfp_hwinfo_read(pf->cpp);
 	}
@@ -224,7 +218,7 @@ static int nfp_pcie_sriov_read_nfd_limit(struct nfp_pf *pf)
 
 	pf->limit_vfs = nfp_rtsym_read_le(pf->rtbl, "nfd_vf_cfg_max_vfs", &err);
 	if (err) {
-		/* For backwards compatibility if symbol not found allow all */
+		 
 		pf->limit_vfs = ~0;
 		if (err == -ENOENT)
 			return 0;
@@ -293,10 +287,7 @@ static int nfp_pcie_sriov_disable(struct pci_dev *pdev)
 	devlink = priv_to_devlink(pf);
 	devl_lock(devlink);
 
-	/* If the VFs are assigned we cannot shut down SR-IOV without
-	 * causing issues, so just leave the hardware available but
-	 * disabled
-	 */
+	 
 	if (pci_vfs_assigned(pdev)) {
 		dev_warn(&pdev->dev, "Disabling while VFs assigned - VFs will not be deallocated\n");
 		devl_unlock(devlink);
@@ -369,13 +360,7 @@ nfp_net_fw_request(struct pci_dev *pdev, struct nfp_pf *pf, const char *name)
 	return fw;
 }
 
-/**
- * nfp_net_fw_find() - Find the correct firmware image for netdev mode
- * @pdev:	PCI Device structure
- * @pf:		NFP PF Device structure
- *
- * Return: firmware if found and requested successfully.
- */
+ 
 static const struct firmware *
 nfp_net_fw_find(struct pci_dev *pdev, struct nfp_pf *pf)
 {
@@ -389,7 +374,7 @@ nfp_net_fw_find(struct pci_dev *pdev, struct nfp_pf *pf)
 
 	nfp_info(pf->cpp, "Looking for firmware file in order of priority:\n");
 
-	/* First try to find a firmware image specific for this device */
+	 
 	interface = nfp_cpp_interface(pf->cpp);
 	nfp_cpp_serial(pf->cpp, &serial);
 	sprintf(fw_name, "netronome/serial-%pMF-%02x-%02x.nffw",
@@ -398,13 +383,13 @@ nfp_net_fw_find(struct pci_dev *pdev, struct nfp_pf *pf)
 	if (fw)
 		return fw;
 
-	/* Then try the PCI name */
+	 
 	sprintf(fw_name, "netronome/pci-%s.nffw", pci_name(pdev));
 	fw = nfp_net_fw_request(pdev, pf, fw_name);
 	if (fw)
 		return fw;
 
-	/* Finally try the card type and media */
+	 
 	if (!pf->eth_tbl) {
 		dev_err(&pdev->dev, "Error: can't identify media config\n");
 		return NULL;
@@ -469,14 +454,7 @@ nfp_get_fw_policy_value(struct pci_dev *pdev, struct nfp_nsp *nsp,
 	return err;
 }
 
-/**
- * nfp_fw_load() - Load the firmware image
- * @pdev:       PCI Device structure
- * @pf:		NFP PF Device structure
- * @nsp:	NFP SP handle
- *
- * Return: -ERRNO, 0 for no firmware loaded, 1 for firmware loaded
- */
+ 
 static int
 nfp_fw_load(struct pci_dev *pdev, struct nfp_pf *pf, struct nfp_nsp *nsp)
 {
@@ -557,15 +535,11 @@ nfp_fw_load(struct pci_dev *pdev, struct nfp_pf *pf, struct nfp_nsp *nsp)
 	} else if (policy != NFP_NSP_APP_FW_LOAD_DISK &&
 		   nfp_nsp_has_stored_fw_load(nsp)) {
 
-		/* Don't propagate this error to stick with legacy driver
-		 * behavior, failure will be detected later during init.
-		 */
+		 
 		if (!nfp_nsp_load_stored_fw(nsp))
 			dev_info(&pdev->dev, "Finished loading stored FW image\n");
 
-		/* Don't flag the fw_loaded in this case since other devices
-		 * may reuse the firmware when configured this way
-		 */
+		 
 	} else {
 		dev_warn(&pdev->dev, "Didn't load firmware, please update flash or reconfigure card\n");
 	}
@@ -573,10 +547,7 @@ nfp_fw_load(struct pci_dev *pdev, struct nfp_pf *pf, struct nfp_nsp *nsp)
 exit_release_fw:
 	release_firmware(fw);
 
-	/* We don't want to unload firmware when other devices may still be
-	 * dependent on it, which could be the case if there are multiple
-	 * devices that could load firmware.
-	 */
+	 
 	if (fw_loaded && ifcs == 1)
 		pf->unload_fw_on_remove = true;
 
@@ -679,7 +650,7 @@ static int nfp_pf_find_rtsyms(struct nfp_pf *pf)
 
 	pf_id = nfp_cppcore_pcie_unit(pf->cpp);
 
-	/* Optional per-PCI PF mailbox */
+	 
 	snprintf(pf_symbol, sizeof(pf_symbol), NFP_MBOX_SYM_NAME, pf_id);
 	pf->mbox = nfp_rtsym_lookup(pf->rtbl, pf_symbol);
 	if (pf->mbox && nfp_rtsym_size(pf->mbox) < NFP_MBOX_SYM_MIN_SIZE) {
@@ -733,18 +704,14 @@ static void nfp_pf_cfg_hwinfo(struct nfp_pf *pf)
 	sp_indiff = (nfp_net_pf_get_app_id(pf) == NFP_APP_FLOWER_NIC) ||
 		    (nfp_net_pf_get_app_cap(pf) & NFP_NET_APP_CAP_SP_INDIFF);
 
-	/* No need to clean `sp_indiff` in driver, management firmware
-	 * will do it when application firmware is unloaded.
-	 */
+	 
 	snprintf(hwinfo, sizeof(hwinfo), "sp_indiff=%d", sp_indiff);
 	err = nfp_nsp_hwinfo_set(nsp, hwinfo, sizeof(hwinfo));
-	/* Not a fatal error, no need to return error to stop driver from loading */
+	 
 	if (err) {
 		nfp_warn(pf->cpp, "HWinfo(sp_indiff=%d) set failed: %d\n", sp_indiff, err);
 	} else {
-		/* Need reinit eth_tbl since the eth table state may change
-		 * after sp_indiff is configured.
-		 */
+		 
 		kfree(pf->eth_tbl);
 		pf->eth_tbl = __nfp_eth_read_ports(pf->cpp, nsp);
 	}

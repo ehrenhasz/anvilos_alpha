@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  GUS's memory allocation routines / bottom layer
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/string.h>
@@ -69,7 +66,7 @@ snd_gf1_mem_xalloc(struct snd_gf1_mem *alloc, struct snd_gf1_mem_block *block,
 
 int snd_gf1_mem_xfree(struct snd_gf1_mem * alloc, struct snd_gf1_mem_block * block)
 {
-	if (block->share) {	/* ok.. shared block */
+	if (block->share) {	 
 		block->share--;
 		mutex_unlock(&alloc->memory_mutex);
 		return 0;
@@ -168,7 +165,7 @@ static int snd_gf1_mem_find(struct snd_gf1_mem * alloc,
 	}
 	while (++idx < 4) {
 		if (size <= info[idx].size) {
-			/* I assume that bank address is already aligned.. */
+			 
 			block->ptr = info[idx].address;
 			block->size = size;
 			return 0;
@@ -188,7 +185,7 @@ struct snd_gf1_mem_block *snd_gf1_mem_alloc(struct snd_gf1_mem * alloc, int owne
 		nblock = snd_gf1_mem_share(alloc, share_id);
 		if (nblock != NULL) {
 			if (size != (int)nblock->size) {
-				/* TODO: remove in the future */
+				 
 				snd_printk(KERN_ERR "snd_gf1_mem_alloc - share: sizes differ\n");
 				goto __std;
 			}

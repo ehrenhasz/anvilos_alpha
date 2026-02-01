@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Stadia controller rumble support.
- *
- * Copyright 2023 Google LLC
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/input.h>

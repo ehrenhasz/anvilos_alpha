@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,14 +25,10 @@
 #include "hci_packet.h"
 #include "gdm_endian.h"
 
-/*
- * Netlink protocol number
- */
+ 
 #define NETLINK_LTE 30
 
-/*
- * Default MTU Size
- */
+ 
 #define DEFAULT_MTU_SIZE 1500
 
 #define IP_VERSION_4	4
@@ -110,11 +106,11 @@ static int gdm_lte_emulate_arp(struct sk_buff *skb_in, u32 nic_type)
 	void *mac_header_data;
 	u32 mac_header_len;
 
-	/* Check for skb->len, discard if empty */
+	 
 	if (skb_in->len == 0)
 		return -ENODATA;
 
-	/* Format the mac header so that it can be put to skb */
+	 
 	if (ntohs(((struct ethhdr *)skb_in->data)->h_proto) == ETH_P_8021Q) {
 		memcpy(&vlan_eth, skb_in->data, sizeof(struct vlan_ethhdr));
 		mac_header_data = &vlan_eth;
@@ -125,20 +121,20 @@ static int gdm_lte_emulate_arp(struct sk_buff *skb_in, u32 nic_type)
 		mac_header_len = ETH_HLEN;
 	}
 
-	/* Get the pointer of the original request */
+	 
 	arp_in = (struct arphdr *)(skb_in->data + mac_header_len);
 	arp_data_in = (struct arpdata *)(skb_in->data + mac_header_len +
 					sizeof(struct arphdr));
 
-	/* Get the pointer of the outgoing response */
+	 
 	arp_out = (struct arphdr *)arp_temp;
 	arp_data_out = (struct arpdata *)(arp_temp + sizeof(struct arphdr));
 
-	/* Copy the arp header */
+	 
 	memcpy(arp_out, arp_in, sizeof(struct arphdr));
 	arp_out->ar_op = htons(ARPOP_REPLY);
 
-	/* Copy the arp payload: based on 2 bytes of mac and fill the IP */
+	 
 	arp_data_out->ar_sha[0] = arp_data_in->ar_sha[0];
 	arp_data_out->ar_sha[1] = arp_data_in->ar_sha[1];
 	memcpy(&arp_data_out->ar_sha[2], &arp_data_in->ar_tip[0], 4);
@@ -146,12 +142,12 @@ static int gdm_lte_emulate_arp(struct sk_buff *skb_in, u32 nic_type)
 	memcpy(&arp_data_out->ar_tha[0], &arp_data_in->ar_sha[0], 6);
 	memcpy(&arp_data_out->ar_tip[0], &arp_data_in->ar_sip[0], 4);
 
-	/* Fill the destination mac with source mac of the received packet */
+	 
 	memcpy(mac_header_data, mac_header_data + ETH_ALEN, ETH_ALEN);
-	/* Fill the source mac with nic's source mac */
+	 
 	memcpy(mac_header_data + ETH_ALEN, nic->src_mac_addr, ETH_ALEN);
 
-	/* Alloc skb and reserve align */
+	 
 	skb_out = dev_alloc_skb(skb_in->len);
 	if (!skb_out)
 		return -ENOMEM;
@@ -234,7 +230,7 @@ static int gdm_lte_emulate_ndp(struct sk_buff *skb_in, u32 nic_type)
 	void *mac_header_data;
 	u32 mac_header_len;
 
-	/* Format the mac header so that it can be put to skb */
+	 
 	if (ntohs(((struct ethhdr *)skb_in->data)->h_proto) == ETH_P_8021Q) {
 		memcpy(&vlan_eth, skb_in->data, sizeof(struct vlan_ethhdr));
 		if (ntohs(vlan_eth.h_vlan_encapsulated_proto) != ETH_P_IPV6)
@@ -249,30 +245,30 @@ static int gdm_lte_emulate_ndp(struct sk_buff *skb_in, u32 nic_type)
 		mac_header_len = ETH_HLEN;
 	}
 
-	/* Check if this is IPv6 ICMP packet */
+	 
 	ipv6_in = (struct ipv6hdr *)(skb_in->data + mac_header_len);
 	if (ipv6_in->version != 6 || ipv6_in->nexthdr != IPPROTO_ICMPV6)
 		return -EPROTONOSUPPORT;
 
-	/* Check if this is NDP packet */
+	 
 	icmp6_in = (struct icmp6hdr *)(skb_in->data + mac_header_len +
 					sizeof(struct ipv6hdr));
-	if (icmp6_in->icmp6_type == NDISC_ROUTER_SOLICITATION) { /* Check RS */
+	if (icmp6_in->icmp6_type == NDISC_ROUTER_SOLICITATION) {  
 		return -EPROTONOSUPPORT;
 	} else if (icmp6_in->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION) {
-		/* Check NS */
+		 
 		u8 icmp_na[sizeof(struct icmp6hdr) +
 			sizeof(struct neighbour_advertisement)];
 		u8 zero_addr8[16] = {0,};
 
 		if (memcmp(ipv6_in->saddr.in6_u.u6_addr8, zero_addr8, 16) == 0)
-			/* Duplicate Address Detection: Source IP is all zero */
+			 
 			return 0;
 
 		icmp6_out.icmp6_type = NDISC_NEIGHBOUR_ADVERTISEMENT;
 		icmp6_out.icmp6_code = 0;
 		icmp6_out.icmp6_cksum = 0;
-		/* R=0, S=1, O=1 */
+		 
 		icmp6_out.icmp6_dataun.un_data32[0] = htonl(0x60000000);
 
 		ns = (struct neighbour_solicitation *)
@@ -306,12 +302,12 @@ static int gdm_lte_emulate_ndp(struct sk_buff *skb_in, u32 nic_type)
 		return -EINVAL;
 	}
 
-	/* Fill the destination mac with source mac of the received packet */
+	 
 	memcpy(mac_header_data, mac_header_data + ETH_ALEN, ETH_ALEN);
-	/* Fill the source mac with nic's source mac */
+	 
 	memcpy(mac_header_data + ETH_ALEN, nic->src_mac_addr, ETH_ALEN);
 
-	/* Alloc skb and reserve align */
+	 
 	skb_out = dev_alloc_skb(skb_in->len);
 	if (!skb_out)
 		return -ENOMEM;
@@ -343,10 +339,10 @@ static s32 gdm_lte_tx_nic_type(struct net_device *dev, struct sk_buff *skb)
 	void *network_data;
 	u32 nic_type;
 
-	/* NIC TYPE is based on the nic_id of this net_device */
+	 
 	nic_type = 0x00000010 | nic->nic_id;
 
-	/* Get ethernet protocol */
+	 
 	eth = (struct ethhdr *)skb->data;
 	if (ntohs(eth->h_proto) == ETH_P_8021Q) {
 		vlan_eth = skb_vlan_eth_hdr(skb);
@@ -358,7 +354,7 @@ static s32 gdm_lte_tx_nic_type(struct net_device *dev, struct sk_buff *skb)
 		network_data = skb->data + ETH_HLEN;
 	}
 
-	/* Process packet for nic type */
+	 
 	switch (mac_proto) {
 	case ETH_P_ARP:
 		nic_type |= NIC_TYPE_ARP;
@@ -367,7 +363,7 @@ static s32 gdm_lte_tx_nic_type(struct net_device *dev, struct sk_buff *skb)
 		nic_type |= NIC_TYPE_F_IPV4;
 		ip = network_data;
 
-		/* Check DHCPv4 */
+		 
 		if (ip->protocol == IPPROTO_UDP) {
 			struct udphdr *udp =
 					network_data + sizeof(struct iphdr);
@@ -379,12 +375,12 @@ static s32 gdm_lte_tx_nic_type(struct net_device *dev, struct sk_buff *skb)
 		nic_type |= NIC_TYPE_F_IPV6;
 		ipv6 = network_data;
 
-		if (ipv6->nexthdr == IPPROTO_ICMPV6) /* Check NDP request */ {
+		if (ipv6->nexthdr == IPPROTO_ICMPV6)   {
 			struct icmp6hdr *icmp6 =
 					network_data + sizeof(struct ipv6hdr);
 			if (icmp6->icmp6_type == NDISC_NEIGHBOUR_SOLICITATION)
 				nic_type |= NIC_TYPE_ICMPV6;
-		} else if (ipv6->nexthdr == IPPROTO_UDP) /* Check DHCPv6 */ {
+		} else if (ipv6->nexthdr == IPPROTO_UDP)   {
 			struct udphdr *udp =
 					network_data + sizeof(struct ipv6hdr);
 			if (ntohs(udp->dest) == 546 || ntohs(udp->dest) == 547)
@@ -427,13 +423,7 @@ static netdev_tx_t gdm_lte_tx(struct sk_buff *skb, struct net_device *dev)
 		}
 	}
 
-	/*
-	 * Need byte shift (that is, remove VLAN tag) if there is one
-	 * For the case of ARP, this breaks the offset as vlan_ethhdr+4
-	 * is treated as ethhdr	However, it shouldn't be a problem as
-	 * the response starts from arp_hdr and ethhdr is created by this
-	 * driver based on the NIC mac
-	 */
+	 
 	if (nic_type & NIC_TYPE_F_VLAN) {
 		struct vlan_ethhdr *vlan_eth = skb_vlan_eth_hdr(skb);
 
@@ -446,15 +436,11 @@ static netdev_tx_t gdm_lte_tx(struct sk_buff *skb, struct net_device *dev)
 		data_len = skb->len;
 	}
 
-	/* If it is a ICMPV6 packet, clear all the other bits :
-	 * for backward compatibility with the firmware
-	 */
+	 
 	if (nic_type & NIC_TYPE_ICMPV6)
 		nic_type = NIC_TYPE_ICMPV6;
 
-	/* If it is not a dhcp packet, clear all the flag bits :
-	 * original NIC, otherwise the special flag (IPVX | DHCP)
-	 */
+	 
 	if (!(nic_type & NIC_TYPE_F_DHCP))
 		nic_type &= NIC_TYPE_MASK;
 
@@ -480,7 +466,7 @@ static netdev_tx_t gdm_lte_tx(struct sk_buff *skb, struct net_device *dev)
 		ret = -ENODEV;
 	}
 
-	/* Updates tx stats */
+	 
 	if (ret) {
 		nic->stats.tx_dropped++;
 	} else {
@@ -574,42 +560,27 @@ static void gdm_lte_netif_rx(struct net_device *dev, char *buf,
 	nic = netdev_priv(dev);
 
 	if (flagged_nic_type & NIC_TYPE_F_DHCP) {
-		/* Change the destination mac address
-		 * with the one requested the IP
-		 */
+		 
 		if (flagged_nic_type & NIC_TYPE_F_IPV4) {
 			struct dhcp_packet {
-				u8 op;      /* BOOTREQUEST or BOOTREPLY */
-				u8 htype;   /* hardware address type.
-					     * 1 = 10mb ethernet
-					     */
-				u8 hlen;    /* hardware address length */
-				u8 hops;    /* used by relay agents only */
-				u32 xid;    /* unique id */
-				u16 secs;   /* elapsed since client began
-					     * acquisition/renewal
-					     */
-				u16 flags;  /* only one flag so far: */
+				u8 op;       
+				u8 htype;    
+				u8 hlen;     
+				u8 hops;     
+				u32 xid;     
+				u16 secs;    
+				u16 flags;   
 				#define BROADCAST_FLAG 0x8000
-				/* "I need broadcast replies" */
-				u32 ciaddr; /* client IP (if client is in
-					     * BOUND, RENEW or REBINDING state)
-					     */
-				u32 yiaddr; /* 'your' (client) IP address */
-				/* IP address of next server to use in
-				 * bootstrap, returned in DHCPOFFER,
-				 * DHCPACK by server
-				 */
+				 
+				u32 ciaddr;  
+				u32 yiaddr;  
+				 
 				u32 siaddr_nip;
-				u32 gateway_nip; /* relay agent IP address */
-				u8 chaddr[16];   /* link-layer client hardware
-						  * address (MAC)
-						  */
-				u8 sname[64];    /* server host name (ASCIZ) */
-				u8 file[128];    /* boot file name (ASCIZ) */
-				u32 cookie;      /* fixed first four option
-						  * bytes (99,130,83,99 dec)
-						  */
+				u32 gateway_nip;  
+				u8 chaddr[16];    
+				u8 sname[64];     
+				u8 file[128];     
+				u32 cookie;       
 			} __packed;
 			int offset = sizeof(struct iphdr) +
 				     sizeof(struct udphdr) +
@@ -628,7 +599,7 @@ static void gdm_lte_netif_rx(struct net_device *dev, char *buf,
 		mac_header_len = ETH_HLEN;
 	}
 
-	/* Format the data so that it can be put to skb */
+	 
 	ether_addr_copy(mac_header_data, nic->dest_mac_addr);
 	memcpy(mac_header_data + ETH_ALEN, nic->src_mac_addr, ETH_ALEN);
 
@@ -636,9 +607,7 @@ static void gdm_lte_netif_rx(struct net_device *dev, char *buf,
 	vlan_eth.h_vlan_proto = htons(ETH_P_8021Q);
 
 	if (nic_type == NIC_TYPE_ARP) {
-		/* Should be response: Only happens because
-		 * there was a request from the host
-		 */
+		 
 		eth.h_proto = htons(ETH_P_ARP);
 		vlan_eth.h_vlan_encapsulated_proto = htons(ETH_P_ARP);
 	} else {
@@ -655,7 +624,7 @@ static void gdm_lte_netif_rx(struct net_device *dev, char *buf,
 		}
 	}
 
-	/* Alloc skb and reserve align */
+	 
 	skb = dev_alloc_skb(len + mac_header_len + NET_IP_ALIGN);
 	if (!skb)
 		return;
@@ -831,30 +800,26 @@ static u8 gdm_lte_macaddr[ETH_ALEN] = {0x00, 0x0a, 0x3b, 0x00, 0x00, 0x00};
 static void form_mac_address(u8 *dev_addr, u8 *nic_src, u8 *nic_dest,
 			     u8 *mac_address, u8 index)
 {
-	/* Form the dev_addr */
+	 
 	if (!mac_address)
 		ether_addr_copy(dev_addr, gdm_lte_macaddr);
 	else
 		ether_addr_copy(dev_addr, mac_address);
 
-	/* The last byte of the mac address
-	 * should be less than or equal to 0xFC
-	 */
+	 
 	dev_addr[ETH_ALEN - 1] += index;
 
-	/* Create random nic src and copy the first
-	 * 3 bytes to be the same as dev_addr
-	 */
+	 
 	eth_random_addr(nic_src);
 	memcpy(nic_src, dev_addr, 3);
 
-	/* Copy the nic_dest from dev_addr*/
+	 
 	ether_addr_copy(nic_dest, dev_addr);
 }
 
 static void validate_mac_address(u8 *mac_address)
 {
-	/* if zero address or multicast bit set, restore the default value */
+	 
 	if (is_zero_ether_addr(mac_address) || (mac_address[0] & 0x01)) {
 		pr_err("MAC invalid, restoring default\n");
 		memcpy(mac_address, gdm_lte_macaddr, 6);
@@ -874,10 +839,10 @@ int register_lte_device(struct phy_dev *phy_dev,
 	validate_mac_address(mac_address);
 
 	for (index = 0; index < MAX_NIC_TYPE; index++) {
-		/* Create device name lteXpdnX */
+		 
 		sprintf(pdn_dev_name, "lte%%dpdn%d", index);
 
-		/* Allocate netdev */
+		 
 		net = alloc_netdev(sizeof(struct nic), pdn_dev_name,
 				   NET_NAME_UNKNOWN, ether_setup);
 		if (!net) {

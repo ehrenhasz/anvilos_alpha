@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright(c) 2020 Intel Corporation.
- */
+
+ 
 #include <linux/workqueue.h>
 
 #include "gt/intel_gt_irq.h"
@@ -17,11 +15,7 @@
 #include "intel_pxp_types.h"
 #include "intel_runtime_pm.h"
 
-/**
- * intel_pxp_irq_handler - Handles PXP interrupts.
- * @pxp: pointer to pxp struct
- * @iir: interrupt vector
- */
+ 
 void intel_pxp_irq_handler(struct intel_pxp *pxp, u16 iir)
 {
 	struct intel_gt *gt;
@@ -38,7 +32,7 @@ void intel_pxp_irq_handler(struct intel_pxp *pxp, u16 iir)
 
 	if (iir & (GEN12_DISPLAY_PXP_STATE_TERMINATED_INTERRUPT |
 		   GEN12_DISPLAY_APP_TERMINATED_PER_FW_REQ_INTERRUPT)) {
-		/* immediately mark PXP as inactive on termination */
+		 
 		intel_pxp_mark_termination_in_progress(pxp);
 		pxp->session_events |= PXP_TERMINATION_REQUEST | PXP_INVAL_REQUIRED;
 	}
@@ -85,13 +79,7 @@ void intel_pxp_irq_disable(struct intel_pxp *pxp)
 {
 	struct intel_gt *gt = pxp->ctrl_gt;
 
-	/*
-	 * We always need to submit a global termination when we re-enable the
-	 * interrupts, so there is no need to make sure that the session state
-	 * makes sense at the end of this function. Just make sure this is not
-	 * called in a path were the driver consider the session as valid and
-	 * doesn't call a termination on restart.
-	 */
+	 
 	GEM_WARN_ON(intel_pxp_is_active(pxp));
 
 	spin_lock_irq(gt->irq_lock);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Andrea Venturi
- * Andrea Venturi <be17068@iperbole.bo.it>
- *
- * Copyright (C) 2016 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dmaengine.h>
@@ -90,7 +84,7 @@
 #define SUN4I_I2S_RX_CHAN_SEL_REG	0x38
 #define SUN4I_I2S_RX_CHAN_MAP_REG	0x3c
 
-/* Defines required for sun8i-h3 support */
+ 
 #define SUN8I_I2S_CTRL_BCLK_OUT			BIT(18)
 #define SUN8I_I2S_CTRL_LRCK_OUT			BIT(17)
 
@@ -130,7 +124,7 @@
 #define SUN8I_I2S_RX_CHAN_SEL_REG	0x54
 #define SUN8I_I2S_RX_CHAN_MAP_REG	0x58
 
-/* Defines required for sun50i-h6 support */
+ 
 #define SUN50I_H6_I2S_TX_CHAN_SEL_OFFSET_MASK	GENMASK(21, 20)
 #define SUN50I_H6_I2S_TX_CHAN_SEL_OFFSET(offset)	((offset) << 20)
 #define SUN50I_H6_I2S_TX_CHAN_SEL_MASK		GENMASK(19, 16)
@@ -153,32 +147,13 @@
 
 struct sun4i_i2s;
 
-/**
- * struct sun4i_i2s_quirks - Differences between SoC variants.
- * @has_reset: SoC needs reset deasserted.
- * @reg_offset_txdata: offset of the tx fifo.
- * @sun4i_i2s_regmap: regmap config to use.
- * @field_clkdiv_mclk_en: regmap field to enable mclk output.
- * @field_fmt_wss: regmap field to set word select size.
- * @field_fmt_sr: regmap field to set sample resolution.
- * @num_din_pins: input pins
- * @num_dout_pins: output pins (currently set but unused)
- * @bclk_dividers: bit clock dividers array
- * @num_bclk_dividers: number of bit clock dividers
- * @mclk_dividers: mclk dividers array
- * @num_mclk_dividers: number of mclk dividers
- * @get_bclk_parent_rate: callback to get bclk parent rate
- * @get_sr: callback to get sample resolution
- * @get_wss: callback to get word select size
- * @set_chan_cfg: callback to set channel configuration
- * @set_fmt: callback to set format
- */
+ 
 struct sun4i_i2s_quirks {
 	bool				has_reset;
-	unsigned int			reg_offset_txdata;	/* TX FIFO */
+	unsigned int			reg_offset_txdata;	 
 	const struct regmap_config	*sun4i_i2s_regmap;
 
-	/* Register fields for i2s */
+	 
 	struct reg_field		field_clkdiv_mclk_en;
 	struct reg_field		field_fmt_wss;
 	struct reg_field		field_fmt_sr;
@@ -195,11 +170,7 @@ struct sun4i_i2s_quirks {
 	int	(*get_sr)(unsigned int width);
 	int	(*get_wss)(unsigned int width);
 
-	/*
-	 * In the set_chan_cfg() function pointer:
-	 * @slots: channels per frame + padding slots, regardless of format
-	 * @slot_width: bits per sample + padding bits, regardless of format
-	 */
+	 
 	int	(*set_chan_cfg)(const struct sun4i_i2s *i2s,
 				unsigned int channels,	unsigned int slots,
 				unsigned int slot_width);
@@ -220,7 +191,7 @@ struct sun4i_i2s {
 	struct snd_dmaengine_dai_dma_data	capture_dma_data;
 	struct snd_dmaengine_dai_dma_data	playback_dma_data;
 
-	/* Register fields for i2s */
+	 
 	struct regmap_field	*field_clkdiv_mclk_en;
 	struct regmap_field	*field_fmt_wss;
 	struct regmap_field	*field_fmt_sr;
@@ -240,7 +211,7 @@ static const struct sun4i_i2s_clk_div sun4i_i2s_bclk_div[] = {
 	{ .div = 8, .val = 3 },
 	{ .div = 12, .val = 4 },
 	{ .div = 16, .val = 5 },
-	/* TODO - extend divide ratio supported by newer SoCs */
+	 
 };
 
 static const struct sun4i_i2s_clk_div sun4i_i2s_mclk_div[] = {
@@ -252,7 +223,7 @@ static const struct sun4i_i2s_clk_div sun4i_i2s_mclk_div[] = {
 	{ .div = 12, .val = 5 },
 	{ .div = 16, .val = 6 },
 	{ .div = 24, .val = 7 },
-	/* TODO - extend divide ratio supported by newer SoCs */
+	 
 };
 
 static const struct sun4i_i2s_clk_div sun8i_i2s_clk_div[] = {
@@ -460,11 +431,11 @@ static int sun4i_i2s_set_chan_cfg(const struct sun4i_i2s *i2s,
 				  unsigned int channels, unsigned int slots,
 				  unsigned int slot_width)
 {
-	/* Map the channels for playback and capture */
+	 
 	regmap_write(i2s->regmap, SUN4I_I2S_TX_CHAN_MAP_REG, 0x76543210);
 	regmap_write(i2s->regmap, SUN4I_I2S_RX_CHAN_MAP_REG, 0x00003210);
 
-	/* Configure the channels */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_TX_CHAN_SEL_REG,
 			   SUN4I_I2S_CHAN_SEL_MASK,
 			   SUN4I_I2S_CHAN_SEL(channels));
@@ -481,11 +452,11 @@ static int sun8i_i2s_set_chan_cfg(const struct sun4i_i2s *i2s,
 {
 	unsigned int lrck_period;
 
-	/* Map the channels for playback and capture */
+	 
 	regmap_write(i2s->regmap, SUN8I_I2S_TX_CHAN_MAP_REG, 0x76543210);
 	regmap_write(i2s->regmap, SUN8I_I2S_RX_CHAN_MAP_REG, 0x76543210);
 
-	/* Configure the channels */
+	 
 	regmap_update_bits(i2s->regmap, SUN8I_I2S_TX_CHAN_SEL_REG,
 			   SUN4I_I2S_CHAN_SEL_MASK,
 			   SUN4I_I2S_CHAN_SEL(channels));
@@ -533,7 +504,7 @@ static int sun50i_h6_i2s_set_chan_cfg(const struct sun4i_i2s *i2s,
 {
 	unsigned int lrck_period;
 
-	/* Map the channels for playback and capture */
+	 
 	regmap_write(i2s->regmap, SUN50I_H6_I2S_TX_CHAN_MAP0_REG(0), 0xFEDCBA98);
 	regmap_write(i2s->regmap, SUN50I_H6_I2S_TX_CHAN_MAP1_REG(0), 0x76543210);
 	if (i2s->variant->num_din_pins > 1) {
@@ -546,7 +517,7 @@ static int sun50i_h6_i2s_set_chan_cfg(const struct sun4i_i2s *i2s,
 		regmap_write(i2s->regmap, SUN50I_H6_I2S_RX_CHAN_MAP1_REG, 0x76543210);
 	}
 
-	/* Configure the channels */
+	 
 	regmap_update_bits(i2s->regmap, SUN50I_H6_I2S_TX_CHAN_SEL_REG(0),
 			   SUN50I_H6_I2S_TX_CHAN_SEL_MASK,
 			   SUN50I_H6_I2S_TX_CHAN_SEL(channels));
@@ -614,7 +585,7 @@ static int sun4i_i2s_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Set significant bits in our FIFOs */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_FIFO_CTRL_REG,
 			   SUN4I_I2S_FIFO_CTRL_TX_MODE_MASK |
 			   SUN4I_I2S_FIFO_CTRL_RX_MODE_MASK,
@@ -655,19 +626,19 @@ static int sun4i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 {
 	u32 val;
 
-	/* DAI clock polarity */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_IB_IF:
-		/* Invert both clocks */
+		 
 		val = SUN4I_I2S_FMT0_BCLK_POLARITY_INVERTED |
 		      SUN4I_I2S_FMT0_LRCLK_POLARITY_INVERTED;
 		break;
 	case SND_SOC_DAIFMT_IB_NF:
-		/* Invert bit clock */
+		 
 		val = SUN4I_I2S_FMT0_BCLK_POLARITY_INVERTED;
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
-		/* Invert frame clock */
+		 
 		val = SUN4I_I2S_FMT0_LRCLK_POLARITY_INVERTED;
 		break;
 	case SND_SOC_DAIFMT_NB_NF:
@@ -682,7 +653,7 @@ static int sun4i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 			   SUN4I_I2S_FMT0_BCLK_POLARITY_MASK,
 			   val);
 
-	/* DAI Mode */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		val = SUN4I_I2S_FMT0_FMT_I2S;
@@ -703,15 +674,15 @@ static int sun4i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_FMT0_REG,
 			   SUN4I_I2S_FMT0_FMT_MASK, val);
 
-	/* DAI clock master masks */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* BCLK and LRCLK master */
+		 
 		val = SUN4I_I2S_CTRL_MODE_MASTER;
 		break;
 
 	case SND_SOC_DAIFMT_BC_FC:
-		/* BCLK and LRCLK slave */
+		 
 		val = SUN4I_I2S_CTRL_MODE_SLAVE;
 		break;
 
@@ -730,25 +701,19 @@ static int sun8i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 	u32 mode, val;
 	u8 offset;
 
-	/*
-	 * DAI clock polarity
-	 *
-	 * The setup for LRCK contradicts the datasheet, but under a
-	 * scope it's clear that the LRCK polarity is reversed
-	 * compared to the expected polarity on the bus.
-	 */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_IB_IF:
-		/* Invert both clocks */
+		 
 		val = SUN8I_I2S_FMT0_BCLK_POLARITY_INVERTED;
 		break;
 	case SND_SOC_DAIFMT_IB_NF:
-		/* Invert bit clock */
+		 
 		val = SUN8I_I2S_FMT0_BCLK_POLARITY_INVERTED |
 		      SUN8I_I2S_FMT0_LRCLK_POLARITY_INVERTED;
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
-		/* Invert frame clock */
+		 
 		val = 0;
 		break;
 	case SND_SOC_DAIFMT_NB_NF:
@@ -763,7 +728,7 @@ static int sun8i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 			   SUN8I_I2S_FMT0_BCLK_POLARITY_MASK,
 			   val);
 
-	/* DAI Mode */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_DSP_A:
 		mode = SUN8I_I2S_CTRL_MODE_PCM;
@@ -803,15 +768,15 @@ static int sun8i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 			   SUN8I_I2S_TX_CHAN_OFFSET_MASK,
 			   SUN8I_I2S_TX_CHAN_OFFSET(offset));
 
-	/* DAI clock master masks */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* BCLK and LRCLK master */
+		 
 		val = SUN8I_I2S_CTRL_BCLK_OUT |	SUN8I_I2S_CTRL_LRCK_OUT;
 		break;
 
 	case SND_SOC_DAIFMT_BC_FC:
-		/* BCLK and LRCLK slave */
+		 
 		val = 0;
 		break;
 
@@ -823,7 +788,7 @@ static int sun8i_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 			   SUN8I_I2S_CTRL_BCLK_OUT | SUN8I_I2S_CTRL_LRCK_OUT,
 			   val);
 
-	/* Set sign extension to pad out LSB with 0 */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_FMT1_REG,
 			   SUN8I_I2S_FMT1_REG_SEXT_MASK,
 			   SUN8I_I2S_FMT1_REG_SEXT(0));
@@ -837,25 +802,19 @@ static int sun50i_h6_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 	u32 mode, val;
 	u8 offset;
 
-	/*
-	 * DAI clock polarity
-	 *
-	 * The setup for LRCK contradicts the datasheet, but under a
-	 * scope it's clear that the LRCK polarity is reversed
-	 * compared to the expected polarity on the bus.
-	 */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_IB_IF:
-		/* Invert both clocks */
+		 
 		val = SUN8I_I2S_FMT0_BCLK_POLARITY_INVERTED;
 		break;
 	case SND_SOC_DAIFMT_IB_NF:
-		/* Invert bit clock */
+		 
 		val = SUN8I_I2S_FMT0_BCLK_POLARITY_INVERTED |
 		      SUN8I_I2S_FMT0_LRCLK_POLARITY_INVERTED;
 		break;
 	case SND_SOC_DAIFMT_NB_IF:
-		/* Invert frame clock */
+		 
 		val = 0;
 		break;
 	case SND_SOC_DAIFMT_NB_NF:
@@ -870,7 +829,7 @@ static int sun50i_h6_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 			   SUN8I_I2S_FMT0_BCLK_POLARITY_MASK,
 			   val);
 
-	/* DAI Mode */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_DSP_A:
 		mode = SUN8I_I2S_CTRL_MODE_PCM;
@@ -910,15 +869,15 @@ static int sun50i_h6_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 			   SUN50I_H6_I2S_TX_CHAN_SEL_OFFSET_MASK,
 			   SUN50I_H6_I2S_TX_CHAN_SEL_OFFSET(offset));
 
-	/* DAI clock master masks */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* BCLK and LRCLK master */
+		 
 		val = SUN8I_I2S_CTRL_BCLK_OUT |	SUN8I_I2S_CTRL_LRCK_OUT;
 		break;
 
 	case SND_SOC_DAIFMT_BC_FC:
-		/* BCLK and LRCLK slave */
+		 
 		val = 0;
 		break;
 
@@ -930,7 +889,7 @@ static int sun50i_h6_i2s_set_soc_fmt(const struct sun4i_i2s *i2s,
 			   SUN8I_I2S_CTRL_BCLK_OUT | SUN8I_I2S_CTRL_LRCK_OUT,
 			   val);
 
-	/* Set sign extension to pad out LSB with 0 */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_FMT1_REG,
 			   SUN8I_I2S_FMT1_REG_SEXT_MASK,
 			   SUN8I_I2S_FMT1_REG_SEXT(0));
@@ -956,20 +915,20 @@ static int sun4i_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 
 static void sun4i_i2s_start_capture(struct sun4i_i2s *i2s)
 {
-	/* Flush RX FIFO */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_FIFO_CTRL_REG,
 			   SUN4I_I2S_FIFO_CTRL_FLUSH_RX,
 			   SUN4I_I2S_FIFO_CTRL_FLUSH_RX);
 
-	/* Clear RX counter */
+	 
 	regmap_write(i2s->regmap, SUN4I_I2S_RX_CNT_REG, 0);
 
-	/* Enable RX Block */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
 			   SUN4I_I2S_CTRL_RX_EN,
 			   SUN4I_I2S_CTRL_RX_EN);
 
-	/* Enable RX DRQ */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_DMA_INT_CTRL_REG,
 			   SUN4I_I2S_DMA_INT_CTRL_RX_DRQ_EN,
 			   SUN4I_I2S_DMA_INT_CTRL_RX_DRQ_EN);
@@ -977,20 +936,20 @@ static void sun4i_i2s_start_capture(struct sun4i_i2s *i2s)
 
 static void sun4i_i2s_start_playback(struct sun4i_i2s *i2s)
 {
-	/* Flush TX FIFO */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_FIFO_CTRL_REG,
 			   SUN4I_I2S_FIFO_CTRL_FLUSH_TX,
 			   SUN4I_I2S_FIFO_CTRL_FLUSH_TX);
 
-	/* Clear TX counter */
+	 
 	regmap_write(i2s->regmap, SUN4I_I2S_TX_CNT_REG, 0);
 
-	/* Enable TX Block */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
 			   SUN4I_I2S_CTRL_TX_EN,
 			   SUN4I_I2S_CTRL_TX_EN);
 
-	/* Enable TX DRQ */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_DMA_INT_CTRL_REG,
 			   SUN4I_I2S_DMA_INT_CTRL_TX_DRQ_EN,
 			   SUN4I_I2S_DMA_INT_CTRL_TX_DRQ_EN);
@@ -998,12 +957,12 @@ static void sun4i_i2s_start_playback(struct sun4i_i2s *i2s)
 
 static void sun4i_i2s_stop_capture(struct sun4i_i2s *i2s)
 {
-	/* Disable RX Block */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
 			   SUN4I_I2S_CTRL_RX_EN,
 			   0);
 
-	/* Disable RX DRQ */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_DMA_INT_CTRL_REG,
 			   SUN4I_I2S_DMA_INT_CTRL_RX_DRQ_EN,
 			   0);
@@ -1011,12 +970,12 @@ static void sun4i_i2s_stop_capture(struct sun4i_i2s *i2s)
 
 static void sun4i_i2s_stop_playback(struct sun4i_i2s *i2s)
 {
-	/* Disable TX Block */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
 			   SUN4I_I2S_CTRL_TX_EN,
 			   0);
 
-	/* Disable TX DRQ */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_DMA_INT_CTRL_REG,
 			   SUN4I_I2S_DMA_INT_CTRL_TX_DRQ_EN,
 			   0);
@@ -1297,11 +1256,11 @@ static int sun4i_i2s_runtime_resume(struct device *dev)
 		goto err_disable_clk;
 	}
 
-	/* Enable the whole hardware block */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
 			   SUN4I_I2S_CTRL_GL_EN, SUN4I_I2S_CTRL_GL_EN);
 
-	/* Enable the first output line */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
 			   SUN4I_I2S_CTRL_SDO_EN_MASK,
 			   SUN4I_I2S_CTRL_SDO_EN(0));
@@ -1325,11 +1284,11 @@ static int sun4i_i2s_runtime_suspend(struct device *dev)
 
 	clk_disable_unprepare(i2s->mod_clk);
 
-	/* Disable our output lines */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
 			   SUN4I_I2S_CTRL_SDO_EN_MASK, 0);
 
-	/* Disable the whole hardware block */
+	 
 	regmap_update_bits(i2s->regmap, SUN4I_I2S_CTRL_REG,
 			   SUN4I_I2S_CTRL_GL_EN, 0);
 
@@ -1376,11 +1335,7 @@ static const struct sun4i_i2s_quirks sun6i_a31_i2s_quirks = {
 	.set_fmt		= sun4i_i2s_set_soc_fmt,
 };
 
-/*
- * This doesn't describe the TDM controller documented in the A83t
- * datasheet, but the three undocumented I2S controller that use the
- * older design.
- */
+ 
 static const struct sun4i_i2s_quirks sun8i_a83t_i2s_quirks = {
 	.has_reset		= true,
 	.reg_offset_txdata	= SUN8I_I2S_FIFO_TX_REG,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2022 - 2023 Intel Corporation
- */
+
+ 
 #include "mvm.h"
 #include "time-event.h"
 
@@ -14,7 +12,7 @@ static u32 iwl_mvm_get_free_fw_link_id(struct iwl_mvm *mvm,
 
 	link_id = ffz(mvm->fw_link_ids_map);
 
-	/* this case can happen if there're deactivated but not removed links */
+	 
 	if (link_id > IWL_MVM_FW_MAX_LINK_ID)
 		return IWL_MVM_FW_LINK_ID_INVALID;
 
@@ -67,9 +65,7 @@ int iwl_mvm_add_link(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 				   link_conf);
 	}
 
-	/* Update SF - Disable if needed. if this fails, SF might still be on
-	 * while many macs are bound, which is forbidden - so fail the binding.
-	 */
+	 
 	if (iwl_mvm_sf_update(mvm, vif, false))
 		return -EINVAL;
 
@@ -106,32 +102,21 @@ int iwl_mvm_link_changed(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 		return -EINVAL;
 
 	if (changes & LINK_CONTEXT_MODIFY_ACTIVE) {
-		/* When activating a link, phy context should be valid;
-		 * when deactivating a link, it also should be valid since
-		 * the link was active before. So, do nothing in this case.
-		 * Since a link is added first with FW_CTXT_INVALID, then we
-		 * can get here in case it's removed before it was activated.
-		 */
+		 
 		if (!link_info->phy_ctxt)
 			return 0;
 
-		/* Catch early if driver tries to activate or deactivate a link
-		 * twice.
-		 */
+		 
 		WARN_ON_ONCE(active == link_info->active);
 
-		/* When deactivating a link session protection should
-		 * be stopped
-		 */
+		 
 		if (!active && vif->type == NL80211_IFTYPE_STATION)
 			iwl_mvm_stop_session_protection(mvm, vif);
 	}
 
 	cmd.link_id = cpu_to_le32(link_info->fw_link_id);
 
-	/* The phy_id, link address and listen_lmac can be modified only until
-	 * the link becomes active, otherwise they will be ignored.
-	 */
+	 
 	phyctxt = link_info->phy_ctxt;
 	if (phyctxt)
 		cmd.phy_id = cpu_to_le32(phyctxt->id);
@@ -152,7 +137,7 @@ int iwl_mvm_link_changed(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 	cmd.cck_short_preamble = cpu_to_le32(link_conf->use_short_preamble);
 	cmd.short_slot = cpu_to_le32(link_conf->use_short_slot);
 
-	/* The fw does not distinguish between ht and fat */
+	 
 	ht_flag = LINK_PROT_FLG_HT_PROT | LINK_PROT_FLG_FAT_PROT;
 	iwl_mvm_set_fw_protection_flags(mvm, vif, link_conf,
 					&cmd.protection_flags,
@@ -181,7 +166,7 @@ int iwl_mvm_link_changed(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			(link_conf->uora_ocw_range >> 3) & 0x7;
 	}
 
-	/* TODO  how to set ndp_fdbk_buff_th_exp? */
+	 
 
 	if (iwl_mvm_set_fw_mu_edca_params(mvm, mvmvif->link[link_id],
 					  &cmd.trig_based_txf[0])) {
@@ -207,7 +192,7 @@ int iwl_mvm_link_changed(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 
 	cmd.frame_time_rts_th = cpu_to_le16(link_conf->frame_time_rts_th);
 
-	/* Block 26-tone RU OFDMA transmissions */
+	 
 	if (link_info->he_ru_2mhz_block) {
 		flags |= LINK_FLG_RU_2MHZ_BLOCK;
 		flags_mask |= LINK_FLG_RU_2MHZ_BLOCK;
@@ -262,9 +247,7 @@ int iwl_mvm_remove_link(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 	return ret;
 }
 
-/* link should be deactivated before removal, so in most cases we need to
- * perform these two operations together
- */
+ 
 int iwl_mvm_disable_link(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			 struct ieee80211_bss_conf *link_conf)
 {

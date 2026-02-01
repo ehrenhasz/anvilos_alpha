@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <sys/syscall.h>
@@ -18,7 +18,7 @@ void test_linked_maps(void)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto cleanup;
 
-	/* trigger */
+	 
 	syscall(SYS_getpgid);
 
 	ASSERT_EQ(skel->bss->output_first1, 2000, "output_first1");

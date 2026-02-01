@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Broadcom
- * Copyright (c) 2014 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include "vc4_hdmi.h"
 #include "vc4_regs.h"
@@ -132,9 +127,7 @@ void vc4_hdmi_phy_init(struct vc4_hdmi *vc4_hdmi,
 {
 	unsigned long flags;
 
-	/* PHY should be in reset, like
-	 * vc4_hdmi_encoder_disable() does.
-	 */
+	 
 
 	spin_lock_irqsave(&vc4_hdmi->hw_lock, flags);
 
@@ -209,7 +202,7 @@ static u32 phy_get_rm_offset(unsigned long long vco_freq)
 	unsigned long long fref = OSCILLATOR_FREQUENCY;
 	u64 offset = 0;
 
-	/* RM offset is stored as 9.22 format */
+	 
 	offset = vco_freq * 2;
 	offset = offset << 22;
 	do_div(offset, fref);
@@ -333,10 +326,7 @@ static const struct phy_settings *phy_get_settings(unsigned long long tmds_rate)
 			return s;
 	}
 
-	/*
-	 * If the pixel clock exceeds our max setting, try the max
-	 * setting anyway.
-	 */
+	 
 	return &vc5_hdmi_phy_settings[count - 1];
 }
 

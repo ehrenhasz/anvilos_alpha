@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * GNSS receiver support
- *
- * Copyright (C) 2018 Johan Hovold <johan@kernel.org>
- */
+ 
+ 
 
 #ifndef _LINUX_GNSS_H
 #define _LINUX_GNSS_H
@@ -73,4 +69,4 @@ static inline void *gnss_get_drvdata(struct gnss_device *gdev)
 	return dev_get_drvdata(&gdev->dev);
 }
 
-#endif /* _LINUX_GNSS_H */
+#endif  

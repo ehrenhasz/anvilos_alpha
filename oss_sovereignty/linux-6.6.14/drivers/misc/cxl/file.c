@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2014 IBM Corp.
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/module.h>
@@ -23,7 +21,7 @@
 #include "cxl.h"
 #include "trace.h"
 
-#define CXL_NUM_MINORS 256 /* Total to reserve */
+#define CXL_NUM_MINORS 256  
 
 #define CXL_AFU_MINOR_D(afu) (CXL_CARD_MINOR(afu->adapter) + 1 + (3 * afu->slice))
 #define CXL_AFU_MINOR_M(afu) (CXL_AFU_MINOR_D(afu) + 1)
@@ -63,11 +61,7 @@ static int __afu_open(struct inode *inode, struct file *file, bool master)
 		goto err_put_adapter;
 	}
 
-	/*
-	 * taking a ref to the afu so that it doesn't go away
-	 * for rest of the function. This ref is released before
-	 * we return.
-	 */
+	 
 	cxl_afu_get(afu);
 	spin_unlock(&adapter->afu_list_lock);
 
@@ -93,11 +87,11 @@ static int __afu_open(struct inode *inode, struct file *file, bool master)
 	pr_devel("afu_open pe: %i\n", ctx->pe);
 	file->private_data = ctx;
 
-	/* indicate success */
+	 
 	rc = 0;
 
 err_put_afu:
-	/* release the ref taken earlier */
+	 
 	cxl_afu_put(afu);
 err_put_adapter:
 	put_device(&adapter->dev);
@@ -123,22 +117,14 @@ int afu_release(struct inode *inode, struct file *file)
 	cxl_context_detach(ctx);
 
 
-	/*
-	 * Delete the context's mapping pointer, unless it's created by the
-	 * kernel API, in which case leave it so it can be freed by reclaim_ctx()
-	 */
+	 
 	if (!ctx->kernelapi) {
 		mutex_lock(&ctx->mapping_lock);
 		ctx->mapping = NULL;
 		mutex_unlock(&ctx->mapping_lock);
 	}
 
-	/*
-	 * At this this point all bottom halfs have finished and we should be
-	 * getting no more IRQs from the hardware for this context.  Once it's
-	 * removed from the IDR (and RCU synchronised) it's safe to free the
-	 * sstp and context.
-	 */
+	 
 	cxl_context_free(ctx);
 
 	return 0;
@@ -153,8 +139,7 @@ static long afu_ioctl_start_work(struct cxl_context *ctx,
 
 	pr_devel("%s: pe: %i\n", __func__, ctx->pe);
 
-	/* Do this outside the status_mutex to avoid a circular dependency with
-	 * the locking in cxl_mmap_fault() */
+	 
 	if (copy_from_user(&work, uwork, sizeof(work)))
 		return -EFAULT;
 
@@ -164,10 +149,7 @@ static long afu_ioctl_start_work(struct cxl_context *ctx,
 		goto out;
 	}
 
-	/*
-	 * if any of the reserved fields are set or any of the unused
-	 * flags are set it's invalid
-	 */
+	 
 	if (work.reserved1 || work.reserved2 || work.reserved3 ||
 	    work.reserved4 || work.reserved5 ||
 	    (work.flags & ~CXL_START_WORK_ALL)) {
@@ -194,58 +176,33 @@ static long afu_ioctl_start_work(struct cxl_context *ctx,
 
 	ctx->mmio_err_ff = !!(work.flags & CXL_START_WORK_ERR_FF);
 
-	/*
-	 * Increment the mapped context count for adapter. This also checks
-	 * if adapter_context_lock is taken.
-	 */
+	 
 	rc = cxl_adapter_context_get(ctx->afu->adapter);
 	if (rc) {
 		afu_release_irqs(ctx, ctx);
 		goto out;
 	}
 
-	/*
-	 * We grab the PID here and not in the file open to allow for the case
-	 * where a process (master, some daemon, etc) has opened the chardev on
-	 * behalf of another process, so the AFU's mm gets bound to the process
-	 * that performs this ioctl and not the process that opened the file.
-	 * Also we grab the PID of the group leader so that if the task that
-	 * has performed the attach operation exits the mm context of the
-	 * process is still accessible.
-	 */
+	 
 	ctx->pid = get_task_pid(current, PIDTYPE_PID);
 
-	/* acquire a reference to the task's mm */
+	 
 	ctx->mm = get_task_mm(current);
 
-	/* ensure this mm_struct can't be freed */
+	 
 	cxl_context_mm_count_get(ctx);
 
 	if (ctx->mm) {
-		/* decrement the use count from above */
+		 
 		mmput(ctx->mm);
-		/* make TLBIs for this context global */
+		 
 		mm_context_add_copro(ctx->mm);
 	}
 
-	/*
-	 * Increment driver use count. Enables global TLBIs for hash
-	 * and callbacks to handle the segment table
-	 */
+	 
 	cxl_ctx_get();
 
-	/*
-	 * A barrier is needed to make sure all TLBIs are global
-	 * before we attach and the context starts being used by the
-	 * adapter.
-	 *
-	 * Needed after mm_context_add_copro() for radix and
-	 * cxl_ctx_get() for hash/p8.
-	 *
-	 * The barrier should really be mb(), since it involves a
-	 * device. However, it's only useful when we have local
-	 * vs. global TLBIs, i.e SMP=y. So keep smp_mb().
-	 */
+	 
 	smp_mb();
 
 	trace_cxl_attach(ctx, work.work_element_descriptor, work.num_interrupts, amr);
@@ -297,7 +254,7 @@ static long afu_ioctl_get_afu_id(struct cxl_context *ctx,
 	afuid.afu_offset = ctx->afu->slice;
 	afuid.afu_mode = ctx->afu->current_mode;
 
-	/* set the flag bit in case the afu is a slave */
+	 
 	if (ctx->afu->current_mode == CXL_MODE_DIRECTED && !ctx->master)
 		afuid.flags |= CXL_AFUID_FLAG_SLAVE;
 
@@ -340,7 +297,7 @@ int afu_mmap(struct file *file, struct vm_area_struct *vm)
 {
 	struct cxl_context *ctx = file->private_data;
 
-	/* AFU must be started before we can MMIO */
+	 
 	if (ctx->status != STARTED)
 		return -EIO;
 
@@ -376,8 +333,7 @@ __poll_t afu_poll(struct file *file, struct poll_table_struct *poll)
 	if (ctx_event_pending(ctx))
 		mask |= EPOLLIN | EPOLLRDNORM;
 	else if (ctx->status == CLOSED)
-		/* Only error on closed when there are no futher events pending
-		 */
+		 
 		mask |= EPOLLERR;
 	spin_unlock_irqrestore(&ctx->lock, flags);
 
@@ -391,33 +347,33 @@ static ssize_t afu_driver_event_copy(struct cxl_context *ctx,
 				     struct cxl_event *event,
 				     struct cxl_event_afu_driver_reserved *pl)
 {
-	/* Check event */
+	 
 	if (!pl) {
 		ctx->afu_driver_ops->event_delivered(ctx, pl, -EINVAL);
 		return -EFAULT;
 	}
 
-	/* Check event size */
+	 
 	event->header.size += pl->data_size;
 	if (event->header.size > CXL_READ_MIN_SIZE) {
 		ctx->afu_driver_ops->event_delivered(ctx, pl, -EINVAL);
 		return -EFAULT;
 	}
 
-	/* Copy event header */
+	 
 	if (copy_to_user(buf, event, sizeof(struct cxl_event_header))) {
 		ctx->afu_driver_ops->event_delivered(ctx, pl, -EFAULT);
 		return -EFAULT;
 	}
 
-	/* Copy event data */
+	 
 	buf += sizeof(struct cxl_event_header);
 	if (copy_to_user(buf, &pl->data, pl->data_size)) {
 		ctx->afu_driver_ops->event_delivered(ctx, pl, -EFAULT);
 		return -EFAULT;
 	}
 
-	ctx->afu_driver_ops->event_delivered(ctx, pl, 0); /* Success */
+	ctx->afu_driver_ops->event_delivered(ctx, pl, 0);  
 	return event->header.size;
 }
 
@@ -519,10 +475,7 @@ out:
 	return rc;
 }
 
-/* 
- * Note: if this is updated, we need to update api.c to patch the new ones in
- * too
- */
+ 
 const struct file_operations afu_fops = {
 	.owner		= THIS_MODULE,
 	.open           = afu_open,
@@ -550,10 +503,7 @@ static char *cxl_devnode(const struct device *dev, umode_t *mode)
 {
 	if (cpu_has_feature(CPU_FTR_HVMODE) &&
 	    CXL_DEVT_IS_CARD(dev->devt)) {
-		/*
-		 * These minor numbers will eventually be used to program the
-		 * PSL and AFUs once we have dynamic reprogramming support
-		 */
+		 
 		return NULL;
 	}
 	return kasprintf(GFP_KERNEL, "cxl/%s", dev_name(dev));
@@ -595,7 +545,7 @@ int cxl_chardev_d_afu_add(struct cxl_afu *afu)
 {
 	return cxl_add_chardev(afu, CXL_AFU_MKDEV_D(afu), &afu->afu_cdev_d,
 			       &afu->chardev_d, "d", "dedicated",
-			       &afu_master_fops); /* Uses master fops */
+			       &afu_master_fops);  
 }
 
 int cxl_chardev_m_afu_add(struct cxl_afu *afu)
@@ -642,11 +592,7 @@ int cxl_register_adapter(struct cxl *adapter)
 {
 	adapter->dev.class = cxl_class;
 
-	/*
-	 * Future: When we support dynamically reprogramming the PSL & AFU we
-	 * will expose the interface to do that via a chardev:
-	 * adapter->dev.devt = CXL_CARD_MKDEV(adapter);
-	 */
+	 
 
 	return device_register(&adapter->dev);
 }
@@ -660,10 +606,7 @@ int __init cxl_file_init(void)
 {
 	int rc;
 
-	/*
-	 * If these change we really need to update API.  Either change some
-	 * flags or update API version number CXL_API_VERSION.
-	 */
+	 
 	BUILD_BUG_ON(CXL_API_VERSION != 3);
 	BUILD_BUG_ON(sizeof(struct cxl_ioctl_start_work) != 64);
 	BUILD_BUG_ON(sizeof(struct cxl_event_header) != 8);

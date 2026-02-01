@@ -1,47 +1,7 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
-/*
- * Authors:
- *    Christian König <christian.koenig@amd.com>
- */
+ 
+ 
 
-/**
- * DOC: MMU Notifier
- *
- * For coherent userptr handling registers an MMU notifier to inform the driver
- * about updates on the page tables of a process.
- *
- * When somebody tries to invalidate the page tables we block the update until
- * all operations on the pages in question are completed, then those pages are
- * marked as accessed and also dirty if it wasn't a read only access.
- *
- * New command submissions using the userptrs in question are delayed until all
- * page table invalidation are completed and we once more see a coherent process
- * address space.
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -53,16 +13,7 @@
 
 #define MAX_WALK_BYTE	(2UL << 30)
 
-/**
- * amdgpu_hmm_invalidate_gfx - callback to notify about mm change
- *
- * @mni: the range (mm) is about to update
- * @range: details on the invalidation
- * @cur_seq: Value to pass to mmu_interval_set_seq()
- *
- * Block for operations on BOs to finish and mark pages as accessed and
- * potentially dirty.
- */
+ 
 static bool amdgpu_hmm_invalidate_gfx(struct mmu_interval_notifier *mni,
 				      const struct mmu_notifier_range *range,
 				      unsigned long cur_seq)
@@ -90,16 +41,7 @@ static const struct mmu_interval_notifier_ops amdgpu_hmm_gfx_ops = {
 	.invalidate = amdgpu_hmm_invalidate_gfx,
 };
 
-/**
- * amdgpu_hmm_invalidate_hsa - callback to notify about mm change
- *
- * @mni: the range (mm) is about to update
- * @range: details on the invalidation
- * @cur_seq: Value to pass to mmu_interval_set_seq()
- *
- * We temporarily evict the BO attached to this range. This necessitates
- * evicting all user-mode queues of the process.
- */
+ 
 static bool amdgpu_hmm_invalidate_hsa(struct mmu_interval_notifier *mni,
 				      const struct mmu_notifier_range *range,
 				      unsigned long cur_seq)
@@ -118,15 +60,7 @@ static const struct mmu_interval_notifier_ops amdgpu_hmm_hsa_ops = {
 	.invalidate = amdgpu_hmm_invalidate_hsa,
 };
 
-/**
- * amdgpu_hmm_register - register a BO for notifier updates
- *
- * @bo: amdgpu buffer object
- * @addr: userptr addr we should monitor
- *
- * Registers a mmu_notifier for the given BO at the specified address.
- * Returns 0 on success, -ERRNO if anything goes wrong.
- */
+ 
 int amdgpu_hmm_register(struct amdgpu_bo *bo, unsigned long addr)
 {
 	if (bo->kfd_bo)
@@ -138,13 +72,7 @@ int amdgpu_hmm_register(struct amdgpu_bo *bo, unsigned long addr)
 					    &amdgpu_hmm_gfx_ops);
 }
 
-/**
- * amdgpu_hmm_unregister - unregister a BO for notifier updates
- *
- * @bo: amdgpu buffer object
- *
- * Remove any registration of mmu notifier updates from the buffer object.
- */
+ 
 void amdgpu_hmm_unregister(struct amdgpu_bo *bo)
 {
 	if (!bo->notifier.mm)
@@ -190,7 +118,7 @@ int amdgpu_hmm_range_get_pages(struct mmu_interval_notifier *notifier,
 		pr_debug("hmm range: start = 0x%lx, end = 0x%lx",
 			hmm_range->start, hmm_range->end);
 
-		/* Assuming 128MB takes maximum 1 second to fault page address */
+		 
 		timeout = max((hmm_range->end - hmm_range->start) >> 27, 1UL);
 		timeout *= HMM_RANGE_DEFAULT_TIMEOUT;
 		timeout = jiffies + msecs_to_jiffies(timeout);
@@ -199,10 +127,7 @@ retry:
 		hmm_range->notifier_seq = mmu_interval_read_begin(notifier);
 		r = hmm_range_fault(hmm_range);
 		if (unlikely(r)) {
-			/*
-			 * FIXME: This timeout should encompass the retry from
-			 * mmu_interval_read_retry() as well.
-			 */
+			 
 			if (r == -EBUSY && !time_after(jiffies, timeout))
 				goto retry;
 			goto out_free_pfns;
@@ -218,11 +143,7 @@ retry:
 	hmm_range->start = start;
 	hmm_range->hmm_pfns = pfns;
 
-	/*
-	 * Due to default_flags, all pages are HMM_PFN_VALID or
-	 * hmm_range_fault() fails. FIXME: The pages cannot be touched outside
-	 * the notifier_lock, and mmu_interval_read_retry() must be done first.
-	 */
+	 
 	for (i = 0; pages && i < npages; i++)
 		pages[i] = hmm_pfn_to_page(pfns[i]);
 

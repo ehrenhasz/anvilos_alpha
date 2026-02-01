@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2013 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 #include <drv_types.h>
 #include <rtw_debug.h>
 #include <rtw_btcoex.h>
@@ -30,9 +26,9 @@ void rtw_btcoex_HaltNotify(struct adapter *padapter)
 	hal_btcoex_HaltNotify(padapter);
 }
 
-/*  ================================================== */
-/*  Below Functions are called by BT-Coex */
-/*  ================================================== */
+ 
+ 
+ 
 void rtw_btcoex_RejectApAggregatedPacket(struct adapter *padapter, u8 enable)
 {
 	struct mlme_ext_info *pmlmeinfo;

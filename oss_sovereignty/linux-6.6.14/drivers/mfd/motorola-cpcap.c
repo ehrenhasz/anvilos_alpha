@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Motorola CPCAP PMIC core driver
- *
- * Copyright (C) 2016 Tony Lindgren <tony@atomide.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -85,10 +81,7 @@ static int cpcap_check_revision(struct cpcap_ddata *cpcap)
 	return 0;
 }
 
-/*
- * First two irq chips are the two private macro interrupt chips, the third
- * irq chip is for register banks 1 - 4 and is available for drivers to use.
- */
+ 
 static struct regmap_irq_chip cpcap_irq_chip[CPCAP_NR_IRQ_CHIPS] = {
 	{
 		.name = "cpcap-m2",
@@ -332,7 +325,7 @@ static int cpcap_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Parent SPI controller uses DMA, CPCAP and child devices do not */
+	 
 	spi->dev.coherent_dma_mask = 0;
 	spi->dev.dma_mask = &spi->dev.coherent_dma_mask;
 

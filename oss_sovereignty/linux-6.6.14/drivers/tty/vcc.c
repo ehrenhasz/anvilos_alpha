@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* vcc.c: sun4v virtual channel concentrator
- *
- * Copyright (C) 2017 Oracle. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -24,18 +21,15 @@ struct vcc_port {
 
 	spinlock_t lock;
 	char *domain;
-	struct tty_struct *tty;	/* only populated while dev is open */
-	unsigned long index;	/* index into the vcc_table */
+	struct tty_struct *tty;	 
+	unsigned long index;	 
 
 	u64 refcnt;
 	bool excl_locked;
 
 	bool removed;
 
-	/* This buffer is required to support the tty write_room interface
-	 * and guarantee that any characters that the driver accepts will
-	 * be eventually sent, either immediately or later.
-	 */
+	 
 	size_t chars_in_buffer;
 	struct vio_vcc buffer;
 
@@ -43,11 +37,11 @@ struct vcc_port {
 	struct timer_list tx_timer;
 };
 
-/* Microseconds that thread will delay waiting for a vcc port ref */
+ 
 #define VCC_REF_DELAY		100
 
 #define VCC_MAX_PORTS		1024
-#define VCC_MINOR_START		0	/* must be zero */
+#define VCC_MINOR_START		0	 
 #define VCC_BUFF_LEN		VIO_VCC_MTU_SIZE
 
 #define VCC_CTL_BREAK		-1
@@ -91,10 +85,7 @@ module_param(vcc_dbg_vio, uint, 0664);
 		}						\
 	} while (0)						\
 
-/* Note: Be careful when adding flags to this line discipline.  Don't
- * add anything that will cause echoing or we'll go into recursive
- * loop echoing chars back and forth with the console drivers.
- */
+ 
 static const struct ktermios vcc_tty_termios = {
 	.c_iflag = IGNBRK | IGNPAR,
 	.c_oflag = OPOST,
@@ -104,13 +95,7 @@ static const struct ktermios vcc_tty_termios = {
 	.c_ospeed = 38400
 };
 
-/**
- * vcc_table_add() - Add VCC port to the VCC table
- * @port: pointer to the VCC port
- *
- * Return: index of the port in the VCC table on success,
- *	   -1 on failure
- */
+ 
 static int vcc_table_add(struct vcc_port *port)
 {
 	unsigned long flags;
@@ -131,10 +116,7 @@ static int vcc_table_add(struct vcc_port *port)
 		return -1;
 }
 
-/**
- * vcc_table_remove() - Removes a VCC port from the VCC table
- * @index: Index into the VCC table
- */
+ 
 static void vcc_table_remove(unsigned long index)
 {
 	unsigned long flags;
@@ -147,14 +129,7 @@ static void vcc_table_remove(unsigned long index)
 	spin_unlock_irqrestore(&vcc_table_lock, flags);
 }
 
-/**
- * vcc_get() - Gets a reference to VCC port
- * @index: Index into the VCC table
- * @excl: Indicates if an exclusive access is requested
- *
- * Return: reference to the VCC port, if found
- *	   NULL, if port not found
- */
+ 
 static struct vcc_port *vcc_get(unsigned long index, bool excl)
 {
 	struct vcc_port *port;
@@ -182,10 +157,7 @@ try_again:
 
 	if (port->refcnt) {
 		spin_unlock_irqrestore(&vcc_table_lock, flags);
-		/* Threads wanting exclusive access will wait half the time,
-		 * probably giving them higher priority in the case of
-		 * multiple waiters.
-		 */
+		 
 		udelay(VCC_REF_DELAY/2);
 		goto try_again;
 	}
@@ -197,14 +169,7 @@ try_again:
 	return port;
 }
 
-/**
- * vcc_put() - Returns a reference to VCC port
- * @port: pointer to VCC port
- * @excl: Indicates if the returned reference is an exclusive reference
- *
- * Note: It's the caller's responsibility to ensure the correct value
- *	 for the excl flag
- */
+ 
 static void vcc_put(struct vcc_port *port, bool excl)
 {
 	unsigned long flags;
@@ -214,7 +179,7 @@ static void vcc_put(struct vcc_port *port, bool excl)
 
 	spin_lock_irqsave(&vcc_table_lock, flags);
 
-	/* check if caller attempted to put with the wrong flags */
+	 
 	if (WARN_ON((excl && !port->excl_locked) ||
 		    (!excl && port->excl_locked)))
 		goto done;
@@ -228,15 +193,7 @@ done:
 	spin_unlock_irqrestore(&vcc_table_lock, flags);
 }
 
-/**
- * vcc_get_ne() - Get a non-exclusive reference to VCC port
- * @index: Index into the VCC table
- *
- * Gets a non-exclusive reference to VCC port, if it's not removed
- *
- * Return: pointer to the VCC port, if found
- *	   NULL, if port not found
- */
+ 
 static struct vcc_port *vcc_get_ne(unsigned long index)
 {
 	struct vcc_port *port;
@@ -279,9 +236,7 @@ static int vcc_rx_check(struct tty_struct *tty, int size)
 	if (WARN_ON(!tty || !tty->port))
 		return 1;
 
-	/* tty_buffer_request_room won't sleep because it uses
-	 * GFP_ATOMIC flag to allocate buffer
-	 */
+	 
 	if (test_bit(TTY_THROTTLED, &tty->flags) ||
 	    (tty_buffer_request_room(tty->port, VCC_BUFF_LEN) < VCC_BUFF_LEN))
 		return 0;
@@ -317,7 +272,7 @@ static int vcc_ldc_read(struct vcc_port *port)
 		goto done;
 	}
 
-	/* Read as long as LDC has incoming data. */
+	 
 	while (1) {
 		if (!vcc_rx_check(tty, VIO_VCC_MTU_SIZE)) {
 			vcc_kick_rx(port);
@@ -337,7 +292,7 @@ static int vcc_ldc_read(struct vcc_port *port)
 
 		if (pkt.tag.type == VIO_TYPE_DATA) {
 			vccdbgp(pkt);
-			/* vcc_rx_check ensures memory availability */
+			 
 			vcc_rx(tty, pkt.data, pkt.tag.stype);
 		} else {
 			pr_err("VCC: unknown msg [%02x:%02x:%04x:%08x]\n",
@@ -422,13 +377,7 @@ done:
 	vcc_put(port, false);
 }
 
-/**
- * vcc_event() - LDC event processing engine
- * @arg: VCC private data
- * @event: LDC event
- *
- * Handles LDC events for VCC
- */
+ 
 static void vcc_event(void *arg, int event)
 {
 	struct vio_driver_state *vio;
@@ -467,7 +416,7 @@ static struct ldc_channel_config vcc_ldc_cfg = {
 	.debug		= 0,
 };
 
-/* Ordered from largest major to lowest */
+ 
 static struct vio_version vcc_versions[] = {
 	{ .major = 1, .minor = 0 },
 };
@@ -545,18 +494,7 @@ static struct attribute_group vcc_attribute_group = {
 	.attrs = vcc_sysfs_entries,
 };
 
-/**
- * vcc_probe() - Initialize VCC port
- * @vdev: Pointer to VIO device of the new VCC port
- * @id: VIO device ID
- *
- * Initializes a VCC port to receive serial console data from
- * the guest domain. Sets up a TTY end point on the control
- * domain. Sets up VIO/LDC link between the guest & control
- * domain endpoints.
- *
- * Return: status of the probe
- */
+ 
 static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 {
 	struct mdesc_handle *hp;
@@ -605,7 +543,7 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 		goto free_ldc;
 	}
 
-	/* Register the device using VCC table index as TTY index */
+	 
 	dev = tty_register_device(vcc_tty_driver, port->index, &vdev->dev);
 	if (IS_ERR(dev)) {
 		rv = PTR_ERR(dev);
@@ -645,9 +583,7 @@ static int vcc_probe(struct vio_dev *vdev, const struct vio_device_id *id)
 
 	dev_set_drvdata(&vdev->dev, port);
 
-	/* It's possible to receive IRQs in the middle of vio_port_up. Disable
-	 * IRQs until the port is up.
-	 */
+	 
 	disable_irq_nosync(vdev->rx_irq);
 	vio_port_up(&port->vio);
 	enable_irq(vdev->rx_irq);
@@ -670,15 +606,7 @@ free_port:
 	return rv;
 }
 
-/**
- * vcc_remove() - Terminate a VCC port
- * @vdev: Pointer to VIO device of the VCC port
- *
- * Terminates a VCC port. Sets up the teardown of TTY and
- * VIO/LDC link between guest and primary domains.
- *
- * Return: status of removal
- */
+ 
 static void vcc_remove(struct vio_dev *vdev)
 {
 	struct vcc_port *port = dev_get_drvdata(&vdev->dev);
@@ -686,16 +614,11 @@ static void vcc_remove(struct vio_dev *vdev)
 	del_timer_sync(&port->rx_timer);
 	del_timer_sync(&port->tx_timer);
 
-	/* If there's a process with the device open, do a synchronous
-	 * hangup of the TTY. This *may* cause the process to call close
-	 * asynchronously, but it's not guaranteed.
-	 */
+	 
 	if (port->tty)
 		tty_vhangup(port->tty);
 
-	/* Get exclusive reference to VCC, ensures that there are no other
-	 * clients to this port. This cannot fail.
-	 */
+	 
 	vcc_get(port->index, true);
 
 	tty_unregister_device(vcc_tty_driver, port->index);
@@ -835,7 +758,7 @@ static ssize_t vcc_write(struct tty_struct *tty, const u8 *buf, size_t count)
 	pkt->tag.type = VIO_TYPE_DATA;
 
 	while (count > 0) {
-		/* Minimum of data to write and space available */
+		 
 		tosend = min_t(size_t, count,
 			       (VCC_BUFF_LEN - port->chars_in_buffer));
 
@@ -852,10 +775,7 @@ static ssize_t vcc_write(struct tty_struct *tty, const u8 *buf, size_t count)
 		vccdbg("DATA [%s]\n", pkt->data);
 		vccdbgl(port->vio.lp);
 
-		/* Since we know we have enough room in VCC buffer for tosend
-		 * we record that it was sent regardless of whether the
-		 * hypervisor actually took it because we have it buffered.
-		 */
+		 
 		rv = ldc_write(port->vio.lp, pkt, (VIO_TAG_SIZE + tosend));
 		vccdbg("VCC: write: ldc_write(%zu)=%d\n",
 		       (VIO_TAG_SIZE + tosend), rv);
@@ -926,7 +846,7 @@ static int vcc_break_ctl(struct tty_struct *tty, int state)
 		return -ENODEV;
 	}
 
-	/* Turn off break */
+	 
 	if (state == 0) {
 		vcc_put(port, false);
 		return 0;

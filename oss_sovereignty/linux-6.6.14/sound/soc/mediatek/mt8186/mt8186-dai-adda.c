@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MediaTek ALSA SoC Audio DAI ADDA Control
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <linux/delay.h>
@@ -24,8 +24,8 @@ enum {
 enum {
 	AUDIO_SDM_LEVEL_MUTE = 0,
 	AUDIO_SDM_LEVEL_NORMAL = 0x1d,
-	/* if you change level normal */
-	/* you need to change formula of hp impedance and dc trim too */
+	 
+	 
 };
 
 enum {
@@ -141,7 +141,7 @@ static unsigned int adda_ul_rate_transform(struct mtk_base_afe *afe,
 	return MTK_AFE_ADDA_UL_RATE_48K;
 }
 
-/* dai component */
+ 
 static const struct snd_kcontrol_new mtk_adda_dl_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("DL1_CH1 Switch", AFE_CONN3, I_DL1_CH1, 1, 0),
 	SOC_DAPM_SINGLE_AUTODISABLE("DL12_CH1 Switch", AFE_CONN3, I_DL12_CH1, 1, 0),
@@ -218,13 +218,13 @@ static int mtk_adda_ul_src_dmic(struct mtk_base_afe *afe, int id)
 		return -EINVAL;
 	}
 
-	/* dmic mode, 3.25M*/
+	 
 	regmap_update_bits(afe->regmap, reg,
 			   DIGMIC_3P25M_1P625M_SEL_MASK_SFT, 0);
 	regmap_update_bits(afe->regmap, reg,
 			   DMIC_LOW_POWER_CTL_MASK_SFT, 0);
 
-	/* turn on dmic, ch1, ch2 */
+	 
 	regmap_update_bits(afe->regmap, reg,
 			   UL_SDM_3_LEVEL_MASK_SFT,
 			   BIT(UL_SDM_3_LEVEL_SFT));
@@ -254,13 +254,13 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMU:
 		mt8186_afe_gpio_request(afe->dev, true, MT8186_DAI_ADDA, 1);
 
-		/* update setting to dmic */
+		 
 		if (mtkaif_dmic) {
-			/* mtkaif_rxif_data_mode = 1, dmic */
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_RX_CFG0,
 					   0x1, 0x1);
 
-			/* dmic mode, 3.25M*/
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_RX_CFG0,
 					   MTKAIF_RXIF_VOICE_MODE_MASK_SFT,
 					   0x0);
@@ -268,7 +268,7 @@ static int mtk_adda_ul_event(struct snd_soc_dapm_widget *w,
 		}
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		mt8186_afe_gpio_request(afe->dev, false, MT8186_DAI_ADDA, 1);
 		break;
@@ -314,9 +314,9 @@ static int mtk_adda_mtkaif_cfg_event(struct snd_soc_dapm_widget *w,
 	switch (event) {
 	case SND_SOC_DAPM_PRE_PMU:
 		if (afe_priv->mtkaif_protocol == MTKAIF_PROTOCOL_2_CLK_P2) {
-			/* set protocol 2 */
+			 
 			regmap_write(afe->regmap, AFE_ADDA_MTKAIF_CFG0, 0x10000);
-			/* mtkaif_rxif_clkinv_adc inverse */
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_CFG0,
 					   MTKAIF_RXIF_CLKINV_ADC_MASK_SFT,
 					   BIT(MTKAIF_RXIF_CLKINV_ADC_SFT));
@@ -343,7 +343,7 @@ static int mtk_adda_mtkaif_cfg_event(struct snd_soc_dapm_widget *w,
 				}
 			}
 
-			/* set delay for ch12 */
+			 
 			if (afe_priv->mtkaif_phase_cycle[0] >=
 			    afe_priv->mtkaif_phase_cycle[1]) {
 				delay_data = DELAY_DATA_MISO1;
@@ -396,7 +396,7 @@ static int mtk_adda_dl_event(struct snd_soc_dapm_widget *w,
 		mt8186_afe_gpio_request(afe->dev, true, MT8186_DAI_ADDA, 0);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* should delayed 1/fs(smallest is 8k) = 125us before afe off */
+		 
 		usleep_range(125, 135);
 		mt8186_afe_gpio_request(afe->dev, false, MT8186_DAI_ADDA, 0);
 		break;
@@ -447,7 +447,7 @@ static const struct snd_kcontrol_new mtk_adda_controls[] = {
 			    mt8186_adda_dmic_get, mt8186_adda_dmic_set),
 };
 
-/* ADDA UL MUX */
+ 
 enum {
 	ADDA_UL_MUX_MTKAIF = 0,
 	ADDA_UL_MUX_AP_DMIC,
@@ -474,7 +474,7 @@ static const struct snd_kcontrol_new adda_ul_mux_control =
 	SOC_DAPM_ENUM("ADDA_UL_MUX Select", adda_ul_mux_map_enum);
 
 static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
-	/* inter-connections */
+	 
 	SND_SOC_DAPM_MIXER("ADDA_DL_CH1", SND_SOC_NOPM, 0, 0,
 			   mtk_adda_dl_ch1_mix,
 			   ARRAY_SIZE(mtk_adda_dl_ch1_mix)),
@@ -522,7 +522,7 @@ static const struct snd_soc_dapm_widget mtk_dai_adda_widgets[] = {
 
 	SND_SOC_DAPM_INPUT("AP_DMIC_INPUT"),
 
-	/* clock */
+	 
 	SND_SOC_DAPM_CLOCK_SUPPLY("top_mux_audio_h"),
 
 	SND_SOC_DAPM_CLOCK_SUPPLY("aud_dac_clk"),
@@ -571,7 +571,7 @@ static int mtk_afe_adc_hires_connect(struct snd_soc_dapm_widget *source,
 }
 
 static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
-	/* playback */
+	 
 	{"ADDA_DL_CH1", "DL1_CH1 Switch", "DL1"},
 	{"ADDA_DL_CH2", "DL1_CH1 Switch", "DL1"},
 	{"ADDA_DL_CH2", "DL1_CH2 Switch", "DL1"},
@@ -605,7 +605,7 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
 	{"ADDA Playback", NULL, "ADDA Enable"},
 	{"ADDA Playback", NULL, "ADDA Playback Enable"},
 
-	/* capture */
+	 
 	{"ADDA_UL_Mux", "MTKAIF", "ADDA Capture"},
 	{"ADDA_UL_Mux", "AP_DMIC", "AP DMIC Capture"},
 
@@ -621,7 +621,7 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
 
 	{"AP DMIC Capture", NULL, "AP_DMIC_INPUT"},
 
-	/* clk */
+	 
 	{"ADDA Playback", NULL, "aud_dac_clk"},
 	{"ADDA Playback", NULL, "aud_dac_predis_clk"},
 	{"ADDA Playback", NULL, "aud_dac_hires_clk", mtk_afe_dac_hires_connect},
@@ -630,14 +630,14 @@ static const struct snd_soc_dapm_route mtk_dai_adda_routes[] = {
 	{"ADDA Capture Enable", NULL, "aud_adc_hires_clk",
 	 mtk_afe_adc_hires_connect},
 
-	/* hires source from apll1 */
+	 
 	{"top_mux_audio_h", NULL, APLL2_W_NAME},
 
 	{"aud_dac_hires_clk", NULL, "top_mux_audio_h"},
 	{"aud_adc_hires_clk", NULL, "top_mux_audio_h"},
 };
 
-/* dai ops */
+ 
 static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 				  struct snd_pcm_hw_params *params,
 				  struct snd_soc_dai *dai)
@@ -657,30 +657,30 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 
 		adda_priv->dl_rate = rate;
 
-		/* set sampling rate */
+		 
 		dl_src2_con0 = adda_dl_rate_transform(afe, rate) <<
 			       DL_2_INPUT_MODE_CTL_SFT;
 
-		/* set output mode, UP_SAMPLING_RATE_X8 */
+		 
 		dl_src2_con0 |= (0x3 << DL_2_OUTPUT_SEL_CTL_SFT);
 
-		/* turn off mute function */
+		 
 		dl_src2_con0 |= BIT(DL_2_MUTE_CH2_OFF_CTL_PRE_SFT);
 		dl_src2_con0 |= BIT(DL_2_MUTE_CH1_OFF_CTL_PRE_SFT);
 
-		/* set voice input data if input sample rate is 8k or 16k */
+		 
 		if (rate == 8000 || rate == 16000)
 			dl_src2_con0 |= BIT(DL_2_VOICE_MODE_CTL_PRE_SFT);
 
-		/* SA suggest apply -0.3db to audio/speech path */
+		 
 		dl_src2_con1 = MTK_AFE_ADDA_DL_GAIN_NORMAL <<
 			       DL_2_GAIN_CTL_PRE_SFT;
 
-		/* turn on down-link gain */
+		 
 		dl_src2_con0 |= BIT(DL_2_GAIN_ON_CTL_PRE_SFT);
 
 		if (id == MT8186_DAI_ADDA) {
-			/* clean predistortion */
+			 
 			regmap_write(afe->regmap, AFE_ADDA_PREDIS_CON0, 0);
 			regmap_write(afe->regmap, AFE_ADDA_PREDIS_CON1, 0);
 
@@ -689,14 +689,14 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 			regmap_write(afe->regmap,
 				     AFE_ADDA_DL_SRC2_CON1, dl_src2_con1);
 
-			/* set sdm gain */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_DL_SDM_DCCOMP_CON,
 					   ATTGAIN_CTL_MASK_SFT,
 					   AUDIO_SDM_LEVEL_NORMAL <<
 					   ATTGAIN_CTL_SFT);
 
-			/* Use new 2nd sdm */
+			 
 			regmap_update_bits(afe->regmap,
 					   AFE_ADDA_DL_SDM_DITHER_CON,
 					   AFE_DL_SDM_DITHER_64TAP_EN_MASK_SFT,
@@ -710,7 +710,7 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 					   USE_3RD_SDM_MASK_SFT,
 					   AUDIO_SDM_2ND << USE_3RD_SDM_SFT);
 
-			/* sdm auto reset */
+			 
 			regmap_write(afe->regmap,
 				     AFE_ADDA_DL_SDM_AUTO_RESET_CON,
 				     SDM_AUTO_RESET_THRESHOLD);
@@ -726,7 +726,7 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 		adda_priv->ul_rate = rate;
 		ul_src_con0 |= (voice_mode << 17) & (0x7 << 17);
 
-		/* enable iir */
+		 
 		ul_src_con0 |= (1 << UL_IIR_ON_TMP_CTL_SFT) &
 			       UL_IIR_ON_TMP_CTL_MASK_SFT;
 		ul_src_con0 |= (UL_IIR_SW << UL_IIRMODE_CTL_SFT) &
@@ -734,7 +734,7 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 		switch (id) {
 		case MT8186_DAI_ADDA:
 		case MT8186_DAI_AP_DMIC:
-			/* 35Hz @ 48k */
+			 
 			regmap_write(afe->regmap,
 				     AFE_ADDA_IIR_COEF_02_01, 0);
 			regmap_write(afe->regmap,
@@ -749,17 +749,17 @@ static int mtk_dai_adda_hw_params(struct snd_pcm_substream *substream,
 			regmap_write(afe->regmap,
 				     AFE_ADDA_UL_SRC_CON0, ul_src_con0);
 
-			/* Using Internal ADC */
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_TOP_CON0, BIT(0), 0);
 
-			/* mtkaif_rxif_data_mode = 0, amic */
+			 
 			regmap_update_bits(afe->regmap, AFE_ADDA_MTKAIF_RX_CFG0, BIT(0), 0);
 			break;
 		default:
 			break;
 		}
 
-		/* ap dmic */
+		 
 		switch (id) {
 		case MT8186_DAI_AP_DMIC:
 			mtk_adda_ul_src_dmic(afe, id);
@@ -776,7 +776,7 @@ static const struct snd_soc_dai_ops mtk_dai_adda_ops = {
 	.hw_params = mtk_dai_adda_hw_params,
 };
 
-/* dai driver */
+ 
 #define MTK_ADDA_PLAYBACK_RATES (SNDRV_PCM_RATE_8000_48000 |\
 				 SNDRV_PCM_RATE_96000 |\
 				 SNDRV_PCM_RATE_192000)
@@ -848,13 +848,13 @@ int mt8186_dai_adda_register(struct mtk_base_afe *afe)
 	dai->dapm_routes = mtk_dai_adda_routes;
 	dai->num_dapm_routes = ARRAY_SIZE(mtk_dai_adda_routes);
 
-	/* set dai priv */
+	 
 	ret = mt8186_dai_set_priv(afe, MT8186_DAI_ADDA,
 				  sizeof(struct mtk_afe_adda_priv), NULL);
 	if (ret)
 		return ret;
 
-	/* ap dmic priv share with adda */
+	 
 	afe_priv->dai_priv[MT8186_DAI_AP_DMIC] =
 		afe_priv->dai_priv[MT8186_DAI_ADDA];
 

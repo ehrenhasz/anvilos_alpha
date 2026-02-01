@@ -1,65 +1,53 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_PSOC_GLOBAL_CONF_MASKS_H_
 #define ASIC_REG_PSOC_GLOBAL_CONF_MASKS_H_
 
-/*
- *****************************************
- *   PSOC_GLOBAL_CONF (Prototype: GLOBAL_CONF)
- *****************************************
- */
+ 
 
-/* PSOC_GLOBAL_CONF_NON_RST_FLOPS */
+ 
 #define PSOC_GLOBAL_CONF_NON_RST_FLOPS_VAL_SHIFT                     0
 #define PSOC_GLOBAL_CONF_NON_RST_FLOPS_VAL_MASK                      0xFFFFFFFF
 
-/* PSOC_GLOBAL_CONF_PCI_FW_FSM */
+ 
 #define PSOC_GLOBAL_CONF_PCI_FW_FSM_EN_SHIFT                         0
 #define PSOC_GLOBAL_CONF_PCI_FW_FSM_EN_MASK                          0x1
 
-/* PSOC_GLOBAL_CONF_BOOT_SEQ_RE_START */
+ 
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_RE_START_IND_SHIFT                 0
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_RE_START_IND_MASK                  0x1
 
-/* PSOC_GLOBAL_CONF_BTM_FSM */
+ 
 #define PSOC_GLOBAL_CONF_BTM_FSM_STATE_SHIFT                         0
 #define PSOC_GLOBAL_CONF_BTM_FSM_STATE_MASK                          0xF
 
-/* PSOC_GLOBAL_CONF_SW_BTM_FSM */
+ 
 #define PSOC_GLOBAL_CONF_SW_BTM_FSM_CTRL_SHIFT                       0
 #define PSOC_GLOBAL_CONF_SW_BTM_FSM_CTRL_MASK                        0xF
 
-/* PSOC_GLOBAL_CONF_SW_BOOT_SEQ_FSM */
+ 
 #define PSOC_GLOBAL_CONF_SW_BOOT_SEQ_FSM_CTRL_SHIFT                  0
 #define PSOC_GLOBAL_CONF_SW_BOOT_SEQ_FSM_CTRL_MASK                   0xF
 
-/* PSOC_GLOBAL_CONF_BOOT_SEQ_TIMEOUT */
+ 
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_TIMEOUT_VAL_SHIFT                  0
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_TIMEOUT_VAL_MASK                   0xFFFFFFFF
 
-/* PSOC_GLOBAL_CONF_SPI_MEM_EN */
+ 
 #define PSOC_GLOBAL_CONF_SPI_MEM_EN_IND_SHIFT                        0
 #define PSOC_GLOBAL_CONF_SPI_MEM_EN_IND_MASK                         0x1
 
-/* PSOC_GLOBAL_CONF_PRSTN */
+ 
 #define PSOC_GLOBAL_CONF_PRSTN_VAL_SHIFT                             0
 #define PSOC_GLOBAL_CONF_PRSTN_VAL_MASK                              0x1
 
-/* PSOC_GLOBAL_CONF_PCIE_EN */
+ 
 #define PSOC_GLOBAL_CONF_PCIE_EN_MASK_SHIFT                          0
 #define PSOC_GLOBAL_CONF_PCIE_EN_MASK_MASK                           0x1
 
-/* PSOC_GLOBAL_CONF_SPI_IMG_STS */
+ 
 #define PSOC_GLOBAL_CONF_SPI_IMG_STS_PRI_SHIFT                       0
 #define PSOC_GLOBAL_CONF_SPI_IMG_STS_PRI_MASK                        0x1
 #define PSOC_GLOBAL_CONF_SPI_IMG_STS_SEC_SHIFT                       1
@@ -69,7 +57,7 @@
 #define PSOC_GLOBAL_CONF_SPI_IMG_STS_PCI_SHIFT                       3
 #define PSOC_GLOBAL_CONF_SPI_IMG_STS_PCI_MASK                        0x8
 
-/* PSOC_GLOBAL_CONF_BOOT_SEQ_FSM */
+ 
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_FSM_IDLE_SHIFT                     0
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_FSM_IDLE_MASK                      0x1
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_FSM_BOOT_INIT_SHIFT                1
@@ -89,27 +77,27 @@
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_FSM_LTSSM_EN_SHIFT                 8
 #define PSOC_GLOBAL_CONF_BOOT_SEQ_FSM_LTSSM_EN_MASK                  0x100
 
-/* PSOC_GLOBAL_CONF_SCRATCHPAD */
+ 
 #define PSOC_GLOBAL_CONF_SCRATCHPAD_REG_SHIFT                        0
 #define PSOC_GLOBAL_CONF_SCRATCHPAD_REG_MASK                         0xFFFFFFFF
 
-/* PSOC_GLOBAL_CONF_SEMAPHORE */
+ 
 #define PSOC_GLOBAL_CONF_SEMAPHORE_REG_SHIFT                         0
 #define PSOC_GLOBAL_CONF_SEMAPHORE_REG_MASK                          0xFFFFFFFF
 
-/* PSOC_GLOBAL_CONF_WARM_REBOOT */
+ 
 #define PSOC_GLOBAL_CONF_WARM_REBOOT_CNTR_SHIFT                      0
 #define PSOC_GLOBAL_CONF_WARM_REBOOT_CNTR_MASK                       0xFFFFFFFF
 
-/* PSOC_GLOBAL_CONF_UBOOT_MAGIC */
+ 
 #define PSOC_GLOBAL_CONF_UBOOT_MAGIC_VAL_SHIFT                       0
 #define PSOC_GLOBAL_CONF_UBOOT_MAGIC_VAL_MASK                        0xFFFFFFFF
 
-/* PSOC_GLOBAL_CONF_SPL_SOURCE */
+ 
 #define PSOC_GLOBAL_CONF_SPL_SOURCE_VAL_SHIFT                        0
 #define PSOC_GLOBAL_CONF_SPL_SOURCE_VAL_MASK                         0x7
 
-/* PSOC_GLOBAL_CONF_I2C_MSTR1_DBG */
+ 
 #define PSOC_GLOBAL_CONF_I2C_MSTR1_DBG_S_GEN_SHIFT                   0
 #define PSOC_GLOBAL_CONF_I2C_MSTR1_DBG_S_GEN_MASK                    0x1
 #define PSOC_GLOBAL_CONF_I2C_MSTR1_DBG_P_GEN_SHIFT                   1
@@ -137,19 +125,19 @@
 #define PSOC_GLOBAL_CONF_I2C_MSTR1_DBG_IC_EN_SHIFT                   19
 #define PSOC_GLOBAL_CONF_I2C_MSTR1_DBG_IC_EN_MASK                    0x80000
 
-/* PSOC_GLOBAL_CONF_I2C_SLV */
+ 
 #define PSOC_GLOBAL_CONF_I2C_SLV_CPU_CTRL_SHIFT                      0
 #define PSOC_GLOBAL_CONF_I2C_SLV_CPU_CTRL_MASK                       0x1
 
-/* PSOC_GLOBAL_CONF_I2C_SLV_INTR_MASK */
+ 
 #define PSOC_GLOBAL_CONF_I2C_SLV_INTR_MASK_FLD_INT_SHIFT             0
 #define PSOC_GLOBAL_CONF_I2C_SLV_INTR_MASK_FLD_INT_MASK              0x1
 
-/* PSOC_GLOBAL_CONF_APP_STATUS */
+ 
 #define PSOC_GLOBAL_CONF_APP_STATUS_IND_SHIFT                        0
 #define PSOC_GLOBAL_CONF_APP_STATUS_IND_MASK                         0xFFFFFFFF
 
-/* PSOC_GLOBAL_CONF_BTL_STS */
+ 
 #define PSOC_GLOBAL_CONF_BTL_STS_DONE_SHIFT                          0
 #define PSOC_GLOBAL_CONF_BTL_STS_DONE_MASK                           0x1
 #define PSOC_GLOBAL_CONF_BTL_STS_FAIL_SHIFT                          4
@@ -157,7 +145,7 @@
 #define PSOC_GLOBAL_CONF_BTL_STS_FAIL_CODE_SHIFT                     8
 #define PSOC_GLOBAL_CONF_BTL_STS_FAIL_CODE_MASK                      0xF00
 
-/* PSOC_GLOBAL_CONF_TIMEOUT_INTR */
+ 
 #define PSOC_GLOBAL_CONF_TIMEOUT_INTR_GPIO_0_SHIFT                   0
 #define PSOC_GLOBAL_CONF_TIMEOUT_INTR_GPIO_0_MASK                    0x1
 #define PSOC_GLOBAL_CONF_TIMEOUT_INTR_GPIO_1_SHIFT                   1
@@ -175,11 +163,11 @@
 #define PSOC_GLOBAL_CONF_TIMEOUT_INTR_UART_1_SHIFT                   7
 #define PSOC_GLOBAL_CONF_TIMEOUT_INTR_UART_1_MASK                    0x80
 
-/* PSOC_GLOBAL_CONF_COMB_TIMEOUT_INTR */
+ 
 #define PSOC_GLOBAL_CONF_COMB_TIMEOUT_INTR_IND_SHIFT                 0
 #define PSOC_GLOBAL_CONF_COMB_TIMEOUT_INTR_IND_MASK                  0x1
 
-/* PSOC_GLOBAL_CONF_PERIPH_INTR */
+ 
 #define PSOC_GLOBAL_CONF_PERIPH_INTR_UART_0_TX_SHIFT                 0
 #define PSOC_GLOBAL_CONF_PERIPH_INTR_UART_0_TX_MASK                  0x1
 #define PSOC_GLOBAL_CONF_PERIPH_INTR_UART_0_RX_SHIFT                 1
@@ -203,15 +191,15 @@
 #define PSOC_GLOBAL_CONF_PERIPH_INTR_MII_SHIFT                       16
 #define PSOC_GLOBAL_CONF_PERIPH_INTR_MII_MASK                        0x10000
 
-/* PSOC_GLOBAL_CONF_COMB_PERIPH_INTR */
+ 
 #define PSOC_GLOBAL_CONF_COMB_PERIPH_INTR_IND_SHIFT                  0
 #define PSOC_GLOBAL_CONF_COMB_PERIPH_INTR_IND_MASK                   0x1
 
-/* PSOC_GLOBAL_CONF_AXI_ERR_INTR */
+ 
 #define PSOC_GLOBAL_CONF_AXI_ERR_INTR_IND_SHIFT                      0
 #define PSOC_GLOBAL_CONF_AXI_ERR_INTR_IND_MASK                       0x1
 
-/* PSOC_GLOBAL_CONF_TARGETID */
+ 
 #define PSOC_GLOBAL_CONF_TARGETID_TDESIGNER_SHIFT                    1
 #define PSOC_GLOBAL_CONF_TARGETID_TDESIGNER_MASK                     0xFFE
 #define PSOC_GLOBAL_CONF_TARGETID_TPARTNO_SHIFT                      12
@@ -219,19 +207,19 @@
 #define PSOC_GLOBAL_CONF_TARGETID_TREVISION_SHIFT                    28
 #define PSOC_GLOBAL_CONF_TARGETID_TREVISION_MASK                     0xF0000000
 
-/* PSOC_GLOBAL_CONF_EMMC_INT_VOL_STABLE */
+ 
 #define PSOC_GLOBAL_CONF_EMMC_INT_VOL_STABLE_IND_SHIFT               0
 #define PSOC_GLOBAL_CONF_EMMC_INT_VOL_STABLE_IND_MASK                0x1
 
-/* PSOC_GLOBAL_CONF_MII_ADDR */
+ 
 #define PSOC_GLOBAL_CONF_MII_ADDR_VAL_SHIFT                          0
 #define PSOC_GLOBAL_CONF_MII_ADDR_VAL_MASK                           0xFF
 
-/* PSOC_GLOBAL_CONF_MII_SPEED */
+ 
 #define PSOC_GLOBAL_CONF_MII_SPEED_VAL_SHIFT                         0
 #define PSOC_GLOBAL_CONF_MII_SPEED_VAL_MASK                          0x3
 
-/* PSOC_GLOBAL_CONF_BOOT_STRAP_PINS */
+ 
 #define PSOC_GLOBAL_CONF_BOOT_STRAP_PINS_CPOL_SHIFT                  0
 #define PSOC_GLOBAL_CONF_BOOT_STRAP_PINS_CPOL_MASK                   0x1
 #define PSOC_GLOBAL_CONF_BOOT_STRAP_PINS_CPHA_SHIFT                  1
@@ -257,27 +245,27 @@
 #define PSOC_GLOBAL_CONF_BOOT_STRAP_PINS_SPARE_SHIFT                 26
 #define PSOC_GLOBAL_CONF_BOOT_STRAP_PINS_SPARE_MASK                  0x1C000000
 
-/* PSOC_GLOBAL_CONF_MEM_REPAIR_CTRL */
+ 
 #define PSOC_GLOBAL_CONF_MEM_REPAIR_CTRL_SET_SHIFT                   0
 #define PSOC_GLOBAL_CONF_MEM_REPAIR_CTRL_SET_MASK                    0x1
 #define PSOC_GLOBAL_CONF_MEM_REPAIR_CTRL_CLR_SHIFT                   1
 #define PSOC_GLOBAL_CONF_MEM_REPAIR_CTRL_CLR_MASK                    0x2
 
-/* PSOC_GLOBAL_CONF_MEM_REPAIR_STS */
+ 
 #define PSOC_GLOBAL_CONF_MEM_REPAIR_STS_IND_SHIFT                    0
 #define PSOC_GLOBAL_CONF_MEM_REPAIR_STS_IND_MASK                     0x1
 
-/* PSOC_GLOBAL_CONF_OUTSTANT_TRANS */
+ 
 #define PSOC_GLOBAL_CONF_OUTSTANT_TRANS_RD_SHIFT                     0
 #define PSOC_GLOBAL_CONF_OUTSTANT_TRANS_RD_MASK                      0x1
 #define PSOC_GLOBAL_CONF_OUTSTANT_TRANS_WR_SHIFT                     1
 #define PSOC_GLOBAL_CONF_OUTSTANT_TRANS_WR_MASK                      0x2
 
-/* PSOC_GLOBAL_CONF_MASK_REQ */
+ 
 #define PSOC_GLOBAL_CONF_MASK_REQ_IND_SHIFT                          0
 #define PSOC_GLOBAL_CONF_MASK_REQ_IND_MASK                           0x1
 
-/* PSOC_GLOBAL_CONF_PRSTN_RST_CFG */
+ 
 #define PSOC_GLOBAL_CONF_PRSTN_RST_CFG_PCI_SHIFT                     0
 #define PSOC_GLOBAL_CONF_PRSTN_RST_CFG_PCI_MASK                      0x1
 #define PSOC_GLOBAL_CONF_PRSTN_RST_CFG_PCI_IF_SHIFT                  1
@@ -303,7 +291,7 @@
 #define PSOC_GLOBAL_CONF_PRSTN_RST_CFG_DMA_IF_SHIFT                  22
 #define PSOC_GLOBAL_CONF_PRSTN_RST_CFG_DMA_IF_MASK                   0x400000
 
-/* PSOC_GLOBAL_CONF_SW_ALL_RST_CFG */
+ 
 #define PSOC_GLOBAL_CONF_SW_ALL_RST_CFG_PCI_SHIFT                    0
 #define PSOC_GLOBAL_CONF_SW_ALL_RST_CFG_PCI_MASK                     0x1
 #define PSOC_GLOBAL_CONF_SW_ALL_RST_CFG_PCI_IF_SHIFT                 1
@@ -329,7 +317,7 @@
 #define PSOC_GLOBAL_CONF_SW_ALL_RST_CFG_DMA_IF_SHIFT                 22
 #define PSOC_GLOBAL_CONF_SW_ALL_RST_CFG_DMA_IF_MASK                  0x400000
 
-/* PSOC_GLOBAL_CONF_WD_RST_CFG */
+ 
 #define PSOC_GLOBAL_CONF_WD_RST_CFG_PCI_SHIFT                        0
 #define PSOC_GLOBAL_CONF_WD_RST_CFG_PCI_MASK                         0x1
 #define PSOC_GLOBAL_CONF_WD_RST_CFG_PCI_IF_SHIFT                     1
@@ -355,7 +343,7 @@
 #define PSOC_GLOBAL_CONF_WD_RST_CFG_DMA_IF_SHIFT                     22
 #define PSOC_GLOBAL_CONF_WD_RST_CFG_DMA_IF_MASK                      0x400000
 
-/* PSOC_GLOBAL_CONF_MNL_RST_CFG */
+ 
 #define PSOC_GLOBAL_CONF_MNL_RST_CFG_PCI_SHIFT                       0
 #define PSOC_GLOBAL_CONF_MNL_RST_CFG_PCI_MASK                        0x1
 #define PSOC_GLOBAL_CONF_MNL_RST_CFG_PCI_IF_SHIFT                    1
@@ -381,7 +369,7 @@
 #define PSOC_GLOBAL_CONF_MNL_RST_CFG_DMA_IF_SHIFT                    22
 #define PSOC_GLOBAL_CONF_MNL_RST_CFG_DMA_IF_MASK                     0x400000
 
-/* PSOC_GLOBAL_CONF_UNIT_RST_N */
+ 
 #define PSOC_GLOBAL_CONF_UNIT_RST_N_PCI_SHIFT                        0
 #define PSOC_GLOBAL_CONF_UNIT_RST_N_PCI_MASK                         0x1
 #define PSOC_GLOBAL_CONF_UNIT_RST_N_PCI_IF_SHIFT                     1
@@ -407,40 +395,40 @@
 #define PSOC_GLOBAL_CONF_UNIT_RST_N_DMA_IF_SHIFT                     22
 #define PSOC_GLOBAL_CONF_UNIT_RST_N_DMA_IF_MASK                      0x400000
 
-/* PSOC_GLOBAL_CONF_PRSTN_MASK */
+ 
 #define PSOC_GLOBAL_CONF_PRSTN_MASK_IND_SHIFT                        0
 #define PSOC_GLOBAL_CONF_PRSTN_MASK_IND_MASK                         0x1
 
-/* PSOC_GLOBAL_CONF_WD_MASK */
+ 
 #define PSOC_GLOBAL_CONF_WD_MASK_IND_SHIFT                           0
 #define PSOC_GLOBAL_CONF_WD_MASK_IND_MASK                            0x1
 
-/* PSOC_GLOBAL_CONF_RST_SRC */
+ 
 #define PSOC_GLOBAL_CONF_RST_SRC_VAL_SHIFT                           0
 #define PSOC_GLOBAL_CONF_RST_SRC_VAL_MASK                            0xF
 
-/* PSOC_GLOBAL_CONF_PAD_1V8_CFG */
+ 
 #define PSOC_GLOBAL_CONF_PAD_1V8_CFG_VAL_SHIFT                       0
 #define PSOC_GLOBAL_CONF_PAD_1V8_CFG_VAL_MASK                        0x7F
 
-/* PSOC_GLOBAL_CONF_PAD_3V3_CFG */
+ 
 #define PSOC_GLOBAL_CONF_PAD_3V3_CFG_VAL_SHIFT                       0
 #define PSOC_GLOBAL_CONF_PAD_3V3_CFG_VAL_MASK                        0x7F
 
-/* PSOC_GLOBAL_CONF_PAD_1V8_INPUT */
+ 
 #define PSOC_GLOBAL_CONF_PAD_1V8_INPUT_CFG_SHIFT                     0
 #define PSOC_GLOBAL_CONF_PAD_1V8_INPUT_CFG_MASK                      0x7
 
-/* PSOC_GLOBAL_CONF_BNK3V3_MS */
+ 
 #define PSOC_GLOBAL_CONF_BNK3V3_MS_VAL_SHIFT                         0
 #define PSOC_GLOBAL_CONF_BNK3V3_MS_VAL_MASK                          0x3
 
-/* PSOC_GLOBAL_CONF_PAD_DEFAULT */
+ 
 #define PSOC_GLOBAL_CONF_PAD_DEFAULT_VAL_SHIFT                       0
 #define PSOC_GLOBAL_CONF_PAD_DEFAULT_VAL_MASK                        0xF
 
-/* PSOC_GLOBAL_CONF_PAD_SEL */
+ 
 #define PSOC_GLOBAL_CONF_PAD_SEL_VAL_SHIFT                           0
 #define PSOC_GLOBAL_CONF_PAD_SEL_VAL_MASK                            0x3
 
-#endif /* ASIC_REG_PSOC_GLOBAL_CONF_MASKS_H_ */
+#endif  

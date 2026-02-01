@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Power Supply driver for a Greybus module.
- *
- * Copyright 2014-2015 Google Inc.
- * Copyright 2014-2015 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -55,10 +50,7 @@ struct gb_power_supplies {
 
 #define to_gb_power_supply(x) power_supply_get_drvdata(x)
 
-/*
- * General power supply properties that could be absent from various reasons,
- * like kernel versions or vendor specific versions
- */
+ 
 #ifndef POWER_SUPPLY_PROP_VOLTAGE_BOOT
 	#define POWER_SUPPLY_PROP_VOLTAGE_BOOT	-1
 #endif
@@ -69,12 +61,9 @@ struct gb_power_supplies {
 	#define POWER_SUPPLY_PROP_CALIBRATE	-1
 #endif
 
-/* cache time in milliseconds, if cache_time is set to 0 cache is disable */
+ 
 static unsigned int cache_time = 1000;
-/*
- * update interval initial and maximum value, between the two will
- * back-off exponential
- */
+ 
 static unsigned int update_interval_init = 1 * HZ;
 static unsigned int update_interval_max = 30 * HZ;
 
@@ -344,7 +333,7 @@ static void next_interval(struct gb_power_supply *gbpsy)
 	if (gbpsy->update_interval == update_interval_max)
 		return;
 
-	/* do some exponential back-off in the update interval */
+	 
 	gbpsy->update_interval *= 2;
 	if (gbpsy->update_interval > update_interval_max)
 		gbpsy->update_interval = update_interval_max;
@@ -361,10 +350,7 @@ static void gb_power_supply_state_change(struct gb_power_supply *gbpsy,
 	struct gb_connection *connection = get_conn_from_psy(gbpsy);
 	int ret;
 
-	/*
-	 * Check gbpsy->pm_acquired to make sure only one pair of 'get_sync'
-	 * and 'put_autosuspend' runtime pm call for state property change.
-	 */
+	 
 	mutex_lock(&gbpsy->supply_lock);
 
 	if ((prop->val == GB_POWER_SUPPLY_STATUS_CHARGING) &&
@@ -422,7 +408,7 @@ static void check_changed(struct gb_power_supply *gbpsy,
 
 static int total_props(struct gb_power_supply *gbpsy)
 {
-	/* this return the intval plus the strval properties */
+	 
 	return (gbpsy->properties_count + gbpsy->properties_count_str);
 }
 
@@ -534,7 +520,7 @@ static int gb_power_supply_prop_descriptors_get(struct gb_power_supply *gbpsy)
 
 	resp = op->response->payload;
 
-	/* validate received properties */
+	 
 	for (i = 0; i < props_count; i++) {
 		ret = get_psp_from_gb_prop(resp->props[i].property, &psp);
 		if (ret < 0) {
@@ -559,7 +545,7 @@ static int gb_power_supply_prop_descriptors_get(struct gb_power_supply *gbpsy)
 		goto out_put_operation;
 	}
 
-	/* Store available properties, skip the ones we do not support */
+	 
 	for (i = 0; i < props_count; i++) {
 		ret = get_psp_from_gb_prop(resp->props[i].property, &psp);
 		if (ret < 0) {
@@ -573,10 +559,7 @@ static int gb_power_supply_prop_descriptors_get(struct gb_power_supply *gbpsy)
 			gbpsy->props[i - r].is_writeable = true;
 	}
 
-	/*
-	 * now append the properties that we already got information in the
-	 * get_description operation. (char * ones)
-	 */
+	 
 	_gb_power_supply_append_props(gbpsy);
 
 	ret = 0;
@@ -661,10 +644,7 @@ static int _gb_power_supply_property_get(struct gb_power_supply *gbpsy,
 	struct gb_connection *connection = get_conn_from_psy(gbpsy);
 	int ret;
 
-	/*
-	 * Properties of type const char *, were already fetched on
-	 * get_description operation and should be cached in gb
-	 */
+	 
 	if (is_prop_valint(psp))
 		ret = __gb_power_supply_property_get(gbpsy, psp, val);
 	else
@@ -678,7 +658,7 @@ static int _gb_power_supply_property_get(struct gb_power_supply *gbpsy,
 
 static int is_cache_valid(struct gb_power_supply *gbpsy)
 {
-	/* check if cache is good enough or it has expired */
+	 
 	if (gbpsy->cache_invalid) {
 		gbpsy->cache_invalid = 0;
 		return 0;
@@ -721,7 +701,7 @@ static int gb_power_supply_status_get(struct gb_power_supply *gbpsy)
 
 static void gb_power_supply_status_update(struct gb_power_supply *gbpsy)
 {
-	/* check if there a change that need to be reported */
+	 
 	gb_power_supply_status_get(gbpsy);
 
 	if (!gbpsy->changed)
@@ -738,10 +718,7 @@ static void gb_power_supply_work(struct work_struct *work)
 						     struct gb_power_supply,
 						     work.work);
 
-	/*
-	 * if the poll interval is not set, disable polling, this is helpful
-	 * specially at unregister time.
-	 */
+	 
 	if (!gbpsy->update_interval)
 		return;
 
@@ -789,7 +766,7 @@ static int gb_power_supply_property_set(struct gb_power_supply *gbpsy,
 	if (ret < 0)
 		goto out;
 
-	/* cache immediately the new value */
+	 
 	prop->val = val;
 
 out:
@@ -908,7 +885,7 @@ static int gb_power_supply_enable(struct gb_power_supply *gbpsy)
 {
 	int ret;
 
-	/* guarantee that we have an unique name, before register */
+	 
 	ret =  __gb_power_supply_set_name(gbpsy->model_name, gbpsy->name,
 					  sizeof(gbpsy->name));
 	if (ret < 0)
@@ -924,7 +901,7 @@ static int gb_power_supply_enable(struct gb_power_supply *gbpsy)
 	INIT_DELAYED_WORK(&gbpsy->work, gb_power_supply_work);
 	schedule_delayed_work(&gbpsy->work, 0);
 
-	/* everything went fine, mark it for release code to know */
+	 
 	gbpsy->registered = true;
 
 	return 0;
@@ -1024,10 +1001,7 @@ static int gb_supplies_request_handler(struct gb_operation *op)
 	}
 
 	event = payload->event;
-	/*
-	 * we will only handle events after setup is done and before release is
-	 * running. For that just check update_interval.
-	 */
+	 
 	gbpsy = &supplies->supply[psy_id];
 	if (!gbpsy->update_interval) {
 		ret = -ESHUTDOWN;
@@ -1035,11 +1009,7 @@ static int gb_supplies_request_handler(struct gb_operation *op)
 	}
 
 	if (event & GB_POWER_SUPPLY_UPDATE) {
-		/*
-		 * we need to make sure we invalidate cache, if not no new
-		 * values for the properties will be fetch and the all propose
-		 * of this event is missed
-		 */
+		 
 		gbpsy->cache_invalid = 1;
 		gb_power_supply_status_update(gbpsy);
 	}
@@ -1082,7 +1052,7 @@ static int gb_power_supply_probe(struct gb_bundle *bundle,
 
 	greybus_set_drvdata(bundle, supplies);
 
-	/* We aren't ready to receive an incoming request yet */
+	 
 	ret = gb_connection_enable_tx(connection);
 	if (ret)
 		goto error_connection_destroy;
@@ -1091,7 +1061,7 @@ static int gb_power_supply_probe(struct gb_bundle *bundle,
 	if (ret < 0)
 		goto error_connection_disable;
 
-	/* We are ready to receive an incoming request now, enable RX as well */
+	 
 	ret = gb_connection_enable(connection);
 	if (ret)
 		goto error_connection_disable;

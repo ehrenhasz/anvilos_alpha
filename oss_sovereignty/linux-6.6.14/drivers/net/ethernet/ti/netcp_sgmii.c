@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SGMI module initialisation
- *
- * Copyright (C) 2014 Texas Instruments Incorporated
- * Authors:	Sandeep Nair <sandeep_n@ti.com>
- *		Sandeep Paulraj <s-paulraj@ti.com>
- *		Wingman Kwok <w-kwok2@ti.com>
- *
- */
+
+ 
 
 #include "netcp.h"
 
@@ -22,7 +14,7 @@
 #define SGMII23_OFFSET(x)	((x - 2) * 0x100)
 #define SGMII_OFFSET(x)		((x <= 1) ? (x * 0x100) : (SGMII23_OFFSET(x)))
 
-/* SGMII registers */
+ 
 #define SGMII_SRESET_REG(x)   (SGMII_OFFSET(x) + 0x004)
 #define SGMII_CTL_REG(x)      (SGMII_OFFSET(x) + 0x010)
 #define SGMII_STATUS_REG(x)   (SGMII_OFFSET(x) + 0x014)
@@ -43,10 +35,10 @@ static void sgmii_write_reg_bit(void __iomem *base, int reg, u32 val)
 	writel((readl(base + reg) | val), base + reg);
 }
 
-/* port is 0 based */
+ 
 int netcp_sgmii_reset(void __iomem *sgmii_ofs, int port)
 {
-	/* Soft reset */
+	 
 	sgmii_write_reg_bit(sgmii_ofs, SGMII_SRESET_REG(port),
 			    SGMII_SRESET_RESET);
 
@@ -57,13 +49,13 @@ int netcp_sgmii_reset(void __iomem *sgmii_ofs, int port)
 	return 0;
 }
 
-/* port is 0 based */
+ 
 bool netcp_sgmii_rtreset(void __iomem *sgmii_ofs, int port, bool set)
 {
 	u32 reg;
 	bool oldval;
 
-	/* Initiate a soft reset */
+	 
 	reg = sgmii_read_reg(sgmii_ofs, SGMII_SRESET_REG(port));
 	oldval = (reg & SGMII_SRESET_RTRESET) != 0x0;
 	if (set)
@@ -121,7 +113,7 @@ int netcp_sgmii_config(void __iomem *sgmii_ofs, int port, u32 interface)
 
 	sgmii_write_reg(sgmii_ofs, SGMII_CTL_REG(port), 0);
 
-	/* Wait for the SerDes pll to lock */
+	 
 	for (i = 0; i < 1000; i++)  {
 		usleep_range(1000, 2000);
 		status = sgmii_read_reg(sgmii_ofs, SGMII_STATUS_REG(port));

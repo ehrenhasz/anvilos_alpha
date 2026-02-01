@@ -1,28 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2004 IBM Corporation
- *
- * Authors:
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Dave Safford <safford@watson.ibm.com>
- * Reiner Sailer <sailer@watson.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org	 
- */
+
+ 
 
 #include "tpm.h"
 #include "tpm_atmel.h"
 
-/* write status bits */
+ 
 enum tpm_atmel_write_status {
 	ATML_STATUS_ABORT = 0x01,
 	ATML_STATUS_LASTBYTE = 0x04
 };
-/* read status bits */
+ 
 enum tpm_atmel_read_status {
 	ATML_STATUS_BUSY = 0x01,
 	ATML_STATUS_DATA_AVAIL = 0x02,
@@ -38,7 +25,7 @@ static int tpm_atml_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 	int i;
 	__be32 *native_size;
 
-	/* start reading header */
+	 
 	if (count < 6)
 		return -EIO;
 
@@ -51,14 +38,14 @@ static int tpm_atml_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 		*buf++ = ioread8(priv->iobase);
 	}
 
-	/* size of the data received */
+	 
 	native_size = (__force __be32 *) (hdr + 2);
 	size = be32_to_cpu(*native_size);
 
 	if (count < size) {
 		dev_err(&chip->dev,
 			"Recv size(%d) less than available space\n", size);
-		for (; i < size; i++) {	/* clear the waiting data anyway */
+		for (; i < size; i++) {	 
 			status = ioread8(priv->iobase + 1);
 			if ((status & ATML_STATUS_DATA_AVAIL) == 0) {
 				dev_err(&chip->dev, "error reading data\n");
@@ -68,7 +55,7 @@ static int tpm_atml_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 		return -EIO;
 	}
 
-	/* read all the data available */
+	 
 	for (; i < size; i++) {
 		status = ioread8(priv->iobase + 1);
 		if ((status & ATML_STATUS_DATA_AVAIL) == 0) {
@@ -78,7 +65,7 @@ static int tpm_atml_recv(struct tpm_chip *chip, u8 *buf, size_t count)
 		*buf++ = ioread8(priv->iobase);
 	}
 
-	/* make sure data available is gone */
+	 
 	status = ioread8(priv->iobase + 1);
 
 	if (status & ATML_STATUS_DATA_AVAIL) {

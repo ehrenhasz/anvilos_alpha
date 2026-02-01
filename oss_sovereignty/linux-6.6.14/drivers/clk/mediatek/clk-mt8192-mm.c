@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2021 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -39,7 +39,7 @@ static const struct mtk_gate_regs mm2_cg_regs = {
 	GATE_MTK(_id, _name, _parent, &mm2_cg_regs, _shift, &mtk_clk_gate_ops_setclr)
 
 static const struct mtk_gate mm_clks[] = {
-	/* MM0 */
+	 
 	GATE_MM0(CLK_MM_DISP_MUTEX0, "mm_disp_mutex0", "disp_sel", 0),
 	GATE_MM0(CLK_MM_DISP_CONFIG, "mm_disp_config", "disp_sel", 1),
 	GATE_MM0(CLK_MM_DISP_OVL0, "mm_disp_ovl0", "disp_sel", 2),
@@ -71,9 +71,9 @@ static const struct mtk_gate mm_clks[] = {
 	GATE_MM0(CLK_MM_DISP_OVL2_2L, "mm_disp_ovl2_2l", "disp_sel", 28),
 	GATE_MM0(CLK_MM_DISP_RDMA4, "mm_disp_rdma4", "disp_sel", 29),
 	GATE_MM0(CLK_MM_DISP_DPI0, "mm_disp_dpi0", "disp_sel", 30),
-	/* MM1 */
+	 
 	GATE_MM1(CLK_MM_SMI_IOMMU, "mm_smi_iommu", "disp_sel", 0),
-	/* MM2 */
+	 
 	GATE_MM2(CLK_MM_DSI_DSI0, "mm_dsi_dsi0", "disp_sel", 0),
 	GATE_MM2(CLK_MM_DPI_DPI0, "mm_dpi_dpi0", "dpi_sel", 8),
 	GATE_MM2(CLK_MM_26MHZ, "mm_26mhz", "clk26m", 24),
@@ -87,7 +87,7 @@ static const struct mtk_clk_desc mm_desc = {
 
 static const struct platform_device_id clk_mt8192_mm_id_table[] = {
 	{ .name = "clk-mt8192-mm", .driver_data = (kernel_ulong_t)&mm_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, clk_mt8192_mm_id_table);
 

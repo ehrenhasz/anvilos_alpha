@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -29,52 +27,52 @@
 #define DTADR(n)	(0x0208 + ((n) << 4))
 #define DCMD		0x020c
 
-#define DCSR_RUN	BIT(31)	/* Run Bit (read / write) */
-#define DCSR_NODESC	BIT(30)	/* No-Descriptor Fetch (read / write) */
-#define DCSR_STOPIRQEN	BIT(29)	/* Stop Interrupt Enable (read / write) */
-#define DCSR_REQPEND	BIT(8)	/* Request Pending (read-only) */
-#define DCSR_STOPSTATE	BIT(3)	/* Stop State (read-only) */
-#define DCSR_ENDINTR	BIT(2)	/* End Interrupt (read / write) */
-#define DCSR_STARTINTR	BIT(1)	/* Start Interrupt (read / write) */
-#define DCSR_BUSERR	BIT(0)	/* Bus Error Interrupt (read / write) */
+#define DCSR_RUN	BIT(31)	 
+#define DCSR_NODESC	BIT(30)	 
+#define DCSR_STOPIRQEN	BIT(29)	 
+#define DCSR_REQPEND	BIT(8)	 
+#define DCSR_STOPSTATE	BIT(3)	 
+#define DCSR_ENDINTR	BIT(2)	 
+#define DCSR_STARTINTR	BIT(1)	 
+#define DCSR_BUSERR	BIT(0)	 
 
-#define DCSR_EORIRQEN	BIT(28)	/* End of Receive Interrupt Enable (R/W) */
-#define DCSR_EORJMPEN	BIT(27)	/* Jump to next descriptor on EOR */
-#define DCSR_EORSTOPEN	BIT(26)	/* STOP on an EOR */
-#define DCSR_SETCMPST	BIT(25)	/* Set Descriptor Compare Status */
-#define DCSR_CLRCMPST	BIT(24)	/* Clear Descriptor Compare Status */
-#define DCSR_CMPST	BIT(10)	/* The Descriptor Compare Status */
-#define DCSR_EORINTR	BIT(9)	/* The end of Receive */
+#define DCSR_EORIRQEN	BIT(28)	 
+#define DCSR_EORJMPEN	BIT(27)	 
+#define DCSR_EORSTOPEN	BIT(26)	 
+#define DCSR_SETCMPST	BIT(25)	 
+#define DCSR_CLRCMPST	BIT(24)	 
+#define DCSR_CMPST	BIT(10)	 
+#define DCSR_EORINTR	BIT(9)	 
 
 #define DRCMR(n)	((((n) < 64) ? 0x0100 : 0x1100) + (((n) & 0x3f) << 2))
-#define DRCMR_MAPVLD	BIT(7)	/* Map Valid (read / write) */
-#define DRCMR_CHLNUM	0x1f	/* mask for Channel Number (read / write) */
+#define DRCMR_MAPVLD	BIT(7)	 
+#define DRCMR_CHLNUM	0x1f	 
 
-#define DDADR_DESCADDR	0xfffffff0	/* Address of next descriptor (mask) */
-#define DDADR_STOP	BIT(0)	/* Stop (read / write) */
+#define DDADR_DESCADDR	0xfffffff0	 
+#define DDADR_STOP	BIT(0)	 
 
-#define DCMD_INCSRCADDR	BIT(31)	/* Source Address Increment Setting. */
-#define DCMD_INCTRGADDR	BIT(30)	/* Target Address Increment Setting. */
-#define DCMD_FLOWSRC	BIT(29)	/* Flow Control by the source. */
-#define DCMD_FLOWTRG	BIT(28)	/* Flow Control by the target. */
-#define DCMD_STARTIRQEN	BIT(22)	/* Start Interrupt Enable */
-#define DCMD_ENDIRQEN	BIT(21)	/* End Interrupt Enable */
-#define DCMD_ENDIAN	BIT(18)	/* Device Endian-ness. */
-#define DCMD_BURST8	(1 << 16)	/* 8 byte burst */
-#define DCMD_BURST16	(2 << 16)	/* 16 byte burst */
-#define DCMD_BURST32	(3 << 16)	/* 32 byte burst */
-#define DCMD_WIDTH1	(1 << 14)	/* 1 byte width */
-#define DCMD_WIDTH2	(2 << 14)	/* 2 byte width (HalfWord) */
-#define DCMD_WIDTH4	(3 << 14)	/* 4 byte width (Word) */
-#define DCMD_LENGTH	0x01fff		/* length mask (max = 8K - 1) */
+#define DCMD_INCSRCADDR	BIT(31)	 
+#define DCMD_INCTRGADDR	BIT(30)	 
+#define DCMD_FLOWSRC	BIT(29)	 
+#define DCMD_FLOWTRG	BIT(28)	 
+#define DCMD_STARTIRQEN	BIT(22)	 
+#define DCMD_ENDIRQEN	BIT(21)	 
+#define DCMD_ENDIAN	BIT(18)	 
+#define DCMD_BURST8	(1 << 16)	 
+#define DCMD_BURST16	(2 << 16)	 
+#define DCMD_BURST32	(3 << 16)	 
+#define DCMD_WIDTH1	(1 << 14)	 
+#define DCMD_WIDTH2	(2 << 14)	 
+#define DCMD_WIDTH4	(3 << 14)	 
+#define DCMD_LENGTH	0x01fff		 
 
 #define PDMA_MAX_DESC_BYTES	DCMD_LENGTH
 
 struct mmp_pdma_desc_hw {
-	u32 ddadr;	/* Points to the next descriptor + flags */
-	u32 dsadr;	/* DSADR value for the current transfer */
-	u32 dtadr;	/* DTADR value for the current transfer */
-	u32 dcmd;	/* DCMD value for the current transfer */
+	u32 ddadr;	 
+	u32 dsadr;	 
+	u32 dtadr;	 
+	u32 dcmd;	 
 } __aligned(32);
 
 struct mmp_pdma_desc_sw {
@@ -94,23 +92,22 @@ struct mmp_pdma_chan {
 	enum dma_transfer_direction dir;
 	struct dma_slave_config slave_config;
 
-	struct mmp_pdma_desc_sw *cyclic_first;	/* first desc_sw if channel
-						 * is in cyclic mode */
+	struct mmp_pdma_desc_sw *cyclic_first;	 
 
-	/* channel's basic info */
+	 
 	struct tasklet_struct tasklet;
 	u32 dcmd;
 	u32 drcmr;
 	u32 dev_addr;
 
-	/* list for desc */
-	spinlock_t desc_lock;		/* Descriptor list lock */
-	struct list_head chain_pending;	/* Link descriptors queue for pending */
-	struct list_head chain_running;	/* Link descriptors queue for running */
-	bool idle;			/* channel statue machine */
+	 
+	spinlock_t desc_lock;		 
+	struct list_head chain_pending;	 
+	struct list_head chain_running;	 
+	bool idle;			 
 	bool byte_align;
 
-	struct dma_pool *desc_pool;	/* Descriptors pool */
+	struct dma_pool *desc_pool;	 
 };
 
 struct mmp_pdma_phy {
@@ -125,7 +122,7 @@ struct mmp_pdma_device {
 	struct device			*dev;
 	struct dma_device		device;
 	struct mmp_pdma_phy		*phy;
-	spinlock_t phy_lock; /* protect alloc/free phy channels */
+	spinlock_t phy_lock;  
 };
 
 #define tx_to_mmp_pdma_desc(tx)					\
@@ -189,7 +186,7 @@ static int clear_chan_irq(struct mmp_pdma_phy *phy)
 	if (!(dint & BIT(phy->idx)))
 		return -EAGAIN;
 
-	/* clear irq */
+	 
 	dcsr = readl(phy->base + reg);
 	writel(dcsr, phy->base + reg);
 	if ((dcsr & DCSR_BUSERR) && (phy->vchan))
@@ -219,7 +216,7 @@ static irqreturn_t mmp_pdma_int_handler(int irq, void *dev_id)
 
 	while (dint) {
 		i = __ffs(dint);
-		/* only handle interrupts belonging to pdma driver*/
+		 
 		if (i >= pdev->dma_channels)
 			break;
 		dint &= (dint - 1);
@@ -235,7 +232,7 @@ static irqreturn_t mmp_pdma_int_handler(int irq, void *dev_id)
 	return IRQ_NONE;
 }
 
-/* lookup free phy channel as descending priority */
+ 
 static struct mmp_pdma_phy *lookup_phy(struct mmp_pdma_chan *pchan)
 {
 	int prio, i;
@@ -243,13 +240,7 @@ static struct mmp_pdma_phy *lookup_phy(struct mmp_pdma_chan *pchan)
 	struct mmp_pdma_phy *phy, *found = NULL;
 	unsigned long flags;
 
-	/*
-	 * dma channel priorities
-	 * ch 0 - 3,  16 - 19  <--> (0)
-	 * ch 4 - 7,  20 - 23  <--> (1)
-	 * ch 8 - 11, 24 - 27  <--> (2)
-	 * ch 12 - 15, 28 - 31  <--> (3)
-	 */
+	 
 
 	spin_lock_irqsave(&pdev->phy_lock, flags);
 	for (prio = 0; prio <= ((pdev->dma_channels - 1) & 0xf) >> 2; prio++) {
@@ -279,7 +270,7 @@ static void mmp_pdma_free_phy(struct mmp_pdma_chan *pchan)
 	if (!pchan->phy)
 		return;
 
-	/* clear the channel mapping in DRCMR */
+	 
 	reg = DRCMR(pchan->drcmr);
 	writel(0, pchan->phy->base + reg);
 
@@ -289,22 +280,19 @@ static void mmp_pdma_free_phy(struct mmp_pdma_chan *pchan)
 	spin_unlock_irqrestore(&pdev->phy_lock, flags);
 }
 
-/*
- * start_pending_queue - transfer any pending transactions
- * pending list ==> running list
- */
+ 
 static void start_pending_queue(struct mmp_pdma_chan *chan)
 {
 	struct mmp_pdma_desc_sw *desc;
 
-	/* still in running, irq will start the pending list */
+	 
 	if (!chan->idle) {
 		dev_dbg(chan->dev, "DMA controller still busy\n");
 		return;
 	}
 
 	if (list_empty(&chan->chain_pending)) {
-		/* chance to re-fetch phy channel with higher prio */
+		 
 		mmp_pdma_free_phy(chan);
 		dev_dbg(chan->dev, "no pending list\n");
 		return;
@@ -318,25 +306,19 @@ static void start_pending_queue(struct mmp_pdma_chan *chan)
 		}
 	}
 
-	/*
-	 * pending -> running
-	 * reintilize pending list
-	 */
+	 
 	desc = list_first_entry(&chan->chain_pending,
 				struct mmp_pdma_desc_sw, node);
 	list_splice_tail_init(&chan->chain_pending, &chan->chain_running);
 
-	/*
-	 * Program the descriptor's address into the DMA controller,
-	 * then start the DMA transaction
-	 */
+	 
 	set_desc(chan->phy, desc->async_tx.phys);
 	enable_chan(chan->phy);
 	chan->idle = false;
 }
 
 
-/* desc->tx_list ==> pending list */
+ 
 static dma_cookie_t mmp_pdma_tx_submit(struct dma_async_tx_descriptor *tx)
 {
 	struct mmp_pdma_chan *chan = to_mmp_pdma_chan(tx->chan);
@@ -351,7 +333,7 @@ static dma_cookie_t mmp_pdma_tx_submit(struct dma_async_tx_descriptor *tx)
 		cookie = dma_cookie_assign(&child->async_tx);
 	}
 
-	/* softly link to pending list - desc->tx_list ==> pending list */
+	 
 	list_splice_tail_init(&desc->tx_list, &chan->chain_pending);
 
 	spin_unlock_irqrestore(&chan->desc_lock, flags);
@@ -373,20 +355,14 @@ mmp_pdma_alloc_descriptor(struct mmp_pdma_chan *chan)
 
 	INIT_LIST_HEAD(&desc->tx_list);
 	dma_async_tx_descriptor_init(&desc->async_tx, &chan->chan);
-	/* each desc has submit */
+	 
 	desc->async_tx.tx_submit = mmp_pdma_tx_submit;
 	desc->async_tx.phys = pdesc;
 
 	return desc;
 }
 
-/*
- * mmp_pdma_alloc_chan_resources - Allocate resources for DMA channel.
- *
- * This function will create a dma pool for descriptor allocation.
- * Request irq only when channel is requested
- * Return - The number of allocated descriptors.
- */
+ 
 
 static int mmp_pdma_alloc_chan_resources(struct dma_chan *dchan)
 {
@@ -465,7 +441,7 @@ mmp_pdma_prep_memcpy(struct dma_chan *dchan,
 	}
 
 	do {
-		/* Allocate the link descriptor from DMA pool */
+		 
 		new = mmp_pdma_alloc_descriptor(chan);
 		if (!new) {
 			dev_err(chan->dev, "no memory for desc\n");
@@ -500,14 +476,14 @@ mmp_pdma_prep_memcpy(struct dma_chan *dchan,
 			dma_dst += copy;
 		}
 
-		/* Insert the link descriptor to the LD ring */
+		 
 		list_add_tail(&new->node, &first->tx_list);
 	} while (len);
 
-	first->async_tx.flags = flags; /* client is in control of this ack */
+	first->async_tx.flags = flags;  
 	first->async_tx.cookie = -EBUSY;
 
-	/* last desc and fire IRQ */
+	 
 	new->desc.ddadr = DDADR_STOP;
 	new->desc.dcmd |= DCMD_ENDIRQEN;
 
@@ -549,7 +525,7 @@ mmp_pdma_prep_slave_sg(struct dma_chan *dchan, struct scatterlist *sgl,
 			if (addr & 0x7)
 				chan->byte_align = true;
 
-			/* allocate and populate the descriptor */
+			 
 			new = mmp_pdma_alloc_descriptor(chan);
 			if (!new) {
 				dev_err(chan->dev, "no memory for desc\n");
@@ -574,10 +550,10 @@ mmp_pdma_prep_slave_sg(struct dma_chan *dchan, struct scatterlist *sgl,
 			async_tx_ack(&new->async_tx);
 			prev = new;
 
-			/* Insert the link descriptor to the LD ring */
+			 
 			list_add_tail(&new->node, &first->tx_list);
 
-			/* update metadata */
+			 
 			addr += len;
 			avail -= len;
 		} while (avail);
@@ -586,7 +562,7 @@ mmp_pdma_prep_slave_sg(struct dma_chan *dchan, struct scatterlist *sgl,
 	first->async_tx.cookie = -EBUSY;
 	first->async_tx.flags = flags;
 
-	/* last desc and fire IRQ */
+	 
 	new->desc.ddadr = DDADR_STOP;
 	new->desc.dcmd |= DCMD_ENDIRQEN;
 
@@ -614,7 +590,7 @@ mmp_pdma_prep_dma_cyclic(struct dma_chan *dchan,
 	if (!dchan || !len || !period_len)
 		return NULL;
 
-	/* the buffer length must be a multiple of period_len */
+	 
 	if (len % period_len != 0)
 		return NULL;
 
@@ -641,7 +617,7 @@ mmp_pdma_prep_dma_cyclic(struct dma_chan *dchan,
 	chan->dir = direction;
 
 	do {
-		/* Allocate the link descriptor from DMA pool */
+		 
 		new = mmp_pdma_alloc_descriptor(chan);
 		if (!new) {
 			dev_err(chan->dev, "no memory for desc\n");
@@ -669,14 +645,14 @@ mmp_pdma_prep_dma_cyclic(struct dma_chan *dchan,
 		else
 			dma_dst += period_len;
 
-		/* Insert the link descriptor to the LD ring */
+		 
 		list_add_tail(&new->node, &first->tx_list);
 	} while (len);
 
-	first->async_tx.flags = flags; /* client is in control of this ack */
+	first->async_tx.flags = flags;  
 	first->async_tx.cookie = -EBUSY;
 
-	/* make the cyclic link */
+	 
 	new->desc.ddadr = first->async_tx.phys;
 	chan->cyclic_first = first;
 
@@ -767,10 +743,7 @@ static unsigned int mmp_pdma_residue(struct mmp_pdma_chan *chan,
 	bool passed = false;
 	bool cyclic = chan->cyclic_first != NULL;
 
-	/*
-	 * If the channel does not have a phy pointer anymore, it has already
-	 * been completed. Therefore, its residue is 0.
-	 */
+	 
 	if (!chan->phy)
 		return 0;
 
@@ -790,13 +763,7 @@ static unsigned int mmp_pdma_residue(struct mmp_pdma_chan *chan,
 		len = sw->desc.dcmd & DCMD_LENGTH;
 		end = start + len;
 
-		/*
-		 * 'passed' will be latched once we found the descriptor which
-		 * lies inside the boundaries of the curr pointer. All
-		 * descriptors that occur in the list _after_ we found that
-		 * partially handled descriptor are still to be processed and
-		 * are hence added to the residual bytes counter.
-		 */
+		 
 
 		if (passed) {
 			residue += len;
@@ -805,19 +772,7 @@ static unsigned int mmp_pdma_residue(struct mmp_pdma_chan *chan,
 			passed = true;
 		}
 
-		/*
-		 * Descriptors that have the ENDIRQEN bit set mark the end of a
-		 * transaction chain, and the cookie assigned with it has been
-		 * returned previously from mmp_pdma_tx_submit().
-		 *
-		 * In case we have multiple transactions in the running chain,
-		 * and the cookie does not match the one the user asked us
-		 * about, reset the state variables and start over.
-		 *
-		 * This logic does not apply to cyclic transactions, where all
-		 * descriptors have the ENDIRQEN bit set, and for which we
-		 * can't have multiple transactions on one channel anyway.
-		 */
+		 
 		if (cyclic || !(sw->desc.dcmd & DCMD_ENDIRQEN))
 			continue;
 
@@ -829,7 +784,7 @@ static unsigned int mmp_pdma_residue(struct mmp_pdma_chan *chan,
 		}
 	}
 
-	/* We should only get here in case of cyclic transactions */
+	 
 	return residue;
 }
 
@@ -847,10 +802,7 @@ static enum dma_status mmp_pdma_tx_status(struct dma_chan *dchan,
 	return ret;
 }
 
-/*
- * mmp_pdma_issue_pending - Issue the DMA start command
- * pending list ==> running list
- */
+ 
 static void mmp_pdma_issue_pending(struct dma_chan *dchan)
 {
 	struct mmp_pdma_chan *chan = to_mmp_pdma_chan(dchan);
@@ -861,11 +813,7 @@ static void mmp_pdma_issue_pending(struct dma_chan *dchan)
 	spin_unlock_irqrestore(&chan->desc_lock, flags);
 }
 
-/*
- * dma_do_tasklet
- * Do call back
- * Start pending list
- */
+ 
 static void dma_do_tasklet(struct tasklet_struct *t)
 {
 	struct mmp_pdma_chan *chan = from_tasklet(chan, t, tasklet);
@@ -885,21 +833,14 @@ static void dma_do_tasklet(struct tasklet_struct *t)
 		return;
 	}
 
-	/* submit pending list; callback for each desc; free desc */
+	 
 	spin_lock_irqsave(&chan->desc_lock, flags);
 
 	list_for_each_entry_safe(desc, _desc, &chan->chain_running, node) {
-		/*
-		 * move the descriptors to a temporary list so we can drop
-		 * the lock during the entire cleanup operation
-		 */
+		 
 		list_move(&desc->node, &chain_cleanup);
 
-		/*
-		 * Look for the first list entry which has the ENDIRQEN flag
-		 * set. That is the descriptor we got an interrupt for, so
-		 * complete that transaction and its cookie.
-		 */
+		 
 		if (desc->desc.dcmd & DCMD_ENDIRQEN) {
 			dma_cookie_t cookie = desc->async_tx.cookie;
 			dma_cookie_complete(&desc->async_tx);
@@ -908,23 +849,20 @@ static void dma_do_tasklet(struct tasklet_struct *t)
 		}
 	}
 
-	/*
-	 * The hardware is idle and ready for more when the
-	 * chain_running list is empty.
-	 */
+	 
 	chan->idle = list_empty(&chan->chain_running);
 
-	/* Start any pending transactions automatically */
+	 
 	start_pending_queue(chan);
 	spin_unlock_irqrestore(&chan->desc_lock, flags);
 
-	/* Run the callback for each descriptor, in order */
+	 
 	list_for_each_entry_safe(desc, _desc, &chain_cleanup, node) {
 		struct dma_async_tx_descriptor *txd = &desc->async_tx;
 
-		/* Remove from the list of transactions */
+		 
 		list_del(&desc->node);
-		/* Run the link descriptor callback function */
+		 
 		dmaengine_desc_get_callback(txd, &cb);
 		dmaengine_desc_callback_invoke(&cb, NULL);
 
@@ -990,7 +928,7 @@ static int mmp_pdma_chan_init(struct mmp_pdma_device *pdev, int idx, int irq)
 	INIT_LIST_HEAD(&chan->chain_pending);
 	INIT_LIST_HEAD(&chan->chain_running);
 
-	/* register virt channel to dma engine */
+	 
 	list_add_tail(&chan->chan.device_node, &pdev->device.channels);
 
 	return 0;
@@ -1042,7 +980,7 @@ static int mmp_pdma_probe(struct platform_device *op)
 
 	of_id = of_match_device(mmp_pdma_dt_ids, pdev->dev);
 	if (of_id) {
-		/* Parse new and deprecated dma-channels properties */
+		 
 		if (of_property_read_u32(pdev->dev->of_node, "dma-channels",
 					 &dma_channels))
 			of_property_read_u32(pdev->dev->of_node, "#dma-channels",
@@ -1050,7 +988,7 @@ static int mmp_pdma_probe(struct platform_device *op)
 	} else if (pdata && pdata->dma_channels) {
 		dma_channels = pdata->dma_channels;
 	} else {
-		dma_channels = 32;	/* default 32 channel */
+		dma_channels = 32;	 
 	}
 	pdev->dma_channels = dma_channels;
 
@@ -1067,7 +1005,7 @@ static int mmp_pdma_probe(struct platform_device *op)
 	INIT_LIST_HEAD(&pdev->device.channels);
 
 	if (irq_num != dma_channels) {
-		/* all chan share one irq, demux inside */
+		 
 		irq = platform_get_irq(op, 0);
 		ret = devm_request_irq(pdev->dev, irq, mmp_pdma_int_handler,
 				       IRQF_SHARED, "pdma", pdev);
@@ -1114,7 +1052,7 @@ static int mmp_pdma_probe(struct platform_device *op)
 	}
 
 	if (op->dev.of_node) {
-		/* Device-tree DMA controller registration */
+		 
 		ret = of_dma_controller_register(op->dev.of_node,
 						 mmp_pdma_dma_xlate, pdev);
 		if (ret < 0) {

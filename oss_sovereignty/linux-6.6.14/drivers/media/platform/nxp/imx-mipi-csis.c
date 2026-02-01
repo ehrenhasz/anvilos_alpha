@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Samsung CSIS MIPI CSI-2 receiver driver.
- *
- * The Samsung CSIS IP is a MIPI CSI-2 receiver found in various NXP i.MX7 and
- * i.MX8 SoCs. The i.MX7 features version 3.3 of the IP, while i.MX8 features
- * version 3.6.3.
- *
- * Copyright (C) 2019 Linaro Ltd
- * Copyright (C) 2015-2016 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2011 - 2013 Samsung Electronics Co., Ltd.
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -43,14 +32,14 @@
 #define MIPI_CSIS_DEF_PIX_WIDTH			640
 #define MIPI_CSIS_DEF_PIX_HEIGHT		480
 
-/* Register map definition */
+ 
 
-/* CSIS version */
+ 
 #define MIPI_CSIS_VERSION			0x00
 #define MIPI_CSIS_VERSION_IMX7D			0x03030505
 #define MIPI_CSIS_VERSION_IMX8MP		0x03060301
 
-/* CSIS common control */
+ 
 #define MIPI_CSIS_CMN_CTRL			0x04
 #define MIPI_CSIS_CMN_CTRL_UPDATE_SHADOW	BIT(16)
 #define MIPI_CSIS_CMN_CTRL_INTER_MODE		BIT(10)
@@ -61,7 +50,7 @@
 #define MIPI_CSIS_CMN_CTRL_LANE_NR_OFFSET	8
 #define MIPI_CSIS_CMN_CTRL_LANE_NR_MASK		(3 << 8)
 
-/* CSIS clock control */
+ 
 #define MIPI_CSIS_CLK_CTRL			0x08
 #define MIPI_CSIS_CLK_CTRL_CLKGATE_TRAIL_CH3(x)	((x) << 28)
 #define MIPI_CSIS_CLK_CTRL_CLKGATE_TRAIL_CH2(x)	((x) << 24)
@@ -70,7 +59,7 @@
 #define MIPI_CSIS_CLK_CTRL_CLKGATE_EN_MSK	(0xf << 4)
 #define MIPI_CSIS_CLK_CTRL_WCLK_SRC		BIT(0)
 
-/* CSIS Interrupt mask */
+ 
 #define MIPI_CSIS_INT_MSK			0x10
 #define MIPI_CSIS_INT_MSK_EVEN_BEFORE		BIT(31)
 #define MIPI_CSIS_INT_MSK_EVEN_AFTER		BIT(30)
@@ -87,7 +76,7 @@
 #define MIPI_CSIS_INT_MSK_ERR_CRC		BIT(1)
 #define MIPI_CSIS_INT_MSK_ERR_UNKNOWN		BIT(0)
 
-/* CSIS Interrupt source */
+ 
 #define MIPI_CSIS_INT_SRC			0x14
 #define MIPI_CSIS_INT_SRC_EVEN_BEFORE		BIT(31)
 #define MIPI_CSIS_INT_SRC_EVEN_AFTER		BIT(30)
@@ -108,14 +97,14 @@
 #define MIPI_CSIS_INT_SRC_ERR_UNKNOWN		BIT(0)
 #define MIPI_CSIS_INT_SRC_ERRORS		0xfffff
 
-/* D-PHY status control */
+ 
 #define MIPI_CSIS_DPHY_STATUS			0x20
 #define MIPI_CSIS_DPHY_STATUS_ULPS_DAT		BIT(8)
 #define MIPI_CSIS_DPHY_STATUS_STOPSTATE_DAT	BIT(4)
 #define MIPI_CSIS_DPHY_STATUS_ULPS_CLK		BIT(1)
 #define MIPI_CSIS_DPHY_STATUS_STOPSTATE_CLK	BIT(0)
 
-/* D-PHY common control */
+ 
 #define MIPI_CSIS_DPHY_CMN_CTRL			0x24
 #define MIPI_CSIS_DPHY_CMN_CTRL_HSSETTLE(n)	((n) << 24)
 #define MIPI_CSIS_DPHY_CMN_CTRL_HSSETTLE_MASK	GENMASK(31, 24)
@@ -127,7 +116,7 @@
 #define MIPI_CSIS_DPHY_CMN_CTRL_ENABLE_CLK	BIT(0)
 #define MIPI_CSIS_DPHY_CMN_CTRL_ENABLE		(0x1f << 0)
 
-/* D-PHY Master and Slave Control register Low */
+ 
 #define MIPI_CSIS_DPHY_BCTRL_L			0x30
 #define MIPI_CSIS_DPHY_BCTRL_L_USER_DATA_PATTERN_LOW(n)		(((n) & 3U) << 30)
 #define MIPI_CSIS_DPHY_BCTRL_L_BIAS_REF_VOLT_715MV		(0 << 28)
@@ -163,42 +152,42 @@
 #define MIPI_CSIS_DPHY_BCTRL_L_TXTRIGGER_CLK_EN			BIT(10)
 #define MIPI_CSIS_DPHY_BCTRL_L_B_DPHYCTRL(n)			(((n) * 25 / 1000000) << 0)
 
-/* D-PHY Master and Slave Control register High */
+ 
 #define MIPI_CSIS_DPHY_BCTRL_H			0x34
-/* D-PHY Slave Control register Low */
+ 
 #define MIPI_CSIS_DPHY_SCTRL_L			0x38
-/* D-PHY Slave Control register High */
+ 
 #define MIPI_CSIS_DPHY_SCTRL_H			0x3c
 
-/* ISP Configuration register */
+ 
 #define MIPI_CSIS_ISP_CONFIG_CH(n)		(0x40 + (n) * 0x10)
 #define MIPI_CSIS_ISPCFG_MEM_FULL_GAP_MSK	(0xff << 24)
 #define MIPI_CSIS_ISPCFG_MEM_FULL_GAP(x)	((x) << 24)
 #define MIPI_CSIS_ISPCFG_PIXEL_MODE_SINGLE	(0 << 12)
 #define MIPI_CSIS_ISPCFG_PIXEL_MODE_DUAL	(1 << 12)
-#define MIPI_CSIS_ISPCFG_PIXEL_MODE_QUAD	(2 << 12)	/* i.MX8M[MNP] only */
+#define MIPI_CSIS_ISPCFG_PIXEL_MODE_QUAD	(2 << 12)	 
 #define MIPI_CSIS_ISPCFG_PIXEL_MASK		(3 << 12)
 #define MIPI_CSIS_ISPCFG_ALIGN_32BIT		BIT(11)
 #define MIPI_CSIS_ISPCFG_FMT(fmt)		((fmt) << 2)
 #define MIPI_CSIS_ISPCFG_FMT_MASK		(0x3f << 2)
 
-/* ISP Image Resolution register */
+ 
 #define MIPI_CSIS_ISP_RESOL_CH(n)		(0x44 + (n) * 0x10)
 #define CSIS_MAX_PIX_WIDTH			0xffff
 #define CSIS_MAX_PIX_HEIGHT			0xffff
 
-/* ISP SYNC register */
+ 
 #define MIPI_CSIS_ISP_SYNC_CH(n)		(0x48 + (n) * 0x10)
 #define MIPI_CSIS_ISP_SYNC_HSYNC_LINTV_OFFSET	18
 #define MIPI_CSIS_ISP_SYNC_VSYNC_SINTV_OFFSET	12
 #define MIPI_CSIS_ISP_SYNC_VSYNC_EINTV_OFFSET	0
 
-/* ISP shadow registers */
+ 
 #define MIPI_CSIS_SDW_CONFIG_CH(n)		(0x80 + (n) * 0x10)
 #define MIPI_CSIS_SDW_RESOL_CH(n)		(0x84 + (n) * 0x10)
 #define MIPI_CSIS_SDW_SYNC_CH(n)		(0x88 + (n) * 0x10)
 
-/* Debug control register */
+ 
 #define MIPI_CSIS_DBG_CTRL			0xc0
 #define MIPI_CSIS_DBG_INTR_MSK			0xc4
 #define MIPI_CSIS_DBG_INTR_MSK_DT_NOT_SUPPORT	BIT(25)
@@ -221,14 +210,14 @@
 
 #define MIPI_CSIS_FRAME_COUNTER_CH(n)		(0x0100 + (n) * 4)
 
-/* Non-image packet data buffers */
+ 
 #define MIPI_CSIS_PKTDATA_ODD			0x2000
 #define MIPI_CSIS_PKTDATA_EVEN			0x3000
 #define MIPI_CSIS_PKTDATA_SIZE			SZ_4K
 
 #define DEFAULT_SCLK_CSIS_FREQ			166000000UL
 
-/* MIPI CSI-2 Data Types */
+ 
 #define MIPI_CSI2_DATA_TYPE_YUV420_8		0x18
 #define MIPI_CSI2_DATA_TYPE_YUV420_10		0x19
 #define MIPI_CSI2_DATA_TYPE_LE_YUV420_8		0x1a
@@ -255,7 +244,7 @@ struct mipi_csis_event {
 };
 
 static const struct mipi_csis_event mipi_csis_events[] = {
-	/* Errors */
+	 
 	{ false, MIPI_CSIS_INT_SRC_ERR_SOT_HS,		"SOT Error" },
 	{ false, MIPI_CSIS_INT_SRC_ERR_LOST_FS,		"Lost Frame Start Error" },
 	{ false, MIPI_CSIS_INT_SRC_ERR_LOST_FE,		"Lost Frame End Error" },
@@ -270,12 +259,12 @@ static const struct mipi_csis_event mipi_csis_events[] = {
 	{ true, MIPI_CSIS_DBG_INTR_SRC_TRUNCATED_FRAME,	"Truncated Frame" },
 	{ true, MIPI_CSIS_DBG_INTR_SRC_EARLY_FE,	"Early Frame End" },
 	{ true, MIPI_CSIS_DBG_INTR_SRC_EARLY_FS,	"Early Frame Start" },
-	/* Non-image data receive events */
+	 
 	{ false, MIPI_CSIS_INT_SRC_EVEN_BEFORE,		"Non-image data before even frame" },
 	{ false, MIPI_CSIS_INT_SRC_EVEN_AFTER,		"Non-image data after even frame" },
 	{ false, MIPI_CSIS_INT_SRC_ODD_BEFORE,		"Non-image data before odd frame" },
 	{ false, MIPI_CSIS_INT_SRC_ODD_AFTER,		"Non-image data after odd frame" },
-	/* Frame start/end */
+	 
 	{ false, MIPI_CSIS_INT_SRC_FRAME_START,		"Frame Start" },
 	{ false, MIPI_CSIS_INT_SRC_FRAME_END,		"Frame End" },
 	{ true, MIPI_CSIS_DBG_INTR_SRC_CAM_VSYNC_FALL,	"VSYNC Falling Edge" },
@@ -326,7 +315,7 @@ struct mipi_csis_device {
 	u32 hs_settle;
 	u32 clk_settle;
 
-	spinlock_t slock;	/* Protect events */
+	spinlock_t slock;	 
 	struct mipi_csis_event events[MIPI_CSIS_NUM_EVENTS];
 	struct dentry *debugfs_root;
 	struct {
@@ -336,9 +325,7 @@ struct mipi_csis_device {
 	} debug;
 };
 
-/* -----------------------------------------------------------------------------
- * Format helpers
- */
+ 
 
 struct csis_pix_format {
 	u32 code;
@@ -348,14 +335,14 @@ struct csis_pix_format {
 };
 
 static const struct csis_pix_format mipi_csis_formats[] = {
-	/* YUV formats. */
+	 
 	{
 		.code = MEDIA_BUS_FMT_UYVY8_1X16,
 		.output = MEDIA_BUS_FMT_UYVY8_1X16,
 		.data_type = MIPI_CSI2_DATA_TYPE_YUV422_8,
 		.width = 16,
 	},
-	/* RGB formats. */
+	 
 	{
 		.code = MEDIA_BUS_FMT_RGB565_1X16,
 		.output = MEDIA_BUS_FMT_RGB565_1X16,
@@ -367,7 +354,7 @@ static const struct csis_pix_format mipi_csis_formats[] = {
 		.data_type = MIPI_CSI2_DATA_TYPE_RGB888,
 		.width = 24,
 	},
-	/* RAW (Bayer and greyscale) formats. */
+	 
 	{
 		.code = MEDIA_BUS_FMT_SBGGR8_1X8,
 		.output = MEDIA_BUS_FMT_SBGGR8_1X8,
@@ -464,31 +451,11 @@ static const struct csis_pix_format mipi_csis_formats[] = {
 		.data_type = MIPI_CSI2_DATA_TYPE_RAW14,
 		.width = 14,
 	},
-	/* JPEG */
+	 
 	{
 		.code = MEDIA_BUS_FMT_JPEG_1X8,
 		.output = MEDIA_BUS_FMT_JPEG_1X8,
-		/*
-		 * Map JPEG_1X8 to the RAW8 datatype.
-		 *
-		 * The CSI-2 specification suggests in Annex A "JPEG8 Data
-		 * Format (informative)" to transmit JPEG data using one of the
-		 * Data Types aimed to represent arbitrary data, such as the
-		 * "User Defined Data Type 1" (0x30).
-		 *
-		 * However, when configured with a User Defined Data Type, the
-		 * CSIS outputs data in quad pixel mode regardless of the mode
-		 * selected in the MIPI_CSIS_ISP_CONFIG_CH register. Neither of
-		 * the IP cores connected to the CSIS in i.MX SoCs (CSI bridge
-		 * or ISI) support quad pixel mode, so this will never work in
-		 * practice.
-		 *
-		 * Some sensors (such as the OV5640) send JPEG data using the
-		 * RAW8 data type. This is usable and works, so map the JPEG
-		 * format to RAW8. If the CSIS ends up being integrated in an
-		 * SoC that can support quad pixel mode, this will have to be
-		 * revisited.
-		 */
+		 
 		.data_type = MIPI_CSI2_DATA_TYPE_RAW8,
 		.width = 8,
 	}
@@ -504,9 +471,7 @@ static const struct csis_pix_format *find_csis_format(u32 code)
 	return NULL;
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware configuration
- */
+ 
 
 static inline u32 mipi_csis_read(struct mipi_csis_device *csis, u32 reg)
 {
@@ -560,31 +525,19 @@ static void __mipi_csis_set_format(struct mipi_csis_device *csis,
 {
 	u32 val;
 
-	/* Color format */
+	 
 	val = mipi_csis_read(csis, MIPI_CSIS_ISP_CONFIG_CH(0));
 	val &= ~(MIPI_CSIS_ISPCFG_ALIGN_32BIT | MIPI_CSIS_ISPCFG_FMT_MASK
 		| MIPI_CSIS_ISPCFG_PIXEL_MASK);
 
-	/*
-	 * YUV 4:2:2 can be transferred with 8 or 16 bits per clock sample
-	 * (referred to in the documentation as single and dual pixel modes
-	 * respectively, although the 8-bit mode transfers half a pixel per
-	 * clock sample and the 16-bit mode one pixel). While both mode work
-	 * when the CSIS is connected to a receiver that supports either option,
-	 * single pixel mode requires clock rates twice as high. As all SoCs
-	 * that integrate the CSIS can operate in 16-bit bit mode, and some do
-	 * not support 8-bit mode (this is the case of the i.MX8MP), use dual
-	 * pixel mode unconditionally.
-	 *
-	 * TODO: Verify which other formats require DUAL (or QUAD) modes.
-	 */
+	 
 	if (csis_fmt->data_type == MIPI_CSI2_DATA_TYPE_YUV422_8)
 		val |= MIPI_CSIS_ISPCFG_PIXEL_MODE_DUAL;
 
 	val |= MIPI_CSIS_ISPCFG_FMT(csis_fmt->data_type);
 	mipi_csis_write(csis, MIPI_CSIS_ISP_CONFIG_CH(0), val);
 
-	/* Pixel resolution */
+	 
 	val = format->width | (format->height << 16);
 	mipi_csis_write(csis, MIPI_CSIS_ISP_RESOL_CH(0), val);
 }
@@ -595,7 +548,7 @@ static int mipi_csis_calculate_params(struct mipi_csis_device *csis,
 	s64 link_freq;
 	u32 lane_rate;
 
-	/* Calculate the line rate from the pixel rate. */
+	 
 	link_freq = v4l2_get_link_freq(csis->src_sd->ctrl_handler,
 				       csis_fmt->width,
 				       csis->bus.num_data_lanes * 2);
@@ -612,12 +565,7 @@ static int mipi_csis_calculate_params(struct mipi_csis_device *csis,
 		return -EINVAL;
 	}
 
-	/*
-	 * The HSSETTLE counter value is document in a table, but can also
-	 * easily be calculated. Hardcode the CLKSETTLE value to 0 for now
-	 * (which is documented as corresponding to CSI-2 v0.87 to v1.00) until
-	 * we figure out how to compute it correctly.
-	 */
+	 
 	csis->hs_settle = (lane_rate - 5000000) / 45000000;
 	csis->clk_settle = 0;
 
@@ -680,7 +628,7 @@ static void mipi_csis_set_params(struct mipi_csis_device *csis,
 			MIPI_CSIS_DPHY_BCTRL_L_B_DPHYCTRL(20000000));
 	mipi_csis_write(csis, MIPI_CSIS_DPHY_BCTRL_H, 0);
 
-	/* Update the shadow register. */
+	 
 	val = mipi_csis_read(csis, MIPI_CSIS_CMN_CTRL);
 	mipi_csis_write(csis, MIPI_CSIS_CMN_CTRL,
 			val | MIPI_CSIS_CMN_CTRL_UPDATE_SHADOW |
@@ -716,7 +664,7 @@ static int mipi_csis_clk_get(struct mipi_csis_device *csis)
 	if (ret < 0)
 		return ret;
 
-	/* Set clock rate */
+	 
 	ret = clk_set_rate(csis->clks[MIPI_CSIS_CLK_WRAP].clk,
 			   csis->clk_frequency);
 	if (ret < 0)
@@ -755,7 +703,7 @@ static irqreturn_t mipi_csis_irq_handler(int irq, void *dev_id)
 
 	spin_lock_irqsave(&csis->slock, flags);
 
-	/* Update the event/error counters */
+	 
 	if ((status & MIPI_CSIS_INT_SRC_ERRORS) || csis->debug.enable) {
 		for (i = 0; i < MIPI_CSIS_NUM_EVENTS; i++) {
 			struct mipi_csis_event *event = &csis->events[i];
@@ -773,9 +721,7 @@ static irqreturn_t mipi_csis_irq_handler(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* -----------------------------------------------------------------------------
- * PHY regulator and reset
- */
+ 
 
 static int mipi_csis_phy_enable(struct mipi_csis_device *csis)
 {
@@ -808,7 +754,7 @@ static int mipi_csis_phy_init(struct mipi_csis_device *csis)
 	if (csis->info->version != MIPI_CSIS_V3_3)
 		return 0;
 
-	/* Get MIPI PHY reset and regulator. */
+	 
 	csis->mrst = devm_reset_control_get_exclusive(csis->dev, NULL);
 	if (IS_ERR(csis->mrst))
 		return PTR_ERR(csis->mrst);
@@ -821,9 +767,7 @@ static int mipi_csis_phy_init(struct mipi_csis_device *csis)
 				     1000000);
 }
 
-/* -----------------------------------------------------------------------------
- * Debug
- */
+ 
 
 static void mipi_csis_clear_counters(struct mipi_csis_device *csis)
 {
@@ -923,9 +867,7 @@ static void mipi_csis_debugfs_exit(struct mipi_csis_device *csis)
 	debugfs_remove_recursive(csis->debugfs_root);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev operations
- */
+ 
 
 static struct mipi_csis_device *sd_to_mipi_csis_device(struct v4l2_subdev *sdev)
 {
@@ -992,10 +934,7 @@ static int mipi_csis_enum_mbus_code(struct v4l2_subdev *sd,
 				    struct v4l2_subdev_state *sd_state,
 				    struct v4l2_subdev_mbus_code_enum *code)
 {
-	/*
-	 * The CSIS can't transcode in any way, the source format is identical
-	 * to the sink format.
-	 */
+	 
 	if (code->pad == CSIS_PAD_SOURCE) {
 		struct v4l2_mbus_framefmt *fmt;
 
@@ -1026,23 +965,14 @@ static int mipi_csis_set_fmt(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *fmt;
 	unsigned int align;
 
-	/*
-	 * The CSIS can't transcode in any way, the source format can't be
-	 * modified.
-	 */
+	 
 	if (sdformat->pad == CSIS_PAD_SOURCE)
 		return v4l2_subdev_get_fmt(sd, sd_state, sdformat);
 
 	if (sdformat->pad != CSIS_PAD_SINK)
 		return -EINVAL;
 
-	/*
-	 * Validate the media bus code and clamp and align the size.
-	 *
-	 * The total number of bits per line must be a multiple of 8. We thus
-	 * need to align the width for formats that are not multiples of 8
-	 * bits.
-	 */
+	 
 	csis_fmt = find_csis_format(sdformat->format.code);
 	if (!csis_fmt)
 		csis_fmt = &mipi_csis_formats[0];
@@ -1059,7 +989,7 @@ static int mipi_csis_set_fmt(struct v4l2_subdev *sd,
 		align = 2;
 		break;
 	default:
-		/* 1, 3, 5, 7 */
+		 
 		align = 3;
 		break;
 	}
@@ -1082,11 +1012,11 @@ static int mipi_csis_set_fmt(struct v4l2_subdev *sd,
 
 	sdformat->format = *fmt;
 
-	/* Propagate the format from sink to source. */
+	 
 	fmt = v4l2_subdev_get_pad_format(sd, sd_state, CSIS_PAD_SOURCE);
 	*fmt = sdformat->format;
 
-	/* The format on the source pad might change due to unpacking. */
+	 
 	fmt->code = csis_fmt->output;
 
 	return 0;
@@ -1178,9 +1108,7 @@ static const struct v4l2_subdev_ops mipi_csis_subdev_ops = {
 	.pad	= &mipi_csis_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * Media entity operations
- */
+ 
 
 static int mipi_csis_link_setup(struct media_entity *entity,
 				const struct media_pad *local_pad,
@@ -1193,7 +1121,7 @@ static int mipi_csis_link_setup(struct media_entity *entity,
 	dev_dbg(csis->dev, "link setup %s -> %s", remote_pad->entity->name,
 		local_pad->entity->name);
 
-	/* We only care about the link to the source. */
+	 
 	if (!(local_pad->flags & MEDIA_PAD_FL_SINK))
 		return 0;
 
@@ -1217,9 +1145,7 @@ static const struct media_entity_operations mipi_csis_entity_ops = {
 	.get_fwnode_pad = v4l2_subdev_get_fwnode_pad_1_to_1,
 };
 
-/* -----------------------------------------------------------------------------
- * Async subdev notifier
- */
+ 
 
 static struct mipi_csis_device *
 mipi_notifier_to_csis_state(struct v4l2_async_notifier *n)
@@ -1299,9 +1225,7 @@ err_parse:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Suspend/resume
- */
+ 
 
 static int __maybe_unused mipi_csis_runtime_suspend(struct device *dev)
 {
@@ -1342,9 +1266,7 @@ static const struct dev_pm_ops mipi_csis_pm_ops = {
 			   NULL)
 };
 
-/* -----------------------------------------------------------------------------
- * Probe/remove & platform driver
- */
+ 
 
 static int mipi_csis_subdev_init(struct mipi_csis_device *csis)
 {
@@ -1410,14 +1332,14 @@ static int mipi_csis_probe(struct platform_device *pdev)
 
 	memcpy(csis->events, mipi_csis_events, sizeof(csis->events));
 
-	/* Parse DT properties. */
+	 
 	ret = mipi_csis_parse_dt(csis);
 	if (ret < 0) {
 		dev_err(dev, "Failed to parse device tree: %d\n", ret);
 		return ret;
 	}
 
-	/* Acquire resources. */
+	 
 	csis->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(csis->regs))
 		return PTR_ERR(csis->regs);
@@ -1434,10 +1356,10 @@ static int mipi_csis_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* Reset PHY and enable the clocks. */
+	 
 	mipi_csis_phy_reset(csis);
 
-	/* Now that the hardware is initialized, request the interrupt. */
+	 
 	ret = devm_request_irq(dev, irq, mipi_csis_irq_handler, 0,
 			       dev_name(dev), csis);
 	if (ret) {
@@ -1445,7 +1367,7 @@ static int mipi_csis_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Initialize and register the subdev. */
+	 
 	ret = mipi_csis_subdev_init(csis);
 	if (ret < 0)
 		return ret;
@@ -1458,10 +1380,10 @@ static int mipi_csis_probe(struct platform_device *pdev)
 		goto err_cleanup;
 	}
 
-	/* Initialize debugfs. */
+	 
 	mipi_csis_debugfs_init(csis);
 
-	/* Enable runtime PM. */
+	 
 	pm_runtime_enable(dev);
 	if (!pm_runtime_enabled(dev)) {
 		ret = mipi_csis_runtime_resume(dev);
@@ -1519,7 +1441,7 @@ static const struct of_device_id mipi_csis_of_match[] = {
 			.num_clocks = 4,
 		},
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mipi_csis_of_match);
 

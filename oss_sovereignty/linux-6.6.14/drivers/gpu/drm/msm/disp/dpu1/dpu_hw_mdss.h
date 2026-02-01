@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DPU_HW_MDSS_H
 #define _DPU_HW_MDSS_H
@@ -220,23 +219,18 @@ enum dpu_intf {
 	INTF_MAX
 };
 
-/*
- * Historically these values correspond to the values written to the
- * DISP_INTF_SEL register, which had to programmed manually. On newer MDP
- * generations this register is NOP, but we keep the values for historical
- * reasons.
- */
+ 
 enum dpu_intf_type {
 	INTF_NONE = 0x0,
 	INTF_DSI = 0x1,
 	INTF_HDMI = 0x3,
 	INTF_LCDC = 0x5,
-	/* old eDP found on 8x74 and 8x84 */
+	 
 	INTF_EDP = 0x9,
-	/* both DP and eDP,  handled by the new DP driver */
+	 
 	INTF_DP = 0xa,
 
-	/* virtual interfaces */
+	 
 	INTF_WB = 0x100,
 };
 
@@ -281,9 +275,7 @@ enum dpu_vbif {
 	VBIF_MAX,
 };
 
-/**
- * DPU HW,Component order color map
- */
+ 
 enum {
 	C0_G_Y = 0,
 	C1_B_Cb = 1,
@@ -291,25 +283,14 @@ enum {
 	C3_ALPHA = 3
 };
 
-/**
- * enum dpu_plane_type - defines how the color component pixel packing
- * @DPU_PLANE_INTERLEAVED   : Color components in single plane
- * @DPU_PLANE_PLANAR        : Color component in separate planes
- * @DPU_PLANE_PSEUDO_PLANAR : Chroma components interleaved in separate plane
- */
+ 
 enum dpu_plane_type {
 	DPU_PLANE_INTERLEAVED,
 	DPU_PLANE_PLANAR,
 	DPU_PLANE_PSEUDO_PLANAR,
 };
 
-/**
- * enum dpu_chroma_samp_type - chroma sub-samplng type
- * @DPU_CHROMA_RGB   : No chroma subsampling
- * @DPU_CHROMA_H2V1  : Chroma pixels are horizontally subsampled
- * @DPU_CHROMA_H1V2  : Chroma pixels are vertically subsampled
- * @DPU_CHROMA_420   : 420 subsampling
- */
+ 
 enum dpu_chroma_samp_type {
 	DPU_CHROMA_RGB,
 	DPU_CHROMA_H2V1,
@@ -317,41 +298,24 @@ enum dpu_chroma_samp_type {
 	DPU_CHROMA_420
 };
 
-/**
- * dpu_fetch_type - Defines How DPU HW fetches data
- * @DPU_FETCH_LINEAR   : fetch is line by line
- * @DPU_FETCH_TILE     : fetches data in Z order from a tile
- * @DPU_FETCH_UBWC     : fetch and decompress data
- */
+ 
 enum dpu_fetch_type {
 	DPU_FETCH_LINEAR,
 	DPU_FETCH_TILE,
 	DPU_FETCH_UBWC
 };
 
-/**
- * Value of enum chosen to fit the number of bits
- * expected by the HW programming.
- */
+ 
 enum {
 	COLOR_ALPHA_1BIT = 0,
 	COLOR_ALPHA_4BIT = 1,
 	COLOR_4BIT = 0,
-	COLOR_5BIT = 1, /* No 5-bit Alpha */
-	COLOR_6BIT = 2, /* 6-Bit Alpha also = 2 */
-	COLOR_8BIT = 3, /* 8-Bit Alpha also = 3 */
+	COLOR_5BIT = 1,  
+	COLOR_6BIT = 2,  
+	COLOR_8BIT = 3,  
 };
 
-/**
- * enum dpu_3d_blend_mode
- * Desribes how the 3d data is blended
- * @BLEND_3D_NONE      : 3d blending not enabled
- * @BLEND_3D_FRAME_INT : Frame interleaving
- * @BLEND_3D_H_ROW_INT : Horizontal row interleaving
- * @BLEND_3D_V_ROW_INT : vertical row interleaving
- * @BLEND_3D_COL_INT   : column interleaving
- * @BLEND_3D_MAX       :
- */
+ 
 enum dpu_3d_blend_mode {
 	BLEND_3D_NONE = 0,
 	BLEND_3D_FRAME_INT,
@@ -361,24 +325,7 @@ enum dpu_3d_blend_mode {
 	BLEND_3D_MAX
 };
 
-/** struct dpu_format - defines the format configuration which
- * allows DPU HW to correctly fetch and decode the format
- * @base: base msm_format structure containing fourcc code
- * @fetch_planes: how the color components are packed in pixel format
- * @element: element color ordering
- * @bits: element bit widths
- * @chroma_sample: chroma sub-samplng type
- * @unpack_align_msb: unpack aligned, 0 to LSB, 1 to MSB
- * @unpack_tight: 0 for loose, 1 for tight
- * @unpack_count: 0 = 1 component, 1 = 2 component
- * @bpp: bytes per pixel
- * @alpha_enable: whether the format has an alpha channel
- * @num_planes: number of planes (including meta data planes)
- * @fetch_mode: linear, tiled, or ubwc hw fetch behavior
- * @flag: usage bit flags
- * @tile_width: format tile width
- * @tile_height: format tile height
- */
+ 
 struct dpu_format {
 	struct msm_format base;
 	enum dpu_plane_type fetch_planes;
@@ -398,17 +345,7 @@ struct dpu_format {
 };
 #define to_dpu_format(x) container_of(x, struct dpu_format, base)
 
-/**
- * struct dpu_hw_fmt_layout - format information of the source pixel data
- * @format: pixel format parameters
- * @num_planes: number of planes (including meta data planes)
- * @width: image width
- * @height: image height
- * @total_size: total size in bytes
- * @plane_addr: address of each plane
- * @plane_size: length of each plane
- * @plane_pitch: pitch of each plane
- */
+ 
 struct dpu_hw_fmt_layout {
 	const struct dpu_format *format;
 	uint32_t num_planes;
@@ -421,7 +358,7 @@ struct dpu_hw_fmt_layout {
 };
 
 struct dpu_csc_cfg {
-	/* matrix coefficients in S15.16 format */
+	 
 	uint32_t csc_mv[DPU_CSC_MATRIX_COEFF_SIZE];
 	uint32_t csc_pre_bv[DPU_CSC_BIAS_SIZE];
 	uint32_t csc_post_bv[DPU_CSC_BIAS_SIZE];
@@ -429,13 +366,7 @@ struct dpu_csc_cfg {
 	uint32_t csc_post_lv[DPU_CSC_CLAMP_SIZE];
 };
 
-/**
- * struct dpu_mdss_color - mdss color description
- * color 0 : green
- * color 1 : blue
- * color 2 : red
- * color 3 : alpha
- */
+ 
 struct dpu_mdss_color {
 	u32 color_0;
 	u32 color_1;
@@ -443,9 +374,7 @@ struct dpu_mdss_color {
 	u32 color_3;
 };
 
-/*
- * Define bit masks for h/w logging.
- */
+ 
 #define DPU_DBG_MASK_NONE     (1 << 0)
 #define DPU_DBG_MASK_INTF     (1 << 1)
 #define DPU_DBG_MASK_LM       (1 << 2)
@@ -459,27 +388,9 @@ struct dpu_mdss_color {
 #define DPU_DBG_MASK_DSPP     (1 << 10)
 #define DPU_DBG_MASK_DSC      (1 << 11)
 
-/**
- * struct dpu_hw_tear_check - Struct contains parameters to configure
- * tear-effect module. This structure is used to configure tear-check
- * logic present either in ping-pong or in interface module.
- * @vsync_count:        Ratio of MDP VSYNC clk freq(Hz) to refresh rate divided
- *                      by no of lines
- * @sync_cfg_height:    Total vertical lines (display height - 1)
- * @vsync_init_val:     Init value to which the read pointer gets loaded at
- *                      vsync edge
- * @sync_threshold_start:    Read pointer threshold start ROI for write operation
- * @sync_threshold_continue: The minimum number of lines the write pointer
- *                           needs to be above the read pointer
- * @start_pos:          The position from which the start_threshold value is added
- * @rd_ptr_irq:         The read pointer line at which interrupt has to be generated
- * @hw_vsync_mode:      Sync with external frame sync input
- */
+ 
 struct dpu_hw_tear_check {
-	/*
-	 * This is ratio of MDP VSYNC clk freq(Hz) to
-	 * refresh rate divided by no of lines
-	 */
+	 
 	u32 vsync_count;
 	u32 sync_cfg_height;
 	u32 vsync_init_val;
@@ -490,15 +401,7 @@ struct dpu_hw_tear_check {
 	u8 hw_vsync_mode;
 };
 
-/**
- * struct dpu_hw_pp_vsync_info - Struct contains parameters to configure
- * read and write pointers for command mode panels
- * @rd_ptr_init_val:    Value of rd pointer at vsync edge
- * @rd_ptr_frame_count: Num frames sent since enabling interface
- * @rd_ptr_line_count:  Current line on panel (rd ptr)
- * @wr_ptr_line_count:  Current line within pp fifo (wr ptr)
- * @intf_frame_count:   Frames read from intf
- */
+ 
 struct dpu_hw_pp_vsync_info {
 	u32 rd_ptr_init_val;
 	u32 rd_ptr_frame_count;
@@ -507,4 +410,4 @@ struct dpu_hw_pp_vsync_info {
 	u32 intf_frame_count;
 };
 
-#endif  /* _DPU_HW_MDSS_H */
+#endif   

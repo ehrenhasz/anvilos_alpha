@@ -1,19 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Realtek Otto MIPS platform watchdog
- *
- * Watchdog timer that will reset the system after timeout, using the selected
- * reset mode.
- *
- * Counter scaling and timeouts:
- * - Base prescale of (2 << 25), providing tick duration T_0: 168ms @ 200MHz
- * - PRESCALE: logarithmic prescaler adding a factor of {1, 2, 4, 8}
- * - Phase 1: Times out after (PHASE1 + 1) × PRESCALE × T_0
- *   Generates an interrupt, WDT cannot be stopped after phase 1
- * - Phase 2: starts after phase 1, times out after (PHASE2 + 1) × PRESCALE × T_0
- *   Resets the system according to RST_MODE
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -50,17 +37,10 @@
 
 #define OTTO_WDT_PRESCALE_MAX		3
 
-/*
- * One higher than the max values contained in PHASE{1,2}, since a value of 0
- * corresponds to one tick.
- */
+ 
 #define OTTO_WDT_PHASE_TICKS_MAX	32
 
-/*
- * The maximum reset delay is actually 2×32 ticks, but that would require large
- * pretimeout values for timeouts longer than 32 ticks. Limit the maximum timeout
- * to 32 + 1 to ensure small pretimeout values can be configured as expected.
- */
+ 
 #define OTTO_WDT_TIMEOUT_TICKS_MAX	(OTTO_WDT_PHASE_TICKS_MAX + 1)
 
 struct otto_wdt_ctrl {
@@ -109,11 +89,7 @@ static int otto_wdt_tick_ms(struct otto_wdt_ctrl *ctrl, int prescale)
 	return DIV_ROUND_CLOSEST(1 << (25 + prescale), ctrl->clk_rate_khz);
 }
 
-/*
- * The timer asserts the PHASE1/PHASE2 IRQs when the number of ticks exceeds
- * the value stored in those fields. This means each phase will run for at least
- * one tick, so small values need to be clamped to correctly reflect the timeout.
- */
+ 
 static inline unsigned int div_round_ticks(unsigned int val, unsigned int tick_duration,
 		unsigned int min_ticks)
 {
@@ -197,7 +173,7 @@ static int otto_wdt_restart(struct watchdog_device *wdev, unsigned long reboot_m
 		break;
 	}
 
-	/* Configure for shortest timeout and wait for reset to occur */
+	 
 	v = FIELD_PREP(OTTO_WDT_CTRL_RST_MODE, reset_mode) | OTTO_WDT_CTRL_ENABLE;
 	iowrite32(v, ctrl->base + OTTO_WDT_REG_CTRL);
 
@@ -302,7 +278,7 @@ static int otto_wdt_probe(struct platform_device *pdev)
 	if (IS_ERR(ctrl->base))
 		return PTR_ERR(ctrl->base);
 
-	/* Clear any old interrupts and reset initial state */
+	 
 	iowrite32(OTTO_WDT_INTR_PHASE_1 | OTTO_WDT_INTR_PHASE_2,
 			ctrl->base + OTTO_WDT_REG_INTR);
 	iowrite32(OTTO_WDT_CTRL_DEFAULT, ctrl->base + OTTO_WDT_REG_CTRL);
@@ -328,10 +304,7 @@ static int otto_wdt_probe(struct platform_device *pdev)
 	ctrl->wdev.info = &otto_wdt_info;
 	ctrl->wdev.ops = &otto_wdt_ops;
 
-	/*
-	 * Since pretimeout cannot be disabled, min. timeout is twice the
-	 * subsystem resolution. Max. timeout is ca. 43s at a bus clock of 200MHz.
-	 */
+	 
 	ctrl->wdev.min_timeout = 2;
 	max_tick_ms = otto_wdt_tick_ms(ctrl, OTTO_WDT_PRESCALE_MAX);
 	ctrl->wdev.max_hw_heartbeat_ms = max_tick_ms * OTTO_WDT_TIMEOUT_TICKS_MAX;

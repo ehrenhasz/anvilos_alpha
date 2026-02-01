@@ -1,29 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2013, 2017 by Delphix. All rights reserved.
- * Copyright (c) 2014 Spectra Logic Corporation, All rights reserved.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/types.h>
@@ -46,86 +23,7 @@
 #include <sys/zfs_znode.h>
 #endif
 
-/*
- * ZFS System attributes:
- *
- * A generic mechanism to allow for arbitrary attributes
- * to be stored in a dnode.  The data will be stored in the bonus buffer of
- * the dnode and if necessary a special "spill" block will be used to handle
- * overflow situations.  The spill block will be sized to fit the data
- * from 512 - 128K.  When a spill block is used the BP (blkptr_t) for the
- * spill block is stored at the end of the current bonus buffer.  Any
- * attributes that would be in the way of the blkptr_t will be relocated
- * into the spill block.
- *
- * Attribute registration:
- *
- * Stored persistently on a per dataset basis
- * a mapping between attribute "string" names and their actual attribute
- * numeric values, length, and byteswap function.  The names are only used
- * during registration.  All  attributes are known by their unique attribute
- * id value.  If an attribute can have a variable size then the value
- * 0 will be used to indicate this.
- *
- * Attribute Layout:
- *
- * Attribute layouts are a way to compactly store multiple attributes, but
- * without taking the overhead associated with managing each attribute
- * individually.  Since you will typically have the same set of attributes
- * stored in the same order a single table will be used to represent that
- * layout.  The ZPL for example will usually have only about 10 different
- * layouts (regular files, device files, symlinks,
- * regular files + scanstamp, files/dir with extended attributes, and then
- * you have the possibility of all of those minus ACL, because it would
- * be kicked out into the spill block)
- *
- * Layouts are simply an array of the attributes and their
- * ordering i.e. [0, 1, 4, 5, 2]
- *
- * Each distinct layout is given a unique layout number and that is what's
- * stored in the header at the beginning of the SA data buffer.
- *
- * A layout only covers a single dbuf (bonus or spill).  If a set of
- * attributes is split up between the bonus buffer and a spill buffer then
- * two different layouts will be used.  This allows us to byteswap the
- * spill without looking at the bonus buffer and keeps the on disk format of
- * the bonus and spill buffer the same.
- *
- * Adding a single attribute will cause the entire set of attributes to
- * be rewritten and could result in a new layout number being constructed
- * as part of the rewrite if no such layout exists for the new set of
- * attributes.  The new attribute will be appended to the end of the already
- * existing attributes.
- *
- * Both the attribute registration and attribute layout information are
- * stored in normal ZAP attributes.  Their should be a small number of
- * known layouts and the set of attributes is assumed to typically be quite
- * small.
- *
- * The registered attributes and layout "table" information is maintained
- * in core and a special "sa_os_t" is attached to the objset_t.
- *
- * A special interface is provided to allow for quickly applying
- * a large set of attributes at once.  sa_replace_all_by_template() is
- * used to set an array of attributes.  This is used by the ZPL when
- * creating a brand new file.  The template that is passed into the function
- * specifies the attribute, size for variable length attributes, location of
- * data and special "data locator" function if the data isn't in a contiguous
- * location.
- *
- * Byteswap implications:
- *
- * Since the SA attributes are not entirely self describing we can't do
- * the normal byteswap processing.  The special ZAP layout attribute and
- * attribute registration attributes define the byteswap function and the
- * size of the attributes, unless it is variable sized.
- * The normal ZFS byteswapping infrastructure assumes you don't need
- * to read any objects in order to do the necessary byteswapping.  Whereas
- * SA attributes can only be properly byteswapped if the dataset is opened
- * and the layout/attribute ZAP attributes are available.  Because of this
- * the SA attributes will be byteswapped when they are first accessed by
- * the SA code that will read the SA data.
- */
+ 
 
 typedef void (sa_iterfunc_t)(void *hdr, void *addr, sa_attr_type_t,
     uint16_t length, int length_idx, boolean_t, void *userp);
@@ -170,14 +68,7 @@ do {								\
 #define	SA_COPY_DATA(f, s, t, l)	sa_copy_data(f, s, t, l)
 #endif
 
-/*
- * This table is fixed and cannot be changed.  Its purpose is to
- * allow the SA code to work with both old/new ZPL file systems.
- * It contains the list of legacy attributes.  These attributes aren't
- * stored in the "attribute" registry zap objects, since older ZPL file systems
- * won't have the registry.  Only objsets of type ZFS_TYPE_FILESYSTEM will
- * use this static table.
- */
+ 
 static const sa_attr_reg_t sa_legacy_attrs[] = {
 	{"ZPL_ATIME", sizeof (uint64_t) * 2, SA_UINT64_ARRAY, 0},
 	{"ZPL_MTIME", sizeof (uint64_t) * 2, SA_UINT64_ARRAY, 1},
@@ -197,16 +88,12 @@ static const sa_attr_reg_t sa_legacy_attrs[] = {
 	{"ZPL_ZNODE_ACL", 88, SA_UINT8_ARRAY, 15},
 };
 
-/*
- * This is only used for objects of type DMU_OT_ZNODE
- */
+ 
 static const sa_attr_type_t sa_legacy_zpl_layout[] = {
     0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15
 };
 
-/*
- * Special dummy layout used for buffers with no attributes.
- */
+ 
 static const sa_attr_type_t sa_dummy_zpl_layout[] = { 0 };
 
 static const size_t sa_legacy_attr_count = ARRAY_SIZE(sa_legacy_attrs);
@@ -310,12 +197,7 @@ sa_get_spill(sa_handle_t *hdl)
 	return (rc);
 }
 
-/*
- * Main attribute lookup/update function
- * returns 0 for success or non zero for failures
- *
- * Operates on bulk array, first failure will abort further processing
- */
+ 
 static int
 sa_attr_op(sa_handle_t *hdl, sa_bulk_attr_t *bulk, int count,
     sa_data_op_t data_op, dmu_tx_t *tx)
@@ -332,7 +214,7 @@ sa_attr_op(sa_handle_t *hdl, sa_bulk_attr_t *bulk, int count,
 		ASSERT(bulk[i].sa_attr <= hdl->sa_os->os_sa->sa_num_attrs);
 
 		bulk[i].sa_addr = NULL;
-		/* First check the bonus buffer */
+		 
 
 		if (hdl->sa_bonus_tab && TOC_ATTR_PRESENT(
 		    hdl->sa_bonus_tab->sa_idx_tab[bulk[i].sa_attr])) {
@@ -374,18 +256,18 @@ sa_attr_op(sa_handle_t *hdl, sa_bulk_attr_t *bulk, int count,
 			continue;
 
 		case SA_UPDATE:
-			/* existing rewrite of attr */
+			 
 			if (bulk[i].sa_addr &&
 			    bulk[i].sa_size == bulk[i].sa_length) {
 				SA_COPY_DATA(bulk[i].sa_data_func,
 				    bulk[i].sa_data, bulk[i].sa_addr,
 				    bulk[i].sa_length);
 				continue;
-			} else if (bulk[i].sa_addr) { /* attr size change */
+			} else if (bulk[i].sa_addr) {  
 				error = sa_modify_attrs(hdl, bulk[i].sa_attr,
 				    SA_REPLACE, bulk[i].sa_data_func,
 				    bulk[i].sa_data, bulk[i].sa_length, tx);
-			} else { /* adding new attribute */
+			} else {  
 				error = sa_modify_attrs(hdl, bulk[i].sa_attr,
 				    SA_ADD, bulk[i].sa_data_func,
 				    bulk[i].sa_data, bulk[i].sa_length, tx);
@@ -444,7 +326,7 @@ sa_add_layout_entry(objset_t *os, const sa_attr_type_t *attrs, int attr_count,
 
 	avl_add(&sa->sa_layout_num_tree, tb);
 
-	/* verify we don't have a hash collision */
+	 
 	if ((findtb = avl_find(&sa->sa_layout_hash_tree, tb, &loc)) != NULL) {
 		for (; findtb && findtb->lot_hash == hash;
 		    findtb = AVL_NEXT(&sa->sa_layout_hash_tree, findtb)) {
@@ -531,25 +413,7 @@ sa_copy_data(sa_data_locator_t *func, void *datastart, void *target, int buflen)
 	}
 }
 
-/*
- * Determine several different values pertaining to system attribute
- * buffers.
- *
- * Return the size of the sa_hdr_phys_t header for the buffer. Each
- * variable length attribute except the first contributes two bytes to
- * the header size, which is then rounded up to an 8-byte boundary.
- *
- * The following output parameters are also computed.
- *
- *  index - The index of the first attribute in attr_desc that will
- *  spill over. Only valid if will_spill is set.
- *
- *  total - The total number of bytes of all system attributes described
- *  in attr_desc.
- *
- *  will_spill - Set when spilling is necessary. It is only set when
- *  the buftype is SA_BONUS.
- */
+ 
 static int
 sa_find_sizes(sa_os_t *sa, sa_bulk_attr_t *attr_desc, int attr_count,
     dmu_buf_t *db, sa_buf_type_t buftype, int full_space, int *index,
@@ -590,18 +454,11 @@ sa_find_sizes(sa_os_t *sa, sa_bulk_attr_t *attr_desc, int attr_count,
 		if (is_var_sz)
 			var_size_count++;
 
-		/*
-		 * Calculate what the SA header size would be if this
-		 * attribute doesn't spill.
-		 */
+		 
 		tmp_hdrsize = hdrsize + ((is_var_sz && var_size_count > 1) ?
 		    sizeof (uint16_t) : 0);
 
-		/*
-		 * Check whether this attribute spans into the space
-		 * that would be used by the spill block pointer should
-		 * a spill block be needed.
-		 */
+		 
 		might_spill_here =
 		    buftype == SA_BONUS && *index == -1 &&
 		    (*total + P2ROUNDUP(tmp_hdrsize, 8)) >
@@ -610,11 +467,7 @@ sa_find_sizes(sa_os_t *sa, sa_bulk_attr_t *attr_desc, int attr_count,
 		if (is_var_sz && var_size_count > 1) {
 			if (buftype == SA_SPILL ||
 			    tmp_hdrsize + *total < full_space) {
-				/*
-				 * Record the extra header size in case this
-				 * increase needs to be reversed due to
-				 * spill-over.
-				 */
+				 
 				hdrsize = tmp_hdrsize;
 				if (*index != -1 || might_spill_here)
 					extra_hdrsize += sizeof (uint16_t);
@@ -627,11 +480,7 @@ sa_find_sizes(sa_os_t *sa, sa_bulk_attr_t *attr_desc, int attr_count,
 			}
 		}
 
-		/*
-		 * Store index of where spill *could* occur. Then
-		 * continue to count the remaining attribute sizes. The
-		 * sum is used later for sizing bonus and spill buffer.
-		 */
+		 
 		if (might_spill_here)
 			*index = i;
 
@@ -649,11 +498,7 @@ sa_find_sizes(sa_os_t *sa, sa_bulk_attr_t *attr_desc, int attr_count,
 
 #define	BUF_SPACE_NEEDED(total, header) (total + header)
 
-/*
- * Find layout that corresponds to ordering of attributes
- * If not found a new layout number is created and added to
- * persistent layout tables.
- */
+ 
 static int
 sa_build_layouts(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc, int attr_count,
     dmu_tx_t *tx)
@@ -682,7 +527,7 @@ sa_build_layouts(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc, int attr_count,
 	dmu_object_dnsize_from_db(hdl->sa_bonus, &dnodesize);
 	bonuslen = DN_BONUS_SIZE(dnodesize);
 
-	/* first determine bonus header size and sum of all attributes */
+	 
 	hdrsize = sa_find_sizes(sa, attr_desc, attr_count, hdl->sa_bonus,
 	    SA_BONUS, bonuslen, &spill_idx, &used, &spilling);
 
@@ -696,7 +541,7 @@ sa_build_layouts(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc, int attr_count,
 	ASSERT((bonustype == DMU_OT_ZNODE && spilling == 0) ||
 	    bonustype == DMU_OT_SA);
 
-	/* setup and size spill buffer when needed */
+	 
 	if (spilling) {
 		boolean_t dummy;
 
@@ -719,7 +564,7 @@ sa_build_layouts(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc, int attr_count,
 			    BUF_SPACE_NEEDED(spill_used, spillhdrsize), tx));
 	}
 
-	/* setup starting pointers to lay down data */
+	 
 	data_start = (void *)((uintptr_t)hdl->sa_bonus->db_data + hdrsize);
 	sahdr = (sa_hdr_phys_t *)hdl->sa_bonus->db_data;
 	buftype = SA_BONUS;
@@ -737,7 +582,7 @@ sa_build_layouts(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc, int attr_count,
 		if (length == 0)
 			length = attr_desc[i].sa_length;
 
-		if (spilling && i == spill_idx) { /* switch to spill buffer */
+		if (spilling && i == spill_idx) {  
 			VERIFY(bonustype == DMU_OT_SA);
 			if (buftype == SA_BONUS && !sa->sa_force_spill) {
 				sa_find_layout(hdl->sa_os, hash, attrs_start,
@@ -771,10 +616,7 @@ sa_build_layouts(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc, int attr_count,
 
 	sa_find_layout(hdl->sa_os, hash, attrs_start, lot_count, tx, &lot);
 
-	/*
-	 * Verify that old znodes always have layout number 0.
-	 * Must be DMU_OT_SA for arbitrary layouts
-	 */
+	 
 	VERIFY((bonustype == DMU_OT_ZNODE && lot->lot_num == 0) ||
 	    (bonustype == DMU_OT_SA && lot->lot_num > 1));
 
@@ -793,9 +635,7 @@ sa_build_layouts(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc, int attr_count,
 	if (hdl->sa_spill) {
 		sa_idx_tab_rele(hdl->sa_os, hdl->sa_spill_tab);
 		if (!spilling) {
-			/*
-			 * remove spill block that is no longer needed.
-			 */
+			 
 			dmu_buf_rele(hdl->sa_spill, NULL);
 			hdl->sa_spill = NULL;
 			hdl->sa_spill_tab = NULL;
@@ -852,9 +692,7 @@ sa_attr_table_setup(objset_t *os, const sa_attr_reg_t *reg_attrs, int count)
 		error = zap_count(os, sa->sa_reg_attr_obj,
 		    &sa_attr_count);
 
-		/*
-		 * Make sure we retrieved a count and that it isn't zero
-		 */
+		 
 		if (error || (error == 0 && sa_attr_count == 0)) {
 			if (error == 0)
 				error = SET_ERROR(EINVAL);
@@ -866,7 +704,7 @@ sa_attr_table_setup(objset_t *os, const sa_attr_reg_t *reg_attrs, int count)
 	if (ostype == DMU_OST_ZFS && sa_attr_count == 0)
 		sa_attr_count += sa_legacy_attr_count;
 
-	/* Allocate attribute numbers for attributes that aren't registered */
+	 
 	for (i = 0; i != count; i++) {
 		boolean_t found = B_FALSE;
 		int j;
@@ -906,11 +744,7 @@ sa_attr_table_setup(objset_t *os, const sa_attr_reg_t *reg_attrs, int count)
 	tb = sa->sa_attr_table =
 	    kmem_zalloc(sizeof (sa_attr_table_t) * sa_attr_count, KM_SLEEP);
 
-	/*
-	 * Attribute table is constructed from requested attribute list,
-	 * previously foreign registered attributes, and also the legacy
-	 * ZPL set of attributes.
-	 */
+	 
 
 	if (sa->sa_reg_attr_obj) {
 		for (zap_cursor_init(&zc, os, sa->sa_reg_attr_obj);
@@ -934,10 +768,7 @@ sa_attr_table_setup(objset_t *os, const sa_attr_reg_t *reg_attrs, int count)
 			    strlen(za.za_name) +1);
 		}
 		zap_cursor_fini(&zc);
-		/*
-		 * Make sure we processed the correct number of registered
-		 * attributes
-		 */
+		 
 		if (registered_count != sa_reg_count) {
 			ASSERT(error != 0);
 			goto bail;
@@ -1043,9 +874,7 @@ sa_setup(objset_t *os, uint64_t sa_obj, const sa_attr_reg_t *reg_attrs,
 		error = zap_count(os, sa->sa_layout_attr_obj,
 		    &layout_count);
 
-		/*
-		 * Layout number count should be > 0
-		 */
+		 
 		if (error || (error == 0 && layout_count == 0)) {
 			if (error == 0)
 				error = SET_ERROR(EINVAL);
@@ -1080,17 +909,14 @@ sa_setup(objset_t *os, uint64_t sa_obj, const sa_attr_reg_t *reg_attrs,
 		}
 		zap_cursor_fini(&zc);
 
-		/*
-		 * Make sure layout count matches number of entries added
-		 * to AVL tree
-		 */
+		 
 		if (avl_numnodes(&sa->sa_layout_num_tree) != layout_count) {
 			ASSERT(error != 0);
 			goto fail;
 		}
 	}
 
-	/* Add special layout number for old ZNODES */
+	 
 	if (ostype == DMU_OST_ZFS) {
 		(void) sa_add_layout_entry(os, sa_legacy_zpl_layout,
 		    sa_legacy_attr_count, 0,
@@ -1125,7 +951,7 @@ sa_tear_down(objset_t *os)
 
 	kmem_free(sa->sa_user_table, sa->sa_user_table_sz);
 
-	/* Free up attr table */
+	 
 
 	sa_free_attr_table(sa);
 
@@ -1252,11 +1078,7 @@ sa_byteswap(sa_handle_t *hdl, sa_buf_type_t buftype)
 	sa_hdr_phys->sa_magic = BSWAP_32(sa_hdr_phys->sa_magic);
 	sa_hdr_phys->sa_layout_info = BSWAP_16(sa_hdr_phys->sa_layout_info);
 
-	/*
-	 * Determine number of variable lengths in header
-	 * The standard 8 byte header has one for free and a
-	 * 16 byte header would have 4 + 1;
-	 */
+	 
 	if (SA_HDR_SIZE(sa_hdr_phys) > 8)
 		num_lengths += (SA_HDR_SIZE(sa_hdr_phys) - 8) >> 1;
 	for (i = 0; i != num_lengths; i++)
@@ -1283,9 +1105,9 @@ sa_build_index(sa_handle_t *hdl, sa_buf_type_t buftype)
 
 	mutex_enter(&sa->sa_lock);
 
-	/* Do we need to byteswap? */
+	 
 
-	/* only check if not old znode */
+	 
 	if (IS_SA_BONUSTYPE(bonustype) && sa_hdr_phys->sa_magic != SA_MAGIC &&
 	    sa_hdr_phys->sa_magic != 0) {
 		if (BSWAP_32(sa_hdr_phys->sa_magic) != SA_MAGIC) {
@@ -1398,8 +1220,8 @@ sa_handle_get_from_db(objset_t *os, dmu_buf_t *db, void *userp,
 	ASSERT(doi.doi_bonus_type == DMU_OT_SA ||
 	    doi.doi_bonus_type == DMU_OT_ZNODE);
 #endif
-	/* find handle, if it exists */
-	/* if one doesn't exist then create a new one, and initialize it */
+	 
+	 
 
 	if (hdl_type == SA_HDL_SHARED)
 		handle = dmu_buf_get_user(db);
@@ -1522,12 +1344,7 @@ sa_lookup_uio(sa_handle_t *hdl, sa_attr_type_t attr, zfs_uio_t *uio)
 	return (error);
 }
 
-/*
- * For the existed object that is upgraded from old system, its ondisk layout
- * has no slot for the project ID attribute. But quota accounting logic needs
- * to access related slots by offset directly. So we need to adjust these old
- * objects' layout to make the project ID to some unified and fixed offset.
- */
+ 
 int
 sa_add_projid(sa_handle_t *hdl, dmu_tx_t *tx, uint64_t projid)
 {
@@ -1560,12 +1377,12 @@ sa_add_projid(sa_handle_t *hdl, dmu_tx_t *tx, uint64_t projid)
 	err = sa_lookup_locked(hdl, SA_ZPL_PROJID(zfsvfs), &projid,
 	    sizeof (uint64_t));
 	if (unlikely(err == 0))
-		/* Someone has added project ID attr by race. */
+		 
 		err = EEXIST;
 	if (err != ENOENT)
 		goto out;
 
-	/* First do a bulk query of the attributes that aren't cached */
+	 
 	if (zp->z_is_sa) {
 		SA_ADD_BULK_ATTR(bulk, count, SA_ZPL_MODE(zfsvfs), NULL,
 		    &mode, 8);
@@ -1699,28 +1516,19 @@ sa_find_idx_tab(objset_t *os, dmu_object_type_t bonustype, sa_hdr_phys_t *hdr)
 	sa_lot_t *tb, search;
 	avl_index_t loc;
 
-	/*
-	 * Deterimine layout number.  If SA node and header == 0 then
-	 * force the index table to the dummy "1" empty layout.
-	 *
-	 * The layout number would only be zero for a newly created file
-	 * that has not added any attributes yet, or with crypto enabled which
-	 * doesn't write any attributes to the bonus buffer.
-	 */
+	 
 
 	search.lot_num = SA_LAYOUT_NUM(hdr, bonustype);
 
 	tb = avl_find(&sa->sa_layout_num_tree, &search, &loc);
 
-	/* Verify header size is consistent with layout information */
+	 
 	ASSERT(tb);
 	ASSERT((IS_SA_BONUSTYPE(bonustype) &&
 	    SA_HDR_SIZE_MATCH_LAYOUT(hdr, tb)) || !IS_SA_BONUSTYPE(bonustype) ||
 	    (IS_SA_BONUSTYPE(bonustype) && hdr->sa_layout_info == 0));
 
-	/*
-	 * See if any of the already existing TOC entries can be reused?
-	 */
+	 
 
 	for (idx_tab = list_head(&tb->lot_idx_tab); idx_tab;
 	    idx_tab = list_next(&tb->lot_idx_tab, idx_tab)) {
@@ -1743,7 +1551,7 @@ sa_find_idx_tab(objset_t *os, dmu_object_type_t bonustype, sa_hdr_phys_t *hdr)
 		}
 	}
 
-	/* No such luck, create a new entry */
+	 
 	idx_tab = kmem_zalloc(sizeof (sa_idx_tab_t), KM_SLEEP);
 	idx_tab->sa_idx_tab =
 	    kmem_zalloc(sizeof (uint32_t) * sa->sa_num_attrs, KM_SLEEP);
@@ -1755,8 +1563,8 @@ sa_find_idx_tab(objset_t *os, dmu_object_type_t bonustype, sa_hdr_phys_t *hdr)
 
 	sa_attr_iter(os, hdr, bonustype, sa_build_idx_tab,
 	    tb, idx_tab);
-	sa_idx_tab_hold(os, idx_tab);   /* one hold for consumer */
-	sa_idx_tab_hold(os, idx_tab);	/* one for layout */
+	sa_idx_tab_hold(os, idx_tab);    
+	sa_idx_tab_hold(os, idx_tab);	 
 	list_insert_tail(&tb->lot_idx_tab, idx_tab);
 	return (idx_tab);
 }
@@ -1804,15 +1612,7 @@ sa_attr_register_sync(sa_handle_t *hdl, dmu_tx_t *tx)
 	mutex_exit(&sa->sa_lock);
 }
 
-/*
- * Replace all attributes with attributes specified in template.
- * If dnode had a spill buffer then those attributes will be
- * also be replaced, possibly with just an empty spill block
- *
- * This interface is intended to only be used for bulk adding of
- * attributes for a new file.  It will also be used by the ZPL
- * when converting and old formatted znode to native SA support.
- */
+ 
 int
 sa_replace_all_by_template_locked(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc,
     int attr_count, dmu_tx_t *tx)
@@ -1837,13 +1637,7 @@ sa_replace_all_by_template(sa_handle_t *hdl, sa_bulk_attr_t *attr_desc,
 	return (error);
 }
 
-/*
- * Add/remove a single attribute or replace a variable-sized attribute value
- * with a value of a different size, and then rewrite the entire set
- * of attributes.
- * Same-length attribute value replacement (including fixed-length attributes)
- * is handled more efficiently by the upper layers.
- */
+ 
 static int
 sa_modify_attrs(sa_handle_t *hdl, sa_attr_type_t newattr,
     sa_data_op_t action, sa_data_locator_t *locator, void *datastart,
@@ -1868,7 +1662,7 @@ sa_modify_attrs(sa_handle_t *hdl, sa_attr_type_t newattr,
 
 	ASSERT(MUTEX_HELD(&hdl->sa_lock));
 
-	/* First make of copy of the old data */
+	 
 
 	DB_DNODE_ENTER(db);
 	dn = DB_DNODE(db);
@@ -1883,7 +1677,7 @@ sa_modify_attrs(sa_handle_t *hdl, sa_attr_type_t newattr,
 	}
 	DB_DNODE_EXIT(db);
 
-	/* Bring spill buffer online if it isn't currently */
+	 
 
 	if ((error = sa_get_spill(hdl)) == 0) {
 		spill_data_size = hdl->sa_spill->db_size;
@@ -1900,7 +1694,7 @@ sa_modify_attrs(sa_handle_t *hdl, sa_attr_type_t newattr,
 		old_data[1] = NULL;
 	}
 
-	/* build descriptor of all attributes */
+	 
 
 	attr_count = bonus_attr_count + spill_attr_count;
 	if (action == SA_ADD)
@@ -1910,20 +1704,13 @@ sa_modify_attrs(sa_handle_t *hdl, sa_attr_type_t newattr,
 
 	attr_desc = kmem_zalloc(sizeof (sa_bulk_attr_t) * attr_count, KM_SLEEP);
 
-	/*
-	 * loop through bonus and spill buffer if it exists, and
-	 * build up new attr_descriptor to reset the attributes
-	 */
+	 
 	k = j = 0;
 	count = bonus_attr_count;
 	hdr = SA_GET_HDR(hdl, SA_BONUS);
 	idx_tab = SA_IDX_TAB_GET(hdl, SA_BONUS);
 	for (; ; k++) {
-		/*
-		 * Iterate over each attribute in layout.  Fetch the
-		 * size of variable-length attributes needing rewrite
-		 * from sa_lengths[].
-		 */
+		 
 		for (i = 0, length_idx = 0; i != count; i++) {
 			sa_attr_type_t attr;
 
@@ -1936,23 +1723,14 @@ sa_modify_attrs(sa_handle_t *hdl, sa_attr_type_t newattr,
 				length = reg_length;
 			}
 			if (attr == newattr) {
-				/*
-				 * There is nothing to do for SA_REMOVE,
-				 * so it is just skipped.
-				 */
+				 
 				if (action == SA_REMOVE)
 					continue;
 
-				/*
-				 * Duplicate attributes are not allowed, so the
-				 * action can not be SA_ADD here.
-				 */
+				 
 				ASSERT3S(action, ==, SA_REPLACE);
 
-				/*
-				 * Only a variable-sized attribute can be
-				 * replaced here, and its size must be changing.
-				 */
+				 
 				ASSERT3U(reg_length, ==, 0);
 				ASSERT3U(length, !=, buflen);
 				SA_ADD_BULK_ATTR(attr_desc, j, attr,
@@ -2006,7 +1784,7 @@ sa_bulk_update_impl(sa_handle_t *hdl, sa_bulk_attr_t *bulk, int count,
 	bonustype = SA_BONUSTYPE_FROM_DB(SA_GET_DB(hdl, SA_BONUS));
 	saved_spill = hdl->sa_spill;
 
-	/* sync out registration table if necessary */
+	 
 	if (sa->sa_need_attr_registration)
 		sa_attr_register_sync(hdl, tx);
 
@@ -2014,14 +1792,7 @@ sa_bulk_update_impl(sa_handle_t *hdl, sa_bulk_attr_t *bulk, int count,
 	if (error == 0 && !IS_SA_BONUSTYPE(bonustype) && sa->sa_update_cb)
 		sa->sa_update_cb(hdl, tx);
 
-	/*
-	 * If saved_spill is NULL and current sa_spill is not NULL that
-	 * means we increased the refcount of the spill buffer through
-	 * sa_get_spill() or dmu_spill_hold_by_dnode().  Therefore we
-	 * must release the hold before calling dmu_tx_commit() to avoid
-	 * making a copy of this buffer in dbuf_sync_leaf() due to the
-	 * reference count now being greater than 1.
-	 */
+	 
 	if (!saved_spill && hdl->sa_spill) {
 		if (hdl->sa_spill_tab) {
 			sa_idx_tab_rele(hdl->sa_os, hdl->sa_spill_tab);
@@ -2035,9 +1806,7 @@ sa_bulk_update_impl(sa_handle_t *hdl, sa_bulk_attr_t *bulk, int count,
 	return (error);
 }
 
-/*
- * update or add new attribute
- */
+ 
 int
 sa_update(sa_handle_t *hdl, sa_attr_type_t type,
     void *buf, uint32_t buflen, dmu_tx_t *tx)
@@ -2058,9 +1827,7 @@ sa_update(sa_handle_t *hdl, sa_attr_type_t type,
 	return (error);
 }
 
-/*
- * Return size of an attribute
- */
+ 
 
 int
 sa_size(sa_handle_t *hdl, sa_attr_type_t attr, int *size)
@@ -2255,4 +2022,4 @@ EXPORT_SYMBOL(sa_handle_lock);
 EXPORT_SYMBOL(sa_handle_unlock);
 EXPORT_SYMBOL(sa_lookup_uio);
 EXPORT_SYMBOL(sa_add_projid);
-#endif /* _KERNEL */
+#endif  

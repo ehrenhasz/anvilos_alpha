@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/platform_device.h>
@@ -19,14 +19,7 @@ static void regulator_fixed_release(struct device *dev)
 	kfree(data);
 }
 
-/**
- * regulator_register_always_on - register an always-on regulator with a fixed name
- * @id: platform device id
- * @name: name to be used for the regulator
- * @supplies: consumers for this regulator
- * @num_supplies: number of consumers
- * @uv: voltage in microvolts
- */
+ 
 struct platform_device *regulator_register_always_on(int id, const char *name,
 	struct regulator_consumer_supply *supplies, int num_supplies, int uv)
 {

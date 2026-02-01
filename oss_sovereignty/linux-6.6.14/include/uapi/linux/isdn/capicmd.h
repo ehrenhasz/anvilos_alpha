@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
-/* $Id: capicmd.h,v 1.2.6.2 2001/09/23 22:24:33 kai Exp $
- * 
- * CAPI 2.0 Interface for Linux
- * 
- * Copyright 1997 by Carsten Paeth <calle@calle.de>
- * 
- * This software may be used and distributed according to the terms
- * of the GNU General Public License, incorporated herein by reference.
- *
- */
+ 
+ 
 
 #ifndef __CAPICMD_H__
 #define __CAPICMD_H__
@@ -18,7 +9,7 @@
 #define CAPI_DATA_B3_RESP_LEN		(CAPI_MSG_BASELEN+4+2)
 #define CAPI_DISCONNECT_B3_RESP_LEN	(CAPI_MSG_BASELEN+4)
 
-/*----- CAPI commands -----*/
+ 
 #define CAPI_ALERT		    0x01
 #define CAPI_CONNECT		    0x02
 #define CAPI_CONNECT_ACTIVE	    0x03
@@ -35,14 +26,14 @@
 #define CAPI_RESET_B3		    0x87
 #define CAPI_SELECT_B_PROTOCOL	    0x41
 
-/*----- CAPI subcommands -----*/
+ 
 
 #define CAPI_REQ    0x80
 #define CAPI_CONF   0x81
 #define CAPI_IND    0x82
 #define CAPI_RESP   0x83
 
-/*----- CAPI combined commands -----*/
+ 
 
 #define CAPICMD(cmd,subcmd)	(((cmd)<<8)|(subcmd))
 
@@ -114,4 +105,4 @@
 #define CAPI_INFO_IND			CAPICMD(CAPI_INFO,CAPI_IND)
 #define CAPI_INFO_RESP			CAPICMD(CAPI_INFO,CAPI_RESP)
 
-#endif				/* __CAPICMD_H__ */
+#endif				 

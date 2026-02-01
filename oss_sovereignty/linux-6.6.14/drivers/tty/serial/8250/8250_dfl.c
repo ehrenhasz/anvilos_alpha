@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA UART
- *
- * Copyright (C) 2022 Intel Corporation.
- *
- * Authors:
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Matthew Gerlach <matthew.gerlach@linux.intel.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>

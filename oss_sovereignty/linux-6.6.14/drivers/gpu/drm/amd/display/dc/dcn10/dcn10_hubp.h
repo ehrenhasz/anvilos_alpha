@@ -1,26 +1,4 @@
-/* Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DC_MEM_INPUT_DCN10_H__
 #define __DC_MEM_INPUT_DCN10_H__
@@ -30,7 +8,7 @@
 #define TO_DCN10_HUBP(hubp)\
 	container_of(hubp, struct dcn10_hubp, base)
 
-/* Register address initialization macro for all ASICs (including those with reduced functionality) */
+ 
 #define HUBP_REG_LIST_DCN(id)\
 	SRI(DCHUBP_CNTL, HUBP, id),\
 	SRI(HUBPREQ_DEBUG_DB, HUBP, id),\
@@ -106,7 +84,7 @@
 	SRI(DCN_CUR0_TTU_CNTL1, HUBPREQ, id),\
 	SRI(HUBP_CLK_CNTL, HUBP, id)
 
-/* Register address initialization macro for ASICs with VM */
+ 
 #define HUBP_REG_LIST_DCN_VM(id)\
 	SRI(NOM_PARAMETERS_0, HUBPREQ, id),\
 	SRI(NOM_PARAMETERS_1, HUBPREQ, id),\
@@ -254,8 +232,8 @@
 #define HUBP_SF(reg_name, field_name, post_fix)\
 	.field_name = reg_name ## __ ## field_name ## post_fix
 
-/* Mask/shift struct generation macro for all ASICs (including those with reduced functionality) */
-/*1.x, 2.x, and 3.x*/
+ 
+ 
 #define HUBP_MASK_SH_LIST_DCN_SHARE_COMMON(mask_sh)\
 	HUBP_SF(HUBP0_DCHUBP_CNTL, HUBP_BLANK_EN, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_CNTL, HUBP_TTU_DISABLE, mask_sh),\
@@ -389,18 +367,18 @@
 	HUBP_SF(HUBPREQ0_DCN_SURF0_TTU_CNTL0, QoS_RAMP_DISABLE, mask_sh),\
 	HUBP_SF(HUBPREQ0_DCN_SURF0_TTU_CNTL1, REFCYC_PER_REQ_DELIVERY_PRE, mask_sh),\
 	HUBP_SF(HUBP0_HUBP_CLK_CNTL, HUBP_CLOCK_ENABLE, mask_sh)
-/*2.x and 1.x only*/
+ 
 #define HUBP_MASK_SH_LIST_DCN_COMMON(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN_SHARE_COMMON(mask_sh),\
 	HUBP_SF(HUBP0_DCSURF_TILING_CONFIG, RB_ALIGNED, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_REQ_SIZE_CONFIG, MPTE_GROUP_SIZE, mask_sh),\
 	HUBP_SF(HUBP0_DCHUBP_REQ_SIZE_CONFIG_C, MPTE_GROUP_SIZE_C, mask_sh)
 
-/*2.x and 1.x only*/
+ 
 #define HUBP_MASK_SH_LIST_DCN(mask_sh)\
 	HUBP_MASK_SH_LIST_DCN_COMMON(mask_sh)
 
-/* Mask/shift struct generation macro for ASICs with VM */
+ 
 #define HUBP_MASK_SH_LIST_DCN_VM(mask_sh)\
 	HUBP_SF(HUBPREQ0_NOM_PARAMETERS_0, DST_Y_PER_PTE_ROW_NOM_L, mask_sh),\
 	HUBP_SF(HUBPREQ0_NOM_PARAMETERS_1, REFCYC_PER_PTE_GROUP_NOM_L, mask_sh),\
@@ -622,7 +600,7 @@
 	type DCN_VM_SYSTEM_APERTURE_DEFAULT_SYSTEM;\
 	type DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB;\
 	type DCN_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB;\
-	/* todo:  get these from GVM instead of reading registers ourselves */\
+	 \
 	type PAGE_DIRECTORY_ENTRY_HI32;\
 	type PAGE_DIRECTORY_ENTRY_LO32;\
 	type LOGICAL_PAGE_NUMBER_HI4;\

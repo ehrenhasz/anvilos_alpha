@@ -1,30 +1,6 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2018 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
-#include <unistd.h> // for ssize_t
+#include <unistd.h> 
 
 #include "py/runtime.h"
 
@@ -49,7 +25,7 @@ static mp_obj_t mp_obj_new_deque_it(mp_obj_t deque, mp_obj_iter_buf_t *iter_buf)
 static mp_obj_t deque_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args) {
     mp_arg_check_num(n_args, n_kw, 2, 3, false);
 
-    // Protect against -1 leading to zero-length allocation and bad array access
+    
     mp_int_t maxlen = mp_obj_get_int(args[1]);
     if (maxlen < 0) {
         mp_raise_ValueError(NULL);
@@ -92,7 +68,7 @@ static mp_obj_t deque_unary_op(mp_unary_op_t op, mp_obj_t self_in) {
         }
         #endif
         default:
-            return MP_OBJ_NULL; // op not supported
+            return MP_OBJ_NULL; 
     }
 }
 
@@ -136,7 +112,7 @@ static mp_obj_t mp_obj_deque_appendleft(mp_obj_t self_in, mp_obj_t arg) {
     self->i_get = new_i_get;
     self->items[self->i_get] = arg;
 
-    // overwriting first element in deque
+    
     if (self->i_put == new_i_get) {
         if (self->i_put == 0) {
             self->i_put = self->alloc - 1;
@@ -201,7 +177,7 @@ static MP_DEFINE_CONST_FUN_OBJ_1(deque_pop_obj, deque_pop);
 #if MICROPY_PY_COLLECTIONS_DEQUE_SUBSCR
 static mp_obj_t deque_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
     if (value == MP_OBJ_NULL) {
-        // delete not supported, fall back to mp_obj_subscr() error message
+        
         return MP_OBJ_NULL;
     }
     mp_obj_deque_t *self = MP_OBJ_TO_PTR(self_in);
@@ -213,10 +189,10 @@ static mp_obj_t deque_subscr(mp_obj_t self_in, mp_obj_t index, mp_obj_t value) {
     }
 
     if (value == MP_OBJ_SENTINEL) {
-        // load
+        
         return self->items[index_val];
     } else {
-        // store into deque
+        
         self->items[index_val] = value;
         return mp_const_none;
     }
@@ -271,8 +247,8 @@ MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &deque_locals_dict
     );
 
-/******************************************************************************/
-/* deque iterator                                                             */
+ 
+ 
 
 #if MICROPY_PY_COLLECTIONS_DEQUE_ITER
 
@@ -311,4 +287,4 @@ static mp_obj_t mp_obj_new_deque_it(mp_obj_t deque, mp_obj_iter_buf_t *iter_buf)
 
 #endif
 
-#endif // MICROPY_PY_COLLECTIONS_DEQUE
+#endif 

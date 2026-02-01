@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2013 Freescale Semiconductor, Inc.
- * Copyright 2021 NXP
- *
- * clock driver for Freescale QorIQ SoCs.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,7 +25,7 @@
 #define CGA_PLL1	1
 #define CGA_PLL2	2
 #define CGA_PLL3	3
-#define CGA_PLL4	4	/* only on clockgen-1.0, which lacks CGB */
+#define CGA_PLL4	4	 
 #define CGB_PLL1	4
 #define CGB_PLL2	5
 #define MAX_PLL_DIV	32
@@ -45,12 +40,12 @@ struct clockgen_pll {
 };
 
 #define CLKSEL_VALID	1
-#define CLKSEL_80PCT	2	/* Only allowed if PLL <= 80% of max cpu freq */
+#define CLKSEL_80PCT	2	 
 
 struct clockgen_sourceinfo {
-	u32 flags;	/* CLKSEL_xxx */
-	int pll;	/* CGx_PLLn */
-	int div;	/* PLL_DIVn */
+	u32 flags;	 
+	int pll;	 
+	int div;	 
 };
 
 #define NUM_MUX_PARENTS	16
@@ -64,14 +59,11 @@ struct clockgen_muxinfo {
 
 struct clockgen;
 
-/*
- * cmux freq must be >= platform pll.
- * If not set, cmux freq must be >= platform pll/2
- */
+ 
 #define CG_CMUX_GE_PLAT		1
 
-#define CG_PLL_8BIT		2	/* PLLCnGSR[CFG] is 8 bits, not 6 */
-#define CG_VER3			4	/* version 3 cg: reg layout different */
+#define CG_PLL_8BIT		2	 
+#define CG_VER3			4	 
 #define CG_LITTLE_ENDIAN	8
 
 struct clockgen_chipinfo {
@@ -79,15 +71,15 @@ struct clockgen_chipinfo {
 	const struct clockgen_muxinfo *cmux_groups[2];
 	const struct clockgen_muxinfo *hwaccel[NUM_HWACCEL];
 	void (*init_periph)(struct clockgen *cg);
-	int cmux_to_group[NUM_CMUX + 1]; /* array should be -1 terminated */
-	u32 pll_mask;	/* 1 << n bit set if PLL n is valid */
-	u32 flags;	/* CG_xxx */
+	int cmux_to_group[NUM_CMUX + 1];  
+	u32 pll_mask;	 
+	u32 flags;	 
 };
 
 struct clockgen {
 	struct device_node *node;
 	void __iomem *regs;
-	struct clockgen_chipinfo info; /* mutable copy */
+	struct clockgen_chipinfo info;  
 	struct clk *sysclk, *coreclk;
 	struct clockgen_pll pll[6];
 	struct clk *cmux[NUM_CMUX];
@@ -883,10 +875,7 @@ static const struct clk_ops cmux_ops = {
 	.set_parent = mux_set_parent,
 };
 
-/*
- * Don't allow setting for now, as the clock options haven't been
- * sanitized for additional restrictions.
- */
+ 
 static const struct clk_ops hwaccel_ops = {
 	.get_parent = mux_get_parent,
 };
@@ -986,13 +975,7 @@ static struct clk * __init create_one_cmux(struct clockgen *cg, int idx)
 
 	hwc->info = cg->info.cmux_groups[cg->info.cmux_to_group[idx]];
 
-	/*
-	 * Find the rate for the default clksel, and treat it as the
-	 * maximum rated core frequency.  If this is an incorrect
-	 * assumption, certain clock options (possibly including the
-	 * default clksel) may be inappropriately excluded on certain
-	 * chips.
-	 */
+	 
 	clksel = (cg_in(cg, hwc->reg) & CLKSEL_MASK) >> CLKSEL_SHIFT;
 	div = get_pll_div(cg, hwc, clksel);
 	if (!div) {
@@ -1056,12 +1039,7 @@ static void __init create_muxes(struct clockgen *cg)
 
 static void __init _clockgen_init(struct device_node *np, bool legacy);
 
-/*
- * Legacy nodes may get probed before the parent clockgen node.
- * It is assumed that device trees with legacy nodes will not
- * contain a "clocks" property -- otherwise the input clocks may
- * not be initialized at this point.
- */
+ 
 static void __init legacy_init_clockgen(struct device_node *np)
 {
 	if (!clockgen.node) {
@@ -1073,7 +1051,7 @@ static void __init legacy_init_clockgen(struct device_node *np)
 	}
 }
 
-/* Legacy node */
+ 
 static void __init core_mux_init(struct device_node *np)
 {
 	struct clk *clk;
@@ -1111,7 +1089,7 @@ static struct clk __init *input_clock(const char *name, struct clk *clk)
 {
 	const char *input_name;
 
-	/* Register the input clock under the desired name. */
+	 
 	input_name = __clk_get_name(clk);
 	clk = clk_register_fixed_factor(NULL, name, input_name,
 					0, 1, 1);
@@ -1182,19 +1160,14 @@ static struct clk * __init create_coreclk(const char *name)
 	if (!IS_ERR(clk))
 		return clk;
 
-	/*
-	 * This indicates a mix of legacy nodes with the new coreclk
-	 * mechanism, which should never happen.  If this error occurs,
-	 * don't use the wrong input clock just because coreclk isn't
-	 * ready yet.
-	 */
+	 
 	if (WARN_ON(PTR_ERR(clk) == -EPROBE_DEFER))
 		return clk;
 
 	return NULL;
 }
 
-/* Legacy node */
+ 
 static void __init sysclk_init(struct device_node *node)
 {
 	struct clk *clk;
@@ -1254,10 +1227,10 @@ static void __init create_one_pll(struct clockgen *cg, int idx)
 			reg = cg->regs + 0x800 + 0x20 * (idx - 1);
 	}
 
-	/* Get the multiple of PLL */
+	 
 	mult = cg_in(cg, reg);
 
-	/* Check if this PLL is disabled */
+	 
 	if (mult & PLL_KILL) {
 		pr_debug("%s(): pll %p disabled\n", __func__, reg);
 		return;
@@ -1273,10 +1246,7 @@ static void __init create_one_pll(struct clockgen *cg, int idx)
 		struct clk *clk;
 		int ret;
 
-		/*
-		 * For platform PLL, there are MAX_PLL_DIV divider clocks.
-		 * For core PLL, there are 4 divider clocks at most.
-		 */
+		 
 		if (idx != PLATFORM_PLL && i >= 4)
 			break;
 
@@ -1357,13 +1327,13 @@ err_clks:
 	kfree(subclks);
 }
 
-/* Legacy node */
+ 
 static void __init pltfrm_pll_init(struct device_node *np)
 {
 	legacy_pll_init(np, PLATFORM_PLL);
 }
 
-/* Legacy node */
+ 
 static void __init core_pll_init(struct device_node *np)
 {
 	struct resource res;
@@ -1373,10 +1343,7 @@ static void __init core_pll_init(struct device_node *np)
 		return;
 
 	if ((res.start & 0xfff) == 0xc00) {
-		/*
-		 * ls1021a devtree labels the platform PLL
-		 * with the core PLL compatible
-		 */
+		 
 		pltfrm_pll_init(np);
 	} else {
 		idx = (res.start & 0xf0) >> 5;
@@ -1450,22 +1417,22 @@ bad_args:
 #include <asm/mpc85xx.h>
 
 static const u32 a4510_svrs[] __initconst = {
-	(SVR_P2040 << 8) | 0x10,	/* P2040 1.0 */
-	(SVR_P2040 << 8) | 0x11,	/* P2040 1.1 */
-	(SVR_P2041 << 8) | 0x10,	/* P2041 1.0 */
-	(SVR_P2041 << 8) | 0x11,	/* P2041 1.1 */
-	(SVR_P3041 << 8) | 0x10,	/* P3041 1.0 */
-	(SVR_P3041 << 8) | 0x11,	/* P3041 1.1 */
-	(SVR_P4040 << 8) | 0x20,	/* P4040 2.0 */
-	(SVR_P4080 << 8) | 0x20,	/* P4080 2.0 */
-	(SVR_P5010 << 8) | 0x10,	/* P5010 1.0 */
-	(SVR_P5010 << 8) | 0x20,	/* P5010 2.0 */
-	(SVR_P5020 << 8) | 0x10,	/* P5020 1.0 */
-	(SVR_P5021 << 8) | 0x10,	/* P5021 1.0 */
-	(SVR_P5040 << 8) | 0x10,	/* P5040 1.0 */
+	(SVR_P2040 << 8) | 0x10,	 
+	(SVR_P2040 << 8) | 0x11,	 
+	(SVR_P2041 << 8) | 0x10,	 
+	(SVR_P2041 << 8) | 0x11,	 
+	(SVR_P3041 << 8) | 0x10,	 
+	(SVR_P3041 << 8) | 0x11,	 
+	(SVR_P4040 << 8) | 0x20,	 
+	(SVR_P4080 << 8) | 0x20,	 
+	(SVR_P5010 << 8) | 0x10,	 
+	(SVR_P5010 << 8) | 0x20,	 
+	(SVR_P5020 << 8) | 0x10,	 
+	(SVR_P5021 << 8) | 0x10,	 
+	(SVR_P5040 << 8) | 0x10,	 
 };
 
-#define SVR_SECURITY	0x80000	/* The Security (E) bit */
+#define SVR_SECURITY	0x80000	 
 
 static bool __init has_erratum_a4510(void)
 {
@@ -1493,7 +1460,7 @@ static void __init _clockgen_init(struct device_node *np, bool legacy)
 	int i, ret;
 	bool is_old_ls1021a = false;
 
-	/* May have already been called by a legacy probe */
+	 
 	if (clockgen.node)
 		return;
 
@@ -1501,7 +1468,7 @@ static void __init _clockgen_init(struct device_node *np, bool legacy)
 	clockgen.regs = of_iomap(np, 0);
 	if (!clockgen.regs &&
 	    of_device_is_compatible(of_root, "fsl,ls1021a")) {
-		/* Compatibility hack for old, broken device trees */
+		 
 		clockgen.regs = ioremap(0x1ee1000, 0x1000);
 		is_old_ls1021a = true;
 	}
@@ -1557,7 +1524,7 @@ static void __init _clockgen_init(struct device_node *np, bool legacy)
 		       __func__, np, ret);
 	}
 
-	/* Don't create cpufreq device for legacy clockgen blocks */
+	 
 	add_cpufreq_dev = !legacy;
 
 	return;
@@ -1608,7 +1575,7 @@ CLK_OF_DECLARE(qoriq_clockgen_t1040, "fsl,t1040-clockgen", clockgen_init);
 CLK_OF_DECLARE(qoriq_clockgen_t2080, "fsl,t2080-clockgen", clockgen_init);
 CLK_OF_DECLARE(qoriq_clockgen_t4240, "fsl,t4240-clockgen", clockgen_init);
 
-/* Legacy nodes */
+ 
 CLK_OF_DECLARE(qoriq_sysclk_1, "fsl,qoriq-sysclk-1.0", sysclk_init);
 CLK_OF_DECLARE(qoriq_sysclk_2, "fsl,qoriq-sysclk-2.0", sysclk_init);
 CLK_OF_DECLARE(qoriq_core_pll_1, "fsl,qoriq-core-pll-1.0", core_pll_init);

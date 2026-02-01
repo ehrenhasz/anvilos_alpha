@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 Avago Technologies.  All rights reserved.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/parser.h>
@@ -18,7 +16,7 @@
 #include <scsi/scsi_transport_fc.h>
 #include <linux/blk-mq-pci.h>
 
-/* *************************** Data Structures/Defines ****************** */
+ 
 
 
 enum nvme_fc_queue_flags {
@@ -26,11 +24,8 @@ enum nvme_fc_queue_flags {
 	NVME_FC_Q_LIVE,
 };
 
-#define NVME_FC_DEFAULT_DEV_LOSS_TMO	60	/* seconds */
-#define NVME_FC_DEFAULT_RECONNECT_TMO	2	/* delay between reconnects
-						 * when connected and a
-						 * connection failure.
-						 */
+#define NVME_FC_DEFAULT_DEV_LOSS_TMO	60	 
+#define NVME_FC_DEFAULT_RECONNECT_TMO	2	 
 
 struct nvme_fc_queue {
 	struct nvme_fc_ctrl	*ctrl;
@@ -46,7 +41,7 @@ struct nvme_fc_queue {
 	atomic_t		csn;
 
 	unsigned long		flags;
-} __aligned(sizeof(u64));	/* alignment for other things alloc'd with */
+} __aligned(sizeof(u64));	 
 
 enum nvme_fcop_flags {
 	FCOP_FLAGS_TERMIO	= (1 << 0),
@@ -63,7 +58,7 @@ struct nvmefc_ls_req_op {
 
 	int			ls_error;
 	struct completion	ls_done;
-	struct list_head	lsreq_list;	/* rport->ls_req_list */
+	struct list_head	lsreq_list;	 
 	bool			req_queued;
 };
 
@@ -75,8 +70,8 @@ struct nvmefc_ls_rcv_op {
 	u16				rqstdatalen;
 	bool				handled;
 	dma_addr_t			rspdma;
-	struct list_head		lsrcv_list;	/* rport->ls_rcv_list */
-} __aligned(sizeof(u64));	/* alignment for other things alloc'd with */
+	struct list_head		lsrcv_list;	 
+} __aligned(sizeof(u64));	 
 
 enum nvme_fcpop_state {
 	FCPOP_STATE_UNINIT	= 0,
@@ -87,14 +82,7 @@ enum nvme_fcpop_state {
 };
 
 struct nvme_fc_fcp_op {
-	struct nvme_request	nreq;		/*
-						 * nvme/host/core.c
-						 * requires this to be
-						 * the 1st element in the
-						 * private structure
-						 * associated with the
-						 * request.
-						 */
+	struct nvme_request	nreq;		 
 	struct nvmefc_fcp_req	fcp_req;
 
 	struct nvme_fc_ctrl	*ctrl;
@@ -120,32 +108,32 @@ struct nvme_fc_lport {
 	struct nvme_fc_local_port	localport;
 
 	struct ida			endp_cnt;
-	struct list_head		port_list;	/* nvme_fc_port_list */
+	struct list_head		port_list;	 
 	struct list_head		endp_list;
-	struct device			*dev;	/* physical device for dma */
+	struct device			*dev;	 
 	struct nvme_fc_port_template	*ops;
 	struct kref			ref;
 	atomic_t                        act_rport_cnt;
-} __aligned(sizeof(u64));	/* alignment for other things alloc'd with */
+} __aligned(sizeof(u64));	 
 
 struct nvme_fc_rport {
 	struct nvme_fc_remote_port	remoteport;
 
-	struct list_head		endp_list; /* for lport->endp_list */
+	struct list_head		endp_list;  
 	struct list_head		ctrl_list;
 	struct list_head		ls_req_list;
 	struct list_head		ls_rcv_list;
 	struct list_head		disc_list;
-	struct device			*dev;	/* physical device for dma */
+	struct device			*dev;	 
 	struct nvme_fc_lport		*lport;
 	spinlock_t			lock;
 	struct kref			ref;
 	atomic_t                        act_ctrl_cnt;
 	unsigned long			dev_loss_end;
 	struct work_struct		lsrcv_work;
-} __aligned(sizeof(u64));	/* alignment for other things alloc'd with */
+} __aligned(sizeof(u64));	 
 
-/* fc_ctrl flags values - specified as bit positions */
+ 
 #define ASSOC_ACTIVE		0
 #define ASSOC_FAILED		1
 #define FCCTRL_TERMIO		2
@@ -162,7 +150,7 @@ struct nvme_fc_ctrl {
 	u64			association_id;
 	struct nvmefc_ls_rcv_op	*rcv_disconn;
 
-	struct list_head	ctrl_list;	/* rport->ctrl_list */
+	struct list_head	ctrl_list;	 
 
 	struct blk_mq_tag_set	admin_tag_set;
 	struct blk_mq_tag_set	tag_set;
@@ -212,7 +200,7 @@ fcp_req_to_fcp_op(struct nvmefc_fcp_req *fcpreq)
 
 
 
-/* *************************** Globals **************************** */
+ 
 
 
 static DEFINE_SPINLOCK(nvme_fc_lock);
@@ -226,15 +214,12 @@ static struct workqueue_struct *nvme_fc_wq;
 static bool nvme_fc_waiting_to_unload;
 static DECLARE_COMPLETION(nvme_fc_unload_proceed);
 
-/*
- * These items are short-term. They will eventually be moved into
- * a generic FC class. See comments in module init.
- */
+ 
 static struct device *fc_udev_device;
 
 static void nvme_fc_complete_rq(struct request *rq);
 
-/* *********************** FC-NVME Port Management ************************ */
+ 
 
 static void __nvme_fc_delete_hw_queue(struct nvme_fc_ctrl *,
 			struct nvme_fc_queue *, unsigned int);
@@ -252,7 +237,7 @@ nvme_fc_free_lport(struct kref *ref)
 	WARN_ON(lport->localport.port_state != FC_OBJSTATE_DELETED);
 	WARN_ON(!list_empty(&lport->endp_list));
 
-	/* remove from transport list */
+	 
 	spin_lock_irqsave(&nvme_fc_lock, flags);
 	list_del(&lport->port_list);
 	if (nvme_fc_waiting_to_unload && list_empty(&nvme_fc_lport_list))
@@ -306,15 +291,12 @@ nvme_fc_attach_to_unreg_lport(struct nvme_fc_port_info *pinfo,
 		}
 
 		if (!nvme_fc_lport_get(lport)) {
-			/*
-			 * fails if ref cnt already 0. If so,
-			 * act as if lport already deleted
-			 */
+			 
 			lport = NULL;
 			goto out_done;
 		}
 
-		/* resume the lport */
+		 
 
 		lport->ops = ops;
 		lport->localport.port_role = pinfo->port_role;
@@ -334,23 +316,7 @@ out_done:
 	return lport;
 }
 
-/**
- * nvme_fc_register_localport - transport entry point called by an
- *                              LLDD to register the existence of a NVME
- *                              host FC port.
- * @pinfo:     pointer to information about the port to be registered
- * @template:  LLDD entrypoints and operational parameters for the port
- * @dev:       physical hardware device node port corresponds to. Will be
- *             used for DMA mappings
- * @portptr:   pointer to a local port pointer. Upon success, the routine
- *             will allocate a nvme_fc_local_port structure and place its
- *             address in the local port pointer. Upon failure, local port
- *             pointer will be set to 0.
- *
- * Returns:
- * a completion status. Must be 0 upon success; a negative errno
- * (ex: -ENXIO) upon failure.
- */
+ 
 int
 nvme_fc_register_localport(struct nvme_fc_port_info *pinfo,
 			struct nvme_fc_port_template *template,
@@ -370,27 +336,21 @@ nvme_fc_register_localport(struct nvme_fc_port_info *pinfo,
 		goto out_reghost_failed;
 	}
 
-	/*
-	 * look to see if there is already a localport that had been
-	 * deregistered and in the process of waiting for all the
-	 * references to fully be removed.  If the references haven't
-	 * expired, we can simply re-enable the localport. Remoteports
-	 * and controller reconnections should resume naturally.
-	 */
+	 
 	newrec = nvme_fc_attach_to_unreg_lport(pinfo, template, dev);
 
-	/* found an lport, but something about its state is bad */
+	 
 	if (IS_ERR(newrec)) {
 		ret = PTR_ERR(newrec);
 		goto out_reghost_failed;
 
-	/* found existing lport, which was resumed */
+	 
 	} else if (newrec) {
 		*portptr = &newrec->localport;
 		return 0;
 	}
 
-	/* nothing found - allocate a new localport struct */
+	 
 
 	newrec = kmalloc((sizeof(*newrec) + template->local_priv_sz),
 			 GFP_KERNEL);
@@ -449,16 +409,7 @@ out_reghost_failed:
 }
 EXPORT_SYMBOL_GPL(nvme_fc_register_localport);
 
-/**
- * nvme_fc_unregister_localport - transport entry point called by an
- *                              LLDD to deregister/remove a previously
- *                              registered a NVME host FC port.
- * @portptr: pointer to the (registered) local port that is to be deregistered.
- *
- * Returns:
- * a completion status. Must be 0 upon success; a negative errno
- * (ex: -ENXIO) upon failure.
- */
+ 
 int
 nvme_fc_unregister_localport(struct nvme_fc_local_port *portptr)
 {
@@ -487,22 +438,15 @@ nvme_fc_unregister_localport(struct nvme_fc_local_port *portptr)
 }
 EXPORT_SYMBOL_GPL(nvme_fc_unregister_localport);
 
-/*
- * TRADDR strings, per FC-NVME are fixed format:
- *   "nn-0x<16hexdigits>:pn-0x<16hexdigits>" - 43 characters
- * udev event will only differ by prefix of what field is
- * being specified:
- *    "NVMEFC_HOST_TRADDR=" or "NVMEFC_TRADDR=" - 19 max characters
- *  19 + 43 + null_fudge = 64 characters
- */
+ 
 #define FCNVME_TRADDR_LENGTH		64
 
 static void
 nvme_fc_signal_discovery_scan(struct nvme_fc_lport *lport,
 		struct nvme_fc_rport *rport)
 {
-	char hostaddr[FCNVME_TRADDR_LENGTH];	/* NVMEFC_HOST_TRADDR=...*/
-	char tgtaddr[FCNVME_TRADDR_LENGTH];	/* NVMEFC_TRADDR=...*/
+	char hostaddr[FCNVME_TRADDR_LENGTH];	 
+	char tgtaddr[FCNVME_TRADDR_LENGTH];	 
 	char *envp[4] = { "FC_EVENT=nvmediscovery", hostaddr, tgtaddr, NULL };
 
 	if (!(rport->remoteport.port_role & FC_PORT_ROLE_NVME_DISCOVERY))
@@ -529,7 +473,7 @@ nvme_fc_free_rport(struct kref *ref)
 	WARN_ON(rport->remoteport.port_state != FC_OBJSTATE_DELETED);
 	WARN_ON(!list_empty(&rport->ctrl_list));
 
-	/* remove from lport list */
+	 
 	spin_lock_irqsave(&nvme_fc_lock, flags);
 	list_del(&rport->endp_list);
 	spin_unlock_irqrestore(&nvme_fc_lock, flags);
@@ -560,10 +504,7 @@ nvme_fc_resume_controller(struct nvme_fc_ctrl *ctrl)
 	switch (nvme_ctrl_state(&ctrl->ctrl)) {
 	case NVME_CTRL_NEW:
 	case NVME_CTRL_CONNECTING:
-		/*
-		 * As all reconnects were suppressed, schedule a
-		 * connect.
-		 */
+		 
 		dev_info(ctrl->ctrl.device,
 			"NVME-FC{%d}: connectivity re-established. "
 			"Attempting reconnect\n", ctrl->cnum);
@@ -572,15 +513,11 @@ nvme_fc_resume_controller(struct nvme_fc_ctrl *ctrl)
 		break;
 
 	case NVME_CTRL_RESETTING:
-		/*
-		 * Controller is already in the process of terminating the
-		 * association. No need to do anything further. The reconnect
-		 * step will naturally occur after the reset completes.
-		 */
+		 
 		break;
 
 	default:
-		/* no action to take - let it delete */
+		 
 		break;
 	}
 }
@@ -609,9 +546,9 @@ nvme_fc_attach_to_suspended_rport(struct nvme_fc_lport *lport,
 
 		spin_lock_irqsave(&rport->lock, flags);
 
-		/* has it been unregistered */
+		 
 		if (rport->remoteport.port_state != FC_OBJSTATE_DELETED) {
-			/* means lldd called us twice */
+			 
 			spin_unlock_irqrestore(&rport->lock, flags);
 			nvme_fc_rport_put(rport);
 			return ERR_PTR(-ESTALE);
@@ -622,10 +559,7 @@ nvme_fc_attach_to_suspended_rport(struct nvme_fc_lport *lport,
 		rport->remoteport.port_state = FC_OBJSTATE_ONLINE;
 		rport->dev_loss_end = 0;
 
-		/*
-		 * kick off a reconnect attempt on all associations to the
-		 * remote port. A successful reconnects will resume i/o.
-		 */
+		 
 		list_for_each_entry(ctrl, &rport->ctrl_list, ctrl_list)
 			nvme_fc_resume_controller(ctrl);
 
@@ -652,22 +586,7 @@ __nvme_fc_set_dev_loss_tmo(struct nvme_fc_rport *rport,
 		rport->remoteport.dev_loss_tmo = NVME_FC_DEFAULT_DEV_LOSS_TMO;
 }
 
-/**
- * nvme_fc_register_remoteport - transport entry point called by an
- *                              LLDD to register the existence of a NVME
- *                              subsystem FC port on its fabric.
- * @localport: pointer to the (registered) local port that the remote
- *             subsystem port is connected to.
- * @pinfo:     pointer to information about the port to be registered
- * @portptr:   pointer to a remote port pointer. Upon success, the routine
- *             will allocate a nvme_fc_remote_port structure and place its
- *             address in the remote port pointer. Upon failure, remote port
- *             pointer will be set to 0.
- *
- * Returns:
- * a completion status. Must be 0 upon success; a negative errno
- * (ex: -ENXIO) upon failure.
- */
+ 
 int
 nvme_fc_register_remoteport(struct nvme_fc_local_port *localport,
 				struct nvme_fc_port_info *pinfo,
@@ -683,19 +602,15 @@ nvme_fc_register_remoteport(struct nvme_fc_local_port *localport,
 		goto out_reghost_failed;
 	}
 
-	/*
-	 * look to see if there is already a remoteport that is waiting
-	 * for a reconnect (within dev_loss_tmo) with the same WWN's.
-	 * If so, transition to it and reconnect.
-	 */
+	 
 	newrec = nvme_fc_attach_to_suspended_rport(lport, pinfo);
 
-	/* found an rport, but something about its state is bad */
+	 
 	if (IS_ERR(newrec)) {
 		ret = PTR_ERR(newrec);
 		goto out_lport_put;
 
-	/* found existing rport, which was resumed */
+	 
 	} else if (newrec) {
 		nvme_fc_lport_put(lport);
 		__nvme_fc_set_dev_loss_tmo(newrec, pinfo);
@@ -704,7 +619,7 @@ nvme_fc_register_remoteport(struct nvme_fc_local_port *localport,
 		return 0;
 	}
 
-	/* nothing found - allocate a new remoteport struct */
+	 
 
 	newrec = kmalloc((sizeof(*newrec) + lport->ops->remote_priv_sz),
 			 GFP_KERNEL);
@@ -796,13 +711,7 @@ nvme_fc_ctrl_connectivity_loss(struct nvme_fc_ctrl *ctrl)
 	switch (nvme_ctrl_state(&ctrl->ctrl)) {
 	case NVME_CTRL_NEW:
 	case NVME_CTRL_LIVE:
-		/*
-		 * Schedule a controller reset. The reset will terminate the
-		 * association and schedule the reconnect timer.  Reconnects
-		 * will be attempted until either the ctlr_loss_tmo
-		 * (max_retries * connect_delay) expires or the remoteport's
-		 * dev_loss_tmo expires.
-		 */
+		 
 		if (nvme_reset_ctrl(&ctrl->ctrl)) {
 			dev_warn(ctrl->ctrl.device,
 				"NVME-FC{%d}: Couldn't schedule reset.\n",
@@ -812,43 +721,22 @@ nvme_fc_ctrl_connectivity_loss(struct nvme_fc_ctrl *ctrl)
 		break;
 
 	case NVME_CTRL_CONNECTING:
-		/*
-		 * The association has already been terminated and the
-		 * controller is attempting reconnects.  No need to do anything
-		 * futher.  Reconnects will be attempted until either the
-		 * ctlr_loss_tmo (max_retries * connect_delay) expires or the
-		 * remoteport's dev_loss_tmo expires.
-		 */
+		 
 		break;
 
 	case NVME_CTRL_RESETTING:
-		/*
-		 * Controller is already in the process of terminating the
-		 * association.  No need to do anything further. The reconnect
-		 * step will kick in naturally after the association is
-		 * terminated.
-		 */
+		 
 		break;
 
 	case NVME_CTRL_DELETING:
 	case NVME_CTRL_DELETING_NOIO:
 	default:
-		/* no action to take - let it delete */
+		 
 		break;
 	}
 }
 
-/**
- * nvme_fc_unregister_remoteport - transport entry point called by an
- *                              LLDD to deregister/remove a previously
- *                              registered a NVME subsystem FC port.
- * @portptr: pointer to the (registered) remote port that is to be
- *           deregistered.
- *
- * Returns:
- * a completion status. Must be 0 upon success; a negative errno
- * (ex: -ENXIO) upon failure.
- */
+ 
 int
 nvme_fc_unregister_remoteport(struct nvme_fc_remote_port *portptr)
 {
@@ -870,7 +758,7 @@ nvme_fc_unregister_remoteport(struct nvme_fc_remote_port *portptr)
 	rport->dev_loss_end = jiffies + (portptr->dev_loss_tmo * HZ);
 
 	list_for_each_entry(ctrl, &rport->ctrl_list, ctrl_list) {
-		/* if dev_loss_tmo==0, dev loss is immediate */
+		 
 		if (!portptr->dev_loss_tmo) {
 			dev_warn(ctrl->ctrl.device,
 				"NVME-FC{%d}: controller connectivity lost.\n",
@@ -887,25 +775,14 @@ nvme_fc_unregister_remoteport(struct nvme_fc_remote_port *portptr)
 	if (atomic_read(&rport->act_ctrl_cnt) == 0)
 		rport->lport->ops->remoteport_delete(portptr);
 
-	/*
-	 * release the reference, which will allow, if all controllers
-	 * go away, which should only occur after dev_loss_tmo occurs,
-	 * for the rport to be torn down.
-	 */
+	 
 	nvme_fc_rport_put(rport);
 
 	return 0;
 }
 EXPORT_SYMBOL_GPL(nvme_fc_unregister_remoteport);
 
-/**
- * nvme_fc_rescan_remoteport - transport entry point called by an
- *                              LLDD to request a nvme device rescan.
- * @remoteport: pointer to the (registered) remote port that is to be
- *              rescanned.
- *
- * Returns: N/A
- */
+ 
 void
 nvme_fc_rescan_remoteport(struct nvme_fc_remote_port *remoteport)
 {
@@ -929,7 +806,7 @@ nvme_fc_set_remoteport_devloss(struct nvme_fc_remote_port *portptr,
 		return -EINVAL;
 	}
 
-	/* a dev_loss_tmo of 0 (immediate) is allowed to be set */
+	 
 	rport->remoteport.dev_loss_tmo = dev_loss_tmo;
 
 	spin_unlock_irqrestore(&rport->lock, flags);
@@ -939,23 +816,9 @@ nvme_fc_set_remoteport_devloss(struct nvme_fc_remote_port *portptr,
 EXPORT_SYMBOL_GPL(nvme_fc_set_remoteport_devloss);
 
 
-/* *********************** FC-NVME DMA Handling **************************** */
+ 
 
-/*
- * The fcloop device passes in a NULL device pointer. Real LLD's will
- * pass in a valid device pointer. If NULL is passed to the dma mapping
- * routines, depending on the platform, it may or may not succeed, and
- * may crash.
- *
- * As such:
- * Wrapper all the dma routines and check the dev pointer.
- *
- * If simple mappings (return just a dma address, we'll noop them,
- * returning a dma address of 0.
- *
- * On more complex mappings (dma_map_sg), a pseudo routine fills
- * in the scatter list, setting all dma addresses to 0.
- */
+ 
 
 static inline dma_addr_t
 fc_dma_map_single(struct device *dev, void *ptr, size_t size,
@@ -994,7 +857,7 @@ fc_dma_sync_single_for_device(struct device *dev, dma_addr_t addr, size_t size,
 		dma_sync_single_for_device(dev, addr, size, dir);
 }
 
-/* pseudo dma_map_sg call */
+ 
 static int
 fc_map_sg(struct scatterlist *sg, int nents)
 {
@@ -1027,7 +890,7 @@ fc_dma_unmap_sg(struct device *dev, struct scatterlist *sg, int nents,
 		dma_unmap_sg(dev, sg, nents, dir);
 }
 
-/* *********************** FC-NVME LS Handling **************************** */
+ 
 
 static void nvme_fc_ctrl_put(struct nvme_fc_ctrl *);
 static int nvme_fc_ctrl_get(struct nvme_fc_ctrl *);
@@ -1140,12 +1003,7 @@ nvme_fc_send_ls_req(struct nvme_fc_rport *rport, struct nvmefc_ls_req_op *lsop)
 	ret = __nvme_fc_send_ls_req(rport, lsop, nvme_fc_send_ls_req_done);
 
 	if (!ret) {
-		/*
-		 * No timeout/not interruptible as we need the struct
-		 * to exist until the lldd calls us back. Thus mandate
-		 * wait until driver calls back. lldd responsible for
-		 * the timeout action
-		 */
+		 
 		wait_for_completion(&lsop->ls_done);
 
 		__nvme_fc_finish_ls_req(lsop);
@@ -1156,7 +1014,7 @@ nvme_fc_send_ls_req(struct nvme_fc_rport *rport, struct nvmefc_ls_req_op *lsop)
 	if (ret)
 		return ret;
 
-	/* ACC or RJT payload ? */
+	 
 	if (rjt->w0.ls_cmd == FCNVME_LS_RJT)
 		return -ENXIO;
 
@@ -1168,7 +1026,7 @@ nvme_fc_send_ls_req_async(struct nvme_fc_rport *rport,
 		struct nvmefc_ls_req_op *lsop,
 		void (*done)(struct nvmefc_ls_req *req, int status))
 {
-	/* don't wait for completion */
+	 
 
 	return __nvme_fc_send_ls_req(rport, lsop, done);
 }
@@ -1215,7 +1073,7 @@ nvme_fc_connect_admin_queue(struct nvme_fc_ctrl *ctrl,
 
 	assoc_rqst->assoc_cmd.ersp_ratio = cpu_to_be16(ersp_ratio);
 	assoc_rqst->assoc_cmd.sqsize = cpu_to_be16(qsize - 1);
-	/* Linux supports only Dynamic controllers */
+	 
 	assoc_rqst->assoc_cmd.cntlid = cpu_to_be16(0xffff);
 	uuid_copy(&assoc_rqst->assoc_cmd.hostid, &ctrl->ctrl.opts->host->id);
 	strncpy(assoc_rqst->assoc_cmd.hostnqn, ctrl->ctrl.opts->host->nqn,
@@ -1234,9 +1092,9 @@ nvme_fc_connect_admin_queue(struct nvme_fc_ctrl *ctrl,
 	if (ret)
 		goto out_free_buffer;
 
-	/* process connect LS completion */
+	 
 
-	/* validate the ACC response */
+	 
 	if (assoc_acc->hdr.w0.ls_cmd != FCNVME_LS_ACC)
 		fcret = VERR_LSACC;
 	else if (assoc_acc->hdr.desc_list_len !=
@@ -1349,9 +1207,9 @@ nvme_fc_connect_queue(struct nvme_fc_ctrl *ctrl, struct nvme_fc_queue *queue,
 	if (ret)
 		goto out_free_buffer;
 
-	/* process connect LS completion */
+	 
 
-	/* validate the ACC response */
+	 
 	if (conn_acc->hdr.w0.ls_cmd != FCNVME_LS_ACC)
 		fcret = VERR_LSACC;
 	else if (conn_acc->hdr.desc_list_len !=
@@ -1399,28 +1257,12 @@ nvme_fc_disconnect_assoc_done(struct nvmefc_ls_req *lsreq, int status)
 
 	__nvme_fc_finish_ls_req(lsop);
 
-	/* fc-nvme initiator doesn't care about success or failure of cmd */
+	 
 
 	kfree(lsop);
 }
 
-/*
- * This routine sends a FC-NVME LS to disconnect (aka terminate)
- * the FC-NVME Association.  Terminating the association also
- * terminates the FC-NVME connections (per queue, both admin and io
- * queues) that are part of the association. E.g. things are torn
- * down, and the related FC-NVME Association ID and Connection IDs
- * become invalid.
- *
- * The behavior of the fc-nvme initiator is such that it's
- * understanding of the association and connections will implicitly
- * be torn down. The action is implicit as it may be due to a loss of
- * connectivity with the fc-nvme target, so you may never get a
- * response even if you tried.  As such, the action of this routine
- * is to asynchronously send the LS, ignore any results of the LS, and
- * continue on with terminating the association. If the fc-nvme target
- * is present and receives the LS, it too can tear down.
- */
+ 
 static void
 nvme_fc_xmt_disconnect_assoc(struct nvme_fc_ctrl *ctrl)
 {
@@ -1528,19 +1370,19 @@ nvme_fc_match_disconn_ls(struct nvme_fc_rport *rport,
 		}
 		spin_unlock(&ctrl->lock);
 		if (ret)
-			/* leave the ctrl get reference */
+			 
 			break;
 		nvme_fc_ctrl_put(ctrl);
 	}
 
 	spin_unlock_irqrestore(&rport->lock, flags);
 
-	/* transmit a response for anything that was pending */
+	 
 	if (oldls) {
 		dev_info(rport->lport->dev,
 			"NVME-FC{%d}: Multiple Disconnect Association "
 			"LS's received\n", ctrl->cnum);
-		/* overwrite good response with bogus failure */
+		 
 		oldls->lsrsp->rsplen = nvme_fc_format_rjt(oldls->rspbuf,
 						sizeof(*oldls->rspbuf),
 						rqst->w0.ls_cmd,
@@ -1552,11 +1394,7 @@ nvme_fc_match_disconn_ls(struct nvme_fc_rport *rport,
 	return ret;
 }
 
-/*
- * returns true to mean LS handled and ls_rsp can be sent
- * returns false to defer ls_rsp xmt (will be done as part of
- *     association termination)
- */
+ 
 static bool
 nvme_fc_ls_disconnect_assoc(struct nvmefc_ls_rcv_op *lsop)
 {
@@ -1572,7 +1410,7 @@ nvme_fc_ls_disconnect_assoc(struct nvmefc_ls_rcv_op *lsop)
 
 	ret = nvmefc_vldt_lsreq_discon_assoc(lsop->rqstdatalen, rqst);
 	if (!ret) {
-		/* match an active association */
+		 
 		ctrl = nvme_fc_match_disconn_ls(rport, lsop);
 		if (!ctrl)
 			ret = VERR_NO_ASSOC;
@@ -1591,7 +1429,7 @@ nvme_fc_ls_disconnect_assoc(struct nvmefc_ls_rcv_op *lsop)
 		return true;
 	}
 
-	/* format an ACCept response */
+	 
 
 	lsop->lsrsp->rsplen = sizeof(*acc);
 
@@ -1600,26 +1438,18 @@ nvme_fc_ls_disconnect_assoc(struct nvmefc_ls_rcv_op *lsop)
 				sizeof(struct fcnvme_ls_disconnect_assoc_acc)),
 			FCNVME_LS_DISCONNECT_ASSOC);
 
-	/*
-	 * the transmit of the response will occur after the exchanges
-	 * for the association have been ABTS'd by
-	 * nvme_fc_delete_association().
-	 */
+	 
 
-	/* fail the association */
+	 
 	nvme_fc_error_recovery(ctrl, "Disconnect Association LS received");
 
-	/* release the reference taken by nvme_fc_match_disconn_ls() */
+	 
 	nvme_fc_ctrl_put(ctrl);
 
 	return false;
 }
 
-/*
- * Actual Processing routine for received FC-NVME LS Requests from the LLD
- * returns true if a response should be sent afterward, false if rsp will
- * be sent asynchronously.
- */
+ 
 static bool
 nvme_fc_handle_ls_rqst(struct nvmefc_ls_rcv_op *lsop)
 {
@@ -1630,14 +1460,10 @@ nvme_fc_handle_ls_rqst(struct nvmefc_ls_rcv_op *lsop)
 	lsop->lsrsp->rspbuf = lsop->rspbuf;
 	lsop->lsrsp->rspdma = lsop->rspdma;
 	lsop->lsrsp->done = nvme_fc_xmt_ls_rsp_done;
-	/* Be preventative. handlers will later set to valid length */
+	 
 	lsop->lsrsp->rsplen = 0;
 
-	/*
-	 * handlers:
-	 *   parse request input, execute the request, and format the
-	 *   LS response
-	 */
+	 
 	switch (w0->ls_cmd) {
 	case FCNVME_LS_DISCONNECT_ASSOC:
 		ret = nvme_fc_ls_disconnect_assoc(lsop);
@@ -1710,25 +1536,7 @@ void nvme_fc_rcv_ls_req_err_msg(struct nvme_fc_lport *lport,
 			nvmefc_ls_names[w0->ls_cmd] : "");
 }
 
-/**
- * nvme_fc_rcv_ls_req - transport entry point called by an LLDD
- *                       upon the reception of a NVME LS request.
- *
- * The nvme-fc layer will copy payload to an internal structure for
- * processing.  As such, upon completion of the routine, the LLDD may
- * immediately free/reuse the LS request buffer passed in the call.
- *
- * If this routine returns error, the LLDD should abort the exchange.
- *
- * @portptr:    pointer to the (registered) remote port that the LS
- *              was received from. The remoteport is associated with
- *              a specific localport.
- * @lsrsp:      pointer to a nvmefc_ls_rsp response structure to be
- *              used to reference the exchange corresponding to the LS
- *              when issuing an ls response.
- * @lsreqbuf:   pointer to the buffer containing the LS Request
- * @lsreqbuf_len: length, in bytes, of the received LS request
- */
+ 
 int
 nvme_fc_rcv_ls_req(struct nvme_fc_remote_port *portptr,
 			struct nvmefc_ls_rsp *lsrsp,
@@ -1743,7 +1551,7 @@ nvme_fc_rcv_ls_req(struct nvme_fc_remote_port *portptr,
 
 	nvme_fc_rport_get(rport);
 
-	/* validate there's a routine to transmit a response */
+	 
 	if (!lport->ops->xmt_ls_rsp) {
 		dev_info(lport->dev,
 			"RCV %s LS failed: no LLDD xmt_ls_rsp\n",
@@ -1822,7 +1630,7 @@ out_put:
 EXPORT_SYMBOL_GPL(nvme_fc_rcv_ls_req);
 
 
-/* *********************** NVME Ctrl Routines **************************** */
+ 
 
 static void
 __nvme_fc_exit_request(struct nvme_fc_ctrl *ctrl,
@@ -1878,7 +1686,7 @@ nvme_fc_abort_aen_ops(struct nvme_fc_ctrl *ctrl)
 	struct nvme_fc_fcp_op *aen_op = ctrl->aen_ops;
 	int i;
 
-	/* ensure we've initialized the ops once */
+	 
 	if (!(aen_op->flags & FCOP_FLAGS_AEN))
 		return;
 
@@ -1912,13 +1720,7 @@ nvme_fc_ctrl_ioerr_work(struct work_struct *work)
 	nvme_fc_error_recovery(ctrl, "transport detected io error");
 }
 
-/*
- * nvme_fc_io_getuuid - Routine called to get the appid field
- * associated with request by the lldd
- * @req:IO request from nvme fc to driver
- * Returns: UUID if there is an appid associated with VM or
- * NULL if the user/libvirt has not set the appid to VM
- */
+ 
 char *nvme_fc_io_getuuid(struct nvmefc_fcp_req *req)
 {
 	struct nvme_fc_fcp_op *op = fcp_req_to_fcp_op(req);
@@ -1945,42 +1747,7 @@ nvme_fc_fcpio_done(struct nvmefc_fcp_req *req)
 	bool terminate_assoc = true;
 	int opstate;
 
-	/*
-	 * WARNING:
-	 * The current linux implementation of a nvme controller
-	 * allocates a single tag set for all io queues and sizes
-	 * the io queues to fully hold all possible tags. Thus, the
-	 * implementation does not reference or care about the sqhd
-	 * value as it never needs to use the sqhd/sqtail pointers
-	 * for submission pacing.
-	 *
-	 * This affects the FC-NVME implementation in two ways:
-	 * 1) As the value doesn't matter, we don't need to waste
-	 *    cycles extracting it from ERSPs and stamping it in the
-	 *    cases where the transport fabricates CQEs on successful
-	 *    completions.
-	 * 2) The FC-NVME implementation requires that delivery of
-	 *    ERSP completions are to go back to the nvme layer in order
-	 *    relative to the rsn, such that the sqhd value will always
-	 *    be "in order" for the nvme layer. As the nvme layer in
-	 *    linux doesn't care about sqhd, there's no need to return
-	 *    them in order.
-	 *
-	 * Additionally:
-	 * As the core nvme layer in linux currently does not look at
-	 * every field in the cqe - in cases where the FC transport must
-	 * fabricate a CQE, the following fields will not be set as they
-	 * are not referenced:
-	 *      cqe.sqid,  cqe.sqhd,  cqe.command_id
-	 *
-	 * Failure or error of an individual i/o, in a transport
-	 * detected fashion unrelated to the nvme completion status,
-	 * potentially cause the initiator and target sides to get out
-	 * of sync on SQ head/tail (aka outstanding io count allowed).
-	 * Per FC-NVME spec, failure of an individual command requires
-	 * the connection to be terminated, which in turn requires the
-	 * association to be terminated.
-	 */
+	 
 
 	opstate = atomic_xchg(&op->state, FCPOP_STATE_COMPLETE);
 
@@ -1996,30 +1763,17 @@ nvme_fc_fcpio_done(struct nvmefc_fcp_req *req)
 			ctrl->cnum, freq->status);
 	}
 
-	/*
-	 * For the linux implementation, if we have an unsuccesful
-	 * status, they blk-mq layer can typically be called with the
-	 * non-zero status and the content of the cqe isn't important.
-	 */
+	 
 	if (status)
 		goto done;
 
-	/*
-	 * command completed successfully relative to the wire
-	 * protocol. However, validate anything received and
-	 * extract the status and result from the cqe (create it
-	 * where necessary).
-	 */
+	 
 
 	switch (freq->rcv_rsplen) {
 
 	case 0:
 	case NVME_FC_SIZEOF_ZEROS_RSP:
-		/*
-		 * No response payload or 12 bytes of payload (which
-		 * should all be zeros) are considered successful and
-		 * no payload in the CQE by the transport.
-		 */
+		 
 		if (freq->transferred_length !=
 		    be32_to_cpu(op->cmd_iu.data_len)) {
 			status = cpu_to_le16(NVME_SC_HOST_PATH_ERROR << 1);
@@ -2034,10 +1788,7 @@ nvme_fc_fcpio_done(struct nvmefc_fcp_req *req)
 		break;
 
 	case sizeof(struct nvme_fc_ersp_iu):
-		/*
-		 * The ERSP IU contains a full completion with CQE.
-		 * Validate ERSP IU and look at cqe.
-		 */
+		 
 		if (unlikely(be16_to_cpu(op->rsp_iu.iu_len) !=
 					(freq->rcv_rsplen / 4) ||
 			     be32_to_cpu(op->rsp_iu.xfrd_len) !=
@@ -2077,7 +1828,7 @@ done:
 		nvme_complete_async_event(&queue->ctrl->ctrl, status, &result);
 		__nvme_fc_fcpop_chk_teardowns(ctrl, op, opstate);
 		atomic_set(&op->state, FCPOP_STATE_IDLE);
-		op->flags = FCOP_FLAGS_AEN;	/* clear other flags */
+		op->flags = FCOP_FLAGS_AEN;	 
 		nvme_fc_ctrl_put(ctrl);
 		goto check_error;
 	}
@@ -2197,7 +1948,7 @@ nvme_fc_init_aen_ops(struct nvme_fc_ctrl *ctrl)
 
 		memset(sqe, 0, sizeof(*sqe));
 		sqe->common.opcode = nvme_admin_async_event;
-		/* Note: core layer may overwrite the sqe.command_id value */
+		 
 		sqe->common.command_id = NVME_AQ_BLK_MQ_DEPTH + i;
 	}
 	return 0;
@@ -2260,26 +2011,10 @@ nvme_fc_init_queue(struct nvme_fc_ctrl *ctrl, int idx)
 	else
 		queue->cmnd_capsule_len = sizeof(struct nvme_command);
 
-	/*
-	 * Considered whether we should allocate buffers for all SQEs
-	 * and CQEs and dma map them - mapping their respective entries
-	 * into the request structures (kernel vm addr and dma address)
-	 * thus the driver could use the buffers/mappings directly.
-	 * It only makes sense if the LLDD would use them for its
-	 * messaging api. It's very unlikely most adapter api's would use
-	 * a native NVME sqe/cqe. More reasonable if FC-NVME IU payload
-	 * structures were used instead.
-	 */
+	 
 }
 
-/*
- * This routine terminates a queue at the transport level.
- * The transport has already ensured that all outstanding ios on
- * the queue have been terminated.
- * The transport will send a Disconnect LS request to terminate
- * the queue's connection. Termination of the admin queue will also
- * terminate the association at the target.
- */
+ 
 static void
 nvme_fc_free_queue(struct nvme_fc_queue *queue)
 {
@@ -2287,11 +2022,7 @@ nvme_fc_free_queue(struct nvme_fc_queue *queue)
 		return;
 
 	clear_bit(NVME_FC_Q_LIVE, &queue->flags);
-	/*
-	 * Current implementation never disconnects a single queue.
-	 * It always terminates a whole association. So there is never
-	 * a disconnect(queue) LS sent to the target.
-	 */
+	 
 
 	queue->connection_id = 0;
 	atomic_set(&queue->csn, 0);
@@ -2399,7 +2130,7 @@ nvme_fc_ctrl_free(struct kref *ref)
 	if (ctrl->ctrl.tagset)
 		nvme_remove_io_tag_set(&ctrl->ctrl);
 
-	/* remove from rport list */
+	 
 	spin_lock_irqsave(&ctrl->rport->lock, flags);
 	list_del(&ctrl->ctrl_list);
 	spin_unlock_irqrestore(&ctrl->rport->lock, flags);
@@ -2430,10 +2161,7 @@ nvme_fc_ctrl_get(struct nvme_fc_ctrl *ctrl)
 	return kref_get_unless_zero(&ctrl->ref);
 }
 
-/*
- * All accesses from nvme core layer done - can now free the
- * controller. Called after last nvme_put_ctrl() call
- */
+ 
 static void
 nvme_fc_nvme_ctrl_freed(struct nvme_ctrl *nctrl)
 {
@@ -2444,19 +2172,7 @@ nvme_fc_nvme_ctrl_freed(struct nvme_ctrl *nctrl)
 	nvme_fc_ctrl_put(ctrl);
 }
 
-/*
- * This routine is used by the transport when it needs to find active
- * io on a queue that is to be terminated. The transport uses
- * blk_mq_tagset_busy_itr() to find the busy requests, which then invoke
- * this routine to kill them on a 1 by 1 basis.
- *
- * As FC allocates FC exchange for each io, the transport must contact
- * the LLDD to terminate the exchange, thus releasing the FC exchange.
- * After terminating the exchange the LLDD will call the transport's
- * normal io done path for the request, but it will have an aborted
- * status. The done path will return the io request back to the block
- * layer with an error status.
- */
+ 
 static bool nvme_fc_terminate_exchange(struct request *req, void *data)
 {
 	struct nvme_ctrl *nctrl = data;
@@ -2468,42 +2184,20 @@ static bool nvme_fc_terminate_exchange(struct request *req, void *data)
 	return true;
 }
 
-/*
- * This routine runs through all outstanding commands on the association
- * and aborts them.  This routine is typically be called by the
- * delete_association routine. It is also called due to an error during
- * reconnect. In that scenario, it is most likely a command that initializes
- * the controller, including fabric Connect commands on io queues, that
- * may have timed out or failed thus the io must be killed for the connect
- * thread to see the error.
- */
+ 
 static void
 __nvme_fc_abort_outstanding_ios(struct nvme_fc_ctrl *ctrl, bool start_queues)
 {
 	int q;
 
-	/*
-	 * if aborting io, the queues are no longer good, mark them
-	 * all as not live.
-	 */
+	 
 	if (ctrl->ctrl.queue_count > 1) {
 		for (q = 1; q < ctrl->ctrl.queue_count; q++)
 			clear_bit(NVME_FC_Q_LIVE, &ctrl->queues[q].flags);
 	}
 	clear_bit(NVME_FC_Q_LIVE, &ctrl->queues[0].flags);
 
-	/*
-	 * If io queues are present, stop them and terminate all outstanding
-	 * ios on them. As FC allocates FC exchange for each io, the
-	 * transport must contact the LLDD to terminate the exchange,
-	 * thus releasing the FC exchange. We use blk_mq_tagset_busy_itr()
-	 * to tell us what io's are busy and invoke a transport routine
-	 * to kill them with the LLDD.  After terminating the exchange
-	 * the LLDD will call the transport's normal io done path, but it
-	 * will have an aborted status. The done path will return the
-	 * io requests back to the block layer as part of normal completions
-	 * (but with error status).
-	 */
+	 
 	if (ctrl->ctrl.queue_count > 1) {
 		nvme_quiesce_io_queues(&ctrl->ctrl);
 		nvme_sync_io_queues(&ctrl->ctrl);
@@ -2514,21 +2208,9 @@ __nvme_fc_abort_outstanding_ios(struct nvme_fc_ctrl *ctrl, bool start_queues)
 			nvme_unquiesce_io_queues(&ctrl->ctrl);
 	}
 
-	/*
-	 * Other transports, which don't have link-level contexts bound
-	 * to sqe's, would try to gracefully shutdown the controller by
-	 * writing the registers for shutdown and polling (call
-	 * nvme_disable_ctrl()). Given a bunch of i/o was potentially
-	 * just aborted and we will wait on those contexts, and given
-	 * there was no indication of how live the controlelr is on the
-	 * link, don't send more io to create more contexts for the
-	 * shutdown. Let the controller fail via keepalive failure if
-	 * its still present.
-	 */
+	 
 
-	/*
-	 * clean up the admin queue. Same thing as above.
-	 */
+	 
 	nvme_quiesce_admin_queue(&ctrl->ctrl);
 	blk_sync_queue(ctrl->ctrl.admin_q);
 	blk_mq_tagset_busy_iter(&ctrl->admin_tag_set,
@@ -2541,13 +2223,7 @@ __nvme_fc_abort_outstanding_ios(struct nvme_fc_ctrl *ctrl, bool start_queues)
 static void
 nvme_fc_error_recovery(struct nvme_fc_ctrl *ctrl, char *errmsg)
 {
-	/*
-	 * if an error (io timeout, etc) while (re)connecting, the remote
-	 * port requested terminating of the association (disconnect_ls)
-	 * or an error (timeout or abort) occurred on an io while creating
-	 * the controller.  Abort any ios on the association and let the
-	 * create_association error path resolve things.
-	 */
+	 
 	if (ctrl->ctrl.state == NVME_CTRL_CONNECTING) {
 		__nvme_fc_abort_outstanding_ios(ctrl, true);
 		set_bit(ASSOC_FAILED, &ctrl->flags);
@@ -2557,7 +2233,7 @@ nvme_fc_error_recovery(struct nvme_fc_ctrl *ctrl, char *errmsg)
 		return;
 	}
 
-	/* Otherwise, only proceed if in LIVE state - e.g. on first error */
+	 
 	if (ctrl->ctrl.state != NVME_CTRL_LIVE)
 		return;
 
@@ -2577,10 +2253,7 @@ static enum blk_eh_timer_return nvme_fc_timeout(struct request *rq)
 	struct nvme_fc_cmd_iu *cmdiu = &op->cmd_iu;
 	struct nvme_command *sqe = &cmdiu->sqe;
 
-	/*
-	 * Attempt to abort the offending command. Command completion
-	 * will detect the aborted io and will fail the connection.
-	 */
+	 
 	dev_info(ctrl->ctrl.device,
 		"NVME-FC{%d.%d}: io timeout: opcode %d fctype %d w10/11: "
 		"x%08x/x%08x\n",
@@ -2589,11 +2262,7 @@ static enum blk_eh_timer_return nvme_fc_timeout(struct request *rq)
 	if (__nvme_fc_abort_op(ctrl, op))
 		nvme_fc_error_recovery(ctrl, "io timeout abort failed");
 
-	/*
-	 * the io abort has been initiated. Have the reset timer
-	 * restarted and the abort completion will complete the io
-	 * shortly. Avoids a synchronous wait while the abort finishes.
-	 */
+	 
 	return BLK_EH_RESET_TIMER;
 }
 
@@ -2626,9 +2295,7 @@ nvme_fc_map_data(struct nvme_fc_ctrl *ctrl, struct request *rq,
 		return -EFAULT;
 	}
 
-	/*
-	 * TODO: blk_integrity_rq(rq)  for DIF
-	 */
+	 
 	return 0;
 }
 
@@ -2649,29 +2316,7 @@ nvme_fc_unmap_data(struct nvme_fc_ctrl *ctrl, struct request *rq,
 	freq->sg_cnt = 0;
 }
 
-/*
- * In FC, the queue is a logical thing. At transport connect, the target
- * creates its "queue" and returns a handle that is to be given to the
- * target whenever it posts something to the corresponding SQ.  When an
- * SQE is sent on a SQ, FC effectively considers the SQE, or rather the
- * command contained within the SQE, an io, and assigns a FC exchange
- * to it. The SQE and the associated SQ handle are sent in the initial
- * CMD IU sents on the exchange. All transfers relative to the io occur
- * as part of the exchange.  The CQE is the last thing for the io,
- * which is transferred (explicitly or implicitly) with the RSP IU
- * sent on the exchange. After the CQE is received, the FC exchange is
- * terminaed and the Exchange may be used on a different io.
- *
- * The transport to LLDD api has the transport making a request for a
- * new fcp io request to the LLDD. The LLDD then allocates a FC exchange
- * resource and transfers the command. The LLDD will then process all
- * steps to complete the io. Upon completion, the transport done routine
- * is called.
- *
- * So - while the operation is outstanding to the LLDD, there is a link
- * level FC exchange resource that is also outstanding. This must be
- * considered in all cleanup operations.
- */
+ 
 static blk_status_t
 nvme_fc_start_fcp_op(struct nvme_fc_ctrl *ctrl, struct nvme_fc_queue *queue,
 	struct nvme_fc_fcp_op *op, u32 data_len,
@@ -2681,17 +2326,14 @@ nvme_fc_start_fcp_op(struct nvme_fc_ctrl *ctrl, struct nvme_fc_queue *queue,
 	struct nvme_command *sqe = &cmdiu->sqe;
 	int ret, opstate;
 
-	/*
-	 * before attempting to send the io, check to see if we believe
-	 * the target device is present
-	 */
+	 
 	if (ctrl->rport->remoteport.port_state != FC_OBJSTATE_ONLINE)
 		return BLK_STS_RESOURCE;
 
 	if (!nvme_fc_ctrl_get(ctrl))
 		return BLK_STS_IOERR;
 
-	/* format the FC-NVME CMD IU and fcp_req */
+	 
 	cmdiu->connection_id = cpu_to_be64(queue->connection_id);
 	cmdiu->data_len = cpu_to_be32(data_len);
 	switch (io_dir) {
@@ -2712,20 +2354,11 @@ nvme_fc_start_fcp_op(struct nvme_fc_ctrl *ctrl, struct nvme_fc_queue *queue,
 	op->fcp_req.status = NVME_SC_SUCCESS;
 	op->fcp_req.sqid = cpu_to_le16(queue->qnum);
 
-	/*
-	 * validate per fabric rules, set fields mandated by fabric spec
-	 * as well as those by FC-NVME spec.
-	 */
+	 
 	WARN_ON_ONCE(sqe->common.metadata);
 	sqe->common.flags |= NVME_CMD_SGL_METABUF;
 
-	/*
-	 * format SQE DPTR field per FC-NVME rules:
-	 *    type=0x5     Transport SGL Data Block Descriptor
-	 *    subtype=0xA  Transport-specific value
-	 *    address=0
-	 *    length=length of the data series
-	 */
+	 
 	sqe->rw.dptr.sgl.type = (NVME_TRANSPORT_SGL_DATA_DESC << 4) |
 					NVME_SGL_FMT_TRANSPORT_A;
 	sqe->rw.dptr.sgl.length = cpu_to_le32(data_len);
@@ -2756,18 +2389,7 @@ nvme_fc_start_fcp_op(struct nvme_fc_ctrl *ctrl, struct nvme_fc_queue *queue,
 					queue->lldd_handle, &op->fcp_req);
 
 	if (ret) {
-		/*
-		 * If the lld fails to send the command is there an issue with
-		 * the csn value?  If the command that fails is the Connect,
-		 * no - as the connection won't be live.  If it is a command
-		 * post-connect, it's possible a gap in csn may be created.
-		 * Does this matter?  As Linux initiators don't send fused
-		 * commands, no.  The gap would exist, but as there's nothing
-		 * that depends on csn order to be delivered on the target
-		 * side, it shouldn't hurt.  It would be difficult for a
-		 * target to even detect the csn gap as it has no idea when the
-		 * cmd with the csn was supposed to arrive.
-		 */
+		 
 		opstate = atomic_xchg(&op->state, FCPOP_STATE_COMPLETE);
 		__nvme_fc_fcpop_chk_teardowns(ctrl, op, opstate);
 
@@ -2810,14 +2432,7 @@ nvme_fc_queue_rq(struct blk_mq_hw_ctx *hctx,
 	if (ret)
 		return ret;
 
-	/*
-	 * nvme core doesn't quite treat the rq opaquely. Commands such
-	 * as WRITE ZEROES will return a non-zero rq payload_bytes yet
-	 * there is no actual payload to be transferred.
-	 * To get it right, key data transmission on there being 1 or
-	 * more physical segments in the sg list. If there is no
-	 * physical segments, there is no payload.
-	 */
+	 
 	if (blk_rq_nr_phys_segments(rq)) {
 		data_len = blk_rq_payload_bytes(rq);
 		io_dir = ((rq_data_dir(rq) == WRITE) ?
@@ -2877,7 +2492,7 @@ static void nvme_fc_map_queues(struct blk_mq_tag_set *set)
 			continue;
 		}
 
-		/* Call LLDD map queue functionality if defined */
+		 
 		if (ctrl->lport->ops->map_queues)
 			ctrl->lport->ops->map_queues(&ctrl->lport->localport,
 						     map);
@@ -2943,7 +2558,7 @@ out_cleanup_tagset:
 	nvme_remove_io_tag_set(&ctrl->ctrl);
 	nvme_fc_free_io_queues(ctrl);
 
-	/* force put free routine to ignore io queues */
+	 
 	ctrl->ctrl.tagset = NULL;
 
 	return ret;
@@ -2974,7 +2589,7 @@ nvme_fc_recreate_io_queues(struct nvme_fc_ctrl *ctrl)
 	}
 
 	ctrl->ctrl.queue_count = nr_io_queues + 1;
-	/* check for io queues existing */
+	 
 	if (ctrl->ctrl.queue_count == 1)
 		return 0;
 
@@ -3044,7 +2659,7 @@ nvme_fc_ctlr_inactive_on_rport(struct nvme_fc_ctrl *ctrl)
 	struct nvme_fc_lport *lport = rport->lport;
 	u32 cnt;
 
-	/* clearing of ctrl->flags ASSOC_ACTIVE bit is in association delete */
+	 
 
 	cnt = atomic_dec_return(&rport->act_ctrl_cnt);
 	if (cnt == 0) {
@@ -3056,10 +2671,7 @@ nvme_fc_ctlr_inactive_on_rport(struct nvme_fc_ctrl *ctrl)
 	return 0;
 }
 
-/*
- * This routine restarts the controller on the host side, and
- * on the link side, recreates the controller association.
- */
+ 
 static int
 nvme_fc_create_association(struct nvme_fc_ctrl *ctrl)
 {
@@ -3085,9 +2697,7 @@ nvme_fc_create_association(struct nvme_fc_ctrl *ctrl)
 
 	clear_bit(ASSOC_FAILED, &ctrl->flags);
 
-	/*
-	 * Create the admin queue
-	 */
+	 
 
 	ret = __nvme_fc_create_hw_queue(ctrl, &ctrl->queues[0], 0,
 				NVME_AQ_DEPTH);
@@ -3105,12 +2715,7 @@ nvme_fc_create_association(struct nvme_fc_ctrl *ctrl)
 
 	set_bit(NVME_FC_Q_LIVE, &ctrl->queues[0].flags);
 
-	/*
-	 * Check controller capabilities
-	 *
-	 * todo:- add code to check if ctrl attributes changed from
-	 * prior connection values
-	 */
+	 
 
 	ret = nvme_enable_ctrl(&ctrl->ctrl);
 	if (!ret && test_bit(ASSOC_FAILED, &ctrl->flags))
@@ -3130,9 +2735,9 @@ nvme_fc_create_association(struct nvme_fc_ctrl *ctrl)
 	if (ret)
 		goto out_disconnect_admin_queue;
 
-	/* sanity checks */
+	 
 
-	/* FC-NVME does not have other data in the capsule */
+	 
 	if (ctrl->ctrl.icdoff) {
 		dev_err(ctrl->ctrl.device, "icdoff %d is not supported!\n",
 				ctrl->ctrl.icdoff);
@@ -3140,7 +2745,7 @@ nvme_fc_create_association(struct nvme_fc_ctrl *ctrl)
 		goto out_disconnect_admin_queue;
 	}
 
-	/* FC-NVME supports normal SGL Data Block Descriptors */
+	 
 	if (!nvme_ctrl_sgl_supported(&ctrl->ctrl)) {
 		dev_err(ctrl->ctrl.device,
 			"Mandatory sgls are not supported!\n");
@@ -3149,7 +2754,7 @@ nvme_fc_create_association(struct nvme_fc_ctrl *ctrl)
 	}
 
 	if (opts->queue_size > ctrl->ctrl.maxcmd) {
-		/* warn if maxcmd is lower than queue_size */
+		 
 		dev_warn(ctrl->ctrl.device,
 			"queue_size %zu > ctrl maxcmd %u, reducing "
 			"to maxcmd\n",
@@ -3162,9 +2767,7 @@ nvme_fc_create_association(struct nvme_fc_ctrl *ctrl)
 	if (ret)
 		goto out_term_aen_ops;
 
-	/*
-	 * Create the io queues
-	 */
+	 
 
 	if (ctrl->ctrl.queue_count > 1) {
 		if (!ctrl->ioq_live)
@@ -3184,7 +2787,7 @@ nvme_fc_create_association(struct nvme_fc_ctrl *ctrl)
 	if (changed)
 		nvme_start_ctrl(&ctrl->ctrl);
 
-	return 0;	/* Success */
+	return 0;	 
 
 out_term_aen_ops:
 	nvme_fc_term_aen_ops(ctrl);
@@ -3192,7 +2795,7 @@ out_disconnect_admin_queue:
 	dev_warn(ctrl->ctrl.device,
 		"NVME-FC{%d}: create_assoc failed, assoc_id %llx ret %d\n",
 		ctrl->cnum, ctrl->association_id, ret);
-	/* send a Disconnect(association) LS to fc-nvme target */
+	 
 	nvme_fc_xmt_disconnect_assoc(ctrl);
 	spin_lock_irqsave(&ctrl->lock, flags);
 	ctrl->association_id = 0;
@@ -3212,12 +2815,7 @@ out_free_queue:
 }
 
 
-/*
- * This routine stops operation of the controller on the host side.
- * On the host os stack side: Admin and IO queues are stopped,
- *   outstanding ios on them terminated via FC ABTS.
- * On the link side: the association is terminated.
- */
+ 
 static void
 nvme_fc_delete_association(struct nvme_fc_ctrl *ctrl)
 {
@@ -3234,10 +2832,10 @@ nvme_fc_delete_association(struct nvme_fc_ctrl *ctrl)
 
 	__nvme_fc_abort_outstanding_ios(ctrl, false);
 
-	/* kill the aens as they are a separate path */
+	 
 	nvme_fc_abort_aen_ops(ctrl);
 
-	/* wait for all io that had to be aborted */
+	 
 	spin_lock_irq(&ctrl->lock);
 	wait_event_lock_irq(ctrl->ioabort_wait, ctrl->iocnt == 0, ctrl->lock);
 	clear_bit(FCCTRL_TERMIO, &ctrl->flags);
@@ -3245,12 +2843,7 @@ nvme_fc_delete_association(struct nvme_fc_ctrl *ctrl)
 
 	nvme_fc_term_aen_ops(ctrl);
 
-	/*
-	 * send a Disconnect(association) LS to fc-nvme target
-	 * Note: could have been sent at top of process, but
-	 * cleaner on link traffic if after the aborts complete.
-	 * Note: if association doesn't exist, association_id will be 0
-	 */
+	 
 	if (ctrl->association_id)
 		nvme_fc_xmt_disconnect_assoc(ctrl);
 
@@ -3260,10 +2853,7 @@ nvme_fc_delete_association(struct nvme_fc_ctrl *ctrl)
 	ctrl->rcv_disconn = NULL;
 	spin_unlock_irqrestore(&ctrl->lock, flags);
 	if (disls)
-		/*
-		 * if a Disconnect Request was waiting for a response, send
-		 * now that all ABTS's have been issued (and are complete).
-		 */
+		 
 		nvme_fc_xmt_ls_rsp(disls);
 
 	if (ctrl->ctrl.tagset) {
@@ -3274,10 +2864,10 @@ nvme_fc_delete_association(struct nvme_fc_ctrl *ctrl)
 	__nvme_fc_delete_hw_queue(ctrl, &ctrl->queues[0], 0);
 	nvme_fc_free_queue(&ctrl->queues[0]);
 
-	/* re-enable the admin_q so anything new can fast fail */
+	 
 	nvme_unquiesce_admin_queue(&ctrl->ctrl);
 
-	/* resume the io queues so that things will fast fail */
+	 
 	nvme_unquiesce_io_queues(&ctrl->ctrl);
 
 	nvme_fc_ctlr_inactive_on_rport(ctrl);
@@ -3290,10 +2880,7 @@ nvme_fc_delete_ctrl(struct nvme_ctrl *nctrl)
 
 	cancel_work_sync(&ctrl->ioerr_work);
 	cancel_delayed_work_sync(&ctrl->connect_work);
-	/*
-	 * kill the association on the link side.  this will block
-	 * waiting for io to terminate
-	 */
+	 
 	nvme_fc_delete_association(ctrl);
 }
 
@@ -3357,7 +2944,7 @@ nvme_fc_reset_ctrl_work(struct work_struct *work)
 
 	nvme_stop_ctrl(&ctrl->ctrl);
 
-	/* will block will waiting for io to terminate */
+	 
 	nvme_fc_delete_association(ctrl);
 
 	if (!nvme_change_ctrl_state(&ctrl->ctrl, NVME_CTRL_CONNECTING))
@@ -3421,14 +3008,7 @@ static const struct blk_mq_ops nvme_fc_admin_mq_ops = {
 };
 
 
-/*
- * Fails a controller request if it matches an existing controller
- * (association) with the same tuple:
- * <Host NQN, Host ID, local FC port, remote FC port, SUBSYS NQN>
- *
- * The ports don't need to be compared as they are intrinsically
- * already matched by the port pointers supplied.
- */
+ 
 static bool
 nvme_fc_existing_controller(struct nvme_fc_rport *rport,
 		struct nvmf_ctrl_options *opts)
@@ -3480,10 +3060,7 @@ nvme_fc_init_ctrl(struct device *dev, struct nvmf_ctrl_options *opts,
 		goto out_free_ctrl;
 	}
 
-	/*
-	 * if ctrl_loss_tmo is being enforced and the default reconnect delay
-	 * is being used, change to a shorter reconnect delay for FC.
-	 */
+	 
 	if (opts->max_reconnects != -1 &&
 	    opts->reconnect_delay == NVMF_DEF_RECONNECT_DELAY &&
 	    opts->reconnect_delay > NVME_FC_DEFAULT_RECONNECT_TMO) {
@@ -3515,11 +3092,11 @@ nvme_fc_init_ctrl(struct device *dev, struct nvmf_ctrl_options *opts,
 	INIT_WORK(&ctrl->ioerr_work, nvme_fc_ctrl_ioerr_work);
 	spin_lock_init(&ctrl->lock);
 
-	/* io queue count */
+	 
 	ctrl->ctrl.queue_count = min_t(unsigned int,
 				opts->nr_io_queues,
 				lport->ops->max_hw_queues);
-	ctrl->ctrl.queue_count++;	/* +1 for admin queue */
+	ctrl->ctrl.queue_count++;	 
 
 	ctrl->ctrl.sqsize = opts->queue_size - 1;
 	ctrl->ctrl.kato = opts->kato;
@@ -3533,18 +3110,13 @@ nvme_fc_init_ctrl(struct device *dev, struct nvmf_ctrl_options *opts,
 
 	nvme_fc_init_queue(ctrl, 0);
 
-	/*
-	 * Would have been nice to init io queues tag set as well.
-	 * However, we require interaction from the controller
-	 * for max io queue count before we can do so.
-	 * Defer this to the connect path.
-	 */
+	 
 
 	ret = nvme_init_ctrl(&ctrl->ctrl, dev, &nvme_fc_ctrl_ops, 0);
 	if (ret)
 		goto out_free_queues;
 
-	/* at this point, teardown path changes to ref counting on nvme ctrl */
+	 
 
 	ret = nvme_alloc_admin_tag_set(&ctrl->ctrl, &ctrl->admin_tag_set,
 			&nvme_fc_admin_mq_ops,
@@ -3587,19 +3159,13 @@ fail_ctrl:
 
 	ctrl->ctrl.opts = NULL;
 
-	/* initiate nvme ctrl ref counting teardown */
+	 
 	nvme_uninit_ctrl(&ctrl->ctrl);
 
-	/* Remove core ctrl ref. */
+	 
 	nvme_put_ctrl(&ctrl->ctrl);
 
-	/* as we're past the point where we transition to the ref
-	 * counting teardown path, if we return a bad pointer here,
-	 * the calling routine, thinking it's prior to the
-	 * transition, will do an rport put. Since the teardown
-	 * path also does a rport put, we do an extra get here to
-	 * so proper order/teardown happens.
-	 */
+	 
 	nvme_fc_rport_get(rport);
 
 	return ERR_PTR(-EIO);
@@ -3612,7 +3178,7 @@ out_free_ida:
 out_free_ctrl:
 	kfree(ctrl);
 out_fail:
-	/* exit via here doesn't follow ctlr ref points */
+	 
 	return ERR_PTR(ret);
 }
 
@@ -3634,11 +3200,7 @@ __nvme_fc_parse_u64(substring_t *sstr, u64 *val)
 	return 0;
 }
 
-/*
- * This routine validates and extracts the WWN's from the TRADDR string.
- * As kernel parsers need the 0x to determine number base, universally
- * build string to parse with 0x prefix before parsing name strings.
- */
+ 
 static int
 nvme_fc_parse_traddr(struct nvmet_fc_traddr *traddr, char *buf, size_t blen)
 {
@@ -3646,7 +3208,7 @@ nvme_fc_parse_traddr(struct nvmet_fc_traddr *traddr, char *buf, size_t blen)
 	substring_t wwn = { name, &name[sizeof(name)-1] };
 	int nnoffset, pnoffset;
 
-	/* validate if string is one of the 2 allowed formats */
+	 
 	if (strnlen(buf, blen) == NVME_FC_TRADDR_MAXLENGTH &&
 			!strncmp(buf, "nn-0x", NVME_FC_TRADDR_OXNNLEN) &&
 			!strncmp(&buf[NVME_FC_TRADDR_MAX_PN_OFFSET],
@@ -3701,7 +3263,7 @@ nvme_fc_create_ctrl(struct device *dev, struct nvmf_ctrl_options *opts)
 	if (ret || !laddr.nn || !laddr.pn)
 		return ERR_PTR(-EINVAL);
 
-	/* find the host and remote ports to connect together */
+	 
 	spin_lock_irqsave(&nvme_fc_lock, flags);
 	list_for_each_entry(lport, &nvme_fc_lport_list, port_list) {
 		if (lport->localport.node_name != laddr.nn ||
@@ -3715,7 +3277,7 @@ nvme_fc_create_ctrl(struct device *dev, struct nvmf_ctrl_options *opts)
 			    rport->remoteport.port_state != FC_OBJSTATE_ONLINE)
 				continue;
 
-			/* if fail to get reference fall through. Will error */
+			 
 			if (!nvme_fc_rport_get(rport))
 				break;
 
@@ -3743,7 +3305,7 @@ static struct nvmf_transport_ops nvme_fc_transport = {
 	.create_ctrl	= nvme_fc_create_ctrl,
 };
 
-/* Arbitrary successive failures max. With lots of subsystems could be high */
+ 
 #define DISCOVERY_MAX_FAIL	20
 
 static ssize_t nvme_fc_nvme_discovery_store(struct device *dev,
@@ -3762,15 +3324,7 @@ restart:
 			if (!nvme_fc_lport_get(lport))
 				continue;
 			if (!nvme_fc_rport_get(rport)) {
-				/*
-				 * This is a temporary condition. Upon restart
-				 * this rport will be gone from the list.
-				 *
-				 * Revert the lport put and retry.  Anything
-				 * added to the list already will be skipped (as
-				 * they are no longer list_empty).  Loops should
-				 * resume at rports that were not yet seen.
-				 */
+				 
 				nvme_fc_lport_put(lport);
 
 				if (failcnt++ < DISCOVERY_MAX_FAIL)
@@ -3794,7 +3348,7 @@ process_local_list:
 		spin_unlock_irqrestore(&nvme_fc_lock, flags);
 
 		lport = rport->lport;
-		/* signal discovery. Won't hurt if it repeats */
+		 
 		nvme_fc_signal_discovery_scan(lport, rport);
 		nvme_fc_rport_put(rport);
 		nvme_fc_lport_put(lport);
@@ -3809,7 +3363,7 @@ process_local_list:
 static DEVICE_ATTR(nvme_discovery, 0200, NULL, nvme_fc_nvme_discovery_store);
 
 #ifdef CONFIG_BLK_CGROUP_FC_APPID
-/* Parse the cgroup id from a buf and return the length of cgrpid */
+ 
 static int fc_parse_cgrpid(const char *buf, u64 *id)
 {
 	char cgrp_id[16+1];
@@ -3831,9 +3385,7 @@ static int fc_parse_cgrpid(const char *buf, u64 *id)
 	return cgrpid_len;
 }
 
-/*
- * Parse and update the appid in the blkcg associated with the cgroupid.
- */
+ 
 static ssize_t fc_appid_store(struct device *dev,
 		struct device_attribute *attr, const char *buf, size_t count)
 {
@@ -3865,7 +3417,7 @@ static ssize_t fc_appid_store(struct device *dev,
 	return orig_count;
 }
 static DEVICE_ATTR(appid_store, 0200, NULL, fc_appid_store);
-#endif /* CONFIG_BLK_CGROUP_FC_APPID */
+#endif  
 
 static struct attribute *nvme_fc_attrs[] = {
 	&dev_attr_nvme_discovery.attr,
@@ -3897,29 +3449,14 @@ static int __init nvme_fc_init_module(void)
 	if (!nvme_fc_wq)
 		return -ENOMEM;
 
-	/*
-	 * NOTE:
-	 * It is expected that in the future the kernel will combine
-	 * the FC-isms that are currently under scsi and now being
-	 * added to by NVME into a new standalone FC class. The SCSI
-	 * and NVME protocols and their devices would be under this
-	 * new FC class.
-	 *
-	 * As we need something to post FC-specific udev events to,
-	 * specifically for nvme probe events, start by creating the
-	 * new device class.  When the new standalone FC class is
-	 * put in place, this code will move to a more generic
-	 * location for the class.
-	 */
+	 
 	ret = class_register(&fc_class);
 	if (ret) {
 		pr_err("couldn't register class fc\n");
 		goto out_destroy_wq;
 	}
 
-	/*
-	 * Create a device for the FC-centric udev events
-	 */
+	 
 	fc_udev_device = device_create(&fc_class, NULL, MKDEV(0, 0), NULL,
 				"fc_udev_device");
 	if (IS_ERR(fc_udev_device)) {

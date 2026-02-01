@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright Sunplus Technology Co., Ltd.
- *       All rights reserved.
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/netdevice.h>
@@ -24,7 +22,7 @@ void spl2sw_rx_descs_flush(struct spl2sw_common *comm)
 			rx_desc[j].cmd2 = (j == comm->rx_desc_num[i] - 1) ?
 					  RXD_EOR | comm->rx_desc_buff_size :
 					  comm->rx_desc_buff_size;
-			wmb();	/* Set RXD_OWN after other fields are ready. */
+			wmb();	 
 			rx_desc[j].cmd1 = RXD_OWN;
 		}
 	}
@@ -39,7 +37,7 @@ void spl2sw_tx_descs_clean(struct spl2sw_common *comm)
 
 	for (i = 0; i < TX_DESC_NUM; i++) {
 		comm->tx_desc[i].cmd1 = 0;
-		wmb();	/* Clear TXD_OWN and then set other fields. */
+		wmb();	 
 		comm->tx_desc[i].cmd2 = 0;
 		comm->tx_desc[i].addr1 = 0;
 		comm->tx_desc[i].addr2 = 0;
@@ -71,7 +69,7 @@ void spl2sw_rx_descs_clean(struct spl2sw_common *comm)
 		rx_skbinfo = comm->rx_skb_info[i];
 		for (j = 0; j < comm->rx_desc_num[i]; j++) {
 			rx_desc[j].cmd1 = 0;
-			wmb();	/* Clear RXD_OWN and then set other fields. */
+			wmb();	 
 			rx_desc[j].cmd2 = 0;
 			rx_desc[j].addr1 = 0;
 
@@ -104,7 +102,7 @@ void spl2sw_descs_free(struct spl2sw_common *comm)
 	for (i = 0; i < RX_DESC_QUEUE_NUM; i++)
 		comm->rx_desc[i] = NULL;
 
-	/*  Free descriptor area  */
+	 
 	if (comm->desc_base) {
 		dma_free_coherent(&comm->pdev->dev, comm->desc_size, comm->desc_base,
 				  comm->desc_dma);
@@ -154,7 +152,7 @@ int spl2sw_rx_descs_init(struct spl2sw_common *comm)
 			rx_desc[j].cmd2 = (j == comm->rx_desc_num[i] - 1) ?
 					  RXD_EOR | comm->rx_desc_buff_size :
 					  comm->rx_desc_buff_size;
-			wmb();	/* Set RXD_OWN after other fields are effective. */
+			wmb();	 
 			rx_desc[j].cmd1 = RXD_OWN;
 		}
 	}
@@ -171,7 +169,7 @@ int spl2sw_descs_alloc(struct spl2sw_common *comm)
 	s32 desc_size;
 	u32 i;
 
-	/* Alloc descriptor area  */
+	 
 	desc_size = (TX_DESC_NUM + MAC_GUARD_DESC_NUM) * sizeof(struct spl2sw_mac_desc);
 	for (i = 0; i < RX_DESC_QUEUE_NUM; i++)
 		desc_size += comm->rx_desc_num[i] * sizeof(struct spl2sw_mac_desc);
@@ -183,10 +181,10 @@ int spl2sw_descs_alloc(struct spl2sw_common *comm)
 
 	comm->desc_size = desc_size;
 
-	/* Setup Tx descriptor */
+	 
 	comm->tx_desc = comm->desc_base;
 
-	/* Setup Rx descriptor */
+	 
 	comm->rx_desc[0] = &comm->tx_desc[TX_DESC_NUM + MAC_GUARD_DESC_NUM];
 	for (i = 1; i < RX_DESC_QUEUE_NUM; i++)
 		comm->rx_desc[i] = comm->rx_desc[i - 1] + comm->rx_desc_num[i - 1];
@@ -198,7 +196,7 @@ int spl2sw_descs_init(struct spl2sw_common *comm)
 {
 	u32 i, ret;
 
-	/* Initialize rx descriptor's data */
+	 
 	comm->rx_desc_num[0] = RX_QUEUE0_DESC_NUM;
 	comm->rx_desc_num[1] = RX_QUEUE1_DESC_NUM;
 
@@ -209,7 +207,7 @@ int spl2sw_descs_init(struct spl2sw_common *comm)
 	}
 	comm->rx_desc_buff_size = MAC_RX_LEN_MAX;
 
-	/* Initialize tx descriptor's data */
+	 
 	comm->tx_done_pos = 0;
 	comm->tx_desc = NULL;
 	comm->tx_pos = 0;
@@ -217,7 +215,7 @@ int spl2sw_descs_init(struct spl2sw_common *comm)
 	for (i = 0; i < TX_DESC_NUM; i++)
 		comm->tx_temp_skb_info[i].skb = NULL;
 
-	/* Allocate tx & rx descriptors. */
+	 
 	ret = spl2sw_descs_alloc(comm);
 	if (ret)
 		return ret;

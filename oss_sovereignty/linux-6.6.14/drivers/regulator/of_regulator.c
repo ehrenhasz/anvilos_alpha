@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OF helpers for regulator framework
- *
- * Copyright (C) 2011 Texas Instruments, Inc.
- * Rajendra Nayak <rnayak@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -51,7 +46,7 @@ static void of_get_regulator_prot_limits(struct device_node *np,
 	};
 	bool set[4] = {0};
 
-	/* Protection limits: */
+	 
 	for (i = 0; i < ARRAY_SIZE(props); i++) {
 		char prop[255];
 		bool found;
@@ -102,11 +97,11 @@ static int of_get_regulation_constraints(struct device *dev,
 	if (!of_property_read_u32(np, "regulator-max-microvolt", &pval))
 		constraints->max_uV = pval;
 
-	/* Voltage change possible? */
+	 
 	if (constraints->min_uV != constraints->max_uV)
 		constraints->valid_ops_mask |= REGULATOR_CHANGE_VOLTAGE;
 
-	/* Do we have a voltage range, if so try to apply it? */
+	 
 	if (constraints->min_uV && constraints->max_uV)
 		constraints->apply_uV = true;
 
@@ -121,13 +116,13 @@ static int of_get_regulation_constraints(struct device *dev,
 				  &pval))
 		constraints->ilim_uA = pval;
 
-	/* Current change possible? */
+	 
 	if (constraints->min_uA != constraints->max_uA)
 		constraints->valid_ops_mask |= REGULATOR_CHANGE_CURRENT;
 
 	constraints->boot_on = of_property_read_bool(np, "regulator-boot-on");
 	constraints->always_on = of_property_read_bool(np, "regulator-always-on");
-	if (!constraints->always_on) /* status change should be possible. */
+	if (!constraints->always_on)  
 		constraints->valid_ops_mask |= REGULATOR_CHANGE_STATUS;
 
 	constraints->pull_down = of_property_read_bool(np, "regulator-pull-down");
@@ -304,7 +299,7 @@ static int of_get_regulation_constraints(struct device *dev,
 		if (!of_property_read_u32(suspend_np,
 					"regulator-suspend-microvolt", &pval))
 			suspend_state->uV = pval;
-		else /* otherwise use min_uV as default suspend voltage */
+		else  
 			suspend_state->uV = suspend_state->min_uV;
 
 		if (of_property_read_bool(suspend_np,
@@ -322,16 +317,7 @@ static int of_get_regulation_constraints(struct device *dev,
 	return 0;
 }
 
-/**
- * of_get_regulator_init_data - extract regulator_init_data structure info
- * @dev: device requesting for regulator_init_data
- * @node: regulator device node
- * @desc: regulator description
- *
- * Populates regulator_init_data structure by extracting data from device
- * tree node, returns a pointer to the populated structure or NULL if memory
- * alloc fails.
- */
+ 
 struct regulator_init_data *of_get_regulator_init_data(struct device *dev,
 					  struct device_node *node,
 					  const struct regulator_desc *desc)
@@ -343,7 +329,7 @@ struct regulator_init_data *of_get_regulator_init_data(struct device *dev,
 
 	init_data = devm_kzalloc(dev, sizeof(*init_data), GFP_KERNEL);
 	if (!init_data)
-		return NULL; /* Out of memory? */
+		return NULL;  
 
 	if (of_get_regulation_constraints(dev, node, &init_data, desc))
 		return NULL;
@@ -366,24 +352,7 @@ static void devm_of_regulator_put_matches(struct device *dev, void *res)
 		of_node_put(devm_matches->matches[i].of_node);
 }
 
-/**
- * of_regulator_match - extract multiple regulator init data from device tree.
- * @dev: device requesting the data
- * @node: parent device node of the regulators
- * @matches: match table for the regulators
- * @num_matches: number of entries in match table
- *
- * This function uses a match table specified by the regulator driver to
- * parse regulator init data from the device tree. @node is expected to
- * contain a set of child nodes, each providing the init data for one
- * regulator. The data parsed from a child node will be matched to a regulator
- * based on either the deprecated property regulator-compatible if present,
- * or otherwise the child node's name. Note that the match table is modified
- * in place and an additional of_node reference is taken for each matched
- * regulator.
- *
- * Returns the number of matches found or a negative error code on failure.
- */
+ 
 int of_regulator_match(struct device *dev, struct device_node *node,
 		       struct of_regulator_match *matches,
 		       unsigned int num_matches)
@@ -484,10 +453,7 @@ device_node *regulator_of_get_init_node(struct device *dev,
 
 		if (!strcmp(desc->of_match, name)) {
 			of_node_put(search);
-			/*
-			 * 'of_node_get(child)' is already performed by the
-			 * for_each loop.
-			 */
+			 
 			return child;
 		}
 	}
@@ -550,9 +516,7 @@ struct regulator_dev *of_find_regulator_by_node(struct device_node *np)
 	return dev ? dev_to_rdev(dev) : NULL;
 }
 
-/*
- * Returns number of regulators coupled with rdev.
- */
+ 
 int of_get_n_coupled(struct regulator_dev *rdev)
 {
 	struct device_node *node = rdev->dev.of_node;
@@ -565,7 +529,7 @@ int of_get_n_coupled(struct regulator_dev *rdev)
 	return (n_phandles > 0) ? n_phandles : 0;
 }
 
-/* Looks for "to_find" device_node in src's "regulator-coupled-with" property */
+ 
 static bool of_coupling_find_node(struct device_node *src,
 				  struct device_node *to_find,
 				  int *index)
@@ -584,7 +548,7 @@ static bool of_coupling_find_node(struct device_node *src,
 		if (!tmp)
 			break;
 
-		/* found */
+		 
 		if (tmp == to_find)
 			found = true;
 
@@ -599,19 +563,7 @@ static bool of_coupling_find_node(struct device_node *src,
 	return found;
 }
 
-/**
- * of_check_coupling_data - Parse rdev's coupling properties and check data
- *			    consistency
- * @rdev: pointer to regulator_dev whose data is checked
- *
- * Function checks if all the following conditions are met:
- * - rdev's max_spread is greater than 0
- * - all coupled regulators have the same max_spread
- * - all coupled regulators have the same number of regulator_dev phandles
- * - all regulators are linked to each other
- *
- * Returns true if all conditions are met.
- */
+ 
 bool of_check_coupling_data(struct regulator_dev *rdev)
 {
 	struct device_node *node = rdev->dev.of_node;
@@ -621,7 +573,7 @@ bool of_check_coupling_data(struct regulator_dev *rdev)
 	int i;
 	bool ret = true;
 
-	/* iterate over rdev's phandles */
+	 
 	for (i = 0; i < n_phandles; i++) {
 		int max_spread = rdev->constraints->max_spread[i];
 		int c_max_spread, c_n_phandles;
@@ -675,15 +627,7 @@ clean:
 	return ret;
 }
 
-/**
- * of_parse_coupled_regulator() - Get regulator_dev pointer from rdev's property
- * @rdev: Pointer to regulator_dev, whose DTS is used as a source to parse
- *	  "regulator-coupled-with" property
- * @index: Index in phandles array
- *
- * Returns the regulator_dev pointer parsed from DTS. If it has not been yet
- * registered, returns NULL
- */
+ 
 struct regulator_dev *of_parse_coupled_regulator(struct regulator_dev *rdev,
 						 int index)
 {
@@ -702,21 +646,17 @@ struct regulator_dev *of_parse_coupled_regulator(struct regulator_dev *rdev,
 	return c_rdev;
 }
 
-/*
- * Check if name is a supply name according to the '*-supply' pattern
- * return 0 if false
- * return length of supply name without the -supply
- */
+ 
 static int is_supply_name(const char *name)
 {
 	int strs, i;
 
 	strs = strlen(name);
-	/* string need to be at minimum len(x-supply) */
+	 
 	if (strs < 8)
 		return 0;
 	for (i = strs - 6; i > 0; i--) {
-		/* find first '-' and check if right part is supply */
+		 
 		if (name[i] != '-')
 			continue;
 		if (strcmp(name + i + 1, "supply") != 0)
@@ -726,20 +666,7 @@ static int is_supply_name(const char *name)
 	return 0;
 }
 
-/*
- * of_regulator_bulk_get_all - get multiple regulator consumers
- *
- * @dev:	Device to supply
- * @np:		device node to search for consumers
- * @consumers:  Configuration of consumers; clients are stored here.
- *
- * @return number of regulators on success, an errno on failure.
- *
- * This helper function allows drivers to get several regulator
- * consumers in one operation.  If any of the regulators cannot be
- * acquired then any regulators that were allocated will be freed
- * before returning to the caller.
- */
+ 
 int of_regulator_bulk_get_all(struct device *dev, struct device_node *np,
 			      struct regulator_bulk_data **consumers)
 {
@@ -751,10 +678,7 @@ int of_regulator_bulk_get_all(struct device *dev, struct device_node *np,
 
 	*consumers = NULL;
 
-	/*
-	 * first pass: get numbers of xxx-supply
-	 * second pass: fill consumers
-	 */
+	 
 restart:
 	for_each_property_of_node(np, prop) {
 		i = is_supply_name(prop->name);

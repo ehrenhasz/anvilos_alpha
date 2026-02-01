@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_PAGE_COUNTER_H
 #define _LINUX_PAGE_COUNTER_H
 
@@ -8,19 +8,16 @@
 #include <asm/page.h>
 
 struct page_counter {
-	/*
-	 * Make sure 'usage' does not share cacheline with any other field. The
-	 * memcg->memory.usage is a hot member of struct mem_cgroup.
-	 */
+	 
 	atomic_long_t usage;
 	CACHELINE_PADDING(_pad1_);
 
-	/* effective memory.min and memory.min usage tracking */
+	 
 	unsigned long emin;
 	atomic_long_t min_usage;
 	atomic_long_t children_min_usage;
 
-	/* effective memory.low and memory.low usage tracking */
+	 
 	unsigned long elow;
 	atomic_long_t low_usage;
 	atomic_long_t children_low_usage;
@@ -28,7 +25,7 @@ struct page_counter {
 	unsigned long watermark;
 	unsigned long failcnt;
 
-	/* Keep all the read most fields in a separete cacheline. */
+	 
 	CACHELINE_PADDING(_pad2_);
 
 	unsigned long min;
@@ -81,4 +78,4 @@ static inline void page_counter_reset_watermark(struct page_counter *counter)
 	counter->watermark = page_counter_read(counter);
 }
 
-#endif /* _LINUX_PAGE_COUNTER_H */
+#endif  

@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Internal kunit try catch implementation to be shared with tests.
- *
- * Copyright (C) 2019, Google LLC.
- * Author: Brendan Higgins <brendanhiggins@google.com>
- */
+ 
+ 
 
 #ifndef _KUNIT_TRY_CATCH_IMPL_H
 #define _KUNIT_TRY_CATCH_IMPL_H
@@ -24,4 +19,4 @@ static inline void kunit_try_catch_init(struct kunit_try_catch *try_catch,
 	try_catch->catch = catch;
 }
 
-#endif /* _KUNIT_TRY_CATCH_IMPL_H */
+#endif  

@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2020 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2017 Amlogic, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef __GE2D_REGS__
 #define __GE2D_REGS__
 
-/* Registers starts at (GE2D_REG(0x8a0 * 4) */
+ 
 #define GE2D_REG(x) ((0x8a0 + (x)) * 4)
 
 #define GE2D_GEN_CTRL0 GE2D_REG(0x00)
@@ -75,7 +71,7 @@
 #define GE2D_FORMAT_24BIT	2
 #define GE2D_FORMAT_32BIT	3
 
-/* 16 bit */
+ 
 #define GE2D_COLOR_MAP_YUV422		0
 #define GE2D_COLOR_MAP_RGB655		1
 #define GE2D_COLOR_MAP_YUV655		1
@@ -94,7 +90,7 @@
 #define GE2D_COLOR_MAP_RGBA4642		8
 #define GE2D_COLOR_MAP_YUVA4642		8
 
-/* 24 bit */
+ 
 #define GE2D_COLOR_MAP_RGB888		0
 #define GE2D_COLOR_MAP_YUV444		0
 #define GE2D_COLOR_MAP_RGBA5658		1
@@ -108,7 +104,7 @@
 #define GE2D_COLOR_MAP_BGR888		5
 #define GE2D_COLOR_MAP_VUY888		5
 
-/* 32 bit */
+ 
 #define GE2D_COLOR_MAP_RGBA8888		0
 #define GE2D_COLOR_MAP_YUVA8888		0
 #define GE2D_COLOR_MAP_ARGB8888		1
@@ -168,11 +164,11 @@
 
 #define GE2D_SRC1_CLIPX_START_END GE2D_REG(0x07)
 
-#define GE2D_START_EXTRA	BIT(31) /* For GE2D_SRC1_CLIPX/Y_START_END */
-#define GE2D_START_EXTRA0	BIT(30)	/* For GE2D_SRC1_X/Y_START_END */
+#define GE2D_START_EXTRA	BIT(31)  
+#define GE2D_START_EXTRA0	BIT(30)	 
 #define GE2D_START		GENMASK(28, 16)
-#define GE2D_END_EXTRA		BIT(15) /* For GE2D_SRC1_CLIPX/Y_START_END */
-#define GE2D_END_EXTRA0		BIT(14)	/* For GE2D_SRC1_X/Y_START_END */
+#define GE2D_END_EXTRA		BIT(15)  
+#define GE2D_END_EXTRA0		BIT(14)	 
 #define GE2D_END		GENMASK(12, 0)
 
 #define GE2D_SRC1_CLIPY_START_END GE2D_REG(0x08)
@@ -229,11 +225,11 @@
 #define GE2D_SRC2_COLOR_MULT_ALPHA_SEL	BIT(24)
 #define GE2D_ALU_BLEND_MODE		GENMASK(22, 20)
 
-#define OPERATION_ADD           0    /* Cd = Cs*Fs+Cd*Fd */
-#define OPERATION_SUB           1    /* Cd = Cs*Fs-Cd*Fd */
-#define OPERATION_REVERSE_SUB   2    /* Cd = Cd*Fd-Cs*Fs */
-#define OPERATION_MIN           3    /* Cd = Min(Cd*Fd,Cs*Fs) */
-#define OPERATION_MAX           4    /* Cd = Max(Cd*Fd,Cs*Fs) */
+#define OPERATION_ADD           0     
+#define OPERATION_SUB           1     
+#define OPERATION_REVERSE_SUB   2     
+#define OPERATION_MIN           3     
+#define OPERATION_MAX           4     
 #define OPERATION_LOGIC         5
 
 #define GE2D_ALU_SRC_COLOR_BLEND_FACTOR	GENMASK(19, 16)
@@ -357,4 +353,4 @@
 #define GE2D_SRC2_BADDR_CTRL  GE2D_REG(0x55)
 #define GE2D_SRC2_STRIDE_CTRL GE2D_REG(0x56)
 
-#endif /* __GE2D_REGS__ */
+#endif  

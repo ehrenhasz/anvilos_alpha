@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020 Bootlin SA
- * Author: Alexandre Belloni <alexandre.belloni@bootlin.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>

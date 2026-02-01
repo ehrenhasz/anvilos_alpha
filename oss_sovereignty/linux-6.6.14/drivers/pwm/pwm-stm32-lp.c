@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STM32 Low-Power Timer PWM driver
- *
- * Copyright (C) STMicroelectronics 2017
- *
- * Author: Gerald Baeza <gerald.baeza@st.com>
- *
- * Inspired by Gerald Baeza's pwm-stm32 driver
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/mfd/stm32-lptimer.h>
@@ -28,7 +20,7 @@ static inline struct stm32_pwm_lp *to_stm32_pwm_lp(struct pwm_chip *chip)
 	return container_of(chip, struct stm32_pwm_lp, chip);
 }
 
-/* STM32 Low-Power Timer is preceded by a configurable power-of-2 prescaler */
+ 
 #define STM32_LPTIM_MAX_PRESCALER	128
 
 static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
@@ -46,21 +38,21 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	if (!state->enabled) {
 		if (cstate.enabled) {
-			/* Disable LP timer */
+			 
 			ret = regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
 			if (ret)
 				return ret;
-			/* disable clock to PWM counter */
+			 
 			clk_disable(priv->clk);
 		}
 		return 0;
 	}
 
-	/* Calculate the period and prescaler value */
+	 
 	div = (unsigned long long)clk_get_rate(priv->clk) * state->period;
 	do_div(div, NSEC_PER_SEC);
 	if (!div) {
-		/* Clock is too slow to achieve requested period. */
+		 
 		dev_dbg(priv->chip.dev, "Can't reach %llu ns\n", state->period);
 		return -EINVAL;
 	}
@@ -76,12 +68,12 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	}
 	prd = div;
 
-	/* Calculate the duty cycle */
+	 
 	dty = prd * state->duty_cycle;
 	do_div(dty, state->period);
 
 	if (!cstate.enabled) {
-		/* enable clock to drive PWM counter */
+		 
 		ret = clk_enable(priv->clk);
 		if (ret)
 			return ret;
@@ -97,7 +89,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		val |= FIELD_PREP(STM32_LPTIM_WAVPOL, state->polarity);
 		mask = STM32_LPTIM_PRESC | STM32_LPTIM_WAVPOL;
 
-		/* Must disable LP timer to modify CFGR */
+		 
 		reenable = true;
 		ret = regmap_write(priv->regmap, STM32_LPTIM_CR, 0);
 		if (ret)
@@ -110,7 +102,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	}
 
 	if (reenable) {
-		/* Must (re)enable LP timer to modify CMP & ARR */
+		 
 		ret = regmap_write(priv->regmap, STM32_LPTIM_CR,
 				   STM32_LPTIM_ENABLE);
 		if (ret)
@@ -125,7 +117,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (ret)
 		goto err;
 
-	/* ensure CMP & ARR registers are properly written */
+	 
 	ret = regmap_read_poll_timeout(priv->regmap, STM32_LPTIM_ISR, val,
 				       (val & STM32_LPTIM_CMPOK_ARROK) == STM32_LPTIM_CMPOK_ARROK,
 				       100, 1000);
@@ -139,7 +131,7 @@ static int stm32_pwm_lp_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		goto err;
 
 	if (reenable) {
-		/* Start LP timer in continuous mode */
+		 
 		ret = regmap_set_bits(priv->regmap, STM32_LPTIM_CR,
 				      STM32_LPTIM_CNTSTRT);
 		if (ret) {
@@ -167,7 +159,7 @@ static int stm32_pwm_lp_get_state(struct pwm_chip *chip,
 
 	regmap_read(priv->regmap, STM32_LPTIM_CR, &val);
 	state->enabled = !!FIELD_GET(STM32_LPTIM_ENABLE, val);
-	/* Keep PWM counter clock refcount in sync with PWM initial state */
+	 
 	if (state->enabled)
 		clk_enable(priv->clk);
 

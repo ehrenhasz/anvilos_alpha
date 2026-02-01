@@ -1,20 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2019 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "goyaP.h"
 #include "../include/goya/asic_reg/goya_regs.h"
 
-/*
- * goya_set_block_as_protected - set the given block as protected
- *
- * @hdev: pointer to hl_device structure
- * @block: block base address
- *
- */
+ 
 static void goya_pb_set_block(struct hl_device *hdev, u64 base)
 {
 	u32 pb_addr = base - CFG_BASE + PROT_BITS_OFFS;
@@ -30,7 +21,7 @@ static void goya_init_mme_protection_bits(struct hl_device *hdev)
 	u32 pb_addr, mask;
 	u8 word_offset;
 
-	/* TODO: change to real reg name when Soc Online is updated */
+	 
 	u64 mmMME_SBB_POWER_ECO1 = 0xDFF60,
 		mmMME_SBB_POWER_ECO2 = 0xDFF64;
 
@@ -2242,36 +2233,10 @@ static void goya_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 }
 
-/*
- * goya_init_protection_bits - Initialize protection bits for specific registers
- *
- * @hdev: pointer to hl_device structure
- *
- * All protection bits are 1 by default, means not protected. Need to set to 0
- * each bit that belongs to a protected register.
- *
- */
+ 
 static void goya_init_protection_bits(struct hl_device *hdev)
 {
-	/*
-	 * In each 4K block of registers, the last 128 bytes are protection
-	 * bits - total of 1024 bits, one for each register. Each bit is related
-	 * to a specific register, by the order of the registers.
-	 * So in order to calculate the bit that is related to a given register,
-	 * we need to calculate its word offset and then the exact bit inside
-	 * the word (which is 4 bytes).
-	 *
-	 * Register address:
-	 *
-	 * 31                 12 11           7   6             2  1      0
-	 * -----------------------------------------------------------------
-	 * |      Don't         |    word       |  bit location  |    0    |
-	 * |      care          |   offset      |  inside word   |         |
-	 * -----------------------------------------------------------------
-	 *
-	 * Bits 7-11 represents the word offset inside the 128 bytes.
-	 * Bits 2-6 represents the bit location inside the word.
-	 */
+	 
 	u32 pb_addr, mask;
 	u8 word_offset;
 
@@ -2368,15 +2333,7 @@ static void goya_init_protection_bits(struct hl_device *hdev)
 	goya_init_tpc_protection_bits(hdev);
 }
 
-/*
- * goya_init_security - Initialize security model
- *
- * @hdev: pointer to hl_device structure
- *
- * Initialize the security model of the device
- * That includes range registers and protection bit per register
- *
- */
+ 
 void goya_init_security(struct hl_device *hdev)
 {
 	struct goya_device *goya = hdev->asic_specific;
@@ -2432,24 +2389,20 @@ void goya_init_security(struct hl_device *hdev)
 	if (!(goya->hw_cap_initialized & HW_CAP_MMU)) {
 		WREG32(mmDMA_MACRO_HBW_RANGE_HIT_BLOCK, 0xFE);
 
-		/* Protect HOST */
+		 
 		WREG32(mmDMA_MACRO_HBW_RANGE_BASE_31_0_0, 0);
 		WREG32(mmDMA_MACRO_HBW_RANGE_BASE_49_32_0, 0);
 		WREG32(mmDMA_MACRO_HBW_RANGE_MASK_31_0_0, 0);
 		WREG32(mmDMA_MACRO_HBW_RANGE_MASK_49_32_0, 0xFFF80);
 	}
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmDMA_MACRO_HBW_RANGE_BASE_31_0_1, dram_addr_lo);
 	WREG32(mmDMA_MACRO_HBW_RANGE_BASE_49_32_1, dram_addr_hi);
 	WREG32(mmDMA_MACRO_HBW_RANGE_MASK_31_0_1, 0xE0000000);
 	WREG32(mmDMA_MACRO_HBW_RANGE_MASK_49_32_1, 0x3FFFF);
 
-	/* Protect registers */
+	 
 
 	WREG32(mmDMA_MACRO_LBW_RANGE_BASE_0, lbw_rng0_base);
 	WREG32(mmDMA_MACRO_LBW_RANGE_MASK_0, lbw_rng0_mask);
@@ -2494,7 +2447,7 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmMME5_RTR_HBW_RANGE_HIT, 0xFE);
 	WREG32(mmMME6_RTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmMME1_RTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmMME1_RTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmMME1_RTR_HBW_RANGE_MASK_L_0, 0);
@@ -2525,11 +2478,7 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmMME6_RTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmMME6_RTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmMME1_RTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmMME1_RTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmMME1_RTR_HBW_RANGE_MASK_L_1, 0xE0000000);
@@ -2737,17 +2686,13 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmTPC0_NRTR_LBW_RANGE_HIT, 0xFFFF);
 	WREG32(mmTPC0_NRTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmTPC0_NRTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmTPC0_NRTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmTPC0_NRTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmTPC0_NRTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmTPC0_NRTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmTPC0_NRTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmTPC0_NRTR_HBW_RANGE_MASK_L_1, 0xE0000000);
@@ -2785,17 +2730,13 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmTPC1_RTR_LBW_RANGE_HIT, 0xFFFF);
 	WREG32(mmTPC1_RTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmTPC1_RTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmTPC1_RTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmTPC1_RTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmTPC1_RTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmTPC1_RTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmTPC1_RTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmTPC1_RTR_HBW_RANGE_MASK_L_1, 0xE0000000);
@@ -2833,17 +2774,13 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmTPC2_RTR_LBW_RANGE_HIT, 0xFFFF);
 	WREG32(mmTPC2_RTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmTPC2_RTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmTPC2_RTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmTPC2_RTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmTPC2_RTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmTPC2_RTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmTPC2_RTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmTPC2_RTR_HBW_RANGE_MASK_L_1, 0xE0000000);
@@ -2881,17 +2818,13 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmTPC3_RTR_LBW_RANGE_HIT, 0xFFFF);
 	WREG32(mmTPC3_RTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmTPC3_RTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmTPC3_RTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmTPC3_RTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmTPC3_RTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmTPC3_RTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmTPC3_RTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmTPC3_RTR_HBW_RANGE_MASK_L_1, 0xE0000000);
@@ -2929,17 +2862,13 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmTPC4_RTR_LBW_RANGE_HIT, 0xFFFF);
 	WREG32(mmTPC4_RTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmTPC4_RTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmTPC4_RTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmTPC4_RTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmTPC4_RTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmTPC4_RTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmTPC4_RTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmTPC4_RTR_HBW_RANGE_MASK_L_1, 0xE0000000);
@@ -2977,17 +2906,13 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmTPC5_RTR_LBW_RANGE_HIT, 0xFFFF);
 	WREG32(mmTPC5_RTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmTPC5_RTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmTPC5_RTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmTPC5_RTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmTPC5_RTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmTPC5_RTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmTPC5_RTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmTPC5_RTR_HBW_RANGE_MASK_L_1, 0xE0000000);
@@ -3025,17 +2950,13 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmTPC6_RTR_LBW_RANGE_HIT, 0xFFFF);
 	WREG32(mmTPC6_RTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmTPC6_RTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmTPC6_RTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmTPC6_RTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmTPC6_RTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmTPC6_RTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmTPC6_RTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmTPC6_RTR_HBW_RANGE_MASK_L_1, 0xE0000000);
@@ -3073,17 +2994,13 @@ void goya_init_security(struct hl_device *hdev)
 	WREG32(mmTPC7_NRTR_LBW_RANGE_HIT, 0xFFFF);
 	WREG32(mmTPC7_NRTR_HBW_RANGE_HIT, 0xFE);
 
-	/* Protect HOST */
+	 
 	WREG32(mmTPC7_NRTR_HBW_RANGE_BASE_L_0, 0);
 	WREG32(mmTPC7_NRTR_HBW_RANGE_BASE_H_0, 0);
 	WREG32(mmTPC7_NRTR_HBW_RANGE_MASK_L_0, 0);
 	WREG32(mmTPC7_NRTR_HBW_RANGE_MASK_H_0, 0xFFF80);
 
-	/*
-	 * Protect DDR @
-	 * DRAM_VIRT_BASE : DRAM_VIRT_BASE + DRAM_VIRT_END
-	 * The mask protects the first 512MB
-	 */
+	 
 	WREG32(mmTPC7_NRTR_HBW_RANGE_BASE_L_1, dram_addr_lo);
 	WREG32(mmTPC7_NRTR_HBW_RANGE_BASE_H_1, dram_addr_hi);
 	WREG32(mmTPC7_NRTR_HBW_RANGE_MASK_L_1, 0xE0000000);

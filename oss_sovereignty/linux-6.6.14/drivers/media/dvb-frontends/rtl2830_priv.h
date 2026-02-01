@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Realtek RTL2830 DVB-T demodulator driver
- *
- * Copyright (C) 2011 Antti Palosaari <crope@iki.fi>
- */
+ 
+ 
 
 #ifndef RTL2830_PRIV_H
 #define RTL2830_PRIV_H
@@ -25,7 +21,7 @@ struct rtl2830_dev {
 	bool sleeping;
 	unsigned long filters;
 	enum fe_status fe_status;
-	u64 post_bit_error_prev; /* for old DVBv3 read_ber() calculation */
+	u64 post_bit_error_prev;  
 	u64 post_bit_error;
 	u64 post_bit_count;
 };
@@ -36,4 +32,4 @@ struct rtl2830_reg_val_mask {
 	u8  mask;
 };
 
-#endif /* RTL2830_PRIV_H */
+#endif  

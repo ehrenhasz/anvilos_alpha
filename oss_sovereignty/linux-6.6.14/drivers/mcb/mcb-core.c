@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MEN Chameleon Bus.
- *
- * Copyright (C) 2013 MEN Mikroelektronik GmbH (www.men.de)
- * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -170,15 +165,7 @@ static struct device_type mcb_carrier_device_type = {
 	.groups = mcb_carrier_groups,
 };
 
-/**
- * __mcb_register_driver() - Register a @mcb_driver at the system
- * @drv: The @mcb_driver
- * @owner: The @mcb_driver's module
- * @mod_name: The name of the @mcb_driver's module
- *
- * Register a @mcb_driver at the system. Perform some sanity checks, if
- * the .probe and .remove methods are provided by the driver.
- */
+ 
 int __mcb_register_driver(struct mcb_driver *drv, struct module *owner,
 			const char *mod_name)
 {
@@ -193,12 +180,7 @@ int __mcb_register_driver(struct mcb_driver *drv, struct module *owner,
 }
 EXPORT_SYMBOL_NS_GPL(__mcb_register_driver, MCB);
 
-/**
- * mcb_unregister_driver() - Unregister a @mcb_driver from the system
- * @drv: The @mcb_driver
- *
- * Unregister a @mcb_driver from the system.
- */
+ 
 void mcb_unregister_driver(struct mcb_driver *drv)
 {
 	driver_unregister(&drv->driver);
@@ -213,13 +195,7 @@ static void mcb_release_dev(struct device *dev)
 	kfree(mdev);
 }
 
-/**
- * mcb_device_register() - Register a mcb_device
- * @bus: The @mcb_bus of the device
- * @dev: The @mcb_device
- *
- * Register a specific @mcb_device at a @mcb_bus and the system itself.
- */
+ 
 int mcb_device_register(struct mcb_bus *bus, struct mcb_device *dev)
 {
 	int ret;
@@ -261,11 +237,7 @@ static void mcb_free_bus(struct device *dev)
 	kfree(bus);
 }
 
-/**
- * mcb_alloc_bus() - Allocate a new @mcb_bus
- *
- * Allocate a new @mcb_bus.
- */
+ 
 struct mcb_bus *mcb_alloc_bus(struct device *carrier)
 {
 	struct mcb_bus *bus;
@@ -314,24 +286,14 @@ static void mcb_devices_unregister(struct mcb_bus *bus)
 {
 	bus_for_each_dev(&mcb_bus_type, NULL, NULL, __mcb_devices_unregister);
 }
-/**
- * mcb_release_bus() - Free a @mcb_bus
- * @bus: The @mcb_bus to release
- *
- * Release an allocated @mcb_bus from the system.
- */
+ 
 void mcb_release_bus(struct mcb_bus *bus)
 {
 	mcb_devices_unregister(bus);
 }
 EXPORT_SYMBOL_NS_GPL(mcb_release_bus, MCB);
 
-/**
- * mcb_bus_put() - Increment refcnt
- * @bus: The @mcb_bus
- *
- * Get a @mcb_bus' ref
- */
+ 
 struct mcb_bus *mcb_bus_get(struct mcb_bus *bus)
 {
 	if (bus)
@@ -341,12 +303,7 @@ struct mcb_bus *mcb_bus_get(struct mcb_bus *bus)
 }
 EXPORT_SYMBOL_NS_GPL(mcb_bus_get, MCB);
 
-/**
- * mcb_bus_put() - Decrement refcnt
- * @bus: The @mcb_bus
- *
- * Release a @mcb_bus' ref
- */
+ 
 void mcb_bus_put(struct mcb_bus *bus)
 {
 	if (bus)
@@ -354,12 +311,7 @@ void mcb_bus_put(struct mcb_bus *bus)
 }
 EXPORT_SYMBOL_NS_GPL(mcb_bus_put, MCB);
 
-/**
- * mcb_alloc_dev() - Allocate a device
- * @bus: The @mcb_bus the device is part of
- *
- * Allocate a @mcb_device and add bus.
- */
+ 
 struct mcb_device *mcb_alloc_dev(struct mcb_bus *bus)
 {
 	struct mcb_device *dev;
@@ -374,12 +326,7 @@ struct mcb_device *mcb_alloc_dev(struct mcb_bus *bus)
 }
 EXPORT_SYMBOL_NS_GPL(mcb_alloc_dev, MCB);
 
-/**
- * mcb_free_dev() - Free @mcb_device
- * @dev: The device to free
- *
- * Free a @mcb_device
- */
+ 
 void mcb_free_dev(struct mcb_device *dev)
 {
 	kfree(dev);
@@ -399,23 +346,14 @@ static int __mcb_bus_add_devices(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * mcb_bus_add_devices() - Add devices in the bus' internal device list
- * @bus: The @mcb_bus we add the devices
- *
- * Add devices in the bus' internal device list to the system.
- */
+ 
 void mcb_bus_add_devices(const struct mcb_bus *bus)
 {
 	bus_for_each_dev(&mcb_bus_type, NULL, NULL, __mcb_bus_add_devices);
 }
 EXPORT_SYMBOL_NS_GPL(mcb_bus_add_devices, MCB);
 
-/**
- * mcb_get_resource() - get a resource for a mcb device
- * @dev: the mcb device
- * @type: the type of resource
- */
+ 
 struct resource *mcb_get_resource(struct mcb_device *dev, unsigned int type)
 {
 	if (type == IORESOURCE_MEM)
@@ -427,14 +365,7 @@ struct resource *mcb_get_resource(struct mcb_device *dev, unsigned int type)
 }
 EXPORT_SYMBOL_NS_GPL(mcb_get_resource, MCB);
 
-/**
- * mcb_request_mem() - Request memory
- * @dev: The @mcb_device the memory is for
- * @name: The name for the memory reference.
- *
- * Request memory for a @mcb_device. If @name is NULL the driver name will
- * be used.
- */
+ 
 struct resource *mcb_request_mem(struct mcb_device *dev, const char *name)
 {
 	struct resource *mem;
@@ -453,12 +384,7 @@ struct resource *mcb_request_mem(struct mcb_device *dev, const char *name)
 }
 EXPORT_SYMBOL_NS_GPL(mcb_request_mem, MCB);
 
-/**
- * mcb_release_mem() - Release memory requested by device
- * @dev: The @mcb_device that requested the memory
- *
- * Release memory that was prior requested via @mcb_request_mem().
- */
+ 
 void mcb_release_mem(struct resource *mem)
 {
 	u32 size;
@@ -477,12 +403,7 @@ static int __mcb_get_irq(struct mcb_device *dev)
 	return irq->start;
 }
 
-/**
- * mcb_get_irq() - Get device's IRQ number
- * @dev: The @mcb_device the IRQ is for
- *
- * Get the IRQ number of a given @mcb_device.
- */
+ 
 int mcb_get_irq(struct mcb_device *dev)
 {
 	struct mcb_bus *bus = dev->bus;
@@ -505,10 +426,7 @@ static void mcb_exit(void)
 	bus_unregister(&mcb_bus_type);
 }
 
-/* mcb must be initialized after PCI but before the chameleon drivers.
- * That means we must use some initcall between subsys_initcall and
- * device_initcall.
- */
+ 
 fs_initcall(mcb_init);
 module_exit(mcb_exit);
 

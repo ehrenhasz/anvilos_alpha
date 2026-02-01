@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright(c) 2014 - 2022 Intel Corporation */
+ 
+ 
 #ifndef QAT_BL_H
 #define QAT_BL_H
 #include <linux/crypto.h>

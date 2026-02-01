@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * omap-mcpdm.c  --  OMAP ALSA SoC DAI driver using McPDM port
- *
- * Copyright (C) 2009 - 2011 Texas Instruments
- *
- * Author: Misael Lopez Cruz <misael.lopez@ti.com>
- * Contact: Jorge Eduardo Candelaria <x0107209@ti.com>
- *          Margarita Olaya <magi.olaya@ti.com>
- *          Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -31,8 +22,8 @@
 #include "sdma-pcm.h"
 
 struct mcpdm_link_config {
-	u32 link_mask; /* channel mask for the direction */
-	u32 threshold; /* FIFO threshold */
+	u32 link_mask;  
+	u32 threshold;  
 };
 
 struct omap_mcpdm {
@@ -45,24 +36,22 @@ struct omap_mcpdm {
 
 	struct mutex mutex;
 
-	/* Playback/Capture configuration */
+	 
 	struct mcpdm_link_config config[2];
 
-	/* McPDM dn offsets for rx1, and 2 channels */
+	 
 	u32 dn_rx_offset;
 
-	/* McPDM needs to be restarted due to runtime reconfiguration */
+	 
 	bool restart;
 
-	/* pm state for suspend/resume handling */
+	 
 	int pm_active_count;
 
 	struct snd_dmaengine_dai_dma_data dma_data[2];
 };
 
-/*
- * Stream DMA parameters
- */
+ 
 
 static inline void omap_mcpdm_write(struct omap_mcpdm *mcpdm, u16 reg, u32 val)
 {
@@ -110,10 +99,7 @@ static void omap_mcpdm_reg_dump(struct omap_mcpdm *mcpdm)
 static void omap_mcpdm_reg_dump(struct omap_mcpdm *mcpdm) {}
 #endif
 
-/*
- * Enables the transfer through the PDM interface to/from the Phoenix
- * codec by enabling the corresponding UP or DN channels.
- */
+ 
 static void omap_mcpdm_start(struct omap_mcpdm *mcpdm)
 {
 	u32 ctrl = omap_mcpdm_read(mcpdm, MCPDM_REG_CTRL);
@@ -129,10 +115,7 @@ static void omap_mcpdm_start(struct omap_mcpdm *mcpdm)
 	omap_mcpdm_write(mcpdm, MCPDM_REG_CTRL, ctrl);
 }
 
-/*
- * Disables the transfer through the PDM interface to/from the Phoenix
- * codec by disabling the corresponding UP or DN channels.
- */
+ 
 static void omap_mcpdm_stop(struct omap_mcpdm *mcpdm)
 {
 	u32 ctrl = omap_mcpdm_read(mcpdm, MCPDM_REG_CTRL);
@@ -149,19 +132,14 @@ static void omap_mcpdm_stop(struct omap_mcpdm *mcpdm)
 
 }
 
-/*
- * Is the physical McPDM interface active.
- */
+ 
 static inline int omap_mcpdm_active(struct omap_mcpdm *mcpdm)
 {
 	return omap_mcpdm_read(mcpdm, MCPDM_REG_CTRL) &
 					(MCPDM_PDM_DN_MASK | MCPDM_PDM_UP_MASK);
 }
 
-/*
- * Configures McPDM uplink, and downlink for audio.
- * This function should be called before omap_mcpdm_start.
- */
+ 
 static void omap_mcpdm_open_streams(struct omap_mcpdm *mcpdm)
 {
 	u32 ctrl = omap_mcpdm_read(mcpdm, MCPDM_REG_CTRL);
@@ -172,7 +150,7 @@ static void omap_mcpdm_open_streams(struct omap_mcpdm *mcpdm)
 			MCPDM_DN_IRQ_EMPTY | MCPDM_DN_IRQ_FULL |
 			MCPDM_UP_IRQ_EMPTY | MCPDM_UP_IRQ_FULL);
 
-	/* Enable DN RX1/2 offset cancellation feature, if configured */
+	 
 	if (mcpdm->dn_rx_offset) {
 		u32 dn_offset = mcpdm->dn_rx_offset;
 
@@ -190,27 +168,24 @@ static void omap_mcpdm_open_streams(struct omap_mcpdm *mcpdm)
 			MCPDM_DMA_DN_ENABLE | MCPDM_DMA_UP_ENABLE);
 }
 
-/*
- * Cleans McPDM uplink, and downlink configuration.
- * This function should be called when the stream is closed.
- */
+ 
 static void omap_mcpdm_close_streams(struct omap_mcpdm *mcpdm)
 {
-	/* Disable irq request generation for downlink */
+	 
 	omap_mcpdm_write(mcpdm, MCPDM_REG_IRQENABLE_CLR,
 			MCPDM_DN_IRQ_EMPTY | MCPDM_DN_IRQ_FULL);
 
-	/* Disable DMA request generation for downlink */
+	 
 	omap_mcpdm_write(mcpdm, MCPDM_REG_DMAENABLE_CLR, MCPDM_DMA_DN_ENABLE);
 
-	/* Disable irq request generation for uplink */
+	 
 	omap_mcpdm_write(mcpdm, MCPDM_REG_IRQENABLE_CLR,
 			MCPDM_UP_IRQ_EMPTY | MCPDM_UP_IRQ_FULL);
 
-	/* Disable DMA request generation for uplink */
+	 
 	omap_mcpdm_write(mcpdm, MCPDM_REG_DMAENABLE_CLR, MCPDM_DMA_UP_ENABLE);
 
-	/* Disable RX1/2 offset cancellation */
+	 
 	if (mcpdm->dn_rx_offset)
 		omap_mcpdm_write(mcpdm, MCPDM_REG_DN_OFFSET, 0);
 }
@@ -222,7 +197,7 @@ static irqreturn_t omap_mcpdm_irq_handler(int irq, void *dev_id)
 
 	irq_status = omap_mcpdm_read(mcpdm, MCPDM_REG_IRQSTATUS);
 
-	/* Acknowledge irq event */
+	 
 	omap_mcpdm_write(mcpdm, MCPDM_REG_IRQSTATUS, irq_status);
 
 	if (irq_status & MCPDM_DN_IRQ_FULL)
@@ -306,13 +281,13 @@ static int omap_mcpdm_dai_hw_params(struct snd_pcm_substream *substream,
 	switch (channels) {
 	case 5:
 		if (stream == SNDRV_PCM_STREAM_CAPTURE)
-			/* up to 3 channels for capture */
+			 
 			return -EINVAL;
 		link_mask |= 1 << 4;
 		fallthrough;
 	case 4:
 		if (stream == SNDRV_PCM_STREAM_CAPTURE)
-			/* up to 3 channels for capture */
+			 
 			return -EINVAL;
 		link_mask |= 1 << 3;
 		fallthrough;
@@ -326,18 +301,18 @@ static int omap_mcpdm_dai_hw_params(struct snd_pcm_substream *substream,
 		link_mask |= 1 << 0;
 		break;
 	default:
-		/* unsupported number of channels */
+		 
 		return -EINVAL;
 	}
 
 	dma_data = snd_soc_dai_get_dma_data(dai, substream);
 
 	threshold = mcpdm->config[stream].threshold;
-	/* Configure McPDM channels, and DMA packet size */
+	 
 	if (stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		link_mask <<= 3;
 
-		/* If capture is not running assume a stereo stream to come */
+		 
 		if (!mcpdm->config[!stream].link_mask)
 			mcpdm->config[!stream].link_mask = 0x3;
 
@@ -345,7 +320,7 @@ static int omap_mcpdm_dai_hw_params(struct snd_pcm_substream *substream,
 				(MCPDM_DN_THRES_MAX - threshold) * channels;
 		latency = threshold;
 	} else {
-		/* If playback is not running assume a stereo stream to come */
+		 
 		if (!mcpdm->config[!stream].link_mask)
 			mcpdm->config[!stream].link_mask = (0x3 << 3);
 
@@ -353,16 +328,13 @@ static int omap_mcpdm_dai_hw_params(struct snd_pcm_substream *substream,
 		latency = (MCPDM_DN_THRES_MAX - threshold);
 	}
 
-	/*
-	 * The DMA must act to a DMA request within latency time (usec) to avoid
-	 * under/overflow
-	 */
+	 
 	mcpdm->latency[stream] = latency * USEC_PER_SEC / params_rate(params);
 
 	if (!mcpdm->latency[stream])
 		mcpdm->latency[stream] = 10;
 
-	/* Check if we need to restart McPDM with this stream */
+	 
 	if (mcpdm->config[stream].link_mask &&
 	    mcpdm->config[stream].link_mask != link_mask)
 		mcpdm->restart = true;
@@ -382,7 +354,7 @@ static int omap_mcpdm_prepare(struct snd_pcm_substream *substream,
 	int stream2 = tx ? SNDRV_PCM_STREAM_CAPTURE : SNDRV_PCM_STREAM_PLAYBACK;
 	int latency = mcpdm->latency[stream2];
 
-	/* Prevent omap hardware from hitting off between FIFO fills */
+	 
 	if (!latency || mcpdm->latency[stream1] < latency)
 		latency = mcpdm->latency[stream1];
 
@@ -411,7 +383,7 @@ static int omap_mcpdm_probe(struct snd_soc_dai *dai)
 
 	pm_runtime_enable(mcpdm->dev);
 
-	/* Disable lines while request is ongoing */
+	 
 	pm_runtime_get_sync(mcpdm->dev);
 	omap_mcpdm_write(mcpdm, MCPDM_REG_CTRL, 0x00);
 
@@ -425,7 +397,7 @@ static int omap_mcpdm_probe(struct snd_soc_dai *dai)
 		pm_runtime_disable(mcpdm->dev);
 	}
 
-	/* Configure McPDM threshold values */
+	 
 	mcpdm->config[SNDRV_PCM_STREAM_PLAYBACK].threshold = 2;
 	mcpdm->config[SNDRV_PCM_STREAM_CAPTURE].threshold =
 							MCPDM_UP_THRES_MAX - 3;

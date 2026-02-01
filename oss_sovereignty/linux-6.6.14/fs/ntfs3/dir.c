@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *
- * Copyright (C) 2019-2021 Paragon Software GmbH, All rights reserved.
- *
- *  Directory handling functions for NTFS-based filesystems.
- *
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/nls.h>
@@ -14,7 +8,7 @@
 #include "ntfs.h"
 #include "ntfs_fs.h"
 
-/* Convert little endian UTF-16 to NLS string. */
+ 
 int ntfs_utf16_to_nls(struct ntfs_sb_info *sbi, const __le16 *name, u32 len,
 		      u8 *buf, int buf_len)
 {
@@ -25,7 +19,7 @@ int ntfs_utf16_to_nls(struct ntfs_sb_info *sbi, const __le16 *name, u32 len,
 	static_assert(sizeof(wchar_t) == sizeof(__le16));
 
 	if (!nls) {
-		/* UTF-16 -> UTF-8 */
+		 
 		ret = utf16s_to_utf8s((wchar_t *)name, len, UTF16_LITTLE_ENDIAN,
 				      buf, buf_len);
 		buf[ret] = '\0';
@@ -73,19 +67,15 @@ int ntfs_utf16_to_nls(struct ntfs_sb_info *sbi, const __le16 *name, u32 len,
 	return op - buf;
 }
 
-// clang-format off
+
 #define PLANE_SIZE	0x00010000
 
 #define SURROGATE_PAIR	0x0000d800
 #define SURROGATE_LOW	0x00000400
 #define SURROGATE_BITS	0x000003ff
-// clang-format on
 
-/*
- * put_utf16 - Modified version of put_utf16 from fs/nls/nls_base.c
- *
- * Function is sparse warnings free.
- */
+
+ 
 static inline void put_utf16(wchar_t *s, unsigned int c,
 			     enum utf16_endian endian)
 {
@@ -105,12 +95,7 @@ static inline void put_utf16(wchar_t *s, unsigned int c,
 	}
 }
 
-/*
- * _utf8s_to_utf16s
- *
- * Modified version of 'utf8s_to_utf16s' allows to
- * detect -ENAMETOOLONG without writing out of expected maximum.
- */
+ 
 static int _utf8s_to_utf16s(const u8 *s, int inlen, enum utf16_endian endian,
 			    wchar_t *pwcs, int maxout)
 {
@@ -160,20 +145,7 @@ static int _utf8s_to_utf16s(const u8 *s, int inlen, enum utf16_endian endian,
 	return op - pwcs;
 }
 
-/*
- * ntfs_nls_to_utf16 - Convert input string to UTF-16.
- * @name:	Input name.
- * @name_len:	Input name length.
- * @uni:	Destination memory.
- * @max_ulen:	Destination memory.
- * @endian:	Endian of target UTF-16 string.
- *
- * This function is called:
- * - to create NTFS name
- * - to create symlink
- *
- * Return: UTF-16 string length or error (if negative).
- */
+ 
 int ntfs_nls_to_utf16(struct ntfs_sb_info *sbi, const u8 *name, u32 name_len,
 		      struct cpu_str *uni, u32 max_ulen,
 		      enum utf16_endian endian)
@@ -186,7 +158,7 @@ int ntfs_nls_to_utf16(struct ntfs_sb_info *sbi, const u8 *name, u32 name_len,
 	static_assert(sizeof(wchar_t) == sizeof(u16));
 
 	if (!nls) {
-		/* utf8 -> utf16 */
+		 
 		ret = _utf8s_to_utf16s(name, name_len, endian, uname, max_ulen);
 		uni->len = ret;
 		return ret;
@@ -227,9 +199,7 @@ int ntfs_nls_to_utf16(struct ntfs_sb_info *sbi, const u8 *name, u32 name_len,
 	return ret;
 }
 
-/*
- * dir_search_u - Helper function.
- */
+ 
 struct inode *dir_search_u(struct inode *dir, const struct cpu_str *uni,
 			   struct ntfs_fnd *fnd)
 {
@@ -294,7 +264,7 @@ static inline int ntfs_filldir(struct ntfs_sb_info *sbi, struct ntfs_inode *ni,
 	if (ino == MFT_REC_ROOT)
 		return 0;
 
-	/* Skip meta files. Unless option to show metafiles is set. */
+	 
 	if (!sbi->options->showmeta && ntfs_is_meta_file(sbi, ino))
 		return 0;
 
@@ -309,7 +279,7 @@ static inline int ntfs_filldir(struct ntfs_sb_info *sbi, struct ntfs_inode *ni,
 		return 0;
 	}
 
-	/* NTFS: symlinks are "dir + reparse" or "file + reparse" */
+	 
 	if (fname->dup.fa & FILE_ATTRIBUTE_REPARSE_POINT)
 		dt_type = DT_LNK;
 	else
@@ -318,9 +288,7 @@ static inline int ntfs_filldir(struct ntfs_sb_info *sbi, struct ntfs_inode *ni,
 	return !dir_emit(ctx, (s8 *)name, name_len, ino, dt_type);
 }
 
-/*
- * ntfs_read_hdr - Helper function for ntfs_readdir().
- */
+ 
 static int ntfs_read_hdr(struct ntfs_sb_info *sbi, struct ntfs_inode *ni,
 			 const struct INDEX_HDR *hdr, u64 vbo, u64 pos,
 			 u8 *name, struct dir_context *ctx)
@@ -343,7 +311,7 @@ static int ntfs_read_hdr(struct ntfs_sb_info *sbi, struct ntfs_inode *ni,
 		if (de_is_last(e))
 			return 0;
 
-		/* Skip already enumerated. */
+		 
 		if (vbo + off < pos)
 			continue;
 
@@ -352,20 +320,14 @@ static int ntfs_read_hdr(struct ntfs_sb_info *sbi, struct ntfs_inode *ni,
 
 		ctx->pos = vbo + off;
 
-		/* Submit the name to the filldir callback. */
+		 
 		err = ntfs_filldir(sbi, ni, e, name, ctx);
 		if (err)
 			return err;
 	}
 }
 
-/*
- * ntfs_readdir - file_operations::iterate_shared
- *
- * Use non sorted enumeration.
- * We have an example of broken volume where sorted enumeration
- * counts each name twice.
- */
+ 
 static int ntfs_readdir(struct file *file, struct dir_context *ctx)
 {
 	const struct INDEX_ROOT *root;
@@ -383,7 +345,7 @@ static int ntfs_readdir(struct file *file, struct dir_context *ctx)
 	struct indx_node *node = NULL;
 	u8 index_bits = ni->dir.index_bits;
 
-	/* Name is a buffer of PATH_MAX length. */
+	 
 	static_assert(NTFS_NAME_LEN * 4 < PATH_MAX);
 
 	eod = i_size + sbi->record_size;
@@ -394,17 +356,13 @@ static int ntfs_readdir(struct file *file, struct dir_context *ctx)
 	if (!dir_emit_dots(file, ctx))
 		return 0;
 
-	/* Allocate PATH_MAX bytes. */
+	 
 	name = __getname();
 	if (!name)
 		return -ENOMEM;
 
 	if (!ni->mi_loaded && ni->attr_list.size) {
-		/*
-		 * Directory inode is locked for read.
-		 * Load all subrecords to avoid 'write' access to 'ni' during
-		 * directory reading.
-		 */
+		 
 		ni_lock(ni);
 		if (!ni->mi_loaded && ni->attr_list.size) {
 			err = ni_load_all_mi(ni);
@@ -586,7 +544,7 @@ bool dir_is_empty(struct inode *dir)
 	return is_empty;
 }
 
-// clang-format off
+
 const struct file_operations ntfs_dir_operations = {
 	.llseek		= generic_file_llseek,
 	.read		= generic_read_dir,
@@ -594,4 +552,4 @@ const struct file_operations ntfs_dir_operations = {
 	.fsync		= generic_file_fsync,
 	.open		= ntfs_file_open,
 };
-// clang-format on
+

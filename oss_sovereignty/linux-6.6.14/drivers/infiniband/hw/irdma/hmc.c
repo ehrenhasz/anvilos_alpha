@@ -1,23 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "osdep.h"
 #include "hmc.h"
 #include "defs.h"
 #include "type.h"
 #include "protos.h"
 
-/**
- * irdma_find_sd_index_limit - finds segment descriptor index limit
- * @hmc_info: pointer to the HMC configuration information structure
- * @type: type of HMC resources we're searching
- * @idx: starting index for the object
- * @cnt: number of objects we're trying to create
- * @sd_idx: pointer to return index of the segment descriptor in question
- * @sd_limit: pointer to return the maximum number of segment descriptors
- *
- * This function calculates the segment descriptor index and index limit
- * for the resource defined by irdma_hmc_rsrc_type.
- */
+ 
 
 static void irdma_find_sd_index_limit(struct irdma_hmc_info *hmc_info, u32 type,
 				      u32 idx, u32 cnt, u32 *sd_idx,
@@ -33,18 +22,7 @@ static void irdma_find_sd_index_limit(struct irdma_hmc_info *hmc_info, u32 type,
 	*sd_limit += 1;
 }
 
-/**
- * irdma_find_pd_index_limit - finds page descriptor index limit
- * @hmc_info: pointer to the HMC configuration information struct
- * @type: HMC resource type we're examining
- * @idx: starting index for the object
- * @cnt: number of objects we're trying to create
- * @pd_idx: pointer to return page descriptor index
- * @pd_limit: pointer to return page descriptor index limit
- *
- * Calculates the page descriptor index and index limit for the resource
- * defined by irdma_hmc_rsrc_type.
- */
+ 
 
 static void irdma_find_pd_index_limit(struct irdma_hmc_info *hmc_info, u32 type,
 				      u32 idx, u32 cnt, u32 *pd_idx,
@@ -60,13 +38,7 @@ static void irdma_find_pd_index_limit(struct irdma_hmc_info *hmc_info, u32 type,
 	*pd_limit += 1;
 }
 
-/**
- * irdma_set_sd_entry - setup entry for sd programming
- * @pa: physical addr
- * @idx: sd index
- * @type: paged or direct sd
- * @entry: sd entry ptr
- */
+ 
 static void irdma_set_sd_entry(u64 pa, u32 idx, enum irdma_sd_entry_type type,
 			       struct irdma_update_sd_entry *entry)
 {
@@ -79,12 +51,7 @@ static void irdma_set_sd_entry(u64 pa, u32 idx, enum irdma_sd_entry_type type,
 	entry->cmd = idx | FIELD_PREP(IRDMA_PFHMC_SDCMD_PMSDWR, 1) | BIT(15);
 }
 
-/**
- * irdma_clr_sd_entry - setup entry for sd clear
- * @idx: sd index
- * @type: paged or direct sd
- * @entry: sd entry ptr
- */
+ 
 static void irdma_clr_sd_entry(u32 idx, enum irdma_sd_entry_type type,
 			       struct irdma_update_sd_entry *entry)
 {
@@ -95,12 +62,7 @@ static void irdma_clr_sd_entry(u32 idx, enum irdma_sd_entry_type type,
 	entry->cmd = idx | FIELD_PREP(IRDMA_PFHMC_SDCMD_PMSDWR, 1) | BIT(15);
 }
 
-/**
- * irdma_invalidate_pf_hmc_pd - Invalidates the pd cache in the hardware for PF
- * @dev: pointer to our device struct
- * @sd_idx: segment descriptor index
- * @pd_idx: page descriptor index
- */
+ 
 static inline void irdma_invalidate_pf_hmc_pd(struct irdma_sc_dev *dev, u32 sd_idx,
 					      u32 pd_idx)
 {
@@ -111,15 +73,7 @@ static inline void irdma_invalidate_pf_hmc_pd(struct irdma_sc_dev *dev, u32 sd_i
 	writel(val, dev->hw_regs[IRDMA_PFHMC_PDINV]);
 }
 
-/**
- * irdma_hmc_sd_one - setup 1 sd entry for cqp
- * @dev: pointer to the device structure
- * @hmc_fn_id: hmc's function id
- * @pa: physical addr
- * @sd_idx: sd index
- * @type: paged or direct sd
- * @setsd: flag to set or clear sd
- */
+ 
 int irdma_hmc_sd_one(struct irdma_sc_dev *dev, u8 hmc_fn_id, u64 pa, u32 sd_idx,
 		     enum irdma_sd_entry_type type, bool setsd)
 {
@@ -134,14 +88,7 @@ int irdma_hmc_sd_one(struct irdma_sc_dev *dev, u8 hmc_fn_id, u64 pa, u32 sd_idx,
 	return dev->cqp->process_cqp_sds(dev, &sdinfo);
 }
 
-/**
- * irdma_hmc_sd_grp - setup group of sd entries for cqp
- * @dev: pointer to the device structure
- * @hmc_info: pointer to the HMC configuration information struct
- * @sd_index: sd index
- * @sd_cnt: number of sd entries
- * @setsd: flag to set or clear sd
- */
+ 
 static int irdma_hmc_sd_grp(struct irdma_sc_dev *dev,
 			    struct irdma_hmc_info *hmc_info, u32 sd_index,
 			    u32 sd_cnt, bool setsd)
@@ -187,11 +134,7 @@ static int irdma_hmc_sd_grp(struct irdma_sc_dev *dev,
 	return ret_code;
 }
 
-/**
- * irdma_hmc_finish_add_sd_reg - program sd entries for objects
- * @dev: pointer to the device structure
- * @info: create obj info
- */
+ 
 static int irdma_hmc_finish_add_sd_reg(struct irdma_sc_dev *dev,
 				       struct irdma_hmc_create_obj_info *info)
 {
@@ -209,14 +152,7 @@ static int irdma_hmc_finish_add_sd_reg(struct irdma_sc_dev *dev,
 				true);
 }
 
-/**
- * irdma_sc_create_hmc_obj - allocate backing store for hmc objects
- * @dev: pointer to the device structure
- * @info: pointer to irdma_hmc_create_obj_info struct
- *
- * This will allocate memory for PDs and backing pages and populate
- * the sd and pd entries.
- */
+ 
 int irdma_sc_create_hmc_obj(struct irdma_sc_dev *dev,
 			    struct irdma_hmc_create_obj_info *info)
 {
@@ -266,7 +202,7 @@ int irdma_sc_create_hmc_obj(struct irdma_sc_dev *dev,
 			pd_idx1 = max(pd_idx, (j * IRDMA_HMC_MAX_BP_COUNT));
 			pd_lmt1 = min(pd_lmt, (j + 1) * IRDMA_HMC_MAX_BP_COUNT);
 			for (i = pd_idx1; i < pd_lmt1; i++) {
-				/* update the pd table entry */
+				 
 				ret_code = irdma_add_pd_table_entry(dev,
 								    info->hmc_info,
 								    i, NULL);
@@ -315,12 +251,7 @@ exit_sd_error:
 	return ret_code;
 }
 
-/**
- * irdma_finish_del_sd_reg - delete sd entries for objects
- * @dev: pointer to the device structure
- * @info: dele obj info
- * @reset: true if called before reset
- */
+ 
 static int irdma_finish_del_sd_reg(struct irdma_sc_dev *dev,
 				   struct irdma_hmc_del_obj_info *info,
 				   bool reset)
@@ -356,17 +287,7 @@ static int irdma_finish_del_sd_reg(struct irdma_sc_dev *dev,
 	return ret_code;
 }
 
-/**
- * irdma_sc_del_hmc_obj - remove pe hmc objects
- * @dev: pointer to the device structure
- * @info: pointer to irdma_hmc_del_obj_info struct
- * @reset: true if called before reset
- *
- * This will de-populate the SDs and PDs.  It frees
- * the memory for PDS and backing storage.  After this function is returned,
- * caller should deallocate memory allocated previously for
- * book-keeping information about PDs and backing storage.
- */
+ 
 int irdma_sc_del_hmc_obj(struct irdma_sc_dev *dev,
 			 struct irdma_hmc_del_obj_info *info, bool reset)
 {
@@ -462,14 +383,7 @@ int irdma_sc_del_hmc_obj(struct irdma_sc_dev *dev,
 	return irdma_finish_del_sd_reg(dev, info, reset);
 }
 
-/**
- * irdma_add_sd_table_entry - Adds a segment descriptor to the table
- * @hw: pointer to our hw struct
- * @hmc_info: pointer to the HMC configuration information struct
- * @sd_index: segment descriptor index to manipulate
- * @type: what type of segment descriptor we're manipulating
- * @direct_mode_sz: size to alloc in direct mode
- */
+ 
 int irdma_add_sd_table_entry(struct irdma_hw *hw,
 			     struct irdma_hmc_info *hmc_info, u32 sd_index,
 			     enum irdma_sd_entry_type type, u64 direct_mode_sz)
@@ -485,7 +399,7 @@ int irdma_add_sd_table_entry(struct irdma_hw *hw,
 		else
 			alloc_len = direct_mode_sz;
 
-		/* allocate a 4K pd page or 2M backing page */
+		 
 		dma_mem.size = ALIGN(alloc_len, IRDMA_HMC_PD_BP_BUF_ALIGNMENT);
 		dma_mem.va = dma_alloc_coherent(hw->device, dma_mem.size,
 						&dma_mem.pa, GFP_KERNEL);
@@ -523,23 +437,7 @@ int irdma_add_sd_table_entry(struct irdma_hw *hw,
 	return 0;
 }
 
-/**
- * irdma_add_pd_table_entry - Adds page descriptor to the specified table
- * @dev: pointer to our device structure
- * @hmc_info: pointer to the HMC configuration information structure
- * @pd_index: which page descriptor index to manipulate
- * @rsrc_pg: if not NULL, use preallocated page instead of allocating new one.
- *
- * This function:
- *	1. Initializes the pd entry
- *	2. Adds pd_entry in the pd_table
- *	3. Mark the entry valid in irdma_hmc_pd_entry structure
- *	4. Initializes the pd_entry's ref count to 1
- * assumptions:
- *	1. The memory for pd should be pinned down, physically contiguous and
- *	   aligned on 4K boundary and zeroed memory.
- *	2. It should be 4K in size.
- */
+ 
 int irdma_add_pd_table_entry(struct irdma_sc_dev *dev,
 			     struct irdma_hmc_info *hmc_info, u32 pd_index,
 			     struct irdma_dma_mem *rsrc_pg)
@@ -596,21 +494,7 @@ int irdma_add_pd_table_entry(struct irdma_sc_dev *dev,
 	return 0;
 }
 
-/**
- * irdma_remove_pd_bp - remove a backing page from a page descriptor
- * @dev: pointer to our HW structure
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: the page index
- *
- * This function:
- *	1. Marks the entry in pd table (for paged address mode) or in sd table
- *	   (for direct address mode) invalid.
- *	2. Write to register PMPDINV to invalidate the backing page in FV cache
- *	3. Decrement the ref count for the pd _entry
- * assumptions:
- *	1. Caller can deallocate the memory used by backing storage after this
- *	   function returns.
- */
+ 
 int irdma_remove_pd_bp(struct irdma_sc_dev *dev,
 		       struct irdma_hmc_info *hmc_info, u32 idx)
 {
@@ -657,11 +541,7 @@ int irdma_remove_pd_bp(struct irdma_sc_dev *dev,
 	return 0;
 }
 
-/**
- * irdma_prep_remove_sd_bp - Prepares to remove a backing page from a sd entry
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: the page index
- */
+ 
 int irdma_prep_remove_sd_bp(struct irdma_hmc_info *hmc_info, u32 idx)
 {
 	struct irdma_hmc_sd_entry *sd_entry;
@@ -676,11 +556,7 @@ int irdma_prep_remove_sd_bp(struct irdma_hmc_info *hmc_info, u32 idx)
 	return 0;
 }
 
-/**
- * irdma_prep_remove_pd_page - Prepares to remove a PD page from sd entry.
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: segment descriptor index to find the relevant page descriptor
- */
+ 
 int irdma_prep_remove_pd_page(struct irdma_hmc_info *hmc_info, u32 idx)
 {
 	struct irdma_hmc_sd_entry *sd_entry;

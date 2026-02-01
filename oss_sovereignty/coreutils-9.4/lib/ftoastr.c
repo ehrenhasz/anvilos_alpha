@@ -1,29 +1,6 @@
-/* floating point to accurate string
+ 
 
-   Copyright (C) 2010-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Paul Eggert.  */
-
-/* This code can misbehave on some buggy or older platforms, when
-   operating on arguments on floating types other than 'double', or
-   when given unusual combinations of options.  Gnulib's
-   snprintf-posix module works around many of these problems.
-
-   This code relies on sprintf, strtod, etc. operating accurately;
-   otherwise, the resulting strings could be inaccurate or too long.  */
+ 
 
 #include <config.h>
 
@@ -69,16 +46,12 @@
 # endif
 #endif
 
-/* On pre-C99 hosts, approximate strtof with strtod.  This
-   may generate one or two extra digits, but that's better than not
-   working at all.  */
+ 
 #ifndef STRTOF
 # define STRTOF PREFIX (strtod)
 #endif
 
-/* On hosts where it's not known that snprintf works, use sprintf to
-   implement the subset needed here.  Typically BUFSIZE is big enough
-   and there's little or no performance hit.  */
+ 
 #ifdef C_LOCALE
 # undef snprintf
 # define snprintf c_snprintf
@@ -111,13 +84,7 @@ ftoastr_snprintf (char *buf, size_t bufsize, char const *format,
 int
 FTOASTR (char *buf, size_t bufsize, int flags, int width, FLOAT x)
 {
-  /* The following method is simple but slow.
-     For ideas about speeding things up, please see:
-
-     Andrysco M, Jhala R, Lerner S. Printing floating-point numbers:
-     a faster, always correct method. ACM SIGPLAN notices - POPL '16.
-     2016;51(1):555-67 <https://doi.org/10.1145/2914770.2837654>; draft at
-     <https://cseweb.ucsd.edu/~lerner/papers/fp-printing-popl16.pdf>.  */
+   
 
   PROMOTED_FLOAT promoted_x = x;
   char format[sizeof "%-+ 0*.*Lg"];
@@ -127,7 +94,7 @@ FTOASTR (char *buf, size_t bufsize, int flags, int width, FLOAT x)
   char *p = format;
   *p++ = '%';
 
-  /* Support flags that generate output parsable by strtof.  */
+   
   *p = '-'; p += (flags & FTOASTR_LEFT_JUSTIFY  ) != 0;
   *p = '+'; p += (flags & FTOASTR_ALWAYS_SIGNED ) != 0;
   *p = ' '; p += (flags & FTOASTR_SPACE_POSITIVE) != 0;

@@ -1,8 +1,4 @@
-/*
- * Copyright (C) 2017 Spreadtrum Communications Inc.
- *
- * SPDX-License-Identifier: (GPL-2.0+ OR MIT)
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -30,7 +26,7 @@
 #define ADDR_STA0_DVD		0x28
 #define ADDR_RST		0x2c
 
-/* I2C_CTL */
+ 
 #define STP_EN			BIT(20)
 #define FIFO_AF_LVL_MASK	GENMASK(19, 16)
 #define FIFO_AF_LVL		16
@@ -48,7 +44,7 @@
 #define I2C_INT_EN		BIT(1)
 #define I2C_START		BIT(0)
 
-/* I2C_STATUS */
+ 
 #define SDA_IN			BIT(21)
 #define SCL_IN			BIT(20)
 #define FIFO_FULL		BIT(4)
@@ -57,7 +53,7 @@
 #define I2C_RX_ACK		BIT(1)
 #define I2C_BUSY		BIT(0)
 
-/* ADDR_RST */
+ 
 #define I2C_RST			BIT(0)
 
 #define I2C_FIFO_DEEP		12
@@ -69,12 +65,12 @@
 #define I2C_ADDR_DVD1_CALC(high, low)	\
 	(((high) & GENMASK(31, 16)) | (((low) & GENMASK(31, 16)) >> 16))
 
-/* timeout (ms) for pm runtime autosuspend */
+ 
 #define SPRD_I2C_PM_TIMEOUT	1000
-/* timeout (ms) for transfer message */
+ 
 #define I2C_XFER_TIMEOUT	1000
 
-/* SPRD i2c data structure */
+ 
 struct sprd_i2c {
 	struct i2c_adapter adap;
 	struct device *dev;
@@ -219,11 +215,7 @@ static void sprd_i2c_data_transfer(struct sprd_i2c *i2c_dev)
 		i2c_dev->count -= I2C_FIFO_FULL_THLD;
 		i2c_dev->buf += I2C_FIFO_FULL_THLD;
 
-		/*
-		 * If the read data count is larger than rx fifo full threshold,
-		 * we should enable the rx fifo full interrupt to read data
-		 * again.
-		 */
+		 
 		if (i2c_dev->count >= I2C_FIFO_FULL_THLD)
 			sprd_i2c_set_fifo_full_int(i2c_dev, 1);
 	} else {
@@ -231,11 +223,7 @@ static void sprd_i2c_data_transfer(struct sprd_i2c *i2c_dev)
 		i2c_dev->buf += need_tran;
 		i2c_dev->count -= need_tran;
 
-		/*
-		 * If the write data count is arger than tx fifo depth which
-		 * means we can not write all data in one time, then we should
-		 * enable the tx fifo empty interrupt to write again.
-		 */
+		 
 		if (i2c_count > I2C_FIFO_DEEP)
 			sprd_i2c_set_fifo_empty_int(i2c_dev, 1);
 	}
@@ -264,10 +252,7 @@ static int sprd_i2c_handle_msg(struct i2c_adapter *i2c_adap,
 		sprd_i2c_send_stop(i2c_dev, !!is_last_msg);
 	}
 
-	/*
-	 * We should enable rx fifo full interrupt to get data when receiving
-	 * full data.
-	 */
+	 
 	if (msg->flags & I2C_M_RD)
 		sprd_i2c_set_fifo_full_int(i2c_dev, 1);
 	else
@@ -321,18 +306,9 @@ static const struct i2c_algorithm sprd_i2c_algo = {
 static void sprd_i2c_set_clk(struct sprd_i2c *i2c_dev, u32 freq)
 {
 	u32 apb_clk = i2c_dev->src_clk;
-	/*
-	 * From I2C databook, the prescale calculation formula:
-	 * prescale = freq_i2c / (4 * freq_scl) - 1;
-	 */
+	 
 	u32 i2c_dvd = apb_clk / (4 * freq) - 1;
-	/*
-	 * From I2C databook, the high period of SCL clock is recommended as
-	 * 40% (2/5), and the low period of SCL clock is recommended as 60%
-	 * (3/5), then the formula should be:
-	 * high = (prescale * 2 * 2) / 5
-	 * low = (prescale * 2 * 3) / 5
-	 */
+	 
 	u32 high = ((i2c_dvd << 1) * 2) / 5;
 	u32 low = ((i2c_dvd << 1) * 3) / 5;
 	u32 div0 = I2C_ADDR_DVD0_CALC(high, low);
@@ -341,7 +317,7 @@ static void sprd_i2c_set_clk(struct sprd_i2c *i2c_dev, u32 freq)
 	writel(div0, i2c_dev->base + ADDR_DVD0);
 	writel(div1, i2c_dev->base + ADDR_DVD1);
 
-	/* Start hold timing = hold time(us) * source clock */
+	 
 	if (freq == I2C_MAX_FAST_MODE_FREQ)
 		writel((6 * apb_clk) / 10000000, i2c_dev->base + ADDR_STA0_DVD);
 	else if (freq == I2C_MAX_STANDARD_MODE_FREQ)
@@ -377,14 +353,7 @@ static irqreturn_t sprd_i2c_isr_thread(int irq, void *dev_id)
 	else
 		i2c_tran = i2c_dev->count;
 
-	/*
-	 * If we got one ACK from slave when writing data, and we did not
-	 * finish this transmission (i2c_tran is not zero), then we should
-	 * continue to write data.
-	 *
-	 * For reading data, ack is always true, if i2c_tran is not 0 which
-	 * means we still need to contine to read data from slave.
-	 */
+	 
 	if (i2c_tran && ack) {
 		sprd_i2c_data_transfer(i2c_dev);
 		return IRQ_HANDLED;
@@ -392,16 +361,13 @@ static irqreturn_t sprd_i2c_isr_thread(int irq, void *dev_id)
 
 	i2c_dev->err = 0;
 
-	/*
-	 * If we did not get one ACK from slave when writing data, we should
-	 * return -EIO to notify users.
-	 */
+	 
 	if (!ack)
 		i2c_dev->err = -EIO;
 	else if (msg->flags & I2C_M_RD && i2c_dev->count)
 		sprd_i2c_read_bytes(i2c_dev, i2c_dev->buf, i2c_dev->count);
 
-	/* Transmission is done and clear ack and start operation */
+	 
 	sprd_i2c_clear_ack(i2c_dev);
 	sprd_i2c_clear_start(i2c_dev);
 	complete(&i2c_dev->complete);
@@ -421,17 +387,7 @@ static irqreturn_t sprd_i2c_isr(int irq, void *dev_id)
 	else
 		i2c_tran = i2c_dev->count;
 
-	/*
-	 * If we did not get one ACK from slave when writing data, then we
-	 * should finish this transmission since we got some errors.
-	 *
-	 * When writing data, if i2c_tran == 0 which means we have writen
-	 * done all data, then we can finish this transmission.
-	 *
-	 * When reading data, if conut < rx fifo full threshold, which
-	 * means we can read all data in one time, then we can finish this
-	 * transmission too.
-	 */
+	 
 	if (!i2c_tran || !ack) {
 		sprd_i2c_clear_start(i2c_dev);
 		sprd_i2c_clear_irq(i2c_dev);
@@ -518,7 +474,7 @@ static int sprd_i2c_probe(struct platform_device *pdev)
 	if (!of_property_read_u32(dev->of_node, "clock-frequency", &prop))
 		i2c_dev->bus_freq = prop;
 
-	/* We only support 100k and 400k now, otherwise will return error. */
+	 
 	if (i2c_dev->bus_freq != I2C_MAX_STANDARD_MODE_FREQ &&
 	    i2c_dev->bus_freq != I2C_MAX_FAST_MODE_FREQ)
 		return -EINVAL;

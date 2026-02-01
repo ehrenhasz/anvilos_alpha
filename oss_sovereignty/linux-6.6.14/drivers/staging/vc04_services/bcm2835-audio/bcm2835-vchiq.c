@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2011 Broadcom Corporation.  All rights reserved. */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -11,7 +11,7 @@ struct bcm2835_audio_instance {
 	struct device *dev;
 	unsigned int service_handle;
 	struct completion msg_avail_comp;
-	struct mutex vchi_mutex; /* Serialize vchiq access */
+	struct mutex vchi_mutex;  
 	struct bcm2835_alsa_stream *alsa_stream;
 	int result;
 	unsigned int max_packet;
@@ -135,7 +135,7 @@ vc_vchi_audio_init(struct vchiq_instance *vchiq_instance,
 	};
 	int status;
 
-	/* Open the VCHI service connections */
+	 
 	status = vchiq_open_service(vchiq_instance, &params,
 				    &instance->service_handle);
 
@@ -146,7 +146,7 @@ vc_vchi_audio_init(struct vchiq_instance *vchiq_instance,
 		return -EPERM;
 	}
 
-	/* Finished with the service for now */
+	 
 	vchiq_release_service(instance->alsa_stream->chip->vchi_ctx->instance,
 			      instance->service_handle);
 
@@ -161,7 +161,7 @@ static void vc_vchi_audio_deinit(struct bcm2835_audio_instance *instance)
 	vchiq_use_service(instance->alsa_stream->chip->vchi_ctx->instance,
 			  instance->service_handle);
 
-	/* Close all VCHI service connections */
+	 
 	status = vchiq_close_service(instance->alsa_stream->chip->vchi_ctx->instance,
 				     instance->service_handle);
 	if (status) {
@@ -177,7 +177,7 @@ int bcm2835_new_vchi_ctx(struct device *dev, struct bcm2835_vchi_ctx *vchi_ctx)
 {
 	int ret;
 
-	/* Initialize and create a VCHI connection */
+	 
 	ret = vchiq_initialise(&vchi_ctx->instance);
 	if (ret) {
 		dev_err(dev, "failed to initialise VCHI instance (ret=%d)\n",
@@ -201,7 +201,7 @@ int bcm2835_new_vchi_ctx(struct device *dev, struct bcm2835_vchi_ctx *vchi_ctx)
 
 void bcm2835_free_vchi_ctx(struct bcm2835_vchi_ctx *vchi_ctx)
 {
-	/* Close the VCHI connection - it will also free vchi_ctx->instance */
+	 
 	WARN_ON(vchiq_shutdown(vchi_ctx->instance));
 
 	vchi_ctx->instance = NULL;
@@ -213,7 +213,7 @@ int bcm2835_audio_open(struct bcm2835_alsa_stream *alsa_stream)
 	struct bcm2835_audio_instance *instance;
 	int err;
 
-	/* Allocate memory for this instance */
+	 
 	instance = kzalloc(sizeof(*instance), GFP_KERNEL);
 	if (!instance)
 		return -ENOMEM;
@@ -237,7 +237,7 @@ int bcm2835_audio_open(struct bcm2835_alsa_stream *alsa_stream)
 			       &instance->peer_version);
 	bcm2835_audio_unlock(instance);
 	if (instance->peer_version < 2 || force_bulk)
-		instance->max_packet = 0; /* bulk transfer */
+		instance->max_packet = 0;  
 	else
 		instance->max_packet = 4000;
 
@@ -278,7 +278,7 @@ int bcm2835_audio_set_params(struct bcm2835_alsa_stream *alsa_stream,
 	};
 	int err;
 
-	/* resend ctls - alsa_stream may not have been open when first send */
+	 
 	err = bcm2835_audio_set_ctls(alsa_stream);
 	if (err)
 		return err;
@@ -298,7 +298,7 @@ int bcm2835_audio_stop(struct bcm2835_alsa_stream *alsa_stream)
 					 VC_AUDIO_MSG_TYPE_STOP, false);
 }
 
-/* FIXME: this doesn't seem working as expected for "draining" */
+ 
 int bcm2835_audio_drain(struct bcm2835_alsa_stream *alsa_stream)
 {
 	struct vc_audio_msg m = {
@@ -317,7 +317,7 @@ int bcm2835_audio_close(struct bcm2835_alsa_stream *alsa_stream)
 	err = bcm2835_audio_send_simple(alsa_stream->instance,
 					VC_AUDIO_MSG_TYPE_CLOSE, true);
 
-	/* Stop the audio service */
+	 
 	vc_vchi_audio_deinit(instance);
 	alsa_stream->instance = NULL;
 	kfree(instance);
@@ -351,7 +351,7 @@ int bcm2835_audio_write(struct bcm2835_alsa_stream *alsa_stream,
 
 	count = size;
 	if (!instance->max_packet) {
-		/* Send the message to the videocore */
+		 
 		status = vchiq_bulk_transmit(vchiq_instance, instance->service_handle, src, count,
 					     NULL, VCHIQ_BULK_MODE_BLOCKING);
 	} else {

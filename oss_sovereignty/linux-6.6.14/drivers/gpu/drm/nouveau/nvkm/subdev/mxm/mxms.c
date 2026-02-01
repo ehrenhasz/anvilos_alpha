@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "mxms.h"
 
 #define ROM16(x) get_unaligned_le16(&(x))
@@ -107,26 +85,26 @@ mxms_foreach(struct nvkm_mxm *mxm, u8 types,
 		u8 entries = 0;
 
 		switch (type) {
-		case 0: /* Output Device Structure */
+		case 0:  
 			if (mxms_version(mxm) >= 0x0300)
 				headerlen = 8;
 			else
 				headerlen = 6;
 			break;
-		case 1: /* System Cooling Capability Structure */
-		case 2: /* Thermal Structure */
-		case 3: /* Input Power Structure */
+		case 1:  
+		case 2:  
+		case 3:  
 			headerlen = 4;
 			break;
-		case 4: /* GPIO Device Structure */
+		case 4:  
 			headerlen = 4;
 			recordlen = 2;
 			entries   = (ROM32(desc[0]) & 0x01f00000) >> 20;
 			break;
-		case 5: /* Vendor Specific Structure */
+		case 5:  
 			headerlen = 8;
 			break;
-		case 6: /* Backlight Control Structure */
+		case 6:  
 			if (mxms_version(mxm) >= 0x0300) {
 				headerlen = 4;
 				recordlen = 8;
@@ -135,7 +113,7 @@ mxms_foreach(struct nvkm_mxm *mxm, u8 types,
 				headerlen = 8;
 			}
 			break;
-		case 7: /* Fan Control Structure */
+		case 7:  
 			headerlen = 8;
 			recordlen = 4;
 			entries   = desc[1] & 0x07;

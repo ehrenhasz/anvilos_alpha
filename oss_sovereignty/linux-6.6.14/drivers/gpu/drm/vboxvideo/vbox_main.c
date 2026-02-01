@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2013-2017 Oracle Corporation
- * This file is based on ast_main.c
- * Copyright 2012 Red Hat Inc.
- * Authors: Dave Airlie <airlied@redhat.com>,
- *          Michael Thayer <michael.thayer@oracle.com,
- *          Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/vbox_err.h>
@@ -22,7 +15,7 @@ void vbox_report_caps(struct vbox_private *vbox)
 	u32 caps = VBVACAPS_DISABLE_CURSOR_INTEGRATION |
 		   VBVACAPS_IRQ | VBVACAPS_USE_VBVA_ONLY;
 
-	/* The host only accepts VIDEO_MODE_HINTS if it is send separately. */
+	 
 	hgsmi_send_caps_info(vbox->guest_pool, caps);
 	caps |= VBVACAPS_VIDEO_MODE_HINTS;
 	hgsmi_send_caps_info(vbox->guest_pool, caps);
@@ -39,7 +32,7 @@ static int vbox_accel_init(struct vbox_private *vbox)
 	if (!vbox->vbva_info)
 		return -ENOMEM;
 
-	/* Take a command buffer for each screen from the end of usable VRAM. */
+	 
 	vbox->available_vram_size -= vbox->num_crtcs * VBVA_MIN_BUFFER_SIZE;
 
 	vbox->vbva_buffers = pci_iomap_range(pdev, 0,
@@ -58,7 +51,7 @@ static int vbox_accel_init(struct vbox_private *vbox)
 			i * VBVA_MIN_BUFFER_SIZE;
 		if (!vbva_enable(&vbox->vbva_info[i],
 				 vbox->guest_pool, vbva, i)) {
-			/* very old host or driver error. */
+			 
 			DRM_ERROR("vboxvideo: vbva_enable failed\n");
 		}
 	}
@@ -74,7 +67,7 @@ static void vbox_accel_fini(struct vbox_private *vbox)
 		vbva_disable(&vbox->vbva_info[i], vbox->guest_pool, i);
 }
 
-/* Do we support the 4.3 plus mode hint reporting interface? */
+ 
 static bool have_hgsmi_mode_hints(struct vbox_private *vbox)
 {
 	u32 have_hints, have_cursor;
@@ -115,14 +108,14 @@ int vbox_hw_init(struct vbox_private *vbox)
 
 	DRM_INFO("VRAM %08x\n", vbox->full_vram_size);
 
-	/* Map guest-heap at end of vram */
+	 
 	vbox->guest_heap =
 	    pci_iomap_range(pdev, 0, GUEST_HEAP_OFFSET(vbox),
 			    GUEST_HEAP_SIZE);
 	if (!vbox->guest_heap)
 		return -ENOMEM;
 
-	/* Create guest-heap mem-pool use 2^4 = 16 byte chunks */
+	 
 	vbox->guest_pool = devm_gen_pool_create(vbox->ddev.dev, 4, -1,
 						"vboxvideo-accel");
 	if (IS_ERR(vbox->guest_pool))
@@ -141,9 +134,9 @@ int vbox_hw_init(struct vbox_private *vbox)
 		return ret;
 	}
 
-	/* Reduce available VRAM size to reflect the guest heap. */
+	 
 	vbox->available_vram_size = GUEST_HEAP_OFFSET(vbox);
-	/* Linux drm represents monitors as a 32-bit array. */
+	 
 	hgsmi_query_conf(vbox->guest_pool, VBOX_VBVA_CONF32_MONITOR_COUNT,
 			 &vbox->num_crtcs);
 	vbox->num_crtcs = clamp_t(u32, vbox->num_crtcs, 1, VBOX_MAX_SCREENS);

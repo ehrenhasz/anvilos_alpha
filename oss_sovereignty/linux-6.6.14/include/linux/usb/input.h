@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005 Dmitry Torokhov
- */
+
+ 
 
 #ifndef __LINUX_USB_INPUT_H
 #define __LINUX_USB_INPUT_H
@@ -19,4 +17,4 @@ usb_to_input_id(const struct usb_device *dev, struct input_id *id)
 	id->version = le16_to_cpu(dev->descriptor.bcdDevice);
 }
 
-#endif /* __LINUX_USB_INPUT_H */
+#endif  

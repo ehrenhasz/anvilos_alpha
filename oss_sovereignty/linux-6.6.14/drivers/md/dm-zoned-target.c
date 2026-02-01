@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Western Digital Corporation or its affiliates.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-zoned.h"
 
@@ -13,9 +9,7 @@
 
 #define DMZ_MIN_BIOS		8192
 
-/*
- * Zone BIO context.
- */
+ 
 struct dmz_bioctx {
 	struct dmz_dev		*dev;
 	struct dm_zone		*zone;
@@ -23,9 +17,7 @@ struct dmz_bioctx {
 	refcount_t		ref;
 };
 
-/*
- * Chunk work descriptor.
- */
+ 
 struct dm_chunk_work {
 	struct work_struct	work;
 	refcount_t		refcount;
@@ -34,44 +26,38 @@ struct dm_chunk_work {
 	struct bio_list		bio_list;
 };
 
-/*
- * Target descriptor.
- */
+ 
 struct dmz_target {
 	struct dm_dev		**ddev;
 	unsigned int		nr_ddevs;
 
 	unsigned int		flags;
 
-	/* Zoned block device information */
+	 
 	struct dmz_dev		*dev;
 
-	/* For metadata handling */
+	 
 	struct dmz_metadata     *metadata;
 
-	/* For chunk work */
+	 
 	struct radix_tree_root	chunk_rxtree;
 	struct workqueue_struct *chunk_wq;
 	struct mutex		chunk_lock;
 
-	/* For cloned BIOs to zones */
+	 
 	struct bio_set		bio_set;
 
-	/* For flush */
+	 
 	spinlock_t		flush_lock;
 	struct bio_list		flush_list;
 	struct delayed_work	flush_work;
 	struct workqueue_struct *flush_wq;
 };
 
-/*
- * Flush intervals (seconds).
- */
+ 
 #define DMZ_FLUSH_PERIOD	(10 * HZ)
 
-/*
- * Target BIO completion.
- */
+ 
 static inline void dmz_bio_endio(struct bio *bio, blk_status_t status)
 {
 	struct dmz_bioctx *bioctx =
@@ -96,10 +82,7 @@ static inline void dmz_bio_endio(struct bio *bio, blk_status_t status)
 	}
 }
 
-/*
- * Completion callback for an internally cloned target BIO. This terminates the
- * target BIO when there are no more references to its context.
- */
+ 
 static void dmz_clone_endio(struct bio *clone)
 {
 	struct dmz_bioctx *bioctx = clone->bi_private;
@@ -109,10 +92,7 @@ static void dmz_clone_endio(struct bio *clone)
 	dmz_bio_endio(bioctx->bio, status);
 }
 
-/*
- * Issue a clone of a target BIO. The clone may only partially process the
- * original target BIO.
- */
+ 
 static int dmz_submit_bio(struct dmz_target *dmz, struct dm_zone *zone,
 			  struct bio *bio, sector_t chunk_block,
 			  unsigned int nr_blocks)
@@ -147,15 +127,13 @@ static int dmz_submit_bio(struct dmz_target *dmz, struct dm_zone *zone,
 	return 0;
 }
 
-/*
- * Zero out pages of discarded blocks accessed by a read BIO.
- */
+ 
 static void dmz_handle_read_zero(struct dmz_target *dmz, struct bio *bio,
 				 sector_t chunk_block, unsigned int nr_blocks)
 {
 	unsigned int size = nr_blocks << DMZ_BLOCK_SHIFT;
 
-	/* Clear nr_blocks */
+	 
 	swap(bio->bi_iter.bi_size, size);
 	zero_fill_bio(bio);
 	swap(bio->bi_iter.bi_size, size);
@@ -163,9 +141,7 @@ static void dmz_handle_read_zero(struct dmz_target *dmz, struct bio *bio,
 	bio_advance(bio, size);
 }
 
-/*
- * Process a read BIO.
- */
+ 
 static int dmz_handle_read(struct dmz_target *dmz, struct dm_zone *zone,
 			   struct bio *bio)
 {
@@ -176,7 +152,7 @@ static int dmz_handle_read(struct dmz_target *dmz, struct dm_zone *zone,
 	struct dm_zone *rzone, *bzone;
 	int ret;
 
-	/* Read into unmapped chunks need only zeroing the BIO buffer */
+	 
 	if (!zone) {
 		zero_fill_bio(bio);
 		return 0;
@@ -190,40 +166,37 @@ static int dmz_handle_read(struct dmz_target *dmz, struct dm_zone *zone,
 		zone->id,
 		(unsigned long long)chunk_block, nr_blocks);
 
-	/* Check block validity to determine the read location */
+	 
 	bzone = zone->bzone;
 	while (chunk_block < end_block) {
 		nr_blocks = 0;
 		if (dmz_is_rnd(zone) || dmz_is_cache(zone) ||
 		    chunk_block < zone->wp_block) {
-			/* Test block validity in the data zone */
+			 
 			ret = dmz_block_valid(zmd, zone, chunk_block);
 			if (ret < 0)
 				return ret;
 			if (ret > 0) {
-				/* Read data zone blocks */
+				 
 				nr_blocks = ret;
 				rzone = zone;
 			}
 		}
 
-		/*
-		 * No valid blocks found in the data zone.
-		 * Check the buffer zone, if there is one.
-		 */
+		 
 		if (!nr_blocks && bzone) {
 			ret = dmz_block_valid(zmd, bzone, chunk_block);
 			if (ret < 0)
 				return ret;
 			if (ret > 0) {
-				/* Read buffer zone blocks */
+				 
 				nr_blocks = ret;
 				rzone = bzone;
 			}
 		}
 
 		if (nr_blocks) {
-			/* Valid blocks found: read them */
+			 
 			nr_blocks = min_t(unsigned int, nr_blocks,
 					  end_block - chunk_block);
 			ret = dmz_submit_bio(dmz, rzone, bio,
@@ -232,7 +205,7 @@ static int dmz_handle_read(struct dmz_target *dmz, struct dm_zone *zone,
 				return ret;
 			chunk_block += nr_blocks;
 		} else {
-			/* No valid block: zeroout the current BIO block */
+			 
 			dmz_handle_read_zero(dmz, bio, chunk_block, 1);
 			chunk_block++;
 		}
@@ -241,11 +214,7 @@ static int dmz_handle_read(struct dmz_target *dmz, struct dm_zone *zone,
 	return 0;
 }
 
-/*
- * Write blocks directly in a data zone, at the write pointer.
- * If a buffer zone is assigned, invalidate the blocks written
- * in place.
- */
+ 
 static int dmz_handle_direct_write(struct dmz_target *dmz,
 				   struct dm_zone *zone, struct bio *bio,
 				   sector_t chunk_block,
@@ -258,15 +227,12 @@ static int dmz_handle_direct_write(struct dmz_target *dmz,
 	if (dmz_is_readonly(zone))
 		return -EROFS;
 
-	/* Submit write */
+	 
 	ret = dmz_submit_bio(dmz, zone, bio, chunk_block, nr_blocks);
 	if (ret)
 		return ret;
 
-	/*
-	 * Validate the blocks in the data zone and invalidate
-	 * in the buffer zone, if there is one.
-	 */
+	 
 	ret = dmz_validate_blocks(zmd, zone, chunk_block, nr_blocks);
 	if (ret == 0 && bzone)
 		ret = dmz_invalidate_blocks(zmd, bzone, chunk_block, nr_blocks);
@@ -274,11 +240,7 @@ static int dmz_handle_direct_write(struct dmz_target *dmz,
 	return ret;
 }
 
-/*
- * Write blocks in the buffer zone of @zone.
- * If no buffer zone is assigned yet, get one.
- * Called with @zone write locked.
- */
+ 
 static int dmz_handle_buffered_write(struct dmz_target *dmz,
 				     struct dm_zone *zone, struct bio *bio,
 				     sector_t chunk_block,
@@ -288,7 +250,7 @@ static int dmz_handle_buffered_write(struct dmz_target *dmz,
 	struct dm_zone *bzone;
 	int ret;
 
-	/* Get the buffer zone. One will be allocated if needed */
+	 
 	bzone = dmz_get_chunk_buffer(zmd, zone);
 	if (IS_ERR(bzone))
 		return PTR_ERR(bzone);
@@ -296,15 +258,12 @@ static int dmz_handle_buffered_write(struct dmz_target *dmz,
 	if (dmz_is_readonly(bzone))
 		return -EROFS;
 
-	/* Submit write */
+	 
 	ret = dmz_submit_bio(dmz, bzone, bio, chunk_block, nr_blocks);
 	if (ret)
 		return ret;
 
-	/*
-	 * Validate the blocks in the buffer zone
-	 * and invalidate in the data zone.
-	 */
+	 
 	ret = dmz_validate_blocks(zmd, bzone, chunk_block, nr_blocks);
 	if (ret == 0 && chunk_block < zone->wp_block)
 		ret = dmz_invalidate_blocks(zmd, zone, chunk_block, nr_blocks);
@@ -312,9 +271,7 @@ static int dmz_handle_buffered_write(struct dmz_target *dmz,
 	return ret;
 }
 
-/*
- * Process a write BIO.
- */
+ 
 static int dmz_handle_write(struct dmz_target *dmz, struct dm_zone *zone,
 			    struct bio *bio)
 {
@@ -335,25 +292,16 @@ static int dmz_handle_write(struct dmz_target *dmz, struct dm_zone *zone,
 
 	if (dmz_is_rnd(zone) || dmz_is_cache(zone) ||
 	    chunk_block == zone->wp_block) {
-		/*
-		 * zone is a random zone or it is a sequential zone
-		 * and the BIO is aligned to the zone write pointer:
-		 * direct write the zone.
-		 */
+		 
 		return dmz_handle_direct_write(dmz, zone, bio,
 					       chunk_block, nr_blocks);
 	}
 
-	/*
-	 * This is an unaligned write in a sequential zone:
-	 * use buffered write.
-	 */
+	 
 	return dmz_handle_buffered_write(dmz, zone, bio, chunk_block, nr_blocks);
 }
 
-/*
- * Process a discard BIO.
- */
+ 
 static int dmz_handle_discard(struct dmz_target *dmz, struct dm_zone *zone,
 			      struct bio *bio)
 {
@@ -363,7 +311,7 @@ static int dmz_handle_discard(struct dmz_target *dmz, struct dm_zone *zone,
 	sector_t chunk_block = dmz_chunk_block(zmd, block);
 	int ret = 0;
 
-	/* For unmapped chunks, there is nothing to do */
+	 
 	if (!zone)
 		return 0;
 
@@ -376,10 +324,7 @@ static int dmz_handle_discard(struct dmz_target *dmz, struct dm_zone *zone,
 		zone->id,
 		(unsigned long long)chunk_block, nr_blocks);
 
-	/*
-	 * Invalidate blocks in the data zone and its
-	 * buffer zone if one is mapped.
-	 */
+	 
 	if (dmz_is_rnd(zone) || dmz_is_cache(zone) ||
 	    chunk_block < zone->wp_block)
 		ret = dmz_invalidate_blocks(zmd, zone, chunk_block, nr_blocks);
@@ -389,9 +334,7 @@ static int dmz_handle_discard(struct dmz_target *dmz, struct dm_zone *zone,
 	return ret;
 }
 
-/*
- * Process a BIO.
- */
+ 
 static void dmz_handle_bio(struct dmz_target *dmz, struct dm_chunk_work *cw,
 			   struct bio *bio)
 {
@@ -403,11 +346,7 @@ static void dmz_handle_bio(struct dmz_target *dmz, struct dm_chunk_work *cw,
 
 	dmz_lock_metadata(zmd);
 
-	/*
-	 * Get the data zone mapping the chunk. There may be no
-	 * mapping for read and discard. If a mapping is obtained,
-	 + the zone returned will be set to active state.
-	 */
+	 
 	zone = dmz_get_chunk_mapping(zmd, dmz_bio_chunk(zmd, bio),
 				     bio_op(bio));
 	if (IS_ERR(zone)) {
@@ -415,7 +354,7 @@ static void dmz_handle_bio(struct dmz_target *dmz, struct dm_chunk_work *cw,
 		goto out;
 	}
 
-	/* Process the BIO */
+	 
 	if (zone) {
 		dmz_activate_zone(zone);
 		bioctx->zone = zone;
@@ -439,10 +378,7 @@ static void dmz_handle_bio(struct dmz_target *dmz, struct dm_chunk_work *cw,
 		ret = -EIO;
 	}
 
-	/*
-	 * Release the chunk mapping. This will check that the mapping
-	 * is still valid, that is, that the zone used still has valid blocks.
-	 */
+	 
 	if (zone)
 		dmz_put_chunk_mapping(zmd, zone);
 out:
@@ -451,18 +387,13 @@ out:
 	dmz_unlock_metadata(zmd);
 }
 
-/*
- * Increment a chunk reference counter.
- */
+ 
 static inline void dmz_get_chunk_work(struct dm_chunk_work *cw)
 {
 	refcount_inc(&cw->refcount);
 }
 
-/*
- * Decrement a chunk work reference count and
- * free it if it becomes 0.
- */
+ 
 static void dmz_put_chunk_work(struct dm_chunk_work *cw)
 {
 	if (refcount_dec_and_test(&cw->refcount)) {
@@ -472,9 +403,7 @@ static void dmz_put_chunk_work(struct dm_chunk_work *cw)
 	}
 }
 
-/*
- * Chunk BIO work function.
- */
+ 
 static void dmz_chunk_work(struct work_struct *work)
 {
 	struct dm_chunk_work *cw = container_of(work, struct dm_chunk_work, work);
@@ -483,7 +412,7 @@ static void dmz_chunk_work(struct work_struct *work)
 
 	mutex_lock(&dmz->chunk_lock);
 
-	/* Process the chunk BIOs */
+	 
 	while ((bio = bio_list_pop(&cw->bio_list))) {
 		mutex_unlock(&dmz->chunk_lock);
 		dmz_handle_bio(dmz, cw, bio);
@@ -491,28 +420,26 @@ static void dmz_chunk_work(struct work_struct *work)
 		dmz_put_chunk_work(cw);
 	}
 
-	/* Queueing the work incremented the work refcount */
+	 
 	dmz_put_chunk_work(cw);
 
 	mutex_unlock(&dmz->chunk_lock);
 }
 
-/*
- * Flush work.
- */
+ 
 static void dmz_flush_work(struct work_struct *work)
 {
 	struct dmz_target *dmz = container_of(work, struct dmz_target, flush_work.work);
 	struct bio *bio;
 	int ret;
 
-	/* Flush dirty metadata blocks */
+	 
 	ret = dmz_flush_metadata(dmz->metadata);
 	if (ret)
 		DMDEBUG("(%s): Metadata flush failed, rc=%d",
 			dmz_metadata_label(dmz->metadata), ret);
 
-	/* Process queued flush requests */
+	 
 	while (1) {
 		spin_lock(&dmz->flush_lock);
 		bio = bio_list_pop(&dmz->flush_list);
@@ -527,10 +454,7 @@ static void dmz_flush_work(struct work_struct *work)
 	queue_delayed_work(dmz->flush_wq, &dmz->flush_work, DMZ_FLUSH_PERIOD);
 }
 
-/*
- * Get a chunk work and start it to process a new BIO.
- * If the BIO chunk has no work yet, create one.
- */
+ 
 static int dmz_queue_chunk_work(struct dmz_target *dmz, struct bio *bio)
 {
 	unsigned int chunk = dmz_bio_chunk(dmz->metadata, bio);
@@ -539,12 +463,12 @@ static int dmz_queue_chunk_work(struct dmz_target *dmz, struct bio *bio)
 
 	mutex_lock(&dmz->chunk_lock);
 
-	/* Get the BIO chunk work. If one is not active yet, create one */
+	 
 	cw = radix_tree_lookup(&dmz->chunk_rxtree, chunk);
 	if (cw) {
 		dmz_get_chunk_work(cw);
 	} else {
-		/* Create a new chunk work */
+		 
 		cw = kmalloc(sizeof(struct dm_chunk_work), GFP_NOIO);
 		if (unlikely(!cw)) {
 			ret = -ENOMEM;
@@ -573,11 +497,7 @@ out:
 	return ret;
 }
 
-/*
- * Check if the backing device is being removed. If it's on the way out,
- * start failing I/O. Reclaim and metadata components also call this
- * function to cleanly abort operation in the event of such failure.
- */
+ 
 bool dmz_bdev_is_dying(struct dmz_dev *dmz_dev)
 {
 	if (dmz_dev->flags & DMZ_BDEV_DYING)
@@ -594,12 +514,7 @@ bool dmz_bdev_is_dying(struct dmz_dev *dmz_dev)
 	return dmz_dev->flags & DMZ_BDEV_DYING;
 }
 
-/*
- * Check the backing device availability. This detects such events as
- * backing device going offline due to errors, media removals, etc.
- * This check is less efficient than dmz_bdev_is_dying() and should
- * only be performed as a part of error handling.
- */
+ 
 bool dmz_check_bdev(struct dmz_dev *dmz_dev)
 {
 	struct gendisk *disk;
@@ -619,9 +534,7 @@ bool dmz_check_bdev(struct dmz_dev *dmz_dev)
 	return !(dmz_dev->flags & DMZ_BDEV_DYING);
 }
 
-/*
- * Process a new BIO.
- */
+ 
 static int dmz_map(struct dm_target *ti, struct bio *bio)
 {
 	struct dmz_target *dmz = ti->private;
@@ -645,17 +558,17 @@ static int dmz_map(struct dm_target *ti, struct bio *bio)
 	if (!nr_sectors && bio_op(bio) != REQ_OP_WRITE)
 		return DM_MAPIO_REMAPPED;
 
-	/* The BIO should be block aligned */
+	 
 	if ((nr_sectors & DMZ_BLOCK_SECTORS_MASK) || (sector & DMZ_BLOCK_SECTORS_MASK))
 		return DM_MAPIO_KILL;
 
-	/* Initialize the BIO context */
+	 
 	bioctx->dev = NULL;
 	bioctx->zone = NULL;
 	bioctx->bio = bio;
 	refcount_set(&bioctx->ref, 1);
 
-	/* Set the BIO pending in the flush list */
+	 
 	if (!nr_sectors && bio_op(bio) == REQ_OP_WRITE) {
 		spin_lock(&dmz->flush_lock);
 		bio_list_add(&dmz->flush_list, bio);
@@ -664,12 +577,12 @@ static int dmz_map(struct dm_target *ti, struct bio *bio)
 		return DM_MAPIO_SUBMITTED;
 	}
 
-	/* Split zone BIOs to fit entirely into a zone */
+	 
 	chunk_sector = sector & (dmz_zone_nr_sectors(zmd) - 1);
 	if (chunk_sector + nr_sectors > dmz_zone_nr_sectors(zmd))
 		dm_accept_partial_bio(bio, dmz_zone_nr_sectors(zmd) - chunk_sector);
 
-	/* Now ready to handle this BIO */
+	 
 	ret = dmz_queue_chunk_work(dmz, bio);
 	if (ret) {
 		DMDEBUG("(%s): BIO op %d, can't process chunk %llu, err %i",
@@ -682,9 +595,7 @@ static int dmz_map(struct dm_target *ti, struct bio *bio)
 	return DM_MAPIO_SUBMITTED;
 }
 
-/*
- * Get zoned device information.
- */
+ 
 static int dmz_get_zoned_device(struct dm_target *ti, char *path,
 				int idx, int nr_devs)
 {
@@ -694,7 +605,7 @@ static int dmz_get_zoned_device(struct dm_target *ti, char *path,
 	int ret;
 	struct block_device *bdev;
 
-	/* Get the target device */
+	 
 	ret = dm_get_device(ti, path, dm_table_get_mode(ti->table), &ddev);
 	if (ret) {
 		ti->error = "Get target device failed";
@@ -745,9 +656,7 @@ err:
 	return -EINVAL;
 }
 
-/*
- * Cleanup zoned device information.
- */
+ 
 static void dmz_put_zoned_devices(struct dm_target *ti)
 {
 	struct dmz_target *dmz = ti->private;
@@ -767,10 +676,7 @@ static int dmz_fixup_devices(struct dm_target *ti)
 	sector_t zone_nr_sectors = 0;
 	int i;
 
-	/*
-	 * When we have more than on devices, the first one must be a
-	 * regular block device and the others zoned block devices.
-	 */
+	 
 	if (dmz->nr_ddevs > 1) {
 		reg_dev = &dmz->dev[0];
 		if (!(reg_dev->flags & DMZ_BDEV_REGULAR)) {
@@ -823,21 +729,19 @@ static int dmz_fixup_devices(struct dm_target *ti)
 	return 0;
 }
 
-/*
- * Setup target.
- */
+ 
 static int dmz_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct dmz_target *dmz;
 	int ret, i;
 
-	/* Check arguments */
+	 
 	if (argc < 1) {
 		ti->error = "Invalid argument count";
 		return -EINVAL;
 	}
 
-	/* Allocate and initialize the target descriptor */
+	 
 	dmz = kzalloc(sizeof(struct dmz_target), GFP_KERNEL);
 	if (!dmz) {
 		ti->error = "Unable to allocate the zoned target descriptor";
@@ -859,7 +763,7 @@ static int dmz_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 
 	ti->private = dmz;
 
-	/* Get the target zoned block device */
+	 
 	for (i = 0; i < argc; i++) {
 		ret = dmz_get_zoned_device(ti, argv[i], i, argc);
 		if (ret)
@@ -869,7 +773,7 @@ static int dmz_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	if (ret)
 		goto err_dev;
 
-	/* Initialize metadata */
+	 
 	ret = dmz_ctr_metadata(dmz->dev, argc, &dmz->metadata,
 			       dm_table_device_name(ti->table));
 	if (ret) {
@@ -877,7 +781,7 @@ static int dmz_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto err_dev;
 	}
 
-	/* Set target (no write same support) */
+	 
 	ti->max_io_len = dmz_zone_nr_sectors(dmz->metadata);
 	ti->num_flush_bios = 1;
 	ti->num_discard_bios = 1;
@@ -886,18 +790,18 @@ static int dmz_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	ti->flush_supported = true;
 	ti->discards_supported = true;
 
-	/* The exposed capacity is the number of chunks that can be mapped */
+	 
 	ti->len = (sector_t)dmz_nr_chunks(dmz->metadata) <<
 		dmz_zone_nr_sectors_shift(dmz->metadata);
 
-	/* Zone BIO */
+	 
 	ret = bioset_init(&dmz->bio_set, DMZ_MIN_BIOS, 0, 0);
 	if (ret) {
 		ti->error = "Create BIO set failed";
 		goto err_meta;
 	}
 
-	/* Chunk BIO work */
+	 
 	mutex_init(&dmz->chunk_lock);
 	INIT_RADIX_TREE(&dmz->chunk_rxtree, GFP_NOIO);
 	dmz->chunk_wq = alloc_workqueue("dmz_cwq_%s",
@@ -909,7 +813,7 @@ static int dmz_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 		goto err_bio;
 	}
 
-	/* Flush work */
+	 
 	spin_lock_init(&dmz->flush_lock);
 	bio_list_init(&dmz->flush_list);
 	INIT_DELAYED_WORK(&dmz->flush_work, dmz_flush_work);
@@ -922,7 +826,7 @@ static int dmz_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 	}
 	mod_delayed_work(dmz->flush_wq, &dmz->flush_work, DMZ_FLUSH_PERIOD);
 
-	/* Initialize reclaim */
+	 
 	for (i = 0; i < dmz->nr_ddevs; i++) {
 		ret = dmz_ctr_reclaim(dmz->metadata, &dmz->dev[i].reclaim, i);
 		if (ret) {
@@ -955,9 +859,7 @@ err:
 	return ret;
 }
 
-/*
- * Cleanup target.
- */
+ 
 static void dmz_dtr(struct dm_target *ti)
 {
 	struct dmz_target *dmz = ti->private;
@@ -985,9 +887,7 @@ static void dmz_dtr(struct dm_target *ti)
 	kfree(dmz);
 }
 
-/*
- * Setup target request queue limits.
- */
+ 
 static void dmz_io_hints(struct dm_target *ti, struct queue_limits *limits)
 {
 	struct dmz_target *dmz = ti->private;
@@ -1005,17 +905,15 @@ static void dmz_io_hints(struct dm_target *ti, struct queue_limits *limits)
 	limits->max_hw_discard_sectors = chunk_sectors;
 	limits->max_write_zeroes_sectors = chunk_sectors;
 
-	/* FS hint to try to align to the device zone size */
+	 
 	limits->chunk_sectors = chunk_sectors;
 	limits->max_sectors = chunk_sectors;
 
-	/* We are exposing a drive-managed zoned block device */
+	 
 	limits->zoned = BLK_ZONED_NONE;
 }
 
-/*
- * Pass on ioctl to the backend device.
- */
+ 
 static int dmz_prepare_ioctl(struct dm_target *ti, struct block_device **bdev)
 {
 	struct dmz_target *dmz = ti->private;
@@ -1029,9 +927,7 @@ static int dmz_prepare_ioctl(struct dm_target *ti, struct block_device **bdev)
 	return 0;
 }
 
-/*
- * Stop works on suspend.
- */
+ 
 static void dmz_suspend(struct dm_target *ti)
 {
 	struct dmz_target *dmz = ti->private;
@@ -1043,9 +939,7 @@ static void dmz_suspend(struct dm_target *ti)
 	cancel_delayed_work_sync(&dmz->flush_work);
 }
 
-/*
- * Restart works on resume or if suspend failed.
- */
+ 
 static void dmz_resume(struct dm_target *ti)
 {
 	struct dmz_target *dmz = ti->private;
@@ -1090,10 +984,7 @@ static void dmz_status(struct dm_target *ti, status_type_t type,
 		       dmz_nr_unmap_cache_zones(dmz->metadata),
 		       dmz_nr_cache_zones(dmz->metadata));
 		for (i = 0; i < dmz->nr_ddevs; i++) {
-			/*
-			 * For a multi-device setup the first device
-			 * contains only cache zones.
-			 */
+			 
 			if ((i == 0) &&
 			    (dmz_nr_cache_zones(dmz->metadata) > 0))
 				continue;

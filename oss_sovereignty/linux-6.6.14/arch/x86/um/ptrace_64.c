@@ -1,9 +1,4 @@
-/*
- * Copyright 2003 PathScale, Inc.
- * Copyright (C) 2003 - 2007 Jeff Dike (jdike@{addtoit,linux.intel}.com)
- *
- * Licensed under the GPL
- */
+ 
 
 #include <linux/mm.h>
 #include <linux/sched.h>
@@ -14,10 +9,7 @@
 #include <registers.h>
 #include <asm/ptrace-abi.h>
 
-/*
- * determines which flags the user has access to.
- * 1 = access 0 = no access
- */
+ 
 #define FLAG_MASK 0x44dd5UL
 
 static const int reg_offsets[] =
@@ -74,7 +66,7 @@ int putreg(struct task_struct *child, int regno, unsigned long value)
 		break;
 
 	case ORIG_RAX:
-		/* Update the syscall number. */
+		 
 		UPT_SYSCALL_NR(&child->thread.regs.regs) = value;
 		break;
 
@@ -170,13 +162,13 @@ unsigned long getreg(struct task_struct *child, int regno)
 
 int peek_user(struct task_struct *child, long addr, long data)
 {
-	/* read the word at location addr in the USER area. */
+	 
 	unsigned long tmp;
 
 	if ((addr & 3) || addr < 0)
 		return -EIO;
 
-	tmp = 0;  /* Default return condition */
+	tmp = 0;   
 	if (addr < MAX_REG_OFFSET)
 		tmp = getreg(child, addr);
 	else if ((addr >= offsetof(struct user, u_debugreg[0])) &&
@@ -188,7 +180,7 @@ int peek_user(struct task_struct *child, long addr, long data)
 	return put_user(tmp, (unsigned long *) data);
 }
 
-/* XXX Mostly copied from sys-i386 */
+ 
 int is_syscall(unsigned long addr)
 {
 	unsigned short instr;
@@ -196,12 +188,7 @@ int is_syscall(unsigned long addr)
 
 	n = copy_from_user(&instr, (void __user *) addr, sizeof(instr));
 	if (n) {
-		/*
-		 * access_process_vm() grants access to vsyscall and stub,
-		 * while copy_from_user doesn't. Maybe access_process_vm is
-		 * slow, but that doesn't matter, since it will be called only
-		 * in case of singlestepping, if copy_from_user failed.
-		 */
+		 
 		n = access_process_vm(current, addr, &instr, sizeof(instr),
 				FOLL_FORCE);
 		if (n != sizeof(instr)) {
@@ -210,7 +197,7 @@ int is_syscall(unsigned long addr)
 			return 1;
 		}
 	}
-	/* sysenter */
+	 
 	return instr == 0x050f;
 }
 
@@ -251,14 +238,14 @@ long subarch_ptrace(struct task_struct *child, long request,
 	void __user *datap = (void __user *) data;
 
 	switch (request) {
-	case PTRACE_GETFPREGS: /* Get the child FPU state. */
+	case PTRACE_GETFPREGS:  
 		ret = get_fpregs(datap, child);
 		break;
-	case PTRACE_SETFPREGS: /* Set the child FPU state. */
+	case PTRACE_SETFPREGS:  
 		ret = set_fpregs(datap, child);
 		break;
 	case PTRACE_ARCH_PRCTL:
-		/* XXX Calls ptrace on the host - needs some SMP thinking */
+		 
 		ret = arch_prctl(child, data, (void __user *) addr);
 		break;
 	}

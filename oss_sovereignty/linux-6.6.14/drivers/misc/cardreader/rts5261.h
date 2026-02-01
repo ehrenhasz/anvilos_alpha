@@ -1,16 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2018-2019 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Rui FENG <rui_feng@realsil.com.cn>
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+ 
+ 
 #ifndef RTS5261_H
 #define RTS5261_H
 
-/*New add*/
+ 
 #define rts5261_vendor_setting_valid(reg)	((reg) & 0x010000)
 #define rts5261_reg_to_aspm(reg) \
 	(((~(reg) >> 28) & 0x02) | (((reg) >> 28) & 0x01))
@@ -34,7 +27,7 @@
 #define RTS5261_PAD_H3L1		0xFF79
 #define PAD_GPIO_H3L1			(1 << 3)
 
-/* SSC_CTL2 0xFC12 */
+ 
 #define RTS5261_SSC_DEPTH_MASK		0x07
 #define RTS5261_SSC_DEPTH_DISALBE	0x00
 #define RTS5261_SSC_DEPTH_8M		0x01
@@ -45,10 +38,10 @@
 #define RTS5261_SSC_DEPTH_256K		0x06
 #define RTS5261_SSC_DEPTH_128K		0x07
 
-/* efuse control register*/
+ 
 #define RTS5261_EFUSE_CTL		0xFC30
 #define RTS5261_EFUSE_ENABLE		0x80
-/* EFUSE_MODE: 0=READ 1=PROGRAM */
+ 
 #define RTS5261_EFUSE_MODE_MASK		0x40
 #define RTS5261_EFUSE_PROGRAM		0x40
 
@@ -58,14 +51,14 @@
 #define RTS5261_EFUSE_WRITE_DATA	0xFC32
 #define RTS5261_EFUSE_READ_DATA		0xFC34
 
-/* DMACTL 0xFE2C */
+ 
 #define RTS5261_DMA_PACK_SIZE_MASK	0xF0
 
-/* FW status register */
+ 
 #define RTS5261_FW_STATUS		0xFF56
 #define RTS5261_EXPRESS_LINK_FAIL_MASK	(0x01<<7)
 
-/* FW control register */
+ 
 #define RTS5261_FW_CTL			0xFF5F
 #define RTS5261_INFORM_RTD3_COLD	(0x01<<5)
 
@@ -79,7 +72,7 @@
 #define RTS5261_LDO12_130		(0x06<<1)
 #define RTS5261_LDO12_135		(0x07<<1)
 
-/* LDO control register */
+ 
 #define RTS5261_CARD_PWR_CTL		0xFD50
 #define RTS5261_SD_CLK_ISO		(0x01<<7)
 #define RTS5261_PAD_SD_DAT_FW_CTRL	(0x01<<6)
@@ -100,7 +93,7 @@
 #define RTS5261_DV3318_19		(0x04<<4)
 #define RTS5261_DV3318_33		(0x07<<4)
 
-/* CRD6603-433 190319 request changed */
+ 
 #define RTS5261_LDO1_OCP_THD_740	(0x00<<5)
 #define RTS5261_LDO1_OCP_THD_800	(0x01<<5)
 #define RTS5261_LDO1_OCP_THD_860	(0x02<<5)
@@ -173,12 +166,12 @@
 #define REG_EFUSE_POWEROFF		0x00
 
 
-/* Single LUN, support SD/SD EXPRESS */
+ 
 #define DEFAULT_SINGLE		0
 #define SD_LUN			1
 #define SD_EXPRESS_LUN		2
 
-/* For Change_FPGA_SSCClock Function */
+ 
 #define MULTIPLY_BY_1    0x00
 #define MULTIPLY_BY_2    0x01
 #define MULTIPLY_BY_3    0x02
@@ -203,4 +196,4 @@
 int rts5261_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
 		u8 ssc_depth, bool initial_mode, bool double_clk, bool vpclk);
 
-#endif /* RTS5261_H */
+#endif  

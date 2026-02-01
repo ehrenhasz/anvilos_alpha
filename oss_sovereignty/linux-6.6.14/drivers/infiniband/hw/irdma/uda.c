@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2016 - 2021 Intel Corporation */
+
+ 
 #include <linux/etherdevice.h>
 
 #include "osdep.h"
@@ -10,13 +10,7 @@
 #include "uda.h"
 #include "uda_d.h"
 
-/**
- * irdma_sc_access_ah() - Create, modify or delete AH
- * @cqp: struct for cqp hw
- * @info: ah information
- * @op: Operation
- * @scratch: u64 saved to be used during cqp completion
- */
+ 
 int irdma_sc_access_ah(struct irdma_sc_cqp *cqp, struct irdma_ah_info *info,
 		       u32 op, u64 scratch)
 {
@@ -62,7 +56,7 @@ int irdma_sc_access_ah(struct irdma_sc_cqp *cqp, struct irdma_ah_info *info,
 	set_64bit_val(wqe, 8, qw1);
 	set_64bit_val(wqe, 16, qw2);
 
-	dma_wmb(); /* need write block before writing WQE header */
+	dma_wmb();  
 
 	set_64bit_val(
 		wqe, 24,
@@ -80,15 +74,12 @@ int irdma_sc_access_ah(struct irdma_sc_cqp *cqp, struct irdma_ah_info *info,
 	return 0;
 }
 
-/**
- * irdma_create_mg_ctx() - create a mcg context
- * @info: multicast group context info
- */
+ 
 static void irdma_create_mg_ctx(struct irdma_mcast_grp_info *info)
 {
 	struct irdma_mcast_grp_ctx_entry_info *entry_info = NULL;
-	u8 idx = 0; /* index in the array */
-	u8 ctx_idx = 0; /* index in the MG context */
+	u8 idx = 0;  
+	u8 ctx_idx = 0;  
 
 	memset(info->dma_mem_mc.va, 0, IRDMA_MAX_MGS_PER_CTX * sizeof(u64));
 
@@ -105,13 +96,7 @@ static void irdma_create_mg_ctx(struct irdma_mcast_grp_info *info)
 	}
 }
 
-/**
- * irdma_access_mcast_grp() - Access mcast group based on op
- * @cqp: Control QP
- * @info: multicast group context info
- * @op: operation to perform
- * @scratch: u64 saved to be used during cqp completion
- */
+ 
 int irdma_access_mcast_grp(struct irdma_sc_cqp *cqp,
 			   struct irdma_mcast_grp_info *info, u32 op,
 			   u64 scratch)
@@ -151,7 +136,7 @@ int irdma_access_mcast_grp(struct irdma_sc_cqp *cqp,
 			      FIELD_PREP(IRDMA_UDA_CQPSQ_MAV_ADDR3, info->dest_ip_addr[0]));
 	}
 
-	dma_wmb(); /* need write memory block before writing the WQE header. */
+	dma_wmb();  
 
 	set_64bit_val(wqe, 24,
 		      FIELD_PREP(IRDMA_UDA_CQPSQ_MG_WQEVALID, cqp->polarity) |
@@ -170,11 +155,7 @@ int irdma_access_mcast_grp(struct irdma_sc_cqp *cqp,
 	return 0;
 }
 
-/**
- * irdma_compare_mgs - Compares two multicast group structures
- * @entry1: Multcast group info
- * @entry2: Multcast group info in context
- */
+ 
 static bool irdma_compare_mgs(struct irdma_mcast_grp_ctx_entry_info *entry1,
 			      struct irdma_mcast_grp_ctx_entry_info *entry2)
 {
@@ -185,11 +166,7 @@ static bool irdma_compare_mgs(struct irdma_mcast_grp_ctx_entry_info *entry1,
 	return false;
 }
 
-/**
- * irdma_sc_add_mcast_grp - Allocates mcast group entry in ctx
- * @ctx: Multcast group context
- * @mg: Multcast group info
- */
+ 
 int irdma_sc_add_mcast_grp(struct irdma_mcast_grp_info *ctx,
 			   struct irdma_mcast_grp_ctx_entry_info *mg)
 {
@@ -197,7 +174,7 @@ int irdma_sc_add_mcast_grp(struct irdma_mcast_grp_info *ctx,
 	bool free_entry_found = false;
 	u32 free_entry_idx = 0;
 
-	/* find either an identical or a free entry for a multicast group */
+	 
 	for (idx = 0; idx < IRDMA_MAX_MGS_PER_CTX; idx++) {
 		if (ctx->mg_ctx_info[idx].valid_entry) {
 			if (irdma_compare_mgs(&ctx->mg_ctx_info[idx], mg)) {
@@ -223,20 +200,13 @@ int irdma_sc_add_mcast_grp(struct irdma_mcast_grp_info *ctx,
 	return -ENOMEM;
 }
 
-/**
- * irdma_sc_del_mcast_grp - Delete mcast group
- * @ctx: Multcast group context
- * @mg: Multcast group info
- *
- * Finds and removes a specific mulicast group from context, all
- * parameters must match to remove a multicast group.
- */
+ 
 int irdma_sc_del_mcast_grp(struct irdma_mcast_grp_info *ctx,
 			   struct irdma_mcast_grp_ctx_entry_info *mg)
 {
 	u32 idx;
 
-	/* find an entry in multicast group context */
+	 
 	for (idx = 0; idx < IRDMA_MAX_MGS_PER_CTX; idx++) {
 		if (!ctx->mg_ctx_info[idx].valid_entry)
 			continue;
@@ -247,7 +217,7 @@ int irdma_sc_del_mcast_grp(struct irdma_mcast_grp_info *ctx,
 			if (!ctx->mg_ctx_info[idx].use_cnt) {
 				ctx->mg_ctx_info[idx].valid_entry = false;
 				ctx->no_of_mgs--;
-				/* Remove gap if element was not the last */
+				 
 				if (idx != ctx->no_of_mgs &&
 				    ctx->no_of_mgs > 0) {
 					memcpy(&ctx->mg_ctx_info[idx],

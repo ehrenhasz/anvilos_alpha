@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -187,9 +187,7 @@ static void _rtl92ee_fill_h2c_command(struct ieee80211_hw *hw, u8 element_id,
 
 	rtl_dbg(rtlpriv, COMP_CMD, DBG_LOUD, "come in\n");
 
-	/* 1. Prevent race condition in setting H2C cmd.
-	 * (copy from MgntActSet_RF_State().)
-	 */
+	 
 	while (true) {
 		spin_lock_irqsave(&rtlpriv->locks.h2c_lock, flag);
 		if (rtlhal->h2c_setinprogress) {
@@ -220,7 +218,7 @@ static void _rtl92ee_fill_h2c_command(struct ieee80211_hw *hw, u8 element_id,
 	}
 
 	while (!bwrite_sucess) {
-		/* 2. Find the last BOX number which has been writen. */
+		 
 		boxnum = rtlhal->last_hmeboxnum;
 		switch (boxnum) {
 		case 0:
@@ -245,7 +243,7 @@ static void _rtl92ee_fill_h2c_command(struct ieee80211_hw *hw, u8 element_id,
 			break;
 		}
 
-		/* 3. Check if the box content is empty. */
+		 
 		isfw_read = false;
 		u1b_tmp = rtl_read_byte(rtlpriv, REG_CR);
 
@@ -278,16 +276,14 @@ static void _rtl92ee_fill_h2c_command(struct ieee80211_hw *hw, u8 element_id,
 			}
 		}
 
-		/* If Fw has not read the last
-		 * H2C cmd, break and give up this H2C.
-		 */
+		 
 		if (!isfw_read) {
 			rtl_dbg(rtlpriv, COMP_CMD, DBG_LOUD,
 				"Write H2C reg BOX[%d] fail,Fw don't read.\n",
 				boxnum);
 			break;
 		}
-		/* 4. Fill the H2C cmd into box */
+		 
 		memset(boxcontent, 0, sizeof(boxcontent));
 		memset(boxextcontent, 0, sizeof(boxextcontent));
 		boxcontent[0] = element_id;
@@ -299,7 +295,7 @@ static void _rtl92ee_fill_h2c_command(struct ieee80211_hw *hw, u8 element_id,
 		case 1:
 		case 2:
 		case 3:
-			/*boxcontent[0] &= ~(BIT(7));*/
+			 
 			memcpy((u8 *)(boxcontent) + 1,
 			       cmdbuffer + buf_index, cmd_len);
 
@@ -312,7 +308,7 @@ static void _rtl92ee_fill_h2c_command(struct ieee80211_hw *hw, u8 element_id,
 		case 5:
 		case 6:
 		case 7:
-			/*boxcontent[0] |= (BIT(7));*/
+			 
 			memcpy((u8 *)(boxextcontent),
 			       cmdbuffer + buf_index+3, cmd_len-3);
 			memcpy((u8 *)(boxcontent) + 1,
@@ -398,7 +394,7 @@ void rtl92ee_set_fw_pwrmode_cmd(struct ieee80211_hw *hw, u8 mode)
 	u8 u1_h2c_set_pwrmode[H2C_92E_PWEMODE_LENGTH] = { 0 };
 	struct rtl_ps_ctl *ppsc = rtl_psc(rtl_priv(hw));
 	u8 rlbm, power_state = 0, byte5 = 0;
-	u8 awake_intvl;	/* DTIM = (awake_intvl - 1) */
+	u8 awake_intvl;	 
 	struct rtl_btc_ops *btc_ops = rtlpriv->btcoexist.btc_ops;
 	bool bt_ctrl_lps = (rtlpriv->cfg->ops->get_btc_status() ?
 			    btc_ops->btc_is_bt_ctrl_lps(rtlpriv) : false);
@@ -423,9 +419,7 @@ void rtl92ee_set_fw_pwrmode_cmd(struct ieee80211_hw *hw, u8 mode)
 	case FW_PS_DTIM_MODE:
 		rlbm = 2;
 		awake_intvl = ppsc->reg_max_lps_awakeintvl;
-		/* hw->conf.ps_dtim_period or mac->vif->bss_conf.dtim_period
-		 * is only used in swlps.
-		 */
+		 
 		break;
 	default:
 		rlbm = 2;
@@ -447,9 +441,7 @@ void rtl92ee_set_fw_pwrmode_cmd(struct ieee80211_hw *hw, u8 mode)
 			power_state = btc_ops->btc_get_rpwm_val(rtlpriv);
 
 			if ((rlbm == 2) && (byte5 & BIT(4))) {
-				/* Keep awake interval to 1 to prevent from
-				 * decreasing coex performance
-				 */
+				 
 				awake_intvl = 2;
 				rlbm = 2;
 			}
@@ -484,12 +476,7 @@ void rtl92ee_set_fw_pwrmode_cmd(struct ieee80211_hw *hw, u8 mode)
 void rtl92ee_set_fw_media_status_rpt_cmd(struct ieee80211_hw *hw, u8 mstatus)
 {
 	u8 parm[3] = { 0 , 0 , 0 };
-	/* parm[0]: bit0=0-->Disconnect, bit0=1-->Connect
-	 *          bit1=0-->update Media Status to MACID
-	 *          bit1=1-->update Media Status from MACID to MACID_End
-	 * parm[1]: MACID, if this is INFRA_STA, MacID = 0
-	 * parm[2]: MACID_End
-	 */
+	 
 
 	SET_H2CCMD_MSRRPT_PARM_OPMODE(parm, mstatus);
 	SET_H2CCMD_MSRRPT_PARM_MACID_IND(parm, 0);
@@ -497,17 +484,17 @@ void rtl92ee_set_fw_media_status_rpt_cmd(struct ieee80211_hw *hw, u8 mstatus)
 	rtl92ee_fill_h2c_cmd(hw, H2C_92E_MSRRPT, 3, parm);
 }
 
-#define BEACON_PG		0 /* ->1 */
+#define BEACON_PG		0  
 #define PSPOLL_PG		2
 #define NULL_PG			3
-#define PROBERSP_PG		4 /* ->5 */
+#define PROBERSP_PG		4  
 #define QOS_NULL_PG		6
 #define BT_QOS_NULL_PG	7
 
 #define TOTAL_RESERVED_PKT_LEN	1024
 
 static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
-	/* page 0 beacon */
+	 
 	0x80, 0x00, 0x00, 0x00, 0xFF, 0xFF, 0xFF, 0xFF,
 	0xFF, 0xFF, 0x00, 0xE0, 0x4C, 0x02, 0xB1, 0x78,
 	0xEC, 0x1A, 0x59, 0x0B, 0xAD, 0xD4, 0x20, 0x00,
@@ -525,7 +512,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0xF2, 0x01, 0x01, 0x00, 0x00, 0x50, 0xF2, 0x04,
 	0x01, 0x00, 0x00, 0x50, 0xF2, 0x04, 0x01, 0x00,
 
-	/* page 1 beacon */
+	 
 	0x00, 0x50, 0xF2, 0x02, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -543,7 +530,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 2  ps-poll */
+	 
 	0xA4, 0x10, 0x01, 0xC0, 0xEC, 0x1A, 0x59, 0x0B,
 	0xAD, 0xD4, 0x00, 0xE0, 0x4C, 0x02, 0xB1, 0x78,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -561,7 +548,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 3  null */
+	 
 	0x48, 0x01, 0x00, 0x00, 0xEC, 0x1A, 0x59, 0x0B,
 	0xAD, 0xD4, 0x00, 0xE0, 0x4C, 0x02, 0xB1, 0x78,
 	0xEC, 0x1A, 0x59, 0x0B, 0xAD, 0xD4, 0x00, 0x00,
@@ -579,7 +566,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 4  probe_resp */
+	 
 	0x50, 0x00, 0x00, 0x00, 0x00, 0x40, 0x10, 0x10,
 	0x00, 0x03, 0x00, 0xE0, 0x4C, 0x76, 0x00, 0x42,
 	0x00, 0x40, 0x10, 0x10, 0x00, 0x03, 0x00, 0x00,
@@ -597,7 +584,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x01, 0x70, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 5  probe_resp */
+	 
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
@@ -611,7 +598,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 6 qos null data */
+	 
 	0xC8, 0x01, 0x00, 0x00, 0x84, 0xC9, 0xB2, 0xA7,
 	0xB3, 0x6E, 0x00, 0xE0, 0x4C, 0x02, 0x51, 0x02,
 	0x84, 0xC9, 0xB2, 0xA7, 0xB3, 0x6E, 0x00, 0x00,
@@ -629,7 +616,7 @@ static u8 reserved_page_packet[TOTAL_RESERVED_PKT_LEN] = {
 	0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 	0x00, 0x80, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
 
-	/* page 7 BT-qos null data */
+	 
 	0xC8, 0x01, 0x00, 0x00, 0x84, 0xC9, 0xB2, 0xA7,
 	0xB3, 0x6E, 0x00, 0xE0, 0x4C, 0x02, 0x51, 0x02,
 	0x84, 0xC9, 0xB2, 0xA7, 0xB3, 0x6E, 0x00, 0x00,
@@ -668,18 +655,12 @@ void rtl92ee_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished)
 	u8 *p_probersp;
 	u8 *qosnull;
 	u8 *btqosnull;
-	/*---------------------------------------------------------
-	 *			(1) beacon
-	 *---------------------------------------------------------
-	 */
+	 
 	beacon = &reserved_page_packet[BEACON_PG * 128];
 	SET_80211_HDR_ADDRESS2(beacon, mac->mac_addr);
 	SET_80211_HDR_ADDRESS3(beacon, mac->bssid);
 
-	/*-------------------------------------------------------
-	 *			(2) ps-poll
-	 *--------------------------------------------------------
-	 */
+	 
 	p_pspoll = &reserved_page_packet[PSPOLL_PG * 128];
 	SET_80211_PS_POLL_AID(p_pspoll, (mac->assoc_id | 0xc000));
 	SET_80211_PS_POLL_BSSID(p_pspoll, mac->bssid);
@@ -687,10 +668,7 @@ void rtl92ee_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished)
 
 	SET_H2CCMD_RSVDPAGE_LOC_PSPOLL(u1rsvdpageloc, PSPOLL_PG);
 
-	/*--------------------------------------------------------
-	 *			(3) null data
-	 *---------------------------------------------------------
-	 */
+	 
 	nullfunc = &reserved_page_packet[NULL_PG * 128];
 	SET_80211_HDR_ADDRESS1(nullfunc, mac->bssid);
 	SET_80211_HDR_ADDRESS2(nullfunc, mac->mac_addr);
@@ -698,10 +676,7 @@ void rtl92ee_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished)
 
 	SET_H2CCMD_RSVDPAGE_LOC_NULL_DATA(u1rsvdpageloc, NULL_PG);
 
-	/*---------------------------------------------------------
-	 *			(4) probe response
-	 *----------------------------------------------------------
-	 */
+	 
 	p_probersp = &reserved_page_packet[PROBERSP_PG * 128];
 	SET_80211_HDR_ADDRESS1(p_probersp, mac->bssid);
 	SET_80211_HDR_ADDRESS2(p_probersp, mac->mac_addr);
@@ -709,10 +684,7 @@ void rtl92ee_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished)
 
 	SET_H2CCMD_RSVDPAGE_LOC_PROBE_RSP(u1rsvdpageloc, PROBERSP_PG);
 
-	/*---------------------------------------------------------
-	 *			(5) QoS null data
-	 *----------------------------------------------------------
-	 */
+	 
 	qosnull = &reserved_page_packet[QOS_NULL_PG * 128];
 	SET_80211_HDR_ADDRESS1(qosnull, mac->bssid);
 	SET_80211_HDR_ADDRESS2(qosnull, mac->mac_addr);
@@ -720,10 +692,7 @@ void rtl92ee_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished)
 
 	SET_H2CCMD_RSVDPAGE_LOC_QOS_NULL_DATA(u1rsvdpageloc, QOS_NULL_PG);
 
-	/*---------------------------------------------------------
-	 *			(6) BT QoS null data
-	 *----------------------------------------------------------
-	 */
+	 
 	btqosnull = &reserved_page_packet[BT_QOS_NULL_PG * 128];
 	SET_80211_HDR_ADDRESS1(btqosnull, mac->bssid);
 	SET_80211_HDR_ADDRESS2(btqosnull, mac->mac_addr);
@@ -762,7 +731,7 @@ void rtl92ee_set_fw_rsvdpagepkt(struct ieee80211_hw *hw, bool b_dl_finished)
 	}
 }
 
-/*Shoud check FW support p2p or not.*/
+ 
 static void rtl92ee_set_p2p_ctw_period_cmd(struct ieee80211_hw *hw, u8 ctwindow)
 {
 	u8 u1_ctwindow_period[1] = {ctwindow};
@@ -788,27 +757,27 @@ void rtl92ee_set_p2p_ps_offload_cmd(struct ieee80211_hw *hw, u8 p2p_ps_state)
 		break;
 	case P2P_PS_ENABLE:
 		rtl_dbg(rtlpriv, COMP_FW, DBG_LOUD, "P2P_PS_ENABLE\n");
-		/* update CTWindow value. */
+		 
 		if (p2pinfo->ctwindow > 0) {
 			p2p_ps_offload->ctwindow_en = 1;
 			ctwindow = p2pinfo->ctwindow;
 			rtl92ee_set_p2p_ctw_period_cmd(hw, ctwindow);
 		}
-		/* hw only support 2 set of NoA */
+		 
 		for (i = 0 ; i < p2pinfo->noa_num ; i++) {
-			/* To control the register setting for which NOA*/
+			 
 			rtl_write_byte(rtlpriv, 0x5cf, (i << 4));
 			if (i == 0)
 				p2p_ps_offload->noa0_en = 1;
 			else
 				p2p_ps_offload->noa1_en = 1;
-			/* config P2P NoA Descriptor Register */
+			 
 			rtl_write_dword(rtlpriv, 0x5E0,
 					p2pinfo->noa_duration[i]);
 			rtl_write_dword(rtlpriv, 0x5E4,
 					p2pinfo->noa_interval[i]);
 
-			/*Get Current TSF value */
+			 
 			tsf_low = rtl_read_dword(rtlpriv, REG_TSFTR);
 
 			start_time = p2pinfo->noa_start_time[i];
@@ -824,7 +793,7 @@ void rtl92ee_set_p2p_ps_offload_cmd(struct ieee80211_hw *hw, u8 p2p_ps_state)
 					p2pinfo->noa_count_type[i]);
 		}
 		if ((p2pinfo->opp_ps == 1) || (p2pinfo->noa_num > 0)) {
-			/* rst p2p circuit */
+			 
 			rtl_write_byte(rtlpriv, REG_DUAL_TSF_RST, BIT(4));
 			p2p_ps_offload->offload_en = 1;
 

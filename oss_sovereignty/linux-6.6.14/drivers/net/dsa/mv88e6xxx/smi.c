@@ -1,30 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx System Management Interface (SMI) support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2019 Vivien Didelot <vivien.didelot@gmail.com>
- */
+
+ 
 
 #include "chip.h"
 #include "smi.h"
 
-/* The switch ADDR[4:1] configuration pins define the chip SMI device address
- * (ADDR[0] is always zero, thus only even SMI addresses can be strapped).
- *
- * When ADDR is all zero, the chip uses Single-chip Addressing Mode, assuming it
- * is the only device connected to the SMI master. In this mode it responds to
- * all 32 possible SMI addresses, and thus maps directly the internal devices.
- *
- * When ADDR is non-zero, the chip uses Multi-chip Addressing Mode, allowing
- * multiple devices to share the SMI interface. In this mode it responds to only
- * 2 registers, used to indirectly access the internal SMI devices.
- *
- * Some chips use a different scheme: Only the ADDR4 pin is used for
- * configuration, and the device responds to 16 of the 32 SMI
- * addresses, allowing two to coexist on the same SMI interface.
- */
+ 
 
 static int mv88e6xxx_smi_direct_read(struct mv88e6xxx_chip *chip,
 				     int dev, int reg, u16 *data)
@@ -60,9 +40,7 @@ static int mv88e6xxx_smi_direct_wait(struct mv88e6xxx_chip *chip,
 	int err;
 	int i;
 
-	/* Even if the initial poll takes longer than 50ms, always do
-	 * at least one more attempt.
-	 */
+	 
 	for (i = 0; time_before(jiffies, timeout) || (i < 2); i++) {
 		err = mv88e6xxx_smi_direct_read(chip, dev, reg, &data);
 		if (err)
@@ -102,9 +80,7 @@ static const struct mv88e6xxx_bus_ops mv88e6xxx_smi_dual_direct_ops = {
 	.write = mv88e6xxx_smi_dual_direct_write,
 };
 
-/* Offset 0x00: SMI Command Register
- * Offset 0x01: SMI Data Register
- */
+ 
 
 static int mv88e6xxx_smi_indirect_read(struct mv88e6xxx_chip *chip,
 				       int dev, int reg, u16 *data)
@@ -154,10 +130,7 @@ static int mv88e6xxx_smi_indirect_write(struct mv88e6xxx_chip *chip,
 
 static int mv88e6xxx_smi_indirect_init(struct mv88e6xxx_chip *chip)
 {
-	/* Ensure that the chip starts out in the ready state. As both
-	 * reads and writes always ensure this on return, they can
-	 * safely depend on the chip not being busy on entry.
-	 */
+	 
 	return mv88e6xxx_smi_direct_wait(chip, chip->sw_addr,
 					 MV88E6XXX_SMI_CMD, 15, 0);
 }

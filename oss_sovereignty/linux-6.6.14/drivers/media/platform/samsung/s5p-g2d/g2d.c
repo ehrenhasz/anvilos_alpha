@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Samsung S5P G2D - 2D Graphics Accelerator Driver
- *
- * Copyright (c) 2011 Samsung Electronics Co., Ltd.
- * Kamil Debski, <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/fs.h>
@@ -240,7 +235,7 @@ static int g2d_open(struct file *file)
 	if (!ctx)
 		return -ENOMEM;
 	ctx->dev = dev;
-	/* Set default formats */
+	 
 	ctx->in		= def_frame;
 	ctx->out	= def_frame;
 
@@ -261,7 +256,7 @@ static int g2d_open(struct file *file)
 
 	g2d_setup_ctrls(ctx);
 
-	/* Write the default values to the ctx struct */
+	 
 	v4l2_ctrl_handler_setup(&ctx->ctrl_handler);
 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
@@ -366,8 +361,7 @@ static int vidioc_s_fmt(struct file *file, void *prv, struct v4l2_format *f)
 	struct g2d_fmt *fmt;
 	int ret = 0;
 
-	/* Adjust all values accordingly to the hardware capabilities
-	 * and chosen format. */
+	 
 	ret = vidioc_try_fmt(file, prv, f);
 	if (ret)
 		return ret;
@@ -385,7 +379,7 @@ static int vidioc_s_fmt(struct file *file, void *prv, struct v4l2_format *f)
 	frm->width	= f->fmt.pix.width;
 	frm->height	= f->fmt.pix.height;
 	frm->size	= f->fmt.pix.sizeimage;
-	/* Reset crop settings */
+	 
 	frm->o_width	= 0;
 	frm->o_height	= 0;
 	frm->c_width	= frm->width;
@@ -756,11 +750,11 @@ static void g2d_remove(struct platform_device *pdev)
 }
 
 static struct g2d_variant g2d_drvdata_v3x = {
-	.hw_rev = TYPE_G2D_3X, /* Revision 3.0 for S5PV210 and Exynos4210 */
+	.hw_rev = TYPE_G2D_3X,  
 };
 
 static struct g2d_variant g2d_drvdata_v4x = {
-	.hw_rev = TYPE_G2D_4X, /* Revision 4.1 for Exynos4X12 and Exynos5 */
+	.hw_rev = TYPE_G2D_4X,  
 };
 
 static const struct of_device_id exynos_g2d_match[] = {

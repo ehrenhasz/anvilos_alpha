@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2016-2018 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef __NFP_ASM_H__
 #define __NFP_ASM_H__ 1
@@ -282,7 +282,7 @@ enum lcsr_wr_src {
 #define NFP_CSR_ACT_LM_ADDR3	0x9c
 #define NFP_CSR_PSEUDO_RND_NUM	0x148
 
-/* Software register representation, independent of operand type */
+ 
 #define NN_REG_TYPE	GENMASK(31, 24)
 #define NN_REG_LM_IDX	GENMASK(23, 22)
 #define NN_REG_LM_IDX_HI	BIT(23)

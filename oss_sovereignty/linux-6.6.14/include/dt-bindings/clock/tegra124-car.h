@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * This header provides Tegra124-specific constants for binding
- * nvidia,tegra124-car.
- */
+ 
+ 
 
 #include <dt-bindings/clock/tegra124-car-common.h>
 
@@ -17,4 +14,4 @@
 
 #define TEGRA124_CLK_CLK_MAX		315
 
-#endif	/* _DT_BINDINGS_CLOCK_TEGRA124_CAR_H */
+#endif	 

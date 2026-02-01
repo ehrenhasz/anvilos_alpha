@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Realtek MDIO interface driver
- *
- * ASICs we intend to support with this driver:
- *
- * RTL8366   - The original version, apparently
- * RTL8369   - Similar enough to have the same datsheet as RTL8366
- * RTL8366RB - Probably reads out "RTL8366 revision B", has a quite
- *             different register layout from the other two
- * RTL8366S  - Is this "RTL8366 super"?
- * RTL8367   - Has an OpenWRT driver as well
- * RTL8368S  - Seems to be an alternative name for RTL8366RB
- * RTL8370   - Also uses SMI
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- * Copyright (C) 2010 Antti Seppälä <a.seppala@gmail.com>
- * Copyright (C) 2010 Roman Yeryomin <roman@advem.lv>
- * Copyright (C) 2011 Colin Leitner <colin.leitner@googlemail.com>
- * Copyright (C) 2009-2010 Gabor Juhos <juhosg@openwrt.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -26,7 +8,7 @@
 
 #include "realtek.h"
 
-/* Read/write via mdiobus */
+ 
 #define REALTEK_MDIO_CTRL0_REG		31
 #define REALTEK_MDIO_START_REG		29
 #define REALTEK_MDIO_CTRL1_REG		21
@@ -114,10 +96,10 @@ static void realtek_mdio_unlock(void *ctx)
 }
 
 static const struct regmap_config realtek_mdio_regmap_config = {
-	.reg_bits = 10, /* A4..A0 R4..R0 */
+	.reg_bits = 10,  
 	.val_bits = 16,
 	.reg_stride = 1,
-	/* PHY regs are at 0x8000 */
+	 
 	.max_register = 0xffff,
 	.reg_format_endian = REGMAP_ENDIAN_BIG,
 	.reg_read = realtek_mdio_read,
@@ -128,10 +110,10 @@ static const struct regmap_config realtek_mdio_regmap_config = {
 };
 
 static const struct regmap_config realtek_mdio_nolock_regmap_config = {
-	.reg_bits = 10, /* A4..A0 R4..R0 */
+	.reg_bits = 10,  
 	.val_bits = 16,
 	.reg_stride = 1,
-	/* PHY regs are at 0x8000 */
+	 
 	.max_register = 0xffff,
 	.reg_format_endian = REGMAP_ENDIAN_BIG,
 	.reg_read = realtek_mdio_read,
@@ -194,7 +176,7 @@ static int realtek_mdio_probe(struct mdio_device *mdiodev)
 
 	dev_set_drvdata(dev, priv);
 
-	/* TODO: if power is software controlled, set up any regulators here */
+	 
 	priv->leds_disabled = of_property_read_bool(np, "realtek,disable-leds");
 
 	priv->reset = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
@@ -245,7 +227,7 @@ static void realtek_mdio_remove(struct mdio_device *mdiodev)
 
 	dsa_unregister_switch(priv->ds);
 
-	/* leave the device reset asserted */
+	 
 	if (priv->reset)
 		gpiod_set_value(priv->reset, 1);
 }
@@ -269,7 +251,7 @@ static const struct of_device_id realtek_mdio_of_match[] = {
 #if IS_ENABLED(CONFIG_NET_DSA_REALTEK_RTL8365MB)
 	{ .compatible = "realtek,rtl8365mb", .data = &rtl8365mb_variant, },
 #endif
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, realtek_mdio_of_match);
 

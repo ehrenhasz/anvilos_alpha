@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014 MundoReader S.L.
- * Author: Heiko Stuebner <heiko@sntech.de>
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_CLK_ROCKCHIP_RK3288_H
 #define _DT_BINDINGS_CLK_ROCKCHIP_RK3288_H
 
-/* core clocks */
+ 
 #define PLL_APLL		1
 #define PLL_DPLL		2
 #define PLL_CPLL		3
@@ -15,7 +12,7 @@
 #define PLL_NPLL		5
 #define ARMCLK			6
 
-/* sclk gates (special clocks) */
+ 
 #define SCLK_GPU		64
 #define SCLK_SPI0		65
 #define SCLK_SPI1		66
@@ -87,7 +84,7 @@
 #define DCLK_VOP0		190
 #define DCLK_VOP1		191
 
-/* aclk gates */
+ 
 #define ACLK_GPU		192
 #define ACLK_DMAC1		193
 #define ACLK_DMAC2		194
@@ -108,7 +105,7 @@
 #define ACLK_CPU		209
 #define ACLK_PERI		210
 
-/* pclk gates */
+ 
 #define PCLK_GPIO0		320
 #define PCLK_GPIO1		321
 #define PCLK_GPIO2		322
@@ -162,7 +159,7 @@
 #define PCLK_EFUSE1024		370
 #define PCLK_ISP_IN		371
 
-/* hclk gates */
+ 
 #define HCLK_GPS		448
 #define HCLK_OTG0		449
 #define HCLK_USBHOST0		450
@@ -197,7 +194,7 @@
 
 #define CLK_NR_CLKS		(HCLK_PERI + 1)
 
-/* soft-reset indices */
+ 
 #define SRST_CORE0		0
 #define SRST_CORE1		1
 #define SRST_CORE2		2

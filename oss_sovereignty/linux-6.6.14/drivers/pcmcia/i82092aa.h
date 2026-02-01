@@ -1,10 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _INCLUDE_GUARD_i82092aa_H_
 #define _INCLUDE_GUARD_i82092aa_H_
 
 #include <linux/interrupt.h>
 
-/* prototypes */
+ 
 
 static int  i82092aa_pci_probe(struct pci_dev *dev, const struct pci_device_id *id);
 static void i82092aa_pci_remove(struct pci_dev *dev);

@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IBM Accelerator Family 'GenWQE'
- *
- * (C) Copyright IBM Corp. 2013
- *
- * Author: Frank Haverkamp <haver@linux.vnet.ibm.com>
- * Author: Joerg-Stephan Vogt <jsvogt@de.ibm.com>
- * Author: Michael Jung <mijung@gmx.net>
- * Author: Michael Ruettger <michael@ibmra.de>
- */
 
-/*
- * Sysfs interfaces for the GenWQE card. There are attributes to query
- * the version of the bitstream as well as some for the driver. For
- * debugging, please also see the debugfs interfaces of this driver.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -129,22 +116,7 @@ static ssize_t base_clock_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(base_clock);
 
-/*
- * curr_bitstream_show() - Show the current bitstream id
- *
- * There is a bug in some old versions of the CPLD which selects the
- * bitstream, which causes the IO_SLU_BITSTREAM register to report
- * unreliable data in very rare cases. This makes this sysfs
- * unreliable up to the point were a new CPLD version is being used.
- *
- * Unfortunately there is no automatic way yet to query the CPLD
- * version, such that you need to manually ensure via programming
- * tools that you have a recent version of the CPLD software.
- *
- * The proposed circumvention is to use a special recovery bitstream
- * on the backup partition (0) to identify problems while loading the
- * image.
- */
+ 
 static ssize_t curr_bitstream_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -156,11 +128,7 @@ static ssize_t curr_bitstream_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(curr_bitstream);
 
-/*
- * next_bitstream_show() - Show the next activated bitstream
- *
- * IO_SLC_CFGREG_SOFTRESET: This register can only be accessed by the PF.
- */
+ 
 static ssize_t next_bitstream_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -176,7 +144,7 @@ static ssize_t next_bitstream_show(struct device *dev,
 		break;
 	default:
 		next_bitstream = -1;
-		break;		/* error */
+		break;		 
 	}
 	return sprintf(buf, "%d\n", next_bitstream);
 }
@@ -231,10 +199,7 @@ static ssize_t reload_bitstream_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(reload_bitstream);
 
-/*
- * Create device_attribute structures / params: name, mode, show, store
- * additional flag if valid in VF
- */
+ 
 static struct attribute *genwqe_attributes[] = {
 	&dev_attr_tempsens.attr,
 	&dev_attr_next_bitstream.attr,
@@ -260,12 +225,7 @@ static struct attribute *genwqe_normal_attributes[] = {
 	NULL,
 };
 
-/*
- * genwqe_is_visible() - Determine if sysfs attribute should be visible or not
- *
- * VFs have restricted mmio capabilities, so not all sysfs entries
- * are allowed in VFs.
- */
+ 
 static umode_t genwqe_is_visible(struct kobject *kobj,
 				 struct attribute *attr, int n)
 {

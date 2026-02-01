@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/module.h>
 #include <linux/slab.h>
 #include "adf_accel_devices.h"
@@ -71,7 +71,7 @@ struct qat_crypto_instance *qat_crypto_get_instance_node(int node)
 
 	if (!accel_dev) {
 		pr_debug_ratelimited("QAT: Could not find a device on node %d\n", node);
-		/* Get any started device */
+		 
 		list_for_each_entry(tmp_dev, adf_devmgr_get_head(), list) {
 			if (adf_dev_started(tmp_dev) &&
 			    !list_empty(&tmp_dev->crypto_list)) {
@@ -104,17 +104,7 @@ struct qat_crypto_instance *qat_crypto_get_instance_node(int node)
 	return inst;
 }
 
-/**
- * qat_crypto_vf_dev_config()
- *     create dev config required to create crypto inst.
- *
- * @accel_dev: Pointer to acceleration device.
- *
- * Function creates device configuration required to create
- * asym, sym or, crypto instances
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int qat_crypto_vf_dev_config(struct adf_accel_dev *accel_dev)
 {
 	u16 ring_to_svc_map = GET_HW_DATA(accel_dev)->ring_to_svc_map;

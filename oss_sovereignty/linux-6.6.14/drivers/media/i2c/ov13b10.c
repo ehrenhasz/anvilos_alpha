@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2021 Intel Corporation.
+
+
 
 #include <linux/acpi.h>
 #include <linux/clk.h>
@@ -23,41 +23,41 @@
 #define OV13B10_REG_SOFTWARE_RST	0x0103
 #define OV13B10_SOFTWARE_RST		0x01
 
-/* Chip ID */
+ 
 #define OV13B10_REG_CHIP_ID		0x300a
 #define OV13B10_CHIP_ID			0x560d42
 
-/* V_TIMING internal */
+ 
 #define OV13B10_REG_VTS			0x380e
 #define OV13B10_VTS_30FPS		0x0c7c
 #define OV13B10_VTS_60FPS		0x063e
 #define OV13B10_VTS_MAX			0x7fff
 
-/* HBLANK control - read only */
+ 
 #define OV13B10_PPL_560MHZ		4704
 
-/* Exposure control */
+ 
 #define OV13B10_REG_EXPOSURE		0x3500
 #define OV13B10_EXPOSURE_MIN		4
 #define OV13B10_EXPOSURE_STEP		1
 #define OV13B10_EXPOSURE_DEFAULT	0x40
 
-/* Analog gain control */
+ 
 #define OV13B10_REG_ANALOG_GAIN		0x3508
 #define OV13B10_ANA_GAIN_MIN		0x80
 #define OV13B10_ANA_GAIN_MAX		0x07c0
 #define OV13B10_ANA_GAIN_STEP		1
 #define OV13B10_ANA_GAIN_DEFAULT	0x80
 
-/* Digital gain control */
+ 
 #define OV13B10_REG_DGTL_GAIN_H		0x350a
 #define OV13B10_REG_DGTL_GAIN_M		0x350b
 #define OV13B10_REG_DGTL_GAIN_L		0x350c
 
-#define OV13B10_DGTL_GAIN_MIN		1024	     /* Min = 1 X */
-#define OV13B10_DGTL_GAIN_MAX		(4096 - 1)   /* Max = 4 X */
-#define OV13B10_DGTL_GAIN_DEFAULT	2560	     /* Default gain = 2.5 X */
-#define OV13B10_DGTL_GAIN_STEP		1	     /* Each step = 1/1024 */
+#define OV13B10_DGTL_GAIN_MIN		1024	      
+#define OV13B10_DGTL_GAIN_MAX		(4096 - 1)    
+#define OV13B10_DGTL_GAIN_DEFAULT	2560	      
+#define OV13B10_DGTL_GAIN_STEP		1	      
 
 #define OV13B10_DGTL_GAIN_L_SHIFT	6
 #define OV13B10_DGTL_GAIN_L_MASK	0x3
@@ -66,20 +66,20 @@
 #define OV13B10_DGTL_GAIN_H_SHIFT	10
 #define OV13B10_DGTL_GAIN_H_MASK	0x3
 
-/* Test Pattern Control */
+ 
 #define OV13B10_REG_TEST_PATTERN	0x5080
 #define OV13B10_TEST_PATTERN_ENABLE	BIT(7)
 #define OV13B10_TEST_PATTERN_MASK	0xf3
 #define OV13B10_TEST_PATTERN_BAR_SHIFT	2
 
-/* Flip Control */
+ 
 #define OV13B10_REG_FORMAT1		0x3820
 #define OV13B10_REG_FORMAT2		0x3821
 
-/* Horizontal Window Offset */
+ 
 #define OV13B10_REG_H_WIN_OFFSET	0x3811
 
-/* Vertical Window Offset */
+ 
 #define OV13B10_REG_V_WIN_OFFSET	0x3813
 
 struct ov13b10_reg {
@@ -92,32 +92,32 @@ struct ov13b10_reg_list {
 	const struct ov13b10_reg *regs;
 };
 
-/* Link frequency config */
+ 
 struct ov13b10_link_freq_config {
 	u32 pixels_per_line;
 
-	/* registers for this link frequency */
+	 
 	struct ov13b10_reg_list reg_list;
 };
 
-/* Mode : resolution and related config&values */
+ 
 struct ov13b10_mode {
-	/* Frame width */
+	 
 	u32 width;
-	/* Frame height */
+	 
 	u32 height;
 
-	/* V-timing */
+	 
 	u32 vts_def;
 	u32 vts_min;
 
-	/* Index of Link frequency config to be used */
+	 
 	u32 link_freq_index;
-	/* Default register values */
+	 
 	struct ov13b10_reg_list reg_list;
 };
 
-/* 4208x3120 needs 1120Mbps/lane, 4 lanes */
+ 
 static const struct ov13b10_reg mipi_data_rate_1120mbps[] = {
 	{0x0103, 0x01},
 	{0x0303, 0x04},
@@ -476,17 +476,14 @@ static const char * const ov13b10_test_pattern_menu[] = {
 	"Vertical Color Bar Type 4"
 };
 
-/* Configurations for supported link frequencies */
+ 
 #define OV13B10_LINK_FREQ_560MHZ	560000000ULL
 #define OV13B10_LINK_FREQ_INDEX_0	0
 
 #define OV13B10_EXT_CLK			19200000
 #define OV13B10_DATA_LANES		4
 
-/*
- * pixel_rate = link_freq * data-rate * nr_of_lanes / bits_per_sample
- * data rate => double data rate; number of lanes => 4; bits per pixel => 10
- */
+ 
 static u64 link_freq_to_pixel_rate(u64 f)
 {
 	f *= 2 * OV13B10_DATA_LANES;
@@ -495,12 +492,12 @@ static u64 link_freq_to_pixel_rate(u64 f)
 	return f;
 }
 
-/* Menu items for LINK_FREQ V4L2 control */
+ 
 static const s64 link_freq_menu_items[] = {
 	OV13B10_LINK_FREQ_560MHZ
 };
 
-/* Link frequency configs */
+ 
 static const struct ov13b10_link_freq_config
 			link_freq_configs[] = {
 	{
@@ -512,7 +509,7 @@ static const struct ov13b10_link_freq_config
 	}
 };
 
-/* Mode configs */
+ 
 static const struct ov13b10_mode supported_modes[] = {
 	{
 		.width = 4208,
@@ -581,29 +578,29 @@ struct ov13b10 {
 	struct regulator *avdd;
 	struct gpio_desc *reset;
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov13b10_mode *cur_mode;
 
-	/* Mutex for serialized access */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 
-	/* True if the device has been identified */
+	 
 	bool identified;
 };
 
 #define to_ov13b10(_sd)	container_of(_sd, struct ov13b10, sd)
 
-/* Read registers up to 4 at a time */
+ 
 static int ov13b10_read_reg(struct ov13b10 *ov13b,
 			    u16 reg, u32 len, u32 *val)
 {
@@ -618,13 +615,13 @@ static int ov13b10_read_reg(struct ov13b10 *ov13b,
 		return -EINVAL;
 
 	data_be_p = (u8 *)&data_be;
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 2;
 	msgs[0].buf = (u8 *)&reg_addr_be;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -639,7 +636,7 @@ static int ov13b10_read_reg(struct ov13b10 *ov13b,
 	return 0;
 }
 
-/* Write registers up to 4 at a time */
+ 
 static int ov13b10_write_reg(struct ov13b10 *ov13b,
 			     u16 reg, u32 len, u32 __val)
 {
@@ -668,7 +665,7 @@ static int ov13b10_write_reg(struct ov13b10 *ov13b,
 	return 0;
 }
 
-/* Write a list of registers */
+ 
 static int ov13b10_write_regs(struct ov13b10 *ov13b,
 			      const struct ov13b10_reg *regs, u32 len)
 {
@@ -697,7 +694,7 @@ static int ov13b10_write_reg_list(struct ov13b10 *ov13b,
 	return ov13b10_write_regs(ov13b, r_list->regs, r_list->num_of_regs);
 }
 
-/* Open sub-device */
+ 
 static int ov13b10_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	const struct ov13b10_mode *default_mode = &supported_modes[0];
@@ -708,13 +705,13 @@ static int ov13b10_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 
 	mutex_lock(&ov13b->mutex);
 
-	/* Initialize try_fmt */
+	 
 	try_fmt->width = default_mode->width;
 	try_fmt->height = default_mode->height;
 	try_fmt->code = MEDIA_BUS_FMT_SGRBG10_1X10;
 	try_fmt->field = V4L2_FIELD_NONE;
 
-	/* No crop or compose */
+	 
 	mutex_unlock(&ov13b->mutex);
 
 	return 0;
@@ -725,9 +722,7 @@ static int ov13b10_update_digital_gain(struct ov13b10 *ov13b, u32 d_gain)
 	int ret;
 	u32 val;
 
-	/*
-	 * 0x350C[7:6], 0x350B[7:0], 0x350A[1:0]
-	 */
+	 
 
 	val = (d_gain & OV13B10_DGTL_GAIN_L_MASK) << OV13B10_DGTL_GAIN_L_SHIFT;
 	ret = ov13b10_write_reg(ov13b, OV13B10_REG_DGTL_GAIN_L,
@@ -792,10 +787,7 @@ static int ov13b10_set_ctrl_hflip(struct ov13b10 *ov13b, u32 ctrl_val)
 	if (ret)
 		return ret;
 
-	/*
-	 * Applying cropping offset to reverse the change of Bayer order
-	 * after mirroring image
-	 */
+	 
 	return ov13b10_write_reg(ov13b, OV13B10_REG_H_WIN_OFFSET,
 				 OV13B10_REG_VALUE_08BIT,
 				 ctrl_val ? ++val : val);
@@ -823,10 +815,7 @@ static int ov13b10_set_ctrl_vflip(struct ov13b10 *ov13b, u32 ctrl_val)
 	if (ret)
 		return ret;
 
-	/*
-	 * Applying cropping offset to reverse the change of Bayer order
-	 * after flipping image
-	 */
+	 
 	return ov13b10_write_reg(ov13b, OV13B10_REG_V_WIN_OFFSET,
 				 OV13B10_REG_VALUE_08BIT,
 				 ctrl_val ? --val : val);
@@ -840,10 +829,10 @@ static int ov13b10_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max = ov13b->cur_mode->height + ctrl->val - 8;
 		__v4l2_ctrl_modify_range(ov13b->exposure,
 					 ov13b->exposure->minimum,
@@ -851,10 +840,7 @@ static int ov13b10_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	}
 
-	/*
-	 * Applying V4L2 control value only happens
-	 * when power is up for streaming
-	 */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -908,7 +894,7 @@ static int ov13b10_enum_mbus_code(struct v4l2_subdev *sd,
 				  struct v4l2_subdev_state *sd_state,
 				  struct v4l2_subdev_mbus_code_enum *code)
 {
-	/* Only one bayer order(GRBG) is supported */
+	 
 	if (code->index > 0)
 		return -EINVAL;
 
@@ -991,7 +977,7 @@ ov13b10_set_pad_format(struct v4l2_subdev *sd,
 
 	mutex_lock(&ov13b->mutex);
 
-	/* Only one raw bayer(GRBG) order is supported */
+	 
 	if (fmt->format.code != MEDIA_BUS_FMT_SGRBG10_1X10)
 		fmt->format.code = MEDIA_BUS_FMT_SGRBG10_1X10;
 
@@ -1010,7 +996,7 @@ ov13b10_set_pad_format(struct v4l2_subdev *sd,
 		pixel_rate = link_freq_to_pixel_rate(link_freq);
 		__v4l2_ctrl_s_ctrl_int64(ov13b->pixel_rate, pixel_rate);
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = ov13b->cur_mode->vts_def -
 			     ov13b->cur_mode->height;
 		vblank_min = ov13b->cur_mode->vts_min -
@@ -1033,7 +1019,7 @@ ov13b10_set_pad_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* Verify chip ID */
+ 
 static int ov13b10_identify_module(struct ov13b10 *ov13b)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&ov13b->sd);
@@ -1096,7 +1082,7 @@ static int ov13b10_power_on(struct device *dev)
 	}
 
 	gpiod_set_value_cansleep(ov13b10->reset, 0);
-	/* 5ms to wait ready after XSHUTDN assert */
+	 
 	usleep_range(5000, 5500);
 
 	return 0;
@@ -1112,7 +1098,7 @@ static int ov13b10_start_streaming(struct ov13b10 *ov13b)
 	if (ret)
 		return ret;
 
-	/* Get out of from software reset */
+	 
 	ret = ov13b10_write_reg(ov13b, OV13B10_REG_SOFTWARE_RST,
 				OV13B10_REG_VALUE_08BIT, OV13B10_SOFTWARE_RST);
 	if (ret) {
@@ -1129,7 +1115,7 @@ static int ov13b10_start_streaming(struct ov13b10 *ov13b)
 		return ret;
 	}
 
-	/* Apply default values of current mode */
+	 
 	reg_list = &ov13b->cur_mode->reg_list;
 	ret = ov13b10_write_reg_list(ov13b, reg_list);
 	if (ret) {
@@ -1137,7 +1123,7 @@ static int ov13b10_start_streaming(struct ov13b10 *ov13b)
 		return ret;
 	}
 
-	/* Apply customized values from user */
+	 
 	ret =  __v4l2_ctrl_handler_setup(ov13b->sd.ctrl_handler);
 	if (ret)
 		return ret;
@@ -1147,7 +1133,7 @@ static int ov13b10_start_streaming(struct ov13b10 *ov13b)
 				 OV13B10_MODE_STREAMING);
 }
 
-/* Stop streaming */
+ 
 static int ov13b10_stop_streaming(struct ov13b10 *ov13b)
 {
 	return ov13b10_write_reg(ov13b, OV13B10_REG_MODE_SELECT,
@@ -1171,10 +1157,7 @@ static int ov13b10_set_stream(struct v4l2_subdev *sd, int enable)
 		if (ret < 0)
 			goto err_unlock;
 
-		/*
-		 * Apply default & customized values
-		 * and then start streaming.
-		 */
+		 
 		ret = ov13b10_start_streaming(ov13b);
 		if (ret)
 			goto err_rpm_put;
@@ -1260,7 +1243,7 @@ static const struct v4l2_subdev_internal_ops ov13b10_internal_ops = {
 	.open = ov13b10_open,
 };
 
-/* Initialize control handlers */
+ 
 static int ov13b10_init_controls(struct ov13b10 *ov13b)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&ov13b->sd);
@@ -1295,7 +1278,7 @@ static int ov13b10_init_controls(struct ov13b10 *ov13b)
 
 	pixel_rate_max = link_freq_to_pixel_rate(link_freq_menu_items[0]);
 	pixel_rate_min = 0;
-	/* By default, PIXEL_RATE is read only */
+	 
 	ov13b->pixel_rate = v4l2_ctrl_new_std(ctrl_hdlr, &ov13b10_ctrl_ops,
 					      V4L2_CID_PIXEL_RATE,
 					      pixel_rate_min, pixel_rate_max,
@@ -1329,7 +1312,7 @@ static int ov13b10_init_controls(struct ov13b10 *ov13b)
 			  OV13B10_ANA_GAIN_MIN, OV13B10_ANA_GAIN_MAX,
 			  OV13B10_ANA_GAIN_STEP, OV13B10_ANA_GAIN_DEFAULT);
 
-	/* Digital gain */
+	 
 	v4l2_ctrl_new_std(ctrl_hdlr, &ov13b10_ctrl_ops, V4L2_CID_DIGITAL_GAIN,
 			  OV13B10_DGTL_GAIN_MIN, OV13B10_DGTL_GAIN_MAX,
 			  OV13B10_DGTL_GAIN_STEP, OV13B10_DGTL_GAIN_DEFAULT);
@@ -1481,7 +1464,7 @@ static int ov13b10_probe(struct i2c_client *client)
 	bool full_power;
 	int ret;
 
-	/* Check HW config */
+	 
 	ret = ov13b10_check_hwcfg(&client->dev);
 	if (ret) {
 		dev_err(&client->dev, "failed to check hwcfg: %d", ret);
@@ -1492,7 +1475,7 @@ static int ov13b10_probe(struct i2c_client *client)
 	if (!ov13b)
 		return -ENOMEM;
 
-	/* Initialize subdev */
+	 
 	v4l2_i2c_subdev_init(&ov13b->sd, client, &ov13b10_subdev_ops);
 
 	ret = ov13b10_get_pm_resources(&client->dev);
@@ -1507,7 +1490,7 @@ static int ov13b10_probe(struct i2c_client *client)
 			return ret;
 		}
 
-		/* Check module identity */
+		 
 		ret = ov13b10_identify_module(ov13b);
 		if (ret) {
 			dev_err(&client->dev, "failed to find sensor: %d\n", ret);
@@ -1515,20 +1498,20 @@ static int ov13b10_probe(struct i2c_client *client)
 		}
 	}
 
-	/* Set default mode to max resolution */
+	 
 	ov13b->cur_mode = &supported_modes[0];
 
 	ret = ov13b10_init_controls(ov13b);
 	if (ret)
 		goto error_power_off;
 
-	/* Initialize subdev */
+	 
 	ov13b->sd.internal_ops = &ov13b10_internal_ops;
 	ov13b->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE;
 	ov13b->sd.entity.ops = &ov13b10_subdev_entity_ops;
 	ov13b->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
 
-	/* Initialize source pad */
+	 
 	ov13b->pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_pads_init(&ov13b->sd.entity, 1, &ov13b->pad);
 	if (ret) {
@@ -1540,12 +1523,9 @@ static int ov13b10_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto error_media_entity;
 
-	/*
-	 * Device is already turned on by i2c-core with ACPI domain PM.
-	 * Enable runtime PM and turn off the device.
-	 */
+	 
 
-	/* Set the device's state to active if it's in D0 state. */
+	 
 	if (full_power)
 		pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
@@ -1585,7 +1565,7 @@ static DEFINE_RUNTIME_DEV_PM_OPS(ov13b10_pm_ops, ov13b10_suspend,
 static const struct acpi_device_id ov13b10_acpi_ids[] = {
 	{"OVTIDB10"},
 	{"OVTI13B1"},
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(acpi, ov13b10_acpi_ids);

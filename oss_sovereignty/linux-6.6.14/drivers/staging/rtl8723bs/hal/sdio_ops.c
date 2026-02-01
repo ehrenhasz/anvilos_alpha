@@ -1,19 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- *******************************************************************************/
+
+ 
 #include <drv_types.h>
 #include <rtw_debug.h>
 #include <rtl8723b_hal.h>
 
-/*  */
-/*  Description: */
-/*	The following mapping is for SDIO host local register space. */
-/*  */
-/*  Creadted by Roger, 2011.01.31. */
-/*  */
+ 
+ 
+ 
+ 
+ 
+ 
 static void hal_sdio_get_cmd_addr_8723b(
 	struct adapter *adapter,
 	u8 device_id,
@@ -174,7 +170,7 @@ static u32 sdio_read32(struct intf_hdl *intfhdl, u32 addr)
 		return le32_to_cpu(le_tmp);
 	}
 
-	/*  4 bytes alignment */
+	 
 	shift = ftaddr & 0x3;
 	if (shift == 0) {
 		val = sd_read32(intfhdl, ftaddr, NULL);
@@ -218,7 +214,7 @@ static s32 sdio_readN(struct intf_hdl *intfhdl, u32 addr, u32 cnt, u8 *buf)
 	)
 		return sd_cmd52_read(intfhdl, ftaddr, cnt, buf);
 
-	/*  4 bytes alignment */
+	 
 	shift = ftaddr & 0x3;
 	if (shift == 0) {
 		err = sd_read(intfhdl, ftaddr, cnt, buf);
@@ -288,7 +284,7 @@ static s32 sdio_write32(struct intf_hdl *intfhdl, u32 addr, u32 val)
 		return sd_cmd52_write(intfhdl, ftaddr, 4, (u8 *)&le_tmp);
 	}
 
-	/*  4 bytes alignment */
+	 
 	shift = ftaddr & 0x3;
 	if (shift == 0) {
 		sd_write32(intfhdl, ftaddr, val, &err);
@@ -366,22 +362,7 @@ static void sdio_write_mem(
 	sdio_writeN(intfhdl, addr, cnt, wmem);
 }
 
-/*
- * Description:
- *Read from RX FIFO
- *Round read size to block size,
- *and make sure data transfer will be done in one command.
- *
- * Parameters:
- *intfhdl	a pointer of intf_hdl
- *addr		port ID
- *cnt			size to read
- *rmem		address to put data
- *
- * Return:
- *_SUCCESS(1)		Success
- *_FAIL(0)		Fail
- */
+ 
 static u32 sdio_read_port(
 	struct intf_hdl *intfhdl,
 	u32 addr,
@@ -410,22 +391,7 @@ static u32 sdio_read_port(
 	return _SUCCESS;
 }
 
-/*
- * Description:
- *Write to TX FIFO
- *Align write size block size,
- *and make sure data could be written in one command.
- *
- * Parameters:
- *intfhdl	a pointer of intf_hdl
- *addr		port ID
- *cnt			size to write
- *wmem		data pointer to write
- *
- * Return:
- *_SUCCESS(1)		Success
- *_FAIL(0)		Fail
- */
+ 
 static u32 sdio_write_port(
 	struct intf_hdl *intfhdl,
 	u32 addr,
@@ -478,9 +444,7 @@ void sdio_set_intf_ops(struct adapter *adapter, struct _io_ops *ops)
 	ops->_write_port = &sdio_write_port;
 }
 
-/*
- * Todo: align address to 4 bytes.
- */
+ 
 static s32 _sdio_local_read(
 	struct adapter *adapter,
 	u32 addr,
@@ -516,9 +480,7 @@ static s32 _sdio_local_read(
 	return err;
 }
 
-/*
- * Todo: align address to 4 bytes.
- */
+ 
 s32 sdio_local_read(
 	struct adapter *adapter,
 	u32 addr,
@@ -557,9 +519,7 @@ s32 sdio_local_read(
 	return err;
 }
 
-/*
- * Todo: align address to 4 bytes.
- */
+ 
 s32 sdio_local_write(
 	struct adapter *adapter,
 	u32 addr,
@@ -665,7 +625,7 @@ static s32 read_interrupt_8723b_sdio(struct adapter *adapter, u32 *phisr)
 
 	himr = GET_HAL_DATA(adapter)->sdio_himr;
 
-	/*  decide how many bytes need to be read */
+	 
 	hisr_len = 0;
 	while (himr) {
 		hisr_len++;
@@ -684,15 +644,15 @@ static s32 read_interrupt_8723b_sdio(struct adapter *adapter, u32 *phisr)
 	return true;
 }
 
-/*  */
-/*	Description: */
-/*		Initialize SDIO Host Interrupt Mask configuration variables for future use. */
-/*  */
-/*	Assumption: */
-/*		Using SDIO Local register ONLY for configuration. */
-/*  */
-/*	Created by Roger, 2011.02.11. */
-/*  */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 void InitInterrupt8723BSdio(struct adapter *adapter)
 {
 	struct hal_com_data *haldata;
@@ -703,12 +663,12 @@ void InitInterrupt8723BSdio(struct adapter *adapter)
 				   0);
 }
 
-/*  */
-/*	Description: */
-/*		Initialize System Host Interrupt Mask configuration variables for future use. */
-/*  */
-/*	Created by Roger, 2011.08.03. */
-/*  */
+ 
+ 
+ 
+ 
+ 
+ 
 void InitSysInterrupt8723BSdio(struct adapter *adapter)
 {
 	struct hal_com_data *haldata;
@@ -718,16 +678,16 @@ void InitSysInterrupt8723BSdio(struct adapter *adapter)
 	haldata->SysIntrMask = (0);
 }
 
-/*  */
-/*	Description: */
-/*		Enalbe SDIO Host Interrupt Mask configuration on SDIO local domain. */
-/*  */
-/*	Assumption: */
-/*		1. Using SDIO Local register ONLY for configuration. */
-/*		2. PASSIVE LEVEL */
-/*  */
-/*	Created by Roger, 2011.02.11. */
-/*  */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 void EnableInterrupt8723BSdio(struct adapter *adapter)
 {
 	struct hal_com_data *haldata;
@@ -739,27 +699,27 @@ void EnableInterrupt8723BSdio(struct adapter *adapter)
 	himr = cpu_to_le32(haldata->sdio_himr);
 	sdio_local_write(adapter, SDIO_REG_HIMR, 4, (u8 *)&himr);
 
-	/*  Update current system IMR settings */
+	 
 	tmp = rtw_read32(adapter, REG_HSIMR);
 	rtw_write32(adapter, REG_HSIMR, tmp | haldata->SysIntrMask);
 
-	/*  */
-	/*  <Roger_Notes> There are some C2H CMDs have been sent before system interrupt is enabled, e.g., C2H, CPWM. */
-	/*  So we need to clear all C2H events that FW has notified, otherwise FW won't schedule any commands anymore. */
-	/*  2011.10.19. */
-	/*  */
+	 
+	 
+	 
+	 
+	 
 	rtw_write8(adapter, REG_C2HEVT_CLEAR, C2H_EVT_HOST_CLOSE);
 }
 
-/*  */
-/*	Description: */
-/*		Disable SDIO Host IMR configuration to mask unnecessary interrupt service. */
-/*  */
-/*	Assumption: */
-/*		Using SDIO Local register ONLY for configuration. */
-/*  */
-/*	Created by Roger, 2011.02.11. */
-/*  */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 void DisableInterrupt8723BSdio(struct adapter *adapter)
 {
 	__le32 himr;
@@ -768,15 +728,15 @@ void DisableInterrupt8723BSdio(struct adapter *adapter)
 	sdio_local_write(adapter, SDIO_REG_HIMR, 4, (u8 *)&himr);
 }
 
-/*  */
-/*	Description: */
-/*		Using 0x100 to check the power status of FW. */
-/*  */
-/*	Assumption: */
-/*		Using SDIO Local register ONLY for configuration. */
-/*  */
-/*	Created by Isaac, 2013.09.10. */
-/*  */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 u8 CheckIPSStatus(struct adapter *adapter)
 {
 	if (rtw_read8(adapter, 0x100) == 0xEA)
@@ -792,11 +752,11 @@ static struct recv_buf *sd_recv_rxfifo(struct adapter *adapter, u32 size)
 	struct recv_priv *recv_priv;
 	struct recv_buf	*recvbuf;
 
-	/*  Patch for some SDIO Host 4 bytes issue */
-	/*  ex. RK3188 */
+	 
+	 
 	readsize = round_up(size, 4);
 
-	/* 3 1. alloc recvbuf */
+	 
 	recv_priv = &adapter->recvpriv;
 	recvbuf = rtw_dequeue_recvbuf(&recv_priv->free_recv_buf_queue);
 	if (!recvbuf) {
@@ -805,7 +765,7 @@ static struct recv_buf *sd_recv_rxfifo(struct adapter *adapter, u32 size)
 		return NULL;
 	}
 
-	/* 3 2. alloc skb */
+	 
 	if (!recvbuf->pskb) {
 		SIZE_PTR tmpaddr = 0;
 		SIZE_PTR alignment = 0;
@@ -821,13 +781,13 @@ static struct recv_buf *sd_recv_rxfifo(struct adapter *adapter, u32 size)
 		skb_reserve(recvbuf->pskb, (RECVBUFF_ALIGN_SZ - alignment));
 	}
 
-	/* 3 3. read data from rxfifo */
+	 
 	readbuf = recvbuf->pskb->data;
 	ret = sdio_read_port(&adapter->iopriv.intf, WLAN_RX0FF_DEVICE_ID, readsize, readbuf);
 	if (ret == _FAIL)
 		return NULL;
 
-	/* 3 4. init recvbuf */
+	 
 	recvbuf->len = size;
 	recvbuf->phead = recvbuf->pskb->head;
 	recvbuf->pdata = recvbuf->pskb->data;
@@ -846,10 +806,10 @@ static void sd_rxhandler(struct adapter *adapter, struct recv_buf *recvbuf)
 	recv_priv = &adapter->recvpriv;
 	pending_queue = &recv_priv->recv_buf_pending_queue;
 
-	/* 3 1. enqueue recvbuf */
+	 
 	rtw_enqueue_recvbuf(recvbuf, pending_queue);
 
-	/* 3 2. schedule tasklet */
+	 
 	tasklet_schedule(&recv_priv->recv_tasklet);
 }
 
@@ -900,7 +860,7 @@ void sd_int_dpc(struct adapter *adapter)
 		if (c2h_evt) {
 			if (c2h_evt_read_88xx(adapter, (u8 *)c2h_evt) == _SUCCESS) {
 				if (c2h_id_filter_ccx_8723b((u8 *)c2h_evt)) {
-					/* Handle CCX report here */
+					 
 					rtw_hal_c2h_handler(adapter, (u8 *)c2h_evt);
 					kfree(c2h_evt);
 				} else {
@@ -910,7 +870,7 @@ void sd_int_dpc(struct adapter *adapter)
 				kfree(c2h_evt);
 			}
 		} else {
-			/* Error handling for malloc fail */
+			 
 			rtw_cbuf_push(adapter->evtpriv.c2h_queue, NULL);
 			_set_workitem(&adapter->evtpriv.c2h_wk);
 		}
@@ -965,7 +925,7 @@ void sd_int_hdl(struct adapter *adapter)
 
 		hal->sdio_hisr &= hal->sdio_himr;
 
-		/*  clear HISR */
+		 
 		v32 = hal->sdio_hisr & MASK_SDIO_HISR_CLEAR;
 		if (v32)
 			sdio_local_cmd52_write4byte(adapter, SDIO_REG_HISR, v32);
@@ -974,16 +934,16 @@ void sd_int_hdl(struct adapter *adapter)
 	}
 }
 
-/*  */
-/*	Description: */
-/*		Query SDIO Local register to query current the number of Free TxPacketBuffer page. */
-/*  */
-/*	Assumption: */
-/*		1. Running at PASSIVE_LEVEL */
-/*		2. RT_TX_SPINLOCK is NOT acquired. */
-/*  */
-/*	Created by Roger, 2011.01.28. */
-/*  */
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 u8 HalQueryTxBufferStatus8723BSdio(struct adapter *adapter)
 {
 	struct hal_com_data *hal;
@@ -998,10 +958,10 @@ u8 HalQueryTxBufferStatus8723BSdio(struct adapter *adapter)
 	return true;
 }
 
-/*  */
-/*	Description: */
-/*		Query SDIO Local register to get the current number of TX OQT Free Space. */
-/*  */
+ 
+ 
+ 
+ 
 void HalQueryTxOQTBufferStatus8723BSdio(struct adapter *adapter)
 {
 	struct hal_com_data *haldata = GET_HAL_DATA(adapter);

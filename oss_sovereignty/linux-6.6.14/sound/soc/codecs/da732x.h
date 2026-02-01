@@ -1,18 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * da732x.h -- Dialog DA732X ALSA SoC Audio Driver Header File
- *
- * Copyright (C) 2012 Dialog Semiconductor GmbH
- *
- * Author: Michal Hajduk <Michal.Hajduk@diasemi.com>
- */
+ 
+ 
 
 #ifndef __DA732X_H_
 #define __DA732X_H_
 
 #include <sound/soc.h>
 
-/* General */
+ 
 #define	DA732X_U8_MASK			0xFF
 #define	DA732X_4BYTES			4
 #define	DA732X_3BYTES			3
@@ -27,7 +21,7 @@
 #define	DA732X_HP_DIS			0x0
 #define	DA732X_CLEAR_REG		0x0
 
-/* Calibration */
+ 
 #define	DA732X_DAC_OFFSET_STEP		0x20
 #define	DA732X_OUTPUT_OFFSET_STEP	0x80
 #define	DA732X_HP_OUT_TRIM_VAL		0x0
@@ -39,7 +33,7 @@
 #define	DA732X_HPR_AMP			1
 #define	DA732X_HP_AMPS			2
 
-/* Clock settings */
+ 
 #define DA732X_STARTUP_DELAY		100
 #define	DA732X_PLL_OUT_196608		196608000
 #define	DA732X_PLL_OUT_180634		180633600
@@ -60,7 +54,7 @@
 #define	DA732X_LIN_LP_VOL		0x4F
 #define	DA732X_LP_VOL			0x40
 
-/* Kcontrols */
+ 
 #define	DA732X_DAC_EN_MAX		2
 #define	DA732X_ADCL_MUX_MAX		2
 #define	DA732X_ADCR_MUX_MAX		3
@@ -82,7 +76,7 @@
 #define	DA732X_DISABLE_ALL_CLKS		0
 #define	DA732X_RESET_ADCS		0
 
-/* dB values */
+ 
 #define DA732X_MIC_VOL_DB_MIN		0
 #define DA732X_MIC_VOL_DB_INC		50
 #define DA732X_MIC_PRE_VOL_DB_MIN	0
@@ -120,4 +114,4 @@ enum da732x_sysctl {
 	DA732X_SR_96KHZ		= 0xF,
 };
 
-#endif /* __DA732X_H_ */
+#endif  

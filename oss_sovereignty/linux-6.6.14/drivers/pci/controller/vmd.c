@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Volume Management Device driver
- * Copyright (c) 2015, Intel Corporation.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -35,48 +32,26 @@
 #define MB2_SHADOW_SIZE		16
 
 enum vmd_features {
-	/*
-	 * Device may contain registers which hint the physical location of the
-	 * membars, in order to allow proper address translation during
-	 * resource assignment to enable guest virtualization
-	 */
+	 
 	VMD_FEAT_HAS_MEMBAR_SHADOW		= (1 << 0),
 
-	/*
-	 * Device may provide root port configuration information which limits
-	 * bus numbering
-	 */
+	 
 	VMD_FEAT_HAS_BUS_RESTRICTIONS		= (1 << 1),
 
-	/*
-	 * Device contains physical location shadow registers in
-	 * vendor-specific capability space
-	 */
+	 
 	VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP	= (1 << 2),
 
-	/*
-	 * Device may use MSI-X vector 0 for software triggering and will not
-	 * be used for MSI remapping
-	 */
+	 
 	VMD_FEAT_OFFSET_FIRST_VECTOR		= (1 << 3),
 
-	/*
-	 * Device can bypass remapping MSI-X transactions into its MSI-X table,
-	 * avoiding the requirement of a VMD MSI domain for child device
-	 * interrupt handling.
-	 */
+	 
 	VMD_FEAT_CAN_BYPASS_MSI_REMAP		= (1 << 4),
 
-	/*
-	 * Enable ASPM on the PCIE root ports and set the default LTR of the
-	 * storage devices on platforms where these values are not configured by
-	 * BIOS. This is needed for laptops, which require these settings for
-	 * proper power management of the SoC.
-	 */
+	 
 	VMD_FEAT_BIOS_PM_QUIRK		= (1 << 5),
 };
 
-#define VMD_BIOS_PM_QUIRK_LTR	0x1003	/* 3145728 ns */
+#define VMD_BIOS_PM_QUIRK_LTR	0x1003	 
 
 #define VMD_FEATS_CLIENT	(VMD_FEAT_HAS_MEMBAR_SHADOW_VSCAP |	\
 				 VMD_FEAT_HAS_BUS_RESTRICTIONS |	\
@@ -85,21 +60,10 @@ enum vmd_features {
 
 static DEFINE_IDA(vmd_instance_ida);
 
-/*
- * Lock for manipulating VMD IRQ lists.
- */
+ 
 static DEFINE_RAW_SPINLOCK(list_lock);
 
-/**
- * struct vmd_irq - private data to map driver IRQ to the VMD shared vector
- * @node:	list item for parent traversal.
- * @irq:	back pointer to parent.
- * @enabled:	true if driver enabled IRQ
- * @virq:	the virtual IRQ value provided to the requesting driver.
- *
- * Every MSI/MSI-X IRQ requested for a device in a VMD domain will be mapped to
- * a VMD IRQ using this structure.
- */
+ 
 struct vmd_irq {
 	struct list_head	node;
 	struct vmd_irq_list	*irq;
@@ -107,14 +71,7 @@ struct vmd_irq {
 	unsigned int		virq;
 };
 
-/**
- * struct vmd_irq_list - list of driver requested IRQs mapping to a VMD vector
- * @irq_list:	the list of irq's the VMD one demuxes to.
- * @srcu:	SRCU struct for local synchronization.
- * @count:	number of child IRQs assigned to this vector; used to track
- *		sharing.
- * @virq:	The underlying VMD Linux interrupt number
- */
+ 
 struct vmd_irq_list {
 	struct list_head	irq_list;
 	struct srcu_struct	srcu;
@@ -152,14 +109,7 @@ static inline unsigned int index_from_irqs(struct vmd_dev *vmd,
 	return irqs - vmd->irqs;
 }
 
-/*
- * Drivers managing a device in a VMD domain allocate their own IRQs as before,
- * but the MSI entry for the hardware it's driving will be programmed with a
- * destination ID for the VMD MSI-X table.  The VMD muxes interrupts in its
- * domain into one of its own, and the VMD driver de-muxes these for the
- * handlers sharing that VMD IRQ.  The vmd irq_domain provides the operations
- * and irq_chip to set this up.
- */
+ 
 static void vmd_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
 {
 	struct vmd_irq *vmdirq = data->chip_data;
@@ -172,9 +122,7 @@ static void vmd_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
 	msg->arch_addr_lo.destid_0_7 = index_from_irqs(vmd, irq);
 }
 
-/*
- * We rely on MSI_FLAG_USE_DEF_CHIP_OPS to set the IRQ mask/unmask ops.
- */
+ 
 static void vmd_irq_enable(struct irq_data *data)
 {
 	struct vmd_irq *vmdirq = data->chip_data;
@@ -204,10 +152,7 @@ static void vmd_irq_disable(struct irq_data *data)
 	raw_spin_unlock_irqrestore(&list_lock, flags);
 }
 
-/*
- * XXX: Stubbed until we develop acceptable way to not create conflicts with
- * other devices sharing the same vector.
- */
+ 
 static int vmd_irq_set_affinity(struct irq_data *data,
 				const struct cpumask *dest, bool force)
 {
@@ -228,10 +173,7 @@ static irq_hw_number_t vmd_get_hwirq(struct msi_domain_info *info,
 	return 0;
 }
 
-/*
- * XXX: We can be even smarter selecting the best IRQ once we solve the
- * affinity problem.
- */
+ 
 static struct vmd_irq_list *vmd_next_irq(struct vmd_dev *vmd, struct msi_desc *desc)
 {
 	unsigned long flags;
@@ -240,10 +182,7 @@ static struct vmd_irq_list *vmd_next_irq(struct vmd_dev *vmd, struct msi_desc *d
 	if (vmd->msix_count == 1 + vmd->first_vec)
 		return &vmd->irqs[vmd->first_vec];
 
-	/*
-	 * White list for fast-interrupt handlers. All others will share the
-	 * "slow" interrupt vector.
-	 */
+	 
 	switch (msi_desc_to_pci_dev(desc)->class) {
 	case PCI_CLASS_STORAGE_EXPRESS:
 		break;
@@ -290,7 +229,7 @@ static void vmd_msi_free(struct irq_domain *domain,
 
 	synchronize_srcu(&vmdirq->irq->srcu);
 
-	/* XXX: Potential optimization to rebalance */
+	 
 	raw_spin_lock_irqsave(&list_lock, flags);
 	vmdirq->irq->count--;
 	raw_spin_unlock_irqrestore(&list_lock, flags);
@@ -360,10 +299,7 @@ static int vmd_create_irq_domain(struct vmd_dev *vmd)
 
 static void vmd_remove_irq_domain(struct vmd_dev *vmd)
 {
-	/*
-	 * Some production BIOS won't enable remapping between soft reboots.
-	 * Ensure remapping is restored before unloading the driver.
-	 */
+	 
 	if (!vmd->msix_count)
 		vmd_set_msi_remapping(vmd, true);
 
@@ -387,10 +323,7 @@ static void __iomem *vmd_cfg_addr(struct vmd_dev *vmd, struct pci_bus *bus,
 	return vmd->cfgbar + offset;
 }
 
-/*
- * CPU may deadlock if config space is not serialized on some versions of this
- * hardware, so all config space access is done under a spinlock.
- */
+ 
 static int vmd_pci_read(struct pci_bus *bus, unsigned int devfn, int reg,
 			int len, u32 *value)
 {
@@ -421,11 +354,7 @@ static int vmd_pci_read(struct pci_bus *bus, unsigned int devfn, int reg,
 	return ret;
 }
 
-/*
- * VMD h/w converts non-posted config writes to posted memory writes. The
- * read-back in this function forces the completion so it returns only after
- * the config space was written, as expected.
- */
+ 
 static int vmd_pci_write(struct pci_bus *bus, unsigned int devfn, int reg,
 			 int len, u32 value)
 {
@@ -475,10 +404,7 @@ static struct acpi_device *vmd_acpi_find_companion(struct pci_dev *pci_dev)
 
 	bridge = pci_find_host_bridge(pci_dev->bus);
 	busnr = pci_dev->bus->number - bridge->bus->number;
-	/*
-	 * The address computation below is only applicable to relative bus
-	 * numbers below 32.
-	 */
+	 
 	if (busnr > 31)
 		return NULL;
 
@@ -512,7 +438,7 @@ static void vmd_acpi_end(void)
 #else
 static inline void vmd_acpi_begin(void) { }
 static inline void vmd_acpi_end(void) { }
-#endif /* CONFIG_ACPI */
+#endif  
 
 static void vmd_domain_reset(struct vmd_dev *vmd)
 {
@@ -540,20 +466,17 @@ static void vmd_domain_reset(struct vmd_dev *vmd)
 				     PCI_CLASS_BRIDGE_PCI))
 					continue;
 
-				/*
-				 * Temporarily disable the I/O range before updating
-				 * PCI_IO_BASE.
-				 */
+				 
 				writel(0x0000ffff, base + PCI_IO_BASE_UPPER16);
-				/* Update lower 16 bits of I/O base/limit */
+				 
 				writew(0x00f0, base + PCI_IO_BASE);
-				/* Update upper 16 bits of I/O base/limit */
+				 
 				writel(0, base + PCI_IO_BASE_UPPER16);
 
-				/* MMIO Base/Limit */
+				 
 				writel(0x0000fff0, base + PCI_MEMORY_BASE);
 
-				/* Prefetchable MMIO Base/Limit */
+				 
 				writel(0, base + PCI_PREF_LIMIT_UPPER32);
 				writel(0x0000fff0, base + PCI_PREF_MEMORY_BASE);
 				writel(0xffffffff, base + PCI_PREF_BASE_UPPER32);
@@ -574,12 +497,7 @@ static void vmd_detach_resources(struct vmd_dev *vmd)
 	vmd->dev->resource[VMD_MEMBAR2].child = NULL;
 }
 
-/*
- * VMD domains start at 0x10000 to not clash with ACPI _SEG domains.
- * Per ACPI r6.0, sec 6.5.6,  _SEG returns an integer, of which the lower
- * 16 bits are the PCI Segment Group (domain) number.  Other bits are
- * currently reserved.
- */
+ 
 static int vmd_find_free_domain(void)
 {
 	int domain = 0xffff;
@@ -617,13 +535,13 @@ static int vmd_get_phys_offsets(struct vmd_dev *vmd, bool native_hint,
 		} else
 			return 0;
 	} else {
-		/* Hypervisor-Emulated Vendor-Specific Capability */
+		 
 		int pos = pci_find_capability(dev, PCI_CAP_ID_VNDR);
 		u32 reg, regu;
 
 		pci_read_config_dword(dev, pos + 4, &reg);
 
-		/* "SHDW" */
+		 
 		if (pos && reg == 0x53484457) {
 			pci_read_config_dword(dev, pos + 8, &reg);
 			pci_read_config_dword(dev, pos + 12, &regu);
@@ -723,10 +641,7 @@ static int vmd_alloc_irqs(struct vmd_dev *vmd)
 	return 0;
 }
 
-/*
- * Since VMD is an aperture to regular PCIe root ports, only allow it to
- * control features that the OS is allowed to control on the physical PCI bus.
- */
+ 
 static void vmd_copy_host_bridge_flags(struct pci_host_bridge *root_bridge,
 				       struct pci_host_bridge *vmd_bridge)
 {
@@ -738,9 +653,7 @@ static void vmd_copy_host_bridge_flags(struct pci_host_bridge *root_bridge,
 	vmd_bridge->native_dpc = root_bridge->native_dpc;
 }
 
-/*
- * Enable ASPM and LTR settings on devices that aren't configured by BIOS.
- */
+ 
 static int vmd_pm_enable_quirk(struct pci_dev *pdev, void *userdata)
 {
 	unsigned long features = *(unsigned long *)userdata;
@@ -757,20 +670,12 @@ static int vmd_pm_enable_quirk(struct pci_dev *pdev, void *userdata)
 	if (!pos)
 		return 0;
 
-	/*
-	 * Skip if the max snoop LTR is non-zero, indicating BIOS has set it
-	 * so the LTR quirk is not needed.
-	 */
+	 
 	pci_read_config_dword(pdev, pos + PCI_LTR_MAX_SNOOP_LAT, &ltr_reg);
 	if (!!(ltr_reg & (PCI_LTR_VALUE_MASK | PCI_LTR_SCALE_MASK)))
 		return 0;
 
-	/*
-	 * Set the default values to the maximum required by the platform to
-	 * allow the deepest power management savings. Write as a DWORD where
-	 * the lower word is the max snoop latency and the upper word is the
-	 * max non-snoop latency.
-	 */
+	 
 	ltr_reg = (ltr << 16) | ltr;
 	pci_write_config_dword(pdev, pos + PCI_LTR_MAX_SNOOP_LAT, ltr_reg);
 	pci_info(pdev, "VMD: Default LTR value set by driver\n");
@@ -791,12 +696,7 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 	struct pci_dev *dev;
 	int ret;
 
-	/*
-	 * Shadow registers may exist in certain VMD device ids which allow
-	 * guests to correctly assign host physical addresses to the root ports
-	 * and child devices. These registers will either return the host value
-	 * or 0, depending on an enable bit in the VMD device.
-	 */
+	 
 	if (features & VMD_FEAT_HAS_MEMBAR_SHADOW) {
 		membar2_offset = MB2_SHADOW_OFFSET + MB2_SHADOW_SIZE;
 		ret = vmd_get_phys_offsets(vmd, true, &offset[0], &offset[1]);
@@ -808,10 +708,7 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 			return ret;
 	}
 
-	/*
-	 * Certain VMD devices may have a root port configuration option which
-	 * limits the bus range to between 0-127, 128-255, or 224-255
-	 */
+	 
 	if (features & VMD_FEAT_HAS_BUS_RESTRICTIONS) {
 		ret = vmd_get_bus_number_start(vmd);
 		if (ret)
@@ -826,23 +723,7 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 		.flags = IORESOURCE_BUS | IORESOURCE_PCI_FIXED,
 	};
 
-	/*
-	 * If the window is below 4GB, clear IORESOURCE_MEM_64 so we can
-	 * put 32-bit resources in the window.
-	 *
-	 * There's no hardware reason why a 64-bit window *couldn't*
-	 * contain a 32-bit resource, but pbus_size_mem() computes the
-	 * bridge window size assuming a 64-bit window will contain no
-	 * 32-bit resources.  __pci_assign_resource() enforces that
-	 * artificial restriction to make sure everything will fit.
-	 *
-	 * The only way we could use a 64-bit non-prefetchable MEMBAR is
-	 * if its address is <4GB so that we can convert it to a 32-bit
-	 * resource.  To be visible to the host OS, all VMD endpoints must
-	 * be initially configured by platform BIOS, which includes setting
-	 * up these resources.  We can assume the device is configured
-	 * according to the platform needs.
-	 */
+	 
 	res = &vmd->dev->resource[VMD_MEMBAR1];
 	upper_bits = upper_32_bits(res->end);
 	flags = res->flags & ~IORESOURCE_SIZEALIGN;
@@ -876,12 +757,7 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 
 	sd->node = pcibus_to_node(vmd->dev->bus);
 
-	/*
-	 * Currently MSI remapping must be enabled in guest passthrough mode
-	 * due to some missing interrupt remapping plumbing. This is probably
-	 * acceptable because the guest is usually CPU-limited and MSI
-	 * remapping doesn't become a performance bottleneck.
-	 */
+	 
 	if (!(features & VMD_FEAT_CAN_BYPASS_MSI_REMAP) ||
 	    offset[0] || offset[1]) {
 		ret = vmd_alloc_irqs(vmd);
@@ -894,10 +770,7 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 		if (ret)
 			return ret;
 
-		/*
-		 * Override the IRQ domain bus token so the domain can be
-		 * distinguished from a regular PCI/MSI domain.
-		 */
+		 
 		irq_domain_update_bus_token(vmd->irq_domain, DOMAIN_BUS_VMD_MSI);
 	} else {
 		vmd_set_msi_remapping(vmd, false);
@@ -930,13 +803,7 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 	pci_scan_child_bus(vmd->bus);
 	vmd_domain_reset(vmd);
 
-	/* When Intel VMD is enabled, the OS does not discover the Root Ports
-	 * owned by Intel VMD within the MMCFG space. pci_reset_bus() applies
-	 * a reset to the parent of the PCI device supplied as argument. This
-	 * is why we pass a child device, so the reset can be triggered at
-	 * the Intel bridge level and propagated to all the children in the
-	 * hierarchy.
-	 */
+	 
 	list_for_each_entry(child, &vmd->bus->children, node) {
 		if (!list_empty(&child->devices)) {
 			dev = list_first_entry(&child->devices,
@@ -953,11 +820,7 @@ static int vmd_enable_domain(struct vmd_dev *vmd, unsigned long features)
 
 	pci_walk_bus(vmd->bus, vmd_pm_enable_quirk, &features);
 
-	/*
-	 * VMD root buses are virtual and don't return true on pci_is_pcie()
-	 * and will fail pcie_bus_configure_settings() early. It can instead be
-	 * run on each of the real root ports.
-	 */
+	 
 	list_for_each_entry(child, &vmd->bus->children, node)
 		pcie_bus_configure_settings(child);
 

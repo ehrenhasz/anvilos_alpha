@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (c) 2018 Synopsys, Inc. and/or its affiliates.
- * stmmac HW Interface Handling
- */
+
+ 
 
 #include "common.h"
 #include "stmmac.h"
@@ -57,7 +54,7 @@ static int stmmac_dwmac1_quirks(struct stmmac_priv *priv)
 	if (priv->plat->enh_desc) {
 		dev_info(priv->device, "Enhanced/Alternate descriptors\n");
 
-		/* GMAC older than 3.50 has no extended descriptors */
+		 
 		if (priv->synopsys_id >= DWMAC_CORE_3_50) {
 			dev_info(priv->device, "Enabled extended descriptors\n");
 			priv->extend_desc = 1;
@@ -117,7 +114,7 @@ static const struct stmmac_hwif_entry {
 	int (*setup)(struct stmmac_priv *priv);
 	int (*quirks)(struct stmmac_priv *priv);
 } stmmac_hw[] = {
-	/* NOTE: New HW versions shall go to the end of this table */
+	 
 	{
 		.gmac = false,
 		.gmac4 = false,
@@ -288,16 +285,16 @@ int stmmac_hwif_init(struct stmmac_priv *priv)
 		id = 0;
 	}
 
-	/* Save ID for later use */
+	 
 	priv->synopsys_id = id;
 
-	/* Lets assume some safe values first */
+	 
 	priv->ptpaddr = priv->ioaddr +
 		(needs_gmac4 ? PTP_GMAC4_OFFSET : PTP_GMAC3_X_OFFSET);
 	priv->mmcaddr = priv->ioaddr +
 		(needs_gmac4 ? MMC_GMAC4_OFFSET : MMC_GMAC3_X_OFFSET);
 
-	/* Check for HW specific setup first */
+	 
 	if (priv->plat->setup) {
 		mac = priv->plat->setup(priv);
 		needs_setup = false;
@@ -308,7 +305,7 @@ int stmmac_hwif_init(struct stmmac_priv *priv)
 	if (!mac)
 		return -ENOMEM;
 
-	/* Fallback to generic HW */
+	 
 	for (i = ARRAY_SIZE(stmmac_hw) - 1; i >= 0; i--) {
 		entry = &stmmac_hw[i];
 
@@ -318,13 +315,13 @@ int stmmac_hwif_init(struct stmmac_priv *priv)
 			continue;
 		if (needs_xgmac ^ entry->xgmac)
 			continue;
-		/* Use synopsys_id var because some setups can override this */
+		 
 		if (priv->synopsys_id < entry->min_id)
 			continue;
 		if (needs_xgmac && (dev_id ^ entry->dev_id))
 			continue;
 
-		/* Only use generic HW helpers if needed */
+		 
 		mac->desc = mac->desc ? : entry->desc;
 		mac->dma = mac->dma ? : entry->dma;
 		mac->mac = mac->mac ? : entry->mac;
@@ -337,14 +334,14 @@ int stmmac_hwif_init(struct stmmac_priv *priv)
 		priv->ptpaddr = priv->ioaddr + entry->regs.ptp_off;
 		priv->mmcaddr = priv->ioaddr + entry->regs.mmc_off;
 
-		/* Entry found */
+		 
 		if (needs_setup) {
 			ret = entry->setup(priv);
 			if (ret)
 				return ret;
 		}
 
-		/* Save quirks, if needed for posterior use */
+		 
 		priv->hwif_quirks = entry->quirks;
 		return 0;
 	}

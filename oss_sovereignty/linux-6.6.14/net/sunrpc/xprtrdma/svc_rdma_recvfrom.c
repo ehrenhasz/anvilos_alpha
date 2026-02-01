@@ -1,96 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (c) 2016-2018 Oracle. All rights reserved.
- * Copyright (c) 2014 Open Grid Computing, Inc. All rights reserved.
- * Copyright (c) 2005-2006 Network Appliance, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the BSD-type
- * license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *      Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *
- *      Redistributions in binary form must reproduce the above
- *      copyright notice, this list of conditions and the following
- *      disclaimer in the documentation and/or other materials provided
- *      with the distribution.
- *
- *      Neither the name of the Network Appliance, Inc. nor the names of
- *      its contributors may be used to endorse or promote products
- *      derived from this software without specific prior written
- *      permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Author: Tom Tucker <tom@opengridcomputing.com>
- */
 
-/* Operation
- *
- * The main entry point is svc_rdma_recvfrom. This is called from
- * svc_recv when the transport indicates there is incoming data to
- * be read. "Data Ready" is signaled when an RDMA Receive completes,
- * or when a set of RDMA Reads complete.
- *
- * An svc_rqst is passed in. This structure contains an array of
- * free pages (rq_pages) that will contain the incoming RPC message.
- *
- * Short messages are moved directly into svc_rqst::rq_arg, and
- * the RPC Call is ready to be processed by the Upper Layer.
- * svc_rdma_recvfrom returns the length of the RPC Call message,
- * completing the reception of the RPC Call.
- *
- * However, when an incoming message has Read chunks,
- * svc_rdma_recvfrom must post RDMA Reads to pull the RPC Call's
- * data payload from the client. svc_rdma_recvfrom sets up the
- * RDMA Reads using pages in svc_rqst::rq_pages, which are
- * transferred to an svc_rdma_recv_ctxt for the duration of the
- * I/O. svc_rdma_recvfrom then returns zero, since the RPC message
- * is still not yet ready.
- *
- * When the Read chunk payloads have become available on the
- * server, "Data Ready" is raised again, and svc_recv calls
- * svc_rdma_recvfrom again. This second call may use a different
- * svc_rqst than the first one, thus any information that needs
- * to be preserved across these two calls is kept in an
- * svc_rdma_recv_ctxt.
- *
- * The second call to svc_rdma_recvfrom performs final assembly
- * of the RPC Call message, using the RDMA Read sink pages kept in
- * the svc_rdma_recv_ctxt. The xdr_buf is copied from the
- * svc_rdma_recv_ctxt to the second svc_rqst. The second call returns
- * the length of the completed RPC Call message.
- *
- * Page Management
- *
- * Pages under I/O must be transferred from the first svc_rqst to an
- * svc_rdma_recv_ctxt before the first svc_rdma_recvfrom call returns.
- *
- * The first svc_rqst supplies pages for RDMA Reads. These are moved
- * from rqstp::rq_pages into ctxt::pages. The consumed elements of
- * the rq_pages array are set to NULL and refilled with the first
- * svc_rdma_recvfrom call returns.
- *
- * During the second svc_rdma_recvfrom call, RDMA Read sink pages
- * are transferred from the svc_rdma_recv_ctxt to the second svc_rqst.
- */
+ 
+
+ 
 
 #include <linux/slab.h>
 #include <linux/spinlock.h>
@@ -175,11 +86,7 @@ static void svc_rdma_recv_ctxt_destroy(struct svcxprt_rdma *rdma,
 	kfree(ctxt);
 }
 
-/**
- * svc_rdma_recv_ctxts_destroy - Release all recv_ctxt's for an xprt
- * @rdma: svcxprt_rdma being torn down
- *
- */
+ 
 void svc_rdma_recv_ctxts_destroy(struct svcxprt_rdma *rdma)
 {
 	struct svc_rdma_recv_ctxt *ctxt;
@@ -191,12 +98,7 @@ void svc_rdma_recv_ctxts_destroy(struct svcxprt_rdma *rdma)
 	}
 }
 
-/**
- * svc_rdma_recv_ctxt_get - Allocate a recv_ctxt
- * @rdma: controlling svcxprt_rdma
- *
- * Returns a recv_ctxt or (rarely) NULL if none are available.
- */
+ 
 struct svc_rdma_recv_ctxt *svc_rdma_recv_ctxt_get(struct svcxprt_rdma *rdma)
 {
 	struct svc_rdma_recv_ctxt *ctxt;
@@ -218,12 +120,7 @@ out_empty:
 	goto out;
 }
 
-/**
- * svc_rdma_recv_ctxt_put - Return recv_ctxt to free list
- * @rdma: controlling svcxprt_rdma
- * @ctxt: object to return to the free list
- *
- */
+ 
 void svc_rdma_recv_ctxt_put(struct svcxprt_rdma *rdma,
 			    struct svc_rdma_recv_ctxt *ctxt)
 {
@@ -235,15 +132,7 @@ void svc_rdma_recv_ctxt_put(struct svcxprt_rdma *rdma,
 	llist_add(&ctxt->rc_node, &rdma->sc_recv_ctxts);
 }
 
-/**
- * svc_rdma_release_ctxt - Release transport-specific per-rqst resources
- * @xprt: the transport which owned the context
- * @vctxt: the context from rqstp->rq_xprt_ctxt or dr->xprt_ctxt
- *
- * Ensure that the recv_ctxt is released whether or not a Reply
- * was sent. For example, the client could close the connection,
- * or svc_process could drop an RPC, before the Reply is sent.
- */
+ 
 void svc_rdma_release_ctxt(struct svc_xprt *xprt, void *vctxt)
 {
 	struct svc_rdma_recv_ctxt *ctxt = vctxt;
@@ -292,28 +181,17 @@ err_free:
 		bad_wr = bad_wr->next;
 		svc_rdma_recv_ctxt_put(rdma, ctxt);
 	}
-	/* Since we're destroying the xprt, no need to reset
-	 * sc_pending_recvs. */
+	 
 	return false;
 }
 
-/**
- * svc_rdma_post_recvs - Post initial set of Recv WRs
- * @rdma: fresh svcxprt_rdma
- *
- * Returns true if successful, otherwise false.
- */
+ 
 bool svc_rdma_post_recvs(struct svcxprt_rdma *rdma)
 {
 	return svc_rdma_refresh_recvs(rdma, rdma->sc_max_requests);
 }
 
-/**
- * svc_rdma_wc_receive - Invoked by RDMA provider for each polled Receive WC
- * @cq: Completion Queue context
- * @wc: Work Completion object
- *
- */
+ 
 static void svc_rdma_wc_receive(struct ib_cq *cq, struct ib_wc *wc)
 {
 	struct svcxprt_rdma *rdma = cq->cq_context;
@@ -322,32 +200,24 @@ static void svc_rdma_wc_receive(struct ib_cq *cq, struct ib_wc *wc)
 
 	rdma->sc_pending_recvs--;
 
-	/* WARNING: Only wc->wr_cqe and wc->status are reliable */
+	 
 	ctxt = container_of(cqe, struct svc_rdma_recv_ctxt, rc_cqe);
 
 	if (wc->status != IB_WC_SUCCESS)
 		goto flushed;
 	trace_svcrdma_wc_recv(wc, &ctxt->rc_cid);
 
-	/* If receive posting fails, the connection is about to be
-	 * lost anyway. The server will not be able to send a reply
-	 * for this RPC, and the client will retransmit this RPC
-	 * anyway when it reconnects.
-	 *
-	 * Therefore we drop the Receive, even if status was SUCCESS
-	 * to reduce the likelihood of replayed requests once the
-	 * client reconnects.
-	 */
+	 
 	if (rdma->sc_pending_recvs < rdma->sc_max_requests)
 		if (!svc_rdma_refresh_recvs(rdma, rdma->sc_recv_batch))
 			goto dropped;
 
-	/* All wc fields are now known to be valid */
+	 
 	ctxt->rc_byte_len = wc->byte_len;
 
 	spin_lock(&rdma->sc_rq_dto_lock);
 	list_add_tail(&ctxt->rc_list, &rdma->sc_rq_dto_q);
-	/* Note the unlock pairs with the smp_rmb in svc_xprt_ready: */
+	 
 	set_bit(XPT_DATA, &rdma->sc_xprt.xpt_flags);
 	spin_unlock(&rdma->sc_rq_dto_lock);
 	if (!test_bit(RDMAXPRT_CONN_PENDING, &rdma->sc_flags))
@@ -364,11 +234,7 @@ dropped:
 	svc_xprt_deferred_close(&rdma->sc_xprt);
 }
 
-/**
- * svc_rdma_flush_recv_queues - Drain pending Receive work
- * @rdma: svcxprt_rdma being shut down
- *
- */
+ 
 void svc_rdma_flush_recv_queues(struct svcxprt_rdma *rdma)
 {
 	struct svc_rdma_recv_ctxt *ctxt;
@@ -394,26 +260,7 @@ static void svc_rdma_build_arg_xdr(struct svc_rqst *rqstp,
 	arg->len = ctxt->rc_byte_len;
 }
 
-/**
- * xdr_count_read_segments - Count number of Read segments in Read list
- * @rctxt: Ingress receive context
- * @p: Start of an un-decoded Read list
- *
- * Before allocating anything, ensure the ingress Read list is safe
- * to use.
- *
- * The segment count is limited to how many segments can fit in the
- * transport header without overflowing the buffer. That's about 40
- * Read segments for a 1KB inline threshold.
- *
- * Return values:
- *   %true: Read list is valid. @rctxt's xdr_stream is updated to point
- *	    to the first byte past the Read list. rc_read_pcl and
- *	    rc_call_pcl cl_count fields are set to the number of
- *	    Read segments in the list.
- *  %false: Read list is corrupt. @rctxt's xdr_stream is left in an
- *	    unknown state.
- */
+ 
 static bool xdr_count_read_segments(struct svc_rdma_recv_ctxt *rctxt, __be32 *p)
 {
 	rctxt->rc_call_pcl.cl_count = 0;
@@ -444,18 +291,7 @@ static bool xdr_count_read_segments(struct svc_rdma_recv_ctxt *rctxt, __be32 *p)
 	return true;
 }
 
-/* Sanity check the Read list.
- *
- * Sanity checks:
- * - Read list does not overflow Receive buffer.
- * - Chunk size limited by largest NFS data payload.
- *
- * Return values:
- *   %true: Read list is valid. @rctxt's xdr_stream is updated
- *	    to point to the first byte past the Read list.
- *  %false: Read list is corrupt. @rctxt's xdr_stream is left
- *	    in an unknown state.
- */
+ 
 static bool xdr_check_read_list(struct svc_rdma_recv_ctxt *rctxt)
 {
 	__be32 *p;
@@ -478,27 +314,13 @@ static bool xdr_check_write_chunk(struct svc_rdma_recv_ctxt *rctxt)
 	if (xdr_stream_decode_u32(&rctxt->rc_stream, &segcount))
 		return false;
 
-	/* A bogus segcount causes this buffer overflow check to fail. */
+	 
 	p = xdr_inline_decode(&rctxt->rc_stream,
 			      segcount * rpcrdma_segment_maxsz * sizeof(*p));
 	return p != NULL;
 }
 
-/**
- * xdr_count_write_chunks - Count number of Write chunks in Write list
- * @rctxt: Received header and decoding state
- * @p: start of an un-decoded Write list
- *
- * Before allocating anything, ensure the ingress Write list is
- * safe to use.
- *
- * Return values:
- *       %true: Write list is valid. @rctxt's xdr_stream is updated
- *		to point to the first byte past the Write list, and
- *		the number of Write chunks is in rc_write_pcl.cl_count.
- *      %false: Write list is corrupt. @rctxt's xdr_stream is left
- *		in an indeterminate state.
- */
+ 
 static bool xdr_count_write_chunks(struct svc_rdma_recv_ctxt *rctxt, __be32 *p)
 {
 	rctxt->rc_write_pcl.cl_count = 0;
@@ -513,21 +335,7 @@ static bool xdr_count_write_chunks(struct svc_rdma_recv_ctxt *rctxt, __be32 *p)
 	return true;
 }
 
-/* Sanity check the Write list.
- *
- * Implementation limits:
- * - This implementation currently supports only one Write chunk.
- *
- * Sanity checks:
- * - Write list does not overflow Receive buffer.
- * - Chunk size limited by largest NFS data payload.
- *
- * Return values:
- *       %true: Write list is valid. @rctxt's xdr_stream is updated
- *		to point to the first byte past the Write list.
- *      %false: Write list is corrupt. @rctxt's xdr_stream is left
- *		in an unknown state.
- */
+ 
 static bool xdr_check_write_list(struct svc_rdma_recv_ctxt *rctxt)
 {
 	__be32 *p;
@@ -544,18 +352,7 @@ static bool xdr_check_write_list(struct svc_rdma_recv_ctxt *rctxt)
 	return true;
 }
 
-/* Sanity check the Reply chunk.
- *
- * Sanity checks:
- * - Reply chunk does not overflow Receive buffer.
- * - Chunk size limited by largest NFS data payload.
- *
- * Return values:
- *       %true: Reply chunk is valid. @rctxt's xdr_stream is updated
- *		to point to the first byte past the Reply chunk.
- *      %false: Reply chunk is corrupt. @rctxt's xdr_stream is left
- *		in an unknown state.
- */
+ 
 static bool xdr_check_reply_chunk(struct svc_rdma_recv_ctxt *rctxt)
 {
 	__be32 *p;
@@ -573,13 +370,7 @@ static bool xdr_check_reply_chunk(struct svc_rdma_recv_ctxt *rctxt)
 	return pcl_alloc_write(rctxt, &rctxt->rc_reply_pcl, p);
 }
 
-/* RPC-over-RDMA Version One private extension: Remote Invalidation.
- * Responder's choice: requester signals it can handle Send With
- * Invalidate, and responder chooses one R_key to invalidate.
- *
- * If there is exactly one distinct R_key in the received transport
- * header, set rc_inv_rkey to that R_key. Otherwise, set it to zero.
- */
+ 
 static void svc_rdma_get_inv_rkey(struct svcxprt_rdma *rdma,
 				  struct svc_rdma_recv_ctxt *ctxt)
 {
@@ -628,22 +419,7 @@ static void svc_rdma_get_inv_rkey(struct svcxprt_rdma *rdma,
 	ctxt->rc_inv_rkey = inv_rkey;
 }
 
-/**
- * svc_rdma_xdr_decode_req - Decode the transport header
- * @rq_arg: xdr_buf containing ingress RPC/RDMA message
- * @rctxt: state of decoding
- *
- * On entry, xdr->head[0].iov_base points to first byte of the
- * RPC-over-RDMA transport header.
- *
- * On successful exit, head[0] points to first byte past the
- * RPC-over-RDMA header. For RDMA_MSG, this is the RPC message.
- *
- * The length of the RPC-over-RDMA header is returned.
- *
- * Assumptions:
- * - The transport header is entirely contained in the head iovec.
- */
+ 
 static int svc_rdma_xdr_decode_req(struct xdr_buf *rq_arg,
 				   struct svc_rdma_recv_ctxt *rctxt)
 {
@@ -722,11 +498,7 @@ static void svc_rdma_send_error(struct svcxprt_rdma *rdma,
 	svc_rdma_send_error_msg(rdma, sctxt, rctxt, status);
 }
 
-/* By convention, backchannel calls arrive via rdma_msg type
- * messages, and never populate the chunk lists. This makes
- * the RPC/RDMA header small and fixed in size, so it is
- * straightforward to check the RPC header's direction field.
- */
+ 
 static bool svc_rdma_is_reverse_direction_reply(struct svc_xprt *xprt,
 						struct svc_rdma_recv_ctxt *rctxt)
 {
@@ -747,41 +519,14 @@ static bool svc_rdma_is_reverse_direction_reply(struct svc_xprt *xprt,
 	if (!pcl_is_empty(&rctxt->rc_reply_pcl))
 		return false;
 
-	/* RPC call direction */
+	 
 	if (*(p + 8) == cpu_to_be32(RPC_CALL))
 		return false;
 
 	return true;
 }
 
-/**
- * svc_rdma_recvfrom - Receive an RPC call
- * @rqstp: request structure into which to receive an RPC Call
- *
- * Returns:
- *	The positive number of bytes in the RPC Call message,
- *	%0 if there were no Calls ready to return,
- *	%-EINVAL if the Read chunk data is too large,
- *	%-ENOMEM if rdma_rw context pool was exhausted,
- *	%-ENOTCONN if posting failed (connection is lost),
- *	%-EIO if rdma_rw initialization failed (DMA mapping, etc).
- *
- * Called in a loop when XPT_DATA is set. XPT_DATA is cleared only
- * when there are no remaining ctxt's to process.
- *
- * The next ctxt is removed from the "receive" lists.
- *
- * - If the ctxt completes a Receive, then construct the Call
- *   message from the contents of the Receive buffer.
- *
- *   - If there are no Read chunks in this message, then finish
- *     assembling the Call message and return the number of bytes
- *     in the message.
- *
- *   - If there are Read chunks in this message, post Read WRs to
- *     pull that payload. When the Read WRs complete, build the
- *     full message and return the number of bytes in it.
- */
+ 
 int svc_rdma_recvfrom(struct svc_rqst *rqstp)
 {
 	struct svc_xprt *xprt = rqstp->rq_xprt;
@@ -790,9 +535,7 @@ int svc_rdma_recvfrom(struct svc_rqst *rqstp)
 	struct svc_rdma_recv_ctxt *ctxt;
 	int ret;
 
-	/* Prevent svc_xprt_release() from releasing pages in rq_pages
-	 * when returning 0 or an error.
-	 */
+	 
 	rqstp->rq_respages = rqstp->rq_pages;
 	rqstp->rq_next_page = rqstp->rq_respages;
 
@@ -804,11 +547,11 @@ int svc_rdma_recvfrom(struct svc_rqst *rqstp)
 	if (ctxt)
 		list_del(&ctxt->rc_list);
 	else
-		/* No new incoming requests, terminate the loop */
+		 
 		clear_bit(XPT_DATA, &xprt->xpt_flags);
 	spin_unlock(&rdma_xprt->sc_rq_dto_lock);
 
-	/* Unblock the transport for the next receive */
+	 
 	svc_xprt_received(xprt);
 	if (!ctxt)
 		return 0;

@@ -1,22 +1,6 @@
-/* casemod.c -- functions to change case of strings */
+ 
 
-/* Copyright (C) 2008-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if defined (HAVE_CONFIG_H)
 #  include <config.h>
@@ -24,7 +8,7 @@
 
 #if defined (HAVE_UNISTD_H)
 #  include <unistd.h>
-#endif /* HAVE_UNISTD_H */
+#endif  
 
 #include <stdc.h>
 
@@ -54,7 +38,7 @@
 #  define TOGGLE(x)	(iswupper (x) ? towlower (x) : (_to_wupper(x)))
 #endif
 
-/* These must agree with the defines in externs.h */
+ 
 #define CASE_NOOP	0x0000
 #define CASE_LOWER	0x0001
 #define CASE_UPPER	0x0002
@@ -65,7 +49,7 @@
 #define CASE_UPFIRST	0x0040
 #define CASE_LOWFIRST	0x0080
 
-#define CASE_USEWORDS	0x1000		/* modify behavior to act on words in passed string */
+#define CASE_USEWORDS	0x1000		 
 
 extern char *substring PARAMS((char *, int, int));
 
@@ -95,8 +79,7 @@ cval (s, i, l)
 }
 #endif
 
-/* Modify the case of characters in STRING matching PAT based on the value of
-   FLAGS.  If PAT is null, modify the case of each character */
+ 
 char *
 sh_modcase (string, pat, flags)
      const char *string;
@@ -134,7 +117,7 @@ sh_modcase (string, pat, flags)
   ret = (char *)xmalloc (2*end + 1);
   retind = 0;
 
-  /* See if we are supposed to split on alphanumerics and operate on each word */
+   
   usewords = (flags & CASE_USEWORDS);
   flags &= ~CASE_USEWORDS;
 
@@ -155,7 +138,7 @@ sh_modcase (string, pat, flags)
 	  free (s);
 	  if (match == 0)
             {
-              /* copy unmatched portion */
+               
               memcpy (ret + retind, string + start, next - start);
               retind += next - start;
               start = next;
@@ -164,9 +147,7 @@ sh_modcase (string, pat, flags)
             }
 	}
 
-      /* XXX - for now, the toggling operators work on the individual
-	 words in the string, breaking on alphanumerics.  Should I
-	 leave the capitalization operators to do that also? */
+       
       if (flags == CASE_CAPITALIZE)
 	{
 	  if (usewords)
@@ -207,8 +188,7 @@ sh_modcase (string, pat, flags)
       else
 	nop = flags;
 
-      /* Can't short-circuit, some locales have multibyte upper and lower
-	 case equivalents of single-byte ascii characters (e.g., Turkish) */
+       
       if (mb_cur_max == 1)
 	{
 singlebyte:
@@ -227,9 +207,7 @@ singlebyte:
       else
 	{
 	  m = mbrtowc (&wc, string + start, end - start, &state);
-	  /* Have to go through wide case conversion even for single-byte
-	     chars, to accommodate single-byte characters where the
-	     corresponding upper or lower case equivalent is multibyte. */
+	   
 	  if (MB_INVALIDCH (m))
 	    {
 	      wc = (unsigned char)string[start];
@@ -247,8 +225,7 @@ singlebyte:
 	    case CASE_TOGGLE: nwc = TOGGLE (wc); break;
 	    }
 
-	  /* We don't have to convert `wide' characters that are in the
-	     unsigned char range back to single-byte `multibyte' characters. */
+	   
 	  if ((int)nwc <= UCHAR_MAX && is_basic ((int)nwc))
 	    ret[retind++] = nwc;
 	  else
@@ -256,7 +233,7 @@ singlebyte:
 	      mlen = wcrtomb (mb, nwc, &state);
 	      if (mlen > 0)
 		mb[mlen] = '\0';
-	      /* Don't assume the same width */
+	       
 	      strncpy (ret + retind, mb, mlen);
 	      retind += mlen;
 	    }

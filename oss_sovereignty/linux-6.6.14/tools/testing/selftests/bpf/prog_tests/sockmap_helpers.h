@@ -7,7 +7,7 @@
 #define MAX_STRERR_LEN 256
 #define MAX_TEST_NAME 80
 
-/* workaround for older vm_sockets.h */
+ 
 #ifndef VMADDR_CID_LOCAL
 #define VMADDR_CID_LOCAL 1
 #endif
@@ -28,7 +28,7 @@
 		FAIL("%s: %s", (msg), __buf);                                  \
 	})
 
-/* Wrappers that fail the test on error and report it. */
+ 
 
 #define xaccept_nonblock(fd, addr, len)                                        \
 	({                                                                     \
@@ -413,4 +413,4 @@ static inline int socket_loopback(int family, int sotype)
 }
 
 
-#endif // __SOCKMAP_HELPERS__
+#endif 

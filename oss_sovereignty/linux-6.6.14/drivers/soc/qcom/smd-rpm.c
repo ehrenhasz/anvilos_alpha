@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, Sony Mobile Communications AB.
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -16,14 +13,7 @@
 
 #define RPM_REQUEST_TIMEOUT     (5 * HZ)
 
-/**
- * struct qcom_smd_rpm - state of the rpm device driver
- * @rpm_channel:	reference to the smd channel
- * @dev:		rpm device
- * @ack:		completion for acks
- * @lock:		mutual exclusion around the send/complete pair
- * @ack_status:		result of the rpm request
- */
+ 
 struct qcom_smd_rpm {
 	struct rpmsg_endpoint *rpm_channel;
 	struct device *dev;
@@ -33,24 +23,13 @@ struct qcom_smd_rpm {
 	int ack_status;
 };
 
-/**
- * struct qcom_rpm_header - header for all rpm requests and responses
- * @service_type:	identifier of the service
- * @length:		length of the payload
- */
+ 
 struct qcom_rpm_header {
 	__le32 service_type;
 	__le32 length;
 };
 
-/**
- * struct qcom_rpm_request - request message to the rpm
- * @msg_id:	identifier of the outgoing message
- * @flags:	active/sleep state flags
- * @type:	resource type
- * @id:		resource id
- * @data_len:	length of the payload following this header
- */
+ 
 struct qcom_rpm_request {
 	__le32 msg_id;
 	__le32 flags;
@@ -59,15 +38,7 @@ struct qcom_rpm_request {
 	__le32 data_len;
 };
 
-/**
- * struct qcom_rpm_message - response message from the rpm
- * @msg_type:	indicator of the type of message
- * @length:	the size of this message, including the message header
- * @msg_id:	message id
- * @message:	textual message from the rpm
- *
- * Multiple of these messages can be stacked in an rpm message.
- */
+ 
 struct qcom_rpm_message {
 	__le32 msg_type;
 	__le32 length;
@@ -77,20 +48,12 @@ struct qcom_rpm_message {
 	};
 };
 
-#define RPM_SERVICE_TYPE_REQUEST	0x00716572 /* "req\0" */
+#define RPM_SERVICE_TYPE_REQUEST	0x00716572  
 
-#define RPM_MSG_TYPE_ERR		0x00727265 /* "err\0" */
-#define RPM_MSG_TYPE_MSG_ID		0x2367736d /* "msg#" */
+#define RPM_MSG_TYPE_ERR		0x00727265  
+#define RPM_MSG_TYPE_MSG_ID		0x2367736d  
 
-/**
- * qcom_rpm_smd_write - write @buf to @type:@id
- * @rpm:	rpm handle
- * @state:	active/sleep state flags
- * @type:	resource type
- * @id:		resource identifier
- * @buf:	the data to be written
- * @count:	number of bytes in @buf
- */
+ 
 int qcom_rpm_smd_write(struct qcom_smd_rpm *rpm,
 		       int state,
 		       u32 type, u32 id,
@@ -107,7 +70,7 @@ int qcom_rpm_smd_write(struct qcom_smd_rpm *rpm,
 	} *pkt;
 	size_t size = sizeof(*pkt) + count;
 
-	/* SMD packets to the RPM may not exceed 256 bytes */
+	 
 	if (WARN_ON(size >= 256))
 		return -EINVAL;
 
@@ -220,7 +183,7 @@ static void qcom_smd_rpm_remove(struct rpmsg_device *rpdev)
 
 static const struct rpmsg_device_id qcom_smd_rpm_id_table[] = {
 	{ .name = "rpm_requests", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(rpmsg, qcom_smd_rpm_id_table);
 

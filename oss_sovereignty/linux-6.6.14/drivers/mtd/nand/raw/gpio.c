@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Updated, and converted to generic GPIO based driver by Russell King.
- *
- * Written by Ben Dooks <ben@simtec.co.uk>
- *   Based on 2.4 version by Mark Whittaker
- *
- * © 2004 Simtec Electronics
- *
- * Device driver for NAND flash that uses a memory mapped interface to
- * read/write the NAND commands and data, and GPIO pins for control signals
- * (the DT binding refers to this as "GPIO assisted NAND flash")
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/err.h>
@@ -33,11 +22,11 @@ struct gpiomtd {
 	void __iomem		*io_sync;
 	struct nand_chip	nand_chip;
 	struct gpio_nand_platdata plat;
-	struct gpio_desc *nce; /* Optional chip enable */
+	struct gpio_desc *nce;  
 	struct gpio_desc *cle;
 	struct gpio_desc *ale;
 	struct gpio_desc *rdy;
-	struct gpio_desc *nwp; /* Optional write protection */
+	struct gpio_desc *nwp;  
 };
 
 static inline struct gpiomtd *gpio_nand_getpriv(struct mtd_info *mtd)
@@ -47,23 +36,13 @@ static inline struct gpiomtd *gpio_nand_getpriv(struct mtd_info *mtd)
 
 
 #ifdef CONFIG_ARM
-/* gpio_nand_dosync()
- *
- * Make sure the GPIO state changes occur in-order with writes to NAND
- * memory region.
- * Needed on PXA due to bus-reordering within the SoC itself (see section on
- * I/O ordering in PXA manual (section 2.3, p35)
- */
+ 
 static void gpio_nand_dosync(struct gpiomtd *gpiomtd)
 {
 	unsigned long tmp;
 
 	if (gpiomtd->io_sync) {
-		/*
-		 * Linux memory barriers don't cater for what's required here.
-		 * What's required is what's here - a read from a separate
-		 * region with a dependency on that read.
-		 */
+		 
 		tmp = readl(gpiomtd->io_sync);
 		asm volatile("mov %1, %0\n" : "=r" (tmp) : "r" (tmp));
 	}
@@ -224,7 +203,7 @@ static struct resource *gpio_nand_get_io_sync_of(struct platform_device *pdev)
 
 	return r;
 }
-#else /* CONFIG_OF */
+#else  
 static inline int gpio_nand_get_config_of(const struct device *dev,
 					  struct gpio_nand_platdata *plat)
 {
@@ -236,7 +215,7 @@ gpio_nand_get_io_sync_of(struct platform_device *pdev)
 {
 	return NULL;
 }
-#endif /* CONFIG_OF */
+#endif  
 
 static inline int gpio_nand_get_config(const struct device *dev,
 				       struct gpio_nand_platdata *plat)
@@ -275,7 +254,7 @@ static void gpio_nand_remove(struct platform_device *pdev)
 	WARN_ON(ret);
 	nand_cleanup(chip);
 
-	/* Enable write protection and disable the chip */
+	 
 	if (gpiomtd->nwp && !IS_ERR(gpiomtd->nwp))
 		gpiod_set_value(gpiomtd->nwp, 0);
 	if (gpiomtd->nce && !IS_ERR(gpiomtd->nce))
@@ -315,12 +294,12 @@ static int gpio_nand_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Just enable the chip */
+	 
 	gpiomtd->nce = devm_gpiod_get_optional(dev, "nce", GPIOD_OUT_HIGH);
 	if (IS_ERR(gpiomtd->nce))
 		return PTR_ERR(gpiomtd->nce);
 
-	/* We disable write protection once we know probe() will succeed */
+	 
 	gpiomtd->nwp = devm_gpiod_get_optional(dev, "nwp", GPIOD_OUT_LOW);
 	if (IS_ERR(gpiomtd->nwp)) {
 		ret = PTR_ERR(gpiomtd->nwp);
@@ -357,15 +336,11 @@ static int gpio_nand_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, gpiomtd);
 
-	/* Disable write protection, if wired up */
+	 
 	if (gpiomtd->nwp && !IS_ERR(gpiomtd->nwp))
 		gpiod_direction_output(gpiomtd->nwp, 1);
 
-	/*
-	 * This driver assumes that the default ECC engine should be TYPE_SOFT.
-	 * Set ->engine_type before registering the NAND devices in order to
-	 * provide a driver specific default value.
-	 */
+	 
 	chip->ecc.engine_type = NAND_ECC_ENGINE_TYPE_SOFT;
 
 	ret = nand_scan(chip, 1);

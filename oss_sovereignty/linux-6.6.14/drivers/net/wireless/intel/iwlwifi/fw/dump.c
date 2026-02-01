@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/devcoredump.h>
 #include "iwl-drv.h"
 #include "runtime.h"
@@ -21,83 +17,65 @@
 #define RT_NMI_INTERRUPT_OTHER_LMAC_FATAL	0x73
 #define FW_ASSERT_NMI_UNKNOWN			0x84
 
-/*
- * Note: This structure is read from the device with IO accesses,
- * and the reading already does the endian conversion. As it is
- * read with u32-sized accesses, any members with a different size
- * need to be ordered correctly though!
- */
+ 
 struct iwl_error_event_table {
-	u32 valid;		/* (nonzero) valid, (0) log is empty */
-	u32 error_id;		/* type of error */
-	u32 trm_hw_status0;	/* TRM HW status */
-	u32 trm_hw_status1;	/* TRM HW status */
-	u32 blink2;		/* branch link */
-	u32 ilink1;		/* interrupt link */
-	u32 ilink2;		/* interrupt link */
-	u32 data1;		/* error-specific data */
-	u32 data2;		/* error-specific data */
-	u32 data3;		/* error-specific data */
-	u32 bcon_time;		/* beacon timer */
-	u32 tsf_low;		/* network timestamp function timer */
-	u32 tsf_hi;		/* network timestamp function timer */
-	u32 gp1;		/* GP1 timer register */
-	u32 gp2;		/* GP2 timer register */
-	u32 fw_rev_type;	/* firmware revision type */
-	u32 major;		/* uCode version major */
-	u32 minor;		/* uCode version minor */
-	u32 hw_ver;		/* HW Silicon version */
-	u32 brd_ver;		/* HW board version */
-	u32 log_pc;		/* log program counter */
-	u32 frame_ptr;		/* frame pointer */
-	u32 stack_ptr;		/* stack pointer */
-	u32 hcmd;		/* last host command header */
-	u32 isr0;		/* isr status register LMPM_NIC_ISR0:
-				 * rxtx_flag */
-	u32 isr1;		/* isr status register LMPM_NIC_ISR1:
-				 * host_flag */
-	u32 isr2;		/* isr status register LMPM_NIC_ISR2:
-				 * enc_flag */
-	u32 isr3;		/* isr status register LMPM_NIC_ISR3:
-				 * time_flag */
-	u32 isr4;		/* isr status register LMPM_NIC_ISR4:
-				 * wico interrupt */
-	u32 last_cmd_id;	/* last HCMD id handled by the firmware */
-	u32 wait_event;		/* wait event() caller address */
-	u32 l2p_control;	/* L2pControlField */
-	u32 l2p_duration;	/* L2pDurationField */
-	u32 l2p_mhvalid;	/* L2pMhValidBits */
-	u32 l2p_addr_match;	/* L2pAddrMatchStat */
-	u32 lmpm_pmg_sel;	/* indicate which clocks are turned on
-				 * (LMPM_PMG_SEL) */
-	u32 u_timestamp;	/* indicate when the date and time of the
-				 * compilation */
-	u32 flow_handler;	/* FH read/write pointers, RX credit */
-} __packed /* LOG_ERROR_TABLE_API_S_VER_3 */;
+	u32 valid;		 
+	u32 error_id;		 
+	u32 trm_hw_status0;	 
+	u32 trm_hw_status1;	 
+	u32 blink2;		 
+	u32 ilink1;		 
+	u32 ilink2;		 
+	u32 data1;		 
+	u32 data2;		 
+	u32 data3;		 
+	u32 bcon_time;		 
+	u32 tsf_low;		 
+	u32 tsf_hi;		 
+	u32 gp1;		 
+	u32 gp2;		 
+	u32 fw_rev_type;	 
+	u32 major;		 
+	u32 minor;		 
+	u32 hw_ver;		 
+	u32 brd_ver;		 
+	u32 log_pc;		 
+	u32 frame_ptr;		 
+	u32 stack_ptr;		 
+	u32 hcmd;		 
+	u32 isr0;		 
+	u32 isr1;		 
+	u32 isr2;		 
+	u32 isr3;		 
+	u32 isr4;		 
+	u32 last_cmd_id;	 
+	u32 wait_event;		 
+	u32 l2p_control;	 
+	u32 l2p_duration;	 
+	u32 l2p_mhvalid;	 
+	u32 l2p_addr_match;	 
+	u32 lmpm_pmg_sel;	 
+	u32 u_timestamp;	 
+	u32 flow_handler;	 
+} __packed  ;
 
-/*
- * UMAC error struct - relevant starting from family 8000 chip.
- * Note: This structure is read from the device with IO accesses,
- * and the reading already does the endian conversion. As it is
- * read with u32-sized accesses, any members with a different size
- * need to be ordered correctly though!
- */
+ 
 struct iwl_umac_error_event_table {
-	u32 valid;		/* (nonzero) valid, (0) log is empty */
-	u32 error_id;		/* type of error */
-	u32 blink1;		/* branch link */
-	u32 blink2;		/* branch link */
-	u32 ilink1;		/* interrupt link */
-	u32 ilink2;		/* interrupt link */
-	u32 data1;		/* error-specific data */
-	u32 data2;		/* error-specific data */
-	u32 data3;		/* error-specific data */
+	u32 valid;		 
+	u32 error_id;		 
+	u32 blink1;		 
+	u32 blink2;		 
+	u32 ilink1;		 
+	u32 ilink2;		 
+	u32 data1;		 
+	u32 data2;		 
+	u32 data3;		 
 	u32 umac_major;
 	u32 umac_minor;
-	u32 frame_pointer;	/* core register 27*/
-	u32 stack_pointer;	/* core register 28 */
-	u32 cmd_header;		/* latest host cmd sent to UMAC */
-	u32 nic_isr_pref;	/* ISR status register */
+	u32 frame_pointer;	 
+	u32 stack_pointer;	 
+	u32 cmd_header;		 
+	u32 nic_isr_pref;	 
 } __packed;
 
 #define ERROR_START_OFFSET  (1 * sizeof(u32))
@@ -191,14 +169,14 @@ static void iwl_fwrt_dump_lmac_error_log(struct iwl_fw_runtime *fwrt, u8 lmac_nu
 		return;
 	}
 
-	/* check if there is a HW error */
+	 
 	val = iwl_trans_read_mem32(trans, base);
 	if (iwl_trans_is_hw_error_value(val)) {
 		int err;
 
 		IWL_ERR(trans, "HW error, resetting before reading\n");
 
-		/* reset the device */
+		 
 		err = iwl_trans_sw_reset(trans, true);
 		if (err)
 			return;
@@ -226,7 +204,7 @@ static void iwl_fwrt_dump_lmac_error_log(struct iwl_fw_runtime *fwrt, u8 lmac_nu
 			fwrt->trans->status, table.valid);
 	}
 
-	/* Do not change this output - scripts rely on it */
+	 
 
 	IWL_ERR(fwrt, "Loaded firmware version: %s\n", fwrt->fw->fw_version);
 
@@ -267,13 +245,7 @@ static void iwl_fwrt_dump_lmac_error_log(struct iwl_fw_runtime *fwrt, u8 lmac_nu
 	IWL_ERR(fwrt, "0x%08X | flow_handler\n", table.flow_handler);
 }
 
-/*
- * TCM error struct.
- * Note: This structure is read from the device with IO accesses,
- * and the reading already does the endian conversion. As it is
- * read with u32-sized accesses, any members with a different size
- * need to be ordered correctly though!
- */
+ 
 struct iwl_tcm_error_event_table {
 	u32 valid;
 	u32 error_id;
@@ -289,7 +261,7 @@ struct iwl_tcm_error_event_table {
 	u32 hw_status[5];
 	u32 sw_status[1];
 	u32 reserved[4];
-} __packed; /* TCM_LOG_ERROR_TABLE_API_S_VER_1 */
+} __packed;  
 
 static void iwl_fwrt_dump_tcm_error_log(struct iwl_fw_runtime *fwrt, int idx)
 {
@@ -336,13 +308,7 @@ static void iwl_fwrt_dump_tcm_error_log(struct iwl_fw_runtime *fwrt, int idx)
 			table.sw_status[i], i);
 }
 
-/*
- * RCM error struct.
- * Note: This structure is read from the device with IO accesses,
- * and the reading already does the endian conversion. As it is
- * read with u32-sized accesses, any members with a different size
- * need to be ordered correctly though!
- */
+ 
 struct iwl_rcm_error_event_table {
 	u32 valid;
 	u32 error_id;
@@ -363,7 +329,7 @@ struct iwl_rcm_error_event_table {
 	u32 mh_info;
 	u32 mh_err;
 	u32 reserved[3];
-} __packed; /* RCM_LOG_ERROR_TABLE_API_S_VER_1 */
+} __packed;  
 
 static void iwl_fwrt_dump_rcm_error_log(struct iwl_fw_runtime *fwrt, int idx)
 {

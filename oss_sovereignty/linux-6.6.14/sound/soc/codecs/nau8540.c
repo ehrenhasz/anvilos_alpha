@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NAU85L40 ALSA SoC audio driver
- *
- * Copyright 2016 Nuvoton Technology Corp.
- * Author: John Hsu <KCHSU0@nuvoton.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -31,10 +26,10 @@
 #define NAU_FVCO_MAX 100000000
 #define NAU_FVCO_MIN 90000000
 
-/* the maximum frequency of CLK_ADC */
+ 
 #define CLK_ADC_MAX 6144000
 
-/* scaling for mclk from sysclk_src output */
+ 
 static const struct nau8540_fll_attr mclk_src_scaling[] = {
 	{ 1, 0x0 },
 	{ 2, 0x2 },
@@ -48,7 +43,7 @@ static const struct nau8540_fll_attr mclk_src_scaling[] = {
 	{ 24, 0xc },
 };
 
-/* ratio for input clk freq */
+ 
 static const struct nau8540_fll_attr fll_ratio[] = {
 	{ 512000, 0x01 },
 	{ 256000, 0x02 },
@@ -66,12 +61,12 @@ static const struct nau8540_fll_attr fll_pre_scalar[] = {
 	{ 8, 0x3 },
 };
 
-/* over sampling rate */
+ 
 static const struct nau8540_osr_attr osr_adc_sel[] = {
-	{ 32, 3 },	/* OSR 32, SRC 1/8 */
-	{ 64, 2 },	/* OSR 64, SRC 1/4 */
-	{ 128, 1 },	/* OSR 128, SRC 1/2 */
-	{ 256, 0 },	/* OSR 256, SRC 1 */
+	{ 32, 3 },	 
+	{ 64, 2 },	 
+	{ 128, 1 },	 
+	{ 256, 0 },	 
 };
 
 static const struct reg_default nau8540_reg_defaults[] = {
@@ -238,7 +233,7 @@ static int adc_power_control(struct snd_soc_dapm_widget *w,
 
 	if (SND_SOC_DAPM_EVENT_ON(event)) {
 		msleep(300);
-		/* DO12 and DO34 pad output enable */
+		 
 		regmap_update_bits(nau8540->regmap, NAU8540_REG_PCM_CTRL1,
 			NAU8540_I2S_DO12_TRI, 0);
 		regmap_update_bits(nau8540->regmap, NAU8540_REG_PCM_CTRL2,
@@ -393,12 +388,7 @@ static int nau8540_hw_params(struct snd_pcm_substream *substream,
 	unsigned int val_len = 0;
 	const struct nau8540_osr_attr *osr;
 
-	/* CLK_ADC = OSR * FS
-	 * ADC clock frequency is defined as Over Sampling Rate (OSR)
-	 * multiplied by the audio sample rate (Fs). Note that the OSR and Fs
-	 * values must be selected such that the maximum frequency is less
-	 * than 6.144 MHz.
-	 */
+	 
 	osr = nau8540_get_osr(nau8540);
 	if (!osr || !osr->osr)
 		return -EINVAL;
@@ -489,18 +479,7 @@ static int nau8540_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	return 0;
 }
 
-/**
- * nau8540_set_tdm_slot - configure DAI TX TDM.
- * @dai: DAI
- * @tx_mask: bitmask representing active TX slots. Ex.
- *                 0xf for normal 4 channel TDM.
- *                 0xf0 for shifted 4 channel TDM
- * @rx_mask: no used.
- * @slots: Number of slots in use.
- * @slot_width: Width in bits for each slot.
- *
- * Configures a DAI for TDM operation. Only support 4 slots TDM.
- */
+ 
 static int nau8540_set_tdm_slot(struct snd_soc_dai *dai,
 	unsigned int tx_mask, unsigned int rx_mask, int slots, int slot_width)
 {
@@ -554,26 +533,14 @@ static struct snd_soc_dai_driver nau8540_dai = {
 	.ops = &nau8540_dai_ops,
 };
 
-/**
- * nau8540_calc_fll_param - Calculate FLL parameters.
- * @fll_in: external clock provided to codec.
- * @fs: sampling rate.
- * @fll_param: Pointer to structure of FLL parameters.
- *
- * Calculate FLL parameters to configure codec.
- *
- * Returns 0 for success or negative error code.
- */
+ 
 static int nau8540_calc_fll_param(unsigned int fll_in,
 	unsigned int fs, struct nau8540_fll *fll_param)
 {
 	u64 fvco, fvco_max;
 	unsigned int fref, i, fvco_sel;
 
-	/* Ensure the reference clock frequency (FREF) is <= 13.5MHz by dividing
-	 * freq_in by 1, 2, 4, or 8 using FLL pre-scalar.
-	 * FREF = freq_in / NAU8540_FLL_REF_DIV_MASK
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(fll_pre_scalar); i++) {
 		fref = fll_in / fll_pre_scalar[i].param;
 		if (fref <= NAU_FREF_MAX)
@@ -583,7 +550,7 @@ static int nau8540_calc_fll_param(unsigned int fll_in,
 		return -EINVAL;
 	fll_param->clk_ref_div = fll_pre_scalar[i].val;
 
-	/* Choose the FLL ratio based on FREF */
+	 
 	for (i = 0; i < ARRAY_SIZE(fll_ratio); i++) {
 		if (fref >= fll_ratio[i].param)
 			break;
@@ -592,11 +559,7 @@ static int nau8540_calc_fll_param(unsigned int fll_in,
 		return -EINVAL;
 	fll_param->ratio = fll_ratio[i].val;
 
-	/* Calculate the frequency of DCO (FDCO) given freq_out = 256 * Fs.
-	 * FDCO must be within the 90MHz - 124MHz or the FFL cannot be
-	 * guaranteed across the full range of operation.
-	 * FDCO = freq_out * 2 * mclk_src_scaling
-	 */
+	 
 	fvco_max = 0;
 	fvco_sel = ARRAY_SIZE(mclk_src_scaling);
 	for (i = 0; i < ARRAY_SIZE(mclk_src_scaling); i++) {
@@ -611,9 +574,7 @@ static int nau8540_calc_fll_param(unsigned int fll_in,
 		return -EINVAL;
 	fll_param->mclk_src = mclk_src_scaling[fvco_sel].val;
 
-	/* Calculate the FLL 10-bit integer input and the FLL 16-bit fractional
-	 * input based on FDCO, FREF and FLL ratio.
-	 */
+	 
 	fvco = div_u64(fvco_max << 16, fref * fll_param->ratio);
 	fll_param->fll_int = (fvco >> 16) & 0x3FF;
 	fll_param->fll_frac = fvco & 0xFFFF;
@@ -629,12 +590,12 @@ static void nau8540_fll_apply(struct regmap *regmap,
 	regmap_update_bits(regmap, NAU8540_REG_FLL1,
 		NAU8540_FLL_RATIO_MASK | NAU8540_ICTRL_LATCH_MASK,
 		fll_param->ratio | (0x6 << NAU8540_ICTRL_LATCH_SFT));
-	/* FLL 16-bit fractional input */
+	 
 	regmap_write(regmap, NAU8540_REG_FLL2, fll_param->fll_frac);
-	/* FLL 10-bit integer input */
+	 
 	regmap_update_bits(regmap, NAU8540_REG_FLL3,
 		NAU8540_FLL_INTEGER_MASK, fll_param->fll_int);
-	/* FLL pre-scaler */
+	 
 	regmap_update_bits(regmap, NAU8540_REG_FLL4,
 		NAU8540_FLL_REF_DIV_MASK,
 		fll_param->clk_ref_div << NAU8540_FLL_REF_DIV_SFT);
@@ -660,7 +621,7 @@ static void nau8540_fll_apply(struct regmap *regmap,
 	}
 }
 
-/* freq_out must be 256*Fs in order to achieve the best performance */
+ 
 static int nau8540_set_pll(struct snd_soc_component *component, int pll_id, int source,
 		unsigned int freq_in, unsigned int freq_out)
 {
@@ -756,7 +717,7 @@ static void nau8540_init_regs(struct nau8540 *nau8540)
 {
 	struct regmap *regmap = nau8540->regmap;
 
-	/* Enable Bias/VMID/VMID Tieoff */
+	 
 	regmap_update_bits(regmap, NAU8540_REG_VMID_CTRL,
 		NAU8540_VMID_EN | NAU8540_VMID_SEL_MASK,
 		NAU8540_VMID_EN | (0x2 << NAU8540_VMID_SEL_SFT));
@@ -769,20 +730,18 @@ static void nau8540_init_regs(struct nau8540 *nau8540)
 	regmap_update_bits(regmap, NAU8540_REG_CLOCK_CTRL,
 		NAU8540_CLK_ADC_EN | NAU8540_CLK_I2S_EN,
 		NAU8540_CLK_ADC_EN | NAU8540_CLK_I2S_EN);
-	/* ADC OSR selection, CLK_ADC = Fs * OSR;
-	 * Channel time alignment enable.
-	 */
+	 
 	regmap_update_bits(regmap, NAU8540_REG_ADC_SAMPLE_RATE,
 		NAU8540_CH_SYNC | NAU8540_ADC_OSR_MASK,
 		NAU8540_CH_SYNC | NAU8540_ADC_OSR_64);
-	/* PGA input mode selection */
+	 
 	regmap_update_bits(regmap, NAU8540_REG_FEPGA1,
 		NAU8540_FEPGA1_MODCH2_SHT | NAU8540_FEPGA1_MODCH1_SHT,
 		NAU8540_FEPGA1_MODCH2_SHT | NAU8540_FEPGA1_MODCH1_SHT);
 	regmap_update_bits(regmap, NAU8540_REG_FEPGA2,
 		NAU8540_FEPGA2_MODCH4_SHT | NAU8540_FEPGA2_MODCH3_SHT,
 		NAU8540_FEPGA2_MODCH4_SHT | NAU8540_FEPGA2_MODCH3_SHT);
-	/* DO12 and DO34 pad output disable */
+	 
 	regmap_update_bits(regmap, NAU8540_REG_PCM_CTRL1,
 		NAU8540_I2S_DO12_TRI, NAU8540_I2S_DO12_TRI);
 	regmap_update_bits(regmap, NAU8540_REG_PCM_CTRL2,

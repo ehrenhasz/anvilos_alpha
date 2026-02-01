@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * adis16400.c	support Analog Devices ADIS16400/5
- *		3d 2g Linear Accelerometers,
- *		3d Gyroscopes,
- *		3d Magnetometers via SPI
- *
- * Copyright (c) 2009 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
- * Copyright (c) 2007 Jonathan Cameron <jic23@kernel.org>
- * Copyright (c) 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/irq.h>
 #include <linux/device.h>
@@ -23,73 +14,73 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/imu/adis.h>
 
-#define ADIS16400_STARTUP_DELAY	290 /* ms */
-#define ADIS16400_MTEST_DELAY 90 /* ms */
+#define ADIS16400_STARTUP_DELAY	290  
+#define ADIS16400_MTEST_DELAY 90  
 
-#define ADIS16400_FLASH_CNT  0x00 /* Flash memory write count */
-#define ADIS16400_SUPPLY_OUT 0x02 /* Power supply measurement */
-#define ADIS16400_XGYRO_OUT 0x04 /* X-axis gyroscope output */
-#define ADIS16400_YGYRO_OUT 0x06 /* Y-axis gyroscope output */
-#define ADIS16400_ZGYRO_OUT 0x08 /* Z-axis gyroscope output */
-#define ADIS16400_XACCL_OUT 0x0A /* X-axis accelerometer output */
-#define ADIS16400_YACCL_OUT 0x0C /* Y-axis accelerometer output */
-#define ADIS16400_ZACCL_OUT 0x0E /* Z-axis accelerometer output */
-#define ADIS16400_XMAGN_OUT 0x10 /* X-axis magnetometer measurement */
-#define ADIS16400_YMAGN_OUT 0x12 /* Y-axis magnetometer measurement */
-#define ADIS16400_ZMAGN_OUT 0x14 /* Z-axis magnetometer measurement */
-#define ADIS16400_TEMP_OUT  0x16 /* Temperature output */
-#define ADIS16400_AUX_ADC   0x18 /* Auxiliary ADC measurement */
+#define ADIS16400_FLASH_CNT  0x00  
+#define ADIS16400_SUPPLY_OUT 0x02  
+#define ADIS16400_XGYRO_OUT 0x04  
+#define ADIS16400_YGYRO_OUT 0x06  
+#define ADIS16400_ZGYRO_OUT 0x08  
+#define ADIS16400_XACCL_OUT 0x0A  
+#define ADIS16400_YACCL_OUT 0x0C  
+#define ADIS16400_ZACCL_OUT 0x0E  
+#define ADIS16400_XMAGN_OUT 0x10  
+#define ADIS16400_YMAGN_OUT 0x12  
+#define ADIS16400_ZMAGN_OUT 0x14  
+#define ADIS16400_TEMP_OUT  0x16  
+#define ADIS16400_AUX_ADC   0x18  
 
-#define ADIS16350_XTEMP_OUT 0x10 /* X-axis gyroscope temperature measurement */
-#define ADIS16350_YTEMP_OUT 0x12 /* Y-axis gyroscope temperature measurement */
-#define ADIS16350_ZTEMP_OUT 0x14 /* Z-axis gyroscope temperature measurement */
+#define ADIS16350_XTEMP_OUT 0x10  
+#define ADIS16350_YTEMP_OUT 0x12  
+#define ADIS16350_ZTEMP_OUT 0x14  
 
-#define ADIS16300_PITCH_OUT 0x12 /* X axis inclinometer output measurement */
-#define ADIS16300_ROLL_OUT  0x14 /* Y axis inclinometer output measurement */
-#define ADIS16300_AUX_ADC   0x16 /* Auxiliary ADC measurement */
+#define ADIS16300_PITCH_OUT 0x12  
+#define ADIS16300_ROLL_OUT  0x14  
+#define ADIS16300_AUX_ADC   0x16  
 
-#define ADIS16448_BARO_OUT	0x16 /* Barometric pressure output */
-#define ADIS16448_TEMP_OUT  0x18 /* Temperature output */
+#define ADIS16448_BARO_OUT	0x16  
+#define ADIS16448_TEMP_OUT  0x18  
 
-/* Calibration parameters */
-#define ADIS16400_XGYRO_OFF 0x1A /* X-axis gyroscope bias offset factor */
-#define ADIS16400_YGYRO_OFF 0x1C /* Y-axis gyroscope bias offset factor */
-#define ADIS16400_ZGYRO_OFF 0x1E /* Z-axis gyroscope bias offset factor */
-#define ADIS16400_XACCL_OFF 0x20 /* X-axis acceleration bias offset factor */
-#define ADIS16400_YACCL_OFF 0x22 /* Y-axis acceleration bias offset factor */
-#define ADIS16400_ZACCL_OFF 0x24 /* Z-axis acceleration bias offset factor */
-#define ADIS16400_XMAGN_HIF 0x26 /* X-axis magnetometer, hard-iron factor */
-#define ADIS16400_YMAGN_HIF 0x28 /* Y-axis magnetometer, hard-iron factor */
-#define ADIS16400_ZMAGN_HIF 0x2A /* Z-axis magnetometer, hard-iron factor */
-#define ADIS16400_XMAGN_SIF 0x2C /* X-axis magnetometer, soft-iron factor */
-#define ADIS16400_YMAGN_SIF 0x2E /* Y-axis magnetometer, soft-iron factor */
-#define ADIS16400_ZMAGN_SIF 0x30 /* Z-axis magnetometer, soft-iron factor */
+ 
+#define ADIS16400_XGYRO_OFF 0x1A  
+#define ADIS16400_YGYRO_OFF 0x1C  
+#define ADIS16400_ZGYRO_OFF 0x1E  
+#define ADIS16400_XACCL_OFF 0x20  
+#define ADIS16400_YACCL_OFF 0x22  
+#define ADIS16400_ZACCL_OFF 0x24  
+#define ADIS16400_XMAGN_HIF 0x26  
+#define ADIS16400_YMAGN_HIF 0x28  
+#define ADIS16400_ZMAGN_HIF 0x2A  
+#define ADIS16400_XMAGN_SIF 0x2C  
+#define ADIS16400_YMAGN_SIF 0x2E  
+#define ADIS16400_ZMAGN_SIF 0x30  
 
-#define ADIS16400_GPIO_CTRL 0x32 /* Auxiliary digital input/output control */
-#define ADIS16400_MSC_CTRL  0x34 /* Miscellaneous control */
-#define ADIS16400_SMPL_PRD  0x36 /* Internal sample period (rate) control */
-#define ADIS16400_SENS_AVG  0x38 /* Dynamic range and digital filter control */
-#define ADIS16400_SLP_CNT   0x3A /* Sleep mode control */
-#define ADIS16400_DIAG_STAT 0x3C /* System status */
+#define ADIS16400_GPIO_CTRL 0x32  
+#define ADIS16400_MSC_CTRL  0x34  
+#define ADIS16400_SMPL_PRD  0x36  
+#define ADIS16400_SENS_AVG  0x38  
+#define ADIS16400_SLP_CNT   0x3A  
+#define ADIS16400_DIAG_STAT 0x3C  
 
-/* Alarm functions */
-#define ADIS16400_GLOB_CMD  0x3E /* System command */
-#define ADIS16400_ALM_MAG1  0x40 /* Alarm 1 amplitude threshold */
-#define ADIS16400_ALM_MAG2  0x42 /* Alarm 2 amplitude threshold */
-#define ADIS16400_ALM_SMPL1 0x44 /* Alarm 1 sample size */
-#define ADIS16400_ALM_SMPL2 0x46 /* Alarm 2 sample size */
-#define ADIS16400_ALM_CTRL  0x48 /* Alarm control */
-#define ADIS16400_AUX_DAC   0x4A /* Auxiliary DAC data */
+ 
+#define ADIS16400_GLOB_CMD  0x3E  
+#define ADIS16400_ALM_MAG1  0x40  
+#define ADIS16400_ALM_MAG2  0x42  
+#define ADIS16400_ALM_SMPL1 0x44  
+#define ADIS16400_ALM_SMPL2 0x46  
+#define ADIS16400_ALM_CTRL  0x48  
+#define ADIS16400_AUX_DAC   0x4A  
 
-#define ADIS16334_LOT_ID1   0x52 /* Lot identification code 1 */
-#define ADIS16334_LOT_ID2   0x54 /* Lot identification code 2 */
-#define ADIS16400_PRODUCT_ID 0x56 /* Product identifier */
-#define ADIS16334_SERIAL_NUMBER 0x58 /* Serial number, lot specific */
+#define ADIS16334_LOT_ID1   0x52  
+#define ADIS16334_LOT_ID2   0x54  
+#define ADIS16400_PRODUCT_ID 0x56  
+#define ADIS16334_SERIAL_NUMBER 0x58  
 
 #define ADIS16400_ERROR_ACTIVE			(1<<14)
 #define ADIS16400_NEW_DATA			(1<<14)
 
-/* MSC_CTRL */
+ 
 #define ADIS16400_MSC_CTRL_MEM_TEST		(1<<11)
 #define ADIS16400_MSC_CTRL_INT_SELF_TEST	(1<<10)
 #define ADIS16400_MSC_CTRL_NEG_SELF_TEST	(1<<9)
@@ -100,11 +91,11 @@
 #define ADIS16400_MSC_CTRL_DATA_RDY_POL_HIGH	(1<<1)
 #define ADIS16400_MSC_CTRL_DATA_RDY_DIO2	(1<<0)
 
-/* SMPL_PRD */
+ 
 #define ADIS16400_SMPL_PRD_TIME_BASE	(1<<7)
 #define ADIS16400_SMPL_PRD_DIV_MASK	0x7F
 
-/* DIAG_STAT */
+ 
 #define ADIS16400_DIAG_STAT_ZACCL_FAIL	15
 #define ADIS16400_DIAG_STAT_YACCL_FAIL	14
 #define ADIS16400_DIAG_STAT_XACCL_FAIL	13
@@ -121,7 +112,7 @@
 #define ADIS16400_DIAG_STAT_POWER_HIGH	1
 #define ADIS16400_DIAG_STAT_POWER_LOW	0
 
-/* GLOB_CMD */
+ 
 #define ADIS16400_GLOB_CMD_SW_RESET	(1<<7)
 #define ADIS16400_GLOB_CMD_P_AUTO_NULL	(1<<4)
 #define ADIS16400_GLOB_CMD_FLASH_UPD	(1<<3)
@@ -129,7 +120,7 @@
 #define ADIS16400_GLOB_CMD_FAC_CALIB	(1<<1)
 #define ADIS16400_GLOB_CMD_AUTO_NULL	(1<<0)
 
-/* SLP_CNT */
+ 
 #define ADIS16400_SLP_CNT_POWER_OFF	(1<<8)
 
 #define ADIS16334_RATE_DIV_SHIFT 8
@@ -156,19 +147,12 @@ struct adis16400_chip_info {
 	unsigned int accel_scale_micro;
 	int temp_scale_nano;
 	int temp_offset;
-	/* set_freq() & get_freq() need to avoid using ADIS lib's state lock */
+	 
 	int (*set_freq)(struct adis16400_state *st, unsigned int freq);
 	int (*get_freq)(struct adis16400_state *st);
 };
 
-/**
- * struct adis16400_state - device instance specific data
- * @variant:	chip variant info
- * @filt_int:	integer part of requested filter frequency
- * @adis:	adis device
- * @avail_scan_mask:	NULL terminated array of bitmaps of channels
- *			that must be enabled together
- **/
+ 
 struct adis16400_state {
 	struct adis16400_chip_info	*variant;
 	int				filt_int;
@@ -177,9 +161,7 @@ struct adis16400_state {
 	unsigned long avail_scan_mask[2];
 };
 
-/* At the moment triggers are only used for ring buffer
- * filling. This may change!
- */
+ 
 
 enum {
 	ADIS16400_SCAN_SUPPLY,
@@ -385,14 +367,14 @@ static int adis16400_set_freq(struct adis16400_state *st, unsigned int freq)
 }
 
 static const unsigned int adis16400_3db_divisors[] = {
-	[0] = 2, /* Special case */
+	[0] = 2,  
 	[1] = 6,
 	[2] = 12,
 	[3] = 25,
 	[4] = 50,
 	[5] = 100,
 	[6] = 200,
-	[7] = 200, /* Not a valid setting */
+	[7] = 200,  
 };
 
 static int __adis16400_set_filter(struct iio_dev *indio_dev, int sps, int val)
@@ -415,7 +397,7 @@ static int __adis16400_set_filter(struct iio_dev *indio_dev, int sps, int val)
 	return ret;
 }
 
-/* Power down the device */
+ 
 static int adis16400_stop_device(struct iio_dev *indio_dev)
 {
 	struct adis16400_state *st = iio_priv(indio_dev);
@@ -437,7 +419,7 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
 	unsigned int device_id;
 	int ret;
 
-	/* use low spi speed for init if the device has a slow mode */
+	 
 	if (st->variant->flags & ADIS16400_HAS_SLOW_MODE)
 		st->adis.spi->max_speed_hz = ADIS16400_SPI_SLOW;
 	else
@@ -468,7 +450,7 @@ static int adis16400_initial_setup(struct iio_dev *indio_dev)
 			indio_dev->name, prod_id,
 			spi_get_chipselect(st->adis.spi, 0), st->adis.spi->irq);
 	}
-	/* use high spi speed if possible */
+	 
 	if (st->variant->flags & ADIS16400_HAS_SLOW_MODE) {
 		ret = adis_read_reg_16(&st->adis, ADIS16400_SMPL_PRD, &smp_prd);
 		if (ret)
@@ -505,13 +487,10 @@ static int adis16400_write_raw(struct iio_dev *indio_dev,
 				adis16400_addresses[chan->scan_index], val);
 		return ret;
 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-		/*
-		 * Need to cache values so we can update if the frequency
-		 * changes.
-		 */
+		 
 		adis_dev_lock(&st->adis);
 		st->filt_int = val;
-		/* Work out update to current value */
+		 
 		sps = st->variant->get_freq(st);
 		if (sps < 0) {
 			adis_dev_unlock(&st->adis);
@@ -557,10 +536,10 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
 			*val = 0;
 			if (chan->channel == 0) {
 				*val = 2;
-				*val2 = 418000; /* 2.418 mV */
+				*val2 = 418000;  
 			} else {
 				*val = 0;
-				*val2 = 805800; /* 805.8 uV */
+				*val2 = 805800;  
 			}
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_ACCEL:
@@ -569,14 +548,14 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_MAGN:
 			*val = 0;
-			*val2 = 500; /* 0.5 mgauss */
+			*val2 = 500;  
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_TEMP:
 			*val = st->variant->temp_scale_nano / 1000000;
 			*val2 = (st->variant->temp_scale_nano % 1000000);
 			return IIO_VAL_INT_PLUS_MICRO;
 		case IIO_PRESSURE:
-			/* 20 uBar = 0.002kPascal */
+			 
 			*val = 0;
 			*val2 = 2000;
 			return IIO_VAL_INT_PLUS_MICRO;
@@ -592,12 +571,12 @@ static int adis16400_read_raw(struct iio_dev *indio_dev,
 		*val = val16;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_OFFSET:
-		/* currently only temperature */
+		 
 		*val = st->variant->temp_offset;
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
 		adis_dev_lock(&st->adis);
-		/* Need both the number of taps and the sampling frequency */
+		 
 		ret = __adis_read_reg_16(&st->adis,
 						ADIS16400_SENS_AVG,
 						&val16);
@@ -643,12 +622,7 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
 
 	if (st->variant->flags & ADIS16400_BURST_DIAG_STAT) {
 		buffer = adis->buffer + sizeof(u16);
-		/*
-		 * The size here is always larger than, or equal to the true
-		 * size of the channel data. This may result in a larger copy
-		 * than necessary, but as the target buffer will be
-		 * buffer->scan_bytes this will be safe.
-		 */
+		 
 		iio_push_to_buffers_with_ts_unaligned(indio_dev, buffer,
 						      indio_dev->scan_bytes - sizeof(pf->timestamp),
 						      pf->timestamp);
@@ -665,7 +639,7 @@ static irqreturn_t adis16400_trigger_handler(int irq, void *p)
 }
 #else
 #define adis16400_trigger_handler	NULL
-#endif /* IS_ENABLED(CONFIG_IIO_BUFFER) */
+#endif  
 
 #define ADIS16400_VOLTAGE_CHAN(addr, bits, name, si, chn) { \
 	.type = IIO_VOLTAGE, \
@@ -1002,10 +976,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.num_channels = ARRAY_SIZE(adis16300_channels),
 		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE |
 				ADIS16400_HAS_SERIAL_NUMBER,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000),  
 		.accel_scale_micro = 5884,
-		.temp_scale_nano = 140000000, /* 0.14 C */
-		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
+		.temp_scale_nano = 140000000,  
+		.temp_offset = 25000000 / 140000,  
 		.set_freq = adis16400_set_freq,
 		.get_freq = adis16400_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16300_timeouts, 18),
@@ -1015,10 +989,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.num_channels = ARRAY_SIZE(adis16334_channels),
 		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_NO_BURST |
 				ADIS16400_HAS_SERIAL_NUMBER,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
-		.temp_scale_nano = 67850000, /* 0.06785 C */
-		.temp_offset = 25000000 / 67850, /* 25 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(1000),  
+		.temp_scale_nano = 67850000,  
+		.temp_offset = 25000000 / 67850,  
 		.set_freq = adis16334_set_freq,
 		.get_freq = adis16334_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16334_timeouts, 0),
@@ -1026,10 +1000,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 	[ADIS16350] = {
 		.channels = adis16350_channels,
 		.num_channels = ARRAY_SIZE(adis16350_channels),
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(73260), /* 0.07326 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(2522), /* 0.002522 g */
-		.temp_scale_nano = 145300000, /* 0.1453 C */
-		.temp_offset = 25000000 / 145300, /* 25 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(73260),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(2522),  
+		.temp_scale_nano = 145300000,  
+		.temp_offset = 25000000 / 145300,  
 		.flags = ADIS16400_NO_BURST | ADIS16400_HAS_SLOW_MODE,
 		.set_freq = adis16400_set_freq,
 		.get_freq = adis16400_get_freq,
@@ -1040,10 +1014,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.num_channels = ARRAY_SIZE(adis16350_channels),
 		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE |
 				ADIS16400_HAS_SERIAL_NUMBER,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
-		.temp_scale_nano = 136000000, /* 0.136 C */
-		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(3333),  
+		.temp_scale_nano = 136000000,  
+		.temp_offset = 25000000 / 136000,  
 		.set_freq = adis16400_set_freq,
 		.get_freq = adis16400_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16300_timeouts, 28),
@@ -1053,10 +1027,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.num_channels = ARRAY_SIZE(adis16350_channels),
 		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE |
 				ADIS16400_HAS_SERIAL_NUMBER,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(333), /* 0.333 mg */
-		.temp_scale_nano = 136000000, /* 0.136 C */
-		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(333),  
+		.temp_scale_nano = 136000000,  
+		.temp_offset = 25000000 / 136000,  
 		.set_freq = adis16400_set_freq,
 		.get_freq = adis16400_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16362_timeouts, 28),
@@ -1066,10 +1040,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.num_channels = ARRAY_SIZE(adis16350_channels),
 		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE |
 				ADIS16400_HAS_SERIAL_NUMBER,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(1000), /* 1 mg */
-		.temp_scale_nano = 136000000, /* 0.136 C */
-		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(1000),  
+		.temp_scale_nano = 136000000,  
+		.temp_offset = 25000000 / 136000,  
 		.set_freq = adis16400_set_freq,
 		.get_freq = adis16400_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16362_timeouts, 28),
@@ -1079,10 +1053,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.num_channels = ARRAY_SIZE(adis16350_channels),
 		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE |
 				ADIS16400_HAS_SERIAL_NUMBER,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(2000), /* 0.2 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
-		.temp_scale_nano = 136000000, /* 0.136 C */
-		.temp_offset = 25000000 / 136000, /* 25 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(2000),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(3333),  
+		.temp_scale_nano = 136000000,  
+		.temp_offset = 25000000 / 136000,  
 		.set_freq = adis16400_set_freq,
 		.get_freq = adis16400_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16300_timeouts, 28),
@@ -1091,10 +1065,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.channels = adis16400_channels,
 		.num_channels = ARRAY_SIZE(adis16400_channels),
 		.flags = ADIS16400_HAS_PROD_ID | ADIS16400_HAS_SLOW_MODE,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000), /* 0.05 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(3333), /* 3.333 mg */
-		.temp_scale_nano = 140000000, /* 0.14 C */
-		.temp_offset = 25000000 / 140000, /* 25 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(50000),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(3333),  
+		.temp_scale_nano = 140000000,  
+		.temp_offset = 25000000 / 140000,  
 		.set_freq = adis16400_set_freq,
 		.get_freq = adis16400_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16400_timeouts, 24),
@@ -1105,10 +1079,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.flags = ADIS16400_HAS_PROD_ID |
 				ADIS16400_HAS_SERIAL_NUMBER |
 				ADIS16400_BURST_DIAG_STAT,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(10000), /* 0.01 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(250), /* 1/4000 g */
-		.temp_scale_nano = 73860000, /* 0.07386 C */
-		.temp_offset = 31000000 / 73860, /* 31 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(10000),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(250),  
+		.temp_scale_nano = 73860000,  
+		.temp_offset = 31000000 / 73860,  
 		.set_freq = adis16334_set_freq,
 		.get_freq = adis16334_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16445_timeouts, 16),
@@ -1119,10 +1093,10 @@ static struct adis16400_chip_info adis16400_chips[] = {
 		.flags = ADIS16400_HAS_PROD_ID |
 				ADIS16400_HAS_SERIAL_NUMBER |
 				ADIS16400_BURST_DIAG_STAT,
-		.gyro_scale_micro = IIO_DEGREE_TO_RAD(40000), /* 0.04 deg/s */
-		.accel_scale_micro = IIO_G_TO_M_S_2(833), /* 1/1200 g */
-		.temp_scale_nano = 73860000, /* 0.07386 C */
-		.temp_offset = 31000000 / 73860, /* 31 C = 0x00 */
+		.gyro_scale_micro = IIO_DEGREE_TO_RAD(40000),  
+		.accel_scale_micro = IIO_G_TO_M_S_2(833),  
+		.temp_scale_nano = 73860000,  
+		.temp_offset = 31000000 / 73860,  
 		.set_freq = adis16334_set_freq,
 		.get_freq = adis16334_get_freq,
 		.adis_data = ADIS16400_DATA(&adis16448_timeouts, 24),
@@ -1168,7 +1142,7 @@ static int adis16400_probe(struct spi_device *spi)
 
 	st = iio_priv(indio_dev);
 
-	/* setup the industrialio driver allocated elements */
+	 
 	st->variant = &adis16400_chips[spi_get_device_id(spi)->driver_data];
 	indio_dev->name = spi_get_device_id(spi)->name;
 	indio_dev->channels = st->variant->channels;
@@ -1191,7 +1165,7 @@ static int adis16400_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Get the device into a sane initial state */
+	 
 	ret = adis16400_initial_setup(indio_dev);
 	if (ret)
 		return ret;

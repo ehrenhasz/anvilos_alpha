@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright(c) 2020 Intel Corporation.
+
+
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -51,11 +51,11 @@ static const struct regmap_bus regmap_sdw_mbq = {
 
 static int regmap_sdw_mbq_config_check(const struct regmap_config *config)
 {
-	/* MBQ-based controls are only 16-bits for now */
+	 
 	if (config->val_bits != 16)
 		return -ENOTSUPP;
 
-	/* Registers are 32 bits wide */
+	 
 	if (config->reg_bits != 32)
 		return -ENOTSUPP;
 

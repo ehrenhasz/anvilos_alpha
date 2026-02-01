@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015, 2017, 2022 Linaro Limited
- */
+
+ 
 #include <linux/device.h>
 #include <linux/dma-buf.h>
 #include <linux/genalloc.h>
@@ -26,10 +24,7 @@ static int pool_op_gen_alloc(struct tee_shm_pool *pool, struct tee_shm *shm,
 	shm->kaddr = (void *)va;
 	shm->paddr = gen_pool_virt_to_phys(genpool, va);
 	shm->size = s;
-	/*
-	 * This is from a static shared memory pool so no need to register
-	 * each chunk, and no need to unregister later either.
-	 */
+	 
 	shm->flags &= ~TEE_SHM_DYNAMIC;
 	return 0;
 }
@@ -61,7 +56,7 @@ struct tee_shm_pool *tee_shm_pool_alloc_res_mem(unsigned long vaddr,
 	struct tee_shm_pool *pool;
 	int rc;
 
-	/* Start and end must be page aligned */
+	 
 	if (vaddr & page_mask || paddr & page_mask || size & page_mask)
 		return ERR_PTR(-EINVAL);
 

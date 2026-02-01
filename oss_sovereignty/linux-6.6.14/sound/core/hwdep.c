@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Hardware dependent layer
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/major.h>
 #include <linux/init.h>
@@ -212,7 +209,7 @@ static int snd_hwdep_dsp_load(struct snd_hwdep *hw,
 		return -ENXIO;
 	if (info->index >= 32)
 		return -EINVAL;
-	/* check whether the dsp was already loaded */
+	 
 	if (hw->dsp_loaded & (1u << info->index))
 		return -EBUSY;
 	err = hw->ops.dsp_load(hw, info);
@@ -320,9 +317,7 @@ static int snd_hwdep_control_ioctl(struct snd_card *card,
 #define snd_hwdep_ioctl_compat	NULL
 #endif
 
-/*
-
- */
+ 
 
 static const struct file_operations snd_hwdep_f_ops =
 {
@@ -348,19 +343,7 @@ static void snd_hwdep_free(struct snd_hwdep *hwdep)
 	kfree(hwdep);
 }
 
-/**
- * snd_hwdep_new - create a new hwdep instance
- * @card: the card instance
- * @id: the id string
- * @device: the device index (zero-based)
- * @rhwdep: the pointer to store the new hwdep instance
- *
- * Creates a new hwdep instance with the given index on the card.
- * The callbacks (hwdep->ops) must be set on the returned instance
- * after this call manually by the caller.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_hwdep_new(struct snd_card *card, char *id, int device,
 		  struct snd_hwdep **rhwdep)
 {
@@ -483,9 +466,7 @@ static int snd_hwdep_dev_disconnect(struct snd_device *device)
 }
 
 #ifdef CONFIG_SND_PROC_FS
-/*
- *  Info interface
- */
+ 
 
 static void snd_hwdep_proc_read(struct snd_info_entry *entry,
 				struct snd_info_buffer *buffer)
@@ -520,15 +501,13 @@ static void __exit snd_hwdep_proc_done(void)
 {
 	snd_info_free_entry(snd_hwdep_proc_entry);
 }
-#else /* !CONFIG_SND_PROC_FS */
+#else  
 #define snd_hwdep_proc_init()
 #define snd_hwdep_proc_done()
-#endif /* CONFIG_SND_PROC_FS */
+#endif  
 
 
-/*
- *  ENTRY functions
- */
+ 
 
 static int __init alsa_hwdep_init(void)
 {

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2012 Guenter Roeck <linux@roeck-us.net>
- *
- * based on max1668.c
- * Copyright (c) 2011 David George <david.george@ska.ac.za>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -22,7 +17,7 @@
 enum chips { max6581, max6602, max6622, max6636, max6689, max6693, max6694,
 	     max6697, max6698, max6699 };
 
-/* Report local sensor as temp1 */
+ 
 
 static const u8 MAX6697_REG_TEMP[] = {
 			0x07, 0x01, 0x02, 0x03, 0x04, 0x05, 0x06, 0x08 };
@@ -33,10 +28,7 @@ static const u8 MAX6697_REG_MAX[] = {
 static const u8 MAX6697_REG_CRIT[] = {
 			0x20, 0x21, 0x22, 0x23, 0x24, 0x25, 0x26, 0x27 };
 
-/*
- * Map device tree / platform data register bit map to chip bit map.
- * Applies to alert register and over-temperature register.
- */
+ 
 #define MAX6697_ALERT_MAP_BITS(reg)	((((reg) & 0x7e) >> 1) | \
 				 (((reg) & 0x01) << 6) | ((reg) & 0x80))
 #define MAX6697_OVERT_MAP_BITS(reg) (((reg) >> 1) | (((reg) & 0x01) << 7))
@@ -59,7 +51,7 @@ static const u8 MAX6697_REG_CRIT[] = {
 #define MAX6581_OFFSET_MIN		-31750
 #define MAX6581_OFFSET_MAX		31750
 
-#define MAX6697_CONV_TIME		156	/* ms per channel, worst case */
+#define MAX6697_CONV_TIME		156	 
 
 struct max6697_chip_data {
 	int channels;
@@ -76,15 +68,15 @@ struct max6697_data {
 	enum chips type;
 	const struct max6697_chip_data *chip;
 
-	int update_interval;	/* in milli-seconds */
-	int temp_offset;	/* in degrees C */
+	int update_interval;	 
+	int temp_offset;	 
 
 	struct mutex update_lock;
-	unsigned long last_updated;	/* In jiffies */
-	bool valid;		/* true if following fields are valid */
+	unsigned long last_updated;	 
+	bool valid;		 
 
-	/* 1x local and up to 7x remote */
-	u8 temp[8][4];		/* [nr][0]=temp [1]=ext [2]=max [3]=crit */
+	 
+	u8 temp[8][4];		 
 #define MAX6697_TEMP_INPUT	0
 #define MAX6697_TEMP_EXT	1
 #define MAX6697_TEMP_MAX	2
@@ -92,7 +84,7 @@ struct max6697_data {
 	u32 alarms;
 };
 
-/* Diode fault status bits on MAX6581 are right shifted by one bit */
+ 
 static const u8 max6581_alarm_map[] = {
 	 0, 0, 1, 2, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13, 14, 15,
 	 16, 17, 18, 19, 20, 21, 22, 23 };
@@ -346,7 +338,7 @@ static ssize_t offset_store(struct device *dev, struct device_attribute *devattr
 	channel_enabled = (select & (1 << (index - 1)));
 	temp = clamp_val(temp, MAX6581_OFFSET_MIN, MAX6581_OFFSET_MAX);
 	val = DIV_ROUND_CLOSEST(temp, 250);
-	/* disable the offset for channel if the new offset is 0 */
+	 
 	if (val == 0) {
 		if (channel_enabled)
 			ret = i2c_smbus_write_byte_data(data->client, MAX6581_REG_OFFSET_SELECT,
@@ -445,7 +437,7 @@ static SENSOR_DEVICE_ATTR_RO(temp6_fault, alarm, 5);
 static SENSOR_DEVICE_ATTR_RO(temp7_fault, alarm, 6);
 static SENSOR_DEVICE_ATTR_RO(temp8_fault, alarm, 7);
 
-/* There is no offset for local temperature so starting from temp2 */
+ 
 static SENSOR_DEVICE_ATTR_RW(temp2_offset, offset, 1);
 static SENSOR_DEVICE_ATTR_RW(temp3_offset, offset, 2);
 static SENSOR_DEVICE_ATTR_RW(temp4_offset, offset, 3);
@@ -462,8 +454,8 @@ static umode_t max6697_is_visible(struct kobject *kobj, struct attribute *attr,
 	struct device *dev = kobj_to_dev(kobj);
 	struct max6697_data *data = dev_get_drvdata(dev);
 	const struct max6697_chip_data *chip = data->chip;
-	int channel = index / 7;	/* channel number */
-	int nr = index % 7;		/* attribute index within channel */
+	int channel = index / 7;	 
+	int nr = index % 7;		 
 
 	if (channel >= chip->channels)
 		return 0;
@@ -472,7 +464,7 @@ static umode_t max6697_is_visible(struct kobject *kobj, struct attribute *attr,
 		return 0;
 	if (nr == 5 && !(chip->have_fault & (1 << channel)))
 		return 0;
-	/* offset reg is only supported on max6581 remote channels */
+	 
 	if (nr == 6)
 		if (data->type != max6581 || channel == 0)
 			return 0;
@@ -480,11 +472,7 @@ static umode_t max6697_is_visible(struct kobject *kobj, struct attribute *attr,
 	return attr->mode;
 }
 
-/*
- * max6697_is_visible uses the index into the following array to determine
- * if attributes should be created or not. Any change in order or content
- * must be matched in max6697_is_visible.
- */
+ 
 static struct attribute *max6697_attributes[] = {
 	&sensor_dev_attr_temp1_input.dev_attr.attr,
 	&sensor_dev_attr_temp1_max.dev_attr.attr,
@@ -599,11 +587,7 @@ static int max6697_init_chip(struct max6697_data *data,
 	int factor = chip->channels;
 	int ret, reg;
 
-	/*
-	 * Don't touch configuration if neither platform data nor OF
-	 * configuration was specified. If that is the case, use the
-	 * current chip configuration.
-	 */
+	 
 	if (!pdata && !client->dev.of_node) {
 		reg = i2c_smbus_read_byte_data(client, MAX6697_REG_CONFIG);
 		if (reg < 0)

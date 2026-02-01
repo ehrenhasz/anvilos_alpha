@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -64,13 +41,13 @@ bool dal_bios_parser_init_cmd_tbl_helper(
 		return true;
 
 	default:
-		/* Unsupported DCE */
+		 
 		BREAK_TO_DEBUGGER();
 		return false;
 	}
 }
 
-/* real implementations */
+ 
 
 bool dal_cmd_table_helper_controller_id_to_atom(
 	enum controller_id id,
@@ -107,21 +84,13 @@ bool dal_cmd_table_helper_controller_id_to_atom(
 		*atom_id = ATOM_CRTC_INVALID;
 		return true;
 	default:
-		/* Wrong controller id */
+		 
 		BREAK_TO_DEBUGGER();
 		return false;
 	}
 }
 
-/**
- * dal_cmd_table_helper_transmitter_bp_to_atom - Translate the Transmitter to the
- *                                    corresponding ATOM BIOS value
- * @t: transmitter
- * returns: output digitalTransmitter
- *    // =00: Digital Transmitter1 ( UNIPHY linkAB )
- *    // =01: Digital Transmitter2 ( UNIPHY linkCD )
- *    // =02: Digital Transmitter3 ( UNIPHY linkEF )
- */
+ 
 uint8_t dal_cmd_table_helper_transmitter_bp_to_atom(
 	enum transmitter t)
 {
@@ -137,7 +106,7 @@ uint8_t dal_cmd_table_helper_transmitter_bp_to_atom(
 	case TRANSMITTER_UNIPHY_F:
 		return 2;
 	default:
-		/* Invalid Transmitter Type! */
+		 
 		BREAK_TO_DEBUGGER();
 		return 0;
 	}
@@ -175,32 +144,19 @@ void dal_cmd_table_helper_assign_control_parameter(
 	struct bp_encoder_control *control,
 	DIG_ENCODER_CONTROL_PARAMETERS_V2 *ctrl_param)
 {
-	/* there are three transmitter blocks, each one has two links 4-lanes
-	 * each, A+B, C+D, E+F, Uniphy A, C and E are enumerated as link 0 in
-	 * each transmitter block B, D and F as link 1, third transmitter block
-	 * has non splitable links (UniphyE and UniphyF can not be configured
-	 * separately to drive two different streams)
-	 */
+	 
 	if ((control->transmitter == TRANSMITTER_UNIPHY_B) ||
 		(control->transmitter == TRANSMITTER_UNIPHY_D) ||
 		(control->transmitter == TRANSMITTER_UNIPHY_F)) {
-		/* Bit2: Link Select
-		 * =0: PHY linkA/C/E
-		 * =1: PHY linkB/D/F
-		 */
+		 
 		ctrl_param->acConfig.ucLinkSel = 1;
 	}
 
-	/* Bit[4:3]: Transmitter Selection
-	 * =00: Digital Transmitter1 ( UNIPHY linkAB )
-	 * =01: Digital Transmitter2 ( UNIPHY linkCD )
-	 * =02: Digital Transmitter3 ( UNIPHY linkEF )
-	 * =03: Reserved
-	 */
+	 
 	ctrl_param->acConfig.ucTransmitterSel =
 		(uint8_t)(h->transmitter_bp_to_atom(control->transmitter));
 
-	/* We need to convert from KHz units into 10KHz units */
+	 
 	ctrl_param->ucAction = h->encoder_action_to_atom(control->action);
 	ctrl_param->usPixelClock = cpu_to_le16((uint16_t)(control->pixel_clock / 10));
 	ctrl_param->ucEncoderMode =
@@ -235,7 +191,7 @@ bool dal_cmd_table_helper_clock_source_id_to_ref_clk_src(
 		*ref_clk_src_id = ENCODER_REFCLK_SRC_INVALID;
 		return true;
 	default:
-		/* Unsupported clock source id */
+		 
 		BREAK_TO_DEBUGGER();
 		return false;
 	}
@@ -288,7 +244,7 @@ uint8_t dal_cmd_table_helper_encoder_id_to_atom(
 	case ENCODER_ID_UNKNOWN:
 		return ENCODER_OBJECT_ID_NONE;
 	default:
-		/* Invalid encoder id */
+		 
 		BREAK_TO_DEBUGGER();
 		return ENCODER_OBJECT_ID_NONE;
 	}

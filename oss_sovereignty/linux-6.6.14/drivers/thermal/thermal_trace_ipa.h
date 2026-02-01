@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM thermal_power_allocator
 
@@ -82,7 +82,7 @@ TRACE_EVENT(thermal_power_allocator_pid,
 		  __entry->tz_id, __entry->err, __entry->err_integral,
 		  __entry->p, __entry->i, __entry->d, __entry->output)
 );
-#endif /* _TRACE_THERMAL_POWER_ALLOCATOR_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
@@ -90,5 +90,5 @@ TRACE_EVENT(thermal_power_allocator_pid,
 #undef TRACE_INCLUDE_FILE
 #define TRACE_INCLUDE_FILE thermal_trace_ipa
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

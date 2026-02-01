@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/kernel.h>
 
@@ -38,54 +17,54 @@
 #include "amdgpu_ras.h"
 
 static const struct soc15_reg_entry gfx_v9_4_edc_counter_regs[] = {
-	/* CPC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmCPC_EDC_SCRATCH_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmCPC_EDC_UCODE_CNT), 0, 1, 1 },
-	/* DC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmDC_EDC_STATE_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmDC_EDC_CSINVOC_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmDC_EDC_RESTORE_CNT), 0, 1, 1 },
-	/* CPF */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmCPF_EDC_ROQ_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmCPF_EDC_TAG_CNT), 0, 1, 1 },
-	/* GDS */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmGDS_EDC_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmGDS_EDC_GRBM_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmGDS_EDC_OA_DED), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmGDS_EDC_OA_PHY_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmGDS_EDC_OA_PIPE_CNT), 0, 1, 1 },
-	/* SPI */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmSPI_EDC_CNT), 0, 4, 1 },
-	/* SQ */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmSQ_EDC_CNT), 0, 8, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, mmSQ_EDC_DED_CNT), 0, 8, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, mmSQ_EDC_INFO), 0, 8, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, mmSQ_EDC_SEC_CNT), 0, 8, 16 },
-	/* SQC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmSQC_EDC_CNT), 0, 4, 6 },
 	{ SOC15_REG_ENTRY(GC, 0, mmSQC_EDC_CNT2), 0, 4, 6 },
 	{ SOC15_REG_ENTRY(GC, 0, mmSQC_EDC_CNT3), 0, 4, 6 },
 	{ SOC15_REG_ENTRY(GC, 0, mmSQC_EDC_PARITY_CNT3), 0, 4, 6 },
-	/* TA */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmTA_EDC_CNT), 0, 4, 16 },
-	/* TCA */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmTCA_EDC_CNT), 0, 1, 2 },
-	/* TCC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmTCC_EDC_CNT), 0, 1, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, mmTCC_EDC_CNT2), 0, 1, 16 },
-	/* TCI */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmTCI_EDC_CNT), 0, 1, 72 },
-	/* TCP */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmTCP_EDC_CNT_NEW), 0, 4, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, mmTCP_ATC_EDC_GATCL1_CNT), 0, 4, 16 },
 	{ SOC15_REG_ENTRY(GC, 0, mmTCP_EDC_CNT), 0, 4, 16 },
-	/* TD */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmTD_EDC_CNT), 0, 4, 16 },
-	/* GCEA */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmGCEA_EDC_CNT), 0, 1, 32 },
 	{ SOC15_REG_ENTRY(GC, 0, mmGCEA_EDC_CNT2), 0, 1, 32 },
 	{ SOC15_REG_ENTRY(GC, 0, mmGCEA_EDC_CNT3), 0, 1, 32 },
-	/* RLC */
+	 
 	{ SOC15_REG_ENTRY(GC, 0, mmRLC_EDC_CNT), 0, 1, 1 },
 	{ SOC15_REG_ENTRY(GC, 0, mmRLC_EDC_CNT2), 0, 1, 1 },
 };
@@ -118,7 +97,7 @@ static void gfx_v9_4_select_se_sh(struct amdgpu_device *adev, u32 se_num,
 }
 
 static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
-	/* CPC */
+	 
 	{ "CPC_SCRATCH", SOC15_REG_ENTRY(GC, 0, mmCPC_EDC_SCRATCH_CNT),
 	  SOC15_REG_FIELD(CPC_EDC_SCRATCH_CNT, SEC_COUNT),
 	  SOC15_REG_FIELD(CPC_EDC_SCRATCH_CNT, DED_COUNT) },
@@ -145,7 +124,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(DC_EDC_RESTORE_CNT, SEC_COUNT1_ME1),
 	  SOC15_REG_FIELD(DC_EDC_RESTORE_CNT, DED_COUNT1_ME1) },
 
-	/* CPF */
+	 
 	{ "CPF_ROQ_ME2", SOC15_REG_ENTRY(GC, 0, mmCPF_EDC_ROQ_CNT),
 	  SOC15_REG_FIELD(CPF_EDC_ROQ_CNT, SEC_COUNT_ME2),
 	  SOC15_REG_FIELD(CPF_EDC_ROQ_CNT, DED_COUNT_ME2) },
@@ -156,7 +135,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(CPF_EDC_TAG_CNT, SEC_COUNT),
 	  SOC15_REG_FIELD(CPF_EDC_TAG_CNT, DED_COUNT) },
 
-	/* GDS */
+	 
 	{ "GDS_GRBM", SOC15_REG_ENTRY(GC, 0, mmGDS_EDC_GRBM_CNT),
 	  SOC15_REG_FIELD(GDS_EDC_GRBM_CNT, SEC),
 	  SOC15_REG_FIELD(GDS_EDC_GRBM_CNT, DED) },
@@ -189,7 +168,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(GDS_EDC_OA_PIPE_CNT, ME1_PIPE3_PIPE_MEM_SEC),
 	  SOC15_REG_FIELD(GDS_EDC_OA_PIPE_CNT, ME1_PIPE3_PIPE_MEM_DED) },
 
-	/* SPI */
+	 
 	{ "SPI_SR_MEM", SOC15_REG_ENTRY(GC, 0, mmSPI_EDC_CNT),
 	  SOC15_REG_FIELD(SPI_EDC_CNT, SPI_SR_MEM_SEC_COUNT),
 	  SOC15_REG_FIELD(SPI_EDC_CNT, SPI_SR_MEM_DED_COUNT) },
@@ -206,7 +185,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(SPI_EDC_CNT, SPI_LIFE_CNT_SEC_COUNT),
 	  SOC15_REG_FIELD(SPI_EDC_CNT, SPI_LIFE_CNT_DED_COUNT) },
 
-	/* SQ */
+	 
 	{ "SQ_SGPR", SOC15_REG_ENTRY(GC, 0, mmSQ_EDC_CNT),
 	  SOC15_REG_FIELD(SQ_EDC_CNT, SGPR_SEC_COUNT),
 	  SOC15_REG_FIELD(SQ_EDC_CNT, SGPR_DED_COUNT) },
@@ -229,7 +208,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(SQ_EDC_CNT, VGPR3_SEC_COUNT),
 	  SOC15_REG_FIELD(SQ_EDC_CNT, VGPR3_DED_COUNT) },
 
-	/* SQC */
+	 
 	{ "SQC_INST_UTCL1_LFIFO", SOC15_REG_ENTRY(GC, 0, mmSQC_EDC_CNT2),
 	  SOC15_REG_FIELD(SQC_EDC_CNT2, INST_UTCL1_LFIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT2, INST_UTCL1_LFIFO_DED_COUNT) },
@@ -316,7 +295,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(SQC_EDC_CNT3, DATA_BANKB_BANK_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(SQC_EDC_CNT3, DATA_BANKB_BANK_RAM_DED_COUNT) },
 
-	/* TA */
+	 
 	{ "TA_FS_DFIFO", SOC15_REG_ENTRY(GC, 0, mmTA_EDC_CNT),
 	  SOC15_REG_FIELD(TA_EDC_CNT, TA_FS_DFIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TA_EDC_CNT, TA_FS_DFIFO_DED_COUNT) },
@@ -333,7 +312,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(TA_EDC_CNT, TA_FS_CFIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TA_EDC_CNT, TA_FS_CFIFO_DED_COUNT) },
 
-	/* TCA */
+	 
 	{ "TCA_HOLE_FIFO", SOC15_REG_ENTRY(GC, 0, mmTCA_EDC_CNT),
 	  SOC15_REG_FIELD(TCA_EDC_CNT, HOLE_FIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TCA_EDC_CNT, HOLE_FIFO_DED_COUNT) },
@@ -341,7 +320,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(TCA_EDC_CNT, REQ_FIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TCA_EDC_CNT, REQ_FIFO_DED_COUNT) },
 
-	/* TCC */
+	 
 	{ "TCC_CACHE_DATA", SOC15_REG_ENTRY(GC, 0, mmTCC_EDC_CNT),
 	  SOC15_REG_FIELD(TCC_EDC_CNT, CACHE_DATA_SEC_COUNT),
 	  SOC15_REG_FIELD(TCC_EDC_CNT, CACHE_DATA_DED_COUNT) },
@@ -388,12 +367,12 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(TCC_EDC_CNT, LATENCY_FIFO_NEXT_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(TCC_EDC_CNT, LATENCY_FIFO_NEXT_RAM_DED_COUNT) },
 
-	/* TCI */
+	 
 	{ "TCI_WRITE_RAM", SOC15_REG_ENTRY(GC, 0, mmTCI_EDC_CNT),
 	  SOC15_REG_FIELD(TCI_EDC_CNT, WRITE_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(TCI_EDC_CNT, WRITE_RAM_DED_COUNT) },
 
-	/* TCP */
+	 
 	{ "TCP_CACHE_RAM", SOC15_REG_ENTRY(GC, 0, mmTCP_EDC_CNT_NEW),
 	  SOC15_REG_FIELD(TCP_EDC_CNT_NEW, CACHE_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(TCP_EDC_CNT_NEW, CACHE_RAM_DED_COUNT) },
@@ -415,7 +394,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(TCP_EDC_CNT_NEW, UTCL1_LFIFO1_SEC_COUNT),
 	  SOC15_REG_FIELD(TCP_EDC_CNT_NEW, UTCL1_LFIFO1_DED_COUNT) },
 
-	/* TD */
+	 
 	{ "TD_SS_FIFO_LO", SOC15_REG_ENTRY(GC, 0, mmTD_EDC_CNT),
 	  SOC15_REG_FIELD(TD_EDC_CNT, SS_FIFO_LO_SEC_COUNT),
 	  SOC15_REG_FIELD(TD_EDC_CNT, SS_FIFO_LO_DED_COUNT) },
@@ -426,7 +405,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	  SOC15_REG_FIELD(TD_EDC_CNT, CS_FIFO_SEC_COUNT),
 	  SOC15_REG_FIELD(TD_EDC_CNT, CS_FIFO_DED_COUNT) },
 
-	/* EA */
+	 
 	{ "EA_DRAMRD_CMDMEM", SOC15_REG_ENTRY(GC, 0, mmGCEA_EDC_CNT),
 	  SOC15_REG_FIELD(GCEA_EDC_CNT, DRAMRD_CMDMEM_SEC_COUNT),
 	  SOC15_REG_FIELD(GCEA_EDC_CNT, DRAMRD_CMDMEM_DED_COUNT) },
@@ -508,7 +487,7 @@ static const struct soc15_ras_field_entry gfx_v9_4_ras_fields[] = {
 	{ "EA_MAM_AFMEM", SOC15_REG_ENTRY(GC, 0, mmGCEA_EDC_CNT3), 0, 0,
 	  SOC15_REG_FIELD(GCEA_EDC_CNT3, MAM_AFMEM_DED_COUNT) },
 
-	/* RLC */
+	 
 	{ "RLCG_INSTR_RAM", SOC15_REG_ENTRY(GC, 0, mmRLC_EDC_CNT),
 	  SOC15_REG_FIELD(RLC_EDC_CNT, RLCG_INSTR_RAM_SEC_COUNT),
 	  SOC15_REG_FIELD(RLC_EDC_CNT, RLCG_INSTR_RAM_DED_COUNT) },
@@ -992,9 +971,7 @@ static void gfx_v9_4_query_ras_error_status(struct amdgpu_device *adev)
 			if (REG_GET_FIELD(reg_value, GCEA_ERR_STATUS, SDP_RDRSP_STATUS) ||
 			    REG_GET_FIELD(reg_value, GCEA_ERR_STATUS, SDP_WRRSP_STATUS) ||
 			    REG_GET_FIELD(reg_value, GCEA_ERR_STATUS, SDP_RDRSP_DATAPARITY_ERROR)) {
-				/* SDP read/write error/parity error in FUE_IS_FATAL mode
-				 * can cause system fatal error in arcturas. Harvest the error
-				 * status before GPU reset */
+				 
 				dev_warn(adev->dev, "GCEA err detected at instance: %d, status: 0x%x!\n",
 						j, reg_value);
 			}

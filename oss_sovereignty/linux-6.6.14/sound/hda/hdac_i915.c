@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  hdac_i915.c - routines for sync between HD-A core and i915 display driver
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -11,20 +9,7 @@
 #include <sound/hda_i915.h>
 #include <sound/hda_register.h>
 
-/**
- * snd_hdac_i915_set_bclk - Reprogram BCLK for HSW/BDW
- * @bus: HDA core bus
- *
- * Intel HSW/BDW display HDA controller is in GPU. Both its power and link BCLK
- * depends on GPU. Two Extended Mode registers EM4 (M value) and EM5 (N Value)
- * are used to convert CDClk (Core Display Clock) to 24MHz BCLK:
- * BCLK = CDCLK * M / N
- * The values will be lost when the display power well is disabled and need to
- * be restored to avoid abnormal playback speed.
- *
- * Call this function at initializing and changing power well, as well as
- * at ELD notifier for the hotplug.
- */
+ 
 void snd_hdac_i915_set_bclk(struct hdac_bus *bus)
 {
 	struct drm_audio_component *acomp = bus->audio_component;
@@ -33,9 +18,9 @@ void snd_hdac_i915_set_bclk(struct hdac_bus *bus)
 	unsigned int bclk_m, bclk_n;
 
 	if (!acomp || !acomp->ops || !acomp->ops->get_cdclk_freq)
-		return; /* only for i915 binding */
+		return;  
 	if (!HDA_CONTROLLER_IS_HSW(pci))
-		return; /* only HSW/BDW */
+		return;  
 
 	cdclk_freq = acomp->ops->get_cdclk_freq(acomp->dev);
 	switch (cdclk_freq) {
@@ -45,7 +30,7 @@ void snd_hdac_i915_set_bclk(struct hdac_bus *bus)
 		break;
 
 	case 450000:
-	default: /* default CDCLK 450MHz */
+	default:  
 		bclk_m = 4;
 		bclk_n = 75;
 		break;
@@ -66,29 +51,26 @@ void snd_hdac_i915_set_bclk(struct hdac_bus *bus)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_i915_set_bclk);
 
-/* returns true if the devices can be connected for audio */
+ 
 static bool connectivity_check(struct pci_dev *i915, struct pci_dev *hdac)
 {
 	struct pci_bus *bus_a = i915->bus, *bus_b = hdac->bus;
 
-	/* directly connected on the same bus */
+	 
 	if (bus_a == bus_b)
 		return true;
 
 	bus_a = bus_a->parent;
 	bus_b = bus_b->parent;
 
-	/* connected via parent bus (may be NULL!) */
+	 
 	if (bus_a == bus_b)
 		return true;
 
 	if (!bus_a || !bus_b)
 		return false;
 
-	/*
-	 * on i915 discrete GPUs with embedded HDA audio, the two
-	 * devices are connected via 2nd level PCI bridge
-	 */
+	 
 	bus_a = bus_a->parent;
 	bus_b = bus_b->parent;
 	if (bus_a && bus_a == bus_b)
@@ -117,7 +99,7 @@ static int i915_component_master_match(struct device *dev, int subcomponent,
 	return 0;
 }
 
-/* check whether Intel graphics is present and reachable */
+ 
 static int i915_gfx_present(struct pci_dev *hdac_pci)
 {
 	struct pci_dev *display_dev = NULL;
@@ -134,18 +116,7 @@ static int i915_gfx_present(struct pci_dev *hdac_pci)
 	return false;
 }
 
-/**
- * snd_hdac_i915_init - Initialize i915 audio component
- * @bus: HDA core bus
- *
- * This function is supposed to be used only by a HD-audio controller
- * driver that needs the interaction with i915 graphics.
- *
- * This function initializes and sets up the audio component to communicate
- * with i915 graphics driver.
- *
- * Returns zero for success or a negative error code.
- */
+ 
 int snd_hdac_i915_init(struct hdac_bus *bus)
 {
 	struct drm_audio_component *acomp;
@@ -165,7 +136,7 @@ int snd_hdac_i915_init(struct hdac_bus *bus)
 	if (!acomp->ops) {
 		if (!IS_ENABLED(CONFIG_MODULES) ||
 		    !request_module("i915")) {
-			/* 60s timeout */
+			 
 			wait_for_completion_killable_timeout(&acomp->master_bind_complete,
 							     msecs_to_jiffies(60 * 1000));
 		}

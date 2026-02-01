@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* drivers/net/ethernet/micrel/ks8851.c
- *
- * Copyright 2009 Simtec Electronics
- *	http://www.simtec.co.uk/
- *	Ben Dooks <ben@simtec.co.uk>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -28,22 +23,7 @@
 
 static int msg_enable;
 
-/**
- * struct ks8851_net_spi - KS8851 SPI driver private data
- * @lock: Lock to ensure that the device is not accessed when busy.
- * @tx_work: Work queue for tx packets
- * @ks8851: KS8851 driver common private data
- * @spidev: The spi device we're bound to.
- * @spi_msg1: pre-setup SPI transfer with one message, @spi_xfer1.
- * @spi_msg2: pre-setup SPI transfer with two messages, @spi_xfer2.
- * @spi_xfer1: @spi_msg1 SPI transfer structure
- * @spi_xfer2: @spi_msg2 SPI transfer structure
- *
- * The @lock ensures that the chip is protected when certain operations are
- * in progress. When the read or write packet transfer is in progress, most
- * of the chip registers are not ccessible until the transfer is finished and
- * the DMA has been de-asserted.
- */
+ 
 struct ks8851_net_spi {
 	struct ks8851_net	ks8851;
 	struct mutex		lock;
@@ -57,26 +37,20 @@ struct ks8851_net_spi {
 
 #define to_ks8851_spi(ks) container_of((ks), struct ks8851_net_spi, ks8851)
 
-/* SPI frame opcodes */
+ 
 #define KS_SPIOP_RD	0x00
 #define KS_SPIOP_WR	0x40
 #define KS_SPIOP_RXFIFO	0x80
 #define KS_SPIOP_TXFIFO	0xC0
 
-/* shift for byte-enable data */
+ 
 #define BYTE_EN(_x)	((_x) << 2)
 
-/* turn register number and byte-enable mask into data for start of packet */
+ 
 #define MK_OP(_byteen, _reg)	\
 	(BYTE_EN(_byteen) | (_reg) << (8 + 2) | (_reg) >> 6)
 
-/**
- * ks8851_lock_spi - register access lock
- * @ks: The chip state
- * @flags: Spinlock flags
- *
- * Claim chip register access lock
- */
+ 
 static void ks8851_lock_spi(struct ks8851_net *ks, unsigned long *flags)
 {
 	struct ks8851_net_spi *kss = to_ks8851_spi(ks);
@@ -84,13 +58,7 @@ static void ks8851_lock_spi(struct ks8851_net *ks, unsigned long *flags)
 	mutex_lock(&kss->lock);
 }
 
-/**
- * ks8851_unlock_spi - register access unlock
- * @ks: The chip state
- * @flags: Spinlock flags
- *
- * Release chip register access lock
- */
+ 
 static void ks8851_unlock_spi(struct ks8851_net *ks, unsigned long *flags)
 {
 	struct ks8851_net_spi *kss = to_ks8851_spi(ks);
@@ -98,21 +66,9 @@ static void ks8851_unlock_spi(struct ks8851_net *ks, unsigned long *flags)
 	mutex_unlock(&kss->lock);
 }
 
-/* SPI register read/write calls.
- *
- * All these calls issue SPI transactions to access the chip's registers. They
- * all require that the necessary lock is held to prevent accesses when the
- * chip is busy transferring packet data (RX/TX FIFO accesses).
- */
+ 
 
-/**
- * ks8851_wrreg16_spi - write 16bit register value to chip via SPI
- * @ks: The chip state
- * @reg: The register address
- * @val: The value to write
- *
- * Issue a write to put the value @val into the register specified in @reg.
- */
+ 
 static void ks8851_wrreg16_spi(struct ks8851_net *ks, unsigned int reg,
 			       unsigned int val)
 {
@@ -134,16 +90,7 @@ static void ks8851_wrreg16_spi(struct ks8851_net *ks, unsigned int reg,
 		netdev_err(ks->netdev, "spi_sync() failed\n");
 }
 
-/**
- * ks8851_rdreg - issue read register command and return the data
- * @ks: The device state
- * @op: The register address and byte enables in message format.
- * @rxb: The RX buffer to return the result into
- * @rxl: The length of data expected.
- *
- * This is the low level read call that issues the necessary spi message(s)
- * to read data from the register specified in @op.
- */
+ 
 static void ks8851_rdreg(struct ks8851_net *ks, unsigned int op,
 			 u8 *rxb, unsigned int rxl)
 {
@@ -186,13 +133,7 @@ static void ks8851_rdreg(struct ks8851_net *ks, unsigned int op,
 		memcpy(rxb, trx + 2, rxl);
 }
 
-/**
- * ks8851_rdreg16_spi - read 16 bit register from device via SPI
- * @ks: The chip information
- * @reg: The register address
- *
- * Read a 16bit register from the chip, returning the result
- */
+ 
 static unsigned int ks8851_rdreg16_spi(struct ks8851_net *ks, unsigned int reg)
 {
 	__le16 rx = 0;
@@ -201,15 +142,7 @@ static unsigned int ks8851_rdreg16_spi(struct ks8851_net *ks, unsigned int reg)
 	return le16_to_cpu(rx);
 }
 
-/**
- * ks8851_rdfifo_spi - read data from the receive fifo via SPI
- * @ks: The device state.
- * @buff: The buffer address
- * @len: The length of the data to read
- *
- * Issue an RXQ FIFO read command and read the @len amount of data from
- * the FIFO into the buffer specified by @buff.
- */
+ 
 static void ks8851_rdfifo_spi(struct ks8851_net *ks, u8 *buff, unsigned int len)
 {
 	struct ks8851_net_spi *kss = to_ks8851_spi(ks);
@@ -221,7 +154,7 @@ static void ks8851_rdfifo_spi(struct ks8851_net *ks, u8 *buff, unsigned int len)
 	netif_dbg(ks, rx_status, ks->netdev,
 		  "%s: %d@%p\n", __func__, len, buff);
 
-	/* set the operation we're issuing */
+	 
 	txb[0] = KS_SPIOP_RXFIFO;
 
 	xfer->tx_buf = txb;
@@ -238,17 +171,7 @@ static void ks8851_rdfifo_spi(struct ks8851_net *ks, u8 *buff, unsigned int len)
 		netdev_err(ks->netdev, "%s: spi_sync() failed\n", __func__);
 }
 
-/**
- * ks8851_wrfifo_spi - write packet to TX FIFO via SPI
- * @ks: The device state.
- * @txp: The sk_buff to transmit.
- * @irq: IRQ on completion of the packet.
- *
- * Send the @txp to the chip. This means creating the relevant packet header
- * specifying the length of the packet and the other information the chip
- * needs, such as IRQ on completion. Send the header and the packet data to
- * the device.
- */
+ 
 static void ks8851_wrfifo_spi(struct ks8851_net *ks, struct sk_buff *txp,
 			      bool irq)
 {
@@ -265,9 +188,9 @@ static void ks8851_wrfifo_spi(struct ks8851_net *ks, struct sk_buff *txp,
 	fid &= TXFR_TXFID_MASK;
 
 	if (irq)
-		fid |= TXFR_TXIC;	/* irq on completion */
+		fid |= TXFR_TXIC;	 
 
-	/* start header at txb[1] to align txw entries */
+	 
 	ks->txh.txb[1] = KS_SPIOP_TXFIFO;
 	ks->txh.txw[1] = cpu_to_le16(fid);
 	ks->txh.txw[2] = cpu_to_le16(txp->len);
@@ -286,35 +209,19 @@ static void ks8851_wrfifo_spi(struct ks8851_net *ks, struct sk_buff *txp,
 		netdev_err(ks->netdev, "%s: spi_sync() failed\n", __func__);
 }
 
-/**
- * calc_txlen - calculate size of message to send packet
- * @len: Length of data
- *
- * Returns the size of the TXFIFO message needed to send
- * this packet.
- */
+ 
 static unsigned int calc_txlen(unsigned int len)
 {
 	return ALIGN(len + 4, 4);
 }
 
-/**
- * ks8851_rx_skb_spi - receive skbuff
- * @ks: The device state
- * @skb: The skbuff
- */
+ 
 static void ks8851_rx_skb_spi(struct ks8851_net *ks, struct sk_buff *skb)
 {
 	netif_rx(skb);
 }
 
-/**
- * ks8851_tx_work - process tx packet(s)
- * @work: The work strucutre what was scheduled.
- *
- * This is called when a number of packets have been scheduled for
- * transmission and need to be sent to the device.
- */
+ 
 static void ks8851_tx_work(struct work_struct *work)
 {
 	unsigned int dequeued_len = 0;
@@ -358,10 +265,7 @@ static void ks8851_tx_work(struct work_struct *work)
 	ks8851_unlock_spi(ks, &flags);
 }
 
-/**
- * ks8851_flush_tx_work_spi - flush outstanding TX work
- * @ks: The device state
- */
+ 
 static void ks8851_flush_tx_work_spi(struct ks8851_net *ks)
 {
 	struct ks8851_net_spi *kss = to_ks8851_spi(ks);
@@ -369,19 +273,7 @@ static void ks8851_flush_tx_work_spi(struct ks8851_net *ks)
 	flush_work(&kss->tx_work);
 }
 
-/**
- * ks8851_start_xmit_spi - transmit packet using SPI
- * @skb: The buffer to transmit
- * @dev: The device used to transmit the packet.
- *
- * Called by the network layer to transmit the @skb. Queue the packet for
- * the device and schedule the necessary work to transmit the packet when
- * it is free.
- *
- * We do this to firstly avoid sleeping with the network device locked,
- * and secondly so we can round up more than one packet to transmit which
- * means we can try and avoid generating too many transmit done interrupts.
- */
+ 
 static netdev_tx_t ks8851_start_xmit_spi(struct sk_buff *skb,
 					 struct net_device *dev)
 {
@@ -438,19 +330,19 @@ static int ks8851_probe_spi(struct spi_device *spi)
 	ks->rx_skb = ks8851_rx_skb_spi;
 	ks->flush_tx_work = ks8851_flush_tx_work_spi;
 
-#define STD_IRQ (IRQ_LCI |	/* Link Change */	\
-		 IRQ_TXI |	/* TX done */		\
-		 IRQ_RXI |	/* RX done */		\
-		 IRQ_SPIBEI |	/* SPI bus error */	\
-		 IRQ_TXPSI |	/* TX process stop */	\
-		 IRQ_RXPSI)	/* RX process stop */
+#define STD_IRQ (IRQ_LCI |	 	\
+		 IRQ_TXI |	 		\
+		 IRQ_RXI |	 		\
+		 IRQ_SPIBEI |	 	\
+		 IRQ_TXPSI |	 	\
+		 IRQ_RXPSI)	 
 	ks->rc_ier = STD_IRQ;
 
 	kss->spidev = spi;
 	mutex_init(&kss->lock);
 	INIT_WORK(&kss->tx_work, ks8851_tx_work);
 
-	/* initialise pre-made spi transfer messages */
+	 
 	spi_message_init(&kss->spi_msg1);
 	spi_message_add_tail(&kss->spi_xfer1, &kss->spi_msg1);
 

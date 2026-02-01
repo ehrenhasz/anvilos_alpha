@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C Link Layer for ST NCI NFC controller familly based Driver
- * Copyright (C) 2014-2015 STMicroelectronics SAS. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -19,12 +16,12 @@
 
 #define DRIVER_DESC "NCI NFC driver for ST_NCI"
 
-/* ndlc header */
+ 
 #define ST_NCI_FRAME_HEADROOM 1
 #define ST_NCI_FRAME_TAILROOM 0
 
-#define ST_NCI_I2C_MIN_SIZE 4   /* PCB(1) + NCI Packet header(3) */
-#define ST_NCI_I2C_MAX_SIZE 250 /* req 4.2.1 */
+#define ST_NCI_I2C_MIN_SIZE 4    
+#define ST_NCI_I2C_MAX_SIZE 250  
 
 #define ST_NCI_DRIVER_NAME "st_nci"
 #define ST_NCI_I2C_DRIVER_NAME "st_nci_i2c"
@@ -65,11 +62,7 @@ static void st_nci_i2c_disable(void *phy_id)
 	phy->irq_active = false;
 }
 
-/*
- * Writing a frame must not return the number of written bytes.
- * It must return either zero for success, or <0 for error.
- * In addition, it must not alter the skb
- */
+ 
 static int st_nci_i2c_write(void *phy_id, struct sk_buff *skb)
 {
 	int r;
@@ -80,7 +73,7 @@ static int st_nci_i2c_write(void *phy_id, struct sk_buff *skb)
 		return phy->ndlc->hard_fault;
 
 	r = i2c_master_send(client, skb->data, skb->len);
-	if (r < 0) {  /* Retry, chip was in standby */
+	if (r < 0) {   
 		usleep_range(1000, 4000);
 		r = i2c_master_send(client, skb->data, skb->len);
 	}
@@ -95,14 +88,7 @@ static int st_nci_i2c_write(void *phy_id, struct sk_buff *skb)
 	return r;
 }
 
-/*
- * Reads an ndlc frame and returns it in a newly allocated sk_buff.
- * returns:
- * 0 : if received frame is complete
- * -EREMOTEIO : i2c read error (fatal)
- * -EBADMSG : frame was incorrect and discarded
- * -ENOMEM : cannot allocate skb, frame dropped
- */
+ 
 static int st_nci_i2c_read(struct st_nci_i2c_phy *phy,
 				 struct sk_buff **skb)
 {
@@ -112,7 +98,7 @@ static int st_nci_i2c_read(struct st_nci_i2c_phy *phy,
 	struct i2c_client *client = phy->i2c_dev;
 
 	r = i2c_master_recv(client, buf, ST_NCI_I2C_MIN_SIZE);
-	if (r < 0) {  /* Retry, chip was in standby */
+	if (r < 0) {   
 		usleep_range(1000, 4000);
 		r = i2c_master_recv(client, buf, ST_NCI_I2C_MIN_SIZE);
 	}
@@ -149,11 +135,7 @@ static int st_nci_i2c_read(struct st_nci_i2c_phy *phy,
 	return 0;
 }
 
-/*
- * Reads an ndlc frame from the chip.
- *
- * On ST_NCI, IRQ goes in idle state when read starts.
- */
+ 
 static irqreturn_t st_nci_irq_thread_fn(int irq, void *phy_id)
 {
 	struct st_nci_i2c_phy *phy = phy_id;
@@ -218,7 +200,7 @@ static int st_nci_i2c_probe(struct i2c_client *client)
 	if (r)
 		dev_dbg(dev, "Unable to add GPIO mapping table\n");
 
-	/* Get RESET GPIO */
+	 
 	phy->gpiod_reset = devm_gpiod_get(dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(phy->gpiod_reset)) {
 		nfc_err(dev, "Unable to get RESET GPIO\n");

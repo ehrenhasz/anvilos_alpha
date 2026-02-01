@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Event char devices, giving access to raw input device events.
- *
- * Copyright (c) 1999-2002 Vojtech Pavlik
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -30,7 +26,7 @@ struct evdev {
 	struct input_handle handle;
 	struct evdev_client __rcu *grab;
 	struct list_head client_list;
-	spinlock_t client_lock; /* protects client_list */
+	spinlock_t client_lock;  
 	struct mutex mutex;
 	struct device dev;
 	struct cdev cdev;
@@ -40,8 +36,8 @@ struct evdev {
 struct evdev_client {
 	unsigned int head;
 	unsigned int tail;
-	unsigned int packet_head; /* [future] position of the first element of next packet */
-	spinlock_t buffer_lock; /* protects access to buffer, head and tail */
+	unsigned int packet_head;  
+	spinlock_t buffer_lock;  
 	wait_queue_head_t wait;
 	struct fasync_struct *fasync;
 	struct evdev *evdev;
@@ -56,7 +52,7 @@ struct evdev_client {
 static size_t evdev_get_mask_cnt(unsigned int type)
 {
 	static const size_t counts[EV_CNT] = {
-		/* EV_SYN==0 is EV_CNT, _not_ SYN_CNT, see EVIOCGBIT */
+		 
 		[EV_SYN]	= EV_CNT,
 		[EV_KEY]	= KEY_CNT,
 		[EV_REL]	= REL_CNT,
@@ -71,7 +67,7 @@ static size_t evdev_get_mask_cnt(unsigned int type)
 	return (type < EV_CNT) ? counts[type] : 0;
 }
 
-/* requires the buffer lock to be held */
+ 
 static bool __evdev_is_filtered(struct evdev_client *client,
 				unsigned int type,
 				unsigned int code)
@@ -79,16 +75,16 @@ static bool __evdev_is_filtered(struct evdev_client *client,
 	unsigned long *mask;
 	size_t cnt;
 
-	/* EV_SYN and unknown codes are never filtered */
+	 
 	if (type == EV_SYN || type >= EV_CNT)
 		return false;
 
-	/* first test whether the type is filtered */
+	 
 	mask = client->evmasks[0];
 	if (mask && !test_bit(type, mask))
 		return true;
 
-	/* unknown values are never filtered */
+	 
 	cnt = evdev_get_mask_cnt(type);
 	if (!cnt || code >= cnt)
 		return false;
@@ -97,7 +93,7 @@ static bool __evdev_is_filtered(struct evdev_client *client,
 	return mask && !test_bit(code, mask);
 }
 
-/* flush queued events of type @type, caller must hold client->buffer_lock */
+ 
 static void __evdev_flush_queue(struct evdev_client *client, unsigned int type)
 {
 	unsigned int i, head, num;
@@ -110,7 +106,7 @@ static void __evdev_flush_queue(struct evdev_client *client, unsigned int type)
 	head = client->tail;
 	client->packet_head = client->tail;
 
-	/* init to 1 so a leading SYN_REPORT will not be dropped */
+	 
 	num = 1;
 
 	for (i = client->tail; i != client->head; i = (i + 1) & mask) {
@@ -118,13 +114,13 @@ static void __evdev_flush_queue(struct evdev_client *client, unsigned int type)
 		is_report = ev->type == EV_SYN && ev->code == SYN_REPORT;
 
 		if (ev->type == type) {
-			/* drop matched entry */
+			 
 			continue;
 		} else if (is_report && !num) {
-			/* drop empty SYN_REPORT groups */
+			 
 			continue;
 		} else if (head != i) {
-			/* move entry to fill the gap */
+			 
 			client->buffer[head] = *ev;
 		}
 
@@ -156,7 +152,7 @@ static void __evdev_queue_syn_dropped(struct evdev_client *client)
 	client->head &= client->bufsize - 1;
 
 	if (unlikely(client->head == client->tail)) {
-		/* drop queue but keep our SYN_DROPPED event */
+		 
 		client->tail = (client->head - 1) & (client->bufsize - 1);
 		client->packet_head = client->tail;
 	}
@@ -194,10 +190,7 @@ static int evdev_set_clk_type(struct evdev_client *client, unsigned int clkid)
 	if (client->clk_type != clk_type) {
 		client->clk_type = clk_type;
 
-		/*
-		 * Flush pending events and queue SYN_DROPPED event,
-		 * but only if the queue is not empty.
-		 */
+		 
 		spin_lock_irqsave(&client->buffer_lock, flags);
 
 		if (client->head != client->tail) {
@@ -218,10 +211,7 @@ static void __pass_event(struct evdev_client *client,
 	client->head &= client->bufsize - 1;
 
 	if (unlikely(client->head == client->tail)) {
-		/*
-		 * This effectively "drops" all unconsumed events, leaving
-		 * EV_SYN/SYN_DROPPED plus the newest event in the queue.
-		 */
+		 
 		client->tail = (client->head - 2) & (client->bufsize - 1);
 
 		client->buffer[client->tail] = (struct input_event) {
@@ -257,7 +247,7 @@ static void evdev_pass_values(struct evdev_client *client,
 	event.input_event_sec = ts.tv_sec;
 	event.input_event_usec = ts.tv_nsec / NSEC_PER_USEC;
 
-	/* Interrupts are disabled, just acquire the lock. */
+	 
 	spin_lock(&client->buffer_lock);
 
 	for (v = vals; v != vals + count; v++) {
@@ -265,7 +255,7 @@ static void evdev_pass_values(struct evdev_client *client,
 			continue;
 
 		if (v->type == EV_SYN && v->code == SYN_REPORT) {
-			/* drop empty SYN_REPORT */
+			 
 			if (client->packet_head == client->head)
 				continue;
 
@@ -285,9 +275,7 @@ static void evdev_pass_values(struct evdev_client *client,
 			EPOLLIN | EPOLLOUT | EPOLLRDNORM | EPOLLWRNORM);
 }
 
-/*
- * Pass incoming events to all connected clients.
- */
+ 
 static void evdev_events(struct input_handle *handle,
 			 const struct input_value *vals, unsigned int count)
 {
@@ -308,9 +296,7 @@ static void evdev_events(struct input_handle *handle,
 	rcu_read_unlock();
 }
 
-/*
- * Pass incoming event to all connected clients.
- */
+ 
 static void evdev_event(struct input_handle *handle,
 			unsigned int type, unsigned int code, int value)
 {
@@ -334,10 +320,7 @@ static void evdev_free(struct device *dev)
 	kfree(evdev);
 }
 
-/*
- * Grabs an event device (along with underlying input device).
- * This function is called with evdev->mutex taken.
- */
+ 
 static int evdev_grab(struct evdev *evdev, struct evdev_client *client)
 {
 	int error;
@@ -416,10 +399,7 @@ static void evdev_close_device(struct evdev *evdev)
 	mutex_unlock(&evdev->mutex);
 }
 
-/*
- * Wake up users waiting for IO so they can disconnect from
- * dead device.
- */
+ 
 static void evdev_hangup(struct evdev *evdev)
 {
 	struct evdev_client *client;
@@ -575,10 +555,7 @@ static ssize_t evdev_read(struct file *file, char __user *buffer,
 		    (file->f_flags & O_NONBLOCK))
 			return -EAGAIN;
 
-		/*
-		 * count == 0 is special - no IO is done but we check
-		 * for error conditions (see above).
-		 */
+		 
 		if (count == 0)
 			break;
 
@@ -606,7 +583,7 @@ static ssize_t evdev_read(struct file *file, char __user *buffer,
 	return read;
 }
 
-/* No kernel lock - fine */
+ 
 static __poll_t evdev_poll(struct file *file, poll_table *wait)
 {
 	struct evdev_client *client = file->private_data;
@@ -729,7 +706,7 @@ static int bits_from_user(unsigned long *bits, unsigned int maxbit,
 	return copy_from_user(bits, p, len) ? -EFAULT : len;
 }
 
-#endif /* __BIG_ENDIAN */
+#endif  
 
 #else
 
@@ -759,7 +736,7 @@ static int bits_from_user(unsigned long *bits, unsigned int maxbit,
 	return copy_from_user(bits, p, len) ? -EFAULT : len;
 }
 
-#endif /* CONFIG_COMPAT */
+#endif  
 
 static int str_to_user(const char *str, unsigned int maxlen, void __user *p)
 {
@@ -808,7 +785,7 @@ static int evdev_handle_get_keycode(struct input_dev *dev, void __user *p)
 	int __user *ip = (int __user *)p;
 	int error;
 
-	/* legacy case */
+	 
 	if (copy_from_user(ke.scancode, p, sizeof(unsigned int)))
 		return -EFAULT;
 
@@ -870,19 +847,7 @@ static int evdev_handle_set_keycode_v2(struct input_dev *dev, void __user *p)
 	return input_set_keycode(dev, &ke);
 }
 
-/*
- * If we transfer state to the user, we should flush all pending events
- * of the same type from the client's queue. Otherwise, they might end up
- * with duplicate events, which can screw up client's state tracking.
- * If bits_to_user fails after flushing the queue, we queue a SYN_DROPPED
- * event so user-space will notice missing events.
- *
- * LOCKING:
- * We need to take event_lock before buffer_lock to avoid dead-locks. But we
- * need the even_lock only to guarantee consistent state. We can safely release
- * it while flushing the queue. This allows input-core to handle filters while
- * we flush the queue.
- */
+ 
 static int evdev_handle_get_val(struct evdev_client *client,
 				struct input_dev *dev, unsigned int type,
 				unsigned long *bits, unsigned int maxbit,
@@ -951,7 +916,7 @@ static int evdev_revoke(struct evdev *evdev, struct evdev_client *client,
 	return 0;
 }
 
-/* must be called with evdev-mutex held */
+ 
 static int evdev_set_mask(struct evdev_client *client,
 			  unsigned int type,
 			  const void __user *codes,
@@ -962,7 +927,7 @@ static int evdev_set_mask(struct evdev_client *client,
 	size_t cnt;
 	int error;
 
-	/* we allow unknown types and 'codes_size > size' for forward-compat */
+	 
 	cnt = evdev_get_mask_cnt(type);
 	if (!cnt)
 		return 0;
@@ -987,7 +952,7 @@ static int evdev_set_mask(struct evdev_client *client,
 	return 0;
 }
 
-/* must be called with evdev-mutex held */
+ 
 static int evdev_get_mask(struct evdev_client *client,
 			  unsigned int type,
 			  void __user *codes,
@@ -999,7 +964,7 @@ static int evdev_get_mask(struct evdev_client *client,
 	int i;
 	int error;
 
-	/* we allow unknown types and 'codes_size > size' for forward-compat */
+	 
 	cnt = evdev_get_mask_cnt(type);
 	size = sizeof(unsigned long) * BITS_TO_LONGS(cnt);
 	xfer_size = min_t(size_t, codes_size, size);
@@ -1012,7 +977,7 @@ static int evdev_get_mask(struct evdev_client *client,
 			if (error < 0)
 				return error;
 		} else {
-			/* fake mask with all bits set */
+			 
 			for (i = 0; i < xfer_size; i++)
 				if (put_user(0xffU, (u8 __user *)codes + i))
 					return -EFAULT;
@@ -1040,7 +1005,7 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 	unsigned int size;
 	int error;
 
-	/* First we check for fixed-length commands */
+	 
 	switch (cmd) {
 
 	case EVIOCGVERSION:
@@ -1140,7 +1105,7 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 
 	size = _IOC_SIZE(cmd);
 
-	/* Now check variable-length commands */
+	 
 #define EVIOC_MASK_SIZE(nr)	((nr) & ~(_IOC_SIZEMASK << _IOC_SIZESHIFT))
 	switch (EVIOC_MASK_SIZE(cmd)) {
 
@@ -1190,7 +1155,7 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 		return 0;
 	}
 
-	/* Multi-number variable-length handlers */
+	 
 	if (_IOC_TYPE(cmd) != 'E')
 		return -EINVAL;
 
@@ -1233,15 +1198,11 @@ static long evdev_do_ioctl(struct file *file, unsigned int cmd,
 			if (size < sizeof(struct input_absinfo))
 				abs.resolution = 0;
 
-			/* We can't change number of reserved MT slots */
+			 
 			if (t == ABS_MT_SLOT)
 				return -EINVAL;
 
-			/*
-			 * Take event lock to ensure that we are not
-			 * changing device parameters in the middle
-			 * of event.
-			 */
+			 
 			spin_lock_irq(&dev->event_lock);
 			dev->absinfo[t] = abs;
 			spin_unlock_irq(&dev->event_lock);
@@ -1304,11 +1265,7 @@ static const struct file_operations evdev_fops = {
 	.llseek		= no_llseek,
 };
 
-/*
- * Mark device non-existent. This disables writes, ioctls and
- * prevents new users from opening the device. Already posted
- * blocking reads will stay, however new ones will fail.
- */
+ 
 static void evdev_mark_dead(struct evdev *evdev)
 {
 	mutex_lock(&evdev->mutex);
@@ -1323,17 +1280,14 @@ static void evdev_cleanup(struct evdev *evdev)
 	evdev_mark_dead(evdev);
 	evdev_hangup(evdev);
 
-	/* evdev is marked dead so no one else accesses evdev->open */
+	 
 	if (evdev->open) {
 		input_flush_device(handle, NULL);
 		input_close_device(handle);
 	}
 }
 
-/*
- * Create new evdev device. Note that input core serializes calls
- * to connect and disconnect.
- */
+ 
 static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
 			 const struct input_device_id *id)
 {
@@ -1361,7 +1315,7 @@ static int evdev_connect(struct input_handler *handler, struct input_dev *dev,
 	evdev->exist = true;
 
 	dev_no = minor;
-	/* Normalize device number if it falls into legacy range */
+	 
 	if (dev_no < EVDEV_MINOR_BASE + EVDEV_MINORS)
 		dev_no -= EVDEV_MINOR_BASE;
 	dev_set_name(&evdev->dev, "event%d", dev_no);
@@ -1411,8 +1365,8 @@ static void evdev_disconnect(struct input_handle *handle)
 }
 
 static const struct input_device_id evdev_ids[] = {
-	{ .driver_info = 1 },	/* Matches all devices */
-	{ },			/* Terminating zero entry */
+	{ .driver_info = 1 },	 
+	{ },			 
 };
 
 MODULE_DEVICE_TABLE(input, evdev_ids);

@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2008-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <asm/unaligned.h>
 #include "hw.h"
@@ -315,7 +301,7 @@ static int ath9k_hw_def_check_eeprom(struct ath_hw *ah)
 	    AR5416_EEP_NO_BACK_VER))
 		return -EINVAL;
 
-	/* Enable fixup for AR_AN_TOP2 if necessary */
+	 
 	if ((ah->hw_version.devid == AR9280_DEVID_PCI) &&
 	    ((le16_to_cpu(eep->baseEepHeader.version) & 0xff) > 0x0a) &&
 	    (eep->baseEepHeader.pwdclkind == 0))
@@ -698,28 +684,20 @@ static int16_t ath9k_change_gain_boundary_setting(struct ath_hw *ah,
 {
 	u16 k;
 
-	/* Prior to writing the boundaries or the pdadc vs. power table
-	 * into the chip registers the default starting point on the pdadc
-	 * vs. power table needs to be checked and the curve boundaries
-	 * adjusted accordingly
-	 */
+	 
 	if (AR_SREV_9280_20_OR_LATER(ah)) {
 		u16 gb_limit;
 
 		if (AR5416_PWR_TABLE_OFFSET_DB != pwr_table_offset) {
-			/* get the difference in dB */
+			 
 			*diff = (u16)(pwr_table_offset - AR5416_PWR_TABLE_OFFSET_DB);
-			/* get the number of half dB steps */
+			 
 			*diff *= 2;
-			/* change the original gain boundary settings
-			 * by the number of half dB steps
-			 */
+			 
 			for (k = 0; k < numXpdGain; k++)
 				gb[k] = (u16)(gb[k] - *diff);
 		}
-		/* Because of a hardware limitation, ensure the gain boundary
-		 * is not larger than (63 - overlap)
-		 */
+		 
 		gb_limit = (u16)(MAX_RATE_POWER - pdGainOverlap_t2);
 
 		for (k = 0; k < numXpdGain; k++)
@@ -737,19 +715,15 @@ static void ath9k_adjust_pdadc_values(struct ath_hw *ah,
 #define NUM_PDADC(diff) (AR5416_NUM_PDADC_VALUES - diff)
 	u16 k;
 
-	/* If this is a board that has a pwrTableOffset that differs from
-	 * the default AR5416_PWR_TABLE_OFFSET_DB then the start of the
-	 * pdadc vs pwr table needs to be adjusted prior to writing to the
-	 * chip.
-	 */
+	 
 	if (AR_SREV_9280_20_OR_LATER(ah)) {
 		if (AR5416_PWR_TABLE_OFFSET_DB != pwr_table_offset) {
-			/* shift the table to start at the new offset */
+			 
 			for (k = 0; k < (u16)NUM_PDADC(diff); k++ ) {
 				pdadcValues[k] = pdadcValues[k + diff];
 			}
 
-			/* fill the back of the table */
+			 
 			for (k = (u16)NUM_PDADC(diff); k < NUM_PDADC(0); k++) {
 				pdadcValues[k] = pdadcValues[NUM_PDADC(diff)];
 			}
@@ -1278,17 +1252,17 @@ static void ath9k_hw_def_set_txpower(struct ath_hw *ah,
 		  ATH9K_POW_SM(pModal->pwrDecreaseFor3Chain, 6)
 		  | ATH9K_POW_SM(pModal->pwrDecreaseFor2Chain, 0));
 
-	/* TPC initializations */
+	 
 	if (ah->tpc_enabled) {
 		int ht40_delta;
 
 		ht40_delta = (IS_CHAN_HT40(chan)) ? ht40PowerIncForPdadc : 0;
 		ar5008_hw_init_rate_txpower(ah, ratesArray, chan, ht40_delta);
-		/* Enable TPC */
+		 
 		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX,
 			MAX_RATE_POWER | AR_PHY_POWER_TX_RATE_MAX_TPC_ENABLE);
 	} else {
-		/* Disable TPC */
+		 
 		REG_WRITE(ah, AR_PHY_POWER_TX_RATE_MAX, MAX_RATE_POWER);
 	}
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car V3M System Controller
- *
- * Copyright (C) 2017 Cogent Embedded Inc.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/kernel.h>

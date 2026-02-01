@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * CS42L43 SoundWire driver
- *
- * Copyright (C) 2022-2023 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/errno.h>
@@ -119,14 +114,7 @@ static int cs42l43_sdw_update_status(struct sdw_slave *sdw, enum sdw_slave_statu
 static int cs42l43_sdw_interrupt(struct sdw_slave *sdw,
 				 struct sdw_slave_intr_status *status)
 {
-	/*
-	 * The IRQ itself was handled through the regmap_irq handler, this is
-	 * just clearing up the additional Cirrus SoundWire registers that are
-	 * not covered by the SoundWire framework or the IRQ handler itself.
-	 * There is only a single bit in GEN_INT_STAT_1 and it doesn't clear if
-	 * IRQs are still pending so doing a read/write here after handling the
-	 * IRQ is fine.
-	 */
+	 
 	sdw_read_no_pm(sdw, CS42L43_GEN_INT_STAT_1);
 	sdw_write_no_pm(sdw, CS42L43_GEN_INT_STAT_1, CS42L43_INT_STAT_GEN1_MASK);
 

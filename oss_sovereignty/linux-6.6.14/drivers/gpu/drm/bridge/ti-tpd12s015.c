@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TPD12S015 HDMI ESD protection & level shifter chip driver
- *
- * Copyright (C) 2019 Texas Instruments Incorporated
- *
- * Based on the omapdrm-specific encoder-opa362 driver
- *
- * Copyright (C) 2013 Texas Instruments Incorporated
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -53,7 +44,7 @@ static int tpd12s015_attach(struct drm_bridge *bridge,
 
 	gpiod_set_value_cansleep(tpd->ls_oe_gpio, 1);
 
-	/* DC-DC converter needs at max 300us to get to 90% of 5V. */
+	 
 	usleep_range(300, 1000);
 
 	return 0;
@@ -126,7 +117,7 @@ static int tpd12s015_probe(struct platform_device *pdev)
 	tpd->bridge.type = DRM_MODE_CONNECTOR_HDMIA;
 	tpd->bridge.ops = DRM_BRIDGE_OP_DETECT;
 
-	/* Get the next bridge, connected to port@1. */
+	 
 	node = of_graph_get_remote_node(pdev->dev.of_node, 1, -1);
 	if (!node)
 		return -ENODEV;
@@ -137,7 +128,7 @@ static int tpd12s015_probe(struct platform_device *pdev)
 	if (!tpd->next_bridge)
 		return -EPROBE_DEFER;
 
-	/* Get the control and HPD GPIOs. */
+	 
 	gpio = devm_gpiod_get_index_optional(&pdev->dev, NULL, 0,
 					     GPIOD_OUT_LOW);
 	if (IS_ERR(gpio))
@@ -158,7 +149,7 @@ static int tpd12s015_probe(struct platform_device *pdev)
 
 	tpd->hpd_gpio = gpio;
 
-	/* Register the IRQ if the HPD GPIO is IRQ-capable. */
+	 
 	tpd->hpd_irq = gpiod_to_irq(tpd->hpd_gpio);
 	if (tpd->hpd_irq >= 0) {
 		ret = devm_request_threaded_irq(&pdev->dev, tpd->hpd_irq, NULL,
@@ -173,7 +164,7 @@ static int tpd12s015_probe(struct platform_device *pdev)
 		tpd->bridge.ops |= DRM_BRIDGE_OP_HPD;
 	}
 
-	/* Register the DRM bridge. */
+	 
 	drm_bridge_add(&tpd->bridge);
 
 	return 0;

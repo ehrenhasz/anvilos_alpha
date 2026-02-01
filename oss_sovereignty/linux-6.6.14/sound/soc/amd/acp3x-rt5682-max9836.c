@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Machine driver for AMD ACP Audio engine using DA7219 & MAX98357 codec.
-//
-//Copyright 2016 Advanced Micro Devices, Inc.
+
+
+
+
+
 
 #include <sound/core.h>
 #include <sound/soc.h>
@@ -59,7 +59,7 @@ static int acp3x_5682_init(struct snd_soc_pcm_runtime *rtd)
 
 	dev_info(rtd->dev, "codec dai name = %s\n", codec_dai->name);
 
-	/* set rt5682 dai fmt */
+	 
 	ret =  snd_soc_dai_set_fmt(codec_dai, SND_SOC_DAIFMT_I2S
 			| SND_SOC_DAIFMT_NB_NF
 			| SND_SOC_DAIFMT_CBP_CFP);
@@ -69,7 +69,7 @@ static int acp3x_5682_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
-	/* set codec PLL */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, RT5682_PLL2, RT5682_PLL2_S_MCLK,
 				  PCO_PLAT_CLK, RT5682_PLL_FREQ);
 	if (ret < 0) {
@@ -77,7 +77,7 @@ static int acp3x_5682_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
-	/* Set codec sysclk */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, RT5682_SCLK_S_PLL2,
 			RT5682_PLL_FREQ, SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -86,7 +86,7 @@ static int acp3x_5682_init(struct snd_soc_pcm_runtime *rtd)
 		return ret;
 	}
 
-	/* Set tdm/i2s1 master bclk ratio */
+	 
 	ret = snd_soc_dai_set_bclk_ratio(codec_dai, 64);
 	if (ret < 0) {
 		dev_err(rtd->dev,
@@ -128,7 +128,7 @@ static int rt5682_clk_enable(struct snd_pcm_substream *substream)
 	int ret = 0;
 	struct snd_soc_pcm_runtime *rtd = asoc_substream_to_rtd(substream);
 
-	/* RT5682 will support only 48K output with 48M mclk */
+	 
 	clk_set_rate(rt5682_dai_wclk, 48000);
 	clk_set_rate(rt5682_dai_bclk, 48000 * 64);
 	ret = clk_prepare_enable(rt5682_dai_wclk);
@@ -448,7 +448,7 @@ static const struct snd_soc_dapm_route acp3x_1015p_route[] = {
 	{"IN1P", NULL, "Headset Mic"},
 	{"Dmic Mux", "Front Mic", "DMIC"},
 	{"Dmic Mux", "Rear Mic", "DMIC"},
-	/* speaker */
+	 
 	{ "Speakers", NULL, "Speaker" },
 };
 

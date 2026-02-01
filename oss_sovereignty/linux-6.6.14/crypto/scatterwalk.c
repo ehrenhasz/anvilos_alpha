@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * Cipher operations.
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- *               2002 Adam J. Richter <adam@yggdrasil.com>
- *               2004 Jean-Luc Cooke <jlcooke@certainkey.com>
- */
+
+ 
 
 #include <crypto/scatterwalk.h>
 #include <linux/kernel.h>

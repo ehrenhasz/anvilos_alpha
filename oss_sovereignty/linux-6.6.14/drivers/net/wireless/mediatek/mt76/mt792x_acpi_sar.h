@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2023 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7921_ACPI_SAR_H
 #define __MT7921_ACPI_SAR_H
@@ -47,7 +47,7 @@ struct mt792x_asar_geo_band {
 
 struct mt792x_asar_geo_limit {
 	u8 idx;
-	/* 0:2G, 1:5G */
+	 
 	struct mt792x_asar_geo_band band[2];
 } __packed;
 
@@ -60,7 +60,7 @@ struct mt792x_asar_geo {
 
 struct mt792x_asar_geo_limit_v2 {
 	u8 idx;
-	/* 0:2G, 1:5G, 2:6G */
+	 
 	struct mt792x_asar_geo_band band[3];
 } __packed;
 

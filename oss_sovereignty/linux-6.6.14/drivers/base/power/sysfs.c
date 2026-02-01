@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* sysfs entries for device PM */
+
+ 
 #include <linux/device.h>
 #include <linux/kobject.h>
 #include <linux/string.h>
@@ -11,86 +11,7 @@
 #include <linux/jiffies.h>
 #include "power.h"
 
-/*
- *	control - Report/change current runtime PM setting of the device
- *
- *	Runtime power management of a device can be blocked with the help of
- *	this attribute.  All devices have one of the following two values for
- *	the power/control file:
- *
- *	 + "auto\n" to allow the device to be power managed at run time;
- *	 + "on\n" to prevent the device from being power managed at run time;
- *
- *	The default for all devices is "auto", which means that devices may be
- *	subject to automatic power management, depending on their drivers.
- *	Changing this attribute to "on" prevents the driver from power managing
- *	the device at run time.  Doing that while the device is suspended causes
- *	it to be woken up.
- *
- *	wakeup - Report/change current wakeup option for device
- *
- *	Some devices support "wakeup" events, which are hardware signals
- *	used to activate devices from suspended or low power states.  Such
- *	devices have one of three values for the sysfs power/wakeup file:
- *
- *	 + "enabled\n" to issue the events;
- *	 + "disabled\n" not to do so; or
- *	 + "\n" for temporary or permanent inability to issue wakeup.
- *
- *	(For example, unconfigured USB devices can't issue wakeups.)
- *
- *	Familiar examples of devices that can issue wakeup events include
- *	keyboards and mice (both PS2 and USB styles), power buttons, modems,
- *	"Wake-On-LAN" Ethernet links, GPIO lines, and more.  Some events
- *	will wake the entire system from a suspend state; others may just
- *	wake up the device (if the system as a whole is already active).
- *	Some wakeup events use normal IRQ lines; other use special out
- *	of band signaling.
- *
- *	It is the responsibility of device drivers to enable (or disable)
- *	wakeup signaling as part of changing device power states, respecting
- *	the policy choices provided through the driver model.
- *
- *	Devices may not be able to generate wakeup events from all power
- *	states.  Also, the events may be ignored in some configurations;
- *	for example, they might need help from other devices that aren't
- *	active, or which may have wakeup disabled.  Some drivers rely on
- *	wakeup events internally (unless they are disabled), keeping
- *	their hardware in low power modes whenever they're unused.  This
- *	saves runtime power, without requiring system-wide sleep states.
- *
- *	async - Report/change current async suspend setting for the device
- *
- *	Asynchronous suspend and resume of the device during system-wide power
- *	state transitions can be enabled by writing "enabled" to this file.
- *	Analogously, if "disabled" is written to this file, the device will be
- *	suspended and resumed synchronously.
- *
- *	All devices have one of the following two values for power/async:
- *
- *	 + "enabled\n" to permit the asynchronous suspend/resume of the device;
- *	 + "disabled\n" to forbid it;
- *
- *	NOTE: It generally is unsafe to permit the asynchronous suspend/resume
- *	of a device unless it is certain that all of the PM dependencies of the
- *	device are known to the PM core.  However, for some devices this
- *	attribute is set to "enabled" by bus type code or device drivers and in
- *	that cases it should be safe to leave the default value.
- *
- *	autosuspend_delay_ms - Report/change a device's autosuspend_delay value
- *
- *	Some drivers don't want to carry out a runtime suspend as soon as a
- *	device becomes idle; they want it always to remain idle for some period
- *	of time before suspending it.  This period is the autosuspend_delay
- *	value (expressed in milliseconds) and it can be controlled by the user.
- *	If the value is negative then the device will never be runtime
- *	suspended.
- *
- *	NOTE: The autosuspend_delay_ms attribute and the autosuspend_delay
- *	value are used only if the driver calls pm_runtime_use_autosuspend().
- *
- *	wakeup_count - Report the number of wakeup events related to the device
- */
+ 
 
 const char power_group_name[] = "power";
 EXPORT_SYMBOL_GPL(power_group_name);
@@ -230,10 +151,7 @@ static ssize_t pm_qos_resume_latency_us_store(struct device *dev,
 	int ret;
 
 	if (!kstrtos32(buf, 0, &value)) {
-		/*
-		 * Prevent users from writing negative or "no constraint" values
-		 * directly.
-		 */
+		 
 		if (value < 0 || value == PM_QOS_RESUME_LATENCY_NO_CONSTRAINT)
 			return -EINVAL;
 
@@ -274,7 +192,7 @@ static ssize_t pm_qos_latency_tolerance_us_store(struct device *dev,
 	int ret;
 
 	if (kstrtos32(buf, 0, &value) == 0) {
-		/* Users can't write negative values directly */
+		 
 		if (value < 0)
 			return -EINVAL;
 	} else {
@@ -540,8 +458,8 @@ static ssize_t wakeup_prevent_sleep_time_ms_show(struct device *dev,
 }
 
 static DEVICE_ATTR_RO(wakeup_prevent_sleep_time_ms);
-#endif /* CONFIG_PM_AUTOSLEEP */
-#else /* CONFIG_PM_SLEEP */
+#endif  
+#else  
 static inline int dpm_sysfs_wakeup_change_owner(struct device *dev, kuid_t kuid,
 						kgid_t kgid)
 {
@@ -607,8 +525,8 @@ static ssize_t async_store(struct device *dev, struct device_attribute *attr,
 
 static DEVICE_ATTR_RW(async);
 
-#endif /* CONFIG_PM_SLEEP */
-#endif /* CONFIG_PM_ADVANCED_DEBUG */
+#endif  
+#endif  
 
 static struct attribute *power_attrs[] = {
 #ifdef CONFIG_PM_ADVANCED_DEBUG
@@ -619,7 +537,7 @@ static struct attribute *power_attrs[] = {
 	&dev_attr_runtime_usage.attr,
 	&dev_attr_runtime_active_kids.attr,
 	&dev_attr_runtime_enabled.attr,
-#endif /* CONFIG_PM_ADVANCED_DEBUG */
+#endif  
 	NULL,
 };
 static const struct attribute_group pm_attr_group = {
@@ -695,7 +613,7 @@ int dpm_sysfs_add(struct device *dev)
 {
 	int rc;
 
-	/* No need to create PM sysfs if explicitly disabled. */
+	 
 	if (device_pm_not_required(dev))
 		return 0;
 

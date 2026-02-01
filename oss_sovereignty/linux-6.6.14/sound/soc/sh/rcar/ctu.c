@@ -1,73 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ctu.c
-//
-// Copyright (c) 2015 Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+
+
+
+
+
 
 #include "rsnd.h"
 
 #define CTU_NAME_SIZE	16
 #define CTU_NAME "ctu"
 
-/*
- * User needs to setup CTU by amixer, and its settings are
- * based on below registers
- *
- * CTUn_CPMDR : amixser set "CTU Pass"
- * CTUn_SV0xR : amixser set "CTU SV0"
- * CTUn_SV1xR : amixser set "CTU SV1"
- * CTUn_SV2xR : amixser set "CTU SV2"
- * CTUn_SV3xR : amixser set "CTU SV3"
- *
- * [CTU Pass]
- * 0000: default
- * 0001: Connect input data of channel 0
- * 0010: Connect input data of channel 1
- * 0011: Connect input data of channel 2
- * 0100: Connect input data of channel 3
- * 0101: Connect input data of channel 4
- * 0110: Connect input data of channel 5
- * 0111: Connect input data of channel 6
- * 1000: Connect input data of channel 7
- * 1001: Connect calculated data by scale values of matrix row 0
- * 1010: Connect calculated data by scale values of matrix row 1
- * 1011: Connect calculated data by scale values of matrix row 2
- * 1100: Connect calculated data by scale values of matrix row 3
- *
- * [CTU SVx]
- * [Output0] = [SV00, SV01, SV02, SV03, SV04, SV05, SV06, SV07]
- * [Output1] = [SV10, SV11, SV12, SV13, SV14, SV15, SV16, SV17]
- * [Output2] = [SV20, SV21, SV22, SV23, SV24, SV25, SV26, SV27]
- * [Output3] = [SV30, SV31, SV32, SV33, SV34, SV35, SV36, SV37]
- * [Output4] = [ 0,   0,    0,    0,    0,    0,    0,    0   ]
- * [Output5] = [ 0,   0,    0,    0,    0,    0,    0,    0   ]
- * [Output6] = [ 0,   0,    0,    0,    0,    0,    0,    0   ]
- * [Output7] = [ 0,   0,    0,    0,    0,    0,    0,    0   ]
- *
- * [SVxx]
- * Plus					Minus
- * value	time		dB	value		time		dB
- * -----------------------------------------------------------------------
- * H'7F_FFFF	2		6	H'80_0000	2		6
- * ...
- * H'40_0000	1		0	H'C0_0000	1		0
- * ...
- * H'00_0001	2.38 x 10^-7	-132
- * H'00_0000	0		Mute	H'FF_FFFF	2.38 x 10^-7	-132
- *
- *
- * Ex) Input ch -> Output ch
- *	1ch     ->  0ch
- *	0ch     ->  1ch
- *
- *	amixer set "CTU Reset" on
- *	amixer set "CTU Pass" 9,10
- *	amixer set "CTU SV0" 0,4194304
- *	amixer set "CTU SV1" 4194304,0
- * or
- *	amixer set "CTU Reset" on
- *	amixer set "CTU Pass" 2,1
- */
+ 
 
 struct rsnd_ctu {
 	struct rsnd_mod mod;
@@ -205,7 +147,7 @@ static int rsnd_ctu_pcm_new(struct rsnd_mod *mod,
 	if (rsnd_flags_has(ctu, KCTRL_INITIALIZED))
 		return 0;
 
-	/* CTU Pass */
+	 
 	ret = rsnd_kctrl_new_m(mod, io, rtd, "CTU Pass",
 			       rsnd_kctrl_accept_anytime,
 			       NULL,
@@ -214,7 +156,7 @@ static int rsnd_ctu_pcm_new(struct rsnd_mod *mod,
 	if (ret < 0)
 		return ret;
 
-	/* ROW0 */
+	 
 	ret = rsnd_kctrl_new_m(mod, io, rtd, "CTU SV0",
 			       rsnd_kctrl_accept_anytime,
 			       NULL,
@@ -223,7 +165,7 @@ static int rsnd_ctu_pcm_new(struct rsnd_mod *mod,
 	if (ret < 0)
 		return ret;
 
-	/* ROW1 */
+	 
 	ret = rsnd_kctrl_new_m(mod, io, rtd, "CTU SV1",
 			       rsnd_kctrl_accept_anytime,
 			       NULL,
@@ -232,7 +174,7 @@ static int rsnd_ctu_pcm_new(struct rsnd_mod *mod,
 	if (ret < 0)
 		return ret;
 
-	/* ROW2 */
+	 
 	ret = rsnd_kctrl_new_m(mod, io, rtd, "CTU SV2",
 			       rsnd_kctrl_accept_anytime,
 			       NULL,
@@ -241,7 +183,7 @@ static int rsnd_ctu_pcm_new(struct rsnd_mod *mod,
 	if (ret < 0)
 		return ret;
 
-	/* ROW3 */
+	 
 	ret = rsnd_kctrl_new_m(mod, io, rtd, "CTU SV3",
 			       rsnd_kctrl_accept_anytime,
 			       NULL,
@@ -250,7 +192,7 @@ static int rsnd_ctu_pcm_new(struct rsnd_mod *mod,
 	if (ret < 0)
 		return ret;
 
-	/* Reset */
+	 
 	ret = rsnd_kctrl_new_s(mod, io, rtd, "CTU Reset",
 			       rsnd_kctrl_accept_anytime,
 			       rsnd_ctu_value_reset,
@@ -263,19 +205,13 @@ static int rsnd_ctu_pcm_new(struct rsnd_mod *mod,
 
 static int rsnd_ctu_id(struct rsnd_mod *mod)
 {
-	/*
-	 * ctu00: -> 0, ctu01: -> 0, ctu02: -> 0, ctu03: -> 0
-	 * ctu10: -> 1, ctu11: -> 1, ctu12: -> 1, ctu13: -> 1
-	 */
+	 
 	return mod->id / 4;
 }
 
 static int rsnd_ctu_id_sub(struct rsnd_mod *mod)
 {
-	/*
-	 * ctu00: -> 0, ctu01: -> 1, ctu02: -> 2, ctu03: -> 3
-	 * ctu10: -> 0, ctu11: -> 1, ctu12: -> 2, ctu13: -> 3
-	 */
+	 
 	return mod->id % 4;
 }
 
@@ -323,13 +259,13 @@ int rsnd_ctu_probe(struct rsnd_priv *priv)
 	char name[CTU_NAME_SIZE];
 	int i, nr, ret;
 
-	/* This driver doesn't support Gen1 at this point */
+	 
 	if (rsnd_is_gen1(priv))
 		return 0;
 
 	node = rsnd_ctu_of_node(priv);
 	if (!node)
-		return 0; /* not used is not error */
+		return 0;  
 
 	nr = of_get_child_count(node);
 	if (!nr) {
@@ -351,10 +287,7 @@ int rsnd_ctu_probe(struct rsnd_priv *priv)
 	for_each_child_of_node(node, np) {
 		ctu = rsnd_ctu_get(priv, i);
 
-		/*
-		 * CTU00, CTU01, CTU02, CTU03 => CTU0
-		 * CTU10, CTU11, CTU12, CTU13 => CTU1
-		 */
+		 
 		snprintf(name, CTU_NAME_SIZE, "%s.%d",
 			 CTU_NAME, i / 4);
 

@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* Driver for ETAS GmbH ES58X USB CAN(-FD) Bus Interfaces.
- *
- * File es58x_fd.c: Adds support to ETAS ES582.1 and ES584.1 (naming
- * convention: we use the term "ES58X FD" when referring to those two
- * variants together).
- *
- * Copyright (c) 2019 Robert Bosch Engineering and Business Solutions. All rights reserved.
- * Copyright (c) 2020 ETAS K.K.. All rights reserved.
- * Copyright (c) 2020-2022 Vincent Mailhol <mailhol.vincent@wanadoo.fr>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/kernel.h>
@@ -18,18 +9,7 @@
 #include "es58x_core.h"
 #include "es58x_fd.h"
 
-/**
- * es58x_fd_sizeof_rx_tx_msg() - Calculate the actual length of the
- *	structure of a rx or tx message.
- * @msg: message of variable length, must have a dlc and a len fields.
- *
- * Even if RTR frames have actually no payload, the ES58X devices
- * still expect it. Must be a macro in order to accept several types
- * (struct es58x_fd_tx_can_msg and struct es58x_fd_rx_can_msg) as an
- * input.
- *
- * Return: length of the message.
- */
+ 
 #define es58x_fd_sizeof_rx_tx_msg(msg)					\
 ({									\
 	typeof(msg) __msg = (msg);					\
@@ -113,11 +93,7 @@ static int es58x_fd_rx_can_msg(struct net_device *netdev,
 		const struct es58x_fd_rx_can_msg *rx_can_msg =
 		    (const struct es58x_fd_rx_can_msg *)rx_can_msg_buf;
 		bool is_can_fd = !!(rx_can_msg->flags & ES58X_FLAG_FD_DATA);
-		/* rx_can_msg_len is the length of the rx_can_msg
-		 * buffer. Not to be confused with rx_can_msg->len
-		 * which is the length of the CAN payload
-		 * rx_can_msg->data.
-		 */
+		 
 		u16 rx_can_msg_len = es58x_fd_sizeof_rx_tx_msg(*rx_can_msg);
 
 		if (rx_can_msg_len > rx_can_msg_buf_len) {
@@ -357,7 +333,7 @@ static int es58x_fd_tx_can_msg(struct es58x_priv *priv,
 	if (ret)
 		return ret;
 
-	/* Fill message contents. */
+	 
 	tx_can_msg = (typeof(tx_can_msg))&es58x_fd_urb_cmd->raw_msg[msg_len];
 	tx_can_msg->packet_idx = (u8)priv->tx_head;
 	put_unaligned_le32(es58x_get_raw_can_id(cf), &tx_can_msg->can_id);
@@ -368,7 +344,7 @@ static int es58x_fd_tx_can_msg(struct es58x_priv *priv,
 		tx_can_msg->dlc = can_get_cc_dlc(cf, priv->can.ctrlmode);
 	memcpy(tx_can_msg->data, cf->data, cf->len);
 
-	/* Calculate new sizes */
+	 
 	msg_len += es58x_fd_sizeof_rx_tx_msg(*tx_can_msg);
 	priv->tx_urb->transfer_buffer_length = es58x_get_urb_cmd_len(es58x_dev,
 								     msg_len);
@@ -380,9 +356,7 @@ static int es58x_fd_tx_can_msg(struct es58x_priv *priv,
 static void es58x_fd_convert_bittiming(struct es58x_fd_bittiming *es58x_fd_bt,
 				       struct can_bittiming *bt)
 {
-	/* The actual value set in the hardware registers is one less
-	 * than the functional value.
-	 */
+	 
 	const int offset = 1;
 
 	es58x_fd_bt->bitrate = cpu_to_le32(bt->bitrate);
@@ -447,9 +421,7 @@ static int es58x_fd_enable_channel(struct es58x_priv *priv)
 
 static int es58x_fd_disable_channel(struct es58x_priv *priv)
 {
-	/* The type (ES58X_FD_CMD_TYPE_CAN or ES58X_FD_CMD_TYPE_CANFD) does
-	 * not matter here.
-	 */
+	 
 	return es58x_send_msg(priv->es58x_dev, ES58X_FD_CMD_TYPE_CAN,
 			      ES58X_FD_CAN_CMD_ID_DISABLE_CHANNEL,
 			      ES58X_EMPTY_MSG, 0, priv->channel_idx);
@@ -462,15 +434,7 @@ static int es58x_fd_get_timestamp(struct es58x_device *es58x_dev)
 			      0, ES58X_CHANNEL_IDX_NA);
 }
 
-/* Nominal bittiming constants for ES582.1 and ES584.1 as specified in
- * the microcontroller datasheet: "SAM E70/S70/V70/V71 Family" section
- * 49.6.8 "MCAN Nominal Bit Timing and Prescaler Register" from
- * Microchip.
- *
- * The values from the specification are the hardware register
- * values. To convert them to the functional values, all ranges were
- * incremented by 1 (e.g. range [0..n-1] changed to [1..n]).
- */
+ 
 static const struct can_bittiming_const es58x_fd_nom_bittiming_const = {
 	.name = "ES582.1/ES584.1",
 	.tseg1_min = 2,
@@ -483,11 +447,7 @@ static const struct can_bittiming_const es58x_fd_nom_bittiming_const = {
 	.brp_inc = 1
 };
 
-/* Data bittiming constants for ES582.1 and ES584.1 as specified in
- * the microcontroller datasheet: "SAM E70/S70/V70/V71 Family" section
- * 49.6.4 "MCAN Data Bit Timing and Prescaler Register" from
- * Microchip.
- */
+ 
 static const struct can_bittiming_const es58x_fd_data_bittiming_const = {
 	.name = "ES582.1/ES584.1",
 	.tseg1_min = 2,
@@ -500,14 +460,10 @@ static const struct can_bittiming_const es58x_fd_data_bittiming_const = {
 	.brp_inc = 1
 };
 
-/* Transmission Delay Compensation constants for ES582.1 and ES584.1
- * as specified in the microcontroller datasheet: "SAM E70/S70/V70/V71
- * Family" section 49.6.15 "MCAN Transmitter Delay Compensation
- * Register" from Microchip.
- */
+ 
 static const struct can_tdc_const es58x_tdc_const = {
 	.tdcv_min = 0,
-	.tdcv_max = 0, /* Manual mode not supported. */
+	.tdcv_max = 0,  
 	.tdco_min = 0,
 	.tdco_max = 127,
 	.tdcf_min = 0,
@@ -518,35 +474,19 @@ const struct es58x_parameters es58x_fd_param = {
 	.bittiming_const = &es58x_fd_nom_bittiming_const,
 	.data_bittiming_const = &es58x_fd_data_bittiming_const,
 	.tdc_const = &es58x_tdc_const,
-	/* The devices use NXP TJA1044G transievers which guarantee
-	 * the timing for data rates up to 5 Mbps. Bitrates up to 8
-	 * Mbps work in an optimal environment but are not recommended
-	 * for production environment.
-	 */
-	.bitrate_max = 8 * MEGA /* BPS */,
-	.clock = {.freq = 80 * MEGA /* Hz */},
+	 
+	.bitrate_max = 8 * MEGA  ,
+	.clock = {.freq = 80 * MEGA  },
 	.ctrlmode_supported = CAN_CTRLMODE_LOOPBACK | CAN_CTRLMODE_LISTENONLY |
 	    CAN_CTRLMODE_3_SAMPLES | CAN_CTRLMODE_FD | CAN_CTRLMODE_FD_NON_ISO |
 	    CAN_CTRLMODE_CC_LEN8_DLC | CAN_CTRLMODE_TDC_AUTO,
-	.tx_start_of_frame = 0xCEFA,	/* FACE in little endian */
-	.rx_start_of_frame = 0xFECA,	/* CAFE in little endian */
+	.tx_start_of_frame = 0xCEFA,	 
+	.rx_start_of_frame = 0xFECA,	 
 	.tx_urb_cmd_max_len = ES58X_FD_TX_URB_CMD_MAX_LEN,
 	.rx_urb_cmd_max_len = ES58X_FD_RX_URB_CMD_MAX_LEN,
-	/* Size of internal device TX queue is 500.
-	 *
-	 * However, when reaching value around 278, the device's busy
-	 * LED turns on and thus maximum value of 500 is never reached
-	 * in practice. Also, when this value is too high, some error
-	 * on the echo_msg were witnessed when the device is
-	 * recovering from bus off.
-	 *
-	 * For above reasons, a value that would prevent the device
-	 * from becoming busy was chosen. In practice, BQL would
-	 * prevent the value from even getting closer to below
-	 * maximum, so no impact on performance was measured.
-	 */
-	.fifo_mask = 255, /* echo_skb_max = 256 */
-	.dql_min_limit = CAN_FRAME_LEN_MAX * 15, /* Empirical value. */
+	 
+	.fifo_mask = 255,  
+	.dql_min_limit = CAN_FRAME_LEN_MAX * 15,  
 	.tx_bulk_max = ES58X_FD_TX_BULK_MAX,
 	.urb_cmd_header_len = ES58X_FD_URB_CMD_HEADER_LEN,
 	.rx_urb_max = ES58X_RX_URBS_MAX,
@@ -560,6 +500,6 @@ const struct es58x_operators es58x_fd_ops = {
 	.tx_can_msg = es58x_fd_tx_can_msg,
 	.enable_channel = es58x_fd_enable_channel,
 	.disable_channel = es58x_fd_disable_channel,
-	.reset_device = NULL, /* Not implemented in the device firmware. */
+	.reset_device = NULL,  
 	.get_timestamp = es58x_fd_get_timestamp
 };

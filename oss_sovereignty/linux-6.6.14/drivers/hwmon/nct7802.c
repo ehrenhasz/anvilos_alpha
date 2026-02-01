@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * nct7802 - Driver for Nuvoton NCT7802Y
- *
- * Copyright (C) 2014  Guenter Roeck <linux@roeck-us.net>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -40,7 +36,7 @@ static const u8 REG_VOLTAGE_LIMIT_MSB_SHIFT[2][5] = {
 #define REG_VOLTAGE_LOW		0x0f
 #define REG_FANCOUNT_LOW	0x13
 #define REG_START		0x21
-#define REG_MODE		0x22 /* 7.2.32 Mode Selection Register */
+#define REG_MODE		0x22  
 #define REG_PECI_ENABLE		0x23
 #define REG_FAN_ENABLE		0x24
 #define REG_VMON_ENABLE		0x25
@@ -51,10 +47,7 @@ static const u8 REG_VOLTAGE_LIMIT_MSB_SHIFT[2][5] = {
 #define REG_CHIP_ID		0xfe
 #define REG_VERSION_ID		0xff
 
-/*
- * Resistance temperature detector (RTD) modes according to 7.2.32 Mode
- * Selection Register
- */
+ 
 #define RTD_MODE_CURRENT	0x1
 #define RTD_MODE_THERMISTOR	0x2
 #define RTD_MODE_VOLTAGE	0x3
@@ -62,19 +55,14 @@ static const u8 REG_VOLTAGE_LIMIT_MSB_SHIFT[2][5] = {
 #define MODE_RTD_MASK		0x3
 #define MODE_LTD_EN		0x40
 
-/*
- * Bit offset for sensors modes in REG_MODE.
- * Valid for index 0..2, indicating RTD1..3.
- */
+ 
 #define MODE_BIT_OFFSET_RTD(index) ((index) * 2)
 
-/*
- * Data structures and manipulation thereof
- */
+ 
 
 struct nct7802_data {
 	struct regmap *regmap;
-	struct mutex access_lock; /* for multi-byte read and write operations */
+	struct mutex access_lock;  
 	u8 in_status;
 	struct mutex in_alarm_lock;
 };
@@ -106,7 +94,7 @@ static ssize_t temp_type_store(struct device *dev,
 	err = kstrtouint(buf, 0, &type);
 	if (err < 0)
 		return err;
-	if (sattr->index == 2 && type != 4) /* RD3 */
+	if (sattr->index == 2 && type != 4)  
 		return -EINVAL;
 	if (type < 3 || type > 4)
 		return -EINVAL;
@@ -215,7 +203,7 @@ static int nct7802_read_temp(struct nct7802_data *data,
 	if (err < 0)
 		goto abort;
 	t1 <<= 8;
-	if (reg_temp_low) {	/* 11 bit data */
+	if (reg_temp_low) {	 
 		err = regmap_read(data->regmap, reg_temp_low, &t2);
 		if (err < 0)
 			goto abort;
@@ -240,8 +228,8 @@ static int nct7802_read_fan(struct nct7802_data *data, u8 reg_fan)
 	if (ret < 0)
 		goto abort;
 	ret = (f1 << 5) | (f2 >> 3);
-	/* convert fan count to rpm */
-	if (ret == 0x1fff)	/* maximum value, assume fan is stopped */
+	 
+	if (ret == 0x1fff)	 
 		ret = 0;
 	else if (ret)
 		ret = DIV_ROUND_CLOSEST(1350000U, ret);
@@ -264,8 +252,8 @@ static int nct7802_read_fan_min(struct nct7802_data *data, u8 reg_fan_low,
 	if (ret < 0)
 		goto abort;
 	ret = f1 | ((f2 & 0xf8) << 5);
-	/* convert fan count to rpm */
-	if (ret == 0x1fff)	/* maximum value, assume no limit */
+	 
+	if (ret == 0x1fff)	 
 		ret = 0;
 	else if (ret)
 		ret = DIV_ROUND_CLOSEST(1350000U, ret);
@@ -306,7 +294,7 @@ static int nct7802_read_voltage(struct nct7802_data *data, int nr, int index)
 	int ret;
 
 	mutex_lock(&data->access_lock);
-	if (index == 0) {	/* voltage */
+	if (index == 0) {	 
 		ret = regmap_read(data->regmap, REG_VOLTAGE[nr], &v1);
 		if (ret < 0)
 			goto abort;
@@ -314,7 +302,7 @@ static int nct7802_read_voltage(struct nct7802_data *data, int nr, int index)
 		if (ret < 0)
 			goto abort;
 		ret = ((v1 << 2) | (v2 >> 6)) * nct7802_vmul[nr];
-	}  else {	/* limit */
+	}  else {	 
 		int shift = 8 - REG_VOLTAGE_LIMIT_MSB_SHIFT[index - 1][nr];
 
 		ret = regmap_read(data->regmap,
@@ -397,26 +385,15 @@ static ssize_t in_alarm_show(struct device *dev, struct device_attribute *attr,
 
 	mutex_lock(&data->in_alarm_lock);
 
-	/*
-	 * The SMI Voltage status register is the only register giving a status
-	 * for voltages. A bit is set for each input crossing a threshold, in
-	 * both direction, but the "inside" or "outside" limits info is not
-	 * available. Also this register is cleared on read.
-	 * Note: this is not explicitly spelled out in the datasheet, but
-	 * from experiment.
-	 * To deal with this we use a status cache with one validity bit and
-	 * one status bit for each input. Validity is cleared at startup and
-	 * each time the register reports a change, and the status is processed
-	 * by software based on current input value and limits.
-	 */
-	ret = regmap_read(data->regmap, 0x1e, &val); /* SMI Voltage status */
+	 
+	ret = regmap_read(data->regmap, 0x1e, &val);  
 	if (ret < 0)
 		goto abort;
 
-	/* invalidate cached status for all inputs crossing a threshold */
+	 
 	data->in_status &= ~((val & 0x0f) << 4);
 
-	/* if cached status for requested input is invalid, update it */
+	 
 	if (!(data->in_status & (0x10 << sattr->index))) {
 		ret = nct7802_read_voltage(data, sattr->nr, 0);
 		if (ret < 0)
@@ -647,7 +624,7 @@ static struct attribute *nct7802_temp_attrs[] = {
 	&sensor_dev_attr_temp1_fault.dev_attr.attr,
 	&sensor_dev_attr_temp1_beep.dev_attr.attr,
 
-	&sensor_dev_attr_temp2_type.dev_attr.attr,		/* 10 */
+	&sensor_dev_attr_temp2_type.dev_attr.attr,		 
 	&sensor_dev_attr_temp2_input.dev_attr.attr,
 	&sensor_dev_attr_temp2_min.dev_attr.attr,
 	&sensor_dev_attr_temp2_max.dev_attr.attr,
@@ -658,7 +635,7 @@ static struct attribute *nct7802_temp_attrs[] = {
 	&sensor_dev_attr_temp2_fault.dev_attr.attr,
 	&sensor_dev_attr_temp2_beep.dev_attr.attr,
 
-	&sensor_dev_attr_temp3_type.dev_attr.attr,		/* 20 */
+	&sensor_dev_attr_temp3_type.dev_attr.attr,		 
 	&sensor_dev_attr_temp3_input.dev_attr.attr,
 	&sensor_dev_attr_temp3_min.dev_attr.attr,
 	&sensor_dev_attr_temp3_max.dev_attr.attr,
@@ -669,7 +646,7 @@ static struct attribute *nct7802_temp_attrs[] = {
 	&sensor_dev_attr_temp3_fault.dev_attr.attr,
 	&sensor_dev_attr_temp3_beep.dev_attr.attr,
 
-	&sensor_dev_attr_temp4_input.dev_attr.attr,		/* 30 */
+	&sensor_dev_attr_temp4_input.dev_attr.attr,		 
 	&sensor_dev_attr_temp4_min.dev_attr.attr,
 	&sensor_dev_attr_temp4_max.dev_attr.attr,
 	&sensor_dev_attr_temp4_crit.dev_attr.attr,
@@ -678,7 +655,7 @@ static struct attribute *nct7802_temp_attrs[] = {
 	&sensor_dev_attr_temp4_crit_alarm.dev_attr.attr,
 	&sensor_dev_attr_temp4_beep.dev_attr.attr,
 
-	&sensor_dev_attr_temp5_input.dev_attr.attr,		/* 38 */
+	&sensor_dev_attr_temp5_input.dev_attr.attr,		 
 	&sensor_dev_attr_temp5_min.dev_attr.attr,
 	&sensor_dev_attr_temp5_max.dev_attr.attr,
 	&sensor_dev_attr_temp5_crit.dev_attr.attr,
@@ -687,7 +664,7 @@ static struct attribute *nct7802_temp_attrs[] = {
 	&sensor_dev_attr_temp5_crit_alarm.dev_attr.attr,
 	&sensor_dev_attr_temp5_beep.dev_attr.attr,
 
-	&sensor_dev_attr_temp6_input.dev_attr.attr,		/* 46 */
+	&sensor_dev_attr_temp6_input.dev_attr.attr,		 
 	&sensor_dev_attr_temp6_beep.dev_attr.attr,
 
 	NULL
@@ -706,26 +683,26 @@ static umode_t nct7802_temp_is_visible(struct kobject *kobj,
 		return 0;
 
 	if (index < 10 &&
-	    (reg & 03) != 0x01 && (reg & 0x03) != 0x02)		/* RD1 */
+	    (reg & 03) != 0x01 && (reg & 0x03) != 0x02)		 
 		return 0;
 
 	if (index >= 10 && index < 20 &&
-	    (reg & 0x0c) != 0x04 && (reg & 0x0c) != 0x08)	/* RD2 */
+	    (reg & 0x0c) != 0x04 && (reg & 0x0c) != 0x08)	 
 		return 0;
-	if (index >= 20 && index < 30 && (reg & 0x30) != 0x20)	/* RD3 */
+	if (index >= 20 && index < 30 && (reg & 0x30) != 0x20)	 
 		return 0;
 
-	if (index >= 30 && index < 38)				/* local */
+	if (index >= 30 && index < 38)				 
 		return attr->mode;
 
 	err = regmap_read(data->regmap, REG_PECI_ENABLE, &reg);
 	if (err < 0)
 		return 0;
 
-	if (index >= 38 && index < 46 && !(reg & 0x01))		/* PECI 0 */
+	if (index >= 38 && index < 46 && !(reg & 0x01))		 
 		return 0;
 
-	if (index >= 46 && !(reg & 0x02))			/* PECI 1 */
+	if (index >= 46 && !(reg & 0x02))			 
 		return 0;
 
 	return attr->mode;
@@ -769,21 +746,21 @@ static struct attribute *nct7802_in_attrs[] = {
 	&sensor_dev_attr_in0_alarm.dev_attr.attr,
 	&sensor_dev_attr_in0_beep.dev_attr.attr,
 
-	&sensor_dev_attr_in1_input.dev_attr.attr,	/* 5 */
+	&sensor_dev_attr_in1_input.dev_attr.attr,	 
 
-	&sensor_dev_attr_in2_input.dev_attr.attr,	/* 6 */
+	&sensor_dev_attr_in2_input.dev_attr.attr,	 
 	&sensor_dev_attr_in2_min.dev_attr.attr,
 	&sensor_dev_attr_in2_max.dev_attr.attr,
 	&sensor_dev_attr_in2_alarm.dev_attr.attr,
 	&sensor_dev_attr_in2_beep.dev_attr.attr,
 
-	&sensor_dev_attr_in3_input.dev_attr.attr,	/* 11 */
+	&sensor_dev_attr_in3_input.dev_attr.attr,	 
 	&sensor_dev_attr_in3_min.dev_attr.attr,
 	&sensor_dev_attr_in3_max.dev_attr.attr,
 	&sensor_dev_attr_in3_alarm.dev_attr.attr,
 	&sensor_dev_attr_in3_beep.dev_attr.attr,
 
-	&sensor_dev_attr_in4_input.dev_attr.attr,	/* 16 */
+	&sensor_dev_attr_in4_input.dev_attr.attr,	 
 	&sensor_dev_attr_in4_min.dev_attr.attr,
 	&sensor_dev_attr_in4_max.dev_attr.attr,
 	&sensor_dev_attr_in4_alarm.dev_attr.attr,
@@ -800,18 +777,18 @@ static umode_t nct7802_in_is_visible(struct kobject *kobj,
 	unsigned int reg;
 	int err;
 
-	if (index < 6)						/* VCC, VCORE */
+	if (index < 6)						 
 		return attr->mode;
 
 	err = regmap_read(data->regmap, REG_MODE, &reg);
 	if (err < 0)
 		return 0;
 
-	if (index >= 6 && index < 11 && (reg & 0x03) != 0x03)	/* VSEN1 */
+	if (index >= 6 && index < 11 && (reg & 0x03) != 0x03)	 
 		return 0;
-	if (index >= 11 && index < 16 && (reg & 0x0c) != 0x0c)	/* VSEN2 */
+	if (index >= 11 && index < 16 && (reg & 0x0c) != 0x0c)	 
 		return 0;
-	if (index >= 16 && (reg & 0x30) != 0x30)		/* VSEN3 */
+	if (index >= 16 && (reg & 0x30) != 0x30)		 
 		return 0;
 
 	return attr->mode;
@@ -835,17 +812,17 @@ static SENSOR_DEVICE_ATTR_2_RW(fan3_min, fan_min, 0x4b, 0x4e);
 static SENSOR_DEVICE_ATTR_2_RO(fan3_alarm, alarm, 0x1a, 2);
 static SENSOR_DEVICE_ATTR_2_RW(fan3_beep, beep, 0x5b, 2);
 
-/* 7.2.89 Fan Control Output Type */
+ 
 static SENSOR_DEVICE_ATTR_RO(pwm1_mode, pwm_mode, 0);
 static SENSOR_DEVICE_ATTR_RO(pwm2_mode, pwm_mode, 1);
 static SENSOR_DEVICE_ATTR_RO(pwm3_mode, pwm_mode, 2);
 
-/* 7.2.91... Fan Control Output Value */
+ 
 static SENSOR_DEVICE_ATTR_RW(pwm1, pwm, REG_PWM(0));
 static SENSOR_DEVICE_ATTR_RW(pwm2, pwm, REG_PWM(1));
 static SENSOR_DEVICE_ATTR_RW(pwm3, pwm, REG_PWM(2));
 
-/* 7.2.95... Temperature to Fan mapping Relationships Register */
+ 
 static SENSOR_DEVICE_ATTR_RW(pwm1_enable, pwm_enable, 0);
 static SENSOR_DEVICE_ATTR_RW(pwm2_enable, pwm_enable, 1);
 static SENSOR_DEVICE_ATTR_RW(pwm3_enable, pwm_enable, 2);
@@ -872,7 +849,7 @@ static umode_t nct7802_fan_is_visible(struct kobject *kobj,
 {
 	struct device *dev = kobj_to_dev(kobj);
 	struct nct7802_data *data = dev_get_drvdata(dev);
-	int fan = index / 4;	/* 4 attributes per fan */
+	int fan = index / 4;	 
 	unsigned int reg;
 	int err;
 
@@ -905,42 +882,42 @@ static const struct attribute_group nct7802_pwm_group = {
 	.attrs = nct7802_pwm_attrs,
 };
 
-/* 7.2.115... 0x80-0x83, 0x84 Temperature (X-axis) transition */
+ 
 static SENSOR_DEVICE_ATTR_2_RW(pwm1_auto_point1_temp, temp, 0x80, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm1_auto_point2_temp, temp, 0x81, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm1_auto_point3_temp, temp, 0x82, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm1_auto_point4_temp, temp, 0x83, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm1_auto_point5_temp, temp, 0x84, 0);
 
-/* 7.2.120... 0x85-0x88 PWM (Y-axis) transition */
+ 
 static SENSOR_DEVICE_ATTR_RW(pwm1_auto_point1_pwm, pwm, 0x85);
 static SENSOR_DEVICE_ATTR_RW(pwm1_auto_point2_pwm, pwm, 0x86);
 static SENSOR_DEVICE_ATTR_RW(pwm1_auto_point3_pwm, pwm, 0x87);
 static SENSOR_DEVICE_ATTR_RW(pwm1_auto_point4_pwm, pwm, 0x88);
 static SENSOR_DEVICE_ATTR_RO(pwm1_auto_point5_pwm, pwm, 0);
 
-/* 7.2.124 Table 2 X-axis Transition Point 1 Register */
+ 
 static SENSOR_DEVICE_ATTR_2_RW(pwm2_auto_point1_temp, temp, 0x90, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm2_auto_point2_temp, temp, 0x91, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm2_auto_point3_temp, temp, 0x92, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm2_auto_point4_temp, temp, 0x93, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm2_auto_point5_temp, temp, 0x94, 0);
 
-/* 7.2.129 Table 2 Y-axis Transition Point 1 Register */
+ 
 static SENSOR_DEVICE_ATTR_RW(pwm2_auto_point1_pwm, pwm, 0x95);
 static SENSOR_DEVICE_ATTR_RW(pwm2_auto_point2_pwm, pwm, 0x96);
 static SENSOR_DEVICE_ATTR_RW(pwm2_auto_point3_pwm, pwm, 0x97);
 static SENSOR_DEVICE_ATTR_RW(pwm2_auto_point4_pwm, pwm, 0x98);
 static SENSOR_DEVICE_ATTR_RO(pwm2_auto_point5_pwm, pwm, 0);
 
-/* 7.2.133 Table 3 X-axis Transition Point 1 Register */
+ 
 static SENSOR_DEVICE_ATTR_2_RW(pwm3_auto_point1_temp, temp, 0xA0, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm3_auto_point2_temp, temp, 0xA1, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm3_auto_point3_temp, temp, 0xA2, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm3_auto_point4_temp, temp, 0xA3, 0);
 static SENSOR_DEVICE_ATTR_2_RW(pwm3_auto_point5_temp, temp, 0xA4, 0);
 
-/* 7.2.138 Table 3 Y-axis Transition Point 1 Register */
+ 
 static SENSOR_DEVICE_ATTR_RW(pwm3_auto_point1_pwm, pwm, 0xA5);
 static SENSOR_DEVICE_ATTR_RW(pwm3_auto_point2_pwm, pwm, 0xA6);
 static SENSOR_DEVICE_ATTR_RW(pwm3_auto_point3_pwm, pwm, 0xA7);
@@ -1005,10 +982,7 @@ static int nct7802_detect(struct i2c_client *client,
 {
 	int reg;
 
-	/*
-	 * Chip identification registers are only available in bank 0,
-	 * so only attempt chip detection if bank 0 is selected
-	 */
+	 
 	reg = i2c_smbus_read_byte_data(client, REG_BANK);
 	if (reg != 0x00)
 		return -ENODEV;
@@ -1025,7 +999,7 @@ static int nct7802_detect(struct i2c_client *client,
 	if (reg < 0 || (reg & 0xf0) != 0x20)
 		return -ENODEV;
 
-	/* Also validate lower bits of voltage and temperature registers */
+	 
 	reg = i2c_smbus_read_byte_data(client, REG_TEMP_LSB);
 	if (reg < 0 || (reg & 0x1f))
 		return -ENODEV;
@@ -1087,7 +1061,7 @@ static int nct7802_get_channel_config(struct device *dev,
 		return 0;
 	}
 
-	/* At this point we have reg >= 1 && reg <= 3 */
+	 
 
 	if (!of_device_is_available(node)) {
 		*mode_val &= ~(MODE_RTD_MASK << MODE_BIT_OFFSET_RTD(reg - 1));
@@ -1114,7 +1088,7 @@ static int nct7802_get_channel_config(struct device *dev,
 	}
 
 	if (reg == 3) {
-		/* RTD3 only supports thermistor mode */
+		 
 		md = RTD_MODE_THERMISTOR;
 	} else {
 		if (of_property_read_string(node, "temperature-mode",
@@ -1143,7 +1117,7 @@ static int nct7802_get_channel_config(struct device *dev,
 static int nct7802_configure_channels(struct device *dev,
 				      struct nct7802_data *data)
 {
-	/* Enable local temperature sensor by default */
+	 
 	u8 mode_mask = MODE_LTD_EN, mode_val = MODE_LTD_EN;
 	struct device_node *node;
 	int err;
@@ -1166,7 +1140,7 @@ static int nct7802_init_chip(struct device *dev, struct nct7802_data *data)
 {
 	int err;
 
-	/* Enable ADC */
+	 
 	err = regmap_update_bits(data->regmap, REG_START, 0x01, 0x01);
 	if (err)
 		return err;
@@ -1175,7 +1149,7 @@ static int nct7802_init_chip(struct device *dev, struct nct7802_data *data)
 	if (err)
 		return err;
 
-	/* Enable Vcore and VCC voltage monitoring */
+	 
 	return regmap_update_bits(data->regmap, REG_VMON_ENABLE, 0x03, 0x03);
 }
 

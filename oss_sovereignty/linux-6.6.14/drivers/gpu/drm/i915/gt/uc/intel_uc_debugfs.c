@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/string_helpers.h>
@@ -47,7 +45,7 @@ void intel_uc_debugfs_register(struct intel_uc *uc, struct dentry *gt_root)
 	if (!gt_root)
 		return;
 
-	/* GuC and HuC go always in pair, no need to check both */
+	 
 	if (!intel_uc_supports_guc(uc))
 		return;
 

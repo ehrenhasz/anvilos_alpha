@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2016 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <darrick.wong@oracle.com>
- */
+ 
+ 
 #ifndef __XFS_AG_RESV_H__
 #define	__XFS_AG_RESV_H__
 
@@ -33,11 +30,7 @@ xfs_perag_resv(
 	}
 }
 
-/*
- * RMAPBT reservation accounting wrappers. Since rmapbt blocks are sourced from
- * the AGFL, they are allocated one at a time and the reservation updates don't
- * require a transaction.
- */
+ 
 static inline void
 xfs_ag_resv_rmapbt_alloc(
 	struct xfs_mount	*mp,
@@ -52,4 +45,4 @@ xfs_ag_resv_rmapbt_alloc(
 	xfs_perag_put(pag);
 }
 
-#endif	/* __XFS_AG_RESV_H__ */
+#endif	 

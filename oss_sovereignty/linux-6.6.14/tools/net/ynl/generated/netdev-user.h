@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause) */
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/netdev.yaml */
-/* YNL-GEN user header */
+ 
+ 
+ 
+ 
 
 #ifndef _LINUX_NETDEV_GEN_H
 #define _LINUX_NETDEV_GEN_H
@@ -15,13 +15,13 @@ struct ynl_sock;
 
 extern const struct ynl_family ynl_netdev_family;
 
-/* Enums */
+ 
 const char *netdev_op_str(int op);
 const char *netdev_xdp_act_str(enum netdev_xdp_act value);
 
-/* Common nested types */
-/* ============== NETDEV_CMD_DEV_GET ============== */
-/* NETDEV_CMD_DEV_GET - do */
+ 
+ 
+ 
 struct netdev_dev_get_req {
 	struct {
 		__u32 ifindex:1;
@@ -57,13 +57,11 @@ struct netdev_dev_get_rsp {
 
 void netdev_dev_get_rsp_free(struct netdev_dev_get_rsp *rsp);
 
-/*
- * Get / dump information about a netdev.
- */
+ 
 struct netdev_dev_get_rsp *
 netdev_dev_get(struct ynl_sock *ys, struct netdev_dev_get_req *req);
 
-/* NETDEV_CMD_DEV_GET - dump */
+ 
 struct netdev_dev_get_list {
 	struct netdev_dev_get_list *next;
 	struct netdev_dev_get_rsp obj __attribute__ ((aligned (8)));
@@ -73,7 +71,7 @@ void netdev_dev_get_list_free(struct netdev_dev_get_list *rsp);
 
 struct netdev_dev_get_list *netdev_dev_get_dump(struct ynl_sock *ys);
 
-/* NETDEV_CMD_DEV_GET - notify */
+ 
 struct netdev_dev_get_ntf {
 	__u16 family;
 	__u8 cmd;
@@ -84,4 +82,4 @@ struct netdev_dev_get_ntf {
 
 void netdev_dev_get_ntf_free(struct netdev_dev_get_ntf *rsp);
 
-#endif /* _LINUX_NETDEV_GEN_H */
+#endif  

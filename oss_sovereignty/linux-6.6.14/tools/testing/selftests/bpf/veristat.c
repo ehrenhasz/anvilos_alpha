@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 #define _GNU_SOURCE
 #include <argp.h>
 #include <string.h>
@@ -39,38 +39,7 @@ enum stat_id {
 	NUM_STATS_CNT = FILE_NAME - VERDICT,
 };
 
-/* In comparison mode each stat can specify up to four different values:
- *   - A side value;
- *   - B side value;
- *   - absolute diff value;
- *   - relative (percentage) diff value.
- *
- * When specifying stat specs in comparison mode, user can use one of the
- * following variant suffixes to specify which exact variant should be used for
- * ordering or filtering:
- *   - `_a` for A side value;
- *   - `_b` for B side value;
- *   - `_diff` for absolute diff value;
- *   - `_pct` for relative (percentage) diff value.
- *
- * If no variant suffix is provided, then `_b` (control data) is assumed.
- *
- * As an example, let's say instructions stat has the following output:
- *
- * Insns (A)  Insns (B)  Insns   (DIFF)
- * ---------  ---------  --------------
- * 21547      20920       -627 (-2.91%)
- *
- * Then:
- *   - 21547 is A side value (insns_a);
- *   - 20920 is B side value (insns_b);
- *   - -627 is absolute diff value (insns_diff);
- *   - -2.91% is relative diff value (insns_pct).
- *
- * For verdict there is no verdict_pct variant.
- * For file and program name, _a and _b variants are equivalent and there are
- * no _diff or _pct variants.
- */
+ 
 enum stat_variant {
 	VARIANT_A,
 	VARIANT_B,
@@ -85,7 +54,7 @@ struct verif_stats {
 	long stats[NUM_STATS_CNT];
 };
 
-/* joined comparison mode stats */
+ 
 struct verif_stats_join {
 	char *file_name;
 	char *prog_name;
@@ -99,12 +68,12 @@ struct stat_specs {
 	enum stat_id ids[ALL_STATS_CNT];
 	enum stat_variant variants[ALL_STATS_CNT];
 	bool asc[ALL_STATS_CNT];
-	int lens[ALL_STATS_CNT * 3]; /* 3x for comparison mode */
+	int lens[ALL_STATS_CNT * 3];  
 };
 
 enum resfmt {
 	RESFMT_TABLE,
-	RESFMT_TABLE_CALCLEN, /* fake format to pre-calculate table's column widths */
+	RESFMT_TABLE_CALCLEN,  
 	RESFMT_CSV,
 };
 
@@ -114,21 +83,21 @@ enum filter_kind {
 };
 
 enum operator_kind {
-	OP_EQ,		/* == or = */
-	OP_NEQ,		/* != or <> */
-	OP_LT,		/* < */
-	OP_LE,		/* <= */
-	OP_GT,		/* > */
-	OP_GE,		/* >= */
+	OP_EQ,		 
+	OP_NEQ,		 
+	OP_LT,		 
+	OP_LE,		 
+	OP_GT,		 
+	OP_GE,		 
 };
 
 struct filter {
 	enum filter_kind kind;
-	/* FILTER_NAME */
+	 
 	char *any_glob;
 	char *file_glob;
 	char *prog_glob;
-	/* FILTER_STAT */
+	 
 	enum operator_kind op;
 	int stat_id;
 	enum stat_variant stat_var;
@@ -154,7 +123,7 @@ static struct env {
 	struct verif_stats *prog_stats;
 	int prog_stat_cnt;
 
-	/* baseline_stats is allocated and used only in comparison mode */
+	 
 	struct verif_stats *baseline_stats;
 	int baseline_stat_cnt;
 
@@ -331,7 +300,7 @@ static const struct argp argp = {
 };
 
 
-/* Adapted from perf/util/string.c */
+ 
 static bool glob_matches(const char *str, const char *pat)
 {
 	while (*str && *pat && *pat != '*') {
@@ -340,11 +309,11 @@ static bool glob_matches(const char *str, const char *pat)
 		str++;
 		pat++;
 	}
-	/* Check wild card */
+	 
 	if (*pat == '*') {
 		while (*pat == '*')
 			pat++;
-		if (!*pat) /* Tail wild card matches all */
+		if (!*pat)  
 			return true;
 		while (*str)
 			if (glob_matches(str++, pat))
@@ -360,9 +329,9 @@ static bool is_bpf_obj_file(const char *path) {
 
 	fd = open(path, O_RDONLY | O_CLOEXEC);
 	if (fd < 0)
-		return true; /* we'll fail later and propagate error */
+		return true;  
 
-	/* ensure libelf is initialized */
+	 
 	(void)elf_version(EV_CURRENT);
 
 	elf = elf_begin(fd, ELF_C_READ, NULL);
@@ -373,7 +342,7 @@ static bool is_bpf_obj_file(const char *path) {
 		goto cleanup;
 
 	ehdr = elf64_getehdr(elf);
-	/* Old LLVM set e_machine to EM_NONE */
+	 
 	if (!ehdr || ehdr->e_type != ET_REL || (ehdr->e_machine && ehdr->e_machine != EM_BPF))
 		goto cleanup;
 
@@ -414,12 +383,7 @@ static bool should_process_file_prog(const char *filename, const char *prog_name
 		if (f->any_glob) {
 			if (glob_matches(filename, f->any_glob))
 				return true;
-			/* If we don't know program name yet, any_glob filter
-			 * has to assume that current BPF object file might be
-			 * relevant; we'll check again later on after opening
-			 * BPF object file, at which point program name will
-			 * be known finally.
-			 */
+			 
 			if (!prog_name || glob_matches(prog_name, f->any_glob))
 				return true;
 		} else {
@@ -431,9 +395,7 @@ static bool should_process_file_prog(const char *filename, const char *prog_name
 		}
 	}
 
-	/* if there are no file/prog name allow filters, allow all progs,
-	 * unless they are denied earlier explicitly
-	 */
+	 
 	return allow_cnt == 0;
 }
 
@@ -441,10 +403,7 @@ static struct {
 	enum operator_kind op_kind;
 	const char *op_str;
 } operators[] = {
-	/* Order of these definitions matter to avoid situations like '<'
-	 * matching part of what is actually a '<>' operator. That is,
-	 * substrings should go last.
-	 */
+	 
 	{ OP_EQ, "==" },
 	{ OP_NEQ, "!=" },
 	{ OP_NEQ, "<>" },
@@ -472,16 +431,7 @@ static int append_filter(struct filter **filters, int *cnt, const char *str)
 	f = &(*filters)[*cnt];
 	memset(f, 0, sizeof(*f));
 
-	/* First, let's check if it's a stats filter of the following form:
-	 * <stat><op><value, where:
-	 *   - <stat> is one of supported numerical stats (verdict is also
-	 *     considered numerical, failure == 0, success == 1);
-	 *   - <op> is comparison operator (see `operators` definitions);
-	 *   - <value> is an integer (or failure/success, or false/true as
-	 *     special aliases for 0 and 1, respectively).
-	 * If the form doesn't match what user provided, we assume file/prog
-	 * glob filter.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(operators); i++) {
 		enum stat_variant var;
 		int id;
@@ -539,14 +489,7 @@ static int append_filter(struct filter **filters, int *cnt, const char *str)
 		return 0;
 	}
 
-	/* File/prog filter can be specified either as '<glob>' or
-	 * '<file-glob>/<prog-glob>'. In the former case <glob> is applied to
-	 * both file and program names. This seems to be way more useful in
-	 * practice. If user needs full control, they can use '/<prog-glob>'
-	 * form to glob just program name, or '<file-glob>/' to glob only file
-	 * name. But usually common <glob> seems to be the most useful and
-	 * ergonomic way.
-	 */
+	 
 	f->kind = FILTER_NAME;
 	p = strchr(str, '/');
 	if (!p) {
@@ -555,13 +498,13 @@ static int append_filter(struct filter **filters, int *cnt, const char *str)
 			return -ENOMEM;
 	} else {
 		if (str != p) {
-			/* non-empty file glob */
+			 
 			f->file_glob = strndup(str, p - str);
 			if (!f->file_glob)
 				return -ENOMEM;
 		}
 		if (strlen(p + 1) > 0) {
-			/* non-empty prog glob */
+			 
 			f->prog_glob = strdup(p + 1);
 			if (!f->prog_glob) {
 				free(f->file_glob);
@@ -589,10 +532,10 @@ static int append_filter_file(const char *path)
 	}
 
 	while (fscanf(f, " %1023[^\n]\n", buf) == 1) {
-		/* lines starting with # are comments, skip them */
+		 
 		if (buf[0] == '\0' || buf[0] == '#')
 			continue;
-		/* lines starting with ! are negative match filters */
+		 
 		if (buf[0] == '!')
 			err = append_filter(&env.deny_filters, &env.deny_filter_cnt, buf + 1);
 		else
@@ -631,7 +574,7 @@ static const struct stat_specs default_sort_spec = {
 	.asc = { true, true, },
 };
 
-/* sorting for comparison mode to join two data sets */
+ 
 static const struct stat_specs join_sort_spec = {
 	.spec_cnt = 2,
 	.ids = {
@@ -646,9 +589,9 @@ static struct stat_def {
 	bool asc_by_default;
 	bool left_aligned;
 } stat_defs[] = {
-	[FILE_NAME] = { "File", {"file_name", "filename", "file"}, true /* asc */, true /* left */ },
-	[PROG_NAME] = { "Program", {"prog_name", "progname", "prog"}, true /* asc */, true /* left */ },
-	[VERDICT] = { "Verdict", {"verdict"}, true /* asc: failure, success */, true /* left */ },
+	[FILE_NAME] = { "File", {"file_name", "filename", "file"}, true  , true   },
+	[PROG_NAME] = { "Program", {"prog_name", "progname", "prog"}, true  , true   },
+	[VERDICT] = { "Verdict", {"verdict"}, true  , true   },
 	[DURATION] = { "Duration (us)", {"duration", "dur"}, },
 	[TOTAL_INSNS] = { "Insns", {"total_insns", "insns"}, },
 	[TOTAL_STATES] = { "States", {"total_states", "states"}, },
@@ -682,11 +625,7 @@ static bool parse_stat_id_var(const char *name, size_t len, int *id, enum stat_v
 				continue;
 
 			if (alias_len == len) {
-				/* If no variant suffix is specified, we
-				 * assume control group (just in case we are
-				 * in comparison mode. Variant is ignored in
-				 * non-comparison mode.
-				 */
+				 
 				*var = VARIANT_B;
 				*id = i;
 				return true;
@@ -794,14 +733,12 @@ static int parse_verif_log(char * const buf, size_t buf_sz, struct verif_stats *
 	buf[buf_sz - 1] = '\0';
 
 	for (pos = strlen(buf) - 1, lines = 0; pos >= 0 && lines < MAX_PARSED_LOG_LINES; lines++) {
-		/* find previous endline or otherwise take the start of log buf */
+		 
 		for (cur = &buf[pos]; cur > buf && cur[0] != '\n'; cur--, pos--) {
 		}
-		/* next time start from end of previous line (or pos goes to <0) */
+		 
 		pos--;
-		/* if we found endline, point right after endline symbol;
-		 * otherwise, stay at the beginning of log buf
-		 */
+		 
 		if (cur[0] == '\n')
 			cur++;
 
@@ -823,21 +760,14 @@ static int guess_prog_type_by_ctx_name(const char *ctx_name,
 				       enum bpf_prog_type *prog_type,
 				       enum bpf_attach_type *attach_type)
 {
-	/* We need to guess program type based on its declared context type.
-	 * This guess can't be perfect as many different program types might
-	 * share the same context type.  So we can only hope to reasonably
-	 * well guess this and get lucky.
-	 *
-	 * Just in case, we support both UAPI-side type names and
-	 * kernel-internal names.
-	 */
+	 
 	static struct {
 		const char *uapi_name;
 		const char *kern_name;
 		enum bpf_prog_type prog_type;
 		enum bpf_attach_type attach_type;
 	} ctx_map[] = {
-		/* __sk_buff is most ambiguous, we assume TC program */
+		 
 		{ "__sk_buff", "sk_buff", BPF_PROG_TYPE_SCHED_CLS },
 		{ "bpf_sock", "sock", BPF_PROG_TYPE_CGROUP_SOCK, BPF_CGROUP_INET4_POST_BIND },
 		{ "bpf_sock_addr", "bpf_sock_addr_kern",  BPF_PROG_TYPE_CGROUP_SOCK_ADDR, BPF_CGROUP_INET4_BIND },
@@ -849,12 +779,10 @@ static int guess_prog_type_by_ctx_name(const char *ctx_name,
 		{ "sk_reuseport_md", "sk_reuseport_kern", BPF_PROG_TYPE_SK_REUSEPORT, BPF_SK_REUSEPORT_SELECT_OR_MIGRATE },
 		{ "bpf_sk_lookup", "bpf_sk_lookup_kern", BPF_PROG_TYPE_SK_LOOKUP, BPF_SK_LOOKUP },
 		{ "xdp_md", "xdp_buff", BPF_PROG_TYPE_XDP, BPF_XDP },
-		/* tracing types with no expected attach type */
+		 
 		{ "bpf_user_pt_regs_t", "pt_regs", BPF_PROG_TYPE_KPROBE },
 		{ "bpf_perf_event_data", "bpf_perf_event_data_kern", BPF_PROG_TYPE_PERF_EVENT },
-		/* raw_tp programs use u64[] from kernel side, we don't want
-		 * to match on that, probably; so NULL for kern-side type
-		 */
+		 
 		{ "bpf_raw_tracepoint_args", NULL, BPF_PROG_TYPE_RAW_TRACEPOINT },
 	};
 	int i;
@@ -879,10 +807,10 @@ static void fixup_obj(struct bpf_object *obj, struct bpf_program *prog, const ch
 	struct bpf_map *map;
 
 	bpf_object__for_each_map(map, obj) {
-		/* disable pinning */
+		 
 		bpf_map__set_pin_path(map, NULL);
 
-		/* fix up map size, if necessary */
+		 
 		switch (bpf_map__type(map)) {
 		case BPF_MAP_TYPE_SK_STORAGE:
 		case BPF_MAP_TYPE_TASK_STORAGE:
@@ -895,11 +823,7 @@ static void fixup_obj(struct bpf_object *obj, struct bpf_program *prog, const ch
 		}
 	}
 
-	/* SEC(freplace) programs can't be loaded with veristat as is,
-	 * but we can try guessing their target program's expected type by
-	 * looking at the type of program's first argument and substituting
-	 * corresponding program type
-	 */
+	 
 	if (bpf_program__type(prog) == BPF_PROG_TYPE_EXT) {
 		const struct btf *btf = bpf_object__btf(obj);
 		const char *prog_name = bpf_program__name(prog);
@@ -918,7 +842,7 @@ static void fixup_obj(struct bpf_object *obj, struct bpf_program *prog, const ch
 		if (!btf_is_func_proto(t) || btf_vlen(t) != 1)
 			goto skip_freplace_fixup;
 
-		/* context argument is a pointer to a struct/typedef */
+		 
 		t = btf__type_by_id(btf, btf_params(t)[0].type);
 		while (t && btf_is_mod(t))
 			t = btf__type_by_id(btf, t->type);
@@ -979,12 +903,12 @@ static int process_prog(const char *filename, struct bpf_object *obj, struct bpf
 		buf = malloc(buf_sz);
 		if (!buf)
 			return -ENOMEM;
-		/* ensure we always request stats */
+		 
 		log_level = env.log_level | 4 | (env.log_fixed ? 8 : 0);
 	} else {
 		buf = verif_log_buf;
 		buf_sz = sizeof(verif_log_buf);
-		/* request only verifier stats */
+		 
 		log_level = 4 | (env.log_fixed ? 8 : 0);
 	}
 	verif_log_buf[0] = '\0';
@@ -992,7 +916,7 @@ static int process_prog(const char *filename, struct bpf_object *obj, struct bpf
 	bpf_program__set_log_buf(prog, buf, buf_sz);
 	bpf_program__set_log_level(prog, log_level);
 
-	/* increase chances of successful BPF object loading */
+	 
 	fixup_obj(obj, prog, base_filename);
 
 	if (env.force_checkpoints)
@@ -1003,7 +927,7 @@ static int process_prog(const char *filename, struct bpf_object *obj, struct bpf
 
 	stats->file_name = strdup(base_filename);
 	stats->prog_name = strdup(bpf_program__name(prog));
-	stats->stats[VERDICT] = err == 0; /* 1 - success, 0 - failure */
+	stats->stats[VERDICT] = err == 0;  
 	parse_verif_log(buf, buf_sz, stats);
 
 	if (env.verbose) {
@@ -1045,12 +969,7 @@ static int process_obj(const char *filename)
 	old_libbpf_print_fn = libbpf_set_print(libbpf_print_fn);
 	obj = bpf_object__open_file(filename, &opts);
 	if (!obj) {
-		/* if libbpf can't open BPF object file, it could be because
-		 * that BPF object file is incomplete and has to be statically
-		 * linked into a final BPF object file; instead of bailing
-		 * out, report it into stderr, mark it as skipped, and
-		 * proceed
-		 */
+		 
 		fprintf(stderr, "Failed to open '%s': %d\n", filename, -errno);
 		env.files_skipped++;
 		err = 0;
@@ -1147,7 +1066,7 @@ static int cmp_prog_stats(const void *v1, const void *v2)
 			return cmp;
 	}
 
-	/* always disambiguate with file+prog, which are unique */
+	 
 	cmp = strcmp(s1->file_name, s2->file_name);
 	if (cmp != 0)
 		return cmp;
@@ -1190,7 +1109,7 @@ static void fetch_join_stat_value(const struct verif_stats_join *s,
 		if (!s->stats_a || !s->stats_b)
 			*num_val = -DBL_MAX;
 		else if (id == VERDICT)
-			*num_val = v1 == v2 ? 1.0 /* MATCH */ : 0.0 /* MISMATCH */;
+			*num_val = v1 == v2 ? 1.0   : 0.0  ;
 		else
 			*num_val = (double)(v2 - v1);
 		return;
@@ -1242,7 +1161,7 @@ static int cmp_join_stats(const void *v1, const void *v2)
 			return cmp;
 	}
 
-	/* always disambiguate with file+prog, which are unique */
+	 
 	cmp = strcmp(s1->file_name, s2->file_name);
 	if (cmp != 0)
 		return cmp;
@@ -1464,14 +1383,14 @@ static int parse_stats_csv(const char *filename, struct stat_specs *specs,
 
 		while ((next = strtok_r(state ? NULL : input, ",\n", &state))) {
 			if (header) {
-				/* for the first line, set up spec stats */
+				 
 				err = parse_stat(next, specs);
 				if (err)
 					goto cleanup;
 				continue;
 			}
 
-			/* for all other lines, parse values based on spec */
+			 
 			if (col >= specs->spec_cnt) {
 				fprintf(stderr, "Found extraneous column #%d in row #%d of '%s'\n",
 					col, *stat_cntp, filename);
@@ -1503,10 +1422,7 @@ static int parse_stats_csv(const char *filename, struct stat_specs *specs,
 			goto cleanup;
 		}
 
-		/* in comparison mode we can only check filters after we
-		 * parsed entire line; if row should be ignored we pretend we
-		 * never parsed it
-		 */
+		 
 		if (!should_process_file_prog(st->file_name, st->prog_name)) {
 			free(st->file_name);
 			free(st->prog_name);
@@ -1524,7 +1440,7 @@ cleanup:
 	return err;
 }
 
-/* empty/zero stats for mismatched rows */
+ 
 static const struct verif_stats fallback_stats = { .file_name = "", .prog_name = "" };
 
 static bool is_key_stat(enum stat_id id)
@@ -1560,7 +1476,7 @@ static void output_comp_headers(enum resfmt fmt)
 
 	for (i = 0; i < env.output_spec.spec_cnt; i++) {
 		int id = env.output_spec.ids[i];
-		/* key stats don't have A/B/DIFF columns, they are common for both data sets */
+		 
 		int max_j = is_key_stat(id) ? 1 : 3;
 
 		for (j = 0; j < max_j; j++) {
@@ -1615,9 +1531,9 @@ static void output_comp_stats(const struct verif_stats_join *join_stats,
 		prepare_value(base, id, &base_str, &base_val);
 		prepare_value(comp, id, &comp_str, &comp_val);
 
-		/* normalize all the outputs to be in string buffers for simplicity */
+		 
 		if (is_key_stat(id)) {
-			/* key stats (file and program name) are always strings */
+			 
 			if (base)
 				snprintf(base_buf, sizeof(base_buf), "%s", base_str);
 			else
@@ -1649,7 +1565,7 @@ static void output_comp_stats(const struct verif_stats_join *join_stats,
 			} else {
 				if (base_val == 0) {
 					if (comp_val == base_val)
-						p = 0.0; /* avoid +0 (+100%) case */
+						p = 0.0;  
 					else
 						p = comp_val < base_val ? -100.0 : 100.0;
 				} else {
@@ -1674,7 +1590,7 @@ static void output_comp_stats(const struct verif_stats_join *join_stats,
 			}
 			break;
 		case RESFMT_TABLE: {
-			/* string outputs are left-aligned, number outputs are right-aligned */
+			 
 			const char *fmt = base_str ? "%s%-*s" : "%s%*s";
 
 			printf(fmt, i == 0 ? "" : COLUMN_SEP, *max_len_base, base_buf);
@@ -1757,7 +1673,7 @@ static bool should_output_join_stats(const struct verif_stats_join *stats)
 			return true;
 	}
 
-	/* if there are no stat allowed filters, pass everything through */
+	 
 	return allow_cnt == 0;
 }
 
@@ -1787,10 +1703,7 @@ static int handle_comparison_mode(void)
 		return err;
 	}
 
-	/* To keep it simple we validate that the set and order of stats in
-	 * both CSVs are exactly the same. This can be lifted with a bit more
-	 * pre-processing later.
-	 */
+	 
 	if (base_specs.spec_cnt != comp_specs.spec_cnt) {
 		fprintf(stderr, "Number of stats in '%s' and '%s' differs (%d != %d)!\n",
 			env.filenames[0], env.filenames[1],
@@ -1807,21 +1720,14 @@ static int handle_comparison_mode(void)
 		}
 	}
 
-	/* Replace user-specified sorting spec with file+prog sorting rule to
-	 * be able to join two datasets correctly. Once we are done, we will
-	 * restore the original sort spec.
-	 */
+	 
 	tmp_sort_spec = env.sort_spec;
 	env.sort_spec = join_sort_spec;
 	qsort(env.prog_stats, env.prog_stat_cnt, sizeof(*env.prog_stats), cmp_prog_stats);
 	qsort(env.baseline_stats, env.baseline_stat_cnt, sizeof(*env.baseline_stats), cmp_prog_stats);
 	env.sort_spec = tmp_sort_spec;
 
-	/* Join two datasets together. If baseline and comparison datasets
-	 * have different subset of rows (we match by 'object + prog' as
-	 * a unique key) then assume empty/missing/zero value for rows that
-	 * are missing in the opposite data set.
-	 */
+	 
 	i = j = 0;
 	while (i < env.baseline_stat_cnt || j < env.prog_stat_cnt) {
 		const struct verif_stats *base, *comp;
@@ -1879,14 +1785,10 @@ static int handle_comparison_mode(void)
 		env.join_stat_cnt += 1;
 	}
 
-	/* now sort joined results accorsing to sort spec */
+	 
 	qsort(env.join_stats, env.join_stat_cnt, sizeof(*env.join_stats), cmp_join_stats);
 
-	/* for human-readable table output we need to do extra pass to
-	 * calculate column widths, so we substitute current output format
-	 * with RESFMT_TABLE_CALCLEN and later revert it back to RESFMT_TABLE
-	 * and do everything again.
-	 */
+	 
 	if (env.out_fmt == RESFMT_TABLE)
 		cur_fmt = RESFMT_TABLE_CALCLEN;
 	else
@@ -1910,7 +1812,7 @@ one_more_time:
 
 	if (cur_fmt == RESFMT_TABLE_CALCLEN) {
 		cur_fmt = RESFMT_TABLE;
-		goto one_more_time; /* ... this time with feeling */
+		goto one_more_time;  
 	}
 
 	return 0;
@@ -1957,7 +1859,7 @@ static bool should_output_stats(const struct verif_stats *stats)
 			return true;
 	}
 
-	/* if there are no stat allowed filters, pass everything through */
+	 
 	return allow_cnt == 0;
 }
 
@@ -1967,7 +1869,7 @@ static void output_prog_stats(void)
 	int i, last_stat_idx = 0;
 
 	if (env.out_fmt == RESFMT_TABLE) {
-		/* calculate column widths */
+		 
 		output_headers(RESFMT_TABLE_CALCLEN);
 		for (i = 0; i < env.prog_stat_cnt; i++) {
 			stats = &env.prog_stats[i];
@@ -1978,7 +1880,7 @@ static void output_prog_stats(void)
 		}
 	}
 
-	/* actually output the table */
+	 
 	output_headers(env.out_fmt);
 	for (i = 0; i < env.prog_stat_cnt; i++) {
 		stats = &env.prog_stats[i];

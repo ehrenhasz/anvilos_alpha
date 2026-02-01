@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel(R) Trace Hub PTI output driver
- *
- * Copyright (C) 2014-2016 Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -30,7 +26,7 @@ struct pti_device {
 	unsigned int		lpp_dest;
 };
 
-/* map PTI widths to MODE settings of PTI_CTL register */
+ 
 static const unsigned int pti_mode[] = {
 	0, 4, 8, 0, 12, 0, 0, 0, 16, 0, 0, 0, 0, 0, 0, 0,
 };

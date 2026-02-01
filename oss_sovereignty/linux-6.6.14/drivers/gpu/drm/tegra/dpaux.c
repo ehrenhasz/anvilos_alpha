@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -132,14 +130,11 @@ static ssize_t tegra_dpaux_transfer(struct drm_dp_aux *aux,
 	u8 reply = 0;
 	u32 value;
 
-	/* Tegra has 4x4 byte DP AUX transmit and receive FIFOs. */
+	 
 	if (msg->size > 16)
 		return -EINVAL;
 
-	/*
-	 * Allow zero-sized messages only for I2C, in which case they specify
-	 * address-only transactions.
-	 */
+	 
 	if (msg->size < 1) {
 		switch (msg->request & ~DP_AUX_I2C_MOT) {
 		case DP_AUX_I2C_WRITE_STATUS_UPDATE:
@@ -152,7 +147,7 @@ static ssize_t tegra_dpaux_transfer(struct drm_dp_aux *aux,
 			return -EINVAL;
 		}
 	} else {
-		/* For non-zero-sized messages, set the CMDLEN field. */
+		 
 		value = DPAUX_DP_AUXCTL_CMDLEN(msg->size - 1);
 	}
 
@@ -201,7 +196,7 @@ static ssize_t tegra_dpaux_transfer(struct drm_dp_aux *aux,
 		ret = msg->size;
 	}
 
-	/* start transaction */
+	 
 	value = tegra_dpaux_readl(dpaux, DPAUX_DP_AUXCTL);
 	value |= DPAUX_DP_AUXCTL_TRANSACTREQ;
 	tegra_dpaux_writel(dpaux, value, DPAUX_DP_AUXCTL);
@@ -210,7 +205,7 @@ static ssize_t tegra_dpaux_transfer(struct drm_dp_aux *aux,
 	if (!status)
 		return -ETIMEDOUT;
 
-	/* read status and clear errors */
+	 
 	value = tegra_dpaux_readl(dpaux, DPAUX_DP_AUXSTAT);
 	tegra_dpaux_writel(dpaux, 0xf00, DPAUX_DP_AUXSTAT);
 
@@ -248,11 +243,7 @@ static ssize_t tegra_dpaux_transfer(struct drm_dp_aux *aux,
 		if (msg->request & DP_AUX_I2C_READ) {
 			size_t count = value & DPAUX_DP_AUXSTAT_REPLY_MASK;
 
-			/*
-			 * There might be a smarter way to do this, but since
-			 * the DP helpers will already retry transactions for
-			 * an -EBUSY return value, simply reuse that instead.
-			 */
+			 
 			if (count != msg->size) {
 				ret = -EBUSY;
 				goto out;
@@ -282,7 +273,7 @@ static irqreturn_t tegra_dpaux_irq(int irq, void *data)
 	struct tegra_dpaux *dpaux = data;
 	u32 value;
 
-	/* clear interrupts */
+	 
 	value = tegra_dpaux_readl(dpaux, DPAUX_INTR_AUX);
 	tegra_dpaux_writel(dpaux, value, DPAUX_INTR_AUX);
 
@@ -290,7 +281,7 @@ static irqreturn_t tegra_dpaux_irq(int irq, void *data)
 		schedule_work(&dpaux->work);
 
 	if (value & DPAUX_INTR_IRQ_EVENT) {
-		/* TODO: handle this */
+		 
 	}
 
 	if (value & DPAUX_INTR_AUX_DONE)
@@ -532,14 +523,7 @@ static int tegra_dpaux_probe(struct platform_device *pdev)
 
 	drm_dp_aux_init(&dpaux->aux);
 
-	/*
-	 * Assume that by default the DPAUX/I2C pads will be used for HDMI,
-	 * so power them up and configure them in I2C mode.
-	 *
-	 * The DPAUX code paths reconfigure the pads in AUX mode, but there
-	 * is no possibility to perform the I2C mode configuration in the
-	 * HDMI path.
-	 */
+	 
 	err = tegra_dpaux_pad_config(dpaux, DPAUX_PADCTL_FUNC_I2C);
 	if (err < 0)
 		return err;
@@ -558,7 +542,7 @@ static int tegra_dpaux_probe(struct platform_device *pdev)
 		return PTR_ERR(dpaux->pinctrl);
 	}
 #endif
-	/* enable and clear all interrupts */
+	 
 	value = DPAUX_INTR_AUX_DONE | DPAUX_INTR_IRQ_EVENT |
 		DPAUX_INTR_UNPLUG_EVENT | DPAUX_INTR_PLUG_EVENT;
 	tegra_dpaux_writel(dpaux, value, DPAUX_INTR_EN_AUX);
@@ -583,7 +567,7 @@ static void tegra_dpaux_remove(struct platform_device *pdev)
 
 	cancel_work_sync(&dpaux->work);
 
-	/* make sure pads are powered down when not in use */
+	 
 	tegra_dpaux_pad_power_down(dpaux);
 
 	pm_runtime_put_sync(&pdev->dev);

@@ -1,35 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Eddie Dong <eddie.dong@intel.com>
- *    Jike Song <jike.song@intel.com>
- *
- * Contributors:
- *    Zhi Wang <zhi.a.wang@intel.com>
- *    Min He <min.he@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *
- */
+ 
 
 #include "i915_drv.h"
 #include "gvt.h"
@@ -42,30 +11,17 @@ enum {
 	INTEL_GVT_PCI_BAR_MAX,
 };
 
-/* bitmap for writable bits (RW or RW1C bits, but cannot co-exist in one
- * byte) byte by byte in standard pci configuration space. (not the full
- * 256 bytes.)
- */
+ 
 static const u8 pci_cfg_space_rw_bmp[PCI_INTERRUPT_LINE + 4] = {
 	[PCI_COMMAND]		= 0xff, 0x07,
-	[PCI_STATUS]		= 0x00, 0xf9, /* the only one RW1C byte */
+	[PCI_STATUS]		= 0x00, 0xf9,  
 	[PCI_CACHE_LINE_SIZE]	= 0xff,
 	[PCI_BASE_ADDRESS_0 ... PCI_CARDBUS_CIS - 1] = 0xff,
 	[PCI_ROM_ADDRESS]	= 0x01, 0xf8, 0xff, 0xff,
 	[PCI_INTERRUPT_LINE]	= 0xff,
 };
 
-/**
- * vgpu_pci_cfg_mem_write - write virtual cfg space memory
- * @vgpu: target vgpu
- * @off: offset
- * @src: src ptr to write
- * @bytes: number of bytes
- *
- * Use this function to write virtual cfg space memory.
- * For standard cfg space, only RW bits can be changed,
- * and we emulates the RW1C behavior of PCI_STATUS register.
- */
+ 
 static void vgpu_pci_cfg_mem_write(struct intel_vgpu *vgpu, unsigned int off,
 				   u8 *src, unsigned int bytes)
 {
@@ -79,18 +35,14 @@ static void vgpu_pci_cfg_mem_write(struct intel_vgpu *vgpu, unsigned int off,
 		old = cfg_base[off + i];
 		new = src[i] & mask;
 
-		/**
-		 * The PCI_STATUS high byte has RW1C bits, here
-		 * emulates clear by writing 1 for these bits.
-		 * Writing a 0b to RW1C bits has no effect.
-		 */
+		 
 		if (off + i == PCI_STATUS + 1)
 			new = (~new & old) & mask;
 
 		cfg_base[off + i] = (old & ~mask) | new;
 	}
 
-	/* For other configuration space directly copy as it is. */
+	 
 	if (i < bytes)
 		memcpy(cfg_base + off + i, src + i, bytes - i);
 
@@ -104,16 +56,7 @@ static void vgpu_pci_cfg_mem_write(struct intel_vgpu *vgpu, unsigned int off,
 	}
 }
 
-/**
- * intel_vgpu_emulate_cfg_read - emulate vGPU configuration space read
- * @vgpu: target vgpu
- * @offset: offset
- * @p_data: return data ptr
- * @bytes: number of bytes to read
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_emulate_cfg_read(struct intel_vgpu *vgpu, unsigned int offset,
 	void *p_data, unsigned int bytes)
 {
@@ -171,7 +114,7 @@ static int emulate_pci_rom_bar_write(struct intel_vgpu *vgpu,
 	u32 new = *(u32 *)(p_data);
 
 	if ((new & PCI_ROM_ADDRESS_MASK) == PCI_ROM_ADDRESS_MASK)
-		/* We don't have rom, return size of 0. */
+		 
 		*pval = 0;
 	else
 		vgpu_pci_cfg_mem_write(vgpu, offset, p_data, bytes);
@@ -188,13 +131,7 @@ static void emulate_pci_bar_write(struct intel_vgpu *vgpu, unsigned int offset,
 		vgpu_cfg_space(vgpu)[PCI_COMMAND] & PCI_COMMAND_MEMORY;
 	struct intel_vgpu_pci_bar *bars = vgpu->cfg_space.bar;
 
-	/*
-	 * Power-up software can determine how much address
-	 * space the device requires by writing a value of
-	 * all 1's to the register and then reading the value
-	 * back. The device will return 0's in all don't-care
-	 * address bits.
-	 */
+	 
 	if (new == 0xffffffff) {
 		switch (offset) {
 		case PCI_BASE_ADDRESS_0:
@@ -202,10 +139,7 @@ static void emulate_pci_bar_write(struct intel_vgpu *vgpu, unsigned int offset,
 			size = ~(bars[INTEL_GVT_PCI_BAR_GTTMMIO].size -1);
 			intel_vgpu_write_pci_bar(vgpu, offset,
 						size >> (lo ? 0 : 32), lo);
-			/*
-			 * Untrap the BAR, since guest hasn't configured a
-			 * valid GPA
-			 */
+			 
 			trap_gttmmio(vgpu, false);
 			break;
 		case PCI_BASE_ADDRESS_2:
@@ -216,17 +150,14 @@ static void emulate_pci_bar_write(struct intel_vgpu *vgpu, unsigned int offset,
 			map_aperture(vgpu, false);
 			break;
 		default:
-			/* Unimplemented BARs */
+			 
 			intel_vgpu_write_pci_bar(vgpu, offset, 0x0, false);
 		}
 	} else {
 		switch (offset) {
 		case PCI_BASE_ADDRESS_0:
 		case PCI_BASE_ADDRESS_1:
-			/*
-			 * Untrap the old BAR first, since guest has
-			 * re-configured the BAR
-			 */
+			 
 			trap_gttmmio(vgpu, false);
 			intel_vgpu_write_pci_bar(vgpu, offset, new, lo);
 			trap_gttmmio(vgpu, mmio_enabled);
@@ -243,16 +174,7 @@ static void emulate_pci_bar_write(struct intel_vgpu *vgpu, unsigned int offset,
 	}
 }
 
-/**
- * intel_vgpu_emulate_cfg_write - emulate vGPU configuration space write
- * @vgpu: target vgpu
- * @offset: offset
- * @p_data: write data ptr
- * @bytes: number of bytes to write
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_emulate_cfg_write(struct intel_vgpu *vgpu, unsigned int offset,
 	void *p_data, unsigned int bytes)
 {
@@ -266,7 +188,7 @@ int intel_vgpu_emulate_cfg_write(struct intel_vgpu *vgpu, unsigned int offset,
 			offset + bytes > vgpu->gvt->device_info.cfg_space_size))
 		return -EINVAL;
 
-	/* First check if it's PCI_COMMAND */
+	 
 	if (IS_ALIGNED(offset, 2) && offset == PCI_COMMAND) {
 		if (drm_WARN_ON(&i915->drm, bytes > 2))
 			return -EINVAL;
@@ -309,13 +231,7 @@ int intel_vgpu_emulate_cfg_write(struct intel_vgpu *vgpu, unsigned int offset,
 	return 0;
 }
 
-/**
- * intel_vgpu_init_cfg_space - init vGPU configuration space when create vGPU
- *
- * @vgpu: a vGPU
- * @primary: is the vGPU presented as primary
- *
- */
+ 
 void intel_vgpu_init_cfg_space(struct intel_vgpu *vgpu,
 			       bool primary)
 {
@@ -335,7 +251,7 @@ void intel_vgpu_init_cfg_space(struct intel_vgpu *vgpu,
 			INTEL_GVT_PCI_CLASS_VGA_OTHER;
 	}
 
-	/* Show guest that there isn't any stolen memory.*/
+	 
 	gmch_ctl = (u16 *)(vgpu_cfg_space(vgpu) + INTEL_GVT_PCI_GMCH_CONTROL);
 	*gmch_ctl &= ~(BDW_GMCH_GMS_MASK << BDW_GMCH_GMS_SHIFT);
 
@@ -345,9 +261,7 @@ void intel_vgpu_init_cfg_space(struct intel_vgpu *vgpu,
 	vgpu_cfg_space(vgpu)[PCI_COMMAND] &= ~(PCI_COMMAND_IO
 					     | PCI_COMMAND_MEMORY
 					     | PCI_COMMAND_MASTER);
-	/*
-	 * Clear the bar upper 32bit and let guest to assign the new value
-	 */
+	 
 	memset(vgpu_cfg_space(vgpu) + PCI_BASE_ADDRESS_1, 0, 4);
 	memset(vgpu_cfg_space(vgpu) + PCI_BASE_ADDRESS_3, 0, 4);
 	memset(vgpu_cfg_space(vgpu) + PCI_BASE_ADDRESS_4, 0, 8);
@@ -360,7 +274,7 @@ void intel_vgpu_init_cfg_space(struct intel_vgpu *vgpu,
 
 	memset(vgpu_cfg_space(vgpu) + PCI_ROM_ADDRESS, 0, 4);
 
-	/* PM Support */
+	 
 	vgpu->cfg_space.pmcsr_off = 0;
 	if (vgpu_cfg_space(vgpu)[PCI_STATUS] & PCI_STATUS_CAP_LIST) {
 		next = vgpu_cfg_space(vgpu)[PCI_CAPABILITY_LIST];
@@ -374,12 +288,7 @@ void intel_vgpu_init_cfg_space(struct intel_vgpu *vgpu,
 	}
 }
 
-/**
- * intel_vgpu_reset_cfg_space - reset vGPU configuration space
- *
- * @vgpu: a vGPU
- *
- */
+ 
 void intel_vgpu_reset_cfg_space(struct intel_vgpu *vgpu)
 {
 	u8 cmd = vgpu_cfg_space(vgpu)[PCI_COMMAND];
@@ -391,10 +300,6 @@ void intel_vgpu_reset_cfg_space(struct intel_vgpu *vgpu)
 		map_aperture(vgpu, false);
 	}
 
-	/**
-	 * Currently we only do such reset when vGPU is not
-	 * owned by any VM, so we simply restore entire cfg
-	 * space to default value.
-	 */
+	 
 	intel_vgpu_init_cfg_space(vgpu, primary);
 }

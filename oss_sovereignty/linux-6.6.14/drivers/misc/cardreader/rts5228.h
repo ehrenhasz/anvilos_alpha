@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2018-2019 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Ricky WU <ricky_wu@realtek.com>
- *   Rui FENG <rui_feng@realsil.com.cn>
- *   Wei WANG <wei_wang@realsil.com.cn>
- */
+ 
+ 
 #ifndef RTS5228_H
 #define RTS5228_H
 
@@ -24,7 +16,7 @@
 #define RTS5228_PAD_H3L1			0xFF79
 #define PAD_GPIO_H3L1			(1 << 3)
 
-/* SSC_CTL2 0xFC12 */
+ 
 #define RTS5228_SSC_DEPTH_MASK		0x07
 #define RTS5228_SSC_DEPTH_DISALBE	0x00
 #define RTS5228_SSC_DEPTH_8M		0x01
@@ -35,7 +27,7 @@
 #define RTS5228_SSC_DEPTH_256K		0x06
 #define RTS5228_SSC_DEPTH_128K		0x07
 
-/* DMACTL 0xFE2C */
+ 
 #define RTS5228_DMA_PACK_SIZE_MASK		0xF0
 
 #define RTS5228_REG_LDO12_CFG			0xFF6E
@@ -54,7 +46,7 @@
 #define RTS5228_LDO12_L12_MASK			(0x07<<4)
 #define RTS5228_LDO12_L12_120			(0x04<<4)
 
-/* LDO control register */
+ 
 #define RTS5228_CARD_PWR_CTL			0xFD50
 #define RTS5228_PUPDC					(0x01<<5)
 
@@ -135,12 +127,12 @@
 #define FORCE_PM_VALUE			0x10
 
 
-/* Single LUN, support SD */
+ 
 #define DEFAULT_SINGLE		0
 #define SD_LUN				1
 
 
-/* For Change_FPGA_SSCClock Function */
+ 
 #define MULTIPLY_BY_1    0x00
 #define MULTIPLY_BY_2    0x01
 #define MULTIPLY_BY_3    0x02
@@ -165,4 +157,4 @@
 int rts5228_pci_switch_clock(struct rtsx_pcr *pcr, unsigned int card_clock,
 		u8 ssc_depth, bool initial_mode, bool double_clk, bool vpclk);
 
-#endif /* RTS5228_H */
+#endif  

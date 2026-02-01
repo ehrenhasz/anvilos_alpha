@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt274.c  --  RT274 ALSA SoC audio codec driver
- *
- * Copyright 2017 Realtek Semiconductor Corp.
- * Author: Bard Liao <bardliao@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -405,7 +400,7 @@ static int rt274_mic_detect(struct snd_soc_component *component,
 	rt274->jack = jack;
 
 	if (jack == NULL) {
-		/* Disable jack detection */
+		 
 		regmap_update_bits(rt274->regmap, RT274_EAPD_GPIO_IRQ_CTRL,
 					RT274_IRQ_EN, RT274_IRQ_DIS);
 
@@ -415,7 +410,7 @@ static int rt274_mic_detect(struct snd_soc_component *component,
 	regmap_update_bits(rt274->regmap, RT274_EAPD_GPIO_IRQ_CTRL,
 				RT274_IRQ_EN, RT274_IRQ_EN);
 
-	/* Send an initial report */
+	 
 	rt274_irq(0, rt274);
 
 	return 0;
@@ -453,7 +448,7 @@ static const struct snd_kcontrol_new loutr_enable_control =
 	SOC_DAPM_SINGLE_AUTODISABLE("Switch", RT274_LOUTR_GAIN,
 			RT274_MUTE_SFT, 1, 1);
 
-/* ADC0 source */
+ 
 static const char * const rt274_adc_src[] = {
 	"Mic", "Line1", "Line2", "Dmic"
 };
@@ -475,14 +470,14 @@ static const struct snd_kcontrol_new rt274_adc1_mux =
 static const char * const rt274_dac_src[] = {
 	"DAC OUT0", "DAC OUT1"
 };
-/* HP-OUT source */
+ 
 static SOC_ENUM_SINGLE_DECL(rt274_hpo_enum, RT274_HPO_MUX,
 				0, rt274_dac_src);
 
 static const struct snd_kcontrol_new rt274_hpo_mux =
 SOC_DAPM_ENUM("HPO source", rt274_hpo_enum);
 
-/* Line out source */
+ 
 static SOC_ENUM_SINGLE_DECL(rt274_lout_enum, RT274_LOUT_MUX,
 				0, rt274_dac_src);
 
@@ -490,28 +485,28 @@ static const struct snd_kcontrol_new rt274_lout_mux =
 SOC_DAPM_ENUM("LOUT source", rt274_lout_enum);
 
 static const struct snd_soc_dapm_widget rt274_dapm_widgets[] = {
-	/* Input Lines */
+	 
 	SND_SOC_DAPM_INPUT("DMIC1 Pin"),
 	SND_SOC_DAPM_INPUT("DMIC2 Pin"),
 	SND_SOC_DAPM_INPUT("MIC"),
 	SND_SOC_DAPM_INPUT("LINE1"),
 	SND_SOC_DAPM_INPUT("LINE2"),
 
-	/* DMIC */
+	 
 	SND_SOC_DAPM_PGA("DMIC1", SND_SOC_NOPM, 0, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("DMIC2", SND_SOC_NOPM, 0, 0, NULL, 0),
 
-	/* ADCs */
+	 
 	SND_SOC_DAPM_ADC("ADC 0", NULL, RT274_SET_STREAMID_ADC1, 4, 0),
 	SND_SOC_DAPM_ADC("ADC 1", NULL, RT274_SET_STREAMID_ADC2, 4, 0),
 
-	/* ADC Mux */
+	 
 	SND_SOC_DAPM_MUX("ADC 0 Mux", SND_SOC_NOPM, 0, 0,
 		&rt274_adc0_mux),
 	SND_SOC_DAPM_MUX("ADC 1 Mux", SND_SOC_NOPM, 0, 0,
 		&rt274_adc1_mux),
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RXL", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("AIF1RXR", "AIF1 Playback", 1, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF1TXL", "AIF1 Capture", 0, SND_SOC_NOPM, 0, 0),
@@ -521,12 +516,12 @@ static const struct snd_soc_dapm_widget rt274_dapm_widgets[] = {
 	SND_SOC_DAPM_AIF_OUT("AIF2TXL", "AIF1 Capture", 2, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_OUT("AIF2TXR", "AIF1 Capture", 3, SND_SOC_NOPM, 0, 0),
 
-	/* Output Side */
-	/* DACs */
+	 
+	 
 	SND_SOC_DAPM_DAC("DAC 0", NULL, RT274_SET_STREAMID_DAC0, 4, 0),
 	SND_SOC_DAPM_DAC("DAC 1", NULL, RT274_SET_STREAMID_DAC1, 4, 0),
 
-	/* Output Mux */
+	 
 	SND_SOC_DAPM_MUX("HPO Mux", SND_SOC_NOPM, 0, 0, &rt274_hpo_mux),
 	SND_SOC_DAPM_MUX("LOUT Mux", SND_SOC_NOPM, 0, 0, &rt274_lout_mux),
 
@@ -535,13 +530,13 @@ static const struct snd_soc_dapm_widget rt274_dapm_widgets[] = {
 	SND_SOC_DAPM_SUPPLY("LOUT Power", RT274_SET_PIN_LOUT3,
 		RT274_SET_PIN_SFT, 0, NULL, 0),
 
-	/* Output Mixer */
+	 
 	SND_SOC_DAPM_PGA("DAC OUT0", SND_SOC_NOPM, 0, 0,
 			NULL, 0),
 	SND_SOC_DAPM_PGA("DAC OUT1", SND_SOC_NOPM, 0, 0,
 			NULL, 0),
 
-	/* Output Pga */
+	 
 	SND_SOC_DAPM_SWITCH("LOUT L", SND_SOC_NOPM, 0, 0,
 		&loutl_enable_control),
 	SND_SOC_DAPM_SWITCH("LOUT R", SND_SOC_NOPM, 0, 0,
@@ -551,7 +546,7 @@ static const struct snd_soc_dapm_widget rt274_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("HPO R", SND_SOC_NOPM, 0, 0,
 		&hpor_enable_control),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_OUTPUT("HPO Pin"),
 	SND_SOC_DAPM_OUTPUT("SPDIF"),
 	SND_SOC_DAPM_OUTPUT("LINE3"),
@@ -620,7 +615,7 @@ static int rt274_hw_params(struct snd_pcm_substream *substream,
 	int d_len_code = 0, c_len_code = 0;
 
 	switch (params_rate(params)) {
-	/* bit 14 0:48K 1:44.1K */
+	 
 	case 44100:
 	case 48000:
 		break;
@@ -649,7 +644,7 @@ static int rt274_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (params_channels(params) <= 16) {
-		/* bit 3:0 Number of Channel */
+		 
 		val |= (params_channels(params) - 1);
 	} else {
 		dev_err(component->dev, "Unsupported channels %d\n",
@@ -658,7 +653,7 @@ static int rt274_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	switch (params_width(params)) {
-	/* bit 6:4 Bits per Sample */
+	 
 	case 16:
 		d_len_code = 0;
 		c_len_code = 0;
@@ -740,7 +735,7 @@ static int rt274_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	default:
 		return -EINVAL;
 	}
-	/* bit 15 Stream Type 0:PCM 1:Non-PCM */
+	 
 	snd_soc_component_update_bits(component, RT274_DAC_FORMAT, 0x8000, 0);
 	snd_soc_component_update_bits(component, RT274_ADC_FORMAT, 0x8000, 0);
 
@@ -953,7 +948,7 @@ static irqreturn_t rt274_irq(int irq, void *data)
 	bool mic = false;
 	int ret, status = 0;
 
-	/* Clear IRQ */
+	 
 	regmap_update_bits(rt274->regmap, RT274_EAPD_GPIO_IRQ_CTRL,
 				RT274_IRQ_CLR, RT274_IRQ_CLR);
 
@@ -1151,29 +1146,29 @@ static int rt274_i2c_probe(struct i2c_client *i2c)
 	rt274->i2c = i2c;
 	i2c_set_clientdata(i2c, rt274);
 
-	/* reset codec */
+	 
 	regmap_write(rt274->regmap, RT274_RESET, 0);
 	regmap_update_bits(rt274->regmap, 0x1a, 0x4000, 0x4000);
 
-	/* Set Pad PDB is floating */
+	 
 	regmap_update_bits(rt274->regmap, RT274_PAD_CTRL12, 0x3, 0x0);
 	regmap_write(rt274->regmap, RT274_COEF5b_INDEX, 0x01);
 	regmap_write(rt274->regmap, RT274_COEF5b_COEF, 0x8540);
 	regmap_update_bits(rt274->regmap, 0x6f, 0x0100, 0x0100);
-	/* Combo jack auto detect */
+	 
 	regmap_write(rt274->regmap, 0x4a, 0x201b);
-	/* Aux mode off */
+	 
 	regmap_update_bits(rt274->regmap, 0x6f, 0x3000, 0x2000);
-	/* HP DC Calibration */
+	 
 	regmap_update_bits(rt274->regmap, 0x6f, 0xf, 0x0);
-	/* Set NID=58h.Index 00h [15]= 1b; */
+	 
 	regmap_write(rt274->regmap, RT274_COEF58_INDEX, 0x00);
 	regmap_write(rt274->regmap, RT274_COEF58_COEF, 0xb888);
 	msleep(500);
 	regmap_update_bits(rt274->regmap, 0x6f, 0xf, 0xb);
 	regmap_write(rt274->regmap, RT274_COEF58_INDEX, 0x00);
 	regmap_write(rt274->regmap, RT274_COEF58_COEF, 0x3888);
-	/* Set pin widget */
+	 
 	regmap_write(rt274->regmap, RT274_SET_PIN_HPO, 0x40);
 	regmap_write(rt274->regmap, RT274_SET_PIN_LOUT3, 0x40);
 	regmap_write(rt274->regmap, RT274_SET_MIC, 0x20);
@@ -1183,7 +1178,7 @@ static int rt274_i2c_probe(struct i2c_client *i2c)
 	regmap_update_bits(rt274->regmap, RT274_EAPD_GPIO_IRQ_CTRL,
 				RT274_GPI2_SEL_MASK, RT274_GPI2_SEL_DMIC_CLK);
 
-	/* jack detection */
+	 
 	regmap_write(rt274->regmap, RT274_UNSOLICITED_HP_OUT, 0x81);
 	regmap_write(rt274->regmap, RT274_UNSOLICITED_MIC, 0x82);
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2014 Broadcom Corporation
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -15,17 +15,11 @@
 
 #define N_DATA_REGS					8
 
-/*
- * PER_I2C/BSC count register mask depends on 1 byte/4 byte data register
- * size. Cable modem and DSL SoCs with Peripheral i2c cores use 1 byte per
- * data register whereas STB SoCs use 4 byte per data register transfer,
- * account for this difference in total count per transaction and mask to
- * use.
- */
+ 
 #define BSC_CNT_REG1_MASK(nb)	(nb == 1 ? GENMASK(3, 0) : GENMASK(5, 0))
 #define BSC_CNT_REG1_SHIFT	0
 
-/* BSC CTL register field definitions */
+ 
 #define BSC_CTL_REG_DTF_MASK				0x00000003
 #define BSC_CTL_REG_SCL_SEL_MASK			0x00000030
 #define BSC_CTL_REG_SCL_SEL_SHIFT			4
@@ -33,7 +27,7 @@
 #define BSC_CTL_REG_INT_EN_SHIFT			6
 #define BSC_CTL_REG_DIV_CLK_MASK			0x00000080
 
-/* BSC_IIC_ENABLE r/w enable and interrupt field definitions */
+ 
 #define BSC_IIC_EN_RESTART_MASK				0x00000040
 #define BSC_IIC_EN_NOSTART_MASK				0x00000020
 #define BSC_IIC_EN_NOSTOP_MASK				0x00000010
@@ -41,40 +35,40 @@
 #define BSC_IIC_EN_INTRP_MASK				0x00000002
 #define BSC_IIC_EN_ENABLE_MASK				0x00000001
 
-/* BSC_CTLHI control register field definitions */
+ 
 #define BSC_CTLHI_REG_INPUT_SWITCHING_LEVEL_MASK	0x00000080
 #define BSC_CTLHI_REG_DATAREG_SIZE_MASK			0x00000040
 #define BSC_CTLHI_REG_IGNORE_ACK_MASK			0x00000002
 #define BSC_CTLHI_REG_WAIT_DIS_MASK			0x00000001
 
-#define I2C_TIMEOUT					100 /* msecs */
+#define I2C_TIMEOUT					100  
 
-/* Condition mask used for non combined transfer */
+ 
 #define COND_RESTART		BSC_IIC_EN_RESTART_MASK
 #define COND_NOSTART		BSC_IIC_EN_NOSTART_MASK
 #define COND_NOSTOP		BSC_IIC_EN_NOSTOP_MASK
 #define COND_START_STOP		(COND_RESTART | COND_NOSTART | COND_NOSTOP)
 
-/* BSC data transfer direction */
+ 
 #define DTF_WR_MASK		0x00000000
 #define DTF_RD_MASK		0x00000001
-/* BSC data transfer direction combined format */
+ 
 #define DTF_RD_WR_MASK		0x00000002
 #define DTF_WR_RD_MASK		0x00000003
 
 #define INT_ENABLE		true
 #define INT_DISABLE		false
 
-/* BSC block register map structure to cache fields to be written */
+ 
 struct bsc_regs {
-	u32	chip_address;           /* slave address */
-	u32	data_in[N_DATA_REGS];   /* tx data buffer*/
-	u32	cnt_reg;		/* rx/tx data length */
-	u32	ctl_reg;		/* control register */
-	u32	iic_enable;		/* xfer enable and status */
-	u32	data_out[N_DATA_REGS];  /* rx data buffer */
-	u32	ctlhi_reg;		/* more control fields */
-	u32	scl_param;		/* reserved */
+	u32	chip_address;            
+	u32	data_in[N_DATA_REGS];    
+	u32	cnt_reg;		 
+	u32	ctl_reg;		 
+	u32	iic_enable;		 
+	u32	data_out[N_DATA_REGS];   
+	u32	ctlhi_reg;		 
+	u32	scl_param;		 
 };
 
 struct bsc_clk_param {
@@ -162,7 +156,7 @@ struct brcmstb_i2c_dev {
 	int data_regsz;
 };
 
-/* register accessors for both be and le cpu arch */
+ 
 #ifdef CONFIG_CPU_BIG_ENDIAN
 #define __bsc_readl(_reg) ioread32be(_reg)
 #define __bsc_writel(_val, _reg) iowrite32be(_val, _reg)
@@ -192,10 +186,10 @@ static void brcmstb_i2c_enable_disable_irq(struct brcmstb_i2c_dev *dev,
 {
 
 	if (int_en)
-		/* Enable BSC  CTL interrupt line */
+		 
 		dev->bsc_regmap->ctl_reg |= BSC_CTL_REG_INT_EN_MASK;
 	else
-		/* Disable BSC CTL interrupt line */
+		 
 		dev->bsc_regmap->ctl_reg &= ~BSC_CTL_REG_INT_EN_MASK;
 
 	barrier();
@@ -221,7 +215,7 @@ static irqreturn_t brcmstb_i2c_isr(int irq, void *devid)
 	return IRQ_HANDLED;
 }
 
-/* Wait for device to be ready */
+ 
 static int brcmstb_i2c_wait_if_busy(struct brcmstb_i2c_dev *dev)
 {
 	unsigned long timeout = jiffies + msecs_to_jiffies(I2C_TIMEOUT);
@@ -234,7 +228,7 @@ static int brcmstb_i2c_wait_if_busy(struct brcmstb_i2c_dev *dev)
 	return 0;
 }
 
-/* i2c xfer completion function, handles both irq and polling mode */
+ 
 static int brcmstb_i2c_wait_for_completion(struct brcmstb_i2c_dev *dev)
 {
 	int ret = 0;
@@ -244,7 +238,7 @@ static int brcmstb_i2c_wait_for_completion(struct brcmstb_i2c_dev *dev)
 		if (!wait_for_completion_timeout(&dev->done, timeout))
 			ret = -ETIMEDOUT;
 	} else {
-		/* we are in polling mode */
+		 
 		u32 bsc_intrp;
 		unsigned long time_left = jiffies + timeout;
 
@@ -265,7 +259,7 @@ static int brcmstb_i2c_wait_for_completion(struct brcmstb_i2c_dev *dev)
 	return ret;
 }
 
-/* Set xfer START/STOP conditions for subsequent transfer */
+ 
 static void brcmstb_set_i2c_start_stop(struct brcmstb_i2c_dev *dev,
 				       u32 cond_flag)
 {
@@ -274,30 +268,30 @@ static void brcmstb_set_i2c_start_stop(struct brcmstb_i2c_dev *dev,
 	dev->bsc_regmap->iic_enable = (regval & ~COND_START_STOP) | cond_flag;
 }
 
-/* Send I2C request check completion */
+ 
 static int brcmstb_send_i2c_cmd(struct brcmstb_i2c_dev *dev,
 				enum bsc_xfer_cmd cmd)
 {
 	int rc = 0;
 	struct bsc_regs *pi2creg = dev->bsc_regmap;
 
-	/* Make sure the hardware is ready */
+	 
 	rc = brcmstb_i2c_wait_if_busy(dev);
 	if (rc < 0)
 		return rc;
 
-	/* only if we are in interrupt mode */
+	 
 	if (dev->irq >= 0)
 		reinit_completion(&dev->done);
 
-	/* enable BSC CTL interrupt line */
+	 
 	brcmstb_i2c_enable_disable_irq(dev, INT_ENABLE);
 
-	/* initiate transfer by setting iic_enable */
+	 
 	pi2creg->iic_enable |= BSC_IIC_EN_ENABLE_MASK;
 	bsc_writel(dev, pi2creg->iic_enable, iic_enable);
 
-	/* Wait for transaction to finish or timeout */
+	 
 	rc = brcmstb_i2c_wait_for_completion(dev);
 	if (rc) {
 		dev_dbg(dev->device, "intr timeout for cmd %s\n",
@@ -319,7 +313,7 @@ cmd_out:
 	return rc;
 }
 
-/* Actual data transfer through the BSC master */
+ 
 static int brcmstb_i2c_xfer_bsc_data(struct brcmstb_i2c_dev *dev,
 				     u8 *buf, unsigned int len,
 				     struct i2c_msg *pmsg)
@@ -331,7 +325,7 @@ static int brcmstb_i2c_xfer_bsc_data(struct brcmstb_i2c_dev *dev,
 	int no_ack = pmsg->flags & I2C_M_IGNORE_NAK;
 	int data_regsz = brcmstb_i2c_get_data_regsz(dev);
 
-	/* see if the transaction needs to check NACK conditions */
+	 
 	if (no_ack) {
 		cmd = (pmsg->flags & I2C_M_RD) ? CMD_RD_NOACK
 			: CMD_WR_NOACK;
@@ -342,18 +336,18 @@ static int brcmstb_i2c_xfer_bsc_data(struct brcmstb_i2c_dev *dev,
 	}
 	bsc_writel(dev, pi2creg->ctlhi_reg, ctlhi_reg);
 
-	/* set data transfer direction */
+	 
 	ctl_reg = pi2creg->ctl_reg & ~BSC_CTL_REG_DTF_MASK;
 	if (cmd == CMD_WR || cmd == CMD_WR_NOACK)
 		pi2creg->ctl_reg = ctl_reg | DTF_WR_MASK;
 	else
 		pi2creg->ctl_reg = ctl_reg | DTF_RD_MASK;
 
-	/* set the read/write length */
+	 
 	bsc_writel(dev, BSC_CNT_REG1_MASK(data_regsz) &
 		   (len << BSC_CNT_REG1_SHIFT), cnt_reg);
 
-	/* Write data into data_in register */
+	 
 
 	if (cmd == CMD_WR || cmd == CMD_WR_NOACK) {
 		for (cnt = 0, i = 0; cnt < len; cnt += data_regsz, i++) {
@@ -369,7 +363,7 @@ static int brcmstb_i2c_xfer_bsc_data(struct brcmstb_i2c_dev *dev,
 		}
 	}
 
-	/* Initiate xfer, the function will return on completion */
+	 
 	rc = brcmstb_send_i2c_cmd(dev, cmd);
 
 	if (rc != 0) {
@@ -377,7 +371,7 @@ static int brcmstb_i2c_xfer_bsc_data(struct brcmstb_i2c_dev *dev,
 		return rc;
 	}
 
-	/* Read data from data_out register */
+	 
 	if (cmd == CMD_RD || cmd == CMD_RD_NOACK) {
 		for (cnt = 0, i = 0; cnt < len; cnt += data_regsz, i++) {
 			u32 data = bsc_readl(dev, data_out[i]);
@@ -393,7 +387,7 @@ static int brcmstb_i2c_xfer_bsc_data(struct brcmstb_i2c_dev *dev,
 	return 0;
 }
 
-/* Write a single byte of data to the i2c bus */
+ 
 static int brcmstb_i2c_write_data_byte(struct brcmstb_i2c_dev *dev,
 				       u8 *buf, unsigned int nak_expected)
 {
@@ -405,27 +399,27 @@ static int brcmstb_i2c_write_data_byte(struct brcmstb_i2c_dev *dev,
 	return brcmstb_send_i2c_cmd(dev, cmd);
 }
 
-/* Send i2c address */
+ 
 static int brcmstb_i2c_do_addr(struct brcmstb_i2c_dev *dev,
 			       struct i2c_msg *msg)
 {
 	unsigned char addr;
 
 	if (msg->flags & I2C_M_TEN) {
-		/* First byte is 11110XX0 where XX is upper 2 bits */
+		 
 		addr = 0xF0 | ((msg->addr & 0x300) >> 7);
 		bsc_writel(dev, addr, chip_address);
 
-		/* Second byte is the remaining 8 bits */
+		 
 		addr = msg->addr & 0xFF;
 		if (brcmstb_i2c_write_data_byte(dev, &addr, 0) < 0)
 			return -EREMOTEIO;
 
 		if (msg->flags & I2C_M_RD) {
-			/* For read, send restart without stop condition */
+			 
 			brcmstb_set_i2c_start_stop(dev, COND_RESTART
 						   | COND_NOSTOP);
-			/* Then re-send the first byte with the read bit set */
+			 
 			addr = 0xF0 | ((msg->addr & 0x300) >> 7) | 0x01;
 			if (brcmstb_i2c_write_data_byte(dev, &addr, 0) < 0)
 				return -EREMOTEIO;
@@ -440,7 +434,7 @@ static int brcmstb_i2c_do_addr(struct brcmstb_i2c_dev *dev,
 	return 0;
 }
 
-/* Master transfer function */
+ 
 static int brcmstb_i2c_xfer(struct i2c_adapter *adapter,
 			    struct i2c_msg msgs[], int num)
 {
@@ -454,7 +448,7 @@ static int brcmstb_i2c_xfer(struct i2c_adapter *adapter,
 	int xfersz = brcmstb_i2c_get_xfersz(dev);
 	u32 cond, cond_per_msg;
 
-	/* Loop through all messages */
+	 
 	for (i = 0; i < num; i++) {
 		pmsg = &msgs[i];
 		len = pmsg->len;
@@ -472,7 +466,7 @@ static int brcmstb_i2c_xfer(struct i2c_adapter *adapter,
 
 		brcmstb_set_i2c_start_stop(dev, cond);
 
-		/* Send slave address */
+		 
 		if (!(pmsg->flags & I2C_M_NOSTART)) {
 			rc = brcmstb_i2c_do_addr(dev, pmsg);
 			if (rc < 0) {
@@ -485,7 +479,7 @@ static int brcmstb_i2c_xfer(struct i2c_adapter *adapter,
 
 		cond_per_msg = cond;
 
-		/* Perform data transfer */
+		 
 		while (len) {
 			bytes_to_xfer = min(len, xfersz);
 
@@ -547,7 +541,7 @@ static void brcmstb_i2c_set_bus_speed(struct brcmstb_i2c_dev *dev)
 		}
 	}
 
-	/* in case we did not get find a valid speed */
+	 
 	if (i == num_speeds) {
 		i = (bsc_readl(dev, ctl_reg) & BSC_CTL_REG_SCL_SEL_MASK) >>
 			BSC_CTL_REG_SCL_SEL_SHIFT;
@@ -559,13 +553,13 @@ static void brcmstb_i2c_set_bus_speed(struct brcmstb_i2c_dev *dev)
 static void brcmstb_i2c_set_bsc_reg_defaults(struct brcmstb_i2c_dev *dev)
 {
 	if (brcmstb_i2c_get_data_regsz(dev) == sizeof(u32))
-		/* set 4 byte data in/out xfers  */
+		 
 		dev->bsc_regmap->ctlhi_reg = BSC_CTLHI_REG_DATAREG_SIZE_MASK;
 	else
 		dev->bsc_regmap->ctlhi_reg &= ~BSC_CTLHI_REG_DATAREG_SIZE_MASK;
 
 	bsc_writel(dev, dev->bsc_regmap->ctlhi_reg, ctlhi_reg);
-	/* set bus speed */
+	 
 	brcmstb_i2c_set_bus_speed(dev);
 }
 
@@ -577,7 +571,7 @@ static int bcm2711_release_bsc(struct brcmstb_i2c_dev *dev)
 	struct platform_device *pdev = to_platform_device(dev->device);
 	void __iomem *autoi2c;
 
-	/* Map hardware registers */
+	 
 	autoi2c = devm_platform_ioremap_resource_byname(pdev, "auto-i2c");
 	if (IS_ERR(autoi2c))
 		return PTR_ERR(autoi2c);
@@ -585,7 +579,7 @@ static int bcm2711_release_bsc(struct brcmstb_i2c_dev *dev)
 	writel(AUTOI2C_CTRL0_RELEASE_BSC, autoi2c + AUTOI2C_CTRL0);
 	devm_iounmap(&pdev->dev, autoi2c);
 
-	/* We need to reset the controller after the release */
+	 
 	dev->bsc_regmap->iic_enable = 0;
 	bsc_writel(dev, dev->bsc_regmap->iic_enable, iic_enable);
 
@@ -599,7 +593,7 @@ static int brcmstb_i2c_probe(struct platform_device *pdev)
 	const char *int_name;
 	int rc;
 
-	/* Allocate memory for private data structure */
+	 
 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
@@ -612,7 +606,7 @@ static int brcmstb_i2c_probe(struct platform_device *pdev)
 	dev->device = &pdev->dev;
 	init_completion(&dev->done);
 
-	/* Map hardware registers */
+	 
 	dev->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(dev->base))
 		return PTR_ERR(dev->base);
@@ -629,13 +623,13 @@ static int brcmstb_i2c_probe(struct platform_device *pdev)
 	if (rc < 0)
 		int_name = NULL;
 
-	/* Get the interrupt number */
+	 
 	dev->irq = platform_get_irq_optional(pdev, 0);
 
-	/* disable the bsc interrupt line */
+	 
 	brcmstb_i2c_enable_disable_irq(dev, INT_DISABLE);
 
-	/* register the ISR handler */
+	 
 	if (dev->irq >= 0) {
 		rc = devm_request_irq(&pdev->dev, dev->irq, brcmstb_i2c_isr,
 				      IRQF_SHARED,
@@ -655,7 +649,7 @@ static int brcmstb_i2c_probe(struct platform_device *pdev)
 		dev->clk_freq_hz = bsc_clk[0].hz;
 	}
 
-	/* set the data in/out register size for compatible SoCs */
+	 
 	if (of_device_is_compatible(dev->device->of_node,
 				    "brcm,brcmper-i2c"))
 		dev->data_regsz = sizeof(u8);
@@ -664,7 +658,7 @@ static int brcmstb_i2c_probe(struct platform_device *pdev)
 
 	brcmstb_i2c_set_bsc_reg_defaults(dev);
 
-	/* Add the i2c adapter */
+	 
 	adap = &dev->adapter;
 	i2c_set_adapdata(adap, dev);
 	adap->owner = THIS_MODULE;

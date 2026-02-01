@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Follows implementation found in linux/virtio_byteorder.h
- */
+ 
+ 
 #ifndef _LINUX_RPMSG_BYTEORDER_H
 #define _LINUX_RPMSG_BYTEORDER_H
 #include <linux/types.h>
@@ -64,4 +62,4 @@ static inline __rpmsg64 __cpu_to_rpmsg64(bool little_endian, u64 val)
 		return (__force __rpmsg64)cpu_to_be64(val);
 }
 
-#endif /* _LINUX_RPMSG_BYTEORDER_H */
+#endif  

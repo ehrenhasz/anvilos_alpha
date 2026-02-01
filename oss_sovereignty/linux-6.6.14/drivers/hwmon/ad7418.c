@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An hwmon driver for the Analog Devices AD7416/17/18
- * Copyright (C) 2006-07 Tower Technologies
- *
- * Author: Alessandro Zummo <a.zummo@towertech.it>
- *
- * Based on lm75.c
- * Copyright (C) 1998-99 Frodo Looijaard <frodol@dds.nl>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/jiffies.h>
@@ -26,7 +18,7 @@
 
 enum chips { ad7416, ad7417, ad7418 };
 
-/* AD7418 registers */
+ 
 #define AD7418_REG_TEMP_IN	0x00
 #define AD7418_REG_CONF		0x01
 #define AD7418_REG_TEMP_HYST	0x02
@@ -45,10 +37,10 @@ struct ad7418_data {
 	struct i2c_client	*client;
 	enum chips		type;
 	struct mutex		lock;
-	int			adc_max;	/* number of ADC channels */
+	int			adc_max;	 
 	bool			valid;
-	unsigned long		last_updated;	/* In jiffies */
-	s16			temp[3];	/* Register values */
+	unsigned long		last_updated;	 
+	s16			temp[3];	 
 	u16			in[4];
 };
 
@@ -65,7 +57,7 @@ static int ad7418_update_device(struct device *dev)
 		u8 cfg;
 		int i, ch;
 
-		/* read config register and clear channel bits */
+		 
 		val = i2c_smbus_read_byte_data(client, AD7418_REG_CONF);
 		if (val < 0)
 			goto abort;
@@ -104,7 +96,7 @@ static int ad7418_update_device(struct device *dev)
 			data->in[data->adc_max - 1 - i] = val;
 		}
 
-		/* restore old configuration value */
+		 
 		val = i2c_smbus_write_word_swapped(client, AD7418_REG_CONF,
 						   cfg);
 		if (val < 0)
@@ -276,7 +268,7 @@ static int ad7418_probe(struct i2c_client *client)
 
 	dev_info(dev, "%s chip found\n", client->name);
 
-	/* Initialize the AD7418 chip */
+	 
 	ad7418_init_client(client);
 
 	hwmon_dev = devm_hwmon_device_register_with_groups(dev,

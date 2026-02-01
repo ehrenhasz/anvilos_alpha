@@ -1,11 +1,9 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/workqueue.h>
 
-#include "i915_drv.h" /* for_each_engine() */
+#include "i915_drv.h"  
 #include "i915_request.h"
 #include "intel_engine_heartbeat.h"
 #include "intel_execlists_submission.h"
@@ -22,7 +20,7 @@ static bool retire_requests(struct intel_timeline *tl)
 		if (!i915_request_retire(rq))
 			return false;
 
-	/* And check nothing new was submitted */
+	 
 	return !i915_active_fence_isset(&tl->last_request);
 }
 
@@ -46,11 +44,11 @@ static bool flush_submission(struct intel_gt *gt, long timeout)
 	for_each_engine(engine, gt, id) {
 		intel_engine_flush_submission(engine);
 
-		/* Flush the background retirement and idle barriers */
+		 
 		flush_work(&engine->retire_work);
 		flush_delayed_work(&engine->wakeref.work);
 
-		/* Is the idle barrier still outstanding? */
+		 
 		active |= engine_active(engine);
 	}
 
@@ -66,14 +64,7 @@ static void engine_retire(struct work_struct *work)
 	do {
 		struct intel_timeline *next = xchg(&tl->retire, NULL);
 
-		/*
-		 * Our goal here is to retire _idle_ timelines as soon as
-		 * possible (as they are idle, we do not expect userspace
-		 * to be cleaning up anytime soon).
-		 *
-		 * If the timeline is currently locked, either it is being
-		 * retired elsewhere or about to be!
-		 */
+		 
 		if (mutex_trylock(&tl->mutex)) {
 			retire_requests(tl);
 			mutex_unlock(&tl->mutex);
@@ -91,13 +82,9 @@ static bool add_retire(struct intel_engine_cs *engine,
 #define STUB ((struct intel_timeline *)1)
 	struct intel_timeline *first;
 
-	/*
-	 * We open-code a llist here to include the additional tag [BIT(0)]
-	 * so that we know when the timeline is already on a
-	 * retirement queue: either this engine or another.
-	 */
+	 
 
-	if (cmpxchg(&tl->retire, NULL, STUB)) /* already queued */
+	if (cmpxchg(&tl->retire, NULL, STUB))  
 		return false;
 
 	intel_timeline_get(tl);
@@ -112,7 +99,7 @@ static bool add_retire(struct intel_engine_cs *engine,
 void intel_engine_add_retire(struct intel_engine_cs *engine,
 			     struct intel_timeline *tl)
 {
-	/* We don't deal well with the engine disappearing beneath us */
+	 
 	GEM_BUG_ON(intel_engine_is_virtual(engine));
 
 	if (add_retire(engine, tl))
@@ -138,17 +125,17 @@ long intel_gt_retire_requests_timeout(struct intel_gt *gt, long timeout,
 	unsigned long active_count = 0;
 	LIST_HEAD(free);
 
-	flush_submission(gt, timeout); /* kick the ksoftirqd tasklets */
+	flush_submission(gt, timeout);  
 	spin_lock(&timelines->lock);
 	list_for_each_entry_safe(tl, tn, &timelines->active_list, link) {
 		if (!mutex_trylock(&tl->mutex)) {
-			active_count++; /* report busy to caller, try again? */
+			active_count++;  
 			continue;
 		}
 
 		intel_timeline_get(tl);
 		GEM_BUG_ON(!atomic_read(&tl->active_count));
-		atomic_inc(&tl->active_count); /* pin the list element */
+		atomic_inc(&tl->active_count);  
 		spin_unlock(&timelines->lock);
 
 		if (timeout > 0) {
@@ -163,7 +150,7 @@ long intel_gt_retire_requests_timeout(struct intel_gt *gt, long timeout,
 								 timeout);
 				dma_fence_put(fence);
 
-				/* Retirement is best effort */
+				 
 				if (!mutex_trylock(&tl->mutex)) {
 					active_count++;
 					goto out_active;
@@ -177,12 +164,12 @@ long intel_gt_retire_requests_timeout(struct intel_gt *gt, long timeout,
 
 out_active:	spin_lock(&timelines->lock);
 
-		/* Resume list iteration after reacquiring spinlock */
+		 
 		list_safe_reset_next(tl, tn, link);
 		if (atomic_dec_and_test(&tl->active_count))
 			list_del(&tl->link);
 
-		/* Defer the final release to after the spinlock */
+		 
 		if (refcount_dec_and_test(&tl->kref.refcount)) {
 			GEM_BUG_ON(atomic_read(&tl->active_count));
 			list_add(&tl->link, &free);
@@ -193,7 +180,7 @@ out_active:	spin_lock(&timelines->lock);
 	list_for_each_entry_safe(tl, tn, &free, link)
 		__intel_timeline_free(&tl->kref);
 
-	if (flush_submission(gt, timeout)) /* Wait, there's more! */
+	if (flush_submission(gt, timeout))  
 		active_count++;
 
 	if (remaining_timeout)
@@ -230,7 +217,7 @@ void intel_gt_unpark_requests(struct intel_gt *gt)
 
 void intel_gt_fini_requests(struct intel_gt *gt)
 {
-	/* Wait until the work is marked as finished before unloading! */
+	 
 	cancel_delayed_work_sync(&gt->requests.retire_work);
 
 	flush_work(&gt->watchdog.work);

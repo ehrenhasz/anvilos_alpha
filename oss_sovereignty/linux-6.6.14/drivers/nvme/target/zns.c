@@ -1,26 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe ZNS-ZBD command implementation.
- * Copyright (C) 2021 Western Digital Corporation or its affiliates.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/nvme.h>
 #include <linux/blkdev.h>
 #include "nvmet.h"
 
-/*
- * We set the Memory Page Size Minimum (MPSMIN) for target controller to 0
- * which gets added by 12 in the nvme_enable_ctrl() which results in 2^12 = 4k
- * as page_shift value. When calculating the ZASL use shift by 12.
- */
+ 
 #define NVMET_MPSMIN_SHIFT	12
 
 static inline u8 nvmet_zasl(unsigned int zone_append_sects)
 {
-	/*
-	 * Zone Append Size Limit (zasl) is expressed as a power of 2 value
-	 * with the minimum memory page size (i.e. 12) as unit.
-	 */
+	 
 	return ilog2(zone_append_sects >> (NVMET_MPSMIN_SHIFT - 9));
 }
 
@@ -44,19 +34,10 @@ bool nvmet_bdev_zns_enable(struct nvmet_ns *ns)
 	}
 	ns->subsys->zasl = zasl;
 
-	/*
-	 * Generic zoned block devices may have a smaller last zone which is
-	 * not supported by ZNS. Exclude zoned drives that have such smaller
-	 * last zone.
-	 */
+	 
 	if (get_capacity(bd_disk) & (bdev_zone_sectors(ns->bdev) - 1))
 		return false;
-	/*
-	 * ZNS does not define a conventional zone type. If the underlying
-	 * device has a bitmap set indicating the existence of conventional
-	 * zones, reject the device. Otherwise, use report zones to detect if
-	 * the device has conventional zones.
-	 */
+	 
 	if (ns->bdev->bd_disk->conv_zones_bitmap)
 		return false;
 
@@ -279,7 +260,7 @@ static void nvmet_bdev_zone_zmgmt_recv_work(struct work_struct *w)
 	int ret;
 	struct nvmet_report_zone_data rz_data = {
 		.out_nr_zones = get_nr_zones_from_buf(req, out_bufsize),
-		/* leave the place for report zone header */
+		 
 		.out_buf_offset = sizeof(struct nvme_zone_report),
 		.zrasf = req->cmd->zmr.zrasf,
 		.nr_zones = 0,
@@ -302,10 +283,7 @@ static void nvmet_bdev_zone_zmgmt_recv_work(struct work_struct *w)
 		goto out;
 	}
 
-	/*
-	 * When partial bit is set nr_zones must indicate the number of zone
-	 * descriptors actually transferred.
-	 */
+	 
 	if (req->cmd->zmr.pr)
 		rz_data.nr_zones = min(rz_data.nr_zones, rz_data.out_nr_zones);
 
@@ -415,14 +393,14 @@ static u16 nvmet_bdev_zone_mgmt_emulate_all(struct nvmet_req *req)
 		goto out;
 	}
 
-	/* Scan and build bitmap of the eligible zones */
+	 
 	ret = blkdev_report_zones(bdev, 0, nr_zones, zmgmt_send_scan_cb, &d);
 	if (ret != nr_zones) {
 		if (ret > 0)
 			ret = -EIO;
 		goto out;
 	} else {
-		/* We scanned all the zones */
+		 
 		ret = 0;
 	}
 
@@ -432,7 +410,7 @@ static u16 nvmet_bdev_zone_mgmt_emulate_all(struct nvmet_req *req)
 				zsa_req_op(req->cmd->zms.zsa) | REQ_SYNC,
 				GFP_KERNEL);
 			bio->bi_iter.bi_sector = sector;
-			/* This may take a while, so be nice to others */
+			 
 			cond_resched();
 		}
 		sector += bdev_zone_sectors(bdev);
@@ -466,7 +444,7 @@ static u16 nvmet_bdev_execute_zmgmt_send_all(struct nvmet_req *req)
 	case REQ_OP_ZONE_FINISH:
 		return nvmet_bdev_zone_mgmt_emulate_all(req);
 	default:
-		/* this is needed to quiet compiler warning */
+		 
 		req->error_loc = offsetof(struct nvme_zone_mgmt_send_cmd, zsa);
 		return NVME_SC_INVALID_FIELD | NVME_SC_DNR;
 	}
@@ -490,7 +468,7 @@ static void nvmet_bdev_zmgmt_send_work(struct work_struct *w)
 		goto out;
 	}
 
-	/* when select all bit is set slba field is ignored */
+	 
 	if (req->cmd->zms.select_all) {
 		status = nvmet_bdev_execute_zmgmt_send_all(req);
 		goto out;
@@ -545,7 +523,7 @@ void nvmet_bdev_execute_zone_append(struct nvmet_req *req)
 	struct bio *bio;
 	int sg_cnt;
 
-	/* Request is completed on len mismatch in nvmet_check_transter_len() */
+	 
 	if (!nvmet_check_transfer_len(req, nvmet_rw_data_len(req)))
 		return;
 

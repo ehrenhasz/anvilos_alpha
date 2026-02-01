@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (c) 2021, Microsoft Corporation. */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -99,7 +99,7 @@ static int mana_gd_query_max_resources(struct pci_dev *pdev)
 	if (gc->max_num_queues > resp.max_rq)
 		gc->max_num_queues = resp.max_rq;
 
-	/* The Hardware Channel (HWC) used 1 MSI-X */
+	 
 	if (gc->max_num_queues > gc->num_msix_usable - 1)
 		gc->max_num_queues = gc->num_msix_usable - 1;
 
@@ -151,7 +151,7 @@ static int mana_gd_detect_devices(struct pci_dev *pdev)
 		dev = resp.devs[i];
 		dev_type = dev.type;
 
-		/* HWC is already detected in mana_hwc_create_channel(). */
+		 
 		if (dev_type == GDMA_DEVICE_HWC)
 			continue;
 
@@ -311,7 +311,7 @@ static void mana_gd_ring_doorbell(struct gdma_context *gc, u32 db_index,
 		return;
 	}
 
-	/* Ensure all writes are done before ring doorbell */
+	 
 	wmb();
 
 	writeq(e.as_uint64, addr);
@@ -319,9 +319,7 @@ static void mana_gd_ring_doorbell(struct gdma_context *gc, u32 db_index,
 
 void mana_gd_wq_ring_doorbell(struct gdma_context *gc, struct gdma_queue *queue)
 {
-	/* Hardware Spec specifies that software client should set 0 for
-	 * wqe_cnt for Receive Queues. This value is not used in Send Queues.
-	 */
+	 
 	mana_gd_ring_doorbell(gc, queue->gdma_dev->doorbell, queue->type,
 			      queue->id, queue->head * GDMA_WQE_BU_SIZE, 0);
 }
@@ -406,14 +404,14 @@ static void mana_gd_process_eq_events(void *arg)
 	num_eqe = eq->queue_size / GDMA_EQE_SIZE;
 	eq_eqe_ptr = eq->queue_mem_ptr;
 
-	/* Process up to 5 EQEs at a time, and update the HW head. */
+	 
 	for (i = 0; i < 5; i++) {
 		eqe = &eq_eqe_ptr[eq->head % num_eqe];
 		eqe_info.as_uint32 = eqe->eqe_info;
 		owner_bits = eqe_info.owner_bits;
 
 		old_bits = (eq->head / num_eqe - 1) & GDMA_EQE_OWNER_MASK;
-		/* No more entries */
+		 
 		if (owner_bits == old_bits)
 			break;
 
@@ -423,9 +421,7 @@ static void mana_gd_process_eq_events(void *arg)
 			break;
 		}
 
-		/* Per GDMA spec, rmb is necessary after checking owner_bits, before
-		 * reading eqe.
-		 */
+		 
 		rmb();
 
 		mana_gd_process_eqe(eq);
@@ -497,7 +493,7 @@ static void mana_gd_deregiser_irq(struct gdma_queue *queue)
 	gc = gd->gdma_context;
 	r = &gc->msix_resource;
 
-	/* At most num_online_cpus() + 1 interrupts are used. */
+	 
 	msix_index = queue->eq.msix_index;
 	if (WARN_ON(msix_index >= gc->num_msix_usable))
 		return;
@@ -916,8 +912,8 @@ int mana_gd_verify_vf_version(struct pci_dev *pdev)
 	req.gd_drv_cap_flags3 = GDMA_DRV_CAP_FLAGS3;
 	req.gd_drv_cap_flags4 = GDMA_DRV_CAP_FLAGS4;
 
-	req.drv_ver = 0;	/* Unused*/
-	req.os_type = 0x10;	/* Linux */
+	req.drv_ver = 0;	 
+	req.os_type = 0x10;	 
 	req.os_ver_major = LINUX_VERSION_MAJOR;
 	req.os_ver_minor = LINUX_VERSION_PATCHLEVEL;
 	req.os_ver_build = LINUX_VERSION_SUBLEVEL;
@@ -1047,10 +1043,7 @@ static u32 mana_gd_write_client_oob(const struct gdma_wqe_request *wqe_req,
 	if (q_type == GDMA_SQ)
 		header->client_data_unit = wqe_req->client_data_unit;
 
-	/* The size of gdma_wqe + client_oob_size must be less than or equal
-	 * to one Basic Unit (i.e. 32 bytes), so the pointer can't go beyond
-	 * the queue memory buffer boundary.
-	 */
+	 
 	ptr = wqe_ptr + sizeof(header);
 
 	if (wqe_req->inline_oob_data && wqe_req->inline_oob_size > 0) {
@@ -1171,18 +1164,16 @@ static int mana_gd_read_cqe(struct gdma_queue *cq, struct gdma_comp *comp)
 	owner_bits = cqe->cqe_info.owner_bits;
 
 	old_bits = (cq->head / num_cqe - 1) & GDMA_CQE_OWNER_MASK;
-	/* Return 0 if no more entries. */
+	 
 	if (owner_bits == old_bits)
 		return 0;
 
 	new_bits = (cq->head / num_cqe) & GDMA_CQE_OWNER_MASK;
-	/* Return -1 if overflow detected. */
+	 
 	if (WARN_ON_ONCE(owner_bits != new_bits))
 		return -1;
 
-	/* Per GDMA spec, rmb is necessary after checking owner_bits, before
-	 * reading completion info
-	 */
+	 
 	rmb();
 
 	comp->wq_num = cqe->cqe_info.wq_num;
@@ -1255,7 +1246,7 @@ static int mana_gd_setup_irqs(struct pci_dev *pdev)
 	if (max_queues_per_port > MANA_MAX_NUM_QUEUES)
 		max_queues_per_port = MANA_MAX_NUM_QUEUES;
 
-	/* Need 1 interrupt for the Hardware communication Channel (HWC) */
+	 
 	max_irqs = max_queues_per_port + 1;
 
 	nvec = pci_alloc_irq_vectors(pdev, 2, max_irqs, PCI_IRQ_MSIX);
@@ -1338,7 +1329,7 @@ static void mana_gd_remove_irqs(struct pci_dev *pdev)
 
 		gic = &gc->irq_contexts[i];
 
-		/* Need to clear the hint before free_irq */
+		 
 		irq_update_affinity_hint(irq, NULL);
 		free_irq(irq, gic);
 	}
@@ -1409,7 +1400,7 @@ static int mana_gd_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	int bar = 0;
 	int err;
 
-	/* Each port has 2 CQs, each CQ has at most 1 EQE at a time */
+	 
 	BUILD_BUG_ON(2 * MAX_PORTS_IN_MANA_DEV * GDMA_EQE_SIZE > EQ_SIZE);
 
 	err = pci_enable_device(pdev);
@@ -1491,7 +1482,7 @@ static void mana_gd_remove(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 }
 
-/* The 'state' parameter is not used. */
+ 
 static int mana_gd_suspend(struct pci_dev *pdev, pm_message_t state)
 {
 	struct gdma_context *gc = pci_get_drvdata(pdev);
@@ -1503,10 +1494,7 @@ static int mana_gd_suspend(struct pci_dev *pdev, pm_message_t state)
 	return 0;
 }
 
-/* In case the NIC hardware stops working, the suspend and resume callbacks will
- * fail -- if this happens, it's safer to just report an error than try to undo
- * what has been done.
- */
+ 
 static int mana_gd_resume(struct pci_dev *pdev)
 {
 	struct gdma_context *gc = pci_get_drvdata(pdev);
@@ -1523,7 +1511,7 @@ static int mana_gd_resume(struct pci_dev *pdev)
 	return 0;
 }
 
-/* Quiesce the device for kexec. This is also called upon reboot/shutdown. */
+ 
 static void mana_gd_shutdown(struct pci_dev *pdev)
 {
 	struct gdma_context *gc = pci_get_drvdata(pdev);

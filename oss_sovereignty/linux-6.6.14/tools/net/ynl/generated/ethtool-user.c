@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR BSD-3-Clause)
-/* Do not edit directly, auto-generated from: */
-/*	Documentation/netlink/specs/ethtool.yaml */
-/* YNL-GEN user source */
-/* YNL-ARG --user-header linux/ethtool_netlink.h --exclude-op stats-get */
+
+ 
+ 
+ 
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -15,7 +15,7 @@
 
 #include "linux/ethtool_netlink.h"
 
-/* Enums */
+ 
 static const char * const ethtool_op_strmap[] = {
 	[ETHTOOL_MSG_STRSET_GET] = "strset-get",
 	[ETHTOOL_MSG_LINKINFO_GET] = "linkinfo-get",
@@ -91,7 +91,7 @@ const char *ethtool_stringset_str(enum ethtool_stringset value)
 	return ethtool_stringset_strmap[value];
 }
 
-/* Policies */
+ 
 struct ynl_policy_attr ethtool_header_policy[ETHTOOL_A_HEADER_MAX + 1] = {
 	[ETHTOOL_A_HEADER_DEV_INDEX] = { .name = "dev-index", .type = YNL_PT_U32, },
 	[ETHTOOL_A_HEADER_DEV_NAME] = { .name = "dev-name", .type = YNL_PT_NUL_STR, },
@@ -666,7 +666,7 @@ struct ynl_policy_nest ethtool_mm_nest = {
 	.table = ethtool_mm_policy,
 };
 
-/* Common nested types */
+ 
 void ethtool_header_free(struct ethtool_header *obj)
 {
 	free(obj->dev_name);
@@ -1544,8 +1544,8 @@ int ethtool_tunnel_udp_parse(struct ynl_parse_arg *yarg,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_STRSET_GET ============== */
-/* ETHTOOL_MSG_STRSET_GET - do */
+ 
+ 
 void ethtool_strset_get_req_free(struct ethtool_strset_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -1632,7 +1632,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_STRSET_GET - dump */
+ 
 void ethtool_strset_get_list_free(struct ethtool_strset_get_list *rsp)
 {
 	struct ethtool_strset_get_list *next = rsp;
@@ -1682,8 +1682,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_LINKINFO_GET ============== */
-/* ETHTOOL_MSG_LINKINFO_GET - do */
+ 
+ 
 void ethtool_linkinfo_get_req_free(struct ethtool_linkinfo_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -1780,7 +1780,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_LINKINFO_GET - dump */
+ 
 void ethtool_linkinfo_get_list_free(struct ethtool_linkinfo_get_list *rsp)
 {
 	struct ethtool_linkinfo_get_list *next = rsp;
@@ -1825,15 +1825,15 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_LINKINFO_GET - notify */
+ 
 void ethtool_linkinfo_get_ntf_free(struct ethtool_linkinfo_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_LINKINFO_SET ============== */
-/* ETHTOOL_MSG_LINKINFO_SET - do */
+ 
+ 
 void ethtool_linkinfo_set_req_free(struct ethtool_linkinfo_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -1869,8 +1869,8 @@ int ethtool_linkinfo_set(struct ynl_sock *ys,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_LINKMODES_GET ============== */
-/* ETHTOOL_MSG_LINKMODES_GET - do */
+ 
+ 
 void ethtool_linkmodes_get_req_free(struct ethtool_linkmodes_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -1998,7 +1998,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_LINKMODES_GET - dump */
+ 
 void ethtool_linkmodes_get_list_free(struct ethtool_linkmodes_get_list *rsp)
 {
 	struct ethtool_linkmodes_get_list *next = rsp;
@@ -2045,7 +2045,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_LINKMODES_GET - notify */
+ 
 void ethtool_linkmodes_get_ntf_free(struct ethtool_linkmodes_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -2054,8 +2054,8 @@ void ethtool_linkmodes_get_ntf_free(struct ethtool_linkmodes_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_LINKMODES_SET ============== */
-/* ETHTOOL_MSG_LINKMODES_SET - do */
+ 
+ 
 void ethtool_linkmodes_set_req_free(struct ethtool_linkmodes_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2101,8 +2101,8 @@ int ethtool_linkmodes_set(struct ynl_sock *ys,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_LINKSTATE_GET ============== */
-/* ETHTOOL_MSG_LINKSTATE_GET - do */
+ 
+ 
 void ethtool_linkstate_get_req_free(struct ethtool_linkstate_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2205,7 +2205,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_LINKSTATE_GET - dump */
+ 
 void ethtool_linkstate_get_list_free(struct ethtool_linkstate_get_list *rsp)
 {
 	struct ethtool_linkstate_get_list *next = rsp;
@@ -2250,8 +2250,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_DEBUG_GET ============== */
-/* ETHTOOL_MSG_DEBUG_GET - do */
+ 
+ 
 void ethtool_debug_get_req_free(struct ethtool_debug_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2333,7 +2333,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_DEBUG_GET - dump */
+ 
 void ethtool_debug_get_list_free(struct ethtool_debug_get_list *rsp)
 {
 	struct ethtool_debug_get_list *next = rsp;
@@ -2379,7 +2379,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_DEBUG_GET - notify */
+ 
 void ethtool_debug_get_ntf_free(struct ethtool_debug_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -2387,8 +2387,8 @@ void ethtool_debug_get_ntf_free(struct ethtool_debug_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_DEBUG_SET ============== */
-/* ETHTOOL_MSG_DEBUG_SET - do */
+ 
+ 
 void ethtool_debug_set_req_free(struct ethtool_debug_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2416,8 +2416,8 @@ int ethtool_debug_set(struct ynl_sock *ys, struct ethtool_debug_set_req *req)
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_WOL_GET ============== */
-/* ETHTOOL_MSG_WOL_GET - do */
+ 
+ 
 void ethtool_wol_get_req_free(struct ethtool_wol_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2510,7 +2510,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_WOL_GET - dump */
+ 
 void ethtool_wol_get_list_free(struct ethtool_wol_get_list *rsp)
 {
 	struct ethtool_wol_get_list *next = rsp;
@@ -2556,7 +2556,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_WOL_GET - notify */
+ 
 void ethtool_wol_get_ntf_free(struct ethtool_wol_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -2565,8 +2565,8 @@ void ethtool_wol_get_ntf_free(struct ethtool_wol_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_WOL_SET ============== */
-/* ETHTOOL_MSG_WOL_SET - do */
+ 
+ 
 void ethtool_wol_set_req_free(struct ethtool_wol_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2597,8 +2597,8 @@ int ethtool_wol_set(struct ynl_sock *ys, struct ethtool_wol_set_req *req)
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_FEATURES_GET ============== */
-/* ETHTOOL_MSG_FEATURES_GET - do */
+ 
+ 
 void ethtool_features_get_req_free(struct ethtool_features_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2710,7 +2710,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_FEATURES_GET - dump */
+ 
 void ethtool_features_get_list_free(struct ethtool_features_get_list *rsp)
 {
 	struct ethtool_features_get_list *next = rsp;
@@ -2759,7 +2759,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_FEATURES_GET - notify */
+ 
 void ethtool_features_get_ntf_free(struct ethtool_features_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -2770,8 +2770,8 @@ void ethtool_features_get_ntf_free(struct ethtool_features_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_FEATURES_SET ============== */
-/* ETHTOOL_MSG_FEATURES_SET - do */
+ 
+ 
 void ethtool_features_set_req_free(struct ethtool_features_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2895,8 +2895,8 @@ err_free:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_PRIVFLAGS_GET ============== */
-/* ETHTOOL_MSG_PRIVFLAGS_GET - do */
+ 
+ 
 void ethtool_privflags_get_req_free(struct ethtool_privflags_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -2979,7 +2979,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PRIVFLAGS_GET - dump */
+ 
 void ethtool_privflags_get_list_free(struct ethtool_privflags_get_list *rsp)
 {
 	struct ethtool_privflags_get_list *next = rsp;
@@ -3025,7 +3025,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PRIVFLAGS_GET - notify */
+ 
 void ethtool_privflags_get_ntf_free(struct ethtool_privflags_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -3033,8 +3033,8 @@ void ethtool_privflags_get_ntf_free(struct ethtool_privflags_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_PRIVFLAGS_SET ============== */
-/* ETHTOOL_MSG_PRIVFLAGS_SET - do */
+ 
+ 
 void ethtool_privflags_set_req_free(struct ethtool_privflags_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -3063,8 +3063,8 @@ int ethtool_privflags_set(struct ynl_sock *ys,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_RINGS_GET ============== */
-/* ETHTOOL_MSG_RINGS_GET - do */
+ 
+ 
 void ethtool_rings_get_req_free(struct ethtool_rings_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -3211,7 +3211,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_RINGS_GET - dump */
+ 
 void ethtool_rings_get_list_free(struct ethtool_rings_get_list *rsp)
 {
 	struct ethtool_rings_get_list *next = rsp;
@@ -3256,15 +3256,15 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_RINGS_GET - notify */
+ 
 void ethtool_rings_get_ntf_free(struct ethtool_rings_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_RINGS_SET ============== */
-/* ETHTOOL_MSG_RINGS_SET - do */
+ 
+ 
 void ethtool_rings_set_req_free(struct ethtool_rings_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -3319,8 +3319,8 @@ int ethtool_rings_set(struct ynl_sock *ys, struct ethtool_rings_set_req *req)
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_CHANNELS_GET ============== */
-/* ETHTOOL_MSG_CHANNELS_GET - do */
+ 
+ 
 void ethtool_channels_get_req_free(struct ethtool_channels_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -3432,7 +3432,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_CHANNELS_GET - dump */
+ 
 void ethtool_channels_get_list_free(struct ethtool_channels_get_list *rsp)
 {
 	struct ethtool_channels_get_list *next = rsp;
@@ -3477,15 +3477,15 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_CHANNELS_GET - notify */
+ 
 void ethtool_channels_get_ntf_free(struct ethtool_channels_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_CHANNELS_SET ============== */
-/* ETHTOOL_MSG_CHANNELS_SET - do */
+ 
+ 
 void ethtool_channels_set_req_free(struct ethtool_channels_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -3527,8 +3527,8 @@ int ethtool_channels_set(struct ynl_sock *ys,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_COALESCE_GET ============== */
-/* ETHTOOL_MSG_COALESCE_GET - do */
+ 
+ 
 void ethtool_coalesce_get_req_free(struct ethtool_coalesce_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -3735,7 +3735,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_COALESCE_GET - dump */
+ 
 void ethtool_coalesce_get_list_free(struct ethtool_coalesce_get_list *rsp)
 {
 	struct ethtool_coalesce_get_list *next = rsp;
@@ -3780,15 +3780,15 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_COALESCE_GET - notify */
+ 
 void ethtool_coalesce_get_ntf_free(struct ethtool_coalesce_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_COALESCE_SET ============== */
-/* ETHTOOL_MSG_COALESCE_SET - do */
+ 
+ 
 void ethtool_coalesce_set_req_free(struct ethtool_coalesce_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -3868,8 +3868,8 @@ int ethtool_coalesce_set(struct ynl_sock *ys,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_PAUSE_GET ============== */
-/* ETHTOOL_MSG_PAUSE_GET - do */
+ 
+ 
 void ethtool_pause_get_req_free(struct ethtool_pause_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -3971,7 +3971,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PAUSE_GET - dump */
+ 
 void ethtool_pause_get_list_free(struct ethtool_pause_get_list *rsp)
 {
 	struct ethtool_pause_get_list *next = rsp;
@@ -4017,7 +4017,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PAUSE_GET - notify */
+ 
 void ethtool_pause_get_ntf_free(struct ethtool_pause_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -4025,8 +4025,8 @@ void ethtool_pause_get_ntf_free(struct ethtool_pause_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_PAUSE_SET ============== */
-/* ETHTOOL_MSG_PAUSE_SET - do */
+ 
+ 
 void ethtool_pause_set_req_free(struct ethtool_pause_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -4062,8 +4062,8 @@ int ethtool_pause_set(struct ynl_sock *ys, struct ethtool_pause_set_req *req)
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_EEE_GET ============== */
-/* ETHTOOL_MSG_EEE_GET - do */
+ 
+ 
 void ethtool_eee_get_req_free(struct ethtool_eee_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -4175,7 +4175,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_EEE_GET - dump */
+ 
 void ethtool_eee_get_list_free(struct ethtool_eee_get_list *rsp)
 {
 	struct ethtool_eee_get_list *next = rsp;
@@ -4221,7 +4221,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_EEE_GET - notify */
+ 
 void ethtool_eee_get_ntf_free(struct ethtool_eee_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -4230,8 +4230,8 @@ void ethtool_eee_get_ntf_free(struct ethtool_eee_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_EEE_SET ============== */
-/* ETHTOOL_MSG_EEE_SET - do */
+ 
+ 
 void ethtool_eee_set_req_free(struct ethtool_eee_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -4270,8 +4270,8 @@ int ethtool_eee_set(struct ynl_sock *ys, struct ethtool_eee_set_req *req)
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_TSINFO_GET ============== */
-/* ETHTOOL_MSG_TSINFO_GET - do */
+ 
+ 
 void ethtool_tsinfo_get_req_free(struct ethtool_tsinfo_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -4378,7 +4378,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_TSINFO_GET - dump */
+ 
 void ethtool_tsinfo_get_list_free(struct ethtool_tsinfo_get_list *rsp)
 {
 	struct ethtool_tsinfo_get_list *next = rsp;
@@ -4426,8 +4426,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_CABLE_TEST_ACT ============== */
-/* ETHTOOL_MSG_CABLE_TEST_ACT - do */
+ 
+ 
 void ethtool_cable_test_act_req_free(struct ethtool_cable_test_act_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -4453,8 +4453,8 @@ int ethtool_cable_test_act(struct ynl_sock *ys,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_CABLE_TEST_TDR_ACT ============== */
-/* ETHTOOL_MSG_CABLE_TEST_TDR_ACT - do */
+ 
+ 
 void
 ethtool_cable_test_tdr_act_req_free(struct ethtool_cable_test_tdr_act_req *req)
 {
@@ -4481,8 +4481,8 @@ int ethtool_cable_test_tdr_act(struct ynl_sock *ys,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_TUNNEL_INFO_GET ============== */
-/* ETHTOOL_MSG_TUNNEL_INFO_GET - do */
+ 
+ 
 void ethtool_tunnel_info_get_req_free(struct ethtool_tunnel_info_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -4565,7 +4565,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_TUNNEL_INFO_GET - dump */
+ 
 void
 ethtool_tunnel_info_get_list_free(struct ethtool_tunnel_info_get_list *rsp)
 {
@@ -4612,8 +4612,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_FEC_GET ============== */
-/* ETHTOOL_MSG_FEC_GET - do */
+ 
+ 
 void ethtool_fec_get_req_free(struct ethtool_fec_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -4715,7 +4715,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_FEC_GET - dump */
+ 
 void ethtool_fec_get_list_free(struct ethtool_fec_get_list *rsp)
 {
 	struct ethtool_fec_get_list *next = rsp;
@@ -4761,7 +4761,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_FEC_GET - notify */
+ 
 void ethtool_fec_get_ntf_free(struct ethtool_fec_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -4770,8 +4770,8 @@ void ethtool_fec_get_ntf_free(struct ethtool_fec_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_FEC_SET ============== */
-/* ETHTOOL_MSG_FEC_SET - do */
+ 
+ 
 void ethtool_fec_set_req_free(struct ethtool_fec_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -4806,8 +4806,8 @@ int ethtool_fec_set(struct ynl_sock *ys, struct ethtool_fec_set_req *req)
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_MODULE_EEPROM_GET ============== */
-/* ETHTOOL_MSG_MODULE_EEPROM_GET - do */
+ 
+ 
 void
 ethtool_module_eeprom_get_req_free(struct ethtool_module_eeprom_get_req *req)
 {
@@ -4918,7 +4918,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_MODULE_EEPROM_GET - dump */
+ 
 void
 ethtool_module_eeprom_get_list_free(struct ethtool_module_eeprom_get_list *rsp)
 {
@@ -4965,8 +4965,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_PHC_VCLOCKS_GET ============== */
-/* ETHTOOL_MSG_PHC_VCLOCKS_GET - do */
+ 
+ 
 void ethtool_phc_vclocks_get_req_free(struct ethtool_phc_vclocks_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5044,7 +5044,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PHC_VCLOCKS_GET - dump */
+ 
 void
 ethtool_phc_vclocks_get_list_free(struct ethtool_phc_vclocks_get_list *rsp)
 {
@@ -5090,8 +5090,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_MODULE_GET ============== */
-/* ETHTOOL_MSG_MODULE_GET - do */
+ 
+ 
 void ethtool_module_get_req_free(struct ethtool_module_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5173,7 +5173,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_MODULE_GET - dump */
+ 
 void ethtool_module_get_list_free(struct ethtool_module_get_list *rsp)
 {
 	struct ethtool_module_get_list *next = rsp;
@@ -5218,15 +5218,15 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_MODULE_GET - notify */
+ 
 void ethtool_module_get_ntf_free(struct ethtool_module_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_MODULE_SET ============== */
-/* ETHTOOL_MSG_MODULE_SET - do */
+ 
+ 
 void ethtool_module_set_req_free(struct ethtool_module_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5255,8 +5255,8 @@ int ethtool_module_set(struct ynl_sock *ys, struct ethtool_module_set_req *req)
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_PSE_GET ============== */
-/* ETHTOOL_MSG_PSE_GET - do */
+ 
+ 
 void ethtool_pse_get_req_free(struct ethtool_pse_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5343,7 +5343,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PSE_GET - dump */
+ 
 void ethtool_pse_get_list_free(struct ethtool_pse_get_list *rsp)
 {
 	struct ethtool_pse_get_list *next = rsp;
@@ -5387,8 +5387,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_PSE_SET ============== */
-/* ETHTOOL_MSG_PSE_SET - do */
+ 
+ 
 void ethtool_pse_set_req_free(struct ethtool_pse_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5419,8 +5419,8 @@ int ethtool_pse_set(struct ynl_sock *ys, struct ethtool_pse_set_req *req)
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_RSS_GET ============== */
-/* ETHTOOL_MSG_RSS_GET - do */
+ 
+ 
 void ethtool_rss_get_req_free(struct ethtool_rss_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5524,7 +5524,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_RSS_GET - dump */
+ 
 void ethtool_rss_get_list_free(struct ethtool_rss_get_list *rsp)
 {
 	struct ethtool_rss_get_list *next = rsp;
@@ -5570,8 +5570,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_PLCA_GET_CFG ============== */
-/* ETHTOOL_MSG_PLCA_GET_CFG - do */
+ 
+ 
 void ethtool_plca_get_cfg_req_free(struct ethtool_plca_get_cfg_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5683,7 +5683,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PLCA_GET_CFG - dump */
+ 
 void ethtool_plca_get_cfg_list_free(struct ethtool_plca_get_cfg_list *rsp)
 {
 	struct ethtool_plca_get_cfg_list *next = rsp;
@@ -5728,15 +5728,15 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PLCA_GET_CFG - notify */
+ 
 void ethtool_plca_get_cfg_ntf_free(struct ethtool_plca_get_cfg_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_PLCA_SET_CFG ============== */
-/* ETHTOOL_MSG_PLCA_SET_CFG - do */
+ 
+ 
 void ethtool_plca_set_cfg_req_free(struct ethtool_plca_set_cfg_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5778,8 +5778,8 @@ int ethtool_plca_set_cfg(struct ynl_sock *ys,
 	return 0;
 }
 
-/* ============== ETHTOOL_MSG_PLCA_GET_STATUS ============== */
-/* ETHTOOL_MSG_PLCA_GET_STATUS - do */
+ 
+ 
 void ethtool_plca_get_status_req_free(struct ethtool_plca_get_status_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -5892,7 +5892,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_PLCA_GET_STATUS - dump */
+ 
 void
 ethtool_plca_get_status_list_free(struct ethtool_plca_get_status_list *rsp)
 {
@@ -5938,8 +5938,8 @@ free_list:
 	return NULL;
 }
 
-/* ============== ETHTOOL_MSG_MM_GET ============== */
-/* ETHTOOL_MSG_MM_GET - do */
+ 
+ 
 void ethtool_mm_get_req_free(struct ethtool_mm_get_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -6061,7 +6061,7 @@ err_free:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_MM_GET - dump */
+ 
 void ethtool_mm_get_list_free(struct ethtool_mm_get_list *rsp)
 {
 	struct ethtool_mm_get_list *next = rsp;
@@ -6106,7 +6106,7 @@ free_list:
 	return NULL;
 }
 
-/* ETHTOOL_MSG_MM_GET - notify */
+ 
 void ethtool_mm_get_ntf_free(struct ethtool_mm_get_ntf *rsp)
 {
 	ethtool_header_free(&rsp->obj.header);
@@ -6114,8 +6114,8 @@ void ethtool_mm_get_ntf_free(struct ethtool_mm_get_ntf *rsp)
 	free(rsp);
 }
 
-/* ============== ETHTOOL_MSG_MM_SET ============== */
-/* ETHTOOL_MSG_MM_SET - do */
+ 
+ 
 void ethtool_mm_set_req_free(struct ethtool_mm_set_req *req)
 {
 	ethtool_header_free(&req->header);
@@ -6150,7 +6150,7 @@ int ethtool_mm_set(struct ynl_sock *ys, struct ethtool_mm_set_req *req)
 	return 0;
 }
 
-/* ETHTOOL_MSG_CABLE_TEST_NTF - event */
+ 
 int ethtool_cable_test_ntf_rsp_parse(const struct nlmsghdr *nlh, void *data)
 {
 	struct ethtool_cable_test_ntf_rsp *dst;
@@ -6190,7 +6190,7 @@ void ethtool_cable_test_ntf_free(struct ethtool_cable_test_ntf *rsp)
 	free(rsp);
 }
 
-/* ETHTOOL_MSG_CABLE_TEST_TDR_NTF - event */
+ 
 int ethtool_cable_test_tdr_ntf_rsp_parse(const struct nlmsghdr *nlh,
 					 void *data)
 {

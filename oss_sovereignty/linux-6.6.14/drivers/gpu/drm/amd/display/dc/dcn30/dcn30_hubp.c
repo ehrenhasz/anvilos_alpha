@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dcn30_hubp.h"
 
@@ -50,7 +27,7 @@ void hubp3_set_vm_system_aperture_settings(struct hubp *hubp,
 	PHYSICAL_ADDRESS_LOC mc_vm_apt_low;
 	PHYSICAL_ADDRESS_LOC mc_vm_apt_high;
 
-	// The format of high/low are 48:18 of the 48 bit addr
+	
 	mc_vm_apt_low.quad_part = apt->sys_low.quad_part >> 18;
 	mc_vm_apt_high.quad_part = apt->sys_high.quad_part >> 18;
 
@@ -72,11 +49,11 @@ bool hubp3_program_surface_flip_and_addr(
 {
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 
-	//program flip type
+	
 	REG_UPDATE(DCSURF_FLIP_CONTROL,
 			SURFACE_FLIP_TYPE, flip_immediate);
 
-	// Program VMID reg
+	
 	if (flip_immediate == 0)
 		REG_UPDATE(VMID_SETTINGS_0,
 			VMID, address->vmid);
@@ -86,24 +63,15 @@ bool hubp3_program_surface_flip_and_addr(
 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_IN_STEREOSYNC, 0x1);
 
 	} else {
-		// turn off stereo if not in stereo
+		
 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_MODE_FOR_STEREOSYNC, 0x0);
 		REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_FLIP_IN_STEREOSYNC, 0x0);
 	}
 
-	/* HW automatically latch rest of address register on write to
-	 * DCSURF_PRIMARY_SURFACE_ADDRESS if SURFACE_UPDATE_LOCK is not used
-	 *
-	 * program high first and then the low addr, order matters!
-	 */
+	 
 	switch (address->type) {
 	case PLN_ADDR_TYPE_GRAPHICS:
-		/* DCN1.0 does not support const color
-		 * TODO: program DCHUBBUB_RET_PATH_DCC_CFGx_0/1
-		 * base on address->grph.dcc_const_color
-		 * x = 0, 2, 4, 6 for pipe 0, 1, 2, 3 for rgb and luma
-		 * x = 1, 3, 5, 7 for pipe 0, 1, 2, 3 for chroma
-		 */
+		 
 
 		if (address->grph.addr.quad_part == 0)
 			break;
@@ -367,14 +335,14 @@ void hubp3_dmdata_set_attributes(
 {
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
 
-	/*always HW mode */
+	 
 	REG_UPDATE(DMDATA_CNTL,
 			DMDATA_MODE, 1);
 
-	/* for DMDATA flip, need to use SURFACE_UPDATE_LOCK */
+	 
 	REG_UPDATE(DCSURF_FLIP_CONTROL, SURFACE_UPDATE_LOCK, 1);
 
-	/* toggle DMDATA_UPDATED and set repeat and size */
+	 
 	REG_UPDATE(DMDATA_CNTL,
 			DMDATA_UPDATED, 0);
 	REG_UPDATE_3(DMDATA_CNTL,
@@ -382,7 +350,7 @@ void hubp3_dmdata_set_attributes(
 			DMDATA_REPEAT, attr->dmdata_repeat,
 			DMDATA_SIZE, attr->dmdata_size);
 
-	/* set DMDATA address */
+	 
 	REG_WRITE(DMDATA_ADDRESS_LOW, attr->address.low_part);
 	REG_UPDATE(DMDATA_ADDRESS_HIGH,
 			DMDATA_ADDRESS_HIGH, attr->address.high_part);
@@ -464,9 +432,7 @@ void hubp3_setup(
 		struct _vcs_dpi_display_rq_regs_st *rq_regs,
 		struct _vcs_dpi_display_pipe_dest_params_st *pipe_dest)
 {
-	/* otg is locked when this func is called. Register are double buffered.
-	 * disable the requestors is not needed
-	 */
+	 
 	hubp2_vready_at_or_After_vsync(hubp, pipe_dest);
 	hubp21_program_requestor(hubp, rq_regs);
 	hubp3_program_deadline(hubp, dlg_attr, ttu_attr);
@@ -474,11 +440,11 @@ void hubp3_setup(
 
 void hubp3_init(struct hubp *hubp)
 {
-	// DEDCN21-133: Inconsistent row starting line for flip between DPTE and Meta
-	// This is a chicken bit to enable the ECO fix.
+	
+	
 
 	struct dcn20_hubp *hubp2 = TO_DCN20_HUBP(hubp);
-	//hubp[i].HUBPREQ_DEBUG.HUBPREQ_DEBUG[26] = 1;
+	
 	REG_WRITE(HUBPREQ_DEBUG, 1 << 26);
 }
 

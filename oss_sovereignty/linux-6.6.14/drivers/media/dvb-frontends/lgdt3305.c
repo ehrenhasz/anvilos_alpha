@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *    Support for LG Electronics LGDT3304 and LGDT3305 - VSB/QAM
- *
- *    Copyright (C) 2008, 2009, 2010 Michael Krufky <mkrufky@linuxtv.org>
- *
- *    LGDT3304 support by Jarod Wilson <jarod@redhat.com>
- */
+
+ 
 
 #include <asm/div64.h>
 #include <linux/dvb/frontend.h>
@@ -51,9 +45,9 @@ struct lgdt3305_state {
 	u32 snr;
 };
 
-/* ------------------------------------------------------------------------ */
+ 
 
-/* FIXME: verify & document the LGDT3304 registers */
+ 
 
 #define LGDT3305_GEN_CTRL_1                   0x0000
 #define LGDT3305_GEN_CTRL_2                   0x0001
@@ -197,7 +191,7 @@ static int lgdt3305_write_regs(struct lgdt3305_state *state,
 	return 0;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lgdt3305_soft_reset(struct lgdt3305_state *state)
 {
@@ -307,7 +301,7 @@ static int lgdt3305_set_filter_extension(struct lgdt3305_state *state,
 	return lgdt3305_set_reg_bit(state, 0x043f, 2, val);
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lgdt3305_passband_digital_agc(struct lgdt3305_state *state,
 					 struct dtv_frontend_properties *p)
@@ -351,11 +345,10 @@ static int lgdt3305_rfagc_loop(struct lgdt3305_state *state,
 	case QAM_256:
 		agcdelay = 0x046b;
 		rfbw     = 0x8889;
-		/* FIXME: investigate optimal ifbw & rfbw values for the
-		 *        DT3304 and re-write this switch..case block */
+		 
 		if (state->cfg->demod_chip == LGDT3304)
 			ifbw = 0x6666;
-		else /* (state->cfg->demod_chip == LGDT3305) */
+		else  
 			ifbw = 0x8888;
 		break;
 	default:
@@ -365,7 +358,7 @@ static int lgdt3305_rfagc_loop(struct lgdt3305_state *state,
 	if (state->cfg->rf_agc_loop) {
 		lg_dbg("agcdelay: 0x%04x, rfbw: 0x%04x\n", agcdelay, rfbw);
 
-		/* rf agc loop filter bandwidth */
+		 
 		lgdt3305_write_reg(state, LGDT3305_AGC_DELAY_PT_1,
 				   agcdelay >> 8);
 		lgdt3305_write_reg(state, LGDT3305_AGC_DELAY_PT_2,
@@ -378,7 +371,7 @@ static int lgdt3305_rfagc_loop(struct lgdt3305_state *state,
 	} else {
 		lg_dbg("ifbw: 0x%04x\n", ifbw);
 
-		/* if agc loop filter bandwidth */
+		 
 		lgdt3305_write_reg(state, LGDT3305_IFBW_1, ifbw >> 8);
 		lgdt3305_write_reg(state, LGDT3305_IFBW_2, ifbw & 0xff);
 	}
@@ -407,7 +400,7 @@ static int lgdt3305_agc_setup(struct lgdt3305_state *state,
 
 	lg_dbg("lockdten = %d, acqen = %d\n", lockdten, acqen);
 
-	/* control agc function */
+	 
 	switch (state->cfg->demod_chip) {
 	case LGDT3304:
 		lgdt3305_write_reg(state, 0x0314, 0xe1 | lockdten << 1);
@@ -459,7 +452,7 @@ static int lgdt3305_set_agc_power_ref(struct lgdt3305_state *state,
 	return 0;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lgdt3305_spectral_inversion(struct lgdt3305_state *state,
 				       struct dtv_frontend_properties *p,
@@ -537,7 +530,7 @@ static int lgdt3305_set_if(struct lgdt3305_state *state,
 	return 0;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lgdt3305_i2c_gate_ctrl(struct dvb_frontend *fe, int enable)
 {
@@ -562,16 +555,16 @@ static int lgdt3305_sleep(struct dvb_frontend *fe)
 	gen_ctrl_3 = read_reg(state, LGDT3305_GEN_CTRL_3);
 	gen_ctrl_4 = read_reg(state, LGDT3305_GEN_CTRL_4);
 
-	/* hold in software reset while sleeping */
+	 
 	gen_ctrl_3 &= ~0x01;
-	/* tristate the IF-AGC pin */
+	 
 	gen_ctrl_3 |=  0x02;
-	/* tristate the RF-AGC pin */
+	 
 	gen_ctrl_3 |=  0x04;
 
-	/* disable vsb/qam module */
+	 
 	gen_ctrl_4 &= ~0x01;
-	/* disable adc module */
+	 
 	gen_ctrl_4 &= ~0x02;
 
 	lgdt3305_write_reg(state, LGDT3305_GEN_CTRL_3, gen_ctrl_3);
@@ -695,7 +688,7 @@ static int lgdt3304_set_parameters(struct dvb_frontend *fe)
 	if (lg_fail(ret))
 		goto fail;
 
-	/* reg 0x030d is 3304-only... seen in vsb and qam usbsnoops... */
+	 
 	switch (p->modulation) {
 	case VSB_8:
 		lgdt3305_write_reg(state, 0x030d, 0x00);
@@ -728,7 +721,7 @@ static int lgdt3304_set_parameters(struct dvb_frontend *fe)
 	if (lg_fail(ret))
 		goto fail;
 
-	/* lgdt3305_mpeg_mode_polarity calls lgdt3305_soft_reset */
+	 
 	ret = lgdt3305_mpeg_mode_polarity(state);
 fail:
 	return ret;
@@ -765,7 +758,7 @@ static int lgdt3305_set_parameters(struct dvb_frontend *fe)
 	if (lg_fail(ret))
 		goto fail;
 
-	/* low if */
+	 
 	ret = lgdt3305_write_reg(state, LGDT3305_GEN_CONTROL, 0x2f);
 	if (lg_fail(ret))
 		goto fail;
@@ -792,7 +785,7 @@ static int lgdt3305_set_parameters(struct dvb_frontend *fe)
 	if (lg_fail(ret))
 		goto fail;
 
-	/* lgdt3305_mpeg_mode_polarity calls lgdt3305_soft_reset */
+	 
 	ret = lgdt3305_mpeg_mode_polarity(state);
 fail:
 	return ret;
@@ -810,7 +803,7 @@ static int lgdt3305_get_frontend(struct dvb_frontend *fe,
 	return 0;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lgdt3305_read_cr_lock_status(struct lgdt3305_state *state,
 					int *locked)
@@ -940,7 +933,7 @@ static int lgdt3305_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	switch (state->current_modulation) {
 	case QAM_256:
 	case QAM_64:
-		/* signal bit is unreliable on the DT3304 in QAM mode */
+		 
 		if (((LGDT3304 == state->cfg->demod_chip)) && (cr_lock))
 			*status |= FE_HAS_SIGNAL;
 
@@ -962,19 +955,17 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
-/* borrowed from lgdt330x.c */
+ 
 static u32 calculate_snr(u32 mse, u32 c)
 {
-	if (mse == 0) /* no signal */
+	if (mse == 0)  
 		return 0;
 
 	mse = intlog10(mse);
 	if (mse > c) {
-		/* Negative SNR, which is possible, but realisticly the
-		demod will lose lock before the signal gets this bad.  The
-		API only allows for unsigned values, so just return 0 */
+		 
 		return 0;
 	}
 	return 10*(c - mse);
@@ -983,25 +974,25 @@ static u32 calculate_snr(u32 mse, u32 c)
 static int lgdt3305_read_snr(struct dvb_frontend *fe, u16 *snr)
 {
 	struct lgdt3305_state *state = fe->demodulator_priv;
-	u32 noise;	/* noise value */
-	u32 c;		/* per-modulation SNR calculation constant */
+	u32 noise;	 
+	u32 c;		 
 
 	switch (state->current_modulation) {
 	case VSB_8:
 #ifdef USE_PTMSE
-		/* Use Phase Tracker Mean-Square Error Register */
-		/* SNR for ranges from -13.11 to +44.08 */
+		 
+		 
 		noise =	((read_reg(state, LGDT3305_PT_MSE_1) & 0x07) << 16) |
 			(read_reg(state, LGDT3305_PT_MSE_2) << 8) |
 			(read_reg(state, LGDT3305_PT_MSE_3) & 0xff);
-		c = 73957994; /* log10(25*32^2)*2^24 */
+		c = 73957994;  
 #else
-		/* Use Equalizer Mean-Square Error Register */
-		/* SNR for ranges from -16.12 to +44.08 */
+		 
+		 
 		noise =	((read_reg(state, LGDT3305_EQ_MSE_1) & 0x0f) << 16) |
 			(read_reg(state, LGDT3305_EQ_MSE_2) << 8) |
 			(read_reg(state, LGDT3305_EQ_MSE_3) & 0xff);
-		c = 73957994; /* log10(25*32^2)*2^24 */
+		c = 73957994;  
 #endif
 		break;
 	case QAM_64:
@@ -1011,13 +1002,13 @@ static int lgdt3305_read_snr(struct dvb_frontend *fe, u16 *snr)
 
 		c = (state->current_modulation == QAM_64) ?
 			97939837 : 98026066;
-		/* log10(688128)*2^24 and log10(696320)*2^24 */
+		 
 		break;
 	default:
 		return -EINVAL;
 	}
 	state->snr = calculate_snr(noise, c);
-	/* report SNR in dB * 10 */
+	 
 	*snr = (state->snr / ((1 << 24) / 10));
 	lg_dbg("noise = 0x%08x, snr = %d.%02d dB\n", noise,
 	       state->snr >> 24, (((state->snr >> 8) & 0xffff) * 100) >> 16);
@@ -1028,13 +1019,7 @@ static int lgdt3305_read_snr(struct dvb_frontend *fe, u16 *snr)
 static int lgdt3305_read_signal_strength(struct dvb_frontend *fe,
 					 u16 *strength)
 {
-	/* borrowed from lgdt330x.c
-	 *
-	 * Calculate strength from SNR up to 35dB
-	 * Even though the SNR can go higher than 35dB,
-	 * there is some comfort factor in having a range of
-	 * strong signals that can show at 100%
-	 */
+	 
 	struct lgdt3305_state *state = fe->demodulator_priv;
 	u16 snr;
 	int ret;
@@ -1044,8 +1029,8 @@ static int lgdt3305_read_signal_strength(struct dvb_frontend *fe,
 	ret = fe->ops.read_snr(fe, &snr);
 	if (lg_fail(ret))
 		goto fail;
-	/* Rather than use the 8.8 value snr, use state->snr which is 8.24 */
-	/* scale the range 0 - 35*2^24 into 0 - 65535 */
+	 
+	 
 	if (state->snr >= 8960 * 0x10000)
 		*strength = 0xffff;
 	else
@@ -1054,7 +1039,7 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int lgdt3305_read_ber(struct dvb_frontend *fe, u32 *ber)
 {
@@ -1124,7 +1109,7 @@ struct dvb_frontend *lgdt3305_attach(const struct lgdt3305_config *config,
 	}
 	state->frontend.demodulator_priv = state;
 
-	/* verify that we're talking to a lg dt3304/5 */
+	 
 	ret = lgdt3305_read_reg(state, LGDT3305_GEN_CTRL_2, &val);
 	if ((lg_fail(ret)) | (val == 0))
 		goto fail;

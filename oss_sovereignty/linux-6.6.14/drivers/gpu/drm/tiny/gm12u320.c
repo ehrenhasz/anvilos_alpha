@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2019 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pm.h>
@@ -37,10 +35,7 @@ MODULE_PARM_DESC(eco_mode, "Turn on Eco mode (less bright, more silent)");
 #define DRIVER_MAJOR		1
 #define DRIVER_MINOR		0
 
-/*
- * The DLP has an actual width of 854 pixels, but that is not a multiple
- * of 8, breaking things left and right, so we export a width of 848.
- */
+ 
 #define GM12U320_USER_WIDTH		848
 #define GM12U320_REAL_WIDTH		854
 #define GM12U320_HEIGHT			480
@@ -77,10 +72,10 @@ MODULE_PARM_DESC(eco_mode, "Turn on Eco mode (less bright, more silent)");
 
 #define MISC_REQ_GET_SET_ECO_A		0xff
 #define MISC_REQ_GET_SET_ECO_B		0x35
-/* Windows driver does once every second, with arg d = 1, other args 0 */
+ 
 #define MISC_REQ_UNKNOWN1_A		0xff
 #define MISC_REQ_UNKNOWN1_B		0x38
-/* Windows driver does this on init, with arg a, b = 0, c = 0xa0, d = 4 */
+ 
 #define MISC_REQ_UNKNOWN2_A		0xa5
 #define MISC_REQ_UNKNOWN2_B		0x00
 
@@ -211,7 +206,7 @@ static int gm12u320_misc_request(struct gm12u320_device *gm12u320,
 	gm12u320->cmd_buf[24] = arg_c;
 	gm12u320->cmd_buf[25] = arg_d;
 
-	/* Send request */
+	 
 	ret = usb_bulk_msg(udev, usb_sndbulkpipe(udev, MISC_SND_EPT),
 			   gm12u320->cmd_buf, CMD_SIZE, &len, CMD_TIMEOUT);
 	if (ret || len != CMD_SIZE) {
@@ -219,7 +214,7 @@ static int gm12u320_misc_request(struct gm12u320_device *gm12u320,
 		return -EIO;
 	}
 
-	/* Read value */
+	 
 	ret = usb_bulk_msg(udev, usb_rcvbulkpipe(udev, MISC_RCV_EPT),
 			   gm12u320->cmd_buf, MISC_VALUE_SIZE, &len,
 			   DATA_TIMEOUT);
@@ -227,9 +222,9 @@ static int gm12u320_misc_request(struct gm12u320_device *gm12u320,
 		GM12U320_ERR("Misc. value error %d\n", ret);
 		return -EIO;
 	}
-	/* cmd_buf[0] now contains the read value, which we don't use */
+	 
 
-	/* Read status */
+	 
 	ret = usb_bulk_msg(udev, usb_rcvbulkpipe(udev, MISC_RCV_EPT),
 			   gm12u320->cmd_buf, READ_STATUS_SIZE, &len,
 			   CMD_TIMEOUT);
@@ -268,7 +263,7 @@ static void gm12u320_copy_fb_to_blocks(struct gm12u320_device *gm12u320)
 	x2 = gm12u320->fb_update.rect.x2;
 	y1 = gm12u320->fb_update.rect.y1;
 	y2 = gm12u320->fb_update.rect.y2;
-	vaddr = gm12u320->fb_update.src_map.vaddr; /* TODO: Use mapping abstraction properly */
+	vaddr = gm12u320->fb_update.src_map.vaddr;  
 
 	ret = drm_gem_fb_begin_cpu_access(fb, DMA_FROM_DEVICE);
 	if (ret) {
@@ -335,7 +330,7 @@ static void gm12u320_fb_update_work(struct work_struct *work)
 		else
 			block_size = DATA_BLOCK_SIZE;
 
-		/* Send data command to device */
+		 
 		memcpy(gm12u320->cmd_buf, cmd_data, CMD_SIZE);
 		gm12u320->cmd_buf[8] = block_size & 0xff;
 		gm12u320->cmd_buf[9] = block_size >> 8;
@@ -350,7 +345,7 @@ static void gm12u320_fb_update_work(struct work_struct *work)
 		if (ret || len != CMD_SIZE)
 			goto err;
 
-		/* Send data block to device */
+		 
 		ret = usb_bulk_msg(udev,
 				   usb_sndbulkpipe(udev, DATA_SND_EPT),
 				   gm12u320->data_buf[block], block_size,
@@ -358,7 +353,7 @@ static void gm12u320_fb_update_work(struct work_struct *work)
 		if (ret || len != block_size)
 			goto err;
 
-		/* Read status */
+		 
 		ret = usb_bulk_msg(udev,
 				   usb_rcvbulkpipe(udev, DATA_RCV_EPT),
 				   gm12u320->cmd_buf, READ_STATUS_SIZE, &len,
@@ -367,14 +362,14 @@ static void gm12u320_fb_update_work(struct work_struct *work)
 			goto err;
 	}
 
-	/* Send draw command to device */
+	 
 	memcpy(gm12u320->cmd_buf, cmd_draw, CMD_SIZE);
 	ret = usb_bulk_msg(udev, usb_sndbulkpipe(udev, DATA_SND_EPT),
 			   gm12u320->cmd_buf, CMD_SIZE, &len, CMD_TIMEOUT);
 	if (ret || len != CMD_SIZE)
 		goto err;
 
-	/* Read status */
+	 
 	ret = usb_bulk_msg(udev, usb_rcvbulkpipe(udev, DATA_RCV_EPT),
 			   gm12u320->cmd_buf, READ_STATUS_SIZE, &len,
 			   gm12u320->fb_update.draw_status_timeout);
@@ -384,16 +379,13 @@ static void gm12u320_fb_update_work(struct work_struct *work)
 	gm12u320->fb_update.draw_status_timeout = CMD_TIMEOUT;
 	gm12u320->fb_update.frame = !gm12u320->fb_update.frame;
 
-	/*
-	 * We must draw a frame every 2s otherwise the projector
-	 * switches back to showing its logo.
-	 */
+	 
 	queue_delayed_work(system_long_wq, &gm12u320->fb_update.work,
 			   msecs_to_jiffies(IDLE_TIMEOUT));
 
 	return;
 err:
-	/* Do not log errors caused by module unload or device unplug */
+	 
 	if (ret != -ENODEV && ret != -ECONNRESET && ret != -ESHUTDOWN)
 		GM12U320_ERR("Frame update error: %d\n", ret);
 }
@@ -451,69 +443,64 @@ static void gm12u320_stop_fb_update(struct gm12u320_device *gm12u320)
 static int gm12u320_set_ecomode(struct gm12u320_device *gm12u320)
 {
 	return gm12u320_misc_request(gm12u320, MISC_REQ_GET_SET_ECO_A,
-				     MISC_REQ_GET_SET_ECO_B, 0x01 /* set */,
+				     MISC_REQ_GET_SET_ECO_B, 0x01  ,
 				     eco_mode ? 0x01 : 0x00, 0x00, 0x01);
 }
 
-/* ------------------------------------------------------------------ */
-/* gm12u320 connector						      */
+ 
+ 
 
-/*
- * We use fake EDID info so that userspace know that it is dealing with
- * an Acer projector, rather then listing this as an "unknown" monitor.
- * Note this assumes this driver is only ever used with the Acer C120, if we
- * add support for other devices the vendor and model should be parameterized.
- */
+ 
 static struct edid gm12u320_edid = {
 	.header		= { 0x00, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0x00 },
-	.mfg_id		= { 0x04, 0x72 },	/* "ACR" */
-	.prod_code	= { 0x20, 0xc1 },	/* C120h */
+	.mfg_id		= { 0x04, 0x72 },	 
+	.prod_code	= { 0x20, 0xc1 },	 
 	.serial		= 0xaa55aa55,
 	.mfg_week	= 1,
 	.mfg_year	= 16,
-	.version	= 1,			/* EDID 1.3 */
-	.revision	= 3,			/* EDID 1.3 */
-	.input		= 0x08,			/* Analog input */
-	.features	= 0x0a,			/* Pref timing in DTD 1 */
+	.version	= 1,			 
+	.revision	= 3,			 
+	.input		= 0x08,			 
+	.features	= 0x0a,			 
 	.standard_timings = { { 1, 1 }, { 1, 1 }, { 1, 1 }, { 1, 1 },
 			      { 1, 1 }, { 1, 1 }, { 1, 1 }, { 1, 1 } },
 	.detailed_timings = { {
 		.pixel_clock = 3383,
-		/* hactive = 848, hblank = 256 */
+		 
 		.data.pixel_data.hactive_lo = 0x50,
 		.data.pixel_data.hblank_lo = 0x00,
 		.data.pixel_data.hactive_hblank_hi = 0x31,
-		/* vactive = 480, vblank = 28 */
+		 
 		.data.pixel_data.vactive_lo = 0xe0,
 		.data.pixel_data.vblank_lo = 0x1c,
 		.data.pixel_data.vactive_vblank_hi = 0x10,
-		/* hsync offset 40 pw 128, vsync offset 1 pw 4 */
+		 
 		.data.pixel_data.hsync_offset_lo = 0x28,
 		.data.pixel_data.hsync_pulse_width_lo = 0x80,
 		.data.pixel_data.vsync_offset_pulse_width_lo = 0x14,
 		.data.pixel_data.hsync_vsync_offset_pulse_width_hi = 0x00,
-		/* Digital separate syncs, hsync+, vsync+ */
+		 
 		.data.pixel_data.misc = 0x1e,
 	}, {
 		.pixel_clock = 0,
-		.data.other_data.type = 0xfd, /* Monitor ranges */
+		.data.other_data.type = 0xfd,  
 		.data.other_data.data.range.min_vfreq = 59,
 		.data.other_data.data.range.max_vfreq = 61,
 		.data.other_data.data.range.min_hfreq_khz = 29,
 		.data.other_data.data.range.max_hfreq_khz = 32,
-		.data.other_data.data.range.pixel_clock_mhz = 4, /* 40 MHz */
+		.data.other_data.data.range.pixel_clock_mhz = 4,  
 		.data.other_data.data.range.flags = 0,
 		.data.other_data.data.range.formula.cvt = {
 			0xa0, 0x20, 0x20, 0x20, 0x20, 0x20, 0x20 },
 	}, {
 		.pixel_clock = 0,
-		.data.other_data.type = 0xfc, /* Model string */
+		.data.other_data.type = 0xfc,  
 		.data.other_data.data.str.str = {
 			'P', 'r', 'o', 'j', 'e', 'c', 't', 'o', 'r', '\n',
 			' ', ' ',  ' ' },
 	}, {
 		.pixel_clock = 0,
-		.data.other_data.type = 0xfe, /* Unspecified text / padding */
+		.data.other_data.type = 0xfe,  
 		.data.other_data.data.str.str = {
 			'\n', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ', ' ',
 			' ', ' ',  ' ' },
@@ -546,8 +533,8 @@ static int gm12u320_conn_init(struct gm12u320_device *gm12u320)
 				  &gm12u320_conn_funcs, DRM_MODE_CONNECTOR_VGA);
 }
 
-/* ------------------------------------------------------------------ */
-/* gm12u320 (simple) display pipe				      */
+ 
+ 
 
 static void gm12u320_pipe_enable(struct drm_simple_display_pipe *pipe,
 				 struct drm_crtc_state *crtc_state,
@@ -595,11 +582,7 @@ static const uint64_t gm12u320_pipe_modifiers[] = {
 	DRM_FORMAT_MOD_INVALID
 };
 
-/*
- * FIXME: Dma-buf sharing requires DMA support by the importing device.
- *        This function is a workaround to make USB devices work as well.
- *        See todo.rst for how to fix the issue in the dma-buf framework.
- */
+ 
 static struct drm_gem_object *gm12u320_gem_prime_import(struct drm_device *dev,
 							struct dma_buf *dma_buf)
 {
@@ -640,10 +623,7 @@ static int gm12u320_usb_probe(struct usb_interface *interface,
 	struct drm_device *dev;
 	int ret;
 
-	/*
-	 * The gm12u320 presents itself to the system as 2 usb mass-storage
-	 * interfaces, we only care about / need the first one.
-	 */
+	 
 	if (interface->cur_altsetting->desc.bInterfaceNumber != 0)
 		return -ENODEV;
 
@@ -655,7 +635,7 @@ static int gm12u320_usb_probe(struct usb_interface *interface,
 
 	gm12u320->dmadev = usb_intf_get_dma_device(to_usb_interface(dev->dev));
 	if (!gm12u320->dmadev)
-		drm_warn(dev, "buffer sharing not supported"); /* not an error */
+		drm_warn(dev, "buffer sharing not supported");  
 
 	INIT_DELAYED_WORK(&gm12u320->fb_update.work, gm12u320_fb_update_work);
 	mutex_init(&gm12u320->fb_update.lock);

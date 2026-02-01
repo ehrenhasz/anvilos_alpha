@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common methods for use with dell-wmi-sysman
- *
- *  Copyright (c) 2020 Dell Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,18 +18,13 @@ struct wmi_sysman_priv wmi_priv = {
 	.mutex = __MUTEX_INITIALIZER(wmi_priv.mutex),
 };
 
-/* reset bios to defaults */
+ 
 static const char * const reset_types[] = {"builtinsafe", "lastknowngood", "factory", "custom"};
 static int reset_option = -1;
 static struct class *fw_attr_class;
 
 
-/**
- * populate_string_buffer() - populates a string buffer
- * @buffer: the start of the destination buffer
- * @buffer_len: length of the destination buffer
- * @str: the string to insert into buffer
- */
+ 
 ssize_t populate_string_buffer(char *buffer, size_t buffer_len, const char *str)
 {
 	u16 *length = (u16 *)buffer;
@@ -56,23 +47,14 @@ ssize_t populate_string_buffer(char *buffer, size_t buffer_len, const char *str)
 	return sizeof(u16) + *length;
 }
 
-/**
- * calculate_string_buffer() - determines size of string buffer for use with BIOS communication
- * @str: the string to calculate based upon
- *
- */
+ 
 size_t calculate_string_buffer(const char *str)
 {
-	/* u16 length field + one UTF16 char for each input char */
+	 
 	return sizeof(u16) + strlen(str) * sizeof(u16);
 }
 
-/**
- * calculate_security_buffer() - determines size of security buffer for authentication scheme
- * @authentication: the authentication content
- *
- * Currently only supported type is Admin password
- */
+ 
 size_t calculate_security_buffer(char *authentication)
 {
 	if (strlen(authentication) > 0) {
@@ -82,13 +64,7 @@ size_t calculate_security_buffer(char *authentication)
 	return sizeof(u32) * 2;
 }
 
-/**
- * populate_security_buffer() - builds a security buffer for authentication scheme
- * @buffer: the buffer to populate
- * @authentication: the authentication content
- *
- * Currently only supported type is PLAIN TEXT
- */
+ 
 void populate_security_buffer(char *buffer, char *authentication)
 {
 	char *auth = buffer + sizeof(u32) * 2;
@@ -98,50 +74,42 @@ void populate_security_buffer(char *buffer, char *authentication)
 	*sectype = strlen(authentication) > 0 ? 1 : 0;
 	*seclen = strlen(authentication);
 
-	/* plain text */
+	 
 	if (strlen(authentication) > 0)
 		memcpy(auth, authentication, *seclen);
 }
 
-/**
- * map_wmi_error() - map errors from WMI methods to kernel error codes
- * @error_code: integer error code returned from Dell's firmware
- */
+ 
 int map_wmi_error(int error_code)
 {
 	switch (error_code) {
 	case 0:
-		/* success */
+		 
 		return 0;
 	case 1:
-		/* failed */
+		 
 		return -EIO;
 	case 2:
-		/* invalid parameter */
+		 
 		return -EINVAL;
 	case 3:
-		/* access denied */
+		 
 		return -EACCES;
 	case 4:
-		/* not supported */
+		 
 		return -EOPNOTSUPP;
 	case 5:
-		/* memory error */
+		 
 		return -ENOMEM;
 	case 6:
-		/* protocol error */
+		 
 		return -EPROTO;
 	}
-	/* unspecified error */
+	 
 	return -EIO;
 }
 
-/**
- * reset_bios_show() - sysfs implementaton for read reset_bios
- * @kobj: Kernel object for this attribute
- * @attr: Kernel object attribute
- * @buf: The buffer to display to userspace
- */
+ 
 static ssize_t reset_bios_show(struct kobject *kobj, struct kobj_attribute *attr, char *buf)
 {
 	char *start = buf;
@@ -157,13 +125,7 @@ static ssize_t reset_bios_show(struct kobject *kobj, struct kobj_attribute *attr
 	return buf-start;
 }
 
-/**
- * reset_bios_store() - sysfs implementaton for write reset_bios
- * @kobj: Kernel object for this attribute
- * @attr: Kernel object attribute
- * @buf: The buffer from userspace
- * @count: the size of the buffer from userspace
- */
+ 
 static ssize_t reset_bios_store(struct kobject *kobj,
 				struct kobj_attribute *attr, const char *buf, size_t count)
 {
@@ -183,15 +145,7 @@ static ssize_t reset_bios_store(struct kobject *kobj,
 	return ret;
 }
 
-/**
- * pending_reboot_show() - sysfs implementaton for read pending_reboot
- * @kobj: Kernel object for this attribute
- * @attr: Kernel object attribute
- * @buf: The buffer to display to userspace
- *
- * Stores default value as 0
- * When current_value is changed this attribute is set to 1 to notify reboot may be required
- */
+ 
 static ssize_t pending_reboot_show(struct kobject *kobj, struct kobj_attribute *attr,
 				   char *buf)
 {
@@ -202,10 +156,7 @@ static struct kobj_attribute reset_bios = __ATTR_RW(reset_bios);
 static struct kobj_attribute pending_reboot = __ATTR_RO(pending_reboot);
 
 
-/**
- * create_attributes_level_sysfs_files() - Creates reset_bios and
- * pending_reboot attributes
- */
+ 
 static int create_attributes_level_sysfs_files(void)
 {
 	int ret;
@@ -260,11 +211,7 @@ static const struct kobj_type attr_name_ktype = {
 	.sysfs_ops	= &wmi_sysman_kobj_sysfs_ops,
 };
 
-/**
- * strlcpy_attr - Copy a length-limited, NULL-terminated string with bound checks
- * @dest: Where to copy the string to
- * @src: Where to copy the string from
- */
+ 
 void strlcpy_attr(char *dest, char *src)
 {
 	size_t len = strlen(src) + 1;
@@ -272,21 +219,12 @@ void strlcpy_attr(char *dest, char *src)
 	if (len > 1 && len <= MAX_BUFF)
 		strscpy(dest, src, len);
 
-	/*len can be zero because any property not-applicable to attribute can
-	 * be empty so check only for too long buffers and log error
-	 */
+	 
 	if (len > MAX_BUFF)
 		pr_err("Source string returned from BIOS is out of bound!\n");
 }
 
-/**
- * get_wmiobj_pointer() - Get Content of WMI block for particular instance
- * @instance_id: WMI instance ID
- * @guid_string: WMI GUID (in str form)
- *
- * Fetches the content for WMI block (instance_id) under GUID (guid_string)
- * Caller must kfree the return
- */
+ 
 union acpi_object *get_wmiobj_pointer(int instance_id, const char *guid_string)
 {
 	struct acpi_buffer out = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -297,10 +235,7 @@ union acpi_object *get_wmiobj_pointer(int instance_id, const char *guid_string)
 	return ACPI_SUCCESS(status) ? (union acpi_object *)out.pointer : NULL;
 }
 
-/**
- * get_instance_count() - Compute total number of instances under guid_string
- * @guid_string: WMI GUID (in string form)
- */
+ 
 int get_instance_count(const char *guid_string)
 {
 	int ret;
@@ -312,10 +247,7 @@ int get_instance_count(const char *guid_string)
 	return ret;
 }
 
-/**
- * alloc_attributes_data() - Allocate attributes data for a particular type
- * @attr_type: Attribute type to allocate
- */
+ 
 static int alloc_attributes_data(int attr_type)
 {
 	int retval = 0;
@@ -340,12 +272,7 @@ static int alloc_attributes_data(int attr_type)
 	return retval;
 }
 
-/**
- * destroy_attribute_objs() - Free a kset of kobjects
- * @kset: The kset to destroy
- *
- * Fress kobjects created for each attribute_name under attribute type kset
- */
+ 
 static void destroy_attribute_objs(struct kset *kset)
 {
 	struct kobject *pos, *next;
@@ -355,9 +282,7 @@ static void destroy_attribute_objs(struct kset *kset)
 	}
 }
 
-/**
- * release_attributes_data() - Clean-up all sysfs directories and files created
- */
+ 
 static void release_attributes_data(void)
 {
 	mutex_lock(&wmi_priv.mutex);
@@ -380,26 +305,17 @@ static void release_attributes_data(void)
 	mutex_unlock(&wmi_priv.mutex);
 }
 
-/**
- * init_bios_attributes() - Initialize all attributes for a type
- * @attr_type: The attribute type to initialize
- * @guid: The WMI GUID associated with this type to initialize
- *
- * Initialiaze all 4 types of attributes enumeration, integer, string and password object.
- * Populates each attrbute typ's respective properties under sysfs files
- */
+ 
 static int init_bios_attributes(int attr_type, const char *guid)
 {
-	struct kobject *attr_name_kobj; //individual attribute names
+	struct kobject *attr_name_kobj; 
 	union acpi_object *obj = NULL;
 	union acpi_object *elements;
 	struct kobject *duplicate;
 	struct kset *tmp_set;
 	int min_elements;
 
-	/* instance_id needs to be reset for each type GUID
-	 * also, instance IDs are unique within GUID but not across
-	 */
+	 
 	int instance_id = 0;
 	int retval = 0;
 
@@ -417,7 +333,7 @@ static int init_bios_attributes(int attr_type, const char *guid)
 		return -EINVAL;
 	}
 
-	/* need to use specific instance_id and guid combination to get right data */
+	 
 	obj = get_wmiobj_pointer(instance_id, guid);
 	if (!obj)
 		return -ENODEV;
@@ -438,7 +354,7 @@ static int init_bios_attributes(int attr_type, const char *guid)
 
 		elements = obj->package.elements;
 
-		/* sanity checking */
+		 
 		if (elements[ATTR_NAME].type != ACPI_TYPE_STRING) {
 			pr_debug("incorrect element type\n");
 			goto nextobj;
@@ -460,7 +376,7 @@ static int init_bios_attributes(int attr_type, const char *guid)
 			goto nextobj;
 		}
 
-		/* build attribute */
+		 
 		attr_name_kobj = kzalloc(sizeof(*attr_name_kobj), GFP_KERNEL);
 		if (!attr_name_kobj) {
 			retval = -ENOMEM;
@@ -476,7 +392,7 @@ static int init_bios_attributes(int attr_type, const char *guid)
 			goto err_attr_init;
 		}
 
-		/* enumerate all of this attribute */
+		 
 		switch (attr_type) {
 		case ENUM:
 			retval = populate_enum_data(elements, instance_id, attr_name_kobj,

@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2020 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 #ifndef GAUDI2_CORESIGHT_REGS_DRV_H_
 #define GAUDI2_CORESIGHT_REGS_DRV_H_
 
@@ -11,7 +6,7 @@
 #include "../include/gaudi2/gaudi2_coresight.h"
 #include "gaudi2P.h"
 
-/* FUNNEL Offsets - same offsets for all funnels*/
+ 
 #define mmFUNNEL_CTRL_REG_OFFSET	\
 			(mmDCORE0_TPC0_EML_FUNNEL_CTRL_REG -	\
 				mmDCORE0_TPC0_EML_FUNNEL_BASE)
@@ -116,7 +111,7 @@
 			(mmDCORE0_TPC0_EML_FUNNEL_CID3 -	\
 				mmDCORE0_TPC0_EML_FUNNEL_BASE)
 
-/* ETF Offsets - same offsets for all etfs */
+ 
 #define mmETF_RSZ_OFFSET	\
 			(mmDCORE0_TPC0_EML_ETF_RSZ -	\
 				mmDCORE0_TPC0_EML_ETF_BASE)
@@ -298,7 +293,7 @@
 				mmDCORE0_TPC0_EML_ETF_BASE)
 
 
-/* STM OFFSETS - same offsets for all stms */
+ 
 #define mmSTM_STMDMASTARTR_OFFSET	\
 			(mmDCORE0_TPC0_EML_STM_STMDMASTARTR -	\
 				mmDCORE0_TPC0_EML_STM_BASE)
@@ -516,7 +511,7 @@
 				mmDCORE0_TPC0_EML_STM_BASE)
 
 
-/* SPMU OFFSETS - same offsets for all SPMUs */
+ 
 #define mmSPMU_PMEVCNTR0_EL0_OFFSET	\
 			(mmDCORE0_TPC0_EML_SPMU_PMEVCNTR0_EL0 -	\
 				mmDCORE0_TPC0_EML_SPMU_BASE)
@@ -774,7 +769,7 @@
 				mmDCORE0_TPC0_EML_SPMU_BASE)
 
 
-/* BMON OFFSETS - same offsets for all BMONs*/
+ 
 #define mmBMON_CR_OFFSET	\
 			(mmDCORE0_TPC0_EML_BUSMON_0_CR -	\
 				mmDCORE0_TPC0_EML_BUSMON_0_BASE)
@@ -1056,8 +1051,8 @@
 				mmDCORE0_TPC0_EML_BUSMON_0_BASE)
 
 
-/* Coresight unlock offset */
+ 
 #define  mmCORESIGHT_UNLOCK_REGISTER_OFFSET mmSTM_STMLAR_OFFSET
 #define  mmCORESIGHT_UNLOCK_STATUS_REGISTER_OFFSET mmSTM_STMLSR_OFFSET
 
-#endif /* GAUDI2_CORESIGHT_REGS_DRV_H_ */
+#endif  

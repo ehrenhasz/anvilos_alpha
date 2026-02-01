@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*  GPLv2, Copyright(c) 2017 Jesper Dangaard Brouer, Red Hat, Inc. */
+
+ 
 #include "xdp_sample.bpf.h"
 
 #include <bpf/bpf_tracing.h>
@@ -22,16 +22,13 @@ struct {
 
 const volatile int nr_cpus = 0;
 
-/* These can be set before loading so that redundant comparisons can be DCE'd by
- * the verifier, and only actual matches are tried after loading tp_btf program.
- * This allows sample to filter tracepoint stats based on net_device.
- */
+ 
 const volatile int from_match[32] = {};
 const volatile int to_match[32] = {};
 
 int cpumap_map_id = 0;
 
-/* Find if b is part of set a, but if a is empty set then evaluate to true */
+ 
 #define IN_SET(a, b)                                                 \
 	({                                                           \
 		bool __res = !(a)[0];                                \
@@ -83,13 +80,8 @@ static __always_inline int xdp_redirect_collect_stat(int from, int err)
 		NO_TEAR_INC(rec->dropped);
 	else
 		NO_TEAR_INC(rec->processed);
-	return 0; /* Indicate event was filtered (no further processing)*/
-	/*
-	 * Returning 1 here would allow e.g. a perf-record tracepoint
-	 * to see and record these events, but it doesn't work well
-	 * in-practice as stopping perf-record also unload this
-	 * bpf_prog.  Plus, there is additional overhead of doing so.
-	 */
+	return 0;  
+	 
 }
 
 SEC("tp_btf/xdp_redirect_err")
@@ -141,14 +133,10 @@ int BPF_PROG(tp_xdp_cpumap_enqueue, int map_id, unsigned int processed,
 		return 0;
 	NO_TEAR_ADD(rec->processed, processed);
 	NO_TEAR_ADD(rec->dropped, drops);
-	/* Record bulk events, then userspace can calc average bulk size */
+	 
 	if (processed > 0)
 		NO_TEAR_INC(rec->issue);
-	/* Inception: It's possible to detect overload situations, via
-	 * this tracepoint.  This can be used for creating a feedback
-	 * loop to XDP, which can take appropriate actions to mitigate
-	 * this overload situation.
-	 */
+	 
 	return 0;
 }
 
@@ -171,7 +159,7 @@ int BPF_PROG(tp_xdp_cpumap_kthread, int map_id, unsigned int processed,
 	NO_TEAR_ADD(rec->xdp_pass, xdp_stats->pass);
 	NO_TEAR_ADD(rec->xdp_drop, xdp_stats->drop);
 	NO_TEAR_ADD(rec->xdp_redirect, xdp_stats->redirect);
-	/* Count times kthread yielded CPU via schedule call */
+	 
 	if (sched)
 		NO_TEAR_INC(rec->issue);
 	return 0;
@@ -224,10 +212,10 @@ int BPF_PROG(tp_xdp_devmap_xmit, const struct net_device *from_dev,
 		return 0;
 	NO_TEAR_ADD(rec->processed, sent);
 	NO_TEAR_ADD(rec->dropped, drops);
-	/* Record bulk events, then userspace can calc average bulk size */
+	 
 	NO_TEAR_INC(rec->info);
-	/* Record error cases, where no frame were sent */
-	/* Catch API error of drv ndo_xdp_xmit sent more than count */
+	 
+	 
 	if (err || drops < 0)
 		NO_TEAR_INC(rec->issue);
 	return 0;

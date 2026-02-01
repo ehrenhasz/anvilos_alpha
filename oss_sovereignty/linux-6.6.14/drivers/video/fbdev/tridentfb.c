@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Frame buffer driver for Trident TGUI, Blade and Image series
- *
- * Copyright 2001, 2002 - Jani Monoses   <jani@iv.ro>
- * Copyright 2009 Krzysztof Helt <krzysztof.h1@wp.pl>
- *
- * CREDITS:(in order of appearance)
- *	skeletonfb.c by Geert Uytterhoeven and other fb code in drivers/video
- *	Special thanks ;) to Mattia Crivellini <tia@mclink.it>
- *	much inspired by the XFree86 4.x Trident driver sources
- *	by Alan Hourihane the FreeVGA project
- *	Francesco Salvestrini <salvestrini@users.sf.net> XP support,
- *	code, suggestions
- * TODO:
- *	timing value tweaking so it looks good on every monitor in every mode
- */
+
+ 
 
 #include <linux/aperture.h>
 #include <linux/module.h>
@@ -31,7 +16,7 @@
 #include <linux/i2c-algo-bit.h>
 
 struct tridentfb_par {
-	void __iomem *io_virt;	/* iospace virtual memory address */
+	void __iomem *io_virt;	 
 	u32 pseudo_pal[16];
 	int chip_id;
 	int flatpanel;
@@ -44,7 +29,7 @@ struct tridentfb_par {
 	void (*image_blit)
 		(struct tridentfb_par *par, const char*,
 		 u32, u32, u32, u32, u32, u32);
-	unsigned char eng_oper;	/* engine operation... */
+	unsigned char eng_oper;	 
 	bool ddc_registered;
 	struct i2c_adapter ddc_adapter;
 	struct i2c_algo_bit_data ddc_algo;
@@ -58,9 +43,9 @@ static struct fb_fix_screeninfo tridentfb_fix = {
 	.accel = FB_ACCEL_NONE,
 };
 
-/* defaults which are normally overriden by user values */
+ 
 
-/* video mode */
+ 
 static char *mode_option;
 static int bpp = 8;
 
@@ -154,10 +139,10 @@ static inline int iscyber(int id)
 		return 1;
 
 	case CYBER9320:
-	case CYBERBLADEi7:	/* VIA MPV4 integrated version */
+	case CYBERBLADEi7:	 
 	default:
-		/* case CYBERBLDAEXPm8:  Strange */
-		/* case CYBERBLDAEXPm16: Strange */
+		 
+		 
 		return 0;
 	}
 }
@@ -194,9 +179,9 @@ static void tridentfb_ddc_setscl_tgui(void *data, int val)
 	u8 reg = vga_mm_rcrt(par->io_virt, I2C) & DDC_MASK_TGUI;
 
 	if (val)
-		reg &= ~DDC_SCL_DRIVE_TGUI; /* disable drive - don't drive hi */
+		reg &= ~DDC_SCL_DRIVE_TGUI;  
 	else
-		reg |= DDC_SCL_DRIVE_TGUI; /* drive low */
+		reg |= DDC_SCL_DRIVE_TGUI;  
 
 	vga_mm_wcrt(par->io_virt, I2C, reg);
 }
@@ -207,9 +192,9 @@ static void tridentfb_ddc_setsda_tgui(void *data, int val)
 	u8 reg = vga_mm_rcrt(par->io_virt, I2C) & DDC_MASK_TGUI;
 
 	if (val)
-		reg &= ~DDC_SDA_DRIVE_TGUI; /* disable drive - don't drive hi */
+		reg &= ~DDC_SDA_DRIVE_TGUI;  
 	else
-		reg |= DDC_SDA_DRIVE_TGUI; /* drive low */
+		reg |= DDC_SDA_DRIVE_TGUI;  
 
 	vga_mm_wcrt(par->io_virt, I2C, reg);
 }
@@ -277,11 +262,11 @@ static int tridentfb_setup_ddc_bus(struct fb_info *info)
 	par->ddc_adapter.class		= I2C_CLASS_DDC;
 	par->ddc_adapter.algo_data	= &par->ddc_algo;
 	par->ddc_adapter.dev.parent	= info->device;
-	if (is_oldclock(par->chip_id)) { /* not sure if this check is OK */
+	if (is_oldclock(par->chip_id)) {  
 		par->ddc_algo.setsda	= tridentfb_ddc_setsda_tgui;
 		par->ddc_algo.setscl	= tridentfb_ddc_setscl_tgui;
 		par->ddc_algo.getsda	= tridentfb_ddc_getsda_tgui;
-		/* no getscl */
+		 
 	} else {
 		par->ddc_algo.setsda	= tridentfb_ddc_setsda;
 		par->ddc_algo.setscl	= tridentfb_ddc_setscl;
@@ -297,9 +282,7 @@ static int tridentfb_setup_ddc_bus(struct fb_info *info)
 	return i2c_bit_add_bus(&par->ddc_adapter);
 }
 
-/*
- * Blade specific acceleration.
- */
+ 
 
 #define point(x, y) ((y) << 16 | (x))
 
@@ -373,9 +356,7 @@ static void blade_copy_rect(struct tridentfb_par *par,
 	writemmr(par, DST2, direction ? d1 : d2);
 }
 
-/*
- * BladeXP specific acceleration functions
- */
+ 
 
 static void xp_init_accel(struct tridentfb_par *par, int pitch, int bpp)
 {
@@ -415,11 +396,11 @@ static void xp_wait_engine(struct tridentfb_par *par)
 	while (t_inb(par, STATUS) & 0x80) {
 		count++;
 		if (count == 10000000) {
-			/* Timeout */
+			 
 			count = 9990000;
 			timeout++;
 			if (timeout == 8) {
-				/* Reset engine */
+				 
 				t_outb(par, 0x00, STATUS);
 				return;
 			}
@@ -472,9 +453,7 @@ static void xp_copy_rect(struct tridentfb_par *par,
 	t_outb(par, 0x01, OLDCMD);
 }
 
-/*
- * Image specific acceleration functions
- */
+ 
 static void image_init_accel(struct tridentfb_par *par, int pitch, int bpp)
 {
 	int tmp = bpp == 24 ? 2: (bpp >> 4);
@@ -537,15 +516,13 @@ static void image_copy_rect(struct tridentfb_par *par,
 		 0x80000000 | 1 << 22 | 1 << 10 | 1 << 7 | direction);
 }
 
-/*
- * TGUI 9440/96XX acceleration
- */
+ 
 
 static void tgui_init_accel(struct tridentfb_par *par, int pitch, int bpp)
 {
 	unsigned char x = bpp == 24 ? 3 : (bpp >> 4);
 
-	/* disable clipping */
+	 
 	writemmr(par, 0x2148, 0);
 	writemmr(par, 0x214C, point(4095, 2047));
 
@@ -611,9 +588,7 @@ static void tgui_copy_rect(struct tridentfb_par *par,
 	t_outb(par, 1, OLDCMD);
 }
 
-/*
- * Accel functions called by the upper layers
- */
+ 
 static void tridentfb_fillrect(struct fb_info *info,
 			       const struct fb_fillrect *fr)
 {
@@ -689,9 +664,7 @@ static int tridentfb_sync(struct fb_info *info)
 	return 0;
 }
 
-/*
- * Hardware access functions
- */
+ 
 
 static inline unsigned char read3X4(struct tridentfb_par *par, int reg)
 {
@@ -713,7 +686,7 @@ static inline unsigned char read3CE(struct tridentfb_par *par,
 static inline void writeAttr(struct tridentfb_par *par, int reg,
 			     unsigned char val)
 {
-	fb_readb(par->io_virt + VGA_IS1_RC);	/* flip-flop to index */
+	fb_readb(par->io_virt + VGA_IS1_RC);	 
 	vga_mm_wattr(par->io_virt, reg, val);
 }
 
@@ -725,30 +698,30 @@ static inline void write3CE(struct tridentfb_par *par, int reg,
 
 static void enable_mmio(struct tridentfb_par *par)
 {
-	/* Goto New Mode */
+	 
 	vga_io_rseq(0x0B);
 
-	/* Unprotect registers */
+	 
 	vga_io_wseq(NewMode1, 0x80);
 	if (!is_oldprotect(par->chip_id))
 		vga_io_wseq(Protection, 0x92);
 
-	/* Enable MMIO */
+	 
 	outb(PCIReg, 0x3D4);
 	outb(inb(0x3D5) | 0x01, 0x3D5);
 }
 
 static void disable_mmio(struct tridentfb_par *par)
 {
-	/* Goto New Mode */
+	 
 	vga_mm_rseq(par->io_virt, 0x0B);
 
-	/* Unprotect registers */
+	 
 	vga_mm_wseq(par->io_virt, NewMode1, 0x80);
 	if (!is_oldprotect(par->chip_id))
 		vga_mm_wseq(par->io_virt, Protection, 0x92);
 
-	/* Disable MMIO */
+	 
 	t_outb(par, PCIReg, 0x3D4);
 	t_outb(par, t_inb(par, 0x3D5) & ~0x01, 0x3D5);
 }
@@ -759,7 +732,7 @@ static inline void crtc_unlock(struct tridentfb_par *par)
 		 read3X4(par, VGA_CRTC_V_SYNC_END) & 0x7F);
 }
 
-/*  Return flat panel's maximum x resolution */
+ 
 static int get_nativex(struct tridentfb_par *par)
 {
 	int x, y, tmp;
@@ -789,12 +762,12 @@ static int get_nativex(struct tridentfb_par *par)
 	return x;
 }
 
-/* Set pitch */
+ 
 static inline void set_lwidth(struct tridentfb_par *par, int width)
 {
 	write3X4(par, VGA_CRTC_OFFSET, width & 0xFF);
-	/* chips older than TGUI9660 have only 1 width bit in AddColReg */
-	/* touching the other one breaks I2C/DDC */
+	 
+	 
 	if (par->chip_id == TGUI9440 || par->chip_id == CYBER9320)
 		write3X4(par, AddColReg,
 		     (read3X4(par, AddColReg) & 0xEF) | ((width & 0x100) >> 4));
@@ -803,7 +776,7 @@ static inline void set_lwidth(struct tridentfb_par *par, int width)
 		     (read3X4(par, AddColReg) & 0xCF) | ((width & 0x300) >> 4));
 }
 
-/* For resolutions smaller than FP resolution stretch */
+ 
 static void screen_stretch(struct tridentfb_par *par)
 {
 	if (par->chip_id != CYBERBLADEXPAi1)
@@ -814,14 +787,14 @@ static void screen_stretch(struct tridentfb_par *par)
 	write3CE(par, HorStretch, (read3CE(par, HorStretch) & 0x7C) | 1);
 }
 
-/* For resolutions smaller than FP resolution center */
+ 
 static inline void screen_center(struct tridentfb_par *par)
 {
 	write3CE(par, VertStretch, (read3CE(par, VertStretch) & 0x7C) | 0x80);
 	write3CE(par, HorStretch, (read3CE(par, HorStretch) & 0x7C) | 0x80);
 }
 
-/* Address of first shown pixel in display memory */
+ 
 static void set_screen_start(struct tridentfb_par *par, int base)
 {
 	u8 tmp;
@@ -833,7 +806,7 @@ static void set_screen_start(struct tridentfb_par *par, int base)
 	write3X4(par, CRTHiOrd, tmp | ((base & 0xE0000) >> 17));
 }
 
-/* Set dotclock frequency */
+ 
 static void set_vclk(struct tridentfb_par *par, unsigned long freq)
 {
 	int m, n, k;
@@ -878,7 +851,7 @@ static void set_vclk(struct tridentfb_par *par, unsigned long freq)
 	debug("VCLK = %X %X\n", hi, lo);
 }
 
-/* Set number of lines for flat panels*/
+ 
 static void set_number_of_lines(struct tridentfb_par *par, int lines)
 {
 	int tmp = read3CE(par, CyberEnhance) & 0x8F;
@@ -893,10 +866,7 @@ static void set_number_of_lines(struct tridentfb_par *par, int lines)
 	write3CE(par, CyberEnhance, tmp);
 }
 
-/*
- * If we see that FP is active we assume we have one.
- * Otherwise we have a CRT display. User can override.
- */
+ 
 static int is_flatpanel(struct tridentfb_par *par)
 {
 	if (fp)
@@ -906,13 +876,13 @@ static int is_flatpanel(struct tridentfb_par *par)
 	return (read3CE(par, FPConfig) & 0x10) ? 1 : 0;
 }
 
-/* Try detecting the video memory size */
+ 
 static unsigned int get_memsize(struct tridentfb_par *par)
 {
 	unsigned char tmp, tmp2;
 	unsigned int k;
 
-	/* If memory size provided by user */
+	 
 	if (memsize)
 		k = memsize * Kb;
 	else
@@ -928,7 +898,7 @@ static unsigned int get_memsize(struct tridentfb_par *par)
 				k = 512 * Kb;
 				break;
 			case 0x02:
-				k = 6 * Mb;	/* XP */
+				k = 6 * Mb;	 
 				break;
 			case 0x03:
 				k = 1 * Mb;
@@ -937,21 +907,21 @@ static unsigned int get_memsize(struct tridentfb_par *par)
 				k = 8 * Mb;
 				break;
 			case 0x06:
-				k = 10 * Mb;	/* XP */
+				k = 10 * Mb;	 
 				break;
 			case 0x07:
 				k = 2 * Mb;
 				break;
 			case 0x08:
-				k = 12 * Mb;	/* XP */
+				k = 12 * Mb;	 
 				break;
 			case 0x0A:
-				k = 14 * Mb;	/* XP */
+				k = 14 * Mb;	 
 				break;
 			case 0x0C:
-				k = 16 * Mb;	/* XP */
+				k = 16 * Mb;	 
 				break;
-			case 0x0E:		/* XP */
+			case 0x0E:		 
 
 				tmp2 = vga_mm_rseq(par->io_virt, 0xC1);
 				switch (tmp2) {
@@ -987,30 +957,30 @@ static unsigned int get_memsize(struct tridentfb_par *par)
 	return k;
 }
 
-/* See if we can handle the video mode described in var */
+ 
 static int tridentfb_check_var(struct fb_var_screeninfo *var,
 			       struct fb_info *info)
 {
 	struct tridentfb_par *par = info->par;
 	int bpp = var->bits_per_pixel;
 	int line_length;
-	int ramdac = 230000; /* 230MHz for most 3D chips */
+	int ramdac = 230000;  
 	debug("enter\n");
 
 	if (!var->pixclock)
 		return -EINVAL;
 
-	/* check color depth */
+	 
 	if (bpp == 24)
 		bpp = var->bits_per_pixel = 32;
 	if (bpp != 8 && bpp != 16 && bpp != 32)
 		return -EINVAL;
 	if (par->chip_id == TGUI9440 && bpp == 32)
 		return -EINVAL;
-	/* check whether resolution fits on panel and in memory */
+	 
 	if (par->flatpanel && nativex && var->xres > nativex)
 		return -EINVAL;
-	/* various resolution checks */
+	 
 	var->xres = (var->xres + 7) & ~0x7;
 	if (var->xres > var->xres_virtual)
 		var->xres_virtual = var->xres;
@@ -1018,14 +988,14 @@ static int tridentfb_check_var(struct fb_var_screeninfo *var,
 		var->yres_virtual = var->yres;
 	if (var->xres_virtual > 4095 || var->yres > 2048)
 		return -EINVAL;
-	/* prevent from position overflow for acceleration */
+	 
 	if (var->yres_virtual > 0xffff)
 		return -EINVAL;
 	line_length = var->xres_virtual * bpp / 8;
 
 	if (!is3Dchip(par->chip_id) &&
 	    !(info->flags & FBINFO_HWACCEL_DISABLED)) {
-		/* acceleration requires line length to be power of 2 */
+		 
 		if (line_length <= 512)
 			var->xres_virtual = 512 * 8 / bpp;
 		else if (line_length <= 1024)
@@ -1042,7 +1012,7 @@ static int tridentfb_check_var(struct fb_var_screeninfo *var,
 		line_length = var->xres_virtual * bpp / 8;
 	}
 
-	/* datasheet specifies how to set panning only up to 4 MB */
+	 
 	if (line_length * (var->yres_virtual - var->yres) > (4 << 20))
 		var->yres_virtual = ((4 << 20) / line_length) + var->yres;
 
@@ -1095,7 +1065,7 @@ static int tridentfb_check_var(struct fb_var_screeninfo *var,
 		break;
 	}
 
-	/* The clock is doubled for 32 bpp */
+	 
 	if (bpp == 32)
 		ramdac /= 2;
 
@@ -1108,7 +1078,7 @@ static int tridentfb_check_var(struct fb_var_screeninfo *var,
 
 }
 
-/* Pan the display */
+ 
 static int tridentfb_pan_display(struct fb_var_screeninfo *var,
 				 struct fb_info *info)
 {
@@ -1128,7 +1098,7 @@ static inline void shadowmode_on(struct tridentfb_par *par)
 	write3CE(par, CyberControl, read3CE(par, CyberControl) | 0x81);
 }
 
-/* Set the hardware to the requested video mode */
+ 
 static int tridentfb_set_par(struct fb_info *info)
 {
 	struct tridentfb_par *par = info->par;
@@ -1174,11 +1144,7 @@ static int tridentfb_set_par(struct fb_info *info)
 		tmp &= ~0x80;
 
 	if (par->flatpanel && var->xres < nativex) {
-		/*
-		 * on flat panels with native size larger
-		 * than requested resolution decide whether
-		 * we stretch or center
-		 */
+		 
 		t_outb(par, tmp | 0xC0, VGA_MIS_W);
 
 		shadowmode_on(par);
@@ -1193,7 +1159,7 @@ static int tridentfb_set_par(struct fb_info *info)
 		write3CE(par, CyberControl, 8);
 	}
 
-	/* vertical timing values */
+	 
 	write3X4(par, VGA_CRTC_V_TOTAL, vtotal & 0xFF);
 	write3X4(par, VGA_CRTC_V_DISP_END, vdispend & 0xFF);
 	write3X4(par, VGA_CRTC_V_SYNC_START, vsyncstart & 0xFF);
@@ -1201,7 +1167,7 @@ static int tridentfb_set_par(struct fb_info *info)
 	write3X4(par, VGA_CRTC_V_BLANK_START, vblankstart & 0xFF);
 	write3X4(par, VGA_CRTC_V_BLANK_END, vblankend & 0xFF);
 
-	/* horizontal timing values */
+	 
 	write3X4(par, VGA_CRTC_H_TOTAL, htotal & 0xFF);
 	write3X4(par, VGA_CRTC_H_DISP, hdispend & 0xFF);
 	write3X4(par, VGA_CRTC_H_SYNC_START, hsyncstart & 0xFF);
@@ -1210,7 +1176,7 @@ static int tridentfb_set_par(struct fb_info *info)
 	write3X4(par, VGA_CRTC_H_BLANK_START, hblankstart & 0xFF);
 	write3X4(par, VGA_CRTC_H_BLANK_END, hblankend & 0x1F);
 
-	/* higher bits of vertical timing values */
+	 
 	tmp = 0x10;
 	if (vtotal & 0x100) tmp |= 0x01;
 	if (vdispend & 0x100) tmp |= 0x02;
@@ -1223,7 +1189,7 @@ static int tridentfb_set_par(struct fb_info *info)
 	write3X4(par, VGA_CRTC_OVERFLOW, tmp);
 
 	tmp = read3X4(par, CRTHiOrd) & 0x07;
-	tmp |= 0x08;	/* line compare bit 10 */
+	tmp |= 0x08;	 
 	if (vtotal & 0x400) tmp |= 0x80;
 	if (vblankstart & 0x400) tmp |= 0x40;
 	if (vsyncstart & 0x400) tmp |= 0x20;
@@ -1238,24 +1204,24 @@ static int tridentfb_set_par(struct fb_info *info)
 
 	tmp = 0x40;
 	if (vblankstart & 0x200) tmp |= 0x20;
-//FIXME	if (info->var.vmode & FB_VMODE_DOUBLE) tmp |= 0x80;  /* double scan for 200 line modes */
+ 
 	write3X4(par, VGA_CRTC_MAX_SCAN, tmp);
 
 	write3X4(par, VGA_CRTC_LINE_COMPARE, 0xFF);
 	write3X4(par, VGA_CRTC_PRESET_ROW, 0);
 	write3X4(par, VGA_CRTC_MODE, 0xC3);
 
-	write3X4(par, LinearAddReg, 0x20);	/* enable linear addressing */
+	write3X4(par, LinearAddReg, 0x20);	 
 
 	tmp = (info->var.vmode & FB_VMODE_INTERLACED) ? 0x84 : 0x80;
-	/* enable access extended memory */
+	 
 	write3X4(par, CRTCModuleTest, tmp);
 	tmp = read3CE(par, MiscIntContReg) & ~0x4;
 	if (info->var.vmode & FB_VMODE_INTERLACED)
 		tmp |= 0x4;
 	write3CE(par, MiscIntContReg, tmp);
 
-	/* enable GE for text acceleration */
+	 
 	write3X4(par, GraphEngReg, 0x80);
 
 	switch (bpp) {
@@ -1280,26 +1246,26 @@ static int tridentfb_set_par(struct fb_info *info)
 		tmp |= 0x10;
 	if (iscyber(par->chip_id))
 		tmp |= 0x20;
-	write3X4(par, DRAMControl, tmp);	/* both IO, linear enable */
+	write3X4(par, DRAMControl, tmp);	 
 
 	write3X4(par, InterfaceSel, read3X4(par, InterfaceSel) | 0x40);
 	if (!is_xp(par->chip_id))
 		write3X4(par, Performance, read3X4(par, Performance) | 0x10);
-	/* MMIO & PCI read and write burst enable */
+	 
 	if (par->chip_id != TGUI9440 && par->chip_id != IMAGE975)
 		write3X4(par, PCIReg, read3X4(par, PCIReg) | 0x06);
 
 	vga_mm_wseq(par->io_virt, 0, 3);
-	vga_mm_wseq(par->io_virt, 1, 1); /* set char clock 8 dots wide */
-	/* enable 4 maps because needed in chain4 mode */
+	vga_mm_wseq(par->io_virt, 1, 1);  
+	 
 	vga_mm_wseq(par->io_virt, 2, 0x0F);
 	vga_mm_wseq(par->io_virt, 3, 0);
-	vga_mm_wseq(par->io_virt, 4, 0x0E); /* memory mode enable bitmaps ?? */
+	vga_mm_wseq(par->io_virt, 4, 0x0E);  
 
-	/* convert from picoseconds to kHz */
+	 
 	vclk = PICOS2KHZ(info->var.pixclock);
 
-	/* divide clock by 2 if 32bpp chain4 mode display and CPU path */
+	 
 	tmp = read3CE(par, MiscExtFunc) & 0xF0;
 	if (bpp == 32 || (par->chip_id == TGUI9440 && bpp == 16)) {
 		tmp |= 8;
@@ -1307,20 +1273,20 @@ static int tridentfb_set_par(struct fb_info *info)
 	}
 	set_vclk(par, vclk);
 	write3CE(par, MiscExtFunc, tmp | 0x12);
-	write3CE(par, 0x5, 0x40);	/* no CGA compat, allow 256 col */
-	write3CE(par, 0x6, 0x05);	/* graphics mode */
-	write3CE(par, 0x7, 0x0F);	/* planes? */
+	write3CE(par, 0x5, 0x40);	 
+	write3CE(par, 0x6, 0x05);	 
+	write3CE(par, 0x7, 0x0F);	 
 
-	/* graphics mode and support 256 color modes */
+	 
 	writeAttr(par, 0x10, 0x41);
-	writeAttr(par, 0x12, 0x0F);	/* planes */
-	writeAttr(par, 0x13, 0);	/* horizontal pel panning */
+	writeAttr(par, 0x12, 0x0F);	 
+	writeAttr(par, 0x13, 0);	 
 
-	/* colors */
+	 
 	for (tmp = 0; tmp < 0x10; tmp++)
 		writeAttr(par, tmp, tmp);
-	fb_readb(par->io_virt + VGA_IS1_RC);	/* flip-flop to index */
-	t_outb(par, 0x20, VGA_ATT_W);		/* enable attr */
+	fb_readb(par->io_virt + VGA_IS1_RC);	 
+	t_outb(par, 0x20, VGA_ATT_W);		 
 
 	switch (bpp) {
 	case 8:
@@ -1357,7 +1323,7 @@ static int tridentfb_set_par(struct fb_info *info)
 	return 0;
 }
 
-/* Set one color register */
+ 
 static int tridentfb_setcolreg(unsigned regno, unsigned red, unsigned green,
 			       unsigned blue, unsigned transp,
 			       struct fb_info *info)
@@ -1377,14 +1343,14 @@ static int tridentfb_setcolreg(unsigned regno, unsigned red, unsigned green,
 		t_outb(par, blue >> 10, VGA_PEL_D);
 
 	} else if (regno < 16) {
-		if (bpp == 16) {	/* RGB 565 */
+		if (bpp == 16) {	 
 			u32 col;
 
 			col = (red & 0xF800) | ((green & 0xFC00) >> 5) |
 				((blue & 0xF800) >> 11);
 			col |= col << 16;
 			((u32 *)(info->pseudo_palette))[regno] = col;
-		} else if (bpp == 32)		/* ARGB 8888 */
+		} else if (bpp == 32)		 
 			((u32 *)info->pseudo_palette)[regno] =
 				((transp & 0xFF00) << 16)	|
 				((red & 0xFF00) << 8)		|
@@ -1395,7 +1361,7 @@ static int tridentfb_setcolreg(unsigned regno, unsigned red, unsigned green,
 	return 0;
 }
 
-/* Try blanking the screen. For flat panels it does nothing */
+ 
 static int tridentfb_blank(int blank_mode, struct fb_info *info)
 {
 	unsigned char PMCont, DPMSCont;
@@ -1404,29 +1370,29 @@ static int tridentfb_blank(int blank_mode, struct fb_info *info)
 	debug("enter\n");
 	if (par->flatpanel)
 		return 0;
-	t_outb(par, 0x04, 0x83C8); /* Read DPMS Control */
+	t_outb(par, 0x04, 0x83C8);  
 	PMCont = t_inb(par, 0x83C6) & 0xFC;
 	DPMSCont = read3CE(par, PowerStatus) & 0xFC;
 	switch (blank_mode) {
 	case FB_BLANK_UNBLANK:
-		/* Screen: On, HSync: On, VSync: On */
+		 
 	case FB_BLANK_NORMAL:
-		/* Screen: Off, HSync: On, VSync: On */
+		 
 		PMCont |= 0x03;
 		DPMSCont |= 0x00;
 		break;
 	case FB_BLANK_HSYNC_SUSPEND:
-		/* Screen: Off, HSync: Off, VSync: On */
+		 
 		PMCont |= 0x02;
 		DPMSCont |= 0x01;
 		break;
 	case FB_BLANK_VSYNC_SUSPEND:
-		/* Screen: Off, HSync: On, VSync: Off */
+		 
 		PMCont |= 0x02;
 		DPMSCont |= 0x02;
 		break;
 	case FB_BLANK_POWERDOWN:
-		/* Screen: Off, HSync: Off, VSync: Off */
+		 
 		PMCont |= 0x00;
 		DPMSCont |= 0x03;
 		break;
@@ -1438,7 +1404,7 @@ static int tridentfb_blank(int blank_mode, struct fb_info *info)
 
 	debug("exit\n");
 
-	/* let fbcon do a softblank for us */
+	 
 	return (blank_mode == FB_BLANK_NORMAL) ? 1 : 0;
 }
 
@@ -1481,7 +1447,7 @@ static int trident_pci_probe(struct pci_dev *dev,
 
 	chip_id = id->device;
 
-	/* If PCI id is 0x9660 then further detect chip type */
+	 
 
 	if (chip_id == TGUI9660) {
 		revision = vga_io_rseq(RevisionID);
@@ -1532,13 +1498,13 @@ static int trident_pci_probe(struct pci_dev *dev,
 		default_par->copy_rect = blade_copy_rect;
 		default_par->image_blit = blade_image_blit;
 		tridentfb_fix.accel = FB_ACCEL_TRIDENT_BLADE3D;
-	} else if (chip3D) {			/* 3DImage family left */
+	} else if (chip3D) {			 
 		default_par->init_accel = image_init_accel;
 		default_par->wait_engine = image_wait_engine;
 		default_par->fill_rect = image_fill_rect;
 		default_par->copy_rect = image_copy_rect;
 		tridentfb_fix.accel = FB_ACCEL_TRIDENT_3DIMAGE;
-	} else { 				/* TGUI 9440/96XX family */
+	} else { 				 
 		default_par->init_accel = tgui_init_accel;
 		default_par->wait_engine = xp_wait_engine;
 		default_par->fill_rect = tgui_fill_rect;
@@ -1548,7 +1514,7 @@ static int trident_pci_probe(struct pci_dev *dev,
 
 	default_par->chip_id = chip_id;
 
-	/* setup MMIO region */
+	 
 	tridentfb_fix.mmio_start = pci_resource_start(dev, 1);
 	tridentfb_fix.mmio_len = pci_resource_len(dev, 1);
 
@@ -1570,7 +1536,7 @@ static int trident_pci_probe(struct pci_dev *dev,
 
 	enable_mmio(default_par);
 
-	/* setup framebuffer memory */
+	 
 	tridentfb_fix.smem_start = pci_resource_start(dev, 0);
 	tridentfb_fix.smem_len = get_memsize(default_par);
 
@@ -1654,7 +1620,7 @@ static int trident_pci_probe(struct pci_dev *dev,
 							 &info->modelist);
 				if (m) {
 					fb_videomode_to_var(&info->var, m);
-					/* fill all other info->var's fields */
+					 
 					if (tridentfb_check_var(&info->var,
 								info) == 0)
 						found = true;
@@ -1666,7 +1632,7 @@ static int trident_pci_probe(struct pci_dev *dev,
 	if (!mode_option && !found)
 		mode_option = "640x480-8@60";
 
-	/* Prepare startup mode */
+	 
 	if (mode_option) {
 		err = fb_find_mode(&info->var, info, mode_option,
 				   info->monspecs.modedb,
@@ -1733,7 +1699,7 @@ static void trident_pci_remove(struct pci_dev *dev)
 	framebuffer_release(info);
 }
 
-/* List of boards that we are trying to support */
+ 
 static const struct pci_device_id trident_devices[] = {
 	{PCI_VENDOR_ID_TRIDENT,	BLADE3D, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
 	{PCI_VENDOR_ID_TRIDENT,	CYBERBLADEi7, PCI_ANY_ID, PCI_ANY_ID, 0, 0, 0},
@@ -1768,11 +1734,7 @@ static struct pci_driver tridentfb_pci_driver = {
 	.remove = trident_pci_remove,
 };
 
-/*
- * Parse user specified options (`video=trident:')
- * example:
- *	video=trident:800x600,bpp=16,noaccel
- */
+ 
 #ifndef MODULE
 static int __init tridentfb_setup(char *options)
 {

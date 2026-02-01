@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/kernel.h>
 #include <linux/skbuff.h>
 #include <linux/export.h>
@@ -52,9 +52,7 @@ void skb_flow_dissector_init(struct flow_dissector *flow_dissector,
 	memset(flow_dissector, 0, sizeof(*flow_dissector));
 
 	for (i = 0; i < key_count; i++, key++) {
-		/* User should make sure that every key target offset is within
-		 * boundaries of unsigned short.
-		 */
+		 
 		BUG_ON(key->offset > USHRT_MAX);
 		BUG_ON(dissector_uses_key(flow_dissector,
 					  key->key_id));
@@ -63,9 +61,7 @@ void skb_flow_dissector_init(struct flow_dissector *flow_dissector,
 		flow_dissector->offset[key->key_id] = key->offset;
 	}
 
-	/* Ensure that the dissector always includes control and basic key.
-	 * That way we are able to avoid handling lack of these in fast path.
-	 */
+	 
 	BUG_ON(!dissector_uses_key(flow_dissector,
 				   FLOW_DISSECTOR_KEY_CONTROL));
 	BUG_ON(!dissector_uses_key(flow_dissector,
@@ -80,11 +76,7 @@ int flow_dissector_bpf_prog_attach_check(struct net *net,
 	enum netns_bpf_attach_type type = NETNS_BPF_FLOW_DISSECTOR;
 
 	if (net == &init_net) {
-		/* BPF flow dissector in the root namespace overrides
-		 * any per-net-namespace one. When attaching to root,
-		 * make sure we don't have any BPF program attached
-		 * to the non-root namespaces.
-		 */
+		 
 		struct net *ns;
 
 		for_each_net(ns) {
@@ -94,28 +86,16 @@ int flow_dissector_bpf_prog_attach_check(struct net *net,
 				return -EEXIST;
 		}
 	} else {
-		/* Make sure root flow dissector is not attached
-		 * when attaching to the non-root namespace.
-		 */
+		 
 		if (rcu_access_pointer(init_net.bpf.run_array[type]))
 			return -EEXIST;
 	}
 
 	return 0;
 }
-#endif /* CONFIG_BPF_SYSCALL */
+#endif  
 
-/**
- * __skb_flow_get_ports - extract the upper layer ports and return them
- * @skb: sk_buff to extract the ports from
- * @thoff: transport header offset
- * @ip_proto: protocol for which to get port offset
- * @data: raw buffer pointer to the packet, if NULL use skb->data
- * @hlen: packet header length, if @data is NULL use skb_headlen(skb)
- *
- * The function will try to retrieve the ports at offset thoff + poff where poff
- * is the protocol port offset returned from proto_ports_offset
- */
+ 
 __be32 __skb_flow_get_ports(const struct sk_buff *skb, int thoff, u8 ip_proto,
 			    const void *data, int hlen)
 {
@@ -154,14 +134,7 @@ static bool icmp_has_id(u8 type)
 	return false;
 }
 
-/**
- * skb_flow_get_icmp_tci - extract ICMP(6) Type, Code and Identifier fields
- * @skb: sk_buff to extract from
- * @key_icmp: struct flow_dissector_key_icmp to fill
- * @data: raw buffer pointer to the packet
- * @thoff: offset to extract at
- * @hlen: packet header length
- */
+ 
 void skb_flow_get_icmp_tci(const struct sk_buff *skb,
 			   struct flow_dissector_key_icmp *key_icmp,
 			   const void *data, int thoff, int hlen)
@@ -175,9 +148,7 @@ void skb_flow_get_icmp_tci(const struct sk_buff *skb,
 	key_icmp->type = ih->type;
 	key_icmp->code = ih->code;
 
-	/* As we use 0 to signal that the Id field is not present,
-	 * avoid confusion with packets without such field
-	 */
+	 
 	if (icmp_has_id(ih->type))
 		key_icmp->id = ih->un.echo.id ? ntohs(ih->un.echo.id) : 1;
 	else
@@ -185,9 +156,7 @@ void skb_flow_get_icmp_tci(const struct sk_buff *skb,
 }
 EXPORT_SYMBOL(skb_flow_get_icmp_tci);
 
-/* If FLOW_DISSECTOR_KEY_ICMP is set, dissect an ICMP packet
- * using skb_flow_get_icmp_tci().
- */
+ 
 static void __skb_flow_dissect_icmp(const struct sk_buff *skb,
 				    struct flow_dissector *flow_dissector,
 				    void *target_container, const void *data,
@@ -356,7 +325,7 @@ skb_flow_dissect_ct(const struct sk_buff *skb,
 	cl = nf_ct_labels_find(ct);
 	if (cl)
 		memcpy(key->ct_labels, cl->bits, sizeof(key->ct_labels));
-#endif /* CONFIG_NF_CONNTRACK */
+#endif  
 }
 EXPORT_SYMBOL(skb_flow_dissect_ct);
 
@@ -368,7 +337,7 @@ skb_flow_dissect_tunnel_info(const struct sk_buff *skb,
 	struct ip_tunnel_info *info;
 	struct ip_tunnel_key *key;
 
-	/* A quick check to see if there might be something to do. */
+	 
 	if (!dissector_uses_key(flow_dissector,
 				FLOW_DISSECTOR_KEY_ENC_KEYID) &&
 	    !dissector_uses_key(flow_dissector,
@@ -590,9 +559,7 @@ __skb_flow_dissect_arp(const struct sk_buff *skb,
 	memcpy(&key_arp->sip, arp_eth->ar_sip, sizeof(key_arp->sip));
 	memcpy(&key_arp->tip, arp_eth->ar_tip, sizeof(key_arp->tip));
 
-	/* Only store the lower byte of the opcode;
-	 * this covers ARPOP_REPLY and ARPOP_REQUEST.
-	 */
+	 
 	key_arp->op = ntohs(arp->ar_op) & 0xff;
 
 	ether_addr_copy(key_arp->sha, arp_eth->ar_sha);
@@ -643,18 +610,18 @@ __skb_flow_dissect_gre(const struct sk_buff *skb,
 	if (!hdr)
 		return FLOW_DISSECT_RET_OUT_BAD;
 
-	/* Only look inside GRE without routing */
+	 
 	if (hdr->flags & GRE_ROUTING)
 		return FLOW_DISSECT_RET_OUT_GOOD;
 
-	/* Only look inside GRE for version 0 and 1 */
+	 
 	gre_ver = ntohs(hdr->flags & GRE_VERSION);
 	if (gre_ver > 1)
 		return FLOW_DISSECT_RET_OUT_GOOD;
 
 	*p_proto = hdr->protocol;
 	if (gre_ver) {
-		/* Version1 must be PPTP, and check the flags */
+		 
 		if (!(*p_proto == GRE_PROTO_PPP && (hdr->flags & GRE_KEY)))
 			return FLOW_DISSECT_RET_OUT_GOOD;
 	}
@@ -704,14 +671,11 @@ __skb_flow_dissect_gre(const struct sk_buff *skb,
 			*p_proto = eth->h_proto;
 			offset += sizeof(*eth);
 
-			/* Cap headers that we access via pointers at the
-			 * end of the Ethernet header as our maximum alignment
-			 * at that point is only 2 bytes.
-			 */
+			 
 			if (NET_IP_ALIGN)
 				*p_hlen = *p_nhoff + offset;
 		}
-	} else { /* version 1, must be PPTP */
+	} else {  
 		u8 _ppp_hdr[PPP_HDRLEN];
 		u8 *ppp_hdr;
 
@@ -732,7 +696,7 @@ __skb_flow_dissect_gre(const struct sk_buff *skb,
 			*p_proto = htons(ETH_P_IPV6);
 			break;
 		default:
-			/* Could probably catch some more like MPLS */
+			 
 			break;
 		}
 
@@ -747,25 +711,7 @@ __skb_flow_dissect_gre(const struct sk_buff *skb,
 	return FLOW_DISSECT_RET_PROTO_AGAIN;
 }
 
-/**
- * __skb_flow_dissect_batadv() - dissect batman-adv header
- * @skb: sk_buff to with the batman-adv header
- * @key_control: flow dissectors control key
- * @data: raw buffer pointer to the packet, if NULL use skb->data
- * @p_proto: pointer used to update the protocol to process next
- * @p_nhoff: pointer used to update inner network header offset
- * @hlen: packet header length
- * @flags: any combination of FLOW_DISSECTOR_F_*
- *
- * ETH_P_BATMAN packets are tried to be dissected. Only
- * &struct batadv_unicast packets are actually processed because they contain an
- * inner ethernet header and are usually followed by actual network header. This
- * allows the flow dissector to continue processing the packet.
- *
- * Return: FLOW_DISSECT_RET_PROTO_AGAIN when &struct batadv_unicast was found,
- *  FLOW_DISSECT_RET_OUT_GOOD when dissector should stop after encapsulation,
- *  otherwise FLOW_DISSECT_RET_OUT_BAD
- */
+ 
 static enum flow_dissect_ret
 __skb_flow_dissect_batadv(const struct sk_buff *skb,
 			  struct flow_dissector_key_control *key_control,
@@ -884,9 +830,7 @@ __skb_flow_dissect_ipv6(const struct sk_buff *skb,
 	key_ip->ttl = iph->hop_limit;
 }
 
-/* Maximum number of protocol headers that can be parsed in
- * __skb_flow_dissect
- */
+ 
 #define MAX_FLOW_DISSECT_HDRS	15
 
 static bool skb_flow_dissect_allowed(int *num_hdrs)
@@ -974,7 +918,7 @@ u32 bpf_flow_dissect(struct bpf_prog *prog, struct bpf_flow_dissector *ctx,
 	struct bpf_flow_keys *flow_keys = ctx->flow_keys;
 	u32 result;
 
-	/* Pass parameters to the BPF program */
+	 
 	memset(flow_keys, 0, sizeof(*flow_keys));
 	flow_keys->n_proto = proto;
 	flow_keys->nhoff = nhoff;
@@ -1002,25 +946,7 @@ static bool is_pppoe_ses_hdr_valid(const struct pppoe_hdr *hdr)
 	return hdr->ver == 1 && hdr->type == 1 && hdr->code == 0;
 }
 
-/**
- * __skb_flow_dissect - extract the flow_keys struct and return it
- * @net: associated network namespace, derived from @skb if NULL
- * @skb: sk_buff to extract the flow from, can be NULL if the rest are specified
- * @flow_dissector: list of keys to dissect
- * @target_container: target structure to put dissected values into
- * @data: raw buffer pointer to the packet, if NULL use skb->data
- * @proto: protocol for which to get the flow, if @data is NULL use skb->protocol
- * @nhoff: network header offset, if @data is NULL use skb_network_offset(skb)
- * @hlen: packet header length, if @data is NULL use skb_headlen(skb)
- * @flags: flags that control the dissection process, e.g.
- *         FLOW_DISSECTOR_F_STOP_AT_ENCAP.
- *
- * The function will try to retrieve individual keys into target specified
- * by flow_dissector from either the skbuff or a raw buffer specified by the
- * rest parameters.
- *
- * Caller must take care of zeroing target container memory.
- */
+ 
 bool __skb_flow_dissect(const struct net *net,
 			const struct sk_buff *skb,
 			struct flow_dissector *flow_dissector,
@@ -1054,7 +980,7 @@ bool __skb_flow_dissect(const struct net *net,
 			int offset = 0;
 
 			ops = skb->dev->dsa_ptr->tag_ops;
-			/* Only DSA header taggers break flow dissection */
+			 
 			if (ops->needed_headroom &&
 			    (!md_dst || md_dst->type != METADATA_HW_PORT_MUX)) {
 				if (ops->flow_dissect)
@@ -1070,16 +996,12 @@ bool __skb_flow_dissect(const struct net *net,
 #endif
 	}
 
-	/* It is ensured by skb_flow_dissector_init() that control key will
-	 * be always present.
-	 */
+	 
 	key_control = skb_flow_dissector_target(flow_dissector,
 						FLOW_DISSECTOR_KEY_CONTROL,
 						target_container);
 
-	/* It is ensured by skb_flow_dissector_init() that basic key will
-	 * be always present.
-	 */
+	 
 	key_basic = skb_flow_dissector_target(flow_dissector,
 					      FLOW_DISSECTOR_KEY_BASIC,
 					      target_container);
@@ -1116,10 +1038,7 @@ bool __skb_flow_dissect(const struct net *net,
 
 			if (skb) {
 				ctx.skb = skb;
-				/* we can't use 'proto' in the skb case
-				 * because it might be set to skb->vlan_proto
-				 * which has been pulled from the data
-				 */
+				 
 				n_proto = skb->protocol;
 			}
 
@@ -1340,9 +1259,7 @@ proto_again:
 			break;
 		}
 
-		/* least significant bit of the most significant octet
-		 * indicates if protocol field was compressed
-		 */
+		 
 		ppp_proto = ntohs(hdr->proto);
 		if (ppp_proto & 0x0100) {
 			ppp_proto = ppp_proto >> 8;
@@ -1479,7 +1396,7 @@ proto_again:
 		break;
 	}
 
-	/* Process result of proto processing */
+	 
 	switch (fdret) {
 	case FLOW_DISSECT_RET_OUT_GOOD:
 		goto out_good;
@@ -1631,7 +1548,7 @@ ip_proto_again:
 		__skb_flow_dissect_ports(skb, flow_dissector, target_container,
 					 data, nhoff, ip_proto, hlen);
 
-	/* Process result of IP proto processing */
+	 
 	switch (fdret) {
 	case FLOW_DISSECT_RET_PROTO_AGAIN:
 		if (skb_flow_dissect_allowed(&num_hdrs))
@@ -1727,9 +1644,7 @@ __be32 flow_get_u32_dst(const struct flow_keys *flow)
 }
 EXPORT_SYMBOL(flow_get_u32_dst);
 
-/* Sort the source and destination IP and the ports,
- * to have consistent hash within the two directions
- */
+ 
 static inline void __flow_hash_consistentify(struct flow_keys *keys)
 {
 	int addr_diff, i;
@@ -1837,15 +1752,7 @@ u32 __skb_get_hash_symmetric(const struct sk_buff *skb)
 }
 EXPORT_SYMBOL_GPL(__skb_get_hash_symmetric);
 
-/**
- * __skb_get_hash: calculate a flow hash
- * @skb: sk_buff to calculate flow hash from
- *
- * This function calculates a flow hash based on src/dst addresses
- * and src/dst port numbers.  Sets hash in skb to non-zero hash value
- * on success, zero indicates no valid hash.  Also, sets l4_hash in skb
- * if hash is a canonical 4-tuple hash over transport ports.
- */
+ 
 void __skb_get_hash(struct sk_buff *skb)
 {
 	struct flow_keys keys;
@@ -1873,14 +1780,14 @@ u32 __skb_get_poff(const struct sk_buff *skb, const void *data,
 {
 	u32 poff = keys->control.thoff;
 
-	/* skip L4 headers for fragments after the first */
+	 
 	if ((keys->control.flags & FLOW_DIS_IS_FRAGMENT) &&
 	    !(keys->control.flags & FLOW_DIS_FIRST_FRAG))
 		return poff;
 
 	switch (keys->basic.ip_proto) {
 	case IPPROTO_TCP: {
-		/* access doff as u8 to avoid unaligned access */
+		 
 		const u8 *doff;
 		u8 _doff;
 
@@ -1896,9 +1803,7 @@ u32 __skb_get_poff(const struct sk_buff *skb, const void *data,
 	case IPPROTO_UDPLITE:
 		poff += sizeof(struct udphdr);
 		break;
-	/* For the rest, we do not really care about header
-	 * extensions at this point for now.
-	 */
+	 
 	case IPPROTO_ICMP:
 		poff += sizeof(struct icmphdr);
 		break;
@@ -1919,15 +1824,7 @@ u32 __skb_get_poff(const struct sk_buff *skb, const void *data,
 	return poff;
 }
 
-/**
- * skb_get_poff - get the offset to the payload
- * @skb: sk_buff to get the payload offset from
- *
- * The function will get the offset to the payload as far as it could
- * be dissected.  The main user is currently BPF, so that we can dynamically
- * truncate packets without needing to push actual payload to the user
- * space and can analyze headers only, instead.
- */
+ 
 u32 skb_get_poff(const struct sk_buff *skb)
 {
 	struct flow_keys_basic keys;

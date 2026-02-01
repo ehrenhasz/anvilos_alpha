@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * arizona-spi.c  --  Arizona SPI bus interface
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/err.h>
@@ -34,10 +28,7 @@ static const struct acpi_gpio_mapping arizona_acpi_gpios[] = {
 	{ }
 };
 
-/*
- * The ACPI resources for the device only describe external GPIO-s. They do
- * not provide mappings for the GPIO-s coming from the Arizona codec itself.
- */
+ 
 static const struct gpiod_lookup arizona_soc_gpios[] = {
 	{ "arizona", 2, "wlf,spkvdd-ena", 0, GPIO_ACTIVE_HIGH },
 	{ "arizona", 4, "wlf,micd-pol", 0, GPIO_ACTIVE_LOW },
@@ -48,17 +39,17 @@ static void arizona_spi_acpi_remove_lookup(void *lookup)
 	gpiod_remove_lookup_table(lookup);
 }
 
-/* For ACPI tables from boards which ship with Windows as factory OS */
+ 
 static int arizona_spi_acpi_windows_probe(struct arizona *arizona)
 {
 	struct gpiod_lookup_table *lookup;
 	acpi_status status;
 	int ret;
 
-	/* Add mappings for the 2 ACPI declared GPIOs used for reset and ldo-ena */
+	 
 	devm_acpi_dev_add_driver_gpios(arizona->dev, arizona_acpi_gpios);
 
-	/* Add lookups for the SoCs own GPIOs used for micdet-polarity and spkVDD-enable */
+	 
 	lookup = devm_kzalloc(arizona->dev,
 			      struct_size(lookup, table, ARRAY_SIZE(arizona_soc_gpios) + 1),
 			      GFP_KERNEL);
@@ -73,7 +64,7 @@ static int arizona_spi_acpi_windows_probe(struct arizona *arizona)
 	if (ret)
 		return ret;
 
-	/* Enable 32KHz clock from SoC to codec for jack-detect */
+	 
 	status = acpi_evaluate_object(ACPI_HANDLE(arizona->dev), "CLKE", NULL, NULL);
 	if (ACPI_FAILURE(status))
 		dev_warn(arizona->dev, "Failed to enable 32KHz clk ACPI error %d\n", status);
@@ -81,16 +72,12 @@ static int arizona_spi_acpi_windows_probe(struct arizona *arizona)
 	return 0;
 }
 
-/* For ACPI tables from boards which ship with Android as factory OS */
+ 
 static int arizona_spi_acpi_android_probe(struct arizona *arizona)
 {
 	int ret;
 
-	/*
-	 * Get the reset GPIO, treating -ENOENT as -EPROBE_DEFER to wait for
-	 * the x86-android-tablets module to register the board specific GPIO
-	 * lookup table.
-	 */
+	 
 	arizona->pdata.reset = devm_gpiod_get(arizona->dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(arizona->pdata.reset)) {
 		ret = PTR_ERR(arizona->pdata.reset);
@@ -105,18 +92,7 @@ static int arizona_spi_acpi_android_probe(struct arizona *arizona)
 	return 0;
 }
 
-/*
- * The AOSP 3.5 mm Headset: Accessory Specification gives the following values:
- * Function A Play/Pause:           0 ohm
- * Function D Voice assistant:    135 ohm
- * Function B Volume Up           240 ohm
- * Function C Volume Down         470 ohm
- * Minimum Mic DC resistance     1000 ohm
- * Minimum Ear speaker impedance   16 ohm
- * Note the first max value below must be less then the min. speaker impedance,
- * to allow CTIA/OMTP detection to work. The other max values are the closest
- * value from extcon-arizona.c:arizona_micd_levels halfway 2 button resistances.
- */
+ 
 static const struct arizona_micd_range arizona_micd_aosp_ranges[] = {
 	{ .max =  11, .key = KEY_PLAYPAUSE },
 	{ .max = 186, .key = KEY_VOICECOMMAND },
@@ -137,29 +113,17 @@ static int arizona_spi_acpi_probe(struct arizona *arizona)
 	if (ret)
 		return ret;
 
-	/*
-	 * Some DSDTs wrongly declare the IRQ trigger-type as IRQF_TRIGGER_FALLING
-	 * The IRQ line will stay low when a new IRQ event happens between reading
-	 * the IRQ status flags and acknowledging them. When the IRQ line stays
-	 * low like this the IRQ will never trigger again when its type is set
-	 * to IRQF_TRIGGER_FALLING. Correct the IRQ trigger-type to fix this.
-	 *
-	 * Note theoretically it is possible that some boards are not capable
-	 * of handling active low level interrupts. In that case setting the
-	 * flag to IRQF_TRIGGER_FALLING would not be a bug (and we would need
-	 * to work around this) but so far all known usages of IRQF_TRIGGER_FALLING
-	 * are a bug in the board's DSDT.
-	 */
+	 
 	arizona->pdata.irq_flags = IRQF_TRIGGER_LOW;
 
-	/* Wait 200 ms after jack insertion */
+	 
 	arizona->pdata.micd_detect_debounce = 200;
 
-	/* Use standard AOSP values for headset-button mappings */
+	 
 	arizona->pdata.micd_ranges = arizona_micd_aosp_ranges;
 	arizona->pdata.num_micd_ranges = ARRAY_SIZE(arizona_micd_aosp_ranges);
 
-	/* Use left headphone speaker for HP vs line-out detection */
+	 
 	arizona->pdata.hpdet_channel = ARIZONA_ACCDET_MODE_HPL;
 
 	return 0;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * LCD panel support for the Palm Tungsten E
- *
- * Original version : Romain Goyet <r.goyet@gmail.com>
- * Current version : Laurent Gonzalez <palmte.linux@free.fr>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>

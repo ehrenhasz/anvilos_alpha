@@ -1,26 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "chan.h"
 #include "chid.h"
 #include "cgrp.h"
@@ -50,19 +28,17 @@ nvkm_chan_cctx_bind(struct nvkm_chan *chan, struct nvkm_engn *engn, struct nvkm_
 
 	CHAN_TRACE(chan, "%sbind cctx %d[%s]", cctx ? "" : "un", engn->id, engine->subdev.name);
 
-	/* Prevent any channel in channel group from being rescheduled, kick them
-	 * off host and any engine(s) they're loaded on.
-	 */
+	 
 	if (cgrp->hw)
 		nvkm_runl_block(runl);
 	else
 		nvkm_chan_block(chan);
 	nvkm_chan_preempt(chan, true);
 
-	/* Update context pointer. */
+	 
 	engn->func->bind(engn, cctx, chan);
 
-	/* Resume normal operation. */
+	 
 	if (cgrp->hw)
 		nvkm_runl_allow(runl);
 	else
@@ -98,7 +74,7 @@ nvkm_chan_cctx_get(struct nvkm_chan *chan, struct nvkm_engn *engn, struct nvkm_c
 	struct nvkm_cctx *cctx;
 	int ret;
 
-	/* Look for an existing channel context for this engine+VEID. */
+	 
 	mutex_lock(&cgrp->mutex);
 	cctx = nvkm_list_find(cctx, &chan->cctxs, head,
 			      cctx->vctx->ectx->engn == engn && cctx->vctx->vmm == chan->vmm);
@@ -109,14 +85,14 @@ nvkm_chan_cctx_get(struct nvkm_chan *chan, struct nvkm_engn *engn, struct nvkm_c
 		return 0;
 	}
 
-	/* Nope - create a fresh one.  But, sub-context first. */
+	 
 	ret = nvkm_cgrp_vctx_get(cgrp, engn, chan, &vctx, client);
 	if (ret) {
 		CHAN_ERROR(chan, "vctx %d[%s]: %d", engn->id, engn->engine->subdev.name, ret);
 		goto done;
 	}
 
-	/* Now, create the channel context - to track engine binding. */
+	 
 	CHAN_TRACE(chan, "ctor cctx %d[%s]", engn->id, engn->engine->subdev.name);
 	if (!(cctx = *pcctx = kzalloc(sizeof(*cctx), GFP_KERNEL))) {
 		nvkm_cgrp_vctx_put(cgrp, &vctx);
@@ -353,7 +329,7 @@ nvkm_chan_new_(const struct nvkm_chan_func *func, struct nvkm_runl *runl, int ru
 	struct nvkm_chan *chan;
 	int ret;
 
-	/* Validate arguments against class requirements. */
+	 
 	if ((runq && runq >= runl->func->runqs) ||
 	    (!func->inst->vmm != !vmm) ||
 	    ((func->userd->bar < 0) == !userd) ||
@@ -381,14 +357,7 @@ nvkm_chan_new_(const struct nvkm_chan_func *func, struct nvkm_runl *runl, int ru
 	INIT_LIST_HEAD(&chan->cctxs);
 	INIT_LIST_HEAD(&chan->head);
 
-	/* Join channel group.
-	 *
-	 * GK110 and newer support channel groups (aka TSGs), where individual channels
-	 * share a timeslice, and, engine context(s).
-	 *
-	 * As such, engine contexts are tracked in nvkm_cgrp and we need them even when
-	 * channels aren't in an API channel group, and on HW that doesn't support TSGs.
-	 */
+	 
 	if (!cgrp) {
 		ret = nvkm_cgrp_new(runl, chan->name, vmm, fifo->func->cgrp.force, &chan->cgrp);
 		if (ret) {
@@ -406,7 +375,7 @@ nvkm_chan_new_(const struct nvkm_chan_func *func, struct nvkm_runl *runl, int ru
 		chan->cgrp = nvkm_cgrp_ref(cgrp);
 	}
 
-	/* Allocate instance block. */
+	 
 	ret = nvkm_gpuobj_new(device, func->inst->size, 0x1000, func->inst->zero, NULL,
 			      &chan->inst);
 	if (ret) {
@@ -414,7 +383,7 @@ nvkm_chan_new_(const struct nvkm_chan_func *func, struct nvkm_runl *runl, int ru
 		return ret;
 	}
 
-	/* Initialise virtual address-space. */
+	 
 	if (func->inst->vmm) {
 		if (WARN_ON(vmm->mmu != device->mmu))
 			return -EINVAL;
@@ -428,7 +397,7 @@ nvkm_chan_new_(const struct nvkm_chan_func *func, struct nvkm_runl *runl, int ru
 		chan->vmm = nvkm_vmm_ref(vmm);
 	}
 
-	/* Allocate HW ctxdma for push buffer. */
+	 
 	if (func->ramfc->ctxdma) {
 		ret = nvkm_object_bind(&dmaobj->object, chan->inst, -16, &chan->push);
 		if (ret) {
@@ -437,7 +406,7 @@ nvkm_chan_new_(const struct nvkm_chan_func *func, struct nvkm_runl *runl, int ru
 		}
 	}
 
-	/* Allocate channel ID. */
+	 
 	chan->id = nvkm_chid_get(runl->chid, chan);
 	if (chan->id < 0) {
 		RUNL_ERROR(runl, "!chids");
@@ -447,7 +416,7 @@ nvkm_chan_new_(const struct nvkm_chan_func *func, struct nvkm_runl *runl, int ru
 	if (cgrp->id < 0)
 		cgrp->id = chan->id;
 
-	/* Initialise USERD. */
+	 
 	if (func->userd->bar < 0) {
 		if (ouserd + chan->func->userd->size >= nvkm_memory_size(userd)) {
 			RUNL_DEBUG(runl, "ouserd %llx", ouserd);
@@ -469,7 +438,7 @@ nvkm_chan_new_(const struct nvkm_chan_func *func, struct nvkm_runl *runl, int ru
 	if (chan->func->userd->clear)
 		chan->func->userd->clear(chan);
 
-	/* Initialise RAMFC. */
+	 
 	ret = chan->func->ramfc->write(chan, offset, length, devm, priv);
 	if (ret) {
 		RUNL_DEBUG(runl, "ramfc %d", ret);

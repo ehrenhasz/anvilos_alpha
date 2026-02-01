@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021
- * Author(s): Giulio Benetti <giulio.benetti@benettiengineering.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -558,7 +555,7 @@ static const struct i2c_device_id hycon_hy46xx_id[] = {
 	{ .name = "hy4623" },
 	{ .name = "hy4633" },
 	{ .name = "hy4635" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, hycon_hy46xx_id);
 
@@ -569,7 +566,7 @@ static const struct of_device_id hycon_hy46xx_of_match[] = {
 	{ .compatible = "hycon,hy4623" },
 	{ .compatible = "hycon,hy4633" },
 	{ .compatible = "hycon,hy4635" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, hycon_hy46xx_of_match);
 

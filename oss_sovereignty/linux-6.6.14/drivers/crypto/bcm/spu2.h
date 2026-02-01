@@ -1,11 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2016 Broadcom
- */
+ 
+ 
 
-/*
- * This file contains SPU message definitions specific to SPU2.
- */
+ 
 
 #ifndef _SPU2_H
 #define _SPU2_H
@@ -65,13 +61,13 @@ enum spu2_hash_mode {
 };
 
 enum spu2_ret_md_opts {
-	SPU2_RET_NO_MD = 0,	/* return no metadata */
-	SPU2_RET_FMD_OMD = 1,	/* return both FMD and OMD */
-	SPU2_RET_FMD_ONLY = 2,	/* return only FMD */
-	SPU2_RET_FMD_OMD_IV = 3,	/* return FMD and OMD with just IVs */
+	SPU2_RET_NO_MD = 0,	 
+	SPU2_RET_FMD_OMD = 1,	 
+	SPU2_RET_FMD_ONLY = 2,	 
+	SPU2_RET_FMD_OMD_IV = 3,	 
 };
 
-/* Fixed Metadata format */
+ 
 struct SPU2_FMD {
 	__le64 ctrl0;
 	__le64 ctrl1;
@@ -81,94 +77,79 @@ struct SPU2_FMD {
 
 #define FMD_SIZE  sizeof(struct SPU2_FMD)
 
-/* Fixed part of request message header length in bytes. Just FMD. */
+ 
 #define SPU2_REQ_FIXED_LEN FMD_SIZE
 #define SPU2_HEADER_ALLOC_LEN (SPU_REQ_FIXED_LEN + \
 				2 * MAX_KEY_SIZE + 2 * MAX_IV_SIZE)
 
-/* FMD ctrl0 field masks */
-#define SPU2_CIPH_ENCRYPT_EN            0x1 /* 0: decrypt, 1: encrypt */
-#define SPU2_CIPH_TYPE                 0xF0 /* one of spu2_cipher_type */
+ 
+#define SPU2_CIPH_ENCRYPT_EN            0x1  
+#define SPU2_CIPH_TYPE                 0xF0  
 #define SPU2_CIPH_TYPE_SHIFT              4
-#define SPU2_CIPH_MODE                0xF00 /* one of spu2_cipher_mode */
+#define SPU2_CIPH_MODE                0xF00  
 #define SPU2_CIPH_MODE_SHIFT              8
-#define SPU2_CFB_MASK                0x7000 /* cipher feedback mask */
+#define SPU2_CFB_MASK                0x7000  
 #define SPU2_CFB_MASK_SHIFT              12
-#define SPU2_PROTO_SEL             0xF00000 /* MACsec, IPsec, TLS... */
+#define SPU2_PROTO_SEL             0xF00000  
 #define SPU2_PROTO_SEL_SHIFT             20
-#define SPU2_HASH_FIRST           0x1000000 /* 1: hash input is input pkt
-					     * data
-					     */
-#define SPU2_CHK_TAG              0x2000000 /* 1: check digest provided */
-#define SPU2_HASH_TYPE          0x1F0000000 /* one of spu2_hash_type */
+#define SPU2_HASH_FIRST           0x1000000  
+#define SPU2_CHK_TAG              0x2000000  
+#define SPU2_HASH_TYPE          0x1F0000000  
 #define SPU2_HASH_TYPE_SHIFT             28
-#define SPU2_HASH_MODE         0xF000000000 /* one of spu2_hash_mode */
+#define SPU2_HASH_MODE         0xF000000000  
 #define SPU2_HASH_MODE_SHIFT             36
-#define SPU2_CIPH_PAD_EN     0x100000000000 /* 1: Add pad to end of payload for
-					     *    enc
-					     */
-#define SPU2_CIPH_PAD      0xFF000000000000 /* cipher pad value */
+#define SPU2_CIPH_PAD_EN     0x100000000000  
+#define SPU2_CIPH_PAD      0xFF000000000000  
 #define SPU2_CIPH_PAD_SHIFT              48
 
-/* FMD ctrl1 field masks */
-#define SPU2_TAG_LOC                    0x1 /* 1: end of payload, 0: undef */
-#define SPU2_HAS_FR_DATA                0x2 /* 1: msg has frame data */
-#define SPU2_HAS_AAD1                   0x4 /* 1: msg has AAD1 field */
-#define SPU2_HAS_NAAD                   0x8 /* 1: msg has NAAD field */
-#define SPU2_HAS_AAD2                  0x10 /* 1: msg has AAD2 field */
-#define SPU2_HAS_ESN                   0x20 /* 1: msg has ESN field */
-#define SPU2_HASH_KEY_LEN            0xFF00 /* len of hash key in bytes.
-					     * HMAC only.
-					     */
+ 
+#define SPU2_TAG_LOC                    0x1  
+#define SPU2_HAS_FR_DATA                0x2  
+#define SPU2_HAS_AAD1                   0x4  
+#define SPU2_HAS_NAAD                   0x8  
+#define SPU2_HAS_AAD2                  0x10  
+#define SPU2_HAS_ESN                   0x20  
+#define SPU2_HASH_KEY_LEN            0xFF00  
 #define SPU2_HASH_KEY_LEN_SHIFT           8
-#define SPU2_CIPH_KEY_LEN         0xFF00000 /* len of cipher key in bytes */
+#define SPU2_CIPH_KEY_LEN         0xFF00000  
 #define SPU2_CIPH_KEY_LEN_SHIFT          20
-#define SPU2_GENIV               0x10000000 /* 1: hw generates IV */
-#define SPU2_HASH_IV             0x20000000 /* 1: IV incl in hash */
-#define SPU2_RET_IV              0x40000000 /* 1: return IV in output msg
-					     *    b4 payload
-					     */
-#define SPU2_RET_IV_LEN         0xF00000000 /* length in bytes of IV returned.
-					     * 0 = 16 bytes
-					     */
+#define SPU2_GENIV               0x10000000  
+#define SPU2_HASH_IV             0x20000000  
+#define SPU2_RET_IV              0x40000000  
+#define SPU2_RET_IV_LEN         0xF00000000  
 #define SPU2_RET_IV_LEN_SHIFT            32
-#define SPU2_IV_OFFSET         0xF000000000 /* gen IV offset */
+#define SPU2_IV_OFFSET         0xF000000000  
 #define SPU2_IV_OFFSET_SHIFT             36
-#define SPU2_IV_LEN          0x1F0000000000 /* length of input IV in bytes */
+#define SPU2_IV_LEN          0x1F0000000000  
 #define SPU2_IV_LEN_SHIFT                40
-#define SPU2_HASH_TAG_LEN  0x7F000000000000 /* hash tag length in bytes */
+#define SPU2_HASH_TAG_LEN  0x7F000000000000  
 #define SPU2_HASH_TAG_LEN_SHIFT          48
-#define SPU2_RETURN_MD    0x300000000000000 /* return metadata */
+#define SPU2_RETURN_MD    0x300000000000000  
 #define SPU2_RETURN_MD_SHIFT             56
 #define SPU2_RETURN_FD    0x400000000000000
 #define SPU2_RETURN_AAD1  0x800000000000000
 #define SPU2_RETURN_NAAD 0x1000000000000000
 #define SPU2_RETURN_AAD2 0x2000000000000000
-#define SPU2_RETURN_PAY  0x4000000000000000 /* return payload */
+#define SPU2_RETURN_PAY  0x4000000000000000  
 
-/* FMD ctrl2 field masks */
-#define SPU2_AAD1_OFFSET              0xFFF /* byte offset of AAD1 field */
-#define SPU2_AAD1_LEN               0xFF000 /* length of AAD1 in bytes */
+ 
+#define SPU2_AAD1_OFFSET              0xFFF  
+#define SPU2_AAD1_LEN               0xFF000  
 #define SPU2_AAD1_LEN_SHIFT              12
-#define SPU2_AAD2_OFFSET         0xFFF00000 /* byte offset of AAD2 field */
+#define SPU2_AAD2_OFFSET         0xFFF00000  
 #define SPU2_AAD2_OFFSET_SHIFT           20
-#define SPU2_PL_OFFSET   0xFFFFFFFF00000000 /* payload offset from AAD2 */
+#define SPU2_PL_OFFSET   0xFFFFFFFF00000000  
 #define SPU2_PL_OFFSET_SHIFT             32
 
-/* FMD ctrl3 field masks */
-#define SPU2_PL_LEN              0xFFFFFFFF /* payload length in bytes */
-#define SPU2_TLS_LEN         0xFFFF00000000 /* TLS encrypt: cipher len
-					     * TLS decrypt: compressed len
-					     */
+ 
+#define SPU2_PL_LEN              0xFFFFFFFF  
+#define SPU2_TLS_LEN         0xFFFF00000000  
 #define SPU2_TLS_LEN_SHIFT               32
 
-/*
- * Max value that can be represented in the Payload Length field of the
- * ctrl3 word of FMD.
- */
+ 
 #define SPU2_MAX_PAYLOAD  SPU2_PL_LEN
 
-/* Error values returned in STATUS field of response messages */
+ 
 #define SPU2_INVALID_ICV  1
 
 void spu2_dump_msg_hdr(u8 *buf, unsigned int buf_len);

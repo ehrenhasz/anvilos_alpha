@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/cpufreq/freq_table.c
- *
- * Copyright (C) 2002 - 2003 Dominik Brodowski
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/cpufreq.h>
 #include <linux/module.h>
 
-/*********************************************************************
- *                     FREQUENCY TABLE HELPERS                       *
- *********************************************************************/
+ 
 
 bool policy_has_boost_freq(struct cpufreq_policy *policy)
 {
@@ -53,10 +47,7 @@ int cpufreq_frequency_table_cpuinfo(struct cpufreq_policy *policy,
 
 	policy->min = policy->cpuinfo.min_freq = min_freq;
 	policy->max = max_freq;
-	/*
-	 * If the driver has set its own cpuinfo.max_freq above max_freq, leave
-	 * it as is.
-	 */
+	 
 	if (policy->cpuinfo.max_freq < max_freq)
 		policy->max = policy->cpuinfo.max_freq = max_freq;
 
@@ -102,10 +93,7 @@ int cpufreq_frequency_table_verify(struct cpufreq_policy_data *policy,
 }
 EXPORT_SYMBOL_GPL(cpufreq_frequency_table_verify);
 
-/*
- * Generic routine to verify policy & frequency table, requires driver to set
- * policy->freq_table prior to it.
- */
+ 
 int cpufreq_generic_frequency_table_verify(struct cpufreq_policy_data *policy)
 {
 	if (!policy->freq_table)
@@ -227,9 +215,7 @@ int cpufreq_frequency_table_get_index(struct cpufreq_policy *policy,
 }
 EXPORT_SYMBOL_GPL(cpufreq_frequency_table_get_index);
 
-/*
- * show_available_freqs - show available frequencies for the specified CPU
- */
+ 
 static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf,
 				    bool show_boost)
 {
@@ -240,17 +226,7 @@ static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf,
 		return -ENODEV;
 
 	cpufreq_for_each_valid_entry(pos, table) {
-		/*
-		 * show_boost = true and driver_data = BOOST freq
-		 * display BOOST freqs
-		 *
-		 * show_boost = false and driver_data = BOOST freq
-		 * show_boost = true and driver_data != BOOST freq
-		 * continue - do not display anything
-		 *
-		 * show_boost = false and driver_data != BOOST freq
-		 * display NON BOOST freqs
-		 */
+		 
 		if (show_boost ^ (pos->flags & CPUFREQ_BOOST_FREQ))
 			continue;
 
@@ -266,10 +242,7 @@ static ssize_t show_available_freqs(struct cpufreq_policy *policy, char *buf,
 struct freq_attr cpufreq_freq_attr_##_name##_freqs =     \
 __ATTR_RO(_name##_frequencies)
 
-/*
- * scaling_available_frequencies_show - show available normal frequencies for
- * the specified CPU
- */
+ 
 static ssize_t scaling_available_frequencies_show(struct cpufreq_policy *policy,
 						  char *buf)
 {
@@ -278,10 +251,7 @@ static ssize_t scaling_available_frequencies_show(struct cpufreq_policy *policy,
 cpufreq_attr_available_freq(scaling_available);
 EXPORT_SYMBOL_GPL(cpufreq_freq_attr_scaling_available_freqs);
 
-/*
- * scaling_boost_frequencies_show - show available boost frequencies for
- * the specified CPU
- */
+ 
 static ssize_t scaling_boost_frequencies_show(struct cpufreq_policy *policy,
 					      char *buf)
 {
@@ -316,9 +286,9 @@ static int set_freq_table_sorted(struct cpufreq_policy *policy)
 			return -EINVAL;
 		}
 
-		/* Frequency increased from prev to pos */
+		 
 		if (pos->frequency > prev->frequency) {
-			/* But frequency was decreasing earlier */
+			 
 			if (ascending < 0) {
 				pr_debug("Freq table is unsorted\n");
 				return 0;
@@ -326,9 +296,9 @@ static int set_freq_table_sorted(struct cpufreq_policy *policy)
 
 			ascending++;
 		} else {
-			/* Frequency decreased from prev to pos */
+			 
 
-			/* But frequency was increasing earlier */
+			 
 			if (ascending > 0) {
 				pr_debug("Freq table is unsorted\n");
 				return 0;
@@ -356,7 +326,7 @@ int cpufreq_table_validate_and_sort(struct cpufreq_policy *policy)
 	int ret;
 
 	if (!policy->freq_table) {
-		/* Freq table must be passed by drivers with target_index() */
+		 
 		if (has_target_index())
 			return -EINVAL;
 

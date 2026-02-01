@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #define DPRINTK(fmt, ...)				\
@@ -31,7 +31,7 @@
 
 
 
-/* device/<type>/<id> => <type>-<id> */
+ 
 static int frontend_bus_id(char bus_id[XEN_BUS_ID_SIZE], const char *nodename)
 {
 	nodename = strchr(nodename, '/');
@@ -49,14 +49,14 @@ static int frontend_bus_id(char bus_id[XEN_BUS_ID_SIZE], const char *nodename)
 	return 0;
 }
 
-/* device/<typename>/<name> */
+ 
 static int xenbus_probe_frontend(struct xen_bus_type *bus, const char *type,
 				 const char *name)
 {
 	char *nodename;
 	int err;
 
-	/* ignore console/0 */
+	 
 	if (!strncmp(type, "console", 7) && !strncmp(name, "0", 1)) {
 		DPRINTK("Ignoring buggy device entry console/0");
 		return 0;
@@ -100,10 +100,7 @@ static void xenbus_frontend_delayed_resume(struct work_struct *w)
 
 static int xenbus_frontend_dev_resume(struct device *dev)
 {
-	/*
-	 * If xenstored is running in this domain, we cannot access the backend
-	 * state at the moment, so we need to defer xenbus_dev_resume
-	 */
+	 
 	if (xen_store_domain_type == XS_LOCAL) {
 		struct xenbus_device *xdev = to_xenbus_device(dev);
 
@@ -157,7 +154,7 @@ static const struct dev_pm_ops xenbus_pm_ops = {
 
 static struct xen_bus_type xenbus_frontend = {
 	.root = "device",
-	.levels = 2,		/* device/type/<id> */
+	.levels = 2,		 
 	.get_bus_id = frontend_bus_id,
 	.probe = xenbus_probe_frontend,
 	.otherend_changed = backend_changed,
@@ -183,7 +180,7 @@ static void frontend_changed(struct xenbus_watch *watch,
 }
 
 
-/* We watch for devices appearing and vanishing. */
+ 
 static struct xenbus_watch fe_watch = {
 	.node = "device",
 	.callback = frontend_changed,
@@ -200,14 +197,11 @@ static int is_device_connecting(struct device *dev, void *data, bool ignore_none
 	struct device_driver *drv = data;
 	struct xenbus_driver *xendrv;
 
-	/*
-	 * A device with no driver will never connect. We care only about
-	 * devices which should currently be in the process of connecting.
-	 */
+	 
 	if (!dev->driver)
 		return 0;
 
-	/* Is this search limited to a particular driver? */
+	 
 	if (drv && (dev->driver != drv))
 		return 0;
 
@@ -222,7 +216,7 @@ static int is_device_connecting(struct device *dev, void *data, bool ignore_none
 }
 static int essential_device_connecting(struct device *dev, void *data)
 {
-	return is_device_connecting(dev, data, true /* ignore PV[KBB+FB] */);
+	return is_device_connecting(dev, data, true  );
 }
 static int non_essential_device_connecting(struct device *dev, void *data)
 {
@@ -245,12 +239,12 @@ static int print_device_status(struct device *dev, void *data)
 	struct xenbus_device *xendev = to_xenbus_device(dev);
 	struct device_driver *drv = data;
 
-	/* Is this operation limited to a particular driver? */
+	 
 	if (drv && (dev->driver != drv))
 		return 0;
 
 	if (!dev->driver) {
-		/* Information only: is this too noisy? */
+		 
 		pr_info("Device with no driver: %s\n", xendev->nodename);
 	} else if (xendev->state < XenbusStateConnected) {
 		enum xenbus_state rstate = XenbusStateUnknown;
@@ -263,7 +257,7 @@ static int print_device_status(struct device *dev, void *data)
 	return 0;
 }
 
-/* We only wait for device setup after most initcalls have run. */
+ 
 static int ready_to_wait_for_devices;
 
 static bool wait_loop(unsigned long start, unsigned int max_delay,
@@ -284,20 +278,7 @@ static bool wait_loop(unsigned long start, unsigned int max_delay,
 
 	return false;
 }
-/*
- * On a 5-minute timeout, wait for all devices currently configured.  We need
- * to do this to guarantee that the filesystems and / or network devices
- * needed for boot are available, before we can allow the boot to proceed.
- *
- * This needs to be on a late_initcall, to happen after the frontend device
- * drivers have been initialised, but before the root fs is mounted.
- *
- * A possible improvement here would be to have the tools add a per-device
- * flag to the store entry, indicating whether it is needed at boot time.
- * This would allow people who knew what they were doing to accelerate their
- * boot slightly, but of course needs tools or manual intervention to set up
- * those flags correctly.
- */
+ 
 static void wait_for_devices(struct xenbus_driver *xendrv)
 {
 	unsigned long start = jiffies;
@@ -311,7 +292,7 @@ static void wait_for_devices(struct xenbus_driver *xendrv)
 		if (wait_loop(start, 30, &seconds_waited))
 			break;
 
-	/* Skips PVKB and PVFB check.*/
+	 
 	while (exists_essential_connecting_device(drv))
 		if (wait_loop(start, 270, &seconds_waited))
 			break;
@@ -335,7 +316,7 @@ int __xenbus_register_frontend(struct xenbus_driver *drv, struct module *owner,
 	if (ret)
 		return ret;
 
-	/* If this driver is loaded as a module wait for devices to attach. */
+	 
 	wait_for_devices(drv);
 
 	return 0;
@@ -365,11 +346,7 @@ static void xenbus_reset_wait_for_backend(char *be, int expected)
 		pr_info("backend %s timed out\n", be);
 }
 
-/*
- * Reset frontend if it is in Connected or Closed state.
- * Wait for backend to catch up.
- * State Connected happens during kdump, Closed after kexec.
- */
+ 
 static void xenbus_reset_frontend(char *fe, char *be, int be_state)
 {
 	struct xenbus_watch be_watch;
@@ -388,7 +365,7 @@ static void xenbus_reset_frontend(char *fe, char *be, int be_state)
 	pr_info("triggering reconnect on %s\n", be);
 	register_xenbus_watch(&be_watch);
 
-	/* fall through to forward backend to state XenbusStateInitialising */
+	 
 	switch (be_state) {
 	case XenbusStateConnected:
 		xenbus_printf(XBT_NIL, fe, "state", "%d", XenbusStateClosing);
@@ -468,10 +445,10 @@ static int frontend_probe_and_watch(struct notifier_block *notifier,
 				   unsigned long event,
 				   void *data)
 {
-	/* reset devices in Connected or Closed state */
+	 
 	if (xen_hvm_domain())
 		xenbus_reset_state();
-	/* Enumerate devices in xenstore and watch for changes. */
+	 
 	xenbus_probe_devices(&xenbus_frontend);
 	register_xenbus_watch(&fe_watch);
 
@@ -488,7 +465,7 @@ static int __init xenbus_probe_frontend_init(void)
 
 	DPRINTK("");
 
-	/* Register ourselves with the kernel bus subsystem */
+	 
 	err = bus_register(&xenbus_frontend.bus);
 	if (err)
 		return err;

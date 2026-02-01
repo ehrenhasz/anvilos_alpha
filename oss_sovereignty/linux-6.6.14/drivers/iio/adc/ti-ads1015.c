@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADS1015 - Texas Instruments Analog-to-Digital Converter
- *
- * Copyright (c) 2016, Intel Corporation.
- *
- * IIO driver for ADS1015 ADC 7-bit I2C slave address:
- *	* 0x48 - ADDR connected to Ground
- *	* 0x49 - ADDR connected to Vdd
- *	* 0x4A - ADDR connected to SDA
- *	* 0x4B - ADDR connected to SCL
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -56,18 +46,18 @@
 #define ADS1015_CFG_PGA_MASK	GENMASK(11, 9)
 #define ADS1015_CFG_MUX_MASK	GENMASK(14, 12)
 
-/* Comparator queue and disable field */
+ 
 #define ADS1015_CFG_COMP_DISABLE	3
 
-/* Comparator polarity field */
+ 
 #define ADS1015_CFG_COMP_POL_LOW	0
 #define ADS1015_CFG_COMP_POL_HIGH	1
 
-/* Comparator mode field */
+ 
 #define ADS1015_CFG_COMP_MODE_TRAD	0
 #define ADS1015_CFG_COMP_MODE_WINDOW	1
 
-/* device operating modes */
+ 
 #define ADS1015_CONTINUOUS	0
 #define ADS1015_SINGLESHOT	1
 
@@ -107,15 +97,12 @@ static const int ads1115_data_rate[] = {
 	8, 16, 32, 64, 128, 250, 475, 860
 };
 
-/*
- * Translation from PGA bits to full-scale positive and negative input voltage
- * range in mV
- */
+ 
 static const int ads1015_fullscale_range[] = {
 	6144, 4096, 2048, 1024, 512, 256, 256, 256
 };
 
-static const int ads1015_scale[] = {	/* 12bit ADC */
+static const int ads1015_scale[] = {	 
 	256, 11,
 	512, 11,
 	1024, 11,
@@ -124,7 +111,7 @@ static const int ads1015_scale[] = {	/* 12bit ADC */
 	6144, 11
 };
 
-static const int ads1115_scale[] = {	/* 16bit ADC */
+static const int ads1115_scale[] = {	 
 	256, 15,
 	512, 15,
 	1024, 15,
@@ -133,10 +120,7 @@ static const int ads1115_scale[] = {	/* 16bit ADC */
 	6144, 15
 };
 
-/*
- * Translation from COMP_QUE field value to the number of successive readings
- * exceed the threshold values before an interrupt is generated
- */
+ 
 static const int ads1015_comp_queue[] = { 1, 2, 4 };
 
 static const struct iio_event_spec ads1015_events[] = {
@@ -157,19 +141,7 @@ static const struct iio_event_spec ads1015_events[] = {
 	},
 };
 
-/*
- * Compile-time check whether _fitbits can accommodate up to _testbits
- * bits. Returns _fitbits on success, fails to compile otherwise.
- *
- * The test works such that it multiplies constant _fitbits by constant
- * double-negation of size of a non-empty structure, i.e. it multiplies
- * constant _fitbits by constant 1 in each successful compilation case.
- * The non-empty structure may contain C11 _Static_assert(), make use of
- * this and place the kernel variant of static assert in there, so that
- * it performs the compile-time check for _testbits <= _fitbits. Note
- * that it is not possible to directly use static_assert in compound
- * statements, hence this convoluted construct.
- */
+ 
 #define FIT_CHECK(_testbits, _fitbits)					\
 	(								\
 		(_fitbits) *						\
@@ -243,10 +215,7 @@ struct ads1015_thresh_data {
 
 struct ads1015_data {
 	struct regmap *regmap;
-	/*
-	 * Protects ADC ops, e.g: concurrent sysfs/buffered
-	 * data reads, configuration updates
-	 */
+	 
 	struct mutex lock;
 	struct ads1015_channel_data channel_data[ADS1015_CHANNELS];
 
@@ -255,11 +224,7 @@ struct ads1015_data {
 	struct ads1015_thresh_data thresh_data[ADS1015_CHANNELS];
 
 	const struct ads1015_chip_data *chip;
-	/*
-	 * Set to true when the ADC is switched to the continuous-conversion
-	 * mode and exits from a power-down state.  This flag is used to avoid
-	 * getting the stale result from the conversion register.
-	 */
+	 
 	bool conv_invalid;
 };
 
@@ -383,14 +348,14 @@ static int ads1015_set_power_state(struct ads1015_data *data, bool on)
 	return ret < 0 ? ret : 0;
 }
 
-#else /* !CONFIG_PM */
+#else  
 
 static int ads1015_set_power_state(struct ads1015_data *data, bool on)
 {
 	return 0;
 }
 
-#endif /* !CONFIG_PM */
+#endif  
 
 static
 int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
@@ -432,7 +397,7 @@ int ads1015_get_adc_result(struct ads1015_data *data, int chan, int *val)
 		dr_old = (old & ADS1015_CFG_DR_MASK) >> ADS1015_CFG_DR_SHIFT;
 		conv_time = DIV_ROUND_UP(USEC_PER_SEC, data_rate[dr_old]);
 		conv_time += DIV_ROUND_UP(USEC_PER_SEC, data_rate[dr]);
-		conv_time += conv_time / 10; /* 10% internal clock inaccuracy */
+		conv_time += conv_time / 10;  
 		usleep_range(conv_time, conv_time + 1);
 		data->conv_invalid = false;
 	}
@@ -445,7 +410,7 @@ static irqreturn_t ads1015_trigger_handler(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 	struct ads1015_data *data = iio_priv(indio_dev);
-	/* Ensure natural alignment of timestamp */
+	 
 	struct {
 		s16 chan;
 		s64 timestamp __aligned(8);
@@ -815,7 +780,7 @@ static int ads1015_write_event_config(struct iio_dev *indio_dev,
 
 	mutex_lock(&data->lock);
 
-	/* Prevent from enabling both buffer and event at a time */
+	 
 	ret = iio_device_claim_direct_mode(indio_dev);
 	if (ret) {
 		mutex_unlock(&data->lock);
@@ -840,7 +805,7 @@ static irqreturn_t ads1015_event_handler(int irq, void *priv)
 	int val;
 	int ret;
 
-	/* Clear the latched ALERT/RDY pin */
+	 
 	ret = regmap_read(data->regmap, ADS1015_CONV_REG, &val);
 	if (ret)
 		return IRQ_HANDLED;
@@ -863,7 +828,7 @@ static int ads1015_buffer_preenable(struct iio_dev *indio_dev)
 {
 	struct ads1015_data *data = iio_priv(indio_dev);
 
-	/* Prevent from enabling both buffer and event at a time */
+	 
 	if (ads1015_event_channel_enabled(data))
 		return -EBUSY;
 
@@ -960,7 +925,7 @@ static void ads1015_get_channels_config(struct i2c_client *client)
 	if (!ads1015_client_get_channels_config(client))
 		return;
 
-	/* fallback on default configuration */
+	 
 	for (k = 0; k < ADS1015_CHANNELS; ++k) {
 		data->channel_data[k].pga = ADS1015_DEFAULT_PGA;
 		data->channel_data[k].data_rate = ADS1015_DEFAULT_DATA_RATE;
@@ -1007,10 +972,7 @@ static int ads1015_probe(struct i2c_client *client)
 	data->chip = chip;
 	data->event_channel = ADS1015_CHANNELS;
 
-	/*
-	 * Set default lower and upper threshold to min and max value
-	 * respectively.
-	 */
+	 
 	for (i = 0; i < ADS1015_CHANNELS; i++) {
 		int realbits = indio_dev->channels[i].scan_type.realbits;
 
@@ -1018,7 +980,7 @@ static int ads1015_probe(struct i2c_client *client)
 		data->thresh_data[i].high_thresh = (1 << (realbits - 1)) - 1;
 	}
 
-	/* we need to keep this ABI the same as used by hwmon ADS1015 driver */
+	 
 	ads1015_get_channels_config(client);
 
 	data->regmap = devm_regmap_init_i2c(client, chip->has_comparator ?
@@ -1105,7 +1067,7 @@ static void ads1015_remove(struct i2c_client *client)
 	pm_runtime_disable(&client->dev);
 	pm_runtime_set_suspended(&client->dev);
 
-	/* power down single shot mode */
+	 
 	ret = ads1015_set_conv_mode(data, ADS1015_SINGLESHOT);
 	if (ret)
 		dev_warn(&client->dev, "Failed to power down (%pe)\n",

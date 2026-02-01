@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for SBS compliant Smart Battery System Managers
- *
- * The device communicates via i2c at address 0x0a and multiplexes access to up
- * to four smart batteries at address 0x0b.
- *
- * Via sysfs interface the online state and charge type are presented.
- *
- * Datasheet SBSM:    http://sbs-forum.org/specs/sbsm100b.pdf
- * Datasheet LTC1760: http://cds.linear.com/docs/en/datasheet/1760fb.pdf
- *
- * Karl-Heinz Schneider <karl-heinz@schneider-inet.de>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
@@ -23,7 +11,7 @@
 #define SBSM_MAX_BATS  4
 #define SBSM_RETRY_CNT 3
 
-/* registers addresses */
+ 
 #define SBSM_CMD_BATSYSSTATE     0x01
 #define SBSM_CMD_BATSYSSTATECONT 0x02
 #define SBSM_CMD_BATSYSINFO      0x04
@@ -41,9 +29,9 @@ struct sbsm_data {
 
 	struct power_supply *psy;
 
-	u8 cur_chan;          /* currently selected channel */
+	u8 cur_chan;           
 	struct gpio_chip chip;
-	bool is_ltc1760;      /* special capabilities */
+	bool is_ltc1760;       
 
 	unsigned int supported_bats;
 	unsigned int last_state;
@@ -116,7 +104,7 @@ static int sbsm_get_property(struct power_supply *psy,
 		val->intval = POWER_SUPPLY_CHARGE_TYPE_TRICKLE;
 
 		if (data->is_ltc1760) {
-			/* charge mode fast if turbo is active */
+			 
 			regval = sbsm_read_word(data->client, SBSM_CMD_LTC);
 			if (regval < 0)
 				return regval;
@@ -150,7 +138,7 @@ static int sbsm_set_property(struct power_supply *psy,
 
 	switch (psp) {
 	case POWER_SUPPLY_PROP_CHARGE_TYPE:
-		/* write 1 to TURBO if type fast is given */
+		 
 		if (!data->is_ltc1760)
 			break;
 		regval = val->intval ==
@@ -165,10 +153,7 @@ static int sbsm_set_property(struct power_supply *psy,
 	return ret;
 }
 
-/*
- * Switch to battery
- * Parameter chan is directly the content of SMB_BAT* nibble
- */
+ 
 static int sbsm_select(struct i2c_mux_core *muxc, u32 chan)
 {
 	struct sbsm_data *data = i2c_mux_priv(muxc);
@@ -179,7 +164,7 @@ static int sbsm_select(struct i2c_mux_core *muxc, u32 chan)
 	if (data->cur_chan == chan)
 		return ret;
 
-	/* chan goes from 1 ... 4 */
+	 
 	reg = BIT(SBSM_SMB_BAT_OFFSET + chan);
 	ret = sbsm_write_word(data->client, SBSM_CMD_BATSYSSTATE, reg);
 	if (ret)
@@ -202,10 +187,7 @@ static int sbsm_gpio_get_value(struct gpio_chip *gc, unsigned int off)
 	return ret & BIT(off);
 }
 
-/*
- * This needs to be defined or the GPIO lib fails to register the pin.
- * But the 'gpio' is always an input.
- */
+ 
 static int sbsm_gpio_direction_input(struct gpio_chip *gc, unsigned int off)
 {
 	return 0;
@@ -325,7 +307,7 @@ static int sbsm_probe(struct i2c_client *client)
 	struct power_supply_config psy_cfg = {};
 	int ret = 0, i;
 
-	/* Device listens only at address 0x0a */
+	 
 	if (client->addr != 0x0a)
 		return -EINVAL;
 
@@ -355,7 +337,7 @@ static int sbsm_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* register muxed i2c channels. One for each supported battery */
+	 
 	for (i = 0; i < SBSM_MAX_BATS; ++i) {
 		if (data->supported_bats & BIT(i)) {
 			ret = i2c_mux_add_adapter(data->muxc, 0, i + 1, 0);

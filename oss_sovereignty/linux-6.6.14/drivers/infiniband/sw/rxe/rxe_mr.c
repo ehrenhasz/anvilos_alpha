@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2016 Mellanox Technologies Ltd. All rights reserved.
- * Copyright (c) 2015 System Fabric Works, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/libnvdimm.h>
 
 #include "rxe.h"
 #include "rxe_loc.h"
 
-/* Return a random 8 bit key value that is
- * different than the last_key. Set last_key to -1
- * if this is the first key for an MR or MW
- */
+ 
 u8 rxe_get_next_key(u32 last_key)
 {
 	u8 key;
@@ -49,11 +43,7 @@ static void rxe_mr_init(int access, struct rxe_mr *mr)
 {
 	u32 key = mr->elem.index << 8 | rxe_get_next_key(-1);
 
-	/* set ibmr->l/rkey and also copy into private l/rkey
-	 * for user MRs these will always be the same
-	 * for cases where caller 'owns' the key portion
-	 * they may be different until REG_MR WQE is executed.
-	 */
+	 
 	mr->lkey = mr->ibmr.lkey = key;
 	mr->rkey = mr->ibmr.rkey = key;
 
@@ -189,7 +179,7 @@ int rxe_mr_init_fast(int max_pages, struct rxe_mr *mr)
 {
 	int err;
 
-	/* always allow remote access for FMRs */
+	 
 	rxe_mr_init(RXE_ACCESS_REMOTE, mr);
 
 	err = rxe_mr_alloc(mr, max_pages);
@@ -326,9 +316,7 @@ int rxe_mr_copy(struct rxe_mr *mr, u64 iova, void *addr,
 	return rxe_mr_copy_xarray(mr, iova, addr, length, dir);
 }
 
-/* copy data in or out of a wqe, i.e. sg list
- * under the control of a dma descriptor
- */
+ 
 int copy_data(
 	struct rxe_pd		*pd,
 	int			access,
@@ -430,7 +418,7 @@ int rxe_flush_pmem_iova(struct rxe_mr *mr, u64 iova, unsigned int length)
 	int err;
 	u8 *va;
 
-	/* mr must be valid even if length is zero */
+	 
 	if (WARN_ON(!mr))
 		return -EINVAL;
 
@@ -465,7 +453,7 @@ int rxe_flush_pmem_iova(struct rxe_mr *mr, u64 iova, unsigned int length)
 	return 0;
 }
 
-/* Guarantee atomicity of atomic operations at the machine level. */
+ 
 static DEFINE_SPINLOCK(atomic_ops_lock);
 
 int rxe_mr_do_atomic_op(struct rxe_mr *mr, u64 iova, int opcode,
@@ -525,14 +513,14 @@ int rxe_mr_do_atomic_op(struct rxe_mr *mr, u64 iova, int opcode,
 }
 
 #if defined CONFIG_64BIT
-/* only implemented or called for 64 bit architectures */
+ 
 int rxe_mr_do_atomic_write(struct rxe_mr *mr, u64 iova, u64 value)
 {
 	unsigned int page_offset;
 	struct page *page;
 	u64 *va;
 
-	/* See IBA oA19-28 */
+	 
 	if (unlikely(mr->state != RXE_MR_STATE_VALID)) {
 		rxe_dbg_mr(mr, "mr not in valid state");
 		return RESPST_ERR_RKEY_VIOLATION;
@@ -545,7 +533,7 @@ int rxe_mr_do_atomic_write(struct rxe_mr *mr, u64 iova, u64 value)
 		unsigned long index;
 		int err;
 
-		/* See IBA oA19-28 */
+		 
 		err = mr_check_range(mr, iova, sizeof(value));
 		if (unlikely(err)) {
 			rxe_dbg_mr(mr, "iova out of range");
@@ -558,7 +546,7 @@ int rxe_mr_do_atomic_write(struct rxe_mr *mr, u64 iova, u64 value)
 			return RESPST_ERR_RKEY_VIOLATION;
 	}
 
-	/* See IBA A19.4.2 */
+	 
 	if (unlikely(page_offset & 0x7)) {
 		rxe_dbg_mr(mr, "misaligned address");
 		return RESPST_ERR_MISALIGNED_ATOMIC;
@@ -566,7 +554,7 @@ int rxe_mr_do_atomic_write(struct rxe_mr *mr, u64 iova, u64 value)
 
 	va = kmap_local_page(page);
 
-	/* Do atomic write after all prior operations have completed */
+	 
 	smp_store_release(&va[page_offset >> 3], value);
 
 	kunmap_local(va);
@@ -678,32 +666,26 @@ err:
 	return ret;
 }
 
-/* user can (re)register fast MR by executing a REG_MR WQE.
- * user is expected to hold a reference on the ib mr until the
- * WQE completes.
- * Once a fast MR is created this is the only way to change the
- * private keys. It is the responsibility of the user to maintain
- * the ib mr keys in sync with rxe mr keys.
- */
+ 
 int rxe_reg_fast_mr(struct rxe_qp *qp, struct rxe_send_wqe *wqe)
 {
 	struct rxe_mr *mr = to_rmr(wqe->wr.wr.reg.mr);
 	u32 key = wqe->wr.wr.reg.key;
 	u32 access = wqe->wr.wr.reg.access;
 
-	/* user can only register MR in free state */
+	 
 	if (unlikely(mr->state != RXE_MR_STATE_FREE)) {
 		rxe_dbg_mr(mr, "mr->lkey = 0x%x not free\n", mr->lkey);
 		return -EINVAL;
 	}
 
-	/* user can only register mr with qp in same protection domain */
+	 
 	if (unlikely(qp->ibqp.pd != mr->ibmr.pd)) {
 		rxe_dbg_mr(mr, "qp->pd and mr->pd don't match\n");
 		return -EINVAL;
 	}
 
-	/* user is only allowed to change key portion of l/rkey */
+	 
 	if (unlikely((mr->lkey & ~0xff) != (key & ~0xff))) {
 		rxe_dbg_mr(mr, "key = 0x%x has wrong index mr->lkey = 0x%x\n",
 			key, mr->lkey);

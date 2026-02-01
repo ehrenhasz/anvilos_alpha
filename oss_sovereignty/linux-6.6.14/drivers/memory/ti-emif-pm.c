@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI AM33XX SRAM EMIF Driver
- *
- * Copyright (C) 2016-2017 Texas Instruments Inc.
- *	Dave Gerlach
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/genalloc.h>
@@ -80,12 +75,12 @@ static int ti_emif_alloc_sram(struct device *dev,
 		return -ENOMEM;
 	}
 
-	/* Save physical address to calculate resume offset during pm init */
+	 
 	emif_data->ti_emif_sram_phys =
 			gen_pool_virt_to_phys(emif_data->sram_pool_code,
 					      emif_data->ti_emif_sram_virt);
 
-	/* Get sram pool for data section and allocate space */
+	 
 	emif_data->sram_pool_data = of_gen_pool_get(np, "sram", 1);
 	if (!emif_data->sram_pool_data) {
 		dev_err(dev, "Unable to get sram pool for ocmcram data\n");
@@ -102,14 +97,11 @@ static int ti_emif_alloc_sram(struct device *dev,
 		goto err_free_sram_code;
 	}
 
-	/* Save physical address to calculate resume offset during pm init */
+	 
 	emif_data->ti_emif_sram_data_phys =
 		gen_pool_virt_to_phys(emif_data->sram_pool_data,
 				      emif_data->ti_emif_sram_data_virt);
-	/*
-	 * These functions are called during suspend path while MMU is
-	 * still on so add virtual base to offset for absolute address
-	 */
+	 
 	emif_data->pm_functions.save_context =
 		sram_suspend_address(emif_data,
 				     (unsigned long)ti_emif_save_context);
@@ -120,10 +112,7 @@ static int ti_emif_alloc_sram(struct device *dev,
 		sram_suspend_address(emif_data,
 				     (unsigned long)ti_emif_abort_sr);
 
-	/*
-	 * These are called during resume path when MMU is not enabled
-	 * so physical address is used instead
-	 */
+	 
 	emif_data->pm_functions.restore_context =
 		sram_resume_address(emif_data,
 				    (unsigned long)ti_emif_restore_context);
@@ -173,13 +162,7 @@ static int ti_emif_push_sram(struct device *dev, struct ti_emif_data *emif_data)
 	return 0;
 }
 
-/*
- * Due to Usage Note 3.1.2 "DDR3: JEDEC Compliance for Maximum
- * Self-Refresh Command Limit" found in AM335x Silicon Errata
- * (Document SPRZ360F Revised November 2013) we must configure
- * the self refresh delay timer to 0xA (8192 cycles) to avoid
- * generating too many refresh command from the EMIF.
- */
+ 
 static void ti_emif_configure_sr_delay(struct ti_emif_data *emif_data)
 {
 	writel(EMIF_POWER_MGMT_WAIT_SELF_REFRESH_8192_CYCLES,
@@ -191,13 +174,7 @@ static void ti_emif_configure_sr_delay(struct ti_emif_data *emif_data)
 		EMIF_POWER_MANAGEMENT_CTRL_SHDW));
 }
 
-/**
- * ti_emif_copy_pm_function_table - copy mapping of pm funcs in sram
- * @sram_pool: pointer to struct gen_pool where dst resides
- * @dst: void * to address that table should be copied
- *
- * Returns 0 if success other error code if table is not available
- */
+ 
 int ti_emif_copy_pm_function_table(struct gen_pool *sram_pool, void *dst)
 {
 	void *copy_addr;
@@ -215,11 +192,7 @@ int ti_emif_copy_pm_function_table(struct gen_pool *sram_pool, void *dst)
 }
 EXPORT_SYMBOL_GPL(ti_emif_copy_pm_function_table);
 
-/**
- * ti_emif_get_mem_type - return type for memory type in use
- *
- * Returns memory type value read from EMIF or error code if fails
- */
+ 
 int ti_emif_get_mem_type(void)
 {
 	unsigned long temp;
@@ -250,12 +223,7 @@ static int ti_emif_resume(struct device *dev)
 	unsigned long tmp =
 			__raw_readl((void __iomem *)emif_instance->ti_emif_sram_virt);
 
-	/*
-	 * Check to see if what we are copying is already present in the
-	 * first byte at the destination, only copy if it is not which
-	 * indicates we have lost context and sram no longer contains
-	 * the PM code
-	 */
+	 
 	if (tmp != ti_emif_sram)
 		ti_emif_push_sram(dev, emif_instance);
 
@@ -264,13 +232,10 @@ static int ti_emif_resume(struct device *dev)
 
 static int ti_emif_suspend(struct device *dev)
 {
-	/*
-	 * The contents will be present in DDR hence no need to
-	 * explicitly save
-	 */
+	 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static int ti_emif_probe(struct platform_device *pdev)
 {

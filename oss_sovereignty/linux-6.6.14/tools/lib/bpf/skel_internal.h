@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause) */
-/* Copyright (c) 2021 Facebook */
+ 
+ 
 #ifndef __SKEL_INTERNAL_H
 #define __SKEL_INTERNAL_H
 
@@ -27,17 +27,11 @@
 # endif
 #endif
 
-/* This file is a base header for auto-generated *.lskel.h files.
- * Its contents will change and may become part of auto-generation in the future.
- *
- * The layout of bpf_[map|prog]_desc and bpf_loader_ctx is feature dependent
- * and will change from one version of libbpf to another and features
- * requested during loader program generation.
- */
+ 
 struct bpf_map_desc {
-	/* output of the loader prog */
+	 
 	int map_fd;
-	/* input for the loader prog */
+	 
 	__u32 max_entries;
 	__aligned_u64 initial_value;
 };
@@ -99,35 +93,12 @@ static inline void skel_free(const void *p)
 	kfree(p);
 }
 
-/* skel->bss/rodata maps are populated the following way:
- *
- * For kernel use:
- * skel_prep_map_data() allocates kernel memory that kernel module can directly access.
- * Generated lskel stores the pointer in skel->rodata and in skel->maps.rodata.initial_value.
- * The loader program will perform probe_read_kernel() from maps.rodata.initial_value.
- * skel_finalize_map_data() sets skel->rodata to point to actual value in a bpf map and
- * does maps.rodata.initial_value = ~0ULL to signal skel_free_map_data() that kvfree
- * is not nessary.
- *
- * For user space:
- * skel_prep_map_data() mmaps anon memory into skel->rodata that can be accessed directly.
- * Generated lskel stores the pointer in skel->rodata and in skel->maps.rodata.initial_value.
- * The loader program will perform copy_from_user() from maps.rodata.initial_value.
- * skel_finalize_map_data() remaps bpf array map value from the kernel memory into
- * skel->rodata address.
- *
- * The "bpftool gen skeleton -L" command generates lskel.h that is suitable for
- * both kernel and user space. The generated loader program does
- * either bpf_probe_read_kernel() or bpf_copy_from_user() from initial_value
- * depending on bpf_loader_ctx->flags.
- */
+ 
 static inline void skel_free_map_data(void *p, __u64 addr, size_t sz)
 {
 	if (addr != ~0ULL)
 		kvfree(p);
-	/* When addr == ~0ULL the 'p' points to
-	 * ((struct bpf_array *)map)->value. See skel_finalize_map_data.
-	 */
+	 
 }
 
 static inline void *skel_prep_map_data(const void *val, size_t mmap_sz, size_t val_sz)
@@ -149,16 +120,14 @@ static inline void *skel_finalize_map_data(__u64 *init_val, size_t mmap_sz, int 
 	kvfree((void *) (long) *init_val);
 	*init_val = ~0ULL;
 
-	/* At this point bpf_load_and_run() finished without error and
-	 * 'fd' is a valid bpf map FD. All sanity checks below should succeed.
-	 */
+	 
 	map = bpf_map_get(fd);
 	if (IS_ERR(map))
 		return NULL;
 	if (map->map_type != BPF_MAP_TYPE_ARRAY)
 		goto out;
 	addr = ((struct bpf_array *)map)->value;
-	/* the addr stays valid, since FD is not closed */
+	 
 out:
 	bpf_map_put(map);
 	return addr;

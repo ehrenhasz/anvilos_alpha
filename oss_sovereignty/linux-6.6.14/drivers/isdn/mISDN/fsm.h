@@ -1,19 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *
- * Author       Karsten Keil <kkeil@novell.com>
- *
- * Thanks to    Jan den Ouden
- *              Fritz Elfert
- * Copyright 2008  by Karsten Keil <kkeil@novell.com>
- */
+ 
+ 
 
 #ifndef _MISDN_FSM_H
 #define _MISDN_FSM_H
 
 #include <linux/timer.h>
 
-/* Statemachine */
+ 
 
 struct FsmInst;
 

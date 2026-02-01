@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_HW_H
 #define ATH12K_HW_H
@@ -12,23 +9,23 @@
 #include "wmi.h"
 #include "hal.h"
 
-/* Target configuration defines */
+ 
 
-/* Num VDEVS per radio */
+ 
 #define TARGET_NUM_VDEVS	(16 + 1)
 
 #define TARGET_NUM_PEERS_PDEV	(512 + TARGET_NUM_VDEVS)
 
-/* Num of peers for Single Radio mode */
+ 
 #define TARGET_NUM_PEERS_SINGLE		(TARGET_NUM_PEERS_PDEV)
 
-/* Num of peers for DBS */
+ 
 #define TARGET_NUM_PEERS_DBS		(2 * TARGET_NUM_PEERS_PDEV)
 
-/* Num of peers for DBS_SBS */
+ 
 #define TARGET_NUM_PEERS_DBS_SBS	(3 * TARGET_NUM_PEERS_PDEV)
 
-/* Max num of stations (per radio) */
+ 
 #define TARGET_NUM_STATIONS	512
 
 #define TARGET_NUM_PEERS(x)	TARGET_NUM_PEERS_##x
@@ -237,7 +234,7 @@ enum ath12k_bd_ie_board_type {
 };
 
 enum ath12k_bd_ie_type {
-	/* contains sub IEs of enum ath12k_bd_ie_board_type */
+	 
 	ATH12K_BD_IE_BOARD = 0,
 	ATH12K_BD_IE_BOARD_EXT = 1,
 };

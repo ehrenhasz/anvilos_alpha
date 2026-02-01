@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic GPIO card-detect helper
- *
- * Copyright (C) 2011, Guennadi Liakhovetski <g.liakhovetski@gmx.de>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/gpio/consumer.h>
@@ -28,7 +24,7 @@ struct mmc_gpio {
 
 static irqreturn_t mmc_gpio_cd_irqt(int irq, void *dev_id)
 {
-	/* Schedule a card detection after a debounce timeout */
+	 
 	struct mmc_host *host = dev_id;
 	struct mmc_gpio *ctx = host->slot.handler_priv;
 
@@ -107,10 +103,7 @@ void mmc_gpiod_request_cd_irq(struct mmc_host *host)
 	if (host->slot.cd_irq >= 0 || !ctx || !ctx->cd_gpio)
 		return;
 
-	/*
-	 * Do not use IRQ if the platform prefers to poll, e.g., because that
-	 * IRQ number is already used by another unit and cannot be shared.
-	 */
+	 
 	if (ctx->cd_irq >= 0)
 		irq = ctx->cd_irq;
 	else if (!(host->caps & MMC_CAP_NEEDS_POLL))
@@ -155,9 +148,7 @@ int mmc_gpio_set_cd_wake(struct mmc_host *host, bool on)
 }
 EXPORT_SYMBOL(mmc_gpio_set_cd_wake);
 
-/* Register an alternate interrupt service routine for
- * the card-detect GPIO.
- */
+ 
 void mmc_gpio_set_cd_isr(struct mmc_host *host,
 			 irqreturn_t (*isr)(int irq, void *dev_id))
 {
@@ -168,19 +159,7 @@ void mmc_gpio_set_cd_isr(struct mmc_host *host,
 }
 EXPORT_SYMBOL(mmc_gpio_set_cd_isr);
 
-/**
- * mmc_gpiod_request_cd - request a gpio descriptor for card-detection
- * @host: mmc host
- * @con_id: function within the GPIO consumer
- * @idx: index of the GPIO to obtain in the consumer
- * @override_active_level: ignore %GPIO_ACTIVE_LOW flag
- * @debounce: debounce time in microseconds
- *
- * Note that this must be called prior to mmc_add_host()
- * otherwise the caller must also call mmc_gpiod_request_cd_irq().
- *
- * Returns zero on success, else an error.
- */
+ 
 int mmc_gpiod_request_cd(struct mmc_host *host, const char *con_id,
 			 unsigned int idx, bool override_active_level,
 			 unsigned int debounce)
@@ -193,7 +172,7 @@ int mmc_gpiod_request_cd(struct mmc_host *host, const char *con_id,
 	if (IS_ERR(desc))
 		return PTR_ERR(desc);
 
-	/* Update default label if no con_id provided */
+	 
 	if (!con_id)
 		gpiod_set_consumer_name(desc, ctx->cd_label);
 
@@ -203,11 +182,11 @@ int mmc_gpiod_request_cd(struct mmc_host *host, const char *con_id,
 			ctx->cd_debounce_delay_ms = debounce / 1000;
 	}
 
-	/* override forces default (active-low) polarity ... */
+	 
 	if (override_active_level && !gpiod_is_active_low(desc))
 		gpiod_toggle_active_low(desc);
 
-	/* ... or active-high */
+	 
 	if (host->caps2 & MMC_CAP2_CD_ACTIVE_HIGH)
 		gpiod_toggle_active_low(desc);
 
@@ -225,15 +204,7 @@ bool mmc_can_gpio_cd(struct mmc_host *host)
 }
 EXPORT_SYMBOL(mmc_can_gpio_cd);
 
-/**
- * mmc_gpiod_request_ro - request a gpio descriptor for write protection
- * @host: mmc host
- * @con_id: function within the GPIO consumer
- * @idx: index of the GPIO to obtain in the consumer
- * @debounce: debounce time in microseconds
- *
- * Returns zero on success, else an error.
- */
+ 
 int mmc_gpiod_request_ro(struct mmc_host *host, const char *con_id,
 			 unsigned int idx, unsigned int debounce)
 {
@@ -245,7 +216,7 @@ int mmc_gpiod_request_ro(struct mmc_host *host, const char *con_id,
 	if (IS_ERR(desc))
 		return PTR_ERR(desc);
 
-	/* Update default label if no con_id provided */
+	 
 	if (!con_id)
 		gpiod_set_consumer_name(desc, ctx->ro_label);
 

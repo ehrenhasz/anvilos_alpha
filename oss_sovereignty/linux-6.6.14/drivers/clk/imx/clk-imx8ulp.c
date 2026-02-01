@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021 NXP
- */
+
+ 
 
 #include <dt-bindings/clock/imx8ulp-clock.h>
 #include <linux/err.h>
@@ -53,7 +51,7 @@ struct pcc_reset_dev {
 	void __iomem *base;
 	struct reset_controller_dev rcdev;
 	const u32 *resets;
-	/* Set to imx_ccm_lock to protect register access shared with clock control */
+	 
 	spinlock_t *lock;
 };
 
@@ -159,7 +157,7 @@ static int imx8ulp_clk_cgc1_init(struct platform_device *pdev)
 
 	clks[IMX8ULP_CLK_DUMMY] = imx_clk_hw_fixed("dummy", 0);
 
-	/* CGC1 */
+	 
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(base)))
 		return PTR_ERR(base);
@@ -241,7 +239,7 @@ static int imx8ulp_clk_cgc2_init(struct platform_device *pdev)
 	clk_data->num = IMX8ULP_CLK_CGC2_END;
 	clks = clk_data->hws;
 
-	/* CGC2 */
+	 
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(base)))
 		return PTR_ERR(base);
@@ -324,7 +322,7 @@ static int imx8ulp_clk_pcc3_init(struct platform_device *pdev)
 	clk_data->num = IMX8ULP_CLK_PCC3_END;
 	clks = clk_data->hws;
 
-	/* PCC3 */
+	 
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(base)))
 		return PTR_ERR(base);
@@ -387,7 +385,7 @@ static int imx8ulp_clk_pcc3_init(struct platform_device *pdev)
 
 	imx_register_uart_clocks();
 
-	/* register the pcc3 reset controller */
+	 
 	return imx8ulp_pcc_reset_init(pdev, base, pcc3_resets, ARRAY_SIZE(pcc3_resets));
 }
 
@@ -407,7 +405,7 @@ static int imx8ulp_clk_pcc4_init(struct platform_device *pdev)
 	clk_data->num = IMX8ULP_CLK_PCC4_END;
 	clks = clk_data->hws;
 
-	/* PCC4 */
+	 
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(base)))
 		return PTR_ERR(base);
@@ -419,8 +417,8 @@ static int imx8ulp_clk_pcc4_init(struct platform_device *pdev)
 	clks[IMX8ULP_CLK_LPI2C7] = imx8ulp_clk_hw_composite("lpi2c7", pcc4_periph_bus_sels, ARRAY_SIZE(pcc4_periph_bus_sels), true, true, true, base + 0x14, 1);
 	clks[IMX8ULP_CLK_LPUART6] = imx8ulp_clk_hw_composite("lpuart6", pcc4_periph_bus_sels, ARRAY_SIZE(pcc4_periph_bus_sels), true, true, true, base + 0x18, 1);
 	clks[IMX8ULP_CLK_LPUART7] = imx8ulp_clk_hw_composite("lpuart7", pcc4_periph_bus_sels, ARRAY_SIZE(pcc4_periph_bus_sels), true, true, true, base + 0x1c, 1);
-	clks[IMX8ULP_CLK_SAI4] = imx8ulp_clk_hw_composite("sai4", xbar_divbus, 1, false, false, true, base + 0x20, 1); /* sai ipg, NOT from sai sel */
-	clks[IMX8ULP_CLK_SAI5] = imx8ulp_clk_hw_composite("sai5", xbar_divbus, 1, false, false, true, base + 0x24, 1); /* sai ipg */
+	clks[IMX8ULP_CLK_SAI4] = imx8ulp_clk_hw_composite("sai4", xbar_divbus, 1, false, false, true, base + 0x20, 1);  
+	clks[IMX8ULP_CLK_SAI5] = imx8ulp_clk_hw_composite("sai5", xbar_divbus, 1, false, false, true, base + 0x24, 1);  
 	clks[IMX8ULP_CLK_PCTLE] = imx_clk_hw_gate("pctle", "xbar_divbus", base + 0x28, 30);
 	clks[IMX8ULP_CLK_PCTLF] = imx_clk_hw_gate("pctlf", "xbar_divbus", base + 0x2c, 30);
 	clks[IMX8ULP_CLK_USDHC0] = imx8ulp_clk_hw_composite("usdhc0", pcc4_periph_plat_sels, ARRAY_SIZE(pcc4_periph_plat_sels), true, false, true, base + 0x34, 1);
@@ -441,7 +439,7 @@ static int imx8ulp_clk_pcc4_init(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* register the pcc4 reset controller */
+	 
 	return imx8ulp_pcc_reset_init(pdev, base, pcc4_resets, ARRAY_SIZE(pcc4_resets));
 
 }
@@ -462,7 +460,7 @@ static int imx8ulp_clk_pcc5_init(struct platform_device *pdev)
 	clk_data->num = IMX8ULP_CLK_PCC5_END;
 	clks = clk_data->hws;
 
-	/* PCC5 */
+	 
 	base = devm_platform_ioremap_resource(pdev, 0);
 	if (WARN_ON(IS_ERR(base)))
 		return PTR_ERR(base);
@@ -529,7 +527,7 @@ static int imx8ulp_clk_pcc5_init(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* register the pcc5 reset controller */
+	 
 	return imx8ulp_pcc_reset_init(pdev, base, pcc5_resets, ARRAY_SIZE(pcc5_resets));
 }
 
@@ -551,7 +549,7 @@ static const struct of_device_id imx8ulp_clk_dt_ids[] = {
 	{ .compatible = "fsl,imx8ulp-pcc5", .data = imx8ulp_clk_pcc5_init },
 	{ .compatible = "fsl,imx8ulp-cgc2", .data = imx8ulp_clk_cgc2_init },
 	{ .compatible = "fsl,imx8ulp-cgc1", .data = imx8ulp_clk_cgc1_init },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, imx8ulp_clk_dt_ids);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cxd2880_top.c
- * Sony CXD2880 DVB-T2/T tuner + demodulator driver
- *
- * Copyright (C) 2016, 2017, 2018 Sony Semiconductor Solutions Corporation
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
 
@@ -32,7 +27,7 @@ struct cxd2880_priv {
 	struct cxd2880_spi cxd2880_spi;
 	struct cxd2880_dvbt_tune_param dvbt_tune_param;
 	struct cxd2880_dvbt2_tune_param dvbt2_tune_param;
-	struct mutex *spi_mutex; /* For SPI access exclusive control */
+	struct mutex *spi_mutex;  
 	unsigned long pre_ber_update;
 	unsigned long pre_ber_interval;
 	unsigned long post_ber_update;
@@ -585,13 +580,9 @@ static int cxd2880_read_signal_strength(struct dvb_frontend *fe,
 	mutex_unlock(priv->spi_mutex);
 
 	level /= 125;
-	/*
-	 * level should be between -105dBm and -30dBm.
-	 * E.g. they should be between:
-	 * -105000/125 = -840 and -30000/125 = -240
-	 */
+	 
 	level = clamp(level, -840, -240);
-	/* scale value to 0x0000-0xffff */
+	 
 	*strength = ((level + 840) * 0xffff) / (-240 + 840);
 
 	if (ret)
@@ -740,7 +731,7 @@ static int cxd2880_set_ber_per_period_t(struct dvb_frontend *fe)
 			data = 0x00;
 		}
 
-		if (data & 0x01) { /* Low priority */
+		if (data & 0x01) {  
 			pre_ber_rate =
 				63000000 * bw * (info.constellation * 2 + 2) /
 				denominator_tbl[info.guard];
@@ -752,7 +743,7 @@ static int cxd2880_set_ber_per_period_t(struct dvb_frontend *fe)
 			ucblock_rate = (1000 * 7 / 8) *	cr_table[info.rate_lp] *
 				       bw * (info.constellation * 2 + 2) /
 				       denominator_tbl[info.guard];
-		} else { /* High priority */
+		} else {  
 			pre_ber_rate =
 				63000000 * bw * 2 / denominator_tbl[info.guard];
 

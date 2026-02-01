@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 BayLibre, SAS
- * Author: Maxime Jourdan <mjourdan@baylibre.com>
- */
+
+ 
 
 #include <media/v4l2-mem2mem.h>
 #include <media/videobuf2-dma-contig.h>
@@ -12,10 +9,10 @@
 #include "vdec_helpers.h"
 
 #define SIZE_WORKSPACE		SZ_128K
-/* Offset substracted by the firmware from the workspace paddr */
+ 
 #define WORKSPACE_OFFSET	(5 * SZ_1K)
 
-/* map firmware registers to known MPEG1/2 functions */
+ 
 #define MREG_SEQ_INFO		AV_SCRATCH_4
 	#define MPEG2_SEQ_DAR_MASK	GENMASK(3, 0)
 	#define MPEG2_DAR_4_3		2
@@ -37,7 +34,7 @@
 #define PICINFO_TOP_FIRST	0x00002000
 
 struct codec_mpeg12 {
-	/* Buffer for the MPEG1/2 Workspace */
+	 
 	void	  *workspace_vaddr;
 	dma_addr_t workspace_paddr;
 };
@@ -70,7 +67,7 @@ static int codec_mpeg12_start(struct amvdec_session *sess)
 	if (!mpeg12)
 		return -ENOMEM;
 
-	/* Allocate some memory for the MPEG1/2 decoder's state */
+	 
 	mpeg12->workspace_vaddr = dma_alloc_coherent(core->dev, SIZE_WORKSPACE,
 						     &mpeg12->workspace_paddr,
 						     GFP_KERNEL);
@@ -172,7 +169,7 @@ static irqreturn_t codec_mpeg12_threaded_isr(struct amvdec_session *sess)
 	if (!reg)
 		return IRQ_HANDLED;
 
-	/* Unclear what this means */
+	 
 	if ((reg & GENMASK(23, 17)) == GENMASK(23, 17))
 		goto end;
 

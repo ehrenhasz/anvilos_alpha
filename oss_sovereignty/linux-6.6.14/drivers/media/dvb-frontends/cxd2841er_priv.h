@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * cxd2841er_priv.h
- *
- * Sony CXD2441ER digital demodulator driver internal definitions
- *
- * Copyright 2012 Sony Corporation
- * Copyright (C) 2014 NetUP Inc.
- * Copyright (C) 2014 Sergey Kozlov <serjk@netup.ru>
- * Copyright (C) 2014 Abylay Ospan <aospan@netup.ru>
- */
+ 
+ 
 
 #ifndef CXD2841ER_PRIV_H
 #define CXD2841ER_PRIV_H

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MediaTek Pinctrl Paris Driver, which implement the vendor per-pin
- * bindings for MediaTek SoC.
- *
- * Copyright (C) 2018 MediaTek Inc.
- * Author: Sean Wang <sean.wang@mediatek.com>
- *	   Zhiyong Tao <zhiyong.tao@mediatek.com>
- *	   Hongzhou.Yang <hongzhou.yang@mediatek.com>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
@@ -21,7 +13,7 @@
 
 #define PINCTRL_PINCTRL_DEV	KBUILD_MODNAME
 
-/* Custom pinconf parameters */
+ 
 #define MTK_PIN_CONFIG_TDSEL	(PIN_CONFIG_END + 1)
 #define MTK_PIN_CONFIG_RDSEL	(PIN_CONFIG_END + 2)
 #define MTK_PIN_CONFIG_PU_ADV	(PIN_CONFIG_END + 3)
@@ -53,31 +45,16 @@ static const char * const mtk_gpio_functions[] = {
 	"func12", "func13", "func14", "func15",
 };
 
-/*
- * This section supports converting to/from custom MTK_PIN_CONFIG_DRV_ADV
- * and standard PIN_CONFIG_DRIVE_STRENGTH_UA pin configs.
- *
- * The custom value encodes three hardware bits as follows:
- *
- *   |           Bits           |
- *   | 2 (E1) | 1 (E0) | 0 (EN) | drive strength (uA)
- *   ------------------------------------------------
- *   |    x   |    x   |    0   | disabled, use standard drive strength
- *   -------------------------------------
- *   |    0   |    0   |    1   |  125 uA
- *   |    0   |    1   |    1   |  250 uA
- *   |    1   |    0   |    1   |  500 uA
- *   |    1   |    1   |    1   | 1000 uA
- */
+ 
 static const int mtk_drv_adv_uA[] = { 125, 250, 500, 1000 };
 
 static int mtk_drv_adv_to_uA(int val)
 {
-	/* This should never happen. */
+	 
 	if (WARN_ON_ONCE(val < 0 || val > 7))
 		return -EINVAL;
 
-	/* Bit 0 simply enables this hardware part */
+	 
 	if (!(val & BIT(0)))
 		return -EINVAL;
 
@@ -122,7 +99,7 @@ static int mtk_pinmux_gpio_set_direction(struct pinctrl_dev *pctldev,
 
 	desc = (const struct mtk_pin_desc *)&hw->soc->pins[pin];
 
-	/* hardware would take 0 as input direction */
+	 
 	return mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_DIR, !input);
 }
 
@@ -169,13 +146,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
 		err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_DIR, &ret);
 		if (err)
 			break;
-		/*     CONFIG     Current direction return value
-		 * -------------  ----------------- ----------------------
-		 * OUTPUT_ENABLE       output       1 (= HW value)
-		 *                     input        0 (= HW value)
-		 * INPUT_ENABLE        output       0 (= reverse HW value)
-		 *                     input        1 (= reverse HW value)
-		 */
+		 
 		if (param == PIN_CONFIG_INPUT_ENABLE)
 			ret = !ret;
 
@@ -184,9 +155,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
 		err = mtk_hw_get_value(hw, desc, PINCTRL_PIN_REG_DIR, &ret);
 		if (err)
 			break;
-		/* return error when in output mode
-		 * because schmitt trigger only work in input mode
-		 */
+		 
 		if (ret) {
 			err = -EINVAL;
 			break;
@@ -203,7 +172,7 @@ static int mtk_pinconf_get(struct pinctrl_dev *pctldev,
 			if (!err) {
 				err = mtk_drv_adv_to_uA(ret);
 				if (err > 0) {
-					/* PIN_CONFIG_DRIVE_STRENGTH_UA used */
+					 
 					err = -EINVAL;
 					break;
 				}
@@ -284,9 +253,7 @@ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 	case PIN_CONFIG_OUTPUT_ENABLE:
 		err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_SMT,
 				       MTK_DISABLE);
-		/* Keep set direction to consider the case that a GPIO pin
-		 *  does not have SMT control
-		 */
+		 
 		if (err != -ENOTSUPP)
 			break;
 
@@ -294,7 +261,7 @@ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 				       MTK_OUTPUT);
 		break;
 	case PIN_CONFIG_INPUT_ENABLE:
-		/* regard all non-zero value as enable */
+		 
 		err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_IES, !!arg);
 		if (err)
 			break;
@@ -303,7 +270,7 @@ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 				       MTK_INPUT);
 		break;
 	case PIN_CONFIG_SLEW_RATE:
-		/* regard all non-zero value as enable */
+		 
 		err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_SR, !!arg);
 		break;
 	case PIN_CONFIG_OUTPUT:
@@ -317,9 +284,7 @@ static int mtk_pinconf_set(struct pinctrl_dev *pctldev, unsigned int pin,
 		break;
 	case PIN_CONFIG_INPUT_SCHMITT:
 	case PIN_CONFIG_INPUT_SCHMITT_ENABLE:
-		/* arg = 1: Input mode & SMT enable ;
-		 * arg = 0: Output mode & SMT disable
-		 */
+		 
 		err = mtk_hw_set_value(hw, desc, PINCTRL_PIN_REG_DIR, !arg);
 		if (err)
 			break;
@@ -664,7 +629,7 @@ ssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,
 		rsel = pullen;
 		pullen = 1;
 	} else {
-		/* Case for: R1R0 */
+		 
 		if (pullen == MTK_PUPD_SET_R1R0_00) {
 			pullen = 0;
 			r1 = 0;
@@ -683,7 +648,7 @@ ssize_t mtk_pctrl_show_one_pin(struct mtk_pinctrl *hw,
 			r0 = 1;
 		}
 
-		/* Case for: RSEL */
+		 
 		if (pullen >= MTK_PULL_SET_RSEL_000 &&
 		    pullen <= MTK_PULL_SET_RSEL_111) {
 			rsel = pullen - MTK_PULL_SET_RSEL_000;
@@ -799,7 +764,7 @@ static int mtk_pconf_group_get(struct pinctrl_dev *pctldev, unsigned group,
 	struct mtk_pinctrl *hw = pinctrl_dev_get_drvdata(pctldev);
 	struct mtk_pinctrl_group *grp = &hw->groups[group];
 
-	 /* One pin per group only */
+	  
 	return mtk_pinconf_get(pctldev, grp->pin, config);
 }
 
@@ -825,11 +790,7 @@ static int mtk_pconf_group_set(struct pinctrl_dev *pctldev, unsigned group,
 			adv_drve_strength_found = true;
 	}
 
-	/*
-	 * Disable advanced drive strength mode if drive-strength-microamp
-	 * is not set. However, mediatek,drive-strength-adv takes precedence
-	 * as its value can explicitly request the mode be enabled or not.
-	 */
+	 
 	if (hw->soc->adv_drive_set && !drive_strength_uA_found &&
 	    !adv_drve_strength_found)
 		hw->soc->adv_drive_set(hw, &hw->soc->pins[grp->pin], 0);
@@ -861,10 +822,7 @@ static int mtk_gpio_get_direction(struct gpio_chip *chip, unsigned int gpio)
 	if (gpio >= hw->soc->npins)
 		return -EINVAL;
 
-	/*
-	 * "Virtual" GPIOs are always and only used for interrupts
-	 * Since they are only used for interrupts, they are always inputs
-	 */
+	 
 	if (mtk_is_virt_gpio(hw, gpio))
 		return 1;
 
@@ -1000,13 +958,13 @@ static int mtk_pctrl_build_state(struct platform_device *pdev)
 	struct mtk_pinctrl *hw = platform_get_drvdata(pdev);
 	int i;
 
-	/* Allocate groups */
+	 
 	hw->groups = devm_kmalloc_array(&pdev->dev, hw->soc->ngrps,
 					sizeof(*hw->groups), GFP_KERNEL);
 	if (!hw->groups)
 		return -ENOMEM;
 
-	/* We assume that one pin is one group, use pin name as group name. */
+	 
 	hw->grp_names = devm_kmalloc_array(&pdev->dev, hw->soc->ngrps,
 					   sizeof(*hw->grp_names), GFP_KERNEL);
 	if (!hw->grp_names)
@@ -1074,7 +1032,7 @@ int mtk_paris_pinctrl_probe(struct platform_device *pdev)
 	if (err)
 		return dev_err_probe(dev, err, "build state failed\n");
 
-	/* Copy from internal struct mtk_pin_desc to register to the core */
+	 
 	pins = devm_kmalloc_array(&pdev->dev, hw->soc->npins, sizeof(*pins),
 				  GFP_KERNEL);
 	if (!pins)
@@ -1085,7 +1043,7 @@ int mtk_paris_pinctrl_probe(struct platform_device *pdev)
 		pins[i].name = hw->soc->pins[i].name;
 	}
 
-	/* Setup pins descriptions per SoC types */
+	 
 	mtk_desc.pins = (const struct pinctrl_pin_desc *)pins;
 	mtk_desc.npins = hw->soc->npins;
 	mtk_desc.num_custom_params = ARRAY_SIZE(mtk_custom_bindings);
@@ -1108,7 +1066,7 @@ int mtk_paris_pinctrl_probe(struct platform_device *pdev)
 		dev_warn(&pdev->dev,
 			 "Failed to add EINT, but pinctrl still can work\n");
 
-	/* Build gpiochip should be after pinctrl_enable is done */
+	 
 	err = mtk_build_gpiochip(hw);
 	if (err)
 		return dev_err_probe(dev, err, "Failed to add gpio_chip\n");

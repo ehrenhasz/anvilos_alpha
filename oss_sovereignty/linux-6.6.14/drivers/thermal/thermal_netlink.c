@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020 Linaro Limited
- *
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- *
- * Generic netlink for thermal management framework
- */
+
+ 
 #include <linux/module.h>
 #include <linux/kernel.h>
 #include <net/genetlink.h>
@@ -19,7 +13,7 @@ static const struct genl_multicast_group thermal_genl_mcgrps[] = {
 };
 
 static const struct nla_policy thermal_genl_policy[THERMAL_GENL_ATTR_MAX + 1] = {
-	/* Thermal zone */
+	 
 	[THERMAL_GENL_ATTR_TZ]			= { .type = NLA_NESTED },
 	[THERMAL_GENL_ATTR_TZ_ID]		= { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_TZ_TEMP]		= { .type = NLA_U32 },
@@ -32,18 +26,18 @@ static const struct nla_policy thermal_genl_policy[THERMAL_GENL_ATTR_MAX + 1] = 
 	[THERMAL_GENL_ATTR_TZ_CDEV_WEIGHT]	= { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_TZ_NAME]		= { .type = NLA_STRING,
 						    .len = THERMAL_NAME_LENGTH },
-	/* Governor(s) */
+	 
 	[THERMAL_GENL_ATTR_TZ_GOV]		= { .type = NLA_NESTED },
 	[THERMAL_GENL_ATTR_TZ_GOV_NAME]		= { .type = NLA_STRING,
 						    .len = THERMAL_NAME_LENGTH },
-	/* Cooling devices */
+	 
 	[THERMAL_GENL_ATTR_CDEV]		= { .type = NLA_NESTED },
 	[THERMAL_GENL_ATTR_CDEV_ID]		= { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_CDEV_CUR_STATE]	= { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_CDEV_MAX_STATE]	= { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_CDEV_NAME]		= { .type = NLA_STRING,
 						    .len = THERMAL_NAME_LENGTH },
-	/* CPU capabilities */
+	 
 	[THERMAL_GENL_ATTR_CPU_CAPABILITY]		= { .type = NLA_NESTED },
 	[THERMAL_GENL_ATTR_CPU_CAPABILITY_ID]		= { .type = NLA_U32 },
 	[THERMAL_GENL_ATTR_CPU_CAPABILITY_PERFORMANCE]	= { .type = NLA_U32 },
@@ -71,7 +65,7 @@ typedef int (*cb_t)(struct param *);
 
 static struct genl_family thermal_gnl_family;
 
-/************************** Sampling encoding *******************************/
+ 
 
 int thermal_genl_sampling_temp(int id, int temp)
 {
@@ -106,7 +100,7 @@ out_free:
 	return -EMSGSIZE;
 }
 
-/**************************** Event encoding *********************************/
+ 
 
 static int thermal_genl_event_tz_create(struct param *p)
 {
@@ -265,9 +259,7 @@ static cb_t event_cb[] = {
 	[THERMAL_GENL_EVENT_CPU_CAPABILITY_CHANGE] = thermal_genl_event_cpu_capability_change,
 };
 
-/*
- * Generic netlink event encoding
- */
+ 
 static int thermal_genl_send_event(enum thermal_genl_event event,
 				   struct param *p)
 {
@@ -409,7 +401,7 @@ int thermal_genl_cpu_capability_event(int count,
 }
 EXPORT_SYMBOL_GPL(thermal_genl_cpu_capability_event);
 
-/*************************** Command encoding ********************************/
+ 
 
 static int __thermal_genl_cmd_tz_get_id(struct thermal_zone_device *tz,
 					void *data)

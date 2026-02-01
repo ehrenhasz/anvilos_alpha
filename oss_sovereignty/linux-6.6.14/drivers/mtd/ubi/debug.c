@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) International Business Machines Corp., 2006
- *
- * Author: Artem Bityutskiy (Битюцкий Артём)
- */
+
+ 
 
 #include "ubi.h"
 #include <linux/debugfs.h>
@@ -12,13 +8,7 @@
 #include <linux/seq_file.h>
 
 
-/**
- * ubi_dump_flash - dump a region of flash.
- * @ubi: UBI device description object
- * @pnum: the physical eraseblock number to dump
- * @offset: the starting offset within the physical eraseblock to dump
- * @len: the length of the region to dump
- */
+ 
 void ubi_dump_flash(struct ubi_device *ubi, int pnum, int offset, int len)
 {
 	int err;
@@ -44,10 +34,7 @@ out:
 	return;
 }
 
-/**
- * ubi_dump_ec_hdr - dump an erase counter header.
- * @ec_hdr: the erase counter header to dump
- */
+ 
 void ubi_dump_ec_hdr(const struct ubi_ec_hdr *ec_hdr)
 {
 	pr_err("Erase counter header dump:\n");
@@ -63,10 +50,7 @@ void ubi_dump_ec_hdr(const struct ubi_ec_hdr *ec_hdr)
 		       ec_hdr, UBI_EC_HDR_SIZE, 1);
 }
 
-/**
- * ubi_dump_vid_hdr - dump a volume identifier header.
- * @vid_hdr: the volume identifier header to dump
- */
+ 
 void ubi_dump_vid_hdr(const struct ubi_vid_hdr *vid_hdr)
 {
 	pr_err("Volume identifier header dump:\n");
@@ -88,10 +72,7 @@ void ubi_dump_vid_hdr(const struct ubi_vid_hdr *vid_hdr)
 		       vid_hdr, UBI_VID_HDR_SIZE, 1);
 }
 
-/**
- * ubi_dump_vol_info - dump volume information.
- * @vol: UBI volume description object
- */
+ 
 void ubi_dump_vol_info(const struct ubi_volume *vol)
 {
 	pr_err("Volume information dump:\n");
@@ -119,11 +100,7 @@ void ubi_dump_vol_info(const struct ubi_volume *vol)
 	}
 }
 
-/**
- * ubi_dump_vtbl_record - dump a &struct ubi_vtbl_record object.
- * @r: the object to dump
- * @idx: volume table index
- */
+ 
 void ubi_dump_vtbl_record(const struct ubi_vtbl_record *r, int idx)
 {
 	int name_len = be16_to_cpu(r->name_len);
@@ -152,10 +129,7 @@ void ubi_dump_vtbl_record(const struct ubi_vtbl_record *r, int idx)
 	pr_err("\tcrc             %#08x\n", be32_to_cpu(r->crc));
 }
 
-/**
- * ubi_dump_av - dump a &struct ubi_ainf_volume object.
- * @av: the object to dump
- */
+ 
 void ubi_dump_av(const struct ubi_ainf_volume *av)
 {
 	pr_err("Volume attaching information dump:\n");
@@ -169,11 +143,7 @@ void ubi_dump_av(const struct ubi_ainf_volume *av)
 	pr_err("\tdata_pad       %d\n", av->data_pad);
 }
 
-/**
- * ubi_dump_aeb - dump a &struct ubi_ainf_peb object.
- * @aeb: the object to dump
- * @type: object type: 0 - not corrupted, 1 - corrupted
- */
+ 
 void ubi_dump_aeb(const struct ubi_ainf_peb *aeb, int type)
 {
 	pr_err("eraseblock attaching information dump:\n");
@@ -186,10 +156,7 @@ void ubi_dump_aeb(const struct ubi_ainf_peb *aeb, int type)
 	}
 }
 
-/**
- * ubi_dump_mkvol_req - dump a &struct ubi_mkvol_req object.
- * @req: the object to dump
- */
+ 
 void ubi_dump_mkvol_req(const struct ubi_mkvol_req *req)
 {
 	char nm[17];
@@ -206,18 +173,10 @@ void ubi_dump_mkvol_req(const struct ubi_mkvol_req *req)
 	pr_err("\t1st 16 characters of name: %s\n", nm);
 }
 
-/*
- * Root directory for UBI stuff in debugfs. Contains sub-directories which
- * contain the stuff specific to particular UBI devices.
- */
+ 
 static struct dentry *dfs_rootdir;
 
-/**
- * ubi_debugfs_init - create UBI debugfs directory.
- *
- * Create UBI debugfs directory. Returns zero in case of success and a negative
- * error code in case of failure.
- */
+ 
 int ubi_debugfs_init(void)
 {
 	if (!IS_ENABLED(CONFIG_DEBUG_FS))
@@ -235,16 +194,14 @@ int ubi_debugfs_init(void)
 	return 0;
 }
 
-/**
- * ubi_debugfs_exit - remove UBI debugfs directory.
- */
+ 
 void ubi_debugfs_exit(void)
 {
 	if (IS_ENABLED(CONFIG_DEBUG_FS))
 		debugfs_remove(dfs_rootdir);
 }
 
-/* Read an UBI debugfs file */
+ 
 static ssize_t dfs_file_read(struct file *file, char __user *user_buf,
 			     size_t count, loff_t *ppos)
 {
@@ -307,7 +264,7 @@ out:
 	return count;
 }
 
-/* Write an UBI debugfs file */
+ 
 static ssize_t dfs_file_write(struct file *file, const char __user *user_buf,
 			      size_t count, loff_t *ppos)
 {
@@ -375,9 +332,7 @@ out:
 	return count;
 }
 
-/* File operations for all UBI debugfs files except
- * detailed_erase_block_info
- */
+ 
 static const struct file_operations dfs_fops = {
 	.read   = dfs_file_read,
 	.write  = dfs_file_write,
@@ -386,9 +341,7 @@ static const struct file_operations dfs_fops = {
 	.owner  = THIS_MODULE,
 };
 
-/* As long as the position is less then that total number of erase blocks,
- * we still have more to print.
- */
+ 
 static void *eraseblk_count_seq_start(struct seq_file *s, loff_t *pos)
 {
 	struct ubi_device *ubi = s->private;
@@ -399,9 +352,7 @@ static void *eraseblk_count_seq_start(struct seq_file *s, loff_t *pos)
 	return NULL;
 }
 
-/* Since we are using the position as the iterator, we just need to check if we
- * are done and increment the position.
- */
+ 
 static void *eraseblk_count_seq_next(struct seq_file *s, void *v, loff_t *pos)
 {
 	struct ubi_device *ubi = s->private;
@@ -426,7 +377,7 @@ static int eraseblk_count_seq_show(struct seq_file *s, void *iter)
 	int erase_count = -1;
 	int err;
 
-	/* If this is the start, print a header */
+	 
 	if (*block_number == 0)
 		seq_puts(s, "physical_block_number\terase_count\n");
 
@@ -493,13 +444,7 @@ static const struct file_operations eraseblk_count_fops = {
 	.release = eraseblk_count_release,
 };
 
-/**
- * ubi_debugfs_init_dev - initialize debugfs for an UBI device.
- * @ubi: UBI device description object
- *
- * This function creates all debugfs files for UBI device @ubi. Returns zero in
- * case of success and a negative error code in case of failure.
- */
+ 
 int ubi_debugfs_init_dev(struct ubi_device *ubi)
 {
 	unsigned long ubi_num = ubi->ubi_num;
@@ -513,7 +458,7 @@ int ubi_debugfs_init_dev(struct ubi_device *ubi)
 	n = snprintf(d->dfs_dir_name, UBI_DFS_DIR_LEN + 1, UBI_DFS_DIR_NAME,
 		     ubi->ubi_num);
 	if (n > UBI_DFS_DIR_LEN) {
-		/* The array size is too small */
+		 
 		return -EINVAL;
 	}
 
@@ -562,23 +507,14 @@ int ubi_debugfs_init_dev(struct ubi_device *ubi)
 	return 0;
 }
 
-/**
- * ubi_debugfs_exit_dev - free all debugfs files corresponding to device @ubi
- * @ubi: UBI device description object
- */
+ 
 void ubi_debugfs_exit_dev(struct ubi_device *ubi)
 {
 	if (IS_ENABLED(CONFIG_DEBUG_FS))
 		debugfs_remove_recursive(ubi->dbg.dfs_dir);
 }
 
-/**
- * ubi_dbg_power_cut - emulate a power cut if it is time to do so
- * @ubi: UBI device description object
- * @caller: Flags set to indicate from where the function is being called
- *
- * Returns non-zero if a power cut was emulated, zero if not.
- */
+ 
 int ubi_dbg_power_cut(struct ubi_device *ubi, int caller)
 {
 	unsigned int range;

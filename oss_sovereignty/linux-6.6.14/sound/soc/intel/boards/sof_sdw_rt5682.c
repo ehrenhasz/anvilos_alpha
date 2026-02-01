@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Intel Corporation
 
-/*
- *  sof_sdw_rt5682 - Helpers to handle RT5682 from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -23,7 +21,7 @@ static const struct snd_soc_dapm_widget rt5682_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route rt5682_map[] = {
-	/*Headphones*/
+	 
 	{ "Headphone", NULL, "rt5682 HPOL" },
 	{ "Headphone", NULL, "rt5682 HPOR" },
 	{ "rt5682 IN1P", NULL, "Headset Mic" },
@@ -117,10 +115,7 @@ int sof_sdw_rt5682_init(struct snd_soc_card *card,
 			struct sof_sdw_codec_info *info,
 			bool playback)
 {
-	/*
-	 * headset should be initialized once.
-	 * Do it with dai link for playback.
-	 */
+	 
 	if (!playback)
 		return 0;
 

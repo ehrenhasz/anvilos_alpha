@@ -1,25 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef SMU75_DISCRETE_H
 #define SMU75_DISCRETE_H
@@ -40,8 +19,8 @@
 #define POSTDIV_DIV_BY_16 4
 
 struct sclkFcwRange_t {
-	uint8_t  vco_setting; /* 1: 3-6GHz, 3: 2-4GHz */
-	uint8_t  postdiv;     /* divide by 2^n */
+	uint8_t  vco_setting;  
+	uint8_t  postdiv;      
 	uint16_t fcw_pcc;
 	uint16_t fcw_trans_upper;
 	uint16_t fcw_trans_lower;
@@ -177,7 +156,7 @@ struct SMU75_Discrete_LinkLevel {
 typedef struct SMU75_Discrete_LinkLevel SMU75_Discrete_LinkLevel;
 
 
-/* MC ARB DRAM Timing registers. */
+ 
 struct SMU75_Discrete_MCArbDramTimingTableEntry {
 	uint32_t McArbDramTiming;
 	uint32_t McArbDramTiming2;
@@ -194,7 +173,7 @@ struct SMU75_Discrete_MCArbDramTimingTable {
 
 typedef struct SMU75_Discrete_MCArbDramTimingTable SMU75_Discrete_MCArbDramTimingTable;
 
-/* UVD VCLK/DCLK state (level) definition. */
+ 
 struct SMU75_Discrete_UvdLevel {
 	uint32_t VclkFrequency;
 	uint32_t DclkFrequency;
@@ -206,7 +185,7 @@ struct SMU75_Discrete_UvdLevel {
 
 typedef struct SMU75_Discrete_UvdLevel SMU75_Discrete_UvdLevel;
 
-/* Clocks for other external blocks (VCE, ACP, SAMU). */
+ 
 struct SMU75_Discrete_ExtClkLevel {
 	uint32_t Frequency;
 	SMU_VoltageLevel MinVoltage;

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Conexant CX24120/CX24118 - DVB-S/S2 demod/tuner driver
- *
- * Copyright (C) 2008 Patrick Boettcher <pb@linuxtv.org>
- * Copyright (C) 2009 Sergey Tyurin <forum.free-x.de>
- * Updated 2012 by Jannis Achstetter <jannis_achstetter@web.de>
- * Copyright (C) 2015 Jemma Denson <jdenson@gmail.com>
- */
+ 
+ 
 
 #ifndef CX24120_H
 #define CX24120_H
@@ -28,7 +21,7 @@ struct cx24120_config {
 	int (*request_firmware)(struct dvb_frontend *fe,
 				const struct firmware **fw, char *name);
 
-	/* max bytes I2C provider can write at once */
+	 
 	u16 i2c_wr_max;
 };
 
@@ -45,4 +38,4 @@ struct dvb_frontend *cx24120_attach(const struct cx24120_config *config,
 }
 #endif
 
-#endif /* CX24120_H */
+#endif  

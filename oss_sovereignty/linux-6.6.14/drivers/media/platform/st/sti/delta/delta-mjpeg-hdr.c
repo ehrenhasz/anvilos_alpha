@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2013
- * Author: Hugues Fruchet <hugues.fruchet@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include "delta.h"
 #include "delta-mjpeg.h"

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Feature set bits and string conversion.
- * Inspired by ext4's features compat/incompat/ro_compat related code.
- *
- * Copyright 2020 Coly Li <colyli@suse.de>
- *
- */
+
+ 
 #include "bcache_ondisk.h"
 #include "bcache.h"
 #include "features.h"

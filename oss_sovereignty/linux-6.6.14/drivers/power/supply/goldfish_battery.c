@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Power supply driver for the goldfish emulator
- *
- * Copyright (C) 2008 Google, Inc.
- * Copyright (C) 2012 Intel, Inc.
- * Copyright (C) 2013 Intel, Inc.
- * Author: Mike Lockwood <lockwood@android.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -33,9 +26,9 @@ struct goldfish_battery_data {
 	(writel(x, data->reg_base + addr))
 
 enum {
-	/* status register */
+	 
 	BATTERY_INT_STATUS	= 0x00,
-	/* set this to enable IRQ */
+	 
 	BATTERY_INT_ENABLE	= 0x04,
 
 	BATTERY_AC_ONLINE	= 0x08,
@@ -166,7 +159,7 @@ static irqreturn_t goldfish_battery_interrupt(int irq, void *dev_id)
 
 	spin_lock_irqsave(&data->lock, irq_flags);
 
-	/* read status flags, which will clear the interrupt */
+	 
 	status = GOLDFISH_BATTERY_READ(data, BATTERY_INT_STATUS);
 	status &= BATTERY_INT_MASK;
 

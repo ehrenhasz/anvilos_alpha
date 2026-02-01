@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * COMEDI driver for the watchdog subdevice found on some addi-data boards
- * Copyright (c) 2013 H Hartley Sweeten <hsweeten@visionengravers.com>
- *
- * Based on implementations in various addi-data COMEDI drivers.
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1998 David A. Schleef <ds@schleef.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
@@ -19,16 +11,7 @@ struct addi_watchdog_private {
 	unsigned int wdog_ctrl;
 };
 
-/*
- * The watchdog subdevice is configured with two INSN_CONFIG instructions:
- *
- * Enable the watchdog and set the reload timeout:
- *	data[0] = INSN_CONFIG_ARM
- *	data[1] = timeout reload value
- *
- * Disable the watchdog:
- *	data[0] = INSN_CONFIG_DISARM
- */
+ 
 static int addi_watchdog_insn_config(struct comedi_device *dev,
 				     struct comedi_subdevice *s,
 				     struct comedi_insn *insn,
@@ -43,7 +26,7 @@ static int addi_watchdog_insn_config(struct comedi_device *dev,
 		reload = data[1] & s->maxdata;
 		outl(reload, spriv->iobase + ADDI_TCW_RELOAD_REG);
 
-		/* Time base is 20ms, let the user know the timeout */
+		 
 		dev_info(dev->class_dev, "watchdog enabled, timeout:%dms\n",
 			 20 * reload + 20);
 		break;
@@ -86,7 +69,7 @@ static int addi_watchdog_insn_write(struct comedi_device *dev,
 		return -EINVAL;
 	}
 
-	/* "ping" the watchdog */
+	 
 	for (i = 0; i < insn->n; i++) {
 		outl(spriv->wdog_ctrl | ADDI_TCW_CTRL_TRIG,
 		     spriv->iobase + ADDI_TCW_CTRL_REG);

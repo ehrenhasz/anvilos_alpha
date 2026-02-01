@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Authors:
- * (C) 2020 Alexander Aring <alex.aring@gmail.com>
- */
+
+ 
 
 #include <linux/rpl_iptunnel.h>
 
@@ -44,7 +41,7 @@ static bool rpl_validate_srh(struct net *net, struct ipv6_rpl_sr_hdr *srh,
 	if ((srh->hdrlen << 3) != seglen)
 		return false;
 
-	/* check at least one segment and seglen fit with segments_left */
+	 
 	if (!srh->segments_left ||
 	    (srh->segments_left * sizeof(struct in6_addr)) != seglen)
 		return false;
@@ -92,7 +89,7 @@ static int rpl_build_state(struct net *net, struct nlattr *nla,
 	if (srh_len < sizeof(*srh))
 		return -EINVAL;
 
-	/* verify that SRH is consistent */
+	 
 	if (!rpl_validate_srh(net, srh, srh_len - sizeof(*srh)))
 		return -EINVAL;
 

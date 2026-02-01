@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    Copyright IBM Corp. 1999, 2010
- *    Author(s): Cornelia Huck (cornelia.huck@de.ibm.com)
- *		 Arnd Bergmann (arndb@de.ibm.com)
- *		 Peter Oberparleiter <peter.oberparleiter@de.ibm.com>
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/workqueue.h>
@@ -36,42 +31,35 @@ enum cfg_task_t {
 	cfg_deconfigure
 };
 
-/* Map for pending configure tasks. */
+ 
 static enum cfg_task_t chp_cfg_task[__MAX_CSSID + 1][__MAX_CHPID + 1];
 static DEFINE_SPINLOCK(cfg_lock);
 
-/* Map for channel-path status. */
+ 
 static struct sclp_chp_info chp_info;
 static DEFINE_MUTEX(info_lock);
 
-/* Time after which channel-path status may be outdated. */
+ 
 static unsigned long chp_info_expires;
 
 static struct work_struct cfg_work;
 
-/* Wait queue for configure completion events. */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(cfg_wait_queue);
 
-/* Set vary state for given chpid. */
+ 
 static void set_chp_logically_online(struct chp_id chpid, int onoff)
 {
 	chpid_to_chp(chpid)->state = onoff;
 }
 
-/* On success return 0 if channel-path is varied offline, 1 if it is varied
- * online. Return -ENODEV if channel-path is not registered. */
+ 
 int chp_get_status(struct chp_id chpid)
 {
 	return (chpid_to_chp(chpid) ? chpid_to_chp(chpid)->state : -ENODEV);
 }
 
-/**
- * chp_get_sch_opm - return opm for subchannel
- * @sch: subchannel
- *
- * Calculate and return the operational path mask (opm) based on the chpids
- * used by the subchannel and the status of the associated channel-paths.
- */
+ 
 u8 chp_get_sch_opm(struct subchannel *sch)
 {
 	struct chp_id chpid;
@@ -90,22 +78,13 @@ u8 chp_get_sch_opm(struct subchannel *sch)
 }
 EXPORT_SYMBOL_GPL(chp_get_sch_opm);
 
-/**
- * chp_is_registered - check if a channel-path is registered
- * @chpid: channel-path ID
- *
- * Return non-zero if a channel-path with the given chpid is registered,
- * zero otherwise.
- */
+ 
 int chp_is_registered(struct chp_id chpid)
 {
 	return chpid_to_chp(chpid) != NULL;
 }
 
-/*
- * Function: s390_vary_chpid
- * Varies the specified chpid online or offline
- */
+ 
 static int s390_vary_chpid(struct chp_id chpid, int on)
 {
 	char dbf_text[15];
@@ -124,9 +103,7 @@ static int s390_vary_chpid(struct chp_id chpid, int on)
 	return 0;
 }
 
-/*
- * Channel measurement related functions
- */
+ 
 static ssize_t chp_measurement_chars_read(struct file *filp,
 					  struct kobject *kobj,
 					  struct bin_attribute *bin_attr,
@@ -190,7 +167,7 @@ static ssize_t chp_measurement_read(struct file *filp, struct kobject *kobj,
 
 	size = sizeof(struct cmg_entry);
 
-	/* Only allow single reads. */
+	 
 	if (off || count < size)
 		return 0;
 	chp_measurement_copy_block((struct cmg_entry *)buf, css, chp->chpid);
@@ -226,9 +203,7 @@ int chp_add_cmg_attr(struct channel_path *chp)
 	return ret;
 }
 
-/*
- * Files for the channel path entries.
- */
+ 
 static ssize_t chp_status_show(struct device *dev,
 			       struct device_attribute *attr, char *buf)
 {
@@ -255,7 +230,7 @@ static ssize_t chp_status_write(struct device *dev,
 	if (!num_args)
 		return count;
 
-	/* Wait until previous actions have settled. */
+	 
 	css_wait_for_slow_path();
 
 	if (!strncasecmp(cmd, "on", 2) || !strcmp(cmd, "1")) {
@@ -332,7 +307,7 @@ static ssize_t chp_cmg_show(struct device *dev, struct device_attribute *attr,
 
 	if (!chp)
 		return 0;
-	if (chp->cmg == -1) /* channel measurements not available */
+	if (chp->cmg == -1)  
 		return sprintf(buf, "unknown\n");
 	return sprintf(buf, "%x\n", chp->cmg);
 }
@@ -346,7 +321,7 @@ static ssize_t chp_shared_show(struct device *dev,
 
 	if (!chp)
 		return 0;
-	if (chp->shared == -1) /* channel measurements not available */
+	if (chp->shared == -1)  
 		return sprintf(buf, "unknown\n");
 	return sprintf(buf, "%x\n", chp->shared);
 }
@@ -451,14 +426,7 @@ static void chp_release(struct device *dev)
 	kfree(cp);
 }
 
-/**
- * chp_update_desc - update channel-path description
- * @chp: channel-path
- *
- * Update the channel-path description of the specified channel-path
- * including channel measurement related information.
- * Return zero on success, non-zero otherwise.
- */
+ 
 int chp_update_desc(struct channel_path *chp)
 {
 	int rc;
@@ -467,10 +435,7 @@ int chp_update_desc(struct channel_path *chp)
 	if (rc)
 		return rc;
 
-	/*
-	 * Fetching the following data is optional. Not all machines or
-	 * hypervisors implement the required chsc commands.
-	 */
+	 
 	chsc_determine_fmt1_channel_path_desc(chp->chpid, &chp->desc_fmt1);
 	chsc_determine_fmt3_channel_path_desc(chp->chpid, &chp->desc_fmt3);
 	chsc_get_channel_measurement_chars(chp);
@@ -478,13 +443,7 @@ int chp_update_desc(struct channel_path *chp)
 	return 0;
 }
 
-/**
- * chp_new - register a new channel-path
- * @chpid: channel-path ID
- *
- * Create and register data structure representing new channel-path. Return
- * zero on success, non-zero otherwise.
- */
+ 
 int chp_new(struct chp_id chpid)
 {
 	struct channel_subsystem *css = css_by_id(chpid.cssid);
@@ -500,7 +459,7 @@ int chp_new(struct chp_id chpid)
 		ret = -ENOMEM;
 		goto out;
 	}
-	/* fill in status, etc. */
+	 
 	chp->chpid = chpid;
 	chp->state = 1;
 	chp->dev.parent = &css->device;
@@ -508,7 +467,7 @@ int chp_new(struct chp_id chpid)
 	chp->dev.release = chp_release;
 	mutex_init(&chp->lock);
 
-	/* Obtain channel path description and fill it in. */
+	 
 	ret = chp_update_desc(chp);
 	if (ret)
 		goto out_free;
@@ -518,7 +477,7 @@ int chp_new(struct chp_id chpid)
 	}
 	dev_set_name(&chp->dev, "chp%x.%02x", chpid.cssid, chpid.id);
 
-	/* make it known to the system */
+	 
 	ret = device_register(&chp->dev);
 	if (ret) {
 		CIO_MSG_EVENT(0, "Could not register chp%x.%02x: %d\n",
@@ -543,13 +502,7 @@ out:
 	return ret;
 }
 
-/**
- * chp_get_chp_desc - return newly allocated channel-path description
- * @chpid: channel-path ID
- *
- * On success return a newly allocated copy of the channel-path description
- * data associated with the given channel-path ID. Return %NULL on error.
- */
+ 
 struct channel_path_desc_fmt0 *chp_get_chp_desc(struct chp_id chpid)
 {
 	struct channel_path *chp;
@@ -568,15 +521,7 @@ struct channel_path_desc_fmt0 *chp_get_chp_desc(struct chp_id chpid)
 	return desc;
 }
 
-/**
- * chp_process_crw - process channel-path status change
- * @crw0: channel report-word to handler
- * @crw1: second channel-report word (always NULL)
- * @overflow: crw overflow indication
- *
- * Handle channel-report-words indicating that the status of a channel-path
- * has changed.
- */
+ 
 static void chp_process_crw(struct crw *crw0, struct crw *crw1,
 			    int overflow)
 {
@@ -590,11 +535,7 @@ static void chp_process_crw(struct crw *crw0, struct crw *crw1,
 		      "chn=%d, rsc=%X, anc=%d, erc=%X, rsid=%X\n",
 		      crw0->slct, crw0->oflw, crw0->chn, crw0->rsc, crw0->anc,
 		      crw0->erc, crw0->rsid);
-	/*
-	 * Check for solicited machine checks. These are
-	 * created by reset channel path and need not be
-	 * handled here.
-	 */
+	 
 	if (crw0->slct) {
 		CIO_CRW_EVENT(2, "solicited machine check for "
 			      "channel path %02X\n", crw0->rsid);
@@ -603,12 +544,12 @@ static void chp_process_crw(struct crw *crw0, struct crw *crw1,
 	chp_id_init(&chpid);
 	chpid.id = crw0->rsid;
 	switch (crw0->erc) {
-	case CRW_ERC_IPARM: /* Path has come. */
+	case CRW_ERC_IPARM:  
 	case CRW_ERC_INIT:
 		chp_new(chpid);
 		chsc_chp_online(chpid);
 		break;
-	case CRW_ERC_PERRI: /* Path has gone. */
+	case CRW_ERC_PERRI:  
 	case CRW_ERC_PERRN:
 		chsc_chp_offline(chpid);
 		break;
@@ -643,7 +584,7 @@ static inline int info_bit_num(struct chp_id id)
 	return id.id + id.cssid * (__MAX_CHPID + 1);
 }
 
-/* Force chp_info refresh on next call to info_validate(). */
+ 
 static void info_expire(void)
 {
 	mutex_lock(&info_lock);
@@ -651,7 +592,7 @@ static void info_expire(void)
 	mutex_unlock(&info_lock);
 }
 
-/* Ensure that chp_info is up-to-date. */
+ 
 static int info_update(void)
 {
 	int rc;
@@ -659,7 +600,7 @@ static int info_update(void)
 	mutex_lock(&info_lock);
 	rc = 0;
 	if (time_after(jiffies, chp_info_expires)) {
-		/* Data is too old, update. */
+		 
 		rc = sclp_chp_read_info(&chp_info);
 		chp_info_expires = jiffies + CHP_INFO_UPDATE_INTERVAL ;
 	}
@@ -668,13 +609,7 @@ static int info_update(void)
 	return rc;
 }
 
-/**
- * chp_info_get_status - retrieve configure status of a channel-path
- * @chpid: channel-path ID
- *
- * On success, return 0 for standby, 1 for configured, 2 for reserved,
- * 3 for not recognized. Return negative error code on error.
- */
+ 
 int chp_info_get_status(struct chp_id chpid)
 {
 	int rc;
@@ -699,19 +634,19 @@ int chp_info_get_status(struct chp_id chpid)
 	return rc;
 }
 
-/* Return configure task for chpid. */
+ 
 static enum cfg_task_t cfg_get_task(struct chp_id chpid)
 {
 	return chp_cfg_task[chpid.cssid][chpid.id];
 }
 
-/* Set configure task for chpid. */
+ 
 static void cfg_set_task(struct chp_id chpid, enum cfg_task_t cfg)
 {
 	chp_cfg_task[chpid.cssid][chpid.id] = cfg;
 }
 
-/* Fetch the first configure task. Set chpid accordingly. */
+ 
 static enum cfg_task_t chp_cfg_fetch_task(struct chp_id *chpid)
 {
 	enum cfg_task_t t = cfg_none;
@@ -725,8 +660,7 @@ static enum cfg_task_t chp_cfg_fetch_task(struct chp_id *chpid)
 	return t;
 }
 
-/* Perform one configure/deconfigure request. Reschedule work function until
- * last request. */
+ 
 static void cfg_func(struct work_struct *work)
 {
 	struct chp_id chpid;
@@ -759,7 +693,7 @@ static void cfg_func(struct work_struct *work)
 		}
 		break;
 	case cfg_none:
-		/* Get updated information after last change. */
+		 
 		info_update();
 		wake_up_interruptible(&cfg_wait_queue);
 		return;
@@ -771,13 +705,7 @@ static void cfg_func(struct work_struct *work)
 	schedule_work(&cfg_work);
 }
 
-/**
- * chp_cfg_schedule - schedule chpid configuration request
- * @chpid: channel-path ID
- * @configure: Non-zero for configure, zero for deconfigure
- *
- * Schedule a channel-path configuration/deconfiguration request.
- */
+ 
 void chp_cfg_schedule(struct chp_id chpid, int configure)
 {
 	CIO_MSG_EVENT(2, "chp_cfg_sched%x.%02x=%d\n", chpid.cssid, chpid.id,
@@ -788,13 +716,7 @@ void chp_cfg_schedule(struct chp_id chpid, int configure)
 	schedule_work(&cfg_work);
 }
 
-/**
- * chp_cfg_cancel_deconfigure - cancel chpid deconfiguration request
- * @chpid: channel-path ID
- *
- * Cancel an active channel-path deconfiguration request if it has not yet
- * been performed.
- */
+ 
 void chp_cfg_cancel_deconfigure(struct chp_id chpid)
 {
 	CIO_MSG_EVENT(2, "chp_cfg_cancel:%x.%02x\n", chpid.cssid, chpid.id);
@@ -834,7 +756,7 @@ static int __init chp_init(void)
 	INIT_WORK(&cfg_work, cfg_func);
 	if (info_update())
 		return 0;
-	/* Register available channel-paths. */
+	 
 	chp_id_for_each(&chpid) {
 		state = chp_info_get_status(chpid);
 		if (state == CHP_STATUS_CONFIGURED ||

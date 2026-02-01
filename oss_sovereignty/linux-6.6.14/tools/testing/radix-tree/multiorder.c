@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * multiorder.c: Multi-order radix tree entry testing
- * Copyright (c) 2016 Intel Corporation
- * Author: Ross Zwisler <ross.zwisler@linux.intel.com>
- * Author: Matthew Wilcox <matthew.r.wilcox@intel.com>
- */
+
+ 
 #include <linux/radix-tree.h>
 #include <linux/slab.h>
 #include <linux/errno.h>
@@ -163,7 +158,7 @@ bool stop_iteration;
 
 static void *creator_func(void *ptr)
 {
-	/* 'order' is set up to ensure we have sibling entries */
+	 
 	unsigned int order = RADIX_TREE_MAP_SHIFT - 1;
 	struct radix_tree_root *tree = ptr;
 	int i;
@@ -214,7 +209,7 @@ static void multiorder_iteration_race(struct xarray *xa)
 
 static void *load_creator(void *ptr)
 {
-	/* 'order' is set up to ensure we have sibling entries */
+	 
 	unsigned int order;
 	struct radix_tree_root *tree = ptr;
 	int i;

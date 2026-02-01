@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * vimc-core.c Virtual Media Controller Driver
- *
- * Copyright (C) 2015-2017 Helen Koike <helen.fornazier@gmail.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/font.h>
@@ -37,7 +33,7 @@ MODULE_PARM_DESC(allocator, " memory allocator selection, default is 0.\n"
 	.ancillary_ent = ancillary		\
 }
 
-/* Structure which describes data links between entities */
+ 
 struct vimc_data_link {
 	unsigned int src_ent;
 	u16 src_pad;
@@ -46,7 +42,7 @@ struct vimc_data_link {
 	u32 flags;
 };
 
-/* Enum to improve clarity when defining vimc_data_links */
+ 
 enum vimc_data_link_ents {
 	SENSOR_A,
 	SENSOR_B,
@@ -61,13 +57,13 @@ enum vimc_data_link_ents {
 	LENS_B,
 };
 
-/* Structure which describes ancillary links between entities */
+ 
 struct vimc_ancillary_link {
 	unsigned int primary_ent;
 	unsigned int ancillary_ent;
 };
 
-/* Structure which describes the whole topology */
+ 
 struct vimc_pipeline_config {
 	const struct vimc_ent_config *ents;
 	size_t num_ents;
@@ -77,9 +73,7 @@ struct vimc_pipeline_config {
 	size_t num_ancillary_links;
 };
 
-/* --------------------------------------------------------------------------
- * Topology Configuration
- */
+ 
 
 static struct vimc_ent_config ent_config[] = {
 	[SENSOR_A] = {
@@ -107,7 +101,7 @@ static struct vimc_ent_config ent_config[] = {
 		.type = &vimc_capture_type
 	},
 	[RGB_YUV_INPUT] = {
-		/* TODO: change this to vimc-input when it is implemented */
+		 
 		.name = "RGB/YUV Input",
 		.type = &vimc_sensor_type
 	},
@@ -130,33 +124,33 @@ static struct vimc_ent_config ent_config[] = {
 };
 
 static const struct vimc_data_link data_links[] = {
-	/* Link: Sensor A (Pad 0)->(Pad 0) Debayer A */
+	 
 	VIMC_DATA_LINK(SENSOR_A, 0, DEBAYER_A, 0,
 		       MEDIA_LNK_FL_ENABLED | MEDIA_LNK_FL_IMMUTABLE),
-	/* Link: Sensor A (Pad 0)->(Pad 0) Raw Capture 0 */
+	 
 	VIMC_DATA_LINK(SENSOR_A, 0, RAW_CAPTURE_0, 0,
 		       MEDIA_LNK_FL_ENABLED | MEDIA_LNK_FL_IMMUTABLE),
-	/* Link: Sensor B (Pad 0)->(Pad 0) Debayer B */
+	 
 	VIMC_DATA_LINK(SENSOR_B, 0, DEBAYER_B, 0,
 		       MEDIA_LNK_FL_ENABLED | MEDIA_LNK_FL_IMMUTABLE),
-	/* Link: Sensor B (Pad 0)->(Pad 0) Raw Capture 1 */
+	 
 	VIMC_DATA_LINK(SENSOR_B, 0, RAW_CAPTURE_1, 0,
 		       MEDIA_LNK_FL_ENABLED | MEDIA_LNK_FL_IMMUTABLE),
-	/* Link: Debayer A (Pad 1)->(Pad 0) Scaler */
+	 
 	VIMC_DATA_LINK(DEBAYER_A, 1, SCALER, 0, MEDIA_LNK_FL_ENABLED),
-	/* Link: Debayer B (Pad 1)->(Pad 0) Scaler */
+	 
 	VIMC_DATA_LINK(DEBAYER_B, 1, SCALER, 0, 0),
-	/* Link: RGB/YUV Input (Pad 0)->(Pad 0) Scaler */
+	 
 	VIMC_DATA_LINK(RGB_YUV_INPUT, 0, SCALER, 0, 0),
-	/* Link: Scaler (Pad 1)->(Pad 0) RGB/YUV Capture */
+	 
 	VIMC_DATA_LINK(SCALER, 1, RGB_YUV_CAPTURE, 0,
 		       MEDIA_LNK_FL_ENABLED | MEDIA_LNK_FL_IMMUTABLE),
 };
 
 static const struct vimc_ancillary_link ancillary_links[] = {
-	/* Link: Sensor A -> Lens A */
+	 
 	VIMC_ANCILLARY_LINK(0, 9),
-	/* Link: Sensor B -> Lens B */
+	 
 	VIMC_ANCILLARY_LINK(1, 10),
 };
 
@@ -169,7 +163,7 @@ static struct vimc_pipeline_config pipe_cfg = {
 	.num_ancillary_links = ARRAY_SIZE(ancillary_links),
 };
 
-/* -------------------------------------------------------------------------- */
+ 
 
 static void vimc_rm_links(struct vimc_device *vimc)
 {
@@ -184,7 +178,7 @@ static int vimc_create_links(struct vimc_device *vimc)
 	unsigned int i;
 	int ret;
 
-	/* Initialize the links between entities */
+	 
 	for (i = 0; i < vimc->pipe_cfg->num_data_links; i++) {
 		const struct vimc_data_link *link = &vimc->pipe_cfg->data_links[i];
 
@@ -279,14 +273,14 @@ static int vimc_register_devices(struct vimc_device *vimc)
 {
 	int ret;
 
-	/* Register the v4l2 struct */
+	 
 	ret = v4l2_device_register(vimc->mdev.dev, &vimc->v4l2_dev);
 	if (ret) {
 		dev_err(vimc->mdev.dev,
 			"v4l2 device register failed (err=%d)\n", ret);
 		return ret;
 	}
-	/* allocate ent_devs */
+	 
 	vimc->ent_devs = kcalloc(vimc->pipe_cfg->num_ents,
 				 sizeof(*vimc->ent_devs), GFP_KERNEL);
 	if (!vimc->ent_devs) {
@@ -294,17 +288,17 @@ static int vimc_register_devices(struct vimc_device *vimc)
 		goto err_v4l2_unregister;
 	}
 
-	/* Invoke entity config hooks to initialize and register subdevs */
+	 
 	ret = vimc_add_subdevs(vimc);
 	if (ret)
 		goto err_free_ent_devs;
 
-	/* Initialize links */
+	 
 	ret = vimc_create_links(vimc);
 	if (ret)
 		goto err_rm_subdevs;
 
-	/* Register the media device */
+	 
 	ret = media_device_register(&vimc->mdev);
 	if (ret) {
 		dev_err(vimc->mdev.dev,
@@ -312,7 +306,7 @@ static int vimc_register_devices(struct vimc_device *vimc)
 		goto err_rm_subdevs;
 	}
 
-	/* Expose all subdev's nodes*/
+	 
 	ret = v4l2_device_register_subdev_nodes(&vimc->v4l2_dev);
 	if (ret) {
 		dev_err(vimc->mdev.dev,
@@ -360,10 +354,10 @@ static int vimc_probe(struct platform_device *pdev)
 
 	vimc->pipe_cfg = &pipe_cfg;
 
-	/* Link the media device within the v4l2_device */
+	 
 	vimc->v4l2_dev.mdev = &vimc->mdev;
 
-	/* Initialize media device */
+	 
 	strscpy(vimc->mdev.model, VIMC_MDEV_MODEL_NAME,
 		sizeof(vimc->mdev.model));
 	snprintf(vimc->mdev.bus_info, sizeof(vimc->mdev.bus_info),
@@ -377,10 +371,7 @@ static int vimc_probe(struct platform_device *pdev)
 		kfree(vimc);
 		return ret;
 	}
-	/*
-	 * the release cb is set only after successful registration.
-	 * if the registration fails, we release directly from probe
-	 */
+	 
 
 	vimc->v4l2_dev.release = vimc_v4l2_dev_release;
 	platform_set_drvdata(pdev, vimc);

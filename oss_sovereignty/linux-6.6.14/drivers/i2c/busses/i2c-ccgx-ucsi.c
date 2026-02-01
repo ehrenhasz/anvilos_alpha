@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Instantiate UCSI device for Cypress CCGx Type-C controller.
- * Derived from i2c-designware-pcidrv.c and i2c-nvidia-gpu.c.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/export.h>

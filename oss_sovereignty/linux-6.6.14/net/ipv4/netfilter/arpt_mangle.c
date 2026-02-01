@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* module that allows mangling of the arp payload */
+
+ 
 #include <linux/module.h>
 #include <linux/netfilter.h>
 #include <linux/netfilter_arp/arpt_mangle.h>
@@ -24,7 +24,7 @@ target(struct sk_buff *skb, const struct xt_action_param *par)
 	arpptr = skb_network_header(skb) + sizeof(*arp);
 	pln = arp->ar_pln;
 	hln = arp->ar_hln;
-	/* We assume that pln and hln were checked in the match */
+	 
 	if (mangle->flags & ARPT_MANGLE_SDEV) {
 		if (ARPT_DEV_ADDR_LEN_MAX < hln ||
 		   (arpptr + hln > skb_tail_pointer(skb)))

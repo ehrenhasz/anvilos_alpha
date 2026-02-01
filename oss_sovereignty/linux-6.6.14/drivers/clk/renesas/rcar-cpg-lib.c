@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car Gen3 Clock Pulse Generator Library
- *
- * Copyright (C) 2015-2018 Glider bvba
- * Copyright (C) 2019 Renesas Electronics Corp.
- *
- * Based on clk-rcar-gen3.c
- *
- * Copyright (C) 2015 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -62,28 +53,18 @@ void cpg_simple_notifier_register(struct raw_notifier_head *notifiers,
 	raw_notifier_chain_register(notifiers, &csn->nb);
 }
 
-/*
- * SDn Clock
- */
+ 
 
 #define SDnSRCFC_SHIFT 2
 #define STPnHCK	BIT(9 - SDnSRCFC_SHIFT)
 
 static const struct clk_div_table cpg_sdh_div_table[] = {
-	/*
-	 * These values are recommended by the datasheet.  Because they come
-	 * first, Linux will only use these.
-	 */
+	 
 	{ 0, 1 }, { 1, 2 }, { STPnHCK | 2, 4 }, { STPnHCK | 3, 8 },
 	{ STPnHCK | 4, 16 },
-	/*
-	 * These values are not recommended because STPnHCK is wrong.  But they
-	 * have been seen because of broken firmware.  So, we support reading
-	 * them but Linux will sanitize them when initializing through
-	 * recalc_rate.
-	 */
+	 
 	{ STPnHCK | 0, 1 }, { STPnHCK | 1, 2 },  { 2, 4 }, { 3, 8 }, { 4, 16 },
-	/* Sentinel */
+	 
 	{ 0, 0 }
 };
 
@@ -126,10 +107,7 @@ struct clk * __init cpg_sd_clk_register(const char *name,
 struct rpc_clock {
 	struct clk_divider div;
 	struct clk_gate gate;
-	/*
-	 * One notifier covers both RPC and RPCD2 clocks as they are both
-	 * controlled by the same RPCCKCR register...
-	 */
+	 
 	struct cpg_simple_notifier csn;
 };
 

@@ -1,51 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2004 James Courtier-Dutton <James@superbug.demon.co.uk>
- *  Driver CA0106 chips. e.g. Sound Blaster Audigy LS and Live 24bit
- *  Version: 0.0.18
- *
- *  FEATURES currently supported:
- *    See ca0106_main.c for features.
- * 
- *  Changelog:
- *    Support interrupts per period.
- *    Removed noise from Center/LFE channel when in Analog mode.
- *    Rename and remove mixer controls.
- *  0.0.6
- *    Use separate card based DMA buffer for periods table list.
- *  0.0.7
- *    Change remove and rename ctrls into lists.
- *  0.0.8
- *    Try to fix capture sources.
- *  0.0.9
- *    Fix AC3 output.
- *    Enable S32_LE format support.
- *  0.0.10
- *    Enable playback 48000 and 96000 rates. (Rates other that these do not work, even with "plug:front".)
- *  0.0.11
- *    Add Model name recognition.
- *  0.0.12
- *    Correct interrupt timing. interrupt at end of period, instead of in the middle of a playback period.
- *    Remove redundent "voice" handling.
- *  0.0.13
- *    Single trigger call for multi channels.
- *  0.0.14
- *    Set limits based on what the sound card hardware can do.
- *    playback periods_min=2, periods_max=8
- *    capture hw constraints require period_size = n * 64 bytes.
- *    playback hw constraints require period_size = n * 64 bytes.
- *  0.0.15
- *    Separated ca0106.c into separate functional .c files.
- *  0.0.16
- *    Modified Copyright message.
- *  0.0.17
- *    Implement Mic and Line in Capture.
- *  0.0.18
- *    Add support for mute control on SB Live 24bit (cards w/ SPI DAC)
- *
- *  This code was initially based on code from ALSA's emu10k1x.c which is:
- *  Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -65,7 +19,7 @@ static void ca0106_spdif_enable(struct snd_ca0106 *emu)
 	unsigned int val;
 
 	if (emu->spdif_enable) {
-		/* Digital */
+		 
 		snd_ca0106_ptr_write(emu, SPDIF_SELECT1, 0, 0xf);
 		snd_ca0106_ptr_write(emu, SPDIF_SELECT2, 0, 0x0b000000);
 		val = snd_ca0106_ptr_read(emu, CAPTURE_CONTROL, 0) & ~0x1000;
@@ -74,7 +28,7 @@ static void ca0106_spdif_enable(struct snd_ca0106 *emu)
 		outl(val, emu->port + CA0106_GPIO);
 
 	} else {
-		/* Analog */
+		 
 		snd_ca0106_ptr_write(emu, SPDIF_SELECT1, 0, 0xf);
 		snd_ca0106_ptr_write(emu, SPDIF_SELECT2, 0, 0x000f0000);
 		val = snd_ca0106_ptr_read(emu, CAPTURE_CONTROL, 0) | 0x1000;
@@ -99,17 +53,17 @@ static void ca0106_set_i2c_capture_source(struct snd_ca0106 *emu,
 	unsigned int ngain, ogain;
 	u32 source;
 
-	snd_ca0106_i2c_write(emu, ADC_MUX, 0); /* Mute input */
-	ngain = emu->i2c_capture_volume[val][0]; /* Left */
-	ogain = emu->i2c_capture_volume[emu->i2c_capture_source][0]; /* Left */
+	snd_ca0106_i2c_write(emu, ADC_MUX, 0);  
+	ngain = emu->i2c_capture_volume[val][0];  
+	ogain = emu->i2c_capture_volume[emu->i2c_capture_source][0];  
 	if (force || ngain != ogain)
 		snd_ca0106_i2c_write(emu, ADC_ATTEN_ADCL, ngain & 0xff);
-	ngain = emu->i2c_capture_volume[val][1]; /* Right */
-	ogain = emu->i2c_capture_volume[emu->i2c_capture_source][1]; /* Right */
+	ngain = emu->i2c_capture_volume[val][1];  
+	ogain = emu->i2c_capture_volume[emu->i2c_capture_source][1];  
 	if (force || ngain != ogain)
 		snd_ca0106_i2c_write(emu, ADC_ATTEN_ADCR, ngain & 0xff);
 	source = 1 << val;
-	snd_ca0106_i2c_write(emu, ADC_MUX, source); /* Set source */
+	snd_ca0106_i2c_write(emu, ADC_MUX, source);  
 	emu->i2c_capture_source = val;
 }
 
@@ -118,16 +72,16 @@ static void ca0106_set_capture_mic_line_in(struct snd_ca0106 *emu)
 	u32 tmp;
 
 	if (emu->capture_mic_line_in) {
-		/* snd_ca0106_i2c_write(emu, ADC_MUX, 0); */ /* Mute input */
+		   
 		tmp = inl(emu->port + CA0106_GPIO) & ~0x400;
 		tmp = tmp | 0x400;
 		outl(tmp, emu->port + CA0106_GPIO);
-		/* snd_ca0106_i2c_write(emu, ADC_MUX, ADC_MUX_MIC); */
+		 
 	} else {
-		/* snd_ca0106_i2c_write(emu, ADC_MUX, 0); */ /* Mute input */
+		   
 		tmp = inl(emu->port + CA0106_GPIO) & ~0x400;
 		outl(tmp, emu->port + CA0106_GPIO);
-		/* snd_ca0106_i2c_write(emu, ADC_MUX, ADC_MUX_LINEIN); */
+		 
 	}
 }
 
@@ -136,8 +90,7 @@ static void ca0106_set_spdif_bits(struct snd_ca0106 *emu, int idx)
 	snd_ca0106_ptr_write(emu, SPCS0 + idx, 0, emu->spdif_str_bits[idx]);
 }
 
-/*
- */
+ 
 static const DECLARE_TLV_DB_SCALE(snd_ca0106_db_scale1, -5175, 25, 1);
 static const DECLARE_TLV_DB_SCALE(snd_ca0106_db_scale2, -10350, 50, 1);
 
@@ -230,10 +183,7 @@ static int snd_ca0106_i2c_capture_source_put(struct snd_kcontrol *kcontrol,
 	struct snd_ca0106 *emu = snd_kcontrol_chip(kcontrol);
 	unsigned int source_id;
 	int change = 0;
-	/* If the capture source has changed,
-	 * update the capture volume from the cached value
-	 * for the particular source.
-	 */
+	 
 	source_id = ucontrol->value.enumerated.item[0] ;
 	if (source_id >= 4)
 		return -EINVAL;
@@ -372,9 +322,7 @@ static int snd_ca0106_spdif_put_default(struct snd_kcontrol *kcontrol,
 	val = encode_spdif_bits(ucontrol->value.iec958.status);
 	if (val != emu->spdif_bits[idx]) {
 		emu->spdif_bits[idx] = val;
-		/* FIXME: this isn't safe, but needed to keep the compatibility
-		 * with older alsa-lib config
-		 */
+		 
 		emu->spdif_str_bits[idx] = val;
 		ca0106_set_spdif_bits(emu, idx);
 		return 1;
@@ -419,8 +367,8 @@ static int snd_ca0106_volume_get(struct snd_kcontrol *kcontrol,
 	reg = kcontrol->private_value & 0xff;
 
         value = snd_ca0106_ptr_read(emu, reg, channel_id);
-        ucontrol->value.integer.value[0] = 0xff - ((value >> 24) & 0xff); /* Left */
-        ucontrol->value.integer.value[1] = 0xff - ((value >> 16) & 0xff); /* Right */
+        ucontrol->value.integer.value[0] = 0xff - ((value >> 24) & 0xff);  
+        ucontrol->value.integer.value[1] = 0xff - ((value >> 16) & 0xff);  
         return 0;
 }
 
@@ -478,7 +426,7 @@ static int snd_ca0106_i2c_volume_put(struct snd_kcontrol *kcontrol,
 	int change = 0;
 
 	source_id = kcontrol->private_value;
-	ogain = emu->i2c_capture_volume[source_id][0]; /* Left */
+	ogain = emu->i2c_capture_volume[source_id][0];  
 	ngain = ucontrol->value.integer.value[0];
 	if (ngain > 0xff)
 		return -EINVAL;
@@ -488,7 +436,7 @@ static int snd_ca0106_i2c_volume_put(struct snd_kcontrol *kcontrol,
 		emu->i2c_capture_volume[source_id][0] = ucontrol->value.integer.value[0];
 		change = 1;
 	}
-	ogain = emu->i2c_capture_volume[source_id][1]; /* Right */
+	ogain = emu->i2c_capture_volume[source_id][1];  
 	ngain = ucontrol->value.integer.value[1];
 	if (ngain > 0xff)
 		return -EINVAL;
@@ -525,11 +473,11 @@ static int spi_mute_put(struct snd_kcontrol *kcontrol,
 
 	ret = emu->spi_dac_reg[reg] & bit;
 	if (ucontrol->value.integer.value[0]) {
-		if (!ret)	/* bit already cleared, do nothing */
+		if (!ret)	 
 			return 0;
 		emu->spi_dac_reg[reg] &= ~bit;
 	} else {
-		if (ret)	/* bit already set, do nothing */
+		if (ret)	 
 			return 0;
 		emu->spi_dac_reg[reg] |= bit;
 	}
@@ -685,7 +633,7 @@ snd_ca0106_volume_spi_dac_ctl(const struct snd_ca0106_details *details,
 		dac_id = (details->spi_dac & 0x000f) >> (4 * 0);
 		break;
 	default:
-		/* Unused channel */
+		 
 		spi_switch.name = NULL;
 		dac_id = 0;
 	}
@@ -806,7 +754,7 @@ int snd_ca0106_mixer(struct snd_ca0106 *emu)
 		ADD_CTLS(emu, snd_ca0106_volume_i2c_adc_ctls);
 		if (emu->details->gpio_type == 1)
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_ca0106_capture_mic_line_in, emu));
-		else  /* gpio_type == 2 */
+		else   
 			err = snd_ctl_add(card, snd_ctl_new1(&snd_ca0106_capture_line_in_side_out, emu));
 		if (err < 0)
 			return err;
@@ -824,7 +772,7 @@ int snd_ca0106_mixer(struct snd_ca0106 *emu)
 		}
 	}
 
-	/* Create virtual master controls */
+	 
 	vmaster = snd_ctl_make_virtual_master("Master Playback Volume",
 					      snd_ca0106_master_db_scale);
 	if (!vmaster)
@@ -875,7 +823,7 @@ void snd_ca0106_mixer_suspend(struct snd_ca0106 *chip)
 {
 	int i;
 
-	/* save volumes */
+	 
 	for (i = 0; i < NUM_SAVED_VOLUMES; i++)
 		chip->saved_vol[i] =
 			snd_ca0106_ptr_read(chip, saved_volumes[i].reg,
@@ -899,4 +847,4 @@ void snd_ca0106_mixer_resume(struct snd_ca0106  *chip)
 	if (chip->details->i2c_adc)
 		ca0106_set_capture_mic_line_in(chip);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  

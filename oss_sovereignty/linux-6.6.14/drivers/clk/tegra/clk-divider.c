@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -160,7 +158,7 @@ struct clk *tegra_clk_register_divider(const char *name,
 	divider->lock = lock;
 	divider->flags = clk_divider_flags;
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	divider->hw.init = &init;
 
 	clk = clk_register(NULL, &divider->hw);

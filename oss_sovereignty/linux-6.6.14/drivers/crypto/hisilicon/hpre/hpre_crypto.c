@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 HiSilicon Limited. */
+
+ 
 #include <crypto/akcipher.h>
 #include <crypto/curve25519.h>
 #include <crypto/dh.h>
@@ -39,19 +39,19 @@ struct hpre_ctx;
 #define HPRE_DFX_SEC_TO_US	1000000
 #define HPRE_DFX_US_TO_NS	1000
 
-/* due to nist p521  */
+ 
 #define HPRE_ECC_MAX_KSZ	66
 
-/* size in bytes of the n prime */
+ 
 #define HPRE_ECC_NIST_P192_N_SIZE	24
 #define HPRE_ECC_NIST_P256_N_SIZE	32
 #define HPRE_ECC_NIST_P384_N_SIZE	48
 
-/* size in bytes */
+ 
 #define HPRE_ECC_HW256_KSZ_B	32
 #define HPRE_ECC_HW384_KSZ_B	48
 
-/* capability register mask of driver */
+ 
 #define HPRE_DRV_RSA_MASK_CAP		BIT(0)
 #define HPRE_DRV_DH_MASK_CAP		BIT(1)
 #define HPRE_DRV_ECDH_MASK_CAP		BIT(2)
@@ -60,15 +60,15 @@ struct hpre_ctx;
 typedef void (*hpre_cb)(struct hpre_ctx *ctx, void *sqe);
 
 struct hpre_rsa_ctx {
-	/* low address: e--->n */
+	 
 	char *pubkey;
 	dma_addr_t dma_pubkey;
 
-	/* low address: d--->n */
+	 
 	char *prikey;
 	dma_addr_t dma_prikey;
 
-	/* low address: dq->dp->q->p->qinv */
+	 
 	char *crt_prikey;
 	dma_addr_t dma_crt_prikey;
 
@@ -76,37 +76,30 @@ struct hpre_rsa_ctx {
 };
 
 struct hpre_dh_ctx {
-	/*
-	 * If base is g we compute the public key
-	 *	ya = g^xa mod p; [RFC2631 sec 2.1.1]
-	 * else if base if the counterpart public key we
-	 * compute the shared secret
-	 *	ZZ = yb^xa mod p; [RFC2631 sec 2.1.1]
-	 * low address: d--->n, please refer to Hisilicon HPRE UM
-	 */
+	 
 	char *xa_p;
 	dma_addr_t dma_xa_p;
 
-	char *g; /* m */
+	char *g;  
 	dma_addr_t dma_g;
 };
 
 struct hpre_ecdh_ctx {
-	/* low address: p->a->k->b */
+	 
 	unsigned char *p;
 	dma_addr_t dma_p;
 
-	/* low address: x->y */
+	 
 	unsigned char *g;
 	dma_addr_t dma_g;
 };
 
 struct hpre_curve25519_ctx {
-	/* low address: p->a->k */
+	 
 	unsigned char *p;
 	dma_addr_t dma_p;
 
-	/* gx coordinate */
+	 
 	unsigned char *g;
 	dma_addr_t dma_g;
 };
@@ -126,7 +119,7 @@ struct hpre_ctx {
 		struct hpre_ecdh_ctx ecdh;
 		struct hpre_curve25519_ctx curve25519;
 	};
-	/* for ecc algorithms */
+	 
 	unsigned int curve_id;
 };
 
@@ -291,7 +284,7 @@ static int hpre_hw_data_init(struct hpre_asym_request *hpre_req,
 	dma_addr_t tmp = 0;
 	int ret;
 
-	/* when the data is dh's source, we should format it */
+	 
 	if ((sg_is_last(data) && len == ctx->key_sz) &&
 	    ((is_dh && !is_src) || !is_dh))
 		ret = hpre_get_data_dma_addr(hpre_req, data, len, is_src, &tmp);
@@ -617,7 +610,7 @@ static int hpre_dh_compute_value(struct kpp_request *req)
 	else
 		msg->dw0 = cpu_to_le32(le32_to_cpu(msg->dw0) | HPRE_ALG_DH);
 
-	/* success */
+	 
 	ret = hpre_send(ctx, msg);
 	if (likely(!ret))
 		return -EINPROGRESS;
@@ -670,7 +663,7 @@ static int hpre_dh_set_params(struct hpre_ctx *ctx, struct dh *params)
 
 	memcpy(ctx->dh.xa_p + sz, params->p, sz);
 
-	/* If g equals 2 don't copy it */
+	 
 	if (params->g_size == 1 && *(char *)params->g == HPRE_DH_G_FLAG) {
 		ctx->crt_g2_mode = true;
 		return 0;
@@ -722,7 +715,7 @@ static int hpre_dh_set_secret(struct crypto_kpp *tfm, const void *buf,
 	if (crypto_dh_decode_key(buf, len, &params) < 0)
 		return -EINVAL;
 
-	/* Free old secret if any */
+	 
 	hpre_dh_clear_ctx(ctx, false);
 
 	ret = hpre_dh_set_params(ctx, &params);
@@ -799,7 +792,7 @@ static int hpre_rsa_enc(struct akcipher_request *req)
 	struct hpre_sqe *msg = &hpre_req->req;
 	int ret;
 
-	/* For 512 and 1536 bits key size, use soft tfm instead */
+	 
 	if (ctx->key_sz == HPRE_RSA_512BITS_KSZ ||
 	    ctx->key_sz == HPRE_RSA_1536BITS_KSZ) {
 		akcipher_request_set_tfm(req, ctx->rsa.soft_tfm);
@@ -826,7 +819,7 @@ static int hpre_rsa_enc(struct akcipher_request *req)
 	if (unlikely(ret))
 		goto clear_all;
 
-	/* success */
+	 
 	ret = hpre_send(ctx, msg);
 	if (likely(!ret))
 		return -EINPROGRESS;
@@ -847,7 +840,7 @@ static int hpre_rsa_dec(struct akcipher_request *req)
 	struct hpre_sqe *msg = &hpre_req->req;
 	int ret;
 
-	/* For 512 and 1536 bits key size, use soft tfm instead */
+	 
 	if (ctx->key_sz == HPRE_RSA_512BITS_KSZ ||
 	    ctx->key_sz == HPRE_RSA_1536BITS_KSZ) {
 		akcipher_request_set_tfm(req, ctx->rsa.soft_tfm);
@@ -881,7 +874,7 @@ static int hpre_rsa_dec(struct akcipher_request *req)
 	if (unlikely(ret))
 		goto clear_all;
 
-	/* success */
+	 
 	ret = hpre_send(ctx, msg);
 	if (likely(!ret))
 		return -EINPROGRESS;
@@ -902,7 +895,7 @@ static int hpre_rsa_set_n(struct hpre_ctx *ctx, const char *value,
 
 	ctx->key_sz = vlen;
 
-	/* if invalid key size provided, we use software tfm */
+	 
 	if (!hpre_rsa_key_size_is_support(ctx->key_sz))
 		return 0;
 
@@ -927,7 +920,7 @@ static int hpre_rsa_set_n(struct hpre_ctx *ctx, const char *value,
 	}
 	memcpy(ctx->rsa.pubkey + vlen, ptr, vlen);
 
-	/* Using hardware HPRE to do RSA */
+	 
 	return 1;
 }
 
@@ -1033,7 +1026,7 @@ free_key:
 	return ret;
 }
 
-/* If it is clear all, all the resources of the QP will be cleaned. */
+ 
 static void hpre_rsa_clear_ctx(struct hpre_ctx *ctx, bool is_clear_all)
 {
 	unsigned int half_key_sz = ctx->key_sz >> 1;
@@ -1066,10 +1059,7 @@ static void hpre_rsa_clear_ctx(struct hpre_ctx *ctx, bool is_clear_all)
 	hpre_ctx_clear(ctx, is_clear_all);
 }
 
-/*
- * we should judge if it is CRT or not,
- * CRT: return true,  N-CRT: return false .
- */
+ 
 static bool hpre_is_crt_key(struct rsa_key *key)
 {
 	u16 len = key->p_sz + key->q_sz + key->dp_sz + key->dq_sz +
@@ -1077,7 +1067,7 @@ static bool hpre_is_crt_key(struct rsa_key *key)
 
 #define LEN_OF_NCRT_PARA	5
 
-	/* N-CRT less than 5 parameters */
+	 
 	return len > LEN_OF_NCRT_PARA;
 }
 
@@ -1158,7 +1148,7 @@ static unsigned int hpre_rsa_max_size(struct crypto_akcipher *tfm)
 {
 	struct hpre_ctx *ctx = akcipher_tfm_ctx(tfm);
 
-	/* For 512 and 1536 bits key size, use soft tfm instead */
+	 
 	if (ctx->key_sz == HPRE_RSA_512BITS_KSZ ||
 	    ctx->key_sz == HPRE_RSA_1536BITS_KSZ)
 		return crypto_akcipher_maxsize(ctx->rsa.soft_tfm);
@@ -1216,12 +1206,12 @@ static void hpre_ecc_clear_ctx(struct hpre_ctx *ctx, bool is_clear_all,
 		hisi_qm_stop_qp(ctx->qp);
 
 	if (is_ecdh && ctx->ecdh.p) {
-		/* ecdh: p->a->k->b */
+		 
 		memzero_explicit(ctx->ecdh.p + shift, sz);
 		dma_free_coherent(dev, sz << 3, ctx->ecdh.p, ctx->ecdh.dma_p);
 		ctx->ecdh.p = NULL;
 	} else if (!is_ecdh && ctx->curve25519.p) {
-		/* curve25519: p->a->k */
+		 
 		memzero_explicit(ctx->curve25519.p + shift, sz);
 		dma_free_coherent(dev, sz << 2, ctx->curve25519.p,
 				  ctx->curve25519.dma_p);
@@ -1231,13 +1221,7 @@ static void hpre_ecc_clear_ctx(struct hpre_ctx *ctx, bool is_clear_all,
 	hpre_ctx_clear(ctx, is_clear_all);
 }
 
-/*
- * The bits of 192/224/256/384/521 are supported by HPRE,
- * and convert the bits like:
- * bits<=256, bits=256; 256<bits<=384, bits=384; 384<bits<=576, bits=576;
- * If the parameter bit width is insufficient, then we fill in the
- * high-order zeros by soft, so TASK_LENGTH1 is 0x3/0x5/0x8;
- */
+ 
 static unsigned int hpre_ecdh_supported_curve(unsigned short id)
 {
 	switch (id) {
@@ -1403,7 +1387,7 @@ static int hpre_ecdh_set_secret(struct crypto_kpp *tfm, const void *buf,
 		return -EINVAL;
 	}
 
-	/* Use stdrng to generate private key */
+	 
 	if (!params.key || !params.key_size) {
 		params.key = key;
 		curve_sz = hpre_ecdh_get_curvesz(ctx->curve_id);
@@ -1538,7 +1522,7 @@ static int hpre_ecdh_src_data_init(struct hpre_asym_request *hpre_req,
 	void *ptr;
 	int shift;
 
-	/* Src_data include gx and gy. */
+	 
 	shift = ctx->key_sz - (len >> 1);
 	if (unlikely(shift < 0))
 		return -EINVAL;
@@ -1628,7 +1612,7 @@ static unsigned int hpre_ecdh_max_size(struct crypto_kpp *tfm)
 {
 	struct hpre_ctx *ctx = kpp_tfm_ctx(tfm);
 
-	/* max size is the pub_key_size, include x and y */
+	 
 	return ctx->key_sz << 1;
 }
 
@@ -1681,12 +1665,7 @@ static void hpre_curve25519_fill_curve(struct hpre_ctx *ctx, const void *buf,
 	unsigned int shift = sz << 1;
 	void *p;
 
-	/*
-	 * The key from 'buf' is in little-endian, we should preprocess it as
-	 * the description in rfc7748: "k[0] &= 248, k[31] &= 127, k[31] |= 64",
-	 * then convert it to big endian. Only in this way, the result can be
-	 * the same as the software curve-25519 that exists in crypto.
-	 */
+	 
 	memcpy(secret, buf, len);
 	curve25519_clamp_secret(secret);
 	hpre_key_to_big_end(secret, CURVE25519_KEY_SIZE);
@@ -1695,7 +1674,7 @@ static void hpre_curve25519_fill_curve(struct hpre_ctx *ctx, const void *buf,
 
 	curve = ecc_get_curve25519();
 
-	/* fill curve parameters */
+	 
 	fill_curve_param(p, curve->p, len, curve->g.ndigits);
 	fill_curve_param(p + sz, curve->a, len, curve->g.ndigits);
 	memcpy(p + shift, secret, len);
@@ -1710,7 +1689,7 @@ static int hpre_curve25519_set_param(struct hpre_ctx *ctx, const void *buf,
 	unsigned int sz = ctx->key_sz;
 	unsigned int shift = sz << 1;
 
-	/* p->a->k->gx */
+	 
 	if (!ctx->curve25519.p) {
 		ctx->curve25519.p = dma_alloc_coherent(dev, sz << 2,
 						       &ctx->curve25519.dma_p,
@@ -1740,7 +1719,7 @@ static int hpre_curve25519_set_secret(struct crypto_kpp *tfm, const void *buf,
 		return ret;
 	}
 
-	/* Free old secret if any */
+	 
 	hpre_ecc_clear_ctx(ctx, false, false);
 
 	ctx->key_sz = CURVE25519_KEY_SIZE;
@@ -1846,7 +1825,7 @@ static void hpre_curve25519_src_modulo_p(u8 *ptr)
 	for (i = 0; i < CURVE25519_KEY_SIZE - 1; i++)
 		ptr[i] = 0;
 
-	/* The modulus is ptr's last byte minus '0xed'(last byte of p) */
+	 
 	ptr[i] -= 0xed;
 }
 
@@ -1877,11 +1856,7 @@ static int hpre_curve25519_src_init(struct hpre_asym_request *hpre_req,
 		goto err;
 	}
 
-	/*
-	 * Src_data(gx) is in little-endian order, MSB in the final byte should
-	 * be masked as described in RFC7748, then transform it to big-endian
-	 * form, then hisi_hpre can use the data.
-	 */
+	 
 	ptr[31] &= 0x7f;
 	hpre_key_to_big_end(ptr, CURVE25519_KEY_SIZE);
 
@@ -1889,10 +1864,7 @@ static int hpre_curve25519_src_init(struct hpre_asym_request *hpre_req,
 
 	fill_curve_param(p, curve->p, CURVE25519_KEY_SIZE, curve->g.ndigits);
 
-	/*
-	 * When src_data equals (2^255 - 19) ~  (2^255 - 1), it is out of p,
-	 * we get its modulus to p, and then use it.
-	 */
+	 
 	if (memcmp(ptr, p, ctx->key_sz) == 0) {
 		dev_err(dev, "gx is p!\n");
 		goto err;

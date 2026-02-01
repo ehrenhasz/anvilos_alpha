@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021 Pengutronix, Oleksij Rempel <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/counter.h>
 #include <linux/gpio/consumer.h>

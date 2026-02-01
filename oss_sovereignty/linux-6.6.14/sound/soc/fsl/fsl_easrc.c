@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright 2019 NXP
+
+
 
 #include <linux/atomic.h>
 #include <linux/clk.h>
@@ -163,12 +163,7 @@ static const struct snd_kcontrol_new fsl_easrc_snd_controls[] = {
 	SOC_SINGLE_REG_RW("Context 3 IEC958 CS5", REG_EASRC_CS5(3)),
 };
 
-/*
- * fsl_easrc_set_rs_ratio
- *
- * According to the resample taps, calculate the resample ratio
- * ratio = in_rate / out_rate
- */
+ 
 static int fsl_easrc_set_rs_ratio(struct fsl_asrc_pair *ctx)
 {
 	struct fsl_asrc *easrc = ctx->asrc;
@@ -182,15 +177,15 @@ static int fsl_easrc_set_rs_ratio(struct fsl_asrc_pair *ctx)
 
 	switch (easrc_priv->rs_num_taps) {
 	case EASRC_RS_32_TAPS:
-		/* integer bits = 5; */
+		 
 		frac_bits = 39;
 		break;
 	case EASRC_RS_64_TAPS:
-		/* integer bits = 6; */
+		 
 		frac_bits = 38;
 		break;
 	case EASRC_RS_128_TAPS:
-		/* integer bits = 7; */
+		 
 		frac_bits = 37;
 		break;
 	default:
@@ -214,7 +209,7 @@ static int fsl_easrc_set_rs_ratio(struct fsl_asrc_pair *ctx)
 	return 0;
 }
 
-/* Normalize input and output sample rates */
+ 
 static void fsl_easrc_normalize_rates(struct fsl_asrc_pair *ctx)
 {
 	struct fsl_easrc_ctx_priv *ctx_priv;
@@ -230,12 +225,12 @@ static void fsl_easrc_normalize_rates(struct fsl_asrc_pair *ctx)
 
 	a = gcd(a, b);
 
-	/* Divide by gcd to normalize the rate */
+	 
 	ctx_priv->in_params.norm_rate = ctx_priv->in_params.sample_rate / a;
 	ctx_priv->out_params.norm_rate = ctx_priv->out_params.sample_rate / a;
 }
 
-/* Resets the pointer of the coeff memory pointers */
+ 
 static int fsl_easrc_coeff_mem_ptr_reset(struct fsl_asrc *easrc,
 					 unsigned int ctx_id, int mem_type)
 {
@@ -249,7 +244,7 @@ static int fsl_easrc_coeff_mem_ptr_reset(struct fsl_asrc *easrc,
 
 	switch (mem_type) {
 	case EASRC_PF_COEFF_MEM:
-		/* This resets the prefilter memory pointer addr */
+		 
 		if (ctx_id >= EASRC_CTX_MAX_NUM) {
 			dev_err(dev, "Invalid context id[%d]\n", ctx_id);
 			return -EINVAL;
@@ -260,7 +255,7 @@ static int fsl_easrc_coeff_mem_ptr_reset(struct fsl_asrc *easrc,
 		val = EASRC_CCE1_COEF_MEM_RST;
 		break;
 	case EASRC_RS_COEFF_MEM:
-		/* This resets the resampling memory pointer addr */
+		 
 		reg = REG_EASRC_CRCC;
 		mask = EASRC_CRCC_RS_CPR_MASK;
 		val = EASRC_CRCC_RS_CPR;
@@ -270,11 +265,7 @@ static int fsl_easrc_coeff_mem_ptr_reset(struct fsl_asrc *easrc,
 		return -EINVAL;
 	}
 
-	/*
-	 * To reset the write pointer back to zero, the register field
-	 * ASRC_CTX_CTRL_EXT1x[PF_COEFF_MEM_RST] can be toggled from
-	 * 0x0 to 0x1 to 0x0.
-	 */
+	 
 	regmap_update_bits(easrc->regmap, reg, mask, 0);
 	regmap_update_bits(easrc->regmap, reg, mask, val);
 	regmap_update_bits(easrc->regmap, reg, mask, 0);
@@ -332,40 +323,22 @@ static int fsl_easrc_resampler_config(struct fsl_asrc *easrc)
 		return -EINVAL;
 	}
 
-	/*
-	 * RS_LOW - first half of center tap of the sinc function
-	 * RS_HIGH - second half of center tap of the sinc function
-	 * This is due to the fact the resampling function must be
-	 * symetrical - i.e. odd number of taps
-	 */
+	 
 	r = (uint32_t *)&selected_interp->center_tap;
 	regmap_write(easrc->regmap, REG_EASRC_RCTCL, EASRC_RCTCL_RS_CL(r[0]));
 	regmap_write(easrc->regmap, REG_EASRC_RCTCH, EASRC_RCTCH_RS_CH(r[1]));
 
-	/*
-	 * Write Number of Resampling Coefficient Taps
-	 * 00b - 32-Tap Resampling Filter
-	 * 01b - 64-Tap Resampling Filter
-	 * 10b - 128-Tap Resampling Filter
-	 * 11b - N/A
-	 */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CRCC,
 			   EASRC_CRCC_RS_TAPS_MASK,
 			   EASRC_CRCC_RS_TAPS(easrc_priv->rs_num_taps));
 
-	/* Reset prefilter coefficient pointer back to 0 */
+	 
 	ret = fsl_easrc_coeff_mem_ptr_reset(easrc, 0, EASRC_RS_COEFF_MEM);
 	if (ret)
 		return ret;
 
-	/*
-	 * When the filter is programmed to run in:
-	 * 32-tap mode, 16-taps, 128-phases 4-coefficients per phase
-	 * 64-tap mode, 32-taps, 64-phases 4-coefficients per phase
-	 * 128-tap mode, 64-taps, 32-phases 4-coefficients per phase
-	 * This means the number of writes is constant no matter
-	 * the mode we are using
-	 */
+	 
 	num_coeff = 16 * 128 * 4;
 
 	for (i = 0; i < num_coeff; i++) {
@@ -379,19 +352,7 @@ static int fsl_easrc_resampler_config(struct fsl_asrc *easrc)
 	return 0;
 }
 
-/**
- *  fsl_easrc_normalize_filter - Scale filter coefficients (64 bits float)
- *  For input float32 normalized range (1.0,-1.0) -> output int[16,24,32]:
- *      scale it by multiplying filter coefficients by 2^31
- *  For input int[16, 24, 32] -> output float32
- *      scale it by multiplying filter coefficients by 2^-15, 2^-23, 2^-31
- *  input:
- *      @easrc:  Structure pointer of fsl_asrc
- *      @infilter : Pointer to non-scaled input filter
- *      @shift:  The multiply factor
- *  output:
- *      @outfilter: scaled filter
- */
+ 
 static int fsl_easrc_normalize_filter(struct fsl_asrc *easrc,
 				      u64 *infilter,
 				      u64 *outfilter,
@@ -402,16 +363,13 @@ static int fsl_easrc_normalize_filter(struct fsl_asrc *easrc,
 	s64 exp  = (coef & 0x7ff0000000000000ll) >> 52;
 	u64 outcoef;
 
-	/*
-	 * If exponent is zero (value == 0), or 7ff (value == NaNs)
-	 * dont touch the content
-	 */
+	 
 	if (exp == 0 || exp == 0x7ff) {
 		*outfilter = coef;
 		return 0;
 	}
 
-	/* coef * 2^shift ==> exp + shift */
+	 
 	exp += shift;
 
 	if ((shift > 0 && exp >= 0x7ff) || (shift < 0 && exp <= 0)) {
@@ -434,7 +392,7 @@ static int fsl_easrc_write_pf_coeff_mem(struct fsl_asrc *easrc, int ctx_id,
 	u32 *r;
 	u64 tmp;
 
-	/* If STx_NUM_TAPS is set to 0x0 then return */
+	 
 	if (!n_taps)
 		return 0;
 
@@ -443,10 +401,7 @@ static int fsl_easrc_write_pf_coeff_mem(struct fsl_asrc *easrc, int ctx_id,
 		return -EINVAL;
 	}
 
-	/*
-	 * When switching between stages, the address pointer
-	 * should be reset back to 0x0 before performing a write
-	 */
+	 
 	ret = fsl_easrc_coeff_mem_ptr_reset(easrc, ctx_id, EASRC_PF_COEFF_MEM);
 	if (ret)
 		return ret;
@@ -509,45 +464,7 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
 	regmap_write(easrc->regmap, REG_EASRC_CCE1(ctx_id), 0);
 	regmap_write(easrc->regmap, REG_EASRC_CCE2(ctx_id), 0);
 
-	/*
-	 * The audio float point data range is (-1, 1), the asrc would output
-	 * all zero for float point input and integer output case, that is to
-	 * drop the fractional part of the data directly.
-	 *
-	 * In order to support float to int conversion or int to float
-	 * conversion we need to do special operation on the coefficient to
-	 * enlarge/reduce the data to the expected range.
-	 *
-	 * For float to int case:
-	 * Up sampling:
-	 * 1. Create a 1 tap filter with center tap (only tap) of 2^31
-	 *    in 64 bits floating point.
-	 *    double value = (double)(((uint64_t)1) << 31)
-	 * 2. Program 1 tap prefilter with center tap above.
-	 *
-	 * Down sampling,
-	 * 1. If the filter is single stage filter, add "shift" to the exponent
-	 *    of stage 1 coefficients.
-	 * 2. If the filter is two stage filter , add "shift" to the exponent
-	 *    of stage 2 coefficients.
-	 *
-	 * The "shift" is 31, same for int16, int24, int32 case.
-	 *
-	 * For int to float case:
-	 * Up sampling:
-	 * 1. Create a 1 tap filter with center tap (only tap) of 2^-31
-	 *    in 64 bits floating point.
-	 * 2. Program 1 tap prefilter with center tap above.
-	 *
-	 * Down sampling,
-	 * 1. If the filter is single stage filter, subtract "shift" to the
-	 *    exponent of stage 1 coefficients.
-	 * 2. If the filter is two stage filter , subtract "shift" to the
-	 *    exponent of stage 2 coefficients.
-	 *
-	 * The "shift" is 15,23,31, different for int16, int24, int32 case.
-	 *
-	 */
+	 
 	if (out_s_rate >= in_s_rate) {
 		if (out_s_rate == in_s_rate)
 			regmap_update_bits(easrc->regmap,
@@ -593,11 +510,7 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
 			return -EINVAL;
 		}
 
-		/*
-		 * In prefilter coeff array, first st1_num_taps represent the
-		 * stage1 prefilter coefficients followed by next st2_num_taps
-		 * representing stage 2 coefficients
-		 */
+		 
 		ctx_priv->st1_num_taps = selected_prefil->st1_taps;
 		ctx_priv->st1_coeff    = selected_prefil->coeff;
 		ctx_priv->st1_num_exp  = selected_prefil->st1_exp;
@@ -608,7 +521,7 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
 
 		if (in_s_fmt == SNDRV_PCM_FORMAT_FLOAT_LE &&
 		    out_s_fmt != SNDRV_PCM_FORMAT_FLOAT_LE) {
-			/* only change stage2 coefficient for 2 stage case */
+			 
 			if (ctx_priv->st2_num_taps > 0)
 				ctx_priv->st2_addexp = 31;
 			else
@@ -628,11 +541,7 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
 
 	if (ctx_priv->in_filled_sample * out_s_rate % in_s_rate != 0)
 		ctx_priv->out_missed_sample += 1;
-	/*
-	 * To modify the value of a prefilter coefficient, the user must
-	 * perform a write to the register ASRC_PRE_COEFF_FIFOn[COEFF_DATA]
-	 * while the respective context RUN_EN bit is set to 0b0
-	 */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CC(ctx_id),
 			   EASRC_CC_EN_MASK, 0);
 
@@ -643,12 +552,12 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
 		goto ctx_error;
 	}
 
-	/* Update ctx ST1_NUM_TAPS in Context Control Extended 2 register */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CCE2(ctx_id),
 			   EASRC_CCE2_ST1_TAPS_MASK,
 			   EASRC_CCE2_ST1_TAPS(ctx_priv->st1_num_taps - 1));
 
-	/* Prefilter Coefficient Write Select to write in ST1 coeff */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CCE1(ctx_id),
 			   EASRC_CCE1_COEF_WS_MASK,
 			   EASRC_PF_ST1_COEFF_WR << EASRC_CCE1_COEF_WS_SHIFT);
@@ -671,10 +580,7 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
 		regmap_update_bits(easrc->regmap, REG_EASRC_CCE1(ctx_id),
 				   EASRC_CCE1_PF_TSEN_MASK,
 				   EASRC_CCE1_PF_TSEN);
-		/*
-		 * Enable prefilter stage1 writeback floating point
-		 * which is used for FLOAT_LE case
-		 */
+		 
 		regmap_update_bits(easrc->regmap, REG_EASRC_CCE1(ctx_id),
 				   EASRC_CCE1_PF_ST1_WBFP_MASK,
 				   EASRC_CCE1_PF_ST1_WBFP);
@@ -683,12 +589,12 @@ static int fsl_easrc_prefilter_config(struct fsl_asrc *easrc,
 				   EASRC_CCE1_PF_EXP_MASK,
 				   EASRC_CCE1_PF_EXP(ctx_priv->st1_num_exp - 1));
 
-		/* Update ctx ST2_NUM_TAPS in Context Control Extended 2 reg */
+		 
 		regmap_update_bits(easrc->regmap, REG_EASRC_CCE2(ctx_id),
 				   EASRC_CCE2_ST2_TAPS_MASK,
 				   EASRC_CCE2_ST2_TAPS(ctx_priv->st2_num_taps - 1));
 
-		/* Prefilter Coefficient Write Select to write in ST2 coeff */
+		 
 		regmap_update_bits(easrc->regmap, REG_EASRC_CCE1(ctx_id),
 				   EASRC_CCE1_COEF_WS_MASK,
 				   EASRC_PF_ST2_COEFF_WR << EASRC_CCE1_COEF_WS_SHIFT);
@@ -847,17 +753,7 @@ static int fsl_easrc_config_one_slot(struct fsl_asrc_pair *ctx,
 	return 0;
 }
 
-/*
- * fsl_easrc_config_slot
- *
- * A single context can be split amongst any of the 4 context processing pipes
- * in the design.
- * The total number of channels consumed within the context processor must be
- * less than or equal to 8. if a single context is configured to contain more
- * than 8 channels then it must be distributed across multiple context
- * processing pipe slots.
- *
- */
+ 
 static int fsl_easrc_config_slot(struct fsl_asrc *easrc, unsigned int ctx_id)
 {
 	struct fsl_easrc_priv *easrc_priv = easrc->private;
@@ -916,11 +812,7 @@ static int fsl_easrc_config_slot(struct fsl_asrc *easrc, unsigned int ctx_id)
 	return 0;
 }
 
-/*
- * fsl_easrc_release_slot
- *
- * Clear the slot configuration
- */
+ 
 static int fsl_easrc_release_slot(struct fsl_asrc *easrc, unsigned int ctx_id)
 {
 	struct fsl_easrc_priv *easrc_priv = easrc->private;
@@ -933,7 +825,7 @@ static int fsl_easrc_release_slot(struct fsl_asrc *easrc, unsigned int ctx_id)
 			easrc_priv->slot[i][0].busy = false;
 			easrc_priv->slot[i][0].num_channel = 0;
 			easrc_priv->slot[i][0].pf_mem_used = 0;
-			/* set registers */
+			 
 			regmap_write(easrc->regmap, REG_EASRC_DPCS0R0(i), 0);
 			regmap_write(easrc->regmap, REG_EASRC_DPCS0R1(i), 0);
 			regmap_write(easrc->regmap, REG_EASRC_DPCS0R2(i), 0);
@@ -945,7 +837,7 @@ static int fsl_easrc_release_slot(struct fsl_asrc *easrc, unsigned int ctx_id)
 			easrc_priv->slot[i][1].busy = false;
 			easrc_priv->slot[i][1].num_channel = 0;
 			easrc_priv->slot[i][1].pf_mem_used = 0;
-			/* set registers */
+			 
 			regmap_write(easrc->regmap, REG_EASRC_DPCS1R0(i), 0);
 			regmap_write(easrc->regmap, REG_EASRC_DPCS1R1(i), 0);
 			regmap_write(easrc->regmap, REG_EASRC_DPCS1R2(i), 0);
@@ -956,11 +848,7 @@ static int fsl_easrc_release_slot(struct fsl_asrc *easrc, unsigned int ctx_id)
 	return 0;
 }
 
-/*
- * fsl_easrc_config_context
- *
- * Configure the register relate with context.
- */
+ 
 static int fsl_easrc_config_context(struct fsl_asrc *easrc, unsigned int ctx_id)
 {
 	struct fsl_easrc_ctx_priv *ctx_priv;
@@ -989,7 +877,7 @@ static int fsl_easrc_config_context(struct fsl_asrc *easrc, unsigned int ctx_id)
 	if (ret)
 		return ret;
 
-	/* Initialize the context coeficients */
+	 
 	ret = fsl_easrc_prefilter_config(easrc, ctx->index);
 	if (ret)
 		return ret;
@@ -1000,13 +888,7 @@ static int fsl_easrc_config_context(struct fsl_asrc *easrc, unsigned int ctx_id)
 	if (ret)
 		return ret;
 
-	/*
-	 * Both prefilter and resampling filters can use following
-	 * initialization modes:
-	 * 2 - zero-fil mode
-	 * 1 - replication mode
-	 * 0 - software control
-	 */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CCE1(ctx_id),
 			   EASRC_CCE1_RS_INIT_MASK,
 			   EASRC_CCE1_RS_INIT(ctx_priv->rs_init_mode));
@@ -1015,24 +897,17 @@ static int fsl_easrc_config_context(struct fsl_asrc *easrc, unsigned int ctx_id)
 			   EASRC_CCE1_PF_INIT_MASK,
 			   EASRC_CCE1_PF_INIT(ctx_priv->pf_init_mode));
 
-	/*
-	 * Context Input FIFO Watermark
-	 * DMA request is generated when input FIFO < FIFO_WTMK
-	 */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CC(ctx_id),
 			   EASRC_CC_FIFO_WTMK_MASK,
 			   EASRC_CC_FIFO_WTMK(ctx_priv->in_params.fifo_wtmk));
 
-	/*
-	 * Context Output FIFO Watermark
-	 * DMA request is generated when output FIFO > FIFO_WTMK
-	 * So we set fifo_wtmk -1 to register.
-	 */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_COC(ctx_id),
 			   EASRC_COC_FIFO_WTMK_MASK,
 			   EASRC_COC_FIFO_WTMK(ctx_priv->out_params.fifo_wtmk - 1));
 
-	/* Number of channels */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CC(ctx_id),
 			   EASRC_CC_CHEN_MASK,
 			   EASRC_CC_CHEN(ctx->channels - 1));
@@ -1050,16 +925,12 @@ static int fsl_easrc_process_format(struct fsl_asrc_pair *ctx,
 	if (!fmt)
 		return -EINVAL;
 
-	/*
-	 * Context Input Floating Point Format
-	 * 0 - Integer Format
-	 * 1 - Single Precision FP Format
-	 */
+	 
 	fmt->floating_point = !snd_pcm_format_linear(raw_fmt);
 	fmt->sample_pos = 0;
 	fmt->iec958 = 0;
 
-	/* Get the data width */
+	 
 	switch (snd_pcm_format_width(raw_fmt)) {
 	case 16:
 		fmt->width = EASRC_WIDTH_16_BIT;
@@ -1101,22 +972,14 @@ static int fsl_easrc_process_format(struct fsl_asrc_pair *ctx,
 		break;
 	}
 
-	/*
-	 * Data Endianness
-	 * 0 - Little-Endian
-	 * 1 - Big-Endian
-	 */
+	 
 	ret = snd_pcm_format_big_endian(raw_fmt);
 	if (ret < 0)
 		return ret;
 
 	fmt->endianness = ret;
 
-	/*
-	 * Input Data sign
-	 * 0b - Signed Format
-	 * 1b - Unsigned Format
-	 */
+	 
 	fmt->unsign = snd_pcm_format_unsigned(raw_fmt) > 0 ? 1 : 0;
 
 	return 0;
@@ -1132,7 +995,7 @@ static int fsl_easrc_set_ctx_format(struct fsl_asrc_pair *ctx,
 	struct fsl_easrc_data_fmt *out_fmt = &ctx_priv->out_params.fmt;
 	int ret = 0;
 
-	/* Get the bitfield values for input data format */
+	 
 	if (in_raw_format && out_raw_format) {
 		ret = fsl_easrc_process_format(ctx, in_fmt, *in_raw_format);
 		if (ret)
@@ -1152,12 +1015,12 @@ static int fsl_easrc_set_ctx_format(struct fsl_asrc_pair *ctx,
 			   EASRC_CC_INSIGN_MASK,
 			   in_fmt->unsign << EASRC_CC_INSIGN_SHIFT);
 
-	/* In Sample Position */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CC(ctx->index),
 			   EASRC_CC_SAMPLE_POS_MASK,
 			   EASRC_CC_SAMPLE_POS(in_fmt->sample_pos));
 
-	/* Get the bitfield values for input data format */
+	 
 	if (in_raw_format && out_raw_format) {
 		ret = fsl_easrc_process_format(ctx, out_fmt, *out_raw_format);
 		if (ret)
@@ -1177,7 +1040,7 @@ static int fsl_easrc_set_ctx_format(struct fsl_asrc_pair *ctx,
 			   EASRC_COC_OUTSIGN_MASK,
 			   out_fmt->unsign << EASRC_COC_OUTSIGN_SHIFT);
 
-	/* Out Sample Position */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_COC(ctx->index),
 			   EASRC_COC_SAMPLE_POS_MASK,
 			   EASRC_COC_SAMPLE_POS(out_fmt->sample_pos));
@@ -1189,12 +1052,7 @@ static int fsl_easrc_set_ctx_format(struct fsl_asrc_pair *ctx,
 	return ret;
 }
 
-/*
- * The ASRC provides interleaving support in hardware to ensure that a
- * variety of sample sources can be internally combined
- * to conform with this format. Interleaving parameters are accessed
- * through the ASRC_CTRL_IN_ACCESSa and ASRC_CTRL_OUT_ACCESSa registers
- */
+ 
 static int fsl_easrc_set_ctx_organziation(struct fsl_asrc_pair *ctx)
 {
 	struct fsl_easrc_ctx_priv *ctx_priv;
@@ -1206,7 +1064,7 @@ static int fsl_easrc_set_ctx_organziation(struct fsl_asrc_pair *ctx)
 	easrc = ctx->asrc;
 	ctx_priv = ctx->private;
 
-	/* input interleaving parameters */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_CIA(ctx->index),
 			   EASRC_CIA_ITER_MASK,
 			   EASRC_CIA_ITER(ctx_priv->in_params.iterations));
@@ -1217,7 +1075,7 @@ static int fsl_easrc_set_ctx_organziation(struct fsl_asrc_pair *ctx)
 			   EASRC_CIA_ACCLEN_MASK,
 			   EASRC_CIA_ACCLEN(ctx_priv->in_params.access_len));
 
-	/* output interleaving parameters */
+	 
 	regmap_update_bits(easrc->regmap, REG_EASRC_COA(ctx->index),
 			   EASRC_COA_ITER_MASK,
 			   EASRC_COA_ITER(ctx_priv->out_params.iterations));
@@ -1231,12 +1089,7 @@ static int fsl_easrc_set_ctx_organziation(struct fsl_asrc_pair *ctx)
 	return 0;
 }
 
-/*
- * Request one of the available contexts
- *
- * Returns a negative number on error and >=0 as context id
- * on success
- */
+ 
 static int fsl_easrc_request_context(int channels, struct fsl_asrc_pair *ctx)
 {
 	enum asrc_pair_index index = ASRC_INVALID_PAIR;
@@ -1277,11 +1130,7 @@ static int fsl_easrc_request_context(int channels, struct fsl_asrc_pair *ctx)
 	return ret;
 }
 
-/*
- * Release the context
- *
- * This funciton is mainly doing the revert thing in request context
- */
+ 
 static void fsl_easrc_release_context(struct fsl_asrc_pair *ctx)
 {
 	unsigned long lock_flags;
@@ -1302,11 +1151,7 @@ static void fsl_easrc_release_context(struct fsl_asrc_pair *ctx)
 	spin_unlock_irqrestore(&easrc->lock, lock_flags);
 }
 
-/*
- * Start the context
- *
- * Enable the DMA request and context
- */
+ 
 static int fsl_easrc_start_context(struct fsl_asrc_pair *ctx)
 {
 	struct fsl_asrc *easrc = ctx->asrc;
@@ -1320,11 +1165,7 @@ static int fsl_easrc_start_context(struct fsl_asrc_pair *ctx)
 	return 0;
 }
 
-/*
- * Stop the context
- *
- * Disable the DMA request and context
- */
+ 
 static int fsl_easrc_stop_context(struct fsl_asrc_pair *ctx)
 {
 	struct fsl_asrc *easrc = ctx->asrc;
@@ -1343,13 +1184,13 @@ static int fsl_easrc_stop_context(struct fsl_asrc_pair *ctx)
 			val &= EASRC_SFS_NSGO_MASK;
 			size = val >> EASRC_SFS_NSGO_SHIFT;
 
-			/* Read FIFO, drop the data */
+			 
 			for (i = 0; i < size * ctx->channels; i++)
 				regmap_read(easrc->regmap, REG_EASRC_RDFIFO(ctx->index), &val);
-			/* Check RUN_STOP_DONE */
+			 
 			regmap_read(easrc->regmap, REG_EASRC_IRQF, &val);
 			if (val & EASRC_IRQF_RSD(1 << ctx->index)) {
-				/*Clear RUN_STOP_DONE*/
+				 
 				regmap_write_bits(easrc->regmap,
 						  REG_EASRC_IRQF,
 						  EASRC_IRQF_RSD(1 << ctx->index),
@@ -1379,7 +1220,7 @@ static struct dma_chan *fsl_easrc_get_dma_channel(struct fsl_asrc_pair *ctx,
 	enum asrc_pair_index index = ctx->index;
 	char name[8];
 
-	/* Example of dma name: ctx0_rx */
+	 
 	sprintf(name, "ctx%c_%cx", index + '0', dir == IN ? 'r' : 't');
 
 	return dma_request_slave_channel(&easrc->pdev->dev, name);
@@ -1457,10 +1298,7 @@ static int fsl_easrc_hw_params(struct snd_pcm_substream *substream,
 
 	ctx_priv->ctx_streams |= BIT(substream->stream);
 
-	/*
-	 * Set the input and output ratio so we can compute
-	 * the resampling ratio in RS_LOW/HIGH
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		ctx_priv->in_params.sample_rate = rate;
 		ctx_priv->in_params.sample_format = format;
@@ -1477,10 +1315,7 @@ static int fsl_easrc_hw_params(struct snd_pcm_substream *substream,
 	ctx_priv->in_params.fifo_wtmk  = 0x20;
 	ctx_priv->out_params.fifo_wtmk = 0x20;
 
-	/*
-	 * Do only rate conversion and keep the same format for input
-	 * and output data
-	 */
+	 
 	ret = fsl_easrc_set_ctx_format(ctx,
 				       &ctx_priv->in_params.sample_format,
 				       &ctx_priv->out_params.sample_format);
@@ -1919,7 +1754,7 @@ static int fsl_easrc_probe(struct platform_device *pdev)
 		return PTR_ERR(easrc->mem_clk);
 	}
 
-	/* Set default value */
+	 
 	easrc->channel_avail = 32;
 	easrc->get_dma_channel = fsl_easrc_get_dma_channel;
 	easrc->request_pair = fsl_easrc_request_context;
@@ -2037,11 +1872,7 @@ static __maybe_unused int fsl_easrc_runtime_resume(struct device *dev)
 		goto disable_mem_clk;
 	}
 
-	/*
-	 * Write Resampling Coefficients
-	 * The coefficient RAM must be configured prior to beginning of
-	 * any context processing within the ASRC
-	 */
+	 
 	ret = fsl_easrc_resampler_config(easrc);
 	if (ret) {
 		dev_err(dev, "resampler config failed\n");

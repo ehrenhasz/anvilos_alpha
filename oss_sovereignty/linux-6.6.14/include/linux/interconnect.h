@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018-2019, Linaro Ltd.
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
+ 
+ 
 
 #ifndef __LINUX_INTERCONNECT_H
 #define __LINUX_INTERCONNECT_H
@@ -10,7 +7,7 @@
 #include <linux/mutex.h>
 #include <linux/types.h>
 
-/* macros for converting to icc units */
+ 
 #define Bps_to_icc(x)	((x) / 1000)
 #define kBps_to_icc(x)	(x)
 #define MBps_to_icc(x)	((x) * 1000)
@@ -23,14 +20,7 @@
 struct icc_path;
 struct device;
 
-/**
- * struct icc_bulk_data - Data used for bulk icc operations.
- *
- * @path: reference to the interconnect path (internal use)
- * @name: the name from the "interconnect-names" DT property
- * @avg_bw: average bandwidth in icc units
- * @peak_bw: peak bandwidth in icc units
- */
+ 
 struct icc_bulk_data {
 	struct icc_path	*path;
 	const char *name;
@@ -133,6 +123,6 @@ static inline void icc_bulk_disable(int num_paths, const struct icc_bulk_data *p
 {
 }
 
-#endif /* CONFIG_INTERCONNECT */
+#endif  
 
-#endif /* __LINUX_INTERCONNECT_H */
+#endif  

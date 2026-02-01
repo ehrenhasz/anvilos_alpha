@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- *  Copyright (C) 2005 Mike Isely <isely@pobox.com>
- *  Copyright (C) 2004 Aurelien Alleaume <slts@free.fr>
- */
 
-/*
+ 
 
-   This source file is specifically designed to interface with the
-   saa711x support that is available in the v4l available starting
-   with linux 2.6.15.
-
-*/
+ 
 
 #include "pvrusb2-video-v4l.h"
 
@@ -32,8 +22,7 @@ struct routing_scheme {
 
 static const int routing_scheme0[] = {
 	[PVR2_CVAL_INPUT_TV] = SAA7115_COMPOSITE4,
-	/* In radio mode, we mute the video, but point at one
-	   spot just to stay consistent */
+	 
 	[PVR2_CVAL_INPUT_RADIO] = SAA7115_COMPOSITE5,
 	[PVR2_CVAL_INPUT_COMPOSITE] = SAA7115_COMPOSITE5,
 	[PVR2_CVAL_INPUT_SVIDEO] =  SAA7115_SVIDEO2,
@@ -48,7 +37,7 @@ static const int routing_scheme1[] = {
 	[PVR2_CVAL_INPUT_TV] = SAA7115_COMPOSITE4,
 	[PVR2_CVAL_INPUT_RADIO] = SAA7115_COMPOSITE5,
 	[PVR2_CVAL_INPUT_COMPOSITE] = SAA7115_COMPOSITE3,
-	[PVR2_CVAL_INPUT_SVIDEO] =  SAA7115_SVIDEO2, /* or SVIDEO0, it seems */
+	[PVR2_CVAL_INPUT_SVIDEO] =  SAA7115_SVIDEO2,  
 };
 
 static const struct routing_scheme routing_def1 = {

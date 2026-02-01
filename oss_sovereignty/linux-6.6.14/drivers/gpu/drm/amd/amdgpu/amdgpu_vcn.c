@@ -1,28 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -36,7 +12,7 @@
 #include "amdgpu_vcn.h"
 #include "soc15d.h"
 
-/* Firmware Names */
+ 
 #define FIRMWARE_RAVEN			"amdgpu/raven_vcn.bin"
 #define FIRMWARE_PICASSO		"amdgpu/picasso_vcn.bin"
 #define FIRMWARE_RAVEN2			"amdgpu/raven2_vcn.bin"
@@ -117,13 +93,7 @@ int amdgpu_vcn_sw_init(struct amdgpu_device *adev)
 	    (adev->pg_flags & AMD_PG_SUPPORT_VCN_DPG))
 		adev->vcn.indirect_sram = true;
 
-	/*
-	 * Some Steam Deck's BIOS versions are incompatible with the
-	 * indirect SRAM mode, leading to amdgpu being unable to get
-	 * properly probed (and even potentially crashing the kernel).
-	 * Hence, check for these versions here - notice this is
-	 * restricted to Vangogh (Deck's APU).
-	 */
+	 
 	if (adev->ip_versions[UVD_HWIP][0] == IP_VERSION(3, 0, 2)) {
 		const char *bios_ver = dmi_get_system_info(DMI_BIOS_VERSION);
 
@@ -138,12 +108,7 @@ int amdgpu_vcn_sw_init(struct amdgpu_device *adev)
 	hdr = (const struct common_firmware_header *)adev->vcn.fw->data;
 	adev->vcn.fw_version = le32_to_cpu(hdr->ucode_version);
 
-	/* Bit 20-23, it is encode major and non-zero for new naming convention.
-	 * This field is part of version minor and DRM_DISABLED_FLAG in old naming
-	 * convention. Since the l:wq!atest version minor is 0x5B and DRM_DISABLED_FLAG
-	 * is zero in old naming convention, this field is always zero so far.
-	 * These four bits are used to tell which naming convention is present.
-	 */
+	 
 	fw_check = (le32_to_cpu(hdr->ucode_version) >> 20) & 0xf;
 	if (fw_check) {
 		unsigned int dec_ver, enc_major, enc_minor, vep, fw_rev;
@@ -259,7 +224,7 @@ int amdgpu_vcn_sw_fini(struct amdgpu_device *adev)
 	return 0;
 }
 
-/* from vcn4 and above, only unified queue is used */
+ 
 static bool amdgpu_vcn_using_unified_queue(struct amdgpu_ring *ring)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -296,8 +261,7 @@ int amdgpu_vcn_suspend(struct amdgpu_device *adev)
 
 	cancel_delayed_work_sync(&adev->vcn.idle_work);
 
-	/* err_event_athub will corrupt VCPU buffer, so we need to
-	 * restore fw data and clear buffer in amdgpu_vcn_resume() */
+	 
 	if (in_ras_intr)
 		return 0;
 
@@ -468,7 +432,7 @@ int amdgpu_vcn_dec_ring_test_ring(struct amdgpu_ring *ring)
 	unsigned int i;
 	int r;
 
-	/* VCN in SRIOV does not support direct register read/write */
+	 
 	if (amdgpu_sriov_vf(adev))
 		return 0;
 
@@ -671,12 +635,12 @@ static uint32_t *amdgpu_vcn_unified_ring_ib_header(struct amdgpu_ib *ib,
 {
 	uint32_t *ib_checksum;
 
-	ib->ptr[ib->length_dw++] = 0x00000010; /* single queue checksum */
+	ib->ptr[ib->length_dw++] = 0x00000010;  
 	ib->ptr[ib->length_dw++] = 0x30000002;
 	ib_checksum = &ib->ptr[ib->length_dw++];
 	ib->ptr[ib->length_dw++] = ib_pack_in_dw;
 
-	ib->ptr[ib->length_dw++] = 0x00000010; /* engine info */
+	ib->ptr[ib->length_dw++] = 0x00000010;  
 	ib->ptr[ib->length_dw++] = 0x30000001;
 	ib->ptr[ib->length_dw++] = enc ? 0x2 : 0x3;
 	ib->ptr[ib->length_dw++] = ib_pack_in_dw * sizeof(uint32_t);
@@ -724,10 +688,10 @@ static int amdgpu_vcn_dec_sw_send_msg(struct amdgpu_ring *ring,
 	ib = &job->ibs[0];
 	ib->length_dw = 0;
 
-	/* single queue headers */
+	 
 	if (sq) {
 		ib_pack_in_dw = sizeof(struct amdgpu_vcn_decode_buffer) / sizeof(uint32_t)
-						+ 4 + 2; /* engine info + decoding ib in dw */
+						+ 4 + 2;  
 		ib_checksum = amdgpu_vcn_unified_ring_ib_header(ib, ib_pack_in_dw, false);
 	}
 
@@ -860,20 +824,20 @@ static int amdgpu_vcn_enc_get_create_msg(struct amdgpu_ring *ring, uint32_t hand
 		ib_checksum = amdgpu_vcn_unified_ring_ib_header(ib, 0x11, true);
 
 	ib->ptr[ib->length_dw++] = 0x00000018;
-	ib->ptr[ib->length_dw++] = 0x00000001; /* session info */
+	ib->ptr[ib->length_dw++] = 0x00000001;  
 	ib->ptr[ib->length_dw++] = handle;
 	ib->ptr[ib->length_dw++] = upper_32_bits(addr);
 	ib->ptr[ib->length_dw++] = addr;
 	ib->ptr[ib->length_dw++] = 0x0000000b;
 
 	ib->ptr[ib->length_dw++] = 0x00000014;
-	ib->ptr[ib->length_dw++] = 0x00000002; /* task info */
+	ib->ptr[ib->length_dw++] = 0x00000002;  
 	ib->ptr[ib->length_dw++] = 0x0000001c;
 	ib->ptr[ib->length_dw++] = 0x00000000;
 	ib->ptr[ib->length_dw++] = 0x00000000;
 
 	ib->ptr[ib->length_dw++] = 0x00000008;
-	ib->ptr[ib->length_dw++] = 0x08000001; /* op initialize */
+	ib->ptr[ib->length_dw++] = 0x08000001;  
 
 	for (i = ib->length_dw; i < ib_size_dw; ++i)
 		ib->ptr[i] = 0x0;
@@ -940,7 +904,7 @@ static int amdgpu_vcn_enc_get_destroy_msg(struct amdgpu_ring *ring, uint32_t han
 	ib->ptr[ib->length_dw++] = 0x00000000;
 
 	ib->ptr[ib->length_dw++] = 0x00000008;
-	ib->ptr[ib->length_dw++] = 0x08000002; /* op close session */
+	ib->ptr[ib->length_dw++] = 0x08000002;  
 
 	for (i = ib->length_dw; i < ib_size_dw; ++i)
 		ib->ptr[i] = 0x0;
@@ -1042,7 +1006,7 @@ void amdgpu_vcn_setup_ucode(struct amdgpu_device *adev)
 		for (i = 0; i < adev->vcn.num_vcn_inst; i++) {
 			if (adev->vcn.harvest_config & (1 << i))
 				continue;
-			/* currently only support 2 FW instances */
+			 
 			if (i >= 2) {
 				dev_info(adev->dev, "More then 2 VCN FW instances!\n");
 				break;
@@ -1060,9 +1024,7 @@ void amdgpu_vcn_setup_ucode(struct amdgpu_device *adev)
 	}
 }
 
-/*
- * debugfs for mapping vcn firmware log buffer.
- */
+ 
 #if defined(CONFIG_DEBUG_FS)
 static ssize_t amdgpu_debugfs_vcn_fwlog_read(struct file *f, char __user *buf,
 					     size_t size, loff_t *pos)

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *                   Lee Revell <rlrevell@joe-job.com>
- *                   James Courtier-Dutton <James@superbug.co.uk>
- *                   Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
- *                   Creative Labs, Inc.
- *
- *  Routines for control of EMU10K1 chips / proc interface routines
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/init.h>
@@ -49,7 +41,7 @@ static void snd_emu10k1_proc_spdif_status(struct snd_emu10k1 * emu,
 			snd_iprintf(buffer, "S/PDIF Valid          : %s\n", rate & SRCS_SPDIFVALID ? "on" : "off");
 			snd_iprintf(buffer, "S/PDIF Locked         : %s\n", rate & SRCS_SPDIFLOCKED ? "on" : "off");
 			snd_iprintf(buffer, "Rate Locked           : %s\n", rate & SRCS_RATELOCKED ? "on" : "off");
-			/* From ((Rate * 48000 ) / 262144); */
+			 
 			snd_iprintf(buffer, "Estimated Sample Rate : %d\n", ((rate & 0xFFFFF ) * 375) >> 11); 
 		}
 	} else {
@@ -111,7 +103,7 @@ static void snd_emu10k1_proc_read(struct snd_info_entry *entry,
 		}
 	}
 	snd_iprintf(buffer, "\nEffect Send Targets:\n");
-	// Audigy actually has 64, but we don't use them all.
+	
 	for (idx = 0; idx < 32; idx++) {
 		const char *c = snd_emu10k1_fxbus[idx];
 		if (c)
@@ -165,14 +157,14 @@ static void snd_emu10k1_proc_spdif_read(struct snd_info_entry *entry,
 	u32 value2;
 
 	if (emu->card_capabilities->emu_model) {
-		// This represents the S/PDIF lock status on 0404b, which is
-		// kinda weird and unhelpful, because monitoring it via IRQ is
-		// impractical (one gets an IRQ flood as long as it is desynced).
+		
+		
+		
 		snd_emu1010_fpga_read(emu, EMU_HANA_IRQ_STATUS, &value);
 		snd_iprintf(buffer, "Lock status 1: %#x\n", value & 0x10);
 
-		// Bit 0x1 in LO being 0 is supposedly for ADAT lock.
-		// The registers are always all zero on 0404b.
+		
+		
 		snd_emu1010_fpga_read(emu, EMU_HANA_LOCK_STS_LO, &value);
 		snd_emu1010_fpga_read(emu, EMU_HANA_LOCK_STS_HI, &value2);
 		snd_iprintf(buffer, "Lock status 2: %#x %#x\n", value, value2);
@@ -233,7 +225,7 @@ static const struct emu10k1_reg_entry sblive_reg_entries[] = {
 	{ 0x10, 0x10, "EXTIN" },
 	{ 0x20, 0x10, "EXTOUT" },
 	{ 0x30, 0x10, "FXBUS2" },
-	{ 0x40, 0x20, NULL },  // Constants
+	{ 0x40, 0x20, NULL },  
 	{ 0x100, 0x100, "GPR" },
 	{ 0x200, 0x80, "ITRAM_DATA" },
 	{ 0x280, 0x20, "ETRAM_DATA" },
@@ -250,10 +242,10 @@ static const struct emu10k1_reg_entry audigy_reg_entries[] = {
 	{ 0x80, 0x20, "FXBUS2" },
 	{ 0xa0, 0x10, "EMU32OUTH" },
 	{ 0xb0, 0x10, "EMU32OUTL" },
-	{ 0xc0, 0x20, NULL },  // Constants
-	// This can't be quite right - overlap.
-	//{ 0x100, 0xc0, "ITRAM_CTL" },
-	//{ 0x1c0, 0x40, "ETRAM_CTL" },
+	{ 0xc0, 0x20, NULL },  
+	
+	
+	
 	{ 0x160, 0x20, "A3_EMU32IN" },
 	{ 0x1e0, 0x20, "A3_EMU32OUT" },
 	{ 0x200, 0xc0, "ITRAM_DATA" },
@@ -467,27 +459,27 @@ static void snd_emu_proc_emu1010_reg_read(struct snd_info_entry *entry,
 
 	snd_iprintf(buffer, "\nEMU1010 Routes:\n\n");
 
-	for (i = 0; i < 16; i++)  // To Alice2/Tina[2] via EMU32
+	for (i = 0; i < 16; i++)  
 		snd_emu_proc_emu1010_link_read(emu, buffer, i);
 	if (emu->card_capabilities->emu_model != EMU_MODEL_EMU0404)
-		for (i = 0; i < 32; i++)  // To Dock via EDI
+		for (i = 0; i < 32; i++)  
 			snd_emu_proc_emu1010_link_read(emu, buffer, 0x100 + i);
 	if (emu->card_capabilities->emu_model != EMU_MODEL_EMU1616)
-		for (i = 0; i < 8; i++)  // To Hamoa/local
+		for (i = 0; i < 8; i++)  
 			snd_emu_proc_emu1010_link_read(emu, buffer, 0x200 + i);
-	for (i = 0; i < 8; i++)  // To Hamoa/Mana/local
+	for (i = 0; i < 8; i++)  
 		snd_emu_proc_emu1010_link_read(emu, buffer, 0x300 + i);
 	if (emu->card_capabilities->emu_model == EMU_MODEL_EMU1616) {
-		for (i = 0; i < 16; i++)  // To Tina2 via EMU32
+		for (i = 0; i < 16; i++)  
 			snd_emu_proc_emu1010_link_read(emu, buffer, 0x400 + i);
 	} else if (emu->card_capabilities->emu_model != EMU_MODEL_EMU0404) {
-		for (i = 0; i < 8; i++)  // To Hana ADAT
+		for (i = 0; i < 8; i++)  
 			snd_emu_proc_emu1010_link_read(emu, buffer, 0x400 + i);
 		if (emu->card_capabilities->emu_model == EMU_MODEL_EMU1010B) {
-			for (i = 0; i < 16; i++)  // To Tina via EMU32
+			for (i = 0; i < 16; i++)  
 				snd_emu_proc_emu1010_link_read(emu, buffer, 0x500 + i);
 		} else {
-			// To Alice2 via I2S
+			
 			snd_emu_proc_emu1010_link_read(emu, buffer, 0x500);
 			snd_emu_proc_emu1010_link_read(emu, buffer, 0x501);
 			snd_emu_proc_emu1010_link_read(emu, buffer, 0x600);
@@ -692,28 +684,28 @@ int snd_emu10k1_proc_init(struct snd_emu10k1 *emu)
 	if (! snd_card_proc_new(emu->card, "fx8010_gpr", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = emu;
-		entry->mode = S_IFREG | 0444 /*| S_IWUSR*/;
+		entry->mode = S_IFREG | 0444  ;
 		entry->size = emu->audigy ? A_TOTAL_SIZE_GPR : TOTAL_SIZE_GPR;
 		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
 	}
 	if (! snd_card_proc_new(emu->card, "fx8010_tram_data", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = emu;
-		entry->mode = S_IFREG | 0444 /*| S_IWUSR*/;
+		entry->mode = S_IFREG | 0444  ;
 		entry->size = emu->audigy ? A_TOTAL_SIZE_TANKMEM_DATA : TOTAL_SIZE_TANKMEM_DATA ;
 		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
 	}
 	if (! snd_card_proc_new(emu->card, "fx8010_tram_addr", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = emu;
-		entry->mode = S_IFREG | 0444 /*| S_IWUSR*/;
+		entry->mode = S_IFREG | 0444  ;
 		entry->size = emu->audigy ? A_TOTAL_SIZE_TANKMEM_ADDR : TOTAL_SIZE_TANKMEM_ADDR ;
 		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
 	}
 	if (! snd_card_proc_new(emu->card, "fx8010_code", &entry)) {
 		entry->content = SNDRV_INFO_CONTENT_DATA;
 		entry->private_data = emu;
-		entry->mode = S_IFREG | 0444 /*| S_IWUSR*/;
+		entry->mode = S_IFREG | 0444  ;
 		entry->size = emu->audigy ? A_TOTAL_SIZE_CODE : TOTAL_SIZE_CODE;
 		entry->c.ops = &snd_emu10k1_proc_ops_fx8010;
 	}

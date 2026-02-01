@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung Exynos5 SoC series USB DRD PHY driver
- *
- * Phy provider for USB 3.0 DRD controller on Exynos5 SoC series
- *
- * Copyright (C) 2014 Samsung Electronics Co., Ltd.
- * Author: Vivek Gautam <gautam.vivek@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -23,7 +16,7 @@
 #include <linux/regulator/consumer.h>
 #include <linux/soc/samsung/exynos-regs-pmu.h>
 
-/* Exynos USB PHY registers */
+ 
 #define EXYNOS5_FSEL_9MHZ6		0x0
 #define EXYNOS5_FSEL_10MHZ		0x1
 #define EXYNOS5_FSEL_12MHZ		0x2
@@ -33,7 +26,7 @@
 #define EXYNOS5_FSEL_26MHZ		0x82
 #define EXYNOS5_FSEL_50MHZ		0x7
 
-/* Exynos5: USB 3.0 DRD PHY registers */
+ 
 #define EXYNOS5_DRD_LINKSYSTEM			0x04
 
 #define LINKSYSTEM_FLADJ_MASK			(0x3f << 1)
@@ -126,7 +119,7 @@
 #define EXYNOS5_DRD_PHYRESUME			0x34
 #define EXYNOS5_DRD_LINKPORT			0x44
 
-/* USB 3.0 DRD PHY SS Function Control Reg; accessed by CR_PORT */
+ 
 #define EXYNOS5_DRD_PHYSS_LOSLEVEL_OVRD_IN		(0x15)
 #define LOSLEVEL_OVRD_IN_LOS_BIAS_5420			(0x5 << 13)
 #define LOSLEVEL_OVRD_IN_LOS_BIAS_DEFAULT		(0x0 << 13)
@@ -145,7 +138,7 @@
 #define LANE0_TX_DEBUG_RXDET_MEAS_TIME_62M5		(0x20 << 4)
 #define LANE0_TX_DEBUG_RXDET_MEAS_TIME_96M_100M		(0x40 << 4)
 
-/* Exynos850: USB DRD PHY registers */
+ 
 #define EXYNOS850_DRD_LINKCTRL			0x04
 #define LINKCTRL_BUS_FILTER_BYPASS(_x)		((_x) << 4)
 #define LINKCTRL_FORCE_QACT			BIT(8)
@@ -200,24 +193,7 @@ struct exynos5_usbdrd_phy_drvdata {
 	bool has_common_clk_gate;
 };
 
-/**
- * struct exynos5_usbdrd_phy - driver data for USB 3.0 PHY
- * @dev: pointer to device instance of this platform device
- * @reg_phy: usb phy controller register memory base
- * @clk: phy clock for register access
- * @pipeclk: clock for pipe3 phy
- * @utmiclk: clock for utmi+ phy
- * @itpclk: clock for ITP generation
- * @drv_data: pointer to SoC level driver data structure
- * @phys: array for 'EXYNOS5_DRDPHYS_NUM' number of PHY
- *	    instances each with its 'phy' and 'phy_cfg'.
- * @extrefclk: frequency select settings when using 'separate
- *	       reference clocks' for SS and HS operations
- * @ref_clk: reference clock to PHY block from which PHY's
- *	     operational clocks are derived
- * @vbus: VBUS regulator for phy
- * @vbus_boost: Boost regulator for VBUS present on few Exynos boards
- */
+ 
 struct exynos5_usbdrd_phy {
 	struct device *dev;
 	void __iomem *reg_phy;
@@ -246,13 +222,10 @@ struct exynos5_usbdrd_phy *to_usbdrd_phy(struct phy_usb_instance *inst)
 			    phys[(inst)->index]);
 }
 
-/*
- * exynos5_rate_to_clk() converts the supplied clock rate to the value that
- * can be written to the phy register.
- */
+ 
 static unsigned int exynos5_rate_to_clk(unsigned long rate, u32 *reg)
 {
-	/* EXYNOS5_FSEL_MASK */
+	 
 
 	switch (rate) {
 	case 9600 * KHZ:
@@ -300,25 +273,21 @@ static void exynos5_usbdrd_phy_isol(struct phy_usb_instance *inst,
 			   EXYNOS4_PHY_ENABLE, val);
 }
 
-/*
- * Sets the pipe3 phy's clk as EXTREFCLK (XXTI) which is internal clock
- * from clock core. Further sets multiplier values and spread spectrum
- * clock settings for SuperSpeed operations.
- */
+ 
 static unsigned int
 exynos5_usbdrd_pipe3_set_refclk(struct phy_usb_instance *inst)
 {
 	u32 reg;
 	struct exynos5_usbdrd_phy *phy_drd = to_usbdrd_phy(inst);
 
-	/* restore any previous reference clock settings */
+	 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYCLKRST);
 
-	/* Use EXTREFCLK as ref clock */
+	 
 	reg &= ~PHYCLKRST_REFCLKSEL_MASK;
 	reg |=	PHYCLKRST_REFCLKSEL_EXT_REFCLK;
 
-	/* FSEL settings corresponding to reference clock */
+	 
 	reg &= ~PHYCLKRST_FSEL_PIPE_MASK |
 		PHYCLKRST_MPLL_MULTIPLIER_MASK |
 		PHYCLKRST_SSC_REFCLKSEL_MASK;
@@ -347,17 +316,14 @@ exynos5_usbdrd_pipe3_set_refclk(struct phy_usb_instance *inst)
 	return reg;
 }
 
-/*
- * Sets the utmi phy's clk as EXTREFCLK (XXTI) which is internal clock
- * from clock core. Further sets the FSEL values for HighSpeed operations.
- */
+ 
 static unsigned int
 exynos5_usbdrd_utmi_set_refclk(struct phy_usb_instance *inst)
 {
 	u32 reg;
 	struct exynos5_usbdrd_phy *phy_drd = to_usbdrd_phy(inst);
 
-	/* restore any previous reference clock settings */
+	 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYCLKRST);
 
 	reg &= ~PHYCLKRST_REFCLKSEL_MASK;
@@ -376,7 +342,7 @@ static void exynos5_usbdrd_pipe3_init(struct exynos5_usbdrd_phy *phy_drd)
 	u32 reg;
 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYPARAM1);
-	/* Set Tx De-Emphasis level */
+	 
 	reg &= ~PHYPARAM1_PCS_TXDEEMPH_MASK;
 	reg |=	PHYPARAM1_PCS_TXDEEMPH;
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_PHYPARAM1);
@@ -391,18 +357,18 @@ static void exynos5_usbdrd_utmi_init(struct exynos5_usbdrd_phy *phy_drd)
 	u32 reg;
 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYPARAM0);
-	/* Set Loss-of-Signal Detector sensitivity */
+	 
 	reg &= ~PHYPARAM0_REF_LOSLEVEL_MASK;
 	reg |=	PHYPARAM0_REF_LOSLEVEL;
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_PHYPARAM0);
 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYPARAM1);
-	/* Set Tx De-Emphasis level */
+	 
 	reg &= ~PHYPARAM1_PCS_TXDEEMPH_MASK;
 	reg |=	PHYPARAM1_PCS_TXDEEMPH;
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_PHYPARAM1);
 
-	/* UTMI Power Control */
+	 
 	writel(PHYUTMI_OTGDISABLE, phy_drd->reg_phy + EXYNOS5_DRD_PHYUTMI);
 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYTEST);
@@ -421,43 +387,40 @@ static int exynos5_usbdrd_phy_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* Reset USB 3.0 PHY */
+	 
 	writel(0x0, phy_drd->reg_phy + EXYNOS5_DRD_PHYREG0);
 	writel(0x0, phy_drd->reg_phy + EXYNOS5_DRD_PHYRESUME);
 
-	/*
-	 * Setting the Frame length Adj value[6:1] to default 0x20
-	 * See xHCI 1.0 spec, 5.2.4
-	 */
+	 
 	reg =	LINKSYSTEM_XHCI_VERSION_CONTROL |
 		LINKSYSTEM_FLADJ(0x20);
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_LINKSYSTEM);
 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYPARAM0);
-	/* Select PHY CLK source */
+	 
 	reg &= ~PHYPARAM0_REF_USE_PAD;
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_PHYPARAM0);
 
-	/* This bit must be set for both HS and SS operations */
+	 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYUTMICLKSEL);
 	reg |= PHYUTMICLKSEL_UTMI_CLKSEL;
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_PHYUTMICLKSEL);
 
-	/* UTMI or PIPE3 specific init */
+	 
 	inst->phy_cfg->phy_init(phy_drd);
 
-	/* reference clock settings */
+	 
 	reg = inst->phy_cfg->set_refclk(inst);
 
-		/* Digital power supply in normal operating mode */
+		 
 	reg |=	PHYCLKRST_RETENABLEN |
-		/* Enable ref clock for SS function */
+		 
 		PHYCLKRST_REF_SSP_EN |
-		/* Enable spread spectrum */
+		 
 		PHYCLKRST_SSC_EN |
-		/* Power down HS Bias and PLL blocks in suspend mode */
+		 
 		PHYCLKRST_COMMONONN |
-		/* Reset the port */
+		 
 		PHYCLKRST_PORTRESET;
 
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_PHYCLKRST);
@@ -488,14 +451,14 @@ static int exynos5_usbdrd_phy_exit(struct phy *phy)
 		PHYUTMI_FORCESLEEP;
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_PHYUTMI);
 
-	/* Resetting the PHYCLKRST enable bits to reduce leakage current */
+	 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYCLKRST);
 	reg &= ~(PHYCLKRST_REF_SSP_EN |
 		 PHYCLKRST_SSC_EN |
 		 PHYCLKRST_COMMONONN);
 	writel(reg, phy_drd->reg_phy + EXYNOS5_DRD_PHYCLKRST);
 
-	/* Control PHYTEST to remove leakage current */
+	 
 	reg = readl(phy_drd->reg_phy + EXYNOS5_DRD_PHYTEST);
 	reg |=	PHYTEST_POWERDOWN_SSP |
 		PHYTEST_POWERDOWN_HSP;
@@ -521,7 +484,7 @@ static int exynos5_usbdrd_phy_power_on(struct phy *phy)
 		clk_prepare_enable(phy_drd->itpclk);
 	}
 
-	/* Enable VBUS supply */
+	 
 	if (phy_drd->vbus_boost) {
 		ret = regulator_enable(phy_drd->vbus_boost);
 		if (ret) {
@@ -539,7 +502,7 @@ static int exynos5_usbdrd_phy_power_on(struct phy *phy)
 		}
 	}
 
-	/* Power-on PHY*/
+	 
 	inst->phy_cfg->phy_isol(inst, 0);
 
 	return 0;
@@ -566,10 +529,10 @@ static int exynos5_usbdrd_phy_power_off(struct phy *phy)
 
 	dev_dbg(phy_drd->dev, "Request to power_off usbdrd_phy phy\n");
 
-	/* Power-off the PHY */
+	 
 	inst->phy_cfg->phy_isol(inst, 1);
 
-	/* Disable VBUS supply */
+	 
 	if (phy_drd->vbus)
 		regulator_disable(phy_drd->vbus);
 	if (phy_drd->vbus_boost)
@@ -617,7 +580,7 @@ static int crport_ctrl_write(struct exynos5_usbdrd_phy *phy_drd,
 {
 	int ret;
 
-	/* Write Address */
+	 
 	writel(PHYREG0_CR_DATA_IN(addr),
 	       phy_drd->reg_phy + EXYNOS5_DRD_PHYREG0);
 	ret = crport_handshake(phy_drd, PHYREG0_CR_DATA_IN(addr),
@@ -625,7 +588,7 @@ static int crport_ctrl_write(struct exynos5_usbdrd_phy *phy_drd,
 	if (ret)
 		return ret;
 
-	/* Write Data */
+	 
 	writel(PHYREG0_CR_DATA_IN(data),
 	       phy_drd->reg_phy + EXYNOS5_DRD_PHYREG0);
 	ret = crport_handshake(phy_drd, PHYREG0_CR_DATA_IN(data),
@@ -639,22 +602,13 @@ static int crport_ctrl_write(struct exynos5_usbdrd_phy *phy_drd,
 	return ret;
 }
 
-/*
- * Calibrate few PHY parameters using CR_PORT register to meet
- * SuperSpeed requirements on Exynos5420 and Exynos5800 systems,
- * which have 28nm USB 3.0 DRD PHY.
- */
+ 
 static int exynos5420_usbdrd_phy_calibrate(struct exynos5_usbdrd_phy *phy_drd)
 {
 	unsigned int temp;
 	int ret = 0;
 
-	/*
-	 * Change los_bias to (0x5) for 28nm PHY from a
-	 * default value (0x0); los_level is set as default
-	 * (0x9) as also reflected in los_level[30:26] bits
-	 * of PHYPARAM0 register.
-	 */
+	 
 	temp = LOSLEVEL_OVRD_IN_LOS_BIAS_5420 |
 		LOSLEVEL_OVRD_IN_EN |
 		LOSLEVEL_OVRD_IN_LOS_LEVEL_DEFAULT;
@@ -667,10 +621,7 @@ static int exynos5420_usbdrd_phy_calibrate(struct exynos5_usbdrd_phy *phy_drd)
 		return ret;
 	}
 
-	/*
-	 * Set tx_vboost_lvl to (0x5) for 28nm PHY Tuning,
-	 * to raise Tx signal level from its default value of (0x4)
-	 */
+	 
 	temp = TX_VBOOSTLEVEL_OVRD_IN_VBOOST_5420;
 	ret = crport_ctrl_write(phy_drd,
 				EXYNOS5_DRD_PHYSS_TX_VBOOSTLEVEL_OVRD_IN,
@@ -681,15 +632,7 @@ static int exynos5420_usbdrd_phy_calibrate(struct exynos5_usbdrd_phy *phy_drd)
 		return ret;
 	}
 
-	/*
-	 * Set proper time to wait for RxDetect measurement, for
-	 * desired reference clock of PHY, by tuning the CR_PORT
-	 * register LANE0.TX_DEBUG which is internal to PHY.
-	 * This fixes issue with few USB 3.0 devices, which are
-	 * not detected (not even generate interrupts on the bus
-	 * on insertion) without this change.
-	 * e.g. Samsung SUM-TSB16S 3.0 USB drive.
-	 */
+	 
 	switch (phy_drd->extrefclk) {
 	case EXYNOS5_FSEL_50MHZ:
 		temp = LANE0_TX_DEBUG_RXDET_MEAS_TIME_48M_50M_52M;
@@ -749,32 +692,28 @@ static void exynos850_usbdrd_utmi_init(struct exynos5_usbdrd_phy *phy_drd)
 	void __iomem *regs_base = phy_drd->reg_phy;
 	u32 reg;
 
-	/*
-	 * Disable HWACG (hardware auto clock gating control). This will force
-	 * QACTIVE signal in Q-Channel interface to HIGH level, to make sure
-	 * the PHY clock is not gated by the hardware.
-	 */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_LINKCTRL);
 	reg |= LINKCTRL_FORCE_QACT;
 	writel(reg, regs_base + EXYNOS850_DRD_LINKCTRL);
 
-	/* Start PHY Reset (POR=high) */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_CLKRST);
 	reg |= CLKRST_PHY_SW_RST;
 	writel(reg, regs_base + EXYNOS850_DRD_CLKRST);
 
-	/* Enable UTMI+ */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_UTMI);
 	reg &= ~(UTMI_FORCE_SUSPEND | UTMI_FORCE_SLEEP | UTMI_DP_PULLDOWN |
 		 UTMI_DM_PULLDOWN);
 	writel(reg, regs_base + EXYNOS850_DRD_UTMI);
 
-	/* Set PHY clock and control HS PHY */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_HSP);
 	reg |= HSP_EN_UTMISUSPEND | HSP_COMMONONN;
 	writel(reg, regs_base + EXYNOS850_DRD_HSP);
 
-	/* Set VBUS Valid and D+ pull-up control by VBUS pad usage */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_LINKCTRL);
 	reg |= LINKCTRL_BUS_FILTER_BYPASS(0xf);
 	writel(reg, regs_base + EXYNOS850_DRD_LINKCTRL);
@@ -787,19 +726,19 @@ static void exynos850_usbdrd_utmi_init(struct exynos5_usbdrd_phy *phy_drd)
 	reg |= HSP_VBUSVLDEXT | HSP_VBUSVLDEXTSEL;
 	writel(reg, regs_base + EXYNOS850_DRD_HSP);
 
-	/* Power up PHY analog blocks */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_HSP_TEST);
 	reg &= ~HSP_TEST_SIDDQ;
 	writel(reg, regs_base + EXYNOS850_DRD_HSP_TEST);
 
-	/* Finish PHY reset (POR=low) */
-	udelay(10); /* required before doing POR=low */
+	 
+	udelay(10);  
 	reg = readl(regs_base + EXYNOS850_DRD_CLKRST);
 	reg &= ~(CLKRST_PHY_SW_RST | CLKRST_PORT_RST);
 	writel(reg, regs_base + EXYNOS850_DRD_CLKRST);
-	udelay(75); /* required after POR=low for guaranteed PHY clock */
+	udelay(75);  
 
-	/* Disable single ended signal out */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_HSP);
 	reg &= ~HSP_FSV_OUT_EN;
 	writel(reg, regs_base + EXYNOS850_DRD_HSP);
@@ -815,7 +754,7 @@ static int exynos850_usbdrd_phy_init(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* UTMI or PIPE3 specific init */
+	 
 	inst->phy_cfg->phy_init(phy_drd);
 
 	clk_disable_unprepare(phy_drd->clk);
@@ -835,22 +774,22 @@ static int exynos850_usbdrd_phy_exit(struct phy *phy)
 	if (ret)
 		return ret;
 
-	/* Set PHY clock and control HS PHY */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_UTMI);
 	reg &= ~(UTMI_DP_PULLDOWN | UTMI_DM_PULLDOWN);
 	reg |= UTMI_FORCE_SUSPEND | UTMI_FORCE_SLEEP;
 	writel(reg, regs_base + EXYNOS850_DRD_UTMI);
 
-	/* Power down PHY analog blocks */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_HSP_TEST);
 	reg |= HSP_TEST_SIDDQ;
 	writel(reg, regs_base + EXYNOS850_DRD_HSP_TEST);
 
-	/* Link reset */
+	 
 	reg = readl(regs_base + EXYNOS850_DRD_CLKRST);
 	reg |= CLKRST_LINK_SW_RST;
 	writel(reg, regs_base + EXYNOS850_DRD_CLKRST);
-	udelay(10); /* required before doing POR=low */
+	udelay(10);  
 	reg &= ~CLKRST_LINK_SW_RST;
 	writel(reg, regs_base + EXYNOS850_DRD_CLKRST);
 
@@ -1041,11 +980,7 @@ static int exynos5_usbdrd_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(reg_pmu);
 	}
 
-	/*
-	 * Exynos5420 SoC has multiple channels for USB 3.0 PHY, with
-	 * each having separate power control registers.
-	 * 'channel' facilitates to set such registers.
-	 */
+	 
 	channel = of_alias_get_id(node, "usbdrdphy");
 	if (channel < 0)
 		dev_dbg(dev, "Not a multi-controller usbdrd phy\n");
@@ -1060,7 +995,7 @@ static int exynos5_usbdrd_phy_probe(struct platform_device *pdev)
 		break;
 	}
 
-	/* Get Vbus regulators */
+	 
 	phy_drd->vbus = devm_regulator_get(dev, "vbus");
 	if (IS_ERR(phy_drd->vbus)) {
 		ret = PTR_ERR(phy_drd->vbus);

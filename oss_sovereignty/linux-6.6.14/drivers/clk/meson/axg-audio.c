@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright (c) 2018 BayLibre, SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -173,7 +170,7 @@
 	},								\
 }
 
-/* Audio Master Clocks */
+ 
 static const struct clk_parent_data mst_mux_parent_data[] = {
 	{ .fw_name = "mst_in0", },
 	{ .fw_name = "mst_in1", },
@@ -205,7 +202,7 @@ static const struct clk_parent_data mst_mux_parent_data[] = {
 #define AUD_MST_SYS_DIV(_name, _reg)					\
 	AUD_MST_DIV(_name, _reg, 0)
 
-/* Sample Clocks */
+ 
 #define AUD_MST_SCLK_PRE_EN(_name, _reg)				\
 	AUD_GATE(mst_##_name##_sclk_pre_en, _reg, 31,			\
 		 aud_mst_##_name##_mclk, 0)
@@ -227,7 +224,7 @@ static const struct clk_parent_data mst_mux_parent_data[] = {
 	AUD_TRIPHASE(mst_##_name##_lrclk, _reg, 1, 1, 3, 5,		\
 		     aud_mst_##_name##_lrclk_div, CLK_SET_RATE_PARENT)
 
-/* TDM bit clock sources */
+ 
 static const struct clk_parent_data tdm_sclk_parent_data[] = {
 	{ .name = "aud_mst_a_sclk", .index = -1, },
 	{ .name = "aud_mst_b_sclk", .index = -1, },
@@ -247,7 +244,7 @@ static const struct clk_parent_data tdm_sclk_parent_data[] = {
 	{ .fw_name = "slv_sclk9", },
 };
 
-/* TDM sample clock sources */
+ 
 static const struct clk_parent_data tdm_lrclk_parent_data[] = {
 	{ .name = "aud_mst_a_lrclk", .index = -1, },
 	{ .name = "aud_mst_b_lrclk", .index = -1, },
@@ -289,7 +286,7 @@ static const struct clk_parent_data tdm_lrclk_parent_data[] = {
 	AUD_MUX(tdm##_name##_lrclk, _reg, 0xf, 20,			\
 		CLK_MUX_ROUND_CLOSEST, tdm_lrclk_parent_data, 0)
 
-/* Pad master clock sources */
+ 
 static const struct clk_parent_data mclk_pad_ctrl_parent_data[] = {
 	{ .name = "aud_mst_a_mclk", .index = -1,  },
 	{ .name = "aud_mst_b_mclk", .index = -1,  },
@@ -299,7 +296,7 @@ static const struct clk_parent_data mclk_pad_ctrl_parent_data[] = {
 	{ .name = "aud_mst_f_mclk", .index = -1,  },
 };
 
-/* Pad bit clock sources */
+ 
 static const struct clk_parent_data sclk_pad_ctrl_parent_data[] = {
 	{ .name = "aud_mst_a_sclk", .index = -1, },
 	{ .name = "aud_mst_b_sclk", .index = -1, },
@@ -309,7 +306,7 @@ static const struct clk_parent_data sclk_pad_ctrl_parent_data[] = {
 	{ .name = "aud_mst_f_sclk", .index = -1, },
 };
 
-/* Pad sample clock sources */
+ 
 static const struct clk_parent_data lrclk_pad_ctrl_parent_data[] = {
 	{ .name = "aud_mst_a_lrclk", .index = -1, },
 	{ .name = "aud_mst_b_lrclk", .index = -1, },
@@ -323,7 +320,7 @@ static const struct clk_parent_data lrclk_pad_ctrl_parent_data[] = {
 	AUD_MUX(_name, _reg, 0x7, _shift, 0, _parents,		\
 		CLK_SET_RATE_NO_REPARENT)
 
-/* Common Clocks */
+ 
 static struct clk_regmap ddr_arb =
 	AUD_PCLK_GATE(ddr_arb, AUDIO_CLK_GATE_EN, 0);
 static struct clk_regmap pdm =
@@ -545,7 +542,7 @@ static struct clk_regmap tdmout_b_lrclk =
 static struct clk_regmap tdmout_c_lrclk =
 	AUD_TDM_LRLCK(out_c, AUDIO_CLK_TDMOUT_C_CTRL);
 
-/* AXG Clocks */
+ 
 static struct clk_regmap axg_tdmout_a_sclk =
 	AUD_TDM_SCLK(out_a, AUDIO_CLK_TDMOUT_A_CTRL);
 static struct clk_regmap axg_tdmout_b_sclk =
@@ -553,10 +550,10 @@ static struct clk_regmap axg_tdmout_b_sclk =
 static struct clk_regmap axg_tdmout_c_sclk =
 	AUD_TDM_SCLK(out_c, AUDIO_CLK_TDMOUT_C_CTRL);
 
-/* AXG/G12A Clocks */
+ 
 static struct clk_hw axg_aud_top = {
 	.init = &(struct clk_init_data) {
-		/* Provide aud_top signal name on axg and g12a */
+		 
 		.name = "aud_top",
 		.ops = &(const struct clk_ops) {},
 		.parent_data = &(const struct clk_parent_data) {
@@ -605,7 +602,7 @@ static struct clk_regmap mst_e_mclk =
 static struct clk_regmap mst_f_mclk =
 	AUD_MST_MCLK_GATE(mst_f_mclk, AUDIO_MCLK_F_CTRL);
 
-/* G12a clocks */
+ 
 static struct clk_regmap g12a_tdm_mclk_pad_0 = AUD_TDM_PAD_CTRL(
 	mclk_pad_0, AUDIO_MST_PAD_CTRL0, 0, mclk_pad_ctrl_parent_data);
 static struct clk_regmap g12a_tdm_mclk_pad_1 = AUD_TDM_PAD_CTRL(
@@ -637,7 +634,7 @@ static struct clk_regmap spdifout_b =
 static struct clk_regmap eqdrc =
 	AUD_PCLK_GATE(eqdrc, AUDIO_CLK_GATE_EN, 22);
 
-/* SM1 Clocks */
+ 
 static struct clk_regmap sm1_clk81_en = {
 	.data = &(struct clk_regmap_gate_data){
 		.offset = AUDIO_CLK81_EN,
@@ -810,10 +807,7 @@ static struct clk_regmap sm1_tdm_sclk_pad_1 = AUD_TDM_PAD_CTRL(
 static struct clk_regmap sm1_tdm_sclk_pad_2 = AUD_TDM_PAD_CTRL(
 	tdm_sclk_pad_2, AUDIO_SM1_MST_PAD_CTRL1, 8, sclk_pad_ctrl_parent_data);
 
-/*
- * Array of all clocks provided by this provider
- * The input clocks of the controller will be populated at runtime
- */
+ 
 static struct clk_hw *axg_audio_hw_clks[] = {
 	[AUD_CLKID_DDR_ARB]		= &ddr_arb.hw,
 	[AUD_CLKID_PDM]			= &pdm.hw,
@@ -939,10 +933,7 @@ static struct clk_hw *axg_audio_hw_clks[] = {
 	[AUD_CLKID_TOP]			= &axg_aud_top,
 };
 
-/*
- * Array of all G12A clocks provided by this provider
- * The input clocks of the controller will be populated at runtime
- */
+ 
 static struct clk_hw *g12a_audio_hw_clks[] = {
 	[AUD_CLKID_DDR_ARB]		= &ddr_arb.hw,
 	[AUD_CLKID_PDM]			= &pdm.hw,
@@ -1080,10 +1071,7 @@ static struct clk_hw *g12a_audio_hw_clks[] = {
 	[AUD_CLKID_TOP]			= &axg_aud_top,
 };
 
-/*
- * Array of all SM1 clocks provided by this provider
- * The input clocks of the controller will be populated at runtime
- */
+ 
 static struct clk_hw *sm1_audio_hw_clks[] = {
 	[AUD_CLKID_DDR_ARB]		= &ddr_arb.hw,
 	[AUD_CLKID_PDM]			= &pdm.hw,
@@ -1235,7 +1223,7 @@ static struct clk_hw *sm1_audio_hw_clks[] = {
 };
 
 
-/* Convenience table to populate regmap in .probe(). */
+ 
 static struct clk_regmap *const axg_clk_regmaps[] = {
 	&ddr_arb,
 	&pdm,
@@ -1766,7 +1754,7 @@ static int axg_audio_clkc_probe(struct platform_device *pdev)
 		return PTR_ERR(map);
 	}
 
-	/* Get the mandatory peripheral clock */
+	 
 	clk = devm_clk_get_enabled(dev, "pclk");
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);
@@ -1777,16 +1765,16 @@ static int axg_audio_clkc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Populate regmap for the regmap backed clocks */
+	 
 	for (i = 0; i < data->regmap_clk_num; i++)
 		data->regmap_clks[i]->map = map;
 
-	/* Take care to skip the registered input clocks */
+	 
 	for (i = AUD_CLKID_DDR_ARB; i < data->hw_clks.num; i++) {
 		const char *name;
 
 		hw = data->hw_clks.hws[i];
-		/* array might be sparse */
+		 
 		if (!hw)
 			continue;
 
@@ -1803,7 +1791,7 @@ static int axg_audio_clkc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Stop here if there is no reset */
+	 
 	if (!data->reset_num)
 		return 0;
 

@@ -1,24 +1,4 @@
-/* alarmtimer suspend test
- *		John Stultz (john.stultz@linaro.org)
- *              (C) Copyright Linaro 2013
- *              Licensed under the GPLv2
- *
- *   This test makes sure the alarmtimer & RTC wakeup code is
- *   functioning.
- *
- *  To build:
- *	$ gcc alarmtimer-suspend.c -o alarmtimer-suspend -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 
 #include <stdio.h>
@@ -46,7 +26,7 @@
 
 
 #define NSEC_PER_SEC 1000000000ULL
-#define UNREASONABLE_LAT (NSEC_PER_SEC * 5) /* hopefully we resume in 5 secs */
+#define UNREASONABLE_LAT (NSEC_PER_SEC * 5)  
 
 #define SUSPEND_SECS 15
 int alarmcount;
@@ -124,13 +104,13 @@ int main(void)
 	struct sigaction act;
 	int signum = SIGRTMAX;
 
-	/* Set up signal handler: */
+	 
 	sigfillset(&act.sa_mask);
 	act.sa_flags = 0;
 	act.sa_handler = sigalarm;
 	sigaction(signum, &act, NULL);
 
-	/* Set up timer: */
+	 
 	memset(&se, 0, sizeof(se));
 	se.sigev_notify = SIGEV_SIGNAL;
 	se.sigev_signo = signum;
@@ -159,7 +139,7 @@ int main(void)
 		timer_settime(tm1, TIMER_ABSTIME, &its1, &its2);
 
 		while (alarmcount < 5)
-			sleep(1); /* First 5 alarms, do nothing */
+			sleep(1);  
 
 		printf("Starting suspend loops\n");
 		while (alarmcount < 10) {

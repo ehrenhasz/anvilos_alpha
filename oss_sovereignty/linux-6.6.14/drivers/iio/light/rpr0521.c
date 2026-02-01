@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RPR-0521 ROHM Ambient Light and Proximity Sensor
- *
- * Copyright (c) 2015, Intel Corporation.
- *
- * IIO driver for RPR-0521RS (7-bit I2C slave address 0x38).
- *
- * TODO: illuminance channel
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -28,9 +20,9 @@
 #define RPR0521_REG_MODE_CTRL		0x41
 #define RPR0521_REG_ALS_CTRL		0x42
 #define RPR0521_REG_PXS_CTRL		0x43
-#define RPR0521_REG_PXS_DATA		0x44 /* 16-bit, little endian */
-#define RPR0521_REG_ALS_DATA0		0x46 /* 16-bit, little endian */
-#define RPR0521_REG_ALS_DATA1		0x48 /* 16-bit, little endian */
+#define RPR0521_REG_PXS_DATA		0x44  
+#define RPR0521_REG_ALS_DATA0		0x46  
+#define RPR0521_REG_ALS_DATA1		0x48  
 #define RPR0521_REG_INTERRUPT		0x4A
 #define RPR0521_REG_PS_OFFSET_LSB	0x53
 #define RPR0521_REG_ID			0x92
@@ -65,7 +57,7 @@
 #define RPR0521_INTERRUPT_INT_REASSERT_DISABLE	0x00
 
 #define RPR0521_MANUFACT_ID		0xE0
-#define RPR0521_DEFAULT_MEAS_TIME	0x06 /* ALS - 100ms, PXS - 100ms */
+#define RPR0521_DEFAULT_MEAS_TIME	0x06  
 
 #define RPR0521_DRV_NAME		"RPR0521"
 #define RPR0521_IRQ_NAME		"rpr0521_event"
@@ -82,16 +74,16 @@ struct rpr0521_gain {
 };
 
 static const struct rpr0521_gain rpr0521_als_gain[4] = {
-	{1, 0},		/* x1 */
-	{0, 500000},	/* x2 */
-	{0, 15625},	/* x64 */
-	{0, 7812},	/* x128 */
+	{1, 0},		 
+	{0, 500000},	 
+	{0, 15625},	 
+	{0, 7812},	 
 };
 
 static const struct rpr0521_gain rpr0521_pxs_gain[3] = {
-	{1, 0},		/* x1 */
-	{0, 500000},	/* x2 */
-	{0, 125000},	/* x4 */
+	{1, 0},		 
+	{0, 500000},	 
+	{0, 125000},	 
 };
 
 enum rpr0521_channel {
@@ -158,36 +150,36 @@ struct rpr0521_samp_freq {
 };
 
 static const struct rpr0521_samp_freq rpr0521_samp_freq_i[13] = {
-/*	{ALS, PXS},		   W==currently writable option */
-	{0, 0, 0, 0},		/* W0000, 0=standby */
-	{0, 0, 100, 0},		/*  0001 */
-	{0, 0, 25, 0},		/*  0010 */
-	{0, 0, 10, 0},		/*  0011 */
-	{0, 0, 2, 500000},	/*  0100 */
-	{10, 0, 20, 0},		/*  0101 */
-	{10, 0, 10, 0},		/* W0110 */
-	{10, 0, 2, 500000},	/*  0111 */
-	{2, 500000, 20, 0},	/*  1000, measurement 100ms, sleep 300ms */
-	{2, 500000, 10, 0},	/*  1001, measurement 100ms, sleep 300ms */
-	{2, 500000, 0, 0},	/*  1010, high sensitivity mode */
-	{2, 500000, 2, 500000},	/* W1011, high sensitivity mode */
-	{20, 0, 20, 0}	/* 1100, ALS_data x 0.5, see specification P.18 */
+ 
+	{0, 0, 0, 0},		 
+	{0, 0, 100, 0},		 
+	{0, 0, 25, 0},		 
+	{0, 0, 10, 0},		 
+	{0, 0, 2, 500000},	 
+	{10, 0, 20, 0},		 
+	{10, 0, 10, 0},		 
+	{10, 0, 2, 500000},	 
+	{2, 500000, 20, 0},	 
+	{2, 500000, 10, 0},	 
+	{2, 500000, 0, 0},	 
+	{2, 500000, 2, 500000},	 
+	{20, 0, 20, 0}	 
 };
 
 struct rpr0521_data {
 	struct i2c_client *client;
 
-	/* protect device params updates (e.g state, gain) */
+	 
 	struct mutex lock;
 
-	/* device active status */
+	 
 	bool als_dev_en;
 	bool pxs_dev_en;
 
 	struct iio_trigger *drdy_trigger0;
 	s64 irq_timestamp;
 
-	/* optimize runtime pm ops - enable/disable device only if needed */
+	 
 	bool als_ps_need_en;
 	bool pxs_ps_need_en;
 	bool als_need_dis;
@@ -195,11 +187,7 @@ struct rpr0521_data {
 
 	struct regmap *regmap;
 
-	/*
-	 * Ensure correct naturally aligned timestamp.
-	 * Note that the read will put garbage data into
-	 * the padding but this should not be a problem
-	 */
+	 
 	struct {
 		__le16 channels[3];
 		u8 garbage;
@@ -210,10 +198,7 @@ struct rpr0521_data {
 static IIO_CONST_ATTR(in_intensity_scale_available, RPR0521_ALS_SCALE_AVAIL);
 static IIO_CONST_ATTR(in_proximity_scale_available, RPR0521_PXS_SCALE_AVAIL);
 
-/*
- * Start with easy freq first, whole table of freq combinations is more
- * complicated.
- */
+ 
 static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("2.5 10");
 
 static struct attribute *rpr0521_attributes[] = {
@@ -227,7 +212,7 @@ static const struct attribute_group rpr0521_attribute_group = {
 	.attrs = rpr0521_attributes,
 };
 
-/* Order of the channel data in buffer */
+ 
 enum rpr0521_scan_index_order {
 	RPR0521_CHAN_INDEX_PXS,
 	RPR0521_CHAN_INDEX_BOTH,
@@ -326,16 +311,7 @@ static int rpr0521_pxs_enable(struct rpr0521_data *data, u8 status)
 	return 0;
 }
 
-/**
- * rpr0521_set_power_state - handles runtime PM state and sensors enabled status
- *
- * @data: rpr0521 device private data
- * @on: state to be set for devices in @device_mask
- * @device_mask: bitmask specifying for which device we need to update @on state
- *
- * Calls for this function must be balanced so that each ON should have matching
- * OFF. Otherwise pm usage_count gets out of sync.
- */
+ 
 static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
 				   u8 device_mask)
 {
@@ -352,13 +328,7 @@ static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
 		data->pxs_need_dis = !on;
 	}
 
-	/*
-	 * On: _resume() is called only when we are suspended
-	 * Off: _suspend() is called after delay if _resume() is not
-	 * called before that.
-	 * Note: If either measurement is re-enabled before _suspend(),
-	 * both stay enabled until _suspend().
-	 */
+	 
 	if (on) {
 		ret = pm_runtime_resume_and_get(&data->client->dev);
 	} else {
@@ -373,7 +343,7 @@ static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
 	}
 
 	if (on) {
-		/* If _resume() was not called, enable measurement now. */
+		 
 		if (data->als_ps_need_en) {
 			ret = rpr0521_als_enable(data, RPR0521_MODE_ALS_ENABLE);
 			if (ret)
@@ -392,7 +362,7 @@ static int rpr0521_set_power_state(struct rpr0521_data *data, bool on,
 	return 0;
 }
 
-/* Interrupt register tells if this sensor caused the interrupt or not. */
+ 
 static inline bool rpr0521_is_triggered(struct rpr0521_data *data)
 {
 	int ret;
@@ -400,27 +370,23 @@ static inline bool rpr0521_is_triggered(struct rpr0521_data *data)
 
 	ret = regmap_read(data->regmap, RPR0521_REG_INTERRUPT, &reg);
 	if (ret < 0)
-		return false;   /* Reg read failed. */
+		return false;    
 	if (reg &
 	    (RPR0521_INTERRUPT_ALS_INT_STATUS_MASK |
 	    RPR0521_INTERRUPT_PS_INT_STATUS_MASK))
 		return true;
 	else
-		return false;   /* Int not from this sensor. */
+		return false;    
 }
 
-/* IRQ to trigger handler */
+ 
 static irqreturn_t rpr0521_drdy_irq_handler(int irq, void *private)
 {
 	struct iio_dev *indio_dev = private;
 	struct rpr0521_data *data = iio_priv(indio_dev);
 
 	data->irq_timestamp = iio_get_time_ns(indio_dev);
-	/*
-	 * We need to wake the thread to read the interrupt reg. It
-	 * is not possible to do that here because regmap_read takes a
-	 * mutex.
-	 */
+	 
 
 	return IRQ_WAKE_THREAD;
 }
@@ -443,7 +409,7 @@ static irqreturn_t rpr0521_trigger_consumer_store_time(int irq, void *p)
 	struct iio_poll_func *pf = p;
 	struct iio_dev *indio_dev = pf->indio_dev;
 
-	/* Other trigger polls store time here. */
+	 
 	if (!iio_trigger_using_own(indio_dev))
 		pf->timestamp = iio_get_time_ns(indio_dev);
 
@@ -457,18 +423,18 @@ static irqreturn_t rpr0521_trigger_consumer_handler(int irq, void *p)
 	struct rpr0521_data *data = iio_priv(indio_dev);
 	int err;
 
-	/* Use irq timestamp when reasonable. */
+	 
 	if (iio_trigger_using_own(indio_dev) && data->irq_timestamp) {
 		pf->timestamp = data->irq_timestamp;
 		data->irq_timestamp = 0;
 	}
-	/* Other chained trigger polls get timestamp only here. */
+	 
 	if (!pf->timestamp)
 		pf->timestamp = iio_get_time_ns(indio_dev);
 
 	err = regmap_bulk_read(data->regmap, RPR0521_REG_PXS_DATA,
 		data->scan.channels,
-		(3 * 2) + 1);	/* 3 * 16-bit + (discarded) int clear reg. */
+		(3 * 2) + 1);	 
 	if (!err)
 		iio_push_to_buffers_with_timestamp(indio_dev,
 						   &data->scan, pf->timestamp);
@@ -486,7 +452,7 @@ static int rpr0521_write_int_enable(struct rpr0521_data *data)
 {
 	int err;
 
-	/* Interrupt after each measurement */
+	 
 	err = regmap_update_bits(data->regmap, RPR0521_REG_PXS_CTRL,
 		RPR0521_PXS_PERSISTENCE_MASK,
 		RPR0521_PXS_PERSISTENCE_DRDY);
@@ -495,7 +461,7 @@ static int rpr0521_write_int_enable(struct rpr0521_data *data)
 		return -EBUSY;
 		}
 
-	/* Ignore latch and mode because of drdy */
+	 
 	err = regmap_write(data->regmap, RPR0521_REG_INTERRUPT,
 		RPR0521_INTERRUPT_INT_REASSERT_DISABLE |
 		RPR0521_INTERRUPT_INT_TRIG_ALS_DISABLE |
@@ -511,17 +477,14 @@ static int rpr0521_write_int_enable(struct rpr0521_data *data)
 
 static int rpr0521_write_int_disable(struct rpr0521_data *data)
 {
-	/* Don't care of clearing mode, assert and latch. */
+	 
 	return regmap_write(data->regmap, RPR0521_REG_INTERRUPT,
 				RPR0521_INTERRUPT_INT_TRIG_ALS_DISABLE |
 				RPR0521_INTERRUPT_INT_TRIG_PS_DISABLE
 				);
 }
 
-/*
- * Trigger producer enable / disable. Note that there will be trigs only when
- * measurement data is ready to be read.
- */
+ 
 static int rpr0521_pxs_drdy_set_state(struct iio_trigger *trigger,
 	bool enable_drdy)
 {
@@ -600,7 +563,7 @@ static int rpr0521_set_gain(struct rpr0521_data *data, int chan,
 {
 	int i, idx = -EINVAL;
 
-	/* get gain index */
+	 
 	for (i = 0; i < rpr0521_gain[chan].size; i++)
 		if (val == rpr0521_gain[chan].gain[i].scale &&
 		    val2 == rpr0521_gain[chan].gain[i].uscale) {
@@ -652,10 +615,7 @@ static int rpr0521_write_samp_freq_common(struct rpr0521_data *data,
 {
 	int i;
 
-	/*
-	 * Ignore channel
-	 * both pxs and als are setup only to same freq because of simplicity
-	 */
+	 
 	switch (val) {
 	case 0:
 		i = 0;
@@ -852,7 +812,7 @@ static int rpr0521_init(struct rpr0521_data *data)
 		return -ENODEV;
 	}
 
-	/* set default measurement time - 100 ms for both ALS and PS */
+	 
 	ret = regmap_update_bits(data->regmap, RPR0521_REG_MODE_CTRL,
 				 RPR0521_MODE_MEAS_TIME_MASK,
 				 RPR0521_DEFAULT_MEAS_TIME);
@@ -891,10 +851,7 @@ static int rpr0521_poweroff(struct rpr0521_data *data)
 	data->als_dev_en = false;
 	data->pxs_dev_en = false;
 
-	/*
-	 * Int pin keeps state after power off. Set pin to high impedance
-	 * mode to prevent power drain.
-	 */
+	 
 	ret = regmap_read(data->regmap, RPR0521_REG_INTERRUPT, &tmp);
 	if (ret) {
 		dev_err(&data->client->dev, "Failed to reset int pin.\n");
@@ -971,14 +928,11 @@ static int rpr0521_probe(struct i2c_client *client)
 	pm_runtime_set_autosuspend_delay(&client->dev, RPR0521_SLEEP_DELAY_MS);
 	pm_runtime_use_autosuspend(&client->dev);
 
-	/*
-	 * If sensor write/read is needed in _probe after _use_autosuspend,
-	 * sensor needs to be _resumed first using rpr0521_set_power_state().
-	 */
+	 
 
-	/* IRQ to trigger setup */
+	 
 	if (client->irq) {
-		/* Trigger0 producer setup */
+		 
 		data->drdy_trigger0 = devm_iio_trigger_alloc(
 			indio_dev->dev.parent,
 			"%s-dev%d", indio_dev->name, iio_device_id(indio_dev));
@@ -990,7 +944,7 @@ static int rpr0521_probe(struct i2c_client *client)
 		indio_dev->available_scan_masks = rpr0521_available_scan_masks;
 		iio_trigger_set_drvdata(data->drdy_trigger0, indio_dev);
 
-		/* Ties irq to trigger producer handler. */
+		 
 		ret = devm_request_threaded_irq(&client->dev, client->irq,
 			rpr0521_drdy_irq_handler, rpr0521_drdy_irq_thread,
 			IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
@@ -1008,12 +962,9 @@ static int rpr0521_probe(struct i2c_client *client)
 			goto err_pm_disable;
 		}
 
-		/*
-		 * Now whole pipe from physical interrupt (irq defined by
-		 * devicetree to device) to trigger0 output is set up.
-		 */
+		 
 
-		/* Trigger consumer setup */
+		 
 		ret = devm_iio_triggered_buffer_setup(indio_dev->dev.parent,
 			indio_dev,
 			rpr0521_trigger_consumer_store_time,
@@ -1059,13 +1010,13 @@ static int rpr0521_runtime_suspend(struct device *dev)
 	int ret;
 
 	mutex_lock(&data->lock);
-	/* If measurements are enabled, enable them on resume */
+	 
 	if (!data->als_need_dis)
 		data->als_ps_need_en = data->als_dev_en;
 	if (!data->pxs_need_dis)
 		data->pxs_ps_need_en = data->pxs_dev_en;
 
-	/* disable channels and sets {als,pxs}_dev_en to false */
+	 
 	ret = rpr0521_poweroff(data);
 	regcache_mark_dirty(data->regmap);
 	mutex_unlock(&data->lock);
@@ -1093,7 +1044,7 @@ static int rpr0521_runtime_resume(struct device *dev)
 			return ret;
 		data->pxs_ps_need_en = false;
 	}
-	msleep(100);	//wait for first measurement result
+	msleep(100);	
 
 	return 0;
 }

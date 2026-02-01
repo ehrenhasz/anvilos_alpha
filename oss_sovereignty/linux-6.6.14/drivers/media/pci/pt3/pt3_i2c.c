@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Earthsoft PT3 driver
- *
- * Copyright (C) 2014 Akihiro Tsukada <tskd08@gmail.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/i2c.h>
@@ -17,7 +13,7 @@
 #define PT3_CMD_ADDR_INIT_DEMOD  4096
 #define PT3_CMD_ADDR_INIT_TUNER  (4096 + 2042)
 
-/* masks for I2C status register */
+ 
 #define STAT_SEQ_RUNNING 0x1
 #define STAT_SEQ_ERROR   0x6
 #define STAT_NO_SEQ      0x8
@@ -100,7 +96,7 @@ static void put_stop(struct pt3_i2cbuf *cbuf)
 }
 
 
-/* translates msgs to internal commands for bit-banging */
+ 
 static void translate(struct pt3_i2cbuf *cbuf, struct i2c_msg *msgs, int num)
 {
 	int i, j;
@@ -141,12 +137,12 @@ static int wait_i2c_result(struct pt3_board *pt3, u32 *result, int max_wait)
 	return 0;
 }
 
-/* send [pre-]translated i2c msgs stored at addr */
+ 
 static int send_i2c_cmd(struct pt3_board *pt3, u32 addr)
 {
 	u32 ret;
 
-	/* make sure that previous transactions had finished */
+	 
 	if (wait_i2c_result(pt3, NULL, 50)) {
 		dev_warn(&pt3->pdev->dev, "(%s) prev. transaction stalled\n",
 				__func__);
@@ -155,7 +151,7 @@ static int send_i2c_cmd(struct pt3_board *pt3, u32 addr)
 
 	iowrite32(PT3_I2C_RUN | addr, pt3->regs[0] + REG_I2C_W);
 	usleep_range(200, 300);
-	/* wait for the current transaction to finish */
+	 
 	if (wait_i2c_result(pt3, &ret, 500) || (ret & STAT_SEQ_ERROR)) {
 		dev_warn(&pt3->pdev->dev, "(%s) failed.\n", __func__);
 		return -EIO;
@@ -164,16 +160,14 @@ static int send_i2c_cmd(struct pt3_board *pt3, u32 addr)
 }
 
 
-/* init commands for each demod are combined into one transaction
- *  and hidden in ROM with the address PT3_CMD_ADDR_INIT_DEMOD.
- */
+ 
 int  pt3_init_all_demods(struct pt3_board *pt3)
 {
 	ioread32(pt3->regs[0] + REG_I2C_R);
 	return send_i2c_cmd(pt3, PT3_CMD_ADDR_INIT_DEMOD);
 }
 
-/* init commands for two ISDB-T tuners are hidden in ROM. */
+ 
 int  pt3_init_all_mxl301rf(struct pt3_board *pt3)
 {
 	usleep_range(1000, 2000);
@@ -185,9 +179,7 @@ void pt3_i2c_reset(struct pt3_board *pt3)
 	iowrite32(PT3_I2C_RESET, pt3->regs[0] + REG_I2C_W);
 }
 
-/*
- * I2C algorithm
- */
+ 
 int
 pt3_i2c_master_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs, int num)
 {

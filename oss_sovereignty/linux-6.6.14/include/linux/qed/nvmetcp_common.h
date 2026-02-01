@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* Copyright 2021 Marvell. All rights reserved. */
+ 
+ 
 
 #ifndef __NVMETCP_COMMON__
 #define __NVMETCP_COMMON__
@@ -10,7 +10,7 @@
 #define NVMETCP_SLOW_PATH_LAYER_CODE (6)
 #define NVMETCP_WQE_NUM_SGES_SLOWIO (0xf)
 
-/* NVMeTCP firmware function init parameters */
+ 
 struct nvmetcp_spe_func_init {
 	__le16 half_way_close_timeout;
 	u8 num_sq_pages_in_ring;
@@ -36,13 +36,13 @@ struct nvmetcp_spe_func_init {
 	struct scsi_init_func_queues q_params;
 };
 
-/* NVMeTCP init params passed by driver to FW in NVMeTCP init ramrod. */
+ 
 struct nvmetcp_init_ramrod_params {
 	struct nvmetcp_spe_func_init nvmetcp_init_spe;
 	struct tcp_init_params tcp_init;
 };
 
-/* NVMeTCP Ramrod Command IDs */
+ 
 enum nvmetcp_ramrod_cmd_id {
 	NVMETCP_RAMROD_CMD_ID_UNUSED = 0,
 	NVMETCP_RAMROD_CMD_ID_INIT_FUNC = 1,
@@ -59,38 +59,38 @@ struct nvmetcp_glbl_queue_entry {
 	struct regpair reserved;
 };
 
-/* NVMeTCP conn level EQEs */
+ 
 enum nvmetcp_eqe_opcode {
-	NVMETCP_EVENT_TYPE_INIT_FUNC = 0, /* Response after init Ramrod */
-	NVMETCP_EVENT_TYPE_DESTROY_FUNC, /* Response after destroy Ramrod */
-	NVMETCP_EVENT_TYPE_OFFLOAD_CONN,/* Response after option 2 offload Ramrod */
-	NVMETCP_EVENT_TYPE_UPDATE_CONN, /* Response after update Ramrod */
-	NVMETCP_EVENT_TYPE_CLEAR_SQ, /* Response after clear sq Ramrod */
-	NVMETCP_EVENT_TYPE_TERMINATE_CONN, /* Response after termination Ramrod */
+	NVMETCP_EVENT_TYPE_INIT_FUNC = 0,  
+	NVMETCP_EVENT_TYPE_DESTROY_FUNC,  
+	NVMETCP_EVENT_TYPE_OFFLOAD_CONN, 
+	NVMETCP_EVENT_TYPE_UPDATE_CONN,  
+	NVMETCP_EVENT_TYPE_CLEAR_SQ,  
+	NVMETCP_EVENT_TYPE_TERMINATE_CONN,  
 	NVMETCP_EVENT_TYPE_RESERVED0,
 	NVMETCP_EVENT_TYPE_RESERVED1,
-	NVMETCP_EVENT_TYPE_ASYN_CONNECT_COMPLETE, /* Connect completed (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_ASYN_TERMINATE_DONE, /* Termination completed (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_START_OF_ERROR_TYPES = 10, /* Separate EQs from err EQs */
-	NVMETCP_EVENT_TYPE_ASYN_ABORT_RCVD, /* TCP RST packet receive (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_ASYN_CLOSE_RCVD, /* TCP FIN packet receive (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_ASYN_SYN_RCVD, /* TCP SYN+ACK packet receive (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_ASYN_MAX_RT_TIME, /* TCP max retransmit time (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_ASYN_MAX_RT_CNT, /* TCP max retransmit count (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_ASYN_MAX_KA_PROBES_CNT, /* TCP ka probes count (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_ASYN_FIN_WAIT2, /* TCP fin wait 2 (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_NVMETCP_CONN_ERROR, /* NVMeTCP error response (A-syn EQE) */
-	NVMETCP_EVENT_TYPE_TCP_CONN_ERROR, /* NVMeTCP error - tcp error (A-syn EQE) */
+	NVMETCP_EVENT_TYPE_ASYN_CONNECT_COMPLETE,  
+	NVMETCP_EVENT_TYPE_ASYN_TERMINATE_DONE,  
+	NVMETCP_EVENT_TYPE_START_OF_ERROR_TYPES = 10,  
+	NVMETCP_EVENT_TYPE_ASYN_ABORT_RCVD,  
+	NVMETCP_EVENT_TYPE_ASYN_CLOSE_RCVD,  
+	NVMETCP_EVENT_TYPE_ASYN_SYN_RCVD,  
+	NVMETCP_EVENT_TYPE_ASYN_MAX_RT_TIME,  
+	NVMETCP_EVENT_TYPE_ASYN_MAX_RT_CNT,  
+	NVMETCP_EVENT_TYPE_ASYN_MAX_KA_PROBES_CNT,  
+	NVMETCP_EVENT_TYPE_ASYN_FIN_WAIT2,  
+	NVMETCP_EVENT_TYPE_NVMETCP_CONN_ERROR,  
+	NVMETCP_EVENT_TYPE_TCP_CONN_ERROR,  
 	MAX_NVMETCP_EQE_OPCODE
 };
 
 struct nvmetcp_conn_offload_section {
-	struct regpair cccid_itid_table_addr; /* CCCID to iTID table address */
-	__le16 cccid_max_range; /* CCCID max value - used for validation */
+	struct regpair cccid_itid_table_addr;  
+	__le16 cccid_max_range;  
 	__le16 reserved[3];
 };
 
-/* NVMe TCP connection offload params passed by driver to FW in NVMeTCP offload ramrod */
+ 
 struct nvmetcp_conn_offload_params {
 	struct regpair sq_pbl_addr;
 	struct regpair r2tq_pbl_addr;
@@ -114,10 +114,10 @@ struct nvmetcp_conn_offload_params {
 	__le32 reserved1;
 	__le32 initial_ack;
 
-	struct nvmetcp_conn_offload_section nvmetcp; /* NVMe/TCP section */
+	struct nvmetcp_conn_offload_section nvmetcp;  
 };
 
-/* NVMe TCP and TCP connection offload params passed by driver to FW in NVMeTCP offload ramrod. */
+ 
 struct nvmetcp_spe_conn_offload {
 	__le16 reserved;
 	__le16 conn_id;
@@ -126,7 +126,7 @@ struct nvmetcp_spe_conn_offload {
 	struct tcp_offload_params_opt2 tcp;
 };
 
-/* NVMeTCP connection update params passed by driver to FW in NVMETCP update ramrod. */
+ 
 struct nvmetcp_conn_update_ramrod_params {
 	__le16 reserved0;
 	__le16 conn_id;
@@ -156,7 +156,7 @@ struct nvmetcp_conn_update_ramrod_params {
 	__le32 reserved4[5];
 };
 
-/* NVMeTCP connection termination request */
+ 
 struct nvmetcp_spe_conn_termination {
 	__le16 reserved0;
 	__le16 conn_id;
@@ -182,7 +182,7 @@ enum nvmetcp_wqe_type {
 struct nvmetcp_wqe {
 	__le16 task_id;
 	u8 flags;
-#define NVMETCP_WQE_WQE_TYPE_MASK 0x7 /* [use nvmetcp_wqe_type] */
+#define NVMETCP_WQE_WQE_TYPE_MASK 0x7  
 #define NVMETCP_WQE_WQE_TYPE_SHIFT 0
 #define NVMETCP_WQE_NUM_SGES_MASK 0xF
 #define NVMETCP_WQE_NUM_SGES_SHIFT 3
@@ -232,17 +232,17 @@ enum nvmetcp_task_type {
 
 struct nvmetcp_db_data {
 	u8 params;
-#define NVMETCP_DB_DATA_DEST_MASK 0x3 /* destination of doorbell (use enum db_dest) */
+#define NVMETCP_DB_DATA_DEST_MASK 0x3  
 #define NVMETCP_DB_DATA_DEST_SHIFT 0
-#define NVMETCP_DB_DATA_AGG_CMD_MASK 0x3 /* aggregative command to CM (use enum db_agg_cmd_sel) */
+#define NVMETCP_DB_DATA_AGG_CMD_MASK 0x3  
 #define NVMETCP_DB_DATA_AGG_CMD_SHIFT 2
-#define NVMETCP_DB_DATA_BYPASS_EN_MASK 0x1 /* enable QM bypass */
+#define NVMETCP_DB_DATA_BYPASS_EN_MASK 0x1  
 #define NVMETCP_DB_DATA_BYPASS_EN_SHIFT 4
 #define NVMETCP_DB_DATA_RESERVED_MASK 0x1
 #define NVMETCP_DB_DATA_RESERVED_SHIFT 5
-#define NVMETCP_DB_DATA_AGG_VAL_SEL_MASK 0x3 /* aggregative value selection */
+#define NVMETCP_DB_DATA_AGG_VAL_SEL_MASK 0x3  
 #define NVMETCP_DB_DATA_AGG_VAL_SEL_SHIFT 6
-	u8 agg_flags; /* bit for every DQ counter flags in CM context that DQ can increment */
+	u8 agg_flags;  
 	__le16 sq_prod;
 };
 
@@ -321,7 +321,7 @@ struct nvmetcp_task_hdr {
 
 struct nvmetcp_task_hdr_aligned {
 	struct nvmetcp_task_hdr task_hdr;
-	__le32 reserved[2];	/* HSI_COMMENT: Align to QREG */
+	__le32 reserved[2];	 
 };
 
 struct e5_tdif_task_context {
@@ -399,9 +399,9 @@ struct ustorm_nvmetcp_task_st_ctx {
 };
 
 struct e5_ystorm_nvmetcp_task_ag_ctx {
-	u8 reserved /* cdu_validation */;
-	u8 byte1 /* state_and_core_id */;
-	__le16 word0 /* icid */;
+	u8 reserved  ;
+	u8 byte1  ;
+	__le16 word0  ;
 	u8 flags0;
 	u8 flags1;
 	u8 flags2;
@@ -528,4 +528,4 @@ struct e5_nvmetcp_task_context {
 	struct e5_rdif_task_context rdif_context;
 };
 
-#endif /* __NVMETCP_COMMON__*/
+#endif  

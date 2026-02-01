@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for the ADC on Freescale Semiconductor MC13783 and MC13892 PMICs.
- *
- * Copyright 2004-2007 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright (C) 2009 Sascha Hauer, Pengutronix
- */
+
+ 
 
 #include <linux/mfd/mc13xxx.h>
 #include <linux/platform_device.h>
@@ -19,7 +14,7 @@
 
 #define DRIVER_NAME	"mc13783-adc"
 
-/* platform device id driver data */
+ 
 #define MC13783_ADC_16CHANS	1
 #define MC13783_ADC_BPDIV2	2
 
@@ -52,7 +47,7 @@ static int mc13783_adc_read(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* ADIN7 subchannels */
+	 
 	if (channel >= 16)
 		channel = 7;
 
@@ -78,10 +73,7 @@ static ssize_t mc13783_adc_bp_show(struct device *dev,
 	if (driver_data & MC13783_ADC_BPDIV2)
 		val = DIV_ROUND_CLOSEST(val * 9, 2);
 	else
-		/*
-		 * BP (channel 2) reports with offset 2.4V to the actual value
-		 * to fit the input range of the ADC.  unit = 2.25mV = 9/4 mV.
-		 */
+		 
 		val = DIV_ROUND_CLOSEST(val * 9, 4) + 2400;
 
 	return sprintf(buf, "%u\n", val);
@@ -97,10 +89,7 @@ static ssize_t mc13783_adc_gp_show(struct device *dev,
 	if (ret)
 		return ret;
 
-	/*
-	 * input range is [0, 2.3V], val has 10 bits, so each bit
-	 * is worth 9/4 mV.
-	 */
+	 
 	val = DIV_ROUND_CLOSEST(val * 9, 4);
 
 	return sprintf(buf, "%u\n", val);
@@ -119,10 +108,10 @@ static ssize_t mc13783_adc_uid_show(struct device *dev,
 		return ret;
 
 	if (driver_data & MC13783_ADC_BPDIV2)
-		/* MC13892 have 1/2 divider, input range is [0, 4.800V] */
+		 
 		val = DIV_ROUND_CLOSEST(val * 4800, 1024);
 	else
-		/* MC13783 have 0.9 divider, input range is [0, 2.555V] */
+		 
 		val = DIV_ROUND_CLOSEST(val * 2555, 1024);
 
 	return sprintf(buf, "%u\n", val);
@@ -141,18 +130,10 @@ static ssize_t mc13783_adc_temp_show(struct device *dev,
 		return ret;
 
 	if (driver_data & MC13783_ADC_BPDIV2) {
-		/*
-		 * MC13892:
-		 * Die Temperature Read Out Code at 25C 680
-		 * Temperature change per LSB +0.4244C
-		 */
+		 
 		ret = DIV_ROUND_CLOSEST(-2635920 + val * 4244, 10);
 	} else {
-		/*
-		 * MC13783:
-		 * Die Temperature Read Out Code at 25C 282
-		 * Temperature change per LSB -1.14C
-		 */
+		 
 		ret = 346480 - 1140 * val;
 	}
 
@@ -190,7 +171,7 @@ static const struct attribute_group mc13783_group_base = {
 	.attrs = mc13783_attr_base,
 };
 
-/* these are only used if MC13783_ADC_16CHANS is provided in driver data */
+ 
 static struct attribute *mc13783_attr_16chans[] = {
 	&sensor_dev_attr_in8_input.dev_attr.attr,
 	&sensor_dev_attr_in9_input.dev_attr.attr,
@@ -203,7 +184,7 @@ static const struct attribute_group mc13783_group_16chans = {
 	.attrs = mc13783_attr_16chans,
 };
 
-/* last four channels may be occupied by the touchscreen */
+ 
 static struct attribute *mc13783_attr_ts[] = {
 	&sensor_dev_attr_in12_input.dev_attr.attr,
 	&sensor_dev_attr_in13_input.dev_attr.attr,
@@ -243,7 +224,7 @@ static int __init mc13783_adc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, priv);
 
-	/* Register sysfs hooks */
+	 
 	ret = sysfs_create_group(&pdev->dev.kobj, &mc13783_group_base);
 	if (ret)
 		return ret;
@@ -311,7 +292,7 @@ static const struct platform_device_id mc13783_adc_idtable[] = {
 		.name = "mc13892-adc",
 		.driver_data = MC13783_ADC_BPDIV2,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(platform, mc13783_adc_idtable);

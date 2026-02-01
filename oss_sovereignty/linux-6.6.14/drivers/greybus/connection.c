@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus connections
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #include <linux/workqueue.h>
 #include <linux/greybus.h>
@@ -18,7 +13,7 @@ static void gb_connection_kref_release(struct kref *kref);
 static DEFINE_SPINLOCK(gb_connections_lock);
 static DEFINE_MUTEX(gb_connection_mutex);
 
-/* Caller holds gb_connection_mutex. */
+ 
 static bool gb_connection_cport_in_use(struct gb_interface *intf, u16 cport_id)
 {
 	struct gb_host_device *hd = intf->hd;
@@ -47,9 +42,7 @@ static void gb_connection_put(struct gb_connection *connection)
 	kref_put(&connection->kref, gb_connection_kref_release);
 }
 
-/*
- * Returns a reference-counted pointer to the connection if found.
- */
+ 
 static struct gb_connection *
 gb_connection_hd_find(struct gb_host_device *hd, u16 cport_id)
 {
@@ -69,10 +62,7 @@ found:
 	return connection;
 }
 
-/*
- * Callback from the host driver to let us know that data has been
- * received on the bundle.
- */
+ 
 void greybus_data_rcvd(struct gb_host_device *hd, u16 cport_id,
 		       u8 *data, size_t length)
 {
@@ -117,29 +107,7 @@ static void gb_connection_init_name(struct gb_connection *connection)
 		 "%u/%u:%u", hd_cport_id, intf_id, cport_id);
 }
 
-/*
- * _gb_connection_create() - create a Greybus connection
- * @hd:			host device of the connection
- * @hd_cport_id:	host-device cport id, or -1 for dynamic allocation
- * @intf:		remote interface, or NULL for static connections
- * @bundle:		remote-interface bundle (may be NULL)
- * @cport_id:		remote-interface cport id, or 0 for static connections
- * @handler:		request handler (may be NULL)
- * @flags:		connection flags
- *
- * Create a Greybus connection, representing the bidirectional link
- * between a CPort on a (local) Greybus host device and a CPort on
- * another Greybus interface.
- *
- * A connection also maintains the state of operations sent over the
- * connection.
- *
- * Serialised against concurrent create and destroy using the
- * gb_connection_mutex.
- *
- * Return: A pointer to the new connection if successful, or an ERR_PTR
- * otherwise.
- */
+ 
 static struct gb_connection *
 _gb_connection_create(struct gb_host_device *hd, int hd_cport_id,
 		      struct gb_interface *intf,
@@ -391,10 +359,7 @@ static int gb_connection_hd_cport_clear(struct gb_connection *connection)
 	return 0;
 }
 
-/*
- * Request the SVC to create a connection from AP's cport to interface's
- * cport.
- */
+ 
 static int
 gb_connection_svc_connection_create(struct gb_connection *connection)
 {
@@ -408,9 +373,7 @@ gb_connection_svc_connection_create(struct gb_connection *connection)
 
 	intf = connection->intf;
 
-	/*
-	 * Enable either E2EFC or CSD, unless no flow control is requested.
-	 */
+	 
 	cport_flags = GB_SVC_CPORT_FLAG_CSV_N;
 	if (gb_connection_flow_control_disabled(connection)) {
 		cport_flags |= GB_SVC_CPORT_FLAG_CSD_N;
@@ -448,7 +411,7 @@ gb_connection_svc_connection_destroy(struct gb_connection *connection)
 				  connection->intf_cport_id);
 }
 
-/* Inform Interface about active CPorts */
+ 
 static int gb_connection_control_connected(struct gb_connection *connection)
 {
 	struct gb_control *control;
@@ -509,10 +472,7 @@ gb_connection_control_disconnected(struct gb_connection *connection)
 		if (connection->mode_switch) {
 			ret = gb_control_mode_switch_operation(control);
 			if (ret) {
-				/*
-				 * Allow mode switch to time out waiting for
-				 * mailbox event.
-				 */
+				 
 				return;
 			}
 		}
@@ -592,12 +552,7 @@ gb_connection_cport_shutdown_phase_2(struct gb_connection *connection)
 	return gb_connection_cport_shutdown(connection, 2);
 }
 
-/*
- * Cancel all active operations on a connection.
- *
- * Locking: Called with connection lock held and state set to DISABLED or
- * DISCONNECTING.
- */
+ 
 static void gb_connection_cancel_operations(struct gb_connection *connection,
 					    int errno)
 	__must_hold(&connection->lock)
@@ -621,11 +576,7 @@ static void gb_connection_cancel_operations(struct gb_connection *connection,
 	}
 }
 
-/*
- * Cancel all active incoming operations on a connection.
- *
- * Locking: Called with connection lock held and state set to ENABLED_TX.
- */
+ 
 static void
 gb_connection_flush_incoming_operations(struct gb_connection *connection,
 					int errno)
@@ -650,7 +601,7 @@ gb_connection_flush_incoming_operations(struct gb_connection *connection,
 
 		spin_unlock_irq(&connection->lock);
 
-		/* FIXME: flush, not cancel? */
+		 
 		gb_operation_cancel_incoming(operation, errno);
 		gb_operation_put(operation);
 
@@ -658,21 +609,12 @@ gb_connection_flush_incoming_operations(struct gb_connection *connection,
 	}
 }
 
-/*
- * _gb_connection_enable() - enable a connection
- * @connection:		connection to enable
- * @rx:			whether to enable incoming requests
- *
- * Connection-enable helper for DISABLED->ENABLED, DISABLED->ENABLED_TX, and
- * ENABLED_TX->ENABLED state transitions.
- *
- * Locking: Caller holds connection->mutex.
- */
+ 
 static int _gb_connection_enable(struct gb_connection *connection, bool rx)
 {
 	int ret;
 
-	/* Handle ENABLED_TX -> ENABLED transitions. */
+	 
 	if (connection->state == GB_CONNECTION_STATE_ENABLED_TX) {
 		if (!(connection->handler && rx))
 			return 0;
@@ -715,7 +657,7 @@ err_control_disconnecting:
 	gb_connection_cancel_operations(connection, -ESHUTDOWN);
 	spin_unlock_irq(&connection->lock);
 
-	/* Transmit queue should already be empty. */
+	 
 	gb_connection_hd_cport_flush(connection);
 
 	gb_connection_control_disconnecting(connection);
@@ -838,7 +780,7 @@ void gb_connection_disable(struct gb_connection *connection)
 
 	connection->state = GB_CONNECTION_STATE_DISABLED;
 
-	/* control-connection tear down is deferred when mode switching */
+	 
 	if (!connection->mode_switch) {
 		gb_connection_svc_connection_destroy(connection);
 		gb_connection_hd_cport_clear(connection);
@@ -851,7 +793,7 @@ out_unlock:
 }
 EXPORT_SYMBOL_GPL(gb_connection_disable);
 
-/* Disable a connection without communicating with the remote end. */
+ 
 void gb_connection_disable_forced(struct gb_connection *connection)
 {
 	mutex_lock(&connection->mutex);
@@ -877,7 +819,7 @@ out_unlock:
 }
 EXPORT_SYMBOL_GPL(gb_connection_disable_forced);
 
-/* Caller must have disabled the connection before destroying it. */
+ 
 void gb_connection_destroy(struct gb_connection *connection)
 {
 	if (!connection)

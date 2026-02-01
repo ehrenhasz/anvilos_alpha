@@ -1,38 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*-*-linux-c-*-*/
 
-/*
-  Copyright (C) 2007,2008 Jonathan Woithe <jwoithe@just42.net>
-  Copyright (C) 2008 Peter Gruber <nokos@gmx.net>
-  Copyright (C) 2008 Tony Vroon <tony@linx.net>
-  Based on earlier work:
-    Copyright (C) 2003 Shane Spencer <shane@bogomip.com>
-    Adrian Yee <brewt-fujitsu@brewt.org>
+ 
 
-  Templated from msi-laptop.c and thinkpad_acpi.c which is copyright
-  by its respective authors.
+ 
 
- */
-
-/*
- * fujitsu-laptop.c - Fujitsu laptop support, providing access to additional
- * features made available on a range of Fujitsu laptops including the
- * P2xxx/P5xxx/S6xxx/S7xxx series.
- *
- * This driver implements a vendor-specific backlight control interface for
- * Fujitsu laptops and provides support for hotkeys present on certain Fujitsu
- * laptops.
- *
- * This driver has been tested on a Fujitsu Lifebook S6410, S7020 and
- * P8010.  It should work on most P-series and S-series Lifebooks, but
- * YMMV.
- *
- * The module parameter use_alt_lcd_levels switches between different ACPI
- * brightness controls which are used by different Fujitsu laptops.  In most
- * cases the correct method is automatically detected. "use_alt_lcd_levels=1"
- * is applicable for a Fujitsu Lifebook S6410 if autodetection fails.
- *
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -65,16 +36,16 @@
 
 #define ACPI_FUJITSU_NOTIFY_CODE	0x80
 
-/* FUNC interface - command values */
+ 
 #define FUNC_FLAGS			BIT(12)
 #define FUNC_LEDS			(BIT(12) | BIT(0))
 #define FUNC_BUTTONS			(BIT(12) | BIT(1))
 #define FUNC_BACKLIGHT			(BIT(12) | BIT(2))
 
-/* FUNC interface - responses */
+ 
 #define UNSUPPORTED_CMD			0x80000000
 
-/* FUNC interface - status flags */
+ 
 #define FLAG_RFKILL			BIT(5)
 #define FLAG_LID			BIT(8)
 #define FLAG_DOCK			BIT(9)
@@ -82,7 +53,7 @@
 #define FLAG_MICMUTE			BIT(29)
 #define FLAG_SOFTKEYS			(FLAG_RFKILL | FLAG_TOUCHPAD_TOGGLE | FLAG_MICMUTE)
 
-/* FUNC interface - LED control */
+ 
 #define FUNC_LED_OFF			BIT(0)
 #define FUNC_LED_ON			(BIT(0) | BIT(16) | BIT(17))
 #define LOGOLAMP_POWERON		BIT(13)
@@ -92,27 +63,27 @@
 #define ECO_LED				BIT(16)
 #define ECO_LED_ON			BIT(19)
 
-/* FUNC interface - backlight power control */
+ 
 #define BACKLIGHT_PARAM_POWER		BIT(2)
 #define BACKLIGHT_OFF			(BIT(0) | BIT(1))
 #define BACKLIGHT_ON			0
 
-/* Scancodes read from the GIRB register */
+ 
 #define KEY1_CODE			0x410
 #define KEY2_CODE			0x411
 #define KEY3_CODE			0x412
 #define KEY4_CODE			0x413
 #define KEY5_CODE			0x420
 
-/* Hotkey ringbuffer limits */
+ 
 #define MAX_HOTKEY_RINGBUFFER_SIZE	100
 #define RINGBUFFERSIZE			40
 
-/* Module parameters */
+ 
 static int use_alt_lcd_levels = -1;
 static bool disable_brightness_adjust;
 
-/* Device controlling the backlight and associated keys */
+ 
 struct fujitsu_bl {
 	struct input_dev *input;
 	char phys[32];
@@ -123,7 +94,7 @@ struct fujitsu_bl {
 
 static struct fujitsu_bl *fujitsu_bl;
 
-/* Device used to access hotkeys and other features on the laptop */
+ 
 struct fujitsu_laptop {
 	struct input_dev *input;
 	char phys[32];
@@ -136,7 +107,7 @@ struct fujitsu_laptop {
 
 static struct acpi_device *fext;
 
-/* Fujitsu ACPI interface function */
+ 
 
 static int call_fext_func(struct acpi_device *device,
 			  int func, int op, int feature, int state)
@@ -164,7 +135,7 @@ static int call_fext_func(struct acpi_device *device,
 	return value;
 }
 
-/* Hardware access for LCD brightness control */
+ 
 
 static int set_lcd_level(struct acpi_device *device, int level)
 {
@@ -239,7 +210,7 @@ static int get_max_brightness(struct acpi_device *device)
 	return priv->max_brightness;
 }
 
-/* Backlight device stuff */
+ 
 
 static int bl_get_brightness(struct backlight_device *b)
 {
@@ -329,7 +300,7 @@ static struct platform_driver fujitsu_pf_driver = {
 		   }
 };
 
-/* ACPI device for LCD brightness control */
+ 
 
 static const struct key_entry keymap_backlight[] = {
 	{ KE_KEY, true, { KEY_BRIGHTNESSUP } },
@@ -413,7 +384,7 @@ static int acpi_fujitsu_bl_add(struct acpi_device *device)
 	return fujitsu_backlight_register(device);
 }
 
-/* Brightness notify */
+ 
 
 static void acpi_fujitsu_bl_notify(struct acpi_device *device, u32 event)
 {
@@ -443,7 +414,7 @@ static void acpi_fujitsu_bl_notify(struct acpi_device *device, u32 event)
 	sparse_keymap_report_event(priv->input, oldb < newb, 1, true);
 }
 
-/* ACPI device for hotkey handling */
+ 
 
 static const struct key_entry keymap_default[] = {
 	{ KE_KEY, KEY1_CODE,            { KEY_PROG1 } },
@@ -451,7 +422,7 @@ static const struct key_entry keymap_default[] = {
 	{ KE_KEY, KEY3_CODE,            { KEY_PROG3 } },
 	{ KE_KEY, KEY4_CODE,            { KEY_PROG4 } },
 	{ KE_KEY, KEY5_CODE,            { KEY_RFKILL } },
-	/* Soft keys read from status flags */
+	 
 	{ KE_KEY, FLAG_RFKILL,          { KEY_RFKILL } },
 	{ KE_KEY, FLAG_TOUCHPAD_TOGGLE, { KEY_TOUCHPAD_TOGGLE } },
 	{ KE_KEY, FLAG_MICMUTE,         { KEY_MICMUTE } },
@@ -459,18 +430,18 @@ static const struct key_entry keymap_default[] = {
 };
 
 static const struct key_entry keymap_s64x0[] = {
-	{ KE_KEY, KEY1_CODE, { KEY_SCREENLOCK } },	/* "Lock" */
-	{ KE_KEY, KEY2_CODE, { KEY_HELP } },		/* "Mobility Center */
+	{ KE_KEY, KEY1_CODE, { KEY_SCREENLOCK } },	 
+	{ KE_KEY, KEY2_CODE, { KEY_HELP } },		 
 	{ KE_KEY, KEY3_CODE, { KEY_PROG3 } },
 	{ KE_KEY, KEY4_CODE, { KEY_PROG4 } },
 	{ KE_END, 0 }
 };
 
 static const struct key_entry keymap_p8010[] = {
-	{ KE_KEY, KEY1_CODE, { KEY_HELP } },		/* "Support" */
+	{ KE_KEY, KEY1_CODE, { KEY_HELP } },		 
 	{ KE_KEY, KEY2_CODE, { KEY_PROG2 } },
-	{ KE_KEY, KEY3_CODE, { KEY_SWITCHVIDEOMODE } },	/* "Presentation" */
-	{ KE_KEY, KEY4_CODE, { KEY_WWW } },		/* "WWW" */
+	{ KE_KEY, KEY3_CODE, { KEY_SWITCHVIDEOMODE } },	 
+	{ KE_KEY, KEY4_CODE, { KEY_WWW } },		 
 	{ KE_END, 0 }
 };
 
@@ -723,15 +694,7 @@ static int acpi_fujitsu_laptop_leds_register(struct acpi_device *device)
 			return ret;
 	}
 
-	/*
-	 * Some Fujitsu laptops have a radio toggle button in place of a slide
-	 * switch and all such machines appear to also have an RF LED.  Based on
-	 * comparing DSDT tables of four Fujitsu Lifebook models (E744, E751,
-	 * S7110, S8420; the first one has a radio toggle button, the other
-	 * three have slide switches), bit 17 of flags_supported (the value
-	 * returned by method S000 of ACPI device FUJ02E3) seems to indicate
-	 * whether given model has a radio toggle button.
-	 */
+	 
 	if (priv->flags_supported & BIT(17)) {
 		led = devm_kzalloc(&device->dev, sizeof(*led), GFP_KERNEL);
 		if (!led)
@@ -746,11 +709,7 @@ static int acpi_fujitsu_laptop_leds_register(struct acpi_device *device)
 			return ret;
 	}
 
-	/* Support for eco led is not always signaled in bit corresponding
-	 * to the bit used to control the led. According to the DSDT table,
-	 * bit 14 seems to indicate presence of said led as well.
-	 * Confirm by testing the status.
-	 */
+	 
 	if ((call_fext_func(device, FUNC_LEDS, 0x0, 0x0, 0x0) & BIT(14)) &&
 	    (call_fext_func(device,
 			    FUNC_LEDS, 0x2, ECO_LED, 0x0) != UNSUPPORTED_CMD)) {
@@ -785,7 +744,7 @@ static int acpi_fujitsu_laptop_add(struct acpi_device *device)
 	strcpy(acpi_device_class(device), ACPI_FUJITSU_CLASS);
 	device->driver_data = priv;
 
-	/* kfifo */
+	 
 	spin_lock_init(&priv->fifo_lock);
 	ret = kfifo_alloc(&priv->fifo, RINGBUFFERSIZE * sizeof(int),
 			  GFP_KERNEL);
@@ -797,15 +756,14 @@ static int acpi_fujitsu_laptop_add(struct acpi_device *device)
 
 	while (call_fext_func(device, FUNC_BUTTONS, 0x1, 0x0, 0x0) != 0 &&
 	       i++ < MAX_HOTKEY_RINGBUFFER_SIZE)
-		; /* No action, result is discarded */
+		;  
 	acpi_handle_debug(device->handle, "Discarded %i ringbuffer entries\n",
 			  i);
 
 	priv->flags_supported = call_fext_func(device, FUNC_FLAGS, 0x0, 0x0,
 					       0x0);
 
-	/* Make sure our bitmask of supported functions is cleared if the
-	   RFKILL function block is not implemented, like on the S7020. */
+	 
 	if (priv->flags_supported == UNSUPPORTED_CMD)
 		priv->flags_supported = 0;
 
@@ -813,11 +771,11 @@ static int acpi_fujitsu_laptop_add(struct acpi_device *device)
 		priv->flags_state = call_fext_func(device, FUNC_FLAGS, 0x4, 0x0,
 						   0x0);
 
-	/* Suspect this is a keymap of the application panel, print it */
+	 
 	acpi_handle_info(device->handle, "BTNI: [0x%x]\n",
 			 call_fext_func(device, FUNC_BUTTONS, 0x0, 0x0, 0x0));
 
-	/* Sync backlight power status */
+	 
 	if (fujitsu_bl && fujitsu_bl->bl_device &&
 	    acpi_video_get_backlight_type() == acpi_backlight_vendor) {
 		if (call_fext_func(fext, FUNC_BACKLIGHT, 0x2,
@@ -920,12 +878,7 @@ static void acpi_fujitsu_laptop_notify(struct acpi_device *device, u32 event)
 					 "Unknown GIRB result [%x]\n", irb);
 	}
 
-	/*
-	 * First seen on the Skylake-based Lifebook E736/E746/E756), the
-	 * touchpad toggle hotkey (Fn+F4) is handled in software. Other models
-	 * have since added additional "soft keys". These are reported in the
-	 * status flags queried using FUNC_FLAGS.
-	 */
+	 
 	if (priv->flags_supported & (FLAG_SOFTKEYS)) {
 		flags = call_fext_func(device, FUNC_FLAGS, 0x1, 0x0, 0x0);
 		flags &= (FLAG_SOFTKEYS);
@@ -934,7 +887,7 @@ static void acpi_fujitsu_laptop_notify(struct acpi_device *device, u32 event)
 	}
 }
 
-/* Initialization */
+ 
 
 static const struct acpi_device_id fujitsu_bl_device_ids[] = {
 	{ACPI_FUJITSU_BL_HID, 0},
@@ -982,13 +935,13 @@ static int __init fujitsu_init(void)
 	if (ret)
 		return ret;
 
-	/* Register platform stuff */
+	 
 
 	ret = platform_driver_register(&fujitsu_pf_driver);
 	if (ret)
 		goto err_unregister_acpi;
 
-	/* Register laptop driver */
+	 
 
 	ret = acpi_bus_register_driver(&acpi_fujitsu_laptop_driver);
 	if (ret)

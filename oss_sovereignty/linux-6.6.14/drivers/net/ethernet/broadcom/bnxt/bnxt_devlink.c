@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2017 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
@@ -189,7 +182,7 @@ static int bnxt_fw_dump(struct devlink_health_reporter *reporter,
 	void *data;
 	int rc;
 
-	/* TODO: no firmware dump support in devlink_health_report() context */
+	 
 	if (priv_ctx)
 		return -EOPNOTSUPP;
 
@@ -368,7 +361,7 @@ bnxt_dl_livepatch_report_err(struct bnxt *bp, struct netlink_ext_ack *extack,
 	}
 }
 
-/* Live patch status in NVM */
+ 
 #define BNXT_LIVEPATCH_NOT_INSTALLED	0
 #define BNXT_LIVEPATCH_INSTALLED	FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_INSTALL
 #define BNXT_LIVEPATCH_REMOVED		FW_LIVEPATCH_QUERY_RESP_STATUS_FLAGS_ACTIVE
@@ -666,7 +659,7 @@ static const struct devlink_ops bnxt_dl_ops = {
 #ifdef CONFIG_BNXT_SRIOV
 	.eswitch_mode_set = bnxt_dl_eswitch_mode_set,
 	.eswitch_mode_get = bnxt_dl_eswitch_mode_get,
-#endif /* CONFIG_BNXT_SRIOV */
+#endif  
 	.info_get	  = bnxt_dl_info_get,
 	.flash_update	  = bnxt_dl_flash_update,
 	.reload_actions	  = BIT(DEVLINK_RELOAD_ACTION_DRIVER_REINIT) |
@@ -762,12 +755,12 @@ static int bnxt_hwrm_get_nvm_cfg_ver(struct bnxt *bp, u32 *nvm_cfg_ver)
 		goto exit;
 	}
 
-	/* earlier devices present as an array of raw bytes */
+	 
 	if (!BNXT_CHIP_P5(bp)) {
 		dim = 0;
 		i = 0;
-		bits *= 3;  /* array of 3 version components */
-		bytes *= 4; /* copy whole word */
+		bits *= 3;   
+		bytes *= 4;  
 	}
 
 	hwrm_req_hold(bp, req);
@@ -1048,7 +1041,7 @@ static int bnxt_hwrm_nvm_req(struct bnxt *bp, u32 param_id, void *msg,
 	dma_addr_t data_dma_addr;
 	int idx = 0, rc, i;
 
-	/* Get/Set NVM CFG parameter is supported only on PFs */
+	 
 	if (BNXT_VF(bp)) {
 		hwrm_req_drop(bp, req);
 		return -EPERM;
@@ -1211,7 +1204,7 @@ static const struct devlink_param bnxt_dl_params[] = {
 			     BIT(DEVLINK_PARAM_CMODE_PERMANENT),
 			     bnxt_dl_nvm_param_get, bnxt_dl_nvm_param_set,
 			     NULL),
-	/* keep REMOTE_DEV_RESET last, it is excluded based on caps */
+	 
 	DEVLINK_PARAM_GENERIC(ENABLE_REMOTE_DEV_RESET,
 			      BIT(DEVLINK_PARAM_CMODE_RUNTIME),
 			      bnxt_remote_dev_reset_get,
@@ -1273,7 +1266,7 @@ int bnxt_dl_register(struct bnxt *bp)
 	bp_dl->bp = bp;
 	bnxt_dl_set_remote_reset(dl, true);
 
-	/* Add switchdev eswitch mode setting, if SRIOV supported */
+	 
 	if (pci_find_ext_capability(bp->pdev, PCI_EXT_CAP_ID_SRIOV) &&
 	    bp->hwrm_spec_code > 0x10803)
 		bp->eswitch_mode = DEVLINK_ESWITCH_MODE_LEGACY;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <drm/drm_drv.h>
 #include <drm/drm_file.h>
@@ -562,7 +560,7 @@ int lsdc_ttm_init(struct lsdc_device *ldev)
 
 	drm_info(ddev, "VRAM: %lu pages ready\n", num_vram_pages);
 
-	/* 512M is far enough for us now */
+	 
 	ldev->gtt_size = 512 << 20;
 
 	num_gtt_pages = ldev->gtt_size >> PAGE_SHIFT;

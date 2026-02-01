@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale Vybrid vf610 DAC driver
- *
- * Copyright 2016 Toradex AG
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -126,12 +122,8 @@ static int vf610_read_raw(struct iio_dev *indio_dev,
 		*val = VF610_DAC_DAT0(readl(info->regs));
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/*
-		 * DACRFS is always 1 for valid reference and typical
-		 * reference voltage as per Vybrid datasheet is 3.3V
-		 * from section 9.1.2.1 of Vybrid datasheet
-		 */
-		*val = 3300 /* mV */;
+		 
+		*val = 3300  ;
 		*val2 = 12;
 		return IIO_VAL_FRACTIONAL_LOG2;
 
@@ -166,7 +158,7 @@ static const struct iio_info vf610_dac_iio_info = {
 
 static const struct of_device_id vf610_dac_match[] = {
 	{ .compatible = "fsl,vf610-dac", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, vf610_dac_match);
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <stdbool.h>
@@ -61,7 +61,7 @@ void test_module_attach(void)
 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	ASSERT_OK(trigger_module_test_read(READ_SZ), "trigger_read");
 	ASSERT_OK(trigger_module_test_write(WRITE_SZ), "trigger_write");
 
@@ -84,7 +84,7 @@ void test_module_attach(void)
 
 	test_module_attach__detach(skel);
 
-	/* attach fentry/fexit and make sure it get's module reference */
+	 
 	link = bpf_program__attach(skel->progs.handle_fentry);
 	if (!ASSERT_OK_PTR(link, "attach_fentry"))
 		goto cleanup;

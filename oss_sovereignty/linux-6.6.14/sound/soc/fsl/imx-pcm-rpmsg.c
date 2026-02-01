@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017-2021 NXP
+
+
 
 #include <linux/dma-mapping.h>
 #include <linux/slab.h>
@@ -59,13 +59,13 @@ static int imx_rpmsg_pcm_send_message(struct rpmsg_msg *msg,
 		return ret;
 	}
 
-	/* No receive msg for TYPE_C command */
+	 
 	if (msg->s_msg.header.type == MSG_TYPE_C) {
 		mutex_unlock(&info->msg_lock);
 		return 0;
 	}
 
-	/* wait response from rpmsg */
+	 
 	ret = wait_for_completion_timeout(&info->cmd_complete,
 					  msecs_to_jiffies(RPMSG_TIMEOUT));
 	if (!ret) {
@@ -79,13 +79,7 @@ static int imx_rpmsg_pcm_send_message(struct rpmsg_msg *msg,
 	memcpy(&info->msg[msg->r_msg.header.cmd].r_msg,
 	       &msg->r_msg, sizeof(struct rpmsg_r_msg));
 
-	/*
-	 * Reset the buffer pointer to be zero, actully we have
-	 * set the buffer pointer to be zero in imx_rpmsg_terminate_all
-	 * But if there is timer task queued in queue, after it is
-	 * executed the buffer pointer will be changed, so need to
-	 * reset it again with TERMINATE command.
-	 */
+	 
 	switch (msg->s_msg.header.cmd) {
 	case TX_TERMINATE:
 		info->msg[TX_POINTER].r_msg.param.buffer_offset = 0;
@@ -112,10 +106,7 @@ static int imx_rpmsg_insert_workqueue(struct snd_pcm_substream *substream,
 	unsigned long flags;
 	int ret = 0;
 
-	/*
-	 * Queue the work to workqueue.
-	 * If the queue is full, drop the message.
-	 */
+	 
 	spin_lock_irqsave(&info->wq_lock, flags);
 	if (info->work_write_index != info->work_read_index) {
 		int index = info->work_write_index;
@@ -241,7 +232,7 @@ static int imx_rpmsg_pcm_open(struct snd_soc_component *component,
 		msg = &info->msg[TX_OPEN];
 		msg->s_msg.header.cmd = TX_OPEN;
 
-		/* reinitialize buffer counter*/
+		 
 		cmd = TX_PERIOD_DONE + MSG_TYPE_A_NUM;
 		info->msg[cmd].s_msg.param.buffer_tail = 0;
 		info->msg[cmd].r_msg.param.buffer_tail = 0;
@@ -251,7 +242,7 @@ static int imx_rpmsg_pcm_open(struct snd_soc_component *component,
 		msg = &info->msg[RX_OPEN];
 		msg->s_msg.header.cmd = RX_OPEN;
 
-		/* reinitialize buffer counter*/
+		 
 		cmd = RX_PERIOD_DONE + MSG_TYPE_A_NUM;
 		info->msg[cmd].s_msg.param.buffer_tail = 0;
 		info->msg[cmd].r_msg.param.buffer_tail = 0;
@@ -273,7 +264,7 @@ static int imx_rpmsg_pcm_open(struct snd_soc_component *component,
 
 	info->msg_drop_count[substream->stream] = 0;
 
-	/* Create timer*/
+	 
 	info->stream_timer[substream->stream].info = info;
 	info->stream_timer[substream->stream].substream = substream;
 	timer_setup(&info->stream_timer[substream->stream].timer,
@@ -288,7 +279,7 @@ static int imx_rpmsg_pcm_close(struct snd_soc_component *component,
 	struct rpmsg_info *info = dev_get_drvdata(component->dev);
 	struct rpmsg_msg *msg;
 
-	/* Flush work in workqueue to make TX_CLOSE is the last message */
+	 
 	flush_workqueue(info->rpmsg_wq);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
@@ -320,17 +311,11 @@ static int imx_rpmsg_pcm_prepare(struct snd_soc_component *component,
 	struct snd_soc_dai *cpu_dai = asoc_rtd_to_cpu(rtd, 0);
 	struct fsl_rpmsg *rpmsg = dev_get_drvdata(cpu_dai->dev);
 
-	/*
-	 * NON-MMAP mode, NONBLOCK, Version 2, enable lpa in dts
-	 * four conditions to determine the lpa is enabled.
-	 */
+	 
 	if ((runtime->access == SNDRV_PCM_ACCESS_RW_INTERLEAVED ||
 	     runtime->access == SNDRV_PCM_ACCESS_RW_NONINTERLEAVED) &&
 	     rpmsg->enable_lpa) {
-		/*
-		 * Ignore suspend operation in low power mode
-		 * M core will continue playback music on A core suspend.
-		 */
+		 
 		rtd->dai_link->ignore_suspend = 1;
 		rpmsg->force_lpa = 1;
 	} else {
@@ -361,7 +346,7 @@ static int imx_rpmsg_prepare_and_submit(struct snd_soc_component *component,
 		msg->s_msg.header.cmd = RX_BUFFER;
 	}
 
-	/* Send buffer address and buffer size */
+	 
 	msg->s_msg.param.buffer_addr = substream->runtime->dma_addr;
 	msg->s_msg.param.buffer_size = snd_pcm_lib_buffer_bytes(substream);
 	msg->s_msg.param.period_size = snd_pcm_lib_period_bytes(substream);
@@ -437,7 +422,7 @@ static int imx_rpmsg_terminate_all(struct snd_soc_component *component,
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		msg = &info->msg[TX_TERMINATE];
 		msg->s_msg.header.cmd = TX_TERMINATE;
-		/* Clear buffer count*/
+		 
 		cmd = TX_PERIOD_DONE + MSG_TYPE_A_NUM;
 		info->msg[cmd].s_msg.param.buffer_tail = 0;
 		info->msg[cmd].r_msg.param.buffer_tail = 0;
@@ -445,7 +430,7 @@ static int imx_rpmsg_terminate_all(struct snd_soc_component *component,
 	} else {
 		msg = &info->msg[RX_TERMINATE];
 		msg->s_msg.header.cmd = RX_TERMINATE;
-		/* Clear buffer count*/
+		 
 		cmd = RX_PERIOD_DONE + MSG_TYPE_A_NUM;
 		info->msg[cmd].s_msg.param.buffer_tail = 0;
 		info->msg[cmd].r_msg.param.buffer_tail = 0;
@@ -504,13 +489,7 @@ static int imx_rpmsg_pcm_trigger(struct snd_soc_component *component,
 	return 0;
 }
 
-/*
- * imx_rpmsg_pcm_ack
- *
- * Send the period index to M core through rpmsg, but not send
- * all the period index to M core, reduce some unnessesary msg
- * to reduce the pressure of rpmsg bandwidth.
- */
+ 
 static int imx_rpmsg_pcm_ack(struct snd_soc_component *component,
 			     struct snd_pcm_substream *substream)
 {
@@ -544,7 +523,7 @@ static int imx_rpmsg_pcm_ack(struct snd_soc_component *component,
 		       snd_pcm_lib_buffer_bytes(substream));
 	buffer_tail = buffer_tail / snd_pcm_lib_period_bytes(substream);
 
-	/* There is update for period index */
+	 
 	if (buffer_tail != msg->s_msg.param.buffer_tail) {
 		written_num = buffer_tail - msg->s_msg.param.buffer_tail;
 		if (written_num < 0)
@@ -552,7 +531,7 @@ static int imx_rpmsg_pcm_ack(struct snd_soc_component *component,
 
 		msg->s_msg.param.buffer_tail = buffer_tail;
 
-		/* The notification message is updated to latest */
+		 
 		spin_lock_irqsave(&info->lock[substream->stream], flags);
 		memcpy(&info->notify[substream->stream], msg,
 		       sizeof(struct rpmsg_s_msg));
@@ -565,18 +544,7 @@ static int imx_rpmsg_pcm_ack(struct snd_soc_component *component,
 			avail = snd_pcm_capture_hw_avail(runtime);
 
 		timer = &info->stream_timer[substream->stream].timer;
-		/*
-		 * If the data in the buffer is less than one period before
-		 * this fill, which means the data may not enough on M
-		 * core side, we need to send message immediately to let
-		 * M core know the pointer is updated.
-		 * if there is more than one period data in the buffer before
-		 * this fill, which means the data is enough on M core side,
-		 * we can delay one period (using timer) to send the message
-		 * for reduce the message number in workqueue, because the
-		 * pointer may be updated by ack function later, we can
-		 * send latest pointer to M core side.
-		 */
+		 
 		if ((avail - written_num * period_size) <= period_size) {
 			imx_rpmsg_insert_workqueue(substream, msg, info);
 		} else if (rpmsg->force_lpa && !timer_pending(timer)) {
@@ -630,12 +598,7 @@ static void imx_rpmsg_pcm_work(struct work_struct *work)
 	work_of_rpmsg = container_of(work, struct work_of_rpmsg, work);
 	info = work_of_rpmsg->info;
 
-	/*
-	 * Every work in the work queue, first we check if there
-	 * is update for period is filled, because there may be not
-	 * enough data in M core side, need to let M core know
-	 * data is updated immediately.
-	 */
+	 
 	spin_lock_irqsave(&info->lock[TX], flags);
 	if (info->notify_updated[TX]) {
 		memcpy(&msg, &info->notify[TX], sizeof(struct rpmsg_s_msg));
@@ -656,7 +619,7 @@ static void imx_rpmsg_pcm_work(struct work_struct *work)
 		spin_unlock_irqrestore(&info->lock[RX], flags);
 	}
 
-	/* Skip the notification message for it has been processed above */
+	 
 	if (work_of_rpmsg->msg.s_msg.header.type == MSG_TYPE_C &&
 	    (work_of_rpmsg->msg.s_msg.header.cmd == TX_PERIOD_DONE ||
 	     work_of_rpmsg->msg.s_msg.header.cmd == RX_PERIOD_DONE))
@@ -665,7 +628,7 @@ static void imx_rpmsg_pcm_work(struct work_struct *work)
 	if (!is_notification)
 		info->send_message(&work_of_rpmsg->msg, info);
 
-	/* update read index */
+	 
 	spin_lock_irqsave(&info->wq_lock, flags);
 	info->work_read_index++;
 	info->work_read_index %= WORK_MAX_NUM;
@@ -686,7 +649,7 @@ static int imx_rpmsg_pcm_probe(struct platform_device *pdev)
 
 	info->rpdev = container_of(pdev->dev.parent, struct rpmsg_device, dev);
 	info->dev = &pdev->dev;
-	/* Setup work queue */
+	 
 	info->rpmsg_wq = alloc_ordered_workqueue(info->rpdev->id.name,
 						 WQ_HIGHPRI |
 						 WQ_UNBOUND |
@@ -696,7 +659,7 @@ static int imx_rpmsg_pcm_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	/* Write index initialize 1, make it differ with the read index */
+	 
 	info->work_write_index = 1;
 	info->send_message = imx_rpmsg_pcm_send_message;
 
@@ -705,7 +668,7 @@ static int imx_rpmsg_pcm_probe(struct platform_device *pdev)
 		info->work_list[i].info = info;
 	}
 
-	/* Initialize msg */
+	 
 	for (i = 0; i < MSG_MAX_NUM; i++) {
 		info->msg[i].s_msg.header.cate  = IMX_RPMSG_AUDIO;
 		info->msg[i].s_msg.header.major = IMX_RMPSG_MAJOR;
@@ -732,7 +695,7 @@ static int imx_rpmsg_pcm_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
-	/* platform component name is used by machine driver to link with */
+	 
 	component->name = info->rpdev->id.name;
 
 #ifdef CONFIG_DEBUG_FS
@@ -812,7 +775,7 @@ static int imx_rpmsg_pcm_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct dev_pm_ops imx_rpmsg_pcm_pm_ops = {
 	SET_RUNTIME_PM_OPS(imx_rpmsg_pcm_runtime_suspend,

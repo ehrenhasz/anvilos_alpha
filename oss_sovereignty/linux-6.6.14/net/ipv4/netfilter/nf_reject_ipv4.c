@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <net/ip.h>
@@ -87,11 +85,11 @@ struct sk_buff *nf_reject_skb_v4_unreach(struct net *net,
 	if (!nf_reject_iphdr_validate(oldskb))
 		return NULL;
 
-	/* IP header checks: fragment. */
+	 
 	if (ip_hdr(oldskb)->frag_off & htons(IP_OFFSET))
 		return NULL;
 
-	/* RFC says return as much as we can without exceeding 576 bytes. */
+	 
 	len = min_t(unsigned int, 536, oldskb->len);
 
 	if (!pskb_may_pull(oldskb, len))
@@ -141,7 +139,7 @@ const struct tcphdr *nf_reject_ip_tcphdr_get(struct sk_buff *oldskb,
 {
 	const struct tcphdr *oth;
 
-	/* IP header checks: fragment. */
+	 
 	if (ip_hdr(oldskb)->frag_off & htons(IP_OFFSET))
 		return NULL;
 
@@ -153,11 +151,11 @@ const struct tcphdr *nf_reject_ip_tcphdr_get(struct sk_buff *oldskb,
 	if (oth == NULL)
 		return NULL;
 
-	/* No RST for RST. */
+	 
 	if (oth->rst)
 		return NULL;
 
-	/* Check checksum */
+	 
 	if (nf_ip_checksum(oldskb, hook, ip_hdrlen(oldskb), IPPROTO_TCP))
 		return NULL;
 
@@ -235,7 +233,7 @@ static int nf_reject_fill_skb_dst(struct sk_buff *skb_in)
 	return 0;
 }
 
-/* Send RST reply */
+ 
 void nf_send_reset(struct net *net, struct sock *sk, struct sk_buff *oldskb,
 		   int hook)
 {
@@ -260,7 +258,7 @@ void nf_send_reset(struct net *net, struct sock *sk, struct sk_buff *oldskb,
 	if (!nskb)
 		return;
 
-	/* ip_route_me_harder expects skb->dst to be set */
+	 
 	skb_dst_set_noref(nskb, skb_dst(oldskb));
 
 	nskb->mark = IP4_REPLY_MARK(net, oldskb->mark);
@@ -274,7 +272,7 @@ void nf_send_reset(struct net *net, struct sock *sk, struct sk_buff *oldskb,
 
 	niph = ip_hdr(nskb);
 
-	/* "Never happens" */
+	 
 	if (nskb->len > dst_mtu(skb_dst(nskb)))
 		goto free_nskb;
 
@@ -282,12 +280,7 @@ void nf_send_reset(struct net *net, struct sock *sk, struct sk_buff *oldskb,
 	nf_ct_set_closing(skb_nfct(oldskb));
 
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-	/* If we use ip_local_out for bridged traffic, the MAC source on
-	 * the RST will be ours, instead of the destination's.  This confuses
-	 * some routers/firewalls, and they drop the packet.  So we need to
-	 * build the eth header using the original destination's MAC as the
-	 * source, and send the RST packet directly.
-	 */
+	 
 	if (nf_bridge_info_exists(oldskb)) {
 		struct ethhdr *oeth = eth_hdr(oldskb);
 		struct net_device *br_indev;

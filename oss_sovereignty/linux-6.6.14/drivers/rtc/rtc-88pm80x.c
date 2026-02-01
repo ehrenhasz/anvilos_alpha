@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Real Time Clock driver for Marvell 88PM80x PMIC
- *
- * Copyright (c) 2012 Marvell International Ltd.
- *  Wenzeng Chen<wzch@marvell.com>
- *  Qiao Zhou <zhouqiao@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -69,10 +63,7 @@ static int pm80x_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 	return 0;
 }
 
-/*
- * Calculate the next alarm time given the requested alarm time mask
- * and the current time.
- */
+ 
 static void rtc_next_alarm_time(struct rtc_time *next, struct rtc_time *now,
 				struct rtc_time *alrm)
 {
@@ -90,7 +81,7 @@ static void rtc_next_alarm_time(struct rtc_time *next, struct rtc_time *now,
 	next_time = rtc_tm_to_time64(next);
 
 	if (next_time < now_time) {
-		/* Advance one day */
+		 
 		next_time += 60 * 60 * 24;
 		rtc_time64_to_tm(next_time, next);
 	}
@@ -106,7 +97,7 @@ static int pm80x_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		(buf[1] << 8) | buf[0];
 	dev_dbg(info->dev, "%x-%x-%x-%x\n", buf[0], buf[1], buf[2], buf[3]);
 
-	/* load 32-bit read-only counter */
+	 
 	regmap_raw_read(info->map, PM800_RTC_COUNTER1, buf, 4);
 	data = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
 		(buf[1] << 8) | buf[0];
@@ -125,7 +116,7 @@ static int pm80x_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	ticks = rtc_tm_to_time64(tm);
 
-	/* load 32-bit read-only counter */
+	 
 	regmap_raw_read(info->map, PM800_RTC_COUNTER1, buf, 4);
 	data = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
 		(buf[1] << 8) | buf[0];
@@ -182,7 +173,7 @@ static int pm80x_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 		(buf[1] << 8) | buf[0];
 	dev_dbg(info->dev, "%x-%x-%x-%x\n", buf[0], buf[1], buf[2], buf[3]);
 
-	/* load 32-bit read-only counter */
+	 
 	regmap_raw_read(info->map, PM800_RTC_COUNTER1, buf, 4);
 	data = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
 		(buf[1] << 8) | buf[0];
@@ -193,7 +184,7 @@ static int pm80x_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	rtc_time64_to_tm(ticks, &now_tm);
 	dev_dbg(info->dev, "%s, now time : %lu\n", __func__, ticks);
 	rtc_next_alarm_time(&alarm_tm, &now_tm, &alrm->time);
-	/* get new ticks for alarm in 24 hours */
+	 
 	ticks = rtc_tm_to_time64(&alarm_tm);
 	dev_dbg(info->dev, "%s, alarm time: %lu\n", __func__, ticks);
 	data = ticks - base;
@@ -298,14 +289,11 @@ static int pm80x_rtc_probe(struct platform_device *pdev)
 	if (ret)
 		goto out_rtc;
 
-	/*
-	 * enable internal XO instead of internal 3.25MHz clock since it can
-	 * free running in PMIC power-down state.
-	 */
+	 
 	regmap_update_bits(info->map, PM800_RTC_CONTROL, PM800_RTC1_USE_XO,
 			   PM800_RTC1_USE_XO);
 
-	/* remember whether this power up is caused by PMIC RTC or not */
+	 
 	info->rtc_dev->dev.platform_data = &pdata->rtc_wakeup;
 
 	device_init_wakeup(&pdev->dev, 1);

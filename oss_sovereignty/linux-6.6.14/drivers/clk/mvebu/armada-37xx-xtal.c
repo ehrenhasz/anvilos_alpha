@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Armada 37xx SoC xtal clocks
- *
- * Copyright (C) 2016 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- *
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>

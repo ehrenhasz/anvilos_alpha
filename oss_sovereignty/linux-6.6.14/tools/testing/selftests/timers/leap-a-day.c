@@ -1,41 +1,4 @@
-/* Leap second stress test
- *              by: John Stultz (john.stultz@linaro.org)
- *              (C) Copyright IBM 2012
- *              (C) Copyright 2013, 2015 Linaro Limited
- *              Licensed under the GPLv2
- *
- *  This test signals the kernel to insert a leap second
- *  every day at midnight GMT. This allows for stressing the
- *  kernel's leap-second behavior, as well as how well applications
- *  handle the leap-second discontinuity.
- *
- *  Usage: leap-a-day [-s] [-i <num>]
- *
- *  Options:
- *	-s:	Each iteration, set the date to 10 seconds before midnight GMT.
- *		This speeds up the number of leapsecond transitions tested,
- *		but because it calls settimeofday frequently, advancing the
- *		time by 24 hours every ~16 seconds, it may cause application
- *		disruption.
- *
- *	-i:	Number of iterations to run (default: infinite)
- *
- *  Other notes: Disabling NTP prior to running this is advised, as the two
- *		 may conflict in their commands to the kernel.
- *
- *  To build:
- *	$ gcc leap-a-day.c -o leap-a-day -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 
 
 
@@ -56,7 +19,7 @@
 time_t next_leap;
 int error_found;
 
-/* returns 1 if a <= b, 0 otherwise */
+ 
 static inline int in_order(struct timespec a, struct timespec b)
 {
 	if (a.tv_sec < b.tv_sec)
@@ -91,28 +54,23 @@ char *time_state_str(int state)
 	return "ERROR";
 }
 
-/* clear NTP time_status & time_state */
+ 
 int clear_time_state(void)
 {
 	struct timex tx;
 	int ret;
 
-	/*
-	 * We have to call adjtime twice here, as kernels
-	 * prior to 6b1859dba01c7 (included in 3.5 and
-	 * -stable), had an issue with the state machine
-	 * and wouldn't clear the STA_INS/DEL flag directly.
-	 */
+	 
 	tx.modes = ADJ_STATUS;
 	tx.status = STA_PLL;
 	ret = adjtimex(&tx);
 
-	/* Clear maxerror, as it can cause UNSYNC to be set */
+	 
 	tx.modes = ADJ_MAXERROR;
 	tx.maxerror = 0;
 	ret = adjtimex(&tx);
 
-	/* Clear the status */
+	 
 	tx.modes = ADJ_STATUS;
 	tx.status = 0;
 	ret = adjtimex(&tx);
@@ -120,7 +78,7 @@ int clear_time_state(void)
 	return ret;
 }
 
-/* Make sure we cleanup on ctrl-c */
+ 
 void handler(int unused)
 {
 	clear_time_state();
@@ -156,7 +114,7 @@ void sigalarm(int signo)
 }
 
 
-/* Test for known hrtimer failure */
+ 
 void test_hrtimer_failure(void)
 {
 	struct timespec now, target;
@@ -185,7 +143,7 @@ int main(int argc, char **argv)
 	int iterations = 10;
 	int opt;
 
-	/* Process arguments */
+	 
 	while ((opt = getopt(argc, argv, "sti:")) != -1) {
 		switch (opt) {
 		case 'w':
@@ -208,7 +166,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Make sure TAI support is present if -t was used */
+	 
 	if (tai_time) {
 		struct timespec ts;
 
@@ -221,7 +179,7 @@ int main(int argc, char **argv)
 	signal(SIGINT, handler);
 	signal(SIGKILL, handler);
 
-	/* Set up timer signal handler: */
+	 
 	sigfillset(&act.sa_mask);
 	act.sa_flags = 0;
 	act.sa_handler = sigalarm;
@@ -239,10 +197,10 @@ int main(int argc, char **argv)
 		struct timex tx;
 		time_t now;
 
-		/* Get the current time */
+		 
 		clock_gettime(CLOCK_REALTIME, &ts);
 
-		/* Calculate the next possible leap second 23:59:60 GMT */
+		 
 		next_leap = ts.tv_sec;
 		next_leap += 86400 - (next_leap % 86400);
 
@@ -255,10 +213,10 @@ int main(int argc, char **argv)
 			printf("Setting time to %s", ctime(&tv.tv_sec));
 		}
 
-		/* Reset NTP time state */
+		 
 		clear_time_state();
 
-		/* Set the leap second insert flag */
+		 
 		tx.modes = ADJ_STATUS;
 		if (insert)
 			tx.status = STA_INS;
@@ -271,7 +229,7 @@ int main(int argc, char **argv)
 			return ksft_exit_fail();
 		}
 
-		/* Validate STA_INS was set */
+		 
 		tx.modes = 0;
 		ret = adjtimex(&tx);
 		if (tx.status != STA_INS && tx.status != STA_DEL) {
@@ -287,7 +245,7 @@ int main(int argc, char **argv)
 
 		printf("Scheduling leap second for %s", ctime(&next_leap));
 
-		/* Set up timer */
+		 
 		printf("Setting timer for %ld -  %s", next_leap, ctime(&next_leap));
 		memset(&se, 0, sizeof(se));
 		se.sigev_notify = SIGEV_SIGNAL;
@@ -303,7 +261,7 @@ int main(int argc, char **argv)
 		its1.it_interval.tv_nsec = 0;
 		timer_settime(tm1, TIMER_ABSTIME, &its1, NULL);
 
-		/* Wake up 3 seconds before leap */
+		 
 		ts.tv_sec = next_leap - 3;
 		ts.tv_nsec = 0;
 
@@ -311,7 +269,7 @@ int main(int argc, char **argv)
 		while (clock_nanosleep(CLOCK_REALTIME, TIMER_ABSTIME, &ts, NULL))
 			printf("Something woke us up, returning to sleep\n");
 
-		/* Validate STA_INS is still set */
+		 
 		tx.modes = 0;
 		ret = adjtimex(&tx);
 		if (tx.status != STA_INS && tx.status != STA_DEL) {
@@ -324,7 +282,7 @@ int main(int argc, char **argv)
 			ret = adjtimex(&tx);
 		}
 
-		/* Check adjtimex output every half second */
+		 
 		now = tx.time.tv_sec;
 		while (now < next_leap + 2) {
 			char buf[26];
@@ -342,7 +300,7 @@ int main(int argc, char **argv)
 						time_state_str(ret));
 			} else {
 				ctime_r(&tx.time.tv_sec, buf);
-				buf[strlen(buf)-1] = 0; /*remove trailing\n */
+				buf[strlen(buf)-1] = 0;  
 
 				printf("%s + %6ld us (%i)\t%s\n",
 						buf,
@@ -351,15 +309,15 @@ int main(int argc, char **argv)
 						time_state_str(ret));
 			}
 			now = tx.time.tv_sec;
-			/* Sleep for another half second */
+			 
 			ts.tv_sec = 0;
 			ts.tv_nsec = NSEC_PER_SEC / 2;
 			clock_nanosleep(CLOCK_MONOTONIC, 0, &ts, NULL);
 		}
-		/* Switch to using other mode */
+		 
 		insert = !insert;
 
-		/* Note if kernel has known hrtimer failure */
+		 
 		test_hrtimer_failure();
 
 		printf("Leap complete\n");

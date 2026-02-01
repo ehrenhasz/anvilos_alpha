@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Unisoc Inc.
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/dma-mapping.h>
@@ -54,7 +52,7 @@ static struct drm_driver sprd_drm_drv = {
 	.driver_features	= DRIVER_GEM | DRIVER_MODESET | DRIVER_ATOMIC,
 	.fops			= &sprd_drm_fops,
 
-	/* GEM Operations */
+	 
 	DRM_GEM_DMA_DRIVER_OPS,
 
 	.name			= DRIVER_NAME,
@@ -84,24 +82,24 @@ static int sprd_drm_bind(struct device *dev)
 
 	sprd_drm_mode_config_init(drm);
 
-	/* bind and init sub drivers */
+	 
 	ret = component_bind_all(drm->dev, drm);
 	if (ret) {
 		drm_err(drm, "failed to bind all component.\n");
 		return ret;
 	}
 
-	/* vblank init */
+	 
 	ret = drm_vblank_init(drm, drm->mode_config.num_crtc);
 	if (ret) {
 		drm_err(drm, "failed to initialize vblank.\n");
 		goto err_unbind_all;
 	}
 
-	/* reset all the states of crtc/plane/encoder/connector */
+	 
 	drm_mode_config_reset(drm);
 
-	/* init kms poll for handling hpd */
+	 
 	drm_kms_helper_poll_init(drm);
 
 	ret = drm_dev_register(drm, 0);
@@ -158,7 +156,7 @@ static void sprd_drm_shutdown(struct platform_device *pdev)
 
 static const struct of_device_id drm_match_table[] = {
 	{ .compatible = "sprd,display-subsystem", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, drm_match_table);
 

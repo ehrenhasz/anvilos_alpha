@@ -1,46 +1,17 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or http://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Based on Edon-R implementation for SUPERCOP, based on NIST API.
- * Copyright (c) 2009, 2010, Jørn Amundsen <jorn.amundsen@ntnu.no>
- * Copyright (c) 2013 Saso Kiselkov, All rights reserved
- * Copyright (c) 2023 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/string.h>
 #include <sys/edonr.h>
 
-/*
- * We need 1196 byte stack for Q512() on i386
- * - we define this pragma to make gcc happy
- */
+ 
 #if defined(__GNUC__) && defined(_ILP32)
 #pragma GCC diagnostic ignored "-Wframe-larger-than="
 #endif
 
-/*
- * Insert compiler memory barriers to reduce stack frame size.
- */
+ 
 #define	MEMORY_BARRIER   asm volatile("" ::: "memory");
 
 #if defined(_ZFS_BIG_ENDIAN)
@@ -53,10 +24,10 @@
 
 #define	hashState512(x)	((x)->pipe->p512)
 
-/* rotate shortcuts */
+ 
 #define	rotl64(x, n)	(((x) << (n)) | ((x) >> (64 - (n))))
 
-/* EdonR512 initial double chaining pipe */
+ 
 static const uint64_t i512p2[16] = {
 	0x8081828384858687ull, 0x88898a8b8c8d8e8full,
 	0x9091929394959697ull, 0x98999a9b9c9d9e9full,
@@ -148,7 +119,7 @@ Q512(size_t bitlen, const uint64_t *data, uint64_t *p)
 #define	d(j)	data[j]
 #endif
 
-		/* First row of quasigroup e-transformations */
+		 
 		LS1_512(d(15), d(14), d(13), d(12), d(11), d(10), d(9), d(8));
 		LS2_512(d(0), d(1), d(2), d(3), d(4), d(5), d(6), d(7));
 		QEF_512(p0, p1, p2, p3, p4, p5, p6, p7);
@@ -157,7 +128,7 @@ Q512(size_t bitlen, const uint64_t *data, uint64_t *p)
 		LS2_512(d(8), d(9), d(10), d(11), d(12), d(13), d(14), d(15));
 		QEF_512(q0, q1, q2, q3, q4, q5, q6, q7);
 
-		/* Second row of quasigroup e-transformations */
+		 
 		LS1_512(p[8], p[9], p[10], p[11], p[12], p[13], p[14], p[15]);
 		LS2_512(p0, p1, p2, p3, p4, p5, p6, p7);
 		QEF_512(p0, p1, p2, p3, p4, p5, p6, p7);
@@ -166,7 +137,7 @@ Q512(size_t bitlen, const uint64_t *data, uint64_t *p)
 		LS2_512(q0, q1, q2, q3, q4, q5, q6, q7);
 		QEF_512(q0, q1, q2, q3, q4, q5, q6, q7);
 
-		/* Third row of quasigroup e-transformations */
+		 
 		LS1_512(p0, p1, p2, p3, p4, p5, p6, p7);
 		LS2_512(p[0], p[1], p[2], p[3], p[4], p[5], p[6], p[7]);
 		QEF_512(p0, p1, p2, p3, p4, p5, p6, p7);
@@ -175,7 +146,7 @@ Q512(size_t bitlen, const uint64_t *data, uint64_t *p)
 		LS2_512(p0, p1, p2, p3, p4, p5, p6, p7);
 		QEF_512(q0, q1, q2, q3, q4, q5, q6, q7);
 
-		/* Fourth row of quasigroup e-transformations */
+		 
 		LS1_512(d(7), d(6), d(5), d(4), d(3), d(2), d(1), d(0));
 		LS2_512(p0, p1, p2, p3, p4, p5, p6, p7);
 		QEF_512(p0, p1, p2, p3, p4, p5, p6, p7);
@@ -184,7 +155,7 @@ Q512(size_t bitlen, const uint64_t *data, uint64_t *p)
 		LS2_512(q0, q1, q2, q3, q4, q5, q6, q7);
 		QEF_512(q0, q1, q2, q3, q4, q5, q6, q7);
 
-		/* Edon-R tweak on the original SHA-3 Edon-R submission. */
+		 
 		p[0] ^= d(8) ^ p0;
 		p[1] ^= d(9) ^ p1;
 		p[2] ^= d(10) ^ p2;
@@ -223,7 +194,7 @@ EdonRUpdate(EdonRState *state, const uint8_t *data, size_t databitlen)
 	size_t bits_processed;
 
 	if (state->unprocessed_bits > 0) {
-		/* LastBytes = databitlen / 8 */
+		 
 		int LastBytes = (int)databitlen >> 3;
 
 		ASSERT(state->unprocessed_bits + databitlen <=
@@ -233,10 +204,10 @@ EdonRUpdate(EdonRState *state, const uint8_t *data, size_t databitlen)
 		    + (state->unprocessed_bits >> 3), data, LastBytes);
 		state->unprocessed_bits += (int)databitlen;
 		databitlen = state->unprocessed_bits;
-		/* LINTED E_BAD_PTR_CAST_ALIGN */
+		 
 		data64 = (uint64_t *)hashState512(state)->LastPart;
 	} else
-		/* LINTED E_BAD_PTR_CAST_ALIGN */
+		 
 		data64 = (uint64_t *)data;
 
 	bits_processed = Q512(databitlen, data64,
@@ -245,11 +216,11 @@ EdonRUpdate(EdonRState *state, const uint8_t *data, size_t databitlen)
 	databitlen -= bits_processed;
 	state->unprocessed_bits = (int)databitlen;
 	if (databitlen > 0) {
-		/* LastBytes = Ceil(databitlen / 8) */
+		 
 		int LastBytes = ((~(((-(int)databitlen) >> 3) & 0x03ff)) + 1) \
 		    & 0x03ff;
 
-		data64 += bits_processed >> 6;	/* byte size update */
+		data64 += bits_processed >> 6;	 
 		memmove(hashState512(state)->LastPart, data64, LastBytes);
 	}
 }
@@ -267,7 +238,7 @@ EdonRFinal(EdonRState *state, uint8_t *hashval)
 	hashState512(state)->LastPart[LastByte] =
 	    (hashState512(state)->LastPart[LastByte] \
 	    & (0xff << (PadOnePosition + 1))) ^ (0x01 << PadOnePosition);
-	/* LINTED E_BAD_PTR_CAST_ALIGN */
+	 
 	data64 = (uint64_t *)hashState512(state)->LastPart;
 
 	if (state->unprocessed_bits < 960) {

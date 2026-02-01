@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Read/write thread of a guest agent for virtio-trace
- *
- * Copyright (C) 2012 Hitachi, Ltd.
- * Created by Yoshihiro Yunomae <yoshihiro.yunomae.ez@hitachi.com>
- *            Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <fcntl.h>
@@ -45,23 +39,23 @@ void *rw_thread_init(int cpu, const char *in_path, const char *out_path,
 
 	rw_ti->cpu_num = cpu;
 
-	/* set read(input) fd */
+	 
 	rw_ti->in_fd = open(in_path, O_RDONLY);
 	if (rw_ti->in_fd == -1) {
 		pr_err("Could not open in_fd (CPU:%d)\n", cpu);
 		goto error;
 	}
 
-	/* set write(output) fd */
+	 
 	if (!stdout_flag) {
-		/* virtio-serial output mode */
+		 
 		rw_ti->out_fd = open(out_path, O_WRONLY);
 		if (rw_ti->out_fd == -1) {
 			pr_err("Could not open out_fd (CPU:%d)\n", cpu);
 			goto error;
 		}
 	} else
-		/* stdout mode */
+		 
 		rw_ti->out_fd = STDOUT_FILENO;
 
 	if (pipe2(data_pipe, O_NONBLOCK) < 0) {
@@ -69,10 +63,7 @@ void *rw_thread_init(int cpu, const char *in_path, const char *out_path,
 		goto error;
 	}
 
-	/*
-	 * Size of pipe is 64kB in default based on fs/pipe.c.
-	 * To read/write trace data speedy, pipe size is changed.
-	 */
+	 
 	if (fcntl(*data_pipe, F_SETPIPE_SZ, pipe_size) < 0) {
 		pr_err("Could not change pipe size in rw-thread(%d)\n", cpu);
 		goto error;
@@ -88,7 +79,7 @@ error:
 	exit(EXIT_FAILURE);
 }
 
-/* Bind a thread to a cpu */
+ 
 static void bind_cpu(int cpu_num)
 {
 	cpu_set_t mask;
@@ -96,7 +87,7 @@ static void bind_cpu(int cpu_num)
 	CPU_ZERO(&mask);
 	CPU_SET(cpu_num, &mask);
 
-	/* bind my thread to cpu_num by assigning zero to the first argument */
+	 
 	if (sched_setaffinity(0, sizeof(mask), &mask) == -1)
 		pr_err("Could not set CPU#%d affinity\n", (int)cpu_num);
 }
@@ -110,7 +101,7 @@ static void *rw_thread_main(void *thread_info)
 	bind_cpu(ts->cpu_num);
 
 	while (1) {
-		/* Wait for a read order of trace data by Host OS */
+		 
 		if (!global_run_operation) {
 			pthread_mutex_lock(&mutex_notify);
 			pthread_cond_wait(&cond_wakeup, &mutex_notify);
@@ -120,10 +111,7 @@ static void *rw_thread_main(void *thread_info)
 		if (global_sig_receive)
 			break;
 
-		/*
-		 * Each thread read trace_pipe_raw of each cpu bounding the
-		 * thread, so contention of multi-threads does not occur.
-		 */
+		 
 		rlen = splice(ts->in_fd, NULL, ts->read_pipe, NULL,
 				ts->pipe_size, SPLICE_F_MOVE | SPLICE_F_MORE);
 
@@ -131,12 +119,7 @@ static void *rw_thread_main(void *thread_info)
 			pr_err("Splice_read in rw-thread(%d)\n", ts->cpu_num);
 			goto error;
 		} else if (rlen == 0) {
-			/*
-			 * If trace data do not exist or are unreadable not
-			 * for exceeding the page size, splice_read returns
-			 * NULL. Then, this waits for being filled the data in a
-			 * ring-buffer.
-			 */
+			 
 			usleep(READ_WAIT_USEC);
 			pr_debug("Read retry(cpu:%d)\n", ts->cpu_num);
 			continue;
@@ -154,15 +137,7 @@ static void *rw_thread_main(void *thread_info)
 								ts->cpu_num);
 				goto error;
 			} else if (ret == 0)
-				/*
-				 * When host reader is not in time for reading
-				 * trace data, guest will be stopped. This is
-				 * because char dev in QEMU is not supported
-				 * non-blocking mode. Then, writer might be
-				 * sleep in that case.
-				 * This sleep will be removed by supporting
-				 * non-blocking mode.
-				 */
+				 
 				sleep(1);
 			wlen += ret;
 		} while (wlen < rlen);

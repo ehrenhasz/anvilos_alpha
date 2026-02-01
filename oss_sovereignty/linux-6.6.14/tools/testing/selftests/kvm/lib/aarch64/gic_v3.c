@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ARM Generic Interrupt Controller (GIC) v3 support
- */
+
+ 
 
 #include <linux/sizes.h>
 
@@ -33,7 +31,7 @@ static struct gicv3_data gicv3_data;
 
 static void gicv3_gicd_wait_for_rwp(void)
 {
-	unsigned int count = 100000; /* 1s */
+	unsigned int count = 100000;  
 
 	while (readl(gicv3_data.dist_base + GICD_CTLR) & GICD_CTLR_RWP) {
 		GUEST_ASSERT(count--);
@@ -43,7 +41,7 @@ static void gicv3_gicd_wait_for_rwp(void)
 
 static void gicv3_gicr_wait_for_rwp(void *redist_base)
 {
-	unsigned int count = 100000; /* 1s */
+	unsigned int count = 100000;  
 
 	while (readl(redist_base + GICR_CTLR) & GICR_CTLR_RWP) {
 		GUEST_ASSERT(count--);
@@ -70,7 +68,7 @@ static enum gicv3_intid_range get_intid_range(unsigned int intid)
 		return SPI_RANGE;
 	}
 
-	/* We should not be reaching here */
+	 
 	GUEST_ASSERT(0);
 
 	return INVALID_RANGE;
@@ -105,10 +103,7 @@ static void gicv3_set_eoi_split(bool split)
 {
 	uint32_t val;
 
-	/*
-	 * All other fields are read-only, so no need to read CTLR first. In
-	 * fact, the kernel does the same.
-	 */
+	 
 	val = split ? (1U << 1) : 0;
 	write_sysreg_s(val, SYS_ICC_CTLR_EL1);
 	isb();
@@ -142,14 +137,7 @@ void gicv3_setl_fields(uint32_t cpu_or_dist, uint64_t offset,
 	gicv3_reg_writel(cpu_or_dist, offset, tmp);
 }
 
-/*
- * We use a single offset for the distributor and redistributor maps as they
- * have the same value in both. The only exceptions are registers that only
- * exist in one and not the other, like GICR_WAKER that doesn't exist in the
- * distributor map. Such registers are conveniently marked as reserved in the
- * map that doesn't implement it; like GICR_WAKER's offset of 0x0014 being
- * marked as "Reserved" in the Distributor map.
- */
+ 
 static void gicv3_access_reg(uint32_t intid, uint64_t offset,
 		uint32_t reg_bits, uint32_t bits_per_field,
 		bool write, uint32_t *val)
@@ -161,10 +149,7 @@ static void gicv3_access_reg(uint32_t intid, uint64_t offset,
 
 	GUEST_ASSERT(bits_per_field <= reg_bits);
 	GUEST_ASSERT(!write || *val < (1U << bits_per_field));
-	/*
-	 * This function does not support 64 bit accesses. Just asserting here
-	 * until we implement readq/writeq.
-	 */
+	 
 	GUEST_ASSERT(reg_bits == 32);
 
 	fields_per_reg = reg_bits / bits_per_field;
@@ -172,7 +157,7 @@ static void gicv3_access_reg(uint32_t intid, uint64_t offset,
 	shift = index * bits_per_field;
 	mask = ((1U << bits_per_field) - 1) << shift;
 
-	/* Set offset to the actual register holding intid's config. */
+	 
 	offset += (intid / fields_per_reg) * (reg_bits / 8);
 
 	cpu_or_dist = (intid_range == SPI_RANGE) ? DIST_BIT : cpu;
@@ -204,12 +189,12 @@ static void gicv3_set_priority(uint32_t intid, uint32_t prio)
 	gicv3_write_reg(intid, GICD_IPRIORITYR, 32, 8, prio);
 }
 
-/* Sets the intid to be level-sensitive or edge-triggered. */
+ 
 static void gicv3_irq_set_config(uint32_t intid, bool is_edge)
 {
 	uint32_t val;
 
-	/* N/A for private interrupts. */
+	 
 	GUEST_ASSERT(get_intid_range(intid) == SPI_RANGE);
 	val = is_edge ? 2 : 0;
 	gicv3_write_reg(intid, GICD_ICFGR, 32, 2, val);
@@ -266,12 +251,12 @@ static bool gicv3_irq_get_pending(uint32_t intid)
 static void gicv3_enable_redist(void *redist_base)
 {
 	uint32_t val = readl(redist_base + GICR_WAKER);
-	unsigned int count = 100000; /* 1s */
+	unsigned int count = 100000;  
 
 	val &= ~GICR_WAKER_ProcessorSleep;
 	writel(val, redist_base + GICR_WAKER);
 
-	/* Wait until the processor is 'active' */
+	 
 	while (readl(redist_base + GICR_WAKER) & GICR_WAKER_ChildrenAsleep) {
 		GUEST_ASSERT(count--);
 		udelay(10);
@@ -280,7 +265,7 @@ static void gicv3_enable_redist(void *redist_base)
 
 static inline void *gicr_base_cpu(void *redist_base, uint32_t cpu)
 {
-	/* Align all the redistributors sequentially */
+	 
 	return redist_base + cpu * SZ_64K * 2;
 }
 
@@ -297,29 +282,26 @@ static void gicv3_cpu_init(unsigned int cpu, void *redist_base)
 
 	gicv3_enable_redist(redist_base_cpu);
 
-	/*
-	 * Mark all the SGI and PPI interrupts as non-secure Group-1.
-	 * Also, deactivate and disable them.
-	 */
+	 
 	writel(~0, sgi_base + GICR_IGROUPR0);
 	writel(~0, sgi_base + GICR_ICACTIVER0);
 	writel(~0, sgi_base + GICR_ICENABLER0);
 
-	/* Set a default priority for all the SGIs and PPIs */
+	 
 	for (i = 0; i < 32; i += 4)
 		writel(GICD_INT_DEF_PRI_X4,
 				sgi_base + GICR_IPRIORITYR0 + i);
 
 	gicv3_gicr_wait_for_rwp(redist_base_cpu);
 
-	/* Enable the GIC system register (ICC_*) access */
+	 
 	write_sysreg_s(read_sysreg_s(SYS_ICC_SRE_EL1) | ICC_SRE_EL1_SRE,
 			SYS_ICC_SRE_EL1);
 
-	/* Set a default priority threshold */
+	 
 	write_sysreg_s(ICC_PMR_DEF_PRIO, SYS_ICC_PMR_EL1);
 
-	/* Enable non-secure Group-1 interrupts */
+	 
 	write_sysreg_s(ICC_IGRPEN1_EL1_ENABLE, SYS_ICC_GRPEN1_EL1);
 
 	gicv3_data.redist_base[cpu] = redist_base_cpu;
@@ -330,29 +312,26 @@ static void gicv3_dist_init(void)
 	void *dist_base = gicv3_data.dist_base;
 	unsigned int i;
 
-	/* Disable the distributor until we set things up */
+	 
 	writel(0, dist_base + GICD_CTLR);
 	gicv3_gicd_wait_for_rwp();
 
-	/*
-	 * Mark all the SPI interrupts as non-secure Group-1.
-	 * Also, deactivate and disable them.
-	 */
+	 
 	for (i = 32; i < gicv3_data.nr_spis; i += 32) {
 		writel(~0, dist_base + GICD_IGROUPR + i / 8);
 		writel(~0, dist_base + GICD_ICACTIVER + i / 8);
 		writel(~0, dist_base + GICD_ICENABLER + i / 8);
 	}
 
-	/* Set a default priority for all the SPIs */
+	 
 	for (i = 32; i < gicv3_data.nr_spis; i += 4)
 		writel(GICD_INT_DEF_PRI_X4,
 				dist_base + GICD_IPRIORITYR + i);
 
-	/* Wait for the settings to sync-in */
+	 
 	gicv3_gicd_wait_for_rwp();
 
-	/* Finally, enable the distributor globally with ARE */
+	 
 	writel(GICD_CTLR_ARE_NS | GICD_CTLR_ENABLE_G1A |
 			GICD_CTLR_ENABLE_G1, dist_base + GICD_CTLR);
 	gicv3_gicd_wait_for_rwp();
@@ -369,11 +348,7 @@ static void gicv3_init(unsigned int nr_cpus, void *dist_base)
 	if (gicv3_data.nr_spis > 1020)
 		gicv3_data.nr_spis = 1020;
 
-	/*
-	 * Initialize only the distributor for now.
-	 * The redistributor and CPU interfaces are initialized
-	 * later for every PE.
-	 */
+	 
 	gicv3_dist_init();
 }
 

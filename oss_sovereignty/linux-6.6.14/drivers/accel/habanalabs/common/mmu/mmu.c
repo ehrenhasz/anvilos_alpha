@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include <linux/slab.h>
 
@@ -11,14 +8,7 @@
 
 #include <trace/events/habanalabs.h>
 
-/**
- * hl_mmu_get_funcs() - get MMU functions structure
- * @hdev: habanalabs device structure.
- * @pgt_residency: page table residency.
- * @is_dram_addr: true if we need HMMU functions
- *
- * @return appropriate MMU functions structure
- */
+ 
 static struct hl_mmu_funcs *hl_mmu_get_funcs(struct hl_device *hdev, int pgt_residency,
 									bool is_dram_addr)
 {
@@ -34,12 +24,7 @@ bool hl_is_dram_va(struct hl_device *hdev, u64 virt_addr)
 					prop->dmmu.end_addr);
 }
 
-/**
- * hl_mmu_init() - initialize the MMU module.
- * @hdev: habanalabs device structure.
- *
- * Return: 0 for success, non-zero for failure.
- */
+ 
 int hl_mmu_init(struct hl_device *hdev)
 {
 	int rc = -EOPNOTSUPP;
@@ -70,16 +55,7 @@ fini_dr_mmu:
 	return rc;
 }
 
-/**
- * hl_mmu_fini() - release the MMU module.
- * @hdev: habanalabs device structure.
- *
- * This function does the following:
- * - Disable MMU in H/W.
- * - Free the pgt_infos pool.
- *
- * All contexts should be freed before calling this function.
- */
+ 
 void hl_mmu_fini(struct hl_device *hdev)
 {
 	if (hdev->mmu_disable)
@@ -94,14 +70,7 @@ void hl_mmu_fini(struct hl_device *hdev)
 	mutex_destroy(&hdev->mmu_lock);
 }
 
-/**
- * hl_mmu_ctx_init() - initialize a context for using the MMU module.
- * @ctx: pointer to the context structure to initialize.
- *
- * Initialize a mutex to protect the concurrent mapping flow, a hash to hold all
- * page tables hops related to this context.
- * Return: 0 on success, non-zero otherwise.
- */
+ 
 int hl_mmu_ctx_init(struct hl_ctx *ctx)
 {
 	struct hl_device *hdev = ctx->hdev;
@@ -131,16 +100,7 @@ fini_dr_ctx:
 	return rc;
 }
 
-/*
- * hl_mmu_ctx_fini - disable a ctx from using the mmu module
- *
- * @ctx: pointer to the context structure
- *
- * This function does the following:
- * - Free any pgts which were not freed yet
- * - Free the mutex
- * - Free DRAM default page mapping hops
- */
+ 
 void hl_mmu_ctx_fini(struct hl_ctx *ctx)
 {
 	struct hl_device *hdev = ctx->hdev;
@@ -155,29 +115,11 @@ void hl_mmu_ctx_fini(struct hl_ctx *ctx)
 		hdev->mmu_func[MMU_HR_PGT].ctx_fini(ctx);
 }
 
-/*
- * hl_mmu_get_real_page_size - get real page size to use in map/unmap operation
- *
- * @hdev: pointer to device data.
- * @mmu_prop: MMU properties.
- * @page_size: page size
- * @real_page_size: set here the actual page size to use for the operation
- * @is_dram_addr: true if DRAM address, otherwise false.
- *
- * @return 0 on success, otherwise non 0 error code
- *
- * note that this is general implementation that can fit most MMU arch. but as this is used as an
- * MMU function:
- * 1. it shall not be called directly- only from mmu_func structure instance
- * 2. each MMU may modify the implementation internally
- */
+ 
 int hl_mmu_get_real_page_size(struct hl_device *hdev, struct hl_mmu_properties *mmu_prop,
 				u32 page_size, u32 *real_page_size, bool is_dram_addr)
 {
-	/*
-	 * The H/W handles mapping of specific page sizes. Hence if the page
-	 * size is bigger, we break it to sub-pages and map them separately.
-	 */
+	 
 	if ((page_size % mmu_prop->page_size) == 0) {
 		*real_page_size = mmu_prop->page_size;
 		return 0;
@@ -202,27 +144,7 @@ static struct hl_mmu_properties *hl_mmu_get_prop(struct hl_device *hdev, u32 pag
 	return &prop->pmmu;
 }
 
-/*
- * hl_mmu_unmap_page - unmaps a virtual addr
- *
- * @ctx: pointer to the context structure
- * @virt_addr: virt addr to map from
- * @page_size: size of the page to unmap
- * @flush_pte: whether to do a PCI flush
- *
- * This function does the following:
- * - Check that the virt addr is mapped
- * - Unmap the virt addr and frees pgts if possible
- * - Returns 0 on success, -EINVAL if the given addr is not mapped
- *
- * Because this function changes the page tables in the device and because it
- * changes the MMU hash, it must be protected by a lock.
- * However, because it maps only a single page, the lock should be implemented
- * in a higher level in order to protect the entire mapping of the memory area
- *
- * For optimization reasons PCI flush may be requested once after unmapping of
- * large area.
- */
+ 
 int hl_mmu_unmap_page(struct hl_ctx *ctx, u64 virt_addr, u32 page_size, bool flush_pte)
 {
 	struct hl_device *hdev = ctx->hdev;
@@ -267,28 +189,7 @@ int hl_mmu_unmap_page(struct hl_ctx *ctx, u64 virt_addr, u32 page_size, bool flu
 	return rc;
 }
 
-/*
- * hl_mmu_map_page - maps a virtual addr to physical addr
- *
- * @ctx: pointer to the context structure
- * @virt_addr: virt addr to map from
- * @phys_addr: phys addr to map to
- * @page_size: physical page size
- * @flush_pte: whether to do a PCI flush
- *
- * This function does the following:
- * - Check that the virt addr is not mapped
- * - Allocate pgts as necessary in order to map the virt addr to the phys
- * - Returns 0 on success, -EINVAL if addr is already mapped, or -ENOMEM.
- *
- * Because this function changes the page tables in the device and because it
- * changes the MMU hash, it must be protected by a lock.
- * However, because it maps only a single page, the lock should be implemented
- * in a higher level in order to protect the entire mapping of the memory area
- *
- * For optimization reasons PCI flush may be requested once after mapping of
- * large area.
- */
+ 
 int hl_mmu_map_page(struct hl_ctx *ctx, u64 virt_addr, u64 phys_addr, u32 page_size,
 			bool flush_pte)
 {
@@ -315,11 +216,7 @@ int hl_mmu_map_page(struct hl_ctx *ctx, u64 virt_addr, u64 phys_addr, u32 page_s
 	if (rc)
 		return rc;
 
-	/*
-	 * Verify that the phys and virt addresses are aligned with the
-	 * MMU page size (in dram this means checking the address and MMU
-	 * after scrambling)
-	 */
+	 
 	if ((is_dram_addr &&
 			((hdev->asic_funcs->scramble_addr(hdev, phys_addr) &
 				(mmu_prop->page_size - 1)) ||
@@ -368,16 +265,7 @@ err:
 	return rc;
 }
 
-/*
- * hl_mmu_map_contiguous - implements a wrapper for hl_mmu_map_page
- *                         for mapping contiguous physical memory
- *
- * @ctx: pointer to the context structure
- * @virt_addr: virt addr to map from
- * @phys_addr: phys addr to map to
- * @size: size to map
- *
- */
+ 
 int hl_mmu_map_contiguous(struct hl_ctx *ctx, u64 virt_addr,
 					u64 phys_addr, u32 size)
 {
@@ -410,7 +298,7 @@ int hl_mmu_map_contiguous(struct hl_ctx *ctx, u64 virt_addr,
 			dev_err(hdev->dev,
 				"Map failed for va 0x%llx to pa 0x%llx\n",
 				curr_va, curr_pa);
-			/* last mapping failed so don't try to unmap it - reduce off by page_size */
+			 
 			off -= page_size;
 			goto unmap;
 		}
@@ -430,15 +318,7 @@ unmap:
 	return rc;
 }
 
-/*
- * hl_mmu_unmap_contiguous - implements a wrapper for hl_mmu_unmap_page
- *                           for unmapping contiguous physical memory
- *
- * @ctx: pointer to the context structure
- * @virt_addr: virt addr to unmap
- * @size: size to unmap
- *
- */
+ 
 int hl_mmu_unmap_contiguous(struct hl_ctx *ctx, u64 virt_addr, u32 size)
 {
 	struct hl_device *hdev = ctx->hdev;
@@ -480,7 +360,7 @@ static void hl_mmu_pa_page_with_offset(struct hl_ctx *ctx, u64 virt_addr,
 	u64 offset_mask, addr_mask, hop_shift, tmp_phys_addr;
 	struct hl_mmu_properties *mmu_prop;
 
-	/* last hop holds the phys address and flags */
+	 
 	if (hops->unscrambled_paddr)
 		tmp_phys_addr = hops->unscrambled_paddr;
 	else
@@ -490,7 +370,7 @@ static void hl_mmu_pa_page_with_offset(struct hl_ctx *ctx, u64 virt_addr,
 		mmu_prop = &prop->pmmu_huge;
 	else if (hops->range_type == HL_VA_RANGE_TYPE_HOST)
 		mmu_prop = &prop->pmmu;
-	else /* HL_VA_RANGE_TYPE_DRAM */
+	else  
 		mmu_prop = &prop->dmmu;
 
 	if ((hops->range_type == HL_VA_RANGE_TYPE_DRAM) &&
@@ -499,11 +379,7 @@ static void hl_mmu_pa_page_with_offset(struct hl_ctx *ctx, u64 virt_addr,
 			page_id, page_start;
 		u32 page_off;
 
-		/*
-		 * Bit arithmetic cannot be used for non power of two page
-		 * sizes. In addition, since bit arithmetic is not used,
-		 * we cannot ignore dram base. All that shall be considered.
-		 */
+		 
 
 		dram_page_size = prop->dram_page_size;
 		dram_base = prop->dram_base_address;
@@ -515,11 +391,7 @@ static void hl_mmu_pa_page_with_offset(struct hl_ctx *ctx, u64 virt_addr,
 
 		*phys_addr = page_start + page_off + dram_base;
 	} else {
-		/*
-		 * find the correct hop shift field in hl_mmu_properties
-		 * structure in order to determine the right masks
-		 * for the page offset.
-		 */
+		 
 		hop_shift = mmu_prop->hop_shifts[hops->used_hops - 1];
 		offset_mask = (1ull << hop_shift) - 1;
 		addr_mask = ~(offset_mask);
@@ -558,13 +430,13 @@ int hl_mmu_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
 		return -EOPNOTSUPP;
 
 	prop = &hdev->asic_prop;
-	hops->scrambled_vaddr = virt_addr;      /* assume no scrambling */
+	hops->scrambled_vaddr = virt_addr;       
 
 	is_dram_addr = hl_mem_area_inside_range(virt_addr, prop->dmmu.page_size,
 								prop->dmmu.start_addr,
 								prop->dmmu.end_addr);
 
-	/* host-residency is the same in PMMU and PMMU huge, no need to distinguish here */
+	 
 	mmu_prop = is_dram_addr ? &prop->dmmu : &prop->pmmu;
 	pgt_residency = mmu_prop->host_resident ? MMU_HR_PGT : MMU_DR_PGT;
 	mmu_funcs = hl_mmu_get_funcs(hdev, pgt_residency, is_dram_addr);
@@ -576,7 +448,7 @@ int hl_mmu_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr,
 	if (rc)
 		return rc;
 
-	/* add page offset to physical address */
+	 
 	if (hops->unscrambled_paddr)
 		hl_mmu_pa_page_with_offset(ctx, virt_addr, hops, &hops->unscrambled_paddr);
 
@@ -596,7 +468,7 @@ int hl_mmu_if_set_funcs(struct hl_device *hdev)
 		break;
 	case ASIC_GAUDI2:
 	case ASIC_GAUDI2B:
-		/* MMUs in Gaudi2 are always host resident */
+		 
 		hl_mmu_v2_hr_set_funcs(hdev, &hdev->mmu_func[MMU_HR_PGT]);
 		break;
 	default:
@@ -608,26 +480,13 @@ int hl_mmu_if_set_funcs(struct hl_device *hdev)
 	return 0;
 }
 
-/**
- * hl_mmu_scramble_addr() - The generic mmu address scrambling routine.
- * @hdev: pointer to device data.
- * @addr: The address to scramble.
- *
- * Return: The scrambled address.
- */
+ 
 u64 hl_mmu_scramble_addr(struct hl_device *hdev, u64 addr)
 {
 	return addr;
 }
 
-/**
- * hl_mmu_descramble_addr() - The generic mmu address descrambling
- * routine.
- * @hdev: pointer to device data.
- * @addr: The address to descramble.
- *
- * Return: The un-scrambled address.
- */
+ 
 u64 hl_mmu_descramble_addr(struct hl_device *hdev, u64 addr)
 {
 	return addr;
@@ -677,10 +536,7 @@ static void hl_mmu_prefetch_work_function(struct work_struct *work)
 	mutex_unlock(&hdev->mmu_lock);
 
 put_ctx:
-	/*
-	 * context was taken in the common mmu prefetch function- see comment there about
-	 * context handling.
-	 */
+	 
 	hl_ctx_put(ctx);
 	kfree(pfw);
 }
@@ -700,10 +556,7 @@ int hl_mmu_prefetch_cache_range(struct hl_ctx *ctx, u32 flags, u32 asid, u64 va,
 	handle_prefetch_work->flags = flags;
 	handle_prefetch_work->asid = asid;
 
-	/*
-	 * as actual prefetch is done in a WQ we must get the context (and put it
-	 * at the end of the work function)
-	 */
+	 
 	hl_ctx_get(ctx);
 	queue_work(ctx->hdev->prefetch_wq, &handle_prefetch_work->prefetch_work);
 
@@ -715,16 +568,7 @@ u64 hl_mmu_get_next_hop_addr(struct hl_ctx *ctx, u64 curr_pte)
 	return (curr_pte & PAGE_PRESENT_MASK) ? (curr_pte & HOP_PHYS_ADDR_MASK) : ULLONG_MAX;
 }
 
-/**
- * hl_mmu_get_hop_pte_phys_addr() - extract PTE address from HOP
- * @ctx: pointer to the context structure to initialize.
- * @mmu_prop: MMU properties.
- * @hop_idx: HOP index.
- * @hop_addr: HOP address.
- * @virt_addr: virtual address for the translation.
- *
- * @return the matching PTE value on success, otherwise U64_MAX.
- */
+ 
 u64 hl_mmu_get_hop_pte_phys_addr(struct hl_ctx *ctx, struct hl_mmu_properties *mmu_prop,
 					u8 hop_idx, u64 hop_addr, u64 virt_addr)
 {
@@ -753,21 +597,11 @@ static void mmu_dma_mem_free_from_chunk(struct gen_pool *pool,
 
 void hl_mmu_hr_flush(struct hl_ctx *ctx)
 {
-	/* a flush operation requires memory barrier */
+	 
 	mb();
 }
 
-/**
- * hl_mmu_hr_pool_destroy() - destroy genpool
- * @hdev: habanalabs device structure.
- * @hr_priv: MMU HR private data.
- * @hop_table_size: HOP table size.
- *
- * This function does the following:
- * - free entries allocated for shadow HOP0
- * - free pool chunks
- * - free pool
- */
+ 
 static void hl_mmu_hr_pool_destroy(struct hl_device *hdev, struct hl_mmu_hr_priv *hr_priv,
 					u32 hop_table_size)
 {
@@ -779,7 +613,7 @@ static void hl_mmu_hr_pool_destroy(struct hl_device *hdev, struct hl_mmu_hr_priv
 	if (ZERO_OR_NULL_PTR(*pool))
 		return;
 
-	/* Free the Fixed allocation of HOPs0 */
+	 
 	if (hr_priv->mmu_asid_hop0) {
 		for (asid = 0 ; asid < prop->max_asid ; asid++) {
 			hop0_pgt = &hr_priv->mmu_asid_hop0[asid];
@@ -793,26 +627,11 @@ static void hl_mmu_hr_pool_destroy(struct hl_device *hdev, struct hl_mmu_hr_priv
 	gen_pool_for_each_chunk(*pool, mmu_dma_mem_free_from_chunk, hdev);
 	gen_pool_destroy(*pool);
 
-	/* Make sure that if we arrive here again without init was called we
-	 * won't cause kernel panic. This can happen for example if we fail
-	 * during hard reset code at certain points
-	 */
+	 
 	*pool = NULL;
 }
 
-/**
- * hl_mmu_hr_init() - initialize the MMU module.
- * @hdev: habanalabs device structure.
- * @hr_priv: MMU HR private data.
- * @hop_table_size: HOP table size.
- * @pgt_size: memory size allocated for the page table
- *
- * @return 0 on success otherwise non-zero error code
- *
- * This function does the following:
- * - Create a pool of pages for pgt_infos.
- * - Create a shadow table for pgt
- */
+ 
 int hl_mmu_hr_init(struct hl_device *hdev, struct hl_mmu_hr_priv *hr_priv, u32 hop_table_size,
 			u64 pgt_size)
 {
@@ -823,12 +642,7 @@ int hl_mmu_hr_init(struct hl_device *hdev, struct hl_mmu_hr_priv *hr_priv, u32 h
 	u64 virt_addr;
 	int i, rc;
 
-	/*
-	 * we set alloc size as PAGE_SIZE (sine dma_alloc_coherent allocation order/size is
-	 * PAGE_SHIFT/PAGE_SIZE) in order to be able to control the allocations alignment.
-	 * This way we can call "DMA alloc align" according to dma_alloc granularity and supply
-	 * allocations with higher-order alignment restrictions
-	 */
+	 
 	hr_priv->mmu_pgt_pool = gen_pool_create(PAGE_SHIFT, -1);
 	if (ZERO_OR_NULL_PTR(hr_priv->mmu_pgt_pool)) {
 		dev_err(hdev->dev, "Failed to create hr page pool\n");
@@ -875,7 +689,7 @@ int hl_mmu_hr_init(struct hl_device *hdev, struct hl_mmu_hr_priv *hr_priv, u32 h
 		}
 	}
 
-	/* MMU H/W init will be done in device hw_init() */
+	 
 
 	return 0;
 
@@ -887,41 +701,22 @@ destroy_mmu_pgt_pool:
 	return rc;
 }
 
-/**
- * hl_mmu_hr_fini() - release the MMU module.
- * @hdev: habanalabs device structure.
- * @hr_priv: MMU host resident private info.
- * @hop_table_size: HOP table size
- *
- * This function does the following:
- * - Disable MMU in H/W.
- * - Free the pgt_infos pool.
- *
- * All contexts should be freed before calling this function.
- */
+ 
 void hl_mmu_hr_fini(struct hl_device *hdev, struct hl_mmu_hr_priv *hr_priv, u32 hop_table_size)
 {
-	/* MMU H/W fini was already done in device hw_fini() */
+	 
 
 	hl_mmu_hr_pool_destroy(hdev, hr_priv, hop_table_size);
 
 	if (!ZERO_OR_NULL_PTR(hr_priv->mmu_asid_hop0)) {
 		kvfree(hr_priv->mmu_asid_hop0);
 
-		/* Make sure that if we arrive here again without init was
-		 * called we won't cause kernel panic. This can happen for
-		 * example if we fail during hard reset code at certain points
-		 */
+		 
 		hr_priv->mmu_asid_hop0 = NULL;
 	}
 }
 
-/**
- * hl_mmu_hr_free_hop_remove_pgt() - free HOP and remove PGT from hash
- * @pgt_info: page table info structure.
- * @hr_priv: MMU HR private data.
- * @hop_table_size: HOP table size.
- */
+ 
 void hl_mmu_hr_free_hop_remove_pgt(struct pgt_info *pgt_info, struct hl_mmu_hr_priv *hr_priv,
 					u32 hop_table_size)
 {
@@ -930,18 +725,7 @@ void hl_mmu_hr_free_hop_remove_pgt(struct pgt_info *pgt_info, struct hl_mmu_hr_p
 	kfree(pgt_info);
 }
 
-/**
- * hl_mmu_hr_pte_phys_to_virt() - translate PTE phys addr to virt addr
- * @ctx: pointer to the context structure
- * @pgt: pgt_info for the HOP hosting the PTE
- * @phys_pte_addr: phys address of the PTE
- * @hop_table_size: HOP table size
- *
- * @return PTE virtual address
- *
- * The function use the pgt_info to get HOP base virt addr and obtain the PTE's virt addr
- * by adding the PTE offset.
- */
+ 
 u64 hl_mmu_hr_pte_phys_to_virt(struct hl_ctx *ctx, struct pgt_info *pgt,
 							u64 phys_pte_addr, u32 hop_table_size)
 {
@@ -951,49 +735,25 @@ u64 hl_mmu_hr_pte_phys_to_virt(struct hl_ctx *ctx, struct pgt_info *pgt,
 	return pgt->virt_addr + pte_offset;
 }
 
-/**
- * hl_mmu_hr_write_pte() - write HR PTE
- * @ctx: pointer to the context structure
- * @pgt_info: HOP's page table info structure
- * @phys_pte_addr: phys PTE address
- * @val: raw PTE data
- * @hop_table_size: HOP table size
- */
+ 
 void hl_mmu_hr_write_pte(struct hl_ctx *ctx, struct pgt_info *pgt_info, u64 phys_pte_addr,
 								u64 val, u32 hop_table_size)
 {
-	/*
-	 * The value to write is the phys address of the next hop +
-	 * flags at the 12 LSBs.
-	 */
+	 
 	u64 virt_addr = hl_mmu_hr_pte_phys_to_virt(ctx, pgt_info, phys_pte_addr, hop_table_size);
 
 	*((u64 *) (uintptr_t) virt_addr) = val;
 }
 
-/**
- * hl_mmu_hr_clear_pte() - clear HR PTE
- * @ctx: pointer to the context structure
- * @pgt_info: HOP's page table info structure
- * @phys_pte_addr: phys PTE address
- * @hop_table_size: HOP table size
- */
+ 
 void hl_mmu_hr_clear_pte(struct hl_ctx *ctx, struct pgt_info *pgt_info, u64 phys_pte_addr,
 						u32 hop_table_size)
 {
-	/* no need to transform the value to physical address */
+	 
 	hl_mmu_hr_write_pte(ctx, pgt_info, phys_pte_addr, 0, hop_table_size);
 }
 
-/**
- * hl_mmu_hr_put_pte() - put HR PTE and remove it if necessary (no more PTEs)
- * @ctx: pointer to the context structure
- * @pgt_info: HOP's page table info structure
- * @hr_priv: HR MMU private info
- * @hop_table_size: HOP table size
- *
- * @return number of PTEs still in the HOP
- */
+ 
 int hl_mmu_hr_put_pte(struct hl_ctx *ctx, struct pgt_info *pgt_info,
 						struct hl_mmu_hr_priv *hr_priv,
 						u32 hop_table_size)
@@ -1002,10 +762,7 @@ int hl_mmu_hr_put_pte(struct hl_ctx *ctx, struct pgt_info *pgt_info,
 
 	pgt_info->num_of_ptes--;
 
-	/*
-	 * Need to save the number of ptes left because free_hop might free
-	 * the pgt_info
-	 */
+	 
 	num_of_ptes_left = pgt_info->num_of_ptes;
 	if (!num_of_ptes_left)
 		hl_mmu_hr_free_hop_remove_pgt(pgt_info, hr_priv, hop_table_size);
@@ -1013,25 +770,13 @@ int hl_mmu_hr_put_pte(struct hl_ctx *ctx, struct pgt_info *pgt_info,
 	return num_of_ptes_left;
 }
 
-/**
- * hl_mmu_hr_get_pte() - increase PGT PTE count
- * @ctx: pointer to the context structure
- * @hr_func: host resident functions
- * @phys_hop_addr: HOP phys address
- */
+ 
 void hl_mmu_hr_get_pte(struct hl_ctx *ctx, struct hl_hr_mmu_funcs *hr_func, u64 phys_hop_addr)
 {
 	hr_func->get_pgt_info(ctx, phys_hop_addr)->num_of_ptes++;
 }
 
-/**
- * hl_mmu_hr_get_next_hop_pgt_info() - get pgt_info structure for the next HOP
- * @ctx: pointer to the context structure.
- * @hr_func: host resident functions.
- * @curr_pte: current PTE value.
- *
- * @return pgt_info structure on success, otherwise NULL.
- */
+ 
 struct pgt_info *hl_mmu_hr_get_next_hop_pgt_info(struct hl_ctx *ctx,
 							struct hl_hr_mmu_funcs *hr_func,
 							u64 curr_pte)
@@ -1044,15 +789,7 @@ struct pgt_info *hl_mmu_hr_get_next_hop_pgt_info(struct hl_ctx *ctx,
 	return hr_func->get_pgt_info(ctx, next_hop_phys_addr);
 }
 
-/**
- * hl_mmu_hr_alloc_hop() - allocate HOP
- * @ctx: pointer to the context structure.
- * @hr_priv: host resident private info structure.
- * @hr_func: host resident functions.
- * @mmu_prop: MMU properties.
- *
- * @return pgt_info structure associated with the allocated HOP on success, otherwise NULL.
- */
+ 
 struct pgt_info *hl_mmu_hr_alloc_hop(struct hl_ctx *ctx, struct hl_mmu_hr_priv *hr_priv,
 							struct hl_hr_mmu_funcs *hr_func,
 							struct hl_mmu_properties *mmu_prop)
@@ -1075,7 +812,7 @@ struct pgt_info *hl_mmu_hr_alloc_hop(struct hl_ctx *ctx, struct hl_mmu_hr_priv *
 		if (virt_addr)
 			break;
 
-		/* No memory in pool - get some and try again */
+		 
 		virt_addr = hl_asic_dma_alloc_coherent(hdev, SZ_2M, &phys_addr,
 							GFP_KERNEL | __GFP_ZERO);
 		if (ZERO_OR_NULL_PTR(virt_addr))
@@ -1109,17 +846,7 @@ pool_alloc_err:
 	return NULL;
 }
 
-/**
- * hl_mmu_hr_get_alloc_next_hop() - get the next HOP, allocate it if it does not exist
- * @ctx: pointer to the context structure.
- * @hr_priv: host resident private info structure.
- * @hr_func: host resident functions.
- * @mmu_prop: MMU properties.
- * @curr_pte: current PTE value.
- * @is_new_hop: set to true if HOP is new (caller responsibility to set it to false).
- *
- * @return pgt_info structure associated with the allocated HOP on success, otherwise NULL.
- */
+ 
 struct pgt_info *hl_mmu_hr_get_alloc_next_hop(struct hl_ctx *ctx,
 							struct hl_mmu_hr_priv *hr_priv,
 							struct hl_hr_mmu_funcs *hr_func,
@@ -1135,19 +862,11 @@ struct pgt_info *hl_mmu_hr_get_alloc_next_hop(struct hl_ctx *ctx,
 	return hl_mmu_hr_alloc_hop(ctx, hr_priv, hr_func, mmu_prop);
 }
 
-/**
- * hl_mmu_hr_get_tlb_info() - get the TLB info (info for a specific mapping)
- * @ctx: pointer to the context structure.
- * @virt_addr: the virt address for which to get info.
- * @hops: HOPs info structure.
- * @hr_func: host resident functions.
- *
- * @return 0 on success, otherwise non 0 error code..
- */
+ 
 int hl_mmu_hr_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr, struct hl_mmu_hop_info *hops,
 								struct hl_hr_mmu_funcs *hr_func)
 {
-	/* using 6 HOPs as this is the maximum number of HOPs */
+	 
 	struct pgt_info *hops_pgt_info[MMU_ARCH_6_HOPS] = { NULL };
 	struct hl_device *hdev = ctx->hdev;
 	struct hl_mmu_properties *mmu_prop;
@@ -1160,7 +879,7 @@ int hl_mmu_hr_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr, struct hl_mmu_hop_
 
 	used_hops = mmu_prop->num_hops;
 
-	/* huge pages use one less hop */
+	 
 	if (is_huge)
 		used_hops--;
 
@@ -1193,7 +912,7 @@ int hl_mmu_hr_get_tlb_info(struct hl_ctx *ctx, u64 virt_addr, struct hl_mmu_hop_
 			break;
 	}
 
-	/* if passed over all hops then no last hop was found */
+	 
 	if (i == mmu_prop->num_hops)
 		return -EFAULT;
 

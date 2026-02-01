@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -32,7 +32,7 @@
 #define OCC_P10_SRAM_CMD_ADDR	0xFFFFD000
 #define OCC_P10_SRAM_RSP_ADDR	0xFFFFE000
 
-#define OCC_P10_SRAM_MODE	0x58	/* Normal mode, OCB channel 2 */
+#define OCC_P10_SRAM_MODE	0x58	 
 
 #define OCC_TIMEOUT_MS		1000
 #define OCC_CMD_IN_PRG_WAIT_MS	50
@@ -62,7 +62,7 @@ struct occ_response {
 	u8 cmd_type;
 	u8 return_status;
 	__be16 data_length;
-	u8 data[OCC_RESP_DATA_BYTES + 2];	/* two bytes checksum */
+	u8 data[OCC_RESP_DATA_BYTES + 2];	 
 } __packed;
 
 struct occ_client {
@@ -97,7 +97,7 @@ static int occ_open(struct inode *inode, struct file *file)
 	file->private_data = client;
 	get_device(occ->dev);
 
-	/* We allocate a 1-page buffer, make sure it all fits */
+	 
 	BUILD_BUG_ON((OCC_CMD_DATA_BYTES + 3) > PAGE_SIZE);
 	BUILD_BUG_ON((OCC_RESP_DATA_BYTES + 7) > PAGE_SIZE);
 
@@ -118,13 +118,13 @@ static ssize_t occ_read(struct file *file, char __user *buf, size_t len,
 
 	mutex_lock(&client->lock);
 
-	/* This should not be possible ... */
+	 
 	if (WARN_ON_ONCE(client->read_offset > client->data_size)) {
 		rc = -EIO;
 		goto done;
 	}
 
-	/* Grab how much data we have to read */
+	 
 	rc = min(len, client->data_size - client->read_offset);
 	if (copy_to_user(buf, client->buffer + client->read_offset, rc))
 		rc = -EFAULT;
@@ -153,40 +153,34 @@ static ssize_t occ_write(struct file *file, const char __user *buf,
 
 	mutex_lock(&client->lock);
 
-	/* Construct the command */
+	 
 	cmd = client->buffer;
 
-	/*
-	 * Copy the user command (assume user data follows the occ command
-	 * format)
-	 * byte 0: command type
-	 * bytes 1-2: data length (msb first)
-	 * bytes 3-n: data
-	 */
+	 
 	if (copy_from_user(&cmd[1], buf, len)) {
 		rc = -EFAULT;
 		goto done;
 	}
 
-	/* Extract data length */
+	 
 	data_length = (cmd[2] << 8) + cmd[3];
 	if (data_length > OCC_CMD_DATA_BYTES) {
 		rc = -EINVAL;
 		goto done;
 	}
 
-	/* Submit command; 4 bytes before the data and 2 bytes after */
+	 
 	rlen = PAGE_SIZE;
 	rc = fsi_occ_submit(client->occ->dev, cmd, data_length + 6, cmd,
 			    &rlen);
 	if (rc)
 		goto done;
 
-	/* Set read tracking data */
+	 
 	client->data_size = rlen;
 	client->read_offset = 0;
 
-	/* Done */
+	 
 	rc = len;
 
  done:
@@ -219,7 +213,7 @@ static void occ_save_ffdc(struct occ *occ, __be32 *resp, size_t parsed_len,
 {
 	if (resp_len > parsed_len) {
 		size_t dh = resp_len - parsed_len;
-		size_t ffdc_len = (dh - 1) * 4; /* SBE words are four bytes */
+		size_t ffdc_len = (dh - 1) * 4;  
 		__be32 *ffdc = &resp[parsed_len];
 
 		if (ffdc_len > occ->client_buffer_size)
@@ -233,7 +227,7 @@ static void occ_save_ffdc(struct occ *occ, __be32 *resp, size_t parsed_len,
 static int occ_verify_checksum(struct occ *occ, struct occ_response *resp,
 			       u16 data_length)
 {
-	/* Fetch the two bytes after the data for the checksum. */
+	 
 	u16 checksum_resp = get_unaligned_be16(&resp->data[data_length]);
 	u16 checksum;
 	u16 i;
@@ -257,22 +251,19 @@ static int occ_verify_checksum(struct occ *occ, struct occ_response *resp,
 
 static int occ_getsram(struct occ *occ, u32 offset, void *data, ssize_t len)
 {
-	u32 data_len = ((len + 7) / 8) * 8;	/* must be multiples of 8 B */
+	u32 data_len = ((len + 7) / 8) * 8;	 
 	size_t cmd_len, parsed_len, resp_data_len;
 	size_t resp_len = OCC_MAX_RESP_WORDS;
 	__be32 *resp = occ->buffer;
 	__be32 cmd[6];
 	int idx = 0, rc;
 
-	/*
-	 * Magic sequence to do SBE getsram command. SBE will fetch data from
-	 * specified SRAM address.
-	 */
+	 
 	switch (occ->version) {
 	default:
 	case occ_p9:
 		cmd_len = 5;
-		cmd[2] = cpu_to_be32(1);	/* Normal mode */
+		cmd[2] = cpu_to_be32(1);	 
 		cmd[3] = cpu_to_be32(OCC_P9_SRAM_RSP_ADDR + offset);
 		break;
 	case occ_p10:
@@ -318,7 +309,7 @@ static int occ_getsram(struct occ *occ, u32 offset, void *data, ssize_t len)
 static int occ_putsram(struct occ *occ, const void *data, ssize_t len,
 		       u8 seq_no, u16 checksum)
 {
-	u32 data_len = ((len + 7) / 8) * 8;	/* must be multiples of 8 B */
+	u32 data_len = ((len + 7) / 8) * 8;	 
 	size_t cmd_len, parsed_len, resp_data_len;
 	size_t resp_len = OCC_MAX_RESP_WORDS;
 	__be32 *buf = occ->buffer;
@@ -328,17 +319,14 @@ static int occ_putsram(struct occ *occ, const void *data, ssize_t len,
 	cmd_len = (occ->version == occ_p10) ? 6 : 5;
 	cmd_len += data_len >> 2;
 
-	/*
-	 * Magic sequence to do SBE putsram command. SBE will transfer
-	 * data to specified SRAM address.
-	 */
+	 
 	buf[0] = cpu_to_be32(cmd_len);
 	buf[1] = cpu_to_be32(SBEFIFO_CMD_PUT_OCC_SRAM);
 
 	switch (occ->version) {
 	default:
 	case occ_p9:
-		buf[2] = cpu_to_be32(1);	/* Normal mode */
+		buf[2] = cpu_to_be32(1);	 
 		buf[3] = cpu_to_be32(OCC_P9_SRAM_CMD_ADDR);
 		break;
 	case occ_p10:
@@ -353,10 +341,7 @@ static int occ_putsram(struct occ *occ, const void *data, ssize_t len,
 	memcpy(&buf[5 + idx], data, len);
 
 	byte_buf = (u8 *)&buf[5 + idx];
-	/*
-	 * Overwrite the first byte with our sequence number and the last two
-	 * bytes with the checksum.
-	 */
+	 
 	byte_buf[0] = seq_no;
 	byte_buf[len - 2] = checksum >> 8;
 	byte_buf[len - 1] = checksum & 0xff;
@@ -404,22 +389,22 @@ static int occ_trigger_attn(struct occ *occ)
 	default:
 	case occ_p9:
 		cmd_len = 7;
-		buf[2] = cpu_to_be32(3); /* Circular mode */
+		buf[2] = cpu_to_be32(3);  
 		buf[3] = 0;
 		break;
 	case occ_p10:
 		idx = 1;
 		cmd_len = 8;
-		buf[2] = cpu_to_be32(0xd0); /* Circular mode, OCB Channel 1 */
+		buf[2] = cpu_to_be32(0xd0);  
 		buf[3] = 0;
 		buf[4] = 0;
 		break;
 	}
 
-	buf[0] = cpu_to_be32(cmd_len);		/* Chip-op length in words */
+	buf[0] = cpu_to_be32(cmd_len);		 
 	buf[1] = cpu_to_be32(SBEFIFO_CMD_PUT_OCC_SRAM);
-	buf[4 + idx] = cpu_to_be32(8);		/* Data length in bytes */
-	buf[5 + idx] = cpu_to_be32(0x20010000);	/* Trigger OCC attention */
+	buf[4 + idx] = cpu_to_be32(8);		 
+	buf[5 + idx] = cpu_to_be32(0x20010000);	 
 	buf[6 + idx] = 0;
 
 	rc = sbefifo_submit(occ->sbefifo, buf, cmd_len, buf, &resp_len);
@@ -492,7 +477,7 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
 
 	cmd_type = byte_request[1];
 
-	/* Checksum the request, ignoring first byte (sequence number). */
+	 
 	for (i = 1; i < req_len - 2; ++i)
 		checksum += byte_request[i];
 
@@ -509,14 +494,7 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
 		goto done;
 	}
 
-	/*
-	 * Get a sequence number and update the counter. Avoid a sequence
-	 * number of 0 which would pass the response check below even if the
-	 * OCC response is uninitialized. Any sequence number the user is
-	 * trying to send is overwritten since this function is the only common
-	 * interface to the OCC and therefore the only place we can guarantee
-	 * unique sequence numbers.
-	 */
+	 
 	seq_no = occ->sequence_number++;
 	if (!occ->sequence_number)
 		occ->sequence_number = 1;
@@ -532,7 +510,7 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
 
 	end = jiffies + timeout;
 	while (true) {
-		/* Read occ response header */
+		 
 		rc = occ_getsram(occ, 0, resp, 8);
 		if (rc)
 			goto done;
@@ -550,23 +528,17 @@ int fsi_occ_submit(struct device *dev, const void *request, size_t req_len,
 			set_current_state(TASK_UNINTERRUPTIBLE);
 			schedule_timeout(wait_time);
 		} else {
-			/* Extract size of response data */
+			 
 			resp_data_length =
 				get_unaligned_be16(&resp->data_length);
 
-			/*
-			 * Message size is data length + 5 bytes header + 2
-			 * bytes checksum
-			 */
+			 
 			if ((resp_data_length + 7) > user_resp_len) {
 				rc = -EMSGSIZE;
 				goto done;
 			}
 
-			/*
-			 * Get the entire response including the header again,
-			 * in case it changed
-			 */
+			 
 			if (resp_data_length > 1) {
 				rc = occ_getsram(occ, 0, resp,
 						 resp_data_length + 7);
@@ -637,7 +609,7 @@ static int occ_probe(struct platform_device *pdev)
 	if (!occ)
 		return -ENOMEM;
 
-	/* SBE words are always four bytes */
+	 
 	occ->buffer = kvmalloc(OCC_MAX_RESP_WORDS * 4, GFP_KERNEL);
 	if (!occ->buffer)
 		return -ENOMEM;
@@ -645,17 +617,14 @@ static int occ_probe(struct platform_device *pdev)
 	occ->version = (uintptr_t)of_device_get_match_data(dev);
 	occ->dev = dev;
 	occ->sbefifo = dev->parent;
-	/*
-	 * Quickly derive a pseudo-random number from jiffies so that
-	 * re-probing the driver doesn't accidentally overlap sequence numbers.
-	 */
+	 
 	occ->sequence_number = (u8)((jiffies % 0xff) + 1);
 	mutex_init(&occ->occ_lock);
 
 	if (dev->of_node) {
 		rc = of_property_read_u32(dev->of_node, "reg", &reg);
 		if (!rc) {
-			/* make sure we don't have a duplicate from dts */
+			 
 			occ->idx = ida_simple_get(&occ_ida, reg, reg + 1,
 						  GFP_KERNEL);
 			if (occ->idx < 0)

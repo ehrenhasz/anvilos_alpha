@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <sys/mman.h>
 #include "test_mmap.skel.h"
@@ -37,7 +37,7 @@ void test_mmap(void)
 	if (CHECK(err != 0, "bpf_map__set_max_entries", "bpf_map__set_max_entries failed\n"))
 		goto cleanup;
 
-	/* at least 4 pages of data */
+	 
 	err = bpf_map__set_max_entries(skel->maps.data_map,
 				       4 * (page_size / sizeof(u64)));
 	if (CHECK(err != 0, "bpf_map__set_max_entries", "bpf_map__set_max_entries failed\n"))
@@ -57,19 +57,19 @@ void test_mmap(void)
 		munmap(tmp1, page_size);
 		goto cleanup;
 	}
-	/* now double-check if it's mmap()'able at all */
+	 
 	tmp1 = mmap(NULL, page_size, PROT_READ, MAP_SHARED, rdmap_fd, 0);
 	if (CHECK(tmp1 == MAP_FAILED, "rdonly_read_mmap", "failed: %d\n", errno))
 		goto cleanup;
 
-	/* get map's ID */
+	 
 	memset(&map_info, 0, map_info_sz);
 	err = bpf_map_get_info_by_fd(data_map_fd, &map_info, &map_info_sz);
 	if (CHECK(err, "map_get_info", "failed %d\n", errno))
 		goto cleanup;
 	data_map_id = map_info.id;
 
-	/* mmap BSS map */
+	 
 	bss_mmaped = mmap(NULL, bss_sz, PROT_READ | PROT_WRITE, MAP_SHARED,
 			  bpf_map__fd(bss_map), 0);
 	if (CHECK(bss_mmaped == MAP_FAILED, "bss_mmap",
@@ -77,7 +77,7 @@ void test_mmap(void)
 		bss_mmaped = NULL;
 		goto cleanup;
 	}
-	/* map as R/W first */
+	 
 	map_mmaped = mmap(NULL, map_sz, PROT_READ | PROT_WRITE, MAP_SHARED,
 			  data_map_fd, 0);
 	if (CHECK(map_mmaped == MAP_FAILED, "data_mmap",
@@ -126,7 +126,7 @@ void test_mmap(void)
 	CHECK_FAIL(bpf_map_lookup_elem(data_map_fd, &far, &val));
 	CHECK_FAIL(val != 3 * 123);
 
-	/* data_map freeze should fail due to R/W mmap() */
+	 
 	err = bpf_map_freeze(data_map_fd);
 	if (CHECK(!err || errno != EBUSY, "no_freeze",
 		  "data_map freeze succeeded: err=%d, errno=%d\n", err, errno))
@@ -136,13 +136,13 @@ void test_mmap(void)
 	if (CHECK(err, "mprotect_ro", "mprotect to r/o failed %d\n", errno))
 		goto cleanup;
 
-	/* unmap R/W mapping */
+	 
 	err = munmap(map_mmaped, map_sz);
 	map_mmaped = NULL;
 	if (CHECK(err, "data_map_munmap", "data_map munmap failed: %d\n", errno))
 		goto cleanup;
 
-	/* re-map as R/O now */
+	 
 	map_mmaped = mmap(NULL, map_sz, PROT_READ, MAP_SHARED, data_map_fd, 0);
 	if (CHECK(map_mmaped == MAP_FAILED, "data_mmap",
 		  "data_map R/O mmap failed: %d\n", errno)) {
@@ -157,7 +157,7 @@ void test_mmap(void)
 		goto cleanup;
 	map_data = map_mmaped;
 
-	/* map/unmap in a loop to test ref counting */
+	 
 	for (i = 0; i < 10; i++) {
 		int flags = i % 2 ? PROT_READ : PROT_WRITE;
 		void *p;
@@ -170,13 +170,13 @@ void test_mmap(void)
 			goto cleanup;
 	}
 
-	/* data_map freeze should now succeed due to no R/W mapping */
+	 
 	err = bpf_map_freeze(data_map_fd);
 	if (CHECK(err, "freeze", "data_map freeze failed: err=%d, errno=%d\n",
 		  err, errno))
 		goto cleanup;
 
-	/* mapping as R/W now should fail */
+	 
 	tmp1 = mmap(NULL, map_sz, PROT_READ | PROT_WRITE, MAP_SHARED,
 		    data_map_fd, 0);
 	if (CHECK(tmp1 != MAP_FAILED, "data_mmap", "mmap succeeded\n")) {
@@ -195,14 +195,14 @@ void test_mmap(void)
 	CHECK_FAIL(map_data->val[2] != 321);
 	CHECK_FAIL(map_data->val[far] != 3 * 321);
 
-	/* check some more advanced mmap() manipulations */
+	 
 
 	tmp0 = mmap(NULL, 4 * page_size, PROT_READ, MAP_SHARED | MAP_ANONYMOUS,
 			  -1, 0);
 	if (CHECK(tmp0 == MAP_FAILED, "adv_mmap0", "errno %d\n", errno))
 		goto cleanup;
 
-	/* map all but last page: pages 1-3 mapped */
+	 
 	tmp1 = mmap(tmp0, 3 * page_size, PROT_READ, MAP_SHARED | MAP_FIXED,
 			  data_map_fd, 0);
 	if (CHECK(tmp0 != tmp1, "adv_mmap1", "tmp0: %p, tmp1: %p\n", tmp0, tmp1)) {
@@ -210,14 +210,14 @@ void test_mmap(void)
 		goto cleanup;
 	}
 
-	/* unmap second page: pages 1, 3 mapped */
+	 
 	err = munmap(tmp1 + page_size, page_size);
 	if (CHECK(err, "adv_mmap2", "errno %d\n", errno)) {
 		munmap(tmp1, 4 * page_size);
 		goto cleanup;
 	}
 
-	/* map page 2 back */
+	 
 	tmp2 = mmap(tmp1 + page_size, page_size, PROT_READ,
 		    MAP_SHARED | MAP_FIXED, data_map_fd, 0);
 	if (CHECK(tmp2 == MAP_FAILED, "adv_mmap3", "errno %d\n", errno)) {
@@ -228,11 +228,11 @@ void test_mmap(void)
 	CHECK(tmp1 + page_size != tmp2, "adv_mmap4",
 	      "tmp1: %p, tmp2: %p\n", tmp1, tmp2);
 
-	/* re-map all 4 pages */
+	 
 	tmp2 = mmap(tmp1, 4 * page_size, PROT_READ, MAP_SHARED | MAP_FIXED,
 		    data_map_fd, 0);
 	if (CHECK(tmp2 == MAP_FAILED, "adv_mmap5", "errno %d\n", errno)) {
-		munmap(tmp1, 4 * page_size); /* unmap page 1 */
+		munmap(tmp1, 4 * page_size);  
 		goto cleanup;
 	}
 	CHECK(tmp1 != tmp2, "adv_mmap6", "tmp1: %p, tmp2: %p\n", tmp1, tmp2);
@@ -249,9 +249,9 @@ void test_mmap(void)
 
 	munmap(tmp2, 4 * page_size);
 
-	/* map all 4 pages, but with pg_off=1 page, should fail */
+	 
 	tmp1 = mmap(NULL, 4 * page_size, PROT_READ, MAP_SHARED | MAP_FIXED,
-		    data_map_fd, page_size /* initial page shift */);
+		    data_map_fd, page_size  );
 	if (CHECK(tmp1 != MAP_FAILED, "adv_mmap7", "unexpected success")) {
 		munmap(tmp1, 4 * page_size);
 		goto cleanup;
@@ -268,7 +268,7 @@ void test_mmap(void)
 	CHECK_FAIL(munmap(map_mmaped, map_sz));
 	map_mmaped = NULL;
 
-	/* map should be still held by active mmap */
+	 
 	tmp_fd = bpf_map_get_fd_by_id(data_map_id);
 	if (CHECK(tmp_fd < 0, "get_map_by_id", "failed %d\n", errno)) {
 		munmap(tmp1, map_sz);
@@ -276,10 +276,10 @@ void test_mmap(void)
 	}
 	close(tmp_fd);
 
-	/* this should release data map finally */
+	 
 	munmap(tmp1, map_sz);
 
-	/* we need to wait for RCU grace period */
+	 
 	for (i = 0; i < 10000; i++) {
 		__u32 id = data_map_id - 1;
 		if (bpf_map_get_next_id(id, &id) || id > data_map_id)
@@ -287,7 +287,7 @@ void test_mmap(void)
 		usleep(1);
 	}
 
-	/* should fail to get map FD by non-existing ID */
+	 
 	tmp_fd = bpf_map_get_fd_by_id(data_map_id);
 	if (CHECK(tmp_fd >= 0, "get_map_by_id_after",
 		  "unexpectedly succeeded %d\n", tmp_fd)) {

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2023 Advanced Micro Devices, Inc */
+
+ 
 
 #include <linux/vdpa.h>
 #include <linux/virtio_pci_modern.h>
@@ -25,7 +25,7 @@ int pds_vdpa_init_hw(struct pds_vdpa_device *pdsv)
 	union pds_core_adminq_comp comp = {};
 	int err;
 
-	/* Initialize the vdpa/virtio device */
+	 
 	err = pds_client_adminq_cmd(padev, &cmd, sizeof(cmd.vdpa_init),
 				    &comp, 0);
 	if (err)

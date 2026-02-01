@@ -1,23 +1,6 @@
-/* keymaps.c -- Functions and keymaps for the GNU Readline library. */
+ 
 
-/* Copyright (C) 1988,1989-2009,2017 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -29,9 +12,9 @@
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
-#include <stdio.h>	/* for FILE * definition for readline.h */
+#include <stdio.h>	 
 
 #include "readline.h"
 #include "rlconf.h"
@@ -44,15 +27,14 @@
 
 #include "xmalloc.h"
 
-/* **************************************************************** */
-/*								    */
-/*		      Functions for manipulating Keymaps.	    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 
-/* Return a new, empty keymap.
-   Free it with free() when you are done. */
+ 
 Keymap
 rl_make_bare_keymap (void)
 {
@@ -77,8 +59,7 @@ rl_make_bare_keymap (void)
   return (keymap);
 }
 
-/* A convenience function that returns 1 if there are no keys bound to
-   functions in KEYMAP */
+ 
 int
 rl_empty_keymap (Keymap keymap)
 {
@@ -92,8 +73,7 @@ rl_empty_keymap (Keymap keymap)
   return 1;
 }
 
-/* Return a new keymap which is a copy of MAP.  Just copies pointers, does
-   not copy text of macros or descend into child keymaps. */
+ 
 Keymap
 rl_copy_keymap (Keymap map)
 {
@@ -109,9 +89,7 @@ rl_copy_keymap (Keymap map)
   return (temp);
 }
 
-/* Return a new keymap with the printing characters bound to rl_insert,
-   the uppercase Meta characters bound to run their lowercase equivalents,
-   and the Meta digits bound to produce numeric arguments. */
+ 
 Keymap
 rl_make_keymap (void)
 {
@@ -120,24 +98,24 @@ rl_make_keymap (void)
 
   newmap = rl_make_bare_keymap ();
 
-  /* All ASCII printing characters are self-inserting. */
+   
   for (i = ' '; i < 127; i++)
     newmap[i].function = rl_insert;
 
   newmap[TAB].function = rl_insert;
-  newmap[RUBOUT].function = rl_rubout;	/* RUBOUT == 127 */
+  newmap[RUBOUT].function = rl_rubout;	 
   newmap[CTRL('H')].function = rl_rubout;
 
 #if KEYMAP_SIZE > 128
-  /* Printing characters in ISO Latin-1 and some 8-bit character sets. */
+   
   for (i = 128; i < 256; i++)
     newmap[i].function = rl_insert;
-#endif /* KEYMAP_SIZE > 128 */
+#endif  
 
   return (newmap);
 }
 
-/* Free the storage associated with MAP. */
+ 
 void
 rl_discard_keymap (Keymap map)
 {
@@ -165,7 +143,7 @@ rl_discard_keymap (Keymap map)
     }
 }
 
-/* Convenience function that discards, then frees, MAP. */
+ 
 void
 rl_free_keymap (Keymap map)
 {

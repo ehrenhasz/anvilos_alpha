@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx Test Pattern Generator
- *
- * Copyright (C) 2013-2015 Ideas on Board
- * Copyright (C) 2013-2015 Xilinx, Inc.
- *
- * Contacts: Hyun Kwon <hyun.kwon@xilinx.com>
- *           Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gpio/consumer.h>
@@ -58,33 +50,13 @@
 #define XTPG_BAYER_PHASE_BGGR			3
 #define XTPG_BAYER_PHASE_OFF			4
 
-/*
- * The minimum blanking value is one clock cycle for the front porch, one clock
- * cycle for the sync pulse and one clock cycle for the back porch.
- */
+ 
 #define XTPG_MIN_HBLANK			3
 #define XTPG_MAX_HBLANK			(XVTC_MAX_HSIZE - XVIP_MIN_WIDTH)
 #define XTPG_MIN_VBLANK			3
 #define XTPG_MAX_VBLANK			(XVTC_MAX_VSIZE - XVIP_MIN_HEIGHT)
 
-/**
- * struct xtpg_device - Xilinx Test Pattern Generator device structure
- * @xvip: Xilinx Video IP device
- * @pads: media pads
- * @npads: number of pads (1 or 2)
- * @has_input: whether an input is connected to the sink pad
- * @formats: active V4L2 media bus format for each pad
- * @default_format: default V4L2 media bus format
- * @vip_format: format information corresponding to the active format
- * @bayer: boolean flag if TPG is set to any bayer format
- * @ctrl_handler: control handler
- * @hblank: horizontal blanking control
- * @vblank: vertical blanking control
- * @pattern: test pattern control
- * @streaming: is the video stream active
- * @vtc: video timing controller
- * @vtmux_gpio: video timing mux GPIO
- */
+ 
 struct xtpg_device {
 	struct xvip_device xvip;
 
@@ -133,18 +105,15 @@ static void __xtpg_update_pattern_control(struct xtpg_device *xtpg,
 {
 	u32 pattern_mask = (1 << (xtpg->pattern->maximum + 1)) - 1;
 
-	/*
-	 * If the TPG has no sink pad or no input connected to its sink pad
-	 * passthrough mode can't be enabled.
-	 */
+	 
 	if (xtpg->npads == 1 || !xtpg->has_input)
 		passthrough = false;
 
-	/* If passthrough mode is allowed unmask bit 0. */
+	 
 	if (passthrough)
 		pattern_mask &= ~1;
 
-	/* If test pattern mode is allowed unmask all other bits. */
+	 
 	if (pattern)
 		pattern_mask &= 1;
 
@@ -160,9 +129,7 @@ static void xtpg_update_pattern_control(struct xtpg_device *xtpg,
 	mutex_unlock(xtpg->ctrl_handler.lock);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Video Operations
- */
+ 
 
 static int xtpg_s_stream(struct v4l2_subdev *subdev, int enable)
 {
@@ -207,21 +174,13 @@ static int xtpg_s_stream(struct v4l2_subdev *subdev, int enable)
 		xvtc_generator_start(xtpg->vtc, &config);
 	}
 
-	/*
-	 * Configure the bayer phase and video timing mux based on the
-	 * operation mode (passthrough or test pattern generation). The test
-	 * pattern can be modified by the control set handler, we thus need to
-	 * take the control lock here to avoid races.
-	 */
+	 
 	mutex_lock(xtpg->ctrl_handler.lock);
 
 	xvip_clr_and_set(&xtpg->xvip, XTPG_PATTERN_CONTROL,
 			 XTPG_PATTERN_MASK, xtpg->pattern->cur.val);
 
-	/*
-	 * Switching between passthrough and test pattern generation modes isn't
-	 * allowed during streaming, update the control range accordingly.
-	 */
+	 
 	passthrough = xtpg->pattern->cur.val == 0;
 	__xtpg_update_pattern_control(xtpg, passthrough, !passthrough);
 
@@ -229,10 +188,7 @@ static int xtpg_s_stream(struct v4l2_subdev *subdev, int enable)
 
 	mutex_unlock(xtpg->ctrl_handler.lock);
 
-	/*
-	 * For TPG v5.0, the bayer phase needs to be off for the pass through
-	 * mode, otherwise the external input would be subsampled.
-	 */
+	 
 	bayer_phase = passthrough ? XTPG_BAYER_PHASE_OFF
 		    : xtpg_get_bayer_phase(xtpg->formats[0].code);
 	xvip_write(&xtpg->xvip, XTPG_BAYER_PHASE, bayer_phase);
@@ -245,9 +201,7 @@ static int xtpg_s_stream(struct v4l2_subdev *subdev, int enable)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Pad Operations
- */
+ 
 
 static struct v4l2_mbus_framefmt *
 __xtpg_get_pad_format(struct xtpg_device *xtpg,
@@ -287,15 +241,13 @@ static int xtpg_set_format(struct v4l2_subdev *subdev,
 
 	__format = __xtpg_get_pad_format(xtpg, sd_state, fmt->pad, fmt->which);
 
-	/* In two pads mode the source pad format is always identical to the
-	 * sink pad format.
-	 */
+	 
 	if (xtpg->npads == 2 && fmt->pad == 1) {
 		fmt->format = *__format;
 		return 0;
 	}
 
-	/* Bayer phase is configurable at runtime */
+	 
 	if (xtpg->bayer) {
 		bayer_phase = xtpg_get_bayer_phase(fmt->format.code);
 		if (bayer_phase != XTPG_BAYER_PHASE_OFF)
@@ -306,7 +258,7 @@ static int xtpg_set_format(struct v4l2_subdev *subdev,
 
 	fmt->format = *__format;
 
-	/* Propagate the format to the source pad. */
+	 
 	if (xtpg->npads == 2) {
 		__format = __xtpg_get_pad_format(xtpg, sd_state, 1,
 						 fmt->which);
@@ -316,9 +268,7 @@ static int xtpg_set_format(struct v4l2_subdev *subdev,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static int xtpg_enum_frame_size(struct v4l2_subdev *subdev,
 				struct v4l2_subdev_state *sd_state,
@@ -331,9 +281,7 @@ static int xtpg_enum_frame_size(struct v4l2_subdev *subdev,
 	if (fse->index || fse->code != format->code)
 		return -EINVAL;
 
-	/* Min / max values for pad 0 is always fixed in both one and two pads
-	 * modes. In two pads mode, the source pad(= 1) size is identical to
-	 * the sink pad size */
+	 
 	if (fse->pad == 0) {
 		fse->min_width = XVIP_MIN_WIDTH;
 		fse->max_width = XVIP_MAX_WIDTH;
@@ -485,9 +433,7 @@ static const struct v4l2_subdev_internal_ops xtpg_internal_ops = {
 	.close	= xtpg_close,
 };
 
-/*
- * Control Config
- */
+ 
 
 static const char *const xtpg_pattern_strings[] = {
 	"Passthrough",
@@ -674,17 +620,13 @@ static struct v4l2_ctrl_config xtpg_ctrls[] = {
 	},
 };
 
-/* -----------------------------------------------------------------------------
- * Media Operations
- */
+ 
 
 static const struct media_entity_operations xtpg_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/* -----------------------------------------------------------------------------
- * Power Management
- */
+ 
 
 static int __maybe_unused xtpg_pm_suspend(struct device *dev)
 {
@@ -704,9 +646,7 @@ static int __maybe_unused xtpg_pm_resume(struct device *dev)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Platform Device Driver
- */
+ 
 
 static int xtpg_parse_of(struct xtpg_device *xtpg)
 {
@@ -735,7 +675,7 @@ static int xtpg_parse_of(struct xtpg_device *xtpg)
 			return PTR_ERR(format);
 		}
 
-		/* Get and check the format description */
+		 
 		if (!xtpg->vip_format) {
 			xtpg->vip_format = format;
 		} else if (xtpg->vip_format != format) {
@@ -751,7 +691,7 @@ static int xtpg_parse_of(struct xtpg_device *xtpg)
 			of_node_put(endpoint);
 		}
 
-		/* Count the number of ports. */
+		 
 		nports++;
 	}
 
@@ -801,12 +741,10 @@ static int xtpg_probe(struct platform_device *pdev)
 		goto error_resource;
 	}
 
-	/* Reset and initialize the core */
+	 
 	xvip_reset(&xtpg->xvip);
 
-	/* Initialize V4L2 subdevice and media entity. Pad numbers depend on the
-	 * number of pads.
-	 */
+	 
 	if (xtpg->npads == 2) {
 		xtpg->pads[0].flags = MEDIA_PAD_FL_SINK;
 		xtpg->pads[1].flags = MEDIA_PAD_FL_SOURCE;
@@ -814,7 +752,7 @@ static int xtpg_probe(struct platform_device *pdev)
 		xtpg->pads[0].flags = MEDIA_PAD_FL_SOURCE;
 	}
 
-	/* Initialize the default format */
+	 
 	xtpg->default_format.code = xtpg->vip_format->code;
 	xtpg->default_format.field = V4L2_FIELD_NONE;
 	xtpg->default_format.colorspace = V4L2_COLORSPACE_SRGB;
@@ -828,7 +766,7 @@ static int xtpg_probe(struct platform_device *pdev)
 	if (xtpg->npads == 2)
 		xtpg->formats[1] = xtpg->default_format;
 
-	/* Initialize V4L2 subdevice and media entity */
+	 
 	subdev = &xtpg->xvip.subdev;
 	v4l2_subdev_init(subdev, &xtpg_ops);
 	subdev->dev = &pdev->dev;

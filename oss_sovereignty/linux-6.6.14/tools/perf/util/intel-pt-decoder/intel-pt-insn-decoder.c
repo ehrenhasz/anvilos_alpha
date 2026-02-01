@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_pt_insn_decoder.c: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <stdio.h>
@@ -24,7 +21,7 @@
 #error Instruction buffer size too small
 #endif
 
-/* Based on branch_type() from arch/x86/events/intel/lbr.c */
+ 
 static void intel_pt_insn_decoder(struct insn *insn,
 				  struct intel_pt_insn *intel_pt_insn)
 {
@@ -47,18 +44,18 @@ static void intel_pt_insn_decoder(struct insn *insn,
 		switch (insn->opcode.bytes[1]) {
 		case 0x01:
 			switch (insn->modrm.bytes[0]) {
-			case 0xc2: /* vmlaunch */
-			case 0xc3: /* vmresume */
+			case 0xc2:  
+			case 0xc3:  
 				op = INTEL_PT_OP_VMENTRY;
 				branch = INTEL_PT_BR_INDIRECT;
 				break;
 			case 0xca:
 				switch (insn->prefixes.bytes[3]) {
-				case 0xf2: /* erets */
+				case 0xf2:  
 					op = INTEL_PT_OP_ERETS;
 					branch = INTEL_PT_BR_INDIRECT;
 					break;
-				case 0xf3: /* eretu */
+				case 0xf3:  
 					op = INTEL_PT_OP_ERETU;
 					branch = INTEL_PT_BR_INDIRECT;
 					break;
@@ -70,17 +67,17 @@ static void intel_pt_insn_decoder(struct insn *insn,
 				break;
 			}
 			break;
-		case 0x05: /* syscall */
-		case 0x34: /* sysenter */
+		case 0x05:  
+		case 0x34:  
 			op = INTEL_PT_OP_SYSCALL;
 			branch = INTEL_PT_BR_INDIRECT;
 			break;
-		case 0x07: /* sysret */
-		case 0x35: /* sysexit */
+		case 0x07:  
+		case 0x35:  
 			op = INTEL_PT_OP_SYSRET;
 			branch = INTEL_PT_BR_INDIRECT;
 			break;
-		case 0x80 ... 0x8f: /* jcc */
+		case 0x80 ... 0x8f:  
 			op = INTEL_PT_OP_JCC;
 			branch = INTEL_PT_BR_CONDITIONAL;
 			break;
@@ -88,55 +85,55 @@ static void intel_pt_insn_decoder(struct insn *insn,
 			break;
 		}
 		break;
-	case 0x70 ... 0x7f: /* jcc */
+	case 0x70 ... 0x7f:  
 		op = INTEL_PT_OP_JCC;
 		branch = INTEL_PT_BR_CONDITIONAL;
 		break;
-	case 0xc2: /* near ret */
-	case 0xc3: /* near ret */
-	case 0xca: /* far ret */
-	case 0xcb: /* far ret */
+	case 0xc2:  
+	case 0xc3:  
+	case 0xca:  
+	case 0xcb:  
 		op = INTEL_PT_OP_RET;
 		branch = INTEL_PT_BR_INDIRECT;
 		break;
-	case 0xcf: /* iret */
+	case 0xcf:  
 		op = INTEL_PT_OP_IRET;
 		branch = INTEL_PT_BR_INDIRECT;
 		break;
-	case 0xcc ... 0xce: /* int */
+	case 0xcc ... 0xce:  
 		op = INTEL_PT_OP_INT;
 		branch = INTEL_PT_BR_INDIRECT;
 		break;
-	case 0xe8: /* call near rel */
+	case 0xe8:  
 		op = INTEL_PT_OP_CALL;
 		branch = INTEL_PT_BR_UNCONDITIONAL;
 		break;
-	case 0x9a: /* call far absolute */
+	case 0x9a:  
 		op = INTEL_PT_OP_CALL;
 		branch = INTEL_PT_BR_INDIRECT;
 		break;
-	case 0xe0 ... 0xe2: /* loop */
+	case 0xe0 ... 0xe2:  
 		op = INTEL_PT_OP_LOOP;
 		branch = INTEL_PT_BR_CONDITIONAL;
 		break;
-	case 0xe3: /* jcc */
+	case 0xe3:  
 		op = INTEL_PT_OP_JCC;
 		branch = INTEL_PT_BR_CONDITIONAL;
 		break;
-	case 0xe9: /* jmp */
-	case 0xeb: /* jmp */
+	case 0xe9:  
+	case 0xeb:  
 		op = INTEL_PT_OP_JMP;
 		branch = INTEL_PT_BR_UNCONDITIONAL;
 		break;
-	case 0xea: /* far jmp */
+	case 0xea:  
 		op = INTEL_PT_OP_JMP;
 		branch = INTEL_PT_BR_INDIRECT;
 		break;
-	case 0xff: /* call near absolute, call far absolute ind */
+	case 0xff:  
 		ext = (insn->modrm.bytes[0] >> 3) & 0x7;
 		switch (ext) {
-		case 2: /* near ind call */
-		case 3: /* far ind call */
+		case 2:  
+		case 3:  
 			op = INTEL_PT_OP_CALL;
 			branch = INTEL_PT_BR_INDIRECT;
 			break;

@@ -1,9 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2020-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
 #ifndef GAUDI2P_H_
 #define GAUDI2P_H_
@@ -19,9 +14,9 @@
 #define GAUDI2_LINUX_FW_FILE	"habanalabs/gaudi2/gaudi2-fit.itb"
 #define GAUDI2_BOOT_FIT_FILE	"habanalabs/gaudi2/gaudi2-boot-fit.itb"
 
-#define MMU_PAGE_TABLES_INITIAL_SIZE	0x10000000	/* 256MB */
+#define MMU_PAGE_TABLES_INITIAL_SIZE	0x10000000	 
 
-#define GAUDI2_CPU_TIMEOUT_USEC		30000000	/* 30s */
+#define GAUDI2_CPU_TIMEOUT_USEC		30000000	 
 
 #define NUMBER_OF_PDMA_QUEUES		2
 #define NUMBER_OF_EDMA_QUEUES		8
@@ -52,7 +47,7 @@
 
 #define NUMBER_OF_DEC		((NUM_OF_DEC_PER_DCORE * NUM_OF_DCORES) + NUMBER_OF_PCIE_DEC)
 
-/* Map all arcs dccm + arc schedulers acp blocks */
+ 
 #define NUM_OF_USER_ACP_BLOCKS		(NUM_OF_SCHEDULER_ARC + 2)
 #define NUM_OF_USER_NIC_UMR_BLOCKS	15
 #define NUM_OF_EXPOSED_SM_BLOCKS	((NUM_OF_DCORES - 1) * 2)
@@ -61,9 +56,7 @@
 	NUM_OF_EXPOSED_SM_BLOCKS + \
 	(NIC_NUMBER_OF_ENGINES * NUM_OF_USER_NIC_UMR_BLOCKS))
 
-/* Within the user mapped array, decoder entries start post all the ARC related
- * entries
- */
+ 
 #define USR_MAPPED_BLK_DEC_START_IDX \
 	(NUM_ARC_CPUS + NUM_OF_USER_ACP_BLOCKS + \
 	(NIC_NUMBER_OF_ENGINES * NUM_OF_USER_NIC_UMR_BLOCKS))
@@ -81,15 +74,15 @@
 #error "GAUDI2_MAX_PENDING_CS must be power of 2 and greater than 1"
 #endif
 
-#define CORESIGHT_TIMEOUT_USEC			100000		/* 100 ms */
+#define CORESIGHT_TIMEOUT_USEC			100000		 
 
-#define GAUDI2_PREBOOT_REQ_TIMEOUT_USEC		25000000	/* 25s */
+#define GAUDI2_PREBOOT_REQ_TIMEOUT_USEC		25000000	 
 
-#define GAUDI2_BOOT_FIT_REQ_TIMEOUT_USEC	10000000	/* 10s */
+#define GAUDI2_BOOT_FIT_REQ_TIMEOUT_USEC	10000000	 
 
-#define GAUDI2_NIC_CLK_FREQ			450000000ull	/* 450 MHz */
+#define GAUDI2_NIC_CLK_FREQ			450000000ull	 
 
-#define DC_POWER_DEFAULT			60000		/* 60W */
+#define DC_POWER_DEFAULT			60000		 
 
 #define GAUDI2_HBM_NUM				6
 
@@ -105,14 +98,12 @@
 #define GAUDI2_ENGINE_ID_DCORE_OFFSET \
 	(GAUDI2_DCORE1_ENGINE_ID_EDMA_0 - GAUDI2_DCORE0_ENGINE_ID_EDMA_0)
 
-/* DRAM Memory Map */
+ 
 
-#define CPU_FW_IMAGE_SIZE			0x10000000	/* 256MB */
+#define CPU_FW_IMAGE_SIZE			0x10000000	 
 
-/* This define should be used only when working in a debug mode without dram.
- * When working with dram, the driver size will be calculated dynamically.
- */
-#define NIC_DEFAULT_DRV_SIZE			0x20000000	/* 512MB */
+ 
+#define NIC_DEFAULT_DRV_SIZE			0x20000000	 
 
 #define CPU_FW_IMAGE_ADDR			DRAM_PHYS_BASE
 
@@ -123,38 +114,31 @@
 
 #define SRAM_USER_BASE_OFFSET			0
 
-/* cluster binning */
+ 
 #define MAX_FAULTY_HBMS				1
 #define GAUDI2_XBAR_EDGE_FULL_MASK		0xF
 #define GAUDI2_EDMA_FULL_MASK			0xFF
 #define GAUDI2_DRAM_FULL_MASK			0x3F
 
-/* Host virtual address space. */
+ 
 
 #define VA_HOST_SPACE_PAGE_START		0xFFF0000000000000ull
-#define VA_HOST_SPACE_PAGE_END			0xFFF0800000000000ull /* 140TB */
+#define VA_HOST_SPACE_PAGE_END			0xFFF0800000000000ull  
 
 #define VA_HOST_SPACE_HPAGE_START		0xFFF0800000000000ull
-#define VA_HOST_SPACE_HPAGE_END			0xFFF1000000000000ull /* 140TB */
+#define VA_HOST_SPACE_HPAGE_END			0xFFF1000000000000ull  
 
-/* 140TB */
+ 
 #define VA_HOST_SPACE_PAGE_SIZE		(VA_HOST_SPACE_PAGE_END - VA_HOST_SPACE_PAGE_START)
 
-/* 140TB */
+ 
 #define VA_HOST_SPACE_HPAGE_SIZE	(VA_HOST_SPACE_HPAGE_END - VA_HOST_SPACE_HPAGE_START)
 
 #define VA_HOST_SPACE_SIZE		(VA_HOST_SPACE_PAGE_SIZE + VA_HOST_SPACE_HPAGE_SIZE)
 
 #define HOST_SPACE_INTERNAL_CB_SZ		SZ_2M
 
-/*
- * HBM virtual address space
- * Gaudi2 has 6 HBM devices, each supporting 16GB total of 96GB at most.
- * No core separation is supported so we can have one chunk of virtual address
- * space just above the physical ones.
- * The virtual address space starts immediately after the end of the physical
- * address space which is determined at run-time.
- */
+ 
 #define VA_HBM_SPACE_END		0x1002000000000000ull
 
 #define HW_CAP_PLL			BIT_ULL(0)
@@ -203,7 +187,7 @@
 #define HW_CAP_RESERVED			BIT(43)
 #define HW_CAP_MMU_MASK			(HW_CAP_PMMU | HW_CAP_DMMU_MASK)
 
-/* Range Registers */
+ 
 #define RR_TYPE_SHORT			0
 #define RR_TYPE_LONG			1
 #define RR_TYPE_SHORT_PRIV		2
@@ -213,7 +197,7 @@
 #define NUM_SHORT_HBW_RR		6
 #define NUM_LONG_HBW_RR			4
 
-/* RAZWI initiator coordinates- X- 5 bits, Y- 4 bits */
+ 
 #define RAZWI_INITIATOR_X_SHIFT		0
 #define RAZWI_INITIATOR_X_MASK		0x1F
 #define RAZWI_INITIATOR_Y_SHIFT		5
@@ -223,15 +207,15 @@
 	((((y) & RAZWI_INITIATOR_Y_MASK) << RAZWI_INITIATOR_Y_SHIFT) | \
 		(((x) & RAZWI_INITIATOR_X_MASK) << RAZWI_INITIATOR_X_SHIFT))
 
-/* decoders have separate mask */
+ 
 #define HW_CAP_DEC_SHIFT		0
 #define HW_CAP_DEC_MASK			GENMASK_ULL(9, 0)
 
-/* TPCs have separate mask */
+ 
 #define HW_CAP_TPC_SHIFT		0
 #define HW_CAP_TPC_MASK			GENMASK_ULL(24, 0)
 
-/* nics have separate mask */
+ 
 #define HW_CAP_NIC_SHIFT		0
 #define HW_CAP_NIC_MASK			GENMASK_ULL(NIC_NUMBER_OF_ENGINES - 1, 0)
 
@@ -278,11 +262,7 @@ enum gaudi2_reserved_cq_id {
 	GAUDI2_RESERVED_CQ_NUMBER
 };
 
-/*
- * Gaudi2 subtitute TPCs Numbering
- * At most- two faulty TPCs are allowed
- * First replacement to a faulty TPC will be TPC24, second- TPC23
- */
+ 
 enum substitude_tpc {
 	FAULTY_TPC_SUBTS_1_TPC_24,
 	FAULTY_TPC_SUBTS_2_TPC_23,
@@ -290,17 +270,17 @@ enum substitude_tpc {
 };
 
 enum gaudi2_dma_core_id {
-	DMA_CORE_ID_PDMA0, /* Dcore 0 */
-	DMA_CORE_ID_PDMA1, /* Dcore 0 */
-	DMA_CORE_ID_EDMA0, /* Dcore 0 */
-	DMA_CORE_ID_EDMA1, /* Dcore 0 */
-	DMA_CORE_ID_EDMA2, /* Dcore 1 */
-	DMA_CORE_ID_EDMA3, /* Dcore 1 */
-	DMA_CORE_ID_EDMA4, /* Dcore 2 */
-	DMA_CORE_ID_EDMA5, /* Dcore 2 */
-	DMA_CORE_ID_EDMA6, /* Dcore 3 */
-	DMA_CORE_ID_EDMA7, /* Dcore 3 */
-	DMA_CORE_ID_KDMA, /* Dcore 0 */
+	DMA_CORE_ID_PDMA0,  
+	DMA_CORE_ID_PDMA1,  
+	DMA_CORE_ID_EDMA0,  
+	DMA_CORE_ID_EDMA1,  
+	DMA_CORE_ID_EDMA2,  
+	DMA_CORE_ID_EDMA3,  
+	DMA_CORE_ID_EDMA4,  
+	DMA_CORE_ID_EDMA5,  
+	DMA_CORE_ID_EDMA6,  
+	DMA_CORE_ID_EDMA7,  
+	DMA_CORE_ID_KDMA,  
 	DMA_CORE_ID_SIZE
 };
 
@@ -343,7 +323,7 @@ enum gaudi2_tpc_id {
 	TPC_ID_DCORE3_TPC3,
 	TPC_ID_DCORE3_TPC4,
 	TPC_ID_DCORE3_TPC5,
-	/* the PCI TPC is placed last (mapped liked HW) */
+	 
 	TPC_ID_DCORE0_TPC6,
 	TPC_ID_SIZE,
 };
@@ -372,7 +352,7 @@ enum gaudi2_hbm_id {
 	HBM_ID_SIZE,
 };
 
-/* specific EDMA enumeration */
+ 
 enum gaudi2_edma_id {
 	EDMA_ID_DCORE0_INSTANCE0,
 	EDMA_ID_DCORE0_INSTANCE1,
@@ -385,9 +365,7 @@ enum gaudi2_edma_id {
 	EDMA_ID_SIZE,
 };
 
-/* User interrupt count is aligned with HW CQ count.
- * We have 64 CQ's per dcore, CQ0 in dcore 0 is reserved for legacy mode
- */
+ 
 #define GAUDI2_NUM_USER_INTERRUPTS 255
 #define GAUDI2_NUM_RESERVED_INTERRUPTS 1
 #define GAUDI2_TOTAL_USER_INTERRUPTS (GAUDI2_NUM_USER_INTERRUPTS + GAUDI2_NUM_RESERVED_INTERRUPTS)
@@ -429,20 +407,7 @@ enum gaudi2_irq_num {
 
 static_assert(GAUDI2_IRQ_NUM_USER_FIRST > GAUDI2_IRQ_NUM_SHARED_DEC1_ABNRM);
 
-/**
- * struct dup_block_ctx - context to initialize unit instances across multiple
- *                        blocks where block can be either a dcore of duplicated
- *                        common module. this code relies on constant offsets
- *                        of blocks and unit instances in a block.
- * @instance_cfg_fn: instance specific configuration function.
- * @data: private configuration data.
- * @base: base address of the first instance in the first block.
- * @block_off: subsequent blocks address spacing.
- * @instance_off: subsequent block's instances address spacing.
- * @enabled_mask: mask of enabled instances (1- enabled, 0- disabled).
- * @blocks: number of blocks.
- * @instances: unit instances per block.
- */
+ 
 struct dup_block_ctx {
 	void (*instance_cfg_fn)(struct hl_device *hdev, u64 base, void *data);
 	void *data;
@@ -454,77 +419,13 @@ struct dup_block_ctx {
 	unsigned int instances;
 };
 
-/**
- * struct gaudi2_queues_test_info - Holds the address of a the messages used for testing the
- *                                  device queues.
- * @dma_addr: the address used by the HW for accessing the message.
- * @kern_addr: The address used by the driver for accessing the message.
- */
+ 
 struct gaudi2_queues_test_info {
 	dma_addr_t dma_addr;
 	void *kern_addr;
 };
 
-/**
- * struct gaudi2_device - ASIC specific manage structure.
- * @cpucp_info_get: get information on device from CPU-CP
- * @mapped_blocks: array that holds the base address and size of all blocks
- *                 the user can map.
- * @lfsr_rand_seeds: array of MME ACC random seeds to set.
- * @hw_queues_lock: protects the H/W queues from concurrent access.
- * @scratchpad_kernel_address: general purpose PAGE_SIZE contiguous memory,
- *                             this memory region should be write-only.
- *                             currently used for HBW QMAN writes which is
- *                             redundant.
- * @scratchpad_bus_address: scratchpad bus address
- * @virt_msix_db_cpu_addr: host memory page for the virtual MSI-X doorbell.
- * @virt_msix_db_dma_addr: bus address of the page for the virtual MSI-X doorbell.
- * @dram_bar_cur_addr: current address of DRAM PCI bar.
- * @hw_cap_initialized: This field contains a bit per H/W engine. When that
- *                      engine is initialized, that bit is set by the driver to
- *                      signal we can use this engine in later code paths.
- *                      Each bit is cleared upon reset of its corresponding H/W
- *                      engine.
- * @active_hw_arc: This field contains a bit per ARC of an H/W engine with
- *                 exception of TPC and NIC engines. Once an engine arc is
- *                 initialized, its respective bit is set. Driver can uniquely
- *                 identify each initialized ARC and use this information in
- *                 later code paths. Each respective bit is cleared upon reset
- *                 of its corresponding ARC of the H/W engine.
- * @dec_hw_cap_initialized: This field contains a bit per decoder H/W engine.
- *                      When that engine is initialized, that bit is set by
- *                      the driver to signal we can use this engine in later
- *                      code paths.
- *                      Each bit is cleared upon reset of its corresponding H/W
- *                      engine.
- * @tpc_hw_cap_initialized: This field contains a bit per TPC H/W engine.
- *                      When that engine is initialized, that bit is set by
- *                      the driver to signal we can use this engine in later
- *                      code paths.
- *                      Each bit is cleared upon reset of its corresponding H/W
- *                      engine.
- * @active_tpc_arc: This field contains a bit per ARC of the TPC engines.
- *                  Once an engine arc is initialized, its respective bit is
- *                  set. Each respective bit is cleared upon reset of its
- *                  corresponding ARC of the TPC engine.
- * @nic_hw_cap_initialized: This field contains a bit per nic H/W engine.
- * @active_nic_arc: This field contains a bit per ARC of the NIC engines.
- *                  Once an engine arc is initialized, its respective bit is
- *                  set. Each respective bit is cleared upon reset of its
- *                  corresponding ARC of the NIC engine.
- * @hw_events: array that holds all H/W events that are defined valid.
- * @events_stat: array that holds histogram of all received events.
- * @events_stat_aggregate: same as events_stat but doesn't get cleared on reset.
- * @num_of_valid_hw_events: used to hold the number of valid H/W events.
- * @nic_ports: array that holds all NIC ports manage structures.
- * @nic_macros: array that holds all NIC macro manage structures.
- * @core_info: core info to be used by the Ethernet driver.
- * @aux_ops: functions for core <-> aux drivers communication.
- * @flush_db_fifo: flag to force flush DB FIFO after a write.
- * @hbm_cfg: HBM subsystem settings
- * @hw_queues_lock_mutex: used by simulator instead of hw_queues_lock.
- * @queues_test_info: information used by the driver when testing the HW queues.
- */
+ 
 struct gaudi2_device {
 	int (*cpucp_info_get)(struct hl_device *hdev);
 
@@ -552,15 +453,11 @@ struct gaudi2_device {
 	u32				events_stat_aggregate[GAUDI2_EVENT_SIZE];
 	u32				num_of_valid_hw_events;
 
-	/* Queue testing */
+	 
 	struct gaudi2_queues_test_info	queues_test_info[GAUDI2_NUM_TESTED_QS];
 };
 
-/*
- * Types of the Gaudi2 IP blocks, used by special blocks iterator.
- * Required for scenarios where only particular block types can be
- * addressed (e.g., special PLDM images).
- */
+ 
 enum gaudi2_block_types {
 	GAUDI2_BLOCK_TYPE_PLL,
 	GAUDI2_BLOCK_TYPE_RTR,
@@ -612,4 +509,4 @@ int gaudi2_init_security(struct hl_device *hdev);
 void gaudi2_ack_protection_bits_errors(struct hl_device *hdev);
 int gaudi2_send_device_activity(struct hl_device *hdev, bool open);
 
-#endif /* GAUDI2P_H_ */
+#endif  

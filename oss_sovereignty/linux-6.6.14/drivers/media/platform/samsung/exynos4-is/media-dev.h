@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2011 - 2012 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef FIMC_MDEVICE_H_
 #define FIMC_MDEVICE_H_
@@ -30,7 +28,7 @@
 #define FIMC_MAX_CAMCLKS	2
 #define DEFAULT_SENSOR_CLK_FREQ	24000000U
 
-/* LCD/ISP Writeback clocks (PIXELASYNCMx) */
+ 
 enum {
 	CLK_IDX_WB_A,
 	CLK_IDX_WB_B,
@@ -46,11 +44,7 @@ enum fimc_subdev_index {
 	IDX_MAX,
 };
 
-/*
- * This structure represents a chain of media entities, including a data
- * source entity (e.g. an image sensor subdevice), a data capture entity
- * - a video capture device node and any remaining entities.
- */
+ 
 struct fimc_pipeline {
 	struct exynos_media_pipeline ep;
 	struct list_head list;
@@ -71,15 +65,7 @@ struct fimc_camclk_info {
 	unsigned long frequency;
 };
 
-/**
- * struct fimc_sensor_info - image data source subdev information
- * @pdata: sensor's attributes passed as media device's platform data
- * @asd: asynchronous subdev registration data structure
- * @subdev: image sensor v4l2 subdev
- * @host: fimc device the sensor is currently linked to
- *
- * This data structure applies to image sensor and the writeback subdevs.
- */
+ 
 struct fimc_sensor_info {
 	struct fimc_source_info pdata;
 	struct v4l2_async_connection *asd;
@@ -93,28 +79,7 @@ struct cam_clk {
 };
 #define to_cam_clk(_hw) container_of(_hw, struct cam_clk, hw)
 
-/**
- * struct fimc_md - fimc media device information
- * @csis: MIPI CSIS subdevs data
- * @sensor: array of registered sensor subdevs
- * @num_sensors: actual number of registered sensors
- * @camclk: external sensor clock information
- * @wbclk: external writeback clock information
- * @fimc_lite: array of registered fimc-lite devices
- * @fimc: array of registered fimc devices
- * @fimc_is: fimc-is data structure
- * @use_isp: set to true when FIMC-IS subsystem is used
- * @pmf: handle to the CAMCLK clock control FIMC helper device
- * @media_dev: top level media device
- * @v4l2_dev: top level v4l2_device holding up the subdevs
- * @pdev: platform device this media device is hooked up into
- * @clk_provider: CAMCLK clock provider structure
- * @subdev_notifier: notifier for the subdevs
- * @user_subdev_api: true if subdevs are not configured by the host driver
- * @slock: spinlock protecting @sensor array
- * @pipelines: list of pipelines
- * @link_setup_graph: graph iterator
- */
+ 
 struct fimc_md {
 	struct fimc_csis_info csis[CSIS_MAX_ENTITIES];
 	struct fimc_sensor_info sensor[FIMC_MAX_SENSORS];
@@ -183,7 +148,7 @@ static inline bool fimc_md_is_isp_available(struct device_node *node)
 }
 #else
 #define fimc_md_is_isp_available(node) (false)
-#endif /* CONFIG_OF */
+#endif  
 
 static inline struct v4l2_subdev *__fimc_md_get_subdev(
 				struct exynos_media_pipeline *ep,

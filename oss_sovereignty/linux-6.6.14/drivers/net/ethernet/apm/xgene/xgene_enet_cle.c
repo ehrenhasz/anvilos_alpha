@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Applied Micro X-Gene SoC Ethernet Classifier structures
- *
- * Copyright (c) 2016, Applied Micro Circuits Corporation
- * Authors: Khuong Dinh <kdinh@apm.com>
- *          Tanmay Inamdar <tinamdar@apm.com>
- *          Iyappan Subramanian <isubramanian@apm.com>
- */
+
+ 
 
 #include "xgene_enet_main.h"
 
-/* interfaces to convert structures to HW recognized bit formats */
+ 
 static void xgene_cle_sband_to_hw(u8 frag, enum xgene_cle_prot_version ver,
 				  enum xgene_cle_prot_type type, u32 len,
 				  u32 *reg)
@@ -130,7 +124,7 @@ static int xgene_cle_dram_wr(struct xgene_enet_cle *cle, u32 *data, u8 nregs,
 	u8 port, nparsers;
 	int ret = 0;
 
-	/* PTREE_RAM onwards, DRAM regions are common for all parsers */
+	 
 	nparsers = (type >= PTREE_RAM) ? 1 : cle->parsers;
 
 	for (i = 0; i < nparsers; i++) {
@@ -160,7 +154,7 @@ static void xgene_cle_enable_ptree(struct xgene_enet_pdata *pdata,
 	u32 offset = CLE_PORT_OFFSET;
 	u32 i;
 
-	/* 1G port has to advance 4 bytes and 10G has to advance 8 bytes */
+	 
 	ptree->start_pkt += cle->jump_bytes;
 	for (i = 0; i < cle->parsers; i++) {
 		if (cle->active_parser != PARSER_ALL)
@@ -195,7 +189,7 @@ static int xgene_cle_setup_dbptr(struct xgene_enet_pdata *pdata,
 
 static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 	{
-		/* PKT_TYPE_NODE */
+		 
 		.node_type = EWDN,
 		.last_node = 0,
 		.hdr_len_store = 1,
@@ -206,7 +200,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		.num_branches = 2,
 		.branch = {
 			{
-				/* IPV4 */
+				 
 				.valid = 1,
 				.next_packet_pointer = 22,
 				.jump_bw = JMP_FW,
@@ -231,7 +225,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		},
 	},
 	{
-		/* PKT_PROT_NODE */
+		 
 		.node_type = EWDN,
 		.last_node = 0,
 		.hdr_len_store = 1,
@@ -242,7 +236,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		.num_branches = 3,
 		.branch = {
 			{
-				/* TCP */
+				 
 				.valid = 1,
 				.next_packet_pointer = 26,
 				.jump_bw = JMP_FW,
@@ -254,7 +248,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0x00ff
 			},
 			{
-				/* UDP */
+				 
 				.valid = 1,
 				.next_packet_pointer = 26,
 				.jump_bw = JMP_FW,
@@ -279,7 +273,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		}
 	},
 	{
-		/* RSS_IPV4_TCP_NODE */
+		 
 		.node_type = EWDN,
 		.last_node = 0,
 		.hdr_len_store = 1,
@@ -290,7 +284,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		.num_branches = 6,
 		.branch = {
 			{
-				/* SRC IPV4 B01 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 28,
 				.jump_bw = JMP_FW,
@@ -302,7 +296,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* SRC IPV4 B23 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 30,
 				.jump_bw = JMP_FW,
@@ -314,7 +308,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* DST IPV4 B01 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 32,
 				.jump_bw = JMP_FW,
@@ -326,7 +320,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* DST IPV4 B23 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 34,
 				.jump_bw = JMP_FW,
@@ -338,7 +332,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* TCP SRC Port */
+				 
 				.valid = 0,
 				.next_packet_pointer = 36,
 				.jump_bw = JMP_FW,
@@ -350,7 +344,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* TCP DST Port */
+				 
 				.valid = 0,
 				.next_packet_pointer = 256,
 				.jump_bw = JMP_FW,
@@ -364,7 +358,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		}
 	},
 	{
-		/* RSS_IPV4_UDP_NODE */
+		 
 		.node_type = EWDN,
 		.last_node = 0,
 		.hdr_len_store = 1,
@@ -375,7 +369,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		.num_branches = 6,
 		.branch = {
 			{
-				/* SRC IPV4 B01 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 28,
 				.jump_bw = JMP_FW,
@@ -387,7 +381,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* SRC IPV4 B23 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 30,
 				.jump_bw = JMP_FW,
@@ -399,7 +393,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* DST IPV4 B01 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 32,
 				.jump_bw = JMP_FW,
@@ -411,7 +405,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* DST IPV4 B23 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 34,
 				.jump_bw = JMP_FW,
@@ -423,7 +417,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* TCP SRC Port */
+				 
 				.valid = 0,
 				.next_packet_pointer = 36,
 				.jump_bw = JMP_FW,
@@ -435,7 +429,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* TCP DST Port */
+				 
 				.valid = 0,
 				.next_packet_pointer = 258,
 				.jump_bw = JMP_FW,
@@ -449,7 +443,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		}
 	},
 	{
-		/* RSS_IPV4_OTHERS_NODE */
+		 
 		.node_type = EWDN,
 		.last_node = 0,
 		.hdr_len_store = 1,
@@ -460,7 +454,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 		.num_branches = 6,
 		.branch = {
 			{
-				/* SRC IPV4 B01 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 28,
 				.jump_bw = JMP_FW,
@@ -472,7 +466,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* SRC IPV4 B23 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 30,
 				.jump_bw = JMP_FW,
@@ -484,7 +478,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* DST IPV4 B01 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 32,
 				.jump_bw = JMP_FW,
@@ -496,7 +490,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* DST IPV4 B23 */
+				 
 				.valid = 0,
 				.next_packet_pointer = 34,
 				.jump_bw = JMP_FW,
@@ -508,7 +502,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* TCP SRC Port */
+				 
 				.valid = 0,
 				.next_packet_pointer = 36,
 				.jump_bw = JMP_FW,
@@ -520,7 +514,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 				.mask = 0xffff
 			},
 			{
-				/* TCP DST Port */
+				 
 				.valid = 0,
 				.next_packet_pointer = 260,
 				.jump_bw = JMP_FW,
@@ -535,7 +529,7 @@ static const struct xgene_cle_ptree_ewdn xgene_init_ptree_dn[] = {
 	},
 
 	{
-		/* LAST NODE */
+		 
 		.node_type = EWDN,
 		.last_node = 1,
 		.hdr_len_store = 1,
@@ -579,7 +573,7 @@ static int xgene_cle_setup_node(struct xgene_enet_pdata *pdata,
 			return ret;
 	}
 
-	/* continue node index for key node */
+	 
 	memset(buf, 0, sizeof(buf));
 	for (j = i; j < (ptree->num_kn + num_dn); j++) {
 		xgene_cle_kn_to_hw(&kn[j - num_dn], buf);
@@ -650,12 +644,12 @@ static int xgene_cle_set_rss_sband(struct xgene_enet_cle *cle)
 	u32 hdr_len;
 	int ret;
 
-	/* Sideband: IPV4/TCP packets */
+	 
 	hdr_len = (mac_hdr_len << 5) | ipv4_ihl;
 	xgene_cle_sband_to_hw(0, XGENE_CLE_IPV4, XGENE_CLE_TCP, hdr_len, &reg);
 	sband = reg;
 
-	/* Sideband: IPv4/UDP packets */
+	 
 	hdr_len = (mac_hdr_len << 5) | ipv4_ihl;
 	xgene_cle_sband_to_hw(1, XGENE_CLE_IPV4, XGENE_CLE_UDP, hdr_len, &reg);
 	sband |= (reg << 16);
@@ -664,13 +658,13 @@ static int xgene_cle_set_rss_sband(struct xgene_enet_cle *cle)
 	if (ret)
 		return ret;
 
-	/* Sideband: IPv4/RAW packets */
+	 
 	hdr_len = (mac_hdr_len << 5) | ipv4_ihl;
 	xgene_cle_sband_to_hw(0, XGENE_CLE_IPV4, XGENE_CLE_OTHER,
 			      hdr_len, &reg);
 	sband = reg;
 
-	/* Sideband: Ethernet II/RAW packets */
+	 
 	hdr_len = (mac_hdr_len << 5);
 	xgene_cle_sband_to_hw(0, XGENE_CLE_IPV4, XGENE_CLE_OTHER,
 			      hdr_len, &reg);
@@ -685,7 +679,7 @@ static int xgene_cle_set_rss_sband(struct xgene_enet_cle *cle)
 
 static int xgene_cle_set_rss_skeys(struct xgene_enet_cle *cle)
 {
-	u32 secret_key_ipv4[4];  /* 16 Bytes*/
+	u32 secret_key_ipv4[4];   
 	int ret = 0;
 
 	get_random_bytes(secret_key_ipv4, 16);
@@ -740,17 +734,17 @@ static int xgene_cle_setup_rss(struct xgene_enet_pdata *pdata)
 		else
 			offset = i * CLE_PORT_OFFSET;
 
-		/* enable RSS */
+		 
 		val = (RSS_IPV4_12B << 1) | 0x1;
 		writel(val, base + RSS_CTRL0 + offset);
 	}
 
-	/* setup sideband data */
+	 
 	ret = xgene_cle_set_rss_sband(cle);
 	if (ret)
 		return ret;
 
-	/* setup indirection table */
+	 
 	ret = xgene_cle_set_rss_idt(pdata);
 	if (ret)
 		return ret;
@@ -771,7 +765,7 @@ static int xgene_enet_cle_init(struct xgene_enet_pdata *pdata)
 		return -EINVAL;
 
 	ptree = &enet_cle->ptree;
-	ptree->start_pkt = 12; /* Ethertype */
+	ptree->start_pkt = 12;  
 
 	ret = xgene_cle_setup_rss(pdata);
 	if (ret) {

@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * drivers/of/property.c - Procedures for accessing and interpreting
- *			   Devicetree properties and graphs.
- *
- * Initially created by copying procedures from drivers/of/base.c. This
- * file contains the OF property as well as the OF graph interface
- * functions.
- *
- * Paul Mackerras	August 1996.
- * Copyright (C) 1996-2005 Paul Mackerras.
- *
- *  Adapted for 64bit PowerPC by Dave Engebretsen and Peter Bergner.
- *    {engebret|bergner}@us.ibm.com
- *
- *  Adapted for sparc and sparc64 by David S. Miller davem@davemloft.net
- *
- *  Reconsolidated from arch/x/kernel/prom.c by Stephen Rothwell and
- *  Grant Likely.
- */
+
+ 
 
 #define pr_fmt(fmt)	"OF: " fmt
 
@@ -31,13 +13,7 @@
 
 #include "of_private.h"
 
-/**
- * of_graph_is_present() - check graph's presence
- * @node: pointer to device_node containing graph port
- *
- * Return: True if @node has a port or ports (with a port) sub-node,
- * false otherwise.
- */
+ 
 bool of_graph_is_present(const struct device_node *node)
 {
 	struct device_node *ports, *port;
@@ -54,20 +30,7 @@ bool of_graph_is_present(const struct device_node *node)
 }
 EXPORT_SYMBOL(of_graph_is_present);
 
-/**
- * of_property_count_elems_of_size - Count the number of elements in a property
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @elem_size:	size of the individual element
- *
- * Search for a property in a device node and count the number of elements of
- * size elem_size in it.
- *
- * Return: The number of elements on sucess, -EINVAL if the property does not
- * exist or its length does not match a multiple of elem_size and -ENODATA if
- * the property does not have a value.
- */
+ 
 int of_property_count_elems_of_size(const struct device_node *np,
 				const char *propname, int elem_size)
 {
@@ -88,22 +51,7 @@ int of_property_count_elems_of_size(const struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(of_property_count_elems_of_size);
 
-/**
- * of_find_property_value_of_size
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @min:	minimum allowed length of property value
- * @max:	maximum allowed length of property value (0 means unlimited)
- * @len:	if !=NULL, actual length is written to here
- *
- * Search for a property in a device node and valid the requested size.
- *
- * Return: The property value on success, -EINVAL if the property does not
- * exist, -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data is too small or too large.
- *
- */
+ 
 static void *of_find_property_value_of_size(const struct device_node *np,
 			const char *propname, u32 min, u32 max, size_t *len)
 {
@@ -124,23 +72,7 @@ static void *of_find_property_value_of_size(const struct device_node *np,
 	return prop->value;
 }
 
-/**
- * of_property_read_u32_index - Find and read a u32 from a multi-value property.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @index:	index of the u32 in the list of values
- * @out_value:	pointer to return value, modified only if no error.
- *
- * Search for a property in a device node and read nth 32-bit value from
- * it.
- *
- * Return: 0 on success, -EINVAL if the property does not exist,
- * -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data isn't large enough.
- *
- * The out_value is modified only if a valid u32 value can be decoded.
- */
+ 
 int of_property_read_u32_index(const struct device_node *np,
 				       const char *propname,
 				       u32 index, u32 *out_value)
@@ -158,23 +90,7 @@ int of_property_read_u32_index(const struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(of_property_read_u32_index);
 
-/**
- * of_property_read_u64_index - Find and read a u64 from a multi-value property.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @index:	index of the u64 in the list of values
- * @out_value:	pointer to return value, modified only if no error.
- *
- * Search for a property in a device node and read nth 64-bit value from
- * it.
- *
- * Return: 0 on success, -EINVAL if the property does not exist,
- * -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data isn't large enough.
- *
- * The out_value is modified only if a valid u64 value can be decoded.
- */
+ 
 int of_property_read_u64_index(const struct device_node *np,
 				       const char *propname,
 				       u32 index, u64 *out_value)
@@ -191,30 +107,7 @@ int of_property_read_u64_index(const struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(of_property_read_u64_index);
 
-/**
- * of_property_read_variable_u8_array - Find and read an array of u8 from a
- * property, with bounds on the minimum and maximum array size.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_values:	pointer to found values.
- * @sz_min:	minimum number of array elements to read
- * @sz_max:	maximum number of array elements to read, if zero there is no
- *		upper limit on the number of elements in the dts entry but only
- *		sz_min will be read.
- *
- * Search for a property in a device node and read 8-bit value(s) from
- * it.
- *
- * dts entry of array should be like:
- *  ``property = /bits/ 8 <0x50 0x60 0x70>;``
- *
- * Return: The number of elements read on success, -EINVAL if the property
- * does not exist, -ENODATA if property does not have a value, and -EOVERFLOW
- * if the property data is smaller than sz_min or longer than sz_max.
- *
- * The out_values is modified only if a valid u8 value can be decoded.
- */
+ 
 int of_property_read_variable_u8_array(const struct device_node *np,
 					const char *propname, u8 *out_values,
 					size_t sz_min, size_t sz_max)
@@ -241,30 +134,7 @@ int of_property_read_variable_u8_array(const struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(of_property_read_variable_u8_array);
 
-/**
- * of_property_read_variable_u16_array - Find and read an array of u16 from a
- * property, with bounds on the minimum and maximum array size.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_values:	pointer to found values.
- * @sz_min:	minimum number of array elements to read
- * @sz_max:	maximum number of array elements to read, if zero there is no
- *		upper limit on the number of elements in the dts entry but only
- *		sz_min will be read.
- *
- * Search for a property in a device node and read 16-bit value(s) from
- * it.
- *
- * dts entry of array should be like:
- *  ``property = /bits/ 16 <0x5000 0x6000 0x7000>;``
- *
- * Return: The number of elements read on success, -EINVAL if the property
- * does not exist, -ENODATA if property does not have a value, and -EOVERFLOW
- * if the property data is smaller than sz_min or longer than sz_max.
- *
- * The out_values is modified only if a valid u16 value can be decoded.
- */
+ 
 int of_property_read_variable_u16_array(const struct device_node *np,
 					const char *propname, u16 *out_values,
 					size_t sz_min, size_t sz_max)
@@ -291,27 +161,7 @@ int of_property_read_variable_u16_array(const struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(of_property_read_variable_u16_array);
 
-/**
- * of_property_read_variable_u32_array - Find and read an array of 32 bit
- * integers from a property, with bounds on the minimum and maximum array size.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_values:	pointer to return found values.
- * @sz_min:	minimum number of array elements to read
- * @sz_max:	maximum number of array elements to read, if zero there is no
- *		upper limit on the number of elements in the dts entry but only
- *		sz_min will be read.
- *
- * Search for a property in a device node and read 32-bit value(s) from
- * it.
- *
- * Return: The number of elements read on success, -EINVAL if the property
- * does not exist, -ENODATA if property does not have a value, and -EOVERFLOW
- * if the property data is smaller than sz_min or longer than sz_max.
- *
- * The out_values is modified only if a valid u32 value can be decoded.
- */
+ 
 int of_property_read_variable_u32_array(const struct device_node *np,
 			       const char *propname, u32 *out_values,
 			       size_t sz_min, size_t sz_max)
@@ -338,21 +188,7 @@ int of_property_read_variable_u32_array(const struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(of_property_read_variable_u32_array);
 
-/**
- * of_property_read_u64 - Find and read a 64 bit integer from a property
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_value:	pointer to return value, modified only if return value is 0.
- *
- * Search for a property in a device node and read a 64-bit value from
- * it.
- *
- * Return: 0 on success, -EINVAL if the property does not exist,
- * -ENODATA if property does not have a value, and -EOVERFLOW if the
- * property data isn't large enough.
- *
- * The out_value is modified only if a valid u64 value can be decoded.
- */
+ 
 int of_property_read_u64(const struct device_node *np, const char *propname,
 			 u64 *out_value)
 {
@@ -369,27 +205,7 @@ int of_property_read_u64(const struct device_node *np, const char *propname,
 }
 EXPORT_SYMBOL_GPL(of_property_read_u64);
 
-/**
- * of_property_read_variable_u64_array - Find and read an array of 64 bit
- * integers from a property, with bounds on the minimum and maximum array size.
- *
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_values:	pointer to found values.
- * @sz_min:	minimum number of array elements to read
- * @sz_max:	maximum number of array elements to read, if zero there is no
- *		upper limit on the number of elements in the dts entry but only
- *		sz_min will be read.
- *
- * Search for a property in a device node and read 64-bit value(s) from
- * it.
- *
- * Return: The number of elements read on success, -EINVAL if the property
- * does not exist, -ENODATA if property does not have a value, and -EOVERFLOW
- * if the property data is smaller than sz_min or longer than sz_max.
- *
- * The out_values is modified only if a valid u64 value can be decoded.
- */
+ 
 int of_property_read_variable_u64_array(const struct device_node *np,
 			       const char *propname, u64 *out_values,
 			       size_t sz_min, size_t sz_max)
@@ -418,25 +234,7 @@ int of_property_read_variable_u64_array(const struct device_node *np,
 }
 EXPORT_SYMBOL_GPL(of_property_read_variable_u64_array);
 
-/**
- * of_property_read_string - Find and read a string from a property
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_string:	pointer to null terminated return string, modified only if
- *		return value is 0.
- *
- * Search for a property in a device tree node and retrieve a null
- * terminated string value (pointer to data, not a copy).
- *
- * Return: 0 on success, -EINVAL if the property does not exist, -ENODATA if
- * property does not have a value, and -EILSEQ if the string is not
- * null-terminated within the length of the property data.
- *
- * Note that the empty string "" has length of 1, thus -ENODATA cannot
- * be interpreted as an empty string.
- *
- * The out_string pointer is modified only if a valid string can be decoded.
- */
+ 
 int of_property_read_string(const struct device_node *np, const char *propname,
 				const char **out_string)
 {
@@ -452,15 +250,7 @@ int of_property_read_string(const struct device_node *np, const char *propname,
 }
 EXPORT_SYMBOL_GPL(of_property_read_string);
 
-/**
- * of_property_match_string() - Find string in a list and return index
- * @np: pointer to node containing string list property
- * @propname: string list property name
- * @string: pointer to string to search for in string list
- *
- * This function searches a string list property and returns the index
- * of a specific string value.
- */
+ 
 int of_property_match_string(const struct device_node *np, const char *propname,
 			     const char *string)
 {
@@ -483,23 +273,13 @@ int of_property_match_string(const struct device_node *np, const char *propname,
 			return -EILSEQ;
 		pr_debug("comparing %s with %s\n", string, p);
 		if (strcmp(string, p) == 0)
-			return i; /* Found it; return index */
+			return i;  
 	}
 	return -ENODATA;
 }
 EXPORT_SYMBOL_GPL(of_property_match_string);
 
-/**
- * of_property_read_string_helper() - Utility helper for parsing string properties
- * @np:		device node from which the property value is to be read.
- * @propname:	name of the property to be searched.
- * @out_strs:	output array of string pointers.
- * @sz:		number of array elements to read.
- * @skip:	Number of strings to skip over at beginning of list.
- *
- * Don't call this function directly. It is a utility helper for the
- * of_property_read_string*() family of functions.
- */
+ 
 int of_property_read_string_helper(const struct device_node *np,
 				   const char *propname, const char **out_strs,
 				   size_t sz, int skip)
@@ -568,13 +348,7 @@ const char *of_prop_next_string(struct property *prop, const char *cur)
 }
 EXPORT_SYMBOL_GPL(of_prop_next_string);
 
-/**
- * of_graph_parse_endpoint() - parse common endpoint node properties
- * @node: pointer to endpoint device_node
- * @endpoint: pointer to the OF endpoint data structure
- *
- * The caller should hold a reference to @node.
- */
+ 
 int of_graph_parse_endpoint(const struct device_node *node,
 			    struct of_endpoint *endpoint)
 {
@@ -586,10 +360,7 @@ int of_graph_parse_endpoint(const struct device_node *node,
 	memset(endpoint, 0, sizeof(*endpoint));
 
 	endpoint->local_node = node;
-	/*
-	 * It doesn't matter whether the two calls below succeed.
-	 * If they don't then the default value 0 is used.
-	 */
+	 
 	of_property_read_u32(port_node, "reg", &endpoint->port);
 	of_property_read_u32(node, "reg", &endpoint->id);
 
@@ -599,14 +370,7 @@ int of_graph_parse_endpoint(const struct device_node *node,
 }
 EXPORT_SYMBOL(of_graph_parse_endpoint);
 
-/**
- * of_graph_get_port_by_id() - get the port matching a given id
- * @parent: pointer to the parent device node
- * @id: id of the port
- *
- * Return: A 'port' node pointer with refcount incremented. The caller
- * has to use of_node_put() on it when done.
- */
+ 
 struct device_node *of_graph_get_port_by_id(struct device_node *parent, u32 id)
 {
 	struct device_node *node, *port;
@@ -631,14 +395,7 @@ struct device_node *of_graph_get_port_by_id(struct device_node *parent, u32 id)
 }
 EXPORT_SYMBOL(of_graph_get_port_by_id);
 
-/**
- * of_graph_get_next_endpoint() - get next endpoint node
- * @parent: pointer to the parent device node
- * @prev: previous endpoint node, or NULL to get first
- *
- * Return: An 'endpoint' node pointer with refcount incremented. Refcount
- * of the passed @prev node is decremented.
- */
+ 
 struct device_node *of_graph_get_next_endpoint(const struct device_node *parent,
 					struct device_node *prev)
 {
@@ -648,11 +405,7 @@ struct device_node *of_graph_get_next_endpoint(const struct device_node *parent,
 	if (!parent)
 		return NULL;
 
-	/*
-	 * Start by locating the port node. If no previous endpoint is specified
-	 * search for the first port node, otherwise get the previous endpoint
-	 * parent port node.
-	 */
+	 
 	if (!prev) {
 		struct device_node *node;
 
@@ -675,18 +428,14 @@ struct device_node *of_graph_get_next_endpoint(const struct device_node *parent,
 	}
 
 	while (1) {
-		/*
-		 * Now that we have a port node, get the next endpoint by
-		 * getting the next child. If the previous endpoint is NULL this
-		 * will return the first child.
-		 */
+		 
 		endpoint = of_get_next_child(port, prev);
 		if (endpoint) {
 			of_node_put(port);
 			return endpoint;
 		}
 
-		/* No more endpoints under this port, try the next one. */
+		 
 		prev = NULL;
 
 		do {
@@ -698,16 +447,7 @@ struct device_node *of_graph_get_next_endpoint(const struct device_node *parent,
 }
 EXPORT_SYMBOL(of_graph_get_next_endpoint);
 
-/**
- * of_graph_get_endpoint_by_regs() - get endpoint node of specific identifiers
- * @parent: pointer to the parent device node
- * @port_reg: identifier (value of reg property) of the parent port node
- * @reg: identifier (value of reg property) of the endpoint node
- *
- * Return: An 'endpoint' node pointer which is identified by reg and at the same
- * is the child of a port node identified by port_reg. reg and port_reg are
- * ignored when they are -1. Use of_node_put() on the pointer when done.
- */
+ 
 struct device_node *of_graph_get_endpoint_by_regs(
 	const struct device_node *parent, int port_reg, int reg)
 {
@@ -725,27 +465,15 @@ struct device_node *of_graph_get_endpoint_by_regs(
 }
 EXPORT_SYMBOL(of_graph_get_endpoint_by_regs);
 
-/**
- * of_graph_get_remote_endpoint() - get remote endpoint node
- * @node: pointer to a local endpoint device_node
- *
- * Return: Remote endpoint node associated with remote endpoint node linked
- *	   to @node. Use of_node_put() on it when done.
- */
+ 
 struct device_node *of_graph_get_remote_endpoint(const struct device_node *node)
 {
-	/* Get remote endpoint node. */
+	 
 	return of_parse_phandle(node, "remote-endpoint", 0);
 }
 EXPORT_SYMBOL(of_graph_get_remote_endpoint);
 
-/**
- * of_graph_get_port_parent() - get port's parent node
- * @node: pointer to a local endpoint device_node
- *
- * Return: device node associated with endpoint node linked
- *	   to @node. Use of_node_put() on it when done.
- */
+ 
 struct device_node *of_graph_get_port_parent(struct device_node *node)
 {
 	unsigned int depth;
@@ -753,13 +481,10 @@ struct device_node *of_graph_get_port_parent(struct device_node *node)
 	if (!node)
 		return NULL;
 
-	/*
-	 * Preserve usecount for passed in node as of_get_next_parent()
-	 * will do of_node_put() on it.
-	 */
+	 
 	of_node_get(node);
 
-	/* Walk 3 levels up only if there is 'ports' node. */
+	 
 	for (depth = 3; depth && node; depth--) {
 		node = of_get_next_parent(node);
 		if (depth == 2 && !of_node_name_eq(node, "ports"))
@@ -769,19 +494,13 @@ struct device_node *of_graph_get_port_parent(struct device_node *node)
 }
 EXPORT_SYMBOL(of_graph_get_port_parent);
 
-/**
- * of_graph_get_remote_port_parent() - get remote port's parent node
- * @node: pointer to a local endpoint device_node
- *
- * Return: Remote device node associated with remote endpoint node linked
- *	   to @node. Use of_node_put() on it when done.
- */
+ 
 struct device_node *of_graph_get_remote_port_parent(
 			       const struct device_node *node)
 {
 	struct device_node *np, *pp;
 
-	/* Get remote endpoint node. */
+	 
 	np = of_graph_get_remote_endpoint(node);
 
 	pp = of_graph_get_port_parent(np);
@@ -792,18 +511,12 @@ struct device_node *of_graph_get_remote_port_parent(
 }
 EXPORT_SYMBOL(of_graph_get_remote_port_parent);
 
-/**
- * of_graph_get_remote_port() - get remote port node
- * @node: pointer to a local endpoint device_node
- *
- * Return: Remote port node associated with remote endpoint node linked
- * to @node. Use of_node_put() on it when done.
- */
+ 
 struct device_node *of_graph_get_remote_port(const struct device_node *node)
 {
 	struct device_node *np;
 
-	/* Get remote endpoint node. */
+	 
 	np = of_graph_get_remote_endpoint(node);
 	if (!np)
 		return NULL;
@@ -823,15 +536,7 @@ int of_graph_get_endpoint_count(const struct device_node *np)
 }
 EXPORT_SYMBOL(of_graph_get_endpoint_count);
 
-/**
- * of_graph_get_remote_node() - get remote parent device_node for given port/endpoint
- * @node: pointer to parent device_node containing graph port/endpoint
- * @port: identifier (value of reg property) of the parent port node
- * @endpoint: identifier (value of reg property) of the endpoint node
- *
- * Return: Remote device node associated with remote endpoint node linked
- * to @node. Use of_node_put() on it when done.
- */
+ 
 struct device_node *of_graph_get_remote_node(const struct device_node *node,
 					     u32 port, u32 endpoint)
 {
@@ -940,7 +645,7 @@ static const char *of_fwnode_get_name(const struct fwnode_handle *fwnode)
 
 static const char *of_fwnode_get_name_prefix(const struct fwnode_handle *fwnode)
 {
-	/* Root needs no prefix here (its name is "/"). */
+	 
 	if (!to_of_node(fwnode)->parent)
 		return "";
 
@@ -1027,12 +732,12 @@ of_fwnode_graph_get_port_parent(struct fwnode_handle *fwnode)
 {
 	struct device_node *np;
 
-	/* Get the parent of the port */
+	 
 	np = of_get_parent(to_of_node(fwnode));
 	if (!np)
 		return NULL;
 
-	/* Is this the "ports" node? If not, it's the port parent. */
+	 
 	if (!of_node_name_eq(np, "ports"))
 		return of_fwnode_handle(np);
 
@@ -1097,7 +802,7 @@ static void of_link_to_phandle(struct device_node *con_np,
 {
 	struct device_node *tmp_np = of_node_get(sup_np);
 
-	/* Check that sup_np and its ancestors are available. */
+	 
 	while (tmp_np) {
 		if (of_fwnode_handle(tmp_np)->dev) {
 			of_node_put(tmp_np);
@@ -1115,25 +820,7 @@ static void of_link_to_phandle(struct device_node *con_np,
 	fwnode_link_add(of_fwnode_handle(con_np), of_fwnode_handle(sup_np));
 }
 
-/**
- * parse_prop_cells - Property parsing function for suppliers
- *
- * @np:		Pointer to device tree node containing a list
- * @prop_name:	Name of property to be parsed. Expected to hold phandle values
- * @index:	For properties holding a list of phandles, this is the index
- *		into the list.
- * @list_name:	Property name that is known to contain list of phandle(s) to
- *		supplier(s)
- * @cells_name:	property name that specifies phandles' arguments count
- *
- * This is a helper function to parse properties that have a known fixed name
- * and are a list of phandles and phandle arguments.
- *
- * Returns:
- * - phandle node pointer with refcount incremented. Caller must of_node_put()
- *   on it when done.
- * - NULL if no phandle found at index
- */
+ 
 static struct device_node *parse_prop_cells(struct device_node *np,
 					    const char *prop_name, int index,
 					    const char *list_name,
@@ -1169,25 +856,7 @@ static int strcmp_suffix(const char *str, const char *suffix)
 	return strcmp(str + len - suffix_len, suffix);
 }
 
-/**
- * parse_suffix_prop_cells - Suffix property parsing function for suppliers
- *
- * @np:		Pointer to device tree node containing a list
- * @prop_name:	Name of property to be parsed. Expected to hold phandle values
- * @index:	For properties holding a list of phandles, this is the index
- *		into the list.
- * @suffix:	Property suffix that is known to contain list of phandle(s) to
- *		supplier(s)
- * @cells_name:	property name that specifies phandles' arguments count
- *
- * This is a helper function to parse properties that have a known fixed suffix
- * and are a list of phandles and phandle arguments.
- *
- * Returns:
- * - phandle node pointer with refcount incremented. Caller must of_node_put()
- *   on it when done.
- * - NULL if no phandle found at index
- */
+ 
 static struct device_node *parse_suffix_prop_cells(struct device_node *np,
 					    const char *prop_name, int index,
 					    const char *suffix,
@@ -1212,26 +881,7 @@ static struct device_node *parse_##fname(struct device_node *np,	     \
 	return parse_suffix_prop_cells(np, prop_name, index, suffix, cells); \
 }
 
-/**
- * struct supplier_bindings - Property parsing functions for suppliers
- *
- * @parse_prop: function name
- *	parse_prop() finds the node corresponding to a supplier phandle
- * @parse_prop.np: Pointer to device node holding supplier phandle property
- * @parse_prop.prop_name: Name of property holding a phandle value
- * @parse_prop.index: For properties holding a list of phandles, this is the
- *		      index into the list
- * @optional: Describes whether a supplier is mandatory or not
- * @node_not_dev: The consumer node containing the property is never converted
- *		  to a struct device. Instead, parse ancestor nodes for the
- *		  compatible property to find a node corresponding to a device.
- *
- * Returns:
- * parse_prop() return values are
- * - phandle node pointer with refcount incremented. Caller must of_node_put()
- *   on it when done.
- * - NULL if no phandle found at index
- */
+ 
 struct supplier_bindings {
 	struct device_node *(*parse_prop)(struct device_node *np,
 					  const char *prop_name, int index);
@@ -1297,10 +947,7 @@ static struct device_node *parse_gpio_compat(struct device_node *np,
 	if (strcmp(prop_name, "gpio") && strcmp(prop_name, "gpios"))
 		return NULL;
 
-	/*
-	 * Ignore node with gpio-hog property since its gpios are all provided
-	 * by its parent.
-	 */
+	 
 	if (of_property_read_bool(np, "gpio-hog"))
 		return NULL;
 
@@ -1364,25 +1011,7 @@ static const struct supplier_bindings of_supplier_bindings[] = {
 	{}
 };
 
-/**
- * of_link_property - Create device links to suppliers listed in a property
- * @con_np: The consumer device tree node which contains the property
- * @prop_name: Name of property to be parsed
- *
- * This function checks if the property @prop_name that is present in the
- * @con_np device tree node is one of the known common device tree bindings
- * that list phandles to suppliers. If @prop_name isn't one, this function
- * doesn't do anything.
- *
- * If @prop_name is one, this function attempts to create fwnode links from the
- * consumer device tree node @con_np to all the suppliers device tree nodes
- * listed in @prop_name.
- *
- * Any failed attempt to create a fwnode link will NOT result in an immediate
- * return.  of_link_property() must create links to all the available supplier
- * device tree nodes even when attempts to create a link to one or more
- * suppliers fail.
- */
+ 
 static int of_link_property(struct device_node *con_np, const char *prop_name)
 {
 	struct device_node *phandle;
@@ -1390,7 +1019,7 @@ static int of_link_property(struct device_node *con_np, const char *prop_name)
 	unsigned int i = 0;
 	bool matched = false;
 
-	/* Do not stop at first failed link, link all available suppliers. */
+	 
 	while (!matched && s->parse_prop) {
 		if (s->optional && !fw_devlink_is_strict()) {
 			s++;

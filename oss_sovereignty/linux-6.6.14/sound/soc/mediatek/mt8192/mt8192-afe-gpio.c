@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8192-afe-gpio.c  --  Mediatek 8192 afe gpio ctrl
-//
-// Copyright (c) 2020 MediaTek Inc.
-// Author: Shane Chien <shane.chien@mediatek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/gpio.h>
 #include <linux/pinctrl/consumer.h>
@@ -154,7 +154,7 @@ int mt8192_afe_gpio_init(struct device *dev)
 
 	mt8192_afe_gpio_select(dev, MT8192_AFE_GPIO_CLK_MOSI_ON);
 
-	/* gpio status init */
+	 
 	mt8192_afe_gpio_request(dev, false, MT8192_DAI_ADDA, 0);
 	mt8192_afe_gpio_request(dev, false, MT8192_DAI_ADDA, 1);
 

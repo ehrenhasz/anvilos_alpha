@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm5110.c  --  WM5110 ALSA SoC Audio driver
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -431,7 +425,7 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
 
 	lold = dre & (1 << mc->shift);
 	rold = dre & (1 << mc->rshift);
-	/* Enables are channel wise swapped from the DRE enables */
+	 
 	lena = ena & (1 << mc->rshift);
 	rena = ena & (1 << mc->shift);
 
@@ -448,7 +442,7 @@ static int wm5110_put_dre(struct snd_kcontrol *kcontrol,
 		goto err;
 	}
 
-	/* Force reset of PGA volumes, if turning DRE off */
+	 
 	if (!lnew && lold)
 		wm5110_clear_pga_volume(arizona, mc->shift);
 
@@ -471,10 +465,7 @@ static int wm5110_in_pga_get(struct snd_kcontrol *kcontrol,
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 	int ret;
 
-	/*
-	 * PGA Volume is also used as part of the enable sequence, so
-	 * usage of it should be avoided whilst that is running.
-	 */
+	 
 	snd_soc_dapm_mutex_lock(dapm);
 
 	ret = snd_soc_get_volsw_range(kcontrol, ucontrol);
@@ -491,10 +482,7 @@ static int wm5110_in_pga_put(struct snd_kcontrol *kcontrol,
 	struct snd_soc_dapm_context *dapm = snd_soc_component_get_dapm(component);
 	int ret;
 
-	/*
-	 * PGA Volume is also used as part of the enable sequence, so
-	 * usage of it should be avoided whilst that is running.
-	 */
+	 
 	snd_soc_dapm_mutex_lock(dapm);
 
 	ret = snd_soc_put_volsw_range(kcontrol, ucontrol);
@@ -2432,7 +2420,7 @@ static int wm5110_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	/* This may return -EPROBE_DEFER, so do this early on */
+	 
 	ret = arizona_jack_codec_dev_probe(&wm5110->core, &pdev->dev);
 	if (ret)
 		return ret;
@@ -2447,7 +2435,7 @@ static int wm5110_probe(struct platform_device *pdev)
 			 ARIZONA_IRQ_FLL2_LOCK, ARIZONA_IRQ_FLL2_CLOCK_OK,
 			 &wm5110->fll[1]);
 
-	/* SR2 fixed at 8kHz, SR3 fixed at 16kHz */
+	 
 	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_2,
 			   ARIZONA_SAMPLE_RATE_2_MASK, 0x11);
 	regmap_update_bits(arizona->regmap, ARIZONA_SAMPLE_RATE_3,
@@ -2456,7 +2444,7 @@ static int wm5110_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(wm5110_dai); i++)
 		arizona_init_dai(&wm5110->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(wm5110_digital_vu); i++)
 		regmap_update_bits(arizona->regmap, wm5110_digital_vu[i],
 				   WM5110_DIG_VU, WM5110_DIG_VU);

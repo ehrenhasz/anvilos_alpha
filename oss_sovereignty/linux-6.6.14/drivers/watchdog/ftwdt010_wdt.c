@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Watchdog driver for Faraday Technology FTWDT010
- *
- * Copyright (C) 2017 Linus Walleij <linus.walleij@linaro.org>
- *
- * Inspired by the out-of-tree drivers from OpenWRT:
- * Copyright (C) 2009 Paulius Zaleckas <paulius.zaleckas@teltonika.lt>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/init.h>
@@ -32,7 +25,7 @@
 #define WDCR_SYS_RST		BIT(1)
 #define WDCR_ENABLE		BIT(0)
 
-#define WDT_CLOCK		5000000		/* 5 MHz */
+#define WDT_CLOCK		5000000		 
 
 struct ftwdt010_wdt {
 	struct watchdog_device	wdd;
@@ -55,7 +48,7 @@ static void ftwdt010_enable(struct ftwdt010_wdt *gwdt,
 
 	writel(timeout * WDT_CLOCK, gwdt->base + FTWDT010_WDLOAD);
 	writel(WDRESTART_MAGIC, gwdt->base + FTWDT010_WDRESTART);
-	/* set clock before enabling */
+	 
 	enable = WDCR_CLOCK_5MHZ | WDCR_SYS_RST;
 	writel(enable, gwdt->base + FTWDT010_WDCR);
 	if (need_irq)
@@ -156,16 +149,13 @@ static int ftwdt010_wdt_probe(struct platform_device *pdev)
 	gwdt->wdd.max_timeout = 0xFFFFFFFF / WDT_CLOCK;
 	gwdt->wdd.parent = dev;
 
-	/*
-	 * If 'timeout-sec' unspecified in devicetree, assume a 13 second
-	 * default.
-	 */
+	 
 	gwdt->wdd.timeout = 13U;
 	watchdog_init_timeout(&gwdt->wdd, 0, dev);
 
 	reg = readw(gwdt->base + FTWDT010_WDCR);
 	if (reg & WDCR_ENABLE) {
-		/* Watchdog was enabled by the bootloader, disable it. */
+		 
 		reg &= ~WDCR_ENABLE;
 		writel(reg, gwdt->base + FTWDT010_WDCR);
 	}
@@ -183,7 +173,7 @@ static int ftwdt010_wdt_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Set up platform driver data */
+	 
 	platform_set_drvdata(pdev, gwdt);
 	dev_info(dev, "FTWDT010 watchdog driver enabled\n");
 

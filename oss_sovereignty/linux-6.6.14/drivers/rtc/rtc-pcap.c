@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  pcap rtc code for Motorola EZX phones
- *
- *  Copyright (c) 2008 guiming zhuo <gmzhuo@gmail.com>
- *  Copyright (c) 2009 Daniel Ribeiro <drwyrm@gmail.com>
- *
- *  Based on Motorola's rtc.c Copyright (c) 2003-2005 Motorola
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -42,8 +35,8 @@ static int pcap_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	struct pcap_rtc *pcap_rtc = dev_get_drvdata(dev);
 	struct rtc_time *tm = &alrm->time;
 	unsigned long secs;
-	u32 tod;	/* time of day, seconds since midnight */
-	u32 days;	/* days since 1/1/1970 */
+	u32 tod;	 
+	u32 days;	 
 
 	ezx_pcap_read(pcap_rtc->pcap, PCAP_REG_RTC_TODA, &tod);
 	secs = tod & PCAP_RTC_TOD_MASK;

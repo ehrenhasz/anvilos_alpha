@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2013 Martin Matuska <mm@FreeBSD.org>. All rights reserved.
- */
+ 
 #include "../../libzfs_impl.h"
 #include <libzfs.h>
 #include <libzutil.h>
@@ -52,7 +31,7 @@ execvPe(const char *name, const char *path, char * const *argv,
 
 	eacces = 0;
 
-	/* If it's an absolute or relative path name, it's easy. */
+	 
 	if (strchr(name, '/')) {
 		bp = name;
 		op = NULL;
@@ -60,7 +39,7 @@ execvPe(const char *name, const char *path, char * const *argv,
 	}
 	bp = buf;
 
-	/* If it's an empty path name, fail in the usual POSIX way. */
+	 
 	if (*name == '\0') {
 		errno = ENOENT;
 		return (-1);
@@ -71,31 +50,24 @@ execvPe(const char *name, const char *path, char * const *argv,
 	while (op != NULL) {
 		np = strchrnul(op, ':');
 
-		/*
-		 * It's a SHELL path -- double, leading and trailing colons
-		 * mean the current directory.
-		 */
+		 
 		if (np == op) {
-			/* Empty component. */
+			 
 			p = ".";
 			lp = 1;
 		} else {
-			/* Non-empty component. */
+			 
 			p = op;
 			lp = np - op;
 		}
 
-		/* Advance to the next component or terminate after this. */
+		 
 		if (*np == '\0')
 			op = NULL;
 		else
 			op = np + 1;
 
-		/*
-		 * If the path is too long complain.  This is a possible
-		 * security issue; given a way to make the path too long
-		 * the user may execute the wrong program.
-		 */
+		 
 		if (lp + ln + 2 > sizeof (buf)) {
 			(void) write(STDERR_FILENO, "execvP: ", 8);
 			(void) write(STDERR_FILENO, p, lp);
@@ -120,16 +92,10 @@ retry:		(void) execve(bp, argv, envp);
 			for (cnt = 0; argv[cnt]; ++cnt)
 				;
 
-			/*
-			 * cnt may be 0 above; always allocate at least
-			 * 3 entries so that we can at least fit "sh", bp, and
-			 * the NULL terminator.  We can rely on cnt to take into
-			 * account the NULL terminator in all other scenarios,
-			 * as we drop argv[0].
-			 */
+			 
 			memp = alloca(MAX(3, cnt + 2) * sizeof (char *));
 			if (memp == NULL) {
-				/* errno = ENOMEM; XXX override ENOEXEC? */
+				 
 				goto done;
 			}
 			if (cnt > 0) {
@@ -150,18 +116,10 @@ retry:		(void) execve(bp, argv, envp);
 		case ENOTDIR:
 			break;
 		case ETXTBSY:
-			/*
-			 * We used to retry here, but sh(1) doesn't.
-			 */
+			 
 			goto done;
 		default:
-			/*
-			 * EACCES may be for an inaccessible directory or
-			 * a non-executable file.  Call stat() to decide
-			 * which.  This also handles ambiguities for EFAULT
-			 * and EIO, and undocumented errors like ESTALE.
-			 * We hope that the race for a stat() is unimportant.
-			 */
+			 
 			save_errno = errno;
 			if (stat(bp, &sb) != 0)
 				break;
@@ -186,7 +144,7 @@ execvpe(const char *name, char * const argv[], char * const envp[])
 {
 	const char *path;
 
-	/* Get the path we're searching. */
+	 
 	if ((path = getenv("PATH")) == NULL)
 		path = _PATH_DEFPATH;
 
@@ -221,21 +179,13 @@ zfs_ioctl(libzfs_handle_t *hdl, int request, zfs_cmd_t *zc)
 	return (lzc_ioctl_fd(hdl->libzfs_fd, request, zc));
 }
 
-/*
- * Verify the required ZFS_DEV device is available and optionally attempt
- * to load the ZFS modules.  Under normal circumstances the modules
- * should already have been loaded by some external mechanism.
- */
+ 
 int
 libzfs_load_module(void)
 {
-	/*
-	 * XXX: kldfind(ZFS_KMOD) would be nice here, but we retain
-	 * modfind("zfs") so out-of-base openzfs userland works with the
-	 * in-base module.
-	 */
+	 
 	if (modfind("zfs") < 0) {
-		/* Not present in kernel, try loading it. */
+		 
 		if (kldload(ZFS_KMOD) < 0 && errno != EEXIST) {
 			return (errno);
 		}
@@ -271,9 +221,7 @@ zfs_destroy_snaps_nvl_os(libzfs_handle_t *hdl, nvlist_t *snaps)
 	return (0);
 }
 
-/*
- * Attach/detach the given filesystem to/from the given jail.
- */
+ 
 int
 zfs_jail(zfs_handle_t *zhp, int jailid, int attach)
 {
@@ -313,7 +261,7 @@ zfs_jail(zfs_handle_t *zhp, int jailid, int attach)
 		return (zfs_error(hdl, EZFS_BADTYPE, errbuf));
 	case ZFS_TYPE_POOL:
 	case ZFS_TYPE_FILESYSTEM:
-		/* OK */
+		 
 		;
 	}
 	assert(zhp->zfs_type == ZFS_TYPE_FILESYSTEM);
@@ -329,9 +277,7 @@ zfs_jail(zfs_handle_t *zhp, int jailid, int attach)
 	return (ret);
 }
 
-/*
- * Set loader options for next boot.
- */
+ 
 int
 zpool_nextboot(libzfs_handle_t *hdl, uint64_t pool_guid, uint64_t dev_guid,
     const char *command)
@@ -350,9 +296,7 @@ zpool_nextboot(libzfs_handle_t *hdl, uint64_t pool_guid, uint64_t dev_guid,
 	return (error);
 }
 
-/*
- * Return allocated loaded module version, or NULL on error (with errno set)
- */
+ 
 char *
 zfs_version_kernel(void)
 {

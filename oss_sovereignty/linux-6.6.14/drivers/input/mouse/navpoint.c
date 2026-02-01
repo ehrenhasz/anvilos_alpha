@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Synaptics NavPoint (PXA27x SSP/SPI) driver.
- *
- * Copyright (C) 2012 Paul Parsons <lost.distance@yahoo.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,12 +14,7 @@
 #include <linux/pxa2xx_ssp.h>
 #include <linux/slab.h>
 
-/*
- * Synaptics Modular Embedded Protocol: Module Packet Format.
- * Module header byte 2:0 = Length (# bytes that follow)
- * Module header byte 4:3 = Control
- * Module header byte 7:5 = Module Address
- */
+ 
 #define HEADER_LENGTH(byte)	((byte) & 0x07)
 #define HEADER_CONTROL(byte)	(((byte) >> 3) & 0x03)
 #define HEADER_ADDRESS(byte)	((byte) >> 5)
@@ -37,38 +28,33 @@ struct navpoint {
 	u8			data[1 + HEADER_LENGTH(0xff)];
 };
 
-/*
- * Initialization values for SSCR0_x, SSCR1_x, SSSR_x.
- */
+ 
 static const u32 sscr0 = 0
-	| SSCR0_TUM		/* TIM = 1; No TUR interrupts */
-	| SSCR0_RIM		/* RIM = 1; No ROR interrupts */
-	| SSCR0_SSE		/* SSE = 1; SSP enabled */
-	| SSCR0_Motorola	/* FRF = 0; Motorola SPI */
-	| SSCR0_DataSize(16)	/* DSS = 15; Data size = 16-bit */
+	| SSCR0_TUM		 
+	| SSCR0_RIM		 
+	| SSCR0_SSE		 
+	| SSCR0_Motorola	 
+	| SSCR0_DataSize(16)	 
 	;
 static const u32 sscr1 = 0
-	| SSCR1_SCFR		/* SCFR = 1; SSPSCLK only during transfers */
-	| SSCR1_SCLKDIR		/* SCLKDIR = 1; Slave mode */
-	| SSCR1_SFRMDIR		/* SFRMDIR = 1; Slave mode */
-	| SSCR1_RWOT		/* RWOT = 1; Receive without transmit mode */
-	| SSCR1_RxTresh(1)	/* RFT = 0; Receive FIFO threshold = 1 */
-	| SSCR1_SPH		/* SPH = 1; SSPSCLK inactive 0.5 + 1 cycles */
-	| SSCR1_RIE		/* RIE = 1; Receive FIFO interrupt enabled */
+	| SSCR1_SCFR		 
+	| SSCR1_SCLKDIR		 
+	| SSCR1_SFRMDIR		 
+	| SSCR1_RWOT		 
+	| SSCR1_RxTresh(1)	 
+	| SSCR1_SPH		 
+	| SSCR1_RIE		 
 	;
 static const u32 sssr = 0
-	| SSSR_BCE		/* BCE = 1; Clear BCE */
-	| SSSR_TUR		/* TUR = 1; Clear TUR */
-	| SSSR_EOC		/* EOC = 1; Clear EOC */
-	| SSSR_TINT		/* TINT = 1; Clear TINT */
-	| SSSR_PINT		/* PINT = 1; Clear PINT */
-	| SSSR_ROR		/* ROR = 1; Clear ROR */
+	| SSSR_BCE		 
+	| SSSR_TUR		 
+	| SSSR_EOC		 
+	| SSSR_TINT		 
+	| SSSR_PINT		 
+	| SSSR_ROR		 
 	;
 
-/*
- * MEP Query $22: Touchpad Coordinate Range Query is not supported by
- * the NavPoint module, so sampled values provide the default limits.
- */
+ 
 #define NAVPOINT_X_MIN		1278
 #define NAVPOINT_X_MAX		5340
 #define NAVPOINT_Y_MIN		1572
@@ -83,11 +69,11 @@ static void navpoint_packet(struct navpoint *navpoint)
 	int x, y, z;
 
 	switch (navpoint->data[0]) {
-	case 0xff:	/* Garbage (packet?) between reset and Hello packet */
-	case 0x00:	/* Module 0, NULL packet */
+	case 0xff:	 
+	case 0x00:	 
 		break;
 
-	case 0x0e:	/* Module 0, Absolute packet */
+	case 0x0e:	 
 		finger = (navpoint->data[1] & 0x01);
 		gesture = (navpoint->data[1] & 0x02);
 		x = ((navpoint->data[2] & 0x1f) << 8) | navpoint->data[3];
@@ -102,7 +88,7 @@ static void navpoint_packet(struct navpoint *navpoint)
 		input_sync(navpoint->input);
 		break;
 
-	case 0x19:	/* Module 0, Hello packet */
+	case 0x19:	 
 		if ((navpoint->data[1] & 0xf0) == 0x10)
 			break;
 		fallthrough;
@@ -157,9 +143,9 @@ static void navpoint_up(struct navpoint *navpoint)
 	pxa_ssp_write_reg(ssp, SSCR1, sscr1);
 	pxa_ssp_write_reg(ssp, SSSR, sssr);
 	pxa_ssp_write_reg(ssp, SSTO, 0);
-	pxa_ssp_write_reg(ssp, SSCR0, sscr0);	/* SSCR0_SSE written last */
+	pxa_ssp_write_reg(ssp, SSCR0, sscr0);	 
 
-	/* Wait until SSP port is ready for slave clock operations */
+	 
 	for (timeout = 100; timeout != 0; --timeout) {
 		if (!(pxa_ssp_read_reg(ssp, SSSR) & SSSR_CSS))
 			break;
@@ -229,7 +215,7 @@ static int navpoint_probe(struct platform_device *pdev)
 		goto err_free_gpio;
 	}
 
-	/* HaRET does not disable devices before jumping into Linux */
+	 
 	if (pxa_ssp_read_reg(ssp, SSCR0) & SSCR0_SSE) {
 		pxa_ssp_write_reg(ssp, SSCR0, 0);
 		dev_warn(&pdev->dev, "ssp%d already enabled\n", pdata->port);

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Regulator Driver for Freescale MC13892 PMIC
-//
-// Copyright 2010 Yong Shen <yong.shen@linaro.org>
-//
-// Based on draft driver from Arnaud Patard <arnaud.patard@rtp-net.org>
+
+
+
+
+
+
+
 
 #include <linux/mfd/mc13892.h>
 #include <linux/regulator/machine.h>
@@ -160,12 +160,7 @@ static const unsigned int mc13892_sw1[] = {
 	1350000, 1375000
 };
 
-/*
- * Note: this table is used to derive SWxVSEL by index into
- * the array. Offset the values by the index of 1100000uV
- * to get the actual register value for that voltage selector
- * if the HI bit is to be set as well.
- */
+ 
 #define MC13892_SWxHI_SEL_OFFSET		20
 
 static const unsigned int mc13892_sw[] = {
@@ -313,14 +308,14 @@ static int mc13892_powermisc_rmw(struct mc13xxx_regulator_priv *priv, u32 mask,
 	if (ret)
 		goto out;
 
-	/* Update the stored state for Power Gates. */
+	 
 	priv->powermisc_pwgt_state =
 		(priv->powermisc_pwgt_state & ~mask) | val;
 	priv->powermisc_pwgt_state &= MC13892_POWERMISC_PWGTSPI_M;
 
-	/* Construct the new register value */
+	 
 	valread = (valread & ~mask) | val;
-	/* Overwrite the PWGTxEN with the stored version */
+	 
 	valread = (valread & ~MC13892_POWERMISC_PWGTSPI_M) |
 		priv->powermisc_pwgt_state;
 
@@ -339,7 +334,7 @@ static int mc13892_gpo_regulator_enable(struct regulator_dev *rdev)
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
 
-	/* Power Gate enable value is 0 */
+	 
 	if (id == MC13892_PWGT1SPI || id == MC13892_PWGT2SPI)
 		en_val = 0;
 
@@ -357,7 +352,7 @@ static int mc13892_gpo_regulator_disable(struct regulator_dev *rdev)
 
 	dev_dbg(rdev_get_dev(rdev), "%s id: %d\n", __func__, id);
 
-	/* Power Gate disable value is 1 */
+	 
 	if (id == MC13892_PWGT1SPI || id == MC13892_PWGT2SPI)
 		dis_val = mc13892_regulators[id].enable_bit;
 
@@ -378,8 +373,7 @@ static int mc13892_gpo_regulator_is_enabled(struct regulator_dev *rdev)
 	if (ret)
 		return ret;
 
-	/* Power Gates state is stored in powermisc_pwgt_state
-	 * where the meaning of bits is negated */
+	 
 	val = (val & ~MC13892_POWERMISC_PWGTSPI_M) |
 		(priv->powermisc_pwgt_state ^ MC13892_POWERMISC_PWGTSPI_M);
 
@@ -410,16 +404,7 @@ static int mc13892_sw_regulator_get_voltage_sel(struct regulator_dev *rdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Figure out if the HI bit is set inside the switcher mode register
-	 * since this means the selector value we return is at a different
-	 * offset into the selector table.
-	 *
-	 * According to the MC13892 documentation note 59 (Table 47) the SW1
-	 * buck switcher does not support output range programming therefore
-	 * the HI bit must always remain 0. So do not do anything strange if
-	 * our register is MC13892_SWITCHERS0.
-	 */
+	 
 
 	selector = val & mc13892_regulators[id].vsel_mask;
 
@@ -446,19 +431,7 @@ static int mc13892_sw_regulator_set_voltage_sel(struct regulator_dev *rdev,
 	mask = mc13892_regulators[id].vsel_mask;
 	reg_value = selector;
 
-	/*
-	 * Don't mess with the HI bit or support HI voltage offsets for SW1.
-	 *
-	 * Since the get_voltage_sel callback has given a fudged value for
-	 * the selector offset, we need to back out that offset if HI is
-	 * to be set so we write the correct value to the register.
-	 *
-	 * The HI bit addition and selector offset handling COULD be more
-	 * complicated by shifting and masking off the voltage selector part
-	 * of the register then logical OR it back in, but since the selector
-	 * is at bits 4:0 there is very little point. This makes the whole
-	 * thing more readable and we do far less work.
-	 */
+	 
 
 	if (mc13892_regulators[id].vsel_reg != MC13892_SWITCHERS0) {
 		mask |= MC13892_SWITCHERS0_SWxHI;
@@ -559,7 +532,7 @@ static int mc13892_regulator_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_unlock;
 
-	/* enable switch auto mode (on 2.0A silicon only) */
+	 
 	if ((val & 0x0000FFFF) == 0x45d0) {
 		ret = mc13xxx_reg_rmw(mc13892, MC13892_SWITCHERS4,
 			MC13892_SWITCHERS4_SW1MODE_M |
@@ -579,7 +552,7 @@ static int mc13892_regulator_probe(struct platform_device *pdev)
 	}
 	mc13xxx_unlock(mc13892);
 
-	/* update mc13892_vcam ops */
+	 
 	memcpy(&mc13892_vcam_ops, mc13892_regulators[MC13892_VCAM].desc.ops,
 						sizeof(struct regulator_ops));
 	mc13892_vcam_ops.set_mode = mc13892_vcam_set_mode;

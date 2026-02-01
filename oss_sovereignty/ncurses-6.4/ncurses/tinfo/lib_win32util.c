@@ -1,36 +1,6 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 1998-2009,2010 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Juergen Pfeifer                                                 *
- *     and: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -46,18 +16,7 @@ MODULE_ID("$Id: lib_win32util.c,v 1.2 2021/09/04 10:54:35 tom Exp $")
 
 #define array_length(a) (sizeof(a)/sizeof(a[0]))
 
-/*   This function tests, whether or not the ncurses application
-     is running as a descendant of MSYS2/cygwin mintty terminal
-     application. mintty doesn't use Windows Console for its screen
-     I/O, so the native Windows _isatty doesn't recognize it as
-     character device. But we can discover we are at the end of an
-     Pipe and can query the server side of the pipe, looking whether
-     or not this is mintty.
-     For now we terminate the program if we discover that situation.
-     Althogh in theory it would be possible, to remotely manipulate
-     the terminal state of mintty, this is out of scope for now and
-     not worth the significant effort.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_console_checkmintty(int fd, LPHANDLE pMinTTY)
 {
@@ -72,13 +31,11 @@ _nc_console_checkmintty(int fd, LPHANDLE pMinTTY)
 	if (dw == FILE_TYPE_PIPE) {
 	    if (GetNamedPipeInfo(handle, 0, 0, 0, 0)) {
 	        ULONG pPid;
-		/* Requires NT6 */
+		 
 		if (GetNamedPipeServerProcessId(handle, &pPid)) {
 		    TCHAR buf[MAX_PATH];
 		    DWORD len = 0;
-		    /* These security attributes may allow us to
-		       create a remote thread in mintty to manipulate
-		       the terminal state remotely */
+		     
 		    HANDLE pHandle = OpenProcess(
 						 PROCESS_CREATE_THREAD
 						 | PROCESS_QUERY_INFORMATION
@@ -113,16 +70,16 @@ _nc_console_checkmintty(int fd, LPHANDLE pMinTTY)
     }
     returnCode(code);
 }
-#endif /* _NC_CHECK_MINTTY */
+#endif  
 
-#define JAN1970 116444736000000000LL	/* the value for 01/01/1970 00:00 */
+#define JAN1970 116444736000000000LL	 
 
 NCURSES_EXPORT(int)
 _nc_gettimeofday(struct timeval *tv, void *tz GCC_UNUSED)
 {
     union {
 	FILETIME ft;
-	long long since1601;	/* time since 1 Jan 1601 in 100ns units */
+	long long since1601;	 
     } data;
 
     GetSystemTimeAsFileTime(&data.ft);
@@ -131,4 +88,4 @@ _nc_gettimeofday(struct timeval *tv, void *tz GCC_UNUSED)
     return (0);
 }
 
-#endif // _NC_WINDOWS
+#endif 

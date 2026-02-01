@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) 2001 Clemson University and The University of Chicago
- *
- * See COPYING in top-level directory.
- */
+
+ 
 #include "protocol.h"
 #include "orangefs-kernel.h"
 #include "orangefs-bufmap.h"
@@ -73,7 +69,7 @@ static void put(struct slot_map *m, int slot)
 	v = ++m->c;
 	if (v > 0)
 		wake_up_locked(&m->q);
-	if (unlikely(v == -1))     /* finished dying */
+	if (unlikely(v == -1))      
 		wake_up_all_locked(&m->q);
 	spin_unlock(&m->q.lock);
 }
@@ -93,8 +89,8 @@ static int wait_for_free(struct slot_map *m)
 			break;
 
 		if (m->c < 0) {
-			/* we are waiting for map to be installed */
-			/* it would better be there soon, or we go away */
+			 
+			 
 			if (n > ORANGEFS_BUFMAP_WAIT_TIMEOUT_SECS * HZ)
 				n = ORANGEFS_BUFMAP_WAIT_TIMEOUT_SECS * HZ;
 		}
@@ -136,11 +132,11 @@ static int get(struct slot_map *m)
 	return res;
 }
 
-/* used to describe mapped buffers */
+ 
 struct orangefs_bufmap_desc {
-	void __user *uaddr;		/* user space address pointer */
-	struct page **page_array;	/* array of mapped pages */
-	int array_count;		/* size of above arrays */
+	void __user *uaddr;		 
+	struct page **page_array;	 
+	int array_count;		 
 	struct list_head list_link;
 };
 
@@ -154,10 +150,10 @@ static struct orangefs_bufmap {
 	struct page **page_array;
 	struct orangefs_bufmap_desc *desc_array;
 
-	/* array to track usage of buffer descriptors */
+	 
 	unsigned long *buffer_index_array;
 
-	/* array to track usage of buffer descriptors for readdir */
+	 
 #define N DIV_ROUND_UP(ORANGEFS_READDIR_DEFAULT_DESC_COUNT, BITS_PER_LONG)
 	unsigned long readdir_index_array[N];
 #undef N
@@ -180,10 +176,7 @@ orangefs_bufmap_free(struct orangefs_bufmap *bufmap)
 	kfree(bufmap);
 }
 
-/*
- * XXX: Can the size and shift change while the caller gives up the
- * XXX: lock between calling this and doing something useful?
- */
+ 
 
 int orangefs_bufmap_size_query(void)
 {
@@ -238,7 +231,7 @@ orangefs_bufmap_alloc(struct ORANGEFS_dev_map_desc *user_desc)
 
 	bufmap->page_count = bufmap->total_size / PAGE_SIZE;
 
-	/* allocate storage to track our page mappings */
+	 
 	bufmap->page_array =
 		kcalloc(bufmap->page_count, sizeof(struct page *), GFP_KERNEL);
 	if (!bufmap->page_array)
@@ -263,7 +256,7 @@ orangefs_bufmap_map(struct orangefs_bufmap *bufmap,
 	int pages_per_desc = bufmap->desc_size / PAGE_SIZE;
 	int offset = 0, ret, i;
 
-	/* map the pages */
+	 
 	ret = pin_user_pages_fast((unsigned long)user_desc->ptr,
 			     bufmap->page_count, FOLL_WRITE, bufmap->page_array);
 
@@ -281,16 +274,11 @@ orangefs_bufmap_map(struct orangefs_bufmap *bufmap,
 		return -ENOMEM;
 	}
 
-	/*
-	 * ideally we want to get kernel space pointers for each page, but
-	 * we can't kmap that many pages at once if highmem is being used.
-	 * so instead, we just kmap/kunmap the page address each time the
-	 * kaddr is needed.
-	 */
+	 
 	for (i = 0; i < bufmap->page_count; i++)
 		flush_dcache_page(bufmap->page_array[i]);
 
-	/* build a list of available descriptors */
+	 
 	for (offset = 0, i = 0; i < bufmap->desc_count; i++) {
 		bufmap->desc_array[i].page_array = &bufmap->page_array[offset];
 		bufmap->desc_array[i].array_count = pages_per_desc;
@@ -302,13 +290,7 @@ orangefs_bufmap_map(struct orangefs_bufmap *bufmap,
 	return 0;
 }
 
-/*
- * orangefs_bufmap_initialize()
- *
- * initializes the mapped buffer interface
- *
- * returns 0 on success, -errno on failure
- */
+ 
 int orangefs_bufmap_initialize(struct ORANGEFS_dev_map_desc *user_desc)
 {
 	struct orangefs_bufmap *bufmap;
@@ -326,10 +308,7 @@ int orangefs_bufmap_initialize(struct ORANGEFS_dev_map_desc *user_desc)
 	    user_desc->count < 0)
 		goto out;
 
-	/*
-	 * sanity check alignment and size of buffer that caller wants to
-	 * work with
-	 */
+	 
 	if (PAGE_ALIGN((unsigned long)user_desc->ptr) !=
 	    (unsigned long)user_desc->ptr) {
 		gossip_err("orangefs error: memory alignment (front). %p\n",
@@ -397,14 +376,7 @@ out:
 	return ret;
 }
 
-/*
- * orangefs_bufmap_finalize()
- *
- * shuts down the mapped buffer interface and releases any resources
- * associated with it
- *
- * no return value
- */
+ 
 void orangefs_bufmap_finalize(void)
 {
 	struct orangefs_bufmap *bufmap = __orangefs_bufmap;
@@ -431,42 +403,19 @@ void orangefs_bufmap_run_down(void)
 	orangefs_bufmap_free(bufmap);
 }
 
-/*
- * orangefs_bufmap_get()
- *
- * gets a free mapped buffer descriptor, will sleep until one becomes
- * available if necessary
- *
- * returns slot on success, -errno on failure
- */
+ 
 int orangefs_bufmap_get(void)
 {
 	return get(&rw_map);
 }
 
-/*
- * orangefs_bufmap_put()
- *
- * returns a mapped buffer descriptor to the collection
- *
- * no return value
- */
+ 
 void orangefs_bufmap_put(int buffer_index)
 {
 	put(&rw_map, buffer_index);
 }
 
-/*
- * orangefs_readdir_index_get()
- *
- * gets a free descriptor, will sleep until one becomes
- * available if necessary.
- * Although the readdir buffers are not mapped into kernel space
- * we could do that at a later point of time. Regardless, these
- * indices are used by the client-core.
- *
- * returns slot on success, -errno on failure
- */
+ 
 int orangefs_readdir_index_get(void)
 {
 	return get(&readdir_map);
@@ -477,10 +426,7 @@ void orangefs_readdir_index_put(int buffer_index)
 	put(&readdir_map, buffer_index);
 }
 
-/*
- * we've been handed an iovec, we need to copy it to
- * the shared memory descriptor at "buffer_index".
- */
+ 
 int orangefs_bufmap_copy_from_iovec(struct iov_iter *iter,
 				int buffer_index,
 				size_t size)
@@ -505,10 +451,7 @@ int orangefs_bufmap_copy_from_iovec(struct iov_iter *iter,
 	return 0;
 }
 
-/*
- * we've been handed an iovec, we need to fill it from
- * the shared memory descriptor at "buffer_index".
- */
+ 
 int orangefs_bufmap_copy_to_iovec(struct iov_iter *iter,
 				    int buffer_index,
 				    size_t size)

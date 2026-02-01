@@ -1,28 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Armada CP110 System Controller
- *
- * Copyright (C) 2016 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- */
 
-/*
- * CP110 has 6 core clocks:
- *
- *  - PLL0		(1 Ghz)
- *    - PPv2 core	(1/3 PLL0)
- *    - x2 Core		(1/2 PLL0)
- *	- Core		(1/2 x2 Core)
- *    - SDIO		(2/5 PLL0)
- *
- *  - NAND clock, which is either:
- *    - Equal to SDIO clock
- *    - 2/5 PLL0
- *
- * CP110 has 32 gateable clocks, for the various peripherals in the IP.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) "cp110-system-controller: " fmt
 
@@ -57,7 +36,7 @@ enum {
 #define CP110_CORE_NAND			4
 #define CP110_CORE_SDIO			5
 
-/* A number of gateable clocks need special handling */
+ 
 #define CP110_GATE_AUDIO		0
 #define CP110_GATE_COMM_UNIT		1
 #define CP110_GATE_NAND			2
@@ -244,7 +223,7 @@ static int cp110_syscon_common_probe(struct platform_device *pdev,
 
 	cp110_clks = cp110_clk_data->hws;
 
-	/* Register the PLL0 which is the root of the hw tree */
+	 
 	pll0_name = ap_cp_unique_name(dev, syscon_node, "pll0");
 	hw = clk_hw_register_fixed_rate(NULL, pll0_name, NULL, 0,
 					1000 * 1000 * 1000);
@@ -255,7 +234,7 @@ static int cp110_syscon_common_probe(struct platform_device *pdev,
 
 	cp110_clks[CP110_CORE_PLL0] = hw;
 
-	/* PPv2 is PLL0/3 */
+	 
 	ppv2_name = ap_cp_unique_name(dev, syscon_node, "ppv2-core");
 	hw = clk_hw_register_fixed_factor(NULL, ppv2_name, pll0_name, 0, 1, 3);
 	if (IS_ERR(hw)) {
@@ -265,7 +244,7 @@ static int cp110_syscon_common_probe(struct platform_device *pdev,
 
 	cp110_clks[CP110_CORE_PPV2] = hw;
 
-	/* X2CORE clock is PLL0/2 */
+	 
 	x2core_name = ap_cp_unique_name(dev, syscon_node, "x2core");
 	hw = clk_hw_register_fixed_factor(NULL, x2core_name, pll0_name,
 					  0, 1, 2);
@@ -276,7 +255,7 @@ static int cp110_syscon_common_probe(struct platform_device *pdev,
 
 	cp110_clks[CP110_CORE_X2CORE] = hw;
 
-	/* Core clock is X2CORE/2 */
+	 
 	core_name = ap_cp_unique_name(dev, syscon_node, "core");
 	hw = clk_hw_register_fixed_factor(NULL, core_name, x2core_name,
 					  0, 1, 2);
@@ -286,7 +265,7 @@ static int cp110_syscon_common_probe(struct platform_device *pdev,
 	}
 
 	cp110_clks[CP110_CORE_CORE] = hw;
-	/* NAND can be either PLL0/2.5 or core clock */
+	 
 	nand_name = ap_cp_unique_name(dev, syscon_node, "nand-core");
 	if (nand_clk_ctrl & NF_CLOCK_SEL_400_MASK)
 		hw = clk_hw_register_fixed_factor(NULL, nand_name,
@@ -301,7 +280,7 @@ static int cp110_syscon_common_probe(struct platform_device *pdev,
 
 	cp110_clks[CP110_CORE_NAND] = hw;
 
-	/* SDIO clock is PLL0/2.5 */
+	 
 	sdio_name = ap_cp_unique_name(dev, syscon_node, "sdio-core");
 	hw = clk_hw_register_fixed_factor(NULL, sdio_name,
 					  pll0_name, 0, 2, 5);
@@ -312,7 +291,7 @@ static int cp110_syscon_common_probe(struct platform_device *pdev,
 
 	cp110_clks[CP110_CORE_SDIO] = hw;
 
-	/* create the unique name for all the gate clocks */
+	 
 	for (i = 0; i < ARRAY_SIZE(gate_base_names); i++)
 		gate_name[i] =	ap_cp_unique_name(dev, syscon_node,
 						  gate_base_names[i]);

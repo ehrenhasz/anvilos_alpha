@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * oxfw_hwdep.c - a part of driver for OXFW970/971 based devices
- *
- * Copyright (c) 2014 Takashi Sakamoto
- */
 
-/*
- * This codes give three functionality.
- *
- * 1.get firewire node information
- * 2.get notification about starting/stopping stream
- * 3.lock/unlock stream
- */
+ 
+
+ 
 
 #include "oxfw.h"
 

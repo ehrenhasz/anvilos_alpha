@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2015 Freescale Semiconductor, Inc.
- *
- * Freescale DCU drm device driver
- */
+ 
+ 
 
 #ifndef __FSL_DCU_DRM_CONNECTOR_H__
 #define __FSL_DCU_DRM_CONNECTOR_H__
@@ -25,4 +21,4 @@ int fsl_dcu_drm_encoder_create(struct fsl_dcu_drm_device *fsl_dev,
 			       struct drm_crtc *crtc);
 int fsl_dcu_create_outputs(struct fsl_dcu_drm_device *fsl_dev);
 
-#endif /* __FSL_DCU_DRM_CONNECTOR_H__ */
+#endif  

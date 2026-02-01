@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for MT9V022, MT9V024, MT9V032, and MT9V034 CMOS Image Sensors
- *
- * Copyright (C) 2010, Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *
- * Based on the MT9M001 driver,
- *
- * Copyright (C) 2008, Guennadi Liakhovetski <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -29,7 +21,7 @@
 #include <media/v4l2-fwnode.h>
 #include <media/v4l2-subdev.h>
 
-/* The first four rows are black rows. The active area spans 753x481 pixels. */
+ 
 #define MT9V032_PIXEL_ARRAY_HEIGHT			485
 #define MT9V032_PIXEL_ARRAY_WIDTH			753
 
@@ -143,12 +135,12 @@
 #define MT9V032_THERMAL_INFO				0xc1
 
 enum mt9v032_model {
-	MT9V032_MODEL_V022_COLOR,	/* MT9V022IX7ATC */
-	MT9V032_MODEL_V022_MONO,	/* MT9V022IX7ATM */
-	MT9V032_MODEL_V024_COLOR,	/* MT9V024IA7XTC */
-	MT9V032_MODEL_V024_MONO,	/* MT9V024IA7XTM */
-	MT9V032_MODEL_V032_COLOR,	/* MT9V032C12STM */
-	MT9V032_MODEL_V032_MONO,	/* MT9V032C12STC */
+	MT9V032_MODEL_V022_COLOR,	 
+	MT9V032_MODEL_V022_MONO,	 
+	MT9V032_MODEL_V024_COLOR,	 
+	MT9V032_MODEL_V024_MONO,	 
+	MT9V032_MODEL_V032_COLOR,	 
+	MT9V032_MODEL_V032_MONO,	 
 	MT9V032_MODEL_V034_COLOR,
 	MT9V032_MODEL_V034_MONO,
 };
@@ -270,7 +262,7 @@ static int mt9v032_power_on(struct mt9v032 *mt9v032)
 	if (ret < 0)
 		return ret;
 
-	/* System clock has to be enabled before releasing the reset */
+	 
 	ret = clk_prepare_enable(mt9v032->clk);
 	if (ret)
 		return ret;
@@ -280,15 +272,11 @@ static int mt9v032_power_on(struct mt9v032 *mt9v032)
 	if (mt9v032->reset_gpio) {
 		gpiod_set_value_cansleep(mt9v032->reset_gpio, 0);
 
-		/* After releasing reset we need to wait 10 clock cycles
-		 * before accessing the sensor over I2C. As the minimum SYSCLK
-		 * frequency is 13MHz, waiting 1µs will be enough in the worst
-		 * case.
-		 */
+		 
 		udelay(1);
 	}
 
-	/* Reset the chip and stop data read out */
+	 
 	ret = regmap_write(map, MT9V032_RESET, 1);
 	if (ret < 0)
 		goto err;
@@ -328,7 +316,7 @@ static int __mt9v032_set_power(struct mt9v032 *mt9v032, bool on)
 	if (ret < 0)
 		return ret;
 
-	/* Configure the pixel clock polarity */
+	 
 	if (mt9v032->pdata && mt9v032->pdata->clk_pol) {
 		ret = regmap_write(map, mt9v032->model->data->pclk_reg,
 				MT9V032_PIXEL_CLOCK_INV_PXL_CLK);
@@ -336,7 +324,7 @@ static int __mt9v032_set_power(struct mt9v032 *mt9v032, bool on)
 			return ret;
 	}
 
-	/* Disable the noise correction algorithm and restore the controls. */
+	 
 	ret = regmap_write(map, MT9V032_ROW_NOISE_CORR_CONTROL, 0);
 	if (ret < 0)
 		return ret;
@@ -344,9 +332,7 @@ static int __mt9v032_set_power(struct mt9v032 *mt9v032, bool on)
 	return v4l2_ctrl_handler_setup(&mt9v032->ctrls);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev video operations
- */
+ 
 
 static struct v4l2_mbus_framefmt *
 __mt9v032_get_pad_format(struct mt9v032 *mt9v032,
@@ -394,7 +380,7 @@ static int mt9v032_s_stream(struct v4l2_subdev *subdev, int enable)
 	if (!enable)
 		return regmap_update_bits(map, MT9V032_CHIP_CONTROL, mode, 0);
 
-	/* Configure the window size and row/column bin */
+	 
 	hbin = fls(mt9v032->hratio) - 1;
 	vbin = fls(mt9v032->vratio) - 1;
 	ret = regmap_update_bits(map, MT9V032_READ_MODE,
@@ -424,7 +410,7 @@ static int mt9v032_s_stream(struct v4l2_subdev *subdev, int enable)
 	if (ret < 0)
 		return ret;
 
-	/* Switch to master "normal" mode */
+	 
 	return regmap_update_bits(map, MT9V032_CHIP_CONTROL, mode, mode);
 }
 
@@ -485,10 +471,7 @@ static void mt9v032_configure_pixel_rate(struct mt9v032 *mt9v032)
 
 static unsigned int mt9v032_calc_ratio(unsigned int input, unsigned int output)
 {
-	/* Compute the power-of-two binning factor closest to the input size to
-	 * output size ratio. Given that the output size is bounded by input/4
-	 * and input, a generic implementation would be an ineffective luxury.
-	 */
+	 
 	if (output * 3 > input * 2)
 		return 1;
 	if (output * 3 > input)
@@ -511,7 +494,7 @@ static int mt9v032_set_format(struct v4l2_subdev *subdev,
 	__crop = __mt9v032_get_pad_crop(mt9v032, sd_state, format->pad,
 					format->which);
 
-	/* Clamp the width and height to avoid dividing by zero. */
+	 
 	width = clamp(ALIGN(format->format.width, 2),
 		      max_t(unsigned int, __crop->width / 4,
 			    MT9V032_WINDOW_WIDTH_MIN),
@@ -566,9 +549,7 @@ static int mt9v032_set_selection(struct v4l2_subdev *subdev,
 	if (sel->target != V4L2_SEL_TGT_CROP)
 		return -EINVAL;
 
-	/* Clamp the crop rectangle boundaries and align them to a non multiple
-	 * of 2 pixels to ensure a GRBG Bayer pattern.
-	 */
+	 
 	rect.left = clamp(ALIGN(sel->r.left + 1, 2) - 1,
 			  MT9V032_COLUMN_START_MIN,
 			  MT9V032_COLUMN_START_MAX);
@@ -591,9 +572,7 @@ static int mt9v032_set_selection(struct v4l2_subdev *subdev,
 					sel->which);
 
 	if (rect.width != __crop->width || rect.height != __crop->height) {
-		/* Reset the output image size if the crop rectangle size has
-		 * been modified.
-		 */
+		 
 		__format = __mt9v032_get_pad_format(mt9v032, sd_state,
 						    sel->pad,
 						    sel->which);
@@ -612,38 +591,18 @@ static int mt9v032_set_selection(struct v4l2_subdev *subdev,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev control operations
- */
+ 
 
 #define V4L2_CID_TEST_PATTERN_COLOR	(V4L2_CID_USER_BASE | 0x1001)
-/*
- * Value between 1 and 64 to set the desired bin. This is effectively a measure
- * of how bright the image is supposed to be. Both AGC and AEC try to reach
- * this.
- */
+ 
 #define V4L2_CID_AEGC_DESIRED_BIN	(V4L2_CID_USER_BASE | 0x1002)
-/*
- * LPF is the low pass filter capability of the chip. Both AEC and AGC have
- * this setting. This limits the speed in which AGC/AEC adjust their settings.
- * Possible values are 0-2. 0 means no LPF. For 1 and 2 this equation is used:
- *
- * if |(calculated new exp - current exp)| > (current exp / 4)
- *	next exp = calculated new exp
- * else
- *	next exp = current exp + ((calculated new exp - current exp) / 2^LPF)
- */
+ 
 #define V4L2_CID_AEC_LPF		(V4L2_CID_USER_BASE | 0x1003)
 #define V4L2_CID_AGC_LPF		(V4L2_CID_USER_BASE | 0x1004)
-/*
- * Value between 0 and 15. This is the number of frames being skipped before
- * updating the auto exposure/gain.
- */
+ 
 #define V4L2_CID_AEC_UPDATE_INTERVAL	(V4L2_CID_USER_BASE | 0x1005)
 #define V4L2_CID_AGC_UPDATE_INTERVAL	(V4L2_CID_USER_BASE | 0x1006)
-/*
- * Maximum shutter width used for AEC.
- */
+ 
 #define V4L2_CID_AEC_MAX_SHUTTER_WIDTH	(V4L2_CID_USER_BASE | 0x1007)
 
 static int mt9v032_s_ctrl(struct v4l2_ctrl *ctrl)
@@ -843,9 +802,7 @@ static const struct v4l2_ctrl_config mt9v034_aec_max_shutter_width = {
 	.flags		= 0,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev core operations
- */
+ 
 
 static int mt9v032_set_power(struct v4l2_subdev *subdev, int on)
 {
@@ -854,16 +811,14 @@ static int mt9v032_set_power(struct v4l2_subdev *subdev, int on)
 
 	mutex_lock(&mt9v032->power_lock);
 
-	/* If the power count is modified from 0 to != 0 or from != 0 to 0,
-	 * update the power state.
-	 */
+	 
 	if (mt9v032->power_count == !on) {
 		ret = __mt9v032_set_power(mt9v032, !!on);
 		if (ret < 0)
 			goto done;
 	}
 
-	/* Update the power count. */
+	 
 	mt9v032->power_count += on ? 1 : -1;
 	WARN_ON(mt9v032->power_count < 0);
 
@@ -872,9 +827,7 @@ done:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 subdev internal operations
- */
+ 
 
 static int mt9v032_registered(struct v4l2_subdev *subdev)
 {
@@ -893,7 +846,7 @@ static int mt9v032_registered(struct v4l2_subdev *subdev)
 		return ret;
 	}
 
-	/* Read and check the sensor version */
+	 
 	ret = regmap_read(mt9v032->regmap, MT9V032_CHIP_VERSION, &version);
 
 	mt9v032_power_off(mt9v032);
@@ -992,9 +945,7 @@ static const struct regmap_config mt9v032_regmap_config = {
 	.cache_type = REGCACHE_RBTREE,
 };
 
-/* -----------------------------------------------------------------------------
- * Driver initialization and probing
- */
+ 
 
 static struct mt9v032_platform_data *
 mt9v032_get_pdata(struct i2c_client *client)
@@ -1204,7 +1155,7 @@ static void mt9v032_remove(struct i2c_client *client)
 
 static const struct mt9v032_model_data mt9v032_model_data[] = {
 	{
-		/* MT9V022, MT9V032 revisions 1/2/3 */
+		 
 		.min_row_time = 660,
 		.min_hblank = MT9V032_HORIZONTAL_BLANKING_MIN,
 		.min_vblank = MT9V032_VERTICAL_BLANKING_MIN,
@@ -1215,7 +1166,7 @@ static const struct mt9v032_model_data mt9v032_model_data[] = {
 		.aec_max_shutter_reg = MT9V032_AEC_MAX_SHUTTER_WIDTH,
 		.aec_max_shutter_v4l2_ctrl = &mt9v032_aec_max_shutter_width,
 	}, {
-		/* MT9V024, MT9V034 */
+		 
 		.min_row_time = 690,
 		.min_hblank = MT9V034_HORIZONTAL_BLANKING_MIN,
 		.min_vblank = MT9V034_VERTICAL_BLANKING_MIN,
@@ -1286,7 +1237,7 @@ static const struct of_device_id mt9v032_of_match[] = {
 	{ .compatible = "aptina,mt9v032m" },
 	{ .compatible = "aptina,mt9v034" },
 	{ .compatible = "aptina,mt9v034m" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mt9v032_of_match);
 #endif

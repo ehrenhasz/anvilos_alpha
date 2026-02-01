@@ -1,24 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -46,11 +26,7 @@
 #include "asic_reg/smuio/smuio_13_0_2_offset.h"
 #include "asic_reg/smuio/smuio_13_0_2_sh_mask.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -97,7 +73,7 @@ int smu_v13_0_init_microcode(struct smu_context *smu)
 	const struct common_firmware_header *header;
 	struct amdgpu_firmware_info *ucode = NULL;
 
-	/* doesn't need to load smu firmware in IOV mode */
+	 
 	if (amdgpu_sriov_vf(adev))
 		return 0;
 
@@ -186,7 +162,7 @@ int smu_v13_0_init_pptable_microcode(struct smu_context *smu)
 	int ret = 0;
 	void *table;
 
-	/* doesn't need to load smu firmware in IOV mode */
+	 
 	if (amdgpu_sriov_vf(adev))
 		return 0;
 
@@ -201,7 +177,7 @@ int smu_v13_0_init_pptable_microcode(struct smu_context *smu)
 	    (adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 10)))
 		return 0;
 
-	/* override pptable_id from driver parameter */
+	 
 	if (amdgpu_smu_pptable_id >= 0) {
 		pptable_id = amdgpu_smu_pptable_id;
 		dev_info(adev->dev, "override pptable id %d\n", pptable_id);
@@ -209,7 +185,7 @@ int smu_v13_0_init_pptable_microcode(struct smu_context *smu)
 		pptable_id = smu->smu_table.boot_values.pp_table_id;
 	}
 
-	/* "pptable_id == 0" means vbios carries the pptable. */
+	 
 	if (!pptable_id)
 		return 0;
 
@@ -272,19 +248,12 @@ int smu_v13_0_check_fw_version(struct smu_context *smu)
 	    adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 6))
 		adev->pm.fw_version = smu_version;
 
-	/* only for dGPU w/ SMU13*/
+	 
 	if (adev->pm.fw)
 		dev_dbg(smu->adev->dev, "smu fw reported program %d, version = 0x%08x (%d.%d.%d)\n",
 			 smu_program, smu_version, smu_major, smu_minor, smu_debug);
 
-	/*
-	 * 1. if_version mismatch is not critical as our fw is designed
-	 * to be backward compatible.
-	 * 2. New fw usually brings some optimizations. But that's visible
-	 * only on the paired driver.
-	 * Considering above, we just leave user a verbal message instead
-	 * of halt driver loading.
-	 */
+	 
 	if (if_version != smu->smc_driver_if_version) {
 		dev_info(adev->dev, "smu driver if version = 0x%08x, smu fw if version = 0x%08x, "
 			 "smu fw program = %d, smu fw version = 0x%08x (%d.%d.%d)\n",
@@ -406,7 +375,7 @@ int smu_v13_0_setup_pptable(struct smu_context *smu)
 	void *table;
 	int ret = 0;
 
-	/* override pptable_id from driver parameter */
+	 
 	if (amdgpu_smu_pptable_id >= 0) {
 		pptable_id = amdgpu_smu_pptable_id;
 		dev_info(adev->dev, "override pptable id %d\n", pptable_id);
@@ -414,7 +383,7 @@ int smu_v13_0_setup_pptable(struct smu_context *smu)
 		pptable_id = smu->smu_table.boot_values.pp_table_id;
 	}
 
-	/* force using vbios pptable in sriov mode */
+	 
 	if ((amdgpu_sriov_vf(adev) || !pptable_id) && (amdgpu_emu_mode != 1))
 		ret = smu_v13_0_get_pptable_from_vbios(smu, &table, &size);
 	else
@@ -451,7 +420,7 @@ int smu_v13_0_init_smc_tables(struct smu_context *smu)
 		goto err1_out;
 	}
 
-	/* Aldebaran does not support OVERDRIVE */
+	 
 	if (tables[SMU_TABLE_OVERDRIVE].size) {
 		smu_table->overdrive_table =
 			kzalloc(tables[SMU_TABLE_OVERDRIVE].size, GFP_KERNEL);
@@ -870,7 +839,7 @@ smu_v13_0_get_max_sustainable_clock(struct smu_context *smu, uint32_t *clock,
 	if (*clock != 0)
 		return 0;
 
-	/* if DC limit is zero, return AC limit */
+	 
 	ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_GetMaxDpmFreq,
 					      clk_id << 16, clock);
 	if (ret) {
@@ -1265,7 +1234,7 @@ static int smu_v13_0_set_irq_state(struct amdgpu_device *adev,
 
 	switch (state) {
 	case AMDGPU_IRQ_STATE_DISABLE:
-		/* For THM irqs */
+		 
 		val = RREG32_SOC15(THM, 0, regTHM_THERMAL_INT_CTRL);
 		val = REG_SET_FIELD(val, THM_THERMAL_INT_CTRL, THERM_INTH_MASK, 1);
 		val = REG_SET_FIELD(val, THM_THERMAL_INT_CTRL, THERM_INTL_MASK, 1);
@@ -1273,14 +1242,14 @@ static int smu_v13_0_set_irq_state(struct amdgpu_device *adev,
 
 		WREG32_SOC15(THM, 0, regTHM_THERMAL_INT_ENA, 0);
 
-		/* For MP1 SW irqs */
+		 
 		val = RREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT_CTRL);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT_CTRL, INT_MASK, 1);
 		WREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT_CTRL, val);
 
 		break;
 	case AMDGPU_IRQ_STATE_ENABLE:
-		/* For THM irqs */
+		 
 		low = max(SMU_THERMAL_MINIMUM_ALERT_TEMP,
 			  smu->thermal_range.min / SMU_TEMPERATURE_UNITS_PER_CENTIGRADES);
 		high = min(SMU_THERMAL_MAXIMUM_ALERT_TEMP,
@@ -1301,7 +1270,7 @@ static int smu_v13_0_set_irq_state(struct amdgpu_device *adev,
 		val |= (1 << THM_THERMAL_INT_ENA__THERM_TRIGGER_CLR__SHIFT);
 		WREG32_SOC15(THM, 0, regTHM_THERMAL_INT_ENA, val);
 
-		/* For MP1 SW irqs */
+		 
 		val = RREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT, ID, 0xFE);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT, VALID, 0);
@@ -1326,8 +1295,8 @@ static int smu_v13_0_ack_ac_dc_interrupt(struct smu_context *smu)
 				    NULL);
 }
 
-#define THM_11_0__SRCID__THM_DIG_THERM_L2H		0		/* ASIC_TEMP > CG_THERMAL_INT.DIG_THERM_INTH  */
-#define THM_11_0__SRCID__THM_DIG_THERM_H2L		1		/* ASIC_TEMP < CG_THERMAL_INT.DIG_THERM_INTL  */
+#define THM_11_0__SRCID__THM_DIG_THERM_L2H		0		 
+#define THM_11_0__SRCID__THM_DIG_THERM_H2L		1		 
 #define SMUIO_11_0__SRCID__SMUIO_GPIO19			83
 
 static int smu_v13_0_irq_process(struct amdgpu_device *adev,
@@ -1337,10 +1306,7 @@ static int smu_v13_0_irq_process(struct amdgpu_device *adev,
 	struct smu_context *smu = adev->powerplay.pp_handle;
 	uint32_t client_id = entry->client_id;
 	uint32_t src_id = entry->src_id;
-	/*
-	 * ctxid is used to distinguish different
-	 * events for SMCToHost interrupt.
-	 */
+	 
 	uint32_t ctxid = entry->src_data[0];
 	uint32_t data;
 	uint32_t high;
@@ -1361,14 +1327,12 @@ static int smu_v13_0_irq_process(struct amdgpu_device *adev,
 		}
 	} else if (client_id == SOC15_IH_CLIENTID_ROM_SMUIO) {
 		dev_emerg(adev->dev, "ERROR: GPU HW Critical Temperature Fault(aka CTF) detected!\n");
-		/*
-		 * HW CTF just occurred. Shutdown to prevent further damage.
-		 */
+		 
 		dev_emerg(adev->dev, "ERROR: System is going to shutdown due to GPU HW CTF!\n");
 		orderly_poweroff(true);
 	} else if (client_id == SOC15_IH_CLIENTID_MP1) {
 		if (src_id == 0xfe) {
-			/* ACK SMUToHost interrupt */
+			 
 			data = RREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT_CTRL);
 			data = REG_SET_FIELD(data, MP1_SMN_IH_SW_INT_CTRL, INT_ACK, 1);
 			WREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT_CTRL, data);
@@ -1383,9 +1347,7 @@ static int smu_v13_0_irq_process(struct amdgpu_device *adev,
 				smu_v13_0_ack_ac_dc_interrupt(smu);
 				break;
 			case 0x7:
-				/*
-				 * Increment the throttle interrupt counter
-				 */
+				 
 				atomic64_inc(&smu->throttle_int_counter);
 
 				if (!atomic_read(&adev->throttling_logging_enabled))
@@ -1461,7 +1423,7 @@ int smu_v13_0_register_irq_handler(struct smu_context *smu)
 	if (ret)
 		return ret;
 
-	/* Register CTF(GPIO_19) interrupt */
+	 
 	ret = amdgpu_irq_add_id(adev, SOC15_IH_CLIENTID_ROM_SMUIO,
 				SMUIO_11_0__SRCID__SMUIO_GPIO19,
 				irq_src);
@@ -1568,7 +1530,7 @@ int smu_v13_0_get_dpm_ultimate_freq(struct smu_context *smu, enum smu_clk_type c
 			break;
 		}
 
-		/* clock in Mhz unit */
+		 
 		if (min)
 			*min = clock_limit / 100;
 		if (max)
@@ -1776,10 +1738,7 @@ int smu_v13_0_set_performance_level(struct smu_context *smu,
 		return -EINVAL;
 	}
 
-	/*
-	 * Unset those settings for SMU 13.0.2. As soft limits settings
-	 * for those clock domains are not supported.
-	 */
+	 
 	if (smu->adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 2)) {
 		mclk_min = mclk_max = 0;
 		socclk_min = socclk_max = 0;
@@ -1926,7 +1885,7 @@ static int smu_v13_0_get_dpm_level_count(struct smu_context *smu,
 	int ret;
 
 	ret = smu_v13_0_get_dpm_freq_by_index(smu, clk_type, 0xff, value);
-	/* SMU v13.0.2 FW returns 0 based max level, increment by one for it */
+	 
 	if ((smu->adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 2)) && (!ret && value))
 		++(*value);
 
@@ -1962,10 +1921,7 @@ static int smu_v13_0_get_fine_grained_status(struct smu_context *smu,
 	if (ret)
 		return ret;
 
-	/*
-	 * BIT31:  1 - Fine grained DPM, 0 - Dicrete DPM
-	 * now, we un-support it
-	 */
+	 
 	*is_fine_grained_dpm = value & 0x80000000;
 
 	return 0;
@@ -2227,7 +2183,7 @@ bool smu_v13_0_baco_is_support(struct smu_context *smu)
 	    !smu_baco->platform_support)
 		return false;
 
-	/* return true if ASIC is in BACO state already */
+	 
 	if (smu_v13_0_baco_get_state(smu) == SMU_BACO_STATE_ENTER)
 		return true;
 
@@ -2268,7 +2224,7 @@ int smu_v13_0_baco_set_state(struct smu_context *smu,
 		if (ret)
 			return ret;
 
-		/* clear vbios scratch 6 and 7 for coming asic reinit */
+		 
 		WREG32(adev->bios_scratch_reg_offset + 6, 0);
 		WREG32(adev->bios_scratch_reg_offset + 7, 0);
 	}
@@ -2305,7 +2261,7 @@ int smu_v13_0_set_gfx_power_up_by_imu(struct smu_context *smu)
 
 	index = smu_cmn_to_asic_specific_index(smu, CMN2ASIC_MAPPING_MSG,
 					       SMU_MSG_EnableGfxImu);
-	/* Param 1 to tell PMFW to enable GFXOFF feature */
+	 
 	return smu_cmn_send_msg_without_waiting(smu, index, 1);
 }
 
@@ -2316,7 +2272,7 @@ int smu_v13_0_od_edit_dpm_table(struct smu_context *smu,
 	struct smu_dpm_context *smu_dpm = &(smu->smu_dpm);
 	int ret = 0;
 
-	/* Only allowed in manual mode */
+	 
 	if (smu_dpm->dpm_level != AMD_DPM_FORCED_LEVEL_MANUAL)
 		return -EINVAL;
 
@@ -2440,7 +2396,7 @@ int smu_v13_0_update_pcie_parameters(struct smu_context *smu,
 		if (pcie_table->pcie_lane[num_of_levels - 1] < pcie_width_cap)
 			pcie_width_cap = pcie_table->pcie_lane[num_of_levels - 1];
 
-		/* Force all levels to use the same settings */
+		 
 		for (i = 0; i < num_of_levels; i++) {
 			pcie_table->pcie_gen[i] = pcie_gen_cap;
 			pcie_table->pcie_lane[i] = pcie_width_cap;

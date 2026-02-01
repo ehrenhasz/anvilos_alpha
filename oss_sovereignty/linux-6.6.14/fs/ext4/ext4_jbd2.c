@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Interface between ext4 and JBD
- */
+
+ 
 
 #include "ext4_jbd2.h"
 
@@ -10,26 +8,26 @@
 int ext4_inode_journal_mode(struct inode *inode)
 {
 	if (EXT4_JOURNAL(inode) == NULL)
-		return EXT4_INODE_WRITEBACK_DATA_MODE;	/* writeback */
-	/* We do not support data journalling with delayed allocation */
+		return EXT4_INODE_WRITEBACK_DATA_MODE;	 
+	 
 	if (!S_ISREG(inode->i_mode) ||
 	    ext4_test_inode_flag(inode, EXT4_INODE_EA_INODE) ||
 	    test_opt(inode->i_sb, DATA_FLAGS) == EXT4_MOUNT_JOURNAL_DATA ||
 	    (ext4_test_inode_flag(inode, EXT4_INODE_JOURNAL_DATA) &&
 	    !test_opt(inode->i_sb, DELALLOC))) {
-		/* We do not support data journalling for encrypted data */
+		 
 		if (S_ISREG(inode->i_mode) && IS_ENCRYPTED(inode))
-			return EXT4_INODE_ORDERED_DATA_MODE;  /* ordered */
-		return EXT4_INODE_JOURNAL_DATA_MODE;	/* journal data */
+			return EXT4_INODE_ORDERED_DATA_MODE;   
+		return EXT4_INODE_JOURNAL_DATA_MODE;	 
 	}
 	if (test_opt(inode->i_sb, DATA_FLAGS) == EXT4_MOUNT_ORDERED_DATA)
-		return EXT4_INODE_ORDERED_DATA_MODE;	/* ordered */
+		return EXT4_INODE_ORDERED_DATA_MODE;	 
 	if (test_opt(inode->i_sb, DATA_FLAGS) == EXT4_MOUNT_WRITEBACK_DATA)
-		return EXT4_INODE_WRITEBACK_DATA_MODE;	/* writeback */
+		return EXT4_INODE_WRITEBACK_DATA_MODE;	 
 	BUG();
 }
 
-/* Just increment the non-pointer handle value */
+ 
 static handle_t *ext4_get_nojournal(void)
 {
 	handle_t *handle = current->journal_info;
@@ -45,7 +43,7 @@ static handle_t *ext4_get_nojournal(void)
 }
 
 
-/* Decrement the non-pointer handle value */
+ 
 static void ext4_put_nojournal(handle_t *handle)
 {
 	unsigned long ref_cnt = (unsigned long)handle;
@@ -58,9 +56,7 @@ static void ext4_put_nojournal(handle_t *handle)
 	current->journal_info = handle;
 }
 
-/*
- * Wrappers for jbd2_journal_start/end.
- */
+ 
 static int ext4_journal_check_start(struct super_block *sb)
 {
 	journal_t *journal;
@@ -75,11 +71,7 @@ static int ext4_journal_check_start(struct super_block *sb)
 
 	WARN_ON(sb->s_writers.frozen == SB_FREEZE_COMPLETE);
 	journal = EXT4_SB(sb)->s_journal;
-	/*
-	 * Special case here: if the journal has aborted behind our
-	 * backs (eg. EIO in the commit thread), then we still need to
-	 * take the FS itself readonly cleanly.
-	 */
+	 
 	if (journal && is_journal_aborted(journal)) {
 		ext4_abort(sb, -journal->j_errno, "Detected aborted journal");
 		return -EROFS;
@@ -210,12 +202,7 @@ static void ext4_check_bdev_write_error(struct super_block *sb)
 	struct ext4_sb_info *sbi = EXT4_SB(sb);
 	int err;
 
-	/*
-	 * If the block device has write error flag, it may have failed to
-	 * async write out metadata buffers in the background. In this case,
-	 * we could read old data from disk and write it out again, which
-	 * may lead to on-disk filesystem inconsistency.
-	 */
+	 
 	if (errseq_check(&mapping->wb_err, READ_ONCE(sbi->s_bdev_wb_err))) {
 		spin_lock(&sbi->s_bdev_wb_lock);
 		err = errseq_check_and_advance(&mapping->wb_err, &sbi->s_bdev_wb_err);
@@ -253,15 +240,7 @@ int __ext4_journal_get_write_access(const char *where, unsigned int line,
 	return 0;
 }
 
-/*
- * The ext4 forget function must perform a revoke if we are freeing data
- * which has been journaled.  Metadata (eg. indirect blocks) must be
- * revoked in all cases.
- *
- * "bh" may be NULL: a metadata block may have been freed from memory
- * but there may still be a record of it in the journal, and that record
- * still needs to be revoked.
- */
+ 
 int __ext4_forget(const char *where, unsigned int line, handle_t *handle,
 		  int is_metadata, struct inode *inode,
 		  struct buffer_head *bh, ext4_fsblk_t blocknr)
@@ -277,16 +256,13 @@ int __ext4_forget(const char *where, unsigned int line, handle_t *handle,
 		  bh, is_metadata, inode->i_mode,
 		  test_opt(inode->i_sb, DATA_FLAGS));
 
-	/* In the no journal case, we can just do a bforget and return */
+	 
 	if (!ext4_handle_valid(handle)) {
 		bforget(bh);
 		return 0;
 	}
 
-	/* Never use the revoke function if we are doing full data
-	 * journaling: there is no need to, and a V1 superblock won't
-	 * support it.  Otherwise, only skip the revoke on un-journaled
-	 * data blocks. */
+	 
 
 	if (test_opt(inode->i_sb, DATA_FLAGS) == EXT4_MOUNT_JOURNAL_DATA ||
 	    (!is_metadata && !ext4_should_journal_data(inode))) {
@@ -301,9 +277,7 @@ int __ext4_forget(const char *where, unsigned int line, handle_t *handle,
 		return 0;
 	}
 
-	/*
-	 * data!=journal && (is_metadata || should_journal_data(inode))
-	 */
+	 
 	BUFFER_TRACE(bh, "call jbd2_journal_revoke");
 	err = jbd2_journal_revoke(handle, blocknr, bh);
 	if (err) {
@@ -353,7 +327,7 @@ int __ext4_handle_dirty_metadata(const char *where, unsigned int line,
 	set_buffer_uptodate(bh);
 	if (ext4_handle_valid(handle)) {
 		err = jbd2_journal_dirty_metadata(handle, bh);
-		/* Errors can only happen due to aborted journal or a nasty bug */
+		 
 		if (!is_handle_aborted(handle) && WARN_ON_ONCE(err)) {
 			ext4_journal_abort_handle(where, line, __func__, bh,
 						  handle, err);

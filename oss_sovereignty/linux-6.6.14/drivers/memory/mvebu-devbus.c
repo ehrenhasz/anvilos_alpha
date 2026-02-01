@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Marvell EBU SoC Device Bus Controller
- * (memory controller for NOR/NAND/SRAM/FPGA devices)
- *
- * Copyright (C) 2013-2014 Marvell
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,7 +12,7 @@
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
 
-/* Register definitions */
+ 
 #define ARMADA_DEV_WIDTH_SHIFT		30
 #define ARMADA_BADR_SKEW_SHIFT		28
 #define ARMADA_RD_HOLD_SHIFT		23
@@ -120,10 +115,7 @@ static int devbus_get_timing_params(struct devbus *devbus,
 		return err;
 	}
 
-	/*
-	 * The bus width is encoded into the register as 0 for 8 bits,
-	 * and 1 for 16 bits, so we do the necessary conversion here.
-	 */
+	 
 	if (r->bus_width == 8) {
 		r->bus_width = 0;
 	} else if (r->bus_width == 16) {
@@ -199,13 +191,7 @@ static void devbus_orion_set_timing_params(struct devbus *devbus,
 {
 	u32 value;
 
-	/*
-	 * The hardware designers found it would be a good idea to
-	 * split most of the values in the register into two fields:
-	 * one containing all the low-order bits, and another one
-	 * containing just the high-order bit. For all of those
-	 * fields, we have to split the value into these two parts.
-	 */
+	 
 	value =	(r->turn_off   & ORION_TURN_OFF_MASK)  << ORION_TURN_OFF_SHIFT  |
 		(r->acc_first  & ORION_ACC_FIRST_MASK) << ORION_ACC_FIRST_SHIFT |
 		(r->acc_next   & ORION_ACC_NEXT_MASK)  << ORION_ACC_NEXT_SHIFT  |
@@ -232,7 +218,7 @@ static void devbus_armada_set_timing_params(struct devbus *devbus,
 {
 	u32 value;
 
-	/* Set read timings */
+	 
 	value = r->bus_width << ARMADA_DEV_WIDTH_SHIFT |
 		r->badr_skew << ARMADA_BADR_SKEW_SHIFT |
 		r->rd_hold   << ARMADA_RD_HOLD_SHIFT   |
@@ -247,7 +233,7 @@ static void devbus_armada_set_timing_params(struct devbus *devbus,
 
 	writel(value, devbus->base + ARMADA_READ_PARAM_OFFSET);
 
-	/* Set write timings */
+	 
 	value = w->sync_enable  << ARMADA_SYNC_ENABLE_SHIFT |
 		w->wr_low       << ARMADA_WR_LOW_SHIFT      |
 		w->wr_high      << ARMADA_WR_HIGH_SHIFT     |
@@ -284,11 +270,7 @@ static int mvebu_devbus_probe(struct platform_device *pdev)
 	if (IS_ERR(clk))
 		return PTR_ERR(clk);
 
-	/*
-	 * Obtain clock period in picoseconds,
-	 * we need this in order to convert timing
-	 * parameters from cycles to picoseconds.
-	 */
+	 
 	rate = clk_get_rate(clk) / 1000;
 	devbus->tick_ps = 1000000000 / rate;
 
@@ -296,23 +278,19 @@ static int mvebu_devbus_probe(struct platform_device *pdev)
 		devbus->tick_ps);
 
 	if (!of_property_read_bool(node, "devbus,keep-config")) {
-		/* Read the Device Tree node */
+		 
 		err = devbus_get_timing_params(devbus, node, &r, &w);
 		if (err < 0)
 			return err;
 
-		/* Set the new timing parameters */
+		 
 		if (of_device_is_compatible(node, "marvell,orion-devbus"))
 			devbus_orion_set_timing_params(devbus, node, &r, &w);
 		else
 			devbus_armada_set_timing_params(devbus, node, &r, &w);
 	}
 
-	/*
-	 * We need to create a child device explicitly from here to
-	 * guarantee that the child will be probed after the timing
-	 * parameters for the bus are written.
-	 */
+	 
 	err = of_platform_populate(node, NULL, NULL, dev);
 	if (err < 0)
 		return err;

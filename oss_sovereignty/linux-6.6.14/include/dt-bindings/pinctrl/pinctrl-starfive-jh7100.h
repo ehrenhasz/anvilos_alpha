@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/*
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_PINCTRL_STARFIVE_JH7100_H__
 #define __DT_BINDINGS_PINCTRL_STARFIVE_JH7100_H__
@@ -11,18 +9,7 @@
 #define PAD_GPIO(x)		(PAD_GPIO_OFFSET + (x))
 #define PAD_FUNC_SHARE(x)	(PAD_FUNC_SHARE_OFFSET + (x))
 
-/*
- * GPIOMUX bits:
- *  | 31 - 24 | 23 - 16 | 15 - 8 |     7    |     6    |  5 - 0  |
- *  |  dout   |  doen   |  din   | dout rev | doen rev | gpio nr |
- *
- * dout:     output signal
- * doen:     output enable signal
- * din:      optional input signal, 0xff = none
- * dout rev: output signal reverse bit
- * doen rev: output enable signal reverse bit
- * gpio nr:  gpio number, 0 - 63
- */
+ 
 #define GPIOMUX(n, dout, doen, din) ( \
 		(((dout) & 0x80000000) >> (31 - 7)) | (((dout) & 0xff) << 24) | \
 		(((doen) & 0x80000000) >> (31 - 6)) | (((doen) & 0xff) << 16) | \
@@ -272,4 +259,4 @@
 
 #define GPI_NONE				0xff
 
-#endif /* __DT_BINDINGS_PINCTRL_STARFIVE_JH7100_H__ */
+#endif  

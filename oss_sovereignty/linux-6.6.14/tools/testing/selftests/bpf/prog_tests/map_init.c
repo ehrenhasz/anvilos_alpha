@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020 Tessares SA <http://www.tessares.net> */
 
-#include <test_progs.h>
-#include "test_map_init.skel.h"
-
-#define TEST_VALUE 0x1234
-#define FILL_VALUE 0xdeadbeef
-
-static int nr_cpus;
-static int duration;
-
-typedef unsigned long long map_key_t;
-typedef unsigned long long map_value_t;
-typedef struct {
-	map_value_t v; /* padding */
+ 
 } __bpf_percpu_val_align pcpu_map_value_t;
 
 
@@ -74,7 +60,7 @@ error:
 	return NULL;
 }
 
-/* executes bpf program that updates map with key, value */
+ 
 static int prog_run_insert_elem(struct test_map_init *skel, map_key_t key,
 				map_value_t value)
 {
@@ -89,7 +75,7 @@ static int prog_run_insert_elem(struct test_map_init *skel, map_key_t key,
 	if (!ASSERT_OK(test_map_init__attach(skel), "skel_attach"))
 		return -1;
 
-	/* Let tracepoint trigger */
+	 
 	syscall(__NR_getpgid);
 
 	test_map_init__detach(skel);
@@ -119,13 +105,7 @@ static int check_values_one_cpu(pcpu_map_value_t *value, map_value_t expected)
 	return 0;
 }
 
-/* Add key=1 elem with values set for all CPUs
- * Delete elem key=1
- * Run bpf prog that inserts new key=1 elem with value=0x1234
- *   (bpf prog can only set value for current CPU)
- * Lookup Key=1 and check value is as expected for all CPUs:
- *   value set by bpf prog for one CPU, 0 for all others
- */
+ 
 static void test_pcpu_map_init(void)
 {
 	pcpu_map_value_t value[nr_cpus];
@@ -133,39 +113,35 @@ static void test_pcpu_map_init(void)
 	int map_fd, err;
 	map_key_t key;
 
-	/* max 1 elem in map so insertion is forced to reuse freed entry */
+	 
 	skel = setup(BPF_MAP_TYPE_PERCPU_HASH, 1, &map_fd, 1);
 	if (!ASSERT_OK_PTR(skel, "prog_setup"))
 		return;
 
-	/* delete element so the entry can be re-used*/
+	 
 	key = 1;
 	err = bpf_map_delete_elem(map_fd, &key);
 	if (!ASSERT_OK(err, "bpf_map_delete_elem"))
 		goto cleanup;
 
-	/* run bpf prog that inserts new elem, re-using the slot just freed */
+	 
 	err = prog_run_insert_elem(skel, key, TEST_VALUE);
 	if (!ASSERT_OK(err, "prog_run_insert_elem"))
 		goto cleanup;
 
-	/* check that key=1 was re-created by bpf prog */
+	 
 	err = bpf_map_lookup_elem(map_fd, &key, value);
 	if (!ASSERT_OK(err, "bpf_map_lookup_elem"))
 		goto cleanup;
 
-	/* and has expected values */
+	 
 	check_values_one_cpu(value, TEST_VALUE);
 
 cleanup:
 	test_map_init__destroy(skel);
 }
 
-/* Add key=1 and key=2 elems with values set for all CPUs
- * Run bpf prog that inserts new key=3 elem
- *   (only for current cpu; other cpus should have initial value = 0)
- * Lookup Key=1 and check value is as expected for all CPUs
- */
+ 
 static void test_pcpu_lru_map_init(void)
 {
 	pcpu_map_value_t value[nr_cpus];
@@ -173,25 +149,23 @@ static void test_pcpu_lru_map_init(void)
 	int map_fd, err;
 	map_key_t key;
 
-	/* Set up LRU map with 2 elements, values filled for all CPUs.
-	 * With these 2 elements, the LRU map is full
-	 */
+	 
 	skel = setup(BPF_MAP_TYPE_LRU_PERCPU_HASH, 2, &map_fd, 2);
 	if (!ASSERT_OK_PTR(skel, "prog_setup"))
 		return;
 
-	/* run bpf prog that inserts new key=3 element, re-using LRU slot */
+	 
 	key = 3;
 	err = prog_run_insert_elem(skel, key, TEST_VALUE);
 	if (!ASSERT_OK(err, "prog_run_insert_elem"))
 		goto cleanup;
 
-	/* check that key=3 replaced one of earlier elements */
+	 
 	err = bpf_map_lookup_elem(map_fd, &key, value);
 	if (!ASSERT_OK(err, "bpf_map_lookup_elem"))
 		goto cleanup;
 
-	/* and has expected values */
+	 
 	check_values_one_cpu(value, TEST_VALUE);
 
 cleanup:

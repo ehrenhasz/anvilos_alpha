@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include <drm/ttm/ttm_placement.h>
 
@@ -34,10 +10,7 @@
 
 #define VMW_RES_EVICT_ERR_COUNT 10
 
-/**
- * vmw_resource_mob_attach - Mark a resource as attached to its backing mob
- * @res: The resource
- */
+ 
 void vmw_resource_mob_attach(struct vmw_resource *res)
 {
 	struct vmw_bo *gbo = res->guest_memory_bo;
@@ -62,10 +35,7 @@ void vmw_resource_mob_attach(struct vmw_resource *res)
 	vmw_bo_prio_add(gbo, res->used_prio);
 }
 
-/**
- * vmw_resource_mob_detach - Mark a resource as detached from its backing mob
- * @res: The resource
- */
+ 
 void vmw_resource_mob_detach(struct vmw_resource *res)
 {
 	struct vmw_bo *gbo = res->guest_memory_bo;
@@ -90,13 +60,7 @@ vmw_resource_reference_unless_doomed(struct vmw_resource *res)
 	return kref_get_unless_zero(&res->kref) ? res : NULL;
 }
 
-/**
- * vmw_resource_release_id - release a resource id to the id manager.
- *
- * @res: Pointer to the resource.
- *
- * Release the resource id to the resource id manager and set it to -1
- */
+ 
 void vmw_resource_release_id(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -172,14 +136,7 @@ void vmw_resource_unreference(struct vmw_resource **p_res)
 }
 
 
-/**
- * vmw_resource_alloc_id - release a resource id to the id manager.
- *
- * @res: Pointer to the resource.
- *
- * Allocate the lowest free resource from the resource manager, and set
- * @res->id to that id. Returns 0 on success and -ENOMEM on failure.
- */
+ 
 int vmw_resource_alloc_id(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -200,16 +157,7 @@ int vmw_resource_alloc_id(struct vmw_resource *res)
 	return ret < 0 ? ret : 0;
 }
 
-/**
- * vmw_resource_init - initialize a struct vmw_resource
- *
- * @dev_priv:       Pointer to a device private struct.
- * @res:            The struct vmw_resource to initialize.
- * @delay_id:       Boolean whether to defer device id allocation until
- *                  the first validation.
- * @res_free:       Resource destructor.
- * @func:           Resource function table.
- */
+ 
 int vmw_resource_init(struct vmw_private *dev_priv, struct vmw_resource *res,
 		      bool delay_id,
 		      void (*res_free) (struct vmw_resource *res),
@@ -238,20 +186,7 @@ int vmw_resource_init(struct vmw_private *dev_priv, struct vmw_resource *res,
 }
 
 
-/**
- * vmw_user_resource_lookup_handle - lookup a struct resource from a
- * TTM user-space handle and perform basic type checks
- *
- * @dev_priv:     Pointer to a device private struct
- * @tfile:        Pointer to a struct ttm_object_file identifying the caller
- * @handle:       The TTM user-space handle
- * @converter:    Pointer to an object describing the resource type
- * @p_res:        On successful return the location pointed to will contain
- *                a pointer to a refcounted struct vmw_resource.
- *
- * If the handle can't be found or is associated with an incorrect resource
- * type, -EINVAL will be returned.
- */
+ 
 int vmw_user_resource_lookup_handle(struct vmw_private *dev_priv,
 				    struct ttm_object_file *tfile,
 				    uint32_t handle,
@@ -282,11 +217,7 @@ out_bad_resource:
 	return ret;
 }
 
-/*
- * Helper function that looks either a surface or bo.
- *
- * The pointer this pointed at by out_surf and out_buf needs to be null.
- */
+ 
 int vmw_user_lookup_handle(struct vmw_private *dev_priv,
 			   struct drm_file *filp,
 			   uint32_t handle,
@@ -312,13 +243,7 @@ int vmw_user_lookup_handle(struct vmw_private *dev_priv,
 	return ret;
 }
 
-/**
- * vmw_resource_buf_alloc - Allocate a guest memory buffer for a resource.
- *
- * @res:            The resource for which to allocate a gbo buffer.
- * @interruptible:  Whether any sleeps during allocation should be
- *                  performed while interruptible.
- */
+ 
 static int vmw_resource_buf_alloc(struct vmw_resource *res,
 				  bool interruptible)
 {
@@ -348,18 +273,7 @@ out_no_bo:
 	return ret;
 }
 
-/**
- * vmw_resource_do_validate - Make a resource up-to-date and visible
- *                            to the device.
- *
- * @res:            The resource to make visible to the device.
- * @val_buf:        Information about a buffer possibly
- *                  containing backup data if a bind operation is needed.
- * @dirtying:       Transfer dirty regions.
- *
- * On hardware resource shortage, this function returns -EBUSY and
- * should be retried once resources have been freed up.
- */
+ 
 static int vmw_resource_do_validate(struct vmw_resource *res,
 				    struct ttm_validate_buffer *val_buf,
 				    bool dirtying)
@@ -384,10 +298,7 @@ static int vmw_resource_do_validate(struct vmw_resource *res,
 			vmw_resource_mob_attach(res);
 	}
 
-	/*
-	 * Handle the case where the backup mob is marked coherent but
-	 * the resource isn't.
-	 */
+	 
 	if (func->dirty_alloc && vmw_resource_mob_attached(res) &&
 	    !res->coherent) {
 		if (res->guest_memory_bo->dirty && !res->dirty) {
@@ -399,10 +310,7 @@ static int vmw_resource_do_validate(struct vmw_resource *res,
 		}
 	}
 
-	/*
-	 * Transfer the dirty regions to the resource and update
-	 * the resource.
-	 */
+	 
 	if (res->dirty) {
 		if (dirtying && !res->res_dirty) {
 			pgoff_t start = res->guest_memory_offset >> PAGE_SHIFT;
@@ -425,21 +333,7 @@ out_bind_failed:
 	return ret;
 }
 
-/**
- * vmw_resource_unreserve - Unreserve a resource previously reserved for
- * command submission.
- *
- * @res:               Pointer to the struct vmw_resource to unreserve.
- * @dirty_set:         Change dirty status of the resource.
- * @dirty:             When changing dirty status indicates the new status.
- * @switch_guest_memory: Guest memory buffer has been switched.
- * @new_guest_memory_bo: Pointer to new guest memory buffer if command submission
- *                     switched. May be NULL.
- * @new_guest_memory_offset: New gbo offset if @switch_guest_memory is true.
- *
- * Currently unreserving a resource means putting it back on the device's
- * resource lru list, so that it can be evicted if necessary.
- */
+ 
 void vmw_resource_unreserve(struct vmw_resource *res,
 			    bool dirty_set,
 			    bool dirty,
@@ -463,10 +357,7 @@ void vmw_resource_unreserve(struct vmw_resource *res,
 		if (new_guest_memory_bo) {
 			res->guest_memory_bo = vmw_user_bo_ref(new_guest_memory_bo);
 
-			/*
-			 * The validation code should already have added a
-			 * dirty tracker here.
-			 */
+			 
 			WARN_ON(res->coherent && !new_guest_memory_bo->dirty);
 
 			vmw_resource_mob_attach(res);
@@ -492,18 +383,7 @@ void vmw_resource_unreserve(struct vmw_resource *res,
 	spin_unlock(&dev_priv->resource_lock);
 }
 
-/**
- * vmw_resource_check_buffer - Check whether a backup buffer is needed
- *                             for a resource and in that case, allocate
- *                             one, reserve and validate it.
- *
- * @ticket:         The ww acquire context to use, or NULL if trylocking.
- * @res:            The resource for which to allocate a backup buffer.
- * @interruptible:  Whether any sleeps during allocation should be
- *                  performed while interruptible.
- * @val_buf:        On successful return contains data about the
- *                  reserved and validated backup buffer.
- */
+ 
 static int
 vmw_resource_check_buffer(struct ww_acquire_ctx *ticket,
 			  struct vmw_resource *res,
@@ -556,17 +436,7 @@ out_no_reserve:
 	return ret;
 }
 
-/*
- * vmw_resource_reserve - Reserve a resource for command submission
- *
- * @res:            The resource to reserve.
- *
- * This function takes the resource off the LRU list and make sure
- * a guest memory buffer is present for guest-backed resources.
- * However, the buffer may not be bound to the resource at this
- * point.
- *
- */
+ 
 int vmw_resource_reserve(struct vmw_resource *res, bool interruptible,
 			 bool no_guest_memory)
 {
@@ -591,13 +461,7 @@ int vmw_resource_reserve(struct vmw_resource *res, bool interruptible,
 	return 0;
 }
 
-/**
- * vmw_resource_backoff_reservation - Unreserve and unreference a
- *                                    guest memory buffer
- *.
- * @ticket:         The ww acquire ctx used for reservation.
- * @val_buf:        Guest memory buffer information.
- */
+ 
 static void
 vmw_resource_backoff_reservation(struct ww_acquire_ctx *ticket,
 				 struct ttm_validate_buffer *val_buf)
@@ -614,14 +478,7 @@ vmw_resource_backoff_reservation(struct ww_acquire_ctx *ticket,
 	val_buf->bo = NULL;
 }
 
-/**
- * vmw_resource_do_evict - Evict a resource, and transfer its data
- *                         to a backup buffer.
- *
- * @ticket:         The ww acquire ticket to use, or NULL if trylocking.
- * @res:            The resource to evict.
- * @interruptible:  Whether to wait interruptible.
- */
+ 
 static int vmw_resource_do_evict(struct ww_acquire_ctx *ticket,
 				 struct vmw_resource *res, bool interruptible)
 {
@@ -654,21 +511,7 @@ out_no_unbind:
 }
 
 
-/**
- * vmw_resource_validate - Make a resource up-to-date and visible
- *                         to the device.
- * @res: The resource to make visible to the device.
- * @intr: Perform waits interruptible if possible.
- * @dirtying: Pending GPU operation will dirty the resource
- *
- * On successful return, any backup DMA buffer pointed to by @res->backup will
- * be reserved and validated.
- * On hardware resource shortage, this function will repeatedly evict
- * resources of the same type until the validation succeeds.
- *
- * Return: Zero on success, -ERESTARTSYS if interrupted, negative error code
- * on failure.
- */
+ 
 int vmw_resource_validate(struct vmw_resource *res, bool intr,
 			  bool dirtying)
 {
@@ -707,7 +550,7 @@ int vmw_resource_validate(struct vmw_resource *res, bool intr,
 
 		spin_unlock(&dev_priv->resource_lock);
 
-		/* Trylock backup buffers with a NULL ticket. */
+		 
 		ret = vmw_resource_do_evict(NULL, evict_res, intr);
 		if (unlikely(ret != 0)) {
 			spin_lock(&dev_priv->resource_lock);
@@ -737,17 +580,7 @@ out_no_validate:
 }
 
 
-/**
- * vmw_resource_unbind_list
- *
- * @vbo: Pointer to the current backing MOB.
- *
- * Evicts the Guest Backed hardware resource if the backup
- * buffer is being moved out of MOB memory.
- * Note that this function will not race with the resource
- * validation code, since resource validation and eviction
- * both require the backup buffer to be reserved.
- */
+ 
 void vmw_resource_unbind_list(struct vmw_bo *vbo)
 {
 	struct ttm_validate_buffer val_buf = {
@@ -773,14 +606,7 @@ void vmw_resource_unbind_list(struct vmw_bo *vbo)
 }
 
 
-/**
- * vmw_query_readback_all - Read back cached query states
- *
- * @dx_query_mob: Buffer containing the DX query MOB
- *
- * Read back cached states from the device if they exist.  This function
- * assumes binding_mutex is held.
- */
+ 
 int vmw_query_readback_all(struct vmw_bo *dx_query_mob)
 {
 	struct vmw_resource *dx_query_ctx;
@@ -791,7 +617,7 @@ int vmw_query_readback_all(struct vmw_bo *dx_query_mob)
 	} *cmd;
 
 
-	/* No query bound, so do nothing */
+	 
 	if (!dx_query_mob || !dx_query_mob->dx_query_ctx)
 		return 0;
 
@@ -808,7 +634,7 @@ int vmw_query_readback_all(struct vmw_bo *dx_query_mob)
 
 	vmw_cmd_commit(dev_priv, sizeof(*cmd));
 
-	/* Triggers a rebind the next time affected context is bound */
+	 
 	dx_query_mob->dx_query_ctx = NULL;
 
 	return 0;
@@ -816,16 +642,7 @@ int vmw_query_readback_all(struct vmw_bo *dx_query_mob)
 
 
 
-/**
- * vmw_query_move_notify - Read back cached query states
- *
- * @bo: The TTM buffer object about to move.
- * @old_mem: The memory region @bo is moving from.
- * @new_mem: The memory region @bo is moving to.
- *
- * Called before the query MOB is swapped out to read back cached query
- * states from the device.
- */
+ 
 void vmw_query_move_notify(struct ttm_buffer_object *bo,
 			   struct ttm_resource *old_mem,
 			   struct ttm_resource *new_mem)
@@ -836,7 +653,7 @@ void vmw_query_move_notify(struct ttm_buffer_object *bo,
 
 	mutex_lock(&dev_priv->binding_mutex);
 
-	/* If BO is being moved from MOB to system memory */
+	 
 	if (old_mem &&
 	    new_mem->mem_type == TTM_PL_SYSTEM &&
 	    old_mem->mem_type == VMW_PL_MOB) {
@@ -851,7 +668,7 @@ void vmw_query_move_notify(struct ttm_buffer_object *bo,
 		(void) vmw_query_readback_all(dx_query_mob);
 		mutex_unlock(&dev_priv->binding_mutex);
 
-		/* Create a fence and attach the BO to it */
+		 
 		(void) vmw_execbuf_fence_commands(NULL, dev_priv, &fence, NULL);
 		vmw_bo_fence_single(bo, fence);
 
@@ -863,25 +680,13 @@ void vmw_query_move_notify(struct ttm_buffer_object *bo,
 		mutex_unlock(&dev_priv->binding_mutex);
 }
 
-/**
- * vmw_resource_needs_backup - Return whether a resource needs a backup buffer.
- *
- * @res:            The resource being queried.
- */
+ 
 bool vmw_resource_needs_backup(const struct vmw_resource *res)
 {
 	return res->func->needs_guest_memory;
 }
 
-/**
- * vmw_resource_evict_type - Evict all resources of a specific type
- *
- * @dev_priv:       Pointer to a device private struct
- * @type:           The resource type to evict
- *
- * To avoid thrashing starvation or as part of the hibernation sequence,
- * try to evict all evictable resources of a specific type.
- */
+ 
 static void vmw_resource_evict_type(struct vmw_private *dev_priv,
 				    enum vmw_res_type type)
 {
@@ -903,7 +708,7 @@ static void vmw_resource_evict_type(struct vmw_private *dev_priv,
 		list_del_init(&evict_res->lru_head);
 		spin_unlock(&dev_priv->resource_lock);
 
-		/* Wait lock backup buffers with a ticket. */
+		 
 		ret = vmw_resource_do_evict(&ticket, evict_res, false);
 		if (unlikely(ret != 0)) {
 			spin_lock(&dev_priv->resource_lock);
@@ -922,16 +727,7 @@ out_unlock:
 	spin_unlock(&dev_priv->resource_lock);
 }
 
-/**
- * vmw_resource_evict_all - Evict all evictable resources
- *
- * @dev_priv:       Pointer to a device private struct
- *
- * To avoid thrashing starvation or as part of the hibernation sequence,
- * evict all evictable resources. In particular this means that all
- * guest-backed resources that are registered with the device are
- * evicted and the OTable becomes clean.
- */
+ 
 void vmw_resource_evict_all(struct vmw_private *dev_priv)
 {
 	enum vmw_res_type type;
@@ -944,16 +740,7 @@ void vmw_resource_evict_all(struct vmw_private *dev_priv)
 	mutex_unlock(&dev_priv->cmdbuf_mutex);
 }
 
-/*
- * vmw_resource_pin - Add a pin reference on a resource
- *
- * @res: The resource to add a pin reference on
- *
- * This function adds a pin reference, and if needed validates the resource.
- * Having a pin reference means that the resource can never be evicted, and
- * its id will never change as long as there is a pin reference.
- * This function returns 0 on success and a negative error code on failure.
- */
+ 
 int vmw_resource_pin(struct vmw_resource *res, bool interruptible)
 {
 	struct ttm_operation_ctx ctx = { interruptible, false };
@@ -988,7 +775,7 @@ int vmw_resource_pin(struct vmw_resource *res, bool interruptible)
 				}
 			}
 
-			/* Do we really need to pin the MOB as well? */
+			 
 			vmw_bo_pin_reserved(vbo, true);
 		}
 		ret = vmw_resource_validate(res, interruptible, true);
@@ -1007,14 +794,7 @@ out_no_reserve:
 	return ret;
 }
 
-/**
- * vmw_resource_unpin - Remove a pin reference from a resource
- *
- * @res: The resource to remove a pin reference from
- *
- * Having a pin reference means that the resource can never be evicted, and
- * its id will never change as long as there is a pin reference.
- */
+ 
 void vmw_resource_unpin(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -1039,23 +819,13 @@ void vmw_resource_unpin(struct vmw_resource *res)
 	mutex_unlock(&dev_priv->cmdbuf_mutex);
 }
 
-/**
- * vmw_res_type - Return the resource type
- *
- * @res: Pointer to the resource
- */
+ 
 enum vmw_res_type vmw_res_type(const struct vmw_resource *res)
 {
 	return res->func->res_type;
 }
 
-/**
- * vmw_resource_dirty_update - Update a resource's dirty tracker with a
- * sequential range of touched backing store memory.
- * @res: The resource.
- * @start: The first page touched.
- * @end: The last page touched + 1.
- */
+ 
 void vmw_resource_dirty_update(struct vmw_resource *res, pgoff_t start,
 			       pgoff_t end)
 {
@@ -1064,14 +834,7 @@ void vmw_resource_dirty_update(struct vmw_resource *res, pgoff_t start,
 					   end << PAGE_SHIFT);
 }
 
-/**
- * vmw_resources_clean - Clean resources intersecting a mob range
- * @vbo: The mob buffer object
- * @start: The mob page offset starting the range
- * @end: The mob page offset ending the range
- * @num_prefault: Returns how many pages including the first have been
- * cleaned and are ok to prefault
- */
+ 
 int vmw_resources_clean(struct vmw_bo *vbo, pgoff_t start,
 			pgoff_t end, pgoff_t *num_prefault)
 {
@@ -1081,10 +844,7 @@ int vmw_resources_clean(struct vmw_bo *vbo, pgoff_t start,
 	unsigned long res_end = end << PAGE_SHIFT;
 	unsigned long last_cleaned = 0;
 
-	/*
-	 * Find the resource with lowest backup_offset that intersects the
-	 * range.
-	 */
+	 
 	while (cur) {
 		struct vmw_resource *cur_res =
 			container_of(cur, struct vmw_resource, mob_node);
@@ -1097,14 +857,11 @@ int vmw_resources_clean(struct vmw_bo *vbo, pgoff_t start,
 		} else {
 			found = cur_res;
 			cur = cur->rb_left;
-			/* Continue to look for resources with lower offsets */
+			 
 		}
 	}
 
-	/*
-	 * In order of increasing guest_memory_offset, clean dirty resources
-	 * intersecting the range.
-	 */
+	 
 	while (found) {
 		if (found->res_dirty) {
 			int ret;
@@ -1128,9 +885,7 @@ int vmw_resources_clean(struct vmw_bo *vbo, pgoff_t start,
 			break;
 	}
 
-	/*
-	 * Set number of pages allowed prefaulting and fence the buffer object
-	 */
+	 
 	*num_prefault = 1;
 	if (last_cleaned > res_start) {
 		struct ttm_buffer_object *bo = &vbo->tbo;

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __RTW_PWRCTRL_H_
 #define __RTW_PWRCTRL_H_
 
@@ -35,7 +31,7 @@ enum {
 	PS_MODE_ACTIVE	= 0,
 	PS_MODE_MIN,
 	PS_MODE_MAX,
-	PS_MODE_DTIM,	/* PS_MODE_SELF_DEFINED */
+	PS_MODE_DTIM,	 
 	PS_MODE_VOIP,
 	PS_MODE_UAPSD_WMM,
 	PS_MODE_UAPSD,
@@ -46,11 +42,7 @@ enum {
 	PS_MODE_NUM,
 };
 
-/*
-	BIT[2:0] = HW state
-	BIT[3] = Protocol PS state,   0: register active state , 1: register sleep state
-	BIT[4] = sub-state
-*/
+ 
 
 #define PS_DPS				BIT(0)
 #define PS_LCLK				(PS_DPS)
@@ -85,44 +77,44 @@ enum {
 
 struct reportpwrstate_parm {
 	unsigned char mode;
-	unsigned char state; /* the CPWM value */
+	unsigned char state;  
 	unsigned short rsvd;
 };
 
-#define LPS_DELAY_TIME	(1 * HZ) /*  1 sec */
+#define LPS_DELAY_TIME	(1 * HZ)  
 
 #define EXE_PWR_NONE	0x01
 #define EXE_PWR_IPS		0x02
 #define EXE_PWR_LPS		0x04
 
-/*  RF state. */
+ 
 enum rt_rf_power_state {
-	rf_on,		/*  RF is on after RFSleep or RFOff */
-	rf_sleep,	/*  802.11 Power Save mode */
-	rf_off,		/*  HW/SW Radio OFF or Inactive Power Save */
-	/* Add the new RF state above this line ===== */
+	rf_on,		 
+	rf_sleep,	 
+	rf_off,		 
+	 
 	rf_max
 };
 
-/*  RF Off Level for IPS or HW/SW radio off */
-#define	RT_RF_OFF_LEVL_ASPM			BIT(0)	/*  PCI ASPM */
-#define	RT_RF_OFF_LEVL_CLK_REQ		BIT(1)	/*  PCI clock request */
-#define	RT_RF_OFF_LEVL_PCI_D3			BIT(2)	/*  PCI D3 mode */
-#define	RT_RF_OFF_LEVL_HALT_NIC		BIT(3)	/*  NIC halt, re-initialize hw parameters */
-#define	RT_RF_OFF_LEVL_FREE_FW		BIT(4)	/*  FW free, re-download the FW */
-#define	RT_RF_OFF_LEVL_FW_32K		BIT(5)	/*  FW in 32k */
-#define	RT_RF_PS_LEVEL_ALWAYS_ASPM	BIT(6)	/*  Always enable ASPM and Clock Req in initialization. */
-#define	RT_RF_LPS_DISALBE_2R			BIT(30)	/*  When LPS is on, disable 2R if no packet is received or transmitted. */
-#define	RT_RF_LPS_LEVEL_ASPM			BIT(31)	/*  LPS with ASPM */
+ 
+#define	RT_RF_OFF_LEVL_ASPM			BIT(0)	 
+#define	RT_RF_OFF_LEVL_CLK_REQ		BIT(1)	 
+#define	RT_RF_OFF_LEVL_PCI_D3			BIT(2)	 
+#define	RT_RF_OFF_LEVL_HALT_NIC		BIT(3)	 
+#define	RT_RF_OFF_LEVL_FREE_FW		BIT(4)	 
+#define	RT_RF_OFF_LEVL_FW_32K		BIT(5)	 
+#define	RT_RF_PS_LEVEL_ALWAYS_ASPM	BIT(6)	 
+#define	RT_RF_LPS_DISALBE_2R			BIT(30)	 
+#define	RT_RF_LPS_LEVEL_ASPM			BIT(31)	 
 
 #define	RT_IN_PS_LEVEL(ppsc, _PS_FLAG)		((ppsc->cur_ps_level & _PS_FLAG) ? true : false)
 #define	RT_CLEAR_PS_LEVEL(ppsc, _PS_FLAG)	(ppsc->cur_ps_level &= (~(_PS_FLAG)))
 #define	RT_SET_PS_LEVEL(ppsc, _PS_FLAG)		(ppsc->cur_ps_level |= _PS_FLAG)
 
-/*  ASPM OSC Control bit, added by Roger, 2013.03.29. */
-#define	RT_PCI_ASPM_OSC_IGNORE		0	 /*  PCI ASPM ignore OSC control in default */
-#define	RT_PCI_ASPM_OSC_ENABLE		BIT0 /*  PCI ASPM controlled by OS according to ACPI Spec 5.0 */
-#define	RT_PCI_ASPM_OSC_DISABLE		BIT1 /*  PCI ASPM controlled by driver or BIOS, i.e., force enable ASPM */
+ 
+#define	RT_PCI_ASPM_OSC_IGNORE		0	  
+#define	RT_PCI_ASPM_OSC_ENABLE		BIT0  
+#define	RT_PCI_ASPM_OSC_DISABLE		BIT1  
 
 enum {
 	PSBBREG_RF0 = 0,
@@ -132,14 +124,14 @@ enum {
 	PSBBREG_TOTALCNT
 };
 
-enum { /*  for ips_mode */
+enum {  
 	IPS_NONE = 0,
 	IPS_NORMAL,
 	IPS_LEVEL_2,
 	IPS_NUM
 };
 
-/*  Design for pwrctrl_priv.ips_deny, 32 bits for 32 reasons at most */
+ 
 enum ps_deny_reason {
 	PS_DENY_DRV_INITIAL = 0,
 	PS_DENY_SCAN,
@@ -154,10 +146,10 @@ enum ps_deny_reason {
 
 struct pwrctrl_priv {
 	struct mutex lock;
-	volatile u8 rpwm; /*  requested power state for fw */
-	volatile u8 cpwm; /*  fw current power state. updated when 1. read from HCPWM 2. driver lowers power level */
-	volatile u8 tog; /*  toggling */
-	volatile u8 cpwm_tog; /*  toggling */
+	volatile u8 rpwm;  
+	volatile u8 cpwm;  
+	volatile u8 tog;  
+	volatile u8 cpwm_tog;  
 
 	u8 pwr_mode;
 	u8 smart_ps;
@@ -169,14 +161,14 @@ struct pwrctrl_priv {
 	u8 brpwmtimeout;
 	struct work_struct rpwmtimeoutwi;
 	struct timer_list pwr_rpwm_timer;
-	u8 bpower_saving; /* for LPS/IPS */
+	u8 bpower_saving;  
 
 	u8 b_hw_radio_off;
 	u8 reg_rfoff;
-	u8 reg_pdnmode; /* powerdown mode */
+	u8 reg_pdnmode;  
 	u32 rfoff_reason;
 
-	/* RF OFF Level */
+	 
 	u32 cur_ps_level;
 	u32 reg_rfps_level;
 
@@ -185,18 +177,18 @@ struct pwrctrl_priv {
 
 	u8 ips_mode;
 	u8 ips_org_mode;
-	u8 ips_mode_req; /*  used to accept the mode setting request, will update to ipsmode later */
+	u8 ips_mode_req;  
 	bool bips_processing;
-	unsigned long ips_deny_time; /* will deny IPS when system time is smaller than this */
-	u8 pre_ips_type;/*  0: default flow, 1: carddisbale flow */
+	unsigned long ips_deny_time;  
+	u8 pre_ips_type; 
 
-	/*  ps_deny: if 0, power save is free to go; otherwise deny all kinds of power save. */
-	/*  Use enum ps_deny_reason to decide reason. */
-	/*  Don't access this variable directly without control function, */
-	/*  and this variable should be protected by lock. */
+	 
+	 
+	 
+	 
 	u32 ps_deny;
 
-	u8 ps_processing; /* temporarily used to mark whether in rtw_ps_processor */
+	u8 ps_processing;  
 
 	u8 fw_psmode_iface_id;
 	u8 bLeisurePs;
@@ -224,14 +216,14 @@ struct pwrctrl_priv {
 	int		pwr_state_check_interval;
 	u8 pwr_state_check_cnts;
 
-	int		ps_flag; /* used by autosuspend */
+	int		ps_flag;  
 
-	enum rt_rf_power_state	rf_pwrstate;/* cur power state, only for IPS */
-	/* rt_rf_power_state	current_rfpwrstate; */
+	enum rt_rf_power_state	rf_pwrstate; 
+	 
 	enum rt_rf_power_state	change_rfpwrstate;
 
-	u8 bHWPowerdown; /* power down mode selection. 0:radio off, 1:power down */
-	u8 bHWPwrPindetect; /* come from registrypriv.hwpwrp_detect. enable power down function. 0:disable, 1:enable */
+	u8 bHWPowerdown;  
+	u8 bHWPwrPindetect;  
 	u8 bkeepfwalive;
 	u8 brfoffbyhw;
 	unsigned long PS_BBRegBackup[PSBBREG_TOTALCNT];
@@ -289,4 +281,4 @@ void rtw_ps_deny(struct adapter *padapter, enum ps_deny_reason reason);
 void rtw_ps_deny_cancel(struct adapter *padapter, enum ps_deny_reason reason);
 u32 rtw_ps_deny_get(struct adapter *padapter);
 
-#endif  /* __RTL871X_PWRCTRL_H_ */
+#endif   

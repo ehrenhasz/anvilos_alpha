@@ -1,35 +1,11 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2014 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/objlist.h"
 #include "py/runtime.h"
 
 #if MICROPY_PY_HEAPQ
 
-// the algorithm here is modelled on CPython's heapq.py
+
 
 static mp_obj_list_t *heapq_get_heap(mp_obj_t heap_in) {
     if (!mp_obj_is_type(heap_in, &mp_type_list)) {
@@ -58,11 +34,11 @@ static void heapq_heap_siftup(mp_obj_list_t *heap, mp_uint_t pos) {
     mp_uint_t end_pos = heap->len;
     mp_obj_t item = heap->items[pos];
     for (mp_uint_t child_pos = 2 * pos + 1; child_pos < end_pos; child_pos = 2 * pos + 1) {
-        // choose right child if it's <= left child
+        
         if (child_pos + 1 < end_pos && mp_binary_op(MP_BINARY_OP_LESS, heap->items[child_pos], heap->items[child_pos + 1]) == mp_const_false) {
             child_pos += 1;
         }
-        // bubble up the smaller child
+        
         heap->items[pos] = heap->items[child_pos];
         pos = child_pos;
     }
@@ -86,7 +62,7 @@ static mp_obj_t mod_heapq_heappop(mp_obj_t heap_in) {
     mp_obj_t item = heap->items[0];
     heap->len -= 1;
     heap->items[0] = heap->items[heap->len];
-    heap->items[heap->len] = MP_OBJ_NULL; // so we don't retain a pointer
+    heap->items[heap->len] = MP_OBJ_NULL; 
     if (heap->len) {
         heapq_heap_siftup(heap, 0);
     }
@@ -121,4 +97,4 @@ const mp_obj_module_t mp_module_heapq = {
 MP_REGISTER_EXTENSIBLE_MODULE(MP_QSTR_heapq, mp_module_heapq);
 #endif
 
-#endif // MICROPY_PY_HEAPQ
+#endif 

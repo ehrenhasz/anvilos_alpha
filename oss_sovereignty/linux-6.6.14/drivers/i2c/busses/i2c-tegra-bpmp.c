@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/i2c/busses/i2c-tegra-bpmp.c
- *
- * Copyright (c) 2016 NVIDIA Corporation.  All rights reserved.
- *
- * Author: Shardar Shariff Md <smohammed@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -19,10 +13,7 @@
 #include <soc/tegra/bpmp-abi.h>
 #include <soc/tegra/bpmp.h>
 
-/*
- * Serialized I2C message header size is 6 bytes and includes address, flags
- * and length
- */
+ 
 #define SERIALI2C_HDR_SIZE 6
 
 struct tegra_bpmp_i2c {
@@ -33,11 +24,7 @@ struct tegra_bpmp_i2c {
 	unsigned int bus;
 };
 
-/*
- * Linux flags are translated to BPMP defined I2C flags that are used in BPMP
- * firmware I2C driver to avoid any issues in future if Linux I2C flags are
- * changed.
- */
+ 
 static void tegra_bpmp_xlate_flags(u16 flags, u16 *out)
 {
 	if (flags & I2C_M_TEN)
@@ -65,20 +52,7 @@ static void tegra_bpmp_xlate_flags(u16 flags, u16 *out)
 		*out |= SERIALI2C_RECV_LEN;
 }
 
-/*
- * The serialized I2C format is simply the following:
- * [addr little-endian][flags little-endian][len little-endian][data if write]
- * [addr little-endian][flags little-endian][len little-endian][data if write]
- *  ...
- *
- * The flags are translated from Linux kernel representation to seriali2c
- * representation. Any undefined flag being set causes an error.
- *
- * The data is there only for writes. Reads have the data transferred in the
- * other direction, and thus data is not present.
- *
- * See deserialize_i2c documentation for the data format in the other direction.
- */
+ 
 static void tegra_bpmp_serialize_i2c_msg(struct tegra_bpmp_i2c *i2c,
 					struct mrq_i2c_request *request,
 					struct i2c_msg *msgs,
@@ -109,20 +83,7 @@ static void tegra_bpmp_serialize_i2c_msg(struct tegra_bpmp_i2c *i2c,
 	request->xfer.data_size = pos;
 }
 
-/*
- * The data in the BPMP -> CPU direction is composed of sequential blocks for
- * those messages that have I2C_M_RD. So, for example, if you have:
- *
- * - !I2C_M_RD, len == 5, data == a0 01 02 03 04
- * - !I2C_M_RD, len == 1, data == a0
- * - I2C_M_RD, len == 2, data == [uninitialized buffer 1]
- * - !I2C_M_RD, len == 1, data == a2
- * - I2C_M_RD, len == 2, data == [uninitialized buffer 2]
- *
- * ...then the data in the BPMP -> CPU direction would be 4 bytes total, and
- * would contain 2 bytes that will go to uninitialized buffer 1, and 2 bytes
- * that will go to uninitialized buffer 2.
- */
+ 
 static int tegra_bpmp_i2c_deserialize(struct tegra_bpmp_i2c *i2c,
 				      struct mrq_i2c_response *response,
 				      struct i2c_msg *msgs,

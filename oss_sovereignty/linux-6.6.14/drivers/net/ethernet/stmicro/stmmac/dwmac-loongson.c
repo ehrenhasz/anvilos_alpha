@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Loongson Corporation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/pci.h>
@@ -11,31 +10,31 @@
 
 static int loongson_default_data(struct plat_stmmacenet_data *plat)
 {
-	plat->clk_csr = 2;	/* clk_csr_i = 20-35MHz & MDC = clk_csr_i/16 */
+	plat->clk_csr = 2;	 
 	plat->has_gmac = 1;
 	plat->force_sf_dma_mode = 1;
 
-	/* Set default value for multicast hash bins */
+	 
 	plat->multicast_filter_bins = HASH_TABLE_SIZE;
 
-	/* Set default value for unicast filter entries */
+	 
 	plat->unicast_filter_entries = 1;
 
-	/* Set the maxmtu to a default of JUMBO_LEN */
+	 
 	plat->maxmtu = JUMBO_LEN;
 
-	/* Set default number of RX and TX queues to use */
+	 
 	plat->tx_queues_to_use = 1;
 	plat->rx_queues_to_use = 1;
 
-	/* Disable Priority config by default */
+	 
 	plat->tx_queues_cfg[0].use_prio = false;
 	plat->rx_queues_cfg[0].use_prio = false;
 
-	/* Disable RX queues routing by default */
+	 
 	plat->rx_queues_cfg[0].pkt_route = 0x0;
 
-	/* Default to phy auto-detection */
+	 
 	plat->phy_addr = -1;
 
 	plat->dma_cfg->pbl = 32;
@@ -81,14 +80,14 @@ static int loongson_dwmac_probe(struct pci_dev *pdev, const struct pci_device_id
 		goto err_put_node;
 	}
 
-	/* Enable pci device */
+	 
 	ret = pci_enable_device(pdev);
 	if (ret) {
 		dev_err(&pdev->dev, "%s: ERROR: failed to enable device\n", __func__);
 		goto err_put_node;
 	}
 
-	/* Get the base address of device */
+	 
 	for (i = 0; i < PCI_STD_NUM_BARS; i++) {
 		if (pci_resource_len(pdev, i) == 0)
 			continue;

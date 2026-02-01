@@ -1,52 +1,13 @@
-/*
- * Copyright 2013 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Alex Deucher
- */
+ 
 
 #include "radeon.h"
 #include "radeon_asic.h"
 #include "r600.h"
 #include "r600d.h"
 
-/*
- * DMA
- * Starting with R600, the GPU has an asynchronous
- * DMA engine.  The programming model is very similar
- * to the 3D engine (ring buffer, IBs, etc.), but the
- * DMA controller has it's own packet format that is
- * different form the PM4 format used by the 3D engine.
- * It supports copying data, writing embedded data,
- * solid fills, and a number of other things.  It also
- * has support for tiling/detiling of buffers.
- */
+ 
 
-/**
- * r600_dma_get_rptr - get the current read pointer
- *
- * @rdev: radeon_device pointer
- * @ring: radeon ring pointer
- *
- * Get the current rptr from the hardware (r6xx+).
- */
+ 
 uint32_t r600_dma_get_rptr(struct radeon_device *rdev,
 			   struct radeon_ring *ring)
 {
@@ -60,41 +21,21 @@ uint32_t r600_dma_get_rptr(struct radeon_device *rdev,
 	return (rptr & 0x3fffc) >> 2;
 }
 
-/**
- * r600_dma_get_wptr - get the current write pointer
- *
- * @rdev: radeon_device pointer
- * @ring: radeon ring pointer
- *
- * Get the current wptr from the hardware (r6xx+).
- */
+ 
 uint32_t r600_dma_get_wptr(struct radeon_device *rdev,
 			   struct radeon_ring *ring)
 {
 	return (RREG32(DMA_RB_WPTR) & 0x3fffc) >> 2;
 }
 
-/**
- * r600_dma_set_wptr - commit the write pointer
- *
- * @rdev: radeon_device pointer
- * @ring: radeon ring pointer
- *
- * Write the wptr back to the hardware (r6xx+).
- */
+ 
 void r600_dma_set_wptr(struct radeon_device *rdev,
 		       struct radeon_ring *ring)
 {
 	WREG32(DMA_RB_WPTR, (ring->wptr << 2) & 0x3fffc);
 }
 
-/**
- * r600_dma_stop - stop the async dma engine
- *
- * @rdev: radeon_device pointer
- *
- * Stop the async dma engine (r6xx-evergreen).
- */
+ 
 void r600_dma_stop(struct radeon_device *rdev)
 {
 	u32 rb_cntl = RREG32(DMA_RB_CNTL);
@@ -108,14 +49,7 @@ void r600_dma_stop(struct radeon_device *rdev)
 	rdev->ring[R600_RING_TYPE_DMA_INDEX].ready = false;
 }
 
-/**
- * r600_dma_resume - setup and start the async dma engine
- *
- * @rdev: radeon_device pointer
- *
- * Set up the DMA ring buffer and enable it. (r6xx-evergreen).
- * Returns 0 for success, error for failure.
- */
+ 
 int r600_dma_resume(struct radeon_device *rdev)
 {
 	struct radeon_ring *ring = &rdev->ring[R600_RING_TYPE_DMA_INDEX];
@@ -126,7 +60,7 @@ int r600_dma_resume(struct radeon_device *rdev)
 	WREG32(DMA_SEM_INCOMPLETE_TIMER_CNTL, 0);
 	WREG32(DMA_SEM_WAIT_FAIL_TIMER_CNTL, 0);
 
-	/* Set ring buffer size in dwords */
+	 
 	rb_bufsz = order_base_2(ring->ring_size / 4);
 	rb_cntl = rb_bufsz << 1;
 #ifdef __BIG_ENDIAN
@@ -134,11 +68,11 @@ int r600_dma_resume(struct radeon_device *rdev)
 #endif
 	WREG32(DMA_RB_CNTL, rb_cntl);
 
-	/* Initialize the ring buffer's read and write pointers */
+	 
 	WREG32(DMA_RB_RPTR, 0);
 	WREG32(DMA_RB_WPTR, 0);
 
-	/* set the wb address whether it's enabled or not */
+	 
 	WREG32(DMA_RB_RPTR_ADDR_HI,
 	       upper_32_bits(rdev->wb.gpu_addr + R600_WB_DMA_RPTR_OFFSET) & 0xFF);
 	WREG32(DMA_RB_RPTR_ADDR_LO,
@@ -149,7 +83,7 @@ int r600_dma_resume(struct radeon_device *rdev)
 
 	WREG32(DMA_RB_BASE, ring->gpu_addr >> 8);
 
-	/* enable DMA IBs */
+	 
 	ib_cntl = DMA_IB_ENABLE;
 #ifdef __BIG_ENDIAN
 	ib_cntl |= DMA_IB_SWAP_ENABLE;
@@ -182,28 +116,14 @@ int r600_dma_resume(struct radeon_device *rdev)
 	return 0;
 }
 
-/**
- * r600_dma_fini - tear down the async dma engine
- *
- * @rdev: radeon_device pointer
- *
- * Stop the async dma engine and free the ring (r6xx-evergreen).
- */
+ 
 void r600_dma_fini(struct radeon_device *rdev)
 {
 	r600_dma_stop(rdev);
 	radeon_ring_fini(rdev, &rdev->ring[R600_RING_TYPE_DMA_INDEX]);
 }
 
-/**
- * r600_dma_is_lockup - Check if the DMA engine is locked up
- *
- * @rdev: radeon_device pointer
- * @ring: radeon_ring structure holding ring information
- *
- * Check if the async DMA engine is locked up.
- * Returns true if the engine appears to be locked up, false if not.
- */
+ 
 bool r600_dma_is_lockup(struct radeon_device *rdev, struct radeon_ring *ring)
 {
 	u32 reset_mask = r600_gpu_check_soft_reset(rdev);
@@ -216,16 +136,7 @@ bool r600_dma_is_lockup(struct radeon_device *rdev, struct radeon_ring *ring)
 }
 
 
-/**
- * r600_dma_ring_test - simple async dma engine test
- *
- * @rdev: radeon_device pointer
- * @ring: radeon_ring structure holding ring information
- *
- * Test the DMA engine by writing using it to write an
- * value to memory. (r6xx-SI).
- * Returns 0 for success, error for failure.
- */
+ 
 int r600_dma_ring_test(struct radeon_device *rdev,
 		       struct radeon_ring *ring)
 {
@@ -273,42 +184,23 @@ int r600_dma_ring_test(struct radeon_device *rdev,
 	return r;
 }
 
-/**
- * r600_dma_fence_ring_emit - emit a fence on the DMA ring
- *
- * @rdev: radeon_device pointer
- * @fence: radeon fence object
- *
- * Add a DMA fence packet to the ring to write
- * the fence seq number and DMA trap packet to generate
- * an interrupt if needed (r6xx-r7xx).
- */
+ 
 void r600_dma_fence_ring_emit(struct radeon_device *rdev,
 			      struct radeon_fence *fence)
 {
 	struct radeon_ring *ring = &rdev->ring[fence->ring];
 	u64 addr = rdev->fence_drv[fence->ring].gpu_addr;
 
-	/* write the fence */
+	 
 	radeon_ring_write(ring, DMA_PACKET(DMA_PACKET_FENCE, 0, 0, 0));
 	radeon_ring_write(ring, addr & 0xfffffffc);
 	radeon_ring_write(ring, (upper_32_bits(addr) & 0xff));
 	radeon_ring_write(ring, lower_32_bits(fence->seq));
-	/* generate an interrupt */
+	 
 	radeon_ring_write(ring, DMA_PACKET(DMA_PACKET_TRAP, 0, 0, 0));
 }
 
-/**
- * r600_dma_semaphore_ring_emit - emit a semaphore on the dma ring
- *
- * @rdev: radeon_device pointer
- * @ring: radeon_ring structure holding ring information
- * @semaphore: radeon semaphore object
- * @emit_wait: wait or signal semaphore
- *
- * Add a DMA semaphore packet to the ring wait on or signal
- * other rings (r6xx-SI).
- */
+ 
 bool r600_dma_semaphore_ring_emit(struct radeon_device *rdev,
 				  struct radeon_ring *ring,
 				  struct radeon_semaphore *semaphore,
@@ -324,15 +216,7 @@ bool r600_dma_semaphore_ring_emit(struct radeon_device *rdev,
 	return true;
 }
 
-/**
- * r600_dma_ib_test - test an IB on the DMA engine
- *
- * @rdev: radeon_device pointer
- * @ring: radeon_ring structure holding ring information
- *
- * Test a simple IB in the DMA ring (r6xx-SI).
- * Returns 0 on success, error on failure.
- */
+ 
 int r600_dma_ib_test(struct radeon_device *rdev, struct radeon_ring *ring)
 {
 	struct radeon_ib ib;
@@ -393,14 +277,7 @@ int r600_dma_ib_test(struct radeon_device *rdev, struct radeon_ring *ring)
 	return r;
 }
 
-/**
- * r600_dma_ring_ib_execute - Schedule an IB on the DMA engine
- *
- * @rdev: radeon_device pointer
- * @ib: IB object to schedule
- *
- * Schedule an IB in the DMA ring (r6xx-r7xx).
- */
+ 
 void r600_dma_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib)
 {
 	struct radeon_ring *ring = &rdev->ring[ib->ring];
@@ -416,9 +293,7 @@ void r600_dma_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib)
 		radeon_ring_write(ring, next_rptr);
 	}
 
-	/* The indirect buffer packet must end on an 8 DW boundary in the DMA ring.
-	 * Pad as necessary with NOPs.
-	 */
+	 
 	while ((ring->wptr & 7) != 5)
 		radeon_ring_write(ring, DMA_PACKET(DMA_PACKET_NOP, 0, 0, 0));
 	radeon_ring_write(ring, DMA_PACKET(DMA_PACKET_INDIRECT_BUFFER, 0, 0, 0));
@@ -427,19 +302,7 @@ void r600_dma_ring_ib_execute(struct radeon_device *rdev, struct radeon_ib *ib)
 
 }
 
-/**
- * r600_copy_dma - copy pages using the DMA engine
- *
- * @rdev: radeon_device pointer
- * @src_offset: src GPU address
- * @dst_offset: dst GPU address
- * @num_gpu_pages: number of GPU pages to xfer
- * @resv: reservation object to sync to
- *
- * Copy GPU paging using the DMA engine (r6xx).
- * Used by the radeon ttm implementation to move pages if
- * registered as the asic copy callback.
- */
+ 
 struct radeon_fence *r600_copy_dma(struct radeon_device *rdev,
 				   uint64_t src_offset, uint64_t dst_offset,
 				   unsigned num_gpu_pages,

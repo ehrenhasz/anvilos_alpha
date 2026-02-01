@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 2016,2017 Free Software Foundation, Inc.                       *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
 #include <reset_cmd.h>
 #include <tty_settings.h>
@@ -47,18 +18,14 @@
 #endif
 
 #if NEED_PTEM_H
-/* they neglected to define struct winsize in termios.h -- it is only
-   in termio.h	*/
+ 
 #include <sys/stream.h>
 #include <sys/ptem.h>
 #endif
 
 MODULE_ID("$Id: reset_cmd.c,v 1.28 2021/10/02 18:08:44 tom Exp $")
 
-/*
- * SCO defines TIOCGSIZE and the corresponding struct.  Other systems (SunOS,
- * Solaris, IRIX) define TIOCGWINSZ and struct winsize.
- */
+ 
 #ifdef TIOCGSIZE
 # define IOCTL_GET_WINSIZE TIOCGSIZE
 # define IOCTL_SET_WINSIZE TIOCSSIZE
@@ -77,8 +44,8 @@ MODULE_ID("$Id: reset_cmd.c,v 1.28 2021/10/02 18:08:44 tom Exp $")
 
 static FILE *my_file;
 
-static bool use_reset = FALSE;	/* invoked as reset */
-static bool use_init = FALSE;	/* invoked as init */
+static bool use_reset = FALSE;	 
+static bool use_init = FALSE;	 
 
 static GCC_NORETURN void
 failed(const char *msg)
@@ -90,7 +57,7 @@ failed(const char *msg)
     (void) fprintf(my_file, "\n");
     fflush(my_file);
     ExitProgram(ErrSystem(code));
-    /* NOTREACHED */
+     
 }
 
 static bool
@@ -122,14 +89,9 @@ out_char(int c)
     return putc(c, my_file);
 }
 
-/**************************************************************************
- * Mode-setting logic
- **************************************************************************/
+ 
 
-/* some BSD systems have these built in, some systems are missing
- * one or more definitions. The safest solution is to override unless the
- * commonly-altered ones are defined.
- */
+ 
 #if !(defined(CERASE) && defined(CINTR) && defined(CKILL) && defined(CQUIT))
 #undef CEOF
 #undef CERASE
@@ -143,7 +105,7 @@ out_char(int c)
 #undef CSUSP
 #endif
 
-/* control-character defaults */
+ 
 #ifndef CEOF
 #define CEOF	CTRL('D')
 #endif
@@ -151,7 +113,7 @@ out_char(int c)
 #define CERASE	CTRL('H')
 #endif
 #ifndef CINTR
-#define CINTR	127		/* ^? */
+#define CINTR	127		 
 #endif
 #ifndef CKILL
 #define CKILL	CTRL('U')
@@ -188,10 +150,7 @@ out_char(int c)
 #define reset_char(item, value) \
     tty_settings->c_cc[item] = CHK(tty_settings->c_cc[item], value)
 
-/*
- * Reset the terminal mode bits to a sensible state.  Very useful after
- * a child program dies in raw mode.
- */
+ 
 void
 reset_tty_settings(int fd, TTY * tty_settings, int noset)
 {
@@ -334,10 +293,7 @@ reset_tty_settings(int fd, TTY * tty_settings, int noset)
     }
 }
 
-/*
- * Returns a "good" value for the erase character.  This is loosely based on
- * the BSD4.4 logic.
- */
+ 
 static int
 default_erase(void)
 {
@@ -354,19 +310,12 @@ default_erase(void)
     return result;
 }
 
-/*
- * Update the values of the erase, interrupt, and kill characters in the TTY
- * parameter.
- *
- * SVr4 tset (e.g., Solaris 2.5) only modifies the intr, quit or erase
- * characters if they're unset, or if we specify them as options.  This differs
- * from BSD 4.4 tset, which always sets erase.
- */
+ 
 void
 set_control_chars(TTY * tty_settings, int my_erase, int my_intr, int my_kill)
 {
 #if defined(EXP_WIN32_DRIVER)
-    /* noop */
+     
     (void) tty_settings;
     (void) my_erase;
     (void) my_intr;
@@ -392,15 +341,12 @@ set_control_chars(TTY * tty_settings, int my_erase, int my_intr, int my_kill)
 #endif
 }
 
-/*
- * Set up various conversions in the TTY parameter, including parity, tabs,
- * returns, echo, and case, according to the termcap entry.
- */
+ 
 void
 set_conversions(TTY * tty_settings)
 {
 #if defined(EXP_WIN32_DRIVER)
-    /* FIXME */
+     
 #else
 #ifdef ONLCR
     tty_settings->c_oflag |= ONLCR;
@@ -409,21 +355,21 @@ set_conversions(TTY * tty_settings)
     tty_settings->c_lflag |= ECHO;
 #ifdef OXTABS
     tty_settings->c_oflag |= OXTABS;
-#endif /* OXTABS */
+#endif  
 
-    /* test used to be tgetflag("NL") */
+     
     if (VALID_STRING(newline) && newline[0] == '\n' && !newline[1]) {
-	/* Newline, not linefeed. */
+	 
 #ifdef ONLCR
 	tty_settings->c_oflag &= ~((unsigned) ONLCR);
 #endif
 	tty_settings->c_iflag &= ~((unsigned) ICRNL);
     }
 #ifdef OXTABS
-    /* test used to be tgetflag("pt") */
+     
     if (VALID_STRING(set_tab) && VALID_STRING(clear_all_tabs))
 	tty_settings->c_oflag &= ~OXTABS;
-#endif /* OXTABS */
+#endif  
     tty_settings->c_lflag |= (ECHOE | ECHOK);
 #endif
 }
@@ -450,13 +396,7 @@ to_left_margin(void)
     return TRUE;
 }
 
-/*
- * Set the hardware tabs on the terminal, using the 'ct' (clear all tabs),
- * 'st' (set one tab) and 'ch' (horizontal cursor addressing) capabilities.
- * This is done before 'if' and 'is', so they can recover in case of error.
- *
- * Return TRUE if we set any tab stops, FALSE if not.
- */
+ 
 static bool
 reset_tabstops(int wide)
 {
@@ -482,7 +422,7 @@ reset_tabstops(int wide)
     return (FALSE);
 }
 
-/* Output startup string. */
+ 
 bool
 send_init_strings(int fd GCC_UNUSED, TTY * old_settings)
 {
@@ -555,9 +495,7 @@ send_init_strings(int fd GCC_UNUSED, TTY * old_settings)
     return need_flush;
 }
 
-/*
- * Tell the user if a control key has been changed from the default value.
- */
+ 
 static void
 show_tty_change(TTY * old_settings,
 		TTY * new_settings,
@@ -569,7 +507,7 @@ show_tty_change(TTY * old_settings,
     char *p;
 
 #if defined(EXP_WIN32_DRIVER)
-    /* noop */
+     
     (void) old_settings;
     (void) new_settings;
     (void) name;
@@ -586,10 +524,7 @@ show_tty_change(TTY * old_settings,
 
     if (DISABLED(newer)) {
 	(void) fprintf(stderr, "undef.\n");
-	/*
-	 * Check 'delete' before 'backspace', since the key_backspace value
-	 * is ambiguous.
-	 */
+	 
     } else if (newer == 0177) {
 	(void) fprintf(stderr, "delete.\n");
     } else if ((p = key_backspace) != 0
@@ -603,9 +538,7 @@ show_tty_change(TTY * old_settings,
 	(void) fprintf(stderr, "%c.\n", UChar(newer));
 }
 
-/**************************************************************************
- * Miscellaneous.
- **************************************************************************/
+ 
 
 void
 reset_start(FILE *fp, bool is_reset, bool is_init)
@@ -626,7 +559,7 @@ void
 print_tty_chars(TTY * old_settings, TTY * new_settings)
 {
 #if defined(EXP_WIN32_DRIVER)
-    /* noop */
+     
 #else
     show_tty_change(old_settings, new_settings, "Erase", VERASE, CERASE);
     show_tty_change(old_settings, new_settings, "Kill", VKILL, CKILL);
@@ -635,10 +568,7 @@ print_tty_chars(TTY * old_settings, TTY * new_settings)
 }
 
 #if HAVE_SIZECHANGE
-/*
- * Set window size if not set already, but update our copy of the values if the
- * size was set.
- */
+ 
 void
 set_window_size(int fd, short *high, short *wide)
 {

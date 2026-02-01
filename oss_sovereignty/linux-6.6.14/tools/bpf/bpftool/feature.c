@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (c) 2019 Netronome Systems, Inc. */
+
+ 
 
 #include <ctype.h>
 #include <errno.h>
@@ -44,7 +44,7 @@ static bool full_mode;
 static bool run_as_unprivileged;
 #endif
 
-/* Miscellaneous utility functions */
+ 
 
 static bool grep(const char *buffer, const char *pattern)
 {
@@ -71,7 +71,7 @@ static void uppercase(char *str, size_t len)
 		str[i] = toupper(str[i]);
 }
 
-/* Printing utility functions */
+ 
 
 static void
 print_bool_feature(const char *feat_name, const char *plain_name,
@@ -139,7 +139,7 @@ static void print_end_section(void)
 		printf("\n");
 }
 
-/* Probing functions */
+ 
 
 static int get_vendor_id(int ifindex)
 {
@@ -196,7 +196,7 @@ static void probe_unprivileged_disabled(void)
 {
 	long res;
 
-	/* No support for C-style ouptut */
+	 
 
 	res = read_procfs("/proc/sys/kernel/unprivileged_bpf_disabled");
 	if (json_output) {
@@ -225,7 +225,7 @@ static void probe_jit_enable(void)
 {
 	long res;
 
-	/* No support for C-style ouptut */
+	 
 
 	res = read_procfs("/proc/sys/net/core/bpf_jit_enable");
 	if (json_output) {
@@ -255,7 +255,7 @@ static void probe_jit_harden(void)
 {
 	long res;
 
-	/* No support for C-style ouptut */
+	 
 
 	res = read_procfs("/proc/sys/net/core/bpf_jit_harden");
 	if (json_output) {
@@ -285,7 +285,7 @@ static void probe_jit_kallsyms(void)
 {
 	long res;
 
-	/* No support for C-style ouptut */
+	 
 
 	res = read_procfs("/proc/sys/net/core/bpf_jit_kallsyms");
 	if (json_output) {
@@ -311,7 +311,7 @@ static void probe_jit_limit(void)
 {
 	long res;
 
-	/* No support for C-style ouptut */
+	 
 
 	res = read_procfs("/proc/sys/net/core/bpf_jit_limit");
 	if (json_output) {
@@ -340,10 +340,10 @@ static bool read_next_kernel_config_option(gzFile file, char *buf, size_t n,
 		if (!sep)
 			continue;
 
-		/* Trim ending '\n' */
+		 
 		buf[strlen(buf) - 1] = '\0';
 
-		/* Split on '=' and ensure that a value is present. */
+		 
 		*sep = '\0';
 		if (!sep[1])
 			continue;
@@ -361,81 +361,81 @@ static void probe_kernel_image_config(const char *define_prefix)
 		const char * const name;
 		bool macro_dump;
 	} options[] = {
-		/* Enable BPF */
+		 
 		{ "CONFIG_BPF", },
-		/* Enable bpf() syscall */
+		 
 		{ "CONFIG_BPF_SYSCALL", },
-		/* Does selected architecture support eBPF JIT compiler */
+		 
 		{ "CONFIG_HAVE_EBPF_JIT", },
-		/* Compile eBPF JIT compiler */
+		 
 		{ "CONFIG_BPF_JIT", },
-		/* Avoid compiling eBPF interpreter (use JIT only) */
+		 
 		{ "CONFIG_BPF_JIT_ALWAYS_ON", },
-		/* Kernel BTF debug information available */
+		 
 		{ "CONFIG_DEBUG_INFO_BTF", },
-		/* Kernel module BTF debug information available */
+		 
 		{ "CONFIG_DEBUG_INFO_BTF_MODULES", },
 
-		/* cgroups */
+		 
 		{ "CONFIG_CGROUPS", },
-		/* BPF programs attached to cgroups */
+		 
 		{ "CONFIG_CGROUP_BPF", },
-		/* bpf_get_cgroup_classid() helper */
+		 
 		{ "CONFIG_CGROUP_NET_CLASSID", },
-		/* bpf_skb_{,ancestor_}cgroup_id() helpers */
+		 
 		{ "CONFIG_SOCK_CGROUP_DATA", },
 
-		/* Tracing: attach BPF to kprobes, tracepoints, etc. */
+		 
 		{ "CONFIG_BPF_EVENTS", },
-		/* Kprobes */
+		 
 		{ "CONFIG_KPROBE_EVENTS", },
-		/* Uprobes */
+		 
 		{ "CONFIG_UPROBE_EVENTS", },
-		/* Tracepoints */
+		 
 		{ "CONFIG_TRACING", },
-		/* Syscall tracepoints */
+		 
 		{ "CONFIG_FTRACE_SYSCALLS", },
-		/* bpf_override_return() helper support for selected arch */
+		 
 		{ "CONFIG_FUNCTION_ERROR_INJECTION", },
-		/* bpf_override_return() helper */
+		 
 		{ "CONFIG_BPF_KPROBE_OVERRIDE", },
 
-		/* Network */
+		 
 		{ "CONFIG_NET", },
-		/* AF_XDP sockets */
+		 
 		{ "CONFIG_XDP_SOCKETS", },
-		/* BPF_PROG_TYPE_LWT_* and related helpers */
+		 
 		{ "CONFIG_LWTUNNEL_BPF", },
-		/* BPF_PROG_TYPE_SCHED_ACT, TC (traffic control) actions */
+		 
 		{ "CONFIG_NET_ACT_BPF", },
-		/* BPF_PROG_TYPE_SCHED_CLS, TC filters */
+		 
 		{ "CONFIG_NET_CLS_BPF", },
-		/* TC clsact qdisc */
+		 
 		{ "CONFIG_NET_CLS_ACT", },
-		/* Ingress filtering with TC */
+		 
 		{ "CONFIG_NET_SCH_INGRESS", },
-		/* bpf_skb_get_xfrm_state() helper */
+		 
 		{ "CONFIG_XFRM", },
-		/* bpf_get_route_realm() helper */
+		 
 		{ "CONFIG_IP_ROUTE_CLASSID", },
-		/* BPF_PROG_TYPE_LWT_SEG6_LOCAL and related helpers */
+		 
 		{ "CONFIG_IPV6_SEG6_BPF", },
-		/* BPF_PROG_TYPE_LIRC_MODE2 and related helpers */
+		 
 		{ "CONFIG_BPF_LIRC_MODE2", },
-		/* BPF stream parser and BPF socket maps */
+		 
 		{ "CONFIG_BPF_STREAM_PARSER", },
-		/* xt_bpf module for passing BPF programs to netfilter  */
+		 
 		{ "CONFIG_NETFILTER_XT_MATCH_BPF", },
-		/* bpfilter back-end for iptables */
+		 
 		{ "CONFIG_BPFILTER", },
-		/* bpftilter module with "user mode helper" */
+		 
 		{ "CONFIG_BPFILTER_UMH", },
 
-		/* test_bpf module for BPF tests */
+		 
 		{ "CONFIG_TEST_BPF", },
 
-		/* Misc configs useful in BPF C programs */
-		/* jiffies <-> sec conversion for bpf_jiffies64() helper */
+		 
+		 
 		{ "CONFIG_HZ", true, }
 	};
 	char *values[ARRAY_SIZE(options)] = { };
@@ -449,14 +449,12 @@ static void probe_kernel_image_config(const char *define_prefix)
 	if (!uname(&utsn)) {
 		snprintf(path, sizeof(path), "/boot/config-%s", utsn.release);
 
-		/* gzopen also accepts uncompressed files. */
+		 
 		file = gzopen(path, "r");
 	}
 
 	if (!file) {
-		/* Some distributions build with CONFIG_IKCONFIG=y and put the
-		 * config file at /proc/config.gz.
-		 */
+		 
 		file = gzopen("/proc/config.gz", "r");
 	}
 	if (!file) {
@@ -464,7 +462,7 @@ static void probe_kernel_image_config(const char *define_prefix)
 		       strerror(errno));
 		goto end_parse;
 	}
-	/* Sanity checks */
+	 
 	if (!gzgets(file, buf, sizeof(buf)) ||
 	    !gzgets(file, buf, sizeof(buf))) {
 		p_info("skipping kernel config, can't read from file: %s",
@@ -537,7 +535,7 @@ probe_prog_load_ifindex(enum bpf_prog_type prog_type,
 
 static bool probe_prog_type_ifindex(enum bpf_prog_type prog_type, __u32 ifindex)
 {
-	/* nfp returns -EINVAL on exit(0) with TC offload */
+	 
 	struct bpf_insn insns[2] = {
 		BPF_MOV64_IMM(BPF_REG_0, 2),
 		BPF_EXIT_INSN()
@@ -571,9 +569,7 @@ probe_prog_type(enum bpf_prog_type prog_type, const char *prog_type_str,
 	}
 
 #ifdef USE_LIBCAP
-	/* Probe may succeed even if program load fails, for unprivileged users
-	 * check that we did not fail because of insufficient permissions
-	 */
+	 
 	if (run_as_unprivileged && errno == EPERM)
 		res = false;
 #endif
@@ -637,9 +633,7 @@ probe_map_type(enum bpf_map_type map_type, char const *map_type_str,
 		res = libbpf_probe_bpf_map_type(map_type, NULL) > 0;
 	}
 
-	/* Probe result depends on the success of map creation, no additional
-	 * check required for unprivileged users
-	 */
+	 
 
 	maxlen = sizeof(plain_desc) - strlen(plain_comment) - 1;
 	if (strlen(map_type_str) > maxlen) {
@@ -671,7 +665,7 @@ probe_helper_ifindex(enum bpf_func_id id, enum bpf_prog_type prog_type,
 	res = !grep(buf, "invalid func ") && !grep(buf, "unknown func ");
 
 	switch (get_vendor_id(ifindex)) {
-	case 0x19ee: /* Netronome specific */
+	case 0x19ee:  
 		res = res && !grep(buf, "not supported by FW") &&
 			!grep(buf, "unsupported function id");
 		break;
@@ -695,10 +689,7 @@ probe_helper_for_progtype(enum bpf_prog_type prog_type, bool supported_type,
 		else
 			res = libbpf_probe_bpf_helper(prog_type, id, NULL) > 0;
 #ifdef USE_LIBCAP
-		/* Probe may succeed even if program load fails, for
-		 * unprivileged users check that we did not fail because of
-		 * insufficient permissions
-		 */
+		 
 		if (run_as_unprivileged && errno == EPERM)
 			res = false;
 #endif
@@ -729,7 +720,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type,
 	bool probe_res = false;
 
 	if (ifindex)
-		/* Only test helpers for offload-able program types */
+		 
 		switch (prog_type) {
 		case BPF_PROG_TYPE_SCHED_CLS:
 		case BPF_PROG_TYPE_XDP:
@@ -748,9 +739,7 @@ probe_helpers_for_progtype(enum bpf_prog_type prog_type,
 	}
 
 	for (id = 1; id < ARRAY_SIZE(helper_name); id++) {
-		/* Skip helper functions which emit dmesg messages when not in
-		 * the full mode.
-		 */
+		 
 		switch (id) {
 		case BPF_FUNC_trace_printk:
 		case BPF_FUNC_trace_vprintk:
@@ -804,11 +793,7 @@ probe_misc_feature(struct bpf_insn *insns, size_t len,
 			   define_prefix);
 }
 
-/*
- * Probe for availability of kernel commit (5.3):
- *
- * c04c0d2b968a ("bpf: increase complexity limit and maximum program size")
- */
+ 
 static void probe_large_insn_limit(const char *define_prefix, __u32 ifindex)
 {
 	struct bpf_insn insns[BPF_MAXINSNS + 1];
@@ -825,10 +810,7 @@ static void probe_large_insn_limit(const char *define_prefix, __u32 ifindex)
 			   "LARGE_INSN_LIMIT");
 }
 
-/*
- * Probe for bounded loop support introduced in commit 2589726d12a1
- * ("bpf: introduce bounded loops").
- */
+ 
 static void
 probe_bounded_loops(const char *define_prefix, __u32 ifindex)
 {
@@ -846,10 +828,7 @@ probe_bounded_loops(const char *define_prefix, __u32 ifindex)
 			   "BOUNDED_LOOPS");
 }
 
-/*
- * Probe for the v2 instruction set extension introduced in commit 92b31a9af73b
- * ("bpf: add BPF_J{LT,LE,SLT,SLE} instructions").
- */
+ 
 static void
 probe_v2_isa_extension(const char *define_prefix, __u32 ifindex)
 {
@@ -867,10 +846,7 @@ probe_v2_isa_extension(const char *define_prefix, __u32 ifindex)
 			   "V2_ISA_EXTENSION");
 }
 
-/*
- * Probe for the v3 instruction set extension introduced in commit 092ed0968bb6
- * ("bpf: verifier support JMP32").
- */
+ 
 static void
 probe_v3_isa_extension(const char *define_prefix, __u32 ifindex)
 {
@@ -946,7 +922,7 @@ section_program_types(bool *supported_types, const char *define_prefix,
 	while (true) {
 		prog_type++;
 		prog_type_str = libbpf_bpf_prog_type_str(prog_type);
-		/* libbpf will return NULL for variants unknown to it. */
+		 
 		if (!prog_type_str)
 			break;
 
@@ -970,7 +946,7 @@ static void section_map_types(const char *define_prefix, __u32 ifindex)
 	while (true) {
 		map_type++;
 		map_type_str = libbpf_bpf_map_type_str(map_type);
-		/* libbpf will return NULL for variants unknown to it. */
+		 
 		if (!map_type_str)
 			break;
 
@@ -1009,7 +985,7 @@ section_helpers(bool *supported_types, const char *define_prefix, __u32 ifindex)
 	while (true) {
 		prog_type++;
 		prog_type_str = libbpf_bpf_prog_type_str(prog_type);
-		/* libbpf will return NULL for variants unknown to it. */
+		 
 		if (!prog_type_str)
 			break;
 
@@ -1046,7 +1022,7 @@ static int handle_perms(void)
 	struct {
 		cap_value_t cap;
 		bool set;
-		char name[14];	/* strlen("CAP_SYS_ADMIN") */
+		char name[14];	 
 	} bpf_caps[] = {
 		capability(CAP_SYS_ADMIN),
 #ifdef CAP_BPF
@@ -1090,17 +1066,14 @@ static int handle_perms(void)
 		}
 
 		if (cap_sys_admin_only)
-			/* System does not know about CAP_BPF, meaning that
-			 * CAP_SYS_ADMIN is the only capability required. We
-			 * just checked it, break.
-			 */
+			 
 			break;
 	}
 
 	if ((run_as_unprivileged && !nb_bpf_caps) ||
 	    (!run_as_unprivileged && nb_bpf_caps == ARRAY_SIZE(bpf_caps)) ||
 	    (!run_as_unprivileged && cap_sys_admin_only && nb_bpf_caps)) {
-		/* We are all good, exit now */
+		 
 		res = 0;
 		goto exit_free;
 	}
@@ -1118,12 +1091,12 @@ static int handle_perms(void)
 			      capability_msg(bpf_caps, 3)
 #else
 				"", "", "", "", "", ""
-#endif /* CAP_BPF */
+#endif  
 				);
 		goto exit_free;
 	}
 
-	/* if (run_as_unprivileged && nb_bpf_caps > 0), drop capabilities. */
+	 
 	if (cap_set_flag(caps, CAP_EFFECTIVE, nb_bpf_caps, cap_list,
 			 CAP_CLEAR)) {
 		p_err("bug: failed to clear capabilities: %s", strerror(errno));
@@ -1146,17 +1119,14 @@ exit_free:
 
 	return res;
 #else
-	/* Detection assumes user has specific privileges.
-	 * We do not use libcap so let's approximate, and restrict usage to
-	 * root user only.
-	 */
+	 
 	if (geteuid()) {
 		p_err("full feature probing requires root privileges");
 		return -1;
 	}
 
 	return 0;
-#endif /* USE_LIBCAP */
+#endif  
 }
 
 static int do_probe(int argc, char **argv)
@@ -1230,9 +1200,7 @@ static int do_probe(int argc, char **argv)
 		}
 	}
 
-	/* Full feature detection requires specific privileges.
-	 * Let's approximate, and warn if user is not root.
-	 */
+	 
 	if (handle_perms())
 		return -1;
 
@@ -1243,7 +1211,7 @@ static int do_probe(int argc, char **argv)
 
 	section_system_config(target, define_prefix);
 	if (!section_syscall_config(define_prefix))
-		/* bpf() syscall unavailable, don't probe other BPF features */
+		 
 		goto exit_close_json;
 	section_program_types(supported_types, define_prefix, ifindex);
 	section_map_types(define_prefix, ifindex);
@@ -1252,7 +1220,7 @@ static int do_probe(int argc, char **argv)
 
 exit_close_json:
 	if (json_output)
-		/* End root object */
+		 
 		jsonw_end_object(json_wtr);
 
 	return 0;
@@ -1290,7 +1258,7 @@ static int do_list_builtins(int argc, char **argv)
 	}
 
 	if (json_output)
-		jsonw_start_array(json_wtr);	/* root array */
+		jsonw_start_array(json_wtr);	 
 
 	while (true) {
 		const char *name;
@@ -1305,7 +1273,7 @@ static int do_list_builtins(int argc, char **argv)
 	}
 
 	if (json_output)
-		jsonw_end_array(json_wtr);	/* root array */
+		jsonw_end_array(json_wtr);	 
 
 	return 0;
 }

@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CXL Flash Device Driver
- *
- * Written by: Manoj N. Kumar <manoj@linux.vnet.ibm.com>, IBM Corporation
- *             Matthew R. Ochs <mrochs@linux.vnet.ibm.com>, IBM Corporation
- *
- * Copyright (C) 2015 IBM Corporation
- */
+ 
+ 
 
 #ifndef _CXLFLASH_MAIN_H
 #define _CXLFLASH_MAIN_H
@@ -26,23 +19,23 @@
 #define PCI_DEVICE_ID_IBM_FLASH_GT	0x0600
 #define PCI_DEVICE_ID_IBM_BRIARD	0x0624
 
-/* Since there is only one target, make it 0 */
+ 
 #define CXLFLASH_TARGET		0
 #define CXLFLASH_MAX_CDB_LEN	16
 
-/* Really only one target per bus since the Texan is directly attached */
+ 
 #define CXLFLASH_MAX_NUM_TARGETS_PER_BUS	1
 #define CXLFLASH_MAX_NUM_LUNS_PER_TARGET	65536
 
 #define CXLFLASH_PCI_ERROR_RECOVERY_TIMEOUT	(120 * HZ)
 
-/* FC defines */
+ 
 #define FC_MTIP_CMDCONFIG 0x010
 #define FC_MTIP_STATUS 0x018
-#define FC_MAX_NUM_LUNS 0x080 /* Max LUNs host can provision for port */
-#define FC_CUR_NUM_LUNS 0x088 /* Cur number LUNs provisioned for port */
-#define FC_MAX_CAP_PORT 0x090 /* Max capacity all LUNs for port (4K blocks) */
-#define FC_CUR_CAP_PORT 0x098 /* Cur capacity all LUNs for port (4K blocks) */
+#define FC_MAX_NUM_LUNS 0x080  
+#define FC_CUR_NUM_LUNS 0x088  
+#define FC_MAX_CAP_PORT 0x090  
+#define FC_CUR_CAP_PORT 0x098  
 
 #define FC_PNAME 0x300
 #define FC_CONFIG 0x320
@@ -61,23 +54,23 @@
 #define FC_MTIP_STATUS_ONLINE		0x20ULL
 #define FC_MTIP_STATUS_OFFLINE		0x10ULL
 
-/* TIMEOUT and RETRY definitions */
+ 
 
-/* AFU command timeout values */
-#define MC_AFU_SYNC_TIMEOUT	5	/* 5 secs */
-#define MC_LUN_PROV_TIMEOUT	5	/* 5 secs */
-#define MC_AFU_DEBUG_TIMEOUT	5	/* 5 secs */
+ 
+#define MC_AFU_SYNC_TIMEOUT	5	 
+#define MC_LUN_PROV_TIMEOUT	5	 
+#define MC_AFU_DEBUG_TIMEOUT	5	 
 
-/* AFU command room retry limit */
+ 
 #define MC_ROOM_RETRY_CNT	10
 
-/* FC CRC clear periodic timer */
-#define MC_CRC_THRESH 100	/* threshold in 5 mins */
+ 
+#define MC_CRC_THRESH 100	 
 
-#define FC_PORT_STATUS_RETRY_CNT 100	/* 100 100ms retries = 10 seconds */
-#define FC_PORT_STATUS_RETRY_INTERVAL_US 100000	/* microseconds */
+#define FC_PORT_STATUS_RETRY_CNT 100	 
+#define FC_PORT_STATUS_RETRY_INTERVAL_US 100000	 
 
-/* VPD defines */
+ 
 #define CXLFLASH_VPD_LEN	256
 #define WWPN_LEN	16
 #define WWPN_BUF_LEN	(WWPN_LEN + 1)
@@ -126,4 +119,4 @@ struct asyc_intr_info {
 #define SCAN_HOST	0x04
 };
 
-#endif /* _CXLFLASH_MAIN_H */
+#endif  

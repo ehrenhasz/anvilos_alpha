@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -32,11 +11,7 @@
 #include "smu_v13_0_1_pmfw.h"
 #include "smu_cmn.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -224,7 +199,7 @@ static int yellow_carp_dpm_set_vcn_enable(struct smu_context *smu, bool enable)
 {
 	int ret = 0;
 
-	/* vcn dpm on is a prerequisite for vcn power gate messages */
+	 
 	if (enable)
 		ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_PowerUpVcn,
 						      0, NULL);
@@ -269,7 +244,7 @@ static int yellow_carp_post_smu_init(struct smu_context *smu)
 	struct amdgpu_device *adev = smu->adev;
 	int ret = 0;
 
-	/* allow message will be sent after enable message on Yellow Carp*/
+	 
 	ret = smu_cmn_send_smc_msg(smu, SMU_MSG_EnableGfxOff, NULL);
 	if (ret)
 		dev_err(adev->dev, "Failed to Enable GfxOff!\n");
@@ -303,8 +278,7 @@ static void yellow_carp_get_ss_power_percent(SmuMetrics_t *metrics,
 	uint16_t apu_power = 0;
 	uint16_t dgpu_power = 0;
 
-	/* APU and dGPU power values are reported in milli Watts
-	 * and STAPM power limits are in Watts */
+	 
 	apu_power = metrics->ApuPower/1000;
 	apu_limit = metrics->StapmOpnLimit;
 	if (apu_power > apu_limit && apu_limit != 0)
@@ -386,16 +360,12 @@ static int yellow_carp_get_smu_metrics_data(struct smu_context *smu,
 		*value = metrics->Voltage[1];
 		break;
 	case METRICS_SS_APU_SHARE:
-		/* return the percentage of APU power boost
-		 * with respect to APU's power limit.
-		 */
+		 
 		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
 		*value = apu_percent;
 		break;
 	case METRICS_SS_DGPU_SHARE:
-		/* return the percentage of dGPU power boost
-		 * with respect to dGPU's power limit.
-		 */
+		 
 		yellow_carp_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
 		*value = dgpu_percent;
 		break;
@@ -534,7 +504,7 @@ static int yellow_carp_set_watermarks_table(struct smu_context *smu,
 		smu->watermarks_bitmap |= WATERMARKS_EXIST;
 	}
 
-	/* pass data to smu controller */
+	 
 	if ((smu->watermarks_bitmap & WATERMARKS_EXIST) &&
 	     !(smu->watermarks_bitmap & WATERMARKS_LOADED)) {
 		ret = smu_cmn_write_watermarks_table(smu);
@@ -601,18 +571,7 @@ static ssize_t yellow_carp_get_gpu_metrics(struct smu_context *smu,
 	return sizeof(struct gpu_metrics_v2_1);
 }
 
-/**
- * yellow_carp_get_gfxoff_status - get gfxoff status
- *
- * @smu: smu_context pointer
- *
- * This function will be used to get gfxoff status
- *
- * Returns 0=GFXOFF(default).
- * Returns 1=Transition out of GFX State.
- * Returns 2=Not in GFXOFF.
- * Returns 3=Transition into GFXOFF.
- */
+ 
 static uint32_t yellow_carp_get_gfxoff_status(struct smu_context *smu)
 {
 	uint32_t reg;
@@ -639,7 +598,7 @@ static int yellow_carp_od_edit_dpm_table(struct smu_context *smu, enum PP_OD_DPM
 	struct smu_dpm_context *smu_dpm = &(smu->smu_dpm);
 	int ret = 0;
 
-	/* Only allowed in manual mode */
+	 
 	if (smu_dpm->dpm_level != AMD_DPM_FORCED_LEVEL_MANUAL)
 		return -EINVAL;
 
@@ -887,7 +846,7 @@ static int yellow_carp_get_dpm_ultimate_freq(struct smu_context *smu,
 			break;
 		}
 
-		/* clock in Mhz unit */
+		 
 		if (min)
 			*min = clock_limit / 100;
 		if (max)

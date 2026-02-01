@@ -1,10 +1,4 @@
-/*
- * Copyright (C) 2017 Jernej Skrabec <jernej.skrabec@siol.net>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #ifndef _SUN8I_VI_SCALER_H_
 #define _SUN8I_VI_SCALER_H_
@@ -18,7 +12,7 @@
 #define DE3_VI_SCALER_UNIT_BASE 0x20000
 #define DE3_VI_SCALER_UNIT_SIZE 0x08000
 
-/* this two macros assumes 16 fractional bits which is standard in DRM */
+ 
 #define SUN8I_VI_SCALER_SCALE_MIN		1
 #define SUN8I_VI_SCALER_SCALE_MAX		((1UL << 20) - 1)
 

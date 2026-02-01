@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1
+
 #include <linux/log2.h>
 
 #include "trace/beauty/generated/mmap_prot_array.c"
@@ -35,7 +35,7 @@ static size_t syscall_arg__scnprintf_mmap_flags(char *bf, size_t size,
 	unsigned long flags = arg->val;
 
 	if (flags & MAP_ANONYMOUS)
-		arg->mask |= (1 << 4) | (1 << 5); /* Mask 4th ('fd') and 5th ('offset') args, ignored */
+		arg->mask |= (1 << 4) | (1 << 5);  
 
 	return mmap__scnprintf_flags(flags, bf, size, arg->show_string_prefix);
 }
@@ -55,7 +55,7 @@ static size_t syscall_arg__scnprintf_mremap_flags(char *bf, size_t size, struct 
 	unsigned long flags = arg->val;
 
 	if (!(flags & MREMAP_FIXED))
-		arg->mask |=  (1 << 5); /* Mask 5th ('new_address') args, ignored */
+		arg->mask |=  (1 << 5);  
 
 	return mremap__scnprintf_flags(flags, bf, size, arg->show_string_prefix);
 }

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef DIB7000M_H
 #define DIB7000M_H
 
@@ -80,11 +80,6 @@ static inline int dib7000m_pid_filter_ctrl(struct dvb_frontend *fe,
 }
 #endif
 
-/* TODO
-extern INT dib7000m_set_gpio(struct dibDemod *demod, UCHAR num, UCHAR dir, UCHAR val);
-extern INT dib7000m_enable_vbg_voltage(struct dibDemod *demod);
-extern void dib7000m_set_hostbus_diversity(struct dibDemod *demod, UCHAR onoff);
-extern USHORT dib7000m_get_current_agc_global(struct dibDemod *demod);
-*/
+ 
 
 #endif

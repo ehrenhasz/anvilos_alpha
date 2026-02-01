@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PCIe PHY driver for Lantiq VRX200 and ARX300 SoCs.
- *
- * Copyright (C) 2019 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- *
- * Based on the BSP (called "UGW") driver:
- *  Copyright (C) 2009-2015 Lei Chuanhua <chuanhua.lei@lantiq.com>
- *  Copyright (C) 2016 Intel Corporation
- *
- * TODO: PHY modes other than 36MHz (without "SSC")
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -99,14 +89,14 @@ static void ltq_vrx200_pcie_phy_common_setup(struct phy *phy)
 {
 	struct ltq_vrx200_pcie_phy_priv *priv = phy_get_drvdata(phy);
 
-	/* PLL Setting */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_PLL_A_CTRL1, 0x120e);
 
-	/* increase the bias reference voltage */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_PLL_A_CTRL2, 0x39d7);
 	regmap_write(priv->phy_regmap, PCIE_PHY_PLL_A_CTRL3, 0x0900);
 
-	/* Endcnt */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_RX1_EI, 0x0004);
 	regmap_write(priv->phy_regmap, PCIE_PHY_RX1_A_CTRL, 0x6803);
 
@@ -114,27 +104,27 @@ static void ltq_vrx200_pcie_phy_common_setup(struct phy *phy)
 			   PCIE_PHY_TX1_CTRL1_FORCE_EN,
 			   PCIE_PHY_TX1_CTRL1_FORCE_EN);
 
-	/* predrv_ser_en */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_TX1_A_CTRL2, 0x0706);
 
-	/* ctrl_lim */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_TX1_CTRL3, 0x1fff);
 
-	/* ctrl */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_TX1_A_CTRL1, 0x0810);
 
-	/* predrv_ser_en */
+	 
 	regmap_update_bits(priv->phy_regmap, PCIE_PHY_TX2_A_CTRL2, 0x7f00,
 			   0x4700);
 
-	/* RTERM */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_TX1_CTRL2, 0x2e00);
 
-	/* Improved 100MHz clock output  */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_TX2_CTRL2, 0x3096);
 	regmap_write(priv->phy_regmap, PCIE_PHY_TX2_A_CTRL2, 0x4707);
 
-	/* Reduced CDR BW to avoid glitches */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_RX1_CDR, 0x0235);
 }
 
@@ -163,7 +153,7 @@ static void pcie_phy_36mhz_mode_setup(struct phy *phy)
 	regmap_update_bits(priv->phy_regmap, PCIE_PHY_PLL_A_CTRL2,
 			   PCIE_PHY_PLL_A_CTRL2_LF_MODE_EN, 0x0000);
 
-	/* const_sdm */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_PLL_CTRL1, 0x38e4);
 
 	regmap_update_bits(priv->phy_regmap, PCIE_PHY_PLL_CTRL2,
@@ -171,7 +161,7 @@ static void pcie_phy_36mhz_mode_setup(struct phy *phy)
 			   FIELD_PREP(PCIE_PHY_PLL_CTRL2_CONST_SDM_MASK,
 				      0xee));
 
-	/* pllmod */
+	 
 	regmap_write(priv->phy_regmap, PCIE_PHY_PLL_CTRL7, 0x0002);
 	regmap_write(priv->phy_regmap, PCIE_PHY_PLL_CTRL6, 0x3a04);
 	regmap_write(priv->phy_regmap, PCIE_PHY_PLL_CTRL5, 0xfae3);
@@ -216,26 +206,26 @@ static void ltq_vrx200_pcie_phy_apply_workarounds(struct phy *phy)
 	int i;
 
 	for (i = 0; i < ARRAY_SIZE(slices); i++) {
-		/* enable load_en */
+		 
 		regmap_update_bits(priv->phy_regmap, slices[i].reg,
 				   slices[i].def, slices[i].def);
 
 		udelay(1);
 
-		/* disable load_en */
+		 
 		regmap_update_bits(priv->phy_regmap, slices[i].reg,
 				   slices[i].def, 0x0);
 	}
 
 	for (i = 0; i < 5; i++) {
-		/* TX2 modulation */
+		 
 		regmap_write(priv->phy_regmap, PCIE_PHY_TX2_MOD1, 0x1ffe);
 		regmap_write(priv->phy_regmap, PCIE_PHY_TX2_MOD2, 0xfffe);
 		regmap_write(priv->phy_regmap, PCIE_PHY_TX2_MOD3, 0x0601);
 		usleep_range(1000, 2000);
 		regmap_write(priv->phy_regmap, PCIE_PHY_TX2_MOD3, 0x0001);
 
-		/* TX1 modulation */
+		 
 		regmap_write(priv->phy_regmap, PCIE_PHY_TX1_MOD1, 0x1ffe);
 		regmap_write(priv->phy_regmap, PCIE_PHY_TX1_MOD2, 0xfffe);
 		regmap_write(priv->phy_regmap, PCIE_PHY_TX1_MOD3, 0x0601);
@@ -275,7 +265,7 @@ static int ltq_vrx200_pcie_phy_init(struct phy *phy)
 	if (ret)
 		goto err_assert_phy_reset;
 
-	/* Make sure PHY PLL is stable */
+	 
 	usleep_range(20, 40);
 
 	return 0;
@@ -307,22 +297,22 @@ static int ltq_vrx200_pcie_phy_power_on(struct phy *phy)
 	struct ltq_vrx200_pcie_phy_priv *priv = phy_get_drvdata(phy);
 	int ret;
 
-	/* Enable PDI to access PCIe PHY register */
+	 
 	ret = clk_prepare_enable(priv->pdi_clk);
 	if (ret)
 		goto err;
 
-	/* Configure PLL and PHY clock */
+	 
 	ltq_vrx200_pcie_phy_common_setup(phy);
 
 	pcie_phy_36mhz_mode_setup(phy);
 
-	/* Enable the PCIe PHY and make PLL setting take effect */
+	 
 	ret = clk_prepare_enable(priv->phy_clk);
 	if (ret)
 		goto err_disable_pdi_clk;
 
-	/* Check if we are in "startup ready" status */
+	 
 	ret = ltq_vrx200_pcie_phy_wait_for_pll(phy);
 	if (ret)
 		goto err_disable_phy_clk;
@@ -475,7 +465,7 @@ static int ltq_vrx200_pcie_phy_probe(struct platform_device *pdev)
 static const struct of_device_id ltq_vrx200_pcie_phy_of_match[] = {
 	{ .compatible = "lantiq,vrx200-pcie-phy", },
 	{ .compatible = "lantiq,arx300-pcie-phy", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ltq_vrx200_pcie_phy_of_match);
 

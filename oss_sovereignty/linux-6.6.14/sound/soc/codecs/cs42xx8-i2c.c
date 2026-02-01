@@ -1,14 +1,4 @@
-/*
- * Cirrus Logic CS42448/CS42888 Audio CODEC DAI I2C driver
- *
- * Copyright (C) 2014 Freescale Semiconductor, Inc.
- *
- * Author: Nicolin Chen <Guangyu.Chen@freescale.com>
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -53,7 +43,7 @@ static void cs42xx8_i2c_remove(struct i2c_client *i2c)
 static const struct of_device_id cs42xx8_of_match[] = {
 	{ .compatible = "cirrus,cs42448", .data = &cs42448_data, },
 	{ .compatible = "cirrus,cs42888", .data = &cs42888_data, },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cs42xx8_of_match);
 

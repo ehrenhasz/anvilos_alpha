@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  fs/partitions/karma.c
- *  Rio Karma partition info.
- *
- *  Copyright (C) 2006 Bob Copeland (me@bobcopeland.com)
- *  based on osf.c
- */
+
+ 
 
 #include "check.h"
 #include <linux/compiler.h>

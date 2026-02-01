@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DT_TAS2552_H
 #define __DT_TAS2552_H
 
@@ -16,4 +16,4 @@
 #define TAS2552_PDM_CLK_BCLK		((2 << 1) | TAS2552_PDM_CLK)
 #define TAS2552_PDM_CLK_MCLK		((3 << 1) | TAS2552_PDM_CLK)
 
-#endif /* __DT_TAS2552_H */
+#endif  

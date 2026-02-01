@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef UACCESS_H
 #define UACCESS_H
 
@@ -42,4 +42,4 @@ static inline int copy_to_user(void __user volatile *to, const void *from,
 	volatile_memcpy(to, from, n);
 	return 0;
 }
-#endif /* UACCESS_H */
+#endif  

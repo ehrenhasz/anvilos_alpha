@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * sysctl_net_llc.c: sysctl interface to LLC net subsystem.
- *
- * Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/init.h>

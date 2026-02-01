@@ -1,20 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/****************************************************************************/
-/*
- *  linux/fs/binfmt_flat.c
- *
- *	Copyright (C) 2000-2003 David McCullough <davidm@snapgear.com>
- *	Copyright (C) 2002 Greg Ungerer <gerg@snapgear.com>
- *	Copyright (C) 2002 SnapGear, by Paul Dale <pauli@snapgear.com>
- *	Copyright (C) 2000, 2001 Lineo, by David McCullough <davidm@lineo.com>
- *  based heavily on:
- *
- *  linux/fs/binfmt_aout.c:
- *      Copyright (C) 1991, 1992, 1996  Linus Torvalds
- *  linux/fs/binfmt_flat.c for 2.0 kernel
- *	    Copyright (C) 1998  Kenneth Albanowski <kjahds@kjahds.com>
- *	JAN/99 -- coded full program relocation (gerg@snapgear.com)
- */
+
+ 
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -48,25 +34,16 @@
 #define flat_get_relocate_addr(rel)	(rel)
 #endif
 
-/****************************************************************************/
+ 
 
-/*
- * User data (data section and bss) needs to be aligned.
- * We pick 0x20 here because it is the max value elf2flt has always
- * used in producing FLAT files, and because it seems to be large
- * enough to make all the gcc alignment related tests happy.
- */
+ 
 #define FLAT_DATA_ALIGN	(0x20)
 
-/*
- * User data (stack) also needs to be aligned.
- * Here we can be a bit looser than the data sections since this
- * needs to only meet arch ABI requirements.
- */
+ 
 #define FLAT_STACK_ALIGN	max_t(unsigned long, sizeof(void *), ARCH_SLAB_MINALIGN)
 
-#define RELOC_FAILED 0xff00ff01		/* Relocation incorrect somewhere */
-#define UNLOADED_LIB 0x7ff000ff		/* Placeholder for unused library */
+#define RELOC_FAILED 0xff00ff01		 
+#define UNLOADED_LIB 0x7ff000ff		 
 
 #define MAX_SHARED_LIBS			(1)
 
@@ -78,13 +55,13 @@
 
 struct lib_info {
 	struct {
-		unsigned long start_code;		/* Start of text segment */
-		unsigned long start_data;		/* Start of data segment */
-		unsigned long start_brk;		/* End of data segment */
-		unsigned long text_len;			/* Length of text segment */
-		unsigned long entry;			/* Start address for this module */
-		unsigned long build_date;		/* When this one was compiled */
-		bool loaded;				/* Has this library been loaded? */
+		unsigned long start_code;		 
+		unsigned long start_data;		 
+		unsigned long start_brk;		 
+		unsigned long text_len;			 
+		unsigned long entry;			 
+		unsigned long build_date;		 
+		bool loaded;				 
 	} lib_list[MAX_SHARED_LIBS];
 };
 
@@ -96,12 +73,8 @@ static struct linux_binfmt flat_format = {
 };
 
 
-/****************************************************************************/
-/*
- * create_flat_tables() parses the env- and arg-strings in new user
- * memory and creates the pointer tables from them, and puts their
- * addresses on the "stack", recording the new stack pointer value.
- */
+ 
+ 
 
 static int create_flat_tables(struct linux_binprm *bprm, unsigned long arg_start)
 {
@@ -115,8 +88,8 @@ static int create_flat_tables(struct linux_binprm *bprm, unsigned long arg_start
 	sp -= bprm->envc + 1;
 	sp -= bprm->argc + 1;
 	if (IS_ENABLED(CONFIG_BINFMT_FLAT_ARGVP_ENVP_ON_STACK))
-		sp -= 2; /* argvp + envp */
-	sp -= 1;  /* &argc */
+		sp -= 2;  
+	sp -= 1;   
 
 	current->mm->start_stack = (unsigned long)sp & -FLAT_STACK_ALIGN;
 	sp = (unsigned long __user *)current->mm->start_stack;
@@ -160,7 +133,7 @@ static int create_flat_tables(struct linux_binprm *bprm, unsigned long arg_start
 	return 0;
 }
 
-/****************************************************************************/
+ 
 
 #ifdef CONFIG_BINFMT_ZFLAT
 
@@ -168,14 +141,14 @@ static int create_flat_tables(struct linux_binprm *bprm, unsigned long arg_start
 
 #define LBUFSIZE	4000
 
-/* gzip flag byte */
-#define ASCII_FLAG   0x01 /* bit 0 set: file probably ASCII text */
-#define CONTINUATION 0x02 /* bit 1 set: continuation of multi-part gzip file */
-#define EXTRA_FIELD  0x04 /* bit 2 set: extra field present */
-#define ORIG_NAME    0x08 /* bit 3 set: original file name present */
-#define COMMENT      0x10 /* bit 4 set: file comment present */
-#define ENCRYPTED    0x20 /* bit 5 set: file is encrypted */
-#define RESERVED     0xC0 /* bit 6,7:   reserved */
+ 
+#define ASCII_FLAG   0x01  
+#define CONTINUATION 0x02  
+#define EXTRA_FIELD  0x04  
+#define ORIG_NAME    0x08  
+#define COMMENT      0x10  
+#define ENCRYPTED    0x20  
+#define RESERVED     0xC0  
 
 static int decompress_exec(struct linux_binprm *bprm, loff_t fpos, char *dst,
 		long len, int fd)
@@ -197,7 +170,7 @@ static int decompress_exec(struct linux_binprm *bprm, loff_t fpos, char *dst,
 		goto out_free;
 	}
 
-	/* Read in first chunk of data and parse gzip header. */
+	 
 	ret = kernel_read(bprm->file, buf, LBUFSIZE, &fpos);
 
 	strm.next_in = buf;
@@ -206,24 +179,24 @@ static int decompress_exec(struct linux_binprm *bprm, loff_t fpos, char *dst,
 
 	retval = -ENOEXEC;
 
-	/* Check minimum size -- gzip header */
+	 
 	if (ret < 10) {
 		pr_debug("file too small?\n");
 		goto out_free_buf;
 	}
 
-	/* Check gzip magic number */
+	 
 	if ((buf[0] != 037) || ((buf[1] != 0213) && (buf[1] != 0236))) {
 		pr_debug("unknown compression magic?\n");
 		goto out_free_buf;
 	}
 
-	/* Check gzip method */
+	 
 	if (buf[2] != 8) {
 		pr_debug("unknown compression method?\n");
 		goto out_free_buf;
 	}
-	/* Check gzip flags */
+	 
 	if ((buf[3] & ENCRYPTED) || (buf[3] & CONTINUATION) ||
 	    (buf[3] & RESERVED)) {
 		pr_debug("unknown flags?\n");
@@ -294,9 +267,9 @@ out_free:
 	return retval;
 }
 
-#endif /* CONFIG_BINFMT_ZFLAT */
+#endif  
 
-/****************************************************************************/
+ 
 
 static unsigned long
 calc_reloc(unsigned long r, struct lib_info *p)
@@ -318,12 +291,12 @@ calc_reloc(unsigned long r, struct lib_info *p)
 		goto failed;
 	}
 
-	if (r < text_len)			/* In text segment */
+	if (r < text_len)			 
 		addr = r + start_code;
-	else					/* In data segment */
+	else					 
 		addr = r - text_len + start_data;
 
-	/* Range checked already above so doing the range tests is redundant...*/
+	 
 	return addr;
 
 failed:
@@ -333,7 +306,7 @@ failed:
 	return RELOC_FAILED;
 }
 
-/****************************************************************************/
+ 
 
 #ifdef CONFIG_BINFMT_FLAT_OLD
 static void old_reloc(unsigned long rl)
@@ -373,19 +346,14 @@ static void old_reloc(unsigned long rl)
 
 	pr_debug("Relocation became %lx\n", val);
 }
-#endif /* CONFIG_BINFMT_FLAT_OLD */
+#endif  
 
-/****************************************************************************/
+ 
 
 static inline u32 __user *skip_got_header(u32 __user *rp)
 {
 	if (IS_ENABLED(CONFIG_RISCV)) {
-		/*
-		 * RISC-V has a 16 byte GOT PLT header for elf64-riscv
-		 * and 8 byte GOT PLT header for elf32-riscv.
-		 * Skip the whole GOT PLT header, since it is reserved
-		 * for the dynamic linker (ld.so).
-		 */
+		 
 		u32 rp_val0, rp_val1;
 
 		if (get_user(rp_val0, rp))
@@ -416,7 +384,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 	ssize_t result;
 	int ret;
 
-	hdr = ((struct flat_hdr *) bprm->buf);		/* exec-header */
+	hdr = ((struct flat_hdr *) bprm->buf);		 
 
 	text_len  = ntohl(hdr->data_start);
 	data_len  = ntohl(hdr->data_end) - ntohl(hdr->data_start);
@@ -432,13 +400,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 	full_data = data_len + relocs * sizeof(unsigned long);
 
 	if (strncmp(hdr->magic, "bFLT", 4)) {
-		/*
-		 * Previously, here was a printk to tell people
-		 *   "BINFMT_FLAT: bad header magic".
-		 * But for the kernel which also use ELF FD-PIC format, this
-		 * error message is confusing.
-		 * because a lot of people do not manage to produce good
-		 */
+		 
 		ret = -ENOEXEC;
 		goto err;
 	}
@@ -454,28 +416,21 @@ static int load_flat_file(struct linux_binprm *bprm,
 		goto err;
 	}
 
-	/*
-	 * fix up the flags for the older format,  there were all kinds
-	 * of endian hacks,  this only works for the simple cases
-	 */
+	 
 	if (rev == OLD_FLAT_VERSION &&
 	   (flags || IS_ENABLED(CONFIG_BINFMT_FLAT_OLD_ALWAYS_RAM)))
 		flags = FLAT_FLAG_RAM;
 
-#else /* CONFIG_BINFMT_FLAT_OLD */
+#else  
 	if (rev != FLAT_VERSION) {
 		pr_err("bad flat file version 0x%x (supported 0x%lx)\n",
 		       rev, FLAT_VERSION);
 		ret = -ENOEXEC;
 		goto err;
 	}
-#endif /* !CONFIG_BINFMT_FLAT_OLD */
+#endif  
 
-	/*
-	 * Make sure the header params are sane.
-	 * 28 bits (256 MB) is way more than reasonable in this case.
-	 * If some top bits are set we have probable binary corruption.
-	*/
+	 
 	if ((text_len | data_len | bss_len | stack_len | full_data) >> 28) {
 		pr_err("bad header\n");
 		ret = -ENOEXEC;
@@ -490,11 +445,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 	}
 #endif
 
-	/*
-	 * Check initial limits. This avoids letting people circumvent
-	 * size limits imposed on them by creating programs with large
-	 * arrays in the data or bss.
-	 */
+	 
 	rlim = rlimit(RLIMIT_DATA);
 	if (rlim >= RLIM_INFINITY)
 		rlim = ~0;
@@ -503,31 +454,22 @@ static int load_flat_file(struct linux_binprm *bprm,
 		goto err;
 	}
 
-	/* Flush all traces of the currently running executable */
+	 
 	ret = begin_new_exec(bprm);
 	if (ret)
 		goto err;
 
-	/* OK, This is the point of no return */
+	 
 	set_personality(PER_LINUX_32BIT);
 	setup_new_exec(bprm);
 
-	/*
-	 * calculate the extra space we need to map in
-	 */
+	 
 	extra = max_t(unsigned long, bss_len + stack_len,
 			relocs * sizeof(unsigned long));
 
-	/*
-	 * there are a couple of cases here,  the separate code/data
-	 * case,  and then the fully copied to RAM case which lumps
-	 * it all together.
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_MMU) && !(flags & (FLAT_FLAG_RAM|FLAT_FLAG_GZIP))) {
-		/*
-		 * this should give us a ROM ptr,  but if it doesn't we don't
-		 * really care
-		 */
+		 
 		pr_debug("ROM mapping of file (we hope)\n");
 
 		textpos = vm_mmap(bprm->file, 0, text_len, PROT_READ|PROT_EXEC,
@@ -612,9 +554,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 		memp = textpos;
 		memp_size = len;
 #ifdef CONFIG_BINFMT_ZFLAT
-		/*
-		 * load it all in and treat it like a RAM load from now on
-		 */
+		 
 		if (flags & FLAT_FLAG_GZIP) {
 #ifndef CONFIG_MMU
 			result = decompress_exec(bprm, sizeof(struct flat_hdr),
@@ -625,10 +565,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 			memmove((void *) datapos, (void *) realdatastart,
 					full_data);
 #else
-			/*
-			 * This is used on MMU systems mainly for testing.
-			 * Let's use a kernel buffer to simplify things.
-			 */
+			 
 			long unz_text_len = text_len - sizeof(struct flat_hdr);
 			long unz_len = unz_text_len + full_data;
 			char *unz_data = vmalloc(unz_len);
@@ -668,7 +605,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 #endif
 			}
 		} else
-#endif /* CONFIG_BINFMT_ZFLAT */
+#endif  
 		{
 			result = read_code(bprm->file, textpos, 0, text_len);
 			if (!IS_ERR_VALUE(result))
@@ -687,20 +624,14 @@ static int load_flat_file(struct linux_binprm *bprm,
 
 	start_code = textpos + sizeof(struct flat_hdr);
 	end_code = textpos + text_len;
-	text_len -= sizeof(struct flat_hdr); /* the real code len */
+	text_len -= sizeof(struct flat_hdr);  
 
-	/* The main program needs a little extra setup in the task structure */
+	 
 	current->mm->start_code = start_code;
 	current->mm->end_code = end_code;
 	current->mm->start_data = datapos;
 	current->mm->end_data = datapos + data_len;
-	/*
-	 * set up the brk stuff, uses any slack left in data/bss/stack
-	 * allocation.  We put the brk after the bss (between the bss
-	 * and stack) like other platforms.
-	 * Userspace code relies on the stack pointer starting out at
-	 * an address right at the end of a page.
-	 */
+	 
 	current->mm->start_brk = datapos + data_len + bss_len;
 	current->mm->brk = (current->mm->start_brk + 3) & ~3;
 #ifndef CONFIG_MMU
@@ -716,7 +647,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 			datapos + data_len, (datapos + data_len + bss_len + 3) & ~3);
 	}
 
-	/* Store the current module values into the global library structure */
+	 
 	libinfo->lib_list[0].start_code = start_code;
 	libinfo->lib_list[0].start_data = datapos;
 	libinfo->lib_list[0].start_brk = datapos + data_len + bss_len;
@@ -725,18 +656,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 	libinfo->lib_list[0].entry = (0x00ffffff & ntohl(hdr->entry)) + textpos;
 	libinfo->lib_list[0].build_date = ntohl(hdr->build_date);
 
-	/*
-	 * We just load the allocations into some temporary memory to
-	 * help simplify all this mumbo jumbo
-	 *
-	 * We've got two different sections of relocation entries.
-	 * The first is the GOT which resides at the beginning of the data segment
-	 * and is terminated with a -1.  This one can be relocated in place.
-	 * The second is the extra relocation entries tacked after the image's
-	 * data segment. These require a little more processing as the entry is
-	 * really an offset into the image which contains an offset into the
-	 * image.
-	 */
+	 
 	if (flags & FLAT_FLAG_GOTPIC) {
 		rp = skip_got_header((u32 __user *) datapos);
 		for (; ; rp++) {
@@ -757,27 +677,13 @@ static int load_flat_file(struct linux_binprm *bprm,
 		}
 	}
 
-	/*
-	 * Now run through the relocation entries.
-	 * We've got to be careful here as C++ produces relocatable zero
-	 * entries in the constructor and destructor tables which are then
-	 * tested for being not zero (which will always occur unless we're
-	 * based from address zero).  This causes an endless loop as __start
-	 * is at zero.  The solution used is to not relocate zero addresses.
-	 * This has the negative side effect of not allowing a global data
-	 * reference to be statically initialised to _stext (I've moved
-	 * __start to address 4 so that is okay).
-	 */
+	 
 	if (rev > OLD_FLAT_VERSION) {
 		for (i = 0; i < relocs; i++) {
 			u32 addr, relval;
 			__be32 tmp;
 
-			/*
-			 * Get the address of the pointer to be
-			 * relocated (of course, the address has to be
-			 * relocated first).
-			 */
+			 
 			if (get_user(tmp, reloc + i))
 				return -EFAULT;
 			relval = ntohl(tmp);
@@ -788,21 +694,15 @@ static int load_flat_file(struct linux_binprm *bprm,
 				goto err;
 			}
 
-			/* Get the pointer's value.  */
+			 
 			ret = flat_get_addr_from_rp(rp, relval, flags, &addr);
 			if (unlikely(ret))
 				goto err;
 
 			if (addr != 0) {
-				/*
-				 * Do the relocation.  PIC relocs in the data section are
-				 * already in target order
-				 */
+				 
 				if ((flags & FLAT_FLAG_GOTPIC) == 0) {
-					/*
-					 * Meh, the same value can have a different
-					 * byte order based on a flag..
-					 */
+					 
 					addr = ntohl((__force __be32)addr);
 				}
 				addr = calc_reloc(addr, libinfo);
@@ -811,7 +711,7 @@ static int load_flat_file(struct linux_binprm *bprm,
 					goto err;
 				}
 
-				/* Write back the relocated pointer.  */
+				 
 				ret = flat_put_addr_at_rp(rp, addr, relval);
 				if (unlikely(ret))
 					goto err;
@@ -825,15 +725,15 @@ static int load_flat_file(struct linux_binprm *bprm,
 				return -EFAULT;
 			old_reloc(ntohl(relval));
 		}
-#endif /* CONFIG_BINFMT_FLAT_OLD */
+#endif  
 	}
 
 	flush_icache_user_range(start_code, end_code);
 
-	/* zero the BSS,  BRK and stack areas */
+	 
 	if (clear_user((void __user *)(datapos + data_len), bss_len +
-		       (memp + memp_size - stack_len -		/* end brk */
-		       libinfo->lib_list[0].start_brk) +	/* start brk */
+		       (memp + memp_size - stack_len -		 
+		       libinfo->lib_list[0].start_brk) +	 
 		       stack_len))
 		return -EFAULT;
 
@@ -843,12 +743,9 @@ err:
 }
 
 
-/****************************************************************************/
+ 
 
-/*
- * These are the functions used to load flat style executables and shared
- * libraries.  There is no binary dependent code anywhere else.
- */
+ 
 
 static int load_flat_binary(struct linux_binprm *bprm)
 {
@@ -861,25 +758,19 @@ static int load_flat_binary(struct linux_binprm *bprm)
 
 	memset(&libinfo, 0, sizeof(libinfo));
 
-	/*
-	 * We have to add the size of our arguments to our stack size
-	 * otherwise it's too easy for users to create stack overflows
-	 * by passing in a huge argument list.  And yes,  we have to be
-	 * pedantic and include space for the argv/envp array as it may have
-	 * a lot of entries.
-	 */
+	 
 #ifndef CONFIG_MMU
-	stack_len += PAGE_SIZE * MAX_ARG_PAGES - bprm->p; /* the strings */
+	stack_len += PAGE_SIZE * MAX_ARG_PAGES - bprm->p;  
 #endif
-	stack_len += (bprm->argc + 1) * sizeof(char *);   /* the argv array */
-	stack_len += (bprm->envc + 1) * sizeof(char *);   /* the envp array */
+	stack_len += (bprm->argc + 1) * sizeof(char *);    
+	stack_len += (bprm->envc + 1) * sizeof(char *);    
 	stack_len = ALIGN(stack_len, FLAT_STACK_ALIGN);
 
 	res = load_flat_file(bprm, &libinfo, &stack_len);
 	if (res < 0)
 		return res;
 
-	/* Update data segment pointers for all libraries */
+	 
 	for (i = 0; i < MAX_SHARED_LIBS; i++) {
 		if (!libinfo.lib_list[i].loaded)
 			continue;
@@ -901,12 +792,12 @@ static int load_flat_binary(struct linux_binprm *bprm)
 	if (!res)
 		res = create_flat_tables(bprm, bprm->p);
 #else
-	/* Stash our initial stack pointer into the mm structure */
+	 
 	current->mm->start_stack =
 		((current->mm->context.end_brk + stack_len + 3) & ~3) - 4;
 	pr_debug("sp=%lx\n", current->mm->start_stack);
 
-	/* copy the arg pages onto the stack */
+	 
 	res = transfer_args_to_stack(bprm, &current->mm->start_stack);
 	if (!res)
 		res = create_flat_tables(bprm, current->mm->start_stack);
@@ -914,10 +805,7 @@ static int load_flat_binary(struct linux_binprm *bprm)
 	if (res)
 		return res;
 
-	/* Fake some return addresses to ensure the call chain will
-	 * initialise library in order for us.  We are required to call
-	 * lib 1 first, then 2, ... and finally the main program (id 0).
-	 */
+	 
 	start_addr = libinfo.lib_list[0].entry;
 
 #ifdef FLAT_PLAT_INIT
@@ -932,7 +820,7 @@ static int load_flat_binary(struct linux_binprm *bprm)
 	return 0;
 }
 
-/****************************************************************************/
+ 
 
 static int __init init_flat_binfmt(void)
 {
@@ -941,4 +829,4 @@ static int __init init_flat_binfmt(void)
 }
 core_initcall(init_flat_binfmt);
 
-/****************************************************************************/
+ 

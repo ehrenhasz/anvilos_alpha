@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* IEEE 802.11 SoftMAC layer
- * Copyright (c) 2005 Andrea Merello <andrea.merello@gmail.com>
- *
- * Mostly extracted from the rtl8180-sa2400 driver for the
- * in-kernel generic ieee802.11 stack.
- *
- * Some pieces of code might be stolen from ipw2100 driver
- * copyright of who own it's copyright ;-)
- *
- * PS wx handler mostly stolen from hostap, copyright who
- * own it's copyright ;-)
- */
+
+ 
 #include <linux/etherdevice.h>
 
 #include "rtllib.h"
@@ -29,7 +18,7 @@ int rtllib_wx_set_freq(struct rtllib_device *ieee, struct iw_request_info *a,
 		goto out;
 	}
 
-	/* if setting by freq convert to channel */
+	 
 	if (fwrq->e == 1) {
 		if ((fwrq->m >= (int)2.412e8 &&
 		     fwrq->m <= (int)2.487e8)) {
@@ -42,7 +31,7 @@ int rtllib_wx_set_freq(struct rtllib_device *ieee, struct iw_request_info *a,
 		ret = -EOPNOTSUPP;
 		goto out;
 
-	} else { /* Set the channel */
+	} else {  
 
 		if (ieee->active_channel_map[fwrq->m] != 1) {
 			ret = -EINVAL;
@@ -91,7 +80,7 @@ int rtllib_wx_get_wap(struct rtllib_device *ieee,
 	if (ieee->iw_mode == IW_MODE_MONITOR)
 		return -1;
 
-	/* We want avoid to give to the user inconsistent infos*/
+	 
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	if (ieee->link_state != MAC80211_LINKED &&
@@ -123,7 +112,7 @@ int rtllib_wx_set_wap(struct rtllib_device *ieee,
 	rtllib_stop_scan_syncro(ieee);
 
 	mutex_lock(&ieee->wx_mutex);
-	/* use ifconfig hw ether */
+	 
 
 	if (temp->sa_family != ARPHRD_ETHER) {
 		ret = -EINVAL;
@@ -142,9 +131,7 @@ int rtllib_wx_set_wap(struct rtllib_device *ieee,
 	if (ifup)
 		rtllib_stop_protocol(ieee, true);
 
-	/* just to avoid to give inconsistent infos in the
-	 * get wx method. not really needed otherwise
-	 */
+	 
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	ieee->cannot_notify = false;
@@ -170,7 +157,7 @@ int rtllib_wx_get_essid(struct rtllib_device *ieee, struct iw_request_info *a,
 	if (ieee->iw_mode == IW_MODE_MONITOR)
 		return -1;
 
-	/* We want avoid to give to the user inconsistent infos*/
+	 
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	if (ieee->current_network.ssid[0] == '\0' ||
@@ -243,7 +230,7 @@ int rtllib_wx_get_rts(struct rtllib_device *ieee,
 			     union iwreq_data *wrqu, char *extra)
 {
 	wrqu->rts.value = ieee->rts;
-	wrqu->rts.fixed = 0;	/* no auto select */
+	wrqu->rts.fixed = 0;	 
 	wrqu->rts.disabled = (wrqu->rts.value == DEFAULT_RTS_THRESHOLD);
 	return 0;
 }
@@ -312,7 +299,7 @@ void rtllib_wx_sync_scan_wq(void *data)
 	chan = ieee->current_network.channel;
 
 	ieee->leisure_ps_leave(ieee->dev);
-	/* notify AP to be in PS mode */
+	 
 	rtllib_sta_ps_send_null_frame(ieee, 1);
 	rtllib_sta_ps_send_null_frame(ieee, 1);
 
@@ -320,7 +307,7 @@ void rtllib_wx_sync_scan_wq(void *data)
 	rtllib_stop_send_beacons(ieee);
 	ieee->link_state = MAC80211_LINKED_SCANNING;
 	ieee->link_change(ieee->dev);
-	/* wait for ps packet to be kicked out successfully */
+	 
 	msleep(50);
 
 	ieee->ScanOperationBackupHandler(ieee->dev, SCAN_OPT_BACKUP);
@@ -353,7 +340,7 @@ void rtllib_wx_sync_scan_wq(void *data)
 	ieee->link_state = MAC80211_LINKED;
 	ieee->link_change(ieee->dev);
 
-	/* Notify AP that I wake up again */
+	 
 	rtllib_sta_ps_send_null_frame(ieee, 0);
 
 	if (ieee->link_detect_info.NumRecvBcnInPeriod == 0 ||
@@ -382,7 +369,7 @@ int rtllib_wx_set_scan(struct rtllib_device *ieee, struct iw_request_info *a,
 
 	if (ieee->link_state == MAC80211_LINKED) {
 		schedule_work(&ieee->wx_sync_scan_wq);
-		/* intentionally forget to up sem */
+		 
 		return 0;
 	}
 
@@ -414,9 +401,7 @@ int rtllib_wx_set_essid(struct rtllib_device *ieee,
 	if (proto_started)
 		rtllib_stop_protocol(ieee, true);
 
-	/* this is just to be sure that the GET wx callback
-	 * has consistent infos. not needed otherwise
-	 */
+	 
 	spin_lock_irqsave(&ieee->lock, flags);
 
 	if (wrqu->essid.flags && wrqu->essid.length) {
@@ -489,7 +474,7 @@ int rtllib_wx_get_name(struct rtllib_device *ieee, struct iw_request_info *info,
 }
 EXPORT_SYMBOL(rtllib_wx_get_name);
 
-/* this is mostly stolen from hostap */
+ 
 int rtllib_wx_set_power(struct rtllib_device *ieee,
 				 struct iw_request_info *info,
 				 union iwreq_data *wrqu, char *extra)
@@ -541,7 +526,7 @@ exit:
 }
 EXPORT_SYMBOL(rtllib_wx_set_power);
 
-/* this is stolen from hostap */
+ 
 int rtllib_wx_get_power(struct rtllib_device *ieee,
 				 struct iw_request_info *info,
 				 union iwreq_data *wrqu, char *extra)

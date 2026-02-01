@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -30,7 +27,7 @@ struct pll_rate {
 	} conf[32];
 };
 
-/* NOTE: keep sorted highest freq to lowest: */
+ 
 static const struct pll_rate freqtbl[] = {
 	{ 72000000, {
 		{ 0x8f, REG_MDP4_LVDS_PHY_PLL_CTRL_1 },
@@ -73,7 +70,7 @@ static int mpd4_lvds_pll_enable(struct clk_hw *hw)
 
 	mdp4_write(mdp4_kms, REG_MDP4_LVDS_PHY_PLL_CTRL_0, 0x01);
 
-	/* Wait until LVDS PLL is locked and ready */
+	 
 	while (!mdp4_read(mdp4_kms, REG_MDP4_LVDS_PHY_PLL_LOCKED))
 		cpu_relax();
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2014 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/string.h>
 #include <linux/errno.h>
@@ -13,9 +13,7 @@
 #include "snic.h"
 
 
-/*
- * snic_isr_msix_wq : MSIx ISR for work queue.
- */
+ 
 
 static irqreturn_t
 snic_isr_msix_wq(int irq, void *data)
@@ -29,11 +27,11 @@ snic_isr_msix_wq(int irq, void *data)
 	wq_work_done = snic_wq_cmpl_handler(snic, -1);
 	svnic_intr_return_credits(&snic->intr[SNIC_MSIX_WQ],
 				  wq_work_done,
-				  1 /* unmask intr */,
-				  1 /* reset intr timer */);
+				  1  ,
+				  1  );
 
 	return IRQ_HANDLED;
-} /* end of snic_isr_msix_wq */
+}  
 
 static irqreturn_t
 snic_isr_msix_io_cmpl(int irq, void *data)
@@ -47,11 +45,11 @@ snic_isr_msix_io_cmpl(int irq, void *data)
 	iocmpl_work_done = snic_fwcq_cmpl_handler(snic, -1);
 	svnic_intr_return_credits(&snic->intr[SNIC_MSIX_IO_CMPL],
 				  iocmpl_work_done,
-				  1 /* unmask intr */,
-				  1 /* reset intr timer */);
+				  1  ,
+				  1  );
 
 	return IRQ_HANDLED;
-} /* end of snic_isr_msix_io_cmpl */
+}  
 
 static irqreturn_t
 snic_isr_msix_err_notify(int irq, void *data)
@@ -64,11 +62,11 @@ snic_isr_msix_err_notify(int irq, void *data)
 	svnic_intr_return_all_credits(&snic->intr[SNIC_MSIX_ERR_NOTIFY]);
 	snic_log_q_error(snic);
 
-	/*Handling link events */
+	 
 	snic_handle_link_event(snic);
 
 	return IRQ_HANDLED;
-} /* end of snic_isr_msix_err_notify */
+}  
 
 
 void
@@ -76,14 +74,14 @@ snic_free_intr(struct snic *snic)
 {
 	int i;
 
-	/* ONLY interrupt mode MSIX is supported */
+	 
 	for (i = 0; i < ARRAY_SIZE(snic->msix); i++) {
 		if (snic->msix[i].requested) {
 			free_irq(pci_irq_vector(snic->pdev, i),
 				 snic->msix[i].devid);
 		}
 	}
-} /* end of snic_free_intr */
+}  
 
 int
 snic_request_intr(struct snic *snic)
@@ -94,13 +92,7 @@ snic_request_intr(struct snic *snic)
 	intr_mode = svnic_dev_get_intr_mode(snic->vdev);
 	SNIC_BUG_ON(intr_mode != VNIC_DEV_INTR_MODE_MSIX);
 
-	/*
-	 * Currently HW supports single WQ and CQ. So passing devid as snic.
-	 * When hardware supports multiple WQs and CQs, one idea is
-	 * to pass devid as corresponding WQ or CQ ptr and retrieve snic
-	 * from queue ptr.
-	 * Except for err_notify, which is always one.
-	 */
+	 
 	sprintf(snic->msix[SNIC_MSIX_WQ].devname,
 		"%.11s-scsi-wq",
 		snic->name);
@@ -137,7 +129,7 @@ snic_request_intr(struct snic *snic)
 	}
 
 	return ret;
-} /* end of snic_request_intr */
+}  
 
 int
 snic_set_intr_mode(struct snic *snic)
@@ -146,10 +138,7 @@ snic_set_intr_mode(struct snic *snic)
 	unsigned int m = SNIC_CQ_IO_CMPL_MAX;
 	unsigned int vecs = n + m + 1;
 
-	/*
-	 * We need n WQs, m CQs, and n+m+1 INTRs
-	 * (last INTR is used for WQ/CQ errors and notification area
-	 */
+	 
 	BUILD_BUG_ON((ARRAY_SIZE(snic->wq) + SNIC_CQ_IO_CMPL_MAX) >
 			ARRAY_SIZE(snic->intr));
 
@@ -170,7 +159,7 @@ snic_set_intr_mode(struct snic *snic)
 fail:
 	svnic_dev_set_intr_mode(snic->vdev, VNIC_DEV_INTR_MODE_UNKNOWN);
 	return -EINVAL;
-} /* end of snic_set_intr_mode */
+}  
 
 void
 snic_clear_intr_mode(struct snic *snic)

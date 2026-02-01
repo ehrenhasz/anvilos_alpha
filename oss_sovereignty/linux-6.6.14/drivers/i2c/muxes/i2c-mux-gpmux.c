@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * General Purpose I2C multiplexer
- *
- * Copyright (C) 2017 Axentia Technologies AB
- *
- * Author: Peter Rosin <peda@axentia.se>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/i2c-mux.h>

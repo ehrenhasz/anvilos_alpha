@@ -1,27 +1,5 @@
-/* $OpenBSD: sshkey-xmss.c,v 1.12 2022/10/28 00:39:29 djm Exp $ */
-/*
- * Copyright (c) 2017 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 #ifdef WITH_XMSS
@@ -49,7 +27,7 @@
 
 #include "xmss_fast.h"
 
-/* opaque internal XMSS state */
+ 
 #define XMSS_MAGIC		"xmss-state-v1"
 #define XMSS_CIPHERNAME		"aes256-gcm@openssh.com"
 struct ssh_xmss_state {
@@ -66,14 +44,14 @@ struct ssh_xmss_state {
 	u_char		*retain;
 	treehash_inst	*treehash;
 
-	u_int32_t	idx;		/* state read from file */
-	u_int32_t	maxidx;		/* restricted # of signatures */
-	int		have_state;	/* .state file exists */
-	int		lockfd;		/* locked in sshkey_xmss_get_state() */
-	u_char		allow_update;	/* allow sshkey_xmss_update_state() */
-	char		*enc_ciphername;/* encrypt state with cipher */
-	u_char		*enc_keyiv;	/* encrypt state with key */
-	u_int32_t	enc_keyiv_len;	/* length of enc_keyiv */
+	u_int32_t	idx;		 
+	u_int32_t	maxidx;		 
+	int		have_state;	 
+	int		lockfd;		 
+	u_char		allow_update;	 
+	char		*enc_ciphername; 
+	u_char		*enc_keyiv;	 
+	u_int32_t	enc_keyiv_len;	 
 };
 
 int	 sshkey_xmss_init_bds_state(struct sshkey *);
@@ -123,7 +101,7 @@ sshkey_xmss_init(struct sshkey *key, const char *name)
 		free(state);
 		return SSH_ERR_ALLOC_FAIL;
 	}
-	state->k = 2;	/* XXX hardcoded */
+	state->k = 2;	 
 	state->lockfd = -1;
 	if (xmss_set_params(&state->params, state->n, state->h, state->w,
 	    state->k) != 0) {
@@ -351,7 +329,7 @@ sshkey_xmss_deserialize_pk_info(struct sshkey *k, struct sshbuf *b)
 
 	if (state == NULL)
 		return SSH_ERR_INVALID_ARGUMENT;
-	/* optional */
+	 
 	if (sshbuf_len(b) == 0)
 		return 0;
 	if ((r = sshbuf_get_u8(b, &have_info)) != 0)
@@ -453,13 +431,9 @@ sshkey_xmss_get_state(const struct sshkey *k, int printerror)
 
 	if (state == NULL)
 		goto done;
-	/*
-	 * If maxidx is set, then we are allowed a limited number
-	 * of signatures, but don't need to access the disk.
-	 * Otherwise we need to deal with the on-disk state.
-	 */
+	 
 	if (state->maxidx) {
-		/* xmss_sk always contains the current state */
+		 
 		idx = PEEK_U32(k->xmss_sk);
 		if (idx < state->maxidx) {
 			state->allow_update = 1;
@@ -493,7 +467,7 @@ sshkey_xmss_get_state(const struct sshkey *k, int printerror)
 		}
 		usleep(1000*100*tries);
 	}
-	/* XXX no longer const */
+	 
 	if ((r = sshkey_xmss_get_state_from_file((struct sshkey *)k,
 	    statefile, &have_state, printerror)) != 0) {
 		if ((r = sshkey_xmss_get_state_from_file((struct sshkey *)k,
@@ -505,7 +479,7 @@ sshkey_xmss_get_state(const struct sshkey *k, int printerror)
 		}
 	}
 	if (!have_state && !have_ostate) {
-		/* check that bds state is initialized */
+		 
 		if (state->bds.auth == NULL)
 			goto done;
 		PRINT("start from scratch idx 0: %u", state->idx);
@@ -579,13 +553,13 @@ sshkey_xmss_update_state(const struct sshkey *k, int printerror)
 	if (state == NULL || !state->allow_update)
 		return ret;
 	if (state->maxidx) {
-		/* no update since the number of signatures is limited */
+		 
 		ret = 0;
 		goto done;
 	}
 	idx = PEEK_U32(k->xmss_sk);
 	if (idx == state->idx) {
-		/* no signature happened, no need to update */
+		 
 		ret = 0;
 		goto done;
 	} else if (idx != state->idx + 1) {
@@ -686,7 +660,7 @@ sshkey_xmss_serialize_state(const struct sshkey *k, struct sshbuf *b)
 		return SSH_ERR_INVALID_ARGUMENT;
 	if (state->stack == NULL)
 		return SSH_ERR_INVALID_ARGUMENT;
-	state->stackoffset = state->bds.stackoffset;	/* copy back */
+	state->stackoffset = state->bds.stackoffset;	 
 	if ((r = sshbuf_put_cstring(b, SSH_XMSS_K2_MAGIC)) != 0 ||
 	    (r = sshbuf_put_u32(b, state->idx)) != 0 ||
 	    (r = sshbuf_put_string(b, state->stack, num_stack(state))) != 0 ||
@@ -733,12 +707,12 @@ sshkey_xmss_serialize_state_opt(const struct sshkey *k, struct sshbuf *b,
 		r = sshkey_xmss_serialize_state(k, b);
 		break;
 	case SSHKEY_SERIALIZE_SHIELD:
-		/* all of stack/filename/enc are optional */
+		 
 		have_stack = state->stack != NULL;
 		if ((r = sshbuf_put_u8(b, have_stack)) != 0)
 			return r;
 		if (have_stack) {
-			state->idx = PEEK_U32(k->xmss_sk);	/* update */
+			state->idx = PEEK_U32(k->xmss_sk);	 
 			if ((r = sshkey_xmss_serialize_state(k, b)) != 0)
 				return r;
 		}
@@ -800,7 +774,7 @@ sshkey_xmss_deserialize_state(struct sshkey *k, struct sshbuf *b)
 		r = SSH_ERR_INVALID_ARGUMENT;
 		goto out;
 	}
-	/* XXX check stackoffset */
+	 
 	if (ls != num_stack(state) ||
 	    lsl != num_stacklevels(state) ||
 	    la != num_auth(state) ||
@@ -826,7 +800,7 @@ sshkey_xmss_deserialize_state(struct sshkey *k, struct sshbuf *b)
 	xmss_set_bds_state(&state->bds, state->stack, state->stackoffset,
 	    state->stacklevels, state->auth, state->keep, state->treehash,
 	    state->retain, 0);
-	/* success */
+	 
 	r = 0;
  out:
 	free(magic);
@@ -924,7 +898,7 @@ sshkey_xmss_encrypt_state(const struct sshkey *k, struct sshbuf *b,
 		goto out;
 	}
 
-	/* replace first 4 bytes of IV with index to ensure uniqueness */
+	 
 	memcpy(iv, key + keylen, ivlen);
 	POKE_U32(iv, state->idx);
 
@@ -932,7 +906,7 @@ sshkey_xmss_encrypt_state(const struct sshkey *k, struct sshbuf *b,
 	    (r = sshbuf_put_u32(encoded, state->idx)) != 0)
 		goto out;
 
-	/* padded state will be encrypted */
+	 
 	if ((r = sshbuf_putb(padded, b)) != 0)
 		goto out;
 	i = 0;
@@ -942,17 +916,17 @@ sshkey_xmss_encrypt_state(const struct sshkey *k, struct sshbuf *b,
 	}
 	encrypted_len = sshbuf_len(padded);
 
-	/* header including the length of state is used as AAD */
+	 
 	if ((r = sshbuf_put_u32(encoded, encrypted_len)) != 0)
 		goto out;
 	aadlen = sshbuf_len(encoded);
 
-	/* concat header and state */
+	 
 	if ((r = sshbuf_putb(encoded, padded)) != 0)
 		goto out;
 
-	/* reserve space for encryption of encoded data plus auth tag */
-	/* encrypt at offset addlen */
+	 
+	 
 	if ((r = sshbuf_reserve(encrypted,
 	    encrypted_len + aadlen + authlen, &cp)) != 0 ||
 	    (r = cipher_init(&ciphercontext, cipher, key, keylen,
@@ -961,7 +935,7 @@ sshkey_xmss_encrypt_state(const struct sshkey *k, struct sshbuf *b,
 	    encrypted_len, aadlen, authlen)) != 0)
 		goto out;
 
-	/* success */
+	 
 	r = 0;
  out:
 	if (retp != NULL) {
@@ -1016,24 +990,24 @@ sshkey_xmss_decrypt_state(const struct sshkey *k, struct sshbuf *encoded,
 		goto out;
 	}
 
-	/* check magic */
+	 
 	if (sshbuf_len(encoded) < sizeof(XMSS_MAGIC) ||
 	    memcmp(sshbuf_ptr(encoded), XMSS_MAGIC, sizeof(XMSS_MAGIC))) {
 		r = SSH_ERR_INVALID_FORMAT;
 		goto out;
 	}
-	/* parse public portion */
+	 
 	if ((r = sshbuf_consume(encoded, sizeof(XMSS_MAGIC))) != 0 ||
 	    (r = sshbuf_get_u32(encoded, &index)) != 0 ||
 	    (r = sshbuf_get_u32(encoded, &encrypted_len)) != 0)
 		goto out;
 
-	/* check size of encrypted key blob */
+	 
 	if (encrypted_len < blocksize || (encrypted_len % blocksize) != 0) {
 		r = SSH_ERR_INVALID_FORMAT;
 		goto out;
 	}
-	/* check that an appropriate amount of auth data is present */
+	 
 	if (sshbuf_len(encoded) < authlen ||
 	    sshbuf_len(encoded) - authlen < encrypted_len) {
 		r = SSH_ERR_INVALID_FORMAT;
@@ -1042,11 +1016,11 @@ sshkey_xmss_decrypt_state(const struct sshkey *k, struct sshbuf *encoded,
 
 	aadlen = sshbuf_len(copy) - sshbuf_len(encoded);
 
-	/* replace first 4 bytes of IV with index to ensure uniqueness */
+	 
 	memcpy(iv, key + keylen, ivlen);
 	POKE_U32(iv, index);
 
-	/* decrypt private state of key */
+	 
 	if ((r = sshbuf_reserve(decrypted, aadlen + encrypted_len, &dp)) != 0 ||
 	    (r = cipher_init(&ciphercontext, cipher, key, keylen,
 	    iv, ivlen, 0)) != 0 ||
@@ -1054,7 +1028,7 @@ sshkey_xmss_decrypt_state(const struct sshkey *k, struct sshbuf *encoded,
 	    encrypted_len, aadlen, authlen)) != 0)
 		goto out;
 
-	/* there should be no trailing data */
+	 
 	if ((r = sshbuf_consume(encoded, encrypted_len + authlen)) != 0)
 		goto out;
 	if (sshbuf_len(encoded) != 0) {
@@ -1062,12 +1036,12 @@ sshkey_xmss_decrypt_state(const struct sshkey *k, struct sshbuf *encoded,
 		goto out;
 	}
 
-	/* remove AAD */
+	 
 	if ((r = sshbuf_consume(decrypted, aadlen)) != 0)
 		goto out;
-	/* XXX encrypted includes unchecked padding */
+	 
 
-	/* success */
+	 
 	r = 0;
 	if (retp != NULL) {
 		*retp = decrypted;
@@ -1110,4 +1084,4 @@ sshkey_xmss_enable_maxsign(struct sshkey *k, u_int32_t maxsign)
 	state->maxidx = state->idx + maxsign;
 	return 0;
 }
-#endif /* WITH_XMSS */
+#endif  

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * STM32 Low-Power Timer Encoder and Counter driver
- *
- * Copyright (C) STMicroelectronics 2017
- *
- * Author: Fabrice Gasnier <fabrice.gasnier@st.com>
- *
- * Inspired by 104-quad-8 and stm32-timer-trigger drivers.
- *
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/counter.h>
@@ -58,7 +49,7 @@ static int stm32_lptim_set_enable_state(struct stm32_lptim_cnt *priv,
 		return 0;
 	}
 
-	/* LP timer must be enabled before writing CMP & ARR */
+	 
 	ret = regmap_write(priv->regmap, STM32_LPTIM_ARR, priv->ceiling);
 	if (ret)
 		return ret;
@@ -67,7 +58,7 @@ static int stm32_lptim_set_enable_state(struct stm32_lptim_cnt *priv,
 	if (ret)
 		return ret;
 
-	/* ensure CMP & ARR registers are properly written */
+	 
 	ret = regmap_read_poll_timeout(priv->regmap, STM32_LPTIM_ISR, val,
 				       (val & STM32_LPTIM_CMPOK_ARROK) == STM32_LPTIM_CMPOK_ARROK,
 				       100, 1000);
@@ -86,7 +77,7 @@ static int stm32_lptim_set_enable_state(struct stm32_lptim_cnt *priv,
 	}
 	priv->enabled = true;
 
-	/* Start LP timer in continuous mode */
+	 
 	return regmap_update_bits(priv->regmap, STM32_LPTIM_CR,
 				  STM32_LPTIM_CNTSTRT, STM32_LPTIM_CNTSTRT);
 }
@@ -97,7 +88,7 @@ static int stm32_lptim_setup(struct stm32_lptim_cnt *priv, int enable)
 		   STM32_LPTIM_CKPOL | STM32_LPTIM_PRESC;
 	u32 val;
 
-	/* Setup LP timer encoder/counter and polarity, without prescaler */
+	 
 	if (priv->quadrature_mode)
 		val = enable ? STM32_LPTIM_ENC : 0;
 	else
@@ -107,24 +98,7 @@ static int stm32_lptim_setup(struct stm32_lptim_cnt *priv, int enable)
 	return regmap_update_bits(priv->regmap, STM32_LPTIM_CFGR, mask, val);
 }
 
-/*
- * In non-quadrature mode, device counts up on active edge.
- * In quadrature mode, encoder counting scenarios are as follows:
- * +---------+----------+--------------------+--------------------+
- * | Active  | Level on |      IN1 signal    |     IN2 signal     |
- * | edge    | opposite +----------+---------+----------+---------+
- * |         | signal   |  Rising  | Falling |  Rising  | Falling |
- * +---------+----------+----------+---------+----------+---------+
- * | Rising  | High ->  |   Down   |    -    |   Up     |    -    |
- * | edge    | Low  ->  |   Up     |    -    |   Down   |    -    |
- * +---------+----------+----------+---------+----------+---------+
- * | Falling | High ->  |    -     |   Up    |    -     |   Down  |
- * | edge    | Low  ->  |    -     |   Down  |    -     |   Up    |
- * +---------+----------+----------+---------+----------+---------+
- * | Both    | High ->  |   Down   |   Up    |   Up     |   Down  |
- * | edges   | Low  ->  |   Up     |   Down  |   Down   |   Up    |
- * +---------+----------+----------+---------+----------+---------+
- */
+ 
 static const enum counter_function stm32_lptim_cnt_functions[] = {
 	COUNTER_FUNCTION_INCREASE,
 	COUNTER_FUNCTION_QUADRATURE_X4,
@@ -190,7 +164,7 @@ static int stm32_lptim_cnt_function_write(struct counter_device *counter,
 		priv->polarity = STM32_LPTIM_CKPOL_BOTH_EDGES;
 		return 0;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -218,7 +192,7 @@ static int stm32_lptim_cnt_enable_write(struct counter_device *counter,
 	struct stm32_lptim_cnt *const priv = counter_priv(counter);
 	int ret;
 
-	/* Check nobody uses the timer, or already disabled/enabled */
+	 
 	ret = stm32_lptim_is_enabled(priv);
 	if ((ret < 0) || (!ret && !enable))
 		return ret;
@@ -286,7 +260,7 @@ static int stm32_lptim_cnt_action_read(struct counter_device *counter,
 
 	switch (function) {
 	case COUNTER_FUNCTION_INCREASE:
-		/* LP Timer acts as up-counter on input 1 */
+		 
 		if (synapse->signal->id != count->synapses[0].signal->id) {
 			*action = COUNTER_SYNAPSE_ACTION_NONE;
 			return 0;
@@ -303,14 +277,14 @@ static int stm32_lptim_cnt_action_read(struct counter_device *counter,
 			*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 			return 0;
 		default:
-			/* should never reach this path */
+			 
 			return -EINVAL;
 		}
 	case COUNTER_FUNCTION_QUADRATURE_X4:
 		*action = COUNTER_SYNAPSE_ACTION_BOTH_EDGES;
 		return 0;
 	default:
-		/* should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
@@ -331,7 +305,7 @@ static int stm32_lptim_cnt_action_write(struct counter_device *counter,
 	if (err)
 		return err;
 
-	/* only set polarity when in counter mode (on input 1) */
+	 
 	if (function != COUNTER_FUNCTION_INCREASE
 	    || synapse->signal->id != count->synapses[0].signal->id)
 		return -EINVAL;
@@ -383,7 +357,7 @@ static struct counter_synapse stm32_lptim_cnt_synapses[] = {
 	}
 };
 
-/* LP timer with encoder */
+ 
 static struct counter_count stm32_lptim_enc_counts = {
 	.id = 0,
 	.name = "LPTimer Count",
@@ -395,7 +369,7 @@ static struct counter_count stm32_lptim_enc_counts = {
 	.num_ext = ARRAY_SIZE(stm32_lptim_cnt_ext)
 };
 
-/* LP timer without encoder (counter only) */
+ 
 static struct counter_count stm32_lptim_in1_counts = {
 	.id = 0,
 	.name = "LPTimer Count",
@@ -427,7 +401,7 @@ static int stm32_lptim_cnt_probe(struct platform_device *pdev)
 	priv->clk = ddata->clk;
 	priv->ceiling = STM32_LPTIM_MAX_ARR;
 
-	/* Initialize Counter device */
+	 
 	counter->name = dev_name(&pdev->dev);
 	counter->parent = &pdev->dev;
 	counter->ops = &stm32_lptim_cnt_ops;
@@ -456,7 +430,7 @@ static int stm32_lptim_cnt_suspend(struct device *dev)
 	struct stm32_lptim_cnt *priv = dev_get_drvdata(dev);
 	int ret;
 
-	/* Only take care of enabled counter: don't disturb other MFD child */
+	 
 	if (priv->enabled) {
 		ret = stm32_lptim_setup(priv, 0);
 		if (ret)
@@ -466,7 +440,7 @@ static int stm32_lptim_cnt_suspend(struct device *dev)
 		if (ret)
 			return ret;
 
-		/* Force enable state for later resume */
+		 
 		priv->enabled = true;
 	}
 

@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NetLabel Unlabeled Support
- *
- * This file defines functions for dealing with unlabeled packets for the
- * NetLabel system.  The NetLabel system manages static and dynamic label
- * mappings for network protocols such as CIPSO and RIPSO.
- *
- * Author: Paul Moore <paul@paul-moore.com>
- */
 
-/*
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2006 - 2008
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/rcupdate.h>
@@ -45,20 +35,9 @@
 #include "netlabel_unlabeled.h"
 #include "netlabel_mgmt.h"
 
-/* NOTE: at present we always use init's network namespace since we don't
- *       presently support different namespaces even though the majority of
- *       the functions in this file are "namespace safe" */
+ 
 
-/* The unlabeled connection hash table which we use to map network interfaces
- * and addresses of unlabeled packets to a user specified secid value for the
- * LSM.  The hash table is used to lookup the network interface entry
- * (struct netlbl_unlhsh_iface) and then the interface entry is used to
- * lookup an IP address match from an ordered list.  If a network interface
- * match can not be found in the hash table then the default entry
- * (netlbl_unlhsh_def) is used.  The IP address entry list
- * (struct netlbl_unlhsh_addr) is ordered such that the entries with a
- * larger netmask come first.
- */
+ 
 struct netlbl_unlhsh_tbl {
 	struct list_head *tbl;
 	u32 size;
@@ -89,29 +68,28 @@ struct netlbl_unlhsh_iface {
 	struct rcu_head rcu;
 };
 
-/* Argument struct for netlbl_unlhsh_walk() */
+ 
 struct netlbl_unlhsh_walk_arg {
 	struct netlink_callback *nl_cb;
 	struct sk_buff *skb;
 	u32 seq;
 };
 
-/* Unlabeled connection hash table */
-/* updates should be so rare that having one spinlock for the entire
- * hash table should be okay */
+ 
+ 
 static DEFINE_SPINLOCK(netlbl_unlhsh_lock);
 #define netlbl_unlhsh_rcu_deref(p) \
 	rcu_dereference_check(p, lockdep_is_held(&netlbl_unlhsh_lock))
 static struct netlbl_unlhsh_tbl __rcu *netlbl_unlhsh;
 static struct netlbl_unlhsh_iface __rcu *netlbl_unlhsh_def;
 
-/* Accept unlabeled packets flag */
+ 
 static u8 netlabel_unlabel_acceptflg;
 
-/* NetLabel Generic NETLINK unlabeled family */
+ 
 static struct genl_family netlbl_unlabel_gnl_family;
 
-/* NetLabel Netlink attribute policy */
+ 
 static const struct nla_policy netlbl_unlabel_genl_policy[NLBL_UNLABEL_A_MAX + 1] = {
 	[NLBL_UNLABEL_A_ACPTFLG] = { .type = NLA_U8 },
 	[NLBL_UNLABEL_A_IPV6ADDR] = { .type = NLA_BINARY,
@@ -127,23 +105,9 @@ static const struct nla_policy netlbl_unlabel_genl_policy[NLBL_UNLABEL_A_MAX + 1
 	[NLBL_UNLABEL_A_SECCTX] = { .type = NLA_BINARY }
 };
 
-/*
- * Unlabeled Connection Hash Table Functions
- */
+ 
 
-/**
- * netlbl_unlhsh_free_iface - Frees an interface entry from the hash table
- * @entry: the entry's RCU field
- *
- * Description:
- * This function is designed to be used as a callback to the call_rcu()
- * function so that memory allocated to a hash table interface entry can be
- * released safely.  It is important to note that this function does not free
- * the IPv4 and IPv6 address lists contained as part of an interface entry.  It
- * is up to the rest of the code to make sure an interface entry is only freed
- * once it's address lists are empty.
- *
- */
+ 
 static void netlbl_unlhsh_free_iface(struct rcu_head *entry)
 {
 	struct netlbl_unlhsh_iface *iface;
@@ -152,12 +116,11 @@ static void netlbl_unlhsh_free_iface(struct rcu_head *entry)
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netlbl_af6list *iter6;
 	struct netlbl_af6list *tmp6;
-#endif /* IPv6 */
+#endif  
 
 	iface = container_of(entry, struct netlbl_unlhsh_iface, rcu);
 
-	/* no need for locks here since we are the only one with access to this
-	 * structure */
+	 
 
 	netlbl_af4list_foreach_safe(iter4, tmp4, &iface->addr4_list) {
 		netlbl_af4list_remove_entry(iter4);
@@ -168,37 +131,17 @@ static void netlbl_unlhsh_free_iface(struct rcu_head *entry)
 		netlbl_af6list_remove_entry(iter6);
 		kfree(netlbl_unlhsh_addr6_entry(iter6));
 	}
-#endif /* IPv6 */
+#endif  
 	kfree(iface);
 }
 
-/**
- * netlbl_unlhsh_hash - Hashing function for the hash table
- * @ifindex: the network interface/device to hash
- *
- * Description:
- * This is the hashing function for the unlabeled hash table, it returns the
- * bucket number for the given device/interface.  The caller is responsible for
- * ensuring that the hash table is protected with either a RCU read lock or
- * the hash table lock.
- *
- */
+ 
 static u32 netlbl_unlhsh_hash(int ifindex)
 {
 	return ifindex & (netlbl_unlhsh_rcu_deref(netlbl_unlhsh)->size - 1);
 }
 
-/**
- * netlbl_unlhsh_search_iface - Search for a matching interface entry
- * @ifindex: the network interface
- *
- * Description:
- * Searches the unlabeled connection hash table and returns a pointer to the
- * interface entry which matches @ifindex, otherwise NULL is returned.  The
- * caller is responsible for ensuring that the hash table is protected with
- * either a RCU read lock or the hash table lock.
- *
- */
+ 
 static struct netlbl_unlhsh_iface *netlbl_unlhsh_search_iface(int ifindex)
 {
 	u32 bkt;
@@ -215,19 +158,7 @@ static struct netlbl_unlhsh_iface *netlbl_unlhsh_search_iface(int ifindex)
 	return NULL;
 }
 
-/**
- * netlbl_unlhsh_add_addr4 - Add a new IPv4 address entry to the hash table
- * @iface: the associated interface entry
- * @addr: IPv4 address in network byte order
- * @mask: IPv4 address mask in network byte order
- * @secid: LSM secid value for entry
- *
- * Description:
- * Add a new address entry into the unlabeled connection hash table using the
- * interface entry specified by @iface.  On success zero is returned, otherwise
- * a negative value is returned.
- *
- */
+ 
 static int netlbl_unlhsh_add_addr4(struct netlbl_unlhsh_iface *iface,
 				   const struct in_addr *addr,
 				   const struct in_addr *mask,
@@ -255,19 +186,7 @@ static int netlbl_unlhsh_add_addr4(struct netlbl_unlhsh_iface *iface,
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/**
- * netlbl_unlhsh_add_addr6 - Add a new IPv6 address entry to the hash table
- * @iface: the associated interface entry
- * @addr: IPv6 address in network byte order
- * @mask: IPv6 address mask in network byte order
- * @secid: LSM secid value for entry
- *
- * Description:
- * Add a new address entry into the unlabeled connection hash table using the
- * interface entry specified by @iface.  On success zero is returned, otherwise
- * a negative value is returned.
- *
- */
+ 
 static int netlbl_unlhsh_add_addr6(struct netlbl_unlhsh_iface *iface,
 				   const struct in6_addr *addr,
 				   const struct in6_addr *mask,
@@ -297,18 +216,9 @@ static int netlbl_unlhsh_add_addr6(struct netlbl_unlhsh_iface *iface,
 		kfree(entry);
 	return 0;
 }
-#endif /* IPv6 */
+#endif  
 
-/**
- * netlbl_unlhsh_add_iface - Adds a new interface entry to the hash table
- * @ifindex: network interface
- *
- * Description:
- * Add a new, empty, interface entry into the unlabeled connection hash table.
- * On success a pointer to the new interface entry is returned, on failure NULL
- * is returned.
- *
- */
+ 
 static struct netlbl_unlhsh_iface *netlbl_unlhsh_add_iface(int ifindex)
 {
 	u32 bkt;
@@ -346,21 +256,7 @@ add_iface_failure:
 	return NULL;
 }
 
-/**
- * netlbl_unlhsh_add - Adds a new entry to the unlabeled connection hash table
- * @net: network namespace
- * @dev_name: interface name
- * @addr: IP address in network byte order
- * @mask: address mask in network byte order
- * @addr_len: length of address/mask (4 for IPv4, 16 for IPv6)
- * @secid: LSM secid value for the entry
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Adds a new entry to the unlabeled connection hash table.  Returns zero on
- * success, negative values on failure.
- *
- */
+ 
 int netlbl_unlhsh_add(struct net *net,
 		      const char *dev_name,
 		      const void *addr,
@@ -428,7 +324,7 @@ int netlbl_unlhsh_add(struct net *net,
 						  addr6, mask6);
 		break;
 	}
-#endif /* IPv6 */
+#endif  
 	default:
 		ret_val = -EINVAL;
 	}
@@ -450,19 +346,7 @@ unlhsh_add_return:
 	return ret_val;
 }
 
-/**
- * netlbl_unlhsh_remove_addr4 - Remove an IPv4 address entry
- * @net: network namespace
- * @iface: interface entry
- * @addr: IP address
- * @mask: IP address mask
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Remove an IP address entry from the unlabeled connection hash table.
- * Returns zero on success, negative values on failure.
- *
- */
+ 
 static int netlbl_unlhsh_remove_addr4(struct net *net,
 				      struct netlbl_unlhsh_iface *iface,
 				      const struct in_addr *addr,
@@ -511,19 +395,7 @@ static int netlbl_unlhsh_remove_addr4(struct net *net,
 }
 
 #if IS_ENABLED(CONFIG_IPV6)
-/**
- * netlbl_unlhsh_remove_addr6 - Remove an IPv6 address entry
- * @net: network namespace
- * @iface: interface entry
- * @addr: IP address
- * @mask: IP address mask
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Remove an IP address entry from the unlabeled connection hash table.
- * Returns zero on success, negative values on failure.
- *
- */
+ 
 static int netlbl_unlhsh_remove_addr6(struct net *net,
 				      struct netlbl_unlhsh_iface *iface,
 				      const struct in6_addr *addr,
@@ -569,24 +441,15 @@ static int netlbl_unlhsh_remove_addr6(struct net *net,
 	kfree_rcu(entry, rcu);
 	return 0;
 }
-#endif /* IPv6 */
+#endif  
 
-/**
- * netlbl_unlhsh_condremove_iface - Remove an interface entry
- * @iface: the interface entry
- *
- * Description:
- * Remove an interface entry from the unlabeled connection hash table if it is
- * empty.  An interface entry is considered to be empty if there are no
- * address entries assigned to it.
- *
- */
+ 
 static void netlbl_unlhsh_condremove_iface(struct netlbl_unlhsh_iface *iface)
 {
 	struct netlbl_af4list *iter4;
 #if IS_ENABLED(CONFIG_IPV6)
 	struct netlbl_af6list *iter6;
-#endif /* IPv6 */
+#endif  
 
 	spin_lock(&netlbl_unlhsh_lock);
 	netlbl_af4list_foreach_rcu(iter4, &iface->addr4_list)
@@ -594,7 +457,7 @@ static void netlbl_unlhsh_condremove_iface(struct netlbl_unlhsh_iface *iface)
 #if IS_ENABLED(CONFIG_IPV6)
 	netlbl_af6list_foreach_rcu(iter6, &iface->addr6_list)
 		goto unlhsh_condremove_failure;
-#endif /* IPv6 */
+#endif  
 	iface->valid = 0;
 	if (iface->ifindex > 0)
 		list_del_rcu(&iface->list);
@@ -609,20 +472,7 @@ unlhsh_condremove_failure:
 	spin_unlock(&netlbl_unlhsh_lock);
 }
 
-/**
- * netlbl_unlhsh_remove - Remove an entry from the unlabeled hash table
- * @net: network namespace
- * @dev_name: interface name
- * @addr: IP address in network byte order
- * @mask: address mask in network byte order
- * @addr_len: length of address/mask (4 for IPv4, 16 for IPv6)
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Removes and existing entry from the unlabeled connection hash table.
- * Returns zero on success, negative values on failure.
- *
- */
+ 
 int netlbl_unlhsh_remove(struct net *net,
 			 const char *dev_name,
 			 const void *addr,
@@ -664,7 +514,7 @@ int netlbl_unlhsh_remove(struct net *net,
 						     iface, addr, mask,
 						     audit_info);
 		break;
-#endif /* IPv6 */
+#endif  
 	default:
 		ret_val = -EINVAL;
 	}
@@ -678,22 +528,9 @@ unlhsh_remove_return:
 	return ret_val;
 }
 
-/*
- * General Helper Functions
- */
+ 
 
-/**
- * netlbl_unlhsh_netdev_handler - Network device notification handler
- * @this: notifier block
- * @event: the event
- * @ptr: the netdevice notifier info (cast to void)
- *
- * Description:
- * Handle network device events, although at present all we care about is a
- * network device going away.  In the case of a device going away we clear any
- * related entries from the unlabeled connection hash table.
- *
- */
+ 
 static int netlbl_unlhsh_netdev_handler(struct notifier_block *this,
 					unsigned long event, void *ptr)
 {
@@ -703,7 +540,7 @@ static int netlbl_unlhsh_netdev_handler(struct notifier_block *this,
 	if (!net_eq(dev_net(dev), &init_net))
 		return NOTIFY_DONE;
 
-	/* XXX - should this be a check for NETDEV_DOWN or _UNREGISTER? */
+	 
 	if (event == NETDEV_DOWN) {
 		spin_lock(&netlbl_unlhsh_lock);
 		iface = netlbl_unlhsh_search_iface(dev->ifindex);
@@ -721,15 +558,7 @@ static int netlbl_unlhsh_netdev_handler(struct notifier_block *this,
 	return NOTIFY_DONE;
 }
 
-/**
- * netlbl_unlabel_acceptflg_set - Set the unlabeled accept flag
- * @value: desired value
- * @audit_info: NetLabel audit information
- *
- * Description:
- * Set the value of the unlabeled accept flag to @value.
- *
- */
+ 
 static void netlbl_unlabel_acceptflg_set(u8 value,
 					 struct netlbl_audit *audit_info)
 {
@@ -747,18 +576,7 @@ static void netlbl_unlabel_acceptflg_set(u8 value,
 	}
 }
 
-/**
- * netlbl_unlabel_addrinfo_get - Get the IPv4/6 address information
- * @info: the Generic NETLINK info block
- * @addr: the IP address
- * @mask: the IP address mask
- * @len: the address length
- *
- * Description:
- * Examine the Generic NETLINK message and extract the IP address information.
- * Returns zero on success, negative values on failure.
- *
- */
+ 
 static int netlbl_unlabel_addrinfo_get(struct genl_info *info,
 				       void **addr,
 				       void **mask,
@@ -790,20 +608,9 @@ static int netlbl_unlabel_addrinfo_get(struct genl_info *info,
 	return -EINVAL;
 }
 
-/*
- * NetLabel Command Handlers
- */
+ 
 
-/**
- * netlbl_unlabel_accept - Handle an ACCEPT message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Process a user generated ACCEPT message and set the accept flag accordingly.
- * Returns zero on success, negative values on failure.
- *
- */
+ 
 static int netlbl_unlabel_accept(struct sk_buff *skb, struct genl_info *info)
 {
 	u8 value;
@@ -821,16 +628,7 @@ static int netlbl_unlabel_accept(struct sk_buff *skb, struct genl_info *info)
 	return -EINVAL;
 }
 
-/**
- * netlbl_unlabel_list - Handle a LIST message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Process a user generated LIST message and respond with the current status.
- * Returns zero on success, negative values on failure.
- *
- */
+ 
 static int netlbl_unlabel_list(struct sk_buff *skb, struct genl_info *info)
 {
 	int ret_val = -EINVAL;
@@ -861,17 +659,7 @@ list_failure:
 	return ret_val;
 }
 
-/**
- * netlbl_unlabel_staticadd - Handle a STATICADD message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Process a user generated STATICADD message and add a new unlabeled
- * connection entry to the hash table.  Returns zero on success, negative
- * values on failure.
- *
- */
+ 
 static int netlbl_unlabel_staticadd(struct sk_buff *skb,
 				    struct genl_info *info)
 {
@@ -883,10 +671,7 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
 	u32 secid;
 	struct netlbl_audit audit_info;
 
-	/* Don't allow users to add both IPv4 and IPv6 addresses for a
-	 * single entry.  However, allow users to create two entries, one each
-	 * for IPv4 and IPv6, with the same LSM security context which should
-	 * achieve the same result. */
+	 
 	if (!info->attrs[NLBL_UNLABEL_A_SECCTX] ||
 	    !info->attrs[NLBL_UNLABEL_A_IFACE] ||
 	    !((!info->attrs[NLBL_UNLABEL_A_IPV4ADDR] ||
@@ -913,17 +698,7 @@ static int netlbl_unlabel_staticadd(struct sk_buff *skb,
 				 &audit_info);
 }
 
-/**
- * netlbl_unlabel_staticadddef - Handle a STATICADDDEF message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Process a user generated STATICADDDEF message and add a new default
- * unlabeled connection entry.  Returns zero on success, negative values on
- * failure.
- *
- */
+ 
 static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
 				       struct genl_info *info)
 {
@@ -934,10 +709,7 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
 	u32 secid;
 	struct netlbl_audit audit_info;
 
-	/* Don't allow users to add both IPv4 and IPv6 addresses for a
-	 * single entry.  However, allow users to create two entries, one each
-	 * for IPv4 and IPv6, with the same LSM security context which should
-	 * achieve the same result. */
+	 
 	if (!info->attrs[NLBL_UNLABEL_A_SECCTX] ||
 	    !((!info->attrs[NLBL_UNLABEL_A_IPV4ADDR] ||
 	       !info->attrs[NLBL_UNLABEL_A_IPV4MASK]) ^
@@ -962,17 +734,7 @@ static int netlbl_unlabel_staticadddef(struct sk_buff *skb,
 				 &audit_info);
 }
 
-/**
- * netlbl_unlabel_staticremove - Handle a STATICREMOVE message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Process a user generated STATICREMOVE message and remove the specified
- * unlabeled connection entry.  Returns zero on success, negative values on
- * failure.
- *
- */
+ 
 static int netlbl_unlabel_staticremove(struct sk_buff *skb,
 				       struct genl_info *info)
 {
@@ -983,8 +745,7 @@ static int netlbl_unlabel_staticremove(struct sk_buff *skb,
 	u32 addr_len;
 	struct netlbl_audit audit_info;
 
-	/* See the note in netlbl_unlabel_staticadd() about not allowing both
-	 * IPv4 and IPv6 in the same entry. */
+	 
 	if (!info->attrs[NLBL_UNLABEL_A_IFACE] ||
 	    !((!info->attrs[NLBL_UNLABEL_A_IPV4ADDR] ||
 	       !info->attrs[NLBL_UNLABEL_A_IPV4MASK]) ^
@@ -1004,17 +765,7 @@ static int netlbl_unlabel_staticremove(struct sk_buff *skb,
 				    &audit_info);
 }
 
-/**
- * netlbl_unlabel_staticremovedef - Handle a STATICREMOVEDEF message
- * @skb: the NETLINK buffer
- * @info: the Generic NETLINK info block
- *
- * Description:
- * Process a user generated STATICREMOVEDEF message and remove the default
- * unlabeled connection entry.  Returns zero on success, negative values on
- * failure.
- *
- */
+ 
 static int netlbl_unlabel_staticremovedef(struct sk_buff *skb,
 					  struct genl_info *info)
 {
@@ -1024,8 +775,7 @@ static int netlbl_unlabel_staticremovedef(struct sk_buff *skb,
 	u32 addr_len;
 	struct netlbl_audit audit_info;
 
-	/* See the note in netlbl_unlabel_staticadd() about not allowing both
-	 * IPv4 and IPv6 in the same entry. */
+	 
 	if (!((!info->attrs[NLBL_UNLABEL_A_IPV4ADDR] ||
 	       !info->attrs[NLBL_UNLABEL_A_IPV4MASK]) ^
 	      (!info->attrs[NLBL_UNLABEL_A_IPV6ADDR] ||
@@ -1044,22 +794,7 @@ static int netlbl_unlabel_staticremovedef(struct sk_buff *skb,
 }
 
 
-/**
- * netlbl_unlabel_staticlist_gen - Generate messages for STATICLIST[DEF]
- * @cmd: command/message
- * @iface: the interface entry
- * @addr4: the IPv4 address entry
- * @addr6: the IPv6 address entry
- * @arg: the netlbl_unlhsh_walk_arg structure
- *
- * Description:
- * This function is designed to be used to generate a response for a
- * STATICLIST or STATICLISTDEF message.  When called either @addr4 or @addr6
- * can be specified, not both, the other unspecified entry should be set to
- * NULL by the caller.  Returns the size of the message on success, negative
- * values on failure.
- *
- */
+ 
 static int netlbl_unlabel_staticlist_gen(u32 cmd,
 				       const struct netlbl_unlhsh_iface *iface,
 				       const struct netlbl_unlhsh_addr4 *addr4,
@@ -1147,17 +882,7 @@ list_cb_failure:
 	return ret_val;
 }
 
-/**
- * netlbl_unlabel_staticlist - Handle a STATICLIST message
- * @skb: the NETLINK buffer
- * @cb: the NETLINK callback
- *
- * Description:
- * Process a user generated STATICLIST message and dump the unlabeled
- * connection hash table in a form suitable for use in a kernel generated
- * STATICLIST message.  Returns the length of @skb.
- *
- */
+ 
 static int netlbl_unlabel_staticlist(struct sk_buff *skb,
 				     struct netlink_callback *cb)
 {
@@ -1222,7 +947,7 @@ static int netlbl_unlabel_staticlist(struct sk_buff *skb,
 			}
 			iter_addr6 = 0;
 			skip_addr6 = 0;
-#endif /* IPv6 */
+#endif  
 		}
 		iter_chain = 0;
 		skip_chain = 0;
@@ -1237,17 +962,7 @@ unlabel_staticlist_return:
 	return skb->len;
 }
 
-/**
- * netlbl_unlabel_staticlistdef - Handle a STATICLISTDEF message
- * @skb: the NETLINK buffer
- * @cb: the NETLINK callback
- *
- * Description:
- * Process a user generated STATICLISTDEF message and dump the default
- * unlabeled connection entry in a form suitable for use in a kernel generated
- * STATICLISTDEF message.  Returns the length of @skb.
- *
- */
+ 
 static int netlbl_unlabel_staticlistdef(struct sk_buff *skb,
 					struct netlink_callback *cb)
 {
@@ -1293,7 +1008,7 @@ static int netlbl_unlabel_staticlistdef(struct sk_buff *skb,
 			goto unlabel_staticlistdef_return;
 		}
 	}
-#endif /* IPv6 */
+#endif  
 
 unlabel_staticlistdef_return:
 	rcu_read_unlock();
@@ -1302,9 +1017,7 @@ unlabel_staticlistdef_return:
 	return skb->len;
 }
 
-/*
- * NetLabel Generic NETLINK Command Definitions
- */
+ 
 
 static const struct genl_small_ops netlbl_unlabel_genl_ops[] = {
 	{
@@ -1377,42 +1090,21 @@ static struct genl_family netlbl_unlabel_gnl_family __ro_after_init = {
 	.resv_start_op = NLBL_UNLABEL_C_STATICLISTDEF + 1,
 };
 
-/*
- * NetLabel Generic NETLINK Protocol Functions
- */
+ 
 
-/**
- * netlbl_unlabel_genl_init - Register the Unlabeled NetLabel component
- *
- * Description:
- * Register the unlabeled packet NetLabel component with the Generic NETLINK
- * mechanism.  Returns zero on success, negative values on failure.
- *
- */
+ 
 int __init netlbl_unlabel_genl_init(void)
 {
 	return genl_register_family(&netlbl_unlabel_gnl_family);
 }
 
-/*
- * NetLabel KAPI Hooks
- */
+ 
 
 static struct notifier_block netlbl_unlhsh_netdev_notifier = {
 	.notifier_call = netlbl_unlhsh_netdev_handler,
 };
 
-/**
- * netlbl_unlabel_init - Initialize the unlabeled connection hash table
- * @size: the number of bits to use for the hash buckets
- *
- * Description:
- * Initializes the unlabeled connection hash table and registers a network
- * device notification handler.  This function should only be called by the
- * NetLabel subsystem itself during initialization.  Returns zero on success,
- * non-zero values on error.
- *
- */
+ 
 int __init netlbl_unlabel_init(u32 size)
 {
 	u32 iter;
@@ -1444,17 +1136,7 @@ int __init netlbl_unlabel_init(u32 size)
 	return 0;
 }
 
-/**
- * netlbl_unlabel_getattr - Get the security attributes for an unlabled packet
- * @skb: the packet
- * @family: protocol family
- * @secattr: the security attributes
- *
- * Description:
- * Determine the security attributes, if any, for an unlabled packet and return
- * them in @secattr.  Returns zero on success and negative values on failure.
- *
- */
+ 
 int netlbl_unlabel_getattr(const struct sk_buff *skb,
 			   u16 family,
 			   struct netlbl_lsm_secattr *secattr)
@@ -1469,13 +1151,10 @@ int netlbl_unlabel_getattr(const struct sk_buff *skb,
 		goto unlabel_getattr_nolabel;
 
 #if IS_ENABLED(CONFIG_IPV6)
-	/* When resolving a fallback label, check the sk_buff version as
-	 * it is possible (e.g. SCTP) to have family = PF_INET6 while
-	 * receiving ip_hdr(skb)->version = 4.
-	 */
+	 
 	if (family == PF_INET6 && ip_hdr(skb)->version == 4)
 		family = PF_INET;
-#endif /* IPv6 */
+#endif  
 
 	switch (family) {
 	case PF_INET: {
@@ -1503,7 +1182,7 @@ int netlbl_unlabel_getattr(const struct sk_buff *skb,
 		secattr->attr.secid = netlbl_unlhsh_addr6_entry(addr6)->secid;
 		break;
 	}
-#endif /* IPv6 */
+#endif  
 	default:
 		goto unlabel_getattr_nolabel;
 	}
@@ -1521,23 +1200,14 @@ unlabel_getattr_nolabel:
 	return 0;
 }
 
-/**
- * netlbl_unlabel_defconf - Set the default config to allow unlabeled packets
- *
- * Description:
- * Set the default NetLabel configuration to allow incoming unlabeled packets
- * and to send unlabeled network traffic by default.
- *
- */
+ 
 int __init netlbl_unlabel_defconf(void)
 {
 	int ret_val;
 	struct netlbl_dom_map *entry;
 	struct netlbl_audit audit_info;
 
-	/* Only the kernel is allowed to call this function and the only time
-	 * it is called is at bootup before the audit subsystem is reporting
-	 * messages so don't worry to much about these values. */
+	 
 	security_current_getsecid_subj(&audit_info.secid);
 	audit_info.loginuid = GLOBAL_ROOT_UID;
 	audit_info.sessionid = 0;

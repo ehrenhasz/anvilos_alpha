@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max8998_charger.c - Power supply consumer driver for the Maxim 8998/LP3974
-//
-//  Copyright (C) 2009-2010 Samsung Electronics
-//  MyungJoo Ham <myungjoo.ham@samsung.com>
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -21,12 +21,12 @@ struct max8998_battery_data {
 };
 
 static enum power_supply_property max8998_battery_props[] = {
-	POWER_SUPPLY_PROP_PRESENT, /* the presence of battery */
-	POWER_SUPPLY_PROP_ONLINE, /* charger is active or not */
-	POWER_SUPPLY_PROP_STATUS, /* charger is charging/discharging/full */
+	POWER_SUPPLY_PROP_PRESENT,  
+	POWER_SUPPLY_PROP_ONLINE,  
+	POWER_SUPPLY_PROP_STATUS,  
 };
 
-/* Note that the charger control is done by a current regulator "CHARGER" */
+ 
 static int max8998_battery_get_property(struct power_supply *psy,
 		enum power_supply_property psp,
 		union power_supply_propval *val)
@@ -112,9 +112,8 @@ static int max8998_battery_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, max8998);
 	i2c = max8998->iodev->i2c;
 
-	/* Setup "End of Charge" */
-	/* If EOC value equals 0,
-	 * remain value set from bootloader or default value */
+	 
+	 
 	if (pdata->eoc >= 10 && pdata->eoc <= 45) {
 		max8998_update_reg(i2c, MAX8998_REG_CHGR1,
 				(pdata->eoc / 5 - 2) << 5, 0x7 << 5);
@@ -126,7 +125,7 @@ static int max8998_battery_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Setup Charge Restart Level */
+	 
 	switch (pdata->restart) {
 	case 100:
 		max8998_update_reg(i2c, MAX8998_REG_CHGR1, 0x1 << 3, 0x3 << 3);
@@ -149,7 +148,7 @@ static int max8998_battery_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Setup Charge Full Timeout */
+	 
 	switch (pdata->timeout) {
 	case 5:
 		max8998_update_reg(i2c, MAX8998_REG_CHGR2, 0x0 << 4, 0x3 << 4);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -105,7 +103,7 @@ static const struct clk_parent_data disp_cc_parent_data_4[] = {
 	{ .fw_name = "dsi1_phy_pll_out_dsiclk", .name = "dsi1_phy_pll_out_dsiclk" },
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_rcg2 disp_cc_mdss_byte0_clk_src = {
 	.cmd_rcgr = 0x20d0,
 	.mnd_width = 0,
@@ -120,7 +118,7 @@ static struct clk_rcg2 disp_cc_mdss_byte0_clk_src = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_rcg2 disp_cc_mdss_byte1_clk_src = {
 	.cmd_rcgr = 0x20ec,
 	.mnd_width = 0,
@@ -270,7 +268,7 @@ static struct clk_rcg2 disp_cc_mdss_mdp_clk_src = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_rcg2 disp_cc_mdss_pclk0_clk_src = {
 	.cmd_rcgr = 0x2058,
 	.mnd_width = 8,
@@ -285,7 +283,7 @@ static struct clk_rcg2 disp_cc_mdss_pclk0_clk_src = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_rcg2 disp_cc_mdss_pclk1_clk_src = {
 	.cmd_rcgr = 0x2070,
 	.mnd_width = 8,
@@ -363,7 +361,7 @@ static struct clk_branch disp_cc_mdss_axi_clk = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_branch disp_cc_mdss_byte0_clk = {
 	.halt_reg = 0x2028,
 	.halt_check = BRANCH_HALT,
@@ -382,7 +380,7 @@ static struct clk_branch disp_cc_mdss_byte0_clk = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_regmap_div disp_cc_mdss_byte0_div_clk_src = {
 	.reg = 0x20e8,
 	.shift = 0,
@@ -399,7 +397,7 @@ static struct clk_regmap_div disp_cc_mdss_byte0_div_clk_src = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_branch disp_cc_mdss_byte0_intf_clk = {
 	.halt_reg = 0x202c,
 	.halt_check = BRANCH_HALT,
@@ -418,7 +416,7 @@ static struct clk_branch disp_cc_mdss_byte0_intf_clk = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_branch disp_cc_mdss_byte1_clk = {
 	.halt_reg = 0x2030,
 	.halt_check = BRANCH_HALT,
@@ -437,7 +435,7 @@ static struct clk_branch disp_cc_mdss_byte1_clk = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_regmap_div disp_cc_mdss_byte1_div_clk_src = {
 	.reg = 0x2104,
 	.shift = 0,
@@ -454,7 +452,7 @@ static struct clk_regmap_div disp_cc_mdss_byte1_div_clk_src = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_branch disp_cc_mdss_byte1_intf_clk = {
 	.halt_reg = 0x2034,
 	.halt_check = BRANCH_HALT,
@@ -527,7 +525,7 @@ static struct clk_branch disp_cc_mdss_dp_link_clk = {
 	},
 };
 
-/* reset state of disp_cc_mdss_dp_link_div_clk_src divider is 0x3 (div 4) */
+ 
 static struct clk_branch disp_cc_mdss_dp_link_intf_clk = {
 	.halt_reg = 0x2044,
 	.halt_check = BRANCH_HALT,
@@ -652,7 +650,7 @@ static struct clk_branch disp_cc_mdss_mdp_lut_clk = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_branch disp_cc_mdss_pclk0_clk = {
 	.halt_reg = 0x2004,
 	.halt_check = BRANCH_HALT,
@@ -671,7 +669,7 @@ static struct clk_branch disp_cc_mdss_pclk0_clk = {
 	},
 };
 
-/* Return the HW recalc rate for idle use case */
+ 
 static struct clk_branch disp_cc_mdss_pclk1_clk = {
 	.halt_reg = 0x2008,
 	.halt_check = BRANCH_HALT,
@@ -858,7 +856,7 @@ static int disp_cc_sdm845_probe(struct platform_device *pdev)
 
 	clk_fabia_pll_configure(&disp_cc_pll0, regmap, &disp_cc_pll0_config);
 
-	/* Enable hardware clock gating for DSI and MDP clocks */
+	 
 	regmap_update_bits(regmap, 0x8000, 0x7f0, 0x7f0);
 
 	return qcom_cc_really_probe(pdev, &disp_cc_sdm845_desc, regmap);

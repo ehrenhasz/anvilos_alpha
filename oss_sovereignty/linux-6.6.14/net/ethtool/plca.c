@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/phy.h>
 #include <linux/ethtool_netlink.h>
@@ -16,12 +16,12 @@ struct plca_reply_data {
 	struct phy_plca_status		plca_st;
 };
 
-// Helpers ------------------------------------------------------------------ //
+
 
 #define PLCA_REPDATA(__reply_base) \
 	container_of(__reply_base, struct plca_reply_data, base)
 
-// PLCA get configuration message ------------------------------------------- //
+
 
 const struct nla_policy ethnl_plca_get_cfg_policy[] = {
 	[ETHTOOL_A_PLCA_HEADER]		=
@@ -60,13 +60,13 @@ static int plca_get_cfg_prepare_data(const struct ethnl_req_info *req_base,
 	const struct ethtool_phy_ops *ops;
 	int ret;
 
-	// check that the PHY device is available and connected
+	
 	if (!dev->phydev) {
 		ret = -EOPNOTSUPP;
 		goto out;
 	}
 
-	// note: rtnl_lock is held already by ethnl_default_doit
+	
 	ops = ethtool_phy_ops;
 	if (!ops || !ops->get_plca_cfg) {
 		ret = -EOPNOTSUPP;
@@ -90,13 +90,13 @@ out:
 static int plca_get_cfg_reply_size(const struct ethnl_req_info *req_base,
 				   const struct ethnl_reply_data *reply_base)
 {
-	return nla_total_size(sizeof(u16)) +	/* _VERSION */
-	       nla_total_size(sizeof(u8)) +	/* _ENABLED */
-	       nla_total_size(sizeof(u32)) +	/* _NODE_CNT */
-	       nla_total_size(sizeof(u32)) +	/* _NODE_ID */
-	       nla_total_size(sizeof(u32)) +	/* _TO_TIMER */
-	       nla_total_size(sizeof(u32)) +	/* _BURST_COUNT */
-	       nla_total_size(sizeof(u32));	/* _BURST_TIMER */
+	return nla_total_size(sizeof(u16)) +	 
+	       nla_total_size(sizeof(u8)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32)) +	 
+	       nla_total_size(sizeof(u32));	 
 }
 
 static int plca_get_cfg_fill_reply(struct sk_buff *skb,
@@ -125,7 +125,7 @@ static int plca_get_cfg_fill_reply(struct sk_buff *skb,
 	return 0;
 };
 
-// PLCA set configuration message ------------------------------------------- //
+
 
 const struct nla_policy ethnl_plca_set_cfg_policy[] = {
 	[ETHTOOL_A_PLCA_HEADER]		=
@@ -148,7 +148,7 @@ ethnl_set_plca(struct ethnl_req_info *req_info, struct genl_info *info)
 	bool mod = false;
 	int ret;
 
-	// check that the PHY device is available and connected
+	
 	if (!dev->phydev)
 		return -EOPNOTSUPP;
 
@@ -187,7 +187,7 @@ const struct ethnl_request_ops ethnl_plca_cfg_request_ops = {
 	.set_ntf_cmd		= ETHTOOL_MSG_PLCA_NTF,
 };
 
-// PLCA get status message -------------------------------------------------- //
+
 
 const struct nla_policy ethnl_plca_get_status_policy[] = {
 	[ETHTOOL_A_PLCA_HEADER]		=
@@ -203,13 +203,13 @@ static int plca_get_status_prepare_data(const struct ethnl_req_info *req_base,
 	const struct ethtool_phy_ops *ops;
 	int ret;
 
-	// check that the PHY device is available and connected
+	
 	if (!dev->phydev) {
 		ret = -EOPNOTSUPP;
 		goto out;
 	}
 
-	// note: rtnl_lock is held already by ethnl_default_doit
+	
 	ops = ethtool_phy_ops;
 	if (!ops || !ops->get_plca_status) {
 		ret = -EOPNOTSUPP;
@@ -232,7 +232,7 @@ out:
 static int plca_get_status_reply_size(const struct ethnl_req_info *req_base,
 				      const struct ethnl_reply_data *reply_base)
 {
-	return nla_total_size(sizeof(u8));	/* _STATUS */
+	return nla_total_size(sizeof(u8));	 
 }
 
 static int plca_get_status_fill_reply(struct sk_buff *skb,

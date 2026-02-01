@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2018, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <rdma/ib_user_verbs.h>
 #include <rdma/ib_verbs.h>
@@ -74,7 +72,7 @@ static int set_proto(void *outer_c, void *outer_v, u8 mask, u8 val)
 		MLX5_SET(fte_match_set_lyr_2_4, outer_v, ip_protocol, val);
 		goto out;
 	}
-	/* Don't override existing ip protocol */
+	 
 	if (mask != entry_mask || val != entry_val)
 		err = -EINVAL;
 out:
@@ -135,7 +133,7 @@ static int check_mpls_supp_fields(u32 field_support, const __be32 *set_mask)
 #define LAST_DROP_FIELD size
 #define LAST_COUNTERS_FIELD counters
 
-/* Field is the last supported field */
+ 
 #define FIELDS_NOT_SUPPORTED(filter, field)                                    \
 	memchr_inv((void *)&filter.field + sizeof(filter.field), 0,            \
 		   sizeof(filter) - offsetofend(typeof(filter), field))
@@ -520,7 +518,7 @@ static int parse_flow_attr(struct mlx5_core_dev *mdev,
 					 LAST_COUNTERS_FIELD))
 			return -EOPNOTSUPP;
 
-		/* for now support only one counters spec per flow */
+		 
 		if (action->action & MLX5_FLOW_CONTEXT_ACTION_COUNT)
 			return -EINVAL;
 
@@ -534,10 +532,7 @@ static int parse_flow_attr(struct mlx5_core_dev *mdev,
 	return 0;
 }
 
-/* If a flow could catch both multicast and unicast packets,
- * it won't fall into the multicast flow steering table and this rule
- * could steal other multicast packets.
- */
+ 
 static bool flow_is_multicast_only(const struct ib_flow_attr *ib_attr)
 {
 	union ib_flow_spec *flow_spec;
@@ -587,7 +582,7 @@ static bool is_valid_ethertype(struct mlx5_core_dev *mdev,
 	u16 eth_type = 0;
 	bool type_valid;
 
-	/* Validate that ethertype is correct */
+	 
 	for (spec_index = 0; spec_index < flow_attr->num_of_specs; spec_index++) {
 		if ((ib_spec->type == (IB_FLOW_SPEC_ETH | inner_bit)) &&
 		    ib_spec->eth.mask.ether_type) {
@@ -1297,7 +1292,7 @@ static struct ib_flow *mlx5_ib_create_flow(struct ib_qp *qp,
 		if (err)
 			return ERR_PTR(err);
 
-		/* currently supports only one counters data */
+		 
 		if (ucmd_hdr.ncounters_data > 1)
 			return ERR_PTR(-EINVAL);
 
@@ -1749,7 +1744,7 @@ static const struct uverbs_attr_spec mlx5_ib_flow_type[] = {
 	[MLX5_IB_FLOW_TYPE_NORMAL] = {
 		.type = UVERBS_ATTR_TYPE_PTR_IN,
 		.u.ptr = {
-			.len = sizeof(u16), /* data is priority */
+			.len = sizeof(u16),  
 			.min_len = sizeof(u16),
 		}
 	},
@@ -1809,7 +1804,7 @@ static int get_dests(struct uverbs_attr_bundle *attrs,
 	if (err)
 		return err;
 
-	/* Both flags are not allowed */
+	 
 	if (*flags & MLX5_IB_ATTR_CREATE_FLOW_FLAGS_DEFAULT_MISS &&
 	    *flags & MLX5_IB_ATTR_CREATE_FLOW_FLAGS_DROP)
 		return -EINVAL;
@@ -1821,12 +1816,12 @@ static int get_dests(struct uverbs_attr_bundle *attrs,
 			return -EINVAL;
 	}
 
-	/* Allow only DEVX object, drop as dest for FDB */
+	 
 	if (fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_FDB_BYPASS &&
 	    !(dest_devx || (*flags & MLX5_IB_ATTR_CREATE_FLOW_FLAGS_DROP)))
 		return -EINVAL;
 
-	/* Allow only DEVX object or QP as dest when inserting to RDMA_RX */
+	 
 	if ((fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_RDMA_RX) &&
 	    ((!dest_devx && !dest_qp) || (dest_devx && dest_qp)))
 		return -EINVAL;
@@ -1837,12 +1832,10 @@ static int get_dests(struct uverbs_attr_bundle *attrs,
 			uverbs_attr_get_obj(attrs,
 					    MLX5_IB_ATTR_CREATE_FLOW_DEST_DEVX);
 
-		/* Verify that the given DEVX object is a flow
-		 * steering destination.
-		 */
+		 
 		if (!is_flow_dest(devx_obj, dest_id, dest_type))
 			return -EINVAL;
-		/* Allow only flow table as dest when inserting to FDB or RDMA_RX */
+		 
 		if ((fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_FDB_BYPASS ||
 		     fs_matcher->ns_type == MLX5_FLOW_NAMESPACE_RDMA_RX) &&
 		    *dest_type != MLX5_FLOW_DESTINATION_TYPE_FLOW_TABLE)
@@ -2300,9 +2293,7 @@ static int mlx5_ib_matcher_ns(struct uverbs_attr_bundle *attrs,
 	u32 flags;
 	int err;
 
-	/* New users should use MLX5_IB_ATTR_FLOW_MATCHER_FT_TYPE and older
-	 * users should switch to it. We leave this to not break userspace
-	 */
+	 
 	if (uverbs_attr_is_valid(attrs, MLX5_IB_ATTR_FLOW_MATCHER_FT_TYPE) &&
 	    uverbs_attr_is_valid(attrs, MLX5_IB_ATTR_FLOW_MATCHER_FLOW_FLAGS))
 		return -EINVAL;

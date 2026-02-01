@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -38,16 +36,7 @@ static __always_inline void ts_secret_init(void)
 #ifdef CONFIG_INET
 static u32 seq_scale(u32 seq)
 {
-	/*
-	 *	As close as possible to RFC 793, which
-	 *	suggests using a 250 kHz clock.
-	 *	Further reading shows this assumes 2 Mb/s networks.
-	 *	For 10 Mb/s Ethernet, a 1 MHz clock is appropriate.
-	 *	For 10 Gb/s Ethernet, a 1 GHz clock should be ok, but
-	 *	we also need to limit the resolution so that the u32 seq
-	 *	overlaps less than one time per MSL (2 minutes).
-	 *	Choosing a clock of 64 ns period is OK. (period of 274 s)
-	 */
+	 
 	return seq + (ktime_get_real_ns() >> 6);
 }
 #endif
@@ -128,11 +117,7 @@ u32 secure_tcp_ts_off(const struct net *net, __be32 saddr, __be32 daddr)
 			    &ts_secret);
 }
 
-/* secure_tcp_seq_and_tsoff(a, b, 0, d) == secure_ipv4_port_ephemeral(a, b, d),
- * but fortunately, `sport' cannot be 0 in any circumstances. If this changes,
- * it would be easy enough to have the former function use siphash_4u32, passing
- * the arguments as separate u32.
- */
+ 
 u32 secure_tcp_seq(__be32 saddr, __be32 daddr,
 		   __be16 sport, __be16 dport)
 {

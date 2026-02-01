@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic DSI Command Mode panel driver
- *
- * Copyright (C) 2013 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
 
-/* #define DEBUG */
+ 
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -25,7 +20,7 @@
 #include <video/omapfb_dss.h>
 #include <video/mipi_display.h>
 
-/* DSI Virtual channel. Hardcoded for now. */
+ 
 #define TCH 0
 
 #define DCS_READ_NUM_ERRORS	0x05
@@ -47,12 +42,10 @@ struct panel_drv_data {
 
 	struct backlight_device *bldev;
 
-	unsigned long	hw_guard_end;	/* next value of jiffies when we can
-					 * issue the next sleep in/out command
-					 */
-	unsigned long	hw_guard_wait;	/* max guard time in jiffies */
+	unsigned long	hw_guard_end;	 
+	unsigned long	hw_guard_wait;	 
 
-	/* panel HW configuration from DT or platform data */
+	 
 	struct gpio_desc *reset_gpio;
 	struct gpio_desc *ext_te_gpio;
 
@@ -60,7 +53,7 @@ struct panel_drv_data {
 
 	struct omap_dsi_pin_config pin_config;
 
-	/* runtime variables */
+	 
 	bool enabled;
 
 	bool te_enabled;
@@ -501,7 +494,7 @@ static ssize_t dsicm_store_ulps_timeout(struct device *dev,
 	ddata->ulps_timeout = t;
 
 	if (ddata->enabled) {
-		/* dsicm_wake_up will restart the timer */
+		 
 		in->ops.dsi->bus_lock(in);
 		r = dsicm_wake_up(ddata);
 		in->ops.dsi->bus_unlock(in);
@@ -550,20 +543,16 @@ static const struct attribute_group dsicm_attr_group = {
 
 static void dsicm_hw_reset(struct panel_drv_data *ddata)
 {
-	/*
-	 * Note that we appear to activate the reset line here. However
-	 * existing DTSes specified incorrect polarity for it (active high),
-	 * so in fact this deasserts the reset line.
-	 */
+	 
 	gpiod_set_value_cansleep(ddata->reset_gpio, 1);
 	udelay(10);
-	/* reset the panel */
+	 
 	gpiod_set_value_cansleep(ddata->reset_gpio, 0);
-	/* keep reset asserted */
+	 
 	udelay(10);
-	/* release reset line */
+	 
 	gpiod_set_value_cansleep(ddata->reset_gpio, 1);
-	/* wait after releasing reset */
+	 
 	usleep_range(5000, 10000);
 }
 
@@ -620,7 +609,7 @@ static int dsicm_power_on(struct panel_drv_data *ddata)
 		goto err;
 
 	r = dsicm_dcs_write_1(ddata, DCS_CTRL_DISPLAY,
-			(1<<2) | (1<<5));	/* BL | BCTRL */
+			(1<<2) | (1<<5));	 
 	if (r)
 		goto err;
 
@@ -876,7 +865,7 @@ static int dsicm_update(struct omap_dss_device *dssdev,
 		goto err;
 	}
 
-	/* XXX no need to send this every frame, but dsi break if not done */
+	 
 	r = dsicm_set_update_window(ddata, 0, 0,
 			dssdev->panel.timings.x_res,
 			dssdev->panel.timings.y_res);
@@ -894,7 +883,7 @@ static int dsicm_update(struct omap_dss_device *dssdev,
 			goto err;
 	}
 
-	/* note: no bus_unlock here. unlock is in framedone_cb */
+	 
 	mutex_unlock(&ddata->lock);
 	return 0;
 err:
@@ -933,7 +922,7 @@ static int _dsicm_enable_te(struct panel_drv_data *ddata, bool enable)
 	if (!ddata->ext_te_gpio)
 		in->ops.dsi->enable_te(in, enable);
 
-	/* possible panel bug */
+	 
 	msleep(100);
 
 	return r;
@@ -1019,9 +1008,7 @@ static int dsicm_memory_read(struct omap_dss_device *dssdev,
 	if (r)
 		goto err2;
 
-	/* plen 1 or 2 goes into short packet. until checksum error is fixed,
-	 * use short packets. plen 32 works, but bigger packets seem to cause
-	 * an error. */
+	 
 	if (size % 2)
 		plen = 1;
 	else
@@ -1267,7 +1254,7 @@ static int __exit dsicm_remove(struct platform_device *pdev)
 
 	dsicm_cancel_ulps_work(ddata);
 
-	/* reset, to be sure that the panel is in a valid state */
+	 
 	dsicm_hw_reset(ddata);
 
 	return 0;

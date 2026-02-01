@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 
-/*
- * Copyright 2019,2020,2022 NXP
- */
+ 
 
 #ifndef __IMX_LDB_HELPER__
 #define __IMX_LDB_HELPER__
@@ -93,4 +91,4 @@ void ldb_add_bridge_helper(struct ldb *ldb,
 
 void ldb_remove_bridge_helper(struct ldb *ldb);
 
-#endif /* __IMX_LDB_HELPER__ */
+#endif  

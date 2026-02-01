@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra host1x Job
- *
- * Copyright (c) 2010-2015, NVIDIA Corporation.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/err.h>
@@ -38,7 +34,7 @@ struct host1x_job *host1x_job_alloc(struct host1x_channel *ch,
 	if (!enable_firewall)
 		num_unpins += num_cmdbufs;
 
-	/* Check that we're not going to overflow */
+	 
 	total = sizeof(struct host1x_job) +
 		(u64)num_relocs * sizeof(struct host1x_reloc) +
 		(u64)num_unpins * sizeof(struct host1x_job_unpin_data) +
@@ -57,7 +53,7 @@ struct host1x_job *host1x_job_alloc(struct host1x_channel *ch,
 	kref_init(&job->ref);
 	job->channel = ch;
 
-	/* Redistribute memory to the structs  */
+	 
 	mem += sizeof(struct host1x_job);
 	job->relocs = num_relocs ? mem : NULL;
 	mem += num_relocs * sizeof(struct host1x_reloc);
@@ -89,11 +85,7 @@ static void job_free(struct kref *ref)
 		job->release(job);
 
 	if (job->fence) {
-		/*
-		 * remove_callback is atomic w.r.t. fence signaling, so
-		 * after the call returns, we know that the callback is not
-		 * in execution, and the fence can be safely freed.
-		 */
+		 
 		dma_fence_remove_callback(job->fence, &job->fence_cb);
 		dma_fence_put(job->fence);
 	}
@@ -187,11 +179,7 @@ static unsigned int pin_job(struct host1x *host, struct host1x_job *job)
 			goto unpin;
 		}
 
-		/*
-		 * host1x clients are generally not able to do scatter-gather themselves, so fail
-		 * if the buffer is discontiguous and we fail to map its SG table to a single
-		 * contiguous chunk of I/O virtual memory.
-		 */
+		 
 		if (map->chunks > 1) {
 			err = -EINVAL;
 			goto unpin;
@@ -202,10 +190,7 @@ static unsigned int pin_job(struct host1x *host, struct host1x_job *job)
 		job->num_unpins++;
 	}
 
-	/*
-	 * We will copy gathers BO content later, so there is no need to
-	 * hold and pin them.
-	 */
+	 
 	if (job->enable_firewall)
 		return 0;
 
@@ -282,14 +267,14 @@ static int do_relocs(struct host1x_job *job, struct host1x_job_gather *g)
 	struct host1x_bo *cmdbuf = g->bo;
 	unsigned int i;
 
-	/* pin & patch the relocs for one gather */
+	 
 	for (i = 0; i < job->num_relocs; i++) {
 		struct host1x_reloc *reloc = &job->relocs[i];
 		u32 reloc_addr = (job->reloc_addr_phys[i] +
 				  reloc->target.offset) >> reloc->shift;
 		u32 *target;
 
-		/* skip all other gathers */
+		 
 		if (cmdbuf != reloc->cmdbuf.bo)
 			continue;
 
@@ -328,7 +313,7 @@ static bool check_reloc(struct host1x_reloc *reloc, struct host1x_bo *cmdbuf,
 	if (reloc->cmdbuf.bo != cmdbuf || reloc->cmdbuf.offset != offset)
 		return false;
 
-	/* relocation shift value validation isn't implemented yet */
+	 
 	if (reloc->shift)
 		return false;
 
@@ -546,14 +531,11 @@ static inline int copy_gathers(struct device *host, struct host1x_job *job,
 		size += g->words * sizeof(u32);
 	}
 
-	/*
-	 * Try a non-blocking allocation from a higher priority pools first,
-	 * as awaiting for the allocation here is a major performance hit.
-	 */
+	 
 	job->gather_copy_mapped = dma_alloc_wc(host, size, &job->gather_copy,
 					       GFP_NOWAIT);
 
-	/* the higher priority allocation failed, try the generic-blocking */
+	 
 	if (!job->gather_copy_mapped)
 		job->gather_copy_mapped = dma_alloc_wc(host, size,
 						       &job->gather_copy,
@@ -571,24 +553,24 @@ static inline int copy_gathers(struct device *host, struct host1x_job *job,
 			continue;
 		g = &job->cmds[i].gather;
 
-		/* Copy the gather */
+		 
 		gather = host1x_bo_mmap(g->bo);
 		memcpy(job->gather_copy_mapped + offset, gather + g->offset,
 		       g->words * sizeof(u32));
 		host1x_bo_munmap(g->bo, gather);
 
-		/* Store the location in the buffer */
+		 
 		g->base = job->gather_copy;
 		g->offset = offset;
 
-		/* Validate the job */
+		 
 		if (validate(&fw, g))
 			return -EINVAL;
 
 		offset += g->words * sizeof(u32);
 	}
 
-	/* No relocs should remain at this point */
+	 
 	if (fw.num_relocs)
 		return -EINVAL;
 
@@ -601,7 +583,7 @@ int host1x_job_pin(struct host1x_job *job, struct device *dev)
 	unsigned int i, j;
 	struct host1x *host = dev_get_drvdata(dev->parent);
 
-	/* pin memory */
+	 
 	err = pin_job(host, job);
 	if (err)
 		goto out;
@@ -612,7 +594,7 @@ int host1x_job_pin(struct host1x_job *job, struct device *dev)
 			goto out;
 	}
 
-	/* patch gathers */
+	 
 	for (i = 0; i < job->num_cmds; i++) {
 		struct host1x_job_gather *g;
 
@@ -620,11 +602,11 @@ int host1x_job_pin(struct host1x_job *job, struct device *dev)
 			continue;
 		g = &job->cmds[i].gather;
 
-		/* process each gather mem only once */
+		 
 		if (g->handled)
 			continue;
 
-		/* copy_gathers() sets gathers base if firewall is enabled */
+		 
 		if (!job->enable_firewall)
 			g->base = job->gather_addr_phys[i];
 
@@ -676,9 +658,7 @@ void host1x_job_unpin(struct host1x_job *job)
 }
 EXPORT_SYMBOL(host1x_job_unpin);
 
-/*
- * Debug routine used to dump job entries
- */
+ 
 void host1x_job_dump(struct device *dev, struct host1x_job *job)
 {
 	dev_dbg(dev, "    SYNCPT_ID   %d\n", job->syncpt->id);

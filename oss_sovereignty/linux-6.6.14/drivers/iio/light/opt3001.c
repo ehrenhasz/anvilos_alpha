@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * opt3001.c - Texas Instruments OPT3001 Light Sensor
- *
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com
- *
- * Author: Andreas Dannenberg <dannenberg@ti.com>
- * Based on previous work from: Felipe Balbi <balbi@ti.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -40,7 +33,7 @@
 #define OPT3001_CONFIGURATION_M_MASK	(3 << 9)
 #define OPT3001_CONFIGURATION_M_SHUTDOWN (0 << 9)
 #define OPT3001_CONFIGURATION_M_SINGLE	(1 << 9)
-#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9) /* also 3 << 9 */
+#define OPT3001_CONFIGURATION_M_CONTINUOUS (2 << 9)  
 
 #define OPT3001_CONFIGURATION_OVF	BIT(8)
 #define OPT3001_CONFIGURATION_CRF	BIT(7)
@@ -52,7 +45,7 @@
 
 #define OPT3001_CONFIGURATION_FC_MASK	(3 << 0)
 
-/* The end-of-conversion enable is located in the low-limit register */
+ 
 #define OPT3001_LOW_LIMIT_EOC_ENABLE	0xc000
 
 #define OPT3001_REG_EXPONENT(n)		((n) >> 12)
@@ -61,12 +54,7 @@
 #define OPT3001_INT_TIME_LONG		800000
 #define OPT3001_INT_TIME_SHORT		100000
 
-/*
- * Time to wait for conversion result to be ready. The device datasheet
- * sect. 6.5 states results are ready after total integration time plus 3ms.
- * This results in worst-case max values of 113ms or 883ms, respectively.
- * Add some slack to be on the safe side.
- */
+ 
 #define OPT3001_RESULT_READY_SHORT	150
 #define OPT3001_RESULT_READY_LONG	1000
 
@@ -152,11 +140,7 @@ static int opt3001_find_scale(const struct opt3001 *opt, int val,
 	for (i = 0; i < ARRAY_SIZE(opt3001_scales); i++) {
 		const struct opt3001_scale *scale = &opt3001_scales[i];
 
-		/*
-		 * Combine the integer and micro parts for comparison
-		 * purposes. Use milli lux precision to avoid 32-bit integer
-		 * overflows.
-		 */
+		 
 		if ((val * 1000 + val2 / 1000) <=
 				(scale->val * 1000 + scale->val2 / 1000)) {
 			*exponent = i;
@@ -231,11 +215,7 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
 	long timeout;
 
 	if (opt->use_irq) {
-		/*
-		 * Enable the end-of-conversion interrupt mechanism. Note that
-		 * doing so will overwrite the low-level limit value however we
-		 * will restore this value later on.
-		 */
+		 
 		ret = i2c_smbus_write_word_swapped(opt->client,
 					OPT3001_LOW_LIMIT,
 					OPT3001_LOW_LIMIT_EOC_ENABLE);
@@ -245,14 +225,14 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
 			return ret;
 		}
 
-		/* Allow IRQ to access the device despite lock being set */
+		 
 		opt->ok_to_ignore_lock = true;
 	}
 
-	/* Reset data-ready indicator flag */
+	 
 	opt->result_ready = false;
 
-	/* Configure for single-conversion mode and start a new conversion */
+	 
 	ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_CONFIGURATION);
 	if (ret < 0) {
 		dev_err(opt->dev, "failed to read register %02x\n",
@@ -272,19 +252,19 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
 	}
 
 	if (opt->use_irq) {
-		/* Wait for the IRQ to indicate the conversion is complete */
+		 
 		ret = wait_event_timeout(opt->result_ready_queue,
 				opt->result_ready,
 				msecs_to_jiffies(OPT3001_RESULT_READY_LONG));
 		if (ret == 0)
 			return -ETIMEDOUT;
 	} else {
-		/* Sleep for result ready time */
+		 
 		timeout = (opt->int_time == OPT3001_INT_TIME_SHORT) ?
 			OPT3001_RESULT_READY_SHORT : OPT3001_RESULT_READY_LONG;
 		msleep(timeout);
 
-		/* Check result ready flag */
+		 
 		ret = i2c_smbus_read_word_swapped(opt->client,
 						  OPT3001_CONFIGURATION);
 		if (ret < 0) {
@@ -298,7 +278,7 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
 			goto err;
 		}
 
-		/* Obtain value */
+		 
 		ret = i2c_smbus_read_word_swapped(opt->client, OPT3001_RESULT);
 		if (ret < 0) {
 			dev_err(opt->dev, "failed to read register %02x\n",
@@ -311,20 +291,14 @@ static int opt3001_get_lux(struct opt3001 *opt, int *val, int *val2)
 
 err:
 	if (opt->use_irq)
-		/* Disallow IRQ to access the device while lock is active */
+		 
 		opt->ok_to_ignore_lock = false;
 
 	if (ret < 0)
 		return ret;
 
 	if (opt->use_irq) {
-		/*
-		 * Disable the end-of-conversion interrupt mechanism by
-		 * restoring the low-level limit value (clearing
-		 * OPT3001_LOW_LIMIT_EOC_ENABLE). Note that selectively clearing
-		 * those enable bits would affect the actual limit value due to
-		 * bit-overlap and therefore can't be done.
-		 */
+		 
 		value = (opt->low_thresh_exp << 12) | opt->low_thresh_mantissa;
 		ret = i2c_smbus_write_word_swapped(opt->client,
 						   OPT3001_LOW_LIMIT,
@@ -632,20 +606,20 @@ static int opt3001_configure(struct opt3001 *opt)
 
 	reg = ret;
 
-	/* Enable automatic full-scale setting mode */
+	 
 	reg &= ~OPT3001_CONFIGURATION_RN_MASK;
 	reg |= OPT3001_CONFIGURATION_RN_AUTO;
 
-	/* Reflect status of the device's integration time setting */
+	 
 	if (reg & OPT3001_CONFIGURATION_CT)
 		opt->int_time = OPT3001_INT_TIME_LONG;
 	else
 		opt->int_time = OPT3001_INT_TIME_SHORT;
 
-	/* Ensure device is in shutdown initially */
+	 
 	opt3001_set_mode(opt, &reg, OPT3001_CONFIGURATION_M_SHUTDOWN);
 
-	/* Configure for latched window-style comparison operation */
+	 
 	reg |= OPT3001_CONFIGURATION_L;
 	reg &= ~OPT3001_CONFIGURATION_POL;
 	reg &= ~OPT3001_CONFIGURATION_ME;
@@ -776,7 +750,7 @@ static int opt3001_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* Make use of INT pin only if valid IRQ no. is given */
+	 
 	if (irq > 0) {
 		ret = request_threaded_irq(irq, NULL, opt3001_irq,
 				IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
@@ -823,7 +797,7 @@ static void opt3001_remove(struct i2c_client *client)
 
 static const struct i2c_device_id opt3001_id[] = {
 	{ "opt3001", 0 },
-	{ } /* Terminating Entry */
+	{ }  
 };
 MODULE_DEVICE_TABLE(i2c, opt3001_id);
 

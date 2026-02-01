@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * in kernel monitor support: allows rv to control in-kernel monitors.
- *
- * Copyright (C) 2022 Red Hat Inc, Daniel Bristot de Oliveira <bristot@kernel.org>
- */
+
+ 
 #include <getopt.h>
 #include <stdlib.h>
 #include <string.h>
@@ -21,14 +17,7 @@ static int config_trace;
 static char *config_initial_reactor;
 static char *config_reactor;
 
-/*
- * __ikm_read_enable - reads monitor's enable status
- *
- * __does not log errors.
- *
- * Returns the current status, or -1 if the monitor does not exist,
- * __hence not logging errors.
- */
+ 
 static int __ikm_read_enable(char *monitor_name)
 {
 	char path[MAX_PATH];
@@ -44,11 +33,7 @@ static int __ikm_read_enable(char *monitor_name)
 	return enabled;
 }
 
-/*
- * ikm_read_enable - reads monitor's enable status
- *
- * Returns the current status, or -1 on error.
- */
+ 
 static int ikm_read_enable(char *monitor_name)
 {
 	int enabled;
@@ -64,11 +49,7 @@ static int ikm_read_enable(char *monitor_name)
 	return enabled;
 }
 
-/*
- * ikm_write_enable - write to the monitor's enable file
- *
- * Return the number of bytes written, -1 on error.
- */
+ 
 static int ikm_write_enable(char *monitor_name, char *enable_disable)
 {
 	char path[MAX_PATH];
@@ -86,32 +67,19 @@ static int ikm_write_enable(char *monitor_name, char *enable_disable)
 	return retval;
 }
 
-/*
- * ikm_enable - enable a monitor
- *
- * Returns -1 on failure. Success otherwise.
- */
+ 
 static int ikm_enable(char *monitor_name)
 {
 	return ikm_write_enable(monitor_name, "1");
 }
 
-/*
- * ikm_disable - disable a monitor
- *
- * Returns -1 on failure. Success otherwise.
- */
+ 
 static int ikm_disable(char *monitor_name)
 {
 	return ikm_write_enable(monitor_name, "0");
 }
 
-/*
- * ikm_read_desc - read monitors' description
- *
- * Return a dynamically allocated string with the monitor's
- * description, NULL otherwise.
- */
+ 
 static char *ikm_read_desc(char *monitor_name)
 {
 	char path[MAX_PATH];
@@ -129,11 +97,7 @@ static char *ikm_read_desc(char *monitor_name)
 	return desc;
 }
 
-/*
- * ikm_fill_monitor_definition - fill monitor's definition
- *
- * Returns -1 on error, 0 otherwise.
- */
+ 
 static int ikm_fill_monitor_definition(char *name, struct monitor *ikm)
 {
 	int enabled;
@@ -160,11 +124,7 @@ static int ikm_fill_monitor_definition(char *name, struct monitor *ikm)
 	return 0;
 }
 
-/*
- * ikm_write_reactor - switch the reactor to *reactor
- *
- * Return the number or characters written, -1 on error.
- */
+ 
 static int ikm_write_reactor(char *monitor_name, char *reactor)
 {
 	char path[MAX_PATH];
@@ -177,12 +137,7 @@ static int ikm_write_reactor(char *monitor_name, char *reactor)
 	return retval;
 }
 
-/*
- * ikm_read_reactor - read the reactors file
- *
- * Returns a dynamically allocated string with monitor's
- * available reactors, or NULL on error.
- */
+ 
 static char *ikm_read_reactor(char *monitor_name)
 {
 	char path[MAX_PATH];
@@ -198,15 +153,7 @@ static char *ikm_read_reactor(char *monitor_name)
 	return reactors;
 }
 
-/*
- * ikm_get_current_reactor - get the current enabled reactor
- *
- * Reads the reactors file and find the currently enabled
- * [reactor].
- *
- * Returns a dynamically allocated memory with the current
- * reactor. NULL otherwise.
- */
+ 
 static char *ikm_get_current_reactor(char *monitor_name)
 {
 	char *reactors = ikm_read_reactor(monitor_name);
@@ -255,7 +202,7 @@ static int ikm_has_id(char *monitor_name)
 		return -1;
 	}
 
-	/* print fmt: "%d: %s x %s -> %s %s", REC->id, ... */
+	 
 	has_id = !!strstr(format, "REC->id");
 
 	debug_msg("ikm: monitor %s has id: %s\n", monitor_name, has_id ? "yes" : "no");
@@ -265,11 +212,7 @@ static int ikm_has_id(char *monitor_name)
 	return has_id;
 }
 
-/**
- * ikm_list_monitors - list all available monitors
- *
- * Returns 0 on success, -1 otherwise.
- */
+ 
 int ikm_list_monitors(void)
 {
 	char *available_monitors;
@@ -328,17 +271,12 @@ static void ikm_print_header(struct trace_seq *s)
 
 }
 
-/*
- * ikm_event_handler - callback to handle event events
- *
- * Called any time a rv:"monitor"_event events is generated.
- * It parses and print event.
- */
+ 
 static int
 ikm_event_handler(struct trace_seq *s, struct tep_record *record,
 		  struct tep_event *trace_event, void *context)
 {
-	/* if needed: struct trace_instance *inst = context; */
+	 
 	char *state, *event, *next_state;
 	unsigned long long final_state;
 	unsigned long long pid;
@@ -380,12 +318,7 @@ ikm_event_handler(struct trace_seq *s, struct tep_record *record,
 	return 0;
 }
 
-/*
- * ikm_error_handler - callback to handle error events
- *
- * Called any time a rv:"monitor"_errors events is generated.
- * It parses and print event.
- */
+ 
 static int
 ikm_error_handler(struct trace_seq *s, struct tep_record *record,
 		  struct tep_event *trace_event, void *context)
@@ -421,16 +354,10 @@ ikm_error_handler(struct trace_seq *s, struct tep_record *record,
 	return 0;
 }
 
-/*
- * ikm_setup_trace_instance - set up a tracing instance to collect data
- *
- * Create a trace instance, enable rv: events and enable the trace.
- *
- * Returns the trace_instance * with all set, NULL otherwise.
- */
+ 
 static struct trace_instance *ikm_setup_trace_instance(char *monitor_name)
 {
-	char event[MAX_DA_NAME_LEN + 7]; /* max(error_,event_) + '0' = 7 */
+	char event[MAX_DA_NAME_LEN + 7];  
 	struct trace_instance *inst;
 	int retval;
 
@@ -443,7 +370,7 @@ static struct trace_instance *ikm_setup_trace_instance(char *monitor_name)
 		goto out_err;
 	}
 
-	/* alloc data */
+	 
 	inst = calloc(1, sizeof(*inst));
 	if (!inst) {
 		err_msg("ikm: failed to allocate trace instance");
@@ -454,7 +381,7 @@ static struct trace_instance *ikm_setup_trace_instance(char *monitor_name)
 	if (retval)
 		goto out_free;
 
-	/* enable events */
+	 
 	snprintf(event, sizeof(event), "event_%s", monitor_name);
 	retval = tracefs_event_enable(inst->inst, "rv",  event);
 	if (retval)
@@ -471,7 +398,7 @@ static struct trace_instance *ikm_setup_trace_instance(char *monitor_name)
 	tep_register_event_handler(inst->tep, -1, "rv", event,
 				   ikm_error_handler, NULL);
 
-	/* ready to enable */
+	 
 	tracefs_trace_on(inst->inst);
 
 	return inst;
@@ -484,9 +411,7 @@ out_err:
 	return NULL;
 }
 
-/**
- * ikm_destroy_trace_instance - destroy a previously created instance
- */
+ 
 static void ikm_destroy_trace_instance(struct trace_instance *inst)
 {
 	if (!inst)
@@ -496,9 +421,7 @@ static void ikm_destroy_trace_instance(struct trace_instance *inst)
 	free(inst);
 }
 
-/*
- * ikm_usage_print_reactors - print all available reactors, one per line.
- */
+ 
 static void ikm_usage_print_reactors(void)
 {
 	char *reactors = tracefs_instance_file_read(NULL, "rv/available_reactors", NULL);
@@ -523,9 +446,7 @@ static void ikm_usage_print_reactors(void)
 
 	fprintf(stderr, "\n");
 }
-/*
- * ikm_usage - print usage
- */
+ 
 static void ikm_usage(int exit_val, char *monitor_name, const char *fmt, ...)
 {
 
@@ -559,9 +480,7 @@ static void ikm_usage(int exit_val, char *monitor_name, const char *fmt, ...)
 	exit(exit_val);
 }
 
-/*
- * parse_arguments - parse arguments and set config
- */
+ 
 static int parse_arguments(char *monitor_name, int argc, char **argv)
 {
 	int c, retval;
@@ -578,12 +497,12 @@ static int parse_arguments(char *monitor_name, int argc, char **argv)
 			{0, 0, 0, 0}
 		};
 
-		/* getopt_long stores the option index here. */
+		 
 		int option_index = 0;
 
 		c = getopt_long(argc, argv, "hr:stv", long_options, &option_index);
 
-		/* detect the end of the options. */
+		 
 		if (c == -1)
 			break;
 
@@ -624,20 +543,13 @@ static int parse_arguments(char *monitor_name, int argc, char **argv)
 	return 0;
 }
 
-/**
- * ikm_run_monitor - apply configs and run the monitor
- *
- * Returns 1 if a monitor was found an executed, 0 if no
- * monitors were found, or -1 on error.
- */
+ 
 int ikm_run_monitor(char *monitor_name, int argc, char **argv)
 {
 	struct trace_instance *inst = NULL;
 	int retval;
 
-	/*
-	 * Check if monitor exists by seeing it is enabled.
-	 */
+	 
 	retval = __ikm_read_enable(monitor_name);
 	if (retval < 0)
 		return 0;
@@ -647,7 +559,7 @@ int ikm_run_monitor(char *monitor_name, int argc, char **argv)
 		return -1;
 	}
 
-	/* we should be good to go */
+	 
 	retval = parse_arguments(monitor_name, argc, argv);
 	if (retval)
 		ikm_usage(1, monitor_name, "ikm: failed parsing arguments");

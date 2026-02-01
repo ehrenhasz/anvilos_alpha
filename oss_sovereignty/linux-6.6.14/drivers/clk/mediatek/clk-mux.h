@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2018 MediaTek Inc.
- * Author: Owen Chen <owen.chen@mediatek.com>
- */
+ 
+ 
 
 #ifndef __DRV_CLK_MTK_MUX_H
 #define __DRV_CLK_MTK_MUX_H
@@ -96,8 +93,8 @@ struct mtk_mux_nb {
 	struct notifier_block	nb;
 	const struct clk_ops	*ops;
 
-	u8	bypass_index;	/* Which parent to temporarily use */
-	u8	original_index;	/* Set by notifier callback */
+	u8	bypass_index;	 
+	u8	original_index;	 
 };
 
 #define to_mtk_mux_nb(_nb)	container_of(_nb, struct mtk_mux_nb, nb)
@@ -105,4 +102,4 @@ struct mtk_mux_nb {
 int devm_mtk_clk_mux_notifier_register(struct device *dev, struct clk *clk,
 				       struct mtk_mux_nb *mux_nb);
 
-#endif /* __DRV_CLK_MTK_MUX_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Simple file system for zoned block devices exposing zones as files.
- *
- * Copyright (C) 2022 Western Digital Corporation or its affiliates.
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/seq_file.h>
 #include <linux/blkdev.h>

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author: Jacob Chen <jacob-chen@iotwrt.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -374,7 +371,7 @@ static int rga_open(struct file *file)
 	if (!ctx)
 		return -ENOMEM;
 	ctx->rga = rga;
-	/* Set default formats */
+	 
 	ctx->in = def_frame;
 	ctx->out = def_frame;
 
@@ -395,7 +392,7 @@ static int rga_open(struct file *file)
 
 	rga_setup_ctrls(ctx);
 
-	/* Write the default values to the ctx struct */
+	 
 	v4l2_ctrl_handler_setup(&ctx->ctrl_handler);
 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
@@ -522,9 +519,7 @@ static int vidioc_s_fmt(struct file *file, void *prv, struct v4l2_format *f)
 	struct rga_fmt *fmt;
 	int ret = 0;
 
-	/* Adjust all values accordingly to the hardware capabilities
-	 * and chosen format.
-	 */
+	 
 	ret = vidioc_try_fmt(file, prv, f);
 	if (ret)
 		return ret;
@@ -546,7 +541,7 @@ static int vidioc_s_fmt(struct file *file, void *prv, struct v4l2_format *f)
 	frm->stride = f->fmt.pix.bytesperline;
 	frm->colorspace = f->fmt.pix.colorspace;
 
-	/* Reset crop settings */
+	 
 	frm->crop.left = 0;
 	frm->crop.top = 0;
 	frm->crop.width = frm->width;
@@ -617,25 +612,16 @@ static int vidioc_s_selection(struct file *file, void *prv,
 
 	switch (s->target) {
 	case V4L2_SEL_TGT_COMPOSE:
-		/*
-		 * COMPOSE target is only valid for capture buffer type, return
-		 * error for output buffer type
-		 */
+		 
 		if (s->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
 			return -EINVAL;
 		break;
 	case V4L2_SEL_TGT_CROP:
-		/*
-		 * CROP target is only valid for output buffer type, return
-		 * error for capture buffer type
-		 */
+		 
 		if (s->type != V4L2_BUF_TYPE_VIDEO_OUTPUT)
 			return -EINVAL;
 		break;
-	/*
-	 * bound and default crop/compose targets are invalid targets to
-	 * try/set
-	 */
+	 
 	default:
 		return -EINVAL;
 	}
@@ -872,7 +858,7 @@ static int rga_probe(struct platform_device *pdev)
 
 	pm_runtime_put(rga->dev);
 
-	/* Create CMD buffer */
+	 
 	rga->cmdbuf_virt = dma_alloc_attrs(rga->dev, RGA_CMDBUF_SIZE,
 					   &rga->cmdbuf_phy, GFP_KERNEL,
 					   DMA_ATTR_WRITE_COMBINE);

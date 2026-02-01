@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Camera Flash and Torch On/Off Trigger
- *
- * based on ledtrig-ide-disk.c
- *
- * Copyright 2013 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>

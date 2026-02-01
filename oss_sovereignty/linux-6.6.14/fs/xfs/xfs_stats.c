@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 
 struct xstats xfsstats;
@@ -51,22 +48,22 @@ int xfs_stats_format(struct xfsstats __percpu *stats, char *buf)
 		{ "fibt2",		xfsstats_offset(xs_rmap_2)	},
 		{ "rmapbt",		xfsstats_offset(xs_refcbt_2)	},
 		{ "refcntbt",		xfsstats_offset(xs_qm_dqreclaims)},
-		/* we print both series of quota information together */
+		 
 		{ "qm",			xfsstats_offset(xs_xstrat_bytes)},
 	};
 
-	/* Loop over all stats groups */
+	 
 
 	for (i = j = 0; i < ARRAY_SIZE(xstats); i++) {
 		len += scnprintf(buf + len, PATH_MAX - len, "%s",
 				xstats[i].desc);
-		/* inner loop does each group */
+		 
 		for (; j < xstats[i].endpoint; j++)
 			len += scnprintf(buf + len, PATH_MAX - len, " %u",
 					counter_val(stats, j));
 		len += scnprintf(buf + len, PATH_MAX - len, "\n");
 	}
-	/* extra precision counters */
+	 
 	for_each_possible_cpu(i) {
 		xs_xstrat_bytes += per_cpu_ptr(stats, i)->s.xs_xstrat_bytes;
 		xs_write_bytes += per_cpu_ptr(stats, i)->s.xs_write_bytes;
@@ -96,7 +93,7 @@ void xfs_stats_clearall(struct xfsstats __percpu *stats)
 	xfs_notice(NULL, "Clearing xfsstats");
 	for_each_possible_cpu(c) {
 		preempt_disable();
-		/* save vn_active, it's a universal truth! */
+		 
 		vn_active = per_cpu_ptr(stats, c)->s.vn_active;
 		memset(per_cpu_ptr(stats, c), 0, sizeof(*stats));
 		per_cpu_ptr(stats, c)->s.vn_active = vn_active;
@@ -105,7 +102,7 @@ void xfs_stats_clearall(struct xfsstats __percpu *stats)
 }
 
 #ifdef CONFIG_PROC_FS
-/* legacy quota interfaces */
+ 
 #ifdef CONFIG_XFS_QUOTA
 
 #define XFSSTAT_START_XQMSTAT xfsstats_offset(xs_qm_dqreclaims)
@@ -113,14 +110,14 @@ void xfs_stats_clearall(struct xfsstats __percpu *stats)
 
 static int xqm_proc_show(struct seq_file *m, void *v)
 {
-	/* maximum; incore; ratio free to inuse; freelist */
+	 
 	seq_printf(m, "%d\t%d\t%d\t%u\n",
 		   0, counter_val(xfsstats.xs_stats, XFSSTAT_END_XQMSTAT),
 		   0, counter_val(xfsstats.xs_stats, XFSSTAT_END_XQMSTAT + 1));
 	return 0;
 }
 
-/* legacy quota stats interface no 2 */
+ 
 static int xqmstat_proc_show(struct seq_file *m, void *v)
 {
 	int j;
@@ -131,7 +128,7 @@ static int xqmstat_proc_show(struct seq_file *m, void *v)
 	seq_putc(m, '\n');
 	return 0;
 }
-#endif /* CONFIG_XFS_QUOTA */
+#endif  
 
 int
 xfs_init_procfs(void)
@@ -161,4 +158,4 @@ xfs_cleanup_procfs(void)
 {
 	remove_proc_subtree("fs/xfs", NULL);
 }
-#endif /* CONFIG_PROC_FS */
+#endif  

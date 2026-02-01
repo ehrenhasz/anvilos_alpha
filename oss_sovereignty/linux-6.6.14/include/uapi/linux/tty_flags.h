@@ -1,58 +1,42 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _LINUX_TTY_FLAGS_H
 #define _LINUX_TTY_FLAGS_H
 
-/*
- * Definitions for async_struct (and serial_struct) flags field also
- * shared by the tty_port flags structures.
- *
- * Define ASYNCB_* for convenient use with {test,set,clear}_bit.
- *
- * Bits [0..ASYNCB_LAST_USER] are userspace defined/visible/changeable
- * [x] in the bit comments indicates the flag is defunct and no longer used.
- */
-#define ASYNCB_HUP_NOTIFY	 0 /* Notify getty on hangups and closes
-				    * on the callout port */
-#define ASYNCB_FOURPORT		 1 /* Set OUT1, OUT2 per AST Fourport settings */
-#define ASYNCB_SAK		 2 /* Secure Attention Key (Orange book) */
-#define ASYNCB_SPLIT_TERMIOS	 3 /* [x] Separate termios for dialin/callout */
-#define ASYNCB_SPD_HI		 4 /* Use 57600 instead of 38400 bps */
-#define ASYNCB_SPD_VHI		 5 /* Use 115200 instead of 38400 bps */
-#define ASYNCB_SKIP_TEST	 6 /* Skip UART test during autoconfiguration */
-#define ASYNCB_AUTO_IRQ		 7 /* Do automatic IRQ during
-				    * autoconfiguration */
-#define ASYNCB_SESSION_LOCKOUT	 8 /* [x] Lock out cua opens based on session */
-#define ASYNCB_PGRP_LOCKOUT	 9 /* [x] Lock out cua opens based on pgrp */
-#define ASYNCB_CALLOUT_NOHUP	10 /* [x] Don't do hangups for cua device */
-#define ASYNCB_HARDPPS_CD	11 /* Call hardpps when CD goes high  */
-#define ASYNCB_SPD_SHI		12 /* Use 230400 instead of 38400 bps */
-#define ASYNCB_LOW_LATENCY	13 /* Request low latency behaviour */
-#define ASYNCB_BUGGY_UART	14 /* This is a buggy UART, skip some safety
-				    * checks.  Note: can be dangerous! */
-#define ASYNCB_AUTOPROBE	15 /* [x] Port was autoprobed by PCI/PNP code */
-#define ASYNCB_MAGIC_MULTIPLIER	16 /* Use special CLK or divisor */
+ 
+#define ASYNCB_HUP_NOTIFY	 0  
+#define ASYNCB_FOURPORT		 1  
+#define ASYNCB_SAK		 2  
+#define ASYNCB_SPLIT_TERMIOS	 3  
+#define ASYNCB_SPD_HI		 4  
+#define ASYNCB_SPD_VHI		 5  
+#define ASYNCB_SKIP_TEST	 6  
+#define ASYNCB_AUTO_IRQ		 7  
+#define ASYNCB_SESSION_LOCKOUT	 8  
+#define ASYNCB_PGRP_LOCKOUT	 9  
+#define ASYNCB_CALLOUT_NOHUP	10  
+#define ASYNCB_HARDPPS_CD	11  
+#define ASYNCB_SPD_SHI		12  
+#define ASYNCB_LOW_LATENCY	13  
+#define ASYNCB_BUGGY_UART	14  
+#define ASYNCB_AUTOPROBE	15  
+#define ASYNCB_MAGIC_MULTIPLIER	16  
 #define ASYNCB_LAST_USER	16
 
-/*
- * Internal flags used only by kernel (read-only)
- *
- * WARNING: These flags are no longer used and have been superceded by the
- *	    TTY_PORT_ flags in the iflags field (and not userspace-visible)
- */
+ 
 #ifndef __KERNEL__
-#define ASYNCB_INITIALIZED	31 /* Serial port was initialized */
-#define ASYNCB_SUSPENDED	30 /* Serial port is suspended */
-#define ASYNCB_NORMAL_ACTIVE	29 /* Normal device is active */
-#define ASYNCB_BOOT_AUTOCONF	28 /* Autoconfigure port on bootup */
-#define ASYNCB_CLOSING		27 /* Serial port is closing */
-#define ASYNCB_CTS_FLOW		26 /* Do CTS flow control */
-#define ASYNCB_CHECK_CD		25 /* i.e., CLOCAL */
-#define ASYNCB_SHARE_IRQ	24 /* for multifunction cards, no longer used */
-#define ASYNCB_CONS_FLOW	23 /* flow control for console  */
+#define ASYNCB_INITIALIZED	31  
+#define ASYNCB_SUSPENDED	30  
+#define ASYNCB_NORMAL_ACTIVE	29  
+#define ASYNCB_BOOT_AUTOCONF	28  
+#define ASYNCB_CLOSING		27  
+#define ASYNCB_CTS_FLOW		26  
+#define ASYNCB_CHECK_CD		25  
+#define ASYNCB_SHARE_IRQ	24  
+#define ASYNCB_CONS_FLOW	23  
 #define ASYNCB_FIRST_KERNEL	22
 #endif
 
-/* Masks */
+ 
 #define ASYNC_HUP_NOTIFY	(1U << ASYNCB_HUP_NOTIFY)
 #define ASYNC_SUSPENDED		(1U << ASYNCB_SUSPENDED)
 #define ASYNC_FOURPORT		(1U << ASYNCB_FOURPORT)
@@ -82,7 +66,7 @@
 #define ASYNC_SPD_MASK		(ASYNC_SPD_HI|ASYNC_SPD_VHI|ASYNC_SPD_SHI)
 
 #ifndef __KERNEL__
-/* These flags are no longer used (and were always masked from userspace) */
+ 
 #define ASYNC_INITIALIZED	(1U << ASYNCB_INITIALIZED)
 #define ASYNC_NORMAL_ACTIVE	(1U << ASYNCB_NORMAL_ACTIVE)
 #define ASYNC_BOOT_AUTOCONF	(1U << ASYNCB_BOOT_AUTOCONF)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Watchdog driver for the K3 RTI module
- *
- * (c) Copyright 2019-2020 Texas Instruments Inc.
- * All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -23,10 +18,10 @@
 
 #define DEFAULT_HEARTBEAT 60
 
-/* Max heartbeat is calculated at 32kHz source clock */
+ 
 #define MAX_HEARTBEAT	1000
 
-/* Timer register set definition */
+ 
 #define RTIDWDCTRL	0x90
 #define RTIDWDPRLD	0x94
 #define RTIWDSTATUS	0x98
@@ -61,12 +56,7 @@
 
 static int heartbeat = DEFAULT_HEARTBEAT;
 
-/*
- * struct to hold data for each WDT device
- * @base - base io address of WD device
- * @freq - source clock frequency of WDT
- * @wdd  - hold watchdog device as is in WDT core
- */
+ 
 struct rti_wdt_device {
 	void __iomem		*base;
 	unsigned long		freq;
@@ -83,31 +73,25 @@ static int rti_wdt_start(struct watchdog_device *wdd)
 	if (ret)
 		return ret;
 
-	/* set timeout period */
+	 
 	timer_margin = (u64)wdd->timeout * wdt->freq;
 	timer_margin >>= WDT_PRELOAD_SHIFT;
 	if (timer_margin > WDT_PRELOAD_MAX)
 		timer_margin = WDT_PRELOAD_MAX;
 	writel_relaxed(timer_margin, wdt->base + RTIDWDPRLD);
 
-	/*
-	 * RTI only supports a windowed mode, where the watchdog can only
-	 * be petted during the open window; not too early or not too late.
-	 * The HW configuration options only allow for the open window size
-	 * to be 50% or less than that; we obviouly want to configure the open
-	 * window as large as possible so we select the 50% option.
-	 */
+	 
 	wdd->min_hw_heartbeat_ms = 500 * wdd->timeout;
 
-	/* Generate NMI when wdt expires */
+	 
 	writel_relaxed(RTIWWDRX_NMI, wdt->base + RTIWWDRXCTRL);
 
-	/* Open window size 50%; this is the largest window size available */
+	 
 	writel_relaxed(RTIWWDSIZE_50P, wdt->base + RTIWWDSIZECTRL);
 
 	readl_relaxed(wdt->base + RTIWWDSIZECTRL);
 
-	/* enable watchdog */
+	 
 	writel_relaxed(WDENABLE_KEY, wdt->base + RTIDWDCTRL);
 	return 0;
 }
@@ -116,9 +100,9 @@ static int rti_wdt_ping(struct watchdog_device *wdd)
 {
 	struct rti_wdt_device *wdt = watchdog_get_drvdata(wdd);
 
-	/* put watchdog in service state */
+	 
 	writel_relaxed(WDKEY_SEQ0, wdt->base + RTIWDKEY);
-	/* put watchdog in active state */
+	 
 	writel_relaxed(WDKEY_SEQ1, wdt->base + RTIWDKEY);
 
 	return 0;
@@ -126,35 +110,30 @@ static int rti_wdt_ping(struct watchdog_device *wdd)
 
 static int rti_wdt_setup_hw_hb(struct watchdog_device *wdd, u32 wsize)
 {
-	/*
-	 * RTI only supports a windowed mode, where the watchdog can only
-	 * be petted during the open window; not too early or not too late.
-	 * The HW configuration options only allow for the open window size
-	 * to be 50% or less than that.
-	 */
+	 
 	switch (wsize) {
 	case RTIWWDSIZE_50P:
-		/* 50% open window => 50% min heartbeat */
+		 
 		wdd->min_hw_heartbeat_ms = 500 * heartbeat;
 		break;
 
 	case RTIWWDSIZE_25P:
-		/* 25% open window => 75% min heartbeat */
+		 
 		wdd->min_hw_heartbeat_ms = 750 * heartbeat;
 		break;
 
 	case RTIWWDSIZE_12P5:
-		/* 12.5% open window => 87.5% min heartbeat */
+		 
 		wdd->min_hw_heartbeat_ms = 875 * heartbeat;
 		break;
 
 	case RTIWWDSIZE_6P25:
-		/* 6.5% open window => 93.5% min heartbeat */
+		 
 		wdd->min_hw_heartbeat_ms = 935 * heartbeat;
 		break;
 
 	case RTIWWDSIZE_3P125:
-		/* 3.125% open window => 96.9% min heartbeat */
+		 
 		wdd->min_hw_heartbeat_ms = 969 * heartbeat;
 		break;
 
@@ -171,7 +150,7 @@ static unsigned int rti_wdt_get_timeleft_ms(struct watchdog_device *wdd)
 	u32 val;
 	struct rti_wdt_device *wdt = watchdog_get_drvdata(wdd);
 
-	/* if timeout has occurred then return 0 */
+	 
 	val = readl_relaxed(wdt->base + RTIWDSTATUS);
 	if (val & DWDST)
 		return 0;
@@ -233,11 +212,7 @@ static int rti_wdt_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * If watchdog is running at 32k clock, it is not accurate.
-	 * Adjust frequency down in this case so that we don't pet
-	 * the watchdog too often.
-	 */
+	 
 	if (wdt->freq < 32768)
 		wdt->freq = wdt->freq * 9 / 10;
 
@@ -309,10 +284,7 @@ static int rti_wdt_probe(struct platform_device *pdev)
 			goto err_iomap;
 		}
 
-		/*
-		 * If reserved memory is defined for watchdog reset cause.
-		 * Readout the Power-on(PON) reason and pass to bootstatus.
-		 */
+		 
 		paddr = res.start;
 		reserved_mem_size = resource_size(&res);
 		if (reserved_mem_size < RESERVED_MEM_MIN_SIZE) {

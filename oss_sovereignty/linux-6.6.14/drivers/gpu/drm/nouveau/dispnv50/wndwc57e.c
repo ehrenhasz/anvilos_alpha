@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "wndw.h"
 #include "atom.h"
 
@@ -157,7 +137,7 @@ fixedU0_16_FP16(u16 fixed)
 static void
 wndwc57e_ilut_load(struct drm_color_lut *in, int size, void __iomem *mem)
 {
-	memset_io(mem, 0x00, 0x20); /* VSS header. */
+	memset_io(mem, 0x00, 0x20);  
 	mem += 0x20;
 
 	for (; size--; in++, mem += 0x08) {
@@ -169,9 +149,7 @@ wndwc57e_ilut_load(struct drm_color_lut *in, int size, void __iomem *mem)
 		writew(b, mem + 4);
 	}
 
-	/* INTERPOLATE modes require a "next" entry to interpolate with,
-	 * so we replicate the last entry to deal with this for now.
-	 */
+	 
 	writew(readw(mem - 8), mem + 0);
 	writew(readw(mem - 6), mem + 2);
 	writew(readw(mem - 4), mem + 4);
@@ -188,18 +166,13 @@ wndwc57e_ilut(struct nv50_wndw *wndw, struct nv50_wndw_atom *asyw, int size)
 	else
 		asyw->xlut.i.mode = NVC57E_SET_ILUT_CONTROL_MODE_DIRECT10;
 
-	asyw->xlut.i.size = 4 /* VSS header. */ + size + 1 /* Entries. */;
+	asyw->xlut.i.size = 4   + size + 1  ;
 	asyw->xlut.i.output_mode = NVC57E_SET_ILUT_CONTROL_INTERPOLATE_DISABLE;
 	asyw->xlut.i.load = wndwc57e_ilut_load;
 }
 
-/****************************************************************
- *            Log2(block height) ----------------------------+  *
- *            Page Kind ----------------------------------+  |  *
- *            Gob Height/Page Kind Generation ------+     |  |  *
- *                          Sector layout -------+  |     |  |  *
- *                          Compression ------+  |  |     |  |  */
-const u64 wndwc57e_modifiers[] = { /*         |  |  |     |  |  */
+ 
+const u64 wndwc57e_modifiers[] = {  
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 2, 0x06, 0),
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 2, 0x06, 1),
 	DRM_FORMAT_MOD_NVIDIA_BLOCK_LINEAR_2D(0, 1, 2, 0x06, 2),

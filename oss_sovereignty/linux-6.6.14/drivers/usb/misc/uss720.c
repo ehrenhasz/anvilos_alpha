@@ -1,32 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*****************************************************************************/
 
-/*
- *	uss720.c  --  USS720 USB Parport Cable.
- *
- *	Copyright (C) 1999, 2005, 2010
- *	    Thomas Sailer (t.sailer@alumni.ethz.ch)
- *
- *  Based on parport_pc.c
- *
- *  History:
- *   0.1  04.08.1999  Created
- *   0.2  07.08.1999  Some fixes mainly suggested by Tim Waugh
- *		      Interrupt handling currently disabled because
- *		      usb_request_irq crashes somewhere within ohci.c
- *		      for no apparent reason (that is for me, anyway)
- *		      ECP currently untested
- *   0.3  10.08.1999  fixing merge errors
- *   0.4  13.08.1999  Added Vendor/Product ID of Brad Hard's cable
- *   0.5  20.09.1999  usb_control_msg wrapper used
- *        Nov01.2000  usb_device_table support by Adam J. Richter
- *        08.04.2001  Identify version on module load.  gb
- *   0.6  02.09.2005  Fix "scheduling in interrupt" problem by making save/restore
- *                    context asynchronous
- *
- */
+ 
 
-/*****************************************************************************/
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/socket.h>
@@ -42,13 +19,13 @@
 #define DRIVER_AUTHOR "Thomas M. Sailer, t.sailer@alumni.ethz.ch"
 #define DRIVER_DESC "USB Parport Cable driver for Cables using the Lucent Technologies USS720 Chip"
 
-/* --------------------------------------------------------------------- */
+ 
 
 struct parport_uss720_private {
 	struct usb_device *usbdev;
 	struct parport *pp;
 	struct kref ref_count;
-	__u8 reg[7];  /* USB registers */
+	__u8 reg[7];   
 	struct list_head asynclist;
 	spinlock_t asynclock;
 };
@@ -63,7 +40,7 @@ struct uss720_async_request {
 	__u8 reg[7];
 };
 
-/* --------------------------------------------------------------------- */
+ 
 
 static void destroy_priv(struct kref *kref)
 {
@@ -91,7 +68,7 @@ static void destroy_async(struct kref *kref)
 	kref_put(&priv->ref_count, destroy_priv);
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static void async_complete(struct urb *urb)
 {
@@ -112,7 +89,7 @@ static void async_complete(struct urb *urb)
 		dev_dbg(&priv->usbdev->dev, "async_complete regs %7ph\n",
 			priv->reg);
 #endif
-		/* if nAck interrupts are enabled and we have an interrupt, call the interrupt procedure */
+		 
 		if (rq->reg[2] & rq->reg[1] & 0x10 && pp)
 			parport_generic_irq(pp);
 	}
@@ -160,7 +137,7 @@ static struct uss720_async_request *submit_async_request(struct parport_uss720_p
 	usb_fill_control_urb(rq->urb, usbdev, (requesttype & 0x80) ? usb_rcvctrlpipe(usbdev, 0) : usb_sndctrlpipe(usbdev, 0),
 			     (unsigned char *)rq->dr,
 			     (request == 3) ? rq->reg : NULL, (request == 3) ? sizeof(rq->reg) : 0, async_complete, rq);
-	/* rq->urb->transfer_flags |= URB_ASYNC_UNLINK; */
+	 
 	spin_lock_irqsave(&priv->asynclock, flags);
 	list_add_tail(&rq->asynclist, &priv->asynclist);
 	spin_unlock_irqrestore(&priv->asynclock, flags);
@@ -188,7 +165,7 @@ static unsigned int kill_all_async_requests_priv(struct parport_uss720_private *
 	return ret;
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static int get_1284_register(struct parport *pp, unsigned char reg, unsigned char *val, gfp_t mem_flags)
 {
@@ -244,16 +221,16 @@ static int set_1284_register(struct parport *pp, unsigned char reg, unsigned cha
 	return 0;
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
-/* ECR modes */
+ 
 #define ECR_SPP 00
 #define ECR_PS2 01
 #define ECR_PPF 02
 #define ECR_ECP 03
 #define ECR_EPP 04
 
-/* Safely change the mode bits in the ECR */
+ 
 static int change_mode(struct parport *pp, int m)
 {
 	struct parport_uss720_private *priv = pp->private_data;
@@ -262,30 +239,29 @@ static int change_mode(struct parport *pp, int m)
 
 	if (get_1284_register(pp, 6, &reg, GFP_KERNEL))
 		return -EIO;
-	/* Bits <7:5> contain the mode. */
+	 
 	mode = (priv->reg[2] >> 5) & 0x7;
 	if (mode == m)
 		return 0;
-	/* We have to go through mode 000 or 001 */
+	 
 	if (mode > ECR_PS2 && m > ECR_PS2)
 		if (change_mode(pp, ECR_PS2))
 			return -EIO;
 
 	if (m <= ECR_PS2 && !(priv->reg[1] & 0x20)) {
-		/* This mode resets the FIFO, so we may
-		 * have to wait for it to drain first. */
+		 
 		unsigned long expire = jiffies + pp->physport->cad->timeout;
 		switch (mode) {
-		case ECR_PPF: /* Parallel Port FIFO mode */
-		case ECR_ECP: /* ECP Parallel Port mode */
-			/* Poll slowly. */
+		case ECR_PPF:  
+		case ECR_ECP:  
+			 
 			for (;;) {
 				if (get_1284_register(pp, 6, &reg, GFP_KERNEL))
 					return -EIO;
 				if (priv->reg[2] & 0x01)
 					break;
 				if (time_after_eq (jiffies, expire))
-					/* The FIFO is stuck. */
+					 
 					return -EBUSY;
 				msleep_interruptible(10);
 				if (signal_pending (current))
@@ -293,7 +269,7 @@ static int change_mode(struct parport *pp, int m)
 			}
 		}
 	}
-	/* Set the mode. */
+	 
 	if (set_1284_register(pp, 6, m << 5, GFP_KERNEL))
 		return -EIO;
 	if (get_1284_register(pp, 6, &reg, GFP_KERNEL))
@@ -301,9 +277,7 @@ static int change_mode(struct parport *pp, int m)
 	return 0;
 }
 
-/*
- * Clear TIMEOUT BIT in EPP MODE
- */
+ 
 static int clear_epp_timeout(struct parport *pp)
 {
 	unsigned char stat;
@@ -313,9 +287,7 @@ static int clear_epp_timeout(struct parport *pp)
 	return stat & 1;
 }
 
-/*
- * Access functions.
- */
+ 
 #if 0
 static int uss720_irq(int usbstatus, void *buffer, int len, void *dev_id)
 {
@@ -325,7 +297,7 @@ static int uss720_irq(int usbstatus, void *buffer, int len, void *dev_id)
 	if (usbstatus != 0 || len < 4 || !buffer)
 		return 1;
 	memcpy(priv->reg, buffer, 4);
-	/* if nAck interrupts are enabled and we have an interrupt, call the interrupt procedure */
+	 
 	if (priv->reg[2] & priv->reg[1] & 0x10)
 		parport_generic_irq(pp);
 	return 1;
@@ -359,7 +331,7 @@ static void parport_uss720_write_control(struct parport *pp, unsigned char d)
 static unsigned char parport_uss720_read_control(struct parport *pp)
 {
 	struct parport_uss720_private *priv = pp->private_data;	
-	return priv->reg[1] & 0xf; /* Use soft copy */
+	return priv->reg[1] & 0xf;  
 }
 
 static unsigned char parport_uss720_frob_control(struct parport *pp, unsigned char mask, unsigned char val)
@@ -628,7 +600,7 @@ static size_t parport_uss720_write_compat(struct parport *pp, const void *buffer
 	return rlen;
 }
 
-/* --------------------------------------------------------------------- */
+ 
 
 static struct parport_operations parport_uss720_ops = 
 {
@@ -666,7 +638,7 @@ static struct parport_operations parport_uss720_ops =
 	.byte_read_data =	parport_ieee1284_read_byte,
 };
 
-/* --------------------------------------------------------------------- */
+ 
 
 static int uss720_probe(struct usb_interface *intf,
 			const struct usb_device_id *id)
@@ -683,7 +655,7 @@ static int uss720_probe(struct usb_interface *intf,
 		le16_to_cpu(usbdev->descriptor.idVendor),
 		le16_to_cpu(usbdev->descriptor.idProduct));
 
-	/* our known interfaces have 3 alternate settings */
+	 
 	if (intf->num_altsetting != 3) {
 		usb_put_dev(usbdev);
 		return -ENODEV;
@@ -698,9 +670,7 @@ static int uss720_probe(struct usb_interface *intf,
 		return -ENODEV;
 	}
 
-	/*
-	 * Allocate parport interface 
-	 */
+	 
 	priv = kzalloc(sizeof(struct parport_uss720_private), GFP_KERNEL);
 	if (!priv) {
 		usb_put_dev(usbdev);
@@ -721,11 +691,11 @@ static int uss720_probe(struct usb_interface *intf,
 	pp->private_data = priv;
 	pp->modes = PARPORT_MODE_PCSPP | PARPORT_MODE_TRISTATE | PARPORT_MODE_EPP | PARPORT_MODE_ECP | PARPORT_MODE_COMPAT;
 
-	/* set the USS720 control register to manual mode, no ECP compression, enable all ints */
+	 
 	set_1284_register(pp, 7, 0x00, GFP_KERNEL);
-	set_1284_register(pp, 6, 0x30, GFP_KERNEL);  /* PS/2 mode */
+	set_1284_register(pp, 6, 0x30, GFP_KERNEL);   
 	set_1284_register(pp, 2, 0x0c, GFP_KERNEL);
-	/* debugging */
+	 
 	get_1284_register(pp, 0, &reg, GFP_KERNEL);
 	dev_dbg(&intf->dev, "reg: %7ph\n", priv->reg);
 
@@ -764,7 +734,7 @@ static void uss720_disconnect(struct usb_interface *intf)
 	dev_dbg(&intf->dev, "disconnect done\n");
 }
 
-/* table of cables that work through this driver */
+ 
 static const struct usb_device_id uss720_table[] = {
 	{ USB_DEVICE(0x047e, 0x1001) },
 	{ USB_DEVICE(0x04b8, 0x0002) },
@@ -776,7 +746,7 @@ static const struct usb_device_id uss720_table[] = {
 	{ USB_DEVICE(0x06c6, 0x0100) },
 	{ USB_DEVICE(0x0729, 0x1284) },
 	{ USB_DEVICE(0x1293, 0x0002) },
-	{ }						/* Terminating entry */
+	{ }						 
 };
 
 MODULE_DEVICE_TABLE (usb, uss720_table);
@@ -789,7 +759,7 @@ static struct usb_driver uss720_driver = {
 	.id_table =	uss720_table,
 };
 
-/* --------------------------------------------------------------------- */
+ 
 
 MODULE_AUTHOR(DRIVER_AUTHOR);
 MODULE_DESCRIPTION(DRIVER_DESC);
@@ -821,4 +791,4 @@ static void __exit uss720_cleanup(void)
 module_init(uss720_init);
 module_exit(uss720_cleanup);
 
-/* --------------------------------------------------------------------- */
+ 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Bosch BME680 - Temperature, Pressure, Humidity & Gas Sensor
- *
- * Copyright (C) 2017 - 2018 Bosch Sensortec GmbH
- * Copyright (C) 2018 Himanshu Jha <himanshujha199640@gmail.com>
- *
- * Datasheet:
- * https://ae-bst.resource.bosch.com/media/_tech/media/datasheets/BST-BME680-DS001-00.pdf
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -56,10 +48,7 @@ struct bme680_data {
 	u8 oversampling_humid;
 	u16 heater_dur;
 	u16 heater_temp;
-	/*
-	 * Carryover value from temperature conversion, used in pressure
-	 * and humidity compensation calculations.
-	 */
+	 
 	s32 t_fine;
 };
 
@@ -113,7 +102,7 @@ static int bme680_read_calib(struct bme680_data *data,
 	int ret;
 	__le16 buf;
 
-	/* Temperature related coefficients */
+	 
 	ret = regmap_bulk_read(data->regmap, BME680_T1_LSB_REG,
 			       &buf, sizeof(buf));
 	if (ret < 0) {
@@ -137,7 +126,7 @@ static int bme680_read_calib(struct bme680_data *data,
 	}
 	calib->par_t3 = tmp;
 
-	/* Pressure related coefficients */
+	 
 	ret = regmap_bulk_read(data->regmap, BME680_P1_LSB_REG,
 			       &buf, sizeof(buf));
 	if (ret < 0) {
@@ -214,7 +203,7 @@ static int bme680_read_calib(struct bme680_data *data,
 	}
 	calib->par_p10 = tmp;
 
-	/* Humidity related coefficients */
+	 
 	ret = regmap_read(data->regmap, BME680_H1_MSB_REG, &tmp_msb);
 	if (ret < 0) {
 		dev_err(dev, "failed to read BME680_H1_MSB_REG\n");
@@ -276,7 +265,7 @@ static int bme680_read_calib(struct bme680_data *data,
 	}
 	calib->par_h7 = tmp;
 
-	/* Gas heater related coefficients */
+	 
 	ret = regmap_read(data->regmap, BME680_GH1_REG, &tmp);
 	if (ret < 0) {
 		dev_err(dev, "failed to read BME680_GH1_REG\n");
@@ -299,7 +288,7 @@ static int bme680_read_calib(struct bme680_data *data,
 	}
 	calib->par_gh3 = tmp;
 
-	/* Other coefficients */
+	 
 	ret = regmap_read(data->regmap, BME680_REG_RES_HEAT_RANGE, &tmp);
 	if (ret < 0) {
 		dev_err(dev, "failed to read resistance heat range\n");
@@ -324,13 +313,7 @@ static int bme680_read_calib(struct bme680_data *data,
 	return 0;
 }
 
-/*
- * Taken from Bosch BME680 API:
- * https://github.com/BoschSensortec/BME680_driver/blob/63bb5336/bme680.c#L876
- *
- * Returns temperature measurement in DegC, resolutions is 0.01 DegC. Therefore,
- * output value of "3233" represents 32.33 DegC.
- */
+ 
 static s16 bme680_compensate_temp(struct bme680_data *data,
 				  s32 adc_temp)
 {
@@ -338,7 +321,7 @@ static s16 bme680_compensate_temp(struct bme680_data *data,
 	s64 var1, var2, var3;
 	s16 calc_temp;
 
-	/* If the calibration is invalid, attempt to reload it */
+	 
 	if (!calib->par_t2)
 		bme680_read_calib(data, calib);
 
@@ -352,13 +335,7 @@ static s16 bme680_compensate_temp(struct bme680_data *data,
 	return calc_temp;
 }
 
-/*
- * Taken from Bosch BME680 API:
- * https://github.com/BoschSensortec/BME680_driver/blob/63bb5336/bme680.c#L896
- *
- * Returns pressure measurement in Pa. Output value of "97356" represents
- * 97356 Pa = 973.56 hPa.
- */
+ 
 static u32 bme680_compensate_press(struct bme680_data *data,
 				   u32 adc_press)
 {
@@ -393,13 +370,7 @@ static u32 bme680_compensate_press(struct bme680_data *data,
 	return press_comp;
 }
 
-/*
- * Taken from Bosch BME680 API:
- * https://github.com/BoschSensortec/BME680_driver/blob/63bb5336/bme680.c#L937
- *
- * Returns humidity measurement in percent, resolution is 0.001 percent. Output
- * value of "43215" represents 43.215 %rH.
- */
+ 
 static u32 bme680_compensate_humid(struct bme680_data *data,
 				   u16 adc_humid)
 {
@@ -420,17 +391,12 @@ static u32 bme680_compensate_humid(struct bme680_data *data,
 	var6 = (var4 * var5) >> 1;
 	calc_hum = (((var3 + var6) >> 10) * 1000) >> 12;
 
-	calc_hum = clamp(calc_hum, 0, 100000); /* clamp between 0-100 %rH */
+	calc_hum = clamp(calc_hum, 0, 100000);  
 
 	return calc_hum;
 }
 
-/*
- * Taken from Bosch BME680 API:
- * https://github.com/BoschSensortec/BME680_driver/blob/63bb5336/bme680.c#L973
- *
- * Returns gas measurement in Ohm. Output value of "82986" represent 82986 ohms.
- */
+ 
 static u32 bme680_compensate_gas(struct bme680_data *data, u16 gas_res_adc,
 				 u8 gas_range)
 {
@@ -440,7 +406,7 @@ static u32 bme680_compensate_gas(struct bme680_data *data, u16 gas_res_adc,
 	s64 var3;
 	u32 calc_gas_res;
 
-	/* Look up table for the possible gas range values */
+	 
 	const u32 lookupTable[16] = {2147483647u, 2147483647u,
 				2147483647u, 2147483647u, 2147483647u,
 				2126008810u, 2147483647u, 2130303777u,
@@ -458,17 +424,14 @@ static u32 bme680_compensate_gas(struct bme680_data *data, u16 gas_res_adc,
 	return calc_gas_res;
 }
 
-/*
- * Taken from Bosch BME680 API:
- * https://github.com/BoschSensortec/BME680_driver/blob/63bb5336/bme680.c#L1002
- */
+ 
 static u8 bme680_calc_heater_res(struct bme680_data *data, u16 temp)
 {
 	struct bme680_calib *calib = &data->bme680;
 	s32 var1, var2, var3, var4, var5, heatr_res_x100;
 	u8 heatr_res;
 
-	if (temp > 400) /* Cap temperature */
+	if (temp > 400)  
 		temp = 400;
 
 	var1 = (((s32) BME680_AMB_TEMP * calib->par_gh3) / 1000) * 256;
@@ -484,16 +447,13 @@ static u8 bme680_calc_heater_res(struct bme680_data *data, u16 temp)
 	return heatr_res;
 }
 
-/*
- * Taken from Bosch BME680 API:
- * https://github.com/BoschSensortec/BME680_driver/blob/63bb5336/bme680.c#L1188
- */
+ 
 static u8 bme680_calc_heater_dur(u16 dur)
 {
 	u8 durval, factor = 0;
 
 	if (dur >= 0xfc0) {
-		durval = 0xff; /* Max duration */
+		durval = 0xff;  
 	} else {
 		while (dur > 0x3F) {
 			dur = dur / 4;
@@ -541,10 +501,7 @@ static int bme680_chip_config(struct bme680_data *data)
 	osrs = FIELD_PREP(
 		BME680_OSRS_HUMIDITY_MASK,
 		bme680_oversampling_to_reg(data->oversampling_humid));
-	/*
-	 * Highly recommended to set oversampling of humidity before
-	 * temperature/pressure oversampling.
-	 */
+	 
 	ret = regmap_update_bits(data->regmap, BME680_REG_CTRL_HUMIDITY,
 				 BME680_OSRS_HUMIDITY_MASK, osrs);
 	if (ret < 0) {
@@ -552,7 +509,7 @@ static int bme680_chip_config(struct bme680_data *data)
 		return ret;
 	}
 
-	/* IIR filter settings */
+	 
 	ret = regmap_update_bits(data->regmap, BME680_REG_CONFIG,
 				 BME680_FILTER_MASK,
 				 BME680_FILTER_COEFF_VAL);
@@ -582,7 +539,7 @@ static int bme680_gas_config(struct bme680_data *data)
 
 	heatr_res = bme680_calc_heater_res(data, data->heater_temp);
 
-	/* set target heater temperature */
+	 
 	ret = regmap_write(data->regmap, BME680_REG_RES_HEAT_0, heatr_res);
 	if (ret < 0) {
 		dev_err(dev, "failed to write res_heat_0 register\n");
@@ -591,14 +548,14 @@ static int bme680_gas_config(struct bme680_data *data)
 
 	heatr_dur = bme680_calc_heater_dur(data->heater_dur);
 
-	/* set target heating duration */
+	 
 	ret = regmap_write(data->regmap, BME680_REG_GAS_WAIT_0, heatr_dur);
 	if (ret < 0) {
 		dev_err(dev, "failed to write gas_wait_0 register\n");
 		return ret;
 	}
 
-	/* Enable the gas sensor and select heater profile set-point 0 */
+	 
 	ret = regmap_update_bits(data->regmap, BME680_REG_CTRL_GAS_1,
 				 BME680_RUN_GAS_MASK | BME680_NB_CONV_MASK,
 				 FIELD_PREP(BME680_RUN_GAS_MASK, 1) |
@@ -617,7 +574,7 @@ static int bme680_read_temp(struct bme680_data *data, int *val)
 	s32 adc_temp;
 	s16 comp_temp;
 
-	/* set forced mode to trigger measurement */
+	 
 	ret = bme680_set_mode(data, true);
 	if (ret < 0)
 		return ret;
@@ -631,19 +588,14 @@ static int bme680_read_temp(struct bme680_data *data, int *val)
 
 	adc_temp = be32_to_cpu(tmp) >> 12;
 	if (adc_temp == BME680_MEAS_SKIPPED) {
-		/* reading was skipped */
+		 
 		dev_err(dev, "reading temperature skipped\n");
 		return -EINVAL;
 	}
 	comp_temp = bme680_compensate_temp(data, adc_temp);
-	/*
-	 * val might be NULL if we're called by the read_press/read_humid
-	 * routine which is called to get t_fine value used in
-	 * compensate_press/compensate_humid to get compensated
-	 * pressure/humidity readings.
-	 */
+	 
 	if (val) {
-		*val = comp_temp * 10; /* Centidegrees to millidegrees */
+		*val = comp_temp * 10;  
 		return IIO_VAL_INT;
 	}
 
@@ -658,7 +610,7 @@ static int bme680_read_press(struct bme680_data *data,
 	__be32 tmp = 0;
 	s32 adc_press;
 
-	/* Read and compensate temperature to get a reading of t_fine */
+	 
 	ret = bme680_read_temp(data, NULL);
 	if (ret < 0)
 		return ret;
@@ -672,7 +624,7 @@ static int bme680_read_press(struct bme680_data *data,
 
 	adc_press = be32_to_cpu(tmp) >> 12;
 	if (adc_press == BME680_MEAS_SKIPPED) {
-		/* reading was skipped */
+		 
 		dev_err(dev, "reading pressure skipped\n");
 		return -EINVAL;
 	}
@@ -691,7 +643,7 @@ static int bme680_read_humid(struct bme680_data *data,
 	s32 adc_humidity;
 	u32 comp_humidity;
 
-	/* Read and compensate temperature to get a reading of t_fine */
+	 
 	ret = bme680_read_temp(data, NULL);
 	if (ret < 0)
 		return ret;
@@ -705,7 +657,7 @@ static int bme680_read_humid(struct bme680_data *data,
 
 	adc_humidity = be16_to_cpu(tmp);
 	if (adc_humidity == BME680_MEAS_SKIPPED) {
-		/* reading was skipped */
+		 
 		dev_err(dev, "reading humidity skipped\n");
 		return -EINVAL;
 	}
@@ -726,14 +678,14 @@ static int bme680_read_gas(struct bme680_data *data,
 	u16 adc_gas_res;
 	u8 gas_range;
 
-	/* Set heater settings */
+	 
 	ret = bme680_gas_config(data);
 	if (ret < 0) {
 		dev_err(dev, "failed to set gas config\n");
 		return ret;
 	}
 
-	/* set forced mode to trigger measurement */
+	 
 	ret = bme680_set_mode(data, true);
 	if (ret < 0)
 		return ret;
@@ -750,12 +702,7 @@ static int bme680_read_gas(struct bme680_data *data,
 		return ret;
 	}
 
-	/*
-	 * occurs if either the gas heating duration was insuffient
-	 * to reach the target heater temperature or the target
-	 * heater temperature was too high for the heater sink to
-	 * reach.
-	 */
+	 
 	if ((check & BME680_GAS_STAB_BIT) == 0) {
 		dev_err(dev, "heater failed to reach the target temperature\n");
 		return -EINVAL;
@@ -929,12 +876,12 @@ int bme680_core_probe(struct device *dev, struct regmap *regmap,
 	indio_dev->info = &bme680_info;
 	indio_dev->modes = INDIO_DIRECT_MODE;
 
-	/* default values for the sensor */
-	data->oversampling_humid = 2; /* 2X oversampling rate */
-	data->oversampling_press = 4; /* 4X oversampling rate */
-	data->oversampling_temp = 8;  /* 8X oversampling rate */
-	data->heater_temp = 320; /* degree Celsius */
-	data->heater_dur = 150;  /* milliseconds */
+	 
+	data->oversampling_humid = 2;  
+	data->oversampling_press = 4;  
+	data->oversampling_temp = 8;   
+	data->heater_temp = 320;  
+	data->heater_dur = 150;   
 
 	ret = bme680_chip_config(data);
 	if (ret < 0) {

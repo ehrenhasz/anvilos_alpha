@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017-2021 NXP
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -28,13 +28,7 @@ enum codec_type {
 	CODEC_AK5552,
 };
 
-/*
- * Mapping LRCK fs and frame width, table 3 & 4 in datasheet
- * @rmin: min rate
- * @rmax: max rate
- * @wmin: min frame ratio
- * @wmax: max frame ratio
- */
+ 
 struct imx_akcodec_fs_mul {
 	unsigned int rmin;
 	unsigned int rmax;
@@ -42,32 +36,14 @@ struct imx_akcodec_fs_mul {
 	unsigned int wmax;
 };
 
-/*
- * Mapping TDM mode and frame width
- */
+ 
 struct imx_akcodec_tdm_fs_mul {
 	unsigned int min;
 	unsigned int max;
 	unsigned int mul;
 };
 
-/*
- * struct imx_card_plat_data - specific info for codecs
- *
- * @fs_mul: ratio of mclk/fs for normal mode
- * @tdm_fs_mul: ratio of mclk/fs for tdm mode
- * @support_rates: supported sample rate
- * @support_tdm_rates: supported sample rate for tdm mode
- * @support_channels: supported channels
- * @support_tdm_channels: supported channels for tdm mode
- * @num_fs_mul: ARRAY_SIZE of fs_mul
- * @num_tdm_fs_mul: ARRAY_SIZE of tdm_fs_mul
- * @num_rates: ARRAY_SIZE of support_rates
- * @num_tdm_rates: ARRAY_SIZE of support_tdm_rates
- * @num_channels: ARRAY_SIZE of support_channels
- * @num_tdm_channels: ARRAY_SIZE of support_tdm_channels
- * @type: codec type
- */
+ 
 struct imx_card_plat_data {
 	struct imx_akcodec_fs_mul  *fs_mul;
 	struct imx_akcodec_tdm_fs_mul  *tdm_fs_mul;
@@ -85,14 +61,7 @@ struct imx_card_plat_data {
 	enum codec_type type;
 };
 
-/*
- * struct dai_link_data - specific info for dai link
- *
- * @slots: slot number
- * @slot_width: slot width value
- * @cpu_sysclk_id: sysclk id for cpu dai
- * @one2one_ratio: true if mclk equal to bclk
- */
+ 
 struct dai_link_data {
 	unsigned int slots;
 	unsigned int slot_width;
@@ -100,17 +69,7 @@ struct dai_link_data {
 	bool one2one_ratio;
 };
 
-/*
- * struct imx_card_data - platform device data
- *
- * @plat_data: pointer of imx_card_plat_data
- * @dapm_routes: pointer of dapm_routes
- * @link_data: private data for dai link
- * @card: card instance
- * @num_dapm_routes: number of dapm_routes
- * @asrc_rate: asrc rates
- * @asrc_format: asrc format
- */
+ 
 struct imx_card_data {
 	struct imx_card_plat_data *plat_data;
 	struct snd_soc_dapm_route *dapm_routes;
@@ -122,50 +81,40 @@ struct imx_card_data {
 };
 
 static struct imx_akcodec_fs_mul ak4458_fs_mul[] = {
-	/* Normal, < 32kHz */
+	 
 	{ .rmin = 8000,   .rmax = 24000,  .wmin = 256,  .wmax = 1024, },
-	/* Normal, 32kHz */
+	 
 	{ .rmin = 32000,  .rmax = 32000,  .wmin = 256,  .wmax = 1024, },
-	/* Normal */
+	 
 	{ .rmin = 44100,  .rmax = 48000,  .wmin = 256,  .wmax = 768,  },
-	/* Double */
+	 
 	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 512,  },
-	/* Quad */
+	 
 	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 256,  },
-	/* Oct */
+	 
 	{ .rmin = 352800, .rmax = 384000, .wmin = 32,   .wmax = 128,  },
-	/* Hex */
+	 
 	{ .rmin = 705600, .rmax = 768000, .wmin = 16,   .wmax = 64,   },
 };
 
 static struct imx_akcodec_tdm_fs_mul ak4458_tdm_fs_mul[] = {
-	/*
-	 * Table 13	- Audio Interface Format
-	 * For TDM mode, MCLK should is set to
-	 * obtained from 2 * slots * slot_width
-	 */
-	{ .min = 128,	.max = 128,	.mul = 256  }, /* TDM128 */
-	{ .min = 256,	.max = 256,	.mul = 512  }, /* TDM256 */
-	{ .min = 512,	.max = 512,	.mul = 1024  }, /* TDM512 */
+	 
+	{ .min = 128,	.max = 128,	.mul = 256  },  
+	{ .min = 256,	.max = 256,	.mul = 512  },  
+	{ .min = 512,	.max = 512,	.mul = 1024  },  
 };
 
 static struct imx_akcodec_fs_mul ak4497_fs_mul[] = {
-	/**
-	 * Table 7      - mapping multiplier and speed mode
-	 * Tables 8 & 9 - mapping speed mode and LRCK fs
-	 */
-	{ .rmin = 8000,   .rmax = 32000,  .wmin = 256,  .wmax = 1024, }, /* Normal, <= 32kHz */
-	{ .rmin = 44100,  .rmax = 48000,  .wmin = 256,  .wmax = 512, }, /* Normal */
-	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 256, }, /* Double */
-	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 128, }, /* Quad */
-	{ .rmin = 352800, .rmax = 384000, .wmin = 128,  .wmax = 128, }, /* Oct */
-	{ .rmin = 705600, .rmax = 768000, .wmin = 64,   .wmax = 64, }, /* Hex */
+	 
+	{ .rmin = 8000,   .rmax = 32000,  .wmin = 256,  .wmax = 1024, },  
+	{ .rmin = 44100,  .rmax = 48000,  .wmin = 256,  .wmax = 512, },  
+	{ .rmin = 88200,  .rmax = 96000,  .wmin = 256,  .wmax = 256, },  
+	{ .rmin = 176400, .rmax = 192000, .wmin = 128,  .wmax = 128, },  
+	{ .rmin = 352800, .rmax = 384000, .wmin = 128,  .wmax = 128, },  
+	{ .rmin = 705600, .rmax = 768000, .wmin = 64,   .wmax = 64, },  
 };
 
-/*
- * Auto MCLK selection based on LRCK for Normal Mode
- * (Table 4 from datasheet)
- */
+ 
 static struct imx_akcodec_fs_mul ak5558_fs_mul[] = {
 	{ .rmin = 8000,   .rmax = 32000,  .wmin = 512,  .wmax = 1024, },
 	{ .rmin = 44100,  .rmax = 48000,  .wmin = 512,  .wmax = 512, },
@@ -175,11 +124,7 @@ static struct imx_akcodec_fs_mul ak5558_fs_mul[] = {
 	{ .rmin = 705600, .rmax = 768000, .wmin = 32,   .wmax = 32, },
 };
 
-/*
- * MCLK and BCLK selection based on TDM mode
- * because of SAI we also add the restriction: MCLK >= 2 * BCLK
- * (Table 9 from datasheet)
- */
+ 
 static struct imx_akcodec_tdm_fs_mul ak5558_tdm_fs_mul[] = {
 	{ .min = 128,	.max = 128,	.mul = 256 },
 	{ .min = 256,	.max = 256,	.mul = 512 },
@@ -263,7 +208,7 @@ static unsigned long akcodec_get_mclk_rate(struct snd_pcm_substream *substream,
 
 	if (format_is_tdm(link_data)) {
 		for (i = 0; i < plat_data->num_tdm_fs_mul; i++) {
-			/* min = max = slots * slots_width */
+			 
 			if (width != plat_data->tdm_fs_mul[i].min)
 				continue;
 			return rate * plat_data->tdm_fs_mul[i].mul;
@@ -275,7 +220,7 @@ static unsigned long akcodec_get_mclk_rate(struct snd_pcm_substream *substream,
 				width = max(width, plat_data->fs_mul[i].wmin);
 				width = min(width, plat_data->fs_mul[i].wmax);
 
-				/* Adjust SAI bclk:mclk ratio */
+				 
 				width *= link_data->one2one_ratio ? 1 : 2;
 
 				return rate * width;
@@ -283,7 +228,7 @@ static unsigned long akcodec_get_mclk_rate(struct snd_pcm_substream *substream,
 		}
 	}
 
-	/* Let DAI manage clk frequency by default */
+	 
 	return 0;
 }
 
@@ -351,14 +296,14 @@ static int imx_aif_hw_params(struct snd_pcm_substream *substream,
 		}
 	}
 
-	/* Set MCLK freq */
+	 
 	if (codec_is_akcodec(plat_data->type))
 		mclk_freq = akcodec_get_mclk_rate(substream, params, slots, slot_width);
 	else
 		mclk_freq = params_rate(params) * slots * slot_width;
 
 	if (format_is_dsd(params)) {
-		/* Use the maximum freq from DSD512 (512*44100 = 22579200) */
+		 
 		if (!(params_rate(params) % 11025))
 			mclk_freq = IMX_CARD_MCLK_22P5792MHZ;
 		else
@@ -386,13 +331,13 @@ static int ak5558_hw_rule_rate(struct snd_pcm_hw_params *p, struct snd_pcm_hw_ru
 	fs = hw_param_interval(p, SNDRV_PCM_HW_PARAM_SAMPLE_BITS)->min;
 	fs *= link_data->slots;
 
-	/* Identify maximum supported rate */
+	 
 	for (i = 0; i < ARRAY_SIZE(akcodec_rates); i++) {
 		mclk_freq = fs * akcodec_rates[i];
-		/* Adjust SAI bclk:mclk ratio */
+		 
 		mclk_freq *= link_data->one2one_ratio ? 1 : 2;
 
-		/* Skip rates for which MCLK is beyond supported value */
+		 
 		if (mclk_freq > 36864000)
 			continue;
 
@@ -502,17 +447,17 @@ static int imx_card_parse_of(struct imx_card_data *data)
 		return ret;
 	}
 
-	/* DAPM routes */
+	 
 	if (of_property_read_bool(dev->of_node, "audio-routing")) {
 		ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
 		if (ret)
 			return ret;
 	}
 
-	/* Populate links */
+	 
 	num_links = of_get_child_count(dev->of_node);
 
-	/* Allocate the DAI link array */
+	 
 	card->dai_link = devm_kcalloc(dev, num_links, sizeof(*link), GFP_KERNEL);
 	if (!card->dai_link)
 		return -ENOMEM;
@@ -559,19 +504,16 @@ static int imx_card_parse_of(struct imx_card_data *data)
 		}
 
 		if (of_node_name_eq(args.np, "sai")) {
-			/* sai sysclk id */
+			 
 			link_data->cpu_sysclk_id = FSL_SAI_CLK_MAST1;
 
-			/* sai may support mclk/bclk = 1 */
+			 
 			if (of_property_read_bool(np, "fsl,mclk-equal-bclk")) {
 				link_data->one2one_ratio = true;
 			} else {
 				int i;
 
-				/*
-				 * i.MX8MQ don't support one2one ratio, then
-				 * with ak4497 only 16bit case is supported.
-				 */
+				 
 				for (i = 0; i < ARRAY_SIZE(ak4497_fs_mul); i++) {
 					if (ak4497_fs_mul[i].rmin == 705600 &&
 					    ak4497_fs_mul[i].rmax == 768000) {
@@ -596,7 +538,7 @@ static int imx_card_parse_of(struct imx_card_data *data)
 
 			plat_data->num_codecs = link->num_codecs;
 
-			/* Check the akcodec type */
+			 
 			if (!strcmp(link->codecs->dai_name, "ak4458-aif"))
 				plat_data->type = CODEC_AK4458;
 			else if (!strcmp(link->codecs->dai_name, "ak4497-aif"))
@@ -612,7 +554,7 @@ static int imx_card_parse_of(struct imx_card_data *data)
 		}
 
 		if (!strncmp(link->name, "HiFi-ASRC-FE", 12)) {
-			/* DPCM frontend */
+			 
 			link->dynamic = 1;
 			link->dpcm_merged_chan = 1;
 
@@ -626,7 +568,7 @@ static int imx_card_parse_of(struct imx_card_data *data)
 			ret = of_property_read_u32(args.np, "fsl,asrc-format", &asrc_fmt);
 			data->asrc_format = (__force snd_pcm_format_t)asrc_fmt;
 			if (ret) {
-				/* Fallback to old binding; translate to asrc_format */
+				 
 				ret = of_property_read_u32(args.np, "fsl,asrc-width", &width);
 				if (ret) {
 					dev_err(dev,
@@ -640,7 +582,7 @@ static int imx_card_parse_of(struct imx_card_data *data)
 					data->asrc_format = SNDRV_PCM_FORMAT_S16_LE;
 			}
 		} else if (!strncmp(link->name, "HiFi-ASRC-BE", 12)) {
-			/* DPCM backend */
+			 
 			link->no_pcm = 1;
 			link->platforms->of_node = NULL;
 			link->platforms->name = "snd-soc-dummy";
@@ -654,7 +596,7 @@ static int imx_card_parse_of(struct imx_card_data *data)
 		if (link->no_pcm || link->dynamic)
 			snd_soc_dai_link_set_capabilities(link);
 
-		/* Get dai fmt */
+		 
 		ret = asoc_simple_parse_daifmt(dev, np, codec,
 					       NULL, &link->dai_fmt);
 		if (ret)
@@ -662,11 +604,11 @@ static int imx_card_parse_of(struct imx_card_data *data)
 					SND_SOC_DAIFMT_CBC_CFC |
 					SND_SOC_DAIFMT_I2S;
 
-		/* Get tdm slot */
+		 
 		snd_soc_of_parse_tdm_slot(np, NULL, NULL,
 					  &link_data->slots,
 					  &link_data->slot_width);
-		/* default value */
+		 
 		if (!link_data->slots)
 			link_data->slots = 2;
 
@@ -728,7 +670,7 @@ static int imx_card_probe(struct platform_device *pdev)
 	if (!data->dapm_routes)
 		return -ENOMEM;
 
-	/* configure the dapm routes */
+	 
 	switch (plat_data->type) {
 	case CODEC_AK4458:
 	case CODEC_AK4497:
@@ -768,7 +710,7 @@ static int imx_card_probe(struct platform_device *pdev)
 		break;
 	}
 
-	/* default platform data for akcodecs */
+	 
 	if (codec_is_akcodec(plat_data->type)) {
 		plat_data->support_rates = akcodec_rates;
 		plat_data->num_rates = ARRAY_SIZE(akcodec_rates);
@@ -808,7 +750,7 @@ static int imx_card_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* with asrc as front end */
+	 
 	if (data->card.num_links == 3) {
 		data->card.dapm_routes = data->dapm_routes;
 		data->card.num_dapm_routes = data->num_dapm_routes;

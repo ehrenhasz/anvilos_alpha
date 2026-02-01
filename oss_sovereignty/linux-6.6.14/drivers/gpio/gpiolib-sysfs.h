@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef GPIOLIB_SYSFS_H
 #define GPIOLIB_SYSFS_H
@@ -21,6 +21,6 @@ static inline void gpiochip_sysfs_unregister(struct gpio_device *gdev)
 {
 }
 
-#endif /* CONFIG_GPIO_SYSFS */
+#endif  
 
-#endif /* GPIOLIB_SYSFS_H */
+#endif  

@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Memory Encryption Support
- *
- * Copyright (C) 2019 SUSE
- *
- * Author: Joerg Roedel <jroedel@suse.de>
- */
+
+ 
 
 #define pr_fmt(fmt)	"SEV: " fmt
 
-#include <linux/sched/debug.h>	/* For show_regs() */
+#include <linux/sched/debug.h>	 
 #include <linux/percpu-defs.h>
 #include <linux/cc_platform.h>
 #include <linux/printk.h>
@@ -43,7 +37,7 @@
 
 #define DR7_RESET_VALUE        0x400
 
-/* AP INIT values as documented in the APM2  section "Processor Initialization State" */
+ 
 #define AP_INIT_CS_LIMIT		0xffff
 #define AP_INIT_DS_LIMIT		0xffff
 #define AP_INIT_LDTR_LIMIT		0xffff
@@ -59,52 +53,27 @@
 #define AP_INIT_CR0_DEFAULT		0x60000010
 #define AP_INIT_MXCSR_DEFAULT		0x1f80
 
-/* For early boot hypervisor communication in SEV-ES enabled guests */
+ 
 static struct ghcb boot_ghcb_page __bss_decrypted __aligned(PAGE_SIZE);
 
-/*
- * Needs to be in the .data section because we need it NULL before bss is
- * cleared
- */
+ 
 static struct ghcb *boot_ghcb __section(".data");
 
-/* Bitmap of SEV features supported by the hypervisor */
+ 
 static u64 sev_hv_features __ro_after_init;
 
-/* #VC handler runtime per-CPU data */
+ 
 struct sev_es_runtime_data {
 	struct ghcb ghcb_page;
 
-	/*
-	 * Reserve one page per CPU as backup storage for the unencrypted GHCB.
-	 * It is needed when an NMI happens while the #VC handler uses the real
-	 * GHCB, and the NMI handler itself is causing another #VC exception. In
-	 * that case the GHCB content of the first handler needs to be backed up
-	 * and restored.
-	 */
+	 
 	struct ghcb backup_ghcb;
 
-	/*
-	 * Mark the per-cpu GHCBs as in-use to detect nested #VC exceptions.
-	 * There is no need for it to be atomic, because nothing is written to
-	 * the GHCB between the read and the write of ghcb_active. So it is safe
-	 * to use it when a nested #VC exception happens before the write.
-	 *
-	 * This is necessary for example in the #VC->NMI->#VC case when the NMI
-	 * happens while the first #VC handler uses the GHCB. When the NMI code
-	 * raises a second #VC handler it might overwrite the contents of the
-	 * GHCB written by the first handler. To avoid this the content of the
-	 * GHCB is saved and restored when the GHCB is detected to be in use
-	 * already.
-	 */
+	 
 	bool ghcb_active;
 	bool backup_ghcb_active;
 
-	/*
-	 * Cached DR7 value - write it on DR7 writes and return it on reads.
-	 * That value will never make it to the real hardware DR7 as debugging
-	 * is currently unsupported in SEV-ES guests.
-	 */
+	 
 	unsigned long dr7;
 };
 
@@ -118,15 +87,7 @@ static DEFINE_PER_CPU(struct sev_es_save_area *, sev_vmsa);
 struct sev_config {
 	__u64 debug		: 1,
 
-	      /*
-	       * A flag used by __set_pages_state() that indicates when the
-	       * per-CPU GHCB has been created and registered and thus can be
-	       * used by the BSP instead of the early boot GHCB.
-	       *
-	       * For APs, the per-CPU GHCB is created before they are started
-	       * and registered upon startup, so this flag can be used globally
-	       * for the BSP and APs.
-	       */
+	       
 	      ghcbs_initialized	: 1,
 
 	      __reserved	: 62;
@@ -138,56 +99,34 @@ static __always_inline bool on_vc_stack(struct pt_regs *regs)
 {
 	unsigned long sp = regs->sp;
 
-	/* User-mode RSP is not trusted */
+	 
 	if (user_mode(regs))
 		return false;
 
-	/* SYSCALL gap still has user-mode RSP */
+	 
 	if (ip_within_syscall_gap(regs))
 		return false;
 
 	return ((sp >= __this_cpu_ist_bottom_va(VC)) && (sp < __this_cpu_ist_top_va(VC)));
 }
 
-/*
- * This function handles the case when an NMI is raised in the #VC
- * exception handler entry code, before the #VC handler has switched off
- * its IST stack. In this case, the IST entry for #VC must be adjusted,
- * so that any nested #VC exception will not overwrite the stack
- * contents of the interrupted #VC handler.
- *
- * The IST entry is adjusted unconditionally so that it can be also be
- * unconditionally adjusted back in __sev_es_ist_exit(). Otherwise a
- * nested sev_es_ist_exit() call may adjust back the IST entry too
- * early.
- *
- * The __sev_es_ist_enter() and __sev_es_ist_exit() functions always run
- * on the NMI IST stack, as they are only called from NMI handling code
- * right now.
- */
+ 
 void noinstr __sev_es_ist_enter(struct pt_regs *regs)
 {
 	unsigned long old_ist, new_ist;
 
-	/* Read old IST entry */
+	 
 	new_ist = old_ist = __this_cpu_read(cpu_tss_rw.x86_tss.ist[IST_INDEX_VC]);
 
-	/*
-	 * If NMI happened while on the #VC IST stack, set the new IST
-	 * value below regs->sp, so that the interrupted stack frame is
-	 * not overwritten by subsequent #VC exceptions.
-	 */
+	 
 	if (on_vc_stack(regs))
 		new_ist = regs->sp;
 
-	/*
-	 * Reserve additional 8 bytes and store old IST value so this
-	 * adjustment can be unrolled in __sev_es_ist_exit().
-	 */
+	 
 	new_ist -= sizeof(old_ist);
 	*(unsigned long *)new_ist = old_ist;
 
-	/* Set new IST entry */
+	 
 	this_cpu_write(cpu_tss_rw.x86_tss.ist[IST_INDEX_VC], new_ist);
 }
 
@@ -195,22 +134,17 @@ void noinstr __sev_es_ist_exit(void)
 {
 	unsigned long ist;
 
-	/* Read IST entry */
+	 
 	ist = __this_cpu_read(cpu_tss_rw.x86_tss.ist[IST_INDEX_VC]);
 
 	if (WARN_ON(ist == __this_cpu_ist_top_va(VC)))
 		return;
 
-	/* Read back old IST entry and write it to the TSS */
+	 
 	this_cpu_write(cpu_tss_rw.x86_tss.ist[IST_INDEX_VC], *(unsigned long *)ist);
 }
 
-/*
- * Nothing shall interrupt this code path while holding the per-CPU
- * GHCB. The backup GHCB is only for NMIs interrupting this path.
- *
- * Callers must disable local interrupts around it.
- */
+ 
 static noinstr struct ghcb *__sev_get_ghcb(struct ghcb_state *state)
 {
 	struct sev_es_runtime_data *data;
@@ -222,15 +156,10 @@ static noinstr struct ghcb *__sev_get_ghcb(struct ghcb_state *state)
 	ghcb = &data->ghcb_page;
 
 	if (unlikely(data->ghcb_active)) {
-		/* GHCB is already in use - save its contents */
+		 
 
 		if (unlikely(data->backup_ghcb_active)) {
-			/*
-			 * Backup-GHCB is also already in use. There is no way
-			 * to continue here so just kill the machine. To make
-			 * panic() work, mark GHCBs inactive so that messages
-			 * can be printed out.
-			 */
+			 
 			data->ghcb_active        = false;
 			data->backup_ghcb_active = false;
 
@@ -239,12 +168,12 @@ static noinstr struct ghcb *__sev_get_ghcb(struct ghcb_state *state)
 			instrumentation_end();
 		}
 
-		/* Mark backup_ghcb active before writing to it */
+		 
 		data->backup_ghcb_active = true;
 
 		state->ghcb = &data->backup_ghcb;
 
-		/* Backup GHCB content */
+		 
 		*state->ghcb = *ghcb;
 	} else {
 		state->ghcb = NULL;
@@ -282,13 +211,13 @@ static enum es_result __vc_decode_user_insn(struct es_em_ctxt *ctxt)
 
 	insn_bytes = insn_fetch_from_user_inatomic(ctxt->regs, buffer);
 	if (insn_bytes == 0) {
-		/* Nothing could be copied */
+		 
 		ctxt->fi.vector     = X86_TRAP_PF;
 		ctxt->fi.error_code = X86_PF_INSTR | X86_PF_USER;
 		ctxt->fi.cr2        = ctxt->regs->ip;
 		return ES_EXCEPTION;
 	} else if (insn_bytes == -EINVAL) {
-		/* Effective RIP could not be calculated */
+		 
 		ctxt->fi.vector     = X86_TRAP_GP;
 		ctxt->fi.error_code = 0;
 		ctxt->fi.cr2        = 0;
@@ -337,25 +266,7 @@ static enum es_result vc_write_mem(struct es_em_ctxt *ctxt,
 {
 	unsigned long error_code = X86_PF_PROT | X86_PF_WRITE;
 
-	/*
-	 * This function uses __put_user() independent of whether kernel or user
-	 * memory is accessed. This works fine because __put_user() does no
-	 * sanity checks of the pointer being accessed. All that it does is
-	 * to report when the access failed.
-	 *
-	 * Also, this function runs in atomic context, so __put_user() is not
-	 * allowed to sleep. The page-fault handler detects that it is running
-	 * in atomic context and will not try to take mmap_sem and handle the
-	 * fault, so additional pagefault_enable()/disable() calls are not
-	 * needed.
-	 *
-	 * The access can't be done via copy_to_user() here because
-	 * vc_write_mem() must not use string instructions to access unsafe
-	 * memory. The reason is that MOVS is emulated by the #VC handler by
-	 * splitting the move up into a read and a write and taking a nested #VC
-	 * exception on whatever of them is the MMIO access. Using string
-	 * instructions here would cause infinite nesting.
-	 */
+	 
 	switch (size) {
 	case 1: {
 		u8 d1;
@@ -416,25 +327,7 @@ static enum es_result vc_read_mem(struct es_em_ctxt *ctxt,
 {
 	unsigned long error_code = X86_PF_PROT;
 
-	/*
-	 * This function uses __get_user() independent of whether kernel or user
-	 * memory is accessed. This works fine because __get_user() does no
-	 * sanity checks of the pointer being accessed. All that it does is
-	 * to report when the access failed.
-	 *
-	 * Also, this function runs in atomic context, so __get_user() is not
-	 * allowed to sleep. The page-fault handler detects that it is running
-	 * in atomic context and will not try to take mmap_sem and handle the
-	 * fault, so additional pagefault_enable()/disable() calls are not
-	 * needed.
-	 *
-	 * The access can't be done via copy_from_user() here because
-	 * vc_read_mem() must not use string instructions to access unsafe
-	 * memory. The reason is that MOVS is emulated by the #VC handler by
-	 * splitting the move up into a read and a write and taking a nested #VC
-	 * exception on whatever of them is the MMIO access. Using string
-	 * instructions here would cause infinite nesting.
-	 */
+	 
 	switch (size) {
 	case 1: {
 		u8 d1;
@@ -513,7 +406,7 @@ static enum es_result vc_slow_virt_to_phys(struct ghcb *ghcb, struct es_em_ctxt 
 	}
 
 	if (WARN_ON_ONCE(pte_val(*pte) & _PAGE_ENC))
-		/* Emulated MMIO to/from encrypted memory not supported */
+		 
 		return ES_UNSUPPORTED;
 
 	pa = (phys_addr_t)pte_pfn(*pte) << PAGE_SHIFT;
@@ -551,7 +444,7 @@ fault:
 	return ES_EXCEPTION;
 }
 
-/* Include code shared with pre-decompression boot stage */
+ 
 #include "sev-shared.c"
 
 static noinstr void __sev_put_ghcb(struct ghcb_state *state)
@@ -565,15 +458,12 @@ static noinstr void __sev_put_ghcb(struct ghcb_state *state)
 	ghcb = &data->ghcb_page;
 
 	if (state->ghcb) {
-		/* Restore GHCB from Backup */
+		 
 		*ghcb = *state->ghcb;
 		data->backup_ghcb_active = false;
 		state->ghcb = NULL;
 	} else {
-		/*
-		 * Invalidate the GHCB so a VMGEXIT instruction issued
-		 * from userspace won't appear to be valid.
-		 */
+		 
 		vc_ghcb_invalidate(ghcb);
 		data->ghcb_active = false;
 	}
@@ -603,10 +493,7 @@ static u64 __init get_secrets_page(void)
 	struct cc_blob_sev_info info;
 	void *map;
 
-	/*
-	 * The CC blob contains the address of the secrets page, check if the
-	 * blob is present.
-	 */
+	 
 	if (!pa_data)
 		return 0;
 
@@ -618,7 +505,7 @@ static u64 __init get_secrets_page(void)
 	memcpy(&info, map, sizeof(info));
 	early_memunmap(map, sizeof(info));
 
-	/* smoke-test the secrets page passed */
+	 
 	if (!info.secrets_phys || info.secrets_len != PAGE_SIZE)
 		return 0;
 
@@ -696,16 +583,13 @@ static void early_set_pages_state(unsigned long vaddr, unsigned long paddr,
 
 	while (paddr < paddr_end) {
 		if (op == SNP_PAGE_STATE_SHARED) {
-			/* Page validation must be rescinded before changing to shared */
+			 
 			ret = pvalidate(vaddr, RMP_PG_SIZE_4K, false);
 			if (WARN(ret, "Failed to validate address 0x%lx ret %d", paddr, ret))
 				goto e_term;
 		}
 
-		/*
-		 * Use the MSR protocol because this function can be called before
-		 * the GHCB is established.
-		 */
+		 
 		sev_es_wr_ghcb_msr(GHCB_MSR_PSC_REQ_GFN(paddr >> PAGE_SHIFT, op));
 		VMGEXIT();
 
@@ -723,7 +607,7 @@ static void early_set_pages_state(unsigned long vaddr, unsigned long paddr,
 			goto e_term;
 
 		if (op == SNP_PAGE_STATE_PRIVATE) {
-			/* Page validation must be performed after changing to private */
+			 
 			ret = pvalidate(vaddr, RMP_PG_SIZE_4K, true);
 			if (WARN(ret, "Failed to validate address 0x%lx ret %d", paddr, ret))
 				goto e_term;
@@ -742,35 +626,22 @@ e_term:
 void __init early_snp_set_memory_private(unsigned long vaddr, unsigned long paddr,
 					 unsigned long npages)
 {
-	/*
-	 * This can be invoked in early boot while running identity mapped, so
-	 * use an open coded check for SNP instead of using cc_platform_has().
-	 * This eliminates worries about jump tables or checking boot_cpu_data
-	 * in the cc_platform_has() function.
-	 */
+	 
 	if (!(sev_status & MSR_AMD64_SEV_SNP_ENABLED))
 		return;
 
-	 /*
-	  * Ask the hypervisor to mark the memory pages as private in the RMP
-	  * table.
-	  */
+	  
 	early_set_pages_state(vaddr, paddr, npages, SNP_PAGE_STATE_PRIVATE);
 }
 
 void __init early_snp_set_memory_shared(unsigned long vaddr, unsigned long paddr,
 					unsigned long npages)
 {
-	/*
-	 * This can be invoked in early boot while running identity mapped, so
-	 * use an open coded check for SNP instead of using cc_platform_has().
-	 * This eliminates worries about jump tables or checking boot_cpu_data
-	 * in the cc_platform_has() function.
-	 */
+	 
 	if (!(sev_status & MSR_AMD64_SEV_SNP_ENABLED))
 		return;
 
-	 /* Ask hypervisor to mark the memory pages shared in the RMP table. */
+	  
 	early_set_pages_state(vaddr, paddr, npages, SNP_PAGE_STATE_SHARED);
 }
 
@@ -834,7 +705,7 @@ static unsigned long __set_pages_state(struct snp_psc_desc *data, unsigned long 
 		i++;
 	}
 
-	/* Page validation must be rescinded before changing to shared */
+	 
 	if (op == SNP_PAGE_STATE_SHARED)
 		pvalidate_pages(data);
 
@@ -845,7 +716,7 @@ static unsigned long __set_pages_state(struct snp_psc_desc *data, unsigned long 
 	else
 		ghcb = boot_ghcb;
 
-	/* Invoke the hypervisor to perform the page state changes */
+	 
 	if (!ghcb || vmgexit_psc(ghcb, data))
 		sev_es_terminate(SEV_TERM_SET_LINUX, GHCB_TERM_PSC);
 
@@ -854,7 +725,7 @@ static unsigned long __set_pages_state(struct snp_psc_desc *data, unsigned long 
 
 	local_irq_restore(flags);
 
-	/* Page validation must be performed after changing to private */
+	 
 	if (op == SNP_PAGE_STATE_PRIVATE)
 		pvalidate_pages(data);
 
@@ -866,7 +737,7 @@ static void set_pages_state(unsigned long vaddr, unsigned long npages, int op)
 	struct snp_psc_desc desc;
 	unsigned long vaddr_end;
 
-	/* Use the MSR protocol when a GHCB is not available. */
+	 
 	if (!boot_ghcb)
 		return early_set_pages_state(vaddr, __pa(vaddr), npages, op);
 
@@ -910,13 +781,7 @@ static int snp_set_vmsa(void *va, bool vmsa)
 {
 	u64 attrs;
 
-	/*
-	 * Running at VMPL0 allows the kernel to change the VMSA bit for a page
-	 * using the RMPADJUST instruction. However, for the instruction to
-	 * succeed it must target the permissions of a lesser privileged
-	 * (higher numbered) VMPL level, so use VMPL1 (refer to the RMPADJUST
-	 * instruction in the AMD64 APM Volume 3).
-	 */
+	 
 	attrs = 1;
 	if (vmsa)
 		attrs |= RMPADJUST_VMSA_PAGE_BIT;
@@ -935,21 +800,14 @@ static void *snp_alloc_vmsa_page(void)
 {
 	struct page *p;
 
-	/*
-	 * Allocate VMSA page to work around the SNP erratum where the CPU will
-	 * incorrectly signal an RMP violation #PF if a large page (2MB or 1GB)
-	 * collides with the RMP entry of VMSA page. The recommended workaround
-	 * is to not use a large page.
-	 *
-	 * Allocate an 8k page which is also 8k-aligned.
-	 */
+	 
 	p = alloc_pages(GFP_KERNEL_ACCOUNT | __GFP_ZERO, 1);
 	if (!p)
 		return NULL;
 
 	split_page(p, 1);
 
-	/* Free the first 4k. This page may be 2M/1G aligned and cannot be used. */
+	 
 	__free_page(p);
 
 	return page_address(p + 1);
@@ -976,26 +834,19 @@ static int wakeup_cpu_via_vmgexit(int apic_id, unsigned long start_ip)
 	int cpu, ret;
 	u64 cr4;
 
-	/*
-	 * The hypervisor SNP feature support check has happened earlier, just check
-	 * the AP_CREATION one here.
-	 */
+	 
 	if (!(sev_hv_features & GHCB_HV_FT_SNP_AP_CREATION))
 		return -EOPNOTSUPP;
 
-	/*
-	 * Verify the desired start IP against the known trampoline start IP
-	 * to catch any future new trampolines that may be introduced that
-	 * would require a new protected guest entry point.
-	 */
+	 
 	if (WARN_ONCE(start_ip != real_mode_header->trampoline_start,
 		      "Unsupported SNP start_ip: %lx\n", start_ip))
 		return -EINVAL;
 
-	/* Override start_ip with known protected guest start IP */
+	 
 	start_ip = real_mode_header->sev_es_trampoline_start;
 
-	/* Find the logical CPU for the APIC ID */
+	 
 	for_each_present_cpu(cpu) {
 		if (arch_match_cpu_phys_id(cpu, apic_id))
 			break;
@@ -1005,31 +856,25 @@ static int wakeup_cpu_via_vmgexit(int apic_id, unsigned long start_ip)
 
 	cur_vmsa = per_cpu(sev_vmsa, cpu);
 
-	/*
-	 * A new VMSA is created each time because there is no guarantee that
-	 * the current VMSA is the kernels or that the vCPU is not running. If
-	 * an attempt was done to use the current VMSA with a running vCPU, a
-	 * #VMEXIT of that vCPU would wipe out all of the settings being done
-	 * here.
-	 */
+	 
 	vmsa = (struct sev_es_save_area *)snp_alloc_vmsa_page();
 	if (!vmsa)
 		return -ENOMEM;
 
-	/* CR4 should maintain the MCE value */
+	 
 	cr4 = native_read_cr4() & X86_CR4_MCE;
 
-	/* Set the CS value based on the start_ip converted to a SIPI vector */
+	 
 	sipi_vector		= (start_ip >> 12);
 	vmsa->cs.base		= sipi_vector << 12;
 	vmsa->cs.limit		= AP_INIT_CS_LIMIT;
 	vmsa->cs.attrib		= INIT_CS_ATTRIBS;
 	vmsa->cs.selector	= sipi_vector << 8;
 
-	/* Set the RIP value based on start_ip */
+	 
 	vmsa->rip		= start_ip & 0xfff;
 
-	/* Set AP INIT defaults as documented in the APM */
+	 
 	vmsa->ds.limit		= AP_INIT_DS_LIMIT;
 	vmsa->ds.attrib		= INIT_DS_ATTRIBS;
 	vmsa->es		= vmsa->ds;
@@ -1055,18 +900,14 @@ static int wakeup_cpu_via_vmgexit(int apic_id, unsigned long start_ip)
 	vmsa->x87_ftw		= AP_INIT_X87_FTW_DEFAULT;
 	vmsa->x87_fcw		= AP_INIT_X87_FCW_DEFAULT;
 
-	/* SVME must be set. */
+	 
 	vmsa->efer		= EFER_SVME;
 
-	/*
-	 * Set the SNP-specific fields for this VMSA:
-	 *   VMPL level
-	 *   SEV_FEATURES (matches the SEV STATUS MSR right shifted 2 bits)
-	 */
+	 
 	vmsa->vmpl		= 0;
 	vmsa->sev_features	= sev_status >> 2;
 
-	/* Switch the page over to a VMSA page now that it is initialized */
+	 
 	ret = snp_set_vmsa(vmsa, true);
 	if (ret) {
 		pr_err("set VMSA page failed (%u)\n", ret);
@@ -1075,7 +916,7 @@ static int wakeup_cpu_via_vmgexit(int apic_id, unsigned long start_ip)
 		return -EINVAL;
 	}
 
-	/* Issue VMGEXIT AP Creation NAE event */
+	 
 	local_irq_save(flags);
 
 	ghcb = __sev_get_ghcb(&state);
@@ -1099,17 +940,17 @@ static int wakeup_cpu_via_vmgexit(int apic_id, unsigned long start_ip)
 
 	local_irq_restore(flags);
 
-	/* Perform cleanup if there was an error */
+	 
 	if (ret) {
 		snp_cleanup_vmsa(vmsa);
 		vmsa = NULL;
 	}
 
-	/* Free up any previous VMSA page */
+	 
 	if (cur_vmsa)
 		snp_cleanup_vmsa(cur_vmsa);
 
-	/* Record the current VMSA page */
+	 
 	per_cpu(sev_vmsa, cpu) = vmsa;
 
 	return ret;
@@ -1120,11 +961,7 @@ void __init snp_set_wakeup_secondary_cpu(void)
 	if (!cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
 		return;
 
-	/*
-	 * Always set this override if SNP is enabled. This makes it the
-	 * required method to start APs under SNP. If the hypervisor does
-	 * not support AP creation, then no APs will be started.
-	 */
+	 
 	apic_update_callback(wakeup_secondary_cpu, wakeup_cpu_via_vmgexit);
 }
 
@@ -1137,11 +974,11 @@ int __init sev_es_setup_ap_jump_table(struct real_mode_header *rmh)
 
 	jump_table_addr = get_jump_table_addr();
 
-	/* On UP guests there is no jump table so this is not a failure */
+	 
 	if (!jump_table_addr)
 		return 0;
 
-	/* Check if AP Jump Table is page-aligned */
+	 
 	if (jump_table_addr & ~PAGE_MASK)
 		return -EINVAL;
 
@@ -1163,11 +1000,7 @@ int __init sev_es_setup_ap_jump_table(struct real_mode_header *rmh)
 	return 0;
 }
 
-/*
- * This is needed by the OVMF UEFI firmware which will use whatever it finds in
- * the GHCB MSR as its GHCB to talk to the hypervisor. So make sure the per-cpu
- * runtime GHCBs used by the kernel are also mapped in the EFI page-table.
- */
+ 
 int __init sev_es_efi_map_ghcbs(pgd_t *pgd)
 {
 	struct sev_es_runtime_data *data;
@@ -1199,7 +1032,7 @@ static enum es_result vc_handle_msr(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
 	enum es_result ret;
 	u64 exit_info_1;
 
-	/* Is it a WRMSR? */
+	 
 	exit_info_1 = (ctxt->insn.opcode.bytes[1] == 0x30) ? 1 : 0;
 
 	ghcb_set_rcx(ghcb, regs->cx);
@@ -1234,13 +1067,7 @@ void setup_ghcb(void)
 	if (!cc_platform_has(CC_ATTR_GUEST_STATE_ENCRYPT))
 		return;
 
-	/*
-	 * Check whether the runtime #VC exception handler is active. It uses
-	 * the per-CPU GHCB page which is set up by sev_es_init_vc_handling().
-	 *
-	 * If SNP is active, register the per-CPU GHCB page so that the runtime
-	 * exception handler can use it.
-	 */
+	 
 	if (initial_vc_handler == (unsigned long)kernel_exc_vmm_communication) {
 		if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
 			snp_register_per_cpu_ghcb();
@@ -1250,23 +1077,17 @@ void setup_ghcb(void)
 		return;
 	}
 
-	/*
-	 * Make sure the hypervisor talks a supported protocol.
-	 * This gets called only in the BSP boot phase.
-	 */
+	 
 	if (!sev_es_negotiate_protocol())
 		sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SEV_ES_GEN_REQ);
 
-	/*
-	 * Clear the boot_ghcb. The first exception comes in before the bss
-	 * section is cleared.
-	 */
+	 
 	memset(&boot_ghcb_page, 0, PAGE_SIZE);
 
-	/* Alright - Make the boot-ghcb public */
+	 
 	boot_ghcb = &boot_ghcb_page;
 
-	/* SNP guest requires that GHCB GPA must be registered. */
+	 
 	if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP))
 		snp_register_ghcb_early(__pa(&boot_ghcb_page));
 }
@@ -1288,7 +1109,7 @@ static void sev_es_ap_hlt_loop(void)
 		sev_es_wr_ghcb_msr(__pa(ghcb));
 		VMGEXIT();
 
-		/* Wakeup signal? */
+		 
 		if (ghcb_sw_exit_info_2_is_valid(ghcb) &&
 		    ghcb->save.sw_exit_info_2)
 			break;
@@ -1297,29 +1118,21 @@ static void sev_es_ap_hlt_loop(void)
 	__sev_put_ghcb(&state);
 }
 
-/*
- * Play_dead handler when running under SEV-ES. This is needed because
- * the hypervisor can't deliver an SIPI request to restart the AP.
- * Instead the kernel has to issue a VMGEXIT to halt the VCPU until the
- * hypervisor wakes it up again.
- */
+ 
 static void sev_es_play_dead(void)
 {
 	play_dead_common();
 
-	/* IRQs now disabled */
+	 
 
 	sev_es_ap_hlt_loop();
 
-	/*
-	 * If we get here, the VCPU was woken up again. Jump to CPU
-	 * startup code to get it back online.
-	 */
+	 
 	soft_restart_cpu();
 }
-#else  /* CONFIG_HOTPLUG_CPU */
+#else   
 #define sev_es_play_dead	native_play_dead
-#endif /* CONFIG_HOTPLUG_CPU */
+#endif  
 
 #ifdef CONFIG_SMP
 static void __init sev_es_setup_play_dead(void)
@@ -1371,10 +1184,7 @@ void __init sev_es_init_vc_handling(void)
 	if (!sev_es_check_cpu_features())
 		panic("SEV-ES CPU Features missing");
 
-	/*
-	 * SNP is supported in v2 of the GHCB spec which mandates support for HV
-	 * features.
-	 */
+	 
 	if (cc_platform_has(CC_ATTR_GUEST_SEV_SNP)) {
 		sev_hv_features = get_hv_features();
 
@@ -1382,7 +1192,7 @@ void __init sev_es_init_vc_handling(void)
 			sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SNP_UNSUPPORTED);
 	}
 
-	/* Initialize per-cpu GHCB pages */
+	 
 	for_each_possible_cpu(cpu) {
 		alloc_runtime_data(cpu);
 		init_ghcb(cpu);
@@ -1390,7 +1200,7 @@ void __init sev_es_init_vc_handling(void)
 
 	sev_es_setup_play_dead();
 
-	/* Secondary CPUs use the runtime #VC handler */
+	 
 	initial_vc_handler = (unsigned long)kernel_exc_vmm_communication;
 }
 
@@ -1444,7 +1254,7 @@ static enum es_result vc_do_mmio(struct ghcb *ghcb, struct es_em_ctxt *ctxt,
 	}
 
 	exit_info_1 = paddr;
-	/* Can never be greater than 8 */
+	 
 	exit_info_2 = bytes;
 
 	ghcb_set_sw_scratch(ghcb, ghcb_pa + offsetof(struct ghcb, shared_buffer));
@@ -1452,25 +1262,7 @@ static enum es_result vc_do_mmio(struct ghcb *ghcb, struct es_em_ctxt *ctxt,
 	return sev_es_ghcb_hv_call(ghcb, ctxt, exit_code, exit_info_1, exit_info_2);
 }
 
-/*
- * The MOVS instruction has two memory operands, which raises the
- * problem that it is not known whether the access to the source or the
- * destination caused the #VC exception (and hence whether an MMIO read
- * or write operation needs to be emulated).
- *
- * Instead of playing games with walking page-tables and trying to guess
- * whether the source or destination is an MMIO range, split the move
- * into two operations, a read and a write with only one memory operand.
- * This will cause a nested #VC exception on the MMIO address which can
- * then be handled.
- *
- * This implementation has the benefit that it also supports MOVS where
- * source _and_ destination are MMIO regions.
- *
- * It will slow MOVS on MMIO down a lot, but in SEV-ES guests it is a
- * rare operation. If it turns out to be a performance problem the split
- * operations can be moved to memcpy_fromio() and memcpy_toio().
- */
+ 
 static enum es_result vc_handle_mmio_movs(struct es_em_ctxt *ctxt,
 					  unsigned int bytes)
 {
@@ -1555,7 +1347,7 @@ static enum es_result vc_handle_mmio(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
 		if (ret)
 			break;
 
-		/* Zero-extend for 32-bit operation */
+		 
 		if (bytes == 4)
 			*reg_data = 0;
 
@@ -1566,7 +1358,7 @@ static enum es_result vc_handle_mmio(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
 		if (ret)
 			break;
 
-		/* Zero extend based on operand size */
+		 
 		memset(reg_data, 0, insn->opnd_bytes);
 		memcpy(reg_data, ghcb->shared_buffer, bytes);
 		break;
@@ -1585,7 +1377,7 @@ static enum es_result vc_handle_mmio(struct ghcb *ghcb, struct es_em_ctxt *ctxt)
 			sign_byte = (*val & 0x8000) ? 0xff : 0x00;
 		}
 
-		/* Sign extend based on operand size */
+		 
 		memset(reg_data, sign_byte, insn->opnd_bytes);
 		memcpy(reg_data, ghcb->shared_buffer, bytes);
 		break;
@@ -1615,21 +1407,21 @@ static enum es_result vc_handle_dr7_write(struct ghcb *ghcb,
 
 	val = *reg;
 
-	/* Upper 32 bits must be written as zeroes */
+	 
 	if (val >> 32) {
 		ctxt->fi.vector = X86_TRAP_GP;
 		ctxt->fi.error_code = 0;
 		return ES_EXCEPTION;
 	}
 
-	/* Clear out other reserved bits and set bit 10 */
+	 
 	val = (val & 0xffff23ffL) | BIT(10);
 
-	/* Early non-zero writes to DR7 are not supported */
+	 
 	if (!data && (val & ~DR7_RESET_VALUE))
 		return ES_UNSUPPORTED;
 
-	/* Using a value of 0 for ExitInfo1 means RAX holds the value */
+	 
 	ghcb_set_rax(ghcb, val);
 	ret = sev_es_ghcb_hv_call(ghcb, ctxt, SVM_EXIT_WRITE_DR7, 0, 0);
 	if (ret != ES_OK)
@@ -1689,17 +1481,14 @@ static enum es_result vc_handle_rdpmc(struct ghcb *ghcb, struct es_em_ctxt *ctxt
 static enum es_result vc_handle_monitor(struct ghcb *ghcb,
 					struct es_em_ctxt *ctxt)
 {
-	/*
-	 * Treat it as a NOP and do not leak a physical address to the
-	 * hypervisor.
-	 */
+	 
 	return ES_OK;
 }
 
 static enum es_result vc_handle_mwait(struct ghcb *ghcb,
 				      struct es_em_ctxt *ctxt)
 {
-	/* Treat the same as MONITOR/MONITORX */
+	 
 	return ES_OK;
 }
 
@@ -1723,11 +1512,7 @@ static enum es_result vc_handle_vmmcall(struct ghcb *ghcb,
 
 	ctxt->regs->ax = ghcb->save.rax;
 
-	/*
-	 * Call sev_es_hcall_finish() after regs->ax is already set.
-	 * This allows the hypervisor handler to overwrite it again if
-	 * necessary.
-	 */
+	 
 	if (x86_platform.hyper.sev_es_hcall_finish &&
 	    !x86_platform.hyper.sev_es_hcall_finish(ghcb, ctxt->regs))
 		return ES_VMM_ERROR;
@@ -1738,11 +1523,7 @@ static enum es_result vc_handle_vmmcall(struct ghcb *ghcb,
 static enum es_result vc_handle_trap_ac(struct ghcb *ghcb,
 					struct es_em_ctxt *ctxt)
 {
-	/*
-	 * Calling ecx_alignment_check() directly does not work, because it
-	 * enables IRQs and the GHCB is active. Forward the exception and call
-	 * it later from vc_forward_exception().
-	 */
+	 
 	ctxt->fi.vector = X86_TRAP_AC;
 	ctxt->fi.error_code = 0;
 	return ES_EXCEPTION;
@@ -1800,9 +1581,7 @@ static enum es_result vc_handle_exitcode(struct es_em_ctxt *ctxt,
 		result = vc_handle_mmio(ghcb, ctxt);
 		break;
 	default:
-		/*
-		 * Unexpected #VC exception
-		 */
+		 
 		result = ES_UNSUPPORTED;
 	}
 
@@ -1848,11 +1627,7 @@ static __always_inline bool vc_from_invalid_context(struct pt_regs *regs)
 	sp      = (unsigned long)regs;
 	prev_sp = regs->sp;
 
-	/*
-	 * If the code was already executing on the VC2 stack when the #VC
-	 * happened, let it proceed to the normal handling routine. This way the
-	 * code executing on the VC2 stack can cause #VC exceptions to get handled.
-	 */
+	 
 	return is_vc2_stack(sp) && !is_vc2_stack(prev_sp);
 }
 
@@ -1874,7 +1649,7 @@ static bool vc_raw_handle_exception(struct pt_regs *regs, unsigned long error_co
 
 	__sev_put_ghcb(&state);
 
-	/* Done - now check the result */
+	 
 	switch (result) {
 	case ES_OK:
 		vc_finish_insn(&ctxt);
@@ -1898,14 +1673,11 @@ static bool vc_raw_handle_exception(struct pt_regs *regs, unsigned long error_co
 		vc_forward_exception(&ctxt);
 		break;
 	case ES_RETRY:
-		/* Nothing to do */
+		 
 		break;
 	default:
 		pr_emerg("Unknown result in %s():%d\n", __func__, result);
-		/*
-		 * Emulating the instruction which caused the #VC exception
-		 * failed - can't continue so print debug information
-		 */
+		 
 		BUG();
 	}
 
@@ -1917,34 +1689,19 @@ static __always_inline bool vc_is_db(unsigned long error_code)
 	return error_code == SVM_EXIT_EXCP_BASE + X86_TRAP_DB;
 }
 
-/*
- * Runtime #VC exception handler when raised from kernel mode. Runs in NMI mode
- * and will panic when an error happens.
- */
+ 
 DEFINE_IDTENTRY_VC_KERNEL(exc_vmm_communication)
 {
 	irqentry_state_t irq_state;
 
-	/*
-	 * With the current implementation it is always possible to switch to a
-	 * safe stack because #VC exceptions only happen at known places, like
-	 * intercepted instructions or accesses to MMIO areas/IO ports. They can
-	 * also happen with code instrumentation when the hypervisor intercepts
-	 * #DB, but the critical paths are forbidden to be instrumented, so #DB
-	 * exceptions currently also only happen in safe places.
-	 *
-	 * But keep this here in case the noinstr annotations are violated due
-	 * to bug elsewhere.
-	 */
+	 
 	if (unlikely(vc_from_invalid_context(regs))) {
 		instrumentation_begin();
 		panic("Can't handle #VC exception from unsupported context\n");
 		instrumentation_end();
 	}
 
-	/*
-	 * Handle #DB before calling into !noinstr code to avoid recursive #DB.
-	 */
+	 
 	if (vc_is_db(error_code)) {
 		exc_debug(regs);
 		return;
@@ -1955,13 +1712,13 @@ DEFINE_IDTENTRY_VC_KERNEL(exc_vmm_communication)
 	instrumentation_begin();
 
 	if (!vc_raw_handle_exception(regs, error_code)) {
-		/* Show some debug info */
+		 
 		show_regs(regs);
 
-		/* Ask hypervisor to sev_es_terminate */
+		 
 		sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SEV_ES_GEN_REQ);
 
-		/* If that fails and we get here - just panic */
+		 
 		panic("Returned from Terminate-Request to Hypervisor\n");
 	}
 
@@ -1969,15 +1726,10 @@ DEFINE_IDTENTRY_VC_KERNEL(exc_vmm_communication)
 	irqentry_nmi_exit(regs, irq_state);
 }
 
-/*
- * Runtime #VC exception handler when raised from user mode. Runs in IRQ mode
- * and will kill the current task with SIGBUS when an error happens.
- */
+ 
 DEFINE_IDTENTRY_VC_USER(exc_vmm_communication)
 {
-	/*
-	 * Handle #DB before calling into !noinstr code to avoid recursive #DB.
-	 */
+	 
 	if (vc_is_db(error_code)) {
 		noist_exc_debug(regs);
 		return;
@@ -1987,11 +1739,7 @@ DEFINE_IDTENTRY_VC_USER(exc_vmm_communication)
 	instrumentation_begin();
 
 	if (!vc_raw_handle_exception(regs, error_code)) {
-		/*
-		 * Do not kill the machine if user-space triggered the
-		 * exception. Send SIGBUS instead and let user-space deal with
-		 * it.
-		 */
+		 
 		force_sig_fault(SIGBUS, BUS_OBJERR, (void __user *)0);
 	}
 
@@ -2011,7 +1759,7 @@ bool __init handle_vc_boot_ghcb(struct pt_regs *regs)
 	if (result == ES_OK)
 		result = vc_handle_exitcode(&ctxt, boot_ghcb, exit_code);
 
-	/* Done - now check the result */
+	 
 	switch (result) {
 	case ES_OK:
 		vc_finish_insn(&ctxt);
@@ -2032,7 +1780,7 @@ bool __init handle_vc_boot_ghcb(struct pt_regs *regs)
 		vc_early_forward_exception(&ctxt);
 		break;
 	case ES_RETRY:
-		/* Nothing to do */
+		 
 		break;
 	default:
 		BUG();
@@ -2046,34 +1794,18 @@ fail:
 	sev_es_terminate(SEV_TERM_SET_GEN, GHCB_SEV_ES_GEN_REQ);
 }
 
-/*
- * Initial set up of SNP relies on information provided by the
- * Confidential Computing blob, which can be passed to the kernel
- * in the following ways, depending on how it is booted:
- *
- * - when booted via the boot/decompress kernel:
- *   - via boot_params
- *
- * - when booted directly by firmware/bootloader (e.g. CONFIG_PVH):
- *   - via a setup_data entry, as defined by the Linux Boot Protocol
- *
- * Scan for the blob in that order.
- */
+ 
 static __init struct cc_blob_sev_info *find_cc_blob(struct boot_params *bp)
 {
 	struct cc_blob_sev_info *cc_info;
 
-	/* Boot kernel would have passed the CC blob via boot_params. */
+	 
 	if (bp->cc_blob_address) {
 		cc_info = (struct cc_blob_sev_info *)(unsigned long)bp->cc_blob_address;
 		goto found_cc_info;
 	}
 
-	/*
-	 * If kernel was booted directly, without the use of the
-	 * boot/decompression kernel, the CC blob may have been passed via
-	 * setup_data instead.
-	 */
+	 
 	cc_info = find_cc_blob_setup_data(bp);
 	if (!cc_info)
 		return NULL;
@@ -2098,10 +1830,7 @@ bool __init snp_init(struct boot_params *bp)
 
 	setup_cpuid_table(cc_info);
 
-	/*
-	 * The CC blob will be used later to access the secrets page. Cache
-	 * it here like the boot kernel does.
-	 */
+	 
 	bp->cc_blob_address = (u32)(unsigned long)cc_info;
 
 	return true;
@@ -2129,13 +1858,7 @@ static void dump_cpuid_table(void)
 	}
 }
 
-/*
- * It is useful from an auditing/testing perspective to provide an easy way
- * for the guest owner to know that the CPUID table has been initialized as
- * expected, but that initialization happens too early in boot to print any
- * sort of indicator, and there's not really any other good place to do it,
- * so do it here.
- */
+ 
 static int __init report_cpuid_table(void)
 {
 	const struct snp_cpuid_table *cpuid_table = snp_cpuid_get_table();
@@ -2180,10 +1903,7 @@ int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input, struct sn
 
 	rio->exitinfo2 = SEV_RET_NO_FW_CALL;
 
-	/*
-	 * __sev_get_ghcb() needs to run with IRQs disabled because it is using
-	 * a per-CPU GHCB.
-	 */
+	 
 	local_irq_save(flags);
 
 	ghcb = __sev_get_ghcb(&state);
@@ -2213,7 +1933,7 @@ int snp_issue_guest_request(u64 exit_code, struct snp_req_data *input, struct sn
 		break;
 
 	case SNP_GUEST_VMM_ERR(SNP_GUEST_VMM_ERR_INVALID_LEN):
-		/* Number of expected pages are returned in RBX */
+		 
 		if (exit_code == SVM_VMGEXIT_EXT_GUEST_REQUEST) {
 			input->data_npages = ghcb_get_rbx(ghcb);
 			ret = -ENOSPC;

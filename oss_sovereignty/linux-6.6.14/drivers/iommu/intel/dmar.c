@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2006, Intel Corporation.
- *
- * Copyright (C) 2006-2008 Intel Corporation
- * Author: Ashok Raj <ashok.raj@intel.com>
- * Author: Shaohua Li <shaohua.li@intel.com>
- * Author: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
- *
- * This file implements early detection/parsing of Remapping Devices
- * reported to OS through BIOS via DMA remapping reporting (DMAR) ACPI
- * tables.
- *
- * These routines are used by both DMA-remapping and Interrupt-remapping
- */
+
+ 
 
 #define pr_fmt(fmt)     "DMAR: " fmt
 
@@ -44,18 +31,7 @@ struct dmar_res_callback {
 	bool			print_entry;
 };
 
-/*
- * Assumptions:
- * 1) The hotplug framework guarentees that DMAR unit will be hot-added
- *    before IO devices managed by that unit.
- * 2) The hotplug framework guarantees that DMAR unit will be hot-removed
- *    after IO devices managed by that unit.
- * 3) Hotplug events are rare.
- *
- * Locking rules for DMA and interrupt remapping related global data structures:
- * 1) Use dmar_global_lock in process context
- * 2) Use RCU in interrupt context
- */
+ 
 DECLARE_RWSEM(dmar_global_lock);
 LIST_HEAD(dmar_drhd_units);
 
@@ -68,10 +44,7 @@ static void free_iommu(struct intel_iommu *iommu);
 
 static void dmar_register_drhd_unit(struct dmar_drhd_unit *drhd)
 {
-	/*
-	 * add INCLUDE_ALL at the tail, so scan the list will find it at
-	 * the very end.
-	 */
+	 
 	if (drhd->include_all)
 		list_add_tail_rcu(&drhd->list, &dmar_drhd_units);
 	else
@@ -116,7 +89,7 @@ void dmar_free_dev_scope(struct dmar_dev_scope **devices, int *cnt)
 	*cnt = 0;
 }
 
-/* Optimize out kzalloc()/kfree() for normal cases */
+ 
 static char dmar_pci_notify_info_buf[64];
 
 static struct dmar_pci_notify_info *
@@ -127,14 +100,11 @@ dmar_alloc_pci_notify_info(struct pci_dev *dev, unsigned long event)
 	struct pci_dev *tmp;
 	struct dmar_pci_notify_info *info;
 
-	/*
-	 * Ignore devices that have a domain number higher than what can
-	 * be looked up in DMAR, e.g. VMD subdevices with domain 0x10000
-	 */
+	 
 	if (pci_domain_nr(dev->bus) > U16_MAX)
 		return NULL;
 
-	/* Only generate path[] for device addition event */
+	 
 	if (event == BUS_NOTIFY_ADD_DEVICE)
 		for (tmp = dev; tmp; tmp = tmp->bus->self)
 			level++;
@@ -210,7 +180,7 @@ fallback:
 	return false;
 }
 
-/* Return: > 0 if match found, 0 if no match found, < 0 if error happens */
+ 
 int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
 			  void *start, void*end, u16 segment,
 			  struct dmar_dev_scope *devices,
@@ -235,15 +205,7 @@ int dmar_insert_dev_scope(struct dmar_pci_notify_info *info,
 		if (!dmar_match_pci_path(info, scope->bus, path, level))
 			continue;
 
-		/*
-		 * We expect devices with endpoint scope to have normal PCI
-		 * headers, and devices with bridge scope to have bridge PCI
-		 * headers.  However PCI NTB devices may be listed in the
-		 * DMAR table with bridge scope, even though they have a
-		 * normal PCI header.  NTB devices are identified by class
-		 * "BRIDGE_OTHER" (0680h) - we don't declare a socpe mismatch
-		 * for this special case.
-		 */
+		 
 		if ((scope->entry_type == ACPI_DMAR_SCOPE_TYPE_ENDPOINT &&
 		     info->dev->hdr_type != PCI_HEADER_TYPE_NORMAL) ||
 		    (scope->entry_type == ACPI_DMAR_SCOPE_TYPE_BRIDGE &&
@@ -343,18 +305,9 @@ static int dmar_pci_bus_notifier(struct notifier_block *nb,
 	struct pci_dev *pdev = to_pci_dev(data);
 	struct dmar_pci_notify_info *info;
 
-	/* Only care about add/remove events for physical functions.
-	 * For VFs we actually do the lookup based on the corresponding
-	 * PF in device_to_iommu() anyway. */
+	 
 	if (pdev->is_virtfn) {
-		/*
-		 * Ensure that the VF device inherits the irq domain of the
-		 * PF device. Ideally the device would inherit the domain
-		 * from the bus, but DMAR can have multiple units per bus
-		 * which makes this impossible. The VF 'bus' could inherit
-		 * from the PF device, but that's yet another x86'sism to
-		 * inflict on everybody else.
-		 */
+		 
 		if (action == BUS_NOTIFY_ADD_DEVICE)
 			vf_inherit_msi_domain(pdev);
 		return NOTIFY_DONE;
@@ -399,11 +352,7 @@ dmar_find_dmaru(struct acpi_dmar_hardware_unit *drhd)
 	return NULL;
 }
 
-/*
- * dmar_parse_one_drhd - parses exactly one DMA remapping hardware definition
- * structure which uniquely represent one DMA remapping hardware unit
- * present in the platform
- */
+ 
 static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
 {
 	struct acpi_dmar_hardware_unit *drhd;
@@ -419,17 +368,14 @@ static int dmar_parse_one_drhd(struct acpi_dmar_header *header, void *arg)
 	if (!dmaru)
 		return -ENOMEM;
 
-	/*
-	 * If header is allocated from slab by ACPI _DSM method, we need to
-	 * copy the content because the memory buffer will be freed on return.
-	 */
+	 
 	dmaru->hdr = (void *)(dmaru + 1);
 	memcpy(dmaru->hdr, header, header->length);
 	dmaru->reg_base_addr = drhd->address;
 	dmaru->segment = drhd->segment;
-	/* The size of the register set is 2 ^ N 4 KB pages. */
+	 
 	dmaru->reg_size = 1UL << (drhd->size + 12);
-	dmaru->include_all = drhd->flags & 0x1; /* BIT0: INCLUDE_ALL */
+	dmaru->include_all = drhd->flags & 0x1;  
 	dmaru->devices = dmar_alloc_dev_scope((void *)(drhd + 1),
 					      ((void *)drhd) + drhd->header.length,
 					      &dmaru->devices_cnt);
@@ -468,7 +414,7 @@ static int __init dmar_parse_one_andd(struct acpi_dmar_header *header,
 {
 	struct acpi_dmar_andd *andd = (void *)header;
 
-	/* Check for NUL termination within the designated length */
+	 
 	if (strnlen(andd->device_name, header->length - 8) == header->length - 8) {
 		pr_warn(FW_BUG
 			   "Your BIOS is broken; ANDD object name is not NUL-terminated\n"
@@ -551,8 +497,7 @@ dmar_table_print_dmar_entry(struct acpi_dmar_header *header)
 		       rhsa->proximity_domain);
 		break;
 	case ACPI_DMAR_TYPE_NAMESPACE:
-		/* We don't print this here because we need to sanity-check
-		   it first. So print it in dmar_parse_one_andd() instead. */
+		 
 		break;
 	case ACPI_DMAR_TYPE_SATC:
 		satc = container_of(header, struct acpi_dmar_satc, header);
@@ -561,14 +506,12 @@ dmar_table_print_dmar_entry(struct acpi_dmar_header *header)
 	}
 }
 
-/**
- * dmar_table_detect - checks to see if the platform supports DMAR devices
- */
+ 
 static int __init dmar_table_detect(void)
 {
 	acpi_status status = AE_OK;
 
-	/* if we could find DMAR table, then there are DMAR devices */
+	 
 	status = acpi_get_table(ACPI_SIG_DMAR, 0, &dmar_tbl);
 
 	if (ACPI_SUCCESS(status) && !dmar_tbl) {
@@ -588,11 +531,11 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
 	for (iter = start; iter < end; iter = next) {
 		next = (void *)iter + iter->length;
 		if (iter->length == 0) {
-			/* Avoid looping forever on bad ACPI tables */
+			 
 			pr_debug(FW_BUG "Invalid 0-length structure\n");
 			break;
 		} else if (next > end) {
-			/* Avoid passing table end */
+			 
 			pr_warn(FW_BUG "Record passes table end\n");
 			return -EINVAL;
 		}
@@ -601,7 +544,7 @@ static int dmar_walk_remapping_entries(struct acpi_dmar_header *start,
 			dmar_table_print_dmar_entry(iter);
 
 		if (iter->type >= ACPI_DMAR_TYPE_RESERVED) {
-			/* continue for forward compatibility */
+			 
 			pr_debug("Unknown DMAR structure type %d\n",
 				 iter->type);
 		} else if (cb->cb[iter->type]) {
@@ -627,9 +570,7 @@ static inline int dmar_walk_dmar_table(struct acpi_table_dmar *dmar,
 			dmar->header.length - sizeof(*dmar), cb);
 }
 
-/**
- * parse_dmar_table - parses the DMA reporting table
- */
+ 
 static int __init
 parse_dmar_table(void)
 {
@@ -648,16 +589,10 @@ parse_dmar_table(void)
 		.cb[ACPI_DMAR_TYPE_SATC] = &dmar_parse_one_satc,
 	};
 
-	/*
-	 * Do it again, earlier dmar_tbl mapping could be mapped with
-	 * fixed map.
-	 */
+	 
 	dmar_table_detect();
 
-	/*
-	 * ACPI tables may not be DMA protected by tboot, so use DMAR copy
-	 * SINIT saved in SinitMleData in TXT heap (which is DMA protected)
-	 */
+	 
 	dmar_tbl = tboot_get_dmar_table(dmar_tbl);
 
 	dmar = (struct acpi_table_dmar *)dmar_tbl;
@@ -688,7 +623,7 @@ static int dmar_pci_device_match(struct dmar_dev_scope devices[],
 			if (dev_is_pci(tmp) && dev == to_pci_dev(tmp))
 				return 1;
 
-		/* Check our parent */
+		 
 		dev = dev->bus->self;
 	}
 
@@ -930,7 +865,7 @@ void __init detect_intel_iommu(void)
 	if (!ret && !no_iommu && !iommu_detected &&
 	    (!dmar_disabled || dmar_platform_optin())) {
 		iommu_detected = 1;
-		/* Make sure ACS will be enabled */
+		 
 		pci_request_acs();
 	}
 
@@ -955,14 +890,7 @@ static void unmap_iommu(struct intel_iommu *iommu)
 	release_mem_region(iommu->reg_phys, iommu->reg_size);
 }
 
-/**
- * map_iommu: map the iommu's registers
- * @iommu: the iommu to map
- * @drhd: DMA remapping hardware definition structure
- *
- * Memory map the iommu's registers.  Start w/ a single page, and
- * possibly expand if that turns out to be insufficent.
- */
+ 
 static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
 {
 	u64 phys_addr = drhd->reg_base_addr;
@@ -993,7 +921,7 @@ static int map_iommu(struct intel_iommu *iommu, struct dmar_drhd_unit *drhd)
 		goto unmap;
 	}
 
-	/* the registers might be more than one page */
+	 
 	map_size = max_t(int, ecap_max_iotlb_offset(iommu->ecap),
 			 cap_max_fault_reg_offset(iommu->cap));
 	map_size = VTD_PAGE_ALIGN(map_size);
@@ -1106,7 +1034,7 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
 		(unsigned long long)iommu->cap,
 		(unsigned long long)iommu->ecap);
 
-	/* Reflect status in gcmd */
+	 
 	sts = readl(iommu->reg + DMAR_GSTS_REG);
 	if (sts & DMA_GSTS_IRES)
 		iommu->gcmd |= DMA_GCMD_IRE;
@@ -1120,18 +1048,11 @@ static int alloc_iommu(struct dmar_drhd_unit *drhd)
 
 	raw_spin_lock_init(&iommu->register_lock);
 
-	/*
-	 * A value of N in PSS field of eCap register indicates hardware
-	 * supports PASID field of N+1 bits.
-	 */
+	 
 	if (pasid_supported(iommu))
 		iommu->iommu.max_pasids = 2UL << ecap_pss(iommu->ecap);
 
-	/*
-	 * This is only for hotplug; at boot time intel_iommu_enabled won't
-	 * be set yet. When intel_iommu_init() runs, it registers the units
-	 * present at boot time, then sets intel_iommu_enabled.
-	 */
+	 
 	if (intel_iommu_enabled && !drhd->ignored) {
 		err = iommu_device_sysfs_add(&iommu->iommu, NULL,
 					     intel_iommu_groups,
@@ -1197,9 +1118,7 @@ static void free_iommu(struct intel_iommu *iommu)
 	kfree(iommu);
 }
 
-/*
- * Reclaim all the submitted descriptors which have completed its work.
- */
+ 
 static inline void reclaim_free_desc(struct q_inval *qi)
 {
 	while (qi->desc_status[qi->free_tail] == QI_DONE ||
@@ -1281,21 +1200,13 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
 	if (fault & (DMA_FSTS_IQE | DMA_FSTS_ITE | DMA_FSTS_ICE))
 		qi_dump_fault(iommu, fault);
 
-	/*
-	 * If IQE happens, the head points to the descriptor associated
-	 * with the error. No new descriptors are fetched until the IQE
-	 * is cleared.
-	 */
+	 
 	if (fault & DMA_FSTS_IQE) {
 		head = readl(iommu->reg + DMAR_IQH_REG);
 		if ((head >> shift) == index) {
 			struct qi_desc *desc = qi->desc + head;
 
-			/*
-			 * desc->qw2 and desc->qw3 are either reserved or
-			 * used by software as private data. We won't print
-			 * out these two qw's for security consideration.
-			 */
+			 
 			memcpy(desc, qi->desc + (wait_index << shift),
 			       1 << shift);
 			writel(DMA_FSTS_IQE, iommu->reg + DMAR_FSTS_REG);
@@ -1304,10 +1215,7 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
 		}
 	}
 
-	/*
-	 * If ITE happens, all pending wait_desc commands are aborted.
-	 * No new descriptors are fetched until the ITE is cleared.
-	 */
+	 
 	if (fault & DMA_FSTS_ITE) {
 		head = readl(iommu->reg + DMAR_IQH_REG);
 		head = ((head >> shift) - 1 + QI_LENGTH) % QI_LENGTH;
@@ -1336,13 +1244,7 @@ static int qi_check_fault(struct intel_iommu *iommu, int index, int wait_index)
 	return 0;
 }
 
-/*
- * Function to submit invalidation descriptors of all types to the queued
- * invalidation interface(QI). Multiple descriptors can be submitted at a
- * time, a wait descriptor will be appended to each submission to ensure
- * hardware has completed the invalidation before return. Wait descriptors
- * can be part of the submission but it will not be polled for completion.
- */
+ 
 int qi_submit_sync(struct intel_iommu *iommu, struct qi_desc *desc,
 		   unsigned int count, unsigned long options)
 {
@@ -1378,11 +1280,7 @@ restart:
 	rc = 0;
 
 	raw_spin_lock_irqsave(&qi->q_lock, flags);
-	/*
-	 * Check if we have enough empty slots in the queue to submit,
-	 * the calculation is based on:
-	 * # of desc + 1 wait desc + 1 space between head and tail
-	 */
+	 
 	while (qi->free_cnt < count + 2) {
 		raw_spin_unlock_irqrestore(&qi->q_lock, flags);
 		cpu_relax();
@@ -1416,20 +1314,11 @@ restart:
 	qi->free_head = (qi->free_head + count + 1) % QI_LENGTH;
 	qi->free_cnt -= count + 1;
 
-	/*
-	 * update the HW tail register indicating the presence of
-	 * new descriptors.
-	 */
+	 
 	writel(qi->free_head << shift, iommu->reg + DMAR_IQT_REG);
 
 	while (qi->desc_status[wait_index] != QI_DONE) {
-		/*
-		 * We will leave the interrupts disabled, to prevent interrupt
-		 * context to queue another cmd while a cmd is already submitted
-		 * and waiting for completion on this cpu. This is to avoid
-		 * a deadlock where the interrupt context can wait indefinitely
-		 * for free slots in the queue.
-		 */
+		 
 		rc = qi_check_fault(iommu, index, wait_index);
 		if (rc)
 			break;
@@ -1463,9 +1352,7 @@ restart:
 	return rc;
 }
 
-/*
- * Flush the global interrupt entry cache.
- */
+ 
 void qi_global_iec(struct intel_iommu *iommu)
 {
 	struct qi_desc desc;
@@ -1475,7 +1362,7 @@ void qi_global_iec(struct intel_iommu *iommu)
 	desc.qw2 = 0;
 	desc.qw3 = 0;
 
-	/* should never fail */
+	 
 	qi_submit_sync(iommu, &desc, 1, 0);
 }
 
@@ -1522,12 +1409,7 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
 {
 	struct qi_desc desc;
 
-	/*
-	 * VT-d spec, section 4.3:
-	 *
-	 * Software is recommended to not submit any Device-TLB invalidation
-	 * requests while address remapping hardware is disabled.
-	 */
+	 
 	if (!(iommu->gcmd & DMA_GCMD_TE))
 		return;
 
@@ -1548,17 +1430,13 @@ void qi_flush_dev_iotlb(struct intel_iommu *iommu, u16 sid, u16 pfsid,
 	qi_submit_sync(iommu, &desc, 1, 0);
 }
 
-/* PASID-based IOTLB invalidation */
+ 
 void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
 		     unsigned long npages, bool ih)
 {
 	struct qi_desc desc = {.qw2 = 0, .qw3 = 0};
 
-	/*
-	 * npages == -1 means a PASID-selective invalidation, otherwise,
-	 * a positive value for Page-selective-within-PASID invalidation.
-	 * 0 is not a valid input.
-	 */
+	 
 	if (WARN_ON(!npages)) {
 		pr_err("Invalid input npages = %ld\n", npages);
 		return;
@@ -1589,19 +1467,14 @@ void qi_flush_piotlb(struct intel_iommu *iommu, u16 did, u32 pasid, u64 addr,
 	qi_submit_sync(iommu, &desc, 1, 0);
 }
 
-/* PASID-based device IOTLB Invalidate */
+ 
 void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
 			      u32 pasid,  u16 qdep, u64 addr, unsigned int size_order)
 {
 	unsigned long mask = 1UL << (VTD_PAGE_SHIFT + size_order - 1);
 	struct qi_desc desc = {.qw1 = 0, .qw2 = 0, .qw3 = 0};
 
-	/*
-	 * VT-d spec, section 4.3:
-	 *
-	 * Software is recommended to not submit any Device-TLB invalidation
-	 * requests while address remapping hardware is disabled.
-	 */
+	 
 	if (!(iommu->gcmd & DMA_GCMD_TE))
 		return;
 
@@ -1609,33 +1482,21 @@ void qi_flush_dev_iotlb_pasid(struct intel_iommu *iommu, u16 sid, u16 pfsid,
 		QI_DEV_EIOTLB_QDEP(qdep) | QI_DEIOTLB_TYPE |
 		QI_DEV_IOTLB_PFSID(pfsid);
 
-	/*
-	 * If S bit is 0, we only flush a single page. If S bit is set,
-	 * The least significant zero bit indicates the invalidation address
-	 * range. VT-d spec 6.5.2.6.
-	 * e.g. address bit 12[0] indicates 8KB, 13[0] indicates 16KB.
-	 * size order = 0 is PAGE_SIZE 4KB
-	 * Max Invs Pending (MIP) is set to 0 for now until we have DIT in
-	 * ECAP.
-	 */
+	 
 	if (!IS_ALIGNED(addr, VTD_PAGE_SIZE << size_order))
 		pr_warn_ratelimited("Invalidate non-aligned address %llx, order %d\n",
 				    addr, size_order);
 
-	/* Take page address */
+	 
 	desc.qw1 = QI_DEV_EIOTLB_ADDR(addr);
 
 	if (size_order) {
-		/*
-		 * Existing 0s in address below size_order may be the least
-		 * significant bit, we must set them to 1s to avoid having
-		 * smaller size than desired.
-		 */
+		 
 		desc.qw1 |= GENMASK_ULL(size_order + VTD_PAGE_SHIFT - 1,
 					VTD_PAGE_SHIFT);
-		/* Clear size_order bit to indicate size */
+		 
 		desc.qw1 &= ~mask;
-		/* Set the S bit to indicate flushing more than 1 page */
+		 
 		desc.qw1 |= QI_DEV_EIOTLB_SIZE;
 	}
 
@@ -1652,9 +1513,7 @@ void qi_flush_pasid_cache(struct intel_iommu *iommu, u16 did,
 	qi_submit_sync(iommu, &desc, 1, 0);
 }
 
-/*
- * Disable Queued Invalidation interface.
- */
+ 
 void dmar_disable_qi(struct intel_iommu *iommu)
 {
 	unsigned long flags;
@@ -1670,9 +1529,7 @@ void dmar_disable_qi(struct intel_iommu *iommu)
 	if (!(sts & DMA_GSTS_QIES))
 		goto end;
 
-	/*
-	 * Give a chance to HW to complete the pending invalidation requests.
-	 */
+	 
 	while ((readl(iommu->reg + DMAR_IQT_REG) !=
 		readl(iommu->reg + DMAR_IQH_REG)) &&
 		(DMAR_OPERATION_TIMEOUT > (get_cycles() - start_time)))
@@ -1687,9 +1544,7 @@ end:
 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
 }
 
-/*
- * Enable queued invalidation.
- */
+ 
 static void __dmar_enable_qi(struct intel_iommu *iommu)
 {
 	u32 sts;
@@ -1700,16 +1555,13 @@ static void __dmar_enable_qi(struct intel_iommu *iommu)
 	qi->free_head = qi->free_tail = 0;
 	qi->free_cnt = QI_LENGTH;
 
-	/*
-	 * Set DW=1 and QS=1 in IQA_REG when Scalable Mode capability
-	 * is present.
-	 */
+	 
 	if (ecap_smts(iommu->ecap))
 		val |= BIT_ULL(11) | BIT_ULL(0);
 
 	raw_spin_lock_irqsave(&iommu->register_lock, flags);
 
-	/* write zero to the tail reg */
+	 
 	writel(0, iommu->reg + DMAR_IQT_REG);
 
 	dmar_writeq(iommu->reg + DMAR_IQA_REG, val);
@@ -1717,17 +1569,13 @@ static void __dmar_enable_qi(struct intel_iommu *iommu)
 	iommu->gcmd |= DMA_GCMD_QIE;
 	writel(iommu->gcmd, iommu->reg + DMAR_GCMD_REG);
 
-	/* Make sure hardware complete it */
+	 
 	IOMMU_WAIT_OP(iommu, DMAR_GSTS_REG, readl, (sts & DMA_GSTS_QIES), sts);
 
 	raw_spin_unlock_irqrestore(&iommu->register_lock, flags);
 }
 
-/*
- * Enable Queued Invalidation interface. This is a must to support
- * interrupt-remapping. Also used by DMA-remapping, which replaces
- * register based IOTLB invalidation.
- */
+ 
 int dmar_enable_qi(struct intel_iommu *iommu)
 {
 	struct q_inval *qi;
@@ -1736,9 +1584,7 @@ int dmar_enable_qi(struct intel_iommu *iommu)
 	if (!ecap_qis(iommu->ecap))
 		return -ENOENT;
 
-	/*
-	 * queued invalidation is already setup and enabled.
-	 */
+	 
 	if (iommu->qi)
 		return 0;
 
@@ -1748,10 +1594,7 @@ int dmar_enable_qi(struct intel_iommu *iommu)
 
 	qi = iommu->qi;
 
-	/*
-	 * Need two pages to accommodate 256 descriptors of 256 bits each
-	 * if the remapping hardware supports scalable mode translation.
-	 */
+	 
 	desc_page = alloc_pages_node(iommu->node, GFP_ATOMIC | __GFP_ZERO,
 				     !!ecap_smts(iommu->ecap));
 	if (!desc_page) {
@@ -1777,7 +1620,7 @@ int dmar_enable_qi(struct intel_iommu *iommu)
 	return 0;
 }
 
-/* iommu interrupt handling. Most stuff are MSI-like. */
+ 
 
 enum faulttype {
 	DMA_REMAP,
@@ -1807,11 +1650,11 @@ static const char * const dma_remap_sm_fault_reasons[] = {
 	"SM: Invalid Root Table Address",
 	"SM: TTM 0 for request with PASID",
 	"SM: TTM 0 for page group request",
-	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", /* 0x33-0x37 */
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  
 	"SM: Error attempting to access Root Entry",
 	"SM: Present bit in Root Entry is clear",
 	"SM: Non-zero reserved field set in Root Entry",
-	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", /* 0x3B-0x3F */
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  
 	"SM: Error attempting to access Context Entry",
 	"SM: Present bit in Context Entry is clear",
 	"SM: Non-zero reserved field set in the Context Entry",
@@ -1821,20 +1664,20 @@ static const char * const dma_remap_sm_fault_reasons[] = {
 	"SM: PASID is larger than the max in Context Entry",
 	"SM: PRE field in Context-Entry is clear",
 	"SM: RID_PASID field error in Context-Entry",
-	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", /* 0x49-0x4F */
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  
 	"SM: Error attempting to access the PASID Directory Entry",
 	"SM: Present bit in Directory Entry is clear",
 	"SM: Non-zero reserved field set in PASID Directory Entry",
-	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", /* 0x53-0x57 */
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  
 	"SM: Error attempting to access PASID Table Entry",
 	"SM: Present bit in PASID Table Entry is clear",
 	"SM: Non-zero reserved field set in PASID Table Entry",
 	"SM: Invalid Scalable-Mode PASID Table Entry",
 	"SM: ERE field is clear in PASID Table Entry",
 	"SM: SRE field is clear in PASID Table Entry",
-	"Unknown", "Unknown",/* 0x5E-0x5F */
-	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", /* 0x60-0x67 */
-	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", /* 0x68-0x6F */
+	"Unknown", "Unknown", 
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  
 	"SM: Error attempting to access first-level paging entry",
 	"SM: Present bit in first-level paging entry is clear",
 	"SM: Non-zero reserved field set in first-level paging entry",
@@ -1848,7 +1691,7 @@ static const char * const dma_remap_sm_fault_reasons[] = {
 	"SM: Non-zero reserved field set in second-level paging entry",
 	"SM: Invalid second-level page table pointer",
 	"SM: A/D bit update needed in second-level entry when set up in no snoop",
-	"Unknown", "Unknown", "Unknown", /* 0x7D-0x7F */
+	"Unknown", "Unknown", "Unknown",  
 	"SM: Address in first-level translation is not canonical",
 	"SM: U/S set 0 for first-level translation with user privilege",
 	"SM: No execute permission for request with PASID and ER=1",
@@ -1857,7 +1700,7 @@ static const char * const dma_remap_sm_fault_reasons[] = {
 	"SM: No write permission for Write/AtomicOp request",
 	"SM: No read permission for Read/AtomicOp request",
 	"SM: Invalid address-interrupt address",
-	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", /* 0x88-0x8F */
+	"Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown", "Unknown",  
 	"SM: A/D bit update needed in first-level entry when set up in no snoop",
 };
 
@@ -1910,10 +1753,10 @@ void dmar_msi_unmask(struct irq_data *data)
 	int reg = dmar_msi_reg(iommu, data->irq);
 	unsigned long flag;
 
-	/* unmask it */
+	 
 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
 	writel(0, iommu->reg + reg);
-	/* Read a reg to force flush the post write */
+	 
 	readl(iommu->reg + reg);
 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
 }
@@ -1924,10 +1767,10 @@ void dmar_msi_mask(struct irq_data *data)
 	int reg = dmar_msi_reg(iommu, data->irq);
 	unsigned long flag;
 
-	/* mask it */
+	 
 	raw_spin_lock_irqsave(&iommu->register_lock, flag);
 	writel(DMA_FECTL_IM, iommu->reg + reg);
-	/* Read a reg to force flush the post write */
+	 
 	readl(iommu->reg + reg);
 	raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
 }
@@ -2010,14 +1853,14 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
 	if (fault_status && __ratelimit(&rs))
 		pr_err("DRHD: handling fault status reg %x\n", fault_status);
 
-	/* TBD: ignore advanced fault log currently */
+	 
 	if (!(fault_status & DMA_FSTS_PPF))
 		goto unlock_exit;
 
 	fault_index = dma_fsts_fault_record_index(fault_status);
 	reg = cap_fault_reg_offset(iommu->cap);
 	while (1) {
-		/* Disable printing, simply clear the fault when ratelimited */
+		 
 		bool ratelimited = !__ratelimit(&rs);
 		u8 fault_reason;
 		u16 source_id;
@@ -2027,7 +1870,7 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
 		u32 data;
 		bool pasid_present;
 
-		/* highest 32 bits */
+		 
 		data = readl(iommu->reg + reg +
 				fault_index * PRIMARY_FAULT_REG_LEN + 12);
 		if (!(data & DMA_FRCD_F))
@@ -2048,14 +1891,14 @@ irqreturn_t dmar_fault(int irq, void *dev_id)
 			guest_addr = dma_frcd_page_addr(guest_addr);
 		}
 
-		/* clear the fault */
+		 
 		writel(DMA_FRCD_F, iommu->reg + reg +
 			fault_index * PRIMARY_FAULT_REG_LEN + 12);
 
 		raw_spin_unlock_irqrestore(&iommu->register_lock, flag);
 
 		if (!ratelimited)
-			/* Using pasid -1 if pasid is not present */
+			 
 			dmar_fault_do_one(iommu, type, fault_reason,
 					  pasid_present ? pasid : IOMMU_PASID_INVALID,
 					  source_id, guest_addr);
@@ -2078,9 +1921,7 @@ int dmar_set_interrupt(struct intel_iommu *iommu)
 {
 	int irq, ret;
 
-	/*
-	 * Check if the fault interrupt is already initialized.
-	 */
+	 
 	if (iommu->irq)
 		return 0;
 
@@ -2103,9 +1944,7 @@ int __init enable_drhd_fault_handling(void)
 	struct dmar_drhd_unit *drhd;
 	struct intel_iommu *iommu;
 
-	/*
-	 * Enable fault control interrupt.
-	 */
+	 
 	for_each_iommu(iommu, drhd) {
 		u32 fault_status;
 		int ret = dmar_set_interrupt(iommu);
@@ -2116,9 +1955,7 @@ int __init enable_drhd_fault_handling(void)
 			return -1;
 		}
 
-		/*
-		 * Clear any previous faults.
-		 */
+		 
 		dmar_fault(iommu->irq, iommu);
 		fault_status = readl(iommu->reg + DMAR_FSTS_REG);
 		writel(fault_status, iommu->reg + DMAR_FSTS_REG);
@@ -2127,9 +1964,7 @@ int __init enable_drhd_fault_handling(void)
 	return 0;
 }
 
-/*
- * Re-enable Queued Invalidation interface.
- */
+ 
 int dmar_reenable_qi(struct intel_iommu *iommu)
 {
 	if (!ecap_qis(iommu->ecap))
@@ -2138,23 +1973,15 @@ int dmar_reenable_qi(struct intel_iommu *iommu)
 	if (!iommu->qi)
 		return -ENOENT;
 
-	/*
-	 * First disable queued invalidation.
-	 */
+	 
 	dmar_disable_qi(iommu);
-	/*
-	 * Then enable queued invalidation again. Since there is no pending
-	 * invalidation requests now, it's safe to re-enable queued
-	 * invalidation.
-	 */
+	 
 	__dmar_enable_qi(iommu);
 
 	return 0;
 }
 
-/*
- * Check interrupt remapping support in DMAR table description.
- */
+ 
 int __init dmar_ir_support(void)
 {
 	struct acpi_table_dmar *dmar;
@@ -2164,7 +1991,7 @@ int __init dmar_ir_support(void)
 	return dmar->flags & 0x1;
 }
 
-/* Check whether DMAR units are in use */
+ 
 static inline bool dmar_in_use(void)
 {
 	return irq_remapping_enabled || intel_iommu_enabled;
@@ -2192,20 +2019,12 @@ static int __init dmar_free_unused_resources(void)
 
 late_initcall(dmar_free_unused_resources);
 
-/*
- * DMAR Hotplug Support
- * For more details, please refer to Intel(R) Virtualization Technology
- * for Directed-IO Architecture Specifiction, Rev 2.2, Section 8.8
- * "Remapping Hardware Unit Hot Plug".
- */
+ 
 static guid_t dmar_hp_guid =
 	GUID_INIT(0xD8C1A3A6, 0xBE9B, 0x4C9B,
 		  0x91, 0xBF, 0xC3, 0xCB, 0x81, 0xFC, 0x5D, 0xAF);
 
-/*
- * Currently there's only one revision and BIOS will not check the revision id,
- * so use 0 for safety.
- */
+ 
 #define	DMAR_DSM_REV_ID			0
 #define	DMAR_DSM_FUNC_DRHD		1
 #define	DMAR_DSM_FUNC_ATSR		2
@@ -2276,9 +2095,7 @@ static int dmar_hp_remove_drhd(struct acpi_dmar_header *header, void *arg)
 	if (!dmaru)
 		return 0;
 
-	/*
-	 * All PCI devices managed by this unit should have been destroyed.
-	 */
+	 
 	if (!dmaru->include_all && dmaru->devices && dmaru->devices_cnt) {
 		for_each_active_dev_scope(dmaru->devices,
 					  dmaru->devices_cnt, i, dev)
@@ -2433,13 +2250,7 @@ int dmar_device_remove(acpi_handle handle)
 	return dmar_device_hotplug(handle, false);
 }
 
-/*
- * dmar_platform_optin - Is %DMA_CTRL_PLATFORM_OPT_IN_FLAG set in DMAR table
- *
- * Returns true if the platform has %DMA_CTRL_PLATFORM_OPT_IN_FLAG set in
- * the ACPI DMAR table. This means that the platform boot firmware has made
- * sure no device can issue DMA outside of RMRR regions.
- */
+ 
 bool dmar_platform_optin(void)
 {
 	struct acpi_table_dmar *dmar;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008,2009, Steven Rostedt <srostedt@redhat.com>
- */
+
+ 
 #include <dirent.h>
 #include <mntent.h>
 #include <stdio.h>
@@ -18,7 +16,7 @@
 #include <linux/list.h>
 #include <linux/kernel.h>
 #include <linux/zalloc.h>
-#include <internal/lib.h> // page_size
+#include <internal/lib.h> 
 #include <sys/param.h>
 
 #include "trace-event.h"
@@ -39,7 +37,7 @@ struct tracepoint_path {
 	struct tracepoint_path *next;
 };
 
-/* unfortunately, you can not stat debugfs or proc files for size */
+ 
 static int record_file(const char *file, ssize_t hdr_sz)
 {
 	unsigned long long size = 0;
@@ -54,7 +52,7 @@ static int record_file(const char *file, ssize_t hdr_sz)
 		return -errno;
 	}
 
-	/* put in zeros for file size, then fill true size later */
+	 
 	if (hdr_sz) {
 		if (write(output_fd, &size, hdr_sz) != hdr_sz)
 			goto out;
@@ -69,7 +67,7 @@ static int record_file(const char *file, ssize_t hdr_sz)
 		}
 	} while (r > 0);
 
-	/* ugh, handle big-endian hdr_size == 4 */
+	 
 	sizep = (char*)&size;
 	if (host_is_bigendian())
 		sizep += sizeof(u64) - hdr_sz;
@@ -322,12 +320,7 @@ out:
 static int record_proc_kallsyms(void)
 {
 	unsigned long long size = 0;
-	/*
-	 * Just to keep older perf.data file parsers happy, record a zero
-	 * sized kallsyms file, i.e. do the same thing that was done when
-	 * /proc/kallsyms (or something specified via --kallsyms, in a
-	 * different path) couldn't be read.
-	 */
+	 
 	return write(output_fd, &size, 4) != 4 ? -EIO : 0;
 }
 
@@ -346,7 +339,7 @@ static int record_ftrace_printk(void)
 
 	ret = stat(path, &st);
 	if (ret < 0) {
-		/* not found */
+		 
 		size = 0;
 		if (write(output_fd, &size, 4) != 4)
 			err = -EIO;
@@ -374,7 +367,7 @@ static int record_saved_cmdline(void)
 
 	ret = stat(path, &st);
 	if (ret < 0) {
-		/* not found */
+		 
 		size = 0;
 		if (write(output_fd, &size, 8) != 8)
 			err = -EIO;
@@ -554,7 +547,7 @@ static int tracing_data_header(void)
 	char buf[20];
 	ssize_t size;
 
-	/* just guessing this is someone's birthday.. ;) */
+	 
 	buf[0] = 23;
 	buf[1] = 8;
 	buf[2] = 68;
@@ -567,7 +560,7 @@ static int tracing_data_header(void)
 	if (write(output_fd, VERSION, size) != size)
 		return -1;
 
-	/* save endian */
+	 
 	if (host_is_bigendian())
 		buf[0] = 1;
 	else
@@ -576,12 +569,12 @@ static int tracing_data_header(void)
 	if (write(output_fd, buf, 1) != 1)
 		return -1;
 
-	/* save size of long */
+	 
 	buf[0] = sizeof(long);
 	if (write(output_fd, buf, 1) != 1)
 		return -1;
 
-	/* save page_size */
+	 
 	if (write(output_fd, &page_size, 4) != 4)
 		return -1;
 
@@ -626,10 +619,7 @@ struct tracing_data *tracing_data_get(struct list_head *pattrs,
 			return NULL;
 		}
 
-		/*
-		 * Set the temp file the default output, so all the
-		 * tracing data are stored into it.
-		 */
+		 
 		output_fd = temp_fd;
 	}
 
@@ -654,10 +644,7 @@ struct tracing_data *tracing_data_get(struct list_head *pattrs,
 	err = record_saved_cmdline();
 
 out:
-	/*
-	 * All tracing data are stored by now, we can restore
-	 * the default output file in case we used temp file.
-	 */
+	 
 	if (temp) {
 		tdata->size = lseek(output_fd, 0, SEEK_CUR);
 		close(output_fd);
@@ -689,10 +676,7 @@ int read_tracing_data(int fd, struct list_head *pattrs)
 	int err;
 	struct tracing_data *tdata;
 
-	/*
-	 * We work over the real file, so we can write data
-	 * directly, no temp file is needed.
-	 */
+	 
 	tdata = tracing_data_get(pattrs, fd, false);
 	if (!tdata)
 		return -ENOMEM;

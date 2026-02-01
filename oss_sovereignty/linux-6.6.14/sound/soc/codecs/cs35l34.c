@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs35l34.c -- CS35l34 ALSA SoC audio driver
- *
- * Copyright 2016 Cirrus Logic, Inc.
- *
- * Author: Paul Handrigan <Paul.Handrigan@cirrus.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -47,7 +41,7 @@ struct  cs35l34_private {
 	int num_core_supplies;
 	int mclk_int;
 	bool tdm_mode;
-	struct gpio_desc *reset_gpio;	/* Active-low reset GPIO */
+	struct gpio_desc *reset_gpio;	 
 };
 
 static const struct reg_default cs35l34_reg[] = {
@@ -278,19 +272,17 @@ static int cs35l34_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 		return -EINVAL;
 
 	priv->tdm_mode = true;
-	/* scan rx_mask for aud slot */
+	 
 	slot = ffs(rx_mask) - 1;
 	if (slot >= 0)
 		snd_soc_component_update_bits(component, CS35L34_TDM_RX_CTL_1_AUDIN,
 					CS35L34_X_LOC, slot);
 
-	/* scan tx_mask: vmon(2 slots); imon (2 slots); vpmon (1 slot)
-	 * vbstmon (1 slot)
-	 */
+	 
 	slot = ffs(tx_mask) - 1;
 	slot_num = 0;
 
-	/* disable vpmon/vbstmon: enable later if set in tx_mask */
+	 
 	snd_soc_component_update_bits(component, CS35L34_TDM_TX_CTL_3_VPMON,
 				CS35L34_X_STATE | CS35L34_X_LOC,
 				CS35L34_X_STATE | CS35L34_X_LOC);
@@ -298,31 +290,31 @@ static int cs35l34_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 				CS35L34_X_STATE | CS35L34_X_LOC,
 				CS35L34_X_STATE | CS35L34_X_LOC);
 
-	/* disconnect {vp,vbst}_mon routes: eanble later if set in tx_mask*/
+	 
 	while (slot >= 0) {
-		/* configure VMON_TX_LOC */
+		 
 		if (slot_num == 0)
 			snd_soc_component_update_bits(component, CS35L34_TDM_TX_CTL_1_VMON,
 					CS35L34_X_STATE | CS35L34_X_LOC, slot);
 
-		/* configure IMON_TX_LOC */
+		 
 		if (slot_num == 4) {
 			snd_soc_component_update_bits(component, CS35L34_TDM_TX_CTL_2_IMON,
 					CS35L34_X_STATE | CS35L34_X_LOC, slot);
 		}
-		/* configure VPMON_TX_LOC */
+		 
 		if (slot_num == 3) {
 			snd_soc_component_update_bits(component, CS35L34_TDM_TX_CTL_3_VPMON,
 					CS35L34_X_STATE | CS35L34_X_LOC, slot);
 		}
-		/* configure VBSTMON_TX_LOC */
+		 
 		if (slot_num == 7) {
 			snd_soc_component_update_bits(component,
 				CS35L34_TDM_TX_CTL_4_VBSTMON,
 				CS35L34_X_STATE | CS35L34_X_LOC, slot);
 		}
 
-		/* Enable the relevant tx slot */
+		 
 		reg = CS35L34_TDM_TX_SLOT_EN_4 - (slot/8);
 		bit_pos = slot - ((slot / 8) * (8));
 		snd_soc_component_update_bits(component, reg,
@@ -480,7 +472,7 @@ struct cs35l34_mclk_div {
 
 static struct cs35l34_mclk_div cs35l34_mclk_coeffs[] = {
 
-	/* MCLK, Sample Rate, adsp_rate */
+	 
 
 	{5644800, 11025, 0x1},
 	{5644800, 22050, 0x4},
@@ -676,28 +668,28 @@ static int cs35l34_boost_inductor(struct cs35l34_private *cs35l34,
 	struct snd_soc_component *component = cs35l34->component;
 
 	switch (inductor) {
-	case 1000: /* 1 uH */
+	case 1000:  
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_COEF_1, 0x24);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_COEF_2, 0x24);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_SLOPE_COMP,
 			0x4E);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_SW_FREQ, 0);
 		break;
-	case 1200: /* 1.2 uH */
+	case 1200:  
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_COEF_1, 0x20);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_COEF_2, 0x20);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_SLOPE_COMP,
 			0x47);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_SW_FREQ, 1);
 		break;
-	case 1500: /* 1.5uH */
+	case 1500:  
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_COEF_1, 0x20);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_COEF_2, 0x20);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_SLOPE_COMP,
 			0x3C);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_SW_FREQ, 2);
 		break;
-	case 2200: /* 2.2uH */
+	case 2200:  
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_COEF_1, 0x19);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_COEF_2, 0x25);
 		regmap_write(cs35l34->regmap, CS35L34_BST_CONV_SLOPE_COMP,
@@ -719,21 +711,19 @@ static int cs35l34_probe(struct snd_soc_component *component)
 
 	pm_runtime_get_sync(component->dev);
 
-	/* Set over temperature warning attenuation to 6 dB */
+	 
 	regmap_update_bits(cs35l34->regmap, CS35L34_PROTECT_CTL,
 		 CS35L34_OTW_ATTN_MASK, 0x8);
 
-	/* Set Power control registers 2 and 3 to have everything
-	 * powered down at initialization
-	 */
+	 
 	regmap_write(cs35l34->regmap, CS35L34_PWRCTL2, 0xFD);
 	regmap_write(cs35l34->regmap, CS35L34_PWRCTL3, 0x1F);
 
-	/* Set mute bit at startup */
+	 
 	regmap_update_bits(cs35l34->regmap, CS35L34_PROTECT_CTL,
 				CS35L34_MUTE, CS35L34_MUTE);
 
-	/* Set Platform Data */
+	 
 	if (cs35l34->pdata.boost_peak)
 		regmap_update_bits(cs35l34->regmap, CS35L34_BST_PEAK_I,
 				CS35L34_BST_PEAK_MASK,
@@ -813,14 +803,14 @@ static int cs35l34_handle_of_data(struct i2c_client *i2c_client,
 
 	if (of_property_read_u32(np, "cirrus,boost-vtge-millivolt",
 		&val) >= 0) {
-		/* Boost Voltage has a maximum of 8V */
+		 
 		if (val > 8000 || (val < 3300 && val > 0)) {
 			dev_err(&i2c_client->dev,
 				"Invalid Boost Voltage %d mV\n", val);
 			return -EINVAL;
 		}
 		if (val == 0)
-			pdata->boost_vtge = 0; /* Use VP */
+			pdata->boost_vtge = 0;  
 		else
 			pdata->boost_vtge = ((val - 3300)/100) + 1;
 	} else {
@@ -869,7 +859,7 @@ static irqreturn_t cs35l34_irq_thread(int irq, void *data)
 	unsigned int mask1, mask2, mask3, mask4, current1;
 
 
-	/* ack the irq by reading all status registers */
+	 
 	regmap_read(cs35l34->regmap, CS35L34_INT_STATUS_4, &sticky4);
 	regmap_read(cs35l34->regmap, CS35L34_INT_STATUS_3, &sticky3);
 	regmap_read(cs35l34->regmap, CS35L34_INT_STATUS_2, &sticky2);
@@ -889,7 +879,7 @@ static irqreturn_t cs35l34_irq_thread(int irq, void *data)
 	if (sticky1 & CS35L34_CAL_ERR) {
 		dev_err(component->dev, "Cal error\n");
 
-		/* error is no longer asserted; safe to reset */
+		 
 		if (!(current1 & CS35L34_CAL_ERR)) {
 			dev_dbg(component->dev, "Cal error release\n");
 			regmap_update_bits(cs35l34->regmap,
@@ -902,7 +892,7 @@ static irqreturn_t cs35l34_irq_thread(int irq, void *data)
 			regmap_update_bits(cs35l34->regmap,
 					CS35L34_PROT_RELEASE_CTL,
 					CS35L34_CAL_ERR_RLS, 0);
-			/* note: amp will re-calibrate on next resume */
+			 
 		}
 	}
 
@@ -912,7 +902,7 @@ static irqreturn_t cs35l34_irq_thread(int irq, void *data)
 	if (sticky1 & CS35L34_AMP_SHORT) {
 		dev_crit(component->dev, "Amp short error\n");
 
-		/* error is no longer asserted; safe to reset */
+		 
 		if (!(current1 & CS35L34_AMP_SHORT)) {
 			dev_dbg(component->dev,
 				"Amp short error release\n");
@@ -932,7 +922,7 @@ static irqreturn_t cs35l34_irq_thread(int irq, void *data)
 	if (sticky1 & CS35L34_OTW) {
 		dev_crit(component->dev, "Over temperature warning\n");
 
-		/* error is no longer asserted; safe to reset */
+		 
 		if (!(current1 & CS35L34_OTW)) {
 			dev_dbg(component->dev,
 				"Over temperature warning release\n");
@@ -952,7 +942,7 @@ static irqreturn_t cs35l34_irq_thread(int irq, void *data)
 	if (sticky1 & CS35L34_OTE) {
 		dev_crit(component->dev, "Over temperature error\n");
 
-		/* error is no longer asserted; safe to reset */
+		 
 		if (!(current1 & CS35L34_OTE)) {
 			dev_dbg(component->dev,
 				"Over temperature error release\n");
@@ -1096,7 +1086,7 @@ static int cs35l34_i2c_probe(struct i2c_client *i2c_client)
 		 "Cirrus Logic CS35l34 (%x), Revision: %02X\n", devid,
 		reg & 0xFF);
 
-	/* Unmask critical interrupts */
+	 
 	regmap_update_bits(cs35l34->regmap, CS35L34_INT_MASK_1,
 				CS35L34_M_CAL_ERR | CS35L34_M_ALIVE_ERR |
 				CS35L34_M_AMP_SHORT | CS35L34_M_OTW |

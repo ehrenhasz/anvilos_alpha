@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015-16 Golden Delicious Computers
- *
- * Author: Nikolaus Schaller <hns@goldelico.com>
- *
- * LED driver for the IS31FL319{0,1,3,6,9} to drive 1, 3, 6 or 9 light
- * effect LEDs.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -19,10 +12,10 @@
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
 
-/* register numbers */
+ 
 #define IS31FL319X_SHUTDOWN		0x00
 
-/* registers for 3190, 3191 and 3193 */
+ 
 #define IS31FL3190_BREATHING		0x01
 #define IS31FL3190_LEDMODE		0x02
 #define IS31FL3190_CURRENT		0x03
@@ -46,7 +39,7 @@
 #define IS31FL3190_CURRENT_30_mA	0x03
 #define IS31FL3190_CURRENT_42_mA	0x00
 
-/* registers for 3196 and 3199 */
+ 
 #define IS31FL3196_CTRL1		0x01
 #define IS31FL3196_CTRL2		0x02
 #define IS31FL3196_CONFIG1		0x03
@@ -67,7 +60,7 @@
 
 #define IS31FL319X_MAX_LEDS		9
 
-/* CS (Current Setting) in CONFIG2 register */
+ 
 #define IS31FL3196_CONFIG2_CS_SHIFT	4
 #define IS31FL3196_CONFIG2_CS_MASK	GENMASK(2, 0)
 #define IS31FL3196_CONFIG2_CS_STEP_REF	12
@@ -77,15 +70,11 @@
 #define IS31FL3196_CURRENT_uA_STEP	5000
 #define IS31FL3196_CURRENT_uA_DEFAULT	20000
 
-/* Audio gain in CONFIG2 register */
+ 
 #define IS31FL3196_AUDIO_GAIN_DB_MAX	((u32)21)
 #define IS31FL3196_AUDIO_GAIN_DB_STEP	3
 
-/*
- * regmap is used as a cache of chip's register space,
- * to avoid reading back brightness values from chip,
- * which is known to hang.
- */
+ 
 struct is31fl319x_chip {
 	const struct is31fl319x_chipdef *cdef;
 	struct i2c_client               *client;
@@ -115,18 +104,18 @@ struct is31fl319x_chipdef {
 
 static bool is31fl319x_readable_reg(struct device *dev, unsigned int reg)
 {
-	/* we have no readable registers */
+	 
 	return false;
 }
 
 static bool is31fl3190_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/* volatile registers are not cached */
+	 
 	switch (reg) {
 	case IS31FL3190_DATA_UPDATE:
 	case IS31FL3190_TIME_UPDATE:
 	case IS31FL3190_RESET:
-		return true; /* always write-through */
+		return true;  
 	default:
 		return false;
 	}
@@ -153,12 +142,12 @@ static struct regmap_config is31fl3190_regmap_config = {
 
 static bool is31fl3196_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/* volatile registers are not cached */
+	 
 	switch (reg) {
 	case IS31FL3196_DATA_UPDATE:
 	case IS31FL3196_TIME_UPDATE:
 	case IS31FL3196_RESET:
-		return true; /* always write-through */
+		return true;  
 	default:
 		return false;
 	}
@@ -203,20 +192,17 @@ static int is31fl3190_brightness_set(struct led_classdev *cdev,
 
 	mutex_lock(&is31->lock);
 
-	/* update PWM register */
+	 
 	ret = regmap_write(is31->regmap, IS31FL3190_PWM(chan), brightness);
 	if (ret < 0)
 		goto out;
 
-	/* read current brightness of all PWM channels */
+	 
 	for (i = 0; i < is31->cdef->num_leds; i++) {
 		unsigned int pwm_value;
 		bool on;
 
-		/*
-		 * since neither cdev nor the chip can provide
-		 * the current setting, we read from the regmap cache
-		 */
+		 
 
 		ret = regmap_read(is31->regmap, IS31FL3190_PWM(i), &pwm_value);
 		on = ret >= 0 && pwm_value > LED_OFF;
@@ -227,13 +213,13 @@ static int is31fl3190_brightness_set(struct led_classdev *cdev,
 	if (ctrl > 0) {
 		dev_dbg(&is31->client->dev, "power up %02x\n", ctrl);
 		regmap_write(is31->regmap, IS31FL3190_LEDCONTROL, ctrl);
-		/* update PWMs */
+		 
 		regmap_write(is31->regmap, IS31FL3190_DATA_UPDATE, 0x00);
-		/* enable chip from shut down and enable all channels */
+		 
 		ret = regmap_write(is31->regmap, IS31FL319X_SHUTDOWN, 0x20);
 	} else {
 		dev_dbg(&is31->client->dev, "power down\n");
-		/* shut down (no need to clear LEDCONTROL) */
+		 
 		ret = regmap_write(is31->regmap, IS31FL319X_SHUTDOWN, 0x01);
 	}
 
@@ -257,30 +243,27 @@ static int is31fl3196_brightness_set(struct led_classdev *cdev,
 
 	mutex_lock(&is31->lock);
 
-	/* update PWM register */
+	 
 	ret = regmap_write(is31->regmap, IS31FL3196_PWM(chan), brightness);
 	if (ret < 0)
 		goto out;
 
-	/* read current brightness of all PWM channels */
+	 
 	for (i = 0; i < is31->cdef->num_leds; i++) {
 		unsigned int pwm_value;
 		bool on;
 
-		/*
-		 * since neither cdev nor the chip can provide
-		 * the current setting, we read from the regmap cache
-		 */
+		 
 
 		ret = regmap_read(is31->regmap, IS31FL3196_PWM(i), &pwm_value);
 		on = ret >= 0 && pwm_value > LED_OFF;
 
 		if (i < 3)
-			ctrl1 |= on << i;       /* 0..2 => bit 0..2 */
+			ctrl1 |= on << i;        
 		else if (i < 6)
-			ctrl1 |= on << (i + 1); /* 3..5 => bit 4..6 */
+			ctrl1 |= on << (i + 1);  
 		else
-			ctrl2 |= on << (i - 6); /* 6..8 => bit 0..2 */
+			ctrl2 |= on << (i - 6);  
 	}
 
 	if (ctrl1 > 0 || ctrl2 > 0) {
@@ -288,13 +271,13 @@ static int is31fl3196_brightness_set(struct led_classdev *cdev,
 			ctrl1, ctrl2);
 		regmap_write(is31->regmap, IS31FL3196_CTRL1, ctrl1);
 		regmap_write(is31->regmap, IS31FL3196_CTRL2, ctrl2);
-		/* update PWMs */
+		 
 		regmap_write(is31->regmap, IS31FL3196_DATA_UPDATE, 0x00);
-		/* enable chip from shut down */
+		 
 		ret = regmap_write(is31->regmap, IS31FL319X_SHUTDOWN, 0x01);
 	} else {
 		dev_dbg(&is31->client->dev, "power down\n");
-		/* shut down (no need to clear CTRL1/2) */
+		 
 		ret = regmap_write(is31->regmap, IS31FL319X_SHUTDOWN, 0x00);
 	}
 
@@ -375,14 +358,14 @@ static int is31fl319x_parse_child_fw(const struct device *dev,
 		cdev->name = fwnode_get_name(child);
 
 	ret = fwnode_property_read_string(child, "linux,default-trigger", &cdev->default_trigger);
-	if (ret < 0 && ret != -EINVAL) /* is optional */
+	if (ret < 0 && ret != -EINVAL)  
 		return ret;
 
 	led->max_microamp = is31->cdef->current_default;
 	ret = fwnode_property_read_u32(child, "led-max-microamp", &led->max_microamp);
 	if (!ret) {
 		if (led->max_microamp < is31->cdef->current_min)
-			return -EINVAL;	/* not supported */
+			return -EINVAL;	 
 		led->max_microamp = min(led->max_microamp,
 					is31->cdef->current_max);
 	}
@@ -481,17 +464,17 @@ static inline int is31fl3190_microamp_to_cs(struct device *dev, u32 microamp)
 
 static inline int is31fl3196_microamp_to_cs(struct device *dev, u32 microamp)
 {
-	/* round down to nearest supported value (range check done by caller) */
+	 
 	u32 step = microamp / IS31FL3196_CURRENT_uA_STEP;
 
 	return ((IS31FL3196_CONFIG2_CS_STEP_REF - step) &
 		IS31FL3196_CONFIG2_CS_MASK) <<
-		IS31FL3196_CONFIG2_CS_SHIFT; /* CS encoding */
+		IS31FL3196_CONFIG2_CS_SHIFT;  
 }
 
 static inline int is31fl3196_db_to_gain(u32 dezibel)
 {
-	/* round down to nearest supported value (range check done by caller) */
+	 
 	return dezibel / IS31FL3196_AUDIO_GAIN_DB_STEP;
 }
 
@@ -537,16 +520,12 @@ static int is31fl319x_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, is31);
 
-	/* check for write-reply from chip (we can't read any registers) */
+	 
 	err = regmap_write(is31->regmap, is31->cdef->reset_reg, 0x00);
 	if (err < 0)
 		return dev_err_probe(dev, err, "no response from chip write\n");
 
-	/*
-	 * Kernel conventions require per-LED led-max-microamp property.
-	 * But the chip does not allow to limit individual LEDs.
-	 * So we take minimum from all subnodes for safety of hardware.
-	 */
+	 
 	aggregated_led_microamp = is31->cdef->current_max;
 	for (i = 0; i < is31->cdef->num_leds; i++)
 		if (is31->leds[i].configured &&
@@ -578,10 +557,7 @@ static int is31fl319x_probe(struct i2c_client *client)
 	return 0;
 }
 
-/*
- * i2c-core (and modalias) requires that id_table be properly filled,
- * even though it is not used for DeviceTree based instantiation.
- */
+ 
 static const struct i2c_device_id is31fl319x_id[] = {
 	{ "is31fl3190" },
 	{ "is31fl3191" },

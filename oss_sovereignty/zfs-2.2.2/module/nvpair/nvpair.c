@@ -1,38 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2000, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2015, 2017 by Delphix. All rights reserved.
- * Copyright 2018 RackTop Systems.
- */
+ 
 
-/*
- * Links to Illumos.org for more information on Interface Libraries:
- * [1] https://illumos.org/man/3lib/libnvpair
- * [2] https://illumos.org/man/3nvpair/nvlist_alloc
- * [3] https://illumos.org/man/9f/nvlist_alloc
- * [4] https://illumos.org/man/9f/nvlist_next_nvpair
- * [5] https://illumos.org/man/9f/nvpair_value_byte
- */
+ 
 
 #include <sys/debug.h>
 #include <sys/isa_defs.h>
@@ -55,81 +25,7 @@
 
 #define	skip_whitespace(p)	while ((*(p) == ' ') || (*(p) == '\t')) (p)++
 
-/*
- * nvpair.c - Provides kernel & userland interfaces for manipulating
- *	name-value pairs.
- *
- * Overview Diagram
- *
- *  +--------------+
- *  |  nvlist_t    |
- *  |--------------|
- *  | nvl_version  |
- *  | nvl_nvflag   |
- *  | nvl_priv    -+-+
- *  | nvl_flag     | |
- *  | nvl_pad      | |
- *  +--------------+ |
- *                   V
- *      +--------------+      last i_nvp in list
- *      | nvpriv_t     |  +--------------------->
- *      |--------------|  |
- *   +--+- nvp_list    |  |   +------------+
- *   |  |  nvp_last   -+--+   + nv_alloc_t |
- *   |  |  nvp_curr    |      |------------|
- *   |  |  nvp_nva    -+----> | nva_ops    |
- *   |  |  nvp_stat    |      | nva_arg    |
- *   |  +--------------+      +------------+
- *   |
- *   +-------+
- *           V
- *   +---------------------+      +-------------------+
- *   |  i_nvp_t            |  +-->|  i_nvp_t          |  +-->
- *   |---------------------|  |   |-------------------|  |
- *   | nvi_next           -+--+   | nvi_next         -+--+
- *   | nvi_prev (NULL)     | <----+ nvi_prev          |
- *   | . . . . . . . . . . |      | . . . . . . . . . |
- *   | nvp (nvpair_t)      |      | nvp (nvpair_t)    |
- *   |  - nvp_size         |      |  - nvp_size       |
- *   |  - nvp_name_sz      |      |  - nvp_name_sz    |
- *   |  - nvp_value_elem   |      |  - nvp_value_elem |
- *   |  - nvp_type         |      |  - nvp_type       |
- *   |  - data ...         |      |  - data ...       |
- *   +---------------------+      +-------------------+
- *
- *
- *
- *   +---------------------+              +---------------------+
- *   |  i_nvp_t            |  +-->    +-->|  i_nvp_t (last)     |
- *   |---------------------|  |       |   |---------------------|
- *   |  nvi_next          -+--+ ... --+   | nvi_next (NULL)     |
- * <-+- nvi_prev           |<-- ...  <----+ nvi_prev            |
- *   | . . . . . . . . .   |              | . . . . . . . . .   |
- *   | nvp (nvpair_t)      |              | nvp (nvpair_t)      |
- *   |  - nvp_size         |              |  - nvp_size         |
- *   |  - nvp_name_sz      |              |  - nvp_name_sz      |
- *   |  - nvp_value_elem   |              |  - nvp_value_elem   |
- *   |  - DATA_TYPE_NVLIST |              |  - nvp_type         |
- *   |  - data (embedded)  |              |  - data ...         |
- *   |    nvlist name      |              +---------------------+
- *   |  +--------------+   |
- *   |  |  nvlist_t    |   |
- *   |  |--------------|   |
- *   |  | nvl_version  |   |
- *   |  | nvl_nvflag   |   |
- *   |  | nvl_priv   --+---+---->
- *   |  | nvl_flag     |   |
- *   |  | nvl_pad      |   |
- *   |  +--------------+   |
- *   +---------------------+
- *
- *
- * N.B. nvpair_t may be aligned on 4 byte boundary, so +4 will
- * allow value to be aligned on 8 byte boundary
- *
- * name_len is the length of the name string including the null terminator
- * so it must be >= 1
- */
+ 
 #define	NVP_SIZE_CALC(name_len, data_len) \
 	(NV_ALIGN((sizeof (nvpair_t)) + name_len) + NV_ALIGN(data_len))
 
@@ -154,7 +50,7 @@ static const int nvpair_max_recursion = 100;
 static const uint64_t nvlist_hashtable_init_size = (1 << 4);
 
 int
-nv_alloc_init(nv_alloc_t *nva, const nv_alloc_ops_t *nvo, /* args */ ...)
+nv_alloc_init(nv_alloc_t *nva, const nv_alloc_ops_t *nvo,   ...)
 {
 	va_list valist;
 	int err = 0;
@@ -230,10 +126,7 @@ nv_priv_alloc(nv_alloc_t *nva)
 {
 	nvpriv_t *priv;
 
-	/*
-	 * nv_mem_alloc() cannot called here because it needs the priv
-	 * argument.
-	 */
+	 
 	if ((priv = nva->nva_ops->nv_ao_alloc(nva, sizeof (nvpriv_t))) == NULL)
 		return (NULL);
 
@@ -242,11 +135,7 @@ nv_priv_alloc(nv_alloc_t *nva)
 	return (priv);
 }
 
-/*
- * Embedded lists need their own nvpriv_t's.  We create a new
- * nvpriv_t using the parameters and allocator from the parent
- * list's nvpriv_t.
- */
+ 
 static nvpriv_t *
 nv_priv_alloc_embedded(nvpriv_t *priv)
 {
@@ -366,11 +255,7 @@ nvt_resize(nvpriv_t *priv, uint32_t new_size)
 {
 	i_nvp_t **tab = priv->nvp_hashtable;
 
-	/*
-	 * Migrate all the entries from the current table
-	 * to a newly-allocated table with the new size by
-	 * re-adjusting the pointers of their entries.
-	 */
+	 
 	uint32_t size = priv->nvp_nbuckets;
 	uint32_t new_mask = new_size - 1;
 	ASSERT(ISP2(new_size));
@@ -411,24 +296,17 @@ nvt_resize(nvpriv_t *priv, uint32_t new_size)
 static boolean_t
 nvt_needs_togrow(nvpriv_t *priv)
 {
-	/*
-	 * Grow only when we have more elements than buckets
-	 * and the # of buckets doesn't overflow.
-	 */
+	 
 	return (priv->nvp_nentries > priv->nvp_nbuckets &&
 	    (UINT32_MAX >> 1) >= priv->nvp_nbuckets);
 }
 
-/*
- * Allocate a new table that's twice the size of the old one,
- * and migrate all the entries from the old one to the new
- * one by re-adjusting their pointers.
- */
+ 
 static int
 nvt_grow(nvpriv_t *priv)
 {
 	uint32_t current_size = priv->nvp_nbuckets;
-	/* ensure we won't overflow */
+	 
 	ASSERT3U(UINT32_MAX >> 1, >=, current_size);
 	return (nvt_resize(priv, current_size << 1));
 }
@@ -436,27 +314,19 @@ nvt_grow(nvpriv_t *priv)
 static boolean_t
 nvt_needs_toshrink(nvpriv_t *priv)
 {
-	/*
-	 * Shrink only when the # of elements is less than or
-	 * equal to 1/4 the # of buckets. Never shrink less than
-	 * nvlist_hashtable_init_size.
-	 */
+	 
 	ASSERT3U(priv->nvp_nbuckets, >=, nvlist_hashtable_init_size);
 	if (priv->nvp_nbuckets == nvlist_hashtable_init_size)
 		return (B_FALSE);
 	return (priv->nvp_nentries <= (priv->nvp_nbuckets >> 2));
 }
 
-/*
- * Allocate a new table that's half the size of the old one,
- * and migrate all the entries from the old one to the new
- * one by re-adjusting their pointers.
- */
+ 
 static int
 nvt_shrink(nvpriv_t *priv)
 {
 	uint32_t current_size = priv->nvp_nbuckets;
-	/* ensure we won't overflow */
+	 
 	ASSERT3U(current_size, >=, nvlist_hashtable_init_size);
 	return (nvt_resize(priv, current_size >> 1));
 }
@@ -504,17 +374,14 @@ nvt_add_nvpair(nvlist_t *nvl, nvpair_t *nvp)
 {
 	nvpriv_t *priv = (nvpriv_t *)(uintptr_t)nvl->nvl_priv;
 
-	/* initialize nvpair table now if it doesn't exist. */
+	 
 	if (priv->nvp_hashtable == NULL) {
 		int err = nvt_tab_alloc(priv, nvlist_hashtable_init_size);
 		if (err != 0)
 			return (err);
 	}
 
-	/*
-	 * if we don't allow duplicate entries, make sure to
-	 * unlink any existing entries from the table.
-	 */
+	 
 	if (nvl->nvl_nvflag != 0) {
 		int err = nvt_remove_nvpair(nvl, nvp);
 		if (err != 0)
@@ -533,14 +400,14 @@ nvt_add_nvpair(nvlist_t *nvl, nvpair_t *nvp)
 	uint64_t index = hash & (priv->nvp_nbuckets - 1);
 
 	ASSERT3U(index, <, priv->nvp_nbuckets);
-	// cppcheck-suppress nullPointerRedundantCheck
+	 
 	i_nvp_t *bucket = tab[index];
 
-	/* insert link at the beginning of the bucket */
+	 
 	i_nvp_t *new_entry = NVPAIR2I_NVP(nvp);
 	ASSERT3P(new_entry->nvi_hashtable_next, ==, NULL);
 	new_entry->nvi_hashtable_next = bucket;
-	// cppcheck-suppress nullPointerRedundantCheck
+	 
 	tab[index] = new_entry;
 
 	priv->nvp_nentries++;
@@ -578,12 +445,10 @@ nvlist_nv_alloc(int kmflag)
 #else
 	(void) kmflag;
 	return (nv_alloc_nosleep);
-#endif /* _KERNEL */
+#endif  
 }
 
-/*
- * nvlist_alloc - Allocate nvlist.
- */
+ 
 int
 nvlist_alloc(nvlist_t **nvlp, uint_t nvflag, int kmflag)
 {
@@ -612,9 +477,7 @@ nvlist_xalloc(nvlist_t **nvlp, uint_t nvflag, nv_alloc_t *nva)
 	return (0);
 }
 
-/*
- * nvp_buf_alloc - Allocate i_nvp_t for storing a new nv pair.
- */
+ 
 static nvpair_t *
 nvp_buf_alloc(nvlist_t *nvl, size_t len)
 {
@@ -623,9 +486,7 @@ nvp_buf_alloc(nvlist_t *nvl, size_t len)
 	nvpair_t *nvp;
 	size_t nvsize;
 
-	/*
-	 * Allocate the buffer
-	 */
+	 
 	nvsize = len + offsetof(i_nvp_t, nvi_nvp);
 
 	if ((buf = nv_mem_zalloc(priv, nvsize)) == NULL)
@@ -637,9 +498,7 @@ nvp_buf_alloc(nvlist_t *nvl, size_t len)
 	return (nvp);
 }
 
-/*
- * nvp_buf_free - de-Allocate an i_nvp_t.
- */
+ 
 static void
 nvp_buf_free(nvlist_t *nvl, nvpair_t *nvp)
 {
@@ -649,16 +508,14 @@ nvp_buf_free(nvlist_t *nvl, nvpair_t *nvp)
 	nv_mem_free(priv, NVPAIR2I_NVP(nvp), nvsize);
 }
 
-/*
- * nvp_buf_link - link a new nv pair into the nvlist.
- */
+ 
 static void
 nvp_buf_link(nvlist_t *nvl, nvpair_t *nvp)
 {
 	nvpriv_t *priv = (nvpriv_t *)(uintptr_t)nvl->nvl_priv;
 	i_nvp_t *curr = NVPAIR2I_NVP(nvp);
 
-	/* Put element at end of nvlist */
+	 
 	if (priv->nvp_list == NULL) {
 		priv->nvp_list = priv->nvp_last = curr;
 	} else {
@@ -668,18 +525,14 @@ nvp_buf_link(nvlist_t *nvl, nvpair_t *nvp)
 	}
 }
 
-/*
- * nvp_buf_unlink - unlink an removed nvpair out of the nvlist.
- */
+ 
 static void
 nvp_buf_unlink(nvlist_t *nvl, nvpair_t *nvp)
 {
 	nvpriv_t *priv = (nvpriv_t *)(uintptr_t)nvl->nvl_priv;
 	i_nvp_t *curr = NVPAIR2I_NVP(nvp);
 
-	/*
-	 * protect nvlist_next_nvpair() against walking on freed memory.
-	 */
+	 
 	if (priv->nvp_curr == curr)
 		priv->nvp_curr = curr->nvi_next;
 
@@ -694,9 +547,7 @@ nvp_buf_unlink(nvlist_t *nvl, nvpair_t *nvp)
 		curr->nvi_next->nvi_prev = curr->nvi_prev;
 }
 
-/*
- * take a nvpair type and number of elements and make sure the are valid
- */
+ 
 static int
 i_validate_type_nelem(data_type_t type, uint_t nelem)
 {
@@ -736,7 +587,7 @@ i_validate_type_nelem(data_type_t type, uint_t nelem)
 	case DATA_TYPE_UINT64_ARRAY:
 	case DATA_TYPE_STRING_ARRAY:
 	case DATA_TYPE_NVLIST_ARRAY:
-		/* we allow arrays with 0 elements */
+		 
 		break;
 	default:
 		return (EINVAL);
@@ -744,9 +595,7 @@ i_validate_type_nelem(data_type_t type, uint_t nelem)
 	return (0);
 }
 
-/*
- * Verify nvp_name_sz and check the name string length.
- */
+ 
 static int
 i_validate_nvpair_name(nvpair_t *nvp)
 {
@@ -754,7 +603,7 @@ i_validate_nvpair_name(nvpair_t *nvp)
 	    (nvp->nvp_size < NVP_SIZE_CALC(nvp->nvp_name_sz, 0)))
 		return (EFAULT);
 
-	/* verify the name string, make sure its terminated */
+	 
 	if (NVP_NAME(nvp)[nvp->nvp_name_sz - 1] != '\0')
 		return (EFAULT);
 
@@ -786,28 +635,21 @@ i_validate_nvpair_value(data_type_t type, uint_t nelem, const void *data)
 	return (0);
 }
 
-/*
- * This function takes a pointer to what should be a nvpair and it's size
- * and then verifies that all the nvpair fields make sense and can be
- * trusted.  This function is used when decoding packed nvpairs.
- */
+ 
 static int
 i_validate_nvpair(nvpair_t *nvp)
 {
 	data_type_t type = NVP_TYPE(nvp);
 	int size1, size2;
 
-	/* verify nvp_name_sz, check the name string length */
+	 
 	if (i_validate_nvpair_name(nvp) != 0)
 		return (EFAULT);
 
 	if (i_validate_nvpair_value(type, NVP_NELEM(nvp), NVP_VALUE(nvp)) != 0)
 		return (EFAULT);
 
-	/*
-	 * verify nvp_type, nvp_value_elem, and also possibly
-	 * verify string values and get the value size.
-	 */
+	 
 	size2 = i_get_value_size(type, NVP_VALUE(nvp), NVP_NELEM(nvp));
 	size1 = nvp->nvp_size - NVP_VALOFF(nvp);
 	if (size2 < 0 || size1 != NV_ALIGN(size2))
@@ -837,10 +679,7 @@ nvlist_copy_pairs(const nvlist_t *snvl, nvlist_t *dnvl)
 	return (0);
 }
 
-/*
- * Frees all memory allocated for an nvpair (like embedded lists) with
- * the exception of the nvpair buffer itself.
- */
+ 
 static void
 nvpair_free(nvpair_t *nvp)
 {
@@ -862,9 +701,7 @@ nvpair_free(nvpair_t *nvp)
 	}
 }
 
-/*
- * nvlist_free - free an unpacked nvlist
- */
+ 
 void
 nvlist_free(nvlist_t *nvl)
 {
@@ -875,9 +712,7 @@ nvlist_free(nvlist_t *nvl)
 	    (priv = (nvpriv_t *)(uintptr_t)nvl->nvl_priv) == NULL)
 		return;
 
-	/*
-	 * Unpacked nvlist are linked through i_nvp_t
-	 */
+	 
 	curr = priv->nvp_list;
 	while (curr != NULL) {
 		nvpair_t *nvp = &curr->nvi_nvp;
@@ -912,9 +747,7 @@ nvlist_contains_nvp(const nvlist_t *nvl, const nvpair_t *nvp)
 	return (0);
 }
 
-/*
- * Make a copy of nvlist
- */
+ 
 int
 nvlist_dup(const nvlist_t *nvl, nvlist_t **nvlp, int kmflag)
 {
@@ -941,9 +774,7 @@ nvlist_xdup(const nvlist_t *nvl, nvlist_t **nvlp, nv_alloc_t *nva)
 	return (err);
 }
 
-/*
- * Remove all with matching name
- */
+ 
 int
 nvlist_remove_all(nvlist_t *nvl, const char *name)
 {
@@ -961,9 +792,7 @@ nvlist_remove_all(nvlist_t *nvl, const char *name)
 	return (error);
 }
 
-/*
- * Remove first one with matching name and type
- */
+ 
 int
 nvlist_remove(nvlist_t *nvl, const char *name, data_type_t type)
 {
@@ -993,14 +822,7 @@ nvlist_remove_nvpair(nvlist_t *nvl, nvpair_t *nvp)
 	return (0);
 }
 
-/*
- * This function calculates the size of an nvpair value.
- *
- * The data argument controls the behavior in case of the data types
- * 	DATA_TYPE_STRING    	and
- *	DATA_TYPE_STRING_ARRAY
- * Is data == NULL then the size of the string(s) is excluded.
- */
+ 
 static int
 i_get_value_size(data_type_t type, const void *data, uint_t nelem)
 {
@@ -1009,7 +831,7 @@ i_get_value_size(data_type_t type, const void *data, uint_t nelem)
 	if (i_validate_type_nelem(type, nelem) != 0)
 		return (-1);
 
-	/* Calculate required size for holding value */
+	 
 	switch (type) {
 	case DATA_TYPE_BOOLEAN:
 		value_sz = 0;
@@ -1092,7 +914,7 @@ i_get_value_size(data_type_t type, const void *data, uint_t nelem)
 			char *const *strs = data;
 			uint_t i;
 
-			/* no alignment requirement for strings */
+			 
 			for (i = 0; i < nelem; i++) {
 				if (strs[i] == NULL)
 					return (-1);
@@ -1137,9 +959,7 @@ nvlist_copy_embedded(nvlist_t *nvl, nvlist_t *onvl, nvlist_t *emb_nvl)
 	return (err);
 }
 
-/*
- * nvlist_add_common - Add new <name,value> pair to nvlist
- */
+ 
 static int
 nvlist_add_common(nvlist_t *nvl, const char *name,
     data_type_t type, uint_t nelem, const void *data)
@@ -1156,22 +976,14 @@ nvlist_add_common(nvlist_t *nvl, const char *name,
 	if (nelem != 0 && data == NULL)
 		return (EINVAL);
 
-	/*
-	 * Verify type and nelem and get the value size.
-	 * In case of data types DATA_TYPE_STRING and DATA_TYPE_STRING_ARRAY
-	 * is the size of the string(s) included.
-	 */
+	 
 	if ((value_sz = i_get_value_size(type, data, nelem)) < 0)
 		return (EINVAL);
 
 	if (i_validate_nvpair_value(type, nelem, data) != 0)
 		return (EINVAL);
 
-	/*
-	 * If we're adding an nvlist or nvlist array, ensure that we are not
-	 * adding the input nvlist to itself, which would cause recursion,
-	 * and ensure that no NULL nvlist pointers are present.
-	 */
+	 
 	switch (type) {
 	case DATA_TYPE_NVLIST:
 		if (data == nvl || data == NULL)
@@ -1189,7 +1001,7 @@ nvlist_add_common(nvlist_t *nvl, const char *name,
 		break;
 	}
 
-	/* calculate sizes of the nvpair elements and the nvpair itself */
+	 
 	name_sz = strlen(name) + 1;
 	if (name_sz >= 1ULL << (sizeof (nvp->nvp_name_sz) * NBBY - 1))
 		return (EINVAL);
@@ -1213,7 +1025,7 @@ nvlist_add_common(nvlist_t *nvl, const char *name,
 		char *buf = NVP_VALUE(nvp);
 		char **cstrs = (void *)buf;
 
-		/* skip pre-allocated space for pointer array */
+		 
 		buf += nelem * sizeof (uint64_t);
 		for (i = 0; i < nelem; i++) {
 			int slen = strlen(strs[i]) + 1;
@@ -1242,9 +1054,7 @@ nvlist_add_common(nvlist_t *nvl, const char *name,
 		for (i = 0; i < nelem; i++) {
 			if ((err = nvlist_copy_embedded(nvl,
 			    onvlp[i], embedded)) != 0) {
-				/*
-				 * Free any successfully created lists
-				 */
+				 
 				nvpair_free(nvp);
 				nvp_buf_free(nvl, nvp);
 				return (err);
@@ -1258,7 +1068,7 @@ nvlist_add_common(nvlist_t *nvl, const char *name,
 		memcpy(NVP_VALUE(nvp), data, value_sz);
 	}
 
-	/* if unique name, remove before add */
+	 
 	if (nvl->nvl_nvflag & NV_UNIQUE_NAME)
 		(void) nvlist_remove_all(nvl, name);
 	else if (nvl->nvl_nvflag & NV_UNIQUE_NAME_TYPE)
@@ -1451,7 +1261,7 @@ nvlist_add_nvlist_array(nvlist_t *nvl, const char *name,
 	return (nvlist_add_common(nvl, name, DATA_TYPE_NVLIST_ARRAY, n, a));
 }
 
-/* reading name-value pairs */
+ 
 nvpair_t *
 nvlist_next_nvpair(nvlist_t *nvl, const nvpair_t *nvp)
 {
@@ -1464,11 +1274,7 @@ nvlist_next_nvpair(nvlist_t *nvl, const nvpair_t *nvp)
 
 	curr = NVPAIR2I_NVP(nvp);
 
-	/*
-	 * Ensure that nvp is a valid nvpair on this nvlist.
-	 * NB: nvp_curr is used only as a hint so that we don't always
-	 * have to walk the list to determine if nvp is still on the list.
-	 */
+	 
 	if (nvp == NULL)
 		curr = priv->nvp_list;
 	else if (priv->nvp_curr == curr || nvlist_contains_nvp(nvl, nvp))
@@ -1560,10 +1366,7 @@ nvpair_value_common(const nvpair_t *nvp, data_type_t type, uint_t *nelem,
 	if (nvp == NULL || nvpair_type(nvp) != type)
 		return (EINVAL);
 
-	/*
-	 * For non-array types, we copy the data.
-	 * For array types (including string), we set a pointer.
-	 */
+	 
 	switch (type) {
 	case DATA_TYPE_BOOLEAN:
 		if (nelem != NULL)
@@ -1597,10 +1400,7 @@ nvpair_value_common(const nvpair_t *nvp, data_type_t type, uint_t *nelem,
 	case DATA_TYPE_STRING:
 		if (data == NULL)
 			return (EINVAL);
-		/*
-		 * This discards the const from nvp, so all callers for these
-		 * types must not accept const nvpairs.
-		 */
+		 
 		*(void **)data = (void *)NVP_VALUE(nvp);
 		if (nelem != NULL)
 			*nelem = 1;
@@ -1620,10 +1420,7 @@ nvpair_value_common(const nvpair_t *nvp, data_type_t type, uint_t *nelem,
 	case DATA_TYPE_NVLIST_ARRAY:
 		if (nelem == NULL || data == NULL)
 			return (EINVAL);
-		/*
-		 * This discards the const from nvp, so all callers for these
-		 * types must not accept const nvpairs.
-		 */
+		 
 		if ((*nelem = NVP_NELEM(nvp)) != 0)
 			*(void **)data = (void *)NVP_VALUE(nvp);
 		else
@@ -1900,21 +1697,7 @@ nvlist_lookup_pairs(nvlist_t *nvl, int flag, ...)
 	return (ret);
 }
 
-/*
- * Find the 'name'ed nvpair in the nvlist 'nvl'. If 'name' found, the function
- * returns zero and a pointer to the matching nvpair is returned in '*ret'
- * (given 'ret' is non-NULL). If 'sep' is specified then 'name' will penitrate
- * multiple levels of embedded nvlists, with 'sep' as the separator. As an
- * example, if sep is '.', name might look like: "a" or "a.b" or "a.c[3]" or
- * "a.d[3].e[1]".  This matches the C syntax for array embed (for convenience,
- * code also supports "a.d[3]e[1]" syntax).
- *
- * If 'ip' is non-NULL and the last name component is an array, return the
- * value of the "...[index]" array index in *ip. For an array reference that
- * is not indexed, *ip will be returned as -1. If there is a syntax error in
- * 'name', and 'ep' is non-NULL then *ep will be set to point to the location
- * inside the 'name' string where the syntax error was detected.
- */
+ 
 static int
 nvlist_lookup_nvpair_ei_sep(nvlist_t *nvl, const char *name, const char sep,
     nvpair_t **ret, int *ip, const char **ep)
@@ -1928,7 +1711,7 @@ nvlist_lookup_nvpair_ei_sep(nvlist_t *nvl, const char *name, const char sep,
 	int		n;
 
 	if (ip)
-		*ip = -1;			/* not indexed */
+		*ip = -1;			 
 	if (ep)
 		*ep = NULL;
 
@@ -1937,43 +1720,40 @@ nvlist_lookup_nvpair_ei_sep(nvlist_t *nvl, const char *name, const char sep,
 
 	sepp = NULL;
 	idx = 0;
-	/* step through components of name */
+	 
 	for (np = name; np && *np; np = sepp) {
-		/* ensure unique names */
+		 
 		if (!(nvl->nvl_nvflag & NV_UNIQUE_NAME))
 			return (ENOTSUP);
 
-		/* skip white space */
+		 
 		skip_whitespace(np);
 		if (*np == 0)
 			break;
 
-		/* set 'sepp' to end of current component 'np' */
+		 
 		if (sep)
 			sepp = strchr(np, sep);
 		else
 			sepp = NULL;
 
-		/* find start of next "[ index ]..." */
+		 
 		idxp = strchr(np, '[');
 
-		/* if sepp comes first, set idxp to NULL */
+		 
 		if (sepp && idxp && (sepp < idxp))
 			idxp = NULL;
 
-		/*
-		 * At this point 'idxp' is set if there is an index
-		 * expected for the current component.
-		 */
+		 
 		if (idxp) {
-			/* set 'n' to length of current 'np' name component */
+			 
 			n = idxp++ - np;
 
-			/* keep sepp up to date for *ep use as we advance */
+			 
 			skip_whitespace(idxp);
 			sepp = idxp;
 
-			/* determine the index value */
+			 
 #if defined(_KERNEL)
 			if (ddi_strtol(idxp, &idxep, 0, &idx))
 				goto fail;
@@ -1983,15 +1763,15 @@ nvlist_lookup_nvpair_ei_sep(nvlist_t *nvl, const char *name, const char sep,
 			if (idxep == idxp)
 				goto fail;
 
-			/* keep sepp up to date for *ep use as we advance */
+			 
 			sepp = idxep;
 
-			/* skip white space index value and check for ']' */
+			 
 			skip_whitespace(sepp);
 			if (*sepp++ != ']')
 				goto fail;
 
-			/* for embedded arrays, support C syntax: "a[1].b" */
+			 
 			skip_whitespace(sepp);
 			if (sep && (*sepp == sep))
 				sepp++;
@@ -2001,58 +1781,43 @@ nvlist_lookup_nvpair_ei_sep(nvlist_t *nvl, const char *name, const char sep,
 			n = strlen(np);
 		}
 
-		/* trim trailing whitespace by reducing length of 'np' */
+		 
 		if (n == 0)
 			goto fail;
 		for (n--; (np[n] == ' ') || (np[n] == '\t'); n--)
 			;
 		n++;
 
-		/* skip whitespace, and set sepp to NULL if complete */
+		 
 		if (sepp) {
 			skip_whitespace(sepp);
 			if (*sepp == 0)
 				sepp = NULL;
 		}
 
-		/*
-		 * At this point:
-		 * o  'n' is the length of current 'np' component.
-		 * o  'idxp' is set if there was an index, and value 'idx'.
-		 * o  'sepp' is set to the beginning of the next component,
-		 *    and set to NULL if we have no more components.
-		 *
-		 * Search for nvpair with matching component name.
-		 */
+		 
 		for (nvp = nvlist_next_nvpair(nvl, NULL); nvp != NULL;
 		    nvp = nvlist_next_nvpair(nvl, nvp)) {
 
-			/* continue if no match on name */
+			 
 			if (strncmp(np, nvpair_name(nvp), n) ||
 			    (strlen(nvpair_name(nvp)) != n))
 				continue;
 
-			/* if indexed, verify type is array oriented */
+			 
 			if (idxp && !nvpair_type_is_array(nvp))
 				goto fail;
 
-			/*
-			 * Full match found, return nvp and idx if this
-			 * was the last component.
-			 */
+			 
 			if (sepp == NULL) {
 				if (ret)
 					*ret = nvp;
 				if (ip && idxp)
-					*ip = (int)idx;	/* return index */
-				return (0);		/* found */
+					*ip = (int)idx;	 
+				return (0);		 
 			}
 
-			/*
-			 * More components: current match must be
-			 * of DATA_TYPE_NVLIST or DATA_TYPE_NVLIST_ARRAY
-			 * to support going deeper.
-			 */
+			 
 			if (nvpair_type(nvp) == DATA_TYPE_NVLIST) {
 				nvl = EMBEDDED_NVL(nvp);
 				break;
@@ -2068,13 +1833,13 @@ nvlist_lookup_nvpair_ei_sep(nvlist_t *nvl, const char *name, const char sep,
 				break;
 			}
 
-			/* type does not support more levels */
+			 
 			goto fail;
 		}
 		if (nvp == NULL)
-			goto fail;		/* 'name' not found */
+			goto fail;		 
 
-		/* search for match of next component in embedded 'nvl' list */
+		 
 	}
 
 fail:	if (ep && sepp)
@@ -2082,20 +1847,14 @@ fail:	if (ep && sepp)
 	return (EINVAL);
 }
 
-/*
- * Return pointer to nvpair with specified 'name'.
- */
+ 
 int
 nvlist_lookup_nvpair(nvlist_t *nvl, const char *name, nvpair_t **ret)
 {
 	return (nvlist_lookup_nvpair_ei_sep(nvl, name, 0, ret, NULL, NULL));
 }
 
-/*
- * Determine if named nvpair exists in nvlist (use embedded separator of '.'
- * and return array index).  See nvlist_lookup_nvpair_ei_sep for more detailed
- * description.
- */
+ 
 int nvlist_lookup_nvpair_embedded_index(nvlist_t *nvl,
     const char *name, nvpair_t **ret, int *ip, const char **ep)
 {
@@ -2281,9 +2040,7 @@ nvpair_value_hrtime(nvpair_t *nvp, hrtime_t *val)
 	return (nvpair_value_common(nvp, DATA_TYPE_HRTIME, NULL, val));
 }
 
-/*
- * Add specified pair to the list.
- */
+ 
 int
 nvlist_add_nvpair(nvlist_t *nvl, nvpair_t *nvp)
 {
@@ -2294,12 +2051,7 @@ nvlist_add_nvpair(nvlist_t *nvl, nvpair_t *nvp)
 	    NVP_NELEM(nvp), NVP_VALUE(nvp)));
 }
 
-/*
- * Merge the supplied nvlists and put the result in dst.
- * The merged list will contain all names specified in both lists,
- * the values are taken from nvl in the case of duplicates.
- * Return 0 on success.
- */
+ 
 int
 nvlist_merge(nvlist_t *dst, nvlist_t *nvl, int flag)
 {
@@ -2314,9 +2066,7 @@ nvlist_merge(nvlist_t *dst, nvlist_t *nvl, int flag)
 	return (0);
 }
 
-/*
- * Encoding related routines
- */
+ 
 #define	NVS_OP_ENCODE	0
 #define	NVS_OP_DECODE	1
 #define	NVS_OP_GETSIZE	2
@@ -2331,25 +2081,7 @@ typedef struct {
 	int		nvs_recursion;
 } nvstream_t;
 
-/*
- * nvs operations are:
- *   - nvs_nvlist
- *     encoding / decoding of an nvlist header (nvlist_t)
- *     calculates the size used for header and end detection
- *
- *   - nvs_nvpair
- *     responsible for the first part of encoding / decoding of an nvpair
- *     calculates the decoded size of an nvpair
- *
- *   - nvs_nvp_op
- *     second part of encoding / decoding of an nvpair
- *
- *   - nvs_nvp_size
- *     calculates the encoding size of an nvpair
- *
- *   - nvs_nvl_fini
- *     encodes the end detection mark (zeros).
- */
+ 
 struct nvs_ops {
 	int (*nvs_nvlist)(nvstream_t *, nvlist_t *, size_t *);
 	int (*nvs_nvpair)(nvstream_t *, nvpair_t *, size_t *);
@@ -2359,10 +2091,10 @@ struct nvs_ops {
 };
 
 typedef struct {
-	char	nvh_encoding;	/* nvs encoding method */
-	char	nvh_endian;	/* nvs endian */
-	char	nvh_reserved1;	/* reserved for future use */
-	char	nvh_reserved2;	/* reserved for future use */
+	char	nvh_encoding;	 
+	char	nvh_endian;	 
+	char	nvh_reserved1;	 
+	char	nvh_reserved2;	 
 } nvs_header_t;
 
 static int
@@ -2371,9 +2103,7 @@ nvs_encode_pairs(nvstream_t *nvs, nvlist_t *nvl)
 	nvpriv_t *priv = (nvpriv_t *)(uintptr_t)nvl->nvl_priv;
 	i_nvp_t *curr;
 
-	/*
-	 * Walk nvpair in list and encode each nvpair
-	 */
+	 
 	for (curr = priv->nvp_list; curr != NULL; curr = curr->nvi_next)
 		if (nvs->nvs_ops->nvs_nvpair(nvs, &curr->nvi_nvp, NULL) != 0)
 			return (EFAULT);
@@ -2388,15 +2118,12 @@ nvs_decode_pairs(nvstream_t *nvs, nvlist_t *nvl)
 	size_t nvsize;
 	int err;
 
-	/*
-	 * Get decoded size of next pair in stream, alloc
-	 * memory for nvpair_t, then decode the nvpair
-	 */
+	 
 	while ((err = nvs->nvs_ops->nvs_nvpair(nvs, NULL, &nvsize)) == 0) {
-		if (nvsize == 0) /* end of list */
+		if (nvsize == 0)  
 			break;
 
-		/* make sure len makes sense */
+		 
 		if (nvsize < NVP_SIZE_CALC(1, 0))
 			return (EFAULT);
 
@@ -2433,9 +2160,7 @@ nvs_getsize_pairs(nvstream_t *nvs, nvlist_t *nvl, size_t *buflen)
 	uint64_t nvsize = *buflen;
 	size_t size;
 
-	/*
-	 * Get encoded size of nvpairs in nvlist
-	 */
+	 
 	for (curr = priv->nvp_list; curr != NULL; curr = curr->nvi_next) {
 		if (nvs->nvs_ops->nvs_nvp_size(nvs, &curr->nvi_nvp, &size) != 0)
 			return (EINVAL);
@@ -2456,9 +2181,7 @@ nvs_operation(nvstream_t *nvs, nvlist_t *nvl, size_t *buflen)
 	if (nvl->nvl_priv == 0)
 		return (EFAULT);
 
-	/*
-	 * Perform the operation, starting with header, then each nvpair
-	 */
+	 
 	if ((err = nvs->nvs_ops->nvs_nvlist(nvs, nvl, buflen)) != 0)
 		return (err);
 
@@ -2543,7 +2266,7 @@ nvs_embedded_nvl_array(nvstream_t *nvs, nvpair_t *nvp, size_t *size)
 		size_t len = nelem * sizeof (uint64_t);
 		nvlist_t *embedded = (nvlist_t *)((uintptr_t)nvlp + len);
 
-		memset(nvlp, 0, len);	/* don't trust packed data */
+		memset(nvlp, 0, len);	 
 		for (i = 0; i < nelem; i++) {
 			if (nvs_embedded(nvs, embedded) != 0) {
 				nvpair_free(nvp);
@@ -2580,10 +2303,7 @@ nvs_embedded_nvl_array(nvstream_t *nvs, nvpair_t *nvp, size_t *size)
 static int nvs_native(nvstream_t *, nvlist_t *, char *, size_t *);
 static int nvs_xdr(nvstream_t *, nvlist_t *, char *, size_t *);
 
-/*
- * Common routine for nvlist operations:
- * encode, decode, getsize (encoded size).
- */
+ 
 static int
 nvlist_common(nvlist_t *nvl, char *buf, size_t *buflen, int encoding,
     int nvs_op)
@@ -2597,7 +2317,7 @@ nvlist_common(nvlist_t *nvl, char *buf, size_t *buflen, int encoding,
 	int host_endian = 0;
 #else
 #error "No endian defined!"
-#endif	/* _ZFS_LITTLE_ENDIAN */
+#endif	 
 	nvs_header_t *nvh;
 
 	if (buflen == NULL || nvl == NULL ||
@@ -2607,11 +2327,7 @@ nvlist_common(nvlist_t *nvl, char *buf, size_t *buflen, int encoding,
 	nvs.nvs_op = nvs_op;
 	nvs.nvs_recursion = 0;
 
-	/*
-	 * For NVS_OP_ENCODE and NVS_OP_DECODE make sure an nvlist and
-	 * a buffer is allocated.  The first 4 bytes in the buffer are
-	 * used for encoding method and host endian.
-	 */
+	 
 	switch (nvs_op) {
 	case NVS_OP_ENCODE:
 		if (buf == NULL || *buflen < sizeof (nvs_header_t))
@@ -2628,7 +2344,7 @@ nvlist_common(nvlist_t *nvl, char *buf, size_t *buflen, int encoding,
 		if (buf == NULL || *buflen < sizeof (nvs_header_t))
 			return (EINVAL);
 
-		/* get method of encoding from first byte */
+		 
 		nvh = (void *)buf;
 		encoding = nvh->nvh_encoding;
 		nvl_endian = nvh->nvh_endian;
@@ -2637,9 +2353,7 @@ nvlist_common(nvlist_t *nvl, char *buf, size_t *buflen, int encoding,
 	case NVS_OP_GETSIZE:
 		nvl_endian = host_endian;
 
-		/*
-		 * add the size for encoding
-		 */
+		 
 		*buflen = sizeof (nvs_header_t);
 		break;
 
@@ -2647,15 +2361,10 @@ nvlist_common(nvlist_t *nvl, char *buf, size_t *buflen, int encoding,
 		return (ENOTSUP);
 	}
 
-	/*
-	 * Create an nvstream with proper encoding method
-	 */
+	 
 	switch (encoding) {
 	case NV_ENCODE_NATIVE:
-		/*
-		 * check endianness, in case we are unpacking
-		 * from a file
-		 */
+		 
 		if (nvl_endian != host_endian)
 			return (ENOTSUP);
 		err = nvs_native(&nvs, nvl, buf, buflen);
@@ -2677,9 +2386,7 @@ nvlist_size(nvlist_t *nvl, size_t *size, int encoding)
 	return (nvlist_common(nvl, NULL, size, encoding, NVS_OP_GETSIZE));
 }
 
-/*
- * Pack nvlist into contiguous memory
- */
+ 
 int
 nvlist_pack(nvlist_t *nvl, char **bufp, size_t *buflen, int encoding,
     int kmflag)
@@ -2704,18 +2411,7 @@ nvlist_xpack(nvlist_t *nvl, char **bufp, size_t *buflen, int encoding,
 		return (nvlist_common(nvl, *bufp, buflen, encoding,
 		    NVS_OP_ENCODE));
 
-	/*
-	 * Here is a difficult situation:
-	 * 1. The nvlist has fixed allocator properties.
-	 *    All other nvlist routines (like nvlist_add_*, ...) use
-	 *    these properties.
-	 * 2. When using nvlist_pack() the user can specify their own
-	 *    allocator properties (e.g. by using KM_NOSLEEP).
-	 *
-	 * We use the user specified properties (2). A clearer solution
-	 * will be to remove the kmflag from nvlist_pack(), but we will
-	 * not change the interface.
-	 */
+	 
 	nv_priv_init(&nvpriv, nva, 0);
 
 	if ((err = nvlist_size(nvl, &alloc_size, encoding)))
@@ -2735,9 +2431,7 @@ nvlist_xpack(nvlist_t *nvl, char **bufp, size_t *buflen, int encoding,
 	return (err);
 }
 
-/*
- * Unpack buf into an nvlist_t
- */
+ 
 int
 nvlist_unpack(char *buf, size_t buflen, nvlist_t **nvlp, int kmflag)
 {
@@ -2765,20 +2459,9 @@ nvlist_xunpack(char *buf, size_t buflen, nvlist_t **nvlp, nv_alloc_t *nva)
 	return (err);
 }
 
-/*
- * Native encoding functions
- */
+ 
 typedef struct {
-	/*
-	 * This structure is used when decoding a packed nvpair in
-	 * the native format.  n_base points to a buffer containing the
-	 * packed nvpair.  n_end is a pointer to the end of the buffer.
-	 * (n_end actually points to the first byte past the end of the
-	 * buffer.)  n_curr is a pointer that lies between n_base and n_end.
-	 * It points to the current data that we are decoding.
-	 * The amount of data left in the buffer is equal to n_end - n_curr.
-	 * n_flag is used to recognize a packed embedded list.
-	 */
+	 
 	caddr_t n_base;
 	caddr_t n_end;
 	caddr_t n_curr;
@@ -2822,10 +2505,7 @@ native_cp(nvstream_t *nvs, void *buf, size_t size)
 	if (native->n_curr + size > native->n_end)
 		return (EFAULT);
 
-	/*
-	 * The memcpy() below eliminates alignment requirement
-	 * on the buffer (stream) and is preferred over direct access.
-	 */
+	 
 	switch (nvs->nvs_op) {
 	case NVS_OP_ENCODE:
 		memcpy(native->n_curr, buf, size);
@@ -2841,9 +2521,7 @@ native_cp(nvstream_t *nvs, void *buf, size_t size)
 	return (0);
 }
 
-/*
- * operate on nvlist_t header
- */
+ 
 static int
 nvs_native_nvlist(nvstream_t *nvs, nvlist_t *nvl, size_t *size)
 {
@@ -2853,11 +2531,11 @@ nvs_native_nvlist(nvstream_t *nvs, nvlist_t *nvl, size_t *size)
 	case NVS_OP_ENCODE:
 	case NVS_OP_DECODE:
 		if (native->n_flag)
-			return (0);	/* packed embedded list */
+			return (0);	 
 
 		native->n_flag = 1;
 
-		/* copy version and nvflag of the nvlist_t */
+		 
 		if (native_cp(nvs, &nvl->nvl_version, sizeof (int32_t)) != 0 ||
 		    native_cp(nvs, &nvl->nvl_nvflag, sizeof (int32_t)) != 0)
 			return (EFAULT);
@@ -2865,13 +2543,7 @@ nvs_native_nvlist(nvstream_t *nvs, nvlist_t *nvl, size_t *size)
 		return (0);
 
 	case NVS_OP_GETSIZE:
-		/*
-		 * if calculate for packed embedded list
-		 * 	4 for end of the embedded list
-		 * else
-		 * 	2 * sizeof (int32_t) for nvl_version and nvl_nvflag
-		 * 	and 4 for end of the entire list
-		 */
+		 
 		if (native->n_flag) {
 			*size += 4;
 		} else {
@@ -2891,10 +2563,7 @@ nvs_native_nvl_fini(nvstream_t *nvs)
 {
 	if (nvs->nvs_op == NVS_OP_ENCODE) {
 		nvs_native_t *native = (nvs_native_t *)nvs->nvs_private;
-		/*
-		 * Add 4 zero bytes at end of nvlist. They are used
-		 * for end detection by the decode routine.
-		 */
+		 
 		if (native->n_curr + sizeof (int) > native->n_end)
 			return (EFAULT);
 
@@ -2912,11 +2581,7 @@ nvpair_native_embedded(nvstream_t *nvs, nvpair_t *nvp)
 		nvs_native_t *native = (nvs_native_t *)nvs->nvs_private;
 		nvlist_t *packed = (void *)
 		    (native->n_curr - nvp->nvp_size + NVP_VALOFF(nvp));
-		/*
-		 * Null out the pointer that is meaningless in the packed
-		 * structure. The address may not be aligned, so we have
-		 * to use memset.
-		 */
+		 
 		memset((char *)packed + offsetof(nvlist_t, nvl_priv),
 		    0, sizeof (uint64_t));
 	}
@@ -2933,19 +2598,11 @@ nvpair_native_embedded_array(nvstream_t *nvs, nvpair_t *nvp)
 		size_t len = NVP_NELEM(nvp) * sizeof (uint64_t);
 		nvlist_t *packed = (nvlist_t *)((uintptr_t)value + len);
 		int i;
-		/*
-		 * Null out pointers that are meaningless in the packed
-		 * structure. The addresses may not be aligned, so we have
-		 * to use memset.
-		 */
+		 
 		memset(value, 0, len);
 
 		for (i = 0; i < NVP_NELEM(nvp); i++, packed++)
-			/*
-			 * Null out the pointer that is meaningless in the
-			 * packed structure. The address may not be aligned,
-			 * so we have to use memset.
-			 */
+			 
 			memset((char *)packed + offsetof(nvlist_t, nvl_priv),
 			    0, sizeof (uint64_t));
 	}
@@ -2961,11 +2618,7 @@ nvpair_native_string_array(nvstream_t *nvs, nvpair_t *nvp)
 		nvs_native_t *native = (nvs_native_t *)nvs->nvs_private;
 		uint64_t *strp = (void *)
 		    (native->n_curr - nvp->nvp_size + NVP_VALOFF(nvp));
-		/*
-		 * Null out pointers that are meaningless in the packed
-		 * structure. The addresses may not be aligned, so we have
-		 * to use memset.
-		 */
+		 
 		memset(strp, 0, NVP_NELEM(nvp) * sizeof (uint64_t));
 		break;
 	}
@@ -2990,11 +2643,7 @@ nvs_native_nvp_op(nvstream_t *nvs, nvpair_t *nvp)
 	int value_sz;
 	int ret = 0;
 
-	/*
-	 * We do the initial memcpy of the data before we look at
-	 * the nvpair type, because when we're decoding, we won't
-	 * have the correct values for the pair until we do the memcpy.
-	 */
+	 
 	switch (nvs->nvs_op) {
 	case NVS_OP_ENCODE:
 	case NVS_OP_DECODE:
@@ -3005,17 +2654,13 @@ nvs_native_nvp_op(nvstream_t *nvs, nvpair_t *nvp)
 		return (EINVAL);
 	}
 
-	/* verify nvp_name_sz, check the name string length */
+	 
 	if (i_validate_nvpair_name(nvp) != 0)
 		return (EFAULT);
 
 	type = NVP_TYPE(nvp);
 
-	/*
-	 * Verify type and nelem and get the value size.
-	 * In case of data types DATA_TYPE_STRING and DATA_TYPE_STRING_ARRAY
-	 * is the size of the string(s) excluded.
-	 */
+	 
 	if ((value_sz = i_get_value_size(type, NULL, NVP_NELEM(nvp))) < 0)
 		return (EFAULT);
 
@@ -3086,23 +2731,19 @@ nvs_native_nvpair(nvstream_t *nvs, nvpair_t *nvp, size_t *size)
 		nvs_native_t *native = (nvs_native_t *)nvs->nvs_private;
 		int32_t decode_len;
 
-		/* try to read the size value from the stream */
+		 
 		if (native->n_curr + sizeof (int32_t) > native->n_end)
 			return (EFAULT);
 		memcpy(&decode_len, native->n_curr, sizeof (int32_t));
 
-		/* sanity check the size value */
+		 
 		if (decode_len < 0 ||
 		    decode_len > native->n_end - native->n_curr)
 			return (EFAULT);
 
 		*size = decode_len;
 
-		/*
-		 * If at the end of the stream then move the cursor
-		 * forward, otherwise nvpair_native_op() will read
-		 * the entire nvpair at the same cursor position.
-		 */
+		 
 		if (*size == 0)
 			native->n_curr += sizeof (int32_t);
 		break;
@@ -3142,30 +2783,11 @@ nvs_native(nvstream_t *nvs, nvlist_t *nvl, char *buf, size_t *buflen)
 	return (err);
 }
 
-/*
- * XDR encoding functions
- *
- * An xdr packed nvlist is encoded as:
- *
- *  - encoding method and host endian (4 bytes)
- *  - nvl_version (4 bytes)
- *  - nvl_nvflag (4 bytes)
- *
- *  - encoded nvpairs, the format of one xdr encoded nvpair is:
- *	- encoded size of the nvpair (4 bytes)
- *	- decoded size of the nvpair (4 bytes)
- *	- name string, (4 + sizeof(NV_ALIGN4(string))
- *	  a string is coded as size (4 bytes) and data
- *	- data type (4 bytes)
- *	- number of elements in the nvpair (4 bytes)
- *	- data
- *
- *  - 2 zero's for end of the entire list (8 bytes)
- */
+ 
 static int
 nvs_xdr_create(nvstream_t *nvs, XDR *xdr, char *buf, size_t buflen)
 {
-	/* xdr data must be 4 byte aligned */
+	 
 	if ((ulong_t)buf % 4 != 0)
 		return (EFAULT);
 
@@ -3213,10 +2835,7 @@ nvs_xdr_nvlist(nvstream_t *nvs, nvlist_t *nvl, size_t *size)
 		break;
 	}
 	case NVS_OP_GETSIZE: {
-		/*
-		 * 2 * 4 for nvl_version + nvl_nvflag
-		 * and 8 for end of the entire list
-		 */
+		 
 		*size += 2 * 4 + 8;
 		break;
 	}
@@ -3240,11 +2859,9 @@ nvs_xdr_nvl_fini(nvstream_t *nvs)
 	return (0);
 }
 
-/*
- * xdrproc_t-compatible callbacks for xdr_array()
- */
+ 
 
-#if defined(_KERNEL) && defined(__linux__) /* Linux kernel */
+#if defined(_KERNEL) && defined(__linux__)  
 
 #define	NVS_BUILD_XDRPROC_T(type)		\
 static bool_t					\
@@ -3253,7 +2870,7 @@ nvs_xdr_nvp_##type(XDR *xdrs, void *ptr)	\
 	return (xdr_##type(xdrs, ptr));		\
 }
 
-#elif !defined(_KERNEL) && defined(XDR_CONTROL) /* tirpc */
+#elif !defined(_KERNEL) && defined(XDR_CONTROL)  
 
 #define	NVS_BUILD_XDRPROC_T(type)		\
 static bool_t					\
@@ -3269,7 +2886,7 @@ nvs_xdr_nvp_##type(XDR *xdrs, ...)		\
 	return (xdr_##type(xdrs, ptr));		\
 }
 
-#else /* FreeBSD, sunrpc */
+#else  
 
 #define	NVS_BUILD_XDRPROC_T(type)		\
 static bool_t					\
@@ -3280,7 +2897,7 @@ nvs_xdr_nvp_##type(XDR *xdrs, void *ptr, ...)	\
 
 #endif
 
-/* BEGIN CSTYLED */
+ 
 NVS_BUILD_XDRPROC_T(char);
 NVS_BUILD_XDRPROC_T(short);
 NVS_BUILD_XDRPROC_T(u_short);
@@ -3288,12 +2905,9 @@ NVS_BUILD_XDRPROC_T(int);
 NVS_BUILD_XDRPROC_T(u_int);
 NVS_BUILD_XDRPROC_T(longlong_t);
 NVS_BUILD_XDRPROC_T(u_longlong_t);
-/* END CSTYLED */
+ 
 
-/*
- * The format of xdr encoded nvpair is:
- * encode_size, decode_size, name string, data type, nelem, data
- */
+ 
 static int
 nvs_xdr_nvp_op(nvstream_t *nvs, nvpair_t *nvp)
 {
@@ -3309,7 +2923,7 @@ nvs_xdr_nvp_op(nvstream_t *nvs, nvpair_t *nvp)
 
 	ASSERT(xdr != NULL);
 
-	/* name string */
+	 
 	if ((buf = NVP_NAME(nvp)) >= buf_end)
 		return (EFAULT);
 	buflen = buf_end - buf;
@@ -3318,7 +2932,7 @@ nvs_xdr_nvp_op(nvstream_t *nvs, nvpair_t *nvp)
 		return (EFAULT);
 	nvp->nvp_name_sz = strlen(buf) + 1;
 
-	/* type and nelem */
+	 
 	if (!xdr_int(xdr, (int *)&nvp->nvp_type) ||
 	    !xdr_int(xdr, &nvp->nvp_value_elem))
 		return (EFAULT);
@@ -3326,19 +2940,15 @@ nvs_xdr_nvp_op(nvstream_t *nvs, nvpair_t *nvp)
 	type = NVP_TYPE(nvp);
 	nelem = nvp->nvp_value_elem;
 
-	/*
-	 * Verify type and nelem and get the value size.
-	 * In case of data types DATA_TYPE_STRING and DATA_TYPE_STRING_ARRAY
-	 * is the size of the string(s) excluded.
-	 */
+	 
 	if ((value_sz = i_get_value_size(type, NULL, nelem)) < 0)
 		return (EFAULT);
 
-	/* if there is no data to extract then return */
+	 
 	if (nelem == 0)
 		return (0);
 
-	/* value */
+	 
 	if ((buf = NVP_VALUE(nvp)) >= buf_end)
 		return (EFAULT);
 	buflen = buf_end - buf;
@@ -3393,9 +3003,7 @@ nvs_xdr_nvp_op(nvstream_t *nvs, nvpair_t *nvp)
 		break;
 
 	case DATA_TYPE_HRTIME:
-		/*
-		 * NOTE: must expose the definition of hrtime_t here
-		 */
+		 
 		ret = xdr_longlong_t(xdr, (void *)buf);
 		break;
 #if !defined(_KERNEL)
@@ -3454,7 +3062,7 @@ nvs_xdr_nvp_op(nvstream_t *nvs, nvpair_t *nvp)
 		int i;
 
 		if (nvs->nvs_op == NVS_OP_DECODE)
-			memset(buf, 0, len);	/* don't trust packed data */
+			memset(buf, 0, len);	 
 
 		for (i = 0; i < nelem; i++) {
 			if (buflen <= len)
@@ -3484,10 +3092,7 @@ static int
 nvs_xdr_nvp_size(nvstream_t *nvs, nvpair_t *nvp, size_t *size)
 {
 	data_type_t type = NVP_TYPE(nvp);
-	/*
-	 * encode_size + decode_size + name string size + data type + nelem
-	 * where name string size = 4 + NV_ALIGN4(strlen(NVP_NAME(nvp)))
-	 */
+	 
 	uint64_t nvp_sz = 4 + 4 + 4 + NV_ALIGN4(strlen(NVP_NAME(nvp))) + 4 + 4;
 
 	switch (type) {
@@ -3502,7 +3107,7 @@ nvs_xdr_nvp_size(nvstream_t *nvs, nvpair_t *nvp, size_t *size)
 	case DATA_TYPE_UINT16:
 	case DATA_TYPE_INT32:
 	case DATA_TYPE_UINT32:
-		nvp_sz += 4;	/* 4 is the minimum xdr unit */
+		nvp_sz += 4;	 
 		break;
 
 	case DATA_TYPE_INT64:
@@ -3580,26 +3185,7 @@ nvs_xdr_nvp_size(nvstream_t *nvs, nvpair_t *nvp, size_t *size)
 }
 
 
-/*
- * The NVS_XDR_MAX_LEN macro takes a packed xdr buffer of size x and estimates
- * the largest nvpair that could be encoded in the buffer.
- *
- * See comments above nvpair_xdr_op() for the format of xdr encoding.
- * The size of a xdr packed nvpair without any data is 5 words.
- *
- * Using the size of the data directly as an estimate would be ok
- * in all cases except one.  If the data type is of DATA_TYPE_STRING_ARRAY
- * then the actual nvpair has space for an array of pointers to index
- * the strings.  These pointers are not encoded into the packed xdr buffer.
- *
- * If the data is of type DATA_TYPE_STRING_ARRAY and all the strings are
- * of length 0, then each string is encoded in xdr format as a single word.
- * Therefore when expanded to an nvpair there will be 2.25 word used for
- * each string.  (a int64_t allocated for pointer usage, and a single char
- * for the null termination.)
- *
- * This is the calculation performed by the NVS_XDR_MAX_LEN macro.
- */
+ 
 #define	NVS_XDR_HDR_LEN		((size_t)(5 * 4))
 #define	NVS_XDR_DATA_LEN(y)	(((size_t)(y) <= NVS_XDR_HDR_LEN) ? \
 					0 : ((size_t)(y) - NVS_XDR_HDR_LEN))
@@ -3630,16 +3216,16 @@ nvs_xdr_nvpair(nvstream_t *nvs, nvpair_t *nvp, size_t *size)
 	case NVS_OP_DECODE: {
 		struct xdr_bytesrec bytesrec;
 
-		/* get the encode and decode size */
+		 
 		if (!xdr_int(xdr, &encode_len) || !xdr_int(xdr, &decode_len))
 			return (EFAULT);
 		*size = decode_len;
 
-		/* are we at the end of the stream? */
+		 
 		if (*size == 0)
 			return (0);
 
-		/* sanity check the size parameter */
+		 
 		if (!xdr_control(xdr, XDR_GET_BYTES_AVAIL, &bytesrec))
 			return (EFAULT);
 
@@ -3685,7 +3271,7 @@ EXPORT_SYMBOL(nv_alloc_init);
 EXPORT_SYMBOL(nv_alloc_reset);
 EXPORT_SYMBOL(nv_alloc_fini);
 
-/* list management */
+ 
 EXPORT_SYMBOL(nvlist_alloc);
 EXPORT_SYMBOL(nvlist_free);
 EXPORT_SYMBOL(nvlist_size);
@@ -3766,7 +3352,7 @@ EXPORT_SYMBOL(nvlist_lookup_pairs);
 EXPORT_SYMBOL(nvlist_lookup_nvpair);
 EXPORT_SYMBOL(nvlist_exists);
 
-/* processing nvpair */
+ 
 EXPORT_SYMBOL(nvpair_name);
 EXPORT_SYMBOL(nvpair_type);
 EXPORT_SYMBOL(nvpair_value_boolean_value);

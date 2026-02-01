@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/mmc/host/mmci.c - ARM PrimeCell MMCI PL180/1 driver
- *
- *  Copyright (C) 2003 Deep Blue Solutions, Ltd, All Rights Reserved.
- *  Copyright (C) 2010 ST-Ericsson SA
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -363,7 +358,7 @@ static struct variant_data variant_qcom = {
 	.init			= qcom_variant_init,
 };
 
-/* Busy detection for the ST Micro variant */
+ 
 static int mmci_card_busy(struct mmc_host *mmc)
 {
 	struct mmci_host *host = mmc_priv(mmc);
@@ -380,22 +375,14 @@ static int mmci_card_busy(struct mmc_host *mmc)
 
 static void mmci_reg_delay(struct mmci_host *host)
 {
-	/*
-	 * According to the spec, at least three feedback clock cycles
-	 * of max 52 MHz must pass between two writes to the MMCICLOCK reg.
-	 * Three MCLK clock cycles must pass between two MMCIPOWER reg writes.
-	 * Worst delay time during card init is at 100 kHz => 30 us.
-	 * Worst delay time when up and running is at 25 MHz => 120 ns.
-	 */
+	 
 	if (host->cclk < 25000000)
 		udelay(30);
 	else
 		ndelay(120);
 }
 
-/*
- * This must be called with host->lock held
- */
+ 
 void mmci_write_clkreg(struct mmci_host *host, u32 clk)
 {
 	if (host->clk_reg != clk) {
@@ -404,9 +391,7 @@ void mmci_write_clkreg(struct mmci_host *host, u32 clk)
 	}
 }
 
-/*
- * This must be called with host->lock held
- */
+ 
 void mmci_write_pwrreg(struct mmci_host *host, u32 pwr)
 {
 	if (host->pwr_reg != pwr) {
@@ -415,12 +400,10 @@ void mmci_write_pwrreg(struct mmci_host *host, u32 pwr)
 	}
 }
 
-/*
- * This must be called with host->lock held
- */
+ 
 static void mmci_write_datactrlreg(struct mmci_host *host, u32 datactrl)
 {
-	/* Keep busy mode in DPSM if enabled */
+	 
 	datactrl |= host->datactrl_reg & host->variant->busy_dpsm_flag;
 
 	if (host->datactrl_reg != datactrl) {
@@ -429,15 +412,13 @@ static void mmci_write_datactrlreg(struct mmci_host *host, u32 datactrl)
 	}
 }
 
-/*
- * This must be called with host->lock held
- */
+ 
 static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 {
 	struct variant_data *variant = host->variant;
 	u32 clk = variant->clkreg;
 
-	/* Make sure cclk reflects the current calculated clock */
+	 
 	host->cclk = 0;
 
 	if (desired) {
@@ -449,21 +430,13 @@ static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 				clk |= MCI_ST_UX500_NEG_EDGE;
 			host->cclk = host->mclk;
 		} else if (variant->st_clkdiv) {
-			/*
-			 * DB8500 TRM says f = mclk / (clkdiv + 2)
-			 * => clkdiv = (mclk / f) - 2
-			 * Round the divider up so we don't exceed the max
-			 * frequency
-			 */
+			 
 			clk = DIV_ROUND_UP(host->mclk, desired) - 2;
 			if (clk >= 256)
 				clk = 255;
 			host->cclk = host->mclk / (clk + 2);
 		} else {
-			/*
-			 * PL180 TRM says f = mclk / (2 * (clkdiv + 1))
-			 * => clkdiv = mclk / (2 * f) - 1
-			 */
+			 
 			clk = host->mclk / (2 * desired) - 1;
 			if (clk >= 256)
 				clk = 255;
@@ -472,11 +445,11 @@ static void mmci_set_clkreg(struct mmci_host *host, unsigned int desired)
 
 		clk |= variant->clkreg_enable;
 		clk |= MCI_CLK_ENABLE;
-		/* This hasn't proven to be worthwhile */
-		/* clk |= MCI_CLK_PWRSAVE; */
+		 
+		 
 	}
 
-	/* Set actual clock for debug */
+	 
 	host->mmc->actual_clock = host->cclk;
 
 	if (host->mmc->ios.bus_width == MMC_BUS_WIDTH_4)
@@ -507,15 +480,13 @@ static void mmci_dma_setup(struct mmci_host *host)
 	if (host->ops->dma_setup(host))
 		return;
 
-	/* initialize pre request cookie */
+	 
 	host->next_cookie = 1;
 
 	host->use_dma = true;
 }
 
-/*
- * Validate mmc prerequisites
- */
+ 
 static int mmci_validate_data(struct mmci_host *host,
 			      struct mmc_data *data)
 {
@@ -583,7 +554,7 @@ static int mmci_dma_start(struct mmci_host *host, unsigned int datactrl)
 	if (!host->ops || !host->ops->dma_start)
 		return -EINVAL;
 
-	/* Okay, go for it. */
+	 
 	dev_vdbg(mmc_dev(host->mmc),
 		 "Submit MMCI DMA job, sglen %d blksz %04x blks %04x flags %08x\n",
 		 data->sg_len, data->blksz, data->blocks, data->flags);
@@ -592,14 +563,10 @@ static int mmci_dma_start(struct mmci_host *host, unsigned int datactrl)
 	if (ret)
 		return ret;
 
-	/* Trigger the DMA transfer */
+	 
 	mmci_write_datactrlreg(host, datactrl);
 
-	/*
-	 * Let the MMCI say when the data is ended and it's time
-	 * to fire next DMA request. When that happens, MMCI will
-	 * call mmci_data_end()
-	 */
+	 
 	writel(readl(host->base + MMCIMASK0) | MCI_DATAENDMASK,
 	       host->base + MMCIMASK0);
 	return 0;
@@ -696,23 +663,7 @@ static void ux500_busy_clear_mask_done(struct mmci_host *host)
 	host->busy_status = 0;
 }
 
-/*
- * ux500_busy_complete() - this will wait until the busy status
- * goes off, saving any status that occur in the meantime into
- * host->busy_status until we know the card is not busy any more.
- * The function returns true when the busy detection is ended
- * and we should continue processing the command.
- *
- * The Ux500 typically fires two IRQs over a busy cycle like this:
- *
- *  DAT0 busy          +-----------------+
- *                     |                 |
- *  DAT0 not busy  ----+                 +--------
- *
- *                     ^                 ^
- *                     |                 |
- *                    IRQ1              IRQ2
- */
+ 
 static bool ux500_busy_complete(struct mmci_host *host, struct mmc_command *cmd,
 				u32 status, u32 err_msk)
 {
@@ -720,38 +671,21 @@ static bool ux500_busy_complete(struct mmci_host *host, struct mmc_command *cmd,
 	int retries = 10;
 
 	if (status & err_msk) {
-		/* Stop any ongoing busy detection if an error occurs */
+		 
 		ux500_busy_clear_mask_done(host);
 		goto out_ret_state;
 	}
 
-	/*
-	 * The state transitions are encoded in a state machine crossing
-	 * the edges in this switch statement.
-	 */
+	 
 	switch (host->busy_state) {
 
-	/*
-	 * Before unmasking for the busy end IRQ, confirm that the
-	 * command was sent successfully. To keep track of having a
-	 * command in-progress, waiting for busy signaling to end,
-	 * store the status in host->busy_status.
-	 *
-	 * Note that, the card may need a couple of clock cycles before
-	 * it starts signaling busy on DAT0, hence re-read the
-	 * MMCISTATUS register here, to allow the busy bit to be set.
-	 */
+	 
 	case MMCI_BUSY_DONE:
-		/*
-		 * Save the first status register read to be sure to catch
-		 * all bits that may be lost will retrying. If the command
-		 * is still busy this will result in assigning 0 to
-		 * host->busy_status, which is what it should be in IDLE.
-		 */
+		 
 		host->busy_status = status & (MCI_CMDSENT | MCI_CMDRESPEND);
 		while (retries) {
 			status = readl(base + MMCISTATUS);
-			/* Keep accumulating status bits */
+			 
 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
 			if (status & host->variant->busy_detect_flag) {
 				writel(readl(base + MMCIMASK0) |
@@ -769,17 +703,7 @@ static bool ux500_busy_complete(struct mmci_host *host, struct mmc_command *cmd,
 		ux500_busy_clear_mask_done(host);
 		break;
 
-	/*
-	 * If there is a command in-progress that has been successfully
-	 * sent, then bail out if busy status is set and wait for the
-	 * busy end IRQ.
-	 *
-	 * Note that, the HW triggers an IRQ on both edges while
-	 * monitoring DAT0 for busy completion, but there is only one
-	 * status bit in MMCISTATUS for the busy state. Therefore
-	 * both the start and the end interrupts needs to be cleared,
-	 * one after the other. So, clear the busy start IRQ here.
-	 */
+	 
 	case MMCI_BUSY_WAITING_FOR_START_IRQ:
 		if (status & host->variant->busy_detect_flag) {
 			host->busy_status |= status & (MCI_CMDSENT | MCI_CMDRESPEND);
@@ -817,11 +741,7 @@ out_ret_state:
 	return (host->busy_state == MMCI_BUSY_DONE);
 }
 
-/*
- * All the DMA operation mode stuff goes inside this ifdef.
- * This assumes that you have a generic DMA device interface,
- * no custom DMA interfaces are supported.
- */
+ 
 #ifdef CONFIG_DMA_ENGINE
 struct mmci_dmae_next {
 	struct dma_async_tx_descriptor *desc;
@@ -862,11 +782,7 @@ int mmci_dmae_setup(struct mmci_host *host)
 		dmae->tx_channel = NULL;
 	}
 
-	/*
-	 * If only an RX channel is specified, the driver will
-	 * attempt to use it bidirectionally, however if it
-	 * is specified but cannot be located, DMA will be disabled.
-	 */
+	 
 	if (dmae->rx_channel && !dmae->tx_channel)
 		dmae->tx_channel = dmae->rx_channel;
 
@@ -883,10 +799,7 @@ int mmci_dmae_setup(struct mmci_host *host)
 	dev_info(mmc_dev(host->mmc), "DMA channels RX %s, TX %s\n",
 		 rxname, txname);
 
-	/*
-	 * Limit the maximum segment size in any SG entry according to
-	 * the parameters of the DMA engine device.
-	 */
+	 
 	if (dmae->tx_channel) {
 		struct device *dev = dmae->tx_channel->device->dev;
 		unsigned int max_seg_size = dma_get_max_seg_size(dev);
@@ -910,10 +823,7 @@ int mmci_dmae_setup(struct mmci_host *host)
 	return 0;
 }
 
-/*
- * This is used in or so inline it
- * so it can be discarded.
- */
+ 
 void mmci_dmae_release(struct mmci_host *host)
 {
 	struct mmci_dmae_priv *dmae = host->dma_priv;
@@ -965,7 +875,7 @@ void mmci_dmae_finalize(struct mmci_host *host, struct mmc_data *data)
 	if (!dma_inprogress(host))
 		return;
 
-	/* Wait up to 1ms for the DMA to complete */
+	 
 	for (i = 0; ; i++) {
 		status = readl(host->base + MMCISTATUS);
 		if (!(status & MCI_RXDATAAVLBLMASK) || i >= 100)
@@ -973,12 +883,7 @@ void mmci_dmae_finalize(struct mmci_host *host, struct mmc_data *data)
 		udelay(10);
 	}
 
-	/*
-	 * Check to see whether we still have some data left in the FIFO -
-	 * this catches DMA controllers which are unable to monitor the
-	 * DMALBREQ and DMALSREQ signals while allowing us to DMA to non-
-	 * contiguous buffers.  On TX, we'll get a FIFO underrun error.
-	 */
+	 
 	if (status & MCI_RXDATAAVLBLMASK) {
 		mmci_dma_error(host);
 		if (!data->error)
@@ -987,10 +892,7 @@ void mmci_dmae_finalize(struct mmci_host *host, struct mmc_data *data)
 		mmci_dma_unmap(host, data);
 	}
 
-	/*
-	 * Use of DMA with scatter-gather is impossible.
-	 * Give up with DMA and switch back to PIO mode.
-	 */
+	 
 	if (status & MCI_RXDATAAVLBLMASK) {
 		dev_err(mmc_dev(host->mmc), "buggy DMA detected. Taking evasive action.\n");
 		mmci_dma_release(host);
@@ -1001,7 +903,7 @@ void mmci_dmae_finalize(struct mmci_host *host, struct mmc_data *data)
 	dmae->desc_current = NULL;
 }
 
-/* prepares DMA channel and DMA descriptor, returns non-zero on failure */
+ 
 static int _mmci_dmae_prep_data(struct mmci_host *host, struct mmc_data *data,
 				struct dma_chan **dma_chan,
 				struct dma_async_tx_descriptor **dma_desc)
@@ -1013,8 +915,8 @@ static int _mmci_dmae_prep_data(struct mmci_host *host, struct mmc_data *data,
 		.dst_addr = host->phybase + MMCIFIFO,
 		.src_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
 		.dst_addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES,
-		.src_maxburst = variant->fifohalfsize >> 2, /* # of words */
-		.dst_maxburst = variant->fifohalfsize >> 2, /* # of words */
+		.src_maxburst = variant->fifohalfsize >> 2,  
+		.dst_maxburst = variant->fifohalfsize >> 2,  
 		.device_fc = false,
 	};
 	struct dma_chan *chan;
@@ -1031,23 +933,15 @@ static int _mmci_dmae_prep_data(struct mmci_host *host, struct mmc_data *data,
 		chan = dmae->tx_channel;
 	}
 
-	/* If there's no DMA channel, fall back to PIO */
+	 
 	if (!chan)
 		return -EINVAL;
 
-	/* If less than or equal to the fifo size, don't bother with DMA */
+	 
 	if (data->blksz * data->blocks <= variant->fifosize)
 		return -EINVAL;
 
-	/*
-	 * This is necessary to get SDIO working on the Ux500. We do not yet
-	 * know if this is a bug in:
-	 * - The Ux500 DMA controller (DMA40)
-	 * - The MMCI DMA interface on the Ux500
-	 * some power of two blocks (such as 64 bytes) are sent regularly
-	 * during SDIO traffic and those work fine so for these we enable DMA
-	 * transfers.
-	 */
+	 
 	if (host->variant->dma_power_of_2 && !is_power_of_2(data->blksz))
 		return -EINVAL;
 
@@ -1089,11 +983,11 @@ int mmci_dmae_prep_data(struct mmci_host *host,
 
 	if (next)
 		return _mmci_dmae_prep_data(host, data, &nd->chan, &nd->desc);
-	/* Check if next job is already prepared. */
+	 
 	if (dmae->cur && dmae->desc_current)
 		return 0;
 
-	/* No job were prepared thus do it now. */
+	 
 	return _mmci_dmae_prep_data(host, data, &dmae->cur,
 				    &dmae->desc_current);
 }
@@ -1259,12 +1153,7 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 
 		datactrl |= variant->datactrl_mask_sdio;
 
-		/*
-		 * The ST Micro variant for SDIO small write transfers
-		 * needs to have clock H/W flow control disabled,
-		 * otherwise the transfer will not start. The threshold
-		 * depends on the rate of MCLK.
-		 */
+		 
 		if (variant->st_sdio && data->flags & MMC_DATA_WRITE &&
 		    (host->size < 8 ||
 		     (host->size <= 8 && host->mclk > 50000000)))
@@ -1279,31 +1168,21 @@ static void mmci_start_data(struct mmci_host *host, struct mmc_data *data)
 	    host->mmc->ios.timing == MMC_TIMING_MMC_DDR52)
 		datactrl |= variant->datactrl_mask_ddrmode;
 
-	/*
-	 * Attempt to use DMA operation mode, if this
-	 * should fail, fall back to PIO mode
-	 */
+	 
 	if (!mmci_dma_start(host, datactrl))
 		return;
 
-	/* IRQ mode, map the SG list for CPU reading/writing */
+	 
 	mmci_init_sg(host, data);
 
 	if (data->flags & MMC_DATA_READ) {
 		irqmask = MCI_RXFIFOHALFFULLMASK;
 
-		/*
-		 * If we have less than the fifo 'half-full' threshold to
-		 * transfer, trigger a PIO interrupt as soon as any data
-		 * is available.
-		 */
+		 
 		if (host->size < variant->fifohalfsize)
 			irqmask |= MCI_RXDATAAVLBLMASK;
 	} else {
-		/*
-		 * We don't actually need to include "FIFO empty" here
-		 * since its implicit in "FIFO half empty".
-		 */
+		 
 		irqmask = MCI_TXFIFOHALFEMPTYMASK;
 	}
 
@@ -1344,7 +1223,7 @@ mmci_start_command(struct mmci_host *host, struct mmc_command *cmd, u32 c)
 	host->busy_status = 0;
 	host->busy_state = MMCI_BUSY_DONE;
 
-	/* Assign a default timeout if the core does not provide one */
+	 
 	if (busy_resp && !cmd->busy_timeout)
 		cmd->busy_timeout = 10 * MSEC_PER_SEC;
 
@@ -1361,7 +1240,7 @@ mmci_start_command(struct mmci_host *host, struct mmc_command *cmd, u32 c)
 	if (host->ops->pre_sig_volt_switch && cmd->opcode == SD_SWITCH_VOLTAGE)
 		host->ops->pre_sig_volt_switch(host);
 
-	if (/*interrupt*/0)
+	if ( 0)
 		c |= MCI_CPSM_INTERRUPT;
 
 	if (mmc_cmd_type(cmd) == MMC_CMD_ADTC)
@@ -1385,11 +1264,11 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 {
 	unsigned int status_err;
 
-	/* Make sure we have data to handle */
+	 
 	if (!data)
 		return;
 
-	/* First check for errors */
+	 
 	status_err = status & (host->variant->start_err |
 			       MCI_DATACRCFAIL | MCI_DATATIMEOUT |
 			       MCI_TXUNDERRUN | MCI_RXOVERRUN);
@@ -1397,16 +1276,10 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 	if (status_err) {
 		u32 remain, success;
 
-		/* Terminate the DMA transfer */
+		 
 		mmci_dma_error(host);
 
-		/*
-		 * Calculate how far we are into the transfer.  Note that
-		 * the data counter gives the number of bytes transferred
-		 * on the MMC bus, not on the host side.  On reads, this
-		 * can be as much as a FIFO-worth of data ahead.  This
-		 * matters for FIFO overruns only.
-		 */
+		 
 		if (!host->variant->datacnt_useless) {
 			remain = readl(host->base + MMCIDATACNT);
 			success = data->blksz * data->blocks - remain;
@@ -1417,7 +1290,7 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 		dev_dbg(mmc_dev(host->mmc), "MCI ERROR IRQ, status 0x%08x at 0x%08x\n",
 			status_err, success);
 		if (status_err & MCI_DATACRCFAIL) {
-			/* Last block was not successful */
+			 
 			success -= 1;
 			data->error = -EILSEQ;
 		} else if (status_err & MCI_DATATIMEOUT) {
@@ -1445,7 +1318,7 @@ mmci_data_irq(struct mmci_host *host, struct mmc_data *data,
 		mmci_stop_data(host);
 
 		if (!data->error)
-			/* The error clause is handled above, success! */
+			 
 			data->bytes_xfered = data->blksz * data->blocks;
 
 		if (!data->stop) {
@@ -1475,11 +1348,7 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 	sbc = (cmd == host->mrq->sbc);
 	busy_resp = !!(cmd->flags & MMC_RSP_BUSY);
 
-	/*
-	 * We need to be one of these interrupts to be considered worth
-	 * handling. Note that we tag on any latent IRQs postponed
-	 * due to waiting for busy status.
-	 */
+	 
 	if (host->variant->busy_timeout && busy_resp)
 		err_msk |= MCI_DATATIMEOUT;
 
@@ -1487,7 +1356,7 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 	      (err_msk | MCI_CMDSENT | MCI_CMDRESPEND)))
 		return;
 
-	/* Handle busy detection on DAT0 if the variant supports it. */
+	 
 	if (busy_resp && host->variant->busy_detect)
 		if (!host->ops->busy_complete(host, cmd, status, err_msk))
 			return;
@@ -1501,10 +1370,7 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 	} else if (host->variant->busy_timeout && busy_resp &&
 		   status & MCI_DATATIMEOUT) {
 		cmd->error = -ETIMEDOUT;
-		/*
-		 * This will wake up mmci_irq_thread() which will issue
-		 * a hardware reset of the MMCI block.
-		 */
+		 
 		host->irq_action = IRQ_WAKE_THREAD;
 	} else {
 		cmd->resp[0] = readl(base + MMCIRESPONSE0);
@@ -1515,7 +1381,7 @@ mmci_cmd_irq(struct mmci_host *host, struct mmc_command *cmd,
 
 	if ((!sbc && !cmd->data) || cmd->error) {
 		if (host->data) {
-			/* Terminate the DMA transfer */
+			 
 			mmci_dma_error(host);
 
 			mmci_stop_data(host);
@@ -1550,11 +1416,7 @@ static char *ux500_state_str(struct mmci_host *host)
 	}
 }
 
-/*
- * This busy timeout worker is used to "kick" the command IRQ if a
- * busy detect IRQ fails to appear in reasonable time. Only used on
- * variants with busy detection IRQ delivery.
- */
+ 
 static void ux500_busy_timeout_work(struct work_struct *work)
 {
 	struct mmci_host *host = container_of(work, struct mmci_host,
@@ -1565,7 +1427,7 @@ static void ux500_busy_timeout_work(struct work_struct *work)
 	spin_lock_irqsave(&host->lock, flags);
 
 	if (host->cmd) {
-		/* If we are still busy let's tag on a cmd-timeout error. */
+		 
 		status = readl(host->base + MMCISTATUS);
 		if (status & host->variant->busy_detect_flag) {
 			status |= MCI_CMDTIMEOUT;
@@ -1591,10 +1453,7 @@ static int mmci_get_rx_fifocnt(struct mmci_host *host, u32 status, int remain)
 
 static int mmci_qcom_get_rx_fifocnt(struct mmci_host *host, u32 status, int r)
 {
-	/*
-	 * on qcom SDCC4 only 8 words are used in each burst so only 8 addresses
-	 * from the fifo range should be used
-	 */
+	 
 	if (status & MCI_RXFIFOHALFFULL)
 		return host->variant->fifohalfsize;
 	else if (status & MCI_RXDATAAVLBL)
@@ -1619,12 +1478,7 @@ static int mmci_pio_read(struct mmci_host *host, char *buffer, unsigned int rema
 		if (count <= 0)
 			break;
 
-		/*
-		 * SDIO especially may want to send something that is
-		 * not divisible by 4 (as opposed to card sectors
-		 * etc). Therefore make sure to always read the last bytes
-		 * while only doing full 32-bit reads towards the FIFO.
-		 */
+		 
 		if (unlikely(count & 0x3)) {
 			if (count < 4) {
 				unsigned char buf[4];
@@ -1664,14 +1518,7 @@ static int mmci_pio_write(struct mmci_host *host, char *buffer, unsigned int rem
 			 variant->fifosize : variant->fifohalfsize;
 		count = min(remain, maxcnt);
 
-		/*
-		 * SDIO especially may want to send something that is
-		 * not divisible by 4 (as opposed to card sectors
-		 * etc), and the FIFO only accept full 32-bit writes.
-		 * So compensate by adding +3 on the count, a single
-		 * byte become a 32bit write, 7 bytes will be two
-		 * 32bit writes etc.
-		 */
+		 
 		iowrite32_rep(base + MMCIFIFO, ptr, (count + 3) >> 2);
 
 		ptr += count;
@@ -1686,9 +1533,7 @@ static int mmci_pio_write(struct mmci_host *host, char *buffer, unsigned int rem
 	return ptr - buffer;
 }
 
-/*
- * PIO data transfer IRQ handler.
- */
+ 
 static irqreturn_t mmci_pio_irq(int irq, void *dev_id)
 {
 	struct mmci_host *host = dev_id;
@@ -1705,13 +1550,7 @@ static irqreturn_t mmci_pio_irq(int irq, void *dev_id)
 		unsigned int remain, len;
 		char *buffer;
 
-		/*
-		 * For write, we only need to test the half-empty flag
-		 * here - if the FIFO is completely empty, then by
-		 * definition it is more than half empty.
-		 *
-		 * For read, check for data available.
-		 */
+		 
 		if (!(status & (MCI_TXFIFOHALFEMPTY|MCI_RXDATAAVLBL)))
 			break;
 
@@ -1740,19 +1579,11 @@ static irqreturn_t mmci_pio_irq(int irq, void *dev_id)
 
 	sg_miter_stop(sg_miter);
 
-	/*
-	 * If we have less than the fifo 'half-full' threshold to transfer,
-	 * trigger a PIO interrupt as soon as any data is available.
-	 */
+	 
 	if (status & MCI_RXACTIVE && host->size < variant->fifohalfsize)
 		mmci_set_mask1(host, MCI_RXDATAAVLBLMASK);
 
-	/*
-	 * If we run out of data, disable the data IRQs; this
-	 * prevents a race where the FIFO becomes empty before
-	 * the chip itself has disabled the data path, and
-	 * stops us racing with our data end IRQ.
-	 */
+	 
 	if (host->size == 0) {
 		mmci_set_mask1(host, 0);
 		writel(readl(base + MMCIMASK0) | MCI_DATAENDMASK, base + MMCIMASK0);
@@ -1761,9 +1592,7 @@ static irqreturn_t mmci_pio_irq(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * Handle completion of command and data transfers.
- */
+ 
 static irqreturn_t mmci_irq(int irq, void *dev_id)
 {
 	struct mmci_host *host = dev_id;
@@ -1784,10 +1613,7 @@ static irqreturn_t mmci_irq(int irq, void *dev_id)
 			status &= ~host->variant->irq_pio_mask;
 		}
 
-		/*
-		 * Busy detection is managed by mmci_cmd_irq(), including to
-		 * clear the corresponding IRQ.
-		 */
+		 
 		status &= readl(host->base + MMCIMASK0);
 		if (host->variant->busy_detect)
 			writel(status & ~host->variant->busy_detect_mask,
@@ -1805,10 +1631,7 @@ static irqreturn_t mmci_irq(int irq, void *dev_id)
 			mmci_data_irq(host, host->data, status);
 		}
 
-		/*
-		 * Busy detection has been handled by mmci_cmd_irq() above.
-		 * Clear the status bit to prevent polling in IRQ context.
-		 */
+		 
 		if (host->variant->busy_detect_flag)
 			status &= ~host->variant->busy_detect_flag;
 
@@ -1819,12 +1642,7 @@ static irqreturn_t mmci_irq(int irq, void *dev_id)
 	return host->irq_action;
 }
 
-/*
- * mmci_irq_thread() - A threaded IRQ handler that manages a reset of the HW.
- *
- * A reset is needed for some variants, where a datatimeout for a R1B request
- * causes the DPSM to stay busy (non-functional).
- */
+ 
 static irqreturn_t mmci_irq_thread(int irq, void *dev_id)
 {
 	struct mmci_host *host = dev_id;
@@ -1919,11 +1737,7 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		if (!IS_ERR(mmc->supply.vmmc))
 			mmc_regulator_set_ocr(mmc, mmc->supply.vmmc, ios->vdd);
 
-		/*
-		 * The ST Micro variant doesn't have the PL180s MCI_PWR_UP
-		 * and instead uses MCI_PWR_ON so apply whatever value is
-		 * configured in the variant data.
-		 */
+		 
 		pwr |= variant->pwrreg_powerup;
 
 		break;
@@ -1942,11 +1756,7 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	}
 
 	if (variant->signal_direction && ios->power_mode != MMC_POWER_OFF) {
-		/*
-		 * The ST Micro variant has some additional bits
-		 * indicating signal direction for the signals in
-		 * the SD/MMC bus and feedback-clock usage.
-		 */
+		 
 		pwr |= host->pwr_reg_add;
 
 		if (ios->bus_width == MMC_BUS_WIDTH_4)
@@ -1961,20 +1771,14 @@ static void mmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 		if (ios->bus_mode == MMC_BUSMODE_OPENDRAIN)
 			pwr |= variant->opendrain;
 	} else {
-		/*
-		 * If the variant cannot configure the pads by its own, then we
-		 * expect the pinctrl to be able to do that for us
-		 */
+		 
 		if (ios->bus_mode == MMC_BUSMODE_OPENDRAIN)
 			pinctrl_select_state(host->pinctrl, host->pins_opendrain);
 		else
 			pinctrl_select_default_state(mmc_dev(mmc));
 	}
 
-	/*
-	 * If clock = 0 and the variant requires the MMCIPOWER to be used for
-	 * gating the clock, the MCI_PWR_ON bit is cleared.
-	 */
+	 
 	if (!ios->clock && variant->pwrreg_clkgate)
 		pwr &= ~MCI_PWR_ON;
 
@@ -2016,7 +1820,7 @@ static int mmci_get_cd(struct mmc_host *mmc)
 
 	if (status == -ENOSYS) {
 		if (!plat->status)
-			return 1; /* Assume always present */
+			return 1;  
 
 		status = plat->status(mmc_dev(host->mmc));
 	}
@@ -2060,10 +1864,7 @@ static void mmci_probe_level_translator(struct mmc_host *mmc)
 	struct gpio_desc *ckin_gpio;
 	int clk_hi, clk_lo;
 
-	/*
-	 * Assume the level translator is present if st,use-ckin is set.
-	 * This is to cater for DTs which do not implement this test.
-	 */
+	 
 	host->clk_reg_add |= MCI_STM32_CLK_SELCKIN;
 
 	cmd_gpio = gpiod_get(dev, "st,cmd", GPIOD_OUT_HIGH);
@@ -2078,22 +1879,22 @@ static void mmci_probe_level_translator(struct mmc_host *mmc)
 	if (IS_ERR(ckin_gpio))
 		goto exit_ckin;
 
-	/* All GPIOs are valid, test whether level translator works */
+	 
 
-	/* Sample CKIN */
+	 
 	clk_hi = !!gpiod_get_value(ckin_gpio);
 
-	/* Set CK low */
+	 
 	gpiod_set_value(ck_gpio, 0);
 
-	/* Sample CKIN */
+	 
 	clk_lo = !!gpiod_get_value(ckin_gpio);
 
-	/* Tristate all */
+	 
 	gpiod_direction_input(cmd_gpio);
 	gpiod_direction_input(ck_gpio);
 
-	/* Level translator is present if CK signal is propagated to CKIN */
+	 
 	if (!clk_hi || clk_lo) {
 		host->clk_reg_add &= ~MCI_STM32_CLK_SELCKIN;
 		dev_warn(dev,
@@ -2155,7 +1956,7 @@ static int mmci_probe(struct amba_device *dev,
 	struct mmc_host *mmc;
 	int ret;
 
-	/* Must have platform data or Device Tree. */
+	 
 	if (!plat && !np) {
 		dev_err(&dev->dev, "No plat data or DT found\n");
 		return -EINVAL;
@@ -2180,10 +1981,7 @@ static int mmci_probe(struct amba_device *dev,
 	if (ret)
 		goto host_free;
 
-	/*
-	 * Some variant (STM32) doesn't have opendrain bit, nevertheless
-	 * pins can be set accordingly using pinctrl
-	 */
+	 
 	if (!variant->opendrain) {
 		host->pinctrl = devm_pinctrl_get(&dev->dev);
 		if (IS_ERR(host->pinctrl)) {
@@ -2224,11 +2022,7 @@ static int mmci_probe(struct amba_device *dev,
 	host->plat = plat;
 	host->variant = variant;
 	host->mclk = clk_get_rate(host->clk);
-	/*
-	 * According to the spec, mclk is max 100 MHz,
-	 * so we try to adjust the clock down to this,
-	 * (if possible).
-	 */
+	 
 	if (host->mclk > variant->f_max) {
 		ret = clk_set_rate(host->clk, variant->f_max);
 		if (ret < 0)
@@ -2248,12 +2042,7 @@ static int mmci_probe(struct amba_device *dev,
 	if (variant->init)
 		variant->init(host);
 
-	/*
-	 * The ARM and ST versions of the block have slightly different
-	 * clock divider equations which means that the minimum divider
-	 * differs too.
-	 * on Qualcomm like controllers get the nearest minimum clock to 100Khz
-	 */
+	 
 	if (variant->st_clkdiv)
 		mmc->f_min = DIV_ROUND_UP(host->mclk, 257);
 	else if (variant->stm32_clkdiv)
@@ -2262,12 +2051,7 @@ static int mmci_probe(struct amba_device *dev,
 		mmc->f_min = clk_round_rate(host->clk, 100000);
 	else
 		mmc->f_min = DIV_ROUND_UP(host->mclk, 512);
-	/*
-	 * If no maximum operating frequency is supplied, fall back to use
-	 * the module parameter, which has a (low) default value in case it
-	 * is not specified. Either value must not exceed the clock rate into
-	 * the block, of course.
-	 */
+	 
 	if (mmc->f_max)
 		mmc->f_max = variant->explicit_mclk_control ?
 				min(variant->f_max, mmc->f_max) :
@@ -2288,7 +2072,7 @@ static int mmci_probe(struct amba_device *dev,
 	if (ret)
 		dev_err(mmc_dev(mmc), "failed to de-assert reset\n");
 
-	/* Get regulators and the supported OCR mask */
+	 
 	ret = mmc_regulator_get_supply(mmc);
 	if (ret)
 		goto clk_disable;
@@ -2298,63 +2082,44 @@ static int mmci_probe(struct amba_device *dev,
 	else if (plat->ocr_mask)
 		dev_warn(mmc_dev(mmc), "Platform OCR mask is ignored\n");
 
-	/* We support these capabilities. */
+	 
 	mmc->caps |= MMC_CAP_CMD23;
 
-	/*
-	 * Enable busy detection.
-	 */
+	 
 	if (variant->busy_detect) {
 		mmci_ops.card_busy = mmci_card_busy;
-		/*
-		 * Not all variants have a flag to enable busy detection
-		 * in the DPSM, but if they do, set it here.
-		 */
+		 
 		if (variant->busy_dpsm_flag)
 			mmci_write_datactrlreg(host,
 					       host->variant->busy_dpsm_flag);
 		mmc->caps |= MMC_CAP_WAIT_WHILE_BUSY;
 	}
 
-	/* Variants with mandatory busy timeout in HW needs R1B responses. */
+	 
 	if (variant->busy_timeout)
 		mmc->caps |= MMC_CAP_NEED_RSP_BUSY;
 
-	/* Prepare a CMD12 - needed to clear the DPSM on some variants. */
+	 
 	host->stop_abort.opcode = MMC_STOP_TRANSMISSION;
 	host->stop_abort.arg = 0;
 	host->stop_abort.flags = MMC_RSP_R1B | MMC_CMD_AC;
 
-	/* We support these PM capabilities. */
+	 
 	mmc->pm_caps |= MMC_PM_KEEP_POWER;
 
-	/*
-	 * We can do SGIO
-	 */
+	 
 	mmc->max_segs = NR_SG;
 
-	/*
-	 * Since only a certain number of bits are valid in the data length
-	 * register, we must ensure that we don't exceed 2^num-1 bytes in a
-	 * single request.
-	 */
+	 
 	mmc->max_req_size = (1 << variant->datalength_bits) - 1;
 
-	/*
-	 * Set the maximum segment size.  Since we aren't doing DMA
-	 * (yet) we are only limited by the data length register.
-	 */
+	 
 	mmc->max_seg_size = mmc->max_req_size;
 
-	/*
-	 * Block size can be up to 2048 bytes, but must be a power of two.
-	 */
+	 
 	mmc->max_blk_size = 1 << variant->datactrl_blocksz;
 
-	/*
-	 * Limit the number of blocks transferred so that we don't overflow
-	 * the maximum request size.
-	 */
+	 
 	mmc->max_blk_count = mmc->max_req_size >> variant->datactrl_blocksz;
 
 	spin_lock_init(&host->lock);
@@ -2366,13 +2131,7 @@ static int mmci_probe(struct amba_device *dev,
 
 	writel(0xfff, host->base + MMCICLEAR);
 
-	/*
-	 * If:
-	 * - not using DT but using a descriptor table, or
-	 * - using a table of descriptors ALONGSIDE DT, or
-	 * look up these descriptors named "cd" and "wp" right here, fail
-	 * silently of these do not exist
-	 */
+	 
 	if (!np) {
 		ret = mmc_gpiod_request_cd(mmc, "cd", 0, false, 0);
 		if (ret == -EPROBE_DEFER)
@@ -2438,10 +2197,7 @@ static void mmci_remove(struct amba_device *dev)
 		struct mmci_host *host = mmc_priv(mmc);
 		struct variant_data *variant = host->variant;
 
-		/*
-		 * Undo pm_runtime_put() in probe.  We use the _sync
-		 * version here so that we can access the primecell.
-		 */
+		 
 		pm_runtime_get_sync(&dev->dev);
 
 		mmc_remove_host(mmc);
@@ -2554,7 +2310,7 @@ static const struct amba_id mmci_ids[] = {
 		.mask	= 0x000fffff,
 		.data	= &variant_arm,
 	},
-	/* ST Micro variants */
+	 
 	{
 		.id     = 0x00180180,
 		.mask   = 0x00ffffff,
@@ -2605,7 +2361,7 @@ static const struct amba_id mmci_ids[] = {
 		.mask	= 0xf0ffffff,
 		.data	= &variant_stm32_sdmmcv3,
 	},
-	/* Qualcomm variants */
+	 
 	{
 		.id     = 0x00051180,
 		.mask	= 0x000fffff,

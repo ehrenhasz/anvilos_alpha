@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #define _GNU_SOURCE
 
 #include <linux/limits.h>
@@ -24,17 +24,14 @@
 static bool has_localevents;
 static bool has_recursiveprot;
 
-/*
- * This test creates two nested cgroups with and without enabling
- * the memory controller.
- */
+ 
 static int test_memcg_subtree_control(const char *root)
 {
 	char *parent, *child, *parent2 = NULL, *child2 = NULL;
 	int ret = KSFT_FAIL;
 	char buf[PAGE_SIZE];
 
-	/* Create two nested cgroups with the memory controller enabled */
+	 
 	parent = cg_name(root, "memcg_test_0");
 	child = cg_name(root, "memcg_test_0/memcg_test_1");
 	if (!parent || !child)
@@ -52,7 +49,7 @@ static int test_memcg_subtree_control(const char *root)
 	if (cg_read_strstr(child, "cgroup.controllers", "memory"))
 		goto cleanup_child;
 
-	/* Create two nested cgroups without enabling memory controller */
+	 
 	parent2 = cg_name(root, "memcg_test_1");
 	child2 = cg_name(root, "memcg_test_1/memcg_test_1");
 	if (!parent2 || !child2)
@@ -158,11 +155,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test create a memory cgroup, allocates
- * some anonymous memory and some pagecache
- * and check memory.current and some memory.stat values.
- */
+ 
 static int test_memcg_current(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -231,10 +224,7 @@ static int alloc_anon_noexit(const char *cgroup, void *arg)
 	return 0;
 }
 
-/*
- * Wait until processes are killed asynchronously by the OOM killer
- * If we exceed a timeout, fail.
- */
+ 
 static int cg_test_proc_killed(const char *cgroup)
 {
 	int limit;
@@ -250,41 +240,7 @@ static int cg_test_proc_killed(const char *cgroup)
 
 static bool reclaim_until(const char *memcg, long goal);
 
-/*
- * First, this test creates the following hierarchy:
- * A       memory.min = 0,    memory.max = 200M
- * A/B     memory.min = 50M
- * A/B/C   memory.min = 75M,  memory.current = 50M
- * A/B/D   memory.min = 25M,  memory.current = 50M
- * A/B/E   memory.min = 0,    memory.current = 50M
- * A/B/F   memory.min = 500M, memory.current = 0
- *
- * (or memory.low if we test soft protection)
- *
- * Usages are pagecache and the test keeps a running
- * process in every leaf cgroup.
- * Then it creates A/G and creates a significant
- * memory pressure in A.
- *
- * Then it checks actual memory usages and expects that:
- * A/B    memory.current ~= 50M
- * A/B/C  memory.current ~= 29M
- * A/B/D  memory.current ~= 21M
- * A/B/E  memory.current ~= 0
- * A/B/F  memory.current  = 0
- * (for origin of the numbers, see model in memcg_protection.m.)
- *
- * After that it tries to allocate more than there is
- * unprotected memory in A available, and checks that:
- * a) memory.min protects pagecache even in this case,
- * b) memory.low allows reclaiming page cache with low events.
- *
- * Then we try to reclaim from A/B/C using memory.reclaim until its
- * usage reaches 10M.
- * This makes sure that:
- * (a) We ignore the protection of the reclaim target memcg.
- * (b) The previously calculated emin value (~29M) should be dismissed.
- */
+ 
 static int test_memcg_protection(const char *root, bool min)
 {
 	int ret = KSFT_FAIL, rc;
@@ -316,7 +272,7 @@ static int test_memcg_protection(const char *root, bool min)
 		goto cleanup;
 
 	if (cg_read_long(parent[0], attribute)) {
-		/* No memory.min on older kernels is fine */
+		 
 		if (min)
 			ret = KSFT_SKIP;
 		goto cleanup;
@@ -492,11 +448,7 @@ cleanup:
 
 }
 
-/*
- * This test checks that memory.high limits the amount of
- * memory which can be consumed by either anonymous memory
- * or pagecache.
- */
+ 
 static int test_memcg_high(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -556,10 +508,7 @@ static int alloc_anon_mlock(const char *cgroup, void *arg)
 	return 0;
 }
 
-/*
- * This test checks that memory.high is able to throttle big single shot
- * allocation i.e. large allocation within one kernel entry.
- */
+ 
 static int test_memcg_high_sync(const char *root)
 {
 	int ret = KSFT_FAIL, pid, fd = -1;
@@ -617,11 +566,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test checks that memory.max limits the amount of
- * memory which can be consumed by either anonymous memory
- * or pagecache.
- */
+ 
 static int test_memcg_max(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -644,7 +589,7 @@ static int test_memcg_max(const char *root)
 	if (cg_write(memcg, "memory.max", "30M"))
 		goto cleanup;
 
-	/* Should be killed by OOM killer */
+	 
 	if (!cg_run(memcg, alloc_anon, (void *)MB(100)))
 		goto cleanup;
 
@@ -668,21 +613,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * Reclaim from @memcg until usage reaches @goal by writing to
- * memory.reclaim.
- *
- * This function will return false if the usage is already below the
- * goal.
- *
- * This function assumes that writing to memory.reclaim is the only
- * source of change in memory.current (no concurrent allocations or
- * reclaim).
- *
- * This function makes sure memory.reclaim is sane. It will return
- * false if memory.reclaim's error codes do not make sense, even if
- * the usage goal was satisfied.
- */
+ 
 static bool reclaim_until(const char *memcg, long goal)
 {
 	char buf[64];
@@ -695,7 +626,7 @@ static bool reclaim_until(const char *memcg, long goal)
 
 		if (current < goal || values_close(current, goal, 3))
 			break;
-		/* Did memory.reclaim return 0 incorrectly? */
+		 
 		else if (reclaimed)
 			return false;
 
@@ -710,10 +641,7 @@ static bool reclaim_until(const char *memcg, long goal)
 	return reclaimed;
 }
 
-/*
- * This test checks that memory.reclaim reclaims the given
- * amount of memory (from both anon and file, if possible).
- */
+ 
 static int test_memcg_reclaim(const char *root)
 {
 	int ret = KSFT_FAIL, fd, retries;
@@ -737,20 +665,14 @@ static int test_memcg_reclaim(const char *root)
 
 	cg_run_nowait(memcg, alloc_pagecache_50M_noexit, (void *)(long)fd);
 
-	/*
-	 * If swap is enabled, try to reclaim from both anon and file, else try
-	 * to reclaim from file only.
-	 */
+	 
 	if (is_swap_enabled()) {
 		cg_run_nowait(memcg, alloc_anon_noexit, (void *) MB(50));
 		expected_usage = MB(100);
 	} else
 		expected_usage = MB(50);
 
-	/*
-	 * Wait until current usage reaches the expected usage (or we run out of
-	 * retries).
-	 */
+	 
 	retries = 5;
 	while (!values_close(cg_read_long(memcg, "memory.current"),
 			    expected_usage, 10)) {
@@ -765,10 +687,7 @@ static int test_memcg_reclaim(const char *root)
 		}
 	}
 
-	/*
-	 * Reclaim until current reaches 30M, this makes sure we hit both anon
-	 * and file if swap is enabled.
-	 */
+	 
 	if (!reclaim_until(memcg, MB(30)))
 		goto cleanup;
 
@@ -813,10 +732,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test checks that memory.swap.max limits the amount of
- * anonymous memory which can be swapped out.
- */
+ 
 static int test_memcg_swap_max(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -850,7 +766,7 @@ static int test_memcg_swap_max(const char *root)
 	if (cg_write(memcg, "memory.max", "30M"))
 		goto cleanup;
 
-	/* Should be killed by OOM killer */
+	 
 	if (!cg_run(memcg, alloc_anon, (void *)MB(100)))
 		goto cleanup;
 
@@ -876,11 +792,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test disables swapping and tries to allocate anonymous memory
- * up to OOM. Then it checks for oom and oom_kill events in
- * memory.events.
- */
+ 
 static int test_memcg_oom_events(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -987,7 +899,7 @@ static int tcp_client(const char *cgroup, unsigned short port)
 	const char server[] = "localhost";
 	struct addrinfo *ai;
 	char servport[6];
-	int retries = 0x10; /* nice round number */
+	int retries = 0x10;  
 	int sk, ret;
 	long allocated;
 
@@ -1019,7 +931,7 @@ static int tcp_client(const char *cgroup, unsigned short port)
 		if (current < 0 || sock < 0)
 			goto close_sk;
 
-		/* exclude the memory not related to socket connection */
+		 
 		if (values_close(current - allocated, sock, 10)) {
 			ret = KSFT_PASS;
 			break;
@@ -1033,14 +945,7 @@ free_ainfo:
 	return ret;
 }
 
-/*
- * This test checks socket memory accounting.
- * The test forks a TCP server listens on a random port between 1000
- * and 61000. Once it gets a client connection, it starts writing to
- * its socket.
- * The TCP client interleaves reads from the socket with check whether
- * memory.current and memory.stat.sock are similar.
- */
+ 
 static int test_memcg_sock(const char *root)
 {
 	int bind_retries = 5, ret = KSFT_FAIL, pid, err;
@@ -1106,12 +1011,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test disables swapping and tries to allocate anonymous memory
- * up to OOM with memory.group.oom set. Then it checks that all
- * processes in the leaf were killed. It also checks that oom_events
- * were propagated to the parent level.
- */
+ 
 static int test_memcg_oom_group_leaf_events(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -1156,11 +1056,7 @@ static int test_memcg_oom_group_leaf_events(const char *root)
 
 	parent_oom_events = cg_read_key_long(
 			parent, "memory.events", "oom_kill ");
-	/*
-	 * If memory_localevents is not enabled (the default), the parent should
-	 * count OOM events in its children groups. Otherwise, it should not
-	 * have observed any events.
-	 */
+	 
 	if (has_localevents && parent_oom_events != 0)
 		goto cleanup;
 	else if (!has_localevents && parent_oom_events <= 0)
@@ -1179,11 +1075,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test disables swapping and tries to allocate anonymous memory
- * up to OOM with memory.group.oom set. Then it checks that all
- * processes in the parent and leaf were killed.
- */
+ 
 static int test_memcg_oom_group_parent_events(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -1235,11 +1127,7 @@ cleanup:
 	return ret;
 }
 
-/*
- * This test disables swapping and tries to allocate anonymous memory
- * up to OOM with memory.group.oom set. Then it checks that all
- * processes were killed except those set with OOM_SCORE_ADJ_MIN
- */
+ 
 static int test_memcg_oom_group_score_events(const char *root)
 {
 	int ret = KSFT_FAIL;
@@ -1317,10 +1205,7 @@ int main(int argc, char **argv)
 	if (cg_find_unified_root(root, sizeof(root)))
 		ksft_exit_skip("cgroup v2 isn't mounted\n");
 
-	/*
-	 * Check that memory controller is available:
-	 * memory is listed in cgroup.controllers
-	 */
+	 
 	if (cg_read_strstr(root, "cgroup.controllers", "memory"))
 		ksft_exit_skip("memory controller isn't available\n");
 

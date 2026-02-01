@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "tc_counters.h"
 #include "tc_encap_actions.h"
@@ -14,7 +7,7 @@
 #include "mae.h"
 #include "rx_common.h"
 
-/* Counter-management hashtables */
+ 
 
 static const struct rhashtable_params efx_tc_counter_id_ht_params = {
 	.key_len	= offsetof(struct efx_tc_counter_index, linkage),
@@ -33,12 +26,7 @@ static void efx_tc_counter_free(void *ptr, void *__unused)
 	struct efx_tc_counter *cnt = ptr;
 
 	WARN_ON(!list_empty(&cnt->users));
-	/* We'd like to synchronize_rcu() here, but unfortunately we aren't
-	 * removing the element from the hashtable (it's not clear that's a
-	 * safe thing to do in an rhashtable_free_and_destroy free_fn), so
-	 * threads could still be obtaining new pointers to *cnt if they can
-	 * race against this function at all.
-	 */
+	 
 	flush_work(&cnt->work);
 	EFX_WARN_ON_PARANOID(spin_is_locked(&cnt->lock));
 	kfree(cnt);
@@ -69,9 +57,7 @@ fail_counter_id_ht:
 	return rc;
 }
 
-/* Only call this in init failure teardown.
- * Normal exit should fini instead as there may be entries in the table.
- */
+ 
 void efx_tc_destroy_counters(struct efx_nic *efx)
 {
 	rhashtable_destroy(&efx->tc->counter_ht);
@@ -99,14 +85,12 @@ static void efx_tc_counter_work(struct work_struct *work)
 		encap = act->encap_md;
 		if (!encap)
 			continue;
-		if (!encap->neigh) /* can't happen */
+		if (!encap->neigh)  
 			continue;
 		if (time_after_eq(encap->neigh->used, touched))
 			continue;
 		encap->neigh->used = touched;
-		/* We have passed traffic using this ARP entry, so
-		 * indicate to the ARP cache that it's still active
-		 */
+		 
 		if (encap->neigh->dst_ip)
 			n = neigh_lookup(&arp_tbl, &encap->neigh->dst_ip,
 					 encap->neigh->egdev);
@@ -127,7 +111,7 @@ static void efx_tc_counter_work(struct work_struct *work)
 	spin_unlock_bh(&cnt->lock);
 }
 
-/* Counter allocation */
+ 
 
 struct efx_tc_counter *efx_tc_flower_allocate_counter(struct efx_nic *efx,
 						      int type)
@@ -154,11 +138,7 @@ struct efx_tc_counter *efx_tc_flower_allocate_counter(struct efx_nic *efx,
 		goto fail2;
 	return cnt;
 fail2:
-	/* If we get here, it implies that we couldn't insert into the table,
-	 * which in turn probably means that the fw_id was already taken.
-	 * In that case, it's unclear whether we really 'own' the fw_id; but
-	 * the firmware seemed to think we did, so it's proper to free it.
-	 */
+	 
 	rc2 = efx_mae_free_counter(efx, cnt);
 	if (rc2)
 		netif_warn(efx, hw, efx->net_dev,
@@ -182,12 +162,7 @@ void efx_tc_flower_release_counter(struct efx_nic *efx,
 			   "Failed to free MAE counter %u, rc %d\n",
 			   cnt->fw_id, rc);
 	WARN_ON(!list_empty(&cnt->users));
-	/* This doesn't protect counter updates coming in arbitrarily long
-	 * after we deleted the counter.  The RCU just ensures that we won't
-	 * free the counter while another thread has a pointer to it.
-	 * Ensuring we don't update the wrong counter if the ID gets re-used
-	 * is handled by the generation count.
-	 */
+	 
 	synchronize_rcu();
 	flush_work(&cnt->work);
 	EFX_WARN_ON_PARANOID(spin_is_locked(&cnt->lock));
@@ -206,13 +181,13 @@ static struct efx_tc_counter *efx_tc_flower_find_counter_by_fw_id(
 				      efx_tc_counter_ht_params);
 }
 
-/* TC cookie to counter mapping */
+ 
 
 void efx_tc_flower_put_counter_index(struct efx_nic *efx,
 				     struct efx_tc_counter_index *ctr)
 {
 	if (!refcount_dec_and_test(&ctr->ref))
-		return; /* still in use */
+		return;  
 	rhashtable_remove_fast(&efx->tc->counter_id_ht, &ctr->linkage,
 			       efx_tc_counter_id_ht_params);
 	efx_tc_flower_release_counter(efx, ctr->cnt);
@@ -234,13 +209,13 @@ struct efx_tc_counter_index *efx_tc_flower_get_counter_index(
 						&ctr->linkage,
 						efx_tc_counter_id_ht_params);
 	if (old) {
-		/* don't need our new entry */
+		 
 		kfree(ctr);
-		if (IS_ERR(old)) /* oh dear, it's actually an error */
+		if (IS_ERR(old))  
 			return ERR_CAST(old);
 		if (!refcount_inc_not_zero(&old->ref))
 			return ERR_PTR(-EAGAIN);
-		/* existing entry found */
+		 
 		ctr = old;
 	} else {
 		cnt = efx_tc_flower_allocate_counter(efx, type);
@@ -249,7 +224,7 @@ struct efx_tc_counter_index *efx_tc_flower_get_counter_index(
 					       &ctr->linkage,
 					       efx_tc_counter_id_ht_params);
 			kfree(ctr);
-			return (void *)cnt; /* it's an ERR_PTR */
+			return (void *)cnt;  
 		}
 		ctr->cnt = cnt;
 		refcount_set(&ctr->ref, 1);
@@ -267,7 +242,7 @@ struct efx_tc_counter_index *efx_tc_flower_find_counter_index(
 				      efx_tc_counter_id_ht_params);
 }
 
-/* TC Channel.  Counter updates are delivered on this channel's RXQ. */
+ 
 
 static void efx_tc_handle_no_channel(struct efx_nic *efx)
 {
@@ -327,13 +302,10 @@ static void efx_tc_counter_update(struct efx_nic *efx,
 {
 	struct efx_tc_counter *cnt;
 
-	rcu_read_lock(); /* Protect against deletion of 'cnt' */
+	rcu_read_lock();  
 	cnt = efx_tc_flower_find_counter_by_fw_id(efx, counter_type, counter_idx);
 	if (!cnt) {
-		/* This can legitimately happen when a counter is removed,
-		 * with updates for the counter still in-flight; however this
-		 * should be an infrequent occurrence.
-		 */
+		 
 		if (net_ratelimit())
 			netif_dbg(efx, drv, efx->net_dev,
 				  "Got update for unwanted MAE counter %u type %u\n",
@@ -343,19 +315,11 @@ static void efx_tc_counter_update(struct efx_nic *efx,
 
 	spin_lock_bh(&cnt->lock);
 	if ((s32)mark - (s32)cnt->gen < 0) {
-		/* This counter update packet is from before the counter was
-		 * allocated; thus it must be for a previous counter with
-		 * the same ID that has since been freed, and it should be
-		 * ignored.
-		 */
+		 
 	} else {
-		/* Update latest seen generation count.  This ensures that
-		 * even a long-lived counter won't start getting ignored if
-		 * the generation count wraps around, unless it somehow
-		 * manages to go 1<<31 generations without an update.
-		 */
+		 
 		cnt->gen = mark;
-		/* update counter values */
+		 
 		cnt->packets += packets;
 		cnt->bytes += bytes;
 		cnt->touched = jiffies;
@@ -370,18 +334,11 @@ static void efx_tc_rx_version_1(struct efx_nic *efx, const u8 *data, u32 mark)
 {
 	u16 n_counters, i;
 
-	/* Header format:
-	 * + |   0    |   1    |   2    |   3    |
-	 * 0 |version |         reserved         |
-	 * 4 |    seq_index    |   n_counters    |
-	 */
+	 
 
 	n_counters = le16_to_cpu(*(const __le16 *)(data + 6));
 
-	/* Counter update entry format:
-	 * | 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | a | b | c | d | e | f |
-	 * |  counter_idx  |     packet_count      |      byte_count       |
-	 */
+	 
 	for (i = 0; i < n_counters; i++) {
 		const void *entry = data + 8 + 16 * i;
 		u64 packet_count, byte_count;
@@ -412,7 +369,7 @@ static void efx_tc_rx_version_1(struct efx_nic *efx, const u8 *data, u32 mark)
 	 (pkt) + ERF_SC_PACKETISER_PAYLOAD_##field##_LBN/8 + poff +		\
 	 i * ER_RX_SL_PACKETISER_PAYLOAD_WORD_SIZE)
 
-/* Read a little-endian 48-bit field with 16-bit alignment */
+ 
 static u64 efx_tc_read48(const __le16 *field)
 {
 	u64 out = 0;
@@ -449,9 +406,7 @@ static enum efx_tc_counter_type efx_tc_rx_version_2(struct efx_nic *efx,
 		return EFX_TC_COUNTER_TYPE_MAX;
 	}
 	header_offset = TCV2_HDR_BYTE(data, HEADER_OFFSET);
-	/* mae_counter_format.h implies that this offset is fixed, since it
-	 * carries on with SOP-based LBNs for the fields in this header
-	 */
+	 
 	if (header_offset != ERF_SC_PACKETISER_HEADER_HEADER_OFFSET_DEFAULT) {
 		if (net_ratelimit())
 			netif_err(efx, drv, efx->net_dev,
@@ -467,33 +422,29 @@ static enum efx_tc_counter_type efx_tc_rx_version_2(struct efx_nic *efx,
 		u64 packet_count, byte_count;
 		u32 counter_idx;
 
-		/* 24-bit field with 32-bit alignment */
+		 
 		counter_idx_p = TCV2_PKT_PTR(data, payload_offset, i, COUNTER_INDEX);
 		BUILD_BUG_ON(ERF_SC_PACKETISER_PAYLOAD_COUNTER_INDEX_WIDTH != 24);
 		BUILD_BUG_ON(ERF_SC_PACKETISER_PAYLOAD_COUNTER_INDEX_LBN & 31);
 		counter_idx = le32_to_cpu(*(const __le32 *)counter_idx_p) & 0xffffff;
-		/* 48-bit field with 16-bit alignment */
+		 
 		packet_count_p = TCV2_PKT_PTR(data, payload_offset, i, PACKET_COUNT);
 		BUILD_BUG_ON(ERF_SC_PACKETISER_PAYLOAD_PACKET_COUNT_WIDTH != 48);
 		BUILD_BUG_ON(ERF_SC_PACKETISER_PAYLOAD_PACKET_COUNT_LBN & 15);
 		packet_count = efx_tc_read48((const __le16 *)packet_count_p);
-		/* 48-bit field with 16-bit alignment */
+		 
 		byte_count_p = TCV2_PKT_PTR(data, payload_offset, i, BYTE_COUNT);
 		BUILD_BUG_ON(ERF_SC_PACKETISER_PAYLOAD_BYTE_COUNT_WIDTH != 48);
 		BUILD_BUG_ON(ERF_SC_PACKETISER_PAYLOAD_BYTE_COUNT_LBN & 15);
 		byte_count = efx_tc_read48((const __le16 *)byte_count_p);
 
 		if (type == EFX_TC_COUNTER_TYPE_CT) {
-			/* CT counters are 1-bit saturating counters to update
-			 * the lastuse time in CT stats. A received CT counter
-			 * should have packet counter to 0 and only LSB bit on
-			 * in byte counter.
-			 */
+			 
 			if (packet_count || byte_count != 1)
 				netdev_warn_once(efx->net_dev,
 						 "CT counter with inconsistent state (%llu, %llu)\n",
 						 packet_count, byte_count);
-			/* Do not increment the driver's byte counter */
+			 
 			byte_count = 0;
 		}
 
@@ -503,10 +454,7 @@ static enum efx_tc_counter_type efx_tc_rx_version_2(struct efx_nic *efx,
 	return type;
 }
 
-/* We always swallow the packet, whether successful or not, since it's not
- * a network packet and shouldn't ever be forwarded to the stack.
- * @mark is the generation count for counter allocations.
- */
+ 
 static bool efx_tc_rx(struct efx_rx_queue *rx_queue, u32 mark)
 {
 	struct efx_channel *channel = efx_rx_queue_channel(rx_queue);
@@ -517,14 +465,14 @@ static bool efx_tc_rx(struct efx_rx_queue *rx_queue, u32 mark)
 	enum efx_tc_counter_type type;
 	u8 version;
 
-	/* version is always first byte of packet */
+	 
 	version = *data;
 	switch (version) {
 	case 1:
 		type = EFX_TC_COUNTER_TYPE_AR;
 		efx_tc_rx_version_1(efx, data, mark);
 		break;
-	case ERF_SC_PACKETISER_HEADER_VERSION_VALUE: // 2
+	case ERF_SC_PACKETISER_HEADER_VERSION_VALUE: 
 		type = efx_tc_rx_version_2(efx, data, mark);
 		break;
 	default:
@@ -537,9 +485,7 @@ static bool efx_tc_rx(struct efx_rx_queue *rx_queue, u32 mark)
 	}
 
 	if (type < EFX_TC_COUNTER_TYPE_MAX) {
-		/* Update seen_gen unconditionally, to avoid a missed wakeup if
-		 * we race with efx_mae_stop_counters().
-		 */
+		 
 		efx->tc->seen_gen[type] = mark;
 		if (efx->tc->flush_counters &&
 		    (s32)(efx->tc->flush_gen[type] - mark) <= 0)

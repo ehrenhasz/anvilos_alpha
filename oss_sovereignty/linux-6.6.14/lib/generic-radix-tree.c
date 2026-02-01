@@ -9,10 +9,10 @@
 
 struct genradix_node {
 	union {
-		/* Interior node: */
+		 
 		struct genradix_node	*children[GENRADIX_ARY];
 
-		/* Leaf: */
+		 
 		u8			data[PAGE_SIZE];
 	};
 };
@@ -22,15 +22,13 @@ static inline int genradix_depth_shift(unsigned depth)
 	return PAGE_SHIFT + GENRADIX_ARY_SHIFT * depth;
 }
 
-/*
- * Returns size (of data, in bytes) that a tree of a given depth holds:
- */
+ 
 static inline size_t genradix_depth_size(unsigned depth)
 {
 	return 1UL << genradix_depth_shift(depth);
 }
 
-/* depth that's needed for a genradix that can address up to ULONG_MAX: */
+ 
 #define GENRADIX_MAX_DEPTH	\
 	DIV_ROUND_UP(BITS_PER_LONG - PAGE_SHIFT, GENRADIX_ARY_SHIFT)
 
@@ -47,10 +45,7 @@ static inline struct genradix_node *genradix_root_to_node(struct genradix_root *
 	return (void *) ((unsigned long) r & ~GENRADIX_DEPTH_MASK);
 }
 
-/*
- * Returns pointer to the specified byte @offset within @radix, or NULL if not
- * allocated
- */
+ 
 void *__genradix_ptr(struct __genradix *radix, size_t offset)
 {
 	struct genradix_root *r = READ_ONCE(radix->root);
@@ -82,11 +77,7 @@ static inline struct genradix_node *genradix_alloc_node(gfp_t gfp_mask)
 
 	node = (struct genradix_node *)__get_free_page(gfp_mask|__GFP_ZERO);
 
-	/*
-	 * We're using pages (not slab allocations) directly for kernel data
-	 * structures, so we need to explicitly inform kmemleak of them in order
-	 * to avoid false positive memory leak reports.
-	 */
+	 
 	kmemleak_alloc(node, PAGE_SIZE, 1, gfp_mask);
 	return node;
 }
@@ -97,10 +88,7 @@ static inline void genradix_free_node(struct genradix_node *node)
 	free_page((unsigned long)node);
 }
 
-/*
- * Returns pointer to the specified byte @offset within @radix, allocating it if
- * necessary - newly allocated slots are always zeroed out:
- */
+ 
 void *__genradix_ptr_alloc(struct __genradix *radix, size_t offset,
 			   gfp_t gfp_mask)
 {
@@ -108,7 +96,7 @@ void *__genradix_ptr_alloc(struct __genradix *radix, size_t offset,
 	struct genradix_node *n, *new_node = NULL;
 	unsigned level;
 
-	/* Increase tree depth if necessary: */
+	 
 	while (1) {
 		struct genradix_root *r = v, *new_root;
 

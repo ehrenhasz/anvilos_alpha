@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _PFXLEN_H
 #define _PFXLEN_H
 
@@ -6,7 +6,7 @@
 #include <linux/netfilter.h>
 #include <net/tcp.h>
 
-/* Prefixlen maps, by Jan Engelhardt  */
+ 
 extern const union nf_inet_addr ip_set_netmask_map[];
 extern const union nf_inet_addr ip_set_hostmask_map[];
 
@@ -51,4 +51,4 @@ ip6_netmask(union nf_inet_addr *ip, u8 prefix)
 	ip->ip6[3] &= ip_set_netmask6(prefix)[3];
 }
 
-#endif /*_PFXLEN_H */
+#endif  

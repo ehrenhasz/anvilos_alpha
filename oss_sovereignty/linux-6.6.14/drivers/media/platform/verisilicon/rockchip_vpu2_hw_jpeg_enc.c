@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Rockchip Electronics Co., Ltd.
- *
- * JPEG encoder
- * ------------
- * The VPU JPEG encoder produces JPEG baseline sequential format.
- * The quantization coefficients are 8-bit values, complying with
- * the baseline specification. Therefore, it requires
- * luma and chroma quantization tables. The hardware does entropy
- * encoding using internal Huffman tables, as specified in the JPEG
- * specification.
- *
- * In other words, only the luma and chroma quantization tables are
- * required for the encoding operation.
- *
- * Quantization luma table values are written to registers
- * VEPU_swreg_0-VEPU_swreg_15, and chroma table values to
- * VEPU_swreg_16-VEPU_swreg_31. A special order is needed, neither
- * zigzag, nor linear.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <media/v4l2-mem2mem.h>
@@ -38,12 +17,7 @@ static void rockchip_vpu2_set_src_img_ctrl(struct hantro_dev *vpu,
 	u32 overfill_r, overfill_b;
 	u32 reg;
 
-	/*
-	 * The format width and height are already macroblock aligned
-	 * by .vidioc_s_fmt_vid_cap_mplane() callback. Destination
-	 * format width and height can be further modified by
-	 * .vidioc_s_selection(), and the width is 4-aligned.
-	 */
+	 
 	overfill_r = ctx->src_fmt.width - ctx->dst_fmt.width;
 	overfill_b = ctx->src_fmt.height - ctx->dst_fmt.height;
 
@@ -52,12 +26,7 @@ static void rockchip_vpu2_set_src_img_ctrl(struct hantro_dev *vpu,
 
 	reg = VEPU_REG_IN_IMG_CTRL_OVRFLR_D4(overfill_r / 4) |
 	      VEPU_REG_IN_IMG_CTRL_OVRFLB(overfill_b);
-	/*
-	 * This register controls the input crop, as the offset
-	 * from the right/bottom within the last macroblock. The offset from the
-	 * right must be divided by 4 and so the crop must be aligned to 4 pixels
-	 * horizontally.
-	 */
+	 
 	vepu_write_relaxed(vpu, reg, VEPU_REG_ENC_OVER_FILL_STRM_OFFSET);
 
 	reg = VEPU_REG_IN_IMG_CTRL_FMT(ctx->vpu_src_fmt->enc_fmt);
@@ -114,10 +83,7 @@ rockchip_vpu2_jpeg_enc_set_qtable(struct hantro_dev *vpu,
 	luma_qtable_p = (__be32 *)luma_qtable;
 	chroma_qtable_p = (__be32 *)chroma_qtable;
 
-	/*
-	 * Quantization table registers must be written in contiguous blocks.
-	 * DO NOT collapse the below two "for" loops into one.
-	 */
+	 
 	for (i = 0; i < VEPU_JPEG_QUANT_TABLE_COUNT; i++) {
 		reg = get_unaligned_be32(&luma_qtable_p[i]);
 		vepu_write_relaxed(vpu, reg, VEPU_REG_JPEG_LUMA_QUAT(i));
@@ -151,7 +117,7 @@ int rockchip_vpu2_jpeg_enc_run(struct hantro_ctx *ctx)
 	jpeg_ctx.quality = ctx->jpeg_quality;
 	hantro_jpeg_header_assemble(&jpeg_ctx);
 
-	/* Switch to JPEG encoder mode before writing registers */
+	 
 	vepu_write_relaxed(vpu, VEPU_REG_ENCODE_FORMAT_JPEG,
 			   VEPU_REG_ENCODE_START);
 
@@ -167,7 +133,7 @@ int rockchip_vpu2_jpeg_enc_run(struct hantro_ctx *ctx)
 		| VEPU_REG_INPUT_SWAP8
 		| VEPU_REG_INPUT_SWAP16
 		| VEPU_REG_INPUT_SWAP32;
-	/* Make sure that all registers are written at this point. */
+	 
 	vepu_write(vpu, reg, VEPU_REG_DATA_ENDIAN);
 
 	reg = VEPU_REG_AXI_CTRL_BURST_LEN(16);
@@ -179,7 +145,7 @@ int rockchip_vpu2_jpeg_enc_run(struct hantro_ctx *ctx)
 		| VEPU_REG_ENCODE_FORMAT_JPEG
 		| VEPU_REG_ENCODE_ENABLE;
 
-	/* Kick the watchdog and start encoding */
+	 
 	hantro_end_prepare_run(ctx);
 	vepu_write(vpu, reg, VEPU_REG_ENCODE_START);
 

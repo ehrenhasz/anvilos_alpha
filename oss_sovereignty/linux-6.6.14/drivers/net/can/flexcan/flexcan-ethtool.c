@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (c) 2022 Amarula Solutions, Dario Binacchi <dario.binacchi@amarulasolutions.com>
- * Copyright (c) 2022 Pengutronix, Marc Kleine-Budde <kernel@pengutronix.de>
- *
- */
+
+ 
 
 #include <linux/can/dev.h>
 #include <linux/ethtool.h>
@@ -31,9 +28,9 @@ flexcan_get_ringparam(struct net_device *ndev, struct ethtool_ringparam *ring,
 		ring->rx_pending = priv->offload.mb_last -
 			priv->offload.mb_first + 1;
 	else
-		ring->rx_pending = 6;	/* RX-FIFO depth is fixed */
+		ring->rx_pending = 6;	 
 
-	/* the drive currently supports only on TX buffer */
+	 
 	ring->tx_pending = 1;
 }
 

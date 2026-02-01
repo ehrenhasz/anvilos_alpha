@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include "i915_file_private.h"
 #include "mock_context.h"

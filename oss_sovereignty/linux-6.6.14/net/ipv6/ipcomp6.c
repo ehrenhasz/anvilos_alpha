@@ -1,22 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IP Payload Compression Protocol (IPComp) for IPv6 - RFC3173
- *
- * Copyright (C)2003 USAGI/WIDE Project
- *
- * Author	Mitsuru KANDA  <mk@linux-ipv6.org>
- */
-/*
- * [Memo]
- *
- * Outbound:
- *  The compression of IP datagram MUST be done before AH/ESP processing,
- *  fragmentation, and the addition of Hop-by-Hop/Routing header.
- *
- * Inbound:
- *  The decompression of IP datagram MUST be done after the reassembly,
- *  AH/ESP processing.
- */
+
+ 
+ 
 
 #define pr_fmt(fmt) "IPv6: " fmt
 

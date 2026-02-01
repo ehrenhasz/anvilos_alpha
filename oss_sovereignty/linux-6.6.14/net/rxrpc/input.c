@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Processing of received RxRPC packets
- *
- * Copyright (C) 2020 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -15,9 +11,7 @@ static void rxrpc_proto_abort(struct rxrpc_call *call, rxrpc_seq_t seq,
 	rxrpc_abort_call(call, seq, RX_PROTOCOL_ERROR, -EBADMSG, why);
 }
 
-/*
- * Do TCP-style congestion management [RFC 5681].
- */
+ 
 static void rxrpc_congestion_management(struct rxrpc_call *call,
 					struct sk_buff *skb,
 					struct rxrpc_ack_summary *summary,
@@ -71,9 +65,7 @@ static void rxrpc_congestion_management(struct rxrpc_call *call,
 		if (summary->saw_nacks)
 			goto packet_loss_detected;
 
-		/* We analyse the number of packets that get ACK'd per RTT
-		 * period and increase the window if we managed to fill it.
-		 */
+		 
 		if (call->peer->rtt_count == 0)
 			goto out;
 		if (ktime_before(skb->tstamp,
@@ -163,9 +155,7 @@ packet_loss_detected:
 	goto send_extra_data;
 
 send_extra_data:
-	/* Send some previously unsent DATA if we have some to advance the ACK
-	 * state.
-	 */
+	 
 	if (test_bit(RXRPC_CALL_TX_LAST, &call->flags) ||
 	    summary->nr_acks != call->tx_top - call->acks_hard_ack) {
 		call->cong_extra++;
@@ -174,9 +164,7 @@ send_extra_data:
 	goto out_no_clear_ca;
 }
 
-/*
- * Degrade the congestion window if we haven't transmitted a packet for >1RTT.
- */
+ 
 void rxrpc_congestion_degrade(struct rxrpc_call *call)
 {
 	ktime_t rtt, now;
@@ -201,9 +189,7 @@ void rxrpc_congestion_degrade(struct rxrpc_call *call)
 	call->cong_cwnd = max_t(unsigned int, call->cong_cwnd / 2, RXRPC_MIN_CWND);
 }
 
-/*
- * Apply a hard ACK by advancing the Tx window.
- */
+ 
 static bool rxrpc_rotate_tx_window(struct rxrpc_call *call, rxrpc_seq_t to,
 				   struct rxrpc_ack_summary *summary)
 {
@@ -243,12 +229,7 @@ static bool rxrpc_rotate_tx_window(struct rxrpc_call *call, rxrpc_seq_t to,
 	return rot_last;
 }
 
-/*
- * End the transmission phase of a call.
- *
- * This occurs when we get an ACKALL packet, the first DATA packet of a reply,
- * or a final ACK packet.
- */
+ 
 static void rxrpc_end_tx_phase(struct rxrpc_call *call, bool reply_begun,
 			       enum rxrpc_abort_reason abort_why)
 {
@@ -279,9 +260,7 @@ static void rxrpc_end_tx_phase(struct rxrpc_call *call, bool reply_begun,
 	}
 }
 
-/*
- * Begin the reply reception phase of a call.
- */
+ 
 static bool rxrpc_receiving_reply(struct rxrpc_call *call)
 {
 	struct rxrpc_ack_summary summary = { 0 };
@@ -307,9 +286,7 @@ static bool rxrpc_receiving_reply(struct rxrpc_call *call)
 	return true;
 }
 
-/*
- * End the packet reception phase.
- */
+ 
 static void rxrpc_end_rx_phase(struct rxrpc_call *call, rxrpc_serial_t serial)
 {
 	rxrpc_seq_t whigh = READ_ONCE(call->rx_highest_seq);
@@ -342,9 +319,7 @@ static void rxrpc_input_update_ack_window(struct rxrpc_call *call,
 	call->ackr_wtop = wtop;
 }
 
-/*
- * Push a DATA packet onto the Rx queue.
- */
+ 
 static void rxrpc_input_queue_data(struct rxrpc_call *call, struct sk_buff *skb,
 				   rxrpc_seq_t window, rxrpc_seq_t wtop,
 				   enum rxrpc_receive_trace why)
@@ -359,9 +334,7 @@ static void rxrpc_input_queue_data(struct rxrpc_call *call, struct sk_buff *skb,
 		rxrpc_end_rx_phase(call, sp->hdr.serial);
 }
 
-/*
- * Process a DATA packet.
- */
+ 
 static void rxrpc_input_data_one(struct rxrpc_call *call, struct sk_buff *skb,
 				 bool *_notify)
 {
@@ -409,11 +382,11 @@ static void rxrpc_input_data_one(struct rxrpc_call *call, struct sk_buff *skb,
 		goto send_ack;
 	}
 
-	/* Queue the packet. */
+	 
 	if (seq == window) {
 		if (sp->hdr.flags & RXRPC_REQUEST_ACK)
 			ack_reason = RXRPC_ACK_REQUESTED;
-		/* Send an immediate ACK if we fill in a hole */
+		 
 		else if (!skb_queue_empty(&call->rx_oos_queue))
 			ack_reason = RXRPC_ACK_DELAY;
 		else
@@ -503,9 +476,7 @@ send_ack:
 					rxrpc_propose_ack_input_data);
 }
 
-/*
- * Split a jumbo packet and file the bits separately.
- */
+ 
 static bool rxrpc_input_split_jumbo(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	struct rxrpc_jumbo_header jhdr;
@@ -557,10 +528,7 @@ protocol_error:
 	return false;
 }
 
-/*
- * Process a DATA packet, adding the packet to the Rx ring.  The caller's
- * packet ref must be passed on or discarded.
- */
+ 
 static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
@@ -577,9 +545,7 @@ static void rxrpc_input_data(struct rxrpc_call *call, struct sk_buff *skb)
 	switch (__rxrpc_call_state(call)) {
 	case RXRPC_CALL_CLIENT_SEND_REQUEST:
 	case RXRPC_CALL_CLIENT_AWAIT_REPLY:
-		/* Received data implicitly ACKs all of the request
-		 * packets we sent when we're acting as a client.
-		 */
+		 
 		if (!rxrpc_receiving_reply(call))
 			goto out_notify;
 		break;
@@ -614,9 +580,7 @@ out_notify:
 	_leave(" [queued]");
 }
 
-/*
- * See if there's a cached RTT probe to complete.
- */
+ 
 static void rxrpc_complete_rtt_probe(struct rxrpc_call *call,
 				     ktime_t resp_time,
 				     rxrpc_serial_t acked_serial,
@@ -630,7 +594,7 @@ static void rxrpc_complete_rtt_probe(struct rxrpc_call *call,
 	int i;
 
 	avail = READ_ONCE(call->rtt_avail);
-	smp_rmb(); /* Read avail bits before accessing data. */
+	smp_rmb();  
 
 	for (i = 0; i < ARRAY_SIZE(call->rtt_serial); i++) {
 		if (!test_bit(i + RXRPC_CALL_RTT_PEND_SHIFT, &avail))
@@ -641,16 +605,14 @@ static void rxrpc_complete_rtt_probe(struct rxrpc_call *call,
 
 		if (orig_serial == acked_serial) {
 			clear_bit(i + RXRPC_CALL_RTT_PEND_SHIFT, &call->rtt_avail);
-			smp_mb(); /* Read data before setting avail bit */
+			smp_mb();  
 			set_bit(i, &call->rtt_avail);
 			rxrpc_peer_add_rtt(call, type, i, acked_serial, ack_serial,
 					   sent_at, resp_time);
 			matched = true;
 		}
 
-		/* If a later serial is being acked, then mark this slot as
-		 * being available.
-		 */
+		 
 		if (after(acked_serial, orig_serial)) {
 			trace_rxrpc_rtt_rx(call, rxrpc_rtt_rx_obsolete, i,
 					   orig_serial, acked_serial, 0, 0);
@@ -664,9 +626,7 @@ static void rxrpc_complete_rtt_probe(struct rxrpc_call *call,
 		trace_rxrpc_rtt_rx(call, rxrpc_rtt_rx_lost, 9, 0, acked_serial, 0, 0);
 }
 
-/*
- * Process the extra information that may be appended to an ACK packet
- */
+ 
 static void rxrpc_input_ackinfo(struct rxrpc_call *call, struct sk_buff *skb,
 				struct rxrpc_ackinfo *ackinfo)
 {
@@ -702,15 +662,7 @@ static void rxrpc_input_ackinfo(struct rxrpc_call *call, struct sk_buff *skb,
 		wake_up(&call->waitq);
 }
 
-/*
- * Process individual soft ACKs.
- *
- * Each ACK in the array corresponds to one packet and can be either an ACK or
- * a NAK.  If we get find an explicitly NAK'd packet we resend immediately;
- * packets that lie beyond the end of the ACK list are scheduled for resend by
- * the timer on the basis that the peer might just not have processed them at
- * the time the ACK was sent.
- */
+ 
 static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
 				  rxrpc_seq_t seq, int nr_acks,
 				  struct rxrpc_ack_summary *summary)
@@ -732,40 +684,28 @@ static void rxrpc_input_soft_acks(struct rxrpc_call *call, u8 *acks,
 	}
 }
 
-/*
- * Return true if the ACK is valid - ie. it doesn't appear to have regressed
- * with respect to the ack state conveyed by preceding ACKs.
- */
+ 
 static bool rxrpc_is_ack_valid(struct rxrpc_call *call,
 			       rxrpc_seq_t first_pkt, rxrpc_seq_t prev_pkt)
 {
 	rxrpc_seq_t base = READ_ONCE(call->acks_first_seq);
 
 	if (after(first_pkt, base))
-		return true; /* The window advanced */
+		return true;  
 
 	if (before(first_pkt, base))
-		return false; /* firstPacket regressed */
+		return false;  
 
 	if (after_eq(prev_pkt, call->acks_prev_seq))
-		return true; /* previousPacket hasn't regressed. */
+		return true;  
 
-	/* Some rx implementations put a serial number in previousPacket. */
+	 
 	if (after_eq(prev_pkt, base + call->tx_winsize))
 		return false;
 	return true;
 }
 
-/*
- * Process an ACK packet.
- *
- * ack.firstPacket is the sequence number of the first soft-ACK'd/NAK'd packet
- * in the ACK array.  Anything before that is hard-ACK'd and may be discarded.
- *
- * A hard-ACK means that a packet has been processed and may be discarded; a
- * soft-ACK means that the packet may be discarded and retransmission
- * requested.  A phase is complete when all packets are hard-ACK'd.
- */
+ 
 static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	struct rxrpc_ack_summary summary = { 0 };
@@ -814,10 +754,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
 		}
 	}
 
-	/* If we get an EXCEEDS_WINDOW ACK from the server, it probably
-	 * indicates that the client address changed due to NAT.  The server
-	 * lost the call because it switched to a different peer.
-	 */
+	 
 	if (unlikely(ack.reason == RXRPC_ACK_EXCEEDS_WINDOW) &&
 	    first_soft_ack == 1 &&
 	    prev_pkt == 0 &&
@@ -827,10 +764,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
 		goto send_response;
 	}
 
-	/* If we get an OUT_OF_SEQUENCE ACK from the server, that can also
-	 * indicate a change of address.  However, we can retransmit the call
-	 * if we still have it buffered to the beginning.
-	 */
+	 
 	if (unlikely(ack.reason == RXRPC_ACK_OUT_OF_SEQUENCE) &&
 	    first_soft_ack == 1 &&
 	    prev_pkt == 0 &&
@@ -841,7 +775,7 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
 		goto send_response;
 	}
 
-	/* Discard any out-of-order or duplicate ACKs (outside lock). */
+	 
 	if (!rxrpc_is_ack_valid(call, first_soft_ack, prev_pkt)) {
 		trace_rxrpc_rx_discard_ack(call->debug_id, ack_serial,
 					   first_soft_ack, call->acks_first_seq,
@@ -871,14 +805,14 @@ static void rxrpc_input_ack(struct rxrpc_call *call, struct sk_buff *skb)
 		break;
 	}
 
-	/* Parse rwind and mtu sizes if provided. */
+	 
 	if (info.rxMTU)
 		rxrpc_input_ackinfo(call, skb, &info);
 
 	if (first_soft_ack == 0)
 		return rxrpc_proto_abort(call, 0, rxrpc_eproto_ackr_zero);
 
-	/* Ignore ACKs unless we are or have just been transmitting. */
+	 
 	switch (__rxrpc_call_state(call)) {
 	case RXRPC_CALL_CLIENT_SEND_REQUEST:
 	case RXRPC_CALL_CLIENT_AWAIT_REPLY:
@@ -926,9 +860,7 @@ send_response:
 			       rxrpc_propose_ack_respond_to_ack);
 }
 
-/*
- * Process an ACKALL packet.
- */
+ 
 static void rxrpc_input_ackall(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	struct rxrpc_ack_summary summary = { 0 };
@@ -937,9 +869,7 @@ static void rxrpc_input_ackall(struct rxrpc_call *call, struct sk_buff *skb)
 		rxrpc_end_tx_phase(call, false, rxrpc_eproto_unexpected_ackall);
 }
 
-/*
- * Process an ABORT packet directed at a call.
- */
+ 
 static void rxrpc_input_abort(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
@@ -950,9 +880,7 @@ static void rxrpc_input_abort(struct rxrpc_call *call, struct sk_buff *skb)
 				  skb->priority, -ECONNABORTED);
 }
 
-/*
- * Process an incoming call packet.
- */
+ 
 void rxrpc_input_call_packet(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	struct rxrpc_skb_priv *sp = rxrpc_skb(skb);
@@ -985,10 +913,7 @@ void rxrpc_input_call_packet(struct rxrpc_call *call, struct sk_buff *skb)
 		return rxrpc_input_ack(call, skb);
 
 	case RXRPC_PACKET_TYPE_BUSY:
-		/* Just ignore BUSY packets from the server; the retry and
-		 * lifespan timers will take care of business.  BUSY packets
-		 * from the client don't make sense.
-		 */
+		 
 		return;
 
 	case RXRPC_PACKET_TYPE_ABORT:
@@ -1002,12 +927,7 @@ void rxrpc_input_call_packet(struct rxrpc_call *call, struct sk_buff *skb)
 	}
 }
 
-/*
- * Handle a new service call on a channel implicitly completing the preceding
- * call on that channel.  This does not apply to client conns.
- *
- * TODO: If callNumber > call_id + 1, renegotiate security.
- */
+ 
 void rxrpc_implicit_end_call(struct rxrpc_call *call, struct sk_buff *skb)
 {
 	switch (__rxrpc_call_state(call)) {

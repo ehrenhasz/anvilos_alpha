@@ -1,61 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ni_65xx.c
- * Comedi driver for National Instruments PCI-65xx static dio boards
- *
- * Copyright (C) 2006 Jon Grierson <jd@renko.co.uk>
- * Copyright (C) 2006 Frank Mori Hess <fmhess@users.sourceforge.net>
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1999,2002,2003 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: ni_65xx
- * Description: National Instruments 65xx static dio boards
- * Author: Jon Grierson <jd@renko.co.uk>,
- *	   Frank Mori Hess <fmhess@users.sourceforge.net>
- * Status: testing
- * Devices: [National Instruments] PCI-6509 (pci-6509), PXI-6509 (pxi-6509),
- *   PCI-6510 (pci-6510), PCI-6511 (pci-6511), PXI-6511 (pxi-6511),
- *   PCI-6512 (pci-6512), PXI-6512 (pxi-6512), PCI-6513 (pci-6513),
- *   PXI-6513 (pxi-6513), PCI-6514 (pci-6514), PXI-6514 (pxi-6514),
- *   PCI-6515 (pxi-6515), PXI-6515 (pxi-6515), PCI-6516 (pci-6516),
- *   PCI-6517 (pci-6517), PCI-6518 (pci-6518), PCI-6519 (pci-6519),
- *   PCI-6520 (pci-6520), PCI-6521 (pci-6521), PXI-6521 (pxi-6521),
- *   PCI-6528 (pci-6528), PXI-6528 (pxi-6528)
- * Updated: Mon, 21 Jul 2014 12:49:58 +0000
- *
- * Configuration Options: not applicable, uses PCI auto config
- *
- * Based on the PCI-6527 driver by ds.
- * The interrupt subdevice (subdevice 3) is probably broken for all
- * boards except maybe the 6514.
- *
- * This driver previously inverted the outputs on PCI-6513 through to
- * PCI-6519 and on PXI-6513 through to PXI-6515.  It no longer inverts
- * outputs on those cards by default as it didn't make much sense.  If
- * you require the outputs to be inverted on those cards for legacy
- * reasons, set the module parameter "legacy_invert_outputs=true" when
- * loading the module, or set "ni_65xx.legacy_invert_outputs=true" on
- * the kernel command line if the driver is built in to the kernel.
- */
+ 
 
-/*
- * Manuals (available from ftp://ftp.natinst.com/support/manuals)
- *
- *	370106b.pdf	6514 Register Level Programmer Manual
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * PCI BAR1 Register Map
- */
+ 
 
-/* Non-recurring Registers (8-bit except where noted) */
+ 
 #define NI_65XX_ID_REG			0x00
 #define NI_65XX_CLR_REG			0x01
 #define NI_65XX_CLR_WDOG_INT		BIT(6)
@@ -77,13 +33,13 @@
 #define NI_65XX_CTRL_INT_ENA		BIT(2)
 #define NI_65XX_CTRL_OVERFLOW_ENA	BIT(1)
 #define NI_65XX_CTRL_EDGE_ENA		BIT(0)
-#define NI_65XX_REV_REG			0x04 /* 32-bit */
-#define NI_65XX_FILTER_REG		0x08 /* 32-bit */
-#define NI_65XX_RTSI_ROUTE_REG		0x0c /* 16-bit */
-#define NI_65XX_RTSI_EDGE_REG		0x0e /* 16-bit */
-#define NI_65XX_RTSI_WDOG_REG		0x10 /* 16-bit */
-#define NI_65XX_RTSI_TRIG_REG		0x12 /* 16-bit */
-#define NI_65XX_AUTO_CLK_SEL_REG	0x14 /* PXI-6528 only */
+#define NI_65XX_REV_REG			0x04  
+#define NI_65XX_FILTER_REG		0x08  
+#define NI_65XX_RTSI_ROUTE_REG		0x0c  
+#define NI_65XX_RTSI_EDGE_REG		0x0e  
+#define NI_65XX_RTSI_WDOG_REG		0x10  
+#define NI_65XX_RTSI_TRIG_REG		0x12  
+#define NI_65XX_AUTO_CLK_SEL_REG	0x14  
 #define NI_65XX_AUTO_CLK_SEL_STATUS	BIT(1)
 #define NI_65XX_AUTO_CLK_SEL_DISABLE	BIT(0)
 #define NI_65XX_WDOG_CTRL_REG		0x15
@@ -94,9 +50,9 @@
 #define NI_65XX_RTSI_CFG_SYNC_DETECT	BIT(0)
 #define NI_65XX_WDOG_STATUS_REG		0x17
 #define NI_65XX_WDOG_STATUS_EXP		BIT(0)
-#define NI_65XX_WDOG_INTERVAL_REG	0x18 /* 32-bit */
+#define NI_65XX_WDOG_INTERVAL_REG	0x18  
 
-/* Recurring port registers (8-bit) */
+ 
 #define NI_65XX_PORT(x)			((x) * 0x10)
 #define NI_65XX_IO_DATA_REG(x)		(0x40 + NI_65XX_PORT(x))
 #define NI_65XX_IO_SEL_REG(x)		(0x41 + NI_65XX_PORT(x))
@@ -277,15 +233,15 @@ static void ni_65xx_disable_input_filters(struct comedi_device *dev)
 	unsigned int num_ports = ni_65xx_num_ports(dev);
 	int i;
 
-	/* disable input filtering on all ports */
+	 
 	for (i = 0; i < num_ports; ++i)
 		writeb(0x00, dev->mmio + NI_65XX_FILTER_ENA(i));
 
-	/* set filter interval to 0 (32bit reg) */
+	 
 	writel(0x00000000, dev->mmio + NI_65XX_FILTER_REG);
 }
 
-/* updates edge detection for base_chan to base_chan+31 */
+ 
 static void ni_65xx_update_edge_detection(struct comedi_device *dev,
 					  unsigned int base_chan,
 					  unsigned int rising,
@@ -334,11 +290,11 @@ static void ni_65xx_update_edge_detection(struct comedi_device *dev,
 
 static void ni_65xx_disable_edge_detection(struct comedi_device *dev)
 {
-	/* clear edge detection for channels 0 to 31 */
+	 
 	ni_65xx_update_edge_detection(dev, 0, 0, 0);
-	/* clear edge detection for channels 32 to 63 */
+	 
 	ni_65xx_update_edge_detection(dev, 32, 0, 0);
-	/* clear edge detection for channels 64 to 95 */
+	 
 	ni_65xx_update_edge_detection(dev, 64, 0, 0);
 }
 
@@ -356,21 +312,13 @@ static int ni_65xx_dio_insn_config(struct comedi_device *dev,
 
 	switch (data[0]) {
 	case INSN_CONFIG_FILTER:
-		/*
-		 * The deglitch filter interval is specified in nanoseconds.
-		 * The hardware supports intervals in 200ns increments. Round
-		 * the user values up and return the actual interval.
-		 */
+		 
 		interval = (data[1] + 100) / 200;
 		if (interval > 0xfffff)
 			interval = 0xfffff;
 		data[1] = interval * 200;
 
-		/*
-		 * Enable/disable the channel for deglitch filtering. Note
-		 * that the filter interval is never set to '0'. This is done
-		 * because other channels might still be enabled for filtering.
-		 */
+		 
 		val = readb(dev->mmio + NI_65XX_FILTER_ENA(port));
 		if (interval) {
 			writel(interval, dev->mmio + NI_65XX_FILTER_REG);
@@ -442,19 +390,19 @@ static int ni_65xx_dio_insn_bits(struct comedi_device *dev,
 		port_mask &= 0xff;
 		port_data &= 0xff;
 
-		/* update the outputs */
+		 
 		if (port_mask) {
 			bits = readb(dev->mmio + NI_65XX_IO_DATA_REG(port));
-			bits ^= s->io_bits;	/* invert if necessary */
+			bits ^= s->io_bits;	 
 			bits &= ~port_mask;
 			bits |= (port_data & port_mask);
-			bits ^= s->io_bits;	/* invert back */
+			bits ^= s->io_bits;	 
 			writeb(bits, dev->mmio + NI_65XX_IO_DATA_REG(port));
 		}
 
-		/* read back the actual state */
+		 
 		bits = readb(dev->mmio + NI_65XX_IO_DATA_REG(port));
-		bits ^= s->io_bits;	/* invert if necessary */
+		bits ^= s->io_bits;	 
 		if (bitshift > 0)
 			bits <<= bitshift;
 		else
@@ -494,7 +442,7 @@ static int ni_65xx_intr_cmdtest(struct comedi_device *dev,
 {
 	int err = 0;
 
-	/* Step 1 : check if triggers are trivially valid */
+	 
 
 	err |= comedi_check_trigger_src(&cmd->start_src, TRIG_NOW);
 	err |= comedi_check_trigger_src(&cmd->scan_begin_src, TRIG_OTHER);
@@ -505,10 +453,10 @@ static int ni_65xx_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 1;
 
-	/* Step 2a : make sure trigger sources are unique */
-	/* Step 2b : and mutually compatible */
+	 
+	 
 
-	/* Step 3: check if arguments are trivially valid */
+	 
 
 	err |= comedi_check_trigger_arg_is(&cmd->start_arg, 0);
 	err |= comedi_check_trigger_arg_is(&cmd->scan_begin_arg, 0);
@@ -520,9 +468,9 @@ static int ni_65xx_intr_cmdtest(struct comedi_device *dev,
 	if (err)
 		return 3;
 
-	/* Step 4: fix up any arguments */
+	 
 
-	/* Step 5: check channel list if it exists */
+	 
 
 	return 0;
 }
@@ -563,31 +511,28 @@ static int ni_65xx_intr_insn_config(struct comedi_device *dev,
 {
 	switch (data[0]) {
 	case INSN_CONFIG_CHANGE_NOTIFY:
-		/* add instruction to check_insn_config_length() */
+		 
 		if (insn->n != 3)
 			return -EINVAL;
 
-		/* update edge detection for channels 0 to 31 */
+		 
 		ni_65xx_update_edge_detection(dev, 0, data[1], data[2]);
-		/* clear edge detection for channels 32 to 63 */
+		 
 		ni_65xx_update_edge_detection(dev, 32, 0, 0);
-		/* clear edge detection for channels 64 to 95 */
+		 
 		ni_65xx_update_edge_detection(dev, 64, 0, 0);
 		break;
 	case INSN_CONFIG_DIGITAL_TRIG:
-		/* check trigger number */
+		 
 		if (data[1] != 0)
 			return -EINVAL;
-		/* check digital trigger operation */
+		 
 		switch (data[2]) {
 		case COMEDI_DIGITAL_TRIG_DISABLE:
 			ni_65xx_disable_edge_detection(dev);
 			break;
 		case COMEDI_DIGITAL_TRIG_ENABLE_EDGES:
-			/*
-			 * update edge detection for channels data[3]
-			 * to (data[3] + 31)
-			 */
+			 
 			ni_65xx_update_edge_detection(dev, data[3],
 						      data[4], data[5]);
 			break;
@@ -602,25 +547,25 @@ static int ni_65xx_intr_insn_config(struct comedi_device *dev,
 	return insn->n;
 }
 
-/* ripped from mite.h and mite_setup2() to avoid mite dependency */
-#define MITE_IODWBSR	0xc0	 /* IO Device Window Base Size Register */
-#define WENAB			BIT(7) /* window enable */
+ 
+#define MITE_IODWBSR	0xc0	  
+#define WENAB			BIT(7)  
 
 static int ni_65xx_mite_init(struct pci_dev *pcidev)
 {
 	void __iomem *mite_base;
 	u32 main_phys_addr;
 
-	/* ioremap the MITE registers (BAR 0) temporarily */
+	 
 	mite_base = pci_ioremap_bar(pcidev, 0);
 	if (!mite_base)
 		return -ENOMEM;
 
-	/* set data window to main registers (BAR 1) */
+	 
 	main_phys_addr = pci_resource_start(pcidev, 1);
 	writel(main_phys_addr | WENAB, mite_base + MITE_IODWBSR);
 
-	/* finished with MITE registers */
+	 
 	iounmap(mite_base);
 	return 0;
 }
@@ -681,7 +626,7 @@ static int ni_65xx_auto_attach(struct comedi_device *dev,
 		s->insn_bits	= ni_65xx_dio_insn_bits;
 		s->insn_config	= ni_65xx_dio_insn_config;
 
-		/* the input ports always start at port 0 */
+		 
 		s->private = (void *)0;
 	} else {
 		s->type		= COMEDI_SUBD_UNUSED;
@@ -696,20 +641,16 @@ static int ni_65xx_auto_attach(struct comedi_device *dev,
 		s->range_table	= &range_digital;
 		s->insn_bits	= ni_65xx_dio_insn_bits;
 
-		/* the output ports always start after the input ports */
+		 
 		s->private = (void *)(unsigned long)board->num_di_ports;
 
-		/*
-		 * Use the io_bits to handle the inverted outputs.  Inverted
-		 * outputs are only supported if the "legacy_invert_outputs"
-		 * module parameter is set to "true".
-		 */
+		 
 		if (ni_65xx_legacy_invert_outputs && board->legacy_invert)
 			s->io_bits = 0xff;
 
-		/* reset all output ports to comedi '0' */
+		 
 		for (i = 0; i < board->num_do_ports; ++i) {
-			writeb(s->io_bits,	/* inverted if necessary */
+			writeb(s->io_bits,	 
 			       dev->mmio +
 			       NI_65XX_IO_DATA_REG(board->num_di_ports + i));
 		}
@@ -727,10 +668,10 @@ static int ni_65xx_auto_attach(struct comedi_device *dev,
 		s->insn_bits	= ni_65xx_dio_insn_bits;
 		s->insn_config	= ni_65xx_dio_insn_config;
 
-		/* the input/output ports always start at port 0 */
+		 
 		s->private = (void *)0;
 
-		/* configure all ports for input */
+		 
 		for (i = 0; i < board->num_dio_ports; ++i) {
 			writeb(NI_65XX_IO_SEL_INPUT,
 			       dev->mmio + NI_65XX_IO_SEL_REG(i));

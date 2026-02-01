@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2021 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <linux/if_bridge.h>
 #include <net/switchdev.h>
@@ -72,13 +69,13 @@ static void sparx5_attr_stp_state_set(struct sparx5_port *port,
 		break;
 
 	default:
-		/* All other states treated as blocking */
+		 
 		clear_bit(port->portno, sparx5->bridge_fwd_mask);
 		clear_bit(port->portno, sparx5->bridge_lrn_mask);
 		break;
 	}
 
-	/* apply the bridge_fwd_mask to all the ports */
+	 
 	sparx5_update_fwd(sparx5);
 }
 
@@ -102,10 +99,7 @@ static void sparx5_port_attr_mrouter_set(struct sparx5_port *port,
 	if ((enable && port->is_mrouter) || (!enable && !port->is_mrouter))
 		return;
 
-	/* Add/del mrouter port on all active mdb entries in HW.
-	 * Don't change entry port mask, since that represents
-	 * ports that actually joined that group.
-	 */
+	 
 	mutex_lock(&sparx5->mdb_lock);
 	list_for_each_entry(e, &sparx5->mdb_entries, list) {
 		if (!test_bit(port->portno, e->port_mask) &&
@@ -114,9 +108,7 @@ static void sparx5_port_attr_mrouter_set(struct sparx5_port *port,
 	}
 	mutex_unlock(&sparx5->mdb_lock);
 
-	/* Enable/disable flooding depending on if port is mrouter port
-	 * or if mcast flood is enabled.
-	 */
+	 
 	port->is_mrouter = enable;
 	flood_flag = br_port_flag_is_set(port->ndev, BR_MCAST_FLOOD);
 	sparx5_port_update_mcast_ip_flood(port, flood_flag);
@@ -142,9 +134,7 @@ static int sparx5_port_attr_set(struct net_device *dev, const void *ctx,
 		sparx5_port_attr_ageing_set(port, attr->u.ageing_time);
 		break;
 	case SWITCHDEV_ATTR_ID_BRIDGE_VLAN_FILTERING:
-		/* Used PVID 1 when default_pvid is 0, to avoid
-		 * collision with non-bridged ports.
-		 */
+		 
 		if (port->pvid == 0)
 			port->pvid = 1;
 		port->vlan_aware = attr->u.vlan_filtering;
@@ -171,13 +161,11 @@ static int sparx5_port_bridge_join(struct sparx5_port *port,
 	int err;
 
 	if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
-		/* First bridged port */
+		 
 		sparx5->hw_bridge_dev = bridge;
 	else
 		if (sparx5->hw_bridge_dev != bridge)
-			/* This is adding the port to a second bridge, this is
-			 * unsupported
-			 */
+			 
 			return -ENODEV;
 
 	set_bit(port->portno, sparx5->bridge_mask);
@@ -187,12 +175,10 @@ static int sparx5_port_bridge_join(struct sparx5_port *port,
 	if (err)
 		goto err_switchdev_offload;
 
-	/* Remove standalone port entry */
+	 
 	sparx5_mact_forget(sparx5, ndev->dev_addr, 0);
 
-	/* Port enters in bridge mode therefor don't need to copy to CPU
-	 * frames for multicast in case the bridge is not requesting them
-	 */
+	 
 	__dev_mc_unsync(ndev, sparx5_mc_unsync);
 
 	return 0;
@@ -213,15 +199,15 @@ static void sparx5_port_bridge_leave(struct sparx5_port *port,
 	if (bitmap_empty(sparx5->bridge_mask, SPX5_PORTS))
 		sparx5->hw_bridge_dev = NULL;
 
-	/* Clear bridge vlan settings before updating the port settings */
+	 
 	port->vlan_aware = 0;
 	port->pvid = NULL_VID;
 	port->vid = NULL_VID;
 
-	/* Forward frames to CPU */
+	 
 	sparx5_mact_learn(sparx5, PGID_CPU, port->ndev->dev_addr, 0);
 
-	/* Port enters in host more therefore restore mc list */
+	 
 	__dev_mc_sync(port->ndev, sparx5_mc_sync, sparx5_mc_unsync);
 }
 
@@ -319,9 +305,7 @@ static void sparx5_switchdev_bridge_fdb_event_work(struct work_struct *work)
 
 	fdb_info = &switchdev_work->fdb_info;
 
-	/* Used PVID 1 when default_pvid is 0, to avoid
-	 * collision with non-bridged ports.
-	 */
+	 
 	if (fdb_info->vid == 0)
 		vid = 1;
 	else
@@ -417,7 +401,7 @@ static int sparx5_handle_port_vlan_add(struct net_device *dev,
 			container_of(nb, struct sparx5,
 				     switchdev_blocking_nb);
 
-		/* Flood broadcast to CPU */
+		 
 		sparx5_mact_learn(sparx5, PGID_BCAST, dev->broadcast,
 				  v->vid);
 		return 0;
@@ -526,9 +510,7 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
 
 	is_host = netif_is_bridge_master(v->obj.orig_dev);
 
-	/* When VLAN unaware the vlan value is not parsed and we receive vid 0.
-	 * Fall back to bridge vid 1.
-	 */
+	 
 	if (!br_vlan_enabled(spx5->hw_bridge_dev))
 		vid = 1;
 	else
@@ -545,7 +527,7 @@ static int sparx5_handle_port_mdb_add(struct net_device *dev,
 
 	mutex_lock(&spx5->mdb_lock);
 
-	/* Add any mrouter ports to the new entry */
+	 
 	if (is_new && ether_addr_is_ip_mcast(v->addr))
 		for (i = 0; i < SPX5_PORTS; i++)
 			if (spx5->ports[i] && spx5->ports[i]->is_mrouter)
@@ -598,16 +580,14 @@ static int sparx5_handle_port_mdb_del(struct net_device *dev,
 	} else if (!is_host) {
 		clear_bit(port->portno, entry->port_mask);
 
-		/* Port not mrouter port or addr is L2 mcast, remove port from mask. */
+		 
 		if (!port->is_mrouter || !ether_addr_is_ip_mcast(v->addr))
 			sparx5_pgid_update_mask(port, entry->pgid_idx, false);
 	}
 	mutex_unlock(&spx5->mdb_lock);
 
 	if (bitmap_empty(entry->port_mask, SPX5_PORTS) && !entry->cpu_copy) {
-		 /* Clear pgid in case mrouter ports exists
-		  * that are not part of the group.
-		  */
+		  
 		sparx5_pgid_clear(spx5, entry->pgid_idx);
 		sparx5_mact_forget(spx5, entry->addr, entry->vid);
 		sparx5_free_mdb_entry(spx5, entry->addr, entry->vid);
@@ -648,7 +628,7 @@ static int sparx5_handle_port_vlan_del(struct net_device *dev,
 	struct sparx5_port *port = netdev_priv(dev);
 	int ret;
 
-	/* Master bridge? */
+	 
 	if (netif_is_bridge_master(dev)) {
 		struct sparx5 *sparx5 =
 			container_of(nb, struct sparx5,

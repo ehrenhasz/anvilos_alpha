@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdint.h>
 #include "py/gc.h"
@@ -53,9 +29,9 @@ static void soft_timer_schedule_at_ms(uint32_t ticks_ms) {
 
 #endif
 
-// Pointer to the pairheap of soft timer objects.
-// This may contain bss/data pointers as well as GC-heap pointers,
-// and is explicitly GC traced by soft_timer_gc_mark_all().
+
+
+
 static soft_timer_entry_t *soft_timer_heap;
 
 static int soft_timer_lt(mp_pairheap_t *n1, mp_pairheap_t *n2) {
@@ -65,7 +41,7 @@ static int soft_timer_lt(mp_pairheap_t *n1, mp_pairheap_t *n2) {
 }
 
 void soft_timer_deinit(void) {
-    // Pop off all the nodes which are allocated on the GC-heap.
+    
     MICROPY_PY_PENDSV_ENTER;
     soft_timer_entry_t *heap_from = soft_timer_heap;
     soft_timer_entry_t *heap_to = (soft_timer_entry_t *)mp_pairheap_new(soft_timer_lt);
@@ -80,7 +56,7 @@ void soft_timer_deinit(void) {
     MICROPY_PY_PENDSV_EXIT;
 }
 
-// Must be executed at IRQ_PRI_PENDSV
+
 void soft_timer_handler(void) {
     uint32_t ticks_ms = soft_timer_get_ms();
     soft_timer_entry_t *heap = soft_timer_heap;
@@ -99,15 +75,15 @@ void soft_timer_handler(void) {
     }
     soft_timer_heap = heap;
 
-    // Schedule the port's timer to call us back at the correct time.
+    
     if (heap != NULL) {
         soft_timer_schedule_at_ms(heap->expiry_ms);
     }
 }
 
 void soft_timer_gc_mark_all(void) {
-    // Mark all soft timer nodes that are allocated on the GC-heap.
-    // To avoid deep C recursion, pop and recreate the pairheap as nodes are marked.
+    
+    
     MICROPY_PY_PENDSV_ENTER;
     soft_timer_entry_t *heap_from = soft_timer_heap;
     soft_timer_entry_t *heap_to = (soft_timer_entry_t *)mp_pairheap_new(soft_timer_lt);
@@ -137,7 +113,7 @@ void soft_timer_insert(soft_timer_entry_t *entry, uint32_t initial_delta_ms) {
     MICROPY_PY_PENDSV_ENTER;
     soft_timer_heap = (soft_timer_entry_t *)mp_pairheap_push(soft_timer_lt, &soft_timer_heap->pairheap, &entry->pairheap);
     if (entry == soft_timer_heap) {
-        // This new timer became the earliest one so schedule a callback.
+        
         soft_timer_schedule_at_ms(entry->expiry_ms);
     }
     MICROPY_PY_PENDSV_EXIT;

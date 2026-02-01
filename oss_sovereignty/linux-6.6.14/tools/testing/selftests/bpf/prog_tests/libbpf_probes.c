@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2021 Facebook */
+ 
+ 
 
 #include <test_progs.h>
 #include <bpf/btf.h>
@@ -15,7 +15,7 @@ void test_libbpf_probe_prog_types(void)
 	if (!ASSERT_OK_PTR(btf, "btf_parse"))
 		return;
 
-	/* find enum bpf_prog_type and enumerate each value */
+	 
 	id = btf__find_by_name_kind(btf, "bpf_prog_type", BTF_KIND_ENUM);
 	if (!ASSERT_GT(id, 0, "bpf_prog_type_id"))
 		goto cleanup;
@@ -53,7 +53,7 @@ void test_libbpf_probe_map_types(void)
 	if (!ASSERT_OK_PTR(btf, "btf_parse"))
 		return;
 
-	/* find enum bpf_map_type and enumerate each value */
+	 
 	id = btf__find_by_name_kind(btf, "bpf_map_type", BTF_KIND_ENUM);
 	if (!ASSERT_GT(id, 0, "bpf_map_type_id"))
 		goto cleanup;

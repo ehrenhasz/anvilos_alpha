@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __QCOM_TSENS_H__
 #define __QCOM_TSENS_H__
@@ -29,7 +27,7 @@
 
 struct tsens_priv;
 
-/* IP version numbers in ascending order */
+ 
 enum tsens_ver {
 	VER_0 = 0,
 	VER_0_1,
@@ -43,15 +41,7 @@ enum tsens_irq_type {
 	CRITICAL,
 };
 
-/**
- * struct tsens_sensor - data for each sensor connected to the tsens device
- * @priv: tsens device instance that this sensor is connected to
- * @tzd: pointer to the thermal zone that this sensor is in
- * @offset: offset of temperature adjustment curve
- * @hw_id: HW ID can be used in case of platform-specific IDs
- * @slope: slope of temperature adjustment curve
- * @status: 8960-specific variable to track 8960 and 8660 status register offset
- */
+ 
 struct tsens_sensor {
 	struct tsens_priv		*priv;
 	struct thermal_zone_device	*tzd;
@@ -63,22 +53,13 @@ struct tsens_sensor {
 	int				p2_calib_offset;
 };
 
-/**
- * struct tsens_ops - operations as supported by the tsens device
- * @init: Function to initialize the tsens device
- * @calibrate: Function to calibrate the tsens device
- * @get_temp: Function which returns the temp in millidegC
- * @enable: Function to enable (clocks/power) tsens device
- * @disable: Function to disable the tsens device
- * @suspend: Function to suspend the tsens device
- * @resume: Function to resume the tsens device
- */
+ 
 struct tsens_ops {
-	/* mandatory callbacks */
+	 
 	int (*init)(struct tsens_priv *priv);
 	int (*calibrate)(struct tsens_priv *priv);
 	int (*get_temp)(const struct tsens_sensor *s, int *temp);
-	/* optional callbacks */
+	 
 	int (*enable)(struct tsens_priv *priv, int i);
 	void (*disable)(struct tsens_priv *priv);
 	int (*suspend)(struct tsens_priv *priv);
@@ -152,30 +133,26 @@ struct tsens_ops {
 	[_name##_##14] = REG_FIELD(_offset, 30, 30),	\
 	[_name##_##15] = REG_FIELD(_offset, 31, 31)
 
-/*
- * reg_field IDs to use as an index into an array
- * If you change the order of the entries, check the devm_regmap_field_alloc()
- * calls in init_common()
- */
+ 
 enum regfield_ids {
-	/* ----- SROT ------ */
-	/* HW_VER */
+	 
+	 
 	VER_MAJOR,
 	VER_MINOR,
 	VER_STEP,
-	/* CTRL_OFFSET */
+	 
 	TSENS_EN,
 	TSENS_SW_RST,
 	SENSOR_EN,
 	CODE_OR_TEMP,
 
-	/* ----- TM ------ */
-	/* TRDY */
+	 
+	 
 	TRDY,
-	/* INTERRUPT ENABLE */
-	INT_EN,	/* v2+ has separate enables for crit, upper and lower irq */
-	/* STATUS */
-	LAST_TEMP_0,	/* Last temperature reading */
+	 
+	INT_EN,	 
+	 
+	LAST_TEMP_0,	 
 	LAST_TEMP_1,
 	LAST_TEMP_2,
 	LAST_TEMP_3,
@@ -191,7 +168,7 @@ enum regfield_ids {
 	LAST_TEMP_13,
 	LAST_TEMP_14,
 	LAST_TEMP_15,
-	VALID_0,		/* VALID reading or not */
+	VALID_0,		 
 	VALID_1,
 	VALID_2,
 	VALID_3,
@@ -207,7 +184,7 @@ enum regfield_ids {
 	VALID_13,
 	VALID_14,
 	VALID_15,
-	LOWER_STATUS_0,	/* LOWER threshold violated */
+	LOWER_STATUS_0,	 
 	LOWER_STATUS_1,
 	LOWER_STATUS_2,
 	LOWER_STATUS_3,
@@ -223,7 +200,7 @@ enum regfield_ids {
 	LOWER_STATUS_13,
 	LOWER_STATUS_14,
 	LOWER_STATUS_15,
-	LOW_INT_STATUS_0,	/* LOWER interrupt status */
+	LOW_INT_STATUS_0,	 
 	LOW_INT_STATUS_1,
 	LOW_INT_STATUS_2,
 	LOW_INT_STATUS_3,
@@ -239,7 +216,7 @@ enum regfield_ids {
 	LOW_INT_STATUS_13,
 	LOW_INT_STATUS_14,
 	LOW_INT_STATUS_15,
-	LOW_INT_CLEAR_0,	/* LOWER interrupt clear */
+	LOW_INT_CLEAR_0,	 
 	LOW_INT_CLEAR_1,
 	LOW_INT_CLEAR_2,
 	LOW_INT_CLEAR_3,
@@ -255,7 +232,7 @@ enum regfield_ids {
 	LOW_INT_CLEAR_13,
 	LOW_INT_CLEAR_14,
 	LOW_INT_CLEAR_15,
-	LOW_INT_MASK_0,	/* LOWER interrupt mask */
+	LOW_INT_MASK_0,	 
 	LOW_INT_MASK_1,
 	LOW_INT_MASK_2,
 	LOW_INT_MASK_3,
@@ -271,7 +248,7 @@ enum regfield_ids {
 	LOW_INT_MASK_13,
 	LOW_INT_MASK_14,
 	LOW_INT_MASK_15,
-	LOW_THRESH_0,		/* LOWER threshold values */
+	LOW_THRESH_0,		 
 	LOW_THRESH_1,
 	LOW_THRESH_2,
 	LOW_THRESH_3,
@@ -287,7 +264,7 @@ enum regfield_ids {
 	LOW_THRESH_13,
 	LOW_THRESH_14,
 	LOW_THRESH_15,
-	UPPER_STATUS_0,	/* UPPER threshold violated */
+	UPPER_STATUS_0,	 
 	UPPER_STATUS_1,
 	UPPER_STATUS_2,
 	UPPER_STATUS_3,
@@ -303,7 +280,7 @@ enum regfield_ids {
 	UPPER_STATUS_13,
 	UPPER_STATUS_14,
 	UPPER_STATUS_15,
-	UP_INT_STATUS_0,	/* UPPER interrupt status */
+	UP_INT_STATUS_0,	 
 	UP_INT_STATUS_1,
 	UP_INT_STATUS_2,
 	UP_INT_STATUS_3,
@@ -319,7 +296,7 @@ enum regfield_ids {
 	UP_INT_STATUS_13,
 	UP_INT_STATUS_14,
 	UP_INT_STATUS_15,
-	UP_INT_CLEAR_0,	/* UPPER interrupt clear */
+	UP_INT_CLEAR_0,	 
 	UP_INT_CLEAR_1,
 	UP_INT_CLEAR_2,
 	UP_INT_CLEAR_3,
@@ -335,7 +312,7 @@ enum regfield_ids {
 	UP_INT_CLEAR_13,
 	UP_INT_CLEAR_14,
 	UP_INT_CLEAR_15,
-	UP_INT_MASK_0,		/* UPPER interrupt mask */
+	UP_INT_MASK_0,		 
 	UP_INT_MASK_1,
 	UP_INT_MASK_2,
 	UP_INT_MASK_3,
@@ -351,7 +328,7 @@ enum regfield_ids {
 	UP_INT_MASK_13,
 	UP_INT_MASK_14,
 	UP_INT_MASK_15,
-	UP_THRESH_0,		/* UPPER threshold values */
+	UP_THRESH_0,		 
 	UP_THRESH_1,
 	UP_THRESH_2,
 	UP_THRESH_3,
@@ -367,7 +344,7 @@ enum regfield_ids {
 	UP_THRESH_13,
 	UP_THRESH_14,
 	UP_THRESH_15,
-	CRITICAL_STATUS_0,	/* CRITICAL threshold violated */
+	CRITICAL_STATUS_0,	 
 	CRITICAL_STATUS_1,
 	CRITICAL_STATUS_2,
 	CRITICAL_STATUS_3,
@@ -383,7 +360,7 @@ enum regfield_ids {
 	CRITICAL_STATUS_13,
 	CRITICAL_STATUS_14,
 	CRITICAL_STATUS_15,
-	CRIT_INT_STATUS_0,	/* CRITICAL interrupt status */
+	CRIT_INT_STATUS_0,	 
 	CRIT_INT_STATUS_1,
 	CRIT_INT_STATUS_2,
 	CRIT_INT_STATUS_3,
@@ -399,7 +376,7 @@ enum regfield_ids {
 	CRIT_INT_STATUS_13,
 	CRIT_INT_STATUS_14,
 	CRIT_INT_STATUS_15,
-	CRIT_INT_CLEAR_0,	/* CRITICAL interrupt clear */
+	CRIT_INT_CLEAR_0,	 
 	CRIT_INT_CLEAR_1,
 	CRIT_INT_CLEAR_2,
 	CRIT_INT_CLEAR_3,
@@ -415,7 +392,7 @@ enum regfield_ids {
 	CRIT_INT_CLEAR_13,
 	CRIT_INT_CLEAR_14,
 	CRIT_INT_CLEAR_15,
-	CRIT_INT_MASK_0,	/* CRITICAL interrupt mask */
+	CRIT_INT_MASK_0,	 
 	CRIT_INT_MASK_1,
 	CRIT_INT_MASK_2,
 	CRIT_INT_MASK_3,
@@ -431,7 +408,7 @@ enum regfield_ids {
 	CRIT_INT_MASK_13,
 	CRIT_INT_MASK_14,
 	CRIT_INT_MASK_15,
-	CRIT_THRESH_0,		/* CRITICAL threshold values */
+	CRIT_THRESH_0,		 
 	CRIT_THRESH_1,
 	CRIT_THRESH_2,
 	CRIT_THRESH_3,
@@ -448,18 +425,18 @@ enum regfield_ids {
 	CRIT_THRESH_14,
 	CRIT_THRESH_15,
 
-	/* WATCHDOG */
+	 
 	WDOG_BARK_STATUS,
 	WDOG_BARK_CLEAR,
 	WDOG_BARK_MASK,
 	WDOG_BARK_COUNT,
 
-	/* CYCLE COMPLETION MONITOR */
+	 
 	CC_MON_STATUS,
 	CC_MON_CLEAR,
 	CC_MON_MASK,
 
-	MIN_STATUS_0,		/* MIN threshold violated */
+	MIN_STATUS_0,		 
 	MIN_STATUS_1,
 	MIN_STATUS_2,
 	MIN_STATUS_3,
@@ -475,7 +452,7 @@ enum regfield_ids {
 	MIN_STATUS_13,
 	MIN_STATUS_14,
 	MIN_STATUS_15,
-	MAX_STATUS_0,		/* MAX threshold violated */
+	MAX_STATUS_0,		 
 	MAX_STATUS_1,
 	MAX_STATUS_2,
 	MAX_STATUS_3,
@@ -492,23 +469,11 @@ enum regfield_ids {
 	MAX_STATUS_14,
 	MAX_STATUS_15,
 
-	/* Keep last */
+	 
 	MAX_REGFIELDS
 };
 
-/**
- * struct tsens_features - Features supported by the IP
- * @ver_major: Major number of IP version
- * @crit_int: does the IP support critical interrupts?
- * @combo_int: does the IP use one IRQ for up, low and critical thresholds?
- * @adc:      do the sensors only output adc code (instead of temperature)?
- * @srot_split: does the IP neatly splits the register space into SROT and TM,
- *              with SROT only being available to secure boot firmware?
- * @has_watchdog: does this IP support watchdog functionality?
- * @max_sensors: maximum sensors supported by this version of the IP
- * @trip_min_temp: minimum trip temperature supported by this version of the IP
- * @trip_max_temp: maximum trip temperature supported by this version of the IP
- */
+ 
 struct tsens_features {
 	unsigned int ver_major;
 	unsigned int crit_int:1;
@@ -521,14 +486,7 @@ struct tsens_features {
 	int trip_max_temp;
 };
 
-/**
- * struct tsens_plat_data - tsens compile-time platform data
- * @num_sensors: Number of sensors supported by platform
- * @ops: operations the tsens instance supports
- * @hw_ids: Subset of sensors ids supported by platform, if not the first n
- * @feat: features of the IP
- * @fields: bitfield locations
- */
+ 
 struct tsens_plat_data {
 	const u32		num_sensors;
 	const struct tsens_ops	*ops;
@@ -537,35 +495,13 @@ struct tsens_plat_data {
 	const struct reg_field		*fields;
 };
 
-/**
- * struct tsens_context - Registers to be saved/restored across a context loss
- * @threshold: Threshold register value
- * @control: Control register value
- */
+ 
 struct tsens_context {
 	int	threshold;
 	int	control;
 };
 
-/**
- * struct tsens_priv - private data for each instance of the tsens IP
- * @dev: pointer to struct device
- * @num_sensors: number of sensors enabled on this device
- * @tm_map: pointer to TM register address space
- * @srot_map: pointer to SROT register address space
- * @tm_offset: deal with old device trees that don't address TM and SROT
- *             address space separately
- * @ul_lock: lock while processing upper/lower threshold interrupts
- * @crit_lock: lock while processing critical threshold interrupts
- * @rf: array of regmap_fields used to store value of the field
- * @ctx: registers to be saved and restored during suspend/resume
- * @feat: features of the IP
- * @fields: bitfield locations
- * @ops: pointer to list of callbacks supported by this device
- * @debug_root: pointer to debugfs dentry for all tsens
- * @debug: pointer to debugfs dentry for tsens controller
- * @sensor: list of sensors attached to this device
- */
+ 
 struct tsens_priv {
 	struct device			*dev;
 	u32				num_sensors;
@@ -573,7 +509,7 @@ struct tsens_priv {
 	struct regmap			*srot_map;
 	u32				tm_offset;
 
-	/* lock for upper/lower threshold interrupts */
+	 
 	spinlock_t			ul_lock;
 
 	struct regmap_field		*rf[MAX_REGFIELDS];
@@ -588,35 +524,21 @@ struct tsens_priv {
 	struct tsens_sensor		sensor[];
 };
 
-/**
- * struct tsens_single_value - internal representation of a single field inside nvmem calibration data
- * @idx: index into the u32 data array
- * @shift: the shift of the first bit in the value
- * @blob: index of the data blob to use for this cell
- */
+ 
 struct tsens_single_value {
 	u8 idx;
 	u8 shift;
 	u8 blob;
 };
 
-/**
- * struct tsens_legacy_calibration_format - description of calibration data used when parsing the legacy nvmem blob
- * @base_len: the length of the base fields inside calibration data
- * @base_shift: the shift to be applied to base data
- * @sp_len: the length of the sN_pM fields inside calibration data
- * @mode: descriptor of the calibration mode field
- * @invalid: descriptor of the calibration mode invalid field
- * @base: descriptors of the base0 and base1 fields
- * @sp: descriptors of the sN_pM fields
- */
+ 
 struct tsens_legacy_calibration_format {
 	unsigned int base_len;
 	unsigned int base_shift;
 	unsigned int sp_len;
-	/* just two bits */
+	 
 	struct tsens_single_value mode;
-	/* on all platforms except 8974 invalid is the third bit of what downstream calls 'mode' */
+	 
 	struct tsens_single_value invalid;
 	struct tsens_single_value base[2];
 	struct tsens_single_value sp[][2];
@@ -635,16 +557,16 @@ int init_common(struct tsens_priv *priv);
 int get_temp_tsens_valid(const struct tsens_sensor *s, int *temp);
 int get_temp_common(const struct tsens_sensor *s, int *temp);
 
-/* TSENS target */
+ 
 extern struct tsens_plat_data data_8960;
 
-/* TSENS v0.1 targets */
+ 
 extern struct tsens_plat_data data_8226, data_8909, data_8916, data_8939, data_8974, data_9607;
 
-/* TSENS v1 targets */
+ 
 extern struct tsens_plat_data data_tsens_v1, data_8976, data_8956;
 
-/* TSENS v2 targets */
+ 
 extern struct tsens_plat_data data_8996, data_ipq8074, data_tsens_v2;
 
-#endif /* __QCOM_TSENS_H__ */
+#endif  

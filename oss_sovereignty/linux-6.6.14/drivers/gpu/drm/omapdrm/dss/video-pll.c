@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -27,28 +25,25 @@ struct dss_video_pll {
 
 static void dss_dpll_enable_scp_clk(struct dss_video_pll *vpll)
 {
-	REG_MOD(vpll->clkctrl_base, 1, 14, 14); /* CIO_CLK_ICG */
+	REG_MOD(vpll->clkctrl_base, 1, 14, 14);  
 }
 
 static void dss_dpll_disable_scp_clk(struct dss_video_pll *vpll)
 {
-	REG_MOD(vpll->clkctrl_base, 0, 14, 14); /* CIO_CLK_ICG */
+	REG_MOD(vpll->clkctrl_base, 0, 14, 14);  
 }
 
 static void dss_dpll_power_enable(struct dss_video_pll *vpll)
 {
-	REG_MOD(vpll->clkctrl_base, 2, 31, 30); /* PLL_POWER_ON_ALL */
+	REG_MOD(vpll->clkctrl_base, 2, 31, 30);  
 
-	/*
-	 * DRA7x PLL CTRL's PLL_PWR_STATUS seems to always return 0,
-	 * so we have to use fixed delay here.
-	 */
+	 
 	msleep(1);
 }
 
 static void dss_dpll_power_disable(struct dss_video_pll *vpll)
 {
-	REG_MOD(vpll->clkctrl_base, 0, 31, 30);	/* PLL_POWER_OFF */
+	REG_MOD(vpll->clkctrl_base, 0, 31, 30);	 
 }
 
 static int dss_video_pll_enable(struct dss_pll *pll)
@@ -143,19 +138,19 @@ struct dss_pll *dss_video_pll_init(struct dss_device *dss,
 	struct dss_pll *pll;
 	int r;
 
-	/* PLL CONTROL */
+	 
 
 	pll_base = devm_platform_ioremap_resource_byname(pdev, reg_name[id]);
 	if (IS_ERR(pll_base))
 		return ERR_CAST(pll_base);
 
-	/* CLOCK CONTROL */
+	 
 
 	clkctrl_base = devm_platform_ioremap_resource_byname(pdev, clkctrl_name[id]);
 	if (IS_ERR(clkctrl_base))
 		return ERR_CAST(clkctrl_base);
 
-	/* CLKIN */
+	 
 
 	clk = devm_clk_get(&pdev->dev, clkin_name[id]);
 	if (IS_ERR(clk)) {

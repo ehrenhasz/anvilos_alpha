@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Silicon Image SiI8620 HDMI/MHL bridge driver
- *
- * Copyright (C) 2015, Samsung Electronics Co., Ltd.
- * Andrzej Hajda <a.hajda@samsung.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 
@@ -69,7 +64,7 @@ struct sii8620 {
 	struct gpio_desc *gpio_reset;
 	struct gpio_desc *gpio_int;
 	struct regulator_bulk_data supplies[2];
-	struct mutex lock; /* context lock, protects fields below */
+	struct mutex lock;  
 	int error;
 	unsigned int use_packed_pixel:1;
 	enum sii8620_mode mode;
@@ -118,14 +113,14 @@ struct sii8620_mt_msg {
 };
 
 static const u8 sii8620_i2c_page[] = {
-	0x39, /* Main System */
-	0x3d, /* TDM and HSIC */
-	0x49, /* TMDS Receiver, MHL EDID */
-	0x4d, /* eMSC, HDCP, HSIC */
-	0x5d, /* MHL Spec */
-	0x64, /* MHL CBUS */
-	0x59, /* Hardware TPI (Transmitter Programming Interface) */
-	0x61, /* eCBUS-S, eCBUS-D */
+	0x39,  
+	0x3d,  
+	0x49,  
+	0x4d,  
+	0x5d,  
+	0x64,  
+	0x59,  
+	0x61,  
 };
 
 static void sii8620_fetch_edid(struct sii8620 *ctx);
@@ -469,7 +464,7 @@ static void sii8620_mt_read_devcap_send(struct sii8620 *ctx,
 	);
 }
 
-/* copy src to dst and set changed bits in src */
+ 
 static void sii8620_update_array(u8 *dst, u8 *src, int count)
 {
 	while (--count >= 0) {
@@ -2001,7 +1996,7 @@ static void sii8620_irq_ddc(struct sii8620 *ctx)
 	sii8620_write(ctx, REG_INTR3, stat);
 }
 
-/* endian agnostic, non-volatile version of test_bit */
+ 
 static bool sii8620_test_bit(unsigned int nr, const u8 *addr)
 {
 	return 1 & (addr[nr / BITS_PER_BYTE] >> (nr % BITS_PER_BYTE));
@@ -2166,9 +2161,9 @@ static int sii8620_extcon_init(struct sii8620 *ctx)
 	struct device_node *musb, *muic;
 	int ret;
 
-	/* get micro-USB connector node */
+	 
 	musb = of_graph_get_remote_node(ctx->dev->of_node, 1, -1);
-	/* next get micro-USB Interface Controller node */
+	 
 	muic = of_get_next_parent(musb);
 
 	if (!muic) {

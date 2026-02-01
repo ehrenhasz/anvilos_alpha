@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2004 Topspin Corporation.  All rights reserved.
- */
+ 
+ 
 
 #ifndef IB_PACK_H
 #define IB_PACK_H
@@ -35,31 +33,23 @@ struct ib_field {
 #define RESERVED \
 	.field_name          = "reserved"
 
-/*
- * This macro cleans up the definitions of constants for BTH opcodes.
- * It is used to define constants such as IB_OPCODE_UD_SEND_ONLY,
- * which becomes IB_OPCODE_UD + IB_OPCODE_SEND_ONLY, and this gives
- * the correct value.
- *
- * In short, user code should use the constants defined using the
- * macro rather than worrying about adding together other constants.
-*/
+ 
 #define IB_OPCODE(transport, op) \
 	IB_OPCODE_ ## transport ## _ ## op = \
 		IB_OPCODE_ ## transport + IB_OPCODE_ ## op
 
 enum {
-	/* transport types -- just used to define real constants */
+	 
 	IB_OPCODE_RC                                = 0x00,
 	IB_OPCODE_UC                                = 0x20,
 	IB_OPCODE_RD                                = 0x40,
 	IB_OPCODE_UD                                = 0x60,
-	/* per IBTA 1.3 vol 1 Table 38, A10.3.2 */
+	 
 	IB_OPCODE_CNP                               = 0x80,
-	/* Manufacturer specific */
+	 
 	IB_OPCODE_MSP                               = 0xe0,
 
-	/* operations -- just used to define real constants */
+	 
 	IB_OPCODE_SEND_FIRST                        = 0x00,
 	IB_OPCODE_SEND_MIDDLE                       = 0x01,
 	IB_OPCODE_SEND_LAST                         = 0x02,
@@ -81,16 +71,15 @@ enum {
 	IB_OPCODE_ATOMIC_ACKNOWLEDGE                = 0x12,
 	IB_OPCODE_COMPARE_SWAP                      = 0x13,
 	IB_OPCODE_FETCH_ADD                         = 0x14,
-	/* opcode 0x15 is reserved */
+	 
 	IB_OPCODE_SEND_LAST_WITH_INVALIDATE         = 0x16,
 	IB_OPCODE_SEND_ONLY_WITH_INVALIDATE         = 0x17,
 	IB_OPCODE_FLUSH                             = 0x1C,
 	IB_OPCODE_ATOMIC_WRITE                      = 0x1D,
 
-	/* real constants follow -- see comment about above IB_OPCODE()
-	   macro for more details */
+	 
 
-	/* RC */
+	 
 	IB_OPCODE(RC, SEND_FIRST),
 	IB_OPCODE(RC, SEND_MIDDLE),
 	IB_OPCODE(RC, SEND_LAST),
@@ -117,7 +106,7 @@ enum {
 	IB_OPCODE(RC, FLUSH),
 	IB_OPCODE(RC, ATOMIC_WRITE),
 
-	/* UC */
+	 
 	IB_OPCODE(UC, SEND_FIRST),
 	IB_OPCODE(UC, SEND_MIDDLE),
 	IB_OPCODE(UC, SEND_LAST),
@@ -131,7 +120,7 @@ enum {
 	IB_OPCODE(UC, RDMA_WRITE_ONLY),
 	IB_OPCODE(UC, RDMA_WRITE_ONLY_WITH_IMMEDIATE),
 
-	/* RD */
+	 
 	IB_OPCODE(RD, SEND_FIRST),
 	IB_OPCODE(RD, SEND_MIDDLE),
 	IB_OPCODE(RD, SEND_LAST),
@@ -155,7 +144,7 @@ enum {
 	IB_OPCODE(RD, FETCH_ADD),
 	IB_OPCODE(RD, FLUSH),
 
-	/* UD */
+	 
 	IB_OPCODE(UD, SEND_ONLY),
 	IB_OPCODE(UD, SEND_ONLY_WITH_IMMEDIATE)
 };
@@ -286,4 +275,4 @@ int ib_ud_header_pack(struct ib_ud_header *header,
 int ib_ud_header_unpack(void                *buf,
 			struct ib_ud_header *header);
 
-#endif /* IB_PACK_H */
+#endif  

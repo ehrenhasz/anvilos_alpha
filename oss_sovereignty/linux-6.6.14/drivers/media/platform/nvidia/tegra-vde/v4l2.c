@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NVIDIA Tegra Video decoder driver
- *
- * Copyright (C) 2019-2022 Dmitry Osipenko <digetx@gmail.com>
- *
- * Based on Cedrus driver by Bootlin.
- * Copyright (C) 2016 Florent Revest <florent.revest@free-electrons.com>
- * Copyright (C) 2018 Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- *
- * Based on Rockchip driver by Collabora.
- * Copyright (C) 2019 Boris Brezillon <boris.brezillon@collabora.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/slab.h>
@@ -157,10 +146,7 @@ static int tegra_buf_init(struct vb2_buffer *vb)
 	int err;
 
 	if (V4L2_TYPE_IS_CAPTURE(vq->type) && vb->num_planes > 1) {
-		/*
-		 * Tegra decoder writes auxiliary data for I/P frames.
-		 * This data is needed for decoding of B frames.
-		 */
+		 
 		err = tegra_vde_alloc_bo(vde, &tb->aux, DMA_FROM_DEVICE,
 					 vb2_plane_size(vb, 1));
 		if (err)
@@ -256,11 +242,7 @@ static int tegra_buf_prepare(struct vb2_buffer *vb)
 		if (V4L2_TYPE_IS_OUTPUT(vq->type)) {
 			vb_data = vb2_plane_vaddr(vb, i);
 
-			/*
-			 * Hardware requires zero-padding of coded data.
-			 * Otherwise it will fail to parse the trailing
-			 * data and abort the decoding.
-			 */
+			 
 			if (vb_data)
 				memset(vb_data + offset + size, 0,
 				       hw_size - offset - size);
@@ -342,13 +324,7 @@ static int tegra_queue_init(void *priv,
 	unsigned long dma_attrs;
 	int err;
 
-	/*
-	 * TODO: Switch to use of vb2_dma_contig_memops uniformly once we
-	 * will add IOMMU_DOMAIN support for video decoder to tegra-smmu
-	 * driver. For now we need to stick with SG ops in order to be able
-	 * to get SGT table easily. This is suboptimal since SG mappings are
-	 * wasting CPU cache and we don't need that caching.
-	 */
+	 
 	if (vde->domain)
 		mem_ops = &vb2_dma_sg_memops;
 	else
@@ -376,11 +352,7 @@ static int tegra_queue_init(void *priv,
 		return err;
 	}
 
-	/*
-	 * We may need to zero the end of bitstream in kernel if userspace
-	 * doesn't do that, hence kmap is needed for the coded data. It's not
-	 * needed for framebuffers.
-	 */
+	 
 	dma_attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
 
 	dst_vq->buf_struct_size = sizeof(struct tegra_m2m_buffer);
@@ -448,13 +420,7 @@ static void tegra_fill_pixfmt_mp(struct v4l2_pix_format_mplane *pixfmt,
 			unsigned int hdiv = (i == 0) ? 1 : 2;
 			unsigned int vdiv = (i == 0) ? 1 : 2;
 
-			/*
-			 * VDE is connected to Graphics Memory using 128bit port,
-			 * all memory accesses are made using 16B atoms.
-			 *
-			 * V4L requires Cb/Cr strides to be exactly half of the
-			 * Y stride, hence we're aligning Y to 16B x 2.
-			 */
+			 
 			plane = &pixfmt->plane_fmt[i];
 			plane->bytesperline = ALIGN(width, VDE_ATOM * 2) / hdiv;
 			plane->sizeimage = plane->bytesperline * height / vdiv;
@@ -538,11 +504,7 @@ static int tegra_try_decoded_fmt(struct file *file, void *priv,
 	const struct tegra_coded_fmt_desc *coded_desc;
 	unsigned int i;
 
-	/*
-	 * The codec context should point to a coded format desc, if the format
-	 * on the coded end has not been set yet, it should point to the
-	 * default value.
-	 */
+	 
 	coded_desc = ctx->coded_fmt_desc;
 	if (WARN_ON(!coded_desc))
 		return -EINVAL;
@@ -558,7 +520,7 @@ static int tegra_try_decoded_fmt(struct file *file, void *priv,
 	if (i == coded_desc->num_decoded_fmts)
 		pix_mp->pixelformat = coded_desc->decoded_fmts[0];
 
-	/* always apply the frmsize constraint of the coded end */
+	 
 	v4l2_apply_frmsize_constraints(&pix_mp->width,
 				       &pix_mp->height,
 				       &coded_desc->frmsize);
@@ -577,7 +539,7 @@ static int tegra_s_decoded_fmt(struct file *file, void *priv,
 	struct vb2_queue *vq;
 	int err;
 
-	/* change not allowed if queue is busy */
+	 
 	vq = v4l2_m2m_get_vq(ctx->fh.m2m_ctx,
 			     V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 	if (vb2_is_busy(vq))
@@ -665,22 +627,14 @@ static int tegra_s_coded_fmt(struct file *file, void *priv,
 	struct v4l2_format *cap_fmt;
 	int err;
 
-	/*
-	 * In order to support dynamic resolution change, the decoder admits
-	 * a resolution change, as long as the pixelformat remains. Can't be
-	 * done if streaming.
-	 */
+	 
 	vq = v4l2_m2m_get_vq(m2m_ctx, V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE);
 	if (vb2_is_streaming(vq) ||
 	    (vb2_is_busy(vq) &&
 	     f->fmt.pix_mp.pixelformat != ctx->coded_fmt.fmt.pix_mp.pixelformat))
 		return -EBUSY;
 
-	/*
-	 * Since format change on the OUTPUT queue will reset the CAPTURE
-	 * queue, we can't allow doing so when the CAPTURE queue has buffers
-	 * allocated.
-	 */
+	 
 	peer_vq = v4l2_m2m_get_vq(m2m_ctx, V4L2_BUF_TYPE_VIDEO_CAPTURE_MPLANE);
 	if (vb2_is_busy(peer_vq))
 		return -EBUSY;
@@ -696,18 +650,10 @@ static int tegra_s_coded_fmt(struct file *file, void *priv,
 	ctx->coded_fmt_desc = desc;
 	ctx->coded_fmt = *f;
 
-	/*
-	 * Current decoded format might have become invalid with newly
-	 * selected codec, so reset it to default just to be safe and
-	 * keep internal driver state sane. User is mandated to set
-	 * the decoded format again after we return, so we don't need
-	 * anything smarter.
-	 *
-	 * Note that this will propagates any size changes to the decoded format.
-	 */
+	 
 	tegra_reset_decoded_fmt(ctx);
 
-	/* propagate colorspace information to capture */
+	 
 	cap_fmt = &ctx->decoded_fmt;
 	cap_fmt->fmt.pix_mp.xfer_func = f->fmt.pix_mp.xfer_func;
 	cap_fmt->fmt.pix_mp.ycbcr_enc = f->fmt.pix_mp.ycbcr_enc;

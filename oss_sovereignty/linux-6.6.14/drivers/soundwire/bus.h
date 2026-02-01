@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause) */
-/* Copyright(c) 2015-17 Intel Corporation. */
+ 
+ 
 
 #ifndef __SDW_BUS_H
 #define __SDW_BUS_H
@@ -48,18 +48,7 @@ enum {
 	SDW_MSG_FLAG_WRITE,
 };
 
-/**
- * struct sdw_msg - Message structure
- * @addr: Register address accessed in the Slave
- * @len: number of messages
- * @dev_num: Slave device number
- * @addr_page1: SCP address page 1 Slave register
- * @addr_page2: SCP address page 2 Slave register
- * @flags: transfer flags, indicate if xfer is read or write
- * @buf: message data buffer
- * @ssp_sync: Send message at SSP (Stream Synchronization Point)
- * @page: address requires paging
- */
+ 
 struct sdw_msg {
 	u16 addr;
 	u16 len;
@@ -81,19 +70,7 @@ extern int sdw_cols[SDW_FRAME_COLS];
 int sdw_find_row_index(int row);
 int sdw_find_col_index(int col);
 
-/**
- * sdw_port_runtime: Runtime port parameters for Master or Slave
- *
- * @num: Port number. For audio streams, valid port number ranges from
- * [1,14]
- * @ch_mask: Channel mask
- * @transport_params: Transport parameters
- * @port_params: Port parameters
- * @port_node: List node for Master or Slave port_list
- *
- * SoundWire spec has no mention of ports for Master interface but the
- * concept is logically extended.
- */
+ 
 struct sdw_port_runtime {
 	int num;
 	int ch_mask;
@@ -102,16 +79,7 @@ struct sdw_port_runtime {
 	struct list_head port_node;
 };
 
-/**
- * sdw_slave_runtime: Runtime Stream parameters for Slave
- *
- * @slave: Slave handle
- * @direction: Data direction for Slave
- * @ch_count: Number of channels handled by the Slave for
- * this stream
- * @m_rt_node: sdw_master_runtime list node
- * @port_list: List of Slave Ports configured for this stream
- */
+ 
 struct sdw_slave_runtime {
 	struct sdw_slave *slave;
 	enum sdw_data_direction direction;
@@ -120,19 +88,7 @@ struct sdw_slave_runtime {
 	struct list_head port_list;
 };
 
-/**
- * sdw_master_runtime: Runtime stream parameters for Master
- *
- * @bus: Bus handle
- * @stream: Stream runtime handle
- * @direction: Data direction for Master
- * @ch_count: Number of channels handled by the Master for
- * this stream, can be zero.
- * @slave_rt_list: Slave runtime list
- * @port_list: List of Master Ports configured for this stream, can be zero.
- * @stream_node: sdw_stream_runtime master_list node
- * @bus_node: sdw_bus m_rt_list node
- */
+ 
 struct sdw_master_runtime {
 	struct sdw_bus *bus;
 	struct sdw_stream_runtime *stream;
@@ -165,7 +121,7 @@ int sdw_transfer_defer(struct sdw_bus *bus, struct sdw_msg *msg);
 int sdw_fill_msg(struct sdw_msg *msg, struct sdw_slave *slave,
 		 u32 addr, size_t count, u16 dev_num, u8 flags, u8 *buf);
 
-/* Fill transport parameter data structure */
+ 
 static inline void sdw_fill_xport_params(struct sdw_transport_params *params,
 					 int port_num, bool grp_ctrl_valid,
 					 int grp_ctrl, int sample_int,
@@ -185,7 +141,7 @@ static inline void sdw_fill_xport_params(struct sdw_transport_params *params,
 	params->lane_ctrl = lane_ctrl;
 }
 
-/* Fill port parameter data structure */
+ 
 static inline void sdw_fill_port_params(struct sdw_port_params *params,
 					int port_num, int bps,
 					int flow_mode, int data_mode)
@@ -196,14 +152,11 @@ static inline void sdw_fill_port_params(struct sdw_port_params *params,
 	params->data_mode = data_mode;
 }
 
-/* broadcast read/write for tests */
+ 
 int sdw_bread_no_pm_unlocked(struct sdw_bus *bus, u16 dev_num, u32 addr);
 int sdw_bwrite_no_pm_unlocked(struct sdw_bus *bus, u16 dev_num, u32 addr, u8 value);
 
-/*
- * At the moment we only track Master-initiated hw_reset.
- * Additional fields can be added as needed
- */
+ 
 #define SDW_UNATTACH_REQUEST_MASTER_RESET	BIT(0)
 
 void sdw_clear_slave_status(struct sdw_bus *bus, u32 request);
@@ -211,4 +164,4 @@ int sdw_slave_modalias(const struct sdw_slave *slave, char *buf, size_t size);
 void sdw_compute_slave_ports(struct sdw_master_runtime *m_rt,
 			     struct sdw_transport_data *t_data);
 
-#endif /* __SDW_BUS_H */
+#endif  

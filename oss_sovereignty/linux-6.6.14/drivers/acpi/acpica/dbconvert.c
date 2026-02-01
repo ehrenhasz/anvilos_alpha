@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/*******************************************************************************
- *
- * Module Name: dbconvert - debugger miscellaneous conversion routines
- *
- ******************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 #include "accommon.h"
@@ -13,23 +9,12 @@
 ACPI_MODULE_NAME("dbconvert")
 
 #define DB_DEFAULT_PKG_ELEMENTS     33
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_hex_char_to_value
- *
- * PARAMETERS:  hex_char            - Ascii Hex digit, 0-9|a-f|A-F
- *              return_value        - Where the converted value is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Convert a single hex character to a 4-bit number (0-16).
- *
- ******************************************************************************/
+ 
 acpi_status acpi_db_hex_char_to_value(int hex_char, u8 *return_value)
 {
 	u8 value;
 
-	/* Digit must be ascii [0-9a-fA-F] */
+	 
 
 	if (!isxdigit(hex_char)) {
 		return (AE_BAD_HEX_CONSTANT);
@@ -45,19 +30,7 @@ acpi_status acpi_db_hex_char_to_value(int hex_char, u8 *return_value)
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_hex_byte_to_binary
- *
- * PARAMETERS:  hex_byte            - Double hex digit (0x00 - 0xFF) in format:
- *                                    hi_byte then lo_byte.
- *              return_value        - Where the converted value is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Convert two hex characters to an 8 bit number (0 - 255).
- *
- ******************************************************************************/
+ 
 
 static acpi_status acpi_db_hex_byte_to_binary(char *hex_byte, u8 *return_value)
 {
@@ -65,14 +38,14 @@ static acpi_status acpi_db_hex_byte_to_binary(char *hex_byte, u8 *return_value)
 	u8 local1;
 	acpi_status status;
 
-	/* High byte */
+	 
 
 	status = acpi_db_hex_char_to_value(hex_byte[0], &local0);
 	if (ACPI_FAILURE(status)) {
 		return (status);
 	}
 
-	/* Low byte */
+	 
 
 	status = acpi_db_hex_char_to_value(hex_byte[1], &local1);
 	if (ACPI_FAILURE(status)) {
@@ -83,19 +56,7 @@ static acpi_status acpi_db_hex_byte_to_binary(char *hex_byte, u8 *return_value)
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_convert_to_buffer
- *
- * PARAMETERS:  string              - Input string to be converted
- *              object              - Where the buffer object is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Convert a string to a buffer object. String is treated a list
- *              of buffer elements, each separated by a space or comma.
- *
- ******************************************************************************/
+ 
 
 static acpi_status
 acpi_db_convert_to_buffer(char *string, union acpi_object *object)
@@ -106,11 +67,11 @@ acpi_db_convert_to_buffer(char *string, union acpi_object *object)
 	u8 *buffer;
 	acpi_status status;
 
-	/* Skip all preceding white space */
+	 
 
 	acpi_ut_remove_whitespace(&string);
 
-	/* Generate the final buffer length */
+	 
 
 	for (i = 0, length = 0; string[i];) {
 		i += 2;
@@ -126,7 +87,7 @@ acpi_db_convert_to_buffer(char *string, union acpi_object *object)
 		return (AE_NO_MEMORY);
 	}
 
-	/* Convert the command line bytes to the buffer */
+	 
 
 	for (i = 0, j = 0; string[i];) {
 		status = acpi_db_hex_byte_to_binary(&string[i], &buffer[j]);
@@ -148,19 +109,7 @@ acpi_db_convert_to_buffer(char *string, union acpi_object *object)
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_convert_to_package
- *
- * PARAMETERS:  string              - Input string to be converted
- *              object              - Where the package object is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Convert a string to a package object. Handles nested packages
- *              via recursion with acpi_db_convert_to_object.
- *
- ******************************************************************************/
+ 
 
 acpi_status acpi_db_convert_to_package(char *string, union acpi_object *object)
 {
@@ -182,7 +131,7 @@ acpi_status acpi_db_convert_to_package(char *string, union acpi_object *object)
 			break;
 		}
 
-		/* Recursive call to convert each package element */
+		 
 
 		status = acpi_db_convert_to_object(type, this, &elements[i]);
 		if (ACPI_FAILURE(status)) {
@@ -200,23 +149,7 @@ acpi_status acpi_db_convert_to_package(char *string, union acpi_object *object)
 	return (AE_OK);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_convert_to_object
- *
- * PARAMETERS:  type                - Object type as determined by parser
- *              string              - Input string to be converted
- *              object              - Where the new object is returned
- *
- * RETURN:      Status
- *
- * DESCRIPTION: Convert a typed and tokenized string to a union acpi_object. Typing:
- *              1) String objects were surrounded by quotes.
- *              2) Buffer objects were surrounded by parentheses.
- *              3) Package objects were surrounded by brackets "[]".
- *              4) All standalone tokens are treated as integers.
- *
- ******************************************************************************/
+ 
 
 acpi_status
 acpi_db_convert_to_object(acpi_object_type type,
@@ -252,17 +185,7 @@ acpi_db_convert_to_object(acpi_object_type type,
 	return (status);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_encode_pld_buffer
- *
- * PARAMETERS:  pld_info            - _PLD buffer struct (Using local struct)
- *
- * RETURN:      Encode _PLD buffer suitable for return value from _PLD
- *
- * DESCRIPTION: Bit-packs a _PLD buffer struct. Used to test the _PLD macros
- *
- ******************************************************************************/
+ 
 
 u8 *acpi_db_encode_pld_buffer(struct acpi_pld_info *pld_info)
 {
@@ -274,7 +197,7 @@ u8 *acpi_db_encode_pld_buffer(struct acpi_pld_info *pld_info)
 		return (NULL);
 	}
 
-	/* First 32 bits */
+	 
 
 	dword = 0;
 	ACPI_PLD_SET_REVISION(&dword, pld_info->revision);
@@ -284,14 +207,14 @@ u8 *acpi_db_encode_pld_buffer(struct acpi_pld_info *pld_info)
 	ACPI_PLD_SET_BLUE(&dword, pld_info->blue);
 	ACPI_MOVE_32_TO_32(&buffer[0], &dword);
 
-	/* Second 32 bits */
+	 
 
 	dword = 0;
 	ACPI_PLD_SET_WIDTH(&dword, pld_info->width);
 	ACPI_PLD_SET_HEIGHT(&dword, pld_info->height);
 	ACPI_MOVE_32_TO_32(&buffer[1], &dword);
 
-	/* Third 32 bits */
+	 
 
 	dword = 0;
 	ACPI_PLD_SET_USER_VISIBLE(&dword, pld_info->user_visible);
@@ -307,7 +230,7 @@ u8 *acpi_db_encode_pld_buffer(struct acpi_pld_info *pld_info)
 	ACPI_PLD_SET_BAY(&dword, pld_info->bay);
 	ACPI_MOVE_32_TO_32(&buffer[2], &dword);
 
-	/* Fourth 32 bits */
+	 
 
 	dword = 0;
 	ACPI_PLD_SET_EJECTABLE(&dword, pld_info->ejectable);
@@ -321,7 +244,7 @@ u8 *acpi_db_encode_pld_buffer(struct acpi_pld_info *pld_info)
 
 	if (pld_info->revision >= 2) {
 
-		/* Fifth 32 bits */
+		 
 
 		dword = 0;
 		ACPI_PLD_SET_VERT_OFFSET(&dword, pld_info->vertical_offset);
@@ -332,17 +255,7 @@ u8 *acpi_db_encode_pld_buffer(struct acpi_pld_info *pld_info)
 	return (ACPI_CAST_PTR(u8, buffer));
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_db_dump_pld_buffer
- *
- * PARAMETERS:  obj_desc            - Object returned from _PLD method
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Dumps formatted contents of a _PLD return buffer.
- *
- ******************************************************************************/
+ 
 
 #define ACPI_PLD_OUTPUT     "%20s : %-6X\n"
 
@@ -353,7 +266,7 @@ void acpi_db_dump_pld_buffer(union acpi_object *obj_desc)
 	u8 *new_buffer;
 	acpi_status status;
 
-	/* Object must be of type Package with at least one Buffer element */
+	 
 
 	if (obj_desc->type != ACPI_TYPE_PACKAGE) {
 		return;
@@ -364,7 +277,7 @@ void acpi_db_dump_pld_buffer(union acpi_object *obj_desc)
 		return;
 	}
 
-	/* Convert _PLD buffer to local _PLD struct */
+	 
 
 	status = acpi_decode_pld_buffer(buffer_desc->buffer.pointer,
 					buffer_desc->buffer.length, &pld_info);
@@ -372,14 +285,14 @@ void acpi_db_dump_pld_buffer(union acpi_object *obj_desc)
 		return;
 	}
 
-	/* Encode local _PLD struct back to a _PLD buffer */
+	 
 
 	new_buffer = acpi_db_encode_pld_buffer(pld_info);
 	if (!new_buffer) {
 		goto exit;
 	}
 
-	/* The two bit-packed buffers should match */
+	 
 
 	if (memcmp(new_buffer, buffer_desc->buffer.pointer,
 		   buffer_desc->buffer.length)) {
@@ -391,7 +304,7 @@ void acpi_db_dump_pld_buffer(union acpi_object *obj_desc)
 				    0);
 	}
 
-	/* First 32-bit dword */
+	 
 
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Revision", pld_info->revision);
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_IgnoreColor",
@@ -400,12 +313,12 @@ void acpi_db_dump_pld_buffer(union acpi_object *obj_desc)
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Green", pld_info->green);
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Blue", pld_info->blue);
 
-	/* Second 32-bit dword */
+	 
 
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Width", pld_info->width);
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Height", pld_info->height);
 
-	/* Third 32-bit dword */
+	 
 
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_UserVisible",
 		       pld_info->user_visible);
@@ -425,7 +338,7 @@ void acpi_db_dump_pld_buffer(union acpi_object *obj_desc)
 		       pld_info->group_position);
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Bay", pld_info->bay);
 
-	/* Fourth 32-bit dword */
+	 
 
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Ejectable", pld_info->ejectable);
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_EjectRequired",
@@ -438,7 +351,7 @@ void acpi_db_dump_pld_buffer(union acpi_object *obj_desc)
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Rotation", pld_info->rotation);
 	acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_Order", pld_info->order);
 
-	/* Fifth 32-bit dword */
+	 
 
 	if (buffer_desc->buffer.length > 16) {
 		acpi_os_printf(ACPI_PLD_OUTPUT, "PLD_VerticalOffset",

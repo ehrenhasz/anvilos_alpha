@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include "test_custom_sec_handlers.skel.h"
@@ -41,7 +41,7 @@ static int custom_attach_prog(const struct bpf_program *prog, long cookie,
 		return libbpf_get_error(*link);
 	case COOKIE_KPROBE:
 	case COOKIE_FALLBACK:
-		/* no auto-attach for SEC("xyz") and SEC("kprobe") */
+		 
 		*link = NULL;
 		return 0;
 	default:
@@ -105,19 +105,14 @@ void test_custom_sec_handlers(void)
 	ASSERT_GT(abc2_id, 0, "abc2_id");
 	ASSERT_GT(custom_id, 0, "custom_id");
 
-	/* override libbpf's handle of SEC("kprobe/...") but also allow pure
-	 * SEC("kprobe") due to "kprobe+" specifier. Register it as
-	 * TRACEPOINT, just for fun.
-	 */
+	 
 	opts.cookie = COOKIE_KPROBE;
 	kprobe_id = libbpf_register_prog_handler("kprobe+", BPF_PROG_TYPE_TRACEPOINT, 0, &opts);
-	/* fallback treats everything as BPF_PROG_TYPE_SYSCALL program to test
-	 * setting custom BPF_F_SLEEPABLE bit in preload handler
-	 */
+	 
 	opts.cookie = COOKIE_FALLBACK;
 	fallback_id = libbpf_register_prog_handler(NULL, BPF_PROG_TYPE_SYSCALL, 0, &opts);
 
-	if (!ASSERT_GT(fallback_id, 0, "fallback_id") /* || !ASSERT_GT(kprobe_id, 0, "kprobe_id")*/) {
+	if (!ASSERT_GT(fallback_id, 0, "fallback_id")  ) {
 		if (fallback_id > 0)
 			libbpf_unregister_prog_handler(fallback_id);
 		if (kprobe_id > 0)
@@ -125,7 +120,7 @@ void test_custom_sec_handlers(void)
 		return;
 	}
 
-	/* open skeleton and validate assumptions */
+	 
 	skel = test_custom_sec_handlers__open();
 	if (!ASSERT_OK_PTR(skel, "skel_open"))
 		goto cleanup;
@@ -141,12 +136,12 @@ void test_custom_sec_handlers(void)
 
 	skel->rodata->my_pid = getpid();
 
-	/* now attempt to load everything */
+	 
 	err = test_custom_sec_handlers__load(skel);
 	if (!ASSERT_OK(err, "skel_load"))
 		goto cleanup;
 
-	/* now try to auto-attach everything */
+	 
 	err = test_custom_sec_handlers__attach(skel);
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto cleanup;
@@ -155,17 +150,17 @@ void test_custom_sec_handlers(void)
 	ASSERT_EQ(errno, EOPNOTSUPP, "xyz_attach_err");
 	ASSERT_ERR_PTR(skel->links.xyz, "xyz_attach");
 
-	/* trigger programs */
+	 
 	usleep(1);
 
-	/* SEC("abc") is set to not auto-loaded */
+	 
 	ASSERT_FALSE(skel->bss->abc1_called, "abc1_called");
 	ASSERT_TRUE(skel->bss->abc2_called, "abc2_called");
 	ASSERT_TRUE(skel->bss->custom1_called, "custom1_called");
 	ASSERT_TRUE(skel->bss->custom2_called, "custom2_called");
-	/* SEC("kprobe") shouldn't be auto-attached */
+	 
 	ASSERT_FALSE(skel->bss->kprobe1_called, "kprobe1_called");
-	/* SEC("xyz") shouldn't be auto-attached */
+	 
 	ASSERT_FALSE(skel->bss->xyz_called, "xyz_called");
 
 cleanup:

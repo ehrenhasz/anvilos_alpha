@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Phoenix RC Flight Controller Adapter
- *
- * Copyright (C) 2018 Marcus Folkesson <marcus.folkesson@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -35,10 +31,10 @@ static void pxrc_usb_irq(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		/* success */
+		 
 		break;
 	case -ETIME:
-		/* this urb is timing out */
+		 
 		dev_dbg(&pxrc->intf->dev,
 			"%s - urb timed out - was the device unplugged?\n",
 			__func__);
@@ -47,7 +43,7 @@ static void pxrc_usb_irq(struct urb *urb)
 	case -ENOENT:
 	case -ESHUTDOWN:
 	case -EPIPE:
-		/* this urb is terminated, clean up */
+		 
 		dev_dbg(&pxrc->intf->dev, "%s - urb shutting down with status: %d\n",
 			__func__, urb->status);
 		return;
@@ -70,7 +66,7 @@ static void pxrc_usb_irq(struct urb *urb)
 	}
 
 exit:
-	/* Resubmit to fetch new fresh URBs */
+	 
 	error = usb_submit_urb(urb, GFP_ATOMIC);
 	if (error && error != -EPERM)
 		dev_err(&pxrc->intf->dev,
@@ -127,10 +123,7 @@ static int pxrc_probe(struct usb_interface *intf,
 	void *xfer_buf;
 	int error;
 
-	/*
-	 * Locate the endpoint information. This device only has an
-	 * interrupt endpoint.
-	 */
+	 
 	error = usb_find_common_endpoints(intf->cur_altsetting,
 					  NULL, NULL, &epirq, NULL);
 	if (error) {
@@ -201,7 +194,7 @@ static int pxrc_probe(struct usb_interface *intf,
 
 static void pxrc_disconnect(struct usb_interface *intf)
 {
-	/* All driver resources are devm-managed. */
+	 
 }
 
 static int pxrc_suspend(struct usb_interface *intf, pm_message_t message)

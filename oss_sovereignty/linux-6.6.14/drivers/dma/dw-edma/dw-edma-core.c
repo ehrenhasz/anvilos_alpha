@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2019 Synopsys, Inc. and/or its affiliates.
- * Synopsys DesignWare eDMA core driver
- *
- * Author: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -61,11 +56,11 @@ static struct dw_edma_burst *dw_edma_alloc_burst(struct dw_edma_chunk *chunk)
 
 	INIT_LIST_HEAD(&burst->list);
 	if (chunk->burst) {
-		/* Create and add new element into the linked list */
+		 
 		chunk->bursts_alloc++;
 		list_add_tail(&burst->list, &chunk->burst->list);
 	} else {
-		/* List head */
+		 
 		chunk->bursts_alloc = 0;
 		chunk->burst = burst;
 	}
@@ -85,12 +80,7 @@ static struct dw_edma_chunk *dw_edma_alloc_chunk(struct dw_edma_desc *desc)
 
 	INIT_LIST_HEAD(&chunk->list);
 	chunk->chan = chan;
-	/* Toggling change bit (CB) in each chunk, this is a mechanism to
-	 * inform the eDMA HW block that this is a new linked list ready
-	 * to be consumed.
-	 *  - Odd chunks originate CB equal to 0
-	 *  - Even chunks originate CB equal to 1
-	 */
+	 
 	chunk->cb = !(desc->chunks_alloc % 2);
 	if (chan->dir == EDMA_DIR_WRITE) {
 		chunk->ll_region.paddr = chip->ll_region_wr[chan->id].paddr;
@@ -101,7 +91,7 @@ static struct dw_edma_chunk *dw_edma_alloc_chunk(struct dw_edma_desc *desc)
 	}
 
 	if (desc->chunk) {
-		/* Create and add new element into the linked list */
+		 
 		if (!dw_edma_alloc_burst(chunk)) {
 			kfree(chunk);
 			return NULL;
@@ -109,7 +99,7 @@ static struct dw_edma_chunk *dw_edma_alloc_chunk(struct dw_edma_desc *desc)
 		desc->chunks_alloc++;
 		list_add_tail(&chunk->list, &desc->chunk->list);
 	} else {
-		/* List head */
+		 
 		chunk->burst = NULL;
 		desc->chunks_alloc = 0;
 		desc->chunk = chunk;
@@ -139,14 +129,14 @@ static void dw_edma_free_burst(struct dw_edma_chunk *chunk)
 {
 	struct dw_edma_burst *child, *_next;
 
-	/* Remove all the list elements */
+	 
 	list_for_each_entry_safe(child, _next, &chunk->burst->list, list) {
 		list_del(&child->list);
 		kfree(child);
 		chunk->bursts_alloc--;
 	}
 
-	/* Remove the list head */
+	 
 	kfree(child);
 	chunk->burst = NULL;
 }
@@ -158,7 +148,7 @@ static void dw_edma_free_chunk(struct dw_edma_desc *desc)
 	if (!desc->chunk)
 		return;
 
-	/* Remove all the list elements */
+	 
 	list_for_each_entry_safe(child, _next, &desc->chunk->list, list) {
 		dw_edma_free_burst(child);
 		list_del(&child->list);
@@ -166,7 +156,7 @@ static void dw_edma_free_chunk(struct dw_edma_desc *desc)
 		desc->chunks_alloc--;
 	}
 
-	/* Remove the list head */
+	 
 	kfree(child);
 	desc->chunk = NULL;
 }
@@ -283,17 +273,14 @@ static int dw_edma_device_terminate_all(struct dma_chan *dchan)
 	int err = 0;
 
 	if (!chan->configured) {
-		/* Do nothing */
+		 
 	} else if (chan->status == EDMA_ST_PAUSE) {
 		chan->status = EDMA_ST_IDLE;
 		chan->configured = false;
 	} else if (chan->status == EDMA_ST_IDLE) {
 		chan->configured = false;
 	} else if (dw_edma_core_ch_status(chan) == DMA_COMPLETE) {
-		/*
-		 * The channel is in a false BUSY state, probably didn't
-		 * receive or lost an interrupt
-		 */
+		 
 		chan->status = EDMA_ST_IDLE;
 		chan->configured = false;
 	} else if (chan->request > EDMA_REQ_PAUSE) {
@@ -375,32 +362,7 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
 	if (!chan->configured)
 		return NULL;
 
-	/*
-	 * Local Root Port/End-point              Remote End-point
-	 * +-----------------------+ PCIe bus +----------------------+
-	 * |                       |    +-+   |                      |
-	 * |    DEV_TO_MEM   Rx Ch <----+ +---+ Tx Ch  DEV_TO_MEM    |
-	 * |                       |    | |   |                      |
-	 * |    MEM_TO_DEV   Tx Ch +----+ +---> Rx Ch  MEM_TO_DEV    |
-	 * |                       |    +-+   |                      |
-	 * +-----------------------+          +----------------------+
-	 *
-	 * 1. Normal logic:
-	 * If eDMA is embedded into the DW PCIe RP/EP and controlled from the
-	 * CPU/Application side, the Rx channel (EDMA_DIR_READ) will be used
-	 * for the device read operations (DEV_TO_MEM) and the Tx channel
-	 * (EDMA_DIR_WRITE) - for the write operations (MEM_TO_DEV).
-	 *
-	 * 2. Inverted logic:
-	 * If eDMA is embedded into a Remote PCIe EP and is controlled by the
-	 * MWr/MRd TLPs sent from the CPU's PCIe host controller, the Tx
-	 * channel (EDMA_DIR_WRITE) will be used for the device read operations
-	 * (DEV_TO_MEM) and the Rx channel (EDMA_DIR_READ) - for the write
-	 * operations (MEM_TO_DEV).
-	 *
-	 * It is the client driver responsibility to choose a proper channel
-	 * for the DMA transfers.
-	 */
+	 
 	if (chan->dw->chip->flags & DW_EDMA_CHIP_LOCAL) {
 		if ((chan->dir == EDMA_DIR_READ && dir != DMA_DEV_TO_MEM) ||
 		    (chan->dir == EDMA_DIR_WRITE && dir != DMA_MEM_TO_DEV))
@@ -488,13 +450,7 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
 			} else if (xfer->type == EDMA_XFER_SCATTER_GATHER) {
 				src_addr += sg_dma_len(sg);
 				burst->dar = sg_dma_address(sg);
-				/* Unlike the typical assumption by other
-				 * drivers/IPs the peripheral memory isn't
-				 * a FIFO memory, in this case, it's a
-				 * linear memory and that why the source
-				 * and destination addresses are increased
-				 * by the same portion (data length)
-				 */
+				 
 			} else if (xfer->type == EDMA_XFER_INTERLEAVED) {
 				burst->dar = dst_addr;
 			}
@@ -505,13 +461,7 @@ dw_edma_device_transfer(struct dw_edma_transfer *xfer)
 			} else if (xfer->type == EDMA_XFER_SCATTER_GATHER) {
 				dst_addr += sg_dma_len(sg);
 				burst->sar = sg_dma_address(sg);
-				/* Unlike the typical assumption by other
-				 * drivers/IPs the peripheral memory isn't
-				 * a FIFO memory, in this case, it's a
-				 * linear memory and that why the source
-				 * and destination addresses are increased
-				 * by the same portion (data length)
-				 */
+				 
 			}  else if (xfer->type == EDMA_XFER_INTERLEAVED) {
 				burst->sar = src_addr;
 			}
@@ -612,8 +562,7 @@ static void dw_edma_done_interrupt(struct dw_edma_chan *chan)
 				vchan_cookie_complete(vd);
 			}
 
-			/* Continue transferring if there are remaining chunks or issued requests.
-			 */
+			 
 			chan->status = dw_edma_start_transfer(chan) ? EDMA_ST_BUSY : EDMA_ST_IDLE;
 			break;
 
@@ -781,7 +730,7 @@ static int dw_edma_channel_setup(struct dw_edma *dw, u32 wr_alloc, u32 rd_alloc)
 		dw_edma_core_ch_config(chan);
 	}
 
-	/* Set DMA channel capabilities */
+	 
 	dma_cap_zero(dma->cap_mask);
 	dma_cap_set(DMA_SLAVE, dma->cap_mask);
 	dma_cap_set(DMA_CYCLIC, dma->cap_mask);
@@ -792,7 +741,7 @@ static int dw_edma_channel_setup(struct dw_edma *dw, u32 wr_alloc, u32 rd_alloc)
 	dma->dst_addr_widths = BIT(DMA_SLAVE_BUSWIDTH_4_BYTES);
 	dma->residue_granularity = DMA_RESIDUE_GRANULARITY_DESCRIPTOR;
 
-	/* Set DMA channel callbacks */
+	 
 	dma->dev = chip->dev;
 	dma->device_alloc_chan_resources = dw_edma_alloc_chan_resources;
 	dma->device_free_chan_resources = dw_edma_free_chan_resources;
@@ -809,7 +758,7 @@ static int dw_edma_channel_setup(struct dw_edma *dw, u32 wr_alloc, u32 rd_alloc)
 
 	dma_set_max_seg_size(dma->dev, U32_MAX);
 
-	/* Register DMA device */
+	 
 	return dma_async_device_register(dma);
 }
 
@@ -848,7 +797,7 @@ static int dw_edma_irq_request(struct dw_edma *dw,
 		return -ENOMEM;
 
 	if (chip->nr_irqs == 1) {
-		/* Common IRQ shared among all channels */
+		 
 		irq = chip->ops->irq_vector(dev, 0);
 		err = request_irq(irq, dw_edma_interrupt_common,
 				  IRQF_SHARED, dw->name, &dw->irq[0]);
@@ -862,7 +811,7 @@ static int dw_edma_irq_request(struct dw_edma *dw,
 
 		dw->nr_irqs = 1;
 	} else {
-		/* Distribute IRQs equally among all channels */
+		 
 		int tmp = chip->nr_irqs;
 
 		while (tmp && (*wr_alloc + *rd_alloc) < ch_cnt) {
@@ -944,7 +893,7 @@ int dw_edma_probe(struct dw_edma_chip *chip)
 	dev_vdbg(dev, "Channels:\twrite=%d, read=%d\n",
 		 dw->wr_ch_cnt, dw->rd_ch_cnt);
 
-	/* Allocate channels */
+	 
 	dw->chan = devm_kcalloc(dev, dw->wr_ch_cnt + dw->rd_ch_cnt,
 				sizeof(*dw->chan), GFP_KERNEL);
 	if (!dw->chan)
@@ -953,20 +902,20 @@ int dw_edma_probe(struct dw_edma_chip *chip)
 	snprintf(dw->name, sizeof(dw->name), "dw-edma-core:%s",
 		 dev_name(chip->dev));
 
-	/* Disable eDMA, only to establish the ideal initial conditions */
+	 
 	dw_edma_core_off(dw);
 
-	/* Request IRQs */
+	 
 	err = dw_edma_irq_request(dw, &wr_alloc, &rd_alloc);
 	if (err)
 		return err;
 
-	/* Setup write/read channels */
+	 
 	err = dw_edma_channel_setup(dw, wr_alloc, rd_alloc);
 	if (err)
 		goto err_irq_free;
 
-	/* Turn debugfs on */
+	 
 	dw_edma_core_debugfs_on(dw);
 
 	chip->dw = dw;
@@ -988,18 +937,18 @@ int dw_edma_remove(struct dw_edma_chip *chip)
 	struct dw_edma *dw = chip->dw;
 	int i;
 
-	/* Skip removal if no private data found */
+	 
 	if (!dw)
 		return -ENODEV;
 
-	/* Disable eDMA */
+	 
 	dw_edma_core_off(dw);
 
-	/* Free irqs */
+	 
 	for (i = (dw->nr_irqs - 1); i >= 0; i--)
 		free_irq(chip->ops->irq_vector(dev, i), &dw->irq[i]);
 
-	/* Deregister eDMA device */
+	 
 	dma_async_device_unregister(&dw->dma);
 	list_for_each_entry_safe(chan, _chan, &dw->dma.channels,
 				 vc.chan.device_node) {

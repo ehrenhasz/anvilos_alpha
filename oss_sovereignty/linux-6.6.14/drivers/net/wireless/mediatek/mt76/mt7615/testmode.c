@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 Felix Fietkau <nbd@nbd.name> */
+
+ 
 
 #include "mt7615.h"
 #include "eeprom.h"
@@ -10,7 +10,7 @@ enum {
 	TM_CHANGED_TXPOWER,
 	TM_CHANGED_FREQ_OFFSET,
 
-	/* must be last */
+	 
 	NUM_TM_CHANGED
 };
 
@@ -188,7 +188,7 @@ mt7615_tm_set_tx_antenna(struct mt7615_phy *phy, bool en)
 			       (mask & BIT(i)) ? 0 : 0xa);
 	}
 
-	/* 2.4 GHz band */
+	 
 	mt76_rmw_field(dev, MT_ANT_SWITCH_CON(3), MT_ANT_SWITCH_CON_MODE(0),
 		       (mask & BIT(0)) ? 0x8 : 0x1b);
 	mt76_rmw_field(dev, MT_ANT_SWITCH_CON(4), MT_ANT_SWITCH_CON_MODE(2),
@@ -198,7 +198,7 @@ mt7615_tm_set_tx_antenna(struct mt7615_phy *phy, bool en)
 	mt76_rmw_field(dev, MT_ANT_SWITCH_CON(7), MT_ANT_SWITCH_CON_MODE1(2),
 		       (mask & BIT(3)) ? 0x6 : 0xf);
 
-	/* 5 GHz band */
+	 
 	mt76_rmw_field(dev, MT_ANT_SWITCH_CON(4), MT_ANT_SWITCH_CON_MODE(1),
 		       (mask & BIT(0)) ? 0xd : 0x1b);
 	mt76_rmw_field(dev, MT_ANT_SWITCH_CON(2), MT_ANT_SWITCH_CON_MODE(3),

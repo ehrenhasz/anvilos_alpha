@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 */
-/*
- * Copyright 2018 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #ifndef CODEC_V4L2_FWHT_H
 #define CODEC_V4L2_FWHT_H
@@ -15,7 +13,7 @@ struct v4l2_fwht_pixfmt_info {
 	unsigned int sizeimage_div;
 	unsigned int luma_alpha_step;
 	unsigned int chroma_step;
-	/* Chroma plane subsampling */
+	 
 	unsigned int width_div;
 	unsigned int height_div;
 	unsigned int components_num;

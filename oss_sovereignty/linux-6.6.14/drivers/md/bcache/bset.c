@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Code for working with individual keys, and sorted sets of keys with in a
- * btree node
- *
- * Copyright 2012 Google, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) "bcache: %s() " fmt, __func__
 
@@ -126,7 +121,7 @@ static inline void bch_btree_iter_next_check(struct btree_iter *iter) {}
 
 #endif
 
-/* Keylists */
+ 
 
 int __bch_keylist_realloc(struct keylist *l, unsigned int u64s)
 {
@@ -155,7 +150,7 @@ int __bch_keylist_realloc(struct keylist *l, unsigned int u64s)
 	return 0;
 }
 
-/* Pop the top key of keylist by pointing l->top to its previous key */
+ 
 struct bkey *bch_keylist_pop(struct keylist *l)
 {
 	struct bkey *k = l->keys;
@@ -169,7 +164,7 @@ struct bkey *bch_keylist_pop(struct keylist *l)
 	return l->top = k;
 }
 
-/* Pop the bottom key of keylist and update l->top_p */
+ 
 void bch_keylist_pop_front(struct keylist *l)
 {
 	l->top_p -= bkey_u64s(l->keys);
@@ -179,18 +174,18 @@ void bch_keylist_pop_front(struct keylist *l)
 		bch_keylist_bytes(l));
 }
 
-/* Key/pointer manipulation */
+ 
 
 void bch_bkey_copy_single_ptr(struct bkey *dest, const struct bkey *src,
 			      unsigned int i)
 {
 	BUG_ON(i > KEY_PTRS(src));
 
-	/* Only copy the header, key, and one pointer. */
+	 
 	memcpy(dest, src, 2 * sizeof(uint64_t));
 	dest->ptr[0] = src->ptr[i];
 	SET_KEY_PTRS(dest, 1);
-	/* We didn't copy the checksum so clear that bit. */
+	 
 	SET_KEY_CSUM(dest, 0);
 }
 
@@ -233,9 +228,9 @@ bool __bch_cut_back(const struct bkey *where, struct bkey *k)
 	return true;
 }
 
-/* Auxiliary search trees */
+ 
 
-/* 32 bits total: */
+ 
 #define BKEY_MID_BITS		3
 #define BKEY_EXPONENT_BITS	7
 #define BKEY_MANTISSA_BITS	(32 - BKEY_MID_BITS - BKEY_EXPONENT_BITS)
@@ -247,24 +242,11 @@ struct bkey_float {
 	unsigned int	mantissa:BKEY_MANTISSA_BITS;
 } __packed;
 
-/*
- * BSET_CACHELINE was originally intended to match the hardware cacheline size -
- * it used to be 64, but I realized the lookup code would touch slightly less
- * memory if it was 128.
- *
- * It definites the number of bytes (in struct bset) per struct bkey_float in
- * the auxiliar search tree - when we're done searching the bset_float tree we
- * have this many bytes left that we do a linear search over.
- *
- * Since (after level 5) every level of the bset_tree is on a new cacheline,
- * we're touching one fewer cacheline in the bset tree in exchange for one more
- * cacheline in the linear search - but the linear search might stop before it
- * gets to the second cacheline.
- */
+ 
 
 #define BSET_CACHELINE		128
 
-/* Space required for the btree node keys */
+ 
 static inline size_t btree_keys_bytes(struct btree_keys *b)
 {
 	return PAGE_SIZE << b->page_order;
@@ -275,19 +257,19 @@ static inline size_t btree_keys_cachelines(struct btree_keys *b)
 	return btree_keys_bytes(b) / BSET_CACHELINE;
 }
 
-/* Space required for the auxiliary search trees */
+ 
 static inline size_t bset_tree_bytes(struct btree_keys *b)
 {
 	return btree_keys_cachelines(b) * sizeof(struct bkey_float);
 }
 
-/* Space required for the prev pointers */
+ 
 static inline size_t bset_prev_bytes(struct btree_keys *b)
 {
 	return btree_keys_cachelines(b) * sizeof(uint8_t);
 }
 
-/* Memory allocation */
+ 
 
 void bch_btree_keys_free(struct btree_keys *b)
 {
@@ -352,22 +334,12 @@ void bch_btree_keys_init(struct btree_keys *b, const struct btree_keys_ops *ops,
 	b->nsets = 0;
 	b->last_set_unwritten = 0;
 
-	/*
-	 * struct btree_keys in embedded in struct btree, and struct
-	 * bset_tree is embedded into struct btree_keys. They are all
-	 * initialized as 0 by kzalloc() in mca_bucket_alloc(), and
-	 * b->set[0].data is allocated in bch_btree_keys_alloc(), so we
-	 * don't have to initiate b->set[].size and b->set[].data here
-	 * any more.
-	 */
+	 
 }
 
-/* Binary tree stuff for auxiliary search trees */
+ 
 
-/*
- * return array index next to j when does in-order traverse
- * of a binary tree which is stored in a linear array
- */
+ 
 static unsigned int inorder_next(unsigned int j, unsigned int size)
 {
 	if (j * 2 + 1 < size) {
@@ -381,10 +353,7 @@ static unsigned int inorder_next(unsigned int j, unsigned int size)
 	return j;
 }
 
-/*
- * return array index previous to j when does in-order traverse
- * of a binary tree which is stored in a linear array
- */
+ 
 static unsigned int inorder_prev(unsigned int j, unsigned int size)
 {
 	if (j * 2 < size) {
@@ -398,20 +367,7 @@ static unsigned int inorder_prev(unsigned int j, unsigned int size)
 	return j;
 }
 
-/*
- * I have no idea why this code works... and I'm the one who wrote it
- *
- * However, I do know what it does:
- * Given a binary tree constructed in an array (i.e. how you normally implement
- * a heap), it converts a node in the tree - referenced by array index - to the
- * index it would have if you did an inorder traversal.
- *
- * Also tested for every j, size up to size somewhere around 6 million.
- *
- * The binary tree starts at array index 1, not 0
- * extra is a function of size:
- *   extra = (size - rounddown_pow_of_two(size - 1)) << 1;
- */
+ 
 static unsigned int __to_inorder(unsigned int j,
 				  unsigned int size,
 				  unsigned int extra)
@@ -430,10 +386,7 @@ static unsigned int __to_inorder(unsigned int j,
 	return j;
 }
 
-/*
- * Return the cacheline index in bset_tree->data, where j is index
- * from a linear array which stores the auxiliar binary tree
- */
+ 
 static unsigned int to_inorder(unsigned int j, struct bset_tree *t)
 {
 	return __to_inorder(j, t->size, t->extra);
@@ -456,10 +409,7 @@ static unsigned int __inorder_to_tree(unsigned int j,
 	return j;
 }
 
-/*
- * Return an index from a linear array which stores the auxiliar binary
- * tree, j is the cacheline index of t->data.
- */
+ 
 static unsigned int inorder_to_tree(unsigned int j, struct bset_tree *t)
 {
 	return __inorder_to_tree(j, t->size, t->extra);
@@ -503,24 +453,7 @@ void inorder_test(void)
 }
 #endif
 
-/*
- * Cacheline/offset <-> bkey pointer arithmetic:
- *
- * t->tree is a binary search tree in an array; each node corresponds to a key
- * in one cacheline in t->set (BSET_CACHELINE bytes).
- *
- * This means we don't have to store the full index of the key that a node in
- * the binary tree points to; to_inorder() gives us the cacheline, and then
- * bkey_float->m gives us the offset within that cacheline, in units of 8 bytes.
- *
- * cacheline_to_bkey() and friends abstract out all the pointer arithmetic to
- * make this work.
- *
- * To construct the bfloat for an arbitrary key we need to know what the key
- * immediately preceding it is: we have to check if the two keys differ in the
- * bits we're going to store in bkey_float->mantissa. t->prev[j] stores the size
- * of the previous key so we can walk backwards to it from t->tree[j]'s key.
- */
+ 
 
 static struct bkey *cacheline_to_bkey(struct bset_tree *t,
 				      unsigned int cacheline,
@@ -551,10 +484,7 @@ static struct bkey *tree_to_prev_bkey(struct bset_tree *t, unsigned int j)
 	return (void *) (((uint64_t *) tree_to_bkey(t, j)) - t->prev[j]);
 }
 
-/*
- * For the write set - the one we're currently inserting keys into - we don't
- * maintain a full search tree, we just keep a simple lookup table in t->prev.
- */
+ 
 static struct bkey *table_to_bkey(struct bset_tree *t, unsigned int cacheline)
 {
 	return cacheline_to_bkey(t, cacheline, t->prev[cacheline]);
@@ -567,20 +497,7 @@ static inline uint64_t shrd128(uint64_t high, uint64_t low, uint8_t shift)
 	return low;
 }
 
-/*
- * Calculate mantissa value for struct bkey_float.
- * If most significant bit of f->exponent is not set, then
- *  - f->exponent >> 6 is 0
- *  - p[0] points to bkey->low
- *  - p[-1] borrows bits from KEY_INODE() of bkey->high
- * if most isgnificant bits of f->exponent is set, then
- *  - f->exponent >> 6 is 1
- *  - p[0] points to bits from KEY_INODE() of bkey->high
- *  - p[-1] points to other bits from KEY_INODE() of
- *    bkey->high too.
- * See make_bfloat() to check when most significant bit of f->exponent
- * is set or not.
- */
+ 
 static inline unsigned int bfloat_mantissa(const struct bkey *k,
 				       struct bkey_float *f)
 {
@@ -606,16 +523,7 @@ static void make_bfloat(struct bset_tree *t, unsigned int j)
 	BUG_ON(m < l || m > r);
 	BUG_ON(bkey_next(p) != m);
 
-	/*
-	 * If l and r have different KEY_INODE values (different backing
-	 * device), f->exponent records how many least significant bits
-	 * are different in KEY_INODE values and sets most significant
-	 * bits to 1 (by +64).
-	 * If l and r have same KEY_INODE value, f->exponent records
-	 * how many different bits in least significant bits of bkey->low.
-	 * See bfloat_mantiss() how the most significant bit of
-	 * f->exponent is used to calculate bfloat mantissa value.
-	 */
+	 
 	if (KEY_INODE(l) != KEY_INODE(r))
 		f->exponent = fls64(KEY_INODE(r) ^ KEY_INODE(l)) + 64;
 	else
@@ -623,10 +531,7 @@ static void make_bfloat(struct bset_tree *t, unsigned int j)
 
 	f->exponent = max_t(int, f->exponent - BKEY_MANTISSA_BITS, 0);
 
-	/*
-	 * Setting f->exponent = 127 flags this node as failed, and causes the
-	 * lookup code to fall back to comparing against the original key.
-	 */
+	 
 
 	if (bfloat_mantissa(m, f) != bfloat_mantissa(p, f))
 		f->mantissa = bfloat_mantissa(m, f) - 1;
@@ -678,15 +583,7 @@ void bch_bset_init_next(struct btree_keys *b, struct bset *i, uint64_t magic)
 	bch_bset_build_unwritten_tree(b);
 }
 
-/*
- * Build auxiliary binary tree 'struct bset_tree *t', this tree is used to
- * accelerate bkey search in a btree node (pointed by bset_tree->data in
- * memory). After search in the auxiliar tree by calling bset_search_tree(),
- * a struct bset_search_iter is returned which indicates range [l, r] from
- * bset_tree->data where the searching bkey might be inside. Then a followed
- * linear comparison does the exact search, see __bch_bset_search() for how
- * the auxiliary tree is used.
- */
+ 
 void bch_bset_build_written_tree(struct btree_keys *b)
 {
 	struct bset_tree *t = bset_tree_last(b);
@@ -708,7 +605,7 @@ void bch_bset_build_written_tree(struct btree_keys *b)
 
 	t->extra = (t->size - rounddown_pow_of_two(t->size - 1)) << 1;
 
-	/* First we figure out where the first key in each cacheline is */
+	 
 	for (j = inorder_next(0, t->size);
 	     j;
 	     j = inorder_next(j, t->size)) {
@@ -726,14 +623,14 @@ void bch_bset_build_written_tree(struct btree_keys *b)
 
 	t->end = *k;
 
-	/* Then we build the tree */
+	 
 	for (j = inorder_next(0, t->size);
 	     j;
 	     j = inorder_next(j, t->size))
 		make_bfloat(t, j);
 }
 
-/* Insert */
+ 
 
 void bch_bset_fix_invalidated_key(struct btree_keys *b, struct bkey *k)
 {
@@ -787,23 +684,16 @@ static void bch_bset_fix_lookup_table(struct btree_keys *b,
 	unsigned int shift = bkey_u64s(k);
 	unsigned int j = bkey_to_cacheline(t, k);
 
-	/* We're getting called from btree_split() or btree_gc, just bail out */
+	 
 	if (!t->size)
 		return;
 
-	/*
-	 * k is the key we just inserted; we need to find the entry in the
-	 * lookup table for the first key that is strictly greater than k:
-	 * it's either k's cacheline or the next one
-	 */
+	 
 	while (j < t->size &&
 	       table_to_bkey(t, j) <= k)
 		j++;
 
-	/*
-	 * Adjust all the lookup table entries, and find a new key for any that
-	 * have gotten too big
-	 */
+	 
 	for (; j < t->size; j++) {
 		t->prev[j] += shift;
 
@@ -820,7 +710,7 @@ static void bch_bset_fix_lookup_table(struct btree_keys *b,
 	if (t->size == b->set->tree + btree_keys_cachelines(b) - t->tree)
 		return;
 
-	/* Possibly add a new entry to the end of the lookup table */
+	 
 
 	for (k = table_to_bkey(t, t->size - 1);
 	     k != bset_bkey_last(t->data);
@@ -832,21 +722,13 @@ static void bch_bset_fix_lookup_table(struct btree_keys *b,
 		}
 }
 
-/*
- * Tries to merge l and r: l should be lower than r
- * Returns true if we were able to merge. If we did merge, l will be the merged
- * key, r will be untouched.
- */
+ 
 bool bch_bkey_try_merge(struct btree_keys *b, struct bkey *l, struct bkey *r)
 {
 	if (!b->ops->key_merge)
 		return false;
 
-	/*
-	 * Generic header checks
-	 * Assumes left and right are in order
-	 * Left and right must be exactly aligned
-	 */
+	 
 	if (!bch_bkey_equal_header(l, r) ||
 	     bkey_cmp(l, &START_KEY(r)))
 		return false;
@@ -885,11 +767,7 @@ unsigned int bch_btree_insert_key(struct btree_keys *b, struct bkey *k,
 
 	BUG_ON(b->ops->is_extents && !KEY_SIZE(k));
 
-	/*
-	 * If k has preceding key, preceding_key_p will be set to address
-	 *  of k's preceding key; otherwise preceding_key_p will be set
-	 * to NULL inside preceding_key().
-	 */
+	 
 	if (b->ops->is_extents)
 		preceding_key(&START_KEY(k), &preceding_key_p);
 	else
@@ -908,7 +786,7 @@ unsigned int bch_btree_insert_key(struct btree_keys *b, struct bkey *k,
 		m = bkey_next(m);
 	}
 
-	/* prev is in the tree, if we merge we're done */
+	 
 	status = BTREE_INSERT_STATUS_BACK_MERGE;
 	if (prev &&
 	    bch_bkey_try_merge(b, prev, k))
@@ -930,7 +808,7 @@ merged:
 	return status;
 }
 
-/* Lookup */
+ 
 
 struct bset_search_iter {
 	struct bkey *l, *r;
@@ -987,10 +865,7 @@ static struct bset_search_iter bset_search_tree(struct bset_tree *t,
 
 	inorder = to_inorder(j, t);
 
-	/*
-	 * n would have been the node we recursed to - the low bit tells us if
-	 * we recursed left or recursed right.
-	 */
+	 
 	if (n & 1) {
 		l = cacheline_to_bkey(t, inorder, f->m);
 
@@ -1017,31 +892,13 @@ struct bkey *__bch_bset_search(struct btree_keys *b, struct bset_tree *t,
 {
 	struct bset_search_iter i;
 
-	/*
-	 * First, we search for a cacheline, then lastly we do a linear search
-	 * within that cacheline.
-	 *
-	 * To search for the cacheline, there's three different possibilities:
-	 *  * The set is too small to have a search tree, so we just do a linear
-	 *    search over the whole set.
-	 *  * The set is the one we're currently inserting into; keeping a full
-	 *    auxiliary search tree up to date would be too expensive, so we
-	 *    use a much simpler lookup table to do a binary search -
-	 *    bset_search_write_set().
-	 *  * Or we use the auxiliary search tree we constructed earlier -
-	 *    bset_search_tree()
-	 */
+	 
 
 	if (unlikely(!t->size)) {
 		i.l = t->data->start;
 		i.r = bset_bkey_last(t->data);
 	} else if (bset_written(b, t)) {
-		/*
-		 * Each node in the auxiliary search tree covers a certain range
-		 * of bits, and keys above and below the set it covers might
-		 * differ outside those bits - so we have to special case the
-		 * start and end - handle that here:
-		 */
+		 
 
 		if (unlikely(bkey_cmp(search, &t->end) >= 0))
 			return bset_bkey_last(t->data);
@@ -1075,7 +932,7 @@ struct bkey *__bch_bset_search(struct btree_keys *b, struct bset_tree *t,
 	return i.l;
 }
 
-/* Btree iterator */
+ 
 
 typedef bool (btree_iter_cmp_fn)(struct btree_iter_set,
 				 struct btree_iter_set);
@@ -1173,7 +1030,7 @@ struct bkey *bch_btree_iter_next_filter(struct btree_iter *iter,
 	return ret;
 }
 
-/* Mergesort */
+ 
 
 void bch_bset_sort_state_free(struct bset_sort_state *state)
 {
@@ -1202,7 +1059,7 @@ static void btree_mergesort(struct btree_keys *b, struct bset *out,
 		? bch_ptr_bad
 		: bch_ptr_invalid;
 
-	/* Heapify the iterator, using our comparison function */
+	 
 	for (i = iter->used / 2 - 1; i >= 0; --i)
 		heap_sift(iter, i, b->ops->sort_cmp);
 
@@ -1257,16 +1114,7 @@ static void __btree_sort(struct btree_keys *b, struct btree_iter *iter,
 	b->nsets = start;
 
 	if (!start && order == b->page_order) {
-		/*
-		 * Our temporary buffer is the same size as the btree node's
-		 * buffer, we can just swap buffers instead of doing a big
-		 * memcpy()
-		 *
-		 * Don't worry event 'out' is allocated from mempool, it can
-		 * still be swapped here. Because state->pool is a page mempool
-		 * created by mempool_init_page_pool(), which allocates
-		 * pages by alloc_pages() indeed.
-		 */
+		 
 
 		out->magic	= b->set->data->magic;
 		out->seq	= b->set->data->seq;
@@ -1331,7 +1179,7 @@ void bch_btree_sort_into(struct btree_keys *b, struct btree_keys *new,
 
 	bch_time_stats_update(&state->time, start_time);
 
-	new->set->size = 0; // XXX: why?
+	new->set->size = 0;  
 }
 
 #define SORT_CRIT	(4096 / sizeof(uint64_t))
@@ -1341,7 +1189,7 @@ void bch_btree_sort_lazy(struct btree_keys *b, struct bset_sort_state *state)
 	unsigned int crit = SORT_CRIT;
 	int i;
 
-	/* Don't sort if nothing to do */
+	 
 	if (!b->nsets)
 		goto out;
 
@@ -1354,7 +1202,7 @@ void bch_btree_sort_lazy(struct btree_keys *b, struct bset_sort_state *state)
 		}
 	}
 
-	/* Sort if we'd overflow */
+	 
 	if (b->nsets + 1 == MAX_BSETS) {
 		bch_btree_sort(b, state);
 		return;

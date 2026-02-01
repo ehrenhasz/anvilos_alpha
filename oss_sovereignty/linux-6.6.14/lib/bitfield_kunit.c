@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Test cases for bitfield helpers.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -59,11 +57,7 @@
 
 static void __init test_bitfields_constants(struct kunit *context)
 {
-	/*
-	 * NOTE
-	 * This whole function compiles (or at least should, if everything
-	 * is going according to plan) to nothing after optimisation.
-	 */
+	 
 
 	CHECK_ENC_GET(16,  1, 0x000f, 0x0001);
 	CHECK_ENC_GET(16,  3, 0x00f0, 0x0030);
@@ -128,11 +122,11 @@ static void __init test_bitfields_variables(struct kunit *context)
 #ifdef TEST_BITFIELD_COMPILE
 static void __init test_bitfields_compile(struct kunit *context)
 {
-	/* these should fail compilation */
+	 
 	CHECK_ENC_GET(16, 16, 0x0f00, 0x1000);
 	u32_encode_bits(7, 0x06000000);
 
-	/* this should at least give a warning */
+	 
 	u16_encode_bits(0, 0x60000);
 }
 #endif

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * eCryptfs: Linux filesystem encryption layer
- *
- * Copyright (C) 1997-2003 Erez Zadok
- * Copyright (C) 2001-2003 Stony Brook University
- * Copyright (C) 2004-2006 International Business Machines Corp.
- *   Author(s): Michael A. Halcrow <mahalcro@us.ibm.com>
- */
+
+ 
 
 #include <linux/dcache.h>
 #include <linux/namei.h>
@@ -15,19 +8,7 @@
 #include <linux/slab.h>
 #include "ecryptfs_kernel.h"
 
-/**
- * ecryptfs_d_revalidate - revalidate an ecryptfs dentry
- * @dentry: The ecryptfs dentry
- * @flags: lookup flags
- *
- * Called when the VFS needs to revalidate a dentry. This
- * is called whenever a name lookup finds a dentry in the
- * dcache. Most filesystems leave this as NULL, because all their
- * dentries in the dcache are valid.
- *
- * Returns 1 if valid, 0 otherwise.
- *
- */
+ 
 static int ecryptfs_d_revalidate(struct dentry *dentry, unsigned int flags)
 {
 	struct dentry *lower_dentry = ecryptfs_dentry_to_lower(dentry);
@@ -57,12 +38,7 @@ static void ecryptfs_dentry_free_rcu(struct rcu_head *head)
 		container_of(head, struct ecryptfs_dentry_info, rcu));
 }
 
-/**
- * ecryptfs_d_release
- * @dentry: The ecryptfs dentry
- *
- * Called when a dentry is really deallocated.
- */
+ 
 static void ecryptfs_d_release(struct dentry *dentry)
 {
 	struct ecryptfs_dentry_info *p = dentry->d_fsdata;

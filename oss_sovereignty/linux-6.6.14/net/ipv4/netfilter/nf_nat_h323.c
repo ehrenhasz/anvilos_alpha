@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * H.323 extension for NAT alteration.
- *
- * Copyright (c) 2006 Jing Min Zhao <zhaojingmin@users.sourceforge.net>
- * Copyright (c) 2006-2012 Patrick McHardy <kaber@trash.net>
- *
- * Based on the 'brute force' H.323 NAT module by
- * Jozsef Kadlecsik <kadlec@netfilter.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/tcp.h>
@@ -19,7 +11,7 @@
 #include <net/netfilter/nf_conntrack_expect.h>
 #include <linux/netfilter/nf_conntrack_h323.h>
 
-/****************************************************************************/
+ 
 static int set_addr(struct sk_buff *skb, unsigned int protoff,
 		    unsigned char **data, int dataoff,
 		    unsigned int addroff, __be32 ip, __be16 port)
@@ -45,7 +37,7 @@ static int set_addr(struct sk_buff *skb, unsigned int protoff,
 			return -1;
 		}
 
-		/* Relocate data pointer */
+		 
 		th = skb_header_pointer(skb, ip_hdrlen(skb),
 					sizeof(_tcph), &_tcph);
 		if (th == NULL)
@@ -58,16 +50,14 @@ static int set_addr(struct sk_buff *skb, unsigned int protoff,
 			net_notice_ratelimited("nf_nat_h323: nf_nat_mangle_udp_packet error\n");
 			return -1;
 		}
-		/* nf_nat_mangle_udp_packet uses skb_ensure_writable() to copy
-		 * or pull everything in a linear buffer, so we can safely
-		 * use the skb pointers now */
+		 
 		*data = skb->data + ip_hdrlen(skb) + sizeof(struct udphdr);
 	}
 
 	return 0;
 }
 
-/****************************************************************************/
+ 
 static int set_h225_addr(struct sk_buff *skb, unsigned int protoff,
 			 unsigned char **data, int dataoff,
 			 TransportAddress *taddr,
@@ -77,7 +67,7 @@ static int set_h225_addr(struct sk_buff *skb, unsigned int protoff,
 			addr->ip, port);
 }
 
-/****************************************************************************/
+ 
 static int set_h245_addr(struct sk_buff *skb, unsigned protoff,
 			 unsigned char **data, int dataoff,
 			 H245_TransportAddress *taddr,
@@ -88,7 +78,7 @@ static int set_h245_addr(struct sk_buff *skb, unsigned protoff,
 			addr->ip, port);
 }
 
-/****************************************************************************/
+ 
 static int set_sig_addr(struct sk_buff *skb, struct nf_conn *ct,
 			enum ip_conntrack_info ctinfo,
 			unsigned int protoff, unsigned char **data,
@@ -104,9 +94,9 @@ static int set_sig_addr(struct sk_buff *skb, struct nf_conn *ct,
 		if (get_h225_addr(ct, *data, &taddr[i], &addr, &port)) {
 			if (addr.ip == ct->tuplehash[dir].tuple.src.u3.ip &&
 			    port == info->sig_port[dir]) {
-				/* GW->GK */
+				 
 
-				/* Fix for Gnomemeeting */
+				 
 				if (i > 0 &&
 				    get_h225_addr(ct, *data, &taddr[0],
 						  &addr, &port) &&
@@ -124,7 +114,7 @@ static int set_sig_addr(struct sk_buff *skb, struct nf_conn *ct,
 						     info->sig_port[!dir]);
 			} else if (addr.ip == ct->tuplehash[dir].tuple.dst.u3.ip &&
 				   port == info->sig_port[dir]) {
-				/* GK->GW */
+				 
 				pr_debug("nf_nat_ras: set signal address %pI4:%hu->%pI4:%hu\n",
 					 &addr.ip, port,
 					 &ct->tuplehash[!dir].tuple.src.u3.ip,
@@ -141,7 +131,7 @@ static int set_sig_addr(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
-/****************************************************************************/
+ 
 static int set_ras_addr(struct sk_buff *skb, struct nf_conn *ct,
 			enum ip_conntrack_info ctinfo,
 			unsigned int protoff, unsigned char **data,
@@ -170,7 +160,7 @@ static int set_ras_addr(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
-/****************************************************************************/
+ 
 static int nat_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 			enum ip_conntrack_info ctinfo,
 			unsigned int protoff, unsigned char **data, int dataoff,
@@ -184,7 +174,7 @@ static int nat_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 	int i;
 	u_int16_t nated_port;
 
-	/* Set expectations for NAT */
+	 
 	rtp_exp->saved_proto.udp.port = rtp_exp->tuple.dst.u.udp.port;
 	rtp_exp->expectfn = nf_nat_follow_master;
 	rtp_exp->dir = !dir;
@@ -192,30 +182,29 @@ static int nat_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 	rtcp_exp->expectfn = nf_nat_follow_master;
 	rtcp_exp->dir = !dir;
 
-	/* Lookup existing expects */
+	 
 	for (i = 0; i < H323_RTP_CHANNEL_MAX; i++) {
 		if (info->rtp_port[i][dir] == rtp_port) {
-			/* Expected */
+			 
 
-			/* Use allocated ports first. This will refresh
-			 * the expects */
+			 
 			rtp_exp->tuple.dst.u.udp.port = info->rtp_port[i][dir];
 			rtcp_exp->tuple.dst.u.udp.port =
 			    htons(ntohs(info->rtp_port[i][dir]) + 1);
 			break;
 		} else if (info->rtp_port[i][dir] == 0) {
-			/* Not expected */
+			 
 			break;
 		}
 	}
 
-	/* Run out of expectations */
+	 
 	if (i >= H323_RTP_CHANNEL_MAX) {
 		net_notice_ratelimited("nf_nat_h323: out of expectations\n");
 		return 0;
 	}
 
-	/* Try to get a pair of ports. */
+	 
 	for (nated_port = ntohs(rtp_exp->tuple.dst.u.udp.port);
 	     nated_port != 0; nated_port += 2) {
 		int ret;
@@ -242,12 +231,12 @@ static int nat_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 		}
 	}
 
-	if (nated_port == 0) {	/* No port available */
+	if (nated_port == 0) {	 
 		net_notice_ratelimited("nf_nat_h323: out of RTP ports\n");
 		return 0;
 	}
 
-	/* Modify signal */
+	 
 	if (set_h245_addr(skb, protoff, data, dataoff, taddr,
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  htons((port & htons(1)) ? nated_port + 1 :
@@ -257,11 +246,11 @@ static int nat_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 		return -1;
 	}
 
-	/* Save ports */
+	 
 	info->rtp_port[i][dir] = rtp_port;
 	info->rtp_port[i][!dir] = htons(nated_port);
 
-	/* Success */
+	 
 	pr_debug("nf_nat_h323: expect RTP %pI4:%hu->%pI4:%hu\n",
 		 &rtp_exp->tuple.src.u3.ip,
 		 ntohs(rtp_exp->tuple.src.u.udp.port),
@@ -276,7 +265,7 @@ static int nat_rtp_rtcp(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
-/****************************************************************************/
+ 
 static int nat_t120(struct sk_buff *skb, struct nf_conn *ct,
 		    enum ip_conntrack_info ctinfo,
 		    unsigned int protoff, unsigned char **data, int dataoff,
@@ -286,18 +275,18 @@ static int nat_t120(struct sk_buff *skb, struct nf_conn *ct,
 	int dir = CTINFO2DIR(ctinfo);
 	u_int16_t nated_port = ntohs(port);
 
-	/* Set expectations for NAT */
+	 
 	exp->saved_proto.tcp.port = exp->tuple.dst.u.tcp.port;
 	exp->expectfn = nf_nat_follow_master;
 	exp->dir = !dir;
 
 	nated_port = nf_nat_exp_find_port(exp, nated_port);
-	if (nated_port == 0) {	/* No port available */
+	if (nated_port == 0) {	 
 		net_notice_ratelimited("nf_nat_h323: out of TCP ports\n");
 		return 0;
 	}
 
-	/* Modify signal */
+	 
 	if (set_h245_addr(skb, protoff, data, dataoff, taddr,
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  htons(nated_port)) < 0) {
@@ -314,7 +303,7 @@ static int nat_t120(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
-/****************************************************************************/
+ 
 static int nat_h245(struct sk_buff *skb, struct nf_conn *ct,
 		    enum ip_conntrack_info ctinfo,
 		    unsigned int protoff, unsigned char **data, int dataoff,
@@ -325,22 +314,22 @@ static int nat_h245(struct sk_buff *skb, struct nf_conn *ct,
 	int dir = CTINFO2DIR(ctinfo);
 	u_int16_t nated_port = ntohs(port);
 
-	/* Set expectations for NAT */
+	 
 	exp->saved_proto.tcp.port = exp->tuple.dst.u.tcp.port;
 	exp->expectfn = nf_nat_follow_master;
 	exp->dir = !dir;
 
-	/* Check existing expects */
+	 
 	if (info->sig_port[dir] == port)
 		nated_port = ntohs(info->sig_port[!dir]);
 
 	nated_port = nf_nat_exp_find_port(exp, nated_port);
-	if (nated_port == 0) {	/* No port available */
+	if (nated_port == 0) {	 
 		net_notice_ratelimited("nf_nat_q931: out of TCP ports\n");
 		return 0;
 	}
 
-	/* Modify signal */
+	 
 	if (set_h225_addr(skb, protoff, data, dataoff, taddr,
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  htons(nated_port))) {
@@ -348,7 +337,7 @@ static int nat_h245(struct sk_buff *skb, struct nf_conn *ct,
 		return -1;
 	}
 
-	/* Save ports */
+	 
 	info->sig_port[dir] = port;
 	info->sig_port[!dir] = htons(nated_port);
 
@@ -361,30 +350,27 @@ static int nat_h245(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
-/****************************************************************************
- * This conntrack expect function replaces nf_conntrack_q931_expect()
- * which was set by nf_conntrack_h323.c.
- ****************************************************************************/
+ 
 static void ip_nat_q931_expect(struct nf_conn *new,
 			       struct nf_conntrack_expect *this)
 {
 	struct nf_nat_range2 range;
 
-	if (this->tuple.src.u3.ip != 0) {	/* Only accept calls from GK */
+	if (this->tuple.src.u3.ip != 0) {	 
 		nf_nat_follow_master(new, this);
 		return;
 	}
 
-	/* This must be a fresh one. */
+	 
 	BUG_ON(new->status & IPS_NAT_DONE_MASK);
 
-	/* Change src to where master sends to */
+	 
 	range.flags = NF_NAT_RANGE_MAP_IPS;
 	range.min_addr = range.max_addr =
 	    new->tuplehash[!this->dir].tuple.src.u3;
 	nf_nat_setup_info(new, &range, NF_NAT_MANIP_SRC);
 
-	/* For DST manip, map port here to where it's expected. */
+	 
 	range.flags = (NF_NAT_RANGE_MAP_IPS | NF_NAT_RANGE_PROTO_SPECIFIED);
 	range.min_proto = range.max_proto = this->saved_proto;
 	range.min_addr = range.max_addr =
@@ -392,7 +378,7 @@ static void ip_nat_q931_expect(struct nf_conn *new,
 	nf_nat_setup_info(new, &range, NF_NAT_MANIP_DST);
 }
 
-/****************************************************************************/
+ 
 static int nat_q931(struct sk_buff *skb, struct nf_conn *ct,
 		    enum ip_conntrack_info ctinfo,
 		    unsigned int protoff, unsigned char **data,
@@ -404,22 +390,22 @@ static int nat_q931(struct sk_buff *skb, struct nf_conn *ct,
 	u_int16_t nated_port = ntohs(port);
 	union nf_inet_addr addr;
 
-	/* Set expectations for NAT */
+	 
 	exp->saved_proto.tcp.port = exp->tuple.dst.u.tcp.port;
 	exp->expectfn = ip_nat_q931_expect;
 	exp->dir = !dir;
 
-	/* Check existing expects */
+	 
 	if (info->sig_port[dir] == port)
 		nated_port = ntohs(info->sig_port[!dir]);
 
 	nated_port = nf_nat_exp_find_port(exp, nated_port);
-	if (nated_port == 0) {	/* No port available */
+	if (nated_port == 0) {	 
 		net_notice_ratelimited("nf_nat_ras: out of TCP ports\n");
 		return 0;
 	}
 
-	/* Modify signal */
+	 
 	if (set_h225_addr(skb, protoff, data, 0, &taddr[idx],
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  htons(nated_port))) {
@@ -427,11 +413,11 @@ static int nat_q931(struct sk_buff *skb, struct nf_conn *ct,
 		return -1;
 	}
 
-	/* Save ports */
+	 
 	info->sig_port[dir] = port;
 	info->sig_port[!dir] = htons(nated_port);
 
-	/* Fix for Gnomemeeting */
+	 
 	if (idx > 0 &&
 	    get_h225_addr(ct, *data, &taddr[0], &addr, &port) &&
 	    (ntohl(addr.ip) & 0xff000000) == 0x7f000000) {
@@ -443,7 +429,7 @@ static int nat_q931(struct sk_buff *skb, struct nf_conn *ct,
 		}
 	}
 
-	/* Success */
+	 
 	pr_debug("nf_nat_ras: expect Q.931 %pI4:%hu->%pI4:%hu\n",
 		 &exp->tuple.src.u3.ip,
 		 ntohs(exp->tuple.src.u.tcp.port),
@@ -453,29 +439,29 @@ static int nat_q931(struct sk_buff *skb, struct nf_conn *ct,
 	return 0;
 }
 
-/****************************************************************************/
+ 
 static void ip_nat_callforwarding_expect(struct nf_conn *new,
 					 struct nf_conntrack_expect *this)
 {
 	struct nf_nat_range2 range;
 
-	/* This must be a fresh one. */
+	 
 	BUG_ON(new->status & IPS_NAT_DONE_MASK);
 
-	/* Change src to where master sends to */
+	 
 	range.flags = NF_NAT_RANGE_MAP_IPS;
 	range.min_addr = range.max_addr =
 	    new->tuplehash[!this->dir].tuple.src.u3;
 	nf_nat_setup_info(new, &range, NF_NAT_MANIP_SRC);
 
-	/* For DST manip, map port here to where it's expected. */
+	 
 	range.flags = (NF_NAT_RANGE_MAP_IPS | NF_NAT_RANGE_PROTO_SPECIFIED);
 	range.min_proto = range.max_proto = this->saved_proto;
 	range.min_addr = range.max_addr = this->saved_addr;
 	nf_nat_setup_info(new, &range, NF_NAT_MANIP_DST);
 }
 
-/****************************************************************************/
+ 
 static int nat_callforwarding(struct sk_buff *skb, struct nf_conn *ct,
 			      enum ip_conntrack_info ctinfo,
 			      unsigned int protoff,
@@ -486,7 +472,7 @@ static int nat_callforwarding(struct sk_buff *skb, struct nf_conn *ct,
 	int dir = CTINFO2DIR(ctinfo);
 	u_int16_t nated_port;
 
-	/* Set expectations for NAT */
+	 
 	exp->saved_addr = exp->tuple.dst.u3;
 	exp->tuple.dst.u3.ip = ct->tuplehash[!dir].tuple.dst.u3.ip;
 	exp->saved_proto.tcp.port = exp->tuple.dst.u.tcp.port;
@@ -494,12 +480,12 @@ static int nat_callforwarding(struct sk_buff *skb, struct nf_conn *ct,
 	exp->dir = !dir;
 
 	nated_port = nf_nat_exp_find_port(exp, ntohs(port));
-	if (nated_port == 0) {	/* No port available */
+	if (nated_port == 0) {	 
 		net_notice_ratelimited("nf_nat_q931: out of TCP ports\n");
 		return 0;
 	}
 
-	/* Modify signal */
+	 
 	if (set_h225_addr(skb, protoff, data, dataoff, taddr,
 			  &ct->tuplehash[!dir].tuple.dst.u3,
 			  htons(nated_port))) {
@@ -507,7 +493,7 @@ static int nat_callforwarding(struct sk_buff *skb, struct nf_conn *ct,
 		return -1;
 	}
 
-	/* Success */
+	 
 	pr_debug("nf_nat_q931: expect Call Forwarding %pI4:%hu->%pI4:%hu\n",
 		 &exp->tuple.src.u3.ip,
 		 ntohs(exp->tuple.src.u.tcp.port),
@@ -539,7 +525,7 @@ static const struct nfct_h323_nat_hooks nathooks = {
 	.nat_q931 = nat_q931,
 };
 
-/****************************************************************************/
+ 
 static int __init nf_nat_h323_init(void)
 {
 	RCU_INIT_POINTER(nfct_h323_nat_hook, &nathooks);
@@ -548,7 +534,7 @@ static int __init nf_nat_h323_init(void)
 	return 0;
 }
 
-/****************************************************************************/
+ 
 static void __exit nf_nat_h323_fini(void)
 {
 	RCU_INIT_POINTER(nfct_h323_nat_hook, NULL);
@@ -557,7 +543,7 @@ static void __exit nf_nat_h323_fini(void)
 	synchronize_rcu();
 }
 
-/****************************************************************************/
+ 
 module_init(nf_nat_h323_init);
 module_exit(nf_nat_h323_fini);
 

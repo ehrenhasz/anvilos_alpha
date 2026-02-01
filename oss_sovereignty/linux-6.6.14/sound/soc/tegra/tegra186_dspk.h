@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra186_dspk.h - Definitions for Tegra186 DSPK driver
- *
- * Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved.
- *
- */
+ 
+ 
 
 #ifndef __TEGRA186_DSPK_H__
 #define __TEGRA186_DSPK_H__
 
-/* Register offsets from DSPK BASE */
+ 
 #define TEGRA186_DSPK_RX_STATUS			0x0c
 #define TEGRA186_DSPK_RX_INT_STATUS		0x10
 #define TEGRA186_DSPK_RX_INT_MASK		0x14
@@ -24,7 +19,7 @@
 #define TEGRA186_DSPK_CORE_CTRL			0x60
 #define TEGRA186_DSPK_CODEC_CTRL		0x64
 
-/* DSPK CORE CONTROL fields */
+ 
 #define CH_SEL_SHIFT				8
 #define TEGRA186_DSPK_CHANNEL_SELECT_MASK	(0x3 << CH_SEL_SHIFT)
 #define DSPK_OSR_SHIFT				4
@@ -35,7 +30,7 @@
 
 #define DSPK_OSR_FACTOR				32
 
-/* DSPK interface clock ratio */
+ 
 #define DSPK_CLK_RATIO				4
 
 enum tegra_dspk_osr {

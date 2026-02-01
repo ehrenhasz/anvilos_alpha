@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This is the linux wireless configuration interface.
- *
- * Copyright 2006-2010		Johannes Berg <johannes@sipsolutions.net>
- * Copyright 2013-2014  Intel Mobile Communications GmbH
- * Copyright 2015-2017	Intel Deutschland GmbH
- * Copyright (C) 2018-2022 Intel Corporation
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -31,7 +24,7 @@
 #include "wext-compat.h"
 #include "rdev-ops.h"
 
-/* name for sysfs, %d is appended */
+ 
 #define PHY_NAME "phy"
 
 MODULE_AUTHOR("Johannes Berg");
@@ -39,14 +32,14 @@ MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("wireless configuration support");
 MODULE_ALIAS_GENL_FAMILY(NL80211_GENL_NAME);
 
-/* RCU-protected (and RTNL for writers) */
+ 
 LIST_HEAD(cfg80211_rdev_list);
 int cfg80211_rdev_list_generation;
 
-/* for debugfs */
+ 
 static struct dentry *ieee80211_debugfs_dir;
 
-/* for the cleanup, scan and event works */
+ 
 struct workqueue_struct *cfg80211_wq;
 
 static bool cfg80211_disable_40mhz_24ghz;
@@ -100,22 +93,19 @@ static int cfg80211_dev_check_name(struct cfg80211_registered_device *rdev,
 	if (strlen(newname) > NL80211_WIPHY_NAME_MAXLEN)
 		return -EINVAL;
 
-	/* prohibit calling the thing phy%d when %d is not its number */
+	 
 	sscanf(newname, PHY_NAME "%d%n", &wiphy_idx, &taken);
 	if (taken == strlen(newname) && wiphy_idx != rdev->wiphy_idx) {
-		/* count number of places needed to print wiphy_idx */
+		 
 		digits = 1;
 		while (wiphy_idx /= 10)
 			digits++;
-		/*
-		 * deny the name if it is phy<idx> where <idx> is printed
-		 * without leading zeroes. taken == strlen(newname) here
-		 */
+		 
 		if (taken == strlen(PHY_NAME) + digits)
 			return -EINVAL;
 	}
 
-	/* Ensure another device does not already have this name. */
+	 
 	list_for_each_entry(rdev2, &cfg80211_rdev_list, list)
 		if (strcmp(newname, wiphy_name(&rdev2->wiphy)) == 0)
 			return -EINVAL;
@@ -131,7 +121,7 @@ int cfg80211_dev_rename(struct cfg80211_registered_device *rdev,
 	ASSERT_RTNL();
 	lockdep_assert_wiphy(&rdev->wiphy);
 
-	/* Ignore nop renames */
+	 
 	if (strcmp(newname, wiphy_name(&rdev->wiphy)) == 0)
 		return 0;
 
@@ -173,7 +163,7 @@ int cfg80211_switch_netns(struct cfg80211_registered_device *rdev,
 	}
 
 	if (err) {
-		/* failed -- clean up to old netns */
+		 
 		net = wiphy_net(&rdev->wiphy);
 
 		list_for_each_entry_continue_reverse(wdev,
@@ -281,7 +271,7 @@ void cfg80211_shutdown_all_interfaces(struct wiphy *wiphy)
 			continue;
 		}
 
-		/* otherwise, check iftype */
+		 
 
 		wiphy_lock(wiphy);
 
@@ -442,7 +432,7 @@ out:
 	wiphy_unlock(&rdev->wiphy);
 }
 
-/* exported functions */
+ 
 
 struct wiphy *wiphy_new_nm(const struct cfg80211_ops *ops, int sizeof_priv,
 			   const char *requested_name)
@@ -480,16 +470,16 @@ struct wiphy *wiphy_new_nm(const struct cfg80211_ops *ops, int sizeof_priv,
 	rdev->wiphy_idx = atomic_inc_return(&wiphy_counter);
 
 	if (unlikely(rdev->wiphy_idx < 0)) {
-		/* ugh, wrapped! */
+		 
 		atomic_dec(&wiphy_counter);
 		kfree(rdev);
 		return NULL;
 	}
 
-	/* atomic_inc_return makes it start at 1, make it start at 0 */
+	 
 	rdev->wiphy_idx--;
 
-	/* give it a proper name */
+	 
 	if (requested_name && requested_name[0]) {
 		int rv;
 
@@ -509,12 +499,7 @@ struct wiphy *wiphy_new_nm(const struct cfg80211_ops *ops, int sizeof_priv,
 		int rv;
 
 use_default_name:
-		/* NOTE:  This is *probably* safe w/out holding rtnl because of
-		 * the restrictions on phy names.  Probably this call could
-		 * fail if some other part of the kernel (re)named a device
-		 * phyX.  But, might should add some locking and check return
-		 * value, and use a different name if this one exists?
-		 */
+		 
 		rv = dev_set_name(&rdev->wiphy.dev, PHY_NAME "%d", rdev->wiphy_idx);
 		if (rv < 0) {
 			kfree(rdev);
@@ -580,11 +565,7 @@ use_default_name:
 
 	init_waitqueue_head(&rdev->dev_wait);
 
-	/*
-	 * Initialize wiphy parameters to IEEE 802.11 MIB default values.
-	 * Fragmentation and RTS threshold are disabled by default with the
-	 * special -1 value.
-	 */
+	 
 	rdev->wiphy.retry_short = 7;
 	rdev->wiphy.retry_long = 4;
 	rdev->wiphy.frag_threshold = (u32) -1;
@@ -611,18 +592,15 @@ static int wiphy_verify_combinations(struct wiphy *wiphy)
 
 		c = &wiphy->iface_combinations[i];
 
-		/*
-		 * Combinations with just one interface aren't real,
-		 * however we make an exception for DFS.
-		 */
+		 
 		if (WARN_ON((c->max_interfaces < 2) && !c->radar_detect_widths))
 			return -EINVAL;
 
-		/* Need at least one channel */
+		 
 		if (WARN_ON(!c->num_different_channels))
 			return -EINVAL;
 
-		/* DFS only works on one channel. */
+		 
 		if (WARN_ON(c->radar_detect_widths &&
 			    (c->num_different_channels > 1)))
 			return -EINVAL;
@@ -633,7 +611,7 @@ static int wiphy_verify_combinations(struct wiphy *wiphy)
 		for (j = 0; j < c->n_limits; j++) {
 			u16 types = c->limits[j].types;
 
-			/* interface types shouldn't overlap */
+			 
 			if (WARN_ON(types & all_iftypes))
 				return -EINVAL;
 			all_iftypes |= types;
@@ -641,40 +619,28 @@ static int wiphy_verify_combinations(struct wiphy *wiphy)
 			if (WARN_ON(!c->limits[j].max))
 				return -EINVAL;
 
-			/* Shouldn't list software iftypes in combinations! */
+			 
 			if (WARN_ON(wiphy->software_iftypes & types))
 				return -EINVAL;
 
-			/* Only a single P2P_DEVICE can be allowed */
+			 
 			if (WARN_ON(types & BIT(NL80211_IFTYPE_P2P_DEVICE) &&
 				    c->limits[j].max > 1))
 				return -EINVAL;
 
-			/* Only a single NAN can be allowed */
+			 
 			if (WARN_ON(types & BIT(NL80211_IFTYPE_NAN) &&
 				    c->limits[j].max > 1))
 				return -EINVAL;
 
-			/*
-			 * This isn't well-defined right now. If you have an
-			 * IBSS interface, then its beacon interval may change
-			 * by joining other networks, and nothing prevents it
-			 * from doing that.
-			 * So technically we probably shouldn't even allow AP
-			 * and IBSS in the same interface, but it seems that
-			 * some drivers support that, possibly only with fixed
-			 * beacon intervals for IBSS.
-			 */
+			 
 			if (WARN_ON(types & BIT(NL80211_IFTYPE_ADHOC) &&
 				    c->beacon_int_min_gcd)) {
 				return -EINVAL;
 			}
 
 			cnt += c->limits[j].max;
-			/*
-			 * Don't advertise an unsupported type
-			 * in a combination.
-			 */
+			 
 			if (WARN_ON((wiphy->interface_modes & types) != types))
 				return -EINVAL;
 		}
@@ -682,7 +648,7 @@ static int wiphy_verify_combinations(struct wiphy *wiphy)
 		if (WARN_ON(all_iftypes & BIT(NL80211_IFTYPE_WDS)))
 			return -EINVAL;
 
-		/* You can't even choose that many! */
+		 
 		if (WARN_ON(cnt < c->max_interfaces))
 			return -EINVAL;
 	}
@@ -792,9 +758,7 @@ int wiphy_register(struct wiphy *wiphy)
 		     !rdev->ops->set_mac_acl)))
 		return -EINVAL;
 
-	/* assure only valid behaviours are flagged by driver
-	 * hence subtract 2 as bit 0 is invalid.
-	 */
+	 
 	if (WARN_ON(wiphy->bss_select_support &&
 		    (wiphy->bss_select_support & ~(BIT(__NL80211_BSS_SELECT_ATTR_AFTER_LAST) - 2))))
 		return -EINVAL;
@@ -811,7 +775,7 @@ int wiphy_register(struct wiphy *wiphy)
 	if (wiphy->addresses)
 		memcpy(wiphy->perm_addr, wiphy->addresses[0].addr, ETH_ALEN);
 
-	/* sanity check ifmodes */
+	 
 	WARN_ON(!ifmodes);
 	ifmodes &= ((1 << NUM_NL80211_IFTYPES) - 1) & ~1;
 	if (WARN_ON(ifmodes != wiphy->interface_modes))
@@ -821,7 +785,7 @@ int wiphy_register(struct wiphy *wiphy)
 	if (res)
 		return res;
 
-	/* sanity check supported bands/channels */
+	 
 	for (band = 0; band < NUM_NL80211_BANDS; band++) {
 		u16 types = 0;
 		bool have_he = false;
@@ -833,10 +797,7 @@ int wiphy_register(struct wiphy *wiphy)
 		sband->band = band;
 		if (WARN_ON(!sband->n_channels))
 			return -EINVAL;
-		/*
-		 * on 60GHz or sub-1Ghz band, there are no legacy rates, so
-		 * n_bitrates is 0
-		 */
+		 
 		if (WARN_ON((band != NL80211_BAND_60GHZ &&
 			     band != NL80211_BAND_S1GHZ) &&
 			    !sband->n_bitrates))
@@ -847,11 +808,7 @@ int wiphy_register(struct wiphy *wiphy)
 			     sband->vht_cap.vht_supported)))
 			return -EINVAL;
 
-		/*
-		 * Since cfg80211_disable_40mhz_24ghz is global, we can
-		 * modify the sband's ht data even if the driver uses a
-		 * global structure for that.
-		 */
+		 
 		if (cfg80211_disable_40mhz_24ghz &&
 		    band == NL80211_BAND_2GHZ &&
 		    sband->ht_cap.ht_supported) {
@@ -859,11 +816,7 @@ int wiphy_register(struct wiphy *wiphy)
 			sband->ht_cap.cap &= ~IEEE80211_HT_CAP_SGI_40;
 		}
 
-		/*
-		 * Since we use a u32 for rate bitmaps in
-		 * ieee80211_get_response_rate, we cannot
-		 * have more than 32 legacy rates.
-		 */
+		 
 		if (WARN_ON(sband->n_bitrates > 32))
 			return -EINVAL;
 
@@ -892,7 +845,7 @@ int wiphy_register(struct wiphy *wiphy)
 			if (WARN_ON(types & iftd->types_mask))
 				return -EINVAL;
 
-			/* at least one piece of information must be present */
+			 
 			if (WARN_ON(!iftd->he_cap.has_he))
 				return -EINVAL;
 
@@ -907,12 +860,7 @@ int wiphy_register(struct wiphy *wiphy)
 			has_ap = iftd->types_mask & ap_bits;
 			has_non_ap = iftd->types_mask & ~ap_bits;
 
-			/*
-			 * For EHT 20 MHz STA, the capabilities format differs
-			 * but to simplify, don't check 20 MHz but rather check
-			 * only if AP and non-AP were mentioned at the same time,
-			 * reject if so.
-			 */
+			 
 			if (WARN_ON(iftd->eht_cap.has_eht &&
 				    has_ap && has_non_ap))
 				return -EINVAL;
@@ -930,11 +878,7 @@ int wiphy_register(struct wiphy *wiphy)
 	}
 
 	for (i = 0; i < rdev->wiphy.n_vendor_commands; i++) {
-		/*
-		 * Validate we have a policy (can be explicitly set to
-		 * VENDOR_CMD_RAW_DATA which is non-NULL) and also that
-		 * we have at least one of doit/dumpit.
-		 */
+		 
 		if (WARN_ON(!rdev->wiphy.vendor_commands[i].policy))
 			return -EINVAL;
 		if (WARN_ON(!rdev->wiphy.vendor_commands[i].doit &&
@@ -956,7 +900,7 @@ int wiphy_register(struct wiphy *wiphy)
 		 wiphy->max_num_akm_suites > CFG80211_MAX_NUM_AKM_SUITES)
 		return -EINVAL;
 
-	/* check and set up bitrates */
+	 
 	ieee80211_set_bitrate_flags(wiphy);
 
 	rdev->wiphy.features |= NL80211_FEATURE_SCAN_FLUSH;
@@ -973,7 +917,7 @@ int wiphy_register(struct wiphy *wiphy)
 	list_add_rcu(&rdev->list, &cfg80211_rdev_list);
 	cfg80211_rdev_list_generation++;
 
-	/* add to debugfs */
+	 
 	rdev->wiphy.debugfsdir = debugfs_create_dir(wiphy_name(&rdev->wiphy),
 						    ieee80211_debugfs_dir);
 
@@ -981,7 +925,7 @@ int wiphy_register(struct wiphy *wiphy)
 	nl80211_notify_wiphy(rdev, NL80211_CMD_NEW_WIPHY);
 	wiphy_unlock(&rdev->wiphy);
 
-	/* set up regulatory info */
+	 
 	wiphy_regulatory_register(wiphy);
 
 	if (wiphy->regulatory_flags & REGULATORY_CUSTOM_REG) {
@@ -995,9 +939,7 @@ int wiphy_register(struct wiphy *wiphy)
 		nl80211_send_reg_change_event(&request);
 	}
 
-	/* Check that nobody globally advertises any capabilities they do not
-	 * advertise on all possible interface types.
-	 */
+	 
 	if (wiphy->extended_capabilities_len &&
 	    wiphy->num_iftype_ext_capab &&
 	    wiphy->iftype_ext_capab) {
@@ -1102,18 +1044,12 @@ void wiphy_unregister(struct wiphy *wiphy)
 
 	WARN_ON(!list_empty(&rdev->wiphy.wdev_list));
 
-	/*
-	 * First remove the hardware from everywhere, this makes
-	 * it impossible to find from userspace.
-	 */
+	 
 	debugfs_remove_recursive(rdev->wiphy.debugfsdir);
 	list_del_rcu(&rdev->list);
 	synchronize_rcu();
 
-	/*
-	 * If this device got a regulatory hint tell core its
-	 * free to listen now to a new shiny device regulatory hint
-	 */
+	 
 	wiphy_regulatory_deregister(wiphy);
 
 	cfg80211_rdev_list_generation++;
@@ -1124,12 +1060,12 @@ void wiphy_unregister(struct wiphy *wiphy)
 		rdev_set_wakeup(rdev, false);
 #endif
 
-	/* surely nothing is reachable now, clean up work */
+	 
 	cfg80211_process_wiphy_works(rdev, NULL);
 	wiphy_unlock(&rdev->wiphy);
 	rtnl_unlock();
 
-	/* this has nothing to do now but make sure it's gone */
+	 
 	cancel_work_sync(&rdev->wiphy_work);
 
 	cancel_work_sync(&rdev->conn_work);
@@ -1160,13 +1096,7 @@ void cfg80211_dev_free(struct cfg80211_registered_device *rdev)
 		cfg80211_put_bss(&rdev->wiphy, &scan->pub);
 	mutex_destroy(&rdev->wiphy.mtx);
 
-	/*
-	 * The 'regd' can only be non-NULL if we never finished
-	 * initializing the wiphy and thus never went through the
-	 * unregister path - e.g. in failure scenarios. Thus, it
-	 * cannot have been visible to anyone if non-NULL, so we
-	 * can just free it here.
-	 */
+	 
 	kfree(rcu_dereference_raw(rdev->wiphy.regd));
 
 	kfree(rdev);
@@ -1230,14 +1160,11 @@ static void _cfg80211_unregister_wdev(struct wireless_dev *wdev,
 	wdev->wext.keys = NULL;
 #endif
 	wiphy_work_cancel(wdev->wiphy, &wdev->cqm_rssi_work);
-	/* deleted from the list, so can't be found from nl80211 any more */
+	 
 	cqm_config = rcu_access_pointer(wdev->cqm_config);
 	kfree_rcu(cqm_config, rcu_head);
 
-	/*
-	 * Ensure that all events have been processed and
-	 * freed.
-	 */
+	 
 	cfg80211_process_wdev_events(wdev);
 
 	if (wdev->iftype == NL80211_IFTYPE_STATION ||
@@ -1324,16 +1251,16 @@ void __cfg80211_leave(struct cfg80211_registered_device *rdev,
 		break;
 	case NL80211_IFTYPE_P2P_DEVICE:
 	case NL80211_IFTYPE_NAN:
-		/* cannot happen, has no netdev */
+		 
 		break;
 	case NL80211_IFTYPE_AP_VLAN:
 	case NL80211_IFTYPE_MONITOR:
-		/* nothing to do */
+		 
 		break;
 	case NL80211_IFTYPE_UNSPECIFIED:
 	case NL80211_IFTYPE_WDS:
 	case NUM_NL80211_IFTYPES:
-		/* invalid */
+		 
 		break;
 	}
 }
@@ -1390,7 +1317,7 @@ void cfg80211_init_wdev(struct wireless_dev *wdev)
 		wdev->ps = true;
 	else
 		wdev->ps = false;
-	/* allow mac80211 to determine the timeout */
+	 
 	wdev->ps_timeout = -1;
 
 	if ((wdev->iftype == NL80211_IFTYPE_STATION ||
@@ -1407,13 +1334,7 @@ void cfg80211_register_wdev(struct cfg80211_registered_device *rdev,
 	ASSERT_RTNL();
 	lockdep_assert_held(&rdev->wiphy.mtx);
 
-	/*
-	 * We get here also when the interface changes network namespaces,
-	 * as it's registered into the new one, but we don't want it to
-	 * change ID in that case. Checking if the ID is already assigned
-	 * works, because 0 isn't considered a valid ID and the memory is
-	 * 0-initialized.
-	 */
+	 
 	if (!wdev->identifier)
 		wdev->identifier = ++rdev->wdev_id;
 	list_add_rcu(&wdev->list, &rdev->wiphy.wdev_list);
@@ -1443,7 +1364,7 @@ int cfg80211_register_netdevice(struct net_device *dev)
 
 	lockdep_assert_held(&rdev->wiphy.mtx);
 
-	/* we'll take care of this */
+	 
 	wdev->registered = true;
 	wdev->registering = true;
 	ret = register_netdevice(dev);
@@ -1479,7 +1400,7 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
 	case NETDEV_POST_INIT:
 		SET_NETDEV_DEVTYPE(dev, &wiphy_type);
 		wdev->netdev = dev;
-		/* can only change netns with wiphy */
+		 
 		dev->features |= NETIF_F_NETNS_LOCAL;
 
 		cfg80211_init_wdev(wdev);
@@ -1492,10 +1413,7 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
 		}
 		break;
 	case NETDEV_UNREGISTER:
-		/*
-		 * It is possible to get NETDEV_UNREGISTER multiple times,
-		 * so check wdev->registered.
-		 */
+		 
 		if (wdev->registered && !wdev->registering) {
 			wiphy_lock(&rdev->wiphy);
 			_cfg80211_unregister_wdev(wdev, false);
@@ -1507,7 +1425,7 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
 		cfg80211_leave(rdev, wdev);
 		cfg80211_remove_links(wdev);
 		wiphy_unlock(&rdev->wiphy);
-		/* since we just did cfg80211_leave() nothing to do there */
+		 
 		cancel_work_sync(&wdev->disconnect_wk);
 		cancel_work_sync(&wdev->pmsr_free_wk);
 		break;
@@ -1548,11 +1466,11 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
 #ifdef CONFIG_MAC80211_MESH
 		case NL80211_IFTYPE_MESH_POINT:
 			{
-				/* backward compat code... */
+				 
 				struct mesh_setup setup;
 				memcpy(&setup, &default_mesh_setup,
 						sizeof(setup));
-				 /* back compat only needed for mesh_id */
+				  
 				setup.mesh_id = wdev->u.mesh.id;
 				setup.mesh_id_len = wdev->u.mesh.id_up_len;
 				if (wdev->u.mesh.id_up_len)
@@ -1568,16 +1486,13 @@ static int cfg80211_netdev_notifier_call(struct notifier_block *nb,
 		wdev_unlock(wdev);
 		rdev->opencount++;
 
-		/*
-		 * Configure power management to the driver here so that its
-		 * correctly set also after interface type changes etc.
-		 */
+		 
 		if ((wdev->iftype == NL80211_IFTYPE_STATION ||
 		     wdev->iftype == NL80211_IFTYPE_P2P_CLIENT) &&
 		    rdev->ops->set_power_mgmt &&
 		    rdev_set_power_mgmt(rdev, dev, wdev->ps,
 					wdev->ps_timeout)) {
-			/* assume this means it's off */
+			 
 			wdev->ps = false;
 		}
 		wiphy_unlock(&rdev->wiphy);

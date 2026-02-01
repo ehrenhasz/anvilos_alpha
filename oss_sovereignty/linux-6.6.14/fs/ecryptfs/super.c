@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * eCryptfs: Linux filesystem encryption layer
- *
- * Copyright (C) 1997-2003 Erez Zadok
- * Copyright (C) 2001-2003 Stony Brook University
- * Copyright (C) 2004-2006 International Business Machines Corp.
- *   Author(s): Michael A. Halcrow <mahalcro@us.ibm.com>
- *              Michael C. Thompson <mcthomps@us.ibm.com>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/mount.h>
@@ -21,18 +13,7 @@
 
 struct kmem_cache *ecryptfs_inode_info_cache;
 
-/**
- * ecryptfs_alloc_inode - allocate an ecryptfs inode
- * @sb: Pointer to the ecryptfs super block
- *
- * Called to bring an inode into existence.
- *
- * Only handle allocation, setting up structures should be done in
- * ecryptfs_read_inode. This is because the kernel, between now and
- * then, will 0 out the private data pointer.
- *
- * Returns a pointer to a newly allocated inode, NULL otherwise
- */
+ 
 static struct inode *ecryptfs_alloc_inode(struct super_block *sb)
 {
 	struct ecryptfs_inode_info *inode_info;
@@ -61,15 +42,7 @@ static void ecryptfs_free_inode(struct inode *inode)
 	kmem_cache_free(ecryptfs_inode_info_cache, inode_info);
 }
 
-/**
- * ecryptfs_destroy_inode
- * @inode: The ecryptfs inode
- *
- * This is used during the final destruction of the inode.  All
- * allocation of memory related to the inode, including allocated
- * memory in the crypt_stat struct, will be released here.
- * There should be no chance that this deallocation will be missed.
- */
+ 
 static void ecryptfs_destroy_inode(struct inode *inode)
 {
 	struct ecryptfs_inode_info *inode_info;
@@ -79,14 +52,7 @@ static void ecryptfs_destroy_inode(struct inode *inode)
 	ecryptfs_destroy_crypt_stat(&inode_info->crypt_stat);
 }
 
-/**
- * ecryptfs_statfs
- * @dentry: The ecryptfs dentry
- * @buf: The struct kstatfs to fill in with stats
- *
- * Get the filesystem statistics. Currently, we let this pass right through
- * to the lower filesystem and take no action ourselves.
- */
+ 
 static int ecryptfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct dentry *lower_dentry = ecryptfs_dentry_to_lower(dentry);
@@ -106,16 +72,7 @@ static int ecryptfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	return rc;
 }
 
-/**
- * ecryptfs_evict_inode
- * @inode: The ecryptfs inode
- *
- * Called by iput() when the inode reference count reached zero
- * and the inode is not hashed anywhere.  Used to clear anything
- * that needs to be, before the inode is completely destroyed and put
- * on the inode free list. We use this to drop out reference to the
- * lower inode.
- */
+ 
 static void ecryptfs_evict_inode(struct inode *inode)
 {
 	truncate_inode_pages_final(&inode->i_data);
@@ -123,12 +80,7 @@ static void ecryptfs_evict_inode(struct inode *inode)
 	iput(ecryptfs_inode_to_lower(inode));
 }
 
-/*
- * ecryptfs_show_options
- *
- * Prints the mount options for a given superblock.
- * Returns zero; does not fail.
- */
+ 
 static int ecryptfs_show_options(struct seq_file *m, struct dentry *root)
 {
 	struct super_block *sb = root->d_sb;

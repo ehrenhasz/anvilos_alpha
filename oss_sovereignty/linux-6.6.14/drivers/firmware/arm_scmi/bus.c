@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Message Protocol bus layer
- *
- * Copyright (C) 2018-2021 ARM Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,7 +19,7 @@ EXPORT_SYMBOL_GPL(scmi_requested_devices_nh);
 static DEFINE_IDA(scmi_bus_id);
 
 static DEFINE_IDR(scmi_requested_devices);
-/* Protect access to scmi_requested_devices */
+ 
 static DEFINE_MUTEX(scmi_requested_devices_mtx);
 
 struct scmi_requested_dev {
@@ -31,24 +27,10 @@ struct scmi_requested_dev {
 	struct list_head node;
 };
 
-/* Track globally the creation of SCMI SystemPower related devices */
+ 
 static atomic_t scmi_syspower_registered = ATOMIC_INIT(0);
 
-/**
- * scmi_protocol_device_request  - Helper to request a device
- *
- * @id_table: A protocol/name pair descriptor for the device to be created.
- *
- * This helper let an SCMI driver request specific devices identified by the
- * @id_table to be created for each active SCMI instance.
- *
- * The requested device name MUST NOT be already existent for any protocol;
- * at first the freshly requested @id_table is annotated in the IDR table
- * @scmi_requested_devices and then the requested device is advertised to any
- * registered party via the @scmi_requested_devices_nh notification chain.
- *
- * Return: 0 on Success
- */
+ 
 static int scmi_protocol_device_request(const struct scmi_device_id *id_table)
 {
 	int ret = 0;
@@ -66,14 +48,11 @@ static int scmi_protocol_device_request(const struct scmi_device_id *id_table)
 		return -EINVAL;
 	}
 
-	/*
-	 * Search for the matching protocol rdev list and then search
-	 * of any existent equally named device...fails if any duplicate found.
-	 */
+	 
 	mutex_lock(&scmi_requested_devices_mtx);
 	idr_for_each_entry(&scmi_requested_devices, head, id) {
 		if (!phead) {
-			/* A list found registered in the IDR is never empty */
+			 
 			rdev = list_first_entry(head, struct scmi_requested_dev,
 						node);
 			if (rdev->id_table->protocol_id ==
@@ -91,10 +70,7 @@ static int scmi_protocol_device_request(const struct scmi_device_id *id_table)
 		}
 	}
 
-	/*
-	 * No duplicate found for requested id_table, so let's create a new
-	 * requested device entry for this new valid request.
-	 */
+	 
 	rdev = kzalloc(sizeof(*rdev), GFP_KERNEL);
 	if (!rdev) {
 		ret = -ENOMEM;
@@ -102,11 +78,7 @@ static int scmi_protocol_device_request(const struct scmi_device_id *id_table)
 	}
 	rdev->id_table = id_table;
 
-	/*
-	 * Append the new requested device table descriptor to the head of the
-	 * related protocol list, eventually creating such head if not already
-	 * there.
-	 */
+	 
 	if (!phead) {
 		phead = kzalloc(sizeof(*phead), GFP_KERNEL);
 		if (!phead) {
@@ -141,16 +113,7 @@ out:
 	return ret;
 }
 
-/**
- * scmi_protocol_device_unrequest  - Helper to unrequest a device
- *
- * @id_table: A protocol/name pair descriptor for the device to be unrequested.
- *
- * The unrequested device, described by the provided id_table, is at first
- * removed from the IDR @scmi_requested_devices and then the removal is
- * advertised to any registered party via the @scmi_requested_devices_nh
- * notification chain.
- */
+ 
 static void scmi_protocol_device_unrequest(const struct scmi_device_id *id_table)
 {
 	struct list_head *phead;
@@ -330,24 +293,12 @@ __scmi_device_create(struct device_node *np, struct device *parent,
 	int id, retval;
 	struct scmi_device *scmi_dev;
 
-	/*
-	 * If the same protocol/name device already exist under the same parent
-	 * (i.e. SCMI instance) just return the existent device.
-	 * This avoids any race between the SCMI driver, creating devices for
-	 * each DT defined protocol at probe time, and the concurrent
-	 * registration of SCMI drivers.
-	 */
+	 
 	scmi_dev = scmi_child_dev_find(parent, protocol, name);
 	if (scmi_dev)
 		return scmi_dev;
 
-	/*
-	 * Ignore any possible subsequent failures while creating the device
-	 * since we are doomed anyway at that point; not using a mutex which
-	 * spans across this whole function to keep things simple and to avoid
-	 * to serialize all the __scmi_device_create calls across possibly
-	 * different SCMI server instances (parent)
-	 */
+	 
 	if (protocol == SCMI_PROTOCOL_SYSTEM &&
 	    atomic_cmpxchg(&scmi_syspower_registered, 0, 1)) {
 		dev_warn(parent,
@@ -396,29 +347,7 @@ put_dev:
 	return NULL;
 }
 
-/**
- * scmi_device_create  - A method to create one or more SCMI devices
- *
- * @np: A reference to the device node to use for the new device(s)
- * @parent: The parent device to use identifying a specific SCMI instance
- * @protocol: The SCMI protocol to be associated with this device
- * @name: The requested-name of the device to be created; this is optional
- *	  and if no @name is provided, all the devices currently known to
- *	  be requested on the SCMI bus for @protocol will be created.
- *
- * This method can be invoked to create a single well-defined device (like
- * a transport device or a device requested by an SCMI driver loaded after
- * the core SCMI stack has been probed), or to create all the devices currently
- * known to have been requested by the loaded SCMI drivers for a specific
- * protocol (typically during SCMI core protocol enumeration at probe time).
- *
- * Return: The created device (or one of them if @name was NOT provided and
- *	   multiple devices were created) or NULL if no device was created;
- *	   note that NULL indicates an error ONLY in case a specific @name
- *	   was provided: when @name param was not provided, a number of devices
- *	   could have been potentially created for a whole protocol, unless no
- *	   device was found to have been requested for that specific protocol.
- */
+ 
 struct scmi_device *scmi_device_create(struct device_node *np,
 				       struct device *parent, int protocol,
 				       const char *name)
@@ -432,20 +361,20 @@ struct scmi_device *scmi_device_create(struct device_node *np,
 
 	mutex_lock(&scmi_requested_devices_mtx);
 	phead = idr_find(&scmi_requested_devices, protocol);
-	/* Nothing to do. */
+	 
 	if (!phead) {
 		mutex_unlock(&scmi_requested_devices_mtx);
 		return NULL;
 	}
 
-	/* Walk the list of requested devices for protocol and create them */
+	 
 	list_for_each_entry(rdev, phead, node) {
 		struct scmi_device *sdev;
 
 		sdev = __scmi_device_create(np, parent,
 					    rdev->id_table->protocol_id,
 					    rdev->id_table->name);
-		/* Report errors and carry on... */
+		 
 		if (sdev)
 			scmi_dev = sdev;
 		else
@@ -499,10 +428,7 @@ subsys_initcall(scmi_bus_init);
 
 static void __exit scmi_bus_exit(void)
 {
-	/*
-	 * Destroy all remaining devices: just in case the drivers were
-	 * manually unbound and at first and then the modules unloaded.
-	 */
+	 
 	scmi_devices_unregister();
 	bus_unregister(&scmi_bus_type);
 	ida_destroy(&scmi_bus_id);

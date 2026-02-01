@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/V2M USB3DRD driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of_platform.h>
@@ -117,7 +113,7 @@ err_rst:
 
 static const struct of_device_id rzv2m_usb3drd_of_match[] = {
 	{ .compatible = "renesas,rzv2m-usb3drd", },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzv2m_usb3drd_of_match);
 

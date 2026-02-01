@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2020, Mellanox Technologies inc. All rights reserved.
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/mlx5/qp.h>
@@ -72,10 +70,7 @@ static void set_eth_seg(const struct ib_send_wr *wr, struct mlx5_ib_qp *qp,
 		eseg->mss = cpu_to_be16(ud_wr->mss);
 		eseg->inline_hdr.sz = cpu_to_be16(left);
 
-		/* mlx5r_memcpy_send_wqe should get a 16B align address. Hence,
-		 * we first copy up to the current edge and then, if needed,
-		 * continue to mlx5r_memcpy_send_wqe.
-		 */
+		 
 		copysz = min_t(u64, *cur_edge - (void *)eseg->inline_hdr.start,
 			       left);
 		memcpy(eseg->inline_hdr.start, pdata, copysz);
@@ -197,7 +192,7 @@ static void set_reg_mkey_seg(struct mlx5_mkey_seg *seg,
 	if (mr->access_mode == MLX5_MKC_ACCESS_MODE_MTT)
 		seg->log2_page_size = ilog2(mr->ibmr.page_size);
 	else if (mr->access_mode == MLX5_MKC_ACCESS_MODE_KLMS)
-		/* KLMs take twice the size of MTTs */
+		 
 		ndescs *= 2;
 
 	seg->flags = get_umr_flags(access) | mr->access_mode;
@@ -329,12 +324,12 @@ static u8 bs_selector(int block_size)
 static void mlx5_fill_inl_bsf(struct ib_sig_domain *domain,
 			      struct mlx5_bsf_inl *inl)
 {
-	/* Valid inline section and allow BSF refresh */
+	 
 	inl->vld_refresh = cpu_to_be16(MLX5_BSF_INL_VALID |
 				       MLX5_BSF_REFRESH_DIF);
 	inl->dif_apptag = cpu_to_be16(domain->sig.dif.app_tag);
 	inl->dif_reftag = cpu_to_be32(domain->sig.dif.ref_tag);
-	/* repeating block */
+	 
 	inl->rp_inv_seed = MLX5_BSF_REPEAT_BLOCK;
 	inl->sig_type = domain->sig.dif.bg_type == IB_T10DIF_CRC ?
 			MLX5_DIF_CRC : MLX5_DIF_IPCS;
@@ -364,13 +359,13 @@ static int mlx5_set_bsf(struct ib_mr *sig_mr,
 
 	memset(bsf, 0, sizeof(*bsf));
 
-	/* Basic + Extended + Inline */
+	 
 	basic->bsf_size_sbs = 1 << 7;
-	/* Input domain check byte mask */
+	 
 	basic->check_byte_mask = sig_attrs->check_mask;
 	basic->raw_data_size = cpu_to_be32(data_size);
 
-	/* Memory domain */
+	 
 	switch (sig_attrs->mem.sig_type) {
 	case IB_SIG_TYPE_NONE:
 		break;
@@ -383,14 +378,14 @@ static int mlx5_set_bsf(struct ib_mr *sig_mr,
 		return -EINVAL;
 	}
 
-	/* Wire domain */
+	 
 	switch (sig_attrs->wire.sig_type) {
 	case IB_SIG_TYPE_NONE:
 		break;
 	case IB_SIG_TYPE_T10_DIF:
 		if (mem->sig.dif.pi_interval == wire->sig.dif.pi_interval &&
 		    mem->sig_type == wire->sig_type) {
-			/* Same block structure */
+			 
 			basic->bsf_size_sbs |= 1 << 4;
 			if (mem->sig.dif.bg_type == wire->sig.dif.bg_type)
 				basic->wire.copy_byte_mask |= MLX5_CPY_GRD_MASK;
@@ -444,16 +439,7 @@ static int set_sig_data_segment(const struct ib_send_wr *send_wr,
 
 	if (!prot || (data_key == prot_key && data_va == prot_va &&
 		      data_len == prot_len)) {
-		/**
-		 * Source domain doesn't contain signature information
-		 * or data and protection are interleaved in memory.
-		 * So need construct:
-		 *                  ------------------
-		 *                 |     data_klm     |
-		 *                  ------------------
-		 *                 |       BSF        |
-		 *                  ------------------
-		 **/
+		 
 		struct mlx5_klm *data_klm = *seg;
 
 		data_klm->bcount = cpu_to_be32(data_len);
@@ -461,19 +447,7 @@ static int set_sig_data_segment(const struct ib_send_wr *send_wr,
 		data_klm->va = cpu_to_be64(data_va);
 		wqe_size = ALIGN(sizeof(*data_klm), 64);
 	} else {
-		/**
-		 * Source domain contains signature information
-		 * So need construct a strided block format:
-		 *               ---------------------------
-		 *              |     stride_block_ctrl     |
-		 *               ---------------------------
-		 *              |          data_klm         |
-		 *               ---------------------------
-		 *              |          prot_klm         |
-		 *               ---------------------------
-		 *              |             BSF           |
-		 *               ---------------------------
-		 **/
+		 
 		struct mlx5_stride_block_ctrl_seg *sblock_ctrl;
 		struct mlx5_stride_block_entry *data_sentry;
 		struct mlx5_stride_block_entry *prot_sentry;
@@ -572,14 +546,10 @@ static int set_pi_umr_wr(const struct ib_send_wr *send_wr,
 	    unlikely(!sig_mr->sig->sig_status_checked))
 		return -EINVAL;
 
-	/* length of the protected region, data + protection */
+	 
 	region_len = pi_mr->ibmr.length;
 
-	/**
-	 * KLM octoword size - if protection was provided
-	 * then we use strided block format (3 octowords),
-	 * else we use single KLM (1 octoword)
-	 **/
+	 
 	if (sig_attrs->mem.sig_type != IB_SIG_TYPE_NONE)
 		xlt_size = 0x30;
 	else
@@ -645,10 +615,7 @@ static int set_reg_wr(struct mlx5_ib_qp *qp,
 	bool atomic = wr->access & IB_ACCESS_REMOTE_ATOMIC;
 	u8 flags = 0;
 
-	/* Matches access in mlx5_set_umr_free_mkey().
-	 * Relaxed Ordering is set implicitly in mlx5_set_umr_free_mkey() and
-	 * kernel ULPs are not aware of it, so we don't set it here.
-	 */
+	 
 	if (!mlx5r_umr_can_reconfig(dev, 0, wr->access)) {
 		mlx5_ib_warn(
 			to_mdev(qp->ibqp.device),
@@ -774,9 +741,7 @@ void mlx5r_finish_wqe(struct mlx5_ib_qp *qp, struct mlx5_wqe_ctrl_seg *ctrl,
 	qp->sq.cur_post += DIV_ROUND_UP(size * 16, MLX5_SEND_WQE_BB);
 	qp->sq.w_list[idx].next = qp->sq.cur_post;
 
-	/* We save the edge which was possibly updated during the WQE
-	 * construction, into SQ's cache.
-	 */
+	 
 	seg = PTR_ALIGN(seg, MLX5_SEND_WQE_BB);
 	qp->sq.cur_edge = (unlikely(seg == cur_edge)) ?
 			  get_sq_edge(&qp->sq, qp->sq.cur_post &
@@ -818,9 +783,7 @@ static int handle_psv(struct mlx5_ib_dev *dev, struct mlx5_ib_qp *qp,
 {
 	int err;
 
-	/*
-	 * SET_PSV WQEs are not signaled and solicited on error.
-	 */
+	 
 	err = mlx5r_begin_wqe(qp, seg, ctrl, idx, size, cur_edge, nreq,
 			      send_ieth(wr), false, true);
 	if (unlikely(err)) {
@@ -869,7 +832,7 @@ static int handle_reg_mr_integrity(struct mlx5_ib_dev *dev,
 		reg_pi_wr.key = pi_mr->ibmr.rkey;
 
 		(*ctrl)->imm = cpu_to_be32(reg_pi_wr.key);
-		/* UMR for data + prot registration */
+		 
 		err = set_reg_wr(qp, &reg_pi_wr, seg, size, cur_edge, false);
 		if (unlikely(err))
 			goto out;
@@ -885,7 +848,7 @@ static int handle_reg_mr_integrity(struct mlx5_ib_dev *dev,
 		}
 	} else {
 		memset(&pa_pi_mr, 0, sizeof(struct mlx5_ib_mr));
-		/* No UMR, use local_dma_lkey */
+		 
 		pa_pi_mr.ibmr.lkey = mr->ibmr.pd->local_dma_lkey;
 		pa_pi_mr.mmkey.ndescs = mr->mmkey.ndescs;
 		pa_pi_mr.data_length = mr->data_length;
@@ -900,7 +863,7 @@ static int handle_reg_mr_integrity(struct mlx5_ib_dev *dev,
 		mr->pi_mr = &pa_pi_mr;
 	}
 	(*ctrl)->imm = cpu_to_be32(mr->ibmr.rkey);
-	/* UMR for sig MR */
+	 
 	err = set_pi_umr_wr(wr, qp, seg, size, cur_edge);
 	if (unlikely(err)) {
 		mlx5_ib_warn(dev, "\n");
@@ -1009,7 +972,7 @@ static void handle_qpt_ud(struct mlx5_ib_qp *qp, const struct ib_send_wr *wr,
 	*size += sizeof(struct mlx5_wqe_datagram_seg) / 16;
 	handle_post_send_edge(&qp->sq, seg, *size, cur_edge);
 
-	/* handle qp that supports ud offload */
+	 
 	if (qp->flags & IB_QP_CREATE_IPOIB_UD_LSO) {
 		struct mlx5_wqe_eth_pad *pad;
 
@@ -1029,29 +992,23 @@ void mlx5r_ring_db(struct mlx5_ib_qp *qp, unsigned int nreq,
 
 	qp->sq.head += nreq;
 
-	/* Make sure that descriptors are written before
-	 * updating doorbell record and ringing the doorbell
-	 */
+	 
 	wmb();
 
 	qp->db.db[MLX5_SND_DBR] = cpu_to_be32(qp->sq.cur_post);
 
-	/* Make sure doorbell record is visible to the HCA before
-	 * we hit doorbell.
-	 */
+	 
 	wmb();
 
 	mlx5_write64((__be32 *)ctrl, bf->bfreg->map + bf->offset);
-	/* Make sure doorbells don't leak out of SQ spinlock
-	 * and reach the HCA out of order.
-	 */
+	 
 	bf->offset ^= bf->buf_size;
 }
 
 int mlx5_ib_post_send(struct ib_qp *ibqp, const struct ib_send_wr *wr,
 		      const struct ib_send_wr **bad_wr, bool drain)
 {
-	struct mlx5_wqe_ctrl_seg *ctrl = NULL;  /* compiler warning */
+	struct mlx5_wqe_ctrl_seg *ctrl = NULL;   
 	struct mlx5_ib_dev *dev = to_mdev(ibqp->device);
 	struct mlx5_core_dev *mdev = dev->mdev;
 	struct mlx5_ib_qp *qp = to_mqp(ibqp);
@@ -1270,9 +1227,7 @@ out:
 	if (likely(nreq)) {
 		qp->rq.head += nreq;
 
-		/* Make sure that descriptors are written before
-		 * doorbell record.
-		 */
+		 
 		wmb();
 
 		*qp->db.db = cpu_to_be32(qp->rq.head & 0xffff);

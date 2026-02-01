@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*****************************************************************************
- *
- * Copyright (C) 2008 Cedric Bregardis <cedric.bregardis@free.fr> and
- * Jean-Christian Hassler <jhassler@free.fr>
- *
- * This file is part of the Audiowerk2 ALSA driver
- *
- *****************************************************************************/
+
+ 
 #include <linux/init.h>
 #include <linux/pci.h>
 #include <linux/dma-mapping.h>
@@ -29,16 +22,12 @@ MODULE_AUTHOR("Cedric Bregardis <cedric.bregardis@free.fr>, "
 MODULE_DESCRIPTION("Emagic Audiowerk 2 sound driver");
 MODULE_LICENSE("GPL");
 
-/*********************************
- * DEFINES
- ********************************/
+ 
 #define CTL_ROUTE_ANALOG 0
 #define CTL_ROUTE_DIGITAL 1
 
-/*********************************
- * TYPEDEFS
- ********************************/
-  /* hardware definition */
+ 
+   
 static const struct snd_pcm_hardware snd_aw2_playback_hw = {
 	.info = (SNDRV_PCM_INFO_MMAP |
 		 SNDRV_PCM_INFO_INTERLEAVED |
@@ -96,9 +85,7 @@ struct aw2 {
 	struct aw2_pcm_device device_capture[NB_STREAM_CAPTURE];
 };
 
-/*********************************
- * FUNCTION DECLARATIONS
- ********************************/
+ 
 static int snd_aw2_create(struct snd_card *card, struct pci_dev *pci);
 static int snd_aw2_probe(struct pci_dev *pci,
 			 const struct pci_device_id *pci_id);
@@ -127,9 +114,7 @@ static int snd_aw2_control_switch_capture_put(struct snd_kcontrol *kcontrol,
 					      struct snd_ctl_elem_value
 					      *ucontrol);
 
-/*********************************
- * VARIABLES
- ********************************/
+ 
 static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;
 static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;
 static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;
@@ -149,7 +134,7 @@ static const struct pci_device_id snd_aw2_ids[] = {
 
 MODULE_DEVICE_TABLE(pci, snd_aw2_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver aw2_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = snd_aw2_ids,
@@ -158,7 +143,7 @@ static struct pci_driver aw2_driver = {
 
 module_pci_driver(aw2_driver);
 
-/* operators for playback PCM alsa interface */
+ 
 static const struct snd_pcm_ops snd_aw2_playback_ops = {
 	.open = snd_aw2_pcm_playback_open,
 	.close = snd_aw2_pcm_playback_close,
@@ -167,7 +152,7 @@ static const struct snd_pcm_ops snd_aw2_playback_ops = {
 	.pointer = snd_aw2_pcm_pointer_playback,
 };
 
-/* operators for capture PCM alsa interface */
+ 
 static const struct snd_pcm_ops snd_aw2_capture_ops = {
 	.open = snd_aw2_pcm_capture_open,
 	.close = snd_aw2_pcm_capture_close,
@@ -187,51 +172,49 @@ static const struct snd_kcontrol_new aw2_control = {
 	.put = snd_aw2_control_switch_capture_put
 };
 
-/*********************************
- * FUNCTION IMPLEMENTATIONS
- ********************************/
+ 
 
-/* component-destructor */
+ 
 static void snd_aw2_free(struct snd_card *card)
 {
 	struct aw2 *chip = card->private_data;
 
-	/* Free hardware */
+	 
 	snd_aw2_saa7146_free(&chip->saa7146);
 }
 
-/* chip-specific constructor */
+ 
 static int snd_aw2_create(struct snd_card *card,
 			  struct pci_dev *pci)
 {
 	struct aw2 *chip = card->private_data;
 	int err;
 
-	/* initialize the PCI entry */
+	 
 	err = pcim_enable_device(pci);
 	if (err < 0)
 		return err;
 	pci_set_master(pci);
 
-	/* check PCI availability (32bit DMA) */
+	 
 	if (dma_set_mask_and_coherent(&pci->dev, DMA_BIT_MASK(32))) {
 		dev_err(card->dev, "Impossible to set 32bit mask DMA\n");
 		return -ENXIO;
 	}
 
-	/* initialize the stuff */
+	 
 	chip->card = card;
 	chip->pci = pci;
 	chip->irq = -1;
 
-	/* (1) PCI resource allocation */
+	 
 	err = pcim_iomap_regions(pci, 1 << 0, "Audiowerk2");
 	if (err < 0)
 		return err;
 	chip->iobase_phys = pci_resource_start(pci, 0);
 	chip->iobase_virt = pcim_iomap_table(pci)[0];
 
-	/* (2) initialization of the chip hardware */
+	 
 	snd_aw2_saa7146_setup(&chip->saa7146, chip->iobase_virt);
 
 	if (devm_request_irq(&pci->dev, pci->irq, snd_aw2_saa7146_interrupt,
@@ -248,7 +231,7 @@ static int snd_aw2_create(struct snd_card *card,
 	return 0;
 }
 
-/* constructor */
+ 
 static int snd_aw2_probe(struct pci_dev *pci,
 			 const struct pci_device_id *pci_id)
 {
@@ -257,7 +240,7 @@ static int snd_aw2_probe(struct pci_dev *pci,
 	struct aw2 *chip;
 	int err;
 
-	/* (1) Continue if device is not enabled, else inc dev */
+	 
 	if (dev >= SNDRV_CARDS)
 		return -ENODEV;
 	if (!enable[dev]) {
@@ -265,38 +248,38 @@ static int snd_aw2_probe(struct pci_dev *pci,
 		return -ENOENT;
 	}
 
-	/* (2) Create card instance */
+	 
 	err = snd_devm_card_new(&pci->dev, index[dev], id[dev], THIS_MODULE,
 				sizeof(*chip), &card);
 	if (err < 0)
 		return err;
 	chip = card->private_data;
 
-	/* (3) Create main component */
+	 
 	err = snd_aw2_create(card, pci);
 	if (err < 0)
 		goto error;
 
-	/* initialize mutex */
+	 
 	mutex_init(&chip->mtx);
-	/* init spinlock */
+	 
 	spin_lock_init(&chip->reg_lock);
-	/* (4) Define driver ID and name string */
+	 
 	strcpy(card->driver, "aw2");
 	strcpy(card->shortname, "Audiowerk2");
 
 	sprintf(card->longname, "%s with SAA7146 irq %i",
 		card->shortname, chip->irq);
 
-	/* (5) Create other components */
+	 
 	snd_aw2_new_pcm(chip);
 
-	/* (6) Register card instance */
+	 
 	err = snd_card_register(card);
 	if (err < 0)
 		goto error;
 
-	/* (7) Set PCI driver data */
+	 
 	pci_set_drvdata(pci, card);
 
 	dev++;
@@ -307,7 +290,7 @@ static int snd_aw2_probe(struct pci_dev *pci,
 	return err;
 }
 
-/* open callback */
+ 
 static int snd_aw2_pcm_playback_open(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -317,7 +300,7 @@ static int snd_aw2_pcm_playback_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* close callback */
+ 
 static int snd_aw2_pcm_playback_close(struct snd_pcm_substream *substream)
 {
 	return 0;
@@ -333,14 +316,14 @@ static int snd_aw2_pcm_capture_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* close callback */
+ 
 static int snd_aw2_pcm_capture_close(struct snd_pcm_substream *substream)
 {
-	/* TODO: something to do ? */
+	 
 	return 0;
 }
 
-/* prepare callback for playback */
+ 
 static int snd_aw2_pcm_prepare_playback(struct snd_pcm_substream *substream)
 {
 	struct aw2_pcm_device *pcm_device = snd_pcm_substream_chip(substream);
@@ -358,7 +341,7 @@ static int snd_aw2_pcm_prepare_playback(struct snd_pcm_substream *substream)
 					  runtime->dma_addr, period_size,
 					  buffer_size);
 
-	/* Define Interrupt callback */
+	 
 	snd_aw2_saa7146_define_it_playback_callback(pcm_device->stream_number,
 						    (snd_aw2_saa7146_it_cb)
 						    snd_pcm_period_elapsed,
@@ -369,7 +352,7 @@ static int snd_aw2_pcm_prepare_playback(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* prepare callback for capture */
+ 
 static int snd_aw2_pcm_prepare_capture(struct snd_pcm_substream *substream)
 {
 	struct aw2_pcm_device *pcm_device = snd_pcm_substream_chip(substream);
@@ -387,7 +370,7 @@ static int snd_aw2_pcm_prepare_capture(struct snd_pcm_substream *substream)
 					 runtime->dma_addr, period_size,
 					 buffer_size);
 
-	/* Define Interrupt callback */
+	 
 	snd_aw2_saa7146_define_it_capture_callback(pcm_device->stream_number,
 						   (snd_aw2_saa7146_it_cb)
 						   snd_pcm_period_elapsed,
@@ -398,7 +381,7 @@ static int snd_aw2_pcm_prepare_capture(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* playback trigger callback */
+ 
 static int snd_aw2_pcm_trigger_playback(struct snd_pcm_substream *substream,
 					int cmd)
 {
@@ -424,7 +407,7 @@ static int snd_aw2_pcm_trigger_playback(struct snd_pcm_substream *substream,
 	return status;
 }
 
-/* capture trigger callback */
+ 
 static int snd_aw2_pcm_trigger_capture(struct snd_pcm_substream *substream,
 				       int cmd)
 {
@@ -450,7 +433,7 @@ static int snd_aw2_pcm_trigger_capture(struct snd_pcm_substream *substream,
 	return status;
 }
 
-/* playback pointer callback */
+ 
 static snd_pcm_uframes_t snd_aw2_pcm_pointer_playback(struct snd_pcm_substream
 						      *substream)
 {
@@ -458,7 +441,7 @@ static snd_pcm_uframes_t snd_aw2_pcm_pointer_playback(struct snd_pcm_substream
 	struct aw2 *chip = pcm_device->chip;
 	unsigned int current_ptr;
 
-	/* get the current hardware pointer */
+	 
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	current_ptr =
 		snd_aw2_saa7146_get_hw_ptr_playback(&chip->saa7146,
@@ -469,7 +452,7 @@ static snd_pcm_uframes_t snd_aw2_pcm_pointer_playback(struct snd_pcm_substream
 	return bytes_to_frames(substream->runtime, current_ptr);
 }
 
-/* capture pointer callback */
+ 
 static snd_pcm_uframes_t snd_aw2_pcm_pointer_capture(struct snd_pcm_substream
 						     *substream)
 {
@@ -477,7 +460,7 @@ static snd_pcm_uframes_t snd_aw2_pcm_pointer_capture(struct snd_pcm_substream
 	struct aw2 *chip = pcm_device->chip;
 	unsigned int current_ptr;
 
-	/* get the current hardware pointer */
+	 
 	struct snd_pcm_runtime *runtime = substream->runtime;
 	current_ptr =
 		snd_aw2_saa7146_get_hw_ptr_capture(&chip->saa7146,
@@ -488,7 +471,7 @@ static snd_pcm_uframes_t snd_aw2_pcm_pointer_capture(struct snd_pcm_substream
 	return bytes_to_frames(substream->runtime, current_ptr);
 }
 
-/* create a pcm device */
+ 
 static int snd_aw2_new_pcm(struct aw2 *chip)
 {
 	struct snd_pcm *pcm_playback_ana;
@@ -497,7 +480,7 @@ static int snd_aw2_new_pcm(struct aw2 *chip)
 	struct aw2_pcm_device *pcm_device;
 	int err = 0;
 
-	/* Create new Alsa PCM device */
+	 
 
 	err = snd_pcm_new(chip->card, "Audiowerk2 analog playback", 0, 1, 0,
 			  &pcm_playback_ana);
@@ -506,26 +489,25 @@ static int snd_aw2_new_pcm(struct aw2 *chip)
 		return err;
 	}
 
-	/* Creation ok */
+	 
 	pcm_device = &chip->device_playback[NUM_STREAM_PLAYBACK_ANA];
 
-	/* Set PCM device name */
+	 
 	strcpy(pcm_playback_ana->name, "Analog playback");
-	/* Associate private data to PCM device */
+	 
 	pcm_playback_ana->private_data = pcm_device;
-	/* set operators of PCM device */
+	 
 	snd_pcm_set_ops(pcm_playback_ana, SNDRV_PCM_STREAM_PLAYBACK,
 			&snd_aw2_playback_ops);
-	/* store PCM device */
+	 
 	pcm_device->pcm = pcm_playback_ana;
-	/* give base chip pointer to our internal pcm device
-	   structure */
+	 
 	pcm_device->chip = chip;
-	/* Give stream number to PCM device */
+	 
 	pcm_device->stream_number = NUM_STREAM_PLAYBACK_ANA;
 
-	/* pre-allocation of buffers */
-	/* Preallocate continuous pages. */
+	 
+	 
 	snd_pcm_set_managed_buffer_all(pcm_playback_ana,
 				       SNDRV_DMA_TYPE_DEV,
 				       &chip->pci->dev,
@@ -538,26 +520,25 @@ static int snd_aw2_new_pcm(struct aw2 *chip)
 		dev_err(chip->card->dev, "snd_pcm_new error (0x%X)\n", err);
 		return err;
 	}
-	/* Creation ok */
+	 
 	pcm_device = &chip->device_playback[NUM_STREAM_PLAYBACK_DIG];
 
-	/* Set PCM device name */
+	 
 	strcpy(pcm_playback_num->name, "Digital playback");
-	/* Associate private data to PCM device */
+	 
 	pcm_playback_num->private_data = pcm_device;
-	/* set operators of PCM device */
+	 
 	snd_pcm_set_ops(pcm_playback_num, SNDRV_PCM_STREAM_PLAYBACK,
 			&snd_aw2_playback_ops);
-	/* store PCM device */
+	 
 	pcm_device->pcm = pcm_playback_num;
-	/* give base chip pointer to our internal pcm device
-	   structure */
+	 
 	pcm_device->chip = chip;
-	/* Give stream number to PCM device */
+	 
 	pcm_device->stream_number = NUM_STREAM_PLAYBACK_DIG;
 
-	/* pre-allocation of buffers */
-	/* Preallocate continuous pages. */
+	 
+	 
 	snd_pcm_set_managed_buffer_all(pcm_playback_num,
 				       SNDRV_DMA_TYPE_DEV,
 				       &chip->pci->dev,
@@ -571,32 +552,31 @@ static int snd_aw2_new_pcm(struct aw2 *chip)
 		return err;
 	}
 
-	/* Creation ok */
+	 
 	pcm_device = &chip->device_capture[NUM_STREAM_CAPTURE_ANA];
 
-	/* Set PCM device name */
+	 
 	strcpy(pcm_capture->name, "Capture");
-	/* Associate private data to PCM device */
+	 
 	pcm_capture->private_data = pcm_device;
-	/* set operators of PCM device */
+	 
 	snd_pcm_set_ops(pcm_capture, SNDRV_PCM_STREAM_CAPTURE,
 			&snd_aw2_capture_ops);
-	/* store PCM device */
+	 
 	pcm_device->pcm = pcm_capture;
-	/* give base chip pointer to our internal pcm device
-	   structure */
+	 
 	pcm_device->chip = chip;
-	/* Give stream number to PCM device */
+	 
 	pcm_device->stream_number = NUM_STREAM_CAPTURE_ANA;
 
-	/* pre-allocation of buffers */
-	/* Preallocate continuous pages. */
+	 
+	 
 	snd_pcm_set_managed_buffer_all(pcm_capture,
 				       SNDRV_DMA_TYPE_DEV,
 				       &chip->pci->dev,
 				       64 * 1024, 64 * 1024);
 
-	/* Create control */
+	 
 	err = snd_ctl_add(chip->card, snd_ctl_new1(&aw2_control, chip));
 	if (err < 0) {
 		dev_err(chip->card->dev, "snd_ctl_add error (0x%X)\n", err);

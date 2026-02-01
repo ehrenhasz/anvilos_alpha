@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Crane Merchandising Systems. All rights reserved.
-// Copyright (C) 2019 Oleh Kravchenko <oleg@kaa.org.ua>
+
+
+
 
 #include <linux/delay.h>
 #include <linux/leds.h>
@@ -9,59 +9,23 @@
 #include <linux/property.h>
 #include <linux/spi/spi.h>
 
-/*
- * EL15203000 SPI protocol description:
- * +-----+---------+
- * | LED | COMMAND |
- * +-----+---------+
- * |  1  |    1    |
- * +-----+---------+
- * (*) LEDs MCU board expects 20 msec delay per byte.
- *
- * LEDs:
- * +----------+--------------+-------------------------------------------+
- * |    ID    |     NAME     |         DESCRIPTION                       |
- * +----------+--------------+-------------------------------------------+
- * | 'P' 0x50 |     Pipe     | Consists from 5 LEDs, controlled by board |
- * +----------+--------------+-------------------------------------------+
- * | 'S' 0x53 | Screen frame | Light tube around the screen              |
- * +----------+--------------+-------------------------------------------+
- * | 'V' 0x56 | Vending area | Highlights a cup of coffee                |
- * +----------+--------------+-------------------------------------------+
- *
- * COMMAND:
- * +----------+-----------------+--------------+--------------+
- * |  VALUES  |       PIPE      | SCREEN FRAME | VENDING AREA |
- * +----------+-----------------+--------------+--------------+
- * | '0' 0x30 |                      Off                      |
- * +----------+-----------------------------------------------+
- * | '1' 0x31 |                      On                       |
- * +----------+-----------------+--------------+--------------+
- * | '2' 0x32 |     Cascade     |   Breathing  |
- * +----------+-----------------+--------------+
- * | '3' 0x33 | Inverse cascade |
- * +----------+-----------------+
- * | '4' 0x34 |     Bounce      |
- * +----------+-----------------+
- * | '5' 0x35 | Inverse bounce  |
- * +----------+-----------------+
- */
+ 
 
-/* EL15203000 default settings */
+ 
 #define EL_FW_DELAY_USEC	20000ul
 #define EL_PATTERN_DELAY_MSEC	800u
 #define EL_PATTERN_LEN		10u
 #define EL_PATTERN_HALF_LEN	(EL_PATTERN_LEN / 2)
 
 enum el15203000_command {
-	/* for all LEDs */
+	 
 	EL_OFF			= '0',
 	EL_ON			= '1',
 
-	/* for Screen LED */
+	 
 	EL_SCREEN_BREATHING	= '2',
 
-	/* for Pipe LED */
+	 
 	EL_PIPE_CASCADE		= '2',
 	EL_PIPE_INV_CASCADE	= '3',
 	EL_PIPE_BOUNCE		= '4',
@@ -96,7 +60,7 @@ static int el15203000_cmd(struct el15203000_led *led, u8 brightness)
 	dev_dbg(led->priv->dev, "Set brightness of 0x%02x(%c) to 0x%02x(%c)",
 		led->reg, led->reg, brightness, brightness);
 
-	/* to avoid SPI mistiming with firmware we should wait some time */
+	 
 	if (time_after(led->priv->delay, jiffies)) {
 		dev_dbg(led->priv->dev, "Wait %luus to sync",
 			EL_FW_DELAY_USEC);

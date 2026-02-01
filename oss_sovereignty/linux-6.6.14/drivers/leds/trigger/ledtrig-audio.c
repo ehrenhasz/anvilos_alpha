@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Audio Mute LED trigger
-//
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/leds.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2023 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/etherdevice.h>
 #include <linux/skbuff.h>
 #include "iwl-trans.h"
@@ -23,26 +19,22 @@ static inline int iwl_mvm_check_pn(struct iwl_mvm *mvm, struct sk_buff *skb,
 	u8 pn[IEEE80211_CCMP_PN_LEN];
 	u8 *extiv;
 
-	/* do PN checking */
+	 
 
-	/* multicast and non-data only arrives on default queue */
+	 
 	if (!ieee80211_is_data(hdr->frame_control) ||
 	    is_multicast_ether_addr(hdr->addr1))
 		return 0;
 
-	/* do not check PN for open AP */
+	 
 	if (!(stats->flag & RX_FLAG_DECRYPTED))
 		return 0;
 
-	/*
-	 * avoid checking for default queue - we don't want to replicate
-	 * all the logic that's necessary for checking the PN on fragmented
-	 * frames, leave that to mac80211
-	 */
+	 
 	if (queue == 0)
 		return 0;
 
-	/* if we are here - this for sure is either CCMP or GCMP */
+	 
 	if (IS_ERR_OR_NULL(sta)) {
 		IWL_DEBUG_DROP(mvm,
 			       "expected hw-decrypted unicast frame for station\n");
@@ -63,11 +55,11 @@ static inline int iwl_mvm_check_pn(struct iwl_mvm *mvm, struct sk_buff *skb,
 	else
 		tid = 0;
 
-	/* we don't use HCCA/802.11 QoS TSPECs, so drop such frames */
+	 
 	if (tid >= IWL_MAX_TID_COUNT)
 		return -1;
 
-	/* load pn */
+	 
 	pn[0] = extiv[7];
 	pn[1] = extiv[6];
 	pn[2] = extiv[5];
@@ -87,7 +79,7 @@ static inline int iwl_mvm_check_pn(struct iwl_mvm *mvm, struct sk_buff *skb,
 	return 0;
 }
 
-/* iwl_mvm_create_skb Adds the rxb to a new skb */
+ 
 static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
 			      struct ieee80211_hdr *hdr, u16 len, u8 crypt_len,
 			      struct iwl_rx_cmd_buffer *rxb)
@@ -104,58 +96,26 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
 		pad_len = 2;
 	}
 
-	/*
-	 * For non monitor interface strip the bytes the RADA might not have
-	 * removed (it might be disabled, e.g. for mgmt frames). As a monitor
-	 * interface cannot exist with other interfaces, this removal is safe
-	 * and sufficient, in monitor mode there's no decryption being done.
-	 */
+	 
 	if (len > mic_crc_len && !ieee80211_hw_check(mvm->hw, RX_INCLUDES_FCS))
 		len -= mic_crc_len;
 
-	/* If frame is small enough to fit in skb->head, pull it completely.
-	 * If not, only pull ieee80211_hdr (including crypto if present, and
-	 * an additional 8 bytes for SNAP/ethertype, see below) so that
-	 * splice() or TCP coalesce are more efficient.
-	 *
-	 * Since, in addition, ieee80211_data_to_8023() always pull in at
-	 * least 8 bytes (possibly more for mesh) we can do the same here
-	 * to save the cost of doing it later. That still doesn't pull in
-	 * the actual IP header since the typical case has a SNAP header.
-	 * If the latter changes (there are efforts in the standards group
-	 * to do so) we should revisit this and ieee80211_data_to_8023().
-	 */
+	 
 	headlen = (len <= skb_tailroom(skb)) ? len :
 					       hdrlen + crypt_len + 8;
 
-	/* The firmware may align the packet to DWORD.
-	 * The padding is inserted after the IV.
-	 * After copying the header + IV skip the padding if
-	 * present before copying packet data.
-	 */
+	 
 	hdrlen += crypt_len;
 
 	if (unlikely(headlen < hdrlen))
 		return -EINVAL;
 
-	/* Since data doesn't move data while putting data on skb and that is
-	 * the only way we use, data + len is the next place that hdr would be put
-	 */
+	 
 	skb_set_mac_header(skb, skb->len);
 	skb_put_data(skb, hdr, hdrlen);
 	skb_put_data(skb, (u8 *)hdr + hdrlen + pad_len, headlen - hdrlen);
 
-	/*
-	 * If we did CHECKSUM_COMPLETE, the hardware only does it right for
-	 * certain cases and starts the checksum after the SNAP. Check if
-	 * this is the case - it's easier to just bail out to CHECKSUM_NONE
-	 * in the cases the hardware didn't handle, since it's rare to see
-	 * such packets, even though the hardware did calculate the checksum
-	 * in this case, just starting after the MAC header instead.
-	 *
-	 * Starting from Bz hardware, it calculates starting directly after
-	 * the MAC header, so that matches mac80211's expectation.
-	 */
+	 
 	if (skb->ip_summed == CHECKSUM_COMPLETE) {
 		struct {
 			u8 hdr[6];
@@ -172,7 +132,7 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
 			      shdr->type != htons(ETH_P_TDLS))))
 			skb->ip_summed = CHECKSUM_NONE;
 		else if (mvm->trans->trans_cfg->device_family < IWL_DEVICE_FAMILY_BZ)
-			/* mac80211 assumes full CSUM including SNAP header */
+			 
 			skb_postpush_rcsum(skb, shdr, sizeof(*shdr));
 	}
 
@@ -189,10 +149,7 @@ static int iwl_mvm_create_skb(struct iwl_mvm *mvm, struct sk_buff *skb,
 	return 0;
 }
 
-/* put a TLV on the skb and return data pointer
- *
- * Also pad to 4 the len and zero out all data part
- */
+ 
 static void *
 iwl_mvm_radiotap_put_tlv(struct sk_buff *skb, u16 type, u16 len)
 {
@@ -218,21 +175,21 @@ static void iwl_mvm_add_rtap_sniffer_config(struct iwl_mvm *mvm,
 					    IEEE80211_RADIOTAP_VENDOR_NAMESPACE,
 					    sizeof(*radiotap) + vendor_data_len);
 
-	/* Intel OUI */
+	 
 	radiotap->oui[0] = 0xf6;
 	radiotap->oui[1] = 0x54;
 	radiotap->oui[2] = 0x25;
-	/* radiotap sniffer config sub-namespace */
+	 
 	radiotap->oui_subtype = 1;
 	radiotap->vendor_type = 0;
 
-	/* fill the data now */
+	 
 	memcpy(radiotap->data, &mvm->cur_aid, sizeof(mvm->cur_aid));
 
 	rx_status->flag |= RX_FLAG_RADIOTAP_TLV_AT_END;
 }
 
-/* iwl_mvm_pass_packet_to_mac80211 - passes the packet for mac80211 */
+ 
 static void iwl_mvm_pass_packet_to_mac80211(struct iwl_mvm *mvm,
 					    struct napi_struct *napi,
 					    struct sk_buff *skb, int queue,
@@ -292,22 +249,15 @@ static int iwl_mvm_rx_mgmt_prot(struct ieee80211_sta *sta,
 	if ((status & IWL_RX_MPDU_STATUS_SEC_MASK) == IWL_RX_MPDU_STATUS_SEC_NONE)
 		return 0;
 
-	/*
-	 * For non-beacon, we don't really care. But beacons may
-	 * be filtered out, and we thus need the firmware's replay
-	 * detection, otherwise beacons the firmware previously
-	 * filtered could be replayed, or something like that, and
-	 * it can filter a lot - though usually only if nothing has
-	 * changed.
-	 */
+	 
 	if (!ieee80211_is_beacon(hdr->frame_control))
 		return 0;
 
-	/* key mismatch - will also report !MIC_OK but we shouldn't count it */
+	 
 	if (!(status & IWL_RX_MPDU_STATUS_KEY_VALID))
 		return -1;
 
-	/* good cases */
+	 
 	if (likely(status & IWL_RX_MPDU_STATUS_MIC_OK &&
 		   !(status & IWL_RX_MPDU_STATUS_REPLAY_ERROR))) {
 		stats->flag |= RX_FLAG_DECRYPTED;
@@ -321,10 +271,7 @@ static int iwl_mvm_rx_mgmt_prot(struct ieee80211_sta *sta,
 
 	mvmvif = iwl_mvm_vif_from_mac80211(mvmsta->vif);
 
-	/*
-	 * both keys will have the same cipher and MIC length, use
-	 * whichever one is available
-	 */
+	 
 	key = rcu_dereference(mvmvif->bcn_prot.keys[0]);
 	if (!key) {
 		key = rcu_dereference(mvmvif->bcn_prot.keys[1]);
@@ -335,14 +282,11 @@ static int iwl_mvm_rx_mgmt_prot(struct ieee80211_sta *sta,
 	if (len < key->icv_len + IEEE80211_GMAC_PN_LEN + 2)
 		return -1;
 
-	/* get the real key ID */
+	 
 	keyid = frame[len - key->icv_len - IEEE80211_GMAC_PN_LEN - 2];
-	/* and if that's the other key, look it up */
+	 
 	if (keyid != key->keyidx) {
-		/*
-		 * shouldn't happen since firmware checked, but be safe
-		 * in case the MIC length is wrong too, for example
-		 */
+		 
 		if (keyid != 6 && keyid != 7)
 			return -1;
 		key = rcu_dereference(mvmvif->bcn_prot.keys[keyid - 6]);
@@ -350,7 +294,7 @@ static int iwl_mvm_rx_mgmt_prot(struct ieee80211_sta *sta,
 			return -1;
 	}
 
-	/* Report status to mac80211 */
+	 
 	if (!(status & IWL_RX_MPDU_STATUS_MIC_OK))
 		ieee80211_key_mic_failure(key);
 	else if (status & IWL_RX_MPDU_STATUS_REPLAY_ERROR)
@@ -367,13 +311,7 @@ static int iwl_mvm_rx_crypto(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 {
 	u32 status = le32_to_cpu(desc->status);
 
-	/*
-	 * Drop UNKNOWN frames in aggregation, unless in monitor mode
-	 * (where we don't have the keys).
-	 * We limit this to aggregation because in TKIP this is a valid
-	 * scenario, since we may not have the (correct) TTAK (phase 1
-	 * key) in the firmware.
-	 */
+	 
 	if (phy_info & IWL_RX_MPDU_PHY_AMPDU &&
 	    (status & IWL_RX_MPDU_STATUS_SEC_MASK) ==
 	    IWL_RX_MPDU_STATUS_SEC_UNKNOWN && !mvm->monitor_on)
@@ -388,13 +326,13 @@ static int iwl_mvm_rx_crypto(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 	    IWL_RX_MPDU_STATUS_SEC_NONE)
 		return 0;
 
-	/* TODO: handle packets encrypted with unknown alg */
+	 
 
 	switch (status & IWL_RX_MPDU_STATUS_SEC_MASK) {
 	case IWL_RX_MPDU_STATUS_SEC_CCM:
 	case IWL_RX_MPDU_STATUS_SEC_GCM:
 		BUILD_BUG_ON(IEEE80211_CCMP_PN_LEN != IEEE80211_GCMP_PN_LEN);
-		/* alg is CCM: check MIC only */
+		 
 		if (!(status & IWL_RX_MPDU_STATUS_MIC_OK))
 			return -1;
 
@@ -402,7 +340,7 @@ static int iwl_mvm_rx_crypto(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 		*crypt_len = IEEE80211_CCMP_HDR_LEN;
 		return 0;
 	case IWL_RX_MPDU_STATUS_SEC_TKIP:
-		/* Don't drop the frame and decrypt it in SW */
+		 
 		if (!fw_has_api(&mvm->fw->ucode_capa,
 				IWL_UCODE_TLV_API_DEPRECATE_TTAK) &&
 		    !(status & IWL_RX_MPDU_RES_STATUS_TTAK_OK))
@@ -438,14 +376,7 @@ static int iwl_mvm_rx_crypto(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 	case RX_MPDU_RES_STATUS_SEC_CMAC_GMAC_ENC:
 		break;
 	default:
-		/*
-		 * Sometimes we can get frames that were not decrypted
-		 * because the firmware didn't have the keys yet. This can
-		 * happen after connection where we can get multicast frames
-		 * before the GTK is installed.
-		 * Silently drop those frames.
-		 * Also drop un-decrypted frames in monitor mode.
-		 */
+		 
 		if (!is_multicast_ether_addr(hdr->addr1) &&
 		    !mvm->monitor_on && net_ratelimit())
 			IWL_WARN(mvm, "Unhandled alg: 0x%x\n", status);
@@ -486,10 +417,7 @@ static void iwl_mvm_rx_csum(struct iwl_mvm *mvm,
 	}
 }
 
-/*
- * returns true if a packet is a duplicate or invalid tid and should be dropped.
- * Updates AMSDU PN tracking info
- */
+ 
 static bool iwl_mvm_is_dup(struct ieee80211_sta *sta, int queue,
 			   struct ieee80211_rx_status *rx_status,
 			   struct ieee80211_hdr *hdr,
@@ -505,10 +433,7 @@ static bool iwl_mvm_is_dup(struct ieee80211_sta *sta, int queue,
 	mvm_sta = iwl_mvm_sta_from_mac80211(sta);
 	dup_data = &mvm_sta->dup_data[queue];
 
-	/*
-	 * Drop duplicate 802.11 retransmissions
-	 * (IEEE 802.11-2012: 9.3.2.10 "Duplicate detection and recovery")
-	 */
+	 
 	if (ieee80211_is_ctl(hdr->frame_control) ||
 	    ieee80211_is_qos_nullfunc(hdr->frame_control) ||
 	    is_multicast_ether_addr(hdr->addr1)) {
@@ -517,7 +442,7 @@ static bool iwl_mvm_is_dup(struct ieee80211_sta *sta, int queue,
 	}
 
 	if (ieee80211_is_data_qos(hdr->frame_control)) {
-		/* frame has qos control */
+		 
 		tid = ieee80211_get_tid(hdr);
 		if (tid >= IWL_MAX_TID_COUNT)
 			return true;
@@ -525,7 +450,7 @@ static bool iwl_mvm_is_dup(struct ieee80211_sta *sta, int queue,
 		tid = IWL_MAX_TID_COUNT;
 	}
 
-	/* If this wasn't a part of an A-MSDU the sub-frame index will be 0 */
+	 
 	sub_frame_idx = desc->amsdu_info &
 		IWL_RX_MPDU_AMSDU_SUBFRAME_IDX_MASK;
 
@@ -534,7 +459,7 @@ static bool iwl_mvm_is_dup(struct ieee80211_sta *sta, int queue,
 		     dup_data->last_sub_frame[tid] >= sub_frame_idx))
 		return true;
 
-	/* Allow same PN as the first subframe for following sub frames */
+	 
 	if (dup_data->last_seq[tid] == hdr->seq_ctrl &&
 	    sub_frame_idx > dup_data->last_sub_frame[tid] &&
 	    desc->mac_flags2 & IWL_RX_MPDU_MFLG2_AMSDU)
@@ -548,12 +473,7 @@ static bool iwl_mvm_is_dup(struct ieee80211_sta *sta, int queue,
 	return false;
 }
 
-/*
- * Returns true if sn2 - buffer_size < sn1 < sn2.
- * To be used only in order to compare reorder buffer head with NSSN.
- * We fully trust NSSN unless it is behind us due to reorder timeout.
- * Reorder timeout can only bring us up to buffer_size SNs ahead of NSSN.
- */
+ 
 static bool iwl_mvm_is_sn_less(u16 sn1, u16 sn2, u16 buffer_size)
 {
 	return ieee80211_sn_less(sn1, sn2) &&
@@ -594,19 +514,12 @@ static void iwl_mvm_release_frames(struct iwl_mvm *mvm,
 
 	lockdep_assert_held(&reorder_buf->lock);
 
-	/*
-	 * We keep the NSSN not too far behind, if we are sync'ing it and it
-	 * is more than 2048 ahead of us, it must be behind us. Discard it.
-	 * This can happen if the queue that hit the 0 / 2048 seqno was lagging
-	 * behind and this queue already processed packets. The next if
-	 * would have caught cases where this queue would have processed less
-	 * than 64 packets, but it may have processed more than 64 packets.
-	 */
+	 
 	if ((flags & IWL_MVM_RELEASE_FROM_RSS_SYNC) &&
 	    ieee80211_sn_less(nssn, ssn))
 		goto set_timer;
 
-	/* ignore nssn smaller than head sn - this can happen due to timeout */
+	 
 	if (iwl_mvm_is_sn_less(nssn, ssn, reorder_buf->buf_size))
 		goto set_timer;
 
@@ -620,15 +533,11 @@ static void iwl_mvm_release_frames(struct iwl_mvm *mvm,
 		    (ssn == 2048 || ssn == 0))
 			iwl_mvm_sync_nssn(mvm, baid_data->baid, ssn);
 
-		/*
-		 * Empty the list. Will have more than one frame for A-MSDU.
-		 * Empty list is valid as well since nssn indicates frames were
-		 * received.
-		 */
+		 
 		while ((skb = __skb_dequeue(skb_list))) {
 			iwl_mvm_pass_packet_to_mac80211(mvm, napi, skb,
 							reorder_buf->queue,
-							sta, NULL /* FIXME */);
+							sta, NULL  );
 			reorder_buf->num_stored--;
 		}
 	}
@@ -640,7 +549,7 @@ set_timer:
 
 		while (skb_queue_empty(&entries[index].e.frames))
 			index = (index + 1) % reorder_buf->buf_size;
-		/* modify timer to match next frame's expiration time */
+		 
 		mod_timer(&reorder_buf->reorder_timer,
 			  entries[index].e.reorder_time + 1 +
 			  RX_REORDER_BUF_TIMEOUT_MQ);
@@ -672,10 +581,7 @@ void iwl_mvm_reorder_timer_expired(struct timer_list *t)
 		index = (buf->head_sn + i) % buf->buf_size;
 
 		if (skb_queue_empty(&entries[index].e.frames)) {
-			/*
-			 * If there is a hole and the next frame didn't expire
-			 * we want to break and not advance SN
-			 */
+			 
 			cont = false;
 			continue;
 		}
@@ -685,7 +591,7 @@ void iwl_mvm_reorder_timer_expired(struct timer_list *t)
 			break;
 
 		expired = true;
-		/* continue until next hole after this expired frames */
+		 
 		cont = true;
 		sn = ieee80211_sn_add(buf->head_sn, i + 1);
 	}
@@ -704,7 +610,7 @@ void iwl_mvm_reorder_timer_expired(struct timer_list *t)
 
 		mvmsta = iwl_mvm_sta_from_mac80211(sta);
 
-		/* SN is set to the last expired frame + 1 */
+		 
 		IWL_DEBUG_HT(buf->mvm,
 			     "Releasing expired frames for sta %u, sn %d\n",
 			     sta_id, sn);
@@ -714,11 +620,7 @@ void iwl_mvm_reorder_timer_expired(struct timer_list *t)
 				       buf, sn, IWL_MVM_RELEASE_SEND_RSS_SYNC);
 		rcu_read_unlock();
 	} else {
-		/*
-		 * If no frame expired and there are stored frames, index is now
-		 * pointing to the first unexpired frame - modify timer
-		 * accordingly to this frame.
-		 */
+		 
 		mod_timer(&buf->reorder_timer,
 			  entries[index].e.reorder_time +
 			  1 + RX_REORDER_BUF_TIMEOUT_MQ);
@@ -746,7 +648,7 @@ static void iwl_mvm_del_ba(struct iwl_mvm *mvm, int queue,
 	if (WARN_ON_ONCE(!ba_data))
 		goto out;
 
-	/* pick any STA ID to find the pointer */
+	 
 	sta_id = ffs(ba_data->sta_mask) - 1;
 	sta = rcu_dereference(mvm->fw_id_to_mac_id[sta_id]);
 	if (WARN_ON_ONCE(IS_ERR_OR_NULL(sta)))
@@ -754,7 +656,7 @@ static void iwl_mvm_del_ba(struct iwl_mvm *mvm, int queue,
 
 	reorder_buf = &ba_data->reorder_buf[queue];
 
-	/* release all frames that are in the reorder buffer to the stack */
+	 
 	spin_lock_bh(&reorder_buf->lock);
 	iwl_mvm_release_frames(mvm, sta, NULL, ba_data, reorder_buf,
 			       ieee80211_sn_add(reorder_buf->head_sn,
@@ -793,7 +695,7 @@ static void iwl_mvm_release_frames_from_notif(struct iwl_mvm *mvm,
 		goto out;
 	}
 
-	/* pick any STA ID to find the pointer */
+	 
 	sta_id = ffs(ba_data->sta_mask) - 1;
 	sta = rcu_dereference(mvm->fw_id_to_mac_id[sta_id]);
 	if (WARN_ON_ONCE(IS_ERR_OR_NULL(sta)))
@@ -882,36 +784,28 @@ static void iwl_mvm_oldsn_workaround(struct iwl_mvm *mvm,
 	struct iwl_mvm_sta *mvmsta = iwl_mvm_sta_from_mac80211(sta);
 
 	if (gp2 != buffer->consec_oldsn_ampdu_gp2) {
-		/* we have a new (A-)MPDU ... */
+		 
 
-		/*
-		 * reset counter to 0 if we didn't have any oldsn in
-		 * the last A-MPDU (as detected by GP2 being identical)
-		 */
+		 
 		if (!buffer->consec_oldsn_prev_drop)
 			buffer->consec_oldsn_drops = 0;
 
-		/* either way, update our tracking state */
+		 
 		buffer->consec_oldsn_ampdu_gp2 = gp2;
 	} else if (buffer->consec_oldsn_prev_drop) {
-		/*
-		 * tracking state didn't change, and we had an old SN
-		 * indication before - do nothing in this case, we
-		 * already noted this one down and are waiting for the
-		 * next A-MPDU (by GP2)
-		 */
+		 
 		return;
 	}
 
-	/* return unless this MPDU has old SN */
+	 
 	if (!(reorder & IWL_RX_MPDU_REORDER_BA_OLD_SN))
 		return;
 
-	/* update state */
+	 
 	buffer->consec_oldsn_prev_drop = 1;
 	buffer->consec_oldsn_drops++;
 
-	/* if limit is reached, send del BA and reset state */
+	 
 	if (buffer->consec_oldsn_drops == IWL_MVM_AMPDU_CONSEC_DROPS_DELBA) {
 		IWL_WARN(mvm,
 			 "reached %d old SN frames from %pM on queue %d, stopping BA session on TID %d\n",
@@ -923,10 +817,7 @@ static void iwl_mvm_oldsn_workaround(struct iwl_mvm *mvm,
 	}
 }
 
-/*
- * Returns true if the MPDU was buffered\dropped, false if it should be passed
- * to upper layer.
- */
+ 
 static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
 			    struct napi_struct *napi,
 			    int queue,
@@ -955,22 +846,16 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
 	baid = (reorder & IWL_RX_MPDU_REORDER_BAID_MASK) >>
 		IWL_RX_MPDU_REORDER_BAID_SHIFT;
 
-	/*
-	 * This also covers the case of receiving a Block Ack Request
-	 * outside a BA session; we'll pass it to mac80211 and that
-	 * then sends a delBA action frame.
-	 * This also covers pure monitor mode, in which case we won't
-	 * have any BA sessions.
-	 */
+	 
 	if (baid == IWL_RX_REORDER_DATA_INVALID_BAID)
 		return false;
 
-	/* no sta yet */
+	 
 	if (WARN_ONCE(IS_ERR_OR_NULL(sta),
 		      "Got valid BAID without a valid station assigned\n"))
 		return false;
 
-	/* not a data packet or a bar */
+	 
 	if (!ieee80211_is_back_req(hdr->frame_control) &&
 	    (!ieee80211_is_data_qos(hdr->frame_control) ||
 	     is_multicast_ether_addr(hdr->addr1)))
@@ -1022,16 +907,7 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
 		goto drop;
 	}
 
-	/*
-	 * If there was a significant jump in the nssn - adjust.
-	 * If the SN is smaller than the NSSN it might need to first go into
-	 * the reorder buffer, in which case we just release up to it and the
-	 * rest of the function will take care of storing it and releasing up to
-	 * the nssn.
-	 * This should not happen. This queue has been lagging and it should
-	 * have been updated by a IWL_MVM_RXQ_NSSN_SYNC notification. Be nice
-	 * and update the other queues.
-	 */
+	 
 	if (!iwl_mvm_is_sn_less(nssn, buffer->head_sn + buffer->buf_size,
 				buffer->buf_size) ||
 	    !ieee80211_sn_less(sn, buffer->head_sn + buffer->buf_size)) {
@@ -1044,65 +920,40 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
 	iwl_mvm_oldsn_workaround(mvm, sta, tid, buffer, reorder,
 				 rx_status->device_timestamp, queue);
 
-	/* drop any oudated packets */
+	 
 	if (ieee80211_sn_less(sn, buffer->head_sn))
 		goto drop;
 
-	/* release immediately if allowed by nssn and no stored frames */
+	 
 	if (!buffer->num_stored && ieee80211_sn_less(sn, nssn)) {
 		if (iwl_mvm_is_sn_less(buffer->head_sn, nssn,
 				       buffer->buf_size) &&
 		   (!amsdu || last_subframe)) {
-			/*
-			 * If we crossed the 2048 or 0 SN, notify all the
-			 * queues. This is done in order to avoid having a
-			 * head_sn that lags behind for too long. When that
-			 * happens, we can get to a situation where the head_sn
-			 * is within the interval [nssn - buf_size : nssn]
-			 * which will make us think that the nssn is a packet
-			 * that we already freed because of the reordering
-			 * buffer and we will ignore it. So maintain the
-			 * head_sn somewhat updated across all the queues:
-			 * when it crosses 0 and 2048.
-			 */
+			 
 			if (sn == 2048 || sn == 0)
 				iwl_mvm_sync_nssn(mvm, baid, sn);
 			buffer->head_sn = nssn;
 		}
-		/* No need to update AMSDU last SN - we are moving the head */
+		 
 		spin_unlock_bh(&buffer->lock);
 		return false;
 	}
 
-	/*
-	 * release immediately if there are no stored frames, and the sn is
-	 * equal to the head.
-	 * This can happen due to reorder timer, where NSSN is behind head_sn.
-	 * When we released everything, and we got the next frame in the
-	 * sequence, according to the NSSN we can't release immediately,
-	 * while technically there is no hole and we can move forward.
-	 */
+	 
 	if (!buffer->num_stored && sn == buffer->head_sn) {
 		if (!amsdu || last_subframe) {
 			if (sn == 2048 || sn == 0)
 				iwl_mvm_sync_nssn(mvm, baid, sn);
 			buffer->head_sn = ieee80211_sn_inc(buffer->head_sn);
 		}
-		/* No need to update AMSDU last SN - we are moving the head */
+		 
 		spin_unlock_bh(&buffer->lock);
 		return false;
 	}
 
 	index = sn % buffer->buf_size;
 
-	/*
-	 * Check if we already stored this frame
-	 * As AMSDU is either received or not as whole, logic is simple:
-	 * If we have frames in that position in the buffer and the last frame
-	 * originated from AMSDU had a different SN then it is a retransmission.
-	 * If it is the same SN then if the subframe index is incrementing it
-	 * is the same AMSDU - otherwise it is a retransmission.
-	 */
+	 
 	tail = skb_peek_tail(&entries[index].e.frames);
 	if (tail && !amsdu)
 		goto drop;
@@ -1110,7 +961,7 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
 			  buffer->last_sub_index >= sub_frame_idx))
 		goto drop;
 
-	/* put in reorder buffer */
+	 
 	__skb_queue_tail(&entries[index].e.frames, skb);
 	buffer->num_stored++;
 	entries[index].e.reorder_time = jiffies;
@@ -1120,17 +971,7 @@ static bool iwl_mvm_reorder(struct iwl_mvm *mvm,
 		buffer->last_sub_index = sub_frame_idx;
 	}
 
-	/*
-	 * We cannot trust NSSN for AMSDU sub-frames that are not the last.
-	 * The reason is that NSSN advances on the first sub-frame, and may
-	 * cause the reorder buffer to advance before all the sub-frames arrive.
-	 * Example: reorder buffer contains SN 0 & 2, and we receive AMSDU with
-	 * SN 1. NSSN for first sub frame will be 3 with the result of driver
-	 * releasing SN 0,1, 2. When sub-frame 1 arrives - reorder buffer is
-	 * already ahead and it will be dropped.
-	 * If the last sub-frame is not on this queue - we will get frame
-	 * release notification with up to date NSSN.
-	 */
+	 
 	if (!amsdu || last_subframe)
 		iwl_mvm_release_frames(mvm, sta, napi, baid_data,
 				       buffer, nssn,
@@ -1166,14 +1007,9 @@ static void iwl_mvm_agg_rx_received(struct iwl_mvm *mvm,
 		goto out;
 
 	timeout = data->timeout;
-	/*
-	 * Do not update last rx all the time to avoid cache bouncing
-	 * between the rx queues.
-	 * Update it every timeout. Worst case is the session will
-	 * expire after ~ 2 * timeout, which doesn't matter that much.
-	 */
+	 
 	if (time_before(data->last_rx + TU_TO_JIFFIES(timeout), now))
-		/* Update is atomic */
+		 
 		data->last_rx = now;
 
 out:
@@ -1262,14 +1098,7 @@ iwl_mvm_decode_he_phy_ru_alloc(struct iwl_mvm_rx_phy_data *phy_data,
 			       struct ieee80211_radiotap_he_mu *he_mu,
 			       struct ieee80211_rx_status *rx_status)
 {
-	/*
-	 * Unfortunately, we have to leave the mac80211 data
-	 * incorrect for the case that we receive an HE-MU
-	 * transmission and *don't* have the HE phy data (due
-	 * to the bits being used for TSF). This shouldn't
-	 * happen though as management frames where we need
-	 * the TSF/timers are not be transmitted in HE-MU.
-	 */
+	 
 	u8 ru = le32_get_bits(phy_data->d1, IWL_RX_PHY_DATA1_HE_RU_ALLOC_MASK);
 	u32 rate_n_flags = phy_data->rate_n_flags;
 	u32 he_type = rate_n_flags & RATE_MCS_HE_TYPE_MSK_V1;
@@ -1379,7 +1208,7 @@ static void iwl_mvm_decode_he_phy_data(struct iwl_mvm *mvm,
 	case IWL_RX_PHY_INFO_TYPE_HE_MU:
 	case IWL_RX_PHY_INFO_TYPE_HE_MU_EXT:
 	case IWL_RX_PHY_INFO_TYPE_HE_TB:
-		/* HE common */
+		 
 		he->data1 |= cpu_to_le16(IEEE80211_RADIOTAP_HE_DATA1_LDPC_XSYMSEG_KNOWN |
 					 IEEE80211_RADIOTAP_HE_DATA1_DOPPLER_KNOWN |
 					 IEEE80211_RADIOTAP_HE_DATA1_BSS_COLOR_KNOWN);
@@ -1428,7 +1257,7 @@ static void iwl_mvm_decode_he_phy_data(struct iwl_mvm *mvm,
 					      IEEE80211_RADIOTAP_HE_DATA4_SU_MU_SPTL_REUSE);
 		break;
 	default:
-		/* nothing here */
+		 
 		break;
 	}
 
@@ -1469,7 +1298,7 @@ static void iwl_mvm_decode_he_phy_data(struct iwl_mvm *mvm,
 					      IEEE80211_RADIOTAP_HE_DATA3_BEAM_CHANGE);
 		break;
 	default:
-		/* nothing */
+		 
 		break;
 	}
 }
@@ -1556,39 +1385,27 @@ static void iwl_mvm_decode_eht_ext_mu(struct iwl_mvm *mvm,
 			(data5, IWL_RX_PHY_DATA5_EHT_MU_NUM_USR_NON_OFDMA,
 			 IEEE80211_RADIOTAP_EHT_DATA7_NUM_OF_NON_OFDMA_USERS);
 
-		/*
-		 * Hardware labels the content channels/RU allocation values
-		 * as follows:
-		 *           Content Channel 1		Content Channel 2
-		 *   20 MHz: A1
-		 *   40 MHz: A1				B1
-		 *   80 MHz: A1 C1			B1 D1
-		 *  160 MHz: A1 C1 A2 C2		B1 D1 B2 D2
-		 *  320 MHz: A1 C1 A2 C2 A3 C3 A4 C4	B1 D1 B2 D2 B3 D3 B4 D4
-		 *
-		 * However firmware can only give us A1-D2, so the higher
-		 * frequencies are missing.
-		 */
+		 
 
 		switch (phy_bw) {
 		case RATE_MCS_CHAN_WIDTH_320:
-			/* additional values are missing in RX metadata */
+			 
 		case RATE_MCS_CHAN_WIDTH_160:
-			/* content channel 1 */
+			 
 			IWL_MVM_ENC_EHT_RU(1_2_1, A2);
 			IWL_MVM_ENC_EHT_RU(1_2_2, C2);
-			/* content channel 2 */
+			 
 			IWL_MVM_ENC_EHT_RU(2_2_1, B2);
 			IWL_MVM_ENC_EHT_RU(2_2_2, D2);
 			fallthrough;
 		case RATE_MCS_CHAN_WIDTH_80:
-			/* content channel 1 */
+			 
 			IWL_MVM_ENC_EHT_RU(1_1_2, C1);
-			/* content channel 2 */
+			 
 			IWL_MVM_ENC_EHT_RU(2_1_2, D1);
 			fallthrough;
 		case RATE_MCS_CHAN_WIDTH_40:
-			/* content channel 2 */
+			 
 			IWL_MVM_ENC_EHT_RU(2_1_1, B1);
 			fallthrough;
 		case RATE_MCS_CHAN_WIDTH_20:
@@ -1684,9 +1501,7 @@ static void iwl_mvm_decode_eht_ru(struct iwl_mvm *mvm,
 			       IEEE80211_RADIOTAP_EHT_DATA8_RU_ALLOC_TB_FMT_B7_B1);
 	enum nl80211_eht_ru_alloc nl_ru;
 
-	/* Using D1.5 Table 9-53a - Encoding of PS160 and RU Allocation subfields
-	 * in an EHT variant User Info field
-	 */
+	 
 
 	switch (ru) {
 	case 0 ... 36:
@@ -1757,7 +1572,7 @@ static void iwl_mvm_decode_eht_phy_data(struct iwl_mvm *mvm,
 	__le32 usig_a1 = phy_data->rx_vec[0];
 	u8 info_type = phy_data->info_type;
 
-	/* Not in EHT range */
+	 
 	if (info_type < IWL_RX_PHY_INFO_TYPE_EHT_MU ||
 	    info_type > IWL_RX_PHY_INFO_TYPE_EHT_TB_EXT)
 		return;
@@ -1795,7 +1610,7 @@ static void iwl_mvm_decode_eht_phy_data(struct iwl_mvm *mvm,
 				     IWL_RX_PHY_DATA0_ETH_SPATIAL_REUSE_MASK,
 				     IEEE80211_RADIOTAP_EHT_DATA0_SPATIAL_REUSE);
 
-	/* All RU allocating size/index is in TB format */
+	 
 	eht->known |= cpu_to_le32(IEEE80211_RADIOTAP_EHT_KNOWN_RU_ALLOC_TB_FMT);
 	eht->data[8] |= LE32_DEC_ENC(data0, IWL_RX_PHY_DATA0_EHT_PS160,
 				     IEEE80211_RADIOTAP_EHT_DATA8_RU_ALLOC_TB_FMT_PS_160);
@@ -1806,10 +1621,7 @@ static void iwl_mvm_decode_eht_phy_data(struct iwl_mvm *mvm,
 
 	iwl_mvm_decode_eht_ru(mvm, rx_status, eht);
 
-	/* We only get here in case of IWL_RX_MPDU_PHY_TSF_OVERLOAD is set
-	 * which is on only in case of monitor mode so no need to check monitor
-	 * mode
-	 */
+	 
 	eht->known |= cpu_to_le32(IEEE80211_RADIOTAP_EHT_KNOWN_PRIMARY_80);
 	eht->data[1] |=
 		le32_encode_bits(mvm->monitor_p80,
@@ -1835,7 +1647,7 @@ static void iwl_mvm_decode_eht_phy_data(struct iwl_mvm *mvm,
 	eht->data[0] |= LE32_DEC_ENC(data0, IWL_RX_PHY_DATA0_EHT_PE_DISAMBIG,
 				     IEEE80211_RADIOTAP_EHT_DATA0_PE_DISAMBIGUITY_OM);
 
-	/* TODO: what about IWL_RX_PHY_DATA0_EHT_BW320_SLOT */
+	 
 
 	if (!le32_get_bits(data0, IWL_RX_PHY_DATA0_EHT_SIGA_CRC_OK))
 		usig->common |= cpu_to_le32(IEEE80211_RADIOTAP_EHT_USIG_COMMON_BAD_USIG_CRC);
@@ -1844,10 +1656,7 @@ static void iwl_mvm_decode_eht_phy_data(struct iwl_mvm *mvm,
 	usig->common |= LE32_DEC_ENC(data0, IWL_RX_PHY_DATA0_EHT_PHY_VER,
 				     IEEE80211_RADIOTAP_EHT_USIG_COMMON_PHY_VER);
 
-	/*
-	 * TODO: what about TB - IWL_RX_PHY_DATA1_EHT_TB_PILOT_TYPE,
-	 *			 IWL_RX_PHY_DATA1_EHT_TB_LOW_SS
-	 */
+	 
 
 	eht->known |= cpu_to_le32(IEEE80211_RADIOTAP_EHT_KNOWN_EHT_LTF);
 	eht->data[0] |= LE32_DEC_ENC(data1, IWL_RX_PHY_DATA1_EHT_SIG_LTF_NUM,
@@ -1874,12 +1683,12 @@ static void iwl_mvm_rx_eht(struct iwl_mvm *mvm, struct sk_buff *skb,
 
 	u32 rate_n_flags = phy_data->rate_n_flags;
 	u32 he_type = rate_n_flags & RATE_MCS_HE_TYPE_MSK;
-	/* EHT and HE have the same valus for LTF */
+	 
 	u8 ltf = IEEE80211_RADIOTAP_HE_DATA5_LTF_SIZE_UNKNOWN;
 	u16 phy_info = phy_data->phy_info;
 	u32 bw;
 
-	/* u32 for 1 user_info */
+	 
 	if (phy_data->with_data)
 		eht_len += sizeof(u32);
 
@@ -1891,7 +1700,7 @@ static void iwl_mvm_rx_eht(struct iwl_mvm *mvm, struct sk_buff *skb,
 	usig->common |=
 		cpu_to_le32(IEEE80211_RADIOTAP_EHT_USIG_COMMON_BW_KNOWN);
 
-	/* specific handling for 320MHz */
+	 
 	bw = FIELD_GET(RATE_MCS_CHAN_WIDTH_MSK, rate_n_flags);
 	if (bw == RATE_MCS_CHAN_WIDTH_320_VAL)
 		bw += FIELD_GET(IWL_RX_PHY_DATA0_EHT_BW320_SLOT,
@@ -1900,7 +1709,7 @@ static void iwl_mvm_rx_eht(struct iwl_mvm *mvm, struct sk_buff *skb,
 	usig->common |= cpu_to_le32
 		(FIELD_PREP(IEEE80211_RADIOTAP_EHT_USIG_COMMON_BW, bw));
 
-	/* report the AMPDU-EOF bit on single frames */
+	 
 	if (!queue && !(phy_info & IWL_RX_MPDU_PHY_AMPDU)) {
 		rx_status->flag |= RX_FLAG_AMPDU_DETAILS;
 		rx_status->flag |= RX_FLAG_AMPDU_EOF_BIT_KNOWN;
@@ -1908,7 +1717,7 @@ static void iwl_mvm_rx_eht(struct iwl_mvm *mvm, struct sk_buff *skb,
 			rx_status->flag |= RX_FLAG_AMPDU_EOF_BIT;
 	}
 
-	/* update aggregation data for monitor sake on default queue */
+	 
 	if (!queue && (phy_info & IWL_RX_MPDU_PHY_TSF_OVERLOAD) &&
 	    (phy_info & IWL_RX_MPDU_PHY_AMPDU) && phy_data->first_subframe) {
 		rx_status->flag |= RX_FLAG_AMPDU_EOF_BIT_KNOWN;
@@ -1956,7 +1765,7 @@ static void iwl_mvm_rx_eht(struct iwl_mvm *mvm, struct sk_buff *skb,
 		}
 		break;
 	default:
-		/* nothing here */
+		 
 		break;
 	}
 
@@ -2042,7 +1851,7 @@ static void iwl_mvm_rx_he(struct iwl_mvm *mvm, struct sk_buff *skb,
 		rx_status->flag |= RX_FLAG_RADIOTAP_HE_MU;
 	}
 
-	/* report the AMPDU-EOF bit on single frames */
+	 
 	if (!queue && !(phy_info & IWL_RX_MPDU_PHY_AMPDU)) {
 		rx_status->flag |= RX_FLAG_AMPDU_DETAILS;
 		rx_status->flag |= RX_FLAG_AMPDU_EOF_BIT_KNOWN;
@@ -2054,7 +1863,7 @@ static void iwl_mvm_rx_he(struct iwl_mvm *mvm, struct sk_buff *skb,
 		iwl_mvm_decode_he_phy_data(mvm, phy_data, he, he_mu, rx_status,
 					   queue);
 
-	/* update aggregation data for monitor sake on default queue */
+	 
 	if (!queue && (phy_info & IWL_RX_MPDU_PHY_TSF_OVERLOAD) &&
 	    (phy_info & IWL_RX_MPDU_PHY_AMPDU) && phy_data->first_subframe) {
 		rx_status->flag |= RX_FLAG_AMPDU_EOF_BIT_KNOWN;
@@ -2068,7 +1877,7 @@ static void iwl_mvm_rx_he(struct iwl_mvm *mvm, struct sk_buff *skb,
 		rx_status->he_ru = NL80211_RATE_INFO_HE_RU_ALLOC_106;
 	}
 
-	/* actually data is filled in mac80211 */
+	 
 	if (he_type == RATE_MCS_HE_TYPE_SU ||
 	    he_type == RATE_MCS_HE_TYPE_EXT_SU)
 		he->data1 |=
@@ -2195,10 +2004,7 @@ static void iwl_mvm_rx_get_sta_block_tx(void *data, struct ieee80211_sta *sta)
 		rx_sta_csa->all_sta_unblocked = false;
 }
 
-/*
- * Note: requires also rx_status->band to be prefilled, as well
- * as phy_data (apart from phy_data->info_type)
- */
+ 
 static void iwl_mvm_rx_fill_status(struct iwl_mvm *mvm,
 				   struct sk_buff *skb,
 				   struct iwl_mvm_rx_phy_data *phy_data,
@@ -2217,7 +2023,7 @@ static void iwl_mvm_rx_fill_status(struct iwl_mvm *mvm,
 			le32_get_bits(phy_data->d1,
 				      IWL_RX_PHY_DATA1_INFO_TYPE_MASK);
 
-	/* This may be overridden by iwl_mvm_rx_he() to HE_RU */
+	 
 	switch (rate_n_flags & RATE_MCS_CHAN_WIDTH_MSK) {
 	case RATE_MCS_CHAN_WIDTH_20:
 		break;
@@ -2235,7 +2041,7 @@ static void iwl_mvm_rx_fill_status(struct iwl_mvm *mvm,
 		break;
 	}
 
-	/* must be before L-SIG data */
+	 
 	if (format == RATE_MCS_HE_MSK)
 		iwl_mvm_rx_he(mvm, skb, phy_data, queue);
 
@@ -2247,7 +2053,7 @@ static void iwl_mvm_rx_fill_status(struct iwl_mvm *mvm,
 	iwl_mvm_get_signal_strength(mvm, rx_status, rate_n_flags,
 				    phy_data->energy_a, phy_data->energy_b);
 
-	/* using TLV format and must be after all fixed len fields */
+	 
 	if (format == RATE_MCS_EHT_MSK)
 		iwl_mvm_rx_eht(mvm, skb, phy_data, queue);
 
@@ -2387,9 +2193,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 	phy_data.d4 = desc->phy_data4;
 
 	hdr = (void *)(pkt->data + desc_size);
-	/* Dont use dev_alloc_skb(), we'll have enough headroom once
-	 * ieee80211_hdr pulled.
-	 */
+	 
 	skb = alloc_skb(128, GFP_ATOMIC);
 	if (!skb) {
 		IWL_ERR(mvm, "alloc_skb failed\n");
@@ -2397,21 +2201,13 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 	}
 
 	if (desc->mac_flags2 & IWL_RX_MPDU_MFLG2_PAD) {
-		/*
-		 * If the device inserted padding it means that (it thought)
-		 * the 802.11 header wasn't a multiple of 4 bytes long. In
-		 * this case, reserve two bytes at the start of the SKB to
-		 * align the payload properly in case we end up copying it.
-		 */
+		 
 		skb_reserve(skb, 2);
 	}
 
 	rx_status = IEEE80211_SKB_RXCB(skb);
 
-	/*
-	 * Keep packets with CRC errors (and with overrun) for monitor mode
-	 * (otherwise the firmware discards them) but mark them as bad.
-	 */
+	 
 	if (!(desc->status & cpu_to_le32(IWL_RX_MPDU_STATUS_CRC_OK)) ||
 	    !(desc->status & cpu_to_le32(IWL_RX_MPDU_STATUS_OVERRUN_OK))) {
 		IWL_DEBUG_RX(mvm, "Bad CRC or FIFO: 0x%08X.\n",
@@ -2419,7 +2215,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 		rx_status->flag |= RX_FLAG_FAILED_FCS_CRC;
 	}
 
-	/* set the preamble flag if appropriate */
+	 
 	if (format == RATE_MCS_CCK_MSK &&
 	    phy_data.phy_info & IWL_RX_MPDU_PHY_SHORT_PREAMBLE)
 		rx_status->enc_flags |= RX_ENC_FLAG_SHORTPRE;
@@ -2434,7 +2230,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 			tsf_on_air_rise = le64_to_cpu(desc->v1.tsf_on_air_rise);
 
 		rx_status->mactime = tsf_on_air_rise;
-		/* TSF as indicated by the firmware is at INA time */
+		 
 		rx_status->flag |= RX_FLAG_MACTIME_PLCP_START;
 	}
 
@@ -2447,17 +2243,13 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 			NL80211_BAND_2GHZ;
 	}
 
-	/* update aggregation data for monitor sake on default queue */
+	 
 	if (!queue && (phy_data.phy_info & IWL_RX_MPDU_PHY_AMPDU)) {
 		bool toggle_bit;
 
 		toggle_bit = phy_data.phy_info & IWL_RX_MPDU_PHY_AMPDU_TOGGLE;
 		rx_status->flag |= RX_FLAG_AMPDU_DETAILS;
-		/*
-		 * Toggle is switched whenever new aggregation starts. Make
-		 * sure ampdu_reference is never 0 so we can later use it to
-		 * see if the frame was really part of an A-MPDU or not.
-		 */
+		 
 		if (toggle_bit != mvm->ampdu_toggle) {
 			mvm->ampdu_ref++;
 			if (mvm->ampdu_ref == 0)
@@ -2480,10 +2272,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 			link_sta = rcu_dereference(mvm->fw_id_to_link_sta[id]);
 		}
 	} else if (!is_multicast_ether_addr(hdr->addr2)) {
-		/*
-		 * This is fine since we prevent two stations with the same
-		 * address from being added.
-		 */
+		 
 		sta = ieee80211_find_sta_by_ifaddr(mvm->hw, hdr->addr2, NULL);
 	}
 
@@ -2512,11 +2301,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 		    time_after(jiffies, mvm->tcm.ts + MVM_TCM_PERIOD))
 			schedule_delayed_work(&mvm->tcm.work, 0);
 
-		/*
-		 * We have tx blocked stations (with CS bit). If we heard
-		 * frames from a blocked station on a new channel we can
-		 * TX to it again.
-		 */
+		 
 		if (unlikely(tx_blocked_vif) && tx_blocked_vif == vif) {
 			struct iwl_mvm_vif *mvmvif =
 				iwl_mvm_vif_from_mac80211(tx_blocked_vif);
@@ -2534,7 +2319,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 
 			if (rx_sta_csa.all_sta_unblocked) {
 				RCU_INIT_POINTER(mvm->csa_tx_blocked_vif, NULL);
-				/* Unblock BCAST / MCAST station */
+				 
 				iwl_mvm_modify_all_sta_disable_tx(mvm, mvmvif, false);
 				cancel_delayed_work(&mvm->cs_tx_unblock_dwork);
 			}
@@ -2566,12 +2351,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 			goto out;
 		}
 
-		/*
-		 * Our hardware de-aggregates AMSDUs but copies the mac header
-		 * as it to the de-aggregated MPDUs. We need to turn off the
-		 * AMSDU bit in the QoS control ourselves.
-		 * In addition, HW reverses addr3 and addr4 - reverse it back.
-		 */
+		 
 		if ((desc->mac_flags2 & IWL_RX_MPDU_MFLG2_AMSDU) &&
 		    !WARN_ON(!ieee80211_is_data_qos(hdr->frame_control))) {
 			u8 *qc = ieee80211_get_qos_ctl(hdr);
@@ -2593,7 +2373,7 @@ void iwl_mvm_rx_mpdu_mq(struct iwl_mvm *mvm, struct napi_struct *napi,
 		}
 	}
 
-	/* management stuff on default queue */
+	 
 	if (!queue) {
 		if (unlikely((ieee80211_is_beacon(hdr->frame_control) ||
 			      ieee80211_is_probe_resp(hdr->frame_control)) &&
@@ -2668,19 +2448,17 @@ void iwl_mvm_rx_monitor_no_data(struct iwl_mvm *mvm, struct napi_struct *napi,
 				    RX_NO_DATA_NOTIF, 0) >= 3) {
 		if (unlikely(iwl_rx_packet_payload_len(pkt) <
 		    sizeof(struct iwl_rx_no_data_ver_3)))
-		/* invalid len for ver 3 */
+		 
 			return;
 		phy_data.rx_vec[2] = desc->rx_vec[2];
 		phy_data.rx_vec[3] = desc->rx_vec[3];
 	} else {
 		if (format == RATE_MCS_EHT_MSK)
-			/* no support for EHT before version 3 API */
+			 
 			return;
 	}
 
-	/* Dont use dev_alloc_skb(), we'll have enough headroom once
-	 * ieee80211_hdr pulled.
-	 */
+	 
 	skb = alloc_skb(128, GFP_ATOMIC);
 	if (!skb) {
 		IWL_ERR(mvm, "alloc_skb failed\n");
@@ -2689,7 +2467,7 @@ void iwl_mvm_rx_monitor_no_data(struct iwl_mvm *mvm, struct napi_struct *napi,
 
 	rx_status = IEEE80211_SKB_RXCB(skb);
 
-	/* 0-length PSDU */
+	 
 	rx_status->flag |= RX_FLAG_NO_PSDU;
 
 	switch (info_type) {
@@ -2713,18 +2491,10 @@ void iwl_mvm_rx_monitor_no_data(struct iwl_mvm *mvm, struct napi_struct *napi,
 
 	iwl_mvm_rx_fill_status(mvm, skb, &phy_data, queue);
 
-	/* no more radio tap info should be put after this point.
-	 *
-	 * We mark it as mac header, for upper layers to know where
-	 * all radio tap header ends.
-	 */
+	 
 	skb_reset_mac_header(skb);
 
-	/*
-	 * Override the nss from the rx_vec since the rate_n_flags has
-	 * only 2 bits for the nss which gives a max of 4 ss but there
-	 * may be up to 8 spatial streams.
-	 */
+	 
 	switch (format) {
 	case RATE_MCS_VHT_MSK:
 		rx_status->nss =

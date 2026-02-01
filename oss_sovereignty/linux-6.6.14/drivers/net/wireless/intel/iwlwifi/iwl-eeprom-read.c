@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2005-2014, 2018-2019, 2021 Intel Corporation
- */
+
+ 
 #include <linux/types.h>
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -13,24 +11,12 @@
 #include "iwl-prph.h"
 #include "iwl-csr.h"
 
-/*
- * EEPROM access time values:
- *
- * Driver initiates EEPROM read by writing byte address << 1 to CSR_EEPROM_REG.
- * Driver then polls CSR_EEPROM_REG for CSR_EEPROM_REG_READ_VALID_MSK (0x1).
- * When polling, wait 10 uSec between polling loops, up to a maximum 5000 uSec.
- * Driver reads 16-bit value from bits 31-16 of CSR_EEPROM_REG.
- */
-#define IWL_EEPROM_ACCESS_TIMEOUT	5000 /* uSec */
+ 
+#define IWL_EEPROM_ACCESS_TIMEOUT	5000  
 
-/*
- * The device's EEPROM semaphore prevents conflicts between driver and uCode
- * when accessing the EEPROM; each access is a series of pulses to/from the
- * EEPROM chip, not a single event, so even reads could conflict if they
- * weren't arbitrated by the semaphore.
- */
-#define IWL_EEPROM_SEM_TIMEOUT		10   /* microseconds */
-#define IWL_EEPROM_SEM_RETRY_LIMIT	1000 /* number of attempts (not time) */
+ 
+#define IWL_EEPROM_SEM_TIMEOUT		10    
+#define IWL_EEPROM_SEM_RETRY_LIMIT	1000  
 
 
 static int iwl_eeprom_acquire_semaphore(struct iwl_trans *trans)
@@ -39,11 +25,11 @@ static int iwl_eeprom_acquire_semaphore(struct iwl_trans *trans)
 	int ret;
 
 	for (count = 0; count < IWL_EEPROM_SEM_RETRY_LIMIT; count++) {
-		/* Request semaphore */
+		 
 		iwl_set_bit(trans, CSR_HW_IF_CONFIG_REG,
 			    CSR_HW_IF_CONFIG_REG_BIT_EEPROM_OWN_SEM);
 
-		/* See if we got it */
+		 
 		ret = iwl_poll_bit(trans, CSR_HW_IF_CONFIG_REG,
 				CSR_HW_IF_CONFIG_REG_BIT_EEPROM_OWN_SEM,
 				CSR_HW_IF_CONFIG_REG_BIT_EEPROM_OWN_SEM,
@@ -95,11 +81,7 @@ static int iwl_eeprom_verify_signature(struct iwl_trans *trans, bool nvm_is_otp)
 	}
 }
 
-/******************************************************************************
- *
- * OTP related functions
- *
-******************************************************************************/
+ 
 
 static void iwl_set_otp_access_absolute(struct iwl_trans *trans)
 {
@@ -113,7 +95,7 @@ static int iwl_nvm_is_otp(struct iwl_trans *trans)
 {
 	u32 otpgp;
 
-	/* OTP only valid for CP/PP and after */
+	 
 	switch (trans->hw_rev & CSR_HW_REV_TYPE_MSK) {
 	case CSR_HW_REV_TYPE_NONE:
 		IWL_ERR(trans, "Unknown hardware type\n");
@@ -145,10 +127,7 @@ static int iwl_init_otp_access(struct iwl_trans *trans)
 	iwl_clear_bits_prph(trans, APMG_PS_CTRL_REG,
 			    APMG_PS_CTRL_VAL_RESET_REQ);
 
-	/*
-	 * CSR auto clock gate disable bit -
-	 * this is only applicable for HW with OTP shadow RAM
-	 */
+	 
 	if (trans->trans_cfg->base_params->shadow_ram_support)
 		iwl_set_bit(trans, CSR_DBG_LINK_PWR_MGMT_REG,
 			    CSR_RESET_LINK_PWR_MGMT_DISABLED);
@@ -174,19 +153,19 @@ static int iwl_read_otp_word(struct iwl_trans *trans, u16 addr,
 		return ret;
 	}
 	r = iwl_read32(trans, CSR_EEPROM_REG);
-	/* check for ECC errors: */
+	 
 	otpgp = iwl_read32(trans, CSR_OTP_GP_REG);
 	if (otpgp & CSR_OTP_GP_REG_ECC_UNCORR_STATUS_MSK) {
-		/* stop in this case */
-		/* set the uncorrectable OTP ECC bit for acknowledgment */
+		 
+		 
 		iwl_set_bit(trans, CSR_OTP_GP_REG,
 			    CSR_OTP_GP_REG_ECC_UNCORR_STATUS_MSK);
 		IWL_ERR(trans, "Uncorrectable OTP ECC error, abort OTP read\n");
 		return -EINVAL;
 	}
 	if (otpgp & CSR_OTP_GP_REG_ECC_CORR_STATUS_MSK) {
-		/* continue in this case */
-		/* set the correctable OTP ECC bit for acknowledgment */
+		 
+		 
 		iwl_set_bit(trans, CSR_OTP_GP_REG,
 			    CSR_OTP_GP_REG_ECC_CORR_STATUS_MSK);
 		IWL_ERR(trans, "Correctable OTP ECC error, continue read\n");
@@ -195,16 +174,14 @@ static int iwl_read_otp_word(struct iwl_trans *trans, u16 addr,
 	return 0;
 }
 
-/*
- * iwl_is_otp_empty: check for empty OTP
- */
+ 
 static bool iwl_is_otp_empty(struct iwl_trans *trans)
 {
 	u16 next_link_addr = 0;
 	__le16 link_value;
 	bool is_empty = false;
 
-	/* locate the beginning of OTP link list */
+	 
 	if (!iwl_read_otp_word(trans, next_link_addr, &link_value)) {
 		if (!link_value) {
 			IWL_ERR(trans, "OTP is empty\n");
@@ -219,15 +196,7 @@ static bool iwl_is_otp_empty(struct iwl_trans *trans)
 }
 
 
-/*
- * iwl_find_otp_image: find EEPROM image in OTP
- *   finding the OTP block that contains the EEPROM image.
- *   the last valid block on the link list (the block _before_ the last block)
- *   is the block we should read and used to configure the device.
- *   If all the available OTP blocks are full, the last block will be the block
- *   we should read and used to configure the device.
- *   only perform this operation if shadow RAM is disabled
- */
+ 
 static int iwl_find_otp_image(struct iwl_trans *trans,
 					u16 *validblockaddr)
 {
@@ -235,22 +204,16 @@ static int iwl_find_otp_image(struct iwl_trans *trans,
 	__le16 link_value = 0;
 	int usedblocks = 0;
 
-	/* set addressing mode to absolute to traverse the link list */
+	 
 	iwl_set_otp_access_absolute(trans);
 
-	/* checking for empty OTP or error */
+	 
 	if (iwl_is_otp_empty(trans))
 		return -EINVAL;
 
-	/*
-	 * start traverse link list
-	 * until reach the max number of OTP blocks
-	 * different devices have different number of OTP blocks
-	 */
+	 
 	do {
-		/* save current valid block address
-		 * check for more block on the link list
-		 */
+		 
 		valid_addr = next_link_addr;
 		next_link_addr = le16_to_cpu(link_value) * sizeof(u16);
 		IWL_DEBUG_EEPROM(trans->dev, "OTP blocks %d addr 0x%x\n",
@@ -258,33 +221,22 @@ static int iwl_find_otp_image(struct iwl_trans *trans,
 		if (iwl_read_otp_word(trans, next_link_addr, &link_value))
 			return -EINVAL;
 		if (!link_value) {
-			/*
-			 * reach the end of link list, return success and
-			 * set address point to the starting address
-			 * of the image
-			 */
+			 
 			*validblockaddr = valid_addr;
-			/* skip first 2 bytes (link list pointer) */
+			 
 			*validblockaddr += 2;
 			return 0;
 		}
-		/* more in the link list, continue */
+		 
 		usedblocks++;
 	} while (usedblocks <= trans->trans_cfg->base_params->max_ll_items);
 
-	/* OTP has no valid blocks */
+	 
 	IWL_DEBUG_EEPROM(trans->dev, "OTP has no valid blocks\n");
 	return -EINVAL;
 }
 
-/*
- * iwl_read_eeprom - read EEPROM contents
- *
- * Load the EEPROM contents from adapter and return it
- * and its size.
- *
- * NOTE:  This routine uses the non-debug IO access functions.
- */
+ 
 int iwl_read_eeprom(struct iwl_trans *trans, u8 **eeprom, size_t *eeprom_size)
 {
 	__le16 *e;
@@ -316,7 +268,7 @@ int iwl_read_eeprom(struct iwl_trans *trans, u8 **eeprom, size_t *eeprom_size)
 		goto err_free;
 	}
 
-	/* Make sure driver (instead of uCode) is allowed to read EEPROM */
+	 
 	ret = iwl_eeprom_acquire_semaphore(trans);
 	if (ret < 0) {
 		IWL_ERR(trans, "Failed to acquire EEPROM semaphore.\n");
@@ -337,7 +289,7 @@ int iwl_read_eeprom(struct iwl_trans *trans, u8 **eeprom, size_t *eeprom_size)
 		iwl_set_bit(trans, CSR_OTP_GP_REG,
 			    CSR_OTP_GP_REG_ECC_CORR_STATUS_MSK |
 			    CSR_OTP_GP_REG_ECC_UNCORR_STATUS_MSK);
-		/* traversing the linked list if no shadow ram supported */
+		 
 		if (!trans->trans_cfg->base_params->shadow_ram_support) {
 			ret = iwl_find_otp_image(trans, &validblockaddr);
 			if (ret)
@@ -354,7 +306,7 @@ int iwl_read_eeprom(struct iwl_trans *trans, u8 **eeprom, size_t *eeprom_size)
 			cache_addr += sizeof(u16);
 		}
 	} else {
-		/* eeprom is an array of 16bit values */
+		 
 		for (addr = 0; addr < sz; addr += sizeof(u16)) {
 			u32 r;
 

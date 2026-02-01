@@ -1,37 +1,4 @@
-/* Test checking user's permissions for a file.
-   Copyright (C) 2011-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <unistd.h>
-
-#include "signature.h"
-SIGNATURE_CHECK (faccessat, int, (int, const char *, int, int));
-
-#include <errno.h>
-#include <fcntl.h>
-
-#include "macros.h"
-
-#define BASE "test-faccessat.t"
-
-int
-main (void)
-{
-  /* Test behaviour for invalid file descriptors.  */
+ 
   {
     errno = 0;
     ASSERT (faccessat (-1, "foo", F_OK, 0) == -1);
@@ -44,7 +11,7 @@ main (void)
     ASSERT (errno == EBADF);
   }
 
-  /* Test behavior with trailing slash.  */
+   
   unlink (BASE "file");
   ASSERT (faccessat (AT_FDCWD, ".", X_OK, 0) == 0);
   ASSERT (faccessat (AT_FDCWD, "./", X_OK, 0) == 0);

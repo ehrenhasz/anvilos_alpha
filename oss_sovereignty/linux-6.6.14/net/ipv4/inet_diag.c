@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * inet_diag.c	Module for monitoring INET transport protocols sockets.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -130,9 +126,7 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
 	if (nla_put_u8(skb, INET_DIAG_SHUTDOWN, sk->sk_shutdown))
 		goto errout;
 
-	/* IPv6 dual-stack sockets use inet->tos for IPv4 connections,
-	 * hence this needs to be included regardless of socket family.
-	 */
+	 
 	if (ext & (1 << (INET_DIAG_TOS - 1)))
 		if (nla_put_u8(skb, INET_DIAG_TOS, inet->tos) < 0)
 			goto errout;
@@ -160,10 +154,7 @@ int inet_diag_msg_attrs_fill(struct sock *sk, struct sk_buff *skb,
 #ifdef CONFIG_SOCK_CGROUP_DATA
 		classid = sock_cgroup_classid(&sk->sk_cgrp_data);
 #endif
-		/* Fallback to socket priority if class id isn't set.
-		 * Classful qdiscs use it as direct reference to class.
-		 * For cgroup2 classid is always zero.
-		 */
+		 
 		if (!classid)
 			classid = sk->sk_priority;
 
@@ -284,10 +275,7 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
 		if (sock_diag_put_meminfo(sk, skb, INET_DIAG_SKMEMINFO))
 			goto errout;
 
-	/*
-	 * RAW sockets might have user-defined protocols assigned,
-	 * so report the one supplied on socket creation.
-	 */
+	 
 	if (sk->sk_type == SOCK_RAW) {
 		if (nla_put_u8(skb, INET_DIAG_PROTOCOL, sk->sk_protocol))
 			goto errout;
@@ -359,10 +347,7 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
 			goto errout;
 	}
 
-	/* Keep it at the end for potential retry with a larger skb,
-	 * or else do best-effort fitting, which is only done for the
-	 * first_nlmsg.
-	 */
+	 
 	if (cb_data->bpf_stg_diag) {
 		bool first_nlmsg = ((unsigned char *)nlh == skb->data);
 		unsigned int prev_min_dump_alloc;
@@ -388,17 +373,12 @@ int inet_sk_diag_fill(struct sock *sk, struct inet_connection_sock *icsk,
 			goto errout;
 
 		if (cb->min_dump_alloc > prev_min_dump_alloc)
-			/* Retry with pskb_expand_head() with
-			 * __GFP_DIRECT_RECLAIM
-			 */
+			 
 			goto errout;
 
 		WARN_ON_ONCE(total_nla_size <= prev_min_dump_alloc);
 
-		/* Send what we have for this sk
-		 * and move on to the next sk in the following
-		 * dump()
-		 */
+		 
 	}
 
 out:
@@ -767,8 +747,7 @@ static int inet_diag_bc_run(const struct nlattr *_bc,
 	return len == 0;
 }
 
-/* This helper is available for all sockets (ESTABLISH, TIMEWAIT, SYN_RECV)
- */
+ 
 static void entry_fill_addrs(struct inet_diag_entry *entry,
 			     const struct sock *sk)
 {
@@ -832,31 +811,31 @@ static int valid_cc(const void *bc, int len, int cc)
 	return 0;
 }
 
-/* data is u32 ifindex */
+ 
 static bool valid_devcond(const struct inet_diag_bc_op *op, int len,
 			  int *min_len)
 {
-	/* Check ifindex space. */
+	 
 	*min_len += sizeof(u32);
 	if (len < *min_len)
 		return false;
 
 	return true;
 }
-/* Validate an inet_diag_hostcond. */
+ 
 static bool valid_hostcond(const struct inet_diag_bc_op *op, int len,
 			   int *min_len)
 {
 	struct inet_diag_hostcond *cond;
 	int addr_len;
 
-	/* Check hostcond space. */
+	 
 	*min_len += sizeof(struct inet_diag_hostcond);
 	if (len < *min_len)
 		return false;
 	cond = (struct inet_diag_hostcond *)(op + 1);
 
-	/* Check address family and address length. */
+	 
 	switch (cond->family) {
 	case AF_UNSPEC:
 		addr_len = 0;
@@ -874,18 +853,18 @@ static bool valid_hostcond(const struct inet_diag_bc_op *op, int len,
 	if (len < *min_len)
 		return false;
 
-	/* Check prefix length (in bits) vs address length (in bytes). */
+	 
 	if (cond->prefix_len > 8 * addr_len)
 		return false;
 
 	return true;
 }
 
-/* Validate a port comparison operator. */
+ 
 static bool valid_port_comparison(const struct inet_diag_bc_op *op,
 				  int len, int *min_len)
 {
-	/* Port comparisons put the port in a follow-on inet_diag_bc_op. */
+	 
 	*min_len += sizeof(struct inet_diag_bc_op);
 	if (len < *min_len)
 		return false;
@@ -1181,9 +1160,7 @@ again:
 		err = PTR_ERR(handler);
 	inet_diag_unlock_handler(handler);
 
-	/* The skb is not large enough to fit one sk info and
-	 * inet_sk_diag_fill() has requested for a larger skb.
-	 */
+	 
 	if (!skb->len && cb->min_dump_alloc > prev_min_dump_alloc) {
 		err = pskb_expand_head(skb, 0, cb->min_dump_alloc, GFP_KERNEL);
 		if (!err)
@@ -1278,7 +1255,7 @@ static int inet_diag_dump_compat(struct sk_buff *skb,
 	struct inet_diag_req *rc = nlmsg_data(cb->nlh);
 	struct inet_diag_req_v2 req;
 
-	req.sdiag_family = AF_UNSPEC; /* compatibility */
+	req.sdiag_family = AF_UNSPEC;  
 	req.sdiag_protocol = inet_diag_type2proto(cb->nlh->nlmsg_type);
 	req.idiag_ext = rc->idiag_ext;
 	req.idiag_states = rc->idiag_states;
@@ -1481,5 +1458,5 @@ static void __exit inet_diag_exit(void)
 module_init(inet_diag_init);
 module_exit(inet_diag_exit);
 MODULE_LICENSE("GPL");
-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 2 /* AF_INET */);
-MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 10 /* AF_INET6 */);
+MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 2  );
+MODULE_ALIAS_NET_PF_PROTO_TYPE(PF_NETLINK, NETLINK_SOCK_DIAG, 10  );

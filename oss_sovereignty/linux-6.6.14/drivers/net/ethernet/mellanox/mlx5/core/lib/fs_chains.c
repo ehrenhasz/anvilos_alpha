@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2020 Mellanox Technologies.
+
+
 
 #include <linux/mlx5/driver.h>
 #include <linux/mlx5/mlx5_ifc.h>
@@ -23,7 +23,7 @@ struct mlx5_fs_chains {
 
 	struct rhashtable chains_ht;
 	struct rhashtable prios_ht;
-	/* Protects above chains_ht and prios_ht */
+	 
 	struct mutex lock;
 
 	struct mlx5_flow_table *chains_default_ft;
@@ -110,7 +110,7 @@ u32 mlx5_chains_get_chain_range(struct mlx5_fs_chains *chains)
 	if (mlx5_chains_ignore_flow_level_supported(chains))
 		return UINT_MAX - 1;
 
-	/* We should get here only for eswitch case */
+	 
 	return FDB_TC_MAX_CHAIN;
 }
 
@@ -128,7 +128,7 @@ u32 mlx5_chains_get_prio_range(struct mlx5_fs_chains *chains)
 	    chains->dev->priv.eswitch->mode != MLX5_ESWITCH_OFFLOADS)
 		return 1;
 
-	/* We should get here only for eswitch case */
+	 
 	return FDB_TC_MAX_PRIO;
 }
 
@@ -137,7 +137,7 @@ static unsigned int mlx5_chains_get_level_range(struct mlx5_fs_chains *chains)
 	if (mlx5_chains_ignore_flow_level_supported(chains))
 		return UINT_MAX;
 
-	/* Same value for FDB and NIC RX tables */
+	 
 	return FDB_TC_LEVELS_PER_PRIO;
 }
 
@@ -164,17 +164,10 @@ mlx5_chains_create_table(struct mlx5_fs_chains *chains,
 	sz = (chain == mlx5_chains_get_nf_ft_chain(chains)) ? FT_TBL_SZ : POOL_NEXT_SIZE;
 	ft_attr.max_fte = sz;
 
-	/* We use chains_default_ft(chains) as the table's next_ft till
-	 * ignore_flow_level is allowed on FT creation and not just for FTEs.
-	 * Instead caller should add an explicit miss rule if needed.
-	 */
+	 
 	ft_attr.next_ft = chains_default_ft(chains);
 
-	/* The root table(chain 0, prio 1, level 0) is required to be
-	 * connected to the previous fs_core managed prio.
-	 * We always create it, as a managed table, in order to align with
-	 * fs_core logic.
-	 */
+	 
 	if (!mlx5_chains_ignore_flow_level_supported(chains) ||
 	    (chain == 0 && prio == 1 && level == 0)) {
 		ft_attr.level = chains->fs_base_level;
@@ -185,13 +178,7 @@ mlx5_chains_create_table(struct mlx5_fs_chains *chains,
 	} else {
 		ft_attr.flags |= MLX5_FLOW_TABLE_UNMANAGED;
 		ft_attr.prio = chains->fs_base_prio;
-		/* Firmware doesn't allow us to create another level 0 table,
-		 * so we create all unmanaged tables as level 1 (base + 1).
-		 *
-		 * To connect them, we use explicit miss rules with
-		 * ignore_flow_level. Caller is responsible to create
-		 * these rules (if needed).
-		 */
+		 
 		ft_attr.level = chains->fs_base_level + 1;
 		ns = mlx5_get_flow_namespace(chains->dev, chains->ns);
 	}
@@ -228,12 +215,7 @@ create_chain_restore(struct fs_chain *chain)
 	if (err)
 		return err;
 	if (index == MLX5_FS_DEFAULT_FLOW_TAG) {
-		/* we got the special default flow tag id, so we won't know
-		 * if we actually marked the packet with the restore rule
-		 * we create.
-		 *
-		 * This case isn't possible with MLX5_FS_DEFAULT_FLOW_TAG = 0.
-		 */
+		 
 		err = mlx5_chains_get_chain_mapping(chains, chain->chain, &index);
 		mapping_remove(chains->chains_mapping, MLX5_FS_DEFAULT_FLOW_TAG);
 		if (err)
@@ -250,10 +232,7 @@ create_chain_restore(struct fs_chain *chain)
 			goto err_rule;
 		}
 	} else if (chains->ns == MLX5_FLOW_NAMESPACE_KERNEL) {
-		/* For NIC RX we don't need a restore rule
-		 * since we write the metadata to reg_b
-		 * that is passed to SW directly.
-		 */
+		 
 		mapped_obj_to_reg = NIC_MAPPED_OBJ_TO_REG;
 	} else {
 		err = -EINVAL;
@@ -283,7 +262,7 @@ err_mod_hdr:
 	if (!IS_ERR_OR_NULL(chain->restore_rule))
 		mlx5_del_flow_rules(chain->restore_rule);
 err_rule:
-	/* Datapath can't find this mapping, so we can safely remove it */
+	 
 	mapping_remove(chains->chains_mapping, chain->id);
 	return err;
 }
@@ -403,10 +382,7 @@ mlx5_chains_update_prio_prevs(struct prio *prio,
 	if (prio->key.level)
 		return 0;
 
-	/* Iterate in reverse order until reaching the level 0 rule of
-	 * the previous priority, adding all the miss rules first, so we can
-	 * revert them if any of them fails.
-	 */
+	 
 	pos = prio;
 	list_for_each_entry_continue_reverse(pos,
 					     &chain->prios_list,
@@ -424,7 +400,7 @@ mlx5_chains_update_prio_prevs(struct prio *prio,
 			break;
 	}
 
-	/* Success, delete old miss rules, and update the pointers. */
+	 
 	n = 0;
 	pos = prio;
 	list_for_each_entry_continue_reverse(pos,
@@ -482,28 +458,19 @@ mlx5_chains_create_prio(struct mlx5_fs_chains *chains,
 		goto err_alloc;
 	}
 
-	/* Chain's prio list is sorted by prio and level.
-	 * And all levels of some prio point to the next prio's level 0.
-	 * Example list (prio, level):
-	 * (3,0)->(3,1)->(5,0)->(5,1)->(6,1)->(7,0)
-	 * In hardware, we will we have the following pointers:
-	 * (3,0) -> (5,0) -> (7,0) -> Slow path
-	 * (3,1) -> (5,0)
-	 * (5,1) -> (7,0)
-	 * (6,1) -> (7,0)
-	 */
+	 
 
-	/* Default miss for each chain: */
+	 
 	next_ft = (chain == mlx5_chains_get_nf_ft_chain(chains)) ?
 		  chains_default_ft(chains) :
 		  chains_end_ft(chains);
 	list_for_each(pos, &chain_s->prios_list) {
 		struct prio *p = list_entry(pos, struct prio, list);
 
-		/* exit on first pos that is larger */
+		 
 		if (prio < p->key.prio || (prio == p->key.prio &&
 					   level < p->key.level)) {
-			/* Get next level 0 table */
+			 
 			next_ft = p->key.level == 0 ? p->ft : p->next_ft;
 			break;
 		}
@@ -525,7 +492,7 @@ mlx5_chains_create_prio(struct mlx5_fs_chains *chains,
 		goto err_group;
 	}
 
-	/* Add miss rule to next_ft */
+	 
 	miss_rule = mlx5_chains_add_miss_rule(chain_s, ft, next_ft);
 	if (IS_ERR(miss_rule)) {
 		err = PTR_ERR(miss_rule);
@@ -548,7 +515,7 @@ mlx5_chains_create_prio(struct mlx5_fs_chains *chains,
 
 	list_add(&prio_s->list, pos->prev);
 
-	/* Table is ready, connect it */
+	 
 	err = mlx5_chains_update_prio_prevs(prio_s, ft);
 	if (err)
 		goto err_update;
@@ -608,9 +575,7 @@ mlx5_chains_get_table(struct mlx5_fs_chains *chains, u32 chain, u32 prio,
 	    level > mlx5_chains_get_level_range(chains))
 		return ERR_PTR(-EOPNOTSUPP);
 
-	/* create earlier levels for correct fs_core lookup when
-	 * connecting tables.
-	 */
+	 
 	for (l = 0; l < level; l++) {
 		prev_fts = mlx5_chains_get_table(chains, chain, prio, l);
 		if (IS_ERR(prev_fts)) {

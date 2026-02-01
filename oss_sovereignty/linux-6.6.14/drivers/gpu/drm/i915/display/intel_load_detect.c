@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -13,7 +11,7 @@
 #include "intel_display_types.h"
 #include "intel_load_detect.h"
 
-/* VESA 640x480x72Hz mode to set on the pipe */
+ 
 static const struct drm_display_mode load_detect_mode = {
 	DRM_MODE("640x480", DRM_MODE_TYPE_DEFAULT, 31500, 640, 664,
 		 704, 832, 0, 480, 489, 491, 520, 0, DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC),
@@ -66,17 +64,9 @@ intel_load_detect_get_pipe(struct drm_connector *connector,
 
 	drm_WARN_ON(dev, !drm_modeset_is_locked(&config->connection_mutex));
 
-	/*
-	 * Algorithm gets a little messy:
-	 *
-	 *   - if the connector already has an assigned crtc, use it (but make
-	 *     sure it's on first)
-	 *
-	 *   - try to find the first unused crtc that can drive this connector,
-	 *     and use that if we find one
-	 */
+	 
 
-	/* See if we already have a CRTC for this connector */
+	 
 	if (connector->state->crtc) {
 		crtc = to_intel_crtc(connector->state->crtc);
 
@@ -84,11 +74,11 @@ intel_load_detect_get_pipe(struct drm_connector *connector,
 		if (ret)
 			goto fail;
 
-		/* Make sure the crtc and connector are running */
+		 
 		goto found;
 	}
 
-	/* Find an unused one (if possible) */
+	 
 	for_each_intel_crtc(dev, possible_crtc) {
 		if (!(encoder->base.possible_crtcs &
 		      drm_crtc_mask(&possible_crtc->base)))
@@ -107,9 +97,7 @@ intel_load_detect_get_pipe(struct drm_connector *connector,
 		break;
 	}
 
-	/*
-	 * If we didn't find an unused CRTC, don't use any.
-	 */
+	 
 	if (!crtc) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "no pipe available for load-detect\n");
@@ -179,7 +167,7 @@ found:
 
 	drm_atomic_state_put(state);
 
-	/* let the connector get through one full cycle before testing */
+	 
 	intel_crtc_wait_for_next_vblank(crtc);
 
 	return restore_state;

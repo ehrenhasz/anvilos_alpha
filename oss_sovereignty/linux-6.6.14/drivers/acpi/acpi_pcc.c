@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Author: Sudeep Holla <sudeep.holla@arm.com>
- * Copyright 2021 Arm Limited
- *
- * The PCC Address Space also referred as PCC Operation Region pertains to the
- * region of PCC subspace that succeeds the PCC signature. The PCC Operation
- * Region works in conjunction with the PCC Table(Platform Communications
- * Channel Table). PCC subspaces that are marked for use as PCC Operation
- * Regions must not be used as PCC subspaces for the standard ACPI features
- * such as CPPC, RASF, PDTT and MPST. These standard features must always use
- * the PCC Table instead.
- *
- * This driver sets up the PCC Address Space and installs an handler to enable
- * handling of PCC OpRegion in the firmware.
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/acpi.h>
 #include <linux/completion.h>
@@ -23,10 +8,7 @@
 
 #include <acpi/pcc.h>
 
-/*
- * Arbitrary retries in case the remote processor is slow to respond
- * to PCC commands
- */
+ 
 #define PCC_CMD_WAIT_RETRIES_NUM	500ULL
 
 struct pcc_data {
@@ -112,18 +94,14 @@ acpi_pcc_address_space_handler(u32 function, acpi_physical_address addr,
 
 	reinit_completion(&data->done);
 
-	/* Write to Shared Memory */
+	 
 	memcpy_toio(data->pcc_comm_addr, (void *)value, data->ctx.length);
 
 	ret = mbox_send_message(data->pcc_chan->mchan, NULL);
 	if (ret < 0)
 		return AE_ERROR;
 
-	/*
-	 * pcc_chan->latency is just a Nominal value. In reality the remote
-	 * processor could be much slower to reply. So add an arbitrary
-	 * amount of wait on top of Nominal.
-	 */
+	 
 	usecs_lat = PCC_CMD_WAIT_RETRIES_NUM * data->pcc_chan->latency;
 	ret = wait_for_completion_timeout(&data->done,
 						usecs_to_jiffies(usecs_lat));

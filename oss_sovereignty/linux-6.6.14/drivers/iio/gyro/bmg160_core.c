@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * BMG160 Gyro Sensor driver
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -97,7 +94,7 @@ struct bmg160_data {
 	struct iio_trigger *motion_trig;
 	struct iio_mount_matrix orientation;
 	struct mutex mutex;
-	/* Ensure naturally aligned timestamp */
+	 
 	struct {
 		s16 chans[3];
 		s64 timestamp __aligned(8);
@@ -196,7 +193,7 @@ static int bmg160_get_filter(struct bmg160_data *data, int *val)
 		return ret;
 	}
 
-	/* Ignore the readonly reserved bit. */
+	 
 	bw_bits &= ~BMG160_REG_PMU_BW_RES;
 
 	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
@@ -237,10 +234,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
 	int ret;
 	unsigned int val;
 
-	/*
-	 * Reset chip to get it in a known good state. A delay of 30ms after
-	 * reset is required according to the datasheet.
-	 */
+	 
 	regmap_write(data->regmap, BMG160_GYRO_REG_RESET,
 		     BMG160_GYRO_RESET_VAL);
 	usleep_range(30000, 30700);
@@ -261,15 +255,15 @@ static int bmg160_chip_init(struct bmg160_data *data)
 	if (ret < 0)
 		return ret;
 
-	/* Wait upto 500 ms to be ready after changing mode */
+	 
 	usleep_range(500, 1000);
 
-	/* Set Bandwidth */
+	 
 	ret = bmg160_set_bw(data, BMG160_DEF_BW);
 	if (ret < 0)
 		return ret;
 
-	/* Set Default Range */
+	 
 	ret = regmap_write(data->regmap, BMG160_REG_RANGE, BMG160_RANGE_500DPS);
 	if (ret < 0) {
 		dev_err(dev, "Error writing reg_range\n");
@@ -284,7 +278,7 @@ static int bmg160_chip_init(struct bmg160_data *data)
 	}
 	data->slope_thres = val;
 
-	/* Set default interrupt mode */
+	 
 	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_EN_1,
 				 BMG160_INT1_BIT_OD, 0);
 	if (ret < 0) {
@@ -336,7 +330,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
 	struct device *dev = regmap_get_device(data->regmap);
 	int ret;
 
-	/* Enable/Disable INT_MAP0 mapping */
+	 
 	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_MAP_0,
 				 BMG160_INT_MAP_0_BIT_ANY,
 				 (status ? BMG160_INT_MAP_0_BIT_ANY : 0));
@@ -345,9 +339,9 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
 		return ret;
 	}
 
-	/* Enable/Disable slope interrupts */
+	 
 	if (status) {
-		/* Update slope thres */
+		 
 		ret = regmap_write(data->regmap, BMG160_REG_SLOPE_THRES,
 				   data->slope_thres);
 		if (ret < 0) {
@@ -363,11 +357,7 @@ static int bmg160_setup_any_motion_interrupt(struct bmg160_data *data,
 			return ret;
 		}
 
-		/*
-		 * New data interrupt is always non-latched,
-		 * which will have higher priority, so no need
-		 * to set latched mode, we will be flooded anyway with INTR
-		 */
+		 
 		if (!data->dready_trigger_on) {
 			ret = regmap_write(data->regmap,
 					   BMG160_REG_INT_RST_LATCH,
@@ -400,7 +390,7 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
 	struct device *dev = regmap_get_device(data->regmap);
 	int ret;
 
-	/* Enable/Disable INT_MAP1 mapping */
+	 
 	ret = regmap_update_bits(data->regmap, BMG160_REG_INT_MAP_1,
 				 BMG160_INT_MAP_1_BIT_NEW_DATA,
 				 (status ? BMG160_INT_MAP_1_BIT_NEW_DATA : 0));
@@ -422,7 +412,7 @@ static int bmg160_setup_new_data_interrupt(struct bmg160_data *data,
 				   BMG160_DATA_ENABLE_INT);
 
 	} else {
-		/* Restore interrupt mode */
+		 
 		ret = regmap_write(data->regmap, BMG160_REG_INT_RST_LATCH,
 				   BMG160_INT_MODE_LATCH_INT |
 				   BMG160_INT_MODE_LATCH_RESET);
@@ -455,7 +445,7 @@ static int bmg160_get_bw(struct bmg160_data *data, int *val)
 		return ret;
 	}
 
-	/* Ignore the readonly reserved bit. */
+	 
 	bw_bits &= ~BMG160_REG_PMU_BW_RES;
 
 	for (i = 0; i < ARRAY_SIZE(bmg160_samp_freq_table); ++i) {
@@ -622,13 +612,7 @@ static int bmg160_write_raw(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_SAMP_FREQ:
 		mutex_lock(&data->mutex);
-		/*
-		 * Section 4.2 of spec
-		 * In suspend mode, the only supported operations are reading
-		 * registers as well as writing to the (0x14) softreset
-		 * register. Since we will be in suspend mode by default, change
-		 * mode to power on for other writes.
-		 */
+		 
 		ret = bmg160_set_power_state(data, true);
 		if (ret < 0) {
 			mutex_unlock(&data->mutex);
@@ -668,7 +652,7 @@ static int bmg160_write_raw(struct iio_dev *indio_dev,
 			return -EINVAL;
 
 		mutex_lock(&data->mutex);
-		/* Refer to comments above for the suspend mode ops */
+		 
 		ret = bmg160_set_power_state(data, true);
 		if (ret < 0) {
 			mutex_unlock(&data->mutex);
@@ -764,15 +748,7 @@ static int bmg160_write_event_config(struct iio_dev *indio_dev,
 		mutex_unlock(&data->mutex);
 		return 0;
 	}
-	/*
-	 * We will expect the enable and disable to do operation
-	 * in reverse order. This will happen here anyway as our
-	 * resume operation uses sync mode runtime pm calls, the
-	 * suspend operation will be delayed by autosuspend delay
-	 * So the disable operation will still happen in reverse of
-	 * enable operation. When runtime pm is disabled the mode
-	 * is always on so sequence doesn't matter
-	 */
+	 
 	ret = bmg160_set_power_state(data, state);
 	if (ret < 0) {
 		mutex_unlock(&data->mutex);
@@ -905,11 +881,11 @@ static void bmg160_trig_reen(struct iio_trigger *trig)
 	struct device *dev = regmap_get_device(data->regmap);
 	int ret;
 
-	/* new data interrupts don't need ack */
+	 
 	if (data->dready_trigger_on)
 		return;
 
-	/* Set latched mode interrupt and clear any latched interrupt */
+	 
 	ret = regmap_write(data->regmap, BMG160_REG_INT_RST_LATCH,
 			   BMG160_INT_MODE_LATCH_INT |
 			   BMG160_INT_MODE_LATCH_RESET);
@@ -932,10 +908,7 @@ static int bmg160_data_rdy_trigger_set_state(struct iio_trigger *trig,
 		return 0;
 	}
 
-	/*
-	 * Refer to comment in bmg160_write_event_config for
-	 * enable/disable operation order
-	 */
+	 
 	ret = bmg160_set_power_state(data, state);
 	if (ret < 0) {
 		mutex_unlock(&data->mutex);

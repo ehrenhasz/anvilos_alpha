@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Module for modifying the secmark field of the skb, for use by
- * security subsystems.
- *
- * Based on the nfmark match by:
- * (C) 1999-2001 Marc Boucher <marc@mbsi.ca>
- *
- * (C) 2006,2008 Red Hat, Inc., James Morris <jmorris@redhat.com>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/security.h>

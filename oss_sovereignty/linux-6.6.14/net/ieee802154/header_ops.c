@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Fraunhofer ITWM
- *
- * Written by:
- * Phoebe Buckheister <phoebe.buckheister@itwm.fraunhofer.de>
- */
+
+ 
 
 #include <linux/ieee802154.h>
 

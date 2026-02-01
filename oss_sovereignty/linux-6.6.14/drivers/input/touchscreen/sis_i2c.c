@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Touch Screen driver for SiS 9200 family I2C Touch panels
- *
- * Copyright (C) 2015 SiS, Inc.
- * Copyright (C) 2016 Nextfour Group
- */
+
+ 
 
 #include <linux/crc-itu-t.h>
 #include <linux/delay.h>
@@ -19,75 +14,53 @@
 
 #define SIS_I2C_NAME		"sis_i2c_ts"
 
-/*
- * The I2C packet format:
- * le16		byte count
- * u8		Report ID
- * <contact data - variable length>
- * u8		Number of contacts
- * le16		Scan Time (optional)
- * le16		CRC
- *
- * One touch point information consists of 6+ bytes, the order is:
- * u8		contact state
- * u8		finger id
- * le16		x axis
- * le16		y axis
- * u8		contact width (optional)
- * u8		contact height (optional)
- * u8		pressure (optional)
- *
- * Maximum amount of data transmitted in one shot is 64 bytes, if controller
- * needs to report more contacts than fit in one packet it will send true
- * number of contacts in first packet and 0 as number of contacts in second
- * packet.
- */
+ 
 
 #define SIS_MAX_PACKET_SIZE		64
 
 #define SIS_PKT_LEN_OFFSET		0
-#define SIS_PKT_REPORT_OFFSET		2 /* Report ID/type */
-#define SIS_PKT_CONTACT_OFFSET		3 /* First contact */
+#define SIS_PKT_REPORT_OFFSET		2  
+#define SIS_PKT_CONTACT_OFFSET		3  
 
 #define SIS_SCAN_TIME_LEN		2
 
-/* Supported report types */
+ 
 #define SIS_ALL_IN_ONE_PACKAGE		0x10
 #define SIS_PKT_IS_TOUCH(x)		(((x) & 0x0f) == 0x01)
 #define SIS_PKT_IS_HIDI2C(x)		(((x) & 0x0f) == 0x06)
 
-/* Contact properties within report */
+ 
 #define SIS_PKT_HAS_AREA(x)		((x) & BIT(4))
 #define SIS_PKT_HAS_PRESSURE(x)		((x) & BIT(5))
 #define SIS_PKT_HAS_SCANTIME(x)		((x) & BIT(6))
 
-/* Contact size */
+ 
 #define SIS_BASE_LEN_PER_CONTACT	6
 #define SIS_AREA_LEN_PER_CONTACT	2
 #define SIS_PRESSURE_LEN_PER_CONTACT	1
 
-/* Offsets within contact data */
+ 
 #define SIS_CONTACT_STATUS_OFFSET	0
-#define SIS_CONTACT_ID_OFFSET		1 /* Contact ID */
+#define SIS_CONTACT_ID_OFFSET		1  
 #define SIS_CONTACT_X_OFFSET		2
 #define SIS_CONTACT_Y_OFFSET		4
 #define SIS_CONTACT_WIDTH_OFFSET	6
 #define SIS_CONTACT_HEIGHT_OFFSET	7
 #define SIS_CONTACT_PRESSURE_OFFSET(id)	(SIS_PKT_HAS_AREA(id) ? 8 : 6)
 
-/* Individual contact state */
+ 
 #define SIS_STATUS_UP			0x0
 #define SIS_STATUS_DOWN			0x3
 
-/* Touchscreen parameters */
+ 
 #define SIS_MAX_FINGERS			10
 #define SIS_MAX_X			4095
 #define SIS_MAX_Y			4095
 #define SIS_MAX_PRESSURE		255
 
-/* Resolution diagonal */
+ 
 #define SIS_AREA_LENGTH_LONGER		5792
-/*((SIS_MAX_X^2) + (SIS_MAX_Y^2))^0.5*/
+ 
 #define SIS_AREA_LENGTH_SHORT		5792
 #define SIS_AREA_UNIT			(5792 / 32)
 
@@ -132,11 +105,7 @@ static int sis_read_packet(struct i2c_client *client, u8 *buf,
 
 	if (report_id != SIS_ALL_IN_ONE_PACKAGE) {
 		if (SIS_PKT_IS_TOUCH(report_id)) {
-			/*
-			 * Calculate CRC ignoring packet length
-			 * in the beginning and CRC transmitted
-			 * at the end of the packet.
-			 */
+			 
 			crc = crc_itu_t(0, buf + 2, len - 2 - 2);
 			pkg_crc = get_unaligned_le16(&buf[len - 2]);
 
@@ -260,10 +229,7 @@ static void sis_ts_handle_packet(struct sis_ts_data *ts)
 
 			if (report_id != SIS_ALL_IN_ONE_PACKAGE &&
 			    num_reported >= 5) {
-				/*
-				 * The remainder of contacts is sent
-				 * in the 2nd packet.
-				 */
+				 
 				break;
 			}
 		}
@@ -287,7 +253,7 @@ static irqreturn_t sis_ts_irq_handler(int irq, void *dev_id)
 static void sis_ts_reset(struct sis_ts_data *ts)
 {
 	if (ts->reset_gpio) {
-		/* Get out of reset */
+		 
 		usleep_range(1000, 2000);
 		gpiod_set_value(ts->reset_gpio, 1);
 		usleep_range(1000, 2000);
@@ -368,7 +334,7 @@ static int sis_ts_probe(struct i2c_client *client)
 #ifdef CONFIG_OF
 static const struct of_device_id sis_ts_dt_ids[] = {
 	{ .compatible = "sis,9200-ts" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sis_ts_dt_ids);
 #endif
@@ -376,7 +342,7 @@ MODULE_DEVICE_TABLE(of, sis_ts_dt_ids);
 static const struct i2c_device_id sis_ts_id[] = {
 	{ SIS_I2C_NAME,	0 },
 	{ "9200-ts",	0 },
-	{ /* sentinel */  }
+	{    }
 };
 MODULE_DEVICE_TABLE(i2c, sis_ts_id);
 

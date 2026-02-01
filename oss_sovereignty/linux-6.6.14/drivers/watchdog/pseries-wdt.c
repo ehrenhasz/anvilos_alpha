@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2022 International Business Machines, Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
@@ -16,55 +14,17 @@
 
 #define DRV_NAME "pseries-wdt"
 
-/*
- * H_WATCHDOG Input
- *
- * R4: "flags":
- *
- *         Bits 48-55: "operation"
- */
-#define PSERIES_WDTF_OP_START	0x100UL		/* start timer */
-#define PSERIES_WDTF_OP_STOP	0x200UL		/* stop timer */
-#define PSERIES_WDTF_OP_QUERY	0x300UL		/* query timer capabilities */
+ 
+#define PSERIES_WDTF_OP_START	0x100UL		 
+#define PSERIES_WDTF_OP_STOP	0x200UL		 
+#define PSERIES_WDTF_OP_QUERY	0x300UL		 
 
-/*
- *         Bits 56-63: "timeoutAction" (for "Start Watchdog" only)
- */
-#define PSERIES_WDTF_ACTION_HARD_POWEROFF	0x1UL	/* poweroff */
-#define PSERIES_WDTF_ACTION_HARD_RESTART	0x2UL	/* restart */
-#define PSERIES_WDTF_ACTION_DUMP_RESTART	0x3UL	/* dump + restart */
+ 
+#define PSERIES_WDTF_ACTION_HARD_POWEROFF	0x1UL	 
+#define PSERIES_WDTF_ACTION_HARD_RESTART	0x2UL	 
+#define PSERIES_WDTF_ACTION_DUMP_RESTART	0x3UL	 
 
-/*
- * H_WATCHDOG Output
- *
- * R3: Return code
- *
- *     H_SUCCESS    The operation completed.
- *
- *     H_BUSY	    The hypervisor is too busy; retry the operation.
- *
- *     H_PARAMETER  The given "flags" are somehow invalid.  Either the
- *                  "operation" or "timeoutAction" is invalid, or a
- *                  reserved bit is set.
- *
- *     H_P2         The given "watchdogNumber" is zero or exceeds the
- *                  supported maximum value.
- *
- *     H_P3         The given "timeoutInMs" is below the supported
- *                  minimum value.
- *
- *     H_NOOP       The given "watchdogNumber" is already stopped.
- *
- *     H_HARDWARE   The operation failed for ineffable reasons.
- *
- *     H_FUNCTION   The H_WATCHDOG hypercall is not supported by this
- *                  hypervisor.
- *
- * R4:
- *
- * - For the "Query Watchdog Capabilities" operation, a 64-bit
- *   structure:
- */
+ 
 #define PSERIES_WDTQ_MIN_TIMEOUT(cap)	(((cap) >> 48) & 0xffff)
 #define PSERIES_WDTQ_MAX_NUMBER(cap)	(((cap) >> 32) & 0xffff)
 
@@ -94,7 +54,7 @@ MODULE_PARM_DESC(timeout, "Initial watchdog timeout in seconds (default="
 struct pseries_wdt {
 	struct watchdog_device wd;
 	unsigned long action;
-	unsigned long num;		/* Watchdog numbers are 1-based */
+	unsigned long num;		 
 };
 
 static int pseries_wdt_start(struct watchdog_device *wdd)
@@ -161,12 +121,7 @@ static int pseries_wdt_probe(struct platform_device *pdev)
 	if (!pw)
 		return -ENOMEM;
 
-	/*
-	 * Assume watchdogNumber 1 for now.  If we ever support
-	 * multiple timers we will need to devise a way to choose a
-	 * distinct watchdogNumber for each platform device at device
-	 * registration time.
-	 */
+	 
 	pw->num = 1;
 	if (PSERIES_WDTQ_MAX_NUMBER(cap) < pw->num)
 		return -ENODEV;
@@ -180,7 +135,7 @@ static int pseries_wdt_probe(struct platform_device *pdev)
 	pw->wd.ops = &pseries_wdt_ops;
 	msecs = PSERIES_WDTQ_MIN_TIMEOUT(cap);
 	pw->wd.min_timeout = DIV_ROUND_UP(msecs, MSEC_PER_SEC);
-	pw->wd.max_timeout = UINT_MAX / 1000;	/* from linux/watchdog.h */
+	pw->wd.max_timeout = UINT_MAX / 1000;	 
 	pw->wd.timeout = timeout;
 	if (watchdog_init_timeout(&pw->wd, 0, NULL))
 		return -EINVAL;

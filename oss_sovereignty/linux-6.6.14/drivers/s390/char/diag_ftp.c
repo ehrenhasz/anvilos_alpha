@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *    DIAGNOSE X'2C4' instruction based HMC FTP services, useable on z/VM
- *
- *    Copyright IBM Corp. 2013
- *    Author(s): Ralf Hoppe (rhoppe@de.ibm.com)
- *
- */
+
+ 
 
 #define KMSG_COMPONENT "hmcdrv"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -22,36 +16,25 @@
 #include "hmcdrv_ftp.h"
 #include "diag_ftp.h"
 
-/* DIAGNOSE X'2C4' return codes in Ry */
-#define DIAG_FTP_RET_OK	0 /* HMC FTP started successfully */
-#define DIAG_FTP_RET_EBUSY	4 /* HMC FTP service currently busy */
-#define DIAG_FTP_RET_EIO	8 /* HMC FTP service I/O error */
-/* and an artificial extension */
-#define DIAG_FTP_RET_EPERM	2 /* HMC FTP service privilege error */
+ 
+#define DIAG_FTP_RET_OK	0  
+#define DIAG_FTP_RET_EBUSY	4  
+#define DIAG_FTP_RET_EIO	8  
+ 
+#define DIAG_FTP_RET_EPERM	2  
 
-/* FTP service status codes (after INTR at guest real location 133) */
-#define DIAG_FTP_STAT_OK	0U /* request completed successfully */
-#define DIAG_FTP_STAT_PGCC	4U /* program check condition */
-#define DIAG_FTP_STAT_PGIOE	8U /* paging I/O error */
-#define DIAG_FTP_STAT_TIMEOUT	12U /* timeout */
-#define DIAG_FTP_STAT_EBASE	16U /* base of error codes from SCLP */
-#define DIAG_FTP_STAT_LDFAIL	(DIAG_FTP_STAT_EBASE + 1U) /* failed */
-#define DIAG_FTP_STAT_LDNPERM	(DIAG_FTP_STAT_EBASE + 2U) /* not allowed */
-#define DIAG_FTP_STAT_LDRUNS	(DIAG_FTP_STAT_EBASE + 3U) /* runs */
-#define DIAG_FTP_STAT_LDNRUNS	(DIAG_FTP_STAT_EBASE + 4U) /* not runs */
+ 
+#define DIAG_FTP_STAT_OK	0U  
+#define DIAG_FTP_STAT_PGCC	4U  
+#define DIAG_FTP_STAT_PGIOE	8U  
+#define DIAG_FTP_STAT_TIMEOUT	12U  
+#define DIAG_FTP_STAT_EBASE	16U  
+#define DIAG_FTP_STAT_LDFAIL	(DIAG_FTP_STAT_EBASE + 1U)  
+#define DIAG_FTP_STAT_LDNPERM	(DIAG_FTP_STAT_EBASE + 2U)  
+#define DIAG_FTP_STAT_LDRUNS	(DIAG_FTP_STAT_EBASE + 3U)  
+#define DIAG_FTP_STAT_LDNRUNS	(DIAG_FTP_STAT_EBASE + 4U)  
 
-/**
- * struct diag_ftp_ldfpl - load file FTP parameter list (LDFPL)
- * @bufaddr: real buffer address (at 4k boundary)
- * @buflen: length of buffer
- * @offset: dir/file offset
- * @intparm: interruption parameter (unused)
- * @transferred: bytes transferred
- * @fsize: file size, filled on GET
- * @failaddr: failing address
- * @spare: padding
- * @fident: file name - ASCII
- */
+ 
 struct diag_ftp_ldfpl {
 	u64 bufaddr;
 	u64 buflen;
@@ -67,39 +50,20 @@ struct diag_ftp_ldfpl {
 static DECLARE_COMPLETION(diag_ftp_rx_complete);
 static int diag_ftp_subcode;
 
-/**
- * diag_ftp_handler() - FTP services IRQ handler
- * @extirq: external interrupt (sub-) code
- * @param32: 32-bit interruption parameter from &struct diag_ftp_ldfpl
- * @param64: unused (for 64-bit interrupt parameters)
- */
+ 
 static void diag_ftp_handler(struct ext_code extirq,
 			     unsigned int param32,
 			     unsigned long param64)
 {
 	if ((extirq.subcode >> 8) != 8)
-		return; /* not a FTP services sub-code */
+		return;  
 
 	inc_irq_stat(IRQEXT_FTP);
 	diag_ftp_subcode = extirq.subcode & 0xffU;
 	complete(&diag_ftp_rx_complete);
 }
 
-/**
- * diag_ftp_2c4() - DIAGNOSE X'2C4' service call
- * @fpl: pointer to prepared LDFPL
- * @cmd: FTP command to be executed
- *
- * Performs a DIAGNOSE X'2C4' call with (input/output) FTP parameter list
- * @fpl and FTP function code @cmd. In case of an error the function does
- * nothing and returns an (negative) error code.
- *
- * Notes:
- * 1. This function only initiates a transfer, so the caller must wait
- *    for completion (asynchronous execution).
- * 2. The FTP parameter list @fpl must be aligned to a double-word boundary.
- * 3. fpl->bufaddr must be a real address, 4k aligned
- */
+ 
 static int diag_ftp_2c4(struct diag_ftp_ldfpl *fpl,
 			enum hmcdrv_ftp_cmdid cmd)
 {
@@ -130,16 +94,7 @@ static int diag_ftp_2c4(struct diag_ftp_ldfpl *fpl,
 	}
 }
 
-/**
- * diag_ftp_cmd() - executes a DIAG X'2C4' FTP command, targeting a HMC
- * @ftp: pointer to FTP command specification
- * @fsize: return of file size (or NULL if undesirable)
- *
- * Attention: Notice that this function is not reentrant - so the caller
- * must ensure locking.
- *
- * Return: number of bytes read/written or a (negative) error code
- */
+ 
 ssize_t diag_ftp_cmd(const struct hmcdrv_ftp_cmdspec *ftp, size_t *fsize)
 {
 	struct diag_ftp_ldfpl *ldfpl;
@@ -175,10 +130,7 @@ ssize_t diag_ftp_cmd(const struct hmcdrv_ftp_cmdspec *ftp, size_t *fsize)
 	if (len)
 		goto out_free;
 
-	/*
-	 * There is no way to cancel the running diag X'2C4', the code
-	 * needs to wait unconditionally until the transfer is complete.
-	 */
+	 
 	wait_for_completion(&diag_ftp_rx_complete);
 
 #ifdef DEBUG
@@ -189,7 +141,7 @@ ssize_t diag_ftp_cmd(const struct hmcdrv_ftp_cmdspec *ftp, size_t *fsize)
 #endif
 
 	switch (diag_ftp_subcode) {
-	case DIAG_FTP_STAT_OK: /* success */
+	case DIAG_FTP_STAT_OK:  
 		len = ldfpl->transferred;
 		if (fsize)
 			*fsize = ldfpl->fsize;
@@ -201,7 +153,7 @@ ssize_t diag_ftp_cmd(const struct hmcdrv_ftp_cmdspec *ftp, size_t *fsize)
 		len = -EBUSY;
 		break;
 	case DIAG_FTP_STAT_LDFAIL:
-		len = -ENOENT; /* no such file or media */
+		len = -ENOENT;  
 		break;
 	default:
 		len = -EIO;
@@ -214,11 +166,7 @@ out:
 	return len;
 }
 
-/**
- * diag_ftp_startup() - startup of FTP services, when running on z/VM
- *
- * Return: 0 on success, else an (negative) error code
- */
+ 
 int diag_ftp_startup(void)
 {
 	int rc;
@@ -231,9 +179,7 @@ int diag_ftp_startup(void)
 	return 0;
 }
 
-/**
- * diag_ftp_shutdown() - shutdown of FTP services, when running on z/VM
- */
+ 
 void diag_ftp_shutdown(void)
 {
 	irq_subclass_unregister(IRQ_SUBCLASS_SERVICE_SIGNAL);

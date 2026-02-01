@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018-2019 Synopsys, Inc. and/or its affiliates.
- * Synopsys DesignWare eDMA PCIe driver
- *
- * Author: Gustavo Pimentel <gustavo.pimentel@synopsys.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -37,15 +32,15 @@ struct dw_edma_block {
 };
 
 struct dw_edma_pcie_data {
-	/* eDMA registers location */
+	 
 	struct dw_edma_block		rg;
-	/* eDMA memory linked list location */
+	 
 	struct dw_edma_block		ll_wr[EDMA_MAX_WR_CH];
 	struct dw_edma_block		ll_rd[EDMA_MAX_RD_CH];
-	/* eDMA memory data location */
+	 
 	struct dw_edma_block		dt_wr[EDMA_MAX_WR_CH];
 	struct dw_edma_block		dt_rd[EDMA_MAX_RD_CH];
-	/* Other */
+	 
 	enum dw_edma_map_format		mf;
 	u8				irqs;
 	u16				wr_ch_cnt;
@@ -53,37 +48,37 @@ struct dw_edma_pcie_data {
 };
 
 static const struct dw_edma_pcie_data snps_edda_data = {
-	/* eDMA registers location */
+	 
 	.rg.bar				= BAR_0,
-	.rg.off				= 0x00001000,	/*  4 Kbytes */
-	.rg.sz				= 0x00002000,	/*  8 Kbytes */
-	/* eDMA memory linked list location */
+	.rg.off				= 0x00001000,	 
+	.rg.sz				= 0x00002000,	 
+	 
 	.ll_wr = {
-		/* Channel 0 - BAR 2, offset 0 Mbytes, size 2 Kbytes */
+		 
 		DW_BLOCK(BAR_2, 0x00000000, 0x00000800)
-		/* Channel 1 - BAR 2, offset 2 Mbytes, size 2 Kbytes */
+		 
 		DW_BLOCK(BAR_2, 0x00200000, 0x00000800)
 	},
 	.ll_rd = {
-		/* Channel 0 - BAR 2, offset 4 Mbytes, size 2 Kbytes */
+		 
 		DW_BLOCK(BAR_2, 0x00400000, 0x00000800)
-		/* Channel 1 - BAR 2, offset 6 Mbytes, size 2 Kbytes */
+		 
 		DW_BLOCK(BAR_2, 0x00600000, 0x00000800)
 	},
-	/* eDMA memory data location */
+	 
 	.dt_wr = {
-		/* Channel 0 - BAR 2, offset 8 Mbytes, size 2 Kbytes */
+		 
 		DW_BLOCK(BAR_2, 0x00800000, 0x00000800)
-		/* Channel 1 - BAR 2, offset 9 Mbytes, size 2 Kbytes */
+		 
 		DW_BLOCK(BAR_2, 0x00900000, 0x00000800)
 	},
 	.dt_rd = {
-		/* Channel 0 - BAR 2, offset 10 Mbytes, size 2 Kbytes */
+		 
 		DW_BLOCK(BAR_2, 0x00a00000, 0x00000800)
-		/* Channel 1 - BAR 2, offset 11 Mbytes, size 2 Kbytes */
+		 
 		DW_BLOCK(BAR_2, 0x00b00000, 0x00000800)
 	},
-	/* Other */
+	 
 	.mf				= EDMA_MF_EDMA_UNROLL,
 	.irqs				= 1,
 	.wr_ch_cnt			= 2,
@@ -166,7 +161,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
 	int err, nr_irqs;
 	int i, mask;
 
-	/* Enable PCI device */
+	 
 	err = pcim_enable_device(pdev);
 	if (err) {
 		pci_err(pdev, "enabling device failed\n");
@@ -175,13 +170,10 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
 
 	memcpy(&vsec_data, pdata, sizeof(struct dw_edma_pcie_data));
 
-	/*
-	 * Tries to find if exists a PCIe Vendor-Specific Extended Capability
-	 * for the DMA, if one exists, then reconfigures it.
-	 */
+	 
 	dw_edma_pcie_get_vsec_dma_data(pdev, &vsec_data);
 
-	/* Mapping PCI BAR regions */
+	 
 	mask = BIT(vsec_data.rg.bar);
 	for (i = 0; i < vsec_data.wr_ch_cnt; i++) {
 		mask |= BIT(vsec_data.ll_wr[i].bar);
@@ -199,19 +191,19 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
 
 	pci_set_master(pdev);
 
-	/* DMA configuration */
+	 
 	err = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(64));
 	if (err) {
 		pci_err(pdev, "DMA mask 64 set failed\n");
 		return err;
 	}
 
-	/* Data structure allocation */
+	 
 	chip = devm_kzalloc(dev, sizeof(*chip), GFP_KERNEL);
 	if (!chip)
 		return -ENOMEM;
 
-	/* IRQs allocation */
+	 
 	nr_irqs = pci_alloc_irq_vectors(pdev, 1, vsec_data.irqs,
 					PCI_IRQ_MSI | PCI_IRQ_MSIX);
 	if (nr_irqs < 1) {
@@ -220,7 +212,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
 		return -EPERM;
 	}
 
-	/* Data structure initialization */
+	 
 	chip->dev = dev;
 
 	chip->mf = vsec_data.mf;
@@ -284,7 +276,7 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
 		dt_region->sz = dt_block->sz;
 	}
 
-	/* Debug info */
+	 
 	if (chip->mf == EDMA_MF_EDMA_LEGACY)
 		pci_dbg(pdev, "Version:\teDMA Port Logic (0x%x)\n", chip->mf);
 	else if (chip->mf == EDMA_MF_EDMA_UNROLL)
@@ -325,20 +317,20 @@ static int dw_edma_pcie_probe(struct pci_dev *pdev,
 
 	pci_dbg(pdev, "Nr. IRQs:\t%u\n", chip->nr_irqs);
 
-	/* Validating if PCI interrupts were enabled */
+	 
 	if (!pci_dev_msi_enabled(pdev)) {
 		pci_err(pdev, "enable interrupt failed\n");
 		return -EPERM;
 	}
 
-	/* Starting eDMA driver */
+	 
 	err = dw_edma_probe(chip);
 	if (err) {
 		pci_err(pdev, "eDMA probe failed\n");
 		return err;
 	}
 
-	/* Saving data structure reference */
+	 
 	pci_set_drvdata(pdev, chip);
 
 	return 0;
@@ -349,12 +341,12 @@ static void dw_edma_pcie_remove(struct pci_dev *pdev)
 	struct dw_edma_chip *chip = pci_get_drvdata(pdev);
 	int err;
 
-	/* Stopping eDMA driver */
+	 
 	err = dw_edma_remove(chip);
 	if (err)
 		pci_warn(pdev, "can't remove device properly: %d\n", err);
 
-	/* Freeing IRQs */
+	 
 	pci_free_irq_vectors(pdev);
 }
 

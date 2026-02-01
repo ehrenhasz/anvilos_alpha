@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Rockchip DP PHY driver
- *
- * Copyright (C) 2016 FuZhou Rockchip Co., Ltd.
- * Author: Yakir Yang <ykk@@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/mfd/syscon.h>

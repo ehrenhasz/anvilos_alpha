@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -33,9 +33,7 @@ void mgag200_g200wb_init_registers(struct mga_device *mdev)
 	mgag200_init_registers(mdev);
 }
 
-/*
- * PIXPLLC
- */
+ 
 
 static int mgag200_g200wb_pixpllc_atomic_check(struct drm_crtc *crtc,
 					       struct drm_atomic_state *new_state)
@@ -120,7 +118,7 @@ void mgag200_g200wb_pixpllc_atomic_update(struct drm_crtc *crtc,
 				WREG8(MGAREG_CRTC_DATA, tmp+1);
 		}
 
-		/* set pixclkdis to 1 */
+		 
 		WREG8(DAC_INDEX, MGA1064_PIX_CLK_CTL);
 		tmp = RREG8(DAC_DATA);
 		tmp |= MGA1064_PIX_CLK_CTL_CLK_DIS;
@@ -131,7 +129,7 @@ void mgag200_g200wb_pixpllc_atomic_update(struct drm_crtc *crtc,
 		tmp |= MGA1064_REMHEADCTL_CLKDIS;
 		WREG8(DAC_DATA, tmp);
 
-		/* select PLL Set C */
+		 
 		tmp = RREG8(MGAREG_MEM_MISC_READ);
 		tmp |= 0x3 << 2;
 		WREG8(MGAREG_MEM_MISC_WRITE, tmp);
@@ -143,7 +141,7 @@ void mgag200_g200wb_pixpllc_atomic_update(struct drm_crtc *crtc,
 
 		udelay(500);
 
-		/* reset the PLL */
+		 
 		WREG8(DAC_INDEX, MGA1064_VREF_CTL);
 		tmp = RREG8(DAC_DATA);
 		tmp &= ~0x04;
@@ -151,14 +149,14 @@ void mgag200_g200wb_pixpllc_atomic_update(struct drm_crtc *crtc,
 
 		udelay(50);
 
-		/* program pixel pll register */
+		 
 		WREG_DAC(MGA1064_WB_PIX_PLLC_N, xpixpllcn);
 		WREG_DAC(MGA1064_WB_PIX_PLLC_M, xpixpllcm);
 		WREG_DAC(MGA1064_WB_PIX_PLLC_P, xpixpllcp);
 
 		udelay(50);
 
-		/* turn pll on */
+		 
 		WREG8(DAC_INDEX, MGA1064_VREF_CTL);
 		tmp = RREG8(DAC_DATA);
 		tmp |= 0x04;
@@ -166,7 +164,7 @@ void mgag200_g200wb_pixpllc_atomic_update(struct drm_crtc *crtc,
 
 		udelay(500);
 
-		/* select the pixel pll */
+		 
 		WREG8(DAC_INDEX, MGA1064_PIX_CLK_CTL);
 		tmp = RREG8(DAC_DATA);
 		tmp &= ~MGA1064_PIX_CLK_CTL_SEL_MSK;
@@ -179,7 +177,7 @@ void mgag200_g200wb_pixpllc_atomic_update(struct drm_crtc *crtc,
 		tmp |= MGA1064_REMHEADCTL_CLKSL_PLL;
 		WREG8(DAC_DATA, tmp);
 
-		/* reset dotclock rate bit */
+		 
 		WREG8(MGAREG_SEQ_INDEX, 1);
 		tmp = RREG8(MGAREG_SEQ_DATA);
 		tmp &= ~0x8;
@@ -209,9 +207,7 @@ void mgag200_g200wb_pixpllc_atomic_update(struct drm_crtc *crtc,
 	WREG_DAC(MGA1064_REMHEADCTL, tmp);
 }
 
-/*
- * Mode-setting pipeline
- */
+ 
 
 static const struct drm_plane_helper_funcs mgag200_g200wb_primary_plane_helper_funcs = {
 	MGAG200_PRIMARY_PLANE_HELPER_FUNCS,
@@ -272,7 +268,7 @@ static int mgag200_g200wb_pipeline_init(struct mga_device *mdev)
 	}
 	drm_crtc_helper_add(crtc, &mgag200_g200wb_crtc_helper_funcs);
 
-	/* FIXME: legacy gamma tables, but atomic gamma doesn't work without */
+	 
 	drm_mode_crtc_set_gamma_size(crtc, MGAG200_LUT_SIZE);
 	drm_crtc_enable_color_mgmt(crtc, 0, false, MGAG200_LUT_SIZE);
 
@@ -309,9 +305,7 @@ static int mgag200_g200wb_pipeline_init(struct mga_device *mdev)
 	return 0;
 }
 
-/*
- * DRM device
- */
+ 
 
 static const struct mgag200_device_info mgag200_g200wb_device_info =
 	MGAG200_DEVICE_INFO_INIT(1280, 1024, 31877, true, 0, 1, false);

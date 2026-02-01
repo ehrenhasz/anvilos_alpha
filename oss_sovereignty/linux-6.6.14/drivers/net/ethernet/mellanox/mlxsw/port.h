@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0 */
-/* Copyright (c) 2015-2018 Mellanox Technologies. All rights reserved */
+ 
+ 
 
 #ifndef _MLXSW_PORT_H
 #define _MLXSW_PORT_H
@@ -32,7 +32,7 @@ enum mlxsw_port_admin_status {
 enum mlxsw_reg_pude_oper_status {
 	MLXSW_PORT_OPER_STATUS_UP = 1,
 	MLXSW_PORT_OPER_STATUS_DOWN = 2,
-	MLXSW_PORT_OPER_STATUS_FAILURE = 4,	/* Can be set to up again. */
+	MLXSW_PORT_OPER_STATUS_FAILURE = 4,	 
 };
 
-#endif /* _MLXSW_PORT_H */
+#endif  

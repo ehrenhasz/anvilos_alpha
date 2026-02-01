@@ -1,30 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2021 Ibrahim Abdelkader <iabdalkader@openmv.io>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- *
- * NINA-W10 Python module.
- */
+ 
 
 #include "py/mphal.h"
 
@@ -58,7 +32,7 @@ typedef struct _nina_obj_t {
     char key[NINA_MAX_WPA_LEN + 1];
 } nina_obj_t;
 
-// For auto-binding UDP sockets
+
 #define BIND_PORT_RANGE_MIN     (65000)
 #define BIND_PORT_RANGE_MAX     (65535)
 
@@ -77,7 +51,7 @@ typedef struct _nina_obj_t {
 
 #define is_nonblocking_error(errno) ((errno) == MP_EAGAIN || (errno) == MP_EWOULDBLOCK || (errno) == MP_EINPROGRESS)
 
-#define debug_printf(...) // mp_printf(&mp_plat_print, __VA_ARGS__)
+#define debug_printf(...) 
 
 static uint16_t bind_port = BIND_PORT_RANGE_MIN;
 const mp_obj_type_t mod_network_nic_type_nina;
@@ -115,10 +89,10 @@ static void network_ninaw10_poll_sockets(mp_sched_node_t *node) {
         mod_network_socket_obj_t *socket = MP_STATE_PORT(mp_wifi_poll_list)->items[i];
         uint8_t flags = 0;
         if (socket->callback == MP_OBJ_NULL || nina_socket_poll(socket->fileno, &flags) < 0) {
-            // Remove socket from poll list on error.
+            
             socket->callback = MP_OBJ_NULL;
             network_ninaw10_poll_list_remove(socket);
-            // Check the same index on the next iteration.
+            
             continue;
         }
         if (flags & SOCKET_POLL_RD) {
@@ -129,7 +103,7 @@ static void network_ninaw10_poll_sockets(mp_sched_node_t *node) {
     }
 
     if (!network_ninaw10_poll_list_is_empty()) {
-        // Reschedule the sockets polling code.
+        
         soft_timer_reinsert(&mp_wifi_poll_timer, NINAW10_POLL_INTERVAL);
     }
 }
@@ -139,11 +113,11 @@ static void network_ninaw10_poll_connect(mp_sched_node_t *node) {
 
     int status = nina_connection_status();
     if (status == NINA_STATUS_CONNECTED) {
-        // Connected to AP, nothing else to do.
+        
         self->poll_enable = false;
     } else if (status != NINA_STATUS_NO_SSID_AVAIL) {
-        // If not connected, and no connection in progress, the connection attempt has failed.
-        // Read the ESP failure reason, reconnect and reschedule the connection polling code.
+        
+        
         int reason = nina_connection_reason();
         if (reason == NINA_ESP_REASON_AUTH_EXPIRE ||
             reason == NINA_ESP_REASON_ASSOC_EXPIRE ||
@@ -157,12 +131,12 @@ static void network_ninaw10_poll_connect(mp_sched_node_t *node) {
                     self->ssid, self->security, self->key);
             }
         } else {
-            // Will not attempt to reconnect if there's another error code set.
+            
             self->poll_enable = false;
         }
     }
 
-    // Reinsert the timer to schedule the polling code.
+    
     soft_timer_reinsert(&mp_wifi_poll_timer, NINAW10_POLL_INTERVAL);
 }
 
@@ -184,7 +158,7 @@ static mp_obj_t network_ninaw10_make_new(const mp_obj_type_t *type, size_t n_arg
     } else {
         nina_obj = MP_OBJ_FROM_PTR(&network_nina_wl_ap);
     }
-    // Register with network module
+    
     mod_network_register_nic(nina_obj);
     return nina_obj;
 }
@@ -199,14 +173,14 @@ static mp_obj_t network_ninaw10_active(size_t n_args, const mp_obj_t *args) {
                 mp_raise_msg_varg(&mp_type_OSError,
                     MP_ERROR_TEXT("failed to initialize Nina-W10 module, error: %d"), error);
             }
-            // check firmware version
+            
             uint8_t semver[NINA_FW_VER_LEN];
             if (nina_fw_version(semver) != 0) {
                 nina_deinit();
                 mp_raise_msg_varg(&mp_type_OSError,
                     MP_ERROR_TEXT("failed to read firmware version, error: %d"), error);
             }
-            // Check the minimum supported firmware version.
+            
             uint32_t fwmin = (NINA_FW_VER_MIN_MAJOR * 100) +
                 (NINA_FW_VER_MIN_MINOR * 10) +
                 (NINA_FW_VER_MIN_PATCH * 1);
@@ -241,7 +215,7 @@ static int nina_scan_callback(nina_scan_result_t *scan_result, void *arg) {
         mp_obj_new_int(scan_result->channel),
         mp_obj_new_int(scan_result->rssi),
         mp_obj_new_int(scan_result->security),
-        MP_OBJ_NEW_SMALL_INT(1), // N
+        MP_OBJ_NEW_SMALL_INT(1), 
     };
     mp_obj_list_append(scan_list, mp_obj_new_tuple(MP_ARRAY_SIZE(ap), ap));
     return 0;
@@ -264,25 +238,25 @@ static mp_obj_t network_ninaw10_connect(mp_uint_t n_args, const mp_obj_t *pos_ar
         { MP_QSTR_channel,  MP_ARG_KW_ONLY | MP_ARG_INT, {.u_int = 1} },
     };
 
-    // parse args
+    
     nina_obj_t *self = MP_OBJ_TO_PTR(pos_args[0]);
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args - 1, pos_args + 1, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
-    // get ssid
+    
     const char *ssid = mp_obj_str_get_str(args[ARG_ssid].u_obj);
 
     if (strlen(ssid) == 0) {
         mp_raise_ValueError(MP_ERROR_TEXT("SSID can't be empty"));
     }
 
-    // get encryption key
+    
     const char *key = NULL;
     if (args[ARG_key].u_obj != mp_const_none) {
         key = mp_obj_str_get_str(args[ARG_key].u_obj);
     }
 
-    // get security mode
+    
     mp_uint_t security = args[ARG_security].u_int;
     if (security == -1 && self->itf == MOD_NETWORK_STA_IF) {
         security = NINA_SEC_WPA_PSK;
@@ -290,29 +264,29 @@ static mp_obj_t network_ninaw10_connect(mp_uint_t n_args, const mp_obj_t *pos_ar
         security = NINA_SEC_WEP;
     }
 
-    // Ensure that the key is not empty if a security mode is used.
+    
     if (security != NINA_SEC_OPEN && strlen(key) == 0) {
         mp_raise_ValueError(MP_ERROR_TEXT("key can't be empty"));
     }
 
-    // Activate the interface if not active.
+    
     if (!self->active) {
         network_ninaw10_active(2, (mp_obj_t [2]) { pos_args[0], mp_const_true });
     }
 
-    // Disconnect active connections first.
+    
     if (nina_isconnected()) {
         nina_disconnect();
     }
 
     if (self->itf == MOD_NETWORK_STA_IF) {
-        // Initialize WiFi in Station mode.
+        
         if (nina_connect(ssid, security, key, 0) != 0) {
             mp_raise_msg_varg(&mp_type_OSError,
                 MP_ERROR_TEXT("could not connect to ssid=%s, sec=%d, key=%s"), ssid, security, key);
         }
 
-        // Save connection info to re-connect if needed.
+        
         self->security = security;
         strncpy(self->key, key, NINA_MAX_WPA_LEN);
         strncpy(self->ssid, ssid, NINA_MAX_SSID_LEN);
@@ -325,7 +299,7 @@ static mp_obj_t network_ninaw10_connect(mp_uint_t n_args, const mp_obj_t *pos_ar
             mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("AP mode only supports WEP or OPEN security modes"));
         }
 
-        // Initialize WiFi in AP mode.
+        
         if (nina_start_ap(ssid, security, key, channel) != 0) {
             mp_raise_msg(&mp_type_OSError, MP_ERROR_TEXT("failed to start in AP mode"));
         }
@@ -349,7 +323,7 @@ static MP_DEFINE_CONST_FUN_OBJ_1(network_ninaw10_isconnected_obj, network_ninaw1
 static mp_obj_t network_ninaw10_ifconfig(size_t n_args, const mp_obj_t *args) {
     nina_ifconfig_t ifconfig;
     if (n_args == 1) {
-        // get ifconfig info
+        
         nina_ifconfig(&ifconfig, false);
         mp_obj_t tuple[4] = {
             netutils_format_ipv4_addr(ifconfig.ip_addr, NETUTILS_BIG),
@@ -359,7 +333,7 @@ static mp_obj_t network_ninaw10_ifconfig(size_t n_args, const mp_obj_t *args) {
         };
         return mp_obj_new_tuple(4, tuple);
     } else {
-        // set ifconfig info
+        
         mp_obj_t *items;
         mp_obj_get_array_fixed_n(args[1], 4, &items);
         netutils_parse_ipv4_addr(items[0], ifconfig.ip_addr, NETUTILS_BIG);
@@ -377,7 +351,7 @@ static mp_obj_t network_ninaw10_config(size_t n_args, const mp_obj_t *args, mp_m
     (void)self;
 
     if (kwargs->used == 0) {
-        // Get config value
+        
         if (n_args != 2) {
             mp_raise_TypeError(MP_ERROR_TEXT("must query one param"));
         }
@@ -415,7 +389,7 @@ static mp_obj_t network_ninaw10_config(size_t n_args, const mp_obj_t *args, mp_m
         if (self->itf != MOD_NETWORK_AP_IF) {
             mp_raise_ValueError(MP_ERROR_TEXT("AP required"));
         }
-        // Call connect to set WiFi access point.
+        
         return network_ninaw10_connect(n_args, args, kwargs);
     }
 
@@ -428,11 +402,11 @@ static mp_obj_t network_ninaw10_status(size_t n_args, const mp_obj_t *args) {
     (void)self;
 
     if (n_args == 1) {
-        // no arguments: return link status
+        
         return mp_obj_new_bool(nina_isconnected());
     }
 
-    // Query parameter.
+    
     switch (mp_obj_str_get_qstr(args[1])) {
         case MP_QSTR_rssi: {
             nina_netinfo_t netinfo;
@@ -480,7 +454,7 @@ static int network_ninaw10_socket_poll(mod_network_socket_obj_t *socket, uint32_
     uint8_t flags = 0;
     debug_printf("socket_polling_rw(%d, %d, %d)\n", socket->fileno, socket->timeout, rwf);
     if (socket->timeout == 0) {
-        // Non-blocking socket, next socket function will return EAGAIN
+        
         return 0;
     }
     mp_uint_t start = mp_hal_ticks_ms();
@@ -501,7 +475,7 @@ static int network_ninaw10_socket_poll(mod_network_socket_obj_t *socket, uint32_
 
 static int network_ninaw10_socket_setblocking(mod_network_socket_obj_t *socket, bool blocking, int *_errno) {
     uint32_t nonblocking = !blocking;
-    // set socket in non-blocking mode
+    
     if (nina_socket_ioctl(socket->fileno, SOCKET_IOCTL_FIONBIO, &nonblocking, sizeof(nonblocking)) < 0) {
         nina_socket_errno(_errno);
         nina_socket_close(socket->fileno);
@@ -549,7 +523,7 @@ static int network_ninaw10_socket_socket(mod_network_socket_obj_t *socket, int *
         return -1;
     }
 
-    // open socket
+    
     int fd = nina_socket_socket(socket_type, socket->proto);
     if (fd < 0) {
         nina_socket_errno(_errno);
@@ -557,7 +531,7 @@ static int network_ninaw10_socket_socket(mod_network_socket_obj_t *socket, int *
         return -1;
     }
 
-    // set socket state
+    
     socket->fileno = fd;
     socket->bound = false;
     socket->callback = MP_OBJ_NULL;
@@ -572,7 +546,7 @@ static void network_ninaw10_socket_close(mod_network_socket_obj_t *socket) {
     }
     if (socket->fileno >= 0) {
         nina_socket_close(socket->fileno);
-        socket->fileno = -1; // Mark socket FD as invalid
+        socket->fileno = -1; 
     }
 }
 
@@ -587,7 +561,7 @@ static int network_ninaw10_socket_bind(mod_network_socket_obj_t *socket, byte *i
         return -1;
     }
 
-    // Mark socket as bound to avoid auto-binding.
+    
     socket->bound = true;
     return 0;
 }
@@ -617,7 +591,7 @@ static int network_ninaw10_socket_accept(mod_network_socket_obj_t *socket,
     int ret = nina_socket_accept(socket->fileno, ip, (uint16_t *)port, &fd);
     if (ret < 0) {
         nina_socket_errno(_errno);
-        // Close socket if not a nonblocking error.
+        
         if (!is_nonblocking_error(*_errno)) {
             network_ninaw10_socket_close(socket);
         }
@@ -625,7 +599,7 @@ static int network_ninaw10_socket_accept(mod_network_socket_obj_t *socket,
         return -1;
     }
 
-    // set socket state
+    
     socket2->fileno = fd;
     socket2->bound = false;
     socket2->timeout = -1;
@@ -641,13 +615,13 @@ static int network_ninaw10_socket_connect(mod_network_socket_obj_t *socket, byte
         nina_socket_errno(_errno);
         debug_printf("socket_connect() -> errno %d\n", *_errno);
 
-        // Close socket if not a nonblocking error.
+        
         if (!is_nonblocking_error(*_errno)) {
             network_ninaw10_socket_close(socket);
             return -1;
         }
 
-        // Poll for write.
+        
         if (socket->timeout == 0 ||
             network_ninaw10_socket_poll(socket, SOCKET_POLL_WR, _errno) != 0) {
             return -1;
@@ -666,7 +640,7 @@ static mp_uint_t network_ninaw10_socket_send(mod_network_socket_obj_t *socket, c
     int ret = nina_socket_send(socket->fileno, buf, len);
     if (ret < 0) {
         nina_socket_errno(_errno);
-        // Close socket if not a nonblocking error.
+        
         if (!is_nonblocking_error(*_errno)) {
             network_ninaw10_socket_close(socket);
         }
@@ -678,7 +652,7 @@ static mp_uint_t network_ninaw10_socket_send(mod_network_socket_obj_t *socket, c
 
 static mp_uint_t network_ninaw10_socket_recv(mod_network_socket_obj_t *socket, byte *buf, mp_uint_t len, int *_errno) {
     debug_printf("socket_recv(%d)\n", socket->fileno);
-    // check if socket in listening state.
+    
     if (network_ninaw10_socket_listening(socket, _errno) == 1) {
         *_errno = MP_ENOTCONN;
         return -1;
@@ -695,7 +669,7 @@ static mp_uint_t network_ninaw10_socket_recv(mod_network_socket_obj_t *socket, b
             *_errno = 0;
             return 0;
         }
-        // Close socket if not a nonblocking error.
+        
         if (!is_nonblocking_error(*_errno)) {
             network_ninaw10_socket_close(socket);
         }
@@ -722,7 +696,7 @@ static mp_uint_t network_ninaw10_socket_auto_bind(mod_network_socket_obj_t *sock
 static mp_uint_t network_ninaw10_socket_sendto(mod_network_socket_obj_t *socket,
     const byte *buf, mp_uint_t len, byte *ip, mp_uint_t port, int *_errno) {
     debug_printf("socket_sendto(%d)\n", socket->fileno);
-    // Auto-bind the socket first if the socket is unbound.
+    
     if (network_ninaw10_socket_auto_bind(socket, _errno) != 0) {
         return -1;
     }
@@ -734,7 +708,7 @@ static mp_uint_t network_ninaw10_socket_sendto(mod_network_socket_obj_t *socket,
     int ret = nina_socket_sendto(socket->fileno, buf, len, ip, port);
     if (ret < 0) {
         nina_socket_errno(_errno);
-        // Close socket if not a nonblocking error.
+        
         if (!is_nonblocking_error(*_errno)) {
             network_ninaw10_socket_close(socket);
         }
@@ -746,7 +720,7 @@ static mp_uint_t network_ninaw10_socket_sendto(mod_network_socket_obj_t *socket,
 static mp_uint_t network_ninaw10_socket_recvfrom(mod_network_socket_obj_t *socket,
     byte *buf, mp_uint_t len, byte *ip, mp_uint_t *port, int *_errno) {
     debug_printf("socket_recvfrom(%d)\n", socket->fileno);
-    // Auto-bind the socket first if the socket is unbound.
+    
     if (network_ninaw10_socket_auto_bind(socket, _errno) != 0) {
         return -1;
     }
@@ -759,7 +733,7 @@ static mp_uint_t network_ninaw10_socket_recvfrom(mod_network_socket_obj_t *socke
     int ret = nina_socket_recvfrom(socket->fileno, buf, len, ip, (uint16_t *)port);
     if (ret < 0) {
         nina_socket_errno(_errno);
-        // Close socket if not a nonblocking error.
+        
         if (!is_nonblocking_error(*_errno)) {
             network_ninaw10_socket_close(socket);
         }
@@ -796,11 +770,11 @@ static int network_ninaw10_socket_settimeout(mod_network_socket_obj_t *socket, m
     debug_printf("socket_settimeout(%d, %d)\n", socket->fileno, timeout_ms);
     #if 0
     if (timeout_ms == 0 || timeout_ms == UINT32_MAX) {
-        // blocking/nonblocking mode
+        
         uint32_t nonblocking = (timeout_ms == 0);
         ret |= nina_socket_ioctl(socket->fileno, SOCKET_IOCTL_FIONBIO, &nonblocking, sizeof(nonblocking));
     } else {
-        // timeout provided
+        
         uint32_t tv[2] = {
             (timeout_ms / 1000),
             (timeout_ms % 1000) * 1000,
@@ -834,7 +808,7 @@ static int network_ninaw10_socket_ioctl(mod_network_socket_obj_t *socket, mp_uin
             ret |= MP_STREAM_POLL_WR;
         }
     } else {
-        // NOTE: FIONREAD and FIONBIO are supported as well.
+        
         *_errno = MP_EINVAL;
         ret = MP_STREAM_ERROR;
     }
@@ -842,9 +816,9 @@ static int network_ninaw10_socket_ioctl(mod_network_socket_obj_t *socket, mp_uin
 }
 
 static void network_ninaw10_deinit(void) {
-    // On soft-reboot, gc_sweep_all is called and all open sockets are closed
-    // and collected. Make sure that the driver is not keeping any references
-    // to collected sockets in the poll list.
+    
+    
+    
     soft_timer_remove(&mp_wifi_poll_timer);
     MP_STATE_PORT(mp_wifi_poll_list) = NULL;
 }
@@ -860,7 +834,7 @@ static const mp_rom_map_elem_t nina_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_status),              MP_ROM_PTR(&network_ninaw10_status_obj) },
     { MP_ROM_QSTR(MP_QSTR_ioctl),               MP_ROM_PTR(&network_ninaw10_ioctl_obj) },
 
-    // Class constants.
+    
     { MP_ROM_QSTR(MP_QSTR_IF_STA),              MP_ROM_INT(MOD_NETWORK_STA_IF) },
     { MP_ROM_QSTR(MP_QSTR_IF_AP),               MP_ROM_INT(MOD_NETWORK_AP_IF) },
 
@@ -868,7 +842,7 @@ static const mp_rom_map_elem_t nina_locals_dict_table[] = {
     { MP_ROM_QSTR(MP_QSTR_SEC_WEP),             MP_ROM_INT(NINA_SEC_WEP) },
     { MP_ROM_QSTR(MP_QSTR_SEC_WPA_WPA2),        MP_ROM_INT(NINA_SEC_WPA_PSK) },
 
-    // For backwards compatibility.
+    
     { MP_ROM_QSTR(MP_QSTR_OPEN),                MP_ROM_INT(NINA_SEC_OPEN) },
     { MP_ROM_QSTR(MP_QSTR_WEP),                 MP_ROM_INT(NINA_SEC_WEP) },
     { MP_ROM_QSTR(MP_QSTR_WPA_PSK),             MP_ROM_INT(NINA_SEC_WPA_PSK) },
@@ -906,4 +880,4 @@ MP_DEFINE_CONST_OBJ_TYPE(
 MP_REGISTER_ROOT_POINTER(struct _machine_spi_obj_t *mp_wifi_spi);
 MP_REGISTER_ROOT_POINTER(struct _mp_obj_list_t *mp_wifi_poll_list);
 
-#endif // #if MICROPY_PY_BLUETOOTH && MICROPY_PY_NETWORK_NINAW10
+#endif 

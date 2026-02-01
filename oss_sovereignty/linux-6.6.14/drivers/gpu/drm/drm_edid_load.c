@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-   drm_edid_load.c: use a built-in EDID data set or load it via the firmware
-		    interface
 
-   Copyright (C) 2012 Carsten Emde <C.Emde@osadl.org>
-
-*/
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -23,7 +17,7 @@ module_param_string(edid_firmware, edid_firmware, sizeof(edid_firmware), 0644);
 MODULE_PARM_DESC(edid_firmware, "Do not probe monitor, use specified EDID blob "
 	"from built-in data or /lib/firmware instead. ");
 
-/* Use only for backward compatibility with drm_kms_helper.edid_firmware */
+ 
 int __drm_set_edid_firmware_path(const char *path)
 {
 	scnprintf(edid_firmware, sizeof(edid_firmware), "%s", path);
@@ -32,7 +26,7 @@ int __drm_set_edid_firmware_path(const char *path)
 }
 EXPORT_SYMBOL(__drm_set_edid_firmware_path);
 
-/* Use only for backward compatibility with drm_kms_helper.edid_firmware */
+ 
 int __drm_get_edid_firmware_path(char *buf, size_t bufsize)
 {
 	return scnprintf(buf, bufsize, "%s", edid_firmware);
@@ -211,14 +205,7 @@ const struct drm_edid *drm_edid_load_firmware(struct drm_connector *connector)
 	if (edid_firmware[0] == '\0')
 		return ERR_PTR(-ENOENT);
 
-	/*
-	 * If there are multiple edid files specified and separated
-	 * by commas, search through the list looking for one that
-	 * matches the connector.
-	 *
-	 * If there's one or more that doesn't specify a connector, keep
-	 * the last one found one as a fallback.
-	 */
+	 
 	fwstr = kstrdup(edid_firmware, GFP_KERNEL);
 	if (!fwstr)
 		return ERR_PTR(-ENOMEM);
@@ -233,7 +220,7 @@ const struct drm_edid *drm_edid_load_firmware(struct drm_connector *connector)
 			break;
 		}
 
-		if (*edidname != '\0') /* corner case: multiple ',' */
+		if (*edidname != '\0')  
 			fallback = edidname;
 	}
 

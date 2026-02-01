@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell CN10K RPM driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include "cgx.h"
 #include "lmac_common.h"
@@ -97,9 +93,7 @@ static u64 rpm_read(rpm_t *rpm, u64 lmac, u64 offset)
 	return	cgx_read(rpm, lmac, offset);
 }
 
-/* Read HW major version to determine RPM
- * MAC type 100/USX
- */
+ 
 static bool is_mac_rpmusx(void *rpmd)
 {
 	rpm_t *rpm = rpmd;
@@ -171,7 +165,7 @@ void rpm_lmac_enadis_rx_pause_fwding(void *rpmd, int lmac_id, bool enable)
 	if (!lmac)
 		return;
 
-	/* Pause frames are not enabled just return */
+	 
 	if (!bitmap_weight(lmac->rx_fc_pfvf_bmap.bmap, lmac->rx_fc_pfvf_bmap.max))
 		return;
 
@@ -211,7 +205,7 @@ static void rpm_cfg_pfc_quanta_thresh(rpm_t *rpm, int lmac_id,
 	u64 quanta_offset = 0, quanta_thresh = 0, cfg;
 	int i, shift;
 
-	/* Set pause time and interval */
+	 
 	for_each_set_bit(i, &pfc_en, 16) {
 		switch (i) {
 		case 0:
@@ -290,13 +284,11 @@ static void rpm2_lmac_cfg_bp(rpm_t *rpm, int lmac_id, u8 tx_pause, u8 rx_pause)
 
 	cfg = rpm_read(rpm, lmac_id, RPM2_CMR_RX_OVR_BP);
 	if (tx_pause) {
-		/* Configure CL0 Pause Quanta & threshold
-		 * for 802.3X frames
-		 */
+		 
 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 1, true);
 		cfg &= ~RPM2_CMR_RX_OVR_BP_EN;
 	} else {
-		/* Disable all Pause Quanta & threshold values */
+		 
 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xffff, false);
 		cfg |= RPM2_CMR_RX_OVR_BP_EN;
 		cfg &= ~RPM2_CMR_RX_OVR_BP_BP;
@@ -310,13 +302,11 @@ static void rpm_lmac_cfg_bp(rpm_t *rpm, int lmac_id, u8 tx_pause, u8 rx_pause)
 
 	cfg = rpm_read(rpm, 0, RPMX_CMR_RX_OVR_BP);
 	if (tx_pause) {
-		/* Configure CL0 Pause Quanta & threshold for
-		 * 802.3X frames
-		 */
+		 
 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 1, true);
 		cfg &= ~RPMX_CMR_RX_OVR_BP_EN(lmac_id);
 	} else {
-		/* Disable all Pause Quanta & threshold values */
+		 
 		rpm_cfg_pfc_quanta_thresh(rpm, lmac_id, 0xffff, false);
 		cfg |= RPMX_CMR_RX_OVR_BP_EN(lmac_id);
 		cfg &= ~RPMX_CMR_RX_OVR_BP_BP(lmac_id);
@@ -358,33 +348,33 @@ void rpm_lmac_pause_frm_config(void *rpmd, int lmac_id, bool enable)
 	u64 cfg, pfc_class_mask_cfg;
 	rpm_t *rpm = rpmd;
 
-	/* ALL pause frames received are completely ignored */
+	 
 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
 	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_RX_P_DISABLE;
 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
 
-	/* Disable forward pause to TX block */
+	 
 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
 	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_IGNORE;
 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
 
-	/* Disable pause frames transmission */
+	 
 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
 	cfg |= RPMX_MTI_MAC100X_COMMAND_CONFIG_TX_P_DISABLE;
 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
 
-	/* Disable forward pause to driver */
+	 
 	cfg = rpm_read(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG);
 	cfg &= ~RPMX_MTI_MAC100X_COMMAND_CONFIG_PAUSE_FWD;
 	rpm_write(rpm, lmac_id, RPMX_MTI_MAC100X_COMMAND_CONFIG, cfg);
 
-	/* Enable channel mask for all LMACS */
+	 
 	if (is_dev_rpm2(rpm))
 		rpm_write(rpm, lmac_id, RPM2_CMR_CHAN_MSK_OR, 0xffff);
 	else
 		rpm_write(rpm, 0, RPMX_CMR_CHAN_MSK_OR, ~0ULL);
 
-	/* Disable all PFC classes */
+	 
 	pfc_class_mask_cfg = is_dev_rpm2(rpm) ? RPM2_CMRX_PRT_CBFC_CTL :
 						RPMX_CMRX_PRT_CBFC_CTL;
 	cfg = rpm_read(rpm, lmac_id, pfc_class_mask_cfg);
@@ -402,16 +392,14 @@ int rpm_get_rx_stats(void *rpmd, int lmac_id, int idx, u64 *rx_stat)
 
 	mutex_lock(&rpm->lock);
 
-	/* Update idx to point per lmac Rx statistics page */
+	 
 	idx += lmac_id * rpm->mac_ops->rx_stats_cnt;
 
-	/* Read lower 32 bits of counter */
+	 
 	val_lo = rpm_read(rpm, 0, RPMX_MTI_STAT_RX_STAT_PAGES_COUNTERX +
 			  (idx * 8));
 
-	/* upon read of lower 32 bits, higher 32 bits are written
-	 * to RPMX_MTI_STAT_DATA_HI_CDC
-	 */
+	 
 	val_hi = rpm_read(rpm, 0, RPMX_MTI_STAT_DATA_HI_CDC);
 
 	*rx_stat = (val_hi << 32 | val_lo);
@@ -430,7 +418,7 @@ int rpm_get_tx_stats(void *rpmd, int lmac_id, int idx, u64 *tx_stat)
 
 	mutex_lock(&rpm->lock);
 
-	/* Update idx to point per lmac Tx statistics page */
+	 
 	idx += lmac_id * rpm->mac_ops->tx_stats_cnt;
 
 	val_lo = rpm_read(rpm, 0, RPMX_MTI_STAT_TX_STAT_PAGES_COUNTERX +
@@ -472,7 +460,7 @@ u32 rpm_get_lmac_fifo_len(void *rpmd, int lmac_id)
 	case 2:
 		return fifo_len / 2;
 	case 3:
-		/* LMAC marked as hi_perf gets half of the FIFO and rest 1/4th */
+		 
 		hi_perf_lmac = rpm_read(rpm, 0, CGXX_CMRX_RX_LMACS);
 		hi_perf_lmac = (hi_perf_lmac >> 4) & 0x3ULL;
 		if (lmac_id == hi_perf_lmac)
@@ -509,11 +497,7 @@ u32 rpm2_get_lmac_fifo_len(void *rpmd, int lmac_id)
 	u16 max_lmac;
 
 	lmac_info = rpm_read(rpm, 0, RPM2_CMRX_RX_LMACS);
-	/* LMACs are divided into two groups and each group
-	 * gets half of the FIFO
-	 * Group0 lmac_id range {0..3}
-	 * Group1 lmac_id range {4..7}
-	 */
+	 
 	max_lmac = (rpm_read(rpm, 0, CGX_CONST) >> 24) & 0xFF;
 	if (max_lmac > 4)
 		fifo_len = rpm->mac_ops->fifo_len / 2;
@@ -535,9 +519,7 @@ u32 rpm2_get_lmac_fifo_len(void *rpmd, int lmac_id)
 	case 2:
 		return fifo_len / 2;
 	case 3:
-		/* LMAC marked as hi_perf gets half of the FIFO
-		 * and rest 1/4th
-		 */
+		 
 		if (lmac_id == hi_perf_lmac)
 			return fifo_len / 2;
 		return fifo_len / 4;
@@ -691,7 +673,7 @@ int rpm_get_fec_stats(void *rpmd, int lmac_id, struct cgx_fec_stats_rsp *rsp)
 		val_hi = rpm_read(rpm, lmac_id, RPMX_MTI_FCFECX_CW_HI);
 		rsp->fec_uncorr_blks = (val_hi << 16 | val_lo);
 
-		/* 50G uses 2 Physical serdes lines */
+		 
 		if (rpm->lmac_idmap[lmac_id]->link_info.lmac_type_id ==
 		    LMAC_MODE_50G_R) {
 			val_lo = rpm_read(rpm, lmac_id,
@@ -707,7 +689,7 @@ int rpm_get_fec_stats(void *rpmd, int lmac_id, struct cgx_fec_stats_rsp *rsp)
 			rsp->fec_uncorr_blks += (val_hi << 16 | val_lo);
 		}
 	} else {
-		/* enable RS-FEC capture */
+		 
 		cfg = rpm_read(rpm, 0, RPMX_MTI_STAT_STATN_CONTROL);
 		cfg |= RPMX_RSFEC_RX_CAPTURE | BIT(lmac_id);
 		rpm_write(rpm, 0, RPMX_MTI_STAT_STATN_CONTROL, cfg);
@@ -734,7 +716,7 @@ int rpm_lmac_reset(void *rpmd, int lmac_id, u8 pf_req_flr)
 	if (!is_lmac_valid(rpm, lmac_id))
 		return -ENODEV;
 
-	/* Resetting PFC related CSRs */
+	 
 	rx_logl_xon = is_dev_rpm2(rpm) ? RPM2_CMRX_RX_LOGL_XON :
 					 RPMX_CMRX_RX_LOGL_XON;
 	cfg = 0xff;

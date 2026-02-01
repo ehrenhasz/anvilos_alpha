@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Dollar Cove TI PMIC operation region driver
- * Copyright (C) 2014 Intel Corporation. All rights reserved.
- *
- * Rewritten and cleaned up
- * Copyright (C) 2017 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/init.h>
@@ -13,26 +7,26 @@
 #include <linux/platform_device.h>
 #include "intel_pmic.h"
 
-/* registers stored in 16bit BE (high:low, total 10bit) */
+ 
 #define CHTDC_TI_VBAT		0x54
 #define CHTDC_TI_DIETEMP	0x56
 #define CHTDC_TI_BPTHERM	0x58
 #define CHTDC_TI_GPADC		0x5a
 
 static struct pmic_table chtdc_ti_power_table[] = {
-	{ .address = 0x00, .reg = 0x41 }, /* LDO1 */
-	{ .address = 0x04, .reg = 0x42 }, /* LDO2 */
-	{ .address = 0x08, .reg = 0x43 }, /* LDO3 */
-	{ .address = 0x0c, .reg = 0x45 }, /* LDO5 */
-	{ .address = 0x10, .reg = 0x46 }, /* LDO6 */
-	{ .address = 0x14, .reg = 0x47 }, /* LDO7 */
-	{ .address = 0x18, .reg = 0x48 }, /* LDO8 */
-	{ .address = 0x1c, .reg = 0x49 }, /* LDO9 */
-	{ .address = 0x20, .reg = 0x4a }, /* LD10 */
-	{ .address = 0x24, .reg = 0x4b }, /* LD11 */
-	{ .address = 0x28, .reg = 0x4c }, /* LD12 */
-	{ .address = 0x2c, .reg = 0x4d }, /* LD13 */
-	{ .address = 0x30, .reg = 0x4e }, /* LD14 */
+	{ .address = 0x00, .reg = 0x41 },  
+	{ .address = 0x04, .reg = 0x42 },  
+	{ .address = 0x08, .reg = 0x43 },  
+	{ .address = 0x0c, .reg = 0x45 },  
+	{ .address = 0x10, .reg = 0x46 },  
+	{ .address = 0x14, .reg = 0x47 },  
+	{ .address = 0x18, .reg = 0x48 },  
+	{ .address = 0x1c, .reg = 0x49 },  
+	{ .address = 0x20, .reg = 0x4a },  
+	{ .address = 0x24, .reg = 0x4b },  
+	{ .address = 0x28, .reg = 0x4c },  
+	{ .address = 0x2c, .reg = 0x4d },  
+	{ .address = 0x30, .reg = 0x4e },  
 };
 
 static struct pmic_table chtdc_ti_thermal_table[] = {
@@ -44,12 +38,12 @@ static struct pmic_table chtdc_ti_thermal_table[] = {
 		.address = 0x0c,
 		.reg = CHTDC_TI_GPADC
 	},
-	/* TMP2 -> SYSTEMP */
+	 
 	{
 		.address = 0x18,
 		.reg = CHTDC_TI_GPADC
 	},
-	/* TMP3 -> BPTHERM */
+	 
 	{
 		.address = 0x24,
 		.reg = CHTDC_TI_BPTHERM
@@ -58,7 +52,7 @@ static struct pmic_table chtdc_ti_thermal_table[] = {
 		.address = 0x30,
 		.reg = CHTDC_TI_GPADC
 	},
-	/* TMP5 -> DIETEMP */
+	 
 	{
 		.address = 0x3c,
 		.reg = CHTDC_TI_DIETEMP
@@ -90,7 +84,7 @@ static int chtdc_ti_pmic_get_raw_temp(struct regmap *regmap, int reg)
 	if (regmap_bulk_read(regmap, reg, buf, 2))
 		return -EIO;
 
-	/* stored in big-endian */
+	 
 	return ((buf[0] & 0x03) << 8) | buf[1];
 }
 
@@ -117,7 +111,7 @@ static int chtdc_ti_pmic_opregion_probe(struct platform_device *pdev)
 	if (err < 0)
 		return err;
 
-	/* Re-enumerate devices depending on PMIC */
+	 
 	acpi_dev_clear_dependencies(ACPI_COMPANION(pdev->dev.parent));
 	return 0;
 }

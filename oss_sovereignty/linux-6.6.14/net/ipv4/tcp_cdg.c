@@ -1,30 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CAIA Delay-Gradient (CDG) congestion control
- *
- * This implementation is based on the paper:
- *   D.A. Hayes and G. Armitage. "Revisiting TCP congestion control using
- *   delay gradients." In IFIP Networking, pages 328-341. Springer, 2011.
- *
- * Scavenger traffic (Less-than-Best-Effort) should disable coexistence
- * heuristics using parameters use_shadow=0 and use_ineff=0.
- *
- * Parameters window, backoff_beta, and backoff_factor are crucial for
- * throughput and delay. Future work is needed to determine better defaults,
- * and to provide guidelines for use in different environments/contexts.
- *
- * Except for window, knobs are configured via /sys/module/tcp_cdg/parameters/.
- * Parameter window is only configurable when loading tcp_cdg as a module.
- *
- * Notable differences from paper/FreeBSD:
- *   o Using Hybrid Slow start and Proportional Rate Reduction.
- *   o Add toggle for shadow window mechanism. Suggested by David Hayes.
- *   o Add toggle for non-congestion loss tolerance.
- *   o Scaling parameter G is changed to a backoff factor;
- *     conversion is given by: backoff_factor = 1000/(G * window).
- *   o Limit shadow window to 2 * cwnd, or to cwnd when application limited.
- *   o More accurate e^-x.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/random.h>
 #include <linux/module.h>
@@ -36,7 +11,7 @@
 #define HYSTART_DELAY		2
 
 static int window __read_mostly = 8;
-static unsigned int backoff_beta __read_mostly = 0.7071 * 1024; /* sqrt 0.5 */
+static unsigned int backoff_beta __read_mostly = 0.7071 * 1024;  
 static unsigned int backoff_factor __read_mostly = 42;
 static unsigned int hystart_detect __read_mostly = 3;
 static unsigned int use_ineff __read_mostly = 5;
@@ -94,16 +69,11 @@ struct cdg {
 	u32 round_start;
 };
 
-/**
- * nexp_u32 - negative base-e exponential
- * @ux: x in units of micro
- *
- * Returns exp(ux * -1e-6) * U32_MAX.
- */
+ 
 static u32 __pure nexp_u32(u32 ux)
 {
 	static const u16 v[] = {
-		/* exp(-x)*65536-1 for x = 0, 0.000256, 0.000512, ... */
+		 
 		65535,
 		65518, 65501, 65468, 65401, 65267, 65001, 64470, 63422,
 		61378, 57484, 50423, 38795, 22965, 8047,  987,   14,
@@ -112,14 +82,14 @@ static u32 __pure nexp_u32(u32 ux)
 	u32 res;
 	int i;
 
-	/* Cut off when ux >= 2^24 (actual result is <= 222/U32_MAX). */
+	 
 	if (msb > U16_MAX)
 		return 0;
 
-	/* Scale first eight bits linearly: */
+	 
 	res = U32_MAX - (ux & 0xff) * (U32_MAX / 1000000);
 
-	/* Obtain e^(x + y + ...) by computing e^x * e^y * ...: */
+	 
 	for (i = 1; msb; i++, msb >>= 1) {
 		u32 y = v[i & -(msb & 1)] + U32_C(1);
 
@@ -129,14 +99,7 @@ static u32 __pure nexp_u32(u32 ux)
 	return res;
 }
 
-/* Based on the HyStart algorithm (by Ha et al.) that is implemented in
- * tcp_cubic. Differences/experimental changes:
- *   o Using Hayes' delayed ACK filter.
- *   o Using a usec clock for the ACK train.
- *   o Reset ACK train when application limited.
- *   o Invoked at any cwnd (i.e. also when cwnd < 16).
- *   o Invoked only when cwnd < ssthresh (i.e. not when cwnd == ssthresh).
- */
+ 
 static void tcp_cdg_hystart_update(struct sock *sk)
 {
 	struct cdg *ca = inet_csk_ca(sk);
@@ -203,30 +166,25 @@ static s32 tcp_cdg_grad(struct cdg *ca)
 		gmax = ca->gsum.max;
 	}
 
-	/* We keep sums to ignore gradients during cwnd reductions;
-	 * the paper's smoothed gradients otherwise simplify to:
-	 * (rtt_latest - rtt_oldest) / window.
-	 *
-	 * We also drop division by window here.
-	 */
+	 
 	grad = gmin > 0 ? gmin : gmax;
 
-	/* Extrapolate missing values in gradient window: */
+	 
 	if (!ca->gfilled) {
 		if (!ca->gradients && window > 1)
-			grad *= window; /* Memory allocation failed. */
+			grad *= window;  
 		else if (ca->tail == 0)
 			ca->gfilled = true;
 		else
 			grad = (grad * window) / (int)ca->tail;
 	}
 
-	/* Backoff was effectual: */
+	 
 	if (gmin <= -32 || gmax <= -32)
 		ca->backoff_cnt = 0;
 
 	if (use_tolerance) {
-		/* Reduce small variations to zero: */
+		 
 		gmin = DIV_ROUND_CLOSEST(gmin, 64);
 		gmax = DIV_ROUND_CLOSEST(gmax, 64);
 
@@ -258,7 +216,7 @@ static bool tcp_cdg_backoff(struct sock *sk, u32 grad)
 	return true;
 }
 
-/* Not called in CWR or Recovery state. */
+ 
 static void tcp_cdg_cong_avoid(struct sock *sk, u32 ack, u32 acked)
 {
 	struct cdg *ca = inet_csk_ca(sk);
@@ -304,15 +262,10 @@ static void tcp_cdg_acked(struct sock *sk, const struct ack_sample *sample)
 	if (sample->rtt_us <= 0)
 		return;
 
-	/* A heuristic for filtering delayed ACKs, adapted from:
-	 * D.A. Hayes. "Timing enhancements to the FreeBSD kernel to support
-	 * delay and rate based TCP mechanisms." TR 100219A. CAIA, 2010.
-	 */
+	 
 	if (tp->sacked_out == 0) {
 		if (sample->pkts_acked == 1 && ca->delack) {
-			/* A delayed ACK is only used for the minimum if it is
-			 * provenly lower than an existing non-zero minimum.
-			 */
+			 
 			ca->rtt.min = min(ca->rtt.min, sample->rtt_us);
 			ca->delack--;
 			return;
@@ -376,7 +329,7 @@ static void tcp_cdg_init(struct sock *sk)
 	struct tcp_sock *tp = tcp_sk(sk);
 
 	ca->gradients = NULL;
-	/* We silently fall back to window = 1 if allocation fails. */
+	 
 	if (window > 1)
 		ca->gradients = kcalloc(window, sizeof(ca->gradients[0]),
 					GFP_NOWAIT | __GFP_NOWARN);

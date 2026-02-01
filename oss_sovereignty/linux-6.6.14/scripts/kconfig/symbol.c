@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2002 Roman Zippel <zippel@linux-m68k.org>
- */
+
+ 
 
 #include <sys/types.h>
 #include <ctype.h>
@@ -177,7 +175,7 @@ static void sym_calc_visibility(struct symbol *sym)
 	struct symbol *choice_sym = NULL;
 	tristate tri;
 
-	/* any prompt visible? */
+	 
 	tri = no;
 
 	if (sym_is_choice_value(sym))
@@ -185,11 +183,7 @@ static void sym_calc_visibility(struct symbol *sym)
 
 	for_all_prompts(sym, prop) {
 		prop->visible.tri = expr_calc_value(prop->visible.expr);
-		/*
-		 * Tristate choice_values with visibility 'mod' are
-		 * not visible if the corresponding choice's value is
-		 * 'yes'.
-		 */
+		 
 		if (choice_sym && sym->type == S_TRISTATE &&
 		    prop->visible.tri == mod && choice_sym->curr.tri == yes)
 			prop->visible.tri = no;
@@ -204,7 +198,7 @@ static void sym_calc_visibility(struct symbol *sym)
 	}
 	if (sym_is_choice_value(sym))
 		return;
-	/* defaulting to "yes" if no explicit "depends on" are given */
+	 
 	tri = yes;
 	if (sym->dir_dep.expr)
 		tri = expr_calc_value(sym->dir_dep.expr);
@@ -234,19 +228,14 @@ static void sym_calc_visibility(struct symbol *sym)
 	}
 }
 
-/*
- * Find the default symbol for a choice.
- * First try the default values for the choice symbol
- * Next locate the first visible choice value
- * Return NULL if none was found
- */
+ 
 struct symbol *sym_choice_default(struct symbol *sym)
 {
 	struct symbol *def_sym;
 	struct property *prop;
 	struct expr *e;
 
-	/* any of the defaults visible? */
+	 
 	for_all_defaults(sym, prop) {
 		prop->visible.tri = expr_calc_value(prop->visible.expr);
 		if (prop->visible.tri == no)
@@ -256,13 +245,13 @@ struct symbol *sym_choice_default(struct symbol *sym)
 			return def_sym;
 	}
 
-	/* just get the first visible value */
+	 
 	prop = sym_get_choice_prop(sym);
 	expr_list_for_each_sym(prop->expr, e, def_sym)
 		if (def_sym->visible != no)
 			return def_sym;
 
-	/* failed to locate any defaults */
+	 
 	return NULL;
 }
 
@@ -273,7 +262,7 @@ static struct symbol *sym_calc_choice(struct symbol *sym)
 	struct expr *e;
 	int flags;
 
-	/* first calculate all choice values' visibilities */
+	 
 	flags = sym->flags;
 	prop = sym_get_choice_prop(sym);
 	expr_list_for_each_sym(prop->expr, e, def_sym) {
@@ -284,7 +273,7 @@ static struct symbol *sym_calc_choice(struct symbol *sym)
 
 	sym->flags &= flags | ~SYMBOL_DEF_USER;
 
-	/* is the user choice visible? */
+	 
 	def_sym = sym->def[S_DEF_USER].val;
 	if (def_sym && def_sym->visible != no)
 		return def_sym;
@@ -292,7 +281,7 @@ static struct symbol *sym_calc_choice(struct symbol *sym)
 	def_sym = sym_choice_default(sym);
 
 	if (def_sym == NULL)
-		/* no choice? reset tristate value */
+		 
 		sym->curr.tri = no;
 
 	return def_sym;
@@ -364,7 +353,7 @@ void sym_calc_value(struct symbol *sym)
 	if (sym->visible != no)
 		sym->flags |= SYMBOL_WRITE;
 
-	/* set default if recursively called */
+	 
 	sym->curr = newval;
 
 	switch (sym_get_type(sym)) {
@@ -375,9 +364,7 @@ void sym_calc_value(struct symbol *sym)
 			newval.tri = (prop_get_symbol(prop)->curr.val == sym) ? yes : no;
 		} else {
 			if (sym->visible != no) {
-				/* if the symbol is visible use the user value
-				 * if available, otherwise try the default value
-				 */
+				 
 				if (sym_has_value(sym)) {
 					newval.tri = EXPR_AND(sym->def[S_DEF_USER].tri,
 							      sym->visible);
@@ -504,10 +491,7 @@ bool sym_set_tristate_value(struct symbol *sym, tristate val)
 		sym->flags |= SYMBOL_DEF_USER;
 		sym_set_changed(sym);
 	}
-	/*
-	 * setting a choice value also resets the new flag of the choice
-	 * symbol and all other choice values.
-	 */
+	 
 	if (sym_is_choice_value(sym) && val == yes) {
 		struct symbol *cs = prop_get_symbol(sym_get_choice_prop(sym));
 		struct property *prop;
@@ -686,13 +670,7 @@ bool sym_set_string_value(struct symbol *sym, const char *newval)
 	return true;
 }
 
-/*
- * Find the default value associated to a symbol.
- * For tristate symbol handle the modules=n case
- * in which case "m" becomes "y".
- * If the symbol does not have any default then fallback
- * to the fixed default values.
- */
+ 
 const char *sym_get_string_default(struct symbol *sym)
 {
 	struct property *prop;
@@ -705,21 +683,17 @@ const char *sym_get_string_default(struct symbol *sym)
 	val = symbol_no.curr.tri;
 	str = symbol_empty.curr.val;
 
-	/* If symbol has a default value look it up */
+	 
 	prop = sym_get_default_prop(sym);
 	if (prop != NULL) {
 		switch (sym->type) {
 		case S_BOOLEAN:
 		case S_TRISTATE:
-			/* The visibility may limit the value from yes => mod */
+			 
 			val = EXPR_AND(expr_calc_value(prop->expr), prop->visible.tri);
 			break;
 		default:
-			/*
-			 * The following fails to handle the situation
-			 * where a default value is further limited by
-			 * the valid range.
-			 */
+			 
 			ds = prop_get_symbol(prop);
 			if (ds != NULL) {
 				sym_calc_value(ds);
@@ -728,19 +702,19 @@ const char *sym_get_string_default(struct symbol *sym)
 		}
 	}
 
-	/* Handle select statements */
+	 
 	val = EXPR_OR(val, sym->rev_dep.tri);
 
-	/* transpose mod to yes if modules are not enabled */
+	 
 	if (val == mod)
 		if (!sym_is_choice_value(sym) && modules_sym->curr.tri == no)
 			val = yes;
 
-	/* transpose mod to yes if type is bool */
+	 
 	if (sym->type == S_BOOLEAN && val == mod)
 		val = yes;
 
-	/* adjust the default value if this symbol is implied by another */
+	 
 	if (val < sym->implied.tri)
 		val = sym->implied.tri;
 
@@ -794,7 +768,7 @@ bool sym_is_changeable(struct symbol *sym)
 
 static unsigned strhash(const char *s)
 {
-	/* fnv32 hash */
+	 
 	unsigned hash = 2166136261U;
 	for (; *s; s++)
 		hash = (hash ^ *s) * 0x01000193;
@@ -874,25 +848,14 @@ struct sym_match {
 	off_t		so, eo;
 };
 
-/* Compare matched symbols as thus:
- * - first, symbols that match exactly
- * - then, alphabetical sort
- */
+ 
 static int sym_rel_comp(const void *sym1, const void *sym2)
 {
 	const struct sym_match *s1 = sym1;
 	const struct sym_match *s2 = sym2;
 	int exact1, exact2;
 
-	/* Exact match:
-	 * - if matched length on symbol s1 is the length of that symbol,
-	 *   then this symbol should come first;
-	 * - if matched length on symbol s2 is the length of that symbol,
-	 *   then this symbol should come first.
-	 * Note: since the search can be a regexp, both symbols may match
-	 * exactly; if this is the case, we can't decide which comes first,
-	 * and we fallback to sorting alphabetically.
-	 */
+	 
 	exact1 = (s1->eo - s1->so) == strlen(s1->sym->name);
 	exact2 = (s2->eo - s2->so) == strlen(s2->sym->name);
 	if (exact1 && !exact2)
@@ -900,7 +863,7 @@ static int sym_rel_comp(const void *sym1, const void *sym2)
 	if (!exact1 && exact2)
 		return 1;
 
-	/* As a fallback, sort symbols alphabetically */
+	 
 	return strcmp(s1->sym->name, s2->sym->name);
 }
 
@@ -913,7 +876,7 @@ struct symbol **sym_re_search(const char *pattern)
 	regmatch_t match[1];
 
 	cnt = size = 0;
-	/* Skip if empty */
+	 
 	if (strlen(pattern) == 0)
 		return NULL;
 	if (regcomp(&re, pattern, REG_EXTENDED|REG_ICASE))
@@ -933,9 +896,7 @@ struct symbol **sym_re_search(const char *pattern)
 			sym_match_arr = tmp;
 		}
 		sym_calc_value(sym);
-		/* As regexec returned 0, we know we have a match, so
-		 * we can use match[0].rm_[se]o without further checks
-		 */
+		 
 		sym_match_arr[cnt].so = match[0].rm_so;
 		sym_match_arr[cnt].eo = match[0].rm_eo;
 		sym_match_arr[cnt++].sym = sym;
@@ -950,19 +911,14 @@ struct symbol **sym_re_search(const char *pattern)
 		sym_arr[cnt] = NULL;
 	}
 sym_re_search_free:
-	/* sym_match_arr can be NULL if no match, but free(NULL) is OK */
+	 
 	free(sym_match_arr);
 	regfree(&re);
 
 	return sym_arr;
 }
 
-/*
- * When we check for recursive dependencies we use a stack to save
- * current state so we can print out relevant info to user.
- * The entries are located on the call stack so no need to free memory.
- * Note insert() remove() must always match to properly clear the stack.
- */
+ 
 static struct dep_stack {
 	struct dep_stack *prev, *next;
 	struct symbol *sym;
@@ -987,11 +943,7 @@ static void dep_stack_remove(void)
 		check_top->next = NULL;
 }
 
-/*
- * Called when we have detected a recursive dependency.
- * check_top point to the top of the stact so we use
- * the ->prev pointer to locate the bottom of the stack.
- */
+ 
 static void sym_check_print_recursive(struct symbol *last_sym)
 {
 	struct dep_stack *stack;
@@ -1020,7 +972,7 @@ static void sym_check_print_recursive(struct symbol *last_sym)
 		if (prop == NULL)
 			prop = stack->sym->prop;
 
-		/* for choice values find the menu entry (used below) */
+		 
 		if (sym_is_choice(sym) || sym_is_choice_value(sym)) {
 			for (prop = sym->prop; prop; prop = prop->next) {
 				menu = prop->menu;
@@ -1115,7 +1067,7 @@ static struct symbol *sym_check_expr_deps(struct expr *e)
 	return NULL;
 }
 
-/* return NULL when dependencies are OK */
+ 
 static struct symbol *sym_check_sym_deps(struct symbol *sym)
 {
 	struct symbol *sym2;
@@ -1216,7 +1168,7 @@ struct symbol *sym_check_deps(struct symbol *sym)
 	if (sym_is_choice_value(sym)) {
 		struct dep_stack stack;
 
-		/* for choice groups start the check with main choice symbol */
+		 
 		dep_stack_insert(&stack, sym);
 		prop = sym_get_choice_prop(sym);
 		sym2 = sym_check_deps(prop_get_symbol(prop));

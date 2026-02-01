@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * FDT related Helper functions used by the EFI stub on multiple
- * architectures. This should be #included by the EFI stub
- * implementation files.
- *
- * Copyright 2013 Linaro Limited; author Roy Franz
- */
+
+ 
 
 #include <linux/efi.h>
 #include <linux/libfdt.h>
@@ -21,7 +15,7 @@ static void fdt_update_cell_size(void *fdt)
 	int offset;
 
 	offset = fdt_path_offset(fdt, "/");
-	/* Set the #address-cells and #size-cells values for an empty tree */
+	 
 
 	fdt_setprop_u32(fdt, offset, "#address-cells", EFI_DT_ADDR_CELLS_DEFAULT);
 	fdt_setprop_u32(fdt, offset, "#size-cells",    EFI_DT_SIZE_CELLS_DEFAULT);
@@ -35,16 +29,13 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
 	u32 fdt_val32;
 	u64 fdt_val64;
 
-	/* Do some checks on provided FDT, if it exists: */
+	 
 	if (orig_fdt) {
 		if (fdt_check_header(orig_fdt)) {
 			efi_err("Device Tree header not valid!\n");
 			return EFI_LOAD_ERROR;
 		}
-		/*
-		 * We don't get the size of the FDT if we get if from a
-		 * configuration table:
-		 */
+		 
 		if (orig_fdt_size && fdt_totalsize(orig_fdt) > orig_fdt_size) {
 			efi_err("Truncated device tree! foo!\n");
 			return EFI_LOAD_ERROR;
@@ -56,10 +47,7 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
 	} else {
 		status = fdt_create_empty_tree(fdt, new_fdt_size);
 		if (status == 0) {
-			/*
-			 * Any failure from the following function is
-			 * non-critical:
-			 */
+			 
 			fdt_update_cell_size(fdt);
 		}
 	}
@@ -67,10 +55,7 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
 	if (status != 0)
 		goto fdt_set_fail;
 
-	/*
-	 * Delete all memory reserve map entries. When booting via UEFI,
-	 * kernel will use the UEFI memory map to find reserved regions.
-	 */
+	 
 	num_rsv = fdt_num_mem_rsv(fdt);
 	while (num_rsv-- > 0)
 		fdt_del_mem_rsv(fdt, num_rsv);
@@ -79,7 +64,7 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
 	if (node < 0) {
 		node = fdt_add_subnode(fdt, 0, "chosen");
 		if (node < 0) {
-			/* 'node' is an error code when negative: */
+			 
 			status = node;
 			goto fdt_set_fail;
 		}
@@ -92,7 +77,7 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
 			goto fdt_set_fail;
 	}
 
-	/* Add FDT entries for EFI runtime services in chosen node. */
+	 
 	node = fdt_subnode_offset(fdt, 0, "chosen");
 	fdt_val64 = cpu_to_fdt64((u64)(unsigned long)efi_system_table);
 
@@ -100,13 +85,13 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
 	if (status)
 		goto fdt_set_fail;
 
-	fdt_val64 = U64_MAX; /* placeholder */
+	fdt_val64 = U64_MAX;  
 
 	status = fdt_setprop_var(fdt, node, "linux,uefi-mmap-start", fdt_val64);
 	if (status)
 		goto fdt_set_fail;
 
-	fdt_val32 = U32_MAX; /* placeholder */
+	fdt_val32 = U32_MAX;  
 
 	status = fdt_setprop_var(fdt, node, "linux,uefi-mmap-size", fdt_val32);
 	if (status)
@@ -132,7 +117,7 @@ static efi_status_t update_fdt(void *orig_fdt, unsigned long orig_fdt_size,
 		}
 	}
 
-	/* Shrink the FDT back to its minimum size: */
+	 
 	fdt_pack(fdt);
 
 	return EFI_SUCCESS;
@@ -194,11 +179,7 @@ static efi_status_t exit_boot_func(struct efi_boot_memmap *map, void *priv)
 
 	p->boot_memmap = map;
 
-	/*
-	 * Update the memory map with virtual addresses. The function will also
-	 * populate @runtime_map with copies of just the EFI_MEMORY_RUNTIME
-	 * entries so that we can pass it straight to SetVirtualAddressMap()
-	 */
+	 
 	efi_get_virtmap(map->map, map->map_size, map->desc_size,
 			p->runtime_map, &p->runtime_entry_count);
 
@@ -209,16 +190,7 @@ static efi_status_t exit_boot_func(struct efi_boot_memmap *map, void *priv)
 # define MAX_FDT_SIZE SZ_2M
 #endif
 
-/*
- * Allocate memory for a new FDT, then add EFI and commandline related fields
- * to the FDT.  This routine increases the FDT allocation size until the
- * allocated memory is large enough.  EFI allocations are in EFI_PAGE_SIZE
- * granules, which are fixed at 4K bytes, so in most cases the first allocation
- * should succeed.  EFI boot services are exited at the end of this function.
- * There must be no allocations between the get_memory_map() call and the
- * exit_boot_services() call, so the exiting of boot services is very tightly
- * tied to the creation of the FDT with the final memory map in it.
- */
+ 
 static
 efi_status_t allocate_new_fdt_and_exit_boot(void *handle,
 					    efi_loaded_image_t *image,
@@ -241,11 +213,7 @@ efi_status_t allocate_new_fdt_and_exit_boot(void *handle,
 		}
 	}
 
-	/*
-	 * Unauthenticated device tree data is a security hazard, so ignore
-	 * 'dtb=' unless UEFI Secure Boot is disabled.  We assume that secure
-	 * boot is enabled if we can't determine its state.
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_EFI_ARMSTUB_DTB_LOADER) ||
 	    efi_get_secureboot() != efi_secureboot_mode_disabled) {
 		if (strstr(cmdline_ptr, "dtb="))
@@ -262,7 +230,7 @@ efi_status_t allocate_new_fdt_and_exit_boot(void *handle,
 	if (fdt_addr) {
 		efi_info("Using DTB from command line\n");
 	} else {
-		/* Look for a device tree configuration table entry. */
+		 
 		fdt_addr = (uintptr_t)get_fdt(&fdt_size);
 		if (fdt_addr)
 			efi_info("Using DTB from configuration table\n");
@@ -297,26 +265,17 @@ efi_status_t allocate_new_fdt_and_exit_boot(void *handle,
 		if (efi_novamap)
 			return EFI_SUCCESS;
 
-		/* Install the new virtual address map */
+		 
 		svam = efi_system_table->runtime->set_virtual_address_map;
 		status = svam(priv.runtime_entry_count * desc_size, desc_size,
 			      desc_ver, priv.runtime_map);
 
-		/*
-		 * We are beyond the point of no return here, so if the call to
-		 * SetVirtualAddressMap() failed, we need to signal that to the
-		 * incoming kernel but proceed normally otherwise.
-		 */
+		 
 		if (status != EFI_SUCCESS) {
 			efi_memory_desc_t *p;
 			int l;
 
-			/*
-			 * Set the virtual address field of all
-			 * EFI_MEMORY_RUNTIME entries to U64_MAX. This will
-			 * signal the incoming kernel that no virtual
-			 * translation has been installed.
-			 */
+			 
 			for (l = 0; l < priv.boot_memmap->map_size;
 			     l += priv.boot_memmap->desc_size) {
 				p = (void *)priv.boot_memmap->map + l;
@@ -358,7 +317,7 @@ efi_status_t efi_boot_kernel(void *handle, efi_loaded_image_t *image,
 		efi_handle_post_ebs_state();
 
 	efi_enter_kernel(kernel_addr, fdt_addr, fdt_totalsize((void *)fdt_addr));
-	/* not reached */
+	 
 }
 
 void *get_fdt(unsigned long *fdt_size)

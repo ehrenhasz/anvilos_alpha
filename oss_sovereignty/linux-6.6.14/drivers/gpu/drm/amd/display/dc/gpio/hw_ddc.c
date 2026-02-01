@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
@@ -88,14 +65,11 @@ static enum gpio_result set_config(
 
 	switch (config_data->config.ddc.type) {
 	case GPIO_DDC_CONFIG_TYPE_MODE_I2C:
-		/* On plug-in, there is a transient level on the pad
-		 * which must be discharged through the internal pull-down.
-		 * Enable internal pull-down, 2.5msec discharge time
-		 * is required for detection of AUX mode */
+		 
 		if (hw_gpio->base.en != GPIO_DDC_LINE_VIP_PAD) {
 			if (!ddc_data_pd_en || !ddc_clk_pd_en) {
 				if (hw_gpio->base.en == GPIO_DDC_LINE_DDC_VGA) {
-					// bit 4 of mask has different usage in some cases
+					
 					REG_SET(gpio.MASK_reg, regval, DC_GPIO_DDC1DATA_PD_EN, 1);
 				} else {
 					REG_SET_2(gpio.MASK_reg, regval,
@@ -134,17 +108,14 @@ static enum gpio_result set_config(
 		}
 
 		if (aux_pad_mode) {
-			/* let pins to get de-asserted
-			 * before setting pad to I2C mode */
+			 
 			if (config_data->config.ddc.data_en_bit_present ||
 				config_data->config.ddc.clock_en_bit_present)
-				/* [anaumov] in DAL2, there was
-				 * dc_service_delay_in_microseconds(2000); */
+				 
 				msleep(2);
 
-			/* set the I2C pad mode */
-			/* read the register again,
-			 * some bits may have been changed */
+			 
+			 
 			REG_UPDATE(gpio.MASK_reg,
 					AUX_PAD1_MODE, 0);
 		}
@@ -152,13 +123,13 @@ static enum gpio_result set_config(
 		if (ddc->regs->dc_gpio_aux_ctrl_5 != 0) {
 				REG_UPDATE(dc_gpio_aux_ctrl_5, DDC_PAD_I2CMODE, 1);
 		}
-		//set  DC_IO_aux_rxsel = 2'b01
+		
 		if (ddc->regs->phy_aux_cntl != 0) {
 				REG_UPDATE(phy_aux_cntl, AUX_PAD_RXSEL, 1);
 		}
 		return GPIO_RESULT_OK;
 	case GPIO_DDC_CONFIG_TYPE_MODE_AUX:
-		/* set the AUX pad mode */
+		 
 		if (!aux_pad_mode) {
 			REG_SET(gpio.MASK_reg, regval,
 					AUX_PAD1_MODE, 1);

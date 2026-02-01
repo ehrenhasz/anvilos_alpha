@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/nfs/dns_resolve.c
- *
- * Copyright (c) 2009 Trond Myklebust <Trond.Myklebust@netapp.com>
- *
- * Resolves DNS hostnames into valid ip addresses
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/sunrpc/clnt.h>

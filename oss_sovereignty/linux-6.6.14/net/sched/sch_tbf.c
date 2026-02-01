@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_tbf.c	Token Bucket Filter queue.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- *		Dmitry Torokhov <dtor@mail.ru> - allow attaching inner qdiscs -
- *						 original idea by Martin Devera
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -20,108 +14,31 @@
 #include <net/pkt_sched.h>
 
 
-/*	Simple Token Bucket Filter.
-	=======================================
-
-	SOURCE.
-	-------
-
-	None.
-
-	Description.
-	------------
-
-	A data flow obeys TBF with rate R and depth B, if for any
-	time interval t_i...t_f the number of transmitted bits
-	does not exceed B + R*(t_f-t_i).
-
-	Packetized version of this definition:
-	The sequence of packets of sizes s_i served at moments t_i
-	obeys TBF, if for any i<=k:
-
-	s_i+....+s_k <= B + R*(t_k - t_i)
-
-	Algorithm.
-	----------
-
-	Let N(t_i) be B/R initially and N(t) grow continuously with time as:
-
-	N(t+delta) = min{B/R, N(t) + delta}
-
-	If the first packet in queue has length S, it may be
-	transmitted only at the time t_* when S/R <= N(t_*),
-	and in this case N(t) jumps:
-
-	N(t_* + 0) = N(t_* - 0) - S/R.
-
-
-
-	Actually, QoS requires two TBF to be applied to a data stream.
-	One of them controls steady state burst size, another
-	one with rate P (peak rate) and depth M (equal to link MTU)
-	limits bursts at a smaller time scale.
-
-	It is easy to see that P>R, and B>M. If P is infinity, this double
-	TBF is equivalent to a single one.
-
-	When TBF works in reshaping mode, latency is estimated as:
-
-	lat = max ((L-B)/R, (L-M)/P)
-
-
-	NOTES.
-	------
-
-	If TBF throttles, it starts a watchdog timer, which will wake it up
-	when it is ready to transmit.
-	Note that the minimal timer resolution is 1/HZ.
-	If no new packets arrive during this period,
-	or if the device is not awaken by EOI for some previous packet,
-	TBF can stop its activity for 1/HZ.
-
-
-	This means, that with depth B, the maximal rate is
-
-	R_crit = B*HZ
-
-	F.e. for 10Mbit ethernet and HZ=100 the minimal allowed B is ~10Kbytes.
-
-	Note that the peak rate TBF is much more tough: with MTU 1500
-	P_crit = 150Kbytes/sec. So, if you need greater peak
-	rates, use alpha with HZ=1000 :-)
-
-	With classful TBF, limit is just kept for backwards compatibility.
-	It is passed to the default bfifo qdisc - if the inner qdisc is
-	changed the limit is not effective anymore.
-*/
+ 
 
 struct tbf_sched_data {
-/* Parameters */
-	u32		limit;		/* Maximal length of backlog: bytes */
+ 
+	u32		limit;		 
 	u32		max_size;
-	s64		buffer;		/* Token bucket depth/rate: MUST BE >= MTU/B */
+	s64		buffer;		 
 	s64		mtu;
 	struct psched_ratecfg rate;
 	struct psched_ratecfg peak;
 
-/* Variables */
-	s64	tokens;			/* Current number of B tokens */
-	s64	ptokens;		/* Current number of P tokens */
-	s64	t_c;			/* Time check-point */
-	struct Qdisc	*qdisc;		/* Inner qdisc, default - bfifo queue */
-	struct qdisc_watchdog watchdog;	/* Watchdog timer */
+ 
+	s64	tokens;			 
+	s64	ptokens;		 
+	s64	t_c;			 
+	struct Qdisc	*qdisc;		 
+	struct qdisc_watchdog watchdog;	 
 };
 
 
-/* Time to Length, convert time in ns to length in bytes
- * to determinate how many bytes can be sent in given time.
- */
+ 
 static u64 psched_ns_t2l(const struct psched_ratecfg *r,
 			 u64 time_in_ns)
 {
-	/* The formula is :
-	 * len = (time_in_ns * r->rate_bytes_ps) / NSEC_PER_SEC
-	 */
+	 
 	u64 len = time_in_ns * r->rate_bytes_ps;
 
 	do_div(len, NSEC_PER_SEC);
@@ -199,9 +116,7 @@ static void tbf_offload_graft(struct Qdisc *sch, struct Qdisc *new,
 				   TC_SETUP_QDISC_TBF, &graft_offload, extack);
 }
 
-/* GSO packet is too big, segment it so that tbf can transmit
- * each segment in time
- */
+ 
 static int tbf_segment(struct sk_buff *skb, struct Qdisc *sch,
 		       struct sk_buff **to_free)
 {
@@ -310,16 +225,7 @@ static struct sk_buff *tbf_dequeue(struct Qdisc *sch)
 		qdisc_watchdog_schedule_ns(&q->watchdog,
 					   now + max_t(long, -toks, -ptoks));
 
-		/* Maybe we have a shorter packet in the queue,
-		   which can be sent now. It sounds cool,
-		   but, however, this is wrong in principle.
-		   We MUST NOT reorder packets under these circumstances.
-
-		   Really, if we split the flow into independent
-		   subflows, it would be a very good solution.
-		   This is the main idea of all FQ algorithms
-		   (cf. CSZ, HPFQ, HFSC)
-		 */
+		 
 
 		qdisc_qstats_overlimit(sch);
 	}
@@ -440,7 +346,7 @@ static int tbf_change(struct Qdisc *sch, struct nlattr *opt,
 			goto done;
 		}
 
-		/* child is fifo, no need to check for noop_qdisc */
+		 
 		qdisc_hash_add(child, true);
 	}
 

@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Surface Book (2 and later) hot-plug driver.
- *
- * Surface Book devices (can) have a hot-pluggable discrete GPU (dGPU). This
- * driver is responsible for out-of-band hot-plug event signaling on these
- * devices. It is specifically required when the hot-plug device is in D3cold
- * and can thus not generate PCIe hot-plug events itself.
- *
- * Event signaling is handled via ACPI, which will generate the appropriate
- * device-check notifications to be picked up by the PCIe hot-plug driver.
- *
- * Copyright (C) 2019-2022 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/gpio.h>
@@ -38,7 +26,7 @@ static const struct acpi_gpio_mapping shps_acpi_gpios[] = {
 	{ },
 };
 
-/* 5515a847-ed55-4b27-8352-cd320e10360a */
+ 
 static const guid_t shps_dsm_guid =
 	GUID_INIT(0x5515a847, 0xed55, 0x4b27, 0x83, 0x52, 0xcd, 0x32, 0x0e, 0x10, 0x36, 0x0a);
 
@@ -53,7 +41,7 @@ enum shps_dsm_fn {
 };
 
 enum shps_irq_type {
-	/* NOTE: Must be in order of enum shps_dsm_fn above. */
+	 
 	SHPS_IRQ_TYPE_BASE_PRESENCE	= 0,
 	SHPS_IRQ_TYPE_DEVICE_POWER	= 1,
 	SHPS_IRQ_TYPE_DEVICE_PRESENCE	= 2,
@@ -67,7 +55,7 @@ static const char *const shps_gpio_names[] = {
 };
 
 struct shps_device {
-	struct mutex lock[SHPS_NUM_IRQS];  /* Protects update in shps_dsm_notify_irq() */
+	struct mutex lock[SHPS_NUM_IRQS];   
 	struct gpio_desc *gpio[SHPS_NUM_IRQS];
 	unsigned int irq[SHPS_NUM_IRQS];
 };
@@ -124,16 +112,16 @@ static irqreturn_t shps_handle_irq(int irq, void *data)
 	struct shps_device *sdev = platform_get_drvdata(pdev);
 	int type;
 
-	/* Figure out which IRQ we're handling. */
+	 
 	for (type = 0; type < SHPS_NUM_IRQS; type++)
 		if (irq == sdev->irq[type])
 			break;
 
-	/* We should have found our interrupt, if not: this is a bug. */
+	 
 	if (WARN(type >= SHPS_NUM_IRQS, "invalid IRQ number: %d\n", irq))
 		return IRQ_HANDLED;
 
-	/* Forward interrupt to ACPI via DSM. */
+	 
 	shps_dsm_notify_irq(pdev, type);
 	return IRQ_HANDLED;
 }
@@ -148,11 +136,7 @@ static int shps_setup_irq(struct platform_device *pdev, enum shps_irq_type type)
 	const int dsm = shps_dsm_fn_for_irq(type);
 	int status, irq;
 
-	/*
-	 * Only set up interrupts that we actually need: The Surface Book 3
-	 * does not have a DSM for base presence, so don't set up an interrupt
-	 * for that.
-	 */
+	 
 	if (!acpi_check_dsm(handle, &shps_dsm_guid, SHPS_DSM_REVISION, BIT(dsm))) {
 		dev_dbg(&pdev->dev, "IRQ notification via DSM not present (irq=%d)\n", type);
 		return 0;
@@ -188,7 +172,7 @@ static int surface_hotplug_remove(struct platform_device *pdev)
 	struct shps_device *sdev = platform_get_drvdata(pdev);
 	int i;
 
-	/* Ensure that IRQs have been fully handled and won't trigger any more. */
+	 
 	for (i = 0; i < SHPS_NUM_IRQS; i++) {
 		if (sdev->irq[i] != SHPS_IRQ_NOT_PRESENT)
 			disable_irq(sdev->irq[i]);
@@ -204,12 +188,7 @@ static int surface_hotplug_probe(struct platform_device *pdev)
 	struct shps_device *sdev;
 	int status, i;
 
-	/*
-	 * The MSHW0153 device is also present on the Surface Laptop 3,
-	 * however that doesn't have a hot-pluggable PCIe device. It also
-	 * doesn't have any GPIO interrupts/pins under the MSHW0153, so filter
-	 * it out here.
-	 */
+	 
 	if (gpiod_count(&pdev->dev, NULL) < 0)
 		return -ENODEV;
 
@@ -223,14 +202,11 @@ static int surface_hotplug_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, sdev);
 
-	/*
-	 * Initialize IRQs so that we can safely call surface_hotplug_remove()
-	 * on errors.
-	 */
+	 
 	for (i = 0; i < SHPS_NUM_IRQS; i++)
 		sdev->irq[i] = SHPS_IRQ_NOT_PRESENT;
 
-	/* Set up IRQs. */
+	 
 	for (i = 0; i < SHPS_NUM_IRQS; i++) {
 		mutex_init(&sdev->lock[i]);
 
@@ -241,7 +217,7 @@ static int surface_hotplug_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Ensure everything is up-to-date. */
+	 
 	for (i = 0; i < SHPS_NUM_IRQS; i++)
 		if (sdev->irq[i] != SHPS_IRQ_NOT_PRESENT)
 			shps_dsm_notify_irq(pdev, i);

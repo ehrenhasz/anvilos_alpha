@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include <net/ip.h>
 
@@ -666,7 +663,7 @@ static u32 qlcnic_read_memory_test_agent(struct qlcnic_adapter *adapter,
 
 	reg_read = mem->size;
 	addr = mem->addr;
-	/* check for data size of multiple of 16 and 16 byte alignment */
+	 
 	if ((addr & 0xf) || (reg_read%16)) {
 		dev_info(&adapter->pdev->dev,
 			 "Unaligned memory addr:0x%x size:0x%x\n",
@@ -709,10 +706,10 @@ out:
 	return mem->size;
 }
 
-/* DMA register base address */
+ 
 #define QLC_DMA_REG_BASE_ADDR(dma_no)	(0x77320000 + (dma_no * 0x10000))
 
-/* DMA register offsets w.r.t base address */
+ 
 #define QLC_DMA_CMD_BUFF_ADDR_LOW	0
 #define QLC_DMA_CMD_BUFF_ADDR_HI	4
 #define QLC_DMA_CMD_STATUS_CTRL		8
@@ -745,7 +742,7 @@ static int qlcnic_start_pex_dma(struct qlcnic_adapter *adapter,
 	if (ret)
 		return ret;
 
-	/* Wait for DMA to complete */
+	 
 	temp_addr = dma_base_addr + QLC_DMA_CMD_STATUS_CTRL;
 	for (i = 0; i < 400; i++) {
 		dma_sts = qlcnic_ind_rd(adapter, temp_addr);
@@ -778,7 +775,7 @@ static u32 qlcnic_read_memory_pexdma(struct qlcnic_adapter *adapter,
 
 	tmpl_hdr = fw_dump->tmpl_hdr;
 
-	/* Check if DMA engine is available */
+	 
 	temp = qlcnic_get_saved_state(adapter, tmpl_hdr,
 				      QLC_83XX_DMA_ENGINE_INDEX);
 	dma_base_addr = QLC_DMA_REG_BASE_ADDR(temp);
@@ -791,7 +788,7 @@ static u32 qlcnic_read_memory_pexdma(struct qlcnic_adapter *adapter,
 		return 0;
 	}
 
-	/* Create DMA descriptor */
+	 
 	dma_descr = kzalloc(sizeof(struct qlcnic_pex_dma_descriptor),
 			    GFP_KERNEL);
 	if (!dma_descr) {
@@ -799,11 +796,7 @@ static u32 qlcnic_read_memory_pexdma(struct qlcnic_adapter *adapter,
 		return 0;
 	}
 
-	/* dma_desc_cmd  0:15  = 0
-	 * dma_desc_cmd 16:19  = mem->dma_desc_cmd 0:3
-	 * dma_desc_cmd 20:23  = pci function number
-	 * dma_desc_cmd 24:31  = mem->dma_desc_cmd 8:15
-	 */
+	 
 	dma_phys_addr = fw_dump->phys_addr;
 	dma_buffer = fw_dump->dma_buffer;
 	temp = 0;
@@ -814,7 +807,7 @@ static u32 qlcnic_read_memory_pexdma(struct qlcnic_adapter *adapter,
 	dma_descr->dma_bus_addr_high = MSD(dma_phys_addr);
 	dma_descr->src_addr_high = 0;
 
-	/* Collect memory dump using multiple DMA operations if required */
+	 
 	while (read_size < mem->size) {
 		if (mem->size - read_size >= QLC_PEX_DMA_READ_SIZE)
 			size = QLC_PEX_DMA_READ_SIZE;
@@ -824,7 +817,7 @@ static u32 qlcnic_read_memory_pexdma(struct qlcnic_adapter *adapter,
 		dma_descr->src_addr_low = mem->addr + read_size;
 		dma_descr->read_data_size = size;
 
-		/* Write DMA descriptor to MS memory*/
+		 
 		temp = sizeof(struct qlcnic_pex_dma_descriptor) / 16;
 		*ret = qlcnic_ms_mem_write128(adapter, mem->desc_card_addr,
 					      (u32 *)dma_descr, temp);
@@ -1301,7 +1294,7 @@ int qlcnic_dump_fw(struct qlcnic_adapter *adapter)
 	ahw = adapter->ahw;
 	tmpl_hdr = fw_dump->tmpl_hdr;
 
-	/* Return if we don't have firmware dump template header */
+	 
 	if (!tmpl_hdr)
 		return -EIO;
 
@@ -1317,7 +1310,7 @@ int qlcnic_dump_fw(struct qlcnic_adapter *adapter)
 	}
 
 	netif_info(adapter->ahw, drv, adapter->netdev, "Take FW dump\n");
-	/* Calculate the size for dump data area only */
+	 
 	for (i = 2, k = 1; (i & QLCNIC_DUMP_MASK_MAX); i <<= 1, k++)
 		if (i & fw_dump->cap_mask)
 			dump_size += qlcnic_get_cap_size(adapter, tmpl_hdr, k);
@@ -1356,7 +1349,7 @@ int qlcnic_dump_fw(struct qlcnic_adapter *adapter)
 			continue;
 		}
 
-		/* Find the handler for this entry */
+		 
 		ops_index = 0;
 		while (ops_index < ops_cnt) {
 			if (entry->hdr.type == fw_dump_ops[ops_index].opcode)
@@ -1372,7 +1365,7 @@ int qlcnic_dump_fw(struct qlcnic_adapter *adapter)
 			continue;
 		}
 
-		/* Collect dump for this entry */
+		 
 		dump = fw_dump_ops[ops_index].handler(adapter, entry, buffer);
 		if (!qlcnic_valid_dump_entry(dev, entry, dump)) {
 			entry->hdr.flags |= QLCNIC_DUMP_SKIP;
@@ -1392,7 +1385,7 @@ int qlcnic_dump_fw(struct qlcnic_adapter *adapter)
 		    "Dump data %d bytes captured, dump data address = %p, template header size %d bytes, template address = %p\n",
 		    fw_dump->size, fw_dump->data, fw_dump->tmpl_hdr_size,
 		    fw_dump->tmpl_hdr);
-	/* Send a udev event to notify availability of FW dump */
+	 
 	kobject_uevent_env(&dev->kobj, KOBJ_CHANGE, msg);
 
 	return 0;
@@ -1401,11 +1394,7 @@ int qlcnic_dump_fw(struct qlcnic_adapter *adapter)
 static inline bool
 qlcnic_83xx_md_check_extended_dump_capability(struct qlcnic_adapter *adapter)
 {
-	/* For special adapters (with 0x8830 device ID), where iSCSI firmware
-	 * dump needs to be captured as part of regular firmware dump
-	 * collection process, firmware exports it's capability through
-	 * capability registers
-	 */
+	 
 	return ((adapter->pdev->device == PCI_DEVICE_ID_QLOGIC_QLE8830) &&
 		(adapter->ahw->extra_capability[0] &
 		 QLCNIC_FW_CAPABILITY_2_EXT_ISCSI_DUMP));
@@ -1436,10 +1425,7 @@ void qlcnic_83xx_get_minidump_template(struct qlcnic_adapter *adapter)
 
 		dev_info(&pdev->dev, "Supports FW dump capability\n");
 
-		/* Once we have minidump template with extended iSCSI dump
-		 * capability, update the minidump capture mask to 0x1f as
-		 * per FW requirement
-		 */
+		 
 		if (extended) {
 			struct qlcnic_83xx_dump_template_hdr *hdr;
 

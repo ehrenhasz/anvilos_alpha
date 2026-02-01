@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence MHDP8546 DP bridge driver.
- *
- * Copyright (C) 2020 Cadence Design Systems, Inc.
- *
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -57,7 +52,7 @@ static int cdns_mhdp_secure_mailbox_recv_header(struct cdns_mhdp_device *mhdp,
 	u8 header[4];
 	int ret;
 
-	/* read the header of the message */
+	 
 	for (i = 0; i < sizeof(header); i++) {
 		ret = cdns_mhdp_secure_mailbox_read(mhdp);
 		if (ret < 0)

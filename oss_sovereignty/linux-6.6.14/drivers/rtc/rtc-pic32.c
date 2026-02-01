@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PIC32 RTC driver
- *
- * Joshua Henderson <joshua.henderson@microchip.com>
- * Copyright (C) 2016 Microchip Technology Inc.  All rights reserved.
- *
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -145,11 +139,7 @@ static int pic32_rtc_gettime(struct device *dev, struct rtc_time *rtc_tm)
 		rtc_tm->tm_year = readb(base + PIC32_RTCYEAR);
 		rtc_tm->tm_sec  = readb(base + PIC32_RTCSEC);
 
-		/*
-		 * The only way to work out whether the system was mid-update
-		 * when we read it is to check the second counter, and if it
-		 * is zero, then we re-try the entire read.
-		 */
+		 
 		tries += 1;
 	} while (rtc_tm->tm_sec == 0 && tries < 2);
 
@@ -365,7 +355,7 @@ err_nortc:
 
 static const struct of_device_id pic32_rtc_dt_ids[] = {
 	{ .compatible = "microchip,pic32mzda-rtc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pic32_rtc_dt_ids);
 

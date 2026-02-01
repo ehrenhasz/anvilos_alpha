@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Real-time clock driver for MPC5121
- *
- * Copyright 2007, Domen Puncer <domen.puncer@telargo.com>
- * Copyright 2008, Freescale Semiconductor, Inc. All rights reserved.
- * Copyright 2011, Dmitry Eremin-Solenikov
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -17,58 +11,49 @@
 #include <linux/slab.h>
 
 struct mpc5121_rtc_regs {
-	u8 set_time;		/* RTC + 0x00 */
-	u8 hour_set;		/* RTC + 0x01 */
-	u8 minute_set;		/* RTC + 0x02 */
-	u8 second_set;		/* RTC + 0x03 */
+	u8 set_time;		 
+	u8 hour_set;		 
+	u8 minute_set;		 
+	u8 second_set;		 
 
-	u8 set_date;		/* RTC + 0x04 */
-	u8 month_set;		/* RTC + 0x05 */
-	u8 weekday_set;		/* RTC + 0x06 */
-	u8 date_set;		/* RTC + 0x07 */
+	u8 set_date;		 
+	u8 month_set;		 
+	u8 weekday_set;		 
+	u8 date_set;		 
 
-	u8 write_sw;		/* RTC + 0x08 */
-	u8 sw_set;		/* RTC + 0x09 */
-	u16 year_set;		/* RTC + 0x0a */
+	u8 write_sw;		 
+	u8 sw_set;		 
+	u16 year_set;		 
 
-	u8 alm_enable;		/* RTC + 0x0c */
-	u8 alm_hour_set;	/* RTC + 0x0d */
-	u8 alm_min_set;		/* RTC + 0x0e */
-	u8 int_enable;		/* RTC + 0x0f */
+	u8 alm_enable;		 
+	u8 alm_hour_set;	 
+	u8 alm_min_set;		 
+	u8 int_enable;		 
 
 	u8 reserved1;
-	u8 hour;		/* RTC + 0x11 */
-	u8 minute;		/* RTC + 0x12 */
-	u8 second;		/* RTC + 0x13 */
+	u8 hour;		 
+	u8 minute;		 
+	u8 second;		 
 
-	u8 month;		/* RTC + 0x14 */
-	u8 wday_mday;		/* RTC + 0x15 */
-	u16 year;		/* RTC + 0x16 */
+	u8 month;		 
+	u8 wday_mday;		 
+	u16 year;		 
 
-	u8 int_alm;		/* RTC + 0x18 */
-	u8 int_sw;		/* RTC + 0x19 */
-	u8 alm_status;		/* RTC + 0x1a */
-	u8 sw_minute;		/* RTC + 0x1b */
+	u8 int_alm;		 
+	u8 int_sw;		 
+	u8 alm_status;		 
+	u8 sw_minute;		 
 
-	u8 bus_error_1;		/* RTC + 0x1c */
-	u8 int_day;		/* RTC + 0x1d */
-	u8 int_min;		/* RTC + 0x1e */
-	u8 int_sec;		/* RTC + 0x1f */
+	u8 bus_error_1;		 
+	u8 int_day;		 
+	u8 int_min;		 
+	u8 int_sec;		 
 
-	/*
-	 * target_time:
-	 *	intended to be used for hibernation but hibernation
-	 *	does not work on silicon rev 1.5 so use it for non-volatile
-	 *	storage of offset between the actual_time register and linux
-	 *	time
-	 */
-	u32 target_time;	/* RTC + 0x20 */
-	/*
-	 * actual_time:
-	 *	readonly time since VBAT_RTC was last connected
-	 */
-	u32 actual_time;	/* RTC + 0x24 */
-	u32 keep_alive;		/* RTC + 0x28 */
+	 
+	u32 target_time;	 
+	 
+	u32 actual_time;	 
+	u32 keep_alive;		 
 };
 
 struct mpc5121_rtc_data {
@@ -79,11 +64,7 @@ struct mpc5121_rtc_data {
 	struct rtc_wkalrm wkalarm;
 };
 
-/*
- * Update second/minute/hour registers.
- *
- * This is just so alarm will work.
- */
+ 
 static void mpc5121_rtc_update_smh(struct mpc5121_rtc_regs __iomem *regs,
 				   struct rtc_time *tm)
 {
@@ -91,7 +72,7 @@ static void mpc5121_rtc_update_smh(struct mpc5121_rtc_regs __iomem *regs,
 	out_8(&regs->minute_set, tm->tm_min);
 	out_8(&regs->hour_set, tm->tm_hour);
 
-	/* set time sequence */
+	 
 	out_8(&regs->set_time, 0x1);
 	out_8(&regs->set_time, 0x3);
 	out_8(&regs->set_time, 0x1);
@@ -104,17 +85,12 @@ static int mpc5121_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
 	unsigned long now;
 
-	/*
-	 * linux time is actual_time plus the offset saved in target_time
-	 */
+	 
 	now = in_be32(&regs->actual_time) + in_be32(&regs->target_time);
 
 	rtc_time64_to_tm(now, tm);
 
-	/*
-	 * update second minute hour registers
-	 * so alarms will work
-	 */
+	 
 	mpc5121_rtc_update_smh(regs, tm);
 
 	return 0;
@@ -126,17 +102,11 @@ static int mpc5121_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
 	unsigned long now;
 
-	/*
-	 * The actual_time register is read only so we write the offset
-	 * between it and linux time to the target_time register.
-	 */
+	 
 	now = rtc_tm_to_time64(tm);
 	out_be32(&regs->target_time, now - in_be32(&regs->actual_time));
 
-	/*
-	 * update second minute hour registers
-	 * so alarms will work
-	 */
+	 
 	mpc5121_rtc_update_smh(regs, tm);
 
 	return 0;
@@ -151,7 +121,7 @@ static int mpc5200_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_sec = in_8(&regs->second);
 	tm->tm_min = in_8(&regs->minute);
 
-	/* 12 hour format? */
+	 
 	if (in_8(&regs->hour) & 0x20)
 		tm->tm_hour = (in_8(&regs->hour) >> 1) +
 			(in_8(&regs->hour) & 1 ? 12 : 0);
@@ -176,13 +146,13 @@ static int mpc5200_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	mpc5121_rtc_update_smh(regs, tm);
 
-	/* date */
+	 
 	out_8(&regs->month_set, tm->tm_mon + 1);
 	out_8(&regs->weekday_set, tm->tm_wday ? tm->tm_wday : 7);
 	out_8(&regs->date_set, tm->tm_mday);
 	out_be16(&regs->year_set, tm->tm_year + 1900);
 
-	/* set date sequence */
+	 
 	out_8(&regs->set_date, 0x1);
 	out_8(&regs->set_date, 0x3);
 	out_8(&regs->set_date, 0x1);
@@ -227,7 +197,7 @@ static irqreturn_t mpc5121_rtc_handler(int irq, void *dev)
 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
 
 	if (in_8(&regs->int_alm)) {
-		/* acknowledge and clear status */
+		 
 		out_8(&regs->int_alm, 1);
 		out_8(&regs->alm_status, 1);
 
@@ -244,7 +214,7 @@ static irqreturn_t mpc5121_rtc_handler_upd(int irq, void *dev)
 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
 
 	if (in_8(&regs->int_sec) && (in_8(&regs->int_enable) & 0x1)) {
-		/* acknowledge */
+		 
 		out_8(&regs->int_sec, 1);
 
 		rtc_update_irq(rtc->rtc, 1, RTC_IRQF | RTC_UF);
@@ -336,7 +306,7 @@ static int mpc5121_rtc_probe(struct platform_device *op)
 	set_bit(RTC_FEATURE_ALARM_RES_MINUTE, rtc->rtc->features);
 	clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, rtc->rtc->features);
 	rtc->rtc->range_min = RTC_TIMESTAMP_BEGIN_0000;
-	rtc->rtc->range_max = 65733206399ULL; /* 4052-12-31 23:59:59 */
+	rtc->rtc->range_max = 65733206399ULL;  
 
 	if (of_device_is_compatible(op->dev.of_node, "fsl,mpc5121-rtc")) {
 		u32 ka;
@@ -347,11 +317,7 @@ static int mpc5121_rtc_probe(struct platform_device *op)
 			out_be32(&rtc->regs->keep_alive, ka);
 		}
 		rtc->rtc->ops = &mpc5121_rtc_ops;
-		/*
-		 * This is a limitation of the driver that abuses the target
-		 * time register, the actual maximum year for the mpc5121 is
-		 * also 4052.
-		 */
+		 
 		rtc->rtc->range_min = 0;
 		rtc->rtc->range_max = U32_MAX;
 	}
@@ -375,7 +341,7 @@ static void mpc5121_rtc_remove(struct platform_device *op)
 	struct mpc5121_rtc_data *rtc = platform_get_drvdata(op);
 	struct mpc5121_rtc_regs __iomem *regs = rtc->regs;
 
-	/* disable interrupt, so there are no nasty surprises */
+	 
 	out_8(&regs->alm_enable, 0);
 	out_8(&regs->int_enable, in_8(&regs->int_enable) & ~0x1);
 

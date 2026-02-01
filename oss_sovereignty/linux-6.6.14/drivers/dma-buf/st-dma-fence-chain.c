@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: MIT
 
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-fence.h>
@@ -314,13 +312,7 @@ static int find_out_of_order(void *arg)
 		goto err;
 	}
 
-	/*
-	 * We signaled the middle fence (2) of the 1-2-3 chain. The behavior
-	 * of the dma-fence-chain is to make us wait for all the fences up to
-	 * the point we want. Since fence 1 is still not signaled, this what
-	 * we should get as fence to wait upon (fence 2 being garbage
-	 * collected during the traversal of the chain).
-	 */
+	 
 	if (fence != fc.chains[0]) {
 		pr_err("Incorrect chain-fence.seqno:%lld reported for completed seqno:2\n",
 		       fence ? fence->seqno : 0);
@@ -412,10 +404,7 @@ static int __find_race(void *arg)
 		if (!fence)
 			goto signal;
 
-		/*
-		 * We can only find ourselves if we are on fence we were
-		 * looking for.
-		 */
+		 
 		if (fence->seqno == seqno) {
 			err = dma_fence_chain_find_seqno(&fence, seqno);
 			if (err) {
@@ -633,7 +622,7 @@ static void randomise_fences(struct fence_chains *fc)
 {
 	unsigned int count = fc->chain_length;
 
-	/* Fisher-Yates shuffle courtesy of Knuth */
+	 
 	while (--count) {
 		unsigned int swp;
 

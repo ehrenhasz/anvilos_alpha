@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2016 Synaptics Incorporated
- * Copyright (c) 2011 Unixphere
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/rmi.h>
@@ -13,21 +10,7 @@
 
 #define BUFFER_SIZE_INCREMENT 32
 
-/**
- * struct rmi_i2c_xport - stores information for i2c communication
- *
- * @xport: The transport interface structure
- * @client: The I2C client device structure
- *
- * @page_mutex: Locks current page to avoid changing pages in unexpected ways.
- * @page: Keeps track of the current virtual page
- *
- * @tx_buf: Buffer used for transmitting data to the sensor over i2c.
- * @tx_buf_size: Size of the buffer
- *
- * @supplies: Array of voltage regulators
- * @startup_delay: Milliseconds to pause after powering up the regulators
- */
+ 
 struct rmi_i2c_xport {
 	struct rmi_transport_dev xport;
 	struct i2c_client *client;
@@ -45,20 +28,7 @@ struct rmi_i2c_xport {
 #define RMI_PAGE_SELECT_REGISTER 0xff
 #define RMI_I2C_PAGE(addr) (((addr) >> 8) & 0xff)
 
-/*
- * rmi_set_page - Set RMI page
- * @xport: The pointer to the rmi_transport_dev struct
- * @page: The new page address.
- *
- * RMI devices have 16-bit addressing, but some of the transport
- * implementations (like SMBus) only have 8-bit addressing. So RMI implements
- * a page address at 0xff of every page so we can reliable page addresses
- * every 256 registers.
- *
- * The page_mutex lock must be held when this function is entered.
- *
- * Returns zero on success, non-zero on failure.
- */
+ 
 static int rmi_set_page(struct rmi_i2c_xport *rmi_i2c, u8 page)
 {
 	struct i2c_client *client = rmi_i2c->client;
@@ -157,7 +127,7 @@ static int rmi_i2c_read_block(struct rmi_transport_dev *xport, u16 addr,
 
 	retval = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
 	if (retval == ARRAY_SIZE(msgs))
-		retval = 0; /* success */
+		retval = 0;  
 	else if (retval >= 0)
 		retval = -EIO;
 
@@ -260,10 +230,7 @@ static int rmi_i2c_probe(struct i2c_client *client)
 
 	i2c_set_clientdata(client, rmi_i2c);
 
-	/*
-	 * Setting the page to zero will (a) make sure the PSR is in a
-	 * known state, and (b) make sure we can talk to the device.
-	 */
+	 
 	error = rmi_set_page(rmi_i2c, 0);
 	if (error) {
 		dev_err(&client->dev, "Failed to set page select to 0\n");

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/ceph/ceph_debug.h>
 
 #include <linux/module.h>
@@ -13,9 +13,7 @@
 #include "auth_x.h"
 
 
-/*
- * get protocol handler
- */
+ 
 static u32 supported_protocols[] = {
 	CEPH_AUTH_NONE,
 	CEPH_AUTH_CEPHX
@@ -50,9 +48,7 @@ void ceph_auth_set_global_id(struct ceph_auth_client *ac, u64 global_id)
 	ac->global_id = global_id;
 }
 
-/*
- * setup, teardown.
- */
+ 
 struct ceph_auth_client *ceph_auth_init(const char *name,
 					const struct ceph_crypto_key *key,
 					const int *con_modes)
@@ -86,9 +82,7 @@ void ceph_auth_destroy(struct ceph_auth_client *ac)
 	kfree(ac);
 }
 
-/*
- * Reset occurs when reconnecting to the monitor.
- */
+ 
 void ceph_auth_reset(struct ceph_auth_client *ac)
 {
 	mutex_lock(&ac->mutex);
@@ -99,9 +93,7 @@ void ceph_auth_reset(struct ceph_auth_client *ac)
 	mutex_unlock(&ac->mutex);
 }
 
-/*
- * EntityName, not to be confused with entity_name_t
- */
+ 
 int ceph_auth_entity_name_encode(const char *name, void **p, void *end)
 {
 	int len = strlen(name);
@@ -114,10 +106,7 @@ int ceph_auth_entity_name_encode(const char *name, void **p, void *end)
 	return 0;
 }
 
-/*
- * Initiate protocol negotiation with monitor.  Include entity name
- * and list supported protocols.
- */
+ 
 int ceph_auth_build_hello(struct ceph_auth_client *ac, void *buf, size_t len)
 {
 	struct ceph_mon_request_header *monhdr = buf;
@@ -131,7 +120,7 @@ int ceph_auth_build_hello(struct ceph_auth_client *ac, void *buf, size_t len)
 	monhdr->session_mon = cpu_to_le16(-1);
 	monhdr->session_mon_tid = 0;
 
-	ceph_encode_32(&p, CEPH_AUTH_UNKNOWN);  /* no protocol, yet */
+	ceph_encode_32(&p, CEPH_AUTH_UNKNOWN);   
 
 	lenp = p;
 	p += sizeof(u32);
@@ -170,7 +159,7 @@ static int build_request(struct ceph_auth_client *ac, bool add_header,
 
 	p = buf;
 	if (add_header) {
-		/* struct ceph_mon_request_header + protocol */
+		 
 		ceph_encode_64_safe(&p, end, 0, e_range);
 		ceph_encode_16_safe(&p, end, -1, e_range);
 		ceph_encode_64_safe(&p, end, 0, e_range);
@@ -192,9 +181,7 @@ e_range:
 	return -ERANGE;
 }
 
-/*
- * Handle auth message from monitor.
- */
+ 
 int ceph_handle_auth_reply(struct ceph_auth_client *ac,
 			   void *buf, size_t len,
 			   void *reply_buf, size_t reply_len)
@@ -232,12 +219,12 @@ int ceph_handle_auth_reply(struct ceph_auth_client *ac,
 	payload_end = payload + payload_len;
 
 	if (ac->negotiating) {
-		/* server does not support our protocols? */
+		 
 		if (!protocol && result < 0) {
 			ret = result;
 			goto out;
 		}
-		/* set up (new) protocol handler? */
+		 
 		if (ac->protocol && ac->protocol != protocol) {
 			ac->ops->destroy(ac);
 			ac->protocol = 0;
@@ -387,9 +374,7 @@ void ceph_auth_invalidate_authorizer(struct ceph_auth_client *ac, int peer_type)
 }
 EXPORT_SYMBOL(ceph_auth_invalidate_authorizer);
 
-/*
- * msgr2 authentication
- */
+ 
 
 static bool contains(const int *arr, int cnt, int val)
 {
@@ -421,9 +406,7 @@ e_range:
 	return -ERANGE;
 }
 
-/*
- * Similar to ceph_auth_build_hello().
- */
+ 
 int ceph_auth_get_request(struct ceph_auth_client *ac, void *buf, int buf_len)
 {
 	int proto = ac->key ? CEPH_AUTH_CEPHX : CEPH_AUTH_NONE;
@@ -452,7 +435,7 @@ int ceph_auth_get_request(struct ceph_auth_client *ac, void *buf, int buf_len)
 		goto out;
 
 	lenp = p;
-	p += 4;  /* space for len */
+	p += 4;   
 
 	ceph_encode_8_safe(&p, end, CEPH_AUTH_MODE_MON, e_range);
 	ret = ceph_auth_entity_name_encode(ac->name, &p, end);

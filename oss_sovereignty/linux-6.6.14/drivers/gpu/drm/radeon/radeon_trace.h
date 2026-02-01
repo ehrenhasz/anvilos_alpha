@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #if !defined(_RADEON_TRACE_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _RADEON_TRACE_H_
 
@@ -203,7 +203,7 @@ DEFINE_EVENT(radeon_semaphore_request, radeon_semaphore_wait,
 
 #endif
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH ../../drivers/gpu/drm/radeon
 #include <trace/define_trace.h>

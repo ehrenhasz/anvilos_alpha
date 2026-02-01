@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <sched.h>
 
@@ -27,7 +27,7 @@ static int run_test(int clockid)
 		futex_op |= FUTEX_CLOCK_REALTIME;
 
 	clock_gettime(clockid, &timeout);
-	timeout.tv_nsec += NSEC_PER_SEC / 10; // 100ms
+	timeout.tv_nsec += NSEC_PER_SEC / 10; 
 	if (timeout.tv_nsec > NSEC_PER_SEC) {
 		timeout.tv_sec++;
 		timeout.tv_nsec -= NSEC_PER_SEC;

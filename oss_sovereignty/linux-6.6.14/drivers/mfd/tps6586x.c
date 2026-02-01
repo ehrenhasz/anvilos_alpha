@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for TI TPS6586x PMIC family
- *
- * Copyright (c) 2010 CompuLab Ltd.
- * Mike Rapoport <mike@compulab.co.il>
- *
- * Based on da903x.c.
- * Copyright (C) 2008 Compulab, Ltd.
- * Mike Rapoport <mike@compulab.co.il>
- * Copyright (C) 2006-2008 Marvell International Ltd.
- * Eric Miao <eric.miao@marvell.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -32,23 +21,23 @@
 #define EXITSLREQ_BIT		BIT(1)
 #define SLEEP_MODE_BIT		BIT(3)
 
-/* interrupt control registers */
+ 
 #define TPS6586X_INT_ACK1	0xb5
 #define TPS6586X_INT_ACK2	0xb6
 #define TPS6586X_INT_ACK3	0xb7
 #define TPS6586X_INT_ACK4	0xb8
 
-/* interrupt mask registers */
+ 
 #define TPS6586X_INT_MASK1	0xb0
 #define TPS6586X_INT_MASK2	0xb1
 #define TPS6586X_INT_MASK3	0xb2
 #define TPS6586X_INT_MASK4	0xb3
 #define TPS6586X_INT_MASK5	0xb4
 
-/* device id */
+ 
 #define TPS6586X_VERSIONCRC	0xcd
 
-/* Maximum register */
+ 
 #define TPS6586X_MAX_REGISTER	TPS6586X_VERSIONCRC
 
 struct tps6586x_irq_data {
@@ -442,7 +431,7 @@ static struct tps6586x_platform_data *tps6586x_parse_dt(struct i2c_client *clien
 
 static bool is_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/* Cache all interrupt mask register */
+	 
 	if ((reg >= TPS6586X_INT_MASK1) && (reg <= TPS6586X_INT_MASK5))
 		return false;
 

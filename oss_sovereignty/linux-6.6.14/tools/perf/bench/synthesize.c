@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Benchmark synthesis of perf events such as at the start of a 'perf
- * record'. Synthesis is done on the current process and the 'dummy' event
- * handlers are invoked that support dump_trace but otherwise do nothing.
- *
- * Copyright 2019 Google LLC.
- */
+
+ 
 #include <stdio.h>
 #include "bench.h"
 #include "../util/debug.h"
@@ -245,10 +239,7 @@ int bench_synthesize(int argc, const char **argv)
 		exit(EXIT_FAILURE);
 	}
 
-	/*
-	 * If neither single threaded or multi-threaded are specified, default
-	 * to running just single threaded.
-	 */
+	 
 	if (!run_st && !run_mt)
 		run_st = true;
 

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * System Control and Power Interface (SCPI) Message Protocol driver
- *
- * SCPI Message Protocol is used between the System Control Processor(SCP)
- * and the Application Processors(AP). The Message Handling Unit(MHU)
- * provides a mechanism for inter-processor communication between SCP's
- * Cortex M3 and AP.
- *
- * SCP offers control and management of the core/cluster power states,
- * various power domain DVFS including the core/cluster, certain system
- * clocks configuration, thermal sensors and many others.
- *
- * Copyright (C) 2015 ARM Ltd.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -65,23 +52,23 @@
 #define MAX_RX_TIMEOUT		(msecs_to_jiffies(30))
 
 enum scpi_error_codes {
-	SCPI_SUCCESS = 0, /* Success */
-	SCPI_ERR_PARAM = 1, /* Invalid parameter(s) */
-	SCPI_ERR_ALIGN = 2, /* Invalid alignment */
-	SCPI_ERR_SIZE = 3, /* Invalid size */
-	SCPI_ERR_HANDLER = 4, /* Invalid handler/callback */
-	SCPI_ERR_ACCESS = 5, /* Invalid access/permission denied */
-	SCPI_ERR_RANGE = 6, /* Value out of range */
-	SCPI_ERR_TIMEOUT = 7, /* Timeout has occurred */
-	SCPI_ERR_NOMEM = 8, /* Invalid memory area or pointer */
-	SCPI_ERR_PWRSTATE = 9, /* Invalid power state */
-	SCPI_ERR_SUPPORT = 10, /* Not supported or disabled */
-	SCPI_ERR_DEVICE = 11, /* Device error */
-	SCPI_ERR_BUSY = 12, /* Device busy */
+	SCPI_SUCCESS = 0,  
+	SCPI_ERR_PARAM = 1,  
+	SCPI_ERR_ALIGN = 2,  
+	SCPI_ERR_SIZE = 3,  
+	SCPI_ERR_HANDLER = 4,  
+	SCPI_ERR_ACCESS = 5,  
+	SCPI_ERR_RANGE = 6,  
+	SCPI_ERR_TIMEOUT = 7,  
+	SCPI_ERR_NOMEM = 8,  
+	SCPI_ERR_PWRSTATE = 9,  
+	SCPI_ERR_SUPPORT = 10,  
+	SCPI_ERR_DEVICE = 11,  
+	SCPI_ERR_BUSY = 12,  
 	SCPI_ERR_MAX
 };
 
-/* SCPI Standard commands */
+ 
 enum scpi_std_cmd {
 	SCPI_CMD_INVALID		= 0x00,
 	SCPI_CMD_SCPI_READY		= 0x01,
@@ -115,7 +102,7 @@ enum scpi_std_cmd {
 	SCPI_CMD_COUNT
 };
 
-/* SCPI Legacy Commands */
+ 
 enum legacy_scpi_std_cmd {
 	LEGACY_SCPI_CMD_INVALID			= 0x00,
 	LEGACY_SCPI_CMD_SCPI_READY		= 0x01,
@@ -152,7 +139,7 @@ enum legacy_scpi_std_cmd {
 	LEGACY_SCPI_CMD_COUNT
 };
 
-/* List all commands that are required to go through the high priority link */
+ 
 static int legacy_hpriority_cmds[] = {
 	LEGACY_SCPI_CMD_GET_CSS_PWR_STATE,
 	LEGACY_SCPI_CMD_CFG_PWR_STATE_STAT,
@@ -170,7 +157,7 @@ static int legacy_hpriority_cmds[] = {
 	LEGACY_SCPI_CMD_SENSOR_CFG_BOUNDS,
 };
 
-/* List all commands used by this driver, used as indexes */
+ 
 enum scpi_drv_cmds {
 	CMD_SCPI_CAPABILITIES = 0,
 	CMD_GET_CLOCK_INFO,
@@ -204,7 +191,7 @@ static int scpi_std_commands[CMD_MAX_COUNT] = {
 
 static int scpi_legacy_commands[CMD_MAX_COUNT] = {
 	LEGACY_SCPI_CMD_SCPI_CAPABILITIES,
-	-1, /* GET_CLOCK_INFO */
+	-1,  
 	LEGACY_SCPI_CMD_GET_CLOCK_VALUE,
 	LEGACY_SCPI_CMD_SET_CLOCK_VALUE,
 	LEGACY_SCPI_CMD_GET_DVFS,
@@ -213,12 +200,12 @@ static int scpi_legacy_commands[CMD_MAX_COUNT] = {
 	LEGACY_SCPI_CMD_SENSOR_CAPABILITIES,
 	LEGACY_SCPI_CMD_SENSOR_INFO,
 	LEGACY_SCPI_CMD_SENSOR_VALUE,
-	-1, /* SET_DEVICE_PWR_STATE */
-	-1, /* GET_DEVICE_PWR_STATE */
+	-1,  
+	-1,  
 };
 
 struct scpi_xfer {
-	u32 slot; /* has to be first element */
+	u32 slot;  
 	u32 cmd;
 	u32 status;
 	const void *tx_buf;
@@ -237,7 +224,7 @@ struct scpi_chan {
 	struct list_head rx_pending;
 	struct list_head xfers_list;
 	struct scpi_xfer *xfers;
-	spinlock_t rx_lock; /* locking for the rx pending list */
+	spinlock_t rx_lock;  
 	struct mutex xfers_lock;
 	u8 token;
 };
@@ -255,10 +242,7 @@ struct scpi_drvinfo {
 	struct scpi_dvfs_info *dvfs[MAX_DVFS_DOMAINS];
 };
 
-/*
- * The SCP firmware only executes in little-endian mode, so any buffers
- * shared through SCPI should have their contents converted to little-endian
- */
+ 
 struct scpi_shared_mem {
 	__le32 command;
 	__le32 status;
@@ -327,20 +311,20 @@ struct dev_pstate_set {
 static struct scpi_drvinfo *scpi_info;
 
 static int scpi_linux_errmap[SCPI_ERR_MAX] = {
-	/* better than switch case as long as return value is continuous */
-	0, /* SCPI_SUCCESS */
-	-EINVAL, /* SCPI_ERR_PARAM */
-	-ENOEXEC, /* SCPI_ERR_ALIGN */
-	-EMSGSIZE, /* SCPI_ERR_SIZE */
-	-EINVAL, /* SCPI_ERR_HANDLER */
-	-EACCES, /* SCPI_ERR_ACCESS */
-	-ERANGE, /* SCPI_ERR_RANGE */
-	-ETIMEDOUT, /* SCPI_ERR_TIMEOUT */
-	-ENOMEM, /* SCPI_ERR_NOMEM */
-	-EINVAL, /* SCPI_ERR_PWRSTATE */
-	-EOPNOTSUPP, /* SCPI_ERR_SUPPORT */
-	-EIO, /* SCPI_ERR_DEVICE */
-	-EBUSY, /* SCPI_ERR_BUSY */
+	 
+	0,  
+	-EINVAL,  
+	-ENOEXEC,  
+	-EMSGSIZE,  
+	-EINVAL,  
+	-EACCES,  
+	-ERANGE,  
+	-ETIMEDOUT,  
+	-ENOMEM,  
+	-EINVAL,  
+	-EOPNOTSUPP,  
+	-EIO,  
+	-EBUSY,  
 };
 
 static inline int scpi_to_linux_errno(int errno)
@@ -361,10 +345,7 @@ static void scpi_process_cmd(struct scpi_chan *ch, u32 cmd)
 		return;
 	}
 
-	/* Command type is not replied by the SCP Firmware in legacy Mode
-	 * We should consider that command is the head of pending RX commands
-	 * if the list is not empty. In TX only mode, the list would be empty.
-	 */
+	 
 	if (scpi_info->is_legacy) {
 		match = list_first_entry(&ch->rx_pending, struct scpi_xfer,
 					 node);
@@ -377,7 +358,7 @@ static void scpi_process_cmd(struct scpi_chan *ch, u32 cmd)
 				break;
 			}
 	}
-	/* check if wait_for_completion is in progress or timed-out */
+	 
 	if (match && !completion_done(&match->done)) {
 		unsigned int len;
 
@@ -385,7 +366,7 @@ static void scpi_process_cmd(struct scpi_chan *ch, u32 cmd)
 			struct legacy_scpi_shared_mem __iomem *mem =
 							ch->rx_payload;
 
-			/* RX Length is not replied by the legacy Firmware */
+			 
 			len = match->rx_len;
 
 			match->status = ioread32(&mem->status);
@@ -512,14 +493,14 @@ static int scpi_send_message(u8 idx, void *tx_buf, unsigned int tx_len,
 	if (!wait_for_completion_timeout(&msg->done, MAX_RX_TIMEOUT))
 		ret = -ETIMEDOUT;
 	else
-		/* first status word */
+		 
 		ret = msg->status;
 out:
-	if (ret < 0 && rx_buf) /* remove entry from the list if timed-out */
+	if (ret < 0 && rx_buf)  
 		scpi_process_cmd(scpi_chan, msg->cmd);
 
 	put_scpi_xfer(msg, scpi_chan);
-	/* SCPI error codes > 0, translate them to Linux scale*/
+	 
 	return ret > 0 ? scpi_to_linux_errno(ret) : ret;
 }
 
@@ -619,7 +600,7 @@ static struct scpi_dvfs_info *scpi_dvfs_get_info(u8 domain)
 	if (domain >= MAX_DVFS_DOMAINS)
 		return ERR_PTR(-EINVAL);
 
-	if (scpi_info->dvfs[domain])	/* data already populated */
+	if (scpi_info->dvfs[domain])	 
 		return scpi_info->dvfs[domain];
 
 	ret = scpi_send_message(CMD_GET_DVFS_INFO, &domain, sizeof(domain),
@@ -632,7 +613,7 @@ static struct scpi_dvfs_info *scpi_dvfs_get_info(u8 domain)
 		return ERR_PTR(-ENOMEM);
 
 	info->count = buf.opp_count;
-	info->latency = le16_to_cpu(buf.latency) * 1000; /* uS to nS */
+	info->latency = le16_to_cpu(buf.latency) * 1000;  
 
 	info->opps = kcalloc(info->count, sizeof(*opp), GFP_KERNEL);
 	if (!info->opps) {
@@ -748,7 +729,7 @@ static int scpi_sensor_get_value(u16 sensor, u64 *val)
 		return ret;
 
 	if (scpi_info->is_legacy)
-		/* only 32-bits supported, upper 32 bits can be junk */
+		 
 		*val = le32_to_cpup((__le32 *)&value);
 	else
 		*val = le64_to_cpu(value);
@@ -814,7 +795,7 @@ static int scpi_init_versions(struct scpi_drvinfo *info)
 		info->protocol_version = le32_to_cpu(caps.protocol_version);
 		info->firmware_version = le32_to_cpu(caps.platform_version);
 	}
-	/* Ignore error if not implemented */
+	 
 	if (info->is_legacy && ret == -EOPNOTSUPP)
 		return 0;
 
@@ -865,7 +846,7 @@ static int scpi_remove(struct platform_device *pdev)
 	int i;
 	struct scpi_drvinfo *info = platform_get_drvdata(pdev);
 
-	scpi_info = NULL; /* stop exporting SCPI ops through get_scpi_ops */
+	scpi_info = NULL;  
 
 	for (i = 0; i < MAX_DVFS_DOMAINS && info->dvfs[i]; i++) {
 		kfree(info->dvfs[i]->opps);
@@ -967,7 +948,7 @@ static int scpi_probe(struct platform_device *pdev)
 		cl->tx_prepare = scpi_tx_prepare;
 		cl->tx_block = true;
 		cl->tx_tout = 20;
-		cl->knows_txdone = false; /* controller can't ack */
+		cl->knows_txdone = false;  
 
 		INIT_LIST_HEAD(&pchan->rx_pending);
 		INIT_LIST_HEAD(&pchan->xfers_list);
@@ -992,11 +973,11 @@ static int scpi_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, scpi_drvinfo);
 
 	if (scpi_drvinfo->is_legacy) {
-		/* Replace with legacy variants */
+		 
 		scpi_ops.clk_set_val = legacy_scpi_clk_set_val;
 		scpi_drvinfo->commands = scpi_legacy_commands;
 
-		/* Fill priority bitmap */
+		 
 		for (idx = 0; idx < ARRAY_SIZE(legacy_hpriority_cmds); idx++)
 			set_bit(legacy_hpriority_cmds[idx],
 				scpi_drvinfo->cmd_priority);

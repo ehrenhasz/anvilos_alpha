@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for EXAR XRA1403 16-bit GPIO expander
- *
- * Copyright (c) 2017, General Electric Company
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/driver.h>
@@ -15,19 +11,19 @@
 #include <linux/spi/spi.h>
 #include <linux/regmap.h>
 
-/* XRA1403 registers */
-#define XRA_GSR   0x00 /* GPIO State */
-#define XRA_OCR   0x02 /* Output Control */
-#define XRA_PIR   0x04 /* Input Polarity Inversion */
-#define XRA_GCR   0x06 /* GPIO Configuration */
-#define XRA_PUR   0x08 /* Input Internal Pull-up Resistor Enable/Disable */
-#define XRA_IER   0x0A /* Input Interrupt Enable */
-#define XRA_TSCR  0x0C /* Output Three-State Control */
-#define XRA_ISR   0x0E /* Input Interrupt Status */
-#define XRA_REIR  0x10 /* Input Rising Edge Interrupt Enable */
-#define XRA_FEIR  0x12 /* Input Falling Edge Interrupt Enable */
-#define XRA_IFR   0x14 /* Input Filter Enable/Disable */
-#define XRA_LAST  0x15 /* Bounds */
+ 
+#define XRA_GSR   0x00  
+#define XRA_OCR   0x02  
+#define XRA_PIR   0x04  
+#define XRA_GCR   0x06  
+#define XRA_PUR   0x08  
+#define XRA_IER   0x0A  
+#define XRA_TSCR  0x0C  
+#define XRA_ISR   0x0E  
+#define XRA_REIR  0x10  
+#define XRA_FEIR  0x12  
+#define XRA_IFR   0x14  
+#define XRA_LAST  0x15  
 
 struct xra1403 {
 	struct gpio_chip  chip;
@@ -157,7 +153,7 @@ static int xra1403_probe(struct spi_device *spi)
 	if (!xra)
 		return -ENOMEM;
 
-	/* bring the chip out of reset if reset pin is provided*/
+	 
 	reset_gpio = devm_gpiod_get_optional(&spi->dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(reset_gpio))
 		dev_warn(&spi->dev, "Could not get reset-gpios\n");

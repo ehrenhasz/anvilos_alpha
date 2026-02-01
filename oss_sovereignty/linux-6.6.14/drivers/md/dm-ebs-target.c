@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 Red Hat GmbH
- *
- * This file is released under the GPL.
- *
- * Device-mapper target to emulate smaller logical block
- * size on backing devices exposing (natively) larger ones.
- *
- * E.g. 512 byte sector emulation on 4K native disks.
- */
+
+ 
 
 #include "dm.h"
 #include <linux/module.h>
@@ -19,19 +10,19 @@
 
 static void ebs_dtr(struct dm_target *ti);
 
-/* Emulated block size context. */
+ 
 struct ebs_c {
-	struct dm_dev *dev;		/* Underlying device to emulate block size on. */
-	struct dm_bufio_client *bufio;	/* Use dm-bufio for read and read-modify-write processing. */
-	struct workqueue_struct *wq;	/* Workqueue for ^ processing of bios. */
-	struct work_struct ws;		/* Work item used for ^. */
-	struct bio_list bios_in;	/* Worker bios input list. */
-	spinlock_t lock;		/* Guard bios input list above. */
-	sector_t start;			/* <start> table line argument, see ebs_ctr below. */
-	unsigned int e_bs;		/* Emulated block size in sectors exposed to upper layer. */
-	unsigned int u_bs;		/* Underlying block size in sectors retrieved from/set on lower layer device. */
-	unsigned char block_shift;	/* bitshift sectors -> blocks used in dm-bufio API. */
-	bool u_bs_set:1;		/* Flag to indicate underlying block size is set on table line. */
+	struct dm_dev *dev;		 
+	struct dm_bufio_client *bufio;	 
+	struct workqueue_struct *wq;	 
+	struct work_struct ws;		 
+	struct bio_list bios_in;	 
+	spinlock_t lock;		 
+	sector_t start;			 
+	unsigned int e_bs;		 
+	unsigned int u_bs;		 
+	unsigned char block_shift;	 
+	bool u_bs_set:1;		 
 };
 
 static inline sector_t __sector_to_block(struct ebs_c *ec, sector_t sector)
@@ -44,7 +35,7 @@ static inline sector_t __block_mod(sector_t sector, unsigned int bs)
 	return sector & (bs - 1);
 }
 
-/* Return number of blocks for a bio, accounting for misalignment of start and end sectors. */
+ 
 static inline unsigned int __nr_blocks(struct ebs_c *ec, struct bio *bio)
 {
 	sector_t end_sector = __block_mod(bio->bi_iter.bi_sector, ec->u_bs) + bio_sectors(bio);
@@ -57,11 +48,7 @@ static inline bool __ebs_check_bs(unsigned int bs)
 	return bs && is_power_of_2(bs);
 }
 
-/*
- * READ/WRITE:
- *
- * copy blocks between bufio blocks and bio vector's (partial/overlapping) pages.
- */
+ 
 static int __ebs_rw_bvec(struct ebs_c *ec, enum req_op op, struct bio_vec *bv,
 			 struct bvec_iter *iter)
 {
@@ -78,24 +65,21 @@ static int __ebs_rw_bvec(struct ebs_c *ec, enum req_op op, struct bio_vec *bv,
 
 	pa = bvec_virt(bv);
 
-	/* Handle overlapping page <-> blocks */
+	 
 	while (bv_len) {
 		cur_len = min(dm_bufio_get_block_size(ec->bufio) - buf_off, bv_len);
 
-		/* Avoid reading for writes in case bio vector's page overwrites block completely. */
+		 
 		if (op == REQ_OP_READ || buf_off || bv_len < dm_bufio_get_block_size(ec->bufio))
 			ba = dm_bufio_read(ec->bufio, block, &b);
 		else
 			ba = dm_bufio_new(ec->bufio, block, &b);
 
 		if (IS_ERR(ba)) {
-			/*
-			 * Carry on with next buffer, if any, to issue all possible
-			 * data but return error.
-			 */
+			 
 			r = PTR_ERR(ba);
 		} else {
-			/* Copy data to/from bio to buffer if read/new was successful above. */
+			 
 			ba += buf_off;
 			if (op == REQ_OP_READ) {
 				memcpy(pa, ba, cur_len);
@@ -118,7 +102,7 @@ static int __ebs_rw_bvec(struct ebs_c *ec, enum req_op op, struct bio_vec *bv,
 	return r;
 }
 
-/* READ/WRITE: iterate bio vector's copying between (partial) pages and bufio blocks. */
+ 
 static int __ebs_rw_bio(struct ebs_c *ec, enum req_op op, struct bio *bio)
 {
 	int r = 0, rr;
@@ -134,12 +118,7 @@ static int __ebs_rw_bio(struct ebs_c *ec, enum req_op op, struct bio *bio)
 	return r;
 }
 
-/*
- * Discard bio's blocks, i.e. pass discards down.
- *
- * Avoid discarding partial blocks at beginning and end;
- * return 0 in case no blocks can be discarded as a result.
- */
+ 
 static int __ebs_discard_bio(struct ebs_c *ec, struct bio *bio)
 {
 	sector_t block, blocks, sector = bio->bi_iter.bi_sector;
@@ -147,23 +126,20 @@ static int __ebs_discard_bio(struct ebs_c *ec, struct bio *bio)
 	block = __sector_to_block(ec, sector);
 	blocks = __nr_blocks(ec, bio);
 
-	/*
-	 * Partial first underlying block (__nr_blocks() may have
-	 * resulted in one block).
-	 */
+	 
 	if (__block_mod(sector, ec->u_bs)) {
 		block++;
 		blocks--;
 	}
 
-	/* Partial last underlying block if any. */
+	 
 	if (blocks && __block_mod(bio_end_sector(bio), ec->u_bs))
 		blocks--;
 
 	return blocks ? dm_bufio_issue_discard(ec->bufio, block, blocks) : 0;
 }
 
-/* Release blocks them from the bufio cache. */
+ 
 static void __ebs_forget_bio(struct ebs_c *ec, struct bio *bio)
 {
 	sector_t blocks, sector = bio->bi_iter.bi_sector;
@@ -173,7 +149,7 @@ static void __ebs_forget_bio(struct ebs_c *ec, struct bio *bio)
 	dm_bufio_forget_buffers(ec->bufio, __sector_to_block(ec, sector), blocks);
 }
 
-/* Worker function to process incoming bios. */
+ 
 static void __ebs_process_bios(struct work_struct *ws)
 {
 	int r;
@@ -190,7 +166,7 @@ static void __ebs_process_bios(struct work_struct *ws)
 	bio_list_init(&ec->bios_in);
 	spin_unlock_irq(&ec->lock);
 
-	/* Prefetch all read and any mis-aligned write buffers */
+	 
 	bio_list_for_each(bio, &bios) {
 		block1 = __sector_to_block(ec, bio->bi_iter.bi_sector);
 		if (bio_op(bio) == REQ_OP_READ)
@@ -220,14 +196,11 @@ static void __ebs_process_bios(struct work_struct *ws)
 			bio->bi_status = errno_to_blk_status(r);
 	}
 
-	/*
-	 * We write dirty buffers after processing I/O on them
-	 * but before we endio thus addressing REQ_FUA/REQ_SYNC.
-	 */
+	 
 	r = write ? dm_bufio_write_dirty_buffers(ec->bufio) : 0;
 
 	while ((bio = bio_list_pop(&bios))) {
-		/* Any other request is endioed. */
+		 
 		if (unlikely(r && bio_op(bio) == REQ_OP_WRITE))
 			bio_io_error(bio);
 		else
@@ -235,15 +208,7 @@ static void __ebs_process_bios(struct work_struct *ws)
 	}
 }
 
-/*
- * Construct an emulated block size mapping: <dev_path> <offset> <ebs> [<ubs>]
- *
- * <dev_path>: path of the underlying device
- * <offset>: offset in 512 bytes sectors into <dev_path>
- * <ebs>: emulated block size in units of 512 bytes exposed to the upper layer
- * [<ubs>]: underlying block size in units of 512 bytes imposed on the lower layer;
- *	    optional, if not supplied, retrieve logical block size from underlying device
- */
+ 
 static int ebs_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	int r;
@@ -367,11 +332,7 @@ static int ebs_map(struct dm_target *ti, struct bio *bio)
 
 	if (unlikely(bio_op(bio) == REQ_OP_FLUSH))
 		return DM_MAPIO_REMAPPED;
-	/*
-	 * Only queue for bufio processing in case of partial or overlapping buffers
-	 * -or-
-	 * emulation with ebs == ubs aiming for tests of dm-bufio overhead.
-	 */
+	 
 	if (likely(__block_mod(bio->bi_iter.bi_sector, ec->u_bs) ||
 		   __block_mod(bio_end_sector(bio), ec->u_bs) ||
 		   ec->e_bs == ec->u_bs)) {
@@ -384,7 +345,7 @@ static int ebs_map(struct dm_target *ti, struct bio *bio)
 		return DM_MAPIO_SUBMITTED;
 	}
 
-	/* Forget any buffer content relative to this direct backing device I/O. */
+	 
 	__ebs_forget_bio(ec, bio);
 
 	return DM_MAPIO_REMAPPED;
@@ -414,9 +375,7 @@ static int ebs_prepare_ioctl(struct dm_target *ti, struct block_device **bdev)
 	struct ebs_c *ec = ti->private;
 	struct dm_dev *dev = ec->dev;
 
-	/*
-	 * Only pass ioctls through if the device sizes match exactly.
-	 */
+	 
 	*bdev = dev->bdev;
 	return !!(ec->start || ti->len != bdev_nr_sectors(dev->bdev));
 }

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2020 - 2022, Google LLC
- *
- * MAXIM TCPCI based TCPC driver
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
@@ -28,11 +24,7 @@
 #define TCPC_RECEIVE_BUFFER_FRAME_TYPE_OFFSET		1
 #define TCPC_RECEIVE_BUFFER_RX_BYTE_BUF_OFFSET		2
 
-/*
- * LongMessage not supported, hence 32 bytes for buf to be read from RECEIVE_BUFFER.
- * DEVICE_CAPABILITIES_2.LongMessage = 0, the value in READABLE_BYTE_COUNT reg shall be
- * less than or equal to 31. Since, RECEIVE_BUFFER len = 31 + 1(READABLE_BYTE_COUNT).
- */
+ 
 #define TCPC_RECEIVE_BUFFER_LEN				32
 
 #define MAX_BUCK_BOOST_SID				0x69
@@ -85,7 +77,7 @@ static void max_tcpci_init_regs(struct max_tcpci_chip *chip)
 		return;
 	}
 
-	/* Enable VSAFE0V detection */
+	 
 	ret = max_tcpci_write8(chip, TCPC_EXTENDED_STATUS_MASK, TCPC_EXTENDED_STATUS_VSAFE0V);
 	if (ret < 0) {
 		dev_err(chip->dev, "Unable to unmask TCPC_EXTENDED_STATUS_VSAFE0V ret:%d\n", ret);
@@ -95,7 +87,7 @@ static void max_tcpci_init_regs(struct max_tcpci_chip *chip)
 	alert_mask = TCPC_ALERT_TX_SUCCESS | TCPC_ALERT_TX_DISCARDED | TCPC_ALERT_TX_FAILED |
 		TCPC_ALERT_RX_HARD_RST | TCPC_ALERT_RX_STATUS | TCPC_ALERT_CC_STATUS |
 		TCPC_ALERT_VBUS_DISCNCT | TCPC_ALERT_RX_BUF_OVF | TCPC_ALERT_POWER_STATUS |
-		/* Enable Extended alert for detecting Fast Role Swap Signal */
+		 
 		TCPC_ALERT_EXTND | TCPC_ALERT_EXTENDED_STATUS;
 
 	ret = max_tcpci_write16(chip, TCPC_ALERT_MASK, alert_mask);
@@ -105,7 +97,7 @@ static void max_tcpci_init_regs(struct max_tcpci_chip *chip)
 		return;
 	}
 
-	/* Enable vbus voltage monitoring and voltage alerts */
+	 
 	ret = max_tcpci_write8(chip, TCPC_POWER_CTRL, 0);
 	if (ret < 0) {
 		dev_err(chip->dev, "Error writing to TCPC_POWER_CTRL ret:%d\n", ret);
@@ -124,11 +116,7 @@ static void process_rx(struct max_tcpci_chip *chip, u16 status)
 	int ret, payload_index;
 	u8 *rx_buf_ptr;
 
-	/*
-	 * READABLE_BYTE_COUNT: Indicates the number of bytes in the RX_BUF_BYTE_x registers
-	 * plus one (for the RX_BUF_FRAME_TYPE) Table 4-36.
-	 * Read the count and frame type.
-	 */
+	 
 	ret = regmap_raw_read(chip->data.regmap, TCPC_RX_BYTE_CNT, rx_buf, 2);
 	if (ret < 0) {
 		dev_err(chip->dev, "TCPC_RX_BYTE_CNT read failed ret:%d\n", ret);
@@ -150,10 +138,7 @@ static void process_rx(struct max_tcpci_chip *chip, u16 status)
 		return;
 	}
 
-	/*
-	 * Read count + 1 as RX_BUF_BYTE_x is hidden and can only be read through
-	 * TCPC_RX_BYTE_CNT
-	 */
+	 
 	count += 1;
 	ret = regmap_raw_read(chip->data.regmap, TCPC_RX_BYTE_CNT, rx_buf, count);
 	if (ret < 0) {
@@ -168,10 +153,7 @@ static void process_rx(struct max_tcpci_chip *chip, u16 status)
 	     rx_buf_ptr += sizeof(msg.payload[0]))
 		msg.payload[payload_index] = cpu_to_le32(*(u32 *)rx_buf_ptr);
 
-	/*
-	 * Read complete, clear RX status alert bit.
-	 * Clear overflow as well if set.
-	 */
+	 
 	ret = max_tcpci_write16(chip, TCPC_ALERT, status & TCPC_ALERT_RX_BUF_OVF ?
 				TCPC_ALERT_RX_STATUS | TCPC_ALERT_RX_BUF_OVF :
 				TCPC_ALERT_RX_STATUS);
@@ -228,11 +210,7 @@ static void process_power_status(struct max_tcpci_chip *chip)
 
 static void max_tcpci_frs_sourcing_vbus(struct tcpci *tcpci, struct tcpci_data *tdata)
 {
-	/*
-	 * For Fast Role Swap case, Boost turns on autonomously without
-	 * AP intervention, but, needs AP to enable source mode explicitly
-	 * for AP to regain control.
-	 */
+	 
 	max_tcpci_set_vbus(tcpci, tdata, true, false);
 }
 
@@ -245,12 +223,12 @@ static void process_tx(struct max_tcpci_chip *chip, u16 status)
 	else if (status & TCPC_ALERT_TX_FAILED)
 		tcpm_pd_transmit_complete(chip->port, TCPC_TX_FAILED);
 
-	/* Reinit regs as Hard reset sets them to default value */
+	 
 	if ((status & TCPC_ALERT_TX_SUCCESS) && (status & TCPC_ALERT_TX_FAILED))
 		max_tcpci_init_regs(chip);
 }
 
-/* Enable USB switches when partner is USB communications capable */
+ 
 static void max_tcpci_set_partner_usb_comm_capable(struct tcpci *tcpci, struct tcpci_data *data,
 						   bool capable)
 {
@@ -271,10 +249,7 @@ static irqreturn_t _max_tcpci_irq(struct max_tcpci_chip *chip, u16 status)
 	int ret;
 	u8 reg_status;
 
-	/*
-	 * Clear alert status for everything except RX_STATUS, which shouldn't
-	 * be cleared until we have successfully retrieved message.
-	 */
+	 
 	if (status & ~TCPC_ALERT_RX_STATUS) {
 		mask = status & TCPC_ALERT_RX_BUF_OVF ?
 			status & ~(TCPC_ALERT_RX_STATUS | TCPC_ALERT_RX_BUF_OVF) :
@@ -363,7 +338,7 @@ static irqreturn_t max_tcpci_irq(int irq, void *dev_id)
 	}
 	while (status) {
 		irq_return = _max_tcpci_irq(chip, status);
-		/* Do not return if the ALERT is already set. */
+		 
 		ret = max_tcpci_read16(chip, TCPC_ALERT, &status);
 		if (ret < 0)
 			break;
@@ -411,10 +386,7 @@ static int max_tcpci_start_toggling(struct tcpci *tcpci, struct tcpci_data *tdat
 
 static int tcpci_init(struct tcpci *tcpci, struct tcpci_data *data)
 {
-	/*
-	 * Generic TCPCI overwrites the regs once this driver initializes
-	 * them. Prevent this by returning -1.
-	 */
+	 
 	return -1;
 }
 
@@ -450,7 +422,7 @@ static int max_tcpci_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* Chip level tcpci callbacks */
+	 
 	chip->data.set_vbus = max_tcpci_set_vbus;
 	chip->data.start_drp_toggling = max_tcpci_start_toggling;
 	chip->data.TX_BUF_BYTE_x_hidden = true;

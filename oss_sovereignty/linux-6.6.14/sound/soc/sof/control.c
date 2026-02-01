@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
 
-/* Mixer Controls */
+
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/leds.h>
@@ -167,7 +167,7 @@ int snd_sof_bytes_ext_put(struct snd_kcontrol *kcontrol,
 	struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(scomp);
 	const struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);
 
-	/* make sure we have at least a header */
+	 
 	if (size < sizeof(struct snd_ctl_tlv))
 		return -EINVAL;
 

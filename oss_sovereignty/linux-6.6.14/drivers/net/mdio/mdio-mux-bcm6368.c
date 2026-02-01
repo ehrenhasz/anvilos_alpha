@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Broadcom BCM6368 mdiomux bus controller driver
- *
- * Copyright (C) 2021 Álvaro Fernández Rojas <noltari@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -102,10 +98,7 @@ static int bcm6368_mdiomux_probe(struct platform_device *pdev)
 	if (!res)
 		return -EINVAL;
 
-	/*
-	 * Just ioremap, as this MDIO block is usually integrated into an
-	 * Ethernet MAC controller register range
-	 */
+	 
 	md->base = devm_ioremap(&pdev->dev, res->start, resource_size(res));
 	if (!md->base) {
 		dev_err(&pdev->dev, "failed to ioremap register\n");
@@ -165,7 +158,7 @@ static int bcm6368_mdiomux_remove(struct platform_device *pdev)
 
 static const struct of_device_id bcm6368_mdiomux_ids[] = {
 	{ .compatible = "brcm,bcm6368-mdio-mux", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, bcm6368_mdiomux_ids);
 

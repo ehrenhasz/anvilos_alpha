@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019-2021 Xilinx, Inc.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/fpga/fpga-mgr.h>

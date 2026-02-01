@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/sysv/dir.c
- *
- *  minix/dir.c
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  coh/dir.c
- *  Copyright (C) 1993  Pascal Haible, Bruno Haible
- *
- *  sysv/dir.c
- *  Copyright (C) 1993  Bruno Haible
- *
- *  SystemV/Coherent directory handling functions
- */
+
+ 
 
 #include <linux/pagemap.h>
 #include <linux/highmem.h>
@@ -51,13 +38,7 @@ static int sysv_handle_dirsync(struct inode *dir)
 	return err;
 }
 
-/*
- * Calls to dir_get_page()/unmap_and_put_page() must be nested according to the
- * rules documented in mm/highmem.rst.
- *
- * NOTE: sysv_find_entry() and sysv_dotdot() act as calls to dir_get_page()
- * and must be treated accordingly for nesting purposes.
- */
+ 
 static void *dir_get_page(struct inode *dir, unsigned long n, struct page **p)
 {
 	struct address_space *mapping = dir->i_mapping;
@@ -112,9 +93,7 @@ static int sysv_readdir(struct file *file, struct dir_context *ctx)
 	return 0;
 }
 
-/* compare strings: name[0..len-1] (not zero-terminated) and
- * buffer[0..] (filled with zeroes up to buffer[0..maxlen-1])
- */
+ 
 static inline int namecompare(int len, int maxlen,
 	const char * name, const char * buffer)
 {
@@ -123,19 +102,7 @@ static inline int namecompare(int len, int maxlen,
 	return !memcmp(name, buffer, len);
 }
 
-/*
- *	sysv_find_entry()
- *
- * finds an entry in the specified directory with the wanted name. It
- * returns the cache buffer in which the entry was found, and the entry
- * itself (as a parameter - res_dir). It does NOT read the inode of the
- * entry - you'll have to do that yourself if you want to.
- *
- * On Success unmap_and_put_page() should be called on *res_page.
- *
- * sysv_find_entry() acts as a call to dir_get_page() and must be treated
- * accordingly for nesting purposes.
- */
+ 
 struct sysv_dir_entry *sysv_find_entry(struct dentry *dentry, struct page **res_page)
 {
 	const char * name = dentry->d_name.name;
@@ -194,7 +161,7 @@ int sysv_add_link(struct dentry *dentry, struct inode *inode)
 	loff_t pos;
 	int err;
 
-	/* We take care of directory expansion in the same loop */
+	 
 	for (n = 0; n <= npages; n++) {
 		kaddr = dir_get_page(dir, n, &page);
 		if (IS_ERR(kaddr))
@@ -286,9 +253,7 @@ fail:
 	return err;
 }
 
-/*
- * routine to check that the specified directory is empty (for rmdir)
- */
+ 
 int sysv_empty_dir(struct inode * inode)
 {
 	struct super_block *sb = inode->i_sb;
@@ -309,7 +274,7 @@ int sysv_empty_dir(struct inode * inode)
 		for ( ;(char *)de <= kaddr; de++) {
 			if (!de->inode)
 				continue;
-			/* check for . and .. */
+			 
 			if (de->name[0] != '.')
 				goto not_empty;
 			if (!de->name[1]) {
@@ -330,7 +295,7 @@ not_empty:
 	return 0;
 }
 
-/* Releases the page */
+ 
 int sysv_set_link(struct sysv_dir_entry *de, struct page *page,
 	struct inode *inode)
 {
@@ -351,20 +316,14 @@ int sysv_set_link(struct sysv_dir_entry *de, struct page *page,
 	return sysv_handle_dirsync(inode);
 }
 
-/*
- * Calls to dir_get_page()/unmap_and_put_page() must be nested according to the
- * rules documented in mm/highmem.rst.
- *
- * sysv_dotdot() acts as a call to dir_get_page() and must be treated
- * accordingly for nesting purposes.
- */
+ 
 struct sysv_dir_entry *sysv_dotdot(struct inode *dir, struct page **p)
 {
 	struct sysv_dir_entry *de = dir_get_page(dir, 0, p);
 
 	if (IS_ERR(de))
 		return NULL;
-	/* ".." is the second directory entry */
+	 
 	return de + 1;
 }
 

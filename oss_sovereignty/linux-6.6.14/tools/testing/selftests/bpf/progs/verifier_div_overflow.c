@@ -1,15 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/div_overflow.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
 #include <limits.h>
 #include "bpf_misc.h"
 
-/* Just make sure that JITs used udiv/umod as otherwise we get
- * an exception from INT_MIN/-1 overflow similarly as with div
- * by zero.
- */
+ 
 
 SEC("tc")
 __description("DIV32 overflow, check 1")

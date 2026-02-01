@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- * Copyright 2014-2015 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_drv.h"
@@ -30,48 +7,22 @@
 #include "vmwgfx_so.h"
 #include "vmwgfx_binding.h"
 
-/*
- * The currently only reason we need to keep track of views is that if we
- * destroy a hardware surface, all views pointing to it must also be destroyed,
- * otherwise the device will error.
- * So in particular if a surface is evicted, we must destroy all views pointing
- * to it, and all context bindings of that view. Similarly we must restore
- * the view bindings, views and surfaces pointed to by the views when a
- * context is referenced in the command stream.
- */
+ 
 
-/**
- * struct vmw_view - view metadata
- *
- * @rcu: RCU callback head
- * @res: The struct vmw_resource we derive from
- * @ctx: Non-refcounted pointer to the context this view belongs to.
- * @srf: Refcounted pointer to the surface pointed to by this view.
- * @cotable: Refcounted pointer to the cotable holding this view.
- * @srf_head: List head for the surface-to-view list.
- * @cotable_head: List head for the cotable-to_view list.
- * @view_type: View type.
- * @view_id: User-space per context view id. Currently used also as per
- * context device view id.
- * @cmd_size: Size of the SVGA3D define view command that we've copied from the
- * command stream.
- * @committed: Whether the view is actually created or pending creation at the
- * device level.
- * @cmd: The SVGA3D define view command copied from the command stream.
- */
+ 
 struct vmw_view {
 	struct rcu_head rcu;
 	struct vmw_resource res;
-	struct vmw_resource *ctx;      /* Immutable */
-	struct vmw_resource *srf;      /* Immutable */
-	struct vmw_resource *cotable;  /* Immutable */
-	struct list_head srf_head;     /* Protected by binding_mutex */
-	struct list_head cotable_head; /* Protected by binding_mutex */
-	unsigned view_type;            /* Immutable */
-	unsigned view_id;              /* Immutable */
-	u32 cmd_size;                  /* Immutable */
-	bool committed;                /* Protected by binding_mutex */
-	u32 cmd[];		       /* Immutable */
+	struct vmw_resource *ctx;       
+	struct vmw_resource *srf;       
+	struct vmw_resource *cotable;   
+	struct list_head srf_head;      
+	struct list_head cotable_head;  
+	unsigned view_type;             
+	unsigned view_id;               
+	u32 cmd_size;                   
+	bool committed;                 
+	u32 cmd[];		        
 };
 
 static int vmw_view_create(struct vmw_resource *res);
@@ -91,40 +42,19 @@ static const struct vmw_res_func vmw_view_func = {
 	.commit_notify = vmw_view_commit_notify,
 };
 
-/**
- * struct vmw_view_define - view define command body stub
- *
- * @view_id: The device id of the view being defined
- * @sid: The surface id of the view being defined
- *
- * This generic struct is used by the code to change @view_id and @sid of a
- * saved view define command.
- */
+ 
 struct vmw_view_define {
 	uint32 view_id;
 	uint32 sid;
 };
 
-/**
- * vmw_view - Convert a struct vmw_resource to a struct vmw_view
- *
- * @res: Pointer to the resource to convert.
- *
- * Returns a pointer to a struct vmw_view.
- */
+ 
 static struct vmw_view *vmw_view(struct vmw_resource *res)
 {
 	return container_of(res, struct vmw_view, res);
 }
 
-/**
- * vmw_view_commit_notify - Notify that a view operation has been committed to
- * hardware from a user-supplied command stream.
- *
- * @res: Pointer to the view resource.
- * @state: Indicating whether a creation or removal has been committed.
- *
- */
+ 
 static void vmw_view_commit_notify(struct vmw_resource *res,
 				   enum vmw_cmdbuf_res_state state)
 {
@@ -149,14 +79,7 @@ static void vmw_view_commit_notify(struct vmw_resource *res,
 	mutex_unlock(&dev_priv->binding_mutex);
 }
 
-/**
- * vmw_view_create - Create a hardware view.
- *
- * @res: Pointer to the view resource.
- *
- * Create a hardware view. Typically used if that view has previously been
- * destroyed by an eviction operation.
- */
+ 
 static int vmw_view_create(struct vmw_resource *res)
 {
 	struct vmw_view *view = vmw_view(res);
@@ -181,7 +104,7 @@ static int vmw_view_create(struct vmw_resource *res)
 
 	memcpy(cmd, &view->cmd, view->cmd_size);
 	WARN_ON(cmd->body.view_id != view->view_id);
-	/* Sid may have changed due to surface eviction. */
+	 
 	WARN_ON(view->srf->id == SVGA3D_INVALID_ID);
 	cmd->body.sid = view->srf->id;
 	vmw_cmd_commit(res->dev_priv, view->cmd_size);
@@ -193,14 +116,7 @@ static int vmw_view_create(struct vmw_resource *res)
 	return 0;
 }
 
-/**
- * vmw_view_destroy - Destroy a hardware view.
- *
- * @res: Pointer to the view resource.
- *
- * Destroy a hardware view. Typically used on unexpected termination of the
- * owning process or if the surface the view is pointing to is destroyed.
- */
+ 
 static int vmw_view_destroy(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -231,13 +147,7 @@ static int vmw_view_destroy(struct vmw_resource *res)
 	return 0;
 }
 
-/**
- * vmw_hw_view_destroy - Destroy a hardware view as part of resource cleanup.
- *
- * @res: Pointer to the view resource.
- *
- * Destroy a hardware view if it's still present.
- */
+ 
 static void vmw_hw_view_destroy(struct vmw_resource *res)
 {
 	struct vmw_private *dev_priv = res->dev_priv;
@@ -248,41 +158,20 @@ static void vmw_hw_view_destroy(struct vmw_resource *res)
 	mutex_unlock(&dev_priv->binding_mutex);
 }
 
-/**
- * vmw_view_key - Compute a view key suitable for the cmdbuf resource manager
- *
- * @user_key: The user-space id used for the view.
- * @view_type: The view type.
- *
- * Destroy a hardware view if it's still present.
- */
+ 
 static u32 vmw_view_key(u32 user_key, enum vmw_view_type view_type)
 {
 	return user_key | (view_type << 20);
 }
 
-/**
- * vmw_view_id_ok - Basic view id and type range checks.
- *
- * @user_key: The user-space id used for the view.
- * @view_type: The view type.
- *
- * Checks that the view id and type (typically provided by user-space) is
- * valid.
- */
+ 
 static bool vmw_view_id_ok(u32 user_key, enum vmw_view_type view_type)
 {
 	return (user_key < SVGA_COTABLE_MAX_IDS &&
 		view_type < vmw_view_max);
 }
 
-/**
- * vmw_view_res_free - resource res_free callback for view resources
- *
- * @res: Pointer to a struct vmw_resource
- *
- * Frees memory held by the struct vmw_view.
- */
+ 
 static void vmw_view_res_free(struct vmw_resource *res)
 {
 	struct vmw_view *view = vmw_view(res);
@@ -292,21 +181,7 @@ static void vmw_view_res_free(struct vmw_resource *res)
 	kfree_rcu(view, rcu);
 }
 
-/**
- * vmw_view_add - Create a view resource and stage it for addition
- * as a command buffer managed resource.
- *
- * @man: Pointer to the compat shader manager identifying the shader namespace.
- * @ctx: Pointer to a struct vmw_resource identifying the active context.
- * @srf: Pointer to a struct vmw_resource identifying the surface the view
- * points to.
- * @view_type: The view type deduced from the view create command.
- * @user_key: The key that is used to identify the shader. The key is
- * unique to the view type and to the context.
- * @cmd: Pointer to the view create command in the command stream.
- * @cmd_size: Size of the view create command in the command stream.
- * @list: Caller's list of staged command buffer resource actions.
- */
+ 
 int vmw_view_add(struct vmw_cmdbuf_res_manager *man,
 		 struct vmw_resource *ctx,
 		 struct vmw_resource *srf,
@@ -379,18 +254,7 @@ out_resource_init:
 	return ret;
 }
 
-/**
- * vmw_view_remove - Stage a view for removal.
- *
- * @man: Pointer to the view manager identifying the shader namespace.
- * @user_key: The key that is used to identify the view. The key is
- * unique to the view type.
- * @view_type: View type
- * @list: Caller's list of staged command buffer resource actions.
- * @res_p: If the resource is in an already committed state, points to the
- * struct vmw_resource on successful return. The pointer will be
- * non ref-counted.
- */
+ 
 int vmw_view_remove(struct vmw_cmdbuf_res_manager *man,
 		    u32 user_key, enum vmw_view_type view_type,
 		    struct list_head *list,
@@ -406,18 +270,7 @@ int vmw_view_remove(struct vmw_cmdbuf_res_manager *man,
 				     list, res_p);
 }
 
-/**
- * vmw_view_cotable_list_destroy - Evict all views belonging to a cotable.
- *
- * @dev_priv: Pointer to a device private struct.
- * @list: List of views belonging to a cotable.
- * @readback: Unused. Needed for function interface only.
- *
- * This function evicts all views belonging to a cotable.
- * It must be called with the binding_mutex held, and the caller must hold
- * a reference to the view resource. This is typically called before the
- * cotable is paged out.
- */
+ 
 void vmw_view_cotable_list_destroy(struct vmw_private *dev_priv,
 				   struct list_head *list,
 				   bool readback)
@@ -430,15 +283,7 @@ void vmw_view_cotable_list_destroy(struct vmw_private *dev_priv,
 		WARN_ON(vmw_view_destroy(&entry->res));
 }
 
-/**
- * vmw_view_surface_list_destroy - Evict all views pointing to a surface
- *
- * @dev_priv: Pointer to a device private struct.
- * @list: List of views pointing to a surface.
- *
- * This function evicts all views pointing to a surface. This is typically
- * called before the surface is evicted.
- */
+ 
 void vmw_view_surface_list_destroy(struct vmw_private *dev_priv,
 				   struct list_head *list)
 {
@@ -450,29 +295,13 @@ void vmw_view_surface_list_destroy(struct vmw_private *dev_priv,
 		WARN_ON(vmw_view_destroy(&entry->res));
 }
 
-/**
- * vmw_view_srf - Return a non-refcounted pointer to the surface a view is
- * pointing to.
- *
- * @res: pointer to a view resource.
- *
- * Note that the view itself is holding a reference, so as long
- * the view resource is alive, the surface resource will be.
- */
+ 
 struct vmw_resource *vmw_view_srf(struct vmw_resource *res)
 {
 	return vmw_view(res)->srf;
 }
 
-/**
- * vmw_view_lookup - Look up a view.
- *
- * @man: The context's cmdbuf ref manager.
- * @view_type: The view type.
- * @user_key: The view user id.
- *
- * returns a refcounted pointer to a view or an error pointer if not found.
- */
+ 
 struct vmw_resource *vmw_view_lookup(struct vmw_cmdbuf_res_manager *man,
 				     enum vmw_view_type view_type,
 				     u32 user_key)
@@ -481,18 +310,7 @@ struct vmw_resource *vmw_view_lookup(struct vmw_cmdbuf_res_manager *man,
 				     vmw_view_key(user_key, view_type));
 }
 
-/**
- * vmw_view_dirtying - Return whether a view type is dirtying its resource
- * @res: Pointer to the view
- *
- * Each time a resource is put on the validation list as the result of a
- * view pointing to it, we need to determine whether that resource will
- * be dirtied (written to by the GPU) as a result of the corresponding
- * GPU operation. Currently only rendertarget-, depth-stencil and unordered
- * access views are capable of dirtying its resource.
- *
- * Return: Whether the view type of @res dirties the resource it points to.
- */
+ 
 u32 vmw_view_dirtying(struct vmw_resource *res)
 {
 	static u32 view_is_dirtying[vmw_view_max] = {
@@ -501,7 +319,7 @@ u32 vmw_view_dirtying(struct vmw_resource *res)
 		[vmw_view_ua] = VMW_RES_DIRTY_SET,
 	};
 
-	/* Update this function as we add more view types */
+	 
 	BUILD_BUG_ON(vmw_view_max != 4);
 	return view_is_dirtying[vmw_view(res)->view_type];
 }
@@ -531,17 +349,14 @@ const SVGACOTableType vmw_so_cotables[] = {
 };
 
 
-/* To remove unused function warning */
+ 
 static void vmw_so_build_asserts(void) __attribute__((used));
 
 
-/*
- * This function is unused at run-time, and only used to dump various build
- * asserts important for code optimization assumptions.
- */
+ 
 static void vmw_so_build_asserts(void)
 {
-	/* Assert that our vmw_view_cmd_to_type() function is correct. */
+	 
 	BUILD_BUG_ON(SVGA_3D_CMD_DX_DESTROY_SHADERRESOURCE_VIEW !=
 		     SVGA_3D_CMD_DX_DEFINE_SHADERRESOURCE_VIEW + 1);
 	BUILD_BUG_ON(SVGA_3D_CMD_DX_DEFINE_RENDERTARGET_VIEW !=
@@ -553,16 +368,13 @@ static void vmw_so_build_asserts(void)
 	BUILD_BUG_ON(SVGA_3D_CMD_DX_DESTROY_DEPTHSTENCIL_VIEW !=
 		     SVGA_3D_CMD_DX_DEFINE_SHADERRESOURCE_VIEW + 5);
 
-	/* Assert that our "one body fits all" assumption is valid */
+	 
 	BUILD_BUG_ON(sizeof(union vmw_view_destroy) != sizeof(u32));
 
-	/* Assert that the view key space can hold all view ids. */
+	 
 	BUILD_BUG_ON(SVGA_COTABLE_MAX_IDS >= ((1 << 20) - 1));
 
-	/*
-	 * Assert that the offset of sid in all view define commands
-	 * is what we assume it to be.
-	 */
+	 
 	BUILD_BUG_ON(offsetof(struct vmw_view_define, sid) !=
 		     offsetof(SVGA3dCmdDXDefineShaderResourceView, sid));
 	BUILD_BUG_ON(offsetof(struct vmw_view_define, sid) !=

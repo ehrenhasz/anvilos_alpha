@@ -1,46 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2022 Google */
+
+ 
 #include <linux/bpf.h>
 #include <linux/btf_ids.h>
 #include <linux/cgroup.h>
 #include <linux/kernel.h>
 #include <linux/seq_file.h>
 
-#include "../cgroup/cgroup-internal.h"  /* cgroup_mutex and cgroup_is_dead */
+#include "../cgroup/cgroup-internal.h"   
 
-/* cgroup_iter provides four modes of traversal to the cgroup hierarchy.
- *
- *  1. Walk the descendants of a cgroup in pre-order.
- *  2. Walk the descendants of a cgroup in post-order.
- *  3. Walk the ancestors of a cgroup.
- *  4. Show the given cgroup only.
- *
- * For walking descendants, cgroup_iter can walk in either pre-order or
- * post-order. For walking ancestors, the iter walks up from a cgroup to
- * the root.
- *
- * The iter program can terminate the walk early by returning 1. Walk
- * continues if prog returns 0.
- *
- * The prog can check (seq->num == 0) to determine whether this is
- * the first element. The prog may also be passed a NULL cgroup,
- * which means the walk has completed and the prog has a chance to
- * do post-processing, such as outputting an epilogue.
- *
- * Note: the iter_prog is called with cgroup_mutex held.
- *
- * Currently only one session is supported, which means, depending on the
- * volume of data bpf program intends to send to user space, the number
- * of cgroups that can be walked is limited. For example, given the current
- * buffer size is 8 * PAGE_SIZE, if the program sends 64B data for each
- * cgroup, assuming PAGE_SIZE is 4kb, the total number of cgroups that can
- * be walked is 512. This is a limitation of cgroup_iter. If the output data
- * is larger than the kernel buffer size, after all data in the kernel buffer
- * is consumed by user space, the subsequent read() syscall will signal
- * EOPNOTSUPP. In order to work around, the user may have to update their
- * program to reduce the volume of data sent to output. For example, skip
- * some uninteresting cgroups.
- */
+ 
 
 struct bpf_iter__cgroup {
 	__bpf_md_ptr(struct bpf_iter_meta *, meta);
@@ -60,14 +28,12 @@ static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
 
 	cgroup_lock();
 
-	/* cgroup_iter doesn't support read across multiple sessions. */
+	 
 	if (*pos > 0) {
 		if (p->visited_all)
 			return NULL;
 
-		/* Haven't visited all, but because cgroup_mutex has dropped,
-		 * return -EOPNOTSUPP to indicate incomplete iteration.
-		 */
+		 
 		return ERR_PTR(-EOPNOTSUPP);
 	}
 
@@ -78,7 +44,7 @@ static void *cgroup_iter_seq_start(struct seq_file *seq, loff_t *pos)
 		return css_next_descendant_pre(NULL, p->start_css);
 	else if (p->order == BPF_CGROUP_ITER_DESCENDANTS_POST)
 		return css_next_descendant_post(NULL, p->start_css);
-	else /* BPF_CGROUP_ITER_SELF_ONLY and BPF_CGROUP_ITER_ANCESTORS_UP */
+	else  
 		return p->start_css;
 }
 
@@ -91,7 +57,7 @@ static void cgroup_iter_seq_stop(struct seq_file *seq, void *v)
 
 	cgroup_unlock();
 
-	/* pass NULL to the prog for post-processing */
+	 
 	if (!v) {
 		__cgroup_iter_seq_show(seq, NULL, true);
 		p->visited_all = true;
@@ -113,7 +79,7 @@ static void *cgroup_iter_seq_next(struct seq_file *seq, void *v, loff_t *pos)
 		return css_next_descendant_post(curr, p->start_css);
 	else if (p->order == BPF_CGROUP_ITER_ANCESTORS_UP)
 		return curr->parent;
-	else  /* BPF_CGROUP_ITER_SELF_ONLY */
+	else   
 		return NULL;
 }
 
@@ -126,7 +92,7 @@ static int __cgroup_iter_seq_show(struct seq_file *seq,
 	struct bpf_prog *prog;
 	int ret = 0;
 
-	/* cgroup is dead, skip this element */
+	 
 	if (css && cgroup_is_dead(css->cgroup))
 		return 0;
 
@@ -137,7 +103,7 @@ static int __cgroup_iter_seq_show(struct seq_file *seq,
 	if (prog)
 		ret = bpf_iter_run_prog(prog, &ctx);
 
-	/* if prog returns > 0, terminate after this element. */
+	 
 	if (ret != 0)
 		p->terminate = true;
 
@@ -164,11 +130,7 @@ static int cgroup_iter_seq_init(void *priv, struct bpf_iter_aux_info *aux)
 	struct cgroup_iter_priv *p = (struct cgroup_iter_priv *)priv;
 	struct cgroup *cgrp = aux->cgroup.start;
 
-	/* bpf_iter_attach_cgroup() has already acquired an extra reference
-	 * for the start cgroup, but the reference may be released after
-	 * cgroup_iter_seq_init(), so acquire another reference for the
-	 * start cgroup.
-	 */
+	 
 	p->start_css = &cgrp->self;
 	css_get(p->start_css);
 	p->terminate = false;
@@ -213,7 +175,7 @@ static int bpf_iter_attach_cgroup(struct bpf_prog *prog,
 		cgrp = cgroup_v1v2_get_from_fd(fd);
 	else if (id)
 		cgrp = cgroup_get_from_id(id);
-	else /* walk the entire hierarchy by default. */
+	else  
 		cgrp = cgroup_get_from_path("/");
 
 	if (IS_ERR(cgrp))
@@ -240,11 +202,7 @@ static void bpf_iter_cgroup_show_fdinfo(const struct bpf_iter_aux_info *aux,
 		goto show_order;
 	}
 
-	/* If cgroup_path_ns() fails, buf will be an empty string, cgroup_path
-	 * will print nothing.
-	 *
-	 * Path is in the calling process's cgroup namespace.
-	 */
+	 
 	cgroup_path_ns(aux->cgroup.start, buf, PATH_MAX,
 		       current->nsproxy->cgroup_ns);
 	seq_printf(seq, "cgroup_path:\t%s\n", buf);
@@ -257,7 +215,7 @@ show_order:
 		seq_puts(seq, "order: descendants_post\n");
 	else if (aux->cgroup.order == BPF_CGROUP_ITER_ANCESTORS_UP)
 		seq_puts(seq, "order: ancestors_up\n");
-	else /* BPF_CGROUP_ITER_SELF_ONLY */
+	else  
 		seq_puts(seq, "order: self_only\n");
 }
 

@@ -21,7 +21,7 @@ void do_str(const char *src, mp_parse_input_kind_t input_kind) {
         mp_call_function_0(module_fun);
         nlr_pop();
     } else {
-        // uncaught exception
+        
         mp_obj_print_exception(&mp_plat_print, (mp_obj_t)nlr.ret_val);
     }
 }
@@ -52,8 +52,8 @@ int main(int argc, char **argv) {
     #else
     pyexec_friendly_repl();
     #endif
-    // do_str("print('hello world!', list(x+1 for x in range(10)), end='eol\\n')", MP_PARSE_SINGLE_INPUT);
-    // do_str("for i in range(10):\r\n  print(i)", MP_PARSE_FILE_INPUT);
+    
+    
     #else
     pyexec_frozen_module("frozentest.py", false);
     #endif
@@ -63,8 +63,8 @@ int main(int argc, char **argv) {
 
 #if MICROPY_ENABLE_GC
 void gc_collect(void) {
-    // WARNING: This gc_collect implementation doesn't try to get root
-    // pointers from CPU registers, and thus may function incorrectly.
+    
+    
     void *dummy;
     gc_collect_start();
     gc_collect_root(&dummy, ((mp_uint_t)stack_top - (mp_uint_t)&dummy) / sizeof(mp_uint_t));
@@ -102,23 +102,23 @@ void MP_WEAK __assert_func(const char *file, int line, const char *func, const c
 
 #if MICROPY_MIN_USE_CORTEX_CPU
 
-// this is a minimal IRQ and reset framework for any Cortex-M CPU
+
 
 extern uint32_t _estack, _sidata, _sdata, _edata, _sbss, _ebss;
 
 void Reset_Handler(void) __attribute__((naked));
 void Reset_Handler(void) {
-    // set stack pointer
+    
     __asm volatile ("ldr sp, =_estack");
-    // copy .data section from flash to RAM
+    
     for (uint32_t *src = &_sidata, *dest = &_sdata; dest < &_edata;) {
         *dest++ = *src++;
     }
-    // zero out .bss section
+    
     for (uint32_t *dest = &_sbss; dest < &_ebss;) {
         *dest++ = 0;
     }
-    // jump to board initialisation
+    
     void _start(void);
     _start();
 }
@@ -131,38 +131,38 @@ void Default_Handler(void) {
 const uint32_t isr_vector[] __attribute__((section(".isr_vector"))) = {
     (uint32_t)&_estack,
     (uint32_t)&Reset_Handler,
-    (uint32_t)&Default_Handler, // NMI_Handler
-    (uint32_t)&Default_Handler, // HardFault_Handler
-    (uint32_t)&Default_Handler, // MemManage_Handler
-    (uint32_t)&Default_Handler, // BusFault_Handler
-    (uint32_t)&Default_Handler, // UsageFault_Handler
+    (uint32_t)&Default_Handler, 
+    (uint32_t)&Default_Handler, 
+    (uint32_t)&Default_Handler, 
+    (uint32_t)&Default_Handler, 
+    (uint32_t)&Default_Handler, 
     0,
     0,
     0,
     0,
-    (uint32_t)&Default_Handler, // SVC_Handler
-    (uint32_t)&Default_Handler, // DebugMon_Handler
+    (uint32_t)&Default_Handler, 
+    (uint32_t)&Default_Handler, 
     0,
-    (uint32_t)&Default_Handler, // PendSV_Handler
-    (uint32_t)&Default_Handler, // SysTick_Handler
+    (uint32_t)&Default_Handler, 
+    (uint32_t)&Default_Handler, 
 };
 
 void _start(void) {
-    // when we get here: stack is initialised, bss is clear, data is copied
+    
 
-    // SCB->CCR: enable 8-byte stack alignment for IRQ handlers, in accord with EABI
+    
     *((volatile uint32_t *)0xe000ed14) |= 1 << 9;
 
-    // initialise the cpu and peripherals
+    
     #if MICROPY_MIN_USE_STM32_MCU
     void stm32_init(void);
     stm32_init();
     #endif
 
-    // now that we have a basic system up and running we can call main
+    
     main(0, NULL);
 
-    // we must not return
+    
     for (;;) {
     }
 }
@@ -171,7 +171,7 @@ void _start(void) {
 
 #if MICROPY_MIN_USE_STM32_MCU
 
-// this is minimal set-up code for an STM32 MCU
+
 
 typedef struct {
     volatile uint32_t CR;
@@ -212,7 +212,7 @@ typedef struct {
 #define GPIOB  ((periph_gpio_t *)0x40020400)
 #define RCC    ((periph_rcc_t *)0x40023800)
 
-// simple GPIO interface
+
 #define GPIO_MODE_IN (0)
 #define GPIO_MODE_OUT (1)
 #define GPIO_MODE_ALT (2)
@@ -221,8 +221,8 @@ typedef struct {
 #define GPIO_PULL_DOWN (1)
 void gpio_init(periph_gpio_t *gpio, int pin, int mode, int pull, int alt) {
     gpio->MODER = (gpio->MODER & ~(3 << (2 * pin))) | (mode << (2 * pin));
-    // OTYPER is left as default push-pull
-    // OSPEEDR is left as default low speed
+    
+    
     gpio->PUPDR = (gpio->PUPDR & ~(3 << (2 * pin))) | (pull << (2 * pin));
     gpio->AFR[pin >> 3] = (gpio->AFR[pin >> 3] & ~(15 << (4 * (pin & 7)))) | (alt << (4 * (pin & 7)));
 }
@@ -232,29 +232,29 @@ void gpio_init(periph_gpio_t *gpio, int pin, int mode, int pull, int alt) {
 #define gpio_high(gpio, pin) do { gpio->BSRRL = (1 << (pin)); } while (0)
 
 void stm32_init(void) {
-    // basic MCU config
-    RCC->CR |= (uint32_t)0x00000001; // set HSION
-    RCC->CFGR = 0x00000000; // reset all
-    RCC->CR &= (uint32_t)0xfef6ffff; // reset HSEON, CSSON, PLLON
-    RCC->PLLCFGR = 0x24003010; // reset PLLCFGR
-    RCC->CR &= (uint32_t)0xfffbffff; // reset HSEBYP
-    RCC->CIR = 0x00000000; // disable IRQs
+    
+    RCC->CR |= (uint32_t)0x00000001; 
+    RCC->CFGR = 0x00000000; 
+    RCC->CR &= (uint32_t)0xfef6ffff; 
+    RCC->PLLCFGR = 0x24003010; 
+    RCC->CR &= (uint32_t)0xfffbffff; 
+    RCC->CIR = 0x00000000; 
 
-    // leave the clock as-is (internal 16MHz)
+    
 
-    // enable GPIO clocks
-    RCC->AHB1ENR |= 0x00000003; // GPIOAEN, GPIOBEN
+    
+    RCC->AHB1ENR |= 0x00000003; 
 
-    // turn on an LED! (on pyboard it's the red one)
+    
     gpio_init(GPIOA, 13, GPIO_MODE_OUT, GPIO_PULL_NONE, 0);
     gpio_high(GPIOA, 13);
 
-    // enable UART1 at 9600 baud (TX=B6, RX=B7)
+    
     gpio_init(GPIOB, 6, GPIO_MODE_ALT, GPIO_PULL_NONE, 7);
     gpio_init(GPIOB, 7, GPIO_MODE_ALT, GPIO_PULL_NONE, 7);
-    RCC->APB2ENR |= 0x00000010; // USART1EN
-    USART1->BRR = (104 << 4) | 3; // 16MHz/(16*104.1875) = 9598 baud
-    USART1->CR1 = 0x0000200c; // USART enable, tx enable, rx enable
+    RCC->APB2ENR |= 0x00000010; 
+    USART1->BRR = (104 << 4) | 3; 
+    USART1->CR1 = 0x0000200c; 
 }
 
 #endif

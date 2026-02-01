@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Amlogic Meson Nand Flash Controller Driver
- *
- * Copyright (c) 2018 Amlogic, inc.
- * Author: Liang Yang <liang.yang@amlogic.com>
- */
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/dma-mapping.h>
@@ -88,12 +83,12 @@
 
 #define MAX_CE_NUM		2
 
-/* eMMC clock register, misc control */
+ 
 #define CLK_SELECT_NAND		BIT(31)
 
 #define NFC_CLK_CYCLE		6
 
-/* nand flash controller delay 3 ns */
+ 
 #define NFC_DEFAULT_DELAY	3000
 
 #define ROW_ADDER(page, index)	(((page) >> (8 * (index))) & 0xff)
@@ -324,17 +319,7 @@ static void meson_nfc_cmd_access(struct nand_chip *nand, int raw, bool dir,
 
 static void meson_nfc_drain_cmd(struct meson_nfc *nfc)
 {
-	/*
-	 * Insert two commands to make sure all valid commands are finished.
-	 *
-	 * The Nand flash controller is designed as two stages pipleline -
-	 *  a) fetch and b) excute.
-	 * There might be cases when the driver see command queue is empty,
-	 * but the Nand flash controller still has two commands buffered,
-	 * one is fetched into NFC request queue (ready to run), and another
-	 * is actively executing. So pushing 2 "IDLE" commands guarantees that
-	 * the pipeline is emptied.
-	 */
+	 
 	meson_nfc_cmd_idle(nfc, 0);
 	meson_nfc_cmd_idle(nfc, 0);
 }
@@ -345,7 +330,7 @@ static int meson_nfc_wait_cmd_finish(struct meson_nfc *nfc,
 	u32 cmd_size = 0;
 	int ret;
 
-	/* wait cmd fifo is empty */
+	 
 	ret = readl_relaxed_poll_timeout(nfc->reg_base + NFC_REG_CMD, cmd_size,
 					 !NFC_CMD_GET_SIZE(cmd_size),
 					 10, timeout_ms * 1000);
@@ -438,7 +423,7 @@ static int meson_nfc_wait_no_rb_pin(struct nand_chip *nand, int timeout_ms,
 	reinit_completion(&nfc->completion);
 	nand_status_op(nand, NULL);
 
-	/* use the max erase time as the maximum clock for waiting R/B */
+	 
 	cmd = NFC_CMD_RB | NFC_CMD_RB_INT_NO_PIN | nfc->timing.tbers_max;
 	writel(cmd, nfc->reg_base + NFC_REG_CMD);
 
@@ -467,7 +452,7 @@ static int meson_nfc_wait_rb_pin(struct meson_nfc *nfc, int timeout_ms)
 
 	reinit_completion(&nfc->completion);
 
-	/* use the max erase time as the maximum clock for waiting R/B */
+	 
 	cmd = NFC_CMD_RB | NFC_CMD_RB_INT
 		| nfc->param.chip_select | nfc->timing.tbers_max;
 	writel(cmd, nfc->reg_base + NFC_REG_CMD);
@@ -486,16 +471,7 @@ static int meson_nfc_queue_rb(struct nand_chip *nand, int timeout_ms,
 	struct meson_nfc *nfc = nand_get_controller_data(nand);
 
 	if (nfc->no_rb_pin) {
-		/* This mode is used when there is no wired R/B pin.
-		 * It works like 'nand_soft_waitrdy()', but instead of
-		 * polling NAND_CMD_STATUS bit in the software loop,
-		 * it will wait for interrupt - controllers checks IO
-		 * bus and when it detects NAND_CMD_STATUS on it, it
-		 * raises interrupt. After interrupt, NAND_CMD_READ0 is
-		 * sent as terminator of the ready waiting procedure if
-		 * needed (for all cases except page programming - this
-		 * is reason of 'need_cmd_read0' flag).
-		 */
+		 
 		return meson_nfc_wait_no_rb_pin(nand, timeout_ms,
 						need_cmd_read0);
 	} else {
@@ -696,7 +672,7 @@ static int meson_nfc_rw_cmd_prepare_and_execute(struct nand_chip *nand,
 	else
 		cmd_num--;
 
-	/* subtract cmd1 */
+	 
 	cmd_num--;
 
 	for (i = 0; i < cmd_num; i++)
@@ -795,7 +771,7 @@ static void meson_nfc_check_ecc_pages_valid(struct meson_nfc *nfc,
 	info = &meson_chip->info_buf[neccpages - 1];
 	do {
 		usleep_range(10, 15);
-		/* info is updated by nfc dma engine*/
+		 
 		smp_rmb();
 		dma_sync_single_for_cpu(nfc->dev, nfc->iaddr, nfc->info_bytes,
 					DMA_FROM_DEVICE);
@@ -1118,7 +1094,7 @@ static int meson_nfc_clk_init(struct meson_nfc *nfc)
 	struct clk_init_data init = {0};
 	int ret;
 
-	/* request core clock */
+	 
 	nfc->core_clk = devm_clk_get(nfc->dev, "core");
 	if (IS_ERR(nfc->core_clk)) {
 		dev_err(nfc->dev, "failed to get core clock\n");
@@ -1153,7 +1129,7 @@ static int meson_nfc_clk_init(struct meson_nfc *nfc)
 	if (IS_ERR(nfc->nand_clk))
 		return PTR_ERR(nfc->nand_clk);
 
-	/* init SD_EMMC_CLOCK to sane defaults w/min clock rate */
+	 
 	writel(CLK_SELECT_NAND | readl(nfc->reg_clk),
 	       nfc->reg_clk);
 

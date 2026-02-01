@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
-//
-// Authors: Rander Wang <rander.wang@linux.intel.com>
-//	    Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
+
 #include <linux/firmware.h>
 #include <sound/sof/header.h>
 #include <sound/sof/ipc4/header.h>
@@ -182,23 +182,23 @@ static void sof_ipc4_log_header(struct device *dev, u8 *text, struct sof_ipc4_ms
 	type = SOF_IPC4_MSG_TYPE_GET(msg->primary);
 
 	if (val == SOF_IPC4_MSG_TARGET(SOF_IPC4_MODULE_MSG)) {
-		/* Module message */
+		 
 		if (type < SOF_IPC4_MOD_TYPE_LAST)
 			str = ipc4_dbg_mod_msg_type[type];
 		if (!str)
 			str = "Unknown Module message type";
 	} else {
-		/* Global FW message */
+		 
 		if (type < SOF_IPC4_GLB_TYPE_LAST)
 			str = ipc4_dbg_glb_msg_type[type];
 		if (!str)
 			str = "Unknown Global message type";
 
 		if (type == SOF_IPC4_GLB_NOTIFICATION) {
-			/* Notification message */
+			 
 			u32 notif = SOF_IPC4_NOTIFICATION_TYPE_GET(msg->primary);
 
-			/* Do not print log buffer notification if not desired */
+			 
 			if (notif == SOF_IPC4_NOTIFY_LOG_BUFFER_STATUS &&
 			    !sof_debug_check_flag(SOF_DBG_PRINT_DMA_POSITION_UPDATE_LOGS))
 				return;
@@ -228,11 +228,11 @@ static void sof_ipc4_log_header(struct device *dev, u8 *text, struct sof_ipc4_ms
 				msg->extension, str);
 	}
 }
-#else /* CONFIG_SND_SOC_SOF_DEBUG_VERBOSE_IPC */
+#else  
 static void sof_ipc4_log_header(struct device *dev, u8 *text, struct sof_ipc4_msg *msg,
 				bool data_size_valid)
 {
-	/* Do not print log buffer notification if not desired */
+	 
 	if (!sof_debug_check_flag(SOF_DBG_PRINT_DMA_POSITION_UPDATE_LOGS) &&
 	    !SOF_IPC4_MSG_IS_MODULE_MSG(msg->primary) &&
 	    SOF_IPC4_MSG_TYPE_GET(msg->primary) == SOF_IPC4_GLB_NOTIFICATION &&
@@ -260,7 +260,7 @@ static int sof_ipc4_get_reply(struct snd_sof_dev *sdev)
 	struct sof_ipc4_msg *ipc4_reply;
 	int ret;
 
-	/* get the generic reply */
+	 
 	ipc4_reply = msg->reply_data;
 
 	sof_ipc4_log_header(sdev->dev, "ipc tx reply", ipc4_reply, false);
@@ -269,19 +269,19 @@ static int sof_ipc4_get_reply(struct snd_sof_dev *sdev)
 	if (ret)
 		return ret;
 
-	/* No other information is expected for non large config get replies */
+	 
 	if (!msg->reply_size || !SOF_IPC4_MSG_IS_MODULE_MSG(ipc4_reply->primary) ||
 	    (SOF_IPC4_MSG_TYPE_GET(ipc4_reply->primary) != SOF_IPC4_MOD_LARGE_CONFIG_GET))
 		return 0;
 
-	/* Read the requested payload */
+	 
 	snd_sof_dsp_mailbox_read(sdev, sdev->dsp_box.offset, ipc4_reply->data_ptr,
 				 msg->reply_size);
 
 	return 0;
 }
 
-/* wait for IPC message reply */
+ 
 static int ipc4_wait_tx_done(struct snd_sof_ipc *ipc, void *reply_data)
 {
 	struct snd_sof_ipc_msg *msg = &ipc->msg;
@@ -289,7 +289,7 @@ static int ipc4_wait_tx_done(struct snd_sof_ipc *ipc, void *reply_data)
 	struct snd_sof_dev *sdev = ipc->sdev;
 	int ret;
 
-	/* wait for DSP IPC completion */
+	 
 	ret = wait_event_timeout(msg->waitq, msg->ipc_complete,
 				 msecs_to_jiffies(sdev->ipc_timeout));
 	if (ret == 0) {
@@ -308,10 +308,10 @@ static int ipc4_wait_tx_done(struct snd_sof_ipc *ipc, void *reply_data)
 			struct sof_ipc4_msg *ipc4_reply = msg->reply_data;
 			struct sof_ipc4_msg *ipc4_reply_data = reply_data;
 
-			/* Copy the header */
+			 
 			ipc4_reply_data->header_u64 = ipc4_reply->header_u64;
 			if (msg->reply_size && ipc4_reply_data->data_ptr) {
-				/* copy the payload returned from DSP */
+				 
 				memcpy(ipc4_reply_data->data_ptr, ipc4_reply->data_ptr,
 				       msg->reply_size);
 				ipc4_reply_data->data_size = msg->reply_size;
@@ -322,7 +322,7 @@ static int ipc4_wait_tx_done(struct snd_sof_ipc *ipc, void *reply_data)
 		sof_ipc4_log_header(sdev->dev, "ipc tx done ", ipc4_msg, true);
 	}
 
-	/* re-enable dumps after successful IPC tx */
+	 
 	if (sdev->ipc_dump_printed) {
 		sdev->dbg_dump_printed = false;
 		sdev->ipc_dump_printed = false;
@@ -352,7 +352,7 @@ static int ipc4_tx_msg_unlocked(struct snd_sof_ipc *ipc,
 		return ret;
 	}
 
-	/* now wait for completion */
+	 
 	return ipc4_wait_tx_done(ipc, reply_data);
 }
 
@@ -370,13 +370,13 @@ static int sof_ipc4_tx_msg(struct snd_sof_dev *sdev, void *msg_data, size_t msg_
 			.state = SOF_DSP_PM_D0,
 		};
 
-		/* ensure the DSP is in D0i0 before sending a new IPC */
+		 
 		ret = snd_sof_dsp_set_power_state(sdev, &target_state);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* Serialise IPC TX */
+	 
 	mutex_lock(&ipc->tx_mutex);
 
 	ret = ipc4_tx_msg_unlocked(ipc, msg_data, msg_bytes, reply_data, reply_bytes);
@@ -384,7 +384,7 @@ static int sof_ipc4_tx_msg(struct snd_sof_dev *sdev, void *msg_data, size_t msg_
 	if (sof_debug_check_flag(SOF_DBG_DUMP_IPC_MESSAGE_PAYLOAD)) {
 		struct sof_ipc4_msg *msg = NULL;
 
-		/* payload is indicated by non zero msg/reply_bytes */
+		 
 		if (msg_bytes)
 			msg = msg_data;
 		else if (reply_bytes)
@@ -435,12 +435,12 @@ static int sof_ipc4_set_get_data(struct snd_sof_dev *sdev, void *data,
 
 	tx.extension |= SOF_IPC4_MOD_EXT_MSG_FIRST_BLOCK(1);
 
-	/* ensure the DSP is in D0i0 before sending IPC */
+	 
 	ret = snd_sof_dsp_set_power_state(sdev, &target_state);
 	if (ret < 0)
 		return ret;
 
-	/* Serialise IPC TX */
+	 
 	mutex_lock(&sdev->ipc->tx_mutex);
 
 	do {
@@ -476,7 +476,7 @@ static int sof_ipc4_set_get_data(struct snd_sof_dev *sdev, void *data,
 			rx_size = chunk_size;
 		}
 
-		/* Send the message for the current chunk */
+		 
 		ret = ipc4_tx_msg_unlocked(sdev->ipc, &tx, tx_size, &rx, rx_size);
 		if (ret < 0) {
 			dev_err(sdev->dev,
@@ -486,7 +486,7 @@ static int sof_ipc4_set_get_data(struct snd_sof_dev *sdev, void *data,
 		}
 
 		if (!set && rx.extension & SOF_IPC4_MOD_EXT_MSG_FIRST_BLOCK_MASK) {
-			/* Verify the firmware reported total payload size */
+			 
 			rx_size = rx.extension & SOF_IPC4_MOD_EXT_MSG_SIZE_MASK;
 
 			if (rx_size > payload_bytes) {
@@ -509,7 +509,7 @@ static int sof_ipc4_set_get_data(struct snd_sof_dev *sdev, void *data,
 		remaining -= chunk_size;
 	} while (remaining);
 
-	/* Adjust the received data size if needed */
+	 
 	if (!set && payload_bytes != offset)
 		ipc4_msg->data_size = offset;
 
@@ -527,10 +527,10 @@ static int sof_ipc4_init_msg_memory(struct snd_sof_dev *sdev)
 	struct sof_ipc4_msg *ipc4_msg;
 	struct snd_sof_ipc_msg *msg = &sdev->ipc->msg;
 
-	/* TODO: get max_payload_size from firmware */
+	 
 	sdev->ipc->max_payload_size = SOF_IPC4_MSG_MAX_SIZE;
 
-	/* Allocate memory for the ipc4 container and the maximum payload */
+	 
 	msg->reply_data = devm_kzalloc(sdev->dev, sdev->ipc->max_payload_size +
 				       sizeof(struct sof_ipc4_msg), GFP_KERNEL);
 	if (!msg->reply_data)
@@ -546,11 +546,11 @@ static int ipc4_fw_ready(struct snd_sof_dev *sdev, struct sof_ipc4_msg *ipc4_msg
 {
 	int inbox_offset, inbox_size, outbox_offset, outbox_size;
 
-	/* no need to re-check version/ABI for subsequent boots */
+	 
 	if (!sdev->first_boot)
 		return 0;
 
-	/* Set up the windows for IPC communication */
+	 
 	inbox_offset = snd_sof_dsp_get_mailbox_offset(sdev);
 	if (inbox_offset < 0) {
 		dev_err(sdev->dev, "%s: No mailbox offset\n", __func__);
@@ -595,7 +595,7 @@ static void sof_ipc4_rx_msg(struct snd_sof_dev *sdev)
 
 	switch (SOF_IPC4_NOTIFICATION_TYPE_GET(ipc4_msg->primary)) {
 	case SOF_IPC4_NOTIFY_FW_READY:
-		/* check for FW boot completion */
+		 
 		if (sdev->fw_state == SOF_FW_BOOT_IN_PROGRESS) {
 			err = ipc4_fw_ready(sdev, ipc4_msg);
 			if (err < 0)
@@ -603,7 +603,7 @@ static void sof_ipc4_rx_msg(struct snd_sof_dev *sdev)
 			else
 				sof_set_fw_state(sdev, SOF_FW_BOOT_READY_OK);
 
-			/* wake up firmware loader */
+			 
 			wake_up(&sdev->boot_wait);
 		}
 
@@ -662,15 +662,7 @@ static int sof_ipc4_set_core_state(struct snd_sof_dev *sdev, int core_idx, bool 
 	return sof_ipc4_tx_msg(sdev, &msg, msg.data_size, NULL, 0, false);
 }
 
-/*
- * The context save callback is used to send a message to the firmware notifying
- * it that the primary core is going to be turned off, which is used as an
- * indication to prepare for a full power down, thus preparing for IMR boot
- * (when supported)
- *
- * Note: in IPC4 there is no message used to restore context, thus no context
- * restore callback is implemented
- */
+ 
 static int sof_ipc4_ctx_save(struct snd_sof_dev *sdev)
 {
 	return sof_ipc4_set_core_state(sdev, SOF_DSP_PRIMARY_CORE, false);
@@ -712,10 +704,7 @@ static void sof_ipc4_exit(struct snd_sof_dev *sdev)
 	unsigned long lib_id;
 
 	xa_for_each(&ipc4_data->fw_lib_xa, lib_id, fw_lib) {
-		/*
-		 * The basefw (ID == 0) is handled by generic code, it is not
-		 * loaded by IPC4 code.
-		 */
+		 
 		if (lib_id != 0)
 			release_firmware(fw_lib->sof_fw.fw);
 

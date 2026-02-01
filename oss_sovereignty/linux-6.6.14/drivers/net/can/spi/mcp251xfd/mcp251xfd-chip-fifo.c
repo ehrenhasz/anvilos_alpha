@@ -1,16 +1,16 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2019, 2020, 2021 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
-// Based on:
-//
-// CAN bus driver for Microchip 25XXFD CAN Controller with SPI Interface
-//
-// Copyright (c) 2019 Martin Sperl <kernel@martin.sperl.org>
-//
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 
@@ -22,12 +22,7 @@ mcp251xfd_chip_rx_fifo_init_one(const struct mcp251xfd_priv *priv,
 {
 	u32 fifo_con;
 
-	/* Enable RXOVIE on _all_ RX FIFOs, not just the last one.
-	 *
-	 * FIFOs hit by a RX MAB overflow and RXOVIE enabled will
-	 * generate a RXOVIF, use this to properly detect RX MAB
-	 * overflows.
-	 */
+	 
 	fifo_con = FIELD_PREP(MCP251XFD_REG_FIFOCON_FSIZE_MASK,
 			      ring->obj_num - 1) |
 		MCP251XFD_REG_FIFOCON_RXTSEN |
@@ -67,7 +62,7 @@ int mcp251xfd_chip_fifo_init(const struct mcp251xfd_priv *priv)
 	u32 val;
 	int err, n;
 
-	/* TEF */
+	 
 	val = FIELD_PREP(MCP251XFD_REG_TEFCON_FSIZE_MASK,
 			 tx_ring->obj_num - 1) |
 		MCP251XFD_REG_TEFCON_TEFTSEN |
@@ -78,7 +73,7 @@ int mcp251xfd_chip_fifo_init(const struct mcp251xfd_priv *priv)
 	if (err)
 		return err;
 
-	/* TX FIFO */
+	 
 	val = FIELD_PREP(MCP251XFD_REG_FIFOCON_FSIZE_MASK,
 			 tx_ring->obj_num - 1) |
 		MCP251XFD_REG_FIFOCON_TXEN |
@@ -104,7 +99,7 @@ int mcp251xfd_chip_fifo_init(const struct mcp251xfd_priv *priv)
 	if (err)
 		return err;
 
-	/* RX FIFOs */
+	 
 	mcp251xfd_for_each_rx_ring(priv, rx_ring, n) {
 		err = mcp251xfd_chip_rx_fifo_init_one(priv, rx_ring);
 		if (err)

@@ -1,23 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (c) Jeffrey Layton <jlayton@redhat.com>, 2013
- *
- * The const tables in this file were converted from the following info
- * provided by Microsoft:
- *
- * 3.1.5.3 Mapping UTF-16 Strings to Upper Case:
- *
- * https://msdn.microsoft.com/en-us/library/hh877830.aspx
- * http://www.microsoft.com/en-us/download/details.aspx?displaylang=en&id=10921
- *
- * In particular, the table in "Windows 8 Upper Case Mapping Table.txt" was
- * post-processed using the winucase_convert.pl script.
- */
+
+ 
 
 #include <linux/nls.h>
 
-wchar_t cifs_toupper(wchar_t in);  /* quiet sparse */
+wchar_t cifs_toupper(wchar_t in);   
 
 static const wchar_t t2_00[256] = {
 	0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000, 0x0000,
@@ -614,14 +600,7 @@ static const wchar_t *const toplevel[256] = {
 	NULL,  NULL,  NULL,  NULL,  NULL,  NULL,  NULL, t2_ff,
 };
 
-/**
- * cifs_toupper - convert a wchar_t from lower to uppercase
- * @in: character to convert from lower to uppercase
- *
- * This function consults the static tables above to convert a wchar_t from
- * lower to uppercase. In the event that there is no mapping, the original
- * "in" character is returned.
- */
+ 
 wchar_t
 cifs_toupper(wchar_t in)
 {
@@ -629,18 +608,18 @@ cifs_toupper(wchar_t in)
 	const wchar_t *tbl;
 	wchar_t out;
 
-	/* grab upper byte */
+	 
 	idx = (in & 0xff00) >> 8;
 
-	/* find pointer to 2nd layer table */
+	 
 	tbl = toplevel[idx];
 	if (!tbl)
 		return in;
 
-	/* grab lower byte */
+	 
 	idx = in & 0xff;
 
-	/* look up character in table */
+	 
 	out = tbl[idx];
 	if (out)
 		return out;

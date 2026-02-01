@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// max8997.c - Regulator driver for the Maxim 8997/8966
-//
-// Copyright (C) 2011 Samsung Electronics
-// MyungJoo Ham <myungjoo.ham@samsung.com>
-//
-// This driver is based on max8998.c
+
+
+
+
+
+
+
+
 
 #include <linux/bug.h>
 #include <linux/err.h>
@@ -24,7 +24,7 @@ struct max8997_data {
 	struct device *dev;
 	struct max8997_dev *iodev;
 	int num_regulators;
-	int ramp_delay; /* in mV/us */
+	int ramp_delay;  
 
 	bool buck1_gpiodvs;
 	bool buck2_gpiodvs;
@@ -63,20 +63,20 @@ struct voltage_map_desc {
 	int step;
 };
 
-/* Voltage maps in uV */
+ 
 static const struct voltage_map_desc ldo_voltage_map_desc = {
 	.min = 800000,	.max = 3950000,	.step = 50000,
-}; /* LDO1 ~ 18, 21 all */
+};  
 
 static const struct voltage_map_desc buck1245_voltage_map_desc = {
 	.min = 650000,	.max = 2225000,	.step = 25000,
-}; /* Buck1, 2, 4, 5 */
+};  
 
 static const struct voltage_map_desc buck37_voltage_map_desc = {
 	.min = 750000,	.max = 3900000,	.step = 50000,
-}; /* Buck3, 7 */
+};  
 
-/* current map in uA */
+ 
 static const struct voltage_map_desc charger_current_map_desc = {
 	.min = 200000,	.max = 950000,	.step = 50000,
 };
@@ -232,7 +232,7 @@ static int max8997_get_enable_register(struct regulator_dev *rdev,
 		*pattern = 0x40;
 		break;
 	default:
-		/* Not controllable or not exists */
+		 
 		return -EINVAL;
 	}
 
@@ -441,10 +441,7 @@ static int max8997_set_voltage_charger_cv(struct regulator_dev *rdev,
 	return ret;
 }
 
-/*
- * For LDO1 ~ LDO21, BUCK1~5, BUCK7, CHARGER, CHARGER_TOPOFF
- * BUCK1, 2, and 5 are available if they are not controlled by gpio
- */
+ 
 static int max8997_set_voltage_ldobuck(struct regulator_dev *rdev,
 		int min_uV, int max_uV, unsigned *selector)
 {
@@ -495,11 +492,11 @@ static int max8997_set_voltage_buck_time_sel(struct regulator_dev *rdev,
 	int rid = rdev_get_id(rdev);
 	const struct voltage_map_desc *desc = reg_voltage_map[rid];
 
-	/* Delay is required only if the voltage is increasing */
+	 
 	if (old_selector >= new_selector)
 		return 0;
 
-	/* No need to delay if gpio_dvs_mode */
+	 
 	switch (rid) {
 	case MAX8997_BUCK1:
 		if (max8997->buck1_gpiodvs)
@@ -527,14 +524,7 @@ static int max8997_set_voltage_buck_time_sel(struct regulator_dev *rdev,
 	return 0;
 }
 
-/*
- * Assess the damage on the voltage setting of BUCK1,2,5 by the change.
- *
- * When GPIO-DVS mode is used for multiple bucks, changing the voltage value
- * of one of the bucks may affect that of another buck, which is the side
- * effect of the change (set_voltage). This function examines the GPIO-DVS
- * configurations and checks whether such side-effect exists.
- */
+ 
 static int max8997_assess_side_effect(struct regulator_dev *rdev,
 		u8 new_val, int *best)
 {
@@ -584,7 +574,7 @@ static int max8997_assess_side_effect(struct regulator_dev *rdev,
 			if (others == rid)
 				continue;
 			if (buckx_gpiodvs[others] == false)
-				continue; /* Not affected */
+				continue;  
 			diff = (buckx_val[others])[i] -
 				(buckx_val[others])[max8997->buck125_gpioindex];
 			if (diff > 0)
@@ -594,7 +584,7 @@ static int max8997_assess_side_effect(struct regulator_dev *rdev,
 		}
 		if (side_effect[i] == 0) {
 			*best = i;
-			return 0; /* NO SIDE EFFECT! Use This! */
+			return 0;  
 		}
 		if (side_effect[i] < min_side_effect) {
 			min_side_effect = side_effect[i];
@@ -608,10 +598,7 @@ static int max8997_assess_side_effect(struct regulator_dev *rdev,
 	return side_effect[*best];
 }
 
-/*
- * For Buck 1 ~ 5 and 7. If it is not controlled by GPIO, this calls
- * max8997_set_voltage_ldobuck to do the job.
- */
+ 
 static int max8997_set_voltage_buck(struct regulator_dev *rdev,
 		int min_uV, int max_uV, unsigned *selector)
 {
@@ -686,7 +673,7 @@ out:
 	return 0;
 }
 
-/* For SAFEOUT1 and SAFEOUT2 */
+ 
 static int max8997_set_voltage_safeout_sel(struct regulator_dev *rdev,
 					   unsigned selector)
 {
@@ -786,7 +773,7 @@ static int max8997_set_current_limit(struct regulator_dev *rdev,
 	if (rid != MAX8997_CHARGER && rid != MAX8997_CHARGER_TOPOFF)
 		return -EINVAL;
 
-	/* Reuse max8997_set_voltage_ldobuck to set current_limit. */
+	 
 	return max8997_set_voltage_ldobuck(rdev, min_uA, max_uA, &dummy);
 }
 
@@ -801,7 +788,7 @@ static int max8997_get_current_limit(struct regulator_dev *rdev)
 	if (sel < 0)
 		return sel;
 
-	/* Reuse max8997_list_voltage to get current_limit. */
+	 
 	return max8997_list_voltage(rdev, sel);
 }
 
@@ -911,7 +898,7 @@ static int max8997_pmic_dt_parse_pdata(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* count the number of regulators to be supported in pmic */
+	 
 	pdata->num_regulators = of_get_child_count(regulators_np);
 
 	rdata = devm_kcalloc(&pdev->dev,
@@ -1000,7 +987,7 @@ static int max8997_pmic_dt_parse_pdata(struct platform_device *pdev,
 {
 	return 0;
 }
-#endif /* CONFIG_OF */
+#endif  
 
 static int max8997_pmic_probe(struct platform_device *pdev)
 {
@@ -1081,7 +1068,7 @@ static int max8997_pmic_probe(struct platform_device *pdev)
 			max_buck5 = max8997->buck5_vol[i];
 	}
 
-	/* For the safety, set max voltage before setting up */
+	 
 	for (i = 0; i < 8; i++) {
 		max8997_update_reg(i2c, MAX8997_REG_BUCK1DVS1 + i,
 				max_buck1, 0x3f);
@@ -1091,7 +1078,7 @@ static int max8997_pmic_probe(struct platform_device *pdev)
 				max_buck5, 0x3f);
 	}
 
-	/* Initialize all the DVS related BUCK registers */
+	 
 	for (i = 0; i < nr_dvs; i++) {
 		max8997_update_reg(i2c, MAX8997_REG_BUCK1DVS1 + i,
 				max8997->buck1_vol[i],
@@ -1104,10 +1091,7 @@ static int max8997_pmic_probe(struct platform_device *pdev)
 				0x3f);
 	}
 
-	/*
-	 * If buck 1, 2, and 5 do not care DVS GPIO settings, ignore them.
-	 * If at least one of them cares, set gpios.
-	 */
+	 
 	if (pdata->buck1_gpiodvs || pdata->buck2_gpiodvs ||
 			pdata->buck5_gpiodvs) {
 
@@ -1135,16 +1119,16 @@ static int max8997_pmic_probe(struct platform_device *pdev)
 
 		gpio_direction_output(pdata->buck125_gpios[0],
 				(max8997->buck125_gpioindex >> 2)
-				& 0x1); /* SET1 */
+				& 0x1);  
 		gpio_direction_output(pdata->buck125_gpios[1],
 				(max8997->buck125_gpioindex >> 1)
-				& 0x1); /* SET2 */
+				& 0x1);  
 		gpio_direction_output(pdata->buck125_gpios[2],
 				(max8997->buck125_gpioindex >> 0)
-				& 0x1); /* SET3 */
+				& 0x1);  
 	}
 
-	/* DVS-GPIO disabled */
+	 
 	max8997_update_reg(i2c, MAX8997_REG_BUCK1CTRL, (pdata->buck1_gpiodvs) ?
 			(1 << 1) : (0 << 1), 1 << 1);
 	max8997_update_reg(i2c, MAX8997_REG_BUCK2CTRL, (pdata->buck2_gpiodvs) ?
@@ -1152,8 +1136,8 @@ static int max8997_pmic_probe(struct platform_device *pdev)
 	max8997_update_reg(i2c, MAX8997_REG_BUCK5CTRL, (pdata->buck5_gpiodvs) ?
 			(1 << 1) : (0 << 1), 1 << 1);
 
-	/* Misc Settings */
-	max8997->ramp_delay = 10; /* set 10mV/us, which is the default */
+	 
+	max8997->ramp_delay = 10;  
 	max8997_write_reg(i2c, MAX8997_REG_BUCKRAMP, (0xf << 4) | 0x9);
 
 	for (i = 0; i < pdata->num_regulators; i++) {

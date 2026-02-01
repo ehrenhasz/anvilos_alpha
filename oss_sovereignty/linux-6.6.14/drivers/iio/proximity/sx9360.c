@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 Google LLC.
- *
- * Driver for Semtech's SX9360 capacitive proximity/button solution.
- * Based on SX9360 driver and copy of datasheet at:
- * https://edit.wpgdadawant.com/uploads/news_file/program/2019/30184/tech_files/program_30184_suggest_other_file.pdf
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -25,11 +19,11 @@
 
 #include "sx_common.h"
 
-/* Nominal Oscillator Frequency. */
+ 
 #define SX9360_FOSC_MHZ			4
 #define SX9360_FOSC_HZ			(SX9360_FOSC_MHZ * 1000000)
 
-/* Register definitions. */
+ 
 #define SX9360_REG_IRQ_SRC		SX_COMMON_REG_IRQ_SRC
 #define SX9360_REG_STAT		0x01
 #define SX9360_REG_STAT_COMPSTAT_MASK	GENMASK(2, 1)
@@ -113,7 +107,7 @@
 #define SX9360_REG_USE_FILTER_LSB		0x9b
 
 #define SX9360_REG_RESET		0xcf
-/* Write this to REG_RESET to do a soft reset. */
+ 
 #define SX9360_SOFT_RESET		0xde
 
 #define SX9360_REG_WHOAMI		0xfa
@@ -121,7 +115,7 @@
 
 #define SX9360_REG_REVISION		0xfe
 
-/* 2 channels, Phase Reference and Measurement. */
+ 
 #define SX9360_NUM_CHANNELS		2
 
 static const struct iio_chan_spec sx9360_channels[] = {
@@ -170,30 +164,18 @@ static const struct iio_chan_spec sx9360_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(2),
 };
 
-/*
- * Each entry contains the integer part (val) and the fractional part, in micro
- * seconds. It conforms to the IIO output IIO_VAL_INT_PLUS_MICRO.
- *
- * The frequency control register holds the period, with a ~2ms increment.
- * Therefore the smallest frequency is 4MHz / (2047 * 8192),
- * The fastest is 4MHz / 8192.
- * The interval is not linear, but given there is 2047 possible value,
- * Returns the fake increment of (Max-Min)/2047
- */
+ 
 static const struct {
 	int val;
 	int val2;
 } sx9360_samp_freq_interval[] = {
-	{ 0, 281250 },  /* 4MHz / (8192 * 2047) */
+	{ 0, 281250 },   
 	{ 0, 281250 },
-	{ 448, 281250 },  /* 4MHz / 8192 */
+	{ 448, 281250 },   
 };
 
 static const struct regmap_range sx9360_writable_reg_ranges[] = {
-	/*
-	 * To set COMPSTAT for compensation, even if datasheet says register is
-	 * RO.
-	 */
+	 
 	regmap_reg_range(SX9360_REG_STAT, SX9360_REG_IRQ_CFG),
 	regmap_reg_range(SX9360_REG_GNRL_CTRL0, SX9360_REG_GNRL_CTRL2),
 	regmap_reg_range(SX9360_REG_AFE_CTRL1, SX9360_REG_AFE_PARAM1_PHM),
@@ -208,10 +190,7 @@ static const struct regmap_access_table sx9360_writeable_regs = {
 	.n_yes_ranges = ARRAY_SIZE(sx9360_writable_reg_ranges),
 };
 
-/*
- * All allocated registers are readable, so we just list unallocated
- * ones.
- */
+ 
 static const struct regmap_range sx9360_non_readable_reg_ranges[] = {
 	regmap_reg_range(SX9360_REG_IRQ_CFG + 1, SX9360_REG_GNRL_CTRL0 - 1),
 	regmap_reg_range(SX9360_REG_GNRL_CTRL2 + 1, SX9360_REG_AFE_CTRL1 - 1),
@@ -261,10 +240,7 @@ static int sx9360_read_prox_data(struct sx_common_data *data,
 	return regmap_bulk_read(data->regmap, chan->address, val, sizeof(*val));
 }
 
-/*
- * If we have no interrupt support, we have to wait for a scan period
- * after enabling a channel to get a result.
- */
+ 
 static int sx9360_wait_for_sample(struct sx_common_data *data)
 {
 	int ret;
@@ -664,11 +640,7 @@ static int sx9360_write_raw(struct iio_dev *indio_dev,
 static const struct sx_common_reg_default sx9360_default_regs[] = {
 	{ SX9360_REG_IRQ_MSK, 0x00 },
 	{ SX9360_REG_IRQ_CFG, 0x00, "irq_cfg" },
-	/*
-	 * The lower 2 bits should not be set as it enable sensors measurements.
-	 * Turning the detection on before the configuration values are set to
-	 * good values can cause the device to return erroneous readings.
-	 */
+	 
 	{ SX9360_REG_GNRL_CTRL0, 0x00, "gnrl_ctrl0" },
 	{ SX9360_REG_GNRL_CTRL1, 0x00, "gnrl_ctrl1" },
 	{ SX9360_REG_GNRL_CTRL2, SX9360_REG_GNRL_CTRL2_PERIOD_102MS, "gnrl_ctrl2" },
@@ -696,14 +668,14 @@ static const struct sx_common_reg_default sx9360_default_regs[] = {
 	{ SX9360_REG_PROX_CTRL5, SX9360_REG_PROX_CTRL5_PROXTHRESH_32, "prox_ctrl5" },
 };
 
-/* Activate all channels and perform an initial compensation. */
+ 
 static int sx9360_init_compensation(struct iio_dev *indio_dev)
 {
 	struct sx_common_data *data = iio_priv(indio_dev);
 	unsigned int val;
 	int ret;
 
-	/* run the compensation phase on all channels */
+	 
 	ret = regmap_update_bits(data->regmap, SX9360_REG_STAT,
 				 SX9360_REG_STAT_COMPSTAT_MASK,
 				 SX9360_REG_STAT_COMPSTAT_MASK);
@@ -761,7 +733,7 @@ sx9360_get_default_reg(struct device *dev, int idx,
 		if (ret)
 			break;
 
-		/* Powers of 2, except for a gap between 16 and 64 */
+		 
 		raw = clamp(ilog2(pos), 3, 11) - (pos >= 32 ? 4 : 3);
 		reg_def->def &= ~SX9360_REG_PROX_CTRL3_AVGPOS_FILT_MASK;
 		reg_def->def |= FIELD_PREP(SX9360_REG_PROX_CTRL3_AVGPOS_FILT_MASK, raw);
@@ -773,10 +745,7 @@ sx9360_get_default_reg(struct device *dev, int idx,
 
 static int sx9360_check_whoami(struct device *dev, struct iio_dev *indio_dev)
 {
-	/*
-	 * Only one sensor for this driver. Assuming the device tree
-	 * is correct, just set the sensor name.
-	 */
+	 
 	indio_dev->name = "sx9360";
 	return 0;
 }
@@ -836,7 +805,7 @@ static int sx9360_suspend(struct device *dev)
 	if (ret < 0)
 		goto out;
 
-	/* Disable all phases, send the device to sleep. */
+	 
 	ret = regmap_write(data->regmap, SX9360_REG_GNRL_CTRL0, 0);
 
 out:
@@ -889,11 +858,7 @@ static struct i2c_driver sx9360_driver = {
 		.of_match_table = sx9360_of_match,
 		.pm = pm_sleep_ptr(&sx9360_pm_ops),
 
-		/*
-		 * Lots of i2c transfers in probe + over 200 ms waiting in
-		 * sx9360_init_compensation() mean a slow probe; prefer async
-		 * so we don't delay boot if we're builtin to the kernel.
-		 */
+		 
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 	.probe		= sx9360_probe,

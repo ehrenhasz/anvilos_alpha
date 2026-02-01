@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Industrial I/O driver for Microchip digital potentiometers
- * Copyright (c) 2015  Axentia Technologies AB
- * Author: Peter Rosin <peda@axentia.se>
- *
- * Datasheet: http://www.microchip.com/downloads/en/DeviceDoc/22096b.pdf
- *
- * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
- * mcp4531	1	129		5, 10, 50, 100          010111x
- * mcp4532	1	129		5, 10, 50, 100          01011xx
- * mcp4541	1	129		5, 10, 50, 100          010111x
- * mcp4542	1	129		5, 10, 50, 100          01011xx
- * mcp4551	1	257		5, 10, 50, 100          010111x
- * mcp4552	1	257		5, 10, 50, 100          01011xx
- * mcp4561	1	257		5, 10, 50, 100          010111x
- * mcp4562	1	257		5, 10, 50, 100          01011xx
- * mcp4631	2	129		5, 10, 50, 100          0101xxx
- * mcp4632	2	129		5, 10, 50, 100          01011xx
- * mcp4641	2	129		5, 10, 50, 100          0101xxx
- * mcp4642	2	129		5, 10, 50, 100          01011xx
- * mcp4651	2	257		5, 10, 50, 100          0101xxx
- * mcp4652	2	257		5, 10, 50, 100          01011xx
- * mcp4661	2	257		5, 10, 50, 100          0101xxx
- * mcp4662	2	257		5, 10, 50, 100          01011xx
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -276,7 +252,7 @@ static const struct i2c_device_id mcp4531_id[] = {
 	MCP4531_ID_TABLE("mcp4662-103", MCP466x_103),
 	MCP4531_ID_TABLE("mcp4662-503", MCP466x_503),
 	MCP4531_ID_TABLE("mcp4662-104", MCP466x_104),
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, mcp4531_id);
 
@@ -350,7 +326,7 @@ static const struct of_device_id mcp4531_of_match[] = {
 	MCP4531_COMPATIBLE("microchip,mcp4662-103", MCP466x_103),
 	MCP4531_COMPATIBLE("microchip,mcp4662-503", MCP466x_503),
 	MCP4531_COMPATIBLE("microchip,mcp4662-104", MCP466x_104),
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mcp4531_of_match);
 

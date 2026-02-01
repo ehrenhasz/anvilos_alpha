@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Privileged ADI driver for sparc64
- *
- * Author: Tom Hromatka <tom.hromatka@oracle.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/miscdevice.h>
 #include <linux/module.h>
@@ -182,7 +178,7 @@ static loff_t adi_llseek(struct file *file, loff_t offset, int whence)
 	case SEEK_END:
 	case SEEK_DATA:
 	case SEEK_HOLE:
-		/* unsupported */
+		 
 		return -EINVAL;
 	case SEEK_CUR:
 		if (offset == 0)

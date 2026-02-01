@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1+
-/*
- * Copyright 2016 Tom aan de Wiel
- * Copyright 2018 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- *
- * 8x8 Fast Walsh Hadamard Transform in sequency order based on the paper:
- *
- * A Recursive Algorithm for Sequency-Ordered Fast Walsh Transforms,
- * R.D. Brown, 1977
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/kernel.h>
@@ -16,11 +8,7 @@
 
 #define OVERFLOW_BIT BIT(14)
 
-/*
- * Note: bit 0 of the header must always be 0. Otherwise it cannot
- * be guaranteed that the magic 8 byte sequence (see below) can
- * never occur in the rlc output.
- */
+ 
 #define PFRAME_BIT BIT(15)
 #define DUPS_MASK 0x1ffe
 
@@ -47,10 +35,7 @@ static const uint8_t zigzag[64] = {
 	63,
 };
 
-/*
- * noinline_for_stack to work around
- * https://bugs.llvm.org/show_bug.cgi?id=38809
- */
+ 
 static int noinline_for_stack
 rlc(const s16 *in, __be16 *output, int blocktype)
 {
@@ -60,7 +45,7 @@ rlc(const s16 *in, __be16 *output, int blocktype)
 	int x, y;
 	int ret = 0;
 
-	/* read in block from framebuffer */
+	 
 	int lastzero_run = 0;
 	int to_encode;
 
@@ -71,7 +56,7 @@ rlc(const s16 *in, __be16 *output, int blocktype)
 		}
 	}
 
-	/* keep track of amount of trailing zeros */
+	 
 	for (i = 63; i >= 0 && !block[zigzag[i]]; i--)
 		lastzero_run++;
 
@@ -85,7 +70,7 @@ rlc(const s16 *in, __be16 *output, int blocktype)
 		int cnt = 0;
 		int tmp;
 
-		/* count leading zeros */
+		 
 		while ((tmp = block[zigzag[i]]) == 0 && cnt < 14) {
 			cnt++;
 			i++;
@@ -94,7 +79,7 @@ rlc(const s16 *in, __be16 *output, int blocktype)
 				break;
 			}
 		}
-		/* 4 bits for run, 12 for coefficient (quantization by 4) */
+		 
 		*output++ = htons((cnt | tmp << 4));
 		i++;
 		ret++;
@@ -107,14 +92,11 @@ rlc(const s16 *in, __be16 *output, int blocktype)
 	return ret;
 }
 
-/*
- * This function will worst-case increase rlc_in by 65*2 bytes:
- * one s16 value for the header and 8 * 8 coefficients of type s16.
- */
+ 
 static noinline_for_stack u16
 derlc(const __be16 **rlc_in, s16 *dwht_out, const __be16 *end_of_input)
 {
-	/* header */
+	 
 	const __be16 *input = *rlc_in;
 	u16 stat;
 	int dec_count = 0;
@@ -126,14 +108,7 @@ derlc(const __be16 **rlc_in, s16 *dwht_out, const __be16 *end_of_input)
 		return OVERFLOW_BIT;
 	stat = ntohs(*input++);
 
-	/*
-	 * Now de-compress, it expands one byte to up to 15 bytes
-	 * (or fills the remainder of the 64 bytes with zeroes if it
-	 * is the last byte to expand).
-	 *
-	 * So block has to be 8 * 8 + 16 bytes, the '+ 16' is to
-	 * allow for overflow if the incoming data was malformed.
-	 */
+	 
 	while (dec_count < 8 * 8) {
 		s16 in;
 		int length;
@@ -145,7 +120,7 @@ derlc(const __be16 **rlc_in, s16 *dwht_out, const __be16 *end_of_input)
 		length = in & 0xf;
 		coeff = in >> 4;
 
-		/* fill remainder with zeros */
+		 
 		if (length == 15) {
 			for (i = 0; i < 64 - dec_count; i++)
 				*wp++ = 0;
@@ -249,14 +224,14 @@ static void noinline_for_stack fwht(const u8 *block, s16 *output_block,
 				    unsigned int stride,
 				    unsigned int input_step, bool intra)
 {
-	/* we'll need more than 8 bits for the transformed coefficients */
+	 
 	s32 workspace1[8], workspace2[8];
 	const u8 *tmp = block;
 	s16 *out = output_block;
 	int add = intra ? 256 : 0;
 	unsigned int i;
 
-	/* stage 1 */
+	 
 	for (i = 0; i < 8; i++, tmp += stride, out += 8) {
 		switch (input_step) {
 		case 1:
@@ -313,7 +288,7 @@ static void noinline_for_stack fwht(const u8 *block, s16 *output_block,
 			break;
 		}
 
-		/* stage 2 */
+		 
 		workspace2[0] = workspace1[0] + workspace1[2];
 		workspace2[1] = workspace1[0] - workspace1[2];
 		workspace2[2] = workspace1[1] - workspace1[3];
@@ -324,7 +299,7 @@ static void noinline_for_stack fwht(const u8 *block, s16 *output_block,
 		workspace2[6] = workspace1[5] - workspace1[7];
 		workspace2[7] = workspace1[5] + workspace1[7];
 
-		/* stage 3 */
+		 
 		out[0] = workspace2[0] + workspace2[4];
 		out[1] = workspace2[0] - workspace2[4];
 		out[2] = workspace2[1] - workspace2[5];
@@ -338,7 +313,7 @@ static void noinline_for_stack fwht(const u8 *block, s16 *output_block,
 	out = output_block;
 
 	for (i = 0; i < 8; i++, out++) {
-		/* stage 1 */
+		 
 		workspace1[0]  = out[0] + out[1 * 8];
 		workspace1[1]  = out[0] - out[1 * 8];
 
@@ -351,7 +326,7 @@ static void noinline_for_stack fwht(const u8 *block, s16 *output_block,
 		workspace1[6]  = out[6 * 8] + out[7 * 8];
 		workspace1[7]  = out[6 * 8] - out[7 * 8];
 
-		/* stage 2 */
+		 
 		workspace2[0] = workspace1[0] + workspace1[2];
 		workspace2[1] = workspace1[0] - workspace1[2];
 		workspace2[2] = workspace1[1] - workspace1[3];
@@ -361,7 +336,7 @@ static void noinline_for_stack fwht(const u8 *block, s16 *output_block,
 		workspace2[5] = workspace1[4] - workspace1[6];
 		workspace2[6] = workspace1[5] - workspace1[7];
 		workspace2[7] = workspace1[5] + workspace1[7];
-		/* stage 3 */
+		 
 		out[0 * 8] = workspace2[0] + workspace2[4];
 		out[1 * 8] = workspace2[0] - workspace2[4];
 		out[2 * 8] = workspace2[1] - workspace2[5];
@@ -373,23 +348,18 @@ static void noinline_for_stack fwht(const u8 *block, s16 *output_block,
 	}
 }
 
-/*
- * Not the nicest way of doing it, but P-blocks get twice the range of
- * that of the I-blocks. Therefore we need a type bigger than 8 bits.
- * Furthermore values can be negative... This is just a version that
- * works with 16 signed data
- */
+ 
 static void noinline_for_stack
 fwht16(const s16 *block, s16 *output_block, int stride, int intra)
 {
-	/* we'll need more than 8 bits for the transformed coefficients */
+	 
 	s32 workspace1[8], workspace2[8];
 	const s16 *tmp = block;
 	s16 *out = output_block;
 	int i;
 
 	for (i = 0; i < 8; i++, tmp += stride, out += 8) {
-		/* stage 1 */
+		 
 		workspace1[0]  = tmp[0] + tmp[1];
 		workspace1[1]  = tmp[0] - tmp[1];
 
@@ -402,7 +372,7 @@ fwht16(const s16 *block, s16 *output_block, int stride, int intra)
 		workspace1[6]  = tmp[6] + tmp[7];
 		workspace1[7]  = tmp[6] - tmp[7];
 
-		/* stage 2 */
+		 
 		workspace2[0] = workspace1[0] + workspace1[2];
 		workspace2[1] = workspace1[0] - workspace1[2];
 		workspace2[2] = workspace1[1] - workspace1[3];
@@ -413,7 +383,7 @@ fwht16(const s16 *block, s16 *output_block, int stride, int intra)
 		workspace2[6] = workspace1[5] - workspace1[7];
 		workspace2[7] = workspace1[5] + workspace1[7];
 
-		/* stage 3 */
+		 
 		out[0] = workspace2[0] + workspace2[4];
 		out[1] = workspace2[0] - workspace2[4];
 		out[2] = workspace2[1] - workspace2[5];
@@ -427,7 +397,7 @@ fwht16(const s16 *block, s16 *output_block, int stride, int intra)
 	out = output_block;
 
 	for (i = 0; i < 8; i++, out++) {
-		/* stage 1 */
+		 
 		workspace1[0]  = out[0] + out[1*8];
 		workspace1[1]  = out[0] - out[1*8];
 
@@ -440,7 +410,7 @@ fwht16(const s16 *block, s16 *output_block, int stride, int intra)
 		workspace1[6]  = out[6*8] + out[7*8];
 		workspace1[7]  = out[6*8] - out[7*8];
 
-		/* stage 2 */
+		 
 		workspace2[0] = workspace1[0] + workspace1[2];
 		workspace2[1] = workspace1[0] - workspace1[2];
 		workspace2[2] = workspace1[1] - workspace1[3];
@@ -451,7 +421,7 @@ fwht16(const s16 *block, s16 *output_block, int stride, int intra)
 		workspace2[6] = workspace1[5] - workspace1[7];
 		workspace2[7] = workspace1[5] + workspace1[7];
 
-		/* stage 3 */
+		 
 		out[0*8] = workspace2[0] + workspace2[4];
 		out[1*8] = workspace2[0] - workspace2[4];
 		out[2*8] = workspace2[1] - workspace2[5];
@@ -466,10 +436,7 @@ fwht16(const s16 *block, s16 *output_block, int stride, int intra)
 static noinline_for_stack void
 ifwht(const s16 *block, s16 *output_block, int intra)
 {
-	/*
-	 * we'll need more than 8 bits for the transformed coefficients
-	 * use native unit of cpu
-	 */
+	 
 	int workspace1[8], workspace2[8];
 	int inter = intra ? 0 : 1;
 	const s16 *tmp = block;
@@ -477,7 +444,7 @@ ifwht(const s16 *block, s16 *output_block, int intra)
 	int i;
 
 	for (i = 0; i < 8; i++, tmp += 8, out += 8) {
-		/* stage 1 */
+		 
 		workspace1[0]  = tmp[0] + tmp[1];
 		workspace1[1]  = tmp[0] - tmp[1];
 
@@ -490,7 +457,7 @@ ifwht(const s16 *block, s16 *output_block, int intra)
 		workspace1[6]  = tmp[6] + tmp[7];
 		workspace1[7]  = tmp[6] - tmp[7];
 
-		/* stage 2 */
+		 
 		workspace2[0] = workspace1[0] + workspace1[2];
 		workspace2[1] = workspace1[0] - workspace1[2];
 		workspace2[2] = workspace1[1] - workspace1[3];
@@ -501,7 +468,7 @@ ifwht(const s16 *block, s16 *output_block, int intra)
 		workspace2[6] = workspace1[5] - workspace1[7];
 		workspace2[7] = workspace1[5] + workspace1[7];
 
-		/* stage 3 */
+		 
 		out[0] = workspace2[0] + workspace2[4];
 		out[1] = workspace2[0] - workspace2[4];
 		out[2] = workspace2[1] - workspace2[5];
@@ -515,7 +482,7 @@ ifwht(const s16 *block, s16 *output_block, int intra)
 	out = output_block;
 
 	for (i = 0; i < 8; i++, out++) {
-		/* stage 1 */
+		 
 		workspace1[0]  = out[0] + out[1 * 8];
 		workspace1[1]  = out[0] - out[1 * 8];
 
@@ -528,7 +495,7 @@ ifwht(const s16 *block, s16 *output_block, int intra)
 		workspace1[6]  = out[6 * 8] + out[7 * 8];
 		workspace1[7]  = out[6 * 8] - out[7 * 8];
 
-		/* stage 2 */
+		 
 		workspace2[0] = workspace1[0] + workspace1[2];
 		workspace2[1] = workspace1[0] - workspace1[2];
 		workspace2[2] = workspace1[1] - workspace1[3];
@@ -539,7 +506,7 @@ ifwht(const s16 *block, s16 *output_block, int intra)
 		workspace2[6] = workspace1[5] - workspace1[7];
 		workspace2[7] = workspace1[5] + workspace1[7];
 
-		/* stage 3 */
+		 
 		if (inter) {
 			int d;
 
@@ -667,10 +634,7 @@ static void add_deltas(s16 *deltas, const u8 *ref, int stride,
 		for (l = 0; l < 8; l++) {
 			*deltas += *ref;
 			ref += ref_step;
-			/*
-			 * Due to quantizing, it might possible that the
-			 * decoded coefficients are slightly out of range
-			 */
+			 
 			if (*deltas < 0)
 				*deltas = 0;
 			else if (*deltas > 255)
@@ -700,7 +664,7 @@ static u32 encode_plane(u8 *input, u8 *refp, __be16 **rlco, __be16 *rlco_max,
 	for (j = 0; j < height / 8; j++) {
 		input = input_start + j * 8 * stride;
 		for (i = 0; i < width / 8; i++) {
-			/* intra code, first frame is always intra coded. */
+			 
 			int blocktype = IBLOCK;
 			unsigned int size;
 
@@ -712,7 +676,7 @@ static u32 encode_plane(u8 *input, u8 *refp, __be16 **rlco, __be16 *rlco_max,
 				quantize_intra(cf->coeffs, cf->de_coeffs,
 					       cf->i_frame_qp);
 			} else {
-				/* inter code */
+				 
 				encoding |= FWHT_FRAME_PCODED;
 				fwht16(deltablock, cf->coeffs, 8, 0);
 				quantize_inter(cf->coeffs, cf->de_coeffs,
@@ -757,12 +721,7 @@ exit_loop:
 		u8 *p;
 
 		input = input_start;
-		/*
-		 * The compressed stream should never contain the magic
-		 * header, so when we copy the YUV data we replace 0xff
-		 * by 0xfe. Since YUV is limited range such values
-		 * shouldn't appear anyway.
-		 */
+		 
 		for (j = 0; j < height; j++) {
 			for (i = 0, p = input; i < width; i++, p += input_step)
 				*out++ = (*p == 0xff) ? 0xfe : *p;
@@ -860,12 +819,7 @@ static bool decode_plane(struct fwht_cframe *cf, const __be16 **rlco,
 		return true;
 	}
 
-	/*
-	 * When decoding each macroblock the rlco pointer will be increased
-	 * by 65 * 2 bytes worst-case.
-	 * To avoid overflow the buffer has to be 65/64th of the actual raw
-	 * image size, just in case someone feeds it malicious data.
-	 */
+	 
 	for (j = 0; j < height / 8; j++) {
 		for (i = 0; i < width / 8; i++) {
 			const u8 *refp = ref + j * 8 * ref_stride +

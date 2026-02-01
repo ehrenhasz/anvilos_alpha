@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2023 Marijn Suijten <marijn.suijten@somainline.org>. All rights reserved.
- * Copyright (c) 2022. Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2018, 2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _DPU_5_4_SM6125_H
 #define _DPU_5_4_SM6125_H
@@ -169,7 +165,7 @@ static const struct dpu_perf_cfg sm6125_perf_data = {
 	.max_bw_low = 4100000,
 	.max_bw_high = 4100000,
 	.min_core_ib = 2400000,
-	.min_llcc_ib = 0, /* No LLCC on this SoC */
+	.min_llcc_ib = 0,  
 	.min_dram_ib = 800000,
 	.min_prefill_lines = 24,
 	.danger_lut_tbl = {0xf, 0xffff, 0x0},
@@ -184,7 +180,7 @@ static const struct dpu_perf_cfg sm6125_perf_data = {
 		{.nentry = ARRAY_SIZE(sc7180_qos_nrt),
 		.entries = sc7180_qos_nrt
 		},
-		/* TODO: macrotile-qseed is different from macrotile */
+		 
 	},
 	.cdp_cfg = {
 		{.rd_enable = 1, .wr_enable = 1},

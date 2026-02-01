@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -57,11 +54,7 @@ int __gfs2_trans_begin(struct gfs2_trans *tr, struct gfs2_sbd *sdp,
 	tr->tr_revokes = revokes;
 	tr->tr_reserved = GFS2_LOG_FLUSH_MIN_BLOCKS;
 	if (blocks) {
-		/*
-		 * The reserved blocks are either used for data or metadata.
-		 * We can have mixed data and metadata, each with its own log
-		 * descriptor block; see calc_reserved().
-		 */
+		 
 		tr->tr_reserved += blocks + 1 + DIV_ROUND_UP(blocks - 1, databuf_limit(sdp));
 	}
 	INIT_LIST_HEAD(&tr->tr_databuf);
@@ -75,14 +68,7 @@ int __gfs2_trans_begin(struct gfs2_trans *tr, struct gfs2_sbd *sdp,
 
 	sb_start_intwrite(sdp->sd_vfs);
 
-	/*
-	 * Try the reservations under sd_log_flush_lock to prevent log flushes
-	 * from creating inconsistencies between the number of allocated and
-	 * reserved revokes.  If that fails, do a full-block allocation outside
-	 * of the lock to avoid stalling log flushes.  Then, allot the
-	 * appropriate number of blocks to revokes, use as many revokes locally
-	 * as needed, and "release" the surplus into the revokes pool.
-	 */
+	 
 
 	down_read(&sdp->sd_log_flush_lock);
 	if (gfs2_log_try_reserve(sdp, tr, &extra_revokes))
@@ -175,20 +161,7 @@ static struct gfs2_bufdata *gfs2_alloc_bufdata(struct gfs2_glock *gl,
 	return bd;
 }
 
-/**
- * gfs2_trans_add_data - Add a databuf to the transaction.
- * @gl: The inode glock associated with the buffer
- * @bh: The buffer to add
- *
- * This is used in journaled data mode.
- * We need to journal the data block in the same way as metadata in
- * the functions above. The difference is that here we have a tag
- * which is two __be64's being the block number (as per meta data)
- * and a flag which says whether the data block needs escaping or
- * not. This means we need a new log entry for each 251 or so data
- * blocks, which isn't an enormous overhead but twice as much as
- * for normal metadata blocks.
- */
+ 
 void gfs2_trans_add_data(struct gfs2_glock *gl, struct buffer_head *bh)
 {
 	struct gfs2_trans *tr = current->journal_info;

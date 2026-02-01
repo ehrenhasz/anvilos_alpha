@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM sock
 
@@ -15,7 +15,7 @@
 		EM(AF_INET)				\
 		EMe(AF_INET6)
 
-/* The protocol traced by inet_sock_set_state */
+ 
 #define inet_protocol_names		\
 		EM(IPPROTO_TCP)			\
 		EM(IPPROTO_DCCP)		\
@@ -40,7 +40,7 @@
 		EM(SK_MEM_SEND)			\
 		EMe(SK_MEM_RECV)
 
-/* enums need to be exported to user space */
+ 
 #undef EM
 #undef EMe
 #define EM(a)       TRACE_DEFINE_ENUM(a);
@@ -287,9 +287,7 @@ TRACE_EVENT(sk_data_ready,
 		  __entry->family, __entry->protocol, (void *)__entry->ip)
 );
 
-/*
- * sock send/recv msg length
- */
+ 
 DECLARE_EVENT_CLASS(sock_msg_length,
 
 	TP_PROTO(struct sock *sk, int ret, int flags),
@@ -332,7 +330,7 @@ DEFINE_EVENT(sock_msg_length, sock_recv_length,
 
 	TP_ARGS(sk, ret, flags)
 );
-#endif /* _TRACE_SOCK_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell Octeon EP (EndPoint) Ethernet Driver
- *
- * Copyright (C) 2020 Marvell.
- *
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -20,7 +16,7 @@
 #define OCTEP_INTR_POLL_TIME_MSECS    100
 struct workqueue_struct *octep_wq;
 
-/* Supported Devices */
+ 
 static const struct pci_device_id octep_pci_id_tbl[] = {
 	{PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, OCTEP_PCI_DEVICE_ID_CN93_PF)},
 	{PCI_DEVICE(PCI_VENDOR_ID_CAVIUM, OCTEP_PCI_DEVICE_ID_CNF95N_PF)},
@@ -32,19 +28,7 @@ MODULE_AUTHOR("Veerasenareddy Burru <vburru@marvell.com>");
 MODULE_DESCRIPTION(OCTEP_DRV_STRING);
 MODULE_LICENSE("GPL");
 
-/**
- * octep_alloc_ioq_vectors() - Allocate Tx/Rx Queue interrupt info.
- *
- * @oct: Octeon device private data structure.
- *
- * Allocate resources to hold per Tx/Rx queue interrupt info.
- * This is the information passed to interrupt handler, from which napi poll
- * is scheduled and includes quick access to private data of Tx/Rx queue
- * corresponding to the interrupt being handled.
- *
- * Return: 0, on successful allocation of resources for all queue interrupts.
- *         -1, if failed to allocate any resource.
- */
+ 
 static int octep_alloc_ioq_vectors(struct octep_device *oct)
 {
 	int i;
@@ -73,11 +57,7 @@ free_ioq_vector:
 	return -1;
 }
 
-/**
- * octep_free_ioq_vectors() - Free Tx/Rx Queue interrupt vector info.
- *
- * @oct: Octeon device private data structure.
- */
+ 
 static void octep_free_ioq_vectors(struct octep_device *oct)
 {
 	int i;
@@ -91,23 +71,13 @@ static void octep_free_ioq_vectors(struct octep_device *oct)
 	netdev_info(oct->netdev, "Freed IOQ Vectors\n");
 }
 
-/**
- * octep_enable_msix_range() - enable MSI-x interrupts.
- *
- * @oct: Octeon device private data structure.
- *
- * Allocate and enable all MSI-x interrupts (queue and non-queue interrupts)
- * for the Octeon device.
- *
- * Return: 0, on successfully enabling all MSI-x interrupts.
- *         -1, if failed to enable any MSI-x interrupt.
- */
+ 
 static int octep_enable_msix_range(struct octep_device *oct)
 {
 	int num_msix, msix_allocated;
 	int i;
 
-	/* Generic interrupts apart from input/output queues */
+	 
 	num_msix = oct->num_oqs + CFG_GET_NON_IOQ_MSIX(oct->conf);
 	oct->msix_entries = kcalloc(num_msix,
 				    sizeof(struct msix_entry), GFP_KERNEL);
@@ -139,13 +109,7 @@ msix_alloc_err:
 	return -1;
 }
 
-/**
- * octep_disable_msix() - disable MSI-x interrupts.
- *
- * @oct: Octeon device private data structure.
- *
- * Disable MSI-x on the Octeon device.
- */
+ 
 static void octep_disable_msix(struct octep_device *oct)
 {
 	pci_disable_msix(oct->pdev);
@@ -154,14 +118,7 @@ static void octep_disable_msix(struct octep_device *oct)
 	dev_info(&oct->pdev->dev, "Disabled MSI-X\n");
 }
 
-/**
- * octep_non_ioq_intr_handler() - common handler for all generic interrupts.
- *
- * @irq: Interrupt number.
- * @data: interrupt data.
- *
- * this is common handler for all non-queue (generic) interrupts.
- */
+ 
 static irqreturn_t octep_non_ioq_intr_handler(int irq, void *data)
 {
 	struct octep_device *oct = data;
@@ -169,15 +126,7 @@ static irqreturn_t octep_non_ioq_intr_handler(int irq, void *data)
 	return oct->hw_ops.non_ioq_intr_handler(oct);
 }
 
-/**
- * octep_ioq_intr_handler() - handler for all Tx/Rx queue interrupts.
- *
- * @irq: Interrupt number.
- * @data: interrupt data contains pointers to Tx/Rx queue private data
- *         and correspong NAPI context.
- *
- * this is common handler for all non-queue (generic) interrupts.
- */
+ 
 static irqreturn_t octep_ioq_intr_handler(int irq, void *data)
 {
 	struct octep_ioq_vector *ioq_vector = data;
@@ -186,16 +135,7 @@ static irqreturn_t octep_ioq_intr_handler(int irq, void *data)
 	return oct->hw_ops.ioq_intr_handler(ioq_vector);
 }
 
-/**
- * octep_request_irqs() - Register interrupt handlers.
- *
- * @oct: Octeon device private data structure.
- *
- * Register handlers for all queue and non-queue interrupts.
- *
- * Return: 0, on successful registration of all interrupt handlers.
- *         -1, on any error.
- */
+ 
 static int octep_request_irqs(struct octep_device *oct)
 {
 	struct net_device *netdev = oct->netdev;
@@ -213,7 +153,7 @@ static int octep_request_irqs(struct octep_device *oct)
 	if (!oct->non_ioq_irq_names)
 		goto alloc_err;
 
-	/* First few MSI-X interrupts are non-queue interrupts */
+	 
 	for (i = 0; i < num_non_ioq_msix; i++) {
 		char *irq_name;
 
@@ -233,7 +173,7 @@ static int octep_request_irqs(struct octep_device *oct)
 		}
 	}
 
-	/* Request IRQs for Tx/Rx queues */
+	 
 	for (j = 0; j < oct->num_oqs; j++) {
 		ioq_vector = oct->ioq_vector[j];
 		msix_entry = &oct->msix_entries[j + num_non_ioq_msix];
@@ -277,23 +217,17 @@ alloc_err:
 	return -1;
 }
 
-/**
- * octep_free_irqs() - free all registered interrupts.
- *
- * @oct: Octeon device private data structure.
- *
- * Free all queue and non-queue interrupts of the Octeon device.
- */
+ 
 static void octep_free_irqs(struct octep_device *oct)
 {
 	int i;
 
-	/* First few MSI-X interrupts are non queue interrupts; free them */
+	 
 	for (i = 0; i < CFG_GET_NON_IOQ_MSIX(oct->conf); i++)
 		free_irq(oct->msix_entries[i].vector, oct);
 	kfree(oct->non_ioq_irq_names);
 
-	/* Free IRQs for Input/Output (Tx/Rx) queues */
+	 
 	for (i = CFG_GET_NON_IOQ_MSIX(oct->conf); i < oct->num_irqs; i++) {
 		irq_set_affinity_hint(oct->msix_entries[i].vector, NULL);
 		free_irq(oct->msix_entries[i].vector,
@@ -302,17 +236,7 @@ static void octep_free_irqs(struct octep_device *oct)
 	netdev_info(oct->netdev, "IRQs freed\n");
 }
 
-/**
- * octep_setup_irqs() - setup interrupts for the Octeon device.
- *
- * @oct: Octeon device private data structure.
- *
- * Allocate data structures to hold per interrupt information, allocate/enable
- * MSI-x interrupt and register interrupt handlers.
- *
- * Return: 0, on successful allocation and registration of all interrupts.
- *         -1, on any error.
- */
+ 
 static int octep_setup_irqs(struct octep_device *oct)
 {
 	if (octep_alloc_ioq_vectors(oct))
@@ -334,11 +258,7 @@ ioq_vector_err:
 	return -1;
 }
 
-/**
- * octep_clean_irqs() - free all interrupts and its resources.
- *
- * @oct: Octeon device private data structure.
- */
+ 
 static void octep_clean_irqs(struct octep_device *oct)
 {
 	octep_free_irqs(oct);
@@ -346,12 +266,7 @@ static void octep_clean_irqs(struct octep_device *oct)
 	octep_free_ioq_vectors(oct);
 }
 
-/**
- * octep_enable_ioq_irq() - Enable MSI-x interrupt of a Tx/Rx queue.
- *
- * @iq: Octeon Tx queue data structure.
- * @oq: Octeon Rx queue data structure.
- */
+ 
 static void octep_enable_ioq_irq(struct octep_iq *iq, struct octep_oq *oq)
 {
 	u32 pkts_pend = oq->pkts_pending;
@@ -367,18 +282,13 @@ static void octep_enable_ioq_irq(struct octep_iq *iq, struct octep_oq *oq)
 		oq->last_pkt_count = pkts_pend;
 	}
 
-	/* Flush the previous wrties before writing to RESEND bit */
+	 
 	wmb();
 	writeq(1UL << OCTEP_OQ_INTR_RESEND_BIT, oq->pkts_sent_reg);
 	writeq(1UL << OCTEP_IQ_INTR_RESEND_BIT, iq->inst_cnt_reg);
 }
 
-/**
- * octep_napi_poll() - NAPI poll function for Tx/Rx.
- *
- * @napi: pointer to napi context.
- * @budget: max number of packets to be processed in single invocation.
- */
+ 
 static int octep_napi_poll(struct napi_struct *napi, int budget)
 {
 	struct octep_ioq_vector *ioq_vector =
@@ -388,9 +298,7 @@ static int octep_napi_poll(struct napi_struct *napi, int budget)
 	tx_pending = octep_iq_process_completions(ioq_vector->iq, budget);
 	rx_done = octep_oq_process_rx(ioq_vector->oq, budget);
 
-	/* need more polling if tx completion processing is still pending or
-	 * processed at least 'budget' number of rx packets.
-	 */
+	 
 	if (tx_pending || rx_done >= budget)
 		return budget;
 
@@ -399,11 +307,7 @@ static int octep_napi_poll(struct napi_struct *napi, int budget)
 	return rx_done;
 }
 
-/**
- * octep_napi_add() - Add NAPI poll for all Tx/Rx queues.
- *
- * @oct: Octeon device private data structure.
- */
+ 
 static void octep_napi_add(struct octep_device *oct)
 {
 	int i;
@@ -416,11 +320,7 @@ static void octep_napi_add(struct octep_device *oct)
 	}
 }
 
-/**
- * octep_napi_delete() - delete NAPI poll callback for all Tx/Rx queues.
- *
- * @oct: Octeon device private data structure.
- */
+ 
 static void octep_napi_delete(struct octep_device *oct)
 {
 	int i;
@@ -432,11 +332,7 @@ static void octep_napi_delete(struct octep_device *oct)
 	}
 }
 
-/**
- * octep_napi_enable() - enable NAPI for all Tx/Rx queues.
- *
- * @oct: Octeon device private data structure.
- */
+ 
 static void octep_napi_enable(struct octep_device *oct)
 {
 	int i;
@@ -447,11 +343,7 @@ static void octep_napi_enable(struct octep_device *oct)
 	}
 }
 
-/**
- * octep_napi_disable() - disable NAPI for all Tx/Rx queues.
- *
- * @oct: Octeon device private data structure.
- */
+ 
 static void octep_napi_disable(struct octep_device *oct)
 {
 	int i;
@@ -468,17 +360,7 @@ static void octep_link_up(struct net_device *netdev)
 	netif_tx_start_all_queues(netdev);
 }
 
-/**
- * octep_open() - start the octeon network device.
- *
- * @netdev: pointer to kernel network device.
- *
- * setup Tx/Rx queues, interrupts and enable hardware operation of Tx/Rx queues
- * and interrupts..
- *
- * Return: 0, on successfully setting up device and bring it up.
- *         -1, on any error.
- */
+ 
 static int octep_open(struct net_device *netdev)
 {
 	struct octep_device *oct = netdev_priv(netdev);
@@ -513,10 +395,10 @@ static int octep_open(struct net_device *netdev)
 				       false);
 	oct->poll_non_ioq_intr = false;
 
-	/* Enable the input and output queues for this Octeon device */
+	 
 	oct->hw_ops.enable_io_queues(oct);
 
-	/* Enable Octeon device interrupts */
+	 
 	oct->hw_ops.enable_interrupts(oct);
 
 	octep_oq_dbell_init(oct);
@@ -537,14 +419,7 @@ setup_iq_err:
 	return -1;
 }
 
-/**
- * octep_stop() - stop the octeon network device.
- *
- * @netdev: pointer to kernel network device.
- *
- * stop the device Tx/Rx operations, bring down the link and
- * free up all resources allocated for Tx/Rx queues and interrupts.
- */
+ 
 static int octep_stop(struct net_device *netdev)
 {
 	struct octep_device *oct = netdev_priv(netdev);
@@ -556,7 +431,7 @@ static int octep_stop(struct net_device *netdev)
 	octep_ctrl_net_set_rx_state(oct, OCTEP_CTRL_NET_INVALID_VFID, false,
 				    false);
 
-	/* Stop Tx from stack */
+	 
 	netif_tx_stop_all_queues(netdev);
 	netif_carrier_off(netdev);
 	netif_tx_disable(netdev);
@@ -584,26 +459,17 @@ static int octep_stop(struct net_device *netdev)
 	return 0;
 }
 
-/**
- * octep_iq_full_check() - check if a Tx queue is full.
- *
- * @iq: Octeon Tx queue data structure.
- *
- * Return: 0, if the Tx queue is not full.
- *         1, if the Tx queue is full.
- */
+ 
 static inline int octep_iq_full_check(struct octep_iq *iq)
 {
 	if (likely((iq->max_count - atomic_read(&iq->instr_pending)) >=
 		   OCTEP_WAKE_QUEUE_THRESHOLD))
 		return 0;
 
-	/* Stop the queue if unable to send */
+	 
 	netif_stop_subqueue(iq->netdev, iq->q_no);
 
-	/* check again and restart the queue, in case NAPI has just freed
-	 * enough Tx ring entries.
-	 */
+	 
 	if (unlikely((iq->max_count - atomic_read(&iq->instr_pending)) >=
 		     OCTEP_WAKE_QUEUE_THRESHOLD)) {
 		netif_start_subqueue(iq->netdev, iq->q_no);
@@ -614,15 +480,7 @@ static inline int octep_iq_full_check(struct octep_iq *iq)
 	return 1;
 }
 
-/**
- * octep_start_xmit() - Enqueue packet to Octoen hardware Tx Queue.
- *
- * @skb: packet skbuff pointer.
- * @netdev: kernel network device.
- *
- * Return: NETDEV_TX_BUSY, if Tx Queue is full.
- *         NETDEV_TX_OK, if successfully enqueued to hardware Tx queue.
- */
+ 
 static netdev_tx_t octep_start_xmit(struct sk_buff *skb,
 				    struct net_device *netdev)
 {
@@ -671,7 +529,7 @@ static netdev_tx_t octep_start_xmit(struct sk_buff *skb,
 			goto dma_map_err;
 		hw_desc->dptr = tx_buffer->dma;
 	} else {
-		/* Scatter/Gather */
+		 
 		dma_addr_t dma;
 		u16 len;
 
@@ -693,7 +551,7 @@ static netdev_tx_t octep_start_xmit(struct sk_buff *skb,
 		sglist[0].len[3] = len;
 		sglist[0].dma_ptr[0] = dma;
 
-		si = 1; /* entry 0 is main skb, mapped above */
+		si = 1;  
 		frag = &shinfo->frags[0];
 		while (nr_frags--) {
 			len = skb_frag_size(frag);
@@ -722,10 +580,10 @@ static netdev_tx_t octep_start_xmit(struct sk_buff *skb,
 	if (wi == iq->max_count)
 		wi = 0;
 	iq->host_write_index = wi;
-	/* Flush the hw descriptor before writing to doorbell */
+	 
 	wmb();
 
-	/* Ring Doorbell to notify the NIC there is a new packet */
+	 
 	writel(1, iq->doorbell_reg);
 	iq->stats.instr_posted++;
 	return NETDEV_TX_OK;
@@ -748,12 +606,7 @@ dma_map_err:
 	return NETDEV_TX_OK;
 }
 
-/**
- * octep_get_stats64() - Get Octeon network device statistics.
- *
- * @netdev: kernel network device.
- * @stats: pointer to stats structure to be filled in.
- */
+ 
 static void octep_get_stats64(struct net_device *netdev,
 			      struct rtnl_link_stats64 *stats)
 {
@@ -790,15 +643,7 @@ static void octep_get_stats64(struct net_device *netdev,
 	stats->tx_fifo_errors = oct->iface_tx_stats.undflw;
 }
 
-/**
- * octep_tx_timeout_task - work queue task to Handle Tx queue timeout.
- *
- * @work: pointer to Tx queue timeout work_struct
- *
- * Stop and start the device so that it frees up all queue resources
- * and restarts the queues, that potentially clears a Tx queue timeout
- * condition.
- **/
+ 
 static void octep_tx_timeout_task(struct work_struct *work)
 {
 	struct octep_device *oct = container_of(work, struct octep_device,
@@ -813,14 +658,7 @@ static void octep_tx_timeout_task(struct work_struct *work)
 	rtnl_unlock();
 }
 
-/**
- * octep_tx_timeout() - Handle Tx Queue timeout.
- *
- * @netdev: pointer to kernel network device.
- * @txqueue: Timed out Tx queue number.
- *
- * Schedule a work to handle Tx queue timeout.
- */
+ 
 static void octep_tx_timeout(struct net_device *netdev, unsigned int txqueue)
 {
 	struct octep_device *oct = netdev_priv(netdev);
@@ -878,13 +716,7 @@ static const struct net_device_ops octep_netdev_ops = {
 	.ndo_change_mtu          = octep_change_mtu,
 };
 
-/**
- * octep_intr_poll_task - work queue task to process non-ioq interrupts.
- *
- * @work: pointer to mbox work_struct
- *
- * Process non-ioq interrupts to handle control mailbox, pfvf mailbox.
- **/
+ 
 static void octep_intr_poll_task(struct work_struct *work)
 {
 	struct octep_device *oct = container_of(work, struct octep_device,
@@ -900,15 +732,7 @@ static void octep_intr_poll_task(struct work_struct *work)
 			   msecs_to_jiffies(OCTEP_INTR_POLL_TIME_MSECS));
 }
 
-/**
- * octep_hb_timeout_task - work queue task to check firmware heartbeat.
- *
- * @work: pointer to hb work_struct
- *
- * Check for heartbeat miss count. Uninitialize oct device if miss count
- * exceeds configured max heartbeat miss count.
- *
- **/
+ 
 static void octep_hb_timeout_task(struct work_struct *work)
 {
 	struct octep_device *oct = container_of(work, struct octep_device,
@@ -931,13 +755,7 @@ static void octep_hb_timeout_task(struct work_struct *work)
 	rtnl_unlock();
 }
 
-/**
- * octep_ctrl_mbox_task - work queue task to handle ctrl mbox messages.
- *
- * @work: pointer to ctrl mbox work_struct
- *
- * Poll ctrl mbox message queue and handle control messages from firmware.
- **/
+ 
 static void octep_ctrl_mbox_task(struct work_struct *work)
 {
 	struct octep_device *oct = container_of(work, struct octep_device,
@@ -958,24 +776,18 @@ static const char *octep_devid_to_str(struct octep_device *oct)
 	}
 }
 
-/**
- * octep_device_setup() - Setup Octeon Device.
- *
- * @oct: Octeon device private data structure.
- *
- * Setup Octeon device hardware operations, configuration, etc ...
- */
+ 
 int octep_device_setup(struct octep_device *oct)
 {
 	struct pci_dev *pdev = oct->pdev;
 	int i, ret;
 
-	/* allocate memory for oct->conf */
+	 
 	oct->conf = kzalloc(sizeof(*oct->conf), GFP_KERNEL);
 	if (!oct->conf)
 		return -ENOMEM;
 
-	/* Map BAR regions */
+	 
 	for (i = 0; i < OCTEP_MMIO_REGIONS; i++) {
 		oct->mmio[i].hw_addr =
 			ioremap(pci_resource_start(oct->pdev, i * 2),
@@ -1026,13 +838,7 @@ unmap_prev:
 	return -1;
 }
 
-/**
- * octep_device_cleanup() - Cleanup Octeon Device.
- *
- * @oct: Octeon device private data structure.
- *
- * Cleanup Octeon device allocated resources.
- */
+ 
 static void octep_device_cleanup(struct octep_device *oct)
 {
 	int i;
@@ -1082,15 +888,7 @@ static bool get_fw_ready_status(struct pci_dev *pdev)
 	return false;
 }
 
-/**
- * octep_probe() - Octeon PCI device probe handler.
- *
- * @pdev: PCI device structure.
- * @ent: entry in Octeon PCI device ID table.
- *
- * Initializes and enables the Octeon PCI device for network operations.
- * Initializes Octeon private data structure and registers a network device.
- */
+ 
 static int octep_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
 	struct octep_device *octep_dev = NULL;
@@ -1188,14 +986,7 @@ err_dma_mask:
 	return err;
 }
 
-/**
- * octep_remove() - Remove Octeon PCI device from driver control.
- *
- * @pdev: PCI device structure of the Octeon device.
- *
- * Cleanup all resources allocated for the Octeon device.
- * Unregister from network device and disable the PCI device.
- */
+ 
 static void octep_remove(struct pci_dev *pdev)
 {
 	struct octep_device *oct = pci_get_drvdata(pdev);
@@ -1222,18 +1013,14 @@ static struct pci_driver octep_driver = {
 	.remove = octep_remove,
 };
 
-/**
- * octep_init_module() - Module initialiation.
- *
- * create common resource for the driver and register PCI driver.
- */
+ 
 static int __init octep_init_module(void)
 {
 	int ret;
 
 	pr_info("%s: Loading %s ...\n", OCTEP_DRV_NAME, OCTEP_DRV_STRING);
 
-	/* work queue for all deferred tasks */
+	 
 	octep_wq = create_singlethread_workqueue(OCTEP_DRV_NAME);
 	if (!octep_wq) {
 		pr_err("%s: Failed to create common workqueue\n",
@@ -1254,11 +1041,7 @@ static int __init octep_init_module(void)
 	return ret;
 }
 
-/**
- * octep_exit_module() - Module exit routine.
- *
- * unregister the driver with PCI subsystem and cleanup common resources.
- */
+ 
 static void __exit octep_exit_module(void)
 {
 	pr_info("%s: Unloading ...\n", OCTEP_DRV_NAME);

@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * cpcihp_generic.c
- *
- * Generic port I/O CompactPCI driver
- *
- * Copyright 2002 SOMA Networks, Inc.
- * Copyright 2001 Intel San Luis Obispo
- * Copyright 2000,2001 MontaVista Software Inc.
- *
- * This generic CompactPCI hotplug driver should allow using the PCI hotplug
- * mechanism on any CompactPCI board that exposes the #ENUM signal as a bit
- * in a system register that can be read through standard port I/O.
- *
- * Send feedback to <scottm@somanetworks.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -42,7 +28,7 @@
 #define info(format, arg...) printk(KERN_INFO "%s: " format "\n", MY_NAME, ## arg)
 #define warn(format, arg...) printk(KERN_WARNING "%s: " format "\n", MY_NAME, ## arg)
 
-/* local variables */
+ 
 static bool debug;
 static char *bridge;
 static u8 bridge_busnr;

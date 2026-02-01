@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1251
- *
- * Copyright (c) 1998-2007 Texas Instruments Incorporated
- * Copyright (C) 2008 Nokia Corporation
- */
+
+ 
 
 #include "wl1251.h"
 #include "reg.h"
@@ -49,7 +44,7 @@ static int wl1251_event_ps_report(struct wl1251 *wl,
 		wl1251_debug(DEBUG_PSM, "PSM entry failed");
 
 		if (wl->station_mode != STATION_POWER_SAVE_MODE) {
-			/* remain in active mode */
+			 
 			wl->psm_entry_retry = 0;
 			break;
 		}
@@ -117,7 +112,7 @@ static int wl1251_event_process(struct wl1251 *wl, struct event_mailbox *mbox)
 	if (vector & SYNCHRONIZATION_TIMEOUT_EVENT_ID) {
 		wl1251_debug(DEBUG_EVENT, "SYNCHRONIZATION_TIMEOUT_EVENT");
 
-		/* indicate to the stack, that beacons have been lost */
+		 
 		if (wl->vif && wl->vif->type == NL80211_IFTYPE_STATION)
 			ieee80211_beacon_loss(wl->vif);
 	}
@@ -151,10 +146,7 @@ static int wl1251_event_process(struct wl1251 *wl, struct event_mailbox *mbox)
 	return 0;
 }
 
-/*
- * Poll the mailbox event field until any of the bits in the mask is set or a
- * timeout occurs (WL1251_EVENT_TIMEOUT in msecs)
- */
+ 
 int wl1251_event_wait(struct wl1251 *wl, u32 mask, int timeout_ms)
 {
 	u32 events_vector, event;
@@ -168,7 +160,7 @@ int wl1251_event_wait(struct wl1251 *wl, u32 mask, int timeout_ms)
 
 		msleep(1);
 
-		/* read from both event fields */
+		 
 		events_vector = wl1251_mem_read32(wl, wl->mbox_ptr[0]);
 		event = events_vector & mask;
 		events_vector = wl1251_mem_read32(wl, wl->mbox_ptr[1]);
@@ -214,18 +206,18 @@ int wl1251_event_handle(struct wl1251 *wl, u8 mbox_num)
 		return -ENOMEM;
 	}
 
-	/* first we read the mbox descriptor */
+	 
 	wl1251_mem_read(wl, wl->mbox_ptr[mbox_num], mbox,
 			sizeof(*mbox));
 
-	/* process the descriptor */
+	 
 	ret = wl1251_event_process(wl, mbox);
 	kfree(mbox);
 
 	if (ret < 0)
 		return ret;
 
-	/* then we let the firmware know it can go on...*/
+	 
 	wl1251_reg_write32(wl, ACX_REG_INTERRUPT_TRIG, INTR_TRIG_EVENT_ACK);
 
 	return 0;

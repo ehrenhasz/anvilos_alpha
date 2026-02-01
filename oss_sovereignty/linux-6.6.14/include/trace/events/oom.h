@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM oom
 
@@ -188,8 +188,8 @@ TRACE_EVENT(compact_retry,
 			__entry->retries, __entry->max_retries,
 			__entry->ret)
 );
-#endif /* CONFIG_COMPACTION */
+#endif  
 #endif
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

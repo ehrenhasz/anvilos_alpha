@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Lee Revell <rlrevell@joe-job.com>
- *                   Clemens Ladisch <clemens@ladisch.de>
- *                   Oswald Buddenhagen <oswald.buddenhagen@gmx.de>
- *
- *  Routines for control of EMU10K1 chips
- */
+
+ 
 
 #include <linux/time.h>
 #include <sound/core.h>
@@ -18,7 +12,7 @@ static int snd_emu10k1_timer_start(struct snd_timer *timer)
 
 	emu = snd_timer_chip(timer);
 	delay = timer->sticks - 1;
-	if (delay < 5 ) /* minimum time is 5 ticks */
+	if (delay < 5 )  
 		delay = 5;
 	snd_emu10k1_intr_enable(emu, INTE_INTERVALTIMERENB);
 	outw(delay & TIMER_RATE_MASK, emu->port + TIMER);
@@ -40,9 +34,9 @@ static unsigned long snd_emu10k1_timer_c_resolution(struct snd_timer *timer)
 
 	if (emu->card_capabilities->emu_model &&
 	    emu->emu1010.word_clock == 44100)
-		return 22676;  // 1 sample @ 44.1 kHz = 22.675736...us
+		return 22676;  
 	else
-		return 20833;  // 1 sample @ 48 kHz = 20.833...us
+		return 20833;  
 }
 
 static int snd_emu10k1_timer_precise_resolution(struct snd_timer *timer,

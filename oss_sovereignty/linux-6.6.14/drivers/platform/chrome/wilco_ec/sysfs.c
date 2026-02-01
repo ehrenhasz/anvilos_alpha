@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 Google LLC
- *
- * Sysfs properties to view and modify EC-controlled features on Wilco devices.
- * The entries will appear under /sys/bus/platform/devices/GOOG000C:00/
- *
- * See Documentation/ABI/testing/sysfs-platform-wilco-ec for more information.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -19,11 +12,11 @@
 #define SUB_CMD_KB_CMOS_AUTO_ON		0x03
 
 struct boot_on_ac_request {
-	u8 cmd;			/* Always CMD_KB_CMOS */
+	u8 cmd;			 
 	u8 reserved1;
-	u8 sub_cmd;		/* Always SUB_CMD_KB_CMOS_AUTO_ON */
+	u8 sub_cmd;		 
 	u8 reserved3to5[3];
-	u8 val;			/* Either 0 or 1 */
+	u8 val;			 
 	u8 reserved7;
 } __packed;
 
@@ -35,16 +28,16 @@ enum usb_charge_op {
 };
 
 struct usb_charge_request {
-	u8 cmd;		/* Always CMD_USB_CHARGE */
+	u8 cmd;		 
 	u8 reserved;
-	u8 op;		/* One of enum usb_charge_op */
-	u8 val;		/* When setting, either 0 or 1 */
+	u8 op;		 
+	u8 val;		 
 } __packed;
 
 struct usb_charge_response {
 	u8 reserved;
-	u8 status;	/* Set by EC to 0 on success, other value on failure */
-	u8 val;		/* When getting, set by EC to either 0 or 1 */
+	u8 status;	 
+	u8 val;		 
 } __packed;
 
 #define CMD_EC_INFO			0x38
@@ -56,14 +49,14 @@ enum get_ec_info_op {
 };
 
 struct get_ec_info_req {
-	u8 cmd;			/* Always CMD_EC_INFO */
+	u8 cmd;			 
 	u8 reserved;
-	u8 op;			/* One of enum get_ec_info_op */
+	u8 op;			 
 } __packed;
 
 struct get_ec_info_resp {
 	u8 reserved[2];
-	char value[9]; /* __nonstring: might not be null terminated */
+	char value[9];  
 } __packed;
 
 static ssize_t boot_on_ac_store(struct device *dev,

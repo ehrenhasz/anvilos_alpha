@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: MIT
 
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/seq_file.h>
 #include <linux/string_helpers.h>
@@ -178,7 +176,7 @@ static int gen6_drpc(struct seq_file *m)
 			    GEN9_PWRGT_MEDIA_STATUS_MASK) ? "Up" : "Down");
 	}
 
-	/* Not exactly sure what this is */
+	 
 	intel_rc6_print_residency(m, "RC6 \"Locked to RPn\" residency since boot:",
 				  INTEL_RC6_RES_RC6_LOCKED);
 	intel_rc6_print_residency(m, "RC6 residency since boot:", INTEL_RC6_RES_RC6);
@@ -305,7 +303,7 @@ static int mtl_drpc(struct seq_file *m)
 			   (mtl_powergate_status &
 			    GEN9_PWRGT_RENDER_STATUS_MASK) ? "Up" : "Down");
 
-	/* Works for both render and media gt's */
+	 
 	intel_rc6_print_residency(m, "RC6 residency since boot:", INTEL_RC6_RES_RC6);
 
 	return fw_domains_show(m, NULL);
@@ -428,7 +426,7 @@ static int llc_show(struct seq_file *m, void *data)
 	min_gpu_freq = rps->min_freq;
 	max_gpu_freq = rps->max_freq;
 	if (IS_GEN9_BC(i915) || GRAPHICS_VER(i915) >= 11) {
-		/* Convert GT frequency to 50 HZ units */
+		 
 		min_gpu_freq /= GEN9_FREQ_SCALER;
 		max_gpu_freq /= GEN9_FREQ_SCALER;
 	}
@@ -563,11 +561,7 @@ static int perf_limit_reasons_clear(void *data, u64 val)
 	struct intel_gt *gt = data;
 	intel_wakeref_t wakeref;
 
-	/*
-	 * Clear the upper 16 "log" bits, the lower 16 "status" bits are
-	 * read-only. The upper 16 "log" bits are identical to the lower 16
-	 * "status" bits except that the "log" bits remain set until cleared.
-	 */
+	 
 	with_intel_runtime_pm(gt->uncore->rpm, wakeref)
 		intel_uncore_rmw(gt->uncore, intel_gt_perf_limit_reasons_reg(gt),
 				 GT0_PERF_LIMIT_REASONS_LOG_MASK, 0);

@@ -1,16 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-// kaiomy.h - Keytable for kaiomy Remote Controller
-//
-// keymap imported from ir-keymaps.c
-//
-// Copyright (c) 2010 by Mauro Carvalho Chehab
+
+
+
+
+
+
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/* Kaiomy TVnPC U2
-   Mauro Carvalho Chehab <mchehab@kernel.org>
- */
+ 
 
 static struct rc_map_table kaiomy[] = {
 	{ 0x43, KEY_POWER2},
@@ -61,7 +59,7 @@ static struct rc_map_list kaiomy_map = {
 	.map = {
 		.scan     = kaiomy,
 		.size     = ARRAY_SIZE(kaiomy),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_KAIOMY,
 	}
 };

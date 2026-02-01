@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Orion SoC clocks
- *
- * Copyright (C) 2014 Thomas Petazzoni
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -18,9 +11,7 @@ static const struct coreclk_ratio orion_coreclk_ratios[] __initconst = {
 	{ .id = 0, .name = "ddrclk", }
 };
 
-/*
- * Orion 5181
- */
+ 
 
 #define SAR_MV88F5181_TCLK_FREQ      8
 #define SAR_MV88F5181_TCLK_FREQ_MASK 0x3
@@ -88,9 +79,7 @@ static void __init mv88f5181_clk_init(struct device_node *np)
 
 CLK_OF_DECLARE(mv88f5181_clk, "marvell,mv88f5181-core-clock", mv88f5181_clk_init);
 
-/*
- * Orion 5182
- */
+ 
 
 #define SAR_MV88F5182_TCLK_FREQ      8
 #define SAR_MV88F5182_TCLK_FREQ_MASK 0x3
@@ -156,13 +145,11 @@ static void __init mv88f5182_clk_init(struct device_node *np)
 
 CLK_OF_DECLARE(mv88f5182_clk, "marvell,mv88f5182-core-clock", mv88f5182_clk_init);
 
-/*
- * Orion 5281
- */
+ 
 
 static u32 __init mv88f5281_get_tclk_freq(void __iomem *sar)
 {
-	/* On 5281, tclk is always 166 Mhz */
+	 
 	return 166666667;
 }
 
@@ -213,9 +200,7 @@ static void __init mv88f5281_clk_init(struct device_node *np)
 
 CLK_OF_DECLARE(mv88f5281_clk, "marvell,mv88f5281-core-clock", mv88f5281_clk_init);
 
-/*
- * Orion 6183
- */
+ 
 
 #define SAR_MV88F6183_TCLK_FREQ      9
 #define SAR_MV88F6183_TCLK_FREQ_MASK 0x1

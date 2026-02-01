@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ALSA SoC Audio Layer - Samsung S/PDIF Controller driver
-//
-// Copyright (c) 2010 Samsung Electronics Co. Ltd
-//		http://www.samsung.com/
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -17,7 +17,7 @@
 #include "dma.h"
 #include "spdif.h"
 
-/* Registers */
+ 
 #define CLKCON				0x00
 #define CON				0x04
 #define BSTAS				0x08
@@ -62,19 +62,7 @@
 
 #define CSTAS_NO_COPYRIGHT		(0x1 << 2)
 
-/**
- * struct samsung_spdif_info - Samsung S/PDIF Controller information
- * @lock: Spin lock for S/PDIF.
- * @dev: The parent device passed to use from the probe.
- * @regs: The pointer to the device register block.
- * @clk_rate: Current clock rate for calcurate ratio.
- * @pclk: The peri-clock pointer for spdif master operation.
- * @sclk: The source clock pointer for making sync signals.
- * @saved_clkcon: Backup clkcon reg. in suspend.
- * @saved_con: Backup con reg. in suspend.
- * @saved_cstas: Backup cstas reg. in suspend.
- * @dma_playback: DMA information for playback channel.
- */
+ 
 struct samsung_spdif_info {
 	spinlock_t	lock;
 	struct device	*dev;
@@ -407,7 +395,7 @@ static int spdif_probe(struct platform_device *pdev)
 	if (ret)
 		goto err1;
 
-	/* Request S/PDIF Register's memory region */
+	 
 	if (!request_mem_region(mem_res->start,
 				resource_size(mem_res), "samsung-spdif")) {
 		dev_err(&pdev->dev, "Unable to request register region\n");

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      names.c  --  USB name database manipulation routines
- *
- *      Copyright (C) 1999, 2000  Thomas Sailer (sailer@ife.ee.ethz.ch)
- *
- *	Copyright (C) 2005 Takahiro Hirofuchi
- *		- names_deinit() is added.
- */
+
+ 
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -138,7 +131,7 @@ const char *names_protocol(u_int8_t classid, u_int8_t subclassid,
 	return NULL;
 }
 
-/* add a cleanup function by takahiro */
+ 
 struct pool {
 	struct pool *next;
 	void *mem;
@@ -301,7 +294,7 @@ static void parse(FILE *f)
 
 	while (fgets(buf, sizeof(buf), f)) {
 		linectr++;
-		/* remove line ends */
+		 
 		cp = strchr(buf, '\r');
 		if (cp)
 			*cp = 0;
@@ -313,29 +306,26 @@ static void parse(FILE *f)
 		cp = buf;
 		if (buf[0] == 'P' && buf[1] == 'H' && buf[2] == 'Y' &&
 		    buf[3] == 'S' && buf[4] == 'D' &&
-		    buf[5] == 'E' && buf[6] == 'S' && /*isspace(buf[7])*/
+		    buf[5] == 'E' && buf[6] == 'S' &&  
 		    buf[7] == ' ') {
 			continue;
 		}
 		if (buf[0] == 'P' && buf[1] == 'H' &&
-		    buf[2] == 'Y' && /*isspace(buf[3])*/ buf[3] == ' ') {
+		    buf[2] == 'Y' &&   buf[3] == ' ') {
 			continue;
 		}
 		if (buf[0] == 'B' && buf[1] == 'I' && buf[2] == 'A' &&
-		    buf[3] == 'S' && /*isspace(buf[4])*/ buf[4] == ' ') {
+		    buf[3] == 'S' &&   buf[4] == ' ') {
 			continue;
 		}
-		if (buf[0] == 'L' && /*isspace(buf[1])*/ buf[1] == ' ') {
+		if (buf[0] == 'L' &&   buf[1] == ' ') {
 			lasthut = lastclass = lastvendor = lastsubclass = -1;
-			/*
-			 * set 1 as pseudo-id to indicate that the parser is
-			 * in a `L' section.
-			 */
+			 
 			lastlang = 1;
 			continue;
 		}
-		if (buf[0] == 'C' && /*isspace(buf[1])*/ buf[1] == ' ') {
-			/* class spec */
+		if (buf[0] == 'C' &&   buf[1] == ' ') {
+			 
 			cp = buf+2;
 			while (isspace(*cp))
 				cp++;
@@ -359,16 +349,16 @@ static void parse(FILE *f)
 			continue;
 		}
 		if (buf[0] == 'A' && buf[1] == 'T' && isspace(buf[2])) {
-			/* audio terminal type spec */
+			 
 			continue;
 		}
 		if (buf[0] == 'H' && buf[1] == 'C' && buf[2] == 'C'
 		    && isspace(buf[3])) {
-			/* HID Descriptor bCountryCode */
+			 
 			continue;
 		}
 		if (isxdigit(*cp)) {
-			/* vendor */
+			 
 			u = strtoul(cp, &cp, 16);
 			while (isspace(*cp))
 				cp++;
@@ -385,7 +375,7 @@ static void parse(FILE *f)
 			continue;
 		}
 		if (buf[0] == '\t' && isxdigit(buf[1])) {
-			/* product or subclass spec */
+			 
 			u = strtoul(buf+1, &cp, 16);
 			while (isspace(*cp))
 				cp++;
@@ -412,11 +402,11 @@ static void parse(FILE *f)
 				continue;
 			}
 			if (lasthut != -1) {
-				/* do not store hut */
+				 
 				continue;
 			}
 			if (lastlang != -1) {
-				/* do not store langid */
+				 
 				continue;
 			}
 			err("Product/Subclass spec without prior Vendor/Class spec at line %u",
@@ -424,7 +414,7 @@ static void parse(FILE *f)
 			continue;
 		}
 		if (buf[0] == '\t' && buf[1] == '\t' && isxdigit(buf[2])) {
-			/* protocol spec */
+			 
 			u = strtoul(buf+2, &cp, 16);
 			while (isspace(*cp))
 				cp++;
@@ -448,16 +438,13 @@ static void parse(FILE *f)
 			continue;
 		}
 		if (buf[0] == 'H' && buf[1] == 'I' &&
-		    buf[2] == 'D' && /*isspace(buf[3])*/ buf[3] == ' ') {
+		    buf[2] == 'D' &&   buf[3] == ' ') {
 			continue;
 		}
 		if (buf[0] == 'H' && buf[1] == 'U' &&
-		    buf[2] == 'T' && /*isspace(buf[3])*/ buf[3] == ' ') {
+		    buf[2] == 'T' &&   buf[3] == ' ') {
 			lastlang = lastclass = lastvendor = lastsubclass = -1;
-			/*
-			 * set 1 as pseudo-id to indicate that the parser is
-			 * in a `HUT' section.
-			 */
+			 
 			lasthut = 1;
 			continue;
 		}

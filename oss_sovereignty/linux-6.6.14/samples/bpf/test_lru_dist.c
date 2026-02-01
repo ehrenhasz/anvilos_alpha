@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Facebook
- */
+
+ 
 #define _GNU_SOURCE
 #include <linux/types.h>
 #include <stdio.h>
@@ -184,7 +182,7 @@ static unsigned int read_keys(const char *dist_file,
 		if (b[i] == '\n')
 			counts++;
 	}
-	counts++; /* in case the last line has no \n */
+	counts++;  
 
 	retkeys = malloc(counts * sizeof(unsigned long long));
 	assert(retkeys);
@@ -249,10 +247,7 @@ static void run_parallel(unsigned int tasks, void (*fn)(int i, void *data),
 			printf("couldn't spawn #%d process\n", i);
 			exit(1);
 		}
-		/* It is mostly redundant and just allow the parent
-		 * process to update next_shced_cpu for the next child
-		 * process
-		 */
+		 
 		next_sched_cpu = sched_next_online(pid[i], next_sched_cpu);
 	}
 	for (i = 0; i < tasks; i++) {
@@ -469,7 +464,7 @@ static void test_parallel_lru_loss(int map_type, int map_flags, int nr_tasks)
 	printf("%s (map_type:%d map_flags:0x%X):\n", __func__, map_type,
 	       map_flags);
 
-	/* Give 20% more than the active working set */
+	 
 	if (map_flags & BPF_F_NO_COMMON_LRU)
 		map_fd = create_map(map_type, map_flags,
 				    nr_cpus * (1000 + 200));

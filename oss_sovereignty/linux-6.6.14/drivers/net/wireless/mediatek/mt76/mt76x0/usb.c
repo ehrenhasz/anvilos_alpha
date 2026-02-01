@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -12,33 +10,33 @@
 #include "../mt76x02_usb.h"
 
 static struct usb_device_id mt76x0_device_table[] = {
-	{ USB_DEVICE(0x148F, 0x7610) },	/* MT7610U */
-	{ USB_DEVICE(0x13B1, 0x003E) },	/* Linksys AE6000 */
-	{ USB_DEVICE(0x0E8D, 0x7610) },	/* Sabrent NTWLAC */
-	{ USB_DEVICE(0x7392, 0xa711) },	/* Edimax 7711mac */
-	{ USB_DEVICE(0x7392, 0xb711) },	/* Edimax / Elecom  */
-	{ USB_DEVICE(0x148f, 0x761a) },	/* TP-Link TL-WDN5200 */
-	{ USB_DEVICE(0x148f, 0x760a) },	/* TP-Link unknown */
-	{ USB_DEVICE(0x0b05, 0x17d1) },	/* Asus USB-AC51 */
-	{ USB_DEVICE(0x0b05, 0x17db) },	/* Asus USB-AC50 */
-	{ USB_DEVICE(0x0df6, 0x0075) },	/* Sitecom WLA-3100 */
-	{ USB_DEVICE(0x2019, 0xab31) },	/* Planex GW-450D */
-	{ USB_DEVICE(0x2001, 0x3d02) },	/* D-LINK DWA-171 rev B1 */
-	{ USB_DEVICE(0x0586, 0x3425) },	/* Zyxel NWD6505 */
-	{ USB_DEVICE(0x07b8, 0x7610) },	/* AboCom AU7212 */
-	{ USB_DEVICE(0x04bb, 0x0951) },	/* I-O DATA WN-AC433UK */
-	{ USB_DEVICE(0x057c, 0x8502) },	/* AVM FRITZ!WLAN USB Stick AC 430 */
-	{ USB_DEVICE(0x293c, 0x5702) },	/* Comcast Xfinity KXW02AAA  */
-	{ USB_DEVICE(0x20f4, 0x806b) },	/* TRENDnet TEW-806UBH  */
-	{ USB_DEVICE(0x7392, 0xc711) }, /* Devolo Wifi ac Stick */
-	{ USB_DEVICE(0x0df6, 0x0079) }, /* Sitecom Europe B.V. ac  Stick */
-	{ USB_DEVICE(0x2357, 0x0123) }, /* TP-LINK T2UHP_US_v1 */
-	{ USB_DEVICE(0x2357, 0x010b) }, /* TP-LINK T2UHP_UN_v1 */
-	/* TP-LINK Archer T1U */
+	{ USB_DEVICE(0x148F, 0x7610) },	 
+	{ USB_DEVICE(0x13B1, 0x003E) },	 
+	{ USB_DEVICE(0x0E8D, 0x7610) },	 
+	{ USB_DEVICE(0x7392, 0xa711) },	 
+	{ USB_DEVICE(0x7392, 0xb711) },	 
+	{ USB_DEVICE(0x148f, 0x761a) },	 
+	{ USB_DEVICE(0x148f, 0x760a) },	 
+	{ USB_DEVICE(0x0b05, 0x17d1) },	 
+	{ USB_DEVICE(0x0b05, 0x17db) },	 
+	{ USB_DEVICE(0x0df6, 0x0075) },	 
+	{ USB_DEVICE(0x2019, 0xab31) },	 
+	{ USB_DEVICE(0x2001, 0x3d02) },	 
+	{ USB_DEVICE(0x0586, 0x3425) },	 
+	{ USB_DEVICE(0x07b8, 0x7610) },	 
+	{ USB_DEVICE(0x04bb, 0x0951) },	 
+	{ USB_DEVICE(0x057c, 0x8502) },	 
+	{ USB_DEVICE(0x293c, 0x5702) },	 
+	{ USB_DEVICE(0x20f4, 0x806b) },	 
+	{ USB_DEVICE(0x7392, 0xc711) },  
+	{ USB_DEVICE(0x0df6, 0x0079) },  
+	{ USB_DEVICE(0x2357, 0x0123) },  
+	{ USB_DEVICE(0x2357, 0x010b) },  
+	 
 	{ USB_DEVICE(0x2357, 0x0105), .driver_info = 1, },
-	/* MT7630U */
+	 
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0E8D, 0x7630, 0xff, 0x2, 0xff)},
-	/* MT7650U */
+	 
 	{ USB_DEVICE_AND_INTERFACE_INFO(0x0E8D, 0x7650, 0xff, 0x2, 0xff)},
 	{ 0, }
 };
@@ -52,9 +50,7 @@ static void mt76x0_init_usb_dma(struct mt76x02_dev *dev)
 	val |= MT_USB_DMA_CFG_RX_BULK_EN |
 	       MT_USB_DMA_CFG_TX_BULK_EN;
 
-	/* disable AGGR_BULK_RX in order to receive one
-	 * frame in each rx urb and avoid copies
-	 */
+	 
 	val &= ~MT_USB_DMA_CFG_RX_BULK_AGG_EN;
 	mt76_wr(dev, MT_USB_DMA_CFG, val);
 
@@ -191,7 +187,7 @@ static int mt76x0u_register_device(struct mt76x02_dev *dev)
 	if (err < 0)
 		goto out_err;
 
-	/* check hw sg support in order to enable AMSDU */
+	 
 	hw->max_tx_fragments = dev->mt76.usb.sg_en ? MT_TX_SG_MAX_SIZE : 1;
 	err = mt76x0_register_device(dev);
 	if (err < 0)
@@ -235,7 +231,7 @@ static int mt76x0u_probe(struct usb_interface *usb_intf,
 	dev = container_of(mdev, struct mt76x02_dev, mt76);
 	mutex_init(&dev->phy_mutex);
 
-	/* Quirk for Archer T1U */
+	 
 	if (id->driver_info)
 		dev->no_2ghz = true;
 
@@ -249,7 +245,7 @@ static int mt76x0u_probe(struct usb_interface *usb_intf,
 	if (ret)
 		goto err;
 
-	/* Disable the HW, otherwise MCU fail to initialize on hot reboot */
+	 
 	mt76x0_chip_onoff(dev, false, false);
 
 	if (!mt76x02_wait_for_mac(mdev)) {
@@ -266,7 +262,7 @@ static int mt76x0u_probe(struct usb_interface *usb_intf,
 		goto err;
 	}
 
-	/* Note: vendor driver skips this check for MT76X0U */
+	 
 	if (!(mt76_rr(dev, MT_EFUSE_CTRL) & MT_EFUSE_CTRL_SEL))
 		dev_warn(mdev->dev, "Warning: eFUSE not present\n");
 

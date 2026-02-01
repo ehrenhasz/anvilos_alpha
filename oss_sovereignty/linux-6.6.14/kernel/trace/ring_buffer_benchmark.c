@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ring buffer tester and benchmark
- *
- * Copyright (C) 2009 Steven Rostedt <srostedt@redhat.com>
- */
+
+ 
 #include <linux/ring_buffer.h>
 #include <linux/completion.h>
 #include <linux/kthread.h>
@@ -18,11 +14,11 @@ struct rb_page {
 	char		data[4080];
 };
 
-/* run time and sleep time in seconds */
+ 
 #define RUN_TIME	10ULL
 #define SLEEP_TIME	10
 
-/* number of events for writer to wake up the reader */
+ 
 static int wakeup_interval = 100;
 
 static int reader_finish;
@@ -120,7 +116,7 @@ static enum event_status read_page(int cpu)
 	ret = ring_buffer_read_page(buffer, &bpage, PAGE_SIZE, cpu, 1);
 	if (ret >= 0) {
 		rpage = bpage;
-		/* The commit may have missed event flags set, clear them */
+		 
 		commit = local_read(&rpage->commit) & 0xfffff;
 		for (i = 0; i < commit && !test_error ; i += inc) {
 
@@ -133,7 +129,7 @@ static enum event_status read_page(int cpu)
 			event = (void *)&rpage->data[i];
 			switch (event->type_len) {
 			case RINGBUF_TYPE_PADDING:
-				/* failed writes may be discarded events */
+				 
 				if (!event->time_delta)
 					TEST_ERROR();
 				inc = event->array[0] + 4;
@@ -181,14 +177,11 @@ static enum event_status read_page(int cpu)
 
 static void ring_buffer_consumer(void)
 {
-	/* toggle between reading pages and events */
+	 
 	read_events ^= 1;
 
 	read = 0;
-	/*
-	 * Continue running until the producer specifically asks to stop
-	 * and is ready for the completion.
-	 */
+	 
 	while (!READ_ONCE(reader_finish)) {
 		int found = 1;
 
@@ -213,9 +206,7 @@ static void ring_buffer_consumer(void)
 			}
 		}
 
-		/* Wait till the producer wakes us up when there is more data
-		 * available or when the producer wants us to finish reading.
-		 */
+		 
 		set_current_state(TASK_INTERRUPTIBLE);
 		if (reader_finish)
 			break;
@@ -238,10 +229,7 @@ static void ring_buffer_producer(void)
 	unsigned long avg;
 	int cnt = 0;
 
-	/*
-	 * Hammer the buffer for 10 secs (this may
-	 * make the system stall)
-	 */
+	 
 	trace_printk("Starting ring buffer hammer\n");
 	start_time = ktime_get();
 	timeout = ktime_add_ns(start_time, RUN_TIME * NSEC_PER_SEC);
@@ -268,15 +256,7 @@ static void ring_buffer_producer(void)
 			wake_up_process(consumer);
 
 #ifndef CONFIG_PREEMPTION
-		/*
-		 * If we are a non preempt kernel, the 10 seconds run will
-		 * stop everything while it runs. Instead, we will call
-		 * cond_resched and also add any time that was lost by a
-		 * reschedule.
-		 *
-		 * Do a cond resched at the same frequency we would wake up
-		 * the reader.
-		 */
+		 
 		if (cnt % wakeup_interval)
 			cond_resched();
 #endif
@@ -284,10 +264,10 @@ static void ring_buffer_producer(void)
 	trace_printk("End ring buffer hammer\n");
 
 	if (consumer) {
-		/* Init both completions here to avoid races */
+		 
 		init_completion(&read_start);
 		init_completion(&read_done);
-		/* the completions must be visible before the finish var */
+		 
 		smp_wmb();
 		reader_finish = 1;
 		wake_up_process(consumer);
@@ -317,7 +297,7 @@ static void ring_buffer_producer(void)
 		trace_printk("Running Producer at nice: %d\n",
 			     producer_nice);
 
-	/* Let the user know that the test is running at low priority */
+	 
 	if (!producer_fifo && !consumer_fifo &&
 	    producer_nice == MAX_NICE && consumer_nice == MAX_NICE)
 		trace_printk("WARNING!!! This test is running at lowest priority.\n");
@@ -334,7 +314,7 @@ static void ring_buffer_producer(void)
 	trace_printk("Missed:   %ld\n", missed);
 	trace_printk("Hit:      %ld\n", hit);
 
-	/* Convert time from usecs to millisecs */
+	 
 	do_div(time, USEC_PER_MSEC);
 	if (time)
 		hit /= (long)time;
@@ -344,7 +324,7 @@ static void ring_buffer_producer(void)
 	trace_printk("Entries per millisec: %ld\n", hit);
 
 	if (hit) {
-		/* Calculate the average time in nanosecs */
+		 
 		avg = NSEC_PER_MSEC / hit;
 		trace_printk("%ld ns per entry\n", avg);
 	}
@@ -356,13 +336,13 @@ static void ring_buffer_producer(void)
 		trace_printk("Total iterations per millisec: %ld\n",
 			     hit + missed);
 
-		/* it is possible that hit + missed will overflow and be zero */
+		 
 		if (!(hit + missed)) {
 			trace_printk("hit + missed overflowed and totalled zero!\n");
-			hit--; /* make it non zero */
+			hit--;  
 		}
 
-		/* Calculate the average time in nanosecs */
+		 
 		avg = NSEC_PER_MSEC / (hit + missed);
 		trace_printk("%ld ns per entry\n", avg);
 	}
@@ -431,7 +411,7 @@ static int __init ring_buffer_benchmark_init(void)
 {
 	int ret;
 
-	/* make a one meg buffer in overwite mode */
+	 
 	buffer = ring_buffer_alloc(1000000, RB_FL_OVERWRITE);
 	if (!buffer)
 		return -ENOMEM;
@@ -451,9 +431,7 @@ static int __init ring_buffer_benchmark_init(void)
 	if (IS_ERR(producer))
 		goto out_kill;
 
-	/*
-	 * Run them as low-prio background tasks by default:
-	 */
+	 
 	if (!disable_reader) {
 		if (consumer_fifo >= 2)
 			sched_set_fifo(consumer);

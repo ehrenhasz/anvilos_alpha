@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drm kms/fb dma helper functions
- *
- * Copyright (C) 2012 Analog Devices Inc.
- *   Author: Lars-Peter Clausen <lars@metafoo.de>
- *
- * Based on udl_fbdev.c
- *  Copyright (C) 2012 Red Hat
- */
+
+ 
 
 #include <drm/drm_damage_helper.h>
 #include <drm/drm_fb_dma_helper.h>
@@ -19,30 +11,9 @@
 #include <linux/dma-mapping.h>
 #include <linux/module.h>
 
-/**
- * DOC: framebuffer dma helper functions
- *
- * Provides helper functions for creating a DMA-contiguous framebuffer.
- *
- * Depending on the platform, the buffers may be physically non-contiguous and
- * mapped through an IOMMU or a similar mechanism, or allocated from
- * physically-contiguous memory (using, for instance, CMA or a pool of memory
- * reserved at early boot). This is handled behind the scenes by the DMA mapping
- * API.
- *
- * drm_gem_fb_create() is used in the &drm_mode_config_funcs.fb_create
- * callback function to create a DMA-contiguous framebuffer.
- */
+ 
 
-/**
- * drm_fb_dma_get_gem_obj() - Get DMA GEM object for framebuffer
- * @fb: The framebuffer
- * @plane: Which plane
- *
- * Return the DMA GEM object for given framebuffer.
- *
- * This function will usually be called from the CRTC callback functions.
- */
+ 
 struct drm_gem_dma_object *drm_fb_dma_get_gem_obj(struct drm_framebuffer *fb,
 						  unsigned int plane)
 {
@@ -56,17 +27,7 @@ struct drm_gem_dma_object *drm_fb_dma_get_gem_obj(struct drm_framebuffer *fb,
 }
 EXPORT_SYMBOL_GPL(drm_fb_dma_get_gem_obj);
 
-/**
- * drm_fb_dma_get_gem_addr() - Get DMA (bus) address for framebuffer, for pixel
- * formats where values are grouped in blocks this will get you the beginning of
- * the block
- * @fb: The framebuffer
- * @state: Which state of drm plane
- * @plane: Which plane
- * Return the DMA GEM address for given framebuffer.
- *
- * This function will usually be called from the PLANE callback functions.
- */
+ 
 dma_addr_t drm_fb_dma_get_gem_addr(struct drm_framebuffer *fb,
 				   struct drm_plane_state *state,
 				   unsigned int plane)
@@ -105,18 +66,7 @@ dma_addr_t drm_fb_dma_get_gem_addr(struct drm_framebuffer *fb,
 }
 EXPORT_SYMBOL_GPL(drm_fb_dma_get_gem_addr);
 
-/**
- * drm_fb_dma_sync_non_coherent - Sync GEM object to non-coherent backing
- *	memory
- * @drm: DRM device
- * @old_state: Old plane state
- * @state: New plane state
- *
- * This function can be used by drivers that use damage clips and have
- * DMA GEM objects backed by non-coherent memory. Calling this function
- * in a plane's .atomic_update ensures that all the data in the backing
- * memory have been written to RAM.
- */
+ 
 void drm_fb_dma_sync_non_coherent(struct drm_device *drm,
 				  struct drm_plane_state *old_state,
 				  struct drm_plane_state *state)
@@ -138,7 +88,7 @@ void drm_fb_dma_sync_non_coherent(struct drm_device *drm,
 		drm_atomic_helper_damage_iter_init(&iter, old_state, state);
 
 		drm_atomic_for_each_plane_damage(&iter, &clip) {
-			/* Ignore x1/x2 values, invalidate complete lines */
+			 
 			offset = clip.y1 * state->fb->pitches[i];
 
 			nb_bytes = (clip.y2 - clip.y1) * state->fb->pitches[i];

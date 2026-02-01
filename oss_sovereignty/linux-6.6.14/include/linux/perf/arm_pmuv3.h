@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2012 ARM Ltd.
- */
+ 
+ 
 
 #ifndef __PERF_ARM_PMUV3_H
 #define __PERF_ARM_PMUV3_H
@@ -9,9 +7,7 @@
 #define ARMV8_PMU_MAX_COUNTERS	32
 #define ARMV8_PMU_COUNTER_MASK	(ARMV8_PMU_MAX_COUNTERS - 1)
 
-/*
- * Common architectural and microarchitectural event numbers.
- */
+ 
 #define ARMV8_PMUV3_PERFCTR_SW_INCR				0x0000
 #define ARMV8_PMUV3_PERFCTR_L1I_CACHE_REFILL			0x0001
 #define ARMV8_PMUV3_PERFCTR_L1I_TLB_REFILL			0x0002
@@ -77,27 +73,27 @@
 #define ARMV8_PMUV3_PERFCTR_STALL_SLOT_FRONTEND			0x003E
 #define ARMV8_PMUV3_PERFCTR_STALL_SLOT				0x003F
 
-/* Statistical profiling extension microarchitectural events */
+ 
 #define ARMV8_SPE_PERFCTR_SAMPLE_POP				0x4000
 #define ARMV8_SPE_PERFCTR_SAMPLE_FEED				0x4001
 #define ARMV8_SPE_PERFCTR_SAMPLE_FILTRATE			0x4002
 #define ARMV8_SPE_PERFCTR_SAMPLE_COLLISION			0x4003
 
-/* AMUv1 architecture events */
+ 
 #define ARMV8_AMU_PERFCTR_CNT_CYCLES				0x4004
 #define ARMV8_AMU_PERFCTR_STALL_BACKEND_MEM			0x4005
 
-/* long-latency read miss events */
+ 
 #define ARMV8_PMUV3_PERFCTR_L1I_CACHE_LMISS			0x4006
 #define ARMV8_PMUV3_PERFCTR_L2D_CACHE_LMISS_RD			0x4009
 #define ARMV8_PMUV3_PERFCTR_L2I_CACHE_LMISS			0x400A
 #define ARMV8_PMUV3_PERFCTR_L3D_CACHE_LMISS_RD			0x400B
 
-/* Trace buffer events */
+ 
 #define ARMV8_PMUV3_PERFCTR_TRB_WRAP				0x400C
 #define ARMV8_PMUV3_PERFCTR_TRB_TRIG				0x400E
 
-/* Trace unit events */
+ 
 #define ARMV8_PMUV3_PERFCTR_TRCEXTOUT0				0x4010
 #define ARMV8_PMUV3_PERFCTR_TRCEXTOUT1				0x4011
 #define ARMV8_PMUV3_PERFCTR_TRCEXTOUT2				0x4012
@@ -107,17 +103,17 @@
 #define ARMV8_PMUV3_PERFCTR_CTI_TRIGOUT6			0x401A
 #define ARMV8_PMUV3_PERFCTR_CTI_TRIGOUT7			0x401B
 
-/* additional latency from alignment events */
+ 
 #define ARMV8_PMUV3_PERFCTR_LDST_ALIGN_LAT			0x4020
 #define ARMV8_PMUV3_PERFCTR_LD_ALIGN_LAT			0x4021
 #define ARMV8_PMUV3_PERFCTR_ST_ALIGN_LAT			0x4022
 
-/* Armv8.5 Memory Tagging Extension events */
+ 
 #define ARMV8_MTE_PERFCTR_MEM_ACCESS_CHECKED			0x4024
 #define ARMV8_MTE_PERFCTR_MEM_ACCESS_CHECKED_RD			0x4025
 #define ARMV8_MTE_PERFCTR_MEM_ACCESS_CHECKED_WR			0x4026
 
-/* ARMv8 recommended implementation defined event types */
+ 
 #define ARMV8_IMPDEF_PERFCTR_L1D_CACHE_RD			0x0040
 #define ARMV8_IMPDEF_PERFCTR_L1D_CACHE_WR			0x0041
 #define ARMV8_IMPDEF_PERFCTR_L1D_CACHE_REFILL_RD		0x0042
@@ -204,50 +200,40 @@
 #define ARMV8_IMPDEF_PERFCTR_L3D_CACHE_WB_CLEAN			0x00A7
 #define ARMV8_IMPDEF_PERFCTR_L3D_CACHE_INVAL			0x00A8
 
-/*
- * Per-CPU PMCR: config reg
- */
-#define ARMV8_PMU_PMCR_E	(1 << 0) /* Enable all counters */
-#define ARMV8_PMU_PMCR_P	(1 << 1) /* Reset all counters */
-#define ARMV8_PMU_PMCR_C	(1 << 2) /* Cycle counter reset */
-#define ARMV8_PMU_PMCR_D	(1 << 3) /* CCNT counts every 64th cpu cycle */
-#define ARMV8_PMU_PMCR_X	(1 << 4) /* Export to ETM */
-#define ARMV8_PMU_PMCR_DP	(1 << 5) /* Disable CCNT if non-invasive debug*/
-#define ARMV8_PMU_PMCR_LC	(1 << 6) /* Overflow on 64 bit cycle counter */
-#define ARMV8_PMU_PMCR_LP	(1 << 7) /* Long event counter enable */
-#define ARMV8_PMU_PMCR_N_SHIFT	11  /* Number of counters supported */
+ 
+#define ARMV8_PMU_PMCR_E	(1 << 0)  
+#define ARMV8_PMU_PMCR_P	(1 << 1)  
+#define ARMV8_PMU_PMCR_C	(1 << 2)  
+#define ARMV8_PMU_PMCR_D	(1 << 3)  
+#define ARMV8_PMU_PMCR_X	(1 << 4)  
+#define ARMV8_PMU_PMCR_DP	(1 << 5)  
+#define ARMV8_PMU_PMCR_LC	(1 << 6)  
+#define ARMV8_PMU_PMCR_LP	(1 << 7)  
+#define ARMV8_PMU_PMCR_N_SHIFT	11   
 #define ARMV8_PMU_PMCR_N_MASK	0x1f
-#define ARMV8_PMU_PMCR_MASK	0xff    /* Mask for writable bits */
+#define ARMV8_PMU_PMCR_MASK	0xff     
 
-/*
- * PMOVSR: counters overflow flag status reg
- */
-#define ARMV8_PMU_OVSR_MASK		0xffffffff	/* Mask for writable bits */
+ 
+#define ARMV8_PMU_OVSR_MASK		0xffffffff	 
 #define ARMV8_PMU_OVERFLOWED_MASK	ARMV8_PMU_OVSR_MASK
 
-/*
- * PMXEVTYPER: Event selection reg
- */
-#define ARMV8_PMU_EVTYPE_MASK	0xc800ffff	/* Mask for writable bits */
-#define ARMV8_PMU_EVTYPE_EVENT	0xffff		/* Mask for EVENT bits */
+ 
+#define ARMV8_PMU_EVTYPE_MASK	0xc800ffff	 
+#define ARMV8_PMU_EVTYPE_EVENT	0xffff		 
 
-/*
- * Event filters for PMUv3
- */
+ 
 #define ARMV8_PMU_EXCLUDE_EL1	(1U << 31)
 #define ARMV8_PMU_EXCLUDE_EL0	(1U << 30)
 #define ARMV8_PMU_INCLUDE_EL2	(1U << 27)
 
-/*
- * PMUSERENR: user enable reg
- */
-#define ARMV8_PMU_USERENR_MASK	0xf		/* Mask for writable bits */
-#define ARMV8_PMU_USERENR_EN	(1 << 0) /* PMU regs can be accessed at EL0 */
-#define ARMV8_PMU_USERENR_SW	(1 << 1) /* PMSWINC can be written at EL0 */
-#define ARMV8_PMU_USERENR_CR	(1 << 2) /* Cycle counter can be read at EL0 */
-#define ARMV8_PMU_USERENR_ER	(1 << 3) /* Event counter can be read at EL0 */
+ 
+#define ARMV8_PMU_USERENR_MASK	0xf		 
+#define ARMV8_PMU_USERENR_EN	(1 << 0)  
+#define ARMV8_PMU_USERENR_SW	(1 << 1)  
+#define ARMV8_PMU_USERENR_CR	(1 << 2)  
+#define ARMV8_PMU_USERENR_ER	(1 << 3)  
 
-/* PMMIR_EL1.SLOTS mask */
+ 
 #define ARMV8_PMU_SLOTS_MASK	0xff
 
 #define ARMV8_PMU_BUS_SLOTS_SHIFT 8
@@ -255,9 +241,7 @@
 #define ARMV8_PMU_BUS_WIDTH_SHIFT 16
 #define ARMV8_PMU_BUS_WIDTH_MASK 0xf
 
-/*
- * This code is really good
- */
+ 
 
 #define PMEVN_CASE(n, case_macro) \
 	case n: case_macro(n); break

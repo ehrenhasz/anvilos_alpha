@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -13,7 +13,7 @@
 
 #define to_clk_pllv2(clk) (container_of(clk, struct clk_pllv2, clk))
 
-/* PLL Register Offsets */
+ 
 #define MXC_PLL_DP_CTL			0x00
 #define MXC_PLL_DP_CONFIG		0x04
 #define MXC_PLL_DP_OP			0x08
@@ -27,7 +27,7 @@
 #define MXC_PLL_DP_MFN_TOGC		0x28
 #define MXC_PLL_DP_DESTAT		0x2c
 
-/* PLL Register Bit definitions */
+ 
 #define MXC_PLL_DP_CTL_MUL_CTRL		0x2000
 #define MXC_PLL_DP_CTL_DPDCK0_2_EN	0x1000
 #define MXC_PLL_DP_CTL_DPDCK0_2_OFFSET	12
@@ -68,7 +68,7 @@
 #define MXC_PLL_DP_DESTAT_TOG_SEL	(1 << 31)
 #define MXC_PLL_DP_DESTAT_MFN		0x07FFFFFF
 
-#define MAX_DPLL_WAIT_TRIES	1000 /* 1000 * udelay(1) = 1ms */
+#define MAX_DPLL_WAIT_TRIES	1000  
 
 struct clk_pllv2 {
 	struct clk_hw	hw;
@@ -168,7 +168,7 @@ static int clk_pllv2_set_rate(struct clk_hw *hw, unsigned long rate,
 		return ret;
 
 	dp_ctl = __raw_readl(pllbase + MXC_PLL_DP_CTL);
-	/* use dpdck0_2 */
+	 
 	__raw_writel(dp_ctl | 0x1000L, pllbase + MXC_PLL_DP_CTL);
 
 	__raw_writel(dp_op, pllbase + MXC_PLL_DP_OP);
@@ -203,7 +203,7 @@ static int clk_pllv2_prepare(struct clk_hw *hw)
 	reg = __raw_readl(pllbase + MXC_PLL_DP_CTL) | MXC_PLL_DP_CTL_UPEN;
 	__raw_writel(reg, pllbase + MXC_PLL_DP_CTL);
 
-	/* Wait for lock */
+	 
 	do {
 		reg = __raw_readl(pllbase + MXC_PLL_DP_CTL);
 		if (reg & MXC_PLL_DP_CTL_LRF)

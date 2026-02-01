@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * OHCI HCD (Host Controller Driver) for USB.
- *
- *  Copyright (C) 2004 SAN People (Pty) Ltd.
- *  Copyright (C) 2005 Thibaut VARENE <varenet@parisc-linux.org>
- *
- * AT91 Bus Glue
- *
- * Based on fragments of 2.4 driver by Rick Bronson.
- * Based on ohci-omap.c
- *
- * This file is licenced under the GPL.
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/clk.h>
@@ -35,7 +23,7 @@
 #define at91_for_each_port(index)	\
 		for ((index) = 0; (index) < AT91_MAX_USBH_PORTS; (index)++)
 
-/* interface, function and usb clocks; sometimes also an AHB clock */
+ 
 #define hcd_to_ohci_at91_priv(h) \
 	((struct ohci_at91_priv *)hcd_to_ohci(h)->priv)
 
@@ -43,7 +31,7 @@
 struct at91_usbh_data {
 	struct gpio_desc *vbus_pin[AT91_MAX_USBH_PORTS];
 	struct gpio_desc *overcurrent_pin[AT91_MAX_USBH_PORTS];
-	u8 ports;				/* number of ports on root hub */
+	u8 ports;				 
 	u8 overcurrent_supported;
 	u8 overcurrent_status[AT91_MAX_USBH_PORTS];
 	u8 overcurrent_changed[AT91_MAX_USBH_PORTS];
@@ -54,11 +42,11 @@ struct ohci_at91_priv {
 	struct clk *fclk;
 	struct clk *hclk;
 	bool clocked;
-	bool wakeup;		/* Saved wake-up state for resume */
+	bool wakeup;		 
 	struct regmap *sfr_regmap;
 	u32 suspend_smc_id;
 };
-/* interface and function clocks; sometimes also an AHB clock */
+ 
 
 #define DRIVER_DESC "OHCI Atmel driver"
 
@@ -68,7 +56,7 @@ static const struct ohci_driver_overrides ohci_at91_drv_overrides __initconst = 
 	.extra_priv_size = sizeof(struct ohci_at91_priv),
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static void at91_start_clock(struct ohci_at91_priv *ohci_at91)
 {
@@ -101,14 +89,10 @@ static void at91_start_hc(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "start\n");
 
-	/*
-	 * Start the USB clocks.
-	 */
+	 
 	at91_start_clock(ohci_at91);
 
-	/*
-	 * The USB host controller must remain in reset.
-	 */
+	 
 	writel(0, &regs->control);
 }
 
@@ -119,19 +103,15 @@ static void at91_stop_hc(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "stop\n");
 
-	/*
-	 * Put the USB host controller into reset.
-	 */
+	 
 	usb_hcd_platform_shutdown(pdev);
 
-	/*
-	 * Stop the USB clocks.
-	 */
+	 
 	at91_stop_clock(ohci_at91);
 }
 
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static void usb_hcd_at91_remove (struct usb_hcd *, struct platform_device *);
 
@@ -162,21 +142,11 @@ static struct regmap *at91_dt_syscon_sfr(void)
 	return regmap;
 }
 
-/* configure so an HC device and id are always provided */
-/* always called with process context; sleeping is OK */
+ 
+ 
 
 
-/*
- * usb_hcd_at91_probe - initialize AT91-based HCDs
- * @driver:	Pointer to hc driver instance
- * @pdev:	USB controller to probe
- *
- * Context: task context, might sleep
- *
- * Allocates basic resources for this USB host controller, and
- * then invokes the start() method for the HCD associated with it
- * through the hotplug entry's driver_data.
- */
+ 
 static int usb_hcd_at91_probe(const struct hc_driver *driver,
 			struct platform_device *pdev)
 {
@@ -238,10 +208,7 @@ static int usb_hcd_at91_probe(const struct hc_driver *driver,
 	ohci->num_ports = board->ports;
 	at91_start_hc(pdev);
 
-	/*
-	 * The RemoteWakeupConnected bit has to be set explicitly
-	 * before calling ohci_run. The reset value of this bit is 0.
-	 */
+	 
 	ohci->hc_control = OHCI_CTRL_RWC;
 
 	retval = usb_add_hcd(hcd, irq, IRQF_SHARED);
@@ -250,7 +217,7 @@ static int usb_hcd_at91_probe(const struct hc_driver *driver,
 		return retval;
 	}
 
-	/* Error handling */
+	 
 	at91_stop_hc(pdev);
 
  err:
@@ -259,19 +226,9 @@ static int usb_hcd_at91_probe(const struct hc_driver *driver,
 }
 
 
-/* may be called with controller, bus, and devices active */
+ 
 
-/*
- * usb_hcd_at91_remove - shutdown processing for AT91-based HCDs
- * @hcd:	USB controller to remove
- * @pdev:	Platform device required for cleanup
- *
- * Context: task context, might sleep
- *
- * Reverses the effect of usb_hcd_at91_probe(), first invoking
- * the HCD's stop() method.  It is always called from a thread
- * context, "rmmod" or something similar.
- */
+ 
 static void usb_hcd_at91_remove(struct usb_hcd *hcd,
 				struct platform_device *pdev)
 {
@@ -280,7 +237,7 @@ static void usb_hcd_at91_remove(struct usb_hcd *hcd,
 	usb_put_hcd(hcd);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void ohci_at91_usb_set_power(struct at91_usbh_data *pdata, int port, int enable)
 {
 	if (!valid_port(port))
@@ -297,9 +254,7 @@ static int ohci_at91_usb_get_power(struct at91_usbh_data *pdata, int port)
 	return gpiod_get_value(pdata->vbus_pin[port]);
 }
 
-/*
- * Update the status data from the hub with the over-current indicator change.
- */
+ 
 static int ohci_at91_hub_status_data(struct usb_hcd *hcd, char *buf)
 {
 	struct at91_usbh_data *pdata = hcd->self.controller->platform_data;
@@ -345,9 +300,7 @@ static int ohci_at91_port_suspend(struct ohci_at91_priv *ohci_at91, u8 set)
 	return 0;
 }
 
-/*
- * Look at the control requests to the root hub and see if we need to override.
- */
+ 
 static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 				 u16 wIndex, char *buf, u16 wLength)
 {
@@ -435,16 +388,14 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 	switch (typeReq) {
 	case GetHubDescriptor:
 
-		/* update the hub's descriptor */
+		 
 
 		desc = (struct usb_hub_descriptor *)buf;
 
 		dev_dbg(hcd->self.controller, "wHubCharacteristics 0x%04x\n",
 			desc->wHubCharacteristics);
 
-		/* remove the old configurations for power-switching, and
-		 * over-current protection, and insert our new configuration
-		 */
+		 
 
 		desc->wHubCharacteristics &= ~cpu_to_le16(HUB_CHAR_LPSM);
 		desc->wHubCharacteristics |=
@@ -462,7 +413,7 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		return ret;
 
 	case GetPortStatus:
-		/* check port status */
+		 
 
 		dev_dbg(hcd->self.controller, "GetPortStatus(%d)\n", wIndex);
 
@@ -482,7 +433,7 @@ static int ohci_at91_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 	return ret;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static irqreturn_t ohci_hcd_at91_overcurrent_irq(int irq, void *data)
 {
@@ -490,8 +441,7 @@ static irqreturn_t ohci_hcd_at91_overcurrent_irq(int irq, void *data)
 	struct at91_usbh_data *pdata = dev_get_platdata(&pdev->dev);
 	int val, port;
 
-	/* From the GPIO notifying the over-current situation, find
-	 * out the corresponding port */
+	 
 	at91_for_each_port(port) {
 		if (gpiod_to_irq(pdata->overcurrent_pin[port]) == irq)
 			break;
@@ -504,9 +454,7 @@ static irqreturn_t ohci_hcd_at91_overcurrent_irq(int irq, void *data)
 
 	val = gpiod_get_value(pdata->overcurrent_pin[port]);
 
-	/* When notified of an over-current situation, disable power
-	   on the corresponding port, and mark this port in
-	   over-current. */
+	 
 	if (!val) {
 		ohci_at91_usb_set_power(pdata, port, 0);
 		pdata->overcurrent_status[port]  = 1;
@@ -521,12 +469,12 @@ static irqreturn_t ohci_hcd_at91_overcurrent_irq(int irq, void *data)
 
 static const struct of_device_id at91_ohci_dt_ids[] = {
 	{ .compatible = "atmel,at91rm9200-ohci" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, at91_ohci_dt_ids);
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int ohci_hcd_at91_drv_probe(struct platform_device *pdev)
 {
@@ -537,10 +485,7 @@ static int ohci_hcd_at91_drv_probe(struct platform_device *pdev)
 	int			err;
 	u32			ports;
 
-	/* Right now device-tree probed devices don't get dma_mask set.
-	 * Since shared usb code relies on it, set it here for now.
-	 * Once we have dma capability bindings this can go away.
-	 */
+	 
 	ret = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (ret)
 		return ret;
@@ -618,10 +563,7 @@ ohci_hcd_at91_drv_suspend(struct device *dev)
 	struct ohci_at91_priv *ohci_at91 = hcd_to_ohci_at91_priv(hcd);
 	int		ret;
 
-	/*
-	 * Disable wakeup if we are going to sleep with slow clock mode
-	 * enabled.
-	 */
+	 
 	ohci_at91->wakeup = device_may_wakeup(dev)
 			&& !at91_suspend_entering_slow_clock();
 
@@ -634,17 +576,11 @@ ohci_hcd_at91_drv_suspend(struct device *dev)
 			disable_irq_wake(hcd->irq);
 		return ret;
 	}
-	/*
-	 * The integrated transceivers seem unable to notice disconnect,
-	 * reconnect, or wakeup without the 48 MHz clock active.  so for
-	 * correctness, always discard connection state (using reset).
-	 *
-	 * REVISIT: some boards will be able to turn VBUS off...
-	 */
+	 
 	if (!ohci_at91->wakeup) {
 		ohci->rh_state = OHCI_RH_HALTED;
 
-		/* flush the writes */
+		 
 		(void) ohci_readl (ohci, &ohci->regs->control);
 		msleep(1);
 		ohci_at91_port_suspend(ohci_at91, 1);
@@ -669,12 +605,7 @@ ohci_hcd_at91_drv_resume(struct device *dev)
 	else
 		at91_start_clock(ohci_at91);
 
-	/*
-	 * According to the comment in ohci_hcd_at91_drv_suspend()
-	 * we need to do a reset if the 48Mhz clock was stopped,
-	 * that is, if ohci_at91->wakeup is clear. Tell ohci_resume()
-	 * to reset in this case by setting its "hibernated" flag.
-	 */
+	 
 	ohci_resume(hcd, !ohci_at91->wakeup);
 
 	return 0;
@@ -701,14 +632,7 @@ static int __init ohci_at91_init(void)
 
 	ohci_init_driver(&ohci_at91_hc_driver, &ohci_at91_drv_overrides);
 
-	/*
-	 * The Atmel HW has some unusual quirks, which require Atmel-specific
-	 * workarounds. We override certain hc_driver functions here to
-	 * achieve that. We explicitly do not enhance ohci_driver_overrides to
-	 * allow this more easily, since this is an unusual case, and we don't
-	 * want to encourage others to override these functions by making it
-	 * too easy.
-	 */
+	 
 
 	ohci_at91_hc_driver.hub_status_data	= ohci_at91_hub_status_data;
 	ohci_at91_hc_driver.hub_control		= ohci_at91_hub_control;

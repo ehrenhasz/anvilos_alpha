@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVBIOS_VOLT_H__
 #define __NVBIOS_VOLT_H__
 
@@ -13,12 +13,12 @@ struct nvbios_volt {
 	u32 max;
 	u32 base;
 
-	/* GPIO mode */
+	 
 	bool ranged;
 	u8   vidmask;
 	s16  step;
 
-	/* PWM mode */
+	 
 	u32 pwm_freq;
 	u32 pwm_range;
 };

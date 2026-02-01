@@ -1,10 +1,4 @@
-/* Copyright (c) 2013-2015 PLUMgrid, http://plumgrid.com
- * Copyright (c) 2015 BMW Car IT GmbH
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include <linux/version.h>
 #include <linux/ptrace.h>
 #include <uapi/linux/bpf.h>
@@ -13,10 +7,7 @@
 #define MAX_ENTRIES	20
 #define MAX_CPU		4
 
-/* We need to stick to static allocated memory (an array instead of
- * hash table) because managing dynamic memory from the
- * trace_preempt_[on|off] tracepoints hooks is not supported.
- */
+ 
 
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY);

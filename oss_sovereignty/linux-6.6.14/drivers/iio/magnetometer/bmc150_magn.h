@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _BMC150_MAGN_H_
 #define _BMC150_MAGN_H_
 
@@ -9,4 +9,4 @@ int bmc150_magn_probe(struct device *dev, struct regmap *regmap, int irq,
 		      const char *name);
 void bmc150_magn_remove(struct device *dev);
 
-#endif /* _BMC150_MAGN_H_ */
+#endif  

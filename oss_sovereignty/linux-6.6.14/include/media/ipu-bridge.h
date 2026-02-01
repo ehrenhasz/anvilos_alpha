@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Author: Dan Scally <djrscally@gmail.com> */
+ 
+ 
 #ifndef __IPU_BRIDGE_H
 #define __IPU_BRIDGE_H
 
@@ -12,7 +12,7 @@
 #define IPU_MAX_PORTS				4
 #define MAX_NUM_LINK_FREQS			3
 
-/* Values are educated guesses as we don't have a spec */
+ 
 #define IPU_SENSOR_ROTATION_NORMAL		0
 #define IPU_SENSOR_ROTATION_INVERTED		1
 
@@ -53,7 +53,7 @@ enum ipu_sensor_swnodes {
 	SWNODE_SENSOR_ENDPOINT,
 	SWNODE_IPU_PORT,
 	SWNODE_IPU_ENDPOINT,
-	/* below are optional / maybe empty */
+	 
 	SWNODE_IVSC_HID,
 	SWNODE_IVSC_SENSOR_PORT,
 	SWNODE_IVSC_SENSOR_ENDPOINT,
@@ -63,7 +63,7 @@ enum ipu_sensor_swnodes {
 	SWNODE_COUNT
 };
 
-/* Data representation as it is in ACPI SSDB buffer */
+ 
 struct ipu_sensor_ssdb {
 	u8 version;
 	u8 sku;
@@ -119,7 +119,7 @@ struct ipu_sensor_config {
 };
 
 struct ipu_sensor {
-	/* append ssdb.link(u8) in "-%u" format as suffix of HID */
+	 
 	char name[ACPI_ID_LEN + 4];
 	struct acpi_device *adev;
 
@@ -127,7 +127,7 @@ struct ipu_sensor {
 	struct acpi_device *ivsc_adev;
 	char ivsc_name[ACPI_ID_LEN + 4];
 
-	/* SWNODE_COUNT + 1 for terminating NULL */
+	 
 	const struct software_node *group[SWNODE_COUNT + 1];
 	struct software_node swnodes[SWNODE_COUNT];
 	struct ipu_node_names node_names;
@@ -173,7 +173,7 @@ int ipu_bridge_init(struct device *dev,
 int ipu_bridge_parse_ssdb(struct acpi_device *adev, struct ipu_sensor *sensor);
 int ipu_bridge_instantiate_vcm(struct device *sensor);
 #else
-/* Use a define to avoid the @parse_sensor_fwnode argument getting evaluated */
+ 
 #define ipu_bridge_init(dev, parse_sensor_fwnode)	(0)
 static inline int ipu_bridge_instantiate_vcm(struct device *s) { return 0; }
 #endif

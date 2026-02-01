@@ -1,19 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IPv6 input
- *	Linux INET6 implementation
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- *	Ian P. Morris		<I.P.Morris@soton.ac.uk>
- *
- *	Based in linux/net/ipv4/ip_input.c
- */
-/* Changes
- *
- *	Mitsuru KANDA @USAGI and
- *	YOSHIFUJI Hideaki @USAGI: Remove ipv6_parse_exthdrs().
- */
+
+ 
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -68,9 +55,7 @@ static void ip6_rcv_finish_core(struct net *net, struct sock *sk,
 
 int ip6_rcv_finish(struct net *net, struct sock *sk, struct sk_buff *skb)
 {
-	/* if ingress device is enslaved to an L3 master device pass the
-	 * skb to its handler for processing
-	 */
+	 
 	skb = l3mdev_ip6_rcv(skb);
 	if (!skb)
 		return NET_RX_SUCCESS;
@@ -118,9 +103,7 @@ static void ip6_list_rcv_finish(struct net *net, struct sock *sk,
 		struct dst_entry *dst;
 
 		skb_list_del_init(skb);
-		/* if ingress device is enslaved to an L3 master device pass the
-		 * skb to its handler for processing
-		 */
+		 
 		skb = l3mdev_ip6_rcv(skb);
 		if (!skb)
 			continue;
@@ -133,16 +116,16 @@ static void ip6_list_rcv_finish(struct net *net, struct sock *sk,
 		if (curr_dst != dst) {
 			hint = ip6_extract_route_hint(net, skb);
 
-			/* dispatch old sublist */
+			 
 			if (!list_empty(&sublist))
 				ip6_sublist_rcv_finish(&sublist);
-			/* start new sublist */
+			 
 			INIT_LIST_HEAD(&sublist);
 			curr_dst = dst;
 		}
 		list_add_tail(&skb->list, &sublist);
 	}
-	/* dispatch final sublist */
+	 
 	ip6_sublist_rcv_finish(&sublist);
 }
 
@@ -177,17 +160,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 
 	memset(IP6CB(skb), 0, sizeof(struct inet6_skb_parm));
 
-	/*
-	 * Store incoming device index. When the packet will
-	 * be queued, we cannot refer to skb->dev anymore.
-	 *
-	 * BTW, when we send a packet for our own local address on a
-	 * non-loopback interface (e.g. ethX), it is being delivered
-	 * via the loopback interface (lo) here; skb->dev = loopback_dev.
-	 * It, however, should be considered as if it is being
-	 * arrived via the sending interface (ethX), because of the
-	 * nature of scoping architecture. --yoshfuji
-	 */
+	 
 	IP6CB(skb)->iif = skb_valid_dst(skb) ? ip6_dst_idev(skb_dst(skb))->dev->ifindex : dev->ifindex;
 
 	if (unlikely(!pskb_may_pull(skb, sizeof(*hdr))))
@@ -204,35 +177,21 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 			IPSTATS_MIB_NOECTPKTS +
 				(ipv6_get_dsfield(hdr) & INET_ECN_MASK),
 			max_t(unsigned short, 1, skb_shinfo(skb)->gso_segs));
-	/*
-	 * RFC4291 2.5.3
-	 * The loopback address must not be used as the source address in IPv6
-	 * packets that are sent outside of a single node. [..]
-	 * A packet received on an interface with a destination address
-	 * of loopback must be dropped.
-	 */
+	 
 	if ((ipv6_addr_loopback(&hdr->saddr) ||
 	     ipv6_addr_loopback(&hdr->daddr)) &&
 	    !(dev->flags & IFF_LOOPBACK) &&
 	    !netif_is_l3_master(dev))
 		goto err;
 
-	/* RFC4291 Errata ID: 3480
-	 * Interface-Local scope spans only a single interface on a
-	 * node and is useful only for loopback transmission of
-	 * multicast.  Packets with interface-local scope received
-	 * from another node must be discarded.
-	 */
+	 
 	if (!(skb->pkt_type == PACKET_LOOPBACK ||
 	      dev->flags & IFF_LOOPBACK) &&
 	    ipv6_addr_is_multicast(&hdr->daddr) &&
 	    IPV6_ADDR_MC_SCOPE(&hdr->daddr) == 1)
 		goto err;
 
-	/* If enabled, drop unicast packets that were encapsulated in link-layer
-	 * multicast or broadcast to protected against the so-called "hole-196"
-	 * attack in 802.11 wireless.
-	 */
+	 
 	if (!ipv6_addr_is_multicast(&hdr->daddr) &&
 	    (skb->pkt_type == PACKET_BROADCAST ||
 	     skb->pkt_type == PACKET_MULTICAST) &&
@@ -241,20 +200,12 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 		goto err;
 	}
 
-	/* RFC4291 2.7
-	 * Nodes must not originate a packet to a multicast address whose scope
-	 * field contains the reserved value 0; if such a packet is received, it
-	 * must be silently dropped.
-	 */
+	 
 	if (ipv6_addr_is_multicast(&hdr->daddr) &&
 	    IPV6_ADDR_MC_SCOPE(&hdr->daddr) == 0)
 		goto err;
 
-	/*
-	 * RFC4291 2.7
-	 * Multicast addresses must not be used as source addresses in IPv6
-	 * packets or appear in any Routing header.
-	 */
+	 
 	if (ipv6_addr_is_multicast(&hdr->saddr))
 		goto err;
 
@@ -263,7 +214,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 
 	pkt_len = ntohs(hdr->payload_len);
 
-	/* pkt_len may be zero if Jumbo payload option is present */
+	 
 	if (pkt_len || hdr->nexthdr != NEXTHDR_HOP) {
 		if (pkt_len + sizeof(struct ipv6hdr) > skb->len) {
 			__IP6_INC_STATS(net,
@@ -286,7 +237,7 @@ static struct sk_buff *ip6_rcv_core(struct sk_buff *skb, struct net_device *dev,
 
 	rcu_read_unlock();
 
-	/* Must drop socket now because of tproxy. */
+	 
 	if (!skb_sk_is_prefetched(skb))
 		skb_orphan(skb);
 
@@ -320,7 +271,7 @@ static void ip6_sublist_rcv(struct list_head *head, struct net_device *dev,
 	ip6_list_rcv_finish(net, NULL, head);
 }
 
-/* Receive a list of IPv6 packets */
+ 
 void ipv6_list_rcv(struct list_head *head, struct packet_type *pt,
 		   struct net_device *orig_dev)
 {
@@ -340,26 +291,24 @@ void ipv6_list_rcv(struct list_head *head, struct packet_type *pt,
 			continue;
 
 		if (curr_dev != dev || curr_net != net) {
-			/* dispatch old sublist */
+			 
 			if (!list_empty(&sublist))
 				ip6_sublist_rcv(&sublist, curr_dev, curr_net);
-			/* start new sublist */
+			 
 			INIT_LIST_HEAD(&sublist);
 			curr_dev = dev;
 			curr_net = net;
 		}
 		list_add_tail(&skb->list, &sublist);
 	}
-	/* dispatch final sublist */
+	 
 	if (!list_empty(&sublist))
 		ip6_sublist_rcv(&sublist, curr_dev, curr_net);
 }
 
 INDIRECT_CALLABLE_DECLARE(int tcp_v6_rcv(struct sk_buff *));
 
-/*
- *	Deliver the packet to the host
- */
+ 
 void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
 			      bool have_final)
 {
@@ -369,9 +318,7 @@ void ip6_protocol_deliver_rcu(struct net *net, struct sk_buff *skb, int nexthdr,
 	SKB_DR(reason);
 	bool raw;
 
-	/*
-	 *	Parse extension headers
-	 */
+	 
 
 resubmit:
 	idev = ip6_dst_idev(skb_dst(skb));
@@ -390,11 +337,7 @@ resubmit_final:
 
 		if (have_final) {
 			if (!(ipprot->flags & INET6_PROTO_FINAL)) {
-				/* Once we've seen a final protocol don't
-				 * allow encapsulation on any non-final
-				 * ones. This allows foo in UDP encapsulation
-				 * to work.
-				 */
+				 
 				goto discard;
 			}
 		} else if (ipprot->flags & INET6_PROTO_FINAL) {
@@ -402,7 +345,7 @@ resubmit_final:
 			int sdif = inet6_sdif(skb);
 			struct net_device *dev;
 
-			/* Only do this once for first final protocol */
+			 
 			have_final = true;
 
 
@@ -410,7 +353,7 @@ resubmit_final:
 					   skb_network_header_len(skb));
 			hdr = ipv6_hdr(skb);
 
-			/* skb->dev passed may be master dev for vrfs. */
+			 
 			if (sdif) {
 				dev = dev_get_by_index_rcu(net, sdif);
 				if (!dev)
@@ -439,11 +382,7 @@ resubmit_final:
 				      skb);
 		if (ret > 0) {
 			if (ipprot->flags & INET6_PROTO_FINAL) {
-				/* Not an extension header, most likely UDP
-				 * encapsulation. Use return value as nexthdr
-				 * protocol not nhoff (which presumably is
-				 * not set by handler).
-				 */
+				 
 				nexthdr = ret;
 				goto resubmit_final;
 			} else {
@@ -506,7 +445,7 @@ int ip6_mc_input(struct sk_buff *skb)
 			 __in6_dev_get_safely(skb->dev), IPSTATS_MIB_INMCAST,
 			 skb->len);
 
-	/* skb->dev passed may be master dev for vrfs. */
+	 
 	if (sdif) {
 		rcu_read_lock();
 		dev = dev_get_by_index_rcu(dev_net(skb->dev), sdif);
@@ -525,35 +464,28 @@ int ip6_mc_input(struct sk_buff *skb)
 		rcu_read_unlock();
 
 #ifdef CONFIG_IPV6_MROUTE
-	/*
-	 *      IPv6 multicast router mode is now supported ;)
-	 */
+	 
 	if (atomic_read(&dev_net(skb->dev)->ipv6.devconf_all->mc_forwarding) &&
 	    !(ipv6_addr_type(&hdr->daddr) &
 	      (IPV6_ADDR_LOOPBACK|IPV6_ADDR_LINKLOCAL)) &&
 	    likely(!(IP6CB(skb)->flags & IP6SKB_FORWARDED))) {
-		/*
-		 * Okay, we try to forward - split and duplicate
-		 * packets.
-		 */
+		 
 		struct sk_buff *skb2;
 		struct inet6_skb_parm *opt = IP6CB(skb);
 
-		/* Check for MLD */
+		 
 		if (unlikely(opt->flags & IP6SKB_ROUTERALERT)) {
-			/* Check if this is a mld message */
+			 
 			u8 nexthdr = hdr->nexthdr;
 			__be16 frag_off;
 			int offset;
 
-			/* Check if the value of Router Alert
-			 * is for MLD (0x0000).
-			 */
+			 
 			if (opt->ra == htons(IPV6_OPT_ROUTERALERT_MLD)) {
 				deliver = false;
 
 				if (!ipv6_ext_hdr(nexthdr)) {
-					/* BUG */
+					 
 					goto out;
 				}
 				offset = ipv6_skip_exthdr(skb, sizeof(*hdr),
@@ -566,7 +498,7 @@ int ip6_mc_input(struct sk_buff *skb)
 
 				goto out;
 			}
-			/* unknown RA - process it normally */
+			 
 		}
 
 		if (deliver)
@@ -585,7 +517,7 @@ out:
 	if (likely(deliver))
 		ip6_input(skb);
 	else {
-		/* discard */
+		 
 		kfree_skb(skb);
 	}
 

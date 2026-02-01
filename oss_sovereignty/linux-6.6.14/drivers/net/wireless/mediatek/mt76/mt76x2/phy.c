@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+
+ 
 
 #include "mt76x2.h"
 #include "eeprom.h"
@@ -210,7 +207,7 @@ void mt76x2_phy_tssi_compensate(struct mt76x02_dev *dev)
 		return;
 
 	if (!dev->cal.tssi_comp_pending) {
-		/* TSSI trigger */
+		 
 		t.cal_mode = BIT(0);
 		mt76x2_mcu_tssi_comp(dev, &t);
 		dev->cal.tssi_comp_pending = true;
@@ -343,7 +340,7 @@ void mt76x2_phy_update_channel_gain(struct mt76x02_dev *dev)
 	dev->cal.agc_gain_cur[1] = gain[1] - gain_delta;
 	mt76x2_phy_set_gain_val(dev);
 
-	/* clear false CCA counters */
+	 
 	mt76_rr(dev, MT_RX_STAT_1);
 }
 EXPORT_SYMBOL_GPL(mt76x2_phy_update_channel_gain);

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for FPGA Accelerated Function Unit (AFU)
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *   Wu Hao <hao.wu@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- *   Joseph Grecco <joe.grecco@intel.com>
- *   Enno Luebbers <enno.luebbers@intel.com>
- *   Tim Whisonant <tim.whisonant@intel.com>
- *   Ananda Ravuri <ananda.ravuri@intel.com>
- *   Henry Mitchel <henry.mitchel@intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -21,20 +8,10 @@
 
 #include "dfl-afu.h"
 
-#define RST_POLL_INVL 10 /* us */
-#define RST_POLL_TIMEOUT 1000 /* us */
+#define RST_POLL_INVL 10  
+#define RST_POLL_TIMEOUT 1000  
 
-/**
- * __afu_port_enable - enable a port by clear reset
- * @pdev: port platform device.
- *
- * Enable Port by clear the port soft reset bit, which is set by default.
- * The AFU is unable to respond to any MMIO access while in reset.
- * __afu_port_enable function should only be used after __afu_port_disable
- * function.
- *
- * The caller needs to hold lock for protection.
- */
+ 
 int __afu_port_enable(struct platform_device *pdev)
 {
 	struct dfl_feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
@@ -48,15 +25,12 @@ int __afu_port_enable(struct platform_device *pdev)
 
 	base = dfl_get_feature_ioaddr_by_id(&pdev->dev, PORT_FEATURE_ID_HEADER);
 
-	/* Clear port soft reset */
+	 
 	v = readq(base + PORT_HDR_CTRL);
 	v &= ~PORT_CTRL_SFTRST;
 	writeq(v, base + PORT_HDR_CTRL);
 
-	/*
-	 * HW clears the ack bit to indicate that the port is fully out
-	 * of reset.
-	 */
+	 
 	if (readq_poll_timeout(base + PORT_HDR_CTRL, v,
 			       !(v & PORT_CTRL_SFTRST_ACK),
 			       RST_POLL_INVL, RST_POLL_TIMEOUT)) {
@@ -67,14 +41,7 @@ int __afu_port_enable(struct platform_device *pdev)
 	return 0;
 }
 
-/**
- * __afu_port_disable - disable a port by hold reset
- * @pdev: port platform device.
- *
- * Disable Port by setting the port soft reset bit, it puts the port into reset.
- *
- * The caller needs to hold lock for protection.
- */
+ 
 int __afu_port_disable(struct platform_device *pdev)
 {
 	struct dfl_feature_platform_data *pdata = dev_get_platdata(&pdev->dev);
@@ -86,16 +53,12 @@ int __afu_port_disable(struct platform_device *pdev)
 
 	base = dfl_get_feature_ioaddr_by_id(&pdev->dev, PORT_FEATURE_ID_HEADER);
 
-	/* Set port soft reset */
+	 
 	v = readq(base + PORT_HDR_CTRL);
 	v |= PORT_CTRL_SFTRST;
 	writeq(v, base + PORT_HDR_CTRL);
 
-	/*
-	 * HW sets ack bit to 1 when all outstanding requests have been drained
-	 * on this port and minimum soft reset pulse width has elapsed.
-	 * Driver polls port_soft_reset_ack to determine if reset done by HW.
-	 */
+	 
 	if (readq_poll_timeout(base + PORT_HDR_CTRL, v,
 			       v & PORT_CTRL_SFTRST_ACK,
 			       RST_POLL_INVL, RST_POLL_TIMEOUT)) {
@@ -106,18 +69,7 @@ int __afu_port_disable(struct platform_device *pdev)
 	return 0;
 }
 
-/*
- * This function resets the FPGA Port and its accelerator (AFU) by function
- * __port_disable and __port_enable (set port soft reset bit and then clear
- * it). Userspace can do Port reset at any time, e.g. during DMA or Partial
- * Reconfiguration. But it should never cause any system level issue, only
- * functional failure (e.g. DMA or PR operation failure) and be recoverable
- * from the failure.
- *
- * Note: the accelerator (AFU) is not accessible when its port is in reset
- * (disabled). Any attempts on MMIO access to AFU while in reset, will
- * result errors reported via port error reporting sub feature (if present).
- */
+ 
 static int __port_reset(struct platform_device *pdev)
 {
 	int ret;
@@ -394,11 +346,7 @@ static umode_t port_hdr_attrs_visible(struct kobject *kobj,
 	base = dfl_get_feature_ioaddr_by_id(dev, PORT_FEATURE_ID_HEADER);
 
 	if (dfl_feature_revision(base) > 0) {
-		/*
-		 * userclk sysfs interfaces are only visible in case port
-		 * revision is 0, as hardware with revision >0 doesn't
-		 * support this.
-		 */
+		 
 		if (attr == &dev_attr_userclk_freqcmd.attr ||
 		    attr == &dev_attr_userclk_freqcntrcmd.attr ||
 		    attr == &dev_attr_userclk_freqsts.attr ||
@@ -486,10 +434,7 @@ static umode_t port_afu_attrs_visible(struct kobject *kobj,
 {
 	struct device *dev = kobj_to_dev(kobj);
 
-	/*
-	 * sysfs entries are visible only if related private feature is
-	 * enumerated.
-	 */
+	 
 	if (!dfl_get_feature_by_id(dev, PORT_FEATURE_ID_AFU))
 		return 0;
 
@@ -643,7 +588,7 @@ static int afu_release(struct inode *inode, struct file *filp)
 static long afu_ioctl_check_extension(struct dfl_feature_platform_data *pdata,
 				      unsigned long arg)
 {
-	/* No extension support for now */
+	 
 	return 0;
 }
 
@@ -779,12 +724,7 @@ static long afu_ioctl(struct file *filp, unsigned int cmd, unsigned long arg)
 	case DFL_FPGA_PORT_DMA_UNMAP:
 		return afu_ioctl_dma_unmap(pdata, (void __user *)arg);
 	default:
-		/*
-		 * Let sub-feature's ioctl function to handle the cmd
-		 * Sub-feature's ioctl returns -ENODEV when cmd is not
-		 * handled in this sub feature, and returns 0 and other
-		 * error code if cmd is handled.
-		 */
+		 
 		dfl_fpga_dev_for_each_feature(pdata, f)
 			if (f->ops && f->ops->ioctl) {
 				ret = f->ops->ioctl(pdev, f, cmd, arg);
@@ -831,7 +771,7 @@ static int afu_mmap(struct file *filp, struct vm_area_struct *vma)
 	    !(region.flags & DFL_PORT_REGION_WRITE))
 		return -EPERM;
 
-	/* Support debug access to the mapping */
+	 
 	vma->vm_ops = &afu_vma_ops;
 
 	vma->vm_page_prot = pgprot_noncached(vma->vm_page_prot);

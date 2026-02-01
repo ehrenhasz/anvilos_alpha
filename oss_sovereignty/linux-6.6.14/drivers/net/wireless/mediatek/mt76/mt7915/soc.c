@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2022 MediaTek Inc. */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,7 +18,7 @@
 #define MT7981_CON_INFRA_VERSION 0x02090000
 #define MT7986_CON_INFRA_VERSION 0x02070000
 
-/* INFRACFG */
+ 
 #define MT_INFRACFG_CONN2AP_SLPPROT	0x0d0
 #define MT_INFRACFG_AP2CONN_SLPPROT	0x0d4
 
@@ -26,7 +26,7 @@
 #define MT_INFRACFG_TX_RDY_MASK		BIT(4)
 #define MT_INFRACFG_TX_EN_MASK		BIT(0)
 
-/* TOP POS */
+ 
 #define MT_TOP_POS_FAST_CTRL		0x114
 #define MT_TOP_POS_FAST_EN_MASK		BIT(3)
 
@@ -173,7 +173,7 @@ static u8 mt798x_wmac_check_adie_type(struct mt7915_dev *dev)
 {
 	u32 val;
 
-	/* Only DBDC A-die is used with MT7981 */
+	 
 	if (is_mt7981(&dev->mt76))
 		return ADIE_DBDC;
 
@@ -301,7 +301,7 @@ static int mt798x_wmac_coninfra_setup(struct mt7915_dev *dev)
 	val = (rmem->base >> 16) & MT_TOP_MCU_EMI_BASE_MASK;
 
 	if (is_mt7986(&dev->mt76)) {
-		/* Set conninfra subsys PLL check */
+		 
 		mt76_rmw_field(dev, MT_INFRA_CKGEN_BUS,
 			       MT_INFRA_CKGEN_BUS_RDY_SEL_MASK, 0x1);
 		mt76_rmw_field(dev, MT_INFRA_CKGEN_BUS,
@@ -324,7 +324,7 @@ static int mt798x_wmac_coninfra_setup(struct mt7915_dev *dev)
 
 	mt76_rr(dev, MT_CONN_INFRA_EFUSE);
 
-	/* Set conninfra sysram */
+	 
 	mt76_wr(dev, MT_TOP_RGU_SYSRAM_PDN, 0);
 	mt76_wr(dev, MT_TOP_RGU_SYSRAM_SLP, 1);
 
@@ -594,7 +594,7 @@ static int mt7986_wmac_adie_xtal_trim_7975(struct mt7915_dev *dev, u8 adie)
 	if (ret)
 		return ret;
 
-	/* Update trim value to C1 and C2*/
+	 
 	value = FIELD_GET(MT_ADIE_7975_XO_CTRL2_C1_MASK, result) |
 		FIELD_GET(MT_ADIE_7975_XO_CTRL2_C2_MASK, result);
 	ret = mt76_wmac_spi_rmw(dev, adie, MT_ADIE_7975_XO_CTRL2,
@@ -621,7 +621,7 @@ static int mt7986_wmac_adie_patch_7975(struct mt7915_dev *dev, u8 adie)
 {
 	int ret;
 
-	/* disable CAL LDO and fine tune RFDIG LDO */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0x348, 0x00000002);
 	if (ret)
 		return ret;
@@ -638,17 +638,17 @@ static int mt7986_wmac_adie_patch_7975(struct mt7915_dev *dev, u8 adie)
 	if (ret)
 		return ret;
 
-	/* set CKA driving and filter */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0xa1c, 0x30000aaa);
 	if (ret)
 		return ret;
 
-	/* set CKB LDO to 1.4V */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0xa84, 0x8470008a);
 	if (ret)
 		return ret;
 
-	/* turn on SX0 LTBUF */
+	 
 	if (is_mt7981(&dev->mt76)) {
 		ret = mt76_wmac_spi_write(dev, adie, 0x074, 0x00000007);
 	} else if (is_mt7986(&dev->mt76)) {
@@ -661,17 +661,17 @@ static int mt7986_wmac_adie_patch_7975(struct mt7915_dev *dev, u8 adie)
 	if (ret)
 		return ret;
 
-	/* CK_BUF_SW_EN = 1 (all buf in manual mode.) */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0xaa4, 0x01001fc0);
 	if (ret)
 		return ret;
 
-	/* BT mode/WF normal mode 00000005 */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0x070, 0x00000005);
 	if (ret)
 		return ret;
 
-	/* BG thermal sensor offset update */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0x344, 0x00000088);
 	if (ret)
 		return ret;
@@ -688,22 +688,22 @@ static int mt7986_wmac_adie_patch_7975(struct mt7915_dev *dev, u8 adie)
 	if (ret)
 		return ret;
 
-	/* set WCON VDD IPTAT to "0000" */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0xa80, 0x44d07000);
 	if (ret)
 		return ret;
 
-	/* change back LTBUF SX3 drving to default value */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0xa88, 0x3900aaaa);
 	if (ret)
 		return ret;
 
-	/* SM input cap off */
+	 
 	ret = mt76_wmac_spi_write(dev, adie, 0x2c4, 0x00000000);
 	if (ret)
 		return ret;
 
-	/* set CKB driving and filter */
+	 
 	if (is_mt7986(&dev->mt76))
 		return mt76_wmac_spi_write(dev, adie, 0x2c8, 0x00000072);
 
@@ -832,17 +832,17 @@ static void mt7986_wmac_subsys_pll_initial(struct mt7915_dev *dev, u8 band)
 
 static void mt7986_wmac_subsys_setting(struct mt7915_dev *dev)
 {
-	/* Subsys pll init */
+	 
 	mt7986_wmac_subsys_pll_initial(dev, 0);
 	mt7986_wmac_subsys_pll_initial(dev, 1);
 
-	/* Set legacy OSC control stable time*/
+	 
 	mt76_rmw(dev, MT_CONN_INFRA_OSC_RC_EN,
 		 MT_CONN_INFRA_OSC_RC_EN_MASK, 0x0);
 	mt76_rmw(dev, MT_CONN_INFRA_OSC_CTRL,
 		 MT_CONN_INFRA_OSC_STB_TIME_MASK, 0x80706);
 
-	/* prevent subsys from power on/of in a short time interval */
+	 
 	mt76_rmw(dev, MT_TOP_WFSYS_PWR,
 		 MT_TOP_PWR_ACK_MASK | MT_TOP_PWR_KEY_MASK,
 		 MT_TOP_PWR_KEY);
@@ -971,7 +971,7 @@ static int mt7986_wmac_wfsys_setting(struct mt7915_dev *dev)
 	int ret;
 	u32 cur;
 
-	/* Turn off wfsys2conn bus sleep protect */
+	 
 	mt76_rmw(dev, MT_CONN_INFRA_WF_SLP_PROT,
 		 MT_CONN_INFRA_WF_SLP_PROT_MASK, 0x0);
 
@@ -979,7 +979,7 @@ static int mt7986_wmac_wfsys_setting(struct mt7915_dev *dev)
 	if (ret)
 		return ret;
 
-	/* Check bus sleep protect */
+	 
 
 	ret = read_poll_timeout(mt76_rr, cur,
 				!(cur & MT_CONN_INFRA_CONN_WF_MASK),
@@ -1134,7 +1134,7 @@ int mt7986_wmac_enable(struct mt7915_dev *dev)
 	if (ret)
 		return ret;
 
-	/* mt7981 doesn't support a second a-die */
+	 
 	if (is_mt7986(&dev->mt76)) {
 		ret = mt7986_wmac_adie_setup(dev, 1, adie_type);
 		if (ret)
@@ -1162,22 +1162,22 @@ void mt7986_wmac_disable(struct mt7915_dev *dev)
 
 	mt7986_wmac_top_wfsys_wakeup(dev, true);
 
-	/* Turn on wfsys2conn bus sleep protect */
+	 
 	mt76_rmw_field(dev, MT_CONN_INFRA_WF_SLP_PROT,
 		       MT_CONN_INFRA_WF_SLP_PROT_MASK, 0x1);
 
-	/* Check wfsys2conn bus sleep protect */
+	 
 	read_poll_timeout(mt76_rr, cur, !(cur ^ MT_CONN_INFRA_CONN),
 			  USEC_PER_MSEC, 50 * USEC_PER_MSEC, false,
 			  dev, MT_CONN_INFRA_WF_SLP_PROT_RDY);
 
 	mt7986_wmac_wfsys_poweron(dev, false);
 
-	/* Turn back wpll setting */
+	 
 	mt76_rmw_field(dev, MT_AFE_DIG_EN_02(0), MT_AFE_MCU_BPLL_CFG_MASK, 0x2);
 	mt76_rmw_field(dev, MT_AFE_DIG_EN_02(0), MT_AFE_WPLL_CFG_MASK, 0x2);
 
-	/* Reset EMI */
+	 
 	mt76_rmw_field(dev, MT_CONN_INFRA_EMI_REQ,
 		       MT_CONN_INFRA_EMI_REQ_MASK, 0x1);
 	mt76_rmw_field(dev, MT_CONN_INFRA_EMI_REQ,

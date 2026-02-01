@@ -1,23 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * kernel/power/suspend_test.c - Suspend to RAM and standby test facility.
- *
- * Copyright (c) 2009 Pavel Machek <pavel@ucw.cz>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/rtc.h>
 
 #include "power.h"
 
-/*
- * We test the system suspend code by setting an RTC wakealarm a short
- * time in the future, then suspending.  Suspending the devices won't
- * normally take long ... some systems only need a few milliseconds.
- *
- * The time it takes is system-specific though, so when we test this
- * during system bootup we allow a LOT of time.
- */
+ 
 #define TEST_SUSPEND_SECONDS	10
 
 static unsigned long suspend_test_start_time;
@@ -26,10 +15,7 @@ static u32 test_repeat_count_current;
 
 void suspend_test_start(void)
 {
-	/* FIXME Use better timebase than "jiffies", ideally a clocksource.
-	 * What we want is a hardware counter that will work correctly even
-	 * during the irqs-are-off stages of the suspend/resume cycle...
-	 */
+	 
 	suspend_test_start_time = jiffies;
 }
 
@@ -42,22 +28,12 @@ void suspend_test_finish(const char *label)
 	pr_info("PM: %s took %d.%03d seconds\n", label,
 			msec / 1000, msec % 1000);
 
-	/* Warning on suspend means the RTC alarm period needs to be
-	 * larger -- the system was sooo slooowwww to suspend that the
-	 * alarm (should have) fired before the system went to sleep!
-	 *
-	 * Warning on either suspend or resume also means the system
-	 * has some performance issues.  The stack dump of a WARN_ON
-	 * is more likely to get the right attention than a printk...
-	 */
+	 
 	WARN(msec > (TEST_SUSPEND_SECONDS * 1000),
 	     "Component: %s, time: %u\n", label, msec);
 }
 
-/*
- * To test system suspend, we need a hands-off mechanism to resume the
- * system.  RTCs wake alarms are a common self-contained mechanism.
- */
+ 
 
 static void __init test_wakealarm(struct rtc_device *rtc, suspend_state_t state)
 {
@@ -74,7 +50,7 @@ static void __init test_wakealarm(struct rtc_device *rtc, suspend_state_t state)
 	struct rtc_wkalrm	alm;
 	int			status;
 
-	/* this may fail if the RTC hasn't been initialized */
+	 
 repeat:
 	status = rtc_read_time(rtc, &alm.time);
 	if (status < 0) {
@@ -117,10 +93,7 @@ repeat:
 	if (test_repeat_count_current < test_repeat_count_max)
 		goto repeat;
 
-	/* Some platforms can't detect that the alarm triggered the
-	 * wakeup, or (accordingly) disable it after it afterwards.
-	 * It's supposed to give oneshot behavior; cope.
-	 */
+	 
 	alm.enabled = false;
 	rtc_set_alarm(rtc, &alm);
 }
@@ -137,11 +110,7 @@ static int __init has_wakealarm(struct device *dev, const void *data)
 	return 1;
 }
 
-/*
- * Kernel options like "test_suspend=mem" force suspend/resume sanity tests
- * at startup time.  They're normally disabled, for faster boot and because
- * we can't know which states really work on this particular system.
- */
+ 
 static const char *test_state_label __initdata;
 
 static char warn_bad_state[] __initdata =
@@ -153,7 +122,7 @@ static int __init setup_test_suspend(char *value)
 	char *repeat;
 	char *suspend_type;
 
-	/* example : "=mem[,N]" ==> "mem[,N]" */
+	 
 	value++;
 	suspend_type = strsep(&value, ",");
 	if (!suspend_type)
@@ -185,7 +154,7 @@ static int __init test_suspend(void)
 	struct device		*dev;
 	suspend_state_t test_state;
 
-	/* PM is initialized by now; is that state testable? */
+	 
 	if (!test_state_label)
 		return 0;
 
@@ -200,7 +169,7 @@ static int __init test_suspend(void)
 		return 0;
 	}
 
-	/* RTCs have initialized by now too ... can we use one? */
+	 
 	dev = class_find_device(rtc_class, NULL, NULL, has_wakealarm);
 	if (dev) {
 		rtc = rtc_class_open(dev_name(dev));
@@ -211,7 +180,7 @@ static int __init test_suspend(void)
 		return 0;
 	}
 
-	/* go for it */
+	 
 	test_wakealarm(rtc, test_state);
 	rtc_class_close(rtc);
 	return 0;

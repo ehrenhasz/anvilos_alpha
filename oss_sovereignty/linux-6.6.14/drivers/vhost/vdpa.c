@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018-2020 Intel Corporation.
- * Copyright (C) 2020 Red Hat, Inc.
- *
- * Author: Tiwei Bie <tiwei.bie@intel.com>
- *         Jason Wang <jasowang@redhat.com>
- *
- * Thanks Michael S. Tsirkin for the valuable comments and
- * suggestions.  And thanks to Cunming Liang and Zhihong Wang for all
- * their supports.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -283,10 +273,7 @@ static long vhost_vdpa_set_status(struct vhost_vdpa *v, u8 __user *statusp)
 
 	status_old = ops->get_status(vdpa);
 
-	/*
-	 * Userspace shouldn't remove status bits unless reset the
-	 * status to 0.
-	 */
+	 
 	if (status != 0 && (status_old & ~status) != 0)
 		return -EINVAL;
 
@@ -423,10 +410,7 @@ static long vhost_vdpa_set_features(struct vhost_vdpa *v, u64 __user *featurep)
 	u64 features;
 	int i;
 
-	/*
-	 * It's not allowed to change the features after they have
-	 * been negotiated.
-	 */
+	 
 	if (ops->get_status(vdpa) & VIRTIO_CONFIG_S_FEATURES_OK)
 		return -EBUSY;
 
@@ -436,7 +420,7 @@ static long vhost_vdpa_set_features(struct vhost_vdpa *v, u64 __user *featurep)
 	if (vdpa_set_features(vdpa, features))
 		return -EINVAL;
 
-	/* let the vqs know what has been configured */
+	 
 	actual_features = ops->get_driver_features(vdpa);
 	for (i = 0; i < d->nvqs; ++i) {
 		struct vhost_virtqueue *vq = d->vqs[i];
@@ -536,11 +520,7 @@ static long vhost_vdpa_get_vqs_count(struct vhost_vdpa *v, u32 __user *argp)
 	return 0;
 }
 
-/* After a successful return of ioctl the device must not process more
- * virtqueue descriptors. The device can answer to read or writes of config
- * fields as if it were not suspended. In particular, writing to "queue_enable"
- * with a value of 1 will not make the device start processing buffers.
- */
+ 
 static long vhost_vdpa_suspend(struct vhost_vdpa *v)
 {
 	struct vdpa_device *vdpa = v->vdpa;
@@ -552,10 +532,7 @@ static long vhost_vdpa_suspend(struct vhost_vdpa *v)
 	return ops->suspend(vdpa);
 }
 
-/* After a successful return of this ioctl the device resumes processing
- * virtqueue descriptors. The device becomes fully operational the same way it
- * was before it was suspended.
- */
+ 
 static long vhost_vdpa_resume(struct vhost_vdpa *v)
 {
 	struct vdpa_device *vdpa = v->vdpa;
@@ -993,7 +970,7 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
 	long pinned;
 	int ret = 0;
 
-	/* Limit the use of memory for bookkeeping */
+	 
 	page_list = (struct page **) __get_free_page(GFP_KERNEL);
 	if (!page_list)
 		return -ENOMEM;
@@ -1042,20 +1019,13 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
 			u64 csize;
 
 			if (last_pfn && (this_pfn != last_pfn + 1)) {
-				/* Pin a contiguous chunk of memory */
+				 
 				csize = PFN_PHYS(last_pfn - map_pfn + 1);
 				ret = vhost_vdpa_map(v, iotlb, iova, csize,
 						     PFN_PHYS(map_pfn),
 						     perm, NULL);
 				if (ret) {
-					/*
-					 * Unpin the pages that are left unmapped
-					 * from this point on in the current
-					 * page_list. The remaining outstanding
-					 * ones which may stride across several
-					 * chunks will be covered in the common
-					 * error path subsequently.
-					 */
+					 
 					unpin_user_pages(&page_list[i],
 							 pinned - i);
 					goto out;
@@ -1073,7 +1043,7 @@ static int vhost_vdpa_pa_map(struct vhost_vdpa *v,
 		npages -= pinned;
 	}
 
-	/* Pin the rest chunk */
+	 
 	ret = vhost_vdpa_map(v, iotlb, iova, PFN_PHYS(last_pfn - map_pfn + 1),
 			     PFN_PHYS(map_pfn), perm, NULL);
 out:
@@ -1081,15 +1051,7 @@ out:
 		if (nchunks) {
 			unsigned long pfn;
 
-			/*
-			 * Unpin the outstanding pages which are yet to be
-			 * mapped but haven't due to vdpa_map() or
-			 * pin_user_pages() failure.
-			 *
-			 * Mapped pages are accounted in vdpa_map(), hence
-			 * the corresponding unpinning will be handled by
-			 * vdpa_unmap().
-			 */
+			 
 			WARN_ON(!last_pfn);
 			for (pfn = map_pfn; pfn <= last_pfn; pfn++)
 				unpin_user_page(pfn_to_page(pfn));
@@ -1211,7 +1173,7 @@ static int vhost_vdpa_alloc_domain(struct vhost_vdpa *v)
 	const struct bus_type *bus;
 	int ret;
 
-	/* Device want to do DMA by itself */
+	 
 	if (ops->set_map || ops->dma_map)
 		return 0;
 
@@ -1410,10 +1372,7 @@ static int vhost_vdpa_mmap(struct file *file, struct vm_area_struct *vma)
 	if (!ops->get_vq_notification)
 		return -ENOTSUPP;
 
-	/* To be safe and easily modelled by userspace, We only
-	 * support the doorbell which sits on the page boundary and
-	 * does not share the page with other registers.
-	 */
+	 
 	notify = ops->get_vq_notification(vdpa, index);
 	if (notify.addr & (PAGE_SIZE - 1))
 		return -EINVAL;
@@ -1424,7 +1383,7 @@ static int vhost_vdpa_mmap(struct file *file, struct vm_area_struct *vma)
 	vma->vm_ops = &vhost_vdpa_vm_ops;
 	return 0;
 }
-#endif /* CONFIG_MMU */
+#endif  
 
 static const struct file_operations vhost_vdpa_fops = {
 	.owner		= THIS_MODULE,
@@ -1434,7 +1393,7 @@ static const struct file_operations vhost_vdpa_fops = {
 	.unlocked_ioctl	= vhost_vdpa_unlocked_ioctl,
 #ifdef CONFIG_MMU
 	.mmap		= vhost_vdpa_mmap,
-#endif /* CONFIG_MMU */
+#endif  
 	.compat_ioctl	= compat_ptr_ioctl,
 };
 
@@ -1455,9 +1414,7 @@ static int vhost_vdpa_probe(struct vdpa_device *vdpa)
 	int minor;
 	int i, r;
 
-	/* We can't support platform IOMMU device with more than 1
-	 * group or as
-	 */
+	 
 	if (!ops->set_map && !ops->dma_map &&
 	    (vdpa->ngroups > 1 || vdpa->nas > 1))
 		return -EOPNOTSUPP;

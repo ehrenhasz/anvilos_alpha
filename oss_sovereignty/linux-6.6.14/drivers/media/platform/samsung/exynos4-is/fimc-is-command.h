@@ -1,23 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Samsung Exynos4x12 FIMC-IS (Imaging Subsystem) driver
- *
- * FIMC-IS command set definitions
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- *
- * Authors: Younghwan Joo <yhwan.joo@samsung.com>
- *          Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+ 
+ 
 
 #ifndef FIMC_IS_CMD_H_
 #define FIMC_IS_CMD_H_
 
-#define FIMC_IS_COMMAND_VER	110 /* FIMC-IS command set version 1.10 */
+#define FIMC_IS_COMMAND_VER	110  
 
-/* Enumeration of commands between the FIMC-IS and the host processor. */
+ 
 
-/* HOST to FIMC-IS */
+ 
 #define HIC_PREVIEW_STILL	0x0001
 #define HIC_PREVIEW_VIDEO	0x0002
 #define HIC_CAPTURE_STILL	0x0003
@@ -28,7 +19,7 @@
 #define HIC_GET_PARAMETER	0x0008
 #define HIC_SET_TUNE		0x0009
 #define HIC_GET_STATUS		0x000b
-/* Sensor part */
+ 
 #define HIC_OPEN_SENSOR		0x000c
 #define HIC_CLOSE_SENSOR	0x000d
 #define HIC_SIMMIAN_INIT	0x000e
@@ -39,18 +30,18 @@
 #define HIC_LOAD_SET_FILE	0x0013
 #define HIC_MSG_CONFIG		0x0014
 #define HIC_MSG_TEST		0x0015
-/* FIMC-IS to HOST */
+ 
 #define IHC_GET_SENSOR_NUM	0x1000
 #define IHC_SET_SHOT_MARK	0x1001
-/* parameter1: frame number */
-/* parameter2: confidence level (smile 0~100) */
-/* parameter3: confidence level (blink 0~100) */
+ 
+ 
+ 
 #define IHC_SET_FACE_MARK	0x1002
-/* parameter1: coordinate count */
-/* parameter2: coordinate buffer address */
+ 
+ 
 #define IHC_FRAME_DONE		0x1003
-/* parameter1: frame start number */
-/* parameter2: frame count */
+ 
+ 
 #define IHC_AA_DONE		0x1004
 #define IHC_NOT_READY		0x1005
 
@@ -131,4 +122,4 @@ struct is_mcuctl_reg {
 	struct is_common_regs common;
 } __packed;
 
-#endif /* FIMC_IS_CMD_H_ */
+#endif  

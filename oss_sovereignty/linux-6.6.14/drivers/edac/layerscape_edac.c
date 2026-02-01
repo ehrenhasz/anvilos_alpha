@@ -1,18 +1,4 @@
-/*
- * Freescale Memory Controller kernel module
- *
- * Author: York Sun <york.sun@nxp.com>
- *
- * Copyright 2016 NXP Semiconductor
- *
- * Derived from mpc85xx_edac.c
- * Author: Dave Jiang <djiang@mvista.com>
- *
- * 2006-2007 (c) MontaVista Software, Inc. This file is licensed under
- * the terms of the GNU General Public License version 2. This program
- * is licensed "as is" without any warranty of any kind, whether express
- * or implied.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -41,7 +27,7 @@ static int __init fsl_ddr_mc_init(void)
 	if (ghes_get_devices())
 		return -EBUSY;
 
-	/* make sure error reporting method is sane */
+	 
 	switch (edac_op_state) {
 	case EDAC_OPSTATE_POLL:
 	case EDAC_OPSTATE_INT:

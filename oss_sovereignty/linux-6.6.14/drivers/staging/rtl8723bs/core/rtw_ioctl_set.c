@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+
+ 
 
 #include <drv_types.h>
 #include <rtw_debug.h>
@@ -59,13 +55,13 @@ u8 rtw_do_join(struct adapter *padapter)
 		spin_unlock_bh(&(pmlmepriv->scanned_queue.lock));
 		_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
-		/* when set_ssid/set_bssid for rtw_do_join(), but scanning queue is empty */
-		/* we try to issue sitesurvey firstly */
+		 
+		 
 
 		if (pmlmepriv->LinkDetectInfo.bBusyTraffic == false
 			|| rtw_to_roam(padapter) > 0
 		) {
-			/*  submit site_survey_cmd */
+			 
 			ret = rtw_sitesurvey_cmd(padapter, &pmlmepriv->assoc_ssid, 1, NULL, 0);
 			if (ret != _SUCCESS)
 				pmlmepriv->to_join = false;
@@ -86,9 +82,9 @@ u8 rtw_do_join(struct adapter *padapter)
 			_set_timer(&pmlmepriv->assoc_timer, MAX_JOIN_TIMEOUT);
 		} else {
 			if (check_fwstate(pmlmepriv, WIFI_ADHOC_STATE) == true) {
-				/*  submit createbss_cmd to change to a ADHOC_MASTER */
+				 
 
-				/* pmlmepriv->lock has been acquired by caller... */
+				 
 				struct wlan_bssid_ex    *pdev_network = &(padapter->registrypriv.dev_network);
 
 				pmlmepriv->fw_state = WIFI_ADHOC_MASTER_STATE;
@@ -109,11 +105,11 @@ u8 rtw_do_join(struct adapter *padapter)
 				pmlmepriv->to_join = false;
 
 			} else {
-				/*  can't associate ; reset under-linking */
+				 
 				_clr_fwstate_(pmlmepriv, _FW_UNDER_LINKING);
 
-				/* when set_ssid/set_bssid for rtw_do_join(), but there are no desired bss in scanning queue */
-				/* we try to issue sitesurvey firstly */
+				 
+				 
 				if (pmlmepriv->LinkDetectInfo.bBusyTraffic == false
 					|| rtw_to_roam(padapter) > 0
 				) {
@@ -162,7 +158,7 @@ u8 rtw_set_802_11_ssid(struct adapter *padapter, struct ndis_802_11_ssid *ssid)
 		    (!memcmp(&pmlmepriv->assoc_ssid.ssid, ssid->ssid, ssid->ssid_length))) {
 			if (check_fwstate(pmlmepriv, WIFI_STATION_STATE) == false) {
 				if (rtw_is_same_ibss(padapter, pnetwork) == false) {
-					/* if in WIFI_ADHOC_MASTER_STATE | WIFI_ADHOC_STATE, create bss or rejoin again */
+					 
 					rtw_disassoc_cmd(padapter, 0, true);
 
 					if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
@@ -175,7 +171,7 @@ u8 rtw_set_802_11_ssid(struct adapter *padapter, struct ndis_802_11_ssid *ssid)
 						set_fwstate(pmlmepriv, WIFI_ADHOC_STATE);
 					}
 				} else {
-					goto release_mlme_lock;/* it means driver is in WIFI_ADHOC_MASTER_STATE, we needn't create bss again. */
+					goto release_mlme_lock; 
 				}
 			} else {
 				rtw_lps_ctrl_wk_cmd(padapter, LPS_CTRL_JOINBSS, 1);
@@ -294,7 +290,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct adapter *padapter,
 
 	if (*pold_state != networktype) {
 		if (*pold_state == Ndis802_11APMode) {
-			/* change to other mode from Ndis802_11APMode */
+			 
 			cur_network->join_res = -1;
 
 			stop_ap_mode(padapter);
@@ -311,7 +307,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct adapter *padapter,
 
 		if ((*pold_state == Ndis802_11Infrastructure) || (*pold_state == Ndis802_11IBSS)) {
 			if (check_fwstate(pmlmepriv, _FW_LINKED) == true)
-				rtw_indicate_disconnect(padapter); /* will clr Linked_state; before this function, we must have checked whether issue dis-assoc_cmd or not */
+				rtw_indicate_disconnect(padapter);  
 		}
 
 		*pold_state = networktype;
@@ -330,7 +326,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct adapter *padapter,
 		case Ndis802_11APMode:
 			set_fwstate(pmlmepriv, WIFI_AP_STATE);
 			start_ap_mode(padapter);
-			/* rtw_indicate_connect(padapter); */
+			 
 
 			break;
 
@@ -339,7 +335,7 @@ u8 rtw_set_802_11_infrastructure_mode(struct adapter *padapter,
 			break;
 		}
 
-		/* SecClearAllKeys(adapter); */
+		 
 
 		spin_unlock_bh(&pmlmepriv->lock);
 	}
@@ -356,7 +352,7 @@ u8 rtw_set_802_11_disassociate(struct adapter *padapter)
 	if (check_fwstate(pmlmepriv, _FW_LINKED) == true) {
 		rtw_disassoc_cmd(padapter, 0, true);
 		rtw_indicate_disconnect(padapter);
-		/* modify for CONFIG_IEEE80211W, none 11w can use it */
+		 
 		rtw_free_assoc_resources_cmd(padapter);
 		rtw_pwr_wakeup(padapter);
 	}
@@ -382,7 +378,7 @@ u8 rtw_set_802_11_bssid_list_scan(struct adapter *padapter, struct ndis_802_11_s
 
 	if ((check_fwstate(pmlmepriv, _FW_UNDER_SURVEY|_FW_UNDER_LINKING) == true) ||
 		(pmlmepriv->LinkDetectInfo.bBusyTraffic == true)) {
-		/*  Scan or linking is in progress, do nothing. */
+		 
 		res = true;
 
 	} else {
@@ -462,12 +458,7 @@ exit:
 	return ret;
 }
 
-/*
- * rtw_get_cur_max_rate -
- * @adapter: pointer to struct adapter structure
- *
- * Return 0 or 100Kbps
- */
+ 
 u16 rtw_get_cur_max_rate(struct adapter *adapter)
 {
 	int	i = 0;

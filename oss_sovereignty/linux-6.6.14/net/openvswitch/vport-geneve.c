@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014 Nicira, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,10 +23,7 @@
 #include "vport-netdev.h"
 
 static struct vport_ops ovs_geneve_vport_ops;
-/**
- * struct geneve_port - Keeps track of open UDP ports
- * @dst_port: destination port.
- */
+ 
 struct geneve_port {
 	u16 dst_port;
 };
@@ -68,7 +63,7 @@ static struct vport *geneve_tnl_create(const struct vport_parms *parms)
 	if (a && nla_len(a) == sizeof(u16)) {
 		dst_port = nla_get_u16(a);
 	} else {
-		/* Require destination port from userspace. */
+		 
 		err = -EINVAL;
 		goto error;
 	}

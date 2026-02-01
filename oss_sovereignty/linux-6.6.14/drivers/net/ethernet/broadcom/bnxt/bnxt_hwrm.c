@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2020 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <asm/byteorder.h>
 #include <linux/dma-mapping.h>
@@ -30,34 +23,7 @@ static u64 hwrm_calc_sentinel(struct bnxt_hwrm_ctx *ctx, u16 req_type)
 	return (((uintptr_t)ctx) + req_type) ^ BNXT_HWRM_SENTINEL;
 }
 
-/**
- * __hwrm_req_init() - Initialize an HWRM request.
- * @bp: The driver context.
- * @req: A pointer to the request pointer to initialize.
- * @req_type: The request type. This will be converted to the little endian
- *	before being written to the req_type field of the returned request.
- * @req_len: The length of the request to be allocated.
- *
- * Allocate DMA resources and initialize a new HWRM request object of the
- * given type. The response address field in the request is configured with
- * the DMA bus address that has been mapped for the response and the passed
- * request is pointed to kernel virtual memory mapped for the request (such
- * that short_input indirection can be accomplished without copying). The
- * request’s target and completion ring are initialized to default values and
- * can be overridden by writing to the returned request object directly.
- *
- * The initialized request can be further customized by writing to its fields
- * directly, taking care to covert such fields to little endian. The request
- * object will be consumed (and all its associated resources release) upon
- * passing it to hwrm_req_send() unless ownership of the request has been
- * claimed by the caller via a call to hwrm_req_hold(). If the request is not
- * consumed, either because it is never sent or because ownership has been
- * claimed, then it must be released by a call to hwrm_req_drop().
- *
- * Return: zero on success, negative error code otherwise:
- *	E2BIG: the type of request pointer is too large to fit.
- *	ENOMEM: an allocation failure occurred.
- */
+ 
 int __hwrm_req_init(struct bnxt *bp, void **req, u16 req_type, u32 req_len)
 {
 	struct bnxt_hwrm_ctx *ctx;
@@ -73,19 +39,19 @@ int __hwrm_req_init(struct bnxt *bp, void **req, u16 req_type, u32 req_len)
 		return -ENOMEM;
 
 	ctx = (struct bnxt_hwrm_ctx *)(req_addr + BNXT_HWRM_CTX_OFFSET);
-	/* safety first, sentinel used to check for invalid requests */
+	 
 	ctx->sentinel = hwrm_calc_sentinel(ctx, req_type);
 	ctx->req_len = req_len;
 	ctx->req = (struct input *)req_addr;
 	ctx->resp = (struct output *)(req_addr + BNXT_HWRM_RESP_OFFSET);
 	ctx->dma_handle = dma_handle;
-	ctx->flags = 0; /* __GFP_ZERO, but be explicit regarding ownership */
+	ctx->flags = 0;  
 	ctx->timeout = bp->hwrm_cmd_timeout ?: DFLT_HWRM_CMD_TIMEOUT;
 	ctx->allocated = BNXT_HWRM_DMA_SIZE - BNXT_HWRM_CTX_OFFSET;
 	ctx->gfp = GFP_KERNEL;
 	ctx->slice_addr = NULL;
 
-	/* initialize common request fields */
+	 
 	ctx->req->req_type = cpu_to_le16(req_type);
 	ctx->req->resp_addr = cpu_to_le64(dma_handle + BNXT_HWRM_RESP_OFFSET);
 	ctx->req->cmpl_ring = cpu_to_le16(BNXT_HWRM_NO_CMPL_RING);
@@ -103,16 +69,16 @@ static struct bnxt_hwrm_ctx *__hwrm_ctx(struct bnxt *bp, u8 *req_addr)
 	u64 sentinel;
 
 	if (!req) {
-		/* can only be due to software bug, be loud */
+		 
 		netdev_err(bp->dev, "null HWRM request");
 		dump_stack();
 		return NULL;
 	}
 
-	/* HWRM API has no type safety, verify sentinel to validate address */
+	 
 	sentinel = hwrm_calc_sentinel(ctx, le16_to_cpu(req->req_type));
 	if (ctx->sentinel != sentinel) {
-		/* can only be due to software bug, be loud */
+		 
 		netdev_err(bp->dev, "HWRM sentinel mismatch, req_type = %u\n",
 			   (u32)le16_to_cpu(req->req_type));
 		dump_stack();
@@ -122,16 +88,7 @@ static struct bnxt_hwrm_ctx *__hwrm_ctx(struct bnxt *bp, u8 *req_addr)
 	return ctx;
 }
 
-/**
- * hwrm_req_timeout() - Set the completion timeout for the request.
- * @bp: The driver context.
- * @req: The request to set the timeout.
- * @timeout: The timeout in milliseconds.
- *
- * Set the timeout associated with the request for subsequent calls to
- * hwrm_req_send(). Some requests are long running and require a different
- * timeout than the default.
- */
+ 
 void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout)
 {
 	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
@@ -140,21 +97,7 @@ void hwrm_req_timeout(struct bnxt *bp, void *req, unsigned int timeout)
 		ctx->timeout = timeout;
 }
 
-/**
- * hwrm_req_alloc_flags() - Sets GFP allocation flags for slices.
- * @bp: The driver context.
- * @req: The request for which calls to hwrm_req_dma_slice() will have altered
- *	allocation flags.
- * @gfp: A bitmask of GFP flags. These flags are passed to dma_alloc_coherent()
- *	whenever it is used to allocate backing memory for slices. Note that
- *	calls to hwrm_req_dma_slice() will not always result in new allocations,
- *	however, memory suballocated from the request buffer is already
- *	__GFP_ZERO.
- *
- * Sets the GFP allocation flags associated with the request for subsequent
- * calls to hwrm_req_dma_slice(). This can be useful for specifying __GFP_ZERO
- * for slice allocations.
- */
+ 
 void hwrm_req_alloc_flags(struct bnxt *bp, void *req, gfp_t gfp)
 {
 	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
@@ -163,32 +106,7 @@ void hwrm_req_alloc_flags(struct bnxt *bp, void *req, gfp_t gfp)
 		ctx->gfp = gfp;
 }
 
-/**
- * hwrm_req_replace() - Replace request data.
- * @bp: The driver context.
- * @req: The request to modify. A call to hwrm_req_replace() is conceptually
- *	an assignment of new_req to req. Subsequent calls to HWRM API functions,
- *	such as hwrm_req_send(), should thus use req and not new_req (in fact,
- *	calls to HWRM API functions will fail if non-managed request objects
- *	are passed).
- * @len: The length of new_req.
- * @new_req: The pre-built request to copy or reference.
- *
- * Replaces the request data in req with that of new_req. This is useful in
- * scenarios where a request object has already been constructed by a third
- * party prior to creating a resource managed request using hwrm_req_init().
- * Depending on the length, hwrm_req_replace() will either copy the new
- * request data into the DMA memory allocated for req, or it will simply
- * reference the new request and use it in lieu of req during subsequent
- * calls to hwrm_req_send(). The resource management is associated with
- * req and is independent of and does not apply to new_req. The caller must
- * ensure that the lifetime of new_req is least as long as req. Any slices
- * that may have been associated with the original request are released.
- *
- * Return: zero on success, negative error code otherwise:
- *     E2BIG: Request is too large.
- *     EINVAL: Invalid request to modify.
- */
+ 
 int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len)
 {
 	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
@@ -201,7 +119,7 @@ int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len)
 	if (len > BNXT_HWRM_CTX_OFFSET)
 		return -E2BIG;
 
-	/* free any existing slices */
+	 
 	ctx->allocated = BNXT_HWRM_DMA_SIZE - BNXT_HWRM_CTX_OFFSET;
 	if (ctx->slice_addr) {
 		dma_free_coherent(&bp->pdev->dev, ctx->slice_size,
@@ -221,27 +139,14 @@ int hwrm_req_replace(struct bnxt *bp, void *req, void *new_req, u32 len)
 	ctx->req->resp_addr = cpu_to_le64(ctx->dma_handle +
 					  BNXT_HWRM_RESP_OFFSET);
 
-	/* update sentinel for potentially new request type */
+	 
 	req_type = le16_to_cpu(internal_req->req_type);
 	ctx->sentinel = hwrm_calc_sentinel(ctx, req_type);
 
 	return 0;
 }
 
-/**
- * hwrm_req_flags() - Set non internal flags of the ctx
- * @bp: The driver context.
- * @req: The request containing the HWRM command
- * @flags: ctx flags that don't have BNXT_HWRM_INTERNAL_FLAG set
- *
- * ctx flags can be used by the callers to instruct how the subsequent
- * hwrm_req_send() should behave. Example: callers can use hwrm_req_flags
- * with BNXT_HWRM_CTX_SILENT to omit kernel prints of errors of hwrm_req_send()
- * or with BNXT_HWRM_FULL_WAIT enforce hwrm_req_send() to wait for full timeout
- * even if FW is not responding.
- * This generic function can be used to set any flag that is not an internal flag
- * of the HWRM module.
- */
+ 
 void hwrm_req_flags(struct bnxt *bp, void *req, enum bnxt_hwrm_ctx_flags flags)
 {
 	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
@@ -250,31 +155,7 @@ void hwrm_req_flags(struct bnxt *bp, void *req, enum bnxt_hwrm_ctx_flags flags)
 		ctx->flags |= (flags & HWRM_API_FLAGS);
 }
 
-/**
- * hwrm_req_hold() - Claim ownership of the request's resources.
- * @bp: The driver context.
- * @req: A pointer to the request to own. The request will no longer be
- *	consumed by calls to hwrm_req_send().
- *
- * Take ownership of the request. Ownership places responsibility on the
- * caller to free the resources associated with the request via a call to
- * hwrm_req_drop(). The caller taking ownership implies that a subsequent
- * call to hwrm_req_send() will not consume the request (ie. sending will
- * not free the associated resources if the request is owned by the caller).
- * Taking ownership returns a reference to the response. Retaining and
- * accessing the response data is the most common reason to take ownership
- * of the request. Ownership can also be acquired in order to reuse the same
- * request object across multiple invocations of hwrm_req_send().
- *
- * Return: A pointer to the response object.
- *
- * The resources associated with the response will remain available to the
- * caller until ownership of the request is relinquished via a call to
- * hwrm_req_drop(). It is not possible for hwrm_req_hold() to return NULL if
- * a valid request is provided. A returned NULL value would imply a driver
- * bug and the implementation will complain loudly in the logs to aid in
- * detection. It should not be necessary to check the result for NULL.
- */
+ 
 void *hwrm_req_hold(struct bnxt *bp, void *req)
 {
 	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
@@ -284,7 +165,7 @@ void *hwrm_req_hold(struct bnxt *bp, void *req)
 		return NULL;
 
 	if (ctx->flags & BNXT_HWRM_INTERNAL_CTX_OWNED) {
-		/* can only be due to software bug, be loud */
+		 
 		netdev_err(bp->dev, "HWRM context already owned, req_type = %u\n",
 			   (u32)le16_to_cpu(input->req_type));
 		dump_stack();
@@ -298,35 +179,22 @@ void *hwrm_req_hold(struct bnxt *bp, void *req)
 static void __hwrm_ctx_drop(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
 {
 	void *addr = ((u8 *)ctx) - BNXT_HWRM_CTX_OFFSET;
-	dma_addr_t dma_handle = ctx->dma_handle; /* save before invalidate */
+	dma_addr_t dma_handle = ctx->dma_handle;  
 
-	/* unmap any auxiliary DMA slice */
+	 
 	if (ctx->slice_addr)
 		dma_free_coherent(&bp->pdev->dev, ctx->slice_size,
 				  ctx->slice_addr, ctx->slice_handle);
 
-	/* invalidate, ensure ownership, sentinel and dma_handle are cleared */
+	 
 	memset(ctx, 0, sizeof(struct bnxt_hwrm_ctx));
 
-	/* return the buffer to the DMA pool */
+	 
 	if (dma_handle)
 		dma_pool_free(bp->hwrm_dma_pool, addr, dma_handle);
 }
 
-/**
- * hwrm_req_drop() - Release all resources associated with the request.
- * @bp: The driver context.
- * @req: The request to consume, releasing the associated resources. The
- *	request object, any slices, and its associated response are no
- *	longer valid.
- *
- * It is legal to call hwrm_req_drop() on an unowned request, provided it
- * has not already been consumed by hwrm_req_send() (for example, to release
- * an aborted request). A given request should not be dropped more than once,
- * nor should it be dropped after having been consumed by hwrm_req_send(). To
- * do so is an error (the context will not be found and a stack trace will be
- * rendered in the kernel log).
- */
+ 
 void hwrm_req_drop(struct bnxt *bp, void *req)
 {
 	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
@@ -522,16 +390,16 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
 		max_req_len = BNXT_HWRM_SHORT_REQ_LEN;
 	}
 
-	/* Ensure any associated DMA buffers are written before doorbell */
+	 
 	wmb();
 
-	/* Write request msg to hwrm channel */
+	 
 	__iowrite32_copy(bp->bar0 + bar_offset, data, msg_len / 4);
 
 	for (i = msg_len; i < max_req_len; i += 4)
 		writel(0, bp->bar0 + bar_offset + i);
 
-	/* Ring channel doorbell */
+	 
 	writel(1, bp->bar0 + doorbell_offset);
 
 	hwrm_req_dbg(bp, ctx->req);
@@ -541,30 +409,25 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
 		goto exit;
 	}
 
-	/* Limit timeout to an upper limit */
+	 
 	timeout = min(ctx->timeout, bp->hwrm_cmd_max_timeout ?: HWRM_CMD_MAX_TIMEOUT);
-	/* convert timeout to usec */
+	 
 	timeout *= 1000;
 
 	i = 0;
-	/* Short timeout for the first few iterations:
-	 * number of loops = number of loops for short timeout +
-	 * number of loops for standard timeout.
-	 */
+	 
 	tmo_count = HWRM_SHORT_TIMEOUT_COUNTER;
 	timeout = timeout - HWRM_SHORT_MIN_TIMEOUT * HWRM_SHORT_TIMEOUT_COUNTER;
 	tmo_count += DIV_ROUND_UP(timeout, HWRM_MIN_TIMEOUT);
 
 	if (le16_to_cpu(ctx->req->cmpl_ring) != INVALID_HW_RING_ID) {
-		/* Wait until hwrm response cmpl interrupt is processed */
+		 
 		while (READ_ONCE(token->state) < BNXT_HWRM_COMPLETE &&
 		       i++ < tmo_count) {
-			/* Abort the wait for completion if the FW health
-			 * check has failed.
-			 */
+			 
 			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
 				goto exit;
-			/* on first few passes, just barely sleep */
+			 
 			if (i < HWRM_SHORT_TIMEOUT_COUNTER) {
 				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
 					     HWRM_SHORT_MAX_TIMEOUT);
@@ -587,14 +450,12 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
 		len = le16_to_cpu(READ_ONCE(ctx->resp->resp_len));
 		valid = ((u8 *)ctx->resp) + len - 1;
 	} else {
-		__le16 seen_out_of_seq = ctx->req->seq_id; /* will never see */
+		__le16 seen_out_of_seq = ctx->req->seq_id;  
 		int j;
 
-		/* Check if response len is updated */
+		 
 		for (i = 0; i < tmo_count; i++) {
-			/* Abort the wait for completion if the FW health
-			 * check has failed.
-			 */
+			 
 			if (test_bit(BNXT_STATE_FW_FATAL_COND, &bp->state))
 				goto exit;
 
@@ -619,7 +480,7 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
 				}
 			}
 
-			/* on first few passes, just barely sleep */
+			 
 			if (i < HWRM_SHORT_TIMEOUT_COUNTER) {
 				usleep_range(HWRM_SHORT_MIN_TIMEOUT,
 					     HWRM_SHORT_MAX_TIMEOUT);
@@ -643,10 +504,10 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
 			goto exit;
 		}
 
-		/* Last byte of resp contains valid bit */
+		 
 		valid = ((u8 *)ctx->resp) + len - 1;
 		for (j = 0; j < HWRM_VALID_BIT_DELAY_USEC; ) {
-			/* make sure we read from updated DMA memory */
+			 
 			dma_rmb();
 			if (*valid)
 				break;
@@ -667,10 +528,7 @@ static int __hwrm_send(struct bnxt *bp, struct bnxt_hwrm_ctx *ctx)
 		}
 	}
 
-	/* Zero valid bit for compatibility.  Valid bit in an older spec
-	 * may become a new field in a newer spec.  We must make sure that
-	 * a new field not implemented by old spec will read zero.
-	 */
+	 
 	*valid = 0;
 	rc = le16_to_cpu(ctx->resp->error_code);
 	if (rc == HWRM_ERR_CODE_BUSY && !(ctx->flags & BNXT_HWRM_CTX_SILENT))
@@ -690,36 +548,7 @@ exit:
 	return rc;
 }
 
-/**
- * hwrm_req_send() - Execute an HWRM command.
- * @bp: The driver context.
- * @req: A pointer to the request to send. The DMA resources associated with
- *	the request will be released (ie. the request will be consumed) unless
- *	ownership of the request has been assumed by the caller via a call to
- *	hwrm_req_hold().
- *
- * Send an HWRM request to the device and wait for a response. The request is
- * consumed if it is not owned by the caller. This function will block until
- * the request has either completed or times out due to an error.
- *
- * Return: A result code.
- *
- * The result is zero on success, otherwise the negative error code indicates
- * one of the following errors:
- *	E2BIG: The request was too large.
- *	EBUSY: The firmware is in a fatal state or the request timed out
- *	EACCESS: HWRM access denied.
- *	ENOSPC: HWRM resource allocation error.
- *	EINVAL: Request parameters are invalid.
- *	ENOMEM: HWRM has no buffers.
- *	EAGAIN: HWRM busy or reset in progress.
- *	EOPNOTSUPP: Invalid request type.
- *	EIO: Any other error.
- * Error handling is orthogonal to request ownership. An unowned request will
- * still be consumed on error. If the caller owns the request, then the caller
- * is responsible for releasing the resources. Otherwise, hwrm_req_send() will
- * always consume the request.
- */
+ 
 int hwrm_req_send(struct bnxt *bp, void *req)
 {
 	struct bnxt_hwrm_ctx *ctx = __hwrm_ctx(bp, req);
@@ -730,48 +559,14 @@ int hwrm_req_send(struct bnxt *bp, void *req)
 	return __hwrm_send(bp, ctx);
 }
 
-/**
- * hwrm_req_send_silent() - A silent version of hwrm_req_send().
- * @bp: The driver context.
- * @req: The request to send without logging.
- *
- * The same as hwrm_req_send(), except that the request is silenced using
- * hwrm_req_silence() prior the call. This version of the function is
- * provided solely to preserve the legacy API’s flavor for this functionality.
- *
- * Return: A result code, see hwrm_req_send().
- */
+ 
 int hwrm_req_send_silent(struct bnxt *bp, void *req)
 {
 	hwrm_req_flags(bp, req, BNXT_HWRM_CTX_SILENT);
 	return hwrm_req_send(bp, req);
 }
 
-/**
- * hwrm_req_dma_slice() - Allocate a slice of DMA mapped memory.
- * @bp: The driver context.
- * @req: The request for which indirect data will be associated.
- * @size: The size of the allocation.
- * @dma_handle: The bus address associated with the allocation. The HWRM API has
- *	no knowledge about the type of the request and so cannot infer how the
- *	caller intends to use the indirect data. Thus, the caller is
- *	responsible for configuring the request object appropriately to
- *	point to the associated indirect memory. Note, DMA handle has the
- *	same definition as it does in dma_alloc_coherent(), the caller is
- *	responsible for endian conversions via cpu_to_le64() before assigning
- *	this address.
- *
- * Allocates DMA mapped memory for indirect data related to a request. The
- * lifetime of the DMA resources will be bound to that of the request (ie.
- * they will be automatically released when the request is either consumed by
- * hwrm_req_send() or dropped by hwrm_req_drop()). Small allocations are
- * efficiently suballocated out of the request buffer space, hence the name
- * slice, while larger requests are satisfied via an underlying call to
- * dma_alloc_coherent(). Multiple suballocations are supported, however, only
- * one externally mapped region is.
- *
- * Return: The kernel virtual address of the DMA mapping.
- */
+ 
 void *
 hwrm_req_dma_slice(struct bnxt *bp, void *req, u32 size, dma_addr_t *dma_handle)
 {
@@ -795,9 +590,9 @@ hwrm_req_dma_slice(struct bnxt *bp, void *req, u32 size, dma_addr_t *dma_handle)
 		return addr;
 	}
 
-	/* could not suballocate from ctx buffer, try create a new mapping */
+	 
 	if (ctx->slice_addr) {
-		/* if one exists, can only be due to software bug, be loud */
+		 
 		netdev_err(bp->dev, "HWRM refusing to reallocate DMA slice, req_type = %u\n",
 			   (u32)le16_to_cpu(input->req_type));
 		dump_stack();

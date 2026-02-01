@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * dwmac-sti.c - STMicroelectronics DWMAC Specific Glue layer
- *
- * Copyright (C) 2003-2014 STMicroelectronics (R&D) Limited
- * Author: Srinivas Kandagatla <srinivas.kandagatla@st.com>
- * Contributors: Giuseppe Cavallaro <peppe.cavallaro@st.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -34,40 +28,7 @@
 #define IS_PHY_IF_MODE_GBIT(iface)	(IS_PHY_IF_MODE_RGMII(iface) || \
 					 iface == PHY_INTERFACE_MODE_GMII)
 
-/* STiH4xx register definitions (STiH407/STiH410 families)
- *
- * Below table summarizes the clock requirement and clock sources for
- * supported phy interface modes with link speeds.
- * ________________________________________________
- *|  PHY_MODE	| 1000 Mbit Link | 100 Mbit Link   |
- * ------------------------------------------------
- *|	MII	|	n/a	 |	25Mhz	   |
- *|		|		 |	txclk	   |
- * ------------------------------------------------
- *|	GMII	|     125Mhz	 |	25Mhz	   |
- *|		|  clk-125/txclk |	txclk	   |
- * ------------------------------------------------
- *|	RGMII	|     125Mhz	 |	25Mhz	   |
- *|		|  clk-125/txclk |	clkgen     |
- *|		|    clkgen	 |		   |
- * ------------------------------------------------
- *|	RMII	|	n/a	 |	25Mhz	   |
- *|		|		 |clkgen/phyclk-in |
- * ------------------------------------------------
- *
- *	  Register Configuration
- *-------------------------------
- * src	 |BIT(8)| BIT(7)| BIT(6)|
- *-------------------------------
- * txclk |   0	|  n/a	|   1	|
- *-------------------------------
- * ck_125|   0	|  n/a	|   0	|
- *-------------------------------
- * phyclk|   1	|   0	|  n/a	|
- *-------------------------------
- * clkgen|   1	|   1	|  n/a	|
- *-------------------------------
- */
+ 
 
 #define STIH4XX_RETIME_SRC_MASK			GENMASK(8, 6)
 #define STIH4XX_ETH_SEL_TX_RETIME_CLK		BIT(8)
@@ -79,13 +40,7 @@
 #define EN_MASK		GENMASK(1, 1)
 #define EN		BIT(1)
 
-/*
- * 3 bits [4:2]
- *	000-GMII/MII
- *	001-RGMII
- *	010-SGMII
- *	100-RMII
- */
+ 
 #define MII_PHY_SEL_MASK	GENMASK(4, 2)
 #define ETH_PHY_SEL_RMII	BIT(4)
 #define ETH_PHY_SEL_SGMII	BIT(3)
@@ -94,12 +49,12 @@
 #define ETH_PHY_SEL_MII		0x0
 
 struct sti_dwmac {
-	phy_interface_t interface;	/* MII interface */
-	bool ext_phyclk;	/* Clock from external PHY */
-	u32 tx_retime_src;	/* TXCLK Retiming*/
-	struct clk *clk;	/* PHY clock */
-	u32 ctrl_reg;		/* GMAC glue-logic control register */
-	int clk_sel_reg;	/* GMAC ext clk selection register */
+	phy_interface_t interface;	 
+	bool ext_phyclk;	 
+	u32 tx_retime_src;	 
+	struct clk *clk;	 
+	u32 ctrl_reg;		 
+	int clk_sel_reg;	 
 	struct regmap *regmap;
 	bool gmac_en;
 	u32 speed;
@@ -152,11 +107,11 @@ static void stih4xx_fix_retime_src(void *priv, u32 spd, unsigned int mode)
 			freq = DWMAC_50MHZ;
 		}
 	} else if (IS_PHY_IF_MODE_RGMII(dwmac->interface)) {
-		/* On GiGa clk source can be either ext or from clkgen */
+		 
 		if (spd == SPEED_1000) {
 			freq = DWMAC_125MHZ;
 		} else {
-			/* Switch to clkgen for these speeds */
+			 
 			src = TX_RETIME_SRC_CLKGEN;
 			if (spd == SPEED_100)
 				freq = DWMAC_25MHZ;
@@ -201,7 +156,7 @@ static int sti_dwmac_parse_data(struct sti_dwmac *dwmac,
 	struct regmap *regmap;
 	int err;
 
-	/* clk selection from extra syscfg register */
+	 
 	dwmac->clk_sel_reg = -ENXIO;
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "sti-clkconf");
 	if (res)
@@ -345,7 +300,7 @@ static int sti_dwmac_resume(struct device *dev)
 
 	return stmmac_resume(dev);
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(sti_dwmac_pm_ops, sti_dwmac_suspend,
 					   sti_dwmac_resume);

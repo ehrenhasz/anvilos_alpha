@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+ 
+ 
 
 #ifndef _CCU_FRAC_H_
 #define _CCU_FRAC_H_
@@ -42,4 +40,4 @@ int ccu_frac_helper_set_rate(struct ccu_common *common,
 			     struct ccu_frac_internal *cf,
 			     unsigned long rate, u32 lock);
 
-#endif /* _CCU_FRAC_H_ */
+#endif  

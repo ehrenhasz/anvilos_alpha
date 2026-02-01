@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright 2021 NXP */
+
+ 
 
 #include <dt-bindings/firmware/imx/rsrc.h>
 #include <linux/arm-smccc.h>
@@ -27,9 +27,7 @@
 
 #define DSP_RPROC_CLK_MAX			5
 
-/*
- * Module parameters
- */
+ 
 static unsigned int no_mailboxes;
 module_param_named(no_mailboxes, no_mailboxes, int, 0644);
 MODULE_PARM_DESC(no_mailboxes,
@@ -38,20 +36,20 @@ MODULE_PARM_DESC(no_mailboxes,
 #define REMOTE_IS_READY				BIT(0)
 #define REMOTE_READY_WAIT_MAX_RETRIES		500
 
-/* att flags */
-/* DSP own area */
+ 
+ 
 #define ATT_OWN					BIT(31)
-/* DSP instruction area */
+ 
 #define ATT_IRAM				BIT(30)
 
-/* Definitions for i.MX8MP */
-/* DAP registers */
+ 
+ 
 #define IMX8M_DAP_DEBUG				0x28800000
 #define IMX8M_DAP_DEBUG_SIZE			(64 * 1024)
 #define IMX8M_DAP_PWRCTL			(0x4000 + 0x3020)
 #define IMX8M_PWRCTL_CORERESET			BIT(16)
 
-/* DSP audio mix registers */
+ 
 #define IMX8M_AudioDSP_REG0			0x100
 #define IMX8M_AudioDSP_REG1			0x104
 #define IMX8M_AudioDSP_REG2			0x108
@@ -60,7 +58,7 @@ MODULE_PARM_DESC(no_mailboxes,
 #define IMX8M_AudioDSP_REG2_RUNSTALL		BIT(5)
 #define IMX8M_AudioDSP_REG2_PWAITMODE		BIT(1)
 
-/* Definitions for i.MX8ULP */
+ 
 #define IMX8ULP_SIM_LPAV_REG_SYSCTRL0		0x8
 #define IMX8ULP_SYSCTRL0_DSP_DBG_RST		BIT(25)
 #define IMX8ULP_SYSCTRL0_DSP_PLAT_CLK_EN	BIT(19)
@@ -72,19 +70,7 @@ MODULE_PARM_DESC(no_mailboxes,
 
 #define IMX8ULP_SIP_HIFI_XRDC			0xc200000e
 
-/*
- * enum - Predefined Mailbox Messages
- *
- * @RP_MBOX_SUSPEND_SYSTEM: system suspend request for the remote processor
- *
- * @RP_MBOX_SUSPEND_ACK: successful response from remote processor for a
- * suspend request
- *
- * @RP_MBOX_RESUME_SYSTEM: system resume request for the remote processor
- *
- * @RP_MBOX_RESUME_ACK: successful response from remote processor for a
- * resume request
- */
+ 
 enum imx_dsp_rp_mbox_messages {
 	RP_MBOX_SUSPEND_SYSTEM			= 0xFF11,
 	RP_MBOX_SUSPEND_ACK			= 0xFF12,
@@ -92,25 +78,7 @@ enum imx_dsp_rp_mbox_messages {
 	RP_MBOX_RESUME_ACK			= 0xFF14,
 };
 
-/**
- * struct imx_dsp_rproc - DSP remote processor state
- * @regmap: regmap handler
- * @rproc: rproc handler
- * @dsp_dcfg: device configuration pointer
- * @clks: clocks needed by this device
- * @cl: mailbox client to request the mailbox channel
- * @cl_rxdb: mailbox client to request the mailbox channel for doorbell
- * @tx_ch: mailbox tx channel handle
- * @rx_ch: mailbox rx channel handle
- * @rxdb_ch: mailbox rx doorbell channel handle
- * @pd_dev: power domain device
- * @pd_dev_link: power domain device link
- * @ipc_handle: System Control Unit ipc handle
- * @rproc_work: work for processing virtio interrupts
- * @pm_comp: completion primitive to sync for suspend response
- * @num_domains: power domain number
- * @flags: control flags
- */
+ 
 struct imx_dsp_rproc {
 	struct regmap				*regmap;
 	struct rproc				*rproc;
@@ -130,77 +98,73 @@ struct imx_dsp_rproc {
 	u32					flags;
 };
 
-/**
- * struct imx_dsp_rproc_dcfg - DSP remote processor configuration
- * @dcfg: imx_rproc_dcfg handler
- * @reset: reset callback function
- */
+ 
 struct imx_dsp_rproc_dcfg {
 	const struct imx_rproc_dcfg		*dcfg;
 	int (*reset)(struct imx_dsp_rproc *priv);
 };
 
 static const struct imx_rproc_att imx_dsp_rproc_att_imx8qm[] = {
-	/* dev addr , sys addr  , size	    , flags */
+	 
 	{ 0x596e8000, 0x556e8000, 0x00008000, ATT_OWN },
 	{ 0x596f0000, 0x556f0000, 0x00008000, ATT_OWN },
 	{ 0x596f8000, 0x556f8000, 0x00000800, ATT_OWN | ATT_IRAM},
 	{ 0x55700000, 0x55700000, 0x00070000, ATT_OWN },
-	/* DDR (Data) */
+	 
 	{ 0x80000000, 0x80000000, 0x60000000, 0},
 };
 
 static const struct imx_rproc_att imx_dsp_rproc_att_imx8qxp[] = {
-	/* dev addr , sys addr  , size	    , flags */
+	 
 	{ 0x596e8000, 0x596e8000, 0x00008000, ATT_OWN },
 	{ 0x596f0000, 0x596f0000, 0x00008000, ATT_OWN },
 	{ 0x596f8000, 0x596f8000, 0x00000800, ATT_OWN | ATT_IRAM},
 	{ 0x59700000, 0x59700000, 0x00070000, ATT_OWN },
-	/* DDR (Data) */
+	 
 	{ 0x80000000, 0x80000000, 0x60000000, 0},
 };
 
 static const struct imx_rproc_att imx_dsp_rproc_att_imx8mp[] = {
-	/* dev addr , sys addr  , size	    , flags */
+	 
 	{ 0x3b6e8000, 0x3b6e8000, 0x00008000, ATT_OWN },
 	{ 0x3b6f0000, 0x3b6f0000, 0x00008000, ATT_OWN },
 	{ 0x3b6f8000, 0x3b6f8000, 0x00000800, ATT_OWN | ATT_IRAM},
 	{ 0x3b700000, 0x3b700000, 0x00040000, ATT_OWN },
-	/* DDR (Data) */
+	 
 	{ 0x40000000, 0x40000000, 0x80000000, 0},
 };
 
 static const struct imx_rproc_att imx_dsp_rproc_att_imx8ulp[] = {
-	/* dev addr , sys addr  , size	    , flags */
+	 
 	{ 0x21170000, 0x21170000, 0x00010000, ATT_OWN | ATT_IRAM},
 	{ 0x21180000, 0x21180000, 0x00010000, ATT_OWN },
-	/* DDR (Data) */
+	 
 	{ 0x0c000000, 0x80000000, 0x10000000, 0},
 	{ 0x30000000, 0x90000000, 0x10000000, 0},
 };
 
-/* Initialize the mailboxes between cores, if exists */
+ 
 static int (*imx_dsp_rproc_mbox_init)(struct imx_dsp_rproc *priv);
 
-/* Reset function for DSP on i.MX8MP */
+ 
 static int imx8mp_dsp_reset(struct imx_dsp_rproc *priv)
 {
 	void __iomem *dap = ioremap_wc(IMX8M_DAP_DEBUG, IMX8M_DAP_DEBUG_SIZE);
 	int pwrctl;
 
-	/* Put DSP into reset and stall */
+	 
 	pwrctl = readl(dap + IMX8M_DAP_PWRCTL);
 	pwrctl |= IMX8M_PWRCTL_CORERESET;
 	writel(pwrctl, dap + IMX8M_DAP_PWRCTL);
 
-	/* Keep reset asserted for 10 cycles */
+	 
 	usleep_range(1, 2);
 
 	regmap_update_bits(priv->regmap, IMX8M_AudioDSP_REG2,
 			   IMX8M_AudioDSP_REG2_RUNSTALL,
 			   IMX8M_AudioDSP_REG2_RUNSTALL);
 
-	/* Take the DSP out of reset and keep stalled for FW loading */
+	 
 	pwrctl = readl(dap + IMX8M_DAP_PWRCTL);
 	pwrctl &= ~IMX8M_PWRCTL_CORERESET;
 	writel(pwrctl, dap + IMX8M_DAP_PWRCTL);
@@ -209,22 +173,22 @@ static int imx8mp_dsp_reset(struct imx_dsp_rproc *priv)
 	return 0;
 }
 
-/* Reset function for DSP on i.MX8ULP */
+ 
 static int imx8ulp_dsp_reset(struct imx_dsp_rproc *priv)
 {
 	struct arm_smccc_res res;
 
-	/* Put DSP into reset and stall */
+	 
 	regmap_update_bits(priv->regmap, IMX8ULP_SIM_LPAV_REG_SYSCTRL0,
 			   IMX8ULP_SYSCTRL0_DSP_RST, IMX8ULP_SYSCTRL0_DSP_RST);
 	regmap_update_bits(priv->regmap, IMX8ULP_SIM_LPAV_REG_SYSCTRL0,
 			   IMX8ULP_SYSCTRL0_DSP_STALL,
 			   IMX8ULP_SYSCTRL0_DSP_STALL);
 
-	/* Configure resources of DSP through TFA */
+	 
 	arm_smccc_smc(IMX8ULP_SIP_HIFI_XRDC, 0, 0, 0, 0, 0, 0, 0, &res);
 
-	/* Take the DSP out of reset and keep stalled for FW loading */
+	 
 	regmap_update_bits(priv->regmap, IMX8ULP_SIM_LPAV_REG_SYSCTRL0,
 			   IMX8ULP_SYSCTRL0_DSP_RST, 0);
 	regmap_update_bits(priv->regmap, IMX8ULP_SIM_LPAV_REG_SYSCTRL0,
@@ -233,7 +197,7 @@ static int imx8ulp_dsp_reset(struct imx_dsp_rproc *priv)
 	return 0;
 }
 
-/* Specific configuration for i.MX8MP */
+ 
 static const struct imx_rproc_dcfg dsp_rproc_cfg_imx8mp = {
 	.src_reg	= IMX8M_AudioDSP_REG2,
 	.src_mask	= IMX8M_AudioDSP_REG2_RUNSTALL,
@@ -249,7 +213,7 @@ static const struct imx_dsp_rproc_dcfg imx_dsp_rproc_cfg_imx8mp = {
 	.reset          = imx8mp_dsp_reset,
 };
 
-/* Specific configuration for i.MX8ULP */
+ 
 static const struct imx_rproc_dcfg dsp_rproc_cfg_imx8ulp = {
 	.src_reg	= IMX8ULP_SIM_LPAV_REG_SYSCTRL0,
 	.src_mask	= IMX8ULP_SYSCTRL0_DSP_STALL,
@@ -265,7 +229,7 @@ static const struct imx_dsp_rproc_dcfg imx_dsp_rproc_cfg_imx8ulp = {
 	.reset          = imx8ulp_dsp_reset,
 };
 
-/* Specific configuration for i.MX8QXP */
+ 
 static const struct imx_rproc_dcfg dsp_rproc_cfg_imx8qxp = {
 	.att		= imx_dsp_rproc_att_imx8qxp,
 	.att_size	= ARRAY_SIZE(imx_dsp_rproc_att_imx8qxp),
@@ -276,7 +240,7 @@ static const struct imx_dsp_rproc_dcfg imx_dsp_rproc_cfg_imx8qxp = {
 	.dcfg		= &dsp_rproc_cfg_imx8qxp,
 };
 
-/* Specific configuration for i.MX8QM */
+ 
 static const struct imx_rproc_dcfg dsp_rproc_cfg_imx8qm = {
 	.att		= imx_dsp_rproc_att_imx8qm,
 	.att_size	= ARRAY_SIZE(imx_dsp_rproc_att_imx8qm),
@@ -304,14 +268,7 @@ static int imx_dsp_rproc_ready(struct rproc *rproc)
 	return -ETIMEDOUT;
 }
 
-/*
- * Start function for rproc_ops
- *
- * There is a handshake for start procedure: when DSP starts, it
- * will send a doorbell message to this driver, then the
- * REMOTE_IS_READY flags is set, then driver will kick
- * a message to DSP.
- */
+ 
 static int imx_dsp_rproc_start(struct rproc *rproc)
 {
 	struct imx_dsp_rproc *priv = rproc->priv;
@@ -345,10 +302,7 @@ static int imx_dsp_rproc_start(struct rproc *rproc)
 	return ret;
 }
 
-/*
- * Stop function for rproc_ops
- * It clears the REMOTE_IS_READY flags
- */
+ 
 static int imx_dsp_rproc_stop(struct rproc *rproc)
 {
 	struct imx_dsp_rproc *priv = rproc->priv;
@@ -385,16 +339,7 @@ static int imx_dsp_rproc_stop(struct rproc *rproc)
 	return ret;
 }
 
-/**
- * imx_dsp_rproc_sys_to_da() - internal memory translation helper
- * @priv: private data pointer
- * @sys: system address (DDR address)
- * @len: length of the memory buffer
- * @da: device address to translate
- *
- * Convert system address (DDR address) to device address (DSP)
- * for there may be memory remap for device.
- */
+ 
 static int imx_dsp_rproc_sys_to_da(struct imx_dsp_rproc *priv, u64 sys,
 				   size_t len, u64 *da)
 {
@@ -402,7 +347,7 @@ static int imx_dsp_rproc_sys_to_da(struct imx_dsp_rproc *priv, u64 sys,
 	const struct imx_rproc_dcfg *dcfg = dsp_dcfg->dcfg;
 	int i;
 
-	/* Parse address translation table */
+	 
 	for (i = 0; i < dcfg->att_size; i++) {
 		const struct imx_rproc_att *att = &dcfg->att[i];
 
@@ -417,24 +362,7 @@ static int imx_dsp_rproc_sys_to_da(struct imx_dsp_rproc *priv, u64 sys,
 	return -ENOENT;
 }
 
-/* Main virtqueue message work function
- *
- * This function is executed upon scheduling of the i.MX DSP remoteproc
- * driver's workqueue. The workqueue is scheduled by the mailbox rx
- * handler.
- *
- * This work function processes both the Tx and Rx virtqueue indices on
- * every invocation. The rproc_vq_interrupt function can detect if there
- * are new unprocessed messages or not (returns IRQ_NONE vs IRQ_HANDLED),
- * but there is no need to check for these return values. The index 0
- * triggering will process all pending Rx buffers, and the index 1 triggering
- * will process all newly available Tx buffers and will wakeup any potentially
- * blocked senders.
- *
- * NOTE:
- *    The current logic is based on an inherent design assumption of supporting
- *    only 2 vrings, but this can be changed if needed.
- */
+ 
 static void imx_dsp_rproc_vq_work(struct work_struct *work)
 {
 	struct imx_dsp_rproc *priv = container_of(work, struct imx_dsp_rproc,
@@ -453,15 +381,7 @@ unlock_mutex:
 	mutex_unlock(&rproc->lock);
 }
 
-/**
- * imx_dsp_rproc_rx_tx_callback() - inbound mailbox message handler
- * @cl: mailbox client pointer used for requesting the mailbox channel
- * @data: mailbox payload
- *
- * This handler is invoked by mailbox driver whenever a mailbox
- * message is received. Usually, the SUSPEND and RESUME related messages
- * are handled in this function, other messages are handled by remoteproc core
- */
+ 
 static void imx_dsp_rproc_rx_tx_callback(struct mbox_client *cl, void *data)
 {
 	struct rproc *rproc = dev_get_drvdata(cl->dev);
@@ -484,29 +404,17 @@ static void imx_dsp_rproc_rx_tx_callback(struct mbox_client *cl, void *data)
 	}
 }
 
-/**
- * imx_dsp_rproc_rxdb_callback() - inbound mailbox message handler
- * @cl: mailbox client pointer used for requesting the mailbox channel
- * @data: mailbox payload
- *
- * For doorbell, there is no message specified, just set REMOTE_IS_READY
- * flag.
- */
+ 
 static void imx_dsp_rproc_rxdb_callback(struct mbox_client *cl, void *data)
 {
 	struct rproc *rproc = dev_get_drvdata(cl->dev);
 	struct imx_dsp_rproc *priv = rproc->priv;
 
-	/* Remote is ready after firmware is loaded and running */
+	 
 	priv->flags |= REMOTE_IS_READY;
 }
 
-/**
- * imx_dsp_rproc_mbox_alloc() - request mailbox channels
- * @priv: private data pointer
- *
- * Request three mailbox channels (tx, rx, rxdb).
- */
+ 
 static int imx_dsp_rproc_mbox_alloc(struct imx_dsp_rproc *priv)
 {
 	struct device *dev = priv->rproc->dev.parent;
@@ -523,7 +431,7 @@ static int imx_dsp_rproc_mbox_alloc(struct imx_dsp_rproc *priv)
 	cl->knows_txdone = false;
 	cl->rx_callback = imx_dsp_rproc_rx_tx_callback;
 
-	/* Channel for sending message */
+	 
 	priv->tx_ch = mbox_request_channel_byname(cl, "tx");
 	if (IS_ERR(priv->tx_ch)) {
 		ret = PTR_ERR(priv->tx_ch);
@@ -532,7 +440,7 @@ static int imx_dsp_rproc_mbox_alloc(struct imx_dsp_rproc *priv)
 		return ret;
 	}
 
-	/* Channel for receiving message */
+	 
 	priv->rx_ch = mbox_request_channel_byname(cl, "rx");
 	if (IS_ERR(priv->rx_ch)) {
 		ret = PTR_ERR(priv->rx_ch);
@@ -545,10 +453,7 @@ static int imx_dsp_rproc_mbox_alloc(struct imx_dsp_rproc *priv)
 	cl->dev = dev;
 	cl->rx_callback = imx_dsp_rproc_rxdb_callback;
 
-	/*
-	 * RX door bell is used to receive the ready signal from remote
-	 * after firmware loaded.
-	 */
+	 
 	priv->rxdb_ch = mbox_request_channel_byname(cl, "rxdb");
 	if (IS_ERR(priv->rxdb_ch)) {
 		ret = PTR_ERR(priv->rxdb_ch);
@@ -566,13 +471,7 @@ free_channel_tx:
 	return ret;
 }
 
-/*
- * imx_dsp_rproc_mbox_no_alloc()
- *
- * Empty function for no mailbox between cores
- *
- * Always return 0
- */
+ 
 static int imx_dsp_rproc_mbox_no_alloc(struct imx_dsp_rproc *priv)
 {
 	return 0;
@@ -585,13 +484,7 @@ static void imx_dsp_rproc_free_mbox(struct imx_dsp_rproc *priv)
 	mbox_free_channel(priv->rxdb_ch);
 }
 
-/**
- * imx_dsp_rproc_add_carveout() - request mailbox channels
- * @priv: private data pointer
- *
- * This function registers specified memory entry in @rproc carveouts list
- * The carveouts can help to mapping the memory address for DSP.
- */
+ 
 static int imx_dsp_rproc_add_carveout(struct imx_dsp_rproc *priv)
 {
 	const struct imx_dsp_rproc_dcfg *dsp_dcfg = priv->dsp_dcfg;
@@ -606,7 +499,7 @@ static int imx_dsp_rproc_add_carveout(struct imx_dsp_rproc *priv)
 	int a;
 	u64 da;
 
-	/* Remap required addresses */
+	 
 	for (a = 0; a < dcfg->att_size; a++) {
 		const struct imx_rproc_att *att = &dcfg->att[a];
 
@@ -622,7 +515,7 @@ static int imx_dsp_rproc_add_carveout(struct imx_dsp_rproc *priv)
 			return -ENOMEM;
 		}
 
-		/* Register memory region */
+		 
 		mem = rproc_mem_entry_init(dev, (void __force *)cpu_addr, (dma_addr_t)att->sa,
 					   att->size, da, NULL, NULL, "dsp_mem");
 
@@ -636,10 +529,7 @@ static int imx_dsp_rproc_add_carveout(struct imx_dsp_rproc *priv)
 
 	of_phandle_iterator_init(&it, np, "memory-region", NULL, 0);
 	while (of_phandle_iterator_next(&it) == 0) {
-		/*
-		 * Ignore the first memory region which will be used vdev buffer.
-		 * No need to do extra handlings, rproc_add_virtio_dev will handle it.
-		 */
+		 
 		if (!strcmp(it.node->name, "vdev0buffer"))
 			continue;
 
@@ -662,7 +552,7 @@ static int imx_dsp_rproc_add_carveout(struct imx_dsp_rproc *priv)
 			return -ENOMEM;
 		}
 
-		/* Register memory region */
+		 
 		mem = rproc_mem_entry_init(dev, (void __force *)cpu_addr, (dma_addr_t)rmem->base,
 					   rmem->size, da, NULL, NULL, it.node->name);
 
@@ -679,7 +569,7 @@ static int imx_dsp_rproc_add_carveout(struct imx_dsp_rproc *priv)
 	return 0;
 }
 
-/* Prepare function for rproc_ops */
+ 
 static int imx_dsp_rproc_prepare(struct rproc *rproc)
 {
 	struct imx_dsp_rproc *priv = rproc->priv;
@@ -695,10 +585,7 @@ static int imx_dsp_rproc_prepare(struct rproc *rproc)
 
 	pm_runtime_get_sync(dev);
 
-	/*
-	 * Clear buffers after pm rumtime for internal ocram is not
-	 * accessible if power and clock are not enabled.
-	 */
+	 
 	list_for_each_entry(carveout, &rproc->carveouts, node) {
 		if (carveout->va)
 			memset(carveout->va, 0, carveout->len);
@@ -707,7 +594,7 @@ static int imx_dsp_rproc_prepare(struct rproc *rproc)
 	return  0;
 }
 
-/* Unprepare function for rproc_ops */
+ 
 static int imx_dsp_rproc_unprepare(struct rproc *rproc)
 {
 	pm_runtime_put_sync(rproc->dev.parent);
@@ -715,7 +602,7 @@ static int imx_dsp_rproc_unprepare(struct rproc *rproc)
 	return  0;
 }
 
-/* Kick function for rproc_ops */
+ 
 static void imx_dsp_rproc_kick(struct rproc *rproc, int vqid)
 {
 	struct imx_dsp_rproc *priv = rproc->priv;
@@ -728,10 +615,7 @@ static void imx_dsp_rproc_kick(struct rproc *rproc, int vqid)
 		return;
 	}
 
-	/*
-	 * Send the index of the triggered virtqueue as the mu payload.
-	 * Let remote processor know which virtqueue is used.
-	 */
+	 
 	mmsg = vqid;
 
 	err = mbox_send_message(priv->tx_ch, (void *)&mmsg);
@@ -739,12 +623,7 @@ static void imx_dsp_rproc_kick(struct rproc *rproc, int vqid)
 		dev_err(dev, "%s: failed (%d, err:%d)\n", __func__, vqid, err);
 }
 
-/*
- * Custom memory copy implementation for i.MX DSP Cores
- *
- * The IRAM is part of the HiFi DSP.
- * According to hw specs only 32-bits writes are allowed.
- */
+ 
 static int imx_dsp_rproc_memcpy(void *dst, const void *src, size_t size)
 {
 	void __iomem *dest = (void __iomem *)dst;
@@ -754,29 +633,25 @@ static int imx_dsp_rproc_memcpy(void *dst, const void *src, size_t size)
 	int i, q, r;
 	u32 tmp;
 
-	/* destination must be 32bit aligned */
+	 
 	if (!IS_ALIGNED((uintptr_t)dest, 4))
 		return -EINVAL;
 
 	q = size / 4;
 	r = size % 4;
 
-	/* copy data in units of 32 bits at a time */
+	 
 	for (i = 0; i < q; i++)
 		writel(source[i], dest + i * 4);
 
 	if (r) {
 		affected_mask = GENMASK(8 * r, 0);
 
-		/*
-		 * first read the 32bit data of dest, then change affected
-		 * bytes, and write back to dest.
-		 * For unaffected bytes, it should not be changed
-		 */
+		 
 		tmp = readl(dest + q * 4);
 		tmp &= ~affected_mask;
 
-		/* avoid reading after end of source */
+		 
 		for (i = 0; i < r; i++)
 			tmp |= (src_byte[q * 4 + i] << (8 * i));
 
@@ -786,12 +661,7 @@ static int imx_dsp_rproc_memcpy(void *dst, const void *src, size_t size)
 	return 0;
 }
 
-/*
- * Custom memset implementation for i.MX DSP Cores
- *
- * The IRAM is part of the HiFi DSP.
- * According to hw specs only 32-bits writes are allowed.
- */
+ 
 static int imx_dsp_rproc_memset(void *addr, u8 value, size_t size)
 {
 	void __iomem *tmp_dst = (void __iomem *)addr;
@@ -800,7 +670,7 @@ static int imx_dsp_rproc_memset(void *addr, u8 value, size_t size)
 	int q, r;
 	u32 tmp;
 
-	/* destination must be 32bit aligned */
+	 
 	if (!IS_ALIGNED((uintptr_t)addr, 4))
 		return -EINVAL;
 
@@ -816,11 +686,7 @@ static int imx_dsp_rproc_memset(void *addr, u8 value, size_t size)
 	if (r) {
 		affected_mask = GENMASK(8 * r, 0);
 
-		/*
-		 * first read the 32bit data of addr, then change affected
-		 * bytes, and write back to addr.
-		 * For unaffected bytes, it should not be changed
-		 */
+		 
 		tmp = readl(tmp_dst);
 		tmp &= ~affected_mask;
 
@@ -831,16 +697,7 @@ static int imx_dsp_rproc_memset(void *addr, u8 value, size_t size)
 	return 0;
 }
 
-/*
- * imx_dsp_rproc_elf_load_segments() - load firmware segments to memory
- * @rproc: remote processor which will be booted using these fw segments
- * @fw: the ELF firmware image
- *
- * This function loads the firmware segments to memory, where the remote
- * processor expects them.
- *
- * Return: 0 on success and an appropriate error code otherwise
- */
+ 
 static int imx_dsp_rproc_elf_load_segments(struct rproc *rproc, const struct firmware *fw)
 {
 	struct device *dev = &rproc->dev;
@@ -855,7 +712,7 @@ static int imx_dsp_rproc_elf_load_segments(struct rproc *rproc, const struct fir
 	phnum = elf_hdr_get_e_phnum(class, ehdr);
 	phdr = elf_data + elf_hdr_get_e_phoff(class, ehdr);
 
-	/* go through the available ELF segments */
+	 
 	for (i = 0; i < phnum; i++, phdr += elf_phdr_get_size) {
 		u64 da = elf_phdr_get_p_paddr(class, phdr);
 		u64 memsz = elf_phdr_get_p_memsz(class, phdr);
@@ -891,7 +748,7 @@ static int imx_dsp_rproc_elf_load_segments(struct rproc *rproc, const struct fir
 			break;
 		}
 
-		/* grab the kernel address for this device address */
+		 
 		ptr = rproc_da_to_va(rproc, da, memsz, NULL);
 		if (!ptr) {
 			dev_err(dev, "bad phdr da 0x%llx mem 0x%llx\n", da,
@@ -900,7 +757,7 @@ static int imx_dsp_rproc_elf_load_segments(struct rproc *rproc, const struct fir
 			break;
 		}
 
-		/* put the segment where the remote processor expects it */
+		 
 		if (filesz) {
 			ret = imx_dsp_rproc_memcpy(ptr, elf_data + offset, filesz);
 			if (ret) {
@@ -910,7 +767,7 @@ static int imx_dsp_rproc_elf_load_segments(struct rproc *rproc, const struct fir
 			}
 		}
 
-		/* zero out remaining memory for this segment */
+		 
 		if (memsz > filesz) {
 			ret = imx_dsp_rproc_memset(ptr + filesz, 0, memsz - filesz);
 			if (ret) {
@@ -944,13 +801,7 @@ static const struct rproc_ops imx_dsp_rproc_ops = {
 	.get_boot_addr	= rproc_elf_get_boot_addr,
 };
 
-/**
- * imx_dsp_attach_pm_domains() - attach the power domains
- * @priv: private data pointer
- *
- * On i.MX8QM and i.MX8QXP there is multiple power domains
- * required, so need to link them.
- */
+ 
 static int imx_dsp_attach_pm_domains(struct imx_dsp_rproc *priv)
 {
 	struct device *dev = priv->rproc->dev.parent;
@@ -960,7 +811,7 @@ static int imx_dsp_attach_pm_domains(struct imx_dsp_rproc *priv)
 						       "power-domains",
 						       "#power-domain-cells");
 
-	/* If only one domain, then no need to link the device */
+	 
 	if (priv->num_domains <= 1)
 		return 0;
 
@@ -983,10 +834,7 @@ static int imx_dsp_attach_pm_domains(struct imx_dsp_rproc *priv)
 			goto detach_pm;
 		}
 
-		/*
-		 * device_link_add will check priv->pd_dev[i], if it is
-		 * NULL, then will break.
-		 */
+		 
 		priv->pd_dev_link[i] = device_link_add(dev,
 						       priv->pd_dev[i],
 						       DL_FLAG_STATELESS |
@@ -1024,18 +872,7 @@ static int imx_dsp_detach_pm_domains(struct imx_dsp_rproc *priv)
 	return 0;
 }
 
-/**
- * imx_dsp_rproc_detect_mode() - detect DSP control mode
- * @priv: private data pointer
- *
- * Different platform has different control method for DSP, which depends
- * on how the DSP is integrated in platform.
- *
- * For i.MX8QXP and i.MX8QM, DSP should be started and stopped by System
- * Control Unit.
- * For i.MX8MP and i.MX8ULP, DSP should be started and stopped by system
- * integration module.
- */
+ 
 static int imx_dsp_rproc_detect_mode(struct imx_dsp_rproc *priv)
 {
 	const struct imx_dsp_rproc_dcfg *dsp_dcfg = priv->dsp_dcfg;
@@ -1067,7 +904,7 @@ static int imx_dsp_rproc_detect_mode(struct imx_dsp_rproc *priv)
 }
 
 static const char *imx_dsp_clks_names[DSP_RPROC_CLK_MAX] = {
-	/* DSP clocks */
+	 
 	"core", "ocram", "debug", "ipg", "mu",
 };
 
@@ -1127,13 +964,13 @@ static int imx_dsp_rproc_probe(struct platform_device *pdev)
 		goto err_put_rproc;
 	}
 
-	/* There are multiple power domains required by DSP on some platform */
+	 
 	ret = imx_dsp_attach_pm_domains(priv);
 	if (ret) {
 		dev_err(dev, "failed on imx_dsp_attach_pm_domains\n");
 		goto err_put_rproc;
 	}
-	/* Get clocks */
+	 
 	ret = imx_dsp_rproc_clk_get(priv);
 	if (ret) {
 		dev_err(dev, "failed on imx_dsp_rproc_clk_get\n");
@@ -1171,7 +1008,7 @@ static void imx_dsp_rproc_remove(struct platform_device *pdev)
 	rproc_free(rproc);
 }
 
-/* pm runtime functions */
+ 
 static int imx_dsp_runtime_resume(struct device *dev)
 {
 	struct rproc *rproc = dev_get_drvdata(dev);
@@ -1179,12 +1016,7 @@ static int imx_dsp_runtime_resume(struct device *dev)
 	const struct imx_dsp_rproc_dcfg *dsp_dcfg = priv->dsp_dcfg;
 	int ret;
 
-	/*
-	 * There is power domain attached with mailbox, if setup mailbox
-	 * in probe(), then the power of mailbox is always enabled,
-	 * the power can't be saved.
-	 * So move setup of mailbox to runtime resume.
-	 */
+	 
 	ret = imx_dsp_rproc_mbox_init(priv);
 	if (ret) {
 		dev_err(dev, "failed on imx_dsp_rproc_mbox_init\n");
@@ -1197,7 +1029,7 @@ static int imx_dsp_runtime_resume(struct device *dev)
 		return ret;
 	}
 
-	/* Reset DSP if needed */
+	 
 	if (dsp_dcfg->reset)
 		dsp_dcfg->reset(priv);
 
@@ -1221,15 +1053,12 @@ static void imx_dsp_load_firmware(const struct firmware *fw, void *context)
 	struct rproc *rproc = context;
 	int ret;
 
-	/*
-	 * Same flow as start procedure.
-	 * Load the ELF segments to memory firstly.
-	 */
+	 
 	ret = rproc_load_segments(rproc, fw);
 	if (ret)
 		goto out;
 
-	/* Start the remote processor */
+	 
 	ret = rproc->ops->start(rproc);
 	if (ret)
 		goto out;
@@ -1252,26 +1081,19 @@ static int imx_dsp_suspend(struct device *dev)
 
 	reinit_completion(&priv->pm_comp);
 
-	/* Tell DSP that suspend is happening */
+	 
 	ret = mbox_send_message(priv->tx_ch, (void *)&mmsg);
 	if (ret < 0) {
 		dev_err(dev, "PM mbox_send_message failed: %d\n", ret);
 		return ret;
 	}
 
-	/*
-	 * DSP need to save the context at suspend.
-	 * Here waiting the response for DSP, then power can be disabled.
-	 */
+	 
 	if (!wait_for_completion_timeout(&priv->pm_comp, msecs_to_jiffies(100)))
 		return -EBUSY;
 
 out:
-	/*
-	 * The power of DSP is disabled in suspend, so force pm runtime
-	 * to be suspend, then we can reenable the power and clocks at
-	 * resume stage.
-	 */
+	 
 	return pm_runtime_force_suspend(dev);
 }
 
@@ -1287,11 +1109,7 @@ static int imx_dsp_resume(struct device *dev)
 	if (rproc->state != RPROC_RUNNING)
 		return 0;
 
-	/*
-	 * The power of DSP is disabled at suspend, the memory of dsp
-	 * is reset, the image segments are lost. So need to reload
-	 * firmware and restart the DSP if it is in running state.
-	 */
+	 
 	ret = request_firmware_nowait(THIS_MODULE, FW_ACTION_UEVENT,
 				      rproc->firmware, dev, GFP_KERNEL,
 				      rproc, imx_dsp_load_firmware);

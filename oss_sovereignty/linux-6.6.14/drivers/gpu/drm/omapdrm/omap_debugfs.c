@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Rob Clark <rob.clark@linaro.org>
- */
+
+ 
 
 #include <linux/seq_file.h>
 
@@ -67,7 +64,7 @@ static int fb_show(struct seq_file *m, void *arg)
 }
 #endif
 
-/* list of debufs files that are applicable to all devices */
+ 
 static struct drm_info_list omap_debugfs_list[] = {
 	{"gem", gem_show, 0},
 	{"mm", mm_show, 0},
@@ -76,7 +73,7 @@ static struct drm_info_list omap_debugfs_list[] = {
 #endif
 };
 
-/* list of debugfs files that are specific to devices with dmm/tiler */
+ 
 static struct drm_info_list omap_dmm_debugfs_list[] = {
 	{"tiler_map", tiler_map_show, 0},
 };

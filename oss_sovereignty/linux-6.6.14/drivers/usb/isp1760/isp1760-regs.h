@@ -1,31 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Driver for the NXP ISP1760 chip
- *
- * Copyright 2021 Linaro, Rui Miguel Silva
- * Copyright 2014 Laurent Pinchart
- * Copyright 2007 Sebastian Siewior
- *
- * Contacts:
- *     Sebastian Siewior <bigeasy@linutronix.de>
- *     Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- *     Rui Miguel Silva <rui.silva@linaro.org>
- */
+ 
+ 
 
 #ifndef _ISP176x_REGS_H_
 #define _ISP176x_REGS_H_
 
-/* -----------------------------------------------------------------------------
- * Host Controller
- */
+ 
 
-/* ISP1760/31 */
-/* EHCI capability registers */
+ 
+ 
 #define ISP176x_HC_VERSION		0x002
 #define ISP176x_HC_HCSPARAMS		0x004
 #define ISP176x_HC_HCCPARAMS		0x008
 
-/* EHCI operational registers */
+ 
 #define ISP176x_HC_USBCMD		0x020
 #define ISP176x_HC_USBSTS		0x024
 #define ISP176x_HC_FRINDEX		0x02c
@@ -43,7 +30,7 @@
 #define ISP176x_HC_ATL_PTD_SKIPMAP	0x154
 #define ISP176x_HC_ATL_PTD_LASTPTD	0x158
 
-/* Configuration Register */
+ 
 #define ISP176x_HC_HW_MODE_CTRL		0x300
 #define ISP176x_HC_CHIP_ID		0x304
 #define ISP176x_HC_SCRATCH		0x308
@@ -51,7 +38,7 @@
 #define ISP176x_HC_BUFFER_STATUS	0x334
 #define ISP176x_HC_MEMORY		0x33c
 
-/* Interrupt Register */
+ 
 #define ISP176x_HC_INTERRUPT		0x310
 #define ISP176x_HC_INTERRUPT_ENABLE	0x314
 #define ISP176x_HC_ISO_IRQ_MASK_OR	0x318
@@ -66,61 +53,61 @@
 #define ISP176x_HC_OTG_CTRL_CLEAR	0x376
 
 enum isp176x_host_controller_fields {
-	/* HC_PORTSC1 */
+	 
 	PORT_OWNER, PORT_POWER, PORT_LSTATUS, PORT_RESET, PORT_SUSPEND,
 	PORT_RESUME, PORT_PE, PORT_CSC, PORT_CONNECT,
-	/* HC_HCSPARAMS */
+	 
 	HCS_PPC, HCS_N_PORTS,
-	/* HC_HCCPARAMS */
+	 
 	HCC_ISOC_CACHE, HCC_ISOC_THRES,
-	/* HC_USBCMD */
+	 
 	CMD_LRESET, CMD_RESET, CMD_RUN,
-	/* HC_USBSTS */
+	 
 	STS_PCD,
-	/* HC_FRINDEX */
+	 
 	HC_FRINDEX,
-	/* HC_CONFIGFLAG */
+	 
 	FLAG_CF,
-	/* ISO/INT/ATL PTD */
+	 
 	HC_ISO_PTD_DONEMAP, HC_ISO_PTD_SKIPMAP, HC_ISO_PTD_LASTPTD,
 	HC_INT_PTD_DONEMAP, HC_INT_PTD_SKIPMAP, HC_INT_PTD_LASTPTD,
 	HC_ATL_PTD_DONEMAP, HC_ATL_PTD_SKIPMAP, HC_ATL_PTD_LASTPTD,
-	/* HC_HW_MODE_CTRL */
+	 
 	ALL_ATX_RESET, HW_ANA_DIGI_OC, HW_DEV_DMA, HW_COMN_IRQ, HW_COMN_DMA,
 	HW_DATA_BUS_WIDTH, HW_DACK_POL_HIGH, HW_DREQ_POL_HIGH, HW_INTR_HIGH_ACT,
 	HW_INTF_LOCK, HW_INTR_EDGE_TRIG, HW_GLOBAL_INTR_EN,
-	/* HC_CHIP_ID */
+	 
 	HC_CHIP_ID_HIGH, HC_CHIP_ID_LOW, HC_CHIP_REV,
-	/* HC_SCRATCH */
+	 
 	HC_SCRATCH,
-	/* HC_RESET */
+	 
 	SW_RESET_RESET_ATX, SW_RESET_RESET_HC, SW_RESET_RESET_ALL,
-	/* HC_BUFFER_STATUS */
+	 
 	ISO_BUF_FILL, INT_BUF_FILL, ATL_BUF_FILL,
-	/* HC_MEMORY */
+	 
 	MEM_BANK_SEL, MEM_START_ADDR,
-	/* HC_DATA */
+	 
 	HC_DATA,
-	/* HC_INTERRUPT */
+	 
 	HC_INTERRUPT,
-	/* HC_INTERRUPT_ENABLE */
+	 
 	HC_INT_IRQ_ENABLE, HC_ATL_IRQ_ENABLE,
-	/* INTERRUPT MASKS */
+	 
 	HC_ISO_IRQ_MASK_OR, HC_INT_IRQ_MASK_OR, HC_ATL_IRQ_MASK_OR,
 	HC_ISO_IRQ_MASK_AND, HC_INT_IRQ_MASK_AND, HC_ATL_IRQ_MASK_AND,
-	/* HW_OTG_CTRL_SET */
+	 
 	HW_OTG_DISABLE, HW_SW_SEL_HC_DC, HW_VBUS_DRV, HW_SEL_CP_EXT,
 	HW_DM_PULLDOWN, HW_DP_PULLDOWN, HW_DP_PULLUP, HW_HC_2_DIS,
-	/* HW_OTG_CTRL_CLR */
+	 
 	HW_OTG_DISABLE_CLEAR, HW_SW_SEL_HC_DC_CLEAR, HW_VBUS_DRV_CLEAR,
 	HW_SEL_CP_EXT_CLEAR, HW_DM_PULLDOWN_CLEAR, HW_DP_PULLDOWN_CLEAR,
 	HW_DP_PULLUP_CLEAR, HW_HC_2_DIS_CLEAR,
-	/* Last element */
+	 
 	HC_FIELD_MAX,
 };
 
-/* ISP1763 */
-/* EHCI operational registers */
+ 
+ 
 #define ISP1763_HC_USBCMD		0x8c
 #define ISP1763_HC_USBSTS		0x90
 #define ISP1763_HC_FRINDEX		0x98
@@ -138,7 +125,7 @@ enum isp176x_host_controller_fields {
 #define ISP1763_HC_ATL_PTD_SKIPMAP	0xb2
 #define ISP1763_HC_ATL_PTD_LASTPTD	0xb4
 
-/* Configuration Register */
+ 
 #define ISP1763_HC_HW_MODE_CTRL		0xb6
 #define ISP1763_HC_CHIP_REV		0x70
 #define ISP1763_HC_CHIP_ID		0x72
@@ -148,7 +135,7 @@ enum isp176x_host_controller_fields {
 #define ISP1763_HC_MEMORY		0xc4
 #define ISP1763_HC_DATA			0xc6
 
-/* Interrupt Register */
+ 
 #define ISP1763_HC_INTERRUPT		0xd4
 #define ISP1763_HC_INTERRUPT_ENABLE	0xd6
 #define ISP1763_HC_ISO_IRQ_MASK_OR	0xd8
@@ -161,9 +148,7 @@ enum isp176x_host_controller_fields {
 #define ISP1763_HC_OTG_CTRL_SET		0xe4
 #define ISP1763_HC_OTG_CTRL_CLEAR	0xe6
 
-/* -----------------------------------------------------------------------------
- * Peripheral Controller
- */
+ 
 
 #define DC_IEPTX(n)			(1 << (11 + 2 * (n)))
 #define DC_IEPRX(n)			(1 << (10 + 2 * (n)))
@@ -199,14 +184,14 @@ enum isp176x_host_controller_fields {
 #define ISP176x_DC_ENDPTYP_BULK		0x02
 #define ISP176x_DC_ENDPTYP_INTERRUPT	0x03
 
-/* Initialization Registers */
+ 
 #define ISP176x_DC_ADDRESS		0x0200
 #define ISP176x_DC_MODE			0x020c
 #define ISP176x_DC_INTCONF		0x0210
 #define ISP176x_DC_DEBUG		0x0212
 #define ISP176x_DC_INTENABLE		0x0214
 
-/* Data Flow Registers */
+ 
 #define ISP176x_DC_EPMAXPKTSZ		0x0204
 #define ISP176x_DC_EPTYPE		0x0208
 
@@ -217,7 +202,7 @@ enum isp176x_host_controller_fields {
 #define ISP176x_DC_CTRLFUNC		0x0228
 #define ISP176x_DC_EPINDEX		0x022c
 
-/* DMA Registers */
+ 
 #define ISP176x_DC_DMACMD		0x0230
 #define ISP176x_DC_DMATXCOUNT		0x0234
 #define ISP176x_DC_DMACONF		0x0238
@@ -227,7 +212,7 @@ enum isp176x_host_controller_fields {
 #define ISP176x_DC_DMAEP		0x0258
 #define ISP176x_DC_DMABURSTCOUNT	0x0264
 
-/* General Registers */
+ 
 #define ISP176x_DC_INTERRUPT		0x0218
 #define ISP176x_DC_CHIPID		0x0270
 #define ISP176x_DC_FRAMENUM		0x0274
@@ -237,44 +222,44 @@ enum isp176x_host_controller_fields {
 #define ISP176x_DC_TESTMODE		0x0284
 
 enum isp176x_device_controller_fields {
-	/* DC_ADDRESS */
+	 
 	DC_DEVEN, DC_DEVADDR,
-	/* DC_MODE */
+	 
 	DC_VBUSSTAT, DC_SFRESET, DC_GLINTENA,
-	/* DC_INTCONF */
+	 
 	DC_CDBGMOD_ACK, DC_DDBGMODIN_ACK, DC_DDBGMODOUT_ACK, DC_INTPOL,
-	/* DC_INTENABLE */
+	 
 	DC_IEPRXTX_7, DC_IEPRXTX_6, DC_IEPRXTX_5, DC_IEPRXTX_4, DC_IEPRXTX_3,
 	DC_IEPRXTX_2, DC_IEPRXTX_1, DC_IEPRXTX_0,
 	DC_IEP0SETUP, DC_IEVBUS, DC_IEHS_STA, DC_IERESM, DC_IESUSP, DC_IEBRST,
-	/* DC_EPINDEX */
+	 
 	DC_EP0SETUP, DC_ENDPIDX, DC_EPDIR,
-	/* DC_CTRLFUNC */
+	 
 	DC_CLBUF, DC_VENDP, DC_DSEN, DC_STATUS, DC_STALL,
-	/* DC_BUFLEN */
+	 
 	DC_BUFLEN,
-	/* DC_EPMAXPKTSZ */
+	 
 	DC_FFOSZ,
-	/* DC_EPTYPE */
+	 
 	DC_EPENABLE, DC_ENDPTYP,
-	/* DC_FRAMENUM */
+	 
 	DC_FRAMENUM, DC_UFRAMENUM,
-	/* DC_CHIP_ID */
+	 
 	DC_CHIP_ID_HIGH, DC_CHIP_ID_LOW,
-	/* DC_SCRATCH */
+	 
 	DC_SCRATCH,
-	/* Last element */
+	 
 	DC_FIELD_MAX,
 };
 
-/* ISP1763 */
-/* Initialization Registers */
+ 
+ 
 #define ISP1763_DC_ADDRESS		0x00
 #define ISP1763_DC_MODE			0x0c
 #define ISP1763_DC_INTCONF		0x10
 #define ISP1763_DC_INTENABLE		0x14
 
-/* Data Flow Registers */
+ 
 #define ISP1763_DC_EPMAXPKTSZ		0x04
 #define ISP1763_DC_EPTYPE		0x08
 
@@ -285,7 +270,7 @@ enum isp176x_device_controller_fields {
 #define ISP1763_DC_CTRLFUNC		0x28
 #define ISP1763_DC_EPINDEX		0x2c
 
-/* DMA Registers */
+ 
 #define ISP1763_DC_DMACMD		0x30
 #define ISP1763_DC_DMATXCOUNT		0x34
 #define ISP1763_DC_DMACONF		0x38
@@ -295,7 +280,7 @@ enum isp176x_device_controller_fields {
 #define ISP1763_DC_DMAEP		0x58
 #define ISP1763_DC_DMABURSTCOUNT	0x64
 
-/* General Registers */
+ 
 #define ISP1763_DC_INTERRUPT		0x18
 #define ISP1763_DC_CHIPID_LOW		0x70
 #define ISP1763_DC_CHIPID_HIGH		0x72

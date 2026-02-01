@@ -1,37 +1,4 @@
-/*
- * Copyright (c) 2004, 2005, Voltaire, Inc. All rights reserved.
- * Copyright (c) 2005 Intel Corporation. All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2009 HNR Consulting. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __IB_MAD_PRIV_H__
 #define __IB_MAD_PRIV_H__
@@ -43,9 +10,9 @@
 #include <rdma/ib_smi.h>
 #include <rdma/opa_smi.h>
 
-#define IB_MAD_QPS_CORE		2 /* Always QP0 and QP1 as a minimum */
+#define IB_MAD_QPS_CORE		2  
 
-/* QP and CQ parameters */
+ 
 #define IB_MAD_QP_SEND_SIZE	128
 #define IB_MAD_QP_RECV_SIZE	512
 #define IB_MAD_QP_MIN_SIZE	64
@@ -55,7 +22,7 @@
 
 #define IB_MAD_SEND_Q_PSN	0
 
-/* Registration table sizes */
+ 
 #define MAX_MGMT_CLASS		80
 #define MAX_MGMT_VERSION	0x83
 #define MAX_MGMT_OUI		8
@@ -135,7 +102,7 @@ struct ib_mad_send_wr_private {
 	int refcount;
 	enum ib_wc_status status;
 
-	/* RMPP control */
+	 
 	struct list_head rmpp_list;
 	struct ib_rmpp_segment *last_ack_seg;
 	struct ib_rmpp_segment *cur_seg;
@@ -222,4 +189,4 @@ void ib_mark_mad_done(struct ib_mad_send_wr_private *mad_send_wr);
 void ib_reset_mad_timeout(struct ib_mad_send_wr_private *mad_send_wr,
 			  unsigned long timeout_ms);
 
-#endif	/* __IB_MAD_PRIV_H__ */
+#endif	 

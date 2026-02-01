@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/tboot.h>
 
 #include <asm/cpu.h>
@@ -28,23 +28,14 @@ static void init_vmx_capabilities(struct cpuinfo_x86 *c)
 
 	BUILD_BUG_ON(NVMXINTS != NR_VMX_FEATURE_WORDS);
 
-	/*
-	 * The high bits contain the allowed-1 settings, i.e. features that can
-	 * be turned on.  The low bits contain the allowed-0 settings, i.e.
-	 * features that can be turned off.  Ignore the allowed-0 settings,
-	 * if a feature can be turned on then it's supported.
-	 *
-	 * Use raw rdmsr() for primary processor controls and pin controls MSRs
-	 * as they exist on any CPU that supports VMX, i.e. we want the WARN if
-	 * the RDMSR faults.
-	 */
+	 
 	rdmsr(MSR_IA32_VMX_PROCBASED_CTLS, ign, supported);
 	c->vmx_capability[PRIMARY_CTLS] = supported;
 
 	rdmsr_safe(MSR_IA32_VMX_PROCBASED_CTLS2, &ign, &supported);
 	c->vmx_capability[SECONDARY_CTLS] = supported;
 
-	/* All 64 bits of tertiary controls MSR are allowed-1 settings. */
+	 
 	rdmsr_safe(MSR_IA32_VMX_PROCBASED_CTLS3, &low, &high);
 	c->vmx_capability[TERTIARY_CTLS_LOW] = low;
 	c->vmx_capability[TERTIARY_CTLS_HIGH] = high;
@@ -52,20 +43,17 @@ static void init_vmx_capabilities(struct cpuinfo_x86 *c)
 	rdmsr(MSR_IA32_VMX_PINBASED_CTLS, ign, supported);
 	rdmsr_safe(MSR_IA32_VMX_VMFUNC, &ign, &funcs);
 
-	/*
-	 * Except for EPT+VPID, which enumerates support for both in a single
-	 * MSR, low for EPT, high for VPID.
-	 */
+	 
 	rdmsr_safe(MSR_IA32_VMX_EPT_VPID_CAP, &ept, &vpid);
 
-	/* Pin, EPT, VPID and VM-Func are merged into a single word. */
+	 
 	WARN_ON_ONCE(supported >> 16);
 	WARN_ON_ONCE(funcs >> 4);
 	c->vmx_capability[MISC_FEATURES] = (supported & 0xffff) |
 					   ((vpid & 0x1) << 16) |
 					   ((funcs & 0xf) << 28);
 
-	/* EPT bits are full on scattered and must be manually handled. */
+	 
 	if (ept & VMX_EPT_EXECUTE_ONLY_BIT)
 		c->vmx_capability[MISC_FEATURES] |= VMX_F(EPT_EXECUTE_ONLY);
 	if (ept & VMX_EPT_AD_BIT)
@@ -73,7 +61,7 @@ static void init_vmx_capabilities(struct cpuinfo_x86 *c)
 	if (ept & VMX_EPT_1GB_PAGE_BIT)
 		c->vmx_capability[MISC_FEATURES] |= VMX_F(EPT_1GB);
 
-	/* Synthetic APIC features that are aggregates of multiple features. */
+	 
 	if ((c->vmx_capability[PRIMARY_CTLS] & VMX_F(VIRTUAL_TPR)) &&
 	    (c->vmx_capability[SECONDARY_CTLS] & VMX_F(VIRT_APIC_ACCESSES)))
 		c->vmx_capability[MISC_FEATURES] |= VMX_F(FLEXPRIORITY);
@@ -84,7 +72,7 @@ static void init_vmx_capabilities(struct cpuinfo_x86 *c)
 	    (c->vmx_capability[MISC_FEATURES] & VMX_F(POSTED_INTR)))
 		c->vmx_capability[MISC_FEATURES] |= VMX_F(APICV);
 
-	/* Set the synthetic cpufeatures to preserve /proc/cpuinfo's ABI. */
+	 
 	if (c->vmx_capability[PRIMARY_CTLS] & VMX_F(VIRTUAL_TPR))
 		set_cpu_cap(c, X86_FEATURE_TPR_SHADOW);
 	if (c->vmx_capability[MISC_FEATURES] & VMX_F(FLEXPRIORITY))
@@ -98,7 +86,7 @@ static void init_vmx_capabilities(struct cpuinfo_x86 *c)
 	if (c->vmx_capability[MISC_FEATURES] & VMX_F(VPID))
 		set_cpu_cap(c, X86_FEATURE_VPID);
 }
-#endif /* CONFIG_X86_VMX_FEATURE_NAMES */
+#endif  
 
 static int __init nosgx(char *str)
 {
@@ -126,12 +114,7 @@ void init_ia32_feat_ctl(struct cpuinfo_x86 *c)
 		     IS_ENABLED(CONFIG_KVM_INTEL);
 
 	if (cpu_has(c, X86_FEATURE_SGX) && IS_ENABLED(CONFIG_X86_SGX)) {
-		/*
-		 * Separate out SGX driver enabling from KVM.  This allows KVM
-		 * guests to use SGX even if the kernel SGX driver refuses to
-		 * use it.  This happens if flexible Launch Control is not
-		 * available.
-		 */
+		 
 		enable_sgx_driver = cpu_has(c, X86_FEATURE_SGX_LC);
 		enable_sgx_kvm = enable_vmx && IS_ENABLED(CONFIG_X86_SGX_KVM);
 	}
@@ -139,17 +122,10 @@ void init_ia32_feat_ctl(struct cpuinfo_x86 *c)
 	if (msr & FEAT_CTL_LOCKED)
 		goto update_caps;
 
-	/*
-	 * Ignore whatever value BIOS left in the MSR to avoid enabling random
-	 * features or faulting on the WRMSR.
-	 */
+	 
 	msr = FEAT_CTL_LOCKED;
 
-	/*
-	 * Enable VMX if and only if the kernel may do VMXON at some point,
-	 * i.e. KVM is enabled, to avoid unnecessarily adding an attack vector
-	 * for the kernel, e.g. using VMX to hide malicious code.
-	 */
+	 
 	if (enable_vmx) {
 		msr |= FEAT_CTL_VMX_ENABLED_OUTSIDE_SMX;
 
@@ -191,10 +167,7 @@ update_sgx:
 		return;
 	}
 
-	/*
-	 * VMX feature bit may be cleared due to being disabled in BIOS,
-	 * in which case SGX virtualization cannot be supported either.
-	 */
+	 
 	if (!cpu_has(c, X86_FEATURE_VMX) && enable_sgx_kvm) {
 		pr_err_once("SGX virtualization disabled due to lack of VMX.\n");
 		enable_sgx_kvm = 0;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * MP2629 Driver for ADC
- *
- * Copyright 2020 Monolithic Power Systems, Inc
- *
- * Author: Saravanan Sekar <sravanhome@gmail.com>
- */
+
+ 
 
 #include <linux/iio/driver.h>
 #include <linux/iio/iio.h>

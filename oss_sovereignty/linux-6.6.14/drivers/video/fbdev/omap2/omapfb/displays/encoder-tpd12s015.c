@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TPD12S015 HDMI ESD protection & level shifter chip driver
- *
- * Copyright (C) 2013 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/delay.h>
@@ -45,7 +40,7 @@ static int tpd_connect(struct omap_dss_device *dssdev,
 
 	if (ddata->ct_cp_hpd_gpio) {
 		gpiod_set_value_cansleep(ddata->ct_cp_hpd_gpio, 1);
-		/* DC-DC converter needs at max 300us to get to 90% of 5V */
+		 
 		udelay(300);
 	}
 

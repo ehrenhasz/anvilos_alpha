@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sfr.c - driver for special function registers
- *
- * Copyright (C) 2019 Bootlin.
- *
- */
+
+ 
 #include <linux/mfd/syscon.h>
 #include <linux/module.h>
 #include <linux/nvmem-provider.h>
@@ -79,7 +74,7 @@ static const struct of_device_id atmel_sfr_dt_ids[] = {
 	}, {
 		.compatible = "atmel,sama5d4-sfr",
 	}, {
-		/* sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, atmel_sfr_dt_ids);

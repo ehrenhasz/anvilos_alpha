@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "util/pmu.h"
 #include "util/pmus.h"
 #include "util/env.h"

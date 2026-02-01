@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* esp_scsi.c: ESP SCSI driver.
- *
- * Copyright (C) 2007 David S. Miller (davem@davemloft.net)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -35,7 +32,7 @@
 #define DRV_VERSION		"2.000"
 #define DRV_MODULE_RELDATE	"April 19, 2007"
 
-/* SCSI bus reset settle time in seconds.  */
+ 
 static int esp_bus_reset_settle = 3;
 
 static u32 esp_debug;
@@ -240,19 +237,17 @@ static void esp_set_all_config3(struct esp *esp, u8 val)
 		esp->target[i].esp_config3 = val;
 }
 
-/* Reset the ESP chip, _not_ the SCSI bus. */
+ 
 static void esp_reset_esp(struct esp *esp)
 {
-	/* Now reset the ESP chip */
+	 
 	scsi_esp_cmd(esp, ESP_CMD_RC);
 	scsi_esp_cmd(esp, ESP_CMD_NULL | ESP_CMD_DMA);
 	if (esp->rev == FAST)
 		esp_write8(ESP_CONFIG2_FENAB, ESP_CFG2);
 	scsi_esp_cmd(esp, ESP_CMD_NULL | ESP_CMD_DMA);
 
-	/* This is the only point at which it is reliable to read
-	 * the ID-code for a fast ESP chip variants.
-	 */
+	 
 	esp->max_period = ((35 * esp->ccycle) / 1000);
 	if (esp->rev == FAST) {
 		u8 family_code = ESP_FAMILY(esp_read8(ESP_UID));
@@ -260,10 +255,10 @@ static void esp_reset_esp(struct esp *esp)
 		if (family_code == ESP_UID_F236) {
 			esp->rev = FAS236;
 		} else if (family_code == ESP_UID_HME) {
-			esp->rev = FASHME; /* Version is usually '5'. */
+			esp->rev = FASHME;  
 		} else if (family_code == ESP_UID_FSC) {
 			esp->rev = FSC;
-			/* Enable Active Negation */
+			 
 			esp_write8(ESP_CONFIG4_RADE, ESP_CFG4);
 		} else {
 			esp->rev = FAS100A;
@@ -273,10 +268,7 @@ static void esp_reset_esp(struct esp *esp)
 		esp->min_period = ((5 * esp->ccycle) / 1000);
 	}
 	if (esp->rev == FAS236) {
-		/*
-		 * The AM53c974 chip returns the same ID as FAS236;
-		 * try to configure glitch eater.
-		 */
+		 
 		u8 config4 = ESP_CONFIG4_GE1;
 		esp_write8(config4, ESP_CFG4);
 		config4 = esp_read8(ESP_CFG4);
@@ -291,7 +283,7 @@ static void esp_reset_esp(struct esp *esp)
 	esp_write8(esp->config1, ESP_CFG1);
 	switch (esp->rev) {
 	case ESP100:
-		/* nothing to do */
+		 
 		break;
 
 	case ESP100A:
@@ -299,7 +291,7 @@ static void esp_reset_esp(struct esp *esp)
 		break;
 
 	case ESP236:
-		/* Slow 236 */
+		 
 		esp_write8(esp->config2, ESP_CFG2);
 		esp->prev_cfg3 = esp->target[0].esp_config3;
 		esp_write8(esp->prev_cfg3, ESP_CFG3);
@@ -339,7 +331,7 @@ static void esp_reset_esp(struct esp *esp)
 		break;
 
 	case FAS100A:
-		/* Fast 100a */
+		 
 		esp_write8(esp->config2, ESP_CFG2);
 		esp_set_all_config3(esp,
 				    (esp->target[0].esp_config3 |
@@ -353,7 +345,7 @@ static void esp_reset_esp(struct esp *esp)
 		break;
 	}
 
-	/* Reload the configuration registers */
+	 
 	esp_write8(esp->cfact, ESP_CFACT);
 
 	esp->prev_stp = 0;
@@ -364,7 +356,7 @@ static void esp_reset_esp(struct esp *esp)
 
 	esp_write8(esp->neg_defp, ESP_TIMEO);
 
-	/* Eat any bitrot in the chip */
+	 
 	esp_read8(ESP_INTRPT);
 	udelay(100);
 }
@@ -380,10 +372,7 @@ static void esp_map_dma(struct esp *esp, struct scsi_cmnd *cmd)
 		return;
 
 	if (esp->flags & ESP_FLAG_NO_DMA_MAP) {
-		/*
-		 * For pseudo DMA and PIO we need the virtual address instead of
-		 * a dma address, so perform an identity mapping.
-		 */
+		 
 		spriv->num_sg = scsi_sg_count(cmd);
 
 		scsi_for_each_sg(cmd, s, spriv->num_sg, i) {
@@ -522,24 +511,17 @@ static void esp_write_tgt_sync(struct esp *esp, int tgt)
 static u32 esp_dma_length_limit(struct esp *esp, u32 dma_addr, u32 dma_len)
 {
 	if (esp->rev == FASHME) {
-		/* Arbitrary segment boundaries, 24-bit counts.  */
+		 
 		if (dma_len > (1U << 24))
 			dma_len = (1U << 24);
 	} else {
 		u32 base, end;
 
-		/* ESP chip limits other variants by 16-bits of transfer
-		 * count.  Actually on FAS100A and FAS236 we could get
-		 * 24-bits of transfer count by enabling ESP_CONFIG2_FENAB
-		 * in the ESP_CFG2 register but that causes other unwanted
-		 * changes so we don't use it currently.
-		 */
+		 
 		if (dma_len > (1U << 16))
 			dma_len = (1U << 16);
 
-		/* All of the DMA variants hooked up to these chips
-		 * cannot handle crossing a 24-bit address boundary.
-		 */
+		 
 		base = dma_addr & ((1U << 24) - 1U);
 		end = base + dma_len;
 		if (end > (1U << 24))
@@ -560,7 +542,7 @@ static int esp_need_to_nego_sync(struct esp_target_data *tp)
 {
 	struct scsi_target *target = tp->starget;
 
-	/* When offset is zero, period is "don't care".  */
+	 
 	if (!spi_offset(target) && !tp->nego_goal_offset)
 		return 0;
 
@@ -575,25 +557,19 @@ static int esp_alloc_lun_tag(struct esp_cmd_entry *ent,
 			     struct esp_lun_data *lp)
 {
 	if (!ent->orig_tag[0]) {
-		/* Non-tagged, slot already taken?  */
+		 
 		if (lp->non_tagged_cmd)
 			return -EBUSY;
 
 		if (lp->hold) {
-			/* We are being held by active tagged
-			 * commands.
-			 */
+			 
 			if (lp->num_tagged)
 				return -EBUSY;
 
-			/* Tagged commands completed, we can unplug
-			 * the queue and run this untagged command.
-			 */
+			 
 			lp->hold = 0;
 		} else if (lp->num_tagged) {
-			/* Plug the queue until num_tagged decreases
-			 * to zero in esp_free_lun_tag.
-			 */
+			 
 			lp->hold = 1;
 			return -EBUSY;
 		}
@@ -602,7 +578,7 @@ static int esp_alloc_lun_tag(struct esp_cmd_entry *ent,
 		return 0;
 	}
 
-	/* Tagged command. Check that it isn't blocked by a non-tagged one. */
+	 
 	if (lp->non_tagged_cmd || lp->hold)
 		return -EBUSY;
 
@@ -647,13 +623,7 @@ static void esp_unmap_sense(struct esp *esp, struct esp_cmd_entry *ent)
 	ent->sense_ptr = NULL;
 }
 
-/* When a contingent allegiance condition is created, we force feed a
- * REQUEST_SENSE command to the device to fetch the sense data.  I
- * tried many other schemes, relying on the scsi error handling layer
- * to send out the REQUEST_SENSE automatically, but this was difficult
- * to get right especially in the presence of applications like smartd
- * which use SG_IO to send out their own REQUEST_SENSE commands.
- */
+ 
 static void esp_autosense(struct esp *esp, struct esp_cmd_entry *ent)
 {
 	struct scsi_cmnd *cmd = ent->cmd;
@@ -776,9 +746,7 @@ static void esp_maybe_execute_command(struct esp *esp)
 
 	esp->msg_out_len = 0;
 	if (tp->flags & ESP_TGT_CHECK_NEGO) {
-		/* Need to negotiate.  If the target is broken
-		 * go for synchronous transfers and non-wide.
-		 */
+		 
 		if (tp->flags & ESP_TGT_BROKEN) {
 			tp->flags &= ~ESP_TGT_DISCONNECT;
 			tp->nego_goal_period = 0;
@@ -787,7 +755,7 @@ static void esp_maybe_execute_command(struct esp *esp)
 			tp->nego_goal_tags = 0;
 		}
 
-		/* If the settings are not changing, skip this.  */
+		 
 		if (spi_width(tp->starget) == tp->nego_goal_width &&
 		    spi_period(tp->starget) == tp->nego_goal_period &&
 		    spi_offset(tp->starget) == tp->nego_goal_offset) {
@@ -811,7 +779,7 @@ static void esp_maybe_execute_command(struct esp *esp)
 			tp->flags &= ~ESP_TGT_CHECK_NEGO;
 		}
 
-		/* If there are multiple message bytes, use Select and Stop */
+		 
 		if (esp->msg_out_len)
 			select_and_stop = true;
 	}
@@ -820,9 +788,7 @@ build_identify:
 	*p++ = IDENTIFY(tp->flags & ESP_TGT_DISCONNECT, lun);
 
 	if (ent->tag[0] && esp->rev == ESP100) {
-		/* ESP100 lacks select w/atn3 command, use select
-		 * and stop instead.
-		 */
+		 
 		select_and_stop = true;
 	}
 
@@ -918,10 +884,7 @@ static void esp_cmd_is_done(struct esp *esp, struct esp_cmd_entry *ent,
 	if (ent->flags & ESP_CMD_FLAG_AUTOSENSE) {
 		esp_unmap_sense(esp, ent);
 
-		/* Restore the message/status bytes to what we actually
-		 * saw originally.  Also, report that we are providing
-		 * the sense data.
-		 */
+		 
 		cmd->result = SAM_STAT_CHECK_CONDITION;
 
 		ent->flags &= ~ESP_CMD_FLAG_AUTOSENSE;
@@ -980,15 +943,10 @@ static DEF_SCSI_QCMD(esp_queuecommand)
 static int esp_check_gross_error(struct esp *esp)
 {
 	if (esp->sreg & ESP_STAT_SPAM) {
-		/* Gross Error, could be one of:
-		 * - top of fifo overwritten
-		 * - top of command register overwritten
-		 * - DMA programmed with wrong direction
-		 * - improper phase change
-		 */
+		 
 		shost_printk(KERN_ERR, esp->host,
 			     "Gross error sreg[%02x]\n", esp->sreg);
-		/* XXX Reset the chip. XXX */
+		 
 		return 1;
 	}
 	return 0;
@@ -999,9 +957,7 @@ static int esp_check_spur_intr(struct esp *esp)
 	switch (esp->rev) {
 	case ESP100:
 	case ESP100A:
-		/* The interrupt pending bit of the status register cannot
-		 * be trusted on these revisions.
-		 */
+		 
 		esp->sreg &= ~ESP_STAT_INTR;
 		break;
 
@@ -1010,9 +966,7 @@ static int esp_check_spur_intr(struct esp *esp)
 			if (esp->ireg & ESP_INTR_SR)
 				return 1;
 
-			/* If the DMA is indicating interrupt pending and the
-			 * ESP is not, the only possibility is a DMA error.
-			 */
+			 
 			if (!esp->ops->dma_error(esp)) {
 				shost_printk(KERN_ERR, esp->host,
 					     "Spurious irq, sreg=%02x.\n",
@@ -1022,7 +976,7 @@ static int esp_check_spur_intr(struct esp *esp)
 
 			shost_printk(KERN_ERR, esp->host, "DMA error\n");
 
-			/* XXX Reset the chip. XXX */
+			 
 			return -1;
 		}
 		break;
@@ -1039,10 +993,7 @@ static void esp_schedule_reset(struct esp *esp)
 	esp_event(esp, ESP_EVENT_RESET);
 }
 
-/* In order to avoid having to add a special half-reconnected state
- * into the driver we just sit here and poll through the rest of
- * the reselection process to get the tag message bytes.
- */
+ 
 static struct esp_cmd_entry *esp_reconnect_with_tag(struct esp *esp,
 						    struct esp_lun_data *lp)
 {
@@ -1085,13 +1036,13 @@ static struct esp_cmd_entry *esp_reconnect_with_tag(struct esp *esp,
 		return NULL;
 	}
 
-	/* DMA in the tag bytes... */
+	 
 	esp->command_block[0] = 0xff;
 	esp->command_block[1] = 0xff;
 	esp->ops->send_dma_cmd(esp, esp->command_block_dma,
 			       2, 2, 1, ESP_CMD_DMA | ESP_CMD_TI);
 
-	/* ACK the message.  */
+	 
 	scsi_esp_cmd(esp, ESP_CMD_MOK);
 
 	for (i = 0; i < ESP_RESELECT_TAG_LIMIT; i++) {
@@ -1144,20 +1095,13 @@ static int esp_reconnect(struct esp *esp)
 
 	BUG_ON(esp->active_cmd);
 	if (esp->rev == FASHME) {
-		/* FASHME puts the target and lun numbers directly
-		 * into the fifo.
-		 */
+		 
 		target = esp->fifo[0];
 		lun = esp->fifo[1] & 0x7;
 	} else {
 		u8 bits = esp_read8(ESP_FDATA);
 
-		/* Older chips put the lun directly into the fifo, but
-		 * the target is given as a sample of the arbitration
-		 * lines on the bus at reselection time.  So we should
-		 * see the ID of the ESP and the one reconnecting target
-		 * set in the bitmap.
-		 */
+		 
 		if (!(bits & esp->scsi_id_mask))
 			goto do_reset;
 		bits &= ~esp->scsi_id_mask;
@@ -1170,11 +1114,7 @@ static int esp_reconnect(struct esp *esp)
 		scsi_esp_cmd(esp, ESP_CMD_FLUSH);
 		if (esp->rev == ESP100) {
 			u8 ireg = esp_read8(ESP_INTRPT);
-			/* This chip has a bug during reselection that can
-			 * cause a spurious illegal-command interrupt, which
-			 * we simply ACK here.  Another possibility is a bus
-			 * reset so we must check for that.
-			 */
+			 
 			if (ireg & ESP_INTR_SR)
 				goto do_reset;
 		}
@@ -1224,7 +1164,7 @@ static int esp_finish_select(struct esp *esp)
 	struct esp_cmd_entry *ent;
 	struct scsi_cmnd *cmd;
 
-	/* No longer selecting.  */
+	 
 	esp->select_state = ESP_SELECT_NONE;
 
 	esp->seqreg = esp_read8(ESP_SSTEP) & ESP_STEP_VBITS;
@@ -1232,9 +1172,7 @@ static int esp_finish_select(struct esp *esp)
 	cmd = ent->cmd;
 
 	if (esp->ops->dma_error(esp)) {
-		/* If we see a DMA error during or as a result of selection,
-		 * all bets are off.
-		 */
+		 
 		esp_schedule_reset(esp);
 		esp_cmd_is_done(esp, ent, cmd, DID_ERROR);
 		return 0;
@@ -1245,10 +1183,7 @@ static int esp_finish_select(struct esp *esp)
 	if (esp->ireg == (ESP_INTR_RSEL | ESP_INTR_FDONE)) {
 		struct esp_target_data *tp = &esp->target[cmd->device->id];
 
-		/* Carefully back out of the selection attempt.  Release
-		 * resources (such as DMA mapping & TAG) and reset state (such
-		 * as message out and command delivery variables).
-		 */
+		 
 		if (!(ent->flags & ESP_CMD_FLAG_AUTOSENSE)) {
 			esp_unmap_dma(esp, cmd);
 			esp_free_lun_tag(ent, cmd->device->hostdata);
@@ -1259,25 +1194,18 @@ static int esp_finish_select(struct esp *esp)
 			esp_unmap_sense(esp, ent);
 		}
 
-		/* Now that the state is unwound properly, put back onto
-		 * the issue queue.  This command is no longer active.
-		 */
+		 
 		list_move(&ent->list, &esp->queued_cmds);
 		esp->active_cmd = NULL;
 
-		/* Return value ignored by caller, it directly invokes
-		 * esp_reconnect().
-		 */
+		 
 		return 0;
 	}
 
 	if (esp->ireg == ESP_INTR_DC) {
 		struct scsi_device *dev = cmd->device;
 
-		/* Disconnect.  Make sure we re-negotiate sync and
-		 * wide parameters if this target starts responding
-		 * again in the future.
-		 */
+		 
 		esp->target[dev->id].flags |= ESP_TGT_CHECK_NEGO;
 
 		scsi_esp_cmd(esp, ESP_CMD_ESEL);
@@ -1286,9 +1214,7 @@ static int esp_finish_select(struct esp *esp)
 	}
 
 	if (esp->ireg == (ESP_INTR_FDONE | ESP_INTR_BSERV)) {
-		/* Selection successful.  On pre-FAST chips we have
-		 * to do a NOP and possibly clean out the FIFO.
-		 */
+		 
 		if (esp->rev <= ESP236) {
 			int fcnt = esp_read8(ESP_FFLAGS) & ESP_FF_FBYTES;
 
@@ -1300,9 +1226,7 @@ static int esp_finish_select(struct esp *esp)
 				esp_flush_fifo(esp);
 		}
 
-		/* If we are doing a Select And Stop command, negotiation, etc.
-		 * we'll do the right thing as we transition to the next phase.
-		 */
+		 
 		esp_event(esp, ESP_EVENT_CHECK_PHASE);
 		return 0;
 	}
@@ -1336,14 +1260,7 @@ static int esp_data_bytes_sent(struct esp *esp, struct esp_cmd_entry *ent,
 	bytes_sent -= ecount;
 	bytes_sent -= esp->send_cmd_residual;
 
-	/*
-	 * The am53c974 has a DMA 'peculiarity'. The doc states:
-	 * In some odd byte conditions, one residual byte will
-	 * be left in the SCSI FIFO, and the FIFO Flags will
-	 * never count to '0 '. When this happens, the residual
-	 * byte should be retrieved via PIO following completion
-	 * of the BLAST operation.
-	 */
+	 
 	if (fifo_cnt == 1 && ent->flags & ESP_CMD_FLAG_RESIDUAL) {
 		size_t count = 1;
 		size_t offset = bytes_sent;
@@ -1370,23 +1287,13 @@ static int esp_data_bytes_sent(struct esp *esp, struct esp_cmd_entry *ent,
 
 	flush_fifo = 0;
 	if (!esp->prev_soff) {
-		/* Synchronous data transfer, always flush fifo. */
+		 
 		flush_fifo = 1;
 	} else {
 		if (esp->rev == ESP100) {
 			u32 fflags, phase;
 
-			/* ESP100 has a chip bug where in the synchronous data
-			 * phase it can mistake a final long REQ pulse from the
-			 * target as an extra data byte.  Fun.
-			 *
-			 * To detect this case we resample the status register
-			 * and fifo flags.  If we're still in a data phase and
-			 * we see spurious chunks in the fifo, we return error
-			 * to the caller which should reset and set things up
-			 * such that we only try future transfers to this
-			 * target in synchronous mode.
-			 */
+			 
 			esp->sreg = esp_read8(ESP_STATUS);
 			phase = esp->sreg & ESP_STAT_PMASK;
 			fflags = esp_read8(ESP_FFLAGS);
@@ -1611,16 +1518,14 @@ static void esp_msgin_extended(struct esp *esp)
 	scsi_esp_cmd(esp, ESP_CMD_SATN);
 }
 
-/* Analyze msgin bytes received from target so far.  Return non-zero
- * if there are more bytes needed to complete the message.
- */
+ 
 static int esp_msgin_process(struct esp *esp)
 {
 	u8 msg0 = esp->msg_in[0];
 	int len = esp->msg_in_len;
 
 	if (msg0 & 0x80) {
-		/* Identify */
+		 
 		shost_printk(KERN_INFO, esp->host,
 			     "Unexpected msgin identify\n");
 		return 0;
@@ -1789,16 +1694,14 @@ again:
 		}
 
 		if (ent->flags & ESP_CMD_FLAG_WRITE) {
-			/* XXX parity errors, etc. XXX */
+			 
 
 			esp->ops->dma_drain(esp);
 		}
 		esp->ops->dma_invalidate(esp);
 
 		if (esp->ireg != ESP_INTR_BSERV) {
-			/* We should always see exactly a bus-service
-			 * interrupt at the end of a successful transfer.
-			 */
+			 
 			shost_printk(KERN_INFO, esp->host,
 				     "data done, not BSERV, resetting\n");
 			esp_schedule_reset(esp);
@@ -1811,7 +1714,7 @@ again:
 				 ent->flags, bytes_sent);
 
 		if (bytes_sent < 0) {
-			/* XXX force sync mode for this target XXX */
+			 
 			esp_schedule_reset(esp);
 			return 0;
 		}
@@ -1900,7 +1803,7 @@ again:
 		if (esp->rev == FASHME) {
 			int i;
 
-			/* Always use the fifo.  */
+			 
 			for (i = 0; i < esp->msg_out_len; i++) {
 				esp_write8(esp->msg_out[i], ESP_FDATA);
 				esp_write8(0, ESP_FDATA);
@@ -1915,7 +1818,7 @@ again:
 					esp_write8(esp->msg_out[i], ESP_FDATA);
 				scsi_esp_cmd(esp, ESP_CMD_TI);
 			} else {
-				/* Use DMA. */
+				 
 				memcpy(esp->command_block,
 				       esp->msg_out,
 				       esp->msg_out_len);
@@ -1938,9 +1841,7 @@ again:
 			if (esp->msg_out_len > 1)
 				esp->ops->dma_invalidate(esp);
 
-			/* XXX if the chip went into disconnected mode,
-			 * we can't run the phase state machine anyway.
-			 */
+			 
 			if (!(esp->ireg & ESP_INTR_DC))
 				scsi_esp_cmd(esp, ESP_CMD_NULL);
 		}
@@ -1983,7 +1884,7 @@ again:
 
 			scsi_esp_cmd(esp, ESP_CMD_MOK);
 
-			/* Check whether a bus reset is to be done next */
+			 
 			if (esp->event == ESP_EVENT_RESET)
 				return 0;
 
@@ -2071,7 +1972,7 @@ static void esp_reset_cleanup(struct esp *esp)
 
 	BUG_ON(esp->active_cmd != NULL);
 
-	/* Force renegotiation of sync/wide transfers.  */
+	 
 	for (i = 0; i < ESP_MAX_TARGET; i++) {
 		struct esp_target_data *tp = &esp->target[i];
 
@@ -2090,15 +1991,13 @@ static void esp_reset_cleanup(struct esp *esp)
 	esp->flags &= ~ESP_FLAG_RESETTING;
 }
 
-/* Runs under host->lock */
+ 
 static void __esp_interrupt(struct esp *esp)
 {
 	int finish_reset, intr_done;
 	u8 phase;
 
-       /*
-	* Once INTRPT is read STATUS and SSTEP are cleared.
-	*/
+        
 	esp->sreg = esp_read8(ESP_STATUS);
 	esp->seqreg = esp_read8(ESP_SSTEP);
 	esp->ireg = esp_read8(ESP_INTRPT);
@@ -2159,7 +2058,7 @@ static void __esp_interrupt(struct esp *esp)
 				(void) esp_finish_select(esp);
 			intr_done = esp_reconnect(esp);
 		} else {
-			/* Some combination of FDONE, BSERV, DC. */
+			 
 			if (esp->select_state != ESP_SELECT_NONE)
 				intr_done = esp_finish_select(esp);
 		}
@@ -2214,11 +2113,7 @@ static void esp_get_revision(struct esp *esp)
 
 		esp->config2 = 0;
 		if (val != (ESP_CONFIG2_SCSI2ENAB | ESP_CONFIG2_REGPARITY)) {
-			/*
-			 * If what we write to cfg2 does not come back,
-			 * cfg2 is not implemented.
-			 * Therefore this must be a plain esp100.
-			 */
+			 
 			esp->rev = ESP100;
 			return;
 		}
@@ -2232,18 +2127,14 @@ static void esp_get_revision(struct esp *esp)
 
 	val = esp_read8(ESP_CFG3);
 	if (val != 5) {
-		/* The cfg2 register is implemented, however
-		 * cfg3 is not, must be esp100a.
-		 */
+		 
 		esp->rev = ESP100A;
 	} else {
 		esp_set_all_config3(esp, 0);
 		esp->prev_cfg3 = 0;
 		esp_write8(esp->prev_cfg3, ESP_CFG3);
 
-		/* All of cfg{1,2,3} implemented, must be one of
-		 * the fas variants, figure out which one.
-		 */
+		 
 		if (esp->cfact == 0 || esp->cfact > ESP_CCF_F5) {
 			esp->rev = FAST;
 			esp->sync_defp = SYNC_DEFP_FAST;
@@ -2261,10 +2152,7 @@ static void esp_init_swstate(struct esp *esp)
 	INIT_LIST_HEAD(&esp->active_cmds);
 	INIT_LIST_HEAD(&esp->esp_cmd_pool);
 
-	/* Start with a clear state, domain validation (via ->slave_configure,
-	 * spi_dv_device()) will attempt to enable SYNC, WIDE, and tagged
-	 * commands.
-	 */
+	 
 	for (i = 0 ; i < ESP_MAX_TARGET; i++) {
 		esp->target[i].flags = 0;
 		esp->target[i].nego_goal_period = 0;
@@ -2274,18 +2162,18 @@ static void esp_init_swstate(struct esp *esp)
 	}
 }
 
-/* This places the ESP into a known state at boot time. */
+ 
 static void esp_bootup_reset(struct esp *esp)
 {
 	u8 val;
 
-	/* Reset the DMA */
+	 
 	esp->ops->reset_dma(esp);
 
-	/* Reset the ESP */
+	 
 	esp_reset_esp(esp);
 
-	/* Reset the SCSI bus, but tell ESP not to generate an irq */
+	 
 	val = esp_read8(ESP_CFG1);
 	val |= ESP_CONFIG1_SRRDISAB;
 	esp_write8(val, ESP_CFG1);
@@ -2295,7 +2183,7 @@ static void esp_bootup_reset(struct esp *esp)
 
 	esp_write8(esp->config1, ESP_CFG1);
 
-	/* Eat any bitrot in the chip and we are done... */
+	 
 	esp_read8(ESP_INTRPT);
 }
 
@@ -2304,49 +2192,14 @@ static void esp_set_clock_params(struct esp *esp)
 	int fhz;
 	u8 ccf;
 
-	/* This is getting messy but it has to be done correctly or else
-	 * you get weird behavior all over the place.  We are trying to
-	 * basically figure out three pieces of information.
-	 *
-	 * a) Clock Conversion Factor
-	 *
-	 *    This is a representation of the input crystal clock frequency
-	 *    going into the ESP on this machine.  Any operation whose timing
-	 *    is longer than 400ns depends on this value being correct.  For
-	 *    example, you'll get blips for arbitration/selection during high
-	 *    load or with multiple targets if this is not set correctly.
-	 *
-	 * b) Selection Time-Out
-	 *
-	 *    The ESP isn't very bright and will arbitrate for the bus and try
-	 *    to select a target forever if you let it.  This value tells the
-	 *    ESP when it has taken too long to negotiate and that it should
-	 *    interrupt the CPU so we can see what happened.  The value is
-	 *    computed as follows (from NCR/Symbios chip docs).
-	 *
-	 *          (Time Out Period) *  (Input Clock)
-	 *    STO = ----------------------------------
-	 *          (8192) * (Clock Conversion Factor)
-	 *
-	 *    We use a time out period of 250ms (ESP_BUS_TIMEOUT).
-	 *
-	 * c) Imperical constants for synchronous offset and transfer period
-         *    register values
-	 *
-	 *    This entails the smallest and largest sync period we could ever
-	 *    handle on this ESP.
-	 */
+	 
 	fhz = esp->cfreq;
 
 	ccf = ((fhz / 1000000) + 4) / 5;
 	if (ccf == 1)
 		ccf = 2;
 
-	/* If we can't find anything reasonable, just assume 20MHZ.
-	 * This is the clock frequency of the older sun4c's where I've
-	 * been unable to find the clock-frequency PROM property.  All
-	 * other machines provide useful values it seems.
-	 */
+	 
 	if (fhz <= 5000000 || ccf < 1 || ccf > 8) {
 		fhz = 20000000;
 		ccf = 4;
@@ -2402,7 +2255,7 @@ int scsi_esp_register(struct esp *esp)
 		   esp->host->unique_id, esp_chip_names[esp->rev],
 		   esp->cfreq / 1000000, esp->cfact, esp->scsi_id);
 
-	/* Let the SCSI bus reset settle. */
+	 
 	ssleep(esp_bus_reset_settle);
 
 	err = scsi_add_host(esp->host, esp->dev);
@@ -2494,9 +2347,7 @@ static int esp_eh_abort_handler(struct scsi_cmnd *cmd)
 	struct completion eh_done;
 	unsigned long flags;
 
-	/* XXX This helps a lot with debugging but might be a bit
-	 * XXX much for the final driver.
-	 */
+	 
 	spin_lock_irqsave(esp->host->host_lock, flags);
 	shost_printk(KERN_ERR, esp->host, "Aborting command [%p:%02x]\n",
 		     cmd, cmd->cmnd[0]);
@@ -2527,9 +2378,7 @@ static int esp_eh_abort_handler(struct scsi_cmnd *cmd)
 	}
 
 	if (ent) {
-		/* Easiest case, we didn't even issue the command
-		 * yet so it is trivial to abort.
-		 */
+		 
 		list_del(&ent->list);
 
 		cmd->result = DID_ABORT << 16;
@@ -2544,38 +2393,18 @@ static int esp_eh_abort_handler(struct scsi_cmnd *cmd)
 
 	ent = esp->active_cmd;
 	if (ent && ent->cmd == cmd) {
-		/* Command is the currently active command on
-		 * the bus.  If we already have an output message
-		 * pending, no dice.
-		 */
+		 
 		if (esp->msg_out_len)
 			goto out_failure;
 
-		/* Send out an abort, encouraging the target to
-		 * go to MSGOUT phase by asserting ATN.
-		 */
+		 
 		esp->msg_out[0] = ABORT_TASK_SET;
 		esp->msg_out_len = 1;
 		ent->eh_done = &eh_done;
 
 		scsi_esp_cmd(esp, ESP_CMD_SATN);
 	} else {
-		/* The command is disconnected.  This is not easy to
-		 * abort.  For now we fail and let the scsi error
-		 * handling layer go try a scsi bus reset or host
-		 * reset.
-		 *
-		 * What we could do is put together a scsi command
-		 * solely for the purpose of sending an abort message
-		 * to the target.  Coming up with all the code to
-		 * cook up scsi commands, special case them everywhere,
-		 * etc. is for questionable gain and it would be better
-		 * if the generic scsi error handling layer could do at
-		 * least some of that for us.
-		 *
-		 * Anyways this is an area for potential future improvement
-		 * in this driver.
-		 */
+		 
 		goto out_failure;
 	}
 
@@ -2596,10 +2425,7 @@ out_success:
 	return SUCCESS;
 
 out_failure:
-	/* XXX This might be a good location to set ESP_TGT_BROKEN
-	 * XXX since we know which target/lun in particular is
-	 * XXX causing trouble.
-	 */
+	 
 	spin_unlock_irqrestore(esp->host->host_lock, flags);
 	return FAILED;
 }
@@ -2616,11 +2442,7 @@ static int esp_eh_bus_reset_handler(struct scsi_cmnd *cmd)
 
 	esp->eh_reset = &eh_reset;
 
-	/* XXX This is too simple... We should add lots of
-	 * XXX checks here so that if we find that the chip is
-	 * XXX very wedged we return failure immediately so
-	 * XXX that we can perform a full chip reset.
-	 */
+	 
 	esp->flags |= ESP_FLAG_RESETTING;
 	scsi_esp_cmd(esp, ESP_CMD_RS);
 
@@ -2639,7 +2461,7 @@ static int esp_eh_bus_reset_handler(struct scsi_cmnd *cmd)
 	return SUCCESS;
 }
 
-/* All bets are off, reset the entire device.  */
+ 
 static int esp_eh_host_reset_handler(struct scsi_cmnd *cmd)
 {
 	struct esp *esp = shost_priv(cmd->device->host);

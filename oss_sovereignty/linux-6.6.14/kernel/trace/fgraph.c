@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Infrastructure to took into function calls and returns.
- * Copyright (c) 2008-2009 Frederic Weisbecker <fweisbec@gmail.com>
- * Mostly borrowed from function tracer which
- * is Copyright (c) Steven Rostedt <srostedt@redhat.com>
- *
- * Highly modified by Steven Rostedt (VMware).
- */
+
+ 
 #include <linux/jump_label.h>
 #include <linux/suspend.h>
 #include <linux/ftrace.h>
@@ -28,43 +21,30 @@
 DEFINE_STATIC_KEY_FALSE(kill_ftrace_graph);
 int ftrace_graph_active;
 
-/* Both enabled by default (can be cleared by function_graph tracer flags */
+ 
 static bool fgraph_sleep_time = true;
 
 #ifdef CONFIG_DYNAMIC_FTRACE
-/*
- * archs can override this function if they must do something
- * to enable hook for graph tracer.
- */
+ 
 int __weak ftrace_enable_ftrace_graph_caller(void)
 {
 	return 0;
 }
 
-/*
- * archs can override this function if they must do something
- * to disable hook for graph tracer.
- */
+ 
 int __weak ftrace_disable_ftrace_graph_caller(void)
 {
 	return 0;
 }
 #endif
 
-/**
- * ftrace_graph_stop - set to permanently disable function graph tracing
- *
- * In case of an error int function graph tracing, this is called
- * to try to keep function graph tracing from causing any more harm.
- * Usually this is pretty severe and this is called to try to at least
- * get a warning out to the user.
- */
+ 
 void ftrace_graph_stop(void)
 {
 	static_branch_enable(&kill_ftrace_graph);
 }
 
-/* Add a function return address to the trace stack on thread info.*/
+ 
 static int
 ftrace_push_return_trace(unsigned long ret, unsigned long func,
 			 unsigned long frame_pointer, unsigned long *retp)
@@ -78,13 +58,10 @@ ftrace_push_return_trace(unsigned long ret, unsigned long func,
 	if (!current->ret_stack)
 		return -EBUSY;
 
-	/*
-	 * We must make sure the ret_stack is tested before we read
-	 * anything else.
-	 */
+	 
 	smp_rmb();
 
-	/* The return trace stack is full */
+	 
 	if (current->curr_ret_stack == FTRACE_RETFUNC_DEPTH - 1) {
 		atomic_inc(&current->trace_overrun);
 		return -EBUSY;
@@ -106,14 +83,9 @@ ftrace_push_return_trace(unsigned long ret, unsigned long func,
 	return 0;
 }
 
-/*
- * Not all archs define MCOUNT_INSN_SIZE which is used to look for direct
- * functions. But those archs currently don't support direct functions
- * anyway, and ftrace_find_rec_direct() is just a stub for them.
- * Define MCOUNT_INSN_SIZE to keep those archs compiling.
- */
+ 
 #ifndef MCOUNT_INSN_SIZE
-/* Make sure this only works without direct calls */
+ 
 # ifdef CONFIG_DYNAMIC_FTRACE_WITH_DIRECT_CALLS
 #  error MCOUNT_INSN_SIZE not defined with direct calls enabled
 # endif
@@ -126,12 +98,7 @@ int function_graph_enter(unsigned long ret, unsigned long func,
 	struct ftrace_graph_ent trace;
 
 #ifndef CONFIG_HAVE_DYNAMIC_FTRACE_WITH_ARGS
-	/*
-	 * Skip graph tracing if the return location is served by direct trampoline,
-	 * since call sequence and return addresses are unpredictable anyway.
-	 * Ex: BPF trampoline may call original function and may skip frame
-	 * depending on type of BPF programs attached.
-	 */
+	 
 	if (ftrace_direct_func_count &&
 	    ftrace_find_rec_direct(ret - MCOUNT_INSN_SIZE))
 		return -EBUSY;
@@ -142,7 +109,7 @@ int function_graph_enter(unsigned long ret, unsigned long func,
 	if (ftrace_push_return_trace(ret, func, frame_pointer, retp))
 		goto out;
 
-	/* Only trace if the calling function expects to */
+	 
 	if (!ftrace_graph_entry(&trace))
 		goto out_ret;
 
@@ -154,7 +121,7 @@ int function_graph_enter(unsigned long ret, unsigned long func,
 	return -EBUSY;
 }
 
-/* Retrieve a function return address to the trace stack on thread info.*/
+ 
 static void
 ftrace_pop_return_trace(struct ftrace_graph_ret *trace, unsigned long *ret,
 			unsigned long frame_pointer)
@@ -166,26 +133,13 @@ ftrace_pop_return_trace(struct ftrace_graph_ret *trace, unsigned long *ret,
 	if (unlikely(index < 0 || index >= FTRACE_RETFUNC_DEPTH)) {
 		ftrace_graph_stop();
 		WARN_ON(1);
-		/* Might as well panic, otherwise we have no where to go */
+		 
 		*ret = (unsigned long)panic;
 		return;
 	}
 
 #ifdef HAVE_FUNCTION_GRAPH_FP_TEST
-	/*
-	 * The arch may choose to record the frame pointer used
-	 * and check it here to make sure that it is what we expect it
-	 * to be. If gcc does not set the place holder of the return
-	 * address in the frame pointer, and does a copy instead, then
-	 * the function graph trace will fail. This test detects this
-	 * case.
-	 *
-	 * Currently, x86_32 with optimize for size (-Os) makes the latest
-	 * gcc do the above.
-	 *
-	 * Note, -mfentry does not use frame pointers, and this test
-	 *  is not needed if CC_USING_FENTRY is set.
-	 */
+	 
 	if (unlikely(current->ret_stack[index].fp != frame_pointer)) {
 		ftrace_graph_stop();
 		WARN(1, "Bad frame pointer: expected %lx, received %lx\n"
@@ -204,19 +158,11 @@ ftrace_pop_return_trace(struct ftrace_graph_ret *trace, unsigned long *ret,
 	trace->calltime = current->ret_stack[index].calltime;
 	trace->overrun = atomic_read(&current->trace_overrun);
 	trace->depth = current->curr_ret_depth--;
-	/*
-	 * We still want to trace interrupts coming in if
-	 * max_depth is set to 1. Make sure the decrement is
-	 * seen before ftrace_graph_return.
-	 */
+	 
 	barrier();
 }
 
-/*
- * Hibernation protection.
- * The state of the current task is too much unstable during
- * suspend/restore to disk. We want to protect against that.
- */
+ 
 static int
 ftrace_suspend_notifier_call(struct notifier_block *bl, unsigned long state,
 							void *unused)
@@ -237,13 +183,10 @@ static struct notifier_block ftrace_suspend_notifier = {
 	.notifier_call = ftrace_suspend_notifier_call,
 };
 
-/* fgraph_ret_regs is not defined without CONFIG_FUNCTION_GRAPH_RETVAL */
+ 
 struct fgraph_ret_regs;
 
-/*
- * Send the trace to the ring-buffer.
- * @return the original return address.
- */
+ 
 static unsigned long __ftrace_return_to_handler(struct fgraph_ret_regs *ret_regs,
 						unsigned long frame_pointer)
 {
@@ -256,28 +199,21 @@ static unsigned long __ftrace_return_to_handler(struct fgraph_ret_regs *ret_regs
 #endif
 	trace.rettime = trace_clock_local();
 	ftrace_graph_return(&trace);
-	/*
-	 * The ftrace_graph_return() may still access the current
-	 * ret_stack structure, we need to make sure the update of
-	 * curr_ret_stack is after that.
-	 */
+	 
 	barrier();
 	current->curr_ret_stack--;
 
 	if (unlikely(!ret)) {
 		ftrace_graph_stop();
 		WARN_ON(1);
-		/* Might as well panic. What else to do? */
+		 
 		ret = (unsigned long)panic;
 	}
 
 	return ret;
 }
 
-/*
- * After all architecures have selected HAVE_FUNCTION_GRAPH_RETVAL, we can
- * leave only ftrace_return_to_handler(ret_regs).
- */
+ 
 #ifdef CONFIG_HAVE_FUNCTION_GRAPH_RETVAL
 unsigned long ftrace_return_to_handler(struct fgraph_ret_regs *ret_regs)
 {
@@ -291,17 +227,7 @@ unsigned long ftrace_return_to_handler(unsigned long frame_pointer)
 }
 #endif
 
-/**
- * ftrace_graph_get_ret_stack - return the entry of the shadow stack
- * @task: The task to read the shadow stack from
- * @idx: Index down the shadow stack
- *
- * Return the ret_struct on the shadow stack of the @task at the
- * call graph at @idx starting with zero. If @idx is zero, it
- * will return the last saved ret_stack entry. If it is greater than
- * zero, it will return the corresponding ret_stack for the depth
- * of saved return addresses.
- */
+ 
 struct ftrace_ret_stack *
 ftrace_graph_get_ret_stack(struct task_struct *task, int idx)
 {
@@ -313,21 +239,7 @@ ftrace_graph_get_ret_stack(struct task_struct *task, int idx)
 	return NULL;
 }
 
-/**
- * ftrace_graph_ret_addr - convert a potentially modified stack return address
- *			   to its original value
- *
- * This function can be called by stack unwinding code to convert a found stack
- * return address ('ret') to its original value, in case the function graph
- * tracer has modified it to be 'return_to_handler'.  If the address hasn't
- * been modified, the unchanged value of 'ret' is returned.
- *
- * 'idx' is a state variable which should be initialized by the caller to zero
- * before the first call.
- *
- * 'retp' is a pointer to the return address on the stack.  It's ignored if
- * the arch doesn't have HAVE_FUNCTION_GRAPH_RET_ADDR_PTR defined.
- */
+ 
 #ifdef HAVE_FUNCTION_GRAPH_RET_ADDR_PTR
 unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
 				    unsigned long ret, unsigned long *retp)
@@ -347,7 +259,7 @@ unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
 
 	return ret;
 }
-#else /* !HAVE_FUNCTION_GRAPH_RET_ADDR_PTR */
+#else  
 unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
 				    unsigned long ret, unsigned long *retp)
 {
@@ -366,7 +278,7 @@ unsigned long ftrace_graph_ret_addr(struct task_struct *task, int *idx,
 
 	return task->ret_stack[task_idx].ret;
 }
-#endif /* HAVE_FUNCTION_GRAPH_RET_ADDR_PTR */
+#endif  
 
 static struct ftrace_ops graph_ops = {
 	.func			= ftrace_graph_func,
@@ -375,7 +287,7 @@ static struct ftrace_ops graph_ops = {
 				   FTRACE_OPS_GRAPH_STUB,
 #ifdef FTRACE_GRAPH_TRAMP_ADDR
 	.trampoline		= FTRACE_GRAPH_TRAMP_ADDR,
-	/* trampoline_size is only needed for dynamically allocated tramps */
+	 
 #endif
 	ASSIGN_OPS_HASH(graph_ops, &global_ops.local_hash)
 };
@@ -390,18 +302,15 @@ int ftrace_graph_entry_stub(struct ftrace_graph_ent *trace)
 	return 0;
 }
 
-/*
- * Simply points to ftrace_stub, but with the proper protocol.
- * Defined by the linker script in linux/vmlinux.lds.h
- */
+ 
 extern void ftrace_stub_graph(struct ftrace_graph_ret *);
 
-/* The callbacks that hook a function */
+ 
 trace_func_graph_ret_t ftrace_graph_return = ftrace_stub_graph;
 trace_func_graph_ent_t ftrace_graph_entry = ftrace_graph_entry_stub;
 static trace_func_graph_ent_t __ftrace_graph_entry = ftrace_graph_entry_stub;
 
-/* Try to assign a return stack array on FTRACE_RETSTACK_ALLOC_SIZE tasks. */
+ 
 static int alloc_retstack_tasklist(struct ftrace_ret_stack **ret_stack_list)
 {
 	int i;
@@ -433,7 +342,7 @@ static int alloc_retstack_tasklist(struct ftrace_ret_stack **ret_stack_list)
 			atomic_set(&t->trace_overrun, 0);
 			t->curr_ret_stack = -1;
 			t->curr_ret_depth = -1;
-			/* Make sure the tasks see the -1 first: */
+			 
 			smp_wmb();
 			t->ret_stack = ret_stack_list[start++];
 		}
@@ -456,10 +365,7 @@ ftrace_graph_probe_sched_switch(void *ignore, bool preempt,
 	unsigned long long timestamp;
 	int index;
 
-	/*
-	 * Does the user want to count the time a function was asleep.
-	 * If so, do not update the time stamps.
-	 */
+	 
 	if (fgraph_sleep_time)
 		return;
 
@@ -467,14 +373,11 @@ ftrace_graph_probe_sched_switch(void *ignore, bool preempt,
 
 	prev->ftrace_timestamp = timestamp;
 
-	/* only process tasks that we timestamped */
+	 
 	if (!next->ftrace_timestamp)
 		return;
 
-	/*
-	 * Update all the counters in next to make up for the
-	 * time next was sleeping.
-	 */
+	 
 	timestamp -= next->ftrace_timestamp;
 
 	for (index = next->curr_ret_stack; index >= 0; index--)
@@ -488,29 +391,18 @@ static int ftrace_graph_entry_test(struct ftrace_graph_ent *trace)
 	return __ftrace_graph_entry(trace);
 }
 
-/*
- * The function graph tracer should only trace the functions defined
- * by set_ftrace_filter and set_ftrace_notrace. If another function
- * tracer ops is registered, the graph tracer requires testing the
- * function against the global ops, and not just trace any function
- * that any ftrace_ops registered.
- */
+ 
 void update_function_graph_func(void)
 {
 	struct ftrace_ops *op;
 	bool do_test = false;
 
-	/*
-	 * The graph and global ops share the same set of functions
-	 * to test. If any other ops is on the list, then
-	 * the graph tracing needs to test if its the function
-	 * it should call.
-	 */
+	 
 	do_for_each_ftrace_op(op, ftrace_ops_list) {
 		if (op != &global_ops && op != &graph_ops &&
 		    op != &ftrace_list_end) {
 			do_test = true;
-			/* in double loop, break out with goto */
+			 
 			goto out;
 		}
 	} while_for_each_ftrace_op(op);
@@ -528,23 +420,17 @@ graph_init_task(struct task_struct *t, struct ftrace_ret_stack *ret_stack)
 {
 	atomic_set(&t->trace_overrun, 0);
 	t->ftrace_timestamp = 0;
-	/* make curr_ret_stack visible before we add the ret_stack */
+	 
 	smp_wmb();
 	t->ret_stack = ret_stack;
 }
 
-/*
- * Allocate a return stack for the idle task. May be the first
- * time through, or it may be done by CPU hotplug online.
- */
+ 
 void ftrace_graph_init_idle_task(struct task_struct *t, int cpu)
 {
 	t->curr_ret_stack = -1;
 	t->curr_ret_depth = -1;
-	/*
-	 * The idle task has no parent, it either has its own
-	 * stack or no stack at all.
-	 */
+	 
 	if (t->ret_stack)
 		WARN_ON(t->ret_stack != per_cpu(idle_ret_stack, cpu));
 
@@ -565,10 +451,10 @@ void ftrace_graph_init_idle_task(struct task_struct *t, int cpu)
 	}
 }
 
-/* Allocate a return stack for newly created task */
+ 
 void ftrace_graph_init_task(struct task_struct *t)
 {
-	/* Make sure we do not use the parent ret_stack */
+	 
 	t->ret_stack = NULL;
 	t->curr_ret_stack = -1;
 	t->curr_ret_depth = -1;
@@ -590,13 +476,13 @@ void ftrace_graph_exit_task(struct task_struct *t)
 	struct ftrace_ret_stack	*ret_stack = t->ret_stack;
 
 	t->ret_stack = NULL;
-	/* NULL must become visible to IRQs before we free it: */
+	 
 	barrier();
 
 	kfree(ret_stack);
 }
 
-/* Allocate a return stack for each task */
+ 
 static int start_graph_tracing(void)
 {
 	struct ftrace_ret_stack **ret_stack_list;
@@ -609,7 +495,7 @@ static int start_graph_tracing(void)
 	if (!ret_stack_list)
 		return -ENOMEM;
 
-	/* The cpu_boot init_task->ret_stack will never be freed */
+	 
 	for_each_online_cpu(cpu) {
 		if (!idle_task(cpu)->ret_stack)
 			ftrace_graph_init_idle_task(idle_task(cpu), cpu);
@@ -636,7 +522,7 @@ int register_ftrace_graph(struct fgraph_ops *gops)
 
 	mutex_lock(&ftrace_lock);
 
-	/* we currently allow only one tracer registered at a time */
+	 
 	if (ftrace_graph_active) {
 		ret = -EBUSY;
 		goto out;
@@ -653,12 +539,7 @@ int register_ftrace_graph(struct fgraph_ops *gops)
 
 	ftrace_graph_return = gops->retfunc;
 
-	/*
-	 * Update the indirect function to the entryfunc, and the
-	 * function that gets called to the entry_test first. Then
-	 * call the update fgraph entry function to determine if
-	 * the entryfunc should be called directly or not.
-	 */
+	 
 	__ftrace_graph_entry = gops->entryfunc;
 	ftrace_graph_entry = ftrace_graph_entry_test;
 	update_function_graph_func();

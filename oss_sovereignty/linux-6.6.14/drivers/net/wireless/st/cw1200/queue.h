@@ -1,23 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * O(1) TX queue with built-in allocator for ST-Ericsson CW1200 drivers
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+ 
+ 
 
 #ifndef CW1200_QUEUE_H_INCLUDED
 #define CW1200_QUEUE_H_INCLUDED
 
-/* private */ struct cw1200_queue_item;
+  struct cw1200_queue_item;
 
-/* extern */ struct sk_buff;
-/* extern */ struct wsm_tx;
-/* extern */ struct cw1200_common;
-/* extern */ struct ieee80211_tx_queue_stats;
-/* extern */ struct cw1200_txpriv;
+  struct sk_buff;
+  struct wsm_tx;
+  struct cw1200_common;
+  struct ieee80211_tx_queue_stats;
+  struct cw1200_txpriv;
 
-/* forward */ struct cw1200_queue_stats;
+  struct cw1200_queue_stats;
 
 typedef void (*cw1200_queue_skb_dtor_t)(struct cw1200_common *priv,
 					struct sk_buff *skb,
@@ -36,7 +31,7 @@ struct cw1200_queue {
 	int			tx_locked_cnt;
 	int			*link_map_cache;
 	bool			overfull;
-	spinlock_t		lock; /* Protect queue entry */
+	spinlock_t		lock;  
 	u8			queue_id;
 	u8			generation;
 	struct timer_list	gc;
@@ -44,7 +39,7 @@ struct cw1200_queue {
 };
 
 struct cw1200_queue_stats {
-	spinlock_t		lock; /* Protect stats entry */
+	spinlock_t		lock;  
 	int			*link_map_cache;
 	int			num_queued;
 	size_t			map_capacity;
@@ -110,4 +105,4 @@ static inline u8 cw1200_queue_get_generation(u32 packet_id)
 	return (packet_id >>  8) & 0xFF;
 }
 
-#endif /* CW1200_QUEUE_H_INCLUDED */
+#endif  

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <string.h>
 #include <fcntl.h>
 #include <dirent.h>
@@ -47,7 +47,7 @@ unsigned long pagemap_get_pfn(int fd, char *start)
 {
 	uint64_t entry = pagemap_get_entry(fd, start);
 
-	/* If present (63th bit), PFN is at bit 0 -- 54. */
+	 
 	if (entry & PM_PRESENT)
 		return entry & 0x007fffffffffffffull;
 	return -1ul;
@@ -118,10 +118,7 @@ bool __check_huge(void *addr, char *pattern, int nr_hpages,
 	if (!check_for_pattern(fp, addr_pattern, buffer, sizeof(buffer)))
 		goto err_out;
 
-	/*
-	 * Fetch the pattern in the same block and check the number of
-	 * hugepages.
-	 */
+	 
 	if (!check_for_pattern(fp, pattern, buffer, sizeof(buffer)))
 		goto err_out;
 
@@ -154,7 +151,7 @@ int64_t allocate_transhuge(void *ptr, int pagemap_fd)
 {
 	uint64_t ent[2];
 
-	/* drop pmd */
+	 
 	if (mmap(ptr, HPAGE_SIZE, PROT_READ | PROT_WRITE,
 		 MAP_FIXED | MAP_ANONYMOUS |
 		 MAP_NORESERVE | MAP_PRIVATE, -1, 0) != ptr)
@@ -163,7 +160,7 @@ int64_t allocate_transhuge(void *ptr, int pagemap_fd)
 	if (madvise(ptr, HPAGE_SIZE, MADV_HUGEPAGE))
 		err(2, "MADV_HUGEPAGE");
 
-	/* allocate transparent huge page */
+	 
 	*(volatile void **)ptr = ptr;
 
 	if (pread(pagemap_fd, ent, sizeof(ent),
@@ -225,7 +222,7 @@ int detect_hugetlb_page_sizes(size_t sizes[], int max)
 	return count;
 }
 
-/* If `ioctls' non-NULL, the allowed ioctls will be returned into the var */
+ 
 int uffd_register_with_ioctls(int uffd, void *addr, uint64_t len,
 			      bool miss, bool wp, bool minor, uint64_t *ioctls)
 {

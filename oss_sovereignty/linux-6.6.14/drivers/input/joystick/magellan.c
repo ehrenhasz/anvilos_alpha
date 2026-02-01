@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 1999-2001 Vojtech Pavlik
- */
 
-/*
- * Magellan and Space Mouse 6dof controller driver for Linux
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,18 +15,14 @@ MODULE_AUTHOR("Vojtech Pavlik <vojtech@ucw.cz>");
 MODULE_DESCRIPTION(DRIVER_DESC);
 MODULE_LICENSE("GPL");
 
-/*
- * Definitions & global arrays.
- */
+ 
 
 #define	MAGELLAN_MAX_LENGTH	32
 
 static int magellan_buttons[] = { BTN_0, BTN_1, BTN_2, BTN_3, BTN_4, BTN_5, BTN_6, BTN_7, BTN_8 };
 static int magellan_axes[] = { ABS_X, ABS_Y, ABS_Z, ABS_RX, ABS_RY, ABS_RZ };
 
-/*
- * Per-Magellan data.
- */
+ 
 
 struct magellan {
 	struct input_dev *dev;
@@ -39,12 +31,7 @@ struct magellan {
 	char phys[32];
 };
 
-/*
- * magellan_crunch_nibbles() verifies that the bytes sent from the Magellan
- * have correct upper nibbles for the lower ones, if not, the packet will
- * be thrown away. It also strips these upper halves to simplify further
- * processing.
- */
+ 
 
 static int magellan_crunch_nibbles(unsigned char *data, int count)
 {
@@ -70,7 +57,7 @@ static void magellan_process_packet(struct magellan* magellan)
 
 	switch (magellan->data[0]) {
 
-		case 'd':				/* Axis data */
+		case 'd':				 
 			if (magellan->idx != 25) return;
 			if (magellan_crunch_nibbles(data, 24)) return;
 			for (i = 0; i < 6; i++)
@@ -79,7 +66,7 @@ static void magellan_process_packet(struct magellan* magellan)
 					 data[(i << 2) + 3] <<  4 | data[(i << 2) + 4]) - 32768);
 			break;
 
-		case 'k':				/* Button data */
+		case 'k':				 
 			if (magellan->idx != 4) return;
 			if (magellan_crunch_nibbles(data, 3)) return;
 			t = (data[1] << 1) | (data[2] << 5) | data[3];
@@ -105,9 +92,7 @@ static irqreturn_t magellan_interrupt(struct serio *serio,
 	return IRQ_HANDLED;
 }
 
-/*
- * magellan_disconnect() is the opposite of magellan_connect()
- */
+ 
 
 static void magellan_disconnect(struct serio *serio)
 {
@@ -119,11 +104,7 @@ static void magellan_disconnect(struct serio *serio)
 	kfree(magellan);
 }
 
-/*
- * magellan_connect() is the routine that is called when someone adds a
- * new serio device that supports Magellan protocol and registers it as
- * an input device.
- */
+ 
 
 static int magellan_connect(struct serio *serio, struct serio_driver *drv)
 {
@@ -175,9 +156,7 @@ static int magellan_connect(struct serio *serio, struct serio_driver *drv)
 	return err;
 }
 
-/*
- * The serio driver structure.
- */
+ 
 
 static const struct serio_device_id magellan_serio_ids[] = {
 	{

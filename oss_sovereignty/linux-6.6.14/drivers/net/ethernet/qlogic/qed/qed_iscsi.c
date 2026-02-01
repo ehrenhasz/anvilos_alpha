@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <asm/byteorder.h>
@@ -150,7 +147,7 @@ qed_sp_iscsi_func_start(struct qed_hwfn *p_hwfn,
 	u16 val;
 	u8 i;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -168,7 +165,7 @@ qed_sp_iscsi_func_start(struct qed_hwfn *p_hwfn,
 	p_params = &p_hwfn->pf_params.iscsi_pf_params;
 	p_queue = &p_init->q_params;
 
-	/* Sanity */
+	 
 	if (p_params->num_queues > p_hwfn->hw_info.feat_num[QED_ISCSI_CQ]) {
 		DP_ERR(p_hwfn,
 		       "Cannot satisfy CQ amount. Queues requested %d, CQs available %d. Aborting function start\n",
@@ -278,7 +275,7 @@ static int qed_sp_iscsi_conn_offload(struct qed_hwfn *p_hwfn,
 	u16 *p;
 	u8 i;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -293,12 +290,12 @@ static int qed_sp_iscsi_conn_offload(struct qed_hwfn *p_hwfn,
 
 	p_ramrod = &p_ent->ramrod.iscsi_conn_offload;
 
-	/* Transmission PQ is the first of the PF */
+	 
 	physical_q = qed_get_cm_pq_idx(p_hwfn, PQ_FLAGS_OFLD);
 	p_conn->physical_q0 = physical_q;
 	p_ramrod->iscsi.physical_q0 = cpu_to_le16(physical_q);
 
-	/* iSCSI Pure-ACK PQ */
+	 
 	physical_q = qed_get_cm_pq_idx(p_hwfn, PQ_FLAGS_ACK);
 	p_conn->physical_q1 = physical_q;
 	p_ramrod->iscsi.physical_q1 = cpu_to_le16(physical_q);
@@ -457,7 +454,7 @@ static int qed_sp_iscsi_conn_update(struct qed_hwfn *p_hwfn,
 	int rc;
 	u32 dval;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -498,7 +495,7 @@ qed_sp_iscsi_mac_update(struct qed_hwfn *p_hwfn,
 	int rc = -EINVAL;
 	u8 ucval;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -540,7 +537,7 @@ static int qed_sp_iscsi_conn_terminate(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -574,7 +571,7 @@ static int qed_sp_iscsi_conn_clear_sq(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = -EINVAL;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = p_conn->icid;
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -598,7 +595,7 @@ static int qed_sp_iscsi_func_stop(struct qed_hwfn *p_hwfn,
 	struct qed_sp_init_data init_data;
 	int rc = 0;
 
-	/* Get SPQ entry */
+	 
 	memset(&init_data, 0, sizeof(init_data));
 	init_data.cid = qed_spq_get_cid(p_hwfn);
 	init_data.opaque_fid = p_hwfn->hw_info.opaque_fid;
@@ -694,7 +691,7 @@ static int qed_iscsi_allocate_connection(struct qed_hwfn *p_hwfn,
 	struct qed_iscsi_conn *p_conn = NULL;
 	int rc = 0;
 
-	/* Try finding a free connection that can be used */
+	 
 	spin_lock_bh(&p_hwfn->p_iscsi_info->lock);
 	if (!list_empty(&p_hwfn->p_iscsi_info->free_list))
 		p_conn = list_first_entry(&p_hwfn->p_iscsi_info->free_list,
@@ -707,7 +704,7 @@ static int qed_iscsi_allocate_connection(struct qed_hwfn *p_hwfn,
 	}
 	spin_unlock_bh(&p_hwfn->p_iscsi_info->lock);
 
-	/* Need to allocate a new connection */
+	 
 	p_params = &p_hwfn->pf_params.iscsi_pf_params;
 
 	p_conn = kzalloc(sizeof(*p_conn), GFP_KERNEL);
@@ -790,7 +787,7 @@ static int qed_iscsi_acquire_connection(struct qed_hwfn *p_hwfn,
 	if (rc)
 		return rc;
 
-	/* Use input connection or allocate a new one */
+	 
 	if (p_in_conn)
 		p_conn = p_in_conn;
 	else
@@ -1091,7 +1088,7 @@ static int qed_iscsi_stop(struct qed_dev *cdev)
 		return -EINVAL;
 	}
 
-	/* Stop the iscsi */
+	 
 	rc = qed_sp_iscsi_func_stop(QED_AFFIN_HWFN(cdev), QED_SPQ_MODE_EBLOCK,
 				    NULL);
 	cdev->flags &= ~QED_FLAG_STORAGE_STARTED;
@@ -1140,7 +1137,7 @@ static int qed_iscsi_start(struct qed_dev *cdev,
 		return rc;
 	}
 
-	/* Fill task information */
+	 
 	tasks->size = tid_info->tid_size;
 	tasks->num_tids_per_block = tid_info->num_tids_per_block;
 	memcpy(tasks->blocks, tid_info->blocks,
@@ -1158,12 +1155,12 @@ static int qed_iscsi_acquire_conn(struct qed_dev *cdev,
 	struct qed_hash_iscsi_con *hash_con;
 	int rc;
 
-	/* Allocate a hashed connection */
+	 
 	hash_con = kzalloc(sizeof(*hash_con), GFP_ATOMIC);
 	if (!hash_con)
 		return -ENOMEM;
 
-	/* Acquire the connection */
+	 
 	rc = qed_iscsi_acquire_connection(QED_AFFIN_HWFN(cdev), NULL,
 					  &hash_con->con);
 	if (rc) {
@@ -1172,7 +1169,7 @@ static int qed_iscsi_acquire_conn(struct qed_dev *cdev,
 		return rc;
 	}
 
-	/* Added the connection to hash table */
+	 
 	*handle = hash_con->con->icid;
 	*fw_cid = hash_con->con->fw_cid;
 	hash_add(cdev->connections, &hash_con->node, *handle);
@@ -1216,7 +1213,7 @@ static int qed_iscsi_offload_conn(struct qed_dev *cdev,
 		return -EINVAL;
 	}
 
-	/* Update the connection with information from the params */
+	 
 	con = hash_con->con;
 
 	ether_addr_copy(con->local_mac, conn_info->src.mac);
@@ -1270,7 +1267,7 @@ static int qed_iscsi_offload_conn(struct qed_dev *cdev,
 	con->da_timeout_value = conn_info->da_timeout_value;
 	con->ack_frequency = conn_info->ack_frequency;
 
-	/* Set default values on other connection fields */
+	 
 	con->offl_flags = 0x1;
 
 	return qed_sp_iscsi_conn_offload(QED_AFFIN_HWFN(cdev), con,
@@ -1291,7 +1288,7 @@ static int qed_iscsi_update_conn(struct qed_dev *cdev,
 		return -EINVAL;
 	}
 
-	/* Update the connection with information from the params */
+	 
 	con = hash_con->con;
 	con->update_flag = conn_info->update_flag;
 	con->max_seq_size = conn_info->max_seq_size;
@@ -1371,7 +1368,7 @@ void qed_get_protocol_stats_iscsi(struct qed_dev *cdev,
 {
 	struct qed_iscsi_stats proto_stats;
 
-	/* Retrieve FW statistics */
+	 
 	memset(&proto_stats, 0, sizeof(proto_stats));
 	if (qed_iscsi_stats_context(cdev, &proto_stats, is_atomic)) {
 		DP_VERBOSE(cdev, QED_MSG_STORAGE,
@@ -1379,7 +1376,7 @@ void qed_get_protocol_stats_iscsi(struct qed_dev *cdev,
 		return;
 	}
 
-	/* Translate FW statistics into struct */
+	 
 	stats->rx_pdus = proto_stats.iscsi_rx_total_pdu_cnt;
 	stats->tx_pdus = proto_stats.iscsi_tx_total_pdu_cnt;
 	stats->rx_bytes = proto_stats.iscsi_rx_bytes_cnt;

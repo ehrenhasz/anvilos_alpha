@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ORDERED_EVENTS_H
 #define __ORDERED_EVENTS_H
 
@@ -81,4 +81,4 @@ static inline u64 ordered_events__last_flush_time(struct ordered_events *oe)
 	return oe->last_flush;
 }
 
-#endif /* __ORDERED_EVENTS_H */
+#endif  

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RTC driver for the Micro Crystal RV3028
- *
- * Copyright (C) 2019 Micro Crystal SA
- *
- * Alexandre Belloni <alexandre.belloni@bootlin.com>
- *
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/bcd.h>
@@ -347,10 +340,7 @@ static int rv3028_set_time(struct device *dev, struct rtc_time *tm)
 	date[RV3028_MONTH] = bin2bcd(tm->tm_mon + 1);
 	date[RV3028_YEAR]  = bin2bcd(tm->tm_year - 100);
 
-	/*
-	 * Writing to the Seconds register has the same effect as setting RESET
-	 * bit to 1
-	 */
+	 
 	ret = regmap_bulk_write(rv3028->regmap, RV3028_SEC, date,
 				sizeof(date));
 	if (ret)
@@ -399,7 +389,7 @@ static int rv3028_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	u8 ctrl = 0;
 	int ret;
 
-	/* The alarm has no seconds, round up to nearest minute */
+	 
 	if (alrm->time.tm_sec) {
 		time64_t alarm_time = rtc_tm_to_time64(&alrm->time);
 
@@ -824,10 +814,10 @@ static int rv3028_clkout_register_clk(struct rv3028_data *rv3028,
 	init.num_parents = 0;
 	rv3028->clkout_hw.init = &init;
 
-	/* optional override of the clockname */
+	 
 	of_property_read_string(node, "clock-output-names", &init.name);
 
-	/* register the clock */
+	 
 	clk = devm_clk_register(&client->dev, &rv3028->clkout_hw);
 	if (!IS_ERR(clk))
 		of_clk_add_provider(node, of_clk_src_simple_get, clk);
@@ -865,11 +855,11 @@ static u8 rv3028_set_trickle_charger(struct rv3028_data *rv3028,
 	if (ret < 0)
 		return ret;
 
-	/* mask out only trickle charger bits */
+	 
 	val_old = val_old & (RV3028_BACKUP_TCE | RV3028_BACKUP_TCR_MASK);
 	val = val_old;
 
-	/* setup trickle charger */
+	 
 	if (!device_property_read_u32(&client->dev, "trickle-resistor-ohms",
 				      &ohms)) {
 		int i;
@@ -879,7 +869,7 @@ static u8 rv3028_set_trickle_charger(struct rv3028_data *rv3028,
 				break;
 
 		if (i < ARRAY_SIZE(rv3028_trickle_resistors)) {
-			/* enable trickle charger and its resistor */
+			 
 			val = RV3028_BACKUP_TCE | i;
 		} else {
 			dev_warn(&client->dev, "invalid trickle resistor value\n");
@@ -902,7 +892,7 @@ static u8 rv3028_set_trickle_charger(struct rv3028_data *rv3028,
 		}
 	}
 
-	/* only update EEPROM if changes are necessary */
+	 
 	if (val_old != val) {
 		ret = rv3028_update_cfg(rv3028, RV3028_BACKUP, RV3028_BACKUP_TCE |
 						RV3028_BACKUP_TCR_MASK, val);
@@ -961,10 +951,7 @@ static int rv3028_probe(struct i2c_client *client)
 	if (client->irq > 0) {
 		unsigned long flags;
 
-		/*
-		 * If flags = 0, devm_request_threaded_irq() will use IRQ flags
-		 * obtained from device tree.
-		 */
+		 
 		if (dev_fwnode(&client->dev))
 			flags = 0;
 		else
@@ -987,7 +974,7 @@ static int rv3028_probe(struct i2c_client *client)
 	if (ret)
 		return ret;
 
-	/* setup timestamping */
+	 
 	ret = regmap_update_bits(rv3028->regmap, RV3028_CTRL2,
 				 RV3028_CTRL2_EIE | RV3028_CTRL2_TSE,
 				 RV3028_CTRL2_EIE | RV3028_CTRL2_TSE);

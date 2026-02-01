@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET is implemented using the BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Generic INET transport hashtables
- *
- * Authors:	Lotsa people, from code originally in tcp
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/random.h>
@@ -41,9 +33,7 @@ u32 inet_ehashfn(const struct net *net, const __be32 laddr,
 }
 EXPORT_SYMBOL_GPL(inet_ehashfn);
 
-/* This function handles inet_sock, but also timewait and request sockets
- * for IPv4/IPv6.
- */
+ 
 static u32 sk_ehashfn(const struct sock *sk)
 {
 #if IS_ENABLED(CONFIG_IPV6)
@@ -58,10 +48,7 @@ static u32 sk_ehashfn(const struct sock *sk)
 			    sk->sk_daddr, sk->sk_dport);
 }
 
-/*
- * Allocate and initialize a new local port bind bucket.
- * The bindhash mutex for snum's hash chain must be held here.
- */
+ 
 struct inet_bind_bucket *inet_bind_bucket_create(struct kmem_cache *cachep,
 						 struct net *net,
 						 struct inet_bind_hashbucket *head,
@@ -82,9 +69,7 @@ struct inet_bind_bucket *inet_bind_bucket_create(struct kmem_cache *cachep,
 	return tb;
 }
 
-/*
- * Caller must hold hashbucket lock for this tb with local BH disabled
- */
+ 
 void inet_bind_bucket_destroy(struct kmem_cache *cachep, struct inet_bind_bucket *tb)
 {
 	if (hlist_empty(&tb->owners)) {
@@ -136,7 +121,7 @@ struct inet_bind2_bucket *inet_bind2_bucket_create(struct kmem_cache *cachep,
 	return tb;
 }
 
-/* Caller must hold hashbucket lock for this tb with local BH disabled */
+ 
 void inet_bind2_bucket_destroy(struct kmem_cache *cachep, struct inet_bind2_bucket *tb)
 {
 	if (hlist_empty(&tb->owners) && hlist_empty(&tb->deathrow)) {
@@ -175,9 +160,7 @@ void inet_bind_hash(struct sock *sk, struct inet_bind_bucket *tb,
 	inet_csk(sk)->icsk_bind2_hash = tb2;
 }
 
-/*
- * Get rid of any references to a local port held by the given sock.
- */
+ 
 static void __inet_put_port(struct sock *sk)
 {
 	struct inet_hashinfo *hashinfo = tcp_or_dccp_get_hashinfo(sk);
@@ -246,11 +229,7 @@ int __inet_inherit_port(const struct sock *sk, struct sock *child)
 	if (tb->port != port) {
 		l3mdev = inet_sk_bound_l3mdev(sk);
 
-		/* NOTE: using tproxy and redirecting skbs to a proxy
-		 * on a different listener port breaks the assumption
-		 * that the listener socket's icsk_bind_hash is the same
-		 * as that of the child socket. We have to look up or
-		 * create a new bind bucket for the child here. */
+		 
 		inet_bind_bucket_for_each(tb, &head->chain) {
 			if (inet_bind_bucket_match(tb, net, port, l3mdev))
 				break;
@@ -339,21 +318,7 @@ static inline int compute_score(struct sock *sk, struct net *net,
 	return score;
 }
 
-/**
- * inet_lookup_reuseport() - execute reuseport logic on AF_INET socket if necessary.
- * @net: network namespace.
- * @sk: AF_INET socket, must be in TCP_LISTEN state for TCP or TCP_CLOSE for UDP.
- * @skb: context for a potential SK_REUSEPORT program.
- * @doff: header offset.
- * @saddr: source address.
- * @sport: source port.
- * @daddr: destination address.
- * @hnum: destination port in host byte order.
- * @ehashfn: hash function used to generate the fallback hash.
- *
- * Return: NULL if sk doesn't have SO_REUSEPORT set, otherwise a pointer to
- *         the selected sock or an error.
- */
+ 
 struct sock *inet_lookup_reuseport(struct net *net, struct sock *sk,
 				   struct sk_buff *skb, int doff,
 				   __be32 saddr, __be16 sport,
@@ -372,14 +337,9 @@ struct sock *inet_lookup_reuseport(struct net *net, struct sock *sk,
 }
 EXPORT_SYMBOL_GPL(inet_lookup_reuseport);
 
-/*
- * Here are some nice properties to exploit here. The BSD API
- * does not allow a listening sock to specify the remote port nor the
- * remote address for the connection. So always assume those are both
- * wildcarded during the search since they can never be otherwise.
- */
+ 
 
-/* called with rcu_read_lock() : No refcount taken on the socket */
+ 
 static struct sock *inet_lhash2_lookup(struct net *net,
 				struct inet_listen_hashbucket *ilb2,
 				struct sk_buff *skb, int doff,
@@ -440,7 +400,7 @@ struct sock *__inet_lookup_listener(struct net *net,
 	struct sock *result = NULL;
 	unsigned int hash2;
 
-	/* Lookup redirect from BPF */
+	 
 	if (static_branch_unlikely(&bpf_sk_lookup_enabled) &&
 	    hashinfo == net->ipv4.tcp_death_row.hashinfo) {
 		result = inet_lookup_run_sk_lookup(net, IPPROTO_TCP, skb, doff,
@@ -459,7 +419,7 @@ struct sock *__inet_lookup_listener(struct net *net,
 	if (result)
 		goto done;
 
-	/* Lookup lhash2 with INADDR_ANY */
+	 
 	hash2 = ipv4_portaddr_hash(net, htonl(INADDR_ANY), hnum);
 	ilb2 = inet_lhash2_bucket(hashinfo, hash2);
 
@@ -473,7 +433,7 @@ done:
 }
 EXPORT_SYMBOL_GPL(__inet_lookup_listener);
 
-/* All sockets share common refcount, but have different destructors */
+ 
 void sock_gen_put(struct sock *sk)
 {
 	if (!refcount_dec_and_test(&sk->sk_refcnt))
@@ -504,9 +464,7 @@ struct sock *__inet_lookup_established(struct net *net,
 	const __portpair ports = INET_COMBINED_PORTS(sport, hnum);
 	struct sock *sk;
 	const struct hlist_nulls_node *node;
-	/* Optimize here for direct hit, only listening connections can
-	 * have wildcards anyways.
-	 */
+	 
 	unsigned int hash = inet_ehashfn(net, daddr, hnum, saddr, sport);
 	unsigned int slot = hash & hashinfo->ehash_mask;
 	struct inet_ehash_bucket *head = &hashinfo->ehash[slot];
@@ -526,11 +484,7 @@ begin:
 			goto found;
 		}
 	}
-	/*
-	 * if the nulls value we got at the end of this lookup is
-	 * not the expected one, we must restart lookup.
-	 * We probably met an item that was moved to another chain.
-	 */
+	 
 	if (get_nulls_value(node) != slot)
 		goto begin;
 out:
@@ -540,7 +494,7 @@ found:
 }
 EXPORT_SYMBOL_GPL(__inet_lookup_established);
 
-/* called with local bh disabled */
+ 
 static int __inet_check_established(struct inet_timewait_death_row *death_row,
 				    struct sock *sk, __u16 lport,
 				    struct inet_timewait_sock **twp)
@@ -578,9 +532,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
 		}
 	}
 
-	/* Must record num and sport now. Otherwise we will see
-	 * in hash table socket with a funny identity.
-	 */
+	 
 	inet->inet_num = lport;
 	inet->inet_sport = htons(lport);
 	sk->sk_hash = hash;
@@ -596,7 +548,7 @@ static int __inet_check_established(struct inet_timewait_death_row *death_row,
 	if (twp) {
 		*twp = tw;
 	} else if (tw) {
-		/* Silly. Should hash-dance instead... */
+		 
 		inet_twsk_deschedule_put(tw);
 	}
 	return 0;
@@ -615,9 +567,7 @@ static u64 inet_sk_port_offset(const struct sock *sk)
 					  inet->inet_dport);
 }
 
-/* Searches for an exsiting socket in the ehash bucket list.
- * Returns true if found, false otherwise.
- */
+ 
 static bool inet_ehash_lookup_by_sk(struct sock *sk,
 				    struct hlist_nulls_head *list)
 {
@@ -653,11 +603,7 @@ static bool inet_ehash_lookup_by_sk(struct sock *sk,
 	return false;
 }
 
-/* Insert a socket into ehash, and eventually remove another one
- * (The another one can be a SYN_RECV or TIMEWAIT)
- * If an existing socket already exists, socket sk is not inserted,
- * and sets found_dup_sk parameter to true.
- */
+ 
 bool inet_ehash_insert(struct sock *sk, struct sock *osk, bool *found_dup_sk)
 {
 	struct inet_hashinfo *hashinfo = tcp_or_dccp_get_hashinfo(sk);
@@ -787,9 +733,7 @@ void inet_unhash(struct sock *sk)
 		struct inet_listen_hashbucket *ilb2;
 
 		ilb2 = inet_lhash2_bucket_sk(hashinfo, sk);
-		/* Don't disable bottom halves while acquiring the lock to
-		 * avoid circular locking dependency on PREEMPT_RT.
-		 */
+		 
 		spin_lock(&ilb2->lock);
 		if (sk_unhashed(sk)) {
 			spin_unlock(&ilb2->lock);
@@ -850,7 +794,7 @@ bool inet_bind2_bucket_match_addr_any(const struct inet_bind2_bucket *tb, const 
 	return tb->rcv_saddr == 0;
 }
 
-/* The socket's bhash2 hashbucket spinlock must be held when this is called */
+ 
 struct inet_bind2_bucket *
 inet_bind2_bucket_find(const struct inet_bind_hashbucket *head, const struct net *net,
 		       unsigned short port, int l3mdev, const struct sock *sk)
@@ -904,7 +848,7 @@ static int __inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family, 
 	int bhash;
 
 	if (!inet_csk(sk)->icsk_bind2_hash) {
-		/* Not bind()ed before. */
+		 
 		if (reset)
 			inet_reset_saddr(sk);
 		else
@@ -913,18 +857,11 @@ static int __inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family, 
 		return 0;
 	}
 
-	/* Allocate a bind2 bucket ahead of time to avoid permanently putting
-	 * the bhash2 table in an inconsistent state if a new tb2 bucket
-	 * allocation fails.
-	 */
+	 
 	new_tb2 = kmem_cache_alloc(hinfo->bind2_bucket_cachep, GFP_ATOMIC);
 	if (!new_tb2) {
 		if (reset) {
-			/* The (INADDR_ANY, port) bucket might have already
-			 * been freed, then we cannot fixup icsk_bind2_hash,
-			 * so we give up and unlink sk from bhash/bhash2 not
-			 * to leave inconsistency in bhash2.
-			 */
+			 
 			inet_put_port(sk);
 			inet_reset_saddr(sk);
 		}
@@ -936,9 +873,7 @@ static int __inet_bhash2_update_saddr(struct sock *sk, void *saddr, int family, 
 	head = &hinfo->bhash[bhash];
 	head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
 
-	/* If we change saddr locklessly, another thread
-	 * iterating over bhash might see corrupted address.
-	 */
+	 
 	spin_lock_bh(&head->lock);
 
 	spin_lock(&head2->lock);
@@ -984,16 +919,7 @@ void inet_bhash2_reset_saddr(struct sock *sk)
 }
 EXPORT_SYMBOL_GPL(inet_bhash2_reset_saddr);
 
-/* RFC 6056 3.3.4.  Algorithm 4: Double-Hash Port Selection Algorithm
- * Note that we use 32bit integers (vs RFC 'short integers')
- * because 2^16 is not a multiple of num_ephemeral and this
- * property might be used by clever attacker.
- *
- * RFC claims using TABLE_LENGTH=10 buckets gives an improvement, though
- * attacks were since demonstrated, thus we use 65536 by default instead
- * to really give more isolation and privacy, at the expense of 256kB
- * of kernel memory.
- */
+ 
 #define INET_TABLE_PERTURB_SIZE (1 << CONFIG_INET_TABLE_PERTURB_ORDER)
 static u32 *table_perturb;
 
@@ -1025,7 +951,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
 	l3mdev = inet_sk_bound_l3mdev(sk);
 
 	inet_sk_get_local_port_range(sk, &low, &high);
-	high++; /* [32768, 60999] -> [32768, 61000[ */
+	high++;  
 	remaining = high - low;
 	if (likely(remaining > 1))
 		remaining &= ~1U;
@@ -1037,9 +963,7 @@ int __inet_hash_connect(struct inet_timewait_death_row *death_row,
 	offset = READ_ONCE(table_perturb[index]) + (port_offset >> 32);
 	offset %= remaining;
 
-	/* In first pass we try ports of @low parity.
-	 * inet_csk_get_port() does the opposite choice.
-	 */
+	 
 	offset &= ~1U;
 other_parity_scan:
 	port = low + offset;
@@ -1052,9 +976,7 @@ other_parity_scan:
 						  hinfo->bhash_size)];
 		spin_lock_bh(&head->lock);
 
-		/* Does not bother with rcv_saddr checks, because
-		 * the established check is already unique enough.
-		 */
+		 
 		inet_bind_bucket_for_each(tb, &head->chain) {
 			if (inet_bind_bucket_match(tb, net, port, l3mdev)) {
 				if (tb->fastreuse >= 0 ||
@@ -1090,9 +1012,7 @@ next_port:
 	return -EADDRNOTAVAIL;
 
 ok:
-	/* Find the corresponding tb2 bucket since we need to
-	 * add the socket to the bhash2 table as well
-	 */
+	 
 	head2 = inet_bhashfn_portaddr(hinfo, sk, net, port);
 	spin_lock(&head2->lock);
 
@@ -1104,15 +1024,11 @@ ok:
 			goto error;
 	}
 
-	/* Here we want to add a little bit of randomness to the next source
-	 * port that will be chosen. We use a max() with a random here so that
-	 * on low contention the randomness is maximal and on high contention
-	 * it may be inexistent.
-	 */
+	 
 	i = max_t(int, i, get_random_u32_below(8) * 2);
 	WRITE_ONCE(table_perturb[index], READ_ONCE(table_perturb[index]) + i + 2);
 
-	/* Head lock still held and bh's disabled */
+	 
 	inet_bind_hash(sk, tb, tb2, port);
 
 	if (sk_unhashed(sk)) {
@@ -1138,9 +1054,7 @@ error:
 	return -ENOMEM;
 }
 
-/*
- * Bind a port for a connect operation and hash it.
- */
+ 
 int inet_hash_connect(struct inet_timewait_death_row *death_row,
 		      struct sock *sk)
 {
@@ -1180,7 +1094,7 @@ void __init inet_hashinfo2_init(struct inet_hashinfo *h, const char *name,
 					    high_limit);
 	init_hashinfo_lhash2(h);
 
-	/* this one is used for source ports of outgoing connections */
+	 
 	table_perturb = alloc_large_system_hash("Table-perturb",
 						sizeof(*table_perturb),
 						INET_TABLE_PERTURB_SIZE,
@@ -1196,7 +1110,7 @@ int inet_hashinfo2_init_mod(struct inet_hashinfo *h)
 		return -ENOMEM;
 
 	h->lhash2_mask = INET_LHTABLE_SIZE - 1;
-	/* INET_LHTABLE_SIZE must be a power of 2 */
+	 
 	BUG_ON(INET_LHTABLE_SIZE & h->lhash2_mask);
 
 	init_hashinfo_lhash2(h);
@@ -1210,11 +1124,11 @@ int inet_ehash_locks_alloc(struct inet_hashinfo *hashinfo)
 	unsigned int i, nblocks = 1;
 
 	if (locksz != 0) {
-		/* allocate 2 cache lines or at least one spinlock per cpu */
+		 
 		nblocks = max(2U * L1_CACHE_BYTES / locksz, 1U);
 		nblocks = roundup_pow_of_two(nblocks * num_possible_cpus());
 
-		/* no more locks than number of hash buckets */
+		 
 		nblocks = min(nblocks, hashinfo->ehash_mask + 1);
 
 		hashinfo->ehash_locks = kvmalloc_array(nblocks, locksz, GFP_KERNEL);

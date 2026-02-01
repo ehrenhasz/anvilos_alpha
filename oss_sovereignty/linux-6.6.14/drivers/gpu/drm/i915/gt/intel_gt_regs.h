@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_GT_REGS__
 #define __INTEL_GT_REGS__
@@ -10,25 +8,17 @@
 
 #define VLV_GUNIT_BASE			0x180000
 
-/*
- * The perf control registers are technically multicast registers, but the
- * driver never needs to read/write them directly; we only use them to build
- * lists of registers (where they're mixed in with other non-MCR registers)
- * and then operate on the offset directly.  For now we'll just define them
- * as non-multicast so we can place them on the same list, but we may want
- * to try to come up with a better way to handle heterogeneous lists of
- * registers in the future.
- */
+ 
 #define PERF_REG(offset)			_MMIO(offset)
 
-/* MTL workpoint reg to get core C state and actual freq of 3D, SAMedia */
+ 
 #define MTL_MIRROR_TARGET_WP1			_MMIO(0xc60)
 #define   MTL_CAGF_MASK				REG_GENMASK(8, 0)
 #define   MTL_CC0				0x0
 #define   MTL_CC6				0x3
 #define   MTL_CC_MASK				REG_GENMASK(12, 9)
 
-/* RPM unit config (Gen8+) */
+ 
 #define RPM_CONFIG0				_MMIO(0xd00)
 #define   GEN9_RPM_CONFIG0_CRYSTAL_CLOCK_FREQ_SHIFT	3
 #define   GEN9_RPM_CONFIG0_CRYSTAL_CLOCK_FREQ_MASK	(1 << GEN9_RPM_CONFIG0_CRYSTAL_CLOCK_FREQ_SHIFT)
@@ -46,7 +36,7 @@
 #define RPM_CONFIG1				_MMIO(0xd04)
 #define   GEN10_GT_NOA_ENABLE			(1 << 9)
 
-/* RCP unit config (Gen8+) */
+ 
 #define RCP_CONFIG				_MMIO(0xd08)
 
 #define RC6_LOCATION				_MMIO(0xd40)
@@ -86,13 +76,9 @@
 #define IPEIR_I965				_MMIO(0x2064)
 #define IPEHR_I965				_MMIO(0x2068)
 
-/*
- * On GEN4, only the render ring INSTDONE exists and has a different
- * layout than the GEN7+ version.
- * The GEN2 counterpart of this register is GEN2_INSTDONE.
- */
-#define INSTPS					_MMIO(0x2070) /* 965+ only */
-#define GEN4_INSTDONE1				_MMIO(0x207c) /* 965+ only, aka INSTDONE_2 on SNB */
+ 
+#define INSTPS					_MMIO(0x2070)  
+#define GEN4_INSTDONE1				_MMIO(0x207c)  
 #define ACTHD_I965				_MMIO(0x2074)
 #define HWS_PGA					_MMIO(0x2080)
 #define   HWS_ADDRESS_MASK			0xfffff000
@@ -101,21 +87,15 @@
 #define _3D_CHICKEN				_MMIO(0x2084)
 #define   _3D_CHICKEN_HIZ_PLANE_DISABLE_MSAA_4X_SNB	(1 << 10)
 
-#define PWRCTXA					_MMIO(0x2088) /* 965GM+ only */
+#define PWRCTXA					_MMIO(0x2088)  
 #define   PWRCTX_EN				(1 << 0)
 
 #define FF_SLICE_CHICKEN			_MMIO(0x2088)
 #define   FF_SLICE_CHICKEN_CL_PROVOKING_VERTEX_FIX	(1 << 1)
 
-/* GM45+ chicken bits -- debug workaround bits that may be required
- * for various sorts of correct behavior.  The top 16 bits of each are
- * the enables for writing to the corresponding low bit.
- */
+ 
 #define _3D_CHICKEN2				_MMIO(0x208c)
-/* Disables pipelining of read flushes past the SF-WIZ interface.
- * Required on all Ironlake steppings according to the B-Spec, but the
- * particular danger of not doing so is not specified.
- */
+ 
 #define   _3D_CHICKEN2_WM_READ_PIPELINED	(1 << 14)
 
 #define _3D_CHICKEN3				_MMIO(0x2090)
@@ -123,24 +103,24 @@
 #define   _3D_CHICKEN_SF_DISABLE_OBJEND_CULL	(1 << 10)
 #define   _3D_CHICKEN3_AA_LINE_QUALITY_FIX_ENABLE	(1 << 5)
 #define   _3D_CHICKEN3_SF_DISABLE_FASTCLIP_CULL	(1 << 5)
-#define   _3D_CHICKEN_SDE_LIMIT_FIFO_POLY_DEPTH(x)	((x) << 1) /* gen8+ */
-#define   _3D_CHICKEN3_SF_DISABLE_PIPELINED_ATTR_FETCH	(1 << 1) /* gen6 */
+#define   _3D_CHICKEN_SDE_LIMIT_FIFO_POLY_DEPTH(x)	((x) << 1)  
+#define   _3D_CHICKEN3_SF_DISABLE_PIPELINED_ATTR_FETCH	(1 << 1)  
 
 #define GEN2_INSTDONE				_MMIO(0x2090)
 #define NOPID					_MMIO(0x2094)
 #define HWSTAM					_MMIO(0x2098)
 
 #define WAIT_FOR_RC6_EXIT			_MMIO(0x20cc)
-/* HSW only */
+ 
 #define   HSW_SELECTIVE_READ_ADDRESSING_SHIFT	2
 #define   HSW_SELECTIVE_READ_ADDRESSING_MASK	(0x3 << HSW_SLECTIVE_READ_ADDRESSING_SHIFT)
 #define   HSW_SELECTIVE_WRITE_ADDRESS_SHIFT	4
 #define   HSW_SELECTIVE_WRITE_ADDRESS_MASK	(0x7 << HSW_SELECTIVE_WRITE_ADDRESS_SHIFT)
-/* HSW+ */
+ 
 #define   HSW_WAIT_FOR_RC6_EXIT_ENABLE		(1 << 0)
 #define   HSW_RCS_CONTEXT_ENABLE		(1 << 7)
 #define   HSW_RCS_INHIBIT			(1 << 8)
-/* Gen8 */
+ 
 #define   GEN8_SELECTIVE_WRITE_ADDRESS_SHIFT	4
 #define   GEN8_SELECTIVE_WRITE_ADDRESS_MASK	(0x3 << GEN8_SELECTIVE_WRITE_ADDRESS_SHIFT)
 #define   GEN8_SELECTIVE_WRITE_ADDRESS_SHIFT	4
@@ -160,7 +140,7 @@
 #define   GEN6_WIZ_HASHING_MASK			GEN6_WIZ_HASHING(1, 1)
 #define   GEN6_TD_FOUR_ROW_DISPATCH_DISABLE	(1 << 5)
 
-/* chicken reg for WaConextSwitchWithConcurrentTLBInvalidate */
+ 
 #define GEN9_CSFE_CHICKEN1_RCS			_MMIO(0x20d4)
 #define   GEN9_PREEMPT_GPGPU_SYNC_SWITCH_DISABLE	(1 << 2)
 #define   GEN11_ENABLE_32_PLANE_MODE		(1 << 7)
@@ -178,7 +158,7 @@
 #define GEN12_CS_DEBUG_MODE1_CCCSUNIT_BE_COMMON	_MMIO(0x20ec)
 #define   GEN12_REPLAY_MODE_GRANULARITY		REG_BIT(0)
 
-/* WaClearTdlStateAckDirtyBits */
+ 
 #define GEN8_STATE_ACK				_MMIO(0x20f0)
 #define GEN9_STATE_ACK_SLICE1			_MMIO(0x20f8)
 #define GEN9_STATE_ACK_SLICE2			_MMIO(0x2100)
@@ -190,7 +170,7 @@
 	(GEN9_STATE_ACK_TDL3 | GEN9_STATE_ACK_TDL2 | \
 	 GEN9_STATE_ACK_TDL1 | GEN9_STATE_ACK_TDL0)
 
-#define CACHE_MODE_0				_MMIO(0x2120) /* 915+ only */
+#define CACHE_MODE_0				_MMIO(0x2120)  
 #define   CM0_PIPELINED_RENDER_FLUSH_DISABLE	(1 << 8)
 #define   CM0_IZ_OPT_DISABLE			(1 << 6)
 #define   CM0_ZR_OPT_DISABLE			(1 << 5)
@@ -200,24 +180,10 @@
 #define   CM0_DEPTH_WRITE_DISABLE		(1 << 1)
 #define   CM0_RC_OP_FLUSH_DISABLE		(1 << 0)
 
-#define GFX_FLSH_CNTL				_MMIO(0x2170) /* 915+ only */
+#define GFX_FLSH_CNTL				_MMIO(0x2170)  
 
-/*
- * Logical Context regs
- */
-/*
- * Notes on SNB/IVB/VLV context size:
- * - Power context is saved elsewhere (LLC or stolen)
- * - Ring/execlist context is saved on SNB, not on IVB
- * - Extended context size already includes render context size
- * - We always need to follow the extended context size.
- *   SNB BSpec has comments indicating that we should use the
- *   render context size instead if execlists are disabled, but
- *   based on empirical testing that's just nonsense.
- * - Pipelined/VF state is saved on SNB/IVB respectively
- * - GT1 size just indicates how much of render context
- *   doesn't need saving on GT1
- */
+ 
+ 
 #define CXT_SIZE				_MMIO(0x21a0)
 #define   GEN6_CXT_POWER_SIZE(cxt_reg)		(((cxt_reg) >> 24) & 0x3f)
 #define   GEN6_CXT_RING_SIZE(cxt_reg)		(((cxt_reg) >> 18) & 0x3f)
@@ -293,7 +259,7 @@
 #define DRAW_WATERMARK				_MMIO(0x26c0)
 #define   VERT_WM_VAL				REG_GENMASK(9, 0)
 
-#define GEN12_GLOBAL_MOCS(i)			_MMIO(0x4000 + (i) * 4) /* Global MOCS regs */
+#define GEN12_GLOBAL_MOCS(i)			_MMIO(0x4000 + (i) * 4)  
 
 #define RENDER_HWS_PGA_GEN7			_MMIO(0x4080)
 
@@ -389,18 +355,18 @@
 #define   GEN11_HASH_CTRL_BIT0			(1 << 0)
 #define   GEN11_HASH_CTRL_BIT4			(1 << 12)
 
-/* gamt regs */
+ 
 #define GEN8_L3_LRA_1_GPGPU			_MMIO(0x4dd4)
-#define   GEN8_L3_LRA_1_GPGPU_DEFAULT_VALUE_BDW	0x67F1427F /* max/min for LRA1/2 */
-#define   GEN8_L3_LRA_1_GPGPU_DEFAULT_VALUE_CHV	0x5FF101FF /* max/min for LRA1/2 */
-#define   GEN9_L3_LRA_1_GPGPU_DEFAULT_VALUE_SKL	0x67F1427F /*    "        " */
-#define   GEN9_L3_LRA_1_GPGPU_DEFAULT_VALUE_BXT	0x5FF101FF /*    "        " */
+#define   GEN8_L3_LRA_1_GPGPU_DEFAULT_VALUE_BDW	0x67F1427F  
+#define   GEN8_L3_LRA_1_GPGPU_DEFAULT_VALUE_CHV	0x5FF101FF  
+#define   GEN9_L3_LRA_1_GPGPU_DEFAULT_VALUE_SKL	0x67F1427F  
+#define   GEN9_L3_LRA_1_GPGPU_DEFAULT_VALUE_BXT	0x5FF101FF  
 
-#define MMCD_MISC_CTRL				_MMIO(0x4ddc) /* skl+ */
+#define MMCD_MISC_CTRL				_MMIO(0x4ddc)  
 #define   MMCD_PCLA				(1 << 31)
 #define   MMCD_HOTSPOT_EN			(1 << 27)
 
-/* There are the 4 64-bit counter registers, one for each stream output */
+ 
 #define GEN7_SO_NUM_PRIMS_WRITTEN(n)		_MMIO(0x5200 + (n) * 8)
 #define GEN7_SO_NUM_PRIMS_WRITTEN_UDW(n)	_MMIO(0x5200 + (n) * 8 + 4)
 
@@ -432,10 +398,10 @@
 
 #define XEHPG_INSTDONE_GEOM_SVG			MCR_REG(0x666c)
 
-#define CACHE_MODE_0_GEN7			_MMIO(0x7000) /* IVB+ */
+#define CACHE_MODE_0_GEN7			_MMIO(0x7000)  
 #define   RC_OP_FLUSH_ENABLE			(1 << 0)
 #define   HIZ_RAW_STALL_OPT_DISABLE		(1 << 2)
-#define CACHE_MODE_1				_MMIO(0x7004) /* IVB+ */
+#define CACHE_MODE_1				_MMIO(0x7004)  
 #define   MSAA_OPTIMIZATION_REDUC_DISABLE	REG_BIT(11)
 #define   PIXEL_SUBSPAN_COLLECT_OPT_DISABLE	REG_BIT(6)
 #define   GEN8_4x4_STC_OPTIMIZATION_DISABLE	REG_BIT(6)
@@ -445,7 +411,7 @@
 #define   GEN9_IZ_HASHING_MASK(slice)		(0x3 << ((slice) * 2))
 #define   GEN9_IZ_HASHING(slice, val)		((val) << ((slice) * 2))
 
-/* GEN7 chicken */
+ 
 #define GEN7_COMMON_SLICE_CHICKEN1		_MMIO(0x7010)
 #define   GEN7_CSC1_RHWO_OPT_DISABLE_IN_RCC	(1 << 10)
 #define   GEN9_RHWO_OPTIMIZATION_DISABLE	(1 << 14)
@@ -474,7 +440,7 @@
 #define GEN12_SC_INSTDONE_EXTRA			_MMIO(0x7104)
 #define GEN12_SC_INSTDONE_EXTRA2		_MMIO(0x7108)
 
-/* GEN8 chicken */
+ 
 #define HDC_CHICKEN0				_MMIO(0x7300)
 #define   HDC_FORCE_CSR_NON_COHERENT_OVR_DISABLE	(1 << 15)
 #define   HDC_FENCE_DEST_SLM_DISABLE		(1 << 14)
@@ -541,18 +507,18 @@
 #define HSW_IDICR				_MMIO(0x9008)
 #define   IDIHASHMSK(x)				(((x) & 0x3f) << 16)
 
-#define GEN6_MBCUNIT_SNPCR			_MMIO(0x900c) /* for LLC config */
+#define GEN6_MBCUNIT_SNPCR			_MMIO(0x900c)  
 #define   GEN6_MBC_SNPCR_SHIFT			21
 #define   GEN6_MBC_SNPCR_MASK			(3 << 21)
 #define   GEN6_MBC_SNPCR_MAX			(0 << 21)
 #define   GEN6_MBC_SNPCR_MED			(1 << 21)
 #define   GEN6_MBC_SNPCR_LOW			(2 << 21)
-#define   GEN6_MBC_SNPCR_MIN			(3 << 21) /* only 1/16th of the cache is shared */
+#define   GEN6_MBC_SNPCR_MIN			(3 << 21)  
 
 #define VLV_G3DCTL				_MMIO(0x9024)
 #define VLV_GSCKGCTL				_MMIO(0x9028)
 
-/* WaCatErrorRejectionIssue */
+ 
 #define GEN7_SQ_CHICKEN_MBCUNIT_CONFIG		_MMIO(0x9030)
 #define   GEN7_SQ_CHICKEN_MBCUNIT_SQINTMOB	(1 << 11)
 
@@ -566,13 +532,13 @@
 #define   GEN6_MBCTL_MAE_UPDATE_ENABLE		(1 << 1)
 #define   GEN6_MBCTL_BOOT_FETCH_MECH		(1 << 0)
 
-/* Fuse readout registers for GT */
+ 
 #define XEHP_FUSE4				_MMIO(0x9114)
 #define   GT_L3_EXC_MASK			REG_GENMASK(6, 4)
 #define	GEN10_MIRROR_FUSE3			_MMIO(0x9118)
 #define   GEN10_L3BANK_PAIR_COUNT		4
 #define   GEN10_L3BANK_MASK			0x0F
-/* on Xe_HP the same fuses indicates mslices instead of L3 banks */
+ 
 #define   GEN12_MAX_MSLICES			4
 #define   GEN12_MEML3_EN_MASK			0x0F
 
@@ -661,7 +627,7 @@
 #define   GEN6_GRDOM_VECS			(1 << 4)
 #define   GEN9_GRDOM_GUC			(1 << 5)
 #define   GEN8_GRDOM_MEDIA2			(1 << 7)
-/* GEN11 changed all bit defs except for FULL & RENDER */
+ 
 #define   GEN11_GRDOM_FULL			GEN6_GRDOM_FULL
 #define   GEN11_GRDOM_RENDER			GEN6_GRDOM_RENDER
 #define   XEHPC_GRDOM_BLT8			REG_BIT(31)
@@ -713,8 +679,8 @@
 
 #define UNSLICE_UNIT_LEVEL_CLKGATE		_MMIO(0x9434)
 #define   VFUNIT_CLKGATE_DIS			REG_BIT(20)
-#define   TSGUNIT_CLKGATE_DIS			REG_BIT(17) /* XEHPSDV */
-#define   CG3DDISCFEG_CLKGATE_DIS		REG_BIT(17) /* DG2 */
+#define   TSGUNIT_CLKGATE_DIS			REG_BIT(17)  
+#define   CG3DDISCFEG_CLKGATE_DIS		REG_BIT(17)  
 #define   GAMEDIA_CLKGATE_DIS			REG_BIT(11)
 #define   HSUNIT_CLKGATE_DIS			REG_BIT(8)
 #define   VSUNIT_CLKGATE_DIS			REG_BIT(3)
@@ -889,7 +855,7 @@
 #define ECOBUS					_MMIO(0xa180)
 #define    FORCEWAKE_MT_ENABLE			(1 << 5)
 
-#define FORCEWAKE_MT				_MMIO(0xa188) /* multi-threaded */
+#define FORCEWAKE_MT				_MMIO(0xa188)  
 #define FORCEWAKE_GT_GEN9			_MMIO(0xa188)
 #define FORCEWAKE				_MMIO(0xa18c)
 
@@ -906,7 +872,7 @@
 #define GEN8_PUSHBUS_ENABLE			_MMIO(0xa250)
 #define GEN8_PUSHBUS_SHIFT			_MMIO(0xa25c)
 
-/* GPM unit config (Gen9+) */
+ 
 #define CTC_MODE				_MMIO(0xa26c)
 #define   CTC_SOURCE_PARAMETER_MASK		1
 #define   CTC_SOURCE_CRYSTAL_CLOCK		0
@@ -914,7 +880,7 @@
 #define   CTC_SHIFT_PARAMETER_SHIFT		1
 #define   CTC_SHIFT_PARAMETER_MASK		(0x3 << CTC_SHIFT_PARAMETER_SHIFT)
 
-/* GPM MSG_IDLE */
+ 
 #define MSG_IDLE_CS		_MMIO(0x8000)
 #define MSG_IDLE_VCS0		_MMIO(0x8004)
 #define MSG_IDLE_VCS1		_MMIO(0x8008)
@@ -990,8 +956,8 @@
 
 #define GEN7_L3CNTLREG2				_MMIO(0xb020)
 
-/* MOCS (Memory Object Control State) registers */
-#define GEN9_LNCFCMOCS(i)			_MMIO(0xb020 + (i) * 4)	/* L3 Cache Control */
+ 
+#define GEN9_LNCFCMOCS(i)			_MMIO(0xb020 + (i) * 4)	 
 #define XEHP_LNCFCMOCS(i)			MCR_REG(0xb020 + (i) * 4)
 #define LNCFCMOCS_REG_COUNT			32
 
@@ -1013,12 +979,7 @@
 #define   XEHP_LNESPARE				REG_BIT(19)
 
 #define GEN8_L3SQCREG1				MCR_REG(0xb100)
-/*
- * Note that on CHV the following has an off-by-one error wrt. to BSpec.
- * Using the formula in BSpec leads to a hang, while the formula here works
- * fine and matches the formulas for all other platforms. A BSpec change
- * request has been filed to clarify this.
- */
+ 
 #define   L3_GENERAL_PRIO_CREDITS(x)		(((x) >> 1) << 19)
 #define   L3_HIGH_PRIO_CREDITS(x)		(((x) >> 1) << 14)
 #define   L3_PRIO_CREDITS_MASK			((0x1f << 19) | (0x1f << 14))
@@ -1101,12 +1062,12 @@
 #define XEHP_BLT_TLB_INV_CR			MCR_REG(0xcee4)
 #define GEN12_COMPCTX_TLB_INV_CR		_MMIO(0xcf04)
 #define XEHP_COMPCTX_TLB_INV_CR			MCR_REG(0xcf04)
-#define XELPMP_GSC_TLB_INV_CR			_MMIO(0xcf04)   /* media GT only */
+#define XELPMP_GSC_TLB_INV_CR			_MMIO(0xcf04)    
 
 #define XEHP_MERT_MOD_CTRL			MCR_REG(0xcf28)
 #define RENDER_MOD_CTRL				MCR_REG(0xcf2c)
 #define COMP_MOD_CTRL				MCR_REG(0xcf30)
-#define XELPMP_GSC_MOD_CTRL			_MMIO(0xcf30)	/* media GT only */
+#define XELPMP_GSC_MOD_CTRL			_MMIO(0xcf30)	 
 #define XEHP_VDBX_MOD_CTRL			MCR_REG(0xcf34)
 #define XELPMP_VDBX_MOD_CTRL			_MMIO(0xcf34)
 #define XEHP_VEBX_MOD_CTRL			MCR_REG(0xcf38)
@@ -1124,7 +1085,7 @@
 
 #define GEN12_GAM_DONE				_MMIO(0xcf68)
 
-#define GEN7_HALF_SLICE_CHICKEN1		_MMIO(0xe100) /* IVB GT1 + VLV */
+#define GEN7_HALF_SLICE_CHICKEN1		_MMIO(0xe100)  
 #define GEN8_HALF_SLICE_CHICKEN1		MCR_REG(0xe100)
 #define   GEN7_MAX_PS_THREAD_DEP		(8 << 12)
 #define   GEN7_SINGLE_SUBSCAN_DISPATCH_ENABLE	(1 << 10)
@@ -1167,11 +1128,7 @@
 #define   ENABLE_EU_COUNT_FOR_TDL_FLUSH		REG_BIT(10)
 #define   DISABLE_ECC				REG_BIT(5)
 #define   FLOAT_BLEND_OPTIMIZATION_ENABLE	REG_BIT(4)
-/*
- * We have both ENABLE and DISABLE defines below using the same bit because the
- * meaning depends on the target platform. There are no platform prefix for them
- * because different steppings of DG2 pick one or the other semantics.
- */
+ 
 #define   ENABLE_PREFETCH_INTO_IC		REG_BIT(3)
 #define   DISABLE_PREFETCH_INTO_IC		REG_BIT(3)
 
@@ -1249,11 +1206,11 @@
 #define GEN11_MFX2_MOCS(i)			_MMIO(__GEN11_VCS2_MOCS0 + (i) * 4)
 
 #define CRSTANDVID				_MMIO(0x11100)
-#define PXVFREQ(fstart)				_MMIO(0x11110 + (fstart) * 4)  /* P[0-15]VIDFREQ (0x1114c) (Ironlake) */
+#define PXVFREQ(fstart)				_MMIO(0x11110 + (fstart) * 4)   
 #define   PXVFREQ_PX_MASK			0x7f000000
 #define   PXVFREQ_PX_SHIFT			24
 #define VIDFREQ_BASE				_MMIO(0x11110)
-#define VIDFREQ1				_MMIO(0x11110) /* VIDFREQ1-4 (0x1111c) (Cantiga) */
+#define VIDFREQ1				_MMIO(0x11110)  
 #define VIDFREQ2				_MMIO(0x11114)
 #define VIDFREQ3				_MMIO(0x11118)
 #define VIDFREQ4				_MMIO(0x1111c)
@@ -1268,7 +1225,7 @@
 #define   VIDFREQ_P1_CSCLK_MASK			0x000000f0
 #define   VIDFREQ_P1_CSCLK_SHIFT		4
 #define   VIDFREQ_P1_CRCLK_MASK			0x0000000f
-#define INTTOEXT_BASE				_MMIO(0x11120) /* INTTOEXT1-8 (0x1113c) */
+#define INTTOEXT_BASE				_MMIO(0x11120)  
 #define   INTTOEXT_MAP3_SHIFT			24
 #define   INTTOEXT_MAP3_MASK			(0x1f << INTTOEXT_MAP3_SHIFT)
 #define   INTTOEXT_MAP2_SHIFT			16
@@ -1277,7 +1234,7 @@
 #define   INTTOEXT_MAP1_MASK			(0x1f << INTTOEXT_MAP1_SHIFT)
 #define   INTTOEXT_MAP0_SHIFT			0
 #define   INTTOEXT_MAP0_MASK			(0x1f << INTTOEXT_MAP0_SHIFT)
-#define MEMSWCTL				_MMIO(0x11170) /* Ironlake only */
+#define MEMSWCTL				_MMIO(0x11170)  
 #define   MEMCTL_CMD_MASK			0xe000
 #define   MEMCTL_CMD_SHIFT			13
 #define   MEMCTL_CMD_RCLK_OFF			0
@@ -1286,14 +1243,13 @@
 #define   MEMCTL_CMD_CHVID			3
 #define   MEMCTL_CMD_VMMOFF			4
 #define   MEMCTL_CMD_VMMON			5
-#define   MEMCTL_CMD_STS			(1 << 12) /* write 1 triggers command, clears
-							     when command complete */
-#define   MEMCTL_FREQ_MASK			0x0f00 /* jitter, from 0-15 */
+#define   MEMCTL_CMD_STS			(1 << 12)  
+#define   MEMCTL_FREQ_MASK			0x0f00  
 #define   MEMCTL_FREQ_SHIFT			8
 #define   MEMCTL_SFCAVM				(1 << 7)
 #define   MEMCTL_TGT_VID_MASK			0x007f
 #define MEMIHYST				_MMIO(0x1117c)
-#define MEMINTREN				_MMIO(0x11180) /* 16 bits */
+#define MEMINTREN				_MMIO(0x11180)  
 #define   MEMINT_RSEXIT_EN			(1 << 8)
 #define   MEMINT_CX_SUPR_EN			(1 << 7)
 #define   MEMINT_CONT_BUSY_EN			(1 << 6)
@@ -1303,7 +1259,7 @@
 #define   MEMINT_UP_EVAL_EN			(1 << 2)
 #define   MEMINT_DOWN_EVAL_EN			(1 << 1)
 #define   MEMINT_SW_CMD_EN			(1 << 0)
-#define MEMINTRSTR				_MMIO(0x11182) /* 16 bits */
+#define MEMINTRSTR				_MMIO(0x11182)  
 #define   MEM_RSEXIT_MASK			0xc000
 #define   MEM_RSEXIT_SHIFT			14
 #define   MEM_CONT_BUSY_MASK			0x3000
@@ -1334,7 +1290,7 @@
 #define   MEMINT_SW_CMD				(1 << 0)
 #define MEMMODECTL				_MMIO(0x11190)
 #define   MEMMODE_BOOST_EN			(1 << 31)
-#define   MEMMODE_BOOST_FREQ_MASK		0x0f000000 /* jitter for boost, 0-15 */
+#define   MEMMODE_BOOST_FREQ_MASK		0x0f000000  
 #define   MEMMODE_BOOST_FREQ_SHIFT		24
 #define   MEMMODE_IDLE_MODE_MASK		0x00030000
 #define   MEMMODE_IDLE_MODE_SHIFT		16
@@ -1344,13 +1300,13 @@
 #define   MEMMODE_SWMODE_EN			(1 << 14)
 #define   MEMMODE_RCLK_GATE			(1 << 13)
 #define   MEMMODE_HW_UPDATE			(1 << 12)
-#define   MEMMODE_FSTART_MASK			0x00000f00 /* starting jitter, 0-15 */
+#define   MEMMODE_FSTART_MASK			0x00000f00  
 #define   MEMMODE_FSTART_SHIFT			8
-#define   MEMMODE_FMAX_MASK			0x000000f0 /* max jitter, 0-15 */
+#define   MEMMODE_FMAX_MASK			0x000000f0  
 #define   MEMMODE_FMAX_SHIFT			4
-#define   MEMMODE_FMIN_MASK			0x0000000f /* min jitter, 0-15 */
+#define   MEMMODE_FMIN_MASK			0x0000000f  
 #define RCBMAXAVG				_MMIO(0x1119c)
-#define MEMSWCTL2				_MMIO(0x1119e) /* Cantiga only */
+#define MEMSWCTL2				_MMIO(0x1119e)  
 #define   SWMEMCMD_RENDER_OFF			(0 << 13)
 #define   SWMEMCMD_RENDER_ON			(1 << 13)
 #define   SWMEMCMD_SWFREQ			(2 << 13)
@@ -1359,7 +1315,7 @@
 #define   SWMEMCMD_VRM_ON			(5 << 13)
 #define   CMDSTS				(1 << 12)
 #define   SFCAVM				(1 << 11)
-#define   SWFREQ_MASK				0x0380 /* P0-7 */
+#define   SWFREQ_MASK				0x0380  
 #define   SWFREQ_SHIFT				7
 #define   TARVID_MASK				0x001f
 #define MEMSTAT_CTG				_MMIO(0x111a0)
@@ -1370,49 +1326,49 @@
 #define   RS1EN					(1 << 31)
 #define   RS2EN					(1 << 30)
 #define   RS3EN					(1 << 29)
-#define   D3RS3EN				(1 << 28) /* Display D3 imlies RS3 */
-#define   SWPROMORSX				(1 << 27) /* RSx promotion timers ignored */
-#define   RCWAKERW				(1 << 26) /* Resetwarn from PCH causes wakeup */
-#define   DPRSLPVREN				(1 << 25) /* Fast voltage ramp enable */
-#define   GFXTGHYST				(1 << 24) /* Hysteresis to allow trunk gating */
-#define   RCX_SW_EXIT				(1 << 23) /* Leave RSx and prevent re-entry */
+#define   D3RS3EN				(1 << 28)  
+#define   SWPROMORSX				(1 << 27)  
+#define   RCWAKERW				(1 << 26)  
+#define   DPRSLPVREN				(1 << 25)  
+#define   GFXTGHYST				(1 << 24)  
+#define   RCX_SW_EXIT				(1 << 23)  
 #define   RSX_STATUS_MASK			(7 << 20)
 #define   RSX_STATUS_ON				(0 << 20)
 #define   RSX_STATUS_RC1			(1 << 20)
 #define   RSX_STATUS_RC1E			(2 << 20)
 #define   RSX_STATUS_RS1			(3 << 20)
-#define   RSX_STATUS_RS2			(4 << 20) /* aka rc6 */
-#define   RSX_STATUS_RSVD			(5 << 20) /* deep rc6 unsupported on ilk */
-#define   RSX_STATUS_RS3			(6 << 20) /* rs3 unsupported on ilk */
+#define   RSX_STATUS_RS2			(4 << 20)  
+#define   RSX_STATUS_RSVD			(5 << 20)  
+#define   RSX_STATUS_RS3			(6 << 20)  
 #define   RSX_STATUS_RSVD2			(7 << 20)
-#define   UWRCRSXE				(1 << 19) /* wake counter limit prevents rsx */
-#define   RSCRP					(1 << 18) /* rs requests control on rs1/2 reqs */
-#define   JRSC					(1 << 17) /* rsx coupled to cpu c-state */
-#define   RS2INC0				(1 << 16) /* allow rs2 in cpu c0 */
+#define   UWRCRSXE				(1 << 19)  
+#define   RSCRP					(1 << 18)  
+#define   JRSC					(1 << 17)  
+#define   RS2INC0				(1 << 16)  
 #define   RS1CONTSAV_MASK			(3 << 14)
-#define   RS1CONTSAV_NO_RS1			(0 << 14) /* rs1 doesn't save/restore context */
+#define   RS1CONTSAV_NO_RS1			(0 << 14)  
 #define   RS1CONTSAV_RSVD			(1 << 14)
-#define   RS1CONTSAV_SAVE_RS1			(2 << 14) /* rs1 saves context */
-#define   RS1CONTSAV_FULL_RS1			(3 << 14) /* rs1 saves and restores context */
+#define   RS1CONTSAV_SAVE_RS1			(2 << 14)  
+#define   RS1CONTSAV_FULL_RS1			(3 << 14)  
 #define   NORMSLEXLAT_MASK			(3 << 12)
 #define   SLOW_RS123				(0 << 12)
 #define   SLOW_RS23				(1 << 12)
 #define   SLOW_RS3				(2 << 12)
 #define   NORMAL_RS123				(3 << 12)
-#define   RCMODE_TIMEOUT			(1 << 11) /* 0 is eval interval method */
-#define   IMPROMOEN				(1 << 10) /* promo is immediate or delayed until next idle interval (only for timeout method above) */
-#define   RCENTSYNC				(1 << 9) /* rs coupled to cpu c-state (3/6/7) */
-#define   STATELOCK				(1 << 7) /* locked to rs_cstate if 0 */
+#define   RCMODE_TIMEOUT			(1 << 11)  
+#define   IMPROMOEN				(1 << 10)  
+#define   RCENTSYNC				(1 << 9)  
+#define   STATELOCK				(1 << 7)  
 #define   RS_CSTATE_MASK			(3 << 4)
 #define   RS_CSTATE_C367_RS1			(0 << 4)
 #define   RS_CSTATE_C36_RS1_C7_RS2		(1 << 4)
 #define   RS_CSTATE_RSVD			(2 << 4)
 #define   RS_CSTATE_C367_RS2			(3 << 4)
-#define   REDSAVES				(1 << 3) /* no context save if was idle during rs0 */
-#define   REDRESTORES				(1 << 2) /* no restore if was idle during rs0 */
+#define   REDSAVES				(1 << 3)  
+#define   REDRESTORES				(1 << 2)  
 #define VIDCTL					_MMIO(0x111c0)
 #define VIDSTS					_MMIO(0x111c8)
-#define VIDSTART				_MMIO(0x111cc) /* 8 bits */
+#define VIDSTART				_MMIO(0x111cc)  
 #define MEMSTAT_ILK				_MMIO(0x111f8)
 #define   MEMSTAT_VID_MASK			0x7f00
 #define   MEMSTAT_VID_SHIFT			8
@@ -1424,13 +1380,13 @@
 #define   MEMSTAT_SRC_CTL_THM			2
 #define   MEMSTAT_SRC_CTL_STDBY			3
 #define PMMISC					_MMIO(0x11214)
-#define   MCPPCE_EN				(1 << 0) /* enable PM_MSG from PCH->MPC */
+#define   MCPPCE_EN				(1 << 0)  
 #define SDEW					_MMIO(0x1124c)
 #define CSIEW0					_MMIO(0x11250)
 #define CSIEW1					_MMIO(0x11254)
 #define CSIEW2					_MMIO(0x11258)
-#define PEW(i)					_MMIO(0x1125c + (i) * 4) /* 5 registers */
-#define DEW(i)					_MMIO(0x11270 + (i) * 4) /* 3 registers */
+#define PEW(i)					_MMIO(0x1125c + (i) * 4)  
+#define DEW(i)					_MMIO(0x11270 + (i) * 4)  
 #define MCHAFE					_MMIO(0x112c0)
 #define CSIEC					_MMIO(0x112e0)
 #define DMIEC					_MMIO(0x112e4)
@@ -1446,7 +1402,7 @@
 #define ECR					_MMIO(0x11600)
 #define   ECR_GPFE				(1 << 31)
 #define   ECR_IMONE				(1 << 30)
-#define   ECR_CAP_MASK				0x0000001f /* Event range, 0-31 */
+#define   ECR_CAP_MASK				0x0000001f  
 #define OGW0					_MMIO(0x11608)
 #define OGW1					_MMIO(0x1160c)
 #define EG0					_MMIO(0x11610)
@@ -1457,8 +1413,8 @@
 #define EG5					_MMIO(0x11624)
 #define EG6					_MMIO(0x11628)
 #define EG7					_MMIO(0x1162c)
-#define PXW(i)					_MMIO(0x11664 + (i) * 4) /* 4 registers */
-#define PXWL(i)					_MMIO(0x11680 + (i) * 8) /* 8 registers */
+#define PXW(i)					_MMIO(0x11664 + (i) * 4)  
+#define PXWL(i)					_MMIO(0x11680 + (i) * 8)  
 #define LCFUSE02				_MMIO(0x116c0)
 #define   LCFUSE_HIV_MASK			0x000000ff
 
@@ -1490,15 +1446,12 @@
 #define   GAB_CTL_CONT_AFTER_PAGEFAULT		(1 << 8)
 
 #define GEN6_PMISR				_MMIO(0x44020)
-#define GEN6_PMIMR				_MMIO(0x44024) /* rps_lock */
+#define GEN6_PMIMR				_MMIO(0x44024)  
 #define GEN6_PMIIR				_MMIO(0x44028)
 #define GEN6_PMIER				_MMIO(0x4402c)
 #define   GEN6_PM_MBOX_EVENT			(1 << 25)
 #define   GEN6_PM_THERMAL_EVENT			(1 << 24)
-/*
- * For Gen11 these are in the upper word of the GPM_WGBOXPERF
- * registers. Shifting is handled on accessing the imr and ier.
- */
+ 
 #define   GEN6_PM_RP_DOWN_TIMEOUT		(1 << 6)
 #define   GEN6_PM_RP_UP_THRESHOLD		(1 << 5)
 #define   GEN6_PM_RP_DOWN_THRESHOLD		(1 << 4)
@@ -1636,7 +1589,7 @@
 #define   GEN11_INTR_ENGINE_CLASS(x)		(((x) & GENMASK(18, 16)) >> 16)
 #define   GEN11_INTR_ENGINE_INSTANCE(x)		(((x) & GENMASK(25, 20)) >> 20)
 #define   GEN11_INTR_ENGINE_INTR(x)		((x) & 0xffff)
-/* irq instances for OTHER_CLASS */
+ 
 #define   OTHER_GUC_INSTANCE			0
 #define   OTHER_GTPM_INSTANCE			1
 #define   OTHER_GSC_HECI_2_INSTANCE		3
@@ -1657,7 +1610,7 @@
 #define GEN12_VECS2_VECS3_INTR_MASK		_MMIO(0x1900d4)
 #define GEN12_HECI2_RSVD_INTR_MASK		_MMIO(0x1900e4)
 #define GEN11_GUC_SG_INTR_MASK			_MMIO(0x1900e8)
-#define MTL_GUC_MGUC_INTR_MASK			_MMIO(0x1900e8) /* MTL+ */
+#define MTL_GUC_MGUC_INTR_MASK			_MMIO(0x1900e8)  
 #define GEN11_GPM_WGBOXPERF_INTR_MASK		_MMIO(0x1900ec)
 #define GEN11_CRYPTO_RSVD_INTR_MASK		_MMIO(0x1900f0)
 #define GEN11_GUNIT_CSME_INTR_MASK		_MMIO(0x1900f4)
@@ -1675,12 +1628,7 @@
 #define GT0_PACKAGE_POWER_SKU_UNIT		_MMIO(0x250068)
 #define GT0_PLATFORM_ENERGY_STATUS		_MMIO(0x25006c)
 
-/*
- * Standalone Media's non-engine GT registers are located at their regular GT
- * offsets plus 0x380000.  This extra offset is stored inside the intel_uncore
- * structure so that the existing code can be used for both GTs without
- * modification.
- */
+ 
 #define MTL_MEDIA_GSI_BASE			0x380000
 
-#endif /* __INTEL_GT_REGS__ */
+#endif  

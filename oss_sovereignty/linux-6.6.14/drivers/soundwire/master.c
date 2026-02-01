@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright(c) 2019-2020 Intel Corporation.
+
+
 
 #include <linux/device.h>
 #include <linux/acpi.h>
@@ -8,31 +8,10 @@
 #include <linux/soundwire/sdw_type.h>
 #include "bus.h"
 
-/*
- * The 3s value for autosuspend will only be used if there are no
- * devices physically attached on a bus segment. In practice enabling
- * the bus operation will result in children devices become active and
- * the master device will only suspend when all its children are no
- * longer active.
- */
+ 
 #define SDW_MASTER_SUSPEND_DELAY_MS 3000
 
-/*
- * The sysfs for properties reflects the MIPI description as given
- * in the MIPI DisCo spec
- *
- * Base file is:
- *	sdw-master-N
- *      |---- revision
- *      |---- clk_stop_modes
- *      |---- max_clk_freq
- *      |---- clk_freq
- *      |---- clk_gears
- *      |---- default_row
- *      |---- default_col
- *      |---- dynamic_shape
- *      |---- err_threshold
- */
+ 
 
 #define sdw_master_attr(field, format_string)				\
 static ssize_t field##_show(struct device *dev,				\
@@ -118,12 +97,7 @@ struct device_type sdw_master_type = {
 	.pm = &master_dev_pm,
 };
 
-/**
- * sdw_master_device_add() - create a Linux Master Device representation.
- * @bus: SDW bus instance
- * @parent: parent device
- * @fwnode: firmware node handle
- */
+ 
 int sdw_master_device_add(struct sdw_bus *bus, struct device *parent,
 			  struct fwnode_handle *fwnode)
 {
@@ -150,15 +124,12 @@ int sdw_master_device_add(struct sdw_bus *bus, struct device *parent,
 	ret = device_register(&md->dev);
 	if (ret) {
 		dev_err(parent, "Failed to add master: ret %d\n", ret);
-		/*
-		 * On err, don't free but drop ref as this will be freed
-		 * when release method is invoked.
-		 */
+		 
 		put_device(&md->dev);
 		goto device_register_err;
 	}
 
-	/* add shortcuts to improve code readability/compactness */
+	 
 	md->bus = bus;
 	bus->dev = &md->dev;
 	bus->md = md;
@@ -173,12 +144,7 @@ device_register_err:
 	return ret;
 }
 
-/**
- * sdw_master_device_del() - delete a Linux Master Device representation.
- * @bus: bus handle
- *
- * This function is the dual of sdw_master_device_add()
- */
+ 
 int sdw_master_device_del(struct sdw_bus *bus)
 {
 	pm_runtime_disable(&bus->md->dev);

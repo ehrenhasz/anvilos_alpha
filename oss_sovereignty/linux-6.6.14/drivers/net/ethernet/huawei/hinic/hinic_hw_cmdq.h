@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+ 
+ 
 
 #ifndef HINIC_CMDQ_H
 #define HINIC_CMDQ_H
@@ -145,13 +142,13 @@ struct hinic_cmdq {
 	enum hinic_cmdq_type    cmdq_type;
 	int                     wrapped;
 
-	/* Lock for keeping the doorbell order */
+	 
 	spinlock_t              cmdq_lock;
 
 	struct completion       **done;
 	int                     **errcode;
 
-	/* doorbell area */
+	 
 	void __iomem            *db_base;
 };
 

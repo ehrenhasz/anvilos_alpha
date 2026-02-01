@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * A wrapper for multiple PHYs which passes all phy_* function calls to
- * multiple (actual) PHY devices. This is comes handy when initializing
- * all PHYs on a HCD and to keep them all in the same state.
- *
- * Copyright (C) 2018 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/list.h>
@@ -216,7 +210,7 @@ int usb_phy_roothub_suspend(struct device *controller_dev,
 {
 	usb_phy_roothub_power_off(phy_roothub);
 
-	/* keep the PHYs initialized so the device can wake up the system */
+	 
 	if (device_may_wakeup(controller_dev))
 		return 0;
 
@@ -229,7 +223,7 @@ int usb_phy_roothub_resume(struct device *controller_dev,
 {
 	int err;
 
-	/* if the device can't wake up the system _exit was called */
+	 
 	if (!device_may_wakeup(controller_dev)) {
 		err = usb_phy_roothub_init(phy_roothub);
 		if (err)
@@ -238,7 +232,7 @@ int usb_phy_roothub_resume(struct device *controller_dev,
 
 	err = usb_phy_roothub_power_on(phy_roothub);
 
-	/* undo _init if _power_on failed */
+	 
 	if (err && !device_may_wakeup(controller_dev))
 		usb_phy_roothub_exit(phy_roothub);
 

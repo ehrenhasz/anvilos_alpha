@@ -1,39 +1,8 @@
-/****************************************************************************
- * Copyright 2020 Thomas E. Dickey                                          *
- * Copyright 1998-2004,2012 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  State-machine fallback written by Thomas E. Dickey 2002                 *
- ****************************************************************************/
+ 
 
-/*
- * This function is needed to support vwscanw
- */
+ 
 
 #include <curses.priv.h>
 
@@ -50,7 +19,7 @@ MODULE_ID("$Id: vsscanf.c,v 1.21 2020/02/02 23:34:34 tom Exp $")
 
 typedef enum {
     cUnknown
-    ,cError			/* anything that isn't ANSI */
+    ,cError			 
     ,cAssigned
     ,cChar
     ,cInt
@@ -71,11 +40,11 @@ typedef enum {
 
 typedef enum {
     sUnknown
-    ,sPercent			/* last was '%' beginning a format */
-    ,sNormal			/* ...somewhere in the middle */
-    ,sLeft			/* last was left square bracket beginning a range */
-    ,sRange			/* ...somewhere in the middle */
-    ,sFinal			/* last finished a format */
+    ,sPercent			 
+    ,sNormal			 
+    ,sLeft			 
+    ,sRange			 
+    ,sFinal			 
 } ScanState;
 
 static ChunkType
@@ -160,14 +129,12 @@ other_ch(int ch)
 }
 #endif
 
-/*VARARGS2*/
+ 
 NCURSES_EXPORT(int)
 vsscanf(const char *str, const char *format, va_list ap)
 {
 #if HAVE_VFSCANF || HAVE__DOSCAN
-    /*
-     * This code should work on anything descended from AT&T SVr1.
-     */
+     
     FILE strbuf;
 
     strbuf._flag = _IOREAD;
@@ -190,12 +157,7 @@ vsscanf(const char *str, const char *format, va_list ap)
        _nc_visbuf2(1, str),
        _nc_visbuf2(2, format)));
 
-    /*
-     * This relies on having a working "%n" format conversion.  Check if it
-     * works.  Only very old C libraries do not support it.
-     *
-     * FIXME: move this check into the configure script.
-     */
+     
     if (can_convert < 0) {
 	int check1;
 	int check2;
@@ -219,16 +181,9 @@ vsscanf(const char *str, const char *format, va_list ap)
 	void *pointer;
 
 	if (my_fmt != 0) {
-	    /*
-	     * Split the original format into chunks, adding a "%n" to the end
-	     * of each (except of course if it used %n), and use that
-	     * information to decide where to start scanning the next chunk.
-	     *
-	     * FIXME:  does %n count bytes or characters?  If the latter, this
-	     * will require further work for multibyte strings.
-	     */
+	     
 	    while (*format != '\0') {
-		/* find a chunk */
+		 
 		state = sUnknown;
 		chunk = cUnknown;
 		other = oUnknown;
@@ -292,7 +247,7 @@ vsscanf(const char *str, const char *format, va_list ap)
 		    break;
 		}
 
-		/* add %n, if the format was not that */
+		 
 		if (chunk != cAssigned) {
 		    _nc_STRCAT(my_fmt, "%n", len_fmt);
 		}
@@ -329,7 +284,7 @@ vsscanf(const char *str, const char *format, va_list ap)
 		case cUnknown:
 		    break;
 		}
-		/* do the conversion */
+		 
 		T(("...converting chunk #%d type %d(%s,%s)",
 		   assigned + 1, chunk,
 		   _nc_visbuf2(1, str + consumed),
@@ -349,9 +304,9 @@ vsscanf(const char *str, const char *format, va_list ap)
 #else
 extern
 NCURSES_EXPORT(void)
-_nc_vsscanf(void);		/* quiet's gcc warning */
+_nc_vsscanf(void);		 
 NCURSES_EXPORT(void)
 _nc_vsscanf(void)
 {
-}				/* nonempty for strict ANSI compilers */
-#endif /* !HAVE_VSSCANF */
+}				 
+#endif  

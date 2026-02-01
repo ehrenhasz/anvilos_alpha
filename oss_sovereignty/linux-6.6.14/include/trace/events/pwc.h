@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #if !defined(_TRACE_PWC_H) || defined(TRACE_HEADER_MULTI_READ)
 #define _TRACE_PWC_H
 
@@ -59,7 +59,7 @@ TRACE_EVENT(pwc_handler_exit,
 		__entry->urb)
 );
 
-#endif /* _TRACE_PWC_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

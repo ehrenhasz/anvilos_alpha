@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Bytedance */
+
+ 
 
 #include <test_progs.h>
 #include "test_map_lookup_percpu_elem.skel.h"

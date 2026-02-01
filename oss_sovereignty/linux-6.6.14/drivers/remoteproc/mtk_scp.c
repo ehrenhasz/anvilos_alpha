@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2019 MediaTek Inc.
+
+
+
 
 #include <asm/barrier.h>
 #include <linux/clk.h>
@@ -23,14 +23,7 @@
 #define MAX_CODE_SIZE 0x500000
 #define SECTION_NAME_IPI_BUFFER ".ipi_buffer"
 
-/**
- * scp_get() - get a reference to SCP.
- *
- * @pdev:	the platform device of the module requesting SCP platform
- *		device for using SCP API.
- *
- * Return: Return NULL if failed.  otherwise reference to SCP.
- **/
+ 
 struct mtk_scp *scp_get(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -55,11 +48,7 @@ struct mtk_scp *scp_get(struct platform_device *pdev)
 }
 EXPORT_SYMBOL_GPL(scp_get);
 
-/**
- * scp_put() - "free" the SCP
- *
- * @scp:	mtk_scp structure from scp_get().
- **/
+ 
 void scp_put(struct mtk_scp *scp)
 {
 	put_device(scp->dev);
@@ -128,10 +117,10 @@ static int scp_ipi_init(struct mtk_scp *scp, const struct firmware *fw)
 	int ret;
 	size_t offset;
 
-	/* read the ipi buf addr from FW itself first */
+	 
 	ret = scp_elf_read_ipi_buf_addr(scp, fw, &offset);
 	if (ret) {
-		/* use default ipi buf addr if the FW doesn't have it */
+		 
 		offset = scp->data->ipi_buf_offset;
 		if (!offset)
 			return ret;
@@ -186,7 +175,7 @@ static void mt8183_scp_irq_handler(struct mtk_scp *scp)
 	else
 		scp_wdt_handler(scp, scp_to_host);
 
-	/* SCP won't send another interrupt until we set SCP_TO_HOST to 0. */
+	 
 	writel(MT8183_SCP_IPC_INT_BIT | MT8183_SCP_WDT_INT_BIT,
 	       scp->reg_base + MT8183_SCP_TO_HOST);
 }
@@ -200,10 +189,7 @@ static void mt8192_scp_irq_handler(struct mtk_scp *scp)
 	if (scp_to_host & MT8192_SCP_IPC_INT_BIT) {
 		scp_ipi_handler(scp);
 
-		/*
-		 * SCP won't send another interrupt until we clear
-		 * MT8192_SCP2APMCU_IPC.
-		 */
+		 
 		writel(MT8192_SCP_IPC_INT_BIT,
 		       scp->reg_base + MT8192_SCP2APMCU_IPC_CLR);
 	} else {
@@ -241,7 +227,7 @@ static int scp_elf_load_segments(struct rproc *rproc, const struct firmware *fw)
 	ehdr = (struct elf32_hdr *)elf_data;
 	phdr = (struct elf32_phdr *)(elf_data + ehdr->e_phoff);
 
-	/* go through the available ELF segments */
+	 
 	for (i = 0; i < ehdr->e_phnum; i++, phdr++) {
 		u32 da = phdr->p_paddr;
 		u32 memsz = phdr->p_memsz;
@@ -271,7 +257,7 @@ static int scp_elf_load_segments(struct rproc *rproc, const struct firmware *fw)
 			break;
 		}
 
-		/* grab the kernel address for this device address */
+		 
 		ptr = (void __iomem *)rproc_da_to_va(rproc, da, memsz, NULL);
 		if (!ptr) {
 			dev_err(dev, "bad phdr da 0x%x mem 0x%x\n", da, memsz);
@@ -279,7 +265,7 @@ static int scp_elf_load_segments(struct rproc *rproc, const struct firmware *fw)
 			break;
 		}
 
-		/* put the segment where the remote processor expects it */
+		 
 		scp_memcpy_aligned(ptr, elf_data + phdr->p_offset, filesz);
 	}
 
@@ -340,24 +326,21 @@ static int mt8195_scp_clk_get(struct mtk_scp *scp)
 
 static int mt8183_scp_before_load(struct mtk_scp *scp)
 {
-	/* Clear SCP to host interrupt */
+	 
 	writel(MT8183_SCP_IPC_INT_BIT, scp->reg_base + MT8183_SCP_TO_HOST);
 
-	/* Reset clocks before loading FW */
+	 
 	writel(0x0, scp->reg_base + MT8183_SCP_CLK_SW_SEL);
 	writel(0x0, scp->reg_base + MT8183_SCP_CLK_DIV_SEL);
 
-	/* Initialize TCM before loading FW. */
+	 
 	writel(0x0, scp->reg_base + MT8183_SCP_L1_SRAM_PD);
 	writel(0x0, scp->reg_base + MT8183_SCP_TCM_TAIL_SRAM_PD);
 
-	/* Turn on the power of SCP's SRAM before using it. */
+	 
 	writel(0x0, scp->reg_base + MT8183_SCP_SRAM_PDN);
 
-	/*
-	 * Set I-cache and D-cache size before loading SCP FW.
-	 * SCP SRAM logical address may change when cache size setting differs.
-	 */
+	 
 	writel(MT8183_SCP_CACHE_CON_WAYEN | MT8183_SCP_CACHESIZE_8KB,
 	       scp->reg_base + MT8183_SCP_CACHE_CON);
 	writel(MT8183_SCP_CACHESIZE_8KB, scp->reg_base + MT8183_SCP_DCACHE_CON);
@@ -385,26 +368,23 @@ static void scp_sram_power_off(void __iomem *addr, u32 reserved_mask)
 
 static int mt8186_scp_before_load(struct mtk_scp *scp)
 {
-	/* Clear SCP to host interrupt */
+	 
 	writel(MT8183_SCP_IPC_INT_BIT, scp->reg_base + MT8183_SCP_TO_HOST);
 
-	/* Reset clocks before loading FW */
+	 
 	writel(0x0, scp->reg_base + MT8183_SCP_CLK_SW_SEL);
 	writel(0x0, scp->reg_base + MT8183_SCP_CLK_DIV_SEL);
 
-	/* Turn on the power of SCP's SRAM before using it. Enable 1 block per time*/
+	 
 	scp_sram_power_on(scp->reg_base + MT8183_SCP_SRAM_PDN, 0);
 
-	/* Initialize TCM before loading FW. */
+	 
 	writel(0x0, scp->reg_base + MT8183_SCP_L1_SRAM_PD);
 	writel(0x0, scp->reg_base + MT8183_SCP_TCM_TAIL_SRAM_PD);
 	writel(0x0, scp->reg_base + MT8186_SCP_L1_SRAM_PD_P1);
 	writel(0x0, scp->reg_base + MT8186_SCP_L1_SRAM_PD_p2);
 
-	/*
-	 * Set I-cache and D-cache size before loading SCP FW.
-	 * SCP SRAM logical address may change when cache size setting differs.
-	 */
+	 
 	writel(MT8183_SCP_CACHE_CON_WAYEN | MT8183_SCP_CACHESIZE_8KB,
 	       scp->reg_base + MT8183_SCP_CACHE_CON);
 	writel(MT8183_SCP_CACHESIZE_8KB, scp->reg_base + MT8183_SCP_DCACHE_CON);
@@ -414,19 +394,19 @@ static int mt8186_scp_before_load(struct mtk_scp *scp)
 
 static int mt8192_scp_before_load(struct mtk_scp *scp)
 {
-	/* clear SPM interrupt, SCP2SPM_IPC_CLR */
+	 
 	writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
 
 	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
 
-	/* enable SRAM clock */
+	 
 	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
 	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
 	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
 	scp_sram_power_on(scp->reg_base + MT8192_L1TCM_SRAM_PDN, 0);
 	scp_sram_power_on(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
 
-	/* enable MPU for all memory regions */
+	 
 	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
 
 	return 0;
@@ -434,12 +414,12 @@ static int mt8192_scp_before_load(struct mtk_scp *scp)
 
 static int mt8195_scp_before_load(struct mtk_scp *scp)
 {
-	/* clear SPM interrupt, SCP2SPM_IPC_CLR */
+	 
 	writel(0xff, scp->reg_base + MT8192_SCP2SPM_IPC_CLR);
 
 	writel(1, scp->reg_base + MT8192_CORE0_SW_RSTN_SET);
 
-	/* enable SRAM clock */
+	 
 	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
 	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
 	scp_sram_power_on(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
@@ -447,7 +427,7 @@ static int mt8195_scp_before_load(struct mtk_scp *scp)
 			  MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS);
 	scp_sram_power_on(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
 
-	/* enable MPU for all memory regions */
+	 
 	writel(0xff, scp->reg_base + MT8192_CORE0_MEM_ATT_PREDEF);
 
 	return 0;
@@ -465,7 +445,7 @@ static int scp_load(struct rproc *rproc, const struct firmware *fw)
 		return ret;
 	}
 
-	/* Hold SCP in reset while loading FW. */
+	 
 	scp->data->scp_reset_assert(scp);
 
 	ret = scp->data->scp_before_load(scp);
@@ -566,7 +546,7 @@ static void *mt8192_scp_da_to_va(struct mtk_scp *scp, u64 da, size_t len)
 		return (void __force *)scp->sram_base + offset;
 	}
 
-	/* optional memory region */
+	 
 	if (scp->l1tcm_size &&
 	    da >= scp->l1tcm_phys &&
 	    (da + len) <= scp->l1tcm_phys + scp->l1tcm_size) {
@@ -574,7 +554,7 @@ static void *mt8192_scp_da_to_va(struct mtk_scp *scp, u64 da, size_t len)
 		return (void __force *)scp->l1tcm_base + offset;
 	}
 
-	/* optional memory region */
+	 
 	if (scp->dram_size &&
 	    da >= scp->dma_addr &&
 	    (da + len) <= scp->dma_addr + scp->dram_size) {
@@ -594,26 +574,26 @@ static void *scp_da_to_va(struct rproc *rproc, u64 da, size_t len, bool *is_iome
 
 static void mt8183_scp_stop(struct mtk_scp *scp)
 {
-	/* Disable SCP watchdog */
+	 
 	writel(0, scp->reg_base + MT8183_WDT_CFG);
 }
 
 static void mt8192_scp_stop(struct mtk_scp *scp)
 {
-	/* Disable SRAM clock */
+	 
 	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
 	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
 	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
 	scp_sram_power_off(scp->reg_base + MT8192_L1TCM_SRAM_PDN, 0);
 	scp_sram_power_off(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
 
-	/* Disable SCP watchdog */
+	 
 	writel(0, scp->reg_base + MT8192_CORE0_WDT_CFG);
 }
 
 static void mt8195_scp_stop(struct mtk_scp *scp)
 {
-	/* Disable SRAM clock */
+	 
 	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_0, 0);
 	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_1, 0);
 	scp_sram_power_off(scp->reg_base + MT8192_L2TCM_SRAM_PD_2, 0);
@@ -621,7 +601,7 @@ static void mt8195_scp_stop(struct mtk_scp *scp)
 			   MT8195_L1TCM_SRAM_PDN_RESERVED_RSI_BITS);
 	scp_sram_power_off(scp->reg_base + MT8192_CPU0_SRAM_PD, 0);
 
-	/* Disable SCP watchdog */
+	 
 	writel(0, scp->reg_base + MT8192_CORE0_WDT_CFG);
 }
 
@@ -652,68 +632,35 @@ static const struct rproc_ops scp_ops = {
 	.sanity_check	= rproc_elf_sanity_check,
 };
 
-/**
- * scp_get_device() - get device struct of SCP
- *
- * @scp:	mtk_scp structure
- **/
+ 
 struct device *scp_get_device(struct mtk_scp *scp)
 {
 	return scp->dev;
 }
 EXPORT_SYMBOL_GPL(scp_get_device);
 
-/**
- * scp_get_rproc() - get rproc struct of SCP
- *
- * @scp:	mtk_scp structure
- **/
+ 
 struct rproc *scp_get_rproc(struct mtk_scp *scp)
 {
 	return scp->rproc;
 }
 EXPORT_SYMBOL_GPL(scp_get_rproc);
 
-/**
- * scp_get_vdec_hw_capa() - get video decoder hardware capability
- *
- * @scp:	mtk_scp structure
- *
- * Return: video decoder hardware capability
- **/
+ 
 unsigned int scp_get_vdec_hw_capa(struct mtk_scp *scp)
 {
 	return scp->run.dec_capability;
 }
 EXPORT_SYMBOL_GPL(scp_get_vdec_hw_capa);
 
-/**
- * scp_get_venc_hw_capa() - get video encoder hardware capability
- *
- * @scp:	mtk_scp structure
- *
- * Return: video encoder hardware capability
- **/
+ 
 unsigned int scp_get_venc_hw_capa(struct mtk_scp *scp)
 {
 	return scp->run.enc_capability;
 }
 EXPORT_SYMBOL_GPL(scp_get_venc_hw_capa);
 
-/**
- * scp_mapping_dm_addr() - Mapping SRAM/DRAM to kernel virtual address
- *
- * @scp:	mtk_scp structure
- * @mem_addr:	SCP views memory address
- *
- * Mapping the SCP's SRAM address /
- * DMEM (Data Extended Memory) memory address /
- * Working buffer memory address to
- * kernel virtual address.
- *
- * Return: Return ERR_PTR(-EINVAL) if mapping failed,
- * otherwise the mapped kernel virtual address
- **/
+ 
 void *scp_mapping_dm_addr(struct mtk_scp *scp, u32 mem_addr)
 {
 	void *ptr;
@@ -732,7 +679,7 @@ static int scp_map_memory_region(struct mtk_scp *scp)
 
 	ret = of_reserved_mem_device_init(scp->dev);
 
-	/* reserved memory is optional. */
+	 
 	if (ret == -ENODEV) {
 		dev_info(scp->dev, "skipping reserved memory initialization.");
 		return 0;
@@ -743,7 +690,7 @@ static int scp_map_memory_region(struct mtk_scp *scp)
 		return -ENOMEM;
 	}
 
-	/* Reserved SCP code size */
+	 
 	scp->dram_size = MAX_CODE_SIZE;
 	scp->cpu_addr = dma_alloc_coherent(scp->dev, scp->dram_size,
 					   &scp->dma_addr, GFP_KERNEL);
@@ -844,7 +791,7 @@ static int scp_probe(struct platform_device *pdev)
 	scp->sram_size = resource_size(res);
 	scp->sram_phys = res->start;
 
-	/* l1tcm is an optional memory region */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "l1tcm");
 	scp->l1tcm_base = devm_ioremap_resource(dev, res);
 	if (IS_ERR(scp->l1tcm_base)) {
@@ -874,7 +821,7 @@ static int scp_probe(struct platform_device *pdev)
 	for (i = 0; i < SCP_IPI_MAX; i++)
 		mutex_init(&scp->ipi_desc[i].lock);
 
-	/* register SCP initialization IPI */
+	 
 	ret = scp_ipi_register(scp, SCP_IPI_INIT, scp_init_ipi_handler, scp);
 	if (ret) {
 		dev_err(dev, "Failed to register IPI_SCP_INIT\n");

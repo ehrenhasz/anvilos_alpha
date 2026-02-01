@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: generic data structures and APIs
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_DECL_H_
 #define _MWIFIEX_DECL_H_
@@ -27,9 +23,7 @@
 
 #define MWIFIEX_MIN_DATA_HEADER_LEN (MWIFIEX_DMA_ALIGN_SZ + INTF_HDR_ALIGN + \
 				     MAX_TXPD_SZ)
-#define MWIFIEX_MGMT_FRAME_HEADER_SIZE	8	/* sizeof(pkt_type)
-						 *   + sizeof(tx_control)
-						 */
+#define MWIFIEX_MGMT_FRAME_HEADER_SIZE	8	 
 
 #define MWIFIEX_MAX_TX_BASTREAM_SUPPORTED	2
 #define MWIFIEX_MAX_RX_BASTREAM_SUPPORTED	16
@@ -91,12 +85,12 @@
 #define MWIFIEX_TDLS_MAX_FAIL_COUNT      4
 #define MWIFIEX_AUTO_TDLS_IDLE_TIME     10
 
-/* 54M rates, index from 0 to 11 */
+ 
 #define MWIFIEX_RATE_INDEX_MCS0 12
-/* 12-27=MCS0-15(BW20) */
+ 
 #define MWIFIEX_BW20_MCS_NUM 15
 
-/* Rate index for OFDM 0 */
+ 
 #define MWIFIEX_RATE_INDEX_OFDM0   4
 
 #define MWIFIEX_MAX_STA_NUM		3
@@ -105,7 +99,7 @@
 
 #define MWIFIEX_A_BAND_START_FREQ	5000
 
-/* SDIO Aggr data packet special info */
+ 
 #define SDIO_MAX_AGGR_BUF_SIZE		(256 * 255)
 #define BLOCK_NUMBER_OFFSET		15
 #define SDIO_HEADER_OFFSET		28
@@ -298,4 +292,4 @@ enum mwifiex_chan_offset {
 	SEC_CHAN_BELOW = 3
 };
 
-#endif /* !_MWIFIEX_DECL_H_ */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Fuzhou Rockchip Electronics Co.Ltd
- * Author: Jacob Chen <jacob-chen@iotwrt.com>
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 
@@ -107,9 +104,7 @@ const struct vb2_ops rga_qops = {
 	.stop_streaming = rga_buf_stop_streaming,
 };
 
-/* RGA MMU is a 1-Level MMU, so it can't be used through the IOMMU API.
- * We use it more like a scatter-gather list.
- */
+ 
 void rga_buf_map(struct vb2_buffer *vb)
 {
 	struct rga_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
@@ -125,7 +120,7 @@ void rga_buf_map(struct vb2_buffer *vb)
 	else
 		pages = rga->dst_mmu_pages;
 
-	/* Create local MMU table for RGA */
+	 
 	sgt = vb2_plane_cookie(vb, 0);
 
 	for_each_sg(sgt->sgl, sgl, sgt->nents, i) {
@@ -142,7 +137,7 @@ void rga_buf_map(struct vb2_buffer *vb)
 		mapped_size += len;
 	}
 
-	/* sync local MMU table for RGA */
+	 
 	dma_sync_single_for_device(rga->dev, virt_to_phys(pages),
 				   8 * PAGE_SIZE, DMA_BIDIRECTIONAL);
 }

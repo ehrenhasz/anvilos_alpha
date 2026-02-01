@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * serial_tegra.c
- *
- * High-speed serial driver for NVIDIA Tegra SoCs
- *
- * Copyright (c) 2012-2019, NVIDIA CORPORATION.  All rights reserved.
- *
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/debugfs.h>
@@ -52,10 +44,7 @@
 #define TEGRA_UART_MIN_DMA			16
 #define TEGRA_UART_FIFO_SIZE			32
 
-/*
- * Tx fifo trigger level setting in tegra uart is in
- * reverse way then conventional uart.
- */
+ 
 #define TEGRA_UART_TX_TRIG_16B			0x00
 #define TEGRA_UART_TX_TRIG_8B			0x10
 #define TEGRA_UART_TX_TRIG_4B			0x20
@@ -63,29 +52,17 @@
 
 #define TEGRA_UART_MAXIMUM			8
 
-/* Default UART setting when started: 115200 no parity, stop, 8 data bits */
+ 
 #define TEGRA_UART_DEFAULT_BAUD			115200
 #define TEGRA_UART_DEFAULT_LSR			UART_LCR_WLEN8
 
-/* Tx transfer mode */
+ 
 #define TEGRA_TX_PIO				1
 #define TEGRA_TX_DMA				2
 
 #define TEGRA_UART_FCR_IIR_FIFO_EN		0x40
 
-/**
- * struct tegra_uart_chip_data: SOC specific data.
- *
- * @tx_fifo_full_status: Status flag available for checking tx fifo full.
- * @allow_txfifo_reset_fifo_mode: allow_tx fifo reset with fifo mode or not.
- *			Tegra30 does not allow this.
- * @support_clk_src_div: Clock source support the clock divider.
- * @fifo_mode_enable_status: Is FIFO mode enabled?
- * @uart_max_port: Maximum number of UART ports
- * @max_dma_burst_bytes: Maximum size of DMA bursts
- * @error_tolerance_low_range: Lowest number in the error tolerance range
- * @error_tolerance_high_range: Highest number in the error tolerance range
- */
+ 
 struct tegra_uart_chip_data {
 	bool	tx_fifo_full_status;
 	bool	allow_txfifo_reset_fifo_mode;
@@ -111,7 +88,7 @@ struct tegra_uart_port {
 	struct reset_control			*rst;
 	unsigned int				current_baud;
 
-	/* Register shadow */
+	 
 	unsigned long				fcr_shadow;
 	unsigned long				mcr_shadow;
 	unsigned long				lcr_shadow;
@@ -174,15 +151,7 @@ static unsigned int tegra_uart_get_mctrl(struct uart_port *u)
 {
 	struct tegra_uart_port *tup = to_tegra_uport(u);
 
-	/*
-	 * RI - Ring detector is active
-	 * CD/DCD/CAR - Carrier detect is always active. For some reason
-	 *	linux has different names for carrier detect.
-	 * DSR - Data Set ready is active as the hardware doesn't support it.
-	 *	Don't know if the linux support this yet?
-	 * CTS - Clear to send. Always set to active, as the hardware handles
-	 *	CTS automatically.
-	 */
+	 
 	if (tup->enable_modem_interrupt)
 		return TIOCM_RI | TIOCM_CD | TIOCM_DSR | TIOCM_CTS;
 	return TIOCM_CTS;
@@ -262,15 +231,7 @@ static void tegra_uart_break_ctl(struct uart_port *u, int break_ctl)
 	tup->lcr_shadow = lcr;
 }
 
-/**
- * tegra_uart_wait_cycle_time: Wait for N UART clock periods
- *
- * @tup:	Tegra serial port data structure.
- * @cycles:	Number of clock periods to wait.
- *
- * Tegra UARTs are clocked at 16X the baud/bit rate and hence the UART
- * clock speed is 16X the current baud rate.
- */
+ 
 static void tegra_uart_wait_cycle_time(struct tegra_uart_port *tup,
 				       unsigned int cycles)
 {
@@ -278,7 +239,7 @@ static void tegra_uart_wait_cycle_time(struct tegra_uart_port *tup,
 		udelay(DIV_ROUND_UP(cycles * 1000000, tup->current_baud * 16));
 }
 
-/* Wait for a symbol-time. */
+ 
 static void tegra_uart_wait_sym_time(struct tegra_uart_port *tup,
 		unsigned int syms)
 {
@@ -325,14 +286,10 @@ static void tegra_uart_fifo_reset(struct tegra_uart_port *tup, u8 fcr_bits)
 			tegra_uart_wait_fifo_mode_enabled(tup);
 	}
 
-	/* Dummy read to ensure the write is posted */
+	 
 	tegra_uart_read(tup, UART_SCR);
 
-	/*
-	 * For all tegra devices (up to t210), there is a hardware issue that
-	 * requires software to wait for 32 UART clock periods for the flush
-	 * to propagate, otherwise data could be lost.
-	 */
+	 
 	tegra_uart_wait_cycle_time(tup, 32);
 
 	do {
@@ -422,13 +379,13 @@ static int tegra_set_baudrate(struct tegra_uart_port *tup, unsigned int baud)
 	lcr &= ~UART_LCR_DLAB;
 	tegra_uart_write(tup, lcr, UART_LCR);
 
-	/* Dummy read to ensure the write is posted */
+	 
 	tegra_uart_read(tup, UART_SCR);
 	spin_unlock_irqrestore(&tup->uport.lock, flags);
 
 	tup->current_baud = baud;
 
-	/* wait two character intervals at new rate */
+	 
 	tegra_uart_wait_sym_time(tup, 2);
 	return 0;
 }
@@ -440,12 +397,12 @@ static u8 tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
 
 	if (unlikely(lsr & TEGRA_UART_LSR_ANY)) {
 		if (lsr & UART_LSR_OE) {
-			/* Overrun error */
+			 
 			flag = TTY_OVERRUN;
 			tup->uport.icount.overrun++;
 			dev_dbg(tup->uport.dev, "Got overrun errors\n");
 		} else if (lsr & UART_LSR_PE) {
-			/* Parity error */
+			 
 			flag = TTY_PARITY;
 			tup->uport.icount.parity++;
 			dev_dbg(tup->uport.dev, "Got Parity errors\n");
@@ -454,10 +411,7 @@ static u8 tegra_uart_decode_rx_error(struct tegra_uart_port *tup,
 			tup->uport.icount.frame++;
 			dev_dbg(tup->uport.dev, "Got frame errors\n");
 		} else if (lsr & UART_LSR_BI) {
-			/*
-			 * Break error
-			 * If FIFO read error without any data, reset Rx FIFO
-			 */
+			 
 			if (!(lsr & UART_LSR_DR) && (lsr & UART_LSR_FIFOE))
 				tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_RCVR);
 			if (tup->uport.ignore_status_mask & UART_LSR_BI)
@@ -479,7 +433,7 @@ static int tegra_uart_request_port(struct uart_port *u)
 
 static void tegra_uart_release_port(struct uart_port *u)
 {
-	/* Nothing to do here */
+	 
 }
 
 static void tegra_uart_fill_tx_fifo(struct tegra_uart_port *tup, int max_bytes)
@@ -582,7 +536,7 @@ static void tegra_uart_start_next_tx(struct tegra_uart_port *tup)
 		tegra_uart_start_tx_dma(tup, count);
 }
 
-/* Called by serial core driver with u->lock taken. */
+ 
 static void tegra_uart_start_tx(struct uart_port *u)
 {
 	struct tegra_uart_port *tup = to_tegra_uport(u);
@@ -671,7 +625,7 @@ static void tegra_uart_copy_rx_to_tty(struct tegra_uart_port *tup,
 {
 	int copied;
 
-	/* If count is zero, then there is no data to be copied */
+	 
 	if (!count)
 		return;
 
@@ -713,7 +667,7 @@ static void tegra_uart_rx_buffer_push(struct tegra_uart_port *tup,
 	async_tx_ack(tup->rx_dma_desc);
 	count = tup->rx_bytes_requested - residue;
 
-	/* If we are here, DMA is stopped */
+	 
 	tegra_uart_copy_rx_to_tty(tup, port, count);
 
 	do_handle_rx_pio(tup);
@@ -736,7 +690,7 @@ static void tegra_uart_rx_dma_complete(void *args)
 		goto done;
 	}
 
-	/* Deactivate flow control to stop sender */
+	 
 	if (tup->rts_active)
 		set_rts(tup, false);
 
@@ -744,7 +698,7 @@ static void tegra_uart_rx_dma_complete(void *args)
 	tegra_uart_rx_buffer_push(tup, 0);
 	tegra_uart_start_rx_dma(tup);
 
-	/* Activate flow control to start transfer */
+	 
 	if (tup->rts_active)
 		set_rts(tup, true);
 
@@ -771,7 +725,7 @@ static void tegra_uart_terminate_rx_dma(struct tegra_uart_port *tup)
 
 static void tegra_uart_handle_rx_dma(struct tegra_uart_port *tup)
 {
-	/* Deactivate flow control to stop sender */
+	 
 	if (tup->rts_active)
 		set_rts(tup, false);
 
@@ -818,10 +772,10 @@ static void tegra_uart_handle_modem_signal_change(struct uart_port *u)
 		tup->uport.icount.rng++;
 	if (msr & UART_MSR_DDSR)
 		tup->uport.icount.dsr++;
-	/* We may only get DDCD when HW init and reset */
+	 
 	if (msr & UART_MSR_DDCD)
 		uart_handle_dcd_change(&tup->uport, msr & UART_MSR_DCD);
-	/* Will start/stop_tx accordingly */
+	 
 	if (msr & UART_MSR_DCTS)
 		uart_handle_cts_change(&tup->uport, msr & UART_MSR_CTS);
 }
@@ -857,21 +811,21 @@ static irqreturn_t tegra_uart_isr(int irq, void *data)
 		}
 
 		switch ((iir >> 1) & 0x7) {
-		case 0: /* Modem signal change interrupt */
+		case 0:  
 			tegra_uart_handle_modem_signal_change(u);
 			break;
 
-		case 1: /* Transmit interrupt only triggered when using PIO */
+		case 1:  
 			tup->ier_shadow &= ~UART_IER_THRI;
 			tegra_uart_write(tup, tup->ier_shadow, UART_IER);
 			tegra_uart_handle_tx_pio(tup);
 			break;
 
-		case 4: /* End of data */
-		case 6: /* Rx timeout */
+		case 4:  
+		case 6:  
 			if (!tup->use_rx_pio) {
 				is_rx_int = tup->rx_in_progress;
-				/* Disable Rx interrupts */
+				 
 				ier = tup->ier_shadow;
 				ier &= ~(UART_IER_RDI | UART_IER_RLSI |
 					UART_IER_RTOIE | TEGRA_UART_IER_EORD);
@@ -880,7 +834,7 @@ static irqreturn_t tegra_uart_isr(int irq, void *data)
 				break;
 			}
 			fallthrough;
-		case 2: /* Receive */
+		case 2:  
 			if (!tup->use_rx_pio) {
 				is_rx_start = tup->rx_in_progress;
 				tup->ier_shadow  &= ~UART_IER_RDI;
@@ -891,13 +845,13 @@ static irqreturn_t tegra_uart_isr(int irq, void *data)
 			}
 			break;
 
-		case 3: /* Receive error */
+		case 3:  
 			tegra_uart_decode_rx_error(tup,
 					tegra_uart_read(tup, UART_LSR));
 			break;
 
-		case 5: /* break nothing to handle */
-		case 7: /* break nothing to handle */
+		case 5:  
+		case 7:  
 			break;
 		}
 	}
@@ -915,7 +869,7 @@ static void tegra_uart_stop_rx(struct uart_port *u)
 	if (!tup->rx_in_progress)
 		return;
 
-	tegra_uart_wait_sym_time(tup, 1); /* wait one character interval */
+	tegra_uart_wait_sym_time(tup, 1);  
 
 	ier = tup->ier_shadow;
 	ier &= ~(UART_IER_RDI | UART_IER_RLSI | UART_IER_RTOIE |
@@ -940,7 +894,7 @@ static void tegra_uart_hw_deinit(struct tegra_uart_port *tup)
 	unsigned long msr;
 	unsigned long mcr;
 
-	/* Disable interrupts */
+	 
 	tegra_uart_write(tup, 0, UART_IER);
 
 	lsr = tegra_uart_read(tup, UART_LSR);
@@ -951,7 +905,7 @@ static void tegra_uart_hw_deinit(struct tegra_uart_port *tup)
 			dev_err(tup->uport.dev,
 				"Tx Fifo not empty, CTS disabled, waiting\n");
 
-		/* Wait for Tx fifo to be empty */
+		 
 		while ((lsr & UART_LSR_TEMT) != UART_LSR_TEMT) {
 			wait_time = min(fifo_empty_time, 100lu);
 			udelay(wait_time);
@@ -970,7 +924,7 @@ static void tegra_uart_hw_deinit(struct tegra_uart_port *tup)
 	}
 
 	spin_lock_irqsave(&tup->uport.lock, flags);
-	/* Reset the Rx and Tx FIFOs */
+	 
 	tegra_uart_fifo_reset(tup, UART_FCR_CLEAR_XMIT | UART_FCR_CLEAR_RCVR);
 	tup->current_baud = 0;
 	spin_unlock_irqrestore(&tup->uport.lock, flags);
@@ -1002,7 +956,7 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
 		return ret;
 	}
 
-	/* Reset the UART controller to clear all previous status.*/
+	 
 	reset_control_assert(tup->rst);
 	udelay(10);
 	reset_control_deassert(tup->rst);
@@ -1010,24 +964,7 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
 	tup->rx_in_progress = 0;
 	tup->tx_in_progress = 0;
 
-	/*
-	 * Set the trigger level
-	 *
-	 * For PIO mode:
-	 *
-	 * For receive, this will interrupt the CPU after that many number of
-	 * bytes are received, for the remaining bytes the receive timeout
-	 * interrupt is received. Rx high watermark is set to 4.
-	 *
-	 * For transmit, if the trasnmit interrupt is enabled, this will
-	 * interrupt the CPU when the number of entries in the FIFO reaches the
-	 * low watermark. Tx low watermark is set to 16 bytes.
-	 *
-	 * For DMA mode:
-	 *
-	 * Set the Tx trigger to 16. This should match the DMA burst size that
-	 * programmed in the DMA registers.
-	 */
+	 
 	tup->fcr_shadow = UART_FCR_ENABLE_FIFO;
 
 	if (tup->use_rx_pio) {
@@ -1042,7 +979,7 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
 	tup->fcr_shadow |= TEGRA_UART_TX_TRIG_16B;
 	tegra_uart_write(tup, tup->fcr_shadow, UART_FCR);
 
-	/* Dummy read to ensure the write is posted */
+	 
 	tegra_uart_read(tup, UART_SCR);
 
 	if (tup->cdata->fifo_mode_enable_status) {
@@ -1054,20 +991,11 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
 			return ret;
 		}
 	} else {
-		/*
-		 * For all tegra devices (up to t210), there is a hardware
-		 * issue that requires software to wait for 3 UART clock
-		 * periods after enabling the TX fifo, otherwise data could
-		 * be lost.
-		 */
+		 
 		tegra_uart_wait_cycle_time(tup, 3);
 	}
 
-	/*
-	 * Initialize the UART with default configuration
-	 * (115200, N, 8, 1) so that the receive DMA buffer may be
-	 * enqueued
-	 */
+	 
 	ret = tegra_set_baudrate(tup, TEGRA_UART_DEFAULT_BAUD);
 	if (ret < 0) {
 		clk_disable_unprepare(tup->uart_clk);
@@ -1083,26 +1011,10 @@ static int tegra_uart_hw_init(struct tegra_uart_port *tup)
 	}
 	tup->rx_in_progress = 1;
 
-	/*
-	 * Enable IE_RXS for the receive status interrupts like line errors.
-	 * Enable IE_RX_TIMEOUT to get the bytes which cannot be DMA'd.
-	 *
-	 * EORD is different interrupt than RX_TIMEOUT - RX_TIMEOUT occurs when
-	 * the DATA is sitting in the FIFO and couldn't be transferred to the
-	 * DMA as the DMA size alignment (4 bytes) is not met. EORD will be
-	 * triggered when there is a pause of the incomming data stream for 4
-	 * characters long.
-	 *
-	 * For pauses in the data which is not aligned to 4 bytes, we get
-	 * both the EORD as well as RX_TIMEOUT - SW sees RX_TIMEOUT first
-	 * then the EORD.
-	 */
+	 
 	tup->ier_shadow = UART_IER_RLSI | UART_IER_RTOIE | UART_IER_RDI;
 
-	/*
-	 * If using DMA mode, enable EORD interrupt to notify about RX
-	 * completion.
-	 */
+	 
 	if (!tup->use_rx_pio)
 		tup->ier_shadow |= TEGRA_UART_IER_EORD;
 
@@ -1235,7 +1147,7 @@ static int tegra_uart_startup(struct uart_port *u)
 	return 0;
 
 fail_request_irq:
-	/* tup->uart_clk is already enabled in tegra_uart_hw_init */
+	 
 	clk_disable_unprepare(tup->uart_clk);
 fail_hw_init:
 	if (!tup->use_rx_pio)
@@ -1246,10 +1158,7 @@ fail_rx_dma:
 	return ret;
 }
 
-/*
- * Flush any TX data submitted for DMA and PIO. Called when the
- * TX circular buffer is reset.
- */
+ 
 static void tegra_uart_flush_buffer(struct uart_port *u)
 {
 	struct tegra_uart_port *tup = to_tegra_uport(u);
@@ -1294,21 +1203,21 @@ static void tegra_uart_set_termios(struct uart_port *u,
 	max_divider *= 16;
 	spin_lock_irqsave(&u->lock, flags);
 
-	/* Changing configuration, it is safe to stop any rx now */
+	 
 	if (tup->rts_active)
 		set_rts(tup, false);
 
-	/* Clear all interrupts as configuration is going to be changed */
+	 
 	tegra_uart_write(tup, tup->ier_shadow | UART_IER_RDI, UART_IER);
 	tegra_uart_read(tup, UART_IER);
 	tegra_uart_write(tup, 0, UART_IER);
 	tegra_uart_read(tup, UART_IER);
 
-	/* Parity */
+	 
 	lcr = tup->lcr_shadow;
 	lcr &= ~UART_LCR_PARITY;
 
-	/* CMSPAR isn't supported by this driver */
+	 
 	termios->c_cflag &= ~CMSPAR;
 
 	if ((termios->c_cflag & PARENB) == PARENB) {
@@ -1327,7 +1236,7 @@ static void tegra_uart_set_termios(struct uart_port *u,
 	lcr &= ~UART_LCR_WLEN8;
 	lcr |= UART_LCR_WLEN(char_bits);
 
-	/* Stop bits */
+	 
 	if (termios->c_cflag & CSTOPB)
 		lcr |= UART_LCR_STOP;
 	else
@@ -1337,7 +1246,7 @@ static void tegra_uart_set_termios(struct uart_port *u,
 	tup->lcr_shadow = lcr;
 	tup->symb_bit = tty_get_frame_size(termios->c_cflag);
 
-	/* Baud rate. */
+	 
 	baud = uart_get_baud_rate(u, termios, oldtermios,
 			parent_clk_rate/max_divider,
 			parent_clk_rate/16);
@@ -1351,12 +1260,12 @@ static void tegra_uart_set_termios(struct uart_port *u,
 		tty_termios_encode_baud_rate(termios, baud, baud);
 	spin_lock_irqsave(&u->lock, flags);
 
-	/* Flow control */
+	 
 	if (termios->c_cflag & CRTSCTS)	{
 		tup->mcr_shadow |= TEGRA_UART_MCR_CTS_EN;
 		tup->mcr_shadow &= ~TEGRA_UART_MCR_RTS_EN;
 		tegra_uart_write(tup, tup->mcr_shadow, UART_MCR);
-		/* if top layer has asked to set rts active then do so here */
+		 
 		if (tup->rts_active)
 			set_rts(tup, true);
 	} else {
@@ -1365,18 +1274,18 @@ static void tegra_uart_set_termios(struct uart_port *u,
 		tegra_uart_write(tup, tup->mcr_shadow, UART_MCR);
 	}
 
-	/* update the port timeout based on new settings */
+	 
 	uart_update_timeout(u, termios->c_cflag, baud);
 
-	/* Make sure all writes have completed */
+	 
 	tegra_uart_read(tup, UART_IER);
 
-	/* Re-enable interrupt */
+	 
 	tegra_uart_write(tup, tup->ier_shadow, UART_IER);
 	tegra_uart_read(tup, UART_IER);
 
 	tup->uport.ignore_status_mask = 0;
-	/* Ignore all characters if CREAD is not set */
+	 
 	if ((termios->c_cflag & CREAD) == 0)
 		tup->uport.ignore_status_mask |= UART_LSR_DR;
 	if (termios->c_iflag & IGNBRK)

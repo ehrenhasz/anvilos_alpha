@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2011 - 2012 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Samsung EXYNOS5 SoC series G-Scaler driver
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/delay.h>
@@ -123,17 +118,17 @@ void gsc_hw_set_in_size(struct gsc_ctx *ctx)
 	struct gsc_frame *frame = &ctx->s_frame;
 	u32 cfg;
 
-	/* Set input pixel offset */
+	 
 	cfg = GSC_SRCIMG_OFFSET_X(frame->crop.left);
 	cfg |= GSC_SRCIMG_OFFSET_Y(frame->crop.top);
 	writel(cfg, dev->regs + GSC_SRCIMG_OFFSET);
 
-	/* Set input original size */
+	 
 	cfg = GSC_SRCIMG_WIDTH(frame->f_width);
 	cfg |= GSC_SRCIMG_HEIGHT(frame->f_height);
 	writel(cfg, dev->regs + GSC_SRCIMG_SIZE);
 
-	/* Set input cropped size */
+	 
 	cfg = GSC_CROPPED_WIDTH(frame->crop.width);
 	cfg |= GSC_CROPPED_HEIGHT(frame->crop.height);
 	writel(cfg, dev->regs + GSC_CROPPED_SIZE);
@@ -236,7 +231,7 @@ void gsc_hw_set_out_size(struct gsc_ctx *ctx)
 	struct gsc_frame *frame = &ctx->d_frame;
 	u32 cfg;
 
-	/* Set output original size */
+	 
 	if (ctx->out_path == GSC_DMA) {
 		cfg = GSC_DSTIMG_OFFSET_X(frame->crop.left);
 		cfg |= GSC_DSTIMG_OFFSET_Y(frame->crop.top);
@@ -247,7 +242,7 @@ void gsc_hw_set_out_size(struct gsc_ctx *ctx)
 		writel(cfg, dev->regs + GSC_DSTIMG_SIZE);
 	}
 
-	/* Set output scaled size */
+	 
 	if (ctx->gsc_ctrls.rotate->val == 90 ||
 	    ctx->gsc_ctrls.rotate->val == 270) {
 		cfg = GSC_SCALED_WIDTH(frame->crop.height);

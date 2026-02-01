@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <malloc.h>
 #include <stdlib.h>
 #include <string.h>
@@ -11,7 +11,7 @@
 
 int test_strlen(const void *s);
 
-/* test all offsets and lengths */
+ 
 static void test_one(char *s)
 {
 	unsigned long offset;

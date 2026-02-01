@@ -1,34 +1,31 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2005, Intec Automation Inc.
- * Copyright (C) 2014, Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/mtd/spi-nor.h>
 
 #include "core.h"
 
-/* flash_info mfr_flag. Used to read proprietary FSR register. */
+ 
 #define USE_FSR		BIT(0)
 
-#define SPINOR_OP_RDFSR		0x70	/* Read flag status register */
-#define SPINOR_OP_CLFSR		0x50	/* Clear flag status register */
-#define SPINOR_OP_MT_DTR_RD	0xfd	/* Fast Read opcode in DTR mode */
-#define SPINOR_OP_MT_RD_ANY_REG	0x85	/* Read volatile register */
-#define SPINOR_OP_MT_WR_ANY_REG	0x81	/* Write volatile register */
-#define SPINOR_REG_MT_CFR0V	0x00	/* For setting octal DTR mode */
-#define SPINOR_REG_MT_CFR1V	0x01	/* For setting dummy cycles */
-#define SPINOR_REG_MT_CFR1V_DEF	0x1f	/* Default dummy cycles */
-#define SPINOR_MT_OCT_DTR	0xe7	/* Enable Octal DTR. */
-#define SPINOR_MT_EXSPI		0xff	/* Enable Extended SPI (default) */
+#define SPINOR_OP_RDFSR		0x70	 
+#define SPINOR_OP_CLFSR		0x50	 
+#define SPINOR_OP_MT_DTR_RD	0xfd	 
+#define SPINOR_OP_MT_RD_ANY_REG	0x85	 
+#define SPINOR_OP_MT_WR_ANY_REG	0x81	 
+#define SPINOR_REG_MT_CFR0V	0x00	 
+#define SPINOR_REG_MT_CFR1V	0x01	 
+#define SPINOR_REG_MT_CFR1V_DEF	0x1f	 
+#define SPINOR_MT_OCT_DTR	0xe7	 
+#define SPINOR_MT_EXSPI		0xff	 
 
-/* Flag Status Register bits */
-#define FSR_READY		BIT(7)	/* Device status, 0 = Busy, 1 = Ready */
-#define FSR_E_ERR		BIT(5)	/* Erase operation status */
-#define FSR_P_ERR		BIT(4)	/* Program operation status */
-#define FSR_PT_ERR		BIT(1)	/* Protection error bit */
+ 
+#define FSR_READY		BIT(7)	 
+#define FSR_E_ERR		BIT(5)	 
+#define FSR_P_ERR		BIT(4)	 
+#define FSR_PT_ERR		BIT(1)	 
 
-/* Micron ST SPI NOR flash operations. */
+ 
 #define MICRON_ST_NOR_WR_ANY_REG_OP(naddr, addr, ndata, buf)		\
 	SPI_MEM_OP(SPI_MEM_OP_CMD(SPINOR_OP_MT_WR_ANY_REG, 0),		\
 		   SPI_MEM_OP_ADDR(naddr, addr, 0),			\
@@ -54,7 +51,7 @@ static int micron_st_nor_octal_dtr_en(struct spi_nor *nor)
 	int ret;
 	u8 addr_mode_nbytes = nor->params->addr_mode_nbytes;
 
-	/* Use 20 dummy cycles for memory array reads. */
+	 
 	*buf = 20;
 	op = (struct spi_mem_op)
 		MICRON_ST_NOR_WR_ANY_REG_OP(addr_mode_nbytes,
@@ -71,7 +68,7 @@ static int micron_st_nor_octal_dtr_en(struct spi_nor *nor)
 	if (ret)
 		return ret;
 
-	/* Read flash ID to make sure the switch was successful. */
+	 
 	ret = spi_nor_read_id(nor, 0, 8, buf, SNOR_PROTO_8_8_8_DTR);
 	if (ret) {
 		dev_dbg(nor->dev, "error %d reading JEDEC ID after enabling 8D-8D-8D mode\n", ret);
@@ -90,14 +87,7 @@ static int micron_st_nor_octal_dtr_dis(struct spi_nor *nor)
 	u8 *buf = nor->bouncebuf;
 	int ret;
 
-	/*
-	 * The register is 1-byte wide, but 1-byte transactions are not allowed
-	 * in 8D-8D-8D mode. The next register is the dummy cycle configuration
-	 * register. Since the transaction needs to be at least 2 bytes wide,
-	 * set the next register to its default value. This also makes sense
-	 * because the value was changed when enabling 8D-8D-8D mode, it should
-	 * be reset when disabling.
-	 */
+	 
 	buf[0] = SPINOR_MT_EXSPI;
 	buf[1] = SPINOR_REG_MT_CFR1V_DEF;
 	op = (struct spi_mem_op)
@@ -107,7 +97,7 @@ static int micron_st_nor_octal_dtr_dis(struct spi_nor *nor)
 	if (ret)
 		return ret;
 
-	/* Read flash ID to make sure the switch was successful. */
+	 
 	ret = spi_nor_read_id(nor, 0, 0, buf, SNOR_PROTO_1_1_1);
 	if (ret) {
 		dev_dbg(nor->dev, "error %d reading JEDEC ID after disabling 8D-8D-8D mode\n", ret);
@@ -133,7 +123,7 @@ static void mt35xu512aba_default_init(struct spi_nor *nor)
 
 static int mt35xu512aba_post_sfdp_fixup(struct spi_nor *nor)
 {
-	/* Set the Fast Read settings. */
+	 
 	nor->params->hwcaps.mask |= SNOR_HWCAPS_READ_8_8_8_DTR;
 	spi_nor_set_read_settings(&nor->params->reads[SNOR_CMD_READ_8_8_8_DTR],
 				  0, 20, SPINOR_OP_MT_DTR_RD,
@@ -143,11 +133,7 @@ static int mt35xu512aba_post_sfdp_fixup(struct spi_nor *nor)
 	nor->params->rdsr_dummy = 8;
 	nor->params->rdsr_addr_nbytes = 0;
 
-	/*
-	 * The BFPT quad enable field is set to a reserved value so the quad
-	 * enable function is ignored by spi_nor_parse_bfpt(). Make sure we
-	 * disable it.
-	 */
+	 
 	nor->params->quad_enable = NULL;
 
 	return 0;
@@ -303,15 +289,7 @@ static const struct flash_info st_nor_parts[] = {
 	{ "m25px80",    INFO(0x207114,  0, 64 * 1024, 16) },
 };
 
-/**
- * micron_st_nor_read_fsr() - Read the Flag Status Register.
- * @nor:	pointer to 'struct spi_nor'
- * @fsr:	pointer to a DMA-able buffer where the value of the
- *              Flag Status Register will be written. Should be at least 2
- *              bytes.
- *
- * Return: 0 on success, -errno otherwise.
- */
+ 
 static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
 {
 	int ret;
@@ -322,10 +300,7 @@ static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
 		if (nor->reg_proto == SNOR_PROTO_8_8_8_DTR) {
 			op.addr.nbytes = nor->params->rdsr_addr_nbytes;
 			op.dummy.nbytes = nor->params->rdsr_dummy;
-			/*
-			 * We don't want to read only one byte in DTR mode. So,
-			 * read 2 and then discard the second byte.
-			 */
+			 
 			op.data.nbytes = 2;
 		}
 
@@ -343,10 +318,7 @@ static int micron_st_nor_read_fsr(struct spi_nor *nor, u8 *fsr)
 	return ret;
 }
 
-/**
- * micron_st_nor_clear_fsr() - Clear the Flag Status Register.
- * @nor:	pointer to 'struct spi_nor'.
- */
+ 
 static void micron_st_nor_clear_fsr(struct spi_nor *nor)
 {
 	int ret;
@@ -366,14 +338,7 @@ static void micron_st_nor_clear_fsr(struct spi_nor *nor)
 		dev_dbg(nor->dev, "error %d clearing FSR\n", ret);
 }
 
-/**
- * micron_st_nor_ready() - Query the Status Register as well as the Flag Status
- * Register to see if the flash is ready for new commands. If there are any
- * errors in the FSR clear them.
- * @nor:	pointer to 'struct spi_nor'.
- *
- * Return: 1 if ready, 0 if not ready, -errno on errors.
- */
+ 
 static int micron_st_nor_ready(struct spi_nor *nor)
 {
 	int sr_ready, ret;
@@ -384,13 +349,7 @@ static int micron_st_nor_ready(struct spi_nor *nor)
 
 	ret = micron_st_nor_read_fsr(nor, nor->bouncebuf);
 	if (ret) {
-		/*
-		 * Some controllers, such as Intel SPI, do not support low
-		 * level operations such as reading the flag status
-		 * register. They only expose small amount of high level
-		 * operations to the software. If this is the case we use
-		 * only the status register value.
-		 */
+		 
 		return ret == -EOPNOTSUPP ? sr_ready : ret;
 	}
 
@@ -406,12 +365,7 @@ static int micron_st_nor_ready(struct spi_nor *nor)
 
 		micron_st_nor_clear_fsr(nor);
 
-		/*
-		 * WEL bit remains set to one when an erase or page program
-		 * error occurs. Issue a Write Disable command to protect
-		 * against inadvertent writes that can possibly corrupt the
-		 * contents of the memory.
-		 */
+		 
 		ret = spi_nor_write_disable(nor);
 		if (ret)
 			return ret;

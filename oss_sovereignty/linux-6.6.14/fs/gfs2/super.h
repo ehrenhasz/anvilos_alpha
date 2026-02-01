@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) Sistina Software, Inc.  1997-2003 All rights reserved.
- * Copyright (C) 2004-2006 Red Hat, Inc.  All rights reserved.
- */
+ 
+ 
 
 #ifndef __SUPER_DOT_H__
 #define __SUPER_DOT_H__
@@ -11,7 +8,7 @@
 #include <linux/dcache.h>
 #include "incore.h"
 
-/* Supported fs format version range */
+ 
 #define GFS2_FS_FORMAT_MIN (1801)
 #define GFS2_FS_FORMAT_MAX (1802)
 
@@ -63,5 +60,5 @@ extern const struct dentry_operations gfs2_dops;
 extern const struct xattr_handler *gfs2_xattr_handlers_max[];
 extern const struct xattr_handler **gfs2_xattr_handlers_min;
 
-#endif /* __SUPER_DOT_H__ */
+#endif  
 

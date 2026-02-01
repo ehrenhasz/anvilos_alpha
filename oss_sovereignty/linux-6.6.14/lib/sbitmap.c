@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Facebook
- * Copyright (C) 2013-2014 Jens Axboe
- */
+
+ 
 
 #include <linux/sched.h>
 #include <linux/random.h>
@@ -46,10 +43,10 @@ static inline void update_alloc_hint_after_get(struct sbitmap *sb,
 					       unsigned int nr)
 {
 	if (nr == -1) {
-		/* If the map is full, a hint won't do us much good. */
+		 
 		this_cpu_write(*sb->alloc_hint, 0);
 	} else if (nr == hint || unlikely(sb->round_robin)) {
-		/* Only update the hint if we used it. */
+		 
 		hint = nr + 1;
 		if (hint >= depth - 1)
 			hint = 0;
@@ -57,9 +54,7 @@ static inline void update_alloc_hint_after_get(struct sbitmap *sb,
 	}
 }
 
-/*
- * See if we have deferred clears that we can batch move
- */
+ 
 static inline bool sbitmap_deferred_clear(struct sbitmap_word *map)
 {
 	unsigned long mask;
@@ -67,14 +62,10 @@ static inline bool sbitmap_deferred_clear(struct sbitmap_word *map)
 	if (!READ_ONCE(map->cleared))
 		return false;
 
-	/*
-	 * First get a stable cleared mask, setting the old mask to 0.
-	 */
+	 
 	mask = xchg(&map->cleared, 0);
 
-	/*
-	 * Now clear the masked bits in our free word
-	 */
+	 
 	atomic_long_andnot(mask, (atomic_long_t *)&map->word);
 	BUILD_BUG_ON(sizeof(atomic_long_t) != sizeof(map->word));
 	return true;
@@ -138,17 +129,13 @@ static int __sbitmap_get_word(unsigned long *word, unsigned long depth,
 {
 	int nr;
 
-	/* don't wrap if starting from 0 */
+	 
 	wrap = wrap && hint;
 
 	while (1) {
 		nr = find_next_zero_bit(word, depth, hint);
 		if (unlikely(nr >= depth)) {
-			/*
-			 * We started with an offset, and we didn't reset the
-			 * offset to 0 in a failure case, so start from 0 to
-			 * exhaust the map.
-			 */
+			 
 			if (hint && wrap) {
 				hint = 0;
 				continue;
@@ -207,7 +194,7 @@ static int sbitmap_find_bit(struct sbitmap *sb,
 			break;
 		}
 
-		/* Jump to next index. */
+		 
 		alloc_hint = 0;
 		if (++index >= sb->map_nr)
 			index = 0;
@@ -222,11 +209,7 @@ static int __sbitmap_get(struct sbitmap *sb, unsigned int alloc_hint)
 
 	index = SB_NR_TO_INDEX(sb, alloc_hint);
 
-	/*
-	 * Unless we're doing round robin tag allocation, just use the
-	 * alloc_hint to find the right word index. No point in looping
-	 * twice in find_next_zero_bit() for that case.
-	 */
+	 
 	if (sb->round_robin)
 		alloc_hint = SB_NR_TO_BIT(sb, alloc_hint);
 	else
@@ -387,22 +370,7 @@ static unsigned int sbq_calc_wake_batch(struct sbitmap_queue *sbq,
 	unsigned int wake_batch;
 	unsigned int shallow_depth;
 
-	/*
-	 * For each batch, we wake up one queue. We need to make sure that our
-	 * batch size is small enough that the full depth of the bitmap,
-	 * potentially limited by a shallow depth, is enough to wake up all of
-	 * the queues.
-	 *
-	 * Each full word of the bitmap has bits_per_word bits, and there might
-	 * be a partial word. There are depth / bits_per_word full words and
-	 * depth % bits_per_word bits left over. In bitwise arithmetic:
-	 *
-	 * bits_per_word = 1 << shift
-	 * depth / bits_per_word = depth >> shift
-	 * depth % bits_per_word = depth & ((1 << shift) - 1)
-	 *
-	 * Each word can be limited to sbq->min_shallow_depth bits.
-	 */
+	 
 	shallow_depth = min(1U << sbq->sb.shift, sbq->min_shallow_depth);
 	depth = ((depth >> sbq->sb.shift) * shallow_depth +
 		 min(depth & ((1U << sbq->sb.shift) - 1), shallow_depth));
@@ -523,7 +491,7 @@ unsigned long __sbitmap_queue_get_batch(struct sbitmap_queue *sbq, int nr_tags,
 			}
 		}
 next:
-		/* Jump to next index. */
+		 
 		if (++index >= sb->map_nr)
 			index = 0;
 	}
@@ -559,12 +527,7 @@ static void __sbitmap_queue_wake_up(struct sbitmap_queue *sbq, int nr)
 	for (i = 0; i < SBQ_WAIT_QUEUES; i++) {
 		struct sbq_wait_state *ws = &sbq->ws[wake_index];
 
-		/*
-		 * Advance the index before checking the current queue.
-		 * It improves fairness, by ensuring the queue doesn't
-		 * need to be fully emptied before trying to wake up
-		 * from the next one.
-		 */
+		 
 		wake_index = sbq_index_inc(wake_index);
 
 		if (waitqueue_active(&ws->wait)) {
@@ -619,7 +582,7 @@ void sbitmap_queue_clear_batch(struct sbitmap_queue *sbq, int offset,
 		const int tag = tags[i] - offset;
 		unsigned long *this_addr;
 
-		/* since we're clearing a batch, skip the deferred map */
+		 
 		this_addr = &sb->map[SB_NR_TO_INDEX(sb, tag)].word;
 		if (!addr) {
 			addr = this_addr;
@@ -643,25 +606,11 @@ void sbitmap_queue_clear_batch(struct sbitmap_queue *sbq, int offset,
 void sbitmap_queue_clear(struct sbitmap_queue *sbq, unsigned int nr,
 			 unsigned int cpu)
 {
-	/*
-	 * Once the clear bit is set, the bit may be allocated out.
-	 *
-	 * Orders READ/WRITE on the associated instance(such as request
-	 * of blk_mq) by this bit for avoiding race with re-allocation,
-	 * and its pair is the memory barrier implied in __sbitmap_get_word.
-	 *
-	 * One invariant is that the clear bit has to be zero when the bit
-	 * is in use.
-	 */
+	 
 	smp_mb__before_atomic();
 	sbitmap_deferred_clear_bit(&sbq->sb, nr);
 
-	/*
-	 * Pairs with the memory barrier in set_current_state() to ensure the
-	 * proper ordering of clear_bit_unlock()/waitqueue_active() in the waker
-	 * and test_and_set_bit_lock()/prepare_to_wait()/finish_wait() in the
-	 * waiter. See the comment on waitqueue_active().
-	 */
+	 
 	smp_mb__after_atomic();
 	sbitmap_queue_wake_up(sbq, 1);
 	sbitmap_update_cpu_hint(&sbq->sb, cpu, nr);
@@ -672,10 +621,7 @@ void sbitmap_queue_wake_all(struct sbitmap_queue *sbq)
 {
 	int i, wake_index;
 
-	/*
-	 * Pairs with the memory barrier in set_current_state() like in
-	 * sbitmap_queue_wake_up().
-	 */
+	 
 	smp_mb();
 	wake_index = atomic_read(&sbq->wake_index);
 	for (i = 0; i < SBQ_WAIT_QUEUES; i++) {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0-or-later
-/*
- * Copyright 2008 - 2015 Freescale Semiconductor Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -17,24 +15,24 @@
 #include <linux/phy/phy.h>
 #include <linux/of_mdio.h>
 
-/* Num of additional exact match MAC adr regs */
+ 
 #define MEMAC_NUM_OF_PADDRS 7
 
-/* Control and Configuration Register (COMMAND_CONFIG) */
-#define CMD_CFG_REG_LOWP_RXETY	0x01000000 /* 07 Rx low power indication */
-#define CMD_CFG_TX_LOWP_ENA	0x00800000 /* 08 Tx Low Power Idle Enable */
-#define CMD_CFG_PFC_MODE	0x00080000 /* 12 Enable PFC */
-#define CMD_CFG_NO_LEN_CHK	0x00020000 /* 14 Payload length check disable */
-#define CMD_CFG_SW_RESET	0x00001000 /* 19 S/W Reset, self clearing bit */
-#define CMD_CFG_TX_PAD_EN	0x00000800 /* 20 Enable Tx padding of frames */
-#define CMD_CFG_PAUSE_IGNORE	0x00000100 /* 23 Ignore Pause frame quanta */
-#define CMD_CFG_CRC_FWD		0x00000040 /* 25 Terminate/frwd CRC of frames */
-#define CMD_CFG_PAD_EN		0x00000020 /* 26 Frame padding removal */
-#define CMD_CFG_PROMIS_EN	0x00000010 /* 27 Promiscuous operation enable */
-#define CMD_CFG_RX_EN		0x00000002 /* 30 MAC receive path enable */
-#define CMD_CFG_TX_EN		0x00000001 /* 31 MAC transmit path enable */
+ 
+#define CMD_CFG_REG_LOWP_RXETY	0x01000000  
+#define CMD_CFG_TX_LOWP_ENA	0x00800000  
+#define CMD_CFG_PFC_MODE	0x00080000  
+#define CMD_CFG_NO_LEN_CHK	0x00020000  
+#define CMD_CFG_SW_RESET	0x00001000  
+#define CMD_CFG_TX_PAD_EN	0x00000800  
+#define CMD_CFG_PAUSE_IGNORE	0x00000100  
+#define CMD_CFG_CRC_FWD		0x00000040  
+#define CMD_CFG_PAD_EN		0x00000020  
+#define CMD_CFG_PROMIS_EN	0x00000010  
+#define CMD_CFG_RX_EN		0x00000002  
+#define CMD_CFG_TX_EN		0x00000001  
 
-/* Transmit FIFO Sections Register (TX_FIFO_SECTIONS) */
+ 
 #define TX_FIFO_SECTIONS_TX_EMPTY_MASK			0xFFFF0000
 #define TX_FIFO_SECTIONS_TX_AVAIL_MASK			0x0000FFFF
 #define TX_FIFO_SECTIONS_TX_EMPTY_DEFAULT_10G		0x00400000
@@ -51,34 +49,34 @@ do {									\
 			(_val |= TX_FIFO_SECTIONS_TX_EMPTY_DEFAULT_1G));\
 } while (0)
 
-/* Interface Mode Register (IF_MODE) */
+ 
 
-#define IF_MODE_MASK		0x00000003 /* 30-31 Mask on i/f mode bits */
-#define IF_MODE_10G		0x00000000 /* 30-31 10G interface */
-#define IF_MODE_MII		0x00000001 /* 30-31 MII interface */
-#define IF_MODE_GMII		0x00000002 /* 30-31 GMII (1G) interface */
+#define IF_MODE_MASK		0x00000003  
+#define IF_MODE_10G		0x00000000  
+#define IF_MODE_MII		0x00000001  
+#define IF_MODE_GMII		0x00000002  
 #define IF_MODE_RGMII		0x00000004
 #define IF_MODE_RGMII_AUTO	0x00008000
-#define IF_MODE_RGMII_1000	0x00004000 /* 10 - 1000Mbps RGMII */
-#define IF_MODE_RGMII_100	0x00000000 /* 00 - 100Mbps RGMII */
-#define IF_MODE_RGMII_10	0x00002000 /* 01 - 10Mbps RGMII */
-#define IF_MODE_RGMII_SP_MASK	0x00006000 /* Setsp mask bits */
-#define IF_MODE_RGMII_FD	0x00001000 /* Full duplex RGMII */
-#define IF_MODE_HD		0x00000040 /* Half duplex operation */
+#define IF_MODE_RGMII_1000	0x00004000  
+#define IF_MODE_RGMII_100	0x00000000  
+#define IF_MODE_RGMII_10	0x00002000  
+#define IF_MODE_RGMII_SP_MASK	0x00006000  
+#define IF_MODE_RGMII_FD	0x00001000  
+#define IF_MODE_HD		0x00000040  
 
-/* Hash table Control Register (HASHTABLE_CTRL) */
+ 
 #define HASH_CTRL_MCAST_EN	0x00000100
-/* 26-31 Hash table address code */
+ 
 #define HASH_CTRL_ADDR_MASK	0x0000003F
-/* MAC mcast indication */
+ 
 #define GROUP_ADDRESS		0x0000010000000000LL
-#define HASH_TABLE_SIZE		64	/* Hash tbl size */
+#define HASH_TABLE_SIZE		64	 
 
-/* Interrupt Mask Register (IMASK) */
-#define MEMAC_IMASK_MGI		0x40000000 /* 1 Magic pkt detect indication */
-#define MEMAC_IMASK_TSECC_ER	0x20000000 /* 2 Timestamp FIFO ECC error evnt */
-#define MEMAC_IMASK_TECC_ER	0x02000000 /* 6 Transmit frame ECC error evnt */
-#define MEMAC_IMASK_RECC_ER	0x01000000 /* 7 Receive frame ECC error evnt */
+ 
+#define MEMAC_IMASK_MGI		0x40000000  
+#define MEMAC_IMASK_TSECC_ER	0x20000000  
+#define MEMAC_IMASK_TECC_ER	0x02000000  
+#define MEMAC_IMASK_RECC_ER	0x01000000  
 
 #define MEMAC_ALL_ERRS_IMASK					\
 		((u32)(MEMAC_IMASK_TSECC_ER	|	\
@@ -86,23 +84,23 @@ do {									\
 		       MEMAC_IMASK_RECC_ER		|	\
 		       MEMAC_IMASK_MGI))
 
-#define MEMAC_IEVNT_PCS			0x80000000 /* PCS (XG). Link sync (G) */
-#define MEMAC_IEVNT_AN			0x40000000 /* Auto-negotiation */
-#define MEMAC_IEVNT_LT			0x20000000 /* Link Training/New page */
-#define MEMAC_IEVNT_MGI			0x00004000 /* Magic pkt detection */
-#define MEMAC_IEVNT_TS_ECC_ER		0x00002000 /* Timestamp FIFO ECC error*/
-#define MEMAC_IEVNT_RX_FIFO_OVFL	0x00001000 /* Rx FIFO overflow */
-#define MEMAC_IEVNT_TX_FIFO_UNFL	0x00000800 /* Tx FIFO underflow */
-#define MEMAC_IEVNT_TX_FIFO_OVFL	0x00000400 /* Tx FIFO overflow */
-#define MEMAC_IEVNT_TX_ECC_ER		0x00000200 /* Tx frame ECC error */
-#define MEMAC_IEVNT_RX_ECC_ER		0x00000100 /* Rx frame ECC error */
-#define MEMAC_IEVNT_LI_FAULT		0x00000080 /* Link Interruption flt */
-#define MEMAC_IEVNT_RX_EMPTY		0x00000040 /* Rx FIFO empty */
-#define MEMAC_IEVNT_TX_EMPTY		0x00000020 /* Tx FIFO empty */
-#define MEMAC_IEVNT_RX_LOWP		0x00000010 /* Low Power Idle */
-#define MEMAC_IEVNT_PHY_LOS		0x00000004 /* Phy loss of signal */
-#define MEMAC_IEVNT_REM_FAULT		0x00000002 /* Remote fault (XGMII) */
-#define MEMAC_IEVNT_LOC_FAULT		0x00000001 /* Local fault (XGMII) */
+#define MEMAC_IEVNT_PCS			0x80000000  
+#define MEMAC_IEVNT_AN			0x40000000  
+#define MEMAC_IEVNT_LT			0x20000000  
+#define MEMAC_IEVNT_MGI			0x00004000  
+#define MEMAC_IEVNT_TS_ECC_ER		0x00002000  
+#define MEMAC_IEVNT_RX_FIFO_OVFL	0x00001000  
+#define MEMAC_IEVNT_TX_FIFO_UNFL	0x00000800  
+#define MEMAC_IEVNT_TX_FIFO_OVFL	0x00000400  
+#define MEMAC_IEVNT_TX_ECC_ER		0x00000200  
+#define MEMAC_IEVNT_RX_ECC_ER		0x00000100  
+#define MEMAC_IEVNT_LI_FAULT		0x00000080  
+#define MEMAC_IEVNT_RX_EMPTY		0x00000040  
+#define MEMAC_IEVNT_TX_EMPTY		0x00000020  
+#define MEMAC_IEVNT_RX_LOWP		0x00000010  
+#define MEMAC_IEVNT_PHY_LOS		0x00000004  
+#define MEMAC_IEVNT_REM_FAULT		0x00000002  
+#define MEMAC_IEVNT_LOC_FAULT		0x00000001  
 
 #define DEFAULT_PAUSE_QUANTA	0xf000
 #define DEFAULT_FRAME_LENGTH	0x600
@@ -114,40 +112,40 @@ do {									\
 #define CLXY_PAUSE_THRESH_CLY_QTH	0xFFFF0000
 
 struct mac_addr {
-	/* Lower 32 bits of 48-bit MAC address */
+	 
 	u32 mac_addr_l;
-	/* Upper 16 bits of 48-bit MAC address */
+	 
 	u32 mac_addr_u;
 };
 
-/* memory map */
+ 
 struct memac_regs {
-	u32 res0000[2];			/* General Control and Status */
-	u32 command_config;		/* 0x008 Ctrl and cfg */
-	struct mac_addr mac_addr0;	/* 0x00C-0x010 MAC_ADDR_0...1 */
-	u32 maxfrm;			/* 0x014 Max frame length */
+	u32 res0000[2];			 
+	u32 command_config;		 
+	struct mac_addr mac_addr0;	 
+	u32 maxfrm;			 
 	u32 res0018[1];
-	u32 rx_fifo_sections;		/* Receive FIFO configuration reg */
-	u32 tx_fifo_sections;		/* Transmit FIFO configuration reg */
+	u32 rx_fifo_sections;		 
+	u32 tx_fifo_sections;		 
 	u32 res0024[2];
-	u32 hashtable_ctrl;		/* 0x02C Hash table control */
+	u32 hashtable_ctrl;		 
 	u32 res0030[4];
-	u32 ievent;			/* 0x040 Interrupt event */
-	u32 tx_ipg_length;		/* 0x044 Transmitter inter-packet-gap */
+	u32 ievent;			 
+	u32 tx_ipg_length;		 
 	u32 res0048;
-	u32 imask;			/* 0x04C Interrupt mask */
+	u32 imask;			 
 	u32 res0050;
-	u32 pause_quanta[4];		/* 0x054 Pause quanta */
-	u32 pause_thresh[4];		/* 0x064 Pause quanta threshold */
-	u32 rx_pause_status;		/* 0x074 Receive pause status */
+	u32 pause_quanta[4];		 
+	u32 pause_thresh[4];		 
+	u32 rx_pause_status;		 
 	u32 res0078[2];
-	struct mac_addr mac_addr[MEMAC_NUM_OF_PADDRS];/* 0x80-0x0B4 mac padr */
-	u32 lpwake_timer;		/* 0x0B8 Low Power Wakeup Timer */
-	u32 sleep_timer;		/* 0x0BC Transmit EEE Low Power Timer */
+	struct mac_addr mac_addr[MEMAC_NUM_OF_PADDRS]; 
+	u32 lpwake_timer;		 
+	u32 sleep_timer;		 
 	u32 res00c0[8];
-	u32 statn_config;		/* 0x0E0 Statistics configuration */
+	u32 statn_config;		 
 	u32 res00e4[7];
-	/* Rx Statistics Counter */
+	 
 	u32 reoct_l;
 	u32 reoct_u;
 	u32 roct_l;
@@ -201,7 +199,7 @@ struct memac_regs {
 	u32 rdrntp_l;
 	u32 rdrntp_u;
 	u32 res01d0[12];
-	/* Tx Statistics Counter */
+	 
 	u32 teoct_l;
 	u32 teoct_u;
 	u32 toct_l;
@@ -246,21 +244,21 @@ struct memac_regs {
 	u32 tcnp_l;
 	u32 tcnp_u;
 	u32 res02c8[14];
-	/* Line Interface Control */
-	u32 if_mode;		/* 0x300 Interface Mode Control */
-	u32 if_status;		/* 0x304 Interface Status */
+	 
+	u32 if_mode;		 
+	u32 if_status;		 
 	u32 res0308[14];
-	/* HiGig/2 */
-	u32 hg_config;		/* 0x340 Control and cfg */
+	 
+	u32 hg_config;		 
 	u32 res0344[3];
-	u32 hg_pause_quanta;	/* 0x350 Pause quanta */
+	u32 hg_pause_quanta;	 
 	u32 res0354[3];
-	u32 hg_pause_thresh;	/* 0x360 Pause quanta threshold */
+	u32 hg_pause_thresh;	 
 	u32 res0364[3];
-	u32 hgrx_pause_status;	/* 0x370 Receive pause status */
-	u32 hg_fifos_status;	/* 0x374 fifos status */
-	u32 rhm;		/* 0x378 rx messages counter */
-	u32 thm;		/* 0x37C tx messages counter */
+	u32 hgrx_pause_status;	 
+	u32 hg_fifos_status;	 
+	u32 rhm;		 
+	u32 thm;		 
 };
 
 struct memac_cfg {
@@ -274,16 +272,16 @@ struct memac_cfg {
 };
 
 struct fman_mac {
-	/* Pointer to MAC memory mapped registers */
+	 
 	struct memac_regs __iomem *regs;
-	/* MAC address of device */
+	 
 	u64 addr;
-	struct mac_device *dev_id; /* device cookie used by the exception cbs */
+	struct mac_device *dev_id;  
 	fman_mac_exception_cb *exception_cb;
 	fman_mac_exception_cb *event_cb;
-	/* Pointer to driver's global address hash table  */
+	 
 	struct eth_hash_t *multicast_addr_hash;
-	/* Pointer to driver's individual address hash table  */
+	 
 	struct eth_hash_t *unicast_addr_hash;
 	u8 mac_id;
 	u32 exceptions;
@@ -357,30 +355,30 @@ static int init(struct memac_regs __iomem *regs, struct memac_cfg *cfg,
 {
 	u32 tmp;
 
-	/* Config */
+	 
 	tmp = 0;
 	if (cfg->promiscuous_mode_enable)
 		tmp |= CMD_CFG_PROMIS_EN;
 	if (cfg->pause_ignore)
 		tmp |= CMD_CFG_PAUSE_IGNORE;
 
-	/* Payload length check disable */
+	 
 	tmp |= CMD_CFG_NO_LEN_CHK;
-	/* Enable padding of frames in transmit direction */
+	 
 	tmp |= CMD_CFG_TX_PAD_EN;
 
 	tmp |= CMD_CFG_CRC_FWD;
 
 	iowrite32be(tmp, &regs->command_config);
 
-	/* Max Frame Length */
+	 
 	iowrite32be((u32)cfg->max_frame_length, &regs->maxfrm);
 
-	/* Pause Time */
+	 
 	iowrite32be((u32)cfg->pause_quanta, &regs->pause_quanta[0]);
 	iowrite32be((u32)0, &regs->pause_thresh[0]);
 
-	/* clear all pending events and set-up interrupts */
+	 
 	iowrite32be(0xffffffff, &regs->ievent);
 	set_exception(regs, exceptions, true);
 
@@ -467,11 +465,7 @@ static void memac_err_exception(void *handle)
 	event = ioread32be(&regs->ievent);
 	imask = ioread32be(&regs->imask);
 
-	/* Imask include both error and notification/event bits.
-	 * Leaving only error bits enabled by imask.
-	 * The imask error bits are shifted by 16 bits offset from
-	 * their corresponding location in the ievent - hence the >> 16
-	 */
+	 
 	event &= ((imask & MEMAC_ALL_ERRS_IMASK) >> 16);
 
 	iowrite32be(event, &regs->ievent);
@@ -493,11 +487,7 @@ static void memac_exception(void *handle)
 	event = ioread32be(&regs->ievent);
 	imask = ioread32be(&regs->imask);
 
-	/* Imask include both error and notification/event bits.
-	 * Leaving only error bits enabled by imask.
-	 * The imask error bits are shifted by 16 bits offset from
-	 * their corresponding location in the ievent - hence the >> 16
-	 */
+	 
 	event &= ((imask & MEMAC_ALL_ERRS_IMASK) >> 16);
 
 	iowrite32be(event, &regs->ievent);
@@ -515,11 +505,11 @@ static void free_init_resources(struct fman_mac *memac)
 	fman_unregister_intr(memac->fm, FMAN_MOD_MAC, memac->mac_id,
 			     FMAN_INTR_TYPE_NORMAL);
 
-	/* release the driver's group hash table */
+	 
 	free_hash_table(memac->multicast_addr_hash);
 	memac->multicast_addr_hash = NULL;
 
-	/* release the driver's individual hash table */
+	 
 	free_hash_table(memac->unicast_addr_hash);
 	memac->unicast_addr_hash = NULL;
 }
@@ -632,13 +622,7 @@ static void memac_validate(struct phylink_config *config,
 	phylink_validate_mask_caps(supported, state, caps);
 }
 
-/**
- * memac_if_mode() - Convert an interface mode into an IF_MODE config
- * @interface: A phy interface mode
- *
- * Return: A configuration word, suitable for programming into the lower bits
- *         of %IF_MODE.
- */
+ 
 static u32 memac_if_mode(phy_interface_t interface)
 {
 	switch (interface) {
@@ -740,7 +724,7 @@ static void memac_link_up(struct phylink_config *config, struct phy_device *phy,
 	}
 	iowrite32be(tmp, &regs->if_mode);
 
-	/* TODO: EEE? */
+	 
 
 	if (speed == SPEED_10000) {
 		if (memac->fm_rev_info.major == 6 &&
@@ -769,7 +753,7 @@ static void memac_link_down(struct phylink_config *config, unsigned int mode,
 	struct memac_regs __iomem *regs = memac->regs;
 	u32 tmp;
 
-	/* TODO: graceful */
+	 
 	tmp = ioread32be(&regs->command_config);
 	tmp &= ~(CMD_CFG_RX_EN | CMD_CFG_TX_EN);
 	iowrite32be(tmp, &regs->command_config);
@@ -803,13 +787,13 @@ static int memac_add_hash_mac_address(struct fman_mac *memac,
 	addr = ENET_ADDR_TO_UINT64(*eth_addr);
 
 	if (!(addr & GROUP_ADDRESS)) {
-		/* Unicast addresses not supported in hash */
+		 
 		pr_err("Unicast Address\n");
 		return -EINVAL;
 	}
 	hash = get_mac_addr_hash_code(addr) & HASH_CTRL_ADDR_MASK;
 
-	/* Create element to be added to the driver hash table */
+	 
 	hash_entry = kmalloc(sizeof(*hash_entry), GFP_ATOMIC);
 	if (!hash_entry)
 		return -ENOMEM;
@@ -845,7 +829,7 @@ static int memac_set_allmulti(struct fman_mac *memac, bool enable)
 
 static int memac_set_tstamp(struct fman_mac *memac, bool enable)
 {
-	return 0; /* Always enabled. */
+	return 0;  
 }
 
 static int memac_del_hash_mac_address(struct fman_mac *memac,
@@ -912,7 +896,7 @@ static int memac_init(struct fman_mac *memac)
 
 	memac_drv_param = memac->memac_drv_param;
 
-	/* First, reset the MAC if desired. */
+	 
 	if (memac_drv_param->reset_on_init) {
 		err = reset(memac->regs);
 		if (err) {
@@ -921,7 +905,7 @@ static int memac_init(struct fman_mac *memac)
 		}
 	}
 
-	/* MAC Address */
+	 
 	if (memac->addr != 0) {
 		MAKE_ENET_ADDR_FROM_UINT64(memac->addr, eth_addr);
 		add_addr_in_paddr(memac->regs, (const u8 *)eth_addr, 0);
@@ -929,21 +913,17 @@ static int memac_init(struct fman_mac *memac)
 
 	init(memac->regs, memac->memac_drv_param, memac->exceptions);
 
-	/* FM_RX_FIFO_CORRUPT_ERRATA_10GMAC_A006320 errata workaround
-	 * Exists only in FMan 6.0 and 6.3.
-	 */
+	 
 	if ((memac->fm_rev_info.major == 6) &&
 	    ((memac->fm_rev_info.minor == 0) ||
 	    (memac->fm_rev_info.minor == 3))) {
-		/* MAC strips CRC from received frames - this workaround
-		 * should decrease the likelihood of bug appearance
-		 */
+		 
 		reg32 = ioread32be(&memac->regs->command_config);
 		reg32 &= ~CMD_CFG_CRC_FWD;
 		iowrite32be(reg32, &memac->regs->command_config);
 	}
 
-	/* Max Frame Length */
+	 
 	err = fman_set_mac_max_frame(memac->fm, memac->mac_id,
 				     memac_drv_param->max_frame_length);
 	if (err) {
@@ -1001,19 +981,19 @@ static struct fman_mac *memac_config(struct mac_device *mac_dev,
 	struct fman_mac *memac;
 	struct memac_cfg *memac_drv_param;
 
-	/* allocate memory for the m_emac data structure */
+	 
 	memac = kzalloc(sizeof(*memac), GFP_KERNEL);
 	if (!memac)
 		return NULL;
 
-	/* allocate memory for the m_emac driver parameters data structure */
+	 
 	memac_drv_param = kzalloc(sizeof(*memac_drv_param), GFP_KERNEL);
 	if (!memac_drv_param) {
 		memac_free(memac);
 		return NULL;
 	}
 
-	/* Plant parameter structure pointer */
+	 
 	memac->memac_drv_param = memac_drv_param;
 
 	set_dflts(memac_drv_param);
@@ -1029,7 +1009,7 @@ static struct fman_mac *memac_config(struct mac_device *mac_dev,
 	memac->dev_id = mac_dev;
 	memac->fm = params->fm;
 
-	/* Save FMan revision */
+	 
 	fman_get_revision(memac->fm, &memac->fm_rev_info);
 
 	return memac;
@@ -1053,12 +1033,10 @@ static struct phylink_pcs *memac_pcs_create(struct device_node *mac_node,
 
 static bool memac_supports(struct mac_device *mac_dev, phy_interface_t iface)
 {
-	/* If there's no serdes device, assume that it's been configured for
-	 * whatever the default interface mode is.
-	 */
+	 
 	if (!mac_dev->fman_mac->serdes)
 		return mac_dev->phy_if == iface;
-	/* Otherwise, ask the serdes */
+	 
 	return !phy_validate(mac_dev->fman_mac->serdes, PHY_MODE_ETHERNET,
 			     iface, NULL);
 }
@@ -1119,9 +1097,7 @@ int memac_initialization(struct mac_device *mac_dev,
 		goto _return_fm_mac_free;
 	}
 
-	/* For compatibility, if pcs-handle-names is missing, we assume this
-	 * phy is the first one in pcsphy-handle
-	 */
+	 
 	err = of_property_match_string(mac_node, "pcs-handle-names", "sgmii");
 	if (err == -EINVAL || err == -ENODATA)
 		pcs = memac_pcs_create(mac_node, 0);
@@ -1136,10 +1112,7 @@ int memac_initialization(struct mac_device *mac_dev,
 		goto _return_fm_mac_free;
 	}
 
-	/* If err is set here, it means that pcs-handle-names was missing above
-	 * (and therefore that xfi_pcs cannot be set). If we are defaulting to
-	 * XGMII, assume this is for XFI. Otherwise, assume it is for SGMII.
-	 */
+	 
 	if (err && mac_dev->phy_if == PHY_INTERFACE_MODE_XGMII)
 		memac->xfi_pcs = pcs;
 	else
@@ -1154,23 +1127,14 @@ int memac_initialization(struct mac_device *mac_dev,
 		goto _return_fm_mac_free;
 	}
 
-	/* The internal connection to the serdes is XGMII, but this isn't
-	 * really correct for the phy mode (which is the external connection).
-	 * However, this is how all older device trees say that they want
-	 * 10GBASE-R (aka XFI), so just convert it for them.
-	 */
+	 
 	if (mac_dev->phy_if == PHY_INTERFACE_MODE_XGMII)
 		mac_dev->phy_if = PHY_INTERFACE_MODE_10GBASER;
 
-	/* TODO: The following interface modes are supported by (some) hardware
-	 * but not by this driver:
-	 * - 1000BASE-KX
-	 * - 10GBASE-KR
-	 * - XAUI/HiGig
-	 */
+	 
 	supported = mac_dev->phylink_config.supported_interfaces;
 
-	/* Note that half duplex is only supported on 10/100M interfaces. */
+	 
 
 	if (memac->sgmii_pcs &&
 	    (memac_supports(mac_dev, PHY_INTERFACE_MODE_SGMII) ||
@@ -1193,7 +1157,7 @@ int memac_initialization(struct mac_device *mac_dev,
 	    memac_supports(mac_dev, PHY_INTERFACE_MODE_10GBASER)) {
 		__set_bit(PHY_INTERFACE_MODE_10GBASER, supported);
 	} else {
-		/* From what I can tell, no 10g macs support RGMII. */
+		 
 		phy_interface_set_rgmii(supported);
 		__set_bit(PHY_INTERFACE_MODE_MII, supported);
 	}
@@ -1201,10 +1165,7 @@ int memac_initialization(struct mac_device *mac_dev,
 	capabilities = MAC_SYM_PAUSE | MAC_ASYM_PAUSE | MAC_10 | MAC_100;
 	capabilities |= MAC_1000FD | MAC_2500FD | MAC_10000FD;
 
-	/* These SoCs don't support half duplex at all; there's no different
-	 * FMan version or compatible, so we just have to check the machine
-	 * compatible instead
-	 */
+	 
 	if (of_machine_is_compatible("fsl,ls1043a") ||
 	    of_machine_is_compatible("fsl,ls1046a") ||
 	    of_machine_is_compatible("fsl,B4QDS"))
@@ -1212,10 +1173,7 @@ int memac_initialization(struct mac_device *mac_dev,
 
 	mac_dev->phylink_config.mac_capabilities = capabilities;
 
-	/* The T2080 and T4240 don't support half duplex RGMII. There is no
-	 * other way to identify these SoCs, so just use the machine
-	 * compatible.
-	 */
+	 
 	if (of_machine_is_compatible("fsl,T2080QDS") ||
 	    of_machine_is_compatible("fsl,T2080RDB") ||
 	    of_machine_is_compatible("fsl,T2081QDS") ||
@@ -1223,12 +1181,7 @@ int memac_initialization(struct mac_device *mac_dev,
 	    of_machine_is_compatible("fsl,T4240RDB"))
 		memac->rgmii_no_half_duplex = true;
 
-	/* Most boards should use MLO_AN_INBAND, but existing boards don't have
-	 * a managed property. Default to MLO_AN_INBAND if nothing else is
-	 * specified. We need to be careful and not enable this if we have a
-	 * fixed link or if we are using MII or RGMII, since those
-	 * configurations modes don't use in-band autonegotiation.
-	 */
+	 
 	fixed = of_get_child_by_name(mac_node, "fixed-link");
 	if (!fixed && !of_property_read_bool(mac_node, "fixed-link") &&
 	    !of_property_read_bool(mac_node, "managed") &&

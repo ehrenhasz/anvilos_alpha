@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *   Copyright (C) 2018, Microsoft Corporation.
- *
- *   Author(s): Steve French <stfrench@microsoft.com>
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cifs
 
@@ -14,12 +10,9 @@
 #include <linux/net.h>
 #include <linux/inet.h>
 
-/*
- * Please use this 3-part article as a reference for writing new tracepoints:
- * https://lwn.net/Articles/379903/
- */
+ 
 
-/* For logging errors in read or write */
+ 
 DECLARE_EVENT_CLASS(smb3_rw_err_class,
 	TP_PROTO(unsigned int xid,
 		__u64	fid,
@@ -70,7 +63,7 @@ DEFINE_SMB3_RW_ERR_EVENT(zero_err);
 DEFINE_SMB3_RW_ERR_EVENT(falloc_err);
 
 
-/* For logging successful read or write */
+ 
 DECLARE_EVENT_CLASS(smb3_rw_done_class,
 	TP_PROTO(unsigned int xid,
 		__u64	fid,
@@ -121,7 +114,7 @@ DEFINE_SMB3_RW_DONE_EVENT(query_dir_done);
 DEFINE_SMB3_RW_DONE_EVENT(zero_done);
 DEFINE_SMB3_RW_DONE_EVENT(falloc_done);
 
-/* For logging successful set EOF (truncate) */
+ 
 DECLARE_EVENT_CLASS(smb3_eof_class,
 	TP_PROTO(unsigned int xid,
 		__u64	fid,
@@ -159,9 +152,7 @@ DEFINE_EVENT(smb3_eof_class, smb3_##name,   \
 
 DEFINE_SMB3_EOF_EVENT(set_eof);
 
-/*
- * For handle based calls other than read and write, and get/set info
- */
+ 
 DECLARE_EVENT_CLASS(smb3_fd_class,
 	TP_PROTO(unsigned int xid,
 		__u64	fid,
@@ -237,9 +228,7 @@ DEFINE_SMB3_FD_ERR_EVENT(flush_err);
 DEFINE_SMB3_FD_ERR_EVENT(lock_err);
 DEFINE_SMB3_FD_ERR_EVENT(close_err);
 
-/*
- * For handle based query/set info calls
- */
+ 
 DECLARE_EVENT_CLASS(smb3_inf_enter_class,
 	TP_PROTO(unsigned int xid,
 		__u64	fid,
@@ -455,9 +444,7 @@ DEFINE_SMB3_INF_COMPOUND_ERR_EVENT(mkdir_err);
 DEFINE_SMB3_INF_COMPOUND_ERR_EVENT(delete_err);
 DEFINE_SMB3_INF_COMPOUND_ERR_EVENT(tdis_err);
 
-/*
- * For logging SMB3 Status code and Command for responses which return errors
- */
+ 
 DECLARE_EVENT_CLASS(smb3_cmd_err_class,
 	TP_PROTO(__u32	tid,
 		__u64	sesid,
@@ -651,9 +638,7 @@ DEFINE_EVENT(smb3_enter_exit_class, smb3_##name,  \
 DEFINE_SMB3_ENTER_EXIT_EVENT(enter);
 DEFINE_SMB3_ENTER_EXIT_EVENT(exit_done);
 
-/*
- * For SMB2/SMB3 tree connect
- */
+ 
 
 DECLARE_EVENT_CLASS(smb3_tcon_class,
 	TP_PROTO(unsigned int xid,
@@ -693,9 +678,7 @@ DEFINE_EVENT(smb3_tcon_class, smb3_##name,    \
 DEFINE_SMB3_TCON_EVENT(tcon);
 DEFINE_SMB3_TCON_EVENT(qfs_done);
 
-/*
- * For smb2/smb3 open (including create and mkdir) calls
- */
+ 
 
 DECLARE_EVENT_CLASS(smb3_open_enter_class,
 	TP_PROTO(unsigned int xid,
@@ -1084,7 +1067,7 @@ DEFINE_SMB3_CREDIT_EVENT(waitff_credits);
 DEFINE_SMB3_CREDIT_EVENT(overflow_credits);
 DEFINE_SMB3_CREDIT_EVENT(set_credits);
 
-#endif /* _CIFS_TRACE_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .

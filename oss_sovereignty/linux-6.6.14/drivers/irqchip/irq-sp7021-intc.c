@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/*
- * Copyright (C) Sunplus Technology Co., Ltd.
- *       All rights reserved.
- */
+
+ 
 #include <linux/irq.h>
 #include <linux/irqdomain.h>
 #include <linux/io.h>
@@ -18,13 +15,13 @@
 #define SP_INTC_NR_GROUPS	DIV_ROUND_UP(SP_INTC_NR_IRQS, 32)
 #define SP_INTC_REG_SIZE	(SP_INTC_NR_GROUPS * 4)
 
-/* REG_GROUP_0 regs */
+ 
 #define REG_INTR_TYPE		(sp_intc.g0)
 #define REG_INTR_POLARITY	(REG_INTR_TYPE     + SP_INTC_REG_SIZE)
 #define REG_INTR_PRIORITY	(REG_INTR_POLARITY + SP_INTC_REG_SIZE)
 #define REG_INTR_MASK		(REG_INTR_PRIORITY + SP_INTC_REG_SIZE)
 
-/* REG_GROUP_1 regs */
+ 
 #define REG_INTR_CLEAR		(sp_intc.g1)
 #define REG_MASKED_EXT1		(REG_INTR_CLEAR    + SP_INTC_REG_SIZE)
 #define REG_MASKED_EXT0		(REG_MASKED_EXT1   + SP_INTC_REG_SIZE)
@@ -34,11 +31,7 @@
 #define GROUP_SHIFT_EXT1	(0)
 #define GROUP_SHIFT_EXT0	(8)
 
-/*
- * When GPIO_INT0~7 set to edge trigger, doesn't work properly.
- * WORKAROUND: change it to level trigger, and toggle the polarity
- * at ACK/Handler to make the HW work.
- */
+ 
 #define GPIO_INT0_HWIRQ		120
 #define GPIO_INT7_HWIRQ		127
 #define IS_GPIO_INT(irq)					\
@@ -47,7 +40,7 @@
 	(i >= GPIO_INT0_HWIRQ) && (i <= GPIO_INT7_HWIRQ);	\
 })
 
-/* index of states */
+ 
 enum {
 	_IS_EDGE = 0,
 	_IS_LOW,
@@ -59,20 +52,14 @@ enum {
 #define TEST_STATE(irq, idx)		test_bit(STATE_BIT(irq, idx), sp_intc.states)
 
 static struct sp_intctl {
-	/*
-	 * REG_GROUP_0: include type/polarity/priority/mask regs.
-	 * REG_GROUP_1: include clear/masked_ext0/masked_ext1/group regs.
-	 */
-	void __iomem *g0; // REG_GROUP_0 base
-	void __iomem *g1; // REG_GROUP_1 base
+	 
+	void __iomem *g0; 
+	void __iomem *g1; 
 
 	struct irq_domain *domain;
 	raw_spinlock_t lock;
 
-	/*
-	 * store GPIO_INT states
-	 * each interrupt has 3 states: is_edge, is_low, is_active
-	 */
+	 
 	DECLARE_BITMAP(states, (GPIO_INT7_HWIRQ - GPIO_INT0_HWIRQ + 1) * 3);
 } sp_intc;
 
@@ -101,7 +88,7 @@ static void sp_intc_ack_irq(struct irq_data *d)
 {
 	u32 hwirq = d->hwirq;
 
-	if (unlikely(IS_GPIO_INT(hwirq) && TEST_STATE(hwirq, _IS_EDGE))) { // WORKAROUND
+	if (unlikely(IS_GPIO_INT(hwirq) && TEST_STATE(hwirq, _IS_EDGE))) { 
 		sp_intc_assign_bit(hwirq, REG_INTR_POLARITY, !TEST_STATE(hwirq, _IS_LOW));
 		ASSIGN_STATE(hwirq, _IS_ACTIVE, true);
 	}
@@ -127,12 +114,12 @@ static int sp_intc_set_type(struct irq_data *d, unsigned int type)
 
 	irq_set_handler_locked(d, is_edge ? handle_edge_irq : handle_level_irq);
 
-	if (unlikely(IS_GPIO_INT(hwirq) && is_edge)) { // WORKAROUND
-		/* store states */
+	if (unlikely(IS_GPIO_INT(hwirq) && is_edge)) { 
+		 
 		ASSIGN_STATE(hwirq, _IS_EDGE, is_edge);
 		ASSIGN_STATE(hwirq, _IS_LOW, is_low);
 		ASSIGN_STATE(hwirq, _IS_ACTIVE, false);
-		/* change to level */
+		 
 		is_edge = false;
 	}
 
@@ -173,7 +160,7 @@ static void sp_intc_handle_ext_cascaded(struct irq_desc *desc)
 	chained_irq_enter(chip, desc);
 
 	while ((hwirq = sp_intc_get_ext_irq(ext_num)) >= 0) {
-		if (unlikely(IS_GPIO_INT(hwirq) && TEST_STATE(hwirq, _IS_ACTIVE))) { // WORKAROUND
+		if (unlikely(IS_GPIO_INT(hwirq) && TEST_STATE(hwirq, _IS_ACTIVE))) { 
 			ASSIGN_STATE(hwirq, _IS_ACTIVE, false);
 			sp_intc_assign_bit(hwirq, REG_INTR_POLARITY, TEST_STATE(hwirq, _IS_LOW));
 		} else {
@@ -234,25 +221,25 @@ static int __init sp_intc_init_dt(struct device_node *node, struct device_node *
 		goto out_unmap0;
 	}
 
-	ret = sp_intc_irq_map(node, 0); // EXT_INT0
+	ret = sp_intc_irq_map(node, 0); 
 	if (ret)
 		goto out_unmap1;
 
-	ret = sp_intc_irq_map(node, 1); // EXT_INT1
+	ret = sp_intc_irq_map(node, 1); 
 	if (ret)
 		goto out_unmap1;
 
-	/* initial regs */
+	 
 	for (i = 0; i < SP_INTC_NR_GROUPS; i++) {
-		/* all mask */
+		 
 		writel_relaxed(0, REG_INTR_MASK + i * 4);
-		/* all edge */
+		 
 		writel_relaxed(~0, REG_INTR_TYPE + i * 4);
-		/* all high-active */
+		 
 		writel_relaxed(0, REG_INTR_POLARITY + i * 4);
-		/* all EXT_INT0 */
+		 
 		writel_relaxed(~0, REG_INTR_PRIORITY + i * 4);
-		/* all clear */
+		 
 		writel_relaxed(~0, REG_INTR_CLEAR + i * 4);
 	}
 

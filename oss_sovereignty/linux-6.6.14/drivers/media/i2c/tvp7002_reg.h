@@ -1,46 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/* Texas Instruments Triple 8-/10-BIT 165-/110-MSPS Video and Graphics
- * Digitizer with Horizontal PLL registers
- *
- * Copyright (C) 2009 Texas Instruments Inc
- * Author: Santiago Nunez-Corrales <santiago.nunez@ridgerun.com>
- *
- * This code is partially based upon the TVP5150 driver
- * written by Mauro Carvalho Chehab <mchehab@kernel.org>,
- * the TVP514x driver written by Vaibhav Hiremath <hvaibhav@ti.com>
- * and the TVP7002 driver in the TI LSP 2.10.00.14
- */
+ 
+ 
 
-/* Naming conventions
- * ------------------
- *
- * FDBK:  Feedback
- * DIV:   Divider
- * CTL:   Control
- * SEL:   Select
- * IN:    Input
- * OUT:   Output
- * R:     Red
- * G:     Green
- * B:     Blue
- * OFF:   Offset
- * THRS:  Threshold
- * DGTL:  Digital
- * LVL:   Level
- * PWR:   Power
- * MVIS:  Macrovision
- * W:     Width
- * H:     Height
- * ALGN:  Alignment
- * CLK:   Clocks
- * TOL:   Tolerance
- * BWTH:  Bandwidth
- * COEF:  Coefficient
- * STAT:  Status
- * AUTO:  Automatic
- * FLD:   Field
- * L:	  Line
- */
+ 
 
 #define TVP7002_CHIP_REV		0x00
 #define TVP7002_HPLL_FDBK_DIV_MSBS	0x01
@@ -83,7 +44,7 @@
 #define TVP7002_AUTO_LVL_CTL_ENABLE	0x26
 #define TVP7002_DGTL_ALC_OUT_MSBS	0x27
 #define TVP7002_AUTO_LVL_CTL_FILTER	0x28
-/* Reserved 0x29*/
+ 
 #define TVP7002_FINE_CLAMP_CTL		0x2a
 #define TVP7002_PWR_CTL			0x2b
 #define TVP7002_ADC_SETUP		0x2c
@@ -92,8 +53,8 @@
 #define TVP7002_RGB_COARSE_CLAMP_CTL	0x2f
 #define TVP7002_SOG_COARSE_CLAMP_CTL	0x30
 #define TVP7002_ALC_PLACEMENT		0x31
-/* Reserved 0x32 */
-/* Reserved 0x33 */
+ 
+ 
 #define TVP7002_MVIS_STRIPPER_W		0x34
 #define TVP7002_VSYNC_ALGN		0x35
 #define TVP7002_SYNC_BYPASS		0x36
@@ -104,7 +65,7 @@
 #define TVP7002_HSYNC_W			0x3b
 #define TVP7002_VSYNC_W                 0x3c
 #define TVP7002_L_LENGTH_TOL		0x3d
-/* Reserved 0x3e */
+ 
 #define TVP7002_VIDEO_BWTH_CTL		0x3f
 #define TVP7002_AVID_START_PIXEL_LSBS	0x40
 #define TVP7002_AVID_START_PIXEL_MSBS   0x41

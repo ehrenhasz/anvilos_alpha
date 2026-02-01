@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2013-2018, The Linux Foundation. All rights reserved.
- *
- * RMNET Data virtual network driver
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/ethtool.h>
@@ -14,7 +11,7 @@
 #include "rmnet_map.h"
 #include "rmnet_vnd.h"
 
-/* RX/TX Fixup */
+ 
 
 void rmnet_vnd_rx_fixup(struct sk_buff *skb, struct net_device *dev)
 {
@@ -47,7 +44,7 @@ void rmnet_vnd_tx_fixup(struct sk_buff *skb, struct net_device *dev)
 	rmnet_vnd_tx_fixup_len(skb->len, dev);
 }
 
-/* Network Device Operations */
+ 
 
 static netdev_tx_t rmnet_vnd_start_xmit(struct sk_buff *skb,
 					struct net_device *dev)
@@ -141,7 +138,7 @@ static void rmnet_get_stats64(struct net_device *dev,
 
 		do {
 			start = u64_stats_fetch_begin(&pcpu_ptr->syncp);
-			snapshot = pcpu_ptr->stats;	/* struct assignment */
+			snapshot = pcpu_ptr->stats;	 
 		} while (u64_stats_fetch_retry(&pcpu_ptr->syncp, start));
 
 		total_stats.rx_pkts += snapshot.rx_pkts;
@@ -266,9 +263,7 @@ static const struct ethtool_ops rmnet_ethtool_ops = {
 	.get_sset_count = rmnet_get_sset_count,
 };
 
-/* Called by kernel whenever a new rmnet<n> device is created. Sets MTU,
- * flags, ARP type, needed headroom, etc...
- */
+ 
 void rmnet_vnd_setup(struct net_device *rmnet_dev)
 {
 	rmnet_dev->netdev_ops = &rmnet_vnd_ops;
@@ -277,8 +272,8 @@ void rmnet_vnd_setup(struct net_device *rmnet_dev)
 	eth_hw_addr_random(rmnet_dev);
 	rmnet_dev->tx_queue_len = RMNET_TX_QUEUE_LEN;
 
-	/* Raw IP mode */
-	rmnet_dev->header_ops = NULL;  /* No header */
+	 
+	rmnet_dev->header_ops = NULL;   
 	rmnet_dev->type = ARPHRD_RAWIP;
 	rmnet_dev->hard_header_len = 0;
 	rmnet_dev->flags &= ~(IFF_BROADCAST | IFF_MULTICAST);
@@ -288,12 +283,12 @@ void rmnet_vnd_setup(struct net_device *rmnet_dev)
 
 	rmnet_dev->features |= NETIF_F_LLTX;
 
-	/* This perm addr will be used as interface identifier by IPv6 */
+	 
 	rmnet_dev->addr_assign_type = NET_ADDR_RANDOM;
 	eth_random_addr(rmnet_dev->perm_addr);
 }
 
-/* Exposed API */
+ 
 
 int rmnet_vnd_newlink(u8 id, struct net_device *rmnet_dev,
 		      struct rmnet_port *port,
@@ -354,10 +349,7 @@ int rmnet_vnd_dellink(u8 id, struct rmnet_port *port,
 int rmnet_vnd_do_flow_control(struct net_device *rmnet_dev, int enable)
 {
 	netdev_dbg(rmnet_dev, "Setting VND TX queue state to %d\n", enable);
-	/* Although we expect similar number of enable/disable
-	 * commands, optimize for the disable. That is more
-	 * latency sensitive than enable
-	 */
+	 
 	if (unlikely(enable))
 		netif_wake_queue(rmnet_dev);
 	else

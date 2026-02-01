@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
 
-#include <linux/slab.h> /* fault-inject.h is not standalone! */
+ 
+
+#include <linux/slab.h>  
 
 #include <linux/fault-inject.h>
 #include <linux/sched/mm.h>
@@ -36,25 +34,10 @@ struct drm_i915_gem_object *alloc_pt_lmem(struct i915_address_space *vm, int sz)
 {
 	struct drm_i915_gem_object *obj;
 
-	/*
-	 * To avoid severe over-allocation when dealing with min_page_size
-	 * restrictions, we override that behaviour here by allowing an object
-	 * size and page layout which can be smaller. In practice this should be
-	 * totally fine, since GTT paging structures are not typically inserted
-	 * into the GTT.
-	 *
-	 * Note that we also hit this path for the scratch page, and for this
-	 * case it might need to be 64K, but that should work fine here since we
-	 * used the passed in size for the page size, which should ensure it
-	 * also has the same alignment.
-	 */
+	 
 	obj = __i915_gem_object_create_lmem_with_ps(vm->i915, sz, sz,
 						    vm->lmem_pt_obj_flags);
-	/*
-	 * Ensure all paging structures for this vm share the same dma-resv
-	 * object underneath, with the idea that one object_lock() will lock
-	 * them all at once.
-	 */
+	 
 	if (!IS_ERR(obj)) {
 		obj->base.resv = i915_vm_resv_get(vm);
 		obj->shares_resv_from = vm;
@@ -71,11 +54,7 @@ struct drm_i915_gem_object *alloc_pt_dma(struct i915_address_space *vm, int sz)
 		i915_gem_shrink_all(vm->i915);
 
 	obj = i915_gem_object_create_internal(vm->i915, sz);
-	/*
-	 * Ensure all paging structures for this vm share the same dma-resv
-	 * object underneath, with the idea that one object_lock() will lock
-	 * them all at once.
-	 */
+	 
 	if (!IS_ERR(obj)) {
 		obj->base.resv = i915_vm_resv_get(vm);
 		obj->shares_resv_from = vm;
@@ -120,24 +99,14 @@ static void clear_vm_list(struct list_head *list)
 		struct drm_i915_gem_object *obj = vma->obj;
 
 		if (!i915_gem_object_get_rcu(obj)) {
-			/*
-			 * Object is dying, but has not yet cleared its
-			 * vma list.
-			 * Unbind the dying vma to ensure our list
-			 * is completely drained. We leave the destruction to
-			 * the object destructor to avoid the vma
-			 * disappearing under it.
-			 */
+			 
 			atomic_and(~I915_VMA_PIN_MASK, &vma->flags);
 			WARN_ON(__i915_vma_unbind(vma));
 
-			/* Remove from the unbound list */
+			 
 			list_del_init(&vma->vm_link);
 
-			/*
-			 * Delay the vm and vm mutex freeing until the
-			 * object is done with destruction.
-			 */
+			 
 			i915_vm_resv_get(vma->vm);
 			vma->vm_ddestroy = true;
 		} else {
@@ -155,14 +124,14 @@ static void __i915_vm_close(struct i915_address_space *vm)
 	clear_vm_list(&vm->bound_list);
 	clear_vm_list(&vm->unbound_list);
 
-	/* Check for must-fix unanticipated side-effects */
+	 
 	GEM_BUG_ON(!list_empty(&vm->bound_list));
 	GEM_BUG_ON(!list_empty(&vm->unbound_list));
 
 	mutex_unlock(&vm->mutex);
 }
 
-/* lock the vm into the current ww, if we lock one, we lock all */
+ 
 int i915_vm_lock_objects(struct i915_address_space *vm,
 			 struct i915_gem_ww_ctx *ww)
 {
@@ -171,7 +140,7 @@ int i915_vm_lock_objects(struct i915_address_space *vm,
 	} else {
 		struct i915_ppgtt *ppgtt = i915_vm_to_ppgtt(vm);
 
-		/* We borrowed the scratch page from ggtt, take the top level object */
+		 
 		return i915_gem_object_lock(ppgtt->pd->pt.base, ww);
 	}
 }
@@ -181,14 +150,7 @@ void i915_address_space_fini(struct i915_address_space *vm)
 	drm_mm_takedown(&vm->mm);
 }
 
-/**
- * i915_vm_resv_release - Final struct i915_address_space destructor
- * @kref: Pointer to the &i915_address_space.resv_ref member.
- *
- * This function is called when the last lock sharer no longer shares the
- * &i915_address_space._resv lock, and also if we raced when
- * destroying a vma by the vma destruction
- */
+ 
 void i915_vm_resv_release(struct kref *kref)
 {
 	struct i915_address_space *vm =
@@ -207,7 +169,7 @@ static void __i915_vm_release(struct work_struct *work)
 
 	__i915_vm_close(vm);
 
-	/* Synchronize async unbinds. */
+	 
 	i915_vma_resource_bind_dep_sync_all(vm);
 
 	vm->cleanup(vm);
@@ -231,35 +193,21 @@ void i915_address_space_init(struct i915_address_space *vm, int subclass)
 {
 	kref_init(&vm->ref);
 
-	/*
-	 * Special case for GGTT that has already done an early
-	 * kref_init here.
-	 */
+	 
 	if (!kref_read(&vm->resv_ref))
 		kref_init(&vm->resv_ref);
 
 	vm->pending_unbind = RB_ROOT_CACHED;
 	INIT_WORK(&vm->release_work, __i915_vm_release);
 
-	/*
-	 * The vm->mutex must be reclaim safe (for use in the shrinker).
-	 * Do a dummy acquire now under fs_reclaim so that any allocation
-	 * attempt holding the lock is immediately reported by lockdep.
-	 */
+	 
 	mutex_init(&vm->mutex);
 	lockdep_set_subclass(&vm->mutex, subclass);
 
 	if (!intel_vm_no_concurrent_access_wa(vm->i915)) {
 		i915_gem_shrinker_taints_mutex(vm->i915, &vm->mutex);
 	} else {
-		/*
-		 * CHV + BXT VTD workaround use stop_machine(),
-		 * which is allowed to allocate memory. This means &vm->mutex
-		 * is the outer lock, and in theory we can allocate memory inside
-		 * it through stop_machine().
-		 *
-		 * Add the annotation for this, we use trylock in shrinker.
-		 */
+		 
 		mutex_acquire(&vm->mutex.dep_map, 0, 0, _THIS_IP_);
 		might_alloc(GFP_KERNEL);
 		mutex_release(&vm->mutex.dep_map, _THIS_IP_);
@@ -329,17 +277,7 @@ int setup_scratch_page(struct i915_address_space *vm)
 {
 	unsigned long size;
 
-	/*
-	 * In order to utilize 64K pages for an object with a size < 2M, we will
-	 * need to support a 64K scratch page, given that every 16th entry for a
-	 * page-table operating in 64K mode must point to a properly aligned 64K
-	 * region, including any PTEs which happen to point to scratch.
-	 *
-	 * This is only relevant for the 48b PPGTT where we support
-	 * huge-gtt-pages, see also i915_vma_insert(). However, as we share the
-	 * scratch (read-only) between all vm, we create one 64k scratch page
-	 * for all.
-	 */
+	 
 	size = I915_GTT_PAGE_SIZE_4K;
 	if (i915_vm_is_4lvl(vm) &&
 	    HAS_PAGE_SIZES(vm->i915, I915_GTT_PAGE_SIZE_64K) &&
@@ -356,23 +294,15 @@ int setup_scratch_page(struct i915_address_space *vm)
 		if (map_pt_dma(vm, obj))
 			goto skip_obj;
 
-		/* We need a single contiguous page for our scratch */
+		 
 		if (obj->mm.page_sizes.sg < size)
 			goto skip_obj;
 
-		/* And it needs to be correspondingly aligned */
+		 
 		if (__px_dma(obj) & (size - 1))
 			goto skip_obj;
 
-		/*
-		 * Use a non-zero scratch page for debugging.
-		 *
-		 * We want a value that should be reasonably obvious
-		 * to spot in the error state, while also causing a GPU hang
-		 * if executed. We prefer using a clear page in production, so
-		 * should it ever be accidentally used, the effect should be
-		 * fairly benign.
-		 */
+		 
 		poison_scratch_page(obj);
 
 		vm->scratch[0] = obj;
@@ -405,12 +335,8 @@ void gtt_write_workarounds(struct intel_gt *gt)
 	struct drm_i915_private *i915 = gt->i915;
 	struct intel_uncore *uncore = gt->uncore;
 
-	/*
-	 * This function is for gtt related workarounds. This function is
-	 * called on driver load and after a GPU reset, so you can place
-	 * workarounds here even if they get overwritten by GPU reset.
-	 */
-	/* WaIncreaseDefaultTLBEntries:chv,bdw,skl,bxt,kbl,glk,cfl,cnl,icl */
+	 
+	 
 	if (IS_BROADWELL(i915))
 		intel_uncore_write(uncore,
 				   GEN8_L3_LRA_1_GPGPU,
@@ -428,17 +354,7 @@ void gtt_write_workarounds(struct intel_gt *gt)
 				   GEN8_L3_LRA_1_GPGPU,
 				   GEN9_L3_LRA_1_GPGPU_DEFAULT_VALUE_SKL);
 
-	/*
-	 * To support 64K PTEs we need to first enable the use of the
-	 * Intermediate-Page-Size(IPS) bit of the PDE field via some magical
-	 * mmio, otherwise the page-walker will simply ignore the IPS bit. This
-	 * shouldn't be needed after GEN10.
-	 *
-	 * 64K pages were first introduced from BDW+, although technically they
-	 * only *work* from gen9+. For pre-BDW we instead have the option for
-	 * 32K pages, but we don't currently have any support for it in our
-	 * driver.
-	 */
+	 
 	if (HAS_PAGE_SIZES(i915, I915_GTT_PAGE_SIZE_64K) &&
 	    GRAPHICS_VER(i915) <= 10)
 		intel_uncore_rmw(uncore,
@@ -449,16 +365,11 @@ void gtt_write_workarounds(struct intel_gt *gt)
 	if (IS_GRAPHICS_VER(i915, 8, 11)) {
 		bool can_use_gtt_cache = true;
 
-		/*
-		 * According to the BSpec if we use 2M/1G pages then we also
-		 * need to disable the GTT cache. At least on BDW we can see
-		 * visual corruption when using 2M pages, and not disabling the
-		 * GTT cache.
-		 */
+		 
 		if (HAS_PAGE_SIZES(i915, I915_GTT_PAGE_SIZE_2M))
 			can_use_gtt_cache = false;
 
-		/* WaGttCachingOffByDefault */
+		 
 		intel_uncore_write(uncore,
 				   HSW_GTT_CACHE_EN,
 				   can_use_gtt_cache ? GTT_CACHE_EN_ALL : 0);
@@ -481,10 +392,7 @@ static void xelpmp_setup_private_ppat(struct intel_uncore *uncore)
 	intel_uncore_write(uncore, XELPMP_PAT_INDEX(4),
 			   MTL_PPAT_L4_0_WB | MTL_3_COH_2W);
 
-	/*
-	 * Remaining PAT entries are left at the hardware-default
-	 * fully-cached setting
-	 */
+	 
 }
 
 static void xelpg_setup_private_ppat(struct intel_gt *gt)
@@ -500,15 +408,12 @@ static void xelpg_setup_private_ppat(struct intel_gt *gt)
 	intel_gt_mcr_multicast_write(gt, XEHP_PAT_INDEX(4),
 				     MTL_PPAT_L4_0_WB | MTL_3_COH_2W);
 
-	/*
-	 * Remaining PAT entries are left at the hardware-default
-	 * fully-cached setting
-	 */
+	 
 }
 
 static void tgl_setup_private_ppat(struct intel_uncore *uncore)
 {
-	/* TGL doesn't support LLC or AGE settings */
+	 
 	intel_uncore_write(uncore, GEN12_PAT_INDEX(0), GEN8_PPAT_WB);
 	intel_uncore_write(uncore, GEN12_PAT_INDEX(1), GEN8_PPAT_WC);
 	intel_uncore_write(uncore, GEN12_PAT_INDEX(2), GEN8_PPAT_WT);
@@ -570,25 +475,21 @@ static void icl_setup_private_ppat(struct intel_uncore *uncore)
 			   GEN8_PPAT_WB | GEN8_PPAT_LLCELLC | GEN8_PPAT_AGE(3));
 }
 
-/*
- * The GGTT and PPGTT need a private PPAT setup in order to handle cacheability
- * bits. When using advanced contexts each context stores its own PAT, but
- * writing this data shouldn't be harmful even in those cases.
- */
+ 
 static void bdw_setup_private_ppat(struct intel_uncore *uncore)
 {
 	struct drm_i915_private *i915 = uncore->i915;
 	u64 pat;
 
-	pat = GEN8_PPAT(0, GEN8_PPAT_WB | GEN8_PPAT_LLC) |	/* for normal objects, no eLLC */
-	      GEN8_PPAT(1, GEN8_PPAT_WC | GEN8_PPAT_LLCELLC) |	/* for something pointing to ptes? */
-	      GEN8_PPAT(3, GEN8_PPAT_UC) |			/* Uncached objects, mostly for scanout */
+	pat = GEN8_PPAT(0, GEN8_PPAT_WB | GEN8_PPAT_LLC) |	 
+	      GEN8_PPAT(1, GEN8_PPAT_WC | GEN8_PPAT_LLCELLC) |	 
+	      GEN8_PPAT(3, GEN8_PPAT_UC) |			 
 	      GEN8_PPAT(4, GEN8_PPAT_WB | GEN8_PPAT_LLCELLC | GEN8_PPAT_AGE(0)) |
 	      GEN8_PPAT(5, GEN8_PPAT_WB | GEN8_PPAT_LLCELLC | GEN8_PPAT_AGE(1)) |
 	      GEN8_PPAT(6, GEN8_PPAT_WB | GEN8_PPAT_LLCELLC | GEN8_PPAT_AGE(2)) |
 	      GEN8_PPAT(7, GEN8_PPAT_WB | GEN8_PPAT_LLCELLC | GEN8_PPAT_AGE(3));
 
-	/* for scanout with eLLC */
+	 
 	if (GRAPHICS_VER(i915) >= 9)
 		pat |= GEN8_PPAT(2, GEN8_PPAT_WB | GEN8_PPAT_ELLC_OVERRIDE);
 	else
@@ -602,24 +503,7 @@ static void chv_setup_private_ppat(struct intel_uncore *uncore)
 {
 	u64 pat;
 
-	/*
-	 * Map WB on BDW to snooped on CHV.
-	 *
-	 * Only the snoop bit has meaning for CHV, the rest is
-	 * ignored.
-	 *
-	 * The hardware will never snoop for certain types of accesses:
-	 * - CPU GTT (GMADR->GGTT->no snoop->memory)
-	 * - PPGTT page tables
-	 * - some other special cycles
-	 *
-	 * As with BDW, we also need to consider the following for GT accesses:
-	 * "For GGTT, there is NO pat_sel[2:0] from the entry,
-	 * so RTL will always use the value corresponding to
-	 * pat_sel = 000".
-	 * Which means we must set the snoop bit in PAT entry 0
-	 * in order to keep the global status page working.
-	 */
+	 
 
 	pat = GEN8_PPAT(0, CHV_PPAT_SNOOP) |
 	      GEN8_PPAT(1, 0) |

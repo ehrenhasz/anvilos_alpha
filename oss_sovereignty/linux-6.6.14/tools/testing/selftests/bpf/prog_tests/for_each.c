@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <test_progs.h>
 #include <network_helpers.h>
 #include "for_each_hash_map_elem.skel.h"
@@ -97,7 +97,7 @@ static void test_array_map(void)
 	for (i = 0; i < max_entries; i++) {
 		key = i;
 		val = i + 1;
-		/* skip the last iteration for expected total */
+		 
 		if (i != max_entries - 1)
 			expected_total += val;
 		err = bpf_map__update_elem(skel->maps.arraymap, &key, sizeof(key),

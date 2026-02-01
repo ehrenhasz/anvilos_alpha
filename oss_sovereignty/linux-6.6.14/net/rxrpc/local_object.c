@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Local endpoint object management
- *
- * Copyright (C) 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -22,11 +18,7 @@
 
 static void rxrpc_local_rcu(struct rcu_head *);
 
-/*
- * Handle an ICMP/ICMP6 error turning up at the tunnel.  Push it through the
- * usual mechanism so that it gets parsed and presented through the UDP
- * socket's error_report().
- */
+ 
 static void rxrpc_encap_err_rcv(struct sock *sk, struct sk_buff *skb, int err,
 				__be16 port, u32 info, u8 *payload)
 {
@@ -36,9 +28,7 @@ static void rxrpc_encap_err_rcv(struct sock *sk, struct sk_buff *skb, int err,
 		return ipv6_icmp_error(sk, skb, err, port, info, payload);
 }
 
-/*
- * Set or clear the Don't Fragment flag on a socket.
- */
+ 
 void rxrpc_local_dont_fragment(const struct rxrpc_local *local, bool set)
 {
 	if (set)
@@ -47,15 +37,7 @@ void rxrpc_local_dont_fragment(const struct rxrpc_local *local, bool set)
 		ip_sock_set_mtu_discover(local->socket->sk, IP_PMTUDISC_DONT);
 }
 
-/*
- * Compare a local to an address.  Return -ve, 0 or +ve to indicate less than,
- * same or greater than.
- *
- * We explicitly don't compare the RxRPC service ID as we want to reject
- * conflicting uses by differing services.  Further, we don't want to share
- * addresses with different options (IPv6), so we don't compare those bits
- * either.
- */
+ 
 static long rxrpc_local_cmp_key(const struct rxrpc_local *local,
 				const struct sockaddr_rxrpc *srx)
 {
@@ -69,9 +51,7 @@ static long rxrpc_local_cmp_key(const struct rxrpc_local *local,
 
 	switch (srx->transport.family) {
 	case AF_INET:
-		/* If the choice of UDP port is left up to the transport, then
-		 * the endpoint record doesn't match.
-		 */
+		 
 		return ((u16 __force)local->srx.transport.sin.sin_port -
 			(u16 __force)srx->transport.sin.sin_port) ?:
 			memcmp(&local->srx.transport.sin.sin_addr,
@@ -79,9 +59,7 @@ static long rxrpc_local_cmp_key(const struct rxrpc_local *local,
 			       sizeof(struct in_addr));
 #ifdef CONFIG_AF_RXRPC_IPV6
 	case AF_INET6:
-		/* If the choice of UDP6 port is left up to the transport, then
-		 * the endpoint record doesn't match.
-		 */
+		 
 		return ((u16 __force)local->srx.transport.sin6.sin6_port -
 			(u16 __force)srx->transport.sin6.sin6_port) ?:
 			memcmp(&local->srx.transport.sin6.sin6_addr,
@@ -103,9 +81,7 @@ static void rxrpc_client_conn_reap_timeout(struct timer_list *timer)
 		rxrpc_wake_up_io_thread(local);
 }
 
-/*
- * Allocate a new local endpoint.
- */
+ 
 static struct rxrpc_local *rxrpc_alloc_local(struct net *net,
 					     const struct sockaddr_rxrpc *srx)
 {
@@ -155,10 +131,7 @@ static struct rxrpc_local *rxrpc_alloc_local(struct net *net,
 	return local;
 }
 
-/*
- * create the local socket
- * - must be called with rxrpc_local_mutex locked
- */
+ 
 static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
 {
 	struct udp_tunnel_sock_cfg tuncfg = {NULL};
@@ -196,27 +169,25 @@ static int rxrpc_open_socket(struct rxrpc_local *local, struct net *net)
 	tuncfg.sk_user_data = local;
 	setup_udp_tunnel_sock(net, local->socket, &tuncfg);
 
-	/* set the socket up */
+	 
 	usk = local->socket->sk;
 	usk->sk_error_report = rxrpc_error_report;
 
 	switch (srx->transport.family) {
 	case AF_INET6:
-		/* we want to receive ICMPv6 errors */
+		 
 		ip6_sock_set_recverr(usk);
 
-		/* Fall through and set IPv4 options too otherwise we don't get
-		 * errors from IPv4 packets sent through the IPv6 socket.
-		 */
+		 
 		fallthrough;
 	case AF_INET:
-		/* we want to receive ICMP errors */
+		 
 		ip_sock_set_recverr(usk);
 
-		/* we want to set the don't fragment bit */
+		 
 		rxrpc_local_dont_fragment(local, true);
 
-		/* We want receive timestamps. */
+		 
 		sock_enable_timestamps(usk);
 		break;
 
@@ -244,9 +215,7 @@ error_sock:
 	return ret;
 }
 
-/*
- * Look up or create a new local endpoint using the specified local address.
- */
+ 
 struct rxrpc_local *rxrpc_lookup_local(struct net *net,
 				       const struct sockaddr_rxrpc *srx)
 {
@@ -268,21 +237,13 @@ struct rxrpc_local *rxrpc_lookup_local(struct net *net,
 		if (diff != 0)
 			continue;
 
-		/* Services aren't allowed to share transport sockets, so
-		 * reject that here.  It is possible that the object is dying -
-		 * but it may also still have the local transport address that
-		 * we want bound.
-		 */
+		 
 		if (srx->srx_service) {
 			local = NULL;
 			goto addr_in_use;
 		}
 
-		/* Found a match.  We want to replace a dying object.
-		 * Attempting to bind the transport socket may still fail if
-		 * we're attempting to use a local address that the dying
-		 * object is still using.
-		 */
+		 
 		if (!rxrpc_use_local(local, rxrpc_local_use_lookup))
 			break;
 
@@ -324,9 +285,7 @@ addr_in_use:
 	return ERR_PTR(-EADDRINUSE);
 }
 
-/*
- * Get a ref on a local endpoint.
- */
+ 
 struct rxrpc_local *rxrpc_get_local(struct rxrpc_local *local,
 				    enum rxrpc_local_trace why)
 {
@@ -338,9 +297,7 @@ struct rxrpc_local *rxrpc_get_local(struct rxrpc_local *local,
 	return local;
 }
 
-/*
- * Get a ref on a local endpoint unless its usage has already reached 0.
- */
+ 
 struct rxrpc_local *rxrpc_get_local_maybe(struct rxrpc_local *local,
 					  enum rxrpc_local_trace why)
 {
@@ -355,9 +312,7 @@ struct rxrpc_local *rxrpc_get_local_maybe(struct rxrpc_local *local,
 	return NULL;
 }
 
-/*
- * Drop a ref on a local endpoint.
- */
+ 
 void rxrpc_put_local(struct rxrpc_local *local, enum rxrpc_local_trace why)
 {
 	unsigned int debug_id;
@@ -376,9 +331,7 @@ void rxrpc_put_local(struct rxrpc_local *local, enum rxrpc_local_trace why)
 	}
 }
 
-/*
- * Start using a local endpoint.
- */
+ 
 struct rxrpc_local *rxrpc_use_local(struct rxrpc_local *local,
 				    enum rxrpc_local_trace why)
 {
@@ -394,10 +347,7 @@ struct rxrpc_local *rxrpc_use_local(struct rxrpc_local *local,
 	return local;
 }
 
-/*
- * Cease using a local endpoint.  Once the number of active users reaches 0, we
- * start the closure of the transport in the I/O thread..
- */
+ 
 void rxrpc_unuse_local(struct rxrpc_local *local, enum rxrpc_local_trace why)
 {
 	unsigned int debug_id;
@@ -413,13 +363,7 @@ void rxrpc_unuse_local(struct rxrpc_local *local, enum rxrpc_local_trace why)
 	}
 }
 
-/*
- * Destroy a local endpoint's socket and then hand the record to RCU to dispose
- * of.
- *
- * Closing the socket cannot be done from bottom half context or RCU callback
- * context because it might sleep.
- */
+ 
 void rxrpc_destroy_local(struct rxrpc_local *local)
 {
 	struct socket *socket = local->socket;
@@ -444,9 +388,7 @@ void rxrpc_destroy_local(struct rxrpc_local *local)
 		sock_release(socket);
 	}
 
-	/* At this point, there should be no more packets coming in to the
-	 * local endpoint.
-	 */
+	 
 #ifdef CONFIG_AF_RXRPC_INJECT_RX_DELAY
 	rxrpc_purge_queue(&local->rx_delay_queue);
 #endif
@@ -454,9 +396,7 @@ void rxrpc_destroy_local(struct rxrpc_local *local)
 	rxrpc_purge_client_connections(local);
 }
 
-/*
- * Destroy a local endpoint after the RCU grace period expires.
- */
+ 
 static void rxrpc_local_rcu(struct rcu_head *rcu)
 {
 	struct rxrpc_local *local = container_of(rcu, struct rxrpc_local, rcu);
@@ -465,9 +405,7 @@ static void rxrpc_local_rcu(struct rcu_head *rcu)
 	kfree(local);
 }
 
-/*
- * Verify the local endpoint list is empty by this point.
- */
+ 
 void rxrpc_destroy_all_locals(struct rxrpc_net *rxnet)
 {
 	struct rxrpc_local *local;

@@ -1,34 +1,4 @@
-/* QLogic qedr NIC Driver
- * Copyright (c) 2015-2016  QLogic Corporation
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and /or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #ifndef __QEDR_H__
 #define __QEDR_H__
 
@@ -149,7 +119,7 @@ struct qedr_dev {
 
 	union ib_gid *sgid_tbl;
 
-	/* Lock for sgid table */
+	 
 	spinlock_t sgid_lock;
 
 	u64			guid;
@@ -189,7 +159,7 @@ struct qedr_dev {
 					 (RDMA_RING_PAGE_SIZE) / \
 					 (QEDR_SQE_ELEMENT_SIZE) /\
 					 (QEDR_MAX_SQE_ELEMENTS_PER_SQE))
-/* RQ */
+ 
 #define QEDR_MAX_RQ_PBL			(0x2000)
 #define QEDR_MAX_RQ_PBL_ENTRIES		(0x10000 / sizeof(void *))
 #define QEDR_RQE_ELEMENT_SIZE		(sizeof(struct rdma_rq_sge))
@@ -269,7 +239,7 @@ struct qedr_userq {
 	u64 buf_addr;
 	size_t buf_len;
 
-	/* doorbell recovery */
+	 
 	void __iomem *db_addr;
 	struct qedr_user_db_rec *db_rec_data;
 	struct rdma_user_mmap_entry *db_mmap_entry;
@@ -285,7 +255,7 @@ struct qedr_cq {
 
 	u16 icid;
 
-	/* Lock to protect multiplem CQ's */
+	 
 	spinlock_t cq_lock;
 	u8 arm_flags;
 	struct qed_chain pbl;
@@ -316,19 +286,19 @@ struct qedr_xrcd {
 };
 
 struct qedr_qp_hwq_info {
-	/* WQE Elements */
+	 
 	struct qed_chain pbl;
 	u64 p_phys_addr_tbl;
 	u32 max_sges;
 
-	/* WQE */
+	 
 	u16 prod;
 	u16 cons;
 	u16 wqe_cons;
 	u16 gsi_cons;
 	u16 max_wr;
 
-	/* DB */
+	 
 	void __iomem *db;
 	union db_prod32 db_data;
 
@@ -367,7 +337,7 @@ struct qedr_srq {
 	u16 srq_id;
 	u32 srq_limit;
 	bool is_xrc;
-	/* lock to protect srq recv post */
+	 
 	spinlock_t lock;
 };
 
@@ -392,14 +362,14 @@ enum qedr_iwarp_cm_flags {
 };
 
 struct qedr_qp {
-	struct ib_qp ibqp;	/* must be first */
+	struct ib_qp ibqp;	 
 	struct qedr_dev *dev;
 	struct qedr_qp_hwq_info sq;
 	struct qedr_qp_hwq_info rq;
 
 	u32 max_inline_data;
 
-	/* Lock for QP's */
+	 
 	spinlock_t q_lock;
 	struct qedr_cq *sq_cq;
 	struct qedr_cq *rq_cq;
@@ -420,13 +390,13 @@ struct qedr_qp {
 	u32 dest_qp_num;
 	u8 timeout;
 
-	/* Relevant to qps created from kernel space only (ULPs) */
+	 
 	u8 prev_wqe_size;
 	u16 wqe_cons;
 	u32 err_bitmap;
 	bool signaled;
 
-	/* SQ shadow */
+	 
 	struct {
 		u64 wr_id;
 		enum ib_wc_opcode opcode;
@@ -438,7 +408,7 @@ struct qedr_qp {
 		struct qedr_mr *mr;
 	} *wqe_wr_id;
 
-	/* RQ shadow */
+	 
 	struct {
 		u64 wr_id;
 		struct ib_sge sg_list[RDMA_MAX_SGE_PER_RQ_WQE];
@@ -449,15 +419,15 @@ struct qedr_qp {
 		int rc;
 	} *rqe_wr_id;
 
-	/* Relevant to qps created from user space only (applications) */
+	 
 	struct qedr_userq usq;
 	struct qedr_userq urq;
 
-	/* synchronization objects used with iwarp ep */
+	 
 	struct kref refcnt;
 	struct completion iwarp_cm_comp;
 	struct completion qp_rel_comp;
-	unsigned long iwarp_cm_flags; /* enum iwarp_cm_flags */
+	unsigned long iwarp_cm_flags;  
 };
 
 struct qedr_ah {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 NXP
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -124,7 +122,7 @@ enum imx93_pads {
 	IMX93_IOMUXC_WDOG_ANY  = 107,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx93_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(IMX93_IOMUXC_DAP_TDI),
 	IMX_PINCTRL_PIN(IMX93_IOMUXC_DAP_TMS_SWDIO),
@@ -245,7 +243,7 @@ static const struct imx_pinctrl_soc_info imx93_pinctrl_info = {
 
 static const struct of_device_id imx93_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx93-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx93_pinctrl_of_match);
 

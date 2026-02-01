@@ -1,16 +1,4 @@
-/*
- * QorIQ 10G MDIO Controller
- *
- * Copyright 2012 Freescale Semiconductor, Inc.
- * Copyright 2021 NXP
- *
- * Authors: Andy Fleming <afleming@freescale.com>
- *          Timur Tabi <timur@freescale.com>
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2.  This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/acpi_mdio.h>
@@ -25,15 +13,15 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* Number of microseconds to wait for a register to respond */
+ 
 #define TIMEOUT	1000
 
 struct tgec_mdio_controller {
 	__be32	reserved[12];
-	__be32	mdio_stat;	/* MDIO configuration and status */
-	__be32	mdio_ctl;	/* MDIO control */
-	__be32	mdio_data;	/* MDIO data */
-	__be32	mdio_addr;	/* MDIO address */
+	__be32	mdio_stat;	 
+	__be32	mdio_ctl;	 
+	__be32	mdio_data;	 
+	__be32	mdio_addr;	 
 } __packed;
 
 #define MDIO_STAT_ENC		BIT(6)
@@ -78,16 +66,14 @@ static void xgmac_write32(u32 value,
 		iowrite32be(value, regs);
 }
 
-/*
- * Wait until the MDIO bus is free
- */
+ 
 static int xgmac_wait_until_free(struct device *dev,
 				 struct tgec_mdio_controller __iomem *regs,
 				 bool is_little_endian)
 {
 	unsigned int timeout;
 
-	/* Wait till the bus is free */
+	 
 	timeout = TIMEOUT;
 	while ((xgmac_read32(&regs->mdio_stat, is_little_endian) &
 		MDIO_STAT_BSY) && timeout) {
@@ -103,16 +89,14 @@ static int xgmac_wait_until_free(struct device *dev,
 	return 0;
 }
 
-/*
- * Wait till the MDIO read or write operation is complete
- */
+ 
 static int xgmac_wait_until_done(struct device *dev,
 				 struct tgec_mdio_controller __iomem *regs,
 				 bool is_little_endian)
 {
 	unsigned int timeout;
 
-	/* Wait till the MDIO write is complete */
+	 
 	timeout = TIMEOUT;
 	while ((xgmac_read32(&regs->mdio_stat, is_little_endian) &
 		MDIO_STAT_BSY) && timeout) {
@@ -146,11 +130,11 @@ static int xgmac_mdio_write_c22(struct mii_bus *bus, int phy_id, int regnum,
 	if (ret)
 		return ret;
 
-	/* Set the port and dev addr */
+	 
 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
 	xgmac_write32(mdio_ctl, &regs->mdio_ctl, endian);
 
-	/* Write the value to the register */
+	 
 	xgmac_write32(MDIO_DATA(value), &regs->mdio_data, endian);
 
 	ret = xgmac_wait_until_done(&bus->dev, regs, endian);
@@ -178,18 +162,18 @@ static int xgmac_mdio_write_c45(struct mii_bus *bus, int phy_id, int dev_addr,
 	if (ret)
 		return ret;
 
-	/* Set the port and dev addr */
+	 
 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
 	xgmac_write32(mdio_ctl, &regs->mdio_ctl, endian);
 
-	/* Set the register address */
+	 
 	xgmac_write32(regnum & 0xffff, &regs->mdio_addr, endian);
 
 	ret = xgmac_wait_until_free(&bus->dev, regs, endian);
 	if (ret)
 		return ret;
 
-	/* Write the value to the register */
+	 
 	xgmac_write32(MDIO_DATA(value), &regs->mdio_data, endian);
 
 	ret = xgmac_wait_until_done(&bus->dev, regs, endian);
@@ -199,10 +183,7 @@ static int xgmac_mdio_write_c45(struct mii_bus *bus, int phy_id, int dev_addr,
 	return 0;
 }
 
-/* Reads from register regnum in the PHY for device dev, returning the value.
- * Clears miimcom first.  All PHY configuration has to be done through the
- * TSEC1 MIIM regs.
- */
+ 
 static int xgmac_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
 {
 	struct mdio_fsl_priv *priv = (struct mdio_fsl_priv *)bus->priv;
@@ -222,24 +203,22 @@ static int xgmac_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
 	if (ret)
 		return ret;
 
-	/* Set the Port and Device Addrs */
+	 
 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
 	xgmac_write32(mdio_ctl, &regs->mdio_ctl, endian);
 
 	if (priv->has_a009885)
-		/* Once the operation completes, i.e. MDIO_STAT_BSY clears, we
-		 * must read back the data register within 16 MDC cycles.
-		 */
+		 
 		local_irq_save(flags);
 
-	/* Initiate the read */
+	 
 	xgmac_write32(mdio_ctl | MDIO_CTL_READ, &regs->mdio_ctl, endian);
 
 	ret = xgmac_wait_until_done(&bus->dev, regs, endian);
 	if (ret)
 		goto irq_restore;
 
-	/* Return all Fs if nothing was there */
+	 
 	if ((xgmac_read32(&regs->mdio_stat, endian) & MDIO_STAT_RD_ER) &&
 	    !priv->has_a011043) {
 		dev_dbg(&bus->dev,
@@ -258,10 +237,7 @@ irq_restore:
 	return ret;
 }
 
-/* Reads from register regnum in the PHY for device dev, returning the value.
- * Clears miimcom first.  All PHY configuration has to be done through the
- * TSEC1 MIIM regs.
- */
+ 
 static int xgmac_mdio_read_c45(struct mii_bus *bus, int phy_id, int dev_addr,
 			       int regnum)
 {
@@ -281,11 +257,11 @@ static int xgmac_mdio_read_c45(struct mii_bus *bus, int phy_id, int dev_addr,
 	if (ret)
 		return ret;
 
-	/* Set the Port and Device Addrs */
+	 
 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
 	xgmac_write32(mdio_ctl, &regs->mdio_ctl, endian);
 
-	/* Set the register address */
+	 
 	xgmac_write32(regnum & 0xffff, &regs->mdio_addr, endian);
 
 	ret = xgmac_wait_until_free(&bus->dev, regs, endian);
@@ -293,19 +269,17 @@ static int xgmac_mdio_read_c45(struct mii_bus *bus, int phy_id, int dev_addr,
 		return ret;
 
 	if (priv->has_a009885)
-		/* Once the operation completes, i.e. MDIO_STAT_BSY clears, we
-		 * must read back the data register within 16 MDC cycles.
-		 */
+		 
 		local_irq_save(flags);
 
-	/* Initiate the read */
+	 
 	xgmac_write32(mdio_ctl | MDIO_CTL_READ, &regs->mdio_ctl, endian);
 
 	ret = xgmac_wait_until_done(&bus->dev, regs, endian);
 	if (ret)
 		goto irq_restore;
 
-	/* Return all Fs if nothing was there */
+	 
 	if ((xgmac_read32(&regs->mdio_stat, endian) & MDIO_STAT_RD_ER) &&
 	    !priv->has_a011043) {
 		dev_dbg(&bus->dev,
@@ -376,11 +350,7 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
 	struct mii_bus *bus;
 	int ret;
 
-	/* In DPAA-1, MDIO is one of the many FMan sub-devices. The FMan
-	 * defines a register space that spans a large area, covering all the
-	 * subdevice areas. Therefore, MDIO cannot claim exclusive access to
-	 * this register area.
-	 */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		dev_err(&pdev->dev, "could not obtain address\n");
@@ -405,9 +375,7 @@ static int xgmac_mdio_probe(struct platform_device *pdev)
 	if (!priv->mdio_base)
 		return -ENOMEM;
 
-	/* For both ACPI and DT cases, endianness of MDIO controller
-	 * needs to be specified using "little-endian" property.
-	 */
+	 
 	priv->is_little_endian = device_property_read_bool(&pdev->dev,
 							   "little-endian");
 

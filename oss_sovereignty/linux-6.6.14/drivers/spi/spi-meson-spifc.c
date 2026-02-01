@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Driver for Amlogic Meson SPI flash controller (SPIFC)
-//
-// Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
-//
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -18,7 +18,7 @@
 #include <linux/spi/spi.h>
 #include <linux/types.h>
 
-/* register map */
+ 
 #define REG_CMD			0x00
 #define REG_ADDR		0x04
 #define REG_CTRL		0x08
@@ -39,7 +39,7 @@
 #define REG_B8			0x60
 #define REG_MAX			0x7c
 
-/* register fields */
+ 
 #define CMD_USER		BIT(18)
 #define CTRL_ENABLE_AHB		BIT(17)
 #define CLOCK_SOURCE		BIT(31)
@@ -65,13 +65,7 @@
 
 #define SPIFC_BUFFER_SIZE	64
 
-/**
- * struct meson_spifc
- * @master:	the SPI master
- * @regmap:	regmap for device registers
- * @clk:	input clock of the built-in baud rate generator
- * @dev:	the device structure
- */
+ 
 struct meson_spifc {
 	struct spi_master *master;
 	struct regmap *regmap;
@@ -86,11 +80,7 @@ static const struct regmap_config spifc_regmap_config = {
 	.max_register = REG_MAX,
 };
 
-/**
- * meson_spifc_wait_ready() - wait for the current operation to terminate
- * @spifc:	the Meson SPI device
- * Return:	0 on success, a negative value on error
- */
+ 
 static int meson_spifc_wait_ready(struct meson_spifc *spifc)
 {
 	unsigned long deadline = jiffies + msecs_to_jiffies(5);
@@ -106,12 +96,7 @@ static int meson_spifc_wait_ready(struct meson_spifc *spifc)
 	return -ETIMEDOUT;
 }
 
-/**
- * meson_spifc_drain_buffer() - copy data from device buffer to memory
- * @spifc:	the Meson SPI device
- * @buf:	the destination buffer
- * @len:	number of bytes to copy
- */
+ 
 static void meson_spifc_drain_buffer(struct meson_spifc *spifc, u8 *buf,
 				     int len)
 {
@@ -132,12 +117,7 @@ static void meson_spifc_drain_buffer(struct meson_spifc *spifc, u8 *buf,
 	}
 }
 
-/**
- * meson_spifc_fill_buffer() - copy data from memory to device buffer
- * @spifc:	the Meson SPI device
- * @buf:	the source buffer
- * @len:	number of bytes to copy
- */
+ 
 static void meson_spifc_fill_buffer(struct meson_spifc *spifc, const u8 *buf,
 				    int len)
 {
@@ -157,11 +137,7 @@ static void meson_spifc_fill_buffer(struct meson_spifc *spifc, const u8 *buf,
 	}
 }
 
-/**
- * meson_spifc_setup_speed() - program the clock divider
- * @spifc:	the Meson SPI device
- * @speed:	desired speed in Hz
- */
+ 
 static void meson_spifc_setup_speed(struct meson_spifc *spifc, u32 speed)
 {
 	unsigned long parent, value;
@@ -181,16 +157,7 @@ static void meson_spifc_setup_speed(struct meson_spifc *spifc, u32 speed)
 	regmap_write(spifc->regmap, REG_CLOCK, value);
 }
 
-/**
- * meson_spifc_txrx() - transfer a chunk of data
- * @spifc:	the Meson SPI device
- * @xfer:	the current SPI transfer
- * @offset:	offset of the data to transfer
- * @len:	length of the data to transfer
- * @last_xfer:	whether this is the last transfer of the message
- * @last_chunk:	whether this is the last chunk of the transfer
- * Return:	0 on success, a negative value on error
- */
+ 
 static int meson_spifc_txrx(struct meson_spifc *spifc,
 			    struct spi_transfer *xfer,
 			    int offset, int len, bool last_xfer,
@@ -202,13 +169,13 @@ static int meson_spifc_txrx(struct meson_spifc *spifc,
 	if (xfer->tx_buf)
 		meson_spifc_fill_buffer(spifc, xfer->tx_buf + offset, len);
 
-	/* enable DOUT stage */
+	 
 	regmap_update_bits(spifc->regmap, REG_USER, USER_UC_MASK,
 			   USER_UC_DOUT_SEL);
 	regmap_write(spifc->regmap, REG_USER1,
 		     (8 * len - 1) << USER1_BN_UC_DOUT_SHIFT);
 
-	/* enable data input during DOUT */
+	 
 	regmap_update_bits(spifc->regmap, REG_USER, USER_DIN_EN_MS,
 			   USER_DIN_EN_MS);
 
@@ -222,9 +189,9 @@ static int meson_spifc_txrx(struct meson_spifc *spifc,
 	regmap_update_bits(spifc->regmap, REG_USER4, USER4_CS_ACT,
 			   keep_cs ? USER4_CS_ACT : 0);
 
-	/* clear transition done bit */
+	 
 	regmap_update_bits(spifc->regmap, REG_SLAVE, SLAVE_TRST_DONE, 0);
-	/* start transfer */
+	 
 	regmap_update_bits(spifc->regmap, REG_CMD, CMD_USER, CMD_USER);
 
 	ret = meson_spifc_wait_ready(spifc);
@@ -235,13 +202,7 @@ static int meson_spifc_txrx(struct meson_spifc *spifc,
 	return ret;
 }
 
-/**
- * meson_spifc_transfer_one() - perform a single transfer
- * @master:	the SPI master
- * @spi:	the SPI device
- * @xfer:	the current SPI transfer
- * Return:	0 on success, a negative value on error
- */
+ 
 static int meson_spifc_transfer_one(struct spi_master *master,
 				    struct spi_device *spi,
 				    struct spi_transfer *xfer)
@@ -267,18 +228,15 @@ static int meson_spifc_transfer_one(struct spi_master *master,
 	return ret;
 }
 
-/**
- * meson_spifc_hw_init() - reset and initialize the SPI controller
- * @spifc:	the Meson SPI device
- */
+ 
 static void meson_spifc_hw_init(struct meson_spifc *spifc)
 {
-	/* reset device */
+	 
 	regmap_update_bits(spifc->regmap, REG_SLAVE, SLAVE_SW_RST,
 			   SLAVE_SW_RST);
-	/* disable compatible mode */
+	 
 	regmap_update_bits(spifc->regmap, REG_USER, USER_CMP_MODE, 0);
-	/* set master mode */
+	 
 	regmap_update_bits(spifc->regmap, REG_SLAVE, SLAVE_OP_MODE, 0);
 }
 
@@ -402,7 +360,7 @@ static int meson_spifc_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int meson_spifc_runtime_suspend(struct device *dev)
@@ -422,7 +380,7 @@ static int meson_spifc_runtime_resume(struct device *dev)
 
 	return clk_prepare_enable(spifc->clk);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops meson_spifc_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(meson_spifc_suspend, meson_spifc_resume)

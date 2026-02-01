@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __SOC_STARFIVE_RESET_JH71X0_H
 #define __SOC_STARFIVE_RESET_JH71X0_H
 

@@ -1,43 +1,10 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright 2009 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
 
-/*
- * Copyright (c) 2012 by Delphix. All rights reserved.
- * Copyright (c) 2015 by Syneto S.R.L. All rights reserved.
- * Copyright 2016 Nexenta Systems, Inc.
- */
+ 
 
-/*
- * The pool configuration repository is stored in /etc/zfs/zpool.cache as a
- * single packed nvlist.  While it would be nice to just read in this
- * file from userland, this wouldn't work from a local zone.  So we have to have
- * a zpool ioctl to return the complete configuration for all pools.  In the
- * global zone, this will be identical to reading the file and unpacking it in
- * userland.
- */
+ 
 
 #include <errno.h>
 #include <sys/stat.h>
@@ -97,9 +64,7 @@ namespace_clear(libzfs_handle_t *hdl)
 	}
 }
 
-/*
- * Loads the pool namespace, or re-loads it if the cache has changed.
- */
+ 
 static int
 namespace_reload(libzfs_handle_t *hdl)
 {
@@ -110,11 +75,7 @@ namespace_reload(libzfs_handle_t *hdl)
 	void *cookie;
 
 	if (hdl->libzfs_ns_gen == 0) {
-		/*
-		 * This is the first time we've accessed the configuration
-		 * cache.  Initialize the AVL tree and then fall through to the
-		 * common code.
-		 */
+		 
 		if ((hdl->libzfs_ns_avlpool = uu_avl_pool_create("config_pool",
 		    sizeof (config_node_t),
 		    offsetof(config_node_t, cn_avl),
@@ -133,9 +94,7 @@ namespace_reload(libzfs_handle_t *hdl)
 		if (zfs_ioctl(hdl, ZFS_IOC_POOL_CONFIGS, &zc) != 0) {
 			switch (errno) {
 			case EEXIST:
-				/*
-				 * The namespace hasn't changed.
-				 */
+				 
 				zcmd_free_nvlists(&zc);
 				return (0);
 
@@ -162,9 +121,7 @@ namespace_reload(libzfs_handle_t *hdl)
 
 	zcmd_free_nvlists(&zc);
 
-	/*
-	 * Clear out any existing configuration information.
-	 */
+	 
 	cookie = NULL;
 	while ((cn = uu_avl_teardown(hdl->libzfs_ns_avl, &cookie)) != NULL) {
 		nvlist_free(cn->cn_config);
@@ -196,10 +153,7 @@ namespace_reload(libzfs_handle_t *hdl)
 	return (0);
 }
 
-/*
- * Retrieve the configuration for the given pool. The configuration is an nvlist
- * describing the vdevs, as well as the statistics associated with each one.
- */
+ 
 nvlist_t *
 zpool_get_config(zpool_handle_t *zhp, nvlist_t **oldconfig)
 {
@@ -208,10 +162,7 @@ zpool_get_config(zpool_handle_t *zhp, nvlist_t **oldconfig)
 	return (zhp->zpool_config);
 }
 
-/*
- * Retrieves a list of enabled features and their refcounts and caches it in
- * the pool handle.
- */
+ 
 nvlist_t *
 zpool_get_features(zpool_handle_t *zhp)
 {
@@ -239,12 +190,7 @@ zpool_get_features(zpool_handle_t *zhp)
 	return (features);
 }
 
-/*
- * Refresh the vdev statistics associated with the given pool.  This is used in
- * iostat to show configuration changes and determine the delta from the last
- * time the function was called.  This function can fail, in case the pool has
- * been destroyed.
- */
+ 
 int
 zpool_refresh_stats(zpool_handle_t *zhp, boolean_t *missing)
 {
@@ -264,9 +210,7 @@ zpool_refresh_stats(zpool_handle_t *zhp, boolean_t *missing)
 	for (;;) {
 		if (zfs_ioctl(zhp->zpool_hdl, ZFS_IOC_POOL_STATS,
 		    &zc) == 0) {
-			/*
-			 * The real error is returned in the zc_cookie field.
-			 */
+			 
 			error = zc.zc_cookie;
 			break;
 		}
@@ -306,16 +250,7 @@ zpool_refresh_stats(zpool_handle_t *zhp, boolean_t *missing)
 	return (0);
 }
 
-/*
- * The following environment variables are undocumented
- * and should be used for testing purposes only:
- *
- * __ZFS_POOL_EXCLUDE - don't iterate over the pools it lists
- * __ZFS_POOL_RESTRICT - iterate only over the pools it lists
- *
- * This function returns B_TRUE if the pool should be skipped
- * during iteration.
- */
+ 
 boolean_t
 zpool_skip_pool(const char *poolname)
 {
@@ -362,9 +297,7 @@ zpool_skip_pool(const char *poolname)
 	return (B_TRUE);
 }
 
-/*
- * Iterate over all pools in the system.
- */
+ 
 int
 zpool_iter(libzfs_handle_t *hdl, zpool_iter_f func, void *data)
 {
@@ -372,12 +305,7 @@ zpool_iter(libzfs_handle_t *hdl, zpool_iter_f func, void *data)
 	zpool_handle_t *zhp;
 	int ret;
 
-	/*
-	 * If someone makes a recursive call to zpool_iter(), we want to avoid
-	 * refreshing the namespace because that will invalidate the parent
-	 * context.  We allow recursive calls, but simply re-use the same
-	 * namespace AVL tree.
-	 */
+	 
 	if (!hdl->libzfs_pool_iter && namespace_reload(hdl) != 0)
 		return (-1);
 
@@ -406,10 +334,7 @@ zpool_iter(libzfs_handle_t *hdl, zpool_iter_f func, void *data)
 	return (0);
 }
 
-/*
- * Iterate over root datasets, calling the given function for each.  The zfs
- * handle passed each time must be explicitly closed by the callback.
- */
+ 
 int
 zfs_iter_root(libzfs_handle_t *hdl, zfs_iter_f func, void *data)
 {

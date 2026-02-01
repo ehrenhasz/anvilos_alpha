@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog driver for TQMx86 PLD.
- *
- * The watchdog supports power of 2 timeouts from 1 to 4096sec.
- * Once started, it cannot be stopped.
- *
- * Based on the vendor code written by Vadim V.Vlasov
- * <vvlasov@dev.rtsoft.ru>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/log2.h>
@@ -16,7 +8,7 @@
 #include <linux/timer.h>
 #include <linux/watchdog.h>
 
-/* default timeout (secs) */
+ 
 #define WDT_TIMEOUT 32
 
 static unsigned int timeout;
@@ -29,8 +21,8 @@ struct tqmx86_wdt {
 	void __iomem *io_base;
 };
 
-#define TQMX86_WDCFG	0x00 /* Watchdog Configuration Register */
-#define TQMX86_WDCS	0x01 /* Watchdog Config/Status Register */
+#define TQMX86_WDCFG	0x00  
+#define TQMX86_WDCS	0x01  
 
 static int tqmx86_wdt_start(struct watchdog_device *wdd)
 {
@@ -48,7 +40,7 @@ static int tqmx86_wdt_set_timeout(struct watchdog_device *wdd, unsigned int t)
 
 	t = roundup_pow_of_two(t);
 	val = ilog2(t) | 0x90;
-	val += 3; /* values 0,1,2 correspond to 0.125,0.25,0.5s timeouts */
+	val += 3;  
 	iowrite8(val, priv->io_base + TQMX86_WDCFG);
 
 	wdd->timeout = t;

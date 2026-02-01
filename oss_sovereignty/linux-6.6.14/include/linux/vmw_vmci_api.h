@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * VMware VMCI Driver
- *
- * Copyright (C) 2012 VMware, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef __VMW_VMCI_API_H__
 #define __VMW_VMCI_API_H__
@@ -74,4 +70,4 @@ ssize_t vmci_qpair_dequev(struct vmci_qp *qpair,
 ssize_t vmci_qpair_peekv(struct vmci_qp *qpair, struct msghdr *msg, size_t iov_size,
 			 int mode);
 
-#endif /* !__VMW_VMCI_API_H__ */
+#endif  

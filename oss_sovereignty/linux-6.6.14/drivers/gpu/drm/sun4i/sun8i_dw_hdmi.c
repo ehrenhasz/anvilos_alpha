@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2018 Jernej Skrabec <jernej.skrabec@siol.net>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/module.h>
@@ -45,10 +43,7 @@ sun8i_dw_hdmi_mode_valid_h6(struct dw_hdmi *hdmi, void *data,
 			    const struct drm_display_info *info,
 			    const struct drm_display_mode *mode)
 {
-	/*
-	 * Controller support maximum of 594 MHz, which correlates to
-	 * 4K@60Hz 4:4:4 or RGB.
-	 */
+	 
 	if (mode->clock > 594000)
 		return MODE_CLOCK_HIGH;
 
@@ -119,12 +114,7 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
 
 	encoder->possible_crtcs =
 		sun8i_dw_hdmi_find_possible_crtcs(drm, dev->of_node);
-	/*
-	 * If we failed to find the CRTC(s) which this encoder is
-	 * supposed to be connected to, it's because the CRTC has
-	 * not been registered yet.  Defer probing, and hope that
-	 * the required CRTC is added later.
-	 */
+	 
 	if (encoder->possible_crtcs == 0)
 		return -EPROBE_DEFER;
 
@@ -190,10 +180,7 @@ static int sun8i_dw_hdmi_bind(struct device *dev, struct device *master,
 
 	hdmi->hdmi = dw_hdmi_bind(pdev, encoder, plat_data);
 
-	/*
-	 * If dw_hdmi_bind() fails we'll never call dw_hdmi_unbind(),
-	 * which would have called the encoder cleanup.  Do it manually.
-	 */
+	 
 	if (IS_ERR(hdmi->hdmi)) {
 		ret = PTR_ERR(hdmi->hdmi);
 		goto cleanup_encoder;
@@ -258,7 +245,7 @@ static const struct of_device_id sun8i_dw_hdmi_dt_ids[] = {
 		.compatible = "allwinner,sun50i-h6-dw-hdmi",
 		.data = &sun50i_h6_quirks,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, sun8i_dw_hdmi_dt_ids);
 

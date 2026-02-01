@@ -1,196 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* -*- linux-c -*-
- * APM BIOS driver for Linux
- * Copyright 1994-2001 Stephen Rothwell (sfr@canb.auug.org.au)
- *
- * Initial development of this driver was funded by NEC Australia P/L
- *	and NEC Corporation
- *
- * October 1995, Rik Faith (faith@cs.unc.edu):
- *    Minor enhancements and updates (to the patch set) for 1.3.x
- *    Documentation
- * January 1996, Rik Faith (faith@cs.unc.edu):
- *    Make /proc/apm easy to format (bump driver version)
- * March 1996, Rik Faith (faith@cs.unc.edu):
- *    Prohibit APM BIOS calls unless apm_enabled.
- *    (Thanks to Ulrich Windl <Ulrich.Windl@rz.uni-regensburg.de>)
- * April 1996, Stephen Rothwell (sfr@canb.auug.org.au)
- *    Version 1.0 and 1.1
- * May 1996, Version 1.2
- * Feb 1998, Version 1.3
- * Feb 1998, Version 1.4
- * Aug 1998, Version 1.5
- * Sep 1998, Version 1.6
- * Nov 1998, Version 1.7
- * Jan 1999, Version 1.8
- * Jan 1999, Version 1.9
- * Oct 1999, Version 1.10
- * Nov 1999, Version 1.11
- * Jan 2000, Version 1.12
- * Feb 2000, Version 1.13
- * Nov 2000, Version 1.14
- * Oct 2001, Version 1.15
- * Jan 2002, Version 1.16
- * Oct 2002, Version 1.16ac
- *
- * History:
- *    0.6b: first version in official kernel, Linux 1.3.46
- *    0.7: changed /proc/apm format, Linux 1.3.58
- *    0.8: fixed gcc 2.7.[12] compilation problems, Linux 1.3.59
- *    0.9: only call bios if bios is present, Linux 1.3.72
- *    1.0: use fixed device number, consolidate /proc/apm into this file,
- *         Linux 1.3.85
- *    1.1: support user-space standby and suspend, power off after system
- *         halted, Linux 1.3.98
- *    1.2: When resetting RTC after resume, take care so that the time
- *         is only incorrect by 30-60mS (vs. 1S previously) (Gabor J. Toth
- *         <jtoth@princeton.edu>); improve interaction between
- *         screen-blanking and gpm (Stephen Rothwell); Linux 1.99.4
- *    1.2a:Simple change to stop mysterious bug reports with SMP also added
- *	   levels to the printk calls. APM is not defined for SMP machines.
- *         The new replacement for it is, but Linux doesn't yet support this.
- *         Alan Cox Linux 2.1.55
- *    1.3: Set up a valid data descriptor 0x40 for buggy BIOS's
- *    1.4: Upgraded to support APM 1.2. Integrated ThinkPad suspend patch by
- *         Dean Gaudet <dgaudet@arctic.org>.
- *         C. Scott Ananian <cananian@alumni.princeton.edu> Linux 2.1.87
- *    1.5: Fix segment register reloading (in case of bad segments saved
- *         across BIOS call).
- *         Stephen Rothwell
- *    1.6: Cope with compiler/assembler differences.
- *         Only try to turn off the first display device.
- *         Fix OOPS at power off with no APM BIOS by Jan Echternach
- *                   <echter@informatik.uni-rostock.de>
- *         Stephen Rothwell
- *    1.7: Modify driver's cached copy of the disabled/disengaged flags
- *         to reflect current state of APM BIOS.
- *         Chris Rankin <rankinc@bellsouth.net>
- *         Reset interrupt 0 timer to 100Hz after suspend
- *         Chad Miller <cmiller@surfsouth.com>
- *         Add CONFIG_APM_IGNORE_SUSPEND_BOUNCE
- *         Richard Gooch <rgooch@atnf.csiro.au>
- *         Allow boot time disabling of APM
- *         Make boot messages far less verbose by default
- *         Make asm safer
- *         Stephen Rothwell
- *    1.8: Add CONFIG_APM_RTC_IS_GMT
- *         Richard Gooch <rgooch@atnf.csiro.au>
- *         change APM_NOINTS to CONFIG_APM_ALLOW_INTS
- *         remove dependency on CONFIG_PROC_FS
- *         Stephen Rothwell
- *    1.9: Fix small typo.  <laslo@wodip.opole.pl>
- *         Try to cope with BIOS's that need to have all display
- *         devices blanked and not just the first one.
- *         Ross Paterson <ross@soi.city.ac.uk>
- *         Fix segment limit setting it has always been wrong as
- *         the segments needed to have byte granularity.
- *         Mark a few things __init.
- *         Add hack to allow power off of SMP systems by popular request.
- *         Use CONFIG_SMP instead of __SMP__
- *         Ignore BOUNCES for three seconds.
- *         Stephen Rothwell
- *   1.10: Fix for Thinkpad return code.
- *         Merge 2.2 and 2.3 drivers.
- *         Remove APM dependencies in arch/i386/kernel/process.c
- *         Remove APM dependencies in drivers/char/sysrq.c
- *         Reset time across standby.
- *         Allow more initialisation on SMP.
- *         Remove CONFIG_APM_POWER_OFF and make it boot time
- *         configurable (default on).
- *         Make debug only a boot time parameter (remove APM_DEBUG).
- *         Try to blank all devices on any error.
- *   1.11: Remove APM dependencies in drivers/char/console.c
- *         Check nr_running to detect if we are idle (from
- *         Borislav Deianov <borislav@lix.polytechnique.fr>)
- *         Fix for bioses that don't zero the top part of the
- *         entrypoint offset (Mario Sitta <sitta@al.unipmn.it>)
- *         (reported by Panos Katsaloulis <teras@writeme.com>).
- *         Real mode power off patch (Walter Hofmann
- *         <Walter.Hofmann@physik.stud.uni-erlangen.de>).
- *   1.12: Remove CONFIG_SMP as the compiler will optimize
- *         the code away anyway (smp_num_cpus == 1 in UP)
- *         noted by Artur Skawina <skawina@geocities.com>.
- *         Make power off under SMP work again.
- *         Fix thinko with initial engaging of BIOS.
- *         Make sure power off only happens on CPU 0
- *         (Paul "Rusty" Russell <rusty@rustcorp.com.au>).
- *         Do error notification to user mode if BIOS calls fail.
- *         Move entrypoint offset fix to ...boot/setup.S
- *         where it belongs (Cosmos <gis88564@cis.nctu.edu.tw>).
- *         Remove smp-power-off. SMP users must now specify
- *         "apm=power-off" on the kernel command line. Suggested
- *         by Jim Avera <jima@hal.com>, modified by Alan Cox
- *         <alan@lxorguk.ukuu.org.uk>.
- *         Register the /proc/apm entry even on SMP so that
- *         scripts that check for it before doing power off
- *         work (Jim Avera <jima@hal.com>).
- *   1.13: Changes for new pm_ interfaces (Andy Henroid
- *         <andy_henroid@yahoo.com>).
- *         Modularize the code.
- *         Fix the Thinkpad (again) :-( (CONFIG_APM_IGNORE_MULTIPLE_SUSPENDS
- *         is now the way life works).
- *         Fix thinko in suspend() (wrong return).
- *         Notify drivers on critical suspend.
- *         Make kapmd absorb more idle time (Pavel Machek <pavel@ucw.cz>
- *         modified by sfr).
- *         Disable interrupts while we are suspended (Andy Henroid
- *         <andy_henroid@yahoo.com> fixed by sfr).
- *         Make power off work on SMP again (Tony Hoyle
- *         <tmh@magenta-logic.com> and <zlatko@iskon.hr>) modified by sfr.
- *         Remove CONFIG_APM_SUSPEND_BOUNCE.  The bounce ignore
- *         interval is now configurable.
- *   1.14: Make connection version persist across module unload/load.
- *         Enable and engage power management earlier.
- *         Disengage power management on module unload.
- *         Changed to use the sysrq-register hack for registering the
- *         power off function called by magic sysrq based upon discussions
- *         in irc://irc.openprojects.net/#kernelnewbies
- *         (Crutcher Dunnavant <crutcher+kernel@datastacks.com>).
- *         Make CONFIG_APM_REAL_MODE_POWER_OFF run time configurable.
- *         (Arjan van de Ven <arjanv@redhat.com>) modified by sfr.
- *         Work around byte swap bug in one of the Vaio's BIOS's
- *         (Marc Boucher <marc@mbsi.ca>).
- *         Exposed the disable flag to dmi so that we can handle known
- *         broken APM (Alan Cox <alan@lxorguk.ukuu.org.uk>).
- *   1.14ac: If the BIOS says "I slowed the CPU down" then don't spin
- *         calling it - instead idle. (Alan Cox <alan@lxorguk.ukuu.org.uk>)
- *         If an APM idle fails log it and idle sensibly
- *   1.15: Don't queue events to clients who open the device O_WRONLY.
- *         Don't expect replies from clients who open the device O_RDONLY.
- *         (Idea from Thomas Hood)
- *         Minor waitqueue cleanups. (John Fremlin <chief@bandits.org>)
- *   1.16: Fix idle calling. (Andreas Steinmetz <ast@domdv.de> et al.)
- *         Notify listeners of standby or suspend events before notifying
- *         drivers. Return EBUSY to ioctl() if suspend is rejected.
- *         (Russell King <rmk@arm.linux.org.uk> and Thomas Hood)
- *         Ignore first resume after we generate our own resume event
- *         after a suspend (Thomas Hood)
- *         Daemonize now gets rid of our controlling terminal (sfr).
- *         CONFIG_APM_CPU_IDLE now just affects the default value of
- *         idle_threshold (sfr).
- *         Change name of kernel apm daemon (as it no longer idles) (sfr).
- *   1.16ac: Fix up SMP support somewhat. You can now force SMP on and we
- *	   make _all_ APM calls on the CPU#0. Fix unsafe sign bug.
- *	   TODO: determine if its "boot CPU" or "CPU0" we want to lock to.
- *
- * APM 1.1 Reference:
- *
- *   Intel Corporation, Microsoft Corporation. Advanced Power Management
- *   (APM) BIOS Interface Specification, Revision 1.1, September 1993.
- *   Intel Order Number 241704-001.  Microsoft Part Number 781-110-X01.
- *
- * [This document is available free from Intel by calling 800.628.8686 (fax
- * 916.356.6100) or 800.548.4725; or from
- * http://www.microsoft.com/whdc/archive/amp_12.mspx  It is also
- * available from Microsoft by calling 206.882.8080.]
- *
- * APM 1.2 Reference:
- *   Intel Corporation, Microsoft Corporation. Advanced Power Management
- *   (APM) BIOS Interface Specification, Revision 1.2, February 1996.
- *
- * [This document is available from Microsoft at:
- *    http://www.microsoft.com/whdc/archive/amp_12.mspx]
- */
+
+ 
 
 #define pr_fmt(fmt) "apm: " fmt
 
@@ -238,65 +47,19 @@
 extern int (*console_blank_hook)(int);
 #endif
 
-/*
- * Various options can be changed at boot time as follows:
- * (We allow underscores for compatibility with the modules code)
- *	apm=on/off			enable/disable APM
- *	    [no-]allow[-_]ints		allow interrupts during BIOS calls
- *	    [no-]broken[-_]psr		BIOS has a broken GetPowerStatus call
- *	    [no-]realmode[-_]power[-_]off	switch to real mode before
- *	    					powering off
- *	    [no-]debug			log some debugging messages
- *	    [no-]power[-_]off		power off on shutdown
- *	    [no-]smp			Use apm even on an SMP box
- *	    bounce[-_]interval=<n>	number of ticks to ignore suspend
- *	    				bounces
- *          idle[-_]threshold=<n>       System idle percentage above which to
- *                                      make APM BIOS idle calls. Set it to
- *                                      100 to disable.
- *          idle[-_]period=<n>          Period (in 1/100s of a second) over
- *                                      which the idle percentage is
- *                                      calculated.
- */
+ 
 
-/* KNOWN PROBLEM MACHINES:
- *
- * U: TI 4000M TravelMate: BIOS is *NOT* APM compliant
- *                         [Confirmed by TI representative]
- * ?: ACER 486DX4/75: uses dseg 0040, in violation of APM specification
- *                    [Confirmed by BIOS disassembly]
- *                    [This may work now ...]
- * P: Toshiba 1950S: battery life information only gets updated after resume
- * P: Midwest Micro Soundbook Elite DX2/66 monochrome: screen blanking
- * 	broken in BIOS [Reported by Garst R. Reese <reese@isn.net>]
- * ?: AcerNote-950: oops on reading /proc/apm - workaround is a WIP
- * 	Neale Banks <neale@lowendale.com.au> December 2000
- *
- * Legend: U = unusable with APM patches
- *         P = partially usable with APM patches
- */
+ 
 
-/*
- * Define as 1 to make the driver always call the APM BIOS busy
- * routine even if the clock was not reported as slowed by the
- * idle routine.  Otherwise, define as 0.
- */
+ 
 #define ALWAYS_CALL_BUSY   1
 
-/*
- * Define to make the APM BIOS calls zero all data segment registers (so
- * that an incorrect BIOS implementation will cause a kernel panic if it
- * tries to write to arbitrary memory).
- */
+ 
 #define APM_ZERO_SEGS
 
 #include <asm/apm.h>
 
-/*
- * Define to re-initialize the interrupt 0 timer to 100 Hz after a suspend.
- * This patched by Chad Miller <cmiller@surfsouth.com>, original code by
- * David Chen <chen@ctpa04.mit.edu>
- */
+ 
 #undef INIT_TIMER_AFTER_SUSPEND
 
 #ifdef INIT_TIMER_AFTER_SUSPEND
@@ -305,24 +68,16 @@ extern int (*console_blank_hook)(int);
 #include <linux/delay.h>
 #endif
 
-/*
- * Need to poll the APM BIOS every second
- */
+ 
 #define APM_CHECK_TIMEOUT	(HZ)
 
-/*
- * Ignore suspend events for this amount of time after a resume
- */
+ 
 #define DEFAULT_BOUNCE_INTERVAL	(3 * HZ)
 
-/*
- * Maximum number of events stored
- */
+ 
 #define APM_MAX_EVENTS		20
 
-/*
- * The per-file APM data
- */
+ 
 struct apm_user {
 	int		magic;
 	struct apm_user *next;
@@ -340,14 +95,10 @@ struct apm_user {
 	apm_event_t	events[APM_MAX_EVENTS];
 };
 
-/*
- * The magic number in apm_user
- */
+ 
 #define APM_BIOS_MAGIC		0x4101
 
-/*
- * idle percentage above which bios idle calls are done
- */
+ 
 #ifdef CONFIG_APM_CPU_IDLE
 #define DEFAULT_IDLE_THRESHOLD	95
 #else
@@ -362,12 +113,12 @@ static struct cpuidle_driver apm_idle_driver = {
 	.name = "apm_idle",
 	.owner = THIS_MODULE,
 	.states = {
-		{ /* entry 0 is for polling */ },
-		{ /* entry 1 is for APM idle */
+		{   },
+		{  
 			.name = "APM",
 			.desc = "APM idle",
-			.exit_latency = 250,	/* WAG */
-			.target_residency = 500,	/* WAG */
+			.exit_latency = 250,	 
+			.target_residency = 500,	 
 			.enter = &apm_cpu_idle
 		},
 	},
@@ -376,9 +127,7 @@ static struct cpuidle_driver apm_idle_driver = {
 
 static struct cpuidle_device apm_cpuidle_device;
 
-/*
- * Local variables
- */
+ 
 __visible struct {
 	unsigned long	offset;
 	unsigned short	segment;
@@ -414,23 +163,15 @@ static struct apm_user *user_list;
 static DEFINE_SPINLOCK(user_list_lock);
 static DEFINE_MUTEX(apm_mutex);
 
-/*
- * Set up a segment that references the real mode segment 0x40
- * that extends up to the end of page zero (that we have reserved).
- * This is for buggy BIOS's that refer to (real mode) segment 0x40
- * even though they are called in protected mode.
- */
+ 
 static struct desc_struct bad_bios_desc = GDT_ENTRY_INIT(0x4092,
 			(unsigned long)__va(0x400UL), PAGE_SIZE - 0x400 - 1);
 
-static const char driver_version[] = "1.16ac";	/* no spaces */
+static const char driver_version[] = "1.16ac";	 
 
 static struct task_struct *kapmd_task;
 
-/*
- *	APM event names taken from the APM 1.2 specification. These are
- *	the message codes that the BIOS uses to tell us about events
- */
+ 
 static const char * const apm_event_name[] = {
 	"system standby",
 	"system suspend",
@@ -452,18 +193,15 @@ typedef struct lookup_t {
 	char 	*msg;
 } lookup_t;
 
-/*
- *	The BIOS returns a set of standard error codes in AX when the
- *	carry flag is set.
- */
+ 
 
 static const lookup_t error_table[] = {
-/* N/A	{ APM_SUCCESS,		"Operation succeeded" }, */
+ 
 	{ APM_DISABLED,		"Power management disabled" },
 	{ APM_CONNECTED,	"Real mode interface already connected" },
 	{ APM_NOT_CONNECTED,	"Interface not connected" },
 	{ APM_16_CONNECTED,	"16 bit interface already connected" },
-/* N/A	{ APM_16_UNSUPPORTED,	"16 bit interface not supported" }, */
+ 
 	{ APM_32_CONNECTED,	"32 bit interface already connected" },
 	{ APM_32_UNSUPPORTED,	"32 bit interface not supported" },
 	{ APM_BAD_DEVICE,	"Unrecognized device ID" },
@@ -472,20 +210,13 @@ static const lookup_t error_table[] = {
 	{ APM_BAD_FUNCTION,     "Function not supported" },
 	{ APM_RESUME_DISABLED,	"Resume timer disabled" },
 	{ APM_BAD_STATE,	"Unable to enter requested state" },
-/* N/A	{ APM_NO_EVENTS,	"No events pending" }, */
+ 
 	{ APM_NO_ERROR,		"BIOS did not set a return code" },
 	{ APM_NOT_PRESENT,	"No APM present" }
 };
 #define ERROR_COUNT	ARRAY_SIZE(error_table)
 
-/**
- *	apm_error	-	display an APM error
- *	@str: information string
- *	@err: APM BIOS return code
- *
- *	Write a meaningful log entry to the kernel log in the event of
- *	an APM error.  Note that this also handles (negative) kernel errors.
- */
+ 
 
 static void apm_error(char *str, int err)
 {
@@ -503,22 +234,7 @@ static void apm_error(char *str, int err)
 		       str, err);
 }
 
-/*
- * These are the actual BIOS calls.  Depending on APM_ZERO_SEGS and
- * apm_info.allow_ints, we are being really paranoid here!  Not only
- * are interrupts disabled, but all the segment registers (except SS)
- * are saved and zeroed this means that if the BIOS tries to reference
- * any data without explicitly loading the segment registers, the kernel
- * will fault immediately rather than have some unforeseen circumstances
- * for the rest of the kernel.  And it will be very obvious!  :-) Doing
- * this depends on CS referring to the same physical memory as DS so that
- * DS can be zeroed before the call. Unfortunately, we can't do anything
- * about the stack segment/pointer.  Also, we tell the compiler that
- * everything could change.
- *
- * Also, we KNOW that for the non error case of apm_bios_call, there
- * is no useful data returned in the low order 8 bits of eax.
- */
+ 
 
 static inline unsigned long __apm_irq_save(void)
 {
@@ -559,32 +275,19 @@ static inline void apm_irq_restore(unsigned long flags)
 
 struct apm_bios_call {
 	u32 func;
-	/* In and out */
+	 
 	u32 ebx;
 	u32 ecx;
-	/* Out only */
+	 
 	u32 eax;
 	u32 edx;
 	u32 esi;
 
-	/* Error: -ENOMEM, or bits 8-15 of eax */
+	 
 	int err;
 };
 
-/**
- *	__apm_bios_call - Make an APM BIOS 32bit call
- *	@_call: pointer to struct apm_bios_call.
- *
- *	Make an APM call using the 32bit protected mode interface. The
- *	caller is responsible for knowing if APM BIOS is configured and
- *	enabled. This call can disable interrupts for a long period of
- *	time on some laptops.  The return value is in AH and the carry
- *	flag is loaded into AL.  If there is an error, then the error
- *	code is returned in AH (bits 8-15 of eax) and this function
- *	returns non-zero.
- *
- *	Note: this makes the call on the current CPU.
- */
+ 
 static long __apm_bios_call(void *_call)
 {
 	APM_DECL_SEGS
@@ -618,13 +321,12 @@ static long __apm_bios_call(void *_call)
 	return call->eax & 0xff;
 }
 
-/* Run __apm_bios_call or __apm_bios_call_simple on CPU 0 */
+ 
 static int on_cpu0(long (*fn)(void *), struct apm_bios_call *call)
 {
 	int ret;
 
-	/* Don't bother with work_on_cpu in the common case, so we don't
-	 * have to worry about OOM or overhead. */
+	 
 	if (get_cpu() == 0) {
 		ret = fn(call);
 		put_cpu();
@@ -633,7 +335,7 @@ static int on_cpu0(long (*fn)(void *), struct apm_bios_call *call)
 		ret = work_on_cpu(0, fn, call);
 	}
 
-	/* work_on_cpu can fail with -ENOMEM */
+	 
 	if (ret < 0)
 		call->err = ret;
 	else
@@ -642,29 +344,13 @@ static int on_cpu0(long (*fn)(void *), struct apm_bios_call *call)
 	return ret;
 }
 
-/**
- *	apm_bios_call	-	Make an APM BIOS 32bit call (on CPU 0)
- *	@call: the apm_bios_call registers.
- *
- *	If there is an error, it is returned in @call.err.
- */
+ 
 static int apm_bios_call(struct apm_bios_call *call)
 {
 	return on_cpu0(__apm_bios_call, call);
 }
 
-/**
- *	__apm_bios_call_simple - Make an APM BIOS 32bit call (on CPU 0)
- *	@_call: pointer to struct apm_bios_call.
- *
- *	Make a BIOS call that returns one value only, or just status.
- *	If there is an error, then the error code is returned in AH
- *	(bits 8-15 of eax) and this function returns non-zero (it can
- *	also return -ENOMEM). This is used for simpler BIOS operations.
- *	This call may hold interrupts off for a long time on some laptops.
- *
- *	Note: this makes the call on the current CPU.
- */
+ 
 static long __apm_bios_call_simple(void *_call)
 {
 	u8			error;
@@ -697,20 +383,7 @@ static long __apm_bios_call_simple(void *_call)
 	return error;
 }
 
-/**
- *	apm_bios_call_simple	-	make a simple APM BIOS 32bit call
- *	@func: APM function to invoke
- *	@ebx_in: EBX register value for BIOS call
- *	@ecx_in: ECX register value for BIOS call
- *	@eax: EAX register on return from the BIOS call
- *	@err: bits
- *
- *	Make a BIOS call that returns one value only, or just status.
- *	If there is an error, then the error code is returned in @err
- *	and this function returns non-zero. This is used for simpler
- *	BIOS operations.  This call may hold interrupts off for a long
- *	time on some laptops.
- */
+ 
 static int apm_bios_call_simple(u32 func, u32 ebx_in, u32 ecx_in, u32 *eax,
 				int *err)
 {
@@ -727,21 +400,7 @@ static int apm_bios_call_simple(u32 func, u32 ebx_in, u32 ecx_in, u32 *eax,
 	return ret;
 }
 
-/**
- *	apm_driver_version	-	APM driver version
- *	@val:	loaded with the APM version on return
- *
- *	Retrieve the APM version supported by the BIOS. This is only
- *	supported for APM 1.1 or higher. An error indicates APM 1.0 is
- *	probably present.
- *
- *	On entry val should point to a value indicating the APM driver
- *	version with the high byte being the major and the low byte the
- *	minor number both in BCD
- *
- *	On return it will hold the BIOS revision supported in the
- *	same format.
- */
+ 
 
 static int apm_driver_version(u_short *val)
 {
@@ -754,22 +413,7 @@ static int apm_driver_version(u_short *val)
 	return APM_SUCCESS;
 }
 
-/**
- *	apm_get_event	-	get an APM event from the BIOS
- *	@event: pointer to the event
- *	@info: point to the event information
- *
- *	The APM BIOS provides a polled information for event
- *	reporting. The BIOS expects to be polled at least every second
- *	when events are pending. When a message is found the caller should
- *	poll until no more messages are present.  However, this causes
- *	problems on some laptops where a suspend event notification is
- *	not cleared until it is acknowledged.
- *
- *	Additional information is returned in the info pointer, providing
- *	that APM 1.2 is in use. If no messages are pending the value 0x80
- *	is returned (No power management events pending).
- */
+ 
 static int apm_get_event(apm_event_t *event, apm_eventinfo_t *info)
 {
 	struct apm_bios_call call;
@@ -782,25 +426,13 @@ static int apm_get_event(apm_event_t *event, apm_eventinfo_t *info)
 
 	*event = call.ebx;
 	if (apm_info.connection_version < 0x0102)
-		*info = ~0; /* indicate info not valid */
+		*info = ~0;  
 	else
 		*info = call.ecx;
 	return APM_SUCCESS;
 }
 
-/**
- *	set_power_state	-	set the power management state
- *	@what: which items to transition
- *	@state: state to transition to
- *
- *	Request an APM change of state for one or more system devices. The
- *	processor state must be transitioned last of all. what holds the
- *	class of device in the upper byte and the device number (0xFF for
- *	all) for the object to be transitioned.
- *
- *	The state holds the state to transition to, which may in fact
- *	be an acceptance of a BIOS requested state change.
- */
+ 
 
 static int set_power_state(u_short what, u_short state)
 {
@@ -812,26 +444,14 @@ static int set_power_state(u_short what, u_short state)
 	return APM_SUCCESS;
 }
 
-/**
- *	set_system_power_state - set system wide power state
- *	@state: which state to enter
- *
- *	Transition the entire system into a new APM power state.
- */
+ 
 
 static int set_system_power_state(u_short state)
 {
 	return set_power_state(APM_DEVICE_ALL, state);
 }
 
-/**
- *	apm_do_idle	-	perform power saving
- *
- *	This function notifies the BIOS that the processor is (in the view
- *	of the OS) idle. It returns -1 in the event that the BIOS refuses
- *	to handle the idle request. On a success the function returns 1
- *	if the BIOS did clock slowing or 0 otherwise.
- */
+ 
 
 static int apm_do_idle(void)
 {
@@ -851,9 +471,7 @@ static int apm_do_idle(void)
 	if (ret) {
 		static unsigned long t;
 
-		/* This always fails on some SMP boards running UP kernels.
-		 * Only report the failure the first 5 times.
-		 */
+		 
 		if (++t < 5) {
 			printk(KERN_DEBUG "apm_do_idle failed (%d)\n", err);
 			t = jiffies;
@@ -864,11 +482,7 @@ static int apm_do_idle(void)
 	return clock_slowed;
 }
 
-/**
- *	apm_do_busy	-	inform the BIOS the CPU is busy
- *
- *	Request that the BIOS brings the CPU back to full performance.
- */
+ 
 
 static void apm_do_busy(void)
 {
@@ -881,29 +495,18 @@ static void apm_do_busy(void)
 	}
 }
 
-/*
- * If no process has really been interested in
- * the CPU for some time, we want to call BIOS
- * power management - we probably want
- * to conserve power.
- */
+ 
 #define IDLE_CALC_LIMIT	(HZ * 100)
 #define IDLE_LEAKY_MAX	16
 
-/**
- * apm_cpu_idle		-	cpu idling for APM capable Linux
- *
- * This is the idling function the kernel executes when APM is available. It
- * tries to do BIOS powermanagement based on the average system idle time.
- * Furthermore it calls the system default idle routine.
- */
+ 
 
 static int apm_cpu_idle(struct cpuidle_device *dev,
 	struct cpuidle_driver *drv, int index)
 {
-	static int use_apm_idle; /* = 0 */
-	static unsigned int last_jiffies; /* = 0 */
-	static u64 last_stime; /* = 0 */
+	static int use_apm_idle;  
+	static unsigned int last_jiffies;  
+	static u64 last_stime;  
 	u64 stime, utime;
 
 	int apm_idle_done = 0;
@@ -951,7 +554,7 @@ recalc:
 			case 1:
 				apm_idle_done = 1;
 				break;
-			default: /* BIOS refused */
+			default:  
 				break;
 			}
 		}
@@ -968,19 +571,11 @@ recalc:
 	return index;
 }
 
-/**
- *	apm_power_off	-	ask the BIOS to power off
- *
- *	Handle the power off sequence. This is the one piece of code we
- *	will execute even on SMP machines. In order to deal with BIOS
- *	bugs we support real mode APM BIOS power off calls. We also make
- *	the SMP call on CPU0 as some systems will only honour this call
- *	on their first cpu.
- */
+ 
 
 static void apm_power_off(void)
 {
-	/* Some bioses don't like being called from CPU != 0 */
+	 
 	if (apm_info.realmode_power_off) {
 		set_cpus_allowed_ptr(current, cpumask_of(0));
 		machine_real_restart(MRR_APM);
@@ -991,12 +586,7 @@ static void apm_power_off(void)
 
 #ifdef CONFIG_APM_DO_ENABLE
 
-/**
- *	apm_enable_power_management - enable BIOS APM power management
- *	@enable: enable yes/no
- *
- *	Enable or disable the APM BIOS power services.
- */
+ 
 
 static int apm_enable_power_management(int enable)
 {
@@ -1016,19 +606,7 @@ static int apm_enable_power_management(int enable)
 }
 #endif
 
-/**
- *	apm_get_power_status	-	get current power state
- *	@status: returned status
- *	@bat: battery info
- *	@life: estimated life
- *
- *	Obtain the current power status from the APM BIOS. We return a
- *	status which gives the rough battery status, and current power
- *	source. The bat value returned give an estimate as a percentage
- *	of life and a status value for the battery. The estimated life
- *	if reported is a lifetime in seconds/minutes at current power
- *	consumption.
- */
+ 
 
 static int apm_get_power_status(u_short *status, u_short *bat, u_short *life)
 {
@@ -1066,7 +644,7 @@ static int apm_get_battery_status(u_short which, u_short *status,
 	u32 esi;
 
 	if (apm_info.connection_version < 0x0102) {
-		/* pretend we only have one battery. */
+		 
 		if (which != 1)
 			return APM_BAD_DEVICE;
 		*nbat = 1;
@@ -1084,14 +662,7 @@ static int apm_get_battery_status(u_short which, u_short *status,
 }
 #endif
 
-/**
- *	apm_engage_power_management	-	enable PM on a device
- *	@device: identity of device
- *	@enable: on/off
- *
- *	Activate or deactivate power management on either a specific device
- *	or the entire system (%APM_DEVICE_ALL).
- */
+ 
 
 static int apm_engage_power_management(u_short device, int enable)
 {
@@ -1115,19 +686,11 @@ static int apm_engage_power_management(u_short device, int enable)
 
 #if defined(CONFIG_APM_DISPLAY_BLANK) && defined(CONFIG_VT)
 
-/**
- *	apm_console_blank	-	blank the display
- *	@blank: on/off
- *
- *	Attempt to blank the console, firstly by blanking just video device
- *	zero, and if that fails (some BIOSes don't support it) then it blanks
- *	all video devices. Typically the BIOS will do laptop backlight and
- *	monitor powerdown for us.
- */
+ 
 
 static int apm_console_blank(int blank)
 {
-	int error = APM_NOT_ENGAGED; /* silence gcc */
+	int error = APM_NOT_ENGAGED;  
 	int i;
 	u_short state;
 	static const u_short dev[3] = { 0x100, 0x1FF, 0x101 };
@@ -1223,12 +786,12 @@ static void reinit_timer(void)
 	unsigned long flags;
 
 	raw_spin_lock_irqsave(&i8253_lock, flags);
-	/* set the clock to HZ */
-	outb_p(0x34, PIT_MODE);		/* binary, mode 2, LSB/MSB, ch 0 */
+	 
+	outb_p(0x34, PIT_MODE);		 
 	udelay(10);
-	outb_p(LATCH & 0xff, PIT_CH0);	/* LSB */
+	outb_p(LATCH & 0xff, PIT_CH0);	 
 	udelay(10);
-	outb_p(LATCH >> 8, PIT_CH0);	/* MSB */
+	outb_p(LATCH >> 8, PIT_CH0);	 
 	udelay(10);
 	raw_spin_unlock_irqrestore(&i8253_lock, flags);
 #endif
@@ -1302,12 +865,12 @@ static void standby(void)
 static apm_event_t get_event(void)
 {
 	int error;
-	apm_event_t event = APM_NO_EVENTS; /* silence gcc */
+	apm_event_t event = APM_NO_EVENTS;  
 	apm_eventinfo_t	info;
 
 	static int notified;
 
-	/* we don't use the eventinfo */
+	 
 	error = apm_get_event(&event, &info);
 	if (error == APM_SUCCESS)
 		return event;
@@ -1357,14 +920,7 @@ static void check_events(void)
 					set_system_power_state(APM_STATE_REJECT);
 				break;
 			}
-			/*
-			 * If we are already processing a SUSPEND,
-			 * then further SUSPEND events from the BIOS
-			 * will be ignored.  We also return here to
-			 * cope with the fact that the Thinkpads keep
-			 * sending a SUSPEND event until something else
-			 * happens!
-			 */
+			 
 			if (ignore_sys_suspend)
 				return;
 			ignore_sys_suspend = 1;
@@ -1391,16 +947,14 @@ static void check_events(void)
 		case APM_LOW_BATTERY:
 		case APM_POWER_STATUS_CHANGE:
 			queue_event(event, NULL);
-			/* If needed, notify drivers here */
+			 
 			break;
 
 		case APM_UPDATE_TIME:
 			break;
 
 		case APM_CRITICAL_SUSPEND:
-			/*
-			 * We are not allowed to reject a critical suspend.
-			 */
+			 
 			(void)suspend(0);
 			break;
 		}
@@ -1427,9 +981,7 @@ static void apm_event_handler(void)
 	check_events();
 }
 
-/*
- * This is the APM thread main loop.
- */
+ 
 
 static void apm_mainloop(void)
 {
@@ -1441,10 +993,7 @@ static void apm_mainloop(void)
 		schedule_timeout(APM_CHECK_TIMEOUT);
 		if (kthread_should_stop())
 			break;
-		/*
-		 * Ok, check all events, check for idle (and mark us sleeping
-		 * so as not to count towards the load average)..
-		 */
+		 
 		set_current_state(TASK_INTERRUPTIBLE);
 		apm_event_handler();
 	}
@@ -1614,13 +1163,7 @@ static int do_open(struct inode *inode, struct file *filp)
 	as->event_tail = as->event_head = 0;
 	as->suspends_pending = as->standbys_pending = 0;
 	as->suspends_read = as->standbys_read = 0;
-	/*
-	 * XXX - this is a tiny bit broken, when we consider BSD
-	 * process accounting. If the device is opened by root, we
-	 * instantly flag that we used superuser privs. Who knows,
-	 * we might close the device immediately without doing a
-	 * privileged operation -- cevans
-	 */
+	 
 	as->suser = capable(CAP_SYS_ADMIN);
 	as->writer = (filp->f_mode & FMODE_WRITE) == FMODE_WRITE;
 	as->reader = (filp->f_mode & FMODE_READ) == FMODE_READ;
@@ -1661,43 +1204,7 @@ static int proc_apm_show(struct seq_file *m, void *v)
 			}
 		}
 	}
-	/* Arguments, with symbols from linux/apm_bios.h.  Information is
-	   from the Get Power Status (0x0a) call unless otherwise noted.
-
-	   0) Linux driver version (this will change if format changes)
-	   1) APM BIOS Version.  Usually 1.0, 1.1 or 1.2.
-	   2) APM flags from APM Installation Check (0x00):
-	      bit 0: APM_16_BIT_SUPPORT
-	      bit 1: APM_32_BIT_SUPPORT
-	      bit 2: APM_IDLE_SLOWS_CLOCK
-	      bit 3: APM_BIOS_DISABLED
-	      bit 4: APM_BIOS_DISENGAGED
-	   3) AC line status
-	      0x00: Off-line
-	      0x01: On-line
-	      0x02: On backup power (BIOS >= 1.1 only)
-	      0xff: Unknown
-	   4) Battery status
-	      0x00: High
-	      0x01: Low
-	      0x02: Critical
-	      0x03: Charging
-	      0x04: Selected battery not present (BIOS >= 1.2 only)
-	      0xff: Unknown
-	   5) Battery flag
-	      bit 0: High
-	      bit 1: Low
-	      bit 2: Critical
-	      bit 3: Charging
-	      bit 7: No system battery
-	      0xff: Unknown
-	   6) Remaining battery life (percentage of charge):
-	      0-100: valid
-	      -1: Unknown
-	   7) Remaining battery life (time units):
-	      Number of remaining minutes or seconds
-	      -1: Unknown
-	   8) min = minutes; sec = seconds */
+	 
 
 	seq_printf(m, "%s %d.%d 0x%02x 0x%02x 0x%02x 0x%02x %d%% %d %s\n",
 		   driver_version,
@@ -1723,27 +1230,20 @@ static int apm(void *unused)
 	char 		*power_stat;
 	char 		*bat_stat;
 
-	/* 2002/08/01 - WT
-	 * This is to avoid random crashes at boot time during initialization
-	 * on SMP systems in case of "apm=power-off" mode. Seen on ASUS A7M266D.
-	 * Some bioses don't like being called from CPU != 0.
-	 * Method suggested by Ingo Molnar.
-	 */
+	 
 	set_cpus_allowed_ptr(current, cpumask_of(0));
 	BUG_ON(smp_processor_id() != 0);
 
 	if (apm_info.connection_version == 0) {
 		apm_info.connection_version = apm_info.bios.version;
 		if (apm_info.connection_version > 0x100) {
-			/*
-			 * We only support BIOSs up to version 1.2
-			 */
+			 
 			if (apm_info.connection_version > 0x0102)
 				apm_info.connection_version = 0x0102;
 			error = apm_driver_version(&apm_info.connection_version);
 			if (error != APM_SUCCESS) {
 				apm_error("driver version", error);
-				/* Fall back to an APM 1.0 connection. */
+				 
 				apm_info.connection_version = 0x100;
 			}
 		}
@@ -1756,11 +1256,7 @@ static int apm(void *unused)
 
 #ifdef CONFIG_APM_DO_ENABLE
 	if (apm_info.bios.flags & APM_BIOS_DISABLED) {
-		/*
-		 * This call causes my NEC UltraLite Versa 33/C to hang if it
-		 * is booted with PM disabled but not in the docking station.
-		 * Unfortunate ...
-		 */
+		 
 		error = apm_enable_power_management(1);
 		if (error) {
 			apm_error("enable power management", error);
@@ -1835,7 +1331,7 @@ static int apm(void *unused)
 		}
 	}
 
-	/* Install our power off handler.. */
+	 
 	if (power_off)
 		pm_power_off = apm_power_off;
 
@@ -1920,17 +1416,14 @@ static struct miscdevice apm_device = {
 };
 
 
-/* Simple "print if true" callback */
+ 
 static int __init print_if_true(const struct dmi_system_id *d)
 {
 	printk("%s\n", d->ident);
 	return 0;
 }
 
-/*
- * Some Bioses enable the PS/2 mouse (touchpad) at resume, even if it was
- * disabled before the suspend. Linux used to get terribly confused by that.
- */
+ 
 static int __init broken_ps2_resume(const struct dmi_system_id *d)
 {
 	printk(KERN_INFO "%s machine detected. Mousepad Resume Bug "
@@ -1938,7 +1431,7 @@ static int __init broken_ps2_resume(const struct dmi_system_id *d)
 	return 0;
 }
 
-/* Some bioses have a broken protected mode poweroff and need to use realmode */
+ 
 static int __init set_realmode_power_off(const struct dmi_system_id *d)
 {
 	if (apm_info.realmode_power_off == 0) {
@@ -1949,7 +1442,7 @@ static int __init set_realmode_power_off(const struct dmi_system_id *d)
 	return 0;
 }
 
-/* Some laptops require interrupts to be enabled during APM calls */
+ 
 static int __init set_apm_ints(const struct dmi_system_id *d)
 {
 	if (apm_info.allow_ints == 0) {
@@ -1960,7 +1453,7 @@ static int __init set_apm_ints(const struct dmi_system_id *d)
 	return 0;
 }
 
-/* Some APM bioses corrupt memory or just plain do not work */
+ 
 static int __init apm_is_horked(const struct dmi_system_id *d)
 {
 	if (apm_info.disabled == 0) {
@@ -1983,7 +1476,7 @@ static int __init apm_is_horked_d850md(const struct dmi_system_id *d)
 	return 0;
 }
 
-/* Some APM bioses hang on APM idle calls */
+ 
 static int __init apm_likes_to_melt(const struct dmi_system_id *d)
 {
 	if (apm_info.forbid_idle == 0) {
@@ -1994,21 +1487,7 @@ static int __init apm_likes_to_melt(const struct dmi_system_id *d)
 	return 0;
 }
 
-/*
- *  Check for clue free BIOS implementations who use
- *  the following QA technique
- *
- *      [ Write BIOS Code ]<------
- *               |                ^
- *      < Does it Compile >----N--
- *               |Y               ^
- *	< Does it Boot Win98 >-N--
- *               |Y
- *           [Ship It]
- *
- *	Phoenix A04  08/24/2000 is known bad (Dell Inspiron 5000e)
- *	Phoenix A07  09/29/2000 is known good (Dell Inspiron 5000)
- */
+ 
 static int __init broken_apm_power(const struct dmi_system_id *d)
 {
 	apm_info.get_power_status_broken = 1;
@@ -2017,10 +1496,7 @@ static int __init broken_apm_power(const struct dmi_system_id *d)
 	return 0;
 }
 
-/*
- * This bios swaps the APM minute reporting bytes over (Many sony laptops
- * have this problem).
- */
+ 
 static int __init swab_apm_power_in_minutes(const struct dmi_system_id *d)
 {
 	apm_info.get_power_status_swabinminutes = 1;
@@ -2036,203 +1512,203 @@ static const struct dmi_system_id apm_dmi_table[] __initconst = {
 		{	DMI_MATCH(DMI_SYS_VENDOR, "IBM"),
 			DMI_MATCH(DMI_BIOS_VERSION, "1AET38WW (1.01b)"), },
 	},
-	{	/* Handle problems with APM on the C600 */
+	{	 
 		broken_ps2_resume, "Dell Latitude C600",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "Dell"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Latitude C600"), },
 	},
-	{	/* Allow interrupts during suspend on Dell Latitude laptops*/
+	{	 
 		set_apm_ints, "Dell Latitude",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "Dell Computer Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Latitude C510"), }
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked, "Dell Inspiron 2500",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "Dell Computer Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 2500"),
 			DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "A11"), },
 	},
-	{	/* Allow interrupts during suspend on Dell Inspiron laptops*/
+	{	 
 		set_apm_ints, "Dell Inspiron", {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Computer Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 4000"), },
 	},
-	{	/* Handle problems with APM on Inspiron 5000e */
+	{	 
 		broken_apm_power, "Dell Inspiron 5000e",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "A04"),
 			DMI_MATCH(DMI_BIOS_DATE, "08/24/2000"), },
 	},
-	{	/* Handle problems with APM on Inspiron 2500 */
+	{	 
 		broken_apm_power, "Dell Inspiron 2500",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "A12"),
 			DMI_MATCH(DMI_BIOS_DATE, "02/04/2002"), },
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked, "Dell Dimension 4100",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "Dell Computer Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "XPS-Z"),
 			DMI_MATCH(DMI_BIOS_VENDOR, "Intel Corp."),
 			DMI_MATCH(DMI_BIOS_VERSION, "A11"), },
 	},
-	{	/* Allow interrupts during suspend on Compaq Laptops*/
+	{	 
 		set_apm_ints, "Compaq 12XL125",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "Compaq"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Compaq PC"),
 			DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "4.06"), },
 	},
-	{	/* Allow interrupts during APM or the clock goes slow */
+	{	 
 		set_apm_ints, "ASUSTeK",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "ASUSTeK Computer Inc."),
 			DMI_MATCH(DMI_PRODUCT_NAME, "L8400K series Notebook PC"), },
 	},
-	{	/* APM blows on shutdown */
+	{	 
 		apm_is_horked, "ABIT KX7-333[R]",
 		{	DMI_MATCH(DMI_BOARD_VENDOR, "ABIT"),
 			DMI_MATCH(DMI_BOARD_NAME, "VT8367-8233A (KX7-333[R])"), },
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked, "Trigem Delhi3",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "TriGem Computer, Inc"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Delhi3"), },
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked, "Fujitsu-Siemens",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "hoenix/FUJITSU SIEMENS"),
 			DMI_MATCH(DMI_BIOS_VERSION, "Version1.01"), },
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked_d850md, "Intel D850MD",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Intel Corp."),
 			DMI_MATCH(DMI_BIOS_VERSION, "MV85010A.86A.0016.P07.0201251536"), },
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked, "Intel D810EMO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Intel Corp."),
 			DMI_MATCH(DMI_BIOS_VERSION, "MO81010A.86A.0008.P04.0004170800"), },
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked, "Dell XPS-Z",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Intel Corp."),
 			DMI_MATCH(DMI_BIOS_VERSION, "A11"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "XPS-Z"), },
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked, "Sharp PC-PJ/AX",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "SHARP"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "PC-PJ/AX"),
 			DMI_MATCH(DMI_BIOS_VENDOR, "SystemSoft"),
 			DMI_MATCH(DMI_BIOS_VERSION, "Version R2.08"), },
 	},
-	{	/* APM crashes */
+	{	 
 		apm_is_horked, "Dell Inspiron 2500",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "Dell Computer Corporation"),
 			DMI_MATCH(DMI_PRODUCT_NAME, "Inspiron 2500"),
 			DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "A11"), },
 	},
-	{	/* APM idle hangs */
+	{	 
 		apm_likes_to_melt, "Jabil AMD",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
 			DMI_MATCH(DMI_BIOS_VERSION, "0AASNP06"), },
 	},
-	{	/* APM idle hangs */
+	{	 
 		apm_likes_to_melt, "AMI Bios",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "American Megatrends Inc."),
 			DMI_MATCH(DMI_BIOS_VERSION, "0AASNP05"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-N505X(DE) */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0206H"),
 			DMI_MATCH(DMI_BIOS_DATE, "08/23/99"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-N505VX */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "W2K06H0"),
 			DMI_MATCH(DMI_BIOS_DATE, "02/03/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-XG29 */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0117A0"),
 			DMI_MATCH(DMI_BIOS_DATE, "04/25/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-Z600NE */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0121Z1"),
 			DMI_MATCH(DMI_BIOS_DATE, "05/11/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-Z600NE */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "WME01Z1"),
 			DMI_MATCH(DMI_BIOS_DATE, "08/11/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-Z600LEK(DE) */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0206Z3"),
 			DMI_MATCH(DMI_BIOS_DATE, "12/25/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-Z505LS */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0203D0"),
 			DMI_MATCH(DMI_BIOS_DATE, "05/12/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-Z505LS */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0203Z3"),
 			DMI_MATCH(DMI_BIOS_DATE, "08/25/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-Z505LS (with updated BIOS) */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0209Z3"),
 			DMI_MATCH(DMI_BIOS_DATE, "05/12/01"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-F104K */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0204K2"),
 			DMI_MATCH(DMI_BIOS_DATE, "08/28/00"), },
 	},
 
-	{	/* Handle problems with APM on Sony Vaio PCG-C1VN/C1VE */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0208P1"),
 			DMI_MATCH(DMI_BIOS_DATE, "11/09/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-C1VE */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "R0204P1"),
 			DMI_MATCH(DMI_BIOS_DATE, "09/12/00"), },
 	},
-	{	/* Handle problems with APM on Sony Vaio PCG-C1VE */
+	{	 
 		swab_apm_power_in_minutes, "Sony VAIO",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Phoenix Technologies LTD"),
 			DMI_MATCH(DMI_BIOS_VERSION, "WXPO1Z3"),
 			DMI_MATCH(DMI_BIOS_DATE, "10/26/01"), },
 	},
-	{	/* broken PM poweroff bios */
+	{	 
 		set_realmode_power_off, "Award Software v4.60 PGMA",
 		{	DMI_MATCH(DMI_BIOS_VENDOR, "Award Software International, Inc."),
 			DMI_MATCH(DMI_BIOS_VERSION, "4.60 PGMA"),
 			DMI_MATCH(DMI_BIOS_DATE, "134526184"), },
 	},
 
-	/* Generic per vendor APM settings  */
+	 
 
-	{	/* Allow interrupts during suspend on IBM laptops */
+	{	 
 		set_apm_ints, "IBM",
 		{	DMI_MATCH(DMI_SYS_VENDOR, "IBM"), },
 	},
@@ -2240,16 +1716,7 @@ static const struct dmi_system_id apm_dmi_table[] __initconst = {
 	{ }
 };
 
-/*
- * Just start the APM thread. We do NOT want to do APM BIOS
- * calls from anything but the APM thread, if for no other reason
- * than the fact that we don't trust the APM BIOS. This way,
- * most common APM BIOS problems that lead to protection errors
- * etc will have at least some level of being contained...
- *
- * In short, if something bad happens, at least we have a choice
- * of just killing the apm thread..
- */
+ 
 static int __init apm_init(void)
 {
 	struct desc_struct *gdt;
@@ -2278,20 +1745,17 @@ static int __init apm_init(void)
 		apm_info.get_power_status_broken = 1;
 	if (realmode_power_off)
 		apm_info.realmode_power_off = 1;
-	/* User can override, but default is to trust DMI */
+	 
 	if (apm_disabled != -1)
 		apm_info.disabled = apm_disabled;
 
-	/*
-	 * Fix for the Compaq Contura 3/25c which reports BIOS version 0.1
-	 * but is reportedly a 1.0 BIOS.
-	 */
+	 
 	if (apm_info.bios.version == 0x001)
 		apm_info.bios.version = 0x100;
 
-	/* BIOS < 1.2 doesn't set cseg_16_len */
+	 
 	if (apm_info.bios.version < 0x102)
-		apm_info.bios.cseg_16_len = 0; /* 64k */
+		apm_info.bios.cseg_16_len = 0;  
 
 	if (debug) {
 		printk(KERN_INFO "apm: entry %x:%x cseg16 %x dseg %x",
@@ -2321,23 +1785,11 @@ static int __init apm_init(void)
 		return -ENODEV;
 	}
 
-	/*
-	 * Set up the long jump entry point to the APM BIOS, which is called
-	 * from inline assembly.
-	 */
+	 
 	apm_bios_entry.offset = apm_info.bios.offset;
 	apm_bios_entry.segment = APM_CS;
 
-	/*
-	 * The APM 1.1 BIOS is supposed to provide limit information that it
-	 * recognizes.  Many machines do this correctly, but many others do
-	 * not restrict themselves to their claimed limit.  When this happens,
-	 * they will cause a segmentation violation in the kernel at boot time.
-	 * Most BIOS's, however, will respect a 64k limit, so we use that.
-	 *
-	 * Note we only set APM segments on CPU zero, since we pin the APM
-	 * code to that CPU.
-	 */
+	 
 	gdt = get_cpu_gdt_rw(0);
 	set_desc_base(&gdt[APM_CS >> 3],
 		 (unsigned long)__va((unsigned long)apm_info.bios.cseg << 4));
@@ -2364,11 +1816,7 @@ static int __init apm_init(void)
 		return 0;
 	}
 
-	/*
-	 * Note we don't actually care if the misc_device cannot be registered.
-	 * this driver can do its job without it, even if userspace can't
-	 * control it.  just log the error
-	 */
+	 
 	if (misc_register(&apm_device))
 		printk(KERN_WARNING "apm: Could not register misc device.\n");
 

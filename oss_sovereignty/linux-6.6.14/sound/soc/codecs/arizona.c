@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * arizona.c - Wolfson Arizona class device shared support
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gcd.h>
@@ -299,7 +293,7 @@ int arizona_init_common(struct arizona *arizona)
 	BLOCKING_INIT_NOTIFIER_HEAD(&arizona->notifier);
 
 	for (i = 0; i < ARIZONA_MAX_OUTPUT; ++i) {
-		/* Default is 0 so noop with defaults */
+		 
 		if (pdata->out_mono[i])
 			val = ARIZONA_OUT1_MONO;
 		else
@@ -326,7 +320,7 @@ int arizona_init_common(struct arizona *arizona)
 	}
 
 	for (i = 0; i < ARIZONA_MAX_INPUT; i++) {
-		/* Default for both is 0 so noop with defaults */
+		 
 		val = pdata->dmic_ref[i] << ARIZONA_IN1_DMIC_SUP_SHIFT;
 		if (pdata->inmode[i] & ARIZONA_INMODE_DMIC)
 			val |= 1 << ARIZONA_IN1_MODE_SHIFT;
@@ -493,15 +487,15 @@ const char * const arizona_mixer_texts[ARIZONA_NUM_MIXER_INPUTS] = {
 EXPORT_SYMBOL_GPL(arizona_mixer_texts);
 
 unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS] = {
-	0x00,  /* None */
-	0x04,  /* Tone */
+	0x00,   
+	0x04,   
 	0x05,
-	0x06,  /* Haptics */
-	0x08,  /* AEC */
-	0x09,  /* AEC2 */
-	0x0c,  /* Noise mixer */
-	0x0d,  /* Comfort noise */
-	0x10,  /* IN1L */
+	0x06,   
+	0x08,   
+	0x09,   
+	0x0c,   
+	0x0d,   
+	0x10,   
 	0x11,
 	0x12,
 	0x13,
@@ -509,7 +503,7 @@ unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS] = {
 	0x15,
 	0x16,
 	0x17,
-	0x20,  /* AIF1RX1 */
+	0x20,   
 	0x21,
 	0x22,
 	0x23,
@@ -517,15 +511,15 @@ unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS] = {
 	0x25,
 	0x26,
 	0x27,
-	0x28,  /* AIF2RX1 */
+	0x28,   
 	0x29,
 	0x2a,
 	0x2b,
 	0x2c,
 	0x2d,
-	0x30,  /* AIF3RX1 */
+	0x30,   
 	0x31,
-	0x38,  /* SLIMRX1 */
+	0x38,   
 	0x39,
 	0x3a,
 	0x3b,
@@ -533,67 +527,67 @@ unsigned int arizona_mixer_values[ARIZONA_NUM_MIXER_INPUTS] = {
 	0x3d,
 	0x3e,
 	0x3f,
-	0x50,  /* EQ1 */
+	0x50,   
 	0x51,
 	0x52,
 	0x53,
-	0x58,  /* DRC1L */
+	0x58,   
 	0x59,
 	0x5a,
 	0x5b,
-	0x60,  /* LHPF1 */
+	0x60,   
 	0x61,
 	0x62,
 	0x63,
-	0x68,  /* DSP1.1 */
+	0x68,   
 	0x69,
 	0x6a,
 	0x6b,
 	0x6c,
 	0x6d,
-	0x70,  /* DSP2.1 */
+	0x70,   
 	0x71,
 	0x72,
 	0x73,
 	0x74,
 	0x75,
-	0x78,  /* DSP3.1 */
+	0x78,   
 	0x79,
 	0x7a,
 	0x7b,
 	0x7c,
 	0x7d,
-	0x80,  /* DSP4.1 */
+	0x80,   
 	0x81,
 	0x82,
 	0x83,
 	0x84,
 	0x85,
-	0x90,  /* ASRC1L */
+	0x90,   
 	0x91,
 	0x92,
 	0x93,
-	0xa0,  /* ISRC1INT1 */
+	0xa0,   
 	0xa1,
 	0xa2,
 	0xa3,
-	0xa4,  /* ISRC1DEC1 */
+	0xa4,   
 	0xa5,
 	0xa6,
 	0xa7,
-	0xa8,  /* ISRC2DEC1 */
+	0xa8,   
 	0xa9,
 	0xaa,
 	0xab,
-	0xac,  /* ISRC2INT1 */
+	0xac,   
 	0xad,
 	0xae,
 	0xaf,
-	0xb0,  /* ISRC3DEC1 */
+	0xb0,   
 	0xb1,
 	0xb2,
 	0xb3,
-	0xb4,  /* ISRC3INT1 */
+	0xb4,   
 	0xb5,
 	0xb6,
 	0xb7,
@@ -923,7 +917,7 @@ int arizona_in_ev(struct snd_soc_dapm_widget *w, struct snd_kcontrol *kcontrol,
 		snd_soc_component_update_bits(component, reg,
 					      ARIZONA_IN1L_MUTE, 0);
 
-		/* If this is the last input pending then allow VU */
+		 
 		priv->in_pending--;
 		if (priv->in_pending == 0) {
 			msleep(1);
@@ -936,7 +930,7 @@ int arizona_in_ev(struct snd_soc_dapm_widget *w, struct snd_kcontrol *kcontrol,
 				    ARIZONA_IN1L_MUTE | ARIZONA_IN_VU);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* Disable volume updates if no inputs are enabled */
+		 
 		reg = snd_soc_component_read(component, ARIZONA_INPUT_ENABLES);
 		if (reg == 0)
 			arizona_in_set_vu(component, 0);
@@ -1092,11 +1086,11 @@ int arizona_hp_ev(struct snd_soc_dapm_widget *w, struct snd_kcontrol *kcontrol,
 		return -EINVAL;
 	}
 
-	/* Store the desired state for the HP outputs */
+	 
 	priv->arizona->hp_ena &= ~mask;
 	priv->arizona->hp_ena |= val;
 
-	/* Force off if HPDET clamp is active */
+	 
 	if (priv->arizona->hpdet_clamp)
 		val = 0;
 
@@ -1211,10 +1205,7 @@ int arizona_dvfs_sysclk_ev(struct snd_soc_dapm_widget *w,
 		priv->dvfs_cached = false;
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
-		/* We must ensure DVFS is disabled before the codec goes into
-		 * suspend so that we are never in an illegal state of DVFS
-		 * enabled without enough DCVDD
-		 */
+		 
 		priv->dvfs_cached = true;
 
 		if (priv->dvfs_reqs)
@@ -1682,10 +1673,7 @@ static int arizona_hw_params_rate(struct snd_pcm_substream *substream,
 	int base = dai->driver->base;
 	int i, sr_val, ret;
 
-	/*
-	 * We will need to be more flexible than this in future,
-	 * currently we use a single sample rate for SYSCLK.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(arizona_sr_vals); i++)
 		if (arizona_sr_vals[i] == params_rate(params))
 			break;
@@ -1813,7 +1801,7 @@ static int arizona_hw_params(struct snd_pcm_substream *substream,
 		bclk_target *= chan_limit;
 	}
 
-	/* Force multiple of 2 channels for I2S mode */
+	 
 	val = snd_soc_component_read(component, base + ARIZONA_AIF_FORMAT);
 	val &= ARIZONA_AIF1_FMT_MASK;
 	if ((channels & 1) && (val == ARIZONA_FMT_I2S_MODE)) {
@@ -1845,12 +1833,12 @@ static int arizona_hw_params(struct snd_pcm_substream *substream,
 	reconfig = arizona_aif_cfg_changed(component, base, bclk, lrclk, frame);
 
 	if (reconfig) {
-		/* Save AIF TX/RX state */
+		 
 		aif_tx_state = snd_soc_component_read(component,
 					    base + ARIZONA_AIF_TX_ENABLES);
 		aif_rx_state = snd_soc_component_read(component,
 					    base + ARIZONA_AIF_RX_ENABLES);
-		/* Disable AIF TX/RX before reconfiguring it */
+		 
 		regmap_update_bits_async(arizona->regmap,
 					 base + ARIZONA_AIF_TX_ENABLES,
 					 0xff, 0x0);
@@ -1884,7 +1872,7 @@ static int arizona_hw_params(struct snd_pcm_substream *substream,
 
 restore_aif:
 	if (reconfig) {
-		/* Restore AIF TX/RX state */
+		 
 		regmap_update_bits_async(arizona->regmap,
 					 base + ARIZONA_AIF_TX_ENABLES,
 					 0xff, aif_tx_state);
@@ -2002,7 +1990,7 @@ static int arizona_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 	int rx_max_chan = dai->driver->playback.channels_max;
 	int tx_max_chan = dai->driver->capture.channels_max;
 
-	/* Only support TDM for the physical AIFs */
+	 
 	if (dai->id > ARIZONA_MAX_AIF)
 		return -ENOTSUPP;
 
@@ -2135,7 +2123,7 @@ static int arizona_find_fratio(unsigned int Fref, int *fratio)
 {
 	int i;
 
-	/* Find an appropriate FLL_FRATIO */
+	 
 	for (i = 0; i < ARRAY_SIZE(fll_fratios); i++) {
 		if (fll_fratios[i].min <= Fref && Fref <= fll_fratios[i].max) {
 			if (fratio)
@@ -2155,7 +2143,7 @@ static int arizona_calc_fratio(struct arizona_fll *fll,
 	int init_ratio, ratio;
 	int refdiv, div;
 
-	/* Fref must be <=13.5MHz, find initial refdiv */
+	 
 	div = 1;
 	cfg->refdiv = 0;
 	while (Fref > ARIZONA_FLL_MAX_FREF) {
@@ -2167,7 +2155,7 @@ static int arizona_calc_fratio(struct arizona_fll *fll,
 			return -EINVAL;
 	}
 
-	/* Find an appropriate FLL_FRATIO */
+	 
 	init_ratio = arizona_find_fratio(Fref, &cfg->fratio);
 	if (init_ratio < 0) {
 		arizona_fll_err(fll, "Unable to find FRATIO for Fref=%uHz\n",
@@ -2192,16 +2180,14 @@ static int arizona_calc_fratio(struct arizona_fll *fll,
 
 	cfg->fratio = init_ratio - 1;
 
-	/* Adjust FRATIO/refdiv to avoid integer mode if possible */
+	 
 	refdiv = cfg->refdiv;
 
 	arizona_fll_dbg(fll, "pseudo: initial ratio=%u fref=%u refdiv=%u\n",
 			init_ratio, Fref, refdiv);
 
 	while (div <= ARIZONA_FLL_MAX_REFDIV) {
-		/* start from init_ratio because this may already give a
-		 * fractional N.K
-		 */
+		 
 		for (ratio = init_ratio; ratio > 0; ratio--) {
 			if (target % (ratio * Fref)) {
 				cfg->refdiv = refdiv;
@@ -2261,7 +2247,7 @@ static int arizona_calc_fll(struct arizona_fll *fll,
 
 	arizona_fll_dbg(fll, "Fref=%u Fout=%u\n", Fref, fll->fout);
 
-	/* Fvco should be over the targt; don't check the upper bound */
+	 
 	div = ARIZONA_FLL_MIN_OUTDIV;
 	while (fll->fout * div < ARIZONA_FLL_MIN_FVCO * fll->vco_mult) {
 		div++;
@@ -2273,12 +2259,12 @@ static int arizona_calc_fll(struct arizona_fll *fll,
 
 	arizona_fll_dbg(fll, "Fvco=%dHz\n", target);
 
-	/* Find an appropriate FLL_FRATIO and refdiv */
+	 
 	ratio = arizona_calc_fratio(fll, cfg, target, Fref, sync);
 	if (ratio < 0)
 		return ratio;
 
-	/* Apply the division for our remaining calculations */
+	 
 	Fref = Fref / (1 << cfg->refdiv);
 
 	cfg->n = target / (ratio * Fref);
@@ -2295,10 +2281,7 @@ static int arizona_calc_fll(struct arizona_fll *fll,
 		cfg->lambda = 0;
 	}
 
-	/* Round down to 16bit range with cost of accuracy lost.
-	 * Denominator must be bigger than numerator so we only
-	 * take care of it.
-	 */
+	 
 	while (cfg->lambda >= (1 << 16)) {
 		cfg->theta >>= 1;
 		cfg->lambda >>= 1;
@@ -2429,7 +2412,7 @@ static int arizona_enable_fll(struct arizona_fll *fll)
 		return sync_enabled;
 
 	if (already_enabled) {
-		/* Facilitate smooth refclk across the transition */
+		 
 		regmap_update_bits(fll->arizona->regmap, fll->base + 1,
 				   ARIZONA_FLL1_FREERUN, ARIZONA_FLL1_FREERUN);
 		udelay(32);
@@ -2441,15 +2424,12 @@ static int arizona_enable_fll(struct arizona_fll *fll)
 		arizona_set_fll_clks(fll, fll->base, false);
 	}
 
-	/*
-	 * If we have both REFCLK and SYNCCLK then enable both,
-	 * otherwise apply the SYNCCLK settings to REFCLK.
-	 */
+	 
 	if (fll->ref_src >= 0 && fll->ref_freq &&
 	    fll->ref_src != fll->sync_src) {
 		arizona_calc_fll(fll, &cfg, fll->ref_freq, false);
 
-		/* Ref path hardcodes lambda to 65536 when sync is on */
+		 
 		if (fll->sync_src >= 0 && cfg.lambda)
 			cfg.theta = (cfg.theta * (1 << 16)) / cfg.lambda;
 
@@ -2478,10 +2458,7 @@ static int arizona_enable_fll(struct arizona_fll *fll)
 	if (already_enabled && !!sync_enabled != use_sync)
 		arizona_fll_warn(fll, "Synchroniser changed on active FLL\n");
 
-	/*
-	 * Increase the bandwidth if we're not using a low frequency
-	 * sync source.
-	 */
+	 
 	if (use_sync && fll->sync_freq > 100000)
 		regmap_update_bits_async(arizona->regmap, fll->base + 0x17,
 					 ARIZONA_FLL1_SYNC_BW, 0);
@@ -2620,7 +2597,7 @@ int arizona_init_fll(struct arizona *arizona, int id, int base, int lock_irq,
 	fll->arizona = arizona;
 	fll->sync_src = ARIZONA_FLL_SRC_NONE;
 
-	/* Configure default refclk to 32kHz if we have one */
+	 
 	regmap_read(arizona->regmap, ARIZONA_CLOCK_32K_1, &val);
 	switch (val & ARIZONA_CLK_32K_SRC_MASK) {
 	case ARIZONA_CLK_SRC_MCLK1:
@@ -2643,22 +2620,7 @@ int arizona_init_fll(struct arizona *arizona, int id, int base, int lock_irq,
 }
 EXPORT_SYMBOL_GPL(arizona_init_fll);
 
-/**
- * arizona_set_output_mode - Set the mode of the specified output
- *
- * @component: Device to configure
- * @output: Output number
- * @diff: True to set the output to differential mode
- *
- * Some systems use external analogue switches to connect more
- * analogue devices to the CODEC than are supported by the device.  In
- * some systems this requires changing the switched output from single
- * ended to differential mode dynamically at runtime, an operation
- * supported using this function.
- *
- * Most systems have a single static configuration and should use
- * platform data instead.
- */
+ 
 int arizona_set_output_mode(struct snd_soc_component *component, int output,
 			    bool diff)
 {

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Battery driver for 7th-generation Microsoft Surface devices via Surface
- * System Aggregator Module (SSAM).
- *
- * Copyright (C) 2019-2021 Maximilian Luz <luzmaximilian@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/jiffies.h>
@@ -19,7 +14,7 @@
 #include <linux/surface_aggregator/device.h>
 
 
-/* -- SAM interface. -------------------------------------------------------- */
+ 
 
 enum sam_event_cid_bat {
 	SAM_EVENT_CID_BAT_BIX         = 0x15,
@@ -45,7 +40,7 @@ enum sam_battery_power_unit {
 	SAM_BATTERY_POWER_UNIT_mA     = 1,
 };
 
-/* Equivalent to data returned in ACPI _BIX method, revision 0. */
+ 
 struct spwr_bix {
 	u8  revision;
 	__le32 power_unit;
@@ -71,7 +66,7 @@ struct spwr_bix {
 
 static_assert(sizeof(struct spwr_bix) == 119);
 
-/* Equivalent to data returned in ACPI _BST method. */
+ 
 struct spwr_bst {
 	__le32 state;
 	__le32 present_rate;
@@ -84,32 +79,32 @@ static_assert(sizeof(struct spwr_bst) == 16);
 #define SPWR_BIX_REVISION		0
 #define SPWR_BATTERY_VALUE_UNKNOWN	0xffffffff
 
-/* Get battery status (_STA) */
+ 
 SSAM_DEFINE_SYNC_REQUEST_CL_R(ssam_bat_get_sta, __le32, {
 	.target_category = SSAM_SSH_TC_BAT,
 	.command_id      = 0x01,
 });
 
-/* Get battery static information (_BIX). */
+ 
 SSAM_DEFINE_SYNC_REQUEST_CL_R(ssam_bat_get_bix, struct spwr_bix, {
 	.target_category = SSAM_SSH_TC_BAT,
 	.command_id      = 0x02,
 });
 
-/* Get battery dynamic information (_BST). */
+ 
 SSAM_DEFINE_SYNC_REQUEST_CL_R(ssam_bat_get_bst, struct spwr_bst, {
 	.target_category = SSAM_SSH_TC_BAT,
 	.command_id      = 0x03,
 });
 
-/* Set battery trip point (_BTP). */
+ 
 SSAM_DEFINE_SYNC_REQUEST_CL_W(ssam_bat_set_btp, __le32, {
 	.target_category = SSAM_SSH_TC_BAT,
 	.command_id      = 0x04,
 });
 
 
-/* -- Device structures. ---------------------------------------------------- */
+ 
 
 struct spwr_psy_properties {
 	const char *name;
@@ -127,7 +122,7 @@ struct spwr_battery_device {
 
 	struct ssam_event_notifier notif;
 
-	struct mutex lock;  /* Guards access to state data below. */
+	struct mutex lock;   
 	unsigned long timestamp;
 
 	__le32 sta;
@@ -137,19 +132,16 @@ struct spwr_battery_device {
 };
 
 
-/* -- Module parameters. ---------------------------------------------------- */
+ 
 
 static unsigned int cache_time = 1000;
 module_param(cache_time, uint, 0644);
 MODULE_PARM_DESC(cache_time, "battery state caching time in milliseconds [default: 1000]");
 
 
-/* -- State management. ----------------------------------------------------- */
+ 
 
-/*
- * Delay for battery update quirk. See spwr_external_power_changed() below
- * for more details.
- */
+ 
 #define SPWR_AC_BAT_UPDATE_DELAY	msecs_to_jiffies(5000)
 
 static bool spwr_battery_present(struct spwr_battery_device *bat)
@@ -177,7 +169,7 @@ static int spwr_battery_load_bix(struct spwr_battery_device *bat)
 
 	status = ssam_retry(ssam_bat_get_bix, bat->sdev, &bat->bix);
 
-	/* Enforce NULL terminated strings in case anything goes wrong... */
+	 
 	bat->bix.model[ARRAY_SIZE(bat->bix.model) - 1] = 0;
 	bat->bix.serial[ARRAY_SIZE(bat->bix.serial) - 1] = 0;
 	bat->bix.type[ARRAY_SIZE(bat->bix.type) - 1] = 0;
@@ -304,7 +296,7 @@ static int spwr_battery_recheck_full(struct spwr_battery_device *bat)
 	if (status)
 		goto out;
 
-	/* If battery has been attached, (re-)initialize alarm. */
+	 
 	if (!present && spwr_battery_present(bat)) {
 		u32 cap_warn = get_unaligned_le32(&bat->bix.design_cap_warn);
 
@@ -313,11 +305,7 @@ static int spwr_battery_recheck_full(struct spwr_battery_device *bat)
 			goto out;
 	}
 
-	/*
-	 * Warn if the unit has changed. This is something we genuinely don't
-	 * expect to happen, so make this a big warning. If it does, we'll
-	 * need to add support for it.
-	 */
+	 
 	WARN_ON(unit != get_unaligned_le32(&bat->bix.power_unit));
 
 out:
@@ -345,13 +333,7 @@ static u32 spwr_notify_bat(struct ssam_event_notifier *nf, const struct ssam_eve
 	struct spwr_battery_device *bat = container_of(nf, struct spwr_battery_device, notif);
 	int status;
 
-	/*
-	 * We cannot use strict matching when registering the notifier as the
-	 * EC expects us to register it against instance ID 0. Strict matching
-	 * would thus drop events, as those may have non-zero instance IDs in
-	 * this subsystem. So we need to check the instance ID of the event
-	 * here manually.
-	 */
+	 
 	if (event->instance_id != bat->sdev->uid.instance)
 		return 0;
 
@@ -368,17 +350,12 @@ static u32 spwr_notify_bat(struct ssam_event_notifier *nf, const struct ssam_eve
 		break;
 
 	case SAM_EVENT_CID_BAT_PROT:
-		/*
-		 * TODO: Implement support for battery protection status change
-		 *       event.
-		 */
+		 
 		status = 0;
 		break;
 
 	case SAM_EVENT_CID_BAT_DPTF:
-		/*
-		 * TODO: Implement support for DPTF event.
-		 */
+		 
 		status = 0;
 		break;
 
@@ -410,20 +387,13 @@ static void spwr_external_power_changed(struct power_supply *psy)
 {
 	struct spwr_battery_device *bat = power_supply_get_drvdata(psy);
 
-	/*
-	 * Handle battery update quirk: When the battery is fully charged (or
-	 * charged up to the limit imposed by the UEFI battery limit) and the
-	 * adapter is plugged in or removed, the EC does not send a separate
-	 * event for the state (charging/discharging) change. Furthermore it
-	 * may take some time until the state is updated on the battery.
-	 * Schedule an update to solve this.
-	 */
+	 
 
 	schedule_delayed_work(&bat->update_work, SPWR_AC_BAT_UPDATE_DELAY);
 }
 
 
-/* -- Properties. ----------------------------------------------------------- */
+ 
 
 static const enum power_supply_property spwr_battery_props_chg[] = {
 	POWER_SUPPLY_PROP_STATUS,
@@ -553,7 +523,7 @@ static int spwr_battery_get_property(struct power_supply *psy, enum power_supply
 	if (status)
 		goto out;
 
-	/* Abort if battery is not present. */
+	 
 	if (!spwr_battery_present(bat) && psp != POWER_SUPPLY_PROP_PRESENT) {
 		status = -ENODEV;
 		goto out;
@@ -663,7 +633,7 @@ out:
 }
 
 
-/* -- Alarm attribute. ------------------------------------------------------ */
+ 
 
 static ssize_t alarm_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -716,7 +686,7 @@ static struct attribute *spwr_battery_attrs[] = {
 ATTRIBUTE_GROUPS(spwr_battery);
 
 
-/* -- Device setup. --------------------------------------------------------- */
+ 
 
 static void spwr_battery_init(struct spwr_battery_device *bat, struct ssam_device *sdev,
 			      struct ssam_event_registry registry, const char *name)
@@ -730,7 +700,7 @@ static void spwr_battery_init(struct spwr_battery_device *bat, struct ssam_devic
 	bat->notif.base.fn = spwr_notify_bat;
 	bat->notif.event.reg = registry;
 	bat->notif.event.id.target_category = sdev->uid.category;
-	bat->notif.event.id.instance = 0;	/* need to register with instance 0 */
+	bat->notif.event.id.instance = 0;	 
 	bat->notif.event.mask = SSAM_EVENT_MASK_TARGET;
 	bat->notif.event.flags = SSAM_EVENT_SEQUENCED;
 
@@ -747,7 +717,7 @@ static int spwr_battery_register(struct spwr_battery_device *bat)
 	__le32 sta;
 	int status;
 
-	/* Make sure the device is there and functioning properly. */
+	 
 	status = ssam_retry(ssam_bat_get_sta, bat->sdev, &sta);
 	if (status)
 		return status;
@@ -755,7 +725,7 @@ static int spwr_battery_register(struct spwr_battery_device *bat)
 	if ((le32_to_cpu(sta) & SAM_BATTERY_STA_OK) != SAM_BATTERY_STA_OK)
 		return -ENODEV;
 
-	/* Satisfy lockdep although we are in an exclusive context here. */
+	 
 	mutex_lock(&bat->lock);
 
 	status = spwr_battery_update_bix_unlocked(bat);
@@ -806,7 +776,7 @@ static int spwr_battery_register(struct spwr_battery_device *bat)
 }
 
 
-/* -- Driver setup. --------------------------------------------------------- */
+ 
 
 static int __maybe_unused surface_battery_resume(struct device *dev)
 {

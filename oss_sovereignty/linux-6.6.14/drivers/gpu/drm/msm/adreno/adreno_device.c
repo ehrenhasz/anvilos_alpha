@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013-2014 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- *
- * Copyright (c) 2014,2017 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "adreno_gpu.h"
 
@@ -32,7 +27,7 @@ static const struct adreno_info gpulist[] = {
 		.gmem  = SZ_256K,
 		.inactive_period = DRM_MSM_INACTIVE_PERIOD,
 		.init  = a2xx_gpu_init,
-	}, { /* a200 on i.mx51 has only 128kib gmem */
+	}, {  
 		.chip_ids = ADRENO_CHIP_IDS(0x02000001),
 		.family = ADRENO_2XX_GEN1,
 		.revn  = 201,
@@ -71,7 +66,7 @@ static const struct adreno_info gpulist[] = {
 	}, {
 		.chip_ids = ADRENO_CHIP_IDS(0x03000600),
 		.family = ADRENO_3XX,
-		.revn  = 307,        /* because a305c is revn==306 */
+		.revn  = 307,         
 		.fw = {
 			[ADRENO_FW_PM4] = "a300_pm4.fw",
 			[ADRENO_FW_PFP] = "a300_pfp.fw",
@@ -151,10 +146,7 @@ static const struct adreno_info gpulist[] = {
 			[ADRENO_FW_PFP] = "a530_pfp.fw",
 		},
 		.gmem = (SZ_128K + SZ_8K),
-		/*
-		 * Increase inactive period to 250 to avoid bouncing
-		 * the GDSC which appears to make it grumpy
-		 */
+		 
 		.inactive_period = 250,
 		.quirks = ADRENO_QUIRK_TWO_PASS_USE_WFI |
 			  ADRENO_QUIRK_LMLOADKILL_DISABLE,
@@ -169,10 +161,7 @@ static const struct adreno_info gpulist[] = {
 			[ADRENO_FW_PFP] = "a530_pfp.fw",
 		},
 		.gmem = (SZ_128K + SZ_8K),
-		/*
-		 * Increase inactive period to 250 to avoid bouncing
-		 * the GDSC which appears to make it grumpy
-		 */
+		 
 		.inactive_period = 250,
 		.quirks = ADRENO_QUIRK_LMLOADKILL_DISABLE,
 		.init = a5xx_gpu_init,
@@ -186,14 +175,11 @@ static const struct adreno_info gpulist[] = {
 			[ADRENO_FW_PFP] = "a530_pfp.fw",
 		},
 		.gmem = (SZ_256K + SZ_16K),
-		/*
-		 * Increase inactive period to 250 to avoid bouncing
-		 * the GDSC which appears to make it grumpy
-		 */
+		 
 		.inactive_period = 250,
 		.quirks = ADRENO_QUIRK_LMLOADKILL_DISABLE,
 		.init = a5xx_gpu_init,
-		/* Adreno 509 uses the same ZAP as 512 */
+		 
 		.zapfw = "a512_zap.mdt",
 	}, {
 		.chip_ids = ADRENO_CHIP_IDS(0x05010000),
@@ -204,10 +190,7 @@ static const struct adreno_info gpulist[] = {
 			[ADRENO_FW_PFP] = "a530_pfp.fw",
 		},
 		.gmem = SZ_256K,
-		/*
-		 * Increase inactive period to 250 to avoid bouncing
-		 * the GDSC which appears to make it grumpy
-		 */
+		 
 		.inactive_period = 250,
 		.init = a5xx_gpu_init,
 	}, {
@@ -219,10 +202,7 @@ static const struct adreno_info gpulist[] = {
 			[ADRENO_FW_PFP] = "a530_pfp.fw",
 		},
 		.gmem = (SZ_256K + SZ_16K),
-		/*
-		 * Increase inactive period to 250 to avoid bouncing
-		 * the GDSC which appears to make it grumpy
-		 */
+		 
 		.inactive_period = 250,
 		.quirks = ADRENO_QUIRK_LMLOADKILL_DISABLE,
 		.init = a5xx_gpu_init,
@@ -240,10 +220,7 @@ static const struct adreno_info gpulist[] = {
 			[ADRENO_FW_GPMU] = "a530v3_gpmu.fw2",
 		},
 		.gmem = SZ_1M,
-		/*
-		 * Increase inactive period to 250 to avoid bouncing
-		 * the GDSC which appears to make it grumpy
-		 */
+		 
 		.inactive_period = 250,
 		.quirks = ADRENO_QUIRK_TWO_PASS_USE_WFI |
 			ADRENO_QUIRK_FAULT_DETECT_MASK,
@@ -259,10 +236,7 @@ static const struct adreno_info gpulist[] = {
 			[ADRENO_FW_GPMU] = "a540_gpmu.fw2",
 		},
 		.gmem = SZ_1M,
-		/*
-		 * Increase inactive period to 250 to avoid bouncing
-		 * the GDSC which appears to make it grumpy
-		 */
+		 
 		.inactive_period = 250,
 		.quirks = ADRENO_QUIRK_LMLOADKILL_DISABLE,
 		.init = a5xx_gpu_init,
@@ -279,13 +253,7 @@ static const struct adreno_info gpulist[] = {
 		.init = a6xx_gpu_init,
 		.zapfw = "a610_zap.mdt",
 		.hwcg = a612_hwcg,
-		/*
-		 * There are (at least) three SoCs implementing A610: SM6125
-		 * (trinket), SM6115 (bengal) and SM6225 (khaje). Trinket does
-		 * not have speedbinning, as only a single SKU exists and we
-		 * don't support khaje upstream yet.  Hence, this matching
-		 * table is only valid for bengal.
-		 */
+		 
 		.speedbins = ADRENO_SPEEDBINS(
 			{ 0,   0 },
 			{ 206, 1 },
@@ -423,7 +391,7 @@ static const struct adreno_info gpulist[] = {
 		.speedbins = ADRENO_SPEEDBINS(
 			{ 0, 0 },
 			{ 1, 1 },
-			{ 2, 3 }, /* Yep, 2 and 3 are swapped! :/ */
+			{ 2, 3 },  
 			{ 3, 2 },
 		),
 	}, {
@@ -523,7 +491,7 @@ MODULE_FIRMWARE("qcom/yamato_pm4.fw");
 
 static const struct adreno_info *adreno_info(uint32_t chip_id)
 {
-	/* identify gpu: */
+	 
 	for (int i = 0; i < ARRAY_SIZE(gpulist); i++) {
 		const struct adreno_info *info = &gpulist[i];
 		if (info->machine && !of_machine_is_compatible(info->machine))
@@ -554,11 +522,7 @@ struct msm_gpu *adreno_load_gpu(struct drm_device *dev)
 
 	adreno_gpu = to_adreno_gpu(gpu);
 
-	/*
-	 * The number one reason for HW init to fail is if the firmware isn't
-	 * loaded yet. Try that first and don't bother continuing on
-	 * otherwise
-	 */
+	 
 
 	ret = adreno_load_fw(adreno_gpu);
 	if (ret)
@@ -570,10 +534,7 @@ struct msm_gpu *adreno_load_gpu(struct drm_device *dev)
 			return NULL;
 	}
 
-	/*
-	 * Now that we have firmware loaded, and are ready to begin
-	 * booting the gpu, go ahead and enable runpm:
-	 */
+	 
 	pm_runtime_enable(&pdev->dev);
 
 	ret = pm_runtime_get_sync(&pdev->dev);
@@ -616,7 +577,7 @@ static int find_chipid(struct device *dev, uint32_t *chipid)
 	const char *compat;
 	int ret;
 
-	/* first search the compat strings for qcom,adreno-XYZ.W: */
+	 
 	ret = of_property_read_string_index(node, "compatible", 0, &compat);
 	if (ret == 0) {
 		unsigned int r, patch;
@@ -643,7 +604,7 @@ static int find_chipid(struct device *dev, uint32_t *chipid)
 			return 0;
 	}
 
-	/* and if that fails, fall back to legacy "qcom,chipid" property: */
+	 
 	ret = of_property_read_u32(node, "qcom,chipid", chipid);
 	if (ret) {
 		DRM_DEV_ERROR(dev, "could not parse qcom,chipid: %d\n", ret);
@@ -720,9 +681,7 @@ static const struct component_ops a3xx_ops = {
 
 static void adreno_device_register_headless(void)
 {
-	/* on imx5, we don't have a top-level mdp/dpu node
-	 * this creates a dummy node for the driver for that case
-	 */
+	 
 	struct platform_device_info dummy_info = {
 		.parent = NULL,
 		.name = "msm",
@@ -765,9 +724,9 @@ static void adreno_shutdown(struct platform_device *pdev)
 static const struct of_device_id dt_match[] = {
 	{ .compatible = "qcom,adreno" },
 	{ .compatible = "qcom,adreno-3xx" },
-	/* for compatibility with imx5 gpu: */
+	 
 	{ .compatible = "amd,imageon" },
-	/* for backwards compat w/ downstream kgsl DT files: */
+	 
 	{ .compatible = "qcom,kgsl-3d0" },
 	{}
 };
@@ -783,11 +742,7 @@ static int adreno_runtime_suspend(struct device *dev)
 {
 	struct msm_gpu *gpu = dev_to_gpu(dev);
 
-	/*
-	 * We should be holding a runpm ref, which will prevent
-	 * runtime suspend.  In the system suspend path, we've
-	 * already waited for active jobs to complete.
-	 */
+	 
 	WARN_ON_ONCE(gpu->active_submits);
 
 	return gpu->funcs->pm_suspend(gpu);
@@ -797,17 +752,7 @@ static void suspend_scheduler(struct msm_gpu *gpu)
 {
 	int i;
 
-	/*
-	 * Shut down the scheduler before we force suspend, so that
-	 * suspend isn't racing with scheduler kthread feeding us
-	 * more work.
-	 *
-	 * Note, we just want to park the thread, and let any jobs
-	 * that are already on the hw queue complete normally, as
-	 * opposed to the drm_sched_stop() path used for handling
-	 * faulting/timed-out jobs.  We can't really cancel any jobs
-	 * already on the hw queue without racing with the GPU.
-	 */
+	 
 	for (i = 0; i < gpu->nr_rings; i++) {
 		struct drm_gpu_scheduler *sched = &gpu->rb[i]->sched;
 		kthread_park(sched->thread);

@@ -1,41 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	read_entry.c -- Routine for reading in a compiled terminfo file
- */
+ 
 
 #include <curses.priv.h>
 #include <hashed_db.h>
@@ -91,7 +58,7 @@ convert_32bits(char *buf, NCURSES_INT2 *Numbers, int count)
 	    ch = UChar(*buf++);
 	    Numbers[i] |= (ch << (8 * j));
 	}
-	/* "unsigned" and NCURSES_INT2 are the same size - no sign-extension */
+	 
 	TR(TRACE_DATABASE, ("get Numbers[%d]=%d", i, Numbers[i]));
     }
     return size;
@@ -169,12 +136,12 @@ convert_strings(char *buf, char **Strings, int count, int size, char *table)
 	    }
 	}
 
-	/* make sure all strings are NUL terminated */
+	 
 	if (VALID_STRING(Strings[i])) {
 	    for (p = Strings[i]; p < table + size; p++)
 		if (*p == '\0')
 		    break;
-	    /* if there is no NUL, ignore the string */
+	     
 	    if (p >= table + size)
 		Strings[i] = ABSENT_STRING;
 	}
@@ -260,9 +227,7 @@ valid_shorts(char *buffer, int limit)
 }
 #endif
 
-/*
- * Return TGETENT_YES if read, TGETENT_NO if not found or garbled.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
 {
@@ -284,7 +249,7 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
 
     memset(ptr, 0, sizeof(*ptr));
 
-    /* grab the header */
+     
     if (!read_shorts(buf, 6)
 	|| !IS_TIC_MAGIC(buf)) {
 	returnDB(TGETENT_NO);
@@ -308,7 +273,7 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
     }
 #endif
 
-    /* *INDENT-EQLS* */
+     
     name_size  = MyNumber(buf + 2);
     bool_count = MyNumber(buf + 4);
     num_count  = MyNumber(buf + 6);
@@ -328,13 +293,13 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
     }
 
     want = (unsigned) (str_size + name_size + 1);
-    /* try to allocate space for the string table */
+     
     if (str_count * SIZEOF_SHORT >= max_entry_size
 	|| (string_table = typeMalloc(char, want)) == 0) {
 	returnDB(TGETENT_NO);
     }
 
-    /* grab the name (a null-terminated string) */
+     
     want = min(MAX_NAME_SIZE, (unsigned) name_size);
     ptr->str_table = string_table;
     ptr->term_names = string_table;
@@ -347,21 +312,16 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
     if (have > MAX_NAME_SIZE)
 	offset = (int) (have - MAX_NAME_SIZE);
 
-    /* grab the booleans */
+     
     TYPE_CALLOC(NCURSES_SBOOL, max(BOOLCOUNT, bool_count), ptr->Booleans);
     if (Read(ptr->Booleans, (unsigned) bool_count) < bool_count) {
 	returnDB(TGETENT_NO);
     }
 
-    /*
-     * If booleans end on an odd byte, skip it.  The machine they
-     * originally wrote terminfo on must have been a 16-bit
-     * word-oriented machine that would trap out if you tried a
-     * word access off a 2-byte boundary.
-     */
+     
     even_boundary(name_size + bool_count);
 
-    /* grab the numbers */
+     
     TYPE_CALLOC(NCURSES_INT2, max(NUMCOUNT, num_count), ptr->Numbers);
     if (!read_numbers(buf, num_count)) {
 	returnDB(TGETENT_NO);
@@ -371,11 +331,11 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
     TYPE_CALLOC(char *, max(STRCOUNT, str_count), ptr->Strings);
 
     if (str_count) {
-	/* grab the string offsets */
+	 
 	if (!read_shorts(buf, str_count)) {
 	    returnDB(TGETENT_NO);
 	}
-	/* finally, grab the string table itself */
+	 
 	if (Read(string_table, (unsigned) str_size) != str_size) {
 	    returnDB(TGETENT_NO);
 	}
@@ -387,9 +347,7 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
     ptr->num_Numbers = NUMCOUNT;
     ptr->num_Strings = STRCOUNT;
 
-    /*
-     * Read extended entries, if any, after the normal end of terminfo data.
-     */
+     
     even_boundary(str_size);
     TR(TRACE_DATABASE, ("READ extended_header @%d", offset));
     if (_nc_user_definable && read_shorts(buf, 5) && valid_shorts(buf, 5)) {
@@ -497,9 +455,7 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
 	    }
 	    TR(TRACE_DATABASE, ("Check table-size: %d/%d", check, ext_str_usage));
 #if 0
-	    /*
-	     * Phasing in a proper check will be done "later".
-	     */
+	     
 	    if (check != ext_str_usage)
 		returnDB(TGETENT_NO);
 #endif
@@ -527,7 +483,7 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
 
 	TR(TRACE_DATABASE, ("extend: num_Booleans:%d", ptr->num_Booleans));
     } else
-#endif /* NCURSES_XNAMES */
+#endif  
     {
 	TR(TRACE_DATABASE, ("...done reading terminfo bool %d num %d str %d",
 			    bool_count, num_count, str_count));
@@ -546,17 +502,10 @@ _nc_read_termtype(TERMTYPE2 *ptr, char *buffer, int limit)
     returnDB(TGETENT_YES);
 }
 
-/*
- *	int
- *	_nc_read_file_entry(filename, ptr)
- *
- *	Read the compiled terminfo entry in the given file into the
- *	structure pointed to by ptr, allocating space for the string
- *	table.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_read_file_entry(const char *const filename, TERMTYPE2 *ptr)
-/* return 1 if read, 0 if not found or garbled */
+ 
 {
     FILE *fp = 0;
     int code;
@@ -586,9 +535,7 @@ _nc_read_file_entry(const char *const filename, TERMTYPE2 *ptr)
 }
 
 #if USE_HASHED_DB
-/*
- * Return if if we can build the filename of a ".db" file.
- */
+ 
 static bool
 make_db_filename(char *filename, unsigned limit, const char *const path)
 {
@@ -611,9 +558,7 @@ make_db_filename(char *filename, unsigned limit, const char *const path)
 }
 #endif
 
-/*
- * Return true if we can build the name of a filesystem entry.
- */
+ 
 static bool
 make_dir_filename(char *filename,
 		  unsigned limit,
@@ -642,10 +587,7 @@ lookup_b64(int *target, const char **source)
 {
     int result = 3;
     int j;
-    /*
-     * ncurses' quickdump writes only RFC 4648 "url/filename-safe" encoding,
-     * but accepts RFC-3548
-     */
+     
     for (j = 0; j < 4; ++j) {
 	int ch = UChar(**source);
 	*source += 1;
@@ -736,10 +678,7 @@ decode_quickdump(char *target, const char *source)
     return result;
 }
 
-/*
- * Build a terminfo pathname and try to read the data.  Returns TGETENT_YES on
- * success, TGETENT_NO on failure.
- */
+ 
 static int
 _nc_read_tic_entry(char *filename,
 		   unsigned limit,
@@ -758,13 +697,13 @@ _nc_read_tic_entry(char *filename,
        (T_CALLED("_nc_read_tic_entry(file=%p, path=%s, name=%s)"),
 	filename, path, name));
 
-    assert(TGETENT_YES == TRUE);	/* simplify call for _nc_name_match */
+    assert(TGETENT_YES == TRUE);	 
 
     if ((used = decode_quickdump(buffer, path)) != 0
 	&& (code = _nc_read_termtype(tp, buffer, used)) == TGETENT_YES
 	&& (code = _nc_name_match(tp->term_names, name, "|")) == TGETENT_YES) {
 	TR(TRACE_DATABASE, ("loaded quick-dump for %s", name));
-	/* shorten name shown by infocmp */
+	 
 	_nc_STRCPY(filename, "$TERMINFO", limit);
     } else
 #if USE_HASHED_DB
@@ -779,21 +718,7 @@ _nc_read_tic_entry(char *filename,
 	key.data = save;
 	key.size = strlen(save);
 
-	/*
-	 * This lookup could return termcap data, which we do not want.  We are
-	 * looking for compiled (binary) terminfo data.
-	 *
-	 * cgetent uses a two-level lookup.  On the first it uses the given
-	 * name to return a record containing only the aliases for an entry.
-	 * On the second (using that list of aliases as a key), it returns the
-	 * content of the terminal description.  We expect second lookup to
-	 * return data beginning with the same set of aliases.
-	 *
-	 * For compiled terminfo, the list of aliases in the second case will
-	 * be null-terminated.  A termcap entry will not be, and will run on
-	 * into the description.  So we can easily distinguish between the two
-	 * (source/binary) by checking the lengths.
-	 */
+	 
 	while (_nc_db_get(capdbp, &key, &data) == 0) {
 	    char *have = (char *) data.data;
 	    used = (int) data.size - 1;
@@ -809,22 +734,17 @@ _nc_read_tic_entry(char *filename,
 		break;
 	    }
 
-	    /*
-	     * Just in case we have a corrupt database, do not waste time with
-	     * it.
-	     */
+	     
 	    if (++reccnt >= 3)
 		break;
 
-	    /*
-	     * Prepare for the second level.
-	     */
+	     
 	    key.data = have;
 	    key.size = used;
 	}
 
 	free(save);
-    } else			/* may be either filesystem or flat file */
+    } else			 
 #endif
     if (make_dir_filename(filename, limit, path, name)) {
 	code = _nc_read_file_entry(filename, tp);
@@ -838,13 +758,9 @@ _nc_read_tic_entry(char *filename,
 #endif
     returnDB(code);
 }
-#endif /* NCURSES_USE_DATABASE */
+#endif  
 
-/*
- * Find and read the compiled entry for a given terminal type, if it exists.
- * We take pains here to make sure no combination of environment variables and
- * terminal type name can be used to overrun the file buffer.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_read_entry2(const char *const name, char *const filename, TERMTYPE2 *const tp)
 {
@@ -889,9 +805,7 @@ _nc_read_entry2(const char *const name, char *const filename, TERMTYPE2 *const t
 }
 
 #if NCURSES_EXT_NUMBERS
-/*
- * This entrypoint is used by tack 1.07
- */
+ 
 NCURSES_EXPORT(int)
 _nc_read_entry(const char *const name, char *const filename, TERMTYPE *const tp)
 {

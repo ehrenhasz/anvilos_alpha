@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/arm-smccc.h>
 #include <linux/kernel.h>

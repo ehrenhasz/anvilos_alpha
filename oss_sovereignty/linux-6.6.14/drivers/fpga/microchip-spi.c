@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Microchip Polarfire FPGA programming over slave SPI interface.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/delay.h>
@@ -49,11 +47,7 @@ struct mpf_priv {
 
 static int mpf_read_status(struct mpf_priv *priv)
 {
-	/*
-	 * HW status is returned on MISO in the first byte after CS went
-	 * active. However, first reading can be inadequate, so we submit
-	 * two identical SPI transfers and use result of the later one.
-	 */
+	 
 	struct spi_transfer xfers[2] = {
 		{
 			.tx_buf = &priv->tx,
@@ -121,10 +115,7 @@ static int mpf_ops_parse_header(struct fpga_manager *mgr,
 		return -EAGAIN;
 	}
 
-	/*
-	 * Go through look-up table to find out where actual bitstream starts
-	 * and where sizes of components of the bitstream lies.
-	 */
+	 
 	blocks_num = *(buf + header_size - 1);
 	block_id_offset = header_size + MPF_LOOKUP_TABLE_BLOCK_ID_OFFSET;
 	block_start_offset = header_size + MPF_LOOKUP_TABLE_BLOCK_START_OFFSET;
@@ -169,12 +160,7 @@ static int mpf_ops_parse_header(struct fpga_manager *mgr,
 		return -EFAULT;
 	}
 
-	/*
-	 * Parse bitstream size.
-	 * Sizes of components of the bitstream are 22-bits long placed next
-	 * to each other. Image header should be extended by now up to where
-	 * actual bitstream starts, so no need for overflow check anymore.
-	 */
+	 
 	components_num = get_unaligned_le16(buf + MPF_DATA_SIZE_OFFSET);
 
 	for (i = 0; i < components_num; i++) {
@@ -199,13 +185,7 @@ static int mpf_poll_status(struct mpf_priv *priv, u8 mask)
 {
 	int ret, status;
 
-	/*
-	 * Busy poll HW status. Polling stops if any of the following
-	 * conditions are met:
-	 *  - timeout is reached
-	 *  - mpf_read_status() returns an error
-	 *  - busy bit is cleared AND mask bits are set
-	 */
+	 
 	ret = read_poll_timeout(mpf_read_status, status,
 				(status < 0) ||
 				((status & (MPF_STATUS_BUSY | mask)) == mask),
@@ -394,7 +374,7 @@ static const struct of_device_id mpf_of_ids[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, mpf_of_ids);
-#endif /* IS_ENABLED(CONFIG_OF) */
+#endif  
 
 static struct spi_driver mpf_driver = {
 	.probe = mpf_probe,

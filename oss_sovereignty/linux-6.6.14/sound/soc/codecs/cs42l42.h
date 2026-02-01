@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * cs42l42.h -- CS42L42 ALSA SoC audio driver header
- *
- * Copyright 2016-2022 Cirrus Logic, Inc.
- *
- * Author: James Schulman <james.schulman@cirrus.com>
- * Author: Brian Austin <brian.austin@cirrus.com>
- * Author: Michael White <michael.white@cirrus.com>
- */
+ 
+ 
 
 #ifndef __CS42L42_H__
 #define __CS42L42_H__
@@ -79,4 +71,4 @@ int cs42l42_common_probe(struct cs42l42_private *cs42l42,
 int cs42l42_init(struct cs42l42_private *cs42l42);
 void cs42l42_common_remove(struct cs42l42_private *cs42l42);
 
-#endif /* __CS42L42_H__ */
+#endif  

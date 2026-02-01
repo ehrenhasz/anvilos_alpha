@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright 2015 Texas Instruments
-// Copyright 2018 Sebastian Reichel
-// Copyright 2018 Pavel Machek <pavel@ucw.cz>
-// TI LMU LED common framework, based on previous work from
-// Milo Kim <milo.kim@ti.com>
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -23,13 +23,7 @@ static int ti_lmu_common_update_brightness(struct ti_lmu_bank *lmu_bank,
 	u8 reg, val;
 	int ret;
 
-	/*
-	 * Brightness register update
-	 *
-	 * 11 bit dimming: update LSB bits and write MSB byte.
-	 *		   MSB brightness should be shifted.
-	 *  8 bit dimming: write MSB byte.
-	 */
+	 
 	if (lmu_bank->max_brightness == MAX_BRIGHTNESS_11BIT) {
 		reg = lmu_bank->lsb_brightness_reg;
 		ret = regmap_update_bits(regmap, reg,
@@ -69,7 +63,7 @@ static unsigned int ti_lmu_common_convert_ramp_to_index(unsigned int usec)
 		if (usec == ramp_table[i])
 			return i;
 
-		/* Find an approximate index by looking up the table */
+		 
 		if (usec > ramp_table[i - 1] && usec < ramp_table[i]) {
 			if (usec - ramp_table[i - 1] < ramp_table[i] - usec)
 				return i - 1;

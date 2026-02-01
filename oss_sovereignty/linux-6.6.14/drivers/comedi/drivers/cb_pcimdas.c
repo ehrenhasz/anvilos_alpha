@@ -1,36 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/cb_pcimdas.c
- * Comedi driver for Computer Boards PCIM-DAS1602/16 and PCIe-DAS1602/16
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: cb_pcimdas
- * Description: Measurement Computing PCI Migration series boards
- * Devices: [ComputerBoards] PCIM-DAS1602/16 (cb_pcimdas), PCIe-DAS1602/16
- * Author: Richard Bytheway
- * Updated: Mon, 13 Oct 2014 11:57:39 +0000
- * Status: experimental
- *
- * Written to support the PCIM-DAS1602/16 and PCIe-DAS1602/16.
- *
- * Configuration Options:
- *   none
- *
- * Manual configuration of PCI(e) cards is not supported; they are configured
- * automatically.
- *
- * Developed from cb_pcidas and skel by Richard Bytheway (mocelet@sucs.org).
- * Only supports DIO, AO and simple AI in it's present form.
- * No interrupts, multi channel or FIFO AI,
- * although the card looks like it could support this.
- *
- * https://www.mccdaq.com/PDFs/Manuals/pcim-das1602-16.pdf
- * https://www.mccdaq.com/PDFs/Manuals/pcie-das1602-16.pdf
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -40,21 +11,14 @@
 
 #include "plx9052.h"
 
-/*
- * PCI Bar 1 Register map
- * see plx9052.h for register and bit defines
- */
+ 
 
-/*
- * PCI Bar 2 Register map (devpriv->daqio)
- */
+ 
 #define PCIMDAS_AI_REG			0x00
 #define PCIMDAS_AI_SOFTTRIG_REG		0x00
 #define PCIMDAS_AO_REG(x)		(0x02 + ((x) * 2))
 
-/*
- * PCI Bar 3 Register map (devpriv->BADR3)
- */
+ 
 #define PCIMDAS_MUX_REG			0x00
 #define PCIMDAS_MUX(_lo, _hi)		((_lo) | ((_hi) << 4))
 #define PCIMDAS_DI_DO_REG		0x01
@@ -103,9 +67,7 @@
 #define PCIMDAS_RESIDUE_MSB_REG		0x0d
 #define PCIMDAS_RESIDUE_LSB_REG		0x0e
 
-/*
- * PCI Bar 4 Register map (dev->iobase)
- */
+ 
 #define PCIMDAS_8255_BASE		0x00
 
 static const struct comedi_lrange cb_pcimdas_ai_bip_range = {
@@ -126,10 +88,7 @@ static const struct comedi_lrange cb_pcimdas_ai_uni_range = {
 	}
 };
 
-/*
- * The Analog Output range is not programmable. The DAC ranges are
- * jumper-settable on the board. The settings are not software-readable.
- */
+ 
 static const struct comedi_lrange cb_pcimdas_ao_range = {
 	6, {
 		BIP_RANGE(10),
@@ -141,14 +100,9 @@ static const struct comedi_lrange cb_pcimdas_ao_range = {
 	}
 };
 
-/*
- * this structure is for data unique to this hardware driver.  If
- * several hardware drivers keep similar information in this structure,
- * feel free to suggest moving the variable to the struct comedi_device
- * struct.
- */
+ 
 struct cb_pcimdas_private {
-	/* base addresses */
+	 
 	unsigned long daqio;
 	unsigned long BADR3;
 };
@@ -179,9 +133,9 @@ static int cb_pcimdas_ai_insn_read(struct comedi_device *dev,
 	unsigned int d;
 	int ret;
 
-	/*  only support sw initiated reads from a single channel */
+	 
 
-	/* configure for sw initiated read */
+	 
 	d = inb(devpriv->BADR3 + PCIMDAS_PACER_REG);
 	if ((d & PCIMDAS_PACER_SRC_MASK) != PCIMDAS_PACER_SRC_POLLED) {
 		d &= ~PCIMDAS_PACER_SRC_MASK;
@@ -189,30 +143,30 @@ static int cb_pcimdas_ai_insn_read(struct comedi_device *dev,
 		outb(d, devpriv->BADR3 + PCIMDAS_PACER_REG);
 	}
 
-	/* set bursting off, conversions on */
+	 
 	outb(PCIMDAS_BURST_CONV_EN, devpriv->BADR3 + PCIMDAS_BURST_REG);
 
-	/* set range */
+	 
 	outb(range, devpriv->BADR3 + PCIMDAS_GAIN_REG);
 
-	/* set mux for single channel scan */
+	 
 	outb(PCIMDAS_MUX(chan, chan), devpriv->BADR3 + PCIMDAS_MUX_REG);
 
-	/* convert n samples */
+	 
 	for (n = 0; n < insn->n; n++) {
-		/* trigger conversion */
+		 
 		outw(0, devpriv->daqio + PCIMDAS_AI_SOFTTRIG_REG);
 
-		/* wait for conversion to end */
+		 
 		ret = comedi_timeout(dev, s, insn, cb_pcimdas_ai_eoc, 0);
 		if (ret)
 			return ret;
 
-		/* read data */
+		 
 		data[n] = inw(devpriv->daqio + PCIMDAS_AI_REG);
 	}
 
-	/* return the number of samples read/written */
+	 
 	return n;
 }
 
@@ -276,10 +230,10 @@ static int cb_pcimdas_counter_insn_config(struct comedi_device *dev,
 	switch (data[0]) {
 	case INSN_CONFIG_SET_CLOCK_SRC:
 		switch (data[1]) {
-		case 0:	/* internal 100 kHz clock */
+		case 0:	 
 			ctrl = PCIMDAS_USER_CNTR_CTR1_CLK_SEL;
 			break;
-		case 1:	/* external clk on pin 21 */
+		case 1:	 
 			ctrl = 0;
 			break;
 		default:
@@ -309,7 +263,7 @@ static unsigned int cb_pcimdas_pacer_clk(struct comedi_device *dev)
 	struct cb_pcimdas_private *devpriv = dev->private;
 	unsigned int status;
 
-	/* The Pacer Clock jumper selects a 10 MHz or 1 MHz clock */
+	 
 	status = inb(devpriv->BADR3 + PCIMDAS_STATUS_REG);
 	if (status & PCIMDAS_STATUS_CLK)
 		return I8254_OSC_BASE_10MHZ;
@@ -321,11 +275,7 @@ static bool cb_pcimdas_is_ai_se(struct comedi_device *dev)
 	struct cb_pcimdas_private *devpriv = dev->private;
 	unsigned int status;
 
-	/*
-	 * The number of Analog Input channels is set with the
-	 * Analog Input Mode Switch on the board. The board can
-	 * have 16 single-ended or 8 differential channels.
-	 */
+	 
 	status = inb(devpriv->BADR3 + PCIMDAS_STATUS_REG);
 	return status & PCIMDAS_STATUS_MUX;
 }
@@ -335,11 +285,7 @@ static bool cb_pcimdas_is_ai_uni(struct comedi_device *dev)
 	struct cb_pcimdas_private *devpriv = dev->private;
 	unsigned int status;
 
-	/*
-	 * The Analog Input range polarity is set with the
-	 * Analog Input Polarity Switch on the board. The
-	 * inputs can be set to Unipolar or Bipolar ranges.
-	 */
+	 
 	status = inb(devpriv->BADR3 + PCIMDAS_STATUS_REG);
 	return status & PCIMDAS_STATUS_UB;
 }
@@ -374,7 +320,7 @@ static int cb_pcimdas_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE;
@@ -390,7 +336,7 @@ static int cb_pcimdas_auto_attach(struct comedi_device *dev,
 						    : &cb_pcimdas_ai_bip_range;
 	s->insn_read	= cb_pcimdas_ai_insn_read;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -403,13 +349,13 @@ static int cb_pcimdas_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digital I/O subdevice */
+	 
 	s = &dev->subdevices[2];
 	ret = subdev_8255_init(dev, s, NULL, PCIMDAS_8255_BASE);
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice (main connector) */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -418,7 +364,7 @@ static int cb_pcimdas_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= cb_pcimdas_di_insn_bits;
 
-	/* Digital Output subdevice (main connector) */
+	 
 	s = &dev->subdevices[4];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -427,13 +373,13 @@ static int cb_pcimdas_auto_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= cb_pcimdas_do_insn_bits;
 
-	/* Counter subdevice (8254) */
+	 
 	s = &dev->subdevices[5];
 	comedi_8254_subdevice_init(s, dev->pacer);
 
 	dev->pacer->insn_config = cb_pcimdas_counter_insn_config;
 
-	/* counters 1 and 2 are used internally for the pacer */
+	 
 	comedi_8254_set_busy(dev->pacer, 1, true);
 	comedi_8254_set_busy(dev->pacer, 2, true);
 
@@ -455,8 +401,8 @@ static int cb_pcimdas_pci_probe(struct pci_dev *dev,
 }
 
 static const struct pci_device_id cb_pcimdas_pci_table[] = {
-	{ PCI_DEVICE(PCI_VENDOR_ID_CB, 0x0056) },	/* PCIM-DAS1602/16 */
-	{ PCI_DEVICE(PCI_VENDOR_ID_CB, 0x0115) },	/* PCIe-DAS1602/16 */
+	{ PCI_DEVICE(PCI_VENDOR_ID_CB, 0x0056) },	 
+	{ PCI_DEVICE(PCI_VENDOR_ID_CB, 0x0115) },	 
 	{ 0 }
 };
 MODULE_DEVICE_TABLE(pci, cb_pcimdas_pci_table);

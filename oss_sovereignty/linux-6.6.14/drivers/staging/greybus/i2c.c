@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * I2C bridge driver for the Greybus "generic" I2C module.
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,21 +18,13 @@ struct gb_i2c_device {
 	struct i2c_adapter	adapter;
 };
 
-/*
- * Map Greybus i2c functionality bits into Linux ones
- */
+ 
 static u32 gb_i2c_functionality_map(u32 gb_i2c_functionality)
 {
-	return gb_i2c_functionality;	/* All bits the same for now */
+	return gb_i2c_functionality;	 
 }
 
-/*
- * Do initial setup of the i2c device.  This includes verifying we
- * can support it (based on the protocol version it advertises).
- * If that's OK, we get and cached its functionality bits.
- *
- * Note: gb_i2c_dev->connection is assumed to have been valid.
- */
+ 
 static int gb_i2c_device_setup(struct gb_i2c_device *gb_i2c_dev)
 {
 	struct gb_i2c_functionality_response response;
@@ -56,12 +43,10 @@ static int gb_i2c_device_setup(struct gb_i2c_device *gb_i2c_dev)
 	return 0;
 }
 
-/*
- * Map Linux i2c_msg flags into Greybus i2c transfer op flags.
- */
+ 
 static u16 gb_i2c_transfer_op_flags_map(u16 flags)
 {
-	return flags;	/* All flags the same for now */
+	return flags;	 
 }
 
 static void
@@ -97,10 +82,7 @@ gb_i2c_operation_create(struct gb_connection *connection,
 	}
 	op_count = (u16)msg_count;
 
-	/*
-	 * In addition to space for all message descriptors we need
-	 * to have enough to hold all outbound message data.
-	 */
+	 
 	msg = msgs;
 	for (i = 0; i < msg_count; i++, msg++)
 		if (msg->flags & I2C_M_RD)
@@ -112,7 +94,7 @@ gb_i2c_operation_create(struct gb_connection *connection,
 	request_size += msg_count * sizeof(*op);
 	request_size += data_out_size;
 
-	/* Response consists only of incoming data */
+	 
 	operation = gb_operation_create(connection, GB_I2C_TYPE_TRANSFER,
 					request_size, data_in_size, GFP_KERNEL);
 	if (!operation)
@@ -120,7 +102,7 @@ gb_i2c_operation_create(struct gb_connection *connection,
 
 	request = operation->request->payload;
 	request->op_count = cpu_to_le16(op_count);
-	/* Fill in the ops array */
+	 
 	op = &request->ops[0];
 	msg = msgs;
 	for (i = 0; i < msg_count; i++)
@@ -129,7 +111,7 @@ gb_i2c_operation_create(struct gb_connection *connection,
 	if (!data_out_size)
 		return operation;
 
-	/* Copy over the outgoing data; it starts after the last op */
+	 
 	data = op;
 	msg = msgs;
 	for (i = 0; i < msg_count; i++) {
@@ -162,9 +144,7 @@ static void gb_i2c_decode_response(struct i2c_msg *msgs, u32 msg_count,
 	}
 }
 
-/*
- * Some i2c transfer operations return results that are expected.
- */
+ 
 static bool gb_i2c_expected_transfer_error(int errno)
 {
 	return errno == -EAGAIN || errno == -ENODEV;
@@ -261,7 +241,7 @@ static int gb_i2c_probe(struct gbphy_device *gbphy_dev,
 	if (ret)
 		goto exit_connection_disable;
 
-	/* Looks good; up our i2c adapter */
+	 
 	adapter = &gb_i2c_dev->adapter;
 	adapter->owner = THIS_MODULE;
 	adapter->class = I2C_CLASS_HWMON | I2C_CLASS_SPD;

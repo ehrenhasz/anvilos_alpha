@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2011-2014 Autronica Fire and Security AS
- *
- * Author(s):
- *	2011-2014 Arvid Brodin, arvid.brodin@alten.se
- *
- * include file for HSR and PRP.
- */
+ 
+ 
 
 #ifndef __HSR_PRIVATE_H
 #define __HSR_PRIVATE_H
@@ -15,48 +9,32 @@
 #include <linux/if_vlan.h>
 #include <linux/if_hsr.h>
 
-/* Time constants as specified in the HSR specification (IEC-62439-3 2010)
- * Table 8.
- * All values in milliseconds.
- */
-#define HSR_LIFE_CHECK_INTERVAL		 2000 /* ms */
-#define HSR_NODE_FORGET_TIME		60000 /* ms */
-#define HSR_ANNOUNCE_INTERVAL		  100 /* ms */
-#define HSR_ENTRY_FORGET_TIME		  400 /* ms */
+ 
+#define HSR_LIFE_CHECK_INTERVAL		 2000  
+#define HSR_NODE_FORGET_TIME		60000  
+#define HSR_ANNOUNCE_INTERVAL		  100  
+#define HSR_ENTRY_FORGET_TIME		  400  
 
-/* By how much may slave1 and slave2 timestamps of latest received frame from
- * each node differ before we notify of communication problem?
- */
-#define MAX_SLAVE_DIFF			 3000 /* ms */
+ 
+#define MAX_SLAVE_DIFF			 3000  
 #define HSR_SEQNR_START			(USHRT_MAX - 1024)
 #define HSR_SUP_SEQNR_START		(HSR_SEQNR_START / 2)
 
-/* How often shall we check for broken ring and remove node entries older than
- * HSR_NODE_FORGET_TIME?
- */
-#define PRUNE_PERIOD			 3000 /* ms */
-#define HSR_TLV_EOT				   0  /* End of TLVs */
+ 
+#define PRUNE_PERIOD			 3000  
+#define HSR_TLV_EOT				   0   
 #define HSR_TLV_ANNOUNCE		   22
 #define HSR_TLV_LIFE_CHECK		   23
-/* PRP V1 life check for Duplicate discard */
+ 
 #define PRP_TLV_LIFE_CHECK_DD		   20
-/* PRP V1 life check for Duplicate Accept */
+ 
 #define PRP_TLV_LIFE_CHECK_DA		   21
-/* PRP V1 life redundancy box MAC address */
+ 
 #define PRP_TLV_REDBOX_MAC		   30
 
 #define HSR_V1_SUP_LSDUSIZE		52
 
-/* The helper functions below assumes that 'path' occupies the 4 most
- * significant bits of the 16-bit field shared by 'path' and 'LSDU_size' (or
- * equivalently, the 4 most significant bits of HSR tag byte 14).
- *
- * This is unclear in the IEC specification; its definition of MAC addresses
- * indicates the spec is written with the least significant bit first (to the
- * left). This, however, would mean that the LSDU field would be split in two
- * with the path field in-between, which seems strange. I'm guessing the MAC
- * address definition is in error.
- */
+ 
 
 static inline void set_hsr_tag_path(struct hsr_tag *ht, u16 path)
 {
@@ -85,9 +63,7 @@ struct hsr_sup_tlv {
 	u8		HSR_TLV_length;
 } __packed;
 
-/* HSR/PRP Supervision Frame data types.
- * Field names as defined in the IEC:2010 standard for HSR.
- */
+ 
 struct hsr_sup_tag {
 	__be16				path_and_HSR_ver;
 	__be16				sequence_nr;
@@ -120,20 +96,15 @@ struct hsrv1_ethhdr_sp {
 } __packed;
 
 enum hsr_port_type {
-	HSR_PT_NONE = 0,	/* Must be 0, used by framereg */
+	HSR_PT_NONE = 0,	 
 	HSR_PT_SLAVE_A,
 	HSR_PT_SLAVE_B,
 	HSR_PT_INTERLINK,
 	HSR_PT_MASTER,
-	HSR_PT_PORTS,	/* This must be the last item in the enum */
+	HSR_PT_PORTS,	 
 };
 
-/* PRP Redunancy Control Trailor (RCT).
- * As defined in IEC-62439-4:2012, the PRP RCT is really { sequence Nr,
- * Lan indentifier (LanId), LSDU_size and PRP_suffix = 0x88FB }.
- *
- * Field names as defined in the IEC:2012 standard for PRP.
- */
+ 
 struct prp_rct {
 	__be16          sequence_nr;
 	__be16          lan_id_and_LSDU_size;
@@ -167,7 +138,7 @@ struct hsr_frame_info;
 struct hsr_node;
 
 struct hsr_proto_ops {
-	/* format and send supervision frame */
+	 
 	void (*send_sv_frame)(struct hsr_port *port, unsigned long *interval);
 	void (*handle_san_frame)(bool san, enum hsr_port_type port,
 				 struct hsr_node *node);
@@ -191,28 +162,22 @@ struct hsr_self_node {
 struct hsr_priv {
 	struct rcu_head		rcu_head;
 	struct list_head	ports;
-	struct list_head	node_db;	/* Known HSR nodes */
-	struct hsr_self_node	__rcu *self_node;	/* MACs of slaves */
-	struct timer_list	announce_timer;	/* Supervision frame dispatch */
+	struct list_head	node_db;	 
+	struct hsr_self_node	__rcu *self_node;	 
+	struct timer_list	announce_timer;	 
 	struct timer_list	prune_timer;
 	int announce_count;
 	u16 sequence_nr;
-	u16 sup_sequence_nr;	/* For HSRv1 separate seq_nr for supervision */
-	enum hsr_version prot_version;	/* Indicate if HSRv0, HSRv1 or PRPv1 */
-	spinlock_t seqnr_lock;	/* locking for sequence_nr */
-	spinlock_t list_lock;	/* locking for node list */
+	u16 sup_sequence_nr;	 
+	enum hsr_version prot_version;	 
+	spinlock_t seqnr_lock;	 
+	spinlock_t list_lock;	 
 	struct hsr_proto_ops	*proto_ops;
-#define PRP_LAN_ID	0x5     /* 0x1010 for A and 0x1011 for B. Bit 0 is set
-				 * based on SLAVE_A or SLAVE_B
-				 */
-	u8 net_id;		/* for PRP, it occupies most significant 3 bits
-				 * of lan_id
-				 */
-	bool fwd_offloaded;	/* Forwarding offloaded to HW */
+#define PRP_LAN_ID	0x5      
+	u8 net_id;		 
+	bool fwd_offloaded;	 
 	unsigned char		sup_multicast_addr[ETH_ALEN] __aligned(sizeof(u16));
-				/* Align to u16 boundary to avoid unaligned access
-				 * in ether_addr_equal
-				 */
+				 
 #ifdef	CONFIG_DEBUG_FS
 	struct dentry *node_tbl_root;
 #endif
@@ -223,7 +188,7 @@ struct hsr_priv {
 
 struct hsr_port *hsr_port_get_hsr(struct hsr_priv *hsr, enum hsr_port_type pt);
 
-/* Caller must ensure skb is a valid HSR frame */
+ 
 static inline u16 hsr_get_skb_sequence_nr(struct sk_buff *skb)
 {
 	struct hsr_ethhdr *hsr_ethhdr;
@@ -244,13 +209,13 @@ static inline struct prp_rct *skb_get_PRP_rct(struct sk_buff *skb)
 	return NULL;
 }
 
-/* Assume caller has confirmed this skb is PRP suffixed */
+ 
 static inline u16 prp_get_skb_sequence_nr(struct prp_rct *rct)
 {
 	return ntohs(rct->sequence_nr);
 }
 
-/* assume there is a valid rct */
+ 
 static inline bool prp_check_lsdu_size(struct sk_buff *skb,
 				       struct prp_rct *rct,
 				       bool is_sup)
@@ -291,4 +256,4 @@ static inline void hsr_debugfs_remove_root(void)
 {}
 #endif
 
-#endif /*  __HSR_PRIVATE_H */
+#endif  

@@ -1,26 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung S5P/EXYNOS4 SoC Camera Subsystem driver
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Sylwester Nawrocki <s.nawrocki@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <media/drv-intf/exynos-fimc.h>
 #include "common.h"
 
-/*
- * Called with the media graph mutex held or media_entity_is_streaming(entity)
- * true.
- */
+ 
 struct v4l2_subdev *fimc_find_remote_sensor(struct media_entity *entity)
 {
 	struct media_pad *pad = &entity->pads[0];
 	struct v4l2_subdev *sd;
 
 	while (pad->flags & MEDIA_PAD_FL_SINK) {
-		/* source pad */
+		 
 		pad = media_pad_remote_pad_first(pad);
 		if (!pad || !is_media_entity_v4l2_subdev(pad->entity))
 			break;
@@ -30,7 +22,7 @@ struct v4l2_subdev *fimc_find_remote_sensor(struct media_entity *entity)
 		if (sd->grp_id == GRP_ID_FIMC_IS_SENSOR ||
 		    sd->grp_id == GRP_ID_SENSOR)
 			return sd;
-		/* sink pad */
+		 
 		pad = &sd->entity.pads[0];
 	}
 	return NULL;

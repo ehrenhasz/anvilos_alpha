@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Samsung S5K5BAF UXGA 1/5" 2M CMOS Image Sensor
- * with embedded SoC ISP.
- *
- * Copyright (C) 2013, Samsung Electronics Co., Ltd.
- * Andrzej Hajda <a.hajda@samsung.com>
- *
- * Based on S5K6AA driver authored by Sylwester Nawrocki
- * Copyright (C) 2013, Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -47,20 +38,16 @@ module_param(debug, int, 0644);
 #define S5K5BAF_GAIN_RED_DEF		127
 #define S5K5BAF_GAIN_GREEN_DEF		95
 #define S5K5BAF_GAIN_BLUE_DEF		180
-/* Default number of MIPI CSI-2 data lanes used */
+ 
 #define S5K5BAF_DEF_NUM_LANES		1
 
 #define AHB_MSB_ADDR_PTR		0xfcfc
 
-/*
- * Register interface pages (the most significant word of the address)
- */
+ 
 #define PAGE_IF_HW			0xd000
 #define PAGE_IF_SW			0x7000
 
-/*
- * H/W register Interface (PAGE_IF_HW)
- */
+ 
 #define REG_SW_LOAD_COMPLETE		0x0014
 #define REG_CMDWR_PAGE			0x0028
 #define REG_CMDWR_ADDR			0x002a
@@ -74,18 +61,16 @@ module_param(debug, int, 0644);
 #define REG_PATTERN_HEIGHT		0x311a
 #define REG_PATTERN_PARAM		0x311c
 
-/*
- * S/W register interface (PAGE_IF_SW)
- */
+ 
 
-/* Firmware revision information */
+ 
 #define REG_FW_APIVER			0x012e
 #define  S5K5BAF_FW_APIVER		0x0001
 #define REG_FW_REVISION			0x0130
 #define REG_FW_SENSOR_ID		0x0152
 
-/* Initialization parameters */
-/* Master clock frequency in KHz */
+ 
+ 
 #define REG_I_INCLK_FREQ_L		0x01b8
 #define REG_I_INCLK_FREQ_H		0x01ba
 #define  MIN_MCLK_FREQ_KHZ		6000U
@@ -96,7 +81,7 @@ module_param(debug, int, 0644);
 #define  NMIPI_CLOCKS			1
 #define REG_I_BLOCK_INTERNAL_PLL_CALC	0x01ca
 
-/* Clock configurations, n = 0..2. REG_I_* frequency unit is 4 kHz. */
+ 
 #define REG_I_OPCLK_4KHZ(n)		((n) * 6 + 0x01cc)
 #define REG_I_MIN_OUTRATE_4KHZ(n)	((n) * 6 + 0x01ce)
 #define REG_I_MAX_OUTRATE_4KHZ(n)	((n) * 6 + 0x01d0)
@@ -108,7 +93,7 @@ module_param(debug, int, 0644);
 #define REG_I_INIT_PARAMS_UPDATED	0x01e0
 #define REG_I_ERROR_INFO		0x01e2
 
-/* General purpose parameters */
+ 
 #define REG_USER_BRIGHTNESS		0x01e4
 #define REG_USER_CONTRAST		0x01e6
 #define REG_USER_SATURATION		0x01e8
@@ -138,7 +123,7 @@ module_param(debug, int, 0644);
 #define REG_G_ACTUAL_C_FR_TIME		0x023e
 #define REG_G_ACTUAL_C_OUT_RATE		0x0240
 
-/* Preview control section. n = 0...4. */
+ 
 #define PREG(n, x)			((n) * 0x26 + x)
 #define REG_P_OUT_WIDTH(n)		PREG(n, 0x0242)
 #define REG_P_OUT_HEIGHT(n)		PREG(n, 0x0244)
@@ -156,14 +141,14 @@ module_param(debug, int, 0644);
 #define  FR_RATE_FIXED_ACCURATE		2
 #define REG_P_FR_RATE_Q_TYPE(n)		PREG(n, 0x0252)
 #define  FR_RATE_Q_DYNAMIC		0
-#define  FR_RATE_Q_BEST_FRRATE		1 /* Binning enabled */
-#define  FR_RATE_Q_BEST_QUALITY		2 /* Binning disabled */
-/* Frame period in 0.1 ms units */
+#define  FR_RATE_Q_BEST_FRRATE		1  
+#define  FR_RATE_Q_BEST_QUALITY		2  
+ 
 #define REG_P_MAX_FR_TIME(n)		PREG(n, 0x0254)
 #define REG_P_MIN_FR_TIME(n)		PREG(n, 0x0256)
-#define  S5K5BAF_MIN_FR_TIME		333  /* x100 us */
-#define  S5K5BAF_MAX_FR_TIME		6500 /* x100 us */
-/* The below 5 registers are for "device correction" values */
+#define  S5K5BAF_MIN_FR_TIME		333   
+#define  S5K5BAF_MAX_FR_TIME		6500  
+ 
 #define REG_P_SATURATION(n)		PREG(n, 0x0258)
 #define REG_P_SHARP_BLUR(n)		PREG(n, 0x025a)
 #define REG_P_GLAMOUR(n)		PREG(n, 0x025c)
@@ -173,8 +158,8 @@ module_param(debug, int, 0644);
 #define REG_P_CAP_MIRROR(n)		PREG(n, 0x0264)
 #define REG_P_CAP_ROTATION(n)		PREG(n, 0x0266)
 
-/* Extended image property controls */
-/* Exposure time in 10 us units */
+ 
+ 
 #define REG_SF_USR_EXPOSURE_L		0x03bc
 #define REG_SF_USR_EXPOSURE_H		0x03be
 #define REG_SF_USR_EXPOSURE_CHG		0x03c0
@@ -190,13 +175,13 @@ module_param(debug, int, 0644);
 #define REG_SF_FLICKER_QUANT		0x03d4
 #define REG_SF_FLICKER_QUANT_CHG	0x03d6
 
-/* Output interface (parallel/MIPI) setup */
+ 
 #define REG_OIF_EN_MIPI_LANES		0x03f2
 #define REG_OIF_EN_PACKETS		0x03f4
 #define  EN_PACKETS_CSI2		0xc3
 #define REG_OIF_CFG_CHG			0x03f6
 
-/* Auto-algorithms enable mask */
+ 
 #define REG_DBG_AUTOALG_EN		0x03f8
 #define  AALG_ALL_EN			BIT(0)
 #define  AALG_AE_EN			BIT(1)
@@ -207,7 +192,7 @@ module_param(debug, int, 0644);
 #define  AALG_FIT_EN			BIT(6)
 #define  AALG_WRHW_EN			BIT(7)
 
-/* Pointers to color correction matrices */
+ 
 #define REG_PTR_CCM_HORIZON		0x06d0
 #define REG_PTR_CCM_INCANDESCENT	0x06d4
 #define REG_PTR_CCM_WARM_WHITE		0x06d8
@@ -219,11 +204,9 @@ module_param(debug, int, 0644);
 #define REG_ARR_CCM(n)			(0x2800 + 36 * (n))
 
 static const char * const s5k5baf_supply_names[] = {
-	"vdda",		/* Analog power supply 2.8V (2.6V to 3.0V) */
-	"vddreg",	/* Regulator input power supply 1.8V (1.7V to 1.9V)
-			   or 2.8V (2.6V to 3.0) */
-	"vddio",	/* I/O power supply 1.8V (1.65V to 1.95V)
-			   or 2.8V (2.5V to 3.1V) */
+	"vdda",		 
+	"vddreg",	 
+	"vddio",	 
 };
 #define S5K5BAF_NUM_SUPPLIES ARRAY_SIZE(s5k5baf_supply_names)
 
@@ -241,22 +224,22 @@ enum s5k5baf_gpio_id {
 struct s5k5baf_pixfmt {
 	u32 code;
 	u32 colorspace;
-	/* REG_P_FMT(x) register value */
+	 
 	u16 reg_p_fmt;
 };
 
 struct s5k5baf_ctrls {
 	struct v4l2_ctrl_handler handler;
-	struct { /* Auto / manual white balance cluster */
+	struct {  
 		struct v4l2_ctrl *awb;
 		struct v4l2_ctrl *gain_red;
 		struct v4l2_ctrl *gain_blue;
 	};
-	struct { /* Mirror cluster */
+	struct {  
 		struct v4l2_ctrl *hflip;
 		struct v4l2_ctrl *vflip;
 	};
-	struct { /* Auto exposure / manual exposure and gain cluster */
+	struct {  
 		struct v4l2_ctrl *auto_exp;
 		struct v4l2_ctrl *exposure;
 		struct v4l2_ctrl *gain;
@@ -294,7 +277,7 @@ struct s5k5baf {
 	struct v4l2_subdev sd;
 	struct media_pad pads[NUM_ISP_PADS];
 
-	/* protects the struct members below */
+	 
 	struct mutex lock;
 
 	int error;
@@ -302,13 +285,13 @@ struct s5k5baf {
 	struct v4l2_rect crop_sink;
 	struct v4l2_rect compose;
 	struct v4l2_rect crop_source;
-	/* index to s5k5baf_formats array */
+	 
 	int pixfmt;
-	/* actual frame interval in 100us */
+	 
 	u16 fiv;
-	/* requested frame interval in 100us */
+	 
 	u16 req_fiv;
-	/* cache for REG_DBG_AUTOALG_EN register */
+	 
 	u16 auto_alg;
 
 	struct s5k5baf_ctrls ctrls;
@@ -322,7 +305,7 @@ struct s5k5baf {
 
 static const struct s5k5baf_pixfmt s5k5baf_formats[] = {
 	{ MEDIA_BUS_FMT_VYUY8_2X8,	V4L2_COLORSPACE_JPEG,	5 },
-	/* range 16-240 */
+	 
 	{ MEDIA_BUS_FMT_VYUY8_2X8,	V4L2_COLORSPACE_REC709,	6 },
 	{ MEDIA_BUS_FMT_RGB565_2X8_BE,	V4L2_COLORSPACE_JPEG,	0 },
 };
@@ -331,17 +314,7 @@ static struct v4l2_rect s5k5baf_cis_rect = {
 	0, 0, S5K5BAF_CIS_WIDTH, S5K5BAF_CIS_HEIGHT
 };
 
-/* Setfile contains set of I2C command sequences. Each sequence has its ID.
- * setfile format:
- *	u8 magic[4];
- *	u16 count;		number of sequences
- *	struct {
- *		u16 id;		sequence id
- *		u16 offset;	sequence offset in data array
- *	} seq[count];
- *	u16 data[*];		array containing sequences
- *
- */
+ 
 static int s5k5baf_fw_parse(struct device *dev, struct s5k5baf_fw **fw,
 			    size_t count, const __le16 *data)
 {
@@ -506,17 +479,10 @@ static void s5k5baf_write_arr_seq(struct s5k5baf *state, u16 addr,
 	s5k5baf_write_arr_seq(state, addr, sizeof((char[]){ seq }), \
 			      (const u16 []){ seq })
 
-/* add items count at the beginning of the list */
+ 
 #define NSEQ(seq...) sizeof((char[]){ seq }), seq
 
-/*
- * s5k5baf_write_nseq() - Writes sequences of values to sensor memory via i2c
- * @nseq: sequence of u16 words in format:
- *	(N, address, value[1]...value[N-1])*,0
- * Ex.:
- *	u16 seq[] = { NSEQ(0x4000, 1, 1), NSEQ(0x4010, 640, 480), 0 };
- *	ret = s5k5baf_write_nseq(c, seq);
- */
+ 
 static void s5k5baf_write_nseq(struct s5k5baf *state, const u16 *nseq)
 {
 	int count;
@@ -598,7 +564,7 @@ static void s5k5baf_hw_set_clocks(struct s5k5baf *state)
 	}
 }
 
-/* set custom color correction matrices for various illuminations */
+ 
 static void s5k5baf_hw_set_ccm(struct s5k5baf *state)
 {
 	u16 *seq = s5k5baf_fw_get_seq(state, S5K5BAF_FW_ID_CCM);
@@ -607,7 +573,7 @@ static void s5k5baf_hw_set_ccm(struct s5k5baf *state)
 		s5k5baf_write_nseq(state, seq);
 }
 
-/* CIS sensor tuning, based on undocumented android driver code */
+ 
 static void s5k5baf_hw_set_cis(struct s5k5baf *state)
 {
 	u16 *seq = s5k5baf_fw_get_seq(state, S5K5BAF_FW_ID_CIS);
@@ -629,7 +595,7 @@ static void s5k5baf_hw_sync_cfg(struct s5k5baf *state)
 	}
 	s5k5baf_synchronize(state, 500, REG_G_NEW_CFG_SYNC);
 }
-/* Set horizontal and vertical image flipping */
+ 
 static void s5k5baf_hw_set_mirror(struct s5k5baf *state)
 {
 	u16 flip = state->ctrls.vflip->val | (state->ctrls.vflip->val << 1);
@@ -660,7 +626,7 @@ static void s5k5baf_hw_set_alg(struct s5k5baf *state, u16 alg, bool enable)
 	state->auto_alg = new_alg;
 }
 
-/* Configure auto/manual white balance and R/G/B gains */
+ 
 static void s5k5baf_hw_set_awb(struct s5k5baf *state, int awb)
 {
 	struct s5k5baf_ctrls *ctrls = &state->ctrls;
@@ -675,7 +641,7 @@ static void s5k5baf_hw_set_awb(struct s5k5baf *state, int awb)
 	s5k5baf_hw_set_alg(state, AALG_WB_EN, awb);
 }
 
-/* Program FW with exposure time, 'exposure' in us units */
+ 
 static void s5k5baf_hw_set_user_exposure(struct s5k5baf *state, int exposure)
 {
 	unsigned int time = exposure / 10;
@@ -689,7 +655,7 @@ static void s5k5baf_hw_set_user_gain(struct s5k5baf *state, int gain)
 	s5k5baf_write_seq(state, REG_SF_USR_TOT_GAIN, gain, 1);
 }
 
-/* Set auto/manual exposure and total gain */
+ 
 static void s5k5baf_hw_set_auto_exposure(struct s5k5baf *state, int value)
 {
 	if (value == V4L2_EXPOSURE_AUTO) {
@@ -708,8 +674,7 @@ static void s5k5baf_hw_set_anti_flicker(struct s5k5baf *state, int v)
 	if (v == V4L2_CID_POWER_LINE_FREQUENCY_AUTO) {
 		s5k5baf_hw_set_alg(state, AALG_FLICKER_EN, true);
 	} else {
-		/* The V4L2_CID_LINE_FREQUENCY control values match
-		 * the register values */
+		 
 		s5k5baf_write_seq(state, REG_SF_FLICKER_QUANT, v, 1);
 		s5k5baf_hw_set_alg(state, AALG_FLICKER_EN, false);
 	}
@@ -874,7 +839,7 @@ static int s5k5baf_hw_set_crop_rects(struct s5k5baf *state)
 	case 0:
 		break;
 	case CFG_ERROR_RANGE:
-		/* retry crop with frame interval set to max */
+		 
 		s5k5baf_hw_set_fiv(state, S5K5BAF_MAX_FR_TIME);
 		err = s5k5baf_get_cfg_error(state);
 		ret = s5k5baf_clear_error(state);
@@ -1000,9 +965,7 @@ static void s5k5baf_hw_init(struct s5k5baf *state)
 	s5k5baf_i2c_write(state, REG_CMDWR_PAGE, PAGE_IF_SW);
 }
 
-/*
- * V4L2 subdev core and video operations
- */
+ 
 
 static void s5k5baf_initialize_data(struct s5k5baf *state)
 {
@@ -1166,9 +1129,7 @@ static int s5k5baf_s_frame_interval(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/*
- * V4L2 subdev pad level and video operations
- */
+ 
 static int s5k5baf_enum_frame_interval(struct v4l2_subdev *sd,
 			      struct v4l2_subdev_state *sd_state,
 			      struct v4l2_subdev_frame_interval_enum *fie)
@@ -1410,7 +1371,7 @@ static int s5k5baf_get_selection(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* bounds range [start, start+len) to [0, max) and aligns to 2 */
+ 
 static void s5k5baf_bound_range(u32 *start, u32 *len, u32 max)
 {
 	if (*len > max)
@@ -1464,7 +1425,7 @@ static int s5k5baf_set_selection(struct v4l2_subdev *sd,
 	if (rtype == R_INVALID || s5k5baf_is_bound_target(sel->target))
 		return -EINVAL;
 
-	/* allow only scaling on compose */
+	 
 	if (rtype == R_COMPOSE) {
 		sel->r.left = 0;
 		sel->r.top = 0;
@@ -1492,7 +1453,7 @@ static int s5k5baf_set_selection(struct v4l2_subdev *sd,
 		};
 	mutex_lock(&state->lock);
 	if (state->streaming) {
-		/* adjust sel->r to avoid output resolution change */
+		 
 		if (rtype < R_CROP_SOURCE) {
 			if (sel->r.width < state->crop_source.width)
 				sel->r.width = state->crop_source.width;
@@ -1537,9 +1498,7 @@ static const struct v4l2_subdev_video_ops s5k5baf_video_ops = {
 	.s_stream		= s5k5baf_s_stream,
 };
 
-/*
- * V4L2 subdev controls
- */
+ 
 
 static int s5k5baf_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1634,7 +1593,7 @@ static int s5k5baf_initialize_ctrls(struct s5k5baf *state)
 		return ret;
 	}
 
-	/* Auto white balance cluster */
+	 
 	ctrls->awb = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_AUTO_WHITE_BALANCE,
 				       0, 1, 1, 1);
 	ctrls->gain_red = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_RED_BALANCE,
@@ -1650,10 +1609,10 @@ static int s5k5baf_initialize_ctrls(struct s5k5baf *state)
 	ctrls->auto_exp = v4l2_ctrl_new_std_menu(hdl, ops,
 				V4L2_CID_EXPOSURE_AUTO,
 				V4L2_EXPOSURE_MANUAL, 0, V4L2_EXPOSURE_AUTO);
-	/* Exposure time: x 1 us */
+	 
 	ctrls->exposure = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_EXPOSURE,
 					    0, 6000000U, 1, 100000U);
-	/* Total gain: 256 <=> 1x */
+	 
 	ctrls->gain = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_GAIN,
 					0, 256, 1, 256);
 	v4l2_ctrl_auto_cluster(3, &ctrls->auto_exp, 0, false);
@@ -1689,9 +1648,7 @@ static int s5k5baf_initialize_ctrls(struct s5k5baf *state)
 	return 0;
 }
 
-/*
- * V4L2 subdev internal operations
- */
+ 
 static int s5k5baf_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct v4l2_mbus_framefmt *mf;

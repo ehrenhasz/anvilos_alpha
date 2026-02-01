@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2019-2020 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH11K_SPECTRAL_H
 #define ATH11K_SPECTRAL_H
@@ -9,14 +7,7 @@
 #include "../spectral_common.h"
 #include "dbring.h"
 
-/* enum ath11k_spectral_mode:
- *
- * @SPECTRAL_DISABLED: spectral mode is disabled
- * @SPECTRAL_BACKGROUND: hardware sends samples when it is not busy with
- *	something else.
- * @SPECTRAL_MANUAL: spectral scan is enabled, triggering for samples
- *	is performed manually.
- */
+ 
 enum ath11k_spectral_mode {
 	ATH11K_SPECTRAL_DISABLED = 0,
 	ATH11K_SPECTRAL_BACKGROUND,
@@ -25,9 +16,9 @@ enum ath11k_spectral_mode {
 
 struct ath11k_spectral {
 	struct ath11k_dbring rx_ring;
-	/* Protects enabled */
+	 
 	spinlock_t lock;
-	struct rchan *rfs_scan;	/* relay(fs) channel for spectral scan */
+	struct rchan *rfs_scan;	 
 	struct dentry *scan_ctl;
 	struct dentry *scan_count;
 	struct dentry *scan_bins;
@@ -79,5 +70,5 @@ struct ath11k_dbring *ath11k_spectral_get_dbring(struct ath11k *ar)
 	return NULL;
 }
 
-#endif /* CONFIG_ATH11K_SPECTRAL */
-#endif /* ATH11K_SPECTRAL_H */
+#endif  
+#endif  

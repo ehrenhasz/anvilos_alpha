@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Generic Syscon Reboot Driver
- *
- * Copyright (c) 2013, Applied Micro Circuits Corporation
- * Author: Feng Kan <fkan@apm.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/notifier.h>
@@ -29,7 +24,7 @@ static int syscon_restart_handle(struct notifier_block *this,
 			container_of(this, struct syscon_reboot_context,
 					restart_handler);
 
-	/* Issue the reboot */
+	 
 	regmap_update_bits(ctx->map, ctx->offset, ctx->mask, ctx->value);
 
 	mdelay(1000);
@@ -71,11 +66,11 @@ static int syscon_reboot_probe(struct platform_device *pdev)
 	}
 
 	if (value_err) {
-		/* support old binding */
+		 
 		ctx->value = ctx->mask;
 		ctx->mask = 0xFFFFFFFF;
 	} else if (mask_err) {
-		/* support value without mask*/
+		 
 		ctx->mask = 0xFFFFFFFF;
 	}
 

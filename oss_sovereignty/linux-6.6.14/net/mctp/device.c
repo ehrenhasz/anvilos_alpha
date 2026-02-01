@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Management Component Transport Protocol (MCTP) - device implementation.
- *
- * Copyright (c) 2021 Code Construct
- * Copyright (c) 2021 Google
- */
+
+ 
 
 #include <linux/if_arp.h>
 #include <linux/if_link.h>
@@ -25,25 +20,19 @@ struct mctp_dump_cb {
 	size_t a_idx;
 };
 
-/* unlocked: caller must hold rcu_read_lock.
- * Returned mctp_dev has its refcount incremented, or NULL if unset.
- */
+ 
 struct mctp_dev *__mctp_dev_get(const struct net_device *dev)
 {
 	struct mctp_dev *mdev = rcu_dereference(dev->mctp_ptr);
 
-	/* RCU guarantees that any mdev is still live.
-	 * Zero refcount implies a pending free, return NULL.
-	 */
+	 
 	if (mdev)
 		if (!refcount_inc_not_zero(&mdev->refs))
 			return NULL;
 	return mdev;
 }
 
-/* Returned mctp_dev does not have refcount incremented. The returned pointer
- * remains live while rtnl_lock is held, as that prevents mctp_unregister()
- */
+ 
 struct mctp_dev *mctp_dev_get_rtnl(const struct net_device *dev)
 {
 	return rtnl_dereference(dev->mctp_ptr);
@@ -52,12 +41,12 @@ struct mctp_dev *mctp_dev_get_rtnl(const struct net_device *dev)
 static int mctp_addrinfo_size(void)
 {
 	return NLMSG_ALIGN(sizeof(struct ifaddrmsg))
-		+ nla_total_size(1) // IFA_LOCAL
-		+ nla_total_size(1) // IFA_ADDRESS
+		+ nla_total_size(1) 
+		+ nla_total_size(1) 
 		;
 }
 
-/* flag should be NLM_F_MULTI for dump calls */
+ 
 static int mctp_fill_addrinfo(struct sk_buff *skb,
 			      struct mctp_dev *mdev, mctp_eid_t eid,
 			      int msg_type, u32 portid, u32 seq, int flag)
@@ -123,7 +112,7 @@ static int mctp_dump_addrinfo(struct sk_buff *skb, struct netlink_callback *cb)
 	int idx = 0, rc;
 
 	hdr = nlmsg_data(cb->nlh);
-	// filter by ifindex if requested
+	
 	ifindex = hdr->ifa_index;
 
 	rcu_read_lock();
@@ -138,14 +127,14 @@ static int mctp_dump_addrinfo(struct sk_buff *skb, struct netlink_callback *cb)
 					rc = mctp_dump_dev_addrinfo(mdev,
 								    skb, cb);
 					mctp_dev_put(mdev);
-					// Error indicates full buffer, this
-					// callback will get retried.
+					
+					
 					if (rc < 0)
 						goto out;
 				}
 			}
 			idx++;
-			// reset for next iteration
+			
 			mcb->a_idx = 0;
 		}
 	}
@@ -214,7 +203,7 @@ static int mctp_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
 	else
 		return -EINVAL;
 
-	/* find device */
+	 
 	dev = __dev_get_by_index(net, ifm->ifa_index);
 	if (!dev)
 		return -ENODEV;
@@ -226,7 +215,7 @@ static int mctp_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (!mctp_address_unicast(addr->s_addr))
 		return -EINVAL;
 
-	/* Prevent duplicates. Under RTNL so don't need to lock for reading */
+	 
 	if (memchr(mdev->addrs, addr->s_addr, mdev->num_addrs))
 		return -EEXIST;
 
@@ -236,7 +225,7 @@ static int mctp_rtm_newaddr(struct sk_buff *skb, struct nlmsghdr *nlh,
 	memcpy(tmp_addrs, mdev->addrs, mdev->num_addrs);
 	tmp_addrs[mdev->num_addrs] = addr->s_addr;
 
-	/* Lock to write */
+	 
 	spin_lock_irqsave(&mdev->addrs_lock, flags);
 	mdev->num_addrs++;
 	swap(mdev->addrs, tmp_addrs);
@@ -277,7 +266,7 @@ static int mctp_rtm_deladdr(struct sk_buff *skb, struct nlmsghdr *nlh,
 	else
 		return -EINVAL;
 
-	/* find device */
+	 
 	dev = __dev_get_by_index(net, ifm->ifa_index);
 	if (!dev)
 		return -ENODEV;
@@ -291,7 +280,7 @@ static int mctp_rtm_deladdr(struct sk_buff *skb, struct nlmsghdr *nlh,
 		return -ENOENT;
 
 	rc = mctp_route_remove_local(mdev, addr->s_addr);
-	// we can ignore -ENOENT in the case a route was already removed
+	
 	if (rc < 0 && rc != -ENOENT)
 		return rc;
 
@@ -351,7 +340,7 @@ static struct mctp_dev *mctp_add_dev(struct net_device *dev)
 
 	mdev->net = mctp_default_net(dev_net(dev));
 
-	/* associate to net_device */
+	 
 	refcount_set(&mdev->refs, 1);
 	rcu_assign_pointer(dev->mctp_ptr, mdev);
 
@@ -380,11 +369,11 @@ static size_t mctp_get_link_af_size(const struct net_device *dev,
 	struct mctp_dev *mdev;
 	unsigned int ret;
 
-	/* caller holds RCU */
+	 
 	mdev = __mctp_dev_get(dev);
 	if (!mdev)
 		return 0;
-	ret = nla_total_size(4); /* IFLA_MCTP_NET */
+	ret = nla_total_size(4);  
 	mctp_dev_put(mdev);
 	return ret;
 }
@@ -415,10 +404,10 @@ static int mctp_set_link_af(struct net_device *dev, const struct nlattr *attr,
 	return 0;
 }
 
-/* Matches netdev types that should have MCTP handling */
+ 
 static bool mctp_known(struct net_device *dev)
 {
-	/* only register specific types (inc. NONE for TUN devices) */
+	 
 	return dev->type == ARPHRD_MCTP ||
 		   dev->type == ARPHRD_LOOPBACK ||
 		   dev->type == ARPHRD_NONE;
@@ -444,11 +433,11 @@ static int mctp_register(struct net_device *dev)
 {
 	struct mctp_dev *mdev;
 
-	/* Already registered? */
+	 
 	if (rtnl_dereference(dev->mctp_ptr))
 		return 0;
 
-	/* only register specific types */
+	 
 	if (!mctp_known(dev))
 		return 0;
 

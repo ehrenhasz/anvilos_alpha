@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// wm8994-regulator.c  --  Regulator driver for the WM8994
-//
-// Copyright 2009 Wolfson Microelectronics PLC.
-//
-// Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -171,10 +171,7 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
 	config.regmap = wm8994->regmap;
 	config.init_data = &ldo->init_data;
 
-	/*
-	 * Look up LDO enable GPIO from the parent device node, we don't
-	 * use devm because the regulator core will free the GPIO
-	 */
+	 
 	gpiod = gpiod_get_optional(pdev->dev.parent,
 				   id ? "wlf,ldo2ena" : "wlf,ldo1ena",
 				   GPIOD_OUT_LOW |
@@ -183,7 +180,7 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
 		return PTR_ERR(gpiod);
 	config.ena_gpiod = gpiod;
 
-	/* Use default constraints if none set up */
+	 
 	if (!pdata || !pdata->ldo[id].init_data || wm8994->dev->of_node) {
 		dev_dbg(wm8994->dev, "Using default init data, supply %s %s\n",
 			ldo->supply.dev_name, ldo->supply.supply);
@@ -196,11 +193,7 @@ static int wm8994_ldo_probe(struct platform_device *pdev)
 		ldo->init_data = *pdata->ldo[id].init_data;
 	}
 
-	/*
-	 * At this point the GPIO descriptor is handled over to the
-	 * regulator core and we need not worry about it on the
-	 * error path.
-	 */
+	 
 	if (ldo->wm8994->type == WM8994) {
 		ldo->regulator = devm_regulator_register(&pdev->dev,
 							 &wm8994_ldo_desc[id],
@@ -233,7 +226,7 @@ static struct platform_driver wm8994_ldo_driver = {
 
 module_platform_driver(wm8994_ldo_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Mark Brown <broonie@opensource.wolfsonmicro.com>");
 MODULE_DESCRIPTION("WM8994 LDO driver");
 MODULE_LICENSE("GPL");

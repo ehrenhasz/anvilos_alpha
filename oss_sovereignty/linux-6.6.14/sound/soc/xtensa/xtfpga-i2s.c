@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Xtfpga I2S controller driver
- *
- * Copyright (c) 2014 Cadence Design Systems Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -42,52 +38,27 @@
 
 #define XTFPGA_I2S_FIFO_SIZE		8192
 
-/*
- * I2S controller operation:
- *
- * Enabling TX: output 1 period of zeros (starting with left channel)
- * and then queued data.
- *
- * Level status and interrupt: whenever FIFO level is below FIFO trigger,
- * level status is 1 and an IRQ is asserted (if enabled).
- *
- * Underrun status and interrupt: whenever FIFO is empty, underrun status
- * is 1 and an IRQ is asserted (if enabled).
- */
+ 
 struct xtfpga_i2s {
 	struct device *dev;
 	struct clk *clk;
 	struct regmap *regmap;
 	void __iomem *regs;
 
-	/* current playback substream. NULL if not playing.
-	 *
-	 * Access to that field is synchronized between the interrupt handler
-	 * and userspace through RCU.
-	 *
-	 * Interrupt handler (threaded part) does PIO on substream data in RCU
-	 * read-side critical section. Trigger callback sets and clears the
-	 * pointer when the playback is started and stopped with
-	 * rcu_assign_pointer. When userspace is about to free the playback
-	 * stream in the pcm_close callback it synchronizes with the interrupt
-	 * handler by means of synchronize_rcu call.
-	 */
+	 
 	struct snd_pcm_substream __rcu *tx_substream;
 	unsigned (*tx_fn)(struct xtfpga_i2s *i2s,
 			  struct snd_pcm_runtime *runtime,
 			  unsigned tx_ptr);
-	unsigned tx_ptr; /* next frame index in the sample buffer */
+	unsigned tx_ptr;  
 
-	/* current fifo level estimate.
-	 * Doesn't have to be perfectly accurate, but must be not less than
-	 * the actual FIFO level in order to avoid stall on push attempt.
-	 */
+	 
 	unsigned tx_fifo_level;
 
-	/* FIFO level at which level interrupt occurs */
+	 
 	unsigned tx_fifo_low;
 
-	/* maximal FIFO level */
+	 
 	unsigned tx_fifo_high;
 };
 
@@ -117,15 +88,7 @@ static const struct regmap_config xtfpga_i2s_regmap_config = {
 	.cache_type = REGCACHE_FLAT,
 };
 
-/* Generate functions that do PIO from TX DMA area to FIFO for all supported
- * stream formats.
- * Functions will be called xtfpga_pcm_tx_<channels>x<sample bits>, e.g.
- * xtfpga_pcm_tx_2x16 for 16-bit stereo.
- *
- * FIFO consists of 32-bit words, one word per channel, always 2 channels.
- * If I2S interface is configured with smaller sample resolution, only
- * the LSB of each word is used.
- */
+ 
 #define xtfpga_pcm_tx_fn(channels, sample_bits) \
 static unsigned xtfpga_pcm_tx_##channels##x##sample_bits( \
 	struct xtfpga_i2s *i2s, struct snd_pcm_runtime *runtime, \
@@ -194,10 +157,7 @@ static void xtfpga_pcm_refill_fifo(struct xtfpga_i2s *i2s)
 		    !(int_status & XTFPGA_I2S_INT_LEVEL))
 			break;
 
-		/* After the push the level IRQ is still asserted,
-		 * means FIFO level is below tx_fifo_low. Estimate
-		 * it as tx_fifo_low.
-		 */
+		 
 		i2s->tx_fifo_level = i2s->tx_fifo_low;
 	}
 
@@ -234,17 +194,13 @@ static irqreturn_t xtfpga_i2s_threaded_irq_handler(int irq, void *dev_id)
 	    !(int_status & int_mask & XTFPGA_I2S_INT_VALID))
 		return IRQ_NONE;
 
-	/* Update FIFO level estimate in accordance with interrupt status
-	 * register.
-	 */
+	 
 	if (int_status & XTFPGA_I2S_INT_UNDERRUN) {
 		i2s->tx_fifo_level = 0;
 		regmap_update_bits(i2s->regmap, XTFPGA_I2S_CONFIG,
 				   XTFPGA_I2S_CONFIG_TX_ENABLE, 0);
 	} else {
-		/* The FIFO isn't empty, but is below tx_fifo_low. Estimate
-		 * it as tx_fifo_low.
-		 */
+		 
 		i2s->tx_fifo_level = i2s->tx_fifo_low;
 	}
 
@@ -259,9 +215,7 @@ static irqreturn_t xtfpga_i2s_threaded_irq_handler(int irq, void *dev_id)
 	}
 	rcu_read_unlock();
 
-	/* Refill FIFO, update allowed IRQ reasons, enable IRQ if FIFO is
-	 * not empty.
-	 */
+	 
 	xtfpga_pcm_refill_fifo(i2s);
 
 	return IRQ_HANDLED;
@@ -297,12 +251,7 @@ static int xtfpga_i2s_hw_params(struct snd_pcm_substream *substream,
 	if (err < 0)
 		return err;
 
-	/* ratio field of the config register controls MCLK->I2S clock
-	 * derivation: I2S clock = MCLK / (2 * (ratio + 2)).
-	 *
-	 * So with MCLK = 256 * sample rate ratio is 0 for 32 bit stereo
-	 * and 2 for 16 bit stereo.
-	 */
+	 
 	ratio = (freq - (srate * sample_size * 8)) /
 		(srate * sample_size * 4);
 
@@ -312,7 +261,7 @@ static int xtfpga_i2s_hw_params(struct snd_pcm_substream *substream,
 
 	i2s->tx_fifo_low = XTFPGA_I2S_FIFO_SIZE / 2;
 
-	/* period_size * 2: FIFO always gets 2 samples per frame */
+	 
 	for (level = 1;
 	     i2s->tx_fifo_low / 2 >= period_size * 2 &&
 	     level < (XTFPGA_I2S_CONFIG_LEVEL_MASK >>
@@ -347,7 +296,7 @@ static int xtfpga_i2s_set_fmt(struct snd_soc_dai *cpu_dai,
 	return 0;
 }
 
-/* PCM */
+ 
 
 static const struct snd_pcm_hardware xtfpga_pcm_hardware = {
 	.info = SNDRV_PCM_INFO_INTERLEAVED |

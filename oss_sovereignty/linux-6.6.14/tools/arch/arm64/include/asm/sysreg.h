@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Macros for accessing system registers with older binutils.
- *
- * Copyright (C) 2014 ARM Ltd.
- * Author: Catalin Marinas <catalin.marinas@arm.com>
- */
+ 
+ 
 
 #ifndef __ASM_SYSREG_H
 #define __ASM_SYSREG_H
@@ -12,16 +7,7 @@
 #include <linux/bits.h>
 #include <linux/stringify.h>
 
-/*
- * ARMv8 ARM reserves the following encoding for system registers:
- * (Ref: ARMv8 ARM, Section: "System instruction class encoding overview",
- *  C5.2, version:ARM DDI 0487A.f)
- *	[20-19] : Op0
- *	[18-16] : Op1
- *	[15-12] : CRn
- *	[11-8]  : CRm
- *	[7-5]   : Op2
- */
+ 
 #define Op0_shift	19
 #define Op0_mask	0x3
 #define Op1_shift	16
@@ -49,42 +35,33 @@
 #ifndef CONFIG_BROKEN_GAS_INST
 
 #ifdef __ASSEMBLY__
-// The space separator is omitted so that __emit_inst(x) can be parsed as
-// either an assembler directive or an assembler macro argument.
+
+
 #define __emit_inst(x)			.inst(x)
 #else
 #define __emit_inst(x)			".inst " __stringify((x)) "\n\t"
 #endif
 
-#else  /* CONFIG_BROKEN_GAS_INST */
+#else   
 
 #ifndef CONFIG_CPU_BIG_ENDIAN
 #define __INSTR_BSWAP(x)		(x)
-#else  /* CONFIG_CPU_BIG_ENDIAN */
+#else   
 #define __INSTR_BSWAP(x)		((((x) << 24) & 0xff000000)	| \
 					 (((x) <<  8) & 0x00ff0000)	| \
 					 (((x) >>  8) & 0x0000ff00)	| \
 					 (((x) >> 24) & 0x000000ff))
-#endif	/* CONFIG_CPU_BIG_ENDIAN */
+#endif	 
 
 #ifdef __ASSEMBLY__
 #define __emit_inst(x)			.long __INSTR_BSWAP(x)
-#else  /* __ASSEMBLY__ */
+#else   
 #define __emit_inst(x)			".long " __stringify(__INSTR_BSWAP(x)) "\n\t"
-#endif	/* __ASSEMBLY__ */
+#endif	 
 
-#endif	/* CONFIG_BROKEN_GAS_INST */
+#endif	 
 
-/*
- * Instructions for modifying PSTATE fields.
- * As per Arm ARM for v8-A, Section "C.5.1.3 op0 == 0b00, architectural hints,
- * barriers and CLREX, and PSTATE access", ARM DDI 0487 C.a, system instructions
- * for accessing PSTATE fields have the following encoding:
- *	Op0 = 0, CRn = 4
- *	Op1, Op2 encodes the PSTATE field modified and defines the constraints.
- *	CRm = Imm4 for the instruction.
- *	Rt = 0x1f
- */
+ 
 #define pstate_field(op1, op2)		((op1) << Op1_shift | (op2) << Op2_shift)
 #define PSTATE_Imm_shift		CRm_shift
 
@@ -111,10 +88,7 @@
 #define SYS_DC_CSW			sys_insn(1, 0, 7, 10, 2)
 #define SYS_DC_CISW			sys_insn(1, 0, 7, 14, 2)
 
-/*
- * System registers, organised loosely by encoding but grouped together
- * where the architected name contains an index. e.g. ID_MMFR<n>_EL1.
- */
+ 
 #define SYS_OSDTRRX_EL1			sys_reg(2, 0, 0, 0, 2)
 #define SYS_MDCCINT_EL1			sys_reg(2, 0, 0, 2, 0)
 #define SYS_MDSCR_EL1			sys_reg(2, 0, 0, 2, 2)
@@ -236,8 +210,8 @@
 #define SYS_PAR_EL1_F			BIT(0)
 #define SYS_PAR_EL1_FST			GENMASK(6, 1)
 
-/*** Statistical Profiling Extension ***/
-/* ID registers */
+ 
+ 
 #define SYS_PMSIDR_EL1			sys_reg(3, 0, 9, 9, 7)
 #define SYS_PMSIDR_EL1_FE_SHIFT		0
 #define SYS_PMSIDR_EL1_FT_SHIFT		1
@@ -258,7 +232,7 @@
 #define SYS_PMBIDR_EL1_P_SHIFT		4
 #define SYS_PMBIDR_EL1_F_SHIFT		5
 
-/* Sampling controls */
+ 
 #define SYS_PMSCR_EL1			sys_reg(3, 0, 9, 9, 0)
 #define SYS_PMSCR_EL1_E0SPE_SHIFT	0
 #define SYS_PMSCR_EL1_E1SPE_SHIFT	1
@@ -282,7 +256,7 @@
 #define SYS_PMSIRR_EL1_INTERVAL_SHIFT	8
 #define SYS_PMSIRR_EL1_INTERVAL_MASK	0xffffffUL
 
-/* Filtering controls */
+ 
 #define SYS_PMSNEVFR_EL1		sys_reg(3, 0, 9, 9, 1)
 
 #define SYS_PMSFCR_EL1			sys_reg(3, 0, 9, 9, 4)
@@ -303,7 +277,7 @@
 #define SYS_PMSLATFR_EL1		sys_reg(3, 0, 9, 9, 6)
 #define SYS_PMSLATFR_EL1_MINLAT_SHIFT	0
 
-/* Buffer controls */
+ 
 #define SYS_PMBLIMITR_EL1		sys_reg(3, 0, 9, 10, 0)
 #define SYS_PMBLIMITR_EL1_E_SHIFT	0
 #define SYS_PMBLIMITR_EL1_FM_SHIFT	1
@@ -312,7 +286,7 @@
 
 #define SYS_PMBPTR_EL1			sys_reg(3, 0, 9, 10, 1)
 
-/* Buffer error reporting */
+ 
 #define SYS_PMBSR_EL1			sys_reg(3, 0, 9, 10, 3)
 #define SYS_PMBSR_EL1_COLL_SHIFT	16
 #define SYS_PMBSR_EL1_S_SHIFT		17
@@ -333,11 +307,9 @@
 
 #define SYS_PMBSR_EL1_BUF_BSC_FULL	(0x1UL << SYS_PMBSR_EL1_BUF_BSC_SHIFT)
 
-/*** End of Statistical Profiling Extension ***/
+ 
 
-/*
- * TRBE Registers
- */
+ 
 #define SYS_TRBLIMITR_EL1		sys_reg(3, 0, 9, 11, 0)
 #define SYS_TRBPTR_EL1			sys_reg(3, 0, 9, 11, 1)
 #define SYS_TRBBASER_EL1		sys_reg(3, 0, 9, 11, 2)
@@ -468,7 +440,7 @@
 
 #define SYS_SCXTNUM_EL0			sys_reg(3, 3, 13, 0, 7)
 
-/* Definitions for system register interface to AMU for ARMv8.4 onwards */
+ 
 #define SYS_AM_EL0(crm, op2)		sys_reg(3, 3, 13, (crm), (op2))
 #define SYS_AMCR_EL0			SYS_AM_EL0(2, 0)
 #define SYS_AMCFGR_EL0			SYS_AM_EL0(2, 1)
@@ -479,26 +451,14 @@
 #define SYS_AMCNTENCLR1_EL0		SYS_AM_EL0(3, 0)
 #define SYS_AMCNTENSET1_EL0		SYS_AM_EL0(3, 1)
 
-/*
- * Group 0 of activity monitors (architected):
- *                op0  op1  CRn   CRm       op2
- * Counter:       11   011  1101  010:n<3>  n<2:0>
- * Type:          11   011  1101  011:n<3>  n<2:0>
- * n: 0-15
- *
- * Group 1 of activity monitors (auxiliary):
- *                op0  op1  CRn   CRm       op2
- * Counter:       11   011  1101  110:n<3>  n<2:0>
- * Type:          11   011  1101  111:n<3>  n<2:0>
- * n: 0-15
- */
+ 
 
 #define SYS_AMEVCNTR0_EL0(n)		SYS_AM_EL0(4 + ((n) >> 3), (n) & 7)
 #define SYS_AMEVTYPER0_EL0(n)		SYS_AM_EL0(6 + ((n) >> 3), (n) & 7)
 #define SYS_AMEVCNTR1_EL0(n)		SYS_AM_EL0(12 + ((n) >> 3), (n) & 7)
 #define SYS_AMEVTYPER1_EL0(n)		SYS_AM_EL0(14 + ((n) >> 3), (n) & 7)
 
-/* AMU v1: Fixed (architecturally defined) activity monitors */
+ 
 #define SYS_AMEVCNTR0_CORE_EL0		SYS_AMEVCNTR0_EL0(0)
 #define SYS_AMEVCNTR0_CONST_EL0		SYS_AMEVCNTR0_EL0(1)
 #define SYS_AMEVCNTR0_INST_RET_EL0	SYS_AMEVCNTR0_EL0(2)
@@ -586,7 +546,7 @@
 #define SYS_ICH_LR14_EL2		__SYS__LR8_EL2(6)
 #define SYS_ICH_LR15_EL2		__SYS__LR8_EL2(7)
 
-/* VHE encodings for architectural EL0/1 system registers */
+ 
 #define SYS_SCTLR_EL12			sys_reg(3, 5, 1, 0, 0)
 #define SYS_CPACR_EL12			sys_reg(3, 5, 1, 0, 2)
 #define SYS_ZCR_EL12			sys_reg(3, 5, 1, 2, 0)
@@ -612,7 +572,7 @@
 #define SYS_CNTV_CTL_EL02		sys_reg(3, 5, 14, 3, 1)
 #define SYS_CNTV_CVAL_EL02		sys_reg(3, 5, 14, 3, 2)
 
-/* Common SCTLR_ELx flags. */
+ 
 #define SCTLR_ELx_DSSBS	(BIT(44))
 #define SCTLR_ELx_ATA	(BIT(43))
 
@@ -638,7 +598,7 @@
 #define SCTLR_ELx_A	(BIT(1))
 #define SCTLR_ELx_M	(BIT(0))
 
-/* SCTLR_EL2 specific flags. */
+ 
 #define SCTLR_EL2_RES1	((BIT(4))  | (BIT(5))  | (BIT(11)) | (BIT(16)) | \
 			 (BIT(18)) | (BIT(22)) | (BIT(23)) | (BIT(28)) | \
 			 (BIT(29)))
@@ -657,7 +617,7 @@
 #define INIT_SCTLR_EL2_MMU_OFF \
 	(SCTLR_EL2_RES1 | ENDIAN_SET_EL2)
 
-/* SCTLR_EL1 specific flags. */
+ 
 #define SCTLR_EL1_EPAN		(BIT(57))
 #define SCTLR_EL1_ATA0		(BIT(42))
 
@@ -701,7 +661,7 @@
 	 SCTLR_ELx_ATA  | SCTLR_EL1_ATA0 | ENDIAN_SET_EL1 | SCTLR_EL1_UCI   | \
 	 SCTLR_EL1_EPAN | SCTLR_EL1_RES1)
 
-/* MAIR_ELx memory attributes (used by Linux) */
+ 
 #define MAIR_ATTR_DEVICE_nGnRnE		UL(0x00)
 #define MAIR_ATTR_DEVICE_nGnRE		UL(0x04)
 #define MAIR_ATTR_NORMAL_NC		UL(0x44)
@@ -709,10 +669,10 @@
 #define MAIR_ATTR_NORMAL		UL(0xff)
 #define MAIR_ATTR_MASK			UL(0xff)
 
-/* Position the attr at the correct index */
+ 
 #define MAIR_ATTRIDX(attr, idx)		((attr) << ((idx) * 8))
 
-/* id_aa64isar0 */
+ 
 #define ID_AA64ISAR0_RNDR_SHIFT		60
 #define ID_AA64ISAR0_TLB_SHIFT		56
 #define ID_AA64ISAR0_TS_SHIFT		52
@@ -731,7 +691,7 @@
 #define ID_AA64ISAR0_TLB_RANGE_NI	0x0
 #define ID_AA64ISAR0_TLB_RANGE		0x2
 
-/* id_aa64isar1 */
+ 
 #define ID_AA64ISAR1_I8MM_SHIFT		52
 #define ID_AA64ISAR1_DGH_SHIFT		48
 #define ID_AA64ISAR1_BF16_SHIFT		44
@@ -764,7 +724,7 @@
 #define ID_AA64ISAR1_GPI_NI			0x0
 #define ID_AA64ISAR1_GPI_IMP_DEF		0x1
 
-/* id_aa64pfr0 */
+ 
 #define ID_AA64PFR0_CSV3_SHIFT		60
 #define ID_AA64PFR0_CSV2_SHIFT		56
 #define ID_AA64PFR0_DIT_SHIFT		48
@@ -792,7 +752,7 @@
 #define ID_AA64PFR0_ELx_64BIT_ONLY	0x1
 #define ID_AA64PFR0_ELx_32BIT_64BIT	0x2
 
-/* id_aa64pfr1 */
+ 
 #define ID_AA64PFR1_MPAMFRAC_SHIFT	16
 #define ID_AA64PFR1_RASFRAC_SHIFT	12
 #define ID_AA64PFR1_MTE_SHIFT		8
@@ -808,7 +768,7 @@
 #define ID_AA64PFR1_MTE_EL0		0x1
 #define ID_AA64PFR1_MTE			0x2
 
-/* id_aa64zfr0 */
+ 
 #define ID_AA64ZFR0_F64MM_SHIFT		56
 #define ID_AA64ZFR0_F32MM_SHIFT		52
 #define ID_AA64ZFR0_I8MM_SHIFT		44
@@ -830,7 +790,7 @@
 #define ID_AA64ZFR0_AES_PMULL		0x2
 #define ID_AA64ZFR0_SVEVER_SVE2		0x1
 
-/* id_aa64mmfr0 */
+ 
 #define ID_AA64MMFR0_ECV_SHIFT		60
 #define ID_AA64MMFR0_FGT_SHIFT		56
 #define ID_AA64MMFR0_EXS_SHIFT		44
@@ -880,7 +840,7 @@
 #define ID_AA64MMFR0_PARANGE_MAX	ID_AA64MMFR0_PARANGE_48
 #endif
 
-/* id_aa64mmfr1 */
+ 
 #define ID_AA64MMFR1_ETS_SHIFT		36
 #define ID_AA64MMFR1_TWED_SHIFT		32
 #define ID_AA64MMFR1_XNX_SHIFT		28
@@ -895,7 +855,7 @@
 #define ID_AA64MMFR1_VMIDBITS_8		0
 #define ID_AA64MMFR1_VMIDBITS_16	2
 
-/* id_aa64mmfr2 */
+ 
 #define ID_AA64MMFR2_E0PD_SHIFT		60
 #define ID_AA64MMFR2_EVT_SHIFT		56
 #define ID_AA64MMFR2_BBM_SHIFT		52
@@ -912,7 +872,7 @@
 #define ID_AA64MMFR2_UAO_SHIFT		4
 #define ID_AA64MMFR2_CNP_SHIFT		0
 
-/* id_aa64dfr0 */
+ 
 #define ID_AA64DFR0_MTPMU_SHIFT		48
 #define ID_AA64DFR0_TRBE_SHIFT		44
 #define ID_AA64DFR0_TRACE_FILT_SHIFT	40
@@ -1063,43 +1023,39 @@
 #define DCZID_DZP_SHIFT			4
 #define DCZID_BS_SHIFT			0
 
-/*
- * The ZCR_ELx_LEN_* definitions intentionally include bits [8:4] which
- * are reserved by the SVE architecture for future expansion of the LEN
- * field, with compatible semantics.
- */
+ 
 #define ZCR_ELx_LEN_SHIFT	0
 #define ZCR_ELx_LEN_SIZE	9
 #define ZCR_ELx_LEN_MASK	0x1ff
 
-#define CPACR_EL1_ZEN_EL1EN	(BIT(16)) /* enable EL1 access */
-#define CPACR_EL1_ZEN_EL0EN	(BIT(17)) /* enable EL0 access, if EL1EN set */
+#define CPACR_EL1_ZEN_EL1EN	(BIT(16))  
+#define CPACR_EL1_ZEN_EL0EN	(BIT(17))  
 #define CPACR_EL1_ZEN		(CPACR_EL1_ZEN_EL1EN | CPACR_EL1_ZEN_EL0EN)
 
-/* TCR EL1 Bit Definitions */
+ 
 #define SYS_TCR_EL1_TCMA1	(BIT(58))
 #define SYS_TCR_EL1_TCMA0	(BIT(57))
 
-/* GCR_EL1 Definitions */
+ 
 #define SYS_GCR_EL1_RRND	(BIT(16))
 #define SYS_GCR_EL1_EXCL_MASK	0xffffUL
 
-/* RGSR_EL1 Definitions */
+ 
 #define SYS_RGSR_EL1_TAG_MASK	0xfUL
 #define SYS_RGSR_EL1_SEED_SHIFT	8
 #define SYS_RGSR_EL1_SEED_MASK	0xffffUL
 
-/* GMID_EL1 field definitions */
+ 
 #define SYS_GMID_EL1_BS_SHIFT	0
 #define SYS_GMID_EL1_BS_SIZE	4
 
-/* TFSR{,E0}_EL1 bit definitions */
+ 
 #define SYS_TFSR_EL1_TF0_SHIFT	0
 #define SYS_TFSR_EL1_TF1_SHIFT	1
 #define SYS_TFSR_EL1_TF0	(UL(1) << SYS_TFSR_EL1_TF0_SHIFT)
 #define SYS_TFSR_EL1_TF1	(UL(1) << SYS_TFSR_EL1_TF1_SHIFT)
 
-/* Safe value for MPIDR_EL1: Bit31:RES1, Bit30:U:0, Bit24:MT:0 */
+ 
 #define SYS_MPIDR_SAFE_VAL	(BIT(31))
 
 #define TRFCR_ELx_TS_SHIFT		5
@@ -1111,12 +1067,12 @@
 #define TRFCR_ELx_E0TRE			BIT(0)
 
 
-/* GIC Hypervisor interface registers */
-/* ICH_MISR_EL2 bit definitions */
+ 
+ 
 #define ICH_MISR_EOI		(1 << 0)
 #define ICH_MISR_U		(1 << 1)
 
-/* ICH_LR*_EL2 bit definitions */
+ 
 #define ICH_LR_VIRTUAL_ID_MASK	((1ULL << 32) - 1)
 
 #define ICH_LR_EOI		(1ULL << 41)
@@ -1130,7 +1086,7 @@
 #define ICH_LR_PRIORITY_SHIFT	48
 #define ICH_LR_PRIORITY_MASK	(0xffULL << ICH_LR_PRIORITY_SHIFT)
 
-/* ICH_HCR_EL2 bit definitions */
+ 
 #define ICH_HCR_EN		(1 << 0)
 #define ICH_HCR_UIE		(1 << 1)
 #define ICH_HCR_NPIE		(1 << 3)
@@ -1140,7 +1096,7 @@
 #define ICH_HCR_EOIcount_SHIFT	27
 #define ICH_HCR_EOIcount_MASK	(0x1f << ICH_HCR_EOIcount_SHIFT)
 
-/* ICH_VMCR_EL2 bit definitions */
+ 
 #define ICH_VMCR_ACK_CTL_SHIFT	2
 #define ICH_VMCR_ACK_CTL_MASK	(1 << ICH_VMCR_ACK_CTL_SHIFT)
 #define ICH_VMCR_FIQ_EN_SHIFT	3
@@ -1160,7 +1116,7 @@
 #define ICH_VMCR_ENG1_SHIFT	1
 #define ICH_VMCR_ENG1_MASK	(1 << ICH_VMCR_ENG1_SHIFT)
 
-/* ICH_VTR_EL2 bit definitions */
+ 
 #define ICH_VTR_PRI_BITS_SHIFT	29
 #define ICH_VTR_PRI_BITS_MASK	(7 << ICH_VTR_PRI_BITS_SHIFT)
 #define ICH_VTR_ID_BITS_SHIFT	23
@@ -1172,7 +1128,7 @@
 
 #define ARM64_FEATURE_FIELD_BITS	4
 
-/* Create a mask for the feature bits of the specified feature. */
+ 
 #define ARM64_FEATURE_MASK(x)	(GENMASK_ULL(x##_SHIFT + ARM64_FEATURE_FIELD_BITS - 1, x##_SHIFT))
 
 #ifdef __ASSEMBLY__
@@ -1230,30 +1186,21 @@
 "	msr_s " __stringify(r) ", " v "\n"			\
 	UNDEFINE_MSR_S
 
-/*
- * Unlike read_cpuid, calls to read_sysreg are never expected to be
- * optimized away or replaced with synthetic values.
- */
+ 
 #define read_sysreg(r) ({					\
 	u64 __val;						\
 	asm volatile("mrs %0, " __stringify(r) : "=r" (__val));	\
 	__val;							\
 })
 
-/*
- * The "Z" constraint normally means a zero immediate, but when combined with
- * the "%x0" template means XZR.
- */
+ 
 #define write_sysreg(v, r) do {					\
 	u64 __val = (u64)(v);					\
 	asm volatile("msr " __stringify(r) ", %x0"		\
 		     : : "rZ" (__val));				\
 } while (0)
 
-/*
- * For registers without architectural names, or simply unsupported by
- * GAS.
- */
+ 
 #define read_sysreg_s(r) ({						\
 	u64 __val;							\
 	asm volatile(__mrs_s("%0", r) : "=r" (__val));			\
@@ -1265,10 +1212,7 @@
 	asm volatile(__msr_s(r, "%x0") : : "rZ" (__val));		\
 } while (0)
 
-/*
- * Modify bits in a sysreg. Bits in the clear mask are zeroed, then bits in the
- * set mask are set. Other bits are left as-is.
- */
+ 
 #define sysreg_clear_set(sysreg, clear, set) do {			\
 	u64 __scs_val = read_sysreg(sysreg);				\
 	u64 __scs_new = (__scs_val & ~(u64)(clear)) | (set);		\
@@ -1293,4 +1237,4 @@
 
 #endif
 
-#endif	/* __ASM_SYSREG_H */
+#endif	 

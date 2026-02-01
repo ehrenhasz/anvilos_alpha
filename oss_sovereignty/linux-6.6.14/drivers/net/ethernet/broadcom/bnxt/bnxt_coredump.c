@@ -1,11 +1,4 @@
-/* Broadcom NetXtreme-C/E network driver.
- *
- * Copyright (c) 2021 Broadcom Limited
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation.
- */
+ 
 
 #include <linux/types.h>
 #include <linux/errno.h>
@@ -180,9 +173,7 @@ bnxt_fill_coredump_seg_hdr(struct bnxt *bp,
 		seg_hdr->high_version = seg_rec->version_hi;
 		seg_hdr->flags = cpu_to_le32(seg_rec->compress_flags);
 	} else {
-		/* For hwrm_ver_get response Component id = 2
-		 * and Segment id = 0
-		 */
+		 
 		seg_hdr->component_id = cpu_to_le32(2);
 		seg_hdr->segment_id = 0;
 	}
@@ -287,7 +278,7 @@ static int __bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
 	start_utc = sys_tz.tz_minuteswest * 60;
 	seg_hdr_len = sizeof(seg_hdr);
 
-	/* First segment should be hwrm_ver_get response */
+	 
 	*dump_len = seg_hdr_len + ver_get_resp_len;
 	if (buf) {
 		bnxt_fill_coredump_seg_hdr(bp, &seg_hdr, NULL, ver_get_resp_len,
@@ -331,7 +322,7 @@ static int __bnxt_get_coredump(struct bnxt *bp, void *buf, u32 *dump_len)
 			goto next_seg;
 		}
 
-		/* Write segment data into the buffer */
+		 
 		rc = bnxt_hwrm_dbg_coredump_retrieve(bp, comp_id, seg_id,
 						     &seg_len, buf, buf_len,
 						     offset + seg_hdr_len);
@@ -349,7 +340,7 @@ next_seg:
 					   rc, duration, 0);
 
 		if (buf) {
-			/* Write segment header into the buffer */
+			 
 			memcpy(buf + offset, &seg_hdr, seg_hdr_len);
 			offset += seg_hdr_len + seg_len;
 		}
@@ -414,9 +405,7 @@ static int bnxt_hwrm_get_dump_len(struct bnxt *bp, u16 dump_type, u32 *dump_len)
 	if (dump_type == BNXT_DUMP_CRASH) {
 		*dump_len = le32_to_cpu(resp->crashdump_size);
 	} else {
-		/* Driver adds coredump header and "HWRM_VER_GET response"
-		 * segment additionally to coredump.
-		 */
+		 
 		hdr_len = sizeof(struct bnxt_coredump_segment_hdr) +
 		sizeof(struct hwrm_ver_get_output) +
 		sizeof(struct bnxt_coredump_record);

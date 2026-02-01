@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #if !defined(_MSM_GPU_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _MSM_GPU_TRACE_H_
 
@@ -91,9 +91,7 @@ TRACE_EVENT(msm_gpu_freq_change,
 			__field(u32, freq)
 			),
 		TP_fast_assign(
-			/* trace freq in MHz to match intel_gpu_freq_change, to make life easier
-			 * for userspace
-			 */
+			 
 			__entry->freq = DIV_ROUND_UP(freq, 1000000);
 			),
 		TP_printk("new_freq=%u", __entry->freq)

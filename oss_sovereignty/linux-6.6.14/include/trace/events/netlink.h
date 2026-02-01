@@ -23,7 +23,7 @@ TRACE_EVENT(netlink_extack,
 	TP_printk("msg=%s", __get_str(msg))
 );
 
-#endif /* _TRACE_NETLINK_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

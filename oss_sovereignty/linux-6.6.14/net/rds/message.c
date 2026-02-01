@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2006, 2020 Oracle and/or its affiliates.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- */
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/export.h>
@@ -109,7 +78,7 @@ static void rds_rm_zerocopy_callback(struct rds_sock *rs,
 		if (rds_zcookie_add(info, cookie)) {
 			spin_unlock_irqrestore(&q->lock, flags);
 			kfree(rds_info_from_znotifier(znotif));
-			/* caller invokes rds_wake_sk_sleep() */
+			 
 			return;
 		}
 	}
@@ -121,12 +90,10 @@ static void rds_rm_zerocopy_callback(struct rds_sock *rs,
 	list_add_tail(&info->rs_zcookie_next, &q->zcookie_head);
 
 	spin_unlock_irqrestore(&q->lock, flags);
-	/* caller invokes rds_wake_sk_sleep() */
+	 
 }
 
-/*
- * This relies on dma_map_sg() not touching sg[].page during merging.
- */
+ 
 static void rds_message_purge(struct rds_message *rm)
 {
 	unsigned long i, flags;
@@ -151,7 +118,7 @@ static void rds_message_purge(struct rds_message *rm)
 	spin_unlock_irqrestore(&rm->m_rs_lock, flags);
 
 	for (i = 0; i < rm->data.op_nents; i++) {
-		/* XXX will have to put_page for page refs */
+		 
 		if (!zcopy)
 			__free_page(sg_page(&rm->data.op_sg[i]));
 		else
@@ -201,7 +168,7 @@ int rds_message_add_extension(struct rds_header *hdr, unsigned int type,
 	unsigned int ext_len = sizeof(u8) + len;
 	unsigned char *dst;
 
-	/* For now, refuse to add more than one extension header */
+	 
 	if (hdr->h_exthdr[0] != RDS_EXTHDR_NONE)
 		return 0;
 
@@ -220,20 +187,7 @@ int rds_message_add_extension(struct rds_header *hdr, unsigned int type,
 }
 EXPORT_SYMBOL_GPL(rds_message_add_extension);
 
-/*
- * If a message has extension headers, retrieve them here.
- * Call like this:
- *
- * unsigned int pos = 0;
- *
- * while (1) {
- *	buflen = sizeof(buffer);
- *	type = rds_message_next_extension(hdr, &pos, buffer, &buflen);
- *	if (type == RDS_EXTHDR_NONE)
- *		break;
- *	...
- * }
- */
+ 
 int rds_message_next_extension(struct rds_header *hdr,
 		unsigned int *pos, void *buf, unsigned int *buflen)
 {
@@ -244,8 +198,7 @@ int rds_message_next_extension(struct rds_header *hdr,
 	if (offset >= RDS_HEADER_EXT_SPACE)
 		goto none;
 
-	/* Get the extension type and length. For now, the
-	 * length is implied by the extension type. */
+	 
 	ext_type = src[offset++];
 
 	if (ext_type == RDS_EXTHDR_NONE || ext_type >= __RDS_EXTHDR_MAX)
@@ -276,11 +229,7 @@ int rds_message_add_rdma_dest_extension(struct rds_header *hdr, u32 r_key, u32 o
 }
 EXPORT_SYMBOL_GPL(rds_message_add_rdma_dest_extension);
 
-/*
- * Each rds_message is allocated with extra space for the scatterlist entries
- * rds ops will need. This is to minimize memory allocation count. Then, each rds op
- * can grab SGs when initializing its part of the rds_message.
- */
+ 
 struct rds_message *rds_message_alloc(unsigned int extra_len, gfp_t gfp)
 {
 	struct rds_message *rm;
@@ -305,9 +254,7 @@ out:
 	return rm;
 }
 
-/*
- * RDS ops use this to grab SG entries from the rm's sg pool.
- */
+ 
 struct scatterlist *rds_message_alloc_sgs(struct rds_message *rm, int nents)
 {
 	struct scatterlist *sg_first = (struct scatterlist *) &rm[1];
@@ -370,9 +317,7 @@ static int rds_message_zcopy_from_user(struct rds_message *rm, struct iov_iter *
 
 	rm->m_inc.i_hdr.h_len = cpu_to_be32(iov_iter_count(from));
 
-	/*
-	 * now allocate and copy in the data payload.
-	 */
+	 
 	sg = rm->data.op_sg;
 
 	info = kzalloc(sizeof(*info), GFP_KERNEL);
@@ -426,9 +371,9 @@ int rds_message_copy_from_user(struct rds_message *rm, struct iov_iter *from,
 
 	rm->m_inc.i_hdr.h_len = cpu_to_be32(iov_iter_count(from));
 
-	/* now allocate and copy in the data payload.  */
+	 
 	sg = rm->data.op_sg;
-	sg_off = 0; /* Dear gcc, sg->page will be null from kzalloc. */
+	sg_off = 0;  
 
 	if (zcopy)
 		return rds_message_zcopy_from_user(rm, from);
@@ -501,10 +446,7 @@ int rds_message_inc_copy_to_user(struct rds_incoming *inc, struct iov_iter *to)
 	return copied;
 }
 
-/*
- * If the message is still on the send queue, wait until the transport
- * is done with it. This is particularly important for RDMA operations.
- */
+ 
 void rds_message_wait(struct rds_message *rm)
 {
 	wait_event_interruptible(rm->m_flush_wait,

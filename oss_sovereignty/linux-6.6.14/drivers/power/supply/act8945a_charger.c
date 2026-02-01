@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Power supply driver for the Active-semi ACT8945A PMIC
- *
- * Copyright (C) 2015 Atmel Corporation
- *
- * Author: Wenyou Yang <wenyou.yang@atmel.com>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/of.h>
@@ -18,17 +12,15 @@
 static const char *act8945a_charger_model = "ACT8945A";
 static const char *act8945a_charger_manufacturer = "Active-semi";
 
-/*
- * ACT8945A Charger Register Map
- */
+ 
 
-/* 0x70: Reserved */
+ 
 #define ACT8945A_APCH_CFG		0x71
 #define ACT8945A_APCH_STATUS		0x78
 #define ACT8945A_APCH_CTRL		0x79
 #define ACT8945A_APCH_STATE		0x7A
 
-/* ACT8945A_APCH_CFG */
+ 
 #define APCH_CFG_OVPSET			(0x3 << 0)
 #define APCH_CFG_OVPSET_6V6		(0x0 << 0)
 #define APCH_CFG_OVPSET_7V		(0x1 << 0)
@@ -264,10 +256,7 @@ static int act8945a_get_capacity_level(struct act8945a_charger *charger,
 #define MAX_CURRENT_USB_HIGH	450000
 #define MAX_CURRENT_USB_LOW	90000
 #define MAX_CURRENT_USB_PRE	45000
-/*
- * Riset(K) = 2336 * (1V/Ichg(mA)) - 0.205
- * Riset = 2.43K
- */
+ 
 #define MAX_CURRENT_AC_HIGH		886527
 #define MAX_CURRENT_AC_LOW		117305
 #define MAX_CURRENT_AC_HIGH_PRE		88653

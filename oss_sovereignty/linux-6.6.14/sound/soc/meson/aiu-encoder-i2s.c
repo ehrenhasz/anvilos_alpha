@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2020 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -38,15 +38,15 @@ static void aiu_encoder_i2s_divider_enable(struct snd_soc_component *component,
 static int aiu_encoder_i2s_setup_desc(struct snd_soc_component *component,
 				      struct snd_pcm_hw_params *params)
 {
-	/* Always operate in split (classic interleaved) mode */
+	 
 	unsigned int desc = AIU_I2S_SOURCE_DESC_MODE_SPLIT;
 
-	/* Reset required to update the pipeline */
+	 
 	snd_soc_component_write(component, AIU_RST_SOFT, AIU_RST_SOFT_I2S_FAST);
 	snd_soc_component_read(component, AIU_I2S_SYNC);
 
 	switch (params_physical_width(params)) {
-	case 16: /* Nothing to do */
+	case 16:  
 		break;
 
 	case 32:
@@ -59,7 +59,7 @@ static int aiu_encoder_i2s_setup_desc(struct snd_soc_component *component,
 	}
 
 	switch (params_channels(params)) {
-	case 2: /* Nothing to do */
+	case 2:  
 		break;
 	case 8:
 		desc |= AIU_I2S_SOURCE_DESC_MODE_8CH;
@@ -87,7 +87,7 @@ static int aiu_encoder_i2s_set_legacy_div(struct snd_soc_component *component,
 	case 2:
 	case 4:
 	case 8:
-		/* These are the only valid legacy dividers */
+		 
 		break;
 
 	default:
@@ -112,13 +112,7 @@ static int aiu_encoder_i2s_set_more_div(struct snd_soc_component *component,
 					struct snd_pcm_hw_params *params,
 					unsigned int bs)
 {
-	/*
-	 * NOTE: this HW is odd.
-	 * In most configuration, the i2s divider is 'mclk / blck'.
-	 * However, in 16 bits - 8ch mode, this factor needs to be
-	 * increased by 50% to get the correct output rate.
-	 * No idea why !
-	 */
+	 
 	if (params_width(params) == 16 && params_channels(params) == 8) {
 		if (bs % 2) {
 			dev_err(component->dev,
@@ -128,7 +122,7 @@ static int aiu_encoder_i2s_set_more_div(struct snd_soc_component *component,
 		bs += bs / 2;
 	}
 
-	/* Use CLK_MORE for mclk to bclk divider */
+	 
 	snd_soc_component_update_bits(component, AIU_CLK_CTRL,
 				      AIU_CLK_CTRL_I2S_DIV,
 				      FIELD_PREP(AIU_CLK_CTRL_I2S_DIV, 0));
@@ -149,18 +143,18 @@ static int aiu_encoder_i2s_set_clocks(struct snd_soc_component *component,
 	unsigned int fs, bs;
 	int ret;
 
-	/* Get the oversampling factor */
+	 
 	fs = DIV_ROUND_CLOSEST(clk_get_rate(aiu->i2s.clks[MCLK].clk), srate);
 
 	if (fs % 64)
 		return -EINVAL;
 
-	/* Send data MSB first */
+	 
 	snd_soc_component_update_bits(component, AIU_I2S_DAC_CFG,
 				      AIU_I2S_DAC_CFG_MSB_FIRST,
 				      AIU_I2S_DAC_CFG_MSB_FIRST);
 
-	/* Set bclk to lrlck ratio */
+	 
 	snd_soc_component_update_bits(component, AIU_CODEC_DAC_LRCLK_CTRL,
 				      AIU_CODEC_DAC_LRCLK_CTRL_DIV,
 				      FIELD_PREP(AIU_CODEC_DAC_LRCLK_CTRL_DIV,
@@ -176,7 +170,7 @@ static int aiu_encoder_i2s_set_clocks(struct snd_soc_component *component,
 	if (ret)
 		return ret;
 
-	/* Make sure amclk is used for HDMI i2s as well */
+	 
 	snd_soc_component_update_bits(component, AIU_CLK_CTRL_MORE,
 				      AIU_CLK_CTRL_MORE_HDMI_AMCLK,
 				      AIU_CLK_CTRL_MORE_HDMI_AMCLK);
@@ -191,7 +185,7 @@ static int aiu_encoder_i2s_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	int ret;
 
-	/* Disable the clock while changing the settings */
+	 
 	aiu_encoder_i2s_divider_enable(component, false);
 
 	ret = aiu_encoder_i2s_setup_desc(component, params);
@@ -228,7 +222,7 @@ static int aiu_encoder_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	unsigned int val = 0;
 	unsigned int skew;
 
-	/* Only CPU Master / Codec Slave supported ATM */
+	 
 	if ((fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_BP_FP)
 		return -EINVAL;
 
@@ -240,10 +234,10 @@ static int aiu_encoder_i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	    inv == SND_SOC_DAIFMT_IB_IF)
 		val |= AIU_CLK_CTRL_AOCLK_INVERT;
 
-	/* Signal skew */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
-		/* Invert sample clock for i2s */
+		 
 		val ^= AIU_CLK_CTRL_LRCLK_INVERT;
 		skew = 1;
 		break;
@@ -296,7 +290,7 @@ static int aiu_encoder_i2s_startup(struct snd_pcm_substream *substream,
 	struct aiu *aiu = snd_soc_component_get_drvdata(dai->component);
 	int ret;
 
-	/* Make sure the encoder gets either 2 or 8 channels */
+	 
 	ret = snd_pcm_hw_constraint_list(substream->runtime, 0,
 					 SNDRV_PCM_HW_PARAM_CHANNELS,
 					 &hw_channel_constraints);

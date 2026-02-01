@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Vincent Abriou <vincent.abriou@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/seq_file.h>
@@ -20,7 +15,7 @@
 #include "sti_plane.h"
 #include "sti_vtg.h"
 
-/* Registers */
+ 
 #define CUR_CTL             0x00
 #define CUR_VPO             0x0C
 #define CUR_PML             0x14
@@ -35,31 +30,14 @@
 #define STI_CURS_MIN_SIZE   1
 #define STI_CURS_MAX_SIZE   128
 
-/*
- * pixmap dma buffer structure
- *
- * @paddr:  physical address
- * @size:   buffer size
- * @base:   virtual address
- */
+ 
 struct dma_pixmap {
 	dma_addr_t paddr;
 	size_t size;
 	void *base;
 };
 
-/*
- * STI Cursor structure
- *
- * @sti_plane:    sti_plane structure
- * @dev:          driver device
- * @regs:         cursor registers
- * @width:        cursor width
- * @height:       cursor height
- * @clut:         color look up table
- * @clut_paddr:   color look up table physical address
- * @pixmap:       pixmap dma buffer (clut8-format cursor)
- */
+ 
 struct sti_cursor {
 	struct sti_plane plane;
 	struct device *dev;
@@ -153,7 +131,7 @@ static void sti_cursor_argb8888_to_clut8(struct sti_cursor *cursor, u32 *src)
 
 	for (i = 0; i < cursor->height; i++) {
 		for (j = 0; j < cursor->width; j++) {
-			/* Pick the 2 higher bits of each component */
+			 
 			a = (*src >> 30) & 3;
 			r = (*src >> 22) & 3;
 			g = (*src >> 14) & 3;
@@ -170,7 +148,7 @@ static void sti_cursor_init(struct sti_cursor *cursor)
 	unsigned short *base = cursor->clut;
 	unsigned int a, r, g, b;
 
-	/* Assign CLUT values, ARGB444 format */
+	 
 	for (a = 0; a < 4; a++)
 		for (r = 0; r < 4; r++)
 			for (g = 0; g < 4; g++)
@@ -195,7 +173,7 @@ static int sti_cursor_atomic_check(struct drm_plane *drm_plane,
 	int dst_x, dst_y, dst_w, dst_h;
 	int src_w, src_h;
 
-	/* no need for further checks if the plane is being disabled */
+	 
 	if (!crtc || !fb)
 		return 0;
 
@@ -207,7 +185,7 @@ static int sti_cursor_atomic_check(struct drm_plane *drm_plane,
 			  mode->crtc_hdisplay - dst_x);
 	dst_h = clamp_val(new_plane_state->crtc_h, 0,
 			  mode->crtc_vdisplay - dst_y);
-	/* src_x are in 16.16 format */
+	 
 	src_w = new_plane_state->src_w >> 16;
 	src_h = new_plane_state->src_h >> 16;
 
@@ -220,7 +198,7 @@ static int sti_cursor_atomic_check(struct drm_plane *drm_plane,
 		return -EINVAL;
 	}
 
-	/* If the cursor size has changed, re-allocated the pixmap */
+	 
 	if (!cursor->pixmap.base ||
 	    (cursor->width != src_w) ||
 	    (cursor->height != src_h)) {
@@ -280,10 +258,10 @@ static void sti_cursor_atomic_update(struct drm_plane *drm_plane,
 
 	dma_obj = drm_fb_dma_get_gem_obj(fb, 0);
 
-	/* Convert ARGB8888 to CLUT8 */
+	 
 	sti_cursor_argb8888_to_clut8(cursor, (u32 *)dma_obj->vaddr);
 
-	/* AWS and AWE depend on the mode */
+	 
 	y = sti_vtg_get_line_number(*mode, 0);
 	x = sti_vtg_get_pixel_number(*mode, 0);
 	val = y << 16 | x;
@@ -293,7 +271,7 @@ static void sti_cursor_atomic_update(struct drm_plane *drm_plane,
 	val = y << 16 | x;
 	writel(val, cursor->regs + CUR_AWE);
 
-	/* Set memory location, size, and position */
+	 
 	writel(cursor->pixmap.paddr, cursor->regs + CUR_PML);
 	writel(cursor->width, cursor->regs + CUR_PMP);
 	writel(cursor->height << 16 | cursor->width, cursor->regs + CUR_SIZE);
@@ -302,7 +280,7 @@ static void sti_cursor_atomic_update(struct drm_plane *drm_plane,
 	x = sti_vtg_get_pixel_number(*mode, dst_x);
 	writel((y << 16) | x, cursor->regs + CUR_VPO);
 
-	/* Set and fetch CLUT */
+	 
 	writel(cursor->clut_paddr, cursor->regs + CUR_CML);
 	writel(CUR_CTL_CLUT_UPDATE, cursor->regs + CUR_CTL);
 
@@ -373,7 +351,7 @@ struct drm_plane *sti_cursor_create(struct drm_device *drm_dev,
 		return NULL;
 	}
 
-	/* Allocate clut buffer */
+	 
 	size = 0x100 * sizeof(unsigned short);
 	cursor->clut = dma_alloc_wc(dev, size, &cursor->clut_paddr,
 				    GFP_KERNEL | GFP_DMA);

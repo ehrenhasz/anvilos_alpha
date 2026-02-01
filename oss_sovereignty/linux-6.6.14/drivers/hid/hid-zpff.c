@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Force feedback support for Zeroplus based devices
- *
- *  Copyright (c) 2005, 2006 Anssi Hannula <anssi.hannula@gmail.com>
- */
 
-/*
- */
+ 
+
+ 
 
 
 #include <linux/hid.h>
@@ -29,11 +24,7 @@ static int zpff_play(struct input_dev *dev, void *data,
 	struct zpff_device *zpff = data;
 	int left, right;
 
-	/*
-	 * The following is specified the other way around in the Zeroplus
-	 * datasheet but the order below is correct for the XFX Executioner;
-	 * however it is possible that the XFX Executioner is an exception
-	 */
+	 
 
 	left = effect->u.rumble.strong_magnitude;
 	right = effect->u.rumble.weak_magnitude;

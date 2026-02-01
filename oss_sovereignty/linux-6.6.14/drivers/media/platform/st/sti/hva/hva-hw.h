@@ -1,29 +1,25 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Yannick Fertre <yannick.fertre@st.com>
- *          Hugues Fruchet <hugues.fruchet@st.com>
- */
+ 
+ 
 
 #ifndef HVA_HW_H
 #define HVA_HW_H
 
 #include "hva-mem.h"
 
-/* HVA Versions */
+ 
 #define HVA_VERSION_UNKNOWN    0x000
 #define HVA_VERSION_V400       0x400
 
-/* HVA command types */
+ 
 enum hva_hw_cmd_type {
-	/* RESERVED = 0x00 */
-	/* RESERVED = 0x01 */
+	 
+	 
 	H264_ENC = 0x02,
-	/* RESERVED = 0x03 */
-	/* RESERVED = 0x04 */
-	/* RESERVED = 0x05 */
-	/* RESERVED = 0x06 */
-	/* RESERVED = 0x07 */
+	 
+	 
+	 
+	 
+	 
 	REMOVE_CLIENT = 0x08,
 	FREEZE_CLIENT = 0x09,
 	START_CLIENT = 0x0A,
@@ -42,4 +38,4 @@ int hva_hw_execute_task(struct hva_ctx *ctx, enum hva_hw_cmd_type cmd,
 void hva_hw_dump_regs(struct hva_dev *hva, struct seq_file *s);
 #endif
 
-#endif /* HVA_HW_H */
+#endif  

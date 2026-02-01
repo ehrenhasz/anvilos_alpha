@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Karol Kosik <karo9@interia.eu>
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- */
+
+ 
 
 #include <net/sock.h>
 #include <linux/list.h>
@@ -49,7 +45,7 @@ static int v_send_ret_unlink(struct vudc *udc, struct v_unlink *unlink)
 	memset(&msg, 0, sizeof(msg));
 	memset(&iov, 0, sizeof(iov));
 
-	/* 1. setup usbip_header */
+	 
 	setup_ret_unlink_pdu(&pdu_header, unlink);
 	usbip_header_correct_endian(&pdu_header, 1);
 
@@ -105,7 +101,7 @@ static int v_send_ret_submit(struct vudc *udc, struct urbp *urb_p)
 	}
 	iovnum = 0;
 
-	/* 1. setup usbip_header */
+	 
 	setup_ret_submit_pdu(&pdu_header, urb_p);
 	usbip_dbg_stub_tx("setup txdata seqnum: %d\n",
 			  pdu_header.base.seqnum);
@@ -116,7 +112,7 @@ static int v_send_ret_submit(struct vudc *udc, struct urbp *urb_p)
 	iovnum++;
 	txsize += sizeof(pdu_header);
 
-	/* 2. setup transfer buffer */
+	 
 	if (urb_p->type != USB_ENDPOINT_XFER_ISOC &&
 	    usb_pipein(urb->pipe) && urb->actual_length > 0) {
 		iov[iovnum].iov_base = urb->transfer_buffer;
@@ -125,7 +121,7 @@ static int v_send_ret_submit(struct vudc *udc, struct urbp *urb_p)
 		txsize += urb->actual_length;
 	} else if (urb_p->type == USB_ENDPOINT_XFER_ISOC &&
 		usb_pipein(urb->pipe)) {
-		/* FIXME - copypasted from stub_tx, refactor */
+		 
 		int i;
 
 		for (i = 0; i < urb->number_of_packets; i++) {
@@ -143,9 +139,9 @@ static int v_send_ret_submit(struct vudc *udc, struct urbp *urb_p)
 			goto out;
 		}
 	}
-	/* else - no buffer to send */
+	 
 
-	/* 3. setup iso_packet_descriptor */
+	 
 	if (urb_p->type == USB_ENDPOINT_XFER_ISOC) {
 		ssize_t len = 0;
 
@@ -240,7 +236,7 @@ int v_tx_loop(void *data)
 	return 0;
 }
 
-/* called with spinlocks held */
+ 
 void v_enqueue_ret_unlink(struct vudc *udc, __u32 seqnum, __u32 status)
 {
 	struct tx_item *txi;
@@ -266,7 +262,7 @@ void v_enqueue_ret_unlink(struct vudc *udc, __u32 seqnum, __u32 status)
 	list_add_tail(&txi->tx_entry, &udc->tx_queue);
 }
 
-/* called with spinlocks held */
+ 
 void v_enqueue_ret_submit(struct vudc *udc, struct urbp *urb_p)
 {
 	struct tx_item *txi;

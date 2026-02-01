@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <kunit/test.h>
 
 #include "protocol.h"
@@ -9,9 +9,7 @@ struct test_case {
 	char *result;
 };
 
-/* we can't reuse RFC 4231 test vectors, as we have constraint on the
- * input and key size.
- */
+ 
 static struct test_case tests[] = {
 	{
 		.key = "0b0b0b0b0b0b0b0b",
@@ -39,7 +37,7 @@ static void mptcp_crypto_test_basic(struct kunit *test)
 	int i, j;
 
 	for (i = 0; i < ARRAY_SIZE(tests); ++i) {
-		/* mptcp hmap will convert to be before computing the hmac */
+		 
 		key1 = be64_to_cpu(*((__be64 *)&tests[i].key[0]));
 		key2 = be64_to_cpu(*((__be64 *)&tests[i].key[8]));
 		nonce1 = be32_to_cpu(*((__be32 *)&tests[i].msg[0]));

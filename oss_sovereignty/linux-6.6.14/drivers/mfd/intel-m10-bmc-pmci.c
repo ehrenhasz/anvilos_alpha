@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MAX10 BMC Platform Management Component Interface (PMCI) based
- * interface.
- *
- * Copyright (C) 2020-2023 Intel Corporation.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/device.h>
@@ -18,13 +13,11 @@
 struct m10bmc_pmci_device {
 	void __iomem *base;
 	struct intel_m10bmc m10bmc;
-	struct mutex flash_mutex;	/* protects flash_busy and serializes flash read/read */
+	struct mutex flash_mutex;	 
 	bool flash_busy;
 };
 
-/*
- * Intel FGPA indirect register access via hardware controller/bridge.
- */
+ 
 #define INDIRECT_CMD_OFF	0
 #define INDIRECT_CMD_CLR	0
 #define INDIRECT_CMD_RD		BIT(0)
@@ -169,7 +162,7 @@ static int pmci_flash_bulk_write(struct intel_m10bmc *m10bmc, const u8 *buf, u32
 		offset += blk_size;
 	}
 
-	/* Handle remainder (less than M10BMC_N6000_FIFO_WORD_SIZE bytes) */
+	 
 	if (size) {
 		u32 tmp = 0;
 
@@ -219,7 +212,7 @@ static int pmci_flash_bulk_read(struct intel_m10bmc *m10bmc, u8 *buf, u32 addr, 
 		writel(0, pmci->base + M10BMC_N6000_FLASH_CTRL);
 	}
 
-	/* Handle remainder (less than M10BMC_N6000_FIFO_WORD_SIZE bytes) */
+	 
 	if (size) {
 		u32 tmp;
 
@@ -285,7 +278,7 @@ static int m10bmc_pmci_flash_write(struct intel_m10bmc *m10bmc, const u8 *buf, u
 
 	mutex_lock(&pmci->flash_mutex);
 	WARN_ON_ONCE(!pmci->flash_busy);
-	/* On write, firmware manages flash MUX */
+	 
 	ret = pmci_flash_bulk_write(m10bmc, buf + offset, size);
 	mutex_unlock(&pmci->flash_mutex);
 

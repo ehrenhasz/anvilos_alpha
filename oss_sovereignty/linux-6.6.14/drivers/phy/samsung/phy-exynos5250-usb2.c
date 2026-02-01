@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung SoC USB 1.1/2.0 PHY driver - Exynos 5250 support
- *
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- * Author: Kamil Debski <k.debski@samsung.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -12,7 +7,7 @@
 #include <linux/regmap.h>
 #include "phy-samsung-usb2.h"
 
-/* Exynos USB PHY registers */
+ 
 #define EXYNOS_5250_REFCLKSEL_CRYSTAL	0x0
 #define EXYNOS_5250_REFCLKSEL_XO	0x1
 #define EXYNOS_5250_REFCLKSEL_CLKCORE	0x2
@@ -25,7 +20,7 @@
 #define EXYNOS_5250_FSEL_24MHZ		0x5
 #define EXYNOS_5250_FSEL_50MHZ		0x7
 
-/* Normal host */
+ 
 #define EXYNOS_5250_HOSTPHYCTRL0			0x0
 
 #define EXYNOS_5250_HOSTPHYCTRL0_PHYSWRSTALL		BIT(31)
@@ -50,7 +45,7 @@
 #define EXYNOS_5250_HOSTPHYCTRL0_LINKSWRST		BIT(1)
 #define EXYNOS_5250_HOSTPHYCTRL0_PHYSWRST		BIT(0)
 
-/* HSIC0 & HSIC1 */
+ 
 #define EXYNOS_5250_HSICPHYCTRL1			0x10
 #define EXYNOS_5250_HSICPHYCTRL2			0x20
 
@@ -69,7 +64,7 @@
 #define EXYNOS_5250_HSICPHYCTRLX_UTMISWRST		BIT(2)
 #define EXYNOS_5250_HSICPHYCTRLX_PHYSWRST		BIT(0)
 
-/* EHCI control */
+ 
 #define EXYNOS_5250_HOSTEHCICTRL			0x30
 #define EXYNOS_5250_HOSTEHCICTRL_ENAINCRXALIGN		BIT(29)
 #define EXYNOS_5250_HOSTEHCICTRL_ENAINCR4		BIT(28)
@@ -90,14 +85,14 @@
 		(0x1 << EXYNOS_5250_HOSTEHCICTRL_FLADJVALHOST_SHIFT)
 #define EXYNOS_5250_HOSTEHCICTRL_SIMULATIONMODE		BIT(0)
 
-/* OHCI control */
+ 
 #define EXYNOS_5250_HOSTOHCICTRL                        0x34
 #define EXYNOS_5250_HOSTOHCICTRL_FRAMELENVAL_SHIFT	1
 #define EXYNOS_5250_HOSTOHCICTRL_FRAMELENVAL_MASK \
 		(0x3ff << EXYNOS_5250_HOSTOHCICTRL_FRAMELENVAL_SHIFT)
 #define EXYNOS_5250_HOSTOHCICTRL_FRAMELENVALEN		BIT(0)
 
-/* USBOTG */
+ 
 #define EXYNOS_5250_USBOTGSYS				0x38
 #define EXYNOS_5250_USBOTGSYS_PHYLINK_SW_RESET		BIT(14)
 #define EXYNOS_5250_USBOTGSYS_LINK_SW_RST_UOTG		BIT(13)
@@ -115,13 +110,13 @@
 #define EXYNOS_5250_USBOTGSYS_SIDDQ_UOTG		BIT(1)
 #define EXYNOS_5250_USBOTGSYS_FORCE_SUSPEND		BIT(0)
 
-/* Isolation, configured in the power management unit */
+ 
 #define EXYNOS_5250_USB_ISOL_OTG_OFFSET		0x704
 #define EXYNOS_5250_USB_ISOL_HOST_OFFSET	0x708
 #define EXYNOS_5420_USB_ISOL_HOST_OFFSET	0x70C
 #define EXYNOS_5250_USB_ISOL_ENABLE		BIT(0)
 
-/* Mode swtich register */
+ 
 #define EXYNOS_5250_MODE_SWITCH_OFFSET		0x230
 #define EXYNOS_5250_MODE_SWITCH_MASK		1
 #define EXYNOS_5250_MODE_SWITCH_DEVICE		0
@@ -134,13 +129,10 @@ enum exynos4x12_phy_id {
 	EXYNOS5250_HSIC1,
 };
 
-/*
- * exynos5250_rate_to_clk() converts the supplied clock rate to the value that
- * can be written to the phy register.
- */
+ 
 static int exynos5250_rate_to_clk(unsigned long rate, u32 *reg)
 {
-	/* EXYNOS_5250_FSEL_MASK */
+	 
 
 	switch (rate) {
 	case 9600 * KHZ:
@@ -208,12 +200,12 @@ static int exynos5250_power_on(struct samsung_usb2_phy_instance *inst)
 				   EXYNOS_5250_MODE_SWITCH_MASK,
 				   EXYNOS_5250_MODE_SWITCH_DEVICE);
 
-		/* OTG configuration */
+		 
 		otg = readl(drv->reg_phy + EXYNOS_5250_USBOTGSYS);
-		/* The clock */
+		 
 		otg &= ~EXYNOS_5250_USBOTGSYS_FSEL_MASK;
 		otg |= drv->ref_reg_val << EXYNOS_5250_USBOTGSYS_FSEL_SHIFT;
-		/* Reset */
+		 
 		otg &= ~(EXYNOS_5250_USBOTGSYS_FORCE_SUSPEND |
 			EXYNOS_5250_USBOTGSYS_FORCE_SLEEP |
 			EXYNOS_5250_USBOTGSYS_SIDDQ_UOTG);
@@ -221,7 +213,7 @@ static int exynos5250_power_on(struct samsung_usb2_phy_instance *inst)
 			EXYNOS_5250_USBOTGSYS_PHYLINK_SW_RESET |
 			EXYNOS_5250_USBOTGSYS_LINK_SW_RST_UOTG |
 			EXYNOS_5250_USBOTGSYS_OTGDISABLE;
-		/* Ref clock */
+		 
 		otg &=	~EXYNOS_5250_USBOTGSYS_REFCLKSEL_MASK;
 		otg |=  EXYNOS_5250_REFCLKSEL_CLKCORE <<
 					EXYNOS_5250_USBOTGSYS_REFCLKSEL_SHIFT;
@@ -238,14 +230,14 @@ static int exynos5250_power_on(struct samsung_usb2_phy_instance *inst)
 	case EXYNOS5250_HOST:
 	case EXYNOS5250_HSIC0:
 	case EXYNOS5250_HSIC1:
-		/* Host registers configuration */
+		 
 		ctrl0 = readl(drv->reg_phy + EXYNOS_5250_HOSTPHYCTRL0);
-		/* The clock */
+		 
 		ctrl0 &= ~EXYNOS_5250_HOSTPHYCTRL0_FSEL_MASK;
 		ctrl0 |= drv->ref_reg_val <<
 					EXYNOS_5250_HOSTPHYCTRL0_FSEL_SHIFT;
 
-		/* Reset */
+		 
 		ctrl0 &=	~(EXYNOS_5250_HOSTPHYCTRL0_PHYSWRST |
 				EXYNOS_5250_HOSTPHYCTRL0_PHYSWRSTALL |
 				EXYNOS_5250_HOSTPHYCTRL0_SIDDQ |
@@ -260,12 +252,12 @@ static int exynos5250_power_on(struct samsung_usb2_phy_instance *inst)
 				EXYNOS_5250_HOSTPHYCTRL0_UTMISWRST);
 		writel(ctrl0, drv->reg_phy + EXYNOS_5250_HOSTPHYCTRL0);
 
-		/* OTG configuration */
+		 
 		otg = readl(drv->reg_phy + EXYNOS_5250_USBOTGSYS);
-		/* The clock */
+		 
 		otg &= ~EXYNOS_5250_USBOTGSYS_FSEL_MASK;
 		otg |= drv->ref_reg_val << EXYNOS_5250_USBOTGSYS_FSEL_SHIFT;
-		/* Reset */
+		 
 		otg &= ~(EXYNOS_5250_USBOTGSYS_FORCE_SUSPEND |
 			EXYNOS_5250_USBOTGSYS_FORCE_SLEEP |
 			EXYNOS_5250_USBOTGSYS_SIDDQ_UOTG);
@@ -273,7 +265,7 @@ static int exynos5250_power_on(struct samsung_usb2_phy_instance *inst)
 			EXYNOS_5250_USBOTGSYS_PHYLINK_SW_RESET |
 			EXYNOS_5250_USBOTGSYS_LINK_SW_RST_UOTG |
 			EXYNOS_5250_USBOTGSYS_OTGDISABLE;
-		/* Ref clock */
+		 
 		otg &=	~EXYNOS_5250_USBOTGSYS_REFCLKSEL_MASK;
 		otg |=  EXYNOS_5250_REFCLKSEL_CLKCORE <<
 					EXYNOS_5250_USBOTGSYS_REFCLKSEL_SHIFT;
@@ -283,7 +275,7 @@ static int exynos5250_power_on(struct samsung_usb2_phy_instance *inst)
 			EXYNOS_5250_USBOTGSYS_LINK_SW_RST_UOTG |
 			EXYNOS_5250_USBOTGSYS_PHYLINK_SW_RESET);
 
-		/* HSIC phy configuration */
+		 
 		hsic = (EXYNOS_5250_HSICPHYCTRLX_REFCLKDIV_12 |
 				EXYNOS_5250_HSICPHYCTRLX_REFCLKSEL_DEFAULT |
 				EXYNOS_5250_HSICPHYCTRLX_PHYSWRST);
@@ -293,11 +285,10 @@ static int exynos5250_power_on(struct samsung_usb2_phy_instance *inst)
 		hsic &= ~EXYNOS_5250_HSICPHYCTRLX_PHYSWRST;
 		writel(hsic, drv->reg_phy + EXYNOS_5250_HSICPHYCTRL1);
 		writel(hsic, drv->reg_phy + EXYNOS_5250_HSICPHYCTRL2);
-		/* The following delay is necessary for the reset sequence to be
-		 * completed */
+		 
 		udelay(80);
 
-		/* Enable EHCI DMA burst */
+		 
 		ehci = readl(drv->reg_phy + EXYNOS_5250_HOSTEHCICTRL);
 		ehci |=	EXYNOS_5250_HOSTEHCICTRL_ENAINCRXALIGN |
 			EXYNOS_5250_HOSTEHCICTRL_ENAINCR4 |
@@ -305,9 +296,9 @@ static int exynos5250_power_on(struct samsung_usb2_phy_instance *inst)
 			EXYNOS_5250_HOSTEHCICTRL_ENAINCR16;
 		writel(ehci, drv->reg_phy + EXYNOS_5250_HOSTEHCICTRL);
 
-		/* OHCI settings */
+		 
 		ohci = readl(drv->reg_phy + EXYNOS_5250_HOSTOHCICTRL);
-		/* Following code is based on the old driver */
+		 
 		ohci |=	0x1 << 3;
 		writel(ohci, drv->reg_phy + EXYNOS_5250_HOSTOHCICTRL);
 

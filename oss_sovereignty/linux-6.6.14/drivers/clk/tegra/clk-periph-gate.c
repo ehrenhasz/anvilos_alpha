@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -15,7 +13,7 @@
 
 static DEFINE_SPINLOCK(periph_ref_lock);
 
-/* Macros to assist peripheral gate clock */
+ 
 #define read_enb(gate) \
 	readl_relaxed(gate->clk_base + (gate->regs->enb_reg))
 #define write_enb_set(val, gate) \
@@ -32,7 +30,7 @@ static DEFINE_SPINLOCK(periph_ref_lock);
 
 #define LVL2_CLK_GATE_OVRE 0x554
 
-/* Peripheral gate clock ops */
+ 
 static int clk_periph_is_enabled(struct clk_hw *hw)
 {
 	struct tegra_clk_periph_gate *gate = to_clk_periph_gate(hw);
@@ -67,11 +65,7 @@ static void clk_periph_disable_locked(struct clk_hw *hw)
 {
 	struct tegra_clk_periph_gate *gate = to_clk_periph_gate(hw);
 
-	/*
-	 * If peripheral is in the APB bus then read the APB bus to
-	 * flush the write operation in apb bus. This will avoid the
-	 * peripheral access after disabling clock
-	 */
+	 
 	if (gate->flags & TEGRA_PERIPH_ON_APB)
 		tegra_read_chipid();
 
@@ -115,11 +109,7 @@ static void clk_periph_disable_unused(struct clk_hw *hw)
 
 	spin_lock_irqsave(&periph_ref_lock, flags);
 
-	/*
-	 * Some clocks are duplicated and some of them are marked as critical,
-	 * like fuse and fuse_burn for example, thus the enable_refcnt will
-	 * be non-zero here if the "unused" duplicate is disabled by CCF.
-	 */
+	 
 	if (!gate->enable_refcnt[gate->clk_num])
 		clk_periph_disable_locked(hw);
 
@@ -165,7 +155,7 @@ struct clk *tegra_clk_register_periph_gate(const char *name,
 	gate->enable_refcnt = enable_refcnt;
 	gate->regs = pregs;
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	gate->hw.init = &init;
 
 	clk = clk_register(NULL, &gate->hw);

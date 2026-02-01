@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Channel path related status regions for vfio_ccw
- *
- * Copyright IBM Corp. 2020
- *
- * Author(s): Farhan Ali <alifm@linux.ibm.com>
- *            Eric Farman <farman@linux.ibm.com>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/vfio.h>
@@ -113,7 +106,7 @@ static ssize_t vfio_ccw_crw_region_read(struct vfio_ccw_private *private,
 
 	kfree(crw);
 
-	/* Notify the guest if more CRWs are on our queue */
+	 
 	if (!list_empty(&private->crw) && private->crw_trigger)
 		eventfd_signal(private->crw_trigger, 1);
 

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * atmel-pcm-dma.c  --  ALSA PCM DMA support for the Atmel SoC.
- *
- *  Copyright (C) 2012 Atmel
- *
- * Author: Bo Shen <voice.shen@atmel.com>
- *
- * Based on atmel-pcm by:
- * Sedji Gaouaou <sedji.gaouaou@atmel.com>
- * Copyright 2008 Atmel
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -27,28 +17,21 @@
 
 #include "atmel-pcm.h"
 
-/*--------------------------------------------------------------------------*\
- * Hardware definition
-\*--------------------------------------------------------------------------*/
+ 
 static const struct snd_pcm_hardware atmel_pcm_dma_hardware = {
 	.info			= SNDRV_PCM_INFO_MMAP |
 				  SNDRV_PCM_INFO_MMAP_VALID |
 				  SNDRV_PCM_INFO_INTERLEAVED |
 				  SNDRV_PCM_INFO_RESUME |
 				  SNDRV_PCM_INFO_PAUSE,
-	.period_bytes_min	= 256,		/* lighting DMA overhead */
-	.period_bytes_max	= 2 * 0xffff,	/* if 2 bytes format */
+	.period_bytes_min	= 256,		 
+	.period_bytes_max	= 2 * 0xffff,	 
 	.periods_min		= 8,
-	.periods_max		= 1024,		/* no limit */
+	.periods_max		= 1024,		 
 	.buffer_bytes_max	= 512 * 1024,
 };
 
-/*
- * atmel_pcm_dma_irq: SSC interrupt handler for DMAENGINE enabled SSC
- *
- * We use DMAENGINE to send/receive data to/from SSC so this ISR is only to
- * check if any overrun occured.
- */
+ 
 static void atmel_pcm_dma_irq(u32 ssc_sr,
 	struct snd_pcm_substream *substream)
 {
@@ -64,11 +47,11 @@ static void atmel_pcm_dma_irq(u32 ssc_sr,
 				? "underrun" : "overrun", prtd->name,
 				ssc_sr);
 
-		/* stop RX and capture: will be enabled again at restart */
+		 
 		ssc_writex(prtd->ssc->regs, SSC_CR, prtd->mask->ssc_disable);
 		snd_pcm_stop_xrun(substream);
 
-		/* now drain RHR and read status to remove xrun condition */
+		 
 		ssc_readx(prtd->ssc->regs, SSC_RHR);
 		ssc_readx(prtd->ssc->regs, SSC_SR);
 	}

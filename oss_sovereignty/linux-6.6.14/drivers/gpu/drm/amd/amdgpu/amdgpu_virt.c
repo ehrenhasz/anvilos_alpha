@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/module.h>
 
@@ -44,9 +23,9 @@
 
 bool amdgpu_virt_mmio_blocked(struct amdgpu_device *adev)
 {
-	/* By now all MMIO pages except mailbox are blocked */
-	/* if blocking is enabled in hypervisor. Choose the */
-	/* SCRATCH_REG0 to test. */
+	 
+	 
+	 
 	return RREG32_NO_KIQ(0xc040) == 0xffffffff;
 }
 
@@ -54,7 +33,7 @@ void amdgpu_virt_init_setting(struct amdgpu_device *adev)
 {
 	struct drm_device *ddev = adev_to_drm(adev);
 
-	/* enable virtual display */
+	 
 	if (adev->asic_type != CHIP_ALDEBARAN &&
 	    adev->asic_type != CHIP_ARCTURUS &&
 	    ((adev->pdev->class >> 8) != PCI_CLASS_ACCELERATOR_PROCESSING)) {
@@ -66,7 +45,7 @@ void amdgpu_virt_init_setting(struct amdgpu_device *adev)
 	adev->cg_flags = 0;
 	adev->pg_flags = 0;
 
-	/* Reduce kcq number to 2 to reduce latency */
+	 
 	if (amdgpu_num_kcq == -1)
 		amdgpu_num_kcq = 2;
 }
@@ -100,7 +79,7 @@ void amdgpu_virt_kiq_reg_write_reg_wait(struct amdgpu_device *adev,
 
 	r = amdgpu_fence_wait_polling(ring, seq, MAX_KIQ_REG_WAIT);
 
-	/* don't wait anymore for IRQ context */
+	 
 	if (r < 1 && in_interrupt())
 		goto failed_kiq;
 
@@ -123,13 +102,7 @@ failed_kiq:
 	dev_err(adev->dev, "failed to write reg %x wait reg %x\n", reg0, reg1);
 }
 
-/**
- * amdgpu_virt_request_full_gpu() - request full gpu access
- * @adev:	amdgpu device.
- * @init:	is driver init time.
- * When start to init/fini driver, first need to request full gpu access.
- * Return: Zero if request success, otherwise will return error.
- */
+ 
 int amdgpu_virt_request_full_gpu(struct amdgpu_device *adev, bool init)
 {
 	struct amdgpu_virt *virt = &adev->virt;
@@ -146,13 +119,7 @@ int amdgpu_virt_request_full_gpu(struct amdgpu_device *adev, bool init)
 	return 0;
 }
 
-/**
- * amdgpu_virt_release_full_gpu() - release full gpu access
- * @adev:	amdgpu device.
- * @init:	is driver init time.
- * When finishing driver init/fini, need to release full gpu access.
- * Return: Zero if release success, otherwise will returen error.
- */
+ 
 int amdgpu_virt_release_full_gpu(struct amdgpu_device *adev, bool init)
 {
 	struct amdgpu_virt *virt = &adev->virt;
@@ -168,12 +135,7 @@ int amdgpu_virt_release_full_gpu(struct amdgpu_device *adev, bool init)
 	return 0;
 }
 
-/**
- * amdgpu_virt_reset_gpu() - reset gpu
- * @adev:	amdgpu device.
- * Send reset command to GPU hypervisor to reset GPU that VM is using
- * Return: Zero if reset success, otherwise will return error.
- */
+ 
 int amdgpu_virt_reset_gpu(struct amdgpu_device *adev)
 {
 	struct amdgpu_virt *virt = &adev->virt;
@@ -203,12 +165,7 @@ void amdgpu_virt_request_init_data(struct amdgpu_device *adev)
 		DRM_WARN("host doesn't support REQ_INIT_DATA handshake\n");
 }
 
-/**
- * amdgpu_virt_wait_reset() - wait for reset gpu completed
- * @adev:	amdgpu device.
- * Wait for GPU reset completed.
- * Return: Zero if reset success, otherwise will return error.
- */
+ 
 int amdgpu_virt_wait_reset(struct amdgpu_device *adev)
 {
 	struct amdgpu_virt *virt = &adev->virt;
@@ -219,12 +176,7 @@ int amdgpu_virt_wait_reset(struct amdgpu_device *adev)
 	return virt->ops->wait_reset(adev);
 }
 
-/**
- * amdgpu_virt_alloc_mm_table() - alloc memory for mm table
- * @adev:	amdgpu device.
- * MM table is used by UVD and VCE for its initialization
- * Return: Zero if allocate success.
- */
+ 
 int amdgpu_virt_alloc_mm_table(struct amdgpu_device *adev)
 {
 	int r;
@@ -250,11 +202,7 @@ int amdgpu_virt_alloc_mm_table(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * amdgpu_virt_free_mm_table() - free mm table memory
- * @adev:	amdgpu device.
- * Free MM table memory
- */
+ 
 void amdgpu_virt_free_mm_table(struct amdgpu_device *adev)
 {
 	if (!amdgpu_sriov_vf(adev) || !adev->virt.mm_table.gpu_addr)
@@ -277,10 +225,10 @@ unsigned int amd_sriov_msg_checksum(void *obj,
 	unsigned char *pos;
 
 	pos = (char *)obj;
-	/* calculate checksum */
+	 
 	for (i = 0; i < obj_size; ++i)
 		ret += *(pos + i);
-	/* minus the checksum itself */
+	 
 	pos = (char *)&checksum;
 	for (i = 0; i < sizeof(checksum); ++i)
 		ret -= *(pos + i);
@@ -291,9 +239,7 @@ static int amdgpu_virt_init_ras_err_handler_data(struct amdgpu_device *adev)
 {
 	struct amdgpu_virt *virt = &adev->virt;
 	struct amdgpu_virt_ras_err_handler_data **data = &virt->virt_eh_data;
-	/* GPU will be marked bad on host if bp count more then 10,
-	 * so alloc 512 is enough.
-	 */
+	 
 	unsigned int align_space = 512;
 	void *bps = NULL;
 	struct amdgpu_bo **bps_bo = NULL;
@@ -390,11 +336,7 @@ static void amdgpu_virt_ras_reserve_bps(struct amdgpu_device *adev)
 	for (i = data->last_reserved; i < data->count; i++) {
 		bp = data->bps[i].retired_page;
 
-		/* There are two cases of reserve error should be ignored:
-		 * 1) a ras bad page has been allocated (used by someone);
-		 * 2) a ras bad page has been reserved (duplicate error injection
-		 *    for one page);
-		 */
+		 
 		if (amdgpu_bo_create_kernel_at(adev, bp << AMDGPU_GPU_PAGE_SHIFT,
 					       AMDGPU_GPU_PAGE_SIZE,
 					       &bo, NULL))
@@ -485,7 +427,7 @@ static int amdgpu_virt_read_pf2vf_data(struct amdgpu_device *adev)
 			((struct amdgim_pf2vf_info_v1 *)pf2vf_info)->feature_flags;
 		break;
 	case 2:
-		/* TODO: missing key, need to add it later */
+		 
 		checksum = ((struct amd_sriov_msg_pf2vf_info *)pf2vf_info)->checksum;
 		checkval = amd_sriov_msg_checksum(
 			adev->virt.fw_reserve.p_pf2vf, pf2vf_info->size,
@@ -531,7 +473,7 @@ static int amdgpu_virt_read_pf2vf_data(struct amdgpu_device *adev)
 		return -EINVAL;
 	}
 
-	/* correct too large or too little interval value */
+	 
 	if (adev->virt.vf2pf_update_interval_ms < 200 || adev->virt.vf2pf_update_interval_ms > 10000)
 		adev->virt.vf2pf_update_interval_ms = 2000;
 
@@ -593,7 +535,7 @@ static int amdgpu_virt_write_vf2pf_data(struct amdgpu_device *adev)
 #endif
 		strcpy(vf2pf_info->driver_version, "N/A");
 
-	vf2pf_info->pf2vf_version_required = 0; // no requirement, guest understands all
+	vf2pf_info->pf2vf_version_required = 0;  
 	vf2pf_info->driver_cert = 0;
 	vf2pf_info->os_info.all = 0;
 
@@ -606,7 +548,7 @@ static int amdgpu_virt_write_vf2pf_data(struct amdgpu_device *adev)
 
 	amdgpu_virt_populate_vf2pf_ucode_info(adev);
 
-	/* TODO: read dynamic info */
+	 
 	vf2pf_info->gfx_usage = 0;
 	vf2pf_info->compute_usage = 0;
 	vf2pf_info->encode_usage = 0;
@@ -652,13 +594,13 @@ void amdgpu_virt_init_data_exchange(struct amdgpu_device *adev)
 	if (adev->mman.fw_vram_usage_va && adev->mman.drv_vram_usage_va) {
 		DRM_WARN("Currently fw_vram and drv_vram should not have values at the same time!");
 	} else if (adev->mman.fw_vram_usage_va || adev->mman.drv_vram_usage_va) {
-		/* go through this logic in ip_init and reset to init workqueue*/
+		 
 		amdgpu_virt_exchange_data(adev);
 
 		INIT_DELAYED_WORK(&adev->virt.vf2pf_work, amdgpu_virt_update_vf2pf_work_item);
 		schedule_delayed_work(&(adev->virt.vf2pf_work), msecs_to_jiffies(adev->virt.vf2pf_update_interval_ms));
 	} else if (adev->bios != NULL) {
-		/* got through this logic in early init stage to get necessary flags, e.g. rlcg_acc related*/
+		 
 		adev->virt.fw_reserve.p_pf2vf =
 			(struct amd_sriov_msg_pf2vf_info_header *)
 			(adev->bios + (AMD_SRIOV_MSG_PF2VF_OFFSET_KB << 10));
@@ -694,7 +636,7 @@ void amdgpu_virt_exchange_data(struct amdgpu_device *adev)
 		amdgpu_virt_read_pf2vf_data(adev);
 		amdgpu_virt_write_vf2pf_data(adev);
 
-		/* bad page handling for version 2 */
+		 
 		if (adev->virt.fw_reserve.p_pf2vf->version == 2) {
 			pf2vf_v2 = (struct amd_sriov_msg_pf2vf_info *)adev->virt.fw_reserve.p_pf2vf;
 
@@ -730,7 +672,7 @@ void amdgpu_detect_virtualization(struct amdgpu_device *adev)
 	case CHIP_IP_DISCOVERY:
 		reg = RREG32(mmRCC_IOV_FUNC_IDENTIFIER);
 		break;
-	default: /* other chip doesn't support SRIOV */
+	default:  
 		reg = 0;
 		break;
 	}
@@ -742,18 +684,16 @@ void amdgpu_detect_virtualization(struct amdgpu_device *adev)
 		adev->virt.caps |= AMDGPU_SRIOV_CAPS_ENABLE_IOV;
 
 	if (!reg) {
-		/* passthrough mode exclus sriov mod */
+		 
 		if (is_virtual_machine() && !xen_initial_domain())
 			adev->virt.caps |= AMDGPU_PASSTHROUGH_MODE;
 	}
 
 	if (amdgpu_sriov_vf(adev) && adev->asic_type == CHIP_SIENNA_CICHLID)
-		/* VF MMIO access (except mailbox range) from CPU
-		 * will be blocked during sriov runtime
-		 */
+		 
 		adev->virt.caps |= AMDGPU_VF_MMIO_ACCESS_PROTECT;
 
-	/* we have the ability to check now */
+	 
 	if (amdgpu_sriov_vf(adev)) {
 		switch (adev->asic_type) {
 		case CHIP_TONGA:
@@ -763,10 +703,10 @@ void amdgpu_detect_virtualization(struct amdgpu_device *adev)
 		case CHIP_VEGA10:
 			soc15_set_virt_ops(adev);
 #ifdef CONFIG_X86
-			/* not send GPU_INIT_DATA with MS_HYPERV*/
+			 
 			if (!hypervisor_is_type(X86_HYPER_MS_HYPERV))
 #endif
-				/* send a dummy GPU_INIT_DATA request to host on vega10 */
+				 
 				amdgpu_virt_request_init_data(adev);
 			break;
 		case CHIP_VEGA20:
@@ -779,10 +719,10 @@ void amdgpu_detect_virtualization(struct amdgpu_device *adev)
 		case CHIP_SIENNA_CICHLID:
 		case CHIP_IP_DISCOVERY:
 			nv_set_virt_ops(adev);
-			/* try send GPU_INIT_DATA request to host */
+			 
 			amdgpu_virt_request_init_data(adev);
 			break;
-		default: /* other chip doesn't support SRIOV */
+		default:  
 			DRM_ERROR("Unknown asic type: %d!\n", adev->asic_type);
 			break;
 		}
@@ -838,9 +778,7 @@ enum amdgpu_sriov_vf_mode amdgpu_virt_get_sriov_vf_mode(struct amdgpu_device *ad
 void amdgpu_virt_post_reset(struct amdgpu_device *adev)
 {
 	if (adev->ip_versions[GC_HWIP][0] == IP_VERSION(11, 0, 3)) {
-		/* force set to GFXOFF state after reset,
-		 * to avoid some invalid operation before GC enable
-		 */
+		 
 		adev->gfx.is_poweron = false;
 	}
 }
@@ -849,7 +787,7 @@ bool amdgpu_virt_fw_load_skip_check(struct amdgpu_device *adev, uint32_t ucode_i
 {
 	switch (adev->ip_versions[MP0_HWIP][0]) {
 	case IP_VERSION(13, 0, 0):
-		/* no vf autoload, white list */
+		 
 		if (ucode_id == AMDGPU_UCODE_ID_VCN1 ||
 		    ucode_id == AMDGPU_UCODE_ID_VCN)
 			return false;
@@ -857,7 +795,7 @@ bool amdgpu_virt_fw_load_skip_check(struct amdgpu_device *adev, uint32_t ucode_i
 			return true;
 	case IP_VERSION(11, 0, 9):
 	case IP_VERSION(11, 0, 7):
-		/* black list for CHIP_NAVI12 and CHIP_SIENNA_CICHLID */
+		 
 		if (ucode_id == AMDGPU_UCODE_ID_RLC_G
 		    || ucode_id == AMDGPU_UCODE_ID_RLC_RESTORE_LIST_CNTL
 		    || ucode_id == AMDGPU_UCODE_ID_RLC_RESTORE_LIST_GPM_MEM
@@ -867,7 +805,7 @@ bool amdgpu_virt_fw_load_skip_check(struct amdgpu_device *adev, uint32_t ucode_i
 		else
 			return false;
 	case IP_VERSION(13, 0, 10):
-		/* white list */
+		 
 		if (ucode_id == AMDGPU_UCODE_ID_CAP
 		|| ucode_id == AMDGPU_UCODE_ID_CP_RS64_PFP
 		|| ucode_id == AMDGPU_UCODE_ID_CP_RS64_ME
@@ -890,7 +828,7 @@ bool amdgpu_virt_fw_load_skip_check(struct amdgpu_device *adev, uint32_t ucode_i
 		else
 			return true;
 	default:
-		/* lagacy black list */
+		 
 		if (ucode_id == AMDGPU_UCODE_ID_SDMA0
 		    || ucode_id == AMDGPU_UCODE_ID_SDMA1
 		    || ucode_id == AMDGPU_UCODE_ID_SDMA2
@@ -954,8 +892,7 @@ static bool amdgpu_virt_get_rlcg_reg_access_flag(struct amdgpu_device *adev,
 			*rlcg_flag =
 				write ? AMDGPU_RLCG_GC_WRITE : AMDGPU_RLCG_GC_READ;
 			ret = true;
-		/* only in new version, AMDGPU_REGS_NO_KIQ and
-		 * AMDGPU_REGS_RLC are enabled simultaneously */
+		 
 		} else if ((acc_flags & AMDGPU_REGS_RLC) &&
 				!(acc_flags & AMDGPU_REGS_NO_KIQ) && write) {
 			*rlcg_flag = AMDGPU_RLCG_GC_WRITE_LEGACY;
@@ -1007,22 +944,17 @@ static u32 amdgpu_virt_rlcg_reg_rw(struct amdgpu_device *adev, u32 offset, u32 v
 		spare_int = (void __iomem *)adev->rmmio + 4 * reg_access_ctrl->spare_int;
 
 	if (offset == reg_access_ctrl->grbm_cntl) {
-		/* if the target reg offset is grbm_cntl, write to scratch_reg2 */
+		 
 		writel(v, scratch_reg2);
 		if (flag == AMDGPU_RLCG_GC_WRITE_LEGACY)
 			writel(v, ((void __iomem *)adev->rmmio) + (offset * 4));
 	} else if (offset == reg_access_ctrl->grbm_idx) {
-		/* if the target reg offset is grbm_idx, write to scratch_reg3 */
+		 
 		writel(v, scratch_reg3);
 		if (flag == AMDGPU_RLCG_GC_WRITE_LEGACY)
 			writel(v, ((void __iomem *)adev->rmmio) + (offset * 4));
 	} else {
-		/*
-		 * SCRATCH_REG0 	= read/write value
-		 * SCRATCH_REG1[30:28]	= command
-		 * SCRATCH_REG1[19:0]	= address in dword
-		 * SCRATCH_REG1[26:24]	= Error reporting
-		 */
+		 
 		writel(v, scratch_reg0);
 		writel((offset | flag), scratch_reg1);
 		if (reg_access_ctrl->spare_int)

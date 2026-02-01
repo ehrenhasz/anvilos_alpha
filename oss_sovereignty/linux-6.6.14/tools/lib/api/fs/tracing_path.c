@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE
 #endif
@@ -134,14 +134,9 @@ int tracing_path__strerror_open_tp(int err, char *buf, size_t size,
 
 	switch (err) {
 	case ENOENT:
-		/*
-		 * We will get here if we can't find the tracepoint, but one of
-		 * debugfs or tracefs is configured, which means you probably
-		 * want some tracepoint which wasn't compiled in your kernel.
-		 * - jirka
-		 */
+		 
 		if (debugfs__configured() || tracefs__configured()) {
-			/* sdt markers */
+			 
 			if (!strncmp(filename, "sdt_", 4)) {
 				snprintf(buf, size,
 					"Error:\tFile %s/events/%s not found.\n"

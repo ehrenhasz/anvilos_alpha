@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "util/copyfile.h"
 #include "util/namespaces.h"
 #include <internal/lib.h>
@@ -86,7 +86,7 @@ static int copyfile_mode_ns(const char *from, const char *to, mode_t mode,
 		goto out;
 	err = -1;
 
-	/* extra 'x' at the end is to reserve space for '.' */
+	 
 	if (asprintf(&tmp, "%s.XXXXXXx", to) < 0) {
 		tmp = NULL;
 		goto out;
@@ -101,7 +101,7 @@ static int copyfile_mode_ns(const char *from, const char *to, mode_t mode,
 	if (tofd < 0)
 		goto out;
 
-	if (st.st_size == 0) { /* /proc? do it slowly... */
+	if (st.st_size == 0) {  
 		err = slow_copyfile(from, tmp, nsi);
 		if (!err && fchmod(tofd, mode))
 			err = -1;

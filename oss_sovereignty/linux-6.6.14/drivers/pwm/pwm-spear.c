@@ -1,13 +1,4 @@
-/*
- * ST Microelectronics SPEAr Pulse Width Modulator driver
- *
- * Copyright (C) 2012 ST Microelectronics
- * Shiraz Hashim <shiraz.linux.kernel@gmail.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -24,32 +15,26 @@
 
 #define NUM_PWM		4
 
-/* PWM registers and bits definitions */
-#define PWMCR			0x00	/* Control Register */
+ 
+#define PWMCR			0x00	 
 #define PWMCR_PWM_ENABLE	0x1
 #define PWMCR_PRESCALE_SHIFT	2
 #define PWMCR_MIN_PRESCALE	0x00
 #define PWMCR_MAX_PRESCALE	0x3FFF
 
-#define PWMDCR			0x04	/* Duty Cycle Register */
+#define PWMDCR			0x04	 
 #define PWMDCR_MIN_DUTY		0x0001
 #define PWMDCR_MAX_DUTY		0xFFFF
 
-#define PWMPCR			0x08	/* Period Register */
+#define PWMPCR			0x08	 
 #define PWMPCR_MIN_PERIOD	0x0001
 #define PWMPCR_MAX_PERIOD	0xFFFF
 
-/* Following only available on 13xx SoCs */
-#define PWMMCR			0x3C	/* Master Control Register */
+ 
+#define PWMMCR			0x3C	 
 #define PWMMCR_PWM_ENABLE	0x1
 
-/**
- * struct spear_pwm_chip - struct representing pwm chip
- *
- * @mmio_base: base address of pwm chip
- * @clk: pointer to clk structure of pwm chip
- * @chip: linux pwm chip representation
- */
+ 
 struct spear_pwm_chip {
 	void __iomem *mmio_base;
 	struct clk *clk;
@@ -82,16 +67,7 @@ static int spear_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	unsigned long prescale = PWMCR_MIN_PRESCALE, pv, dc;
 	int ret;
 
-	/*
-	 * Find pv, dc and prescale to suit duty_ns and period_ns. This is done
-	 * according to formulas described below:
-	 *
-	 * period_ns = 10^9 * (PRESCALE + 1) * PV / PWM_CLK_RATE
-	 * duty_ns = 10^9 * (PRESCALE + 1) * DC / PWM_CLK_RATE
-	 *
-	 * PV = (PWM_CLK_RATE * period_ns) / (10^9 * (PRESCALE + 1))
-	 * DC = (PWM_CLK_RATE * duty_ns) / (10^9 * (PRESCALE + 1))
-	 */
+	 
 	clk_rate = clk_get_rate(pc->clk);
 	while (1) {
 		div = 1000000000;
@@ -101,14 +77,11 @@ static int spear_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		val = clk_rate * duty_ns;
 		dc = div64_u64(val, div);
 
-		/* if duty_ns and period_ns are not achievable then return */
+		 
 		if (pv < PWMPCR_MIN_PERIOD || dc < PWMDCR_MIN_DUTY)
 			return -EINVAL;
 
-		/*
-		 * if pv and dc have crossed their upper limit, then increase
-		 * prescale and recalculate pv and dc.
-		 */
+		 
 		if (pv > PWMPCR_MAX_PERIOD || dc > PWMDCR_MAX_DUTY) {
 			if (++prescale > PWMCR_MAX_PRESCALE)
 				return -EINVAL;
@@ -117,10 +90,7 @@ static int spear_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		break;
 	}
 
-	/*
-	 * NOTE: the clock to PWM has to be enabled first before writing to the
-	 * registers.
-	 */
+	 
 	ret = clk_enable(pc->clk);
 	if (ret)
 		return ret;
@@ -227,10 +197,7 @@ static int spear_pwm_probe(struct platform_device *pdev)
 			clk_unprepare(pc->clk);
 			return ret;
 		}
-		/*
-		 * Following enables PWM chip, channels would still be
-		 * enabled individually through their control register
-		 */
+		 
 		val = readl_relaxed(pc->mmio_base + PWMMCR);
 		val |= PWMMCR_PWM_ENABLE;
 		writel_relaxed(val, pc->mmio_base + PWMMCR);
@@ -253,7 +220,7 @@ static void spear_pwm_remove(struct platform_device *pdev)
 
 	pwmchip_remove(&pc->chip);
 
-	/* clk was prepared in probe, hence unprepare it here */
+	 
 	clk_unprepare(pc->clk);
 }
 

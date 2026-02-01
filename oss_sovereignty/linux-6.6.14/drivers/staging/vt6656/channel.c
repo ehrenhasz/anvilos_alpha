@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: Channel number mapping
- *
- * Author: Lucas Lin
- *
- * Date: Dec 24, 2004
- *
- *
- *
- * Revision History:
- *	01-18-2005	RobertYu:	remove the for loop searching in
- *					ChannelValid, change ChannelRuleTab
- *					to lookup-type, reorder table items.
- *
- *
- */
+
+ 
 
 #include "device.h"
 #include "channel.h"

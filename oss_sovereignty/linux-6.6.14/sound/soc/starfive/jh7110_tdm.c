@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * jh7110_tdm.c -- StarFive JH7110 TDM driver
- *
- * Copyright (C) 2023 StarFive Technology Co., Ltd.
- *
- * Author: Walker Chen <walker.chen@starfivetech.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -50,33 +44,33 @@ enum TDM_MASTER_SLAVE_MODE {
 };
 
 enum TDM_CLKPOL {
-	/* tx raising and rx falling */
+	 
 	TDM_TX_RASING_RX_FALLING = 0,
-	/* tx falling and rx raising */
+	 
 	TDM_TX_FALLING_RX_RASING,
 };
 
 enum TDM_ELM {
-	/* only work while SYNCM=0 */
+	 
 	TDM_ELM_LATE = 0,
 	TDM_ELM_EARLY,
 };
 
 enum TDM_SYNCM {
-	/* short frame sync */
+	 
 	TDM_SYNCM_SHORT = 0,
-	/* long frame sync */
+	 
 	TDM_SYNCM_LONG,
 };
 
 enum TDM_IFL {
-	/* FIFO to send or received : half-1/2, Quarter-1/4 */
+	 
 	TDM_FIFO_HALF = 0,
 	TDM_FIFO_QUARTER,
 };
 
 enum TDM_WL {
-	/* send or received word length */
+	 
 	TDM_8BIT_WORD_LEN = 0,
 	TDM_16BIT_WORD_LEN,
 	TDM_20BIT_WORD_LEN,
@@ -85,14 +79,14 @@ enum TDM_WL {
 };
 
 enum TDM_SL {
-	/* send or received slot length */
+	 
 	TDM_8BIT_SLOT_LEN = 0,
 	TDM_16BIT_SLOT_LEN,
 	TDM_32BIT_SLOT_LEN,
 };
 
 enum TDM_LRJ {
-	/* left-justify or right-justify */
+	 
 	TDM_RIGHT_JUSTIFY = 0,
 	TDM_LEFT_JUSTIFT,
 };
@@ -124,7 +118,7 @@ struct jh7110_tdm_dev {
 	u32 samplerate;
 	u32 pcmclk;
 
-	/* data related to DMA transfers b/w tdm and DMAC */
+	 
 	struct snd_dmaengine_dai_dma_data play_dma_data;
 	struct snd_dmaengine_dai_dma_data capture_dma_data;
 	u32 saved_pcmgbcr;
@@ -160,7 +154,7 @@ static void jh7110_tdm_start(struct jh7110_tdm_dev *tdm,
 	data = jh7110_tdm_readl(tdm, TDM_PCMGBCR);
 	jh7110_tdm_writel(tdm, TDM_PCMGBCR, data | PCMGBCR_ENABLE);
 
-	/* restore context */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 		jh7110_tdm_writel(tdm, TDM_PCMTXCR, tdm->saved_pcmtxcr | PCMTXCR_TXEN);
 	else
@@ -266,7 +260,7 @@ static int jh7110_tdm_clk_enable(struct jh7110_tdm_dev *tdm)
 		goto dis_tdm_clk;
 	}
 
-	/* select tdm_ext clock as the clock source for tdm */
+	 
 	ret = clk_set_parent(tdm->clks[5].clk, tdm->clks[4].clk);
 	if (ret) {
 		dev_err(tdm->dev, "Can't set extern clock source for clk_tdm\n");
@@ -300,7 +294,7 @@ static int jh7110_tdm_system_suspend(struct device *dev)
 {
 	struct jh7110_tdm_dev *tdm = dev_get_drvdata(dev);
 
-	/* save context */
+	 
 	tdm->saved_pcmgbcr = jh7110_tdm_readl(tdm, TDM_PCMGBCR);
 	tdm->saved_pcmdiv = jh7110_tdm_readl(tdm, TDM_PCMDIV);
 
@@ -311,7 +305,7 @@ static int jh7110_tdm_system_resume(struct device *dev)
 {
 	struct jh7110_tdm_dev *tdm = dev_get_drvdata(dev);
 
-	/* restore context */
+	 
 	jh7110_tdm_writel(tdm, TDM_PCMGBCR, tdm->saved_pcmgbcr);
 	jh7110_tdm_writel(tdm, TDM_PCMDIV, tdm->saved_pcmdiv);
 
@@ -436,14 +430,14 @@ static int jh7110_tdm_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 	struct jh7110_tdm_dev *tdm = snd_soc_dai_get_drvdata(cpu_dai);
 	unsigned int gbcr;
 
-	/* set master/slave audio interface */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_BP_FP:
-		/* cpu is master */
+		 
 		tdm->ms_mode = TDM_AS_MASTER;
 		break;
 	case SND_SOC_DAIFMT_BC_FC:
-		/* codec is master */
+		 
 		tdm->ms_mode = TDM_AS_SLAVE;
 		break;
 	case SND_SOC_DAIFMT_BC_FP:

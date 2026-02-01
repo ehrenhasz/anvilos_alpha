@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support routines for initializing a PCI subsystem
- *
- * Extruded from code written by
- *      Dave Rusling (david.rusling@reo.mts.dec.com)
- *      David Mosberger (davidm@cs.arizona.edu)
- *	David Miller (davem@redhat.com)
- *
- * Fixed for multiple PCI buses, 1999 Andrea Arcangeli <andrea@suse.de>
- *
- * Nov 2000, Ivan Kokshaysky <ink@jurassic.park.msu.ru>
- *	     Resource sorting
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/export.h>
@@ -31,25 +19,18 @@ static void pci_std_update_resource(struct pci_dev *dev, int resno)
 	int reg;
 	struct resource *res = dev->resource + resno;
 
-	/* Per SR-IOV spec 3.4.1.11, VF BARs are RO zero */
+	 
 	if (dev->is_virtfn)
 		return;
 
-	/*
-	 * Ignore resources for unimplemented BARs and unused resource slots
-	 * for 64 bit BARs.
-	 */
+	 
 	if (!res->flags)
 		return;
 
 	if (res->flags & IORESOURCE_UNSET)
 		return;
 
-	/*
-	 * Ignore non-moveable resources.  This might be legacy resources for
-	 * which no functional BAR register exists or another important
-	 * system resource we shouldn't move around.
-	 */
+	 
 	if (res->flags & IORESOURCE_PCI_FIXED)
 		return;
 
@@ -70,14 +51,7 @@ static void pci_std_update_resource(struct pci_dev *dev, int resno)
 		reg = PCI_BASE_ADDRESS_0 + 4 * resno;
 	} else if (resno == PCI_ROM_RESOURCE) {
 
-		/*
-		 * Apparently some Matrox devices have ROM BARs that read
-		 * as zero when disabled, so don't update ROM BARs unless
-		 * they're enabled.  See
-		 * https://lore.kernel.org/r/43147B3D.1030309@vc.cvut.cz/
-		 * But we must update ROM BAR for buggy devices where even a
-		 * disabled ROM can conflict with other BARs.
-		 */
+		 
 		if (!(res->flags & IORESOURCE_ROM_ENABLE) &&
 		    !dev->rom_bar_overlap)
 			return;
@@ -88,11 +62,7 @@ static void pci_std_update_resource(struct pci_dev *dev, int resno)
 	} else
 		return;
 
-	/*
-	 * We can't update a 64-bit BAR atomically, so when possible,
-	 * disable decoding so that a half-updated BAR won't conflict
-	 * with another device.
-	 */
+	 
 	disable = (res->flags & IORESOURCE_MEM_64) && !dev->mmio_always_on;
 	if (disable) {
 		pci_read_config_word(dev, PCI_COMMAND, &cmd);
@@ -143,11 +113,7 @@ int pci_claim_resource(struct pci_dev *dev, int resource)
 		return -EINVAL;
 	}
 
-	/*
-	 * If we have a shadow copy in RAM, the PCI device doesn't respond
-	 * to the shadow range, so we don't need to claim it, and upstream
-	 * bridges don't need to route the range to the device.
-	 */
+	 
 	if (res->flags & IORESOURCE_ROM_SHADOW)
 		return 0;
 
@@ -173,24 +139,16 @@ EXPORT_SYMBOL(pci_claim_resource);
 
 void pci_disable_bridge_window(struct pci_dev *dev)
 {
-	/* MMIO Base/Limit */
+	 
 	pci_write_config_dword(dev, PCI_MEMORY_BASE, 0x0000fff0);
 
-	/* Prefetchable MMIO Base/Limit */
+	 
 	pci_write_config_dword(dev, PCI_PREF_LIMIT_UPPER32, 0);
 	pci_write_config_dword(dev, PCI_PREF_MEMORY_BASE, 0x0000fff0);
 	pci_write_config_dword(dev, PCI_PREF_BASE_UPPER32, 0xffffffff);
 }
 
-/*
- * Generic function that returns a value indicating that the device's
- * original BIOS BAR address was not saved and so is not available for
- * reinstatement.
- *
- * Can be over-ridden by architecture specific code that implements
- * reinstatement functionality rather than leaving it disabled when
- * normal allocation attempts fail.
- */
+ 
 resource_size_t __weak pcibios_retrieve_fw_addr(struct pci_dev *dev, int idx)
 {
 	return 0;
@@ -214,17 +172,11 @@ static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
 
 	root = pci_find_parent_resource(dev, res);
 	if (!root) {
-		/*
-		 * If dev is behind a bridge, accesses will only reach it
-		 * if res is inside the relevant bridge window.
-		 */
+		 
 		if (pci_upstream_bridge(dev))
 			return -ENXIO;
 
-		/*
-		 * On the root bus, assume the host bridge will forward
-		 * everything.
-		 */
+		 
 		if (res->flags & IORESOURCE_IO)
 			root = &ioport_resource;
 		else
@@ -245,11 +197,7 @@ static int pci_revert_fw_address(struct resource *res, struct pci_dev *dev,
 	return 0;
 }
 
-/*
- * We don't have to worry about legacy ISA devices, so nothing to do here.
- * This is marked as __weak because multiple architectures define it; it should
- * eventually go away.
- */
+ 
 resource_size_t __weak pcibios_align_resource(void *data,
 					      const struct resource *res,
 					      resource_size_t size,
@@ -267,23 +215,14 @@ static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
 
 	min = (res->flags & IORESOURCE_IO) ? PCIBIOS_MIN_IO : PCIBIOS_MIN_MEM;
 
-	/*
-	 * First, try exact prefetching match.  Even if a 64-bit
-	 * prefetchable bridge window is below 4GB, we can't put a 32-bit
-	 * prefetchable resource in it because pbus_size_mem() assumes a
-	 * 64-bit window will contain no 32-bit resources.  If we assign
-	 * things differently than they were sized, not everything will fit.
-	 */
+	 
 	ret = pci_bus_alloc_resource(bus, res, size, align, min,
 				     IORESOURCE_PREFETCH | IORESOURCE_MEM_64,
 				     pcibios_align_resource, dev);
 	if (ret == 0)
 		return 0;
 
-	/*
-	 * If the prefetchable window is only 32 bits wide, we can put
-	 * 64-bit prefetchable resources in it.
-	 */
+	 
 	if ((res->flags & (IORESOURCE_PREFETCH | IORESOURCE_MEM_64)) ==
 	     (IORESOURCE_PREFETCH | IORESOURCE_MEM_64)) {
 		ret = pci_bus_alloc_resource(bus, res, size, align, min,
@@ -293,12 +232,7 @@ static int __pci_assign_resource(struct pci_bus *bus, struct pci_dev *dev,
 			return 0;
 	}
 
-	/*
-	 * If we didn't find a better match, we can put any memory resource
-	 * in a non-prefetchable window.  If this resource is 32 bits and
-	 * non-prefetchable, the first call already tried the only possibility
-	 * so we don't need to try again.
-	 */
+	 
 	if (res->flags & (IORESOURCE_PREFETCH | IORESOURCE_MEM_64))
 		ret = pci_bus_alloc_resource(bus, res, size, align, min, 0,
 					     pcibios_align_resource, dev);
@@ -342,11 +276,7 @@ int pci_assign_resource(struct pci_dev *dev, int resno)
 	size = resource_size(res);
 	ret = _pci_assign_resource(dev, resno, size, align);
 
-	/*
-	 * If we failed to assign anything, let's try the address
-	 * where firmware left it.  That at least has a chance of
-	 * working, which is better than just leaving it disabled.
-	 */
+	 
 	if (ret < 0) {
 		pci_info(dev, "BAR %d: no space for %pR\n", resno, res);
 		ret = pci_revert_fw_address(res, dev, resno, size);
@@ -386,7 +316,7 @@ int pci_reassign_resource(struct pci_dev *dev, int resno, resource_size_t addsiz
 		return -EINVAL;
 	}
 
-	/* already aligned with min_align */
+	 
 	new_size = resource_size(res) + addsize;
 	ret = _pci_assign_resource(dev, resno, new_size, min_align);
 	if (ret) {
@@ -430,12 +360,12 @@ int pci_resize_resource(struct pci_dev *dev, int resno, int size)
 	u32 sizes;
 	u16 cmd;
 
-	/* Check if we must preserve the firmware's resource assignment */
+	 
 	host = pci_find_host_bridge(dev->bus);
 	if (host->preserve_config)
 		return -ENOTSUPP;
 
-	/* Make sure the resource isn't assigned before resizing it. */
+	 
 	if (!(res->flags & IORESOURCE_UNSET))
 		return -EBUSY;
 
@@ -460,7 +390,7 @@ int pci_resize_resource(struct pci_dev *dev, int resno, int size)
 
 	res->end = res->start + pci_rebar_size_to_bytes(size) - 1;
 
-	/* Check if the new config works by trying to assign everything. */
+	 
 	if (dev->bus->self) {
 		ret = pci_reassign_bridge_resources(dev->bus->self, res->flags);
 		if (ret)

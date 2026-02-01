@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the ST STV0910 DVB-S/S2 demodulator.
- *
- * Copyright (C) 2014-2015 Ralph Metzler <rjkm@metzlerbros.de>
- *                         Marcus Metzler <mocm@metzlerbros.de>
- *                         developed for Digital Devices GmbH
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -70,8 +64,8 @@ struct stv_base {
 
 	u8                   adr;
 	struct i2c_adapter  *i2c;
-	struct mutex         i2c_lock; /* shared I2C access protect */
-	struct mutex         reg_lock; /* shared register write protect */
+	struct mutex         i2c_lock;  
+	struct mutex         reg_lock;  
 	int                  count;
 
 	u32                  extclk;
@@ -215,218 +209,208 @@ static int write_field(struct stv *state, u32 field, u8 val)
 		 RSTV0910_P1_##_reg, _val)
 
 static const struct slookup s1_sn_lookup[] = {
-	{   0,    9242  }, /* C/N=   0dB */
-	{   5,    9105  }, /* C/N= 0.5dB */
-	{  10,    8950  }, /* C/N= 1.0dB */
-	{  15,    8780  }, /* C/N= 1.5dB */
-	{  20,    8566  }, /* C/N= 2.0dB */
-	{  25,    8366  }, /* C/N= 2.5dB */
-	{  30,    8146  }, /* C/N= 3.0dB */
-	{  35,    7908  }, /* C/N= 3.5dB */
-	{  40,    7666  }, /* C/N= 4.0dB */
-	{  45,    7405  }, /* C/N= 4.5dB */
-	{  50,    7136  }, /* C/N= 5.0dB */
-	{  55,    6861  }, /* C/N= 5.5dB */
-	{  60,    6576  }, /* C/N= 6.0dB */
-	{  65,    6330  }, /* C/N= 6.5dB */
-	{  70,    6048  }, /* C/N= 7.0dB */
-	{  75,    5768  }, /* C/N= 7.5dB */
-	{  80,    5492  }, /* C/N= 8.0dB */
-	{  85,    5224  }, /* C/N= 8.5dB */
-	{  90,    4959  }, /* C/N= 9.0dB */
-	{  95,    4709  }, /* C/N= 9.5dB */
-	{  100,   4467  }, /* C/N=10.0dB */
-	{  105,   4236  }, /* C/N=10.5dB */
-	{  110,   4013  }, /* C/N=11.0dB */
-	{  115,   3800  }, /* C/N=11.5dB */
-	{  120,   3598  }, /* C/N=12.0dB */
-	{  125,   3406  }, /* C/N=12.5dB */
-	{  130,   3225  }, /* C/N=13.0dB */
-	{  135,   3052  }, /* C/N=13.5dB */
-	{  140,   2889  }, /* C/N=14.0dB */
-	{  145,   2733  }, /* C/N=14.5dB */
-	{  150,   2587  }, /* C/N=15.0dB */
-	{  160,   2318  }, /* C/N=16.0dB */
-	{  170,   2077  }, /* C/N=17.0dB */
-	{  180,   1862  }, /* C/N=18.0dB */
-	{  190,   1670  }, /* C/N=19.0dB */
-	{  200,   1499  }, /* C/N=20.0dB */
-	{  210,   1347  }, /* C/N=21.0dB */
-	{  220,   1213  }, /* C/N=22.0dB */
-	{  230,   1095  }, /* C/N=23.0dB */
-	{  240,    992  }, /* C/N=24.0dB */
-	{  250,    900  }, /* C/N=25.0dB */
-	{  260,    826  }, /* C/N=26.0dB */
-	{  270,    758  }, /* C/N=27.0dB */
-	{  280,    702  }, /* C/N=28.0dB */
-	{  290,    653  }, /* C/N=29.0dB */
-	{  300,    613  }, /* C/N=30.0dB */
-	{  310,    579  }, /* C/N=31.0dB */
-	{  320,    550  }, /* C/N=32.0dB */
-	{  330,    526  }, /* C/N=33.0dB */
-	{  350,    490  }, /* C/N=33.0dB */
-	{  400,    445  }, /* C/N=40.0dB */
-	{  450,    430  }, /* C/N=45.0dB */
-	{  500,    426  }, /* C/N=50.0dB */
-	{  510,    425  }  /* C/N=51.0dB */
+	{   0,    9242  },  
+	{   5,    9105  },  
+	{  10,    8950  },  
+	{  15,    8780  },  
+	{  20,    8566  },  
+	{  25,    8366  },  
+	{  30,    8146  },  
+	{  35,    7908  },  
+	{  40,    7666  },  
+	{  45,    7405  },  
+	{  50,    7136  },  
+	{  55,    6861  },  
+	{  60,    6576  },  
+	{  65,    6330  },  
+	{  70,    6048  },  
+	{  75,    5768  },  
+	{  80,    5492  },  
+	{  85,    5224  },  
+	{  90,    4959  },  
+	{  95,    4709  },  
+	{  100,   4467  },  
+	{  105,   4236  },  
+	{  110,   4013  },  
+	{  115,   3800  },  
+	{  120,   3598  },  
+	{  125,   3406  },  
+	{  130,   3225  },  
+	{  135,   3052  },  
+	{  140,   2889  },  
+	{  145,   2733  },  
+	{  150,   2587  },  
+	{  160,   2318  },  
+	{  170,   2077  },  
+	{  180,   1862  },  
+	{  190,   1670  },  
+	{  200,   1499  },  
+	{  210,   1347  },  
+	{  220,   1213  },  
+	{  230,   1095  },  
+	{  240,    992  },  
+	{  250,    900  },  
+	{  260,    826  },  
+	{  270,    758  },  
+	{  280,    702  },  
+	{  290,    653  },  
+	{  300,    613  },  
+	{  310,    579  },  
+	{  320,    550  },  
+	{  330,    526  },  
+	{  350,    490  },  
+	{  400,    445  },  
+	{  450,    430  },  
+	{  500,    426  },  
+	{  510,    425  }   
 };
 
 static const struct slookup s2_sn_lookup[] = {
-	{  -30,  13950  }, /* C/N=-2.5dB */
-	{  -25,  13580  }, /* C/N=-2.5dB */
-	{  -20,  13150  }, /* C/N=-2.0dB */
-	{  -15,  12760  }, /* C/N=-1.5dB */
-	{  -10,  12345  }, /* C/N=-1.0dB */
-	{   -5,  11900  }, /* C/N=-0.5dB */
-	{    0,  11520  }, /* C/N=   0dB */
-	{    5,  11080  }, /* C/N= 0.5dB */
-	{   10,  10630  }, /* C/N= 1.0dB */
-	{   15,  10210  }, /* C/N= 1.5dB */
-	{   20,   9790  }, /* C/N= 2.0dB */
-	{   25,   9390  }, /* C/N= 2.5dB */
-	{   30,   8970  }, /* C/N= 3.0dB */
-	{   35,   8575  }, /* C/N= 3.5dB */
-	{   40,   8180  }, /* C/N= 4.0dB */
-	{   45,   7800  }, /* C/N= 4.5dB */
-	{   50,   7430  }, /* C/N= 5.0dB */
-	{   55,   7080  }, /* C/N= 5.5dB */
-	{   60,   6720  }, /* C/N= 6.0dB */
-	{   65,   6320  }, /* C/N= 6.5dB */
-	{   70,   6060  }, /* C/N= 7.0dB */
-	{   75,   5760  }, /* C/N= 7.5dB */
-	{   80,   5480  }, /* C/N= 8.0dB */
-	{   85,   5200  }, /* C/N= 8.5dB */
-	{   90,   4930  }, /* C/N= 9.0dB */
-	{   95,   4680  }, /* C/N= 9.5dB */
-	{  100,   4425  }, /* C/N=10.0dB */
-	{  105,   4210  }, /* C/N=10.5dB */
-	{  110,   3980  }, /* C/N=11.0dB */
-	{  115,   3765  }, /* C/N=11.5dB */
-	{  120,   3570  }, /* C/N=12.0dB */
-	{  125,   3315  }, /* C/N=12.5dB */
-	{  130,   3140  }, /* C/N=13.0dB */
-	{  135,   2980  }, /* C/N=13.5dB */
-	{  140,   2820  }, /* C/N=14.0dB */
-	{  145,   2670  }, /* C/N=14.5dB */
-	{  150,   2535  }, /* C/N=15.0dB */
-	{  160,   2270  }, /* C/N=16.0dB */
-	{  170,   2035  }, /* C/N=17.0dB */
-	{  180,   1825  }, /* C/N=18.0dB */
-	{  190,   1650  }, /* C/N=19.0dB */
-	{  200,   1485  }, /* C/N=20.0dB */
-	{  210,   1340  }, /* C/N=21.0dB */
-	{  220,   1212  }, /* C/N=22.0dB */
-	{  230,   1100  }, /* C/N=23.0dB */
-	{  240,   1000  }, /* C/N=24.0dB */
-	{  250,    910  }, /* C/N=25.0dB */
-	{  260,    836  }, /* C/N=26.0dB */
-	{  270,    772  }, /* C/N=27.0dB */
-	{  280,    718  }, /* C/N=28.0dB */
-	{  290,    671  }, /* C/N=29.0dB */
-	{  300,    635  }, /* C/N=30.0dB */
-	{  310,    602  }, /* C/N=31.0dB */
-	{  320,    575  }, /* C/N=32.0dB */
-	{  330,    550  }, /* C/N=33.0dB */
-	{  350,    517  }, /* C/N=35.0dB */
-	{  400,    480  }, /* C/N=40.0dB */
-	{  450,    466  }, /* C/N=45.0dB */
-	{  500,    464  }, /* C/N=50.0dB */
-	{  510,    463  }, /* C/N=51.0dB */
+	{  -30,  13950  },  
+	{  -25,  13580  },  
+	{  -20,  13150  },  
+	{  -15,  12760  },  
+	{  -10,  12345  },  
+	{   -5,  11900  },  
+	{    0,  11520  },  
+	{    5,  11080  },  
+	{   10,  10630  },  
+	{   15,  10210  },  
+	{   20,   9790  },  
+	{   25,   9390  },  
+	{   30,   8970  },  
+	{   35,   8575  },  
+	{   40,   8180  },  
+	{   45,   7800  },  
+	{   50,   7430  },  
+	{   55,   7080  },  
+	{   60,   6720  },  
+	{   65,   6320  },  
+	{   70,   6060  },  
+	{   75,   5760  },  
+	{   80,   5480  },  
+	{   85,   5200  },  
+	{   90,   4930  },  
+	{   95,   4680  },  
+	{  100,   4425  },  
+	{  105,   4210  },  
+	{  110,   3980  },  
+	{  115,   3765  },  
+	{  120,   3570  },  
+	{  125,   3315  },  
+	{  130,   3140  },  
+	{  135,   2980  },  
+	{  140,   2820  },  
+	{  145,   2670  },  
+	{  150,   2535  },  
+	{  160,   2270  },  
+	{  170,   2035  },  
+	{  180,   1825  },  
+	{  190,   1650  },  
+	{  200,   1485  },  
+	{  210,   1340  },  
+	{  220,   1212  },  
+	{  230,   1100  },  
+	{  240,   1000  },  
+	{  250,    910  },  
+	{  260,    836  },  
+	{  270,    772  },  
+	{  280,    718  },  
+	{  290,    671  },  
+	{  300,    635  },  
+	{  310,    602  },  
+	{  320,    575  },  
+	{  330,    550  },  
+	{  350,    517  },  
+	{  400,    480  },  
+	{  450,    466  },  
+	{  500,    464  },  
+	{  510,    463  },  
 };
 
 static const struct slookup padc_lookup[] = {
-	{    0,  118000 }, /* PADC= +0dBm */
-	{ -100,  93600  }, /* PADC= -1dBm */
-	{ -200,  74500  }, /* PADC= -2dBm */
-	{ -300,  59100  }, /* PADC= -3dBm */
-	{ -400,  47000  }, /* PADC= -4dBm */
-	{ -500,  37300  }, /* PADC= -5dBm */
-	{ -600,  29650  }, /* PADC= -6dBm */
-	{ -700,  23520  }, /* PADC= -7dBm */
-	{ -900,  14850  }, /* PADC= -9dBm */
-	{ -1100, 9380   }, /* PADC=-11dBm */
-	{ -1300, 5910   }, /* PADC=-13dBm */
-	{ -1500, 3730   }, /* PADC=-15dBm */
-	{ -1700, 2354   }, /* PADC=-17dBm */
-	{ -1900, 1485   }, /* PADC=-19dBm */
-	{ -2000, 1179   }, /* PADC=-20dBm */
-	{ -2100, 1000   }, /* PADC=-21dBm */
+	{    0,  118000 },  
+	{ -100,  93600  },  
+	{ -200,  74500  },  
+	{ -300,  59100  },  
+	{ -400,  47000  },  
+	{ -500,  37300  },  
+	{ -600,  29650  },  
+	{ -700,  23520  },  
+	{ -900,  14850  },  
+	{ -1100, 9380   },  
+	{ -1300, 5910   },  
+	{ -1500, 3730   },  
+	{ -1700, 2354   },  
+	{ -1900, 1485   },  
+	{ -2000, 1179   },  
+	{ -2100, 1000   },  
 };
 
-/*********************************************************************
- * Tracking carrier loop carrier QPSK 1/4 to 8PSK 9/10 long Frame
- *********************************************************************/
+ 
 static const u8 s2car_loop[] =	{
-	/*
-	 * Modcod  2MPon 2MPoff 5MPon 5MPoff 10MPon 10MPoff
-	 * 20MPon 20MPoff 30MPon 30MPoff
-	 */
+	 
 
-	/* FE_QPSK_14  */
+	 
 	0x0C,  0x3C,  0x0B,  0x3C,  0x2A,  0x2C,  0x2A,  0x1C,  0x3A,  0x3B,
-	/* FE_QPSK_13  */
+	 
 	0x0C,  0x3C,  0x0B,  0x3C,  0x2A,  0x2C,  0x3A,  0x0C,  0x3A,  0x2B,
-	/* FE_QPSK_25  */
+	 
 	0x1C,  0x3C,  0x1B,  0x3C,  0x3A,  0x1C,  0x3A,  0x3B,  0x3A,  0x2B,
-	/* FE_QPSK_12  */
+	 
 	0x0C,  0x1C,  0x2B,  0x1C,  0x0B,  0x2C,  0x0B,  0x0C,  0x2A,  0x2B,
-	/* FE_QPSK_35  */
+	 
 	0x1C,  0x1C,  0x2B,  0x1C,  0x0B,  0x2C,  0x0B,  0x0C,  0x2A,  0x2B,
-	/* FE_QPSK_23  */
+	 
 	0x2C,  0x2C,  0x2B,  0x1C,  0x0B,  0x2C,  0x0B,  0x0C,  0x2A,  0x2B,
-	/* FE_QPSK_34  */
+	 
 	0x3C,  0x2C,  0x3B,  0x2C,  0x1B,  0x1C,  0x1B,  0x3B,  0x3A,  0x1B,
-	/* FE_QPSK_45  */
+	 
 	0x0D,  0x3C,  0x3B,  0x2C,  0x1B,  0x1C,  0x1B,  0x3B,  0x3A,  0x1B,
-	/* FE_QPSK_56  */
+	 
 	0x1D,  0x3C,  0x0C,  0x2C,  0x2B,  0x1C,  0x1B,  0x3B,  0x0B,  0x1B,
-	/* FE_QPSK_89  */
+	 
 	0x3D,  0x0D,  0x0C,  0x2C,  0x2B,  0x0C,  0x2B,  0x2B,  0x0B,  0x0B,
-	/* FE_QPSK_910 */
+	 
 	0x1E,  0x0D,  0x1C,  0x2C,  0x3B,  0x0C,  0x2B,  0x2B,  0x1B,  0x0B,
-	/* FE_8PSK_35  */
+	 
 	0x28,  0x09,  0x28,  0x09,  0x28,  0x09,  0x28,  0x08,  0x28,  0x27,
-	/* FE_8PSK_23  */
+	 
 	0x19,  0x29,  0x19,  0x29,  0x19,  0x29,  0x38,  0x19,  0x28,  0x09,
-	/* FE_8PSK_34  */
+	 
 	0x1A,  0x0B,  0x1A,  0x3A,  0x0A,  0x2A,  0x39,  0x2A,  0x39,  0x1A,
-	/* FE_8PSK_56  */
+	 
 	0x2B,  0x2B,  0x1B,  0x1B,  0x0B,  0x1B,  0x1A,  0x0B,  0x1A,  0x1A,
-	/* FE_8PSK_89  */
+	 
 	0x0C,  0x0C,  0x3B,  0x3B,  0x1B,  0x1B,  0x2A,  0x0B,  0x2A,  0x2A,
-	/* FE_8PSK_910 */
+	 
 	0x0C,  0x1C,  0x0C,  0x3B,  0x2B,  0x1B,  0x3A,  0x0B,  0x2A,  0x2A,
 
-	/**********************************************************************
-	 * Tracking carrier loop carrier 16APSK 2/3 to 32APSK 9/10 long Frame
-	 **********************************************************************/
+	 
 
-	/*
-	 * Modcod 2MPon  2MPoff 5MPon 5MPoff 10MPon 10MPoff 20MPon
-	 * 20MPoff 30MPon 30MPoff
-	 */
+	 
 
-	/* FE_16APSK_23  */
+	 
 	0x0A,  0x0A,  0x0A,  0x0A,  0x1A,  0x0A,  0x39,  0x0A,  0x29,  0x0A,
-	/* FE_16APSK_34  */
+	 
 	0x0A,  0x0A,  0x0A,  0x0A,  0x0B,  0x0A,  0x2A,  0x0A,  0x1A,  0x0A,
-	/* FE_16APSK_45  */
+	 
 	0x0A,  0x0A,  0x0A,  0x0A,  0x1B,  0x0A,  0x3A,  0x0A,  0x2A,  0x0A,
-	/* FE_16APSK_56  */
+	 
 	0x0A,  0x0A,  0x0A,  0x0A,  0x1B,  0x0A,  0x3A,  0x0A,  0x2A,  0x0A,
-	/* FE_16APSK_89  */
+	 
 	0x0A,  0x0A,  0x0A,  0x0A,  0x2B,  0x0A,  0x0B,  0x0A,  0x3A,  0x0A,
-	/* FE_16APSK_910 */
+	 
 	0x0A,  0x0A,  0x0A,  0x0A,  0x2B,  0x0A,  0x0B,  0x0A,  0x3A,  0x0A,
-	/* FE_32APSK_34  */
+	 
 	0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,
-	/* FE_32APSK_45  */
+	 
 	0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,
-	/* FE_32APSK_56  */
+	 
 	0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,
-	/* FE_32APSK_89  */
+	 
 	0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,
-	/* FE_32APSK_910 */
+	 
 	0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,  0x09,
 };
 
@@ -488,7 +472,7 @@ static int get_cur_symbol_rate(struct stv *state, u32 *p_symbol_rate)
 		(u32)tim_offs0;
 
 	if ((timing_offset & (1 << 23)) != 0)
-		timing_offset |= 0xFF000000; /* Sign extent */
+		timing_offset |= 0xFF000000;  
 
 	symbol_rate = (u32)(((u64)symbol_rate * state->base->mclk) >> 32);
 	timing_offset = (s32)(((s64)symbol_rate * (s64)timing_offset) >> 29);
@@ -559,7 +543,7 @@ static int tracking_optimization(struct stv *state)
 	write_reg(state, RSTV0910_P2_DMDCFGMD + state->regoff, tmp);
 
 	if (state->receive_mode == RCVMODE_DVBS2) {
-		/* Disable Reed-Solomon */
+		 
 		write_shared_reg(state,
 				 RSTV0910_TSTTSRS, state->nr ? 0x02 : 0x01,
 				 0x03);
@@ -601,7 +585,7 @@ static s32 table_lookup(const struct slookup *table,
 	int i;
 	s32 reg_diff;
 
-	/* Assumes Table[0].RegValue > Table[imax].RegValue */
+	 
 	if (reg_value >= table[0].reg_value) {
 		value = table[0].value;
 	} else if (reg_value <= table[imax].reg_value) {
@@ -699,35 +683,35 @@ static int get_bit_error_rate_s(struct stv *state, u32 *bernumerator,
 static u32 dvbs2_nbch(enum dvbs2_mod_cod mod_cod, enum dvbs2_fectype fectype)
 {
 	static const u32 nbch[][2] = {
-		{    0,     0}, /* DUMMY_PLF   */
-		{16200,  3240}, /* QPSK_1_4,   */
-		{21600,  5400}, /* QPSK_1_3,   */
-		{25920,  6480}, /* QPSK_2_5,   */
-		{32400,  7200}, /* QPSK_1_2,   */
-		{38880,  9720}, /* QPSK_3_5,   */
-		{43200, 10800}, /* QPSK_2_3,   */
-		{48600, 11880}, /* QPSK_3_4,   */
-		{51840, 12600}, /* QPSK_4_5,   */
-		{54000, 13320}, /* QPSK_5_6,   */
-		{57600, 14400}, /* QPSK_8_9,   */
-		{58320, 16000}, /* QPSK_9_10,  */
-		{43200,  9720}, /* 8PSK_3_5,   */
-		{48600, 10800}, /* 8PSK_2_3,   */
-		{51840, 11880}, /* 8PSK_3_4,   */
-		{54000, 13320}, /* 8PSK_5_6,   */
-		{57600, 14400}, /* 8PSK_8_9,   */
-		{58320, 16000}, /* 8PSK_9_10,  */
-		{43200, 10800}, /* 16APSK_2_3, */
-		{48600, 11880}, /* 16APSK_3_4, */
-		{51840, 12600}, /* 16APSK_4_5, */
-		{54000, 13320}, /* 16APSK_5_6, */
-		{57600, 14400}, /* 16APSK_8_9, */
-		{58320, 16000}, /* 16APSK_9_10 */
-		{48600, 11880}, /* 32APSK_3_4, */
-		{51840, 12600}, /* 32APSK_4_5, */
-		{54000, 13320}, /* 32APSK_5_6, */
-		{57600, 14400}, /* 32APSK_8_9, */
-		{58320, 16000}, /* 32APSK_9_10 */
+		{    0,     0},  
+		{16200,  3240},  
+		{21600,  5400},  
+		{25920,  6480},  
+		{32400,  7200},  
+		{38880,  9720},  
+		{43200, 10800},  
+		{48600, 11880},  
+		{51840, 12600},  
+		{54000, 13320},  
+		{57600, 14400},  
+		{58320, 16000},  
+		{43200,  9720},  
+		{48600, 10800},  
+		{51840, 11880},  
+		{54000, 13320},  
+		{57600, 14400},  
+		{58320, 16000},  
+		{43200, 10800},  
+		{48600, 11880},  
+		{51840, 12600},  
+		{54000, 13320},  
+		{57600, 14400},  
+		{58320, 16000},  
+		{48600, 11880},  
+		{51840, 12600},  
+		{54000, 13320},  
+		{57600, 14400},  
+		{58320, 16000},  
 	};
 
 	if (mod_cod >= DVBS2_QPSK_1_4 &&
@@ -860,11 +844,11 @@ static int stop(struct stv *state)
 		write_reg(state, RSTV0910_P2_TSCFGH + state->regoff,
 			  state->tscfgh | 0x01);
 		read_reg(state, RSTV0910_P2_PDELCTRL1 + state->regoff, &tmp);
-		tmp &= ~0x01; /* release reset DVBS2 packet delin */
+		tmp &= ~0x01;  
 		write_reg(state, RSTV0910_P2_PDELCTRL1 + state->regoff, tmp);
-		/* Blind optim*/
+		 
 		write_reg(state, RSTV0910_P2_AGC2O + state->regoff, 0x5B);
-		/* Stop the demod */
+		 
 		write_reg(state, RSTV0910_P2_DMDISTATE + state->regoff, 0x5c);
 		state->started = 0;
 	}
@@ -877,7 +861,7 @@ static void set_pls(struct stv *state, u32 pls_code)
 	if (pls_code == state->cur_scrambling_code)
 		return;
 
-	/* PLROOT2 bit 2 = gold code */
+	 
 	write_reg(state, RSTV0910_P2_PLROOT0 + state->regoff,
 		  pls_code & 0xff);
 	write_reg(state, RSTV0910_P2_PLROOT1 + state->regoff,
@@ -978,11 +962,11 @@ static int set_vth_default(struct stv *state)
 static int set_vth(struct stv *state)
 {
 	static const struct slookup vthlookup_table[] = {
-		{250,	8780}, /* C/N= 1.5dB */
-		{100,	7405}, /* C/N= 4.5dB */
-		{40,	6330}, /* C/N= 6.5dB */
-		{12,	5224}, /* C/N= 8.5dB */
-		{5,	4236}  /* C/N=10.5dB */
+		{250,	8780},  
+		{100,	7405},  
+		{40,	6330},  
+		{12,	5224},  
+		{5,	4236}   
 	};
 
 	int i;
@@ -1019,33 +1003,33 @@ static int start(struct stv *state, struct dtv_frontend_properties *p)
 	state->receive_mode = RCVMODE_NONE;
 	state->demod_lock_time = 0;
 
-	/* Demod Stop */
+	 
 	if (state->started)
 		write_reg(state, RSTV0910_P2_DMDISTATE + state->regoff, 0x5C);
 
 	init_search_param(state, p);
 
-	if (p->symbol_rate <= 1000000) { /* SR <=1Msps */
+	if (p->symbol_rate <= 1000000) {  
 		state->demod_timeout = 3000;
 		state->fec_timeout = 2000;
-	} else if (p->symbol_rate <= 2000000) { /* 1Msps < SR <=2Msps */
+	} else if (p->symbol_rate <= 2000000) {  
 		state->demod_timeout = 2500;
 		state->fec_timeout = 1300;
-	} else if (p->symbol_rate <= 5000000) { /* 2Msps< SR <=5Msps */
+	} else if (p->symbol_rate <= 5000000) {  
 		state->demod_timeout = 1000;
 		state->fec_timeout = 650;
-	} else if (p->symbol_rate <= 10000000) { /* 5Msps< SR <=10Msps */
+	} else if (p->symbol_rate <= 10000000) {  
 		state->demod_timeout = 700;
 		state->fec_timeout = 350;
-	} else if (p->symbol_rate < 20000000) { /* 10Msps< SR <=20Msps */
+	} else if (p->symbol_rate < 20000000) {  
 		state->demod_timeout = 400;
 		state->fec_timeout = 200;
-	} else { /* SR >=20Msps */
+	} else {  
 		state->demod_timeout = 300;
 		state->fec_timeout = 200;
 	}
 
-	/* Set the Init Symbol rate */
+	 
 	symb = muldiv32(p->symbol_rate, 65536, state->base->mclk);
 	write_reg(state, RSTV0910_P2_SFRINIT1 + state->regoff,
 		  ((symb >> 8) & 0x7F));
@@ -1054,7 +1038,7 @@ static int start(struct stv *state, struct dtv_frontend_properties *p)
 	state->demod_bits |= 0x80;
 	write_reg(state, RSTV0910_P2_DEMOD + state->regoff, state->demod_bits);
 
-	/* FE_STV0910_SetSearchStandard */
+	 
 	read_reg(state, RSTV0910_P2_DMDCFGMD + state->regoff, &reg_dmdcfgmd);
 	write_reg(state, RSTV0910_P2_DMDCFGMD + state->regoff,
 		  reg_dmdcfgmd |= 0xC0);
@@ -1062,13 +1046,13 @@ static int start(struct stv *state, struct dtv_frontend_properties *p)
 	write_shared_reg(state,
 			 RSTV0910_TSTTSRS, state->nr ? 0x02 : 0x01, 0x00);
 
-	/* Disable DSS */
+	 
 	write_reg(state, RSTV0910_P2_FECM  + state->regoff, 0x00);
 	write_reg(state, RSTV0910_P2_PRVIT + state->regoff, 0x2F);
 
 	enable_puncture_rate(state, FEC_NONE);
 
-	/* 8PSK 3/5, 8PSK 2/3 Poff tracking optimization WA */
+	 
 	write_reg(state, RSTV0910_P2_ACLC2S2Q + state->regoff, 0x0B);
 	write_reg(state, RSTV0910_P2_ACLC2S28 + state->regoff, 0x0A);
 	write_reg(state, RSTV0910_P2_BCLC2S2Q + state->regoff, 0x84);
@@ -1081,15 +1065,12 @@ static int start(struct stv *state, struct dtv_frontend_properties *p)
 	write_reg(state, RSTV0910_P2_BCLC2S216A + state->regoff, 0x84);
 	write_reg(state, RSTV0910_P2_BCLC2S232A + state->regoff, 0x84);
 
-	/*
-	 * Reset CAR3, bug DVBS2->DVBS1 lock
-	 * Note: The bit is only pulsed -> no lock on shared register needed
-	 */
+	 
 	write_reg(state, RSTV0910_TSTRES0, state->nr ? 0x04 : 0x08);
 	write_reg(state, RSTV0910_TSTRES0, 0);
 
 	set_vth_default(state);
-	/* Reset demod */
+	 
 	write_reg(state, RSTV0910_P2_DMDISTATE + state->regoff, 0x1F);
 
 	write_reg(state, RSTV0910_P2_CARCFG + state->regoff, 0x46);
@@ -1103,18 +1084,18 @@ static int start(struct stv *state, struct dtv_frontend_properties *p)
 	write_reg(state, RSTV0910_P2_CFRUP1 + state->regoff,
 		  (freq >> 8) & 0xff);
 	write_reg(state, RSTV0910_P2_CFRUP0 + state->regoff, (freq & 0xff));
-	/* CFR Low Setting */
+	 
 	freq = -freq;
 	write_reg(state, RSTV0910_P2_CFRLOW1 + state->regoff,
 		  (freq >> 8) & 0xff);
 	write_reg(state, RSTV0910_P2_CFRLOW0 + state->regoff, (freq & 0xff));
 
-	/* init the demod frequency offset to 0 */
+	 
 	write_reg(state, RSTV0910_P2_CFRINIT1 + state->regoff, 0);
 	write_reg(state, RSTV0910_P2_CFRINIT0 + state->regoff, 0);
 
 	write_reg(state, RSTV0910_P2_DMDISTATE + state->regoff, 0x1F);
-	/* Trigger acq */
+	 
 	write_reg(state, RSTV0910_P2_DMDISTATE + state->regoff, 0x15);
 
 	state->demod_lock_time += TUNING_DELAY;
@@ -1125,13 +1106,13 @@ static int start(struct stv *state, struct dtv_frontend_properties *p)
 
 static int init_diseqc(struct stv *state)
 {
-	u16 offs = state->nr ? 0x40 : 0; /* Address offset */
+	u16 offs = state->nr ? 0x40 : 0;  
 	u8 freq = ((state->base->mclk + 11000 * 32) / (22000 * 32));
 
-	/* Disable receiver */
+	 
 	write_reg(state, RSTV0910_P1_DISRXCFG + offs, 0x00);
-	write_reg(state, RSTV0910_P1_DISTXCFG + offs, 0xBA); /* Reset = 1 */
-	write_reg(state, RSTV0910_P1_DISTXCFG + offs, 0x3A); /* Reset = 0 */
+	write_reg(state, RSTV0910_P1_DISTXCFG + offs, 0xBA);  
+	write_reg(state, RSTV0910_P1_DISTXCFG + offs, 0x3A);  
 	write_reg(state, RSTV0910_P1_DISTXF22 + offs, freq);
 	return 0;
 }
@@ -1149,33 +1130,33 @@ static int probe(struct stv *state)
 	if (id != 0x51)
 		return -EINVAL;
 
-	/* Configure the I2C repeater to off */
+	 
 	write_reg(state, RSTV0910_P1_I2CRPT, 0x24);
-	/* Configure the I2C repeater to off */
+	 
 	write_reg(state, RSTV0910_P2_I2CRPT, 0x24);
-	/* Set the I2C to oversampling ratio */
-	write_reg(state, RSTV0910_I2CCFG, 0x88); /* state->i2ccfg */
+	 
+	write_reg(state, RSTV0910_I2CCFG, 0x88);  
 
-	write_reg(state, RSTV0910_OUTCFG,    0x00); /* OUTCFG */
-	write_reg(state, RSTV0910_PADCFG,    0x05); /* RFAGC Pads Dev = 05 */
-	write_reg(state, RSTV0910_SYNTCTRL,  0x02); /* SYNTCTRL */
-	write_reg(state, RSTV0910_TSGENERAL, state->tsgeneral); /* TSGENERAL */
-	write_reg(state, RSTV0910_CFGEXT,    0x02); /* CFGEXT */
+	write_reg(state, RSTV0910_OUTCFG,    0x00);  
+	write_reg(state, RSTV0910_PADCFG,    0x05);  
+	write_reg(state, RSTV0910_SYNTCTRL,  0x02);  
+	write_reg(state, RSTV0910_TSGENERAL, state->tsgeneral);  
+	write_reg(state, RSTV0910_CFGEXT,    0x02);  
 
 	if (state->single)
-		write_reg(state, RSTV0910_GENCFG, 0x14); /* GENCFG */
+		write_reg(state, RSTV0910_GENCFG, 0x14);  
 	else
-		write_reg(state, RSTV0910_GENCFG, 0x15); /* GENCFG */
+		write_reg(state, RSTV0910_GENCFG, 0x15);  
 
-	write_reg(state, RSTV0910_P1_TNRCFG2, 0x02); /* IQSWAP = 0 */
-	write_reg(state, RSTV0910_P2_TNRCFG2, 0x82); /* IQSWAP = 1 */
+	write_reg(state, RSTV0910_P1_TNRCFG2, 0x02);  
+	write_reg(state, RSTV0910_P2_TNRCFG2, 0x82);  
 
 	write_reg(state, RSTV0910_P1_CAR3CFG, 0x02);
 	write_reg(state, RSTV0910_P2_CAR3CFG, 0x02);
 	write_reg(state, RSTV0910_P1_DMDCFG4, 0x04);
 	write_reg(state, RSTV0910_P2_DMDCFG4, 0x04);
 
-	write_reg(state, RSTV0910_TSTRES0, 0x80); /* LDPC Reset */
+	write_reg(state, RSTV0910_TSTRES0, 0x80);  
 	write_reg(state, RSTV0910_TSTRES0, 0x00);
 
 	write_reg(state, RSTV0910_P1_TSPIDFLT1, 0x00);
@@ -1186,22 +1167,22 @@ static int probe(struct stv *state)
 
 	set_mclock(state, 135000000);
 
-	/* TS output */
+	 
 	write_reg(state, RSTV0910_P1_TSCFGH, state->tscfgh | 0x01);
 	write_reg(state, RSTV0910_P1_TSCFGH, state->tscfgh);
-	write_reg(state, RSTV0910_P1_TSCFGM, 0xC0); /* Manual speed */
+	write_reg(state, RSTV0910_P1_TSCFGM, 0xC0);  
 	write_reg(state, RSTV0910_P1_TSCFGL, 0x20);
 
 	write_reg(state, RSTV0910_P1_TSSPEED, state->tsspeed);
 
 	write_reg(state, RSTV0910_P2_TSCFGH, state->tscfgh | 0x01);
 	write_reg(state, RSTV0910_P2_TSCFGH, state->tscfgh);
-	write_reg(state, RSTV0910_P2_TSCFGM, 0xC0); /* Manual speed */
+	write_reg(state, RSTV0910_P2_TSCFGM, 0xC0);  
 	write_reg(state, RSTV0910_P2_TSCFGL, 0x20);
 
 	write_reg(state, RSTV0910_P2_TSSPEED, state->tsspeed);
 
-	/* Reset stream merger */
+	 
 	write_reg(state, RSTV0910_P1_TSCFGH, state->tscfgh | 0x01);
 	write_reg(state, RSTV0910_P2_TSCFGH, state->tscfgh | 0x01);
 	write_reg(state, RSTV0910_P1_TSCFGH, state->tscfgh);
@@ -1225,15 +1206,7 @@ static int gate_ctrl(struct dvb_frontend *fe, int enable)
 	struct stv *state = fe->demodulator_priv;
 	u8 i2crpt = state->i2crpt & ~0x86;
 
-	/*
-	 * mutex_lock note: Concurrent I2C gate bus accesses must be
-	 * prevented (STV0910 = dual demod on a single IC with a single I2C
-	 * gate/bus, and two tuners attached), similar to most (if not all)
-	 * other I2C host interfaces/buses.
-	 *
-	 * enable=1 (open I2C gate) will grab the lock
-	 * enable=0 (close I2C gate) releases the lock
-	 */
+	 
 
 	if (enable) {
 		mutex_lock(&state->base->i2c_lock);
@@ -1244,7 +1217,7 @@ static int gate_ctrl(struct dvb_frontend *fe, int enable)
 
 	if (write_reg(state, state->nr ? RSTV0910_P2_I2CRPT :
 		      RSTV0910_P1_I2CRPT, i2crpt) < 0) {
-		/* don't hold the I2C bus lock on failure */
+		 
 		if (!WARN_ON(!mutex_is_locked(&state->base->i2c_lock)))
 			mutex_unlock(&state->base->i2c_lock);
 		dev_err(&state->base->i2c->dev,
@@ -1316,7 +1289,7 @@ static int read_snr(struct dvb_frontend *fe)
 
 	if (!get_signal_to_noise(state, &snrval)) {
 		p->cnr.stat[0].scale = FE_SCALE_DECIBEL;
-		p->cnr.stat[0].svalue = 100 * snrval; /* fix scale */
+		p->cnr.stat[0].svalue = 100 * snrval;  
 	} else {
 		p->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
@@ -1389,7 +1362,7 @@ static int read_status(struct dvb_frontend *fe, enum fe_status *status)
 	if (cur_receive_mode == RCVMODE_NONE) {
 		set_vth(state);
 
-		/* reset signal statistics */
+		 
 		p->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 		p->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 		p->pre_bit_error.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
@@ -1448,10 +1421,7 @@ static int read_status(struct dvb_frontend *fe, enum fe_status *status)
 			manage_matype_info(state);
 
 			if (state->receive_mode == RCVMODE_DVBS2) {
-				/*
-				 * FSTV0910_P2_MANUALSX_ROLLOFF,
-				 * FSTV0910_P2_MANUALS2_ROLLOFF = 0
-				 */
+				 
 				state->demod_bits &= ~0x84;
 				write_reg(state,
 					  RSTV0910_P2_DEMOD + state->regoff,
@@ -1459,12 +1429,12 @@ static int read_status(struct dvb_frontend *fe, enum fe_status *status)
 				read_reg(state,
 					 RSTV0910_P2_PDELCTRL2 + state->regoff,
 					 &tmp);
-				/* reset DVBS2 packet delinator error counter */
+				 
 				tmp |= 0x40;
 				write_reg(state,
 					  RSTV0910_P2_PDELCTRL2 + state->regoff,
 					  tmp);
-				/* reset DVBS2 packet delinator error counter */
+				 
 				tmp &= ~0x40;
 				write_reg(state,
 					  RSTV0910_P2_PDELCTRL2 + state->regoff,
@@ -1473,7 +1443,7 @@ static int read_status(struct dvb_frontend *fe, enum fe_status *status)
 				state->berscale = 2;
 				state->last_bernumerator = 0;
 				state->last_berdenominator = 1;
-				/* force to PRE BCH Rate */
+				 
 				write_reg(state,
 					  RSTV0910_P2_ERRCTRL1 + state->regoff,
 					  BER_SRC_S2 | state->berscale);
@@ -1481,18 +1451,15 @@ static int read_status(struct dvb_frontend *fe, enum fe_status *status)
 				state->berscale = 2;
 				state->last_bernumerator = 0;
 				state->last_berdenominator = 1;
-				/* force to PRE RS Rate */
+				 
 				write_reg(state,
 					  RSTV0910_P2_ERRCTRL1 + state->regoff,
 					  BER_SRC_S | state->berscale);
 			}
-			/* Reset the Total packet counter */
+			 
 			write_reg(state,
 				  RSTV0910_P2_FBERCPT4 + state->regoff, 0x00);
-			/*
-			 * Reset the packet Error counter2 (and Set it to
-			 * infinite error count mode)
-			 */
+			 
 			write_reg(state,
 				  RSTV0910_P2_ERRCTRL2 + state->regoff, 0xc1);
 
@@ -1502,7 +1469,7 @@ static int read_status(struct dvb_frontend *fe, enum fe_status *status)
 						     state->puncture_rate);
 		}
 
-		/* Use highest signaled ModCod for quality */
+		 
 		if (state->is_vcm) {
 			u8 tmp;
 			enum fe_stv0910_mod_cod mod_cod;
@@ -1516,18 +1483,18 @@ static int read_status(struct dvb_frontend *fe, enum fe_status *status)
 		}
 	}
 
-	/* read signal statistics */
+	 
 
-	/* read signal strength */
+	 
 	read_signal_strength(fe);
 
-	/* read carrier/noise on FE_HAS_CARRIER */
+	 
 	if (*status & FE_HAS_CARRIER)
 		read_snr(fe);
 	else
 		p->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 
-	/* read ber */
+	 
 	if (*status & FE_HAS_VITERBI) {
 		read_ber(fe);
 	} else {
@@ -1778,12 +1745,12 @@ struct dvb_frontend *stv0910_attach(struct i2c_adapter *i2c,
 	state->tscfgh = 0x20 | (cfg->parallel ? 0 : 0x40);
 	state->tsgeneral = (cfg->parallel == 2) ? 0x02 : 0x00;
 	state->i2crpt = 0x0A | ((cfg->rptlvl & 0x07) << 4);
-	/* use safe tsspeed value if unspecified through stv0910_cfg */
+	 
 	state->tsspeed = (cfg->tsspeed ? cfg->tsspeed : 0x28);
 	state->nr = nr;
 	state->regoff = state->nr ? 0 : 0x200;
 	state->search_range = 16000000;
-	state->demod_bits = 0x10; /* Inversion : Auto with reset to 0 */
+	state->demod_bits = 0x10;  
 	state->receive_mode = RCVMODE_NONE;
 	state->cur_scrambling_code = (~0U);
 	state->single = cfg->single ? 1 : 0;

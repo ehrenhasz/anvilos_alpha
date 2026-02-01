@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-   Copyright (c) 2010,2011 Code Aurora Forum.  All rights reserved.
-   Copyright (c) 2011,2012 Intel Corp.
 
-*/
+ 
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -15,11 +11,11 @@
 
 #define A2MP_FEAT_EXT	0x8000
 
-/* Global AMP Manager list */
+ 
 static LIST_HEAD(amp_mgr_list);
 static DEFINE_MUTEX(amp_mgr_list_lock);
 
-/* A2MP build & send command helper functions */
+ 
 static struct a2mp_cmd *__a2mp_build(u8 code, u8 ident, u16 len, void *data)
 {
 	struct a2mp_cmd *cmd;
@@ -88,7 +84,7 @@ static struct amp_mgr *amp_mgr_lookup_by_state(u8 state)
 	return NULL;
 }
 
-/* hci_dev_list shall be locked */
+ 
 static void __a2mp_add_cl(struct amp_mgr *mgr, struct a2mp_cl *cl)
 {
 	struct hci_dev *hdev;
@@ -111,7 +107,7 @@ static void __a2mp_add_cl(struct amp_mgr *mgr, struct a2mp_cl *cl)
 	}
 }
 
-/* Processing A2MP messages */
+ 
 static int a2mp_command_rej(struct amp_mgr *mgr, struct sk_buff *skb,
 			    struct a2mp_cmd *hdr)
 {
@@ -146,7 +142,7 @@ static int a2mp_discover_req(struct amp_mgr *mgr, struct sk_buff *skb,
 
 	BT_DBG("mtu %d efm 0x%4.4x", le16_to_cpu(req->mtu), ext_feat);
 
-	/* check that packet is not broken for now */
+	 
 	while (ext_feat & A2MP_FEAT_EXT) {
 		if (len < sizeof(ext_feat))
 			return -EINVAL;
@@ -159,7 +155,7 @@ static int a2mp_discover_req(struct amp_mgr *mgr, struct sk_buff *skb,
 
 	read_lock(&hci_dev_list_lock);
 
-	/* at minimum the BR/EDR needs to be listed */
+	 
 	num_ctrl = 1;
 
 	list_for_each_entry(hdev, &hci_dev_list, list) {
@@ -206,7 +202,7 @@ static int a2mp_discover_rsp(struct amp_mgr *mgr, struct sk_buff *skb,
 
 	BT_DBG("mtu %d efm 0x%4.4x", le16_to_cpu(rsp->mtu), ext_feat);
 
-	/* check that packet is not broken for now */
+	 
 	while (ext_feat & A2MP_FEAT_EXT) {
 		if (len < sizeof(ext_feat))
 			return -EINVAL;
@@ -238,7 +234,7 @@ static int a2mp_discover_rsp(struct amp_mgr *mgr, struct sk_buff *skb,
 		cl = skb_pull(skb, sizeof(*cl));
 	}
 
-	/* Fall back to L2CAP init sequence */
+	 
 	if (!found) {
 		struct l2cap_conn *conn = mgr->l2cap_conn;
 		struct l2cap_chan *chan;
@@ -278,7 +274,7 @@ static int a2mp_change_notify(struct amp_mgr *mgr, struct sk_buff *skb,
 		cl = skb_pull(skb, sizeof(*cl));
 	}
 
-	/* TODO send A2MP_CHANGE_RSP */
+	 
 
 	return 0;
 }
@@ -375,7 +371,7 @@ static int a2mp_getampassoc_req(struct amp_mgr *mgr, struct sk_buff *skb,
 
 	BT_DBG("id %u", req->id);
 
-	/* Make sure that other request is not processed */
+	 
 	tmp = amp_mgr_lookup_by_state(READ_LOC_AMP_ASSOC);
 
 	hdev = hci_dev_get(req->id);
@@ -429,7 +425,7 @@ static int a2mp_getampassoc_rsp(struct amp_mgr *mgr, struct sk_buff *skb,
 	if (rsp->status)
 		return -EINVAL;
 
-	/* Save remote ASSOC data */
+	 
 	ctrl = amp_ctrl_lookup(mgr, rsp->id);
 	if (ctrl) {
 		u8 *assoc;
@@ -448,7 +444,7 @@ static int a2mp_getampassoc_rsp(struct amp_mgr *mgr, struct sk_buff *skb,
 		amp_ctrl_put(ctrl);
 	}
 
-	/* Create Phys Link */
+	 
 	hdev = hci_dev_get(rsp->id);
 	if (!hdev)
 		return -EINVAL;
@@ -536,9 +532,7 @@ send_rsp:
 	if (hdev)
 		hci_dev_put(hdev);
 
-	/* Reply error now and success after HCI Write Remote AMP Assoc
-	   command complete with success status
-	 */
+	 
 	if (rsp.status != A2MP_STATUS_SUCCESS) {
 		a2mp_send(mgr, A2MP_CREATEPHYSLINK_RSP, hdr->ident,
 			  sizeof(rsp), &rsp);
@@ -584,7 +578,7 @@ static int a2mp_discphyslink_req(struct amp_mgr *mgr, struct sk_buff *skb,
 		goto clean;
 	}
 
-	/* TODO Disconnect Phys Link here */
+	 
 
 clean:
 	hci_dev_put(hdev);
@@ -605,7 +599,7 @@ static inline int a2mp_cmd_rsp(struct amp_mgr *mgr, struct sk_buff *skb,
 	return 0;
 }
 
-/* Handle A2MP signalling */
+ 
 static int a2mp_chan_recv_cb(struct l2cap_chan *chan, struct sk_buff *skb)
 {
 	struct a2mp_cmd *hdr;
@@ -699,8 +693,7 @@ static int a2mp_chan_recv_cb(struct l2cap_chan *chan, struct sk_buff *skb)
 			  &rej);
 	}
 
-	/* Always free skb and return success error code to prevent
-	   from sending L2CAP Disconnect over A2MP channel */
+	 
 	kfree_skb(skb);
 
 	amp_mgr_put(mgr);
@@ -753,7 +746,7 @@ static const struct l2cap_ops a2mp_chan_ops = {
 	.state_change = a2mp_chan_state_change_cb,
 	.alloc_skb = a2mp_chan_alloc_skb_cb,
 
-	/* Not implemented for A2MP */
+	 
 	.new_connection = l2cap_chan_no_new_connection,
 	.teardown = l2cap_chan_no_teardown,
 	.ready = l2cap_chan_no_ready,
@@ -815,7 +808,7 @@ static struct l2cap_chan *a2mp_chan_open(struct l2cap_conn *conn, bool locked)
 	return chan;
 }
 
-/* AMP Manager functions */
+ 
 struct amp_mgr *amp_mgr_get(struct amp_mgr *mgr)
 {
 	BT_DBG("mgr %p orig refcnt %d", mgr, kref_read(&mgr->kref));
@@ -872,7 +865,7 @@ static struct amp_mgr *amp_mgr_create(struct l2cap_conn *conn, bool locked)
 
 	kref_init(&mgr->kref);
 
-	/* Remote AMP ctrl list initialization */
+	 
 	INIT_LIST_HEAD(&mgr->amp_ctrls);
 	mutex_init(&mgr->amp_ctrls_lock);
 

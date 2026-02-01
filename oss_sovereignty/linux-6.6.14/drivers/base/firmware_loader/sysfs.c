@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/highmem.h>
 #include <linux/module.h>
@@ -8,16 +8,11 @@
 
 #include "sysfs.h"
 
-/*
- * sysfs support for firmware loader
- */
+ 
 
 void __fw_load_abort(struct fw_priv *fw_priv)
 {
-	/*
-	 * There is a small window in which user can write to 'loading'
-	 * between loading done/aborted and disappearance of 'loading'
-	 */
+	 
 	if (fw_state_is_aborted(fw_priv) || fw_state_is_done(fw_priv))
 		return;
 
@@ -31,19 +26,7 @@ static ssize_t timeout_show(const struct class *class, const struct class_attrib
 	return sysfs_emit(buf, "%d\n", __firmware_loading_timeout());
 }
 
-/**
- * timeout_store() - set number of seconds to wait for firmware
- * @class: device class pointer
- * @attr: device attribute pointer
- * @buf: buffer to scan for timeout value
- * @count: number of bytes in @buf
- *
- *	Sets the number of seconds to wait for the firmware.  Once
- *	this expires an error will be returned to the driver and no
- *	firmware will be provided.
- *
- *	Note: zero means 'wait forever'.
- **/
+ 
 static ssize_t timeout_store(const struct class *class, const struct class_attribute *attr,
 			     const char *buf, size_t count)
 {
@@ -87,7 +70,7 @@ static int firmware_uevent(const struct device *dev, struct kobj_uevent_env *env
 	mutex_unlock(&fw_lock);
 	return err;
 }
-#endif /* CONFIG_FW_LOADER_USER_HELPER */
+#endif  
 
 static void fw_dev_release(struct device *dev)
 {
@@ -137,19 +120,7 @@ static ssize_t firmware_loading_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", loading);
 }
 
-/**
- * firmware_loading_store() - set value in the 'loading' control file
- * @dev: device pointer
- * @attr: device attribute pointer
- * @buf: buffer to scan for loading control value
- * @count: number of bytes in @buf
- *
- *	The relevant values are:
- *
- *	 1: Start a load, discarding any previous partial load.
- *	 0: Conclude the load and hand the data to the driver code.
- *	-1: Conclude the load with an error and discard any written data.
- **/
+ 
 static ssize_t firmware_loading_store(struct device *dev,
 				      struct device_attribute *attr,
 				      const char *buf, size_t count)
@@ -166,7 +137,7 @@ static ssize_t firmware_loading_store(struct device *dev,
 
 	switch (loading) {
 	case 1:
-		/* discarding any previous partial load */
+		 
 		fw_free_paged_buf(fw_priv);
 		fw_state_start(fw_priv);
 		break;
@@ -174,12 +145,7 @@ static ssize_t firmware_loading_store(struct device *dev,
 		if (fw_state_is_loading(fw_priv)) {
 			int rc;
 
-			/*
-			 * Several loading requests may be pending on
-			 * one same firmware buf, so let all requests
-			 * see the mapped 'buf->data' once the loading
-			 * is completed.
-			 */
+			 
 			rc = fw_map_paged_buf(fw_priv);
 			if (rc)
 				dev_err(dev, "%s: map pages failed\n",
@@ -190,20 +156,14 @@ static ssize_t firmware_loading_store(struct device *dev,
 								    LOADING_FIRMWARE,
 								    "blob");
 
-			/*
-			 * Same logic as fw_load_abort, only the DONE bit
-			 * is ignored and we set ABORT only on failure.
-			 */
+			 
 			if (rc) {
 				fw_state_aborted(fw_priv);
 				written = rc;
 			} else {
 				fw_state_done(fw_priv);
 
-				/*
-				 * If this is a user-initiated firmware upload
-				 * then start the upload in a worker thread now.
-				 */
+				 
 				rc = fw_upload_start(fw_sysfs);
 				if (rc)
 					written = rc;
@@ -303,18 +263,7 @@ static int fw_realloc_pages(struct fw_sysfs *fw_sysfs, int min_size)
 	return err;
 }
 
-/**
- * firmware_data_write() - write method for firmware
- * @filp: open sysfs file
- * @kobj: kobject for the device
- * @bin_attr: bin_attr structure
- * @buffer: buffer being written
- * @offset: buffer offset for write in total data store area
- * @count: buffer size
- *
- *	Data written to the 'data' attribute will be later handed to
- *	the driver as a firmware image.
- **/
+ 
 static ssize_t firmware_data_write(struct file *filp, struct kobject *kobj,
 				   struct bin_attribute *bin_attr,
 				   char *buffer, loff_t offset, size_t count)

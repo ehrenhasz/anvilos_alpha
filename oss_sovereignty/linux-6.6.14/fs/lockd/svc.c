@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/fs/lockd/svc.c
- *
- * This is the central lockd service.
- *
- * FIXME: Separate the lockd NFS server functionality from the lockd NFS
- * 	  client functionality. Oh why didn't Sun create two separate
- *	  services in the first place?
- *
- * Authors:	Olaf Kirch (okir@monad.swb.de)
- *
- * Copyright (C) 1995, 1996 Olaf Kirch <okir@monad.swb.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -64,20 +52,15 @@ DEFINE_TIMER(nlmsvc_retry, nlmsvc_request_retry);
 
 unsigned int lockd_net_id;
 
-/*
- * These can be set at insmod time (useful for NFS as root filesystem),
- * and also changed through the sysctl interface.  -- Jamie Lokier, Aug 2003
- */
+ 
 static unsigned long		nlm_grace_period;
 static unsigned long		nlm_timeout = LOCKD_DFLT_TIMEO;
 static int			nlm_udpport, nlm_tcpport;
 
-/* RLIM_NOFILE defaults to 1024. That seems like a reasonable default here. */
+ 
 static unsigned int		nlm_max_connections = 1024;
 
-/*
- * Constants needed for the sysctl interface.
- */
+ 
 static const unsigned long	nlm_grace_period_min = 0;
 static const unsigned long	nlm_grace_period_max = 240;
 static const unsigned long	nlm_timeout_min = 3;
@@ -90,7 +73,7 @@ static struct ctl_table_header * nlm_sysctl_table;
 
 static unsigned long get_lockd_grace_period(void)
 {
-	/* Note: nlm_timeout should always be nonzero */
+	 
 	if (nlm_grace_period)
 		return roundup(nlm_grace_period, nlm_timeout) * HZ;
 	else
@@ -116,9 +99,7 @@ static void set_grace_period(struct net *net)
 	schedule_delayed_work(&ln->grace_period_end, grace_period);
 }
 
-/*
- * This is the lockd kernel thread
- */
+ 
 static int
 lockd(void *vrqstp)
 {
@@ -126,17 +107,14 @@ lockd(void *vrqstp)
 	struct net *net = &init_net;
 	struct lockd_net *ln = net_generic(net, lockd_net_id);
 
-	/* try_to_freeze() is called from svc_recv() */
+	 
 	set_freezable();
 
 	dprintk("NFS locking service started (ver " LOCKD_VERSION ").\n");
 
-	/*
-	 * The main request loop. We don't terminate until the last
-	 * NFS mount or NFS daemon has gone away.
-	 */
+	 
 	while (!kthread_should_stop()) {
-		/* update sv_maxconn if it has changed */
+		 
 		rqstp->rq_server->sv_maxconn = nlm_max_connections;
 
 		nlmsvc_retry_blocked();
@@ -183,16 +161,7 @@ static int create_lockd_family(struct svc_serv *serv, struct net *net,
 			cred);
 }
 
-/*
- * Ensure there are active UDP and TCP listeners for lockd.
- *
- * Even if we have only TCP NFS mounts and/or TCP NFSDs, some
- * local services (such as rpc.statd) still require UDP, and
- * some NFS servers do not yet support NLM over TCP.
- *
- * Returns zero if all listeners are available; otherwise a
- * negative errno value is returned.
- */
+ 
 static int make_socks(struct svc_serv *serv, struct net *net,
 		const struct cred *cred)
 {
@@ -326,10 +295,7 @@ static int lockd_get(void)
 		return 0;
 	}
 
-	/*
-	 * Sanity check: if there's no pid,
-	 * we should be the first user ...
-	 */
+	 
 	if (nlmsvc_users)
 		printk(KERN_WARNING
 			"lockd_up: no pid, %d users??\n", nlmsvc_users);
@@ -346,7 +312,7 @@ static int lockd_get(void)
 
 	serv->sv_maxconn = nlm_max_connections;
 	error = svc_set_num_threads(serv, NULL, 1);
-	/* The thread now holds the only reference */
+	 
 	svc_put(serv);
 	if (error < 0)
 		return error;
@@ -379,9 +345,7 @@ static void lockd_put(void)
 	dprintk("lockd_down: service destroyed\n");
 }
 
-/*
- * Bring up the lockd process if it's not already up.
- */
+ 
 int lockd_up(struct net *net, const struct cred *cred)
 {
 	int error;
@@ -404,9 +368,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(lockd_up);
 
-/*
- * Decrement the user count and bring down lockd if we're the last.
- */
+ 
 void
 lockd_down(struct net *net)
 {
@@ -419,9 +381,7 @@ EXPORT_SYMBOL_GPL(lockd_down);
 
 #ifdef CONFIG_SYSCTL
 
-/*
- * Sysctl parameters (same as module parameters, different interface).
- */
+ 
 
 static struct ctl_table nlm_sysctls[] = {
 	{
@@ -477,11 +437,9 @@ static struct ctl_table nlm_sysctls[] = {
 	{ }
 };
 
-#endif	/* CONFIG_SYSCTL */
+#endif	 
 
-/*
- * Module (and sysfs) parameters.
- */
+ 
 
 #define param_set_min_max(name, type, which_strtol, min, max)		\
 static int param_set_##name(const char *val, const struct kernel_param *kp) \
@@ -516,9 +474,7 @@ static enum svc_auth_status lockd_authenticate(struct svc_rqst *rqstp)
 			if (rqstp->rq_proc == 0)
 				return SVC_OK;
 			if (is_callback(rqstp->rq_proc)) {
-				/* Leave it to individual procedures to
-				 * call nlmsvc_lookup_host(rqstp)
-				 */
+				 
 				return SVC_OK;
 			}
 			return svc_set_client(rqstp);
@@ -583,9 +539,7 @@ static struct pernet_operations lockd_net_ops = {
 };
 
 
-/*
- * Initialising and terminating the module.
- */
+ 
 
 static int __init init_nlm(void)
 {
@@ -619,7 +573,7 @@ err_sysctl:
 
 static void __exit exit_nlm(void)
 {
-	/* FIXME: delete all NLM clients */
+	 
 	nlm_shutdown_hosts();
 	lockd_remove_procfs();
 	unregister_pernet_subsys(&lockd_net_ops);
@@ -631,14 +585,7 @@ static void __exit exit_nlm(void)
 module_init(init_nlm);
 module_exit(exit_nlm);
 
-/**
- * nlmsvc_dispatch - Process an NLM Request
- * @rqstp: incoming request
- *
- * Return values:
- *  %0: Processing complete; do not send a Reply
- *  %1: Processing complete; send Reply in rqstp->rq_res
- */
+ 
 static int nlmsvc_dispatch(struct svc_rqst *rqstp)
 {
 	const struct svc_procedure *procp = rqstp->rq_procinfo;
@@ -667,9 +614,7 @@ out_encode_err:
 	return 1;
 }
 
-/*
- * Define NLM program and procedures
- */
+ 
 static DEFINE_PER_CPU_ALIGNED(unsigned long, nlmsvc_version1_count[17]);
 static const struct svc_version	nlmsvc_version1 = {
 	.vs_vers	= 1,
@@ -716,13 +661,13 @@ static struct svc_stat		nlmsvc_stats;
 
 #define NLM_NRVERS	ARRAY_SIZE(nlmsvc_version)
 static struct svc_program	nlmsvc_program = {
-	.pg_prog		= NLM_PROGRAM,		/* program number */
-	.pg_nvers		= NLM_NRVERS,		/* number of entries in nlmsvc_version */
-	.pg_vers		= nlmsvc_version,	/* version table */
-	.pg_name		= "lockd",		/* service name */
-	.pg_class		= "nfsd",		/* share authentication with nfsd */
-	.pg_stats		= &nlmsvc_stats,	/* stats table */
-	.pg_authenticate	= &lockd_authenticate,	/* export authentication */
+	.pg_prog		= NLM_PROGRAM,		 
+	.pg_nvers		= NLM_NRVERS,		 
+	.pg_vers		= nlmsvc_version,	 
+	.pg_name		= "lockd",		 
+	.pg_class		= "nfsd",		 
+	.pg_stats		= &nlmsvc_stats,	 
+	.pg_authenticate	= &lockd_authenticate,	 
 	.pg_init_request	= svc_generic_init_request,
 	.pg_rpcbind_set		= svc_generic_rpcbind_set,
 };

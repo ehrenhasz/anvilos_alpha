@@ -1,25 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MDIO I2C bridge
- *
- * Copyright (C) 2015-2016 Russell King
- * Copyright (C) 2021 Marek Behun
- *
- * Network PHYs can appear on I2C buses when they are part of SFP module.
- * This driver exposes these PHYs to the networking PHY code, allowing
- * our PHY drivers access to these PHYs, and so allowing configuration
- * of their settings.
- */
+
+ 
 #include <linux/i2c.h>
 #include <linux/mdio/mdio-i2c.h>
 #include <linux/phy.h>
 #include <linux/sfp.h>
 
-/*
- * I2C bus addresses 0x50 and 0x51 are normally an EEPROM, which is
- * specified to be present in SFP modules.  These correspond with PHY
- * addresses 16 and 17.  Disallow access to these "phy" addresses.
- */
+ 
 static bool i2c_mii_valid_phy_id(int phy_id)
 {
 	return phy_id != 0x10 && phy_id != 0x11;
@@ -106,17 +92,7 @@ static int i2c_mii_write_default_c22(struct mii_bus *bus, int phy_id, int reg,
 	return i2c_mii_write_default_c45(bus, phy_id, -1, reg, val);
 }
 
-/* RollBall SFPs do not access internal PHY via I2C address 0x56, but
- * instead via address 0x51, when SFP page is set to 0x03 and password to
- * 0xffffffff.
- *
- * address  size  contents  description
- * -------  ----  --------  -----------
- * 0x80     1     CMD       0x01/0x02/0x04 for write/read/done
- * 0x81     1     DEV       Clause 45 device
- * 0x82     2     REG       Clause 45 register
- * 0x84     2     VAL       Register value
- */
+ 
 #define ROLLBALL_PHY_I2C_ADDR		0x51
 
 #define ROLLBALL_PASSWORD		(SFP_VSL + 3)
@@ -180,19 +156,7 @@ static int __i2c_rollball_set_page(struct i2c_adapter *i2c, int bus_addr,
 	return __i2c_transfer_err(i2c, &msg, 1);
 }
 
-/* In order to not interfere with other SFP code (which possibly may manipulate
- * SFP_PAGE), for every transfer we do this:
- *   1. lock the bus
- *   2. save content of SFP_PAGE
- *   3. set SFP_PAGE to 3
- *   4. do the transfer
- *   5. restore original SFP_PAGE
- *   6. unlock the bus
- * Note that one might think that steps 2 to 5 could be theoretically done all
- * in one call to i2c_transfer (by constructing msgs array in such a way), but
- * unfortunately tests show that this does not work :-( Changed SFP_PAGE does
- * not take into account until i2c_transfer() is done.
- */
+ 
 static int i2c_transfer_rollball(struct i2c_adapter *i2c,
 				 struct i2c_msg *msgs, int num)
 {
@@ -201,22 +165,22 @@ static int i2c_transfer_rollball(struct i2c_adapter *i2c,
 
 	i2c_lock_bus(i2c, I2C_LOCK_SEGMENT);
 
-	/* save original page */
+	 
 	ret = __i2c_rollball_get_page(i2c, msgs->addr, &saved_page);
 	if (ret)
 		goto unlock;
 
-	/* change to RollBall MDIO page */
+	 
 	ret = __i2c_rollball_set_page(i2c, msgs->addr, SFP_PAGE_ROLLBALL_MDIO);
 	if (ret)
 		goto unlock;
 
-	/* do the transfer; we try to restore original page if this fails */
+	 
 	ret = __i2c_transfer_err(i2c, msgs, num);
 	if (ret)
 		main_err = ret;
 
-	/* restore original page */
+	 
 	ret = __i2c_rollball_set_page(i2c, msgs->addr, saved_page);
 
 unlock:
@@ -248,9 +212,7 @@ static int i2c_rollball_mii_poll(struct mii_bus *bus, int bus_addr, u8 *buf,
 	msgs[1].len = len;
 	msgs[1].buf = res;
 
-	/* By experiment it takes up to 70 ms to access a register for these
-	 * SFPs. Sleep 20ms between iterations and try 10 times.
-	 */
+	 
 	i = 10;
 	do {
 		msleep(20);

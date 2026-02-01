@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* pdt.c: OF PROM device tree support code.
- *
- * Paul Mackerras	August 1996.
- * Copyright (C) 1996-2005 Paul Mackerras.
- *
- *  Adapted for 64bit PowerPC by Dave Engebretsen and Peter Bergner.
- *    {engebret|bergner}@us.ibm.com
- *
- *  Adapted for sparc by David S. Miller davem@davemloft.net
- *  Adapted for multiple architectures by Andres Salomon <dilinger@queued.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,14 +23,14 @@ static char * __init of_pdt_build_full_name(struct device_node *dp)
 	return build_path_component(dp);
 }
 
-#else /* CONFIG_SPARC */
+#else  
 
 static inline void of_pdt_incr_unique_id(void *p) { }
 static inline void irq_trans_init(struct device_node *dp) { }
 
 static char * __init of_pdt_build_full_name(struct device_node *dp)
 {
-	static int failsafe_id = 0; /* for generating unique names on failure */
+	static int failsafe_id = 0;  
 	const char *name;
 	char path[256];
 	char *buf;
@@ -60,7 +50,7 @@ static char * __init of_pdt_build_full_name(struct device_node *dp)
 	return buf;
 }
 
-#endif /* !CONFIG_SPARC */
+#endif  
 
 static struct property * __init of_pdt_build_one_prop(phandle node, char *prev,
 					       char *special_name,
@@ -208,6 +198,6 @@ void __init of_pdt_build_devicetree(phandle root_node, struct of_pdt_ops *ops)
 	of_root->child = of_pdt_build_tree(of_root,
 				of_pdt_prom_ops->getchild(of_root->phandle));
 
-	/* Get pointer to "/chosen" and "/aliases" nodes for use everywhere */
+	 
 	of_alias_scan(kernel_tree_alloc);
 }

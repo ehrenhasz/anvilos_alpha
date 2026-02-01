@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RISC-V SBI CPU idle driver.
- *
- * Copyright (c) 2021 Western Digital Corporation or its affiliates.
- * Copyright (c) 2022 Ventana Micro Systems Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) "cpuidle-riscv-sbi: " fmt
 
@@ -120,7 +115,7 @@ static __cpuidle int __sbi_enter_domain_idle_state(struct cpuidle_device *dev,
 	if (ret)
 		return -1;
 
-	/* Do runtime PM to manage a hierarchical CPU toplogy. */
+	 
 	if (s2idle)
 		dev_pm_genpd_suspend(pd_dev);
 	else
@@ -144,7 +139,7 @@ static __cpuidle int __sbi_enter_domain_idle_state(struct cpuidle_device *dev,
 
 	cpu_pm_exit();
 
-	/* Clear the domain state to start fresh when back from idle. */
+	 
 	sbi_clear_domain_state();
 	return ret;
 }
@@ -178,7 +173,7 @@ static int sbi_cpuidle_cpuhp_down(unsigned int cpu)
 
 	if (pd_dev) {
 		pm_runtime_put_sync(pd_dev);
-		/* Clear domain state to start fresh at next online. */
+		 
 		sbi_clear_domain_state();
 	}
 
@@ -238,7 +233,7 @@ static int sbi_dt_cpu_init_topology(struct cpuidle_driver *drv,
 				     struct sbi_cpuidle_data *data,
 				     unsigned int state_count, int cpu)
 {
-	/* Currently limit the hierarchical topology to be used in OSI mode. */
+	 
 	if (!sbi_cpuidle_use_osi)
 		return 0;
 
@@ -246,11 +241,7 @@ static int sbi_dt_cpu_init_topology(struct cpuidle_driver *drv,
 	if (IS_ERR_OR_NULL(data->dev))
 		return PTR_ERR_OR_ZERO(data->dev);
 
-	/*
-	 * Using the deepest state for the CPU to trigger a potential selection
-	 * of a shared state for the domain, assumes the domain states are all
-	 * deeper states.
-	 */
+	 
 	drv->states[state_count - 1].flags |= CPUIDLE_FLAG_RCU_IDLE;
 	drv->states[state_count - 1].enter = sbi_enter_domain_idle_state;
 	drv->states[state_count - 1].enter_s2idle =
@@ -281,7 +272,7 @@ static int sbi_cpuidle_dt_init_states(struct device *dev,
 		goto fail;
 	}
 
-	/* Parse SBI specific details from state DT nodes */
+	 
 	for (i = 1; i < state_count; i++) {
 		state_node = of_get_cpu_state_node(cpu_node, i - 1);
 		if (!state_node)
@@ -300,12 +291,12 @@ static int sbi_cpuidle_dt_init_states(struct device *dev,
 		goto fail;
 	}
 
-	/* Initialize optional data, used for the hierarchical topology. */
+	 
 	ret = sbi_dt_cpu_init_topology(drv, data, state_count, cpu);
 	if (ret < 0)
 		return ret;
 
-	/* Store states in the per-cpu struct. */
+	 
 	data->states = states;
 
 fail:
@@ -336,7 +327,7 @@ static int sbi_cpuidle_init_cpu(struct device *dev, int cpu)
 	drv->owner = THIS_MODULE;
 	drv->cpumask = (struct cpumask *)cpumask_of(cpu);
 
-	/* RISC-V architectural WFI to be represented as state index 0. */
+	 
 	drv->states[0].enter = sbi_cpuidle_enter_state;
 	drv->states[0].exit_latency = 1;
 	drv->states[0].target_residency = 1;
@@ -344,22 +335,16 @@ static int sbi_cpuidle_init_cpu(struct device *dev, int cpu)
 	strcpy(drv->states[0].name, "WFI");
 	strcpy(drv->states[0].desc, "RISC-V WFI");
 
-	/*
-	 * If no DT idle states are detected (ret == 0) let the driver
-	 * initialization fail accordingly since there is no reason to
-	 * initialize the idle driver if only wfi is supported, the
-	 * default archictectural back-end already executes wfi
-	 * on idle entry.
-	 */
+	 
 	ret = dt_init_idle_driver(drv, sbi_cpuidle_state_match, 1);
 	if (ret <= 0) {
 		pr_debug("HART%ld: failed to parse DT idle states\n",
 			 cpuid_to_hartid_map(cpu));
 		return ret ? : -ENODEV;
 	}
-	state_count = ret + 1; /* Include WFI state as well */
+	state_count = ret + 1;  
 
-	/* Initialize idle states from DT. */
+	 
 	ret = sbi_cpuidle_dt_init_states(dev, drv, cpu, state_count);
 	if (ret) {
 		pr_err("HART%ld: failed to init idle states\n",
@@ -381,10 +366,7 @@ deinit:
 
 static void sbi_cpuidle_domain_sync_state(struct device *dev)
 {
-	/*
-	 * All devices have now been attached/probed to the PM domain
-	 * topology, hence it's fine to allow domain states to be picked.
-	 */
+	 
 	sbi_cpuidle_pd_allow_domain_state = true;
 }
 
@@ -401,7 +383,7 @@ static int sbi_cpuidle_pd_power_off(struct generic_pm_domain *pd)
 	if (!sbi_cpuidle_pd_allow_domain_state)
 		return -EBUSY;
 
-	/* OSI mode is enabled, set the corresponding domain state. */
+	 
 	pd_state = state->data;
 	sbi_set_domain_state(*pd_state);
 
@@ -432,13 +414,13 @@ static int sbi_pd_init(struct device_node *np)
 
 	pd->flags |= GENPD_FLAG_IRQ_SAFE | GENPD_FLAG_CPU_DOMAIN;
 
-	/* Allow power off when OSI is available. */
+	 
 	if (sbi_cpuidle_use_osi)
 		pd->power_off = sbi_cpuidle_pd_power_off;
 	else
 		pd->flags |= GENPD_FLAG_ALWAYS_ON;
 
-	/* Use governor for CPU PM domains if it has some states to manage. */
+	 
 	pd_gov = pd->states ? &pm_domain_cpu_gov : NULL;
 
 	ret = pm_genpd_init(pd, pd_gov, false);
@@ -492,10 +474,7 @@ static int sbi_genpd_probe(struct device_node *np)
 	if (!np)
 		return -ENODEV;
 
-	/*
-	 * Parse child nodes for the "#power-domain-cells" property and
-	 * initialize a genpd/genpd-of-provider pair when it's found.
-	 */
+	 
 	for_each_child_of_node(np, node) {
 		if (!of_property_present(node, "#power-domain-cells"))
 			continue;
@@ -507,11 +486,11 @@ static int sbi_genpd_probe(struct device_node *np)
 		pd_count++;
 	}
 
-	/* Bail out if not using the hierarchical CPU topology. */
+	 
 	if (!pd_count)
 		goto no_pd;
 
-	/* Link genpd masters/subdomains to model the CPU topology. */
+	 
 	ret = dt_idle_pd_init_topology(np);
 	if (ret)
 		goto remove_pd;
@@ -543,7 +522,7 @@ static int sbi_cpuidle_probe(struct platform_device *pdev)
 	struct cpuidle_device *dev;
 	struct device_node *np, *pds_node;
 
-	/* Detect OSI support based on CPU DT nodes */
+	 
 	sbi_cpuidle_use_osi = true;
 	for_each_possible_cpu(cpu) {
 		np = of_cpu_device_node_get(cpu);
@@ -557,7 +536,7 @@ static int sbi_cpuidle_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Populate generic power domains from DT nodes */
+	 
 	pds_node = of_find_node_by_path("/cpus/power-domains");
 	if (pds_node) {
 		ret = sbi_genpd_probe(pds_node);
@@ -566,7 +545,7 @@ static int sbi_cpuidle_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	/* Initialize CPU idle driver for each CPU */
+	 
 	for_each_possible_cpu(cpu) {
 		ret = sbi_cpuidle_init_cpu(&pdev->dev, cpu);
 		if (ret) {
@@ -576,7 +555,7 @@ static int sbi_cpuidle_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Setup CPU hotplut notifiers */
+	 
 	sbi_idle_init_cpuhp();
 
 	pr_info("idle driver registered for all CPUs\n");
@@ -607,11 +586,7 @@ static int __init sbi_cpuidle_init(void)
 	int ret;
 	struct platform_device *pdev;
 
-	/*
-	 * The SBI HSM suspend function is only available when:
-	 * 1) SBI version is 0.3 or higher
-	 * 2) SBI HSM extension is available
-	 */
+	 
 	if ((sbi_spec_version < sbi_mk_version(0, 3)) ||
 	    !sbi_probe_extension(SBI_EXT_HSM)) {
 		pr_info("HSM suspend not available\n");

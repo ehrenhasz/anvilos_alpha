@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO platform devices interrupt handling
- *
- * Copyright (C) 2013 - Virtual Open Systems
- * Author: Antonios Motakis <a.motakis@virtualopensystems.com>
- */
+
+ 
 
 #include <linux/eventfd.h>
 #include <linux/interrupt.h>
@@ -147,7 +142,7 @@ static irqreturn_t vfio_automasked_irq_handler(int irq, void *dev_id)
 	if (!irq_ctx->masked) {
 		ret = IRQ_HANDLED;
 
-		/* automask maskable interrupts */
+		 
 		disable_irq_nosync(irq_ctx->hwirq);
 		irq_ctx->masked = true;
 	}
@@ -184,7 +179,7 @@ static int vfio_set_trigger(struct vfio_platform_device *vdev, int index,
 		irq->trigger = NULL;
 	}
 
-	if (fd < 0) /* Disable only */
+	if (fd < 0)  
 		return 0;
 	irq->name = kasprintf(GFP_KERNEL_ACCOUNT, "vfio-irq[%d](%s)",
 			      irq->hwirq, vdev->name);

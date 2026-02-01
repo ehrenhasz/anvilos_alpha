@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2017 Intel Corporation.
- */
+ 
+ 
 
 #if !defined(__HFI1_TRACE_MMU_H) || defined(TRACE_HEADER_MULTI_READ)
 #define __HFI1_TRACE_MMU_H
@@ -63,7 +61,7 @@ DEFINE_EVENT(hfi1_mmu_rb_template, hfi1_mmu_release_node,
 	     TP_PROTO(struct mmu_rb_node *node),
 	     TP_ARGS(node));
 
-#endif /* __HFI1_TRACE_RC_H */
+#endif  
 
 #undef TRACE_INCLUDE_PATH
 #undef TRACE_INCLUDE_FILE

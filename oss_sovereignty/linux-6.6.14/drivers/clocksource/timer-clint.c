@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2020 Western Digital Corporation or its affiliates.
- *
- * Most of the M-mode (i.e. NoMMU) RISC-V systems usually have a
- * CLINT MMIO timer device.
- */
+
+ 
 
 #define pr_fmt(fmt) "clint: " fmt
 #include <linux/bitops.h>
@@ -32,7 +27,7 @@
 #define CLINT_TIMER_CMP_OFF	0x4000
 #define CLINT_TIMER_VAL_OFF	0xbff8
 
-/* CLINT manages IPI and Timer for RISC-V M-mode  */
+ 
 static u32 __iomem *clint_ipi_base;
 static unsigned int clint_ipi_irq;
 static u64 __iomem *clint_timer_cmp;
@@ -81,7 +76,7 @@ static u64 notrace clint_get_cycles64(void)
 {
 	return clint_get_cycles();
 }
-#else /* CONFIG_64BIT */
+#else  
 static u64 notrace clint_get_cycles64(void)
 {
 	u32 hi, lo;
@@ -93,7 +88,7 @@ static u64 notrace clint_get_cycles64(void)
 
 	return ((u64)hi << 32) | lo;
 }
-#endif /* CONFIG_64BIT */
+#endif  
 
 static u64 clint_rdtime(struct clocksource *cs)
 {
@@ -143,11 +138,7 @@ static int clint_timer_starting_cpu(unsigned int cpu)
 static int clint_timer_dying_cpu(unsigned int cpu)
 {
 	disable_percpu_irq(clint_timer_irq);
-	/*
-	 * Don't disable IPI when CPU goes offline because
-	 * the masking/unmasking of virtual IPIs is done
-	 * via generic IPI-Mux
-	 */
+	 
 	return 0;
 }
 
@@ -168,10 +159,7 @@ static int __init clint_timer_init_dt(struct device_node *np)
 	void __iomem *base;
 	struct of_phandle_args oirq;
 
-	/*
-	 * Ensure that CLINT device interrupts are either RV_IRQ_TIMER or
-	 * RV_IRQ_SOFT. If it's anything else then we ignore the device.
-	 */
+	 
 	nr_irqs = of_irq_count(np);
 	for (i = 0; i < nr_irqs; i++) {
 		if (of_irq_parse_one(np, i, &oirq)) {
@@ -187,20 +175,20 @@ static int __init clint_timer_init_dt(struct device_node *np)
 			return -ENODEV;
 		}
 
-		/* Find parent irq domain and map ipi irq */
+		 
 		if (!clint_ipi_irq &&
 		    oirq.args[0] == RV_IRQ_SOFT &&
 		    irq_find_host(oirq.np))
 			clint_ipi_irq = irq_of_parse_and_map(np, i);
 
-		/* Find parent irq domain and map timer irq */
+		 
 		if (!clint_timer_irq &&
 		    oirq.args[0] == RV_IRQ_TIMER &&
 		    irq_find_host(oirq.np))
 			clint_timer_irq = irq_of_parse_and_map(np, i);
 	}
 
-	/* If CLINT ipi or timer irq not found then fail */
+	 
 	if (!clint_ipi_irq || !clint_timer_irq) {
 		pr_err("%pOFP: ipi/timer irq not found\n", np);
 		return -ENODEV;
@@ -218,10 +206,7 @@ static int __init clint_timer_init_dt(struct device_node *np)
 	clint_timer_freq = riscv_timebase;
 
 #ifdef CONFIG_RISCV_M_MODE
-	/*
-	 * Yes, that's an odd naming scheme.  time_val is public, but hopefully
-	 * will die in favor of something cleaner.
-	 */
+	 
 	clint_time_val = clint_timer_val;
 #endif
 

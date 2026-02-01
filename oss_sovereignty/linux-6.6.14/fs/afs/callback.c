@@ -1,17 +1,4 @@
-/*
- * Copyright (c) 2002, 2007 Red Hat, Inc. All rights reserved.
- *
- * This software may be freely redistributed under the terms of the
- * GNU General Public License.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
- *
- * Authors: David Woodhouse <dwmw2@infradead.org>
- *          David Howells <dhowells@redhat.com>
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,12 +7,7 @@
 #include <linux/sched.h>
 #include "internal.h"
 
-/*
- * Handle invalidation of an mmap'd file.  We invalidate all the PTEs referring
- * to the pages in this file's pagecache, forcing the kernel to go through
- * ->fault() or ->page_mkwrite() - at which point we can handle invalidation
- * more fully.
- */
+ 
 void afs_invalidate_mmap_work(struct work_struct *work)
 {
 	struct afs_vnode *vnode = container_of(work, struct afs_vnode, cb_work);
@@ -51,10 +33,7 @@ void afs_server_init_callback_work(struct work_struct *work)
 	up_read(&cell->fs_open_mmaps_lock);
 }
 
-/*
- * Allow the fileserver to request callback state (re-)initialisation.
- * Unfortunately, UUIDs are not guaranteed unique.
- */
+ 
 void afs_init_callback_state(struct afs_server *server)
 {
 	rcu_read_lock();
@@ -68,9 +47,7 @@ void afs_init_callback_state(struct afs_server *server)
 	rcu_read_unlock();
 }
 
-/*
- * actually break a callback
- */
+ 
 void __afs_break_callback(struct afs_vnode *vnode, enum afs_cb_break_reason reason)
 {
 	_enter("");
@@ -102,9 +79,7 @@ void afs_break_callback(struct afs_vnode *vnode, enum afs_cb_break_reason reason
 	write_sequnlock(&vnode->cb_lock);
 }
 
-/*
- * Look up a volume by volume ID under RCU conditions.
- */
+ 
 static struct afs_volume *afs_lookup_volume_rcu(struct afs_cell *cell,
 						afs_volid_t vid)
 {
@@ -113,10 +88,7 @@ static struct afs_volume *afs_lookup_volume_rcu(struct afs_cell *cell,
 	int seq = 0;
 
 	do {
-		/* Unfortunately, rbtree walking doesn't give reliable results
-		 * under just the RCU read lock, so we have to check for
-		 * changes.
-		 */
+		 
 		read_seqbegin_or_lock(&cell->volume_lock, &seq);
 
 		p = rcu_dereference_raw(cell->volumes.rb_node);
@@ -138,12 +110,7 @@ static struct afs_volume *afs_lookup_volume_rcu(struct afs_cell *cell,
 	return volume;
 }
 
-/*
- * allow the fileserver to explicitly break one callback
- * - happens when
- *   - the backing file is changed
- *   - a lock is released
- */
+ 
 static void afs_break_one_callback(struct afs_volume *volume,
 				   struct afs_fid *fid)
 {
@@ -152,7 +119,7 @@ static void afs_break_one_callback(struct afs_volume *volume,
 	struct inode *inode;
 
 	if (fid->vnode == 0 && fid->unique == 0) {
-		/* The callback break applies to an entire volume. */
+		 
 		write_lock(&volume->cb_v_break_lock);
 		volume->cb_v_break++;
 		trace_afs_cb_break(fid, volume->cb_v_break,
@@ -161,10 +128,7 @@ static void afs_break_one_callback(struct afs_volume *volume,
 		return;
 	}
 
-	/* See if we can find a matching inode - even an I_NEW inode needs to
-	 * be marked as it can have its callback broken before we finish
-	 * setting up the local inode.
-	 */
+	 
 	sb = rcu_dereference(volume->sb);
 	if (!sb)
 		return;
@@ -189,9 +153,7 @@ static void afs_break_some_callbacks(struct afs_server *server,
 
 	volume = afs_lookup_volume_rcu(server->cell, vid);
 
-	/* TODO: Find all matching volumes if we couldn't match the server and
-	 * break them anyway.
-	 */
+	 
 
 	for (i = *_count; i > 0; cbb++, i--) {
 		if (cbb->fid.vid == vid) {
@@ -208,9 +170,7 @@ static void afs_break_some_callbacks(struct afs_server *server,
 	}
 }
 
-/*
- * allow the fileserver to break callback promises
- */
+ 
 void afs_break_callbacks(struct afs_server *server, size_t count,
 			 struct afs_callback_break *callbacks)
 {

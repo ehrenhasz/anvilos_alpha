@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -162,11 +162,11 @@ static int uevent_listener(unsigned long post_flags, bool expect_uevent,
 			break;
 		}
 
-		/* ignore libudev messages */
+		 
 		if (memcmp(buf, "libudev", 8) == 0)
 			continue;
 
-		/* ignore uevents we didn't trigger */
+		 
 		if (memcmp(buf, __UEVENT_HEADER, __UEVENT_HEADER_LEN) != 0)
 			continue;
 
@@ -176,7 +176,7 @@ static int uevent_listener(unsigned long post_flags, bool expect_uevent,
 		}
 
 		if (TH_LOG_ENABLED) {
-			/* If logging is enabled dump the received uevent. */
+			 
 			(void)write_nointr(STDERR_FILENO, buf, r);
 			(void)write_nointr(STDERR_FILENO, "\n", 1);
 		}
@@ -222,7 +222,7 @@ int set_death_signal(void)
 
 	ret = prctl(PR_SET_PDEATHSIG, SIGKILL, 0, 0, 0);
 
-	/* Check whether we have been orphaned. */
+	 
 	ppid = getppid();
 	if (ppid == 1) {
 		pid_t self;
@@ -263,7 +263,7 @@ static int do_test(unsigned long pre_flags, unsigned long post_flags,
 	}
 
 	if (pid == 0) {
-		/* Make sure that we go away when our parent dies. */
+		 
 		ret = set_death_signal();
 		if (ret < 0) {
 			fprintf(stderr, "Failed to set PR_SET_PDEATHSIG to SIGKILL\n");
@@ -302,17 +302,12 @@ static int do_test(unsigned long pre_flags, unsigned long post_flags,
 		_exit(EXIT_FAILURE);
 	}
 
-	/* Trigger 10 uevents to account for the case where the kernel might
-	 * drop some.
-	 */
+	 
 	ret = trigger_uevent(10);
 	if (ret < 0)
 		fprintf(stderr, "Failed triggering uevents\n");
 
-	/* Wait for 2 seconds before considering this failed. This should be
-	 * plenty of time for the kernel to deliver the uevent even under heavy
-	 * load.
-	 */
+	 
 	timeout.tv_sec = 2;
 	timeout.tv_nsec = 0;
 
@@ -323,9 +318,9 @@ again:
 			goto again;
 
 		if (!expect_uevent)
-			ret = kill(pid, SIGTERM); /* success */
+			ret = kill(pid, SIGTERM);  
 		else
-			ret = kill(pid, SIGUSR1); /* error */
+			ret = kill(pid, SIGUSR1);  
 		if (ret < 0)
 			return -1;
 	}
@@ -375,104 +370,43 @@ TEST(uevent_filtering)
 	sync_fd = eventfd(0, EFD_CLOEXEC);
 	ASSERT_GE(sync_fd, 0);
 
-	/*
-	 * Setup:
-	 * - Open uevent listening socket in initial network namespace owned by
-	 *   initial user namespace.
-	 * - Trigger uevent in initial network namespace owned by initial user
-	 *   namespace.
-	 * Expected Result:
-	 * - uevent listening socket receives uevent
-	 */
+	 
 	ret = do_test(0, 0, true, sync_fd);
 	ASSERT_EQ(0, ret) {
 		goto do_cleanup;
 	}
 
-	/*
-	 * Setup:
-	 * - Open uevent listening socket in non-initial network namespace
-	 *   owned by initial user namespace.
-	 * - Trigger uevent in initial network namespace owned by initial user
-	 *   namespace.
-	 * Expected Result:
-	 * - uevent listening socket receives uevent
-	 */
+	 
 	ret = do_test(CLONE_NEWNET, 0, true, sync_fd);
 	ASSERT_EQ(0, ret) {
 		goto do_cleanup;
 	}
 
-	/*
-	 * Setup:
-	 * - unshare user namespace
-	 * - Open uevent listening socket in initial network namespace
-	 *   owned by initial user namespace.
-	 * - Trigger uevent in initial network namespace owned by initial user
-	 *   namespace.
-	 * Expected Result:
-	 * - uevent listening socket receives uevent
-	 */
+	 
 	ret = do_test(CLONE_NEWUSER, 0, true, sync_fd);
 	ASSERT_EQ(0, ret) {
 		goto do_cleanup;
 	}
 
-	/*
-	 * Setup:
-	 * - Open uevent listening socket in non-initial network namespace
-	 *   owned by non-initial user namespace.
-	 * - Trigger uevent in initial network namespace owned by initial user
-	 *   namespace.
-	 * Expected Result:
-	 * - uevent listening socket receives no uevent
-	 */
+	 
 	ret = do_test(CLONE_NEWUSER | CLONE_NEWNET, 0, false, sync_fd);
 	ASSERT_EQ(0, ret) {
 		goto do_cleanup;
 	}
 
-	/*
-	 * Setup:
-	 * - Open uevent listening socket in initial network namespace
-	 *   owned by initial user namespace.
-	 * - unshare network namespace
-	 * - Trigger uevent in initial network namespace owned by initial user
-	 *   namespace.
-	 * Expected Result:
-	 * - uevent listening socket receives uevent
-	 */
+	 
 	ret = do_test(0, CLONE_NEWNET, true, sync_fd);
 	ASSERT_EQ(0, ret) {
 		goto do_cleanup;
 	}
 
-	/*
-	 * Setup:
-	 * - Open uevent listening socket in initial network namespace
-	 *   owned by initial user namespace.
-	 * - unshare user namespace
-	 * - Trigger uevent in initial network namespace owned by initial user
-	 *   namespace.
-	 * Expected Result:
-	 * - uevent listening socket receives uevent
-	 */
+	 
 	ret = do_test(0, CLONE_NEWUSER, true, sync_fd);
 	ASSERT_EQ(0, ret) {
 		goto do_cleanup;
 	}
 
-	/*
-	 * Setup:
-	 * - Open uevent listening socket in initial network namespace
-	 *   owned by initial user namespace.
-	 * - unshare user namespace
-	 * - unshare network namespace
-	 * - Trigger uevent in initial network namespace owned by initial user
-	 *   namespace.
-	 * Expected Result:
-	 * - uevent listening socket receives uevent
-	 */
+	 
 	ret = do_test(0, CLONE_NEWUSER | CLONE_NEWNET, true, sync_fd);
 	ASSERT_EQ(0, ret) {
 		goto do_cleanup;

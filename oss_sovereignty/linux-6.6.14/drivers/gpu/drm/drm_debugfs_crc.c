@@ -1,30 +1,4 @@
-/*
- * Copyright © 2008 Intel Corporation
- * Copyright © 2016 Collabora Ltd
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- * Based on code from the i915 driver.
- * Original author: Damien Lespiau <damien.lespiau@intel.com>
- *
- */
+ 
 
 #include <linux/circ_buf.h>
 #include <linux/ctype.h>
@@ -39,46 +13,7 @@
 
 #include "drm_internal.h"
 
-/**
- * DOC: CRC ABI
- *
- * DRM device drivers can provide to userspace CRC information of each frame as
- * it reached a given hardware component (a CRC sampling "source").
- *
- * Userspace can control generation of CRCs in a given CRTC by writing to the
- * file dri/0/crtc-N/crc/control in debugfs, with N being the :ref:`index of
- * the CRTC<crtc_index>`. Accepted values are source names (which are
- * driver-specific) and the "auto" keyword, which will let the driver select a
- * default source of frame CRCs for this CRTC.
- *
- * Once frame CRC generation is enabled, userspace can capture them by reading
- * the dri/0/crtc-N/crc/data file. Each line in that file contains the frame
- * number in the first field and then a number of unsigned integer fields
- * containing the CRC data. Fields are separated by a single space and the number
- * of CRC fields is source-specific.
- *
- * Note that though in some cases the CRC is computed in a specified way and on
- * the frame contents as supplied by userspace (eDP 1.3), in general the CRC
- * computation is performed in an unspecified way and on frame contents that have
- * been already processed in also an unspecified way and thus userspace cannot
- * rely on being able to generate matching CRC values for the frame contents that
- * it submits. In this general case, the maximum userspace can do is to compare
- * the reported CRCs of frames that should have the same contents.
- *
- * On the driver side the implementation effort is minimal, drivers only need to
- * implement &drm_crtc_funcs.set_crc_source and &drm_crtc_funcs.verify_crc_source.
- * The debugfs files are automatically set up if those vfuncs are set. CRC samples
- * need to be captured in the driver by calling drm_crtc_add_crc_entry().
- * Depending on the driver and HW requirements, &drm_crtc_funcs.set_crc_source
- * may result in a commit (even a full modeset).
- *
- * CRC results must be reliable across non-full-modeset atomic commits, so if a
- * commit via DRM_IOCTL_MODE_ATOMIC would disable or otherwise interfere with
- * CRC generation, then the driver must mark that commit as a full modeset
- * (drm_atomic_crtc_needs_modeset() should return true). As a result, to ensure
- * consistent results, generic userspace must re-setup CRC generation after a
- * legacy SETCRTC or an atomic commit with DRM_MODE_ATOMIC_ALLOW_MODESET.
- */
+ 
 
 static int crc_control_show(struct seq_file *m, void *data)
 {
@@ -260,7 +195,7 @@ static int crtc_crc_release(struct inode *inode, struct file *filep)
 	struct drm_crtc *crtc = filep->f_inode->i_private;
 	struct drm_crtc_crc *crc = &crtc->crc;
 
-	/* terminate the infinite while loop if 'drm_dp_aux_crc_work' running */
+	 
 	spin_lock_irq(&crc->lock);
 	crc->opened = false;
 	spin_unlock_irq(&crc->lock);
@@ -274,10 +209,7 @@ static int crtc_crc_release(struct inode *inode, struct file *filep)
 	return 0;
 }
 
-/*
- * 1 frame field of 10 chars plus a number of CRC fields of 10 chars each, space
- * separated, with a newline at the end and null-terminated.
- */
+ 
 #define LINE_LEN(values_cnt)	(10 + 11 * values_cnt + 1 + 1)
 #define MAX_LINE_LEN		(LINE_LEN(DRM_MAX_CRC_NR))
 
@@ -297,7 +229,7 @@ static ssize_t crtc_crc_read(struct file *filep, char __user *user_buf,
 		return 0;
 	}
 
-	/* Nothing to read? */
+	 
 	while (crtc_crc_data_count(crc) == 0) {
 		if (filep->f_flags & O_NONBLOCK) {
 			spin_unlock_irq(&crc->lock);
@@ -313,7 +245,7 @@ static ssize_t crtc_crc_read(struct file *filep, char __user *user_buf,
 		}
 	}
 
-	/* We know we have an entry to be read */
+	 
 	entry = &crc->entries[crc->tail];
 
 	if (count < LINE_LEN(crc->values_cnt)) {
@@ -380,16 +312,7 @@ void drm_debugfs_crtc_crc_add(struct drm_crtc *crtc)
 			    &drm_crtc_crc_data_fops);
 }
 
-/**
- * drm_crtc_add_crc_entry - Add entry with CRC information for a frame
- * @crtc: CRTC to which the frame belongs
- * @has_frame: whether this entry has a frame number to go with
- * @frame: number of the frame these CRCs are about
- * @crcs: array of CRC values, with length matching #drm_crtc_crc.values_cnt
- *
- * For each frame, the driver polls the source of CRCs for new data and calls
- * this function to add them to the buffer from where userspace reads.
- */
+ 
 int drm_crtc_add_crc_entry(struct drm_crtc *crtc, bool has_frame,
 			   uint32_t frame, uint32_t *crcs)
 {
@@ -400,7 +323,7 @@ int drm_crtc_add_crc_entry(struct drm_crtc *crtc, bool has_frame,
 
 	spin_lock_irqsave(&crc->lock, flags);
 
-	/* Caller may not have noticed yet that userspace has stopped reading */
+	 
 	if (!crc->entries) {
 		spin_unlock_irqrestore(&crc->lock, flags);
 		return -EINVAL;

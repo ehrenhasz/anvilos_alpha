@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2011 Cisco Systems, Inc.  All rights reserved. */
+ 
+ 
 
 #ifndef _ENIC_PP_H_
 #define _ENIC_PP_H_
@@ -18,4 +18,4 @@ int enic_process_get_pp_request(struct enic *enic, int vf,
 	int request, u16 *response);
 int enic_is_valid_pp_vf(struct enic *enic, int vf, int *err);
 
-#endif /* _ENIC_PP_H_ */
+#endif  

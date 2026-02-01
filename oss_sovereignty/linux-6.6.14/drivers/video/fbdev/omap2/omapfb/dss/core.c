@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/video/omap2/dss/core.c
- *
- * Copyright (C) 2009 Nokia Corporation
- * Author: Tomi Valkeinen <tomi.valkeinen@nokia.com>
- *
- * Some code and ideas taken from drivers/video/omap/ driver
- * by Imre Deak.
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "CORE"
 
@@ -116,7 +108,7 @@ void dss_debugfs_create_file(const char *name, void (*write)(struct seq_file *))
 {
 	debugfs_create_file(name, S_IRUGO, dss_debugfs_dir, write, &dss_fops);
 }
-#else /* CONFIG_FB_OMAP2_DSS_DEBUGFS */
+#else  
 static inline void dss_initialize_debugfs(void)
 {
 }
@@ -126,9 +118,9 @@ static inline void dss_uninitialize_debugfs(void)
 void dss_debugfs_create_file(const char *name, void (*write)(struct seq_file *))
 {
 }
-#endif /* CONFIG_FB_OMAP2_DSS_DEBUGFS */
+#endif  
 
-/* PLATFORM DEVICE */
+ 
 static int omap_dss_pm_notif(struct notifier_block *b, unsigned long v, void *d)
 {
 	DSSDBG("pm notif %lu\n", v);
@@ -192,7 +184,7 @@ static struct platform_driver omap_dss_driver = {
 	},
 };
 
-/* INIT */
+ 
 static int (*dss_output_drv_reg_funcs[])(void) __initdata = {
 	dss_init_platform_driver,
 	dispc_init_platform_driver,

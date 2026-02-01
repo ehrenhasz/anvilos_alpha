@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for BCM6318 GPIO unit (pinctrl + GPIO)
- *
- * Copyright (C) 2021 Álvaro Fernández Rojas <noltari@gmail.com>
- * Copyright (C) 2016 Jonas Gorski <jonas.gorski@gmail.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/gpio/driver.h>
@@ -193,7 +188,7 @@ static struct pingroup bcm6318_groups[] = {
 	BCM_PIN_GROUP(gpio49),
 };
 
-/* GPIO_MODE */
+ 
 static const char * const led_groups[] = {
 	"gpio0",
 	"gpio1",
@@ -221,7 +216,7 @@ static const char * const led_groups[] = {
 	"gpio23",
 };
 
-/* PINMUX_SEL */
+ 
 static const char * const ephy0_spd_led_groups[] = {
 	"gpio0",
 };
@@ -425,12 +420,12 @@ static int bcm6318_gpio_request_enable(struct pinctrl_dev *pctldev,
 {
 	struct bcm63xx_pinctrl *pc = pinctrl_dev_get_drvdata(pctldev);
 
-	/* disable all functions using this pin */
+	 
 	if (offset < 13) {
-		/* GPIOs 0-12 use mux 0 as GPIO function */
+		 
 		bcm6318_rmw_mux(pc, offset, 0, 0);
 	} else if (offset < 42) {
-		/* GPIOs 13-41 use mux 3 as GPIO function */
+		 
 		bcm6318_rmw_mux(pc, offset, 0, 3);
 
 		bcm6318_set_pad(pc, offset, 0);
@@ -471,7 +466,7 @@ static int bcm6318_pinctrl_probe(struct platform_device *pdev)
 
 static const struct of_device_id bcm6318_pinctrl_match[] = {
 	{ .compatible = "brcm,bcm6318-pinctrl", },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver bcm6318_pinctrl_driver = {

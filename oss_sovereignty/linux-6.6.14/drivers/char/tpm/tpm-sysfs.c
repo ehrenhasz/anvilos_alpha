@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2004 IBM Corporation
- * Authors:
- * Leendert van Doorn <leendert@watson.ibm.com>
- * Dave Safford <safford@watson.ibm.com>
- * Reiner Sailer <sailer@watson.ibm.com>
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * Copyright (C) 2013 Obsidian Research Corp
- * Jason Gunthorpe <jgunthorpe@obsidianresearch.com>
- *
- * sysfs filesystem inspection interface to the TPM
- */
+
+ 
 #include <linux/device.h>
 #include "tpm.h"
 
@@ -222,7 +210,7 @@ static ssize_t caps_show(struct device *dev, struct device_attribute *attr,
 	str += sprintf(str, "Manufacturer: 0x%x\n",
 		       be32_to_cpu(cap.manufacturer_id));
 
-	/* TPM 1.2 */
+	 
 	if (!tpm1_getcap(chip, TPM_CAP_VERSION_1_2, &cap,
 			 "attempting to determine the 1.2 version",
 			 sizeof(cap.version2))) {
@@ -230,7 +218,7 @@ static ssize_t caps_show(struct device *dev, struct device_attribute *attr,
 		goto out_print;
 	}
 
-	/* TPM 1.1 */
+	 
 	if (tpm1_getcap(chip, TPM_CAP_VERSION_1_1, &cap,
 			"attempting to determine the 1.1 version",
 			sizeof(cap.version1))) {
@@ -360,7 +348,7 @@ static ssize_t pcr_value_show(struct device *dev,
 	for (i = 0; i < chip->nr_allocated_banks; i++)
 		if (ha->alg_id == chip->allocated_banks[i].alg_id)
 			digest_size = chip->allocated_banks[i].digest_size;
-	/* should never happen */
+	 
 	if (!digest_size)
 		return -EINVAL;
 
@@ -375,19 +363,9 @@ static ssize_t pcr_value_show(struct device *dev,
 	return str - buf;
 }
 
-/*
- * The following set of defines represents all the magic to build
- * the per hash attribute groups for displaying each bank of PCRs.
- * The only slight problem with this approach is that every PCR is
- * hard coded to be present, so you don't know if an PCR is missing
- * until a cat of the file returns -EINVAL
- *
- * Also note you must ignore checkpatch warnings in this macro
- * code. This is deep macro magic that checkpatch.pl doesn't
- * understand.
- */
+ 
 
-/* Note, this must match TPM2_PLATFORM_PCR which is fixed at 24. */
+ 
 #define _TPM_HELPER(_alg, _hash, F) \
 	F(_alg, _hash, 0)	    \
 	F(_alg, _hash, 1)	    \
@@ -414,7 +392,7 @@ static ssize_t pcr_value_show(struct device *dev,
 	F(_alg, _hash, 22)	    \
 	F(_alg, _hash, 23)
 
-/* ignore checkpatch warning about trailing ; in macro. */
+ 
 #define PCR_ATTR(_alg, _hash, _pcr)				   \
 	static struct tpm_pcr_attr dev_attr_pcr_##_hash##_##_pcr = {	\
 		.alg_id = _alg,					   \
@@ -431,7 +409,7 @@ static ssize_t pcr_value_show(struct device *dev,
 #define PCR_ATTRS(_alg, _hash)			\
 	_TPM_HELPER(_alg, _hash, PCR_ATTR)
 
-/* ignore checkpatch warning about trailing , in macro. */
+ 
 #define PCR_ATTR_VAL(_alg, _hash, _pcr)		\
 	&dev_attr_pcr_##_hash##_##_pcr.attr.attr,
 
@@ -451,22 +429,9 @@ static ssize_t pcr_value_show(struct device *dev,
 	PCR_ATTRS(_alg, _hash)		   \
 	PCR_ATTR_GROUP_ARRAY(_alg, _hash); \
 	PCR_ATTR_GROUP(_alg, _hash)
-/*
- * End of macro structure to build an attribute group containing 24
- * PCR value files for each supported hash algorithm
- */
+ 
 
-/*
- * The next set of macros implements the cleverness for each hash to
- * build a static attribute group called pcr_group_<hash> which can be
- * added to chip->groups[].
- *
- * The first argument is the TPM algorithm id and the second is the
- * hash used as both the suffix and the group name.  Note: the group
- * name is a directory in the top level tpm class with the name
- * pcr-<hash>, so it must not clash with any other names already
- * in the sysfs directory.
- */
+ 
 PCR_ATTR_BUILD(TPM_ALG_SHA1, sha1);
 PCR_ATTR_BUILD(TPM_ALG_SHA256, sha256);
 PCR_ATTR_BUILD(TPM_ALG_SHA384, sha384);
@@ -488,7 +453,7 @@ void tpm_sysfs_add_device(struct tpm_chip *chip)
 	else
 		chip->groups[chip->groups_cnt++] = &tpm1_dev_group;
 
-	/* add one group for each bank hash */
+	 
 	for (i = 0; i < chip->nr_allocated_banks; i++) {
 		switch (chip->allocated_banks[i].alg_id) {
 		case TPM_ALG_SHA1:
@@ -507,12 +472,7 @@ void tpm_sysfs_add_device(struct tpm_chip *chip)
 			chip->groups[chip->groups_cnt++] = &pcr_group_sm3;
 			break;
 		default:
-			/*
-			 * If triggers, send a patch to add both a
-			 * PCR_ATTR_BUILD() macro above for the
-			 * missing algorithm as well as an additional
-			 * case in this switch statement.
-			 */
+			 
 			dev_err(&chip->dev,
 				"TPM with unsupported bank algorithm 0x%04x",
 				chip->allocated_banks[i].alg_id);
@@ -520,10 +480,6 @@ void tpm_sysfs_add_device(struct tpm_chip *chip)
 		}
 	}
 
-	/*
-	 * This will only trigger if someone has added an additional
-	 * hash to the tpm_algorithms enum without incrementing
-	 * TPM_MAX_HASHES.
-	 */
+	 
 	WARN_ON(chip->groups_cnt > TPM_MAX_HASHES + 1);
 }

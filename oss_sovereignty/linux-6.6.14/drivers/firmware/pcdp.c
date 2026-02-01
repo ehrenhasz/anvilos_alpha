@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Parse the EFI PCDP table to locate the console device.
- *
- * (c) Copyright 2002, 2003, 2004 Hewlett-Packard Development Company, L.P.
- *	Khalid Aziz <khalid.aziz@hp.com>
- *	Alex Williamson <alex.williamson@hp.com>
- *	Bjorn Helgaas <bjorn.helgaas@hp.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/console.h>
@@ -56,7 +49,7 @@ setup_vga_console(struct pcdp_device *dev)
 	if (if_ptr[0] == PCDP_IF_PCI) {
 		struct pcdp_if_pci if_pci;
 
-		/* struct copy since ifptr might not be correctly aligned */
+		 
 
 		memcpy(&if_pci, if_ptr, sizeof(if_pci));
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TSI driver for Dialog DA9052
- *
- * Copyright(c) 2012 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/input.h>
 #include <linux/delay.h>
@@ -36,7 +30,7 @@ static irqreturn_t da9052_ts_pendwn_irq(int irq, void *data)
 	struct da9052_tsi *tsi = data;
 
 	if (!tsi->stopped) {
-		/* Mask PEN_DOWN event and unmask TSI_READY event */
+		 
 		da9052_disable_irq_nosync(tsi->da9052, DA9052_IRQ_PENDOWN);
 		da9052_enable_irq(tsi->da9052, DA9052_IRQ_TSIREADY);
 
@@ -106,29 +100,26 @@ static void da9052_ts_pen_work(struct work_struct *work)
 	if (!tsi->stopped) {
 		int ret = da9052_reg_read(tsi->da9052, DA9052_TSI_LSB_REG);
 		if (ret < 0 || (ret & TSI_PEN_DOWN_STATUS)) {
-			/* Pen is still DOWN (or read error) */
+			 
 			schedule_delayed_work(&tsi->ts_pen_work, HZ / 50);
 		} else {
 			struct input_dev *input = tsi->dev;
 
-			/* Pen UP */
+			 
 			da9052_ts_adc_toggle(tsi, false);
 
-			/* Report Pen UP */
+			 
 			input_report_key(input, BTN_TOUCH, 0);
 			input_report_abs(input, ABS_PRESSURE, 0);
 			input_sync(input);
 
-			/*
-			 * FIXME: Fixes the unhandled irq issue when quick
-			 * pen down and pen up events occurs
-			 */
+			 
 			ret = da9052_reg_update(tsi->da9052,
 						DA9052_EVENT_B_REG, 0xC0, 0xC0);
 			if (ret < 0)
 				return;
 
-			/* Mask TSI_READY event and unmask PEN_DOWN event */
+			 
 			da9052_disable_irq(tsi->da9052, DA9052_IRQ_TSIREADY);
 			da9052_enable_irq(tsi->da9052, DA9052_IRQ_PENDOWN);
 		}
@@ -162,18 +153,18 @@ static int da9052_configure_tsi(struct da9052_tsi *tsi)
 	if (error)
 		return error;
 
-	/* Measure TSI sample every 1ms */
+	 
 	error = da9052_reg_update(tsi->da9052, DA9052_ADC_CONT_REG,
 				  1 << 6, 1 << 6);
 	if (error < 0)
 		return error;
 
-	/* TSI_DELAY: 3 slots, TSI_SKIP: 0 slots, TSI_MODE: XYZP */
+	 
 	error = da9052_reg_update(tsi->da9052, DA9052_TSI_CONT_A_REG, 0xFC, 0xC0);
 	if (error < 0)
 		return error;
 
-	/* Supply TSIRef through LD09 */
+	 
 	error = da9052_reg_write(tsi->da9052, DA9052_LDO9_REG, 0x59);
 	if (error < 0)
 		return error;
@@ -188,10 +179,10 @@ static int da9052_ts_input_open(struct input_dev *input_dev)
 	tsi->stopped = false;
 	mb();
 
-	/* Unmask PEN_DOWN event */
+	 
 	da9052_enable_irq(tsi->da9052, DA9052_IRQ_PENDOWN);
 
-	/* Enable Pen Detect Circuit */
+	 
 	return da9052_reg_update(tsi->da9052, DA9052_TSI_CONT_A_REG,
 				 1 << 1, 1 << 1);
 }
@@ -209,15 +200,11 @@ static void da9052_ts_input_close(struct input_dev *input_dev)
 		da9052_disable_irq(tsi->da9052, DA9052_IRQ_TSIREADY);
 		da9052_ts_adc_toggle(tsi, false);
 
-		/*
-		 * If ADC was on that means that pendwn IRQ was disabled
-		 * twice and we need to enable it to keep enable/disable
-		 * counter balanced. IRQ is still off though.
-		 */
+		 
 		da9052_enable_irq(tsi->da9052, DA9052_IRQ_PENDOWN);
 	}
 
-	/* Disable Pen Detect Circuit */
+	 
 	da9052_reg_update(tsi->da9052, DA9052_TSI_CONT_A_REG, 1 << 1, 0);
 }
 
@@ -262,10 +249,10 @@ static int da9052_ts_probe(struct platform_device *pdev)
 
 	input_set_drvdata(input_dev, tsi);
 
-	/* Disable Pen Detect Circuit */
+	 
 	da9052_reg_update(tsi->da9052, DA9052_TSI_CONT_A_REG, 1 << 1, 0);
 
-	/* Disable ADC */
+	 
 	da9052_ts_adc_toggle(tsi, false);
 
 	error = da9052_request_irq(tsi->da9052, DA9052_IRQ_PENDOWN,
@@ -284,7 +271,7 @@ static int da9052_ts_probe(struct platform_device *pdev)
 		goto err_free_pendwn_irq;
 	}
 
-	/* Mask PEN_DOWN and TSI_READY events */
+	 
 	da9052_disable_irq(tsi->da9052, DA9052_IRQ_PENDOWN);
 	da9052_disable_irq(tsi->da9052, DA9052_IRQ_TSIREADY);
 

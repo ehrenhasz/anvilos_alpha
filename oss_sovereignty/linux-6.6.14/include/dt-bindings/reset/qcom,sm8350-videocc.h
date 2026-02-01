@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_RESET_QCOM_VIDEO_CC_SM8350_H
 #define _DT_BINDINGS_RESET_QCOM_VIDEO_CC_SM8350_H

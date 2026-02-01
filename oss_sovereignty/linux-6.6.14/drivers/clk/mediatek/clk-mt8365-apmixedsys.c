@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Copyright (c) 2023 Collabora Ltd.
- */
+
+ 
 
 #include <dt-bindings/clock/mediatek,mt8365-clk.h>
 #include <linux/clk.h>
@@ -58,7 +55,7 @@ static const struct mtk_pll_div_table armpll_div_table[] = {
 	{ .div = 2, .freq = 750 * MHZ },
 	{ .div = 3, .freq = 375 * MHZ },
 	{ .div = 4, .freq = 182500000 },
-	{ } /* sentinel */
+	{ }  
 };
 
 static const struct mtk_pll_div_table mfgpll_div_table[] = {
@@ -67,7 +64,7 @@ static const struct mtk_pll_div_table mfgpll_div_table[] = {
 	{ .div = 2, .freq = 800 * MHZ },
 	{ .div = 3, .freq = 400 * MHZ },
 	{ .div = 4, .freq = 200 * MHZ },
-	{ } /* sentinel */
+	{ }  
 };
 
 static const struct mtk_pll_div_table dsppll_div_table[] = {
@@ -76,7 +73,7 @@ static const struct mtk_pll_div_table dsppll_div_table[] = {
 	{ .div = 2, .freq = 600 * MHZ },
 	{ .div = 3, .freq = 400 * MHZ },
 	{ .div = 4, .freq = 200 * MHZ },
-	{ } /* sentinel */
+	{ }  
 };
 
 static const struct mtk_pll_data plls[] = {
@@ -151,7 +148,7 @@ unregister_plls:
 
 static const struct of_device_id of_match_clk_mt8365_apmixed[] = {
 	{ .compatible = "mediatek,mt8365-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8365_apmixed);
 

@@ -1,25 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "amdgpu.h"
 #include "sdma/sdma_4_4_0_offset.h"
 #include "sdma/sdma_4_4_0_sh_mask.h"
@@ -31,8 +10,7 @@
 #define SDMA3_REG_OFFSET 0x1d1a0
 #define SDMA4_REG_OFFSET 0x1d5a0
 
-/* helper function that allow only use sdma0 register offset
- * to calculate register offset for all the sdma instances */
+ 
 static uint32_t sdma_v4_4_get_reg_offset(struct amdgpu_device *adev,
 					 uint32_t instance,
 					 uint32_t offset)
@@ -172,14 +150,12 @@ static void sdma_v4_4_get_ras_error_count(struct amdgpu_device *adev,
 	uint32_t i;
 	uint32_t sec_cnt;
 
-	/* double bits error (multiple bits) error detection is not supported */
+	 
 	for (i = 0; i < ARRAY_SIZE(sdma_v4_4_ras_fields); i++) {
 		if (sdma_v4_4_ras_fields[i].reg_offset != reg_offset)
 			continue;
 
-		/* the SDMA_EDC_COUNTER register in each sdma instance
-		 * shares the same sed shift_mask
-		 * */
+		 
 		sec_cnt = (value &
 			sdma_v4_4_ras_fields[i].sec_count_mask) >>
 			sdma_v4_4_ras_fields[i].sec_count_shift;
@@ -203,31 +179,22 @@ static int sdma_v4_4_query_ras_error_count_by_instance(struct amdgpu_device *ade
 
 	reg_offset = sdma_v4_4_get_reg_offset(adev, instance, regSDMA0_EDC_COUNTER);
 	reg_value = RREG32(reg_offset);
-	/* double bit error is not supported */
+	 
 	if (reg_value)
 		sdma_v4_4_get_ras_error_count(adev, regSDMA0_EDC_COUNTER, reg_value,
 					      instance, &sec_count);
 
 	reg_offset = sdma_v4_4_get_reg_offset(adev, instance, regSDMA0_EDC_COUNTER2);
 	reg_value = RREG32(reg_offset);
-	/* double bit error is not supported */
+	 
 	if (reg_value)
 		sdma_v4_4_get_ras_error_count(adev, regSDMA0_EDC_COUNTER2, reg_value,
 					      instance, &sec_count);
 
-	/*
-	 * err_data->ue_count should be initialized to 0
-	 * before calling into this function
-	 *
-	 * SDMA RAS supports single bit uncorrectable error detection.
-	 * So, increment uncorrectable error count.
-	 */
+	 
 	err_data->ue_count += sec_count;
 
-	/*
-	 * SDMA RAS does not support correctable errors.
-	 * Set ce count to 0.
-	 */
+	 
 	err_data->ce_count = 0;
 
 	return 0;
@@ -238,7 +205,7 @@ static void sdma_v4_4_reset_ras_error_count(struct amdgpu_device *adev)
 	int i;
 	uint32_t reg_offset;
 
-	/* write 0 to EDC_COUNTER reg to clear sdma edc counters */
+	 
 	if (amdgpu_ras_is_supported(adev, AMDGPU_RAS_BLOCK__SDMA)) {
 		for (i = 0; i < adev->sdma.num_instances; i++) {
 			reg_offset = sdma_v4_4_get_reg_offset(adev, i, regSDMA0_EDC_COUNTER);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Test cases for functions and macros in bits.h
- */
+
+ 
 
 #include <kunit/test.h>
 #include <linux/bits.h>
@@ -15,7 +13,7 @@ static void genmask_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 0xFFFFFFFFul, GENMASK(31, 0));
 
 #ifdef TEST_GENMASK_FAILURES
-	/* these should fail compilation */
+	 
 	GENMASK(0, 1);
 	GENMASK(0, 10);
 	GENMASK(9, 10);
@@ -32,7 +30,7 @@ static void genmask_ull_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 0xffffffffffffffffull, GENMASK_ULL(63, 0));
 
 #ifdef TEST_GENMASK_FAILURES
-	/* these should fail compilation */
+	 
 	GENMASK_ULL(0, 1);
 	GENMASK_ULL(0, 10);
 	GENMASK_ULL(9, 10);
@@ -44,7 +42,7 @@ static void genmask_input_check_test(struct kunit *test)
 	unsigned int x, y;
 	int z, w;
 
-	/* Unknown input */
+	 
 	KUNIT_EXPECT_EQ(test, 0, GENMASK_INPUT_CHECK(x, 0));
 	KUNIT_EXPECT_EQ(test, 0, GENMASK_INPUT_CHECK(0, x));
 	KUNIT_EXPECT_EQ(test, 0, GENMASK_INPUT_CHECK(x, y));
@@ -53,7 +51,7 @@ static void genmask_input_check_test(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, 0, GENMASK_INPUT_CHECK(0, z));
 	KUNIT_EXPECT_EQ(test, 0, GENMASK_INPUT_CHECK(z, w));
 
-	/* Valid input */
+	 
 	KUNIT_EXPECT_EQ(test, 0, GENMASK_INPUT_CHECK(1, 1));
 	KUNIT_EXPECT_EQ(test, 0, GENMASK_INPUT_CHECK(39, 21));
 }

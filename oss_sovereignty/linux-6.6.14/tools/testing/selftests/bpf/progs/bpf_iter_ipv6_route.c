@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bpf_iter.h"
 #include "bpf_tracing_net.h"
 #include <bpf/bpf_helpers.h>
@@ -24,7 +24,7 @@ int dump_ipv6_route(struct bpf_iter__ipv6_route *ctx)
 	fib6_nh = &rt->fib6_nh[0];
 	flags = rt->fib6_flags;
 
-	/* FIXME: nexthop_is_multipath is not handled here. */
+	 
 	nh = rt->nh;
 	if (rt->nh)
 		fib6_nh = &nh->nh_info->fib6_nh;

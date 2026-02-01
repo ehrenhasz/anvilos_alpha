@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2019 Texas Instruments Incorporated - https://www.ti.com
- *  Author: Peter Ujfalusi <peter.ujfalusi@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -143,7 +140,7 @@ static const struct of_device_id osd101t2587_of_match[] = {
 		.compatible = "osddisplays,osd101t2587-53ts",
 		.data = &default_mode_osd101t2587,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, osd101t2587_of_match);

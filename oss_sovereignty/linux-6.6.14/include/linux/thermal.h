@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  thermal.h  ($Revision: 0 $)
- *
- *  Copyright (C) 2008  Intel Corp
- *  Copyright (C) 2008  Zhang Rui <rui.zhang@intel.com>
- *  Copyright (C) 2008  Sujith Thomas <sujith.thomas@intel.com>
- */
+ 
+ 
 
 #ifndef __THERMAL_H__
 #define __THERMAL_H__
@@ -17,16 +11,16 @@
 #include <linux/workqueue.h>
 #include <uapi/linux/thermal.h>
 
-/* invalid cooling state */
+ 
 #define THERMAL_CSTATE_INVALID -1UL
 
-/* No upper/lower limit requirement */
+ 
 #define THERMAL_NO_LIMIT	((u32)~0)
 
-/* Default weight of a bound cooling device */
+ 
 #define THERMAL_WEIGHT_DEFAULT 0
 
-/* use value, which < 0K, to indicate an invalid/uninitialized temperature */
+ 
 #define THERMAL_TEMP_INVALID	-274000
 
 struct thermal_zone_device;
@@ -35,31 +29,25 @@ struct thermal_instance;
 struct thermal_attr;
 
 enum thermal_trend {
-	THERMAL_TREND_STABLE, /* temperature is stable */
-	THERMAL_TREND_RAISING, /* temperature is raising */
-	THERMAL_TREND_DROPPING, /* temperature is dropping */
+	THERMAL_TREND_STABLE,  
+	THERMAL_TREND_RAISING,  
+	THERMAL_TREND_DROPPING,  
 };
 
-/* Thermal notification reason */
+ 
 enum thermal_notify_event {
-	THERMAL_EVENT_UNSPECIFIED, /* Unspecified event */
-	THERMAL_EVENT_TEMP_SAMPLE, /* New Temperature sample */
-	THERMAL_TRIP_VIOLATED, /* TRIP Point violation */
-	THERMAL_TRIP_CHANGED, /* TRIP Point temperature changed */
-	THERMAL_DEVICE_DOWN, /* Thermal device is down */
-	THERMAL_DEVICE_UP, /* Thermal device is up after a down event */
-	THERMAL_DEVICE_POWER_CAPABILITY_CHANGED, /* power capability changed */
-	THERMAL_TABLE_CHANGED, /* Thermal table(s) changed */
-	THERMAL_EVENT_KEEP_ALIVE, /* Request for user space handler to respond */
+	THERMAL_EVENT_UNSPECIFIED,  
+	THERMAL_EVENT_TEMP_SAMPLE,  
+	THERMAL_TRIP_VIOLATED,  
+	THERMAL_TRIP_CHANGED,  
+	THERMAL_DEVICE_DOWN,  
+	THERMAL_DEVICE_UP,  
+	THERMAL_DEVICE_POWER_CAPABILITY_CHANGED,  
+	THERMAL_TABLE_CHANGED,  
+	THERMAL_EVENT_KEEP_ALIVE,  
 };
 
-/**
- * struct thermal_trip - representation of a point in temperature domain
- * @temperature: temperature value in miliCelsius
- * @hysteresis: relative hysteresis in miliCelsius
- * @type: trip point type
- * @priv: pointer to driver data associated with this trip
- */
+ 
 struct thermal_trip {
 	int temperature;
 	int hysteresis;
@@ -104,53 +92,13 @@ struct thermal_cooling_device {
 	void *devdata;
 	void *stats;
 	const struct thermal_cooling_device_ops *ops;
-	bool updated; /* true if the cooling device does not need update */
-	struct mutex lock; /* protect thermal_instances list */
+	bool updated;  
+	struct mutex lock;  
 	struct list_head thermal_instances;
 	struct list_head node;
 };
 
-/**
- * struct thermal_zone_device - structure for a thermal zone
- * @id:		unique id number for each thermal zone
- * @type:	the thermal zone device type
- * @device:	&struct device for this thermal zone
- * @trip_temp_attrs:	attributes for trip points for sysfs: trip temperature
- * @trip_type_attrs:	attributes for trip points for sysfs: trip type
- * @trip_hyst_attrs:	attributes for trip points for sysfs: trip hysteresis
- * @mode:		current mode of this thermal zone
- * @devdata:	private pointer for device private data
- * @trips:	an array of struct thermal_trip
- * @num_trips:	number of trip points the thermal zone supports
- * @trips_disabled;	bitmap for disabled trips
- * @passive_delay_jiffies: number of jiffies to wait between polls when
- *			performing passive cooling.
- * @polling_delay_jiffies: number of jiffies to wait between polls when
- *			checking whether trip points have been crossed (0 for
- *			interrupt driven systems)
- * @temperature:	current temperature.  This is only for core code,
- *			drivers should use thermal_zone_get_temp() to get the
- *			current temperature
- * @last_temperature:	previous temperature read
- * @emul_temperature:	emulated temperature when using CONFIG_THERMAL_EMULATION
- * @passive:		1 if you've crossed a passive trip point, 0 otherwise.
- * @prev_low_trip:	the low current temperature if you've crossed a passive
-			trip point.
- * @prev_high_trip:	the above current temperature if you've crossed a
-			passive trip point.
- * @need_update:	if equals 1, thermal_zone_device_update needs to be invoked.
- * @ops:	operations this &thermal_zone_device supports
- * @tzp:	thermal zone parameters
- * @governor:	pointer to the governor for this thermal zone
- * @governor_data:	private pointer for governor data
- * @thermal_instances:	list of &struct thermal_instance of this thermal zone
- * @ida:	&struct ida to generate unique id for this zone's cooling
- *		devices
- * @lock:	lock to protect thermal_instances list
- * @node:	node in thermal_tz_list (in thermal_core.c)
- * @poll_queue:	delayed work for polling
- * @notify_event: Last notification event
- */
+ 
 struct thermal_zone_device {
 	int id;
 	char type[THERMAL_NAME_LENGTH];
@@ -163,7 +111,7 @@ struct thermal_zone_device {
 	void *devdata;
 	struct thermal_trip *trips;
 	int num_trips;
-	unsigned long trips_disabled;	/* bitmap for disabled trips */
+	unsigned long trips_disabled;	 
 	unsigned long passive_delay_jiffies;
 	unsigned long polling_delay_jiffies;
 	int temperature;
@@ -185,18 +133,7 @@ struct thermal_zone_device {
 	enum thermal_notify_event notify_event;
 };
 
-/**
- * struct thermal_governor - structure that holds thermal governor information
- * @name:	name of the governor
- * @bind_to_tz: callback called when binding to a thermal zone.  If it
- *		returns 0, the governor is bound to the thermal zone,
- *		otherwise it fails.
- * @unbind_from_tz:	callback called when a governor is unbound from a
- *			thermal zone.
- * @throttle:	callback called for every trip point even if temperature is
- *		below the trip point temperature
- * @governor_list:	node in thermal_governor_list (in thermal_core.c)
- */
+ 
 struct thermal_governor {
 	char name[THERMAL_NAME_LENGTH];
 	int (*bind_to_tz)(struct thermal_zone_device *tz);
@@ -205,57 +142,38 @@ struct thermal_governor {
 	struct list_head	governor_list;
 };
 
-/* Structure to define Thermal Zone parameters */
+ 
 struct thermal_zone_params {
 	char governor_name[THERMAL_NAME_LENGTH];
 
-	/*
-	 * a boolean to indicate if the thermal to hwmon sysfs interface
-	 * is required. when no_hwmon == false, a hwmon sysfs interface
-	 * will be created. when no_hwmon == true, nothing will be done
-	 */
+	 
 	bool no_hwmon;
 
-	/*
-	 * Sustainable power (heat) that this thermal zone can dissipate in
-	 * mW
-	 */
+	 
 	u32 sustainable_power;
 
-	/*
-	 * Proportional parameter of the PID controller when
-	 * overshooting (i.e., when temperature is below the target)
-	 */
+	 
 	s32 k_po;
 
-	/*
-	 * Proportional parameter of the PID controller when
-	 * undershooting
-	 */
+	 
 	s32 k_pu;
 
-	/* Integral parameter of the PID controller */
+	 
 	s32 k_i;
 
-	/* Derivative parameter of the PID controller */
+	 
 	s32 k_d;
 
-	/* threshold below which the error is no longer accumulated */
+	 
 	s32 integral_cutoff;
 
-	/*
-	 * @slope:	slope of a linear temperature adjustment curve.
-	 * 		Used by thermal zone drivers.
-	 */
+	 
 	int slope;
-	/*
-	 * @offset:	offset of a linear temperature adjustment curve.
-	 * 		Used by thermal zone drivers (default 0).
-	 */
+	 
 	int offset;
 };
 
-/* Function declarations */
+ 
 #ifdef CONFIG_THERMAL_OF
 struct thermal_zone_device *devm_thermal_of_zone_register(struct device *dev, int id, void *data,
 							  const struct thermal_zone_device_ops *ops);
@@ -429,6 +347,6 @@ static inline int thermal_zone_device_enable(struct thermal_zone_device *tz)
 
 static inline int thermal_zone_device_disable(struct thermal_zone_device *tz)
 { return -ENODEV; }
-#endif /* CONFIG_THERMAL */
+#endif  
 
-#endif /* __THERMAL_H__ */
+#endif  

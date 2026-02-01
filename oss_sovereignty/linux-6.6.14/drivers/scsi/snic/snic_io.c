@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2014 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -60,7 +60,7 @@ snic_wq_cmpl_handler_cont(struct vnic_dev *vdev,
 	spin_unlock_irqrestore(&snic->wq_lock[q_num], flags);
 
 	return 0;
-} /* end of snic_cmpl_handler_cont */
+}  
 
 int
 snic_wq_cmpl_handler(struct snic *snic, int work_to_do)
@@ -77,7 +77,7 @@ snic_wq_cmpl_handler(struct snic *snic, int work_to_do)
 	}
 
 	return work_done;
-} /* end of snic_wq_cmpl_handler */
+}  
 
 void
 snic_free_wq_buf(struct vnic_wq *wq, struct vnic_wq_buf *buf)
@@ -98,7 +98,7 @@ snic_free_wq_buf(struct vnic_wq *wq, struct vnic_wq_buf *buf)
 		goto end;
 	}
 
-	SNIC_BUG_ON(rqi->list.next == NULL); /* if not added to spl_cmd_list */
+	SNIC_BUG_ON(rqi->list.next == NULL);  
 	list_del_init(&rqi->list);
 	spin_unlock_irqrestore(&snic->spl_cmd_lock, flags);
 
@@ -114,11 +114,11 @@ end:
 	return;
 }
 
-/* Criteria to select work queue in multi queue mode */
+ 
 static int
 snic_select_wq(struct snic *snic)
 {
-	/* No multi queue support for now */
+	 
 	BUILD_BUG_ON(SNIC_WQ_MAX > 1);
 
 	return 0;
@@ -130,10 +130,7 @@ snic_wqdesc_avail(struct snic *snic, int q_num, int req_type)
 	int nr_wqdesc = snic->config.wq_enet_desc_count;
 
 	if (q_num > 0) {
-		/*
-		 * Multi Queue case, additional care is required.
-		 * Per WQ active requests need to be maintained.
-		 */
+		 
 		SNIC_HOST_INFO(snic->shost, "desc_avail: Multi Queue case.\n");
 		SNIC_BUG_ON(q_num > 0);
 
@@ -158,7 +155,7 @@ snic_queue_wq_desc(struct snic *snic, void *os_buf, u16 len)
 
 	snic_print_desc(__func__, os_buf, len);
 
-	/* Map request buffer */
+	 
 	pa = dma_map_single(&snic->pdev->dev, os_buf, len, DMA_TO_DEVICE);
 	if (dma_mapping_error(&snic->pdev->dev, pa)) {
 		SNIC_HOST_ERR(snic->shost, "qdesc: PCI DMA Mapping Fail.\n");
@@ -183,10 +180,7 @@ snic_queue_wq_desc(struct snic *snic, void *os_buf, u16 len)
 	}
 
 	snic_queue_wq_eth_desc(&snic->wq[q_num], os_buf, pa, len, 0, 0, 1);
-	/*
-	 * Update stats
-	 * note: when multi queue enabled, fw actv_reqs should be per queue.
-	 */
+	 
 	act_reqs = atomic64_inc_return(&fwstats->actv_reqs);
 	spin_unlock_irqrestore(&snic->wq_lock[q_num], flags);
 
@@ -194,12 +188,9 @@ snic_queue_wq_desc(struct snic *snic, void *os_buf, u16 len)
 		atomic64_set(&fwstats->max_actv_reqs, act_reqs);
 
 	return 0;
-} /* end of snic_queue_wq_desc() */
+}  
 
-/*
- * snic_handle_untagged_req: Adds snic specific requests to spl_cmd_list.
- * Purpose : Used during driver unload to clean up the requests.
- */
+ 
 void
 snic_handle_untagged_req(struct snic *snic, struct snic_req_info *rqi)
 {
@@ -212,10 +203,7 @@ snic_handle_untagged_req(struct snic *snic, struct snic_req_info *rqi)
 	spin_unlock_irqrestore(&snic->spl_cmd_lock, flags);
 }
 
-/*
- * snic_req_init:
- * Allocates snic_req_info + snic_host_req + sgl data, and initializes.
- */
+ 
 struct snic_req_info *
 snic_req_init(struct snic *snic, int sg_cnt)
 {
@@ -257,17 +245,15 @@ snic_req_init(struct snic *snic, int sg_cnt)
 end:
 	memset(rqi->req, 0, rqi->req_len);
 
-	/* pre initialization of init_ctx to support req_to_rqi */
+	 
 	rqi->req->hdr.init_ctx = (ulong) rqi;
 
 	SNIC_SCSI_DBG(snic->shost, "Req_alloc:rqi = %p allocatd.\n", rqi);
 
 	return rqi;
-} /* end of snic_req_init */
+}  
 
-/*
- * snic_abort_req_init : Inits abort request.
- */
+ 
 struct snic_host_req *
 snic_abort_req_init(struct snic *snic, struct snic_req_info *rqi)
 {
@@ -275,7 +261,7 @@ snic_abort_req_init(struct snic *snic, struct snic_req_info *rqi)
 
 	SNIC_BUG_ON(!rqi);
 
-	/* If abort to be issued second time, then reuse */
+	 
 	if (rqi->abort_req)
 		return rqi->abort_req;
 
@@ -290,15 +276,13 @@ snic_abort_req_init(struct snic *snic, struct snic_req_info *rqi)
 
 	rqi->abort_req = req;
 	memset(req, 0, sizeof(struct snic_host_req));
-	/* pre initialization of init_ctx to support req_to_rqi */
+	 
 	req->hdr.init_ctx = (ulong) rqi;
 
 	return req;
-} /* end of snic_abort_req_init */
+}  
 
-/*
- * snic_dr_req_init : Inits device reset req
- */
+ 
 struct snic_host_req *
 snic_dr_req_init(struct snic *snic, struct snic_req_info *rqi)
 {
@@ -317,13 +301,13 @@ snic_dr_req_init(struct snic *snic, struct snic_req_info *rqi)
 	SNIC_BUG_ON(rqi->dr_req != NULL);
 	rqi->dr_req = req;
 	memset(req, 0, sizeof(struct snic_host_req));
-	/* pre initialization of init_ctx to support req_to_rqi */
+	 
 	req->hdr.init_ctx = (ulong) rqi;
 
 	return req;
-} /* end of snic_dr_req_init */
+}  
 
-/* frees snic_req_info and snic_host_req */
+ 
 void
 snic_req_free(struct snic *snic, struct snic_req_info *rqi)
 {
@@ -377,9 +361,7 @@ snic_pci_unmap_rsp_buf(struct snic *snic, struct snic_req_info *rqi)
 			 DMA_FROM_DEVICE);
 }
 
-/*
- * snic_free_all_untagged_reqs: Walks through untagged reqs and frees them.
- */
+ 
 void
 snic_free_all_untagged_reqs(struct snic *snic)
 {
@@ -402,9 +384,7 @@ snic_free_all_untagged_reqs(struct snic *snic)
 	spin_unlock_irqrestore(&snic->spl_cmd_lock, flags);
 }
 
-/*
- * snic_release_untagged_req : Unlinks the untagged req and frees it.
- */
+ 
 void
 snic_release_untagged_req(struct snic *snic, struct snic_req_info *rqi)
 {
@@ -430,7 +410,7 @@ end:
 	return;
 }
 
-/* dump buf in hex fmt */
+ 
 void
 snic_hex_dump(char *pfx, char *data, int len)
 {
@@ -438,7 +418,7 @@ snic_hex_dump(char *pfx, char *data, int len)
 	print_hex_dump_bytes(pfx, DUMP_PREFIX_NONE, data, len);
 }
 
-#define	LINE_BUFSZ	128	/* for snic_print_desc fn */
+#define	LINE_BUFSZ	128	 
 static void
 snic_dump_desc(const char *fn, char *os_buf, int len)
 {
@@ -531,10 +511,10 @@ snic_dump_desc(const char *fn, char *os_buf, int len)
 		  fn, line, req->hdr.cmnd_id, req->hdr.sg_cnt, req->hdr.status,
 		  req->hdr.init_ctx);
 
-	/* Enable it, to dump byte stream */
+	 
 	if (snic_log_level & 0x20)
 		snic_hex_dump(cmd_str, os_buf, len);
-} /* end of __snic_print_desc */
+}  
 
 void
 snic_print_desc(const char *fn, char *os_buf, int len)

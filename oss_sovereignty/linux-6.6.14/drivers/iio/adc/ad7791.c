@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD7787/AD7788/AD7789/AD7790/AD7791 SPI ADC driver
- *
- * Copyright 2012 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/device.h>
@@ -28,8 +23,8 @@
 
 #include <linux/platform_data/ad7791.h>
 
-#define AD7791_REG_COMM			0x0 /* For writes */
-#define AD7791_REG_STATUS		0x0 /* For reads */
+#define AD7791_REG_COMM			0x0  
+#define AD7791_REG_STATUS		0x0  
 #define AD7791_REG_MODE			0x1
 #define AD7791_REG_FILTER		0x2
 #define AD7791_REG_DATA			0x3
@@ -267,22 +262,16 @@ static int ad7791_read_raw(struct iio_dev *indio_dev,
 	case IIO_CHAN_INFO_RAW:
 		return ad_sigma_delta_single_conversion(indio_dev, chan, val);
 	case IIO_CHAN_INFO_OFFSET:
-		/**
-		 * Unipolar: 0 to VREF
-		 * Bipolar -VREF to VREF
-		 **/
+		 
 		if (unipolar)
 			*val = 0;
 		else
 			*val = -(1 << (chan->scan_type.realbits - 1));
 		return IIO_VAL_INT;
 	case IIO_CHAN_INFO_SCALE:
-		/* The monitor channel uses an internal reference. */
+		 
 		if (chan->address == AD7791_CH_AVDD_MONITOR) {
-			/*
-			 * The signal is attenuated by a factor of 5 and
-			 * compared against a 1.17V internal reference.
-			 */
+			 
 			*val = 1170 * 5;
 		} else {
 			int voltage_uv;
@@ -373,7 +362,7 @@ static const struct iio_info ad7791_no_filter_info = {
 static int ad7791_setup(struct ad7791_state *st,
 			struct ad7791_platform_data *pdata)
 {
-	/* Set to poweron-reset default values */
+	 
 	st->mode = AD7791_MODE_BUFFER;
 	st->filter = AD7791_FILTER_RATE_16_6;
 

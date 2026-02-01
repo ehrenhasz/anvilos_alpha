@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "gaudiP.h"
 #include "../include/gaudi/asic_reg/gaudi_regs.h"
@@ -468,12 +465,7 @@ static u64 gaudi_rr_hbw_mask_high_ar_regs[GAUDI_NUMBER_OF_HBW_RR_REGS] = {
 	mmNIF_RTR_CTRL_7_RANGE_SEC_MASK_HIGH_AR_0
 };
 
-/**
- * gaudi_pb_set_block - set the given block as protected
- *
- * @hdev: pointer to hl_device structure
- * @base: block base address
- */
+ 
 static void gaudi_pb_set_block(struct hl_device *hdev, u64 base)
 {
 	u32 pb_addr = base - CFG_BASE + PROT_BITS_OFFS;
@@ -986,7 +978,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	WREG32(pb_addr + word_offset, ~mask);
 
-	/* MME 1 is slave, hence its whole QM block is protected (with RR) */
+	 
 
 	pb_addr = (mmMME2_CTRL_RESET & ~0xFFF) + PROT_BITS_OFFS;
 	word_offset = ((mmMME2_CTRL_RESET & PROT_BITS_OFFS) >> 7) << 2;
@@ -1465,7 +1457,7 @@ static void gaudi_init_mme_protection_bits(struct hl_device *hdev)
 
 	WREG32(pb_addr + word_offset, ~mask);
 
-	/* MME 3 is slave, hence its whole QM block is protected (with RR) */
+	 
 }
 
 static void gaudi_init_dma_protection_bits(struct hl_device *hdev)
@@ -12812,44 +12804,10 @@ static void gaudi_init_tpc_protection_bits(struct hl_device *hdev)
 	WREG32(pb_addr + word_offset, ~mask);
 }
 
-/**
- * gaudi_init_protection_bits - Initialize protection bits of specific registers
- *
- * @hdev: pointer to hl_device structure
- *
- * All protection bits are 1 by default, means not protected. Need to set to 0
- * each bit that belongs to a protected register.
- *
- */
+ 
 static void gaudi_init_protection_bits(struct hl_device *hdev)
 {
-	/*
-	 * In each 4K block of registers, the last 128 bytes are protection
-	 * bits - total of 1024 bits, one for each register. Each bit is related
-	 * to a specific register, by the order of the registers.
-	 * So in order to calculate the bit that is related to a given register,
-	 * we need to calculate its word offset and then the exact bit inside
-	 * the word (which is 4 bytes).
-	 *
-	 * Register address:
-	 *
-	 * 31                 12 11           7   6             2  1      0
-	 * -----------------------------------------------------------------
-	 * |      Don't         |    word       |  bit location  |    0    |
-	 * |      care          |   offset      |  inside word   |         |
-	 * -----------------------------------------------------------------
-	 *
-	 * Bits 7-11 represents the word offset inside the 128 bytes.
-	 * Bits 2-6 represents the bit location inside the word.
-	 *
-	 * When a bit is cleared, it means the register it represents can only
-	 * be accessed by a secured entity. When the bit is set, any entity can
-	 * access the register.
-	 *
-	 * The last 4 bytes in the block of the PBs control the security of
-	 * the PBs themselves, so they always need to be configured to be
-	 * secured
-	 */
+	 
 
 	if (!hdev->asic_prop.fw_security_enabled) {
 		gaudi_pb_set_block(hdev, mmIF_E_PLL_BASE);
@@ -12874,35 +12832,35 @@ static void gaudi_init_range_registers_lbw(struct hl_device *hdev)
 	u32 lbw_rng_end[GAUDI_NUMBER_OF_LBW_RANGES];
 	int i, j;
 
-	lbw_rng_start[0]  = (0xFC0E8000 & 0x3FFFFFF) - 1; /* 0x000E7FFF */
-	lbw_rng_end[0]    = (0xFC11FFFF & 0x3FFFFFF) + 1; /* 0x00120000 */
+	lbw_rng_start[0]  = (0xFC0E8000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[0]    = (0xFC11FFFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[1]  = (0xFC1E8000 & 0x3FFFFFF) - 1; /* 0x001E7FFF */
-	lbw_rng_end[1]    = (0xFC48FFFF & 0x3FFFFFF) + 1; /* 0x00490000 */
+	lbw_rng_start[1]  = (0xFC1E8000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[1]    = (0xFC48FFFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[2]  = (0xFC600000 & 0x3FFFFFF) - 1; /* 0x005FFFFF */
-	lbw_rng_end[2]    = (0xFCC48FFF & 0x3FFFFFF) + 1; /* 0x00C49000 */
+	lbw_rng_start[2]  = (0xFC600000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[2]    = (0xFCC48FFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[3]  = (0xFCC4A000 & 0x3FFFFFF) - 1; /* 0x00C49FFF */
-	lbw_rng_end[3]    = (0xFCCDFFFF & 0x3FFFFFF) + 1; /* 0x00CE0000 */
+	lbw_rng_start[3]  = (0xFCC4A000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[3]    = (0xFCCDFFFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[4]  = (0xFCCE4000 & 0x3FFFFFF) - 1; /* 0x00CE3FFF */
-	lbw_rng_end[4]    = (0xFCD1FFFF & 0x3FFFFFF) + 1; /* 0x00D20000 */
+	lbw_rng_start[4]  = (0xFCCE4000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[4]    = (0xFCD1FFFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[5]  = (0xFCD24000 & 0x3FFFFFF) - 1; /* 0x00D23FFF */
-	lbw_rng_end[5]    = (0xFCD5FFFF & 0x3FFFFFF) + 1; /* 0x00D60000 */
+	lbw_rng_start[5]  = (0xFCD24000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[5]    = (0xFCD5FFFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[6]  = (0xFCD64000 & 0x3FFFFFF) - 1; /* 0x00D63FFF */
-	lbw_rng_end[6]    = (0xFCD9FFFF & 0x3FFFFFF) + 1; /* 0x00DA0000 */
+	lbw_rng_start[6]  = (0xFCD64000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[6]    = (0xFCD9FFFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[7]  = (0xFCDA4000 & 0x3FFFFFF) - 1; /* 0x00DA3FFF */
-	lbw_rng_end[7]    = (0xFCDDFFFF & 0x3FFFFFF) + 1; /* 0x00DE0000 */
+	lbw_rng_start[7]  = (0xFCDA4000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[7]    = (0xFCDDFFFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[8]  = (0xFCDE4000 & 0x3FFFFFF) - 1; /* 0x00DE3FFF */
-	lbw_rng_end[8]    = (0xFCE05FFF & 0x3FFFFFF) + 1; /* 0x00E06000 */
+	lbw_rng_start[8]  = (0xFCDE4000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[8]    = (0xFCE05FFF & 0x3FFFFFF) + 1;  
 
-	lbw_rng_start[9]  = (0xFCFC9000 & 0x3FFFFFF) - 1; /* 0x00FC8FFF */
-	lbw_rng_end[9]    = (0xFFFFFFFE & 0x3FFFFFF) + 1; /* 0x03FFFFFF */
+	lbw_rng_start[9]  = (0xFCFC9000 & 0x3FFFFFF) - 1;  
+	lbw_rng_end[9]    = (0xFFFFFFFE & 0x3FFFFFF) + 1;  
 
 	for (i = 0 ; i < GAUDI_NUMBER_OF_LBW_RR_REGS ; i++) {
 		WREG32(gaudi_rr_lbw_hit_aw_regs[i],
@@ -12948,15 +12906,7 @@ static void gaudi_init_range_registers_hbw(struct hl_device *hdev)
 
 	int i;
 
-	/* Configure HBW RR:
-	 * 1st range is the DRAM (first 512MB)
-	 * 2nd range is the 1st 128 bytes in SRAM (for tensor DMA). This area
-	 * is defined as read-only for user
-	 * 3rd range is the PSOC scratch-pad
-	 * 4th range is the PCIe F/W SRAM area
-	 * 5th range is the SPI FLASH area
-	 * 6th range is the host
-	 */
+	 
 
 	for (i = 0 ; i < GAUDI_NUMBER_OF_HBW_RR_REGS ; i++) {
 		WREG32(gaudi_rr_hbw_hit_aw_regs[i], 0x1F);
@@ -13020,7 +12970,7 @@ static void gaudi_init_range_registers_hbw(struct hl_device *hdev)
 		if (gaudi->hw_cap_initialized & HW_CAP_MMU)
 			continue;
 
-		/* Protect HOST */
+		 
 		WREG32(gaudi_rr_hbw_base_low_aw_regs[i] + 20, 0);
 		WREG32(gaudi_rr_hbw_base_low_ar_regs[i] + 20, 0);
 
@@ -13035,21 +12985,10 @@ static void gaudi_init_range_registers_hbw(struct hl_device *hdev)
 	}
 }
 
-/**
- * gaudi_init_security - Initialize security model
- *
- * @hdev: pointer to hl_device structure
- *
- * Initialize the security model of the device
- * That includes range registers and protection bit per register
- *
- */
+ 
 void gaudi_init_security(struct hl_device *hdev)
 {
-	/* Due to H/W errata GAUDI0500, need to override default security
-	 * property configuration of MME SBAB and ACC to be non-privileged and
-	 * non-secured
-	 */
+	 
 	if (!hdev->asic_prop.fw_security_enabled) {
 		WREG32(mmMME0_SBAB_PROT, 0x2);
 		WREG32(mmMME0_ACC_PROT, 0x2);
@@ -13060,9 +12999,7 @@ void gaudi_init_security(struct hl_device *hdev)
 		WREG32(mmMME3_SBAB_PROT, 0x2);
 		WREG32(mmMME3_ACC_PROT, 0x2);
 
-		/*
-		 * On RAZWI, 0 will be returned from RR and 0xBABA0BAD from PB
-		 */
+		 
 		WREG32(0xC01B28, 0x1);
 	}
 

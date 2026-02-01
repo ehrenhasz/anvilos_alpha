@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/init.h>
 #include <linux/module.h>
@@ -58,9 +58,7 @@ static int load_skel(void)
 		err = PTR_ERR(progs_link);
 		goto out;
 	}
-	/* Avoid taking over stdin/stdout/stderr of init process. Zeroing out
-	 * makes skel_closenz() a no-op later in iterators_bpf__destroy().
-	 */
+	 
 	close_fd(skel->links.dump_bpf_map_fd);
 	skel->links.dump_bpf_map_fd = 0;
 	close_fd(skel->links.dump_bpf_prog_fd);

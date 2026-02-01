@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * F81532/F81534 USB to Serial Ports Bridge
- *
- * F81532 => 2 Serial Ports
- * F81534 => 4 Serial Ports
- *
- * Copyright (C) 2016 Feature Integration Technology Inc., (Fintek)
- * Copyright (C) 2016 Tom Tsai (Tom_Tsai@fintek.com.tw)
- * Copyright (C) 2016 Peter Hong (Peter_Hong@fintek.com.tw)
- *
- * The F81532/F81534 had 1 control endpoint for setting, 1 endpoint bulk-out
- * for all serial port TX and 1 endpoint bulk-in for all serial port read in
- * (Read Data/MSR/LSR).
- *
- * Write URB is fixed with 512bytes, per serial port used 128Bytes.
- * It can be described by f81534_prepare_write_buffer()
- *
- * Read URB is 512Bytes max, per serial port used 128Bytes.
- * It can be described by f81534_process_read_urb() and maybe received with
- * 128x1,2,3,4 bytes.
- *
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
@@ -30,7 +9,7 @@
 #include <linux/module.h>
 #include <linux/uaccess.h>
 
-/* Serial Port register Address */
+ 
 #define F81534_UART_BASE_ADDRESS	0x1200
 #define F81534_UART_OFFSET		0x10
 #define F81534_DIVISOR_LSB_REG		(0x00 + F81534_UART_BASE_ADDRESS)
@@ -60,7 +39,7 @@
 #define F81534_MAX_DATA_BLOCK		64
 #define F81534_MAX_BUS_RETRY		20
 
-/* Default URB timeout for USB operations */
+ 
 #define F81534_USB_MAX_RETRY		10
 #define F81534_USB_TIMEOUT		2000
 #define F81534_SET_GET_REGISTER		0xA0
@@ -83,14 +62,7 @@
 #define F81534_TOKEN_TX_EMPTY		0x03
 #define F81534_TOKEN_MSR_CHANGE		0x04
 
-/*
- * We used interal SPI bus to access FLASH section. We must wait the SPI bus to
- * idle if we performed any command.
- *
- * SPI Bus status register: F81534_BUS_REG_STATUS
- *	Bit 0/1	: BUSY
- *	Bit 2	: IDLE
- */
+ 
 #define F81534_BUS_BUSY			(BIT(0) | BIT(1))
 #define F81534_BUS_IDLE			BIT(2)
 #define F81534_BUS_READ_DATA		0x1004
@@ -115,18 +87,7 @@
 #define F81534_1X_RXTRIGGER		0xc3
 #define F81534_8X_RXTRIGGER		0xcf
 
-/*
- * F81532/534 Clock registers (offset +08h)
- *
- * Bit0:	UART Enable (always on)
- * Bit2-1:	Clock source selector
- *			00: 1.846MHz.
- *			01: 18.46MHz.
- *			10: 24MHz.
- *			11: 14.77MHz.
- * Bit4:	Auto direction(RTS) control (RTS pin Low when TX)
- * Bit5:	Invert direction(RTS) when Bit4 enabled (RTS pin high when TX)
- */
+ 
 
 #define F81534_UART_EN			BIT(0)
 #define F81534_CLK_1_846_MHZ		0
@@ -141,7 +102,7 @@
 static const struct usb_device_id f81534_id_table[] = {
 	{ USB_DEVICE(FINTEK_VENDOR_ID_1, FINTEK_DEVICE_ID) },
 	{ USB_DEVICE(FINTEK_VENDOR_ID_2, FINTEK_DEVICE_ID) },
-	{}			/* Terminating entry */
+	{}			 
 };
 
 #define F81534_TX_EMPTY_BIT		0
@@ -178,7 +139,7 @@ struct f81534_port_out_pin {
 	struct f81534_pin_data pin[3];
 };
 
-/* Pin output value for M2/M1/M0(SD) */
+ 
 static const struct f81534_port_out_pin f81534_port_out_pins[] = {
 	 { { { 0x2ae8, BIT(7) }, { 0x2a90, BIT(5) }, { 0x2a90, BIT(4) } } },
 	 { { { 0x2ae8, BIT(6) }, { 0x2ae8, BIT(0) }, { 0x2ae8, BIT(3) } } },
@@ -225,10 +186,7 @@ static int f81534_set_register(struct usb_serial *serial, u16 reg, u8 data)
 
 	*tmp = data;
 
-	/*
-	 * Our device maybe not reply when heavily loading, We'll retry for
-	 * F81534_USB_MAX_RETRY times.
-	 */
+	 
 	while (count--) {
 		status = usb_control_msg(dev, usb_sndctrlpipe(dev, 0),
 					 F81534_SET_GET_REGISTER,
@@ -262,10 +220,7 @@ static int f81534_get_register(struct usb_serial *serial, u16 reg, u8 *data)
 	if (!tmp)
 		return -ENOMEM;
 
-	/*
-	 * Our device maybe not reply when heavily loading, We'll retry for
-	 * F81534_USB_MAX_RETRY times.
-	 */
+	 
 	while (count--) {
 		status = usb_control_msg(dev, usb_rcvctrlpipe(dev, 0),
 					 F81534_SET_GET_REGISTER,
@@ -341,10 +296,7 @@ static int f81534_get_port_register(struct usb_serial_port *port, u16 reg,
 			reg + port_priv->phy_num * F81534_UART_OFFSET, data);
 }
 
-/*
- * If we try to access the internal flash via SPI bus, we should check the bus
- * status for every command. e.g., F81534_BUS_REG_START/F81534_BUS_REG_END
- */
+ 
 static int f81534_wait_for_spi_idle(struct usb_serial *serial)
 {
 	size_t count = F81534_MAX_BUS_RETRY;
@@ -430,22 +382,19 @@ static int f81534_read_flash(struct usb_serial *serial, u32 address,
 	if (status)
 		return status;
 
-	/* Continuous read mode */
+	 
 	do {
 		read_size = min_t(size_t, F81534_MAX_DATA_BLOCK, size);
 
 		for (count = 0; count < read_size; ++count) {
-			/* To write F81534_BUS_REG_END when final byte */
+			 
 			if (size <= F81534_MAX_DATA_BLOCK &&
 					read_size == count + 1)
 				reg_tmp = F81534_BUS_REG_END;
 			else
 				reg_tmp = F81534_BUS_REG_START;
 
-			/*
-			 * Dummy code, force IC to generate a read pulse, the
-			 * set of value 0xf1 is dont care (any value is ok)
-			 */
+			 
 			status = f81534_set_spi_register(serial, reg_tmp,
 					0xf1);
 			if (status)
@@ -475,14 +424,7 @@ static void f81534_prepare_write_buffer(struct usb_serial_port *port, u8 *buf)
 	u8 tx_len;
 	int i;
 
-	/*
-	 * The block layout is fixed with 4x128 Bytes, per 128 Bytes a port.
-	 * index 0: port phy idx (e.g., 0,1,2,3)
-	 * index 1: only F81534_TOKEN_WRITE
-	 * index 2: serial TX out length
-	 * index 3: fix to 0
-	 * index 4~127: serial out data block
-	 */
+	 
 	for (i = 0; i < F81534_NUM_PORT; ++i) {
 		buf[i * F81534_RECEIVE_BLOCK_SIZE] = i;
 		buf[i * F81534_RECEIVE_BLOCK_SIZE + 1] = F81534_TOKEN_WRITE;
@@ -504,7 +446,7 @@ static int f81534_submit_writer(struct usb_serial_port *port, gfp_t mem_flags)
 	unsigned long flags;
 	int result;
 
-	/* Check is any data in write_fifo */
+	 
 	spin_lock_irqsave(&port->lock, flags);
 
 	if (kfifo_is_empty(&port->write_fifo)) {
@@ -514,7 +456,7 @@ static int f81534_submit_writer(struct usb_serial_port *port, gfp_t mem_flags)
 
 	spin_unlock_irqrestore(&port->lock, flags);
 
-	/* Check H/W is TXEMPTY */
+	 
 	if (!test_and_clear_bit(F81534_TX_EMPTY_BIT, &port_priv->tx_empty))
 		return 0;
 
@@ -536,7 +478,7 @@ static int f81534_submit_writer(struct usb_serial_port *port, gfp_t mem_flags)
 
 static u32 f81534_calc_baud_divisor(u32 baudrate, u32 clockrate)
 {
-	/* Round to nearest divisor */
+	 
 	return DIV_ROUND_CLOSEST(clockrate, baudrate);
 }
 
@@ -593,9 +535,9 @@ static int f81534_set_port_config(struct usb_serial_port *port,
 	}
 
 	if (baudrate <= 1200)
-		value = F81534_1X_RXTRIGGER;	/* 128 FIFO & TL: 1x */
+		value = F81534_1X_RXTRIGGER;	 
 	else
-		value = F81534_8X_RXTRIGGER;	/* 128 FIFO & TL: 8x */
+		value = F81534_8X_RXTRIGGER;	 
 
 	status = f81534_set_port_register(port, F81534_CONFIG1_REG, value);
 	if (status) {
@@ -604,9 +546,9 @@ static int f81534_set_port_config(struct usb_serial_port *port,
 	}
 
 	if (baudrate <= 1200)
-		value = UART_FCR_TRIGGER_1 | UART_FCR_ENABLE_FIFO; /* TL: 1 */
+		value = UART_FCR_TRIGGER_1 | UART_FCR_ENABLE_FIFO;  
 	else
-		value = UART_FCR_TRIGGER_8 | UART_FCR_ENABLE_FIFO; /* TL: 8 */
+		value = UART_FCR_TRIGGER_8 | UART_FCR_ENABLE_FIFO;  
 
 	status = f81534_set_port_register(port, F81534_FIFO_CONTROL_REG,
 						value);
@@ -687,14 +629,14 @@ static int f81534_update_mctrl(struct usb_serial_port *port, unsigned int set,
 	u8 tmp;
 
 	if (((set | clear) & (TIOCM_DTR | TIOCM_RTS)) == 0)
-		return 0;	/* no change */
+		return 0;	 
 
 	mutex_lock(&port_priv->mcr_mutex);
 
-	/* 'Set' takes precedence over 'Clear' */
+	 
 	clear &= ~set;
 
-	/* Always enable UART_MCR_OUT2 */
+	 
 	tmp = UART_MCR_OUT2 | port_priv->shadow_mcr;
 
 	if (clear & TIOCM_DTR)
@@ -721,15 +663,7 @@ static int f81534_update_mctrl(struct usb_serial_port *port, unsigned int set,
 	return 0;
 }
 
-/*
- * This function will search the data area with token F81534_CUSTOM_VALID_TOKEN
- * for latest configuration index. If nothing found
- * (*index = F81534_CUSTOM_NO_CUSTOM_DATA), We'll load default configure in
- * F81534_DEF_CONF_ADDRESS_START section.
- *
- * Due to we only use block0 to save data, so *index should be 0 or
- * F81534_CUSTOM_NO_CUSTOM_DATA.
- */
+ 
 static int f81534_find_config_idx(struct usb_serial *serial, u8 *index)
 {
 	u8 tmp;
@@ -743,7 +677,7 @@ static int f81534_find_config_idx(struct usb_serial *serial, u8 *index)
 		return status;
 	}
 
-	/* We'll use the custom data when the data is valid. */
+	 
 	if (tmp == F81534_CUSTOM_VALID_TOKEN)
 		*index = 0;
 	else
@@ -752,13 +686,7 @@ static int f81534_find_config_idx(struct usb_serial *serial, u8 *index)
 	return 0;
 }
 
-/*
- * The F81532/534 will not report serial port to USB serial subsystem when
- * H/W DCD/DSR/CTS/RI/RX pin connected to ground.
- *
- * To detect RX pin status, we'll enable MCR interal loopback, disable it and
- * delayed for 60ms. It connected to ground If LSR register report UART_LSR_BI.
- */
+ 
 static bool f81534_check_port_hw_disabled(struct usb_serial *serial, int phy)
 {
 	int status;
@@ -816,24 +744,7 @@ static bool f81534_check_port_hw_disabled(struct usb_serial *serial, int phy)
 	return false;
 }
 
-/*
- * We had 2 generation of F81532/534 IC. All has an internal storage.
- *
- * 1st is pure USB-to-TTL RS232 IC and designed for 4 ports only, no any
- * internal data will used. All mode and gpio control should manually set
- * by AP or Driver and all storage space value are 0xff. The
- * f81534_calc_num_ports() will run to final we marked as "oldest version"
- * for this IC.
- *
- * 2rd is designed to more generic to use any transceiver and this is our
- * mass production type. We'll save data in F81534_CUSTOM_ADDRESS_START
- * (0x2f00) with 9bytes. The 1st byte is a indicater. If the token is
- * F81534_CUSTOM_VALID_TOKEN(0xf0), the IC is 2nd gen type, the following
- * 4bytes save port mode (0:RS232/1:RS485 Invert/2:RS485), and the last
- * 4bytes save GPIO state(value from 0~7 to represent 3 GPIO output pin).
- * The f81534_calc_num_ports() will run to "new style" with checking
- * F81534_PORT_UNAVAILABLE section.
- */
+ 
 static int f81534_calc_num_ports(struct usb_serial *serial,
 					struct usb_serial_endpoints *epds)
 {
@@ -860,7 +771,7 @@ static int f81534_calc_num_ports(struct usb_serial *serial,
 	usb_set_serial_data(serial, serial_priv);
 	mutex_init(&serial_priv->urb_mutex);
 
-	/* Check had custom setting */
+	 
 	status = f81534_find_config_idx(serial, &serial_priv->setting_idx);
 	if (status) {
 		dev_err(&serial->interface->dev, "%s: find idx failed: %d\n",
@@ -868,10 +779,7 @@ static int f81534_calc_num_ports(struct usb_serial *serial,
 		return status;
 	}
 
-	/*
-	 * We'll read custom data only when data available, otherwise we'll
-	 * read default value instead.
-	 */
+	 
 	if (serial_priv->setting_idx != F81534_CUSTOM_NO_CUSTOM_DATA) {
 		status = f81534_read_flash(serial,
 						F81534_CUSTOM_ADDRESS_START +
@@ -889,7 +797,7 @@ static int f81534_calc_num_ports(struct usb_serial *serial,
 				"%s: read config from block: %d\n", __func__,
 				serial_priv->setting_idx);
 	} else {
-		/* Read default board setting */
+		 
 		status = f81534_read_flash(serial,
 				F81534_DEF_CONF_ADDRESS_START,
 				sizeof(serial_priv->conf_data),
@@ -905,7 +813,7 @@ static int f81534_calc_num_ports(struct usb_serial *serial,
 				__func__);
 	}
 
-	/* New style, find all possible ports */
+	 
 	for (i = 0; i < F81534_NUM_PORT; ++i) {
 		if (f81534_check_port_hw_disabled(serial, i))
 			serial_priv->conf_data[i] |= F81534_PORT_UNAVAILABLE;
@@ -919,10 +827,10 @@ static int f81534_calc_num_ports(struct usb_serial *serial,
 	if (!num_port) {
 		dev_warn(&serial->interface->dev,
 			"no config found, assuming 4 ports\n");
-		num_port = 4;		/* Nothing found, oldest version IC */
+		num_port = 4;		 
 	}
 
-	/* Assign phy-to-logic mapping */
+	 
 	for (i = 0; i < F81534_NUM_PORT; ++i) {
 		if (serial_priv->conf_data[i] & F81534_PORT_UNAVAILABLE)
 			continue;
@@ -933,10 +841,7 @@ static int f81534_calc_num_ports(struct usb_serial *serial,
 				serial_priv->tty_idx[i]);
 	}
 
-	/*
-	 * Setup bulk-out endpoint multiplexing. All ports share the same
-	 * bulk-out endpoint.
-	 */
+	 
 	BUILD_BUG_ON(ARRAY_SIZE(epds->bulk_out) < F81534_NUM_PORT);
 
 	for (i = 1; i < num_port; ++i)
@@ -1017,7 +922,7 @@ static void f81534_msr_changed(struct usb_serial_port *port, u8 msr)
 	dev_dbg(&port->dev, "%s: MSR from %02x to %02x\n", __func__, old_msr,
 			msr);
 
-	/* Update input line counters */
+	 
 	if (msr & UART_MSR_DCTS)
 		port->icount.cts++;
 	if (msr & UART_MSR_DDSR)
@@ -1050,12 +955,12 @@ static int f81534_read_msr(struct usb_serial_port *port)
 	int status;
 	u8 msr;
 
-	/* Get MSR initial value */
+	 
 	status = f81534_get_port_register(port, F81534_MODEM_STATUS_REG, &msr);
 	if (status)
 		return status;
 
-	/* Force update current state */
+	 
 	spin_lock_irqsave(&port_priv->msr_lock, flags);
 	port_priv->shadow_msr = msr;
 	spin_unlock_irqrestore(&port_priv->msr_lock, flags);
@@ -1088,7 +993,7 @@ static int f81534_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	mutex_lock(&serial_priv->urb_mutex);
 
-	/* Submit Read URBs for first port opened */
+	 
 	if (!serial_priv->opened_port) {
 		status = f81534_submit_read_urb(port->serial, GFP_KERNEL);
 		if (status)
@@ -1118,7 +1023,7 @@ static void f81534_close(struct usb_serial_port *port)
 	kfifo_reset_out(&port->write_fifo);
 	spin_unlock_irqrestore(&port->lock, flags);
 
-	/* Kill Read URBs when final port closed */
+	 
 	mutex_lock(&serial_priv->urb_mutex);
 	serial_priv->opened_port--;
 
@@ -1151,23 +1056,12 @@ static void f81534_process_per_serial_block(struct usb_serial_port *port,
 	int status;
 	u8 lsr;
 
-	/*
-	 * The block layout is 128 Bytes
-	 * index 0: port phy idx (e.g., 0,1,2,3),
-	 * index 1: It's could be
-	 *			F81534_TOKEN_RECEIVE
-	 *			F81534_TOKEN_TX_EMPTY
-	 *			F81534_TOKEN_MSR_CHANGE
-	 * index 2: serial in size (data+lsr, must be even)
-	 *			meaningful for F81534_TOKEN_RECEIVE only
-	 * index 3: current MSR with this device
-	 * index 4~127: serial in data block (data+lsr, must be even)
-	 */
+	 
 	switch (data[1]) {
 	case F81534_TOKEN_TX_EMPTY:
 		set_bit(F81534_TX_EMPTY_BIT, &port_priv->tx_empty);
 
-		/* Try to submit writer */
+		 
 		status = f81534_submit_writer(port, GFP_ATOMIC);
 		if (status)
 			dev_err(&port->dev, "%s: submit failed\n", __func__);
@@ -1326,10 +1220,7 @@ static int f81534_set_port_output_pin(struct usb_serial_port *port)
 	idx = F81534_CONF_INIT_GPIO_OFFSET + port_priv->phy_num;
 	value = serial_priv->conf_data[idx];
 	if (value >= F81534_CONF_GPIO_SHUTDOWN) {
-		/*
-		 * Newer IC configure will make transceiver in shutdown mode on
-		 * initial power on. We need enable it before using UARTs.
-		 */
+		 
 		idx = F81534_CONF_WORK_GPIO_OFFSET + port_priv->phy_num;
 		value = serial_priv->conf_data[idx];
 		if (value >= F81534_CONF_GPIO_SHUTDOWN)
@@ -1362,17 +1253,14 @@ static int f81534_port_probe(struct usb_serial_port *port)
 	if (!port_priv)
 		return -ENOMEM;
 
-	/*
-	 * We'll make tx frame error when baud rate from 384~500kps. So we'll
-	 * delay all tx data frame with 1bit.
-	 */
+	 
 	port_priv->shadow_clk = F81534_UART_EN | F81534_CLK_TX_DELAY_1BIT;
 	spin_lock_init(&port_priv->msr_lock);
 	mutex_init(&port_priv->mcr_mutex);
 	mutex_init(&port_priv->lcr_mutex);
 	INIT_WORK(&port_priv->lsr_work, f81534_lsr_worker);
 
-	/* Assign logic-to-phy mapping */
+	 
 	ret = f81534_logic_to_phy_port(port->serial, port);
 	if (ret < 0)
 		return ret;
@@ -1383,12 +1271,7 @@ static int f81534_port_probe(struct usb_serial_port *port)
 	dev_dbg(&port->dev, "%s: port_number: %d, phy_num: %d\n", __func__,
 			port->port_number, port_priv->phy_num);
 
-	/*
-	 * The F81532/534 will hang-up when enable LSR interrupt in IER and
-	 * occur data overrun. So we'll disable the LSR interrupt in probe()
-	 * and submit the LSR worker to clear LSR state when reported LSR error
-	 * bit with bulk-in data in f81534_process_per_serial_block().
-	 */
+	 
 	ret = f81534_set_port_register(port, F81534_INTERRUPT_ENABLE_REG,
 			UART_IER_RDI | UART_IER_THRI | UART_IER_MSI);
 	if (ret)
@@ -1431,7 +1314,7 @@ static int f81534_tiocmget(struct tty_struct *tty)
 	u8 msr;
 	u8 mcr;
 
-	/* Read current MSR from device */
+	 
 	status = f81534_get_port_register(port, F81534_MODEM_STATUS_REG, &msr);
 	if (status)
 		return status;
@@ -1502,10 +1385,7 @@ static int f81534_resume(struct usb_serial *serial)
 	int status;
 	size_t i;
 
-	/*
-	 * We'll register port 0 bulkin when port had opened, It'll take all
-	 * port received data, MSR register change and TX_EMPTY information.
-	 */
+	 
 	mutex_lock(&serial_priv->urb_mutex);
 
 	if (serial_priv->opened_port) {

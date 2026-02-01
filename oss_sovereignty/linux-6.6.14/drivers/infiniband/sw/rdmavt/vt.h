@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2016 Intel Corporation.
- */
+ 
+ 
 
 #ifndef DEF_RDMAVT_H
 #define DEF_RDMAVT_H
@@ -56,7 +54,7 @@
 
 static inline u32 ibport_num_to_idx(struct ib_device *ibdev, u32 port_num)
 {
-	return port_num - 1; /* IB ports start at 1 our arrays at 0 */
+	return port_num - 1;  
 }
 
-#endif          /* DEF_RDMAVT_H */
+#endif           

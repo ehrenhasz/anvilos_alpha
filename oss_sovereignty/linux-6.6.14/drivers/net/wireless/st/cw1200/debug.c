@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mac80211 glue code for mac80211 ST-Ericsson CW1200 drivers
- * DebugFS code
- *
- * Copyright (c) 2010, ST-Ericsson
- * Author: Dmitry Tarnyagin <dmitry.tarnyagin@lockless.no>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/debugfs.h>
@@ -14,7 +8,7 @@
 #include "debug.h"
 #include "fwio.h"
 
-/* join_status */
+ 
 static const char * const cw1200_debug_join_status[] = {
 	"passive",
 	"monitor",
@@ -25,7 +19,7 @@ static const char * const cw1200_debug_join_status[] = {
 	"access point",
 };
 
-/* WSM_JOIN_PREAMBLE_... */
+ 
 static const char * const cw1200_debug_preamble[] = {
 	"long",
 	"short",

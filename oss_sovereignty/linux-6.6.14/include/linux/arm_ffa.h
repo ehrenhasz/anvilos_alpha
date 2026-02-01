@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2021 ARM Ltd.
- */
+ 
+ 
 
 #ifndef _LINUX_ARM_FFA_H
 #define _LINUX_ARM_FFA_H
@@ -55,18 +53,14 @@
 #define FFA_MEM_FRAG_TX			FFA_SMC_32(0x7B)
 #define FFA_NORMAL_WORLD_RESUME		FFA_SMC_32(0x7C)
 
-/*
- * For some calls it is necessary to use SMC64 to pass or return 64-bit values.
- * For such calls FFA_FN_NATIVE(name) will choose the appropriate
- * (native-width) function ID.
- */
+ 
 #ifdef CONFIG_64BIT
 #define FFA_FN_NATIVE(name)	FFA_FN64_##name
 #else
 #define FFA_FN_NATIVE(name)	FFA_##name
 #endif
 
-/* FFA error codes. */
+ 
 #define FFA_RET_SUCCESS            (0)
 #define FFA_RET_NOT_SUPPORTED      (-1)
 #define FFA_RET_INVALID_PARAMETERS (-2)
@@ -77,7 +71,7 @@
 #define FFA_RET_RETRY              (-7)
 #define FFA_RET_ABORTED            (-8)
 
-/* FFA version encoding */
+ 
 #define FFA_MAJOR_VERSION_MASK	GENMASK(30, 16)
 #define FFA_MINOR_VERSION_MASK	GENMASK(15, 0)
 #define FFA_MAJOR_VERSION(x)	((u16)(FIELD_GET(FFA_MAJOR_VERSION_MASK, (x))))
@@ -87,22 +81,15 @@
 	 FIELD_PREP(FFA_MINOR_VERSION_MASK, (minor)))
 #define FFA_VERSION_1_0		FFA_PACK_VERSION_INFO(1, 0)
 
-/**
- * FF-A specification mentions explicitly about '4K pages'. This should
- * not be confused with the kernel PAGE_SIZE, which is the translation
- * granule kernel is configured and may be one among 4K, 16K and 64K.
- */
+ 
 #define FFA_PAGE_SIZE		SZ_4K
 
-/*
- * Minimum buffer size/alignment encodings returned by an FFA_FEATURES
- * query for FFA_RXTX_MAP.
- */
+ 
 #define FFA_FEAT_RXTX_MIN_SZ_4K		0
 #define FFA_FEAT_RXTX_MIN_SZ_64K	1
 #define FFA_FEAT_RXTX_MIN_SZ_16K	2
 
-/* FFA Bus/Device/Driver related */
+ 
 struct ffa_device {
 	u32 id;
 	int vm_id;
@@ -170,99 +157,79 @@ static inline void ffa_driver_unregister(struct ffa_driver *driver) {}
 static inline
 bool ffa_device_is_valid(struct ffa_device *ffa_dev) { return false; }
 
-#endif /* CONFIG_ARM_FFA_TRANSPORT */
+#endif  
 
 #define ffa_register(driver) \
 	ffa_driver_register(driver, THIS_MODULE, KBUILD_MODNAME)
 #define ffa_unregister(driver) \
 	ffa_driver_unregister(driver)
 
-/**
- * module_ffa_driver() - Helper macro for registering a psa_ffa driver
- * @__ffa_driver: ffa_driver structure
- *
- * Helper macro for psa_ffa drivers to set up proper module init / exit
- * functions.  Replaces module_init() and module_exit() and keeps people from
- * printing pointless things to the kernel log when their driver is loaded.
- */
+ 
 #define module_ffa_driver(__ffa_driver)	\
 	module_driver(__ffa_driver, ffa_register, ffa_unregister)
 
-/* FFA transport related */
+ 
 struct ffa_partition_info {
 	u16 id;
 	u16 exec_ctxt;
-/* partition supports receipt of direct requests */
+ 
 #define FFA_PARTITION_DIRECT_RECV	BIT(0)
-/* partition can send direct requests. */
+ 
 #define FFA_PARTITION_DIRECT_SEND	BIT(1)
-/* partition can send and receive indirect messages. */
+ 
 #define FFA_PARTITION_INDIRECT_MSG	BIT(2)
-/* partition runs in the AArch64 execution state. */
+ 
 #define FFA_PARTITION_AARCH64_EXEC	BIT(8)
 	u32 properties;
 	u32 uuid[4];
 };
 
-/* For use with FFA_MSG_SEND_DIRECT_{REQ,RESP} which pass data via registers */
+ 
 struct ffa_send_direct_data {
-	unsigned long data0; /* w3/x3 */
-	unsigned long data1; /* w4/x4 */
-	unsigned long data2; /* w5/x5 */
-	unsigned long data3; /* w6/x6 */
-	unsigned long data4; /* w7/x7 */
+	unsigned long data0;  
+	unsigned long data1;  
+	unsigned long data2;  
+	unsigned long data3;  
+	unsigned long data4;  
 };
 
 struct ffa_mem_region_addr_range {
-	/* The base IPA of the constituent memory region, aligned to 4 kiB */
+	 
 	u64 address;
-	/* The number of 4 kiB pages in the constituent memory region. */
+	 
 	u32 pg_cnt;
 	u32 reserved;
 };
 
 struct ffa_composite_mem_region {
-	/*
-	 * The total number of 4 kiB pages included in this memory region. This
-	 * must be equal to the sum of page counts specified in each
-	 * `struct ffa_mem_region_addr_range`.
-	 */
+	 
 	u32 total_pg_cnt;
-	/* The number of constituents included in this memory region range */
+	 
 	u32 addr_range_cnt;
 	u64 reserved;
-	/** An array of `addr_range_cnt` memory region constituents. */
+	 
 	struct ffa_mem_region_addr_range constituents[];
 };
 
 struct ffa_mem_region_attributes {
-	/* The ID of the VM to which the memory is being given or shared. */
+	 
 	u16 receiver;
-	/*
-	 * The permissions with which the memory region should be mapped in the
-	 * receiver's page table.
-	 */
+	 
 #define FFA_MEM_EXEC		BIT(3)
 #define FFA_MEM_NO_EXEC		BIT(2)
 #define FFA_MEM_RW		BIT(1)
 #define FFA_MEM_RO		BIT(0)
 	u8 attrs;
-	/*
-	 * Flags used during FFA_MEM_RETRIEVE_REQ and FFA_MEM_RETRIEVE_RESP
-	 * for memory regions with multiple borrowers.
-	 */
+	 
 #define FFA_MEM_RETRIEVE_SELF_BORROWER	BIT(0)
 	u8 flag;
-	/*
-	 * Offset in bytes from the start of the outer `ffa_memory_region` to
-	 * an `struct ffa_mem_region_addr_range`.
-	 */
+	 
 	u32 composite_off;
 	u64 reserved;
 };
 
 struct ffa_mem_region {
-	/* The ID of the VM/owner which originally sent the memory region */
+	 
 	u16 sender_id;
 #define FFA_MEM_NORMAL		BIT(5)
 #define FFA_MEM_DEVICE		BIT(4)
@@ -280,15 +247,9 @@ struct ffa_mem_region {
 #define FFA_MEM_INNER_SHAREABLE	(3)
 	u8 attributes;
 	u8 reserved_0;
-/*
- * Clear memory region contents after unmapping it from the sender and
- * before mapping it for any receiver.
- */
+ 
 #define FFA_MEM_CLEAR			BIT(0)
-/*
- * Whether the hypervisor may time slice the memory sharing or retrieval
- * operation.
- */
+ 
 #define FFA_TIME_SLICE_ENABLE		BIT(1)
 
 #define FFA_MEM_RETRIEVE_TYPE_IN_RESP	(0 << 3)
@@ -298,7 +259,7 @@ struct ffa_mem_region {
 
 #define FFA_MEM_RETRIEVE_ADDR_ALIGN_HINT	BIT(9)
 #define FFA_MEM_RETRIEVE_ADDR_ALIGN(x)		((x) << 5)
-	/* Flags to control behaviour of the transaction. */
+	 
 	u32 flags;
 #define HANDLE_LOW_MASK		GENMASK_ULL(31, 0)
 #define HANDLE_HIGH_MASK	GENMASK_ULL(63, 32)
@@ -307,28 +268,14 @@ struct ffa_mem_region {
 
 #define PACK_HANDLE(l, h)		\
 	(FIELD_PREP(HANDLE_LOW_MASK, (l)) | FIELD_PREP(HANDLE_HIGH_MASK, (h)))
-	/*
-	 * A globally-unique ID assigned by the hypervisor for a region
-	 * of memory being sent between VMs.
-	 */
+	 
 	u64 handle;
-	/*
-	 * An implementation defined value associated with the receiver and the
-	 * memory region.
-	 */
+	 
 	u64 tag;
 	u32 reserved_1;
-	/*
-	 * The number of `ffa_mem_region_attributes` entries included in this
-	 * transaction.
-	 */
+	 
 	u32 ep_count;
-	/*
-	 * An array of endpoint memory access descriptors.
-	 * Each one specifies a memory region offset, an endpoint and the
-	 * attributes with which this memory region should be mapped in that
-	 * endpoint's page table.
-	 */
+	 
 	struct ffa_mem_region_attributes ep_mem_access[];
 };
 
@@ -373,4 +320,4 @@ struct ffa_ops {
 	const struct ffa_mem_ops *mem_ops;
 };
 
-#endif /* _LINUX_ARM_FFA_H */
+#endif  

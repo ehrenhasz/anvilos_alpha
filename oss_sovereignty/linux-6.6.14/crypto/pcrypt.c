@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * pcrypt - Parallel crypto wrapper.
- *
- * Copyright (C) 2009 secunet Security Networks AG
- * Copyright (C) 2009 Steffen Klassert <steffen.klassert@secunet.com>
- */
+
+ 
 
 #include <crypto/algapi.h>
 #include <crypto/internal/aead.h>

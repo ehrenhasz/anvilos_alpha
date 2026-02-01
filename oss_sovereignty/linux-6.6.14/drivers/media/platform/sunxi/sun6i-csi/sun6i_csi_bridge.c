@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2021-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/regmap.h>
@@ -13,7 +10,7 @@
 #include "sun6i_csi_bridge.h"
 #include "sun6i_csi_reg.h"
 
-/* Helpers */
+ 
 
 void sun6i_csi_bridge_dimensions(struct sun6i_csi_device *csi_dev,
 				 unsigned int *width, unsigned int *height)
@@ -33,10 +30,10 @@ void sun6i_csi_bridge_format(struct sun6i_csi_device *csi_dev,
 		*field = csi_dev->bridge.mbus_format.field;
 }
 
-/* Format */
+ 
 
 static const struct sun6i_csi_bridge_format sun6i_csi_bridge_formats[] = {
-	/* Bayer */
+	 
 	{
 		.mbus_code		= MEDIA_BUS_FMT_SBGGR8_1X8,
 		.input_format		= SUN6I_CSI_INPUT_FMT_RAW,
@@ -85,7 +82,7 @@ static const struct sun6i_csi_bridge_format sun6i_csi_bridge_formats[] = {
 		.mbus_code		= MEDIA_BUS_FMT_SRGGB12_1X12,
 		.input_format		= SUN6I_CSI_INPUT_FMT_RAW,
 	},
-	/* RGB */
+	 
 	{
 		.mbus_code		= MEDIA_BUS_FMT_RGB565_2X8_LE,
 		.input_format		= SUN6I_CSI_INPUT_FMT_RAW,
@@ -94,7 +91,7 @@ static const struct sun6i_csi_bridge_format sun6i_csi_bridge_formats[] = {
 		.mbus_code		= MEDIA_BUS_FMT_RGB565_2X8_BE,
 		.input_format		= SUN6I_CSI_INPUT_FMT_RAW,
 	},
-	/* YUV422 */
+	 
 	{
 		.mbus_code		= MEDIA_BUS_FMT_YUYV8_2X8,
 		.input_format		= SUN6I_CSI_INPUT_FMT_YUV422,
@@ -155,7 +152,7 @@ static const struct sun6i_csi_bridge_format sun6i_csi_bridge_formats[] = {
 		.input_yuv_seq		= SUN6I_CSI_INPUT_YUV_SEQ_VYUY,
 		.input_yuv_seq_invert	= SUN6I_CSI_INPUT_YUV_SEQ_UYVY,
 	},
-	/* Compressed */
+	 
 	{
 		.mbus_code		= MEDIA_BUS_FMT_JPEG_1X8,
 		.input_format		= SUN6I_CSI_INPUT_FMT_RAW,
@@ -174,7 +171,7 @@ sun6i_csi_bridge_format_find(u32 mbus_code)
 	return NULL;
 }
 
-/* Bridge */
+ 
 
 static void sun6i_csi_bridge_irq_enable(struct sun6i_csi_device *csi_dev)
 {
@@ -298,7 +295,7 @@ sun6i_csi_bridge_configure_parallel(struct sun6i_csi_device *csi_dev)
 
 	switch (bus_width) {
 	case 8:
-	/* 16-bit YUV formats use a doubled width in 8-bit mode. */
+	 
 	case 16:
 		value |= SUN6I_CSI_IF_CFG_DATA_WIDTH_8;
 		break;
@@ -403,7 +400,7 @@ static void sun6i_csi_bridge_configure(struct sun6i_csi_device *csi_dev,
 	sun6i_csi_bridge_configure_format(csi_dev);
 }
 
-/* V4L2 Subdev */
+ 
 
 static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
 {
@@ -417,7 +414,7 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
 	struct media_pad *remote_pad;
 	int ret;
 
-	/* Source */
+	 
 
 	remote_pad = media_pad_remote_pad_unique(local_pad);
 	if (IS_ERR(remote_pad)) {
@@ -439,29 +436,29 @@ static int sun6i_csi_bridge_s_stream(struct v4l2_subdev *subdev, int on)
 		goto disable;
 	}
 
-	/* PM */
+	 
 
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret < 0)
 		return ret;
 
-	/* Clear */
+	 
 
 	sun6i_csi_bridge_irq_clear(csi_dev);
 
-	/* Configure */
+	 
 
 	sun6i_csi_bridge_configure(csi_dev, source);
 
 	if (capture_streaming)
 		sun6i_csi_capture_configure(csi_dev);
 
-	/* State Update */
+	 
 
 	if (capture_streaming)
 		sun6i_csi_capture_state_update(csi_dev);
 
-	/* Enable */
+	 
 
 	if (capture_streaming)
 		sun6i_csi_bridge_irq_enable(csi_dev);
@@ -592,13 +589,13 @@ static const struct v4l2_subdev_ops sun6i_csi_bridge_subdev_ops = {
 	.pad	= &sun6i_csi_bridge_pad_ops,
 };
 
-/* Media Entity */
+ 
 
 static const struct media_entity_operations sun6i_csi_bridge_entity_ops = {
 	.link_validate	= v4l2_subdev_link_validate,
 };
 
-/* V4L2 Async */
+ 
 
 static int sun6i_csi_bridge_link(struct sun6i_csi_device *csi_dev,
 				 int sink_pad_index,
@@ -612,7 +609,7 @@ static int sun6i_csi_bridge_link(struct sun6i_csi_device *csi_dev,
 	int source_pad_index;
 	int ret;
 
-	/* Get the first remote source pad. */
+	 
 	ret = media_entity_get_fwnode_pad(source_entity, remote_subdev->fwnode,
 					  MEDIA_PAD_FL_SOURCE);
 	if (ret < 0) {
@@ -669,10 +666,7 @@ sun6i_csi_bridge_notifier_bound(struct v4l2_async_notifier *notifier,
 	source->subdev = remote_subdev;
 
 	if (csi_dev->isp_available) {
-		/*
-		 * Hook to the first available remote subdev to get v4l2 and
-		 * media devices and register the capture device then.
-		 */
+		 
 		ret = sun6i_csi_isp_complete(csi_dev, remote_subdev->v4l2_dev);
 		if (ret)
 			return ret;
@@ -702,7 +696,7 @@ sun6i_csi_bridge_notifier_ops = {
 	.complete	= sun6i_csi_bridge_notifier_complete,
 };
 
-/* Bridge */
+ 
 
 static int sun6i_csi_bridge_source_setup(struct sun6i_csi_device *csi_dev,
 					 struct sun6i_csi_bridge_source *source,
@@ -779,7 +773,7 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
 
 	mutex_init(&bridge->lock);
 
-	/* V4L2 Subdev */
+	 
 
 	v4l2_subdev_init(subdev, &sun6i_csi_bridge_subdev_ops);
 	strscpy(subdev->name, SUN6I_CSI_BRIDGE_NAME, sizeof(subdev->name));
@@ -789,12 +783,12 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
 
 	v4l2_set_subdevdata(subdev, csi_dev);
 
-	/* Media Entity */
+	 
 
 	subdev->entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;
 	subdev->entity.ops = &sun6i_csi_bridge_entity_ops;
 
-	/* Media Pads */
+	 
 
 	pads[SUN6I_CSI_BRIDGE_PAD_SINK].flags = MEDIA_PAD_FL_SINK;
 	pads[SUN6I_CSI_BRIDGE_PAD_SOURCE].flags = MEDIA_PAD_FL_SOURCE |
@@ -805,7 +799,7 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
 	if (ret < 0)
 		return ret;
 
-	/* V4L2 Subdev */
+	 
 
 	if (csi_dev->isp_available)
 		ret = v4l2_async_register_subdev(subdev);
@@ -817,7 +811,7 @@ int sun6i_csi_bridge_setup(struct sun6i_csi_device *csi_dev)
 		goto error_media_entity;
 	}
 
-	/* V4L2 Async */
+	 
 
 	if (csi_dev->isp_available)
 		v4l2_async_subdev_nf_init(notifier, subdev);

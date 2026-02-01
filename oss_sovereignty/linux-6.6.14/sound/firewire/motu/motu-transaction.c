@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * motu-transaction.c - a part of driver for MOTU FireWire series
- *
- * Copyright (c) 2015-2017 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 
 #include "motu.h"
@@ -81,7 +77,7 @@ int snd_motu_transaction_reregister(struct snd_motu *motu)
 	if (motu->async_handler.callback_data == NULL)
 		return -EINVAL;
 
-	/* Register messaging address. Block transaction is not allowed. */
+	 
 	data = cpu_to_be32((device->card->node_id << 16) |
 			   (motu->async_handler.offset >> 32));
 	err = snd_motu_transaction_write(motu, ASYNC_ADDR_HI, &data,
@@ -102,7 +98,7 @@ int snd_motu_transaction_register(struct snd_motu *motu)
 	};
 	int err;
 
-	/* Perhaps, 4 byte messages are transferred. */
+	 
 	motu->async_handler.length = 4;
 	motu->async_handler.address_callback = handle_message;
 	motu->async_handler.callback_data = motu;
@@ -129,7 +125,7 @@ void snd_motu_transaction_unregister(struct snd_motu *motu)
 		fw_core_remove_address_handler(&motu->async_handler);
 	motu->async_handler.address_callback = NULL;
 
-	/* Unregister the address. */
+	 
 	data = cpu_to_be32(0x00000000);
 	snd_motu_transaction_write(motu, ASYNC_ADDR_HI, &data, sizeof(data));
 	snd_motu_transaction_write(motu, ASYNC_ADDR_LO, &data, sizeof(data));

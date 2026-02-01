@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Analog Devices AD5272 digital potentiometer driver
- * Copyright (C) 2018 Phil Reid <preid@electromag.com.au>
- *
- * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/AD5272_5274.pdf
- *
- * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
- * ad5272	1	1024		20, 50, 100		01011xx
- * ad5274	1	256		20, 100			01011xx
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>

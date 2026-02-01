@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* The industrial I/O core
- *
- * Copyright (c) 2008 Jonathan Cameron
- *
- * Handling of buffer allocation / resizing.
- *
- * Things to look at here.
- * - Better memory allocation techniques?
- * - Alternative access techniques?
- */
+
+ 
 #include <linux/anon_inodes.h>
 #include <linux/kernel.h>
 #include <linux/export.h>
@@ -58,11 +49,11 @@ static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
 	size_t avail;
 	int flushed = 0;
 
-	/* wakeup if the device was unregistered */
+	 
 	if (!indio_dev->info)
 		return true;
 
-	/* drain the buffer if it was disabled */
+	 
 	if (!iio_buffer_is_active(buf)) {
 		to_wait = min_t(size_t, to_wait, 1);
 		to_flush = 0;
@@ -71,7 +62,7 @@ static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
 	avail = iio_buffer_data_available(buf);
 
 	if (avail >= to_wait) {
-		/* force a flush for non-blocking reads */
+		 
 		if (!to_wait && avail < to_flush)
 			iio_buffer_flush_hwfifo(indio_dev, buf,
 						to_flush - avail);
@@ -90,19 +81,7 @@ static bool iio_buffer_ready(struct iio_dev *indio_dev, struct iio_buffer *buf,
 	return false;
 }
 
-/**
- * iio_buffer_read() - chrdev read for buffer access
- * @filp:	File structure pointer for the char device
- * @buf:	Destination buffer for iio buffer read
- * @n:		First n bytes to read
- * @f_ps:	Long offset provided by the user as a seek position
- *
- * This function relies on all buffer implementations having an
- * iio_buffer as their first element.
- *
- * Return: negative values corresponding to error codes or ret != 0
- *	   for ending the reading activity
- **/
+ 
 static ssize_t iio_buffer_read(struct file *filp, char __user *buf,
 			       size_t n, loff_t *f_ps)
 {
@@ -125,10 +104,7 @@ static ssize_t iio_buffer_read(struct file *filp, char __user *buf,
 
 	datum_size = rb->bytes_per_datum;
 
-	/*
-	 * If datum_size is 0 there will never be anything to read from the
-	 * buffer, so signal end of file now.
-	 */
+	 
 	if (!datum_size)
 		return 0;
 
@@ -226,15 +202,7 @@ static ssize_t iio_buffer_write(struct file *filp, const char __user *buf,
 	return ret < 0 ? ret : written;
 }
 
-/**
- * iio_buffer_poll() - poll the buffer to find out if it has data
- * @filp:	File structure pointer for device access
- * @wait:	Poll table structure pointer for which the driver adds
- *		a wait queue
- *
- * Return: (EPOLLIN | EPOLLRDNORM) if data is available for reading
- *	   or 0 for other cases
- */
+ 
 static __poll_t iio_buffer_poll(struct file *filp,
 				struct poll_table_struct *wait)
 {
@@ -267,7 +235,7 @@ ssize_t iio_buffer_read_wrapper(struct file *filp, char __user *buf,
 	struct iio_dev_buffer_pair *ib = filp->private_data;
 	struct iio_buffer *rb = ib->buffer;
 
-	/* check if buffer was opened through new API */
+	 
 	if (test_bit(IIO_BUSY_BIT_POS, &rb->flags))
 		return -EBUSY;
 
@@ -280,7 +248,7 @@ ssize_t iio_buffer_write_wrapper(struct file *filp, const char __user *buf,
 	struct iio_dev_buffer_pair *ib = filp->private_data;
 	struct iio_buffer *rb = ib->buffer;
 
-	/* check if buffer was opened through new API */
+	 
 	if (test_bit(IIO_BUSY_BIT_POS, &rb->flags))
 		return -EBUSY;
 
@@ -293,20 +261,14 @@ __poll_t iio_buffer_poll_wrapper(struct file *filp,
 	struct iio_dev_buffer_pair *ib = filp->private_data;
 	struct iio_buffer *rb = ib->buffer;
 
-	/* check if buffer was opened through new API */
+	 
 	if (test_bit(IIO_BUSY_BIT_POS, &rb->flags))
 		return 0;
 
 	return iio_buffer_poll(filp, wait);
 }
 
-/**
- * iio_buffer_wakeup_poll - Wakes up the buffer waitqueue
- * @indio_dev: The IIO device
- *
- * Wakes up the event waitqueue used for poll(). Should usually
- * be called when the device is unregistered.
- */
+ 
 void iio_buffer_wakeup_poll(struct iio_dev *indio_dev)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -398,14 +360,14 @@ static ssize_t iio_scan_el_show(struct device *dev,
 	int ret;
 	struct iio_buffer *buffer = to_iio_dev_attr(attr)->buffer;
 
-	/* Ensure ret is 0 or 1. */
+	 
 	ret = !!test_bit(to_iio_dev_attr(attr)->address,
 		       buffer->scan_mask);
 
 	return sysfs_emit(buf, "%d\n", ret);
 }
 
-/* Note NULL used as error indicator as it doesn't make sense. */
+ 
 static const unsigned long *iio_scan_mask_match(const unsigned long *av_masks,
 						unsigned int masklength,
 						const unsigned long *mask,
@@ -435,16 +397,7 @@ static bool iio_validate_scan_mask(struct iio_dev *indio_dev,
 	return indio_dev->setup_ops->validate_scan_mask(indio_dev, mask);
 }
 
-/**
- * iio_scan_mask_set() - set particular bit in the scan mask
- * @indio_dev: the iio device
- * @buffer: the buffer whose scan mask we are interested in
- * @bit: the bit to be set.
- *
- * Note that at this point we have no way of knowing what other
- * buffers might request, hence this code only verifies that the
- * individual buffers request is plausible.
- */
+ 
 static int iio_scan_mask_set(struct iio_dev *indio_dev,
 			     struct iio_buffer *buffer, int bit)
 {
@@ -498,7 +451,7 @@ static int iio_scan_mask_query(struct iio_dev *indio_dev,
 	if (!buffer->scan_mask)
 		return 0;
 
-	/* Ensure return value is 0 or 1. */
+	 
 	return !!test_bit(bit, buffer->scan_mask);
 };
 
@@ -710,7 +663,7 @@ static int iio_compute_scan_bytes(struct iio_dev *indio_dev,
 	unsigned int bytes = 0;
 	int length, i, largest = 0;
 
-	/* How much space will the demuxed element take? */
+	 
 	for_each_set_bit(i, mask,
 			 indio_dev->masklength) {
 		length = iio_storage_bytes_for_si(indio_dev, i);
@@ -808,7 +761,7 @@ static int iio_buffer_request_update(struct iio_dev *indio_dev,
 static void iio_free_scan_mask(struct iio_dev *indio_dev,
 			       const unsigned long *mask)
 {
-	/* If the mask is dynamically allocated free it, otherwise do nothing */
+	 
 	if (!indio_dev->available_scan_masks)
 		bitmap_free(mask);
 }
@@ -844,10 +797,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
 	memset(config, 0, sizeof(*config));
 	config->watermark = ~0;
 
-	/*
-	 * If there is just one buffer and we are removing it there is nothing
-	 * to verify.
-	 */
+	 
 	if (remove_buffer && !insert_buffer &&
 	    list_is_singular(&iio_dev_opaque->buffer_list))
 		return 0;
@@ -867,14 +817,11 @@ static int iio_verify_update(struct iio_dev *indio_dev,
 					insert_buffer->watermark);
 	}
 
-	/* Definitely possible for devices to support both of these. */
+	 
 	if ((modes & INDIO_BUFFER_TRIGGERED) && indio_dev->trig) {
 		config->mode = INDIO_BUFFER_TRIGGERED;
 	} else if (modes & INDIO_BUFFER_HARDWARE) {
-		/*
-		 * Keep things simple for now and only allow a single buffer to
-		 * be connected in hardware mode.
-		 */
+		 
 		if (insert_buffer && !list_empty(&iio_dev_opaque->buffer_list))
 			return -EINVAL;
 		config->mode = INDIO_BUFFER_HARDWARE;
@@ -882,13 +829,13 @@ static int iio_verify_update(struct iio_dev *indio_dev,
 	} else if (modes & INDIO_BUFFER_SOFTWARE) {
 		config->mode = INDIO_BUFFER_SOFTWARE;
 	} else {
-		/* Can only occur on first buffer */
+		 
 		if (indio_dev->modes & INDIO_BUFFER_TRIGGERED)
 			dev_dbg(&indio_dev->dev, "Buffer not started: no trigger\n");
 		return -EINVAL;
 	}
 
-	/* What scan mask do we actually have? */
+	 
 	compound_mask = bitmap_zalloc(indio_dev->masklength, GFP_KERNEL);
 	if (!compound_mask)
 		return -ENOMEM;
@@ -929,13 +876,7 @@ static int iio_verify_update(struct iio_dev *indio_dev,
 	return 0;
 }
 
-/**
- * struct iio_demux_table - table describing demux memcpy ops
- * @from:	index to copy from
- * @to:		index to copy to
- * @length:	how many bytes to copy
- * @l:		list head used for management
- */
+ 
 struct iio_demux_table {
 	unsigned int from;
 	unsigned int to;
@@ -981,18 +922,18 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
 	unsigned int in_loc = 0, out_loc = 0;
 	struct iio_demux_table *p = NULL;
 
-	/* Clear out any old demux */
+	 
 	iio_buffer_demux_free(buffer);
 	kfree(buffer->demux_bounce);
 	buffer->demux_bounce = NULL;
 
-	/* First work out which scan mode we will actually have */
+	 
 	if (bitmap_equal(indio_dev->active_scan_mask,
 			 buffer->scan_mask,
 			 indio_dev->masklength))
 		return 0;
 
-	/* Now we have the two masks, work from least sig and build up sizes */
+	 
 	for_each_set_bit(out_ind,
 			 buffer->scan_mask,
 			 indio_dev->masklength) {
@@ -1001,7 +942,7 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
 				       in_ind + 1);
 		while (in_ind != out_ind) {
 			length = iio_storage_bytes_for_si(indio_dev, in_ind);
-			/* Make sure we are aligned */
+			 
 			in_loc = roundup(in_loc, length) + length;
 			in_ind = find_next_bit(indio_dev->active_scan_mask,
 					       indio_dev->masklength,
@@ -1016,7 +957,7 @@ static int iio_buffer_update_demux(struct iio_dev *indio_dev,
 		out_loc += length;
 		in_loc += length;
 	}
-	/* Relies on scan_timestamp being last */
+	 
 	if (buffer->scan_timestamp) {
 		length = iio_storage_bytes_for_timestamp(indio_dev);
 		out_loc = roundup(out_loc, length);
@@ -1073,7 +1014,7 @@ static int iio_enable_buffers(struct iio_dev *indio_dev,
 
 	iio_update_demux(indio_dev);
 
-	/* Wind up again */
+	 
 	if (indio_dev->setup_ops->preenable) {
 		ret = indio_dev->setup_ops->preenable(indio_dev);
 		if (ret) {
@@ -1152,16 +1093,11 @@ static int iio_disable_buffers(struct iio_dev *indio_dev)
 	int ret = 0;
 	int ret2;
 
-	/* Wind down existing buffers - iff there are any */
+	 
 	if (list_empty(&iio_dev_opaque->buffer_list))
 		return 0;
 
-	/*
-	 * If things go wrong at some step in disable we still need to continue
-	 * to perform the other steps, otherwise we leave the device in a
-	 * inconsistent state. We return the error code for the first error we
-	 * encountered.
-	 */
+	 
 
 	if (indio_dev->setup_ops->predisable) {
 		ret2 = indio_dev->setup_ops->predisable(indio_dev);
@@ -1221,7 +1157,7 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
 	if (insert_buffer)
 		iio_buffer_activate(indio_dev, insert_buffer);
 
-	/* If no buffers in list, we are done */
+	 
 	if (list_empty(&iio_dev_opaque->buffer_list))
 		return 0;
 
@@ -1232,14 +1168,7 @@ static int __iio_update_buffers(struct iio_dev *indio_dev,
 	return 0;
 
 err_deactivate_all:
-	/*
-	 * We've already verified that the config is valid earlier. If things go
-	 * wrong in either enable or disable the most likely reason is an IO
-	 * error from the device. In this case there is no good recovery
-	 * strategy. Just make sure to disable everything and leave the device
-	 * in a sane state.  With a bit of luck the device might come back to
-	 * life again later and userspace can try again.
-	 */
+	 
 	iio_buffer_deactivate_all(indio_dev);
 
 err_free_config:
@@ -1312,9 +1241,9 @@ static ssize_t enable_store(struct device *dev, struct device_attribute *attr,
 
 	mutex_lock(&iio_dev_opaque->mlock);
 
-	/* Find out if it is in the list */
+	 
 	inlist = iio_buffer_is_active(buffer);
-	/* Already in desired state */
+	 
 	if (inlist == requested_state)
 		goto done;
 
@@ -1403,12 +1332,7 @@ static struct device_attribute dev_attr_watermark_ro = __ATTR_RO(watermark);
 static DEVICE_ATTR_RO(data_available);
 static DEVICE_ATTR_RO(direction);
 
-/*
- * When adding new attributes here, put the at the end, at least until
- * the code that handles the length/length_ro & watermark/watermark_ro
- * assignments gets cleaned up. Otherwise these can create some weird
- * duplicate attributes errors under some setups.
- */
+ 
 static struct attribute *iio_buffer_attrs[] = {
 	&dev_attr_length.attr,
 	&dev_attr_enable.attr,
@@ -1567,16 +1491,7 @@ static long iio_device_buffer_getfd(struct iio_dev *indio_dev, unsigned long arg
 	}
 
 	if (copy_to_user(ival, &fd, sizeof(fd))) {
-		/*
-		 * "Leak" the fd, as there's not much we can do about this
-		 * anyway. 'fd' might have been closed already, as
-		 * anon_inode_getfd() called fd_install() on it, which made
-		 * it reachable by userland.
-		 *
-		 * Instead of allowing a malicious user to play tricks with
-		 * us, rely on the process exit path to do any necessary
-		 * cleanup, as in releasing the file, if still needed.
-		 */
+		 
 		return -EFAULT;
 	}
 
@@ -1624,12 +1539,12 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
 	INIT_LIST_HEAD(&buffer->buffer_attr_list);
 	channels = indio_dev->channels;
 	if (channels) {
-		/* new magic */
+		 
 		for (i = 0; i < indio_dev->num_channels; i++) {
 			if (channels[i].scan_index < 0)
 				continue;
 
-			/* Verify that sample bits fit into storage */
+			 
 			if (channels[i].scan_type.storagebits <
 			    channels[i].scan_type.realbits +
 			    channels[i].scan_type.shift) {
@@ -1708,7 +1623,7 @@ static int __iio_buffer_alloc_sysfs_and_mask(struct iio_buffer *buffer,
 	if (ret)
 		goto error_free_buffer_attr_group_name;
 
-	/* we only need to register the legacy groups for the first buffer */
+	 
 	if (index > 0)
 		return 0;
 
@@ -1810,15 +1725,7 @@ void iio_buffers_free_sysfs_and_mask(struct iio_dev *indio_dev)
 	}
 }
 
-/**
- * iio_validate_scan_mask_onehot() - Validates that exactly one channel is selected
- * @indio_dev: the iio device
- * @mask: scan mask to be checked
- *
- * Return true if exactly one bit is set in the scan mask, false otherwise. It
- * can be used for devices where only one channel can be active for sampling at
- * a time.
- */
+ 
 bool iio_validate_scan_mask_onehot(struct iio_dev *indio_dev,
 				   const unsigned long *mask)
 {
@@ -1849,19 +1756,12 @@ static int iio_push_to_buffer(struct iio_buffer *buffer, const void *data)
 	if (ret)
 		return ret;
 
-	/*
-	 * We can't just test for watermark to decide if we wake the poll queue
-	 * because read may request less samples than the watermark.
-	 */
+	 
 	wake_up_interruptible_poll(&buffer->pollq, EPOLLIN | EPOLLRDNORM);
 	return 0;
 }
 
-/**
- * iio_push_to_buffers() - push to a registered buffer.
- * @indio_dev:		iio_dev structure for device.
- * @data:		Full scan.
- */
+ 
 int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data)
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
@@ -1878,19 +1778,7 @@ int iio_push_to_buffers(struct iio_dev *indio_dev, const void *data)
 }
 EXPORT_SYMBOL_GPL(iio_push_to_buffers);
 
-/**
- * iio_push_to_buffers_with_ts_unaligned() - push to registered buffer,
- *    no alignment or space requirements.
- * @indio_dev:		iio_dev structure for device.
- * @data:		channel data excluding the timestamp.
- * @data_sz:		size of data.
- * @timestamp:		timestamp for the sample data.
- *
- * This special variant of iio_push_to_buffers_with_timestamp() does
- * not require space for the timestamp, or 8 byte alignment of data.
- * It does however require an allocation on first call and additional
- * copies on all calls, so should be avoided if possible.
- */
+ 
 int iio_push_to_buffers_with_ts_unaligned(struct iio_dev *indio_dev,
 					  const void *data,
 					  size_t data_sz,
@@ -1898,13 +1786,7 @@ int iio_push_to_buffers_with_ts_unaligned(struct iio_dev *indio_dev,
 {
 	struct iio_dev_opaque *iio_dev_opaque = to_iio_dev_opaque(indio_dev);
 
-	/*
-	 * Conservative estimate - we can always safely copy the minimum
-	 * of either the data provided or the length of the destination buffer.
-	 * This relaxed limit allows the calling drivers to be lax about
-	 * tracking the size of the data they are pushing, at the cost of
-	 * unnecessary copying of padding.
-	 */
+	 
 	data_sz = min_t(size_t, indio_dev->scan_bytes, data_sz);
 	if (iio_dev_opaque->bounce_buffer_size !=  indio_dev->scan_bytes) {
 		void *bb;
@@ -1924,15 +1806,7 @@ int iio_push_to_buffers_with_ts_unaligned(struct iio_dev *indio_dev,
 }
 EXPORT_SYMBOL_GPL(iio_push_to_buffers_with_ts_unaligned);
 
-/**
- * iio_buffer_release() - Free a buffer's resources
- * @ref: Pointer to the kref embedded in the iio_buffer struct
- *
- * This function is called when the last reference to the buffer has been
- * dropped. It will typically free all resources allocated by the buffer. Do not
- * call this function manually, always use iio_buffer_put() when done using a
- * buffer.
- */
+ 
 static void iio_buffer_release(struct kref *ref)
 {
 	struct iio_buffer *buffer = container_of(ref, struct iio_buffer, ref);
@@ -1940,12 +1814,7 @@ static void iio_buffer_release(struct kref *ref)
 	buffer->access->release(buffer);
 }
 
-/**
- * iio_buffer_get() - Grab a reference to the buffer
- * @buffer: The buffer to grab a reference for, may be NULL
- *
- * Returns the pointer to the buffer that was passed into the function.
- */
+ 
 struct iio_buffer *iio_buffer_get(struct iio_buffer *buffer)
 {
 	if (buffer)
@@ -1955,10 +1824,7 @@ struct iio_buffer *iio_buffer_get(struct iio_buffer *buffer)
 }
 EXPORT_SYMBOL_GPL(iio_buffer_get);
 
-/**
- * iio_buffer_put() - Release the reference to the buffer
- * @buffer: The buffer to release the reference for, may be NULL
- */
+ 
 void iio_buffer_put(struct iio_buffer *buffer)
 {
 	if (buffer)
@@ -1966,19 +1832,7 @@ void iio_buffer_put(struct iio_buffer *buffer)
 }
 EXPORT_SYMBOL_GPL(iio_buffer_put);
 
-/**
- * iio_device_attach_buffer - Attach a buffer to a IIO device
- * @indio_dev: The device the buffer should be attached to
- * @buffer: The buffer to attach to the device
- *
- * Return 0 if successful, negative if error.
- *
- * This function attaches a buffer to a IIO device. The buffer stays attached to
- * the device until the device is freed. For legacy reasons, the first attached
- * buffer will also be assigned to 'indio_dev->buffer'.
- * The array allocated here, will be free'd via the iio_device_detach_buffers()
- * call which is handled by the iio_device_free().
- */
+ 
 int iio_device_attach_buffer(struct iio_dev *indio_dev,
 			     struct iio_buffer *buffer)
 {
@@ -1995,7 +1849,7 @@ int iio_device_attach_buffer(struct iio_dev *indio_dev,
 
 	buffer = iio_buffer_get(buffer);
 
-	/* first buffer is legacy; attach it to the IIO device directly */
+	 
 	if (!indio_dev->buffer)
 		indio_dev->buffer = buffer;
 

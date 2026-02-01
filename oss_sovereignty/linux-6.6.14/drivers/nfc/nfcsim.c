@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NFC hardware simulation driver
- * Copyright (c) 2013, Intel Corporation.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>
@@ -171,11 +168,7 @@ static void nfcsim_send_wq(struct work_struct *work)
 {
 	struct nfcsim *dev = container_of(work, struct nfcsim, send_work.work);
 
-	/*
-	 * To effectively send data, the device just wake up its link_out which
-	 * is the link_in of the peer device. The exchanged skb has already been
-	 * stored in the dev->link_out through nfcsim_link_set_skb().
-	 */
+	 
 	nfcsim_link_recv_wake(dev->link_out);
 }
 
@@ -227,7 +220,7 @@ static int nfcsim_send(struct nfc_digital_dev *ddev, struct sk_buff *skb,
 		nfcsim_link_set_skb(dev->link_out, skb, dev->rf_tech,
 				    dev->mode);
 
-		/* Add random delay (between 3 and 10 ms) before sending data */
+		 
 		get_random_bytes(&delay, 1);
 		delay = 3 + (delay & 0x07);
 
@@ -346,7 +339,7 @@ static void nfcsim_debugfs_remove(void)
 static void nfcsim_debugfs_init_dev(struct nfcsim *dev)
 {
 	struct dentry *dev_dir;
-	char devname[5]; /* nfcX\0 */
+	char devname[5];  
 	u32 idx;
 	int n;
 

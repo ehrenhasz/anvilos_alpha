@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      Meson Watchdog Driver
- *
- *      Copyright (c) 2014 Carlo Caione
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -43,13 +39,13 @@ struct meson_wdt_data {
 static struct meson_wdt_data meson6_wdt_data = {
 	.enable			= BIT(22),
 	.terminal_count_mask	= 0x3fffff,
-	.count_unit		= 100000, /* 10 us */
+	.count_unit		= 100000,  
 };
 
 static struct meson_wdt_data meson8b_wdt_data = {
 	.enable			= BIT(19),
 	.terminal_count_mask	= 0xffff,
-	.count_unit		= 7812, /* 128 us */
+	.count_unit		= 7812,  
 };
 
 struct meson_wdt_dev {
@@ -154,7 +150,7 @@ static const struct of_device_id meson_wdt_dt_ids[] = {
 	{ .compatible = "amlogic,meson8-wdt", .data = &meson6_wdt_data },
 	{ .compatible = "amlogic,meson8b-wdt", .data = &meson8b_wdt_data },
 	{ .compatible = "amlogic,meson8m2-wdt", .data = &meson8b_wdt_data },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_wdt_dt_ids);
 

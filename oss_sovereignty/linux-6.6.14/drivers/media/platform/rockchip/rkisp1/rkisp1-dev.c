@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR MIT)
-/*
- * Rockchip ISP1 Driver - Base driver
- *
- * Copyright (C) 2019 Collabora, Ltd.
- *
- * Based on Rockchip ISP1 driver by Rockchip Electronics Co., Ltd.
- * Copyright (C) 2017 Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -22,103 +15,14 @@
 #include "rkisp1-common.h"
 #include "rkisp1-csi.h"
 
-/*
- * ISP Details
- * -----------
- *
- * ISP Comprises with:
- *	MIPI serial camera interface
- *	Image Signal Processing
- *	Many Image Enhancement Blocks
- *	Crop
- *	Resizer
- *	RBG display ready image
- *	Image Rotation
- *
- * ISP Block Diagram
- * -----------------
- *                                                             rkisp1-resizer.c          rkisp1-capture.c
- *                                                          |====================|  |=======================|
- *                                rkisp1-isp.c                              Main Picture Path
- *                        |==========================|      |===============================================|
- *                        +-----------+  +--+--+--+--+      +--------+  +--------+              +-----------+
- *                        |           |  |  |  |  |  |      |        |  |        |              |           |
- * +--------+    |\       |           |  |  |  |  |  |   -->|  Crop  |->|  RSZ   |------------->|           |
- * |  MIPI  |--->|  \     |           |  |  |  |  |  |   |  |        |  |        |              |           |
- * +--------+    |   |    |           |  |IE|IE|IE|IE|   |  +--------+  +--------+              |  Memory   |
- *               |MUX|--->|    ISP    |->|0 |1 |2 |3 |---+                                      | Interface |
- * +--------+    |   |    |           |  |  |  |  |  |   |  +--------+  +--------+  +--------+  |           |
- * |Parallel|--->|  /     |           |  |  |  |  |  |   |  |        |  |        |  |        |  |           |
- * +--------+    |/       |           |  |  |  |  |  |   -->|  Crop  |->|  RSZ   |->|  RGB   |->|           |
- *                        |           |  |  |  |  |  |      |        |  |        |  | Rotate |  |           |
- *                        +-----------+  +--+--+--+--+      +--------+  +--------+  +--------+  +-----------+
- *                                               ^
- * +--------+                                    |          |===============================================|
- * |  DMA   |------------------------------------+                          Self Picture Path
- * +--------+
- *
- *         rkisp1-stats.c        rkisp1-params.c
- *       |===============|      |===============|
- *       +---------------+      +---------------+
- *       |               |      |               |
- *       |      ISP      |      |      ISP      |
- *       |               |      |               |
- *       +---------------+      +---------------+
- *
- *
- * Media Topology
- * --------------
- *
- *          +----------+       +----------+
- *          | Sensor 1 |       | Sensor X |
- *          ------------  ...  ------------
- *          |    0     |       |    0     |
- *          +----------+       +----------+
- *               |                  |
- *                \----\       /----/
- *                     |       |
- *                     v       v
- *                  +-------------+
- *                  |      0      |
- *                  ---------------
- *                  |  CSI-2 RX   |
- *                  ---------------         +-----------+
- *                  |      1      |         |  params   |
- *                  +-------------+         | (output)  |
- *                         |               +-----------+
- *                         v                     |
- *                      +------+------+          |
- *                      |  0   |  1   |<---------+
- *                      |------+------|
- *                      |     ISP     |
- *                      |------+------|
- *        +-------------|  2   |  3   |----------+
- *        |             +------+------+          |
- *        |                |                     |
- *        v                v                     v
- *  +- ---------+    +-----------+         +-----------+
- *  |     0     |    |     0     |         |   stats   |
- *  -------------    -------------         | (capture) |
- *  |  Resizer  |    |  Resizer  |         +-----------+
- *  ------------|    ------------|
- *  |     1     |    |     1     |
- *  +-----------+    +-----------+
- *        |                |
- *        v                v
- *  +-----------+    +-----------+
- *  | selfpath  |    | mainpath  |
- *  | (capture) |    | (capture) |
- *  +-----------+    +-----------+
- */
+ 
 
 struct rkisp1_isr_data {
 	const char *name;
 	irqreturn_t (*isr)(int irq, void *ctx);
 };
 
-/* ----------------------------------------------------------------------------
- * Sensor DT bindings
- */
+ 
 
 static int rkisp1_subdev_notifier_bound(struct v4l2_async_notifier *notifier,
 					struct v4l2_subdev *sd,
@@ -198,14 +102,14 @@ static int rkisp1_subdev_notifier_register(struct rkisp1_device *rkisp1)
 		struct fwnode_handle *source;
 		u32 reg = 0;
 
-		/* Select the bus type based on the port. */
+		 
 		port = fwnode_get_parent(ep);
 		fwnode_property_read_u32(port, "reg", &reg);
 		fwnode_handle_put(port);
 
 		switch (reg) {
 		case 0:
-			/* MIPI CSI-2 port */
+			 
 			if (!(rkisp1->info->features & RKISP1_FEATURE_MIPI_CSI2)) {
 				dev_err(rkisp1->dev,
 					"internal CSI must be available for port 0\n");
@@ -217,16 +121,12 @@ static int rkisp1_subdev_notifier_register(struct rkisp1_device *rkisp1)
 			break;
 
 		case 1:
-			/*
-			 * Parallel port. The bus-type property in DT is
-			 * mandatory for port 1, it will be used to determine if
-			 * it's PARALLEL or BT656.
-			 */
+			 
 			vep.bus_type = V4L2_MBUS_UNKNOWN;
 			break;
 		}
 
-		/* Parse the endpoint and validate the bus type. */
+		 
 		ret = v4l2_fwnode_endpoint_parse(ep, &vep);
 		if (ret) {
 			dev_err(rkisp1->dev, "failed to parse endpoint %pfw\n",
@@ -244,7 +144,7 @@ static int rkisp1_subdev_notifier_register(struct rkisp1_device *rkisp1)
 			}
 		}
 
-		/* Add the async subdev to the notifier. */
+		 
 		source = fwnode_graph_get_remote_endpoint(ep);
 		if (!source) {
 			dev_err(rkisp1->dev,
@@ -296,9 +196,7 @@ static int rkisp1_subdev_notifier_register(struct rkisp1_device *rkisp1)
 	return 0;
 }
 
-/* ----------------------------------------------------------------------------
- * Power
- */
+ 
 
 static int __maybe_unused rkisp1_runtime_suspend(struct device *dev)
 {
@@ -329,9 +227,7 @@ static const struct dev_pm_ops rkisp1_pm_ops = {
 	SET_RUNTIME_PM_OPS(rkisp1_runtime_suspend, rkisp1_runtime_resume, NULL)
 };
 
-/* ----------------------------------------------------------------------------
- * Core
- */
+ 
 
 static int rkisp1_create_links(struct rkisp1_device *rkisp1)
 {
@@ -339,7 +235,7 @@ static int rkisp1_create_links(struct rkisp1_device *rkisp1)
 	int ret;
 
 	if (rkisp1->info->features & RKISP1_FEATURE_MIPI_CSI2) {
-		/* Link the CSI receiver to the ISP. */
+		 
 		ret = media_create_pad_link(&rkisp1->csi.sd.entity,
 					    RKISP1_CSI_PAD_SRC,
 					    &rkisp1->isp.sd.entity,
@@ -349,7 +245,7 @@ static int rkisp1_create_links(struct rkisp1_device *rkisp1)
 			return ret;
 	}
 
-	/* create ISP->RSZ->CAP links */
+	 
 	for (i = 0; i < 2; i++) {
 		struct media_entity *resizer =
 			&rkisp1->resizer_devs[i].sd.entity;
@@ -371,7 +267,7 @@ static int rkisp1_create_links(struct rkisp1_device *rkisp1)
 			return ret;
 	}
 
-	/* params links */
+	 
 	ret = media_create_pad_link(&rkisp1->params.vnode.vdev.entity, 0,
 				    &rkisp1->isp.sd.entity,
 				    RKISP1_ISP_PAD_SINK_PARAMS,
@@ -380,7 +276,7 @@ static int rkisp1_create_links(struct rkisp1_device *rkisp1)
 	if (ret)
 		return ret;
 
-	/* 3A stats links */
+	 
 	return media_create_pad_link(&rkisp1->isp.sd.entity,
 				     RKISP1_ISP_PAD_SOURCE_STATS,
 				     &rkisp1->stats.vnode.vdev.entity, 0,
@@ -442,12 +338,7 @@ error:
 
 static irqreturn_t rkisp1_isr(int irq, void *ctx)
 {
-	/*
-	 * Call rkisp1_capture_isr() first to handle the frame that
-	 * potentially completed using the current frame_sequence number before
-	 * it is potentially incremented by rkisp1_isp_isr() in the vertical
-	 * sync.
-	 */
+	 
 	rkisp1_capture_isr(irq, ctx);
 	rkisp1_isp_isr(irq, ctx);
 	rkisp1_csi_isr(irq, ctx);

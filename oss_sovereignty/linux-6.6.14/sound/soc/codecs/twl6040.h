@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ALSA SoC TWL6040 codec driver
- *
- * Author:	Misael Lopez Cruz <x0052729@ti.com>
- */
+ 
+ 
 
 #ifndef __TWL6040_H__
 #define __TWL6040_H__
@@ -27,4 +23,4 @@ int twl6040_get_clk_id(struct snd_soc_component *component);
 int twl6040_get_trim_value(struct snd_soc_component *component, enum twl6040_trim trim);
 int twl6040_get_hs_step_size(struct snd_soc_component *component);
 
-#endif /* End of __TWL6040_H__ */
+#endif  

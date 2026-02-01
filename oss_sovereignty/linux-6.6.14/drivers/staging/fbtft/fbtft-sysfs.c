@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "fbtft.h"
 #include "internal.h"
 
@@ -38,7 +38,7 @@ int fbtft_gamma_parse_str(struct fbtft_par *par, u32 *curves,
 	if (!tmp)
 		return -ENOMEM;
 
-	/* replace optional separators */
+	 
 	str_p = tmp;
 	while (*str_p) {
 		if (*str_p == ',')

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Filesystem parameter parser.
- *
- * Copyright (C) 2018 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/fs_context.h>
@@ -32,12 +28,7 @@ __lookup_constant(const struct constant_table *tbl, const char *name)
 	return NULL;
 }
 
-/**
- * lookup_constant - Look up a constant by name in an ordered table
- * @tbl: The table of constants to search.
- * @name: The name to look up.
- * @not_found: The value to return if the name is not found.
- */
+ 
 int lookup_constant(const struct constant_table *tbl, const char *name, int not_found)
 {
 	const struct constant_table *p = __lookup_constant(tbl, name);
@@ -82,24 +73,7 @@ static const struct fs_parameter_spec *fs_lookup_key(
 	return other;
 }
 
-/*
- * fs_parse - Parse a filesystem configuration parameter
- * @fc: The filesystem context to log errors through.
- * @desc: The parameter description to use.
- * @param: The parameter.
- * @result: Where to place the result of the parse
- *
- * Parse a filesystem configuration parameter and attempt a conversion for a
- * simple parameter for which this is requested.  If successful, the determined
- * parameter ID is placed into @result->key, the desired type is indicated in
- * @result->t and any converted value is placed into an appropriate member of
- * the union in @result.
- *
- * The function returns the parameter number if the parameter was matched,
- * -ENOPARAM if it wasn't matched and @desc->ignore_unknown indicated that
- * unknown parameters are okay and -EINVAL if there was a conversion issue or
- * the parameter wasn't recognised and unknowns aren't okay.
- */
+ 
 int __fs_parse(struct p_log *log,
 	     const struct fs_parameter_spec *desc,
 	     struct fs_parameter *param,
@@ -116,9 +90,7 @@ int __fs_parse(struct p_log *log,
 	if (p->flags & fs_param_deprecated)
 		warn_plog(log, "Deprecated parameter '%s'", param->key);
 
-	/* Try to turn the type we were given into the type desired by the
-	 * parameter and give an error if we can't.
-	 */
+	 
 	if (is_flag(p)) {
 		if (param->type != fs_value_is_flag)
 			return inval_plog(log, "Unexpected value for '%s'",
@@ -133,14 +105,7 @@ int __fs_parse(struct p_log *log,
 }
 EXPORT_SYMBOL(__fs_parse);
 
-/**
- * fs_lookup_param - Look up a path referred to by a parameter
- * @fc: The filesystem context to log errors through.
- * @param: The parameter.
- * @want_bdev: T if want a blockdev
- * @flags: Pathwalk flags passed to filename_lookup()
- * @_path: The result of the lookup
- */
+ 
 int fs_lookup_param(struct fs_context *fc,
 		    struct fs_parameter *param,
 		    bool want_bdev,
@@ -323,14 +288,7 @@ int fs_param_is_path(struct p_log *log, const struct fs_parameter_spec *p,
 EXPORT_SYMBOL(fs_param_is_path);
 
 #ifdef CONFIG_VALIDATE_FS_PARSER
-/**
- * validate_constant_table - Validate a constant table
- * @tbl: The constant table to validate.
- * @tbl_size: The size of the table.
- * @low: The lowest permissible value.
- * @high: The highest permissible value.
- * @special: One special permissible value outside of the range.
- */
+ 
 bool validate_constant_table(const struct constant_table *tbl, size_t tbl_size,
 			     int low, int high, int special)
 {
@@ -372,11 +330,7 @@ bool validate_constant_table(const struct constant_table *tbl, size_t tbl_size,
 	return good;
 }
 
-/**
- * fs_validate_description - Validate a parameter description
- * @name: The parameter name to search for.
- * @desc: The parameter description to validate.
- */
+ 
 bool fs_validate_description(const char *name,
 	const struct fs_parameter_spec *desc)
 {
@@ -384,7 +338,7 @@ bool fs_validate_description(const char *name,
 	bool good = true;
 
 	for (param = desc; param->name; param++) {
-		/* Check for duplicate parameter names */
+		 
 		for (p2 = desc; p2 < param; p2++) {
 			if (strcmp(param->name, p2->name) == 0) {
 				if (is_flag(param) != is_flag(p2))
@@ -397,4 +351,4 @@ bool fs_validate_description(const char *name,
 	}
 	return good;
 }
-#endif /* CONFIG_VALIDATE_FS_PARSER */
+#endif  

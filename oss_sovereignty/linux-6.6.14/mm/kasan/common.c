@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains common KASAN code.
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Andrey Ryabinin <ryabinin.a.a@gmail.com>
- *
- * Some code borrowed from https://github.com/xairy/kasan-prototype by
- *        Andrey Konovalov <andreyknvl@gmail.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/init.h>
@@ -65,7 +57,7 @@ void kasan_disable_current(void)
 }
 EXPORT_SYMBOL(kasan_disable_current);
 
-#endif /* CONFIG_KASAN_GENERIC || CONFIG_KASAN_SW_TAGS */
+#endif  
 
 void __kasan_unpoison_range(const void *address, size_t size)
 {
@@ -73,7 +65,7 @@ void __kasan_unpoison_range(const void *address, size_t size)
 }
 
 #ifdef CONFIG_KASAN_STACK
-/* Unpoison the entire stack for a task. */
+ 
 void kasan_unpoison_task_stack(struct task_struct *task)
 {
 	void *base = task_stack_page(task);
@@ -81,19 +73,15 @@ void kasan_unpoison_task_stack(struct task_struct *task)
 	kasan_unpoison(base, THREAD_SIZE, false);
 }
 
-/* Unpoison the stack for the current task beyond a watermark sp value. */
+ 
 asmlinkage void kasan_unpoison_task_stack_below(const void *watermark)
 {
-	/*
-	 * Calculate the task stack base address.  Avoid using 'current'
-	 * because this function is called by early resume code which hasn't
-	 * yet set up the percpu register (%gs).
-	 */
+	 
 	void *base = (void *)((unsigned long)watermark & ~(THREAD_SIZE - 1));
 
 	kasan_unpoison(base, watermark - base, false);
 }
-#endif /* CONFIG_KASAN_STACK */
+#endif  
 
 bool __kasan_unpoison_pages(struct page *page, unsigned int order, bool init)
 {
@@ -144,42 +132,23 @@ void __kasan_poison_object_data(struct kmem_cache *cache, void *object)
 			KASAN_SLAB_REDZONE, false);
 }
 
-/*
- * This function assigns a tag to an object considering the following:
- * 1. A cache might have a constructor, which might save a pointer to a slab
- *    object somewhere (e.g. in the object itself). We preassign a tag for
- *    each object in caches with constructors during slab creation and reuse
- *    the same tag each time a particular object is allocated.
- * 2. A cache might be SLAB_TYPESAFE_BY_RCU, which means objects can be
- *    accessed after being freed. We preassign tags for objects in these
- *    caches as well.
- * 3. For SLAB allocator we can't preassign tags randomly since the freelist
- *    is stored as an array of indexes instead of a linked list. Assign tags
- *    based on objects indexes, so that objects that are next to each other
- *    get different tags.
- */
+ 
 static inline u8 assign_tag(struct kmem_cache *cache,
 					const void *object, bool init)
 {
 	if (IS_ENABLED(CONFIG_KASAN_GENERIC))
 		return 0xff;
 
-	/*
-	 * If the cache neither has a constructor nor has SLAB_TYPESAFE_BY_RCU
-	 * set, assign a tag when the object is being allocated (init == false).
-	 */
+	 
 	if (!cache->ctor && !(cache->flags & SLAB_TYPESAFE_BY_RCU))
 		return init ? KASAN_TAG_KERNEL : kasan_random_tag();
 
-	/* For caches that either have a constructor or SLAB_TYPESAFE_BY_RCU: */
+	 
 #ifdef CONFIG_SLAB
-	/* For SLAB assign tags based on the object index in the freelist. */
+	 
 	return (u8)obj_to_index(cache, virt_to_slab(object), (void *)object);
 #else
-	/*
-	 * For SLUB assign a random tag during slab creation, otherwise reuse
-	 * the already assigned tag.
-	 */
+	 
 	return init ? kasan_random_tag() : get_tag(object);
 #endif
 }
@@ -187,11 +156,11 @@ static inline u8 assign_tag(struct kmem_cache *cache,
 void * __must_check __kasan_init_slab_obj(struct kmem_cache *cache,
 						const void *object)
 {
-	/* Initialize per-object metadata if it is present. */
+	 
 	if (kasan_requires_meta())
 		kasan_init_object_meta(cache, object);
 
-	/* Tag is ignored in set_tag() without CONFIG_KASAN_SW/HW_TAGS */
+	 
 	object = set_tag(object, assign_tag(cache, object, true));
 
 	return (void *)object;
@@ -217,7 +186,7 @@ static inline bool ____kasan_slab_free(struct kmem_cache *cache, void *object,
 		return true;
 	}
 
-	/* RCU slabs could be legally used after free within the RCU period */
+	 
 	if (unlikely(cache->flags & SLAB_TYPESAFE_BY_RCU))
 		return false;
 
@@ -259,10 +228,7 @@ static inline bool ____kasan_kfree_large(void *ptr, unsigned long ip)
 		return true;
 	}
 
-	/*
-	 * The object will be poisoned by kasan_poison_pages() or
-	 * kasan_slab_free_mempool().
-	 */
+	 
 
 	return false;
 }
@@ -278,12 +244,7 @@ void __kasan_slab_free_mempool(void *ptr, unsigned long ip)
 
 	folio = virt_to_folio(ptr);
 
-	/*
-	 * Even though this function is only called for kmem_cache_alloc and
-	 * kmalloc backed mempool allocations, those allocations can still be
-	 * !PageSlab() when the size provided to kmalloc is larger than
-	 * KMALLOC_MAX_SIZE, and kmalloc falls back onto page_alloc.
-	 */
+	 
 	if (unlikely(!folio_test_slab(folio))) {
 		if (____kasan_kfree_large(ptr, ip))
 			return;
@@ -310,20 +271,14 @@ void * __must_check __kasan_slab_alloc(struct kmem_cache *cache,
 	if (is_kfence_address(object))
 		return (void *)object;
 
-	/*
-	 * Generate and assign random tag for tag-based modes.
-	 * Tag is ignored in set_tag() for the generic mode.
-	 */
+	 
 	tag = assign_tag(cache, object, false);
 	tagged_object = set_tag(object, tag);
 
-	/*
-	 * Unpoison the whole object.
-	 * For kmalloc() allocations, kasan_kmalloc() will do precise poisoning.
-	 */
+	 
 	kasan_unpoison(tagged_object, cache->object_size, init);
 
-	/* Save alloc info (if possible) for non-kmalloc() allocations. */
+	 
 	if (kasan_stack_collection_enabled() && !is_kmalloc_cache(cache))
 		kasan_save_alloc_info(cache, tagged_object, flags);
 
@@ -345,20 +300,13 @@ static inline void *____kasan_kmalloc(struct kmem_cache *cache,
 	if (is_kfence_address(kasan_reset_tag(object)))
 		return (void *)object;
 
-	/*
-	 * The object has already been unpoisoned by kasan_slab_alloc() for
-	 * kmalloc() or by kasan_krealloc() for krealloc().
-	 */
+	 
 
-	/*
-	 * The redzone has byte-level precision for the generic mode.
-	 * Partially poison the last object granule to cover the unaligned
-	 * part of the redzone.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_KASAN_GENERIC))
 		kasan_poison_last_granule((void *)object, size);
 
-	/* Poison the aligned part of the redzone. */
+	 
 	redzone_start = round_up((unsigned long)(object + size),
 				KASAN_GRANULE_SIZE);
 	redzone_end = round_up((unsigned long)(object + cache->object_size),
@@ -366,14 +314,11 @@ static inline void *____kasan_kmalloc(struct kmem_cache *cache,
 	kasan_poison((void *)redzone_start, redzone_end - redzone_start,
 			   KASAN_SLAB_REDZONE, false);
 
-	/*
-	 * Save alloc info (if possible) for kmalloc() allocations.
-	 * This also rewrites the alloc info when called from kasan_krealloc().
-	 */
+	 
 	if (kasan_stack_collection_enabled() && is_kmalloc_cache(cache))
 		kasan_save_alloc_info(cache, (void *)object, flags);
 
-	/* Keep the tag that was set by kasan_slab_alloc(). */
+	 
 	return (void *)object;
 }
 
@@ -396,20 +341,13 @@ void * __must_check __kasan_kmalloc_large(const void *ptr, size_t size,
 	if (unlikely(ptr == NULL))
 		return NULL;
 
-	/*
-	 * The object has already been unpoisoned by kasan_unpoison_pages() for
-	 * alloc_pages() or by kasan_krealloc() for krealloc().
-	 */
+	 
 
-	/*
-	 * The redzone has byte-level precision for the generic mode.
-	 * Partially poison the last object granule to cover the unaligned
-	 * part of the redzone.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_KASAN_GENERIC))
 		kasan_poison_last_granule(ptr, size);
 
-	/* Poison the aligned part of the redzone. */
+	 
 	redzone_start = round_up((unsigned long)(ptr + size),
 				KASAN_GRANULE_SIZE);
 	redzone_end = (unsigned long)ptr + page_size(virt_to_page(ptr));
@@ -426,16 +364,12 @@ void * __must_check __kasan_krealloc(const void *object, size_t size, gfp_t flag
 	if (unlikely(object == ZERO_SIZE_PTR))
 		return (void *)object;
 
-	/*
-	 * Unpoison the object's data.
-	 * Part of it might already have been unpoisoned, but it's unknown
-	 * how big that part is.
-	 */
+	 
 	kasan_unpoison(object, size, false);
 
 	slab = virt_to_slab(object);
 
-	/* Piggy-back on kmalloc() instrumentation to poison the redzone. */
+	 
 	if (unlikely(!slab))
 		return __kasan_kmalloc_large(object, size, flags);
 	else

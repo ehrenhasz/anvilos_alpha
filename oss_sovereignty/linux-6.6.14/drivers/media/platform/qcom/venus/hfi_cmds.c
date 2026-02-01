@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+
+ 
 #include <linux/overflow.h>
 #include <linux/errno.h>
 #include <linux/hash.h>
@@ -623,11 +620,11 @@ static int pkt_session_set_property_1x(struct hfi_session_set_property_pkt *pkt,
 		pl->level = in->level;
 		pl->profile = in->profile;
 		if (pl->profile <= 0)
-			/* Profile not supported, falling back to high */
+			 
 			pl->profile = HFI_H264_PROFILE_HIGH;
 
 		if (!pl->level)
-			/* Level not supported, falling back to 1 */
+			 
 			pl->level = 1;
 
 		pkt->shdr.hdr.size += sizeof(u32) + sizeof(*pl);
@@ -712,18 +709,13 @@ static int pkt_session_set_property_1x(struct hfi_session_set_property_pkt *pkt,
 		min_qp = in->min_qp;
 		max_qp = in->max_qp;
 
-		/* We'll be packing in the qp, so make sure we
-		 * won't be losing data when masking
-		 */
+		 
 		if (min_qp > 0xff || max_qp > 0xff) {
 			ret = -ERANGE;
 			break;
 		}
 
-		/* When creating the packet, pack the qp value as
-		 * 0xiippbb, where ii = qp range for I-frames,
-		 * pp = qp range for P-frames, etc.
-		 */
+		 
 		range->min_qp = min_qp | min_qp << 8 | min_qp << 16;
 		range->max_qp = max_qp | max_qp << 8 | max_qp << 16;
 		range->layer_id = in->layer_id;
@@ -1067,7 +1059,7 @@ static int pkt_session_set_property_1x(struct hfi_session_set_property_pkt *pkt,
 	case HFI_PROPERTY_PARAM_VENC_HDR10_PQ_SEI:
 		return -ENOTSUPP;
 
-	/* FOLLOWING PROPERTIES ARE NOT IMPLEMENTED IN CORE YET */
+	 
 	case HFI_PROPERTY_CONFIG_BUFFER_REQUIREMENTS:
 	case HFI_PROPERTY_CONFIG_PRIORITY:
 	case HFI_PROPERTY_CONFIG_BATCH_INFO:
@@ -1138,11 +1130,7 @@ pkt_session_set_property_3xx(struct hfi_session_set_property_pkt *pkt,
 	pkt->num_properties = 1;
 	pkt->data[0] = ptype;
 
-	/*
-	 * Any session set property which is different in 3XX packetization
-	 * should be added as a new case below. All unchanged session set
-	 * properties will be handled in the default case.
-	 */
+	 
 	switch (ptype) {
 	case HFI_PROPERTY_PARAM_VDEC_MULTI_STREAM: {
 		struct hfi_multi_stream *in = pdata;
@@ -1175,7 +1163,7 @@ pkt_session_set_property_3xx(struct hfi_session_set_property_pkt *pkt,
 		break;
 	}
 	case HFI_PROPERTY_PARAM_VDEC_CONTINUE_DATA_TRANSFER:
-		/* for 3xx fw version session_continue is used */
+		 
 		break;
 	default:
 		ret = pkt_session_set_property_1x(pkt, cookie, ptype, pdata);
@@ -1202,11 +1190,7 @@ pkt_session_set_property_4xx(struct hfi_session_set_property_pkt *pkt,
 	pkt->num_properties = 1;
 	pkt->data[0] = ptype;
 
-	/*
-	 * Any session set property which is different in 3XX packetization
-	 * should be added as a new case below. All unchanged session set
-	 * properties will be handled in the default case.
-	 */
+	 
 	switch (ptype) {
 	case HFI_PROPERTY_PARAM_BUFFER_COUNT_ACTUAL: {
 		struct hfi_buffer_count_actual *in = pdata;
@@ -1265,9 +1249,7 @@ pkt_session_set_property_4xx(struct hfi_session_set_property_pkt *pkt,
 		min_qp = in->min_qp.qp_packed;
 		max_qp = in->max_qp.qp_packed;
 
-		/* We'll be packing in the qp, so make sure we
-		 * won't be losing data when masking
-		 */
+		 
 		if (min_qp > 0xff || max_qp > 0xff)
 			return -ERANGE;
 
@@ -1287,7 +1269,7 @@ pkt_session_set_property_4xx(struct hfi_session_set_property_pkt *pkt,
 	case HFI_PROPERTY_PARAM_BUFFER_ALLOC_MODE:
 	case HFI_PROPERTY_PARAM_VENC_SESSION_QP:
 	case HFI_PROPERTY_PARAM_VENC_SESSION_QP_RANGE:
-		/* not implemented on Venus 4xx */
+		 
 		return -ENOTSUPP;
 	default:
 		return pkt_session_set_property_3xx(pkt, cookie, ptype, pdata);

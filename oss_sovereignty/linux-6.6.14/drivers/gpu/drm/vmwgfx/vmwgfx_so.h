@@ -1,28 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR MIT */
-/**************************************************************************
- * Copyright 2014-2015 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+ 
+ 
 #ifndef VMW_SO_H
 #define VMW_SO_H
 
@@ -44,20 +21,7 @@ enum vmw_so_type {
 	vmw_so_max,
 };
 
-/**
- * union vmw_view_destroy - view destruction command body
- *
- * @rtv: RenderTarget view destruction command body
- * @srv: ShaderResource view destruction command body
- * @dsv: DepthStencil view destruction command body
- * @view_id: A single u32 view id.
- *
- * The assumption here is that all union members are really represented by a
- * single u32 in the command stream. If that's not the case,
- * the size of this union will not equal the size of an u32, and the
- * assumption is invalid, and we detect that at compile time in the
- * vmw_so_build_asserts() function.
- */
+ 
 union vmw_view_destroy {
 	struct SVGA3dCmdDXDestroyRenderTargetView rtv;
 	struct SVGA3dCmdDXDestroyShaderResourceView srv;
@@ -66,25 +30,16 @@ union vmw_view_destroy {
 	u32 view_id;
 };
 
-/* Map enum vmw_view_type to view destroy command ids*/
+ 
 extern const u32 vmw_view_destroy_cmds[];
 
-/* Map enum vmw_view_type to SVGACOTableType */
+ 
 extern const SVGACOTableType vmw_view_cotables[];
 
-/* Map enum vmw_so_type to SVGACOTableType */
+ 
 extern const SVGACOTableType vmw_so_cotables[];
 
-/*
- * vmw_view_cmd_to_type - Return the view type for a create or destroy command
- *
- * @id: The SVGA3D command id.
- *
- * For a given view create or destroy command id, return the corresponding
- * enum vmw_view_type. If the command is unknown, return vmw_view_max.
- * The validity of the simplified calculation is verified in the
- * vmw_so_build_asserts() function.
- */
+ 
 static inline enum vmw_view_type vmw_view_cmd_to_type(u32 id)
 {
 	u32 tmp = (id - SVGA_3D_CMD_DX_DEFINE_SHADERRESOURCE_VIEW) / 2;
@@ -102,17 +57,7 @@ static inline enum vmw_view_type vmw_view_cmd_to_type(u32 id)
 	return (enum vmw_view_type) tmp;
 }
 
-/*
- * vmw_so_cmd_to_type - Return the state object type for a
- * create or destroy command
- *
- * @id: The SVGA3D command id.
- *
- * For a given state object create or destroy command id,
- * return the corresponding enum vmw_so_type. If the command is uknown,
- * return vmw_so_max. We should perhaps optimize this function using
- * a similar strategy as vmw_view_cmd_to_type().
- */
+ 
 static inline enum vmw_so_type vmw_so_cmd_to_type(u32 id)
 {
 	switch (id) {
@@ -142,9 +87,7 @@ static inline enum vmw_so_type vmw_so_cmd_to_type(u32 id)
 	return vmw_so_max;
 }
 
-/*
- * View management - vmwgfx_so.c
- */
+ 
 extern int vmw_view_add(struct vmw_cmdbuf_res_manager *man,
 			struct vmw_resource *ctx,
 			struct vmw_resource *srf,

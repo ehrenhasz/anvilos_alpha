@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVM Express target device driver tracepoints
- * Copyright (c) 2018 Johannes Thumshirn, SUSE Linux GmbH
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include "trace.h"
@@ -215,15 +212,7 @@ const char *nvmet_trace_ctrl_name(struct trace_seq *p, struct nvmet_ctrl *ctrl)
 {
 	const char *ret = trace_seq_buffer_ptr(p);
 
-	/*
-	 * XXX: We don't know the controller instance before executing the
-	 * connect command itself because the connect command for the admin
-	 * queue will not provide the cntlid which will be allocated in this
-	 * command.  In case of io queues, the controller instance will be
-	 * mapped by the extra data of the connect command.
-	 * If we can know the extra data of the connect command in this stage,
-	 * we can update this print statement later.
-	 */
+	 
 	if (ctrl)
 		trace_seq_printf(p, "%d", ctrl->cntlid);
 	else

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __API_DEBUG_INTERNAL_H__
 #define __API_DEBUG_INTERNAL_H__
 
@@ -18,4 +18,4 @@ extern libapi_print_fn_t __pr_debug;
 #define pr_info(fmt, ...)	__pr(__pr_info, fmt, ##__VA_ARGS__)
 #define pr_debug(fmt, ...)	__pr(__pr_debug, fmt, ##__VA_ARGS__)
 
-#endif /* __API_DEBUG_INTERNAL_H__ */
+#endif  

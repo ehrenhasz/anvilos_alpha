@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Freescale eSDHC ColdFire family controller driver, platform bus.
- *
- * Copyright (c) 2020 Timesys Corporation
- *   Author: Angelo Dureghello <angelo.dureghello@timesys.it>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -17,9 +12,7 @@
 #define ESDHC_SYS_CTRL_DTOCV_MASK	0x0f
 #define ESDHC_DEFAULT_HOST_CONTROL	0x28
 
-/*
- * Freescale eSDHC has DMA ERR flag at bit 28, not as std spec says, bit 25.
- */
+ 
 #define ESDHC_INT_VENDOR_SPEC_DMA_ERR	BIT(28)
 
 struct pltfm_mcf_data {
@@ -58,10 +51,7 @@ static inline void esdhc_clrset_be(struct sdhci_host *host,
 	writel((readl(base) & ~mask) | val, base);
 }
 
-/*
- * Note: mcf is big-endian, single bytes need to be accessed at big endian
- * offsets.
- */
+ 
 static void esdhc_mcf_writeb_be(struct sdhci_host *host, u8 val, int reg)
 {
 	void __iomem *base = host->ioaddr + (reg & ~3);
@@ -76,10 +66,7 @@ static void esdhc_mcf_writeb_be(struct sdhci_host *host, u8 val, int reg)
 		tmp &= ~0x03;
 		tmp |= dma_bits;
 
-		/*
-		 * Recomposition needed, restore always endianness and
-		 * keep D3CD and AI, just setting bus width.
-		 */
+		 
 		host_ctrl |= val;
 		host_ctrl |= (dma_bits << 8);
 		writel(host_ctrl, host->ioaddr + SDHCI_HOST_CONTROL);
@@ -106,10 +93,7 @@ static void esdhc_mcf_writew_be(struct sdhci_host *host, u16 val, int reg)
 		if (host->cmd->opcode == MMC_STOP_TRANSMISSION)
 			val |= SDHCI_CMD_ABORTCMD;
 
-		/*
-		 * As for the fsl driver,
-		 * we have to set the mode in a single write here.
-		 */
+		 
 		writel(val << 16 | mcf_data->aside,
 		       host->ioaddr + SDHCI_TRANSFER_MODE);
 		return;
@@ -142,10 +126,7 @@ static u8 esdhc_mcf_readb_be(struct sdhci_host *host, int reg)
 
 static u16 esdhc_mcf_readw_be(struct sdhci_host *host, int reg)
 {
-	/*
-	 * For SDHCI_HOST_VERSION, sdhci specs defines 0xFE,
-	 * a wrong offset for us, we are at 0xFC.
-	 */
+	 
 	if (reg == SDHCI_HOST_VERSION)
 		reg -= 2;
 
@@ -158,10 +139,7 @@ static u32 esdhc_mcf_readl_be(struct sdhci_host *host, int reg)
 
 	val = readl(host->ioaddr + reg);
 
-	/*
-	 * RM (25.3.9) sd pin clock must never exceed 25Mhz.
-	 * So forcing legacy mode at 25Mhz.
-	 */
+	 
 	if (unlikely(reg == SDHCI_CAPABILITIES))
 		val &= ~SDHCI_CAN_DO_HISPD;
 
@@ -183,7 +161,7 @@ static unsigned int esdhc_mcf_get_max_timeout_count(struct sdhci_host *host)
 static void esdhc_mcf_set_timeout(struct sdhci_host *host,
 				  struct mmc_command *cmd)
 {
-	/* Use maximum timeout counter */
+	 
 	esdhc_clrset_be(host, ESDHC_SYS_CTRL_DTOCV_MASK, 0xE,
 			SDHCI_TIMEOUT_CONTROL);
 }
@@ -231,20 +209,7 @@ static void esdhc_mcf_pltfm_set_clock(struct sdhci_host *host,
 		return;
 	}
 
-	/*
-	 * ColdFire eSDHC clock.s
-	 *
-	 * pll -+-> / outdiv1 --> fsys
-	 *      +-> / outdiv3 --> eSDHC clock ---> / SDCCLKFS / DVS
-	 *
-	 * mcf5441x datasheet says:
-	 * (8.1.2) eSDHC should be 40 MHz max
-	 * (25.3.9) eSDHC input is, as example, 96 Mhz ...
-	 * (25.3.9) sd pin clock must never exceed 25Mhz
-	 *
-	 * fvco = fsys * outdvi1 + 1
-	 * fshdc = fvco / outdiv3 + 1
-	 */
+	 
 	temp = readl(pll_dr);
 	fsys = pltfm_host->clock;
 	fvco = fsys * ((temp & 0x1f) + 1);
@@ -266,9 +231,7 @@ static void esdhc_mcf_pltfm_set_clock(struct sdhci_host *host,
 		}
 	}
 
-	/*
-	 * Apply divisors and re-enable all the clocks
-	 */
+	 
 	temp = ((sdclkfs[ri] >> 1) << 8) | ((rq - 1) << 4) |
 		(ESDHC_CLOCK_IPGEN | ESDHC_CLOCK_HCKEN | ESDHC_CLOCK_PEREN);
 	esdhc_clrset_be(host, 0x0000fff7, temp, SDHCI_CLOCK_CONTROL);
@@ -309,10 +272,7 @@ static void esdhc_mcf_request_done(struct sdhci_host *host,
 	if (mmc_get_dma_dir(mrq->data) != DMA_FROM_DEVICE)
 		goto exit_done;
 
-	/*
-	 * On mcf5441x there is no hw sdma option/flag to select the dma
-	 * transfer endiannes. A swap after the transfer is needed.
-	 */
+	 
 	for_each_sg(mrq->data->sg, sg, mrq->data->sg_len, i) {
 		buffer = (u32 *)sg_virt(sg);
 		esdhc_mcf_buffer_swap32(buffer, sg->length);
@@ -354,12 +314,7 @@ static struct sdhci_ops sdhci_esdhc_ops = {
 static const struct sdhci_pltfm_data sdhci_esdhc_mcf_pdata = {
 	.ops = &sdhci_esdhc_ops,
 	.quirks = ESDHC_DEFAULT_QUIRKS | SDHCI_QUIRK_FORCE_DMA,
-		 /*
-		  * Mandatory quirk,
-		  * controller does not support cmd23,
-		  * without, on > 8G cards cmd23 is used, and
-		  * driver times out.
-		  */
+		  
 		  SDHCI_QUIRK2_HOST_NO_CMD23,
 };
 
@@ -376,11 +331,11 @@ static int esdhc_mcf_plat_init(struct sdhci_host *host,
 
 	plat_data = (struct mcf_esdhc_platform_data *)dev->platform_data;
 
-	/* Card_detect */
+	 
 	switch (plat_data->cd_type) {
 	default:
 	case ESDHC_CD_CONTROLLER:
-		/* We have a working card_detect back */
+		 
 		host->quirks &= ~SDHCI_QUIRK_BROKEN_CARD_DETECTION;
 		break;
 	case ESDHC_CD_PERMANENT:

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP855x Backlight Driver
- *
- *			Copyright (C) 2011 Texas Instruments
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -17,7 +13,7 @@
 #include <linux/pwm.h>
 #include <linux/regulator/consumer.h>
 
-/* LP8550/1/2/3/6 Registers */
+ 
 #define LP855X_BRIGHTNESS_CTRL		0x00
 #define LP855X_DEVICE_CTRL		0x01
 #define LP855X_EEPROM_START		0xA0
@@ -25,7 +21,7 @@
 #define LP8556_EPROM_START		0xA0
 #define LP8556_EPROM_END		0xAF
 
-/* LP8555/7 Registers */
+ 
 #define LP8557_BL_CMD			0x00
 #define LP8557_BL_MASK			0x01
 #define LP8557_BL_ON			0x01
@@ -47,13 +43,7 @@ enum lp855x_brightness_ctrl_mode {
 
 struct lp855x;
 
-/*
- * struct lp855x_device_config
- * @pre_init_device: init device function call before updating the brightness
- * @reg_brightness: register address for brigthenss control
- * @reg_devicectrl: register address for device control
- * @post_init_device: late init device function call
- */
+ 
 struct lp855x_device_config {
 	int (*pre_init_device)(struct lp855x *);
 	u8 reg_brightness;
@@ -72,8 +62,8 @@ struct lp855x {
 	struct lp855x_platform_data *pdata;
 	struct pwm_device *pwm;
 	bool needs_pwm_init;
-	struct regulator *supply;	/* regulator for VDD input */
-	struct regulator *enable;	/* regulator for EN/VDDIO input */
+	struct regulator *supply;	 
+	struct regulator *enable;	 
 };
 
 static int lp855x_write_byte(struct lp855x *lp, u8 reg, u8 data)
@@ -132,14 +122,14 @@ static bool lp855x_is_valid_rom_area(struct lp855x *lp, u8 addr)
 
 static int lp8557_bl_off(struct lp855x *lp)
 {
-	/* BL_ON = 0 before updating EPROM settings */
+	 
 	return lp855x_update_bit(lp, LP8557_BL_CMD, LP8557_BL_MASK,
 				LP8557_BL_OFF);
 }
 
 static int lp8557_bl_on(struct lp855x *lp)
 {
-	/* BL_ON = 1 after updating EPROM settings */
+	 
 	return lp855x_update_bit(lp, LP8557_BL_CMD, LP8557_BL_MASK,
 				LP8557_BL_ON);
 }
@@ -156,16 +146,7 @@ static struct lp855x_device_config lp8557_dev_cfg = {
 	.post_init_device = lp8557_bl_on,
 };
 
-/*
- * Device specific configuration flow
- *
- *    a) pre_init_device(optional)
- *    b) update the brightness register
- *    c) update device control register
- *    d) update ROM area(optional)
- *    e) post_init_device(optional)
- *
- */
+ 
 static int lp855x_configure(struct lp855x *lp)
 {
 	u8 val, addr;
@@ -223,7 +204,7 @@ static int lp855x_pwm_ctrl(struct lp855x *lp, int br, int max_br)
 
 	if (lp->needs_pwm_init) {
 		pwm_init_state(lp->pwm, &state);
-		/* Legacy platform data compatibility */
+		 
 		if (lp->pdata->period_ns > 0)
 			state.period = lp->pdata->period_ns;
 		lp->needs_pwm_init = false;
@@ -336,10 +317,10 @@ static int lp855x_parse_dt(struct lp855x *lp)
 	of_property_read_string(node, "bl-name", &pdata->name);
 	of_property_read_u8(node, "dev-ctrl", &pdata->device_control);
 	of_property_read_u8(node, "init-brt", &pdata->initial_brightness);
-	/* Deprecated, specify period in pwms property instead */
+	 
 	of_property_read_u32(node, "pwm-period", &pdata->period_ns);
 
-	/* Fill ROM platform data if defined */
+	 
 	rom_length = of_get_child_count(node);
 	if (rom_length > 0) {
 		struct lp855x_rom_data *rom;
@@ -373,11 +354,7 @@ static int lp855x_parse_acpi(struct lp855x *lp)
 {
 	int ret;
 
-	/*
-	 * On ACPI the device has already been initialized by the firmware
-	 * and is in register mode, so we can read back the settings from
-	 * the registers.
-	 */
+	 
 	ret = i2c_smbus_read_byte_data(lp->client, lp->cfg->reg_brightness);
 	if (ret < 0)
 		return ret;
@@ -503,10 +480,7 @@ static int lp855x_probe(struct i2c_client *cl)
 			goto disable_supply;
 		}
 
-		/*
-		 * LP8555 datasheet says t_RESPONSE (time between VDDIO and
-		 * I2C) is 1ms.
-		 */
+		 
 		usleep_range(1000, 2000);
 	}
 
@@ -583,7 +557,7 @@ MODULE_DEVICE_TABLE(i2c, lp855x_ids);
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id lp855x_acpi_match[] = {
-	/* Xiaomi specific HID used for the LP8556 on the Mi Pad 2 */
+	 
 	{ "XMCC0001", LP8556 },
 	{ }
 };

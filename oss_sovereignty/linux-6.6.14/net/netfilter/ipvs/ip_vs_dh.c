@@ -1,34 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IPVS:        Destination Hashing scheduling module
- *
- * Authors:     Wensong Zhang <wensong@gnuchina.org>
- *
- *              Inspired by the consistent hashing scheduler patch from
- *              Thomas Proell <proellt@gmx.de>
- *
- * Changes:
- */
 
-/*
- * The dh algorithm is to select server by the hash key of destination IP
- * address. The pseudo code is as follows:
- *
- *       n <- servernode[dest_ip];
- *       if (n is dead) OR
- *          (n is overloaded) OR (n.weight <= 0) then
- *                 return NULL;
- *
- *       return n;
- *
- * Notes that servernode is a 256-bucket hash table that maps the hash
- * index derived from packet destination IP address to the current server
- * array. If the dh scheduler is used in cache cluster, it is good to
- * combine it with cache_bypass feature. When the statically assigned
- * server is dead or overloaded, the load balancer can bypass the cache
- * server and send requests to the original server directly.
- *
- */
+ 
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -43,16 +16,12 @@
 #include <net/ip_vs.h>
 
 
-/*
- *      IPVS DH bucket
- */
+ 
 struct ip_vs_dh_bucket {
-	struct ip_vs_dest __rcu	*dest;	/* real server (cache) */
+	struct ip_vs_dest __rcu	*dest;	 
 };
 
-/*
- *     for IPVS DH entry hash table
- */
+ 
 #ifndef CONFIG_IP_VS_DH_TAB_BITS
 #define CONFIG_IP_VS_DH_TAB_BITS        8
 #endif
@@ -65,9 +34,7 @@ struct ip_vs_dh_state {
 	struct rcu_head			rcu_head;
 };
 
-/*
- *	Returns hash value for IPVS DH entry
- */
+ 
 static inline unsigned int ip_vs_dh_hashkey(int af, const union nf_inet_addr *addr)
 {
 	__be32 addr_fold = addr->ip;
@@ -81,9 +48,7 @@ static inline unsigned int ip_vs_dh_hashkey(int af, const union nf_inet_addr *ad
 }
 
 
-/*
- *      Get ip_vs_dest associated with supplied parameters.
- */
+ 
 static inline struct ip_vs_dest *
 ip_vs_dh_get(int af, struct ip_vs_dh_state *s, const union nf_inet_addr *addr)
 {
@@ -91,9 +56,7 @@ ip_vs_dh_get(int af, struct ip_vs_dh_state *s, const union nf_inet_addr *addr)
 }
 
 
-/*
- *      Assign all the hash buckets of the specified table with the service.
- */
+ 
 static int
 ip_vs_dh_reassign(struct ip_vs_dh_state *s, struct ip_vs_service *svc)
 {
@@ -128,9 +91,7 @@ ip_vs_dh_reassign(struct ip_vs_dh_state *s, struct ip_vs_service *svc)
 }
 
 
-/*
- *      Flush all the hash buckets of the specified table.
- */
+ 
 static void ip_vs_dh_flush(struct ip_vs_dh_state *s)
 {
 	int i;
@@ -153,7 +114,7 @@ static int ip_vs_dh_init_svc(struct ip_vs_service *svc)
 {
 	struct ip_vs_dh_state *s;
 
-	/* allocate the DH table for this service */
+	 
 	s = kzalloc(sizeof(struct ip_vs_dh_state), GFP_KERNEL);
 	if (s == NULL)
 		return -ENOMEM;
@@ -163,7 +124,7 @@ static int ip_vs_dh_init_svc(struct ip_vs_service *svc)
 		  "current service\n",
 		  sizeof(struct ip_vs_dh_bucket)*IP_VS_DH_TAB_SIZE);
 
-	/* assign the hash buckets with current dests */
+	 
 	ip_vs_dh_reassign(s, svc);
 
 	return 0;
@@ -174,10 +135,10 @@ static void ip_vs_dh_done_svc(struct ip_vs_service *svc)
 {
 	struct ip_vs_dh_state *s = svc->sched_data;
 
-	/* got to clean up hash buckets here */
+	 
 	ip_vs_dh_flush(s);
 
-	/* release the table itself */
+	 
 	kfree_rcu(s, rcu_head);
 	IP_VS_DBG(6, "DH hash table (memory=%zdbytes) released\n",
 		  sizeof(struct ip_vs_dh_bucket)*IP_VS_DH_TAB_SIZE);
@@ -189,26 +150,21 @@ static int ip_vs_dh_dest_changed(struct ip_vs_service *svc,
 {
 	struct ip_vs_dh_state *s = svc->sched_data;
 
-	/* assign the hash buckets with the updated service */
+	 
 	ip_vs_dh_reassign(s, svc);
 
 	return 0;
 }
 
 
-/*
- *      If the dest flags is set with IP_VS_DEST_F_OVERLOAD,
- *      consider that the server is overloaded here.
- */
+ 
 static inline int is_overloaded(struct ip_vs_dest *dest)
 {
 	return dest->flags & IP_VS_DEST_F_OVERLOAD;
 }
 
 
-/*
- *      Destination hashing scheduling
- */
+ 
 static struct ip_vs_dest *
 ip_vs_dh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		  struct ip_vs_iphdr *iph)
@@ -237,9 +193,7 @@ ip_vs_dh_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 }
 
 
-/*
- *      IPVS DH Scheduler structure
- */
+ 
 static struct ip_vs_scheduler ip_vs_dh_scheduler =
 {
 	.name =			"dh",

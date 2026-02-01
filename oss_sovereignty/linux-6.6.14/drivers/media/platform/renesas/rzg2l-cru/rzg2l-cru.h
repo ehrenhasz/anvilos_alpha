@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Driver for Renesas RZ/G2L CRU
- *
- * Copyright (C) 2022 Renesas Electronics Corp.
- */
+ 
+ 
 
 #ifndef __RZG2L_CRU__
 #define __RZG2L_CRU__
@@ -15,14 +11,14 @@
 #include <media/v4l2-device.h>
 #include <media/videobuf2-v4l2.h>
 
-/* Number of HW buffers */
+ 
 #define RZG2L_CRU_HW_BUFFER_MAX		8
 #define RZG2L_CRU_HW_BUFFER_DEFAULT	3
 
-/* Address alignment mask for HW buffers */
+ 
 #define RZG2L_CRU_HW_BUFFER_MASK	0x1ff
 
-/* Maximum number of CSI2 virtual channels */
+ 
 #define RZG2L_CRU_CSI2_VCHANNEL		4
 
 #define RZG2L_CRU_MIN_INPUT_WIDTH	320
@@ -30,13 +26,7 @@
 #define RZG2L_CRU_MIN_INPUT_HEIGHT	240
 #define RZG2L_CRU_MAX_INPUT_HEIGHT	4095
 
-/**
- * enum rzg2l_cru_dma_state - DMA states
- * @RZG2L_CRU_DMA_STOPPED:   No operation in progress
- * @RZG2L_CRU_DMA_STARTING:  Capture starting up
- * @RZG2L_CRU_DMA_RUNNING:   Operation in progress have buffers
- * @RZG2L_CRU_DMA_STOPPING:  Stopping operation
- */
+ 
 enum rzg2l_cru_dma_state {
 	RZG2L_CRU_DMA_STOPPED = 0,
 	RZG2L_CRU_DMA_STARTING,
@@ -57,44 +47,7 @@ struct rzg2l_cru_ip {
 	struct v4l2_subdev *remote;
 };
 
-/**
- * struct rzg2l_cru_dev - Renesas CRU device structure
- * @dev:		(OF) device
- * @base:		device I/O register space remapped to virtual memory
- * @info:		info about CRU instance
- *
- * @presetn:		CRU_PRESETN reset line
- * @aresetn:		CRU_ARESETN reset line
- *
- * @vclk:		CRU Main clock
- *
- * @image_conv_irq:	Holds image conversion interrupt number
- *
- * @vdev:		V4L2 video device associated with CRU
- * @v4l2_dev:		V4L2 device
- * @num_buf:		Holds the current number of buffers enabled
- * @notifier:		V4L2 asynchronous subdevs notifier
- *
- * @ip:			Image processing subdev info
- * @csi:		CSI info
- * @mdev:		media device
- * @mdev_lock:		protects the count, notifier and csi members
- * @pad:		media pad for the video device entity
- *
- * @lock:		protects @queue
- * @queue:		vb2 buffers queue
- * @scratch:		cpu address for scratch buffer
- * @scratch_phys:	physical address of the scratch buffer
- *
- * @qlock:		protects @queue_buf, @buf_list, @sequence
- *			@state
- * @queue_buf:		Keeps track of buffers given to HW slot
- * @buf_list:		list of queued buffers
- * @sequence:		V4L2 buffers sequence number
- * @state:		keeps track of operation state
- *
- * @format:		active V4L2 pixel format
- */
+ 
 struct rzg2l_cru_dev {
 	struct device *dev;
 	void __iomem *base;

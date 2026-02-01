@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/pcmcia/sa1100_jornada720.c
- *
- * Jornada720 PCMCIA specific routines
- *
- */
+
+ 
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -17,13 +12,7 @@
 
 #include "sa1111_generic.h"
 
-/*
- * Socket 0 power: GPIO A0
- * Socket 0 3V: GPIO A2
- * Socket 1 power: GPIO A1 & GPIO A3
- * Socket 1 3V: GPIO A3
- * Does Socket 1 3V actually do anything?
- */
+ 
 enum {
 	J720_GPIO_PWR,
 	J720_GPIO_3V,
@@ -129,7 +118,7 @@ static struct pcmcia_low_level jornada720_pcmcia_ops = {
 
 int pcmcia_jornada720_init(struct sa1111_dev *sadev)
 {
-	/* Fixme: why messing around with SA11x0's GPIO1? */
+	 
 	GRER |= 0x00000002;
 
 	sa11xx_drv_pcmcia_ops(&jornada720_pcmcia_ops);

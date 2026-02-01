@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_PAGE_OWNER_H
 #define __LINUX_PAGE_OWNER_H
 
@@ -72,5 +72,5 @@ static inline void set_page_owner_migrate_reason(struct page *page, int reason)
 static inline void dump_page_owner(const struct page *page)
 {
 }
-#endif /* CONFIG_PAGE_OWNER */
-#endif /* __LINUX_PAGE_OWNER_H */
+#endif  
+#endif  

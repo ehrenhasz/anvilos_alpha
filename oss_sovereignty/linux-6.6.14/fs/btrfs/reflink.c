@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/blkdev.h>
 #include <linux/iversion.h>
@@ -32,10 +32,7 @@ static int clone_finish_inode_update(struct btrfs_trans_handle *trans,
 	if (!no_time_update) {
 		inode->i_mtime = inode_set_ctime_current(inode);
 	}
-	/*
-	 * We round up to the block size at eof when determining which
-	 * extents to clone above, but shouldn't round up the file size.
-	 */
+	 
 	if (endoff > destoff + olen)
 		endoff = destoff + olen;
 	if (endoff > inode->i_size) {
@@ -73,12 +70,7 @@ static int copy_inline_to_page(struct btrfs_inode *inode,
 
 	ASSERT(IS_ALIGNED(file_offset, block_size));
 
-	/*
-	 * We have flushed and locked the ranges of the source and destination
-	 * inodes, we also have locked the inodes, so we are safe to do a
-	 * reservation here. Also we must not do the reservation while holding
-	 * a transaction open, otherwise we would deadlock.
-	 */
+	 
 	ret = btrfs_delalloc_reserve_space(inode, &data_reserved, file_offset,
 					   block_size);
 	if (ret)
@@ -102,17 +94,7 @@ static int copy_inline_to_page(struct btrfs_inode *inode,
 	if (ret)
 		goto out_unlock;
 
-	/*
-	 * After dirtying the page our caller will need to start a transaction,
-	 * and if we are low on metadata free space, that can cause flushing of
-	 * delalloc for all inodes in order to get metadata space released.
-	 * However we are holding the range locked for the whole duration of
-	 * the clone/dedupe operation, so we may deadlock if that happens and no
-	 * other task releases enough space. So mark this inode as not being
-	 * possible to flush to avoid such deadlock. We will clear that flag
-	 * when we finish cloning all extents, since a transaction is started
-	 * after finding each extent to clone.
-	 */
+	 
 	set_bit(BTRFS_INODE_NO_DELALLOC_FLUSH, &inode->runtime_flags);
 
 	if (comp_type == BTRFS_COMPRESS_NONE) {
@@ -127,18 +109,7 @@ static int copy_inline_to_page(struct btrfs_inode *inode,
 		flush_dcache_page(page);
 	}
 
-	/*
-	 * If our inline data is smaller then the block/page size, then the
-	 * remaining of the block/page is equivalent to zeroes. We had something
-	 * like the following done:
-	 *
-	 * $ xfs_io -f -c "pwrite -S 0xab 0 500" file
-	 * $ sync  # (or fsync)
-	 * $ xfs_io -c "falloc 0 4K" file
-	 * $ xfs_io -c "pwrite -S 0xcd 4K 4K"
-	 *
-	 * So what's in the range [500, 4095] corresponds to zeroes.
-	 */
+	 
 	if (datal < block_size)
 		memzero_page(page, datal, block_size - datal);
 
@@ -160,11 +131,7 @@ out:
 	return ret;
 }
 
-/*
- * Deal with cloning of inline extents. We try to copy the inline extent from
- * the source inode to destination inode when possible. When not possible we
- * copy the inline extent's data into the respective page of the inode.
- */
+ 
 static int clone_copy_inline_extent(struct inode *dst,
 				    struct btrfs_path *path,
 				    struct btrfs_key *new_key,
@@ -207,10 +174,7 @@ static int clone_copy_inline_extent(struct inode *dst,
 		btrfs_item_key_to_cpu(path->nodes[0], &key, path->slots[0]);
 		if (key.objectid == btrfs_ino(BTRFS_I(dst)) &&
 		    key.type == BTRFS_EXTENT_DATA_KEY) {
-			/*
-			 * There's an implicit hole at file offset 0, copy the
-			 * inline extent's data to the page.
-			 */
+			 
 			ASSERT(key.offset > 0);
 			goto copy_to_page;
 		}
@@ -219,11 +183,7 @@ static int clone_copy_inline_extent(struct inode *dst,
 
 		ei = btrfs_item_ptr(path->nodes[0], path->slots[0],
 				    struct btrfs_file_extent_item);
-		/*
-		 * If it's an inline extent replace it with the source inline
-		 * extent, otherwise copy the source inline extent data into
-		 * the respective page at the destination inode.
-		 */
+		 
 		if (btrfs_file_extent_type(path->nodes[0], ei) ==
 		    BTRFS_FILE_EXTENT_INLINE)
 			goto copy_inline_extent;
@@ -232,34 +192,15 @@ static int clone_copy_inline_extent(struct inode *dst,
 	}
 
 copy_inline_extent:
-	/*
-	 * We have no extent items, or we have an extent at offset 0 which may
-	 * or may not be inlined. All these cases are dealt the same way.
-	 */
+	 
 	if (i_size_read(dst) > datal) {
-		/*
-		 * At the destination offset 0 we have either a hole, a regular
-		 * extent or an inline extent larger then the one we want to
-		 * clone. Deal with all these cases by copying the inline extent
-		 * data into the respective page at the destination inode.
-		 */
+		 
 		goto copy_to_page;
 	}
 
-	/*
-	 * Release path before starting a new transaction so we don't hold locks
-	 * that would confuse lockdep.
-	 */
+	 
 	btrfs_release_path(path);
-	/*
-	 * If we end up here it means were copy the inline extent into a leaf
-	 * of the destination inode. We know we will drop or adjust at most one
-	 * extent item in the destination root.
-	 *
-	 * 1 unit - adjusting old extent (we may have to split it)
-	 * 1 unit - add new extent
-	 * 1 unit - inode update
-	 */
+	 
 	trans = btrfs_start_transaction(root, 3);
 	if (IS_ERR(trans)) {
 		ret = PTR_ERR(trans);
@@ -286,12 +227,7 @@ copy_inline_extent:
 	ret = btrfs_inode_set_file_extent_range(BTRFS_I(dst), 0, aligned_end);
 out:
 	if (!ret && !trans) {
-		/*
-		 * No transaction here means we copied the inline extent into a
-		 * page of the destination inode.
-		 *
-		 * 1 unit to update inode item
-		 */
+		 
 		trans = btrfs_start_transaction(root, 1);
 		if (IS_ERR(trans)) {
 			ret = PTR_ERR(trans);
@@ -308,14 +244,7 @@ out:
 	return ret;
 
 copy_to_page:
-	/*
-	 * Release our path because we don't need it anymore and also because
-	 * copy_inline_to_page() needs to reserve data and metadata, which may
-	 * need to flush delalloc when we are low on available space and
-	 * therefore cause a deadlock if writeback of an inline extent needs to
-	 * write to the same leaf or an ordered extent completion needs to write
-	 * to the same leaf.
-	 */
+	 
 	btrfs_release_path(path);
 
 	ret = copy_inline_to_page(BTRFS_I(dst), new_key->offset,
@@ -323,17 +252,7 @@ copy_to_page:
 	goto out;
 }
 
-/*
- * Clone a range from inode file to another.
- *
- * @src:             Inode to clone from
- * @inode:           Inode to clone to
- * @off:             Offset within source to start clone from
- * @olen:            Original length, passed by user, of range to clone
- * @olen_aligned:    Block-aligned value of olen
- * @destoff:         Offset within @inode to start clone
- * @no_time_update:  Whether to update mtime/ctime on the target inode
- */
+ 
 static int btrfs_clone(struct inode *src, struct inode *inode,
 		       const u64 off, const u64 olen, const u64 olen_aligned,
 		       const u64 destoff, int no_time_update)
@@ -363,7 +282,7 @@ static int btrfs_clone(struct inode *src, struct inode *inode,
 	}
 
 	path->reada = READA_FORWARD;
-	/* Clone data */
+	 
 	key.objectid = btrfs_ino(BTRFS_I(src));
 	key.type = BTRFS_EXTENT_DATA_KEY;
 	key.offset = off;
@@ -379,16 +298,12 @@ static int btrfs_clone(struct inode *src, struct inode *inode,
 		u8 comp;
 		u64 drop_start;
 
-		/* Note the key will change type as we walk through the tree */
+		 
 		ret = btrfs_search_slot(NULL, BTRFS_I(src)->root, &key, path,
 				0, 0);
 		if (ret < 0)
 			goto out;
-		/*
-		 * First search, if no extent item that starts at offset off was
-		 * found but the previous item is an extent item, it's possible
-		 * it might overlap our target range, therefore process it.
-		 */
+		 
 		if (key.offset == off && ret > 0 && path->slots[0] > 0) {
 			btrfs_item_key_to_cpu(path->nodes[0], &key,
 					      path->slots[0] - 1);
@@ -428,21 +343,11 @@ process_slot:
 			datao = btrfs_file_extent_offset(leaf, extent);
 			datal = btrfs_file_extent_num_bytes(leaf, extent);
 		} else if (type == BTRFS_FILE_EXTENT_INLINE) {
-			/* Take upper bound, may be compressed */
+			 
 			datal = btrfs_file_extent_ram_bytes(leaf, extent);
 		}
 
-		/*
-		 * The first search might have left us at an extent item that
-		 * ends before our target range's start, can happen if we have
-		 * holes and NO_HOLES feature enabled.
-		 *
-		 * Subsequent searches may leave us on a file range we have
-		 * processed before - this happens due to a race with ordered
-		 * extent completion for a file range that is outside our source
-		 * range, but that range was part of a file extent item that
-		 * also covered a leading part of our source range.
-		 */
+		 
 		if (key.offset + datal <= prev_extent_end) {
 			path->slots[0]++;
 			goto process_slot;
@@ -464,12 +369,7 @@ process_slot:
 		else
 			new_key.offset = destoff;
 
-		/*
-		 * Deal with a hole that doesn't have an extent item that
-		 * represents it (NO_HOLES feature enabled).
-		 * This hole is either in the middle of the cloning range or at
-		 * the beginning (fully overlaps it or partially overlaps it).
-		 */
+		 
 		if (new_key.offset != last_dest_end)
 			drop_start = last_dest_end;
 		else
@@ -479,16 +379,13 @@ process_slot:
 		    type == BTRFS_FILE_EXTENT_PREALLOC) {
 			struct btrfs_replace_extent_info clone_info;
 
-			/*
-			 *    a  | --- range to clone ---|  b
-			 * | ------------- extent ------------- |
-			 */
+			 
 
-			/* Subtract range b */
+			 
 			if (key.offset + datal > off + len)
 				datal = off + len - key.offset;
 
-			/* Subtract range a */
+			 
 			if (off > key.offset) {
 				datao += off - key.offset;
 				datal -= off - key.offset;
@@ -509,14 +406,7 @@ process_slot:
 				goto out;
 		} else {
 			ASSERT(type == BTRFS_FILE_EXTENT_INLINE);
-			/*
-			 * Inline extents always have to start at file offset 0
-			 * and can never be bigger then the sector size. We can
-			 * never clone only parts of an inline extent, since all
-			 * reflink operations must start at a sector size aligned
-			 * offset, and the length must be aligned too or end at
-			 * the i_size (which implies the whole inlined data).
-			 */
+			 
 			ASSERT(key.offset == 0);
 			ASSERT(datal <= fs_info->sectorsize);
 			if (WARN_ON(type != BTRFS_FILE_EXTENT_INLINE) ||
@@ -535,19 +425,7 @@ process_slot:
 
 		btrfs_release_path(path);
 
-		/*
-		 * Whenever we share an extent we update the last_reflink_trans
-		 * of each inode to the current transaction. This is needed to
-		 * make sure fsync does not log multiple checksum items with
-		 * overlapping ranges (because some extent items might refer
-		 * only to sections of the original extent). For the destination
-		 * inode we do this regardless of the generation of the extents
-		 * or even if they are inline extents or explicit holes, to make
-		 * sure a full fsync does not skip them. For the source inode,
-		 * we only need to update last_reflink_trans in case it's a new
-		 * extent that is not a hole or an inline extent, to deal with
-		 * the checksums problem on fsync.
-		 */
+		 
 		if (extent_gen == trans->transid && disko > 0)
 			BTRFS_I(src)->last_reflink_trans = trans->transid;
 
@@ -575,28 +453,10 @@ process_slot:
 	ret = 0;
 
 	if (last_dest_end < destoff + len) {
-		/*
-		 * We have an implicit hole that fully or partially overlaps our
-		 * cloning range at its end. This means that we either have the
-		 * NO_HOLES feature enabled or the implicit hole happened due to
-		 * mixing buffered and direct IO writes against this file.
-		 */
+		 
 		btrfs_release_path(path);
 
-		/*
-		 * When using NO_HOLES and we are cloning a range that covers
-		 * only a hole (no extents) into a range beyond the current
-		 * i_size, punching a hole in the target range will not create
-		 * an extent map defining a hole, because the range starts at or
-		 * beyond current i_size. If the file previously had an i_size
-		 * greater than the new i_size set by this clone operation, we
-		 * need to make sure the next fsync is a full fsync, so that it
-		 * detects and logs a hole covering a range from the current
-		 * i_size to the new i_size. If the clone range covers extents,
-		 * besides a hole, then we know the full sync flag was already
-		 * set by previous calls to btrfs_replace_file_extents() that
-		 * replaced file extent items.
-		 */
+		 
 		if (last_dest_end >= i_size_read(inode))
 			btrfs_set_inode_full_sync(BTRFS_I(inode));
 
@@ -667,10 +527,7 @@ static int btrfs_extent_same_range(struct inode *src, u64 loff, u64 len,
 	const u64 bs = fs_info->sb->s_blocksize;
 	int ret;
 
-	/*
-	 * Lock destination range to serialize with concurrent readahead() and
-	 * source range to serialize with relocation.
-	 */
+	 
 	btrfs_double_extent_lock(src, loff, dst, dst_loff, len);
 	ret = btrfs_clone(src, dst, loff, len, ALIGN(len, bs), dst_loff, 1);
 	btrfs_double_extent_unlock(src, loff, dst, dst_loff, len);
@@ -733,12 +590,7 @@ static noinline int btrfs_clone_files(struct file *file, struct file *file_src,
 	u64 len = olen;
 	u64 bs = fs_info->sb->s_blocksize;
 
-	/*
-	 * VFS's generic_remap_file_range_prep() protects us from cloning the
-	 * eof block into the middle of a file, which would result in corruption
-	 * if the file size is not blocksize aligned. So we don't need to check
-	 * for that case here.
-	 */
+	 
 	if (off + len == src->i_size)
 		len = ALIGN(src->i_size, bs) - off;
 
@@ -748,40 +600,22 @@ static noinline int btrfs_clone_files(struct file *file, struct file *file_src,
 		ret = btrfs_cont_expand(BTRFS_I(inode), inode->i_size, destoff);
 		if (ret)
 			return ret;
-		/*
-		 * We may have truncated the last block if the inode's size is
-		 * not sector size aligned, so we need to wait for writeback to
-		 * complete before proceeding further, otherwise we can race
-		 * with cloning and attempt to increment a reference to an
-		 * extent that no longer exists (writeback completed right after
-		 * we found the previous extent covering eof and before we
-		 * attempted to increment its reference count).
-		 */
+		 
 		ret = btrfs_wait_ordered_range(inode, wb_start,
 					       destoff - wb_start);
 		if (ret)
 			return ret;
 	}
 
-	/*
-	 * Lock destination range to serialize with concurrent readahead() and
-	 * source range to serialize with relocation.
-	 */
+	 
 	btrfs_double_extent_lock(src, off, inode, destoff, len);
 	ret = btrfs_clone(src, inode, off, olen, len, destoff, 0);
 	btrfs_double_extent_unlock(src, off, inode, destoff, len);
 
-	/*
-	 * We may have copied an inline extent into a page of the destination
-	 * range, so wait for writeback to complete before truncating pages
-	 * from the page cache. This is a rare case.
-	 */
+	 
 	wb_ret = btrfs_wait_ordered_range(inode, destoff, len);
 	ret = ret ? ret : wb_ret;
-	/*
-	 * Truncate page cache pages so that future reads will see the cloned
-	 * data immediately and not the previous data.
-	 */
+	 
 	truncate_inode_pages_range(&inode->i_data,
 				round_down(destoff, PAGE_SIZE),
 				round_up(destoff + len, PAGE_SIZE) - 1);
@@ -810,48 +644,19 @@ static int btrfs_remap_file_range_prep(struct file *file_in, loff_t pos_in,
 		ASSERT(inode_in->i_sb == inode_out->i_sb);
 	}
 
-	/* Don't make the dst file partly checksummed */
+	 
 	if ((BTRFS_I(inode_in)->flags & BTRFS_INODE_NODATASUM) !=
 	    (BTRFS_I(inode_out)->flags & BTRFS_INODE_NODATASUM)) {
 		return -EINVAL;
 	}
 
-	/*
-	 * Now that the inodes are locked, we need to start writeback ourselves
-	 * and can not rely on the writeback from the VFS's generic helper
-	 * generic_remap_file_range_prep() because:
-	 *
-	 * 1) For compression we must call filemap_fdatawrite_range() range
-	 *    twice (btrfs_fdatawrite_range() does it for us), and the generic
-	 *    helper only calls it once;
-	 *
-	 * 2) filemap_fdatawrite_range(), called by the generic helper only
-	 *    waits for the writeback to complete, i.e. for IO to be done, and
-	 *    not for the ordered extents to complete. We need to wait for them
-	 *    to complete so that new file extent items are in the fs tree.
-	 */
+	 
 	if (*len == 0 && !(remap_flags & REMAP_FILE_DEDUP))
 		wb_len = ALIGN(inode_in->i_size, bs) - ALIGN_DOWN(pos_in, bs);
 	else
 		wb_len = ALIGN(*len, bs);
 
-	/*
-	 * Workaround to make sure NOCOW buffered write reach disk as NOCOW.
-	 *
-	 * Btrfs' back references do not have a block level granularity, they
-	 * work at the whole extent level.
-	 * NOCOW buffered write without data space reserved may not be able
-	 * to fall back to CoW due to lack of data space, thus could cause
-	 * data loss.
-	 *
-	 * Here we take a shortcut by flushing the whole inode, so that all
-	 * nocow write should reach disk as nocow before we increase the
-	 * reference of the extent. We could do better by only flushing NOCOW
-	 * data, but that needs extra accounting.
-	 *
-	 * Also we don't need to check ASYNC_EXTENT, as async extent will be
-	 * CoWed anyway, not affecting nocow part.
-	 */
+	 
 	ret = filemap_flush(inode_in->i_mapping);
 	if (ret < 0)
 		return ret;
@@ -916,13 +721,7 @@ out_unlock:
 		unlock_two_nondirectories(src_inode, dst_inode);
 	}
 
-	/*
-	 * If either the source or the destination file was opened with O_SYNC,
-	 * O_DSYNC or has the S_SYNC attribute, fsync both the destination and
-	 * source files/ranges, so that after a successful return (0) followed
-	 * by a power failure results in the reflinked data to be readable from
-	 * both files/ranges.
-	 */
+	 
 	if (ret == 0 && len > 0 &&
 	    (file_sync_write(src_file) || file_sync_write(dst_file))) {
 		ret = btrfs_sync_file(src_file, off, off + len - 1, 0);

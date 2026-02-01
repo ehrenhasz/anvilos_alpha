@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_TPC0_CMDQ_REGS_H_
 #define ASIC_REG_TPC0_CMDQ_REGS_H_
 
-/*
- *****************************************
- *   TPC0_CMDQ (Prototype: CMDQ)
- *****************************************
- */
+ 
 
 #define mmTPC0_CMDQ_GLBL_CFG0                                        0xE09000
 
@@ -135,4 +123,4 @@
 
 #define mmTPC0_CMDQ_CQ_BUF_RDATA                                     0xE0930C
 
-#endif /* ASIC_REG_TPC0_CMDQ_REGS_H_ */
+#endif  

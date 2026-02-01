@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * slotmap.h
- *
- * description here
- *
- * Copyright (C) 2002, 2004 Oracle.  All rights reserved.
- */
+ 
+ 
 
 
 #ifndef SLOTMAP_H

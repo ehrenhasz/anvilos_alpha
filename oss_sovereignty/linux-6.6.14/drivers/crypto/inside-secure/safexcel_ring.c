@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Marvell
- *
- * Antoine Tenart <antoine.tenart@free-electrons.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/spinlock.h>
@@ -18,7 +14,7 @@ int safexcel_init_ring_descriptors(struct safexcel_crypto_priv *priv,
 	struct safexcel_command_desc *cdesc;
 	dma_addr_t atok;
 
-	/* Actual command descriptor ring */
+	 
 	cdr->offset = priv->config.cd_offset;
 	cdr->base = dmam_alloc_coherent(priv->dev,
 					cdr->offset * EIP197_DEFAULT_RING_SIZE,
@@ -29,7 +25,7 @@ int safexcel_init_ring_descriptors(struct safexcel_crypto_priv *priv,
 	cdr->base_end = cdr->base + cdr->offset * (EIP197_DEFAULT_RING_SIZE - 1);
 	cdr->read = cdr->base;
 
-	/* Command descriptor shadow ring for storing additional token data */
+	 
 	cdr->shoffset = priv->config.cdsh_offset;
 	cdr->shbase = dmam_alloc_coherent(priv->dev,
 					  cdr->shoffset *
@@ -41,10 +37,7 @@ int safexcel_init_ring_descriptors(struct safexcel_crypto_priv *priv,
 	cdr->shbase_end = cdr->shbase + cdr->shoffset *
 					(EIP197_DEFAULT_RING_SIZE - 1);
 
-	/*
-	 * Populate command descriptors with physical pointers to shadow descs.
-	 * Note that we only need to do this once if we don't overwrite them.
-	 */
+	 
 	cdesc = cdr->base;
 	atok = cdr->shbase_dma;
 	for (i = 0; i < EIP197_DEFAULT_RING_SIZE; i++) {
@@ -55,7 +48,7 @@ int safexcel_init_ring_descriptors(struct safexcel_crypto_priv *priv,
 	}
 
 	rdr->offset = priv->config.rd_offset;
-	/* Use shoffset for result token offset here */
+	 
 	rdr->shoffset = priv->config.res_offset;
 	rdr->base = dmam_alloc_coherent(priv->dev,
 					rdr->offset * EIP197_DEFAULT_RING_SIZE,
@@ -105,7 +98,7 @@ static void *safexcel_ring_next_rwptr(struct safexcel_crypto_priv *priv,
 {
 	void *ptr = ring->write;
 
-	/* Result token at relative offset shoffset */
+	 
 	*rtoken = ring->write + ring->shoffset;
 
 	if ((ring->write == ring->read - ring->offset) ||
@@ -201,12 +194,7 @@ struct safexcel_command_desc *safexcel_add_cdesc(struct safexcel_crypto_priv *pr
 	cdesc->data_hi = upper_32_bits(data);
 
 	if (first) {
-		/*
-		 * Note that the length here MUST be >0 or else the EIP(1)97
-		 * may hang. Newer EIP197 firmware actually incorporates this
-		 * fix already, but that doesn't help the EIP97 and we may
-		 * also be running older firmware.
-		 */
+		 
 		cdesc->control_data.packet_length = full_data_len ?: 1;
 		cdesc->control_data.options = EIP197_OPTION_MAGIC_VALUE |
 					      EIP197_OPTION_64BIT_CTX |
@@ -236,8 +224,8 @@ struct safexcel_result_desc *safexcel_add_rdesc(struct safexcel_crypto_priv *pri
 
 	rdesc->particle_size = len;
 	rdesc->rsvd0 = 0;
-	rdesc->descriptor_overflow = 1; /* assume error */
-	rdesc->buffer_overflow = 1;     /* assume error */
+	rdesc->descriptor_overflow = 1;  
+	rdesc->buffer_overflow = 1;      
 	rdesc->last_seg = last;
 	rdesc->first_seg = first;
 	rdesc->result_size = EIP197_RD64_RESULT_SIZE;
@@ -245,9 +233,9 @@ struct safexcel_result_desc *safexcel_add_rdesc(struct safexcel_crypto_priv *pri
 	rdesc->data_lo = lower_32_bits(data);
 	rdesc->data_hi = upper_32_bits(data);
 
-	/* Clear length in result token */
+	 
 	rtoken->packet_length = 0;
-	/* Assume errors - HW will clear if not the case */
+	 
 	rtoken->error_code = 0x7fff;
 
 	return rdesc;

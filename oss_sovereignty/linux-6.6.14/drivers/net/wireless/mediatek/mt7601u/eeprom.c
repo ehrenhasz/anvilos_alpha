@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/mtd/mtd.h>
@@ -48,9 +45,7 @@ mt7601u_efuse_read(struct mt7601u_dev *dev, u16 addr, u8 *data,
 
 	val = mt76_rr(dev, MT_EFUSE_CTRL);
 	if ((val & MT_EFUSE_CTRL_AOUT) == MT_EFUSE_CTRL_AOUT) {
-		/* Parts of eeprom not in the usage map (0x80-0xc0,0xf0)
-		 * will not return valid data but it's ok.
-		 */
+		 
 		memset(data, 0xff, 16);
 		return 0;
 	}
@@ -168,14 +163,12 @@ mt7601u_set_channel_power(struct mt7601u_dev *dev, u8 *eeprom)
 static void
 mt7601u_set_country_reg(struct mt7601u_dev *dev, u8 *eeprom)
 {
-	/* Note: - region 31 is not valid for mt7601u (see rtmp_init.c)
-	 *	 - comments in rtmp_def.h are incorrect (see rt_channel.c)
-	 */
+	 
 	static const struct reg_channel_bounds chan_bounds[] = {
-		/* EEPROM country regions 0 - 7 */
+		 
 		{  1, 11 },	{  1, 13 },	{ 10,  2 },	{ 10,  4 },
 		{ 14,  1 },	{  1, 14 },	{  3,  7 },	{  5,  9 },
-		/* EEPROM country regions 32 - 33 */
+		 
 		{  1, 11 },	{  1, 14 }
 	};
 	u8 val = eeprom[MT_EE_COUNTRY_REGION];
@@ -192,13 +185,11 @@ mt7601u_set_country_reg(struct mt7601u_dev *dev, u8 *eeprom)
 			 val, chan_bounds[idx].start,
 			 chan_bounds[idx].start + chan_bounds[idx].num - 1);
 	else
-		idx = 5; /* channels 1 - 14 */
+		idx = 5;  
 
 	dev->ee->reg = chan_bounds[idx];
 
-	/* TODO: country region 33 is special - phy should be set to B-mode
-	 *	 before entering channel 14 (see sta/connect.c)
-	 */
+	 
 }
 
 static void
@@ -249,13 +240,13 @@ mt7601u_extra_power_over_mac(struct mt7601u_dev *dev)
 static void
 mt7601u_set_power_rate(struct power_per_rate *rate, s8 delta, u8 value)
 {
-	/* Invalid? Note: vendor driver does not handle this */
+	 
 	if (value == 0xff)
 		return;
 
 	rate->raw = s6_validate(value);
 	rate->bw20 = s6_to_int(value);
-	/* Note: vendor driver does cap the value to s6 right away */
+	 
 	rate->bw40 = rate->bw20 + delta;
 }
 
@@ -268,7 +259,7 @@ mt7601u_save_power_rate(struct mt7601u_dev *dev, s8 delta, u32 val, int i)
 	case 0:
 		mt7601u_set_power_rate(&t->cck[0], delta, (val >> 0) & 0xff);
 		mt7601u_set_power_rate(&t->cck[1], delta, (val >> 8) & 0xff);
-		/* Save cck bw20 for fixups of channel 14 */
+		 
 		dev->ee->real_cck_bw20[0] = t->cck[0].bw20;
 		dev->ee->real_cck_bw20[1] = t->cck[1].bw20;
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/types.h>
 #include <linux/atomic.h>
@@ -43,9 +43,7 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
 	WARN_ON(!(ct && (ctinfo == IP_CT_NEW || ctinfo == IP_CT_RELATED ||
 			 ctinfo == IP_CT_RELATED_REPLY)));
 
-	/* Source address is 0.0.0.0 - locally generated packet that is
-	 * probably not supposed to be masqueraded.
-	 */
+	 
 	if (ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple.src.u3.ip == 0)
 		return NF_ACCEPT;
 
@@ -61,7 +59,7 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
 	if (nat)
 		nat->masq_index = out->ifindex;
 
-	/* Transfer from original range. */
+	 
 	memset(&newrange.min_addr, 0, sizeof(newrange.min_addr));
 	memset(&newrange.max_addr, 0, sizeof(newrange.max_addr));
 	newrange.flags       = range->flags | NF_NAT_RANGE_MAP_IPS;
@@ -70,7 +68,7 @@ nf_nat_masquerade_ipv4(struct sk_buff *skb, unsigned int hooknum,
 	newrange.min_proto   = range->min_proto;
 	newrange.max_proto   = range->max_proto;
 
-	/* Hand modified range to generic setup. */
+	 
 	return nf_nat_setup_info(ct, &newrange, NF_NAT_MANIP_SRC);
 }
 EXPORT_SYMBOL_GPL(nf_nat_masquerade_ipv4);
@@ -92,12 +90,7 @@ static void iterate_cleanup_work(struct work_struct *work)
 	module_put(THIS_MODULE);
 }
 
-/* Iterate conntrack table in the background and remove conntrack entries
- * that use the device/address being removed.
- *
- * In case too many work items have been queued already or memory allocation
- * fails iteration is skipped, conntrack entries will time out eventually.
- */
+ 
 static void nf_nat_masq_schedule(struct net *net, union nf_inet_addr *addr,
 				 int ifindex,
 				 int (*iter)(struct nf_conn *i, void *data),
@@ -117,7 +110,7 @@ static void nf_nat_masq_schedule(struct net *net, union nf_inet_addr *addr,
 
 	w = kzalloc(sizeof(*w), gfp_flags);
 	if (w) {
-		/* We can overshoot MAX_MASQ_WORKER_COUNT, no big deal */
+		 
 		atomic_inc(&masq_worker_count);
 
 		INIT_WORK(&w->work, iterate_cleanup_work);
@@ -154,10 +147,7 @@ static int masq_device_event(struct notifier_block *this,
 	struct net *net = dev_net(dev);
 
 	if (event == NETDEV_DOWN) {
-		/* Device was downed.  Search entire table for
-		 * conntracks which were associated with that device,
-		 * and forget them.
-		 */
+		 
 
 		nf_nat_masq_schedule(net, NULL, dev->ifindex,
 				     device_cmp, GFP_KERNEL);
@@ -191,11 +181,7 @@ static int masq_inet_event(struct notifier_block *this,
 	if (event != NETDEV_DOWN)
 		return NOTIFY_DONE;
 
-	/* The masq_dev_notifier will catch the case of the device going
-	 * down.  So if the inetdev is dead and being destroyed we have
-	 * no work to do.  Otherwise this is an individual address removal
-	 * and we have to perform the flush.
-	 */
+	 
 	idev = ifa->ifa_dev;
 	if (idev->dead)
 		return NOTIFY_DONE;
@@ -269,13 +255,7 @@ nf_nat_masquerade_ipv6(struct sk_buff *skb, const struct nf_nat_range2 *range,
 }
 EXPORT_SYMBOL_GPL(nf_nat_masquerade_ipv6);
 
-/* atomic notifier; can't call nf_ct_iterate_cleanup_net (it can sleep).
- *
- * Defer it to the system workqueue.
- *
- * As we can have 'a lot' of inet_events (depending on amount of ipv6
- * addresses being deleted), we also need to limit work item queue.
- */
+ 
 static int masq_inet6_event(struct notifier_block *this,
 			    unsigned long event, void *ptr)
 {
@@ -319,15 +299,15 @@ int nf_nat_masquerade_inet_register_notifiers(void)
 		goto out_unlock;
 	}
 
-	/* check if the notifier was already set */
+	 
 	if (++masq_refcnt > 1)
 		goto out_unlock;
 
-	/* Register for device down reports */
+	 
 	ret = register_netdevice_notifier(&masq_dev_notifier);
 	if (ret)
 		goto err_dec;
-	/* Register IP address change reports */
+	 
 	ret = register_inetaddr_notifier(&masq_inet_notifier);
 	if (ret)
 		goto err_unregister;
@@ -353,7 +333,7 @@ EXPORT_SYMBOL_GPL(nf_nat_masquerade_inet_register_notifiers);
 void nf_nat_masquerade_inet_unregister_notifiers(void)
 {
 	mutex_lock(&masq_mutex);
-	/* check if the notifiers still have clients */
+	 
 	if (--masq_refcnt > 0)
 		goto out_unlock;
 

@@ -1,30 +1,6 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013-2015 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
-// options to control how MicroPython is built
+
 
 #define MICROPY_ALLOC_PATH_MAX      (PATH_MAX)
 #define MICROPY_PERSISTENT_CODE_LOAD (0)
@@ -76,7 +52,7 @@
 #define MICROPY_PY_BUILTINS_STR_UNICODE (1)
 
 #if !(defined(MICROPY_GCREGS_SETJMP) || defined(__x86_64__) || defined(__i386__) || defined(__thumb2__) || defined(__thumb__) || defined(__arm__))
-// Fall back to setjmp() implementation for discovery of GC pointers in registers.
+
 #define MICROPY_GCREGS_SETJMP (1)
 #endif
 
@@ -90,11 +66,11 @@
 #define MICROPY_PY_IO               (0)
 #define MICROPY_PY_SYS              (0)
 
-// type definitions for the specific machine
+
 
 #ifdef __LP64__
-typedef long mp_int_t; // must be pointer size
-typedef unsigned long mp_uint_t; // must be pointer size
+typedef long mp_int_t; 
+typedef unsigned long mp_uint_t; 
 #elif defined(__MINGW32__) && defined(_WIN64)
 #include <stdint.h>
 typedef __int64 mp_int_t;
@@ -103,13 +79,13 @@ typedef unsigned __int64 mp_uint_t;
 typedef __int64 mp_int_t;
 typedef unsigned __int64 mp_uint_t;
 #else
-// These are definitions for machines where sizeof(int) == sizeof(void*),
-// regardless for actual size.
-typedef int mp_int_t; // must be pointer size
-typedef unsigned int mp_uint_t; // must be pointer size
+
+
+typedef int mp_int_t; 
+typedef unsigned int mp_uint_t; 
 #endif
 
-// Cannot include <sys/types.h>, as it may lead to symbol name clashes
+
 #if _FILE_OFFSET_BITS == 64 && !defined(__LP64__)
 typedef long long mp_off_t;
 #else
@@ -118,7 +94,7 @@ typedef long mp_off_t;
 
 #define MP_PLAT_PRINT_STRN(str, len) (void)0
 
-// We need to provide a declaration/definition of alloca()
+
 #if defined(__FreeBSD__) || defined(__NetBSD__)
 #include <stdlib.h>
 #elif defined(_WIN32)
@@ -129,7 +105,7 @@ typedef long mp_off_t;
 
 #include <stdint.h>
 
-// MSVC specifics - see windows/mpconfigport.h for explanation
+
 #ifdef _MSC_VER
 
 #define MP_ENDIANNESS_LITTLE        (1)
@@ -144,7 +120,7 @@ typedef long mp_off_t;
 #else
 #define MP_SSIZE_MAX                _I32_MAX
 #endif
-#define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)(p)) // Avoid compiler warning about different const qualifiers
+#define MICROPY_MAKE_POINTER_CALLABLE(p) ((void *)(p)) 
 #define restrict
 #define inline                      __inline
 #define alignof(t)                  __alignof(t)

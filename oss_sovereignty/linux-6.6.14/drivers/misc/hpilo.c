@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the HP iLO management processor.
- *
- * Copyright (C) 2008 Hewlett-Packard Development Company, L.P.
- *	David Altobelli <david.altobelli@hpe.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/types.h>
 #include <linux/module.h>
@@ -32,9 +27,9 @@ static unsigned int ilo_major;
 static unsigned int max_ccb = 16;
 static char ilo_hwdev[MAX_ILO_DEV];
 static const struct pci_device_id ilo_blacklist[] = {
-	/* auxiliary iLO */
+	 
 	{PCI_DEVICE_SUB(PCI_VENDOR_ID_HP, 0x3307, PCI_VENDOR_ID_HP, 0x1979)},
-	/* CL */
+	 
 	{PCI_DEVICE_SUB(PCI_VENDOR_ID_HP, 0x3307, PCI_VENDOR_ID_HP_3PAR, 0x0289)},
 	{}
 };
@@ -60,16 +55,7 @@ static inline int desc_mem_sz(int nr_entry)
 	return nr_entry << L2_QENTRY_SZ;
 }
 
-/*
- * FIFO queues, shared with hardware.
- *
- * If a queue has empty slots, an entry is added to the queue tail,
- * and that entry is marked as occupied.
- * Entries can be dequeued from the head of the list, when the device
- * has marked the entry as consumed.
- *
- * Returns true on successful queue/dequeue, false on failure.
- */
+ 
 static int fifo_enqueue(struct ilo_hwinfo *hw, char *fifobar, int entry)
 {
 	struct fifo *fifo_q = FIFOBARTOHANDLE(fifobar);
@@ -201,14 +187,14 @@ static inline int ctrl_set(int l2sz, int idxmask, int desclim)
 
 static void ctrl_setup(struct ccb *ccb, int nr_desc, int l2desc_sz)
 {
-	/* for simplicity, use the same parameters for send and recv ctrls */
+	 
 	ccb->send_ctrl = ctrl_set(l2desc_sz, nr_desc-1, nr_desc-1);
 	ccb->recv_ctrl = ctrl_set(l2desc_sz, nr_desc-1, nr_desc-1);
 }
 
 static inline int fifo_sz(int nr_entry)
 {
-	/* size of a fifo is determined by the number of entries it contains */
+	 
 	return nr_entry * sizeof(u64) + FIFOHANDLESIZE;
 }
 
@@ -217,7 +203,7 @@ static void fifo_setup(void *base_addr, int nr_entry)
 	struct fifo *fifo_q = base_addr;
 	int i;
 
-	/* set up an empty fifo */
+	 
 	fifo_q->head = 0;
 	fifo_q->tail = 0;
 	fifo_q->reset = 0;
@@ -235,14 +221,14 @@ static void ilo_ccb_close(struct pci_dev *pdev, struct ccb_data *data)
 	struct ccb __iomem *device_ccb = data->mapped_ccb;
 	int retries;
 
-	/* complicated dance to tell the hw we are stopping */
+	 
 	doorbell_clr(driver_ccb);
 	iowrite32(ioread32(&device_ccb->send_ctrl) & ~(1 << CTRL_BITPOS_G),
 		  &device_ccb->send_ctrl);
 	iowrite32(ioread32(&device_ccb->recv_ctrl) & ~(1 << CTRL_BITPOS_G),
 		  &device_ccb->recv_ctrl);
 
-	/* give iLO some time to process stop request */
+	 
 	for (retries = MAX_WAIT; retries > 0; retries--) {
 		doorbell_set(driver_ccb);
 		udelay(WAIT_TIME);
@@ -254,10 +240,10 @@ static void ilo_ccb_close(struct pci_dev *pdev, struct ccb_data *data)
 	if (retries == 0)
 		dev_err(&pdev->dev, "Closing, but controller still active\n");
 
-	/* clear the hw ccb */
+	 
 	memset_io(device_ccb, 0, sizeof(struct ccb));
 
-	/* free resources used to back send/recv queues */
+	 
 	dma_free_coherent(&pdev->dev, data->dma_size, data->dma_va,
 			  data->dma_pa);
 }
@@ -286,10 +272,7 @@ static int ilo_ccb_setup(struct ilo_hwinfo *hw, struct ccb_data *data, int slot)
 	dma_va = (char *)roundup((unsigned long)dma_va, ILO_START_ALIGN);
 	dma_pa = roundup(dma_pa, ILO_START_ALIGN);
 
-	/*
-	 * Create two ccb's, one with virt addrs, one with phys addrs.
-	 * Copy the phys addr ccb to device shared mem.
-	 */
+	 
 	ctrl_setup(driver_ccb, NR_QENTRY, L2_QENTRY_SZ);
 	ctrl_setup(ilo_ccb, NR_QENTRY, L2_QENTRY_SZ);
 
@@ -320,7 +303,7 @@ static int ilo_ccb_setup(struct ilo_hwinfo *hw, struct ccb_data *data, int slot)
 	ilo_ccb->channel = slot;
 
 	driver_ccb->ccb_u5.db_base = hw->db_vaddr + (slot << L2_DB_SIZE);
-	ilo_ccb->ccb_u5.db_base = NULL; /* hw ccb's doorbell is not used */
+	ilo_ccb->ccb_u5.db_base = NULL;  
 
 	return 0;
 }
@@ -330,12 +313,12 @@ static void ilo_ccb_open(struct ilo_hwinfo *hw, struct ccb_data *data, int slot)
 	int pkt_id, pkt_sz;
 	struct ccb *driver_ccb = &data->driver_ccb;
 
-	/* copy the ccb with physical addrs to device memory */
+	 
 	data->mapped_ccb = (struct ccb __iomem *)
 				(hw->ram_vaddr + (slot * ILOHW_CCB_SZ));
 	memcpy_toio(data->mapped_ccb, &data->ilo_ccb, sizeof(struct ccb));
 
-	/* put packets on the send and receive queues */
+	 
 	pkt_sz = 0;
 	for (pkt_id = 0; pkt_id < NR_QENTRY; pkt_id++) {
 		ilo_pkt_enqueue(hw, driver_ccb, SENDQ, pkt_id, pkt_sz);
@@ -346,7 +329,7 @@ static void ilo_ccb_open(struct ilo_hwinfo *hw, struct ccb_data *data, int slot)
 	for (pkt_id = 0; pkt_id < NR_QENTRY; pkt_id++)
 		ilo_pkt_enqueue(hw, driver_ccb, RECVQ, pkt_id, pkt_sz);
 
-	/* the ccb is ready to use */
+	 
 	doorbell_clr(driver_ccb);
 }
 
@@ -355,7 +338,7 @@ static int ilo_ccb_verify(struct ilo_hwinfo *hw, struct ccb_data *data)
 	int pkt_id, i;
 	struct ccb *driver_ccb = &data->driver_ccb;
 
-	/* make sure iLO is really handling requests */
+	 
 	for (i = MAX_WAIT; i > 0; i--) {
 		if (ilo_pkt_dequeue(hw, driver_ccb, SENDQ, &pkt_id, NULL, NULL))
 			break;
@@ -374,13 +357,13 @@ static int ilo_ccb_verify(struct ilo_hwinfo *hw, struct ccb_data *data)
 
 static inline int is_channel_reset(struct ccb *ccb)
 {
-	/* check for this particular channel needing a reset */
+	 
 	return FIFOBARTOHANDLE(ccb->ccb_u1.send_fifobar)->reset;
 }
 
 static inline void set_channel_reset(struct ccb *ccb)
 {
-	/* set a flag indicating this channel needs a reset */
+	 
 	FIFOBARTOHANDLE(ccb->ccb_u1.send_fifobar)->reset = 1;
 }
 
@@ -401,7 +384,7 @@ static inline void clear_pending_db(struct ilo_hwinfo *hw, int clr)
 
 static inline void clear_device(struct ilo_hwinfo *hw)
 {
-	/* clear the device (reset bits, pending channel entries) */
+	 
 	clear_pending_db(hw, -1);
 }
 
@@ -420,10 +403,7 @@ static void ilo_set_reset(struct ilo_hwinfo *hw)
 {
 	int slot;
 
-	/*
-	 * Mapped memory is zeroed on ilo reset, so set a per ccb flag
-	 * to indicate that this ccb needs to be closed and reopened.
-	 */
+	 
 	for (slot = 0; slot < max_ccb; slot++) {
 		if (!hw->ccb_alloc[slot])
 			continue;
@@ -441,23 +421,14 @@ static ssize_t ilo_read(struct file *fp, char __user *buf,
 	void *pkt;
 
 	if (is_channel_reset(driver_ccb)) {
-		/*
-		 * If the device has been reset, applications
-		 * need to close and reopen all ccbs.
-		 */
+		 
 		return -ENODEV;
 	}
 
-	/*
-	 * This function is to be called when data is expected
-	 * in the channel, and will return an error if no packet is found
-	 * during the loop below.  The sleep/retry logic is to allow
-	 * applications to call read() immediately post write(),
-	 * and give iLO some time to process the sent packet.
-	 */
+	 
 	cnt = 20;
 	do {
-		/* look for a received packet */
+		 
 		found = ilo_pkt_dequeue(hw, driver_ccb, RECVQ, &pkt_id,
 					&pkt_len, &pkt);
 		if (found)
@@ -469,13 +440,13 @@ static ssize_t ilo_read(struct file *fp, char __user *buf,
 	if (!found)
 		return -EAGAIN;
 
-	/* only copy the length of the received packet */
+	 
 	if (pkt_len < len)
 		len = pkt_len;
 
 	err = copy_to_user(buf, pkt, len);
 
-	/* return the received packet to the queue */
+	 
 	ilo_pkt_enqueue(hw, driver_ccb, RECVQ, pkt_id, desc_mem_sz(1));
 
 	return err ? -EFAULT : len;
@@ -493,20 +464,20 @@ static ssize_t ilo_write(struct file *fp, const char __user *buf,
 	if (is_channel_reset(driver_ccb))
 		return -ENODEV;
 
-	/* get a packet to send the user command */
+	 
 	if (!ilo_pkt_dequeue(hw, driver_ccb, SENDQ, &pkt_id, &pkt_len, &pkt))
 		return -EBUSY;
 
-	/* limit the length to the length of the packet */
+	 
 	if (pkt_len < len)
 		len = pkt_len;
 
-	/* on failure, set the len to 0 to return empty packet to the device */
+	 
 	err = copy_from_user(pkt, buf, len);
 	if (err)
 		len = 0;
 
-	/* send the packet */
+	 
 	ilo_pkt_enqueue(hw, driver_ccb, SENDQ, pkt_id, len);
 	doorbell_set(driver_ccb);
 
@@ -569,16 +540,16 @@ static int ilo_open(struct inode *ip, struct file *fp)
 	slot = iminor(ip) % max_ccb;
 	hw = container_of(ip->i_cdev, struct ilo_hwinfo, cdev);
 
-	/* new ccb allocation */
+	 
 	data = kzalloc(sizeof(*data), GFP_KERNEL);
 	if (!data)
 		return -ENOMEM;
 
 	spin_lock(&hw->open_lock);
 
-	/* each fd private_data holds sw/hw view of ccb */
+	 
 	if (hw->ccb_alloc[slot] == NULL) {
-		/* create a channel control block for this minor */
+		 
 		error = ilo_ccb_setup(hw, data, slot);
 		if (error) {
 			kfree(data);
@@ -590,13 +561,13 @@ static int ilo_open(struct inode *ip, struct file *fp)
 		data->ilo_hw = hw;
 		init_waitqueue_head(&data->ccb_waitq);
 
-		/* write the ccb to hw */
+		 
 		spin_lock_irqsave(&hw->alloc_lock, flags);
 		ilo_ccb_open(hw, data, slot);
 		hw->ccb_alloc[slot] = data;
 		spin_unlock_irqrestore(&hw->alloc_lock, flags);
 
-		/* make sure the channel is functional */
+		 
 		error = ilo_ccb_verify(hw, data);
 		if (error) {
 
@@ -613,11 +584,7 @@ static int ilo_open(struct inode *ip, struct file *fp)
 	} else {
 		kfree(data);
 		if (fp->f_flags & O_EXCL || hw->ccb_alloc[slot]->ccb_excl) {
-			/*
-			 * The channel exists, and either this open
-			 * or a previous open of this channel wants
-			 * exclusive access.
-			 */
+			 
 			error = -EBUSY;
 		} else {
 			hw->ccb_alloc[slot]->ccb_cnt++;
@@ -650,7 +617,7 @@ static irqreturn_t ilo_isr(int irq, void *data)
 
 	spin_lock(&hw->alloc_lock);
 
-	/* check for ccbs which have data */
+	 
 	pending = get_device_outbound(hw);
 	if (!pending) {
 		spin_unlock(&hw->alloc_lock);
@@ -658,7 +625,7 @@ static irqreturn_t ilo_isr(int irq, void *data)
 	}
 
 	if (is_db_reset(pending)) {
-		/* wake up all ccbs if the device was reset */
+		 
 		pending = -1;
 		ilo_set_reset(hw);
 	}
@@ -670,7 +637,7 @@ static irqreturn_t ilo_isr(int irq, void *data)
 			wake_up_interruptible(&hw->ccb_alloc[i]->ccb_waitq);
 	}
 
-	/* clear the device of the channels that have been handled */
+	 
 	clear_pending_db(hw, pending);
 
 	spin_unlock(&hw->alloc_lock);
@@ -692,14 +659,14 @@ static int ilo_map_device(struct pci_dev *pdev, struct ilo_hwinfo *hw)
 	u8 pci_rev_id;
 	int rc;
 
-	/* map the memory mapped i/o registers */
+	 
 	hw->mmio_vaddr = pci_iomap(pdev, 1, 0);
 	if (hw->mmio_vaddr == NULL) {
 		dev_err(&pdev->dev, "Error mapping mmio\n");
 		goto out;
 	}
 
-	/* map the adapter shared memory region */
+	 
 	rc = pci_read_config_byte(pdev, PCI_REVISION_ID, &pci_rev_id);
 	if (rc != 0) {
 		dev_err(&pdev->dev, "Error reading PCI rev id: %d\n", rc);
@@ -708,7 +675,7 @@ static int ilo_map_device(struct pci_dev *pdev, struct ilo_hwinfo *hw)
 
 	if (pci_rev_id >= PCI_REV_ID_NECHES) {
 		bar = 5;
-		/* Last 8k is reserved for CCBs */
+		 
 		off = pci_resource_len(pdev, bar) - 0x2000;
 	} else {
 		bar = 2;
@@ -720,7 +687,7 @@ static int ilo_map_device(struct pci_dev *pdev, struct ilo_hwinfo *hw)
 		goto mmio_free;
 	}
 
-	/* map the doorbell aperture */
+	 
 	hw->db_vaddr = pci_iomap(pdev, 3, max_ccb * ONE_DB_SIZE);
 	if (hw->db_vaddr == NULL) {
 		dev_err(&pdev->dev, "Error mapping doorbell\n");
@@ -755,14 +722,7 @@ static void ilo_remove(struct pci_dev *pdev)
 	free_irq(pdev->irq, ilo_hw);
 	ilo_unmap_device(pdev, ilo_hw);
 	pci_release_regions(pdev);
-	/*
-	 * pci_disable_device(pdev) used to be here. But this PCI device has
-	 * two functions with interrupt lines connected to a single pin. The
-	 * other one is a USB host controller. So when we disable the PIN here
-	 * e.g. by rmmod hpilo, the controller stops working. It is because
-	 * the interrupt link is disabled in ACPI since it is not refcounted
-	 * yet. See acpi_pci_link_free_irq called from acpi_pci_irq_disable.
-	 */
+	 
 	kfree(ilo_hw);
 	ilo_hwdev[(minor / max_ccb)] = 0;
 }
@@ -783,7 +743,7 @@ static int ilo_probe(struct pci_dev *pdev,
 	else if (max_ccb < MIN_CCB)
 		max_ccb = MIN_CCB;
 
-	/* find a free range for device files */
+	 
 	for (devnum = 0; devnum < MAX_ILO_DEV; devnum++) {
 		if (ilo_hwdev[devnum] == 0) {
 			ilo_hwdev[devnum] = 1;
@@ -796,7 +756,7 @@ static int ilo_probe(struct pci_dev *pdev,
 		return -ENODEV;
 	}
 
-	/* track global allocations for this device */
+	 
 	error = -ENOMEM;
 	ilo_hw = kzalloc(sizeof(*ilo_hw), GFP_KERNEL);
 	if (!ilo_hw)
@@ -857,7 +817,7 @@ unmap:
 free_regions:
 	pci_release_regions(pdev);
 disable:
-/*	pci_disable_device(pdev);  see comment in ilo_remove */
+ 
 free:
 	kfree(ilo_hw);
 out:

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * File for any parts of the Coresight decoding that don't require
- * OpenCSD.
- */
+
+ 
 
 #include <errno.h>
 #include <inttypes.h>
@@ -64,29 +61,29 @@ static int cs_etm__print_cpu_metadata_v0(u64 *val, int *offset)
 	int i = *offset, j, nr_params = 0, fmt_offset;
 	u64 magic;
 
-	/* check magic value */
+	 
 	magic = val[i + CS_ETM_MAGIC];
 	if ((magic != __perf_cs_etmv3_magic) &&
 	    (magic != __perf_cs_etmv4_magic)) {
-		/* failure - note bad magic value */
+		 
 		fprintf(stdout, magic_unk_fmt, magic);
 		return -EINVAL;
 	}
 
-	/* print common header block */
+	 
 	fprintf(stdout, cs_etm_priv_fmts[CS_ETM_MAGIC], val[i++]);
 	fprintf(stdout, cs_etm_priv_fmts[CS_ETM_CPU], val[i++]);
 
 	if (magic == __perf_cs_etmv3_magic) {
 		nr_params = CS_ETM_NR_TRC_PARAMS_V0;
 		fmt_offset = CS_ETM_ETMCR;
-		/* after common block, offset format index past NR_PARAMS */
+		 
 		for (j = fmt_offset; j < nr_params + fmt_offset; j++, i++)
 			fprintf(stdout, cs_etm_priv_fmts[j], val[i]);
 	} else if (magic == __perf_cs_etmv4_magic) {
 		nr_params = CS_ETMV4_NR_TRC_PARAMS_V0;
 		fmt_offset = CS_ETMV4_TRCCONFIGR;
-		/* after common block, offset format index past NR_PARAMS */
+		 
 		for (j = fmt_offset; j < nr_params + fmt_offset; j++, i++)
 			fprintf(stdout, cs_etmv4_priv_fmts[j], val[i]);
 	}
@@ -100,12 +97,12 @@ static int cs_etm__print_cpu_metadata_v1(u64 *val, int *offset)
 	u64 magic;
 
 	magic = val[i + CS_ETM_MAGIC];
-	/* total params to print is NR_PARAMS + common block size for v1 */
+	 
 	total_params = val[i + CS_ETM_NR_TRC_PARAMS] + CS_ETM_COMMON_BLK_MAX_V1;
 
 	if (magic == __perf_cs_etmv3_magic) {
 		for (j = 0; j < total_params; j++, i++) {
-			/* if newer record - could be excess params */
+			 
 			if (j >= CS_ETM_PRIV_MAX)
 				fprintf(stdout, param_unk_fmt, j, val[i]);
 			else
@@ -113,7 +110,7 @@ static int cs_etm__print_cpu_metadata_v1(u64 *val, int *offset)
 		}
 	} else if (magic == __perf_cs_etmv4_magic) {
 		for (j = 0; j < total_params; j++, i++) {
-			/* if newer record - could be excess params */
+			 
 			if (j >= CS_ETMV4_PRIV_MAX)
 				fprintf(stdout, param_unk_fmt, j, val[i]);
 			else
@@ -121,14 +118,14 @@ static int cs_etm__print_cpu_metadata_v1(u64 *val, int *offset)
 		}
 	} else if (magic == __perf_cs_ete_magic) {
 		for (j = 0; j < total_params; j++, i++) {
-			/* if newer record - could be excess params */
+			 
 			if (j >= CS_ETE_PRIV_MAX)
 				fprintf(stdout, param_unk_fmt, j, val[i]);
 			else
 				fprintf(stdout, cs_ete_priv_fmts[j], val[i]);
 		}
 	} else {
-		/* failure - note bad magic value and error out */
+		 
 		fprintf(stdout, magic_unk_fmt, magic);
 		return -EINVAL;
 	}
@@ -148,7 +145,7 @@ static void cs_etm__print_auxtrace_info(u64 *val, int num)
 	for (i = CS_HEADER_VERSION_MAX; cpu < num; cpu++) {
 		if (version == 0)
 			err = cs_etm__print_cpu_metadata_v0(val, &i);
-		/* printing same for both, but value bit flags added on v2 */
+		 
 		else if ((version == 1) || (version == 2))
 			err = cs_etm__print_cpu_metadata_v1(val, &i);
 		if (err)
@@ -156,11 +153,7 @@ static void cs_etm__print_auxtrace_info(u64 *val, int num)
 	}
 }
 
-/*
- * Do some basic checks and print the auxtrace info header before calling
- * into cs_etm__process_auxtrace_info_full() which requires OpenCSD to be
- * linked in. This allows some basic debugging if OpenCSD is missing.
- */
+ 
 int cs_etm__process_auxtrace_info(union perf_event *event,
 				  struct perf_session *session)
 {
@@ -173,10 +166,10 @@ int cs_etm__process_auxtrace_info(union perf_event *event,
 	if (auxtrace_info->header.size < (event_header_size + INFO_HEADER_SIZE))
 		return -EINVAL;
 
-	/* First the global part */
+	 
 	ptr = (u64 *) auxtrace_info->priv;
 
-	/* Look for version of the header */
+	 
 	hdr_version = ptr[0];
 	if (hdr_version > CS_HEADER_CURRENT_VERSION) {
 		pr_err("\nCS ETM Trace: Unknown Header Version = %#" PRIx64, hdr_version);

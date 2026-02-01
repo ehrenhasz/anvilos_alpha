@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Shared Memory Communications Direct over ISM devices (SMC-D)
- *
- * Functions for ISM device.
- *
- * Copyright IBM Corp. 2018
- */
+
+ 
 
 #include <linux/if_vlan.h>
 #include <linux/spinlock.h>
@@ -43,7 +38,7 @@ static struct ism_client smc_ism_client = {
 };
 #endif
 
-/* Test if an ISM communication is possible - same CPC */
+ 
 int smc_ism_cantalk(u64 peer_gid, unsigned short vlan_id, struct smcd_dev *smcd)
 {
 	return smcd->ops->query_remote_gid(smcd, peer_gid, vlan_id ? 1 : 0,
@@ -63,13 +58,13 @@ u16 smc_ism_get_chid(struct smcd_dev *smcd)
 	return smcd->ops->get_chid(smcd);
 }
 
-/* HW supports ISM V2 and thus System EID is defined */
+ 
 bool smc_ism_is_v2_capable(void)
 {
 	return smc_ism_v2_capable;
 }
 
-/* Set a connection using this DMBE. */
+ 
 void smc_ism_set_conn(struct smc_connection *conn)
 {
 	unsigned long flags;
@@ -79,7 +74,7 @@ void smc_ism_set_conn(struct smc_connection *conn)
 	spin_unlock_irqrestore(&conn->lgr->smcd->lock, flags);
 }
 
-/* Unset a connection using this DMBE. */
+ 
 void smc_ism_unset_conn(struct smc_connection *conn)
 {
 	unsigned long flags;
@@ -92,27 +87,24 @@ void smc_ism_unset_conn(struct smc_connection *conn)
 	spin_unlock_irqrestore(&conn->lgr->smcd->lock, flags);
 }
 
-/* Register a VLAN identifier with the ISM device. Use a reference count
- * and add a VLAN identifier only when the first DMB using this VLAN is
- * registered.
- */
+ 
 int smc_ism_get_vlan(struct smcd_dev *smcd, unsigned short vlanid)
 {
 	struct smc_ism_vlanid *new_vlan, *vlan;
 	unsigned long flags;
 	int rc = 0;
 
-	if (!vlanid)			/* No valid vlan id */
+	if (!vlanid)			 
 		return -EINVAL;
 
-	/* create new vlan entry, in case we need it */
+	 
 	new_vlan = kzalloc(sizeof(*new_vlan), GFP_KERNEL);
 	if (!new_vlan)
 		return -ENOMEM;
 	new_vlan->vlanid = vlanid;
 	refcount_set(&new_vlan->refcnt, 1);
 
-	/* if there is an existing entry, increase count and return */
+	 
 	spin_lock_irqsave(&smcd->lock, flags);
 	list_for_each_entry(vlan, &smcd->vlan, list) {
 		if (vlan->vlanid == vlanid) {
@@ -122,9 +114,7 @@ int smc_ism_get_vlan(struct smcd_dev *smcd, unsigned short vlanid)
 		}
 	}
 
-	/* no existing entry found.
-	 * add new entry to device; might fail, e.g., if HW limit reached
-	 */
+	 
 	if (smcd->ops->add_vlan_id(smcd, vlanid)) {
 		kfree(new_vlan);
 		rc = -EIO;
@@ -136,10 +126,7 @@ out:
 	return rc;
 }
 
-/* Unregister a VLAN identifier with the ISM device. Use a reference count
- * and remove a VLAN identifier only when the last DMB using this VLAN is
- * unregistered.
- */
+ 
 int smc_ism_put_vlan(struct smcd_dev *smcd, unsigned short vlanid)
 {
 	struct smc_ism_vlanid *vlan;
@@ -147,7 +134,7 @@ int smc_ism_put_vlan(struct smcd_dev *smcd, unsigned short vlanid)
 	bool found = false;
 	int rc = 0;
 
-	if (!vlanid)			/* No valid vlan id */
+	if (!vlanid)			 
 		return -EINVAL;
 
 	spin_lock_irqsave(&smcd->lock, flags);
@@ -161,10 +148,10 @@ int smc_ism_put_vlan(struct smcd_dev *smcd, unsigned short vlanid)
 	}
 	if (!found) {
 		rc = -ENOENT;
-		goto out;		/* VLAN id not in table */
+		goto out;		 
 	}
 
-	/* Found and the last reference just gone */
+	 
 	if (smcd->ops->del_vlan_id(smcd, vlanid))
 		rc = -EIO;
 	list_del(&vlan->list);
@@ -344,10 +331,10 @@ static void smcd_handle_sw_event(struct smc_ism_event_work *wrk)
 
 	ev_info.info = wrk->event.info;
 	switch (wrk->event.code) {
-	case ISM_EVENT_CODE_SHUTDOWN:	/* Peer shut down DMBs */
+	case ISM_EVENT_CODE_SHUTDOWN:	 
 		smc_smcd_terminate(wrk->smcd, wrk->event.tok, ev_info.vlan_id);
 		break;
-	case ISM_EVENT_CODE_TESTLINK:	/* Activity timer */
+	case ISM_EVENT_CODE_TESTLINK:	 
 		if (ev_info.code == ISM_EVENT_REQUEST) {
 			ev_info.code = ISM_EVENT_RESPONSE;
 			wrk->smcd->ops->signal_event(wrk->smcd,
@@ -360,19 +347,19 @@ static void smcd_handle_sw_event(struct smc_ism_event_work *wrk)
 	}
 }
 
-/* worker for SMC-D events */
+ 
 static void smc_ism_event_work(struct work_struct *work)
 {
 	struct smc_ism_event_work *wrk =
 		container_of(work, struct smc_ism_event_work, work);
 
 	switch (wrk->event.type) {
-	case ISM_EVENT_GID:	/* GID event, token is peer GID */
+	case ISM_EVENT_GID:	 
 		smc_smcd_terminate(wrk->smcd, wrk->event.tok, VLAN_VID_MASK);
 		break;
 	case ISM_EVENT_DMB:
 		break;
-	case ISM_EVENT_SWR:	/* Software defined event */
+	case ISM_EVENT_SWR:	 
 		smcd_handle_sw_event(wrk);
 		break;
 	}
@@ -435,7 +422,7 @@ static void smcd_register_dev(struct ism_dev *ism)
 			       SMC_MAX_EID_LEN);
 		}
 	}
-	/* sort list: devices without pnetid before devices with pnetid */
+	 
 	if (smcd->pnetid[0])
 		list_add_tail(&smcd->list, &smcd_dev_list.list);
 	else
@@ -463,17 +450,7 @@ static void smcd_unregister_dev(struct ism_dev *ism)
 	destroy_workqueue(smcd->event_wq);
 }
 
-/* SMCD Device event handler. Called from ISM device interrupt handler.
- * Parameters are ism device pointer,
- * - event->type (0 --> DMB, 1 --> GID),
- * - event->code (event code),
- * - event->tok (either DMB token when event type 0, or GID when event type 1)
- * - event->time (time of day)
- * - event->info (debug info).
- *
- * Context:
- * - Function called in IRQ context from ISM device driver event handler.
- */
+ 
 static void smcd_handle_event(struct ism_dev *ism, struct ism_event *event)
 {
 	struct smcd_dev *smcd = ism_get_priv(ism, &smc_ism_client);
@@ -481,7 +458,7 @@ static void smcd_handle_event(struct ism_dev *ism, struct ism_event *event)
 
 	if (smcd->going_away)
 		return;
-	/* copy event to event work queue, and let it be handled there */
+	 
 	wrk = kmalloc(sizeof(*wrk), GFP_ATOMIC);
 	if (!wrk)
 		return;
@@ -491,13 +468,7 @@ static void smcd_handle_event(struct ism_dev *ism, struct ism_event *event)
 	queue_work(smcd->event_wq, &wrk->work);
 }
 
-/* SMCD Device interrupt handler. Called from ISM device interrupt handler.
- * Parameters are the ism device pointer, DMB number, and the DMBE bitmask.
- * Find the connection and schedule the tasklet for this connection.
- *
- * Context:
- * - Function called in IRQ context from ISM device driver IRQ handler.
- */
+ 
 static void smcd_handle_irq(struct ism_dev *ism, unsigned int dmbno,
 			    u16 dmbemask)
 {

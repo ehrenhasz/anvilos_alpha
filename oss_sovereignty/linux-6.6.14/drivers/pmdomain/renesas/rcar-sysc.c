@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car SYSC Power management support
- *
- * Copyright (C) 2014  Magnus Damm
- * Copyright (C) 2015-2017 Glider bvba
- */
+
+ 
 
 #include <linux/clk/renesas.h>
 #include <linux/delay.h>
@@ -20,29 +15,24 @@
 
 #include "rcar-sysc.h"
 
-/* SYSC Common */
-#define SYSCSR			0x00	/* SYSC Status Register */
-#define SYSCISR			0x04	/* Interrupt Status Register */
-#define SYSCISCR		0x08	/* Interrupt Status Clear Register */
-#define SYSCIER			0x0c	/* Interrupt Enable Register */
-#define SYSCIMR			0x10	/* Interrupt Mask Register */
+ 
+#define SYSCSR			0x00	 
+#define SYSCISR			0x04	 
+#define SYSCISCR		0x08	 
+#define SYSCIER			0x0c	 
+#define SYSCIMR			0x10	 
 
-/* SYSC Status Register */
-#define SYSCSR_PONENB		1	/* Ready for power resume requests */
-#define SYSCSR_POFFENB		0	/* Ready for power shutoff requests */
+ 
+#define SYSCSR_PONENB		1	 
+#define SYSCSR_POFFENB		0	 
 
-/*
- * Power Control Register Offsets inside the register block for each domain
- * Note: The "CR" registers for ARM cores exist on H1 only
- *	 Use WFI to power off, CPG/APMU to resume ARM cores on R-Car Gen2
- *	 Use PSCI on R-Car Gen3
- */
-#define PWRSR_OFFS		0x00	/* Power Status Register */
-#define PWROFFCR_OFFS		0x04	/* Power Shutoff Control Register */
-#define PWROFFSR_OFFS		0x08	/* Power Shutoff Status Register */
-#define PWRONCR_OFFS		0x0c	/* Power Resume Control Register */
-#define PWRONSR_OFFS		0x10	/* Power Resume Status Register */
-#define PWRER_OFFS		0x14	/* Power Shutoff/Resume Error */
+ 
+#define PWRSR_OFFS		0x00	 
+#define PWROFFCR_OFFS		0x04	 
+#define PWROFFSR_OFFS		0x08	 
+#define PWRONCR_OFFS		0x0c	 
+#define PWRONSR_OFFS		0x10	 
+#define PWRER_OFFS		0x14	 
 
 
 #define SYSCSR_TIMEOUT		100
@@ -54,7 +44,7 @@
 #define SYSCISR_TIMEOUT		1000
 #define SYSCISR_DELAY_US	1
 
-#define RCAR_PD_ALWAYS_ON	32	/* Always-on power area */
+#define RCAR_PD_ALWAYS_ON	32	 
 
 struct rcar_sysc_ch {
 	u16 chan_offs;
@@ -63,7 +53,7 @@ struct rcar_sysc_ch {
 };
 
 static void __iomem *rcar_sysc_base;
-static DEFINE_SPINLOCK(rcar_sysc_lock); /* SMP CPUs + I/O devices */
+static DEFINE_SPINLOCK(rcar_sysc_lock);  
 static u32 rcar_sysc_extmask_offs, rcar_sysc_extmask_val;
 
 static int rcar_sysc_pwr_on_off(const struct rcar_sysc_ch *sysc_ch, bool on)
@@ -80,14 +70,14 @@ static int rcar_sysc_pwr_on_off(const struct rcar_sysc_ch *sysc_ch, bool on)
 		reg_offs = PWROFFCR_OFFS;
 	}
 
-	/* Wait until SYSC is ready to accept a power request */
+	 
 	ret = readl_poll_timeout_atomic(rcar_sysc_base + SYSCSR, val,
 					val & BIT(sr_bit), SYSCSR_DELAY_US,
 					SYSCSR_TIMEOUT);
 	if (ret)
 		return -EAGAIN;
 
-	/* Submit power shutoff or power resume request */
+	 
 	iowrite32(BIT(sysc_ch->chan_bit),
 		  rcar_sysc_base + sysc_ch->chan_offs + reg_offs);
 
@@ -104,18 +94,13 @@ static int rcar_sysc_power(const struct rcar_sysc_ch *sysc_ch, bool on)
 
 	spin_lock_irqsave(&rcar_sysc_lock, flags);
 
-	/*
-	 * Mask external power requests for CPU or 3DG domains
-	 */
+	 
 	if (rcar_sysc_extmask_val) {
 		iowrite32(rcar_sysc_extmask_val,
 			  rcar_sysc_base + rcar_sysc_extmask_offs);
 	}
 
-	/*
-	 * The interrupt source needs to be enabled, but masked, to prevent the
-	 * CPU from receiving it.
-	 */
+	 
 	iowrite32(ioread32(rcar_sysc_base + SYSCIMR) | isr_mask,
 		  rcar_sysc_base + SYSCIMR);
 	iowrite32(ioread32(rcar_sysc_base + SYSCIER) | isr_mask,
@@ -123,7 +108,7 @@ static int rcar_sysc_power(const struct rcar_sysc_ch *sysc_ch, bool on)
 
 	iowrite32(isr_mask, rcar_sysc_base + SYSCISCR);
 
-	/* Submit power shutoff or resume request until it was accepted */
+	 
 	for (k = 0; k < PWRER_RETRIES; k++) {
 		ret = rcar_sysc_pwr_on_off(sysc_ch, on);
 		if (ret)
@@ -142,7 +127,7 @@ static int rcar_sysc_power(const struct rcar_sysc_ch *sysc_ch, bool on)
 		goto out;
 	}
 
-	/* Wait until the power shutoff or resume request has completed * */
+	 
 	ret = readl_poll_timeout_atomic(rcar_sysc_base + SYSCISR, status,
 					status & isr_mask, SYSCISR_DELAY_US,
 					SYSCISR_TIMEOUT);
@@ -210,29 +195,20 @@ static int __init rcar_sysc_pd_setup(struct rcar_sysc_pd *pd)
 	int error;
 
 	if (pd->flags & PD_CPU) {
-		/*
-		 * This domain contains a CPU core and therefore it should
-		 * only be turned off if the CPU is not in use.
-		 */
+		 
 		pr_debug("PM domain %s contains %s\n", name, "CPU");
 		genpd->flags |= GENPD_FLAG_ALWAYS_ON;
 	} else if (pd->flags & PD_SCU) {
-		/*
-		 * This domain contains an SCU and cache-controller, and
-		 * therefore it should only be turned off if the CPU cores are
-		 * not in use.
-		 */
+		 
 		pr_debug("PM domain %s contains %s\n", name, "SCU");
 		genpd->flags |= GENPD_FLAG_ALWAYS_ON;
 	} else if (pd->flags & PD_NO_CR) {
-		/*
-		 * This domain cannot be turned off.
-		 */
+		 
 		genpd->flags |= GENPD_FLAG_ALWAYS_ON;
 	}
 
 	if (!(pd->flags & (PD_CPU | PD_SCU))) {
-		/* Enable Clock Domain for I/O devices */
+		 
 		genpd->flags |= GENPD_FLAG_PM_CLK | GENPD_FLAG_ACTIVE_WAKEUP;
 		if (has_cpg_mstp) {
 			genpd->attach_dev = cpg_mstp_attach_dev;
@@ -247,7 +223,7 @@ static int __init rcar_sysc_pd_setup(struct rcar_sysc_pd *pd)
 	genpd->power_on = rcar_sysc_pd_power_on;
 
 	if (pd->flags & (PD_CPU | PD_NO_CR)) {
-		/* Skip CPUs (handled by SMP code) and areas without control */
+		 
 		pr_debug("%s: Not touching %s\n", __func__, genpd->name);
 		goto finalize;
 	}
@@ -273,7 +249,7 @@ static const struct of_device_id rcar_sysc_matches[] __initconst = {
 #endif
 #ifdef CONFIG_SYSC_R8A7743
 	{ .compatible = "renesas,r8a7743-sysc", .data = &r8a7743_sysc_info },
-	/* RZ/G1N is identical to RZ/G2M w.r.t. power domains. */
+	 
 	{ .compatible = "renesas,r8a7744-sysc", .data = &r8a7743_sysc_info },
 #endif
 #ifdef CONFIG_SYSC_R8A7745
@@ -302,7 +278,7 @@ static const struct of_device_id rcar_sysc_matches[] __initconst = {
 #endif
 #ifdef CONFIG_SYSC_R8A7791
 	{ .compatible = "renesas,r8a7791-sysc", .data = &r8a7791_sysc_info },
-	/* R-Car M2-N is identical to R-Car M2-W w.r.t. power domains. */
+	 
 	{ .compatible = "renesas,r8a7793-sysc", .data = &r8a7791_sysc_info },
 #endif
 #ifdef CONFIG_SYSC_R8A7792
@@ -335,7 +311,7 @@ static const struct of_device_id rcar_sysc_matches[] __initconst = {
 #ifdef CONFIG_SYSC_R8A77995
 	{ .compatible = "renesas,r8a77995-sysc", .data = &r8a77995_sysc_info },
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 
 struct rcar_pm_domains {
@@ -379,7 +355,7 @@ static int __init rcar_sysc_pd_init(void)
 
 	rcar_sysc_base = base;
 
-	/* Optional External Request Mask Register */
+	 
 	rcar_sysc_extmask_offs = info->extmask_offs;
 	rcar_sysc_extmask_val = info->extmask_val;
 
@@ -399,7 +375,7 @@ static int __init rcar_sysc_pd_init(void)
 		size_t n;
 
 		if (!area->name) {
-			/* Skip NULLified area */
+			 
 			continue;
 		}
 
@@ -491,4 +467,4 @@ int rcar_sysc_power_up_cpu(unsigned int cpu)
 {
 	return rcar_sysc_power_cpu(cpu, true);
 }
-#endif /* CONFIG_ARCH_R8A7779 */
+#endif  

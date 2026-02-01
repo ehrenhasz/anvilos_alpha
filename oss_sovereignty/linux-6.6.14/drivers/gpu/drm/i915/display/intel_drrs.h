@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DRRS_H__
 #define __INTEL_DRRS_H__
@@ -27,4 +25,4 @@ void intel_drrs_crtc_init(struct intel_crtc *crtc);
 void intel_drrs_crtc_debugfs_add(struct intel_crtc *crtc);
 void intel_drrs_connector_debugfs_add(struct intel_connector *connector);
 
-#endif /* __INTEL_DRRS_H__ */
+#endif  

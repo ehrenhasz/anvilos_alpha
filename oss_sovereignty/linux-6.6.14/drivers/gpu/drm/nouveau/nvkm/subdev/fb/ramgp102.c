@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include "ram.h"
 
 #include <subdev/bios.h>
@@ -11,8 +11,8 @@ int
 gp102_ram_new(struct nvkm_fb *fb, struct nvkm_ram **pram)
 {
 	enum nvkm_ram_type type = nvkm_fb_bios_memtype(fb->subdev.device->bios);
-	const u32 rsvd_head = ( 256 * 1024); /* vga memory */
-	const u32 rsvd_tail = (1024 * 1024); /* vbios etc */
+	const u32 rsvd_head = ( 256 * 1024);  
+	const u32 rsvd_tail = (1024 * 1024);  
 	u64 size = fb->func->vidmem.size(fb);
 	int ret;
 

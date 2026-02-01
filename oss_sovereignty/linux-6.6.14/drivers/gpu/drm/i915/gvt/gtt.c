@@ -1,37 +1,4 @@
-/*
- * GTT virtualization
- *
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Zhi Wang <zhi.a.wang@intel.com>
- *    Zhenyu Wang <zhenyuw@linux.intel.com>
- *    Xiao Zheng <xiao.zheng@intel.com>
- *
- * Contributors:
- *    Min He <min.he@intel.com>
- *    Bing Niu <bing.niu@intel.com>
- *
- */
+ 
 
 #include "i915_drv.h"
 #include "gvt.h"
@@ -49,10 +16,7 @@
 static bool enable_out_of_sync = false;
 static int preallocated_oos_pages = 8192;
 
-/*
- * validate a gm address and related range size,
- * translate it to host gm address
- */
+ 
 bool intel_gvt_ggtt_validate_range(struct intel_vgpu *vgpu, u64 addr, u32 size)
 {
 	if (size == 0)
@@ -70,7 +34,7 @@ bool intel_gvt_ggtt_validate_range(struct intel_vgpu *vgpu, u64 addr, u32 size)
 	return false;
 }
 
-/* translate a guest gmadr to host gmadr */
+ 
 int intel_gvt_ggtt_gmadr_g2h(struct intel_vgpu *vgpu, u64 g_addr, u64 *h_addr)
 {
 	struct drm_i915_private *i915 = vgpu->gvt->gt->i915;
@@ -88,7 +52,7 @@ int intel_gvt_ggtt_gmadr_g2h(struct intel_vgpu *vgpu, u64 g_addr, u64 *h_addr)
 	return 0;
 }
 
-/* translate a host gmadr to guest gmadr */
+ 
 int intel_gvt_ggtt_gmadr_h2g(struct intel_vgpu *vgpu, u64 h_addr, u64 *g_addr)
 {
 	struct drm_i915_private *i915 = vgpu->gvt->gt->i915;
@@ -156,21 +120,7 @@ int intel_gvt_ggtt_h2g_index(struct intel_vgpu *vgpu, unsigned long h_index,
 	memcpy(&(e)->val64, &v, sizeof(v)); \
 } while (0)
 
-/*
- * Mappings between GTT_TYPE* enumerations.
- * Following information can be found according to the given type:
- * - type of next level page table
- * - type of entry inside this level page table
- * - type of entry with PSE set
- *
- * If the given type doesn't have such a kind of information,
- * e.g. give a l4 root entry type, then request to get its PSE type,
- * give a PTE page table type, then request to get its next level page
- * table type, as we know l4 root entry doesn't have a PSE bit,
- * and a PTE page table doesn't have a next level page table type,
- * GTT_TYPE_INVALID will be returned. This is useful when traversing a
- * page table.
- */
+ 
 
 struct gtt_type_table_entry {
 	int entry_type;
@@ -228,7 +178,7 @@ static const struct gtt_type_table_entry gtt_type_table[] = {
 			GTT_TYPE_PPGTT_PDE_PT,
 			GTT_TYPE_PPGTT_PTE_PT,
 			GTT_TYPE_PPGTT_PTE_2M_ENTRY),
-	/* We take IPS bit as 'PSE' for PTE level. */
+	 
 	GTT_TYPE_TABLE_ENTRY(GTT_TYPE_PPGTT_PTE_PT,
 			GTT_TYPE_PPGTT_PTE_4K_ENTRY,
 			GTT_TYPE_PPGTT_PTE_PT,
@@ -355,7 +305,7 @@ static inline int gtt_set_entry64(void *pt,
 #define ADDR_4K_MASK	GENMASK_ULL(GTT_HAW - 1, 12)
 
 #define GTT_SPTE_FLAG_MASK GENMASK_ULL(62, 52)
-#define GTT_SPTE_FLAG_64K_SPLITED BIT(52) /* splited 64K gtt entry */
+#define GTT_SPTE_FLAG_64K_SPLITED BIT(52)  
 
 #define GTT_64K_PTE_STRIDE 16
 
@@ -434,11 +384,7 @@ static void gen8_gtt_clear_ips(struct intel_gvt_gtt_entry *e)
 
 static bool gen8_gtt_test_present(struct intel_gvt_gtt_entry *e)
 {
-	/*
-	 * i915 writes PDP root pointer registers without present bit,
-	 * it also works, so we need to treat root pointer entry
-	 * specifically.
-	 */
+	 
 	if (e->type == GTT_TYPE_PPGTT_ROOT_L3_ENTRY
 			|| e->type == GTT_TYPE_PPGTT_ROOT_L4_ENTRY)
 		return (e->val64 != 0);
@@ -471,9 +417,7 @@ static void gen8_gtt_clear_64k_splited(struct intel_gvt_gtt_entry *e)
 	e->val64 &= ~GTT_SPTE_FLAG_64K_SPLITED;
 }
 
-/*
- * Per-platform GMA routines.
- */
+ 
 static unsigned long gma_to_ggtt_pte_index(unsigned long gma)
 {
 	unsigned long x = (gma >> I915_GTT_PAGE_SHIFT);
@@ -522,7 +466,7 @@ static const struct intel_gvt_gtt_gma_ops gen8_gtt_gma_ops = {
 	.gma_to_pml4_index = gen8_gma_to_pml4_index,
 };
 
-/* Update entry type per pse and ips bit. */
+ 
 static void update_entry_type_for_real(const struct intel_gvt_gtt_pte_ops *pte_ops,
 	struct intel_gvt_gtt_entry *entry, bool ips)
 {
@@ -543,9 +487,7 @@ static void update_entry_type_for_real(const struct intel_gvt_gtt_pte_ops *pte_o
 	GEM_BUG_ON(entry->type == GTT_TYPE_INVALID);
 }
 
-/*
- * MM helpers.
- */
+ 
 static void _ppgtt_get_root_entry(struct intel_vgpu_mm *mm,
 		struct intel_gvt_gtt_entry *entry, unsigned long index,
 		bool guest)
@@ -642,9 +584,7 @@ static void ggtt_set_host_entry(struct intel_vgpu_mm *mm,
 	pte_ops->set_entry(NULL, entry, index, false, 0, mm->vgpu);
 }
 
-/*
- * PPGTT shadow page table helpers.
- */
+ 
 static inline int ppgtt_spt_get_entry(
 		struct intel_vgpu_ppgtt_spt *spt,
 		void *page_table, int type,
@@ -796,7 +736,7 @@ static int ppgtt_write_protection_handler(
 	return ret;
 }
 
-/* Find a spt by guest gfn. */
+ 
 static struct intel_vgpu_ppgtt_spt *intel_vgpu_find_spt_by_gfn(
 		struct intel_vgpu *vgpu, unsigned long gfn)
 {
@@ -809,7 +749,7 @@ static struct intel_vgpu_ppgtt_spt *intel_vgpu_find_spt_by_gfn(
 	return NULL;
 }
 
-/* Find the spt by shadow page mfn. */
+ 
 static inline struct intel_vgpu_ppgtt_spt *intel_vgpu_find_spt_by_mfn(
 		struct intel_vgpu *vgpu, unsigned long mfn)
 {
@@ -818,7 +758,7 @@ static inline struct intel_vgpu_ppgtt_spt *intel_vgpu_find_spt_by_mfn(
 
 static int reclaim_one_ppgtt_mm(struct intel_gvt *gvt);
 
-/* Allocate shadow page table without guest page. */
+ 
 static struct intel_vgpu_ppgtt_spt *ppgtt_alloc_spt(
 		struct intel_vgpu *vgpu, enum intel_gvt_gtt_type type)
 {
@@ -841,9 +781,7 @@ retry:
 	atomic_set(&spt->refcount, 1);
 	INIT_LIST_HEAD(&spt->post_shadow_list);
 
-	/*
-	 * Init shadow_page.
-	 */
+	 
 	spt->shadow_page.type = type;
 	daddr = dma_map_page(kdev, spt->shadow_page.page,
 			     0, 4096, DMA_BIDIRECTIONAL);
@@ -868,7 +806,7 @@ err_free_spt:
 	return ERR_PTR(ret);
 }
 
-/* Allocate shadow page table associated with specific gfn. */
+ 
 static struct intel_vgpu_ppgtt_spt *ppgtt_alloc_spt_gfn(
 		struct intel_vgpu *vgpu, enum intel_gvt_gtt_type type,
 		unsigned long gfn, bool guest_pde_ips)
@@ -880,9 +818,7 @@ static struct intel_vgpu_ppgtt_spt *ppgtt_alloc_spt_gfn(
 	if (IS_ERR(spt))
 		return spt;
 
-	/*
-	 * Init guest_page.
-	 */
+	 
 	ret = intel_vgpu_register_page_track(vgpu, gfn,
 			ppgtt_write_protection_handler, spt);
 	if (ret) {
@@ -988,7 +924,7 @@ static inline void ppgtt_invalidate_pte(struct intel_vgpu_ppgtt_spt *spt,
 	pfn = ops->get_pfn(entry);
 	type = spt->shadow_page.type;
 
-	/* Uninitialized spte or unshadowed spte. */
+	 
 	if (!pfn || pfn == vgpu->gtt.scratch_pt[type].page_mfn)
 		return;
 
@@ -1015,7 +951,7 @@ static int ppgtt_invalidate_spt(struct intel_vgpu_ppgtt_spt *spt)
 			ppgtt_invalidate_pte(spt, &e);
 			break;
 		case GTT_TYPE_PPGTT_PTE_64K_ENTRY:
-			/* We don't setup 64K shadow entry so far. */
+			 
 			WARN(1, "suspicious 64K gtt entry\n");
 			continue;
 		case GTT_TYPE_PPGTT_PTE_2M_ENTRY:
@@ -1058,7 +994,7 @@ static bool vgpu_ips_enabled(struct intel_vgpu *vgpu)
 
 		return ips == GAMW_ECO_ENABLE_64K_IPS_FIELD;
 	} else if (GRAPHICS_VER(dev_priv) >= 11) {
-		/* 64K paging only controlled by IPS bit in PTE now. */
+		 
 		return true;
 	} else
 		return false;
@@ -1138,7 +1074,7 @@ static inline void ppgtt_generate_shadow_entry(struct intel_gvt_gtt_entry *se,
 	se->type = ge->type;
 	se->val64 = ge->val64;
 
-	/* Because we always split 64KB pages, so clear IPS in shadow PDE. */
+	 
 	if (se->type == GTT_TYPE_PPGTT_PDE_ENTRY)
 		ops->clear_ips(se);
 
@@ -1172,7 +1108,7 @@ static int split_2MB_gtt_entry(struct intel_vgpu *vgpu,
 			goto err;
 		sub_se.val64 = se->val64;
 
-		/* Copy the PAT field from PDE. */
+		 
 		sub_se.val64 &= ~_PAGE_PAT;
 		sub_se.val64 |= (se->val64 & _PAGE_PAT_LARGE) >> 5;
 
@@ -1180,7 +1116,7 @@ static int split_2MB_gtt_entry(struct intel_vgpu *vgpu,
 		ppgtt_set_shadow_entry(sub_spt, &sub_se, sub_index);
 	}
 
-	/* Clear dirty field. */
+	 
 	se->val64 &= ~_PAGE_DIRTY;
 
 	ops->clear_pse(se);
@@ -1189,12 +1125,12 @@ static int split_2MB_gtt_entry(struct intel_vgpu *vgpu,
 	ppgtt_set_shadow_entry(spt, se, index);
 	return 0;
 err:
-	/* Cancel the existing addess mappings of DMA addr. */
+	 
 	for_each_present_shadow_entry(sub_spt, &sub_se, sub_index) {
 		gvt_vdbg_mm("invalidate 4K entry\n");
 		ppgtt_invalidate_pte(sub_spt, &sub_se);
 	}
-	/* Release the new allocated spt. */
+	 
 	trace_spt_change(sub_spt->vgpu->id, "release", sub_spt,
 		sub_spt->guest_page.gfn, sub_spt->shadow_page.type);
 	ppgtt_free_spt(sub_spt);
@@ -1256,11 +1192,7 @@ static int ppgtt_populate_shadow_entry(struct intel_vgpu *vgpu,
 		break;
 	case GTT_TYPE_PPGTT_PTE_64K_ENTRY:
 		gvt_vdbg_mm("shadow 64K gtt entry\n");
-		/*
-		 * The layout of 64K page is special, the page size is
-		 * controlled by uper PDE. To be simple, we always split
-		 * 64K page to smaller 4K pages in shadow PT.
-		 */
+		 
 		return split_64KB_gtt_entry(vgpu, spt, index, &se);
 	case GTT_TYPE_PPGTT_PTE_2M_ENTRY:
 		gvt_vdbg_mm("shadow 2M gtt entry\n");
@@ -1277,7 +1209,7 @@ static int ppgtt_populate_shadow_entry(struct intel_vgpu *vgpu,
 		return -EINVAL;
 	}
 
-	/* Successfully shadowed a 4K or 2M page (without splitting). */
+	 
 	pte_ops->set_pfn(&se, dma_addr >> PAGE_SHIFT);
 	ppgtt_set_shadow_entry(spt, &se, index);
 	return 0;
@@ -1349,7 +1281,7 @@ static int ppgtt_handle_guest_entry_removal(struct intel_vgpu_ppgtt_spt *spt,
 		if (ret)
 			goto fail;
 	} else {
-		/* We don't setup 64K shadow entry so far. */
+		 
 		WARN(se->type == GTT_TYPE_PPGTT_PTE_64K_ENTRY,
 		     "suspicious 64K entry\n");
 		ppgtt_invalidate_pte(spt, se);
@@ -1535,16 +1467,7 @@ static int ppgtt_set_guest_page_oos(struct intel_vgpu_ppgtt_spt *spt)
 	return intel_vgpu_disable_page_track(spt->vgpu, spt->guest_page.gfn);
 }
 
-/**
- * intel_vgpu_sync_oos_pages - sync all the out-of-synced shadow for vGPU
- * @vgpu: a vGPU
- *
- * This function is called before submitting a guest workload to host,
- * to sync all the out-of-synced shadow for vGPU
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_sync_oos_pages(struct intel_vgpu *vgpu)
 {
 	struct list_head *pos, *n;
@@ -1564,9 +1487,7 @@ int intel_vgpu_sync_oos_pages(struct intel_vgpu *vgpu)
 	return 0;
 }
 
-/*
- * The heart of PPGTT shadow page table.
- */
+ 
 static int ppgtt_handle_guest_write_page_table(
 		struct intel_vgpu_ppgtt_spt *spt,
 		struct intel_gvt_gtt_entry *we, unsigned long index)
@@ -1580,11 +1501,7 @@ static int ppgtt_handle_guest_write_page_table(
 
 	new_present = ops->test_present(we);
 
-	/*
-	 * Adding the new entry first and then removing the old one, that can
-	 * guarantee the ppgtt table is validated during the window between
-	 * adding and removal.
-	 */
+	 
 	ppgtt_get_shadow_entry(spt, &old_se, index);
 
 	if (new_present) {
@@ -1598,7 +1515,7 @@ static int ppgtt_handle_guest_write_page_table(
 		goto fail;
 
 	if (!new_present) {
-		/* For 64KB splited entries, we need clear them all. */
+		 
 		if (ops->test_64k_splited(&old_se) &&
 		    !(index % GTT_64K_PTE_STRIDE)) {
 			gvt_vdbg_mm("remove splited 64K shadow entries\n");
@@ -1648,16 +1565,7 @@ static void ppgtt_set_post_shadow(struct intel_vgpu_ppgtt_spt *spt,
 			&spt->vgpu->gtt.post_shadow_list_head);
 }
 
-/**
- * intel_vgpu_flush_post_shadow - flush the post shadow transactions
- * @vgpu: a vGPU
- *
- * This function is called before submitting a guest workload to host,
- * to flush all the post shadows for a vGPU.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_flush_post_shadow(struct intel_vgpu *vgpu)
 {
 	struct list_head *pos, *n;
@@ -1700,11 +1608,7 @@ static int ppgtt_handle_guest_write_page_table_bytes(
 
 	ppgtt_get_guest_entry(spt, &we, index);
 
-	/*
-	 * For page table which has 64K gtt entry, only PTE#0, PTE#16,
-	 * PTE#32, ... PTE#496 are used. Unused PTEs update should be
-	 * ignored.
-	 */
+	 
 	if (we.type == GTT_TYPE_PPGTT_PTE_64K_ENTRY &&
 	    (index % GTT_64K_PTE_STRIDE)) {
 		gvt_vdbg_mm("Ignore write to unused PTE entry, index %lu\n",
@@ -1846,17 +1750,7 @@ static void vgpu_free_mm(struct intel_vgpu_mm *mm)
 	kfree(mm);
 }
 
-/**
- * intel_vgpu_create_ppgtt_mm - create a ppgtt mm object for a vGPU
- * @vgpu: a vGPU
- * @root_entry_type: ppgtt root entry type
- * @pdps: guest pdps.
- *
- * This function is used to create a ppgtt mm object for a vGPU.
- *
- * Returns:
- * Zero on success, negative error code in pointer if failed.
- */
+ 
 struct intel_vgpu_mm *intel_vgpu_create_ppgtt_mm(struct intel_vgpu *vgpu,
 		enum intel_gvt_gtt_type root_entry_type, u64 pdps[])
 {
@@ -1938,13 +1832,7 @@ static struct intel_vgpu_mm *intel_vgpu_create_ggtt_mm(struct intel_vgpu *vgpu)
 	return mm;
 }
 
-/**
- * _intel_vgpu_mm_release - destroy a mm object
- * @mm_ref: a kref object
- *
- * This function is used to destroy a mm object for vGPU
- *
- */
+ 
 void _intel_vgpu_mm_release(struct kref *mm_ref)
 {
 	struct intel_vgpu_mm *mm = container_of(mm_ref, typeof(*mm), ref);
@@ -1969,28 +1857,13 @@ void _intel_vgpu_mm_release(struct kref *mm_ref)
 	vgpu_free_mm(mm);
 }
 
-/**
- * intel_vgpu_unpin_mm - decrease the pin count of a vGPU mm object
- * @mm: a vGPU mm object
- *
- * This function is called when user doesn't want to use a vGPU mm object
- */
+ 
 void intel_vgpu_unpin_mm(struct intel_vgpu_mm *mm)
 {
 	atomic_dec_if_positive(&mm->pincount);
 }
 
-/**
- * intel_vgpu_pin_mm - increase the pin count of a vGPU mm object
- * @mm: target vgpu mm
- *
- * This function is called when user wants to use a vGPU mm object. If this
- * mm object hasn't been shadowed yet, the shadow will be populated at this
- * time.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_pin_mm(struct intel_vgpu_mm *mm)
 {
 	int ret;
@@ -2033,9 +1906,7 @@ static int reclaim_one_ppgtt_mm(struct intel_gvt *gvt)
 	return 0;
 }
 
-/*
- * GMA translation APIs.
- */
+ 
 static inline int ppgtt_get_next_level_entry(struct intel_vgpu_mm *mm,
 		struct intel_gvt_gtt_entry *e, unsigned long index, bool guest)
 {
@@ -2054,17 +1925,7 @@ static inline int ppgtt_get_next_level_entry(struct intel_vgpu_mm *mm,
 	return 0;
 }
 
-/**
- * intel_vgpu_gma_to_gpa - translate a gma to GPA
- * @mm: mm object. could be a PPGTT or GGTT mm object
- * @gma: graphics memory address in this mm object
- *
- * This function is used to translate a graphics memory address in specific
- * graphics memory space to guest physical address.
- *
- * Returns:
- * Guest physical address on success, INTEL_GVT_INVALID_ADDR if failed.
- */
+ 
 unsigned long intel_vgpu_gma_to_gpa(struct intel_vgpu_mm *mm, unsigned long gma)
 {
 	struct intel_vgpu *vgpu = mm->vgpu;
@@ -2114,7 +1975,7 @@ unsigned long intel_vgpu_gma_to_gpa(struct intel_vgpu_mm *mm, unsigned long gma)
 			GEM_BUG_ON(1);
 		}
 
-		/* walk the shadow page table and get gpa from guest entry */
+		 
 		for (i = 0; i < levels; i++) {
 			ret = ppgtt_get_next_level_entry(mm, &e, gma_index[i],
 				(i == levels - 1));
@@ -2165,18 +2026,7 @@ static int emulate_ggtt_mmio_read(struct intel_vgpu *vgpu,
 	return 0;
 }
 
-/**
- * intel_vgpu_emulate_ggtt_mmio_read - emulate GTT MMIO register read
- * @vgpu: a vGPU
- * @off: register offset
- * @p_data: data will be returned to guest
- * @bytes: data length
- *
- * This function is used to emulate the GTT MMIO register read
- *
- * Returns:
- * Zero on success, error code if failed.
- */
+ 
 int intel_vgpu_emulate_ggtt_mmio_read(struct intel_vgpu *vgpu, unsigned int off,
 	void *p_data, unsigned int bytes)
 {
@@ -2223,7 +2073,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgpu *vgpu, unsigned int off,
 
 	gma = g_gtt_index << I915_GTT_PAGE_SHIFT;
 
-	/* the VM may configure the whole GM space when ballooning is used */
+	 
 	if (!vgpu_gmadr_is_valid(vgpu, gma))
 		return 0;
 
@@ -2231,10 +2081,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgpu *vgpu, unsigned int off,
 	memcpy((void *)&e.val64 + (off & (info->gtt_entry_size - 1)), p_data,
 			bytes);
 
-	/* If ggtt entry size is 8 bytes, and it's split into two 4 bytes
-	 * write, save the first 4 bytes in a list and update virtual
-	 * PTE. Only update shadow PTE when the second 4 bytes comes.
-	 */
+	 
 	if (bytes < info->gtt_entry_size) {
 		bool found = false;
 
@@ -2243,7 +2090,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgpu *vgpu, unsigned int off,
 			if (g_gtt_index == pos->offset >>
 					info->gtt_entry_size_shift) {
 				if (off != pos->offset) {
-					/* the second partial part*/
+					 
 					int last_off = pos->offset &
 						(info->gtt_entry_size - 1);
 
@@ -2257,7 +2104,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgpu *vgpu, unsigned int off,
 					break;
 				}
 
-				/* update of the first partial part */
+				 
 				pos->data = e.val64;
 				ggtt_set_guest_entry(ggtt_mm, &e, g_gtt_index);
 				return 0;
@@ -2265,7 +2112,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgpu *vgpu, unsigned int off,
 		}
 
 		if (!found) {
-			/* the first partial part */
+			 
 			partial_pte = kzalloc(sizeof(*partial_pte), GFP_KERNEL);
 			if (!partial_pte)
 				return -ENOMEM;
@@ -2286,10 +2133,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgpu *vgpu, unsigned int off,
 						   &dma_addr);
 		if (ret) {
 			gvt_vgpu_err("fail to populate guest ggtt entry\n");
-			/* guest driver may read/write the entry when partial
-			 * update the entry in this situation p2m will fail
-			 * setting the shadow entry to point to a scratch page
-			 */
+			 
 			ops->set_pfn(&m, gvt->gtt.scratch_mfn);
 		} else
 			ops->set_pfn(&m, dma_addr >> PAGE_SHIFT);
@@ -2308,18 +2152,7 @@ static int emulate_ggtt_mmio_write(struct intel_vgpu *vgpu, unsigned int off,
 	return 0;
 }
 
-/*
- * intel_vgpu_emulate_ggtt_mmio_write - emulate GTT MMIO register write
- * @vgpu: a vGPU
- * @off: register offset
- * @p_data: data from guest write
- * @bytes: data length
- *
- * This function is used to emulate the GTT MMIO register write
- *
- * Returns:
- * Zero on success, error code if failed.
- */
+ 
 int intel_vgpu_emulate_ggtt_mmio_write(struct intel_vgpu *vgpu,
 		unsigned int off, void *p_data, unsigned int bytes)
 {
@@ -2335,10 +2168,7 @@ int intel_vgpu_emulate_ggtt_mmio_write(struct intel_vgpu *vgpu,
 	off -= info->gtt_start_offset;
 	ret = emulate_ggtt_mmio_write(vgpu, off, p_data, bytes);
 
-	/* if ggtt of last submitted context is written,
-	 * that context is probably got unpinned.
-	 * Set last shadowed ctx to invalid.
-	 */
+	 
 	for_each_engine(engine, vgpu->gvt->gt, i) {
 		if (!s->last_ctx[i].valid)
 			continue;
@@ -2384,14 +2214,7 @@ static int alloc_scratch_pages(struct intel_vgpu *vgpu,
 	gvt_dbg_mm("vgpu%d create scratch_pt: type %d mfn=0x%lx\n",
 			vgpu->id, type, gtt->scratch_pt[type].page_mfn);
 
-	/* Build the tree by full filled the scratch pt with the entries which
-	 * point to the next level scratch pt or scratch page. The
-	 * scratch_pt[type] indicate the scratch pt/scratch page used by the
-	 * 'type' pt.
-	 * e.g. scratch_pt[GTT_TYPE_PPGTT_PDE_PT] is used by
-	 * GTT_TYPE_PPGTT_PDE_PT level pt, that means this scratch_pt it self
-	 * is GTT_TYPE_PPGTT_PTE_PT, and full filled by scratch page mfn.
-	 */
+	 
 	if (type > GTT_TYPE_PPGTT_PTE_PT) {
 		struct intel_gvt_gtt_entry se;
 
@@ -2399,9 +2222,7 @@ static int alloc_scratch_pages(struct intel_vgpu *vgpu,
 		se.type = get_entry_type(type - 1);
 		ops->set_pfn(&se, gtt->scratch_pt[type - 1].page_mfn);
 
-		/* The entry parameters like present/writeable/cache type
-		 * set to the same as i915's scratch page tree.
-		 */
+		 
 		se.val64 |= GEN8_PAGE_PRESENT | GEN8_PAGE_RW;
 		if (type == GTT_TYPE_PPGTT_PDE_PT)
 			se.val64 |= PPAT_CACHED;
@@ -2450,16 +2271,7 @@ err:
 	return ret;
 }
 
-/**
- * intel_vgpu_init_gtt - initialize per-vGPU graphics memory virulization
- * @vgpu: a vGPU
- *
- * This function is used to initialize per-vGPU graphics memory virtualization
- * components.
- *
- * Returns:
- * Zero on success, error code if failed.
- */
+ 
 int intel_vgpu_init_gtt(struct intel_vgpu *vgpu)
 {
 	struct intel_vgpu_gtt *gtt = &vgpu->gtt;
@@ -2517,16 +2329,7 @@ static void intel_vgpu_destroy_ggtt_mm(struct intel_vgpu *vgpu)
 	vgpu->gtt.ggtt_mm = NULL;
 }
 
-/**
- * intel_vgpu_clean_gtt - clean up per-vGPU graphics memory virulization
- * @vgpu: a vGPU
- *
- * This function is used to clean up per-vGPU graphics memory virtualization
- * components.
- *
- * Returns:
- * Zero on success, error code if failed.
- */
+ 
 void intel_vgpu_clean_gtt(struct intel_vgpu *vgpu)
 {
 	intel_vgpu_destroy_all_ppgtt_mm(vgpu);
@@ -2588,16 +2391,7 @@ fail:
 	return ret;
 }
 
-/**
- * intel_vgpu_find_ppgtt_mm - find a PPGTT mm object
- * @vgpu: a vGPU
- * @pdps: pdp root array
- *
- * This function is used to find a PPGTT mm object from mm object pool
- *
- * Returns:
- * pointer to mm object on success, NULL if failed.
- */
+ 
 struct intel_vgpu_mm *intel_vgpu_find_ppgtt_mm(struct intel_vgpu *vgpu,
 		u64 pdps[])
 {
@@ -2624,17 +2418,7 @@ struct intel_vgpu_mm *intel_vgpu_find_ppgtt_mm(struct intel_vgpu *vgpu,
 	return NULL;
 }
 
-/**
- * intel_vgpu_get_ppgtt_mm - get or create a PPGTT mm object.
- * @vgpu: a vGPU
- * @root_entry_type: ppgtt root entry type
- * @pdps: guest pdps
- *
- * This function is used to find or create a PPGTT mm object from a guest.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 struct intel_vgpu_mm *intel_vgpu_get_ppgtt_mm(struct intel_vgpu *vgpu,
 		enum intel_gvt_gtt_type root_entry_type, u64 pdps[])
 {
@@ -2651,16 +2435,7 @@ struct intel_vgpu_mm *intel_vgpu_get_ppgtt_mm(struct intel_vgpu *vgpu,
 	return mm;
 }
 
-/**
- * intel_vgpu_put_ppgtt_mm - find and put a PPGTT mm object.
- * @vgpu: a vGPU
- * @pdps: guest pdps
- *
- * This function is used to find a PPGTT mm object from a guest and destroy it.
- *
- * Returns:
- * Zero on success, negative error code if failed.
- */
+ 
 int intel_vgpu_put_ppgtt_mm(struct intel_vgpu *vgpu, u64 pdps[])
 {
 	struct intel_vgpu_mm *mm;
@@ -2674,16 +2449,7 @@ int intel_vgpu_put_ppgtt_mm(struct intel_vgpu *vgpu, u64 pdps[])
 	return 0;
 }
 
-/**
- * intel_gvt_init_gtt - initialize mm components of a GVT device
- * @gvt: GVT device
- *
- * This function is called at the initialization stage, to initialize
- * the mm components of a GVT device.
- *
- * Returns:
- * zero on success, negative error code if failed.
- */
+ 
 int intel_gvt_init_gtt(struct intel_gvt *gvt)
 {
 	int ret;
@@ -2727,14 +2493,7 @@ int intel_gvt_init_gtt(struct intel_gvt *gvt)
 	return 0;
 }
 
-/**
- * intel_gvt_clean_gtt - clean up mm components of a GVT device
- * @gvt: GVT device
- *
- * This function is called at the driver unloading stage, to clean up
- * the mm components of a GVT device.
- *
- */
+ 
 void intel_gvt_clean_gtt(struct intel_gvt *gvt)
 {
 	struct device *dev = gvt->gt->i915->drm.dev;
@@ -2749,13 +2508,7 @@ void intel_gvt_clean_gtt(struct intel_gvt *gvt)
 		clean_spt_oos(gvt);
 }
 
-/**
- * intel_vgpu_invalidate_ppgtt - invalidate PPGTT instances
- * @vgpu: a vGPU
- *
- * This function is called when invalidate all PPGTT instances of a vGPU.
- *
- */
+ 
 void intel_vgpu_invalidate_ppgtt(struct intel_vgpu *vgpu)
 {
 	struct list_head *pos, *n;
@@ -2773,15 +2526,7 @@ void intel_vgpu_invalidate_ppgtt(struct intel_vgpu *vgpu)
 	}
 }
 
-/**
- * intel_vgpu_reset_ggtt - reset the GGTT entry
- * @vgpu: a vGPU
- * @invalidate_old: invalidate old entries
- *
- * This function is called at the vGPU create stage
- * to reset all the GGTT entries.
- *
- */
+ 
 void intel_vgpu_reset_ggtt(struct intel_vgpu *vgpu, bool invalidate_old)
 {
 	struct intel_gvt *gvt = vgpu->gvt;
@@ -2817,14 +2562,7 @@ void intel_vgpu_reset_ggtt(struct intel_vgpu *vgpu, bool invalidate_old)
 	ggtt_invalidate(gvt->gt);
 }
 
-/**
- * intel_gvt_restore_ggtt - restore all vGPU's ggtt entries
- * @gvt: intel gvt device
- *
- * This function is called at driver resume stage to restore
- * GGTT entries of every vGPU.
- *
- */
+ 
 void intel_gvt_restore_ggtt(struct intel_gvt *gvt)
 {
 	struct intel_vgpu *vgpu;
@@ -2833,7 +2571,7 @@ void intel_gvt_restore_ggtt(struct intel_gvt *gvt)
 	gen8_pte_t pte;
 	u32 idx, num_low, num_hi, offset;
 
-	/* Restore dirty host ggtt for all vGPUs */
+	 
 	idr_for_each_entry(&(gvt)->vgpu_idr, vgpu, id) {
 		mm = vgpu->gtt.ggtt_mm;
 

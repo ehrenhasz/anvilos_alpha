@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
 
 #include "mipi-phy.h"
 
-/*
- * Default D-PHY timings based on MIPI D-PHY specification. Derived from the
- * valid ranges specified in Section 6.9, Table 14, Page 40 of the D-PHY
- * specification (v1.2) with minor adjustments.
- */
+ 
 int mipi_dphy_timing_get_default(struct mipi_dphy_timing *timing,
 				 unsigned long period)
 {
@@ -32,17 +26,7 @@ int mipi_dphy_timing_get_default(struct mipi_dphy_timing *timing,
 	timing->hssettle = 85 + 6 * period;
 	timing->hsskip = 40;
 
-	/*
-	 * The MIPI D-PHY specification (Section 6.9, v1.2, Table 14, Page 40)
-	 * contains this formula as:
-	 *
-	 *     T_HS-TRAIL = max(n * 8 * period, 60 + n * 4 * period)
-	 *
-	 * where n = 1 for forward-direction HS mode and n = 4 for reverse-
-	 * direction HS mode. There's only one setting and this function does
-	 * not parameterize on anything other that period, so this code will
-	 * assumes that reverse-direction HS mode is supported and uses n = 4.
-	 */
+	 
 	timing->hstrail = max(4 * 8 * period, 60 + 4 * 4 * period);
 
 	timing->init = 100000;
@@ -55,10 +39,7 @@ int mipi_dphy_timing_get_default(struct mipi_dphy_timing *timing,
 	return 0;
 }
 
-/*
- * Validate D-PHY timing according to MIPI D-PHY specification (v1.2, Section
- * Section 6.9 "Global Operation Timing Parameters").
- */
+ 
 int mipi_dphy_timing_validate(struct mipi_dphy_timing *timing,
 			      unsigned long period)
 {

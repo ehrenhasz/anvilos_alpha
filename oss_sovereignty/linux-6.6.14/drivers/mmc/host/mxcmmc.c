@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/mmc/host/mxcmmc.c - Freescale i.MX MMCI driver
- *
- *  This is a driver for the SDHC controller found in Freescale MX2/MX3
- *  SoCs. It is basically the same hardware as found on MX1 (imxmmc.c).
- *  Unlike the hardware found on MX1, this hardware just works and does
- *  not need all the quirks found in imxmmc.c, hence the separate driver.
- *
- *  Copyright (C) 2008 Sascha Hauer, Pengutronix <s.hauer@pengutronix.de>
- *  Copyright (C) 2006 Pavel Pisa, PiKRON <ppisa@pikron.com>
- *
- *  derived from pxamci.c by Russell King
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -167,7 +155,7 @@ static const struct of_device_id mxcmci_of_match[] = {
 		.compatible = "fsl,mpc5121-sdhc",
 		.data = (void *) MPC512X_MMC,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, mxcmci_of_match);
@@ -242,7 +230,7 @@ static void mxcmci_softreset(struct mxcmci_host *host)
 
 	dev_dbg(mmc_dev(host->mmc), "mxcmci_softreset\n");
 
-	/* reset sequence */
+	 
 	mxcmci_writew(host, STR_STP_CLK_RESET, MMC_REG_STR_STP_CLK);
 	mxcmci_writew(host, STR_STP_CLK_RESET | STR_STP_CLK_START_CLK,
 			MMC_REG_STR_STP_CLK);
@@ -325,7 +313,7 @@ static int mxcmci_setup_data(struct mxcmci_host *host, struct mmc_data *data)
 		dma_unmap_sg(host->dma->device->dev, data->sg, data->sg_len,
 				host->dma_dir);
 		host->do_dma = 0;
-		return 0; /* Fall back to PIO */
+		return 0;  
 	}
 	wmb();
 
@@ -364,14 +352,14 @@ static int mxcmci_start_cmd(struct mxcmci_host *host, struct mmc_command *cmd,
 	host->cmd = cmd;
 
 	switch (mmc_resp_type(cmd)) {
-	case MMC_RSP_R1: /* short CRC, OPCODE */
-	case MMC_RSP_R1B:/* short CRC, OPCODE, BUSY */
+	case MMC_RSP_R1:  
+	case MMC_RSP_R1B: 
 		cmdat |= CMD_DAT_CONT_RESPONSE_48BIT_CRC;
 		break;
-	case MMC_RSP_R2: /* long 136 bit + CRC */
+	case MMC_RSP_R2:  
 		cmdat |= CMD_DAT_CONT_RESPONSE_136BIT;
 		break;
-	case MMC_RSP_R3: /* short */
+	case MMC_RSP_R3:  
 		cmdat |= CMD_DAT_CONT_RESPONSE_48BIT;
 		break;
 	case MMC_RSP_NONE:
@@ -445,7 +433,7 @@ static int mxcmci_finish_data(struct mxcmci_host *host, unsigned int stat)
 			data->error = -EILSEQ;
 		} else if (stat & STATUS_CRC_WRITE_ERR) {
 			u32 err_code = (stat >> 9) & 0x3;
-			if (err_code == 2) { /* No CRC response */
+			if (err_code == 2) {  
 				dev_err(mmc_dev(host->mmc),
 					"%s: No CRC -ETIMEDOUT\n", __func__);
 				data->error = -ETIMEDOUT;
@@ -653,7 +641,7 @@ static void mxcmci_data_done(struct mxcmci_host *host, unsigned int stat)
 
 	req = host->req;
 	if (!req->stop)
-		host->req = NULL; /* we will handle finish req below */
+		host->req = NULL;  
 
 	data_error = mxcmci_finish_data(host, stat);
 
@@ -685,10 +673,7 @@ static void mxcmci_cmd_done(struct mxcmci_host *host, unsigned int stat)
 		return;
 	}
 
-	/* For the DMA case the DMA engine handles the data transfer
-	 * automatically. For non DMA we have to do it ourselves.
-	 * Don't do it in interrupt context though.
-	 */
+	 
 	if (!mxcmci_use_dma(host) && host->data)
 		schedule_work(&host->datawork);
 
@@ -824,10 +809,7 @@ static void mxcmci_set_ios(struct mmc_host *mmc, struct mmc_ios *ios)
 	struct mxcmci_host *host = mmc_priv(mmc);
 	int burstlen, ret;
 
-	/*
-	 * use burstlen of 64 (16 words) in 4 bit mode (--> reg value  0)
-	 * use burstlen of 16 (4 words) in 1 bit mode (--> reg value 16)
-	 */
+	 
 	if (ios->bus_width == MMC_BUS_WIDTH_4)
 		burstlen = 16;
 	else
@@ -884,11 +866,7 @@ static int mxcmci_get_ro(struct mmc_host *mmc)
 
 	if (host->pdata && host->pdata->get_ro)
 		return !!host->pdata->get_ro(mmc_dev(mmc));
-	/*
-	 * If board doesn't support read only detection (no mmc_gpio
-	 * context or gpio is invalid), then let the mmc core decide
-	 * what to do.
-	 */
+	 
 	return mmc_gpio_get_ro(mmc);
 }
 
@@ -915,12 +893,7 @@ static void mxcmci_init_card(struct mmc_host *host, struct mmc_card *card)
 {
 	struct mxcmci_host *mxcmci = mmc_priv(host);
 
-	/*
-	 * MX3 SoCs have a silicon bug which corrupts CRC calculation of
-	 * multi-block transfers when connected SDIO peripheral doesn't
-	 * drive the BUSY line as required by the specs.
-	 * One way to prevent this is to only allow 1-bit transfers.
-	 */
+	 
 
 	if (is_imx31_mmc(mxcmci) && mmc_card_sdio(card))
 		host->caps &= ~MMC_CAP_4_BIT_DATA;
@@ -958,7 +931,7 @@ static void mxcmci_watchdog(struct timer_list *t)
 		mxcmci_softreset(host);
 	}
 
-	/* Mark transfer as erroneus and inform the upper layers */
+	 
 
 	if (host->data)
 		host->data->error = -ETIMEDOUT;
@@ -1011,13 +984,13 @@ static int mxcmci_probe(struct platform_device *pdev)
 		goto out_free;
 	mmc->ops = &mxcmci_ops;
 
-	/* For devicetree parsing, the bus width is read from devicetree */
+	 
 	if (pdata)
 		mmc->caps = MMC_CAP_4_BIT_DATA | MMC_CAP_SDIO_IRQ;
 	else
 		mmc->caps |= MMC_CAP_SDIO_IRQ;
 
-	/* MMC core transfer sizes tunable parameters */
+	 
 	mmc->max_blk_size = 2048;
 	mmc->max_blk_count = 65535;
 	mmc->max_req_size = mmc->max_blk_size * mmc->max_blk_count;
@@ -1025,7 +998,7 @@ static int mxcmci_probe(struct platform_device *pdev)
 
 	host->devtype = (uintptr_t)of_device_get_match_data(&pdev->dev);
 
-	/* adjust max_segs after devtype detection */
+	 
 	if (!is_mpc512x_mmc(host))
 		mmc->max_segs = 64;
 
@@ -1089,7 +1062,7 @@ static int mxcmci_probe(struct platform_device *pdev)
 	mmc->f_min = clk_get_rate(host->clk_per) >> 16;
 	mmc->f_max = clk_get_rate(host->clk_per) >> 1;
 
-	/* recommended in data sheet */
+	 
 	mxcmci_writew(host, 0x2db4, MMC_REG_READ_TO);
 
 	mxcmci_writel(host, host->default_irq_mask, MMC_REG_INT_CNTR);
@@ -1102,7 +1075,7 @@ static int mxcmci_probe(struct platform_device *pdev)
 				goto out_clk_put;
 			}
 
-			/* Ignore errors to fall back to PIO mode */
+			 
 			host->dma = NULL;
 		}
 	} else {

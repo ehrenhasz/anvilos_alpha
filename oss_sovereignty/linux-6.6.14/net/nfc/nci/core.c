@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  The NFC Controller Interface is the communication protocol between an
- *  NFC Controller (NFCC) and a Device Host (DH).
- *
- *  Copyright (C) 2011 Texas Instruments, Inc.
- *  Copyright (C) 2014 Marvell International Ltd.
- *
- *  Written by Ilan Elias <ilane@ti.com>
- *
- *  Acknowledgements:
- *  This file is based on hci_core.c, which was written
- *  by Maxim Krasnyansky.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
 
@@ -73,7 +61,7 @@ int nci_get_conn_info_by_dest_type_params(struct nci_dev *ndev, u8 dest_type,
 }
 EXPORT_SYMBOL(nci_get_conn_info_by_dest_type_params);
 
-/* ---- NCI requests ---- */
+ 
 
 void nci_req_complete(struct nci_dev *ndev, int result)
 {
@@ -94,7 +82,7 @@ static void nci_req_cancel(struct nci_dev *ndev, int err)
 	}
 }
 
-/* Execute request and wait for completion. */
+ 
 static int __nci_request(struct nci_dev *ndev,
 			 void (*req)(struct nci_dev *ndev, const void *opt),
 			 const void *opt, __u32 timeout)
@@ -145,11 +133,9 @@ inline int nci_request(struct nci_dev *ndev,
 {
 	int rc;
 
-	/* Serialize all requests */
+	 
 	mutex_lock(&ndev->req_lock);
-	/* check the state after obtaing the lock against any races
-	 * from nci_close_device when the device gets removed.
-	 */
+	 
 	if (test_bit(NCI_UP, &ndev->flags))
 		rc = __nci_request(ndev, req, opt, timeout);
 	else
@@ -184,10 +170,10 @@ static void nci_init_complete_req(struct nci_dev *ndev, const void *opt)
 	__u8 *num = &cmd.num_mapping_configs;
 	int i;
 
-	/* set rf mapping configurations */
+	 
 	*num = 0;
 
-	/* by default mapping is set to NCI_RF_INTERFACE_FRAME */
+	 
 	for (i = 0; i < ndev->num_supported_rf_interfaces; i++) {
 		if (ndev->supported_rf_interfaces[i] ==
 		    NCI_RF_INTERFACE_ISO_DEP) {
@@ -447,7 +433,7 @@ int nci_nfcc_loopback(struct nci_dev *ndev, const void *data, size_t data_len,
 	if (!conn_info)
 		return -EPROTO;
 
-	/* store cb and context to be used on receiving data */
+	 
 	conn_info->data_exchange_cb = nci_nfcc_loopback_cb;
 	conn_info->data_exchange_cb_context = ndev;
 
@@ -537,7 +523,7 @@ static int nci_open_device(struct nci_dev *ndev)
 		nci_clear_target_list(ndev);
 		atomic_set(&ndev->state, NCI_IDLE);
 	} else {
-		/* Init failed, cleanup */
+		 
 		skb_queue_purge(&ndev->cmd_q);
 		skb_queue_purge(&ndev->rx_q);
 		skb_queue_purge(&ndev->tx_q);
@@ -555,15 +541,11 @@ static int nci_close_device(struct nci_dev *ndev)
 {
 	nci_req_cancel(ndev, ENODEV);
 
-	/* This mutex needs to be held as a barrier for
-	 * caller nci_unregister_device
-	 */
+	 
 	mutex_lock(&ndev->req_lock);
 
 	if (!test_and_clear_bit(NCI_UP, &ndev->flags)) {
-		/* Need to flush the cmd wq in case
-		 * there is a queued/running cmd_work
-		 */
+		 
 		flush_workqueue(ndev->cmd_wq);
 		del_timer_sync(&ndev->cmd_timer);
 		del_timer_sync(&ndev->data_timer);
@@ -571,15 +553,15 @@ static int nci_close_device(struct nci_dev *ndev)
 		return 0;
 	}
 
-	/* Drop RX and TX queues */
+	 
 	skb_queue_purge(&ndev->rx_q);
 	skb_queue_purge(&ndev->tx_q);
 
-	/* Flush RX and TX wq */
+	 
 	flush_workqueue(ndev->rx_wq);
 	flush_workqueue(ndev->tx_wq);
 
-	/* Reset device */
+	 
 	skb_queue_purge(&ndev->cmd_q);
 	atomic_set(&ndev->cmd_cnt, 1);
 
@@ -587,19 +569,17 @@ static int nci_close_device(struct nci_dev *ndev)
 	__nci_request(ndev, nci_reset_req, (void *)0,
 		      msecs_to_jiffies(NCI_RESET_TIMEOUT));
 
-	/* After this point our queues are empty
-	 * and no works are scheduled.
-	 */
+	 
 	ndev->ops->close(ndev);
 
 	clear_bit(NCI_INIT, &ndev->flags);
 
-	/* Flush cmd wq */
+	 
 	flush_workqueue(ndev->cmd_wq);
 
 	del_timer_sync(&ndev->cmd_timer);
 
-	/* Clear flags except NCI_UNREG */
+	 
 	ndev->flags &= BIT(NCI_UNREG);
 
 	mutex_unlock(&ndev->req_lock);
@@ -607,7 +587,7 @@ static int nci_close_device(struct nci_dev *ndev)
 	return 0;
 }
 
-/* NCI command timer function */
+ 
 static void nci_cmd_timer(struct timer_list *t)
 {
 	struct nci_dev *ndev = from_timer(ndev, t, cmd_timer);
@@ -616,7 +596,7 @@ static void nci_cmd_timer(struct timer_list *t)
 	queue_work(ndev->cmd_wq, &ndev->cmd_work);
 }
 
-/* NCI data exchange timer function */
+ 
 static void nci_data_timer(struct timer_list *t)
 {
 	struct nci_dev *ndev = from_timer(ndev, t, data_timer);
@@ -1037,7 +1017,7 @@ static int nci_transceive(struct nfc_dev *nfc_dev, struct nfc_target *target,
 	if (test_and_set_bit(NCI_DATA_EXCHANGE, &ndev->flags))
 		return -EBUSY;
 
-	/* store cb and context to be used on receiving data */
+	 
 	conn_info->data_exchange_cb = cb;
 	conn_info->data_exchange_cb_context = cb_context;
 
@@ -1137,15 +1117,8 @@ static const struct nfc_ops nci_nfc_ops = {
 	.fw_download = nci_fw_download,
 };
 
-/* ---- Interface to NCI drivers ---- */
-/**
- * nci_allocate_device - allocate a new nci device
- *
- * @ops: device operations
- * @supported_protocols: NFC protocols supported by the device
- * @tx_headroom: Reserved space at beginning of skb
- * @tx_tailroom: Reserved space at end of skb
- */
+ 
+ 
 struct nci_dev *nci_allocate_device(const struct nci_ops *ops,
 				    __u32 supported_protocols,
 				    int tx_headroom, int tx_tailroom)
@@ -1199,11 +1172,7 @@ free_nci:
 }
 EXPORT_SYMBOL(nci_allocate_device);
 
-/**
- * nci_free_device - deallocate nci device
- *
- * @ndev: The nci device to deallocate
- */
+ 
 void nci_free_device(struct nci_dev *ndev)
 {
 	nfc_free_device(ndev->nfc_dev);
@@ -1212,11 +1181,7 @@ void nci_free_device(struct nci_dev *ndev)
 }
 EXPORT_SYMBOL(nci_free_device);
 
-/**
- * nci_register_device - register a nci device in the nfc subsystem
- *
- * @ndev: The nci device to register
- */
+ 
 int nci_register_device(struct nci_dev *ndev)
 {
 	int rc;
@@ -1279,19 +1244,12 @@ exit:
 }
 EXPORT_SYMBOL(nci_register_device);
 
-/**
- * nci_unregister_device - unregister a nci device in the nfc subsystem
- *
- * @ndev: The nci device to unregister
- */
+ 
 void nci_unregister_device(struct nci_dev *ndev)
 {
 	struct nci_conn_info *conn_info, *n;
 
-	/* This set_bit is not protected with specialized barrier,
-	 * However, it is fine because the mutex_lock(&ndev->req_lock);
-	 * in nci_close_device() will help to emit one.
-	 */
+	 
 	set_bit(NCI_UNREG, &ndev->flags);
 
 	nci_close_device(ndev);
@@ -1302,19 +1260,14 @@ void nci_unregister_device(struct nci_dev *ndev)
 
 	list_for_each_entry_safe(conn_info, n, &ndev->conn_info_list, list) {
 		list_del(&conn_info->list);
-		/* conn_info is allocated with devm_kzalloc */
+		 
 	}
 
 	nfc_unregister_device(ndev->nfc_dev);
 }
 EXPORT_SYMBOL(nci_unregister_device);
 
-/**
- * nci_recv_frame - receive frame from NCI drivers
- *
- * @ndev: The nci device
- * @skb: The sk_buff to receive
- */
+ 
 int nci_recv_frame(struct nci_dev *ndev, struct sk_buff *skb)
 {
 	pr_debug("len %d\n", skb->len);
@@ -1325,7 +1278,7 @@ int nci_recv_frame(struct nci_dev *ndev, struct sk_buff *skb)
 		return -ENXIO;
 	}
 
-	/* Queue frame for rx worker thread */
+	 
 	skb_queue_tail(&ndev->rx_q, skb);
 	queue_work(ndev->rx_wq, &ndev->rx_work);
 
@@ -1342,10 +1295,10 @@ int nci_send_frame(struct nci_dev *ndev, struct sk_buff *skb)
 		return -ENODEV;
 	}
 
-	/* Get rid of skb owner, prior to sending to the driver. */
+	 
 	skb_orphan(skb);
 
-	/* Send copy to sniffer */
+	 
 	nfc_send_to_raw_sock(ndev->nfc_dev, skb,
 			     RAW_PAYLOAD_NCI, NFC_DIRECTION_TX);
 
@@ -1353,7 +1306,7 @@ int nci_send_frame(struct nci_dev *ndev, struct sk_buff *skb)
 }
 EXPORT_SYMBOL(nci_send_frame);
 
-/* Send NCI command */
+ 
 int nci_send_cmd(struct nci_dev *ndev, __u16 opcode, __u8 plen, const void *payload)
 {
 	struct nci_ctrl_hdr *hdr;
@@ -1385,7 +1338,7 @@ int nci_send_cmd(struct nci_dev *ndev, __u16 opcode, __u8 plen, const void *payl
 }
 EXPORT_SYMBOL(nci_send_cmd);
 
-/* Proprietary commands API */
+ 
 static const struct nci_driver_ops *ops_cmd_lookup(const struct nci_driver_ops *ops,
 						   size_t n_ops,
 						   __u16 opcode)
@@ -1459,7 +1412,7 @@ int nci_core_ntf_packet(struct nci_dev *ndev, __u16 opcode,
 				 ndev->ops->n_core_ops);
 }
 
-/* ---- NCI TX Data worker thread ---- */
+ 
 
 static void nci_tx_work(struct work_struct *work)
 {
@@ -1473,14 +1426,14 @@ static void nci_tx_work(struct work_struct *work)
 
 	pr_debug("credits_cnt %d\n", atomic_read(&conn_info->credits_cnt));
 
-	/* Send queued tx data */
+	 
 	while (atomic_read(&conn_info->credits_cnt)) {
 		skb = skb_dequeue(&ndev->tx_q);
 		if (!skb)
 			return;
 		kcov_remote_start_common(skb_get_kcov_handle(skb));
 
-		/* Check if data flow control is used */
+		 
 		if (atomic_read(&conn_info->credits_cnt) !=
 		    NCI_DATA_FLOW_CONTROL_NOT_USED)
 			atomic_dec(&conn_info->credits_cnt);
@@ -1498,7 +1451,7 @@ static void nci_tx_work(struct work_struct *work)
 	}
 }
 
-/* ----- NCI RX worker thread (data & control) ----- */
+ 
 
 static void nci_rx_work(struct work_struct *work)
 {
@@ -1508,11 +1461,11 @@ static void nci_rx_work(struct work_struct *work)
 	for (; (skb = skb_dequeue(&ndev->rx_q)); kcov_remote_stop()) {
 		kcov_remote_start_common(skb_get_kcov_handle(skb));
 
-		/* Send copy to sniffer */
+		 
 		nfc_send_to_raw_sock(ndev->nfc_dev, skb,
 				     RAW_PAYLOAD_NCI, NFC_DIRECTION_RX);
 
-		/* Process frame */
+		 
 		switch (nci_mt(skb->data)) {
 		case NCI_MT_RSP_PKT:
 			nci_rsp_packet(ndev, skb);
@@ -1533,9 +1486,9 @@ static void nci_rx_work(struct work_struct *work)
 		}
 	}
 
-	/* check if a data exchange timeout has occurred */
+	 
 	if (test_bit(NCI_DATA_EXCHANGE_TO, &ndev->flags)) {
-		/* complete the data exchange transaction, if exists */
+		 
 		if (test_bit(NCI_DATA_EXCHANGE, &ndev->flags))
 			nci_data_exchange_complete(ndev, NULL,
 						   ndev->cur_conn_id,
@@ -1545,7 +1498,7 @@ static void nci_rx_work(struct work_struct *work)
 	}
 }
 
-/* ----- NCI TX CMD worker thread ----- */
+ 
 
 static void nci_cmd_work(struct work_struct *work)
 {
@@ -1554,7 +1507,7 @@ static void nci_cmd_work(struct work_struct *work)
 
 	pr_debug("cmd_cnt %d\n", atomic_read(&ndev->cmd_cnt));
 
-	/* Send queued command */
+	 
 	if (atomic_read(&ndev->cmd_cnt)) {
 		skb = skb_dequeue(&ndev->cmd_q);
 		if (!skb)

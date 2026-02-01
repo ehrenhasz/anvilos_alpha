@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2013 Emilio López
- * Emilio López <emilio@elopez.com.ar>
- *
- * Copyright 2015 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -70,7 +64,7 @@ static void __init sun4i_pll2_setup(struct device_node *node,
 		goto err_free_array;
 	}
 
-	/* Setup the gate part of the PLL2 */
+	 
 	gate = kzalloc(sizeof(struct clk_gate), GFP_KERNEL);
 	if (!gate)
 		goto err_unregister_prediv;
@@ -79,7 +73,7 @@ static void __init sun4i_pll2_setup(struct device_node *node,
 	gate->bit_idx = SUN4I_PLL2_ENABLE;
 	gate->lock = &sun4i_a10_pll2_lock;
 
-	/* Setup the multiplier part of the PLL2 */
+	 
 	mult = kzalloc(sizeof(struct clk_multiplier), GFP_KERNEL);
 	if (!mult)
 		goto err_free_gate;
@@ -105,13 +99,7 @@ static void __init sun4i_pll2_setup(struct device_node *node,
 
 	parent = __clk_get_name(base_clk);
 
-	/*
-	 * PLL2-1x
-	 *
-	 * This is supposed to have a post divider, but we won't need
-	 * to use it, we just need to initialise it to 4, and use a
-	 * fixed divider.
-	 */
+	 
 	val = readl(reg);
 	val &= ~(SUN4I_PLL2_POST_DIV_MASK << SUN4I_PLL2_POST_DIV_SHIFT);
 	val |= (SUN4I_PLL2_POST_DIV_VALUE - post_div_offset) << SUN4I_PLL2_POST_DIV_SHIFT;
@@ -126,12 +114,7 @@ static void __init sun4i_pll2_setup(struct device_node *node,
 							    SUN4I_PLL2_POST_DIV_VALUE);
 	WARN_ON(IS_ERR(clks[SUN4I_A10_PLL2_1X]));
 
-	/*
-	 * PLL2-2x
-	 *
-	 * This clock doesn't use the post divider, and really is just
-	 * a fixed divider from the PLL2 base clock.
-	 */
+	 
 	of_property_read_string_index(node, "clock-output-names",
 				      SUN4I_A10_PLL2_2X, &clk_name);
 	clks[SUN4I_A10_PLL2_2X] = clk_register_fixed_factor(NULL, clk_name,
@@ -140,7 +123,7 @@ static void __init sun4i_pll2_setup(struct device_node *node,
 							    1, 2);
 	WARN_ON(IS_ERR(clks[SUN4I_A10_PLL2_2X]));
 
-	/* PLL2-4x */
+	 
 	of_property_read_string_index(node, "clock-output-names",
 				      SUN4I_A10_PLL2_4X, &clk_name);
 	clks[SUN4I_A10_PLL2_4X] = clk_register_fixed_factor(NULL, clk_name,
@@ -149,7 +132,7 @@ static void __init sun4i_pll2_setup(struct device_node *node,
 							    1, 1);
 	WARN_ON(IS_ERR(clks[SUN4I_A10_PLL2_4X]));
 
-	/* PLL2-8x */
+	 
 	of_property_read_string_index(node, "clock-output-names",
 				      SUN4I_A10_PLL2_8X, &clk_name);
 	clks[SUN4I_A10_PLL2_8X] = clk_register_fixed_factor(NULL, clk_name,

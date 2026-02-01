@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx VCU Init
- *
- * Copyright (C) 2016 - 2017 Xilinx, Inc.
- *
- * Contacts   Dhaval Shah <dshah@xilinx.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -46,17 +40,7 @@
 #define FVCO_MIN			(1500U * MHZ)
 #define FVCO_MAX			(3000U * MHZ)
 
-/**
- * struct xvcu_device - Xilinx VCU init device structure
- * @dev: Platform device
- * @pll_ref: pll ref clock source
- * @aclk: axi clock source
- * @logicore_reg_ba: logicore reg base address
- * @vcu_slcr_ba: vcu_slcr Register base address
- * @pll: handle for the VCU PLL
- * @pll_post: handle for the VCU PLL post divider
- * @clk_data: clocks provided by the vcu clock provider
- */
+ 
 struct xvcu_device {
 	struct device *dev;
 	struct clk *pll_ref;
@@ -77,15 +61,7 @@ static struct regmap_config vcu_settings_regmap_config = {
 	.cache_type = REGCACHE_NONE,
 };
 
-/**
- * struct xvcu_pll_cfg - Helper data
- * @fbdiv: The integer portion of the feedback divider to the PLL
- * @cp: PLL charge pump control
- * @res: PLL loop filter resistor control
- * @lfhf: PLL loop filter high frequency capacitor control
- * @lock_dly: Lock circuit configuration settings for lock windowsize
- * @lock_cnt: Lock circuit counter setting
- */
+ 
 struct xvcu_pll_cfg {
 	u32 fbdiv;
 	u32 cp;
@@ -199,25 +175,13 @@ static const struct xvcu_pll_cfg xvcu_pll_cfg[] = {
 	{ 125, 3, 4, 3, 63, 600 },
 };
 
-/**
- * xvcu_read - Read from the VCU register space
- * @iomem:	vcu reg space base address
- * @offset:	vcu reg offset from base
- *
- * Return:	Returns 32bit value from VCU register specified
- *
- */
+ 
 static inline u32 xvcu_read(void __iomem *iomem, u32 offset)
 {
 	return ioread32(iomem + offset);
 }
 
-/**
- * xvcu_write - Write to the VCU register space
- * @iomem:	vcu reg space base address
- * @offset:	vcu reg offset from base
- * @value:	Value to write
- */
+ 
 static inline void xvcu_write(void __iomem *iomem, u32 offset, u32 value)
 {
 	iowrite32(value, iomem + offset);
@@ -256,10 +220,7 @@ static struct clk_hw *xvcu_register_pll_post(struct device *dev,
 	u32 div;
 	u32 vcu_pll_ctrl;
 
-	/*
-	 * The output divider of the PLL must be set to 1/2 to meet the
-	 * timing in the design.
-	 */
+	 
 	vcu_pll_ctrl = xvcu_read(reg_base, VCU_PLL_CTRL);
 	div = FIELD_GET(VCU_PLL_CTRL_CLKOUTDIV, vcu_pll_ctrl);
 	if (div != 1)
@@ -446,7 +407,7 @@ static struct clk_hw *xvcu_clk_hw_register_leaf(struct device *dev,
 	char *name_mux;
 	char *name_div;
 	int err;
-	/* Protect register shared by clocks */
+	 
 	spinlock_t *lock;
 
 	lock = devm_kzalloc(dev, sizeof(*lock), GFP_KERNEL);
@@ -591,15 +552,7 @@ static void xvcu_unregister_clock_provider(struct xvcu_device *xvcu)
 	clk_hw_unregister_fixed_factor(xvcu->pll_post);
 }
 
-/**
- * xvcu_probe - Probe existence of the logicoreIP
- *			and initialize PLL
- *
- * @pdev:	Pointer to the platform_device structure
- *
- * Return:	Returns 0 on success
- *		Negative error code otherwise
- */
+ 
 static int xvcu_probe(struct platform_device *pdev)
 {
 	struct resource *res;
@@ -671,11 +624,7 @@ static int xvcu_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * Do the Gasket isolation and put the VCU out of reset
-	 * Bit 0 : Gasket isolation
-	 * Bit 1 : put VCU out of reset
-	 */
+	 
 	regmap_write(xvcu->logicore_reg_ba, VCU_GASKET_INIT, VCU_GASKET_VALUE);
 
 	ret = xvcu_register_clock_provider(xvcu);
@@ -694,14 +643,7 @@ error_clk_provider:
 	return ret;
 }
 
-/**
- * xvcu_remove - Insert gasket isolation
- *			and disable the clock
- * @pdev:	Pointer to the platform_device structure
- *
- * Return:	Returns 0 on success
- *		Negative error code otherwise
- */
+ 
 static void xvcu_remove(struct platform_device *pdev)
 {
 	struct xvcu_device *xvcu;
@@ -710,7 +652,7 @@ static void xvcu_remove(struct platform_device *pdev)
 
 	xvcu_unregister_clock_provider(xvcu);
 
-	/* Add the Gasket isolation and put the VCU in reset. */
+	 
 	regmap_write(xvcu->logicore_reg_ba, VCU_GASKET_INIT, 0);
 
 	clk_disable_unprepare(xvcu->aclk);

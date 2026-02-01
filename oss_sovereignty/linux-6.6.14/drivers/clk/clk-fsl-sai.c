@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Freescale SAI BCLK as a generic clock driver
- *
- * Copyright 2020 Michael Walle <michael@walle.cc>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -53,7 +49,7 @@ static int fsl_sai_clk_probe(struct platform_device *pdev)
 	sai_clk->div.width = CR2_DIV_WIDTH;
 	sai_clk->div.lock = &sai_clk->lock;
 
-	/* set clock direction, we are the BCLK master */
+	 
 	writel(CR2_BCD, base + I2S_CR2);
 
 	hw = devm_clk_hw_register_composite_pdata(dev, dev->of_node->name,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* I/O iterator tests.  This can only test kernel-backed iterator types.
- *
- * Copyright (C) 2023 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -92,9 +88,7 @@ static void __init iov_kunit_load_kvec(struct kunit *test,
 	iov_iter_kvec(iter, dir, kvec, i, size);
 }
 
-/*
- * Test copying to a ITER_KVEC-type iterator.
- */
+ 
 static void __init iov_kunit_copy_to_kvec(struct kunit *test)
 {
 	const struct kvec_test_range *pr;
@@ -125,14 +119,14 @@ static void __init iov_kunit_copy_to_kvec(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, iter.count, 0);
 	KUNIT_EXPECT_EQ(test, iter.nr_segs, 0);
 
-	/* Build the expected image in the scratch buffer. */
+	 
 	patt = 0;
 	memset(scratch, 0, bufsize);
 	for (pr = kvec_test_ranges; pr->from >= 0; pr++)
 		for (i = pr->from; i < pr->to; i++)
 			scratch[i] = pattern(patt++);
 
-	/* Compare the images */
+	 
 	for (i = 0; i < bufsize; i++) {
 		KUNIT_EXPECT_EQ_MSG(test, buffer[i], scratch[i], "at i=%x", i);
 		if (buffer[i] != scratch[i])
@@ -142,9 +136,7 @@ static void __init iov_kunit_copy_to_kvec(struct kunit *test)
 	KUNIT_SUCCEED();
 }
 
-/*
- * Test copying from a ITER_KVEC-type iterator.
- */
+ 
 static void __init iov_kunit_copy_from_kvec(struct kunit *test)
 {
 	const struct kvec_test_range *pr;
@@ -175,7 +167,7 @@ static void __init iov_kunit_copy_from_kvec(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, iter.count, 0);
 	KUNIT_EXPECT_EQ(test, iter.nr_segs, 0);
 
-	/* Build the expected image in the main buffer. */
+	 
 	i = 0;
 	memset(buffer, 0, bufsize);
 	for (pr = kvec_test_ranges; pr->from >= 0; pr++) {
@@ -187,7 +179,7 @@ static void __init iov_kunit_copy_from_kvec(struct kunit *test)
 	}
 stop:
 
-	/* Compare the images */
+	 
 	for (i = 0; i < bufsize; i++) {
 		KUNIT_EXPECT_EQ_MSG(test, scratch[i], buffer[i], "at i=%x", i);
 		if (scratch[i] != buffer[i])
@@ -251,9 +243,7 @@ static void __init iov_kunit_load_bvec(struct kunit *test,
 	iov_iter_bvec(iter, dir, bvec, i, size);
 }
 
-/*
- * Test copying to a ITER_BVEC-type iterator.
- */
+ 
 static void __init iov_kunit_copy_to_bvec(struct kunit *test)
 {
 	const struct bvec_test_range *pr;
@@ -284,7 +274,7 @@ static void __init iov_kunit_copy_to_bvec(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, iter.count, 0);
 	KUNIT_EXPECT_EQ(test, iter.nr_segs, 0);
 
-	/* Build the expected image in the scratch buffer. */
+	 
 	b = 0;
 	patt = 0;
 	memset(scratch, 0, bufsize);
@@ -295,7 +285,7 @@ static void __init iov_kunit_copy_to_bvec(struct kunit *test)
 			p[i] = pattern(patt++);
 	}
 
-	/* Compare the images */
+	 
 	for (i = 0; i < bufsize; i++) {
 		KUNIT_EXPECT_EQ_MSG(test, buffer[i], scratch[i], "at i=%x", i);
 		if (buffer[i] != scratch[i])
@@ -305,9 +295,7 @@ static void __init iov_kunit_copy_to_bvec(struct kunit *test)
 	KUNIT_SUCCEED();
 }
 
-/*
- * Test copying from a ITER_BVEC-type iterator.
- */
+ 
 static void __init iov_kunit_copy_from_bvec(struct kunit *test)
 {
 	const struct bvec_test_range *pr;
@@ -338,7 +326,7 @@ static void __init iov_kunit_copy_from_bvec(struct kunit *test)
 	KUNIT_EXPECT_EQ(test, iter.count, 0);
 	KUNIT_EXPECT_EQ(test, iter.nr_segs, 0);
 
-	/* Build the expected image in the main buffer. */
+	 
 	i = 0;
 	memset(buffer, 0, bufsize);
 	for (pr = bvec_test_ranges; pr->from >= 0; pr++) {
@@ -352,7 +340,7 @@ static void __init iov_kunit_copy_from_bvec(struct kunit *test)
 	}
 stop:
 
-	/* Compare the images */
+	 
 	for (i = 0; i < bufsize; i++) {
 		KUNIT_EXPECT_EQ_MSG(test, scratch[i], buffer[i], "at i=%x", i);
 		if (scratch[i] != buffer[i])
@@ -398,9 +386,7 @@ static struct xarray *iov_kunit_create_xarray(struct kunit *test)
 	return xarray;
 }
 
-/*
- * Test copying to a ITER_XARRAY-type iterator.
- */
+ 
 static void __init iov_kunit_copy_to_xarray(struct kunit *test)
 {
 	const struct kvec_test_range *pr;
@@ -439,14 +425,14 @@ static void __init iov_kunit_copy_to_xarray(struct kunit *test)
 		i += size;
 	}
 
-	/* Build the expected image in the scratch buffer. */
+	 
 	patt = 0;
 	memset(scratch, 0, bufsize);
 	for (pr = kvec_test_ranges; pr->from >= 0; pr++)
 		for (i = pr->from; i < pr->to; i++)
 			scratch[i] = pattern(patt++);
 
-	/* Compare the images */
+	 
 	for (i = 0; i < bufsize; i++) {
 		KUNIT_EXPECT_EQ_MSG(test, buffer[i], scratch[i], "at i=%x", i);
 		if (buffer[i] != scratch[i])
@@ -456,9 +442,7 @@ static void __init iov_kunit_copy_to_xarray(struct kunit *test)
 	KUNIT_SUCCEED();
 }
 
-/*
- * Test copying from a ITER_XARRAY-type iterator.
- */
+ 
 static void __init iov_kunit_copy_from_xarray(struct kunit *test)
 {
 	const struct kvec_test_range *pr;
@@ -497,7 +481,7 @@ static void __init iov_kunit_copy_from_xarray(struct kunit *test)
 		i += size;
 	}
 
-	/* Build the expected image in the main buffer. */
+	 
 	i = 0;
 	memset(buffer, 0, bufsize);
 	for (pr = kvec_test_ranges; pr->from >= 0; pr++) {
@@ -509,7 +493,7 @@ static void __init iov_kunit_copy_from_xarray(struct kunit *test)
 	}
 stop:
 
-	/* Compare the images */
+	 
 	for (i = 0; i < bufsize; i++) {
 		KUNIT_EXPECT_EQ_MSG(test, scratch[i], buffer[i], "at i=%x", i);
 		if (scratch[i] != buffer[i])
@@ -519,9 +503,7 @@ stop:
 	KUNIT_SUCCEED();
 }
 
-/*
- * Test the extraction of ITER_KVEC-type iterators.
- */
+ 
 static void __init iov_kunit_extract_pages_kvec(struct kunit *test)
 {
 	const struct kvec_test_range *pr;
@@ -599,9 +581,7 @@ stop:
 	KUNIT_SUCCEED();
 }
 
-/*
- * Test the extraction of ITER_BVEC-type iterators.
- */
+ 
 static void __init iov_kunit_extract_pages_bvec(struct kunit *test)
 {
 	const struct bvec_test_range *pr;
@@ -677,9 +657,7 @@ stop:
 	KUNIT_SUCCEED();
 }
 
-/*
- * Test the extraction of ITER_XARRAY-type iterators.
- */
+ 
 static void __init iov_kunit_extract_pages_xarray(struct kunit *test)
 {
 	const struct kvec_test_range *pr;

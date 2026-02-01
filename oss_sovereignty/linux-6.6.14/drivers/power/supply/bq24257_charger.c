@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * TI BQ24257 charger driver
- *
- * Copyright (C) 2015 Intel Corporation
- *
- * Datasheets:
- * https://www.ti.com/product/bq24250
- * https://www.ti.com/product/bq24251
- * https://www.ti.com/product/bq24257
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -33,12 +24,9 @@
 #define BQ24257_MANUFACTURER		"Texas Instruments"
 #define BQ24257_PG_GPIO			"pg"
 
-#define BQ24257_ILIM_SET_DELAY		1000	/* msec */
+#define BQ24257_ILIM_SET_DELAY		1000	 
 
-/*
- * When adding support for new devices make sure that enum bq2425x_chip and
- * bq2425x_chip_name[] always stay in sync!
- */
+ 
 enum bq2425x_chip {
 	BQ24250,
 	BQ24251,
@@ -52,25 +40,25 @@ static const char *const bq2425x_chip_name[] = {
 };
 
 enum bq24257_fields {
-	F_WD_FAULT, F_WD_EN, F_STAT, F_FAULT,			    /* REG 1 */
-	F_RESET, F_IILIMIT, F_EN_STAT, F_EN_TERM, F_CE, F_HZ_MODE,  /* REG 2 */
-	F_VBAT, F_USB_DET,					    /* REG 3 */
-	F_ICHG, F_ITERM,					    /* REG 4 */
-	F_LOOP_STATUS, F_LOW_CHG, F_DPDM_EN, F_CE_STATUS, F_VINDPM, /* REG 5 */
-	F_X2_TMR_EN, F_TMR, F_SYSOFF, F_TS_EN, F_TS_STAT,	    /* REG 6 */
-	F_VOVP, F_CLR_VDP, F_FORCE_BATDET, F_FORCE_PTM,		    /* REG 7 */
+	F_WD_FAULT, F_WD_EN, F_STAT, F_FAULT,			     
+	F_RESET, F_IILIMIT, F_EN_STAT, F_EN_TERM, F_CE, F_HZ_MODE,   
+	F_VBAT, F_USB_DET,					     
+	F_ICHG, F_ITERM,					     
+	F_LOOP_STATUS, F_LOW_CHG, F_DPDM_EN, F_CE_STATUS, F_VINDPM,  
+	F_X2_TMR_EN, F_TMR, F_SYSOFF, F_TS_EN, F_TS_STAT,	     
+	F_VOVP, F_CLR_VDP, F_FORCE_BATDET, F_FORCE_PTM,		     
 
 	F_MAX_FIELDS
 };
 
-/* initial field values, converted from uV/uA */
+ 
 struct bq24257_init_data {
-	u8 ichg;	/* charge current      */
-	u8 vbat;	/* regulation voltage  */
-	u8 iterm;	/* termination current */
-	u8 iilimit;	/* input current limit */
-	u8 vovp;	/* over voltage protection voltage */
-	u8 vindpm;	/* VDMP input threshold voltage */
+	u8 ichg;	 
+	u8 vbat;	 
+	u8 iterm;	 
+	u8 iilimit;	 
+	u8 vovp;	 
+	u8 vindpm;	 
 };
 
 struct bq24257_state {
@@ -96,7 +84,7 @@ struct bq24257_device {
 	struct bq24257_init_data init_data;
 	struct bq24257_state state;
 
-	struct mutex lock; /* protect state data */
+	struct mutex lock;  
 
 	bool iilimit_autoset_enable;
 };
@@ -124,37 +112,37 @@ static const struct regmap_config bq24257_regmap_config = {
 };
 
 static const struct reg_field bq24257_reg_fields[] = {
-	/* REG 1 */
+	 
 	[F_WD_FAULT]		= REG_FIELD(BQ24257_REG_1, 7, 7),
 	[F_WD_EN]		= REG_FIELD(BQ24257_REG_1, 6, 6),
 	[F_STAT]		= REG_FIELD(BQ24257_REG_1, 4, 5),
 	[F_FAULT]		= REG_FIELD(BQ24257_REG_1, 0, 3),
-	/* REG 2 */
+	 
 	[F_RESET]		= REG_FIELD(BQ24257_REG_2, 7, 7),
 	[F_IILIMIT]		= REG_FIELD(BQ24257_REG_2, 4, 6),
 	[F_EN_STAT]		= REG_FIELD(BQ24257_REG_2, 3, 3),
 	[F_EN_TERM]		= REG_FIELD(BQ24257_REG_2, 2, 2),
 	[F_CE]			= REG_FIELD(BQ24257_REG_2, 1, 1),
 	[F_HZ_MODE]		= REG_FIELD(BQ24257_REG_2, 0, 0),
-	/* REG 3 */
+	 
 	[F_VBAT]		= REG_FIELD(BQ24257_REG_3, 2, 7),
 	[F_USB_DET]		= REG_FIELD(BQ24257_REG_3, 0, 1),
-	/* REG 4 */
+	 
 	[F_ICHG]		= REG_FIELD(BQ24257_REG_4, 3, 7),
 	[F_ITERM]		= REG_FIELD(BQ24257_REG_4, 0, 2),
-	/* REG 5 */
+	 
 	[F_LOOP_STATUS]		= REG_FIELD(BQ24257_REG_5, 6, 7),
 	[F_LOW_CHG]		= REG_FIELD(BQ24257_REG_5, 5, 5),
 	[F_DPDM_EN]		= REG_FIELD(BQ24257_REG_5, 4, 4),
 	[F_CE_STATUS]		= REG_FIELD(BQ24257_REG_5, 3, 3),
 	[F_VINDPM]		= REG_FIELD(BQ24257_REG_5, 0, 2),
-	/* REG 6 */
+	 
 	[F_X2_TMR_EN]		= REG_FIELD(BQ24257_REG_6, 7, 7),
 	[F_TMR]			= REG_FIELD(BQ24257_REG_6, 5, 6),
 	[F_SYSOFF]		= REG_FIELD(BQ24257_REG_6, 4, 4),
 	[F_TS_EN]		= REG_FIELD(BQ24257_REG_6, 3, 3),
 	[F_TS_STAT]		= REG_FIELD(BQ24257_REG_6, 0, 2),
-	/* REG 7 */
+	 
 	[F_VOVP]		= REG_FIELD(BQ24257_REG_7, 5, 7),
 	[F_CLR_VDP]		= REG_FIELD(BQ24257_REG_7, 4, 4),
 	[F_FORCE_BATDET]	= REG_FIELD(BQ24257_REG_7, 3, 3),
@@ -267,13 +255,7 @@ static int bq24257_get_input_current_limit(struct bq24257_device *bq,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The "External ILIM" and "Production & Test" modes are not exposed
-	 * through this driver and not being covered by the lookup table.
-	 * Should such a mode have become active let's return an error rather
-	 * than exceeding the bounds of the lookup table and returning
-	 * garbage.
-	 */
+	 
 	if (ret >= BQ24257_IILIMIT_MAP_SIZE)
 		return -ENODATA;
 
@@ -285,11 +267,7 @@ static int bq24257_get_input_current_limit(struct bq24257_device *bq,
 static int bq24257_set_input_current_limit(struct bq24257_device *bq,
 					const union power_supply_propval *val)
 {
-	/*
-	 * Address the case where the user manually sets an input current limit
-	 * while the charger auto-detection mechanism is active. In this
-	 * case we want to abort and go straight to the user-specified value.
-	 */
+	 
 	if (bq->iilimit_autoset_enable)
 		cancel_delayed_work_sync(&bq->iilimit_setup_work);
 
@@ -438,14 +416,7 @@ static int bq24257_get_chip_state(struct bq24257_device *bq,
 	if (bq->pg)
 		state->power_good = !gpiod_get_value_cansleep(bq->pg);
 	else
-		/*
-		 * If we have a chip without a dedicated power-good GPIO or
-		 * some other explicit bit that would provide this information
-		 * assume the power is good if there is no supply related
-		 * fault - and not good otherwise. There is a possibility for
-		 * other errors to mask that power in fact is not good but this
-		 * is probably the best we can do here.
-		 */
+		 
 		switch (state->fault) {
 		case FAULT_INPUT_OVP:
 		case FAULT_INPUT_UVLO:
@@ -514,9 +485,9 @@ enum bq24257_vindpm {
 };
 
 enum bq24257_port_type {
-	PORT_TYPE_DCP,		/* Dedicated Charging Port */
-	PORT_TYPE_CDP,		/* Charging Downstream Port */
-	PORT_TYPE_SDP,		/* Standard Downstream Port */
+	PORT_TYPE_DCP,		 
+	PORT_TYPE_CDP,		 
+	PORT_TYPE_SDP,		 
 	PORT_TYPE_NON_STANDARD,
 };
 
@@ -552,11 +523,7 @@ static int bq24257_iilimit_autoset(struct bq24257_device *bq)
 
 	iilimit = ret;
 
-	/*
-	 * All USB ports should be able to handle 500mA. If not, DPM will lower
-	 * the charging current to accommodate the power source. No need to set
-	 * a lower IILIMIT value.
-	 */
+	 
 	if (loop_status == LOOP_STATUS_IN_DPM && iilimit == IILIMIT_500)
 		return 0;
 
@@ -606,24 +573,18 @@ static void bq24257_handle_state_change(struct bq24257_device *bq,
 	old_state = bq->state;
 	mutex_unlock(&bq->lock);
 
-	/*
-	 * Handle BQ2425x state changes observing whether the D+/D- based input
-	 * current limit autoset functionality is enabled.
-	 */
+	 
 	if (!new_state->power_good) {
 		dev_dbg(bq->dev, "Power removed\n");
 		if (bq->iilimit_autoset_enable) {
 			cancel_delayed_work_sync(&bq->iilimit_setup_work);
 
-			/* activate D+/D- port detection algorithm */
+			 
 			ret = bq24257_field_write(bq, F_DPDM_EN, 1);
 			if (ret < 0)
 				goto error;
 		}
-		/*
-		 * When power is removed always return to the default input
-		 * current limit as configured during probe.
-		 */
+		 
 		ret = bq24257_field_write(bq, F_IILIMIT, bq->init_data.iilimit);
 		if (ret < 0)
 			goto error;
@@ -631,7 +592,7 @@ static void bq24257_handle_state_change(struct bq24257_device *bq,
 		dev_dbg(bq->dev, "Power inserted\n");
 
 		if (bq->iilimit_autoset_enable)
-			/* configure input current limit */
+			 
 			schedule_delayed_work(&bq->iilimit_setup_work,
 				      msecs_to_jiffies(BQ24257_ILIM_SET_DELAY));
 	} else if (new_state->fault == FAULT_NO_BAT) {
@@ -690,15 +651,12 @@ static int bq24257_hw_init(struct bq24257_device *bq)
 		{F_VINDPM, bq->init_data.vindpm},
 	};
 
-	/*
-	 * Disable the watchdog timer to prevent the IC from going back to
-	 * default settings after 50 seconds of I2C inactivity.
-	 */
+	 
 	ret = bq24257_field_write(bq, F_WD_EN, 0);
 	if (ret < 0)
 		return ret;
 
-	/* configure the charge currents and voltages */
+	 
 	for (i = 0; i < ARRAY_SIZE(init_data); i++) {
 		ret = bq24257_field_write(bq, init_data[i].field,
 					  init_data[i].value);
@@ -718,13 +676,13 @@ static int bq24257_hw_init(struct bq24257_device *bq)
 		dev_dbg(bq->dev, "manually setting iilimit = %u\n",
 			bq->init_data.iilimit);
 
-		/* program fixed input current limit */
+		 
 		ret = bq24257_field_write(bq, F_IILIMIT,
 					  bq->init_data.iilimit);
 		if (ret < 0)
 			return ret;
 	} else if (!state.power_good)
-		/* activate D+/D- detection algorithm */
+		 
 		ret = bq24257_field_write(bq, F_DPDM_EN, 1);
 	else if (state.fault != FAULT_NO_BAT)
 		ret = bq24257_iilimit_autoset(bq);
@@ -881,7 +839,7 @@ static int bq24257_fw_probe(struct bq24257_device *bq)
 	int ret;
 	u32 property;
 
-	/* Required properties */
+	 
 	ret = device_property_read_u32(bq->dev, "ti,charge-current", &property);
 	if (ret < 0)
 		return ret;
@@ -905,17 +863,13 @@ static int bq24257_fw_probe(struct bq24257_device *bq)
 	bq->init_data.iterm = bq24257_find_idx(property, bq24257_iterm_map,
 					       BQ24257_ITERM_MAP_SIZE);
 
-	/* Optional properties. If not provided use reasonable default. */
+	 
 	ret = device_property_read_u32(bq->dev, "ti,current-limit",
 				       &property);
 	if (ret < 0) {
 		bq->iilimit_autoset_enable = true;
 
-		/*
-		 * Explicitly set a default value which will be needed for
-		 * devices that don't support the automatic setting of the input
-		 * current limit through the charger type detection mechanism.
-		 */
+		 
 		bq->init_data.iilimit = IILIMIT_500;
 	} else
 		bq->init_data.iilimit =
@@ -1010,11 +964,7 @@ static int bq24257_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/*
-	 * The BQ24250 doesn't support the D+/D- based charger type detection
-	 * used for the automatic setting of the input current limit setting so
-	 * explicitly disable that feature.
-	 */
+	 
 	if (bq->chip == BQ24250)
 		bq->iilimit_autoset_enable = false;
 
@@ -1022,12 +972,7 @@ static int bq24257_probe(struct i2c_client *client)
 		INIT_DELAYED_WORK(&bq->iilimit_setup_work,
 				  bq24257_iilimit_setup_work);
 
-	/*
-	 * The BQ24250 doesn't have a dedicated Power Good (PG) pin so let's
-	 * not probe for it and instead use a SW-based approach to determine
-	 * the PG state. We also use a SW-based approach for all other devices
-	 * if the PG pin is either not defined or can't be probed.
-	 */
+	 
 	if (bq->chip != BQ24250)
 		bq24257_pg_gpio_probe(bq);
 
@@ -1036,16 +981,12 @@ static int bq24257_probe(struct i2c_client *client)
 	else if (!bq->pg)
 		dev_info(bq->dev, "using SW-based power-good detection\n");
 
-	/* reset all registers to defaults */
+	 
 	ret = bq24257_field_write(bq, F_RESET, 1);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Put the RESET bit back to 0, in cache. For some reason the HW always
-	 * returns 1 on this bit, so this is the only way to avoid resetting the
-	 * chip every time we update another field in this register.
-	 */
+	 
 	ret = bq24257_field_write(bq, F_RESET, 0);
 	if (ret < 0)
 		return ret;
@@ -1082,7 +1023,7 @@ static void bq24257_remove(struct i2c_client *client)
 	if (bq->iilimit_autoset_enable)
 		cancel_delayed_work_sync(&bq->iilimit_setup_work);
 
-	bq24257_field_write(bq, F_RESET, 1); /* reset to defaults */
+	bq24257_field_write(bq, F_RESET, 1);  
 }
 
 #ifdef CONFIG_PM_SLEEP
@@ -1094,7 +1035,7 @@ static int bq24257_suspend(struct device *dev)
 	if (bq->iilimit_autoset_enable)
 		cancel_delayed_work_sync(&bq->iilimit_setup_work);
 
-	/* reset all registers to default (and activate standalone mode) */
+	 
 	ret = bq24257_field_write(bq, F_RESET, 1);
 	if (ret < 0)
 		dev_err(bq->dev, "Cannot reset chip to standalone mode.\n");
@@ -1121,7 +1062,7 @@ static int bq24257_resume(struct device *dev)
 		return ret;
 	}
 
-	/* signal userspace, maybe state changed while suspended */
+	 
 	power_supply_changed(bq->charger);
 
 	return 0;

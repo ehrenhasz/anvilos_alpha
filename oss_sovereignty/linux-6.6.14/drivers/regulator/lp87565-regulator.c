@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regulator driver for LP87565 PMIC
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - https://www.ti.com/
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -12,7 +8,7 @@
 #include <linux/mfd/lp87565.h>
 
 enum LP87565_regulator_id {
-	/* BUCK's */
+	 
 	LP87565_BUCK_0,
 	LP87565_BUCK_1,
 	LP87565_BUCK_2,
@@ -68,7 +64,7 @@ static const unsigned int lp87565_buck_ramp_delay[] = {
 	30000, 15000, 10000, 7500, 3800, 1900, 940, 470
 };
 
-/* LP87565 BUCK current limit */
+ 
 static const unsigned int lp87565_buck_uA[] = {
 	1500000, 2000000, 2500000, 3000000, 3500000, 4000000, 4500000, 5000000,
 };
@@ -107,14 +103,14 @@ static int lp87565_buck_set_ramp_delay(struct regulator_dev *rdev,
 
 	rdev->constraints->ramp_delay = lp87565_buck_ramp_delay[reg];
 
-	/* Conservatively give a 15% margin */
+	 
 	rdev->constraints->ramp_delay =
 				rdev->constraints->ramp_delay * 85 / 100;
 
 	return 0;
 }
 
-/* Operations permitted on BUCKs */
+ 
 static const struct regulator_ops lp87565_buck_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= regulator_enable_regmap,
@@ -230,7 +226,7 @@ static int lp87565_regulator_probe(struct platform_device *pdev)
 static const struct platform_device_id lp87565_regulator_id_table[] = {
 	{ "lp87565-regulator", },
 	{ "lp87565-q1-regulator", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, lp87565_regulator_id_table);
 

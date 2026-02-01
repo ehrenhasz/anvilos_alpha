@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Motorola PCAP2 as present in EZX phones
- *
- * Copyright (C) 2006 Harald Welte <laforge@openezx.org>
- * Copyright (C) 2009 Daniel Ribeiro <drwyrm@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -33,25 +28,25 @@ struct pcap_adc_sync_request {
 struct pcap_chip {
 	struct spi_device *spi;
 
-	/* IO */
+	 
 	u32 buf;
 	spinlock_t io_lock;
 
-	/* IRQ */
+	 
 	unsigned int irq_base;
 	u32 msr;
 	struct work_struct isr_work;
 	struct work_struct msr_work;
 	struct workqueue_struct *workqueue;
 
-	/* ADC */
+	 
 	struct pcap_adc_request *adc_queue[PCAP_ADC_MAXQ];
 	u8 adc_head;
 	u8 adc_tail;
 	spinlock_t adc_lock;
 };
 
-/* IO */
+ 
 static int ezx_pcap_putget(struct pcap_chip *pcap, u32 *data)
 {
 	struct spi_transfer t;
@@ -130,7 +125,7 @@ out_unlock:
 }
 EXPORT_SYMBOL_GPL(ezx_pcap_set_bits);
 
-/* IRQ */
+ 
 int irq_to_pcap(struct pcap_chip *pcap, int irq)
 {
 	return irq - pcap->irq_base;
@@ -184,7 +179,7 @@ static void pcap_isr_work(struct work_struct *work)
 		ezx_pcap_read(pcap, PCAP_REG_MSR, &msr);
 		ezx_pcap_read(pcap, PCAP_REG_ISR, &isr);
 
-		/* We can't service/ack irqs that are assigned to port 2 */
+		 
 		if (!(pdata->config & PCAP_SECOND_PORT)) {
 			ezx_pcap_read(pcap, PCAP_REG_INT_SEL, &int_sel);
 			isr &= ~int_sel;
@@ -210,7 +205,7 @@ static void pcap_irq_handler(struct irq_desc *desc)
 	queue_work(pcap->workqueue, &pcap->isr_work);
 }
 
-/* ADC */
+ 
 void pcap_set_ts_bits(struct pcap_chip *pcap, u32 bits)
 {
 	unsigned long flags;
@@ -243,12 +238,12 @@ static void pcap_adc_trigger(struct pcap_chip *pcap)
 	spin_lock_irqsave(&pcap->adc_lock, flags);
 	head = pcap->adc_head;
 	if (!pcap->adc_queue[head]) {
-		/* queue is empty, save power */
+		 
 		pcap_disable_adc(pcap);
 		spin_unlock_irqrestore(&pcap->adc_lock, flags);
 		return;
 	}
-	/* start conversion on requested bank, save TS_M bits */
+	 
 	ezx_pcap_read(pcap, PCAP_REG_ADC, &tmp);
 	tmp &= (PCAP_ADC_TS_M_MASK | PCAP_ADC_TS_REF_LOWPWR);
 	tmp |= pcap->adc_queue[head]->flags | PCAP_ADC_ADEN;
@@ -276,7 +271,7 @@ static irqreturn_t pcap_adc_irq(int irq, void *_pcap)
 		return IRQ_HANDLED;
 	}
 
-	/* read requested channels results */
+	 
 	ezx_pcap_read(pcap, PCAP_REG_ADC, &tmp);
 	tmp &= ~(PCAP_ADC_ADA1_MASK | PCAP_ADC_ADA2_MASK);
 	tmp |= (req->ch[0] << PCAP_ADC_ADA1_SHIFT);
@@ -290,11 +285,11 @@ static irqreturn_t pcap_adc_irq(int irq, void *_pcap)
 	pcap->adc_head = (pcap->adc_head + 1) & (PCAP_ADC_MAXQ - 1);
 	spin_unlock(&pcap->adc_lock);
 
-	/* pass the results and release memory */
+	 
 	req->callback(req->data, res);
 	kfree(req);
 
-	/* trigger next conversion (if any) on queue */
+	 
 	pcap_adc_trigger(pcap);
 
 	return IRQ_HANDLED;
@@ -306,7 +301,7 @@ int pcap_adc_async(struct pcap_chip *pcap, u8 bank, u32 flags, u8 ch[],
 	struct pcap_adc_request *req;
 	unsigned long irq_flags;
 
-	/* This will be freed after we have a result */
+	 
 	req = kmalloc(sizeof(struct pcap_adc_request), GFP_KERNEL);
 	if (!req)
 		return -ENOMEM;
@@ -328,7 +323,7 @@ int pcap_adc_async(struct pcap_chip *pcap, u8 bank, u32 flags, u8 ch[],
 	pcap->adc_tail = (pcap->adc_tail + 1) & (PCAP_ADC_MAXQ - 1);
 	spin_unlock_irqrestore(&pcap->adc_lock, irq_flags);
 
-	/* start conversion */
+	 
 	pcap_adc_trigger(pcap);
 
 	return 0;
@@ -363,7 +358,7 @@ int pcap_adc_sync(struct pcap_chip *pcap, u8 bank, u32 flags, u8 ch[],
 }
 EXPORT_SYMBOL_GPL(pcap_adc_sync);
 
-/* subdevs */
+ 
 static int pcap_remove_subdev(struct device *dev, void *unused)
 {
 	platform_device_unregister(to_platform_device(dev));
@@ -396,16 +391,16 @@ static void ezx_pcap_remove(struct spi_device *spi)
 	unsigned long flags;
 	int i;
 
-	/* remove all registered subdevs */
+	 
 	device_for_each_child(&spi->dev, NULL, pcap_remove_subdev);
 
-	/* cleanup ADC */
+	 
 	spin_lock_irqsave(&pcap->adc_lock, flags);
 	for (i = 0; i < PCAP_ADC_MAXQ; i++)
 		kfree(pcap->adc_queue[i]);
 	spin_unlock_irqrestore(&pcap->adc_lock, flags);
 
-	/* cleanup irqchip */
+	 
 	for (i = pcap->irq_base; i < (pcap->irq_base + PCAP_NIRQS); i++)
 		irq_set_chip_and_handler(i, NULL, NULL);
 
@@ -419,7 +414,7 @@ static int ezx_pcap_probe(struct spi_device *spi)
 	int i, adc_irq;
 	int ret = -ENODEV;
 
-	/* platform data is required */
+	 
 	if (!pdata)
 		goto ret;
 
@@ -435,7 +430,7 @@ static int ezx_pcap_probe(struct spi_device *spi)
 	INIT_WORK(&pcap->msr_work, pcap_msr_work);
 	spi_set_drvdata(spi, pcap);
 
-	/* setup spi */
+	 
 	spi->bits_per_word = 32;
 	spi->mode = SPI_MODE_0 | (pdata->config & PCAP_CS_AH ? SPI_CS_HIGH : 0);
 	ret = spi_setup(spi);
@@ -444,7 +439,7 @@ static int ezx_pcap_probe(struct spi_device *spi)
 
 	pcap->spi = spi;
 
-	/* setup irq */
+	 
 	pcap->irq_base = pdata->irq_base;
 	pcap->workqueue = create_singlethread_workqueue("pcapd");
 	if (!pcap->workqueue) {
@@ -453,19 +448,19 @@ static int ezx_pcap_probe(struct spi_device *spi)
 		goto ret;
 	}
 
-	/* redirect interrupts to AP, except adcdone2 */
+	 
 	if (!(pdata->config & PCAP_SECOND_PORT))
 		ezx_pcap_write(pcap, PCAP_REG_INT_SEL,
 					(1 << PCAP_IRQ_ADCDONE2));
 
-	/* setup irq chip */
+	 
 	for (i = pcap->irq_base; i < (pcap->irq_base + PCAP_NIRQS); i++) {
 		irq_set_chip_and_handler(i, &pcap_irq_chip, handle_simple_irq);
 		irq_set_chip_data(i, pcap);
 		irq_clear_status_flags(i, IRQ_NOREQUEST | IRQ_NOPROBE);
 	}
 
-	/* mask/ack all PCAP interrupts */
+	 
 	ezx_pcap_write(pcap, PCAP_REG_MSR, PCAP_MASK_ALL_INTERRUPT);
 	ezx_pcap_write(pcap, PCAP_REG_ISR, PCAP_CLEAR_INTERRUPT_REGISTER);
 	pcap->msr = PCAP_MASK_ALL_INTERRUPT;
@@ -474,7 +469,7 @@ static int ezx_pcap_probe(struct spi_device *spi)
 	irq_set_chained_handler_and_data(spi->irq, pcap_irq_handler, pcap);
 	irq_set_irq_wake(spi->irq, 1);
 
-	/* ADC */
+	 
 	adc_irq = pcap_to_irq(pcap, (pdata->config & PCAP_SECOND_PORT) ?
 					PCAP_IRQ_ADCDONE2 : PCAP_IRQ_ADCDONE);
 
@@ -483,14 +478,14 @@ static int ezx_pcap_probe(struct spi_device *spi)
 	if (ret)
 		goto free_irqchip;
 
-	/* setup subdevs */
+	 
 	for (i = 0; i < pdata->num_subdevs; i++) {
 		ret = pcap_add_subdev(pcap, &pdata->subdevs[i]);
 		if (ret)
 			goto remove_subdevs;
 	}
 
-	/* board specific quirks */
+	 
 	if (pdata->init)
 		pdata->init(pcap);
 
@@ -501,7 +496,7 @@ remove_subdevs:
 free_irqchip:
 	for (i = pcap->irq_base; i < (pcap->irq_base + PCAP_NIRQS); i++)
 		irq_set_chip_and_handler(i, NULL, NULL);
-/* destroy_workqueue: */
+ 
 	destroy_workqueue(pcap->workqueue);
 ret:
 	return ret;

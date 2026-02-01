@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Uncore Frequency Setting
- * Copyright (c) 2022, Intel Corporation.
- * All rights reserved.
- *
- * Provide interface to set MSR 620 at a granularity of per die. On CPU online,
- * one control CPU is identified per die to read/write limit. This control CPU
- * is changed, if the CPU state is changed to offline. When the last CPU is
- * offline in a die then remove the sysfs object for that die.
- * The majority of actual code is related to sysfs create and read/write
- * attributes.
- *
- * Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/module.h>
@@ -23,13 +10,13 @@
 
 #include "uncore-frequency-common.h"
 
-/* Max instances for uncore data, one for each die */
+ 
 static int uncore_max_entries __read_mostly;
-/* Storage for uncore data for all instances */
+ 
 static struct uncore_data *uncore_instances;
-/* Stores the CPU mask of the target CPUs to use during uncore read/write */
+ 
 static cpumask_t uncore_cpu_mask;
-/* CPU online callback register instance */
+ 
 static enum cpuhp_state uncore_hp_state __read_mostly;
 
 #define MSR_UNCORE_RATIO_LIMIT	0x620
@@ -106,7 +93,7 @@ static int uncore_read_freq(struct uncore_data *data, unsigned int *freq)
 	return 0;
 }
 
-/* Caller provides protection */
+ 
 static struct uncore_data *uncore_get_instance(unsigned int cpu)
 {
 	int id = topology_logical_die_id(cpu);
@@ -122,12 +109,12 @@ static int uncore_event_cpu_online(unsigned int cpu)
 	struct uncore_data *data;
 	int target;
 
-	/* Check if there is an online cpu in the package for uncore MSR */
+	 
 	target = cpumask_any_and(&uncore_cpu_mask, topology_die_cpumask(cpu));
 	if (target < nr_cpu_ids)
 		return 0;
 
-	/* Use this CPU on this die as a control CPU */
+	 
 	cpumask_set_cpu(cpu, &uncore_cpu_mask);
 
 	data = uncore_get_instance(cpu);
@@ -150,11 +137,11 @@ static int uncore_event_cpu_offline(unsigned int cpu)
 	if (!data)
 		return 0;
 
-	/* Check if existing cpu is used for uncore MSRs */
+	 
 	if (!cpumask_test_and_clear_cpu(cpu, &uncore_cpu_mask))
 		return 0;
 
-	/* Find a new cpu to set uncore MSR */
+	 
 	target = cpumask_any_but(topology_die_cpumask(cpu), cpu);
 
 	if (target < nr_cpu_ids) {

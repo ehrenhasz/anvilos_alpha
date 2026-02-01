@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * 1-Wire implementation for the ds2438 chip
- *
- * Copyright (c) 2017 Mariusz Bialonczyk <manio@skyboo.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,29 +13,29 @@
 
 #define W1_DS2438_RETRIES		3
 
-/* Memory commands */
+ 
 #define W1_DS2438_READ_SCRATCH		0xBE
 #define W1_DS2438_WRITE_SCRATCH		0x4E
 #define W1_DS2438_COPY_SCRATCH		0x48
 #define W1_DS2438_RECALL_MEMORY		0xB8
-/* Register commands */
+ 
 #define W1_DS2438_CONVERT_TEMP		0x44
 #define W1_DS2438_CONVERT_VOLTAGE	0xB4
 
 #define DS2438_PAGE_SIZE		8
 #define DS2438_ADC_INPUT_VAD		0
 #define DS2438_ADC_INPUT_VDD		1
-#define DS2438_MAX_CONVERSION_TIME	10		/* ms */
+#define DS2438_MAX_CONVERSION_TIME	10		 
 
-/* Page #0 definitions */
-#define DS2438_STATUS_REG		0x00		/* Status/Configuration Register */
-#define DS2438_STATUS_IAD		(1 << 0)	/* Current A/D Control Bit */
-#define DS2438_STATUS_CA		(1 << 1)	/* Current Accumulator Configuration */
-#define DS2438_STATUS_EE		(1 << 2)	/* Current Accumulator Shadow Selector bit */
-#define DS2438_STATUS_AD		(1 << 3)	/* Voltage A/D Input Select Bit */
-#define DS2438_STATUS_TB		(1 << 4)	/* Temperature Busy Flag */
-#define DS2438_STATUS_NVB		(1 << 5)	/* Nonvolatile Memory Busy Flag */
-#define DS2438_STATUS_ADB		(1 << 6)	/* A/D Converter Busy Flag */
+ 
+#define DS2438_STATUS_REG		0x00		 
+#define DS2438_STATUS_IAD		(1 << 0)	 
+#define DS2438_STATUS_CA		(1 << 1)	 
+#define DS2438_STATUS_EE		(1 << 2)	 
+#define DS2438_STATUS_AD		(1 << 3)	 
+#define DS2438_STATUS_TB		(1 << 4)	 
+#define DS2438_STATUS_NVB		(1 << 5)	 
+#define DS2438_STATUS_ADB		(1 << 6)	 
 
 #define DS2438_TEMP_LSB			0x01
 #define DS2438_TEMP_MSB			0x02
@@ -49,7 +45,7 @@
 #define DS2438_CURRENT_MSB		0x06
 #define DS2438_THRESHOLD		0x07
 
-/* Page #1 definitions */
+ 
 #define DS2438_ETM_0			0x00
 #define DS2438_ETM_1			0x01
 #define DS2438_ETM_2			0x02
@@ -82,7 +78,7 @@ static int w1_ds2438_get_page(struct w1_slave *sl, int pageno, u8 *buf)
 		if (count == DS2438_PAGE_SIZE + 1) {
 			crc = w1_calc_crc8(buf, DS2438_PAGE_SIZE);
 
-			/* check for correct CRC */
+			 
 			if ((u8)buf[DS2438_PAGE_SIZE] == crc)
 				return 0;
 		}
@@ -93,7 +89,7 @@ static int w1_ds2438_get_page(struct w1_slave *sl, int pageno, u8 *buf)
 static int w1_ds2438_get_temperature(struct w1_slave *sl, int16_t *temperature)
 {
 	unsigned int retries = W1_DS2438_RETRIES;
-	u8 w1_buf[DS2438_PAGE_SIZE + 1 /*for CRC*/];
+	u8 w1_buf[DS2438_PAGE_SIZE + 1  ];
 	unsigned int tm = DS2438_MAX_CONVERSION_TIME;
 	unsigned long sleep_rem;
 	int ret;
@@ -152,17 +148,17 @@ static int w1_ds2438_change_config_bit(struct w1_slave *sl, u8 mask, u8 value)
 		w1_buf[1] = 0x00;
 		w1_write_block(sl->master, w1_buf, 2);
 
-		/* reading one byte of result */
+		 
 		status = w1_read_8(sl->master);
 
-		/* if bit0=1, set a value to a mask for easy compare */
+		 
 		if (value)
 			value = mask;
 
 		if ((status & mask) == value)
-			return 0;	/* already set as requested */
+			return 0;	 
 
-		/* changing bit */
+		 
 		status ^= mask;
 		perform_write = 1;
 
@@ -195,17 +191,17 @@ static int w1_ds2438_change_offset_register(struct w1_slave *sl, u8 *value)
 {
 	unsigned int retries = W1_DS2438_RETRIES;
 	u8 w1_buf[9];
-	u8 w1_page1_buf[DS2438_PAGE_SIZE + 1 /*for CRC*/];
+	u8 w1_page1_buf[DS2438_PAGE_SIZE + 1  ];
 
 	if (w1_ds2438_get_page(sl, 1, w1_page1_buf) == 0) {
-		memcpy(&w1_buf[2], w1_page1_buf, DS2438_PAGE_SIZE - 1); /* last register reserved */
-		w1_buf[7] = value[0]; /* change only offset register */
+		memcpy(&w1_buf[2], w1_page1_buf, DS2438_PAGE_SIZE - 1);  
+		w1_buf[7] = value[0];  
 		w1_buf[8] = value[1];
 		while (retries--) {
 			if (w1_reset_select_slave(sl))
 				continue;
 			w1_buf[0] = W1_DS2438_WRITE_SCRATCH;
-			w1_buf[1] = 0x01; /* write to page 1 */
+			w1_buf[1] = 0x01;  
 			w1_write_block(sl->master, w1_buf, 9);
 
 			if (w1_reset_select_slave(sl))
@@ -223,7 +219,7 @@ static int w1_ds2438_get_voltage(struct w1_slave *sl,
 				 int adc_input, uint16_t *voltage)
 {
 	unsigned int retries = W1_DS2438_RETRIES;
-	u8 w1_buf[DS2438_PAGE_SIZE + 1 /*for CRC*/];
+	u8 w1_buf[DS2438_PAGE_SIZE + 1  ];
 	unsigned int tm = DS2438_MAX_CONVERSION_TIME;
 	unsigned long sleep_rem;
 	int ret;
@@ -270,13 +266,13 @@ post_unlock:
 
 static int w1_ds2438_get_current(struct w1_slave *sl, int16_t *voltage)
 {
-	u8 w1_buf[DS2438_PAGE_SIZE + 1 /*for CRC*/];
+	u8 w1_buf[DS2438_PAGE_SIZE + 1  ];
 	int ret;
 
 	mutex_lock(&sl->master->bus_mutex);
 
 	if (w1_ds2438_get_page(sl, 0, w1_buf) == 0) {
-		/* The voltage measured across current sense resistor RSENS. */
+		 
 		*voltage = (((int16_t) w1_buf[DS2438_CURRENT_MSB]) << 8) | ((int16_t) w1_buf[DS2438_CURRENT_LSB]);
 		ret = 0;
 	} else
@@ -336,7 +332,7 @@ static ssize_t page0_read(struct file *filp, struct kobject *kobj,
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	int ret;
-	u8 w1_buf[DS2438_PAGE_SIZE + 1 /*for CRC*/];
+	u8 w1_buf[DS2438_PAGE_SIZE + 1  ];
 
 	if (off != 0)
 		return 0;
@@ -345,7 +341,7 @@ static ssize_t page0_read(struct file *filp, struct kobject *kobj,
 
 	mutex_lock(&sl->master->bus_mutex);
 
-	/* Read no more than page0 size */
+	 
 	if (count > DS2438_PAGE_SIZE)
 		count = DS2438_PAGE_SIZE;
 
@@ -366,7 +362,7 @@ static ssize_t page1_read(struct file *filp, struct kobject *kobj,
 {
 	struct w1_slave *sl = kobj_to_w1_slave(kobj);
 	int ret;
-	u8 w1_buf[DS2438_PAGE_SIZE + 1 /*for CRC*/];
+	u8 w1_buf[DS2438_PAGE_SIZE + 1  ];
 
 	if (off != 0)
 		return 0;
@@ -375,7 +371,7 @@ static ssize_t page1_read(struct file *filp, struct kobject *kobj,
 
 	mutex_lock(&sl->master->bus_mutex);
 
-	/* Read no more than page1 size */
+	 
 	if (count > DS2438_PAGE_SIZE)
 		count = DS2438_PAGE_SIZE;
 
@@ -476,9 +472,9 @@ static BIN_ATTR_RW(iad, 0);
 static BIN_ATTR_RO(page0, DS2438_PAGE_SIZE);
 static BIN_ATTR_RO(page1, DS2438_PAGE_SIZE);
 static BIN_ATTR_WO(offset, 2);
-static BIN_ATTR_RO(temperature, 0/* real length varies */);
-static BIN_ATTR_RO(vad, 0/* real length varies */);
-static BIN_ATTR_RO(vdd, 0/* real length varies */);
+static BIN_ATTR_RO(temperature, 0 );
+static BIN_ATTR_RO(vad, 0 );
+static BIN_ATTR_RO(vdd, 0 );
 
 static struct bin_attribute *w1_ds2438_bin_attrs[] = {
 	&bin_attr_iad,

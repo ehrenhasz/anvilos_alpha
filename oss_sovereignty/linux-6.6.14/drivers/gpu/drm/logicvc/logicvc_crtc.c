@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <linux/of.h>
 #include <linux/of_graph.h>
@@ -44,10 +41,7 @@ static void logicvc_crtc_atomic_begin(struct drm_crtc *drm_crtc,
 	struct drm_device *drm_dev = drm_crtc->dev;
 	unsigned long flags;
 
-	/*
-	 * We need to grab the pending event here if vblank was already enabled
-	 * since we won't get a call to atomic_enable to grab it.
-	 */
+	 
 	if (drm_crtc->state->event && old_state->active) {
 		spin_lock_irqsave(&drm_dev->event_lock, flags);
 		WARN_ON(drm_crtc_vblank_get(drm_crtc) != 0);
@@ -76,7 +70,7 @@ static void logicvc_crtc_atomic_enable(struct drm_crtc *drm_crtc,
 	unsigned long flags;
 	u32 ctrl;
 
-	/* Timings */
+	 
 
 	hact = mode->hdisplay;
 	hfp = mode->hsync_start - mode->hdisplay;
@@ -98,7 +92,7 @@ static void logicvc_crtc_atomic_enable(struct drm_crtc *drm_crtc,
 	regmap_write(logicvc->regmap, LOGICVC_VSYNC_BACK_PORCH_REG, vbp - 1);
 	regmap_write(logicvc->regmap, LOGICVC_VRES_REG, vact - 1);
 
-	/* Signals */
+	 
 
 	ctrl = LOGICVC_CTRL_HSYNC_ENABLE | LOGICVC_CTRL_VSYNC_ENABLE |
 	       LOGICVC_CTRL_DE_ENABLE;
@@ -133,12 +127,12 @@ static void logicvc_crtc_atomic_enable(struct drm_crtc *drm_crtc,
 			   LOGICVC_CTRL_PIXEL_INVERT |
 			   LOGICVC_CTRL_CLOCK_INVERT, ctrl);
 
-	/* Generate internal state reset. */
+	 
 	regmap_write(logicvc->regmap, LOGICVC_DTYPE_REG, 0);
 
 	drm_crtc_vblank_on(drm_crtc);
 
-	/* Register our event after vblank is enabled. */
+	 
 	if (drm_crtc->state->event && !old_state->active) {
 		spin_lock_irqsave(&drm_dev->event_lock, flags);
 		WARN_ON(drm_crtc_vblank_get(drm_crtc) != 0);
@@ -157,7 +151,7 @@ static void logicvc_crtc_atomic_disable(struct drm_crtc *drm_crtc,
 
 	drm_crtc_vblank_off(drm_crtc);
 
-	/* Disable and clear CRTC bits. */
+	 
 	regmap_update_bits(logicvc->regmap, LOGICVC_CTRL_REG,
 			   LOGICVC_CTRL_HSYNC_ENABLE |
 			   LOGICVC_CTRL_HSYNC_INVERT |
@@ -168,10 +162,10 @@ static void logicvc_crtc_atomic_disable(struct drm_crtc *drm_crtc,
 			   LOGICVC_CTRL_PIXEL_INVERT |
 			   LOGICVC_CTRL_CLOCK_INVERT, 0);
 
-	/* Generate internal state reset. */
+	 
 	regmap_write(logicvc->regmap, LOGICVC_DTYPE_REG, 0);
 
-	/* Consume any leftover event since vblank is now disabled. */
+	 
 	if (drm_crtc->state->event && !drm_crtc->state->active) {
 		spin_lock_irq(&drm_dev->event_lock);
 
@@ -192,11 +186,11 @@ static int logicvc_crtc_enable_vblank(struct drm_crtc *drm_crtc)
 {
 	struct logicvc_drm *logicvc = logicvc_drm(drm_crtc->dev);
 
-	/* Clear any pending V_SYNC interrupt. */
+	 
 	regmap_write_bits(logicvc->regmap, LOGICVC_INT_STAT_REG,
 			  LOGICVC_INT_STAT_V_SYNC, LOGICVC_INT_STAT_V_SYNC);
 
-	/* Unmask V_SYNC interrupt. */
+	 
 	regmap_write_bits(logicvc->regmap, LOGICVC_INT_MASK_REG,
 			  LOGICVC_INT_MASK_V_SYNC, 0);
 
@@ -207,7 +201,7 @@ static void logicvc_crtc_disable_vblank(struct drm_crtc *drm_crtc)
 {
 	struct logicvc_drm *logicvc = logicvc_drm(drm_crtc->dev);
 
-	/* Mask V_SYNC interrupt. */
+	 
 	regmap_write_bits(logicvc->regmap, LOGICVC_INT_MASK_REG,
 			  LOGICVC_INT_MASK_V_SYNC, LOGICVC_INT_MASK_V_SYNC);
 }

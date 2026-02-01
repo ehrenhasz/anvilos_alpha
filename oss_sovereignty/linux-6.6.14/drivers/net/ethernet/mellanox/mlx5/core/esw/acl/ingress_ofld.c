@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Inc. All rights reserved. */
+
+ 
 
 #include "mlx5_core.h"
 #include "eswitch.h"
@@ -21,16 +21,12 @@ static int esw_acl_ingress_prio_tag_create(struct mlx5_eswitch *esw,
 	struct mlx5_flow_spec *spec;
 	int err = 0;
 
-	/* For prio tag mode, there is only 1 FTEs:
-	 * 1) Untagged packets - push prio tag VLAN and modify metadata if
-	 * required, allow
-	 * Unmatched traffic is allowed by default
-	 */
+	 
 	spec = kvzalloc(sizeof(*spec), GFP_KERNEL);
 	if (!spec)
 		return -ENOMEM;
 
-	/* Untagged packets - push prio tag VLAN, allow */
+	 
 	MLX5_SET_TO_ONES(fte_match_param, spec->match_criteria, outer_headers.cvlan_tag);
 	MLX5_SET(fte_match_param, spec->match_value, outer_headers.cvlan_tag, 0);
 	spec->match_criteria_enable = MLX5_MATCH_OUTER_HEADERS;
@@ -203,9 +199,7 @@ static int esw_acl_ingress_ofld_groups_create(struct mlx5_eswitch *esw,
 		return -ENOMEM;
 
 	if (vport->vport == MLX5_VPORT_UPLINK) {
-		/* This group can hold an FTE to drop all traffic.
-		 * Need in case LAG is enabled.
-		 */
+		 
 		MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, flow_index);
 		MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, flow_index);
 
@@ -221,9 +215,7 @@ static int esw_acl_ingress_ofld_groups_create(struct mlx5_eswitch *esw,
 	}
 
 	if (esw_acl_ingress_prio_tag_enabled(esw, vport)) {
-		/* This group is to hold FTE to match untagged packets when prio_tag
-		 * is enabled.
-		 */
+		 
 		memset(flow_group_in, 0, inlen);
 		match_criteria = MLX5_ADDR_OF(create_flow_group_in,
 					      flow_group_in, match_criteria);
@@ -245,10 +237,7 @@ static int esw_acl_ingress_ofld_groups_create(struct mlx5_eswitch *esw,
 	}
 
 	if (mlx5_eswitch_vport_match_metadata_enabled(esw)) {
-		/* This group holds an FTE with no match to add metadata for
-		 * tagged packets if prio-tag is enabled, or for all untagged
-		 * traffic in case prio-tag is disabled.
-		 */
+		 
 		memset(flow_group_in, 0, inlen);
 		MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, flow_index);
 		MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, flow_index);
@@ -355,7 +344,7 @@ void esw_acl_ingress_ofld_cleanup(struct mlx5_eswitch *esw,
 	esw_acl_ingress_table_destroy(vport);
 }
 
-/* Caller must hold rtnl_lock */
+ 
 int mlx5_esw_acl_ingress_vport_metadata_update(struct mlx5_eswitch *esw, u16 vport_num,
 					       u32 metadata)
 {
@@ -371,7 +360,7 @@ int mlx5_esw_acl_ingress_vport_metadata_update(struct mlx5_eswitch *esw, u16 vpo
 
 	vport->metadata = metadata ? metadata : vport->default_metadata;
 
-	/* Recreate ingress acl rules with vport->metadata */
+	 
 	err = esw_acl_ingress_ofld_rules_create(esw, vport);
 	if (err)
 		goto out;

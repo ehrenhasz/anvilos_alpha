@@ -1,9 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2022 Intel Corporation
 
-/*
- *  sof_sdw_rt_amp - Helpers to handle RT1308/RT1316/RT1318 from generic machine driver
- */
+
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -20,7 +18,7 @@
 
 #define CODEC_NAME_SIZE	7
 
-/* choose a larger value to resolve compatibility issues */
+ 
 #define RT_AMP_MAX_BQ_REG RT1316_MAX_BQ_REG
 
 struct rt_amp_platform_data {
@@ -39,7 +37,7 @@ static const struct rt_amp_platform_data dell_0b00_platform_data = {
 };
 
 static const struct dmi_system_id dmi_platform_data[] = {
-	/* CometLake devices */
+	 
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc"),
@@ -54,7 +52,7 @@ static const struct dmi_system_id dmi_platform_data[] = {
 		},
 		.driver_data = (void *)&dell_0a5d_platform_data,
 	},
-	/* TigerLake devices */
+	 
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc"),
@@ -69,7 +67,7 @@ static const struct dmi_system_id dmi_platform_data[] = {
 		},
 		.driver_data = (void *)&dell_0a5d_platform_data,
 	},
-	/* AlderLake devices */
+	 
 	{
 		.matches = {
 			DMI_MATCH(DMI_SYS_VENDOR, "Dell Inc"),
@@ -139,12 +137,7 @@ static const struct snd_soc_dapm_widget rt_amp_widgets[] = {
 	SND_SOC_DAPM_SPK("Speaker", NULL),
 };
 
-/*
- * dapm routes for rt1308/rt1316/rt1318 will be registered dynamically
- * according to the number of rt1308/rt1316/rt1318 used. The first two
- * entries will be registered for one codec case, and the last two entries
- * are also registered if two 1308s/1316s/1318s are used.
- */
+ 
 static const struct snd_soc_dapm_route rt1308_map[] = {
 	{ "Speaker", NULL, "rt1308-1 SPOL" },
 	{ "Speaker", NULL, "rt1308-1 SPOR" },
@@ -173,10 +166,10 @@ static const struct snd_soc_dapm_route *get_codec_name_and_route(struct snd_soc_
 
 	dai_name = rtd->dai_link->codecs->dai_name;
 
-	/* get the codec name */
+	 
 	snprintf(codec_name, CODEC_NAME_SIZE, "%s", dai_name);
 
-	/* choose the right codec's map  */
+	 
 	if (strcmp(codec_name, "rt1308") == 0)
 		return rt1308_map;
 	else if (strcmp(codec_name, "rt1316") == 0)
@@ -262,14 +255,14 @@ static int rt1308_i2s_hw_params(struct snd_pcm_substream *substream,
 
 	pll_out = params_rate(params) * 512;
 
-	/* Set rt1308 pll */
+	 
 	err = snd_soc_dai_set_pll(codec_dai, 0, clk_id, clk_freq, pll_out);
 	if (err < 0) {
 		dev_err(card->dev, "Failed to set RT1308 PLL: %d\n", err);
 		return err;
 	}
 
-	/* Set rt1308 sysclk */
+	 
 	err = snd_soc_dai_set_sysclk(codec_dai, RT1308_FS_SYS_S_PLL, pll_out,
 				     SND_SOC_CLOCK_IN);
 	if (err < 0) {
@@ -280,7 +273,7 @@ static int rt1308_i2s_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* machine stream operations */
+ 
 struct snd_soc_ops sof_sdw_rt1308_i2s_ops = {
 	.hw_params = rt1308_i2s_hw_params,
 };
@@ -312,7 +305,7 @@ int sof_sdw_rt_amp_init(struct snd_soc_card *card,
 	struct device *sdw_dev1, *sdw_dev2;
 	int ret;
 
-	/* Count amp number and do init on playback link only. */
+	 
 	if (!playback)
 		return 0;
 
@@ -343,12 +336,7 @@ int sof_sdw_rt_amp_init(struct snd_soc_card *card,
 		}
 		ctx->amp_dev2 = sdw_dev2;
 
-		/*
-		 * if two amps are in one dai link, the init function
-		 * in this dai link will be first set for the first speaker,
-		 * and it should be reset to initialize all speakers when
-		 * the second speaker is found.
-		 */
+		 
 		if (dai_links->init)
 			dai_links->init = all_spk_init;
 		else

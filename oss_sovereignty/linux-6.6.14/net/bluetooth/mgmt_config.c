@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright (C) 2020 Google Corporation
- */
+
+ 
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -46,7 +44,7 @@ int read_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
 {
 	int ret;
 	struct mgmt_rp_read_def_system_config {
-		/* Please see mgmt-api.txt for documentation of these values */
+		 
 		HDEV_PARAM_U16(def_page_scan_type);
 		HDEV_PARAM_U16(def_page_scan_int);
 		HDEV_PARAM_U16(def_page_scan_window);
@@ -137,7 +135,7 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
 				       MGMT_STATUS_INVALID_PARAMS);
 	}
 
-	/* First pass to validate the tlv */
+	 
 	while (buffer_left >= sizeof(struct mgmt_tlv)) {
 		const u8 len = TO_TLV(buffer)->length;
 		size_t exp_type_len;
@@ -154,7 +152,7 @@ int set_def_system_config(struct sock *sk, struct hci_dev *hdev, void *data,
 					MGMT_STATUS_INVALID_PARAMS);
 		}
 
-		/* Please see mgmt-api.txt for documentation of these values */
+		 
 		switch (type) {
 		case 0x0000:
 		case 0x0001:

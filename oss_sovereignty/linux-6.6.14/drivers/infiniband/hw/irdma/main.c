@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "main.h"
 #include "../../../net/ethernet/intel/ice/ice.h"
 
@@ -45,7 +45,7 @@ static void irdma_prep_tc_change(struct irdma_device *iwdev)
 	iwdev->vsi.tc_change_pending = true;
 	irdma_sc_suspend_resume_qps(&iwdev->vsi, IRDMA_OP_SUSPEND);
 
-	/* Wait for all qp's to suspend */
+	 
 	wait_event_timeout(iwdev->suspend_wq,
 			   !atomic_read(&iwdev->vsi.qp_suspend_reqs),
 			   msecs_to_jiffies(IRDMA_EVENT_TIMEOUT_MS));
@@ -145,10 +145,7 @@ static void irdma_iidc_event_handler(struct ice_pf *pf, struct iidc_event *event
 	}
 }
 
-/**
- * irdma_request_reset - Request a reset
- * @rf: RDMA PCI function
- */
+ 
 static void irdma_request_reset(struct irdma_pci_f *rf)
 {
 	struct ice_pf *pf = rf->cdev;
@@ -157,11 +154,7 @@ static void irdma_request_reset(struct irdma_pci_f *rf)
 	ice_rdma_request_reset(pf, IIDC_PFR);
 }
 
-/**
- * irdma_lan_register_qset - Register qset with LAN driver
- * @vsi: vsi structure
- * @tc_node: Traffic class node
- */
+ 
 static int irdma_lan_register_qset(struct irdma_sc_vsi *vsi,
 				   struct irdma_ws_node *tc_node)
 {
@@ -185,11 +178,7 @@ static int irdma_lan_register_qset(struct irdma_sc_vsi *vsi,
 	return 0;
 }
 
-/**
- * irdma_lan_unregister_qset - Unregister qset with LAN driver
- * @vsi: vsi structure
- * @tc_node: Traffic class node
- */
+ 
 static void irdma_lan_unregister_qset(struct irdma_sc_vsi *vsi,
 				      struct irdma_ws_node *tc_node)
 {

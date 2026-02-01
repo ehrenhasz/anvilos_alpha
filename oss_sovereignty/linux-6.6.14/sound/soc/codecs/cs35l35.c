@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs35l35.c -- CS35L35 ALSA SoC audio driver
- *
- * Copyright 2017 Cirrus Logic, Inc.
- *
- * Author: Brian Austin <brian.austin@cirrus.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -35,10 +29,7 @@
 #include "cs35l35.h"
 #include "cirrus_legacy.h"
 
-/*
- * Some fields take zero as a valid value so use a high bit flag that won't
- * get written to the device to mark those.
- */
+ 
 #define CS35L35_VALID_PDATA 0x80000000
 
 static const struct reg_default cs35l35_reg[] = {
@@ -212,7 +203,7 @@ static int cs35l35_sdin_event(struct snd_soc_dapm_widget *w,
 		regmap_update_bits(cs35l35->regmap, CS35L35_PWRCTL1,
 					  CS35L35_PDN_ALL_MASK, 1);
 
-		/* Already muted, so disable volume ramp for faster shutdown */
+		 
 		regmap_update_bits(cs35l35->regmap, CS35L35_AMP_DIG_VOL_CTL,
 				   CS35L35_AMP_DIGSFT_MASK, 0);
 
@@ -254,7 +245,7 @@ static int cs35l35_main_amp_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_POST_PMU:
 		usleep_range(5000, 5100);
-		/* If in PDM mode we must use VP for Voltage control */
+		 
 		if (cs35l35->pdm_mode)
 			regmap_update_bits(cs35l35->regmap,
 					CS35L35_BST_CVTR_V_CTL,
@@ -284,10 +275,7 @@ static int cs35l35_main_amp_event(struct snd_soc_dapm_widget *w,
 		break;
 	case SND_SOC_DAPM_POST_PMD:
 		usleep_range(5000, 5100);
-		/*
-		 * If PDM mode we should switch back to pdata value
-		 * for Voltage control when we go down
-		 */
+		 
 		if (cs35l35->pdm_mode)
 			regmap_update_bits(cs35l35->regmap,
 					CS35L35_BST_CVTR_V_CTL,
@@ -407,7 +395,7 @@ struct cs35l35_sysclk_config {
 
 static struct cs35l35_sysclk_config cs35l35_clk_ctl[] = {
 
-	/* SYSCLK, Sample Rate, Serial Port Cfg */
+	 
 	{5644800, 44100, 0x00},
 	{5644800, 88200, 0x40},
 	{6144000, 48000, 0x10},
@@ -490,12 +478,7 @@ static int cs35l35_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/*
-	 * Rev A0 Errata
-	 * When configured for the weak-drive detection path (CH_WKFET_DIS = 0)
-	 * the Class H algorithm does not enable weak-drive operation for
-	 * nonzero values of CH_WKFET_DELAY if SP_RATE = 01 or 10
-	 */
+	 
 	errata_chk = (clk_ctl & CS35L35_SP_RATE_MASK) >> CS35L35_SP_RATE_SHIFT;
 
 	if (classh->classh_wk_fet_disable == 0x00 &&
@@ -511,10 +494,7 @@ static int cs35l35_hw_params(struct snd_pcm_substream *substream,
 		}
 	}
 
-	/*
-	 * You can pull more Monitor data from the SDOUT pin than going to SDIN
-	 * Just make sure your SCLK is fast enough to fill the frame
-	 */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
 		switch (params_width(params)) {
 		case 8:
@@ -546,9 +526,7 @@ static int cs35l35_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	if (cs35l35->i2s_mode) {
-		/* We have to take the SCLK to derive num sclks
-		 * to configure the CLOCK_CTL3 register correctly
-		 */
+		 
 		if ((cs35l35->sclk / srate) % 4) {
 			dev_err(component->dev, "Unsupported sclk/fs ratio %d:%d\n",
 					cs35l35->sclk, srate);
@@ -556,7 +534,7 @@ static int cs35l35_hw_params(struct snd_pcm_substream *substream,
 		}
 		sp_sclks = ((cs35l35->sclk / srate) / 4) - 1;
 
-		/* Only certain ratios supported when device is a clock consumer */
+		 
 		if (cs35l35->clock_consumer) {
 			switch (sp_sclks) {
 			case CS35L35_SP_SCLKS_32FS:
@@ -568,7 +546,7 @@ static int cs35l35_hw_params(struct snd_pcm_substream *substream,
 				return -EINVAL;
 			}
 		} else {
-			/* Only certain ratios supported when device is a clock provider */
+			 
 			switch (sp_sclks) {
 			case CS35L35_SP_SCLKS_32FS:
 			case CS35L35_SP_SCLKS_64FS:
@@ -654,7 +632,7 @@ static int cs35l35_dai_set_sysclk(struct snd_soc_dai *dai,
 	struct snd_soc_component *component = dai->component;
 	struct cs35l35_private *cs35l35 = snd_soc_component_get_drvdata(component);
 
-	/* Need the SCLK Frequency regardless of sysclk source for I2S */
+	 
 	cs35l35->sclk = freq;
 
 	return 0;
@@ -766,10 +744,7 @@ static int cs35l35_boost_inductor(struct cs35l35_private *cs35l35,
 	struct regmap *regmap = cs35l35->regmap;
 	unsigned int bst_ipk = 0;
 
-	/*
-	 * Digital Boost Converter Configuration for feedback,
-	 * ramping, switching frequency, and estimation block seeding.
-	 */
+	 
 
 	regmap_update_bits(regmap, CS35L35_BST_CONV_SW_FREQ,
 			   CS35L35_BST_CONV_SWFREQ_MASK, 0x00);
@@ -778,7 +753,7 @@ static int cs35l35_boost_inductor(struct cs35l35_private *cs35l35,
 	bst_ipk &= CS35L35_BST_IPK_MASK;
 
 	switch (inductor) {
-	case 1000: /* 1 uH */
+	case 1000:  
 		regmap_write(regmap, CS35L35_BST_CONV_COEF_1, 0x24);
 		regmap_write(regmap, CS35L35_BST_CONV_COEF_2, 0x24);
 		regmap_update_bits(regmap, CS35L35_BST_CONV_SW_FREQ,
@@ -789,7 +764,7 @@ static int cs35l35_boost_inductor(struct cs35l35_private *cs35l35,
 		else
 			regmap_write(regmap, CS35L35_BST_CONV_SLOPE_COMP, 0x4E);
 		break;
-	case 1200: /* 1.2 uH */
+	case 1200:  
 		regmap_write(regmap, CS35L35_BST_CONV_COEF_1, 0x20);
 		regmap_write(regmap, CS35L35_BST_CONV_COEF_2, 0x20);
 		regmap_update_bits(regmap, CS35L35_BST_CONV_SW_FREQ,
@@ -800,7 +775,7 @@ static int cs35l35_boost_inductor(struct cs35l35_private *cs35l35,
 		else
 			regmap_write(regmap, CS35L35_BST_CONV_SLOPE_COMP, 0x47);
 		break;
-	case 1500: /* 1.5uH */
+	case 1500:  
 		regmap_write(regmap, CS35L35_BST_CONV_COEF_1, 0x20);
 		regmap_write(regmap, CS35L35_BST_CONV_COEF_2, 0x20);
 		regmap_update_bits(regmap, CS35L35_BST_CONV_SW_FREQ,
@@ -811,7 +786,7 @@ static int cs35l35_boost_inductor(struct cs35l35_private *cs35l35,
 		else
 			regmap_write(regmap, CS35L35_BST_CONV_SLOPE_COMP, 0x3C);
 		break;
-	case 2200: /* 2.2uH */
+	case 2200:  
 		regmap_write(regmap, CS35L35_BST_CONV_COEF_1, 0x19);
 		regmap_write(regmap, CS35L35_BST_CONV_COEF_2, 0x25);
 		regmap_update_bits(regmap, CS35L35_BST_CONV_SW_FREQ,
@@ -837,7 +812,7 @@ static int cs35l35_component_probe(struct snd_soc_component *component)
 	struct monitor_cfg *monitor_config = &cs35l35->pdata.mon_cfg;
 	int ret;
 
-	/* Set Platform Data */
+	 
 	if (cs35l35->pdata.bst_vctl)
 		regmap_update_bits(cs35l35->regmap, CS35L35_BST_CVTR_V_CTL,
 				CS35L35_BST_CTL_MASK,
@@ -1110,7 +1085,7 @@ static irqreturn_t cs35l35_irq(int irq, void *data)
 	unsigned int sticky1, sticky2, sticky3, sticky4;
 	unsigned int mask1, mask2, mask3, mask4, current1;
 
-	/* ack the irq by reading all status registers */
+	 
 	regmap_read(cs35l35->regmap, CS35L35_INT_STATUS_4, &sticky4);
 	regmap_read(cs35l35->regmap, CS35L35_INT_STATUS_3, &sticky3);
 	regmap_read(cs35l35->regmap, CS35L35_INT_STATUS_2, &sticky2);
@@ -1121,7 +1096,7 @@ static irqreturn_t cs35l35_irq(int irq, void *data)
 	regmap_read(cs35l35->regmap, CS35L35_INT_MASK_2, &mask2);
 	regmap_read(cs35l35->regmap, CS35L35_INT_MASK_1, &mask1);
 
-	/* Check to see if unmasked bits are active */
+	 
 	if (!(sticky1 & ~mask1) && !(sticky2 & ~mask2) && !(sticky3 & ~mask3)
 			&& !(sticky4 & ~mask4))
 		return IRQ_NONE;
@@ -1129,14 +1104,14 @@ static irqreturn_t cs35l35_irq(int irq, void *data)
 	if (sticky2 & CS35L35_PDN_DONE)
 		complete(&cs35l35->pdn_done);
 
-	/* read the current values */
+	 
 	regmap_read(cs35l35->regmap, CS35L35_INT_STATUS_1, &current1);
 
-	/* handle the interrupts */
+	 
 	if (sticky1 & CS35L35_CAL_ERR) {
 		dev_crit(cs35l35->dev, "Calibration Error\n");
 
-		/* error is no longer asserted; safe to reset */
+		 
 		if (!(current1 & CS35L35_CAL_ERR)) {
 			pr_debug("%s : Cal error release\n", __func__);
 			regmap_update_bits(cs35l35->regmap,
@@ -1154,7 +1129,7 @@ static irqreturn_t cs35l35_irq(int irq, void *data)
 
 	if (sticky1 & CS35L35_AMP_SHORT) {
 		dev_crit(cs35l35->dev, "AMP Short Error\n");
-		/* error is no longer asserted; safe to reset */
+		 
 		if (!(current1 & CS35L35_AMP_SHORT)) {
 			dev_dbg(cs35l35->dev, "Amp short error release\n");
 			regmap_update_bits(cs35l35->regmap,
@@ -1173,7 +1148,7 @@ static irqreturn_t cs35l35_irq(int irq, void *data)
 	if (sticky1 & CS35L35_OTW) {
 		dev_warn(cs35l35->dev, "Over temperature warning\n");
 
-		/* error is no longer asserted; safe to reset */
+		 
 		if (!(current1 & CS35L35_OTW)) {
 			dev_dbg(cs35l35->dev, "Over temperature warn release\n");
 			regmap_update_bits(cs35l35->regmap,
@@ -1191,7 +1166,7 @@ static irqreturn_t cs35l35_irq(int irq, void *data)
 
 	if (sticky1 & CS35L35_OTE) {
 		dev_crit(cs35l35->dev, "Over temperature error\n");
-		/* error is no longer asserted; safe to reset */
+		 
 		if (!(current1 & CS35L35_OTE)) {
 			dev_dbg(cs35l35->dev, "Over temperature error release\n");
 			regmap_update_bits(cs35l35->regmap,
@@ -1390,7 +1365,7 @@ static int cs35l35_handle_of_data(struct i2c_client *i2c_client,
 	}
 	of_node_put(classh);
 
-	/* frame depth location */
+	 
 	signal_format = of_get_child_by_name(np, "cirrus,monitor-signal-format");
 	monitor_config->is_present = signal_format ? true : false;
 	if (monitor_config->is_present) {
@@ -1449,7 +1424,7 @@ static int cs35l35_handle_of_data(struct i2c_client *i2c_client,
 	return 0;
 }
 
-/* Errata Rev A0 */
+ 
 static const struct reg_sequence cs35l35_errata_patch[] = {
 
 	{ 0x7F, 0x99 },
@@ -1523,7 +1498,7 @@ static int cs35l35_i2c_probe(struct i2c_client *i2c_client)
 		return ret;
 	}
 
-	/* returning NULL can be valid if in stereo mode */
+	 
 	cs35l35->reset_gpio = devm_gpiod_get_optional(dev, "reset",
 						      GPIOD_OUT_LOW);
 	if (IS_ERR(cs35l35->reset_gpio)) {
@@ -1549,7 +1524,7 @@ static int cs35l35_i2c_probe(struct i2c_client *i2c_client)
 		dev_err(dev, "Failed to request IRQ: %d\n", ret);
 		goto err;
 	}
-	/* initialize codec */
+	 
 	devid = cirrus_read_device_id(cs35l35->regmap, CS35L35_DEVID_AB);
 	if (devid < 0) {
 		ret = devid;
@@ -1580,7 +1555,7 @@ static int cs35l35_i2c_probe(struct i2c_client *i2c_client)
 	dev_info(dev, "Cirrus Logic CS35L35 (%x), Revision: %02X\n",
 		 devid, reg & 0xFF);
 
-	/* Set the INT Masks for critical errors */
+	 
 	regmap_write(cs35l35->regmap, CS35L35_INT_MASK_1,
 				CS35L35_INT1_CRIT_MASK);
 	regmap_write(cs35l35->regmap, CS35L35_INT_MASK_2,

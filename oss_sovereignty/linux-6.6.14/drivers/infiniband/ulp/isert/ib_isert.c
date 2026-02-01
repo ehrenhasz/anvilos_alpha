@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains iSCSI extentions for RDMA (iSER) Verbs
- *
- * (c) Copyright 2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ****************************************************************************/
+
+ 
 
 #include <linux/string.h>
 #include <linux/module.h>
@@ -230,7 +223,7 @@ isert_create_device_ib_res(struct isert_device *device)
 		return ret;
 	}
 
-	/* Check signature cap */
+	 
 	if (ib_dev->attrs.kernel_cap_flags & IBK_INTEGRITY_HANDOVER)
 		device->pi_capable = true;
 	else
@@ -385,7 +378,7 @@ isert_set_nego_params(struct isert_conn *isert_conn,
 {
 	struct ib_device_attr *attr = &isert_conn->device->ib_device->attrs;
 
-	/* Set max inflight RDMA READ requests */
+	 
 	isert_conn->initiator_depth = min_t(u8, param->initiator_depth,
 				attr->max_qp_init_rd_atom);
 	isert_dbg("Using initiator_depth: %u\n", isert_conn->initiator_depth);
@@ -393,10 +386,7 @@ isert_set_nego_params(struct isert_conn *isert_conn,
 	if (param->private_data) {
 		u8 flags = *(u8 *)param->private_data;
 
-		/*
-		 * use remote invalidation if the both initiator
-		 * and the HCA support it
-		 */
+		 
 		isert_conn->snd_w_inv = !(flags & ISER_SEND_W_INV_NOT_SUP) &&
 					  (attr->device_cap_flags &
 					   IB_DEVICE_MEM_MGT_EXTENSIONS);
@@ -558,10 +548,7 @@ isert_handle_unbound_conn(struct isert_conn *isert_conn)
 
 	mutex_lock(&isert_np->mutex);
 	if (!list_empty(&isert_conn->node)) {
-		/*
-		 * This means iscsi doesn't know this connection
-		 * so schedule a cleanup ourselves
-		 */
+		 
 		list_del_init(&isert_conn->node);
 		isert_put_conn(isert_conn);
 		queue_work(isert_release_wq, &isert_conn->release_work);
@@ -569,18 +556,7 @@ isert_handle_unbound_conn(struct isert_conn *isert_conn)
 	mutex_unlock(&isert_np->mutex);
 }
 
-/**
- * isert_conn_terminate() - Initiate connection termination
- * @isert_conn: isert connection struct
- *
- * Notes:
- * In case the connection state is BOUND, move state
- * to TEMINATING and start teardown sequence (rdma_disconnect).
- * In case the connection state is UP, complete flush as well.
- *
- * This routine must be called with mutex held. Thus it is
- * safe to call multiple times.
- */
+ 
 static void
 isert_conn_terminate(struct isert_conn *isert_conn)
 {
@@ -641,7 +617,7 @@ isert_disconnected_handler(struct rdma_cm_id *cma_id,
 		isert_handle_unbound_conn(isert_conn);
 		break;
 	case ISER_CONN_BOUND:
-	case ISER_CONN_FULL_FEATURE: /* FALLTHRU */
+	case ISER_CONN_FULL_FEATURE:  
 		iscsit_cause_connection_reinstatement(isert_conn->conn, 0);
 		break;
 	default:
@@ -695,7 +671,7 @@ isert_cma_handler(struct rdma_cm_id *cma_id, struct rdma_cm_event *event)
 		break;
 	case RDMA_CM_EVENT_ADDR_CHANGE:
 	case RDMA_CM_EVENT_DISCONNECTED:
-	case RDMA_CM_EVENT_TIMEWAIT_EXIT:  /* FALLTHRU */
+	case RDMA_CM_EVENT_TIMEWAIT_EXIT:   
 		ret = isert_disconnected_handler(cma_id, event->event);
 		break;
 	case RDMA_CM_EVENT_DEVICE_REMOVAL:
@@ -705,10 +681,7 @@ isert_cma_handler(struct rdma_cm_id *cma_id, struct rdma_cm_event *event)
 		wait_event_interruptible(isert_conn->rem_wait,
 					 isert_conn->state == ISER_CONN_DOWN);
 		kfree(isert_conn);
-		/*
-		 * return non-zero from the callback to destroy
-		 * the rdma cm id
-		 */
+		 
 		return 1;
 	case RDMA_CM_EVENT_REJECTED:
 		isert_info("Connection rejected: %s\n",
@@ -743,7 +716,7 @@ isert_post_recvm(struct isert_conn *isert_conn, u32 count)
 		rx_desc->in_use = false;
 	}
 	rx_wr--;
-	rx_wr->next = NULL; /* mark end of work requests list */
+	rx_wr->next = NULL;  
 
 	ret = ib_post_recv(isert_conn->qp, isert_conn->rx_wr, NULL);
 	if (ret)
@@ -759,10 +732,7 @@ isert_post_recv(struct isert_conn *isert_conn, struct iser_rx_desc *rx_desc)
 	int ret;
 
 	if (!rx_desc->in_use) {
-		/*
-		 * if the descriptor is not in-use we already reposted it
-		 * for recv, so just silently return
-		 */
+		 
 		return 0;
 	}
 
@@ -957,7 +927,7 @@ isert_put_login_tx(struct iscsit_conn *conn, struct iscsi_login *login,
 			if (ret)
 				return ret;
 
-			/* Now we are in FULL_FEATURE phase */
+			 
 			mutex_lock(&isert_conn->mutex);
 			isert_conn->state = ISER_CONN_FULL_FEATURE;
 			mutex_unlock(&isert_conn->mutex);
@@ -992,10 +962,7 @@ isert_rx_login_req(struct isert_conn *isert_conn)
 	if (login->first_request) {
 		struct iscsi_login_req *login_req =
 			(struct iscsi_login_req *)isert_get_iscsi_hdr(rx_desc);
-		/*
-		 * Setup the initial iscsi_login values from the leading
-		 * login request PDU.
-		 */
+		 
 		login->leading_connection = (!login_req->tsih) ? 1 : 0;
 		login->current_stage = ISCSI_LOGIN_CURRENT_STAGE(
 				login_req->flags);
@@ -1129,9 +1096,7 @@ isert_handle_iscsi_dataout(struct isert_conn *isert_conn,
 		return rc;
 	else if (!cmd)
 		return 0;
-	/*
-	 * FIXME: Unexpected unsolicited_data out
-	 */
+	 
 	if (!cmd->unsolicited_data) {
 		isert_err("Received unexpected solicited data payload\n");
 		dump_stack();
@@ -1147,9 +1112,7 @@ isert_handle_iscsi_dataout(struct isert_conn *isert_conn,
 	sg_start = &cmd->se_cmd.t_data_sg[sg_off];
 	sg_nents = max(1UL, DIV_ROUND_UP(unsol_data_len, PAGE_SIZE));
 	page_off = cmd->write_data_done % PAGE_SIZE;
-	/*
-	 * FIXME: Non page-aligned unsolicited_data out
-	 */
+	 
 	if (page_off) {
 		isert_err("unexpected non-page aligned data payload\n");
 		dump_stack();
@@ -1166,10 +1129,7 @@ isert_handle_iscsi_dataout(struct isert_conn *isert_conn,
 	if (rc < 0)
 		return rc;
 
-	/*
-	 * multiple data-outs on the same command can arrive -
-	 * so post the buffer before hand
-	 */
+	 
 	return isert_post_recv(isert_conn, rx_desc);
 }
 
@@ -1185,9 +1145,7 @@ isert_handle_nop_out(struct isert_conn *isert_conn, struct isert_cmd *isert_cmd,
 	rc = iscsit_setup_nop_out(conn, cmd, hdr);
 	if (rc < 0)
 		return rc;
-	/*
-	 * FIXME: Add support for NOPOUT payload using unsolicited RDMA payload
-	 */
+	 
 
 	return iscsit_process_nop_out(conn, cmd, hdr);
 }
@@ -1446,12 +1404,7 @@ isert_put_cmd(struct isert_cmd *isert_cmd, bool comp_err)
 
 		if (cmd->data_direction == DMA_TO_DEVICE) {
 			iscsit_stop_dataout_timer(cmd);
-			/*
-			 * Check for special case during comp_err where
-			 * WRITE_PENDING has been handed off from core,
-			 * but requires an extra target_put_sess_cmd()
-			 * before transport_generic_free_cmd() below.
-			 */
+			 
 			if (comp_err &&
 			    cmd->se_cmd.t_state == TRANSPORT_WRITE_PENDING) {
 				struct se_cmd *se_cmd = &cmd->se_cmd;
@@ -1475,7 +1428,7 @@ isert_put_cmd(struct isert_cmd *isert_cmd, bool comp_err)
 	case ISCSI_OP_NOOP_OUT:
 	case ISCSI_OP_TEXT:
 		hdr = (struct iscsi_text_rsp *)&isert_cmd->tx_desc.iscsi_header;
-		/* If the continue bit is on, keep the command alive */
+		 
 		if (hdr->flags & ISCSI_FLAG_TEXT_CONTINUE)
 			break;
 
@@ -1484,11 +1437,7 @@ isert_put_cmd(struct isert_cmd *isert_cmd, bool comp_err)
 			list_del_init(&cmd->i_conn_node);
 		spin_unlock_bh(&conn->cmd_lock);
 
-		/*
-		 * Handle special case for REJECT when iscsi_add_reject*() has
-		 * overwritten the original iscsi_opcode assignment, and the
-		 * associated cmd->se_cmd needs to be released.
-		 */
+		 
 		if (cmd->se_cmd.se_tfo != NULL) {
 			isert_dbg("Calling transport_generic_free_cmd for 0x%02x\n",
 				 cmd->iscsi_opcode);
@@ -1596,18 +1545,11 @@ isert_rdma_write_done(struct ib_cq *cq, struct ib_wc *wc)
 	isert_rdma_rw_ctx_destroy(isert_cmd, isert_conn);
 
 	if (ret) {
-		/*
-		 * transport_generic_request_failure() expects to have
-		 * plus two references to handle queue-full, so re-add
-		 * one here as target-core will have already dropped
-		 * it after the first isert_put_datain() callback.
-		 */
+		 
 		kref_get(&cmd->cmd_kref);
 		transport_generic_request_failure(cmd, cmd->pi_err);
 	} else {
-		/*
-		 * XXX: isert_put_response() failure is not retried.
-		 */
+		 
 		ret = isert_put_response(isert_conn->conn, isert_cmd->iscsit_cmd);
 		if (ret)
 			pr_warn_ratelimited("isert_put_response() ret: %d\n", ret);
@@ -1648,11 +1590,7 @@ isert_rdma_read_done(struct ib_cq *cq, struct ib_wc *wc)
 	cmd->i_state = ISTATE_RECEIVED_LAST_DATAOUT;
 	spin_unlock_bh(&cmd->istate_lock);
 
-	/*
-	 * transport_generic_request_failure() will drop the extra
-	 * se_cmd->cmd_kref reference after T10-PI error, and handle
-	 * any non-zero ->queue_status() callback error retries.
-	 */
+	 
 	if (ret)
 		transport_generic_request_failure(se_cmd, se_cmd->pi_err);
 	else
@@ -1770,9 +1708,7 @@ isert_put_response(struct iscsit_conn *conn, struct iscsit_cmd *cmd)
 	isert_create_send_desc(isert_conn, isert_cmd, &isert_cmd->tx_desc);
 	iscsit_build_rsp_pdu(cmd, conn, true, hdr);
 	isert_init_tx_hdrs(isert_conn, &isert_cmd->tx_desc);
-	/*
-	 * Attach SENSE DATA payload to iSCSI Response PDU
-	 */
+	 
 	if (cmd->se_cmd.sense_buffer &&
 	    ((cmd->se_cmd.se_cmd_flags & SCF_TRANSPORT_TASK_SENSE) ||
 	    (cmd->se_cmd.se_cmd_flags & SCF_EMULATED_TASK_SENSE))) {
@@ -1986,11 +1922,7 @@ isert_set_dif_domain(struct se_cmd *se_cmd, struct ib_sig_domain *domain)
 	domain->sig.dif.bg_type = IB_T10DIF_CRC;
 	domain->sig.dif.pi_interval = se_cmd->se_dev->dev_attrib.block_size;
 	domain->sig.dif.ref_tag = se_cmd->reftag_seed;
-	/*
-	 * At the moment we hard code those, but if in the future
-	 * the target core would like to use it, we will take it
-	 * from se_cmd.
-	 */
+	 
 	domain->sig.dif.apptag_check_mask = 0xffff;
 	domain->sig.dif.app_escape = true;
 	domain->sig.dif.ref_escape = true;
@@ -2108,9 +2040,7 @@ isert_put_datain(struct iscsit_conn *conn, struct iscsit_cmd *cmd)
 		isert_cmd->tx_desc.tx_cqe.done = isert_rdma_write_done;
 		cqe = &isert_cmd->tx_desc.tx_cqe;
 	} else {
-		/*
-		 * Build isert_conn->tx_desc for iSCSI response PDU and attach
-		 */
+		 
 		isert_create_send_desc(isert_conn, isert_cmd,
 				       &isert_cmd->tx_desc);
 		iscsit_build_rsp_pdu(cmd, conn, true, (struct iscsi_scsi_rsp *)
@@ -2200,10 +2130,7 @@ isert_response_queue(struct iscsit_conn *conn, struct iscsit_cmd *cmd, int state
 		ret = isert_put_text_rsp(cmd, conn);
 		break;
 	case ISTATE_SEND_STATUS:
-		/*
-		 * Special case for sending non GOOD SCSI status from TX thread
-		 * context during pre se_cmd excecution failure.
-		 */
+		 
 		ret = isert_put_response(conn, cmd);
 		break;
 	default:
@@ -2235,10 +2162,7 @@ isert_setup_id(struct isert_np *isert_np)
 	}
 	isert_dbg("id %p context %p\n", id, id->context);
 
-	/*
-	 * Allow both IPv4 and IPv6 sockets to bind a single port
-	 * at the same time.
-	 */
+	 
 	ret = rdma_set_afonly(id, 1);
 	if (ret) {
 		isert_err("rdma_set_afonly() failed: %d\n", ret);
@@ -2282,10 +2206,7 @@ isert_setup_np(struct iscsi_np *np,
 	INIT_LIST_HEAD(&isert_np->pending);
 	isert_np->np = np;
 
-	/*
-	 * Setup the np->np_sockaddr from the passed sockaddr setup
-	 * in iscsi_target_configfs.c code..
-	 */
+	 
 	memcpy(&np->np_sockaddr, ksockaddr,
 	       sizeof(struct sockaddr_storage));
 
@@ -2350,12 +2271,7 @@ isert_get_login_rx(struct iscsit_conn *conn, struct iscsi_login *login)
 	}
 	reinit_completion(&isert_conn->login_req_comp);
 
-	/*
-	 * For login requests after the first PDU, isert_rx_login_req() will
-	 * kick queue_delayed_work(isert_login_wq, &conn->login_work) as
-	 * the packet is received, which turns this callback from
-	 * iscsi_target_do_login_rx() into a NOP.
-	 */
+	 
 	if (!login->first_request)
 		return 0;
 
@@ -2401,10 +2317,7 @@ accept_wait:
 		spin_unlock_bh(&np->np_thread_lock);
 		isert_dbg("np_thread_state %d\n",
 			 np->np_thread_state);
-		/*
-		 * No point in stalling here when np_thread
-		 * is in state RESET/SHUTDOWN/EXIT - bail
-		 */
+		 
 		return -ENODEV;
 	}
 	spin_unlock_bh(&np->np_thread_lock);
@@ -2440,13 +2353,7 @@ isert_free_np(struct iscsi_np *np)
 	if (isert_np->cm_id)
 		rdma_destroy_id(isert_np->cm_id);
 
-	/*
-	 * FIXME: At this point we don't have a good way to insure
-	 * that at this point we don't have hanging connections that
-	 * completed RDMA establishment but didn't start iscsi login
-	 * process. So work-around this by cleaning up what ever piled
-	 * up in accepted and pending lists.
-	 */
+	 
 	mutex_lock(&isert_np->mutex);
 	if (!list_empty(&isert_np->pending)) {
 		isert_info("Still have isert pending connections\n");
@@ -2521,15 +2428,7 @@ isert_wait4cmds(struct iscsit_conn *conn)
 	}
 }
 
-/**
- * isert_put_unsol_pending_cmds() - Drop commands waiting for
- *     unsolicitate dataout
- * @conn:    iscsi connection
- *
- * We might still have commands that are waiting for unsolicited
- * dataouts messages. We must put the extra reference on those
- * before blocking on the target_wait_for_session_cmds
- */
+ 
 static void
 isert_put_unsol_pending_cmds(struct iscsit_conn *conn)
 {

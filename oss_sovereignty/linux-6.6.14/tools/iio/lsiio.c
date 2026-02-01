@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Industrial I/O utilities - lsiio.c
- *
- * Copyright (c) 2010 Manuel Stahl <manuel.stahl@iis.fraunhofer.de>
- */
+
+ 
 
 #include <string.h>
 #include <dirent.h>
@@ -18,8 +14,8 @@
 #include "iio_utils.h"
 
 static enum verbosity {
-	VERBLEVEL_DEFAULT,	/* 0 gives lspci behaviour */
-	VERBLEVEL_SENSORS,	/* 1 lists sensors */
+	VERBLEVEL_DEFAULT,	 
+	VERBLEVEL_SENSORS,	 
 } verblevel = VERBLEVEL_DEFAULT;
 
 const char *type_device = "iio:device";

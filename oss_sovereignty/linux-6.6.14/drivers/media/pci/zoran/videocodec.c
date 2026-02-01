@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * VIDEO MOTION CODECs internal API for video devices
- *
- * Interface for MJPEG (and maybe later MPEG/WAVELETS) codec's
- * bound to a master device.
- *
- * (c) 2002 Wolfgang Scherr <scherr@net4you.at>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -30,9 +23,9 @@ struct codec_list {
 
 static struct codec_list *codeclist_top;
 
-/* ================================================= */
-/* function prototypes of the master/slave interface */
-/* ================================================= */
+ 
+ 
+ 
 
 struct videocodec *videocodec_attach(struct videocodec_master *master)
 {
@@ -58,8 +51,8 @@ struct videocodec *videocodec_attach(struct videocodec_master *master)
 	}
 
 	while (h) {
-		// attach only if the slave has at least the flags
-		// expected by the master
+		 
+		 
 		if ((master->flags & h->codec->flags) == master->flags) {
 			zrdev_dbg(zr, "%s: try '%s'\n", __func__, h->codec->name);
 
@@ -84,7 +77,7 @@ struct videocodec *videocodec_attach(struct videocodec_master *master)
 					zrdev_dbg(zr, "videocodec: first element\n");
 				} else {
 					while (a->next)
-						a = a->next;	// find end
+						a = a->next;	 
 					a->next = ptr;
 					zrdev_dbg(zr, "videocodec: in after '%s'\n",
 						  h->codec->name);
@@ -190,7 +183,7 @@ int videocodec_register(const struct videocodec *codec)
 		zrdev_dbg(zr, "videocodec: hooked in as first element\n");
 	} else {
 		while (h->next)
-			h = h->next;	// find the end
+			h = h->next;	 
 		h->next = ptr;
 		zrdev_dbg(zr, "videocodec: hooked in after '%s'\n",
 			  h->codec->name);

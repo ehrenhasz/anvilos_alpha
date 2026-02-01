@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -86,17 +86,17 @@ axg_tdmout_get_tdm_stream(struct snd_soc_dapm_widget *w)
 
 static void axg_tdmout_enable(struct regmap *map)
 {
-	/* Apply both reset */
+	 
 	regmap_update_bits(map, TDMOUT_CTRL0,
 			   TDMOUT_CTRL0_RST_OUT | TDMOUT_CTRL0_RST_IN, 0);
 
-	/* Clear out reset before in reset */
+	 
 	regmap_update_bits(map, TDMOUT_CTRL0,
 			   TDMOUT_CTRL0_RST_OUT, TDMOUT_CTRL0_RST_OUT);
 	regmap_update_bits(map, TDMOUT_CTRL0,
 			   TDMOUT_CTRL0_RST_IN,  TDMOUT_CTRL0_RST_IN);
 
-	/* Actually enable tdmout */
+	 
 	regmap_update_bits(map, TDMOUT_CTRL0,
 			   TDMOUT_CTRL0_ENABLE, TDMOUT_CTRL0_ENABLE);
 }
@@ -112,7 +112,7 @@ static int axg_tdmout_prepare(struct regmap *map,
 {
 	unsigned int val, skew = quirks->skew_offset;
 
-	/* Set the stream skew */
+	 
 	switch (ts->iface->fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 	case SND_SOC_DAIFMT_DSP_A:
@@ -131,10 +131,10 @@ static int axg_tdmout_prepare(struct regmap *map,
 
 	val = TDMOUT_CTRL0_INIT_BITNUM(skew);
 
-	/* Set the slot width */
+	 
 	val |= TDMOUT_CTRL0_BITNUM(ts->iface->slot_width - 1);
 
-	/* Set the slot number */
+	 
 	val |= TDMOUT_CTRL0_SLOTNUM(ts->iface->slots - 1);
 
 	regmap_update_bits(map, TDMOUT_CTRL0,
@@ -142,21 +142,21 @@ static int axg_tdmout_prepare(struct regmap *map,
 			   TDMOUT_CTRL0_BITNUM_MASK |
 			   TDMOUT_CTRL0_SLOTNUM_MASK, val);
 
-	/* Set the sample width */
+	 
 	val = TDMOUT_CTRL1_MSB_POS(ts->width - 1);
 
-	/* FIFO data are arranged in chunks of 64bits */
+	 
 	switch (ts->physical_width) {
 	case 8:
-		/* 8 samples of 8 bits */
+		 
 		val |= TDMOUT_CTRL1_TYPE(0);
 		break;
 	case 16:
-		/* 4 samples of 16 bits - right justified */
+		 
 		val |= TDMOUT_CTRL1_TYPE(2);
 		break;
 	case 32:
-		/* 2 samples of 32 bits - right justified */
+		 
 		val |= TDMOUT_CTRL1_TYPE(4);
 		break;
 	default:
@@ -165,7 +165,7 @@ static int axg_tdmout_prepare(struct regmap *map,
 		return -EINVAL;
 	}
 
-	/* If the sample clock is inverted, invert it back for the formatter */
+	 
 	if (axg_tdm_lrclk_invert(ts->iface->fmt))
 		val |= TDMOUT_CTRL1_WS_INV;
 
@@ -173,7 +173,7 @@ static int axg_tdmout_prepare(struct regmap *map,
 			   (TDMOUT_CTRL1_TYPE_MASK | TDMOUT_CTRL1_MSB_POS_MASK |
 			    TDMOUT_CTRL1_WS_INV), val);
 
-	/* Set static swap mask configuration */
+	 
 	regmap_write(map, TDMOUT_SWAP, 0x76543210);
 
 	return axg_tdm_formatter_set_channel_masks(map, ts, TDMOUT_MASK0);

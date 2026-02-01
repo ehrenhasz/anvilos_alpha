@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * LPASS Audio CC and Always ON CC Glitch Free Mux clock driver
- *
- * Copyright (c) 2020 Linaro Ltd.
- * Author: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

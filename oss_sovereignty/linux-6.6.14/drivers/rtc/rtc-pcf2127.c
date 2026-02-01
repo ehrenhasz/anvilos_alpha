@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An I2C and SPI driver for the NXP PCF2127/29/31 RTC
- * Copyright 2013 Til-Technologies
- *
- * Author: Renaud Cerrato <r.cerrato@til-technologies.fr>
- *
- * Watchdog and tamper functions
- * Author: Bruno Thomsen <bruno.thomsen@gmail.com>
- *
- * PCF2131 support
- * Author: Hugo Villeneuve <hvilleneuve@dimonoff.com>
- *
- * based on the other drivers in this same directory.
- *
- * Datasheets: https://www.nxp.com/docs/en/data-sheet/PCF2127.pdf
- *             https://www.nxp.com/docs/en/data-sheet/PCF2131DS.pdf
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/spi/spi.h>
@@ -29,67 +13,62 @@
 #include <linux/regmap.h>
 #include <linux/watchdog.h>
 
-/* Control register 1 */
+ 
 #define PCF2127_REG_CTRL1		0x00
 #define PCF2127_BIT_CTRL1_POR_OVRD		BIT(3)
 #define PCF2127_BIT_CTRL1_TSF1			BIT(4)
 #define PCF2127_BIT_CTRL1_STOP			BIT(5)
-/* Control register 2 */
+ 
 #define PCF2127_REG_CTRL2		0x01
 #define PCF2127_BIT_CTRL2_AIE			BIT(1)
 #define PCF2127_BIT_CTRL2_TSIE			BIT(2)
 #define PCF2127_BIT_CTRL2_AF			BIT(4)
 #define PCF2127_BIT_CTRL2_TSF2			BIT(5)
 #define PCF2127_BIT_CTRL2_WDTF			BIT(6)
-/* Control register 3 */
+ 
 #define PCF2127_REG_CTRL3		0x02
 #define PCF2127_BIT_CTRL3_BLIE			BIT(0)
 #define PCF2127_BIT_CTRL3_BIE			BIT(1)
 #define PCF2127_BIT_CTRL3_BLF			BIT(2)
 #define PCF2127_BIT_CTRL3_BF			BIT(3)
 #define PCF2127_BIT_CTRL3_BTSE			BIT(4)
-/* Time and date registers */
+ 
 #define PCF2127_REG_TIME_BASE		0x03
 #define PCF2127_BIT_SC_OSF			BIT(7)
-/* Alarm registers */
+ 
 #define PCF2127_REG_ALARM_BASE		0x0A
 #define PCF2127_BIT_ALARM_AE			BIT(7)
-/* CLKOUT control register */
+ 
 #define PCF2127_REG_CLKOUT		0x0f
 #define PCF2127_BIT_CLKOUT_OTPR			BIT(5)
-/* Watchdog registers */
+ 
 #define PCF2127_REG_WD_CTL		0x10
 #define PCF2127_BIT_WD_CTL_TF0			BIT(0)
 #define PCF2127_BIT_WD_CTL_TF1			BIT(1)
 #define PCF2127_BIT_WD_CTL_CD0			BIT(6)
 #define PCF2127_BIT_WD_CTL_CD1			BIT(7)
 #define PCF2127_REG_WD_VAL		0x11
-/* Tamper timestamp1 registers */
+ 
 #define PCF2127_REG_TS1_BASE		0x12
 #define PCF2127_BIT_TS_CTRL_TSOFF		BIT(6)
 #define PCF2127_BIT_TS_CTRL_TSM			BIT(7)
-/*
- * RAM registers
- * PCF2127 has 512 bytes general-purpose static RAM (SRAM) that is
- * battery backed and can survive a power outage.
- * PCF2129/31 doesn't have this feature.
- */
+ 
 #define PCF2127_REG_RAM_ADDR_MSB	0x1A
 #define PCF2127_REG_RAM_WRT_CMD		0x1C
 #define PCF2127_REG_RAM_RD_CMD		0x1D
 
-/* Watchdog timer value constants */
+ 
 #define PCF2127_WD_VAL_STOP		0
-/* PCF2127/29 watchdog timer value constants */
-#define PCF2127_WD_CLOCK_HZ_X1000	1000 /* 1Hz */
+ 
+#define PCF2127_WD_CLOCK_HZ_X1000	1000  
 #define PCF2127_WD_MIN_HW_HEARTBEAT_MS	500
-/* PCF2131 watchdog timer value constants */
-#define PCF2131_WD_CLOCK_HZ_X1000	250  /* 1/4Hz */
+ 
+#define PCF2131_WD_CLOCK_HZ_X1000	250   
 #define PCF2131_WD_MIN_HW_HEARTBEAT_MS	4000
 
 #define PCF2127_WD_DEFAULT_TIMEOUT_S	60
 
-/* Mask for currently enabled interrupts */
+ 
 #define PCF2127_CTRL1_IRQ_MASK (PCF2127_BIT_CTRL1_TSF1)
 #define PCF2127_CTRL2_IRQ_MASK ( \
 		PCF2127_BIT_CTRL2_AF | \
@@ -98,40 +77,40 @@
 
 #define PCF2127_MAX_TS_SUPPORTED	4
 
-/* Control register 4 */
+ 
 #define PCF2131_REG_CTRL4		0x03
 #define PCF2131_BIT_CTRL4_TSF4			BIT(4)
 #define PCF2131_BIT_CTRL4_TSF3			BIT(5)
 #define PCF2131_BIT_CTRL4_TSF2			BIT(6)
 #define PCF2131_BIT_CTRL4_TSF1			BIT(7)
-/* Control register 5 */
+ 
 #define PCF2131_REG_CTRL5		0x04
 #define PCF2131_BIT_CTRL5_TSIE4			BIT(4)
 #define PCF2131_BIT_CTRL5_TSIE3			BIT(5)
 #define PCF2131_BIT_CTRL5_TSIE2			BIT(6)
 #define PCF2131_BIT_CTRL5_TSIE1			BIT(7)
-/* Software reset register */
+ 
 #define PCF2131_REG_SR_RESET		0x05
 #define PCF2131_SR_RESET_READ_PATTERN	(BIT(2) | BIT(5))
 #define PCF2131_SR_RESET_CPR_CMD	(PCF2131_SR_RESET_READ_PATTERN | BIT(7))
-/* Time and date registers */
+ 
 #define PCF2131_REG_TIME_BASE		0x07
-/* Alarm registers */
+ 
 #define PCF2131_REG_ALARM_BASE		0x0E
-/* CLKOUT control register */
+ 
 #define PCF2131_REG_CLKOUT		0x13
-/* Watchdog registers */
+ 
 #define PCF2131_REG_WD_CTL		0x35
 #define PCF2131_REG_WD_VAL		0x36
-/* Tamper timestamp1 registers */
+ 
 #define PCF2131_REG_TS1_BASE		0x14
-/* Tamper timestamp2 registers */
+ 
 #define PCF2131_REG_TS2_BASE		0x1B
-/* Tamper timestamp3 registers */
+ 
 #define PCF2131_REG_TS3_BASE		0x22
-/* Tamper timestamp4 registers */
+ 
 #define PCF2131_REG_TS4_BASE		0x29
-/* Interrupt mask registers */
+ 
 #define PCF2131_REG_INT_A_MASK1		0x31
 #define PCF2131_REG_INT_A_MASK2		0x32
 #define PCF2131_REG_INT_B_MASK1		0x33
@@ -159,40 +138,33 @@ enum pcf21xx_type {
 };
 
 struct pcf21xx_ts_config {
-	u8 reg_base; /* Base register to read timestamp values. */
+	u8 reg_base;  
 
-	/*
-	 * If the TS input pin is driven to GND, an interrupt can be generated
-	 * (supported by all variants).
-	 */
-	u8 gnd_detect_reg; /* Interrupt control register address. */
-	u8 gnd_detect_bit; /* Interrupt bit. */
+	 
+	u8 gnd_detect_reg;  
+	u8 gnd_detect_bit;  
 
-	/*
-	 * If the TS input pin is driven to an intermediate level between GND
-	 * and supply, an interrupt can be generated (optional feature depending
-	 * on variant).
-	 */
-	u8 inter_detect_reg; /* Interrupt control register address. */
-	u8 inter_detect_bit; /* Interrupt bit. */
+	 
+	u8 inter_detect_reg;  
+	u8 inter_detect_bit;  
 
-	u8 ie_reg; /* Interrupt enable control register. */
-	u8 ie_bit; /* Interrupt enable bit. */
+	u8 ie_reg;  
+	u8 ie_bit;  
 };
 
 struct pcf21xx_config {
-	int type; /* IC variant */
+	int type;  
 	int max_register;
 	unsigned int has_nvmem:1;
 	unsigned int has_bit_wd_ctl_cd0:1;
-	unsigned int wd_val_reg_readable:1; /* If watchdog value register can be read. */
-	unsigned int has_int_a_b:1; /* PCF2131 supports two interrupt outputs. */
-	u8 reg_time_base; /* Time/date base register. */
-	u8 regs_alarm_base; /* Alarm function base registers. */
-	u8 reg_wd_ctl; /* Watchdog control register. */
-	u8 reg_wd_val; /* Watchdog value register. */
-	u8 reg_clkout; /* Clkout register. */
-	int wdd_clock_hz_x1000; /* Watchdog clock in Hz multiplicated by 1000 */
+	unsigned int wd_val_reg_readable:1;  
+	unsigned int has_int_a_b:1;  
+	u8 reg_time_base;  
+	u8 regs_alarm_base;  
+	u8 reg_wd_ctl;  
+	u8 reg_wd_val;  
+	u8 reg_clkout;  
+	int wdd_clock_hz_x1000;  
 	int wdd_min_hw_heartbeat_ms;
 	unsigned int ts_count;
 	struct pcf21xx_ts_config ts[PCF2127_MAX_TS_SUPPORTED];
@@ -205,24 +177,18 @@ struct pcf2127 {
 	struct regmap *regmap;
 	const struct pcf21xx_config *cfg;
 	bool irq_enabled;
-	time64_t ts[PCF2127_MAX_TS_SUPPORTED]; /* Timestamp values. */
-	bool ts_valid[PCF2127_MAX_TS_SUPPORTED];  /* Timestamp valid indication. */
+	time64_t ts[PCF2127_MAX_TS_SUPPORTED];  
+	bool ts_valid[PCF2127_MAX_TS_SUPPORTED];   
 };
 
-/*
- * In the routines that deal directly with the pcf2127 hardware, we use
- * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
- */
+ 
 static int pcf2127_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct pcf2127 *pcf2127 = dev_get_drvdata(dev);
 	unsigned char buf[7];
 	int ret;
 
-	/*
-	 * Avoid reading CTRL2 register as it causes WD_VAL register
-	 * value to reset to 0 which means watchdog is stopped.
-	 */
+	 
 	ret = regmap_bulk_read(pcf2127->regmap, pcf2127->cfg->reg_time_base,
 			       buf, sizeof(buf));
 	if (ret) {
@@ -230,12 +196,9 @@ static int pcf2127_rtc_read_time(struct device *dev, struct rtc_time *tm)
 		return ret;
 	}
 
-	/* Clock integrity is not guaranteed when OSF flag is set. */
+	 
 	if (buf[0] & PCF2127_BIT_SC_OSF) {
-		/*
-		 * no need clear the flag here,
-		 * it will be cleared once the new date is saved
-		 */
+		 
 		dev_warn(dev,
 			 "oscillator stop detected, date/time is not reliable\n");
 		return -EINVAL;
@@ -276,24 +239,20 @@ static int pcf2127_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		tm->tm_sec, tm->tm_min, tm->tm_hour,
 		tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday);
 
-	/* hours, minutes and seconds */
-	buf[i++] = bin2bcd(tm->tm_sec);	/* this will also clear OSF flag */
+	 
+	buf[i++] = bin2bcd(tm->tm_sec);	 
 	buf[i++] = bin2bcd(tm->tm_min);
 	buf[i++] = bin2bcd(tm->tm_hour);
 	buf[i++] = bin2bcd(tm->tm_mday);
 	buf[i++] = tm->tm_wday & 0x07;
 
-	/* month, 1 - 12 */
+	 
 	buf[i++] = bin2bcd(tm->tm_mon + 1);
 
-	/* year */
+	 
 	buf[i++] = bin2bcd(tm->tm_year - 100);
 
-	/* Write access to time registers:
-	 * PCF2127/29: no special action required.
-	 * PCF2131:    requires setting the STOP and CPR bits. STOP bit needs to
-	 *             be cleared after time registers are updated.
-	 */
+	 
 	if (pcf2127->cfg->type == PCF2131) {
 		err = regmap_update_bits(pcf2127->regmap, PCF2127_REG_CTRL1,
 					 PCF2127_BIT_CTRL1_STOP,
@@ -311,7 +270,7 @@ static int pcf2127_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		}
 	}
 
-	/* write time register's data */
+	 
 	err = regmap_bulk_write(pcf2127->regmap, pcf2127->cfg->reg_time_base, buf, i);
 	if (err) {
 		dev_dbg(dev, "%s: err=%d", __func__, err);
@@ -319,7 +278,7 @@ static int pcf2127_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	}
 
 	if (pcf2127->cfg->type == PCF2131) {
-		/* Clear STOP bit (PCF2131 only) after write is completed. */
+		 
 		err = regmap_update_bits(pcf2127->regmap, PCF2127_REG_CTRL1,
 					 PCF2127_BIT_CTRL1_STOP, 0);
 		if (err) {
@@ -393,29 +352,20 @@ static int pcf2127_nvmem_write(void *priv, unsigned int offset,
 				 val, bytes);
 }
 
-/* watchdog driver */
+ 
 
 static int pcf2127_wdt_ping(struct watchdog_device *wdd)
 {
 	int wd_val;
 	struct pcf2127 *pcf2127 = watchdog_get_drvdata(wdd);
 
-	/*
-	 * Compute counter value of WATCHDG_TIM_VAL to obtain desired period
-	 * in seconds, depending on the source clock frequency.
-	 */
+	 
 	wd_val = ((wdd->timeout * pcf2127->cfg->wdd_clock_hz_x1000) / 1000) + 1;
 
 	return regmap_write(pcf2127->regmap, pcf2127->cfg->reg_wd_val, wd_val);
 }
 
-/*
- * Restart watchdog timer if feature is active.
- *
- * Note: Reading CTRL2 register causes watchdog to stop which is unfortunate,
- * since register also contain control/status flags for other features.
- * Always call this function after reading CTRL2 register.
- */
+ 
 static int pcf2127_wdt_active_ping(struct watchdog_device *wdd)
 {
 	int ret = 0;
@@ -468,18 +418,7 @@ static const struct watchdog_ops pcf2127_watchdog_ops = {
 	.set_timeout = pcf2127_wdt_set_timeout,
 };
 
-/*
- * Compute watchdog period, t, in seconds, from the WATCHDG_TIM_VAL register
- * value, n, and the clock frequency, f1000, in Hz x 1000.
- *
- * The PCF2127/29 datasheet gives t as:
- *   t = n / f
- * The PCF2131 datasheet gives t as:
- *   t = (n - 1) / f
- * For both variants, the watchdog is triggered when the WATCHDG_TIM_VAL reaches
- * the value 1, and not zero. Consequently, the equation from the PCF2131
- * datasheet seems to be the correct one for both variants.
- */
+ 
 static int pcf2127_watchdog_get_period(int n, int f1000)
 {
 	return (1000 * (n - 1)) / f1000;
@@ -513,7 +452,7 @@ static int pcf2127_watchdog_init(struct device *dev, struct pcf2127 *pcf2127)
 
 	watchdog_set_drvdata(&pcf2127->wdd, pcf2127);
 
-	/* Test if watchdog timer is started by bootloader */
+	 
 	if (pcf2127->cfg->wd_val_reg_readable) {
 		u32 wdd_timeout;
 
@@ -529,7 +468,7 @@ static int pcf2127_watchdog_init(struct device *dev, struct pcf2127 *pcf2127)
 	return devm_watchdog_register_device(dev, &pcf2127->wdd);
 }
 
-/* Alarm */
+ 
 static int pcf2127_rtc_read_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct pcf2127 *pcf2127 = dev_get_drvdata(dev);
@@ -594,7 +533,7 @@ static int pcf2127_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	buf[1] = bin2bcd(alrm->time.tm_min);
 	buf[2] = bin2bcd(alrm->time.tm_hour);
 	buf[3] = bin2bcd(alrm->time.tm_mday);
-	buf[4] = PCF2127_BIT_ALARM_AE; /* Do not match on week day */
+	buf[4] = PCF2127_BIT_ALARM_AE;  
 
 	ret = regmap_bulk_write(pcf2127->regmap, pcf2127->cfg->regs_alarm_base,
 				buf, sizeof(buf));
@@ -604,10 +543,7 @@ static int pcf2127_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alrm)
 	return pcf2127_rtc_alarm_irq_enable(dev, alrm->enabled);
 }
 
-/*
- * This function reads one timestamp function data, caller is responsible for
- * calling pcf2127_wdt_active_ping()
- */
+ 
 static int pcf2127_rtc_ts_read(struct device *dev, time64_t *ts,
 			       int ts_id)
 {
@@ -631,11 +567,11 @@ static int pcf2127_rtc_ts_read(struct device *dev, time64_t *ts,
 	tm.tm_min = bcd2bin(data[2] & 0x7F);
 	tm.tm_hour = bcd2bin(data[3] & 0x3F);
 	tm.tm_mday = bcd2bin(data[4] & 0x3F);
-	/* TS_MO register (month) value range: 1-12 */
+	 
 	tm.tm_mon = bcd2bin(data[5] & 0x1F) - 1;
 	tm.tm_year = bcd2bin(data[6]);
 	if (tm.tm_year < 70)
-		tm.tm_year += 100; /* assume we are in 1970...2069 */
+		tm.tm_year += 100;  
 
 	ret = rtc_valid_tm(&tm);
 	if (ret) {
@@ -655,7 +591,7 @@ static void pcf2127_rtc_ts_snapshot(struct device *dev, int ts_id)
 	if (ts_id >= pcf2127->cfg->ts_count)
 		return;
 
-	/* Let userspace read the first timestamp */
+	 
 	if (pcf2127->ts_valid[ts_id])
 		return;
 
@@ -675,7 +611,7 @@ static irqreturn_t pcf2127_rtc_irq(int irq, void *dev)
 		return IRQ_NONE;
 
 	if (pcf2127->cfg->ts_count == 1) {
-		/* PCF2127/29 */
+		 
 		unsigned int ctrl1;
 
 		ret = regmap_read(pcf2127->regmap, PCF2127_REG_CTRL1, &ctrl1);
@@ -696,7 +632,7 @@ static irqreturn_t pcf2127_rtc_irq(int irq, void *dev)
 			regmap_write(pcf2127->regmap, PCF2127_REG_CTRL2,
 				     ctrl2 & ~PCF2127_CTRL2_IRQ_MASK);
 	} else {
-		/* PCF2131. */
+		 
 		unsigned int ctrl4;
 
 		ret = regmap_read(pcf2127->regmap, PCF2131_REG_CTRL4, &ctrl4);
@@ -708,7 +644,7 @@ static irqreturn_t pcf2127_rtc_irq(int irq, void *dev)
 
 		if (ctrl4 & PCF2131_CTRL4_IRQ_MASK) {
 			int i;
-			int tsf_bit = PCF2131_BIT_CTRL4_TSF1; /* Start at bit 7. */
+			int tsf_bit = PCF2131_BIT_CTRL4_TSF1;  
 
 			for (i = 0; i < pcf2127->cfg->ts_count; i++) {
 				if (ctrl4 & tsf_bit)
@@ -743,7 +679,7 @@ static const struct rtc_class_ops pcf2127_rtc_ops = {
 	.alarm_irq_enable = pcf2127_rtc_alarm_irq_enable,
 };
 
-/* sysfs interface */
+ 
 
 static ssize_t timestamp_store(struct device *dev,
 			       struct device_attribute *attr,
@@ -758,7 +694,7 @@ static ssize_t timestamp_store(struct device *dev,
 	if (pcf2127->irq_enabled) {
 		pcf2127->ts_valid[ts_id] = false;
 	} else {
-		/* Always clear GND interrupt bit. */
+		 
 		ret = regmap_update_bits(pcf2127->regmap,
 					 pcf2127->cfg->ts[ts_id].gnd_detect_reg,
 					 pcf2127->cfg->ts[ts_id].gnd_detect_bit,
@@ -770,7 +706,7 @@ static ssize_t timestamp_store(struct device *dev,
 		}
 
 		if (pcf2127->cfg->ts[ts_id].inter_detect_bit) {
-			/* Clear intermediate level interrupt bit if supported. */
+			 
 			ret = regmap_update_bits(pcf2127->regmap,
 						 pcf2127->cfg->ts[ts_id].inter_detect_reg,
 						 pcf2127->cfg->ts[ts_id].inter_detect_bit,
@@ -838,9 +774,7 @@ static ssize_t timestamp_show(struct device *dev,
 		u8 valid_inter = 0;
 		unsigned int ctrl;
 
-		/* Check if TS input pin is driven to GND, supported by all
-		 * variants.
-		 */
+		 
 		ret = regmap_read(pcf2127->regmap,
 				  pcf2127->cfg->ts[ts_id].gnd_detect_reg,
 				  &ctrl);
@@ -850,9 +784,7 @@ static ssize_t timestamp_show(struct device *dev,
 		valid_low = ctrl & pcf2127->cfg->ts[ts_id].gnd_detect_bit;
 
 		if (pcf2127->cfg->ts[ts_id].inter_detect_bit) {
-			/* Check if TS input pin is driven to intermediate level
-			 * between GND and supply, if supported by variant.
-			 */
+			 
 			ret = regmap_read(pcf2127->regmap,
 					  pcf2127->cfg->ts[ts_id].inter_detect_reg,
 					  &ctrl);
@@ -1028,9 +960,7 @@ static struct pcf21xx_config pcf21xx_cfg[] = {
 	},
 };
 
-/*
- * Enable timestamp function and corresponding interrupt(s).
- */
+ 
 static int pcf2127_enable_ts(struct device *dev, int ts_id)
 {
 	struct pcf2127 *pcf2127 = dev_get_drvdata(dev);
@@ -1042,7 +972,7 @@ static int pcf2127_enable_ts(struct device *dev, int ts_id)
 		return -EINVAL;
 	}
 
-	/* Enable timestamp function. */
+	 
 	ret = regmap_update_bits(pcf2127->regmap,
 				 pcf2127->cfg->ts[ts_id].reg_base,
 				 PCF2127_BIT_TS_CTRL_TSOFF |
@@ -1054,11 +984,7 @@ static int pcf2127_enable_ts(struct device *dev, int ts_id)
 		return ret;
 	}
 
-	/*
-	 * Enable interrupt generation when TSF timestamp flag is set.
-	 * Interrupt signals are open-drain outputs and can be left floating if
-	 * unused.
-	 */
+	 
 	ret = regmap_update_bits(pcf2127->regmap, pcf2127->cfg->ts[ts_id].ie_reg,
 				 pcf2127->cfg->ts[ts_id].ie_bit,
 				 pcf2127->cfg->ts[ts_id].ie_bit);
@@ -1071,15 +997,13 @@ static int pcf2127_enable_ts(struct device *dev, int ts_id)
 	return ret;
 }
 
-/* Route all interrupt sources to INT A pin. */
+ 
 static int pcf2127_configure_interrupt_pins(struct device *dev)
 {
 	struct pcf2127 *pcf2127 = dev_get_drvdata(dev);
 	int ret;
 
-	/* Mask bits need to be cleared to enable corresponding
-	 * interrupt source.
-	 */
+	 
 	ret = regmap_write(pcf2127->regmap,
 			   PCF2131_REG_INT_A_MASK1, 0);
 	if (ret)
@@ -1118,12 +1042,9 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 	pcf2127->rtc->ops = &pcf2127_rtc_ops;
 	pcf2127->rtc->range_min = RTC_TIMESTAMP_BEGIN_2000;
 	pcf2127->rtc->range_max = RTC_TIMESTAMP_END_2099;
-	pcf2127->rtc->set_start_time = true; /* Sets actual start to 1970 */
+	pcf2127->rtc->set_start_time = true;  
 
-	/*
-	 * PCF2127/29 do not work correctly when setting alarms at 1s intervals.
-	 * PCF2131 is ok.
-	 */
+	 
 	if (pcf2127->cfg->type == PCF2127 || pcf2127->cfg->type == PCF2129) {
 		set_bit(RTC_FEATURE_ALARM_RES_2S, pcf2127->rtc->features);
 		clear_bit(RTC_FEATURE_UPDATE_INTERRUPT, pcf2127->rtc->features);
@@ -1134,10 +1055,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 	if (alarm_irq > 0) {
 		unsigned long flags;
 
-		/*
-		 * If flags = 0, devm_request_threaded_irq() will use IRQ flags
-		 * obtained from device tree.
-		 */
+		 
 		if (dev_fwnode(dev))
 			flags = 0;
 		else
@@ -1160,7 +1078,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 	}
 
 	if (pcf2127->cfg->has_int_a_b) {
-		/* Configure int A/B pins, independently of alarm_irq. */
+		 
 		ret = pcf2127_configure_interrupt_pins(dev);
 		if (ret) {
 			dev_err(dev, "failed to configure interrupt pins\n");
@@ -1179,10 +1097,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 		ret = devm_rtc_nvmem_register(pcf2127->rtc, &nvmem_cfg);
 	}
 
-	/*
-	 * The "Power-On Reset Override" facility prevents the RTC to do a reset
-	 * after power on. For normal operation the PORO must be disabled.
-	 */
+	 
 	ret = regmap_clear_bits(pcf2127->regmap, PCF2127_REG_CTRL1,
 				PCF2127_BIT_CTRL1_POR_OVRD);
 	if (ret < 0)
@@ -1201,15 +1116,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 		msleep(100);
 	}
 
-	/*
-	 * Watchdog timer enabled and reset pin /RST activated when timed out.
-	 * Select 1Hz clock source for watchdog timer (1/4Hz for PCF2131).
-	 * Note: Countdown timer disabled and not available.
-	 * For pca2129, pcf2129 and pcf2131, only bit[7] is for Symbol WD_CD
-	 * of register watchdg_tim_ctl. The bit[6] is labeled
-	 * as T. Bits labeled as T must always be written with
-	 * logic 0.
-	 */
+	 
 	ret = regmap_update_bits(pcf2127->regmap, pcf2127->cfg->reg_wd_ctl,
 				 PCF2127_BIT_WD_CTL_CD1 |
 				 PCF2127_BIT_WD_CTL_CD0 |
@@ -1225,12 +1132,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 
 	pcf2127_watchdog_init(dev, pcf2127);
 
-	/*
-	 * Disable battery low/switch-over timestamp and interrupts.
-	 * Clear battery interrupt flags which can block new trigger events.
-	 * Note: This is the default chip behaviour but added to ensure
-	 * correct tamper timestamp and interrupt function.
-	 */
+	 
 	ret = regmap_update_bits(pcf2127->regmap, PCF2127_REG_CTRL3,
 				 PCF2127_BIT_CTRL3_BTSE |
 				 PCF2127_BIT_CTRL3_BIE |
@@ -1241,9 +1143,7 @@ static int pcf2127_probe(struct device *dev, struct regmap *regmap,
 		return ret;
 	}
 
-	/*
-	 * Enable timestamp functions 1 to 4.
-	 */
+	 
 	for (int i = 0; i < pcf2127->cfg->ts_count; i++) {
 		ret = pcf2127_enable_ts(dev, i);
 		if (ret)
@@ -1336,11 +1236,7 @@ static int pcf2127_i2c_read(void *context, const void *reg, size_t reg_size,
 	return 0;
 }
 
-/*
- * The reason we need this custom regmap_bus instead of using regmap_init_i2c()
- * is that the STOP condition is required between set register address and
- * read register data when reading from registers.
- */
+ 
 static const struct regmap_bus pcf2127_i2c_regmap = {
 	.write = pcf2127_i2c_write,
 	.gather_write = pcf2127_i2c_gather_write,

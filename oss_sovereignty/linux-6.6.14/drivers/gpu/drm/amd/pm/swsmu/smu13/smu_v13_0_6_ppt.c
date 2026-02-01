@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -51,14 +30,10 @@
 #undef MP1_Public
 #undef smnMP1_FIRMWARE_FLAGS
 
-/* TODO: Check final register offsets */
+ 
 #define MP1_Public 0x03b00000
 #define smnMP1_FIRMWARE_FLAGS 0x3010028
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -77,7 +52,7 @@
 	 FEATURE_MASK(FEATURE_DPM_LCLK) | FEATURE_MASK(FEATURE_DPM_XGMI) |     \
 	 FEATURE_MASK(FEATURE_DPM_VCN))
 
-/* possible frequency drift (1Mhz) */
+ 
 #define EPSILON 1
 
 #define smnPCIE_ESM_CTRL 0x93D0
@@ -290,7 +265,7 @@ static int smu_v13_0_6_get_allowed_feature_mask(struct smu_context *smu,
 	if (num > 2)
 		return -EINVAL;
 
-	/* pptable will handle the features to enable */
+	 
 	memset(feature_mask, 0xFF, sizeof(uint32_t) * num);
 
 	return 0;
@@ -334,14 +309,14 @@ static int smu_v13_0_6_setup_driver_pptable(struct smu_context *smu)
 		(struct PPTable_t *)smu_table->driver_pptable;
 	int ret, i, retry = 100;
 
-	/* Store one-time values in driver PPTable */
+	 
 	if (!pptable->Init) {
 		while (--retry) {
 			ret = smu_v13_0_6_get_metrics_table(smu, NULL, true);
 			if (ret)
 				return ret;
 
-			/* Ensure that metrics have been updated */
+			 
 			if (metrics->AccumulationCounter)
 				break;
 
@@ -373,7 +348,7 @@ static int smu_v13_0_6_setup_driver_pptable(struct smu_context *smu)
 				SMUQ10_TO_UINT(metrics->LclkFrequencyTable[i]);
 		}
 
-		/* use AID0 serial number by default */
+		 
 		pptable->PublicSerialNumber_AID = metrics->PublicSerialNumber_AID[0];
 
 		pptable->Init = true;
@@ -509,12 +484,10 @@ static int smu_v13_0_6_set_default_dpm_table(struct smu_context *smu)
 
 	smu_v13_0_6_setup_driver_pptable(smu);
 
-	/* gfxclk dpm table setup */
+	 
 	dpm_table = &dpm_context->dpm_tables.gfx_table;
 	if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_DPM_GFXCLK_BIT)) {
-		/* In the case of gfxclk, only fine-grained dpm is honored.
-		 * Get min/max values from FW.
-		 */
+		 
 		ret = smu_v13_0_6_get_dpm_ultimate_freq(smu, SMU_GFXCLK,
 							&gfxclkmin, &gfxclkmax);
 		if (ret)
@@ -563,10 +536,7 @@ static int smu_v13_0_6_setup_pptable(struct smu_context *smu)
 {
 	struct smu_table_context *table_context = &smu->smu_table;
 
-	/* TODO: PPTable is not available.
-	 * 1) Find an alternate way to get 'PPTable values' here.
-	 * 2) Check if there is SW CTF
-	 */
+	 
 	table_context->thermal_controller_type = 0;
 
 	return 0;
@@ -686,7 +656,7 @@ static int smu_v13_0_6_get_smu_metrics_data(struct smu_context *smu,
 	if (ret)
 		return ret;
 
-	/* For clocks with multiple instances, only report the first one */
+	 
 	switch (member) {
 	case METRICS_CURR_GFXCLK:
 	case METRICS_AVERAGE_GFXCLK:
@@ -732,9 +702,7 @@ static int smu_v13_0_6_get_smu_metrics_data(struct smu_context *smu,
 		*value = SMUQ10_TO_UINT(metrics->MaxHbmTemperature) *
 			 SMU_TEMPERATURE_UNITS_PER_CENTIGRADES;
 		break;
-	/* This is the max of all VRs and not just SOC VR.
-	 * No need to define another data type for the same.
-	 */
+	 
 	case METRICS_TEMPERATURE_VRSOC:
 		*value = SMUQ10_TO_UINT(metrics->MaxVrTemperature) *
 			 SMU_TEMPERATURE_UNITS_PER_CENTIGRADES;
@@ -1105,10 +1073,7 @@ static int smu_v13_0_6_force_clk_levels(struct smu_context *smu,
 	case SMU_MCLK:
 	case SMU_SOCCLK:
 	case SMU_FCLK:
-		/*
-		 * Should not arrive here since smu_13_0_6 does not
-		 * support mclk/socclk/fclk softmin/softmax settings
-		 */
+		 
 		ret = -EINVAL;
 		break;
 
@@ -1206,7 +1171,7 @@ static int smu_v13_0_6_read_sensor(struct smu_context *smu,
 	case AMDGPU_PP_SENSOR_GFX_MCLK:
 		ret = smu_v13_0_6_get_current_clk_freq_by_table(
 			smu, SMU_UCLK, (uint32_t *)data);
-		/* the output clock frequency in 10K unit */
+		 
 		*(uint32_t *)data *= 100;
 		*size = 4;
 		break;
@@ -1280,29 +1245,20 @@ static int smu_v13_0_6_irq_process(struct amdgpu_device *adev,
 
 	if (client_id == SOC15_IH_CLIENTID_MP1) {
 		if (src_id == IH_INTERRUPT_ID_TO_DRIVER) {
-			/* ACK SMUToHost interrupt */
+			 
 			data = RREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT_CTRL);
 			data = REG_SET_FIELD(data, MP1_SMN_IH_SW_INT_CTRL, INT_ACK, 1);
 			WREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT_CTRL, data);
-			/*
-			 * ctxid is used to distinguish different events for SMCToHost
-			 * interrupt.
-			 */
+			 
 			switch (ctxid) {
 			case IH_INTERRUPT_CONTEXT_ID_THERMAL_THROTTLING:
-				/*
-				 * Increment the throttle interrupt counter
-				 */
+				 
 				atomic64_inc(&smu->throttle_int_counter);
 
 				if (!atomic_read(&adev->throttling_logging_enabled))
 					return 0;
 
-				/* This uses the new method which fixes the
-				 * incorrect throttling status reporting
-				 * through metrics table. For older FWs,
-				 * it will be ignored.
-				 */
+				 
 				if (__ratelimit(&adev->throttling_logging_rs)) {
 					atomic_set(
 						&power_context->throttle_status,
@@ -1327,14 +1283,14 @@ static int smu_v13_0_6_set_irq_state(struct amdgpu_device *adev,
 
 	switch (state) {
 	case AMDGPU_IRQ_STATE_DISABLE:
-		/* For MP1 SW irqs */
+		 
 		val = RREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT_CTRL);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT_CTRL, INT_MASK, 1);
 		WREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT_CTRL, val);
 
 		break;
 	case AMDGPU_IRQ_STATE_ENABLE:
-		/* For MP1 SW irqs */
+		 
 		val = RREG32_SOC15(MP1, 0, regMP1_SMN_IH_SW_INT);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT, ID, 0xFE);
 		val = REG_SET_FIELD(val, MP1_SMN_IH_SW_INT, VALID, 0);
@@ -1387,7 +1343,7 @@ static int smu_v13_0_6_notify_unload(struct smu_context *smu)
 		return 0;
 
 	dev_dbg(smu->adev->dev, "Notify PMFW about driver unload");
-	/* Ignore return, just intimate FW that driver is not going to be there */
+	 
 	smu_cmn_send_smc_msg(smu, SMU_MSG_PrepareMp1ForUnload, NULL);
 
 	return 0;
@@ -1406,7 +1362,7 @@ static int smu_v13_0_6_system_features_control(struct smu_context *smu,
 		if (!(adev->flags & AMD_IS_APU))
 			ret = smu_v13_0_system_features_control(smu, enable);
 	} else {
-		/* Notify FW that the device is no longer driver managed */
+		 
 		smu_v13_0_6_notify_unload(smu);
 	}
 
@@ -1440,7 +1396,7 @@ static int smu_v13_0_6_set_performance_level(struct smu_context *smu,
 	struct smu_umd_pstate_table *pstate_table = &smu->pstate_table;
 	int ret;
 
-	/* Disable determinism if switching to another mode */
+	 
 	if ((smu_dpm->dpm_level == AMD_DPM_FORCED_LEVEL_PERF_DETERMINISM) &&
 	    (level != AMD_DPM_FORCED_LEVEL_PERF_DETERMINISM)) {
 		smu_cmn_send_smc_msg(smu, SMU_MSG_DisableDeterminism, NULL);
@@ -1522,7 +1478,7 @@ static int smu_v13_0_6_set_soft_freq_limited_range(struct smu_context *smu,
 			return -EINVAL;
 		}
 
-		/* Restore default min/max clocks and enable determinism */
+		 
 		min_clk = dpm_context->dpm_tables.gfx_table.min;
 		max_clk = dpm_context->dpm_tables.gfx_table.max;
 		ret = smu_v13_0_6_set_gfx_soft_freq_limited_range(smu, min_clk,
@@ -1556,7 +1512,7 @@ static int smu_v13_0_6_usr_edit_dpm_table(struct smu_context *smu,
 	uint32_t max_clk;
 	int ret = 0;
 
-	/* Only allowed in manual or determinism mode */
+	 
 	if ((smu_dpm->dpm_level != AMD_DPM_FORCED_LEVEL_MANUAL) &&
 	    (smu_dpm->dpm_level != AMD_DPM_FORCED_LEVEL_PERF_DETERMINISM))
 		return -EINVAL;
@@ -1605,7 +1561,7 @@ static int smu_v13_0_6_usr_edit_dpm_table(struct smu_context *smu,
 				"Input parameter number not correct\n");
 			return -EINVAL;
 		} else {
-			/* Use the default frequencies for manual and determinism mode */
+			 
 			min_clk = dpm_context->dpm_tables.gfx_table.min;
 			max_clk = dpm_context->dpm_tables.gfx_table.max;
 
@@ -1686,7 +1642,7 @@ static int smu_v13_0_6_request_i2c_xfer(struct smu_context *smu,
 	table_size = smu_table->tables[SMU_TABLE_I2C_COMMANDS].size;
 
 	memcpy(table->cpu_addr, table_data, table_size);
-	/* Flush hdp cache */
+	 
 	amdgpu_asic_flush_hdp(adev, NULL);
 	ret = smu_cmn_send_smc_msg(smu, SMU_MSG_RequestI2cTransaction,
 					  NULL);
@@ -1715,7 +1671,7 @@ static int smu_v13_0_6_i2c_xfer(struct i2c_adapter *i2c_adap,
 
 	req->I2CcontrollerPort = smu_i2c->port;
 	req->I2CSpeed = I2C_SPEED_FAST_400K;
-	req->SlaveAddress = msg[0].addr << 1; /* wants an 8-bit address */
+	req->SlaveAddress = msg[0].addr << 1;  
 	dir = msg[0].flags & I2C_M_RD;
 
 	for (c = i = 0; i < num_msgs; i++) {
@@ -1723,25 +1679,20 @@ static int smu_v13_0_6_i2c_xfer(struct i2c_adapter *i2c_adap,
 			SwI2cCmd_t *cmd = &req->SwI2cCmds[c];
 
 			if (!(msg[i].flags & I2C_M_RD)) {
-				/* write */
+				 
 				cmd->CmdConfig |= CMDCONFIG_READWRITE_MASK;
 				cmd->ReadWriteData = msg[i].buf[j];
 			}
 
 			if ((dir ^ msg[i].flags) & I2C_M_RD) {
-				/* The direction changes.
-				 */
+				 
 				dir = msg[i].flags & I2C_M_RD;
 				cmd->CmdConfig |= CMDCONFIG_RESTART_MASK;
 			}
 
 			req->NumCmds++;
 
-			/*
-			 * Insert STOP if we are at the last byte of either last
-			 * message for the transaction or the client explicitly
-			 * requires a STOP at this particular message.
-			 */
+			 
 			if ((j == msg[i].len - 1) &&
 			    ((i == num_msgs - 1) || (msg[i].flags & I2C_M_STOP))) {
 				cmd->CmdConfig &= ~CMDCONFIG_RESTART_MASK;
@@ -1860,7 +1811,7 @@ static void smu_v13_0_6_get_unique_id(struct smu_context *smu)
 
 static bool smu_v13_0_6_is_baco_supported(struct smu_context *smu)
 {
-	/* smu_13_0_6 does not support baco */
+	 
 
 	return false;
 }
@@ -1939,7 +1890,7 @@ static int smu_v13_0_6_get_current_pcie_link_speed(struct smu_context *smu)
 	uint32_t speed_level;
 	uint32_t esm_ctrl;
 
-	/* TODO: confirm this on real target */
+	 
 	esm_ctrl = RREG32_PCIE(smnPCIE_ESM_CTRL);
 	if ((esm_ctrl >> 15) & 0x1FFFF)
 		return (((esm_ctrl >> 8) & 0x3F) + 128);
@@ -1977,10 +1928,10 @@ static ssize_t smu_v13_0_6_get_gpu_metrics(struct smu_context *smu, void **table
 
 	gpu_metrics->temperature_hotspot =
 		SMUQ10_TO_UINT(metrics->MaxSocketTemperature);
-	/* Individual HBM stack temperature is not reported */
+	 
 	gpu_metrics->temperature_mem =
 		SMUQ10_TO_UINT(metrics->MaxHbmTemperature);
-	/* Reports max temperature of all voltage rails */
+	 
 	gpu_metrics->temperature_vrsoc =
 		SMUQ10_TO_UINT(metrics->MaxVrTemperature);
 
@@ -1991,7 +1942,7 @@ static ssize_t smu_v13_0_6_get_gpu_metrics(struct smu_context *smu, void **table
 
 	gpu_metrics->average_socket_power =
 		SMUQ10_TO_UINT(metrics->SocketPower);
-	/* Energy counter reported in 15.259uJ (2^-16) units */
+	 
 	gpu_metrics->energy_accumulator = metrics->SocketEnergyAcc;
 
 	gpu_metrics->current_gfxclk =
@@ -2010,7 +1961,7 @@ static ssize_t smu_v13_0_6_get_gpu_metrics(struct smu_context *smu, void **table
 	gpu_metrics->average_vclk0_frequency = gpu_metrics->current_vclk0;
 	gpu_metrics->average_dclk0_frequency = gpu_metrics->current_dclk0;
 
-	/* Throttle status is not reported through metrics now */
+	 
 	gpu_metrics->throttle_status = 0;
 
 	if (!(adev->flags & AMD_IS_APU)) {
@@ -2053,17 +2004,17 @@ static int smu_v13_0_6_mode2_reset(struct smu_context *smu)
 	ret = smu_cmn_send_msg_without_waiting(smu, (uint16_t)index,
 					       SMU_RESET_MODE_2);
 
-	/* This is similar to FLR, wait till max FLR timeout */
+	 
 	msleep(100);
 
 	dev_dbg(smu->adev->dev, "restore config space...\n");
-	/* Restore the config space saved during init */
+	 
 	amdgpu_device_load_pci_state(adev->pdev);
 
 	dev_dbg(smu->adev->dev, "wait for reset ack\n");
 	do {
 		ret = smu_cmn_wait_for_response(smu);
-		/* Wait a bit more time for getting ACK */
+		 
 		if (ret == -ETIME) {
 			--timeout;
 			usleep_range(500, 1000);
@@ -2099,7 +2050,7 @@ static int smu_v13_0_6_get_thermal_temperature_range(struct smu_context *smu,
 	if (!range)
 		return -EINVAL;
 
-	/*Check smu version, GetCtfLimit message only supported for smu version 85.69 or higher */
+	 
 	smu_cmn_get_smc_version(smu, NULL, &smu_version);
 	if (smu_version < 0x554500)
 		return 0;
@@ -2144,7 +2095,7 @@ static int smu_v13_0_6_mode1_reset(struct smu_context *smu)
 	fatal_err = 0;
 	param = SMU_RESET_MODE_1;
 
-	/* fatal error triggered by ras, PMFW supports the flag */
+	 
 	if (ras && atomic_read(&ras->in_recovery))
 		fatal_err = 1;
 
@@ -2173,7 +2124,7 @@ static int smu_v13_0_6_smu_send_hbm_bad_page_num(struct smu_context *smu,
 {
 	int ret = 0;
 
-	/* message SMU to update the bad page number on SMUBUS */
+	 
 	ret = smu_cmn_send_smc_msg_with_param(
 		smu, SMU_MSG_SetNumBadHbmPagesRetired, size, NULL);
 	if (ret)
@@ -2185,9 +2136,9 @@ static int smu_v13_0_6_smu_send_hbm_bad_page_num(struct smu_context *smu,
 }
 
 static const struct pptable_funcs smu_v13_0_6_ppt_funcs = {
-	/* init dpm */
+	 
 	.get_allowed_feature_mask = smu_v13_0_6_get_allowed_feature_mask,
-	/* dpm/clk tables */
+	 
 	.set_default_dpm_table = smu_v13_0_6_set_default_dpm_table,
 	.populate_umd_state_clk = smu_v13_0_6_populate_umd_state_clk,
 	.print_clk_levels = smu_v13_0_6_print_clk_levels,
@@ -2202,7 +2153,7 @@ static const struct pptable_funcs smu_v13_0_6_ppt_funcs = {
 	.init_power = smu_v13_0_init_power,
 	.fini_power = smu_v13_0_fini_power,
 	.check_fw_status = smu_v13_0_6_check_fw_status,
-	/* pptable related */
+	 
 	.check_fw_version = smu_v13_0_check_fw_version,
 	.set_driver_table_location = smu_v13_0_set_driver_table_location,
 	.set_tool_table_location = smu_v13_0_set_tool_table_location,

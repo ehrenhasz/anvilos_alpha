@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) 2005-2011 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+ 
 
 #include "dlm_internal.h"
 #include "lockspace.h"
@@ -45,7 +38,7 @@ void dlm_slots_copy_out(struct dlm_ls *ls, struct dlm_rcom *rc)
 
 	ro = (struct rcom_slot *)(rc->rc_buf + sizeof(struct rcom_config));
 
-	/* ls_slots array is sparse, but not rcom_slots */
+	 
 
 	for (i = 0; i < ls->ls_slots_size; i++) {
 		slot = &ls->ls_slots[i];
@@ -153,9 +146,7 @@ int dlm_slots_copy_in(struct dlm_ls *ls)
 	return 0;
 }
 
-/* for any nodes that do not support slots, we will not have set memb->slot
-   in wait_status_all(), so memb->slot will remain -1, and we will not
-   assign slots or set ls_num_slots here */
+ 
 
 int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 		     struct dlm_slot **slots_out, uint32_t *gen_out)
@@ -169,7 +160,7 @@ int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 	int num = 0;
 	uint32_t gen = 0;
 
-	/* our own memb struct will have slot -1 gen 0 */
+	 
 
 	list_for_each_entry(memb, &ls->ls_nodes, list) {
 		if (memb->nodeid == our_nodeid) {
@@ -183,24 +174,24 @@ int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 		if (memb->generation > gen)
 			gen = memb->generation;
 
-		/* node doesn't support slots */
+		 
 
 		if (memb->slot == -1)
 			return -1;
 
-		/* node needs a slot assigned */
+		 
 
 		if (!memb->slot)
 			need++;
 
-		/* node has a slot assigned */
+		 
 
 		num++;
 
 		if (!max || max < memb->slot)
 			max = memb->slot;
 
-		/* sanity check, once slot is assigned it shouldn't change */
+		 
 
 		if (memb->slot_prev && memb->slot && memb->slot_prev != memb->slot) {
 			log_error(ls, "nodeid %d slot changed %d %d",
@@ -217,7 +208,7 @@ int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 
 	num = 0;
 
-	/* fill in slots (offsets) that are used */
+	 
 
 	list_for_each_entry(memb, &ls->ls_nodes, list) {
 		if (!memb->slot)
@@ -234,7 +225,7 @@ int dlm_slots_assign(struct dlm_ls *ls, int *num_slots, int *slots_size,
 		num++;
 	}
 
-	/* assign new slots from unused offsets */
+	 
 
 	list_for_each_entry(memb, &ls->ls_nodes, list) {
 		if (memb->slot)
@@ -299,7 +290,7 @@ static void add_ordered_member(struct dlm_ls *ls, struct dlm_member *new)
 	if (!memb)
 		list_add_tail(newlist, head);
 	else {
-		/* FIXME: can use list macro here */
+		 
 		newlist->prev = tmp->prev;
 		newlist->next = tmp;
 		tmp->prev->next = newlist;
@@ -417,7 +408,7 @@ static void make_member_array(struct dlm_ls *ls)
 			total += memb->weight;
 	}
 
-	/* all nodes revert to weight of 1 if all have weight 0 */
+	 
 
 	if (!total) {
 		total = ls->ls_num_nodes;
@@ -447,7 +438,7 @@ static void make_member_array(struct dlm_ls *ls)
 	ls->ls_node_array = array;
 }
 
-/* send a status request to all members just to establish comms connections */
+ 
 
 static int ping_members(struct dlm_ls *ls, uint64_t seq)
 {
@@ -485,11 +476,7 @@ static void dlm_lsop_recover_slot(struct dlm_ls *ls, struct dlm_member *memb)
 	if (!ls->ls_ops || !ls->ls_ops->recover_slot)
 		return;
 
-	/* if there is no comms connection with this node
-	   or the present comms connection is newer
-	   than the one when this member was added, then
-	   we consider the node to have failed (versus
-	   being removed due to dlm_release_lockspace) */
+	 
 
 	error = dlm_comm_seq(memb->nodeid, &seq);
 
@@ -551,19 +538,14 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 	struct dlm_config_node *node;
 	int i, error, neg = 0, low = -1;
 
-	/* previously removed members that we've not finished removing need to
-	 * count as a negative change so the "neg" recovery steps will happen
-	 *
-	 * This functionality must report all member changes to lsops or
-	 * midcomms layer and must never return before.
-	 */
+	 
 
 	list_for_each_entry(memb, &ls->ls_nodes_gone, list) {
 		log_rinfo(ls, "prev removed member %d", memb->nodeid);
 		neg++;
 	}
 
-	/* move departed members from ls_nodes to ls_nodes_gone */
+	 
 
 	list_for_each_entry_safe(memb, safe, &ls->ls_nodes, list) {
 		node = find_config_node(rv, memb->nodeid);
@@ -573,7 +555,7 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 		if (!node) {
 			log_rinfo(ls, "remove member %d", memb->nodeid);
 		} else {
-			/* removed and re-added */
+			 
 			log_rinfo(ls, "remove member %d comm_seq %u %u",
 				  memb->nodeid, memb->comm_seq, node->comm_seq);
 		}
@@ -585,7 +567,7 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 		dlm_lsop_recover_slot(ls, memb);
 	}
 
-	/* add new members to ls_nodes */
+	 
 
 	for (i = 0; i < rv->nodes_count; i++) {
 		node = &rv->nodes[i];
@@ -612,31 +594,17 @@ int dlm_recover_members(struct dlm_ls *ls, struct dlm_recover *rv, int *neg_out)
 	return error;
 }
 
-/* Userspace guarantees that dlm_ls_stop() has completed on all nodes before
-   dlm_ls_start() is called on any of them to start the new recovery. */
+ 
 
 int dlm_ls_stop(struct dlm_ls *ls)
 {
 	int new;
 
-	/*
-	 * Prevent dlm_recv from being in the middle of something when we do
-	 * the stop.  This includes ensuring dlm_recv isn't processing a
-	 * recovery message (rcom), while dlm_recoverd is aborting and
-	 * resetting things from an in-progress recovery.  i.e. we want
-	 * dlm_recoverd to abort its recovery without worrying about dlm_recv
-	 * processing an rcom at the same time.  Stopping dlm_recv also makes
-	 * it easy for dlm_receive_message() to check locking stopped and add a
-	 * message to the requestqueue without races.
-	 */
+	 
 
 	down_write(&ls->ls_recv_active);
 
-	/*
-	 * Abort any recovery that's in progress (see RECOVER_STOP,
-	 * dlm_recovery_stopped()) and tell any other threads running in the
-	 * dlm to quit any processing (see RUNNING, dlm_locking_stopped()).
-	 */
+	 
 
 	spin_lock(&ls->ls_recover_lock);
 	set_bit(LSFL_RECOVER_STOP, &ls->ls_flags);
@@ -644,20 +612,11 @@ int dlm_ls_stop(struct dlm_ls *ls)
 	ls->ls_recover_seq++;
 	spin_unlock(&ls->ls_recover_lock);
 
-	/*
-	 * Let dlm_recv run again, now any normal messages will be saved on the
-	 * requestqueue for later.
-	 */
+	 
 
 	up_write(&ls->ls_recv_active);
 
-	/*
-	 * This in_recovery lock does two things:
-	 * 1) Keeps this function from returning until all threads are out
-	 *    of locking routines and locking is truly stopped.
-	 * 2) Keeps any new requests from being processed until it's unlocked
-	 *    when recovery is complete.
-	 */
+	 
 
 	if (new) {
 		set_bit(LSFL_RECOVER_DOWN, &ls->ls_flags);
@@ -666,11 +625,7 @@ int dlm_ls_stop(struct dlm_ls *ls)
 			   test_bit(LSFL_RECOVER_LOCK, &ls->ls_flags));
 	}
 
-	/*
-	 * The recoverd suspend/resume makes sure that dlm_recoverd (if
-	 * running) has noticed RECOVER_STOP above and quit processing the
-	 * previous recovery.
-	 */
+	 
 
 	dlm_recoverd_suspend(ls);
 
@@ -687,13 +642,7 @@ int dlm_ls_stop(struct dlm_ls *ls)
 	if (!ls->ls_recover_begin)
 		ls->ls_recover_begin = jiffies;
 
-	/* call recover_prep ops only once and not multiple times
-	 * for each possible dlm_ls_stop() when recovery is already
-	 * stopped.
-	 *
-	 * If we successful was able to clear LSFL_RUNNING bit and
-	 * it was set we know it is the first dlm_ls_stop() call.
-	 */
+	 
 	if (new)
 		dlm_lsop_recover_prep(ls);
 
@@ -716,7 +665,7 @@ int dlm_ls_start(struct dlm_ls *ls)
 
 	spin_lock(&ls->ls_recover_lock);
 
-	/* the lockspace needs to be stopped before it can be started */
+	 
 
 	if (!dlm_locking_stopped(ls)) {
 		spin_unlock(&ls->ls_recover_lock);

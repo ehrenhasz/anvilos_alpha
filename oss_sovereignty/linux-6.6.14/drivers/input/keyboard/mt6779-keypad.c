@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2022 MediaTek Inc.
- * Author Fengping Yu <fengping.yu@mediatek.com>
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/clk.h>
 #include <linux/input.h>
@@ -25,7 +22,7 @@
 #define MTK_KPD_SEL_COLMASK(c)	GENMASK((c) + 9, 10)
 #define MTK_KPD_SEL_ROWMASK(r)	GENMASK((r) + 3, 4)
 #define MTK_KPD_NUM_MEMS	5
-#define MTK_KPD_NUM_BITS	136	/* 4*32+8 MEM5 only use 8 BITS */
+#define MTK_KPD_NUM_BITS	136	 
 
 struct mt6779_keypad {
 	struct regmap *regmap;
@@ -63,10 +60,7 @@ static irqreturn_t mt6779_keypad_irq_handler(int irq, void *dev_id)
 	bitmap_xor(change, new_state, keypad->keymap_state, MTK_KPD_NUM_BITS);
 
 	for_each_set_bit(bit_nr, change, MTK_KPD_NUM_BITS) {
-		/*
-		 * Registers are 32bits, but only bits [15:0] are used to
-		 * indicate key status.
-		 */
+		 
 		if (bit_nr % 32 >= 16)
 			continue;
 
@@ -74,7 +68,7 @@ static irqreturn_t mt6779_keypad_irq_handler(int irq, void *dev_id)
 		keypad->calc_row_col(key, &row, &col);
 
 		scancode = MATRIX_SCAN_CODE(row, col, row_shift);
-		/* 1: not pressed, 0: pressed */
+		 
 		pressed = !test_bit(bit_nr, new_state);
 		dev_dbg(&keypad->input_dev->dev, "%s",
 			pressed ? "pressed" : "released");
@@ -258,7 +252,7 @@ static int mt6779_keypad_pdrv_probe(struct platform_device *pdev)
 static const struct of_device_id mt6779_keypad_of_match[] = {
 	{ .compatible = "mediatek,mt6779-keypad" },
 	{ .compatible = "mediatek,mt6873-keypad" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver mt6779_keypad_pdrv = {

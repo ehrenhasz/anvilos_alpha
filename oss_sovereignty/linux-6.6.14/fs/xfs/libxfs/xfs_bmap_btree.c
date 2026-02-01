@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2003,2005 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -25,9 +22,7 @@
 
 static struct kmem_cache	*xfs_bmbt_cur_cache;
 
-/*
- * Convert on-disk form of btree root to in-memory form.
- */
+ 
 void
 xfs_bmdr_to_bmbt(
 	struct xfs_inode	*ip,
@@ -76,9 +71,7 @@ xfs_bmbt_disk_get_all(
 		irec->br_state = XFS_EXT_NORM;
 }
 
-/*
- * Extract the blockcount field from an on disk bmap extent record.
- */
+ 
 xfs_filblks_t
 xfs_bmbt_disk_get_blockcount(
 	const struct xfs_bmbt_rec	*r)
@@ -86,9 +79,7 @@ xfs_bmbt_disk_get_blockcount(
 	return (xfs_filblks_t)(be64_to_cpu(r->l1) & xfs_mask64lo(21));
 }
 
-/*
- * Extract the startoff field from a disk format bmap extent record.
- */
+ 
 xfs_fileoff_t
 xfs_bmbt_disk_get_startoff(
 	const struct xfs_bmbt_rec	*r)
@@ -97,9 +88,7 @@ xfs_bmbt_disk_get_startoff(
 		 xfs_mask64lo(64 - BMBT_EXNTFLAG_BITLEN)) >> 9;
 }
 
-/*
- * Set all the fields in a bmap extent record from the uncompressed form.
- */
+ 
 void
 xfs_bmbt_disk_set_all(
 	struct xfs_bmbt_rec	*r,
@@ -122,9 +111,7 @@ xfs_bmbt_disk_set_all(
 		  (xfs_bmbt_rec_base_t)xfs_mask64lo(21)), &r->l1);
 }
 
-/*
- * Convert in-memory form of btree root to on-disk form.
- */
+ 
 void
 xfs_bmbt_to_bmdr(
 	struct xfs_mount	*mp,
@@ -171,10 +158,7 @@ xfs_bmbt_dup_cursor(
 	new = xfs_bmbt_init_cursor(cur->bc_mp, cur->bc_tp,
 			cur->bc_ino.ip, cur->bc_ino.whichfork);
 
-	/*
-	 * Copy the firstblock, dfops, and flags values,
-	 * since init cursor doesn't get them.
-	 */
+	 
 	new->bc_ino.flags = cur->bc_ino.flags;
 
 	return new;
@@ -214,12 +198,7 @@ xfs_bmbt_alloc_block(
 	if (!args.wasdel && args.tp->t_blk_res == 0)
 		return -ENOSPC;
 
-	/*
-	 * If we are coming here from something like unwritten extent
-	 * conversion, there has been no data extent allocation already done, so
-	 * we have to ensure that we attempt to locate the entire set of bmbt
-	 * allocations in the same AG, as xfs_bmapi_write() would have reserved.
-	 */
+	 
 	if (cur->bc_tp->t_highest_agno == NULLAGNUMBER)
 		args.minleft = xfs_bmapi_minleft(cur->bc_tp, cur->bc_ino.ip,
 					cur->bc_ino.whichfork);
@@ -229,11 +208,7 @@ xfs_bmbt_alloc_block(
 		return error;
 
 	if (args.fsbno == NULLFSBLOCK && args.minleft) {
-		/*
-		 * Could not find an AG with enough free space to satisfy
-		 * a full btree split.  Try again and if
-		 * successful activate the lowspace algorithm.
-		 */
+		 
 		args.minleft = 0;
 		error = xfs_alloc_vextent_start_ag(&args, 0);
 		if (error)
@@ -319,15 +294,7 @@ xfs_bmbt_get_maxrecs(
 
 }
 
-/*
- * Get the maximum records we could store in the on-disk format.
- *
- * For non-root nodes this is equivalent to xfs_bmbt_get_maxrecs, but
- * for the root node this checks the available space in the dinode fork
- * so that we can resize the in-memory buffer to match it.  After a
- * resize to the maximum size this function returns the same value
- * as xfs_bmbt_get_maxrecs for the root node, too.
- */
+ 
 STATIC int
 xfs_bmbt_get_dmaxrecs(
 	struct xfs_btree_cur	*cur,
@@ -394,12 +361,7 @@ xfs_bmbt_diff_two_keys(
 
 	ASSERT(!mask || mask->bmbt.br_startoff);
 
-	/*
-	 * Note: This routine previously casted a and b to int64 and subtracted
-	 * them to generate a result.  This lead to problems if b was the
-	 * "maximum" key value (all ones) being signed incorrectly, hence this
-	 * somewhat less efficient version.
-	 */
+	 
 	if (a > b)
 		return 1;
 	if (b > a)
@@ -420,22 +382,13 @@ xfs_bmbt_verify(
 		return __this_address;
 
 	if (xfs_has_crc(mp)) {
-		/*
-		 * XXX: need a better way of verifying the owner here. Right now
-		 * just make sure there has been one set.
-		 */
+		 
 		fa = xfs_btree_lblock_v5hdr_verify(bp, XFS_RMAP_OWN_UNKNOWN);
 		if (fa)
 			return fa;
 	}
 
-	/*
-	 * numrecs and level verification.
-	 *
-	 * We don't know what fork we belong to, so just verify that the level
-	 * is less than the maximum of the two. Later checks will be more
-	 * precise.
-	 */
+	 
 	level = be16_to_cpu(block->bb_level);
 	if (level > max(mp->m_bm_maxlevels[0], mp->m_bm_maxlevels[1]))
 		return __this_address;
@@ -543,15 +496,13 @@ static const struct xfs_btree_ops xfs_bmbt_ops = {
 	.keys_contiguous	= xfs_bmbt_keys_contiguous,
 };
 
-/*
- * Allocate a new bmap btree cursor.
- */
-struct xfs_btree_cur *				/* new bmap btree cursor */
+ 
+struct xfs_btree_cur *				 
 xfs_bmbt_init_cursor(
-	struct xfs_mount	*mp,		/* file system mount point */
-	struct xfs_trans	*tp,		/* transaction pointer */
-	struct xfs_inode	*ip,		/* inode owning the btree */
-	int			whichfork)	/* data or attr fork */
+	struct xfs_mount	*mp,		 
+	struct xfs_trans	*tp,		 
+	struct xfs_inode	*ip,		 
+	int			whichfork)	 
 {
 	struct xfs_ifork	*ifp = xfs_ifork_ptr(ip, whichfork);
 	struct xfs_btree_cur	*cur;
@@ -576,7 +527,7 @@ xfs_bmbt_init_cursor(
 	return cur;
 }
 
-/* Calculate number of records in a block mapping btree block. */
+ 
 static inline unsigned int
 xfs_bmbt_block_maxrecs(
 	unsigned int		blocklen,
@@ -587,9 +538,7 @@ xfs_bmbt_block_maxrecs(
 	return blocklen / (sizeof(xfs_bmbt_key_t) + sizeof(xfs_bmbt_ptr_t));
 }
 
-/*
- * Calculate number of records in a bmap btree block.
- */
+ 
 int
 xfs_bmbt_maxrecs(
 	struct xfs_mount	*mp,
@@ -600,11 +549,7 @@ xfs_bmbt_maxrecs(
 	return xfs_bmbt_block_maxrecs(blocklen, leaf);
 }
 
-/*
- * Calculate the maximum possible height of the btree that the on-disk format
- * supports. This is used for sizing structures large enough to support every
- * possible configuration of a filesystem that might get mounted.
- */
+ 
 unsigned int
 xfs_bmbt_maxlevels_ondisk(void)
 {
@@ -617,14 +562,12 @@ xfs_bmbt_maxlevels_ondisk(void)
 	minrecs[0] = xfs_bmbt_block_maxrecs(blocklen, true) / 2;
 	minrecs[1] = xfs_bmbt_block_maxrecs(blocklen, false) / 2;
 
-	/* One extra level for the inode root. */
+	 
 	return xfs_btree_compute_maxlevels(minrecs,
 			XFS_MAX_EXTCNT_DATA_FORK_LARGE) + 1;
 }
 
-/*
- * Calculate number of records in a bmap btree inode root.
- */
+ 
 int
 xfs_bmdr_maxrecs(
 	int			blocklen,
@@ -637,23 +580,7 @@ xfs_bmdr_maxrecs(
 	return blocklen / (sizeof(xfs_bmdr_key_t) + sizeof(xfs_bmdr_ptr_t));
 }
 
-/*
- * Change the owner of a btree format fork fo the inode passed in. Change it to
- * the owner of that is passed in so that we can change owners before or after
- * we switch forks between inodes. The operation that the caller is doing will
- * determine whether is needs to change owner before or after the switch.
- *
- * For demand paged transactional modification, the fork switch should be done
- * after reading in all the blocks, modifying them and pinning them in the
- * transaction. For modification when the buffers are already pinned in memory,
- * the fork switch can be done before changing the owner as we won't need to
- * validate the owner until the btree buffers are unpinned and writes can occur
- * again.
- *
- * For recovery based ownership change, there is no transactional context and
- * so a buffer list must be supplied so that we can record the buffers that we
- * modified for the caller to issue IO on.
- */
+ 
 int
 xfs_bmbt_change_owner(
 	struct xfs_trans	*tp,
@@ -677,7 +604,7 @@ xfs_bmbt_change_owner(
 	return error;
 }
 
-/* Calculate the bmap btree size for some records. */
+ 
 unsigned long long
 xfs_bmbt_calc_size(
 	struct xfs_mount	*mp,

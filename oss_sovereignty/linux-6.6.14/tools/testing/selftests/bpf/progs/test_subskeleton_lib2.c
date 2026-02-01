@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>

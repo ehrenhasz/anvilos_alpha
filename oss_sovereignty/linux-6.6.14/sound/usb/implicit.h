@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef __USBAUDIO_IMPLICIT_H
 #define __USBAUDIO_IMPLICIT_H
 
@@ -11,4 +11,4 @@ snd_usb_find_implicit_fb_sync_format(struct snd_usb_audio *chip,
 				     const struct snd_pcm_hw_params *params,
 				     int stream, bool *fixed_rate);
 
-#endif /* __USBAUDIO_IMPLICIT_H */
+#endif  

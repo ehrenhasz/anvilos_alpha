@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/nfs/file.c
- *
- *  Copyright (C) 1992  Rick Sladkey
- */
+
+ 
 #include <linux/fs.h>
 #include <linux/file.h>
 #include <linux/falloc.h>
@@ -35,14 +31,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
 	struct iattr attr;
 	int err;
 
-	/*
-	 * If no cached dentry exists or if it's negative, NFSv4 handled the
-	 * opens in ->lookup() or ->create().
-	 *
-	 * We only get this far for a cached positive dentry.  We skipped
-	 * revalidation, so handle it here by dropping the dentry and returning
-	 * -EOPENSTALE.  The VFS will retry the lookup/create/open.
-	 */
+	 
 
 	dprintk("NFS: open file(%pd2)\n", dentry);
 
@@ -50,7 +39,7 @@ nfs4_file_open(struct inode *inode, struct file *filp)
 	if (err)
 		return err;
 
-	/* We can't create new files here */
+	 
 	openflags &= ~(O_CREAT|O_EXCL);
 
 	parent = dget_parent(dentry);
@@ -103,9 +92,7 @@ out_drop:
 	goto out_put_ctx;
 }
 
-/*
- * Flush all dirty pages, and check for write errors.
- */
+ 
 static int
 nfs4_file_flush(struct file *file, fl_owner_t id)
 {
@@ -118,14 +105,11 @@ nfs4_file_flush(struct file *file, fl_owner_t id)
 	if ((file->f_mode & FMODE_WRITE) == 0)
 		return 0;
 
-	/*
-	 * If we're holding a write delegation, then check if we're required
-	 * to flush the i/o on close. If not, then just start the i/o now.
-	 */
+	 
 	if (!nfs4_delegation_flush_on_close(inode))
 		return filemap_fdatawrite(file->f_mapping);
 
-	/* Flush writes to the server and return any errors */
+	 
 	since = filemap_sample_wb_err(file->f_mapping);
 	nfs_wb_all(inode);
 	return filemap_check_wb_err(file->f_mapping, since);
@@ -142,7 +126,7 @@ static ssize_t __nfs4_copy_file_range(struct file *file_in, loff_t pos_in,
 	ssize_t ret;
 	bool sync = false;
 
-	/* Only offload copy if superblock is the same */
+	 
 	if (file_in->f_op != &nfs4_file_operations)
 		return -EXDEV;
 	if (!nfs_server_capable(file_inode(file_out), NFS_CAP_COPY) ||
@@ -150,17 +134,12 @@ static ssize_t __nfs4_copy_file_range(struct file *file_in, loff_t pos_in,
 		return -EOPNOTSUPP;
 	if (file_inode(file_in) == file_inode(file_out))
 		return -EOPNOTSUPP;
-	/* if the copy size if smaller than 2 RPC payloads, make it
-	 * synchronous
-	 */
+	 
 	if (count <= 2 * NFS_SERVER(file_inode(file_in))->rsize)
 		sync = true;
 retry:
 	if (!nfs42_files_from_same_server(file_in, file_out)) {
-		/*
-		 * for inter copy, if copy size is too small
-		 * then fallback to generic copy.
-		 */
+		 
 		if (sync)
 			return -EOPNOTSUPP;
 		cn_resp = kzalloc(sizeof(struct nfs42_copy_notify_res),
@@ -247,7 +226,7 @@ static loff_t nfs42_remap_file_range(struct file *src_file, loff_t src_off,
 	bool same_inode = false;
 	int ret;
 
-	/* NFS does not support deduplication. */
+	 
 	if (remap_flags & REMAP_FILE_DEDUP)
 		return -EOPNOTSUPP;
 
@@ -257,7 +236,7 @@ static loff_t nfs42_remap_file_range(struct file *src_file, loff_t src_off,
 	if (IS_SWAPFILE(dst_inode) || IS_SWAPFILE(src_inode))
 		return -ETXTBSY;
 
-	/* check alignment w.r.t. clone_blksize */
+	 
 	ret = -EINVAL;
 	if (bs) {
 		if (!IS_ALIGNED(src_off, bs) || !IS_ALIGNED(dst_off, bs))
@@ -269,7 +248,7 @@ static loff_t nfs42_remap_file_range(struct file *src_file, loff_t src_off,
 	if (src_inode == dst_inode)
 		same_inode = true;
 
-	/* XXX: do we lock at all? what if server needs CB_RECALL_LAYOUT? */
+	 
 	if (same_inode) {
 		inode_lock(src_inode);
 	} else if (dst_inode < src_inode) {
@@ -280,8 +259,7 @@ static loff_t nfs42_remap_file_range(struct file *src_file, loff_t src_off,
 		inode_lock_nested(dst_inode, I_MUTEX_CHILD);
 	}
 
-	/* flush all pending writes on both src and dst so that server
-	 * has the latest data */
+	 
 	ret = nfs_sync_inode(src_inode);
 	if (ret)
 		goto out_unlock;
@@ -291,8 +269,7 @@ static loff_t nfs42_remap_file_range(struct file *src_file, loff_t src_off,
 
 	ret = nfs42_proc_clone(src_file, dst_file, src_off, dst_off, count);
 
-	/* truncate inode page cache of the dst range so that future reads can fetch
-	 * new data from server */
+	 
 	if (!ret)
 		truncate_inode_pages_range(&dst_inode->i_data, dst_off, dst_off + count - 1);
 
@@ -415,28 +392,18 @@ static const struct nfs4_ssc_client_ops nfs4_ssc_clnt_ops_tbl = {
 	.sco_close = __nfs42_ssc_close,
 };
 
-/**
- * nfs42_ssc_register_ops - Wrapper to register NFS_V4 ops in nfs_common
- *
- * Return values:
- *   None
- */
+ 
 void nfs42_ssc_register_ops(void)
 {
 	nfs42_ssc_register(&nfs4_ssc_clnt_ops_tbl);
 }
 
-/**
- * nfs42_ssc_unregister_ops - wrapper to un-register NFS_V4 ops in nfs_common
- *
- * Return values:
- *   None.
- */
+ 
 void nfs42_ssc_unregister_ops(void)
 {
 	nfs42_ssc_unregister(&nfs4_ssc_clnt_ops_tbl);
 }
-#endif /* CONFIG_NFS_V4_2 */
+#endif  
 
 static int nfs4_setlease(struct file *file, int arg, struct file_lock **lease,
 			 void **priv)

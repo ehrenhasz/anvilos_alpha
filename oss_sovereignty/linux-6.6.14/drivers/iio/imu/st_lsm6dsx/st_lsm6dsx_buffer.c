@@ -1,35 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * STMicroelectronics st_lsm6dsx FIFO buffer library driver
- *
- * LSM6DS3/LSM6DS3H/LSM6DSL/LSM6DSM/ISM330DLC/LSM6DS3TR-C:
- * The FIFO buffer can be configured to store data from gyroscope and
- * accelerometer. Samples are queued without any tag according to a
- * specific pattern based on 'FIFO data sets' (6 bytes each):
- *  - 1st data set is reserved for gyroscope data
- *  - 2nd data set is reserved for accelerometer data
- * The FIFO pattern changes depending on the ODRs and decimation factors
- * assigned to the FIFO data sets. The first sequence of data stored in FIFO
- * buffer contains the data of all the enabled FIFO data sets
- * (e.g. Gx, Gy, Gz, Ax, Ay, Az), then data are repeated depending on the
- * value of the decimation factor and ODR set for each FIFO data set.
- *
- * LSM6DSO/LSM6DSOX/ASM330LHH/ASM330LHHX/LSM6DSR/LSM6DSRX/ISM330DHCX/
- * LSM6DST/LSM6DSOP/LSM6DSTX/LSM6DSV/ASM330LHB:
- * The FIFO buffer can be configured to store data from gyroscope and
- * accelerometer. Each sample is queued with a tag (1B) indicating data
- * source (gyroscope, accelerometer, hw timer).
- *
- * FIFO supported modes:
- *  - BYPASS: FIFO disabled
- *  - CONTINUOUS: FIFO enabled. When the buffer is full, the FIFO index
- *    restarts from the beginning and the oldest sample is overwritten
- *
- * Copyright 2016 STMicroelectronics Inc.
- *
- * Lorenzo Bianconi <lorenzo.bianconi@st.com>
- * Denis Ciocca <denis.ciocca@st.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/iio/kfifo_buf.h>
 #include <linux/iio/iio.h>
@@ -144,7 +114,7 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
 			continue;
 
 		sensor = iio_priv(hw->iio_devs[i]);
-		/* update fifo decimators and sample in pattern */
+		 
 		if (hw->enable_mask & BIT(sensor->id)) {
 			sensor->sip = st_lsm6dsx_get_sip(sensor, min_odr);
 			data = st_lsm6dsx_get_decimator_val(sensor, max_odr);
@@ -169,11 +139,7 @@ static int st_lsm6dsx_update_decimators(struct st_lsm6dsx_hw *hw)
 	hw->sip = sip + ts_sip;
 	hw->ts_sip = ts_sip;
 
-	/*
-	 * update hw ts decimator if necessary. Decimator for hw timestamp
-	 * is always 1 or 0 in order to have a ts sample for each data
-	 * sample in FIFO
-	 */
+	 
 	ts_dec_reg = &hw->settings->ts_settings.decimator;
 	if (ts_dec_reg->addr) {
 		int val, ts_dec = !!hw->ts_sip;
@@ -283,7 +249,7 @@ static int st_lsm6dsx_reset_hw_ts(struct st_lsm6dsx_hw *hw)
 	struct st_lsm6dsx_sensor *sensor;
 	int i, err;
 
-	/* reset hw ts counter */
+	 
 	err = st_lsm6dsx_write_locked(hw, ST_LSM6DSX_REG_TS_RESET_ADDR,
 				      ST_LSM6DSX_TS_RESET_VAL);
 	if (err < 0)
@@ -294,10 +260,7 @@ static int st_lsm6dsx_reset_hw_ts(struct st_lsm6dsx_hw *hw)
 			continue;
 
 		sensor = iio_priv(hw->iio_devs[i]);
-		/*
-		 * store enable buffer timestamp as reference for
-		 * hw timestamp
-		 */
+		 
 		sensor->ts_ref = iio_get_time_ns(hw->iio_devs[i]);
 	}
 	return 0;
@@ -307,7 +270,7 @@ int st_lsm6dsx_resume_fifo(struct st_lsm6dsx_hw *hw)
 {
 	int err;
 
-	/* reset hw ts counter */
+	 
 	err = st_lsm6dsx_reset_hw_ts(hw);
 	if (err < 0)
 		return err;
@@ -315,10 +278,7 @@ int st_lsm6dsx_resume_fifo(struct st_lsm6dsx_hw *hw)
 	return st_lsm6dsx_set_fifo_mode(hw, ST_LSM6DSX_FIFO_CONT);
 }
 
-/*
- * Set max bulk read to ST_LSM6DSX_MAX_WORD_LEN/ST_LSM6DSX_MAX_TAGGED_WORD_LEN
- * in order to avoid a kmalloc for each bus access
- */
+ 
 static inline int st_lsm6dsx_read_block(struct st_lsm6dsx_hw *hw, u8 addr,
 					u8 *data, unsigned int data_len,
 					unsigned int max_word_len)
@@ -340,14 +300,7 @@ static inline int st_lsm6dsx_read_block(struct st_lsm6dsx_hw *hw, u8 addr,
 
 #define ST_LSM6DSX_IIO_BUFF_SIZE	(ALIGN(ST_LSM6DSX_SAMPLE_SIZE, \
 					       sizeof(s64)) + sizeof(s64))
-/**
- * st_lsm6dsx_read_fifo() - hw FIFO read routine
- * @hw: Pointer to instance of struct st_lsm6dsx_hw.
- *
- * Read samples from the hw FIFO and push them to IIO buffers.
- *
- * Return: Number of bytes read from the FIFO
- */
+ 
 int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
 {
 	struct st_lsm6dsx_sensor *acc_sensor, *gyro_sensor, *ext_sensor = NULL;
@@ -390,21 +343,7 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
 			return err;
 		}
 
-		/*
-		 * Data are written to the FIFO with a specific pattern
-		 * depending on the configured ODRs. The first sequence of data
-		 * stored in FIFO contains the data of all enabled sensors
-		 * (e.g. Gx, Gy, Gz, Ax, Ay, Az, Ts), then data are repeated
-		 * depending on the value of the decimation factor set for each
-		 * sensor.
-		 *
-		 * Supposing the FIFO is storing data from gyroscope and
-		 * accelerometer at different ODRs:
-		 *   - gyroscope ODR = 208Hz, accelerometer ODR = 104Hz
-		 * Since the gyroscope ODR is twice the accelerometer one, the
-		 * following pattern is repeated every 9 samples:
-		 *   - Gx, Gy, Gz, Ax, Ay, Az, Ts, Gx, Gy, Gz, Ts, Gx, ..
-		 */
+		 
 		ext_sip = ext_sensor ? ext_sensor->sip : 0;
 		gyro_sip = gyro_sensor->sip;
 		acc_sip = acc_sensor->sip;
@@ -436,19 +375,9 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
 				u8 data[ST_LSM6DSX_SAMPLE_SIZE];
 
 				memcpy(data, &hw->buff[offset], sizeof(data));
-				/*
-				 * hw timestamp is 3B long and it is stored
-				 * in FIFO using 6B as 4th FIFO data set
-				 * according to this schema:
-				 * B0 = ts[15:8], B1 = ts[23:16], B3 = ts[7:0]
-				 */
+				 
 				ts = data[1] << 16 | data[0] << 8 | data[3];
-				/*
-				 * check if hw timestamp engine is going to
-				 * reset (the sensor generates an interrupt
-				 * to signal the hw timestamp will reset in
-				 * 1.638s)
-				 */
+				 
 				if (!reset_ts && ts >= 0xff0000)
 					reset_ts = true;
 				ts *= hw->ts_gain;
@@ -457,10 +386,7 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
 			}
 
 			if (gyro_sip > 0 && !(sip % gyro_sensor->decimator)) {
-				/*
-				 * We need to discards gyro samples during
-				 * filters settling time
-				 */
+				 
 				if (gyro_sensor->samples_to_discard > 0)
 					gyro_sensor->samples_to_discard--;
 				else
@@ -471,10 +397,7 @@ int st_lsm6dsx_read_fifo(struct st_lsm6dsx_hw *hw)
 				gyro_sip--;
 			}
 			if (acc_sip > 0 && !(sip % acc_sensor->decimator)) {
-				/*
-				 * We need to discards accel samples during
-				 * filters settling time
-				 */
+				 
 				if (acc_sensor->samples_to_discard > 0)
 					acc_sensor->samples_to_discard--;
 				else
@@ -515,16 +438,11 @@ st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
 	struct st_lsm6dsx_sensor *sensor;
 	struct iio_dev *iio_dev;
 
-	/* invalid sample during bootstrap phase */
+	 
 	if (val >= ST_LSM6DSX_INVALID_SAMPLE)
 		return -EINVAL;
 
-	/*
-	 * EXT_TAG are managed in FIFO fashion so ST_LSM6DSX_EXT0_TAG
-	 * corresponds to the first enabled channel, ST_LSM6DSX_EXT1_TAG
-	 * to the second one and ST_LSM6DSX_EXT2_TAG to the last enabled
-	 * channel
-	 */
+	 
 	switch (tag) {
 	case ST_LSM6DSX_GYRO_TAG:
 		iio_dev = hw->iio_devs[ST_LSM6DSX_ID_GYRO];
@@ -561,24 +479,12 @@ st_lsm6dsx_push_tagged_data(struct st_lsm6dsx_hw *hw, u8 tag,
 	return 0;
 }
 
-/**
- * st_lsm6dsx_read_tagged_fifo() - tagged hw FIFO read routine
- * @hw: Pointer to instance of struct st_lsm6dsx_hw.
- *
- * Read samples from the hw FIFO and push them to IIO buffers.
- *
- * Return: Number of bytes read from the FIFO
- */
+ 
 int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
 {
 	u16 pattern_len = hw->sip * ST_LSM6DSX_TAGGED_SAMPLE_SIZE;
 	u16 fifo_len, fifo_diff_mask;
-	/*
-	 * Alignment needed as this can ultimately be passed to a
-	 * call to iio_push_to_buffers_with_timestamp() which
-	 * must be passed a buffer that is aligned to 8 bytes so
-	 * as to allow insertion of a naturally aligned timestamp.
-	 */
+	 
 	u8 iio_buff[ST_LSM6DSX_IIO_BUFF_SIZE] __aligned(8);
 	u8 tag;
 	bool reset_ts = false;
@@ -620,19 +526,9 @@ int st_lsm6dsx_read_tagged_fifo(struct st_lsm6dsx_hw *hw)
 
 			tag = hw->buff[i] >> 3;
 			if (tag == ST_LSM6DSX_TS_TAG) {
-				/*
-				 * hw timestamp is 4B long and it is stored
-				 * in FIFO according to this schema:
-				 * B0 = ts[7:0], B1 = ts[15:8], B2 = ts[23:16],
-				 * B3 = ts[31:24]
-				 */
+				 
 				ts = le32_to_cpu(*((__le32 *)iio_buff));
-				/*
-				 * check if hw timestamp engine is going to
-				 * reset (the sensor generates an interrupt
-				 * to signal the hw timestamp will reset in
-				 * 1.638s)
-				 */
+				 
 				if (!reset_ts && ts >= 0xffff0000)
 					reset_ts = true;
 				ts *= hw->ts_gain;
@@ -679,7 +575,7 @@ st_lsm6dsx_update_samples_to_discard(struct st_lsm6dsx_sensor *sensor)
 	    sensor->id != ST_LSM6DSX_ID_ACC)
 		return;
 
-	/* check if drdy mask is supported in hw */
+	 
 	if (hw->settings->drdy_mask.addr)
 		return;
 

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  bxt-sst.c - DSP library functions for BXT platform
- *
- *  Copyright (C) 2015-16 Intel Corp
- *  Author:Rafal Redzimski <rafal.f.redzimski@intel.com>
- *	   Jeeja KP <jeeja.kp@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -23,7 +17,7 @@
 #define BXT_ROM_INIT		0x5
 #define BXT_ADSP_SRAM0_BASE	0x80000
 
-/* Firmware status window */
+ 
 #define BXT_ADSP_FW_STATUS	BXT_ADSP_SRAM0_BASE
 #define BXT_ADSP_ERROR_CODE     (BXT_ADSP_FW_STATUS + 0x4)
 
@@ -34,7 +28,7 @@
 
 #define BXT_ADSP_FW_BIN_HDR_OFFSET 0x2000
 
-/* Delay before scheduling D0i3 entry */
+ 
 #define BXT_D0I3_DELAY 5000
 
 static unsigned int bxt_get_errorcode(struct sst_dsp *ctx)
@@ -50,7 +44,7 @@ bxt_load_library(struct sst_dsp *ctx, struct skl_lib_info *linfo, int lib_count)
 	struct firmware stripped_fw;
 	int ret = 0, i, dma_id, stream_tag;
 
-	/* library indices start from 1 to N. 0 represents base FW */
+	 
 	for (i = 1; i < lib_count; i++) {
 		ret = skl_prepare_lib_load(skl, &skl->lib_info[i], &stripped_fw,
 					BXT_ADSP_FW_BIN_HDR_OFFSET, i);
@@ -86,11 +80,7 @@ load_library_failed:
 	return ret;
 }
 
-/*
- * First boot sequence has some extra steps. Core 0 waits for power
- * status on core 1, so power up core 1 also momentarily, keep it in
- * reset/stall and then turn it off
- */
+ 
 static int sst_bxt_prepare_fw(struct sst_dsp *ctx,
 			const void *fwdata, u32 fwsize)
 {
@@ -106,7 +96,7 @@ static int sst_bxt_prepare_fw(struct sst_dsp *ctx,
 	ctx->dsp_ops.stream_tag = stream_tag;
 	memcpy(ctx->dmab.area, fwdata, fwsize);
 
-	/* Step 1: Power up core 0 and core1 */
+	 
 	ret = skl_dsp_core_power_up(ctx, SKL_DSP_CORE0_MASK |
 				SKL_DSP_CORE_MASK(1));
 	if (ret < 0) {
@@ -114,11 +104,11 @@ static int sst_bxt_prepare_fw(struct sst_dsp *ctx,
 		goto base_fw_load_failed;
 	}
 
-	/* Step 2: Purge FW request */
+	 
 	sst_dsp_shim_write(ctx, SKL_ADSP_REG_HIPCI, SKL_ADSP_REG_HIPCI_BUSY |
 				(BXT_IPC_PURGE_FW | ((stream_tag - 1) << 9)));
 
-	/* Step 3: Unset core0 reset state & unstall/run core0 */
+	 
 	ret = skl_dsp_start_core(ctx, SKL_DSP_CORE0_MASK);
 	if (ret < 0) {
 		dev_err(ctx->dev, "Start dsp core failed ret: %d\n", ret);
@@ -126,7 +116,7 @@ static int sst_bxt_prepare_fw(struct sst_dsp *ctx,
 		goto base_fw_load_failed;
 	}
 
-	/* Step 4: Wait for DONE Bit */
+	 
 	ret = sst_dsp_register_poll(ctx, SKL_ADSP_REG_HIPCIE,
 					SKL_ADSP_REG_HIPCIE_DONE,
 					SKL_ADSP_REG_HIPCIE_DONE,
@@ -136,18 +126,18 @@ static int sst_bxt_prepare_fw(struct sst_dsp *ctx,
 		goto base_fw_load_failed;
 	}
 
-	/* Step 5: power down core1 */
+	 
 	ret = skl_dsp_core_power_down(ctx, SKL_DSP_CORE_MASK(1));
 	if (ret < 0) {
 		dev_err(ctx->dev, "dsp core1 power down failed\n");
 		goto base_fw_load_failed;
 	}
 
-	/* Step 6: Enable Interrupt */
+	 
 	skl_ipc_int_enable(ctx);
 	skl_ipc_op_int_enable(ctx);
 
-	/* Step 7: Wait for ROM init */
+	 
 	ret = sst_dsp_register_poll(ctx, BXT_ADSP_FW_STATUS, SKL_FW_STS_MASK,
 			SKL_FW_INIT, BXT_ROM_INIT_TIMEOUT, "ROM Load");
 	if (ret < 0) {
@@ -192,7 +182,7 @@ static int bxt_load_base_firmware(struct sst_dsp *ctx)
 		}
 	}
 
-	/* prase uuids on first boot */
+	 
 	if (skl->is_first_boot) {
 		ret = snd_skl_parse_uuids(ctx, ctx->fw, BXT_ADSP_FW_BIN_HDR_OFFSET, 0);
 		if (ret < 0)
@@ -249,20 +239,7 @@ sst_load_base_firmware_failed:
 	return ret;
 }
 
-/*
- * Decide the D0i3 state that can be targeted based on the usecase
- * ref counts and DSP state
- *
- * Decision Matrix:  (X= dont care; state = target state)
- *
- * DSP state != SKL_DSP_RUNNING ; state = no d0i3
- *
- * DSP state == SKL_DSP_RUNNING , the following matrix applies
- * non_d0i3 >0; streaming =X; non_streaming =X; state = no d0i3
- * non_d0i3 =X; streaming =0; non_streaming =0; state = no d0i3
- * non_d0i3 =0; streaming >0; non_streaming =X; state = streaming d0i3
- * non_d0i3 =0; streaming =0; non_streaming =X; state = non-streaming d0i3
- */
+ 
 static int bxt_d0i3_target_state(struct sst_dsp *ctx)
 {
 	struct skl_dev *skl = ctx->thread_context;
@@ -293,7 +270,7 @@ static void bxt_set_dsp_D0i3(struct work_struct *work)
 
 	dev_dbg(ctx->dev, "In %s:\n", __func__);
 
-	/* D0i3 entry allowed only if core 0 alone is running */
+	 
 	if (skl_dsp_get_enabled_cores(ctx) !=  SKL_DSP_CORE0_MASK) {
 		dev_warn(ctx->dev,
 				"D0i3 allowed when only core0 running:Exit\n");
@@ -318,7 +295,7 @@ static void bxt_set_dsp_D0i3(struct work_struct *work)
 		return;
 	}
 
-	/* Set Vendor specific register D0I3C.I3 to enable D0i3*/
+	 
 	if (skl->update_d0i3c)
 		skl->update_d0i3c(skl->dev, true);
 
@@ -331,7 +308,7 @@ static int bxt_schedule_dsp_D0i3(struct sst_dsp *ctx)
 	struct skl_dev *skl = ctx->thread_context;
 	struct skl_d0i3_data *d0i3 = &skl->d0i3;
 
-	/* Schedule D0i3 only if the usecase ref counts are appropriate */
+	 
 	if (bxt_d0i3_target_state(ctx) != SKL_DSP_D0I3_NONE) {
 
 		dev_dbg(ctx->dev, "%s: Schedule D0i3\n", __func__);
@@ -351,10 +328,10 @@ static int bxt_set_dsp_D0i0(struct sst_dsp *ctx)
 
 	dev_dbg(ctx->dev, "In %s:\n", __func__);
 
-	/* First Cancel any pending attempt to put DSP to D0i3 */
+	 
 	cancel_delayed_work_sync(&skl->d0i3.work);
 
-	/* If DSP is currently in D0i3, bring it to D0i0 */
+	 
 	if (skl->cores.state[SKL_DSP_CORE0_ID] != SKL_DSP_RUNNING_D0I3)
 		return 0;
 
@@ -368,7 +345,7 @@ static int bxt_set_dsp_D0i0(struct sst_dsp *ctx)
 	if (skl->d0i3.state == SKL_DSP_D0I3_STREAMING)
 		msg.streaming = 1;
 
-	/* Clear Vendor specific register D0I3C.I3 to disable D0i3*/
+	 
 	if (skl->update_d0i3c)
 		skl->update_d0i3c(skl->dev, false);
 
@@ -411,7 +388,7 @@ static int bxt_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
 		return ret;
 	}
 
-	/* If core 0 is being turned on, turn on core 1 as well */
+	 
 	if (core_id == SKL_DSP_CORE0_ID)
 		ret = skl_dsp_core_power_up(ctx, core_mask |
 				SKL_DSP_CORE_MASK(1));
@@ -423,10 +400,7 @@ static int bxt_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
 
 	if (core_id == SKL_DSP_CORE0_ID) {
 
-		/*
-		 * Enable interrupt after SPA is set and before
-		 * DSP is unstalled
-		 */
+		 
 		skl_ipc_int_enable(ctx);
 		skl_ipc_op_int_enable(ctx);
 		skl->boot_complete = false;
@@ -441,7 +415,7 @@ static int bxt_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
 				skl->boot_complete,
 				msecs_to_jiffies(SKL_IPC_BOOT_MSECS));
 
-	/* If core 1 was turned on for booting core 0, turn it off */
+	 
 		skl_dsp_core_power_down(ctx, SKL_DSP_CORE_MASK(1));
 		if (ret == 0) {
 			dev_err(ctx->dev, "%s: DSP boot timeout\n", __func__);
@@ -454,7 +428,7 @@ static int bxt_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
 		}
 	}
 
-	/* Tell FW if additional core in now On */
+	 
 
 	if (core_id != SKL_DSP_CORE0_ID) {
 		dx.core_mask = core_mask;
@@ -498,15 +472,12 @@ static int bxt_set_dsp_D3(struct sst_dsp *ctx, unsigned int core_id)
 		dev_err(ctx->dev,
 		"Failed to set DSP to D3:core id = %d;Continue reset\n",
 		core_id);
-		/*
-		 * In case of D3 failure, re-download the firmware, so set
-		 * fw_loaded to false.
-		 */
+		 
 		skl->fw_loaded = false;
 	}
 
 	if (core_id == SKL_DSP_CORE0_ID) {
-		/* disable Interrupt */
+		 
 		skl_ipc_op_int_disable(ctx);
 		skl_ipc_int_disable(ctx);
 	}
@@ -574,7 +545,7 @@ int bxt_sst_dsp_init(struct device *dev, void __iomem *mmio_base, int irq,
 		return ret;
 	}
 
-	/* set the D0i3 check */
+	 
 	skl->ipc.ops.check_dsp_lp_on = skl_ipc_check_D0i0;
 
 	skl->boot_complete = false;

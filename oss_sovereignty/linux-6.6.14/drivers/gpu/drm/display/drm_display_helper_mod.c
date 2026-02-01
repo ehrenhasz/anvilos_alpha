@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 
 #include <linux/module.h>
 
@@ -14,7 +14,7 @@ static int __init drm_display_helper_module_init(void)
 
 static void __exit drm_display_helper_module_exit(void)
 {
-	/* Call exit functions from specific dp helpers here */
+	 
 	drm_dp_aux_dev_exit();
 }
 

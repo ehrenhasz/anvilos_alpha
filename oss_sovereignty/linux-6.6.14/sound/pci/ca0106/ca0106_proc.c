@@ -1,51 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) 2004 James Courtier-Dutton <James@superbug.demon.co.uk>
- *  Driver CA0106 chips. e.g. Sound Blaster Audigy LS and Live 24bit
- *  Version: 0.0.18
- *
- *  FEATURES currently supported:
- *    See ca0106_main.c for features.
- * 
- *  Changelog:
- *    Support interrupts per period.
- *    Removed noise from Center/LFE channel when in Analog mode.
- *    Rename and remove mixer controls.
- *  0.0.6
- *    Use separate card based DMA buffer for periods table list.
- *  0.0.7
- *    Change remove and rename ctrls into lists.
- *  0.0.8
- *    Try to fix capture sources.
- *  0.0.9
- *    Fix AC3 output.
- *    Enable S32_LE format support.
- *  0.0.10
- *    Enable playback 48000 and 96000 rates. (Rates other that these do not work, even with "plug:front".)
- *  0.0.11
- *    Add Model name recognition.
- *  0.0.12
- *    Correct interrupt timing. interrupt at end of period, instead of in the middle of a playback period.
- *    Remove redundent "voice" handling.
- *  0.0.13
- *    Single trigger call for multi channels.
- *  0.0.14
- *    Set limits based on what the sound card hardware can do.
- *    playback periods_min=2, periods_max=8
- *    capture hw constraints require period_size = n * 64 bytes.
- *    playback hw constraints require period_size = n * 64 bytes.
- *  0.0.15
- *    Separate ca0106.c into separate functional .c files.
- *  0.0.16
- *    Modified Copyright message.
- *  0.0.17
- *    Add iec958 file in proc file system to show status of SPDIF in.
- *  0.0.18
- *    Implement support for Line-in capture on SB Live 24bit.
- *
- *  This code was initially based on code from ALSA's emu10k1x.c which is:
- *  Copyright (c) by Francisco Moraes <fmoraes@nc.rr.com>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -91,7 +45,7 @@ static void snd_ca0106_proc_dump_iec958( struct snd_info_buffer *buffer, u32 val
 	status[3] = (value >> 24)  & 0xff;
 	
 	if (! (status[0] & IEC958_AES0_PROFESSIONAL)) {
-		/* consumer */
+		 
 		snd_iprintf(buffer, "Mode: consumer\n");
 		snd_iprintf(buffer, "Data: ");
 		if (!(status[0] & IEC958_AES0_NONAUDIO)) {

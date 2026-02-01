@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * proc/fs/generic.c --- generic routines for the proc-fs
- *
- * This file contains generic proc-fs routines for handling
- * directories and files.
- * 
- * Copyright (C) 1991, 1992 Linus Torvalds.
- * Copyright (C) 1997 Theodore Ts'o
- */
+
+ 
 
 #include <linux/cache.h>
 #include <linux/errno.h>
@@ -93,7 +85,7 @@ static bool pde_subdir_insert(struct proc_dir_entry *dir,
 	struct rb_root *root = &dir->subdir;
 	struct rb_node **new = &root->rb_node, *parent = NULL;
 
-	/* Figure out where to put new node */
+	 
 	while (*new) {
 		struct proc_dir_entry *this = rb_entry(*new,
 						       struct proc_dir_entry,
@@ -109,7 +101,7 @@ static bool pde_subdir_insert(struct proc_dir_entry *dir,
 			return false;
 	}
 
-	/* Add new node and rebalance tree. */
+	 
 	rb_link_node(&de->subdir_node, parent, new);
 	rb_insert_color(&de->subdir_node, root);
 	return true;
@@ -154,11 +146,7 @@ static const struct inode_operations proc_file_inode_operations = {
 	.setattr	= proc_notify_change,
 };
 
-/*
- * This function parses a name such as "tty/driver/serial", and
- * returns the struct proc_dir_entry for "/proc/tty/driver", and
- * returns "serial" in residual.
- */
+ 
 static int __xlate_proc_name(const char *name, struct proc_dir_entry **ret,
 			     const char **residual)
 {
@@ -194,10 +182,7 @@ static DEFINE_IDA(proc_inum_ida);
 
 #define PROC_DYNAMIC_FIRST 0xF0000000U
 
-/*
- * Return an inode number between PROC_DYNAMIC_FIRST and
- * 0xffffffff, or zero on failure.
- */
+ 
 int proc_alloc_inum(unsigned int *inum)
 {
 	int i;
@@ -222,7 +207,7 @@ static int proc_misc_d_revalidate(struct dentry *dentry, unsigned int flags)
 		return -ECHILD;
 
 	if (atomic_read(&PDE(d_inode(dentry))->in_use) < 0)
-		return 0; /* revalidate */
+		return 0;  
 	return 1;
 }
 
@@ -236,10 +221,7 @@ static const struct dentry_operations proc_misc_dentry_ops = {
 	.d_delete	= proc_misc_d_delete,
 };
 
-/*
- * Don't create negative dentries here, return -ENOENT by hand
- * instead.
- */
+ 
 struct dentry *proc_lookup_de(struct inode *dir, struct dentry *dentry,
 			      struct proc_dir_entry *de)
 {
@@ -271,15 +253,7 @@ struct dentry *proc_lookup(struct inode *dir, struct dentry *dentry,
 	return proc_lookup_de(dir, dentry, PDE(dir));
 }
 
-/*
- * This returns non-zero if at EOF, so that the /proc
- * root directory can use this and check if it should
- * continue with the <pid> entries..
- *
- * Note that the VFS-layer doesn't care about the return
- * value of the readdir() call, as long as it's non-negative
- * for success..
- */
+ 
 int proc_readdir_de(struct file *file, struct dir_context *ctx,
 		    struct proc_dir_entry *de)
 {
@@ -332,11 +306,7 @@ int proc_readdir(struct file *file, struct dir_context *ctx)
 	return proc_readdir_de(file, ctx, PDE(inode));
 }
 
-/*
- * These are the generic /proc directory operations. They
- * use the in-memory "struct proc_dir_entry" tree to parse
- * the /proc directory.
- */
+ 
 static const struct file_operations proc_dir_operations = {
 	.llseek			= generic_file_llseek,
 	.read			= generic_read_dir,
@@ -353,16 +323,14 @@ const struct dentry_operations proc_net_dentry_ops = {
 	.d_delete	= always_delete_dentry,
 };
 
-/*
- * proc directories can do almost nothing..
- */
+ 
 static const struct inode_operations proc_dir_inode_operations = {
 	.lookup		= proc_lookup,
 	.getattr	= proc_getattr,
 	.setattr	= proc_notify_change,
 };
 
-/* returns the registered entry, or frees dp and returns NULL on failure */
+ 
 struct proc_dir_entry *proc_register(struct proc_dir_entry *dir,
 		struct proc_dir_entry *dp)
 {
@@ -447,7 +415,7 @@ static struct proc_dir_entry *__proc_create(struct proc_dir_entry **parent,
 	proc_set_user(ent, (*parent)->uid, (*parent)->gid);
 
 	ent->proc_dops = &proc_misc_dentry_ops;
-	/* Revalidate everything under /proc/${pid}/net */
+	 
 	if ((*parent)->proc_dops == &proc_net_dentry_ops)
 		pde_force_lookup(ent);
 
@@ -605,7 +573,7 @@ static int proc_seq_release(struct inode *inode, struct file *file)
 }
 
 static const struct proc_ops proc_seq_ops = {
-	/* not permanent -- can call into arbitrary seq_operations */
+	 
 	.proc_open	= proc_seq_open,
 	.proc_read_iter	= seq_read_iter,
 	.proc_lseek	= seq_lseek,
@@ -636,7 +604,7 @@ static int proc_single_open(struct inode *inode, struct file *file)
 }
 
 static const struct proc_ops proc_single_ops = {
-	/* not permanent -- can call into arbitrary ->single_show */
+	 
 	.proc_open	= proc_single_open,
 	.proc_read_iter = seq_read_iter,
 	.proc_lseek	= seq_lseek,
@@ -679,9 +647,7 @@ void pde_put(struct proc_dir_entry *pde)
 	}
 }
 
-/*
- * Remove a /proc entry and free it if it's not currently in use.
- */
+ 
 void remove_proc_entry(const char *name, struct proc_dir_entry *parent)
 {
 	struct proc_dir_entry *de = NULL;
@@ -793,11 +759,7 @@ void proc_remove(struct proc_dir_entry *de)
 }
 EXPORT_SYMBOL(proc_remove);
 
-/*
- * Pull a user buffer into memory and pass it to the file's write handler if
- * one is supplied.  The ->write() method is permitted to modify the
- * kernel-side buffer.
- */
+ 
 ssize_t proc_simple_write(struct file *f, const char __user *ubuf, size_t size,
 			  loff_t *_pos)
 {

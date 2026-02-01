@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2009-2023 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_bo.h"
 #include "vmwgfx_drv.h"
@@ -87,16 +63,7 @@ struct ttm_placement vmw_sys_placement = {
 
 const size_t vmw_tt_size = sizeof(struct vmw_ttm_tt);
 
-/**
- * __vmw_piter_non_sg_next: Helper functions to advance
- * a struct vmw_piter iterator.
- *
- * @viter: Pointer to the iterator.
- *
- * These functions return false if past the end of the list,
- * true otherwise. Functions are selected depending on the current
- * DMA mapping mode.
- */
+ 
 static bool __vmw_piter_non_sg_next(struct vmw_piter *viter)
 {
 	return ++(viter->i) < viter->num_pages;
@@ -121,17 +88,7 @@ static dma_addr_t __vmw_piter_sg_addr(struct vmw_piter *viter)
 }
 
 
-/**
- * vmw_piter_start - Initialize a struct vmw_piter.
- *
- * @viter: Pointer to the iterator to initialize
- * @vsgt: Pointer to a struct vmw_sg_table to initialize from
- * @p_offset: Pointer offset used to update current array position
- *
- * Note that we're following the convention of __sg_page_iter_start, so that
- * the iterator doesn't point to a valid page after initialization; it has
- * to be advanced one step first.
- */
+ 
 void vmw_piter_start(struct vmw_piter *viter, const struct vmw_sg_table *vsgt,
 		     unsigned long p_offset)
 {
@@ -156,14 +113,7 @@ void vmw_piter_start(struct vmw_piter *viter, const struct vmw_sg_table *vsgt,
 	}
 }
 
-/**
- * vmw_ttm_unmap_from_dma - unmap  device addresses previsouly mapped for
- * TTM pages
- *
- * @vmw_tt: Pointer to a struct vmw_ttm_backend
- *
- * Used to free dma mappings previously mapped by vmw_ttm_map_for_dma.
- */
+ 
 static void vmw_ttm_unmap_from_dma(struct vmw_ttm_tt *vmw_tt)
 {
 	struct device *dev = vmw_tt->dev_priv->drm.dev;
@@ -172,19 +122,7 @@ static void vmw_ttm_unmap_from_dma(struct vmw_ttm_tt *vmw_tt)
 	vmw_tt->sgt.nents = vmw_tt->sgt.orig_nents;
 }
 
-/**
- * vmw_ttm_map_for_dma - map TTM pages to get device addresses
- *
- * @vmw_tt: Pointer to a struct vmw_ttm_backend
- *
- * This function is used to get device addresses from the kernel DMA layer.
- * However, it's violating the DMA API in that when this operation has been
- * performed, it's illegal for the CPU to write to the pages without first
- * unmapping the DMA mappings, or calling dma_sync_sg_for_cpu(). It is
- * therefore only legal to call this function if we know that the function
- * dma_sync_sg_for_cpu() is a NOP, and dma_sync_sg_for_device() is at most
- * a CPU write buffer flush.
- */
+ 
 static int vmw_ttm_map_for_dma(struct vmw_ttm_tt *vmw_tt)
 {
 	struct device *dev = vmw_tt->dev_priv->drm.dev;
@@ -192,16 +130,7 @@ static int vmw_ttm_map_for_dma(struct vmw_ttm_tt *vmw_tt)
 	return dma_map_sgtable(dev, &vmw_tt->sgt, DMA_BIDIRECTIONAL, 0);
 }
 
-/**
- * vmw_ttm_map_dma - Make sure TTM pages are visible to the device
- *
- * @vmw_tt: Pointer to a struct vmw_ttm_tt
- *
- * Select the correct function for and make sure the TTM pages are
- * visible to the device. Allocate storage for the device mappings.
- * If a mapping has already been performed, indicated by the storage
- * pointer being non NULL, the function returns success.
- */
+ 
 static int vmw_ttm_map_dma(struct vmw_ttm_tt *vmw_tt)
 {
 	struct vmw_private *dev_priv = vmw_tt->dev_priv;
@@ -247,15 +176,7 @@ out_sg_alloc_fail:
 	return ret;
 }
 
-/**
- * vmw_ttm_unmap_dma - Tear down any TTM page device mappings
- *
- * @vmw_tt: Pointer to a struct vmw_ttm_tt
- *
- * Tear down any previously set up device DMA mappings and free
- * any storage space allocated for them. If there are no mappings set up,
- * this function is a NOP.
- */
+ 
 static void vmw_ttm_unmap_dma(struct vmw_ttm_tt *vmw_tt)
 {
 	struct vmw_private *dev_priv = vmw_tt->dev_priv;
@@ -276,17 +197,7 @@ static void vmw_ttm_unmap_dma(struct vmw_ttm_tt *vmw_tt)
 	vmw_tt->mapped = false;
 }
 
-/**
- * vmw_bo_sg_table - Return a struct vmw_sg_table object for a
- * TTM buffer object
- *
- * @bo: Pointer to a struct ttm_buffer_object
- *
- * Returns a pointer to a struct vmw_sg_table object. The object should
- * not be freed after use.
- * Note that for the device addresses to be valid, the buffer object must
- * either be reserved or pinned.
- */
+ 
 const struct vmw_sg_table *vmw_bo_sg_table(struct ttm_buffer_object *bo)
 {
 	struct vmw_ttm_tt *vmw_tt =
@@ -334,7 +245,7 @@ static int vmw_ttm_bind(struct ttm_device *bdev,
 				    vmw_be->gmr_id);
 		break;
 	case VMW_PL_SYSTEM:
-		/* Nothing to be done for a system bind */
+		 
 		break;
 	default:
 		BUG();
@@ -390,7 +301,7 @@ static int vmw_ttm_populate(struct ttm_device *bdev,
 {
 	int ret;
 
-	/* TODO: maybe completely drop this ? */
+	 
 	if (ttm_tt_is_populated(ttm))
 		return 0;
 
@@ -473,17 +384,7 @@ static int vmw_ttm_io_mem_reserve(struct ttm_device *bdev, struct ttm_resource *
 	return 0;
 }
 
-/**
- * vmw_move_notify - TTM move_notify_callback
- *
- * @bo: The TTM buffer object about to move.
- * @old_mem: The old memory where we move from
- * @new_mem: The struct ttm_resource indicating to what memory
- *       region the move is taking place.
- *
- * Calls move_notify for all subsystems needing it.
- * (currently only resources).
- */
+ 
 static void vmw_move_notify(struct ttm_buffer_object *bo,
 			    struct ttm_resource *old_mem,
 			    struct ttm_resource *new_mem)
@@ -493,11 +394,7 @@ static void vmw_move_notify(struct ttm_buffer_object *bo,
 }
 
 
-/**
- * vmw_swap_notify - TTM move_notify_callback
- *
- * @bo: The TTM buffer object about to be swapped out.
- */
+ 
 static void vmw_swap_notify(struct ttm_buffer_object *bo)
 {
 	vmw_bo_swap_notify(bo);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #include <linux/fs.h>
 #include <linux/qnx4_fs.h>
 
@@ -11,8 +11,8 @@
 #endif
 
 struct qnx4_sb_info {
-	unsigned int		Version;	/* may be useful */
-	struct qnx4_inode_entry	*BitMap;	/* useful */
+	unsigned int		Version;	 
+	struct qnx4_inode_entry	*BitMap;	 
 };
 
 struct qnx4_inode_info {

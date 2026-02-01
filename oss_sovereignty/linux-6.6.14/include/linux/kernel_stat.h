@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_KERNEL_STAT_H
 #define _LINUX_KERNEL_STAT_H
 
@@ -11,11 +11,7 @@
 #include <linux/vtime.h>
 #include <asm/irq.h>
 
-/*
- * 'kernel_stat.h' contains the definitions needed for doing
- * some kernel statistics (CPU usage, context switches ...),
- * used by rstatd/perfmeter
- */
+ 
 
 enum cpu_usage_stat {
 	CPUTIME_USER,
@@ -46,7 +42,7 @@ struct kernel_stat {
 DECLARE_PER_CPU(struct kernel_stat, kstat);
 DECLARE_PER_CPU(struct kernel_cpustat, kernel_cpustat);
 
-/* Must have preemption disabled for this to be meaningful. */
+ 
 #define kstat_this_cpu this_cpu_ptr(&kstat)
 #define kcpustat_this_cpu this_cpu_ptr(&kernel_cpustat)
 #define kstat_cpu(cpu) per_cpu(kstat, cpu)
@@ -79,14 +75,10 @@ static inline unsigned int kstat_cpu_softirqs_sum(int cpu)
 	return sum;
 }
 
-/*
- * Number of interrupts per specific IRQ source, since bootup
- */
+ 
 extern unsigned int kstat_irqs_usr(unsigned int irq);
 
-/*
- * Number of interrupts per cpu, since bootup
- */
+ 
 static inline unsigned long kstat_cpu_irqs_sum(unsigned int cpu)
 {
 	return kstat_cpu(cpu).irqs_sum;
@@ -134,4 +126,4 @@ extern void account_idle_ticks(unsigned long ticks);
 extern void __account_forceidle_time(struct task_struct *tsk, u64 delta);
 #endif
 
-#endif /* _LINUX_KERNEL_STAT_H */
+#endif  

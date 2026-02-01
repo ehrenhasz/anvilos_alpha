@@ -1,11 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef	__RTW_HCI_H__
 #define __RTW_HCI_H__
 
-/* ops for PCI, USB and SDIO */
+ 
 struct rtw_hci_ops {
 	int (*tx_write)(struct rtw_dev *rtwdev,
 			struct rtw_tx_pkt_info *pkt_info,

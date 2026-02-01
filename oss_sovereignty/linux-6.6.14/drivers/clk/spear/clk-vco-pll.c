@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * VCO-PLL clock implementation
- */
+
+ 
 
 #define pr_fmt(fmt) "clk-vco-pll: " fmt
 
@@ -14,30 +9,9 @@
 #include <linux/err.h>
 #include "clk.h"
 
-/*
- * DOC: VCO-PLL clock
- *
- * VCO and PLL rate are derived from following equations:
- *
- * In normal mode
- * vco = (2 * M[15:8] * Fin)/N
- *
- * In Dithered mode
- * vco = (2 * M[15:0] * Fin)/(256 * N)
- *
- * pll_rate = pll/2^p
- *
- * vco and pll are very closely bound to each other, "vco needs to program:
- * mode, m & n" and "pll needs to program p", both share common enable/disable
- * logic.
- *
- * clk_register_vco_pll() registers instances of both vco & pll.
- * CLK_SET_RATE_PARENT flag is forced for pll, as it will always pass its
- * set_rate to vco. A single rate table exists for both the clocks, which
- * configures m, n and p.
- */
+ 
 
-/* PLL_CTR register masks */
+ 
 #define PLL_MODE_NORMAL		0
 #define PLL_MODE_FRACTION	1
 #define PLL_MODE_DITH_DSM	2
@@ -49,7 +23,7 @@
 #define PLL_LOCK_SHIFT		0
 #define PLL_LOCK_MASK		1
 
-/* PLL FRQ register masks */
+ 
 #define PLL_NORM_FDBK_M_MASK	0xFF
 #define PLL_NORM_FDBK_M_SHIFT	24
 #define PLL_DITH_FDBK_M_MASK	0xFFFF
@@ -62,7 +36,7 @@
 #define to_clk_vco(_hw) container_of(_hw, struct clk_vco, hw)
 #define to_clk_pll(_hw) container_of(_hw, struct clk_pll, hw)
 
-/* Calculates pll clk rate for specific value of mode, m, n and p */
+ 
 static unsigned long pll_calc_rate(struct pll_rate_tbl *rtbl,
 		unsigned long prate, int index, unsigned long *pll_rate)
 {
@@ -97,7 +71,7 @@ static long clk_pll_round_rate_index(struct clk_hw *hw, unsigned long drate,
 		*prate = pll_calc_rate(pll->vco->rtbl, vco_parent_rate, *index,
 				&rate);
 		if (drate < rate) {
-			/* previous clock was best */
+			 
 			if (*index) {
 				rate = prev_rate;
 				*prate = vco_prev_rate;
@@ -205,12 +179,12 @@ static unsigned long clk_vco_recalc_rate(struct clk_hw *hw,
 
 	den = (val >> PLL_DIV_N_SHIFT) & PLL_DIV_N_MASK;
 
-	/* calculate numerator & denominator */
+	 
 	if (!mode) {
-		/* Normal mode */
+		 
 		num *= (val >> PLL_NORM_FDBK_M_SHIFT) & PLL_NORM_FDBK_M_MASK;
 	} else {
-		/* Dithered mode */
+		 
 		num *= (val >> PLL_DITH_FDBK_M_SHIFT) & PLL_DITH_FDBK_M_MASK;
 		den *= 256;
 	}
@@ -223,7 +197,7 @@ static unsigned long clk_vco_recalc_rate(struct clk_hw *hw,
 	return (((parent_rate / 10000) * num) / den) * 10000;
 }
 
-/* Configures new clock rate of vco */
+ 
 static int clk_vco_set_rate(struct clk_hw *hw, unsigned long drate,
 				unsigned long prate)
 {
@@ -296,7 +270,7 @@ struct clk *clk_register_vco_pll(const char *vco_name, const char *pll_name,
 	if (!pll)
 		goto free_vco;
 
-	/* struct clk_vco assignments */
+	 
 	vco->mode_reg = mode_reg;
 	vco->cfg_reg = cfg_reg;
 	vco->rtbl = rtbl;

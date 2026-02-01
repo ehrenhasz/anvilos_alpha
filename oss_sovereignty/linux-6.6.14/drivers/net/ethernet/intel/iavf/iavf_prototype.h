@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+ 
+ 
 
 #ifndef _IAVF_PROTOTYPE_H_
 #define _IAVF_PROTOTYPE_H_
@@ -8,14 +8,9 @@
 #include "iavf_alloc.h"
 #include <linux/avf/virtchnl.h>
 
-/* Prototypes for shared code functions that are not in
- * the standard function pointer structures.  These are
- * mostly because they are needed even before the init
- * has happened and will assist in the early SW and FW
- * setup.
- */
+ 
 
-/* adminq functions */
+ 
 enum iavf_status iavf_init_adminq(struct iavf_hw *hw);
 enum iavf_status iavf_shutdown_adminq(struct iavf_hw *hw);
 void iavf_adminq_init_ring_data(struct iavf_hw *hw);
@@ -24,12 +19,12 @@ enum iavf_status iavf_clean_arq_element(struct iavf_hw *hw,
 					u16 *events_pending);
 enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 				       struct iavf_aq_desc *desc,
-				       void *buff, /* can be NULL */
+				       void *buff,  
 				       u16 buff_size,
 				       struct iavf_asq_cmd_details *cmd_details);
 bool iavf_asq_done(struct iavf_hw *hw);
 
-/* debug function for adminq */
+ 
 void iavf_debug_aq(struct iavf_hw *hw, enum iavf_debug_mask mask,
 		   void *desc, void *buffer, u16 buf_len);
 
@@ -61,4 +56,4 @@ enum iavf_status iavf_aq_send_msg_to_pf(struct iavf_hw *hw,
 					enum iavf_status v_retval,
 					u8 *msg, u16 msglen,
 					struct iavf_asq_cmd_details *cmd_details);
-#endif /* _IAVF_PROTOTYPE_H_ */
+#endif  

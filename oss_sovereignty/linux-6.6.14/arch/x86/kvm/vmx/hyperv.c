@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/errno.h>
@@ -13,32 +13,7 @@
 
 #define CC KVM_NESTED_VMENTER_CONSISTENCY_CHECK
 
-/*
- * Enlightened VMCSv1 doesn't support these:
- *
- *	POSTED_INTR_NV                  = 0x00000002,
- *	GUEST_INTR_STATUS               = 0x00000810,
- *	APIC_ACCESS_ADDR		= 0x00002014,
- *	POSTED_INTR_DESC_ADDR           = 0x00002016,
- *	EOI_EXIT_BITMAP0                = 0x0000201c,
- *	EOI_EXIT_BITMAP1                = 0x0000201e,
- *	EOI_EXIT_BITMAP2                = 0x00002020,
- *	EOI_EXIT_BITMAP3                = 0x00002022,
- *	GUEST_PML_INDEX			= 0x00000812,
- *	PML_ADDRESS			= 0x0000200e,
- *	VM_FUNCTION_CONTROL             = 0x00002018,
- *	EPTP_LIST_ADDRESS               = 0x00002024,
- *	VMREAD_BITMAP                   = 0x00002026,
- *	VMWRITE_BITMAP                  = 0x00002028,
- *
- *	TSC_MULTIPLIER                  = 0x00002032,
- *	PLE_GAP                         = 0x00004020,
- *	PLE_WINDOW                      = 0x00004022,
- *	VMX_PREEMPTION_TIMER_VALUE      = 0x0000482E,
- *
- * Currently unsupported in KVM:
- *	GUEST_IA32_RTIT_CTL		= 0x00002814,
- */
+ 
 #define EVMCS1_SUPPORTED_PINCTRL					\
 	(PIN_BASED_ALWAYSON_WITHOUT_TRUE_MSR |				\
 	 PIN_BASED_EXT_INTR_MASK |					\
@@ -123,7 +98,7 @@
 		{EVMCS1_OFFSET(name), clean_field}
 
 const struct evmcs_field vmcs_field_to_evmcs_1[] = {
-	/* 64 bit rw */
+	 
 	EVMCS1_FIELD(GUEST_RIP, guest_rip,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE),
 	EVMCS1_FIELD(GUEST_RSP, guest_rsp,
@@ -240,50 +215,18 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2),
 	EVMCS1_FIELD(TSC_MULTIPLIER, tsc_multiplier,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_CONTROL_GRP2),
-	/*
-	 * Not used by KVM:
-	 *
-	 * EVMCS1_FIELD(0x00006828, guest_ia32_s_cet,
-	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
-	 * EVMCS1_FIELD(0x0000682A, guest_ssp,
-	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_BASIC),
-	 * EVMCS1_FIELD(0x0000682C, guest_ia32_int_ssp_table_addr,
-	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
-	 * EVMCS1_FIELD(0x00002816, guest_ia32_lbr_ctl,
-	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
-	 * EVMCS1_FIELD(0x00006C18, host_ia32_s_cet,
-	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
-	 * EVMCS1_FIELD(0x00006C1A, host_ssp,
-	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
-	 * EVMCS1_FIELD(0x00006C1C, host_ia32_int_ssp_table_addr,
-	 *	     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
-	 */
+	 
 
-	/* 64 bit read only */
+	 
 	EVMCS1_FIELD(GUEST_PHYSICAL_ADDRESS, guest_physical_address,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE),
 	EVMCS1_FIELD(EXIT_QUALIFICATION, exit_qualification,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE),
-	/*
-	 * Not defined in KVM:
-	 *
-	 * EVMCS1_FIELD(0x00006402, exit_io_instruction_ecx,
-	 *		HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE);
-	 * EVMCS1_FIELD(0x00006404, exit_io_instruction_esi,
-	 *		HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE);
-	 * EVMCS1_FIELD(0x00006406, exit_io_instruction_esi,
-	 *		HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE);
-	 * EVMCS1_FIELD(0x00006408, exit_io_instruction_eip,
-	 *		HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE);
-	 */
+	 
 	EVMCS1_FIELD(GUEST_LINEAR_ADDRESS, guest_linear_address,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE),
 
-	/*
-	 * No mask defined in the spec as Hyper-V doesn't currently support
-	 * these. Future proof by resetting the whole clean field mask on
-	 * access.
-	 */
+	 
 	EVMCS1_FIELD(VM_EXIT_MSR_STORE_ADDR, vm_exit_msr_store_addr,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_ALL),
 	EVMCS1_FIELD(VM_EXIT_MSR_LOAD_ADDR, vm_exit_msr_load_addr,
@@ -291,7 +234,7 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
 	EVMCS1_FIELD(VM_ENTRY_MSR_LOAD_ADDR, vm_entry_msr_load_addr,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_ALL),
 
-	/* 32 bit rw */
+	 
 	EVMCS1_FIELD(TPR_THRESHOLD, tpr_threshold,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE),
 	EVMCS1_FIELD(GUEST_INTERRUPTIBILITY_INFO, guest_interruptibility_info,
@@ -358,7 +301,7 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
 	EVMCS1_FIELD(GUEST_SYSENTER_CS, guest_sysenter_cs,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_GUEST_GRP1),
 
-	/* 32 bit read only */
+	 
 	EVMCS1_FIELD(VM_INSTRUCTION_ERROR, vm_instruction_error,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE),
 	EVMCS1_FIELD(VM_EXIT_REASON, vm_exit_reason,
@@ -376,7 +319,7 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
 	EVMCS1_FIELD(VMX_INSTRUCTION_INFO, vmx_instruction_info,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_NONE),
 
-	/* No mask defined in the spec (not used) */
+	 
 	EVMCS1_FIELD(PAGE_FAULT_ERROR_CODE_MASK, page_fault_error_code_mask,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_ALL),
 	EVMCS1_FIELD(PAGE_FAULT_ERROR_CODE_MATCH, page_fault_error_code_match,
@@ -390,7 +333,7 @@ const struct evmcs_field vmcs_field_to_evmcs_1[] = {
 	EVMCS1_FIELD(VM_ENTRY_MSR_LOAD_COUNT, vm_entry_msr_load_count,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_ALL),
 
-	/* 16 bit rw */
+	 
 	EVMCS1_FIELD(HOST_ES_SELECTOR, host_es_selector,
 		     HV_VMX_ENLIGHTENED_CLEAN_FIELD_HOST_GRP1),
 	EVMCS1_FIELD(HOST_CS_SELECTOR, host_cs_selector,
@@ -441,15 +384,7 @@ u64 nested_get_evmptr(struct kvm_vcpu *vcpu)
 
 uint16_t nested_get_evmcs_version(struct kvm_vcpu *vcpu)
 {
-	/*
-	 * vmcs_version represents the range of supported Enlightened VMCS
-	 * versions: lower 8 bits is the minimal version, higher 8 bits is the
-	 * maximum supported version. KVM supports versions from 1 to
-	 * KVM_EVMCS_VERSION.
-	 *
-	 * Note, do not check the Hyper-V is fully enabled in guest CPUID, this
-	 * helper is used to _get_ the vCPU's supported CPUID.
-	 */
+	 
 	if (kvm_cpu_cap_get(X86_FEATURE_VMX) &&
 	    (!vcpu || to_vmx(vcpu)->nested.enlightened_vmcs_enabled))
 		return (KVM_EVMCS_VERSION << 8) | 1;
@@ -508,13 +443,7 @@ static bool evmcs_has_perf_global_ctrl(struct kvm_vcpu *vcpu)
 {
 	struct kvm_vcpu_hv *hv_vcpu = to_hv_vcpu(vcpu);
 
-	/*
-	 * PERF_GLOBAL_CTRL has a quirk where some Windows guests may fail to
-	 * boot if a PV CPUID feature flag is not also set.  Treat the fields
-	 * as unsupported if the flag is not set in guest CPUID.  This should
-	 * be called only for guest accesses, and all guest accesses should be
-	 * gated on Hyper-V being enabled and initialized.
-	 */
+	 
 	if (WARN_ON_ONCE(!hv_vcpu))
 		return false;
 
@@ -527,10 +456,7 @@ void nested_evmcs_filter_control_msr(struct kvm_vcpu *vcpu, u32 msr_index, u64 *
 	u32 ctl_high = (u32)(*pdata >> 32);
 	u32 supported_ctrls;
 
-	/*
-	 * Hyper-V 2016 and 2019 try using these features even when eVMCS
-	 * is enabled but there are no corresponding fields.
-	 */
+	 
 	switch (msr_index) {
 	case MSR_IA32_VMX_EXIT_CTLS:
 	case MSR_IA32_VMX_TRUE_EXIT_CTLS:
@@ -593,11 +519,7 @@ int nested_evmcs_check_controls(struct vmcs12 *vmcs12)
 					       vmcs12->vm_entry_controls)))
 		return -EINVAL;
 
-	/*
-	 * VM-Func controls are 64-bit, but KVM currently doesn't support any
-	 * controls in bits 63:32, i.e. dropping those bits on the consistency
-	 * check is intentional.
-	 */
+	 
 	if (WARN_ON_ONCE(vmcs12->vm_function_control >> 32))
 		return -EINVAL;
 
@@ -611,13 +533,7 @@ int nested_evmcs_check_controls(struct vmcs12 *vmcs12)
 #if IS_ENABLED(CONFIG_HYPERV)
 DEFINE_STATIC_KEY_FALSE(__kvm_is_using_evmcs);
 
-/*
- * KVM on Hyper-V always uses the latest known eVMCSv1 revision, the assumption
- * is: in case a feature has corresponding fields in eVMCS described and it was
- * exposed in VMX feature MSRs, KVM is free to use it. Warn if KVM meets a
- * feature which has no corresponding eVMCS field, this likely means that KVM
- * needs to be updated.
- */
+ 
 #define evmcs_check_vmcs_conf(field, ctrl)					\
 	do {									\
 		typeof(vmcs_conf->field) unsupported;				\

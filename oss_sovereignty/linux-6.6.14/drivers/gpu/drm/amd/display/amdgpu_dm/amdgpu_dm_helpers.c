@@ -1,27 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/string.h>
 #include <linux/acpi.h>
@@ -56,14 +33,14 @@ static void apply_edid_quirks(struct edid *edid, struct dc_edid_caps *edid_caps)
 	uint32_t panel_id = edid_extract_panel_id(edid);
 
 	switch (panel_id) {
-	/* Workaround for some monitors which does not work well with FAMS */
+	 
 	case drm_edid_encode_panel_id('S', 'A', 'M', 0x0E5E):
 	case drm_edid_encode_panel_id('S', 'A', 'M', 0x7053):
 	case drm_edid_encode_panel_id('S', 'A', 'M', 0x71AC):
 		DRM_DEBUG_DRIVER("Disabling FAMS on monitor with panel id %X\n", panel_id);
 		edid_caps->panel_patch.disable_fams = true;
 		break;
-	/* Workaround for some monitors that do not clear DPCD 0x317 if FreeSync is unsupported */
+	 
 	case drm_edid_encode_panel_id('A', 'U', 'O', 0xA7AB):
 	case drm_edid_encode_panel_id('A', 'U', 'O', 0xE69B):
 		DRM_DEBUG_DRIVER("Clearing DPCD 0x317 on monitor with panel id %X\n", panel_id);
@@ -74,15 +51,7 @@ static void apply_edid_quirks(struct edid *edid, struct dc_edid_caps *edid_caps)
 	}
 }
 
-/**
- * dm_helpers_parse_edid_caps() - Parse edid caps
- *
- * @link: current detected link
- * @edid:	[in] pointer to edid
- * @edid_caps:	[in] pointer to edid caps
- *
- * Return: void
- */
+ 
 enum dc_edid_status dm_helpers_parse_edid_caps(
 		struct dc_link *link,
 		const struct dc_edid *edid,
@@ -168,7 +137,7 @@ fill_dc_mst_payload_table_from_drm(struct dc_link *link,
 	int current_hw_table_stream_cnt = copy_of_link_table.stream_count;
 	struct link_mst_stream_allocation *dc_alloc;
 
-	/* TODO: refactor to set link->mst_stream_alloc_table directly if possible.*/
+	 
 	if (enable) {
 		dc_alloc =
 		&copy_of_link_table.stream_allocations[current_hw_table_stream_cnt];
@@ -188,7 +157,7 @@ fill_dc_mst_payload_table_from_drm(struct dc_link *link,
 		ASSERT(i != copy_of_link_table.stream_count);
 	}
 
-	/* Fill payload info*/
+	 
 	for (i = 0; i < MAX_CONTROLLER_NUM; i++) {
 		dc_alloc =
 			&copy_of_link_table.stream_allocations[i];
@@ -200,7 +169,7 @@ fill_dc_mst_payload_table_from_drm(struct dc_link *link,
 		}
 	}
 
-	/* Overwrite the old table */
+	 
 	*table = new_table;
 }
 
@@ -222,11 +191,7 @@ static void dm_helpers_construct_old_payload(
 
 	*old_payload = *new_payload;
 
-	/* Set correct time_slots/PBN of old payload.
-	 * other fields (delete & dsc_enabled) in
-	 * struct drm_dp_mst_atomic_payload are don't care fields
-	 * while calling drm_dp_remove_payload()
-	 */
+	 
 	for (i = 0; i < current_link_table.stream_count; i++) {
 		dc_alloc =
 			&current_link_table.stream_allocations[i];
@@ -238,14 +203,12 @@ static void dm_helpers_construct_old_payload(
 		}
 	}
 
-	/* make sure there is an old payload*/
+	 
 	ASSERT(i != current_link_table.stream_count);
 
 }
 
-/*
- * Writes payload allocation table in immediate downstream device.
- */
+ 
 bool dm_helpers_dp_mst_write_payload_allocation_table(
 		struct dc_context *ctx,
 		const struct dc_stream_state *stream,
@@ -258,11 +221,7 @@ bool dm_helpers_dp_mst_write_payload_allocation_table(
 	struct drm_dp_mst_topology_mgr *mst_mgr;
 
 	aconnector = (struct amdgpu_dm_connector *)stream->dm_stream_context;
-	/* Accessing the connector state is required for vcpi_slots allocation
-	 * and directly relies on behaviour in commit check
-	 * that blocks before commit guaranteeing that the state
-	 * is not gonna be swapped while still in use in commit tail
-	 */
+	 
 
 	if (!aconnector || !aconnector->mst_root)
 		return false;
@@ -270,7 +229,7 @@ bool dm_helpers_dp_mst_write_payload_allocation_table(
 	mst_mgr = &aconnector->mst_root->mst_mgr;
 	mst_state = to_drm_dp_mst_topology_state(mst_mgr->base.state);
 
-	/* It's OK for this to fail */
+	 
 	new_payload = drm_atomic_get_mst_payload_state(mst_state, aconnector->mst_output_port);
 
 	if (enable) {
@@ -278,7 +237,7 @@ bool dm_helpers_dp_mst_write_payload_allocation_table(
 
 		drm_dp_add_payload_part1(mst_mgr, mst_state, new_payload);
 	} else {
-		/* construct old payload by VCPI*/
+		 
 		dm_helpers_construct_old_payload(stream->link, mst_state->pbn_div,
 						new_payload, &old_payload);
 		target_payload = &old_payload;
@@ -286,36 +245,25 @@ bool dm_helpers_dp_mst_write_payload_allocation_table(
 		drm_dp_remove_payload(mst_mgr, mst_state, &old_payload, new_payload);
 	}
 
-	/* mst_mgr->->payloads are VC payload notify MST branch using DPCD or
-	 * AUX message. The sequence is slot 1-63 allocated sequence for each
-	 * stream. AMD ASIC stream slot allocation should follow the same
-	 * sequence. copy DRM MST allocation to dc
-	 */
+	 
 	fill_dc_mst_payload_table_from_drm(stream->link, enable, target_payload, proposed_table);
 
 	return true;
 }
 
-/*
- * poll pending down reply
- */
+ 
 void dm_helpers_dp_mst_poll_pending_down_reply(
 	struct dc_context *ctx,
 	const struct dc_link *link)
 {}
 
-/*
- * Clear payload allocation table before enable MST DP link.
- */
+ 
 void dm_helpers_dp_mst_clear_payload_allocation_table(
 	struct dc_context *ctx,
 	const struct dc_link *link)
 {}
 
-/*
- * Polls for ACT (allocation change trigger) handled and sends
- * ALLOCATE_PAYLOAD message.
- */
+ 
 enum act_return_status dm_helpers_dp_mst_poll_for_allocation_change_trigger(
 		struct dc_context *ctx,
 		const struct dc_stream_state *stream)
@@ -409,7 +357,7 @@ void dm_dtn_log_append_v(struct dc_context *ctx,
 	int n;
 
 	if (!log_ctx) {
-		/* No context, redirect to dmesg. */
+		 
 		struct va_format vaf;
 
 		vaf.fmt = msg;
@@ -422,7 +370,7 @@ void dm_dtn_log_append_v(struct dc_context *ctx,
 		return;
 	}
 
-	/* Measure the output. */
+	 
 	va_start(args, msg);
 	n = vsnprintf(NULL, 0, msg, args);
 	va_end(args);
@@ -430,7 +378,7 @@ void dm_dtn_log_append_v(struct dc_context *ctx,
 	if (n <= 0)
 		return;
 
-	/* Reallocate the string buffer as needed. */
+	 
 	total = log_ctx->pos + n + 1;
 
 	if (total > log_ctx->size) {
@@ -448,7 +396,7 @@ void dm_dtn_log_append_v(struct dc_context *ctx,
 	if (!log_ctx->buf)
 		return;
 
-	/* Write the formatted string to the log buffer. */
+	 
 	va_start(args, msg);
 	n = vscnprintf(
 		log_ctx->buf + log_ctx->pos,
@@ -619,24 +567,24 @@ static bool execute_synaptics_rc_command(struct drm_dp_aux *aux,
 	int ret;
 
 	if (is_write_cmd) {
-		// write rc data
+		
 		memmove(rc_data, data, length);
 		ret = drm_dp_dpcd_write(aux, SYNAPTICS_RC_DATA, rc_data, sizeof(rc_data));
 	}
 
-	// write rc offset
+	
 	rc_offset[0] = (unsigned char) offset & 0xFF;
 	rc_offset[1] = (unsigned char) (offset >> 8) & 0xFF;
 	rc_offset[2] = (unsigned char) (offset >> 16) & 0xFF;
 	rc_offset[3] = (unsigned char) (offset >> 24) & 0xFF;
 	ret = drm_dp_dpcd_write(aux, SYNAPTICS_RC_OFFSET, rc_offset, sizeof(rc_offset));
 
-	// write rc length
+	
 	rc_length[0] = (unsigned char) length & 0xFF;
 	rc_length[1] = (unsigned char) (length >> 8) & 0xFF;
 	ret = drm_dp_dpcd_write(aux, SYNAPTICS_RC_LENGTH, rc_length, sizeof(rc_length));
 
-	// write rc cmd
+	
 	rc_cmd = cmd | 0x80;
 	ret = drm_dp_dpcd_write(aux, SYNAPTICS_RC_COMMAND, &rc_cmd, sizeof(rc_cmd));
 
@@ -645,21 +593,21 @@ static bool execute_synaptics_rc_command(struct drm_dp_aux *aux,
 		return false;
 	}
 
-	// poll until active is 0
+	
 	for (i = 0; i < 10; i++) {
 		drm_dp_dpcd_read(aux, SYNAPTICS_RC_COMMAND, &rc_cmd, sizeof(rc_cmd));
 		if (rc_cmd == cmd)
-			// active is 0
+			
 			break;
 		msleep(10);
 	}
 
-	// read rc result
+	
 	drm_dp_dpcd_read(aux, SYNAPTICS_RC_RESULT, &rc_result, sizeof(rc_result));
 	success = (rc_result == 0);
 
 	if (success && !is_write_cmd) {
-		// read rc data
+		
 		drm_dp_dpcd_read(aux, SYNAPTICS_RC_DATA, data, length);
 	}
 
@@ -674,7 +622,7 @@ static void apply_synaptics_fifo_reset_wa(struct drm_dp_aux *aux)
 
 	DC_LOG_DC("Start %s\n", __func__);
 
-	// Step 2
+	
 	data[0] = 'P';
 	data[1] = 'R';
 	data[2] = 'I';
@@ -684,56 +632,56 @@ static void apply_synaptics_fifo_reset_wa(struct drm_dp_aux *aux)
 	if (!execute_synaptics_rc_command(aux, true, 0x01, 5, 0, data))
 		return;
 
-	// Step 3 and 4
+	
 	if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x220998, data))
 		return;
 
-	data[0] &= (~(1 << 1)); // set bit 1 to 0
+	data[0] &= (~(1 << 1)); 
 	if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x220998, data))
 		return;
 
 	if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x220D98, data))
 		return;
 
-	data[0] &= (~(1 << 1)); // set bit 1 to 0
+	data[0] &= (~(1 << 1)); 
 	if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x220D98, data))
 		return;
 
 	if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x221198, data))
 		return;
 
-	data[0] &= (~(1 << 1)); // set bit 1 to 0
+	data[0] &= (~(1 << 1)); 
 	if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x221198, data))
 		return;
 
-	// Step 3 and 5
+	
 	if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x220998, data))
 		return;
 
-	data[0] |= (1 << 1); // set bit 1 to 1
+	data[0] |= (1 << 1); 
 	if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x220998, data))
 		return;
 
 	if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x220D98, data))
 		return;
 
-	data[0] |= (1 << 1); // set bit 1 to 1
+	data[0] |= (1 << 1); 
 
 	if (!execute_synaptics_rc_command(aux, false, 0x31, 4, 0x221198, data))
 		return;
 
-	data[0] |= (1 << 1); // set bit 1 to 1
+	data[0] |= (1 << 1); 
 	if (!execute_synaptics_rc_command(aux, true, 0x21, 4, 0x221198, data))
 		return;
 
-	// Step 6
+	
 	if (!execute_synaptics_rc_command(aux, true, 0x02, 0, 0, NULL))
 		return;
 
 	DC_LOG_DC("Done %s\n", __func__);
 }
 
-/* MST Dock */
+ 
 static const uint8_t SYNAPTICS_DEVICE_ID[] = "SYNA";
 
 static uint8_t write_dsc_enable_synaptics_non_virtual_dpcd_mst(
@@ -746,10 +694,7 @@ static uint8_t write_dsc_enable_synaptics_non_virtual_dpcd_mst(
 	DC_LOG_DC("Configure DSC to non-virtual dpcd synaptics\n");
 
 	if (enable) {
-		/* When DSC is enabled on previous boot and reboot with the hub,
-		 * there is a chance that Synaptics hub gets stuck during reboot sequence.
-		 * Applying a workaround to reset Synaptics SDP fifo before enabling the first stream
-		 */
+		 
 		if (!stream->link->link_status.link_active &&
 			memcmp(stream->link->dpcd_caps.branch_dev_name,
 				(int8_t *)SYNAPTICS_DEVICE_ID, 4) == 0)
@@ -759,10 +704,7 @@ static uint8_t write_dsc_enable_synaptics_non_virtual_dpcd_mst(
 		DRM_INFO("Send DSC enable to synaptics\n");
 
 	} else {
-		/* Synaptics hub not support virtual dpcd,
-		 * external monitor occur garbage while disable DSC,
-		 * Disable DSC only when entire link status turn to false,
-		 */
+		 
 		if (!stream->link->link_status.link_active) {
 			ret = drm_dp_dpcd_write(aux, DP_DSC_ENABLE, &enable, 1);
 			DRM_INFO("Send DSC disable to synaptics\n");
@@ -796,7 +738,7 @@ bool dm_helpers_dp_write_dsc_enable(
 		if (!aconnector->dsc_aux)
 			return false;
 
-		// apply w/a to synaptics
+		
 		if (needs_dsc_aux_workaround(aconnector->dc_link) &&
 		    (aconnector->mst_downstream_port_present.byte & 0x7) != 0x3)
 			return write_dsc_enable_synaptics_non_virtual_dpcd_mst(
@@ -883,14 +825,12 @@ enum dc_edid_status dm_helpers_read_local_edid(
 	else
 		ddc = &aconnector->i2c->base;
 
-	/* some dongles read edid incorrectly the first time,
-	 * do check sum and retry to make sure read correct edid.
-	 */
+	 
 	do {
 
 		edid = drm_get_edid(&aconnector->base, ddc);
 
-		/* DP Compliance Test 4.2.2.6 */
+		 
 		if (link->aux_mode && connector->edid_corrupt)
 			drm_dp_send_real_edid_checksum(&aconnector->dm_dp_aux.aux, connector->real_edid_checksum);
 
@@ -905,7 +845,7 @@ enum dc_edid_status dm_helpers_read_local_edid(
 		sink->dc_edid.length = EDID_LENGTH * (edid->extensions + 1);
 		memmove(sink->dc_edid.raw_edid, (uint8_t *)edid, sink->dc_edid.length);
 
-		/* We don't need the original edid anymore */
+		 
 		kfree(edid);
 
 		edid_status = dm_helpers_parse_edid_caps(
@@ -971,13 +911,13 @@ int dm_helpers_dmub_set_config_sync(struct dc_context *ctx,
 
 void dm_set_dcn_clocks(struct dc_context *ctx, struct dc_clocks *clks)
 {
-	/* TODO: something */
+	 
 }
 
 void dm_helpers_smu_timeout(struct dc_context *ctx, unsigned int msg_id, unsigned int param, unsigned int timeout_us)
 {
-	// TODO:
-	//amdgpu_device_gpu_recover(dc_context->driver-context, NULL);
+	
+	
 }
 
 void dm_helpers_init_panel_settings(
@@ -985,7 +925,7 @@ void dm_helpers_init_panel_settings(
 	struct dc_panel_config *panel_config,
 	struct dc_sink *sink)
 {
-	// Extra Panel Power Sequence
+	
 	panel_config->pps.extra_t3_ms = sink->edid_caps.panel_patch.extra_t3_ms;
 	panel_config->pps.extra_t7_ms = sink->edid_caps.panel_patch.extra_t7_ms;
 	panel_config->pps.extra_delay_backlight_off = sink->edid_caps.panel_patch.extra_delay_backlight_off;
@@ -993,7 +933,7 @@ void dm_helpers_init_panel_settings(
 	panel_config->pps.extra_pre_t11_ms = 0;
 	panel_config->pps.extra_t12_ms = sink->edid_caps.panel_patch.extra_t12_ms;
 	panel_config->pps.extra_post_OUI_ms = 0;
-	// Feature DSC
+	
 	panel_config->dsc.disable_dsc_edp = false;
 	panel_config->dsc.force_dsc_edp_policy = 0;
 }
@@ -1002,7 +942,7 @@ void dm_helpers_override_panel_settings(
 	struct dc_context *ctx,
 	struct dc_panel_config *panel_config)
 {
-	// Feature DSC
+	
 	if (amdgpu_dc_debug_mask & DC_DISABLE_DSC)
 		panel_config->dsc.disable_dsc_edp = true;
 }
@@ -1034,7 +974,7 @@ void *dm_helpers_allocate_gpu_mem(
 		return NULL;
 	}
 
-	/* add da to list in dm */
+	 
 	list_add(&da->list, &adev->dm.da_list);
 
 	return da->cpu_ptr;
@@ -1048,7 +988,7 @@ void dm_helpers_free_gpu_mem(
 	struct amdgpu_device *adev = ctx->driver_context;
 	struct dal_allocation *da;
 
-	/* walk the da list in DM */
+	 
 	list_for_each_entry(da, &adev->dm.da_list, list) {
 		if (pvMem == da->cpu_ptr) {
 			amdgpu_bo_free_kernel(&da->bo, &da->gpu_addr, &da->cpu_ptr);
@@ -1075,7 +1015,7 @@ bool dm_helpers_dmub_outbox_interrupt_control(struct dc_context *ctx, bool enabl
 
 void dm_helpers_mst_enable_stream_features(const struct dc_stream_state *stream)
 {
-	/* TODO: virtual DPCD */
+	 
 	struct dc_link *link = stream->link;
 	union down_spread_ctrl old_downspread;
 	union down_spread_ctrl new_downspread;
@@ -1134,7 +1074,7 @@ bool dm_helpers_dp_handle_test_pattern_request(
 	break;
 	case LINK_TEST_PATTERN_VERTICAL_BARS:
 		test_pattern = DP_TEST_PATTERN_VERTICAL_BARS;
-	break; /* black and white */
+	break;  
 	case LINK_TEST_PATTERN_COLOR_SQUARES:
 		test_pattern = (dpcd_test_params.bits.DYN_RANGE ==
 				TEST_DYN_RANGE_VESA ?
@@ -1154,16 +1094,16 @@ bool dm_helpers_dp_handle_test_pattern_request(
 				DP_TEST_PATTERN_COLOR_SPACE_YCBCR601;
 
 	switch (dpcd_test_params.bits.BPC) {
-	case 0: // 6 bits
+	case 0: 
 		requestColorDepth = COLOR_DEPTH_666;
 		break;
-	case 1: // 8 bits
+	case 1: 
 		requestColorDepth = COLOR_DEPTH_888;
 		break;
-	case 2: // 10 bits
+	case 2: 
 		requestColorDepth = COLOR_DEPTH_101010;
 		break;
-	case 3: // 12 bits
+	case 3: 
 		requestColorDepth = COLOR_DEPTH_121212;
 		break;
 	default:
@@ -1201,7 +1141,7 @@ bool dm_helpers_dp_handle_test_pattern_request(
 		dc_link_update_dsc_config(pipe_ctx);
 
 		aconnector->timing_changed = true;
-		/* store current timing */
+		 
 		if (aconnector->timing_requested)
 			*aconnector->timing_requested = pipe_ctx->stream->timing;
 		else
@@ -1222,19 +1162,19 @@ bool dm_helpers_dp_handle_test_pattern_request(
 
 void dm_set_phyd32clk(struct dc_context *ctx, int freq_khz)
 {
-       // TODO
+       
 }
 
 void dm_helpers_enable_periodic_detection(struct dc_context *ctx, bool enable)
 {
-	/* TODO: add periodic detection implementation */
+	 
 }
 
 void dm_helpers_dp_mst_update_branch_bandwidth(
 		struct dc_context *ctx,
 		struct dc_link *link)
 {
-	// TODO
+	
 }
 
 static bool dm_is_freesync_pcon_whitelist(const uint32_t branch_dev_id)

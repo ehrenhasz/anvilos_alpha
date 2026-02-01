@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 Unisoc Inc.
- */
+ 
+ 
 
 #ifndef __SPRD_DPU_H__
 #define __SPRD_DPU_H__
@@ -20,7 +18,7 @@
 #include <drm/drm_vblank.h>
 #include <uapi/drm/drm_mode.h>
 
-/* DPU Layer registers offset */
+ 
 #define DPU_LAY_REG_OFFSET	0x30
 
 enum {
@@ -29,19 +27,7 @@ enum {
 	SPRD_DPU_IF_LIMIT
 };
 
-/**
- * Sprd DPU context structure
- *
- * @base: DPU controller base address
- * @irq: IRQ number to install the handler for
- * @if_type: The type of DPI interface, default is DPI mode.
- * @vm: videomode structure to use for DPU and DPI initialization
- * @stopped: indicates whether DPU are stopped
- * @wait_queue: wait queue, used to wait for DPU shadow register update done and
- * DPU stop register done interrupt signal.
- * @evt_update: wait queue condition for DPU shadow register
- * @evt_stop: wait queue condition for DPU stop register
- */
+ 
 struct dpu_context {
 	void __iomem *base;
 	int irq;
@@ -53,13 +39,7 @@ struct dpu_context {
 	bool evt_stop;
 };
 
-/**
- * Sprd DPU device structure
- *
- * @crtc: crtc object
- * @drm: A point to drm device
- * @ctx: DPU's implementation specific context object
- */
+ 
 struct sprd_dpu {
 	struct drm_crtc base;
 	struct drm_device *drm;

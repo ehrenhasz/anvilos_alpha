@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* GTP according to GSM TS 09.60 / 3GPP TS 29.060
- *
- * (C) 2012-2014 by sysmocom - s.f.m.c. GmbH
- * (C) 2016 by Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * Author: Harald Welte <hwelte@sysmocom.de>
- *	   Pablo Neira Ayuso <pablo@netfilter.org>
- *	   Andreas Schultz <aschultz@travelping.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -32,7 +24,7 @@
 #include <net/netns/generic.h>
 #include <net/gtp.h>
 
-/* An active session for the subscriber. */
+ 
 struct pdp_ctx {
 	struct hlist_node	hlist_tid;
 	struct hlist_node	hlist_addr;
@@ -60,7 +52,7 @@ struct pdp_ctx {
 	struct rcu_head		rcu_head;
 };
 
-/* One instance of the GTP device. */
+ 
 struct gtp_dev {
 	struct list_head	list;
 
@@ -121,7 +113,7 @@ static inline u32 ipv4_hashfn(__be32 ip)
 	return jhash_1word((__force u32)ip, gtp_h_initval);
 }
 
-/* Resolve a PDP context structure based on the 64bit TID. */
+ 
 static struct pdp_ctx *gtp0_pdp_find(struct gtp_dev *gtp, u64 tid)
 {
 	struct hlist_head *head;
@@ -137,7 +129,7 @@ static struct pdp_ctx *gtp0_pdp_find(struct gtp_dev *gtp, u64 tid)
 	return NULL;
 }
 
-/* Resolve a PDP context structure based on the 32bit TEI. */
+ 
 static struct pdp_ctx *gtp1_pdp_find(struct gtp_dev *gtp, u32 tid)
 {
 	struct hlist_head *head;
@@ -153,7 +145,7 @@ static struct pdp_ctx *gtp1_pdp_find(struct gtp_dev *gtp, u32 tid)
 	return NULL;
 }
 
-/* Resolve a PDP context based on IPv4 address of MS. */
+ 
 static struct pdp_ctx *ipv4_pdp_find(struct gtp_dev *gtp, __be32 ms_addr)
 {
 	struct hlist_head *head;
@@ -186,9 +178,7 @@ static bool gtp_check_ms_ipv4(struct sk_buff *skb, struct pdp_ctx *pctx,
 		return iph->saddr == pctx->ms_addr_ip4.s_addr;
 }
 
-/* Check if the inner IP address in this packet is assigned to any
- * existing mobile subscriber.
- */
+ 
 static bool gtp_check_ms(struct sk_buff *skb, struct pdp_ctx *pctx,
 			     unsigned int hdrlen, unsigned int role)
 {
@@ -207,7 +197,7 @@ static int gtp_rx(struct pdp_ctx *pctx, struct sk_buff *skb,
 		return 1;
 	}
 
-	/* Get rid of the GTP + UDP headers. */
+	 
 	if (iptunnel_pull_header(skb, hdrlen, skb->protocol,
 			 !net_eq(sock_net(pctx->sk), dev_net(pctx->dev)))) {
 		pctx->dev->stats.rx_length_errors++;
@@ -216,10 +206,7 @@ static int gtp_rx(struct pdp_ctx *pctx, struct sk_buff *skb,
 
 	netdev_dbg(pctx->dev, "forwarding packet from GGSN to uplink\n");
 
-	/* Now that the UDP and the GTP header have been removed, set up the
-	 * new network header. This is required by the upper layer to
-	 * calculate the transport header.
-	 */
+	 
 	skb_reset_network_header(skb);
 	skb_reset_mac_header(skb);
 
@@ -250,32 +237,21 @@ static struct rtable *ip4_route_output_gtp(struct flowi4 *fl4,
 	return ip_route_output_key(sock_net(sk), fl4);
 }
 
-/* GSM TS 09.60. 7.3
- * In all Path Management messages:
- * - TID: is not used and shall be set to 0.
- * - Flow Label is not used and shall be set to 0
- * In signalling messages:
- * - number: this field is not yet used in signalling messages.
- *   It shall be set to 255 by the sender and shall be ignored
- *   by the receiver
- * Returns true if the echo req was correct, false otherwise.
- */
+ 
 static bool gtp0_validate_echo_hdr(struct gtp0_header *gtp0)
 {
 	return !(gtp0->tid || (gtp0->flags ^ 0x1e) ||
 		gtp0->number != 0xff || gtp0->flow);
 }
 
-/* msg_type has to be GTP_ECHO_REQ or GTP_ECHO_RSP */
+ 
 static void gtp0_build_echo_msg(struct gtp0_header *hdr, __u8 msg_type)
 {
 	int len_pkt, len_hdr;
 
-	hdr->flags = 0x1e; /* v0, GTP-non-prime. */
+	hdr->flags = 0x1e;  
 	hdr->type = msg_type;
-	/* GSM TS 09.60. 7.3 In all Path Management Flow Label and TID
-	 * are not used and shall be set to 0.
-	 */
+	 
 	hdr->flow = 0;
 	hdr->tid = 0;
 	hdr->number = 0xff;
@@ -308,7 +284,7 @@ static int gtp0_send_echo_resp(struct gtp_dev *gtp, struct sk_buff *skb)
 
 	seq = gtp0->seq;
 
-	/* pull GTP and UDP headers */
+	 
 	skb_pull_data(skb, sizeof(struct gtp0_header) + sizeof(struct udphdr));
 
 	gtp_pkt = skb_push(skb, sizeof(struct gtp0_packet));
@@ -316,10 +292,7 @@ static int gtp0_send_echo_resp(struct gtp_dev *gtp, struct sk_buff *skb)
 
 	gtp0_build_echo_msg(&gtp_pkt->gtp0_h, GTP_ECHO_RSP);
 
-	/* GSM TS 09.60. 7.3 The Sequence Number in a signalling response
-	 * message shall be copied from the signalling request message
-	 * that the GSN is replying to.
-	 */
+	 
 	gtp_pkt->gtp0_h.seq = seq;
 
 	gtp_pkt->ie.tag = GTPIE_RECOVERY;
@@ -327,9 +300,7 @@ static int gtp0_send_echo_resp(struct gtp_dev *gtp, struct sk_buff *skb)
 
 	iph = ip_hdr(skb);
 
-	/* find route to the sender,
-	 * src address becomes dst address and vice versa.
-	 */
+	 
 	rt = ip4_route_output_gtp(&fl4, gtp->sk0, iph->saddr, iph->daddr);
 	if (IS_ERR(rt)) {
 		netdev_dbg(gtp->dev, "no route for echo response from %pI4\n",
@@ -404,7 +375,7 @@ static int gtp0_handle_echo_resp(struct gtp_dev *gtp, struct sk_buff *skb)
 				       msg, 0, GTP_GENL_MCGRP, GFP_ATOMIC);
 }
 
-/* 1 means pass up to the stack, -1 means drop and 0 means decapsulated. */
+ 
 static int gtp0_udp_encap_recv(struct gtp_dev *gtp, struct sk_buff *skb)
 {
 	unsigned int hdrlen = sizeof(struct udphdr) +
@@ -420,10 +391,7 @@ static int gtp0_udp_encap_recv(struct gtp_dev *gtp, struct sk_buff *skb)
 	if ((gtp0->flags >> 5) != GTP_V0)
 		return 1;
 
-	/* If the sockets were created in kernel, it means that
-	 * there is no daemon running in userspace which would
-	 * handle echo request.
-	 */
+	 
 	if (gtp0->type == GTP_ECHO_REQ && gtp->sk_created)
 		return gtp0_send_echo_resp(gtp, skb);
 
@@ -442,21 +410,18 @@ static int gtp0_udp_encap_recv(struct gtp_dev *gtp, struct sk_buff *skb)
 	return gtp_rx(pctx, skb, hdrlen, gtp->role);
 }
 
-/* msg_type has to be GTP_ECHO_REQ or GTP_ECHO_RSP */
+ 
 static void gtp1u_build_echo_msg(struct gtp1_header_long *hdr, __u8 msg_type)
 {
 	int len_pkt, len_hdr;
 
-	/* S flag must be set to 1 */
-	hdr->flags = 0x32; /* v1, GTP-non-prime. */
+	 
+	hdr->flags = 0x32;  
 	hdr->type = msg_type;
-	/* 3GPP TS 29.281 5.1 - TEID has to be set to 0 */
+	 
 	hdr->tid = 0;
 
-	/* seq, npdu and next should be counted to the length of the GTP packet
-	 * that's why szie of gtp1_header should be subtracted,
-	 * not size of gtp1_header_long.
-	 */
+	 
 
 	len_hdr = sizeof(struct gtp1_header);
 
@@ -464,9 +429,7 @@ static void gtp1u_build_echo_msg(struct gtp1_header_long *hdr, __u8 msg_type)
 		len_pkt = sizeof(struct gtp1u_packet);
 		hdr->length = htons(len_pkt - len_hdr);
 	} else {
-		/* GTP_ECHO_REQ does not carry GTP Information Element,
-		 * the why gtp1_header_long is used here.
-		 */
+		 
 		len_pkt = sizeof(struct gtp1_header_long);
 		hdr->length = htons(len_pkt - len_hdr);
 	}
@@ -482,14 +445,11 @@ static int gtp1u_send_echo_resp(struct gtp_dev *gtp, struct sk_buff *skb)
 
 	gtp1u = (struct gtp1_header_long *)(skb->data + sizeof(struct udphdr));
 
-	/* 3GPP TS 29.281 5.1 - For the Echo Request, Echo Response,
-	 * Error Indication and Supported Extension Headers Notification
-	 * messages, the S flag shall be set to 1 and TEID shall be set to 0.
-	 */
+	 
 	if (!(gtp1u->flags & GTP1_F_SEQ) || gtp1u->tid)
 		return -1;
 
-	/* pull GTP and UDP headers */
+	 
 	skb_pull_data(skb,
 		      sizeof(struct gtp1_header_long) + sizeof(struct udphdr));
 
@@ -498,20 +458,13 @@ static int gtp1u_send_echo_resp(struct gtp_dev *gtp, struct sk_buff *skb)
 
 	gtp1u_build_echo_msg(&gtp_pkt->gtp1u_h, GTP_ECHO_RSP);
 
-	/* 3GPP TS 29.281 7.7.2 - The Restart Counter value in the
-	 * Recovery information element shall not be used, i.e. it shall
-	 * be set to zero by the sender and shall be ignored by the receiver.
-	 * The Recovery information element is mandatory due to backwards
-	 * compatibility reasons.
-	 */
+	 
 	gtp_pkt->ie.tag = GTPIE_RECOVERY;
 	gtp_pkt->ie.val = 0;
 
 	iph = ip_hdr(skb);
 
-	/* find route to the sender,
-	 * src address becomes dst address and vice versa.
-	 */
+	 
 	rt = ip4_route_output_gtp(&fl4, gtp->sk1u, iph->saddr, iph->daddr);
 	if (IS_ERR(rt)) {
 		netdev_dbg(gtp->dev, "no route for echo response from %pI4\n",
@@ -541,10 +494,7 @@ static int gtp1u_handle_echo_resp(struct gtp_dev *gtp, struct sk_buff *skb)
 
 	gtp1u = (struct gtp1_header_long *)(skb->data + sizeof(struct udphdr));
 
-	/* 3GPP TS 29.281 5.1 - For the Echo Request, Echo Response,
-	 * Error Indication and Supported Extension Headers Notification
-	 * messages, the S flag shall be set to 1 and TEID shall be set to 0.
-	 */
+	 
 	if (!(gtp1u->flags & GTP1_F_SEQ) || gtp1u->tid)
 		return -1;
 
@@ -582,10 +532,7 @@ static int gtp1u_udp_encap_recv(struct gtp_dev *gtp, struct sk_buff *skb)
 	if ((gtp1->flags >> 5) != GTP_V1)
 		return 1;
 
-	/* If the sockets were created in kernel, it means that
-	 * there is no daemon running in userspace which would
-	 * handle echo request.
-	 */
+	 
 	if (gtp1->type == GTP_ECHO_REQ && gtp->sk_created)
 		return gtp1u_send_echo_resp(gtp, skb);
 
@@ -595,16 +542,11 @@ static int gtp1u_udp_encap_recv(struct gtp_dev *gtp, struct sk_buff *skb)
 	if (gtp1->type != GTP_TPDU)
 		return 1;
 
-	/* From 29.060: "This field shall be present if and only if any one or
-	 * more of the S, PN and E flags are set.".
-	 *
-	 * If any of the bit is set, then the remaining ones also have to be
-	 * set.
-	 */
+	 
 	if (gtp1->flags & GTP1_F_MASK)
 		hdrlen += 4;
 
-	/* Make sure the header is larger enough, including extensions. */
+	 
 	if (!pskb_may_pull(skb, hdrlen))
 		return -1;
 
@@ -668,9 +610,7 @@ static void gtp_encap_disable(struct gtp_dev *gtp)
 	}
 }
 
-/* UDP encapsulation receive handler. See net/ipv4/udp.c.
- * Return codes: 0: success, <0: error, >0: pass up to userspace UDP socket.
- */
+ 
 static int gtp_encap_recv(struct sock *sk, struct sk_buff *skb)
 {
 	struct gtp_dev *gtp;
@@ -692,7 +632,7 @@ static int gtp_encap_recv(struct sock *sk, struct sk_buff *skb)
 		ret = gtp1u_udp_encap_recv(gtp, skb);
 		break;
 	default:
-		ret = -1; /* Shouldn't happen. */
+		ret = -1;  
 	}
 
 	switch (ret) {
@@ -739,7 +679,7 @@ static inline void gtp0_push_header(struct sk_buff *skb, struct pdp_ctx *pctx)
 
 	gtp0 = skb_push(skb, sizeof(*gtp0));
 
-	gtp0->flags	= 0x1e; /* v0, GTP-non-prime. */
+	gtp0->flags	= 0x1e;  
 	gtp0->type	= GTP_TPDU;
 	gtp0->length	= htons(payload_len);
 	gtp0->seq	= htons((atomic_inc_return(&pctx->tx_seq) - 1) % 0xffff);
@@ -756,20 +696,13 @@ static inline void gtp1_push_header(struct sk_buff *skb, struct pdp_ctx *pctx)
 
 	gtp1 = skb_push(skb, sizeof(*gtp1));
 
-	/* Bits    8  7  6  5  4  3  2	1
-	 *	  +--+--+--+--+--+--+--+--+
-	 *	  |version |PT| 0| E| S|PN|
-	 *	  +--+--+--+--+--+--+--+--+
-	 *	    0  0  1  1	1  0  0  0
-	 */
-	gtp1->flags	= 0x30; /* v1, GTP-non-prime. */
+	 
+	gtp1->flags	= 0x30;  
 	gtp1->type	= GTP_TPDU;
 	gtp1->length	= htons(payload_len);
 	gtp1->tid	= htonl(pctx->u.v1.o_tei);
 
-	/* TODO: Support for extension header, sequence number and N-PDU.
-	 *	 Update the length field if any of them is available.
-	 */
+	 
 }
 
 struct gtp_pktinfo {
@@ -821,9 +754,7 @@ static int gtp_build_skb_ip4(struct sk_buff *skb, struct net_device *dev,
 	__be16 df;
 	int mtu;
 
-	/* Read the IP destination address and resolve the PDP context.
-	 * Prepend PDP header with TEI/TID from PDP ctx.
-	 */
+	 
 	iph = ip_hdr(skb);
 	if (gtp->role == GTP_ROLE_SGSN)
 		pctx = ipv4_pdp_find(gtp, iph->saddr);
@@ -853,7 +784,7 @@ static int gtp_build_skb_ip4(struct sk_buff *skb, struct net_device *dev,
 		goto err_rt;
 	}
 
-	/* This is similar to tnl_update_pmtu(). */
+	 
 	df = iph->frag_off;
 	if (df) {
 		mtu = dst_mtu(&rt->dst) - dev->hard_header_len -
@@ -897,13 +828,13 @@ static netdev_tx_t gtp_dev_xmit(struct sk_buff *skb, struct net_device *dev)
 	struct gtp_pktinfo pktinfo;
 	int err;
 
-	/* Ensure there is sufficient headroom. */
+	 
 	if (skb_cow_head(skb, dev->needed_headroom))
 		goto tx_err;
 
 	skb_reset_inner_headers(skb);
 
-	/* PDP context lookups in gtp_build_skb_*() need rcu read-side lock. */
+	 
 	rcu_read_lock();
 	switch (proto) {
 	case ETH_P_IP:
@@ -966,7 +897,7 @@ static void gtp_link_setup(struct net_device *dev)
 	dev->addr_len = 0;
 	dev->mtu = ETH_DATA_LEN - max_gtp_header_len;
 
-	/* Zero header length. */
+	 
 	dev->type = ARPHRD_NONE;
 	dev->flags = IFF_POINTOPOINT | IFF_NOARP | IFF_MULTICAST;
 
@@ -1142,9 +1073,9 @@ static int gtp_validate(struct nlattr *tb[], struct nlattr *data[],
 
 static size_t gtp_get_size(const struct net_device *dev)
 {
-	return nla_total_size(sizeof(__u32)) + /* IFLA_GTP_PDP_HASHSIZE */
-		nla_total_size(sizeof(__u32)) + /* IFLA_GTP_ROLE */
-		nla_total_size(sizeof(__u8)); /* IFLA_GTP_RESTART_COUNT */
+	return nla_total_size(sizeof(__u32)) +  
+		nla_total_size(sizeof(__u32)) +  
+		nla_total_size(sizeof(__u8));  
 }
 
 static int gtp_fill_info(struct sk_buff *skb, const struct net_device *dev)
@@ -1288,9 +1219,7 @@ static struct gtp_dev *gtp_find_dev(struct net *src_net, struct nlattr *nla[])
 	struct net_device *dev;
 	struct net *net;
 
-	/* Examine the link attributes and figure out which network namespace
-	 * we are talking about.
-	 */
+	 
 	if (nla[GTPA_NET_NS_FD])
 		net = get_net_ns_by_fd(nla_get_u32(nla[GTPA_NET_NS_FD]));
 	else
@@ -1299,7 +1228,7 @@ static struct gtp_dev *gtp_find_dev(struct net *src_net, struct nlattr *nla[])
 	if (IS_ERR(net))
 		return NULL;
 
-	/* Check if there's an existing gtpX device to configure */
+	 
 	dev = dev_get_by_index_rcu(net, nla_get_u32(nla[GTPA_LINK]));
 	if (dev && dev->netdev_ops == &gtp_netdev_ops)
 		gtp = netdev_priv(dev);
@@ -1319,10 +1248,7 @@ static void ipv4_pdp_fill(struct pdp_ctx *pctx, struct genl_info *info)
 
 	switch (pctx->gtp_version) {
 	case GTP_V0:
-		/* According to TS 09.60, sections 7.5.1 and 7.5.2, the flow
-		 * label needs to be the same for uplink and downlink packets,
-		 * so let's annotate this.
-		 */
+		 
 		pctx->u.v0.tid = nla_get_u64(info->attrs[GTPA_TID]);
 		pctx->u.v0.flow = nla_get_u16(info->attrs[GTPA_FLOW]);
 		break;
@@ -1397,11 +1323,7 @@ static struct pdp_ctx *gtp_pdp_add(struct gtp_dev *gtp, struct sock *sk,
 
 	switch (pctx->gtp_version) {
 	case GTP_V0:
-		/* TS 09.60: "The flow label identifies unambiguously a GTP
-		 * flow.". We use the tid for this instead, I cannot find a
-		 * situation in which this doesn't unambiguosly identify the
-		 * PDP context.
-		 */
+		 
 		hash_tid = gtp0_hashfn(pctx->u.v0.tid) % gtp->hash_size;
 		break;
 	case GTP_V1:

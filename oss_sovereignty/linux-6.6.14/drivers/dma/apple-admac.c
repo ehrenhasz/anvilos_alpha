@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Audio DMA Controller (ADMAC) on t8103 (M1) and other Apple chips
- *
- * Copyright (C) The Asahi Linux Contributors
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -22,10 +18,7 @@
 #define NCHANNELS_MAX	64
 #define IRQ_NOUTPUTS	4
 
-/*
- * For allocation purposes we split the cache
- * memory into blocks of fixed size (given in bytes).
- */
+ 
 #define SRAM_BLOCK	2048
 
 #define RING_WRITE_SLOT		GENMASK(1, 0)
@@ -95,12 +88,7 @@ struct admac_chan {
 	struct admac_tx *current_tx;
 	int nperiod_acks;
 
-	/*
-	 * We maintain a 'submitted' and 'issued' list mainly for interface
-	 * correctness. Typical use of the driver (per channel) will be
-	 * prepping, submitting and issuing a single cyclic transaction which
-	 * will stay current until terminate_all is called.
-	 */
+	 
 	struct list_head submitted;
 	struct list_head issued;
 
@@ -109,10 +97,7 @@ struct admac_chan {
 
 struct admac_sram {
 	u32 size;
-	/*
-	 * SRAM_CARVEOUT has 16-bit fields, so the SRAM cannot be larger than
-	 * 64K and a 32-bit bitfield over 2K blocks covers it.
-	 */
+	 
 	u32 allocated;
 };
 
@@ -219,7 +204,7 @@ static struct admac_tx *to_admac_tx(struct dma_async_tx_descriptor *tx)
 
 static enum dma_transfer_direction admac_chan_direction(int channo)
 {
-	/* Channel directions are hardwired */
+	 
 	return (channo & 1) ? DMA_DEV_TO_MEM : DMA_MEM_TO_DEV;
 }
 
@@ -277,9 +262,7 @@ static struct dma_async_tx_descriptor *admac_prep_dma_cyclic(
 	return &adtx->tx;
 }
 
-/*
- * Write one hardware descriptor for a dmaengine cyclic transaction.
- */
+ 
 static void admac_cyclic_write_one_desc(struct admac_data *ad, int channo,
 					struct admac_tx *tx)
 {
@@ -287,7 +270,7 @@ static void admac_cyclic_write_one_desc(struct admac_data *ad, int channo,
 
 	addr = tx->buf_addr + (tx->submitted_pos % tx->buf_len);
 
-	/* If happens means we have buggy code */
+	 
 	WARN_ON_ONCE(addr + tx->period_len > tx->buf_end);
 
 	dev_dbg(ad->dev, "ch%d descriptor: addr=0x%pad len=0x%zx flags=0x%lx\n",
@@ -302,10 +285,7 @@ static void admac_cyclic_write_one_desc(struct admac_data *ad, int channo,
 	tx->submitted_pos %= 2 * tx->buf_len;
 }
 
-/*
- * Write all the hardware descriptors for a dmaengine cyclic
- * transaction there is space for.
- */
+ 
 static void admac_cyclic_write_desc(struct admac_data *ad, int channo,
 				    struct admac_tx *tx)
 {
@@ -335,9 +315,7 @@ static int admac_ring_noccupied_slots(int ringval)
 	}
 }
 
-/*
- * Read from hardware the residue of a cyclic dmaengine transaction.
- */
+ 
 static u32 admac_cyclic_read_residue(struct admac_data *ad, int channo,
 				     struct admac_tx *adtx)
 {
@@ -352,13 +330,10 @@ static u32 admac_cyclic_read_residue(struct admac_data *ad, int channo,
 	residue2 = readl_relaxed(ad->base + REG_RESIDUE(channo));
 
 	if (residue2 > residue1) {
-		/*
-		 * Controller must have loaded next descriptor between
-		 * the two residue reads
-		 */
+		 
 		nreports = admac_ring_noccupied_slots(ring1) + 1;
 	} else {
-		/* No descriptor load between the two reads, ring2 is safe to use */
+		 
 		nreports = admac_ring_noccupied_slots(ring2);
 	}
 
@@ -517,10 +492,7 @@ static int admac_terminate_all(struct dma_chan *chan)
 		list_add_tail(&adchan->current_tx->node, &adchan->to_free);
 		adchan->current_tx = NULL;
 	}
-	/*
-	 * Descriptors can only be freed after the tasklet
-	 * has been killed (in admac_synchronize).
-	 */
+	 
 	list_splice_tail_init(&adchan->submitted, &adchan->to_free);
 	list_splice_tail_init(&adchan->issued, &adchan->to_free);
 	spin_unlock_irqrestore(&adchan->lock, flags);
@@ -759,13 +731,7 @@ static int admac_device_config(struct dma_chan *chan,
 		return -EINVAL;
 	}
 
-	/*
-	 * We take port_window_size to be the number of words in a frame.
-	 *
-	 * The controller has some means of out-of-band signalling, to the peripheral,
-	 * of words position in a frame. That's where the importance of this control
-	 * comes from.
-	 */
+	 
 	switch (is_tx ? config->dst_port_window_size : config->src_port_window_size) {
 	case 0 ... 1:
 		break;
@@ -781,13 +747,7 @@ static int admac_device_config(struct dma_chan *chan,
 
 	writel_relaxed(bus_width, ad->base + REG_BUS_WIDTH(adchan->no));
 
-	/*
-	 * By FIFOCTL_LIMIT we seem to set the maximal number of bytes allowed to be
-	 * held in controller's per-channel FIFO. Transfers seem to be triggered
-	 * around the time FIFO occupancy touches FIFOCTL_THRESHOLD.
-	 *
-	 * The numbers we set are more or less arbitrary.
-	 */
+	 
 	writel_relaxed(FIELD_PREP(CHAN_FIFOCTL_LIMIT, 0x30 * wordsize)
 		       | FIELD_PREP(CHAN_FIFOCTL_THRESHOLD, 0x18 * wordsize),
 		       ad->base + REG_CHAN_FIFOCTL(adchan->no));
@@ -818,10 +778,7 @@ static int admac_probe(struct platform_device *pdev)
 	ad->nchannels = nchannels;
 	mutex_init(&ad->cache_alloc_lock);
 
-	/*
-	 * The controller has 4 IRQ outputs. Try them all until
-	 * we find one we can use.
-	 */
+	 
 	for (i = 0; i < IRQ_NOUTPUTS; i++) {
 		irq = platform_get_irq_optional(pdev, i);
 		if (irq >= 0) {

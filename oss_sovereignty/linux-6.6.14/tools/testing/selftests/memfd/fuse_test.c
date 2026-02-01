@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * memfd GUP test-case
- * This tests memfd interactions with get_user_pages(). We require the
- * fuse_mnt.c program to provide a fake direct-IO FUSE mount-point for us. This
- * file-system delays _all_ reads by 1s and forces direct-IO. This means, any
- * read() on files in that file-system will pin the receive-buffer pages for at
- * least 1s via get_user_pages().
- *
- * We use this trick to race ADD_SEALS against a write on a memfd object. The
- * ADD_SEALS must fail if the memfd pages are still pinned. Note that we use
- * the read() syscall with our memory-mapped memfd object as receive buffer to
- * force the kernel to write into our memfd object.
- */
+
+ 
 
 #define _GNU_SOURCE
 #define __EXPORTED_HEADERS__
@@ -164,33 +152,23 @@ static int sealing_thread_fn(void *arg)
 {
 	int sig, r;
 
-	/*
-	 * This thread first waits 200ms so any pending operation in the parent
-	 * is correctly started. After that, it tries to seal @global_mfd as
-	 * SEAL_WRITE. This _must_ fail as the parent thread has a read() into
-	 * that memory mapped object still ongoing.
-	 * We then wait one more second and try sealing again. This time it
-	 * must succeed as there shouldn't be anyone else pinning the pages.
-	 */
+	 
 
-	/* wait 200ms for FUSE-request to be active */
+	 
 	usleep(200000);
 
-	/* unmount mapping before sealing to avoid i_mmap_writable failures */
+	 
 	munmap(global_p, mfd_def_size);
 
-	/* Try sealing the global file; expect EBUSY or success. Current
-	 * kernels will never succeed, but in the future, kernels might
-	 * implement page-replacements or other fancy ways to avoid racing
-	 * writes. */
+	 
 	r = mfd_busy_add_seals(global_mfd, F_SEAL_WRITE);
 	if (r >= 0) {
 		printf("HURRAY! This kernel fixed GUP races!\n");
 	} else {
-		/* wait 1s more so the FUSE-request is done */
+		 
 		sleep(1);
 
-		/* try sealing the global file again */
+		 
 		mfd_assert_add_seals(global_mfd, F_SEAL_WRITE);
 	}
 
@@ -257,7 +235,7 @@ int main(int argc, char **argv)
 
 	zero = calloc(sizeof(*zero), mfd_def_size);
 
-	/* open FUSE memfd file for GUP testing */
+	 
 	printf("opening: %s\n", argv[1]);
 	fd = open(argv[1], O_RDONLY | O_CLOEXEC);
 	if (fd < 0) {
@@ -265,27 +243,20 @@ int main(int argc, char **argv)
 		abort();
 	}
 
-	/* create new memfd-object */
+	 
 	mfd = mfd_assert_new("kern_memfd_fuse",
 			     mfd_def_size,
 			     MFD_CLOEXEC | MFD_ALLOW_SEALING);
 
-	/* mmap memfd-object for writing */
+	 
 	p = mfd_assert_mmap_shared(mfd);
 
-	/* pass mfd+mapping to a separate sealing-thread which tries to seal
-	 * the memfd objects with SEAL_WRITE while we write into it */
+	 
 	global_mfd = mfd;
 	global_p = p;
 	pid = spawn_sealing_thread();
 
-	/* Use read() on the FUSE file to read into our memory-mapped memfd
-	 * object. This races the other thread which tries to seal the
-	 * memfd-object.
-	 * If @fd is on the memfd-fake-FUSE-FS, the read() is delayed by 1s.
-	 * This guarantees that the receive-buffer is pinned for 1s until the
-	 * data is written into it. The racing ADD_SEALS should thus fail as
-	 * the pages are still pinned. */
+	 
 	r = read(fd, p, mfd_def_size);
 	if (r < 0) {
 		printf("read() failed: %m\n");
@@ -297,20 +268,11 @@ int main(int argc, char **argv)
 
 	was_sealed = mfd_assert_get_seals(mfd) & F_SEAL_WRITE;
 
-	/* Wait for sealing-thread to finish and verify that it
-	 * successfully sealed the file after the second try. */
+	 
 	join_sealing_thread(pid);
 	mfd_assert_has_seals(mfd, F_SEAL_WRITE);
 
-	/* *IF* the memfd-object was sealed at the time our read() returned,
-	 * then the kernel did a page-replacement or canceled the read() (or
-	 * whatever magic it did..). In that case, the memfd object is still
-	 * all zero.
-	 * In case the memfd-object was *not* sealed, the read() was successfull
-	 * and the memfd object must *not* be all zero.
-	 * Note that in real scenarios, there might be a mixture of both, but
-	 * in this test-cases, we have explicit 200ms delays which should be
-	 * enough to avoid any in-flight writes. */
+	 
 
 	p = mfd_assert_mmap_private(mfd);
 	if (was_sealed && memcmp(p, zero, mfd_def_size)) {

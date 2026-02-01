@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * elf.c - ELF access library
- *
- * Adapted from kpatch (https://github.com/dynup/kpatch):
- * Copyright (C) 2013-2015 Josh Poimboeuf <jpoimboe@redhat.com>
- * Copyright (C) 2014 Seth Jennings <sjenning@redhat.com>
- */
+
+ 
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -109,9 +103,7 @@ struct symbol_hole {
 	const struct symbol *sym;
 };
 
-/*
- * Find !section symbol where @offset is after it.
- */
+ 
 static int symbol_hole_by_offset(const void *key, const struct rb_node *node)
 {
 	const struct symbol *s = rb_entry(node, struct symbol, node);
@@ -205,9 +197,7 @@ struct symbol *find_symbol_containing(const struct section *sec, unsigned long o
 	return NULL;
 }
 
-/*
- * Returns size of hole starting at @offset.
- */
+ 
 int find_symbol_hole_containing(const struct section *sec, unsigned long offset)
 {
 	struct symbol_hole hole = {
@@ -217,25 +207,23 @@ int find_symbol_hole_containing(const struct section *sec, unsigned long offset)
 	struct rb_node *n;
 	struct symbol *s;
 
-	/*
-	 * Find the rightmost symbol for which @offset is after it.
-	 */
+	 
 	n = rb_find(&hole, &sec->symbol_tree.rb_root, symbol_hole_by_offset);
 
-	/* found a symbol that contains @offset */
+	 
 	if (n)
-		return 0; /* not a hole */
+		return 0;  
 
-	/* didn't find a symbol for which @offset is after it */
+	 
 	if (!hole.sym)
-		return 0; /* not a hole */
+		return 0;  
 
-	/* @offset >= sym->offset + sym->len, find symbol after it */
+	 
 	n = rb_next(&hole.sym->node);
 	if (!n)
-		return -1; /* until end of address space */
+		return -1;  
 
-	/* hole until start of next symbol */
+	 
 	s = rb_entry(n, struct symbol, node);
 	return s->offset - offset;
 }
@@ -382,7 +370,7 @@ static int read_sections(struct elf *elf)
 		printf("section_bits: %d\n", elf->section_bits);
 	}
 
-	/* sanity check, one more call to elf_nextscn() should return NULL */
+	 
 	if (elf_nextscn(elf->elf, s)) {
 		WARN("section entry mismatch");
 		return -1;
@@ -424,10 +412,7 @@ static void elf_add_symbol(struct elf *elf, struct symbol *sym)
 	elf_hash_add(symbol, &sym->hash, sym->idx);
 	elf_hash_add(symbol_name, &sym->name_hash, str_hash(sym->name));
 
-	/*
-	 * Don't store empty STT_NOTYPE symbols in the rbtree.  They
-	 * can exist within a function, confusing the sorting.
-	 */
+	 
 	if (!sym->len)
 		__sym_remove(sym, &sym->sec->symbol_tree);
 }
@@ -449,12 +434,7 @@ static int read_symbols(struct elf *elf)
 
 		symbols_nr = sec_num_entries(symtab);
 	} else {
-		/*
-		 * A missing symbol table is actually possible if it's an empty
-		 * .o file. This can happen for thunk_64.o. Make sure to at
-		 * least allocate the symbol hash tables so we can do symbol
-		 * lookups without crashing.
-		 */
+		 
 		symbols_nr = 0;
 	}
 
@@ -512,7 +492,7 @@ static int read_symbols(struct elf *elf)
 		printf("symbol_bits: %d\n", elf->symbol_bits);
 	}
 
-	/* Create parent/child links for any cold subfunctions */
+	 
 	list_for_each_entry(sec, &elf->sections, list) {
 		sec_for_each_sym(sec, sym) {
 			char pname[MAX_NAME_LEN + 1];
@@ -550,14 +530,7 @@ static int read_symbols(struct elf *elf)
 			sym->pfunc = pfunc;
 			pfunc->cfunc = sym;
 
-			/*
-			 * Unfortunately, -fnoreorder-functions puts the child
-			 * inside the parent.  Remove the overlap so we can
-			 * have sane assumptions.
-			 *
-			 * Note that pfunc->len now no longer matches
-			 * pfunc->sym.st_size.
-			 */
+			 
 			if (sym->sec == pfunc->sec &&
 			    sym->offset >= pfunc->offset &&
 			    sym->offset + sym->len == pfunc->offset + pfunc->len) {
@@ -573,9 +546,7 @@ err:
 	return -1;
 }
 
-/*
- * @sym's idx has changed.  Update the relocs which reference it.
- */
+ 
 static int elf_update_sym_relocs(struct elf *elf, struct symbol *sym)
 {
 	struct reloc *reloc;
@@ -586,14 +557,7 @@ static int elf_update_sym_relocs(struct elf *elf, struct symbol *sym)
 	return 0;
 }
 
-/*
- * The libelf API is terrible; gelf_update_sym*() takes a data block relative
- * index value, *NOT* the symbol index. As such, iterate the data blocks and
- * adjust index until it fits.
- *
- * If no data block is found, allow adding a new data block provided the index
- * is only one past the end.
- */
+ 
 static int elf_update_symbol(struct elf *elf, struct section *symtab,
 			     struct section *symtab_shndx, struct symbol *sym)
 {
@@ -623,28 +587,24 @@ static int elf_update_symbol(struct elf *elf, struct section *symtab,
 	}
 
 	for (;;) {
-		/* get next data descriptor for the relevant sections */
+		 
 		symtab_data = elf_getdata(s, symtab_data);
 		if (t)
 			shndx_data = elf_getdata(t, shndx_data);
 
-		/* end-of-list */
+		 
 		if (!symtab_data) {
-			/*
-			 * Over-allocate to avoid O(n^2) symbol creation
-			 * behaviour.  The down side is that libelf doesn't
-			 * like this; see elf_truncate_section() for the fixup.
-			 */
+			 
 			int num = max(1U, sym->idx/3);
 			void *buf;
 
 			if (idx) {
-				/* we don't do holes in symbol tables */
+				 
 				WARN("index out of range");
 				return -1;
 			}
 
-			/* if @idx == 0, it's the next contiguous entry, create it */
+			 
 			symtab_data = elf_newdata(s);
 			if (t)
 				shndx_data = elf_newdata(t);
@@ -682,28 +642,28 @@ static int elf_update_symbol(struct elf *elf, struct section *symtab,
 			break;
 		}
 
-		/* empty blocks should not happen */
+		 
 		if (!symtab_data->d_size) {
 			WARN("zero size data");
 			return -1;
 		}
 
-		/* is this the right block? */
+		 
 		max_idx = symtab_data->d_size / entsize;
 		if (idx < max_idx)
 			break;
 
-		/* adjust index and try again */
+		 
 		idx -= max_idx;
 	}
 
-	/* something went side-ways */
+	 
 	if (idx < 0) {
 		WARN("negative index");
 		return -1;
 	}
 
-	/* setup extended section index magic and write the symbol */
+	 
 	if ((shndx >= SHN_UNDEF && shndx < SHN_LORESERVE) || is_special_shndx) {
 		sym->sym.st_shndx = shndx;
 		if (!shndx_data)
@@ -744,10 +704,7 @@ __elf_create_symbol(struct elf *elf, struct symbol *sym)
 	if (GELF_ST_BIND(sym->sym.st_info) != STB_LOCAL)
 		goto non_local;
 
-	/*
-	 * Move the first global symbol, as per sh_info, into a new, higher
-	 * symbol index. This fees up a spot for a new local symbol.
-	 */
+	 
 	first_non_local = symtab->sh.sh_info;
 	old = find_symbol_by_index(elf, first_non_local);
 	if (old) {
@@ -767,9 +724,7 @@ __elf_create_symbol(struct elf *elf, struct symbol *sym)
 		new_idx = first_non_local;
 	}
 
-	/*
-	 * Either way, we will add a LOCAL symbol.
-	 */
+	 
 	symtab->sh.sh_info += 1;
 
 non_local:
@@ -803,11 +758,11 @@ elf_create_section_symbol(struct elf *elf, struct section *sec)
 	sym->name = sec->name;
 	sym->sec = sec;
 
-	// st_name 0
+	 
 	sym->sym.st_info = GELF_ST_INFO(STB_LOCAL, STT_SECTION);
-	// st_other 0
-	// st_value 0
-	// st_size 0
+	 
+	 
+	 
 
 	sym = __elf_create_symbol(elf, sym);
 	if (sym)
@@ -899,12 +854,7 @@ struct reloc *elf_init_reloc_text_sym(struct elf *elf, struct section *sec,
 	}
 
 	if (!sym) {
-		/*
-		 * Due to how weak functions work, we must use section based
-		 * relocations. Symbol based relocations would result in the
-		 * weak and non-weak function annotations being overlaid on the
-		 * non-weak function after linking.
-		 */
+		 
 		sym = elf_create_section_symbol(elf, insn_sec);
 		if (!sym)
 			return NULL;
@@ -1020,7 +970,7 @@ struct elf *elf_open_read(const char *name, int flags)
 		cmd = ELF_C_READ_MMAP;
 	else if ((flags & O_ACCMODE) == O_RDWR)
 		cmd = ELF_C_RDWR;
-	else /* O_WRONLY */
+	else  
 		cmd = ELF_C_WRITE;
 
 	elf->elf = elf_begin(elf->fd, cmd, NULL);
@@ -1146,7 +1096,7 @@ struct section *elf_create_section(struct elf *elf, const char *name,
 	sec->sh.sh_addralign = 1;
 	sec->sh.sh_flags = SHF_ALLOC;
 
-	/* Add section name to .shstrtab (or .strtab for Clang) */
+	 
 	shstrtab = find_section_by_name(elf, ".shstrtab");
 	if (!shstrtab)
 		shstrtab = find_section_by_name(elf, ".strtab");
@@ -1240,15 +1190,7 @@ int elf_write_insn(struct elf *elf, struct section *sec,
 	return 0;
 }
 
-/*
- * When Elf_Scn::sh_size is smaller than the combined Elf_Data::d_size
- * do you:
- *
- *   A) adhere to the section header and truncate the data, or
- *   B) ignore the section header and write out all the data you've got?
- *
- * Yes, libelf sucks and we need to manually truncate if we over-allocate data.
- */
+ 
 static int elf_truncate_section(struct elf *elf, struct section *sec)
 {
 	u64 size = sec->sh.sh_size;
@@ -1263,7 +1205,7 @@ static int elf_truncate_section(struct elf *elf, struct section *sec)
 	}
 
 	for (;;) {
-		/* get next data descriptor for the relevant section */
+		 
 		data = elf_getdata(s, data);
 
 		if (!data) {
@@ -1275,7 +1217,7 @@ static int elf_truncate_section(struct elf *elf, struct section *sec)
 		}
 
 		if (truncated) {
-			/* when we remove symbols */
+			 
 			WARN("truncated; but more data\n");
 			return -1;
 		}
@@ -1302,7 +1244,7 @@ int elf_write(struct elf *elf)
 	if (opts.dryrun)
 		return 0;
 
-	/* Update changed relocation sections and section headers: */
+	 
 	list_for_each_entry(sec, &elf->sections, list) {
 		if (sec->truncate)
 			elf_truncate_section(elf, sec);
@@ -1314,7 +1256,7 @@ int elf_write(struct elf *elf)
 				return -1;
 			}
 
-			/* Note this also flags the section dirty */
+			 
 			if (!gelf_update_shdr(s, &sec->sh)) {
 				WARN_ELF("gelf_update_shdr");
 				return -1;
@@ -1324,10 +1266,10 @@ int elf_write(struct elf *elf)
 		}
 	}
 
-	/* Make sure the new section header entries get updated properly. */
+	 
 	elf_flagelf(elf->elf, ELF_C_SET, ELF_F_DIRTY);
 
-	/* Write all changes to the file. */
+	 
 	if (elf_update(elf->elf, ELF_C_WRITE) < 0) {
 		WARN_ELF("elf_update");
 		return -1;
@@ -1346,8 +1288,5 @@ void elf_close(struct elf *elf)
 	if (elf->fd > 0)
 		close(elf->fd);
 
-	/*
-	 * NOTE: All remaining allocations are leaked on purpose.  Objtool is
-	 * about to exit anyway.
-	 */
+	 
 }

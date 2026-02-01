@@ -1,25 +1,7 @@
-/* uname replacement.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-/* Specification.  */
+ 
 #include <sys/utsname.h>
 
-/* This file provides an implementation only for the native Windows API.  */
+ 
 #if defined _WIN32 && ! defined __CYGWIN__
 
 # include <stdio.h>
@@ -28,12 +10,12 @@
 # include <unistd.h>
 # include <windows.h>
 
-/* Mingw headers don't have all the platform codes.  */
+ 
 # ifndef VER_PLATFORM_WIN32_CE
 #  define VER_PLATFORM_WIN32_CE 3
 # endif
 
-/* Some headers don't have all the processor architecture codes.  */
+ 
 # ifndef PROCESSOR_ARCHITECTURE_AMD64
 #  define PROCESSOR_ARCHITECTURE_AMD64 9
 # endif
@@ -41,12 +23,12 @@
 #  define PROCESSOR_ARCHITECTURE_IA32_ON_WIN64 10
 # endif
 
-/* Mingw headers don't have the latest processor codes.  */
+ 
 # ifndef PROCESSOR_AMD_X8664
 #  define PROCESSOR_AMD_X8664 8664
 # endif
 
-/* Don't assume that UNICODE is not defined.  */
+ 
 # undef OSVERSIONINFO
 # define OSVERSIONINFO OSVERSIONINFOA
 # undef GetVersionEx
@@ -57,16 +39,15 @@ uname (struct utsname *buf)
 {
   OSVERSIONINFO version;
   OSVERSIONINFOEX versionex;
-  BOOL have_versionex; /* indicates whether versionex is filled */
+  BOOL have_versionex;  
   const char *super_version;
 
-  /* Preparation: Fill version and, if possible, also versionex.
-     But try to call GetVersionEx only once in the common case.  */
+   
   versionex.dwOSVersionInfoSize = sizeof (OSVERSIONINFOEX);
   have_versionex = GetVersionEx ((OSVERSIONINFO *) &versionex);
   if (have_versionex)
     {
-      /* We know that OSVERSIONINFO is a subset of OSVERSIONINFOEX.  */
+       
       memcpy (&version, &versionex, sizeof (OSVERSIONINFO));
     }
   else
@@ -76,24 +57,24 @@ uname (struct utsname *buf)
         abort ();
     }
 
-  /* Fill in nodename.  */
+   
   if (gethostname (buf->nodename, sizeof (buf->nodename)) < 0)
     strcpy (buf->nodename, "localhost");
 
-  /* Determine major-major Windows version.  */
+   
   if (version.dwPlatformId == VER_PLATFORM_WIN32_NT)
     {
-      /* Windows NT or newer.  */
+       
       super_version = "NT";
     }
   else if (version.dwPlatformId == VER_PLATFORM_WIN32_CE)
     {
-      /* Windows CE or Embedded CE.  */
+       
       super_version = "CE";
     }
   else if (version.dwPlatformId == VER_PLATFORM_WIN32_WINDOWS)
     {
-      /* Windows 95/98/ME.  */
+       
       switch (version.dwMinorVersion)
         {
         case 0:
@@ -113,13 +94,9 @@ uname (struct utsname *buf)
   else
     super_version = "";
 
-  /* Fill in sysname.  */
+   
 # ifdef __MINGW32__
-  /* Returns a string compatible with the MSYS uname.exe program,
-     so that no further changes are needed to GNU config.guess.
-     For example,
-       $ ./uname.exe -s      => MINGW32_NT-5.1
-   */
+   
   sprintf (buf->sysname, "MINGW32_%s-%u.%u", super_version,
            (unsigned int) version.dwMajorVersion,
            (unsigned int) version.dwMinorVersion);
@@ -127,14 +104,11 @@ uname (struct utsname *buf)
   sprintf (buf->sysname, "Windows%s", super_version);
 # endif
 
-  /* Fill in release, version.  */
-  /* The MSYS uname.exe programs uses strings from a modified Cygwin runtime:
-       $ ./uname.exe -r      => 1.0.11(0.46/3/2)
-       $ ./uname.exe -v      => 2008-08-25 23:40
-     There is no point in imitating this behaviour.  */
+   
+   
   if (version.dwPlatformId == VER_PLATFORM_WIN32_NT)
     {
-      /* Windows NT or newer.  */
+       
       struct windows_version
         {
           int major;
@@ -143,10 +117,7 @@ uname (struct utsname *buf)
           const char *name;
         };
 
-      /* Storing the workstation and server version names in a single
-         stream does not waste memory when they are the same.  These
-         macros abstract the representation.  VERSION1 is used if
-         version.wProductType does not matter, VERSION2 if it does.  */
+       
       #define VERSION1(major, minor, name) \
         { major, minor, 0, name }
       #define VERSION2(major, minor, workstation, server) \
@@ -165,8 +136,7 @@ uname (struct utsname *buf)
       const char *base;
       const struct windows_version *v = versions;
 
-      /* Find a version that matches ours.  The last element is a
-         wildcard that always ends the loop.  */
+       
       while ((v->major != version.dwMajorVersion && v->major != -1)
              || (v->minor != version.dwMinorVersion && v->minor != -1))
         v++;
@@ -185,29 +155,28 @@ uname (struct utsname *buf)
     }
   else if (version.dwPlatformId == VER_PLATFORM_WIN32_CE)
     {
-      /* Windows CE or Embedded CE.  */
+       
       sprintf (buf->release, "Windows CE %u.%u",
                (unsigned int) version.dwMajorVersion,
                (unsigned int) version.dwMinorVersion);
     }
   else
     {
-      /* Windows 95/98/ME.  */
+       
       sprintf (buf->release, "Windows %s", super_version);
     }
   strcpy (buf->version, version.szCSDVersion);
 
-  /* Fill in machine.  */
+   
   {
     SYSTEM_INFO info;
 
     GetSystemInfo (&info);
-    /* Check for Windows NT or CE, since the info.wProcessorLevel is
-       garbage on Windows 95. */
+     
     if (version.dwPlatformId == VER_PLATFORM_WIN32_NT
         || version.dwPlatformId == VER_PLATFORM_WIN32_CE)
       {
-        /* Windows NT or newer, or Windows CE or Embedded CE.  */
+         
         switch (info.wProcessorArchitecture)
           {
           case PROCESSOR_ARCHITECTURE_AMD64:
@@ -248,7 +217,7 @@ uname (struct utsname *buf)
       }
     else
       {
-        /* Windows 95/98/ME.  */
+         
         switch (info.dwProcessorType)
           {
           case PROCESSOR_AMD_X8664:

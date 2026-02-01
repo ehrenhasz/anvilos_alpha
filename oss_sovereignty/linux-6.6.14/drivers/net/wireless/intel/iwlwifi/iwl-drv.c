@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2005-2014, 2018-2021 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/completion.h>
 #include <linux/dma-mapping.h>
 #include <linux/firmware.h>
@@ -23,11 +19,7 @@
 #include "fw/api/alive.h"
 #include "fw/api/mac.h"
 
-/******************************************************************************
- *
- * module boiler plate
- *
- ******************************************************************************/
+ 
 
 #define DRV_DESCRIPTION	"Intel(R) Wireless WiFi driver for Linux"
 MODULE_DESCRIPTION(DRV_DESCRIPTION);
@@ -37,20 +29,7 @@ MODULE_LICENSE("GPL");
 static struct dentry *iwl_dbgfs_root;
 #endif
 
-/**
- * struct iwl_drv - drv common data
- * @list: list of drv structures using this opmode
- * @fw: the iwl_fw structure
- * @op_mode: the running op_mode
- * @trans: transport layer
- * @dev: for debug prints only
- * @fw_index: firmware revision to try loading
- * @firmware_name: composite filename of ucode file to load
- * @request_firmware_complete: the firmware has been obtained from user space
- * @dbgfs_drv: debugfs root directory entry
- * @dbgfs_trans: debugfs transport directory entry
- * @dbgfs_op_mode: debugfs op_mode directory entry
- */
+ 
 struct iwl_drv {
 	struct list_head list;
 	struct iwl_fw fw;
@@ -59,8 +38,8 @@ struct iwl_drv {
 	struct iwl_trans *trans;
 	struct device *dev;
 
-	int fw_index;                   /* firmware we're trying to load */
-	char firmware_name[64];         /* name of firmware file to load */
+	int fw_index;                    
+	char firmware_name[64];          
 
 	struct completion request_firmware_complete;
 
@@ -76,27 +55,24 @@ enum {
 	MVM_OP_MODE,
 };
 
-/* Protects the table contents, i.e. the ops pointer & drv list */
+ 
 static DEFINE_MUTEX(iwlwifi_opmode_table_mtx);
 static struct iwlwifi_opmode_table {
-	const char *name;			/* name: iwldvm, iwlmvm, etc */
-	const struct iwl_op_mode_ops *ops;	/* pointer to op_mode ops */
-	struct list_head drv;		/* list of devices using this op_mode */
-} iwlwifi_opmode_table[] = {		/* ops set when driver is initialized */
+	const char *name;			 
+	const struct iwl_op_mode_ops *ops;	 
+	struct list_head drv;		 
+} iwlwifi_opmode_table[] = {		 
 	[DVM_OP_MODE] = { .name = "iwldvm", .ops = NULL },
 	[MVM_OP_MODE] = { .name = "iwlmvm", .ops = NULL },
 };
 
 #define IWL_DEFAULT_SCAN_CHANNELS 40
 
-/*
- * struct fw_sec: Just for the image parsing process.
- * For the fw storage we are using struct fw_desc.
- */
+ 
 struct fw_sec {
-	const void *data;		/* the sec data */
-	size_t size;			/* section size */
-	u32 offset;			/* offset of writing in the device */
+	const void *data;		 
+	size_t size;			 
+	u32 offset;			 
 };
 
 static void iwl_free_fw_desc(struct iwl_drv *drv, struct fw_desc *desc)
@@ -132,7 +108,7 @@ static void iwl_dealloc_ucode(struct iwl_drv *drv)
 	for (i = 0; i < IWL_UCODE_TYPE_MAX; i++)
 		iwl_free_fw_img(drv, drv->fw.img + i);
 
-	/* clear the data for the aborted load case */
+	 
 	memset(&drv->fw, 0, sizeof(drv->fw));
 }
 
@@ -274,20 +250,13 @@ struct fw_img_parsing {
 	int sec_counter;
 };
 
-/*
- * struct fw_sec_parsing: to extract fw section and it's offset from tlv
- */
+ 
 struct fw_sec_parsing {
 	__le32 offset;
 	const u8 data[];
 } __packed;
 
-/**
- * struct iwl_tlv_calib_data - parse the default calib data from TLV
- *
- * @ucode_type: the uCode to which the following default calib relates.
- * @calib: default calibrations.
- */
+ 
 struct iwl_tlv_calib_data {
 	__le32 ucode_type;
 	struct iwl_tlv_calib_ctrl calib;
@@ -299,7 +268,7 @@ struct iwl_firmware_pieces {
 	u32 init_evtlog_ptr, init_evtlog_size, init_errlog_ptr;
 	u32 inst_evtlog_ptr, inst_evtlog_size, inst_errlog_ptr;
 
-	/* FW debug data parsed for driver usage */
+	 
 	bool dbg_dest_tlv_init;
 	const u8 *dbg_dest_ver;
 	union {
@@ -314,10 +283,7 @@ struct iwl_firmware_pieces {
 	size_t n_mem_tlv;
 };
 
-/*
- * These functions are just to extract uCode section data from the pieces
- * structure.
- */
+ 
 static struct fw_sec *get_sec(struct iwl_firmware_pieces *pieces,
 			      enum iwl_ucode_type type,
 			      int  sec)
@@ -382,9 +348,7 @@ static void set_sec_offset(struct iwl_firmware_pieces *pieces,
 	pieces->img[type].sec[sec].offset = offset;
 }
 
-/*
- * Gets uCode section from tlv.
- */
+ 
 static int iwl_store_ucode_sec(struct iwl_firmware_pieces *pieces,
 			       const void *data, enum iwl_ucode_type type,
 			       int size)
@@ -553,7 +517,7 @@ static int iwl_parse_v1_v2_firmware(struct iwl_drv *drv,
 		 IWL_UCODE_SERIAL(drv->fw.ucode_ver),
 		 buildstr, iwl_reduced_fw_name(drv));
 
-	/* Verify size of file vs. image size info in file's header */
+	 
 
 	if (ucode_raw->size != hdr_size +
 	    get_sec_size(pieces, IWL_UCODE_REGULAR, IWL_UCODE_SECTION_INST) +
@@ -600,15 +564,15 @@ static void iwl_drv_set_dump_exclude(struct iwl_drv *drv,
 	if (tlv_type == IWL_UCODE_TLV_SEC_TABLE_ADDR) {
 		excl = &drv->fw.dump_excl[0];
 
-		/* second time we find this, it's for WoWLAN */
+		 
 		if (excl->addr)
 			excl = &drv->fw.dump_excl_wowlan[0];
 	} else if (fw_has_capa(&drv->fw.ucode_capa,
 			       IWL_UCODE_TLV_CAPA_CNSLDTD_D3_D0_IMG)) {
-		/* IWL_UCODE_TLV_D3_KEK_KCK_ADDR is regular image */
+		 
 		excl = &drv->fw.dump_excl[0];
 	} else {
-		/* IWL_UCODE_TLV_D3_KEK_KCK_ADDR is WoWLAN image */
+		 
 		excl = &drv->fw.dump_excl_wowlan[0];
 	}
 
@@ -805,19 +769,13 @@ static int iwl_parse_tlv_firmware(struct iwl_drv *drv,
 			capa->flags |= IWL_UCODE_TLV_FLAGS_PAN;
 			break;
 		case IWL_UCODE_TLV_FLAGS:
-			/* must be at least one u32 */
+			 
 			if (tlv_len < sizeof(u32))
 				goto invalid_tlv_len;
-			/* and a proper number of u32s */
+			 
 			if (tlv_len % sizeof(u32))
 				goto invalid_tlv_len;
-			/*
-			 * This driver only reads the first u32 as
-			 * right now no more features are defined,
-			 * if that changes then either the driver
-			 * will not work with the new firmware, or
-			 * it'll not take advantage of new features.
-			 */
+			 
 			capa->flags = le32_to_cpup((const __le32 *)tlv_data);
 			break;
 		case IWL_UCODE_TLV_API_CHANGES_SET:
@@ -1146,7 +1104,7 @@ static int iwl_parse_tlv_firmware(struct iwl_drv *drv,
 				paging_mem_size;
 			break;
 		case IWL_UCODE_TLV_FW_GSCAN_CAPA:
-			/* ignored */
+			 
 			break;
 		case IWL_UCODE_TLV_FW_MEM_SEG: {
 			const struct iwl_fw_dbg_mem_seg_tlv *dbg_mem =
@@ -1372,7 +1330,7 @@ static int validate_sec_sizes(struct iwl_drv *drv,
 	IWL_DEBUG_INFO(drv, "f/w package hdr init data size = %zd\n",
 		get_sec_size(pieces, IWL_UCODE_INIT, IWL_UCODE_SECTION_DATA));
 
-	/* Verify that uCode images will fit in card's SRAM. */
+	 
 	if (get_sec_size(pieces, IWL_UCODE_REGULAR, IWL_UCODE_SECTION_INST) >
 	    cfg->max_inst_size) {
 		IWL_ERR(drv, "uCode instr len %zd too large to fit in\n",
@@ -1442,7 +1400,7 @@ _iwl_op_mode_start(struct iwl_drv *drv, struct iwlwifi_opmode_table *op)
 
 static void _iwl_op_mode_stop(struct iwl_drv *drv)
 {
-	/* op_mode can be NULL if its start failed */
+	 
 	if (drv->op_mode) {
 		iwl_op_mode_stop(drv->op_mode);
 		drv->op_mode = NULL;
@@ -1454,12 +1412,7 @@ static void _iwl_op_mode_stop(struct iwl_drv *drv)
 	}
 }
 
-/*
- * iwl_req_fw_callback - callback when firmware was loaded
- *
- * If loaded successfully, copies the firmware into buffers
- * for the card to fetch (via DMA).
- */
+ 
 static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 {
 	struct iwl_drv *drv = context;
@@ -1483,7 +1436,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 	fw->ucode_capa.n_scan_channels = IWL_DEFAULT_SCAN_CHANNELS;
 	fw->ucode_capa.num_stations = IWL_MVM_STATION_COUNT_MAX;
 	fw->ucode_capa.num_beacons = 1;
-	/* dump all fw memory areas by default */
+	 
 	fw->dbg.dump_mask = 0xffffffff;
 
 	pieces = kzalloc(sizeof(*pieces), GFP_KERNEL);
@@ -1496,13 +1449,13 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 	IWL_DEBUG_FW_INFO(drv, "Loaded firmware file '%s' (%zd bytes).\n",
 			  drv->firmware_name, ucode_raw->size);
 
-	/* Make sure that we got at least the API version number */
+	 
 	if (ucode_raw->size < 4) {
 		IWL_ERR(drv, "File size way too small!\n");
 		goto try_again;
 	}
 
-	/* Data from ucode file:  header followed by uCode images */
+	 
 	ucode = (const struct iwl_ucode_header *)ucode_raw->data;
 
 	if (ucode->ver)
@@ -1519,11 +1472,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 	else
 		api_ver = IWL_UCODE_API(drv->fw.ucode_ver);
 
-	/*
-	 * api_ver should match the api version forming part of the
-	 * firmware filename ... but we don't check for that and only rely
-	 * on the API version read from firmware header from here on forward
-	 */
+	 
 	if (api_ver < api_min || api_ver > api_max) {
 		IWL_ERR(drv,
 			"Driver unable to support your firmware API. "
@@ -1532,20 +1481,14 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 		goto try_again;
 	}
 
-	/*
-	 * In mvm uCode there is no difference between data and instructions
-	 * sections.
-	 */
+	 
 	if (fw->type == IWL_FW_DVM && validate_sec_sizes(drv, pieces,
 							 drv->trans->cfg))
 		goto try_again;
 
-	/* Allocate ucode buffers for card's bus-master loading ... */
+	 
 
-	/* Runtime instructions and 2 copies of data:
-	 * 1) unmodified from disk
-	 * 2) backup cache for save/restore during power-downs
-	 */
+	 
 	for (i = 0; i < IWL_UCODE_TYPE_MAX; i++)
 		if (iwl_alloc_ucode(drv, pieces, i))
 			goto out_free_fw;
@@ -1583,14 +1526,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 			       sizeof(drv->fw.dbg.dest_tlv->reg_ops[0]) *
 			       drv->fw.dbg.n_dest_reg);
 
-			/* In version 1 of the destination tlv, which is
-			 * relevant for internal buffer exclusively,
-			 * the base address is part of given with the length
-			 * of the buffer, and the size shift is give instead of
-			 * end shift. We now store these values in base_reg,
-			 * and end shift, and when dumping the data we'll
-			 * manipulate it for extracting both the length and
-			 * base address */
+			 
 			dest_tlv->base_reg = pieces->dbg_dest_tlv->cfg_reg;
 			dest_tlv->end_shift =
 				pieces->dbg_dest_tlv->size_shift;
@@ -1632,13 +1568,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 
 	for (i = 0; i < ARRAY_SIZE(drv->fw.dbg.trigger_tlv); i++) {
 		if (pieces->dbg_trigger_tlv[i]) {
-			/*
-			 * If the trigger isn't long enough, WARN and exit.
-			 * Someone is trying to debug something and he won't
-			 * be able to catch the bug he is trying to chase.
-			 * We'd better be noisy to be sure he knows what's
-			 * going on.
-			 */
+			 
 			if (WARN_ON(pieces->dbg_trigger_tlv_len[i] <
 				    (trigger_tlv_sz[i] +
 				     sizeof(struct iwl_fw_dbg_trigger_tlv))))
@@ -1654,17 +1584,13 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 		}
 	}
 
-	/* Now that we can no longer fail, copy information */
+	 
 
 	drv->fw.dbg.mem_tlv = pieces->dbg_mem_tlv;
 	pieces->dbg_mem_tlv = NULL;
 	drv->fw.dbg.n_mem_tlv = pieces->n_mem_tlv;
 
-	/*
-	 * The (size - 16) / 12 formula is based on the information recorded
-	 * for each event, which is of mode 1 (including timestamp) for all
-	 * new microcodes that include this information.
-	 */
+	 
 	fw->init_evtlog_ptr = pieces->init_evtlog_ptr;
 	if (pieces->init_evtlog_size)
 		fw->init_evtlog_size = (pieces->init_evtlog_size - 16)/12;
@@ -1680,16 +1606,13 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 			drv->trans->trans_cfg->base_params->max_event_log_size;
 	fw->inst_errlog_ptr = pieces->inst_errlog_ptr;
 
-	/*
-	 * figure out the offset of chain noise reset and gain commands
-	 * base on the size of standard phy calibration commands table size
-	 */
+	 
 	if (fw->ucode_capa.standard_phy_calibration_size >
 	    IWL_MAX_PHY_CALIBRATE_TBL_SIZE)
 		fw->ucode_capa.standard_phy_calibration_size =
 			IWL_MAX_STANDARD_PHY_CALIBRATE_TBL_SIZE;
 
-	/* We have our copies now, allow OS release its copies */
+	 
 	release_firmware(ucode_raw);
 
 	iwl_dbg_tlv_load_bin(drv->trans->dev, drv->trans);
@@ -1710,7 +1633,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 	IWL_INFO(drv, "loaded firmware version %s op_mode %s\n",
 		 drv->fw.fw_version, op->name);
 
-	/* add this device to the list of devices using this op_mode */
+	 
 	list_add_tail(&drv->list, &op->drv);
 
 	if (op->ops) {
@@ -1725,25 +1648,17 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
 	}
 	mutex_unlock(&iwlwifi_opmode_table_mtx);
 
-	/*
-	 * Complete the firmware request last so that
-	 * a driver unbind (stop) doesn't run while we
-	 * are doing the start() above.
-	 */
+	 
 	complete(&drv->request_firmware_complete);
 
-	/*
-	 * Load the module last so we don't block anything
-	 * else from proceeding if the module fails to load
-	 * or hangs loading.
-	 */
+	 
 	if (load_module)
 		request_module("%s", op->name);
 	failure = false;
 	goto free;
 
  try_again:
-	/* try next, if any */
+	 
 	release_firmware(ucode_raw);
 	if (iwl_request_firmware(drv, false))
 		goto out_unbind;
@@ -1754,7 +1669,7 @@ static void iwl_req_fw_callback(const struct firmware *ucode_raw, void *context)
  out_unbind:
 	complete(&drv->request_firmware_complete);
 	device_release_driver(drv->trans->dev);
-	/* drv has just been freed by the release */
+	 
 	failure = false;
  free:
 	if (failure)
@@ -1786,19 +1701,17 @@ struct iwl_drv *iwl_drv_start(struct iwl_trans *trans)
 	INIT_LIST_HEAD(&drv->list);
 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
-	/* Create the device debugfs entries. */
+	 
 	drv->dbgfs_drv = debugfs_create_dir(dev_name(trans->dev),
 					    iwl_dbgfs_root);
 
-	/* Create transport layer debugfs dir */
+	 
 	drv->trans->dbgfs_dir = debugfs_create_dir("trans", drv->dbgfs_drv);
 #endif
 
 	drv->trans->dbg.domains_bitmap = IWL_TRANS_FW_DBG_DOMAIN(drv->trans);
 	if (iwlwifi_mod_params.enable_ini != ENABLE_INI) {
-		/* We have a non-default value in the module parameter,
-		 * take its value
-		 */
+		 
 		drv->trans->dbg.domains_bitmap &= 0xffff;
 		if (iwlwifi_mod_params.enable_ini != IWL_FW_INI_PRESET_DISABLE) {
 			if (iwlwifi_mod_params.enable_ini > ENABLE_INI) {
@@ -1839,11 +1752,7 @@ void iwl_drv_stop(struct iwl_drv *drv)
 	iwl_dealloc_ucode(drv);
 
 	mutex_lock(&iwlwifi_opmode_table_mtx);
-	/*
-	 * List is empty (this item wasn't added)
-	 * when firmware loading failed -- in that
-	 * case we can't remove it from any list.
-	 */
+	 
 	if (!list_empty(&drv->list))
 		list_del(&drv->list);
 	mutex_unlock(&iwlwifi_opmode_table_mtx);
@@ -1859,14 +1768,14 @@ void iwl_drv_stop(struct iwl_drv *drv)
 	kfree(drv);
 }
 
-/* shared module parameters */
+ 
 struct iwl_mod_params iwlwifi_mod_params = {
 	.fw_restart = true,
 	.bt_coex_active = true,
 	.power_level = IWL_POWER_INDEX_1,
 	.uapsd_disable = IWL_DISABLE_UAPSD_BSS | IWL_DISABLE_UAPSD_P2P_CLIENT,
 	.enable_ini = ENABLE_INI,
-	/* the rest are 0 by default */
+	 
 };
 IWL_EXPORT_SYMBOL(iwlwifi_mod_params);
 
@@ -1882,7 +1791,7 @@ int iwl_opmode_register(const char *name, const struct iwl_op_mode_ops *ops)
 		if (strcmp(op->name, name))
 			continue;
 		op->ops = ops;
-		/* TODO: need to handle exceptional case */
+		 
 		list_for_each_entry(drv, &op->drv, list)
 			drv->op_mode = _iwl_op_mode_start(drv, op);
 
@@ -1905,7 +1814,7 @@ void iwl_opmode_deregister(const char *name)
 			continue;
 		iwlwifi_opmode_table[i].ops = NULL;
 
-		/* call the stop routine for all devices */
+		 
 		list_for_each_entry(drv, &iwlwifi_opmode_table[i].drv, list)
 			_iwl_op_mode_stop(drv);
 
@@ -1926,7 +1835,7 @@ static int __init iwl_drv_init(void)
 	pr_info(DRV_DESCRIPTION "\n");
 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
-	/* Create the root of iwlwifi debugfs subsystem. */
+	 
 	iwl_dbgfs_root = debugfs_create_dir(DRV_NAME, NULL);
 #endif
 
@@ -1983,22 +1892,7 @@ MODULE_PARM_DESC(enable_ini,
 		 "0:disable, 1-15:FW_DBG_PRESET Values, 16:enabled without preset value defined,"
 		 "Debug INI TLV FW debug infrastructure (default: 16)");
 
-/*
- * set bt_coex_active to true, uCode will do kill/defer
- * every time the priority line is asserted (BT is sending signals on the
- * priority line in the PCIx).
- * set bt_coex_active to false, uCode will ignore the BT activity and
- * perform the normal operation
- *
- * User might experience transmit issue on some platform due to WiFi/BT
- * co-exist problem. The possible behaviors are:
- *   Able to scan and finding all the available AP
- *   Not able to associate with any AP
- * On those platforms, WiFi communication can be restored by set
- * "bt_coex_active" module parameter to "false"
- *
- * default: bt_coex_active = true (BT_COEX_ENABLE)
- */
+ 
 module_param_named(bt_coex_active, iwlwifi_mod_params.bt_coex_active,
 		   bool, 0444);
 MODULE_PARM_DESC(bt_coex_active, "enable wifi/bt co-exist (default: enable)");

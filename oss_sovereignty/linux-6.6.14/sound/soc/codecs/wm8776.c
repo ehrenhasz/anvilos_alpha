@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8776.c  --  WM8776 ALSA SoC Audio driver
- *
- * Copyright 2009-12 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- *
- * TODO: Input ALC/limiter support
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -33,7 +25,7 @@ enum wm8776_chip_type {
 	WM8776,
 };
 
-/* codec private data */
+ 
 struct wm8776_priv {
 	struct regmap *regmap;
 	int sysclk[2];
@@ -220,7 +212,7 @@ static int wm8776_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* Finally, write out the values */
+	 
 	snd_soc_component_update_bits(component, reg, 0xf, iface);
 	snd_soc_component_update_bits(component, WM8776_MSTRCTRL, 0x180, master);
 
@@ -261,7 +253,7 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Set word length */
+	 
 	switch (params_width(params)) {
 	case 16:
 		iface = 0;
@@ -281,7 +273,7 @@ static int wm8776_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Only need to set MCLK/LRCLK ratio if we're master */
+	 
 	if (snd_soc_component_read(component, WM8776_MSTRCTRL) & master) {
 		for (i = 0; i < ARRAY_SIZE(mclk_ratios); i++) {
 			if (wm8776->sysclk[dai->driver->id] / params_rate(params)
@@ -344,7 +336,7 @@ static int wm8776_set_bias_level(struct snd_soc_component *component,
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
 			regcache_sync(wm8776->regmap);
 
-			/* Disable the global powerdown; DAPM does the rest */
+			 
 			snd_soc_component_update_bits(component, WM8776_PWRDOWN, 1, 0);
 		}
 
@@ -415,8 +407,7 @@ static int wm8776_probe(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/* Latch the update bits; right channel only since we always
-	 * update both. */
+	 
 	snd_soc_component_update_bits(component, WM8776_HPRVOL, 0x100, 0x100);
 	snd_soc_component_update_bits(component, WM8776_DACRVOL, 0x100, 0x100);
 
@@ -486,7 +477,7 @@ static struct spi_driver wm8776_spi_driver = {
 	},
 	.probe		= wm8776_spi_probe,
 };
-#endif /* CONFIG_SPI_MASTER */
+#endif  
 
 #if IS_ENABLED(CONFIG_I2C)
 static int wm8776_i2c_probe(struct i2c_client *i2c)

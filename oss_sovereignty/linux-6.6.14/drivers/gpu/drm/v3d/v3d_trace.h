@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (C) 2015-2018 Broadcom */
+
+ 
 
 #if !defined(_V3D_TRACE_H_) || defined(TRACE_HEADER_MULTI_READ)
 #define _V3D_TRACE_H_
@@ -289,9 +289,9 @@ TRACE_EVENT(v3d_reset_end,
 		      __entry->dev)
 );
 
-#endif /* _V3D_TRACE_H_ */
+#endif  
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH .
 #include <trace/define_trace.h>

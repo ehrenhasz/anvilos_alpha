@@ -1,21 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "sh_css_sp.h"
 
-#include "dma.h"	/* N_DMA_CHANNEL_ID */
+#include "dma.h"	 
 
 #include <type_support.h>
 #include "ia_css_binary.h"
@@ -26,18 +14,15 @@
 #include "ia_css_debug_internal.h"
 #include "sh_css_legacy.h"
 
-#include "gdc_device.h"				/* HRT_GDC_N */
+#include "gdc_device.h"				 
 
-/*#include "sp.h"*/	/* host2sp_enqueue_frame_data() */
+ 	 
 
 #include "assert_support.h"
 
-#include "ia_css_queue.h"	/* host_sp_enqueue_XXX */
-#include "ia_css_event.h"	/* ia_css_event_encode */
-/*
- * @brief Encode the information into the software-event.
- * Refer to "sw_event_public.h" for details.
- */
+#include "ia_css_queue.h"	 
+#include "ia_css_event.h"	 
+ 
 bool ia_css_event_encode(
     u8	*in,
     u8	nr,
@@ -51,19 +36,19 @@ bool ia_css_event_encode(
 	assert(out);
 	OP___assert(nr > 0 && nr <= MAX_NR_OF_PAYLOADS_PER_SW_EVENT);
 
-	/* initialize the output */
+	 
 	*out = 0;
 
-	/* get the number of bits per information */
+	 
 	nr_of_bits = sizeof(uint32_t) * 8 / nr;
 
-	/* compress the all inputs into a signle output */
+	 
 	for (i = 0; i < nr; i++) {
 		*out <<= nr_of_bits;
 		*out |= in[i];
 	}
 
-	/* get the return value */
+	 
 	ret = (nr > 0 && nr <= MAX_NR_OF_PAYLOADS_PER_SW_EVENT);
 
 	return ret;
@@ -80,13 +65,8 @@ void ia_css_event_decode(
 	ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE_PRIVATE,
 			    "ia_css_event_decode() enter:\n");
 
-	/* First decode according to the common case
-	 * In case of a PORT_EOF event we overwrite with
-	 * the specific values
-	 * This is somewhat ugly but probably somewhat efficient
-	 * (and it avoids some code duplication)
-	 */
-	payload[0] = event & 0xff;  /*event_code */
+	 
+	payload[0] = event & 0xff;   
 	payload[1] = (event >> 8) & 0xff;
 	payload[2] = (event >> 16) & 0xff;
 	payload[3] = 0;

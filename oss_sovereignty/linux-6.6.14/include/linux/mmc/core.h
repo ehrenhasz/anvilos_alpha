@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  linux/include/linux/mmc/core.h
- */
+ 
+ 
 #ifndef LINUX_MMC_CORE_H
 #define LINUX_MMC_CORE_H
 
@@ -30,29 +28,25 @@ struct mmc_command {
 #define MMC_CMD23_ARG_PACKED	((0 << 31) | (1 << 30))
 #define MMC_CMD23_ARG_TAG_REQ	(1 << 29)
 	u32			resp[4];
-	unsigned int		flags;		/* expected response type */
+	unsigned int		flags;		 
 #define MMC_RSP_PRESENT	(1 << 0)
-#define MMC_RSP_136	(1 << 1)		/* 136 bit response */
-#define MMC_RSP_CRC	(1 << 2)		/* expect valid crc */
-#define MMC_RSP_BUSY	(1 << 3)		/* card may send busy */
-#define MMC_RSP_OPCODE	(1 << 4)		/* response contains opcode */
+#define MMC_RSP_136	(1 << 1)		 
+#define MMC_RSP_CRC	(1 << 2)		 
+#define MMC_RSP_BUSY	(1 << 3)		 
+#define MMC_RSP_OPCODE	(1 << 4)		 
 
-#define MMC_CMD_MASK	(3 << 5)		/* non-SPI command type */
+#define MMC_CMD_MASK	(3 << 5)		 
 #define MMC_CMD_AC	(0 << 5)
 #define MMC_CMD_ADTC	(1 << 5)
 #define MMC_CMD_BC	(2 << 5)
 #define MMC_CMD_BCR	(3 << 5)
 
-#define MMC_RSP_SPI_S1	(1 << 7)		/* one status byte */
-#define MMC_RSP_SPI_S2	(1 << 8)		/* second byte */
-#define MMC_RSP_SPI_B4	(1 << 9)		/* four data bytes */
-#define MMC_RSP_SPI_BUSY (1 << 10)		/* card may send busy */
+#define MMC_RSP_SPI_S1	(1 << 7)		 
+#define MMC_RSP_SPI_S2	(1 << 8)		 
+#define MMC_RSP_SPI_B4	(1 << 9)		 
+#define MMC_RSP_SPI_BUSY (1 << 10)		 
 
-/*
- * These are the native response types, and correspond to valid bit
- * patterns of the above flags.  One additional valid pattern
- * is all zeros, which means we don't expect a response.
- */
+ 
 #define MMC_RSP_NONE	(0)
 #define MMC_RSP_R1	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)
 #define MMC_RSP_R1B	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE|MMC_RSP_BUSY)
@@ -63,16 +57,12 @@ struct mmc_command {
 #define MMC_RSP_R6	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)
 #define MMC_RSP_R7	(MMC_RSP_PRESENT|MMC_RSP_CRC|MMC_RSP_OPCODE)
 
-/* Can be used by core to poll after switch to MMC HS mode */
+ 
 #define MMC_RSP_R1_NO_CRC	(MMC_RSP_PRESENT|MMC_RSP_OPCODE)
 
 #define mmc_resp_type(cmd)	((cmd)->flags & (MMC_RSP_PRESENT|MMC_RSP_136|MMC_RSP_CRC|MMC_RSP_BUSY|MMC_RSP_OPCODE))
 
-/*
- * These are the SPI response types for MMC, SD, and SDIO cards.
- * Commands return R1, with maybe more info.  Zero is an error type;
- * callers must always provide the appropriate MMC_RSP_SPI_Rx flags.
- */
+ 
 #define MMC_RSP_SPI_R1	(MMC_RSP_SPI_S1)
 #define MMC_RSP_SPI_R1B	(MMC_RSP_SPI_S1|MMC_RSP_SPI_BUSY)
 #define MMC_RSP_SPI_R2	(MMC_RSP_SPI_S1|MMC_RSP_SPI_S2)
@@ -84,81 +74,63 @@ struct mmc_command {
 #define mmc_spi_resp_type(cmd)	((cmd)->flags & \
 		(MMC_RSP_SPI_S1|MMC_RSP_SPI_BUSY|MMC_RSP_SPI_S2|MMC_RSP_SPI_B4))
 
-/*
- * These are the command types.
- */
+ 
 #define mmc_cmd_type(cmd)	((cmd)->flags & MMC_CMD_MASK)
 
-	unsigned int		retries;	/* max number of retries */
-	int			error;		/* command error */
+	unsigned int		retries;	 
+	int			error;		 
 
-/*
- * Standard errno values are used for errors, but some have specific
- * meaning in the MMC layer:
- *
- * ETIMEDOUT    Card took too long to respond
- * EILSEQ       Basic format problem with the received or sent data
- *              (e.g. CRC check failed, incorrect opcode in response
- *              or bad end bit)
- * EINVAL       Request cannot be performed because of restrictions
- *              in hardware and/or the driver
- * ENOMEDIUM    Host can determine that the slot is empty and is
- *              actively failing requests
- */
+ 
 
-	unsigned int		busy_timeout;	/* busy detect timeout in ms */
-	struct mmc_data		*data;		/* data segment associated with cmd */
-	struct mmc_request	*mrq;		/* associated request */
+	unsigned int		busy_timeout;	 
+	struct mmc_data		*data;		 
+	struct mmc_request	*mrq;		 
 };
 
 struct mmc_data {
-	unsigned int		timeout_ns;	/* data timeout (in ns, max 80ms) */
-	unsigned int		timeout_clks;	/* data timeout (in clocks) */
-	unsigned int		blksz;		/* data block size */
-	unsigned int		blocks;		/* number of blocks */
-	unsigned int		blk_addr;	/* block address */
-	int			error;		/* data error */
+	unsigned int		timeout_ns;	 
+	unsigned int		timeout_clks;	 
+	unsigned int		blksz;		 
+	unsigned int		blocks;		 
+	unsigned int		blk_addr;	 
+	int			error;		 
 	unsigned int		flags;
 
 #define MMC_DATA_WRITE		BIT(8)
 #define MMC_DATA_READ		BIT(9)
-/* Extra flags used by CQE */
-#define MMC_DATA_QBR		BIT(10)		/* CQE queue barrier*/
-#define MMC_DATA_PRIO		BIT(11)		/* CQE high priority */
-#define MMC_DATA_REL_WR		BIT(12)		/* Reliable write */
-#define MMC_DATA_DAT_TAG	BIT(13)		/* Tag request */
-#define MMC_DATA_FORCED_PRG	BIT(14)		/* Forced programming */
+ 
+#define MMC_DATA_QBR		BIT(10)		 
+#define MMC_DATA_PRIO		BIT(11)		 
+#define MMC_DATA_REL_WR		BIT(12)		 
+#define MMC_DATA_DAT_TAG	BIT(13)		 
+#define MMC_DATA_FORCED_PRG	BIT(14)		 
 
 	unsigned int		bytes_xfered;
 
-	struct mmc_command	*stop;		/* stop command */
-	struct mmc_request	*mrq;		/* associated request */
+	struct mmc_command	*stop;		 
+	struct mmc_request	*mrq;		 
 
-	unsigned int		sg_len;		/* size of scatter list */
-	int			sg_count;	/* mapped sg entries */
-	struct scatterlist	*sg;		/* I/O scatter list */
-	s32			host_cookie;	/* host private data */
+	unsigned int		sg_len;		 
+	int			sg_count;	 
+	struct scatterlist	*sg;		 
+	s32			host_cookie;	 
 };
 
 struct mmc_host;
 struct mmc_request {
-	struct mmc_command	*sbc;		/* SET_BLOCK_COUNT for multiblock */
+	struct mmc_command	*sbc;		 
 	struct mmc_command	*cmd;
 	struct mmc_data		*data;
 	struct mmc_command	*stop;
 
 	struct completion	completion;
 	struct completion	cmd_completion;
-	void			(*done)(struct mmc_request *);/* completion function */
-	/*
-	 * Notify uppers layers (e.g. mmc block driver) that recovery is needed
-	 * due to an error associated with the mmc_request. Currently used only
-	 * by CQE.
-	 */
+	void			(*done)(struct mmc_request *); 
+	 
 	void			(*recovery_notifier)(struct mmc_request *);
 	struct mmc_host		*host;
 
-	/* Allow other commands during this ongoing data transfer or busy wait */
+	 
 	bool			cap_cmd_during_tfr;
 
 	int			tag;
@@ -179,4 +151,4 @@ int mmc_hw_reset(struct mmc_card *card);
 int mmc_sw_reset(struct mmc_card *card);
 void mmc_set_data_timeout(struct mmc_data *data, const struct mmc_card *card);
 
-#endif /* LINUX_MMC_CORE_H */
+#endif  

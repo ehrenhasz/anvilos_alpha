@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PTP 1588 clock support - support for timestamping in PHY devices
- *
- * Copyright (C) 2010 OMICRON electronics GmbH
- */
+
+ 
 #include <linux/errqueue.h>
 #include <linux/phy.h>
 #include <linux/ptp_classify.h>

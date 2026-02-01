@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Authors: Alina Yu <alina_yu@richtek.com>
- *          ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/gpio/consumer.h>
@@ -54,13 +49,13 @@
 #define RT9471_VCHG_MAXUV	4700000
 #define RT9471_ICHG_MAXUA	3150000
 
-/* Device ID */
+ 
 #define RT9470_DEVID		0x09
 #define RT9470D_DEVID		0x0A
 #define RT9471_DEVID		0x0D
 #define RT9471D_DEVID		0x0E
 
-/* IRQ number */
+ 
 #define RT9471_IRQ_BC12_DONE	0
 #define RT9471_IRQ_DETACH	1
 #define RT9471_IRQ_RECHG	2
@@ -232,7 +227,7 @@ static int rt9471_set_ieoc(struct rt9471_chip *chip, int microamp)
 	if (ret)
 		return ret;
 
-	/* After applying the new IEOC value, enable charge termination */
+	 
 	return regmap_field_write(chip->rm_fields[F_TE], 1);
 }
 
@@ -455,7 +450,7 @@ static irqreturn_t rt9471_detach_handler(int irqno, void *devid)
 	if (ret)
 		return IRQ_NONE;
 
-	/* Only focus on really detached */
+	 
 	if (vbus_gd)
 		return IRQ_HANDLED;
 
@@ -781,13 +776,13 @@ static const struct regmap_irq_chip rt9471_irq_chip = {
 };
 
 static const struct reg_sequence rt9471_init_regs[] = {
-	REG_SEQ0(RT9471_REG_INFO, 0x80), /* REG_RST */
-	REG_SEQ0(RT9471_REG_TOP, 0xC0), /* WDT = 0 */
-	REG_SEQ0(RT9471_REG_FUNC, 0x01), /* BATFET_DIS_DLY = 0 */
-	REG_SEQ0(RT9471_REG_IBUS, 0x0A), /* AUTO_AICR = 0 */
-	REG_SEQ0(RT9471_REG_VBUS, 0xC6), /* VAC_OVP = 14V */
-	REG_SEQ0(RT9471_REG_JEITA, 0x38), /* JEITA = 0 */
-	REG_SEQ0(RT9471_REG_DPDMDET, 0x31), /* BC12_EN = 0, DCP_DP_OPT = 1 */
+	REG_SEQ0(RT9471_REG_INFO, 0x80),  
+	REG_SEQ0(RT9471_REG_TOP, 0xC0),  
+	REG_SEQ0(RT9471_REG_FUNC, 0x01),  
+	REG_SEQ0(RT9471_REG_IBUS, 0x0A),  
+	REG_SEQ0(RT9471_REG_VBUS, 0xC6),  
+	REG_SEQ0(RT9471_REG_JEITA, 0x38),  
+	REG_SEQ0(RT9471_REG_DPDMDET, 0x31),  
 };
 
 static int rt9471_check_devinfo(struct rt9471_chip *chip)
@@ -848,7 +843,7 @@ static int rt9471_probe(struct i2c_client *i2c)
 	mutex_init(&chip->var_lock);
 	i2c_set_clientdata(i2c, chip);
 
-	/* Default pull charge enable gpio to make 'CHG_EN' by SW control only */
+	 
 	ce_gpio = devm_gpiod_get_optional(dev, "charge-enable", GPIOD_OUT_HIGH);
 	if (IS_ERR(ce_gpio))
 		return dev_err_probe(dev, PTR_ERR(ce_gpio),
@@ -893,7 +888,7 @@ static int rt9471_probe(struct i2c_client *i2c)
 	if (ret)
 		return ret;
 
-	/* After IRQs are all initialized, enable port detection by default */
+	 
 	return regmap_field_write(chip->rm_fields[F_BC12_EN], 1);
 }
 
@@ -901,10 +896,7 @@ static void rt9471_shutdown(struct i2c_client *i2c)
 {
 	struct rt9471_chip *chip = i2c_get_clientdata(i2c);
 
-	/*
-	 * There's no external reset pin. Do register reset to guarantee charger
-	 * function is normal after shutdown
-	 */
+	 
 	regmap_field_write(chip->rm_fields[F_REG_RST], 1);
 }
 

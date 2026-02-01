@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2019-2020, Mellanox Technologies Ltd. All rights reserved.
- */
+
+ 
 
 #include <uapi/rdma/rdma_netlink.h>
 #include <linux/mlx5/rsc_dump.h>

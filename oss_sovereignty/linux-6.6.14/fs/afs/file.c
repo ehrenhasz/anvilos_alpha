@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS filesystem file handling
- *
- * Copyright (C) 2002, 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -80,9 +76,7 @@ static const struct vm_operations_struct afs_vm_ops = {
 	.page_mkwrite	= afs_page_mkwrite,
 };
 
-/*
- * Discard a pin on a writeback key.
- */
+ 
 void afs_put_wb_key(struct afs_wb_key *wbk)
 {
 	if (wbk && refcount_dec_and_test(&wbk->usage)) {
@@ -91,9 +85,7 @@ void afs_put_wb_key(struct afs_wb_key *wbk)
 	}
 }
 
-/*
- * Cache key for writeback.
- */
+ 
 int afs_cache_wb_key(struct afs_vnode *vnode, struct afs_file *af)
 {
 	struct afs_wb_key *wbk, *p;
@@ -124,9 +116,7 @@ found:
 	return 0;
 }
 
-/*
- * open an AFS file or directory and attach a key to it
- */
+ 
 int afs_open(struct inode *inode, struct file *file)
 {
 	struct afs_vnode *vnode = AFS_FS_I(inode);
@@ -177,9 +167,7 @@ error:
 	return ret;
 }
 
-/*
- * release an AFS file or directory and discard its key
- */
+ 
 int afs_release(struct inode *inode, struct file *file)
 {
 	struct afs_vnode_cache_aux aux;
@@ -212,9 +200,7 @@ int afs_release(struct inode *inode, struct file *file)
 	return ret;
 }
 
-/*
- * Allocate a new read record.
- */
+ 
 struct afs_read *afs_alloc_read(gfp_t gfp)
 {
 	struct afs_read *req;
@@ -226,9 +212,7 @@ struct afs_read *afs_alloc_read(gfp_t gfp)
 	return req;
 }
 
-/*
- * Dispose of a ref to a read record.
- */
+ 
 void afs_put_read(struct afs_read *req)
 {
 	if (refcount_dec_and_test(&req->usage)) {
@@ -284,9 +268,7 @@ static const struct afs_operation_ops afs_fetch_data_operation = {
 	.put		= afs_fetch_data_put,
 };
 
-/*
- * Fetch file data from the volume.
- */
+ 
 int afs_fetch_data(struct afs_vnode *vnode, struct afs_read *req)
 {
 	struct afs_operation *op;
@@ -405,10 +387,7 @@ int afs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	return 0;
 }
 
-/*
- * Adjust the dirty region of the page on truncation or full invalidation,
- * getting rid of the markers altogether if the region is entirely invalidated.
- */
+ 
 static void afs_invalidate_dirty(struct folio *folio, size_t offset,
 				 size_t length)
 {
@@ -418,26 +397,23 @@ static void afs_invalidate_dirty(struct folio *folio, size_t offset,
 
 	priv = (unsigned long)folio_get_private(folio);
 
-	/* we clean up only if the entire page is being invalidated */
+	 
 	if (offset == 0 && length == folio_size(folio))
 		goto full_invalidate;
 
-	 /* If the page was dirtied by page_mkwrite(), the PTE stays writable
-	  * and we don't get another notification to tell us to expand it
-	  * again.
-	  */
+	  
 	if (afs_is_folio_dirty_mmapped(priv))
 		return;
 
-	/* We may need to shorten the dirty region */
+	 
 	f = afs_folio_dirty_from(folio, priv);
 	t = afs_folio_dirty_to(folio, priv);
 
 	if (t <= offset || f >= end)
-		return; /* Doesn't overlap */
+		return;  
 
 	if (f < offset && t > end)
-		return; /* Splits the dirty region - just absorb it */
+		return;  
 
 	if (f >= offset && t <= end)
 		goto undirty;
@@ -462,11 +438,7 @@ full_invalidate:
 	folio_detach_private(folio);
 }
 
-/*
- * invalidate part or all of a page
- * - release a page and clean up its private data if offset is 0 (indicating
- *   the entire page)
- */
+ 
 static void afs_invalidate_folio(struct folio *folio, size_t offset,
 			       size_t length)
 {
@@ -481,10 +453,7 @@ static void afs_invalidate_folio(struct folio *folio, size_t offset,
 	_leave("");
 }
 
-/*
- * release a page and clean up its private state if it's not busy
- * - return true if the page can now be released, false if not
- */
+ 
 static bool afs_release_folio(struct folio *folio, gfp_t gfp)
 {
 	struct afs_vnode *vnode = AFS_FS_I(folio_inode(folio));
@@ -493,8 +462,7 @@ static bool afs_release_folio(struct folio *folio, gfp_t gfp)
 	       vnode->fid.vid, vnode->fid.vnode, folio_index(folio), folio->flags,
 	       gfp);
 
-	/* deny if folio is being written to the cache and the caller hasn't
-	 * elected to wait */
+	 
 #ifdef CONFIG_AFS_FSCACHE
 	if (folio_test_fscache(folio)) {
 		if (current_is_kswapd() || !(gfp & __GFP_FS))
@@ -509,7 +477,7 @@ static bool afs_release_folio(struct folio *folio, gfp_t gfp)
 		folio_detach_private(folio);
 	}
 
-	/* Indicate that the folio can be released */
+	 
 	_leave(" = T");
 	return true;
 }
@@ -541,9 +509,7 @@ static void afs_drop_open_mmap(struct afs_vnode *vnode)
 	flush_work(&vnode->cb_work);
 }
 
-/*
- * Handle setting up a memory mapping on an AFS file.
- */
+ 
 static int afs_file_mmap(struct file *file, struct vm_area_struct *vma)
 {
 	struct afs_vnode *vnode = AFS_FS_I(file_inode(file));

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Device driver for the i2c thermostat found on the iBook G4, Albook G4
- *
- * Copyright (C) 2003, 2004 Colin Leroy, Rasmus Rohde, Benjamin Herrenschmidt
- *
- * Documentation from 115254175ADT7467_pra.pdf and 3686221171167ADT7460_b.pdf
- * https://www.onsemi.com/PowerSolutions/product.do?id=ADT7467
- * https://www.onsemi.com/PowerSolutions/product.do?id=ADT7460
- *
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -40,15 +31,15 @@
 #define AUTO_MASK    0x20
 #define INVERT_MASK  0x10
 
-static u8 TEMP_REG[3]    = {0x26, 0x25, 0x27}; /* local, sensor1, sensor2 */
-static u8 LIMIT_REG[3]   = {0x6b, 0x6a, 0x6c}; /* local, sensor1, sensor2 */
+static u8 TEMP_REG[3]    = {0x26, 0x25, 0x27};  
+static u8 LIMIT_REG[3]   = {0x6b, 0x6a, 0x6c};  
 static u8 MANUAL_MODE[2] = {0x5c, 0x5d};       
 static u8 REM_CONTROL[2] = {0x00, 0x40};
 static u8 FAN_SPEED[2]   = {0x28, 0x2a};
 static u8 FAN_SPD_SET[2] = {0x30, 0x31};
 
-static u8 default_limits_local[3] = {70, 50, 70};    /* local, sensor1, sensor2 */
-static u8 default_limits_chip[3] = {80, 65, 80};    /* local, sensor1, sensor2 */
+static u8 default_limits_local[3] = {70, 50, 70};     
+static u8 default_limits_chip[3] = {80, 65, 80};     
 static const char *sensor_location[3] = { "?", "?", "?" };
 
 static int limit_adjust;
@@ -131,12 +122,12 @@ static int read_fan_speed(struct thermostat *th, u8 addr)
 	u8 tmp[2];
 	u16 res;
 	
-	/* should start with low byte */
+	 
 	tmp[1] = read_reg(th, addr);
 	tmp[0] = read_reg(th, addr + 1);
 	
 	res = tmp[1] + (tmp[0] << 8);
-	/* "a value of 0xffff means that the fan has stopped" */
+	 
 	return (res == 0xffff ? 0 : (90000*60)/res);
 }
 
@@ -178,7 +169,7 @@ static void write_fan_speed(struct thermostat *th, int speed, int fan)
 			manual | MANUAL_MASK | th->pwm_inv[fan]);
 		write_reg(th, FAN_SPD_SET[fan], speed);
 	} else {
-		/* back to automatic */
+		 
 		if(th->type == ADT7460) {
 			manual = read_reg(th,
 				MANUAL_MODE[fan]) & (~MANUAL_MASK);
@@ -227,10 +218,10 @@ static void display_stats(struct thermostat *th)
 
 static void update_fans_speed (struct thermostat *th)
 {
-	int lastvar = 0; /* last variation, for iBook */
+	int lastvar = 0;  
 	int i = 0;
 
-	/* we don't care about local sensor, so we start at sensor 1 */
+	 
 	for (i = 1; i < 3; i++) {
 		bool started = false;
 		int fan_number = (th->type == ADT7460 && i == 2);
@@ -240,8 +231,7 @@ static void update_fans_speed (struct thermostat *th)
 			int step = (255 - fan_speed) / 7;
 			int new_speed = 0;
 
-			/* hysteresis : change fan speed only if variation is
-			 * more than two degrees */
+			 
 			if (abs(var - th->last_var[fan_number]) < 2)
 				continue;
 
@@ -261,8 +251,7 @@ static void update_fans_speed (struct thermostat *th)
 			write_both_fan_speed(th, new_speed);
 			th->last_var[fan_number] = var;
 		} else if (var < -2) {
-			/* don't stop fan if sensor2 is cold and sensor1 is not
-			 * so cold (lastvar >= -1) */
+			 
 			if (i == 2 && lastvar < -1) {
 				if (th->last_speed[fan_number] != 0)
 					if (verbose)
@@ -275,8 +264,7 @@ static void update_fans_speed (struct thermostat *th)
 		lastvar = var;
 
 		if (started)
-			return; /* we don't want to re-stop the fan
-				* if sensor1 is heating and sensor2 is not */
+			return;  
 	}
 }
 
@@ -310,11 +298,11 @@ static int monitor_task(void *arg)
 
 static void set_limit(struct thermostat *th, int i)
 {
-	/* Set sensor1 limit higher to avoid powerdowns */
+	 
 	th->limits[i] = default_limits_chip[i] + limit_adjust;
 	write_reg(th, LIMIT_REG[i], th->limits[i]);
 		
-	/* set our limits to normal */
+	 
 	th->limits[i] = default_limits_local[i] + limit_adjust;
 }
 
@@ -419,10 +407,7 @@ static void thermostat_create_files(struct thermostat *th)
 	struct device *dev;
 	int err;
 
-	/* To maintain ABI compatibility with userspace, create
-	 * the old style platform driver and attach the attributes
-	 * to it here
-	 */
+	 
 	th->pdev = of_platform_device_create(np, "temperatures", NULL);
 	if (!th->pdev)
 		return;
@@ -513,13 +498,13 @@ static int probe_thermostat(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/* force manual control to start the fan quieter */
+	 
 	if (fan_speed == -1)
 		fan_speed = 64;
 	
 	if (th->type == ADT7460) {
 		printk(KERN_INFO "adt746x: ADT7460 initializing\n");
-		/* The 7460 needs to be started explicitly */
+		 
 		write_reg(th, CONFIG_REG, 1);
 	} else
 		printk(KERN_INFO "adt746x: ADT7467 initializing\n");
@@ -535,21 +520,21 @@ static int probe_thermostat(struct i2c_client *client)
 			 th->initial_limits[2], th->limits[0], th->limits[1],
 			 th->limits[2]);
 
-	/* record invert bit status because fw can corrupt it after suspend */
+	 
 	th->pwm_inv[0] = read_reg(th, MANUAL_MODE[0]) & INVERT_MASK;
 	th->pwm_inv[1] = read_reg(th, MANUAL_MODE[1]) & INVERT_MASK;
 
-	/* be sure to really write fan speed the first time */
+	 
 	th->last_speed[0] = -2;
 	th->last_speed[1] = -2;
 	th->last_var[0] = -80;
 	th->last_var[1] = -80;
 
 	if (fan_speed != -1) {
-		/* manual mode, stop fans */
+		 
 		write_both_fan_speed(th, 0);
 	} else {
-		/* automatic mode */
+		 
 		write_both_fan_speed(th, -1);
 	}
 	

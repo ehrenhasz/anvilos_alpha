@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2019 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>
@@ -60,23 +58,14 @@ display_connector_detect(struct drm_bridge *bridge)
 	case DRM_MODE_CONNECTOR_DVII:
 	case DRM_MODE_CONNECTOR_HDMIA:
 	case DRM_MODE_CONNECTOR_HDMIB:
-		/*
-		 * For DVI and HDMI connectors a DDC probe failure indicates
-		 * that no cable is connected.
-		 */
+		 
 		return connector_status_disconnected;
 
 	case DRM_MODE_CONNECTOR_Composite:
 	case DRM_MODE_CONNECTOR_SVIDEO:
 	case DRM_MODE_CONNECTOR_VGA:
 	default:
-		/*
-		 * Composite and S-Video connectors have no other detection
-		 * mean than the HPD GPIO. For VGA connectors, even if we have
-		 * an I2C bus, we can't assume that the cable is disconnected
-		 * if drm_probe_ddc fails, as some cables don't wire the DDC
-		 * pins.
-		 */
+		 
 		return connector_status_unknown;
 	}
 }
@@ -89,13 +78,7 @@ static struct edid *display_connector_get_edid(struct drm_bridge *bridge,
 	return drm_get_edid(connector, conn->bridge.ddc);
 }
 
-/*
- * Since this bridge is tied to the connector, it acts like a passthrough,
- * so concerning the output bus formats, either pass the bus formats from the
- * previous bridge or return fallback data like done in the bridge function:
- * drm_atomic_bridge_chain_select_bus_fmts().
- * This supports negotiation if the bridge chain has all bits in place.
- */
+ 
 static u32 *display_connector_get_output_bus_fmts(struct drm_bridge *bridge,
 					struct drm_bridge_state *bridge_state,
 					struct drm_crtc_state *crtc_state,
@@ -131,13 +114,7 @@ static u32 *display_connector_get_output_bus_fmts(struct drm_bridge *bridge,
 							      num_output_fmts);
 }
 
-/*
- * Since this bridge is tied to the connector, it acts like a passthrough,
- * so concerning the input bus formats, either pass the bus formats from the
- * previous bridge or MEDIA_BUS_FMT_FIXED (like select_bus_fmt_recursive())
- * when atomic_get_input_bus_fmts is not supported.
- * This supports negotiation if the bridge chain has all bits in place.
- */
+ 
 static u32 *display_connector_get_input_bus_fmts(struct drm_bridge *bridge,
 					struct drm_bridge_state *bridge_state,
 					struct drm_crtc_state *crtc_state,
@@ -217,7 +194,7 @@ static int display_connector_probe(struct platform_device *pdev)
 
 	type = (uintptr_t)of_device_get_match_data(&pdev->dev);
 
-	/* Get the exact connector type. */
+	 
 	switch (type) {
 	case DRM_MODE_CONNECTOR_DVII: {
 		bool analog, digital;
@@ -267,16 +244,13 @@ static int display_connector_probe(struct platform_device *pdev)
 		break;
 	}
 
-	/* All the supported connector types support interlaced modes. */
+	 
 	conn->bridge.interlace_allowed = true;
 
-	/* Get the optional connector label. */
+	 
 	of_property_read_string(pdev->dev.of_node, "label", &label);
 
-	/*
-	 * Get the HPD GPIO for DVI, HDMI and DP connectors. If the GPIO can provide
-	 * edge interrupts, register an interrupt handler.
-	 */
+	 
 	if (type == DRM_MODE_CONNECTOR_DVII ||
 	    type == DRM_MODE_CONNECTOR_HDMIA ||
 	    type == DRM_MODE_CONNECTOR_DisplayPort) {
@@ -305,7 +279,7 @@ static int display_connector_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Retrieve the DDC I2C adapter for DVI, HDMI and VGA connectors. */
+	 
 	if (type == DRM_MODE_CONNECTOR_DVII ||
 	    type == DRM_MODE_CONNECTOR_HDMIA ||
 	    type == DRM_MODE_CONNECTOR_VGA) {
@@ -323,7 +297,7 @@ static int display_connector_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Get the DP PWR for DP connector. */
+	 
 	if (type == DRM_MODE_CONNECTOR_DisplayPort) {
 		int ret;
 
@@ -332,7 +306,7 @@ static int display_connector_probe(struct platform_device *pdev)
 			return dev_err_probe(&pdev->dev, ret, "failed to get DP PWR regulator\n");
 	}
 
-	/* enable DDC */
+	 
 	if (type == DRM_MODE_CONNECTOR_HDMIA) {
 		int ret;
 

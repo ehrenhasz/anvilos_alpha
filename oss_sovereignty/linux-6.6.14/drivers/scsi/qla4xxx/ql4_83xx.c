@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)   2003-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/ratelimit.h>
 
@@ -101,7 +98,7 @@ static int qla4_83xx_flash_lock(struct scsi_qla_host *ha)
 
 static void qla4_83xx_flash_unlock(struct scsi_qla_host *ha)
 {
-	/* Reading FLASH_UNLOCK register unlocks the Flash */
+	 
 	qla4_83xx_wr_reg(ha, QLA83XX_FLASH_LOCK_ID, 0xFF);
 	qla4_83xx_rd_reg(ha, QLA83XX_FLASH_UNLOCK);
 }
@@ -183,11 +180,11 @@ int qla4_83xx_lockless_flash_read_u32(struct scsi_qla_host *ha,
 		goto exit_lockless_read;
 	}
 
-	/* Check if data is spread across multiple sectors  */
+	 
 	if ((flash_offset + (u32_word_count * sizeof(uint32_t))) >
 	    (QLA83XX_FLASH_SECTOR_SIZE - 1)) {
 
-		/* Multi sector read */
+		 
 		for (i = 0; i < u32_word_count; i++) {
 			ret_val = qla4_83xx_rd_reg_indirect(ha,
 						QLA83XX_FLASH_DIRECT_DATA(addr),
@@ -204,7 +201,7 @@ int qla4_83xx_lockless_flash_read_u32(struct scsi_qla_host *ha,
 			flash_offset = flash_offset + 4;
 
 			if (flash_offset > (QLA83XX_FLASH_SECTOR_SIZE - 1)) {
-				/* This write is needed once for each sector */
+				 
 				ret_val = qla4_83xx_wr_reg_indirect(ha,
 						   QLA83XX_FLASH_DIRECT_WINDOW,
 						   addr);
@@ -217,7 +214,7 @@ int qla4_83xx_lockless_flash_read_u32(struct scsi_qla_host *ha,
 			}
 		}
 	} else {
-		/* Single sector read */
+		 
 		for (i = 0; i < u32_word_count; i++) {
 			ret_val = qla4_83xx_rd_reg_indirect(ha,
 						QLA83XX_FLASH_DIRECT_DATA(addr),
@@ -243,10 +240,7 @@ void qla4_83xx_rom_lock_recovery(struct scsi_qla_host *ha)
 	if (qla4_83xx_flash_lock(ha))
 		ql4_printk(KERN_INFO, ha, "%s: Resetting rom lock\n", __func__);
 
-	/*
-	 * We got the lock, or someone else is holding the lock
-	 * since we are restting, forcefully unlock
-	 */
+	 
 	qla4_83xx_flash_unlock(ha);
 }
 
@@ -261,17 +255,17 @@ static int qla4_83xx_lock_recovery(struct scsi_qla_host *ha)
 
 	lockid = ha->isp_ops->rd_reg_direct(ha, QLA83XX_DRV_LOCKRECOVERY);
 
-	/* Check for other Recovery in progress, go wait */
+	 
 	if ((lockid & 0x3) != 0)
 		goto exit_lock_recovery;
 
-	/* Intent to Recover */
+	 
 	ha->isp_ops->wr_reg_direct(ha, QLA83XX_DRV_LOCKRECOVERY,
 				   (ha->func_num << 2) | INTENT_TO_RECOVER);
 
 	msleep(200);
 
-	/* Check Intent to Recover is advertised */
+	 
 	lockid = ha->isp_ops->rd_reg_direct(ha, QLA83XX_DRV_LOCKRECOVERY);
 	if ((lockid & 0x3C) != (ha->func_num << 2))
 		goto exit_lock_recovery;
@@ -279,18 +273,18 @@ static int qla4_83xx_lock_recovery(struct scsi_qla_host *ha)
 	ql4_printk(KERN_INFO, ha, "%s: IDC Lock recovery initiated for func %d\n",
 		   __func__, ha->func_num);
 
-	/* Proceed to Recover */
+	 
 	ha->isp_ops->wr_reg_direct(ha, QLA83XX_DRV_LOCKRECOVERY,
 				   (ha->func_num << 2) | PROCEED_TO_RECOVER);
 
-	/* Force Unlock */
+	 
 	ha->isp_ops->wr_reg_direct(ha, QLA83XX_DRV_LOCK_ID, 0xFF);
 	ha->isp_ops->rd_reg_direct(ha, QLA83XX_DRV_UNLOCK);
 
-	/* Clear bits 0-5 in IDC_RECOVERY register*/
+	 
 	ha->isp_ops->wr_reg_direct(ha, QLA83XX_DRV_LOCKRECOVERY, 0);
 
-	/* Get lock */
+	 
 	lock = ha->isp_ops->rd_reg_direct(ha, QLA83XX_DRV_LOCK);
 	if (lock) {
 		lockid = ha->isp_ops->rd_reg_direct(ha, QLA83XX_DRV_LOCK_ID);
@@ -319,8 +313,7 @@ int qla4_83xx_drv_lock(struct scsi_qla_host *ha)
 	while (status == 0) {
 		status = qla4_83xx_rd_reg(ha, QLA83XX_DRV_LOCK);
 		if (status) {
-			/* Increment Counter (8-31) and update func_num (0-7) on
-			 * getting a successful lock  */
+			 
 			lock_id = qla4_83xx_rd_reg(ha, QLA83XX_DRV_LOCK_ID);
 			lock_id = ((lock_id + (1 << 8)) & ~0xFF) | ha->func_num;
 			qla4_83xx_wr_reg(ha, QLA83XX_DRV_LOCK_ID, lock_id);
@@ -328,8 +321,7 @@ int qla4_83xx_drv_lock(struct scsi_qla_host *ha)
 		}
 
 		if (timeout == 0)
-			/* Save counter + ID of function holding the lock for
-			 * first failure */
+			 
 			first_owner = ha->isp_ops->rd_reg_direct(ha,
 							  QLA83XX_DRV_LOCK_ID);
 
@@ -343,25 +335,20 @@ int qla4_83xx_drv_lock(struct scsi_qla_host *ha)
 				   (first_owner & 0xFF));
 
 			if (first_owner != tmo_owner) {
-				/* Some other driver got lock, OR same driver
-				 * got lock again (counter value changed), when
-				 * we were waiting for lock.
-				 * Retry for another 2 sec */
+				 
 				ql4_printk(KERN_INFO, ha, "%s: IDC lock failed for func %d\n",
 					   __func__, ha->func_num);
 				timeout = 0;
 			} else {
-				/* Same driver holding lock > 2sec.
-				 * Force Recovery */
+				 
 				ret_val = qla4_83xx_lock_recovery(ha);
 				if (ret_val == QLA_SUCCESS) {
-					/* Recovered and got lock */
+					 
 					ql4_printk(KERN_INFO, ha, "%s: IDC lock Recovery by %d successful\n",
 						   __func__, ha->func_num);
 					break;
 				}
-				/* Recovery Failed, some other function
-				 * has the lock, wait for 2secs and retry */
+				 
 				ql4_printk(KERN_INFO, ha, "%s: IDC lock Recovery by %d failed, Retrying timeout\n",
 					   __func__, ha->func_num);
 				timeout = 0;
@@ -385,7 +372,7 @@ void qla4_83xx_drv_unlock(struct scsi_qla_host *ha)
 		return;
 	}
 
-	/* Keep lock counter value, update the ha->func_num to 0xFF */
+	 
 	qla4_83xx_wr_reg(ha, QLA83XX_DRV_LOCK_ID, (id | 0xFF));
 	qla4_83xx_rd_reg(ha, QLA83XX_DRV_UNLOCK);
 }
@@ -420,7 +407,7 @@ int qla4_83xx_idc_dontreset(struct scsi_qla_host *ha)
 	return idc_ctrl & DONTRESET_BIT0;
 }
 
-/*-------------------------IDC State Machine ---------------------*/
+ 
 
 enum {
 	UNKNOWN_CLASS = 0,
@@ -447,15 +434,13 @@ int qla4_83xx_can_perform_reset(struct scsi_qla_host *ha)
 	int iscsi_present = 0;
 	int iscsi_func_low = 0;
 
-	/* Use the dev_partition register to determine the PCI function number
-	 * and then check drv_active register to see which driver is loaded */
+	 
 	dev_part1 = qla4_83xx_rd_reg(ha,
 				     ha->reg_tbl[QLA8XXX_CRB_DEV_PART_INFO]);
 	dev_part2 = qla4_83xx_rd_reg(ha, QLA83XX_CRB_DEV_PART_INFO2);
 	drv_active = qla4_83xx_rd_reg(ha, ha->reg_tbl[QLA8XXX_CRB_DRV_ACTIVE]);
 
-	/* Each function has 4 bits in dev_partition Info register,
-	 * Lower 2 bits - device type, Upper 2 bits - physical port number */
+	 
 	dev_part = dev_part1;
 	for (i = nibble = 0; i <= 15; i++, nibble++) {
 		func_nibble = dev_part & (0xF << (nibble * 4));
@@ -479,16 +464,14 @@ int qla4_83xx_can_perform_reset(struct scsi_qla_host *ha)
 			}
 		}
 
-		/* For function_num[8..15] get info from dev_part2 register */
+		 
 		if (nibble == 7) {
 			nibble = 0;
 			dev_part = dev_part2;
 		}
 	}
 
-	/* NIC, iSCSI and FCOE are the Reset owners based on order, NIC gets
-	 * precedence over iSCSI and FCOE and iSCSI over FCOE, based on drivers
-	 * present. */
+	 
 	if (!nic_present && (ha->func_num == iscsi_func_low)) {
 		DEBUG2(ql4_printk(KERN_INFO, ha,
 				  "%s: can reset - NIC not present and lower iSCSI function is %d\n",
@@ -499,12 +482,7 @@ int qla4_83xx_can_perform_reset(struct scsi_qla_host *ha)
 	return 0;
 }
 
-/**
- * qla4_83xx_need_reset_handler - Code to start reset sequence
- * @ha: pointer to adapter structure
- *
- * Note: IDC lock must be held upon entry
- **/
+ 
 void qla4_83xx_need_reset_handler(struct scsi_qla_host *ha)
 {
 	uint32_t dev_state, drv_state, drv_active;
@@ -518,8 +496,7 @@ void qla4_83xx_need_reset_handler(struct scsi_qla_host *ha)
 				  __func__));
 		qla4_8xxx_set_rst_ready(ha);
 
-		/* Non-reset owners ACK Reset and wait for device INIT state
-		 * as part of Reset Recovery by Reset Owner */
+		 
 		dev_init_timeout = jiffies + (ha->nx_dev_init_timeout * HZ);
 
 		do {
@@ -572,7 +549,7 @@ void qla4_83xx_need_reset_handler(struct scsi_qla_host *ha)
 		}
 
 		clear_bit(AF_8XXX_RST_OWNER, &ha->flags);
-		/* Start Reset Recovery */
+		 
 		qla4_8xxx_device_bootstrap(ha);
 	}
 }
@@ -597,7 +574,7 @@ void qla4_83xx_get_idc_param(struct scsi_qla_host *ha)
 			  ha->nx_reset_timeout));
 }
 
-/*-------------------------Reset Sequence Functions-----------------------*/
+ 
 
 static void qla4_83xx_dump_reset_seq_hdr(struct scsi_qla_host *ha)
 {
@@ -630,11 +607,11 @@ static int qla4_83xx_copy_bootloader(struct scsi_qla_host *ha)
 	dest = qla4_83xx_rd_reg(ha, QLA83XX_BOOTLOADER_ADDR);
 	size = qla4_83xx_rd_reg(ha, QLA83XX_BOOTLOADER_SIZE);
 
-	/* 128 bit alignment check */
+	 
 	if (size & 0xF)
 		size = (size + 16) & ~0xF;
 
-	/* 16 byte count */
+	 
 	count = size/16;
 
 	p_cache = vmalloc(size);
@@ -655,7 +632,7 @@ static int qla4_83xx_copy_bootloader(struct scsi_qla_host *ha)
 	DEBUG2(ql4_printk(KERN_INFO, ha, "%s: Read firmware from flash\n",
 			  __func__));
 
-	/* 128 bit/16 byte write to MS memory */
+	 
 	ret_val = qla4_8xxx_ms_mem_write_128b(ha, dest, (uint32_t *)p_cache,
 					      count);
 	if (ret_val == QLA_ERROR) {
@@ -694,16 +671,7 @@ static int qla4_83xx_check_cmd_peg_status(struct scsi_qla_host *ha)
 	return ret_val;
 }
 
-/**
- * qla4_83xx_poll_reg - Poll the given CRB addr for duration msecs till
- * value read ANDed with test_mask is equal to test_result.
- *
- * @ha : Pointer to adapter structure
- * @addr : CRB register address
- * @duration : Poll for total of "duration" msecs
- * @test_mask : Mask value read with "test_mask"
- * @test_result : Compare (value&test_mask) with test_result.
- **/
+ 
 static int qla4_83xx_poll_reg(struct scsi_qla_host *ha, uint32_t addr,
 			      int duration, uint32_t test_mask,
 			      uint32_t test_result)
@@ -754,7 +722,7 @@ static int qla4_83xx_reset_seq_checksum_test(struct scsi_qla_host *ha)
 	while (sum >> 16)
 		sum = (sum & 0xFFFF) +  (sum >> 16);
 
-	/* checksum of 0 indicates a valid template */
+	 
 	if (~sum) {
 		ret_val = QLA_SUCCESS;
 	} else {
@@ -766,10 +734,7 @@ static int qla4_83xx_reset_seq_checksum_test(struct scsi_qla_host *ha)
 	return ret_val;
 }
 
-/**
- * qla4_83xx_read_reset_template - Read Reset Template from Flash
- * @ha: Pointer to adapter structure
- **/
+ 
 void qla4_83xx_read_reset_template(struct scsi_qla_host *ha)
 {
 	uint8_t *p_buff;
@@ -794,7 +759,7 @@ void qla4_83xx_read_reset_template(struct scsi_qla_host *ha)
 			  "%s: Read template hdr size %d from Flash\n",
 			  __func__, tmplt_hdr_def_size));
 
-	/* Copy template header from flash */
+	 
 	ret_val = qla4_83xx_flash_read_u32(ha, addr, p_buff,
 					   tmplt_hdr_def_size);
 	if (ret_val != QLA_SUCCESS) {
@@ -806,7 +771,7 @@ void qla4_83xx_read_reset_template(struct scsi_qla_host *ha)
 	ha->reset_tmplt.hdr =
 		(struct qla4_83xx_reset_template_hdr *)ha->reset_tmplt.buff;
 
-	/* Validate the template header size and signature */
+	 
 	tmplt_hdr_size = ha->reset_tmplt.hdr->hdr_size/sizeof(uint32_t);
 	if ((tmplt_hdr_size != tmplt_hdr_def_size) ||
 	    (ha->reset_tmplt.hdr->signature != RESET_TMPLT_HDR_SIGNATURE)) {
@@ -824,7 +789,7 @@ void qla4_83xx_read_reset_template(struct scsi_qla_host *ha)
 			  "%s: Read rest of the template size %d\n",
 			  __func__, ha->reset_tmplt.hdr->size));
 
-	/* Copy rest of the template */
+	 
 	ret_val = qla4_83xx_flash_read_u32(ha, addr, p_buff,
 					   tmplt_hdr_def_size);
 	if (ret_val != QLA_SUCCESS) {
@@ -833,7 +798,7 @@ void qla4_83xx_read_reset_template(struct scsi_qla_host *ha)
 		goto exit_read_template_error;
 	}
 
-	/* Integrity check */
+	 
 	if (qla4_83xx_reset_seq_checksum_test(ha)) {
 		ql4_printk(KERN_ERR, ha, "%s: Reset Seq checksum failed!\n",
 			   __func__);
@@ -843,7 +808,7 @@ void qla4_83xx_read_reset_template(struct scsi_qla_host *ha)
 			  "%s: Reset Seq checksum passed, Get stop, start and init seq offsets\n",
 			  __func__));
 
-	/* Get STOP, START, INIT sequence offsets */
+	 
 	ha->reset_tmplt.init_offset = ha->reset_tmplt.buff +
 				      ha->reset_tmplt.hdr->init_seq_offset;
 	ha->reset_tmplt.start_offset = ha->reset_tmplt.buff +
@@ -861,13 +826,7 @@ exit_read_reset_template:
 	return;
 }
 
-/**
- * qla4_83xx_read_write_crb_reg - Read from raddr and write value to waddr.
- *
- * @ha : Pointer to adapter structure
- * @raddr : CRB address to read from
- * @waddr : CRB address to write to
- **/
+ 
 static void qla4_83xx_read_write_crb_reg(struct scsi_qla_host *ha,
 					 uint32_t raddr, uint32_t waddr)
 {
@@ -877,17 +836,7 @@ static void qla4_83xx_read_write_crb_reg(struct scsi_qla_host *ha,
 	qla4_83xx_wr_reg_indirect(ha, waddr, value);
 }
 
-/**
- * qla4_83xx_rmw_crb_reg - Read Modify Write crb register
- *
- * This function read value from raddr, AND with test_mask,
- * Shift Left,Right/OR/XOR with values RMW header and write value to waddr.
- *
- * @ha : Pointer to adapter structure
- * @raddr : CRB address to read from
- * @waddr : CRB address to write to
- * @p_rmw_hdr : header with shift/or/xor values.
- **/
+ 
 static void qla4_83xx_rmw_crb_reg(struct scsi_qla_host *ha, uint32_t raddr,
 				  uint32_t waddr,
 				  struct qla4_83xx_rmw *p_rmw_hdr)
@@ -954,8 +903,7 @@ static void qla4_83xx_poll_list(struct scsi_qla_host *ha,
 	p_poll = (struct qla4_83xx_poll *)
 		 ((char *)p_hdr + sizeof(struct qla4_83xx_reset_entry_hdr));
 
-	/* Entries start after 8 byte qla4_83xx_poll, poll header contains
-	 * the test_mask, test_value. */
+	 
 	p_entry = (struct qla4_83xx_entry *)((char *)p_poll +
 					     sizeof(struct qla4_83xx_poll));
 
@@ -1100,17 +1048,7 @@ static void qla4_83xx_template_end(struct scsi_qla_host *ha,
 	}
 }
 
-/**
- * qla4_83xx_process_reset_template - Process reset template.
- *
- * Process all entries in reset template till entry with SEQ_END opcode,
- * which indicates end of the reset template processing. Each entry has a
- * Reset Entry header, entry opcode/command, with size of the entry, number
- * of entries in sub-sequence and delay in microsecs or timeout in millisecs.
- *
- * @ha : Pointer to adapter structure
- * @p_buff : Common reset entry header.
- **/
+ 
 static void qla4_83xx_process_reset_template(struct scsi_qla_host *ha,
 					     char *p_buff)
 {
@@ -1162,7 +1100,7 @@ static void qla4_83xx_process_reset_template(struct scsi_qla_host *ha,
 			break;
 		}
 
-		/* Set pointer to next entry in the sequence. */
+		 
 		p_entry += p_hdr->size;
 	}
 
@@ -1204,11 +1142,7 @@ static int qla4_83xx_restart(struct scsi_qla_host *ha)
 
 	qla4_83xx_process_stop_seq(ha);
 
-	/*
-	 * Collect minidump.
-	 * If IDC_CTRL BIT1 is set, clear it on going to INIT state and
-	 * don't collect minidump
-	 */
+	 
 	idc_ctrl = qla4_83xx_rd_reg(ha, QLA83XX_IDC_DRV_CTRL);
 	if (idc_ctrl & GRACEFUL_RESET_BIT1) {
 		qla4_83xx_wr_reg(ha, QLA83XX_IDC_DRV_CTRL,
@@ -1257,7 +1191,7 @@ exit_start_fw:
 	return ret_val;
 }
 
-/*----------------------Interrupt Related functions ---------------------*/
+ 
 
 static void qla4_83xx_disable_iocb_intrs(struct scsi_qla_host *ha)
 {
@@ -1316,15 +1250,13 @@ void qla4_83xx_queue_mbox_cmd(struct scsi_qla_host *ha, uint32_t *mbx_cmd,
 {
 	int i;
 
-	/* Load all mailbox registers, except mailbox 0. */
+	 
 	for (i = 1; i < incount; i++)
 		writel(mbx_cmd[i], &ha->qla4_83xx_reg->mailbox_in[i]);
 
 	writel(mbx_cmd[0], &ha->qla4_83xx_reg->mailbox_in[0]);
 
-	/* Set Host Interrupt register to 1, to tell the firmware that
-	 * a mailbox command is pending. Firmware after reading the
-	 * mailbox command, clears the host interrupt register */
+	 
 	writel(HINT_MBX_INT_PENDING, &ha->qla4_83xx_reg->host_intr);
 }
 
@@ -1339,10 +1271,7 @@ void qla4_83xx_process_mbox_intr(struct scsi_qla_host *ha, int outcount)
 	}
 }
 
-/**
- * qla4_83xx_isp_reset - Resets ISP and aborts all outstanding commands.
- * @ha: pointer to host adapter structure.
- **/
+ 
 int qla4_83xx_isp_reset(struct scsi_qla_host *ha)
 {
 	int rval;
@@ -1355,8 +1284,7 @@ int qla4_83xx_isp_reset(struct scsi_qla_host *ha)
 		qla4_83xx_set_idc_dontreset(ha);
 
 	if (dev_state == QLA8XXX_DEV_READY) {
-		/* If IDC_CTRL DONTRESETHBA_BIT0 is set dont do reset
-		 * recovery */
+		 
 		if (qla4_83xx_idc_dontreset(ha) == DONTRESET_BIT0) {
 			ql4_printk(KERN_ERR, ha, "%s: Reset recovery disabled\n",
 				   __func__);
@@ -1370,20 +1298,13 @@ int qla4_83xx_isp_reset(struct scsi_qla_host *ha)
 				    QLA8XXX_DEV_NEED_RESET);
 
 	} else {
-		/* If device_state is NEED_RESET, go ahead with
-		 * Reset,irrespective of ql4xdontresethba. This is to allow a
-		 * non-reset-owner to force a reset. Non-reset-owner sets
-		 * the IDC_CTRL BIT0 to prevent Reset-owner from doing a Reset
-		 * and then forces a Reset by setting device_state to
-		 * NEED_RESET. */
+		 
 		DEBUG2(ql4_printk(KERN_INFO, ha,
 				  "%s: HW state already set to NEED_RESET\n",
 				  __func__));
 	}
 
-	/* For ISP8324 and ISP8042, Reset owner is NIC, iSCSI or FCOE based on
-	 * priority and which drivers are present. Unlike ISP8022, the function
-	 * setting NEED_RESET, may not be the Reset owner. */
+	 
 	if (qla4_83xx_can_perform_reset(ha))
 		set_bit(AF_8XXX_RST_OWNER, &ha->flags);
 
@@ -1409,7 +1330,7 @@ static void qla4_83xx_dump_pause_control_regs(struct scsi_qla_host *ha)
 	qla4_83xx_rd_reg_indirect(ha, QLA83XX_SRE_SHIM_CONTROL, &val);
 	DEBUG2(ql4_printk(KERN_INFO, ha, "SRE-Shim Ctrl:0x%x\n", val));
 
-	/* Port 0 Rx Buffer Pause Threshold Registers. */
+	 
 	DEBUG2(ql4_printk(KERN_INFO, ha,
 		"Port 0 Rx Buffer Pause Threshold Registers[TC7..TC0]:"));
 	for (i = 0; i < 8; i++) {
@@ -1420,7 +1341,7 @@ static void qla4_83xx_dump_pause_control_regs(struct scsi_qla_host *ha)
 
 	DEBUG2(pr_info("\n"));
 
-	/* Port 1 Rx Buffer Pause Threshold Registers. */
+	 
 	DEBUG2(ql4_printk(KERN_INFO, ha,
 		"Port 1 Rx Buffer Pause Threshold Registers[TC7..TC0]:"));
 	for (i = 0; i < 8; i++) {
@@ -1431,7 +1352,7 @@ static void qla4_83xx_dump_pause_control_regs(struct scsi_qla_host *ha)
 
 	DEBUG2(pr_info("\n"));
 
-	/* Port 0 RxB Traffic Class Max Cell Registers. */
+	 
 	DEBUG2(ql4_printk(KERN_INFO, ha,
 		"Port 0 RxB Traffic Class Max Cell Registers[3..0]:"));
 	for (i = 0; i < 4; i++) {
@@ -1442,7 +1363,7 @@ static void qla4_83xx_dump_pause_control_regs(struct scsi_qla_host *ha)
 
 	DEBUG2(pr_info("\n"));
 
-	/* Port 1 RxB Traffic Class Max Cell Registers. */
+	 
 	DEBUG2(ql4_printk(KERN_INFO, ha,
 		"Port 1 RxB Traffic Class Max Cell Registers[3..0]:"));
 	for (i = 0; i < 4; i++) {
@@ -1453,12 +1374,12 @@ static void qla4_83xx_dump_pause_control_regs(struct scsi_qla_host *ha)
 
 	DEBUG2(pr_info("\n"));
 
-	/* Port 0 RxB Rx Traffic Class Stats. */
+	 
 	DEBUG2(ql4_printk(KERN_INFO, ha,
 			  "Port 0 RxB Rx Traffic Class Stats [TC7..TC0]"));
 	for (i = 7; i >= 0; i--) {
 		qla4_83xx_rd_reg_indirect(ha, QLA83XX_PORT0_RXB_TC_STATS, &val);
-		val &= ~(0x7 << 29);    /* Reset bits 29 to 31 */
+		val &= ~(0x7 << 29);     
 		qla4_83xx_wr_reg_indirect(ha, QLA83XX_PORT0_RXB_TC_STATS,
 					  (val | (i << 29)));
 		qla4_83xx_rd_reg_indirect(ha, QLA83XX_PORT0_RXB_TC_STATS, &val);
@@ -1467,12 +1388,12 @@ static void qla4_83xx_dump_pause_control_regs(struct scsi_qla_host *ha)
 
 	DEBUG2(pr_info("\n"));
 
-	/* Port 1 RxB Rx Traffic Class Stats. */
+	 
 	DEBUG2(ql4_printk(KERN_INFO, ha,
 			  "Port 1 RxB Rx Traffic Class Stats [TC7..TC0]"));
 	for (i = 7; i >= 0; i--) {
 		qla4_83xx_rd_reg_indirect(ha, QLA83XX_PORT1_RXB_TC_STATS, &val);
-		val &= ~(0x7 << 29);    /* Reset bits 29 to 31 */
+		val &= ~(0x7 << 29);     
 		qla4_83xx_wr_reg_indirect(ha, QLA83XX_PORT1_RXB_TC_STATS,
 					  (val | (i << 29)));
 		qla4_83xx_rd_reg_indirect(ha, QLA83XX_PORT1_RXB_TC_STATS, &val);
@@ -1493,27 +1414,27 @@ static void __qla4_83xx_disable_pause(struct scsi_qla_host *ha)
 {
 	int i;
 
-	/* set SRE-Shim Control Register */
+	 
 	qla4_83xx_wr_reg_indirect(ha, QLA83XX_SRE_SHIM_CONTROL,
 				  QLA83XX_SET_PAUSE_VAL);
 
 	for (i = 0; i < 8; i++) {
-		/* Port 0 Rx Buffer Pause Threshold Registers. */
+		 
 		qla4_83xx_wr_reg_indirect(ha,
 				      QLA83XX_PORT0_RXB_PAUSE_THRS + (i * 0x4),
 				      QLA83XX_SET_PAUSE_VAL);
-		/* Port 1 Rx Buffer Pause Threshold Registers. */
+		 
 		qla4_83xx_wr_reg_indirect(ha,
 				      QLA83XX_PORT1_RXB_PAUSE_THRS + (i * 0x4),
 				      QLA83XX_SET_PAUSE_VAL);
 	}
 
 	for (i = 0; i < 4; i++) {
-		/* Port 0 RxB Traffic Class Max Cell Registers. */
+		 
 		qla4_83xx_wr_reg_indirect(ha,
 				     QLA83XX_PORT0_RXB_TC_MAX_CELL + (i * 0x4),
 				     QLA83XX_SET_TC_MAX_CELL_VAL);
-		/* Port 1 RxB Traffic Class Max Cell Registers. */
+		 
 		qla4_83xx_wr_reg_indirect(ha,
 				     QLA83XX_PORT1_RXB_TC_MAX_CELL + (i * 0x4),
 				     QLA83XX_SET_TC_MAX_CELL_VAL);
@@ -1527,17 +1448,10 @@ static void __qla4_83xx_disable_pause(struct scsi_qla_host *ha)
 	ql4_printk(KERN_INFO, ha, "Disabled pause frames successfully.\n");
 }
 
-/**
- * qla4_83xx_eport_init - Initialize EPort.
- * @ha: Pointer to host adapter structure.
- *
- * If EPort hardware is in reset state before disabling pause, there would be
- * serious hardware wedging issues. To prevent this perform eport init everytime
- * before disabling pause frames.
- **/
+ 
 static void qla4_83xx_eport_init(struct scsi_qla_host *ha)
 {
-	/* Clear the 8 registers */
+	 
 	qla4_83xx_wr_reg_indirect(ha, QLA83XX_RESET_REG, 0x0);
 	qla4_83xx_wr_reg_indirect(ha, QLA83XX_RESET_PORT0, 0x0);
 	qla4_83xx_wr_reg_indirect(ha, QLA83XX_RESET_PORT1, 0x0);
@@ -1547,7 +1461,7 @@ static void qla4_83xx_eport_init(struct scsi_qla_host *ha)
 	qla4_83xx_wr_reg_indirect(ha, QLA83XX_RESET_EPG_SHIM, 0x0);
 	qla4_83xx_wr_reg_indirect(ha, QLA83XX_RESET_ETHER_PCS, 0x0);
 
-	/* Write any value to Reset Control register */
+	 
 	qla4_83xx_wr_reg_indirect(ha, QLA83XX_RESET_CONTROL, 0xFF);
 
 	ql4_printk(KERN_INFO, ha, "EPORT is out of reset.\n");
@@ -1556,17 +1470,14 @@ static void qla4_83xx_eport_init(struct scsi_qla_host *ha)
 void qla4_83xx_disable_pause(struct scsi_qla_host *ha)
 {
 	ha->isp_ops->idc_lock(ha);
-	/* Before disabling pause frames, ensure that eport is not in reset */
+	 
 	qla4_83xx_eport_init(ha);
 	qla4_83xx_dump_pause_control_regs(ha);
 	__qla4_83xx_disable_pause(ha);
 	ha->isp_ops->idc_unlock(ha);
 }
 
-/**
- * qla4_83xx_is_detached - Check if we are marked invisible.
- * @ha: Pointer to host adapter structure.
- **/
+ 
 int qla4_83xx_is_detached(struct scsi_qla_host *ha)
 {
 	uint32_t drv_active;

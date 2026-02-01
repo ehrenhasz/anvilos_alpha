@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cirrus Logic CLPS711X Keypad driver
- *
- * Copyright (C) 2014 Alexander Shiyan <shc_work@mail.ru>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/mod_devicetable.h>
@@ -39,17 +35,17 @@ static void clps711x_keypad_poll(struct input_dev *input)
 	int col, row;
 
 	for (col = 0; col < CLPS711X_KEYPAD_COL_COUNT; col++) {
-		/* Assert column */
+		 
 		regmap_update_bits(priv->syscon, SYSCON_OFFSET,
 				   SYSCON1_KBDSCAN_MASK,
 				   SYSCON1_KBDSCAN(8 + col));
 
-		/* Scan rows */
+		 
 		for (row = 0; row < priv->row_count; row++) {
 			struct clps711x_gpio_data *data = &priv->gpio_data[row];
 			bool state, state1;
 
-			/* Read twice for protection against fluctuations */
+			 
 			do {
 				state = gpiod_get_value_cansleep(data->desc);
 				cond_resched();
@@ -75,7 +71,7 @@ static void clps711x_keypad_poll(struct input_dev *input)
 			}
 		}
 
-		/* Set all columns to low */
+		 
 		regmap_update_bits(priv->syscon, SYSCON_OFFSET,
 				   SYSCON1_KBDSCAN_MASK, SYSCON1_KBDSCAN(1));
 	}
@@ -147,7 +143,7 @@ static int clps711x_keypad_probe(struct platform_device *pdev)
 	if (device_property_read_bool(dev, "autorepeat"))
 		__set_bit(EV_REP, input->evbit);
 
-	/* Set all columns to low */
+	 
 	regmap_update_bits(priv->syscon, SYSCON_OFFSET, SYSCON1_KBDSCAN_MASK,
 			   SYSCON1_KBDSCAN(1));
 

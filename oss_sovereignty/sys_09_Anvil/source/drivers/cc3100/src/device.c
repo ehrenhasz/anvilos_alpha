@@ -1,53 +1,19 @@
-/*
-* device.c - CC31xx/CC32xx Host Driver Implementation
-*
-* Copyright (C) 2014 Texas Instruments Incorporated - http://www.ti.com/ 
-* 
-* 
-*  Redistribution and use in source and binary forms, with or without 
-*  modification, are permitted provided that the following conditions 
-*  are met:
-*
-*    Redistributions of source code must retain the above copyright 
-*    notice, this list of conditions and the following disclaimer.
-*
-*    Redistributions in binary form must reproduce the above copyright
-*    notice, this list of conditions and the following disclaimer in the 
-*    documentation and/or other materials provided with the   
-*    distribution.
-*
-*    Neither the name of Texas Instruments Incorporated nor the names of
-*    its contributors may be used to endorse or promote products derived
-*    from this software without specific prior written permission.
-*
-*  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS 
-*  "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT 
-*  LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
-*  A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT 
-*  OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, 
-*  SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT 
-*  LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
-*  DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
-*  THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT 
-*  (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE 
-*  OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
-*
-*/
+ 
 
 
 
-/*****************************************************************************/
-/* Include files                                                             */
-/*****************************************************************************/
+ 
+ 
+ 
 #include "simplelink.h"
 #include "protocol.h"
 #include "flowcont.h"
 #include "driver.h"
 
 
-/*****************************************************************************/
-/* Internal functions                                                        */
-/*****************************************************************************/
+ 
+ 
+ 
 
 const _i8 StartResponseLUT[8] = 
 {
@@ -68,15 +34,15 @@ _i16 _sl_GetStartResponseConvert(_u32 Status)
     return (_i16)StartResponseLUT[Status & 0x7];
 }
 
-/*****************************************************************************/
-/* API Functions                                                             */
-/*****************************************************************************/
+ 
+ 
+ 
 
 
 
-/*****************************************************************************/
-/* sl_Task                                                                   */
-/*****************************************************************************/
+ 
+ 
+ 
 #if _SL_INCLUDE_FUNC(sl_Task)
 void sl_Task(void)
 {
@@ -86,22 +52,22 @@ void sl_Task(void)
 }
 #endif
 
-/*****************************************************************************/
-/* sl_Start                                                                  */
-/*****************************************************************************/
+ 
+ 
+ 
 #if _SL_INCLUDE_FUNC(sl_Start)
 _i16 sl_Start(const void* pIfHdl, _i8*  pDevName, const P_INIT_CALLBACK pInitCallBack)
 {
     _i16 ObjIdx = MAX_CONCURRENT_ACTIONS;
     InitComplete_t  AsyncRsp;
 
-    /* Perform any preprocessing before enable networking services */
+     
     sl_DeviceEnablePreamble();
 
-    /* ControlBlock init */
+     
     _SlDrvDriverCBInit();
 
-    /* open the interface: usually SPI or UART */
+     
     if (NULL == pIfHdl)
     {
         g_pCB->FD = sl_IfOpen((void *)pDevName, 0);
@@ -131,7 +97,7 @@ _i16 sl_Start(const void* pIfHdl, _i8*  pDevName, const P_INIT_CALLBACK pInitCal
         {
             _SlDrvSyncObjWaitForever(&g_pCB->ObjPool[ObjIdx].SyncObj);
 
-            /* release Pool Object */
+             
             _SlDrvReleasePoolObj(g_pCB->FunctionParams.AsyncExt.ActionIndex);
 	         return _sl_GetStartResponseConvert(AsyncRsp.Status);
         }
@@ -144,10 +110,7 @@ _i16 sl_Start(const void* pIfHdl, _i8*  pDevName, const P_INIT_CALLBACK pInitCal
 }
 #endif
 
-/***************************************************************************
-_sl_HandleAsync_InitComplete - handles init complete signalling to 
-a waiting object
-****************************************************************************/
+ 
 void _sl_HandleAsync_InitComplete(void *pVoidBuf)
 {
     InitComplete_t     *pMsgArgs   = (InitComplete_t *)_SL_RESP_ARGS_START(pVoidBuf);
@@ -173,10 +136,7 @@ void _sl_HandleAsync_InitComplete(void *pVoidBuf)
 
 }
 
-/***************************************************************************
-_sl_HandleAsync_Stop - handles stop signalling to 
-a waiting object
-****************************************************************************/
+ 
 void _sl_HandleAsync_Stop(void *pVoidBuf)
 {
     _BasicResponse_t     *pMsgArgs   = (_BasicResponse_t *)_SL_RESP_ARGS_START(pVoidBuf);
@@ -194,9 +154,7 @@ void _sl_HandleAsync_Stop(void *pVoidBuf)
 }
 
 
-/*****************************************************************************
-sl_stop
-******************************************************************************/
+ 
 typedef union
 {
     _DevStopCommand_t  Cmd;
@@ -217,7 +175,7 @@ _i16 sl_Stop(const _u16 timeout)
     _SlStopMsg_u      Msg;
     _BasicResponse_t  AsyncRsp;
     _i8 ObjIdx = MAX_CONCURRENT_ACTIONS;
-    /* if timeout is 0 the shutdown is forced immediately */
+     
     if( 0 == timeout ) 
     {
         sl_IfRegIntHdlr(NULL, NULL);
@@ -227,7 +185,7 @@ _i16 sl_Stop(const _u16 timeout)
     }
     else
     {
-        /* let the device make the shutdown using the defined timeout */
+         
         Msg.Cmd.Timeout = timeout;
 
       ObjIdx = _SlDrvProtectAsyncRespSetting((_u8 *)&AsyncRsp, START_STOP_ID, SL_MAX_SOCKETS);
@@ -257,9 +215,7 @@ _i16 sl_Stop(const _u16 timeout)
 #endif
 
 
-/*****************************************************************************
-sl_EventMaskSet
-*****************************************************************************/
+ 
 typedef union
 {
     _DevMaskEventSetCommand_t	    Cmd;
@@ -292,9 +248,7 @@ _i16 sl_EventMaskSet(const _u8 EventClass ,const _u32 Mask)
 }
 #endif
 
-/******************************************************************************
-sl_EventMaskGet
-******************************************************************************/
+ 
 typedef union
 {
     _DevMaskEventGetCommand_t	    Cmd;
@@ -328,9 +282,7 @@ _i16 sl_EventMaskGet(const _u8 EventClass,_u32 *pMask)
 
 
 
-/******************************************************************************
-sl_DevGet
-******************************************************************************/
+ 
 
 typedef union
 {
@@ -396,9 +348,7 @@ _i32 sl_DevGet(const _u8 DeviceGetId,_u8 *pOption,_u8 *pConfigLen, _u8 *pValues)
 }
 #endif
 
-/******************************************************************************
-sl_DevSet
-******************************************************************************/
+ 
 typedef union
 {
     _DeviceSetGet_t    Cmd;
@@ -438,9 +388,7 @@ _i32 sl_DevSet(const _u8 DeviceSetId ,const _u8 Option,const _u8 ConfigLen,const
 #endif
 
 
-/******************************************************************************
-_SlDrvDeviceEventHandler - handles internally device async events
-******************************************************************************/
+ 
 void _SlDrvDeviceEventHandler(void* pArgs)
 {
     _SlResponseHeader_t      *pHdr       = (_SlResponseHeader_t *)pArgs;
@@ -485,9 +433,7 @@ void _SlDrvDeviceEventHandler(void* pArgs)
 }
 
 
-/******************************************************************************
-sl_UartSetMode 
-******************************************************************************/
+ 
 #ifdef SL_IF_TYPE_UART
 typedef union
 {
@@ -517,32 +463,32 @@ _i16 sl_UartSetMode(const SlUartIfParams_t* pUartParams)
 
     VERIFY_RET_OK(_SlDrvCmdOp((_SlCmdCtrl_t *)&_SlUartSetModeCmdCtrl, &Msg, NULL));
 
-    /* cmd response OK, we can continue with the handshake */
+     
     if (SL_RET_CODE_OK == Msg.Rsp.status)
     {
         sl_IfMaskIntHdlr();
 
-        /* Close the comm port */
+         
         sl_IfClose(g_pCB->FD);
 
-        /* Re-open the comm port */
+         
         sl_IfOpen((void * )pUartParams, UART_IF_OPEN_FLAG_RE_OPEN);
 
         sl_IfUnMaskIntHdlr();
 
-        /* send the magic code and wait for the response */
+         
         sl_IfWrite(g_pCB->FD, (_u8* )&magicCode, 4);
 
         magicCode = UART_SET_MODE_MAGIC_CODE;
         sl_IfWrite(g_pCB->FD, (_u8* )&magicCode, 4);
 
-        /* clear magic code */
+         
         magicCode = 0;
 
-        /* wait (blocking) till the magic code to be returned from device */
+         
         sl_IfRead(g_pCB->FD, (_u8* )&magicCode, 4);
 
-        /* check for the received magic code matching */
+         
         if (UART_SET_MODE_MAGIC_CODE != magicCode)
         {
             _SL_ASSERT(0);

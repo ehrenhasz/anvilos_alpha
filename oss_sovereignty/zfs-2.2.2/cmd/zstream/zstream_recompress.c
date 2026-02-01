@@ -1,32 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright 2022 Axcient.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
 
-/*
- * Copyright (c) 2022 by Delphix. All rights reserved.
- */
+ 
 
 #include <err.h>
 #include <stdio.h>
@@ -105,7 +81,7 @@ zstream_do_recompress(int argc, char *argv[])
 	} else if (0 == strcmp(argv[0], "inherit") ||
 	    0 == strcmp(argv[0], "empty") ||
 	    0 == strcmp(argv[0], "on")) {
-		// Fall through to invalid compression type case
+		
 	} else {
 		for (int i = 0; i < ZIO_COMPRESS_FUNCTIONS; i++) {
 			if (0 == strcmp(zio_compress_table[i].ci_name,
@@ -144,9 +120,7 @@ zstream_do_recompress(int argc, char *argv[])
 		struct drr_write *drrw;
 		uint64_t payload_size = 0;
 
-		/*
-		 * We need to regenerate the checksum.
-		 */
+		 
 		if (drr->drr_type != DRR_BEGIN) {
 			memset(&drr->drr_u.drr_checksum.drr_checksum, 0,
 			    sizeof (drr->drr_u.drr_checksum.drr_checksum));
@@ -179,18 +153,10 @@ zstream_do_recompress(int argc, char *argv[])
 		case DRR_END:
 		{
 			struct drr_end *drre = &drr->drr_u.drr_end;
-			/*
-			 * We would prefer to just check --begin == 0, but
-			 * replication streams have an end of stream END
-			 * record, so we must avoid tripping it.
-			 */
+			 
 			VERIFY3B(seen, ==, B_TRUE);
 			begin--;
-			/*
-			 * Use the recalculated checksum, unless this is
-			 * the END record of a stream package, which has
-			 * no checksum.
-			 */
+			 
 			if (!ZIO_CHECKSUM_IS_ZERO(&drre->drr_checksum))
 				drre->drr_checksum = stream_cksum;
 			break;
@@ -229,13 +195,7 @@ zstream_do_recompress(int argc, char *argv[])
 			VERIFY3S(begin, ==, 1);
 			drrw = &thedrr.drr_u.drr_write;
 			payload_size = DRR_WRITE_PAYLOAD_SIZE(drrw);
-			/*
-			 * In order to recompress an encrypted block, you have
-			 * to decrypt, decompress, recompress, and
-			 * re-encrypt. That can be a future enhancement (along
-			 * with decryption or re-encryption), but for now we
-			 * skip encrypted blocks.
-			 */
+			 
 			boolean_t encrypted = B_FALSE;
 			for (int i = 0; i < ZIO_DATA_SALT_LEN; i++) {
 				if (drrw->drr_salt[i] != 0) {
@@ -256,7 +216,7 @@ zstream_do_recompress(int argc, char *argv[])
 			zio_compress_info_t *dinfo =
 			    &zio_compress_table[drrw->drr_compressiontype];
 
-			/* Set up buffers to minimize memcpys */
+			 
 			char *cbuf, *dbuf;
 			if (cinfo->ci_compress == NULL)
 				dbuf = buf;
@@ -268,7 +228,7 @@ zstream_do_recompress(int argc, char *argv[])
 			else
 				cbuf = safe_calloc(payload_size);
 
-			/* Read and decompress the payload */
+			 
 			(void) sfread(cbuf, payload_size, stdin);
 			if (dinfo->ci_decompress != NULL) {
 				if (0 != dinfo->ci_decompress(cbuf, dbuf,
@@ -285,7 +245,7 @@ zstream_do_recompress(int argc, char *argv[])
 				free(cbuf);
 			}
 
-			/* Recompress the payload */
+			 
 			if (cinfo->ci_compress != NULL) {
 				payload_size = P2ROUNDUP(cinfo->ci_compress(
 				    dbuf, buf, drrw->drr_logical_size,
@@ -329,7 +289,7 @@ zstream_do_recompress(int argc, char *argv[])
 		default:
 			(void) fprintf(stderr, "INVALID record type 0x%x\n",
 			    drr->drr_type);
-			/* should never happen, so assert */
+			 
 			assert(B_FALSE);
 		}
 
@@ -343,11 +303,7 @@ zstream_do_recompress(int argc, char *argv[])
 			exit(1);
 		}
 
-		/*
-		 * We need to recalculate the checksum, and it needs to be
-		 * initially zero to do that.  BEGIN records don't have
-		 * a checksum.
-		 */
+		 
 		if (drr->drr_type != DRR_BEGIN) {
 			memset(&drr->drr_u.drr_checksum.drr_checksum, 0,
 			    sizeof (drr->drr_u.drr_checksum.drr_checksum));
@@ -356,14 +312,7 @@ zstream_do_recompress(int argc, char *argv[])
 		    &stream_cksum, STDOUT_FILENO) != 0)
 			break;
 		if (drr->drr_type == DRR_END) {
-			/*
-			 * Typically the END record is either the last
-			 * thing in the stream, or it is followed
-			 * by a BEGIN record (which also zeros the checksum).
-			 * However, a stream package ends with two END
-			 * records.  The last END record's checksum starts
-			 * from zero.
-			 */
+			 
 			ZIO_SET_CHECKSUM(&stream_cksum, 0, 0, 0, 0);
 		}
 	}

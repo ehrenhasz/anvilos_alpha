@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas Solutions Highlander FPGA I2C/SMBus support.
- *
- * Supported devices: R0P7780LC0011RL, R0P7785LC0011RL
- *
- * Copyright (C) 2008  Paul Mundt
- * Copyright (C) 2008  Renesas Solutions Corp.
- * Copyright (C) 2008  Atom Create Engineering Co., Ltd.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/interrupt.h>
 #include <linux/i2c.h>
@@ -176,11 +168,7 @@ static void highlander_i2c_poll(struct highlander_i2c_dev *dev)
 	for (;;) {
 		smcr = ioread16(dev->base + SMCR);
 
-		/*
-		 * Don't bother checking ACKE here, this and the reset
-		 * are handled in highlander_i2c_wait_xfer_done() when
-		 * waiting for the ACK.
-		 */
+		 
 
 		if (smcr & SMCR_IRIC)
 			return;
@@ -200,7 +188,7 @@ static inline int highlander_i2c_wait_xfer_done(struct highlander_i2c_dev *dev)
 		wait_for_completion_timeout(&dev->cmd_complete,
 					  msecs_to_jiffies(iic_timeout));
 	else
-		/* busy looping, the IRQ of champions */
+		 
 		highlander_i2c_poll(dev);
 
 	return highlander_i2c_wait_for_ack(dev);
@@ -221,18 +209,7 @@ static int highlander_i2c_read(struct highlander_i2c_dev *dev)
 		return -EAGAIN;
 	}
 
-	/*
-	 * The R0P7780LC0011RL FPGA needs a significant delay between
-	 * data read cycles, otherwise the transceiver gets confused and
-	 * garbage is returned when the read is subsequently aborted.
-	 *
-	 * It is not sufficient to wait for BBSY.
-	 *
-	 * While this generally only applies to the older SH7780-based
-	 * Highlanders, the same issue can be observed on SH7785 ones,
-	 * albeit less frequently. SH7780-based Highlanders may need
-	 * this to be as high as 1000 ms.
-	 */
+	 
 	if (iic_read_delay && time_before(jiffies, dev->last_read_time +
 				 msecs_to_jiffies(iic_read_delay)))
 		msleep(jiffies_to_msecs((dev->last_read_time +
@@ -285,9 +262,7 @@ static int highlander_i2c_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 	dev_dbg(dev->dev, "addr %04x, command %02x, read_write %d, size %d\n",
 		addr, command, read_write, size);
 
-	/*
-	 * Set up the buffer and transfer size
-	 */
+	 
 	switch (size) {
 	case I2C_SMBUS_BYTE_DATA:
 		dev->buf = &data->byte;
@@ -302,15 +277,13 @@ static int highlander_i2c_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 		return -EINVAL;
 	}
 
-	/*
-	 * Encode the mode setting
-	 */
+	 
 	tmp = ioread16(dev->base + SMMR);
 	tmp &= ~(SMMR_MODE0 | SMMR_MODE1);
 
 	switch (dev->buf_len) {
 	case 1:
-		/* default */
+		 
 		break;
 	case 8:
 		tmp |= SMMR_MODE0;
@@ -328,10 +301,10 @@ static int highlander_i2c_smbus_xfer(struct i2c_adapter *adap, u16 addr,
 
 	iowrite16(tmp, dev->base + SMMR);
 
-	/* Ensure we're in a sane state */
+	 
 	highlander_i2c_done(dev);
 
-	/* Set slave address */
+	 
 	iowrite16((addr << 1) | read_write, dev->base + SMSMADR);
 
 	highlander_i2c_command(dev, command, dev->buf_len);
@@ -394,7 +367,7 @@ static int highlander_i2c_probe(struct platform_device *pdev)
 		highlander_i2c_irq_disable(dev);
 	}
 
-	dev->last_read_time = jiffies;	/* initial read jiffies */
+	dev->last_read_time = jiffies;	 
 
 	highlander_i2c_setup(dev);
 
@@ -407,9 +380,7 @@ static int highlander_i2c_probe(struct platform_device *pdev)
 	adap->dev.parent = &pdev->dev;
 	adap->nr = pdev->id;
 
-	/*
-	 * Reset the adapter
-	 */
+	 
 	ret = highlander_i2c_reset(dev);
 	if (unlikely(ret)) {
 		dev_err(&pdev->dev, "controller didn't come up\n");

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for the ACCES 104-IDIO-16 family
- * Copyright (C) 2015 William Breathitt Gray
- *
- * This driver supports the following ACCES devices: 104-IDIO-16,
- * 104-IDIO-16E, 104-IDO-16, 104-IDIO-8, 104-IDIO-8E, and 104-IDO-8.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -67,7 +61,7 @@ static const struct regmap_config idio_16_regmap_config = {
 	.use_raw_spinlock = true,
 };
 
-/* Only input lines (GPIO 16-31) support interrupts */
+ 
 #define IDIO_16_REGMAP_IRQ(_id)						\
 	[16 + _id] = {							\
 		.mask = BIT(_id),					\
@@ -75,12 +69,12 @@ static const struct regmap_config idio_16_regmap_config = {
 	}
 
 static const struct regmap_irq idio_16_regmap_irqs[] = {
-	IDIO_16_REGMAP_IRQ(0), IDIO_16_REGMAP_IRQ(1), IDIO_16_REGMAP_IRQ(2), /* 0-2 */
-	IDIO_16_REGMAP_IRQ(3), IDIO_16_REGMAP_IRQ(4), IDIO_16_REGMAP_IRQ(5), /* 3-5 */
-	IDIO_16_REGMAP_IRQ(6), IDIO_16_REGMAP_IRQ(7), IDIO_16_REGMAP_IRQ(8), /* 6-8 */
-	IDIO_16_REGMAP_IRQ(9), IDIO_16_REGMAP_IRQ(10), IDIO_16_REGMAP_IRQ(11), /* 9-11 */
-	IDIO_16_REGMAP_IRQ(12), IDIO_16_REGMAP_IRQ(13), IDIO_16_REGMAP_IRQ(14), /* 12-14 */
-	IDIO_16_REGMAP_IRQ(15), /* 15 */
+	IDIO_16_REGMAP_IRQ(0), IDIO_16_REGMAP_IRQ(1), IDIO_16_REGMAP_IRQ(2),  
+	IDIO_16_REGMAP_IRQ(3), IDIO_16_REGMAP_IRQ(4), IDIO_16_REGMAP_IRQ(5),  
+	IDIO_16_REGMAP_IRQ(6), IDIO_16_REGMAP_IRQ(7), IDIO_16_REGMAP_IRQ(8),  
+	IDIO_16_REGMAP_IRQ(9), IDIO_16_REGMAP_IRQ(10), IDIO_16_REGMAP_IRQ(11),  
+	IDIO_16_REGMAP_IRQ(12), IDIO_16_REGMAP_IRQ(13), IDIO_16_REGMAP_IRQ(14),  
+	IDIO_16_REGMAP_IRQ(15),  
 };
 
 static int idio_16_probe(struct device *dev, unsigned int id)

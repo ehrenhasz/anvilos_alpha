@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Synopsys G210 Test Chip driver
- *
- * Copyright (C) 2015-2016 Synopsys, Inc. (www.synopsys.com)
- *
- * Authors: Joao Pinto <jpinto@synopsys.com>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -16,12 +10,7 @@
 #include "ufshci-dwc.h"
 #include "tc-dwc-g210.h"
 
-/**
- * tc_dwc_g210_setup_40bit_rmmi() - configure 40-bit RMMI.
- * @hba: Pointer to drivers structure
- *
- * Return: 0 on success or non-zero value on failure.
- */
+ 
 static int tc_dwc_g210_setup_40bit_rmmi(struct ufs_hba *hba)
 {
 	static const struct ufshcd_dme_attr_val setup_attrs[] = {
@@ -79,12 +68,7 @@ static int tc_dwc_g210_setup_40bit_rmmi(struct ufs_hba *hba)
 						ARRAY_SIZE(setup_attrs));
 }
 
-/**
- * tc_dwc_g210_setup_20bit_rmmi_lane0() - configure 20-bit RMMI Lane 0.
- * @hba: Pointer to drivers structure
- *
- * Return: 0 on success or non-zero value on failure.
- */
+ 
 static int tc_dwc_g210_setup_20bit_rmmi_lane0(struct ufs_hba *hba)
 {
 	static const struct ufshcd_dme_attr_val setup_attrs[] = {
@@ -131,12 +115,7 @@ static int tc_dwc_g210_setup_20bit_rmmi_lane0(struct ufs_hba *hba)
 						ARRAY_SIZE(setup_attrs));
 }
 
-/**
- * tc_dwc_g210_setup_20bit_rmmi_lane1() - configure 20-bit RMMI Lane 1.
- * @hba: Pointer to drivers structure
- *
- * Return: 0 on success or non-zero value on failure.
- */
+ 
 static int tc_dwc_g210_setup_20bit_rmmi_lane1(struct ufs_hba *hba)
 {
 	int connected_rx_lanes = 0;
@@ -183,7 +162,7 @@ static int tc_dwc_g210_setup_20bit_rmmi_lane1(struct ufs_hba *hba)
 								DME_LOCAL },
 	};
 
-	/* Get the available lane count */
+	 
 	ufshcd_dme_get(hba, UIC_ARG_MIB(PA_AVAILRXDATALANES),
 			&connected_rx_lanes);
 	ufshcd_dme_get(hba, UIC_ARG_MIB(PA_AVAILTXDATALANES),
@@ -207,12 +186,7 @@ out:
 	return ret;
 }
 
-/**
- * tc_dwc_g210_setup_20bit_rmmi() - configure 20-bit RMMI.
- * @hba: Pointer to drivers structure
- *
- * Return: 0 on success or non-zero value on failure.
- */
+ 
 static int tc_dwc_g210_setup_20bit_rmmi(struct ufs_hba *hba)
 {
 	int ret = 0;
@@ -232,12 +206,12 @@ static int tc_dwc_g210_setup_20bit_rmmi(struct ufs_hba *hba)
 	if (ret)
 		goto out;
 
-	/* Lane 0 configuration*/
+	 
 	ret = tc_dwc_g210_setup_20bit_rmmi_lane0(hba);
 	if (ret)
 		goto out;
 
-	/* Lane 1 configuration*/
+	 
 	ret = tc_dwc_g210_setup_20bit_rmmi_lane1(hba);
 	if (ret)
 		goto out;
@@ -246,12 +220,7 @@ out:
 	return ret;
 }
 
-/**
- * tc_dwc_g210_config_40_bit() - configure 40-bit TC specific attributes.
- * @hba: Pointer to drivers structure
- *
- * Return: 0 on success non-zero value on failure.
- */
+ 
 int tc_dwc_g210_config_40_bit(struct ufs_hba *hba)
 {
 	int ret = 0;
@@ -263,12 +232,12 @@ int tc_dwc_g210_config_40_bit(struct ufs_hba *hba)
 		goto out;
 	}
 
-	/* To write Shadow register bank to effective configuration block */
+	 
 	ret = ufshcd_dme_set(hba, UIC_ARG_MIB(VS_MPHYCFGUPDT), 0x01);
 	if (ret)
 		goto out;
 
-	/* To configure Debug OMC */
+	 
 	ret = ufshcd_dme_set(hba, UIC_ARG_MIB(VS_DEBUGOMC), 0x01);
 
 out:
@@ -276,12 +245,7 @@ out:
 }
 EXPORT_SYMBOL(tc_dwc_g210_config_40_bit);
 
-/**
- * tc_dwc_g210_config_20_bit() - configure 20-bit TC specific attributes.
- * @hba: Pointer to drivers structure
- *
- * Return: 0 on success non-zero value on failure.
- */
+ 
 int tc_dwc_g210_config_20_bit(struct ufs_hba *hba)
 {
 	int ret = 0;
@@ -293,12 +257,12 @@ int tc_dwc_g210_config_20_bit(struct ufs_hba *hba)
 		goto out;
 	}
 
-	/* To write Shadow register bank to effective configuration block */
+	 
 	ret = ufshcd_dme_set(hba, UIC_ARG_MIB(VS_MPHYCFGUPDT), 0x01);
 	if (ret)
 		goto out;
 
-	/* To configure Debug OMC */
+	 
 	ret = ufshcd_dme_set(hba, UIC_ARG_MIB(VS_DEBUGOMC), 0x01);
 
 out:

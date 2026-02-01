@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/module.h>
@@ -64,14 +62,7 @@
 
 static const struct super_operations btrfs_super_ops;
 
-/*
- * Types for mounting the default subvolume and a subvolume explicitly
- * requested by subvol=/path. That way the callchain is straightforward and we
- * don't have to play tricks with the mount options and recursive calls to
- * btrfs_mount.
- *
- * The new btrfs_root_fs_type also servers as a tag for the bdev_holder.
- */
+ 
 static struct file_system_type btrfs_fs_type;
 static struct file_system_type btrfs_root_fs_type;
 
@@ -119,7 +110,7 @@ enum {
 	Opt_treelog, Opt_notreelog,
 	Opt_user_subvol_rm_allowed,
 
-	/* Rescue options */
+	 
 	Opt_rescue,
 	Opt_usebackuproot,
 	Opt_nologreplay,
@@ -127,11 +118,11 @@ enum {
 	Opt_ignoredatacsums,
 	Opt_rescue_all,
 
-	/* Deprecated options */
+	 
 	Opt_recovery,
 	Opt_inode_cache, Opt_noinode_cache,
 
-	/* Debugging options */
+	 
 	Opt_check_integrity,
 	Opt_check_integrity_including_extent_data,
 	Opt_check_integrity_print_mask,
@@ -192,17 +183,17 @@ static const match_table_t tokens = {
 	{Opt_notreelog, "notreelog"},
 	{Opt_user_subvol_rm_allowed, "user_subvol_rm_allowed"},
 
-	/* Rescue options */
+	 
 	{Opt_rescue, "rescue=%s"},
-	/* Deprecated, with alias rescue=nologreplay */
+	 
 	{Opt_nologreplay, "nologreplay"},
-	/* Deprecated, with alias rescue=usebackuproot */
+	 
 	{Opt_usebackuproot, "usebackuproot"},
 
-	/* Deprecated options */
+	 
 	{Opt_recovery, "recovery"},
 
-	/* Debugging options */
+	 
 	{Opt_check_integrity, "check_int"},
 	{Opt_check_integrity_including_extent_data, "check_int_data"},
 	{Opt_check_integrity_print_mask, "check_int_print_mask=%u"},
@@ -301,11 +292,7 @@ out:
 	return ret;
 }
 
-/*
- * Regular mount options parser.  Everything that is needed only when
- * reading in a new superblock is parsed here.
- * XXX JDM: This needs to be cleaned up for remount.
- */
+ 
 int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 			unsigned long new_flags)
 {
@@ -333,10 +320,7 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 		}
 	}
 
-	/*
-	 * Even the options are empty, we still need to do extra check
-	 * against new flags
-	 */
+	 
 	if (!options)
 		goto check;
 
@@ -355,10 +339,7 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 		case Opt_subvol_empty:
 		case Opt_subvolid:
 		case Opt_device:
-			/*
-			 * These are parsed by btrfs_parse_subvol_options or
-			 * btrfs_parse_device_options and can be ignored here.
-			 */
+			 
 			break;
 		case Opt_nodatasum:
 			btrfs_set_and_info(info, NODATASUM,
@@ -413,11 +394,7 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 
 				info->compress_type = BTRFS_COMPRESS_ZLIB;
 				info->compress_level = BTRFS_ZLIB_DEFAULT_LEVEL;
-				/*
-				 * args[0] contains uninitialized data since
-				 * for these tokens we don't expect any
-				 * parameter.
-				 */
+				 
 				if (token != Opt_compress &&
 				    token != Opt_compress_force)
 					info->compress_level =
@@ -467,12 +444,7 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 			if (compress_force) {
 				btrfs_set_opt(info->mount_opt, FORCE_COMPRESS);
 			} else {
-				/*
-				 * If we remount from compress-force=xxx to
-				 * compress=xxx, we need clear FORCE_COMPRESS
-				 * flag, otherwise, there is no way for users
-				 * to disable forcible compression separately.
-				 */
+				 
 				btrfs_clear_opt(info->mount_opt, FORCE_COMPRESS);
 			}
 			if (no_compress == 1) {
@@ -620,12 +592,7 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 			break;
 		case Opt_space_cache:
 		case Opt_space_cache_version:
-			/*
-			 * We already set FREE_SPACE_TREE above because we have
-			 * compat_ro(FREE_SPACE_TREE) set, and we aren't going
-			 * to allow v1 to be set for extent tree v2, simply
-			 * ignore this setting if we're extent tree v2.
-			 */
+			 
 			if (btrfs_fs_incompat(info, EXTENT_TREE_V2))
 				break;
 			if (token == Opt_space_cache ||
@@ -650,10 +617,7 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 			btrfs_set_opt(info->mount_opt, RESCAN_UUID_TREE);
 			break;
 		case Opt_no_space_cache:
-			/*
-			 * We cannot operate without the free space tree with
-			 * extent tree v2, ignore this option.
-			 */
+			 
 			if (btrfs_fs_incompat(info, EXTENT_TREE_V2))
 				break;
 			if (btrfs_test_opt(info, SPACE_CACHE)) {
@@ -671,10 +635,7 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 	"the 'inode_cache' option is deprecated and has no effect since 5.11");
 			break;
 		case Opt_clear_cache:
-			/*
-			 * We cannot clear the free space tree with extent tree
-			 * v2, ignore this option.
-			 */
+			 
 			if (btrfs_fs_incompat(info, EXTENT_TREE_V2))
 				break;
 			btrfs_set_and_info(info, CLEAR_CACHE,
@@ -821,7 +782,7 @@ int btrfs_parse_options(struct btrfs_fs_info *info, char *options,
 		}
 	}
 check:
-	/* We're read-only, don't have to check. */
+	 
 	if (new_flags & SB_RDONLY)
 		goto out;
 
@@ -852,12 +813,7 @@ out:
 	return ret;
 }
 
-/*
- * Parse mount options that are required early in the mount process.
- *
- * All other options will be parsed on much later in the mount process and
- * only when we need to allocate a new super block.
- */
+ 
 static int btrfs_parse_device_options(const char *options, blk_mode_t flags)
 {
 	substring_t args[MAX_OPT_ARGS];
@@ -870,10 +826,7 @@ static int btrfs_parse_device_options(const char *options, blk_mode_t flags)
 	if (!options)
 		return 0;
 
-	/*
-	 * strsep changes the string, duplicate it because btrfs_parse_options
-	 * gets called later
-	 */
+	 
 	opts = kstrdup(options, GFP_KERNEL);
 	if (!opts)
 		return -ENOMEM;
@@ -906,11 +859,7 @@ out:
 	return error;
 }
 
-/*
- * Parse mount options that are related to subvolume id
- *
- * The value is later passed to mount_subvol()
- */
+ 
 static int btrfs_parse_subvol_options(const char *options, char **subvol_name,
 		u64 *subvol_objectid)
 {
@@ -922,10 +871,7 @@ static int btrfs_parse_subvol_options(const char *options, char **subvol_name,
 	if (!options)
 		return 0;
 
-	/*
-	 * strsep changes the string, duplicate it because
-	 * btrfs_parse_device_options gets called later
-	 */
+	 
 	opts = kstrdup(options, GFP_KERNEL);
 	if (!opts)
 		return -ENOMEM;
@@ -951,7 +897,7 @@ static int btrfs_parse_subvol_options(const char *options, char **subvol_name,
 			if (error)
 				goto out;
 
-			/* we want the original fs_tree */
+			 
 			if (subvolid == 0)
 				subvolid = BTRFS_FS_TREE_OBJECTID;
 
@@ -995,10 +941,7 @@ char *btrfs_get_subvol_name_from_objectid(struct btrfs_fs_info *fs_info,
 	ptr = name + PATH_MAX - 1;
 	ptr[0] = '\0';
 
-	/*
-	 * Walk up the subvolume trees in the tree of tree roots by root
-	 * backrefs until we hit the top-level subvolume.
-	 */
+	 
 	while (subvol_objectid != BTRFS_FS_TREE_OBJECTID) {
 		key.objectid = subvol_objectid;
 		key.type = BTRFS_ROOT_BACKREF_KEY;
@@ -1035,10 +978,7 @@ char *btrfs_get_subvol_name_from_objectid(struct btrfs_fs_info *fs_info,
 			goto err;
 		}
 
-		/*
-		 * Walk up the filesystem tree by inode refs until we hit the
-		 * root directory.
-		 */
+		 
 		while (dirid != BTRFS_FIRST_FREE_OBJECTID) {
 			key.objectid = dirid;
 			key.type = BTRFS_INODE_REF_KEY;
@@ -1102,11 +1042,7 @@ static int get_default_subvol_objectid(struct btrfs_fs_info *fs_info, u64 *objec
 	if (!path)
 		return -ENOMEM;
 
-	/*
-	 * Find the "default" dir item which points to the root item that we
-	 * will mount by default if we haven't been given a specific subvolume
-	 * to mount.
-	 */
+	 
 	dir_id = btrfs_super_root_dir(fs_info->super_copy);
 	di = btrfs_lookup_dir_item(NULL, root, path, dir_id, &name, 0);
 	if (IS_ERR(di)) {
@@ -1114,11 +1050,7 @@ static int get_default_subvol_objectid(struct btrfs_fs_info *fs_info, u64 *objec
 		return PTR_ERR(di);
 	}
 	if (!di) {
-		/*
-		 * Ok the default dir item isn't there.  This is weird since
-		 * it's always been there, but don't freak out, just try and
-		 * mount the top-level subvolume.
-		 */
+		 
 		btrfs_free_path(path);
 		*objectid = BTRFS_FS_TREE_OBJECTID;
 		return 0;
@@ -1204,21 +1136,13 @@ int btrfs_sync_fs(struct super_block *sb, int wait)
 
 	trans = btrfs_attach_transaction_barrier(root);
 	if (IS_ERR(trans)) {
-		/* no transaction, don't bother */
+		 
 		if (PTR_ERR(trans) == -ENOENT) {
-			/*
-			 * Exit unless we have some pending changes
-			 * that need to go through commit
-			 */
+			 
 			if (!test_bit(BTRFS_FS_NEED_TRANS_COMMIT,
 				      &fs_info->flags))
 				return 0;
-			/*
-			 * A non-blocking test if the fs is frozen. We must not
-			 * start a new transaction here otherwise a deadlock
-			 * happens. The pending operations are delayed to the
-			 * next commit after thawing.
-			 */
+			 
 			if (sb_start_write_trylock(sb))
 				sb_end_write(sb);
 			else
@@ -1359,9 +1283,7 @@ static int btrfs_set_super(struct super_block *s, void *data)
 	return err;
 }
 
-/*
- * subvolumes are identified by ino 256
- */
+ 
 static inline int is_subvolume_inode(struct inode *inode)
 {
 	if (inode && inode->i_ino == BTRFS_FIRST_FREE_OBJECTID)
@@ -1395,7 +1317,7 @@ static struct dentry *mount_subvol(const char *subvol_name, u64 subvol_objectid,
 	}
 
 	root = mount_subtree(mnt, subvol_name);
-	/* mount_subtree() drops our reference on the vfsmount. */
+	 
 	mnt = NULL;
 
 	if (!IS_ERR(root)) {
@@ -1411,11 +1333,7 @@ static struct dentry *mount_subvol(const char *subvol_name, u64 subvol_objectid,
 			ret = -EINVAL;
 		}
 		if (subvol_objectid && root_objectid != subvol_objectid) {
-			/*
-			 * This will also catch a race condition where a
-			 * subvolume which was passed by ID is renamed and
-			 * another subvolume is renamed over the old location.
-			 */
+			 
 			btrfs_err(fs_info,
 				  "subvol '%s' does not match subvolid %llu",
 				  subvol_name, subvol_objectid);
@@ -1434,12 +1352,7 @@ out:
 	return root;
 }
 
-/*
- * Find a superblock for the given device / mount point.
- *
- * Note: This is based on mount_bdev from fs/super.c with a few additions
- *       for multiple device setup.  Make sure to keep it in sync.
- */
+ 
 static struct dentry *btrfs_mount_root(struct file_system_type *fs_type,
 		int flags, const char *device_name, void *data)
 {
@@ -1458,14 +1371,7 @@ static struct dentry *btrfs_mount_root(struct file_system_type *fs_type,
 			return ERR_PTR(error);
 	}
 
-	/*
-	 * Setup a dummy root and fs_info for test/set super.  This is because
-	 * we don't actually fill this stuff out until open_ctree, but we need
-	 * then open_ctree will properly initialize the file system specific
-	 * settings later.  btrfs_init_fs_info initializes the static elements
-	 * of the fs_info (locks and such) to make cleanup easier if we find a
-	 * superblock with our given fs_devices later on at sget() time.
-	 */
+	 
 	fs_info = kvzalloc(sizeof(struct btrfs_fs_info), GFP_KERNEL);
 	if (!fs_info) {
 		error = -ENOMEM;
@@ -1546,28 +1452,7 @@ error_sec_opts:
 	return ERR_PTR(error);
 }
 
-/*
- * Mount function which is called by VFS layer.
- *
- * In order to allow mounting a subvolume directly, btrfs uses mount_subtree()
- * which needs vfsmount* of device's root (/).  This means device's root has to
- * be mounted internally in any case.
- *
- * Operation flow:
- *   1. Parse subvol id related options for later use in mount_subvol().
- *
- *   2. Mount device's root (/) by calling vfs_kern_mount().
- *
- *      NOTE: vfs_kern_mount() is used by VFS to call btrfs_mount() in the
- *      first place. In order to avoid calling btrfs_mount() again, we use
- *      different file_system_type which is not registered to VFS by
- *      register_filesystem() (btrfs_root_fs_type). As a result,
- *      btrfs_mount_root() is called. The return value will be used by
- *      mount_subtree() in mount_subvol().
- *
- *   3. Call mount_subvol() to get the dentry of subvolume. Since there is
- *      "btrfs subvolume set-default", mount_subvol() is called always.
- */
+ 
 static struct dentry *btrfs_mount(struct file_system_type *fs_type, int flags,
 		const char *device_name, void *data)
 {
@@ -1584,7 +1469,7 @@ static struct dentry *btrfs_mount(struct file_system_type *fs_type, int flags,
 		return ERR_PTR(error);
 	}
 
-	/* mount device's root (/) */
+	 
 	mnt_root = vfs_kern_mount(&btrfs_root_fs_type, flags, device_name, data);
 	if (PTR_ERR_OR_ZERO(mnt_root) == -EBUSY) {
 		if (flags & SB_RDONLY) {
@@ -1616,7 +1501,7 @@ static struct dentry *btrfs_mount(struct file_system_type *fs_type, int flags,
 		goto out;
 	}
 
-	/* mount_subvol() will free subvol_name and mnt_root */
+	 
 	root = mount_subvol(subvol_name, subvol_objectid, mnt_root);
 
 out:
@@ -1650,7 +1535,7 @@ static inline void btrfs_remount_begin(struct btrfs_fs_info *fs_info,
 	if (btrfs_raw_test_opt(old_opts, AUTO_DEFRAG) &&
 	    (!btrfs_raw_test_opt(fs_info->mount_opt, AUTO_DEFRAG) ||
 	     (flags & SB_RDONLY))) {
-		/* wait for any defraggers to finish */
+		 
 		wait_event(fs_info->transaction_wait,
 			   (atomic_read(&fs_info->defrag_running) == 0));
 		if (flags & SB_RDONLY)
@@ -1663,16 +1548,13 @@ static inline void btrfs_remount_cleanup(struct btrfs_fs_info *fs_info,
 {
 	const bool cache_opt = btrfs_test_opt(fs_info, SPACE_CACHE);
 
-	/*
-	 * We need to cleanup all defragable inodes if the autodefragment is
-	 * close or the filesystem is read only.
-	 */
+	 
 	if (btrfs_raw_test_opt(old_opts, AUTO_DEFRAG) &&
 	    (!btrfs_raw_test_opt(fs_info->mount_opt, AUTO_DEFRAG) || sb_rdonly(fs_info->sb))) {
 		btrfs_cleanup_defrag_inodes(fs_info);
 	}
 
-	/* If we toggled discard async */
+	 
 	if (!btrfs_raw_test_opt(old_opts, DISCARD_ASYNC) &&
 	    btrfs_test_opt(fs_info, DISCARD_ASYNC))
 		btrfs_discard_resume(fs_info);
@@ -1680,7 +1562,7 @@ static inline void btrfs_remount_cleanup(struct btrfs_fs_info *fs_info,
 		 !btrfs_test_opt(fs_info, DISCARD_ASYNC))
 		btrfs_discard_cleanup(fs_info);
 
-	/* If we toggled space cache */
+	 
 	if (cache_opt != btrfs_free_space_cache_v1_active(fs_info))
 		btrfs_set_free_space_cache_v1_active(fs_info, cache_opt);
 }
@@ -1727,7 +1609,7 @@ static int btrfs_remount(struct super_block *sb, int *flags, char *data)
 	    (!sb_rdonly(sb) || (*flags & SB_RDONLY))) {
 		btrfs_warn(fs_info,
 		"remount supports changing free space tree only from ro to rw");
-		/* Make sure free space cache options match the state on disk */
+		 
 		if (btrfs_fs_compat_ro(fs_info, FREE_SPACE_TREE)) {
 			btrfs_set_opt(fs_info->mount_opt, FREE_SPACE_TREE);
 			btrfs_clear_opt(fs_info->mount_opt, SPACE_CACHE);
@@ -1742,65 +1624,34 @@ static int btrfs_remount(struct super_block *sb, int *flags, char *data)
 		goto out;
 
 	if (*flags & SB_RDONLY) {
-		/*
-		 * this also happens on 'umount -rf' or on shutdown, when
-		 * the filesystem is busy.
-		 */
+		 
 		cancel_work_sync(&fs_info->async_reclaim_work);
 		cancel_work_sync(&fs_info->async_data_reclaim_work);
 
 		btrfs_discard_cleanup(fs_info);
 
-		/* wait for the uuid_scan task to finish */
+		 
 		down(&fs_info->uuid_tree_rescan_sem);
-		/* avoid complains from lockdep et al. */
+		 
 		up(&fs_info->uuid_tree_rescan_sem);
 
 		btrfs_set_sb_rdonly(sb);
 
-		/*
-		 * Setting SB_RDONLY will put the cleaner thread to
-		 * sleep at the next loop if it's already active.
-		 * If it's already asleep, we'll leave unused block
-		 * groups on disk until we're mounted read-write again
-		 * unless we clean them up here.
-		 */
+		 
 		btrfs_delete_unused_bgs(fs_info);
 
-		/*
-		 * The cleaner task could be already running before we set the
-		 * flag BTRFS_FS_STATE_RO (and SB_RDONLY in the superblock).
-		 * We must make sure that after we finish the remount, i.e. after
-		 * we call btrfs_commit_super(), the cleaner can no longer start
-		 * a transaction - either because it was dropping a dead root,
-		 * running delayed iputs or deleting an unused block group (the
-		 * cleaner picked a block group from the list of unused block
-		 * groups before we were able to in the previous call to
-		 * btrfs_delete_unused_bgs()).
-		 */
+		 
 		wait_on_bit(&fs_info->flags, BTRFS_FS_CLEANER_RUNNING,
 			    TASK_UNINTERRUPTIBLE);
 
-		/*
-		 * We've set the superblock to RO mode, so we might have made
-		 * the cleaner task sleep without running all pending delayed
-		 * iputs. Go through all the delayed iputs here, so that if an
-		 * unmount happens without remounting RW we don't end up at
-		 * finishing close_ctree() with a non-empty list of delayed
-		 * iputs.
-		 */
+		 
 		btrfs_run_delayed_iputs(fs_info);
 
 		btrfs_dev_replace_suspend_for_unmount(fs_info);
 		btrfs_scrub_cancel(fs_info);
 		btrfs_pause_balance(fs_info);
 
-		/*
-		 * Pause the qgroup rescan worker if it is running. We don't want
-		 * it to be still running after we are in RO mode, as after that,
-		 * by the time we unmount, it might have left a transaction open,
-		 * so we would leak the transaction and/or crash.
-		 */
+		 
 		btrfs_qgroup_wait_for_completion(fs_info, false);
 
 		ret = btrfs_commit_super(fs_info);
@@ -1832,11 +1683,7 @@ static int btrfs_remount(struct super_block *sb, int *flags, char *data)
 			goto restore;
 		}
 
-		/*
-		 * NOTE: when remounting with a change that does writes, don't
-		 * put it anywhere above this point, as we are not sure to be
-		 * safe to write until we pass the above checks.
-		 */
+		 
 		ret = btrfs_start_pre_rw_mount(fs_info);
 		if (ret)
 			goto restore;
@@ -1845,17 +1692,11 @@ static int btrfs_remount(struct super_block *sb, int *flags, char *data)
 
 		set_bit(BTRFS_FS_OPEN, &fs_info->flags);
 
-		/*
-		 * If we've gone from readonly -> read/write, we need to get
-		 * our sync/async discard lists in the right state.
-		 */
+		 
 		btrfs_discard_resume(fs_info);
 	}
 out:
-	/*
-	 * We need to set SB_I_VERSION here otherwise it'll get cleared by VFS,
-	 * since the absence of the flag means it can be toggled off by remount.
-	 */
+	 
 	*flags |= SB_I_VERSION;
 
 	wake_up_process(fs_info->transaction_kthread);
@@ -1866,7 +1707,7 @@ out:
 	return 0;
 
 restore:
-	/* We've hit an error - don't reset SB_RDONLY */
+	 
 	if (sb_rdonly(sb))
 		old_flags |= SB_RDONLY;
 	if (!(old_flags & SB_RDONLY))
@@ -1884,7 +1725,7 @@ restore:
 	return ret;
 }
 
-/* Used to sort the devices by max_avail(descending sort) */
+ 
 static int btrfs_cmp_device_free_bytes(const void *a, const void *b)
 {
 	const struct btrfs_device_info *dev_info1 = a;
@@ -1897,10 +1738,7 @@ static int btrfs_cmp_device_free_bytes(const void *a, const void *b)
 	return 0;
 }
 
-/*
- * sort the devices by max_avail, in which max free extent size of each device
- * is stored.(Descending Sort)
- */
+ 
 static inline void btrfs_descending_sort_devices(
 					struct btrfs_device_info *devices,
 					size_t nr_devices)
@@ -1909,10 +1747,7 @@ static inline void btrfs_descending_sort_devices(
 	     btrfs_cmp_device_free_bytes, NULL);
 }
 
-/*
- * The helper to calc the free space on the devices that can be used to store
- * file data.
- */
+ 
 static inline int btrfs_calc_avail_data_space(struct btrfs_fs_info *fs_info,
 					      u64 *free_bytes)
 {
@@ -1926,10 +1761,7 @@ static inline int btrfs_calc_avail_data_space(struct btrfs_fs_info *fs_info,
 	int i = 0, nr_devices;
 	const struct btrfs_raid_attr *rattr;
 
-	/*
-	 * We aren't under the device list lock, so this is racy-ish, but good
-	 * enough for our purposes.
-	 */
+	 
 	nr_devices = fs_info->fs_devices->open_devices;
 	if (!nr_devices) {
 		smp_mb();
@@ -1946,7 +1778,7 @@ static inline int btrfs_calc_avail_data_space(struct btrfs_fs_info *fs_info,
 	if (!devices_info)
 		return -ENOMEM;
 
-	/* calc min stripe number for data space allocation */
+	 
 	type = btrfs_data_alloc_profile(fs_info);
 	rattr = &btrfs_raid_array[btrfs_bg_flags_to_raid_index(type)];
 
@@ -1957,7 +1789,7 @@ static inline int btrfs_calc_avail_data_space(struct btrfs_fs_info *fs_info,
 	else if (type & BTRFS_BLOCK_GROUP_RAID10)
 		num_stripes = 4;
 
-	/* Adjust for more than 1 stripe per device */
+	 
 	min_stripe_size = rattr->dev_stripes * BTRFS_STRIPE_LEN;
 
 	rcu_read_lock();
@@ -1973,13 +1805,10 @@ static inline int btrfs_calc_avail_data_space(struct btrfs_fs_info *fs_info,
 
 		avail_space = device->total_bytes - device->bytes_used;
 
-		/* align with stripe_len */
+		 
 		avail_space = rounddown(avail_space, BTRFS_STRIPE_LEN);
 
-		/*
-		 * Ensure we have at least min_stripe_size on top of the
-		 * reserved space on the device.
-		 */
+		 
 		if (avail_space <= BTRFS_DEVICE_RANGE_RESERVED + min_stripe_size)
 			continue;
 
@@ -2019,19 +1848,7 @@ static inline int btrfs_calc_avail_data_space(struct btrfs_fs_info *fs_info,
 	return 0;
 }
 
-/*
- * Calculate numbers for 'df', pessimistic in case of mixed raid profiles.
- *
- * If there's a redundant raid level at DATA block groups, use the respective
- * multiplier to scale the sizes.
- *
- * Unused device space usage is based on simulating the chunk allocator
- * algorithm that respects the device sizes and order of allocations.  This is
- * a close approximation of the actual use but there are other factors that may
- * change the result (like a new metadata chunk).
- *
- * If metadata is exhausted, f_bavail will be 0.
- */
+ 
 static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 {
 	struct btrfs_fs_info *fs_info = btrfs_sb(dentry->d_sb);
@@ -2063,9 +1880,7 @@ static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 			}
 		}
 
-		/*
-		 * Metadata in mixed block group profiles are accounted in data
-		 */
+		 
 		if (!mixed && found->flags & BTRFS_BLOCK_GROUP_METADATA) {
 			if (found->flags & BTRFS_BLOCK_GROUP_DATA)
 				mixed = 1;
@@ -2081,9 +1896,9 @@ static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_blocks >>= bits;
 	buf->f_bfree = buf->f_blocks - (div_u64(total_used, factor) >> bits);
 
-	/* Account global block reserve as used, it's in logical size already */
+	 
 	spin_lock(&block_rsv->lock);
-	/* Mixed block groups accounting is not byte-accurate, avoid overflow */
+	 
 	if (buf->f_bfree >= block_rsv->size >> bits)
 		buf->f_bfree -= block_rsv->size >> bits;
 	else
@@ -2097,28 +1912,10 @@ static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_bavail += div_u64(total_free_data, factor);
 	buf->f_bavail = buf->f_bavail >> bits;
 
-	/*
-	 * We calculate the remaining metadata space minus global reserve. If
-	 * this is (supposedly) smaller than zero, there's no space. But this
-	 * does not hold in practice, the exhausted state happens where's still
-	 * some positive delta. So we apply some guesswork and compare the
-	 * delta to a 4M threshold.  (Practically observed delta was ~2M.)
-	 *
-	 * We probably cannot calculate the exact threshold value because this
-	 * depends on the internal reservations requested by various
-	 * operations, so some operations that consume a few metadata will
-	 * succeed even if the Avail is zero. But this is better than the other
-	 * way around.
-	 */
+	 
 	thresh = SZ_4M;
 
-	/*
-	 * We only want to claim there's no available space if we can no longer
-	 * allocate chunks for our metadata profile and our global reserve will
-	 * not fit in the free metadata space.  If we aren't ->full then we
-	 * still can allocate chunks and thus are fine using the currently
-	 * calculated f_bavail.
-	 */
+	 
 	if (!mixed && block_rsv->space_info->full &&
 	    (total_free_meta < thresh || total_free_meta - thresh < block_rsv->size))
 		buf->f_bavail = 0;
@@ -2127,12 +1924,10 @@ static int btrfs_statfs(struct dentry *dentry, struct kstatfs *buf)
 	buf->f_bsize = dentry->d_sb->s_blocksize;
 	buf->f_namelen = BTRFS_NAME_LEN;
 
-	/* We treat it as constant endianness (it doesn't matter _which_)
-	   because we want the fsid to come out the same whether mounted
-	   on a big-endian or little-endian host */
+	 
 	buf->f_fsid.val[0] = be32_to_cpu(fsid[0]) ^ be32_to_cpu(fsid[2]);
 	buf->f_fsid.val[1] = be32_to_cpu(fsid[1]) ^ be32_to_cpu(fsid[3]);
-	/* Mask in the root object ID too, to disambiguate subvols */
+	 
 	buf->f_fsid.val[0] ^=
 		BTRFS_I(d_inode(dentry))->root->root_key.objectid >> 32;
 	buf->f_fsid.val[1] ^=
@@ -2168,18 +1963,12 @@ MODULE_ALIAS_FS("btrfs");
 
 static int btrfs_control_open(struct inode *inode, struct file *file)
 {
-	/*
-	 * The control file's private_data is used to hold the
-	 * transaction when it is started and is used to keep
-	 * track of whether a transaction is already in progress.
-	 */
+	 
 	file->private_data = NULL;
 	return 0;
 }
 
-/*
- * Used by /dev/btrfs-control for devices ioctls.
- */
+ 
 static long btrfs_control_ioctl(struct file *file, unsigned int cmd,
 				unsigned long arg)
 {
@@ -2239,15 +2028,10 @@ static int btrfs_freeze(struct super_block *sb)
 	struct btrfs_root *root = fs_info->tree_root;
 
 	set_bit(BTRFS_FS_FROZEN, &fs_info->flags);
-	/*
-	 * We don't need a barrier here, we'll wait for any transaction that
-	 * could be in progress on other threads (and do delayed iputs that
-	 * we want to avoid on a frozen filesystem), or do the commit
-	 * ourselves.
-	 */
+	 
 	trans = btrfs_attach_transaction_barrier(root);
 	if (IS_ERR(trans)) {
-		/* no transaction, don't bother */
+		 
 		if (PTR_ERR(trans) == -ENOENT)
 			return 0;
 		return PTR_ERR(trans);
@@ -2262,19 +2046,19 @@ static int check_dev_super(struct btrfs_device *dev)
 	u16 csum_type;
 	int ret = 0;
 
-	/* This should be called with fs still frozen. */
+	 
 	ASSERT(test_bit(BTRFS_FS_FROZEN, &fs_info->flags));
 
-	/* Missing dev, no need to check. */
+	 
 	if (!dev->bdev)
 		return 0;
 
-	/* Only need to check the primary super block. */
+	 
 	sb = btrfs_read_dev_one_super(dev->bdev, 0, true);
 	if (IS_ERR(sb))
 		return PTR_ERR(sb);
 
-	/* Verify the checksum. */
+	 
 	csum_type = btrfs_super_csum_type(sb);
 	if (csum_type != btrfs_super_csum_type(fs_info->super_copy)) {
 		btrfs_err(fs_info, "csum type changed, has %u expect %u",
@@ -2289,7 +2073,7 @@ static int check_dev_super(struct btrfs_device *dev)
 		goto out;
 	}
 
-	/* Btrfs_validate_super() includes fsid check against super->fsid. */
+	 
 	ret = btrfs_validate_super(fs_info, sb, 0);
 	if (ret < 0)
 		goto out;
@@ -2312,14 +2096,7 @@ static int btrfs_unfreeze(struct super_block *sb)
 	struct btrfs_device *device;
 	int ret = 0;
 
-	/*
-	 * Make sure the fs is not changed by accident (like hibernation then
-	 * modified by other OS).
-	 * If we found anything wrong, we mark the fs error immediately.
-	 *
-	 * And since the fs is frozen, no one can modify the fs yet, thus
-	 * we don't need to hold device_list_mutex.
-	 */
+	 
 	list_for_each_entry(device, &fs_info->fs_devices->devices, dev_list) {
 		ret = check_dev_super(device);
 		if (ret < 0) {
@@ -2331,11 +2108,7 @@ static int btrfs_unfreeze(struct super_block *sb)
 	}
 	clear_bit(BTRFS_FS_FROZEN, &fs_info->flags);
 
-	/*
-	 * We still return 0, to allow VFS layer to unfreeze the fs even the
-	 * above checks failed. Since the fs is either fine or read-only, we're
-	 * safe to continue, without causing further damage.
-	 */
+	 
 	return 0;
 }
 
@@ -2343,11 +2116,7 @@ static int btrfs_show_devname(struct seq_file *m, struct dentry *root)
 {
 	struct btrfs_fs_info *fs_info = btrfs_sb(root->d_sb);
 
-	/*
-	 * There should be always a valid pointer in latest_dev, it may be stale
-	 * for a short moment in case it's being deleted but still valid until
-	 * the end of RCU grace period.
-	 */
+	 
 	rcu_read_lock();
 	seq_escape(m, btrfs_dev_name(fs_info->fs_devices->latest_dev), " \t\n\\");
 	rcu_read_unlock();
@@ -2438,10 +2207,10 @@ static void unregister_btrfs(void)
 	unregister_filesystem(&btrfs_fs_type);
 }
 
-/* Helper structure for long init/exit functions. */
+ 
 struct init_sequence {
 	int (*init_func)(void);
-	/* Can be NULL if the init_func doesn't need cleanup. */
+	 
 	void (*exit_func)(void);
 };
 

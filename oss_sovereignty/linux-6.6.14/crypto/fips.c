@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * FIPS 200 support.
- *
- * Copyright (c) 2008 Neil Horman <nhorman@tuxdriver.com>
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/fips.h>
@@ -20,7 +16,7 @@ EXPORT_SYMBOL_GPL(fips_enabled);
 ATOMIC_NOTIFIER_HEAD(fips_fail_notif_chain);
 EXPORT_SYMBOL_GPL(fips_fail_notif_chain);
 
-/* Process kernel command-line parameter at boot time. fips=0 or fips=1 */
+ 
 static int fips_enable(char *str)
 {
 	fips_enabled = !!simple_strtol(str, NULL, 0);

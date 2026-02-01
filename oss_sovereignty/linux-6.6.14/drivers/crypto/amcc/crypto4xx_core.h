@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * AMCC SoC PPC4xx Crypto Driver
- *
- * Copyright (c) 2008 Applied Micro Circuits Corporation.
- * All rights reserved. James Hsiao <jhsiao@amcc.com>
- *
- * This is the header file for AMCC Crypto offload Linux device driver for
- * use with Linux CryptoAPI.
-
- */
+ 
+ 
 
 #ifndef __CRYPTO4XX_CORE_H__
 #define __CRYPTO4XX_CORE_H__
@@ -49,27 +40,22 @@ struct crypto4xx_device;
 union shadow_sa_buf {
 	struct dynamic_sa_ctl sa;
 
-	/* alloc 256 bytes which is enough for any kind of dynamic sa */
+	 
 	u8 buf[256];
 } __packed;
 
 struct pd_uinfo {
 	struct crypto4xx_device *dev;
 	u32   state;
-	u32 first_gd;		/* first gather discriptor
-				used by this packet */
-	u32 num_gd;             /* number of gather discriptor
-				used by this packet */
-	u32 first_sd;		/* first scatter discriptor
-				used by this packet */
-	u32 num_sd;		/* number of scatter discriptors
-				used by this packet */
-	struct dynamic_sa_ctl *sa_va;	/* shadow sa */
-	struct sa_state_record *sr_va;	/* state record for shadow sa */
+	u32 first_gd;		 
+	u32 num_gd;              
+	u32 first_sd;		 
+	u32 num_sd;		 
+	struct dynamic_sa_ctl *sa_va;	 
+	struct sa_state_record *sr_va;	 
 	u32 sr_pa;
 	struct scatterlist *dest_va;
-	struct crypto_async_request *async_req; 	/* base crypto request
-							for this packet */
+	struct crypto_async_request *async_req; 	 
 };
 
 struct crypto4xx_device {
@@ -77,12 +63,12 @@ struct crypto4xx_device {
 	void __iomem *ce_base;
 	void __iomem *trng_base;
 
-	struct ce_pd *pdr;	/* base address of packet descriptor ring */
-	dma_addr_t pdr_pa;	/* physical address of pdr_base_register */
-	struct ce_gd *gdr;	/* gather descriptor ring */
-	dma_addr_t gdr_pa;	/* physical address of gdr_base_register */
-	struct ce_sd *sdr;	/* scatter descriptor ring */
-	dma_addr_t sdr_pa;	/* physical address of sdr_base_register */
+	struct ce_pd *pdr;	 
+	dma_addr_t pdr_pa;	 
+	struct ce_gd *gdr;	 
+	dma_addr_t gdr_pa;	 
+	struct ce_sd *sdr;	 
+	dma_addr_t sdr_pa;	 
 	void *scatter_buffer_va;
 	dma_addr_t scatter_buffer_pa;
 
@@ -97,8 +83,7 @@ struct crypto4xx_device {
 	u32 sdr_tail;
 	u32 sdr_head;
 	struct pd_uinfo *pdr_uinfo;
-	struct list_head alg_list;	/* List of algorithm supported
-					by this device */
+	struct list_head alg_list;	 
 	struct ratelimit_state aead_ratelimit;
 	bool is_revb;
 };
@@ -188,9 +173,7 @@ int crypto4xx_hash_final(struct ahash_request *req);
 int crypto4xx_hash_update(struct ahash_request *req);
 int crypto4xx_hash_init(struct ahash_request *req);
 
-/*
- * Note: Only use this function to copy items that is word aligned.
- */
+ 
 static inline void crypto4xx_memcpy_swab32(u32 *dst, const void *buf,
 					   size_t len)
 {

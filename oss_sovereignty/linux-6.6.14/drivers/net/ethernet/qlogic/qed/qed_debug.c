@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015 QLogic Corporation
- * Copyright (c) 2019-2021 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/vmalloc.h>
@@ -15,7 +12,7 @@
 #include "qed_mcp.h"
 #include "qed_reg_addr.h"
 
-/* Memory groups enum */
+ 
 enum mem_groups {
 	MEM_GROUP_PXP_MEM,
 	MEM_GROUP_DMAE_MEM,
@@ -50,7 +47,7 @@ enum mem_groups {
 	MEM_GROUPS_NUM
 };
 
-/* Memory groups names */
+ 
 static const char * const s_mem_group_names[] = {
 	"PXP_MEM",
 	"DMAE_MEM",
@@ -84,7 +81,7 @@ static const char * const s_mem_group_names[] = {
 	"TASK_CFC_MEM",
 };
 
-/* Idle check conditions */
+ 
 
 static u32 cond5(const u32 *r, const u32 *imm)
 {
@@ -162,7 +159,7 @@ static u32 cond2(const u32 *r, const u32 *imm)
 	return r[0] > imm[0];
 }
 
-/* Array of Idle Check conditions */
+ 
 static u32(*cond_arr[]) (const u32 *r, const u32 *imm) = {
 	cond0,
 	cond1,
@@ -185,7 +182,7 @@ static u32(*cond_arr[]) (const u32 *r, const u32 *imm) = {
 
 #define NUM_DBG_RESET_REGS 8
 
-/******************************* Data Types **********************************/
+ 
 
 enum hw_types {
 	HW_TYPE_ASIC,
@@ -196,7 +193,7 @@ enum hw_types {
 	MAX_HW_TYPES
 };
 
-/* CM context types */
+ 
 enum cm_ctx_types {
 	CM_CTX_CONN_AG,
 	CM_CTX_CONN_ST,
@@ -205,47 +202,47 @@ enum cm_ctx_types {
 	NUM_CM_CTX_TYPES
 };
 
-/* Debug bus frame modes */
+ 
 enum dbg_bus_frame_modes {
-	DBG_BUS_FRAME_MODE_4ST = 0,	/* 4 Storm dwords (no HW) */
-	DBG_BUS_FRAME_MODE_2ST_2HW = 1,	/* 2 Storm dwords, 2 HW dwords */
-	DBG_BUS_FRAME_MODE_1ST_3HW = 2,	/* 1 Storm dwords, 3 HW dwords */
-	DBG_BUS_FRAME_MODE_4HW = 3,	/* 4 HW dwords (no Storms) */
-	DBG_BUS_FRAME_MODE_8HW = 4,	/* 8 HW dwords (no Storms) */
+	DBG_BUS_FRAME_MODE_4ST = 0,	 
+	DBG_BUS_FRAME_MODE_2ST_2HW = 1,	 
+	DBG_BUS_FRAME_MODE_1ST_3HW = 2,	 
+	DBG_BUS_FRAME_MODE_4HW = 3,	 
+	DBG_BUS_FRAME_MODE_8HW = 4,	 
 	DBG_BUS_NUM_FRAME_MODES
 };
 
-/* Debug bus SEMI frame modes */
+ 
 enum dbg_bus_semi_frame_modes {
-	DBG_BUS_SEMI_FRAME_MODE_4FAST = 0,	/* 4 fast dw */
-	DBG_BUS_SEMI_FRAME_MODE_2FAST_2SLOW = 1, /* 2 fast dw, 2 slow dw */
-	DBG_BUS_SEMI_FRAME_MODE_1FAST_3SLOW = 2, /* 1 fast dw,3 slow dw */
-	DBG_BUS_SEMI_FRAME_MODE_4SLOW = 3,	/* 4 slow dw */
+	DBG_BUS_SEMI_FRAME_MODE_4FAST = 0,	 
+	DBG_BUS_SEMI_FRAME_MODE_2FAST_2SLOW = 1,  
+	DBG_BUS_SEMI_FRAME_MODE_1FAST_3SLOW = 2,  
+	DBG_BUS_SEMI_FRAME_MODE_4SLOW = 3,	 
 	DBG_BUS_SEMI_NUM_FRAME_MODES
 };
 
-/* Debug bus filter types */
+ 
 enum dbg_bus_filter_types {
-	DBG_BUS_FILTER_TYPE_OFF,	/* Filter always off */
-	DBG_BUS_FILTER_TYPE_PRE,	/* Filter before trigger only */
-	DBG_BUS_FILTER_TYPE_POST,	/* Filter after trigger only */
-	DBG_BUS_FILTER_TYPE_ON	/* Filter always on */
+	DBG_BUS_FILTER_TYPE_OFF,	 
+	DBG_BUS_FILTER_TYPE_PRE,	 
+	DBG_BUS_FILTER_TYPE_POST,	 
+	DBG_BUS_FILTER_TYPE_ON	 
 };
 
-/* Debug bus pre-trigger recording types */
+ 
 enum dbg_bus_pre_trigger_types {
-	DBG_BUS_PRE_TRIGGER_FROM_ZERO,	/* Record from time 0 */
-	DBG_BUS_PRE_TRIGGER_NUM_CHUNKS,	/* Record some chunks before trigger */
-	DBG_BUS_PRE_TRIGGER_DROP	/* Drop data before trigger */
+	DBG_BUS_PRE_TRIGGER_FROM_ZERO,	 
+	DBG_BUS_PRE_TRIGGER_NUM_CHUNKS,	 
+	DBG_BUS_PRE_TRIGGER_DROP	 
 };
 
-/* Debug bus post-trigger recording types */
+ 
 enum dbg_bus_post_trigger_types {
-	DBG_BUS_POST_TRIGGER_RECORD,	/* Start recording after trigger */
-	DBG_BUS_POST_TRIGGER_DROP	/* Drop data after trigger */
+	DBG_BUS_POST_TRIGGER_RECORD,	 
+	DBG_BUS_POST_TRIGGER_DROP	 
 };
 
-/* Debug bus other engine mode */
+ 
 enum dbg_bus_other_engine_modes {
 	DBG_BUS_OTHER_ENGINE_MODE_NONE,
 	DBG_BUS_OTHER_ENGINE_MODE_DOUBLE_BW_TX,
@@ -254,7 +251,7 @@ enum dbg_bus_other_engine_modes {
 	DBG_BUS_OTHER_ENGINE_MODE_CROSS_ENGINE_RX
 };
 
-/* DBG block Framing mode definitions */
+ 
 struct framing_mode_defs {
 	u8 id;
 	u8 blocks_dword_mask;
@@ -263,7 +260,7 @@ struct framing_mode_defs {
 	u8 full_buf_thr;
 };
 
-/* Chip constant definitions */
+ 
 struct chip_defs {
 	const char *name;
 	u8 dwords_per_cycle;
@@ -272,7 +269,7 @@ struct chip_defs {
 	struct framing_mode_defs *framing_modes;
 };
 
-/* HW type constant definitions */
+ 
 struct hw_type_defs {
 	const char *name;
 	u32 delay_factor;
@@ -280,15 +277,13 @@ struct hw_type_defs {
 	u32 log_thresh;
 };
 
-/* RBC reset definitions */
+ 
 struct rbc_reset_defs {
 	u32 reset_reg_addr;
 	u32 reset_val[MAX_CHIP_IDS];
 };
 
-/* Storm constant definitions.
- * Addresses are in bytes, sizes are in quad-regs.
- */
+ 
 struct storm_defs {
 	char letter;
 	enum block_id sem_block_id;
@@ -306,13 +301,13 @@ struct storm_defs {
 	u32 cm_ctx_lid_sizes[MAX_CHIP_IDS][NUM_CM_CTX_TYPES];
 };
 
-/* Debug Bus Constraint operation constant definitions */
+ 
 struct dbg_bus_constraint_op_defs {
 	u8 hw_op_val;
 	bool is_cyclic;
 };
 
-/* Storm Mode definitions */
+ 
 struct storm_mode_defs {
 	const char *name;
 	bool is_fast_dbg;
@@ -332,7 +327,7 @@ struct grc_param_defs {
 	u32 crash_preset_val[MAX_CHIP_IDS];
 };
 
-/* Address is in 128b units. Width is in bits. */
+ 
 struct rss_mem_defs {
 	const char *mem_name;
 	const char *type_name;
@@ -357,37 +352,37 @@ struct big_ram_defs {
 	u32 data_reg_addr;
 	u32 is_256b_reg_addr;
 	u32 is_256b_bit_offset[MAX_CHIP_IDS];
-	u32 ram_size[MAX_CHIP_IDS]; /* In dwords */
+	u32 ram_size[MAX_CHIP_IDS];  
 };
 
 struct phy_defs {
 	const char *phy_name;
 
-	/* PHY base GRC address */
+	 
 	u32 base_addr;
 
-	/* Relative address of indirect TBUS address register (bits 0..7) */
+	 
 	u32 tbus_addr_lo_addr;
 
-	/* Relative address of indirect TBUS address register (bits 8..10) */
+	 
 	u32 tbus_addr_hi_addr;
 
-	/* Relative address of indirect TBUS data register (bits 0..7) */
+	 
 	u32 tbus_data_lo_addr;
 
-	/* Relative address of indirect TBUS data register (bits 8..11) */
+	 
 	u32 tbus_data_hi_addr;
 };
 
-/* Split type definitions */
+ 
 struct split_type_defs {
 	const char *name;
 };
 
-/******************************** Constants **********************************/
+ 
 
 #define BYTES_IN_DWORD			sizeof(u32)
-/* In the macros below, size and offset are specified in bits */
+ 
 #define CEIL_DWORDS(size)		DIV_ROUND_UP(size, 32)
 #define FIELD_BIT_OFFSET(type, field)	type ## _ ## field ## _ ## OFFSET
 #define FIELD_BIT_SIZE(type, field)	type ## _ ## field ## _ ## SIZE
@@ -415,7 +410,7 @@ struct split_type_defs {
 #define DWORDS_TO_BYTES(dwords)		((dwords) * BYTES_IN_DWORD)
 #define BYTES_TO_DWORDS(bytes)		((bytes) / BYTES_IN_DWORD)
 
-/* extra lines include a signature line + optional latency events line */
+ 
 #define NUM_EXTRA_DBG_LINES(block) \
 	(GET_FIELD((block)->flags, DBG_BLOCK_CHIP_HAS_LATENCY_EVENTS) ? 2 : 1)
 #define NUM_DBG_LINES(block) \
@@ -446,7 +441,7 @@ struct split_type_defs {
 
 #define IDLE_CHK_MAX_ENTRIES_SIZE	32
 
-/* The sizes and offsets below are specified in bits */
+ 
 #define VFC_CAM_CMD_STRUCT_SIZE		64
 #define VFC_CAM_CMD_ROW_OFFSET		48
 #define VFC_CAM_CMD_ROW_SIZE		9
@@ -522,9 +517,9 @@ struct split_type_defs {
 #define EMPTY_FW_VERSION_STR		"???_???_???_???"
 #define EMPTY_FW_IMAGE_STR		"???????????????"
 
-/***************************** Constant Arrays *******************************/
+ 
 
-/* DBG block framing mode definitions, in descending preference order */
+ 
 static struct framing_mode_defs s_framing_mode_defs[4] = {
 	{DBG_BUS_FRAME_MODE_4ST, 0x0, 0xf,
 	 DBG_BUS_SEMI_FRAME_MODE_4FAST,
@@ -537,7 +532,7 @@ static struct framing_mode_defs s_framing_mode_defs[4] = {
 	 DBG_BUS_SEMI_FRAME_MODE_1FAST_3SLOW, 10}
 };
 
-/* Chip constant definitions array */
+ 
 static struct chip_defs s_chip_defs[MAX_CHIP_IDS] = {
 	{"bb", 4, DBG_BUS_NUM_FRAME_MODES, PSWRQ2_REG_ILT_MEMORY_SIZE_BB / 2,
 	 s_framing_mode_defs},
@@ -545,9 +540,9 @@ static struct chip_defs s_chip_defs[MAX_CHIP_IDS] = {
 	 s_framing_mode_defs}
 };
 
-/* Storm constant definitions array */
+ 
 static struct storm_defs s_storm_defs[] = {
-	/* Tstorm */
+	 
 	{'T', BLOCK_TSEM,
 		{DBG_BUS_CLIENT_RBCT, DBG_BUS_CLIENT_RBCT},
 		true,
@@ -558,10 +553,10 @@ static struct storm_defs s_storm_defs[] = {
 		TCM_REG_CTX_RBC_ACCS,
 		{TCM_REG_AGG_CON_CTX, TCM_REG_SM_CON_CTX, TCM_REG_AGG_TASK_CTX,
 		 TCM_REG_SM_TASK_CTX},
-		{{4, 16, 2, 4}, {4, 16, 2, 4}} /* {bb} {k2} */
+		{{4, 16, 2, 4}, {4, 16, 2, 4}}  
 	},
 
-	/* Mstorm */
+	 
 	{'M', BLOCK_MSEM,
 		{DBG_BUS_CLIENT_RBCT, DBG_BUS_CLIENT_RBCM},
 		false,
@@ -575,10 +570,10 @@ static struct storm_defs s_storm_defs[] = {
 		MCM_REG_CTX_RBC_ACCS,
 		{MCM_REG_AGG_CON_CTX, MCM_REG_SM_CON_CTX, MCM_REG_AGG_TASK_CTX,
 		 MCM_REG_SM_TASK_CTX },
-		{{1, 10, 2, 7}, {1, 10, 2, 7}} /* {bb} {k2}*/
+		{{1, 10, 2, 7}, {1, 10, 2, 7}}  
 	},
 
-	/* Ustorm */
+	 
 	{'U', BLOCK_USEM,
 		{DBG_BUS_CLIENT_RBCU, DBG_BUS_CLIENT_RBCU},
 		false,
@@ -592,10 +587,10 @@ static struct storm_defs s_storm_defs[] = {
 		UCM_REG_CTX_RBC_ACCS,
 		{UCM_REG_AGG_CON_CTX, UCM_REG_SM_CON_CTX, UCM_REG_AGG_TASK_CTX,
 		 UCM_REG_SM_TASK_CTX},
-		{{2, 13, 3, 3}, {2, 13, 3, 3}} /* {bb} {k2} */
+		{{2, 13, 3, 3}, {2, 13, 3, 3}}  
 	},
 
-	/* Xstorm */
+	 
 	{'X', BLOCK_XSEM,
 		{DBG_BUS_CLIENT_RBCX, DBG_BUS_CLIENT_RBCX},
 		false,
@@ -608,10 +603,10 @@ static struct storm_defs s_storm_defs[] = {
 		XSEM_REG_DBG_GPRE_VECT,
 		XCM_REG_CTX_RBC_ACCS,
 		{XCM_REG_AGG_CON_CTX, XCM_REG_SM_CON_CTX, 0, 0},
-		{{9, 15, 0, 0}, {9, 15,	0, 0}} /* {bb} {k2} */
+		{{9, 15, 0, 0}, {9, 15,	0, 0}}  
 	},
 
-	/* Ystorm */
+	 
 	{'Y', BLOCK_YSEM,
 		{DBG_BUS_CLIENT_RBCX, DBG_BUS_CLIENT_RBCY},
 		false,
@@ -625,10 +620,10 @@ static struct storm_defs s_storm_defs[] = {
 		YCM_REG_CTX_RBC_ACCS,
 		{YCM_REG_AGG_CON_CTX, YCM_REG_SM_CON_CTX, YCM_REG_AGG_TASK_CTX,
 		 YCM_REG_SM_TASK_CTX},
-		{{2, 3, 2, 12}, {2, 3, 2, 12}} /* {bb} {k2} */
+		{{2, 3, 2, 12}, {2, 3, 2, 12}}  
 	},
 
-	/* Pstorm */
+	 
 	{'P', BLOCK_PSEM,
 		{DBG_BUS_CLIENT_RBCS, DBG_BUS_CLIENT_RBCS},
 		true,
@@ -641,12 +636,12 @@ static struct storm_defs s_storm_defs[] = {
 		PSEM_REG_DBG_GPRE_VECT,
 		PCM_REG_CTX_RBC_ACCS,
 		{0, PCM_REG_SM_CON_CTX, 0, 0},
-		{{0, 10, 0, 0}, {0, 10, 0, 0}} /* {bb} {k2} */
+		{{0, 10, 0, 0}, {0, 10, 0, 0}}  
 	},
 };
 
 static struct hw_type_defs s_hw_type_defs[] = {
-	/* HW_TYPE_ASIC */
+	 
 	{"asic", 1, 256, 32768},
 	{"reserved", 0, 0, 0},
 	{"reserved2", 0, 0, 0},
@@ -655,142 +650,142 @@ static struct hw_type_defs s_hw_type_defs[] = {
 };
 
 static struct grc_param_defs s_grc_param_defs[] = {
-	/* DBG_GRC_PARAM_DUMP_TSTORM */
+	 
 	{{1, 1}, 0, 1, false, false, 1, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_MSTORM */
+	 
 	{{1, 1}, 0, 1, false, false, 1, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_USTORM */
+	 
 	{{1, 1}, 0, 1, false, false, 1, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_XSTORM */
+	 
 	{{1, 1}, 0, 1, false, false, 1, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_YSTORM */
+	 
 	{{1, 1}, 0, 1, false, false, 1, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_PSTORM */
+	 
 	{{1, 1}, 0, 1, false, false, 1, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_REGS */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_RAM */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_PBUF */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_IOR */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_VFC */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_CM_CTX */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_ILT */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_RSS */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_CAU */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_QM */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_MCP */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_DORQ */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_CFC */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_IGU */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_BRB */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_BTB */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_BMB */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_RESERVED1 */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_DUMP_MULD */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_PRS */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_DMAE */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_TM */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_SDM */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_DIF */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_STATIC */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_UNSTALL */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_RESERVED2 */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_MCP_TRACE_META_SIZE */
+	 
 	{{0, 0}, 1, 0xffffffff, false, true, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_EXCLUDE_ALL */
+	 
 	{{0, 0}, 0, 1, true, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_CRASH */
+	 
 	{{0, 0}, 0, 1, true, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_PARITY_SAFE */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_DUMP_CM */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {1, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_PHY */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_NO_MCP */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_NO_FW_VER */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_RESERVED3 */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_DUMP_MCP_HW_DUMP */
+	 
 	{{0, 1}, 0, 1, false, false, 0, {0, 1}},
 
-	/* DBG_GRC_PARAM_DUMP_ILT_CDUC */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_DUMP_ILT_CDUT */
+	 
 	{{1, 1}, 0, 1, false, false, 0, {0, 0}},
 
-	/* DBG_GRC_PARAM_DUMP_CAU_EXT */
+	 
 	{{0, 0}, 0, 1, false, false, 0, {1, 1}}
 };
 
@@ -870,34 +865,34 @@ static struct phy_defs s_phy_defs[] = {
 };
 
 static struct split_type_defs s_split_type_defs[] = {
-	/* SPLIT_TYPE_NONE */
+	 
 	{"eng"},
 
-	/* SPLIT_TYPE_PORT */
+	 
 	{"port"},
 
-	/* SPLIT_TYPE_PF */
+	 
 	{"pf"},
 
-	/* SPLIT_TYPE_PORT_PF */
+	 
 	{"port"},
 
-	/* SPLIT_TYPE_VF */
+	 
 	{"vf"}
 };
 
-/******************************** Variables **********************************/
+ 
 
-/* The version of the calling app */
+ 
 static u32 s_app_ver;
 
-/**************************** Private Functions ******************************/
+ 
 
 static void qed_static_asserts(void)
 {
 }
 
-/* Reads and returns a single dword from the specified unaligned buffer */
+ 
 static u32 qed_read_unaligned_dword(u8 *buf)
 {
 	u32 dword;
@@ -906,7 +901,7 @@ static u32 qed_read_unaligned_dword(u8 *buf)
 	return dword;
 }
 
-/* Sets the value of the specified GRC param */
+ 
 static void qed_grc_set_param(struct qed_hwfn *p_hwfn,
 			      enum dbg_grc_params grc_param, u32 val)
 {
@@ -915,7 +910,7 @@ static void qed_grc_set_param(struct qed_hwfn *p_hwfn,
 	dev_data->grc.param_val[grc_param] = val;
 }
 
-/* Returns the value of the specified GRC param */
+ 
 static u32 qed_grc_get_param(struct qed_hwfn *p_hwfn,
 			     enum dbg_grc_params grc_param)
 {
@@ -924,7 +919,7 @@ static u32 qed_grc_get_param(struct qed_hwfn *p_hwfn,
 	return dev_data->grc.param_val[grc_param];
 }
 
-/* Initializes the GRC parameters */
+ 
 static void qed_dbg_grc_init_params(struct qed_hwfn *p_hwfn)
 {
 	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
@@ -935,7 +930,7 @@ static void qed_dbg_grc_init_params(struct qed_hwfn *p_hwfn)
 	}
 }
 
-/* Sets pointer and size for the specified binary buffer type */
+ 
 static void qed_set_dbg_bin_buf(struct qed_hwfn *p_hwfn,
 				enum bin_dbg_buffer_type buf_type,
 				const u32 *ptr, u32 size)
@@ -946,7 +941,7 @@ static void qed_set_dbg_bin_buf(struct qed_hwfn *p_hwfn,
 	buf->size = size;
 }
 
-/* Initializes debug data for the specified device */
+ 
 static enum dbg_status qed_dbg_dev_init(struct qed_hwfn *p_hwfn)
 {
 	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
@@ -958,7 +953,7 @@ static enum dbg_status qed_dbg_dev_init(struct qed_hwfn *p_hwfn)
 	if (!s_app_ver)
 		return DBG_STATUS_APP_VERSION_NOT_SET;
 
-	/* Set chip */
+	 
 	if (QED_IS_K2(p_hwfn->cdev)) {
 		dev_data->chip_id = CHIP_K2;
 		dev_data->mode_enable[MODE_K2] = 1;
@@ -975,11 +970,11 @@ static enum dbg_status qed_dbg_dev_init(struct qed_hwfn *p_hwfn)
 		return DBG_STATUS_UNKNOWN_CHIP;
 	}
 
-	/* Set HW type */
+	 
 	dev_data->hw_type = HW_TYPE_ASIC;
 	dev_data->mode_enable[MODE_ASIC] = 1;
 
-	/* Set port mode */
+	 
 	switch (p_hwfn->cdev->num_ports_in_engine) {
 	case 1:
 		dev_data->mode_enable[MODE_PORTS_PER_ENG_1] = 1;
@@ -992,11 +987,11 @@ static enum dbg_status qed_dbg_dev_init(struct qed_hwfn *p_hwfn)
 		break;
 	}
 
-	/* Set 100G mode */
+	 
 	if (QED_IS_CMT(p_hwfn->cdev))
 		dev_data->mode_enable[MODE_100G] = 1;
 
-	/* Set number of ports */
+	 
 	if (dev_data->mode_enable[MODE_PORTS_PER_ENG_1] ||
 	    dev_data->mode_enable[MODE_100G])
 		dev_data->num_ports = 1;
@@ -1005,12 +1000,12 @@ static enum dbg_status qed_dbg_dev_init(struct qed_hwfn *p_hwfn)
 	else if (dev_data->mode_enable[MODE_PORTS_PER_ENG_4])
 		dev_data->num_ports = 4;
 
-	/* Set number of PFs per port */
+	 
 	dev_data->num_pfs_per_port = min_t(u32,
 					   num_pfs / dev_data->num_ports,
 					   max_pfs_per_port);
 
-	/* Initializes the GRC parameters */
+	 
 	qed_dbg_grc_init_params(p_hwfn);
 
 	dev_data->use_dmae = true;
@@ -1051,9 +1046,7 @@ static const struct dbg_reset_reg *qed_get_dbg_reset_reg(struct qed_hwfn
 	    reset_reg_id * MAX_CHIP_IDS + dev_data->chip_id;
 }
 
-/* Reads the FW info structure for the specified Storm from the chip,
- * and writes it to the specified fw_info pointer.
- */
+ 
 static void qed_read_storm_fw_info(struct qed_hwfn *p_hwfn,
 				   struct qed_ptt *p_ptt,
 				   u8 storm_id, struct fw_info *fw_info)
@@ -1065,9 +1058,7 @@ static void qed_read_storm_fw_info(struct qed_hwfn *p_hwfn,
 	memset(&fw_info_location, 0, sizeof(fw_info_location));
 	memset(fw_info, 0, sizeof(*fw_info));
 
-	/* Read first the address that points to fw_info location.
-	 * The address is located in the last line of the Storm RAM.
-	 */
+	 
 	addr = storm->sem_fast_mem_addr + SEM_FAST_REG_INT_RAM +
 	    DWORDS_TO_BYTES(SEM_FAST_REG_INT_RAM_SIZE) -
 	    sizeof(fw_info_location);
@@ -1078,7 +1069,7 @@ static void qed_read_storm_fw_info(struct qed_hwfn *p_hwfn,
 	for (i = 0; i < size; i++, addr += BYTES_IN_DWORD)
 		dest[i] = qed_rd(p_hwfn, p_ptt, addr);
 
-	/* Read FW version info from Storm RAM */
+	 
 	size = le32_to_cpu(fw_info_location.size);
 	if (!size || size > sizeof(*fw_info))
 		return;
@@ -1091,9 +1082,7 @@ static void qed_read_storm_fw_info(struct qed_hwfn *p_hwfn,
 		dest[i] = qed_rd(p_hwfn, p_ptt, addr);
 }
 
-/* Dumps the specified string to the specified buffer.
- * Returns the dumped size in bytes.
- */
+ 
 static u32 qed_dump_str(char *dump_buf, bool dump, const char *str)
 {
 	if (dump)
@@ -1102,9 +1091,7 @@ static u32 qed_dump_str(char *dump_buf, bool dump, const char *str)
 	return (u32)strlen(str) + 1;
 }
 
-/* Dumps zeros to align the specified buffer to dwords.
- * Returns the dumped size in bytes.
- */
+ 
 static u32 qed_dump_align(char *dump_buf, bool dump, u32 byte_offset)
 {
 	u8 offset_in_dword, align_size;
@@ -1118,9 +1105,7 @@ static u32 qed_dump_align(char *dump_buf, bool dump, u32 byte_offset)
 	return align_size;
 }
 
-/* Writes the specified string param to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_dump_str_param(u32 *dump_buf,
 			      bool dump,
 			      const char *param_name, const char *param_val)
@@ -1128,44 +1113,42 @@ static u32 qed_dump_str_param(u32 *dump_buf,
 	char *char_buf = (char *)dump_buf;
 	u32 offset = 0;
 
-	/* Dump param name */
+	 
 	offset += qed_dump_str(char_buf + offset, dump, param_name);
 
-	/* Indicate a string param value */
+	 
 	if (dump)
 		*(char_buf + offset) = 1;
 	offset++;
 
-	/* Dump param value */
+	 
 	offset += qed_dump_str(char_buf + offset, dump, param_val);
 
-	/* Align buffer to next dword */
+	 
 	offset += qed_dump_align(char_buf + offset, dump, offset);
 
 	return BYTES_TO_DWORDS(offset);
 }
 
-/* Writes the specified numeric param to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_dump_num_param(u32 *dump_buf,
 			      bool dump, const char *param_name, u32 param_val)
 {
 	char *char_buf = (char *)dump_buf;
 	u32 offset = 0;
 
-	/* Dump param name */
+	 
 	offset += qed_dump_str(char_buf + offset, dump, param_name);
 
-	/* Indicate a numeric param value */
+	 
 	if (dump)
 		*(char_buf + offset) = 0;
 	offset++;
 
-	/* Align buffer to next dword */
+	 
 	offset += qed_dump_align(char_buf + offset, dump, offset);
 
-	/* Dump param value (and change offset from bytes to dwords) */
+	 
 	offset = BYTES_TO_DWORDS(offset);
 	if (dump)
 		*(dump_buf + offset) = param_val;
@@ -1174,9 +1157,7 @@ static u32 qed_dump_num_param(u32 *dump_buf,
 	return offset;
 }
 
-/* Reads the FW version and writes it as a param to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_dump_fw_ver_param(struct qed_hwfn *p_hwfn,
 				 struct qed_ptt *p_ptt,
 				 u32 *dump_buf, bool dump)
@@ -1187,10 +1168,10 @@ static u32 qed_dump_fw_ver_param(struct qed_hwfn *p_hwfn,
 	u32 offset = 0;
 
 	if (dump && !qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_NO_FW_VER)) {
-		/* Read FW info from chip */
+		 
 		qed_read_fw_info(p_hwfn, p_ptt, &fw_info);
 
-		/* Create FW version/image strings */
+		 
 		if (snprintf(fw_ver_str, sizeof(fw_ver_str),
 			     "%d_%d_%d_%d", fw_info.ver.num.major,
 			     fw_info.ver.num.minor, fw_info.ver.num.rev,
@@ -1213,7 +1194,7 @@ static u32 qed_dump_fw_ver_param(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* Dump FW version, image and timestamp */
+	 
 	offset += qed_dump_str_param(dump_buf + offset,
 				     dump, "fw-version", fw_ver_str);
 	offset += qed_dump_str_param(dump_buf + offset,
@@ -1224,9 +1205,7 @@ static u32 qed_dump_fw_ver_param(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Reads the MFW version and writes it as a param to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_dump_mfw_ver_param(struct qed_hwfn *p_hwfn,
 				  struct qed_ptt *p_ptt,
 				  u32 *dump_buf, bool dump)
@@ -1238,15 +1217,13 @@ static u32 qed_dump_mfw_ver_param(struct qed_hwfn *p_hwfn,
 		u32 global_section_offsize, global_section_addr, mfw_ver;
 		u32 public_data_addr, global_section_offsize_addr;
 
-		/* Find MCP public data GRC address. Needs to be ORed with
-		 * MCP_REG_SCRATCH due to a HW bug.
-		 */
+		 
 		public_data_addr = qed_rd(p_hwfn,
 					  p_ptt,
 					  MISC_REG_SHARED_MEM_ADDR) |
 				   MCP_REG_SCRATCH;
 
-		/* Find MCP public global section offset */
+		 
 		global_section_offsize_addr = public_data_addr +
 					      offsetof(struct mcp_public_data,
 						       sections) +
@@ -1257,12 +1234,12 @@ static u32 qed_dump_mfw_ver_param(struct qed_hwfn *p_hwfn,
 			MCP_REG_SCRATCH +
 			(global_section_offsize & OFFSIZE_OFFSET_MASK) * 4;
 
-		/* Read MFW version from MCP public global section */
+		 
 		mfw_ver = qed_rd(p_hwfn, p_ptt,
 				 global_section_addr +
 				 offsetof(struct public_global, mfw_ver));
 
-		/* Dump MFW version param */
+		 
 		if (snprintf(mfw_ver_str, sizeof(mfw_ver_str), "%d_%d_%d_%d",
 			     (u8)(mfw_ver >> 24), (u8)(mfw_ver >> 16),
 			     (u8)(mfw_ver >> 8), (u8)mfw_ver) < 0)
@@ -1273,9 +1250,7 @@ static u32 qed_dump_mfw_ver_param(struct qed_hwfn *p_hwfn,
 	return qed_dump_str_param(dump_buf, dump, "mfw-version", mfw_ver_str);
 }
 
-/* Reads the chip revision from the chip and writes it as a param to the
- * specified buffer. Returns the dumped size in dwords.
- */
+ 
 static u32 qed_dump_chip_revision_param(struct qed_hwfn *p_hwfn,
 					struct qed_ptt *p_ptt,
 					u32 *dump_buf, bool dump)
@@ -1296,18 +1271,14 @@ static u32 qed_dump_chip_revision_param(struct qed_hwfn *p_hwfn,
 	return qed_dump_str_param(dump_buf, dump, "chip-revision", param_str);
 }
 
-/* Writes a section header to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_dump_section_hdr(u32 *dump_buf,
 				bool dump, const char *name, u32 num_params)
 {
 	return qed_dump_num_param(dump_buf, dump, name, num_params);
 }
 
-/* Writes the common global params to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_dump_common_global_params(struct qed_hwfn *p_hwfn,
 					 struct qed_ptt *p_ptt,
 					 u32 *dump_buf,
@@ -1318,13 +1289,13 @@ static u32 qed_dump_common_global_params(struct qed_hwfn *p_hwfn,
 	u32 offset = 0;
 	u8 num_params;
 
-	/* Dump global params section header */
+	 
 	num_params = NUM_COMMON_GLOBAL_PARAMS + num_specific_global_params +
 		(dev_data->chip_id == CHIP_BB ? 1 : 0);
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       dump, "global_params", num_params);
 
-	/* Store params */
+	 
 	offset += qed_dump_fw_ver_param(p_hwfn, p_ptt, dump_buf + offset, dump);
 	offset += qed_dump_mfw_ver_param(p_hwfn,
 					 p_ptt, dump_buf + offset, dump);
@@ -1351,17 +1322,15 @@ static u32 qed_dump_common_global_params(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Writes the "last" section (including CRC) to the specified buffer at the
- * given offset. Returns the dumped size in dwords.
- */
+ 
 static u32 qed_dump_last_section(u32 *dump_buf, u32 offset, bool dump)
 {
 	u32 start_offset = offset;
 
-	/* Dump CRC section header */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset, dump, "last", 0);
 
-	/* Calculate CRC32 and add it to the dword after the "last" section */
+	 
 	if (dump)
 		*(dump_buf + offset) = ~crc32(0xffffffff,
 					      (u8 *)dump_buf,
@@ -1372,7 +1341,7 @@ static u32 qed_dump_last_section(u32 *dump_buf, u32 offset, bool dump)
 	return offset - start_offset;
 }
 
-/* Update blocks reset state  */
+ 
 static void qed_update_blocks_reset_state(struct qed_hwfn *p_hwfn,
 					  struct qed_ptt *p_ptt)
 {
@@ -1381,7 +1350,7 @@ static void qed_update_blocks_reset_state(struct qed_hwfn *p_hwfn,
 	u8 rst_reg_id;
 	u32 blk_id;
 
-	/* Read reset registers */
+	 
 	for (rst_reg_id = 0; rst_reg_id < NUM_DBG_RESET_REGS; rst_reg_id++) {
 		const struct dbg_reset_reg *rst_reg;
 		bool rst_reg_removed;
@@ -1398,7 +1367,7 @@ static void qed_update_blocks_reset_state(struct qed_hwfn *p_hwfn,
 						     rst_reg_addr);
 	}
 
-	/* Check if blocks are in reset */
+	 
 	for (blk_id = 0; blk_id < NUM_PHYS_BLOCKS; blk_id++) {
 		const struct dbg_block_chip *blk;
 		bool has_rst_reg;
@@ -1416,7 +1385,7 @@ static void qed_update_blocks_reset_state(struct qed_hwfn *p_hwfn,
 	}
 }
 
-/* is_mode_match recursive function */
+ 
 static bool qed_is_mode_match_rec(struct qed_hwfn *p_hwfn,
 				  u16 *modes_buf_offset, u8 rec_depth)
 {
@@ -1431,7 +1400,7 @@ static bool qed_is_mode_match_rec(struct qed_hwfn *p_hwfn,
 		return false;
 	}
 
-	/* Get next element from modes tree buffer */
+	 
 	dbg_array = p_hwfn->dbg_arrays[BIN_BUF_DBG_MODE_TREE].ptr;
 	tree_val = dbg_array[(*modes_buf_offset)++];
 
@@ -1452,20 +1421,20 @@ static bool qed_is_mode_match_rec(struct qed_hwfn *p_hwfn,
 	}
 }
 
-/* Returns true if the mode (specified using modes_buf_offset) is enabled */
+ 
 static bool qed_is_mode_match(struct qed_hwfn *p_hwfn, u16 *modes_buf_offset)
 {
 	return qed_is_mode_match_rec(p_hwfn, modes_buf_offset, 0);
 }
 
-/* Enable / disable the Debug block */
+ 
 static void qed_bus_enable_dbg_block(struct qed_hwfn *p_hwfn,
 				     struct qed_ptt *p_ptt, bool enable)
 {
 	qed_wr(p_hwfn, p_ptt, DBG_REG_DBG_BLOCK_ON, enable ? 1 : 0);
 }
 
-/* Resets the Debug block */
+ 
 static void qed_bus_reset_dbg_block(struct qed_hwfn *p_hwfn,
 				    struct qed_ptt *p_ptt)
 {
@@ -1486,9 +1455,7 @@ static void qed_bus_reset_dbg_block(struct qed_hwfn *p_hwfn,
 	qed_wr(p_hwfn, p_ptt, reset_reg_addr, old_reset_reg_val);
 }
 
-/* Enable / disable Debug Bus clients according to the specified mask
- * (1 = enable, 0 = disable).
- */
+ 
 static void qed_bus_enable_clients(struct qed_hwfn *p_hwfn,
 				   struct qed_ptt *p_ptt, u32 client_mask)
 {
@@ -1518,14 +1485,14 @@ static void qed_bus_config_dbg_line(struct qed_hwfn *p_hwfn,
 	       force_frame_mask);
 }
 
-/* Disable debug bus in all blocks */
+ 
 static void qed_bus_disable_blocks(struct qed_hwfn *p_hwfn,
 				   struct qed_ptt *p_ptt)
 {
 	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
 	u32 block_id;
 
-	/* Disable all blocks */
+	 
 	for (block_id = 0; block_id < MAX_BLOCK_ID; block_id++) {
 		const struct dbg_block_chip *block_per_chip =
 		    qed_get_dbg_block_per_chip(p_hwfn,
@@ -1536,7 +1503,7 @@ static void qed_bus_disable_blocks(struct qed_hwfn *p_hwfn,
 		    dev_data->block_in_reset[block_id])
 			continue;
 
-		/* Disable debug bus */
+		 
 		if (GET_FIELD(block_per_chip->flags,
 			      DBG_BLOCK_CHIP_HAS_DBG_BUS)) {
 			u32 dbg_en_addr =
@@ -1557,18 +1524,14 @@ static void qed_bus_disable_blocks(struct qed_hwfn *p_hwfn,
 	}
 }
 
-/* Returns true if the specified entity (indicated by GRC param) should be
- * included in the dump, false otherwise.
- */
+ 
 static bool qed_grc_is_included(struct qed_hwfn *p_hwfn,
 				enum dbg_grc_params grc_param)
 {
 	return qed_grc_get_param(p_hwfn, grc_param) > 0;
 }
 
-/* Returns the storm_id that matches the specified Storm letter,
- * or MAX_DBG_STORMS if invalid storm letter.
- */
+ 
 static enum dbg_storms qed_get_id_from_letter(char storm_letter)
 {
 	u8 storm_id;
@@ -1580,18 +1543,14 @@ static enum dbg_storms qed_get_id_from_letter(char storm_letter)
 	return MAX_DBG_STORMS;
 }
 
-/* Returns true of the specified Storm should be included in the dump, false
- * otherwise.
- */
+ 
 static bool qed_grc_is_storm_included(struct qed_hwfn *p_hwfn,
 				      enum dbg_storms storm)
 {
 	return qed_grc_get_param(p_hwfn, (enum dbg_grc_params)storm) > 0;
 }
 
-/* Returns true if the specified memory should be included in the dump, false
- * otherwise.
- */
+ 
 static bool qed_grc_is_mem_included(struct qed_hwfn *p_hwfn,
 				    enum block_id block_id, u8 mem_group_id)
 {
@@ -1600,7 +1559,7 @@ static bool qed_grc_is_mem_included(struct qed_hwfn *p_hwfn,
 
 	block = get_dbg_block(p_hwfn, block_id);
 
-	/* If the block is associated with a Storm, check Storm match */
+	 
 	if (block->associated_storm_letter) {
 		enum dbg_storms associated_storm_id =
 		    qed_get_id_from_letter(block->associated_storm_letter);
@@ -1666,7 +1625,7 @@ static bool qed_grc_is_mem_included(struct qed_hwfn *p_hwfn,
 	}
 }
 
-/* Stalls all Storms */
+ 
 static void qed_grc_stall_storms(struct qed_hwfn *p_hwfn,
 				 struct qed_ptt *p_ptt, bool stall)
 {
@@ -1686,9 +1645,7 @@ static void qed_grc_stall_storms(struct qed_hwfn *p_hwfn,
 	msleep(STALL_DELAY_MS);
 }
 
-/* Takes all blocks out of reset. If rbc_only is true, only RBC clients are
- * taken out of reset.
- */
+ 
 static void qed_grc_unreset_blocks(struct qed_hwfn *p_hwfn,
 				   struct qed_ptt *p_ptt, bool rbc_only)
 {
@@ -1696,7 +1653,7 @@ static void qed_grc_unreset_blocks(struct qed_hwfn *p_hwfn,
 	u8 chip_id = dev_data->chip_id;
 	u32 i;
 
-	/* Take RBCs out of reset */
+	 
 	for (i = 0; i < ARRAY_SIZE(s_rbc_reset_defs); i++)
 		if (s_rbc_reset_defs[i].reset_val[dev_data->chip_id])
 			qed_wr(p_hwfn,
@@ -1710,7 +1667,7 @@ static void qed_grc_unreset_blocks(struct qed_hwfn *p_hwfn,
 		u8 reset_reg_id;
 		u32 block_id;
 
-		/* Fill reset regs values */
+		 
 		for (block_id = 0; block_id < NUM_PHYS_BLOCKS; block_id++) {
 			bool is_removed, has_reset_reg, unreset_before_dump;
 			const struct dbg_block_chip *block;
@@ -1732,7 +1689,7 @@ static void qed_grc_unreset_blocks(struct qed_hwfn *p_hwfn,
 				    BIT(block->reset_reg_bit_offset);
 		}
 
-		/* Write reset registers */
+		 
 		for (reset_reg_id = 0; reset_reg_id < NUM_DBG_RESET_REGS;
 		     reset_reg_id++) {
 			const struct dbg_reset_reg *reset_reg;
@@ -1758,7 +1715,7 @@ static void qed_grc_unreset_blocks(struct qed_hwfn *p_hwfn,
 	}
 }
 
-/* Returns the attention block data of the specified block */
+ 
 static const struct dbg_attn_block_type_data *
 qed_get_block_attn_data(struct qed_hwfn *p_hwfn,
 			enum block_id block_id, enum dbg_attn_type attn_type)
@@ -1770,7 +1727,7 @@ qed_get_block_attn_data(struct qed_hwfn *p_hwfn,
 	return &base_attn_block_arr[block_id].per_type_data[attn_type];
 }
 
-/* Returns the attention registers of the specified block */
+ 
 static const struct dbg_attn_reg *
 qed_get_block_attn_regs(struct qed_hwfn *p_hwfn,
 			enum block_id block_id, enum dbg_attn_type attn_type,
@@ -1786,7 +1743,7 @@ qed_get_block_attn_regs(struct qed_hwfn *p_hwfn,
 		block_type_data->regs_offset;
 }
 
-/* For each block, clear the status of all parities */
+ 
 static void qed_grc_clear_all_prty(struct qed_hwfn *p_hwfn,
 				   struct qed_ptt *p_ptt)
 {
@@ -1810,7 +1767,7 @@ static void qed_grc_clear_all_prty(struct qed_hwfn *p_hwfn,
 			u16 modes_buf_offset;
 			bool eval_mode;
 
-			/* Check mode */
+			 
 			eval_mode = GET_FIELD(reg_data->mode.data,
 					      DBG_MODE_HDR_EVAL_MODE) > 0;
 			modes_buf_offset =
@@ -1818,7 +1775,7 @@ static void qed_grc_clear_all_prty(struct qed_hwfn *p_hwfn,
 					  DBG_MODE_HDR_MODES_BUF_OFFSET);
 
 			sts_clr_address = reg_data->sts_clr_address;
-			/* If Mode match: clear parity status */
+			 
 			if (!eval_mode ||
 			    qed_is_mode_match(p_hwfn, &modes_buf_offset))
 				qed_rd(p_hwfn, p_ptt,
@@ -1827,7 +1784,7 @@ static void qed_grc_clear_all_prty(struct qed_hwfn *p_hwfn,
 	}
 }
 
-/* Finds the meta data image in NVRAM */
+ 
 static enum dbg_status qed_find_nvram_image(struct qed_hwfn *p_hwfn,
 					    struct qed_ptt *p_ptt,
 					    u32 image_type,
@@ -1839,7 +1796,7 @@ static enum dbg_status qed_find_nvram_image(struct qed_hwfn *p_hwfn,
 	struct mcp_file_att file_att;
 	int nvm_result;
 
-	/* Call NVRAM get file command */
+	 
 	nvm_result = qed_mcp_nvm_rd_cmd(p_hwfn,
 					p_ptt,
 					DRV_MSG_CODE_NVM_GET_FILE_ATT,
@@ -1850,12 +1807,12 @@ static enum dbg_status qed_find_nvram_image(struct qed_hwfn *p_hwfn,
 					(u32 *)&file_att,
 					b_can_sleep);
 
-	/* Check response */
+	 
 	if (nvm_result || (ret_mcp_resp & FW_MSG_CODE_MASK) !=
 	    FW_MSG_CODE_NVM_OK)
 		return DBG_STATUS_NVRAM_GET_IMAGE_FAILED;
 
-	/* Update return values */
+	 
 	*nvram_offset_bytes = file_att.nvm_start_addr;
 	*nvram_size_bytes = file_att.len;
 
@@ -1864,14 +1821,14 @@ static enum dbg_status qed_find_nvram_image(struct qed_hwfn *p_hwfn,
 		   "find_nvram_image: found NVRAM image of type %d in NVRAM offset %d bytes with size %d bytes\n",
 		   image_type, *nvram_offset_bytes, *nvram_size_bytes);
 
-	/* Check alignment */
+	 
 	if (*nvram_size_bytes & 0x3)
 		return DBG_STATUS_NON_ALIGNED_NVRAM_IMAGE;
 
 	return DBG_STATUS_OK;
 }
 
-/* Reads data from NVRAM */
+ 
 static enum dbg_status qed_nvram_read(struct qed_hwfn *p_hwfn,
 				      struct qed_ptt *p_ptt,
 				      u32 nvram_offset_bytes,
@@ -1893,7 +1850,7 @@ static enum dbg_status qed_nvram_read(struct qed_hwfn *p_hwfn,
 		    (bytes_left >
 		     MCP_DRV_NVM_BUF_LEN) ? MCP_DRV_NVM_BUF_LEN : bytes_left;
 
-		/* Call NVRAM read command */
+		 
 		SET_MFW_FIELD(param,
 			      DRV_MB_PARAM_NVM_OFFSET,
 			      nvram_offset_bytes + read_offset);
@@ -1906,11 +1863,11 @@ static enum dbg_status qed_nvram_read(struct qed_hwfn *p_hwfn,
 				       b_can_sleep))
 			return DBG_STATUS_NVRAM_READ_FAILED;
 
-		/* Check response */
+		 
 		if ((ret_mcp_resp & FW_MSG_CODE_MASK) != FW_MSG_CODE_NVM_OK)
 			return DBG_STATUS_NVRAM_READ_FAILED;
 
-		/* Update read offset */
+		 
 		read_offset += ret_read_size;
 		bytes_left -= ret_read_size;
 	} while (bytes_left > 0);
@@ -1918,13 +1875,7 @@ static enum dbg_status qed_nvram_read(struct qed_hwfn *p_hwfn,
 	return DBG_STATUS_OK;
 }
 
-/* Dumps GRC registers section header. Returns the dumped size in dwords.
- * the following parameters are dumped:
- * - count: no. of dumped entries
- * - split_type: split type
- * - split_id: split ID (dumped only if split_id != SPLIT_TYPE_NONE)
- * - reg_type_name: register type name (dumped only if reg_type_name != NULL)
- */
+ 
 static u32 qed_grc_dump_regs_hdr(u32 *dump_buf,
 				 bool dump,
 				 u32 num_reg_entries,
@@ -1952,9 +1903,7 @@ static u32 qed_grc_dump_regs_hdr(u32 *dump_buf,
 	return offset;
 }
 
-/* Reads the specified registers into the specified buffer.
- * The addr and len arguments are specified in dwords.
- */
+ 
 void qed_read_regs(struct qed_hwfn *p_hwfn,
 		   struct qed_ptt *p_ptt, u32 *buf, u32 addr, u32 len)
 {
@@ -1964,10 +1913,7 @@ void qed_read_regs(struct qed_hwfn *p_hwfn,
 		buf[i] = qed_rd(p_hwfn, p_ptt, DWORDS_TO_BYTES(addr + i));
 }
 
-/* Dumps the GRC registers in the specified address range.
- * Returns the dumped size in dwords.
- * The addr and len arguments are specified in dwords.
- */
+ 
 static u32 qed_grc_dump_addr_range(struct qed_hwfn *p_hwfn,
 				   struct qed_ptt *p_ptt,
 				   u32 *dump_buf,
@@ -2003,13 +1949,13 @@ static u32 qed_grc_dump_addr_range(struct qed_hwfn *p_hwfn,
 		break;
 	}
 
-	/* Try reading using DMAE */
+	 
 	if (dev_data->use_dmae && split_type != SPLIT_TYPE_VF &&
 	    (len >= s_hw_type_defs[dev_data->hw_type].dmae_thresh ||
 	     (PROTECT_WIDE_BUS && wide_bus))) {
 		struct qed_dmae_params dmae_params;
 
-		/* Set DMAE params */
+		 
 		memset(&dmae_params, 0, sizeof(dmae_params));
 		SET_FIELD(dmae_params.flags, QED_DMAE_PARAMS_COMPLETION_DST, 1);
 		switch (split_type) {
@@ -2035,7 +1981,7 @@ static u32 qed_grc_dump_addr_range(struct qed_hwfn *p_hwfn,
 			break;
 		}
 
-		/* Execute DMAE command */
+		 
 		read_using_dmae = !qed_dmae_grc2host(p_hwfn,
 						     p_ptt,
 						     DWORDS_TO_BYTES(addr),
@@ -2052,9 +1998,9 @@ static u32 qed_grc_dump_addr_range(struct qed_hwfn *p_hwfn,
 	if (read_using_dmae)
 		goto print_log;
 
-	/* If not read using DMAE, read using GRC */
+	 
 
-	/* Set pretend */
+	 
 	if (split_type != dev_data->pretend.split_type ||
 	    split_id != dev_data->pretend.split_id) {
 		switch (split_type) {
@@ -2085,11 +2031,11 @@ static u32 qed_grc_dump_addr_range(struct qed_hwfn *p_hwfn,
 		dev_data->pretend.split_id = split_id;
 	}
 
-	/* Read registers using GRC */
+	 
 	qed_read_regs(p_hwfn, p_ptt, dump_buf, addr, len);
 
 print_log:
-	/* Print log */
+	 
 	dev_data->num_regs_read += len;
 	thresh = s_hw_type_defs[dev_data->hw_type].log_thresh;
 	if ((dev_data->num_regs_read / thresh) >
@@ -2101,9 +2047,7 @@ print_log:
 	return len;
 }
 
-/* Dumps GRC registers sequence header. Returns the dumped size in dwords.
- * The addr and len arguments are specified in dwords.
- */
+ 
 static u32 qed_grc_dump_reg_entry_hdr(u32 *dump_buf,
 				      bool dump, u32 addr, u32 len)
 {
@@ -2113,9 +2057,7 @@ static u32 qed_grc_dump_reg_entry_hdr(u32 *dump_buf,
 	return 1;
 }
 
-/* Dumps GRC registers sequence. Returns the dumped size in dwords.
- * The addr and len arguments are specified in dwords.
- */
+ 
 static u32 qed_grc_dump_reg_entry(struct qed_hwfn *p_hwfn,
 				  struct qed_ptt *p_ptt,
 				  u32 *dump_buf,
@@ -2134,13 +2076,7 @@ static u32 qed_grc_dump_reg_entry(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC registers sequence with skip cycle.
- * Returns the dumped size in dwords.
- * - addr:	start GRC address in dwords
- * - total_len:	total no. of dwords to dump
- * - read_len:	no. consecutive dwords to read
- * - skip_len:	no. of dwords to skip (and fill with zeros)
- */
+ 
 static u32 qed_grc_dump_reg_entry_skip(struct qed_hwfn *p_hwfn,
 				       struct qed_ptt *p_ptt,
 				       u32 *dump_buf,
@@ -2179,7 +2115,7 @@ static u32 qed_grc_dump_reg_entry_skip(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC registers entries. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_regs_entries(struct qed_hwfn *p_hwfn,
 				     struct qed_ptt *p_ptt,
 				     struct virt_mem_desc input_regs_arr,
@@ -2202,7 +2138,7 @@ static u32 qed_grc_dump_regs_entries(struct qed_hwfn *p_hwfn,
 		u16 modes_buf_offset;
 		bool eval_mode;
 
-		/* Check mode/block */
+		 
 		eval_mode = GET_FIELD(cond_hdr->mode.data,
 				      DBG_MODE_HDR_EVAL_MODE) > 0;
 		if (eval_mode) {
@@ -2243,7 +2179,7 @@ static u32 qed_grc_dump_regs_entries(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC registers entries. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_split_data(struct qed_hwfn *p_hwfn,
 				   struct qed_ptt *p_ptt,
 				   struct virt_mem_desc input_regs_arr,
@@ -2258,20 +2194,20 @@ static u32 qed_grc_dump_split_data(struct qed_hwfn *p_hwfn,
 	u32 num_dumped_reg_entries, offset;
 	u8 hdr_split_id = split_id;
 
-	/* In PORT_PF split type, print a port split header */
+	 
 	if (split_type == SPLIT_TYPE_PORT_PF) {
 		hdr_split_type = SPLIT_TYPE_PORT;
 		hdr_split_id = split_id / dev_data->num_pfs_per_port;
 	}
 
-	/* Calculate register dump header size (and skip it for now) */
+	 
 	offset = qed_grc_dump_regs_hdr(dump_buf,
 				       false,
 				       0,
 				       hdr_split_type,
 				       hdr_split_id, reg_type_name);
 
-	/* Dump registers */
+	 
 	offset += qed_grc_dump_regs_entries(p_hwfn,
 					    p_ptt,
 					    input_regs_arr,
@@ -2282,7 +2218,7 @@ static u32 qed_grc_dump_split_data(struct qed_hwfn *p_hwfn,
 					    block_enable,
 					    &num_dumped_reg_entries);
 
-	/* Write register dump header */
+	 
 	if (dump && num_dumped_reg_entries > 0)
 		qed_grc_dump_regs_hdr(dump_buf,
 				      dump,
@@ -2293,9 +2229,7 @@ static u32 qed_grc_dump_split_data(struct qed_hwfn *p_hwfn,
 	return num_dumped_reg_entries > 0 ? offset : 0;
 }
 
-/* Dumps registers according to the input registers array. Returns the dumped
- * size in dwords.
- */
+ 
 static u32 qed_grc_dump_registers(struct qed_hwfn *p_hwfn,
 				  struct qed_ptt *p_ptt,
 				  u32 *dump_buf,
@@ -2360,7 +2294,7 @@ static u32 qed_grc_dump_registers(struct qed_hwfn *p_hwfn,
 		input_offset += split_data_size;
 	}
 
-	/* Cancel pretends (pretend to original PF) */
+	 
 	if (dump) {
 		qed_fid_pretend(p_hwfn, p_ptt,
 				FIELD_VALUE(PXP_PRETEND_CONCRETE_FID_PFID,
@@ -2372,7 +2306,7 @@ static u32 qed_grc_dump_registers(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dump reset registers. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_reset_regs(struct qed_hwfn *p_hwfn,
 				   struct qed_ptt *p_ptt,
 				   u32 *dump_buf, bool dump)
@@ -2380,12 +2314,12 @@ static u32 qed_grc_dump_reset_regs(struct qed_hwfn *p_hwfn,
 	u32 offset = 0, num_regs = 0;
 	u8 reset_reg_id;
 
-	/* Calculate header size */
+	 
 	offset += qed_grc_dump_regs_hdr(dump_buf,
 					false,
 					0, SPLIT_TYPE_NONE, 0, "RESET_REGS");
 
-	/* Write reset registers */
+	 
 	for (reset_reg_id = 0; reset_reg_id < NUM_DBG_RESET_REGS;
 	     reset_reg_id++) {
 		const struct dbg_reset_reg *reset_reg;
@@ -2406,7 +2340,7 @@ static u32 qed_grc_dump_reset_regs(struct qed_hwfn *p_hwfn,
 		num_regs++;
 	}
 
-	/* Write header */
+	 
 	if (dump)
 		qed_grc_dump_regs_hdr(dump_buf,
 				      true, num_regs, SPLIT_TYPE_NONE,
@@ -2415,9 +2349,7 @@ static u32 qed_grc_dump_reset_regs(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dump registers that are modified during GRC Dump and therefore must be
- * dumped first. Returns the dumped size in dwords.
- */
+ 
 static u32 qed_grc_dump_modified_regs(struct qed_hwfn *p_hwfn,
 				      struct qed_ptt *p_ptt,
 				      u32 *dump_buf, bool dump)
@@ -2428,12 +2360,12 @@ static u32 qed_grc_dump_modified_regs(struct qed_hwfn *p_hwfn,
 	u8 storm_id, reg_idx, num_attn_regs;
 	u32 num_reg_entries = 0;
 
-	/* Write empty header for attention registers */
+	 
 	offset += qed_grc_dump_regs_hdr(dump_buf,
 					false,
 					0, SPLIT_TYPE_NONE, 0, "ATTN_REGS");
 
-	/* Write parity registers */
+	 
 	for (block_id = 0; block_id < NUM_PHYS_BLOCKS; block_id++) {
 		if (dev_data->block_in_reset[block_id] && dump)
 			continue;
@@ -2450,7 +2382,7 @@ static u32 qed_grc_dump_modified_regs(struct qed_hwfn *p_hwfn,
 			bool eval_mode;
 			u32 addr;
 
-			/* Check mode */
+			 
 			eval_mode = GET_FIELD(reg_data->mode.data,
 					      DBG_MODE_HDR_EVAL_MODE) > 0;
 			modes_buf_offset =
@@ -2460,7 +2392,7 @@ static u32 qed_grc_dump_modified_regs(struct qed_hwfn *p_hwfn,
 			    !qed_is_mode_match(p_hwfn, &modes_buf_offset))
 				continue;
 
-			/* Mode match: read & dump registers */
+			 
 			addr = reg_data->mask_address;
 			offset += qed_grc_dump_reg_entry(p_hwfn,
 							 p_ptt,
@@ -2482,19 +2414,19 @@ static u32 qed_grc_dump_modified_regs(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* Overwrite header for attention registers */
+	 
 	if (dump)
 		qed_grc_dump_regs_hdr(dump_buf,
 				      true,
 				      num_reg_entries,
 				      SPLIT_TYPE_NONE, 0, "ATTN_REGS");
 
-	/* Write empty header for stall registers */
+	 
 	stall_regs_offset = offset;
 	offset += qed_grc_dump_regs_hdr(dump_buf,
 					false, 0, SPLIT_TYPE_NONE, 0, "REGS");
 
-	/* Write Storm stall status registers */
+	 
 	for (storm_id = 0, num_reg_entries = 0; storm_id < MAX_DBG_STORMS;
 	     storm_id++) {
 		struct storm_defs *storm = &s_storm_defs[storm_id];
@@ -2516,7 +2448,7 @@ static u32 qed_grc_dump_modified_regs(struct qed_hwfn *p_hwfn,
 		num_reg_entries++;
 	}
 
-	/* Overwrite header for stall registers */
+	 
 	if (dump)
 		qed_grc_dump_regs_hdr(dump_buf + stall_regs_offset,
 				      true,
@@ -2526,7 +2458,7 @@ static u32 qed_grc_dump_modified_regs(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps registers that can't be represented in the debug arrays */
+ 
 static u32 qed_grc_dump_special_regs(struct qed_hwfn *p_hwfn,
 				     struct qed_ptt *p_ptt,
 				     u32 *dump_buf, bool dump)
@@ -2536,9 +2468,7 @@ static u32 qed_grc_dump_special_regs(struct qed_hwfn *p_hwfn,
 	offset += qed_grc_dump_regs_hdr(dump_buf,
 					dump, 2, SPLIT_TYPE_NONE, 0, "REGS");
 
-	/* Dump R/TDIF_REG_DEBUG_ERROR_INFO_SIZE (every 8'th register should be
-	 * skipped).
-	 */
+	 
 	addr = BYTES_TO_DWORDS(RDIF_REG_DEBUG_ERROR_INFO);
 	offset += qed_grc_dump_reg_entry_skip(p_hwfn,
 					      p_ptt,
@@ -2562,18 +2492,7 @@ static u32 qed_grc_dump_special_regs(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps a GRC memory header (section and params). Returns the dumped size in
- * dwords. The following parameters are dumped:
- * - name:	   dumped only if it's not NULL.
- * - addr:	   in dwords, dumped only if name is NULL.
- * - len:	   in dwords, always dumped.
- * - width:	   dumped if it's not zero.
- * - packed:	   dumped only if it's not false.
- * - mem_group:	   always dumped.
- * - is_storm:	   true only if the memory is related to a Storm.
- * - storm_letter: valid only if is_storm is true.
- *
- */
+ 
 static u32 qed_grc_dump_mem_hdr(struct qed_hwfn *p_hwfn,
 				u32 *dump_buf,
 				bool dump,
@@ -2597,12 +2516,12 @@ static u32 qed_grc_dump_mem_hdr(struct qed_hwfn *p_hwfn,
 	if (packed)
 		num_params++;
 
-	/* Dump section header */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       dump, "grc_mem", num_params);
 
 	if (name) {
-		/* Dump name */
+		 
 		if (storm_letter) {
 			strcpy(buf, "?STORM_");
 			buf[0] = storm_letter;
@@ -2614,27 +2533,27 @@ static u32 qed_grc_dump_mem_hdr(struct qed_hwfn *p_hwfn,
 		offset += qed_dump_str_param(dump_buf + offset,
 					     dump, "name", buf);
 	} else {
-		/* Dump address */
+		 
 		u32 addr_in_bytes = DWORDS_TO_BYTES(addr);
 
 		offset += qed_dump_num_param(dump_buf + offset,
 					     dump, "addr", addr_in_bytes);
 	}
 
-	/* Dump len */
+	 
 	offset += qed_dump_num_param(dump_buf + offset, dump, "len", len);
 
-	/* Dump bit width */
+	 
 	if (bit_width)
 		offset += qed_dump_num_param(dump_buf + offset,
 					     dump, "width", bit_width);
 
-	/* Dump packed */
+	 
 	if (packed)
 		offset += qed_dump_num_param(dump_buf + offset,
 					     dump, "packed", 1);
 
-	/* Dump reg type */
+	 
 	if (storm_letter) {
 		strcpy(buf, "?STORM_");
 		buf[0] = storm_letter;
@@ -2648,10 +2567,7 @@ static u32 qed_grc_dump_mem_hdr(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps a single GRC memory. If name is NULL, the memory is stored by address.
- * Returns the dumped size in dwords.
- * The addr and len arguments are specified in dwords.
- */
+ 
 static u32 qed_grc_dump_mem(struct qed_hwfn *p_hwfn,
 			    struct qed_ptt *p_ptt,
 			    u32 *dump_buf,
@@ -2683,7 +2599,7 @@ static u32 qed_grc_dump_mem(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC memories entries. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_mem_entries(struct qed_hwfn *p_hwfn,
 				    struct qed_ptt *p_ptt,
 				    struct virt_mem_desc input_mems_arr,
@@ -2703,7 +2619,7 @@ static u32 qed_grc_dump_mem_entries(struct qed_hwfn *p_hwfn,
 		    input_offset++;
 		num_entries = cond_hdr->data_size / MEM_DUMP_ENTRY_SIZE_DWORDS;
 
-		/* Check required mode */
+		 
 		eval_mode = GET_FIELD(cond_hdr->mode.data,
 				      DBG_MODE_HDR_EVAL_MODE) > 0;
 		if (eval_mode) {
@@ -2752,13 +2668,11 @@ static u32 qed_grc_dump_mem_entries(struct qed_hwfn *p_hwfn,
 			block = get_dbg_block(p_hwfn,
 					      cond_hdr->block_id);
 
-			/* If memory is associated with Storm,
-			 * update storm details
-			 */
+			 
 			if (block->associated_storm_letter)
 				storm_letter = block->associated_storm_letter;
 
-			/* Dump memory */
+			 
 			offset += qed_grc_dump_mem(p_hwfn,
 						p_ptt,
 						dump_buf + offset,
@@ -2777,9 +2691,7 @@ static u32 qed_grc_dump_mem_entries(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC memories according to the input array dump_mem.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_grc_dump_memories(struct qed_hwfn *p_hwfn,
 				 struct qed_ptt *p_ptt,
 				 u32 *dump_buf, bool dump)
@@ -2820,10 +2732,7 @@ static u32 qed_grc_dump_memories(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC context data for the specified Storm.
- * Returns the dumped size in dwords.
- * The lid_size argument is specified in quad-regs.
- */
+ 
 static u32 qed_grc_dump_ctx_data(struct qed_hwfn *p_hwfn,
 				 struct qed_ptt *p_ptt,
 				 u32 *dump_buf,
@@ -2837,7 +2746,7 @@ static u32 qed_grc_dump_ctx_data(struct qed_hwfn *p_hwfn,
 	u32 i, lid, lid_size, total_size;
 	u32 rd_reg_addr, offset = 0;
 
-	/* Convert quad-regs to dwords */
+	 
 	lid_size = storm->cm_ctx_lid_sizes[dev_data->chip_id][ctx_type] * 4;
 
 	if (!lid_size)
@@ -2859,7 +2768,7 @@ static u32 qed_grc_dump_ctx_data(struct qed_hwfn *p_hwfn,
 
 	rd_reg_addr = BYTES_TO_DWORDS(storm->cm_ctx_rd_addr[ctx_type]);
 
-	/* Dump context data */
+	 
 	for (lid = 0; lid < num_lids; lid++) {
 		for (i = 0; i < lid_size; i++) {
 			qed_wr(p_hwfn,
@@ -2878,7 +2787,7 @@ static u32 qed_grc_dump_ctx_data(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC contexts. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_ctx(struct qed_hwfn *p_hwfn,
 			    struct qed_ptt *p_ptt, u32 *dump_buf, bool dump)
 {
@@ -2890,7 +2799,7 @@ static u32 qed_grc_dump_ctx(struct qed_hwfn *p_hwfn,
 					       (enum dbg_storms)storm_id))
 			continue;
 
-		/* Dump Conn AG context size */
+		 
 		offset += qed_grc_dump_ctx_data(p_hwfn,
 						p_ptt,
 						dump_buf + offset,
@@ -2899,7 +2808,7 @@ static u32 qed_grc_dump_ctx(struct qed_hwfn *p_hwfn,
 						NUM_OF_LCIDS,
 						CM_CTX_CONN_AG, storm_id);
 
-		/* Dump Conn ST context size */
+		 
 		offset += qed_grc_dump_ctx_data(p_hwfn,
 						p_ptt,
 						dump_buf + offset,
@@ -2908,7 +2817,7 @@ static u32 qed_grc_dump_ctx(struct qed_hwfn *p_hwfn,
 						NUM_OF_LCIDS,
 						CM_CTX_CONN_ST, storm_id);
 
-		/* Dump Task AG context size */
+		 
 		offset += qed_grc_dump_ctx_data(p_hwfn,
 						p_ptt,
 						dump_buf + offset,
@@ -2917,7 +2826,7 @@ static u32 qed_grc_dump_ctx(struct qed_hwfn *p_hwfn,
 						NUM_OF_LTIDS,
 						CM_CTX_TASK_AG, storm_id);
 
-		/* Dump Task ST context size */
+		 
 		offset += qed_grc_dump_ctx_data(p_hwfn,
 						p_ptt,
 						dump_buf + offset,
@@ -2937,9 +2846,7 @@ static u32 qed_grc_dump_ctx(struct qed_hwfn *p_hwfn,
 #define VFC_POLLING_DELAY_MS	1
 #define VFC_POLLING_COUNT		20
 
-/* Reads data from VFC. Returns the number of dwords read (0 on error).
- * Sizes are specified in dwords.
- */
+ 
 static u32 qed_grc_dump_read_from_vfc(struct qed_hwfn *p_hwfn,
 				      struct qed_ptt *p_ptt,
 				      struct storm_defs *storm,
@@ -2958,21 +2865,21 @@ static u32 qed_grc_dump_read_from_vfc(struct qed_hwfn *p_hwfn,
 	polling_ms = VFC_POLLING_DELAY_MS *
 	    s_hw_type_defs[dev_data->hw_type].delay_factor;
 
-	/* Write VFC command */
+	 
 	ARR_REG_WR(p_hwfn,
 		   p_ptt,
 		   sem_base + SEM_FAST_REG_VFC_DATA_WR,
 		   cmd_data, cmd_size);
 
-	/* Write VFC address */
+	 
 	ARR_REG_WR(p_hwfn,
 		   p_ptt,
 		   sem_base + SEM_FAST_REG_VFC_ADDR,
 		   addr_data, addr_size);
 
-	/* Read response */
+	 
 	for (i = 0; i < resp_size; i++) {
-		/* Poll until ready */
+		 
 		do {
 			reg_addr = sem_base + SEM_FAST_REG_VFC_STATUS;
 			qed_grc_dump_addr_range(p_hwfn,
@@ -3004,7 +2911,7 @@ static u32 qed_grc_dump_read_from_vfc(struct qed_hwfn *p_hwfn,
 	return resp_size;
 }
 
-/* Dump VFC CAM. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_vfc_cam(struct qed_hwfn *p_hwfn,
 				struct qed_ptt *p_ptt,
 				u32 *dump_buf, bool dump, u8 storm_id)
@@ -3027,10 +2934,10 @@ static u32 qed_grc_dump_vfc_cam(struct qed_hwfn *p_hwfn,
 	if (!dump)
 		return offset + total_size;
 
-	/* Prepare CAM address */
+	 
 	SET_VAR_FIELD(cam_addr, VFC_CAM_ADDR, OP, VFC_OPCODE_CAM_RD);
 
-	/* Read VFC CAM data */
+	 
 	for (row = 0; row < VFC_CAM_NUM_ROWS; row++) {
 		SET_VAR_FIELD(cam_cmd, VFC_CAM_CMD, ROW, row);
 		offset += qed_grc_dump_read_from_vfc(p_hwfn,
@@ -3047,7 +2954,7 @@ static u32 qed_grc_dump_vfc_cam(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dump VFC RAM. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_vfc_ram(struct qed_hwfn *p_hwfn,
 				struct qed_ptt *p_ptt,
 				u32 *dump_buf,
@@ -3074,10 +2981,10 @@ static u32 qed_grc_dump_vfc_ram(struct qed_hwfn *p_hwfn,
 	if (!dump)
 		return offset + total_size;
 
-	/* Prepare RAM address */
+	 
 	SET_VAR_FIELD(ram_addr, VFC_RAM_ADDR, OP, VFC_OPCODE_RAM_RD);
 
-	/* Read VFC RAM data */
+	 
 	for (row = ram_defs->base_row;
 	     row < ram_defs->base_row + ram_defs->num_rows; row++) {
 		SET_VAR_FIELD(ram_addr, VFC_RAM_ADDR, ROW, row);
@@ -3095,7 +3002,7 @@ static u32 qed_grc_dump_vfc_ram(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC VFC data. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_vfc(struct qed_hwfn *p_hwfn,
 			    struct qed_ptt *p_ptt, u32 *dump_buf, bool dump)
 {
@@ -3108,13 +3015,13 @@ static u32 qed_grc_dump_vfc(struct qed_hwfn *p_hwfn,
 		    !s_storm_defs[storm_id].has_vfc)
 			continue;
 
-		/* Read CAM */
+		 
 		offset += qed_grc_dump_vfc_cam(p_hwfn,
 					       p_ptt,
 					       dump_buf + offset,
 					       dump, storm_id);
 
-		/* Read RAM */
+		 
 		for (i = 0; i < NUM_VFC_RAM_TYPES; i++)
 			offset += qed_grc_dump_vfc_ram(p_hwfn,
 						       p_ptt,
@@ -3127,7 +3034,7 @@ static u32 qed_grc_dump_vfc(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC RSS data. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_rss(struct qed_hwfn *p_hwfn,
 			    struct qed_ptt *p_ptt, u32 *dump_buf, bool dump)
 {
@@ -3157,7 +3064,7 @@ static u32 qed_grc_dump_rss(struct qed_hwfn *p_hwfn,
 					       packed,
 					       rss_defs->type_name, 0);
 
-		/* Dump RSS data */
+		 
 		if (!dump) {
 			offset += total_dwords;
 			continue;
@@ -3185,7 +3092,7 @@ static u32 qed_grc_dump_rss(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps GRC Big RAM. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_big_ram(struct qed_hwfn *p_hwfn,
 				struct qed_ptt *p_ptt,
 				u32 *dump_buf, bool dump, u8 big_ram_id)
@@ -3207,7 +3114,7 @@ static u32 qed_grc_dump_big_ram(struct qed_hwfn *p_hwfn,
 	strncpy(type_name, big_ram->instance_name, BIG_RAM_NAME_LEN);
 	strncpy(mem_name, big_ram->instance_name, BIG_RAM_NAME_LEN);
 
-	/* Dump memory header */
+	 
 	offset += qed_grc_dump_mem_hdr(p_hwfn,
 				       dump_buf + offset,
 				       dump,
@@ -3217,11 +3124,11 @@ static u32 qed_grc_dump_big_ram(struct qed_hwfn *p_hwfn,
 				       block_size * 8,
 				       false, type_name, 0);
 
-	/* Read and dump Big RAM data */
+	 
 	if (!dump)
 		return offset + ram_size;
 
-	/* Dump Big RAM */
+	 
 	for (i = 0; i < DIV_ROUND_UP(ram_size, BRB_REG_BIG_RAM_DATA_SIZE);
 	     i++) {
 		u32 addr, len;
@@ -3241,7 +3148,7 @@ static u32 qed_grc_dump_big_ram(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps MCP scratchpad. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_mcp(struct qed_hwfn *p_hwfn,
 			    struct qed_ptt *p_ptt, u32 *dump_buf, bool dump)
 {
@@ -3249,14 +3156,14 @@ static u32 qed_grc_dump_mcp(struct qed_hwfn *p_hwfn,
 	u32 offset = 0, addr;
 	bool halted = false;
 
-	/* Halt MCP */
+	 
 	if (dump && !qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_NO_MCP)) {
 		halted = !qed_mcp_halt(p_hwfn, p_ptt);
 		if (!halted)
 			DP_NOTICE(p_hwfn, "MCP halt failed!\n");
 	}
 
-	/* Dump MCP scratchpad */
+	 
 	offset += qed_grc_dump_mem(p_hwfn,
 				   p_ptt,
 				   dump_buf + offset,
@@ -3266,7 +3173,7 @@ static u32 qed_grc_dump_mcp(struct qed_hwfn *p_hwfn,
 				   MCP_REG_SCRATCH_SIZE,
 				   false, 0, false, "MCP", 0);
 
-	/* Dump MCP cpu_reg_file */
+	 
 	offset += qed_grc_dump_mem(p_hwfn,
 				   p_ptt,
 				   dump_buf + offset,
@@ -3276,14 +3183,14 @@ static u32 qed_grc_dump_mcp(struct qed_hwfn *p_hwfn,
 				   MCP_REG_CPU_REG_FILE_SIZE,
 				   false, 0, false, "MCP", 0);
 
-	/* Dump MCP registers */
+	 
 	block_enable[BLOCK_MCP] = true;
 	offset += qed_grc_dump_registers(p_hwfn,
 					 p_ptt,
 					 dump_buf + offset,
 					 dump, block_enable, "MCP");
 
-	/* Dump required non-MCP registers */
+	 
 	offset += qed_grc_dump_regs_hdr(dump_buf + offset,
 					dump, 1, SPLIT_TYPE_NONE, 0,
 					"MCP");
@@ -3296,16 +3203,14 @@ static u32 qed_grc_dump_mcp(struct qed_hwfn *p_hwfn,
 					 1,
 					 false, SPLIT_TYPE_NONE, 0);
 
-	/* Release MCP */
+	 
 	if (halted && qed_mcp_resume(p_hwfn, p_ptt))
 		DP_NOTICE(p_hwfn, "Failed to resume MCP after halt!\n");
 
 	return offset;
 }
 
-/* Dumps the tbus indirect memory for all PHYs.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_grc_dump_phy(struct qed_hwfn *p_hwfn,
 			    struct qed_ptt *p_ptt, u32 *dump_buf, bool dump)
 {
@@ -3370,7 +3275,7 @@ static u32 qed_grc_dump_phy(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps the MCP HW dump from NVRAM. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_mcp_hw_dump(struct qed_hwfn *p_hwfn,
 				    struct qed_ptt *p_ptt,
 				    u32 *dump_buf, bool dump)
@@ -3379,7 +3284,7 @@ static u32 qed_grc_dump_mcp_hw_dump(struct qed_hwfn *p_hwfn,
 	u32 hw_dump_size_dwords = 0, offset = 0;
 	enum dbg_status status;
 
-	/* Read HW dump image from NVRAM */
+	 
 	status = qed_find_nvram_image(p_hwfn,
 				      p_ptt,
 				      NVM_TYPE_HW_DUMP_OUT,
@@ -3391,13 +3296,13 @@ static u32 qed_grc_dump_mcp_hw_dump(struct qed_hwfn *p_hwfn,
 
 	hw_dump_size_dwords = BYTES_TO_DWORDS(hw_dump_size_bytes);
 
-	/* Dump HW dump image section */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       dump, "mcp_hw_dump", 1);
 	offset += qed_dump_num_param(dump_buf + offset,
 				     dump, "size", hw_dump_size_dwords);
 
-	/* Read MCP HW dump image into dump buffer */
+	 
 	if (dump && hw_dump_size_dwords) {
 		status = qed_nvram_read(p_hwfn,
 					p_ptt,
@@ -3416,7 +3321,7 @@ static u32 qed_grc_dump_mcp_hw_dump(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps Static Debug data. Returns the dumped size in dwords. */
+ 
 static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 				     struct qed_ptt *p_ptt,
 				     u32 *dump_buf, bool dump)
@@ -3424,12 +3329,12 @@ static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
 	u32 block_id, line_id, offset = 0, addr, len;
 
-	/* Don't dump static debug if a debug bus recording is in progress */
+	 
 	if (dump && qed_rd(p_hwfn, p_ptt, DBG_REG_DBG_BLOCK_ON))
 		return 0;
 
 	if (dump) {
-		/* Disable debug bus in all blocks */
+		 
 		qed_bus_disable_blocks(p_hwfn, p_ptt);
 
 		qed_bus_reset_dbg_block(p_hwfn, p_ptt);
@@ -3441,7 +3346,7 @@ static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 		qed_bus_enable_dbg_block(p_hwfn, p_ptt, true);
 	}
 
-	/* Dump all static debug lines for each relevant block */
+	 
 	for (block_id = 0; block_id < MAX_BLOCK_ID; block_id++) {
 		const struct dbg_block_chip *block_per_chip;
 		const struct dbg_block *block;
@@ -3472,7 +3377,7 @@ static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 		block_dwords = NUM_DBG_LINES(block_per_chip) *
 			       STATIC_DEBUG_LINE_DWORDS;
 
-		/* Dump static section params */
+		 
 		block = get_dbg_block(p_hwfn, (enum block_id)block_id);
 		offset += qed_grc_dump_mem_hdr(p_hwfn,
 					       dump_buf + offset,
@@ -3487,7 +3392,7 @@ static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 			continue;
 		}
 
-		/* If all lines are invalid - dump zeros */
+		 
 		if (dev_data->block_in_reset[block_id]) {
 			memset(dump_buf + offset, 0,
 			       DWORDS_TO_BYTES(block_dwords));
@@ -3495,7 +3400,7 @@ static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 			continue;
 		}
 
-		/* Enable block's client */
+		 
 		qed_bus_enable_clients(p_hwfn,
 				       p_ptt,
 				       BIT(block_per_chip->dbg_client_id));
@@ -3504,13 +3409,13 @@ static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 		len = STATIC_DEBUG_LINE_DWORDS;
 		for (line_id = 0; line_id < (u32)NUM_DBG_LINES(block_per_chip);
 		     line_id++) {
-			/* Configure debug line ID */
+			 
 			qed_bus_config_dbg_line(p_hwfn,
 						p_ptt,
 						(enum block_id)block_id,
 						(u8)line_id, 0xf, 0, 0, 0);
 
-			/* Read debug line info */
+			 
 			offset += qed_grc_dump_addr_range(p_hwfn,
 							  p_ptt,
 							  dump_buf + offset,
@@ -3521,7 +3426,7 @@ static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 							  0);
 		}
 
-		/* Disable block's client and debug output */
+		 
 		qed_bus_enable_clients(p_hwfn, p_ptt, 0);
 		qed_bus_config_dbg_line(p_hwfn, p_ptt,
 					(enum block_id)block_id, 0, 0, 0, 0, 0);
@@ -3535,9 +3440,7 @@ static u32 qed_grc_dump_static_debug(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Performs GRC Dump to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 				    struct qed_ptt *p_ptt,
 				    u32 *dump_buf,
@@ -3551,11 +3454,11 @@ static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 	*num_dumped_dwords = 0;
 	dev_data->num_regs_read = 0;
 
-	/* Update reset state */
+	 
 	if (dump)
 		qed_update_blocks_reset_state(p_hwfn, p_ptt);
 
-	/* Dump global params */
+	 
 	offset += qed_dump_common_global_params(p_hwfn,
 						p_ptt,
 						dump_buf + offset, dump, 4);
@@ -3572,19 +3475,19 @@ static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 	offset += qed_dump_num_param(dump_buf + offset,
 				     dump, "num-ports", dev_data->num_ports);
 
-	/* Dump reset registers (dumped before taking blocks out of reset ) */
+	 
 	if (qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_REGS))
 		offset += qed_grc_dump_reset_regs(p_hwfn,
 						  p_ptt,
 						  dump_buf + offset, dump);
 
-	/* Take all blocks out of reset (using reset registers) */
+	 
 	if (dump) {
 		qed_grc_unreset_blocks(p_hwfn, p_ptt, false);
 		qed_update_blocks_reset_state(p_hwfn, p_ptt);
 	}
 
-	/* Disable all parities using MFW command */
+	 
 	if (dump &&
 	    !qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_NO_MCP)) {
 		parities_masked = !qed_mcp_mask_parities(p_hwfn, p_ptt, 1);
@@ -3597,24 +3500,24 @@ static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* Dump modified registers (dumped before modifying them) */
+	 
 	if (qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_REGS))
 		offset += qed_grc_dump_modified_regs(p_hwfn,
 						     p_ptt,
 						     dump_buf + offset, dump);
 
-	/* Stall storms */
+	 
 	if (dump &&
 	    (qed_grc_is_included(p_hwfn,
 				 DBG_GRC_PARAM_DUMP_IOR) ||
 	     qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_VFC)))
 		qed_grc_stall_storms(p_hwfn, p_ptt, true);
 
-	/* Dump all regs  */
+	 
 	if (qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_REGS)) {
 		bool block_enable[MAX_BLOCK_ID];
 
-		/* Dump all blocks except MCP */
+		 
 		for (i = 0; i < MAX_BLOCK_ID; i++)
 			block_enable[i] = true;
 		block_enable[BLOCK_MCP] = false;
@@ -3625,31 +3528,31 @@ static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 						 dump,
 						 block_enable, NULL);
 
-		/* Dump special registers */
+		 
 		offset += qed_grc_dump_special_regs(p_hwfn,
 						    p_ptt,
 						    dump_buf + offset, dump);
 	}
 
-	/* Dump memories */
+	 
 	offset += qed_grc_dump_memories(p_hwfn, p_ptt, dump_buf + offset, dump);
 
-	/* Dump MCP */
+	 
 	if (qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_MCP))
 		offset += qed_grc_dump_mcp(p_hwfn,
 					   p_ptt, dump_buf + offset, dump);
 
-	/* Dump context */
+	 
 	if (qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_CM_CTX))
 		offset += qed_grc_dump_ctx(p_hwfn,
 					   p_ptt, dump_buf + offset, dump);
 
-	/* Dump RSS memories */
+	 
 	if (qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_RSS))
 		offset += qed_grc_dump_rss(p_hwfn,
 					   p_ptt, dump_buf + offset, dump);
 
-	/* Dump Big RAM */
+	 
 	for (i = 0; i < NUM_BIG_RAM_TYPES; i++)
 		if (qed_grc_is_included(p_hwfn, s_big_ram_defs[i].grc_param))
 			offset += qed_grc_dump_big_ram(p_hwfn,
@@ -3657,7 +3560,7 @@ static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 						       dump_buf + offset,
 						       dump, i);
 
-	/* Dump VFC */
+	 
 	if (qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_VFC)) {
 		dwords_read = qed_grc_dump_vfc(p_hwfn,
 					       p_ptt, dump_buf + offset, dump);
@@ -3666,21 +3569,21 @@ static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 			return DBG_STATUS_VFC_READ_ERROR;
 	}
 
-	/* Dump PHY tbus */
+	 
 	if (qed_grc_is_included(p_hwfn,
 				DBG_GRC_PARAM_DUMP_PHY) && dev_data->chip_id ==
 	    CHIP_K2 && dev_data->hw_type == HW_TYPE_ASIC)
 		offset += qed_grc_dump_phy(p_hwfn,
 					   p_ptt, dump_buf + offset, dump);
 
-	/* Dump MCP HW Dump */
+	 
 	if (qed_grc_is_included(p_hwfn, DBG_GRC_PARAM_DUMP_MCP_HW_DUMP) &&
 	    !qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_NO_MCP) && 1)
 		offset += qed_grc_dump_mcp_hw_dump(p_hwfn,
 						   p_ptt,
 						   dump_buf + offset, dump);
 
-	/* Dump static debug data (only if not during debug bus recording) */
+	 
 	if (qed_grc_is_included(p_hwfn,
 				DBG_GRC_PARAM_DUMP_STATIC) &&
 	    (!dump || dev_data->bus.state == DBG_BUS_STATE_IDLE))
@@ -3688,18 +3591,18 @@ static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 						    p_ptt,
 						    dump_buf + offset, dump);
 
-	/* Dump last section */
+	 
 	offset += qed_dump_last_section(dump_buf, offset, dump);
 
 	if (dump) {
-		/* Unstall storms */
+		 
 		if (qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_UNSTALL))
 			qed_grc_stall_storms(p_hwfn, p_ptt, false);
 
-		/* Clear parity status */
+		 
 		qed_grc_clear_all_prty(p_hwfn, p_ptt);
 
-		/* Enable all parities using MFW command */
+		 
 		if (parities_masked)
 			qed_mcp_mask_parities(p_hwfn, p_ptt, 0);
 	}
@@ -3709,9 +3612,7 @@ static enum dbg_status qed_grc_dump(struct qed_hwfn *p_hwfn,
 	return DBG_STATUS_OK;
 }
 
-/* Writes the specified failing Idle Check rule to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 				     struct qed_ptt *p_ptt,
 				     u32 *dump_buf,
@@ -3735,7 +3636,7 @@ static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 	cond_regs = &regs[0].cond_reg;
 	info_regs = &regs[rule->num_cond_regs].info_reg;
 
-	/* Dump rule data */
+	 
 	if (dump) {
 		memset(hdr, 0, sizeof(*hdr));
 		hdr->rule_id = rule_id;
@@ -3746,7 +3647,7 @@ static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 
 	offset += IDLE_CHK_RESULT_HDR_DWORDS;
 
-	/* Dump condition register values */
+	 
 	for (reg_id = 0; reg_id < rule->num_cond_regs; reg_id++) {
 		const struct dbg_idle_chk_cond_reg *reg = &cond_regs[reg_id];
 		struct dbg_idle_chk_result_reg_hdr *reg_hdr;
@@ -3754,7 +3655,7 @@ static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 		reg_hdr =
 		    (struct dbg_idle_chk_result_reg_hdr *)(dump_buf + offset);
 
-		/* Write register header */
+		 
 		if (!dump) {
 			offset += IDLE_CHK_RESULT_REG_HDR_DWORDS +
 			    reg->entry_size;
@@ -3771,17 +3672,17 @@ static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 		SET_FIELD(reg_hdr->data,
 			  DBG_IDLE_CHK_RESULT_REG_HDR_REG_ID, reg_id);
 
-		/* Write register values */
+		 
 		for (i = 0; i < reg_hdr->size; i++, next_reg_offset++, offset++)
 			dump_buf[offset] = cond_reg_values[next_reg_offset];
 	}
 
-	/* Dump info register values */
+	 
 	for (reg_id = 0; reg_id < rule->num_info_regs; reg_id++) {
 		const struct dbg_idle_chk_info_reg *reg = &info_regs[reg_id];
 		u32 block_id;
 
-		/* Check if register's block is in reset */
+		 
 		if (!dump) {
 			offset += IDLE_CHK_RESULT_REG_HDR_DWORDS + reg->size;
 			continue;
@@ -3802,7 +3703,7 @@ static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 			reg_hdr = (struct dbg_idle_chk_result_reg_hdr *)
 				  (dump_buf + offset);
 
-			/* Check mode */
+			 
 			eval_mode = GET_FIELD(reg->mode.data,
 					      DBG_MODE_HDR_EVAL_MODE) > 0;
 			if (eval_mode) {
@@ -3822,7 +3723,7 @@ static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 			wide_bus = GET_FIELD(reg->data,
 					     DBG_IDLE_CHK_INFO_REG_WIDE_BUS);
 
-			/* Write register header */
+			 
 			offset += IDLE_CHK_RESULT_REG_HDR_DWORDS;
 			hdr->num_dumped_info_regs++;
 			memset(reg_hdr, 0, sizeof(*reg_hdr));
@@ -3831,7 +3732,7 @@ static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 				  DBG_IDLE_CHK_RESULT_REG_HDR_REG_ID,
 				  rule->num_cond_regs + reg_id);
 
-			/* Write register values */
+			 
 			offset += qed_grc_dump_addr_range(p_hwfn,
 							  p_ptt,
 							  dump_buf + offset,
@@ -3845,7 +3746,7 @@ static u32 qed_idle_chk_dump_failure(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps idle check rule entries. Returns the dumped size in dwords. */
+ 
 static u32
 qed_idle_chk_dump_rule_entries(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 			       u32 *dump_buf, bool dump,
@@ -3877,10 +3778,7 @@ qed_idle_chk_dump_rule_entries(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 		    (u32 *)p_hwfn->dbg_arrays[BIN_BUF_DBG_IDLE_CHK_IMMS].ptr +
 		    rule->imm_offset;
 
-		/* Check if all condition register blocks are out of reset, and
-		 * find maximal number of entries (all condition registers that
-		 * are memories must have the same size, which is > 1).
-		 */
+		 
 		for (reg_id = 0; reg_id < rule->num_cond_regs && check_rule;
 		     reg_id++) {
 			u32 block_id =
@@ -3916,13 +3814,11 @@ qed_idle_chk_dump_rule_entries(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 			continue;
 		}
 
-		/* Go over all register entries (number of entries is the same
-		 * for all condition registers).
-		 */
+		 
 		for (entry_id = 0; entry_id < num_reg_entries; entry_id++) {
 			u32 next_reg_offset = 0;
 
-			/* Read current entry of all condition registers */
+			 
 			for (reg_id = 0; reg_id < rule->num_cond_regs;
 			     reg_id++) {
 				const struct dbg_idle_chk_cond_reg *reg =
@@ -3930,9 +3826,7 @@ qed_idle_chk_dump_rule_entries(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 				u32 padded_entry_size, addr;
 				bool wide_bus;
 
-				/* Find GRC address (if it's a memory, the
-				 * address of the specific entry is calculated).
-				 */
+				 
 				addr = GET_FIELD(reg->data,
 						 DBG_IDLE_CHK_COND_REG_ADDRESS);
 				wide_bus =
@@ -3948,7 +3842,7 @@ qed_idle_chk_dump_rule_entries(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 						padded_entry_size;
 				}
 
-				/* Read registers */
+				 
 				if (next_reg_offset + reg->entry_size >=
 				    IDLE_CHK_MAX_ENTRIES_SIZE) {
 					DP_NOTICE(p_hwfn,
@@ -3966,9 +3860,7 @@ qed_idle_chk_dump_rule_entries(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 							    SPLIT_TYPE_NONE, 0);
 			}
 
-			/* Call rule condition function.
-			 * If returns true, it's a failure.
-			 */
+			 
 			if ((*cond_arr[rule->cond_id]) (cond_reg_values,
 							imm_values)) {
 				offset += qed_idle_chk_dump_failure(p_hwfn,
@@ -3987,9 +3879,7 @@ qed_idle_chk_dump_rule_entries(struct qed_hwfn *p_hwfn, struct qed_ptt *p_ptt,
 	return offset;
 }
 
-/* Performs Idle Check Dump to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_idle_chk_dump(struct qed_hwfn *p_hwfn,
 			     struct qed_ptt *p_ptt, u32 *dump_buf, bool dump)
 {
@@ -3998,14 +3888,14 @@ static u32 qed_idle_chk_dump(struct qed_hwfn *p_hwfn,
 	u32 num_failing_rules_offset, offset = 0,
 	    input_offset = 0, num_failing_rules = 0;
 
-	/* Dump global params  - 1 must match below amount of params */
+	 
 	offset += qed_dump_common_global_params(p_hwfn,
 						p_ptt,
 						dump_buf + offset, dump, 1);
 	offset += qed_dump_str_param(dump_buf + offset,
 				     dump, "dump-type", "idle-chk");
 
-	/* Dump idle check section header with a single parameter */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset, dump, "idle_chk", 1);
 	num_failing_rules_offset = offset;
 	offset += qed_dump_num_param(dump_buf + offset, dump, "num_rules", 0);
@@ -4018,7 +3908,7 @@ static u32 qed_idle_chk_dump(struct qed_hwfn *p_hwfn,
 		u32 curr_failing_rules;
 		u16 modes_buf_offset;
 
-		/* Check mode */
+		 
 		eval_mode = GET_FIELD(cond_hdr->mode.data,
 				      DBG_MODE_HDR_EVAL_MODE) > 0;
 		if (eval_mode) {
@@ -4051,21 +3941,18 @@ static u32 qed_idle_chk_dump(struct qed_hwfn *p_hwfn,
 		input_offset += cond_hdr->data_size;
 	}
 
-	/* Overwrite num_rules parameter */
+	 
 	if (dump)
 		qed_dump_num_param(dump_buf + num_failing_rules_offset,
 				   dump, "num_rules", num_failing_rules);
 
-	/* Dump last section */
+	 
 	offset += qed_dump_last_section(dump_buf, offset, dump);
 
 	return offset;
 }
 
-/* Get info on the MCP Trace data in the scratchpad:
- * - trace_data_grc_addr (OUT): trace data GRC address in bytes
- * - trace_data_size (OUT): trace data size in bytes (without the header)
- */
+ 
 static enum dbg_status qed_mcp_trace_get_data_info(struct qed_hwfn *p_hwfn,
 						   struct qed_ptt *p_ptt,
 						   u32 *trace_data_grc_addr,
@@ -4073,14 +3960,14 @@ static enum dbg_status qed_mcp_trace_get_data_info(struct qed_hwfn *p_hwfn,
 {
 	u32 spad_trace_offsize, signature;
 
-	/* Read trace section offsize structure from MCP scratchpad */
+	 
 	spad_trace_offsize = qed_rd(p_hwfn, p_ptt, MCP_SPAD_TRACE_OFFSIZE_ADDR);
 
-	/* Extract trace section address from offsize (in scratchpad) */
+	 
 	*trace_data_grc_addr =
 		MCP_REG_SCRATCH + SECTION_OFFSET(spad_trace_offsize);
 
-	/* Read signature from MCP trace section */
+	 
 	signature = qed_rd(p_hwfn, p_ptt,
 			   *trace_data_grc_addr +
 			   offsetof(struct mcp_trace, signature));
@@ -4088,7 +3975,7 @@ static enum dbg_status qed_mcp_trace_get_data_info(struct qed_hwfn *p_hwfn,
 	if (signature != MFW_TRACE_SIGNATURE)
 		return DBG_STATUS_INVALID_TRACE_SIGNATURE;
 
-	/* Read trace size from MCP trace section */
+	 
 	*trace_data_size = qed_rd(p_hwfn,
 				  p_ptt,
 				  *trace_data_grc_addr +
@@ -4097,12 +3984,7 @@ static enum dbg_status qed_mcp_trace_get_data_info(struct qed_hwfn *p_hwfn,
 	return DBG_STATUS_OK;
 }
 
-/* Reads MCP trace meta data image from NVRAM
- * - running_bundle_id (OUT): running bundle ID (invalid when loaded from file)
- * - trace_meta_offset (OUT): trace meta offset in NVRAM in bytes (invalid when
- *			      loaded from file).
- * - trace_meta_size (OUT):   size in bytes of the trace meta data.
- */
+ 
 static enum dbg_status qed_mcp_trace_get_meta_info(struct qed_hwfn *p_hwfn,
 						   struct qed_ptt *p_ptt,
 						   u32 trace_data_size_bytes,
@@ -4112,10 +3994,10 @@ static enum dbg_status qed_mcp_trace_get_meta_info(struct qed_hwfn *p_hwfn,
 {
 	u32 spad_trace_offsize, nvram_image_type, running_mfw_addr;
 
-	/* Read MCP trace section offsize structure from MCP scratchpad */
+	 
 	spad_trace_offsize = qed_rd(p_hwfn, p_ptt, MCP_SPAD_TRACE_OFFSIZE_ADDR);
 
-	/* Find running bundle ID */
+	 
 	running_mfw_addr =
 		MCP_REG_SCRATCH + SECTION_OFFSET(spad_trace_offsize) +
 		QED_SECTION_SIZE(spad_trace_offsize) + trace_data_size_bytes;
@@ -4123,7 +4005,7 @@ static enum dbg_status qed_mcp_trace_get_meta_info(struct qed_hwfn *p_hwfn,
 	if (*running_bundle_id > 1)
 		return DBG_STATUS_INVALID_NVRAM_BUNDLE;
 
-	/* Find image in NVRAM */
+	 
 	nvram_image_type =
 	    (*running_bundle_id ==
 	     DIR_ID_1) ? NVM_TYPE_MFW_TRACE1 : NVM_TYPE_MFW_TRACE2;
@@ -4135,7 +4017,7 @@ static enum dbg_status qed_mcp_trace_get_meta_info(struct qed_hwfn *p_hwfn,
 				    true);
 }
 
-/* Reads the MCP Trace meta data from NVRAM into the specified buffer */
+ 
 static enum dbg_status qed_mcp_trace_read_meta(struct qed_hwfn *p_hwfn,
 					       struct qed_ptt *p_ptt,
 					       u32 nvram_offset_in_bytes,
@@ -4145,7 +4027,7 @@ static enum dbg_status qed_mcp_trace_read_meta(struct qed_hwfn *p_hwfn,
 	enum dbg_status status;
 	u32 signature;
 
-	/* Read meta data from NVRAM */
+	 
 	status = qed_nvram_read(p_hwfn,
 				p_ptt,
 				nvram_offset_in_bytes,
@@ -4155,22 +4037,22 @@ static enum dbg_status qed_mcp_trace_read_meta(struct qed_hwfn *p_hwfn,
 	if (status != DBG_STATUS_OK)
 		return status;
 
-	/* Extract and check first signature */
+	 
 	signature = qed_read_unaligned_dword(byte_buf);
 	byte_buf += sizeof(signature);
 	if (signature != NVM_MAGIC_VALUE)
 		return DBG_STATUS_INVALID_TRACE_SIGNATURE;
 
-	/* Extract number of modules */
+	 
 	modules_num = *(byte_buf++);
 
-	/* Skip all modules */
+	 
 	for (i = 0; i < modules_num; i++) {
 		module_len = *(byte_buf++);
 		byte_buf += module_len;
 	}
 
-	/* Extract and check second signature */
+	 
 	signature = qed_read_unaligned_dword(byte_buf);
 	byte_buf += sizeof(signature);
 	if (signature != NVM_MAGIC_VALUE)
@@ -4179,7 +4061,7 @@ static enum dbg_status qed_mcp_trace_read_meta(struct qed_hwfn *p_hwfn,
 	return DBG_STATUS_OK;
 }
 
-/* Dump MCP Trace */
+ 
 static enum dbg_status qed_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 					  struct qed_ptt *p_ptt,
 					  u32 *dump_buf,
@@ -4196,7 +4078,7 @@ static enum dbg_status qed_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 
 	use_mfw = !qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_NO_MCP);
 
-	/* Get trace data info */
+	 
 	status = qed_mcp_trace_get_data_info(p_hwfn,
 					     p_ptt,
 					     &trace_data_grc_addr,
@@ -4204,35 +4086,32 @@ static enum dbg_status qed_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 	if (status != DBG_STATUS_OK)
 		return status;
 
-	/* Dump global params */
+	 
 	offset += qed_dump_common_global_params(p_hwfn,
 						p_ptt,
 						dump_buf + offset, dump, 1);
 	offset += qed_dump_str_param(dump_buf + offset,
 				     dump, "dump-type", "mcp-trace");
 
-	/* Halt MCP while reading from scratchpad so the read data will be
-	 * consistent. if halt fails, MCP trace is taken anyway, with a small
-	 * risk that it may be corrupt.
-	 */
+	 
 	if (dump && use_mfw) {
 		halted = !qed_mcp_halt(p_hwfn, p_ptt);
 		if (!halted)
 			DP_NOTICE(p_hwfn, "MCP halt failed!\n");
 	}
 
-	/* Find trace data size */
+	 
 	trace_data_size_dwords =
 	    DIV_ROUND_UP(trace_data_size_bytes + sizeof(struct mcp_trace),
 			 BYTES_IN_DWORD);
 
-	/* Dump trace data section header and param */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       dump, "mcp_trace_data", 1);
 	offset += qed_dump_num_param(dump_buf + offset,
 				     dump, "size", trace_data_size_dwords);
 
-	/* Read trace data from scratchpad into dump buffer */
+	 
 	offset += qed_grc_dump_addr_range(p_hwfn,
 					  p_ptt,
 					  dump_buf + offset,
@@ -4241,18 +4120,15 @@ static enum dbg_status qed_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 					  trace_data_size_dwords, false,
 					  SPLIT_TYPE_NONE, 0);
 
-	/* Resume MCP (only if halt succeeded) */
+	 
 	if (halted && qed_mcp_resume(p_hwfn, p_ptt))
 		DP_NOTICE(p_hwfn, "Failed to resume MCP after halt!\n");
 
-	/* Dump trace meta section header */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       dump, "mcp_trace_meta", 1);
 
-	/* If MCP Trace meta size parameter was set, use it.
-	 * Otherwise, read trace meta.
-	 * trace_meta_size_bytes is dword-aligned.
-	 */
+	 
 	trace_meta_size_bytes =
 		qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_MCP_TRACE_META_SIZE);
 	if ((!trace_meta_size_bytes || dump) && use_mfw)
@@ -4265,11 +4141,11 @@ static enum dbg_status qed_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 	if (status == DBG_STATUS_OK)
 		trace_meta_size_dwords = BYTES_TO_DWORDS(trace_meta_size_bytes);
 
-	/* Dump trace meta size param */
+	 
 	offset += qed_dump_num_param(dump_buf + offset,
 				     dump, "size", trace_meta_size_dwords);
 
-	/* Read trace meta image into dump buffer */
+	 
 	if (dump && trace_meta_size_dwords)
 		status = qed_mcp_trace_read_meta(p_hwfn,
 						 p_ptt,
@@ -4279,18 +4155,16 @@ static enum dbg_status qed_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 	if (status == DBG_STATUS_OK)
 		offset += trace_meta_size_dwords;
 
-	/* Dump last section */
+	 
 	offset += qed_dump_last_section(dump_buf, offset, dump);
 
 	*num_dumped_dwords = offset;
 
-	/* If no mcp access, indicate that the dump doesn't contain the meta
-	 * data from NVRAM.
-	 */
+	 
 	return use_mfw ? status : DBG_STATUS_NVRAM_GET_IMAGE_FAILED;
 }
 
-/* Dump GRC FIFO */
+ 
 static enum dbg_status qed_reg_fifo_dump(struct qed_hwfn *p_hwfn,
 					 struct qed_ptt *p_ptt,
 					 u32 *dump_buf,
@@ -4301,25 +4175,21 @@ static enum dbg_status qed_reg_fifo_dump(struct qed_hwfn *p_hwfn,
 
 	*num_dumped_dwords = 0;
 
-	/* Dump global params */
+	 
 	offset += qed_dump_common_global_params(p_hwfn,
 						p_ptt,
 						dump_buf + offset, dump, 1);
 	offset += qed_dump_str_param(dump_buf + offset,
 				     dump, "dump-type", "reg-fifo");
 
-	/* Dump fifo data section header and param. The size param is 0 for
-	 * now, and is overwritten after reading the FIFO.
-	 */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       dump, "reg_fifo_data", 1);
 	size_param_offset = offset;
 	offset += qed_dump_num_param(dump_buf + offset, dump, "size", 0);
 
 	if (!dump) {
-		/* FIFO max size is REG_FIFO_DEPTH_DWORDS. There is no way to
-		 * test how much data is available, except for reading it.
-		 */
+		 
 		offset += REG_FIFO_DEPTH_DWORDS;
 		goto out;
 	}
@@ -4327,11 +4197,7 @@ static enum dbg_status qed_reg_fifo_dump(struct qed_hwfn *p_hwfn,
 	fifo_has_data = qed_rd(p_hwfn, p_ptt,
 			       GRC_REG_TRACE_FIFO_VALID_DATA) > 0;
 
-	/* Pull available data from fifo. Use DMAE since this is widebus memory
-	 * and must be accessed atomically. Test for dwords_read not passing
-	 * buffer size since more entries could be added to the buffer as we are
-	 * emptying it.
-	 */
+	 
 	addr = BYTES_TO_DWORDS(GRC_REG_TRACE_FIFO);
 	len = REG_FIFO_ELEMENT_DWORDS;
 	for (dwords_read = 0;
@@ -4352,7 +4218,7 @@ static enum dbg_status qed_reg_fifo_dump(struct qed_hwfn *p_hwfn,
 	qed_dump_num_param(dump_buf + size_param_offset, dump, "size",
 			   dwords_read);
 out:
-	/* Dump last section */
+	 
 	offset += qed_dump_last_section(dump_buf, offset, dump);
 
 	*num_dumped_dwords = offset;
@@ -4360,7 +4226,7 @@ out:
 	return DBG_STATUS_OK;
 }
 
-/* Dump IGU FIFO */
+ 
 static enum dbg_status qed_igu_fifo_dump(struct qed_hwfn *p_hwfn,
 					 struct qed_ptt *p_ptt,
 					 u32 *dump_buf,
@@ -4371,25 +4237,21 @@ static enum dbg_status qed_igu_fifo_dump(struct qed_hwfn *p_hwfn,
 
 	*num_dumped_dwords = 0;
 
-	/* Dump global params */
+	 
 	offset += qed_dump_common_global_params(p_hwfn,
 						p_ptt,
 						dump_buf + offset, dump, 1);
 	offset += qed_dump_str_param(dump_buf + offset,
 				     dump, "dump-type", "igu-fifo");
 
-	/* Dump fifo data section header and param. The size param is 0 for
-	 * now, and is overwritten after reading the FIFO.
-	 */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       dump, "igu_fifo_data", 1);
 	size_param_offset = offset;
 	offset += qed_dump_num_param(dump_buf + offset, dump, "size", 0);
 
 	if (!dump) {
-		/* FIFO max size is IGU_FIFO_DEPTH_DWORDS. There is no way to
-		 * test how much data is available, except for reading it.
-		 */
+		 
 		offset += IGU_FIFO_DEPTH_DWORDS;
 		goto out;
 	}
@@ -4397,11 +4259,7 @@ static enum dbg_status qed_igu_fifo_dump(struct qed_hwfn *p_hwfn,
 	fifo_has_data = qed_rd(p_hwfn, p_ptt,
 			       IGU_REG_ERROR_HANDLING_DATA_VALID) > 0;
 
-	/* Pull available data from fifo. Use DMAE since this is widebus memory
-	 * and must be accessed atomically. Test for dwords_read not passing
-	 * buffer size since more entries could be added to the buffer as we are
-	 * emptying it.
-	 */
+	 
 	addr = BYTES_TO_DWORDS(IGU_REG_ERROR_HANDLING_MEMORY);
 	len = IGU_FIFO_ELEMENT_DWORDS;
 	for (dwords_read = 0;
@@ -4422,7 +4280,7 @@ static enum dbg_status qed_igu_fifo_dump(struct qed_hwfn *p_hwfn,
 	qed_dump_num_param(dump_buf + size_param_offset, dump, "size",
 			   dwords_read);
 out:
-	/* Dump last section */
+	 
 	offset += qed_dump_last_section(dump_buf, offset, dump);
 
 	*num_dumped_dwords = offset;
@@ -4430,7 +4288,7 @@ out:
 	return DBG_STATUS_OK;
 }
 
-/* Protection Override dump */
+ 
 static enum dbg_status qed_protection_override_dump(struct qed_hwfn *p_hwfn,
 						    struct qed_ptt *p_ptt,
 						    u32 *dump_buf,
@@ -4441,16 +4299,14 @@ static enum dbg_status qed_protection_override_dump(struct qed_hwfn *p_hwfn,
 
 	*num_dumped_dwords = 0;
 
-	/* Dump global params */
+	 
 	offset += qed_dump_common_global_params(p_hwfn,
 						p_ptt,
 						dump_buf + offset, dump, 1);
 	offset += qed_dump_str_param(dump_buf + offset,
 				     dump, "dump-type", "protection-override");
 
-	/* Dump data section header and param. The size param is 0 for now,
-	 * and is overwritten after reading the data.
-	 */
+	 
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       dump, "protection_override_data", 1);
 	size_param_offset = offset;
@@ -4461,7 +4317,7 @@ static enum dbg_status qed_protection_override_dump(struct qed_hwfn *p_hwfn,
 		goto out;
 	}
 
-	/* Add override window info to buffer */
+	 
 	override_window_dwords =
 		qed_rd(p_hwfn, p_ptt, GRC_REG_NUMBER_VALID_OVERRIDE_WINDOW) *
 		PROTECTION_OVERRIDE_ELEMENT_DWORDS;
@@ -4478,7 +4334,7 @@ static enum dbg_status qed_protection_override_dump(struct qed_hwfn *p_hwfn,
 				   override_window_dwords);
 	}
 out:
-	/* Dump last section */
+	 
 	offset += qed_dump_last_section(dump_buf, offset, dump);
 
 	*num_dumped_dwords = offset;
@@ -4486,9 +4342,7 @@ out:
 	return DBG_STATUS_OK;
 }
 
-/* Performs FW Asserts Dump to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_fw_asserts_dump(struct qed_hwfn *p_hwfn,
 			       struct qed_ptt *p_ptt, u32 *dump_buf, bool dump)
 {
@@ -4499,14 +4353,14 @@ static u32 qed_fw_asserts_dump(struct qed_hwfn *p_hwfn,
 	u32 offset = 0;
 	u8 storm_id;
 
-	/* Dump global params */
+	 
 	offset += qed_dump_common_global_params(p_hwfn,
 						p_ptt,
 						dump_buf + offset, dump, 1);
 	offset += qed_dump_str_param(dump_buf + offset,
 				     dump, "dump-type", "fw-asserts");
 
-	/* Find Storm dump size */
+	 
 	for (storm_id = 0; storm_id < MAX_DBG_STORMS; storm_id++) {
 		u32 fw_asserts_section_addr, next_list_idx_addr, next_list_idx;
 		struct storm_defs *storm = &s_storm_defs[storm_id];
@@ -4515,12 +4369,12 @@ static u32 qed_fw_asserts_dump(struct qed_hwfn *p_hwfn,
 		if (dev_data->block_in_reset[storm->sem_block_id])
 			continue;
 
-		/* Read FW info for the current Storm */
+		 
 		qed_read_storm_fw_info(p_hwfn, p_ptt, storm_id, &fw_info);
 
 		asserts = &fw_info.fw_asserts_section;
 
-		/* Dump FW Asserts section header and params */
+		 
 		storm_letter_str[0] = storm->letter;
 		offset += qed_dump_section_hdr(dump_buf + offset,
 					       dump, "fw_asserts", 2);
@@ -4531,7 +4385,7 @@ static u32 qed_fw_asserts_dump(struct qed_hwfn *p_hwfn,
 					     "size",
 					     asserts->list_element_dword_size);
 
-		/* Read and dump FW Asserts data */
+		 
 		if (!dump) {
 			offset += asserts->list_element_dword_size;
 			continue;
@@ -4559,15 +4413,13 @@ static u32 qed_fw_asserts_dump(struct qed_hwfn *p_hwfn,
 						  false, SPLIT_TYPE_NONE, 0);
 	}
 
-	/* Dump last section */
+	 
 	offset += qed_dump_last_section(dump_buf, offset, dump);
 
 	return offset;
 }
 
-/* Dumps the specified ILT pages to the specified buffer.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_ilt_dump_pages_range(u32 *dump_buf, u32 *given_offset,
 				    bool *dump, u32 start_page_id,
 				    u32 num_pages,
@@ -4592,9 +4444,7 @@ static u32 qed_ilt_dump_pages_range(u32 *dump_buf, u32 *given_offset,
 			continue;
 
 		if (dump_page_ids) {
-			/* Copy page ID to dump buffer
-			 * (if dump is needed and buffer is not full)
-			 */
+			 
 			if ((continue_dump) &&
 			    (offset + 1 > buf_size_in_dwords)) {
 				continue_dump = false;
@@ -4604,7 +4454,7 @@ static u32 qed_ilt_dump_pages_range(u32 *dump_buf, u32 *given_offset,
 				*(dump_buf + offset) = page_id;
 			offset++;
 		} else {
-			/* Copy page memory to dump buffer */
+			 
 			if ((continue_dump) &&
 			    (offset + BYTES_TO_DWORDS(mem_desc->size) >
 			     buf_size_in_dwords)) {
@@ -4635,9 +4485,7 @@ static u32 qed_ilt_dump_pages_range(u32 *dump_buf, u32 *given_offset,
 	return offset;
 }
 
-/* Dumps a section containing the dumped ILT pages.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_ilt_dump_pages_section(struct qed_hwfn *p_hwfn,
 				      u32 *dump_buf,
 				      u32 *given_offset,
@@ -4688,21 +4536,15 @@ static u32 qed_ilt_dump_pages_section(struct qed_hwfn *p_hwfn,
 	offset += qed_dump_section_hdr(dump_buf + offset,
 				       continue_dump, section_name, 1);
 
-	/* Dump size parameter (0 for now, overwritten with real size later) */
+	 
 	size_param_offset = offset;
 	offset += qed_dump_num_param(dump_buf + offset,
 				     continue_dump, "size", 0);
 	base_data_offset = offset;
 
-	/* CDUC pages are ordered as follows:
-	 * - PF pages - valid section (included in PF connection type mapping)
-	 * - PF pages - invalid section (not dumped)
-	 * - For each VF in the PF:
-	 *   - VF pages - valid section (included in VF connection type mapping)
-	 *   - VF pages - invalid section (not dumped)
-	 */
+	 
 	if (qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_DUMP_ILT_CDUC)) {
-		/* Dump connection PF pages */
+		 
 		start_page_id = clients[ILT_CLI_CDUC].first.val - pf_start_line;
 		qed_ilt_dump_pages_range(dump_buf, &offset, &continue_dump,
 					 start_page_id, valid_conn_pf_pages,
@@ -4710,7 +4552,7 @@ static u32 qed_ilt_dump_pages_section(struct qed_hwfn *p_hwfn,
 					 buf_size_in_dwords,
 					 &actual_dump_size_in_dwords);
 
-		/* Dump connection VF pages */
+		 
 		start_page_id += clients[ILT_CLI_CDUC].pf_total_lines;
 		for (i = 0; i < p_hwfn->p_cxt_mngr->vf_count;
 		     i++, start_page_id += clients[ILT_CLI_CDUC].vf_total_lines)
@@ -4722,15 +4564,9 @@ static u32 qed_ilt_dump_pages_section(struct qed_hwfn *p_hwfn,
 						 &actual_dump_size_in_dwords);
 	}
 
-	/* CDUT pages are ordered as follows:
-	 * - PF init pages (not dumped)
-	 * - PF work pages
-	 * - For each VF in the PF:
-	 *   - VF init pages (not dumped)
-	 *   - VF work pages
-	 */
+	 
 	if (qed_grc_get_param(p_hwfn, DBG_GRC_PARAM_DUMP_ILT_CDUT)) {
-		/* Dump task PF pages */
+		 
 		start_page_id = clients[ILT_CLI_CDUT].first.val +
 		    cdut_pf_init_pages - pf_start_line;
 		qed_ilt_dump_pages_range(dump_buf, &offset, &continue_dump,
@@ -4739,7 +4575,7 @@ static u32 qed_ilt_dump_pages_section(struct qed_hwfn *p_hwfn,
 					 buf_size_in_dwords,
 					 &actual_dump_size_in_dwords);
 
-		/* Dump task VF pages */
+		 
 		start_page_id = clients[ILT_CLI_CDUT].first.val +
 		    cdut_pf_pages + cdut_vf_init_pages - pf_start_line;
 		for (i = 0; i < p_hwfn->p_cxt_mngr->vf_count;
@@ -4752,7 +4588,7 @@ static u32 qed_ilt_dump_pages_section(struct qed_hwfn *p_hwfn,
 						 &actual_dump_size_in_dwords);
 	}
 
-	/*Dump Searcher pages */
+	 
 	if (clients[ILT_CLI_SRC].active) {
 		start_page_id = clients[ILT_CLI_SRC].first.val - pf_start_line;
 		src_pages = clients[ILT_CLI_SRC].last.val -
@@ -4763,7 +4599,7 @@ static u32 qed_ilt_dump_pages_section(struct qed_hwfn *p_hwfn,
 					 &actual_dump_size_in_dwords);
 	}
 
-	/* Overwrite size param */
+	 
 	if (update_size) {
 		u32 section_size = (*dump == continue_dump) ?
 		    offset - base_data_offset :
@@ -4783,10 +4619,7 @@ static u32 qed_ilt_dump_pages_section(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dumps a section containing the global parameters.
- * Part of ilt dump process
- * Returns the dumped size in dwords.
- */
+ 
 static u32
 qed_ilt_dump_dump_common_global_params(struct qed_hwfn *p_hwfn,
 				       struct qed_ptt *p_ptt,
@@ -4927,17 +4760,12 @@ qed_ilt_dump_dump_common_global_params(struct qed_hwfn *p_hwfn,
 				     "src-is-active",
 				     clients[ILT_CLI_SRC].active);
 
-	/* Additional/Less parameters require matching of number in call to
-	 * dump_common_global_params()
-	 */
+	 
 
 	return offset;
 }
 
-/* Dump section containing number of PF CIDs per connection type.
- * Part of ilt dump process.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_ilt_dump_dump_num_pf_cids(struct qed_hwfn *p_hwfn,
 					 u32 *dump_buf,
 					 bool dump, u32 *valid_conn_pf_cids)
@@ -4961,10 +4789,7 @@ static u32 qed_ilt_dump_dump_num_pf_cids(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Dump section containing number of VF CIDs per connection type
- * Part of ilt dump process.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_ilt_dump_dump_num_vf_cids(struct qed_hwfn *p_hwfn,
 					 u32 *dump_buf,
 					 bool dump, u32 *valid_conn_vf_cids)
@@ -4989,10 +4814,7 @@ static u32 qed_ilt_dump_dump_num_vf_cids(struct qed_hwfn *p_hwfn,
 	return offset;
 }
 
-/* Performs ILT Dump to the specified buffer.
- * buf_size_in_dwords - The dumped buffer size.
- * Returns the dumped size in dwords.
- */
+ 
 static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 			struct qed_ptt *p_ptt,
 			u32 *dump_buf, u32 buf_size_in_dwords, bool dump)
@@ -5024,9 +4846,7 @@ static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 	ilt_pages = p_hwfn->p_cxt_mngr->ilt_shadow;
 	continue_dump = dump;
 
-	/* if need to dump then save memory for the last section
-	 * (last section calculates CRC of dumped data)
-	 */
+	 
 	if (dump) {
 		if (buf_size_in_dwords >= last_section_size) {
 			buf_size_in_dwords -= last_section_size;
@@ -5036,13 +4856,9 @@ static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 		}
 	}
 
-	/* Dump global params */
+	 
 
-	/* if need to dump then first check that there is enough memory
-	 * in dumped buffer for this section calculate the size of this
-	 * section without dumping. if there is not enough memory - then
-	 * stop the dumping.
-	 */
+	 
 	if (continue_dump) {
 		section_size =
 			qed_ilt_dump_dump_common_global_params(p_hwfn,
@@ -5070,10 +4886,7 @@ static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 							 &full_dump_off,
 							 &actul_dump_off);
 
-	/* Dump section containing number of PF CIDs per connection type
-	 * If need to dump then first check that there is enough memory in
-	 * dumped buffer for this section.
-	 */
+	 
 	if (continue_dump) {
 		section_size =
 			qed_ilt_dump_dump_num_pf_cids(p_hwfn,
@@ -5091,10 +4904,7 @@ static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 						continue_dump,
 						&valid_conn_pf_cids);
 
-	/* Dump section containing number of VF CIDs per connection type
-	 * If need to dump then first check that there is enough memory in
-	 * dumped buffer for this section.
-	 */
+	 
 	if (continue_dump) {
 		section_size =
 			qed_ilt_dump_dump_num_vf_cids(p_hwfn,
@@ -5112,14 +4922,10 @@ static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 						continue_dump,
 						&valid_conn_vf_cids);
 
-	/* Dump section containing physical memory descriptors for each
-	 * ILT page.
-	 */
+	 
 	num_pages = p_hwfn->p_cxt_mngr->ilt_shadow_size;
 
-	/* If need to dump then first check that there is enough memory
-	 * in dumped buffer for the section header.
-	 */
+	 
 	if (continue_dump) {
 		section_size = qed_dump_section_hdr(NULL,
 						    false,
@@ -5142,9 +4948,7 @@ static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 				     "size",
 				     num_pages * PAGE_MEM_DESC_SIZE_DWORDS);
 
-	/* Copy memory descriptors to dump buffer
-	 * If need to dump then dump till the dump buffer size
-	 */
+	 
 	if (continue_dump) {
 		for (page_id = 0; page_id < num_pages;
 		     page_id++, offset += PAGE_MEM_DESC_SIZE_DWORDS) {
@@ -5171,13 +4975,13 @@ static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 	valid_conn_vf_pages = DIV_ROUND_UP(valid_conn_vf_cids,
 					   num_cids_per_page);
 
-	/* Dump ILT pages IDs */
+	 
 	qed_ilt_dump_pages_section(p_hwfn, dump_buf, &offset, &continue_dump,
 				   valid_conn_pf_pages, valid_conn_vf_pages,
 				   ilt_pages, true, buf_size_in_dwords,
 				   &actual_dump_size_in_dwords);
 
-	/* Dump ILT pages memory */
+	 
 	qed_ilt_dump_pages_section(p_hwfn, dump_buf, &offset, &continue_dump,
 				   valid_conn_pf_pages, valid_conn_vf_pages,
 				   ilt_pages, false, buf_size_in_dwords,
@@ -5192,14 +4996,14 @@ static u32 qed_ilt_dump(struct qed_hwfn *p_hwfn,
 			   "actual-dump-size",
 			   real_dumped_size + last_section_size);
 
-	/* Dump last section */
+	 
 	real_dumped_size += qed_dump_last_section(dump_buf,
 						  real_dumped_size, dump);
 
 	return real_dumped_size;
 }
 
-/***************************** Public Functions *******************************/
+ 
 
 enum dbg_status qed_dbg_set_bin_ptr(struct qed_hwfn *p_hwfn,
 				    const u8 * const bin_ptr)
@@ -5207,7 +5011,7 @@ enum dbg_status qed_dbg_set_bin_ptr(struct qed_hwfn *p_hwfn,
 	struct bin_buffer_hdr *buf_hdrs = (struct bin_buffer_hdr *)bin_ptr;
 	u8 buf_id;
 
-	/* Convert binary data to debug arrays */
+	 
 	for (buf_id = 0; buf_id < MAX_BIN_DBG_BUFFER_TYPE; buf_id++)
 		qed_set_dbg_bin_buf(p_hwfn,
 				    buf_id,
@@ -5236,11 +5040,11 @@ bool qed_read_fw_info(struct qed_hwfn *p_hwfn,
 	for (storm_id = 0; storm_id < MAX_DBG_STORMS; storm_id++) {
 		struct storm_defs *storm = &s_storm_defs[storm_id];
 
-		/* Skip Storm if it's in reset */
+		 
 		if (dev_data->block_in_reset[storm->sem_block_id])
 			continue;
 
-		/* Read FW info for the current Storm */
+		 
 		qed_read_storm_fw_info(p_hwfn, p_ptt, storm_id, fw_info);
 
 		return true;
@@ -5264,9 +5068,7 @@ enum dbg_status qed_dbg_grc_config(struct qed_hwfn *p_hwfn,
 	if (status != DBG_STATUS_OK)
 		return status;
 
-	/* Initializes the GRC parameters (if not initialized). Needed in order
-	 * to set the default parameter values for the first time.
-	 */
+	 
 	qed_dbg_grc_init_params(p_hwfn);
 
 	if (grc_param >= MAX_DBG_GRC_PARAMS)
@@ -5276,23 +5078,21 @@ enum dbg_status qed_dbg_grc_config(struct qed_hwfn *p_hwfn,
 		return DBG_STATUS_INVALID_ARGS;
 
 	if (s_grc_param_defs[grc_param].is_preset) {
-		/* Preset param */
+		 
 
-		/* Disabling a preset is not allowed. Call
-		 * dbg_grc_set_params_default instead.
-		 */
+		 
 		if (!val)
 			return DBG_STATUS_INVALID_ARGS;
 
-		/* Update all params with the preset values */
+		 
 		for (i = 0; i < MAX_DBG_GRC_PARAMS; i++) {
 			struct grc_param_defs *defs = &s_grc_param_defs[i];
 			u32 preset_val;
-			/* Skip persistent params */
+			 
 			if (defs->is_persistent)
 				continue;
 
-			/* Find preset value */
+			 
 			if (grc_param == DBG_GRC_PARAM_EXCLUDE_ALL)
 				preset_val =
 				    defs->exclude_all_preset_val;
@@ -5305,14 +5105,14 @@ enum dbg_status qed_dbg_grc_config(struct qed_hwfn *p_hwfn,
 			qed_grc_set_param(p_hwfn, i, preset_val);
 		}
 	} else {
-		/* Regular param - set its value */
+		 
 		qed_grc_set_param(p_hwfn, grc_param, val);
 	}
 
 	return DBG_STATUS_OK;
 }
 
-/* Assign default GRC param values */
+ 
 void qed_dbg_grc_set_params_default(struct qed_hwfn *p_hwfn)
 {
 	struct dbg_tools_data *dev_data = &p_hwfn->dbg_info;
@@ -5365,13 +5165,13 @@ enum dbg_status qed_dbg_grc_dump(struct qed_hwfn *p_hwfn,
 	if (buf_size_in_dwords < needed_buf_size_in_dwords)
 		return DBG_STATUS_DUMP_BUF_TOO_SMALL;
 
-	/* Doesn't do anything, needed for compile time asserts */
+	 
 	qed_static_asserts();
 
-	/* GRC Dump */
+	 
 	status = qed_grc_dump(p_hwfn, p_ptt, dump_buf, true, num_dumped_dwords);
 
-	/* Revert GRC params to their default */
+	 
 	qed_dbg_grc_set_params_default(p_hwfn);
 
 	return status;
@@ -5428,14 +5228,14 @@ enum dbg_status qed_dbg_idle_chk_dump(struct qed_hwfn *p_hwfn,
 	if (buf_size_in_dwords < needed_buf_size_in_dwords)
 		return DBG_STATUS_DUMP_BUF_TOO_SMALL;
 
-	/* Update reset state */
+	 
 	qed_grc_unreset_blocks(p_hwfn, p_ptt, true);
 	qed_update_blocks_reset_state(p_hwfn, p_ptt);
 
-	/* Idle Check Dump */
+	 
 	*num_dumped_dwords = qed_idle_chk_dump(p_hwfn, p_ptt, dump_buf, true);
 
-	/* Revert GRC params to their default */
+	 
 	qed_dbg_grc_set_params_default(p_hwfn);
 
 	return DBG_STATUS_OK;
@@ -5475,14 +5275,14 @@ enum dbg_status qed_dbg_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 	if (buf_size_in_dwords < needed_buf_size_in_dwords)
 		return DBG_STATUS_DUMP_BUF_TOO_SMALL;
 
-	/* Update reset state */
+	 
 	qed_update_blocks_reset_state(p_hwfn, p_ptt);
 
-	/* Perform dump */
+	 
 	status = qed_mcp_trace_dump(p_hwfn,
 				    p_ptt, dump_buf, true, num_dumped_dwords);
 
-	/* Revert GRC params to their default */
+	 
 	qed_dbg_grc_set_params_default(p_hwfn);
 
 	return status;
@@ -5522,13 +5322,13 @@ enum dbg_status qed_dbg_reg_fifo_dump(struct qed_hwfn *p_hwfn,
 	if (buf_size_in_dwords < needed_buf_size_in_dwords)
 		return DBG_STATUS_DUMP_BUF_TOO_SMALL;
 
-	/* Update reset state */
+	 
 	qed_update_blocks_reset_state(p_hwfn, p_ptt);
 
 	status = qed_reg_fifo_dump(p_hwfn,
 				   p_ptt, dump_buf, true, num_dumped_dwords);
 
-	/* Revert GRC params to their default */
+	 
 	qed_dbg_grc_set_params_default(p_hwfn);
 
 	return status;
@@ -5568,12 +5368,12 @@ enum dbg_status qed_dbg_igu_fifo_dump(struct qed_hwfn *p_hwfn,
 	if (buf_size_in_dwords < needed_buf_size_in_dwords)
 		return DBG_STATUS_DUMP_BUF_TOO_SMALL;
 
-	/* Update reset state */
+	 
 	qed_update_blocks_reset_state(p_hwfn, p_ptt);
 
 	status = qed_igu_fifo_dump(p_hwfn,
 				   p_ptt, dump_buf, true, num_dumped_dwords);
-	/* Revert GRC params to their default */
+	 
 	qed_dbg_grc_set_params_default(p_hwfn);
 
 	return status;
@@ -5616,7 +5416,7 @@ enum dbg_status qed_dbg_protection_override_dump(struct qed_hwfn *p_hwfn,
 	if (buf_size_in_dwords < needed_buf_size_in_dwords)
 		return DBG_STATUS_DUMP_BUF_TOO_SMALL;
 
-	/* Update reset state */
+	 
 	qed_update_blocks_reset_state(p_hwfn, p_ptt);
 
 	status = qed_protection_override_dump(p_hwfn,
@@ -5624,7 +5424,7 @@ enum dbg_status qed_dbg_protection_override_dump(struct qed_hwfn *p_hwfn,
 					      dump_buf,
 					      true, num_dumped_dwords);
 
-	/* Revert GRC params to their default */
+	 
 	qed_dbg_grc_set_params_default(p_hwfn);
 
 	return status;
@@ -5641,7 +5441,7 @@ enum dbg_status qed_dbg_fw_asserts_get_dump_buf_size(struct qed_hwfn *p_hwfn,
 	if (status != DBG_STATUS_OK)
 		return status;
 
-	/* Update reset state */
+	 
 	qed_update_blocks_reset_state(p_hwfn, p_ptt);
 
 	*buf_size = qed_fw_asserts_dump(p_hwfn, p_ptt, NULL, false);
@@ -5672,7 +5472,7 @@ enum dbg_status qed_dbg_fw_asserts_dump(struct qed_hwfn *p_hwfn,
 
 	*num_dumped_dwords = qed_fw_asserts_dump(p_hwfn, p_ptt, dump_buf, true);
 
-	/* Revert GRC params to their default */
+	 
 	qed_dbg_grc_set_params_default(p_hwfn);
 
 	return DBG_STATUS_OK;
@@ -5704,7 +5504,7 @@ static enum dbg_status qed_dbg_ilt_dump(struct qed_hwfn *p_hwfn,
 					  p_ptt,
 					  dump_buf, buf_size_in_dwords, true);
 
-	/* Reveret GRC params to their default */
+	 
 	qed_dbg_grc_set_params_default(p_hwfn);
 
 	return DBG_STATUS_OK;
@@ -5740,7 +5540,7 @@ enum dbg_status qed_dbg_read_attn(struct qed_hwfn *p_hwfn,
 		u16 modes_buf_offset;
 		bool eval_mode;
 
-		/* Check mode */
+		 
 		eval_mode = GET_FIELD(reg_data->mode.data,
 				      DBG_MODE_HDR_EVAL_MODE) > 0;
 		modes_buf_offset = GET_FIELD(reg_data->mode.data,
@@ -5748,7 +5548,7 @@ enum dbg_status qed_dbg_read_attn(struct qed_hwfn *p_hwfn,
 		if (eval_mode && !qed_is_mode_match(p_hwfn, &modes_buf_offset))
 			continue;
 
-		/* Mode match - read attention status register */
+		 
 		sts_addr = DWORDS_TO_BYTES(clear_status ?
 					   reg_data->sts_clr_address :
 					   GET_FIELD(reg_data->data,
@@ -5757,7 +5557,7 @@ enum dbg_status qed_dbg_read_attn(struct qed_hwfn *p_hwfn,
 		if (!sts_val)
 			continue;
 
-		/* Non-zero attention status - add to results */
+		 
 		reg_result = &results->reg_results[num_result_regs];
 		SET_FIELD(reg_result->data,
 			  DBG_ATTN_REG_RESULT_STS_ADDRESS, sts_addr);
@@ -5783,9 +5583,9 @@ enum dbg_status qed_dbg_read_attn(struct qed_hwfn *p_hwfn,
 	return DBG_STATUS_OK;
 }
 
-/******************************* Data Types **********************************/
+ 
 
-/* REG fifo element */
+ 
 struct reg_fifo_element {
 	u64 data;
 #define REG_FIFO_ELEMENT_ADDRESS_SHIFT		0
@@ -5808,13 +5608,13 @@ struct reg_fifo_element {
 #define REG_FIFO_ELEMENT_ERROR_MASK		0x1f
 };
 
-/* REG fifo error element */
+ 
 struct reg_fifo_err {
 	u32 err_code;
 	const char *err_msg;
 };
 
-/* IGU fifo element */
+ 
 struct igu_fifo_element {
 	u32 dword0;
 #define IGU_FIFO_ELEMENT_DWORD0_FID_SHIFT		0
@@ -5864,7 +5664,7 @@ struct igu_fifo_cleanup_wr_data {
 #define IGU_FIFO_CLEANUP_WR_DATA_CMD_TYPE_MASK		0x1
 };
 
-/* Protection override element */
+ 
 struct protection_override_element {
 	u64 data;
 #define PROTECTION_OVERRIDE_ELEMENT_ADDRESS_SHIFT		0
@@ -5913,7 +5713,7 @@ struct igu_fifo_addr_data {
 	enum igu_fifo_addr_types type;
 };
 
-/******************************** Constants **********************************/
+ 
 
 #define MAX_MSG_LEN				1024
 
@@ -5927,247 +5727,247 @@ struct igu_fifo_addr_data {
 
 #define PROTECTION_OVERRIDE_ELEMENT_ADDR_FACTOR	4
 
-/***************************** Constant Arrays *******************************/
+ 
 
-/* Status string array */
+ 
 static const char * const s_status_str[] = {
-	/* DBG_STATUS_OK */
+	 
 	"Operation completed successfully",
 
-	/* DBG_STATUS_APP_VERSION_NOT_SET */
+	 
 	"Debug application version wasn't set",
 
-	/* DBG_STATUS_UNSUPPORTED_APP_VERSION */
+	 
 	"Unsupported debug application version",
 
-	/* DBG_STATUS_DBG_BLOCK_NOT_RESET */
+	 
 	"The debug block wasn't reset since the last recording",
 
-	/* DBG_STATUS_INVALID_ARGS */
+	 
 	"Invalid arguments",
 
-	/* DBG_STATUS_OUTPUT_ALREADY_SET */
+	 
 	"The debug output was already set",
 
-	/* DBG_STATUS_INVALID_PCI_BUF_SIZE */
+	 
 	"Invalid PCI buffer size",
 
-	/* DBG_STATUS_PCI_BUF_ALLOC_FAILED */
+	 
 	"PCI buffer allocation failed",
 
-	/* DBG_STATUS_PCI_BUF_NOT_ALLOCATED */
+	 
 	"A PCI buffer wasn't allocated",
 
-	/* DBG_STATUS_INVALID_FILTER_TRIGGER_DWORDS */
+	 
 	"The filter/trigger constraint dword offsets are not enabled for recording",
-	/* DBG_STATUS_NO_MATCHING_FRAMING_MODE */
+	 
 	"No matching framing mode",
 
-	/* DBG_STATUS_VFC_READ_ERROR */
+	 
 	"Error reading from VFC",
 
-	/* DBG_STATUS_STORM_ALREADY_ENABLED */
+	 
 	"The Storm was already enabled",
 
-	/* DBG_STATUS_STORM_NOT_ENABLED */
+	 
 	"The specified Storm wasn't enabled",
 
-	/* DBG_STATUS_BLOCK_ALREADY_ENABLED */
+	 
 	"The block was already enabled",
 
-	/* DBG_STATUS_BLOCK_NOT_ENABLED */
+	 
 	"The specified block wasn't enabled",
 
-	/* DBG_STATUS_NO_INPUT_ENABLED */
+	 
 	"No input was enabled for recording",
 
-	/* DBG_STATUS_NO_FILTER_TRIGGER_256B */
+	 
 	"Filters and triggers are not allowed in E4 256-bit mode",
 
-	/* DBG_STATUS_FILTER_ALREADY_ENABLED */
+	 
 	"The filter was already enabled",
 
-	/* DBG_STATUS_TRIGGER_ALREADY_ENABLED */
+	 
 	"The trigger was already enabled",
 
-	/* DBG_STATUS_TRIGGER_NOT_ENABLED */
+	 
 	"The trigger wasn't enabled",
 
-	/* DBG_STATUS_CANT_ADD_CONSTRAINT */
+	 
 	"A constraint can be added only after a filter was enabled or a trigger state was added",
 
-	/* DBG_STATUS_TOO_MANY_TRIGGER_STATES */
+	 
 	"Cannot add more than 3 trigger states",
 
-	/* DBG_STATUS_TOO_MANY_CONSTRAINTS */
+	 
 	"Cannot add more than 4 constraints per filter or trigger state",
 
-	/* DBG_STATUS_RECORDING_NOT_STARTED */
+	 
 	"The recording wasn't started",
 
-	/* DBG_STATUS_DATA_DIDNT_TRIGGER */
+	 
 	"A trigger was configured, but it didn't trigger",
 
-	/* DBG_STATUS_NO_DATA_RECORDED */
+	 
 	"No data was recorded",
 
-	/* DBG_STATUS_DUMP_BUF_TOO_SMALL */
+	 
 	"Dump buffer is too small",
 
-	/* DBG_STATUS_DUMP_NOT_CHUNK_ALIGNED */
+	 
 	"Dumped data is not aligned to chunks",
 
-	/* DBG_STATUS_UNKNOWN_CHIP */
+	 
 	"Unknown chip",
 
-	/* DBG_STATUS_VIRT_MEM_ALLOC_FAILED */
+	 
 	"Failed allocating virtual memory",
 
-	/* DBG_STATUS_BLOCK_IN_RESET */
+	 
 	"The input block is in reset",
 
-	/* DBG_STATUS_INVALID_TRACE_SIGNATURE */
+	 
 	"Invalid MCP trace signature found in NVRAM",
 
-	/* DBG_STATUS_INVALID_NVRAM_BUNDLE */
+	 
 	"Invalid bundle ID found in NVRAM",
 
-	/* DBG_STATUS_NVRAM_GET_IMAGE_FAILED */
+	 
 	"Failed getting NVRAM image",
 
-	/* DBG_STATUS_NON_ALIGNED_NVRAM_IMAGE */
+	 
 	"NVRAM image is not dword-aligned",
 
-	/* DBG_STATUS_NVRAM_READ_FAILED */
+	 
 	"Failed reading from NVRAM",
 
-	/* DBG_STATUS_IDLE_CHK_PARSE_FAILED */
+	 
 	"Idle check parsing failed",
 
-	/* DBG_STATUS_MCP_TRACE_BAD_DATA */
+	 
 	"MCP Trace data is corrupt",
 
-	/* DBG_STATUS_MCP_TRACE_NO_META */
+	 
 	"Dump doesn't contain meta data - it must be provided in image file",
 
-	/* DBG_STATUS_MCP_COULD_NOT_HALT */
+	 
 	"Failed to halt MCP",
 
-	/* DBG_STATUS_MCP_COULD_NOT_RESUME */
+	 
 	"Failed to resume MCP after halt",
 
-	/* DBG_STATUS_RESERVED0 */
+	 
 	"",
 
-	/* DBG_STATUS_SEMI_FIFO_NOT_EMPTY */
+	 
 	"Failed to empty SEMI sync FIFO",
 
-	/* DBG_STATUS_IGU_FIFO_BAD_DATA */
+	 
 	"IGU FIFO data is corrupt",
 
-	/* DBG_STATUS_MCP_COULD_NOT_MASK_PRTY */
+	 
 	"MCP failed to mask parities",
 
-	/* DBG_STATUS_FW_ASSERTS_PARSE_FAILED */
+	 
 	"FW Asserts parsing failed",
 
-	/* DBG_STATUS_REG_FIFO_BAD_DATA */
+	 
 	"GRC FIFO data is corrupt",
 
-	/* DBG_STATUS_PROTECTION_OVERRIDE_BAD_DATA */
+	 
 	"Protection Override data is corrupt",
 
-	/* DBG_STATUS_DBG_ARRAY_NOT_SET */
+	 
 	"Debug arrays were not set (when using binary files, dbg_set_bin_ptr must be called)",
 
-	/* DBG_STATUS_RESERVED1 */
+	 
 	"",
 
-	/* DBG_STATUS_NON_MATCHING_LINES */
+	 
 	"Non-matching debug lines - in E4, all lines must be of the same type (either 128b or 256b)",
 
-	/* DBG_STATUS_INSUFFICIENT_HW_IDS */
+	 
 	"Insufficient HW IDs. Try to record less Storms/blocks",
 
-	/* DBG_STATUS_DBG_BUS_IN_USE */
+	 
 	"The debug bus is in use",
 
-	/* DBG_STATUS_INVALID_STORM_DBG_MODE */
+	 
 	"The storm debug mode is not supported in the current chip",
 
-	/* DBG_STATUS_OTHER_ENGINE_BB_ONLY */
+	 
 	"Other engine is supported only in BB",
 
-	/* DBG_STATUS_FILTER_SINGLE_HW_ID */
+	 
 	"The configured filter mode requires a single Storm/block input",
 
-	/* DBG_STATUS_TRIGGER_SINGLE_HW_ID */
+	 
 	"The configured filter mode requires that all the constraints of a single trigger state will be defined on a single Storm/block input",
 
-	/* DBG_STATUS_MISSING_TRIGGER_STATE_STORM */
+	 
 	"When triggering on Storm data, the Storm to trigger on must be specified",
 
-	/* DBG_STATUS_MDUMP2_FAILED_TO_REQUEST_OFFSIZE */
+	 
 	"Failed to request MDUMP2 Offsize",
 
-	/* DBG_STATUS_MDUMP2_FAILED_VALIDATION_OF_DATA_CRC */
+	 
 	"Expected CRC (part of the MDUMP2 data) is different than the calculated CRC over that data",
 
-	/* DBG_STATUS_MDUMP2_INVALID_SIGNATURE */
+	 
 	"Invalid Signature found at start of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_INVALID_LOG_SIZE */
+	 
 	"Invalid Log Size of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_INVALID_LOG_HDR */
+	 
 	"Invalid Log Header of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_INVALID_LOG_DATA */
+	 
 	"Invalid Log Data of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_ERROR_EXTRACTING_NUM_PORTS */
+	 
 	"Could not extract number of ports from regval buf of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_ERROR_EXTRACTING_MFW_STATUS */
+	 
 	"Could not extract MFW (link) status from regval buf of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_ERROR_DISPLAYING_LINKDUMP */
+	 
 	"Could not display linkdump of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_ERROR_READING_PHY_CFG */
+	 
 	"Could not read PHY CFG of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_ERROR_READING_PLL_MODE */
+	 
 	"Could not read PLL Mode of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_ERROR_READING_LANE_REGS */
+	 
 	"Could not read TSCF/TSCE Lane Regs of MDUMP2",
 
-	/* DBG_STATUS_MDUMP2_ERROR_ALLOCATING_BUF */
+	 
 	"Could not allocate MDUMP2 reg-val internal buffer"
 };
 
-/* Idle check severity names array */
+ 
 static const char * const s_idle_chk_severity_str[] = {
 	"Error",
 	"Error if no traffic",
 	"Warning"
 };
 
-/* MCP Trace level names array */
+ 
 static const char * const s_mcp_trace_level_str[] = {
 	"ERROR",
 	"TRACE",
 	"DEBUG"
 };
 
-/* Access type names array */
+ 
 static const char * const s_access_strs[] = {
 	"read",
 	"write"
 };
 
-/* Privilege type names array */
+ 
 static const char * const s_privilege_strs[] = {
 	"VF",
 	"PDA",
@@ -6175,7 +5975,7 @@ static const char * const s_privilege_strs[] = {
 	"UA"
 };
 
-/* Protection type names array */
+ 
 static const char * const s_protection_strs[] = {
 	"(default)",
 	"(default)",
@@ -6187,7 +5987,7 @@ static const char * const s_protection_strs[] = {
 	"override UA"
 };
 
-/* Master type names array */
+ 
 static const char * const s_master_strs[] = {
 	"???",
 	"pxp",
@@ -6207,7 +6007,7 @@ static const char * const s_master_strs[] = {
 	"???"
 };
 
-/* REG FIFO error messages array */
+ 
 static struct reg_fifo_err s_reg_fifo_errors[] = {
 	{1, "grc timeout"},
 	{2, "address doesn't belong to any block"},
@@ -6217,7 +6017,7 @@ static struct reg_fifo_err s_reg_fifo_errors[] = {
 	{17, "RSL error"}
 };
 
-/* IGU FIFO sources array */
+ 
 static const char * const s_igu_fifo_source_strs[] = {
 	"TSTORM",
 	"MSTORM",
@@ -6232,7 +6032,7 @@ static const char * const s_igu_fifo_source_strs[] = {
 	"GRC",
 };
 
-/* IGU FIFO error messages */
+ 
 static const char * const s_igu_fifo_error_strs[] = {
 	"no error",
 	"length error",
@@ -6251,7 +6051,7 @@ static const char * const s_igu_fifo_error_strs[] = {
 	"cleanup command on type bigger than 4"
 };
 
-/* IGU FIFO address data */
+ 
 static const struct igu_fifo_addr_data s_igu_fifo_addr_data[] = {
 	{0x0, 0x101, "MSI-X Memory", NULL,
 	 IGU_ADDR_TYPE_MSIX_MEM},
@@ -6287,12 +6087,12 @@ static const struct igu_fifo_addr_data s_igu_fifo_addr_data[] = {
 	 IGU_ADDR_TYPE_WRITE_PROD_UPDATE}
 };
 
-/******************************** Variables **********************************/
+ 
 
-/* Temporary buffer, used for print size calculations */
+ 
 static char s_temp_buf[MAX_MSG_LEN];
 
-/**************************** Private Functions ******************************/
+ 
 
 static void qed_user_static_asserts(void)
 {
@@ -6308,10 +6108,7 @@ static u32 qed_cyclic_sub(u32 a, u32 b, u32 size)
 	return (size + a - b) % size;
 }
 
-/* Reads the specified number of bytes from the specified cyclic buffer (up to 4
- * bytes) and returns them as a dword value. the specified buffer offset is
- * updated.
- */
+ 
 static u32 qed_read_from_cyclic_buf(void *buf,
 				    u32 *offset,
 				    u32 buf_size, u8 num_bytes_to_read)
@@ -6321,9 +6118,7 @@ static u32 qed_read_from_cyclic_buf(void *buf,
 
 	val_ptr = (u8 *)&val;
 
-	/* Assume running on a LITTLE ENDIAN and the buffer is network order
-	 * (BIG ENDIAN), as high order bytes are placed in lower memory address.
-	 */
+	 
 	for (i = 0; i < num_bytes_to_read; i++) {
 		val_ptr[i] = bytes_buf[*offset];
 		*offset = qed_cyclic_add(*offset, 1, buf_size);
@@ -6332,17 +6127,13 @@ static u32 qed_read_from_cyclic_buf(void *buf,
 	return val;
 }
 
-/* Reads and returns the next byte from the specified buffer.
- * The specified buffer offset is updated.
- */
+ 
 static u8 qed_read_byte_from_buf(void *buf, u32 *offset)
 {
 	return ((u8 *)buf)[(*offset)++];
 }
 
-/* Reads and returns the next dword from the specified buffer.
- * The specified buffer offset is updated.
- */
+ 
 static u32 qed_read_dword_from_buf(void *buf, u32 *offset)
 {
 	u32 dword_val = *(u32 *)&((u8 *)buf)[*offset];
@@ -6352,9 +6143,7 @@ static u32 qed_read_dword_from_buf(void *buf, u32 *offset)
 	return dword_val;
 }
 
-/* Reads the next string from the specified buffer, and copies it to the
- * specified pointer. The specified buffer offset is updated.
- */
+ 
 static void qed_read_str_from_buf(void *buf, u32 *offset, u32 size, char *dest)
 {
 	const char *source_str = &((const char *)buf)[*offset];
@@ -6364,19 +6153,13 @@ static void qed_read_str_from_buf(void *buf, u32 *offset, u32 size, char *dest)
 	*offset += size;
 }
 
-/* Returns a pointer to the specified offset (in bytes) of the specified buffer.
- * If the specified buffer in NULL, a temporary buffer pointer is returned.
- */
+ 
 static char *qed_get_buf_ptr(void *buf, u32 offset)
 {
 	return buf ? (char *)buf + offset : s_temp_buf;
 }
 
-/* Reads a param from the specified buffer. Returns the number of dwords read.
- * If the returned str_param is NULL, the param is numeric and its value is
- * returned in num_param.
- * Otheriwise, the param is a string and its pointer is returned in str_param.
- */
+ 
 static u32 qed_read_param(u32 *dump_buf,
 			  const char **param_name,
 			  const char **param_str_val, u32 *param_num_val)
@@ -6384,20 +6167,20 @@ static u32 qed_read_param(u32 *dump_buf,
 	char *char_buf = (char *)dump_buf;
 	size_t offset = 0;
 
-	/* Extract param name */
+	 
 	*param_name = char_buf;
 	offset += strlen(*param_name) + 1;
 
-	/* Check param type */
+	 
 	if (*(char_buf + offset++)) {
-		/* String param */
+		 
 		*param_str_val = char_buf + offset;
 		*param_num_val = 0;
 		offset += strlen(*param_str_val) + 1;
 		if (offset & 0x3)
 			offset += (4 - (offset & 0x3));
 	} else {
-		/* Numeric param */
+		 
 		*param_str_val = NULL;
 		if (offset & 0x3)
 			offset += (4 - (offset & 0x3));
@@ -6408,9 +6191,7 @@ static u32 qed_read_param(u32 *dump_buf,
 	return (u32)offset / 4;
 }
 
-/* Reads a section header from the specified buffer.
- * Returns the number of dwords read.
- */
+ 
 static u32 qed_read_section_hdr(u32 *dump_buf,
 				const char **section_name,
 				u32 *num_section_params)
@@ -6421,9 +6202,7 @@ static u32 qed_read_section_hdr(u32 *dump_buf,
 			      section_name, &param_str_val, num_section_params);
 }
 
-/* Reads section params from the specified buffer and prints them to the results
- * buffer. Returns the number of dwords read.
- */
+ 
 static u32 qed_print_section_params(u32 *dump_buf,
 				    u32 num_section_params,
 				    char *results_buf, u32 *num_chars_printed)
@@ -6458,9 +6237,7 @@ static u32 qed_print_section_params(u32 *dump_buf,
 	return dump_offset;
 }
 
-/* Returns the block name that matches the specified block ID,
- * or NULL if not found.
- */
+ 
 static const char *qed_dbg_get_block_name(struct qed_hwfn *p_hwfn,
 					  enum block_id block_id)
 {
@@ -6477,9 +6254,7 @@ static struct dbg_tools_user_data *qed_dbg_get_user_data(struct qed_hwfn
 	return (struct dbg_tools_user_data *)p_hwfn->dbg_user_info;
 }
 
-/* Parses the idle check rules and returns the number of characters printed.
- * In case of parsing error, returns 0.
- */
+ 
 static u32 qed_parse_idle_chk_dump_rules(struct qed_hwfn *p_hwfn,
 					 u32 *dump_buf,
 					 u32 *dump_buf_end,
@@ -6488,7 +6263,7 @@ static u32 qed_parse_idle_chk_dump_rules(struct qed_hwfn *p_hwfn,
 					 char *results_buf,
 					 u32 *num_errors, u32 *num_warnings)
 {
-	/* Offset in results_buf in bytes */
+	 
 	u32 results_offset = 0;
 
 	u32 rule_idx;
@@ -6497,7 +6272,7 @@ static u32 qed_parse_idle_chk_dump_rules(struct qed_hwfn *p_hwfn,
 	*num_errors = 0;
 	*num_warnings = 0;
 
-	/* Go over dumped results */
+	 
 	for (rule_idx = 0; rule_idx < num_rules && dump_buf < dump_buf_end;
 	     rule_idx++) {
 		const struct dbg_idle_chk_rule_parsing_data *rule_parsing_data;
@@ -6527,23 +6302,23 @@ static u32 qed_parse_idle_chk_dump_rules(struct qed_hwfn *p_hwfn,
 		if (hdr->severity >= MAX_DBG_IDLE_CHK_SEVERITY_TYPES)
 			return 0;
 
-		/* Skip rule header */
+		 
 		dump_buf += BYTES_TO_DWORDS(sizeof(*hdr));
 
-		/* Update errors/warnings count */
+		 
 		if (hdr->severity == IDLE_CHK_SEVERITY_ERROR ||
 		    hdr->severity == IDLE_CHK_SEVERITY_ERROR_NO_TRAFFIC)
 			(*num_errors)++;
 		else
 			(*num_warnings)++;
 
-		/* Print rule severity */
+		 
 		results_offset +=
 		    sprintf(qed_get_buf_ptr(results_buf,
 					    results_offset), "%s: ",
 			    s_idle_chk_severity_str[hdr->severity]);
 
-		/* Print rule message */
+		 
 		if (has_fw_msg)
 			parsing_str += strlen(parsing_str) + 1;
 		results_offset +=
@@ -6553,7 +6328,7 @@ static u32 qed_parse_idle_chk_dump_rules(struct qed_hwfn *p_hwfn,
 			    print_fw_idle_chk ? parsing_str : lsi_msg);
 		parsing_str += strlen(parsing_str) + 1;
 
-		/* Print register values */
+		 
 		results_offset +=
 		    sprintf(qed_get_buf_ptr(results_buf,
 					    results_offset), " Registers:");
@@ -6571,12 +6346,10 @@ static u32 qed_parse_idle_chk_dump_rules(struct qed_hwfn *p_hwfn,
 			reg_id = GET_FIELD(reg_hdr->data,
 					   DBG_IDLE_CHK_RESULT_REG_HDR_REG_ID);
 
-			/* Skip reg header */
+			 
 			dump_buf += BYTES_TO_DWORDS(sizeof(*reg_hdr));
 
-			/* Skip register names until the required reg_id is
-			 * reached.
-			 */
+			 
 			for (; reg_id > curr_reg_id; curr_reg_id++)
 				parsing_str += strlen(parsing_str) + 1;
 
@@ -6610,19 +6383,14 @@ static u32 qed_parse_idle_chk_dump_rules(struct qed_hwfn *p_hwfn,
 		    sprintf(qed_get_buf_ptr(results_buf, results_offset), "\n");
 	}
 
-	/* Check if end of dump buffer was exceeded */
+	 
 	if (dump_buf > dump_buf_end)
 		return 0;
 
 	return results_offset;
 }
 
-/* Parses an idle check dump buffer.
- * If result_buf is not NULL, the idle check results are printed to it.
- * In any case, the required results buffer size is assigned to
- * parsed_results_bytes.
- * The parsing status is returned.
- */
+ 
 static enum dbg_status qed_parse_idle_chk_dump(struct qed_hwfn *p_hwfn,
 					       u32 *dump_buf,
 					       u32 num_dumped_dwords,
@@ -6635,7 +6403,7 @@ static enum dbg_status qed_parse_idle_chk_dump(struct qed_hwfn *p_hwfn,
 	const char *section_name, *param_name, *param_str_val;
 	u32 *dump_buf_end = dump_buf + num_dumped_dwords;
 
-	/* Offset in results_buf in bytes */
+	 
 	u32 results_offset = 0;
 
 	*parsed_results_bytes = 0;
@@ -6646,22 +6414,18 @@ static enum dbg_status qed_parse_idle_chk_dump(struct qed_hwfn *p_hwfn,
 	    !p_hwfn->dbg_arrays[BIN_BUF_DBG_IDLE_CHK_PARSING_DATA].ptr)
 		return DBG_STATUS_DBG_ARRAY_NOT_SET;
 
-	/* Read global_params section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "global_params"))
 		return DBG_STATUS_IDLE_CHK_PARSE_FAILED;
 
-	/* Print global params */
+	 
 	dump_buf += qed_print_section_params(dump_buf,
 					     num_section_params,
 					     results_buf, &results_offset);
 
-	/* Read idle_chk section
-	 * There may be 1 or 2 idle_chk section parameters:
-	 * - 1st is "num_rules"
-	 * - 2nd is "num_rules_not_dumped" (optional)
-	 */
+	 
 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
@@ -6686,7 +6450,7 @@ static enum dbg_status qed_parse_idle_chk_dump(struct qed_hwfn *p_hwfn,
 	if (num_rules) {
 		u32 rules_print_size;
 
-		/* Print FW output */
+		 
 		results_offset +=
 		    sprintf(qed_get_buf_ptr(results_buf,
 					    results_offset),
@@ -6707,7 +6471,7 @@ static enum dbg_status qed_parse_idle_chk_dump(struct qed_hwfn *p_hwfn,
 		if (!rules_print_size)
 			return DBG_STATUS_IDLE_CHK_PARSE_FAILED;
 
-		/* Print LSI output */
+		 
 		results_offset +=
 		    sprintf(qed_get_buf_ptr(results_buf,
 					    results_offset),
@@ -6729,7 +6493,7 @@ static enum dbg_status qed_parse_idle_chk_dump(struct qed_hwfn *p_hwfn,
 			return DBG_STATUS_IDLE_CHK_PARSE_FAILED;
 	}
 
-	/* Print errors/warnings count */
+	 
 	if (*num_errors)
 		results_offset +=
 		    sprintf(qed_get_buf_ptr(results_buf,
@@ -6755,16 +6519,13 @@ static enum dbg_status qed_parse_idle_chk_dump(struct qed_hwfn *p_hwfn,
 			    "\nIdle Check Partially dumped : num_rules_not_dumped = %d\n",
 			    num_rules_not_dumped);
 
-	/* Add 1 for string NULL termination */
+	 
 	*parsed_results_bytes = results_offset + 1;
 
 	return DBG_STATUS_OK;
 }
 
-/* Allocates and fills MCP Trace meta data based on the specified meta data
- * dump buffer.
- * Returns debug status code.
- */
+ 
 static enum dbg_status
 qed_mcp_trace_alloc_meta_data(struct qed_hwfn *p_hwfn,
 			      const u32 *meta_buf)
@@ -6778,31 +6539,31 @@ qed_mcp_trace_alloc_meta_data(struct qed_hwfn *p_hwfn,
 	meta = &dev_user_data->mcp_trace_meta;
 	meta_buf_bytes = (u8 *)meta_buf;
 
-	/* Free the previous meta before loading a new one. */
+	 
 	if (meta->is_allocated)
 		qed_mcp_trace_free_meta_data(p_hwfn);
 
 	memset(meta, 0, sizeof(*meta));
 
-	/* Read first signature */
+	 
 	signature = qed_read_dword_from_buf(meta_buf_bytes, &offset);
 	if (signature != NVM_MAGIC_VALUE)
 		return DBG_STATUS_INVALID_TRACE_SIGNATURE;
 
-	/* Read no. of modules and allocate memory for their pointers */
+	 
 	meta->modules_num = qed_read_byte_from_buf(meta_buf_bytes, &offset);
 	meta->modules = kcalloc(meta->modules_num, sizeof(char *),
 				GFP_KERNEL);
 	if (!meta->modules)
 		return DBG_STATUS_VIRT_MEM_ALLOC_FAILED;
 
-	/* Allocate and read all module strings */
+	 
 	for (i = 0; i < meta->modules_num; i++) {
 		u8 module_len = qed_read_byte_from_buf(meta_buf_bytes, &offset);
 
 		*(meta->modules + i) = kzalloc(module_len, GFP_KERNEL);
 		if (!(*(meta->modules + i))) {
-			/* Update number of modules to be released */
+			 
 			meta->modules_num = i ? i - 1 : 0;
 			return DBG_STATUS_VIRT_MEM_ALLOC_FAILED;
 		}
@@ -6813,12 +6574,12 @@ qed_mcp_trace_alloc_meta_data(struct qed_hwfn *p_hwfn,
 			(*(meta->modules + i))[MCP_TRACE_MAX_MODULE_LEN] = '\0';
 	}
 
-	/* Read second signature */
+	 
 	signature = qed_read_dword_from_buf(meta_buf_bytes, &offset);
 	if (signature != NVM_MAGIC_VALUE)
 		return DBG_STATUS_INVALID_TRACE_SIGNATURE;
 
-	/* Read number of formats and allocate memory for all formats */
+	 
 	meta->formats_num = qed_read_dword_from_buf(meta_buf_bytes, &offset);
 	meta->formats = kcalloc(meta->formats_num,
 				sizeof(struct mcp_trace_format),
@@ -6826,7 +6587,7 @@ qed_mcp_trace_alloc_meta_data(struct qed_hwfn *p_hwfn,
 	if (!meta->formats)
 		return DBG_STATUS_VIRT_MEM_ALLOC_FAILED;
 
-	/* Allocate and read all strings */
+	 
 	for (i = 0; i < meta->formats_num; i++) {
 		struct mcp_trace_format *format_ptr = &meta->formats[i];
 		u8 format_len;
@@ -6837,7 +6598,7 @@ qed_mcp_trace_alloc_meta_data(struct qed_hwfn *p_hwfn,
 					   MCP_TRACE_FORMAT_LEN);
 		format_ptr->format_str = kzalloc(format_len, GFP_KERNEL);
 		if (!format_ptr->format_str) {
-			/* Update number of modules to be released */
+			 
 			meta->formats_num = i ? i - 1 : 0;
 			return DBG_STATUS_VIRT_MEM_ALLOC_FAILED;
 		}
@@ -6851,17 +6612,7 @@ qed_mcp_trace_alloc_meta_data(struct qed_hwfn *p_hwfn,
 	return DBG_STATUS_OK;
 }
 
-/* Parses an MCP trace buffer. If result_buf is not NULL, the MCP Trace results
- * are printed to it. The parsing status is returned.
- * Arguments:
- * trace_buf - MCP trace cyclic buffer
- * trace_buf_size - MCP trace cyclic buffer size in bytes
- * data_offset - offset in bytes of the data to parse in the MCP trace cyclic
- *		 buffer.
- * data_size - size in bytes of data to parse.
- * parsed_buf - destination buffer for parsed data.
- * parsed_results_bytes - size of parsed data in bytes.
- */
+ 
 static enum dbg_status qed_parse_mcp_trace_buf(struct qed_hwfn *p_hwfn,
 					       u8 *trace_buf,
 					       u32 trace_buf_size,
@@ -6900,7 +6651,7 @@ static enum dbg_status qed_parse_mcp_trace_buf(struct qed_hwfn *p_hwfn,
 		data_size -= MFW_TRACE_ENTRY_SIZE;
 		format_idx = header & MFW_TRACE_EVENTID_MASK;
 
-		/* Skip message if its index doesn't exist in the meta data */
+		 
 		if (format_idx >= meta->formats_num) {
 			u8 format_size = (u8)GET_MFW_FIELD(header,
 							   MFW_TRACE_PRM_SIZE);
@@ -6923,19 +6674,15 @@ static enum dbg_status qed_parse_mcp_trace_buf(struct qed_hwfn *p_hwfn,
 		     i < MCP_TRACE_FORMAT_MAX_PARAMS;
 		     i++, param_mask <<= MCP_TRACE_FORMAT_PARAM_WIDTH,
 		     param_shift += MCP_TRACE_FORMAT_PARAM_WIDTH) {
-			/* Extract param size (0..3) */
+			 
 			u8 param_size = (u8)((format_ptr->data & param_mask) >>
 					     param_shift);
 
-			/* If the param size is zero, there are no other
-			 * parameters.
-			 */
+			 
 			if (!param_size)
 				break;
 
-			/* Size is encoded using 2 bits, where 3 is used to
-			 * encode 4.
-			 */
+			 
 			if (param_size == 3)
 				param_size = 4;
 
@@ -6956,7 +6703,7 @@ static enum dbg_status qed_parse_mcp_trace_buf(struct qed_hwfn *p_hwfn,
 		if (format_level >= ARRAY_SIZE(s_mcp_trace_level_str))
 			return DBG_STATUS_MCP_TRACE_BAD_DATA;
 
-		/* Print current message to results buffer */
+		 
 		*parsed_results_bytes +=
 			sprintf(qed_get_buf_ptr(parsed_buf,
 						*parsed_results_bytes),
@@ -6969,18 +6716,13 @@ static enum dbg_status qed_parse_mcp_trace_buf(struct qed_hwfn *p_hwfn,
 			    params[0], params[1], params[2]);
 	}
 
-	/* Add string NULL terminator */
+	 
 	(*parsed_results_bytes)++;
 
 	return status;
 }
 
-/* Parses an MCP Trace dump buffer.
- * If result_buf is not NULL, the MCP Trace results are printed to it.
- * In any case, the required results buffer size is assigned to
- * parsed_results_bytes.
- * The parsing status is returned.
- */
+ 
 static enum dbg_status qed_parse_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 						u32 *dump_buf,
 						char *results_buf,
@@ -6998,18 +6740,18 @@ static enum dbg_status qed_parse_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 
 	*parsed_results_bytes = 0;
 
-	/* Read global_params section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "global_params"))
 		return DBG_STATUS_MCP_TRACE_BAD_DATA;
 
-	/* Print global params */
+	 
 	dump_buf += qed_print_section_params(dump_buf,
 					     num_section_params,
 					     results_buf, &results_offset);
 
-	/* Read trace_data section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "mcp_trace_data") || num_section_params != 1)
@@ -7020,7 +6762,7 @@ static enum dbg_status qed_parse_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 		return DBG_STATUS_MCP_TRACE_BAD_DATA;
 	trace_data_dwords = param_num_val;
 
-	/* Prepare trace info */
+	 
 	trace = (struct mcp_trace *)dump_buf;
 	if (trace->signature != MFW_TRACE_SIGNATURE || !trace->size)
 		return DBG_STATUS_MCP_TRACE_BAD_DATA;
@@ -7030,7 +6772,7 @@ static enum dbg_status qed_parse_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 	data_size = qed_cyclic_sub(trace->trace_prod, offset, trace->size);
 	dump_buf += trace_data_dwords;
 
-	/* Read meta_data section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "mcp_trace_meta"))
@@ -7041,9 +6783,9 @@ static enum dbg_status qed_parse_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 		return DBG_STATUS_MCP_TRACE_BAD_DATA;
 	trace_meta_dwords = param_num_val;
 
-	/* Choose meta data buffer */
+	 
 	if (!trace_meta_dwords) {
-		/* Dump doesn't include meta data */
+		 
 		struct dbg_tools_user_data *dev_user_data =
 			qed_dbg_get_user_data(p_hwfn);
 
@@ -7052,11 +6794,11 @@ static enum dbg_status qed_parse_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 
 		meta_buf = dev_user_data->mcp_trace_user_meta_buf;
 	} else {
-		/* Dump includes meta data */
+		 
 		meta_buf = dump_buf;
 	}
 
-	/* Allocate meta data memory */
+	 
 	status = qed_mcp_trace_alloc_meta_data(p_hwfn, meta_buf);
 	if (status != DBG_STATUS_OK)
 		return status;
@@ -7081,12 +6823,7 @@ static enum dbg_status qed_parse_mcp_trace_dump(struct qed_hwfn *p_hwfn,
 	return DBG_STATUS_OK;
 }
 
-/* Parses a Reg FIFO dump buffer.
- * If result_buf is not NULL, the Reg FIFO results are printed to it.
- * In any case, the required results buffer size is assigned to
- * parsed_results_bytes.
- * The parsing status is returned.
- */
+ 
 static enum dbg_status qed_parse_reg_fifo_dump(u32 *dump_buf,
 					       char *results_buf,
 					       u32 *parsed_results_bytes)
@@ -7098,18 +6835,18 @@ static enum dbg_status qed_parse_reg_fifo_dump(u32 *dump_buf,
 	u32 results_offset = 0;
 	char vf_str[4];
 
-	/* Read global_params section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "global_params"))
 		return DBG_STATUS_REG_FIFO_BAD_DATA;
 
-	/* Print global params */
+	 
 	dump_buf += qed_print_section_params(dump_buf,
 					     num_section_params,
 					     results_buf, &results_offset);
 
-	/* Read reg_fifo_data section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "reg_fifo_data"))
@@ -7123,24 +6860,24 @@ static enum dbg_status qed_parse_reg_fifo_dump(u32 *dump_buf,
 	num_elements = param_num_val / REG_FIFO_ELEMENT_DWORDS;
 	elements = (struct reg_fifo_element *)dump_buf;
 
-	/* Decode elements */
+	 
 	for (i = 0; i < num_elements; i++) {
 		const char *err_msg = NULL;
 
-		/* Discover if element belongs to a VF or a PF */
+		 
 		vf_val = GET_FIELD(elements[i].data, REG_FIFO_ELEMENT_VF);
 		if (vf_val == REG_FIFO_ELEMENT_IS_PF_VF_VAL)
 			sprintf(vf_str, "%s", "N/A");
 		else
 			sprintf(vf_str, "%d", vf_val);
 
-		/* Find error message */
+		 
 		err_code = GET_FIELD(elements[i].data, REG_FIFO_ELEMENT_ERROR);
 		for (j = 0; j < ARRAY_SIZE(s_reg_fifo_errors) && !err_msg; j++)
 			if (err_code == s_reg_fifo_errors[j].err_code)
 				err_msg = s_reg_fifo_errors[j].err_msg;
 
-		/* Add parsed element to parsed buffer */
+		 
 		results_offset +=
 		    sprintf(qed_get_buf_ptr(results_buf,
 					    results_offset),
@@ -7169,7 +6906,7 @@ static enum dbg_status qed_parse_reg_fifo_dump(u32 *dump_buf,
 						  results_offset),
 				  "fifo contained %d elements", num_elements);
 
-	/* Add 1 for string NULL termination */
+	 
 	*parsed_results_bytes = results_offset + 1;
 
 	return DBG_STATUS_OK;
@@ -7189,9 +6926,7 @@ static enum dbg_status qed_parse_igu_fifo_element(struct igu_fifo_element
 	u16 cmd_addr;
 	u64 dword12;
 
-	/* Dword12 (dword index 1 and 2) contains bits 32..95 of the
-	 * FIFO element.
-	 */
+	 
 	dword12 = ((u64)element->dword2 << 32) | element->dword1;
 	is_wr_cmd = GET_FIELD(dword12, IGU_FIFO_ELEMENT_DWORD12_IS_WR_CMD);
 	is_pf = GET_FIELD(element->dword0, IGU_FIFO_ELEMENT_DWORD0_IS_PF);
@@ -7204,7 +6939,7 @@ static enum dbg_status qed_parse_igu_fifo_element(struct igu_fifo_element
 	if (err_type >= ARRAY_SIZE(s_igu_fifo_error_strs))
 		return DBG_STATUS_IGU_FIFO_BAD_DATA;
 
-	/* Find address data */
+	 
 	for (i = 0; i < ARRAY_SIZE(s_igu_fifo_addr_data) && !found_addr; i++) {
 		const struct igu_fifo_addr_data *curr_addr =
 			&s_igu_fifo_addr_data[i];
@@ -7217,7 +6952,7 @@ static enum dbg_status qed_parse_igu_fifo_element(struct igu_fifo_element
 	if (!found_addr)
 		return DBG_STATUS_IGU_FIFO_BAD_DATA;
 
-	/* Prepare parsed address data */
+	 
 	switch (found_addr->type) {
 	case IGU_ADDR_TYPE_MSIX_MEM:
 		sprintf(parsed_addr_data, " vector_num = 0x%x", cmd_addr / 2);
@@ -7236,7 +6971,7 @@ static enum dbg_status qed_parse_igu_fifo_element(struct igu_fifo_element
 		goto out;
 	}
 
-	/* Prepare parsed write data */
+	 
 	wr_data = GET_FIELD(dword12, IGU_FIFO_ELEMENT_DWORD12_WR_DATA);
 	prod_cons = GET_FIELD(wr_data, IGU_FIFO_WR_DATA_PROD_CONS);
 	is_cleanup = GET_FIELD(wr_data, IGU_FIFO_WR_DATA_CMD_TYPE);
@@ -7284,7 +7019,7 @@ static enum dbg_status qed_parse_igu_fifo_element(struct igu_fifo_element
 		}
 	}
 out:
-	/* Add parsed element to parsed buffer */
+	 
 	*results_offset += sprintf(qed_get_buf_ptr(results_buf,
 						   *results_offset),
 				   "raw: 0x%01x%08x%08x, %s: %d, source : %s, type : %s, cmd_addr : 0x%x(%s%s), %serror: %s\n",
@@ -7306,12 +7041,7 @@ out:
 	return DBG_STATUS_OK;
 }
 
-/* Parses an IGU FIFO dump buffer.
- * If result_buf is not NULL, the IGU FIFO results are printed to it.
- * In any case, the required results buffer size is assigned to
- * parsed_results_bytes.
- * The parsing status is returned.
- */
+ 
 static enum dbg_status qed_parse_igu_fifo_dump(u32 *dump_buf,
 					       char *results_buf,
 					       u32 *parsed_results_bytes)
@@ -7323,18 +7053,18 @@ static enum dbg_status qed_parse_igu_fifo_dump(u32 *dump_buf,
 	u32 results_offset = 0;
 	u8 i;
 
-	/* Read global_params section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "global_params"))
 		return DBG_STATUS_IGU_FIFO_BAD_DATA;
 
-	/* Print global params */
+	 
 	dump_buf += qed_print_section_params(dump_buf,
 					     num_section_params,
 					     results_buf, &results_offset);
 
-	/* Read igu_fifo_data section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "igu_fifo_data"))
@@ -7348,7 +7078,7 @@ static enum dbg_status qed_parse_igu_fifo_dump(u32 *dump_buf,
 	num_elements = param_num_val / IGU_FIFO_ELEMENT_DWORDS;
 	elements = (struct igu_fifo_element *)dump_buf;
 
-	/* Decode elements */
+	 
 	for (i = 0; i < num_elements; i++) {
 		status = qed_parse_igu_fifo_element(&elements[i],
 						    results_buf,
@@ -7361,7 +7091,7 @@ static enum dbg_status qed_parse_igu_fifo_dump(u32 *dump_buf,
 						  results_offset),
 				  "fifo contained %d elements", num_elements);
 
-	/* Add 1 for string NULL termination */
+	 
 	*parsed_results_bytes = results_offset + 1;
 
 	return DBG_STATUS_OK;
@@ -7378,18 +7108,18 @@ qed_parse_protection_override_dump(u32 *dump_buf,
 	u32 results_offset = 0;
 	u8 i;
 
-	/* Read global_params section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "global_params"))
 		return DBG_STATUS_PROTECTION_OVERRIDE_BAD_DATA;
 
-	/* Print global params */
+	 
 	dump_buf += qed_print_section_params(dump_buf,
 					     num_section_params,
 					     results_buf, &results_offset);
 
-	/* Read protection_override_data section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "protection_override_data"))
@@ -7403,7 +7133,7 @@ qed_parse_protection_override_dump(u32 *dump_buf,
 	num_elements = param_num_val / PROTECTION_OVERRIDE_ELEMENT_DWORDS;
 	elements = (struct protection_override_element *)dump_buf;
 
-	/* Decode elements */
+	 
 	for (i = 0; i < num_elements; i++) {
 		u32 address = GET_FIELD(elements[i].data,
 					PROTECTION_OVERRIDE_ELEMENT_ADDRESS) *
@@ -7431,18 +7161,13 @@ qed_parse_protection_override_dump(u32 *dump_buf,
 				  "protection override contained %d elements",
 				  num_elements);
 
-	/* Add 1 for string NULL termination */
+	 
 	*parsed_results_bytes = results_offset + 1;
 
 	return DBG_STATUS_OK;
 }
 
-/* Parses a FW Asserts dump buffer.
- * If result_buf is not NULL, the FW Asserts results are printed to it.
- * In any case, the required results buffer size is assigned to
- * parsed_results_bytes.
- * The parsing status is returned.
- */
+ 
 static enum dbg_status qed_parse_fw_asserts_dump(u32 *dump_buf,
 						 char *results_buf,
 						 u32 *parsed_results_bytes)
@@ -7453,13 +7178,13 @@ static enum dbg_status qed_parse_fw_asserts_dump(u32 *dump_buf,
 
 	*parsed_results_bytes = 0;
 
-	/* Read global_params section */
+	 
 	dump_buf += qed_read_section_hdr(dump_buf,
 					 &section_name, &num_section_params);
 	if (strcmp(section_name, "global_params"))
 		return DBG_STATUS_FW_ASSERTS_PARSE_FAILED;
 
-	/* Print global params */
+	 
 	dump_buf += qed_print_section_params(dump_buf,
 					     num_section_params,
 					     results_buf, &results_offset);
@@ -7469,7 +7194,7 @@ static enum dbg_status qed_parse_fw_asserts_dump(u32 *dump_buf,
 						 &section_name,
 						 &num_section_params);
 		if (!strcmp(section_name, "fw_asserts")) {
-			/* Extract params */
+			 
 			const char *storm_letter = NULL;
 			u32 storm_dump_size = 0;
 
@@ -7490,7 +7215,7 @@ static enum dbg_status qed_parse_fw_asserts_dump(u32 *dump_buf,
 			if (!storm_letter || !storm_dump_size)
 				return DBG_STATUS_FW_ASSERTS_PARSE_FAILED;
 
-			/* Print data */
+			 
 			results_offset +=
 			    sprintf(qed_get_buf_ptr(results_buf,
 						    results_offset),
@@ -7508,13 +7233,13 @@ static enum dbg_status qed_parse_fw_asserts_dump(u32 *dump_buf,
 		}
 	}
 
-	/* Add 1 for string NULL termination */
+	 
 	*parsed_results_bytes = results_offset + 1;
 
 	return DBG_STATUS_OK;
 }
 
-/***************************** Public Functions *******************************/
+ 
 
 enum dbg_status qed_dbg_user_set_bin_ptr(struct qed_hwfn *p_hwfn,
 					 const u8 * const bin_ptr)
@@ -7522,7 +7247,7 @@ enum dbg_status qed_dbg_user_set_bin_ptr(struct qed_hwfn *p_hwfn,
 	struct bin_buffer_hdr *buf_hdrs = (struct bin_buffer_hdr *)bin_ptr;
 	u8 buf_id;
 
-	/* Convert binary data to debug arrays */
+	 
 	for (buf_id = 0; buf_id < MAX_BIN_DBG_BUFFER_TYPE; buf_id++)
 		qed_set_dbg_bin_buf(p_hwfn,
 				    (enum bin_dbg_buffer_type)buf_id,
@@ -7606,7 +7331,7 @@ enum dbg_status qed_print_mcp_trace_results(struct qed_hwfn *p_hwfn,
 {
 	u32 parsed_buf_size;
 
-	/* Doesn't do anything, needed for compile time asserts */
+	 
 	qed_user_static_asserts();
 
 	return qed_parse_mcp_trace_dump(p_hwfn,
@@ -7639,7 +7364,7 @@ enum dbg_status qed_print_mcp_trace_line(struct qed_hwfn *p_hwfn,
 				       results_buf, &parsed_results_bytes);
 }
 
-/* Frees the specified MCP Trace meta data */
+ 
 void qed_mcp_trace_free_meta_data(struct qed_hwfn *p_hwfn)
 {
 	struct dbg_tools_user_data *dev_user_data;
@@ -7651,14 +7376,14 @@ void qed_mcp_trace_free_meta_data(struct qed_hwfn *p_hwfn)
 	if (!meta->is_allocated)
 		return;
 
-	/* Release modules */
+	 
 	if (meta->modules) {
 		for (i = 0; i < meta->modules_num; i++)
 			kfree(meta->modules[i]);
 		kfree(meta->modules);
 	}
 
-	/* Release formats */
+	 
 	if (meta->formats) {
 		for (i = 0; i < meta->formats_num; i++)
 			kfree(meta->formats[i].format_str);
@@ -7771,7 +7496,7 @@ enum dbg_status qed_dbg_parse_attn(struct qed_hwfn *p_hwfn,
 
 	attn_name_base = p_hwfn->dbg_arrays[BIN_BUF_DBG_PARSING_STRINGS].ptr;
 
-	/* Go over registers with a non-zero attention status */
+	 
 	for (i = 0; i < num_regs; i++) {
 		struct dbg_attn_bit_mapping *bit_mapping;
 		struct dbg_attn_reg_result *reg_result;
@@ -7784,7 +7509,7 @@ enum dbg_status qed_dbg_parse_attn(struct qed_hwfn *p_hwfn,
 		    p_hwfn->dbg_arrays[BIN_BUF_DBG_ATTN_INDEXES].ptr +
 		    reg_result->block_attn_offset;
 
-		/* Go over attention status bits */
+		 
 		for (j = 0; j < num_reg_attn; j++) {
 			u16 attn_idx_val = GET_FIELD(bit_mapping[j].data,
 						     DBG_ATTN_BIT_MAPPING_VAL);
@@ -7792,20 +7517,16 @@ enum dbg_status qed_dbg_parse_attn(struct qed_hwfn *p_hwfn,
 			u32 attn_name_offset;
 			u32 sts_addr;
 
-			/* Check if bit mask should be advanced (due to unused
-			 * bits).
-			 */
+			 
 			if (GET_FIELD(bit_mapping[j].data,
 				      DBG_ATTN_BIT_MAPPING_IS_UNUSED_BIT_CNT)) {
 				bit_idx += (u8)attn_idx_val;
 				continue;
 			}
 
-			/* Check current bit index */
+			 
 			if (reg_result->sts_val & BIT(bit_idx)) {
-				/* An attention bit with value=1 was found
-				 * Find attention name
-				 */
+				 
 				attn_name_offset =
 					block_attn_name_offsets[attn_idx_val];
 				attn_name = attn_name_base + attn_name_offset;
@@ -7832,7 +7553,7 @@ enum dbg_status qed_dbg_parse_attn(struct qed_hwfn *p_hwfn,
 	return DBG_STATUS_OK;
 }
 
-/* Wrapper for unifying the idle_chk and mcp_trace api */
+ 
 static enum dbg_status
 qed_print_idle_chk_results_wrapper(struct qed_hwfn *p_hwfn,
 				   u32 *dump_buf,
@@ -7850,7 +7571,7 @@ static DEFINE_MUTEX(qed_dbg_lock);
 
 #define MAX_PHY_RESULT_BUFFER 9000
 
-/******************************** Feature Meta data section ******************/
+ 
 
 #define GRC_NUM_STR_FUNCS 2
 #define IDLE_CHK_NUM_STR_FUNCS 1
@@ -7862,7 +7583,7 @@ static DEFINE_MUTEX(qed_dbg_lock);
 #define ILT_NUM_STR_FUNCS 1
 #define PHY_NUM_STR_FUNCS 20
 
-/* Feature meta data lookup table */
+ 
 static struct {
 	char *name;
 	u32 num_funcs;
@@ -7933,7 +7654,7 @@ static void qed_dbg_print_feature(u8 *p_text_buf, u32 text_size)
 }
 
 #define QED_RESULTS_BUF_MIN_SIZE 16
-/* Generic function for decoding debug feature info */
+ 
 static enum dbg_status format_feature(struct qed_hwfn *p_hwfn,
 				      enum qed_dbg_features feature_idx)
 {
@@ -7944,14 +7665,14 @@ static enum dbg_status format_feature(struct qed_hwfn *p_hwfn,
 	enum dbg_status rc;
 	char *text_buf;
 
-	/* Check if feature supports formatting capability */
+	 
 	if (!qed_features_lookup[feature_idx].results_buf_size)
 		return DBG_STATUS_OK;
 
 	dbuf = (u32 *)feature->dump_buf;
 	dwords = feature->dumped_dwords;
 
-	/* Obtain size of formatted output */
+	 
 	rc = qed_features_lookup[feature_idx].results_buf_size(p_hwfn,
 							       dbuf,
 							       dwords,
@@ -7959,9 +7680,7 @@ static enum dbg_status format_feature(struct qed_hwfn *p_hwfn,
 	if (rc != DBG_STATUS_OK)
 		return rc;
 
-	/* Make sure that the allocated size is a multiple of dword
-	 * (4 bytes).
-	 */
+	 
 	null_char_pos = txt_size_bytes - 1;
 	txt_size_bytes = (txt_size_bytes + 3) & ~0x3;
 
@@ -7972,7 +7691,7 @@ static enum dbg_status format_feature(struct qed_hwfn *p_hwfn,
 		return DBG_STATUS_INVALID_ARGS;
 	}
 
-	/* allocate temp text buf */
+	 
 	text_buf = vzalloc(txt_size_bytes);
 	if (!text_buf) {
 		DP_NOTICE(p_hwfn->cdev,
@@ -7980,7 +7699,7 @@ static enum dbg_status format_feature(struct qed_hwfn *p_hwfn,
 		return DBG_STATUS_VIRT_MEM_ALLOC_FAILED;
 	}
 
-	/* Decode feature opcodes to string on temp buf */
+	 
 	rc = qed_features_lookup[feature_idx].print_results(p_hwfn,
 							    dbuf,
 							    dwords,
@@ -7990,26 +7709,21 @@ static enum dbg_status format_feature(struct qed_hwfn *p_hwfn,
 		return rc;
 	}
 
-	/* Replace the original null character with a '\n' character.
-	 * The bytes that were added as a result of the dword alignment are also
-	 * padded with '\n' characters.
-	 */
+	 
 	for (i = null_char_pos; i < txt_size_bytes; i++)
 		text_buf[i] = '\n';
 
-	/* Dump printable feature to log */
+	 
 	if (p_hwfn->cdev->print_dbg_data)
 		qed_dbg_print_feature(text_buf, txt_size_bytes);
 
-	/* Dump binary data as is to the output file */
+	 
 	if (p_hwfn->cdev->dbg_bin_dump) {
 		vfree(text_buf);
 		return rc;
 	}
 
-	/* Free the old dump_buf and point the dump_buf to the newly allocated
-	 * and formatted text buffer.
-	 */
+	 
 	vfree(feature->dump_buf);
 	feature->dump_buf = text_buf;
 	feature->buf_size = txt_size_bytes;
@@ -8020,7 +7734,7 @@ static enum dbg_status format_feature(struct qed_hwfn *p_hwfn,
 
 #define MAX_DBG_FEATURE_SIZE_DWORDS	0x3FFFFFFF
 
-/* Generic function for performing the dump of a debug feature. */
+ 
 static enum dbg_status qed_dbg_dump(struct qed_hwfn *p_hwfn,
 				    struct qed_ptt *p_ptt,
 				    enum qed_dbg_features feature_idx)
@@ -8033,18 +7747,13 @@ static enum dbg_status qed_dbg_dump(struct qed_hwfn *p_hwfn,
 	DP_NOTICE(p_hwfn->cdev, "Collecting a debug feature [\"%s\"]\n",
 		  qed_features_lookup[feature_idx].name);
 
-	/* Dump_buf was already allocated need to free (this can happen if dump
-	 * was called but file was never read).
-	 * We can't use the buffer as is since size may have changed.
-	 */
+	 
 	if (feature->dump_buf) {
 		vfree(feature->dump_buf);
 		feature->dump_buf = NULL;
 	}
 
-	/* Get buffer size from hsi, allocate accordingly, and perform the
-	 * dump.
-	 */
+	 
 	rc = qed_features_lookup[feature_idx].get_size(p_hwfn, p_ptt,
 						       &buf_size_dwords);
 	if (rc != DBG_STATUS_OK && rc != DBG_STATUS_NVRAM_GET_IMAGE_FAILED)
@@ -8073,19 +7782,14 @@ static enum dbg_status qed_dbg_dump(struct qed_hwfn *p_hwfn,
 							   sizeof(u32),
 							   dwords);
 
-	/* If mcp is stuck we get DBG_STATUS_NVRAM_GET_IMAGE_FAILED error.
-	 * In this case the buffer holds valid binary data, but we won't able
-	 * to parse it (since parsing relies on data in NVRAM which is only
-	 * accessible when MFW is responsive). skip the formatting but return
-	 * success so that binary data is provided.
-	 */
+	 
 	if (rc == DBG_STATUS_NVRAM_GET_IMAGE_FAILED)
 		return DBG_STATUS_OK;
 
 	if (rc != DBG_STATUS_OK)
 		return rc;
 
-	/* Format output */
+	 
 	rc = format_feature(p_hwfn, feature_idx);
 	return rc;
 }
@@ -8172,7 +7876,7 @@ static int qed_dbg_nvm_image(struct qed_dev *cdev, void *buffer,
 	if (rc)
 		return rc;
 
-	/* QED_NVM_IMAGE_NVM_META image is not swapped like other images */
+	 
 	if (image_id != QED_NVM_IMAGE_NVM_META)
 		cpu_to_be32_array((__force __be32 *)buffer,
 				  (const u32 *)buffer,
@@ -8229,9 +7933,7 @@ int qed_dbg_mcp_trace_size(struct qed_dev *cdev)
 	return qed_dbg_feature_size(cdev, DBG_FEATURE_MCP_TRACE);
 }
 
-/* Defines the amount of bytes allocated for recording the length of debugfs
- * feature buffer.
- */
+ 
 #define REGDUMP_HEADER_SIZE			sizeof(u32)
 #define REGDUMP_HEADER_SIZE_SHIFT		0
 #define REGDUMP_HEADER_SIZE_MASK		0xffffff
@@ -8303,12 +8005,12 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 
 	org_engine = qed_get_debug_engine(cdev);
 	for (cur_engine = 0; cur_engine < cdev->num_hwfns; cur_engine++) {
-		/* Collect idle_chks and grcDump for each hw function */
+		 
 		DP_VERBOSE(cdev, QED_MSG_DEBUG,
 			   "obtaining idle_chk and grcdump for current engine\n");
 		qed_set_debug_engine(cdev, cur_engine);
 
-		/* First idle_chk */
+		 
 		rc = qed_dbg_idle_chk(cdev, (u8 *)buffer + offset +
 				      REGDUMP_HEADER_SIZE, &feature_size);
 		if (!rc) {
@@ -8323,7 +8025,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 			DP_ERR(cdev, "qed_dbg_idle_chk failed. rc = %d\n", rc);
 		}
 
-		/* Second idle_chk */
+		 
 		rc = qed_dbg_idle_chk(cdev, (u8 *)buffer + offset +
 				      REGDUMP_HEADER_SIZE, &feature_size);
 		if (!rc) {
@@ -8338,7 +8040,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 			DP_ERR(cdev, "qed_dbg_idle_chk failed. rc = %d\n", rc);
 		}
 
-		/* reg_fifo dump */
+		 
 		rc = qed_dbg_reg_fifo(cdev, (u8 *)buffer + offset +
 				      REGDUMP_HEADER_SIZE, &feature_size);
 		if (!rc) {
@@ -8353,7 +8055,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 			DP_ERR(cdev, "qed_dbg_reg_fifo failed. rc = %d\n", rc);
 		}
 
-		/* igu_fifo dump */
+		 
 		rc = qed_dbg_igu_fifo(cdev, (u8 *)buffer + offset +
 				      REGDUMP_HEADER_SIZE, &feature_size);
 		if (!rc) {
@@ -8368,7 +8070,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 			DP_ERR(cdev, "qed_dbg_igu_fifo failed. rc = %d", rc);
 		}
 
-		/* protection_override dump */
+		 
 		rc = qed_dbg_protection_override(cdev, (u8 *)buffer + offset +
 						 REGDUMP_HEADER_SIZE,
 						 &feature_size);
@@ -8387,7 +8089,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 			       rc);
 		}
 
-		/* fw_asserts dump */
+		 
 		rc = qed_dbg_fw_asserts(cdev, (u8 *)buffer + offset +
 					REGDUMP_HEADER_SIZE, &feature_size);
 		if (!rc) {
@@ -8422,9 +8124,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 			}
 		}
 
-		/* Grc dump - must be last because when mcp stuck it will
-		 * clutter idle_chk, reg_fifo, ...
-		 */
+		 
 		for (i = 0; i < MAX_DBG_GRC_PARAMS; i++)
 			dev_data->grc.param_val[i] = grc_params[i];
 
@@ -8445,7 +8145,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 
 	qed_set_debug_engine(cdev, org_engine);
 
-	/* mcp_trace */
+	 
 	rc = qed_dbg_mcp_trace(cdev, (u8 *)buffer + offset +
 			       REGDUMP_HEADER_SIZE, &feature_size);
 	if (!rc) {
@@ -8458,7 +8158,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 		DP_ERR(cdev, "qed_dbg_mcp_trace failed. rc = %d\n", rc);
 	}
 
-	/* nvm cfg1 */
+	 
 	rc = qed_dbg_nvm_image(cdev,
 			       (u8 *)buffer + offset +
 			       REGDUMP_HEADER_SIZE, &feature_size,
@@ -8476,7 +8176,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 		       rc);
 	}
 
-		/* nvm default */
+		 
 	rc = qed_dbg_nvm_image(cdev,
 			       (u8 *)buffer + offset +
 			       REGDUMP_HEADER_SIZE, &feature_size,
@@ -8495,7 +8195,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 		       "QED_NVM_IMAGE_DEFAULT_CFG", rc);
 	}
 
-	/* nvm meta */
+	 
 	rc = qed_dbg_nvm_image(cdev,
 			       (u8 *)buffer + offset +
 			       REGDUMP_HEADER_SIZE, &feature_size,
@@ -8513,7 +8213,7 @@ int qed_dbg_all_data(struct qed_dev *cdev, void *buffer)
 		       rc);
 	}
 
-	/* nvm mdump */
+	 
 	rc = qed_dbg_nvm_image(cdev, (u8 *)buffer + offset +
 			       REGDUMP_HEADER_SIZE, &feature_size,
 			       QED_NVM_IMAGE_MDUMP);
@@ -8544,7 +8244,7 @@ int qed_dbg_all_data_size(struct qed_dev *cdev)
 	cdev->disable_ilt_dump = false;
 	org_engine = qed_get_debug_engine(cdev);
 	for (cur_engine = 0; cur_engine < cdev->num_hwfns; cur_engine++) {
-		/* Engine specific */
+		 
 		DP_VERBOSE(cdev, QED_MSG_DEBUG,
 			   "calculating idle_chk and grcdump register length for current engine\n");
 		qed_set_debug_engine(cdev, cur_engine);
@@ -8565,7 +8265,7 @@ int qed_dbg_all_data_size(struct qed_dev *cdev)
 
 	qed_set_debug_engine(cdev, org_engine);
 
-	/* Engine common */
+	 
 	regs_len += REGDUMP_HEADER_SIZE + qed_dbg_mcp_trace_size(cdev) +
 	    REGDUMP_HEADER_SIZE + qed_dbg_phy_size(cdev);
 	qed_dbg_nvm_image_length(p_hwfn, QED_NVM_IMAGE_NVM_CFG1, &image_len);
@@ -8601,12 +8301,12 @@ int qed_dbg_feature(struct qed_dev *cdev, void *buffer,
 	struct qed_ptt *p_ptt;
 	int rc = 0;
 
-	/* Acquire ptt */
+	 
 	p_ptt = qed_ptt_acquire(p_hwfn);
 	if (!p_ptt)
 		return -EINVAL;
 
-	/* Get dump */
+	 
 	dbg_rc = qed_dbg_dump(p_hwfn, p_ptt, feature);
 	if (dbg_rc != DBG_STATUS_OK) {
 		DP_VERBOSE(cdev, QED_MSG_DEBUG, "%s\n",
@@ -8643,7 +8343,7 @@ int qed_dbg_feature_size(struct qed_dev *cdev, enum qed_dbg_features feature)
 	if (rc != DBG_STATUS_OK)
 		buf_size_dwords = 0;
 
-	/* Feature will not be dumped if it exceeds maximum size */
+	 
 	if (buf_size_dwords > MAX_DBG_FEATURE_SIZE_DWORDS)
 		buf_size_dwords = 0;
 
@@ -8654,9 +8354,7 @@ int qed_dbg_feature_size(struct qed_dev *cdev, enum qed_dbg_features feature)
 
 int qed_dbg_phy_size(struct qed_dev *cdev)
 {
-	/* return max size of phy info and
-	 * phy mac_stat multiplied by the number of ports
-	 */
+	 
 	return MAX_PHY_RESULT_BUFFER * (1 + qed_device_num_ports(cdev));
 }
 
@@ -8677,12 +8375,10 @@ void qed_dbg_pf_init(struct qed_dev *cdev)
 	const u8 *dbg_values = NULL;
 	int i;
 
-	/* Sync ver with debugbus qed code */
+	 
 	qed_dbg_set_app_ver(TOOLS_VERSION);
 
-	/* Debug values are after init values.
-	 * The offset is the first dword of the file.
-	 */
+	 
 	dbg_values = cdev->firmware->data + *(u32 *)cdev->firmware->data;
 
 	for_each_hwfn(cdev, i) {
@@ -8690,7 +8386,7 @@ void qed_dbg_pf_init(struct qed_dev *cdev)
 		qed_dbg_user_set_bin_ptr(&cdev->hwfns[i], dbg_values);
 	}
 
-	/* Set the hwfn to be 0 as default */
+	 
 	cdev->engine_for_debug = 0;
 }
 
@@ -8699,9 +8395,7 @@ void qed_dbg_pf_exit(struct qed_dev *cdev)
 	struct qed_dbg_feature *feature = NULL;
 	enum qed_dbg_features feature_idx;
 
-	/* debug features' buffers may be allocated if debug feature was used
-	 * but dump wasn't called
-	 */
+	 
 	for (feature_idx = 0; feature_idx < DBG_FEATURE_NUM; feature_idx++) {
 		feature = &cdev->dbg_features[feature_idx];
 		if (feature->dump_buf) {

@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- *
- * Please try to maintain the following order within this file unless it makes
- * sense to do otherwise. From top to bottom:
- * 1. typedefs
- * 2. #defines, and macros
- * 3. structure definitions
- * 4. function prototypes
- *
- * Within each section, please try to order by generation in ascending order,
- * from top to bottom (ie. gen6 on the top, gen8 on the bottom).
- */
+ 
+ 
 
 #ifndef __INTEL_GTT_H__
 #define __INTEL_GTT_H__
@@ -40,7 +28,7 @@
 #define DBG(...)
 #endif
 
-#define NALLOC 3 /* 1 normal, 1 for concurrent threads, 1 for preallocation */
+#define NALLOC 3  
 
 #define I915_GTT_PAGE_SIZE_4K	BIT_ULL(12)
 #define I915_GTT_PAGE_SIZE_64K	BIT_ULL(16)
@@ -55,7 +43,7 @@
 
 #define I915_FENCE_REG_NONE -1
 #define I915_MAX_NUM_FENCES 32
-/* 32 fences + sign bit for FENCE_REG_NONE */
+ 
 #define I915_MAX_NUM_FENCE_BITS 6
 
 typedef u32 gen6_pte_t;
@@ -68,7 +56,7 @@ typedef u64 gen8_pte_t;
 #define I915_PDES			512
 #define I915_PDE_MASK			(I915_PDES - 1)
 
-/* gen6-hsw has bit 11-4 for physical addr bit 39-32 */
+ 
 #define GEN6_GTT_ADDR_ENCODE(addr)	((addr) | (((addr) >> 28) & 0xff0))
 #define GEN6_PTE_ADDR_ENCODE(addr)	GEN6_GTT_ADDR_ENCODE(addr)
 #define GEN6_PDE_ADDR_ENCODE(addr)	GEN6_GTT_ADDR_ENCODE(addr)
@@ -103,10 +91,7 @@ typedef u64 gen8_pte_t;
 #define GEN12_PDE_64K BIT(6)
 #define GEN12_PTE_PS64 BIT(8)
 
-/*
- * Cacheability Control is a 4-bit value. The low three bits are stored in bits
- * 3:1 of the PTE, while the fourth bit is stored in bit 11 of the PTE.
- */
+ 
 #define HSW_CACHEABILITY_CONTROL(bits)	((((bits) & 0x7) << 1) | \
 					 (((bits) & 0x8) << (11 - 3)))
 #define HSW_WB_LLC_AGE3			HSW_CACHEABILITY_CONTROL(0x2)
@@ -119,23 +104,13 @@ typedef u64 gen8_pte_t;
 #define HSW_GTT_ADDR_ENCODE(addr)	((addr) | (((addr) >> 28) & 0x7f0))
 #define HSW_PTE_ADDR_ENCODE(addr)	HSW_GTT_ADDR_ENCODE(addr)
 
-/*
- * GEN8 32b style address is defined as a 3 level page table:
- * 31:30 | 29:21 | 20:12 |  11:0
- * PDPE  |  PDE  |  PTE  | offset
- * The difference as compared to normal x86 3 level page table is the PDPEs are
- * programmed via register.
- *
- * GEN8 48b style address is defined as a 4 level page table:
- * 47:39 | 38:30 | 29:21 | 20:12 |  11:0
- * PML4E | PDPE  |  PDE  |  PTE  | offset
- */
+ 
 #define GEN8_3LVL_PDPES			4
 
 #define PPAT_UNCACHED			(_PAGE_PWT | _PAGE_PCD)
-#define PPAT_CACHED_PDE			0 /* WB LLC */
-#define PPAT_CACHED			_PAGE_PAT /* WB LLCeLLC */
-#define PPAT_DISPLAY_ELLC		_PAGE_PCD /* WT eLLC */
+#define PPAT_CACHED_PDE			0  
+#define PPAT_CACHED			_PAGE_PAT  
+#define PPAT_DISPLAY_ELLC		_PAGE_PCD  
 
 #define CHV_PPAT_SNOOP			REG_BIT(6)
 #define GEN8_PPAT_AGE(x)		((x)<<4)
@@ -213,29 +188,20 @@ void *__px_vaddr(struct drm_i915_gem_object *p);
 #define px_used(px) (&px_pt(px)->used)
 
 struct i915_vm_pt_stash {
-	/* preallocated chains of page tables/directories */
+	 
 	struct i915_page_table *pt[2];
-	/*
-	 * Optionally override the alignment/size of the physical page that
-	 * contains each PT. If not set defaults back to the usual
-	 * I915_GTT_PAGE_SIZE_4K. This does not influence the other paging
-	 * structures. MUST be a power-of-two. ONLY applicable on discrete
-	 * platforms.
-	 */
+	 
 	int pt_sz;
 };
 
 struct i915_vma_ops {
-	/* Map an object into an address space with the given cache flags. */
+	 
 	void (*bind_vma)(struct i915_address_space *vm,
 			 struct i915_vm_pt_stash *stash,
 			 struct i915_vma_resource *vma_res,
 			 unsigned int pat_index,
 			 u32 flags);
-	/*
-	 * Unmap an object from an address space. This usually consists of
-	 * setting the valid PTE entries to a reserved scratch page.
-	 */
+	 
 	void (*unbind_vma)(struct i915_address_space *vm,
 			   struct i915_vma_resource *vma_res);
 
@@ -249,51 +215,47 @@ struct i915_address_space {
 	struct intel_gt *gt;
 	struct drm_i915_private *i915;
 	struct device *dma;
-	u64 total;		/* size addr space maps (ex. 2GB for ggtt) */
-	u64 reserved;		/* size addr space reserved */
+	u64 total;		 
+	u64 reserved;		 
 	u64 min_alignment[INTEL_MEMORY_STOLEN_LOCAL + 1];
 
 	unsigned int bind_async_flags;
 
-	struct mutex mutex; /* protects vma and our lists */
+	struct mutex mutex;  
 
-	struct kref resv_ref; /* kref to keep the reservation lock alive. */
-	struct dma_resv _resv; /* reservation lock for all pd objects, and buffer pool */
+	struct kref resv_ref;  
+	struct dma_resv _resv;  
 #define VM_CLASS_GGTT 0
 #define VM_CLASS_PPGTT 1
 #define VM_CLASS_DPT 2
 
 	struct drm_i915_gem_object *scratch[4];
-	/**
-	 * List of vma currently bound.
-	 */
+	 
 	struct list_head bound_list;
 
-	/**
-	 * List of vmas not yet bound or evicted.
-	 */
+	 
 	struct list_head unbound_list;
 
-	/* Global GTT */
+	 
 	bool is_ggtt:1;
 
-	/* Display page table */
+	 
 	bool is_dpt:1;
 
-	/* Some systems support read-only mappings for GGTT and/or PPGTT */
+	 
 	bool has_read_only:1;
 
-	/* Skip pte rewrite on unbind for suspend. Protected by @mutex */
+	 
 	bool skip_pte_rewrite:1;
 
 	u8 top;
 	u8 pd_shift;
 	u8 scratch_order;
 
-	/* Flags used when creating page-table objects for this vm */
+	 
 	unsigned long lmem_pt_obj_flags;
 
-	/* Interval tree for pending unbind vma resources */
+	 
 	struct rb_root_cached pending_unbind;
 
 	struct drm_i915_gem_object *
@@ -303,7 +265,7 @@ struct i915_address_space {
 
 	u64 (*pte_encode)(dma_addr_t addr,
 			  unsigned int pat_index,
-			  u32 flags); /* Create a valid PTE */
+			  u32 flags);  
 #define PTE_READ_ONLY	BIT(0)
 #define PTE_LM		BIT(1)
 
@@ -347,35 +309,28 @@ struct i915_address_space {
 	I915_SELFTEST_DECLARE(bool scrub_64K);
 };
 
-/*
- * The Graphics Translation Table is the way in which GEN hardware translates a
- * Graphics Virtual Address into a Physical Address. In addition to the normal
- * collateral associated with any va->pa translations GEN hardware also has a
- * portion of the GTT which can be mapped by the CPU and remain both coherent
- * and correct (in cases like swizzling). That region is referred to as GMADR in
- * the spec.
- */
+ 
 struct i915_ggtt {
 	struct i915_address_space vm;
 
-	struct io_mapping iomap;	/* Mapping to our CPU mappable region */
-	struct resource gmadr;          /* GMADR resource */
-	resource_size_t mappable_end;	/* End offset that we can CPU map */
+	struct io_mapping iomap;	 
+	struct resource gmadr;           
+	resource_size_t mappable_end;	 
 
-	/** "Graphics Stolen Memory" holds the global PTEs */
+	 
 	void __iomem *gsm;
 	void (*invalidate)(struct i915_ggtt *ggtt);
 
-	/** PPGTT used for aliasing the PPGTT with the GTT */
+	 
 	struct i915_ppgtt *alias;
 
 	bool do_idle_maps;
 
 	int mtrr;
 
-	/** Bit 6 swizzling required for X tiling */
+	 
 	u32 bit_6_swizzle_x;
-	/** Bit 6 swizzling required for Y tiling */
+	 
 	u32 bit_6_swizzle_y;
 
 	u32 pin_bias;
@@ -384,17 +339,14 @@ struct i915_ggtt {
 	struct i915_fence_reg *fence_regs;
 	struct list_head fence_list;
 
-	/**
-	 * List of all objects in gtt_space, currently mmaped by userspace.
-	 * All objects within this list must also be on bound_list.
-	 */
+	 
 	struct list_head userfault_list;
 
 	struct mutex error_mutex;
 	struct drm_mm_node error_capture;
 	struct drm_mm_node uc_fw;
 
-	/** List of GTs mapping this GGTT */
+	 
 	struct list_head gt_list;
 };
 
@@ -428,7 +380,7 @@ i915_vm_has_scratch_64K(struct i915_address_space *vm)
 static inline u64 i915_vm_min_alignment(struct i915_address_space *vm,
 					enum intel_memory_type type)
 {
-	/* avoid INTEL_MEMORY_MOCK overflow */
+	 
 	if ((int)type >= ARRAY_SIZE(vm->min_alignment))
 		type = INTEL_MEMORY_SYSTEM;
 
@@ -484,12 +436,7 @@ static inline void assert_vm_alive(struct i915_address_space *vm)
 	GEM_BUG_ON(!kref_read(&vm->ref));
 }
 
-/**
- * i915_vm_resv_get - Obtain a reference on the vm's reservation lock
- * @vm: The vm whose reservation lock we want to share.
- *
- * Return: A pointer to the vm's reservation lock.
- */
+ 
 static inline struct dma_resv *i915_vm_resv_get(struct i915_address_space *vm)
 {
 	kref_get(&vm->resv_ref);
@@ -505,10 +452,7 @@ static inline void i915_vm_put(struct i915_address_space *vm)
 	kref_put(&vm->ref, i915_vm_release);
 }
 
-/**
- * i915_vm_resv_put - Release a reference on the vm's reservation lock
- * @vm: The vm whose reservation lock reference we want to release
- */
+ 
 static inline void i915_vm_resv_put(struct i915_address_space *vm)
 {
 	kref_put(&vm->resv_ref, i915_vm_resv_release);
@@ -524,11 +468,7 @@ static inline u32 i915_pte_index(u64 address, unsigned int pde_shift)
 	return (address >> PAGE_SHIFT) & mask;
 }
 
-/*
- * Helper to counts the number of PTEs within the given length. This count
- * does not cross a page table boundary, so the max value would be
- * GEN6_PTES for GEN6, and GEN8_PTES for GEN8.
- */
+ 
 static inline u32 i915_pte_count(u64 addr, u64 length, unsigned int pde_shift)
 {
 	const u64 mask = ~((1ULL << pde_shift) - 1);

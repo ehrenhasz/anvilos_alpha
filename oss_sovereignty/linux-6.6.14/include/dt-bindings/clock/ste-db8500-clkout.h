@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __STE_CLK_DB8500_CLKOUT_H__
 #define __STE_CLK_DB8500_CLKOUT_H__
 

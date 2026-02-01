@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2021 Klara, Inc.
- */
+ 
 
 #include <alloca.h>
 #include <errno.h>
@@ -83,15 +62,7 @@ libzfs_error_init(int error)
 	}
 }
 
-/*
- * zfs(4) is loaded by udev if there's a fstype=zfs device present,
- * but if there isn't, load them automatically;
- * always wait for ZFS_DEV to appear via udev.
- *
- * Environment variables:
- * - ZFS_MODULE_TIMEOUT="<seconds>" - Seconds to wait for ZFS_DEV,
- *                                    defaults to 10, max. 10 min.
- */
+ 
 int
 libzfs_load_module(void)
 {
@@ -185,9 +156,7 @@ zfs_destroy_snaps_nvl_os(libzfs_handle_t *hdl, nvlist_t *snaps)
 	return (0);
 }
 
-/*
- * Return allocated loaded module version, or NULL on error (with errno set)
- */
+ 
 char *
 zfs_version_kernel(void)
 {
@@ -211,9 +180,7 @@ zfs_version_kernel(void)
 	return (ret);
 }
 
-/*
- * Add or delete the given filesystem to/from the given user namespace.
- */
+ 
 int
 zfs_userns(zfs_handle_t *zhp, const char *nspath, int attach)
 {

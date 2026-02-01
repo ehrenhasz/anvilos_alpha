@@ -1,40 +1,19 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef _smuio_13_0_6_OFFSET_HEADER
 #define _smuio_13_0_6_OFFSET_HEADER
 
 
 
-// addressBlock: smuio_smuio_reset_SmuSmuioDec
-// base address: 0x5a300
+
+
 #define regSMUIO_MP_RESET_INTR                                                                          0x00c1
 #define regSMUIO_MP_RESET_INTR_BASE_IDX                                                                 0
 #define regSMUIO_SOC_HALT                                                                               0x00c2
 #define regSMUIO_SOC_HALT_BASE_IDX                                                                      0
 
 
-// addressBlock: smuio_smuio_tsc_SmuSmuioDec
-// base address: 0x5a8a0
+
+
 #define regPWROK_REFCLK_GAP_CYCLES                                                                      0x0028
 #define regPWROK_REFCLK_GAP_CYCLES_BASE_IDX                                                             1
 #define regGOLDEN_TSC_INCREMENT_UPPER                                                                   0x002b
@@ -53,8 +32,8 @@
 #define regSOC_GAP_PWROK_BASE_IDX                                                                       1
 
 
-// addressBlock: smuio_smuio_swtimer_SmuSmuioDec
-// base address: 0x5ac70
+
+
 #define regPWR_DISP_TIMER_CONTROL                                                                       0x011d
 #define regPWR_DISP_TIMER_CONTROL_BASE_IDX                                                              1
 #define regPWR_DISP_TIMER_DEBUG                                                                         0x011e
@@ -69,8 +48,8 @@
 #define regPWR_IH_CONTROL_BASE_IDX                                                                      1
 
 
-// addressBlock: smuio_smuio_misc_SmuSmuioDec
-// base address: 0x5a000
+
+
 #define regSMUIO_MCM_CONFIG                                                                             0x0023
 #define regSMUIO_MCM_CONFIG_BASE_IDX                                                                    0
 #define regIP_DISCOVERY_VERSION                                                                         0x0000
@@ -93,8 +72,8 @@
 #define regSCRATCH_REGISTER7_BASE_IDX                                                                   1
 
 
-// addressBlock: smuio_smuio_i2c_SmuSmuioDec
-// base address: 0x5a100
+
+
 #define regCKSVII2C_IC_CON                                                                              0x0040
 #define regCKSVII2C_IC_CON_BASE_IDX                                                                     0
 #define regCKSVII2C_IC_TAR                                                                              0x0041
@@ -283,8 +262,8 @@
 #define regSMUIO_PWRMGT_BASE_IDX                                                                        0
 
 
-// addressBlock: smuio_smuio_rom_SmuSmuioDec
-// base address: 0x5a380
+
+
 #define regROM_CNTL                                                                                     0x00e0
 #define regROM_CNTL_BASE_IDX                                                                            0
 #define regPAGE_MIRROR_CNTL                                                                             0x00e1
@@ -435,8 +414,8 @@
 #define regROM_SW_DATA_64_BASE_IDX                                                                      0
 
 
-// addressBlock: smuio_smuio_gpio_SmuSmuioDec
-// base address: 0x5a500
+
+
 #define regSMU_GPIOPAD_SW_INT_STAT                                                                      0x0140
 #define regSMU_GPIOPAD_SW_INT_STAT_BASE_IDX                                                             0
 #define regSMU_GPIOPAD_MASK                                                                             0x0141

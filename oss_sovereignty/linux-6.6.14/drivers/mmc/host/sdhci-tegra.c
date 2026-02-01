@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Google, Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -33,7 +31,7 @@
 #include "sdhci-pltfm.h"
 #include "cqhci.h"
 
-/* Tegra SDHOST controller vendor register definitions */
+ 
 #define SDHCI_TEGRA_VENDOR_CLOCK_CTRL			0x100
 #define SDHCI_CLOCK_CTRL_TAP_MASK			0x00ff0000
 #define SDHCI_CLOCK_CTRL_TAP_SHIFT			16
@@ -104,30 +102,20 @@
 #define NVQUIRK_ENABLE_SDR50				BIT(3)
 #define NVQUIRK_ENABLE_SDR104				BIT(4)
 #define NVQUIRK_ENABLE_DDR50				BIT(5)
-/*
- * HAS_PADCALIB NVQUIRK is for SoC's supporting auto calibration of pads
- * drive strength.
- */
+ 
 #define NVQUIRK_HAS_PADCALIB				BIT(6)
-/*
- * NEEDS_PAD_CONTROL NVQUIRK is for SoC's having separate 3V3 and 1V8 pads.
- * 3V3/1V8 pad selection happens through pinctrl state selection depending
- * on the signaling mode.
- */
+ 
 #define NVQUIRK_NEEDS_PAD_CONTROL			BIT(7)
 #define NVQUIRK_DIS_CARD_CLK_CONFIG_TAP			BIT(8)
 #define NVQUIRK_CQHCI_DCMD_R1B_CMD_TIMING		BIT(9)
 
-/*
- * NVQUIRK_HAS_TMCLK is for SoC's having separate timeout clock for Tegra
- * SDMMC hardware data timeout.
- */
+ 
 #define NVQUIRK_HAS_TMCLK				BIT(10)
 
 #define NVQUIRK_HAS_ANDROID_GPT_SECTOR			BIT(11)
 #define NVQUIRK_PROGRAM_STREAMID			BIT(12)
 
-/* SDMMC CQE Base Address for Tegra Host Ver 4.1 and Higher */
+ 
 #define SDHCI_TEGRA_CQE_BASE_ADDR			0xF000
 
 #define SDHCI_TEGRA_CQE_TRNS_MODE	(SDHCI_TRNS_MULTI | \
@@ -142,7 +130,7 @@ struct sdhci_tegra_soc_data {
 	u8 max_tap_delay;
 };
 
-/* Magic pull up and pull down pad calibration offsets */
+ 
 struct sdhci_tegra_autocal_offsets {
 	u32 pull_up_3v3;
 	u32 pull_down_3v3;
@@ -193,7 +181,7 @@ static u16 tegra_sdhci_readw(struct sdhci_host *host, int reg)
 
 	if (unlikely((soc_data->nvquirks & NVQUIRK_FORCE_SDHCI_SPEC_200) &&
 			(reg == SDHCI_HOST_VERSION))) {
-		/* Erratum: Version register is invalid in HW. */
+		 
 		return SDHCI_SPEC_200;
 	}
 
@@ -206,10 +194,7 @@ static void tegra_sdhci_writew(struct sdhci_host *host, u16 val, int reg)
 
 	switch (reg) {
 	case SDHCI_TRANSFER_MODE:
-		/*
-		 * Postpone this write, we must do it together with a
-		 * command write that is down below.
-		 */
+		 
 		pltfm_host->xfer_mode_shadow = val;
 		return;
 	case SDHCI_COMMAND:
@@ -227,10 +212,7 @@ static void tegra_sdhci_writel(struct sdhci_host *host, u32 val, int reg)
 	struct sdhci_tegra *tegra_host = sdhci_pltfm_priv(pltfm_host);
 	const struct sdhci_tegra_soc_data *soc_data = tegra_host->soc_data;
 
-	/* Seems like we're getting spurious timeout and crc errors, so
-	 * disable signalling of them. In case of real errors software
-	 * timers should take care of eventually detecting them.
-	 */
+	 
 	if (unlikely(reg == SDHCI_SIGNAL_ENABLE))
 		val &= ~(SDHCI_INT_TIMEOUT|SDHCI_INT_CRC);
 
@@ -238,7 +220,7 @@ static void tegra_sdhci_writel(struct sdhci_host *host, u32 val, int reg)
 
 	if (unlikely((soc_data->nvquirks & NVQUIRK_ENABLE_BLOCK_GAP_DET) &&
 			(reg == SDHCI_INT_ENABLE))) {
-		/* Erratum: Must enable block gap interrupt detection */
+		 
 		u8 gap_ctrl = readb(host->ioaddr + SDHCI_BLOCK_GAP_CONTROL);
 		if (val & SDHCI_INT_CARD_INT)
 			gap_ctrl |= 0x8;
@@ -291,11 +273,7 @@ static void tegra210_sdhci_writew(struct sdhci_host *host, u16 val, int reg)
 
 static unsigned int tegra_sdhci_get_ro(struct sdhci_host *host)
 {
-	/*
-	 * Write-enable shall be assumed if GPIO is missing in a board's
-	 * device-tree because SDHCI's WRITE_PROTECT bit doesn't work on
-	 * Tegra.
-	 */
+	 
 	return mmc_gpio_get_ro(host->mmc);
 }
 
@@ -305,13 +283,7 @@ static bool tegra_sdhci_is_pad_and_regulator_valid(struct sdhci_host *host)
 	struct sdhci_tegra *tegra_host = sdhci_pltfm_priv(pltfm_host);
 	int has_1v8, has_3v3;
 
-	/*
-	 * The SoCs which have NVQUIRK_NEEDS_PAD_CONTROL require software pad
-	 * voltage configuration in order to perform voltage switching. This
-	 * means that valid pinctrl info is required on SDHCI instances capable
-	 * of performing voltage switching. Whether or not an SDHCI instance is
-	 * capable of voltage switching is determined based on the regulator.
-	 */
+	 
 
 	if (!(tegra_host->soc_data->nvquirks & NVQUIRK_NEEDS_PAD_CONTROL))
 		return true;
@@ -328,7 +300,7 @@ static bool tegra_sdhci_is_pad_and_regulator_valid(struct sdhci_host *host)
 	if (has_1v8 == 1 && has_3v3 == 1)
 		return tegra_host->pad_control_available;
 
-	/* Fixed voltage, no pad control required. */
+	 
 	return true;
 }
 
@@ -340,11 +312,7 @@ static void tegra_sdhci_set_tap(struct sdhci_host *host, unsigned int tap)
 	bool card_clk_enabled = false;
 	u32 reg;
 
-	/*
-	 * Touching the tap values is a bit tricky on some SoC generations.
-	 * The quirk enables a workaround for a glitch that sometimes occurs if
-	 * the tap values are changed.
-	 */
+	 
 
 	if (soc_data->nvquirks & NVQUIRK_DIS_CARD_CLK_CONFIG_TAP)
 		card_clk_enabled = tegra_sdhci_configure_card_clk(host, false);
@@ -388,10 +356,10 @@ static void tegra_sdhci_reset(struct sdhci_host *host, u8 mask)
 		      SDHCI_CLOCK_CTRL_SPI_MODE_CLKEN_OVERRIDE);
 
 	if (tegra_sdhci_is_pad_and_regulator_valid(host)) {
-		/* Erratum: Enable SDHCI spec v3.00 support */
+		 
 		if (soc_data->nvquirks & NVQUIRK_ENABLE_SDHCI_SPEC_300)
 			misc_ctrl |= SDHCI_MISC_CTRL_ENABLE_SDHCI_SPEC_300;
-		/* Advertise UHS modes as supported by host */
+		 
 		if (soc_data->nvquirks & NVQUIRK_ENABLE_SDR50)
 			misc_ctrl |= SDHCI_MISC_CTRL_ENABLE_SDR50;
 		if (soc_data->nvquirks & NVQUIRK_ENABLE_DDR50)
@@ -423,10 +391,7 @@ static void tegra_sdhci_configure_cal_pad(struct sdhci_host *host, bool enable)
 {
 	u32 val;
 
-	/*
-	 * Enable or disable the additional I/O pad used by the drive strength
-	 * calibration process.
-	 */
+	 
 	val = sdhci_readl(host, SDHCI_TEGRA_SDMEM_COMP_PADCTRL);
 
 	if (enable)
@@ -464,7 +429,7 @@ static int tegra_sdhci_set_padctrl(struct sdhci_host *host, int voltage,
 	u32 reg;
 
 	if (!state_drvupdn) {
-		/* PADS Drive Strength */
+		 
 		if (voltage == MMC_SIGNAL_VOLTAGE_180) {
 			if (tegra_host->pinctrl_state_1v8_drv) {
 				pinctrl_drvupdn =
@@ -499,7 +464,7 @@ static int tegra_sdhci_set_padctrl(struct sdhci_host *host, int voltage,
 		}
 
 	} else {
-		/* Dual Voltage PADS Voltage selection */
+		 
 		if (!tegra_host->pad_control_available)
 			return 0;
 
@@ -547,7 +512,7 @@ static void tegra_sdhci_pad_autocalib(struct sdhci_host *host)
 			pdpu = offsets.pull_down_3v3 << 8 | offsets.pull_up_3v3;
 	}
 
-	/* Set initial offset before auto-calibration */
+	 
 	tegra_sdhci_set_pad_autocal_offset(host, pdpu);
 
 	card_clk_enabled = tegra_sdhci_configure_card_clk(host, false);
@@ -559,7 +524,7 @@ static void tegra_sdhci_pad_autocalib(struct sdhci_host *host)
 	sdhci_writel(host, reg, SDHCI_TEGRA_AUTO_CAL_CONFIG);
 
 	usleep_range(1, 2);
-	/* 10 ms timeout */
+	 
 	ret = readl_poll_timeout(host->ioaddr + SDHCI_TEGRA_AUTO_CAL_STATUS,
 				 reg, !(reg & SDHCI_TEGRA_AUTO_CAL_ACTIVE),
 				 1000, 10000);
@@ -571,7 +536,7 @@ static void tegra_sdhci_pad_autocalib(struct sdhci_host *host)
 	if (ret) {
 		dev_err(mmc_dev(host->mmc), "Pad autocal timed out\n");
 
-		/* Disable automatic cal and use fixed Drive Strengths */
+		 
 		reg = sdhci_readl(host, SDHCI_TEGRA_AUTO_CAL_CONFIG);
 		reg &= ~SDHCI_AUTO_CAL_ENABLE;
 		sdhci_writel(host, reg, SDHCI_TEGRA_AUTO_CAL_CONFIG);
@@ -639,12 +604,7 @@ static void tegra_sdhci_parse_pad_autocal_dt(struct sdhci_host *host)
 	if (err)
 		autocal->pull_down_hs400 = autocal->pull_down_1v8;
 
-	/*
-	 * Different fail-safe drive strength values based on the signaling
-	 * voltage are applicable for SoCs supporting 3V3 and 1V8 pad controls.
-	 * So, avoid reading below device tree properties for SoCs that don't
-	 * have NVQUIRK_NEEDS_PAD_CONTROL.
-	 */
+	 
 	if (!(tegra_host->soc_data->nvquirks & NVQUIRK_NEEDS_PAD_CONTROL))
 		return;
 
@@ -700,7 +660,7 @@ static void tegra_sdhci_request(struct mmc_host *mmc, struct mmc_request *mrq)
 	struct sdhci_tegra *tegra_host = sdhci_pltfm_priv(pltfm_host);
 	ktime_t since_calib = ktime_sub(ktime_get(), tegra_host->last_calib);
 
-	/* 100 ms calibration interval is specified in the TRM */
+	 
 	if (ktime_to_ms(since_calib) > 100) {
 		tegra_sdhci_pad_autocalib(host);
 		tegra_host->last_calib = ktime_get();
@@ -756,18 +716,7 @@ static void tegra_sdhci_set_clock(struct sdhci_host *host, unsigned int clock)
 	if (!clock)
 		return sdhci_set_clock(host, clock);
 
-	/*
-	 * In DDR50/52 modes the Tegra SDHCI controllers require the SDHCI
-	 * divider to be configured to divided the host clock by two. The SDHCI
-	 * clock divider is calculated as part of sdhci_set_clock() by
-	 * sdhci_calc_clk(). The divider is calculated from host->max_clk and
-	 * the requested clock rate.
-	 *
-	 * By setting the host->max_clk to clock * 2 the divider calculation
-	 * will always result in the correct value for DDR50/52 modes,
-	 * regardless of clock rate rounding, which may happen if the value
-	 * from clk_get_rate() is used.
-	 */
+	 
 	host_clk = tegra_host->ddr_signaling ? clock * 2 : clock;
 
 	err = dev_pm_opp_set_rate(dev, host_clk);
@@ -799,14 +748,7 @@ static void tegra_sdhci_hs400_enhanced_strobe(struct mmc_host *mmc,
 
 	if (ios->enhanced_strobe) {
 		val |= SDHCI_TEGRA_SYS_SW_CTRL_ENHANCED_STROBE;
-		/*
-		 * When CMD13 is sent from mmc_select_hs400es() after
-		 * switching to HS400ES mode, the bus is operating at
-		 * either MMC_HIGH_26_MAX_DTR or MMC_HIGH_52_MAX_DTR.
-		 * To meet Tegra SDHCI requirement at HS400ES mode, force SDHCI
-		 * interface clock to MMC_HS200_MAX_DTR (200 MHz) so that host
-		 * controller CAR clock and the interface clock are rate matched.
-		 */
+		 
 		tegra_sdhci_set_clock(host, MMC_HS200_MAX_DTR);
 	} else {
 		val &= ~SDHCI_TEGRA_SYS_SW_CTRL_ENHANCED_STROBE;
@@ -841,7 +783,7 @@ static void tegra_sdhci_hs400_dll_cal(struct sdhci_host *host)
 	reg |= SDHCI_TEGRA_DLLCAL_CALIBRATE;
 	sdhci_writel(host, reg, SDHCI_TEGRA_VENDOR_DLLCAL_CFG);
 
-	/* 1 ms sleep, 5 ms timeout */
+	 
 	err = readl_poll_timeout(host->ioaddr + SDHCI_TEGRA_VENDOR_DLLCAL_STA,
 				 reg, !(reg & SDHCI_TEGRA_DLLCAL_STA_ACTIVE),
 				 1000, 5000);
@@ -869,10 +811,7 @@ static void tegra_sdhci_tap_correction(struct sdhci_host *host, u8 thd_up,
 	u8 first_pass_tap = 0;
 	u8 total_tuning_words = host->tuning_loop_count / TUNING_WORD_BIT_SIZE;
 
-	/*
-	 * Read auto-tuned results and extract good valid passing window by
-	 * filtering out un-wanted bubble/partial/merged windows.
-	 */
+	 
 	for (word = 0; word < total_tuning_words; word++) {
 		val = sdhci_readl(host, SDHCI_VNDR_TUN_CTRL0_0);
 		val &= ~SDHCI_VNDR_TUN_CTRL0_TUN_WORD_SEL_MASK;
@@ -905,12 +844,12 @@ static void tegra_sdhci_tap_correction(struct sdhci_host *host, u8 thd_up,
 			} else if (tap_result && start_pass && start_fail &&
 				   end_pass) {
 				window = end_pass_tap - start_pass_tap;
-				/* discard merged window and bubble window */
+				 
 				if (window >= thd_up || window < thd_low) {
 					start_pass_tap = tap;
 					end_pass = false;
 				} else {
-					/* set tap at middle of valid window */
+					 
 					tap = start_pass_tap + window / 2;
 					tegra_host->tuned_tap_delay = tap;
 					return;
@@ -924,7 +863,7 @@ static void tegra_sdhci_tap_correction(struct sdhci_host *host, u8 thd_up,
 	if (!first_fail) {
 		WARN(1, "no edge detected, continue with hw tuned delay.\n");
 	} else if (first_pass) {
-		/* set tap location at fixed tap relative to the first edge */
+		 
 		edge1 = first_fail_tap + (first_pass_tap - first_fail_tap) / 2;
 		if (edge1 - 1 > fixed_tap)
 			tegra_host->tuned_tap_delay = edge1 - fixed_tap;
@@ -944,7 +883,7 @@ static void tegra_sdhci_post_tuning(struct sdhci_host *host)
 	u8 num_iter;
 	u32 clk_rate_mhz, period_ps, bestcase, worstcase;
 
-	/* retain HW tuned tap to use incase if no correction is needed */
+	 
 	val = sdhci_readl(host, SDHCI_TEGRA_VENDOR_CLOCK_CTRL);
 	tegra_host->tuned_tap_delay = (val & SDHCI_CLOCK_CTRL_TAP_MASK) >>
 				      SDHCI_CLOCK_CTRL_TAP_SHIFT;
@@ -955,16 +894,10 @@ static void tegra_sdhci_post_tuning(struct sdhci_host *host)
 		period_ps = USEC_PER_SEC / clk_rate_mhz;
 		bestcase = period_ps / min_tap_dly;
 		worstcase = period_ps / max_tap_dly;
-		/*
-		 * Upper and Lower bound thresholds used to detect merged and
-		 * bubble windows
-		 */
+		 
 		thdupper = (2 * worstcase + bestcase) / 2;
 		thdlower = worstcase / 4;
-		/*
-		 * fixed tap is used when HW tuning result contains single edge
-		 * and tap is set at fixed tap delay relative to the first edge
-		 */
+		 
 		avg_tap_dly = (period_ps * 2) / (min_tap_dly + max_tap_dly);
 		fixed_tap = avg_tap_dly / 2;
 
@@ -974,11 +907,7 @@ static void tegra_sdhci_post_tuning(struct sdhci_host *host)
 			  SDHCI_TEGRA_VNDR_TUN_STATUS1_TAP_MASK;
 		window_width = end_tap - start_tap;
 		num_iter = host->tuning_loop_count;
-		/*
-		 * partial window includes edges of the tuning range.
-		 * merged window includes more taps so window width is higher
-		 * than upper threshold.
-		 */
+		 
 		if (start_tap == 0 || (end_tap == (num_iter - 1)) ||
 		    (end_tap == num_iter - 2) || window_width >= thdupper) {
 			pr_debug("%s: Apply tuning correction\n",
@@ -1020,7 +949,7 @@ static void tegra_sdhci_set_uhs_signaling(struct sdhci_host *host,
 		break;
 	case MMC_TIMING_UHS_SDR104:
 	case MMC_TIMING_MMC_HS200:
-		/* Don't set default tap on tunable modes. */
+		 
 		iter = TRIES_128;
 		break;
 	case MMC_TIMING_MMC_HS400:
@@ -1070,11 +999,7 @@ static int tegra_sdhci_execute_tuning(struct sdhci_host *host, u32 opcode)
 {
 	unsigned int min, max;
 
-	/*
-	 * Start search for minimum tap value at 10, as smaller values are
-	 * may wrongly be reported as working but fail at higher speeds,
-	 * according to the TRM.
-	 */
+	 
 	min = 10;
 	while (min < 255) {
 		tegra_sdhci_set_tap(host, min);
@@ -1083,7 +1008,7 @@ static int tegra_sdhci_execute_tuning(struct sdhci_host *host, u32 opcode)
 		min++;
 	}
 
-	/* Find the maximum tap value that still passes. */
+	 
 	max = min + 1;
 	while (max < 255) {
 		tegra_sdhci_set_tap(host, max);
@@ -1094,7 +1019,7 @@ static int tegra_sdhci_execute_tuning(struct sdhci_host *host, u32 opcode)
 		max++;
 	}
 
-	/* The TRM states the ideal tap value is at 75% in the passing range. */
+	 
 	tegra_sdhci_set_tap(host, min + ((max - min) * 3 / 4));
 
 	return mmc_send_tuning(host->mmc, opcode, NULL);
@@ -1189,14 +1114,7 @@ static void tegra_cqhci_writel(struct cqhci_host *cq_host, u32 val, int reg)
 	ktime_t timeout;
 	bool timed_out;
 
-	/*
-	 * During CQE resume/unhalt, CQHCI driver unhalts CQE prior to
-	 * cqhci_host_ops enable where SDHCI DMA and BLOCK_SIZE registers need
-	 * to be re-configured.
-	 * Tegra CQHCI/SDHCI prevents write access to block size register when
-	 * CQE is unhalted. So handling CQE resume sequence here to configure
-	 * SDHCI block registers prior to exiting CQE halt state.
-	 */
+	 
 	if (reg == CQHCI_CTL && !(val & CQHCI_HALT) &&
 	    cqhci_readl(cq_host, CQHCI_CTL) & CQHCI_HALT) {
 		sdhci_writew(host, SDHCI_TEGRA_CQE_TRNS_MODE, SDHCI_TRANSFER_MODE);
@@ -1209,10 +1127,7 @@ static void tegra_cqhci_writel(struct cqhci_host *cq_host, u32 val, int reg)
 			if (!(ctrl & CQHCI_HALT) || timed_out)
 				break;
 		}
-		/*
-		 * CQE usually resumes very quick, but incase if Tegra CQE
-		 * doesn't resume retry unhalt.
-		 */
+		 
 		if (timed_out)
 			writel(val, cq_host->mmio + reg);
 	} else {
@@ -1238,12 +1153,7 @@ static void sdhci_tegra_cqe_enable(struct mmc_host *mmc)
 	struct sdhci_host *host = mmc_priv(mmc);
 	u32 val;
 
-	/*
-	 * Tegra CQHCI/SDMMC design prevents write access to sdhci block size
-	 * register when CQE is enabled and unhalted.
-	 * CQHCI driver enables CQE prior to activation, so disable CQE before
-	 * programming block size in sdhci controller and enable it back.
-	 */
+	 
 	if (!cq_host->activated) {
 		val = cqhci_readl(cq_host, CQHCI_CFG);
 		if (val & CQHCI_ENABLE)
@@ -1255,13 +1165,7 @@ static void sdhci_tegra_cqe_enable(struct mmc_host *mmc)
 			cqhci_writel(cq_host, val, CQHCI_CFG);
 	}
 
-	/*
-	 * CMD CRC errors are seen sometimes with some eMMC devices when status
-	 * command is sent during transfer of last data block which is the
-	 * default case as send status command block counter (CBC) is 1.
-	 * Recommended fix to set CBC to 0 allowing send status command only
-	 * when data lines are idle.
-	 */
+	 
 	val = cqhci_readl(cq_host, CQHCI_SSC1);
 	val &= ~CQHCI_SSC1_CBC_MASK;
 	cqhci_writel(cq_host, val, CQHCI_SSC1);
@@ -1290,19 +1194,7 @@ static void tegra_sdhci_set_timeout(struct sdhci_host *host,
 {
 	u32 val;
 
-	/*
-	 * HW busy detection timeout is based on programmed data timeout
-	 * counter and maximum supported timeout is 11s which may not be
-	 * enough for long operations like cache flush, sleep awake, erase.
-	 *
-	 * ERASE_TIMEOUT_LIMIT bit of VENDOR_MISC_CTRL register allows
-	 * host controller to wait for busy state until the card is busy
-	 * without HW timeout.
-	 *
-	 * So, use infinite busy wait mode for operations that may take
-	 * more than maximum HW busy timeout of 11s otherwise use finite
-	 * busy wait mode.
-	 */
+	 
 	val = sdhci_readl(host, SDHCI_TEGRA_VENDOR_MISC_CTRL);
 	if (cmd && cmd->busy_timeout >= 11 * MSEC_PER_SEC)
 		val |= SDHCI_MISC_CTRL_ERASE_TIMEOUT_LIMIT;
@@ -1398,13 +1290,7 @@ static const struct sdhci_pltfm_data sdhci_tegra30_pdata = {
 		  SDHCI_QUIRK_CAP_CLOCK_BASE_BROKEN,
 	.quirks2 = SDHCI_QUIRK2_PRESET_VALUE_BROKEN |
 		   SDHCI_QUIRK2_BROKEN_HS200 |
-		   /*
-		    * Auto-CMD23 leads to "Got command interrupt 0x00010000 even
-		    * though no command operation was in progress."
-		    *
-		    * The exact reason is unknown, as the same hardware seems
-		    * to support Auto CMD23 on a downstream 3.1 kernel.
-		    */
+		    
 		   SDHCI_QUIRK2_ACMD23_BROKEN,
 	.ops  = &tegra_sdhci_ops,
 };
@@ -1634,7 +1520,7 @@ cleanup:
 	return ret;
 }
 
-/* Program MC streamID for DMA transfers */
+ 
 static void sdhci_tegra_program_stream_id(struct sdhci_host *host)
 {
 	struct sdhci_pltfm_host *pltfm_host = sdhci_priv(host);
@@ -1681,7 +1567,7 @@ static int sdhci_tegra_probe(struct platform_device *pdev)
 				sdhci_tegra_start_signal_voltage_switch;
 	}
 
-	/* Hook to periodically rerun pad calibration */
+	 
 	if (soc_data->nvquirks & NVQUIRK_HAS_PADCALIB)
 		host->mmc_host_ops.request = tegra_sdhci_request;
 
@@ -1699,10 +1585,10 @@ static int sdhci_tegra_probe(struct platform_device *pdev)
 	if (tegra_host->soc_data->nvquirks & NVQUIRK_ENABLE_DDR50)
 		host->mmc->caps |= MMC_CAP_1_8V_DDR;
 
-	/* HW busy detection is supported, but R1B responses are required. */
+	 
 	host->mmc->caps |= MMC_CAP_WAIT_WHILE_BUSY | MMC_CAP_NEED_RSP_BUSY;
 
-	/* GPIO CD can be set as a wakeup source */
+	 
 	host->mmc->caps |= MMC_CAP_CD_WAKE;
 
 	tegra_sdhci_parse_dt(host);
@@ -1720,20 +1606,7 @@ static int sdhci_tegra_probe(struct platform_device *pdev)
 		goto err_power_req;
 	}
 
-	/*
-	 * Tegra210 has a separate SDMMC_LEGACY_TM clock used for host
-	 * timeout clock and SW can choose TMCLK or SDCLK for hardware
-	 * data timeout through the bit USE_TMCLK_FOR_DATA_TIMEOUT of
-	 * the register SDHCI_TEGRA_VENDOR_SYS_SW_CTRL.
-	 *
-	 * USE_TMCLK_FOR_DATA_TIMEOUT bit default is set to 1 and SDMMC uses
-	 * 12Mhz TMCLK which is advertised in host capability register.
-	 * With TMCLK of 12Mhz provides maximum data timeout period that can
-	 * be achieved is 11s better than using SDCLK for data timeout.
-	 *
-	 * So, TMCLK is set to 12Mhz and kept enabled all the time on SoC's
-	 * supporting separate TMCLK.
-	 */
+	 
 
 	if (soc_data->nvquirks & NVQUIRK_HAS_TMCLK) {
 		clk = devm_clk_get(&pdev->dev, "tmclk");

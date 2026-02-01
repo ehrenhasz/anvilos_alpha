@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2015-2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)	"[drm:%s:%d] " fmt, __func__, __LINE__
 
@@ -23,13 +22,7 @@
 #define DPU_MAX_IMG_WIDTH		0x3FFF
 #define DPU_MAX_IMG_HEIGHT		0x3FFF
 
-/*
- * DPU supported format packing, bpp, and other format
- * information.
- * DPU currently only supports interleaved RGB formats
- * UBWC support for a pixel format is indicated by the flag,
- * there is additional meta data plane for such formats
- */
+ 
 
 #define INTERLEAVED_RGB_FMT(fmt, a, r, g, b, e0, e1, e2, e3, uc, alpha,   \
 bp, flg, fm, np)                                                          \
@@ -183,11 +176,7 @@ flg, fm, np)                                                      \
 	.tile_height = DPU_TILE_HEIGHT_DEFAULT                            \
 }
 
-/*
- * struct dpu_media_color_map - maps drm format to media format
- * @format: DRM base pixel format
- * @color: Media API color related to DRM format
- */
+ 
 struct dpu_media_color_map {
 	uint32_t format;
 	uint32_t color;
@@ -477,12 +466,7 @@ static const struct dpu_format dpu_format_map[] = {
 		DPU_FETCH_LINEAR, 3),
 };
 
-/*
- * UBWC formats table:
- * This table holds the UBWC formats supported.
- * If a compression ratio needs to be used for this or any other format,
- * the data will be passed by user-space.
- */
+ 
 static const struct dpu_format dpu_format_map_ubwc[] = {
 	INTERLEAVED_RGB_FMT_TILED(BGR565,
 		0, COLOR_5BIT, COLOR_6BIT, COLOR_5BIT,
@@ -496,10 +480,7 @@ static const struct dpu_format dpu_format_map_ubwc[] = {
 		true, 4, DPU_FORMAT_FLAG_COMPRESSED,
 		DPU_FETCH_UBWC, 2, DPU_TILE_HEIGHT_UBWC),
 
-	/* ARGB8888 and ABGR8888 purposely have the same color
-	 * ordering.  The hardware only supports ABGR8888 UBWC
-	 * natively.
-	 */
+	 
 	INTERLEAVED_RGB_FMT_TILED(ARGB8888,
 		COLOR_8BIT, COLOR_8BIT, COLOR_8BIT, COLOR_8BIT,
 		C2_R_Cr, C0_G_Y, C1_B_Cb, C3_ALPHA, 4,
@@ -536,10 +517,7 @@ static const struct dpu_format dpu_format_map_ubwc[] = {
 		true, 4, DPU_FORMAT_FLAG_DX | DPU_FORMAT_FLAG_COMPRESSED,
 		DPU_FETCH_UBWC, 2, DPU_TILE_HEIGHT_UBWC),
 
-	/* XRGB2101010 and ARGB2101010 purposely have the same color
-	* ordering.  The hardware only supports ARGB2101010 UBWC
-	* natively.
-	*/
+	 
 	INTERLEAVED_RGB_FMT_TILED(ARGB2101010,
 		COLOR_8BIT, COLOR_8BIT, COLOR_8BIT, COLOR_8BIT,
 		C2_R_Cr, C0_G_Y, C1_B_Cb, C3_ALPHA, 4,
@@ -562,9 +540,7 @@ static const struct dpu_format dpu_format_map_ubwc[] = {
 		DPU_FETCH_UBWC, 4, DPU_TILE_HEIGHT_UBWC),
 };
 
-/* _dpu_get_v_h_subsample_rate - Get subsample rates for all formats we support
- *   Note: Not using the drm_format_*_subsampling since we have formats
- */
+ 
 static void _dpu_get_v_h_subsample_rate(
 	enum dpu_chroma_samp_type chroma_sample,
 	uint32_t *v_sample,
@@ -723,7 +699,7 @@ static int _dpu_format_get_plane_sizes_linear(
 	layout->height = height;
 	layout->num_planes = fmt->num_planes;
 
-	/* Due to memset above, only need to set planes of interest */
+	 
 	if (fmt->fetch_planes == DPU_PLANE_INTERLEAVED) {
 		layout->num_planes = 1;
 		layout->plane_size[0] = width * height * layout->format->bpp;
@@ -756,19 +732,14 @@ static int _dpu_format_get_plane_sizes_linear(
 			layout->plane_size[1] *= 2;
 			layout->plane_pitch[1] *= 2;
 		} else {
-			/* planar */
+			 
 			layout->num_planes = 3;
 			layout->plane_size[2] = layout->plane_size[1];
 			layout->plane_pitch[2] = layout->plane_pitch[1];
 		}
 	}
 
-	/*
-	 * linear format: allow user allocated pitches if they are greater than
-	 * the requirement.
-	 * ubwc format: pitch values are computed uniformly across
-	 * all the components based on ubwc specifications.
-	 */
+	 
 	for (i = 0; i < layout->num_planes && i < DPU_MAX_PLANES; ++i) {
 		if (pitches && layout->plane_pitch[i] < pitches[i])
 			layout->plane_pitch[i] = pitches[i];
@@ -825,62 +796,62 @@ static int _dpu_format_populate_addrs_ubwc(
 
 	meta = DPU_FORMAT_IS_UBWC(layout->format);
 
-	/* Per-format logic for verifying active planes */
+	 
 	if (DPU_FORMAT_IS_YUV(layout->format)) {
-		/************************************************/
-		/*      UBWC            **                      */
-		/*      buffer          **      DPU PLANE       */
-		/*      format          **                      */
-		/************************************************/
-		/* -------------------  ** -------------------- */
-		/* |      Y meta     |  ** |    Y bitstream   | */
-		/* |       data      |  ** |       plane      | */
-		/* -------------------  ** -------------------- */
-		/* |    Y bitstream  |  ** |  CbCr bitstream  | */
-		/* |       data      |  ** |       plane      | */
-		/* -------------------  ** -------------------- */
-		/* |   Cbcr metadata |  ** |       Y meta     | */
-		/* |       data      |  ** |       plane      | */
-		/* -------------------  ** -------------------- */
-		/* |  CbCr bitstream |  ** |     CbCr meta    | */
-		/* |       data      |  ** |       plane      | */
-		/* -------------------  ** -------------------- */
-		/************************************************/
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
 
-		/* configure Y bitstream plane */
+		 
 		layout->plane_addr[0] = base_addr + layout->plane_size[2];
 
-		/* configure CbCr bitstream plane */
+		 
 		layout->plane_addr[1] = base_addr + layout->plane_size[0]
 			+ layout->plane_size[2] + layout->plane_size[3];
 
 		if (!meta)
 			return 0;
 
-		/* configure Y metadata plane */
+		 
 		layout->plane_addr[2] = base_addr;
 
-		/* configure CbCr metadata plane */
+		 
 		layout->plane_addr[3] = base_addr + layout->plane_size[0]
 			+ layout->plane_size[2];
 
 	} else {
-		/************************************************/
-		/*      UBWC            **                      */
-		/*      buffer          **      DPU PLANE       */
-		/*      format          **                      */
-		/************************************************/
-		/* -------------------  ** -------------------- */
-		/* |      RGB meta   |  ** |   RGB bitstream  | */
-		/* |       data      |  ** |       plane      | */
-		/* -------------------  ** -------------------- */
-		/* |  RGB bitstream  |  ** |       NONE       | */
-		/* |       data      |  ** |                  | */
-		/* -------------------  ** -------------------- */
-		/*                      ** |     RGB meta     | */
-		/*                      ** |       plane      | */
-		/*                      ** -------------------- */
-		/************************************************/
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
+		 
 
 		layout->plane_addr[0] = base_addr + layout->plane_size[2];
 		layout->plane_addr[1] = 0;
@@ -901,7 +872,7 @@ static int _dpu_format_populate_addrs_linear(
 {
 	unsigned int i;
 
-	/* Can now check the pitches given vs pitches expected */
+	 
 	for (i = 0; i < layout->num_planes; ++i) {
 		if (layout->plane_pitch[i] > fb->pitches[i]) {
 			DRM_ERROR("plane %u expected pitch %u, fb %u\n",
@@ -910,7 +881,7 @@ static int _dpu_format_populate_addrs_linear(
 		}
 	}
 
-	/* Populate addresses for simple formats here */
+	 
 	for (i = 0; i < layout->num_planes; ++i) {
 		if (aspace)
 			layout->plane_addr[i] =
@@ -944,13 +915,13 @@ int dpu_format_populate_layout(
 
 	layout->format = to_dpu_format(msm_framebuffer_format(fb));
 
-	/* Populate the plane sizes etc via get_format */
+	 
 	ret = dpu_format_get_plane_sizes(layout->format, fb->width, fb->height,
 			layout, fb->pitches);
 	if (ret)
 		return ret;
 
-	/* Populate the addresses given the fb */
+	 
 	if (DPU_FORMAT_IS_UBWC(layout->format) ||
 			DPU_FORMAT_IS_TILE(layout->format))
 		ret = _dpu_format_populate_addrs_ubwc(aspace, fb, layout);
@@ -1014,10 +985,7 @@ const struct dpu_format *dpu_get_dpu_format_ext(
 	const struct dpu_format *map = NULL;
 	ssize_t map_size = 0;
 
-	/*
-	 * Currently only support exactly zero or one modifier.
-	 * All planes use the same modifier.
-	 */
+	 
 	DRM_DEBUG_ATOMIC("plane format modifier 0x%llX\n", modifier);
 
 	switch (modifier) {

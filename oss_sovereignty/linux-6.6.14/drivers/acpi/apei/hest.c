@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * APEI Hardware Error Source Table support
- *
- * HEST describes error sources in detail; communicates operational
- * parameters (i.e. severity levels, masking bits, and threshold
- * values) to Linux as necessary. It also allows the BIOS to report
- * non-standard error sources to Linux (for example, chipset-specific
- * error registers).
- *
- * For more information about HEST, please refer to ACPI Specification
- * version 4.0, section 17.3.2.
- *
- * Copyright 2009 Intel Corp.
- *   Author: Huang Ying <ying.huang@intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -33,12 +19,12 @@
 int hest_disable;
 EXPORT_SYMBOL_GPL(hest_disable);
 
-/* HEST table parsing */
+ 
 
 static struct acpi_table_hest *__read_mostly hest_tab;
 
 static const int hest_esrc_len_tab[ACPI_HEST_TYPE_RESERVED] = {
-	[ACPI_HEST_TYPE_IA32_CHECK] = -1,	/* need further calculation */
+	[ACPI_HEST_TYPE_IA32_CHECK] = -1,	 
 	[ACPI_HEST_TYPE_IA32_CORRECTED_CHECK] = -1,
 	[ACPI_HEST_TYPE_IA32_NMI] = sizeof(struct acpi_hest_ia_nmi),
 	[ACPI_HEST_TYPE_AER_ROOT_PORT] = sizeof(struct acpi_hest_aer_root),
@@ -124,10 +110,7 @@ static int apei_hest_parse(apei_hest_func_t func, void *data)
 	return 0;
 }
 
-/*
- * Check if firmware advertises firmware first mode. We need FF bit to be set
- * along with a set of MC banks which work in FF mode.
- */
+ 
 static int __init hest_parse_cmc(struct acpi_hest_header *hest_hdr, void *data)
 {
 	if (hest_hdr->type != ACPI_HEST_TYPE_IA32_CORRECTED_CHECK)

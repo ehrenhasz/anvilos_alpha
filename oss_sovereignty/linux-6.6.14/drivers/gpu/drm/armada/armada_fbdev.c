@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Russell King
- *  Written from the i915 driver.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/fb.h>
@@ -78,10 +75,7 @@ static int armada_fbdev_create(struct drm_fb_helper *fbh,
 
 	dfb = armada_framebuffer_create(dev, &mode, obj);
 
-	/*
-	 * A reference is now held by the framebuffer object if
-	 * successful, otherwise this drops the ref for the error path.
-	 */
+	 
 	drm_gem_object_put(&obj->obj);
 
 	if (IS_ERR(dfb))
@@ -130,9 +124,7 @@ static const struct drm_fb_helper_funcs armada_fb_helper_funcs = {
 	.fb_probe	= armada_fb_probe,
 };
 
-/*
- * Fbdev client and struct drm_client_funcs
- */
+ 
 
 static void armada_fbdev_client_unregister(struct drm_client_dev *client)
 {

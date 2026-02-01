@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -25,10 +25,7 @@ struct axg_dai_link_tdm_data {
 	struct axg_dai_link_tdm_mask *codec_masks;
 };
 
-/*
- * Base params for the codec to codec links
- * Those will be over-written by the CPU side of the link
- */
+ 
 static const struct snd_soc_pcm_stream codec_params = {
 	.formats = SNDRV_PCM_FMTBIT_S24_LE,
 	.rate_min = 5525,
@@ -89,7 +86,7 @@ static int axg_card_tdm_dai_lb_init(struct snd_soc_pcm_runtime *rtd)
 		(struct axg_dai_link_tdm_data *)priv->link_data[rtd->num];
 	int ret;
 
-	/* The loopback rx_mask is the pad tx_mask */
+	 
 	ret = axg_tdm_set_tdm_slots(asoc_rtd_to_cpu(rtd, 0), NULL, be->tx_mask,
 				    be->slots, be->slot_width);
 	if (ret) {
@@ -109,7 +106,7 @@ static int axg_card_add_tdm_loopback(struct snd_soc_card *card,
 	struct snd_soc_dai_link_component *dlc;
 	int ret;
 
-	/* extend links */
+	 
 	ret = meson_card_reallocate_links(card, card->num_links + 1);
 	if (ret)
 		return ret;
@@ -137,16 +134,13 @@ static int axg_card_add_tdm_loopback(struct snd_soc_card *card,
 	lb->ops = &axg_card_tdm_be_ops;
 	lb->init = axg_card_tdm_dai_lb_init;
 
-	/* Provide the same link data to the loopback */
+	 
 	priv->link_data[*index + 1] = priv->link_data[*index];
 
-	/*
-	 * axg_card_clean_references() will iterate over this link,
-	 * make sure the node count is balanced
-	 */
+	 
 	of_node_get(lb->cpus->of_node);
 
-	/* Let add_links continue where it should */
+	 
 	*index += 1;
 
 	return 0;
@@ -174,7 +168,7 @@ static int axg_card_parse_cpu_tdm_slots(struct snd_soc_card *card,
 		tx = max(tx, be->tx_mask[i]);
 	}
 
-	/* Disable playback is the interface has no tx slots */
+	 
 	if (!tx)
 		link->dpcm_playback = 0;
 
@@ -184,11 +178,11 @@ static int axg_card_parse_cpu_tdm_slots(struct snd_soc_card *card,
 		rx = max(rx, be->rx_mask[i]);
 	}
 
-	/* Disable capture is the interface has no rx slots */
+	 
 	if (!rx)
 		link->dpcm_capture = 0;
 
-	/* ... but the interface should at least have one of them */
+	 
 	if (!tx && !rx) {
 		dev_err(card->dev, "tdm link has no cpu slots\n");
 		return -EINVAL;
@@ -196,16 +190,10 @@ static int axg_card_parse_cpu_tdm_slots(struct snd_soc_card *card,
 
 	of_property_read_u32(node, "dai-tdm-slot-num", &be->slots);
 	if (!be->slots) {
-		/*
-		 * If the slot number is not provided, set it such as it
-		 * accommodates the largest mask
-		 */
+		 
 		be->slots = fls(max(tx, rx));
 	} else if (be->slots < fls(max(tx, rx)) || be->slots > 32) {
-		/*
-		 * Error if the slots can't accommodate the largest mask or
-		 * if it is just too big
-		 */
+		 
 		dev_err(card->dev, "bad slot number\n");
 		return -EINVAL;
 	}
@@ -251,13 +239,13 @@ static int axg_card_parse_tdm(struct snd_soc_card *card,
 	struct axg_dai_link_tdm_data *be;
 	int ret;
 
-	/* Allocate tdm link parameters */
+	 
 	be = devm_kzalloc(card->dev, sizeof(*be), GFP_KERNEL);
 	if (!be)
 		return -ENOMEM;
 	priv->link_data[*index] = be;
 
-	/* Setup tdm link */
+	 
 	link->ops = &axg_card_tdm_be_ops;
 	link->init = axg_card_tdm_dai_init;
 	link->dai_fmt = meson_card_parse_daifmt(node, link->cpus->of_node);
@@ -274,7 +262,7 @@ static int axg_card_parse_tdm(struct snd_soc_card *card,
 	if (ret)
 		return ret;
 
-	/* Add loopback if the pad dai has playback */
+	 
 	if (link->dpcm_playback) {
 		ret = axg_card_add_tdm_loopback(card, index);
 		if (ret)

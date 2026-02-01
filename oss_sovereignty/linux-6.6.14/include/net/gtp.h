@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _GTP_H_
 #define _GTP_H_
 
@@ -6,19 +6,19 @@
 #include <linux/types.h>
 #include <net/rtnetlink.h>
 
-/* General GTP protocol related definitions. */
+ 
 
 #define GTP0_PORT	3386
 #define GTP1U_PORT	2152
 
-/* GTP messages types */
-#define GTP_ECHO_REQ	1	/* Echo Request */
-#define GTP_ECHO_RSP	2	/* Echo Response */
+ 
+#define GTP_ECHO_REQ	1	 
+#define GTP_ECHO_RSP	2	 
 #define GTP_TPDU	255
 
 #define GTPIE_RECOVERY	14
 
-struct gtp0_header {	/* According to GSM TS 09.60. */
+struct gtp0_header {	 
 	__u8	flags;
 	__u8	type;
 	__be16	length;
@@ -29,14 +29,14 @@ struct gtp0_header {	/* According to GSM TS 09.60. */
 	__be64	tid;
 } __attribute__ ((packed));
 
-struct gtp1_header {	/* According to 3GPP TS 29.060. */
+struct gtp1_header {	 
 	__u8	flags;
 	__u8	type;
 	__be16	length;
 	__be32	tid;
 } __attribute__ ((packed));
 
-struct gtp1_header_long {	/* According to 3GPP TS 29.060. */
+struct gtp1_header_long {	 
 	__u8	flags;
 	__u8	type;
 	__be16	length;
@@ -46,7 +46,7 @@ struct gtp1_header_long {	/* According to 3GPP TS 29.060. */
 	__u8	next;
 } __packed;
 
-/* GTP Information Element */
+ 
 struct gtp_ie {
 	__u8	tag;
 	__u8	val;
@@ -62,7 +62,7 @@ struct gtp1u_packet {
 	struct gtp_ie ie;
 } __packed;
 
-struct gtp_pdu_session_info {	/* According to 3GPP TS 38.415. */
+struct gtp_pdu_session_info {	 
 	u8	pdu_type;
 	u8	qfi;
 };

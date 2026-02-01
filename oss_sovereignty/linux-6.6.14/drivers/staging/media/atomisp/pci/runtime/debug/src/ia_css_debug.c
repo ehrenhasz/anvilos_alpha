@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "debug.h"
 
@@ -31,7 +19,7 @@
 #define __INLINE_STREAM2MMIO__
 #endif
 
-#include <linux/string.h> /* for strscpy() */
+#include <linux/string.h>  
 
 #include "ia_css_debug.h"
 #include "ia_css_debug_pipe.h"
@@ -41,7 +29,7 @@
 #include "ia_css_isp_param.h"
 #include "sh_css_params.h"
 #include "ia_css_bufq.h"
-/* ISP2401 */
+ 
 #include "ia_css_queue.h"
 
 #include "ia_css_isp_params.h"
@@ -59,19 +47,19 @@
 #include "sp.h"
 #include "isp.h"
 #include "type_support.h"
-#include "math_support.h" /* CEIL_DIV */
-#include "input_system.h"	/* input_formatter_reg_load */
+#include "math_support.h"  
+#include "input_system.h"	 
 #include "ia_css_tagger_common.h"
 
 #include "sh_css_internal.h"
 #include "ia_css_isys.h"
-#include "sh_css_sp.h"		/* sh_css_sp_get_debug_state() */
+#include "sh_css_sp.h"		 
 
-#include "css_trace.h"      /* tracer */
+#include "css_trace.h"       
 
-#include "device_access.h"	/* for ia_css_device_load_uint32 */
+#include "device_access.h"	 
 
-/* Include all kernel host interfaces for ISP1 */
+ 
 #include "anr/anr_1.0/ia_css_anr.host.h"
 #include "cnr/cnr_1.0/ia_css_cnr.host.h"
 #include "csc/csc_1.0/ia_css_csc.host.h"
@@ -88,7 +76,7 @@
 #include "wb/wb_1.0/ia_css_wb.host.h"
 #include "ynr/ynr_1.0/ia_css_ynr.host.h"
 
-/* Include additional kernel host interfaces for ISP2 */
+ 
 #include "aa/aa_2/ia_css_aa2.host.h"
 #include "anr/anr_2/ia_css_anr2.host.h"
 #include "cnr/cnr_2/ia_css_cnr2.host.h"
@@ -101,10 +89,7 @@
 
 #define ENABLE_LINE_MAX_LENGTH (25)
 
-/*
- * TODO:SH_CSS_MAX_SP_THREADS is not the max number of sp threads
- * future rework should fix this and remove the define MAX_THREAD_NUM
- */
+ 
 #define MAX_THREAD_NUM (SH_CSS_MAX_SP_THREADS + SH_CSS_MAX_SP_INTERNAL_THREADS)
 
 static struct pipe_graph_class {
@@ -117,22 +102,22 @@ static struct pipe_graph_class {
 } pg_inst = {true, 0, 0, 0, 0, N_ATOMISP_INPUT_FORMAT};
 
 static const char *const queue_id_to_str[] = {
-	/* [SH_CSS_QUEUE_A_ID]     =*/ "queue_A",
-	/* [SH_CSS_QUEUE_B_ID]     =*/ "queue_B",
-	/* [SH_CSS_QUEUE_C_ID]     =*/ "queue_C",
-	/* [SH_CSS_QUEUE_D_ID]     =*/ "queue_D",
-	/* [SH_CSS_QUEUE_E_ID]     =*/ "queue_E",
-	/* [SH_CSS_QUEUE_F_ID]     =*/ "queue_F",
-	/* [SH_CSS_QUEUE_G_ID]     =*/ "queue_G",
-	/* [SH_CSS_QUEUE_H_ID]     =*/ "queue_H"
+	  "queue_A",
+	  "queue_B",
+	  "queue_C",
+	  "queue_D",
+	  "queue_E",
+	  "queue_F",
+	  "queue_G",
+	  "queue_H"
 };
 
 static const char *const pipe_id_to_str[] = {
-	/* [IA_CSS_PIPE_ID_PREVIEW]   =*/ "preview",
-	/* [IA_CSS_PIPE_ID_COPY]      =*/ "copy",
-	/* [IA_CSS_PIPE_ID_VIDEO]     =*/ "video",
-	/* [IA_CSS_PIPE_ID_CAPTURE]   =*/ "capture",
-	/* [IA_CSS_PIPE_ID_YUVPP]     =*/ "yuvpp",
+	  "preview",
+	  "copy",
+	  "video",
+	  "capture",
+	  "yuvpp",
 };
 
 static char dot_id_input_bin[SH_CSS_MAX_BINARY_NAME + 10];
@@ -157,8 +142,7 @@ static void debug_dump_long_array_formatted(
 	u32 addr = (uint32_t)stack_sp_addr;
 	u32 stack_size_words = CEIL_DIV(stack_size, sizeof(uint32_t));
 
-	/* When size is not multiple of four, last word is only relevant for
-	 * remaining bytes */
+	 
 	for (i = 0; i < stack_size_words; i++) {
 		val = sp_dmem_load_uint32(sp_id, (hrt_address)addr);
 		if ((i % 8) == 0)
@@ -633,11 +617,8 @@ static void debug_print_if_state(input_formatter_state_t *state, const char *id)
 			    "Hsync", st_hsync_active_low);
 	ia_css_debug_dtrace(2, "\t\t%-32s: %d\n",
 			    "Allow FIFO overflow", st_allow_fifo_overflow);
-	/* Flag that tells whether the IF gives backpressure on frames */
-	/*
-	 * FYI, this is only on the frame request (indicate), when the IF has
-	 * synch'd on a frame it will always give back pressure
-	 */
+	 
+	 
 	ia_css_debug_dtrace(2, "\t\t%-32s: %d\n",
 			    "Block when no request", st_block_fifo_when_no_req);
 
@@ -876,10 +857,7 @@ static void ia_css_debug_dump_if_state(void)
 
 void ia_css_debug_dump_dma_state(void)
 {
-	/* note: the var below is made static as it is quite large;
-	   if it is not static it ends up on the stack which could
-	   cause issues for drivers
-	*/
+	 
 	static dma_state_t state;
 	int i, ch_id;
 
@@ -893,10 +871,10 @@ void ia_css_debug_dump_dma_state(void)
 	char last_cmd_str[64];
 
 	dma_get_state(DMA0_ID, &state);
-	/* Print header for DMA dump status */
+	 
 	ia_css_debug_dtrace(2, "DMA dump status:\n");
 
-	/* Print FSM command flag state */
+	 
 	if (state.fsm_command_idle)
 		ia_css_debug_dtrace(2, "\t%-32s: %s\n", fsm_cmd_st_lbl, "IDLE");
 	if (state.fsm_command_run)
@@ -908,7 +886,7 @@ void ia_css_debug_dump_dma_state(void)
 		ia_css_debug_dtrace(2, "\t%-32s: %s\n", fsm_cmd_st_lbl,
 				    "ERROR");
 
-	/* Print last command along with the channel */
+	 
 	ch_id = state.last_command_channel;
 
 	switch (state.last_command) {
@@ -959,7 +937,7 @@ void ia_css_debug_dump_dma_state(void)
 			    "last command received", state.last_command,
 			    last_cmd_str);
 
-	/* Print DMA registers */
+	 
 	ia_css_debug_dtrace(2, "\t%-32s\n",
 			    "DMA registers, connection group 0");
 	ia_css_debug_dtrace(2, "\t\t%-32s: 0x%X\n", "Cmd Fifo Command",
@@ -1521,14 +1499,14 @@ void ia_css_debug_print_sp_debug_state(const struct sh_css_sp_debug_state
 
 #elif SP_DEBUG == SP_DEBUG_COPY
 
-	/* Remember last_index because we only want to print new entries */
+	 
 	static int last_index;
 	int sp_index = state->index;
 	int n;
 
 	assert(state);
 	if (sp_index < last_index) {
-		/* SP has been reset */
+		 
 		last_index = 0;
 	}
 
@@ -1542,8 +1520,8 @@ void ia_css_debug_print_sp_debug_state(const struct sh_css_sp_debug_state
 	}
 
 	if ((last_index + SH_CSS_SP_DBG_TRACE_DEPTH) < sp_index) {
-		/* last index can be multiple rounds behind */
-		/* while trace size is only SH_CSS_SP_DBG_TRACE_DEPTH */
+		 
+		 
 		last_index = sp_index - SH_CSS_SP_DBG_TRACE_DEPTH;
 	}
 
@@ -1565,12 +1543,7 @@ void ia_css_debug_print_sp_debug_state(const struct sh_css_sp_debug_state
 
 #elif SP_DEBUG == SP_DEBUG_TRACE
 
-	/*
-	 * This is just an example how TRACE_FILE_ID (see ia_css_debug.sp.h) will
-	 * me mapped on the file name string.
-	 *
-	 * Adjust this to your trace case!
-	 */
+	 
 	static char const *const id2filename[8] = {
 		"param_buffer.sp.c | tagger.sp.c | pipe_data.sp.c",
 		"isp_init.sp.c",
@@ -1582,13 +1555,13 @@ void ia_css_debug_print_sp_debug_state(const struct sh_css_sp_debug_state
 		"frame_buffer.sp.c"
 	};
 
-	/* Example SH_CSS_SP_DBG_NR_OF_TRACES==1 */
-	/* Adjust this to your trace case */
+	 
+	 
 	static char const *trace_name[SH_CSS_SP_DBG_NR_OF_TRACES] = {
 		"default"
 	};
 
-	/* Remember host_index_last because we only want to print new entries */
+	 
 	static int host_index_last[SH_CSS_SP_DBG_NR_OF_TRACES] = { 0 };
 	int t, n;
 
@@ -1598,14 +1571,14 @@ void ia_css_debug_print_sp_debug_state(const struct sh_css_sp_debug_state
 		int sp_index_last = state->index_last[t];
 
 		if (sp_index_last < host_index_last[t]) {
-			/* SP has been reset */
+			 
 			host_index_last[t] = 0;
 		}
 
 		if ((host_index_last[t] + SH_CSS_SP_DBG_TRACE_DEPTH) <
 		    sp_index_last) {
-			/* last index can be multiple rounds behind */
-			/* while trace size is only SH_CSS_SP_DBG_TRACE_DEPTH */
+			 
+			 
 			ia_css_debug_dtrace(IA_CSS_DEBUG_VERBOSE,
 					    "Warning: trace %s has gap of %d traces\n",
 					    trace_name[t],
@@ -1835,21 +1808,21 @@ static void debug_print_rx_state(receiver_state_t *state)
 	ia_css_debug_dtrace(2, "\t\t%-32s: %d\n",
 			    "be_irq_clear", state->be_irq_clear);
 
-	/* mipi port state */
+	 
 	for (i = 0; i < N_MIPI_PORT_ID; i++) {
 		ia_css_debug_dtrace(2, "\tMIPI Port %d State:\n", i);
 
 		debug_print_rx_mipi_port_state(&state->mipi_port_state[i]);
 	}
-	/* end of mipi port state */
+	 
 
-	/* rx channel state */
+	 
 	for (i = 0; i < N_RX_CHANNEL_ID; i++) {
 		ia_css_debug_dtrace(2, "\tRX Channel %d State:\n", i);
 
 		debug_print_rx_channel_state(&state->rx_channel_state[i]);
 	}
-	/* end of rx channel state */
+	 
 
 	return;
 }
@@ -2048,7 +2021,7 @@ static void debug_print_isys_state(input_system_state_t *state)
 	assert(state);
 	ia_css_debug_dtrace(2, "InputSystem State:\n");
 
-	/* configuration */
+	 
 	ia_css_debug_dtrace(2, "\tConfiguration:\n");
 
 	ia_css_debug_dtrace(2, "\t\t%-32s: %d\n",
@@ -2083,9 +2056,9 @@ static void debug_print_isys_state(input_system_state_t *state)
 
 	ia_css_debug_dtrace(2, "\t\t%-32s: %d\n",
 			    "str_deint_portB_cnd", state->str_deint_portB_cnt);
-	/* end of configuration */
+	 
 
-	/* capture unit state */
+	 
 	for (i = 0; i < N_CAPTURE_UNIT_ID; i++) {
 		capture_unit_state_t *capture_unit_state;
 
@@ -2094,9 +2067,9 @@ static void debug_print_isys_state(input_system_state_t *state)
 		capture_unit_state = &state->capture_unit[i];
 		debug_print_isys_capture_unit_state(capture_unit_state);
 	}
-	/* end of capture unit state */
+	 
 
-	/* acquisition unit state */
+	 
 	for (i = 0; i < N_ACQUISITION_UNIT_ID; i++) {
 		acquisition_unit_state_t *acquisition_unit_state;
 
@@ -2105,15 +2078,15 @@ static void debug_print_isys_state(input_system_state_t *state)
 		acquisition_unit_state = &state->acquisition_unit[i];
 		debug_print_isys_acquisition_unit_state(acquisition_unit_state);
 	}
-	/* end of acquisition unit state */
+	 
 
-	/* control unit state */
+	 
 	for (i = 0; i < N_CTRL_UNIT_ID; i++) {
 		ia_css_debug_dtrace(2, "\tControlUnit %d State:\n", i);
 
 		debug_print_isys_ctrl_unit_state(&state->ctrl_unit_state[i]);
 	}
-	/* end of control unit state */
+	 
 }
 #endif
 
@@ -2191,11 +2164,7 @@ void ia_css_debug_dump_debug_info(const char *context)
 	return;
 }
 
-/* this function is for debug use, it can make SP go to sleep
-  state after each frame, then user can dump the stable SP dmem.
-  this function can be called after ia_css_start_sp()
-  and before sh_css_init_buffer_queues()
-*/
+ 
 void ia_css_debug_enable_sp_sleep_mode(enum ia_css_sp_sleep_mode mode)
 {
 	const struct ia_css_fw_info *fw;
@@ -2204,7 +2173,7 @@ void ia_css_debug_enable_sp_sleep_mode(enum ia_css_sp_sleep_mode mode)
 	fw = &sh_css_sp_fw;
 	HIVE_ADDR_sp_sleep_mode = fw->info.sp.sleep_mode;
 
-	(void)HIVE_ADDR_sp_sleep_mode;	/* Suppres warnings in CRUN */
+	(void)HIVE_ADDR_sp_sleep_mode;	 
 
 	sp_dmem_store_uint32(SP0_ID,
 			     (unsigned int)sp_address_of(sp_sleep_mode),
@@ -2213,7 +2182,7 @@ void ia_css_debug_enable_sp_sleep_mode(enum ia_css_sp_sleep_mode mode)
 
 void ia_css_debug_wake_up_sp(void)
 {
-	/*hrt_ctl_start(SP); */
+	 
 	sp_ctrl_setbit(SP0_ID, SP_SC_REG, SP_START_BIT);
 }
 
@@ -2223,7 +2192,7 @@ void ia_css_debug_wake_up_sp(void)
 
 #define FIND_DMEM_PARAMS(stream, kernel) FIND_DMEM_PARAMS_TYPE(stream, kernel, kernel)
 
-/* Find a stage that support the kernel and return the parameters for that kernel */
+ 
 static char *
 findf_dmem_params(struct ia_css_stream *stream, short idx)
 {
@@ -2336,10 +2305,10 @@ void sh_css_dump_sp_raw_copy_linecount(bool reduced)
 		     &raw_copy_line_count,
 		     sizeof(raw_copy_line_count));
 
-	/* only indicate if copy loop is active */
+	 
 	if (reduced)
 		raw_copy_line_count = (raw_copy_line_count < 0) ? raw_copy_line_count : 1;
-	/* do the handling */
+	 
 	if (prev_raw_copy_line_count != raw_copy_line_count) {
 		ia_css_debug_dtrace(IA_CSS_DEBUG_VERBOSE,
 				    "sh_css_dump_sp_raw_copy_linecount() line_count=%d\n",
@@ -2366,7 +2335,7 @@ void ia_css_debug_dump_isp_binary(void)
 		     &curr_binary_id,
 		     sizeof(curr_binary_id));
 
-	/* do the handling */
+	 
 	sample_count++;
 	if (prev_binary_id != curr_binary_id) {
 		ia_css_debug_dtrace(IA_CSS_DEBUG_VERBOSE,
@@ -2384,7 +2353,7 @@ void ia_css_debug_dump_perf_counters(void)
 	const struct ia_css_fw_info *fw;
 	int i;
 	unsigned int HIVE_ADDR_ia_css_isys_sp_error_cnt;
-	/* N_MIPI_PORT_ID + 1: 3 Capture Units and 1 Acquire Unit. */
+	 
 	s32 ia_css_sp_input_system_error_cnt[N_MIPI_PORT_ID + 1];
 
 	if (IS_ISP2401)
@@ -2409,10 +2378,7 @@ void ia_css_debug_dump_perf_counters(void)
 	}
 }
 
-/*
- * @brief Initialize the debug mode.
- * Refer to "ia_css_debug.h" for more details.
- */
+ 
 bool ia_css_debug_mode_init(void)
 {
 	bool rc;
@@ -2421,10 +2387,7 @@ bool ia_css_debug_mode_init(void)
 	return rc;
 }
 
-/*
- * @brief Disable the DMA channel.
- * Refer to "ia_css_debug.h" for more details.
- */
+ 
 bool
 ia_css_debug_mode_disable_dma_channel(int dma_id,
 				      int channel_id, int request_type)
@@ -2436,10 +2399,7 @@ ia_css_debug_mode_disable_dma_channel(int dma_id,
 	return rc;
 }
 
-/*
- * @brief Enable the DMA channel.
- * Refer to "ia_css_debug.h" for more details.
- */
+ 
 bool
 ia_css_debug_mode_enable_dma_channel(int dma_id,
 				     int channel_id, int request_type)
@@ -2603,9 +2563,7 @@ void ia_css_debug_pipe_graph_dump_epilogue(void)
 	}
 
 	if (pg_inst.stream_format != N_ATOMISP_INPUT_FORMAT) {
-		/* An input stream format has been set so assume we have
-		 * an input system and sensor
-		 */
+		 
 
 		dtrace_dot(
 		    "node [shape = doublecircle, fixedsize=true, width=2.5]; \"input_system\" [label = \"Input system\"];");
@@ -2626,7 +2584,7 @@ void ia_css_debug_pipe_graph_dump_epilogue(void)
 
 	dtrace_dot("}");
 
-	/* Reset temp strings */
+	 
 	memset(dot_id_input_bin, 0, sizeof(dot_id_input_bin));
 	memset(ring_buffer, 0, sizeof(ring_buffer));
 
@@ -2668,7 +2626,7 @@ ia_css_debug_pipe_graph_dump_stage(
 			sizeof(blob_name));
 	}
 
-	/* Guard in case of binaries that don't have any binary_info */
+	 
 	if (stage->binary_info) {
 		char enable_info1[100];
 		char enable_info2[100];
@@ -2676,9 +2634,7 @@ ia_css_debug_pipe_graph_dump_stage(
 		char enable_info[200];
 		struct ia_css_binary_info *bi = stage->binary_info;
 
-		/* Split it in 2 function-calls to keep the amount of
-		 * parameters per call "reasonable"
-		 */
+		 
 		snprintf(enable_info1, sizeof(enable_info1),
 			 "%s%s%s%s%s%s%s%s%s%s%s%s%s%s",
 			 bi->enable.reduced_pipe ?	"rp," : "",
@@ -2712,7 +2668,7 @@ ia_css_debug_pipe_graph_dump_stage(
 			 bi->enable.high_speed ?		"hs," : ""
 			);
 
-		/* And merge them into one string */
+		 
 		snprintf(enable_info, sizeof(enable_info), "%s%s",
 			 enable_info1, enable_info2);
 		{
@@ -2721,16 +2677,16 @@ ia_css_debug_pipe_graph_dump_stage(
 
 			l = strlen(ei);
 
-			/* Replace last ',' with \0 if present */
+			 
 			if (l && enable_info[l - 1] == ',')
 				enable_info[--l] = '\0';
 
 			if (l > ENABLE_LINE_MAX_LENGTH) {
-				/* Too big for one line, find last comma */
+				 
 				p = ENABLE_LINE_MAX_LENGTH;
 				while (ei[p] != ',')
 					p--;
-				/* Last comma found, copy till that comma */
+				 
 				strscpy(enable_info1, ei,
                                         p > sizeof(enable_info1) ? sizeof(enable_info1) : p);
 
@@ -2738,10 +2694,8 @@ ia_css_debug_pipe_graph_dump_stage(
 				l = strlen(ei);
 
 				if (l <= ENABLE_LINE_MAX_LENGTH) {
-					/* The 2nd line fits */
-					/* we cannot use ei as argument because
-					 * it is not guaranteed dword aligned
-					 */
+					 
+					 
 
 					strscpy(enable_info2, ei,
 						l > sizeof(enable_info2) ? sizeof(enable_info2) : l);
@@ -2750,7 +2704,7 @@ ia_css_debug_pipe_graph_dump_stage(
 						 enable_info1, enable_info2);
 
 				} else {
-					/* 2nd line is still too long */
+					 
 					p = ENABLE_LINE_MAX_LENGTH;
 					while (ei[p] != ',')
 						p--;
@@ -2762,10 +2716,8 @@ ia_css_debug_pipe_graph_dump_stage(
 					l = strlen(ei);
 
 					if (l <= ENABLE_LINE_MAX_LENGTH) {
-						/* The 3rd line fits */
-						/* we cannot use ei as argument because
-						* it is not guaranteed dword aligned
-						*/
+						 
+						 
 						strscpy(enable_info3, ei,
 							sizeof(enable_info3));
 						snprintf(enable_info, sizeof(enable_info),
@@ -2773,7 +2725,7 @@ ia_css_debug_pipe_graph_dump_stage(
 							 enable_info1, enable_info2,
 							 enable_info3);
 					} else {
-						/* 3rd line is still too long */
+						 
 						p = ENABLE_LINE_MAX_LENGTH;
 						while (ei[p] != ',')
 							p--;
@@ -2799,13 +2751,7 @@ ia_css_debug_pipe_graph_dump_stage(
 	}
 
 	if (stage->stage_num == 0) {
-		/*
-		 * There are some implicite assumptions about which bin is the
-		 * input binary e.g. which one is connected to the input system
-		 * Priority:
-		 * 1) sp_raw_copy bin has highest priority
-		 * 2) First stage==0 binary of preview, video or capture
-		 */
+		 
 		if (strlen(dot_id_input_bin) == 0) {
 			snprintf(dot_id_input_bin, sizeof(dot_id_input_bin),
 				 "%s(pipe%d)", blob_name, id);
@@ -3114,38 +3060,9 @@ ia_css_debug_dump_stream_config(
 	ia_css_debug_dump_metadata_config(&config->metadata_config);
 }
 
-/*
-    Trace support.
+ 
 
-    This tracer is using a buffer to trace the flow of the FW and dump misc values (see below for details).
-    Currently, support is only for SKC.
-    To enable support for other platforms:
-     - Allocate a buffer for tracing in DMEM. The longer the better.
-     - Use the DBG_init routine in sp.hive.c to initiatilize the tracer with the address and size selected.
-     - Add trace points in the SP code wherever needed.
-     - Enable the dump below with the required address and required adjustments.
-	   Dump is called at the end of ia_css_debug_dump_sp_state().
-*/
-
-/*
- dump_trace() : dump the trace points from DMEM2.
- for every trace point, the following are printed: index, major:minor and the 16-bit attached value.
- The routine looks for the first 0, and then prints from it cyclically.
- Data forma in DMEM2:
-  first 4 DWORDS: header
-   DWORD 0: data description
-    byte 0: version
-    byte 1: number of threads (for future use)
-    byte 2+3: number ot TPs
-   DWORD 1: command byte + data (for future use)
-    byte 0: command
-    byte 1-3: command signature
-   DWORD 2-3: additional data (for future use)
-  Following data is 4-byte oriented:
-    byte 0:   major
-	byte 1:   minor
-	byte 2-3: data
-*/
+ 
 #if TRACE_ENABLE_SP0 || TRACE_ENABLE_SP1 || TRACE_ENABLE_ISP
 static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 {
@@ -3158,12 +3075,12 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 	enum TRACE_DUMP_FORMAT dump_format;
 
 	int i, j, max_trace_points, point_num, limit = -1;
-	/* using a static buffer here as the driver has issues allocating memory */
+	 
 	static u32 trace_read_buf[TRACE_BUFF_SIZE] = {0};
 	static struct trace_header_t header;
 	u8 *header_arr;
 
-	/* read the header and parse it */
+	 
 	ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE, "~~~ Tracer ");
 	switch (proc_id) {
 	case TRACE_SP0_ID:
@@ -3200,7 +3117,7 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE, " ver %d %d points\n", tmp & 0xFF,
 				    point_num);
 	} else {
-		/* Loading byte-by-byte as using the master routine had issues */
+		 
 		header_arr = (uint8_t *)&header;
 		for (i = 0; i < (int)sizeof(struct trace_header_t); i++)
 			header_arr[i] = ia_css_device_load_uint8(start_addr + (i));
@@ -3220,7 +3137,7 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE, "\t\tToo many points - exiting\n");
 		return;
 	}
-	/* copy the TPs and find the first 0 */
+	 
 	for (i = 0; i < point_num; i++) {
 		trace_read_buf[i] = ia_css_device_load_uint32(start_addr_data +
 				    (i * item_size));
@@ -3241,22 +3158,22 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 					    header.scratch_debug[i], header.scratch_debug[i]);
 		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE, "\n");
 	}
-	/* two 0s in the beginning: empty buffer */
+	 
 	if ((trace_read_buf[0] == 0) && (trace_read_buf[1] == 0)) {
 		ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE, "\t\tEmpty tracer - exiting\n");
 		return;
 	}
-	/* no overrun: start from 0 */
+	 
 	if ((limit == point_num - 1) ||
-	    /* first 0 is at the end - border case */
+	     
 	    (trace_read_buf[limit + 1] ==
-	     0))   /* did not make a full cycle after the memset */
+	     0))    
 		limit = 0;
-	/* overrun: limit is the first non-zero after the first zero */
+	 
 	else
 		limit++;
 
-	/* print the TPs */
+	 
 	for (i = 0; i < point_num; i++) {
 		j = (limit + i) % point_num;
 		if (trace_read_buf[j]) {
@@ -3266,10 +3183,7 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 				tid_val = FIELD_TID_UNPACK(trace_read_buf[j]);
 				dump_format = TRACE_DUMP_FORMAT_POINT;
 
-				/*
-				* When tid value is 111b, the data will be interpreted differently:
-				* tid val is ignored, major field contains 2 bits (msb) for format type
-				*/
+				 
 				if (tid_val == FIELD_TID_SEL_FORMAT_PAT) {
 					dump_format = FIELD_FORMAT_UNPACK(trace_read_buf[j]);
 				}
@@ -3282,7 +3196,7 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 				    FIELD_MINOR_UNPACK(trace_read_buf[j]),
 				    FIELD_VALUE_UNPACK(trace_read_buf[j]));
 				break;
-			/* ISP2400 */
+			 
 			case TRACE_DUMP_FORMAT_VALUE24_HEX:
 				ia_css_debug_dtrace(
 				    IA_CSS_DEBUG_TRACE,	"\t\t%d, %d, 24bit value %x H\n",
@@ -3290,7 +3204,7 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 				    FIELD_MAJOR_UNPACK(trace_read_buf[j]),
 				    FIELD_VALUE_24_UNPACK(trace_read_buf[j]));
 				break;
-			/* ISP2400 */
+			 
 			case TRACE_DUMP_FORMAT_VALUE24_DEC:
 				ia_css_debug_dtrace(
 				    IA_CSS_DEBUG_TRACE,	"\t\t%d, %d, 24bit value %d D\n",
@@ -3298,7 +3212,7 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 				    FIELD_MAJOR_UNPACK(trace_read_buf[j]),
 				    FIELD_VALUE_24_UNPACK(trace_read_buf[j]));
 				break;
-			/* ISP2401 */
+			 
 			case TRACE_DUMP_FORMAT_POINT_NO_TID:
 				ia_css_debug_dtrace(
 				    IA_CSS_DEBUG_TRACE,	"\t\t%d %d:%d value - %x (%d)\n",
@@ -3308,7 +3222,7 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 				    FIELD_VALUE_UNPACK(trace_read_buf[j]),
 				    FIELD_VALUE_UNPACK(trace_read_buf[j]));
 				break;
-			/* ISP2401 */
+			 
 			case TRACE_DUMP_FORMAT_VALUE24:
 				ia_css_debug_dtrace(
 				    IA_CSS_DEBUG_TRACE,	"\t\t%d, %d, 24bit value %x (%d)\n",
@@ -3343,9 +3257,9 @@ static void debug_dump_one_trace(enum TRACE_CORE_ID proc_id)
 	}
 #else
 	(void)proc_id;
-#endif /* HAS_TRACER_V2 */
+#endif  
 }
-#endif /* TRACE_ENABLE_SP0 || TRACE_ENABLE_SP1 || TRACE_ENABLE_ISP */
+#endif  
 
 void ia_css_debug_dump_trace(void)
 {
@@ -3360,8 +3274,7 @@ void ia_css_debug_dump_trace(void)
 #endif
 }
 
-/* Tagger state dump function. The tagger is only available when the CSS
- * contains an input system (2400 or 2401). */
+ 
 void ia_css_debug_tagger_state(void)
 {
 	unsigned int i;
@@ -3370,10 +3283,10 @@ void ia_css_debug_tagger_state(void)
 
 	HIVE_ADDR_tagger_frames = sh_css_sp_fw.info.sp.tagger_frames_addr;
 
-	/* This variable is not used in crun */
+	 
 	(void)HIVE_ADDR_tagger_frames;
 
-	/* 2400 and 2401 only have 1 SP, so the tagger lives on SP0 */
+	 
 	sp_dmem_load(SP0_ID,
 		     (unsigned int)sp_address_of(tagger_frames),
 		     tbuf_frames,
@@ -3386,7 +3299,7 @@ void ia_css_debug_tagger_state(void)
 	}
 }
 
-/* ISP2401 */
+ 
 void ia_css_debug_pc_dump(sp_ID_t id, unsigned int num_of_dumps)
 {
 	unsigned int pc;

@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Xilinx ASoC I2S audio support
-//
-// Copyright (C) 2018 Xilinx, Inc.
-//
-// Author: Praveen Vuppala <praveenv@xilinx.com>
-// Author: Maruthi Srinivas Bayyavarapu <maruthis@xilinx.com>
+
+
+
+
+
+
+
+
 
 #include <linux/io.h>
 #include <linux/module.h>

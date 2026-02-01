@@ -1,39 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright 2020 Joyent, Inc. All rights reserved.
- * Copyright (c) 2011, 2020 by Delphix. All rights reserved.
- * Copyright 2016 Igor Kozhukhov <ikozhukhov@gmail.com>
- * Copyright (c) 2017 Datto Inc.
- * Copyright (c) 2020 The FreeBSD Foundation
- *
- * Portions of this software were developed by Allan Jude
- * under sponsorship from the FreeBSD Foundation.
- */
+ 
 
-/*
- * Internal utility routines for the ZFS library.
- */
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -62,11 +31,7 @@
 #include <zfs_fletcher.h>
 #include <libzutil.h>
 
-/*
- * We only care about the scheme in order to match the scheme
- * with the handler. Each handler should validate the full URI
- * as necessary.
- */
+ 
 #define	URI_REGEX	"^\\([A-Za-z][A-Za-z0-9+.\\-]*\\):"
 
 int
@@ -527,11 +492,7 @@ zfs_setprop_error(libzfs_handle_t *hdl, zfs_prop_t prop, int err,
 	switch (err) {
 
 	case ENOSPC:
-		/*
-		 * For quotas and reservations, ENOSPC indicates
-		 * something different; setting a quota or reservation
-		 * doesn't use any disk space.
-		 */
+		 
 		switch (prop) {
 		case ZFS_PROP_QUOTA:
 		case ZFS_PROP_REFQUOTA:
@@ -617,9 +578,7 @@ zfs_setprop_error(libzfs_handle_t *hdl, zfs_prop_t prop, int err,
 		break;
 
 	case EOVERFLOW:
-		/*
-		 * This platform can't address a volume this big.
-		 */
+		 
 #ifdef _ILP32
 		if (prop == ZFS_PROP_VOLSIZE) {
 			(void) zfs_error(hdl, EZFS_VOLTOOBIG, errbuf);
@@ -672,7 +631,7 @@ zpool_standard_error_fmt(libzfs_handle_t *hdl, int error, const char *fmt, ...)
 		zfs_verror(hdl, EZFS_BUSY, fmt, ap);
 		break;
 
-	/* There is no pending operation to cancel */
+	 
 	case ENOTACTIVE:
 		zfs_verror(hdl, EZFS_NO_PENDING, fmt, ap);
 		break;
@@ -772,18 +731,14 @@ zpool_standard_error_fmt(libzfs_handle_t *hdl, int error, const char *fmt, ...)
 	return (-1);
 }
 
-/*
- * Display an out of memory error message and abort the current program.
- */
+ 
 int
 no_memory(libzfs_handle_t *hdl)
 {
 	return (zfs_error(hdl, EZFS_NOMEM, "internal error"));
 }
 
-/*
- * A safe form of malloc() which will die if the allocation fails.
- */
+ 
 void *
 zfs_alloc(libzfs_handle_t *hdl, size_t size)
 {
@@ -795,9 +750,7 @@ zfs_alloc(libzfs_handle_t *hdl, size_t size)
 	return (data);
 }
 
-/*
- * A safe form of asprintf() which will die if the allocation fails.
- */
+ 
 char *
 zfs_asprintf(libzfs_handle_t *hdl, const char *fmt, ...)
 {
@@ -819,9 +772,7 @@ zfs_asprintf(libzfs_handle_t *hdl, const char *fmt, ...)
 	return (ret);
 }
 
-/*
- * A safe form of realloc(), which also zeroes newly allocated space.
- */
+ 
 void *
 zfs_realloc(libzfs_handle_t *hdl, void *ptr, size_t oldsize, size_t newsize)
 {
@@ -836,9 +787,7 @@ zfs_realloc(libzfs_handle_t *hdl, void *ptr, size_t oldsize, size_t newsize)
 	return (ret);
 }
 
-/*
- * A safe form of strdup() which will die if the allocation fails.
- */
+ 
 char *
 zfs_strdup(libzfs_handle_t *hdl, const char *str)
 {
@@ -856,14 +805,7 @@ libzfs_print_on_error(libzfs_handle_t *hdl, boolean_t printerr)
 	hdl->libzfs_printerr = printerr;
 }
 
-/*
- * Read lines from an open file descriptor and store them in an array of
- * strings until EOF.  lines[] will be allocated and populated with all the
- * lines read.  All newlines are replaced with NULL terminators for
- * convenience.  lines[] must be freed after use with libzfs_free_str_array().
- *
- * Returns the number of lines read.
- */
+ 
 static int
 libzfs_read_stdout_from_fd(int fd, char **lines[])
 {
@@ -882,12 +824,12 @@ libzfs_read_stdout_from_fd(int fd, char **lines[])
 	while (getline(&line, &len, fp) != -1) {
 		tmp = realloc(tmp_lines, sizeof (*tmp_lines) * (lines_cnt + 1));
 		if (tmp == NULL) {
-			/* Return the lines we were able to process */
+			 
 			break;
 		}
 		tmp_lines = tmp;
 
-		/* Remove newline if not EOF */
+		 
 		if (line[strlen(line) - 1] == '\n')
 			line[strlen(line) - 1] = '\0';
 
@@ -910,16 +852,13 @@ libzfs_run_process_impl(const char *path, char *argv[], char *env[], int flags,
 	int error, devnull_fd;
 	int link[2];
 
-	/*
-	 * Setup a pipe between our child and parent process if we're
-	 * reading stdout.
-	 */
+	 
 	if (lines != NULL && pipe2(link, O_NONBLOCK | O_CLOEXEC) == -1)
 		return (-EPIPE);
 
 	pid = fork();
 	if (pid == 0) {
-		/* Child process */
+		 
 		devnull_fd = open("/dev/null", O_WRONLY | O_CLOEXEC);
 
 		if (devnull_fd < 0)
@@ -928,7 +867,7 @@ libzfs_run_process_impl(const char *path, char *argv[], char *env[], int flags,
 		if (!(flags & STDOUT_VERBOSE) && (lines == NULL))
 			(void) dup2(devnull_fd, STDOUT_FILENO);
 		else if (lines != NULL) {
-			/* Save the output to lines[] */
+			 
 			dup2(link[1], STDOUT_FILENO);
 		}
 
@@ -949,7 +888,7 @@ libzfs_run_process_impl(const char *path, char *argv[], char *env[], int flags,
 
 		_exit(-1);
 	} else if (pid > 0) {
-		/* Parent process */
+		 
 		int status;
 
 		while ((error = waitpid(pid, &status, 0)) == -1 &&
@@ -974,12 +913,7 @@ libzfs_run_process(const char *path, char *argv[], int flags)
 	return (libzfs_run_process_impl(path, argv, NULL, flags, NULL, NULL));
 }
 
-/*
- * Run a command and store its stdout lines in an array of strings (lines[]).
- * lines[] is allocated and populated for you, and the number of lines is set in
- * lines_cnt.  lines[] must be freed after use with libzfs_free_str_array().
- * All newlines (\n) in lines[] are terminated for convenience.
- */
+ 
 int
 libzfs_run_process_get_stdout(const char *path, char *argv[], char *env[],
     char **lines[], int *lines_cnt)
@@ -987,10 +921,7 @@ libzfs_run_process_get_stdout(const char *path, char *argv[], char *env[],
 	return (libzfs_run_process_impl(path, argv, env, 0, lines, lines_cnt));
 }
 
-/*
- * Same as libzfs_run_process_get_stdout(), but run without $PATH set.  This
- * means that *path needs to be the full path to the executable.
- */
+ 
 int
 libzfs_run_process_get_stdout_nopath(const char *path, char *argv[],
     char *env[], char **lines[], int *lines_cnt)
@@ -999,10 +930,7 @@ libzfs_run_process_get_stdout_nopath(const char *path, char *argv[],
 	    lines, lines_cnt));
 }
 
-/*
- * Free an array of strings.  Free both the strings contained in the array and
- * the array itself.
- */
+ 
 void
 libzfs_free_str_array(char **strs, int count)
 {
@@ -1012,12 +940,7 @@ libzfs_free_str_array(char **strs, int count)
 	free(strs);
 }
 
-/*
- * Returns 1 if environment variable is set to "YES", "yes", "ON", "on", or
- * a non-zero number.
- *
- * Returns 0 otherwise.
- */
+ 
 boolean_t
 libzfs_envvar_is_set(const char *envvar)
 {
@@ -1081,9 +1004,7 @@ libzfs_init(void)
 		hdl->libzfs_max_nvlist = (SPA_MAXBLOCKSIZE * 4);
 	}
 
-	/*
-	 * For testing, remove some settable properties and features
-	 */
+	 
 	if (libzfs_envvar_is_set("ZFS_SYSFS_PROP_SUPPORT_TEST")) {
 		zprop_desc_t *proptbl;
 
@@ -1136,12 +1057,7 @@ zfs_get_pool_handle(const zfs_handle_t *zhp)
 	return (zhp->zpool_hdl);
 }
 
-/*
- * Given a name, determine whether or not it's a valid path
- * (starts with '/' or "./").  If so, walk the mnttab trying
- * to match the device number.  If not, treat the path as an
- * fs/vol/snap/bkmark name.
- */
+ 
 zfs_handle_t *
 zfs_path_to_zhandle(libzfs_handle_t *hdl, const char *path, zfs_type_t argtype)
 {
@@ -1149,9 +1065,7 @@ zfs_path_to_zhandle(libzfs_handle_t *hdl, const char *path, zfs_type_t argtype)
 	struct extmnttab entry;
 
 	if (path[0] != '/' && strncmp(path, "./", strlen("./")) != 0) {
-		/*
-		 * It's not a valid path, assume it's a name of type 'argtype'.
-		 */
+		 
 		return (zfs_open(hdl, path, argtype));
 	}
 
@@ -1167,10 +1081,7 @@ zfs_path_to_zhandle(libzfs_handle_t *hdl, const char *path, zfs_type_t argtype)
 	return (zfs_open(hdl, entry.mnt_special, ZFS_TYPE_FILESYSTEM));
 }
 
-/*
- * Initialize the zc_nvlist_dst member to prepare for receiving an nvlist from
- * an ioctl().
- */
+ 
 void
 zcmd_alloc_dst_nvlist(libzfs_handle_t *hdl, zfs_cmd_t *zc, size_t len)
 {
@@ -1181,11 +1092,7 @@ zcmd_alloc_dst_nvlist(libzfs_handle_t *hdl, zfs_cmd_t *zc, size_t len)
 	    (uint64_t)(uintptr_t)zfs_alloc(hdl, zc->zc_nvlist_dst_size);
 }
 
-/*
- * Called when an ioctl() which returns an nvlist fails with ENOMEM.  This will
- * expand the nvlist to the size specified in 'zc_nvlist_dst_size', which was
- * filled in by the kernel to indicate the actual required size.
- */
+ 
 void
 zcmd_expand_dst_nvlist(libzfs_handle_t *hdl, zfs_cmd_t *zc)
 {
@@ -1194,9 +1101,7 @@ zcmd_expand_dst_nvlist(libzfs_handle_t *hdl, zfs_cmd_t *zc)
 	    (uint64_t)(uintptr_t)zfs_alloc(hdl, zc->zc_nvlist_dst_size);
 }
 
-/*
- * Called to free the src and dst nvlists stored in the command structure.
- */
+ 
 void
 zcmd_free_nvlists(zfs_cmd_t *zc)
 {
@@ -1237,9 +1142,7 @@ zcmd_write_src_nvlist(libzfs_handle_t *hdl, zfs_cmd_t *zc, nvlist_t *nvl)
 	    &zc->zc_nvlist_src_size, nvl);
 }
 
-/*
- * Unpacks an nvlist from the ZFS ioctl command structure.
- */
+ 
 int
 zcmd_read_dst_nvlist(libzfs_handle_t *hdl, zfs_cmd_t *zc, nvlist_t **nvlp)
 {
@@ -1250,11 +1153,7 @@ zcmd_read_dst_nvlist(libzfs_handle_t *hdl, zfs_cmd_t *zc, nvlist_t **nvlp)
 	return (0);
 }
 
-/*
- * ================================================================
- * API shared by zfs and zpool property management
- * ================================================================
- */
+ 
 
 static void
 zprop_print_headers(zprop_get_cbdata_t *cbp, zfs_type_t type)
@@ -1268,9 +1167,7 @@ zprop_print_headers(zprop_get_cbdata_t *cbp, zfs_type_t type)
 	if (cbp->cb_scripted)
 		return;
 
-	/*
-	 * Start with the length of the column headers.
-	 */
+	 
 	cbp->cb_colwidths[GET_COL_NAME] = strlen(dgettext(TEXT_DOMAIN, "NAME"));
 	cbp->cb_colwidths[GET_COL_PROPERTY] = strlen(dgettext(TEXT_DOMAIN,
 	    "PROPERTY"));
@@ -1281,23 +1178,14 @@ zprop_print_headers(zprop_get_cbdata_t *cbp, zfs_type_t type)
 	cbp->cb_colwidths[GET_COL_SOURCE] = strlen(dgettext(TEXT_DOMAIN,
 	    "SOURCE"));
 
-	/* first property is always NAME */
+	 
 	assert(cbp->cb_proplist->pl_prop ==
 	    ((type == ZFS_TYPE_POOL) ? ZPOOL_PROP_NAME :
 	    ((type == ZFS_TYPE_VDEV) ? VDEV_PROP_NAME : ZFS_PROP_NAME)));
 
-	/*
-	 * Go through and calculate the widths for each column.  For the
-	 * 'source' column, we kludge it up by taking the worst-case scenario of
-	 * inheriting from the longest name.  This is acceptable because in the
-	 * majority of cases 'SOURCE' is the last column displayed, and we don't
-	 * use the width anyway.  Note that the 'VALUE' column can be oversized,
-	 * if the name of the property is much longer than any values we find.
-	 */
+	 
 	for (pl = cbp->cb_proplist; pl != NULL; pl = pl->pl_next) {
-		/*
-		 * 'PROPERTY' column
-		 */
+		 
 		if (pl->pl_prop != ZPROP_USERPROP) {
 			const char *propname = (type == ZFS_TYPE_POOL) ?
 			    zpool_prop_to_name(pl->pl_prop) :
@@ -1316,25 +1204,17 @@ zprop_print_headers(zprop_get_cbdata_t *cbp, zfs_type_t type)
 				cbp->cb_colwidths[GET_COL_PROPERTY] = len;
 		}
 
-		/*
-		 * 'VALUE' column.  The first property is always the 'name'
-		 * property that was tacked on either by /sbin/zfs's
-		 * zfs_do_get() or when calling zprop_expand_list(), so we
-		 * ignore its width.  If the user specified the name property
-		 * to display, then it will be later in the list in any case.
-		 */
+		 
 		if (pl != cbp->cb_proplist &&
 		    pl->pl_width > cbp->cb_colwidths[GET_COL_VALUE])
 			cbp->cb_colwidths[GET_COL_VALUE] = pl->pl_width;
 
-		/* 'RECEIVED' column. */
+		 
 		if (pl != cbp->cb_proplist &&
 		    pl->pl_recvd_width > cbp->cb_colwidths[GET_COL_RECVD])
 			cbp->cb_colwidths[GET_COL_RECVD] = pl->pl_recvd_width;
 
-		/*
-		 * 'NAME' and 'SOURCE' columns
-		 */
+		 
 		if (pl->pl_prop == ((type == ZFS_TYPE_POOL) ? ZPOOL_PROP_NAME :
 		    ((type == ZFS_TYPE_VDEV) ? VDEV_PROP_NAME :
 		    ZFS_PROP_NAME)) && pl->pl_width >
@@ -1345,9 +1225,7 @@ zprop_print_headers(zprop_get_cbdata_t *cbp, zfs_type_t type)
 		}
 	}
 
-	/*
-	 * Now go through and print the headers.
-	 */
+	 
 	for (i = 0; i < ZFS_GET_NCOLS; i++) {
 		switch (cbp->cb_columns[i]) {
 		case GET_COL_NAME:
@@ -1382,10 +1260,7 @@ zprop_print_headers(zprop_get_cbdata_t *cbp, zfs_type_t type)
 	(void) printf("\n");
 }
 
-/*
- * Display a single line of output, according to the settings in the callback
- * structure.
- */
+ 
 void
 zprop_print_one_property(const char *name, zprop_get_cbdata_t *cbp,
     const char *propname, const char *value, zprop_source_t sourcetype,
@@ -1395,9 +1270,7 @@ zprop_print_one_property(const char *name, zprop_get_cbdata_t *cbp,
 	const char *str = NULL;
 	char buf[128];
 
-	/*
-	 * Ignore those source types that the user has chosen to ignore.
-	 */
+	 
 	if ((sourcetype & cbp->cb_sources) == 0)
 		return;
 
@@ -1473,10 +1346,7 @@ zprop_print_one_property(const char *name, zprop_get_cbdata_t *cbp,
 	(void) printf("\n");
 }
 
-/*
- * Given a numeric suffix, convert the value into a number of bits that the
- * resulting value must be shifted.
- */
+ 
 static int
 str2shift(libzfs_handle_t *hdl, const char *buf)
 {
@@ -1496,10 +1366,7 @@ str2shift(libzfs_handle_t *hdl, const char *buf)
 		return (-1);
 	}
 
-	/*
-	 * Allow 'G' = 'GB' = 'GiB', case-insensitively.
-	 * However, 'BB' and 'BiB' are disallowed.
-	 */
+	 
 	if (buf[1] == '\0' ||
 	    (toupper(buf[0]) != 'B' &&
 	    ((toupper(buf[1]) == 'B' && buf[2] == '\0') ||
@@ -1513,11 +1380,7 @@ str2shift(libzfs_handle_t *hdl, const char *buf)
 	return (-1);
 }
 
-/*
- * Convert a string of the form '100G' into a real number.  Used when setting
- * properties or creating a volume.  'buf' is used to place an extended error
- * message for the caller to use.
- */
+ 
 int
 zfs_nicestrtonum(libzfs_handle_t *hdl, const char *value, uint64_t *num)
 {
@@ -1526,7 +1389,7 @@ zfs_nicestrtonum(libzfs_handle_t *hdl, const char *value, uint64_t *num)
 
 	*num = 0;
 
-	/* Check to see if this looks like a number.  */
+	 
 	if ((value[0] < '0' || value[0] > '9') && value[0] != '.') {
 		if (hdl)
 			zfs_error_aux(hdl, dgettext(TEXT_DOMAIN,
@@ -1534,14 +1397,11 @@ zfs_nicestrtonum(libzfs_handle_t *hdl, const char *value, uint64_t *num)
 		return (-1);
 	}
 
-	/* Rely on strtoull() to process the numeric portion.  */
+	 
 	errno = 0;
 	*num = strtoull(value, &end, 10);
 
-	/*
-	 * Check for ERANGE, which indicates that the value is too large to fit
-	 * in a 64-bit value.
-	 */
+	 
 	if (errno == ERANGE) {
 		if (hdl)
 			zfs_error_aux(hdl, dgettext(TEXT_DOMAIN,
@@ -1549,10 +1409,7 @@ zfs_nicestrtonum(libzfs_handle_t *hdl, const char *value, uint64_t *num)
 		return (-1);
 	}
 
-	/*
-	 * If we have a decimal value, then do the computation with floating
-	 * point arithmetic.  Otherwise, use standard arithmetic.
-	 */
+	 
 	if (*end == '.') {
 		double fval = strtod(value, &end);
 
@@ -1561,11 +1418,7 @@ zfs_nicestrtonum(libzfs_handle_t *hdl, const char *value, uint64_t *num)
 
 		fval *= pow(2, shift);
 
-		/*
-		 * UINT64_MAX is not exactly representable as a double.
-		 * The closest representation is UINT64_MAX + 1, so we
-		 * use a >= comparison instead of > for the bounds check.
-		 */
+		 
 		if (fval >= (double)UINT64_MAX) {
 			if (hdl)
 				zfs_error_aux(hdl, dgettext(TEXT_DOMAIN,
@@ -1578,7 +1431,7 @@ zfs_nicestrtonum(libzfs_handle_t *hdl, const char *value, uint64_t *num)
 		if ((shift = str2shift(hdl, end)) == -1)
 			return (-1);
 
-		/* Check for overflow */
+		 
 		if (shift >= 64 || (*num << shift) >> shift != *num) {
 			if (hdl)
 				zfs_error_aux(hdl, dgettext(TEXT_DOMAIN,
@@ -1592,17 +1445,7 @@ zfs_nicestrtonum(libzfs_handle_t *hdl, const char *value, uint64_t *num)
 	return (0);
 }
 
-/*
- * Given a propname=value nvpair to set, parse any numeric properties
- * (index, boolean, etc) if they are specified as strings and add the
- * resulting nvpair to the returned nvlist.
- *
- * At the DSL layer, all properties are either 64-bit numbers or strings.
- * We want the user to be able to ignore this fact and specify properties
- * as native values (numbers, for example) or as strings (to simplify
- * command line utilities).  This also handles converting index types
- * (compression, checksum, etc) from strings to their on-disk index.
- */
+ 
 int
 zprop_parse_value(libzfs_handle_t *hdl, nvpair_t *elem, int prop,
     zfs_type_t type, nvlist_t *ret, const char **svalp, uint64_t *ivalp,
@@ -1627,9 +1470,7 @@ zprop_parse_value(libzfs_handle_t *hdl, nvpair_t *elem, int prop,
 		propname = zfs_prop_to_name(prop);
 	}
 
-	/*
-	 * Convert any properties to the internal DSL value types.
-	 */
+	 
 	*svalp = NULL;
 	*ivalp = 0;
 
@@ -1671,9 +1512,7 @@ zprop_parse_value(libzfs_handle_t *hdl, nvpair_t *elem, int prop,
 			goto error;
 		}
 
-		/*
-		 * Quota special: force 'none' and don't allow 0.
-		 */
+		 
 		if ((type & ZFS_TYPE_DATASET) && *ivalp == 0 && !isnone &&
 		    (prop == ZFS_PROP_QUOTA || prop == ZFS_PROP_REFQUOTA)) {
 			zfs_error_aux(hdl, dgettext(TEXT_DOMAIN,
@@ -1681,20 +1520,14 @@ zprop_parse_value(libzfs_handle_t *hdl, nvpair_t *elem, int prop,
 			goto error;
 		}
 
-		/*
-		 * Special handling for "*_limit=none". In this case it's not
-		 * 0 but UINT64_MAX.
-		 */
+		 
 		if ((type & ZFS_TYPE_DATASET) && isnone &&
 		    (prop == ZFS_PROP_FILESYSTEM_LIMIT ||
 		    prop == ZFS_PROP_SNAPSHOT_LIMIT)) {
 			*ivalp = UINT64_MAX;
 		}
 
-		/*
-		 * Special handling for "checksum_*=none". In this case it's not
-		 * 0 but UINT64_MAX.
-		 */
+		 
 		if ((type & ZFS_TYPE_VDEV) && isnone &&
 		    (prop == VDEV_PROP_CHECKSUM_N ||
 		    prop == VDEV_PROP_CHECKSUM_T ||
@@ -1703,11 +1536,7 @@ zprop_parse_value(libzfs_handle_t *hdl, nvpair_t *elem, int prop,
 			*ivalp = UINT64_MAX;
 		}
 
-		/*
-		 * Special handling for setting 'refreservation' to 'auto'.  Use
-		 * UINT64_MAX to tell the caller to use zfs_fix_auto_resv().
-		 * 'auto' is only allowed on volumes.
-		 */
+		 
 		if (isauto) {
 			switch (prop) {
 			case ZFS_PROP_REFRESERVATION:
@@ -1750,9 +1579,7 @@ zprop_parse_value(libzfs_handle_t *hdl, nvpair_t *elem, int prop,
 		abort();
 	}
 
-	/*
-	 * Add the result to our return set of properties.
-	 */
+	 
 	if (*svalp != NULL) {
 		if (nvlist_add_string(ret, propname, *svalp) != 0) {
 			(void) no_memory(hdl);
@@ -1779,10 +1606,7 @@ addlist(libzfs_handle_t *hdl, const char *propname, zprop_list_t **listp,
 	if (prop != ZPROP_INVAL && !zprop_valid_for_type(prop, type, B_FALSE))
 		prop = ZPROP_INVAL;
 
-	/*
-	 * Return failure if no property table entry was found and this isn't
-	 * a user-defined property.
-	 */
+	 
 	if (prop == ZPROP_USERPROP && ((type == ZFS_TYPE_POOL &&
 	    !zfs_prop_user(propname) &&
 	    !zpool_prop_feature(propname) &&
@@ -1812,27 +1636,18 @@ addlist(libzfs_handle_t *hdl, const char *propname, zprop_list_t **listp,
 	return (0);
 }
 
-/*
- * Given a comma-separated list of properties, construct a property list
- * containing both user-defined and native properties.  This function will
- * return a NULL list if 'all' is specified, which can later be expanded
- * by zprop_expand_list().
- */
+ 
 int
 zprop_get_list(libzfs_handle_t *hdl, char *props, zprop_list_t **listp,
     zfs_type_t type)
 {
 	*listp = NULL;
 
-	/*
-	 * If 'all' is specified, return a NULL list.
-	 */
+	 
 	if (strcmp(props, "all") == 0)
 		return (0);
 
-	/*
-	 * If no props were specified, return an error.
-	 */
+	 
 	if (props[0] == '\0') {
 		zfs_error_aux(hdl, dgettext(TEXT_DOMAIN,
 		    "no properties specified"));
@@ -1907,11 +1722,7 @@ zprop_expand_list(libzfs_handle_t *hdl, zprop_list_t **plp, zfs_type_t type)
 	expand_data_t exp;
 
 	if (*plp == NULL) {
-		/*
-		 * If this is the very first time we've been called for an 'all'
-		 * specification, expand the list to include all native
-		 * properties.
-		 */
+		 
 		last = plp;
 
 		exp.last = last;
@@ -1922,10 +1733,7 @@ zprop_expand_list(libzfs_handle_t *hdl, zprop_list_t **plp, zfs_type_t type)
 		    B_FALSE, type) == ZPROP_INVAL)
 			return (-1);
 
-		/*
-		 * Add 'name' to the beginning of the list, which is handled
-		 * specially.
-		 */
+		 
 		entry = zfs_alloc(hdl, sizeof (zprop_list_t));
 		entry->pl_prop = ((type == ZFS_TYPE_POOL) ?  ZPOOL_PROP_NAME :
 		    ((type == ZFS_TYPE_VDEV) ? VDEV_PROP_NAME : ZFS_PROP_NAME));
@@ -1951,10 +1759,7 @@ zfs_version_userland(void)
 	return (ZFS_META_ALIAS);
 }
 
-/*
- * Prints both zfs userland and kernel versions
- * Returns 0 on success, and -1 on error
- */
+ 
 int
 zfs_version_print(void)
 {
@@ -1972,47 +1777,26 @@ zfs_version_print(void)
 	return (0);
 }
 
-/*
- * Return 1 if the user requested ANSI color output, and our terminal supports
- * it.  Return 0 for no color.
- */
+ 
 int
 use_color(void)
 {
 	static int use_color = -1;
 	char *term;
 
-	/*
-	 * Optimization:
-	 *
-	 * For each zpool invocation, we do a single check to see if we should
-	 * be using color or not, and cache that value for the lifetime of the
-	 * the zpool command.  That makes it cheap to call use_color() when
-	 * we're printing with color.  We assume that the settings are not going
-	 * to change during the invocation of a zpool command (the user isn't
-	 * going to change the ZFS_COLOR value while zpool is running, for
-	 * example).
-	 */
+	 
 	if (use_color != -1) {
-		/*
-		 * We've already figured out if we should be using color or
-		 * not.  Return the cached value.
-		 */
+		 
 		return (use_color);
 	}
 
 	term = getenv("TERM");
-	/*
-	 * The user sets the ZFS_COLOR env var set to enable zpool ANSI color
-	 * output.  However if NO_COLOR is set (https://no-color.org/) then
-	 * don't use it.  Also, don't use color if terminal doesn't support
-	 * it.
-	 */
+	 
 	if (libzfs_envvar_is_set("ZFS_COLOR") &&
 	    !libzfs_envvar_is_set("NO_COLOR") &&
 	    isatty(STDOUT_FILENO) && term && strcmp("dumb", term) != 0 &&
 	    strcmp("unknown", term) != 0) {
-		/* Color supported */
+		 
 		use_color = 1;
 	} else {
 		use_color = 0;
@@ -2021,16 +1805,7 @@ use_color(void)
 	return (use_color);
 }
 
-/*
- * The functions color_start() and color_end() are used for when you want
- * to colorize a block of text.
- *
- * For example:
- * color_start(ANSI_RED)
- * printf("hello");
- * printf("world");
- * color_end();
- */
+ 
 void
 color_start(const char *color)
 {
@@ -2050,9 +1825,7 @@ color_end(void)
 
 }
 
-/*
- * printf() with a color. If color is NULL, then do a normal printf.
- */
+ 
 int
 printf_color(const char *color, const char *format, ...)
 {
@@ -2072,29 +1845,10 @@ printf_color(const char *color, const char *format, ...)
 	return (rc);
 }
 
-/* PATH + 5 env vars + a NULL entry = 7 */
+ 
 #define	ZPOOL_VDEV_SCRIPT_ENV_COUNT 7
 
-/*
- * There's a few places where ZFS will call external scripts (like the script
- * in zpool.d/ and `zfs_prepare_disk`).  These scripts are called with a
- * reduced $PATH, and some vdev specific environment vars set.  This function
- * will allocate an populate the environment variable array that is passed to
- * these scripts.  The user must free the arrays with zpool_vdev_free_env() when
- * they are done.
- *
- * The following env vars will be set (but value could be blank):
- *
- * POOL_NAME
- * VDEV_PATH
- * VDEV_UPATH
- * VDEV_ENC_SYSFS_PATH
- *
- * In addition, you can set an optional environment variable named 'opt_key'
- * to 'opt_val' if you want.
- *
- * Returns allocated env[] array on success, NULL otherwise.
- */
+ 
 char **
 zpool_vdev_script_alloc_env(const char *pool_name,
     const char *vdev_path, const char *vdev_upath,
@@ -2111,7 +1865,7 @@ zpool_vdev_script_alloc_env(const char *pool_name,
 	if (!env[0])
 		goto error;
 
-	/* Setup our custom environment variables */
+	 
 	rc = asprintf(&env[1], "POOL_NAME=%s", pool_name ? pool_name : "");
 	if (rc == -1) {
 		env[1] = NULL;
@@ -2157,9 +1911,7 @@ error:
 	return (NULL);
 }
 
-/*
- * Free the env[] array that was allocated by zpool_vdev_script_alloc_env().
- */
+ 
 void
 zpool_vdev_script_free_env(char **env)
 {
@@ -2169,15 +1921,7 @@ zpool_vdev_script_free_env(char **env)
 	free(env);
 }
 
-/*
- * Prepare a disk by (optionally) running a program before labeling the disk.
- * This can be useful for installing disk firmware or doing some pre-flight
- * checks on the disk before it becomes part of the pool.  The program run is
- * located at ZFSEXECDIR/zfs_prepare_disk
- * (E.x: /usr/local/libexec/zfs/zfs_prepare_disk).
- *
- * Return 0 on success, non-zero on failure.
- */
+ 
 int
 zpool_prepare_disk(zpool_handle_t *zhp, nvlist_t *vdev_nv,
     const char *prepare_str, char **lines[], int *lines_cnt)
@@ -2186,7 +1930,7 @@ zpool_prepare_disk(zpool_handle_t *zhp, nvlist_t *vdev_nv,
 	const char *pool_name;
 	int rc = 0;
 
-	/* Path to script and a NULL entry */
+	 
 	char *argv[2] = {(char *)script_path};
 	char **env = NULL;
 	const char *path = NULL, *enc_sysfs_path = NULL;
@@ -2194,7 +1938,7 @@ zpool_prepare_disk(zpool_handle_t *zhp, nvlist_t *vdev_nv,
 	*lines_cnt = 0;
 
 	if (access(script_path, X_OK) != 0) {
-		/* No script, nothing to do */
+		 
 		return (0);
 	}
 
@@ -2222,30 +1966,7 @@ zpool_prepare_disk(zpool_handle_t *zhp, nvlist_t *vdev_nv,
 	return (rc);
 }
 
-/*
- * Optionally run a script and then label a disk.  The script can be used to
- * prepare a disk for inclusion into the pool.  For example, it might update
- * the disk's firmware or check its health.
- *
- * The 'name' provided is the short name, stripped of any leading
- * /dev path, and is passed to zpool_label_disk. vdev_nv is the nvlist for
- * the vdev.  prepare_str is a string that gets passed as the VDEV_PREPARE
- * env variable to the script.
- *
- * The following env vars are passed to the script:
- *
- * POOL_NAME:		The pool name (blank during zpool create)
- * VDEV_PREPARE:	Reason why the disk is being prepared for inclusion:
- *			"create", "add", "replace", or "autoreplace"
- * VDEV_PATH:		Path to the disk
- * VDEV_UPATH:		One of the 'underlying paths' to the disk.  This is
- * 			useful for DM devices.
- * VDEV_ENC_SYSFS_PATH:	Path to the disk's enclosure sysfs path, if available.
- *
- * Note, some of these values can be blank.
- *
- * Return 0 on success, non-zero otherwise.
- */
+ 
 int
 zpool_prepare_and_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp,
     const char *name, nvlist_t *vdev_nv, const char *prepare_str,
@@ -2256,7 +1977,7 @@ zpool_prepare_and_label_disk(libzfs_handle_t *hdl, zpool_handle_t *zhp,
 	(void) snprintf(vdev_path, sizeof (vdev_path), "%s/%s", DISK_ROOT,
 	    name);
 
-	/* zhp will be NULL when creating a pool */
+	 
 	rc = zpool_prepare_disk(zhp, vdev_nv, prepare_str, lines, lines_cnt);
 	if (rc != 0)
 		return (rc);

@@ -1,14 +1,4 @@
-/*
- * Cirrus Logic CS42448/CS42888 Audio CODEC Digital Audio Interface (DAI) driver
- *
- * Copyright (C) 2014 Freescale Semiconductor, Inc.
- *
- * Author: Nicolin Chen <Guangyu.Chen@freescale.com>
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -35,7 +25,7 @@ static const char *const cs42xx8_supply_names[CS42XX8_NUM_SUPPLIES] = {
 			 SNDRV_PCM_FMTBIT_S24_LE | \
 			 SNDRV_PCM_FMTBIT_S32_LE)
 
-/* codec private data */
+ 
 struct cs42xx8_priv {
 	struct regulator_bulk_data supplies[CS42XX8_NUM_SUPPLIES];
 	const struct cs42xx8_driver_data *drvdata;
@@ -49,9 +39,9 @@ struct cs42xx8_priv {
 	u32 rate[2];
 };
 
-/* -127.5dB to 0dB with step of 0.5dB */
+ 
 static const DECLARE_TLV_DB_SCALE(dac_tlv, -12750, 50, 1);
-/* -64dB to 24dB with step of 0.5dB */
+ 
 static const DECLARE_TLV_DB_SCALE(adc_tlv, -6400, 50, 0);
 
 static const char *const cs42xx8_adc_single[] = { "Differential", "Single-Ended" };
@@ -141,7 +131,7 @@ static const struct snd_soc_dapm_widget cs42xx8_adc3_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route cs42xx8_dapm_routes[] = {
-	/* Playback */
+	 
 	{ "AOUT1L", NULL, "DAC1" },
 	{ "AOUT1R", NULL, "DAC1" },
 	{ "DAC1", NULL, "PWR" },
@@ -158,7 +148,7 @@ static const struct snd_soc_dapm_route cs42xx8_dapm_routes[] = {
 	{ "AOUT4R", NULL, "DAC4" },
 	{ "DAC4", NULL, "PWR" },
 
-	/* Capture */
+	 
 	{ "ADC1", NULL, "AIN1L" },
 	{ "ADC1", NULL, "AIN1R" },
 	{ "ADC1", NULL, "PWR" },
@@ -169,7 +159,7 @@ static const struct snd_soc_dapm_route cs42xx8_dapm_routes[] = {
 };
 
 static const struct snd_soc_dapm_route cs42xx8_adc3_dapm_routes[] = {
-	/* Capture */
+	 
 	{ "ADC3", NULL, "AIN3L" },
 	{ "ADC3", NULL, "AIN3R" },
 	{ "ADC3", NULL, "PWR" },
@@ -182,15 +172,7 @@ struct cs42xx8_ratios {
 	unsigned int ratio[3];
 };
 
-/*
- * According to reference mannual, define the cs42xx8_ratio struct
- * MFreq2 | MFreq1 | MFreq0 |     Description     | SSM | DSM | QSM |
- * 0      | 0      | 0      |1.029MHz to 12.8MHz  | 256 | 128 |  64 |
- * 0      | 0      | 1      |1.536MHz to 19.2MHz  | 384 | 192 |  96 |
- * 0      | 1      | 0      |2.048MHz to 25.6MHz  | 512 | 256 | 128 |
- * 0      | 1      | 1      |3.072MHz to 38.4MHz  | 768 | 384 | 192 |
- * 1      | x      | x      |4.096MHz to 51.2MHz  |1024 | 512 | 256 |
- */
+ 
 static const struct cs42xx8_ratios cs42xx8_ratios[] = {
 	{ 0, 1029000, 12800000, {256, 128, 64} },
 	{ 2, 1536000, 19200000, {384, 192, 96} },
@@ -217,7 +199,7 @@ static int cs42xx8_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct cs42xx8_priv *cs42xx8 = snd_soc_component_get_drvdata(component);
 	u32 val;
 
-	/* Set DAI format */
+	 
 	switch (format & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_LEFT_J:
 		val = CS42XX8_INTF_DAC_DIF_LEFTJ | CS42XX8_INTF_ADC_DIF_LEFTJ;
@@ -240,7 +222,7 @@ static int cs42xx8_set_dai_fmt(struct snd_soc_dai *codec_dai,
 			   CS42XX8_INTF_DAC_DIF_MASK |
 			   CS42XX8_INTF_ADC_DIF_MASK, val);
 
-	/* Set master/slave audio interface */
+	 
 	switch (format & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBS_CFS:
 		cs42xx8->slave_mode = true;
@@ -278,7 +260,7 @@ static int cs42xx8_hw_params(struct snd_pcm_substream *substream,
 	ratio[tx] = rate[tx] > 0 ? cs42xx8->sysclk / rate[tx] : 0;
 	ratio[!tx] = rate[!tx] > 0 ? cs42xx8->sysclk / rate[!tx] : 0;
 
-	/* Get functional mode for tx and rx according to rate */
+	 
 	for (i = 0; i < 2; i++) {
 		if (cs42xx8->slave_mode) {
 			fm[i] = CS42XX8_FM_AUTO;
@@ -298,7 +280,7 @@ static int cs42xx8_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	for (i = 0; i < ARRAY_SIZE(cs42xx8_ratios); i++) {
-		/* Is the ratio[tx] valid ? */
+		 
 		condition1 = ((fm[tx] == CS42XX8_FM_AUTO) ?
 			(cs42xx8_ratios[i].ratio[0] == ratio[tx] ||
 			cs42xx8_ratios[i].ratio[1] == ratio[tx] ||
@@ -310,7 +292,7 @@ static int cs42xx8_hw_params(struct snd_pcm_substream *substream,
 		if (!ratio[tx])
 			condition1 = true;
 
-		/* Is the ratio[!tx] valid ? */
+		 
 		condition2 = ((fm[!tx] == CS42XX8_FM_AUTO) ?
 			(cs42xx8_ratios[i].ratio[0] == ratio[!tx] ||
 			cs42xx8_ratios[i].ratio[1] == ratio[!tx] ||
@@ -320,10 +302,7 @@ static int cs42xx8_hw_params(struct snd_pcm_substream *substream,
 		if (!ratio[!tx])
 			condition2 = true;
 
-		/*
-		 * Both ratio[tx] and ratio[!tx] is valid, then we get
-		 * a proper MFreq.
-		 */
+		 
 		if (condition1 && condition2)
 			break;
 	}
@@ -352,7 +331,7 @@ static int cs42xx8_hw_free(struct snd_pcm_substream *substream,
 	struct cs42xx8_priv *cs42xx8 = snd_soc_component_get_drvdata(component);
 	bool tx = substream->stream == SNDRV_PCM_STREAM_PLAYBACK;
 
-	/* Clear stored rate */
+	 
 	cs42xx8->rate[tx] = 0;
 
 	regmap_update_bits(cs42xx8->regmap, CS42XX8_FUNCMOD,
@@ -401,31 +380,31 @@ static struct snd_soc_dai_driver cs42xx8_dai = {
 };
 
 static const struct reg_default cs42xx8_reg[] = {
-	{ 0x02, 0x00 },   /* Power Control */
-	{ 0x03, 0xF0 },   /* Functional Mode */
-	{ 0x04, 0x46 },   /* Interface Formats */
-	{ 0x05, 0x00 },   /* ADC Control & DAC De-Emphasis */
-	{ 0x06, 0x10 },   /* Transition Control */
-	{ 0x07, 0x00 },   /* DAC Channel Mute */
-	{ 0x08, 0x00 },   /* Volume Control AOUT1 */
-	{ 0x09, 0x00 },   /* Volume Control AOUT2 */
-	{ 0x0a, 0x00 },   /* Volume Control AOUT3 */
-	{ 0x0b, 0x00 },   /* Volume Control AOUT4 */
-	{ 0x0c, 0x00 },   /* Volume Control AOUT5 */
-	{ 0x0d, 0x00 },   /* Volume Control AOUT6 */
-	{ 0x0e, 0x00 },   /* Volume Control AOUT7 */
-	{ 0x0f, 0x00 },   /* Volume Control AOUT8 */
-	{ 0x10, 0x00 },   /* DAC Channel Invert */
-	{ 0x11, 0x00 },   /* Volume Control AIN1 */
-	{ 0x12, 0x00 },   /* Volume Control AIN2 */
-	{ 0x13, 0x00 },   /* Volume Control AIN3 */
-	{ 0x14, 0x00 },   /* Volume Control AIN4 */
-	{ 0x15, 0x00 },   /* Volume Control AIN5 */
-	{ 0x16, 0x00 },   /* Volume Control AIN6 */
-	{ 0x17, 0x00 },   /* ADC Channel Invert */
-	{ 0x18, 0x00 },   /* Status Control */
-	{ 0x1a, 0x00 },   /* Status Mask */
-	{ 0x1b, 0x00 },   /* MUTEC Pin Control */
+	{ 0x02, 0x00 },    
+	{ 0x03, 0xF0 },    
+	{ 0x04, 0x46 },    
+	{ 0x05, 0x00 },    
+	{ 0x06, 0x10 },    
+	{ 0x07, 0x00 },    
+	{ 0x08, 0x00 },    
+	{ 0x09, 0x00 },    
+	{ 0x0a, 0x00 },    
+	{ 0x0b, 0x00 },    
+	{ 0x0c, 0x00 },    
+	{ 0x0d, 0x00 },    
+	{ 0x0e, 0x00 },    
+	{ 0x0f, 0x00 },    
+	{ 0x10, 0x00 },    
+	{ 0x11, 0x00 },    
+	{ 0x12, 0x00 },    
+	{ 0x13, 0x00 },    
+	{ 0x14, 0x00 },    
+	{ 0x15, 0x00 },    
+	{ 0x16, 0x00 },    
+	{ 0x17, 0x00 },    
+	{ 0x18, 0x00 },    
+	{ 0x1a, 0x00 },    
+	{ 0x1b, 0x00 },    
 };
 
 static bool cs42xx8_volatile_register(struct device *dev, unsigned int reg)
@@ -480,7 +459,7 @@ static int cs42xx8_component_probe(struct snd_soc_component *component)
 		break;
 	}
 
-	/* Mute all DAC channels */
+	 
 	regmap_write(cs42xx8->regmap, CS42XX8_DACMUTE, CS42XX8_DACMUTE_ALL);
 
 	return 0;
@@ -564,17 +543,17 @@ int cs42xx8_probe(struct device *dev, struct regmap *regmap, struct cs42xx8_driv
 		return ret;
 	}
 
-	/* Make sure hardware reset done */
+	 
 	msleep(5);
 
-	/* Validate the chip ID */
+	 
 	ret = regmap_read(cs42xx8->regmap, CS42XX8_CHIPID, &val);
 	if (ret < 0) {
 		dev_err(dev, "failed to get device ID, ret = %d", ret);
 		goto err_enable;
 	}
 
-	/* The top four bits of the chip ID should be 0000 */
+	 
 	if (((val & CS42XX8_CHIPID_CHIP_ID_MASK) >> 4) != 0x00) {
 		dev_err(dev, "unmatched chip ID: %d\n",
 			(val & CS42XX8_CHIPID_CHIP_ID_MASK) >> 4);
@@ -587,7 +566,7 @@ int cs42xx8_probe(struct device *dev, struct regmap *regmap, struct cs42xx8_driv
 
 	cs42xx8_dai.name = cs42xx8->drvdata->name;
 
-	/* Each adc supports stereo input */
+	 
 	cs42xx8_dai.capture.channels_max = cs42xx8->drvdata->num_adcs * 2;
 
 	ret = devm_snd_soc_register_component(dev, &cs42xx8_driver, &cs42xx8_dai, 1);
@@ -627,7 +606,7 @@ static int cs42xx8_runtime_resume(struct device *dev)
 		goto err_clk;
 	}
 
-	/* Make sure hardware reset done */
+	 
 	msleep(5);
 
 	regcache_cache_only(cs42xx8->regmap, false);

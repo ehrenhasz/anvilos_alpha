@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * KVM_GET/SET_* tests
- *
- * Copyright (C) 2018, Red Hat, Inc.
- *
- * Tests for vCPU state save/restore, including nested guest state.
- */
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+ 
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -25,10 +19,10 @@
 void svm_l2_guest_code(void)
 {
 	GUEST_SYNC(4);
-	/* Exit to L1 */
+	 
 	vmcall();
 	GUEST_SYNC(6);
-	/* Done, exit to L1 and never come back.  */
+	 
 	vmcall();
 }
 
@@ -38,7 +32,7 @@ static void svm_l1_guest_code(struct svm_test_data *svm)
 	struct vmcb *vmcb = svm->vmcb;
 
 	GUEST_ASSERT(svm->vmcb_gpa);
-	/* Prepare for L2 execution. */
+	 
 	generic_svm_setup(svm, svm_l2_guest_code,
 			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
 
@@ -56,10 +50,10 @@ void vmx_l2_guest_code(void)
 {
 	GUEST_SYNC(6);
 
-	/* Exit to L1 */
+	 
 	vmcall();
 
-	/* L1 has now set up a shadow VMCS for us.  */
+	 
 	GUEST_ASSERT(vmreadz(GUEST_RIP) == 0xc0ffee);
 	GUEST_SYNC(10);
 	GUEST_ASSERT(vmreadz(GUEST_RIP) == 0xc0ffee);
@@ -69,7 +63,7 @@ void vmx_l2_guest_code(void)
 	GUEST_ASSERT(!vmwrite(GUEST_RIP, 0xc0ffffee));
 	GUEST_SYNC(12);
 
-	/* Done, exit to L1 and never come back.  */
+	 
 	vmcall();
 }
 
@@ -95,7 +89,7 @@ static void vmx_l1_guest_code(struct vmx_pages *vmx_pages)
 	GUEST_ASSERT(vmptrstz() == vmx_pages->vmcs_gpa);
 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
 
-	/* Check that the launched state is preserved.  */
+	 
 	GUEST_ASSERT(vmlaunch());
 
 	GUEST_ASSERT(!vmresume());
@@ -151,13 +145,7 @@ static void __attribute__((__flatten__)) guest_code(void *arg)
 
 		xsetbv(0, xgetbv(0) | supported_xcr0);
 
-		/*
-		 * Modify state for all supported xfeatures to take them out of
-		 * their "init" state, i.e. to make them show up in XSTATE_BV.
-		 *
-		 * Note off-by-default features, e.g. AMX, are out of scope for
-		 * this particular testcase as they have a different ABI.
-		 */
+		 
 		GUEST_ASSERT(supported_xcr0 & XFEATURE_MASK_FP);
 		asm volatile ("fincstp");
 
@@ -180,27 +168,10 @@ static void __attribute__((__flatten__)) guest_code(void *arg)
 			GUEST_ASSERT(supported_xcr0 & XFEATURE_MASK_BNDREGS);
 			GUEST_ASSERT(supported_xcr0 & XFEATURE_MASK_BNDCSR);
 
-			/*
-			 * Don't bother trying to get BNDCSR into the INUSE
-			 * state.  MSR_IA32_BNDCFGS doesn't count as it isn't
-			 * managed via XSAVE/XRSTOR, and BNDCFGU can only be
-			 * modified by XRSTOR.  Stuffing XSTATE_BV in the host
-			 * is simpler than doing XRSTOR here in the guest.
-			 *
-			 * However, temporarily enable MPX in BNDCFGS so that
-			 * BNDMOV actually loads BND1.  If MPX isn't *fully*
-			 * enabled, all MPX instructions are treated as NOPs.
-			 *
-			 * Hand encode "bndmov (%rax),%bnd1" as support for MPX
-			 * mnemonics/registers has been removed from gcc and
-			 * clang (and was never fully supported by clang).
-			 */
+			 
 			wrmsr(MSR_IA32_BNDCFGS, BIT_ULL(0));
 			asm volatile (".byte 0x66,0x0f,0x1a,0x08" :: "a" (bounds));
-			/*
-			 * Hand encode "bndmov %bnd1, (%rax)" to sanity check
-			 * that BND1 actually got loaded.
-			 */
+			 
 			asm volatile (".byte 0x66,0x0f,0x1b,0x08" :: "a" (output));
 			wrmsr(MSR_IA32_BNDCFGS, 0);
 
@@ -240,7 +211,7 @@ int main(int argc, char *argv[])
 	struct ucall uc;
 	int stage;
 
-	/* Create VM */
+	 
 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
 
 	vcpu_regs_get(vcpu, &regs1);
@@ -264,7 +235,7 @@ int main(int argc, char *argv[])
 		switch (get_ucall(vcpu, &uc)) {
 		case UCALL_ABORT:
 			REPORT_GUEST_ASSERT(uc);
-			/* NOT REACHED */
+			 
 		case UCALL_SYNC:
 			break;
 		case UCALL_DONE:
@@ -273,7 +244,7 @@ int main(int argc, char *argv[])
 			TEST_FAIL("Unknown ucall %lu", uc.cmd);
 		}
 
-		/* UCALL_SYNC is handled here.  */
+		 
 		TEST_ASSERT(!strcmp((const char *)uc.args[0], "hello") &&
 			    uc.args[1] == stage, "Stage %d: Unexpected register values vmexit, got %lx",
 			    stage, (ulong)uc.args[1]);
@@ -284,24 +255,11 @@ int main(int argc, char *argv[])
 
 		kvm_vm_release(vm);
 
-		/* Restore state in a new VM.  */
+		 
 		vcpu = vm_recreate_with_one_vcpu(vm);
 		vcpu_load_state(vcpu, state);
 
-		/*
-		 * Restore XSAVE state in a dummy vCPU, first without doing
-		 * KVM_SET_CPUID2, and then with an empty guest CPUID.  Except
-		 * for off-by-default xfeatures, e.g. AMX, KVM is supposed to
-		 * allow KVM_SET_XSAVE regardless of guest CPUID.  Manually
-		 * load only XSAVE state, MSRs in particular have a much more
-		 * convoluted ABI.
-		 *
-		 * Load two versions of XSAVE state: one with the actual guest
-		 * XSAVE state, and one with all supported features forced "on"
-		 * in xstate_bv, e.g. to ensure that KVM allows loading all
-		 * supported features, even if something goes awry in saving
-		 * the original snapshot.
-		 */
+		 
 		xstate_bv = (void *)&((uint8_t *)state->xsave->region)[512];
 		saved_xstate_bv = *xstate_bv;
 

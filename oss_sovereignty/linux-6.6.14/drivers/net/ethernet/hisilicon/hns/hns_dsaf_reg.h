@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+ 
+ 
 
 #ifndef _DSAF_REG_H_
 #define _DSAF_REG_H_
@@ -37,7 +35,7 @@
 #define DSAF_SW_PORT_NUM	8
 #define DSAF_TOTAL_QUEUE_NUM	129
 
-/* reserved a tcam entry for each port to support promisc by fuzzy match */
+ 
 #define DSAFV2_MAC_FUZZY_TCAM_NUM    DSAF_MAX_PORT_NUM
 
 #define DSAF_TCAM_SUM		512
@@ -100,7 +98,7 @@
 #define DSAF_SUB_SC_PPE_RESET_ST_REG			0x5A24
 #define DSAF_SUB_SC_RCB_PPE_COM_RESET_ST_REG		0x5A44
 
-/*serdes offset**/
+ 
 #define HNS_MAC_HILINK3_REG DSAF_SUB_SC_HILINK3_CRG_CTRL0_REG
 #define HNS_MAC_HILINK4_REG DSAF_SUB_SC_HILINK4_CRG_CTRL0_REG
 #define HNS_MAC_HILINK3V2_REG DSAF_SUB_SC_HILINK3_CRG_CTRL1_REG
@@ -1092,4 +1090,4 @@ static inline u32 dsaf_get_reg_field(u8 __iomem *base, u32 reg, u32 mask,
 #define hns_mac_reg_read64(drv, offset) \
 	readq((__iomem void *)(((drv)->io_base + 0xc00 + (offset))))
 
-#endif	/* _DSAF_REG_H */
+#endif	 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <stdio.h>
 #include <stdint.h>
@@ -78,14 +78,11 @@ int main(int argc, char **argv)
 
 	path = argv[1];
 
-	/* attributes: EFI_VARIABLE_NON_VOLATILE |
-	 *		EFI_VARIABLE_BOOTSERVICE_ACCESS |
-	 *		EFI_VARIABLE_RUNTIME_ACCESS
-	 */
+	 
 	*(uint32_t *)buf = 0x7;
 	buf[4] = 0;
 
-	/* create a test variable */
+	 
 	fd = open(path, O_WRONLY | O_CREAT, 0600);
 	if (fd < 0) {
 		perror("open(O_WRONLY)");

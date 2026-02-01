@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * APM X-Gene SoC EDAC (error detection and correction)
- *
- * Copyright (c) 2015, Applied Micro Circuits Corporation
- * Author: Feng Kan <fkan@apm.com>
- *         Loc Ho <lho@apm.com>
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <linux/edac.h>
@@ -20,7 +14,7 @@
 
 #define EDAC_MOD_STR			"xgene_edac"
 
-/* Global error configuration status registers (CSR) */
+ 
 #define PCPHPERRINTSTS			0x0000
 #define PCPHPERRINTMSK			0x0004
 #define  MCU_CTL_ERR_MASK		BIT(12)
@@ -92,7 +86,7 @@ static void xgene_edac_pcp_setbits(struct xgene_edac *edac, u32 reg,
 	spin_unlock(&edac->lock);
 }
 
-/* Memory controller error CSR */
+ 
 #define MCU_MAX_RANK			8
 #define MCU_RANK_STRIDE			0x40
 
@@ -192,10 +186,10 @@ static void xgene_edac_mc_check(struct mem_ctl_info *mci)
 	for (rank = 0; rank < MCU_MAX_RANK; rank++) {
 		reg = readl(ctx->mcu_csr + MCUESRR0 + rank * MCU_RANK_STRIDE);
 
-		/* Detect uncorrectable memory error */
+		 
 		if (reg & (MCU_ESRR_DEMANDUCERR_MASK |
 			   MCU_ESRR_BACKUCERR_MASK)) {
-			/* Detected uncorrectable memory error */
+			 
 			edac_mc_chipset_printk(mci, KERN_ERR, "X-Gene",
 				"MCU uncorrectable error at rank %d\n", rank);
 
@@ -203,7 +197,7 @@ static void xgene_edac_mc_check(struct mem_ctl_info *mci)
 				1, 0, 0, 0, 0, 0, -1, mci->ctl_name, "");
 		}
 
-		/* Detect correctable memory error */
+		 
 		if (reg & MCU_ESRR_CERR_MASK) {
 			bank = readl(ctx->mcu_csr + MCUEBLRR0 +
 				     rank * MCU_RANK_STRIDE);
@@ -222,7 +216,7 @@ static void xgene_edac_mc_check(struct mem_ctl_info *mci)
 				1, 0, 0, 0, 0, 0, -1, mci->ctl_name, "");
 		}
 
-		/* Clear all error registers */
+		 
 		writel(0x0, ctx->mcu_csr + MCUEBLRR0 + rank * MCU_RANK_STRIDE);
 		writel(0x0, ctx->mcu_csr + MCUERCRR0 + rank * MCU_RANK_STRIDE);
 		writel(0x0, ctx->mcu_csr + MCUSBECNT0 +
@@ -230,7 +224,7 @@ static void xgene_edac_mc_check(struct mem_ctl_info *mci)
 		writel(reg, ctx->mcu_csr + MCUESRR0 + rank * MCU_RANK_STRIDE);
 	}
 
-	/* Detect memory controller error */
+	 
 	reg = readl(ctx->mcu_csr + MCUGESR);
 	if (reg) {
 		if (reg & MCU_GESR_ADDRNOMATCH_ERR_MASK)
@@ -254,22 +248,15 @@ static void xgene_edac_mc_irq_ctl(struct mem_ctl_info *mci, bool enable)
 
 	mutex_lock(&ctx->edac->mc_lock);
 
-	/*
-	 * As there is only single bit for enable error and interrupt mask,
-	 * we must only enable top level interrupt after all MCUs are
-	 * registered. Otherwise, if there is an error and the corresponding
-	 * MCU has not registered, the interrupt will never get cleared. To
-	 * determine all MCU have registered, we will keep track of active
-	 * MCUs and registered MCUs.
-	 */
+	 
 	if (enable) {
-		/* Set registered MCU bit */
+		 
 		ctx->edac->mc_registered_mask |= 1 << ctx->mcu_id;
 
-		/* Enable interrupt after all active MCU registered */
+		 
 		if (ctx->edac->mc_registered_mask ==
 		    ctx->edac->mc_active_mask) {
-			/* Enable memory controller top level interrupt */
+			 
 			xgene_edac_pcp_clrbits(ctx->edac, PCPHPERRINTMSK,
 					       MCU_UNCORR_ERR_MASK |
 					       MCU_CTL_ERR_MASK);
@@ -277,7 +264,7 @@ static void xgene_edac_mc_irq_ctl(struct mem_ctl_info *mci, bool enable)
 					       MCU_CORR_ERR_MASK);
 		}
 
-		/* Enable MCU interrupt and error reporting */
+		 
 		val = readl(ctx->mcu_csr + MCUGECR);
 		val |= MCU_GECR_DEMANDUCINTREN_MASK |
 		       MCU_GECR_BACKUCINTREN_MASK |
@@ -285,7 +272,7 @@ static void xgene_edac_mc_irq_ctl(struct mem_ctl_info *mci, bool enable)
 		       MUC_GECR_MCUADDRERREN_MASK;
 		writel(val, ctx->mcu_csr + MCUGECR);
 	} else {
-		/* Disable MCU interrupt */
+		 
 		val = readl(ctx->mcu_csr + MCUGECR);
 		val &= ~(MCU_GECR_DEMANDUCINTREN_MASK |
 			 MCU_GECR_BACKUCINTREN_MASK |
@@ -293,13 +280,13 @@ static void xgene_edac_mc_irq_ctl(struct mem_ctl_info *mci, bool enable)
 			 MUC_GECR_MCUADDRERREN_MASK);
 		writel(val, ctx->mcu_csr + MCUGECR);
 
-		/* Disable memory controller top level interrupt */
+		 
 		xgene_edac_pcp_setbits(ctx->edac, PCPHPERRINTMSK,
 				       MCU_UNCORR_ERR_MASK | MCU_CTL_ERR_MASK);
 		xgene_edac_pcp_setbits(ctx->edac, PCPLPERRINTMSK,
 				       MCU_CORR_ERR_MASK);
 
-		/* Clear registered MCU bit */
+		 
 		ctx->edac->mc_registered_mask &= ~(1 << ctx->mcu_id);
 	}
 
@@ -315,24 +302,18 @@ static int xgene_edac_mc_is_active(struct xgene_edac_mc_ctx *ctx, int mc_idx)
 		return 0;
 
 	if (reg & CSW_CSWCR_DUALMCB_MASK) {
-		/*
-		 * Dual MCB active - Determine if all 4 active or just MCU0
-		 * and MCU2 active
-		 */
+		 
 		if (regmap_read(ctx->edac->mcbb_map, MCBADDRMR, &reg))
 			return 0;
 		mcu_mask = (reg & MCBADDRMR_DUALMCU_MODE_MASK) ? 0xF : 0x5;
 	} else {
-		/*
-		 * Single MCB active - Determine if MCU0/MCU1 or just MCU0
-		 * active
-		 */
+		 
 		if (regmap_read(ctx->edac->mcba_map, MCBADDRMR, &reg))
 			return 0;
 		mcu_mask = (reg & MCBADDRMR_DUALMCU_MODE_MASK) ? 0x3 : 0x1;
 	}
 
-	/* Save active MC mask if hasn't set already */
+	 
 	if (!ctx->edac->mc_active_mask)
 		ctx->edac->mc_active_mask = mcu_mask;
 
@@ -366,7 +347,7 @@ static int xgene_edac_mc_add(struct xgene_edac *edac, struct device_node *np)
 		goto err_group;
 	}
 
-	/* Ignore non-active MCU */
+	 
 	if (of_property_read_u32(np, "memory-controller", &tmp_ctx.mcu_id)) {
 		dev_err(edac->dev, "no memory-controller property\n");
 		rc = -ENODEV;
@@ -391,7 +372,7 @@ static int xgene_edac_mc_add(struct xgene_edac *edac, struct device_node *np)
 	}
 
 	ctx = mci->pvt_info;
-	*ctx = tmp_ctx;		/* Copy over resource value */
+	*ctx = tmp_ctx;		 
 	ctx->name = "xgene_edac_mc_err";
 	ctx->mci = mci;
 	mci->pdev = &mci->dev;
@@ -442,7 +423,7 @@ static int xgene_edac_mc_remove(struct xgene_edac_mc_ctx *mcu)
 	return 0;
 }
 
-/* CPU L1/L2 error CSR */
+ 
 #define MAX_CPU_PER_PMD				2
 #define CPU_CSR_STRIDE				0x00100000
 #define CPU_L2C_PAGE				0x000D0000
@@ -500,11 +481,7 @@ static int xgene_edac_mc_remove(struct xgene_edac_mc_ctx *mcu)
 #define CPUX_L2C_L2RTOAHR_PAGE_OFFSET		0x001c
 #define MEMERR_L2C_L2ESRA_PAGE_OFFSET		0x0804
 
-/*
- * Processor Module Domain (PMD) context - Context for a pair of processors.
- * Each PMD consists of 2 CPUs and a shared L2 cache. Each CPU consists of
- * its own L1 cache.
- */
+ 
 struct xgene_edac_pmd_ctx {
 	struct list_head	next;
 	struct device		ddev;
@@ -557,7 +534,7 @@ static void xgene_edac_pmd_l1_check(struct edac_device_ctl_info *edac_dev,
 		break;
 	}
 
-	/* Clear any HW errors */
+	 
 	writel(val, pg_f + MEMERR_CPU_ICFESR_PAGE_OFFSET);
 
 	if (val & (MEMERR_CPU_ICFESR_CERR_MASK |
@@ -601,7 +578,7 @@ chk_lsu:
 		break;
 	}
 
-	/* Clear any HW errors */
+	 
 	writel(val, pg_f + MEMERR_CPU_LSUESR_PAGE_OFFSET);
 
 	if (val & (MEMERR_CPU_LSUESR_CERR_MASK |
@@ -650,7 +627,7 @@ chk_mmu:
 		break;
 	}
 
-	/* Clear any HW errors */
+	 
 	writel(val, pg_f + MEMERR_CPU_MMUESR_PAGE_OFFSET);
 
 	edac_device_handle_ce(edac_dev, 0, 0, edac_dev->ctl_name);
@@ -665,7 +642,7 @@ static void xgene_edac_pmd_l2_check(struct edac_device_ctl_info *edac_dev)
 	u32 val_lo;
 	u32 val;
 
-	/* Check L2 */
+	 
 	pg_e = ctx->pmd_csr + CPU_MEMERR_L2C_PAGE;
 	val = readl(pg_e + MEMERR_L2C_L2ESR_PAGE_OFFSET);
 	if (!val)
@@ -707,7 +684,7 @@ static void xgene_edac_pmd_l2_check(struct edac_device_ctl_info *edac_dev)
 		break;
 	}
 
-	/* Clear any HW errors */
+	 
 	writel(val, pg_e + MEMERR_L2C_L2ESR_PAGE_OFFSET);
 
 	if (val & (MEMERR_L2C_L2ESR_ERR_MASK |
@@ -718,7 +695,7 @@ static void xgene_edac_pmd_l2_check(struct edac_device_ctl_info *edac_dev)
 		edac_device_handle_ue(edac_dev, 0, 0, edac_dev->ctl_name);
 
 chk_l2c:
-	/* Check if any memory request timed out on L2 cache */
+	 
 	pg_d = ctx->pmd_csr + CPU_L2C_PAGE;
 	val = readl(pg_d + CPUX_L2C_L2RTOSR_PAGE_OFFSET);
 	if (val) {
@@ -741,11 +718,11 @@ static void xgene_edac_pmd_check(struct edac_device_ctl_info *edac_dev)
 	if (!((PMD0_MERR_MASK << ctx->pmd) & pcp_hp_stat))
 		return;
 
-	/* Check CPU L1 error */
+	 
 	for (i = 0; i < MAX_CPU_PER_PMD; i++)
 		xgene_edac_pmd_l1_check(edac_dev, i);
 
-	/* Check CPU L2 error */
+	 
 	xgene_edac_pmd_l2_check(edac_dev);
 }
 
@@ -756,10 +733,7 @@ static void xgene_edac_pmd_cpu_hw_cfg(struct edac_device_ctl_info *edac_dev,
 	void __iomem *pg_f = ctx->pmd_csr + cpu * CPU_CSR_STRIDE +
 			     CPU_MEMERR_CPU_PAGE;
 
-	/*
-	 * Enable CPU memory error:
-	 *  MEMERR_CPU_ICFESRA, MEMERR_CPU_LSUESRA, and MEMERR_CPU_MMUESRA
-	 */
+	 
 	writel(0x00000301, pg_f + MEMERR_CPU_ICFECR_PAGE_OFFSET);
 	writel(0x00000301, pg_f + MEMERR_CPU_LSUECR_PAGE_OFFSET);
 	writel(0x00000101, pg_f + MEMERR_CPU_MMUECR_PAGE_OFFSET);
@@ -771,9 +745,9 @@ static void xgene_edac_pmd_hw_cfg(struct edac_device_ctl_info *edac_dev)
 	void __iomem *pg_d = ctx->pmd_csr + CPU_L2C_PAGE;
 	void __iomem *pg_e = ctx->pmd_csr + CPU_MEMERR_L2C_PAGE;
 
-	/* Enable PMD memory error - MEMERR_L2C_L2ECR and L2C_L2RTOCR */
+	 
 	writel(0x00000703, pg_e + MEMERR_L2C_L2ECR_PAGE_OFFSET);
-	/* Configure L2C HW request time out feature if supported */
+	 
 	if (ctx->version > 1)
 		writel(0x00000119, pg_d + CPUX_L2C_L2RTOCR_PAGE_OFFSET);
 }
@@ -784,7 +758,7 @@ static void xgene_edac_pmd_hw_ctl(struct edac_device_ctl_info *edac_dev,
 	struct xgene_edac_pmd_ctx *ctx = edac_dev->pvt_info;
 	int i;
 
-	/* Enable PMD error interrupt */
+	 
 	if (edac_dev->op_state == OP_RUNNING_INTERRUPT) {
 		if (enable)
 			xgene_edac_pcp_clrbits(ctx->edac, PCPHPERRINTMSK,
@@ -797,7 +771,7 @@ static void xgene_edac_pmd_hw_ctl(struct edac_device_ctl_info *edac_dev,
 	if (enable) {
 		xgene_edac_pmd_hw_cfg(edac_dev);
 
-		/* Two CPUs per a PMD */
+		 
 		for (i = 0; i < MAX_CPU_PER_PMD; i++)
 			xgene_edac_pmd_cpu_hw_cfg(edac_dev, i);
 	}
@@ -897,7 +871,7 @@ static int xgene_edac_pmd_add(struct xgene_edac *edac, struct device_node *np,
 	if (!devres_open_group(edac->dev, xgene_edac_pmd_add, GFP_KERNEL))
 		return -ENOMEM;
 
-	/* Determine if this PMD is disabled */
+	 
 	if (of_property_read_u32(np, "pmd-controller", &pmd)) {
 		dev_err(edac->dev, "no pmd-controller property\n");
 		rc = -ENODEV;
@@ -986,7 +960,7 @@ static int xgene_edac_pmd_remove(struct xgene_edac_pmd_ctx *pmd)
 	return 0;
 }
 
-/* L3 Error device */
+ 
 #define L3C_ESR				(0x0A * 4)
 #define  L3C_ESR_DATATAG_MASK		BIT(9)
 #define  L3C_ESR_MULTIHIT_MASK		BIT(8)
@@ -1024,10 +998,7 @@ struct xgene_edac_dev_ctx {
 	int			version;
 };
 
-/*
- * Version 1 of the L3 controller has broken single bit correctable logic for
- * certain error syndromes. Log them as uncorrectable in that case.
- */
+ 
 static bool xgene_edac_l3_promote_to_uc_err(u32 l3cesr, u32 l3celr)
 {
 	if (l3cesr & L3C_ESR_DATATAG_MASK) {
@@ -1086,17 +1057,14 @@ static void xgene_edac_l3_check(struct edac_device_ctl_info *edac_dev)
 			"L3C tag error syndrome 0x%X Way of Tag 0x%X Agent ID 0x%X Operation type 0x%X\n",
 			L3C_ELR_ERRSYN(l3celr), L3C_ELR_ERRWAY(l3celr),
 			L3C_ELR_AGENTID(l3celr), L3C_ELR_OPTYPE(l3celr));
-	/*
-	 * NOTE: Address [41:38] in L3C_ELR_PADDRHIGH(l3celr).
-	 *       Address [37:6] in l3caelr. Lower 6 bits are zero.
-	 */
+	 
 	dev_err(edac_dev->dev, "L3C error address 0x%08X.%08X bank %d\n",
 		L3C_ELR_PADDRHIGH(l3celr) << 6 | (l3caelr >> 26),
 		(l3caelr & 0x3FFFFFFF) << 6, L3C_BELR_BANK(l3cbelr));
 	dev_err(edac_dev->dev,
 		"L3C error status register value 0x%X\n", l3cesr);
 
-	/* Clear L3C error interrupt */
+	 
 	writel(0, ctx->dev_csr + L3C_ESR);
 
 	if (ctx->version <= 1 &&
@@ -1118,7 +1086,7 @@ static void xgene_edac_l3_hw_init(struct edac_device_ctl_info *edac_dev,
 
 	val = readl(ctx->dev_csr + L3C_ECR);
 	val |= L3C_UCERREN | L3C_CERREN;
-	/* On disable, we just disable interrupt but keep error enabled */
+	 
 	if (edac_dev->op_state == OP_RUNNING_INTERRUPT) {
 		if (enable)
 			val |= L3C_ECR_UCINTREN | L3C_ECR_CINTREN;
@@ -1128,7 +1096,7 @@ static void xgene_edac_l3_hw_init(struct edac_device_ctl_info *edac_dev,
 	writel(val, ctx->dev_csr + L3C_ECR);
 
 	if (edac_dev->op_state == OP_RUNNING_INTERRUPT) {
-		/* Enable/disable L3 error top level interrupt */
+		 
 		if (enable) {
 			xgene_edac_pcp_clrbits(ctx->edac, PCPHPERRINTMSK,
 					       L3C_UNCORR_ERR_MASK);
@@ -1150,7 +1118,7 @@ static ssize_t xgene_edac_l3_inject_ctrl_write(struct file *file,
 	struct edac_device_ctl_info *edac_dev = file->private_data;
 	struct xgene_edac_dev_ctx *ctx = edac_dev->pvt_info;
 
-	/* Generate all errors */
+	 
 	writel(0xFFFFFFFF, ctx->dev_csr + L3C_ESR);
 	return count;
 }
@@ -1269,7 +1237,7 @@ static int xgene_edac_l3_remove(struct xgene_edac_dev_ctx *l3)
 	return 0;
 }
 
-/* SoC error device */
+ 
 #define IOBAXIS0TRANSERRINTSTS		0x0000
 #define  IOBAXIS0_M_ILLEGAL_ACCESS_MASK	BIT(1)
 #define  IOBAXIS0_ILLEGAL_ACCESS_MASK	BIT(0)
@@ -1340,7 +1308,7 @@ static int xgene_edac_l3_remove(struct xgene_edac_dev_ctx *l3)
 #define GLBL_MDED_ERRH			0x0848
 #define GLBL_MDED_ERRHMASK		0x084c
 
-/* IO Bus Registers */
+ 
 #define RBCSR				0x0000
 #define STICKYERR_MASK			BIT(0)
 #define RBEIR				0x0008
@@ -1393,7 +1361,7 @@ static void xgene_edac_iob_gic_report(struct edac_device_ctl_info *edac_dev)
 	u32 reg;
 	u32 info;
 
-	/* GIC transaction error interrupt */
+	 
 	reg = readl(ctx->dev_csr + XGICTRANSERRINTSTS);
 	if (!reg)
 		goto chk_iob_err;
@@ -1413,7 +1381,7 @@ static void xgene_edac_iob_gic_report(struct edac_device_ctl_info *edac_dev)
 	writel(reg, ctx->dev_csr + XGICTRANSERRINTSTS);
 
 chk_iob_err:
-	/* IOB memory error */
+	 
 	reg = readl(ctx->dev_csr + GLBL_ERR_STS);
 	if (!reg)
 		return;
@@ -1467,17 +1435,11 @@ static void xgene_edac_rb_report(struct edac_device_ctl_info *edac_dev)
 	u32 err_addr_hi;
 	u32 reg;
 
-	/* If the register bus resource isn't available, just skip it */
+	 
 	if (!ctx->edac->rb_map)
 		goto rb_skip;
 
-	/*
-	 * Check RB access errors
-	 * 1. Out of range
-	 * 2. Un-implemented page
-	 * 3. Un-aligned access
-	 * 4. Offline slave IP
-	 */
+	 
 	if (regmap_read(ctx->edac->rb_map, RBCSR, &reg))
 		return;
 	if (reg & STICKYERR_MASK) {
@@ -1510,7 +1472,7 @@ static void xgene_edac_rb_report(struct edac_device_ctl_info *edac_dev)
 	}
 rb_skip:
 
-	/* IOB Bridge agent transaction error interrupt */
+	 
 	reg = readl(ctx->dev_csr + IOBBATRANSERRINTSTS);
 	if (!reg)
 		return;
@@ -1576,7 +1538,7 @@ static void xgene_edac_pa_report(struct edac_device_ctl_info *edac_dev)
 	u32 err_addr_hi;
 	u32 reg;
 
-	/* IOB Processing agent transaction error interrupt */
+	 
 	reg = readl(ctx->dev_csr + IOBPATRANSERRINTSTS);
 	if (!reg)
 		goto chk_iob_axi0;
@@ -1603,7 +1565,7 @@ static void xgene_edac_pa_report(struct edac_device_ctl_info *edac_dev)
 	writel(reg, ctx->dev_csr + IOBPATRANSERRINTSTS);
 
 chk_iob_axi0:
-	/* IOB AXI0 Error */
+	 
 	reg = readl(ctx->dev_csr + IOBAXIS0TRANSERRINTSTS);
 	if (!reg)
 		goto chk_iob_axi1;
@@ -1617,7 +1579,7 @@ chk_iob_axi0:
 	writel(reg, ctx->dev_csr + IOBAXIS0TRANSERRINTSTS);
 
 chk_iob_axi1:
-	/* IOB AXI1 Error */
+	 
 	reg = readl(ctx->dev_csr + IOBAXIS1TRANSERRINTSTS);
 	if (!reg)
 		return;
@@ -1688,7 +1650,7 @@ static void xgene_edac_soc_hw_init(struct edac_device_ctl_info *edac_dev,
 {
 	struct xgene_edac_dev_ctx *ctx = edac_dev->pvt_info;
 
-	/* Enable SoC IP error interrupt */
+	 
 	if (edac_dev->op_state == OP_RUNNING_INTERRUPT) {
 		if (enable) {
 			xgene_edac_pcp_clrbits(ctx->edac, PCPHPERRINTMSK,
@@ -1892,10 +1854,7 @@ static int xgene_edac_probe(struct platform_device *pdev)
 		goto out_err;
 	}
 
-	/*
-	 * NOTE: The register bus resource is optional for compatibility
-	 * reason.
-	 */
+	 
 	edac->rb_map = syscon_regmap_lookup_by_phandle(pdev->dev.of_node,
 						       "regmap-rb");
 	if (IS_ERR(edac->rb_map)) {
@@ -2007,7 +1966,7 @@ static int __init xgene_edac_init(void)
 	if (ghes_get_devices())
 		return -EBUSY;
 
-	/* Make sure error reporting method is sane */
+	 
 	switch (edac_op_state) {
 	case EDAC_OPSTATE_POLL:
 	case EDAC_OPSTATE_INT:

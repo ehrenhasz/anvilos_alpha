@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2016-2017 Qualcomm Atheros, Inc. All rights reserved.
- * Copyright (c) 2015 The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -23,7 +20,7 @@ static const struct of_device_id ath10k_ahb_of_match[] = {
 MODULE_DEVICE_TABLE(of, ath10k_ahb_of_match);
 
 #define QCA4019_SRAM_ADDR      0x000C0000
-#define QCA4019_SRAM_LEN       0x00040000 /* 256 kb */
+#define QCA4019_SRAM_LEN       0x00040000  
 
 static inline struct ath10k_ahb *ath10k_ahb_priv(struct ath10k *ar)
 {
@@ -280,12 +277,12 @@ static void ath10k_ahb_halt_axi_bus(struct ath10k *ar, u32 haltreq_reg,
 	unsigned long timeout;
 	u32 val;
 
-	/* Issue halt axi bus request */
+	 
 	val = ath10k_ahb_tcsr_read32(ar, haltreq_reg);
 	val |= AHB_AXI_BUS_HALT_REQ;
 	ath10k_ahb_tcsr_write32(ar, haltreq_reg, val);
 
-	/* Wait for axi bus halted ack */
+	 
 	timeout = jiffies + msecs_to_jiffies(ATH10K_AHB_AXI_BUS_HALT_TIMEOUT);
 	do {
 		val = ath10k_ahb_tcsr_read32(ar, haltack_reg);
@@ -369,9 +366,7 @@ static void ath10k_ahb_halt_chip(struct ath10k *ar)
 		ath10k_err(ar, "failed to assert cpu init rst: %d\n", ret);
 	msleep(10);
 
-	/* Clear halt req and core clock disable req before
-	 * deasserting wifi core reset.
-	 */
+	 
 	val = ath10k_ahb_tcsr_read32(ar, haltreq_reg);
 	val &= ~AHB_AXI_BUS_HALT_REQ;
 	ath10k_ahb_tcsr_write32(ar, haltreq_reg, val);
@@ -556,13 +551,7 @@ static int ath10k_ahb_prepare_device(struct ath10k *ar)
 		return ret;
 	}
 
-	/* Clock for the target is supplied from outside of target (ie,
-	 * external clock module controlled by the host). Target needs
-	 * to know what frequency target cpu is configured which is needed
-	 * for target internal use. Read target cpu frequency info from
-	 * gcc register and write into target's scratch register where
-	 * target expects this information.
-	 */
+	 
 	val = ath10k_ahb_gcc_read32(ar, ATH10K_AHB_GCC_FEPLL_PLL_DIV);
 	ath10k_ahb_write32(ar, ATH10K_AHB_WIFI_SCRATCH_5_REG, val);
 
@@ -689,9 +678,7 @@ static u32 ath10k_ahb_qca4019_targ_cpu_to_ce_addr(struct ath10k *ar, u32 addr)
 
 	if (region >= QCA4019_SRAM_ADDR && region <=
 	    (QCA4019_SRAM_ADDR + QCA4019_SRAM_LEN)) {
-		/* SRAM contents for QCA4019 can be directly accessed and
-		 * no conversions are required
-		 */
+		 
 		val |= region;
 	} else {
 		val |= 0x100000 | region;

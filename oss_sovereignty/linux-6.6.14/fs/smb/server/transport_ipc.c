@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/slab.h>
@@ -259,10 +257,7 @@ static int handle_response(int type, void *payload, size_t sz)
 			continue;
 
 		entry->response = NULL;
-		/*
-		 * Response message type value should be equal to
-		 * request message type + 1.
-		 */
+		 
 		if (entry->type + 1 != type) {
 			pr_err("Waiting for IPC type %d, got %d. Ignore.\n",
 			       entry->type + 1, type);

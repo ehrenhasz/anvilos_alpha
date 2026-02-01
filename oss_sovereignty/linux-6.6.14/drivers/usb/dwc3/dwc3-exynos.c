@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-exynos.c - Samsung Exynos DWC3 Specific Glue layer
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Author: Anton Tikhomirov <av.tikhomirov@samsung.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -237,7 +230,7 @@ static const struct dev_pm_ops dwc3_exynos_dev_pm_ops = {
 #define DEV_PM_OPS	(&dwc3_exynos_dev_pm_ops)
 #else
 #define DEV_PM_OPS	NULL
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static struct platform_driver dwc3_exynos_driver = {
 	.probe		= dwc3_exynos_probe,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk-provider.h>
@@ -97,7 +95,7 @@ static struct clk_branch lcc_q6ss_bcr_sleep_clk = {
 	},
 };
 
-/* TCSR clock */
+ 
 static struct clk_branch tcsr_lcc_csr_cbcr_clk = {
 	.halt_reg = 0x8008,
 	.halt_check = BRANCH_VOTED,

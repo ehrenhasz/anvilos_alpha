@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * dlmconvert.h
- *
- * Copyright (C) 2004 Oracle.  All rights reserved.
- */
+ 
+ 
 
 #ifndef DLMCONVERT_H
 #define DLMCONVERT_H

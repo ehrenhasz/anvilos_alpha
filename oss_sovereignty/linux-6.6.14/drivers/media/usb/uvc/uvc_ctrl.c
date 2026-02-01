@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *      uvc_ctrl.c  --  USB Video Class driver - Controls
- *
- *      Copyright (C) 2005-2010
- *          Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <asm/barrier.h>
 #include <linux/bitops.h>
@@ -32,9 +27,7 @@
 #define UVC_CTRL_DATA_DEF	5
 #define UVC_CTRL_DATA_LAST	6
 
-/* ------------------------------------------------------------------------
- * Controls
- */
+ 
 
 static const struct uvc_control_info uvc_ctrls[] = {
 	{
@@ -367,20 +360,7 @@ static const u32 uvc_control_classes[] = {
 
 static const int exposure_auto_mapping[] = { 2, 1, 4, 8 };
 
-/*
- * This function translates the V4L2 menu index @idx, as exposed to userspace as
- * the V4L2 control value, to the corresponding UVC control value used by the
- * device. The custom menu_mapping in the control @mapping is used when
- * available, otherwise the function assumes that the V4L2 and UVC values are
- * identical.
- *
- * For controls of type UVC_CTRL_DATA_TYPE_BITMASK, the UVC control value is
- * expressed as a bitmask and is thus guaranteed to have a single bit set.
- *
- * The function returns -EINVAL if the V4L2 menu index @idx isn't valid for the
- * control, which includes all controls whose type isn't UVC_CTRL_DATA_TYPE_ENUM
- * or UVC_CTRL_DATA_TYPE_BITMASK.
- */
+ 
 static int uvc_mapping_get_menu_value(const struct uvc_control_mapping *mapping,
 				      u32 idx)
 {
@@ -776,7 +756,7 @@ const struct uvc_control_mapping uvc_ctrl_power_line_mapping_uvc11 = {
 
 static const struct uvc_control_mapping *uvc_ctrl_mappings_uvc11[] = {
 	&uvc_ctrl_power_line_mapping_uvc11,
-	NULL, /* Sentinel */
+	NULL,  
 };
 
 static const struct uvc_control_mapping uvc_ctrl_power_line_mapping_uvc15 = {
@@ -793,12 +773,10 @@ static const struct uvc_control_mapping uvc_ctrl_power_line_mapping_uvc15 = {
 
 static const struct uvc_control_mapping *uvc_ctrl_mappings_uvc15[] = {
 	&uvc_ctrl_power_line_mapping_uvc15,
-	NULL, /* Sentinel */
+	NULL,  
 };
 
-/* ------------------------------------------------------------------------
- * Utility functions
- */
+ 
 
 static inline u8 *uvc_ctrl_data(struct uvc_control *ctrl, int id)
 {
@@ -815,12 +793,7 @@ static inline void uvc_clear_bit(u8 *data, int bit)
 	data[bit >> 3] &= ~(1 << (bit & 7));
 }
 
-/*
- * Extract the bit string specified by mapping->offset and mapping->size
- * from the little-endian data stored at 'data' and return the result as
- * a signed 32bit integer. Sign extension will be performed if the mapping
- * references a signed data type.
- */
+ 
 static s32 uvc_get_le_value(struct uvc_control_mapping *mapping,
 	u8 query, const u8 *data)
 {
@@ -845,17 +818,14 @@ static s32 uvc_get_le_value(struct uvc_control_mapping *mapping,
 		data++;
 	}
 
-	/* Sign-extend the value if needed. */
+	 
 	if (mapping->data_type == UVC_CTRL_DATA_TYPE_SIGNED)
 		value |= -(value & (1 << (mapping->size - 1)));
 
 	return value;
 }
 
-/*
- * Set the bit string specified by mapping->offset and mapping->size
- * in the little-endian data stored at 'data' to the value 'value'.
- */
+ 
 static void uvc_set_le_value(struct uvc_control_mapping *mapping,
 	s32 value, u8 *data)
 {
@@ -863,12 +833,7 @@ static void uvc_set_le_value(struct uvc_control_mapping *mapping,
 	int offset = mapping->offset;
 	u8 mask;
 
-	/*
-	 * According to the v4l2 spec, writing any value to a button control
-	 * should result in the action belonging to the button control being
-	 * triggered. UVC devices however want to see a 1 written -> override
-	 * value.
-	 */
+	 
 	if (mapping->v4l2_type == V4L2_CTRL_TYPE_BUTTON)
 		value = -1;
 
@@ -884,9 +849,7 @@ static void uvc_set_le_value(struct uvc_control_mapping *mapping,
 	}
 }
 
-/* ------------------------------------------------------------------------
- * Terminal and unit management
- */
+ 
 
 static int uvc_entity_match_guid(const struct uvc_entity *entity,
 				 const u8 guid[16])
@@ -894,9 +857,7 @@ static int uvc_entity_match_guid(const struct uvc_entity *entity,
 	return memcmp(entity->guid, guid, sizeof(entity->guid)) == 0;
 }
 
-/* ------------------------------------------------------------------------
- * UVC Controls
- */
+ 
 
 static void __uvc_find_control(struct uvc_entity *entity, u32 v4l2_id,
 	struct uvc_control_mapping **mapping, struct uvc_control **control,
@@ -939,10 +900,10 @@ static struct uvc_control *uvc_find_control(struct uvc_video_chain *chain,
 
 	*mapping = NULL;
 
-	/* Mask the query flags. */
+	 
 	v4l2_id &= V4L2_CTRL_ID_MASK;
 
-	/* Find the control. */
+	 
 	list_for_each_entry(entity, &chain->entities, chain) {
 		__uvc_find_control(entity, v4l2_id, mapping, &ctrl, next);
 		if (ctrl && !next)
@@ -996,11 +957,7 @@ static int uvc_ctrl_populate_cache(struct uvc_video_chain *chain,
 			    UVC_VC_EXTENSION_UNIT)
 				return ret;
 
-			/*
-			 * GET_RES is mandatory for XU controls, but some
-			 * cameras still choke on it. Ignore errors and set the
-			 * resolution value to zero.
-			 */
+			 
 			uvc_warn_once(chain->dev, UVC_WARN_XU_GET_RES,
 				      "UVC non compliance - GET_RES failed on "
 				      "an XU control. Enabling workaround.\n");
@@ -1138,16 +1095,7 @@ static int uvc_query_v4l2_class(struct uvc_video_chain *chain, u32 req_id,
 	return 0;
 }
 
-/*
- * Check if control @v4l2_id can be accessed by the given control @ioctl
- * (VIDIOC_G_EXT_CTRLS, VIDIOC_TRY_EXT_CTRLS or VIDIOC_S_EXT_CTRLS).
- *
- * For set operations on slave controls, check if the master's value is set to
- * manual, either in the others controls set in the same ioctl call, or from
- * the master's current value. This catches VIDIOC_S_EXT_CTRLS calls that set
- * both the master and slave control, such as for instance setting
- * auto_exposure=1, exposure_time_absolute=251.
- */
+ 
 int uvc_ctrl_is_accessible(struct uvc_video_chain *chain, u32 v4l2_id,
 			   const struct v4l2_ext_controls *ctrls,
 			   unsigned long ioctl)
@@ -1177,10 +1125,7 @@ int uvc_ctrl_is_accessible(struct uvc_video_chain *chain, u32 v4l2_id,
 	if (ioctl != VIDIOC_S_EXT_CTRLS || !mapping->master_id)
 		return 0;
 
-	/*
-	 * Iterate backwards in cases where the master control is accessed
-	 * multiple times in the same ioctl. We want the last value.
-	 */
+	 
 	for (i = ctrls->count - 1; i >= 0; i--) {
 		if (ctrls->controls[i].id == mapping->master_id)
 			return ctrls->controls[i].value ==
@@ -1217,11 +1162,7 @@ static const char *uvc_map_get_name(const struct uvc_control_mapping *map)
 static u32 uvc_get_ctrl_bitmap(struct uvc_control *ctrl,
 			       struct uvc_control_mapping *mapping)
 {
-	/*
-	 * Some controls, like CT_AE_MODE_CONTROL, use GET_RES to represent
-	 * the number of bits supported. Those controls do not list GET_MAX
-	 * as supported.
-	 */
+	 
 	if (ctrl->info.flags & UVC_CTRL_FLAG_GET_RES)
 		return mapping->get(mapping, UVC_GET_RES,
 				    uvc_ctrl_data(ctrl, UVC_CTRL_DATA_RES));
@@ -1348,7 +1289,7 @@ int uvc_query_v4l2_ctrl(struct uvc_video_chain *chain,
 	if (ret < 0)
 		return -ERESTARTSYS;
 
-	/* Check if the ctrl is a know class */
+	 
 	if (!(v4l2_ctrl->id & V4L2_CTRL_FLAG_NEXT_CTRL)) {
 		ret = uvc_query_v4l2_class(chain, v4l2_ctrl->id, 0, v4l2_ctrl);
 		if (!ret)
@@ -1361,11 +1302,7 @@ int uvc_query_v4l2_ctrl(struct uvc_video_chain *chain,
 		goto done;
 	}
 
-	/*
-	 * If we're enumerating control with V4L2_CTRL_FLAG_NEXT_CTRL, check if
-	 * a class should be inserted between the previous control and the one
-	 * we have just found.
-	 */
+	 
 	if (v4l2_ctrl->id & V4L2_CTRL_FLAG_NEXT_CTRL) {
 		ret = uvc_query_v4l2_class(chain, v4l2_ctrl->id, mapping->id,
 					   v4l2_ctrl);
@@ -1379,15 +1316,7 @@ done:
 	return ret;
 }
 
-/*
- * Mapping V4L2 controls to UVC controls can be straightforward if done well.
- * Most of the UVC controls exist in V4L2, and can be mapped directly. Some
- * must be grouped (for instance the Red Balance, Blue Balance and Do White
- * Balance V4L2 controls use the White Balance Component UVC control) or
- * otherwise translated. The approach we take here is to use a translation
- * table for the controls that can be mapped directly, and handle the others
- * manually.
- */
+ 
 int uvc_query_v4l2_menu(struct uvc_video_chain *chain,
 	struct v4l2_querymenu *query_menu)
 {
@@ -1454,9 +1383,7 @@ done:
 	return ret;
 }
 
-/* --------------------------------------------------------------------------
- * Ctrl event handling
- */
+ 
 
 static void uvc_ctrl_fill_event(struct uvc_video_chain *chain,
 	struct v4l2_event *ev,
@@ -1481,13 +1408,7 @@ static void uvc_ctrl_fill_event(struct uvc_video_chain *chain,
 	ev->u.ctrl.default_value = v4l2_ctrl.default_value;
 }
 
-/*
- * Send control change events to all subscribers for the @ctrl control. By
- * default the subscriber that generated the event, as identified by @handle,
- * is not notified unless it has set the V4L2_EVENT_SUB_FL_ALLOW_FEEDBACK flag.
- * @handle can be NULL for asynchronous events related to auto-update controls,
- * in which case all subscribers are notified.
- */
+ 
 static void uvc_ctrl_send_event(struct uvc_video_chain *chain,
 	struct uvc_fh *handle, struct uvc_control *ctrl,
 	struct uvc_control_mapping *mapping, s32 value, u32 changes)
@@ -1509,11 +1430,7 @@ static void uvc_ctrl_send_event(struct uvc_video_chain *chain,
 	}
 }
 
-/*
- * Send control change events for the slave of the @master control identified
- * by the V4L2 ID @slave_id. The @handle identifies the event subscriber that
- * generated the event and may be NULL for auto-update events.
- */
+ 
 static void uvc_ctrl_send_slave_event(struct uvc_video_chain *chain,
 	struct uvc_fh *handle, struct uvc_control *master, u32 slave_id)
 {
@@ -1547,10 +1464,7 @@ void uvc_ctrl_status_event(struct uvc_video_chain *chain,
 	list_for_each_entry(mapping, &ctrl->info.mappings, list) {
 		s32 value = __uvc_ctrl_get_value(mapping, data);
 
-		/*
-		 * handle may be NULL here if the device sends auto-update
-		 * events without a prior related control set from userspace.
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(mapping->slave_ids); ++i) {
 			if (!mapping->slave_ids[i])
 				break;
@@ -1575,11 +1489,11 @@ static void uvc_ctrl_status_event_work(struct work_struct *work)
 
 	uvc_ctrl_status_event(w->chain, w->ctrl, w->data);
 
-	/* The barrier is needed to synchronize with uvc_status_stop(). */
+	 
 	if (smp_load_acquire(&dev->flush_status))
 		return;
 
-	/* Resubmit the URB. */
+	 
 	w->urb->interval = dev->int_ep->desc.bInterval;
 	ret = usb_submit_urb(w->urb, GFP_KERNEL);
 	if (ret < 0)
@@ -1634,7 +1548,7 @@ static void uvc_ctrl_send_events(struct uvc_fh *handle,
 		ctrl = uvc_find_control(handle->chain, xctrls[i].id, &mapping);
 
 		if (ctrl->info.flags & UVC_CTRL_FLAG_ASYNCHRONOUS)
-			/* Notification will be sent from an Interrupt event. */
+			 
 			continue;
 
 		for (j = 0; j < ARRAY_SIZE(mapping->slave_ids); ++j) {
@@ -1643,10 +1557,7 @@ static void uvc_ctrl_send_events(struct uvc_fh *handle,
 			if (!slave_id)
 				break;
 
-			/*
-			 * We can skip sending an event for the slave if the
-			 * slave is being modified in the same transaction.
-			 */
+			 
 			if (uvc_ctrl_xctrls_has_control(xctrls, xctrls_count,
 							slave_id))
 				continue;
@@ -1655,10 +1566,7 @@ static void uvc_ctrl_send_events(struct uvc_fh *handle,
 						  slave_id);
 		}
 
-		/*
-		 * If the master is being modified in the same transaction
-		 * flags may change too.
-		 */
+		 
 		if (mapping->master_id &&
 		    uvc_ctrl_xctrls_has_control(xctrls, xctrls_count,
 						mapping->master_id))
@@ -1702,10 +1610,7 @@ static int uvc_ctrl_add_event(struct v4l2_subscribed_event *sev, unsigned elems)
 
 		uvc_ctrl_fill_event(handle->chain, &ev, ctrl, mapping, val,
 				    changes);
-		/*
-		 * Mark the queue as active, allowing this initial event to be
-		 * accepted.
-		 */
+		 
 		sev->elems = elems;
 		v4l2_event_queue_fh(sev->fh, &ev);
 	}
@@ -1734,30 +1639,7 @@ const struct v4l2_subscribed_event_ops uvc_ctrl_sub_ev_ops = {
 	.merge = v4l2_ctrl_merge,
 };
 
-/* --------------------------------------------------------------------------
- * Control transactions
- *
- * To make extended set operations as atomic as the hardware allows, controls
- * are handled using begin/commit/rollback operations.
- *
- * At the beginning of a set request, uvc_ctrl_begin should be called to
- * initialize the request. This function acquires the control lock.
- *
- * When setting a control, the new value is stored in the control data field
- * at position UVC_CTRL_DATA_CURRENT. The control is then marked as dirty for
- * later processing. If the UVC and V4L2 control sizes differ, the current
- * value is loaded from the hardware before storing the new value in the data
- * field.
- *
- * After processing all controls in the transaction, uvc_ctrl_commit or
- * uvc_ctrl_rollback must be called to apply the pending changes to the
- * hardware or revert them. When applying changes, all controls marked as
- * dirty will be modified in the UVC device, and the dirty flag will be
- * cleared. When reverting controls, the control data field
- * UVC_CTRL_DATA_CURRENT is reverted to its previous value
- * (UVC_CTRL_DATA_BACKUP) for all dirty controls. Both functions release the
- * control lock.
- */
+ 
 int uvc_ctrl_begin(struct uvc_video_chain *chain)
 {
 	return mutex_lock_interruptible(&chain->ctrl_mutex) ? -ERESTARTSYS : 0;
@@ -1778,13 +1660,7 @@ static int uvc_ctrl_commit_entity(struct uvc_device *dev,
 		if (!ctrl->initialized)
 			continue;
 
-		/*
-		 * Reset the loaded flag for auto-update controls that were
-		 * marked as loaded in uvc_ctrl_get/uvc_ctrl_set to prevent
-		 * uvc_ctrl_get from using the cached value, and for write-only
-		 * controls to prevent uvc_ctrl_set from setting bits not
-		 * explicitly set by the user.
-		 */
+		 
 		if (ctrl->info.flags & UVC_CTRL_FLAG_AUTO_UPDATE ||
 		    !(ctrl->info.flags & UVC_CTRL_FLAG_GET_CUR))
 			ctrl->loaded = 0;
@@ -1846,7 +1722,7 @@ int __uvc_ctrl_commit(struct uvc_fh *handle, int rollback,
 	struct uvc_entity *entity;
 	int ret = 0;
 
-	/* Find the control. */
+	 
 	list_for_each_entry(entity, &chain->entities, chain) {
 		ret = uvc_ctrl_commit_entity(chain->dev, entity, rollback,
 					     &err_ctrl);
@@ -1901,7 +1777,7 @@ int uvc_ctrl_set(struct uvc_fh *handle,
 	if (!(ctrl->info.flags & UVC_CTRL_FLAG_SET_CUR))
 		return -EACCES;
 
-	/* Clamp out of range values. */
+	 
 	switch (mapping->v4l2_type) {
 	case V4L2_CTRL_TYPE_INTEGER:
 		if (!ctrl->cached) {
@@ -1954,10 +1830,7 @@ int uvc_ctrl_set(struct uvc_fh *handle,
 
 		value = uvc_mapping_get_menu_value(mapping, xctrl->value);
 
-		/*
-		 * Valid menu indices are reported by the GET_RES request for
-		 * UVC controls that support it.
-		 */
+		 
 		if (mapping->data_type == UVC_CTRL_DATA_TYPE_BITMASK) {
 			if (!ctrl->cached) {
 				ret = uvc_ctrl_populate_cache(chain, ctrl);
@@ -1976,18 +1849,14 @@ int uvc_ctrl_set(struct uvc_fh *handle,
 		break;
 	}
 
-	/*
-	 * If the mapping doesn't span the whole UVC control, the current value
-	 * needs to be loaded from the device to perform the read-modify-write
-	 * operation.
-	 */
+	 
 	if ((ctrl->info.size * 8) != mapping->size) {
 		ret = __uvc_ctrl_load_cur(chain, ctrl);
 		if (ret < 0)
 			return ret;
 	}
 
-	/* Backup the current value in case we need to rollback later. */
+	 
 	if (!ctrl->dirty) {
 		memcpy(uvc_ctrl_data(ctrl, UVC_CTRL_DATA_BACKUP),
 		       uvc_ctrl_data(ctrl, UVC_CTRL_DATA_CURRENT),
@@ -2005,13 +1874,9 @@ int uvc_ctrl_set(struct uvc_fh *handle,
 	return 0;
 }
 
-/* --------------------------------------------------------------------------
- * Dynamic controls
- */
+ 
 
-/*
- * Retrieve flags for a given control
- */
+ 
 static int uvc_ctrl_get_flags(struct uvc_device *dev,
 			      const struct uvc_control *ctrl,
 			      struct uvc_control_info *info)
@@ -2082,9 +1947,7 @@ static void uvc_ctrl_fixup_xu_info(struct uvc_device *dev,
 	}
 }
 
-/*
- * Query control information (size and flags) for XU controls.
- */
+ 
 static int uvc_ctrl_fill_xu_info(struct uvc_device *dev,
 	const struct uvc_control *ctrl, struct uvc_control_info *info)
 {
@@ -2099,7 +1962,7 @@ static int uvc_ctrl_fill_xu_info(struct uvc_device *dev,
 	info->index = ctrl->index;
 	info->selector = ctrl->index + 1;
 
-	/* Query and verify the control length (GET_LEN) */
+	 
 	ret = uvc_query_ctrl(dev, UVC_GET_LEN, ctrl->entity->id, dev->intfnum,
 			     info->selector, data, 2);
 	if (ret < 0) {
@@ -2174,7 +2037,7 @@ int uvc_xu_ctrl_query(struct uvc_video_chain *chain,
 	u8 *data = NULL;
 	int ret;
 
-	/* Find the extension unit. */
+	 
 	found = false;
 	list_for_each_entry(entity, &chain->entities, chain) {
 		if (UVC_ENTITY_TYPE(entity) == UVC_VC_EXTENSION_UNIT &&
@@ -2190,7 +2053,7 @@ int uvc_xu_ctrl_query(struct uvc_video_chain *chain,
 		return -ENOENT;
 	}
 
-	/* Find the control and perform delayed initialization if needed. */
+	 
 	found = false;
 	for (i = 0; i < entity->ncontrols; ++i) {
 		ctrl = &entity->controls[i];
@@ -2215,7 +2078,7 @@ int uvc_xu_ctrl_query(struct uvc_video_chain *chain,
 		goto done;
 	}
 
-	/* Validate the required buffer size and flags for the request */
+	 
 	reqflags = 0;
 	size = ctrl->info.size;
 
@@ -2285,19 +2148,9 @@ done:
 	return ret;
 }
 
-/* --------------------------------------------------------------------------
- * Suspend/resume
- */
+ 
 
-/*
- * Restore control values after resume, skipping controls that haven't been
- * changed.
- *
- * TODO
- * - Don't restore modified controls that are back to their default value.
- * - Handle restore order (Auto-Exposure Mode should be restored before
- *   Exposure Time).
- */
+ 
 int uvc_ctrl_restore_values(struct uvc_device *dev)
 {
 	struct uvc_control *ctrl;
@@ -2305,7 +2158,7 @@ int uvc_ctrl_restore_values(struct uvc_device *dev)
 	unsigned int i;
 	int ret;
 
-	/* Walk the entities list and restore controls when possible. */
+	 
 	list_for_each_entry(entity, &dev->entities, list) {
 
 		for (i = 0; i < entity->ncontrols; ++i) {
@@ -2329,20 +2182,16 @@ int uvc_ctrl_restore_values(struct uvc_device *dev)
 	return 0;
 }
 
-/* --------------------------------------------------------------------------
- * Control and mapping handling
- */
+ 
 
-/*
- * Add control information to a given control.
- */
+ 
 static int uvc_ctrl_add_info(struct uvc_device *dev, struct uvc_control *ctrl,
 	const struct uvc_control_info *info)
 {
 	ctrl->info = *info;
 	INIT_LIST_HEAD(&ctrl->info.mappings);
 
-	/* Allocate an array to save control values (cur, def, max, etc.) */
+	 
 	ctrl->uvc_data = kzalloc(ctrl->info.size * UVC_CTRL_DATA_LAST + 1,
 				 GFP_KERNEL);
 	if (!ctrl->uvc_data)
@@ -2357,9 +2206,7 @@ static int uvc_ctrl_add_info(struct uvc_device *dev, struct uvc_control *ctrl,
 	return 0;
 }
 
-/*
- * Add a control mapping to a given control.
- */
+ 
 static int __uvc_ctrl_add_mapping(struct uvc_video_chain *chain,
 	struct uvc_control *ctrl, const struct uvc_control_mapping *mapping)
 {
@@ -2367,11 +2214,7 @@ static int __uvc_ctrl_add_mapping(struct uvc_video_chain *chain,
 	unsigned int size;
 	unsigned int i;
 
-	/*
-	 * Most mappings come from static kernel data, and need to be duplicated.
-	 * Mappings that come from userspace will be unnecessarily duplicated,
-	 * this could be optimized.
-	 */
+	 
 	map = kmemdup(mapping, sizeof(*mapping), GFP_KERNEL);
 	if (!map)
 		return -ENOMEM;
@@ -2380,7 +2223,7 @@ static int __uvc_ctrl_add_mapping(struct uvc_video_chain *chain,
 	map->menu_names = NULL;
 	map->menu_mapping = NULL;
 
-	/* For UVCIOC_CTRL_MAP custom control */
+	 
 	if (mapping->name) {
 		map->name = kstrdup(mapping->name, GFP_KERNEL);
 		if (!map->name)
@@ -2451,7 +2294,7 @@ int uvc_ctrl_add_mapping(struct uvc_video_chain *chain,
 		return -EINVAL;
 	}
 
-	/* Search for the matching (GUID/CS) control on the current chain */
+	 
 	list_for_each_entry(entity, &chain->entities, chain) {
 		unsigned int i;
 
@@ -2476,14 +2319,14 @@ int uvc_ctrl_add_mapping(struct uvc_video_chain *chain,
 	if (mutex_lock_interruptible(&chain->ctrl_mutex))
 		return -ERESTARTSYS;
 
-	/* Perform delayed initialization of XU controls */
+	 
 	ret = uvc_ctrl_init_xu_ctrl(dev, ctrl);
 	if (ret < 0) {
 		ret = -ENOENT;
 		goto done;
 	}
 
-	/* Validate the user-provided bit-size and offset */
+	 
 	if (mapping->size > 32 ||
 	    mapping->offset + mapping->size > ctrl->info.size * 8) {
 		ret = -EINVAL;
@@ -2500,7 +2343,7 @@ int uvc_ctrl_add_mapping(struct uvc_video_chain *chain,
 		}
 	}
 
-	/* Prevent excess memory consumption */
+	 
 	if (atomic_inc_return(&dev->nmappings) > UVC_MAX_CONTROL_MAPPINGS) {
 		atomic_dec(&dev->nmappings);
 		uvc_dbg(dev, CONTROL,
@@ -2519,11 +2362,7 @@ done:
 	return ret;
 }
 
-/*
- * Prune an entity of its bogus controls using a blacklist. Bogus controls
- * are currently the ones that crash the camera or unconditionally return an
- * error when queried.
- */
+ 
 static void uvc_ctrl_prune_entity(struct uvc_device *dev,
 	struct uvc_entity *entity)
 {
@@ -2533,12 +2372,12 @@ static void uvc_ctrl_prune_entity(struct uvc_device *dev,
 	};
 
 	static const struct uvc_ctrl_blacklist processing_blacklist[] = {
-		{ { USB_DEVICE(0x13d3, 0x509b) }, 9 }, /* Gain */
-		{ { USB_DEVICE(0x1c4f, 0x3000) }, 6 }, /* WB Temperature */
-		{ { USB_DEVICE(0x5986, 0x0241) }, 2 }, /* Hue */
+		{ { USB_DEVICE(0x13d3, 0x509b) }, 9 },  
+		{ { USB_DEVICE(0x1c4f, 0x3000) }, 6 },  
+		{ { USB_DEVICE(0x5986, 0x0241) }, 2 },  
 	};
 	static const struct uvc_ctrl_blacklist camera_blacklist[] = {
-		{ { USB_DEVICE(0x06f8, 0x3005) }, 9 }, /* Zoom, Absolute */
+		{ { USB_DEVICE(0x06f8, 0x3005) }, 9 },  
 	};
 
 	const struct uvc_ctrl_blacklist *blacklist;
@@ -2582,22 +2421,14 @@ static void uvc_ctrl_prune_entity(struct uvc_device *dev,
 	}
 }
 
-/*
- * Add control information and hardcoded stock control mappings to the given
- * device.
- */
+ 
 static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
 			       struct uvc_control *ctrl)
 {
 	const struct uvc_control_mapping **mappings;
 	unsigned int i;
 
-	/*
-	 * XU controls initialization requires querying the device for control
-	 * information. As some buggy UVC devices will crash when queried
-	 * repeatedly in a tight loop, delay XU controls initialization until
-	 * first use.
-	 */
+	 
 	if (UVC_ENTITY_TYPE(ctrl->entity) == UVC_VC_EXTENSION_UNIT)
 		return;
 
@@ -2607,12 +2438,7 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
 		if (uvc_entity_match_guid(ctrl->entity, info->entity) &&
 		    ctrl->index == info->index) {
 			uvc_ctrl_add_info(chain->dev, ctrl, info);
-			/*
-			 * Retrieve control flags from the device. Ignore errors
-			 * and work with default flag values from the uvc_ctrl
-			 * array when the device doesn't properly implement
-			 * GET_INFO on standard controls.
-			 */
+			 
 			uvc_ctrl_get_flags(chain->dev, ctrl, &ctrl->info);
 			break;
 		 }
@@ -2621,13 +2447,7 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
 	if (!ctrl->initialized)
 		return;
 
-	/*
-	 * First check if the device provides a custom mapping for this control,
-	 * used to override standard mappings for non-conformant devices. Don't
-	 * process standard mappings if a custom mapping is found. This
-	 * mechanism doesn't support combining standard and custom mappings for
-	 * a single control.
-	 */
+	 
 	if (chain->dev->info->mappings) {
 		bool custom = false;
 
@@ -2646,7 +2466,7 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
 			return;
 	}
 
-	/* Process common mappings next. */
+	 
 	for (i = 0; i < ARRAY_SIZE(uvc_ctrl_mappings); ++i) {
 		const struct uvc_control_mapping *mapping = &uvc_ctrl_mappings[i];
 
@@ -2655,7 +2475,7 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
 			__uvc_ctrl_add_mapping(chain, ctrl, mapping);
 	}
 
-	/* Finally process version-specific mappings. */
+	 
 	mappings = chain->dev->uvc_version < 0x0150
 		 ? uvc_ctrl_mappings_uvc11 : uvc_ctrl_mappings_uvc15;
 
@@ -2668,15 +2488,13 @@ static void uvc_ctrl_init_ctrl(struct uvc_video_chain *chain,
 	}
 }
 
-/*
- * Initialize device controls.
- */
+ 
 static int uvc_ctrl_init_chain(struct uvc_video_chain *chain)
 {
 	struct uvc_entity *entity;
 	unsigned int i;
 
-	/* Walk the entities list and instantiate controls */
+	 
 	list_for_each_entry(entity, &chain->entities, chain) {
 		struct uvc_control *ctrl;
 		unsigned int bControlSize = 0, ncontrols;
@@ -2696,10 +2514,10 @@ static int uvc_ctrl_init_chain(struct uvc_video_chain *chain)
 			bControlSize = entity->gpio.bControlSize;
 		}
 
-		/* Remove bogus/blacklisted controls */
+		 
 		uvc_ctrl_prune_entity(chain->dev, entity);
 
-		/* Count supported controls and allocate the controls array */
+		 
 		ncontrols = memweight(bmControls, bControlSize);
 		if (ncontrols == 0)
 			continue;
@@ -2710,7 +2528,7 @@ static int uvc_ctrl_init_chain(struct uvc_video_chain *chain)
 			return -ENOMEM;
 		entity->ncontrols = ncontrols;
 
-		/* Initialize all supported controls */
+		 
 		ctrl = entity->controls;
 		for (i = 0; i < bControlSize * 8; ++i) {
 			if (uvc_test_bit(bmControls, i) == 0)
@@ -2743,9 +2561,7 @@ int uvc_ctrl_init_device(struct uvc_device *dev)
 	return 0;
 }
 
-/*
- * Cleanup device controls.
- */
+ 
 static void uvc_ctrl_cleanup_mappings(struct uvc_device *dev,
 	struct uvc_control *ctrl)
 {
@@ -2765,11 +2581,11 @@ void uvc_ctrl_cleanup_device(struct uvc_device *dev)
 	struct uvc_entity *entity;
 	unsigned int i;
 
-	/* Can be uninitialized if we are aborting on probe error. */
+	 
 	if (dev->async_ctrl.work.func)
 		cancel_work_sync(&dev->async_ctrl.work);
 
-	/* Free controls and control mappings for all entities. */
+	 
 	list_for_each_entry(entity, &dev->entities, list) {
 		for (i = 0; i < entity->ncontrols; ++i) {
 			struct uvc_control *ctrl = &entity->controls[i];

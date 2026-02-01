@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
-* Copyright (c) 2016 MediaTek Inc.
-* Author: PC Chen <pc.chen@mediatek.com>
-*	Tiffany Lin <tiffany.lin@mediatek.com>
-*/
+
+ 
 
 #include <linux/slab.h>
 #include <linux/interrupt.h>
@@ -123,10 +119,7 @@ static int fops_vcodec_open(struct file *file)
 		return -ENOMEM;
 
 	mutex_lock(&dev->dev_mutex);
-	/*
-	 * Use simple counter to uniquely identify this context. Only
-	 * used for logging.
-	 */
+	 
 	ctx->id = dev->id_counter++;
 	v4l2_fh_init(&ctx->fh, video_devdata(file));
 	file->private_data = &ctx->fh;
@@ -155,16 +148,10 @@ static int fops_vcodec_open(struct file *file)
 	mtk_vcodec_enc_set_default_params(ctx);
 
 	if (v4l2_fh_is_singular(&ctx->fh)) {
-		/*
-		 * load fireware to checks if it was loaded already and
-		 * does nothing in that case
-		 */
+		 
 		ret = mtk_vcodec_fw_load_firmware(dev->fw_handler);
 		if (ret < 0) {
-			/*
-			 * Return 0 if downloading firmware successfully,
-			 * otherwise it is failed
-			 */
+			 
 			mtk_v4l2_venc_err(ctx, "vpu_load_firmware failed!");
 			goto err_load_fw;
 		}
@@ -184,7 +171,7 @@ static int fops_vcodec_open(struct file *file)
 			  ctx->id);
 	return ret;
 
-	/* Deinit when failure occurred */
+	 
 err_load_fw:
 	v4l2_m2m_ctx_release(ctx->m2m_ctx);
 err_m2m_ctx_init:
@@ -305,7 +292,7 @@ static int mtk_vcodec_probe(struct platform_device *pdev)
 		goto err_res;
 	}
 
-	/* allocate video device for encoder and register it */
+	 
 	vfd_enc = video_device_alloc();
 	if (!vfd_enc) {
 		dev_err(&pdev->dev, "[MTK VCODEC] Failed to allocate video device");

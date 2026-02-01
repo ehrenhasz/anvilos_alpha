@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  IPv6 Syncookies implementation for the Linux kernel
- *
- *  Authors:
- *  Glenn Griffin	<ggriffin.kernel@gmail.com>
- *
- *  Based on IPv4 implementation by Andi Kleen
- *  linux/net/ipv4/syncookies.c
- */
+
+ 
 
 #include <linux/tcp.h>
 #include <linux/random.h>
@@ -17,21 +9,14 @@
 #include <net/ipv6.h>
 #include <net/tcp.h>
 
-#define COOKIEBITS 24	/* Upper bits store count */
+#define COOKIEBITS 24	 
 #define COOKIEMASK (((__u32)1 << COOKIEBITS) - 1)
 
 static siphash_aligned_key_t syncookie6_secret[2];
 
-/* RFC 2460, Section 8.3:
- * [ipv6 tcp] MSS must be computed as the maximum packet size minus 60 [..]
- *
- * Due to IPV6_MIN_MTU=1280 the lowest possible MSS is 1220, which allows
- * using higher values than ipv4 tcp syncookies.
- * The other values are chosen based on ethernet (1500 and 9k MTU), plus
- * one that accounts for common encap (PPPoe) overhead. Table must be sorted.
- */
+ 
 static __u16 const msstab[] = {
-	1280 - 60, /* IPV6_MIN_MTU - 60 */
+	1280 - 60,  
 	1480 - 60,
 	1500 - 60,
 	9000 - 60,
@@ -156,7 +141,7 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 
 	__NET_INC_STATS(sock_net(sk), LINUX_MIB_SYNCOOKIESRECV);
 
-	/* check for timestamp cookie support */
+	 
 	memset(&tcp_opt, 0, sizeof(tcp_opt));
 	tcp_parse_options(sock_net(sk), skb, &tcp_opt, 0, NULL);
 
@@ -197,7 +182,7 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 	}
 
 	ireq->ir_iif = inet_request_bound_dev_if(sk, skb);
-	/* So that link locals have meaning */
+	 
 	if (!sk->sk_bound_dev_if &&
 	    ipv6_addr_type(&ireq->ir_v6_rmt_addr) & IPV6_ADDR_LINKLOCAL)
 		ireq->ir_iif = tcp_v6_iif(skb);
@@ -218,11 +203,7 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 	if (IS_ENABLED(CONFIG_SMC))
 		ireq->smc_ok = 0;
 
-	/*
-	 * We need to lookup the dst_entry to get the correct window size.
-	 * This is taken from tcp_v6_syn_recv_sock.  Somebody please enlighten
-	 * me if there is a preferred way.
-	 */
+	 
 	{
 		struct in6_addr *final_p, final;
 		struct flowi6 fl6;
@@ -244,7 +225,7 @@ struct sock *cookie_v6_check(struct sock *sk, struct sk_buff *skb)
 	}
 
 	req->rsk_window_clamp = tp->window_clamp ? :dst_metric(dst, RTAX_WINDOW);
-	/* limit the window selection if the user enforce a smaller rx buffer */
+	 
 	full_space = tcp_full_space(sk);
 	if (sk->sk_userlocks & SOCK_RCVBUF_LOCK &&
 	    (req->rsk_window_clamp > full_space || req->rsk_window_clamp == 0))

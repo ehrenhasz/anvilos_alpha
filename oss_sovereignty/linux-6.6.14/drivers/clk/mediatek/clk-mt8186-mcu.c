@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -30,16 +30,13 @@ static const char * const mcu_armpll_bus_parents[] = {
 	"univpll_d2"
 };
 
-/*
- * We only configure the CPU muxes when adjust CPU frequency in MediaTek CPUFreq Driver.
- * Other fields like divider always keep the same value. (set once in bootloader)
- */
+ 
 static struct mtk_composite mcu_muxes[] = {
-	/* CPU_PLLDIV_CFG0 */
+	 
 	MUX(CLK_MCU_ARMPLL_LL_SEL, "mcu_armpll_ll_sel", mcu_armpll_ll_parents, 0x2A0, 9, 2),
-	/* CPU_PLLDIV_CFG1 */
+	 
 	MUX(CLK_MCU_ARMPLL_BL_SEL, "mcu_armpll_bl_sel", mcu_armpll_bl_parents, 0x2A4, 9, 2),
-	/* BUS_PLLDIV_CFG */
+	 
 	MUX(CLK_MCU_ARMPLL_BUS_SEL, "mcu_armpll_bus_sel", mcu_armpll_bus_parents, 0x2E0, 9, 2),
 };
 
@@ -50,7 +47,7 @@ static const struct mtk_clk_desc mcu_desc = {
 
 static const struct of_device_id of_match_clk_mt8186_mcu[] = {
 	{ .compatible = "mediatek,mt8186-mcusys", .data = &mcu_desc },
-	{ /* sentinel */}
+	{  }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8186_mcu);
 

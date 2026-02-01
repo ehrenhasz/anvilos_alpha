@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* MOXA ART Ethernet (RTL8201CP) MDIO interface driver
- *
- * Copyright (C) 2013 Jonas Jensen <jonas.jensen@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -16,14 +13,14 @@
 #define REG_PHY_CTRL            0
 #define REG_PHY_WRITE_DATA      4
 
-/* REG_PHY_CTRL */
-#define MIIWR                   BIT(27) /* init write sequence (auto cleared)*/
+ 
+#define MIIWR                   BIT(27)  
 #define MIIRD                   BIT(26)
 #define REGAD_MASK              0x3e00000
 #define PHYAD_MASK              0x1f0000
 #define MIIRDATA_MASK           0xffff
 
-/* REG_PHY_WRITE_DATA */
+ 
 #define MIIWDATA_MASK           0xffff
 
 struct moxart_mdio_data {
@@ -125,13 +122,7 @@ static int moxart_mdio_probe(struct platform_device *pdev)
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%s-%d-mii", pdev->name, pdev->id);
 	bus->parent = &pdev->dev;
 
-	/* Setting PHY_MAC_INTERRUPT here even if it has no effect,
-	 * of_mdiobus_register() sets these PHY_POLL.
-	 * Ideally, the interrupt from MAC controller could be used to
-	 * detect link state changes, not polling, i.e. if there was
-	 * a way phy_driver could set PHY_HAS_INTERRUPT but have that
-	 * interrupt handled in ethernet drivercode.
-	 */
+	 
 	for (i = 0; i < PHY_MAX_ADDR; i++)
 		bus->irq[i] = PHY_MAC_INTERRUPT;
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel LPSS ACPI support.
- *
- * Copyright (C) 2015, Intel Corporation
- *
- * Authors: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/ioport.h>
@@ -130,7 +123,7 @@ static const struct intel_lpss_platform_info cnl_i2c_info = {
 };
 
 static const struct acpi_device_id intel_lpss_acpi_ids[] = {
-	/* SPT */
+	 
 	{ "INT3440", (kernel_ulong_t)&spt_info },
 	{ "INT3441", (kernel_ulong_t)&spt_info },
 	{ "INT3442", (kernel_ulong_t)&spt_i2c_info },
@@ -142,7 +135,7 @@ static const struct acpi_device_id intel_lpss_acpi_ids[] = {
 	{ "INT3448", (kernel_ulong_t)&spt_uart_info },
 	{ "INT3449", (kernel_ulong_t)&spt_uart_info },
 	{ "INT344A", (kernel_ulong_t)&spt_uart_info },
-	/* CNL */
+	 
 	{ "INT34B0", (kernel_ulong_t)&cnl_info },
 	{ "INT34B1", (kernel_ulong_t)&cnl_info },
 	{ "INT34B2", (kernel_ulong_t)&cnl_i2c_info },
@@ -155,11 +148,11 @@ static const struct acpi_device_id intel_lpss_acpi_ids[] = {
 	{ "INT34B9", (kernel_ulong_t)&spt_uart_info },
 	{ "INT34BA", (kernel_ulong_t)&spt_uart_info },
 	{ "INT34BC", (kernel_ulong_t)&cnl_info },
-	/* BXT */
+	 
 	{ "80860AAC", (kernel_ulong_t)&bxt_i2c_info },
 	{ "80860ABC", (kernel_ulong_t)&bxt_info },
 	{ "80860AC2", (kernel_ulong_t)&bxt_info },
-	/* APL */
+	 
 	{ "80865AAC", (kernel_ulong_t)&apl_i2c_info },
 	{ "80865ABC", (kernel_ulong_t)&bxt_info },
 	{ "80865AC2", (kernel_ulong_t)&bxt_info },

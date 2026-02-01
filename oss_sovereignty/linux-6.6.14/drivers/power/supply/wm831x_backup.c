@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Backup battery driver for Wolfson Microelectronics wm831x PMICs
- *
- * Copyright 2009 Wolfson Microelectronics PLC.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/err.h>
@@ -36,9 +32,7 @@ static int wm831x_backup_read_voltage(struct wm831x *wm831x,
 	return ret;
 }
 
-/*********************************************************************
- *		Backup supply properties
- *********************************************************************/
+ 
 
 static void wm831x_config_backup(struct wm831x *wm831x)
 {
@@ -155,9 +149,7 @@ static enum power_supply_property wm831x_backup_props[] = {
 	POWER_SUPPLY_PROP_PRESENT,
 };
 
-/*********************************************************************
- *		Initialisation
- *********************************************************************/
+ 
 
 static int wm831x_backup_probe(struct platform_device *pdev)
 {
@@ -173,10 +165,7 @@ static int wm831x_backup_probe(struct platform_device *pdev)
 	devdata->wm831x = wm831x;
 	platform_set_drvdata(pdev, devdata);
 
-	/* We ignore configuration failures since we can still read
-	 * back the status without enabling the charger (which may
-	 * already be enabled anyway).
-	 */
+	 
 	wm831x_config_backup(wm831x);
 
 	if (wm831x_pdata && wm831x_pdata->wm831x_num)

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ngene-dvb.c: nGene PCIe bridge driver - DVB functions
- *
- * Copyright (C) 2005-2007 Micronas
- *
- * Copyright (C) 2008-2009 Ralph Metzler <rjkm@metzlerbros.de>
- *                         Modifications for new nGene firmware,
- *                         support for EEPROM-copying,
- *                         support for new dual DVB-S2 card prototype
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -29,9 +20,9 @@ static int ci_tsfix = 1;
 module_param(ci_tsfix, int, 0444);
 MODULE_PARM_DESC(ci_tsfix, "Detect and fix TS buffer offset shifts in conjunction with CI expansions (default: 1/enabled)");
 
-/****************************************************************************/
-/* COMMAND API interface ****************************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 static ssize_t ts_write(struct file *file, const char __user *buf,
 			size_t count, loff_t *ppos)
@@ -113,9 +104,9 @@ struct dvb_device ngene_dvbdev_ci = {
 };
 
 
-/****************************************************************************/
-/* DVB functions and API interface ******************************************/
-/****************************************************************************/
+ 
+ 
+ 
 
 static void swap_buffer(u32 *p, u32 len)
 {
@@ -126,7 +117,7 @@ static void swap_buffer(u32 *p, u32 len)
 	}
 }
 
-/* start of filler packet */
+ 
 static u8 fill_ts[] = { 0x47, 0x1f, 0xff, 0x10, TS_FILLER };
 
 static int tsin_find_offset(void *buf, u32 len)
@@ -167,7 +158,7 @@ void *tsin_exchange(void *priv, void *buf, u32 len, u32 clock, u32 flags)
 		swap_buffer(buf, len);
 
 	if (dev->ci.en && chan->number == 2) {
-		/* blindly copy buffers if ci_tsfix is disabled */
+		 
 		if (!ci_tsfix) {
 			while (len >= 188) {
 				tsin_copy_stripped(dev, buf);
@@ -178,14 +169,9 @@ void *tsin_exchange(void *priv, void *buf, u32 len, u32 clock, u32 flags)
 			return NULL;
 		}
 
-		/* ci_tsfix = 1 */
+		 
 
-		/*
-		 * since the remainder of the TS packet which got cut off
-		 * in the previous tsin_exchange() run is at the beginning
-		 * of the new TS buffer, append this to the temp buffer and
-		 * send it to the DVB ringbuffer afterwards.
-		 */
+		 
 		if (chan->tsin_offset) {
 			memcpy(&chan->tsin_buffer[(188 - chan->tsin_offset)],
 			       buf, chan->tsin_offset);
@@ -195,16 +181,10 @@ void *tsin_exchange(void *priv, void *buf, u32 len, u32 clock, u32 flags)
 			len -= chan->tsin_offset;
 		}
 
-		/*
-		 * copy TS packets to the DVB ringbuffer and detect new offset
-		 * shifts by checking for a valid TS SYNC byte
-		 */
+		 
 		while (len >= 188) {
 			if (*((char *)buf) != 0x47) {
-				/*
-				 * no SYNC header, find new offset shift
-				 * (max. 188 bytes, tsoff will be mod 188)
-				 */
+				 
 				tsoff = tsin_find_offset(buf, len);
 				if (tsoff > 0) {
 					chan->tsin_offset += tsoff;
@@ -218,11 +198,7 @@ void *tsin_exchange(void *priv, void *buf, u32 len, u32 clock, u32 flags)
 						 __func__, tsoff,
 						 chan->number);
 
-					/*
-					 * offset corrected. re-check remaining
-					 * len for a full TS frame, break and
-					 * skip to fragment handling if < 188.
-					 */
+					 
 					if (len < 188)
 						break;
 				}
@@ -234,10 +210,7 @@ void *tsin_exchange(void *priv, void *buf, u32 len, u32 clock, u32 flags)
 			len -= 188;
 		}
 
-		/*
-		 * if a fragment is left, copy to temp buffer. The remainder
-		 * will be appended in the next tsin_exchange() iteration.
-		 */
+		 
 		if (len > 0 && len < 188)
 			memcpy(&chan->tsin_buffer, buf, len);
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
-* OHCI HCD (Host Controller Driver) for USB.
-*
-* Copyright (C) 2010 ST Microelectronics.
-* Deepak Sikri<deepak.sikri@st.com>
-*
-* Based on various ohci-*.c drivers
-*/
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -46,11 +39,7 @@ static int spear_ohci_hcd_drv_probe(struct platform_device *pdev)
 		goto fail;
 	}
 
-	/*
-	 * Right now device-tree probed devices don't get dma_mask set.
-	 * Since shared usb code relies on it, set it here for now.
-	 * Once we have dma capability bindings this can go away.
-	 */
+	 
 	retval = dma_coerce_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
 	if (retval)
 		goto fail;
@@ -154,7 +143,7 @@ static const struct of_device_id spear_ohci_id_table[] = {
 };
 MODULE_DEVICE_TABLE(of, spear_ohci_id_table);
 
-/* Driver definition to register with the platform bus */
+ 
 static struct platform_driver spear_ohci_hcd_driver = {
 	.probe =	spear_ohci_hcd_drv_probe,
 	.remove_new =	spear_ohci_hcd_drv_remove,

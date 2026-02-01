@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #include "percpu_freelist.h"
 
 int pcpu_freelist_init(struct pcpu_freelist *s)
@@ -71,7 +70,7 @@ static inline void ___pcpu_freelist_push_nmi(struct pcpu_freelist *s,
 			}
 		}
 
-		/* cannot lock any per cpu lock, try extralist */
+		 
 		if (pcpu_freelist_try_push_extra(s, node))
 			return;
 	}
@@ -110,7 +109,7 @@ void pcpu_freelist_populate(struct pcpu_freelist *s, void *buf, u32 elem_size,
 		head = per_cpu_ptr(s->freelist, cpu);
 		j = n + (cpu_idx < m ? 1 : 0);
 		for (i = 0; i < j; i++) {
-			/* No locking required as this is not visible yet. */
+			 
 			pcpu_freelist_push_node(head, buf);
 			buf += elem_size;
 		}
@@ -138,7 +137,7 @@ static struct pcpu_freelist_node *___pcpu_freelist_pop(struct pcpu_freelist *s)
 		raw_spin_unlock(&head->lock);
 	}
 
-	/* per cpu lists are all empty, try extralist */
+	 
 	if (!READ_ONCE(s->extralist.first))
 		return NULL;
 	raw_spin_lock(&s->extralist.lock);
@@ -171,7 +170,7 @@ ___pcpu_freelist_pop_nmi(struct pcpu_freelist *s)
 		}
 	}
 
-	/* cannot pop from per cpu lists, try extralist */
+	 
 	if (!READ_ONCE(s->extralist.first) || !raw_spin_trylock(&s->extralist.lock))
 		return NULL;
 	node = s->extralist.first;

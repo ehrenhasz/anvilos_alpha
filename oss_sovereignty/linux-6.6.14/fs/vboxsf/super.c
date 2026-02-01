@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * VirtualBox Guest Shared Folders support: Virtual File System.
- *
- * Module initialization/finalization
- * File system registration/deregistration
- * Superblock reading
- * Few utility functions
- *
- * Copyright (C) 2006-2018 Oracle Corporation
- */
+
+ 
 
 #include <linux/idr.h>
 #include <linux/fs_parser.h>
@@ -19,7 +10,7 @@
 #include <linux/vbox_utils.h>
 #include "vfsmod.h"
 
-#define VBOXSF_SUPER_MAGIC 0x786f4256 /* 'VBox' little endian */
+#define VBOXSF_SUPER_MAGIC 0x786f4256  
 
 static const unsigned char VBSF_MOUNT_SIGNATURE[4] = "\000\377\376\375";
 
@@ -31,7 +22,7 @@ MODULE_PARM_DESC(follow_symlinks,
 static DEFINE_IDA(vboxsf_bdi_ida);
 static DEFINE_MUTEX(vboxsf_setup_mutex);
 static bool vboxsf_setup_done;
-static struct super_operations vboxsf_super_ops; /* forward declaration */
+static struct super_operations vboxsf_super_ops;  
 static struct kmem_cache *vboxsf_inode_cachep;
 
 static char * const vboxsf_default_nls = CONFIG_NLS_DEFAULT;
@@ -140,7 +131,7 @@ static int vboxsf_fill_super(struct super_block *sb, struct fs_context *fc)
 	sbi->next_generation = 1;
 	sbi->bdi_id = -1;
 
-	/* Load nls if not utf8 */
+	 
 	nls_name = ctx->nls_name ? ctx->nls_name : vboxsf_default_nls;
 	if (strcmp(nls_name, "utf8") != 0) {
 		if (nls_name == vboxsf_default_nls)
@@ -167,7 +158,7 @@ static int vboxsf_fill_super(struct super_block *sb, struct fs_context *fc)
 	sb->s_bdi->ra_pages = 0;
 	sb->s_bdi->io_pages = 0;
 
-	/* Turn source into a shfl_string and map the folder */
+	 
 	size = strlen(fc->source) + 1;
 	folder_name = kmalloc(SHFLSTRING_HEADER_SIZE + size, GFP_KERNEL);
 	if (!folder_name) {
@@ -272,10 +263,7 @@ static void vboxsf_put_super(struct super_block *sb)
 	if (sbi->nls)
 		unload_nls(sbi->nls);
 
-	/*
-	 * vboxsf_free_inode uses the idr, make sure all delayed rcu free
-	 * inodes are flushed.
-	 */
+	 
 	rcu_barrier();
 	idr_destroy(&sbi->ino_idr);
 	kfree(sbi);
@@ -309,10 +297,7 @@ static int vboxsf_statfs(struct dentry *dentry, struct kstatfs *stat)
 	stat->f_bavail = shfl_volinfo.available_allocation_bytes;
 
 	stat->f_files = 1000;
-	/*
-	 * Don't return 0 here since the guest may then think that it is not
-	 * possible to create any more files.
-	 */
+	 
 	stat->f_ffree = 1000000;
 	stat->f_fsid.val[0] = 0;
 	stat->f_fsid.val[1] = 0;
@@ -408,7 +393,7 @@ static int vboxsf_reconfigure(struct fs_context *fc)
 	struct vboxsf_fs_context *ctx = fc->fs_private;
 	struct inode *iroot = fc->root->d_sb->s_root->d_inode;
 
-	/* Apply changed options to the root inode */
+	 
 	sbi->o = ctx->o;
 	vboxsf_init_inode(sbi, iroot, &sbi->root_info, true);
 
@@ -453,7 +438,7 @@ static struct file_system_type vboxsf_fs_type = {
 	.kill_sb		= kill_anon_super
 };
 
-/* Module initialization/finalization handlers */
+ 
 static int __init vboxsf_init(void)
 {
 	return register_filesystem(&vboxsf_fs_type);
@@ -466,10 +451,7 @@ static void __exit vboxsf_fini(void)
 	mutex_lock(&vboxsf_setup_mutex);
 	if (vboxsf_setup_done) {
 		vboxsf_disconnect();
-		/*
-		 * Make sure all delayed rcu free inodes are flushed
-		 * before we destroy the cache.
-		 */
+		 
 		rcu_barrier();
 		kmem_cache_destroy(vboxsf_inode_cachep);
 	}

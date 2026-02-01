@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog devices AD5360, AD5361, AD5362, AD5363, AD5370, AD5371, AD5373
- * multi-channel Digital to Analog Converters driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -31,7 +26,7 @@
 #define AD5360_CMD_WRITE_GAIN			0x1
 #define AD5360_CMD_SPECIAL_FUNCTION		0x0
 
-/* Special function register addresses */
+ 
 #define AD5360_REG_SF_NOP			0x0
 #define AD5360_REG_SF_CTRL			0x1
 #define AD5360_REG_SF_OFS(x)			(0x2 + (x))
@@ -46,13 +41,7 @@
 #define AD5360_READBACK_SF			0x4
 
 
-/**
- * struct ad5360_chip_info - chip specific information
- * @channel_template:	channel specification template
- * @num_channels:	number of channels
- * @channels_per_group:	number of channels per group
- * @num_vrefs:		number of vref supplies for the chip
-*/
+ 
 
 struct ad5360_chip_info {
 	struct iio_chan_spec	channel_template;
@@ -61,15 +50,7 @@ struct ad5360_chip_info {
 	unsigned int		num_vrefs;
 };
 
-/**
- * struct ad5360_state - driver instance specific data
- * @spi:		spi_device
- * @chip_info:		chip model specific constants, available modes etc
- * @vref_reg:		vref supply regulators
- * @ctrl:		control register cache
- * @lock:		lock to protect the data buffer during SPI ops
- * @data:		spi transfer buffers
- */
+ 
 
 struct ad5360_state {
 	struct spi_device		*spi;
@@ -78,10 +59,7 @@ struct ad5360_state {
 	unsigned int			ctrl;
 	struct mutex			lock;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	union {
 		__be32 d32;
 		u8 d8[4];
@@ -172,8 +150,7 @@ static unsigned int ad5360_get_channel_vref_index(struct ad5360_state *st,
 {
 	unsigned int i;
 
-	/* The first groups have their own vref, while the remaining groups
-	 * share the last vref */
+	 
 	i = channel / st->chip_info->channels_per_group;
 	if (i >= st->chip_info->num_vrefs)
 		i = st->chip_info->num_vrefs - 1;
@@ -348,14 +325,10 @@ static int ad5360_write_raw(struct iio_dev *indio_dev,
 
 		val = -val;
 
-		/* offset is supposed to have the same scale as raw, but it
-		 * is always 14bits wide, so on a chip where the raw value has
-		 * more bits, we need to shift offset. */
+		 
 		val >>= (chan->scan_type.realbits - 14);
 
-		/* There is one DAC offset register per vref. Changing one
-		 * channels offset will also change the offset for all other
-		 * channels which share the same vref supply. */
+		 
 		ofs_index = ad5360_get_channel_vref_index(st, chan->channel);
 		return ad5360_write(indio_dev, AD5360_CMD_SPECIAL_FUNCTION,
 				 AD5360_REG_SF_OFS(ofs_index), val, 0);
@@ -390,7 +363,7 @@ static int ad5360_read_raw(struct iio_dev *indio_dev,
 		if (scale_uv < 0)
 			return scale_uv;
 
-		/* vout = 4 * vref * dac_code */
+		 
 		*val = scale_uv * 4 / 1000;
 		*val2 = chan->scan_type.realbits;
 		return IIO_VAL_FRACTIONAL_LOG2;

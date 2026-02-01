@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI 3410/5052 USB Serial Driver
- *
- * Copyright (C) 2004 Texas Instruments
- *
- * This driver is based on the Linux io_ti driver, which is
- *   Copyright (C) 2000-2002 Inside Out Networks
- *   Copyright (C) 2001-2002 Greg Kroah-Hartman
- *
- * For questions or problems with this driver, contact Texas Instruments
- * technical support, or Al Borchers <alborchers@steinerpoint.com>, or
- * Peter Berger <pberger@brimson.com>.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -30,11 +18,11 @@
 #include <linux/usb.h>
 #include <linux/usb/serial.h>
 
-/* Configuration ids */
+ 
 #define TI_BOOT_CONFIG			1
 #define TI_ACTIVE_CONFIG		2
 
-/* Vendor and product ids */
+ 
 #define TI_VENDOR_ID			0x0451
 #define IBM_VENDOR_ID			0x04b3
 #define STARTECH_VENDOR_ID		0x14b0
@@ -42,14 +30,14 @@
 #define IBM_4543_PRODUCT_ID		0x4543
 #define IBM_454B_PRODUCT_ID		0x454b
 #define IBM_454C_PRODUCT_ID		0x454c
-#define TI_3410_EZ430_ID		0xF430  /* TI ez430 development tool */
-#define TI_5052_BOOT_PRODUCT_ID		0x5052	/* no EEPROM, no firmware */
-#define TI_5152_BOOT_PRODUCT_ID		0x5152	/* no EEPROM, no firmware */
-#define TI_5052_EEPROM_PRODUCT_ID	0x505A	/* EEPROM, no firmware */
-#define TI_5052_FIRMWARE_PRODUCT_ID	0x505F	/* firmware is running */
-#define FRI2_PRODUCT_ID			0x5053  /* Fish River Island II */
+#define TI_3410_EZ430_ID		0xF430   
+#define TI_5052_BOOT_PRODUCT_ID		0x5052	 
+#define TI_5152_BOOT_PRODUCT_ID		0x5152	 
+#define TI_5052_EEPROM_PRODUCT_ID	0x505A	 
+#define TI_5052_FIRMWARE_PRODUCT_ID	0x505F	 
+#define FRI2_PRODUCT_ID			0x5053   
 
-/* Multi-Tech vendor and product ids */
+ 
 #define MTS_VENDOR_ID			0x06E0
 #define MTS_GSM_NO_FW_PRODUCT_ID	0xF108
 #define MTS_CDMA_NO_FW_PRODUCT_ID	0xF109
@@ -60,17 +48,17 @@
 #define MTS_MT9234ZBA_PRODUCT_ID	0xF115
 #define MTS_MT9234ZBAOLD_PRODUCT_ID	0x0319
 
-/* Abbott Diabetics vendor and product ids */
+ 
 #define ABBOTT_VENDOR_ID		0x1a61
 #define ABBOTT_STEREO_PLUG_ID		0x3410
 #define ABBOTT_PRODUCT_ID		ABBOTT_STEREO_PLUG_ID
 #define ABBOTT_STRIP_PORT_ID		0x3420
 
-/* Honeywell vendor and product IDs */
+ 
 #define HONEYWELL_VENDOR_ID		0x10ac
-#define HONEYWELL_HGI80_PRODUCT_ID	0x0102  /* Honeywell HGI80 */
+#define HONEYWELL_HGI80_PRODUCT_ID	0x0102   
 
-/* Moxa UPORT 11x0 vendor and product IDs */
+ 
 #define MXU1_VENDOR_ID				0x110a
 #define MXU1_1110_PRODUCT_ID			0x1110
 #define MXU1_1130_PRODUCT_ID			0x1130
@@ -78,7 +66,7 @@
 #define MXU1_1151_PRODUCT_ID			0x1151
 #define MXU1_1131_PRODUCT_ID			0x1131
 
-/* Commands */
+ 
 #define TI_GET_VERSION			0x01
 #define TI_GET_PORT_STATUS		0x02
 #define TI_GET_PORT_DEV_INFO		0x03
@@ -95,14 +83,14 @@
 #define TI_READ_DATA			0x81
 #define TI_REQ_TYPE_CLASS		0x82
 
-/* Module identifiers */
+ 
 #define TI_I2C_PORT			0x01
 #define TI_IEEE1284_PORT		0x02
 #define TI_UART1_PORT			0x03
 #define TI_UART2_PORT			0x04
 #define TI_RAM_PORT			0x05
 
-/* Modem status */
+ 
 #define TI_MSR_DELTA_CTS		0x01
 #define TI_MSR_DELTA_DSR		0x02
 #define TI_MSR_DELTA_RI			0x04
@@ -114,7 +102,7 @@
 #define TI_MSR_DELTA_MASK		0x0F
 #define TI_MSR_MASK			0xF0
 
-/* Line status */
+ 
 #define TI_LSR_OVERRUN_ERROR		0x01
 #define TI_LSR_PARITY_ERROR		0x02
 #define TI_LSR_FRAMING_ERROR		0x04
@@ -124,15 +112,15 @@
 #define TI_LSR_TX_EMPTY			0x20
 #define TI_LSR_TX_EMPTY_BOTH		0x40
 
-/* Line control */
+ 
 #define TI_LCR_BREAK			0x40
 
-/* Modem control */
+ 
 #define TI_MCR_LOOP			0x04
 #define TI_MCR_DTR			0x10
 #define TI_MCR_RTS			0x20
 
-/* Mask settings */
+ 
 #define TI_UART_ENABLE_RTS_IN		0x0001
 #define TI_UART_DISABLE_RTS		0x0002
 #define TI_UART_ENABLE_PARITY_CHECKING	0x0008
@@ -146,36 +134,36 @@
 #define TI_UART_ENABLE_MS_INTS		0x2000
 #define TI_UART_ENABLE_AUTO_START_DMA	0x4000
 
-/* Parity */
+ 
 #define TI_UART_NO_PARITY		0x00
 #define TI_UART_ODD_PARITY		0x01
 #define TI_UART_EVEN_PARITY		0x02
 #define TI_UART_MARK_PARITY		0x03
 #define TI_UART_SPACE_PARITY		0x04
 
-/* Stop bits */
+ 
 #define TI_UART_1_STOP_BITS		0x00
 #define TI_UART_1_5_STOP_BITS		0x01
 #define TI_UART_2_STOP_BITS		0x02
 
-/* Bits per character */
+ 
 #define TI_UART_5_DATA_BITS		0x00
 #define TI_UART_6_DATA_BITS		0x01
 #define TI_UART_7_DATA_BITS		0x02
 #define TI_UART_8_DATA_BITS		0x03
 
-/* 232/485 modes */
+ 
 #define TI_UART_232			0x00
 #define TI_UART_485_RECEIVER_DISABLED	0x01
 #define TI_UART_485_RECEIVER_ENABLED	0x02
 
-/* Pipe transfer mode and timeout */
+ 
 #define TI_PIPE_MODE_CONTINUOUS		0x01
 #define TI_PIPE_MODE_MASK		0x03
 #define TI_PIPE_TIMEOUT_MASK		0x7C
 #define TI_PIPE_TIMEOUT_ENABLE		0x80
 
-/* Config struct */
+ 
 struct ti_uart_config {
 	__be16	wBaudRate;
 	__be16	wFlags;
@@ -187,7 +175,7 @@ struct ti_uart_config {
 	u8	bUartMode;
 };
 
-/* Get port status */
+ 
 struct ti_port_status {
 	u8 bCmdCode;
 	u8 bModuleId;
@@ -196,11 +184,11 @@ struct ti_port_status {
 	u8 bLSR;
 };
 
-/* Purge modes */
+ 
 #define TI_PURGE_OUTPUT			0x00
 #define TI_PURGE_INPUT			0x80
 
-/* Read/Write data */
+ 
 #define TI_RW_DATA_ADDR_SFR		0x10
 #define TI_RW_DATA_ADDR_IDATA		0x20
 #define TI_RW_DATA_ADDR_XDATA		0x30
@@ -239,31 +227,31 @@ struct ti_read_data_bytes {
 	u8	bData[];
 };
 
-/* Interrupt struct */
+ 
 struct ti_interrupt {
 	u8	bICode;
 	u8	bIInfo;
 };
 
-/* Interrupt codes */
+ 
 #define TI_CODE_HARDWARE_ERROR		0xFF
 #define TI_CODE_DATA_ERROR		0x03
 #define TI_CODE_MODEM_STATUS		0x04
 
-/* Download firmware max packet size */
+ 
 #define TI_DOWNLOAD_MAX_PACKET_SIZE	64
 
-/* Firmware image header */
+ 
 struct ti_firmware_header {
 	__le16	wLength;
 	u8	bCheckSum;
 } __packed;
 
-/* UART addresses */
-#define TI_UART1_BASE_ADDR		0xFFA0	/* UART 1 base address */
-#define TI_UART2_BASE_ADDR		0xFFB0	/* UART 2 base address */
-#define TI_UART_OFFSET_LCR		0x0002	/* UART MCR register offset */
-#define TI_UART_OFFSET_MCR		0x0004	/* UART MCR register offset */
+ 
+#define TI_UART1_BASE_ADDR		0xFFA0	 
+#define TI_UART2_BASE_ADDR		0xFFB0	 
+#define TI_UART_OFFSET_LCR		0x0002	 
+#define TI_UART_OFFSET_MCR		0x0004	 
 
 #define TI_DRIVER_AUTHOR	"Al Borchers <alborchers@steinerpoint.com>"
 #define TI_DRIVER_DESC		"TI USB 3410/5052 Serial Driver"
@@ -272,7 +260,7 @@ struct ti_firmware_header {
 
 #define TI_TRANSFER_TIMEOUT	2
 
-/* read urb states */
+ 
 #define TI_READ_URB_RUNNING	0
 #define TI_READ_URB_STOPPING	1
 #define TI_READ_URB_STOPPED	2
@@ -283,7 +271,7 @@ struct ti_port {
 	int			tp_is_open;
 	u8			tp_msr;
 	u8			tp_shadow_mcr;
-	u8			tp_uart_mode;	/* 232 or 485 modes */
+	u8			tp_uart_mode;	 
 	unsigned int		tp_uart_base_addr;
 	struct ti_device	*tp_tdev;
 	struct usb_serial_port	*tp_port;
@@ -373,7 +361,7 @@ static const struct usb_device_id ti_id_table_3410[] = {
 	{ USB_DEVICE(MXU1_VENDOR_ID, MXU1_1150_PRODUCT_ID) },
 	{ USB_DEVICE(MXU1_VENDOR_ID, MXU1_1151_PRODUCT_ID) },
 	{ USB_DEVICE(STARTECH_VENDOR_ID, TI_3410_PRODUCT_ID) },
-	{ }	/* terminator */
+	{ }	 
 };
 
 static const struct usb_device_id ti_id_table_5052[] = {
@@ -412,7 +400,7 @@ static const struct usb_device_id ti_id_table_combined[] = {
 	{ USB_DEVICE(MXU1_VENDOR_ID, MXU1_1150_PRODUCT_ID) },
 	{ USB_DEVICE(MXU1_VENDOR_ID, MXU1_1151_PRODUCT_ID) },
 	{ USB_DEVICE(STARTECH_VENDOR_ID, TI_3410_PRODUCT_ID) },
-	{ }	/* terminator */
+	{ }	 
 };
 
 static struct usb_serial_driver ti_1port_device = {
@@ -529,7 +517,7 @@ static int ti_startup(struct usb_serial *serial)
 	tdev->td_serial = serial;
 	usb_set_serial_data(serial, tdev);
 
-	/* determine device type */
+	 
 	if (serial->type == &ti_1port_device)
 		tdev->td_is_3410 = 1;
 	dev_dbg(&dev->dev, "%s - device type is %s\n", __func__,
@@ -549,14 +537,14 @@ static int ti_startup(struct usb_serial *serial)
 	cur_altsetting = serial->interface->cur_altsetting;
 	num_endpoints = cur_altsetting->desc.bNumEndpoints;
 
-	/* if we have only 1 configuration and 1 endpoint, download firmware */
+	 
 	if (dev->descriptor.bNumConfigurations == 1 && num_endpoints == 1) {
 		status = ti_download_firmware(tdev);
 
 		if (status != 0)
 			goto free_tdev;
 
-		/* 3410 must be reset, 5052 resets itself */
+		 
 		if (tdev->td_is_3410) {
 			msleep_interruptible(100);
 			usb_reset_device(dev);
@@ -566,7 +554,7 @@ static int ti_startup(struct usb_serial *serial)
 		goto free_tdev;
 	}
 
-	/* the second configuration must be set */
+	 
 	if (dev->actconfig->desc.bConfigurationValue == TI_BOOT_CONFIG) {
 		status = usb_driver_set_configuration(dev, TI_ACTIVE_CONFIG);
 		status = status ? status : -ENODEV;
@@ -619,10 +607,7 @@ static int ti_port_probe(struct usb_serial_port *port)
 
 	usb_set_serial_port_data(port, tport);
 
-	/*
-	 * The TUSB5052 LSR does not tell when the transmitter shift register
-	 * has emptied so add a one-character drain delay.
-	 */
+	 
 	if (!tport->tp_tdev->td_is_3410)
 		port->port.drain_delay = 1;
 
@@ -653,14 +638,14 @@ static int ti_open(struct tty_struct *tty, struct usb_serial_port *port)
 	dev = port->serial->dev;
 	tdev = tport->tp_tdev;
 
-	/* only one open on any port on a device at a time */
+	 
 	if (mutex_lock_interruptible(&tdev->td_open_close_lock))
 		return -ERESTARTSYS;
 
 	tport->tp_msr = 0;
 	tport->tp_shadow_mcr |= (TI_MCR_RTS | TI_MCR_DTR);
 
-	/* start interrupt urb the first time a port is opened on this device */
+	 
 	if (tdev->td_open_port_count == 0) {
 		dev_dbg(&port->dev, "%s - start interrupt in urb\n", __func__);
 		urb = tdev->td_serial->port[0]->interrupt_in_urb;
@@ -707,8 +692,7 @@ static int ti_open(struct tty_struct *tty, struct usb_serial_port *port)
 		goto unlink_int_urb;
 	}
 
-	/* reset the data toggle on the bulk endpoints to work around bug in
-	 * host controllers where things get out of sync some times */
+	 
 	usb_clear_halt(dev, port->write_urb->pipe);
 	usb_clear_halt(dev, port->read_urb->pipe);
 
@@ -729,7 +713,7 @@ static int ti_open(struct tty_struct *tty, struct usb_serial_port *port)
 		goto unlink_int_urb;
 	}
 
-	/* start read urb */
+	 
 	urb = port->read_urb;
 	if (!urb) {
 		dev_err(&port->dev, "%s - no read urb\n", __func__);
@@ -787,7 +771,7 @@ static void ti_close(struct usb_serial_port *port)
 	mutex_lock(&tdev->td_open_close_lock);
 	--tdev->td_open_port_count;
 	if (tdev->td_open_port_count == 0) {
-		/* last port is closed, shut down interrupt urb */
+		 
 		usb_kill_urb(port->serial->port[0]->interrupt_in_urb);
 	}
 	mutex_unlock(&tdev->td_open_close_lock);
@@ -851,10 +835,7 @@ static bool ti_tx_empty(struct usb_serial_port *port)
 	u8 lsr, mask;
 	int ret;
 
-	/*
-	 * TUSB5052 does not have the TEMT bit to tell if the shift register
-	 * is empty.
-	 */
+	 
 	if (tport->tp_tdev->td_is_3410)
 		mask = TI_LSR_TX_EMPTY_BOTH;
 	else
@@ -908,7 +889,7 @@ static void ti_set_termios(struct tty_struct *tty,
 	if (!config)
 		return;
 
-	/* these flags must be set */
+	 
 	wflags |= TI_UART_ENABLE_MS_INTS;
 	wflags |= TI_UART_ENABLE_AUTO_START_DMA;
 	config->bUartMode = tport->tp_uart_mode;
@@ -929,7 +910,7 @@ static void ti_set_termios(struct tty_struct *tty,
 		break;
 	}
 
-	/* CMSPAR isn't supported by this driver */
+	 
 	tty->termios.c_cflag &= ~CMSPAR;
 
 	if (C_PARENB(tty)) {
@@ -951,7 +932,7 @@ static void ti_set_termios(struct tty_struct *tty,
 		config->bStopBits = TI_UART_1_STOP_BITS;
 
 	if (C_CRTSCTS(tty)) {
-		/* RTS flow control must be off to drop RTS for baud rate B0 */
+		 
 		if ((C_BAUD(tty)) != B0)
 			wflags |= TI_UART_ENABLE_RTS_IN;
 		wflags |= TI_UART_ENABLE_CTS_OUT;
@@ -980,7 +961,7 @@ static void ti_set_termios(struct tty_struct *tty,
 	else
 		wbaudrate = (461538 + baud/2) / baud;
 
-	/* FIXME: Should calculate resulting baud here and report it back */
+	 
 	if ((C_BAUD(tty)) != B0)
 		tty_encode_baud_rate(tty, baud, baud);
 
@@ -999,9 +980,9 @@ static void ti_set_termios(struct tty_struct *tty,
 		dev_err(&port->dev, "%s - cannot set config on port %d, %d\n",
 				__func__, port->port_number, status);
 
-	/* SET_CONFIG asserts RTS and DTR, reset them correctly */
+	 
 	mcr = tport->tp_shadow_mcr;
-	/* if baud rate is B0, clear RTS and DTR */
+	 
 	if (C_BAUD(tty) == B0)
 		mcr &= ~(TI_MCR_DTR | TI_MCR_RTS);
 	status = ti_set_mcr(tport, mcr);
@@ -1228,7 +1209,7 @@ static void ti_bulk_in_callback(struct urb *urb)
 	}
 
 exit:
-	/* continue to read unless stopping */
+	 
 	spin_lock_irqsave(&tport->tp_lock, flags);
 	if (tport->tp_read_urb_state == TI_READ_URB_RUNNING)
 		retval = usb_submit_urb(urb, GFP_ATOMIC);
@@ -1263,7 +1244,7 @@ static void ti_bulk_out_callback(struct urb *urb)
 			__func__, status);
 	}
 
-	/* send any buffered data */
+	 
 	ti_send(tport);
 }
 
@@ -1324,14 +1305,14 @@ static void ti_send(struct ti_port *tport)
 		dev_err_console(port, "%s - submit write urb failed, %d\n",
 							__func__, result);
 		tport->tp_write_urb_in_use = 0;
-		/* TODO: reschedule ti_send */
+		 
 	} else {
 		spin_lock_irqsave(&tport->tp_lock, flags);
 		port->icount.tx += count;
 		spin_unlock_irqrestore(&tport->tp_lock, flags);
 	}
 
-	/* more room in the buffer for new writes, wakeup */
+	 
 	tty_port_tty_wakeup(&port->port);
 
 	return;
@@ -1422,7 +1403,7 @@ static void ti_handle_new_msr(struct ti_port *tport, u8 msr)
 
 	tport->tp_msr = msr & TI_MSR_MASK;
 
-	/* handle CTS flow control */
+	 
 	tty = tty_port_tty_get(&tport->tp_port->port);
 	if (tty && C_CRTSCTS(tty)) {
 		if (msr & TI_MSR_CTS)
@@ -1596,7 +1577,7 @@ static int ti_download_firmware(struct ti_device *tdev)
 		goto check_firmware;
 	}
 
-	/* try ID specific firmware first, then try generic firmware */
+	 
 	sprintf(buf, "ti_usb-v%04x-p%04x.fw",
 			le16_to_cpu(dev->descriptor.idVendor),
 			le16_to_cpu(dev->descriptor.idProduct));

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2012 Regents of the University of California
- * Copyright (C) 2017 SiFive
- *
- * All RISC-V systems have a timer attached to every hart.  These timers can
- * either be read from the "time" and "timeh" CSRs, and can use the SBI to
- * setup events, or directly accessed using MMIO registers.
- */
+
+ 
 
 #define pr_fmt(fmt) "riscv-timer: " fmt
 
@@ -58,11 +51,7 @@ static DEFINE_PER_CPU(struct clock_event_device, riscv_clock_event) = {
 	.set_next_event		= riscv_clock_next_event,
 };
 
-/*
- * It is guaranteed that all the timers across all the harts are synchronized
- * within one tick of each other, so while this could technically go
- * backwards when hopping between CPUs, practically it won't happen.
- */
+ 
 static unsigned long long riscv_clocksource_rdtime(struct clocksource *cs)
 {
 	return get_cycles64();
@@ -114,7 +103,7 @@ void riscv_cs_get_mult_shift(u32 *mult, u32 *shift)
 }
 EXPORT_SYMBOL_GPL(riscv_cs_get_mult_shift);
 
-/* called directly from the low-level interrupt handler */
+ 
 static irqreturn_t riscv_timer_interrupt(int irq, void *dev_id)
 {
 	struct clock_event_device *evdev = this_cpu_ptr(&riscv_clock_event);

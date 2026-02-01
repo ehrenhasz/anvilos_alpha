@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * clk-si5351.h: Skyworks / Silicon Labs Si5351A/B/C I2C Clock Generator
- *
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Rabeeh Khoury <rabeeh@solid-run.com>
- */
+ 
+ 
 
 #ifndef _CLK_SI5351_H_
 #define _CLK_SI5351_H_
@@ -149,13 +144,7 @@
 #define  SI5351_XTAL_ENABLE			(1<<6)
 #define  SI5351_MULTISYNTH_ENABLE		(1<<4)
 
-/**
- * enum si5351_variant - SiLabs Si5351 chip variant
- * @SI5351_VARIANT_A: Si5351A (8 output clocks, XTAL input)
- * @SI5351_VARIANT_A3: Si5351A MSOP10 (3 output clocks, XTAL input)
- * @SI5351_VARIANT_B: Si5351B (8 output clocks, XTAL/VXCO input)
- * @SI5351_VARIANT_C: Si5351C (8 output clocks, XTAL/CLKIN input)
- */
+ 
 enum si5351_variant {
 	SI5351_VARIANT_A = 1,
 	SI5351_VARIANT_A3 = 2,

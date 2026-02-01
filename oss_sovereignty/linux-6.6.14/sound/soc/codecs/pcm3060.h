@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * PCM3060 codec driver
- *
- * Copyright (C) 2018 Kirill Marinushkin <kmarinushkin@birdec.com>
- */
+ 
+ 
 
 #ifndef _SND_SOC_PCM3060_H
 #define _SND_SOC_PCM3060_H
@@ -17,8 +13,8 @@ extern const struct regmap_config pcm3060_regmap;
 #define PCM3060_DAI_ID_ADC	1
 #define PCM3060_DAI_IDS_NUM	2
 
-/* ADC and DAC can be clocked from separate or same sources CLK1 and CLK2 */
-#define PCM3060_CLK_DEF	0 /* default: CLK1->ADC, CLK2->DAC */
+ 
+#define PCM3060_CLK_DEF	0  
 #define PCM3060_CLK1		1
 #define PCM3060_CLK2		2
 
@@ -36,7 +32,7 @@ struct pcm3060_priv {
 int pcm3060_probe(struct device *dev);
 int pcm3060_remove(struct device *dev);
 
-/* registers */
+ 
 
 #define PCM3060_REG64			0x40
 #define PCM3060_REG_MRST		0x80
@@ -93,4 +89,4 @@ int pcm3060_remove(struct device *dev);
 #define PCM3060_REG_SHIFT_MUT11	0x00
 #define PCM3060_REG_SHIFT_MUT12	0x01
 
-#endif /* _SND_SOC_PCM3060_H */
+#endif  

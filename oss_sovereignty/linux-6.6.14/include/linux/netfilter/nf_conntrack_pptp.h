@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* PPTP constants and structs */
+ 
+ 
 #ifndef _NF_CONNTRACK_PPTP_H
 #define _NF_CONNTRACK_PPTP_H
 
@@ -12,16 +12,16 @@
 
 const char *pptp_msg_name(u_int16_t msg);
 
-/* state of the control session */
+ 
 enum pptp_ctrlsess_state {
-	PPTP_SESSION_NONE,			/* no session present */
-	PPTP_SESSION_ERROR,			/* some session error */
-	PPTP_SESSION_STOPREQ,			/* stop_sess request seen */
-	PPTP_SESSION_REQUESTED,			/* start_sess request seen */
-	PPTP_SESSION_CONFIRMED,			/* session established */
+	PPTP_SESSION_NONE,			 
+	PPTP_SESSION_ERROR,			 
+	PPTP_SESSION_STOPREQ,			 
+	PPTP_SESSION_REQUESTED,			 
+	PPTP_SESSION_CONFIRMED,			 
 };
 
-/* state of the call inside the control session */
+ 
 enum pptp_ctrlcall_state {
 	PPTP_CALL_NONE,
 	PPTP_CALL_ERROR,
@@ -33,21 +33,20 @@ enum pptp_ctrlcall_state {
 	PPTP_CALL_CLEAR_REQ,
 };
 
-/* conntrack private data */
+ 
 struct nf_ct_pptp_master {
-	enum pptp_ctrlsess_state sstate;	/* session state */
-	enum pptp_ctrlcall_state cstate;	/* call state */
-	__be16 pac_call_id;			/* call id of PAC */
-	__be16 pns_call_id;			/* call id of PNS */
+	enum pptp_ctrlsess_state sstate;	 
+	enum pptp_ctrlcall_state cstate;	 
+	__be16 pac_call_id;			 
+	__be16 pns_call_id;			 
 
-	/* in pre-2.6.11 this used to be per-expect. Now it is per-conntrack
-	 * and therefore imposes a fixed limit on the number of maps */
+	 
 	struct nf_ct_gre_keymap *keymap[IP_CT_DIR_MAX];
 };
 
 struct nf_nat_pptp {
-	__be16 pns_call_id;			/* NAT'ed PNS call id */
-	__be16 pac_call_id;			/* NAT'ed PAC call id */
+	__be16 pns_call_id;			 
+	__be16 pac_call_id;			 
 };
 
 #define PPTP_CONTROL_PORT	1723
@@ -63,7 +62,7 @@ struct pptp_pkt_hdr {
 	__be32	magicCookie;
 };
 
-/* PptpControlMessageType values */
+ 
 #define PPTP_START_SESSION_REQUEST	1
 #define PPTP_START_SESSION_REPLY	2
 #define PPTP_STOP_SESSION_REQUEST	3
@@ -82,7 +81,7 @@ struct pptp_pkt_hdr {
 
 #define PPTP_MSG_MAX			15
 
-/* PptpGeneralError values */
+ 
 #define PPTP_ERROR_CODE_NONE		0
 #define PPTP_NOT_CONNECTED		1
 #define PPTP_BAD_FORMAT			2
@@ -96,11 +95,11 @@ struct PptpControlHeader {
 	__u16	reserved;
 };
 
-/* FramingCapability Bitmap Values */
+ 
 #define PPTP_FRAME_CAP_ASYNC		0x1
 #define PPTP_FRAME_CAP_SYNC		0x2
 
-/* BearerCapability Bitmap Values */
+ 
 #define PPTP_BEARER_CAP_ANALOG		0x1
 #define PPTP_BEARER_CAP_DIGITAL		0x2
 
@@ -115,7 +114,7 @@ struct PptpStartSessionRequest {
 	__u8	vendorString[64];
 };
 
-/* PptpStartSessionResultCode Values */
+ 
 #define PPTP_START_OK			1
 #define PPTP_START_GENERAL_ERROR	2
 #define PPTP_START_ALREADY_CONNECTED	3
@@ -134,7 +133,7 @@ struct PptpStartSessionReply {
 	__u8	vendorString[64];
 };
 
-/* PptpStopReasons */
+ 
 #define PPTP_STOP_NONE			1
 #define PPTP_STOP_PROTOCOL		2
 #define PPTP_STOP_LOCAL_SHUTDOWN	3
@@ -145,7 +144,7 @@ struct PptpStopSessionRequest {
 	__u16	reserved2;
 };
 
-/* PptpStopSessionResultCode */
+ 
 #define PPTP_STOP_OK			1
 #define PPTP_STOP_GENERAL_ERROR		2
 
@@ -159,7 +158,7 @@ struct PptpEchoRequest {
 	__be32 identNumber;
 };
 
-/* PptpEchoReplyResultCode */
+ 
 #define PPTP_ECHO_OK			1
 #define PPTP_ECHO_GENERAL_ERROR		2
 
@@ -170,12 +169,12 @@ struct PptpEchoReply {
 	__u16	reserved;
 };
 
-/* PptpFramingType */
+ 
 #define PPTP_ASYNC_FRAMING		1
 #define PPTP_SYNC_FRAMING		2
 #define PPTP_DONT_CARE_FRAMING		3
 
-/* PptpCallBearerType */
+ 
 #define PPTP_ANALOG_TYPE		1
 #define PPTP_DIGITAL_TYPE		2
 #define PPTP_DONT_CARE_BEARER_TYPE	3
@@ -195,7 +194,7 @@ struct PptpOutCallRequest {
 	__u8	subAddress[64];
 };
 
-/* PptpCallResultCode */
+ 
 #define PPTP_OUTCALL_CONNECT		1
 #define PPTP_OUTCALL_GENERAL_ERROR	2
 #define PPTP_OUTCALL_NO_CARRIER		3
@@ -228,7 +227,7 @@ struct PptpInCallRequest {
 	__u8	subAddress[64];
 };
 
-/* PptpInCallResultCode */
+ 
 #define PPTP_INCALL_ACCEPT		1
 #define PPTP_INCALL_GENERAL_ERROR	2
 #define PPTP_INCALL_DONT_ACCEPT		3
@@ -318,4 +317,4 @@ struct nf_nat_pptp_hook {
 };
 
 extern const struct nf_nat_pptp_hook __rcu *nf_nat_pptp_hook;
-#endif /* _NF_CONNTRACK_PPTP_H */
+#endif  

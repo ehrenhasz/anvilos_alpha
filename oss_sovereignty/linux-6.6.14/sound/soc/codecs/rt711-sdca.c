@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt711-sdca.c -- rt711 SDCA ALSA SoC audio driver
-//
-// Copyright(c) 2021 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -93,7 +93,7 @@ static int rt711_sdca_calibration(struct rt711_sdca_priv *rt711)
 	dev = regmap_get_device(regmap);
 
 	regmap_read(rt711->regmap, RT711_RC_CAL_STATUS, &val);
-	/* RC calibration */
+	 
 	if (!(val & 0x40))
 		rt711_sdca_index_update_bits(rt711, RT711_VENDOR_ANALOG_CTL,
 			RT711_MISC_POWER_CTL0, 0x0010, 0x0010);
@@ -107,33 +107,33 @@ static int rt711_sdca_calibration(struct rt711_sdca_priv *rt711)
 	if (loop_rc == chk_cnt)
 		dev_err(dev, "%s, RC calibration time-out!\n", __func__);
 
-	/* HP calibration by manual mode setting */
+	 
 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_REG,
 		RT711_FSM_CTL, 0x2000, 0x2000);
 
-	/* Calibration manual mode */
+	 
 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_REG,
 		RT711_FSM_CTL, 0xf, RT711_CALI_CTL);
 
-	/* reset HP calibration */
+	 
 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_CALI,
 		RT711_DAC_DC_CALI_CTL1, RT711_DAC_DC_FORCE_CALI_RST, 0x00);
 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_CALI,
 		RT711_DAC_DC_CALI_CTL1, RT711_DAC_DC_FORCE_CALI_RST,
 		RT711_DAC_DC_FORCE_CALI_RST);
 
-	/* cal_clk_en_reg */
+	 
 	if (rt711->hw_ver == RT711_VER_VD0)
 		rt711_sdca_index_update_bits(rt711, RT711_VENDOR_CALI,
 			RT711_DAC_DC_CALI_CTL1, RT711_DAC_DC_CALI_CLK_EN,
 			RT711_DAC_DC_CALI_CLK_EN);
 
-	/* trigger */
+	 
 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_CALI,
 		RT711_DAC_DC_CALI_CTL1, RT711_DAC_DC_CALI_TRIGGER,
 		RT711_DAC_DC_CALI_TRIGGER);
 
-	/* wait for calibration process */
+	 
 	rt711_sdca_index_read(rt711, RT711_VENDOR_CALI,
 		RT711_DAC_DC_CALI_CTL1, &val);
 
@@ -152,11 +152,11 @@ static int rt711_sdca_calibration(struct rt711_sdca_priv *rt711)
 		ret = -ETIMEDOUT;
 
 _cali_fail_:
-	/* enable impedance sense */
+	 
 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_REG,
 		RT711_FSM_CTL, RT711_FSM_IMP_EN, RT711_FSM_IMP_EN);
 
-	/* release HP-JD and trigger FSM */
+	 
 	rt711_sdca_index_write(rt711, RT711_VENDOR_REG,
 		RT711_DIGITAL_MISC_CTRL4, 0x201b);
 
@@ -171,18 +171,18 @@ static unsigned int rt711_sdca_button_detect(struct rt711_sdca_priv *rt711)
 	int ret;
 	unsigned char buf[3];
 
-	/* get current UMP message owner */
+	 
 	ret = regmap_read(rt711->regmap,
 		SDW_SDCA_CTL(FUNC_NUM_HID, RT711_SDCA_ENT_HID01, RT711_SDCA_CTL_HIDTX_CURRENT_OWNER, 0),
 		&owner);
 	if (ret < 0)
 		return 0;
 
-	/* if owner is device then there is no button event from device */
+	 
 	if (owner == 1)
 		return 0;
 
-	/* read UMP message offset */
+	 
 	ret = regmap_read(rt711->regmap,
 		SDW_SDCA_CTL(FUNC_NUM_HID, RT711_SDCA_ENT_HID01, RT711_SDCA_CTL_HIDTX_MESSAGE_OFFSET, 0),
 		&offset);
@@ -233,9 +233,9 @@ static unsigned int rt711_sdca_button_detect(struct rt711_sdca_priv *rt711)
 	}
 
 _end_btn_det_:
-	/* Host is owner, so set back to device */
+	 
 	if (owner == 0)
-		/* set owner to device */
+		 
 		regmap_write(rt711->regmap,
 			SDW_SDCA_CTL(FUNC_NUM_HID, RT711_SDCA_ENT_HID01,
 				RT711_SDCA_CTL_HIDTX_SET_OWNER_TO_DEVICE, 0), 0x01);
@@ -248,7 +248,7 @@ static int rt711_sdca_headset_detect(struct rt711_sdca_priv *rt711)
 	unsigned int det_mode;
 	int ret;
 
-	/* get detected_mode */
+	 
 	ret = regmap_read(rt711->regmap,
 		SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT711_SDCA_ENT_GE49, RT711_SDCA_CTL_DETECTED_MODE, 0),
 		&det_mode);
@@ -267,7 +267,7 @@ static int rt711_sdca_headset_detect(struct rt711_sdca_priv *rt711)
 		break;
 	}
 
-	/* write selected_mode */
+	 
 	if (det_mode) {
 		ret = regmap_write(rt711->regmap,
 			SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT711_SDCA_ENT_GE49, RT711_SDCA_CTL_SELECTED_MODE, 0),
@@ -298,14 +298,14 @@ static void rt711_sdca_jack_detect_handler(struct work_struct *work)
 	if (!snd_soc_card_is_instantiated(rt711->component->card))
 		return;
 
-	/* SDW_SCP_SDCA_INT_SDCA_0 is used for jack detection */
+	 
 	if (rt711->scp_sdca_stat1 & SDW_SCP_SDCA_INT_SDCA_0) {
 		ret = rt711_sdca_headset_detect(rt711);
 		if (ret < 0)
 			return;
 	}
 
-	/* SDW_SCP_SDCA_INT_SDCA_8 is used for button detection */
+	 
 	if (rt711->scp_sdca_stat2 & SDW_SCP_SDCA_INT_SDCA_8)
 		btn_type = rt711_sdca_button_detect(rt711);
 
@@ -326,7 +326,7 @@ static void rt711_sdca_jack_detect_handler(struct work_struct *work)
 			SND_JACK_BTN_2 | SND_JACK_BTN_3);
 
 	if (btn_type) {
-		/* button released */
+		 
 		snd_soc_jack_report(rt711->hs_jack, rt711->jack_type,
 			SND_JACK_HEADSET |
 			SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -351,9 +351,9 @@ static void rt711_sdca_btn_check_handler(struct work_struct *work)
 	if (ret < 0)
 		goto io_error;
 
-	/* pin attached */
+	 
 	if (det_mode) {
-		/* read UMP message offset */
+		 
 		ret = regmap_read(rt711->regmap,
 			SDW_SDCA_CTL(FUNC_NUM_HID, RT711_SDCA_ENT_HID01, RT711_SDCA_CTL_HIDTX_MESSAGE_OFFSET, 0),
 			&offset);
@@ -412,7 +412,7 @@ static void rt711_sdca_btn_check_handler(struct work_struct *work)
 			SND_JACK_BTN_2 | SND_JACK_BTN_3);
 
 	if (btn_type) {
-		/* button released */
+		 
 		snd_soc_jack_report(rt711->hs_jack, rt711->jack_type,
 			SND_JACK_HEADSET |
 			SND_JACK_BTN_0 | SND_JACK_BTN_1 |
@@ -433,7 +433,7 @@ static void rt711_sdca_jack_init(struct rt711_sdca_priv *rt711)
 	mutex_lock(&rt711->calibrate_mutex);
 
 	if (rt711->hs_jack) {
-		/* Enable HID1 event & set button RTC mode */
+		 
 		rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
 			RT711_PUSH_BTN_INT_CTL6, 0x80f0, 0x8000);
 		rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
@@ -443,13 +443,13 @@ static void rt711_sdca_jack_init(struct rt711_sdca_priv *rt711)
 		rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
 			RT711_PUSH_BTN_INT_CTL9, 0xf000, 0x0000);
 
-		/* GE_mode_change_event_en & Hid1_push_button_event_en */
+		 
 		rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
 			RT711_GE_MODE_RELATED_CTL, 0x0c00, 0x0c00);
 
 		switch (rt711->jd_src) {
 		case RT711_JD1:
-			/* default settings was already for JD1 */
+			 
 			break;
 		case RT711_JD2:
 			rt711_sdca_index_update_bits(rt711, RT711_VENDOR_REG,
@@ -483,13 +483,13 @@ static void rt711_sdca_jack_init(struct rt711_sdca_priv *rt711)
 			break;
 		}
 
-		/* set SCP_SDCA_IntMask1[0]=1 */
+		 
 		sdw_write_no_pm(rt711->slave, SDW_SCP_SDCA_INTMASK1, SDW_SCP_SDCA_INTMASK_SDCA_0);
-		/* set SCP_SDCA_IntMask2[0]=1 */
+		 
 		sdw_write_no_pm(rt711->slave, SDW_SCP_SDCA_INTMASK2, SDW_SCP_SDCA_INTMASK_SDCA_8);
 		dev_dbg(&rt711->slave->dev, "in %s enable\n", __func__);
 	} else {
-		/* disable HID 1/2 event */
+		 
 		rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
 			RT711_GE_MODE_RELATED_CTL, 0x0c00, 0x0000);
 
@@ -507,7 +507,7 @@ static int rt711_sdca_set_jack_detect(struct snd_soc_component *component,
 
 	rt711->hs_jack = hs_jack;
 
-	/* we can only resume if the device was initialized at least once */
+	 
 	if (!rt711->first_hw_init)
 		return 0;
 
@@ -518,7 +518,7 @@ static int rt711_sdca_set_jack_detect(struct snd_soc_component *component,
 			return ret;
 		}
 
-		/* pm_runtime not enabled yet */
+		 
 		dev_dbg(component->dev,	"%s: skipping jack init for now\n", __func__);
 		return 0;
 	}
@@ -531,7 +531,7 @@ static int rt711_sdca_set_jack_detect(struct snd_soc_component *component,
 	return 0;
 }
 
-/* For SDCA control DAC/ADC Gain */
+ 
 static int rt711_sdca_set_gain_put(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
 {
@@ -550,16 +550,16 @@ static int rt711_sdca_set_gain_put(struct snd_kcontrol *kcontrol,
 	regmap_read(rt711->mbq_regmap, mc->reg, &lvalue);
 	regmap_read(rt711->mbq_regmap, mc->rreg, &rvalue);
 
-	/* control value to 2's complement value */
-	/* L Channel */
+	 
+	 
 	gain_l_val = ucontrol->value.integer.value[0];
 	if (gain_l_val > mc->max)
 		gain_l_val = mc->max;
 	read_l = gain_l_val;
 
-	if (mc->shift == 8) /* boost gain */
+	if (mc->shift == 8)  
 		gain_l_val = (gain_l_val * 10) << mc->shift;
-	else { /* ADC/DAC gain */
+	else {  
 		if (adc_vol_flag && gain_l_val > mc->shift)
 			gain_l_val = (gain_l_val - mc->shift) * 75;
 		else
@@ -573,15 +573,15 @@ static int rt711_sdca_set_gain_put(struct snd_kcontrol *kcontrol,
 		gain_l_val &= 0xffff;
 	}
 
-	/* R Channel */
+	 
 	gain_r_val = ucontrol->value.integer.value[1];
 	if (gain_r_val > mc->max)
 		gain_r_val = mc->max;
 	read_r = gain_r_val;
 
-	if (mc->shift == 8) /* boost gain */
+	if (mc->shift == 8)  
 		gain_r_val = (gain_r_val * 10) << mc->shift;
-	else { /* ADC/DAC gain */
+	else {  
 		if (adc_vol_flag && gain_r_val > mc->shift)
 			gain_r_val = (gain_r_val - mc->shift) * 75;
 		else
@@ -600,11 +600,11 @@ static int rt711_sdca_set_gain_put(struct snd_kcontrol *kcontrol,
 	else
 		return 0;
 
-	for (i = 0; i < 3; i++) { /* retry 3 times at most */
-		/* Lch*/
+	for (i = 0; i < 3; i++) {  
+		 
 		regmap_write(rt711->mbq_regmap, mc->reg, gain_l_val);
 
-		/* Rch */
+		 
 		regmap_write(rt711->mbq_regmap, mc->rreg, gain_r_val);
 
 		regmap_read(rt711->mbq_regmap, mc->reg, &read_l);
@@ -633,10 +633,10 @@ static int rt711_sdca_set_gain_get(struct snd_kcontrol *kcontrol,
 	regmap_read(rt711->mbq_regmap, mc->reg, &read_l);
 	regmap_read(rt711->mbq_regmap, mc->rreg, &read_r);
 
-	/* 2's complement value to control value */
-	if (mc->shift == 8) /* boost gain */
+	 
+	if (mc->shift == 8)  
 		ctl_l = (read_l >> mc->shift) / 10;
-	else { /* ADC/DAC gain */
+	else {  
 		ctl_l = read_l;
 		if (read_l & BIT(15)) {
 			ctl_l = 0xffff & ~(read_l - 1);
@@ -655,9 +655,9 @@ static int rt711_sdca_set_gain_get(struct snd_kcontrol *kcontrol,
 
 	neg_flag = 0;
 	if (read_l != read_r) {
-		if (mc->shift == 8) /* boost gain */
+		if (mc->shift == 8)  
 			ctl_r = (read_r >> mc->shift) / 10;
-		else { /* ADC/DAC gain */
+		else {  
 			ctl_r = read_r;
 			if (read_r & BIT(15)) {
 				ctl_r = 0xffff & ~(read_r - 1);
@@ -1276,7 +1276,7 @@ static int rt711_sdca_pcm_hw_params(struct snd_pcm_substream *substream,
 	if (!rt711->slave)
 		return -EINVAL;
 
-	/* SoundWire specific configuration */
+	 
 	snd_sdw_params_to_config(substream, params, &stream_config, &port_config);
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
@@ -1303,7 +1303,7 @@ static int rt711_sdca_pcm_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 44100:
 		sampling_rate = RT711_SDCA_RATE_44100HZ;
@@ -1323,7 +1323,7 @@ static int rt711_sdca_pcm_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* set sampling frequency */
+	 
 	regmap_write(rt711->regmap,
 		SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT711_SDCA_ENT_CS01, RT711_SDCA_CTL_SAMPLE_FREQ_INDEX, 0),
 		sampling_rate);
@@ -1422,10 +1422,7 @@ int rt711_sdca_init(struct device *dev, struct regmap *regmap,
 	INIT_DELAYED_WORK(&rt711->jack_detect_work, rt711_sdca_jack_detect_handler);
 	INIT_DELAYED_WORK(&rt711->jack_btn_check_work, rt711_sdca_btn_check_handler);
 
-	/*
-	 * Mark hw_init to false
-	 * HW init will be performed when device reports present
-	 */
+	 
 	rt711->hw_init = false;
 	rt711->first_hw_init = false;
 	rt711->fu0f_dapm_mute = true;
@@ -1433,7 +1430,7 @@ int rt711_sdca_init(struct device *dev, struct regmap *regmap,
 	rt711->fu0f_mixer_l_mute = rt711->fu0f_mixer_r_mute = true;
 	rt711->fu1e_mixer_l_mute = rt711->fu1e_mixer_r_mute = true;
 
-	/* JD source uses JD2 in default */
+	 
 	rt711->jd_src = RT711_JD2;
 
 	ret =  devm_snd_soc_register_component(dev,
@@ -1444,20 +1441,16 @@ int rt711_sdca_init(struct device *dev, struct regmap *regmap,
 	if (ret < 0)
 		return ret;
 
-	/* set autosuspend parameters */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 3000);
 	pm_runtime_use_autosuspend(dev);
 
-	/* make sure the device does not suspend immediately */
+	 
 	pm_runtime_mark_last_busy(dev);
 
 	pm_runtime_enable(dev);
 
-	/* important note: the device is NOT tagged as 'active' and will remain
-	 * 'suspended' until the hardware is enumerated/initialized. This is required
-	 * to make sure the ASoC framework use of pm_runtime_get_sync() does not silently
-	 * fail with -EACCESS because of race conditions between card creation and enumeration
-	 */
+	 
 
 	dev_dbg(dev, "%s\n", __func__);
 
@@ -1535,11 +1528,9 @@ int rt711_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 		regcache_cache_bypass(rt711->regmap, true);
 		regcache_cache_bypass(rt711->mbq_regmap, true);
 	} else {
-		/*
-		 * PM runtime status is marked as 'active' only when a Slave reports as Attached
-		 */
+		 
 
-		/* update count of parent 'active' children */
+		 
 		pm_runtime_set_active(&slave->dev);
 	}
 
@@ -1555,27 +1546,24 @@ int rt711_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 	else
 		rt711_sdca_vd1_io_init(rt711);
 
-	/* DP4 mux select from 08_filter_Out_pri */
+	 
 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_REG,
 		RT711_FILTER_SRC_SEL, 0x1800, 0x0800);
 
-	/* ge_exclusive_inbox_en disable */
+	 
 	rt711_sdca_index_update_bits(rt711, RT711_VENDOR_HDA_CTL,
 		RT711_PUSH_BTN_INT_CTL0, 0x20, 0x00);
 
-	/* calibration */
+	 
 	ret = rt711_sdca_calibration(rt711);
 	if (ret < 0)
 		dev_err(dev, "%s, calibration failed!\n", __func__);
 
-	/* HP output enable */
+	 
 	regmap_write(rt711->regmap,
 		SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT711_SDCA_ENT_OT1, RT711_SDCA_CTL_VENDOR_DEF, 0), 0x4);
 
-	/*
-	 * if set_jack callback occurred early than io_init,
-	 * we set up the jack detection function now
-	 */
+	 
 	if (rt711->hs_jack)
 		rt711_sdca_jack_init(rt711);
 
@@ -1587,7 +1575,7 @@ int rt711_sdca_io_init(struct device *dev, struct sdw_slave *slave)
 	} else
 		rt711->first_hw_init = true;
 
-	/* Mark Slave initialization complete */
+	 
 	rt711->hw_init = true;
 
 	pm_runtime_mark_last_busy(&slave->dev);

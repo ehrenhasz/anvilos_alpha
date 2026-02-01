@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * HT16K33 driver
- *
- * Author: Robin van der Gracht <robin@protonic.nl>
- *
- * Copyright: (C) 2016 Protonic Holland.
- * Copyright (C) 2021 Glider bv
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -28,7 +21,7 @@
 
 #include "line-display.h"
 
-/* Registers */
+ 
 #define REG_SYSTEM_SETUP		0x20
 #define REG_SYSTEM_SETUP_OSC_ON		BIT(0)
 
@@ -45,7 +38,7 @@
 
 #define REG_BRIGHTNESS			0xE0
 
-/* Defines */
+ 
 #define DRIVER_NAME			"ht16k33"
 
 #define MIN_BRIGHTNESS			0x1
@@ -242,9 +235,7 @@ static void ht16k33_fb_queue(struct ht16k33_priv *priv)
 	schedule_delayed_work(&priv->work, HZ / fbdev->refresh_rate);
 }
 
-/*
- * This gets the fb data from cache and copies it to ht16k33 display RAM
- */
+ 
 static void ht16k33_fb_update(struct work_struct *work)
 {
 	struct ht16k33_priv *priv = container_of(work, struct ht16k33_priv,
@@ -257,14 +248,14 @@ static void ht16k33_fb_update(struct work_struct *work)
 	p1 = fbdev->cache;
 	p2 = fbdev->buffer;
 
-	/* Search for the first byte with changes */
+	 
 	while (pos < HT16K33_FB_SIZE && first < 0) {
 		if (*(p1++) - *(p2++))
 			first = pos;
 		pos++;
 	}
 
-	/* No changes found */
+	 
 	if (first < 0)
 		goto requeue;
 
@@ -272,7 +263,7 @@ static void ht16k33_fb_update(struct work_struct *work)
 	p1 = fbdev->cache + HT16K33_FB_SIZE - 1;
 	p2 = fbdev->buffer + HT16K33_FB_SIZE - 1;
 
-	/* Determine i2c transfer length */
+	 
 	while (len > 1) {
 		if (*(p1--) - *(p2--))
 			break;
@@ -293,19 +284,19 @@ static int ht16k33_initialize(struct ht16k33_priv *priv)
 	uint8_t byte;
 	int err;
 
-	/* Clear RAM (8 * 16 bits) */
+	 
 	memset(data, 0, sizeof(data));
 	err = i2c_smbus_write_block_data(priv->client, 0, sizeof(data), data);
 	if (err)
 		return err;
 
-	/* Turn on internal oscillator */
+	 
 	byte = REG_SYSTEM_SETUP_OSC_ON | REG_SYSTEM_SETUP;
 	err = i2c_smbus_write_byte(priv->client, byte);
 	if (err)
 		return err;
 
-	/* Configure INT pin */
+	 
 	byte = REG_ROWINT_SET | REG_ROWINT_SET_INT_ACT_HIGH;
 	if (priv->client->irq > 0)
 		byte |= REG_ROWINT_SET_INT_EN;
@@ -337,10 +328,7 @@ static const struct backlight_ops ht16k33_bl_ops = {
 	.check_fb	= ht16k33_bl_check_fb,
 };
 
-/*
- * Blank events will be passed to the actual device handling the backlight when
- * we return zero here.
- */
+ 
 static int ht16k33_blank(int blank, struct fb_info *info)
 {
 	return 0;
@@ -365,10 +353,7 @@ static const struct fb_ops ht16k33_fb_ops = {
 	.fb_mmap = ht16k33_mmap,
 };
 
-/*
- * This gets the keys from keypad and reports it to input subsystem.
- * Returns true if a key is pressed.
- */
+ 
 static bool ht16k33_keypad_scan(struct ht16k33_keypad *keypad)
 {
 	const unsigned short *keycodes = keypad->dev->keycode;
@@ -492,7 +477,7 @@ static int ht16k33_led_probe(struct device *dev, struct led_classdev *led,
 	struct led_init_data init_data = {};
 	int err;
 
-	/* The LED is optional */
+	 
 	init_data.fwnode = device_get_named_child_node(dev, "led");
 	if (!init_data.fwnode)
 		return 0;
@@ -593,7 +578,7 @@ static int ht16k33_fbdev_probe(struct device *dev, struct ht16k33_priv *priv,
 		if (err)
 			return err;
 	} else {
-		/* backwards compatibility with DT lacking an led subnode */
+		 
 		struct backlight_properties bl_props;
 
 		memset(&bl_props, 0, sizeof(struct backlight_properties));
@@ -612,7 +597,7 @@ static int ht16k33_fbdev_probe(struct device *dev, struct ht16k33_priv *priv,
 		ht16k33_bl_update_status(bl);
 	}
 
-	/* Framebuffer (2 bytes per column) */
+	 
 	BUILD_BUG_ON(PAGE_SIZE < HT16K33_FB_SIZE);
 	fbdev->buffer = (unsigned char *) get_zeroed_page(GFP_KERNEL);
 	if (!fbdev->buffer)
@@ -675,7 +660,7 @@ static int ht16k33_seg_probe(struct device *dev, struct ht16k33_priv *priv,
 
 	switch (priv->type) {
 	case DISP_MATRIX:
-		/* not handled here */
+		 
 		err = -EINVAL;
 		break;
 
@@ -747,12 +732,12 @@ static int ht16k33_probe(struct i2c_client *client)
 		dft_brightness = MAX_BRIGHTNESS;
 	}
 
-	/* LED */
+	 
 	err = ht16k33_led_probe(dev, &priv->led, dft_brightness);
 	if (err)
 		return err;
 
-	/* Keypad */
+	 
 	if (client->irq > 0) {
 		err = ht16k33_keypad_probe(client, &priv->keypad);
 		if (err)
@@ -761,13 +746,13 @@ static int ht16k33_probe(struct i2c_client *client)
 
 	switch (priv->type) {
 	case DISP_MATRIX:
-		/* Frame Buffer Display */
+		 
 		err = ht16k33_fbdev_probe(dev, priv, dft_brightness);
 		break;
 
 	case DISP_QUAD_7SEG:
 	case DISP_QUAD_14SEG:
-		/* Segment Display */
+		 
 		err = ht16k33_seg_probe(dev, priv, dft_brightness);
 		break;
 	}
@@ -805,13 +790,13 @@ MODULE_DEVICE_TABLE(i2c, ht16k33_i2c_match);
 
 static const struct of_device_id ht16k33_of_match[] = {
 	{
-		/* 0.56" 4-Digit 7-Segment FeatherWing Display (Red) */
+		 
 		.compatible = "adafruit,3108", .data = (void *)DISP_QUAD_7SEG,
 	}, {
-		/* 0.54" Quad Alphanumeric FeatherWing Display (Red) */
+		 
 		.compatible = "adafruit,3130", .data = (void *)DISP_QUAD_14SEG,
 	}, {
-		/* Generic, assumed Dot-Matrix Display */
+		 
 		.compatible = "holtek,ht16k33", .data = (void *)DISP_MATRIX,
 	},
 	{ }

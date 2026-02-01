@@ -1,39 +1,6 @@
-/*
- * Copyright © 2014-2015 Broadcom
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
-/**
- * DOC: Render command list generation
- *
- * In the V3D hardware, render command lists are what load and store
- * tiles of a framebuffer and optionally call out to binner-generated
- * command lists to do the 3D drawing for that tile.
- *
- * In the VC4 driver, render command list generation is performed by the
- * kernel instead of userspace.  We do this because validating a
- * user-submitted command list is hard to get right and has high CPU overhead,
- * while the number of valid configurations for render command lists is
- * actually fairly low.
- */
+ 
 
 #include "uapi/drm/vc4_drm.h"
 #include "vc4_drv.h"
@@ -71,12 +38,7 @@ static inline void rcl_u32(struct vc4_rcl_setup *setup, u32 val)
 	setup->next_offset += 4;
 }
 
-/*
- * Emits a no-op STORE_TILE_BUFFER_GENERAL.
- *
- * If we emit a PACKET_TILE_COORDINATES, it must be followed by a store of
- * some sort before another load is triggered.
- */
+ 
 static void vc4_store_before_load(struct vc4_rcl_setup *setup)
 {
 	rcl_u8(setup, VC4_PACKET_STORE_TILE_BUFFER_GENERAL);
@@ -86,16 +48,10 @@ static void vc4_store_before_load(struct vc4_rcl_setup *setup)
 		VC4_STORE_TILE_BUFFER_DISABLE_COLOR_CLEAR |
 		VC4_STORE_TILE_BUFFER_DISABLE_ZS_CLEAR |
 		VC4_STORE_TILE_BUFFER_DISABLE_VG_MASK_CLEAR);
-	rcl_u32(setup, 0); /* no address, since we're in None mode */
+	rcl_u32(setup, 0);  
 }
 
-/*
- * Calculates the physical address of the start of a tile in a RCL surface.
- *
- * Unlike the other load/store packets,
- * VC4_PACKET_LOAD/STORE_FULL_RES_TILE_BUFFER don't look at the tile
- * coordinates packet, and instead just store to the address given.
- */
+ 
 static uint32_t vc4_full_res_offset(struct vc4_exec_info *exec,
 				    struct drm_gem_dma_object *bo,
 				    struct drm_vc4_submit_rcl_surface *surf,
@@ -105,13 +61,7 @@ static uint32_t vc4_full_res_offset(struct vc4_exec_info *exec,
 		(DIV_ROUND_UP(exec->args->width, 32) * y + x);
 }
 
-/*
- * Emits a PACKET_TILE_COORDINATES if one isn't already pending.
- *
- * The tile coordinates packet triggers a pending load if there is one, are
- * used for clipping during rendering, and determine where loads/stores happen
- * relative to their base address.
- */
+ 
 static void vc4_tile_coordinates(struct vc4_rcl_setup *setup,
 				 uint32_t x, uint32_t y)
 {
@@ -127,10 +77,7 @@ static void emit_tile(struct vc4_exec_info *exec,
 	struct drm_vc4_submit_cl *args = exec->args;
 	bool has_bin = args->bin_cl_size != 0;
 
-	/* Note that the load doesn't actually occur until the
-	 * tile coords packet is processed, and only one load
-	 * may be outstanding at a time.
-	 */
+	 
 	if (setup->color_read) {
 		if (args->color_read.flags &
 		    VC4_SUBMIT_RCL_SURFACE_READ_IS_FULL_RES) {
@@ -149,7 +96,7 @@ static void emit_tile(struct vc4_exec_info *exec,
 
 	if (setup->zs_read) {
 		if (setup->color_read) {
-			/* Exec previous load. */
+			 
 			vc4_tile_coordinates(setup, x, y);
 			vc4_store_before_load(setup);
 		}
@@ -169,14 +116,10 @@ static void emit_tile(struct vc4_exec_info *exec,
 		}
 	}
 
-	/* Clipping depends on tile coordinates having been
-	 * emitted, so we always need one here.
-	 */
+	 
 	vc4_tile_coordinates(setup, x, y);
 
-	/* Wait for the binner before jumping to the first
-	 * tile's lists.
-	 */
+	 
 	if (first && has_bin)
 		rcl_u8(setup, VC4_PACKET_WAIT_ON_SEMAPHORE);
 
@@ -319,7 +262,7 @@ static int vc4_create_rcl_bo(struct drm_device *dev, struct vc4_exec_info *exec,
 	if (setup->color_write)
 		loop_body_size += VC4_PACKET_STORE_MS_TILE_BUFFER_SIZE;
 
-	/* We need a VC4_PACKET_TILE_COORDINATES in between each store. */
+	 
 	loop_body_size += VC4_PACKET_TILE_COORDINATES_SIZE *
 		((setup->msaa_color_write != NULL) +
 		 (setup->msaa_zs_write != NULL) +
@@ -334,11 +277,7 @@ static int vc4_create_rcl_bo(struct drm_device *dev, struct vc4_exec_info *exec,
 	list_add_tail(&to_vc4_bo(&setup->rcl->base)->unref_head,
 		      &exec->unref_list);
 
-	/* The tile buffer gets cleared when the previous tile is stored.  If
-	 * the clear values changed between frames, then the tile buffer has
-	 * stale clear values in it, so we have to do a store in None mode (no
-	 * writes) so that we trigger the tile buffer clear.
-	 */
+	 
 	if (args->flags & VC4_SUBMIT_CL_USE_CLEAR_COLOR) {
 		rcl_u8(setup, VC4_PACKET_CLEAR_COLORS);
 		rcl_u32(setup, args->clear_color[0]);
@@ -350,7 +289,7 @@ static int vc4_create_rcl_bo(struct drm_device *dev, struct vc4_exec_info *exec,
 
 		rcl_u8(setup, VC4_PACKET_STORE_TILE_BUFFER_GENERAL);
 		rcl_u16(setup, VC4_LOADSTORE_TILE_BUFFER_NONE);
-		rcl_u32(setup, 0); /* no address, since we're in None mode */
+		rcl_u32(setup, 0);  
 	}
 
 	rcl_u8(setup, VC4_PACKET_TILE_RENDERING_MODE_CONFIG);
@@ -651,9 +590,7 @@ int vc4_get_rcl(struct drm_device *dev, struct vc4_exec_info *exec)
 	if (ret)
 		return ret;
 
-	/* We shouldn't even have the job submitted to us if there's no
-	 * surface to write out.
-	 */
+	 
 	if (!setup.color_write && !setup.zs_write &&
 	    !setup.msaa_color_write && !setup.msaa_zs_write) {
 		DRM_DEBUG("RCL requires color or Z/S write\n");

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2008 Cisco Systems, Inc.  All rights reserved.
- * Copyright 2007 Nuova Systems, Inc.  All rights reserved.
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/pci.h>
 #include <linux/slab.h>
@@ -44,7 +41,7 @@ void fnic_handle_link(struct work_struct *work)
 
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 
-	fnic->link_events = 1;      /* less work to just set everytime*/
+	fnic->link_events = 1;       
 
 	if (fnic->stop_rx_link_events) {
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
@@ -97,14 +94,14 @@ void fnic_handle_link(struct work_struct *work)
 
 	if (old_link_status == fnic->link_status) {
 		if (!fnic->link_status) {
-			/* DOWN -> DOWN */
+			 
 			spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 			fnic_fc_trace_set_data(fnic->lport->host->host_no,
 				FNIC_FC_LE, "Link Status: DOWN->DOWN",
 				strlen("Link Status: DOWN->DOWN"));
 		} else {
 			if (old_link_down_cnt != fnic->link_down_cnt) {
-				/* UP -> DOWN -> UP */
+				 
 				fnic->lport->host_stats.link_failure_count++;
 				spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 				fnic_fc_trace_set_data(
@@ -117,7 +114,7 @@ void fnic_handle_link(struct work_struct *work)
 					     "link down\n");
 				fcoe_ctlr_link_down(&fnic->ctlr);
 				if (fnic->config.flags & VFCF_FIP_CAPABLE) {
-					/* start FCoE VLAN discovery */
+					 
 					fnic_fc_trace_set_data(
 						fnic->lport->host->host_no,
 						FNIC_FC_LE,
@@ -132,7 +129,7 @@ void fnic_handle_link(struct work_struct *work)
 					     "link up\n");
 				fcoe_ctlr_link_up(&fnic->ctlr);
 			} else {
-				/* UP -> UP */
+				 
 				spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 				fnic_fc_trace_set_data(
 					fnic->lport->host->host_no, FNIC_FC_LE,
@@ -141,10 +138,10 @@ void fnic_handle_link(struct work_struct *work)
 			}
 		}
 	} else if (fnic->link_status) {
-		/* DOWN -> UP */
+		 
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 		if (fnic->config.flags & VFCF_FIP_CAPABLE) {
-			/* start FCoE VLAN discovery */
+			 
 				fnic_fc_trace_set_data(
 				fnic->lport->host->host_no,
 				FNIC_FC_LE, "Link Status: DOWN_UP_VLAN",
@@ -157,7 +154,7 @@ void fnic_handle_link(struct work_struct *work)
 			"Link Status: DOWN_UP", strlen("Link Status: DOWN_UP"));
 		fcoe_ctlr_link_up(&fnic->ctlr);
 	} else {
-		/* UP -> DOWN */
+		 
 		fnic->lport->host_stats.link_failure_count++;
 		spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 		FNIC_FCS_DBG(KERN_DEBUG, fnic->lport->host, "link down\n");
@@ -175,9 +172,7 @@ void fnic_handle_link(struct work_struct *work)
 
 }
 
-/*
- * This function passes incoming fabric frames to libFC
- */
+ 
 void fnic_handle_frame(struct work_struct *work)
 {
 	struct fnic *fnic = container_of(work, struct fnic, frame_work);
@@ -196,10 +191,7 @@ void fnic_handle_frame(struct work_struct *work)
 		}
 		fp = (struct fc_frame *)skb;
 
-		/*
-		 * If we're in a transitional state, just re-queue and return.
-		 * The queue will be serviced when we get to a stable state.
-		 */
+		 
 		if (fnic->state != FNIC_IN_FC_MODE &&
 		    fnic->state != FNIC_IN_ETH_MODE) {
 			skb_queue_head(&fnic->frame_queue, skb);
@@ -251,10 +243,7 @@ void fnic_handle_event(struct work_struct *work)
 			spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 			return;
 		}
-		/*
-		 * If we're in a transitional state, just re-queue and return.
-		 * The queue will be serviced when we get to a stable state.
-		 */
+		 
 		if (fnic->state != FNIC_IN_FC_MODE &&
 		    fnic->state != FNIC_IN_ETH_MODE) {
 			spin_unlock_irqrestore(&fnic->fnic_lock, flags);
@@ -283,14 +272,7 @@ void fnic_handle_event(struct work_struct *work)
 	spin_unlock_irqrestore(&fnic->fnic_lock, flags);
 }
 
-/**
- * is_fnic_fip_flogi_reject() - Check if the Received FIP FLOGI frame is rejected
- * @fip: The FCoE controller that received the frame
- * @skb: The received FIP frame
- *
- * Returns non-zero if the frame is rejected with unsupported cmd with
- * insufficient resource els explanation.
- */
+ 
 static inline int is_fnic_fip_flogi_reject(struct fcoe_ctlr *fip,
 					 struct sk_buff *skb)
 {
@@ -340,10 +322,7 @@ static inline int is_fnic_fip_flogi_reject(struct fcoe_ctlr *fip,
 		if (!fh)
 			return 0;
 
-		/*
-		 * ELS command code, reason and explanation should be = Reject,
-		 * unsupported command and insufficient resource
-		 */
+		 
 		els_op = *(u8 *)(fh + 1);
 		if (els_op == ELS_LS_RJT) {
 			shost_printk(KERN_INFO, lport->host,
@@ -404,7 +383,7 @@ static void fnic_fcoe_send_vlan_req(struct fnic *fnic)
 	skb_reset_network_header(skb);
 	fip->send(fip, skb);
 
-	/* set a timer so that we can retry if there no response */
+	 
 	vlan_tov = jiffies + msecs_to_jiffies(FCOE_CTLR_FIPVLAN_TOV);
 	mod_timer(&fnic->fip_timer, round_jiffies(vlan_tov));
 }
@@ -444,7 +423,7 @@ static void fnic_fcoe_process_vlan_resp(struct fnic *fnic, struct sk_buff *skb)
 				  "process_vlan_resp: FIP VLAN %d\n", vid);
 			vlan = kzalloc(sizeof(*vlan), GFP_ATOMIC);
 			if (!vlan) {
-				/* retry from timer */
+				 
 				spin_unlock_irqrestore(&fnic->vlans_lock,
 							flags);
 				goto out;
@@ -458,9 +437,9 @@ static void fnic_fcoe_process_vlan_resp(struct fnic *fnic, struct sk_buff *skb)
 		rlen -= dlen;
 	}
 
-	/* any VLAN descriptors present ? */
+	 
 	if (list_empty(&fnic->vlans)) {
-		/* retry from timer */
+		 
 		atomic64_inc(&fnic_stats->vlan_stats.resp_withno_vlanID);
 		FNIC_FCS_DBG(KERN_INFO, fnic->lport->host,
 			  "No VLAN descriptors in FIP VLAN response\n");
@@ -470,11 +449,11 @@ static void fnic_fcoe_process_vlan_resp(struct fnic *fnic, struct sk_buff *skb)
 
 	vlan = list_first_entry(&fnic->vlans, struct fcoe_vlan, list);
 	fnic->set_vlan(fnic, vlan->vid);
-	vlan->state = FIP_VLAN_SENT; /* sent now */
+	vlan->state = FIP_VLAN_SENT;  
 	vlan->sol_count++;
 	spin_unlock_irqrestore(&fnic->vlans_lock, flags);
 
-	/* start the solicitation */
+	 
 	fcoe_ctlr_link_up(fip);
 
 	sol_time = jiffies + msecs_to_jiffies(FCOE_CTLR_START_DELAY);
@@ -492,11 +471,11 @@ static void fnic_fcoe_start_fcf_disc(struct fnic *fnic)
 	spin_lock_irqsave(&fnic->vlans_lock, flags);
 	vlan = list_first_entry(&fnic->vlans, struct fcoe_vlan, list);
 	fnic->set_vlan(fnic, vlan->vid);
-	vlan->state = FIP_VLAN_SENT; /* sent now */
+	vlan->state = FIP_VLAN_SENT;  
 	vlan->sol_count = 1;
 	spin_unlock_irqrestore(&fnic->vlans_lock, flags);
 
-	/* start the solicitation */
+	 
 	fcoe_ctlr_link_up(&fnic->ctlr);
 
 	sol_time = jiffies + msecs_to_jiffies(FCOE_CTLR_START_DELAY);
@@ -574,16 +553,16 @@ static int fnic_fcoe_handle_fip_frame(struct fnic *fnic, struct sk_buff *skb)
 	if (op == FIP_OP_DISC && sub == FIP_SC_ADV) {
 		if (fnic_fcoe_vlan_check(fnic, ntohs(fiph->fip_flags)))
 			goto drop;
-		/* pass it on to fcoe */
+		 
 		ret = 1;
 	} else if (op == FIP_OP_VLAN && sub == FIP_SC_VL_NOTE) {
-		/* set the vlan as used */
+		 
 		fnic_fcoe_process_vlan_resp(fnic, skb);
 		ret = 0;
 	} else if (op == FIP_OP_CTRL && sub == FIP_SC_CLR_VLINK) {
-		/* received CVL request, restart vlan disc */
+		 
 		fnic_event_enq(fnic, FNIC_EVT_START_VLAN_DISC);
-		/* pass it on to fcoe */
+		 
 		ret = 1;
 	}
 drop:
@@ -605,10 +584,7 @@ void fnic_handle_fip_frame(struct work_struct *work)
 			dev_kfree_skb(skb);
 			return;
 		}
-		/*
-		 * If we're in a transitional state, just re-queue and return.
-		 * The queue will be serviced when we get to a stable state.
-		 */
+		 
 		if (fnic->state != FNIC_IN_FC_MODE &&
 		    fnic->state != FNIC_IN_ETH_MODE) {
 			skb_queue_head(&fnic->fip_frame_queue, skb);
@@ -623,17 +599,14 @@ void fnic_handle_fip_frame(struct work_struct *work)
 				dev_kfree_skb(skb);
 				continue;
 			}
-			/*
-			 * If there's FLOGI rejects - clear all
-			 * fcf's & restart from scratch
-			 */
+			 
 			if (is_fnic_fip_flogi_reject(&fnic->ctlr, skb)) {
 				atomic64_inc(
 					&fnic_stats->vlan_stats.flogi_rejects);
 				shost_printk(KERN_INFO, fnic->lport->host,
 					  "Trigger a Link down - VLAN Disc\n");
 				fcoe_ctlr_link_down(&fnic->ctlr);
-				/* start FCoE VLAN discovery */
+				 
 				fnic_fcoe_send_vlan_req(fnic);
 				dev_kfree_skb(skb);
 				continue;
@@ -644,11 +617,7 @@ void fnic_handle_fip_frame(struct work_struct *work)
 	}
 }
 
-/**
- * fnic_import_rq_eth_pkt() - handle received FCoE or FIP frame.
- * @fnic:	fnic instance.
- * @skb:	Ethernet Frame.
- */
+ 
 static inline int fnic_import_rq_eth_pkt(struct fnic *fnic, struct sk_buff *skb)
 {
 	struct fc_frame *fp;
@@ -656,9 +625,7 @@ static inline int fnic_import_rq_eth_pkt(struct fnic *fnic, struct sk_buff *skb)
 	struct fcoe_hdr *fcoe_hdr;
 	struct fcoe_crc_eof *ft;
 
-	/*
-	 * Undo VLAN encapsulation if present.
-	 */
+	 
 	eh = (struct ethhdr *)skb->data;
 	if (eh->h_proto == htons(ETH_P_8021Q)) {
 		memmove((u8 *)eh + VLAN_HLEN, eh, ETH_ALEN * 2);
@@ -678,7 +645,7 @@ static inline int fnic_import_rq_eth_pkt(struct fnic *fnic, struct sk_buff *skb)
 		}
 		skb_queue_tail(&fnic->fip_frame_queue, skb);
 		queue_work(fnic_fip_queue, &fnic->fip_frame_work);
-		return 1;		/* let caller know packet was used */
+		return 1;		 
 	}
 	if (eh->h_proto != htons(ETH_P_FCOE))
 		goto drop;
@@ -704,13 +671,7 @@ drop:
 	return -1;
 }
 
-/**
- * fnic_update_mac_locked() - set data MAC address and filters.
- * @fnic:	fnic instance.
- * @new:	newly-assigned FCoE MAC address.
- *
- * Called with the fnic lock held.
- */
+ 
 void fnic_update_mac_locked(struct fnic *fnic, u8 *new)
 {
 	u8 *ctl = fnic->ctlr.ctl_src_addr;
@@ -728,11 +689,7 @@ void fnic_update_mac_locked(struct fnic *fnic, u8 *new)
 		vnic_dev_add_addr(fnic->vdev, new);
 }
 
-/**
- * fnic_update_mac() - set data MAC address and filters.
- * @lport:	local port.
- * @new:	newly-assigned FCoE MAC address.
- */
+ 
 void fnic_update_mac(struct fc_lport *lport, u8 *new)
 {
 	struct fnic *fnic = lport_priv(lport);
@@ -742,20 +699,7 @@ void fnic_update_mac(struct fc_lport *lport, u8 *new)
 	spin_unlock_irq(&fnic->fnic_lock);
 }
 
-/**
- * fnic_set_port_id() - set the port_ID after successful FLOGI.
- * @lport:	local port.
- * @port_id:	assigned FC_ID.
- * @fp:		received frame containing the FLOGI accept or NULL.
- *
- * This is called from libfc when a new FC_ID has been assigned.
- * This causes us to reset the firmware to FC_MODE and setup the new MAC
- * address and FC_ID.
- *
- * It is also called with FC_ID 0 when we're logged off.
- *
- * If the FC_ID is due to point-to-point, fp may be NULL.
- */
+ 
 void fnic_set_port_id(struct fc_lport *lport, u32 port_id, struct fc_frame *fp)
 {
 	struct fnic *fnic = lport_priv(lport);
@@ -765,10 +709,7 @@ void fnic_set_port_id(struct fc_lport *lport, u32 port_id, struct fc_frame *fp)
 	FNIC_FCS_DBG(KERN_DEBUG, lport->host, "set port_id %x fp %p\n",
 		     port_id, fp);
 
-	/*
-	 * If we're clearing the FC_ID, change to use the ctl_src_addr.
-	 * Set ethernet mode to send FLOGI.
-	 */
+	 
 	if (!port_id) {
 		fnic_update_mac(lport, fnic->ctlr.ctl_src_addr);
 		fnic_set_eth_mode(fnic);
@@ -778,13 +719,13 @@ void fnic_set_port_id(struct fc_lport *lport, u32 port_id, struct fc_frame *fp)
 	if (fp) {
 		mac = fr_cb(fp)->granted_mac;
 		if (is_zero_ether_addr(mac)) {
-			/* non-FIP - FLOGI already accepted - ignore return */
+			 
 			fcoe_ctlr_recv_flogi(&fnic->ctlr, lport, fp);
 		}
 		fnic_update_mac(lport, mac);
 	}
 
-	/* Change state to reflect transition to FC mode */
+	 
 	spin_lock_irq(&fnic->fnic_lock);
 	if (fnic->state == FNIC_IN_ETH_MODE || fnic->state == FNIC_IN_FC_MODE)
 		fnic->state = FNIC_IN_ETH_TRANS_FC_MODE;
@@ -798,10 +739,7 @@ void fnic_set_port_id(struct fc_lport *lport, u32 port_id, struct fc_frame *fp)
 	}
 	spin_unlock_irq(&fnic->fnic_lock);
 
-	/*
-	 * Send FLOGI registration to firmware to set up FC mode.
-	 * The new address will be set up when registration completes.
-	 */
+	 
 	ret = fnic_flogi_reg_handler(fnic, port_id);
 
 	if (ret < 0) {
@@ -877,7 +815,7 @@ static void fnic_rq_cmpl_frame_recv(struct vnic_rq *rq, struct cq_desc
 			return;
 
 	} else {
-		/* wrong CQ type*/
+		 
 		shost_printk(KERN_ERR, fnic->lport->host,
 			     "fnic rq_cmpl wrong cq type x%x\n", type);
 		goto drop;
@@ -950,11 +888,7 @@ int fnic_rq_cmpl_handler(struct fnic *fnic, int rq_work_to_do)
 	return tot_rq_work_done;
 }
 
-/*
- * This function is called once at init time to allocate and fill RQ
- * buffers. Subsequently, it is called in the interrupt context after RQ
- * buffer processing to replenish the buffers in the RQ
- */
+ 
 int fnic_alloc_rq_frame(struct vnic_rq *rq)
 {
 	struct fnic *fnic = vnic_dev_priv(rq->vdev);
@@ -1001,11 +935,7 @@ void fnic_free_rq_buf(struct vnic_rq *rq, struct vnic_rq_buf *buf)
 	buf->os_buf = NULL;
 }
 
-/**
- * fnic_eth_send() - Send Ethernet frame.
- * @fip:	fcoe_ctlr instance.
- * @skb:	Ethernet Frame, FIP, without VLAN encapsulation.
- */
+ 
 void fnic_eth_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 {
 	struct fnic *fnic = fnic_from_ctlr(fip);
@@ -1045,7 +975,7 @@ void fnic_eth_send(struct fcoe_ctlr *fip, struct sk_buff *skb)
 		goto irq_restore;
 
 	fnic_queue_wq_eth_desc(wq, skb, pa, skb->len,
-			       0 /* hw inserts cos value */,
+			       0  ,
 			       fnic->vlan_id, 1);
 	spin_unlock_irqrestore(&fnic->wq_lock[0], flags);
 	return;
@@ -1057,9 +987,7 @@ free_skb:
 	kfree_skb(skb);
 }
 
-/*
- * Send FC frame.
- */
+ 
 static int fnic_send_frame(struct fnic *fnic, struct fc_frame *fp)
 {
 	struct vnic_wq *wq = &fnic->wq[0];
@@ -1130,7 +1058,7 @@ static int fnic_send_frame(struct fnic *fnic, struct fc_frame *fp)
 	}
 
 	fnic_queue_wq_desc(wq, skb, pa, tot_len, fr_eof(fp),
-			   0 /* hw inserts cos value */,
+			   0  ,
 			   fnic->vlan_id, 1, 1, 1);
 
 irq_restore:
@@ -1143,10 +1071,7 @@ free_skb_on_err:
 	return ret;
 }
 
-/*
- * fnic_send
- * Routine to send a raw frame
- */
+ 
 int fnic_send(struct fc_lport *lp, struct fc_frame *fp)
 {
 	struct fnic *fnic = lport_priv(lp);
@@ -1157,10 +1082,7 @@ int fnic_send(struct fc_lport *lp, struct fc_frame *fp)
 		return -1;
 	}
 
-	/*
-	 * Queue frame if in a transitional state.
-	 * This occurs while registering the Port_ID / MAC address after FLOGI.
-	 */
+	 
 	spin_lock_irqsave(&fnic->fnic_lock, flags);
 	if (fnic->state != FNIC_IN_FC_MODE && fnic->state != FNIC_IN_ETH_MODE) {
 		skb_queue_tail(&fnic->tx_queue, fp_skb(fp));
@@ -1172,16 +1094,7 @@ int fnic_send(struct fc_lport *lp, struct fc_frame *fp)
 	return fnic_send_frame(fnic, fp);
 }
 
-/**
- * fnic_flush_tx() - send queued frames.
- * @fnic: fnic device
- *
- * Send frames that were waiting to go out in FC or Ethernet mode.
- * Whenever changing modes we purge queued frames, so these frames should
- * be queued for the stable mode that we're in, either FC or Ethernet.
- *
- * Called without fnic_lock held.
- */
+ 
 void fnic_flush_tx(struct fnic *fnic)
 {
 	struct sk_buff *skb;
@@ -1193,12 +1106,7 @@ void fnic_flush_tx(struct fnic *fnic)
 	}
 }
 
-/**
- * fnic_set_eth_mode() - put fnic into ethernet mode.
- * @fnic: fnic device
- *
- * Called without fnic lock held.
- */
+ 
 static void fnic_set_eth_mode(struct fnic *fnic)
 {
 	unsigned long flags;
@@ -1295,11 +1203,7 @@ void fnic_fcoe_reset_vlans(struct fnic *fnic)
 	struct fcoe_vlan *vlan;
 	struct fcoe_vlan *next;
 
-	/*
-	 * indicate a link down to fcoe so that all fcf's are free'd
-	 * might not be required since we did this before sending vlan
-	 * discovery request
-	 */
+	 
 	spin_lock_irqsave(&fnic->vlans_lock, flags);
 	if (!list_empty(&fnic->vlans)) {
 		list_for_each_entry_safe(vlan, next, &fnic->vlans, list) {
@@ -1330,7 +1234,7 @@ void fnic_handle_fip_timer(struct fnic *fnic)
 	spin_lock_irqsave(&fnic->vlans_lock, flags);
 	if (list_empty(&fnic->vlans)) {
 		spin_unlock_irqrestore(&fnic->vlans_lock, flags);
-		/* no vlans available, try again */
+		 
 		if (unlikely(fnic_log_level & FNIC_FCS_LOGGING))
 			if (printk_ratelimit())
 				shost_printk(KERN_DEBUG, fnic->lport->host,
@@ -1351,7 +1255,7 @@ void fnic_handle_fip_timer(struct fnic *fnic)
 		break;
 	case FIP_VLAN_FAILED:
 		spin_unlock_irqrestore(&fnic->vlans_lock, flags);
-		/* if all vlans are in failed state, restart vlan disc */
+		 
 		if (unlikely(fnic_log_level & FNIC_FCS_LOGGING))
 			if (printk_ratelimit())
 				shost_printk(KERN_DEBUG, fnic->lport->host,
@@ -1360,10 +1264,7 @@ void fnic_handle_fip_timer(struct fnic *fnic)
 		break;
 	case FIP_VLAN_SENT:
 		if (vlan->sol_count >= FCOE_CTLR_MAX_SOL) {
-			/*
-			 * no response on this vlan, remove  from the list.
-			 * Try the next vlan
-			 */
+			 
 			FNIC_FCS_DBG(KERN_INFO, fnic->lport->host,
 				  "Dequeue this VLAN ID %d from list\n",
 				  vlan->vid);
@@ -1371,7 +1272,7 @@ void fnic_handle_fip_timer(struct fnic *fnic)
 			kfree(vlan);
 			vlan = NULL;
 			if (list_empty(&fnic->vlans)) {
-				/* we exhausted all vlans, restart vlan disc */
+				 
 				spin_unlock_irqrestore(&fnic->vlans_lock,
 							flags);
 				FNIC_FCS_DBG(KERN_INFO, fnic->lport->host,
@@ -1380,11 +1281,11 @@ void fnic_handle_fip_timer(struct fnic *fnic)
 				fnic_event_enq(fnic, FNIC_EVT_START_VLAN_DISC);
 				return;
 			}
-			/* check the next vlan */
+			 
 			vlan = list_first_entry(&fnic->vlans, struct fcoe_vlan,
 							list);
 			fnic->set_vlan(fnic, vlan->vid);
-			vlan->state = FIP_VLAN_SENT; /* sent now */
+			vlan->state = FIP_VLAN_SENT;  
 		}
 		spin_unlock_irqrestore(&fnic->vlans_lock, flags);
 		atomic64_inc(&fnic_stats->vlan_stats.sol_expiry_count);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 
@@ -58,17 +58,17 @@ static void test_l4lb(const char *file)
 
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	ASSERT_OK(err, "test_run");
-	ASSERT_EQ(topts.retval, 7 /*TC_ACT_REDIRECT*/, "ipv4 test_run retval");
+	ASSERT_EQ(topts.retval, 7  , "ipv4 test_run retval");
 	ASSERT_EQ(topts.data_size_out, 54, "ipv4 test_run data_size_out");
 	ASSERT_EQ(*magic, MAGIC_VAL, "ipv4 magic");
 
 	topts.data_in = &pkt_v6;
 	topts.data_size_in = sizeof(pkt_v6);
-	topts.data_size_out = sizeof(buf); /* reset out size */
+	topts.data_size_out = sizeof(buf);  
 
 	err = bpf_prog_test_run_opts(prog_fd, &topts);
 	ASSERT_OK(err, "test_run");
-	ASSERT_EQ(topts.retval, 7 /*TC_ACT_REDIRECT*/, "ipv6 test_run retval");
+	ASSERT_EQ(topts.retval, 7  , "ipv6 test_run retval");
 	ASSERT_EQ(topts.data_size_out, 74, "ipv6 test_run data_size_out");
 	ASSERT_EQ(*magic, MAGIC_VAL, "ipv6 magic");
 

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: LGPL-2.1
+
 #define _GNU_SOURCE
 #include <assert.h>
 #include <pthread.h>
@@ -69,7 +69,7 @@ struct percpu_list {
 	struct percpu_list_entry c[CPU_SETSIZE];
 };
 
-/* A simple percpu spinlock.  Returns the cpu lock was acquired on. */
+ 
 int rseq_this_cpu_lock(struct percpu_lock *lock)
 {
 	int cpu;
@@ -82,12 +82,9 @@ int rseq_this_cpu_lock(struct percpu_lock *lock)
 					 &lock->c[cpu].v, 0, 1, cpu);
 		if (rseq_likely(!ret))
 			break;
-		/* Retry if comparison fails or rseq aborts. */
+		 
 	}
-	/*
-	 * Acquire semantic when taking lock after control dependency.
-	 * Matches rseq_smp_store_release().
-	 */
+	 
 	rseq_smp_acquire__after_ctrl_dep();
 	return cpu;
 }
@@ -95,10 +92,7 @@ int rseq_this_cpu_lock(struct percpu_lock *lock)
 void rseq_percpu_unlock(struct percpu_lock *lock, int cpu)
 {
 	assert(lock->c[cpu].v == 1);
-	/*
-	 * Release lock, with release semantic. Matches
-	 * rseq_smp_acquire__after_ctrl_dep().
-	 */
+	 
 	rseq_smp_store_release(&lock->c[cpu].v, 0);
 }
 
@@ -126,12 +120,7 @@ void *test_percpu_spinlock_thread(void *arg)
 	return NULL;
 }
 
-/*
- * A simple test which implements a sharded counter using a per-cpu
- * lock.  Obviously real applications might prefer to simply use a
- * per-cpu increment; however, this is reasonable for a test and the
- * lock can be extended to synchronize more complicated operations.
- */
+ 
 void test_percpu_spinlock(void)
 {
 	const int num_threads = 200;
@@ -168,7 +157,7 @@ void this_cpu_list_push(struct percpu_list *list,
 		int ret;
 
 		cpu = get_current_cpu_id();
-		/* Load list->c[cpu].head with single-copy atomicity. */
+		 
 		expect = (intptr_t)RSEQ_READ_ONCE(list->c[cpu].head);
 		newval = (intptr_t)node;
 		targetptr = (intptr_t *)&list->c[cpu].head;
@@ -177,17 +166,13 @@ void this_cpu_list_push(struct percpu_list *list,
 					 targetptr, expect, newval, cpu);
 		if (rseq_likely(!ret))
 			break;
-		/* Retry if comparison fails or rseq aborts. */
+		 
 	}
 	if (_cpu)
 		*_cpu = cpu;
 }
 
-/*
- * Unlike a traditional lock-less linked list; the availability of a
- * rseq primitive allows us to implement pop without concerns over
- * ABA-type races.
- */
+ 
 struct percpu_list_node *this_cpu_list_pop(struct percpu_list *list,
 					   int *_cpu)
 {
@@ -212,14 +197,11 @@ struct percpu_list_node *this_cpu_list_pop(struct percpu_list *list,
 		}
 		if (ret > 0)
 			return NULL;
-		/* Retry if rseq aborts. */
+		 
 	}
 }
 
-/*
- * __percpu_list_pop is not safe against concurrent accesses. Should
- * only be used on lists that are not concurrently modified.
- */
+ 
 struct percpu_list_node *__percpu_list_pop(struct percpu_list *list, int cpu)
 {
 	struct percpu_list_node *node;
@@ -246,7 +228,7 @@ void *test_percpu_list_thread(void *arg)
 		struct percpu_list_node *node;
 
 		node = this_cpu_list_pop(list, NULL);
-		sched_yield();  /* encourage shuffling */
+		sched_yield();   
 		if (node)
 			this_cpu_list_push(list, node, NULL);
 	}
@@ -260,7 +242,7 @@ void *test_percpu_list_thread(void *arg)
 	return NULL;
 }
 
-/* Simultaneous modification to a per-cpu linked list from many threads.  */
+ 
 void test_percpu_list(void)
 {
 	int i, j;
@@ -271,7 +253,7 @@ void test_percpu_list(void)
 
 	memset(&list, 0, sizeof(list));
 
-	/* Generate list entries for every usable cpu. */
+	 
 	sched_getaffinity(0, sizeof(allowed_cpus), &allowed_cpus);
 	for (i = 0; i < CPU_SETSIZE; i++) {
 		if (!CPU_ISSET(i, &allowed_cpus))
@@ -308,11 +290,7 @@ void test_percpu_list(void)
 		}
 	}
 
-	/*
-	 * All entries should now be accounted for (unless some external
-	 * actor is interfering with our allowed affinity while this
-	 * test is running).
-	 */
+	 
 	assert(sum == expected_sum);
 }
 

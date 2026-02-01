@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2018 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/soc/qcom/qmi.h>
 #include <linux/types.h>

@@ -1,27 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alon Levy
- */
+ 
 
 #include <linux/crc32.h>
 #include <linux/delay.h>
@@ -103,7 +80,7 @@ static int qxl_display_copy_rom_client_monitors_config(struct qxl_device *qdev)
 		status = MONITORS_CONFIG_ERROR;
 		return status;
 	}
-	/* we copy max from the client but it isn't used */
+	 
 	qdev->client_monitors_config->max_allowed = qxl_num_crtc;
 	for (i = 0 ; i < qdev->client_monitors_config->count ; ++i) {
 		struct qxl_urect *c_rect =
@@ -193,8 +170,7 @@ void qxl_display_read_client_monitors_config(struct qxl_device *qdev)
 	qxl_update_offset_props(qdev);
 	DRM_MODESET_LOCK_ALL_END(dev, ctx, ret);
 	if (!drm_helper_hpd_irq_event(dev)) {
-		/* notify that the monitor configuration changed, to
-		   adjust at the arbitrary resolution */
+		 
 		drm_kms_helper_hotplug_event(dev);
 	}
 }
@@ -406,7 +382,7 @@ static int qxl_framebuffer_surface_dirty(struct drm_framebuffer *fb,
 					 struct drm_clip_rect *clips,
 					 unsigned int num_clips)
 {
-	/* TODO: vmwgfx where this was cribbed from had locking. Why? */
+	 
 	struct qxl_device *qdev = to_qxl(fb->dev);
 	struct drm_clip_rect norect;
 	struct qxl_bo *qobj;
@@ -417,7 +393,7 @@ static int qxl_framebuffer_surface_dirty(struct drm_framebuffer *fb,
 	DRM_MODESET_LOCK_ALL_BEGIN(fb->dev, ctx, DRM_MODESET_ACQUIRE_INTERRUPTIBLE, ret);
 
 	qobj = gem_to_qxl_bo(fb->obj[0]);
-	/* if we aren't primary surface ignore this */
+	 
 	is_primary = qobj->shadow ? qobj->shadow->is_primary : qobj->is_primary;
 	if (!is_primary)
 		goto out_lock_end;
@@ -430,7 +406,7 @@ static int qxl_framebuffer_surface_dirty(struct drm_framebuffer *fb,
 		norect.y2 = fb->height;
 	} else if (flags & DRM_MODE_FB_DIRTY_ANNOTATE_COPY) {
 		num_clips /= 2;
-		inc = 2; /* skip source rects */
+		inc = 2;  
 	}
 
 	qxl_draw_dirty_fb(qdev, fb, qobj, flags, color,
@@ -870,10 +846,7 @@ static void qxl_plane_cleanup_fb(struct drm_plane *plane,
 	struct qxl_bo *user_bo;
 
 	if (!old_state->fb) {
-		/*
-		 * we never executed prepare_fb, so there's nothing to
-		 * unpin.
-		 */
+		 
 		return;
 	}
 
@@ -1079,7 +1052,7 @@ static enum drm_connector_status qxl_conn_detect(
 	struct qxl_device *qdev = to_qxl(ddev);
 	bool connected = false;
 
-	/* The first monitor is always connected */
+	 
 	if (!qdev->client_monitors_config) {
 		if (output->index == 0)
 			connected = true;
@@ -1151,7 +1124,7 @@ static int qdev_output_init(struct drm_device *dev, int num_output)
 		goto err_drm_connector_cleanup;
 	}
 
-	/* we get HPD via client monitors config */
+	 
 	connector->polled = DRM_CONNECTOR_POLL_HPD;
 	encoder->possible_crtcs = 1 << num_output;
 	drm_connector_attach_encoder(&qxl_output->base,
@@ -1258,7 +1231,7 @@ int qxl_modeset_init(struct qxl_device *qdev)
 
 	qdev->ddev.mode_config.funcs = (void *)&qxl_mode_funcs;
 
-	/* modes will be validated against the framebuffer size */
+	 
 	qdev->ddev.mode_config.min_width = 0;
 	qdev->ddev.mode_config.min_height = 0;
 	qdev->ddev.mode_config.max_width = 8192;

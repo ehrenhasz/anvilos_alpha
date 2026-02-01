@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Microsemi Ocelot Switch driver
- *
- * This contains glue logic between the switchdev driver operations and the
- * mscc_ocelot_switch_lib.
- *
- * Copyright (c) 2017, 2019 Microsemi Corporation
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/dsa/ocelot.h>
 #include <linux/if_bridge.h>
@@ -502,7 +495,7 @@ static int ocelot_vlan_vid_add(struct net_device *dev, u16 vid, bool pvid,
 	if (ret)
 		return ret;
 
-	/* Add the port MAC address to with the right VLAN information */
+	 
 	ocelot_mact_learn(ocelot, PGID_CPU, dev->dev_addr, vid,
 			  ENTRYTYPE_LOCKED);
 
@@ -516,10 +509,7 @@ static int ocelot_vlan_vid_del(struct net_device *dev, u16 vid)
 	int port = priv->port.index;
 	int ret;
 
-	/* 8021q removes VID 0 on module unload for all interfaces
-	 * with VLAN filtering feature. We need to keep it to receive
-	 * untagged traffic.
-	 */
+	 
 	if (vid == OCELOT_STANDALONE_PVID)
 		return 0;
 
@@ -527,7 +517,7 @@ static int ocelot_vlan_vid_del(struct net_device *dev, u16 vid)
 	if (ret)
 		return ret;
 
-	/* Del the port MAC address to with the right VLAN information */
+	 
 	ocelot_mact_forget(ocelot, dev->dev_addr, vid);
 
 	return 0;
@@ -563,7 +553,7 @@ static netdev_tx_t ocelot_port_xmit(struct sk_buff *skb, struct net_device *dev)
 	    !ocelot_can_inject(ocelot, 0))
 		return NETDEV_TX_BUSY;
 
-	/* Check if timestamping is needed */
+	 
 	if (ocelot->ptp && (skb_shinfo(skb)->tx_flags & SKBTX_HW_TSTAMP)) {
 		struct sk_buff *clone = NULL;
 
@@ -599,14 +589,14 @@ struct ocelot_mact_work_ctx {
 	struct ocelot *ocelot;
 	enum ocelot_action_type type;
 	union {
-		/* OCELOT_MACT_LEARN */
+		 
 		struct {
 			unsigned char addr[ETH_ALEN];
 			u16 vid;
 			enum macaccess_entry_type entry_type;
 			int pgid;
 		} learn;
-		/* OCELOT_MACT_FORGET */
+		 
 		struct {
 			unsigned char addr[ETH_ALEN];
 			u16 vid;
@@ -689,10 +679,7 @@ static void ocelot_set_rx_mode(struct net_device *dev)
 	u32 val;
 	int i;
 
-	/* This doesn't handle promiscuous mode because the bridge core is
-	 * setting IFF_PROMISC on all slave interfaces and all frames would be
-	 * forwarded to the CPU port.
-	 */
+	 
 	val = GENMASK(ocelot->num_phys_ports - 1, 0);
 	for_each_nonreserved_multicast_dest_pgid(ocelot, i)
 		ocelot_write_rix(ocelot, val, ANA_PGID_PGID, i);
@@ -707,10 +694,10 @@ static int ocelot_port_set_mac_address(struct net_device *dev, void *p)
 	struct ocelot *ocelot = ocelot_port->ocelot;
 	const struct sockaddr *addr = p;
 
-	/* Learn the new net device MAC address in the mac table. */
+	 
 	ocelot_mact_learn(ocelot, PGID_CPU, addr->sa_data,
 			  OCELOT_STANDALONE_PVID, ENTRYTYPE_LOCKED);
-	/* Then forget the previous one. */
+	 
 	ocelot_mact_forget(ocelot, dev->dev_addr, OCELOT_STANDALONE_PVID);
 
 	eth_hw_addr_set(dev, addr->sa_data);
@@ -837,7 +824,7 @@ static void ocelot_vlan_mode(struct ocelot *ocelot, int port,
 {
 	u32 val;
 
-	/* Filtering */
+	 
 	val = ocelot_read(ocelot, ANA_VLANMASK);
 	if (features & NETIF_F_HW_VLAN_CTAG_FILTER)
 		val |= BIT(port);
@@ -873,9 +860,7 @@ static int ocelot_ioctl(struct net_device *dev, struct ifreq *ifr, int cmd)
 	struct ocelot *ocelot = priv->port.ocelot;
 	int port = priv->port.index;
 
-	/* If the attached PHY device isn't capable of timestamping operations,
-	 * use our own (when possible).
-	 */
+	 
 	if (!phy_has_hwtstamp(dev->phydev) && ocelot->ptp) {
 		switch (cmd) {
 		case SIOCSHWTSTAMP:
@@ -931,7 +916,7 @@ struct net_device *ocelot_port_to_netdev(struct ocelot *ocelot, int port)
 	return priv->dev;
 }
 
-/* Checks if the net_device instance given to us originates from our driver */
+ 
 static bool ocelot_netdevice_dev_check(const struct net_device *dev)
 {
 	return dev->netdev_ops == &ocelot_port_netdev_ops;
@@ -1296,7 +1281,7 @@ static int ocelot_bridge_num_get(struct ocelot *ocelot,
 	int bridge_num = ocelot_bridge_num_find(ocelot, bridge_dev);
 
 	if (bridge_num < 0) {
-		/* First port that offloads this bridge */
+		 
 		bridge_num = find_first_zero_bit(&ocelot->bridges,
 						 ocelot->num_phys_ports);
 
@@ -1310,9 +1295,7 @@ static void ocelot_bridge_num_put(struct ocelot *ocelot,
 				  const struct net_device *bridge_dev,
 				  int bridge_num)
 {
-	/* Check if the bridge is still in use, otherwise it is time
-	 * to clean it up so we can reuse this bridge_num later.
-	 */
+	 
 	if (!ocelot_bridge_num_find(ocelot, bridge_dev))
 		clear_bit(bridge_num, &ocelot->bridges);
 }
@@ -1404,7 +1387,7 @@ static int ocelot_netdevice_lag_join(struct net_device *dev,
 
 	err = ocelot_port_lag_join(ocelot, port, bond, info, extack);
 	if (err == -EOPNOTSUPP)
-		/* Offloading not supported, fall back to software LAG */
+		 
 		return 0;
 
 	bridge_dev = netdev_master_upper_dev_get(bond);
@@ -1481,12 +1464,7 @@ static int ocelot_netdevice_changeupper(struct net_device *dev,
 	return notifier_from_errno(err);
 }
 
-/* Treat CHANGEUPPER events on an offloaded LAG as individual CHANGEUPPER
- * events for the lower physical ports of the LAG.
- * If the LAG upper isn't offloaded, ignore its CHANGEUPPER events.
- * In case the LAG joined a bridge, notify that we are offloading it and can do
- * forwarding in hardware towards it.
- */
+ 
 static int
 ocelot_netdevice_lag_changeupper(struct net_device *dev,
 				 struct netdev_notifier_changeupper_info *info)
@@ -1644,7 +1622,7 @@ static int ocelot_switchdev_blocking_event(struct notifier_block *unused,
 	int err;
 
 	switch (event) {
-		/* Blocking events. */
+		 
 	case SWITCHDEV_PORT_OBJ_ADD:
 		err = switchdev_handle_port_obj_add(dev, ptr,
 						    ocelot_netdevice_dev_check,
@@ -1728,9 +1706,7 @@ static int ocelot_port_phylink_create(struct ocelot *ocelot, int port,
 	int err;
 
 	of_get_phy_mode(portnp, &phy_mode);
-	/* DT bindings of internal PHY ports are broken and don't
-	 * specify a phy-mode
-	 */
+	 
 	if (phy_mode == PHY_INTERFACE_MODE_NA)
 		phy_mode = PHY_INTERFACE_MODE_INTERNAL;
 

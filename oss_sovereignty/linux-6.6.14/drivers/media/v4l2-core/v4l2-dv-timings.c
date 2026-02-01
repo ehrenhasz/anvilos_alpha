@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * v4l2-dv-timings - dv-timings helper functions
- *
- * Copyright 2013 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -164,16 +160,11 @@ bool v4l2_valid_dv_timings(const struct v4l2_dv_timings *t,
 	    (!bt->interlaced && !(caps & V4L2_DV_BT_CAP_PROGRESSIVE)))
 		return false;
 
-	/* sanity checks for the blanking timings */
+	 
 	if (!bt->interlaced &&
 	    (bt->il_vbackporch || bt->il_vsync || bt->il_vfrontporch))
 		return false;
-	/*
-	 * Some video receivers cannot properly separate the frontporch,
-	 * backporch and sync values, and instead they only have the total
-	 * blanking. That can be assigned to any of these three fields.
-	 * So just check that none of these are way out of range.
-	 */
+	 
 	if (bt->hfrontporch > max_hor ||
 	    bt->hsync > max_hor || bt->hbackporch > max_hor)
 		return false;
@@ -254,16 +245,7 @@ bool v4l2_find_dv_timings_cea861_vic(struct v4l2_dv_timings *t, u8 vic)
 }
 EXPORT_SYMBOL_GPL(v4l2_find_dv_timings_cea861_vic);
 
-/**
- * v4l2_match_dv_timings - check if two timings match
- * @t1: compare this v4l2_dv_timings struct...
- * @t2: with this struct.
- * @pclock_delta: the allowed pixelclock deviation.
- * @match_reduced_fps: if true, then fail if V4L2_DV_FL_REDUCED_FPS does not
- *	match.
- *
- * Compare t1 with t2 with a given margin of error for the pixelclock.
- */
+ 
 bool v4l2_match_dv_timings(const struct v4l2_dv_timings *t1,
 			   const struct v4l2_dv_timings *t2,
 			   unsigned pclock_delta, bool match_reduced_fps)
@@ -396,14 +378,7 @@ struct v4l2_fract v4l2_dv_timings_aspect_ratio(const struct v4l2_dv_timings *t)
 }
 EXPORT_SYMBOL_GPL(v4l2_dv_timings_aspect_ratio);
 
-/** v4l2_calc_timeperframe - helper function to calculate timeperframe based
- *	v4l2_dv_timings fields.
- * @t - Timings for the video mode.
- *
- * Calculates the expected timeperframe using the pixel clock value and
- * horizontal/vertical measures. This means that v4l2_dv_timings structure
- * must be correctly and fully filled.
- */
+ 
 struct v4l2_fract v4l2_calc_timeperframe(const struct v4l2_dv_timings *t)
 {
 	const struct v4l2_bt_timings *bt = &t->bt;
@@ -435,58 +410,39 @@ struct v4l2_fract v4l2_calc_timeperframe(const struct v4l2_dv_timings *t)
 }
 EXPORT_SYMBOL_GPL(v4l2_calc_timeperframe);
 
-/*
- * CVT defines
- * Based on Coordinated Video Timings Standard
- * version 1.1 September 10, 2003
- */
+ 
 
-#define CVT_PXL_CLK_GRAN	250000	/* pixel clock granularity */
-#define CVT_PXL_CLK_GRAN_RB_V2 1000	/* granularity for reduced blanking v2*/
+#define CVT_PXL_CLK_GRAN	250000	 
+#define CVT_PXL_CLK_GRAN_RB_V2 1000	 
 
-/* Normal blanking */
-#define CVT_MIN_V_BPORCH	7	/* lines */
-#define CVT_MIN_V_PORCH_RND	3	/* lines */
-#define CVT_MIN_VSYNC_BP	550	/* min time of vsync + back porch (us) */
-#define CVT_HSYNC_PERCENT       8       /* nominal hsync as percentage of line */
+ 
+#define CVT_MIN_V_BPORCH	7	 
+#define CVT_MIN_V_PORCH_RND	3	 
+#define CVT_MIN_VSYNC_BP	550	 
+#define CVT_HSYNC_PERCENT       8        
 
-/* Normal blanking for CVT uses GTF to calculate horizontal blanking */
-#define CVT_CELL_GRAN		8	/* character cell granularity */
-#define CVT_M			600	/* blanking formula gradient */
-#define CVT_C			40	/* blanking formula offset */
-#define CVT_K			128	/* blanking formula scaling factor */
-#define CVT_J			20	/* blanking formula scaling factor */
+ 
+#define CVT_CELL_GRAN		8	 
+#define CVT_M			600	 
+#define CVT_C			40	 
+#define CVT_K			128	 
+#define CVT_J			20	 
 #define CVT_C_PRIME (((CVT_C - CVT_J) * CVT_K / 256) + CVT_J)
 #define CVT_M_PRIME (CVT_K * CVT_M / 256)
 
-/* Reduced Blanking */
-#define CVT_RB_MIN_V_BPORCH    7       /* lines  */
-#define CVT_RB_V_FPORCH        3       /* lines  */
-#define CVT_RB_MIN_V_BLANK   460       /* us     */
-#define CVT_RB_H_SYNC         32       /* pixels */
-#define CVT_RB_H_BLANK       160       /* pixels */
-/* Reduce blanking Version 2 */
-#define CVT_RB_V2_H_BLANK     80       /* pixels */
-#define CVT_RB_MIN_V_FPORCH    3       /* lines  */
-#define CVT_RB_V2_MIN_V_FPORCH 1       /* lines  */
-#define CVT_RB_V_BPORCH        6       /* lines  */
+ 
+#define CVT_RB_MIN_V_BPORCH    7        
+#define CVT_RB_V_FPORCH        3        
+#define CVT_RB_MIN_V_BLANK   460        
+#define CVT_RB_H_SYNC         32        
+#define CVT_RB_H_BLANK       160        
+ 
+#define CVT_RB_V2_H_BLANK     80        
+#define CVT_RB_MIN_V_FPORCH    3        
+#define CVT_RB_V2_MIN_V_FPORCH 1        
+#define CVT_RB_V_BPORCH        6        
 
-/** v4l2_detect_cvt - detect if the given timings follow the CVT standard
- * @frame_height - the total height of the frame (including blanking) in lines.
- * @hfreq - the horizontal frequency in Hz.
- * @vsync - the height of the vertical sync in lines.
- * @active_width - active width of image (does not include blanking). This
- * information is needed only in case of version 2 of reduced blanking.
- * In other cases, this parameter does not have any effect on timings.
- * @polarities - the horizontal and vertical polarities (same as struct
- *		v4l2_bt_timings polarities).
- * @interlaced - if this flag is true, it indicates interlaced format
- * @fmt - the resulting timings.
- *
- * This function will attempt to detect if the given values correspond to a
- * valid CVT format. If so, then it will return true, and fmt will be filled
- * in with the found CVT timings.
- */
+ 
 bool v4l2_detect_cvt(unsigned frame_height,
 		     unsigned hfreq,
 		     unsigned vsync,
@@ -523,7 +479,7 @@ bool v4l2_detect_cvt(unsigned frame_height,
 	if (hfreq == 0)
 		return false;
 
-	/* Vertical */
+	 
 	if (reduced_blanking) {
 		if (rb_v2) {
 			v_bp = CVT_RB_V_BPORCH;
@@ -556,7 +512,7 @@ bool v4l2_detect_cvt(unsigned frame_height,
 	if (image_height < 0)
 		return false;
 
-	/* Aspect ratio based on vsync */
+	 
 	switch (vsync) {
 	case 4:
 		image_width = (image_height * 4) / 3;
@@ -568,7 +524,7 @@ bool v4l2_detect_cvt(unsigned frame_height,
 		image_width = (image_height * 16) / 10;
 		break;
 	case 7:
-		/* special case */
+		 
 		if (image_height == 1024)
 			image_width = (image_height * 5) / 4;
 		else if (image_height == 768)
@@ -586,7 +542,7 @@ bool v4l2_detect_cvt(unsigned frame_height,
 	if (!rb_v2)
 		image_width = image_width & ~7;
 
-	/* Horizontal */
+	 
 	if (reduced_blanking) {
 		int h_blank;
 		int clk_gran;
@@ -659,52 +615,31 @@ bool v4l2_detect_cvt(unsigned frame_height,
 }
 EXPORT_SYMBOL_GPL(v4l2_detect_cvt);
 
-/*
- * GTF defines
- * Based on Generalized Timing Formula Standard
- * Version 1.1 September 2, 1999
- */
+ 
 
-#define GTF_PXL_CLK_GRAN	250000	/* pixel clock granularity */
+#define GTF_PXL_CLK_GRAN	250000	 
 
-#define GTF_MIN_VSYNC_BP	550	/* min time of vsync + back porch (us) */
-#define GTF_V_FP		1	/* vertical front porch (lines) */
-#define GTF_CELL_GRAN		8	/* character cell granularity */
+#define GTF_MIN_VSYNC_BP	550	 
+#define GTF_V_FP		1	 
+#define GTF_CELL_GRAN		8	 
 
-/* Default */
-#define GTF_D_M			600	/* blanking formula gradient */
-#define GTF_D_C			40	/* blanking formula offset */
-#define GTF_D_K			128	/* blanking formula scaling factor */
-#define GTF_D_J			20	/* blanking formula scaling factor */
+ 
+#define GTF_D_M			600	 
+#define GTF_D_C			40	 
+#define GTF_D_K			128	 
+#define GTF_D_J			20	 
 #define GTF_D_C_PRIME ((((GTF_D_C - GTF_D_J) * GTF_D_K) / 256) + GTF_D_J)
 #define GTF_D_M_PRIME ((GTF_D_K * GTF_D_M) / 256)
 
-/* Secondary */
-#define GTF_S_M			3600	/* blanking formula gradient */
-#define GTF_S_C			40	/* blanking formula offset */
-#define GTF_S_K			128	/* blanking formula scaling factor */
-#define GTF_S_J			35	/* blanking formula scaling factor */
+ 
+#define GTF_S_M			3600	 
+#define GTF_S_C			40	 
+#define GTF_S_K			128	 
+#define GTF_S_J			35	 
 #define GTF_S_C_PRIME ((((GTF_S_C - GTF_S_J) * GTF_S_K) / 256) + GTF_S_J)
 #define GTF_S_M_PRIME ((GTF_S_K * GTF_S_M) / 256)
 
-/** v4l2_detect_gtf - detect if the given timings follow the GTF standard
- * @frame_height - the total height of the frame (including blanking) in lines.
- * @hfreq - the horizontal frequency in Hz.
- * @vsync - the height of the vertical sync in lines.
- * @polarities - the horizontal and vertical polarities (same as struct
- *		v4l2_bt_timings polarities).
- * @interlaced - if this flag is true, it indicates interlaced format
- * @aspect - preferred aspect ratio. GTF has no method of determining the
- *		aspect ratio in order to derive the image width from the
- *		image height, so it has to be passed explicitly. Usually
- *		the native screen aspect ratio is used for this. If it
- *		is not filled in correctly, then 16:9 will be assumed.
- * @fmt - the resulting timings.
- *
- * This function will attempt to detect if the given values correspond to a
- * valid GTF format. If so, then it will return true, and fmt will be filled
- * in with the found GTF timings.
- */
+ 
 bool v4l2_detect_gtf(unsigned frame_height,
 		unsigned hfreq,
 		unsigned vsync,
@@ -732,7 +667,7 @@ bool v4l2_detect_gtf(unsigned frame_height,
 	if (hfreq == 0)
 		return false;
 
-	/* Vertical */
+	 
 	v_fp = GTF_V_FP;
 	v_bp = (GTF_MIN_VSYNC_BP * hfreq + 500000) / 1000000 - vsync;
 	if (interlaced)
@@ -750,7 +685,7 @@ bool v4l2_detect_gtf(unsigned frame_height,
 	image_width = ((image_height * aspect.numerator) / aspect.denominator);
 	image_width = (image_width + GTF_CELL_GRAN/2) & ~(GTF_CELL_GRAN - 1);
 
-	/* Horizontal */
+	 
 	if (default_gtf) {
 		u64 num;
 		u32 den;
@@ -817,33 +752,24 @@ bool v4l2_detect_gtf(unsigned frame_height,
 }
 EXPORT_SYMBOL_GPL(v4l2_detect_gtf);
 
-/** v4l2_calc_aspect_ratio - calculate the aspect ratio based on bytes
- *	0x15 and 0x16 from the EDID.
- * @hor_landscape - byte 0x15 from the EDID.
- * @vert_portrait - byte 0x16 from the EDID.
- *
- * Determines the aspect ratio from the EDID.
- * See VESA Enhanced EDID standard, release A, rev 2, section 3.6.2:
- * "Horizontal and Vertical Screen Size or Aspect Ratio"
- */
+ 
 struct v4l2_fract v4l2_calc_aspect_ratio(u8 hor_landscape, u8 vert_portrait)
 {
 	struct v4l2_fract aspect = { 16, 9 };
 	u8 ratio;
 
-	/* Nothing filled in, fallback to 16:9 */
+	 
 	if (!hor_landscape && !vert_portrait)
 		return aspect;
-	/* Both filled in, so they are interpreted as the screen size in cm */
+	 
 	if (hor_landscape && vert_portrait) {
 		aspect.numerator = hor_landscape;
 		aspect.denominator = vert_portrait;
 		return aspect;
 	}
-	/* Only one is filled in, so interpret them as a ratio:
-	   (val + 99) / 100 */
+	 
 	ratio = hor_landscape | vert_portrait;
-	/* Change some rounded values into the exact aspect ratio */
+	 
 	if (ratio == 79) {
 		aspect.numerator = 16;
 		aspect.denominator = 9;
@@ -859,25 +785,13 @@ struct v4l2_fract v4l2_calc_aspect_ratio(u8 hor_landscape, u8 vert_portrait)
 	}
 	if (hor_landscape)
 		return aspect;
-	/* The aspect ratio is for portrait, so swap numerator and denominator */
+	 
 	swap(aspect.denominator, aspect.numerator);
 	return aspect;
 }
 EXPORT_SYMBOL_GPL(v4l2_calc_aspect_ratio);
 
-/** v4l2_hdmi_rx_colorimetry - determine HDMI colorimetry information
- *	based on various InfoFrames.
- * @avi: the AVI InfoFrame
- * @hdmi: the HDMI Vendor InfoFrame, may be NULL
- * @height: the frame height
- *
- * Determines the HDMI colorimetry information, i.e. how the HDMI
- * pixel color data should be interpreted.
- *
- * Note that some of the newer features (DCI-P3, HDR) are not yet
- * implemented: the hdmi.h header needs to be updated to the HDMI 2.0
- * and CTA-861-G standards.
- */
+ 
 struct v4l2_hdmi_colorimetry
 v4l2_hdmi_rx_colorimetry(const struct hdmi_avi_infoframe *avi,
 			 const struct hdmi_vendor_infoframe *hdmi,
@@ -895,7 +809,7 @@ v4l2_hdmi_rx_colorimetry(const struct hdmi_avi_infoframe *avi,
 
 	switch (avi->colorspace) {
 	case HDMI_COLORSPACE_RGB:
-		/* RGB pixel encoding */
+		 
 		switch (avi->colorimetry) {
 		case HDMI_COLORIMETRY_EXTENDED:
 			switch (avi->extended_colorimetry) {
@@ -928,7 +842,7 @@ v4l2_hdmi_rx_colorimetry(const struct hdmi_avi_infoframe *avi,
 		break;
 
 	default:
-		/* YCbCr pixel encoding */
+		 
 		c.quantization = V4L2_QUANTIZATION_LIM_RANGE;
 		switch (avi->colorimetry) {
 		case HDMI_COLORIMETRY_NONE:
@@ -985,7 +899,7 @@ v4l2_hdmi_rx_colorimetry(const struct hdmi_avi_infoframe *avi,
 				c.ycbcr_enc = V4L2_YCBCR_ENC_BT2020_CONST_LUM;
 				c.xfer_func = V4L2_XFER_FUNC_709;
 				break;
-			default: /* fall back to ITU_709 */
+			default:  
 				c.colorspace = V4L2_COLORSPACE_REC709;
 				c.ycbcr_enc = V4L2_YCBCR_ENC_709;
 				c.xfer_func = V4L2_XFER_FUNC_709;
@@ -995,27 +909,14 @@ v4l2_hdmi_rx_colorimetry(const struct hdmi_avi_infoframe *avi,
 		default:
 			break;
 		}
-		/*
-		 * YCC Quantization Range signaling is more-or-less broken,
-		 * let's just ignore this.
-		 */
+		 
 		break;
 	}
 	return c;
 }
 EXPORT_SYMBOL_GPL(v4l2_hdmi_rx_colorimetry);
 
-/**
- * v4l2_get_edid_phys_addr() - find and return the physical address
- *
- * @edid:	pointer to the EDID data
- * @size:	size in bytes of the EDID data
- * @offset:	If not %NULL then the location of the physical address
- *		bytes in the EDID will be returned here. This is set to 0
- *		if there is no physical address found.
- *
- * Return: the physical address or CEC_PHYS_ADDR_INVALID if there is none.
- */
+ 
 u16 v4l2_get_edid_phys_addr(const u8 *edid, unsigned int size,
 			    unsigned int *offset)
 {
@@ -1029,18 +930,7 @@ u16 v4l2_get_edid_phys_addr(const u8 *edid, unsigned int size,
 }
 EXPORT_SYMBOL_GPL(v4l2_get_edid_phys_addr);
 
-/**
- * v4l2_set_edid_phys_addr() - find and set the physical address
- *
- * @edid:	pointer to the EDID data
- * @size:	size in bytes of the EDID data
- * @phys_addr:	the new physical address
- *
- * This function finds the location of the physical address in the EDID
- * and fills in the given physical address and updates the checksum
- * at the end of the EDID block. It does nothing if the EDID doesn't
- * contain a physical address.
- */
+ 
 void v4l2_set_edid_phys_addr(u8 *edid, unsigned int size, u16 phys_addr)
 {
 	unsigned int loc = cec_get_edid_spa_location(edid, size);
@@ -1053,35 +943,17 @@ void v4l2_set_edid_phys_addr(u8 *edid, unsigned int size, u16 phys_addr)
 	edid[loc + 1] = phys_addr & 0xff;
 	loc &= ~0x7f;
 
-	/* update the checksum */
+	 
 	for (i = loc; i < loc + 127; i++)
 		sum += edid[i];
 	edid[i] = 256 - sum;
 }
 EXPORT_SYMBOL_GPL(v4l2_set_edid_phys_addr);
 
-/**
- * v4l2_phys_addr_for_input() - calculate the PA for an input
- *
- * @phys_addr:	the physical address of the parent
- * @input:	the number of the input port, must be between 1 and 15
- *
- * This function calculates a new physical address based on the input
- * port number. For example:
- *
- * PA = 0.0.0.0 and input = 2 becomes 2.0.0.0
- *
- * PA = 3.0.0.0 and input = 1 becomes 3.1.0.0
- *
- * PA = 3.2.1.0 and input = 5 becomes 3.2.1.5
- *
- * PA = 3.2.1.3 and input = 5 becomes f.f.f.f since it maxed out the depth.
- *
- * Return: the new physical address or CEC_PHYS_ADDR_INVALID.
- */
+ 
 u16 v4l2_phys_addr_for_input(u16 phys_addr, u8 input)
 {
-	/* Check if input is sane */
+	 
 	if (WARN_ON(input == 0 || input > 0xf))
 		return CEC_PHYS_ADDR_INVALID;
 
@@ -1097,38 +969,12 @@ u16 v4l2_phys_addr_for_input(u16 phys_addr, u8 input)
 	if ((phys_addr & 0x000f) == 0)
 		return phys_addr | input;
 
-	/*
-	 * All nibbles are used so no valid physical addresses can be assigned
-	 * to the input.
-	 */
+	 
 	return CEC_PHYS_ADDR_INVALID;
 }
 EXPORT_SYMBOL_GPL(v4l2_phys_addr_for_input);
 
-/**
- * v4l2_phys_addr_validate() - validate a physical address from an EDID
- *
- * @phys_addr:	the physical address to validate
- * @parent:	if not %NULL, then this is filled with the parents PA.
- * @port:	if not %NULL, then this is filled with the input port.
- *
- * This validates a physical address as read from an EDID. If the
- * PA is invalid (such as 1.0.1.0 since '0' is only allowed at the end),
- * then it will return -EINVAL.
- *
- * The parent PA is passed into %parent and the input port is passed into
- * %port. For example:
- *
- * PA = 0.0.0.0: has parent 0.0.0.0 and input port 0.
- *
- * PA = 1.0.0.0: has parent 0.0.0.0 and input port 1.
- *
- * PA = 3.2.0.0: has parent 3.0.0.0 and input port 2.
- *
- * PA = f.f.f.f: has parent f.f.f.f and input port 0.
- *
- * Return: 0 if the PA is valid, -EINVAL if not.
- */
+ 
 int v4l2_phys_addr_validate(u16 phys_addr, u16 *parent, u16 *port)
 {
 	int i;

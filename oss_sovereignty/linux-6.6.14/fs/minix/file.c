@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/minix/file.c
- *
- *  Copyright (C) 1991, 1992 Linus Torvalds
- *
- *  minix regular file handling primitives
- */
+
+ 
 
 #include "minix.h"
 
-/*
- * We have mostly NULLs here: the current defaults are OK for
- * the minix filesystem.
- */
+ 
 const struct file_operations minix_file_operations = {
 	.llseek		= generic_file_llseek,
 	.read_iter	= generic_file_read_iter,

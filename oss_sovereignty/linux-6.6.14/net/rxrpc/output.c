@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC packet transmission
- *
- * Copyright (C) 2007 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -42,9 +38,7 @@ struct rxrpc_abort_buffer {
 
 static const char rxrpc_keepalive_string[] = "";
 
-/*
- * Increase Tx backoff on transmission failure and clear it on success.
- */
+ 
 static void rxrpc_tx_backoff(struct rxrpc_call *call, int ret)
 {
 	if (ret < 0) {
@@ -57,14 +51,7 @@ static void rxrpc_tx_backoff(struct rxrpc_call *call, int ret)
 	}
 }
 
-/*
- * Arrange for a keepalive ping a certain time after we last transmitted.  This
- * lets the far side know we're still interested in this call and helps keep
- * the route through any intervening firewall open.
- *
- * Receiving a response to the ping will prevent the ->expect_rx_by timer from
- * expiring.
- */
+ 
 static void rxrpc_set_keepalive(struct rxrpc_call *call)
 {
 	unsigned long now = jiffies, keepalive_at = call->next_rx_timo / 6;
@@ -75,9 +62,7 @@ static void rxrpc_set_keepalive(struct rxrpc_call *call)
 				rxrpc_timer_set_for_keepalive);
 }
 
-/*
- * Fill out an ACK packet.
- */
+ 
 static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
 				 struct rxrpc_call *call,
 				 struct rxrpc_txbuf *txb,
@@ -138,9 +123,7 @@ static size_t rxrpc_fill_out_ack(struct rxrpc_connection *conn,
 	return txb->ack.nAcks + 3 + sizeof(ackinfo);
 }
 
-/*
- * Record the beginning of an RTT probe.
- */
+ 
 static int rxrpc_begin_rtt_probe(struct rxrpc_call *call, rxrpc_serial_t serial,
 				 enum rxrpc_rtt_tx_trace why)
 {
@@ -156,7 +139,7 @@ static int rxrpc_begin_rtt_probe(struct rxrpc_call *call, rxrpc_serial_t serial,
 
 	call->rtt_serial[rtt_slot] = serial;
 	call->rtt_sent_at[rtt_slot] = ktime_get_real();
-	smp_wmb(); /* Write data before avail bit */
+	smp_wmb();  
 	set_bit(rtt_slot + RXRPC_CALL_RTT_PEND_SHIFT, &call->rtt_avail);
 
 	trace_rxrpc_rtt_tx(call, why, rtt_slot, serial);
@@ -167,23 +150,19 @@ no_slot:
 	return -1;
 }
 
-/*
- * Cancel an RTT probe.
- */
+ 
 static void rxrpc_cancel_rtt_probe(struct rxrpc_call *call,
 				   rxrpc_serial_t serial, int rtt_slot)
 {
 	if (rtt_slot != -1) {
 		clear_bit(rtt_slot + RXRPC_CALL_RTT_PEND_SHIFT, &call->rtt_avail);
-		smp_wmb(); /* Clear pending bit before setting slot */
+		smp_wmb();  
 		set_bit(rtt_slot, &call->rtt_avail);
 		trace_rxrpc_rtt_tx(call, rxrpc_rtt_tx_cancel, rtt_slot, serial);
 	}
 }
 
-/*
- * Transmit an ACK packet.
- */
+ 
 int rxrpc_send_ack_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
 {
 	struct rxrpc_connection *conn;
@@ -228,7 +207,7 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
 
 	rxrpc_inc_stat(call->rxnet, stat_tx_ack_send);
 
-	/* Grab the highest received seq as late as possible */
+	 
 	txb->ack.previousPacket	= htonl(call->rx_highest_seq);
 
 	iov_iter_kvec(&msg.msg_iter, WRITE, iov, 1, len);
@@ -254,9 +233,7 @@ int rxrpc_send_ack_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
 	return ret;
 }
 
-/*
- * Send an ABORT call packet.
- */
+ 
 int rxrpc_send_abort_packet(struct rxrpc_call *call)
 {
 	struct rxrpc_connection *conn;
@@ -266,12 +243,7 @@ int rxrpc_send_abort_packet(struct rxrpc_call *call)
 	rxrpc_serial_t serial;
 	int ret;
 
-	/* Don't bother sending aborts for a client call once the server has
-	 * hard-ACK'd all of its request data.  After that point, we're not
-	 * going to stop the operation proceeding, and whilst we might limit
-	 * the reply, it's not worth it if we can send a new call on the same
-	 * channel instead, thereby closing off this call.
-	 */
+	 
 	if (rxrpc_is_client_call(call) &&
 	    test_bit(RXRPC_CALL_TX_ALL_ACKED, &call->flags))
 		return 0;
@@ -318,9 +290,7 @@ int rxrpc_send_abort_packet(struct rxrpc_call *call)
 	return ret;
 }
 
-/*
- * send a packet through the transport endpoint
- */
+ 
 int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
 {
 	enum rxrpc_req_ack_trace why;
@@ -333,7 +303,7 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
 
 	_enter("%x,{%d}", txb->seq, txb->len);
 
-	/* Each transmission of a Tx packet needs a new serial number */
+	 
 	serial = atomic_inc_return(&conn->serial);
 	txb->wire.serial = htonl(serial);
 
@@ -352,13 +322,7 @@ int rxrpc_send_data_packet(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
 	msg.msg_controllen = 0;
 	msg.msg_flags = 0;
 
-	/* If our RTT cache needs working on, request an ACK.  Also request
-	 * ACKs if a DATA packet appears to have been lost.
-	 *
-	 * However, we mustn't request an ACK on the last reply packet of a
-	 * service call, lest OpenAFS incorrectly send us an ACK with some
-	 * soft-ACKs in it and then never follow up with a proper hard ACK.
-	 */
+	 
 	if (txb->wire.flags & RXRPC_REQUEST_ACK)
 		why = rxrpc_reqack_already_on;
 	else if (test_bit(RXRPC_TXBUF_LAST, &txb->flags) && rxrpc_sending_to_client(txb))
@@ -399,17 +363,10 @@ dont_set_request_ack:
 	trace_rxrpc_tx_data(call, txb->seq, serial, txb->wire.flags,
 			    test_bit(RXRPC_TXBUF_RESENT, &txb->flags), false);
 
-	/* Track what we've attempted to transmit at least once so that the
-	 * retransmission algorithm doesn't try to resend what we haven't sent
-	 * yet.  However, this can race as we can receive an ACK before we get
-	 * to this point.  But, OTOH, if we won't get an ACK mentioning this
-	 * packet unless the far side received it (though it could have
-	 * discarded it anyway and NAK'd it).
-	 */
+	 
 	cmpxchg(&call->tx_transmitted, txb->seq - 1, txb->seq);
 
-	/* send the packet with the don't fragment bit set if we currently
-	 * think it's small enough */
+	 
 	if (txb->len >= call->peer->maxdata)
 		goto send_fragmentable;
 
@@ -417,12 +374,7 @@ dont_set_request_ack:
 	if (txb->wire.flags & RXRPC_REQUEST_ACK)
 		rtt_slot = rxrpc_begin_rtt_probe(call, serial, rxrpc_rtt_tx_data);
 
-	/* send the packet by UDP
-	 * - returns -EMSGSIZE if UDP would have to fragment the packet
-	 *   to go out of the interface
-	 *   - in which case, we'll have processed the ICMP error
-	 *     message and update the peer record
-	 */
+	 
 	rxrpc_inc_stat(call->rxnet, stat_tx_data_send);
 	ret = do_udp_sendmsg(conn->local->socket, &msg, len);
 	conn->peer->last_tx_at = ktime_get_seconds();
@@ -470,11 +422,7 @@ done:
 
 		rxrpc_set_keepalive(call);
 	} else {
-		/* Cancel the call if the initial transmission fails,
-		 * particularly if that's due to network routing issues that
-		 * aren't going away anytime soon.  The layer above can arrange
-		 * the retransmission.
-		 */
+		 
 		if (!test_and_set_bit(RXRPC_CALL_BEGAN_RX_TIMER, &call->flags))
 			rxrpc_set_call_completion(call, RXRPC_CALL_LOCAL_ERROR,
 						  RX_USER_ABORT, ret);
@@ -484,7 +432,7 @@ done:
 	return ret;
 
 send_fragmentable:
-	/* attempt to send this message with fragmentation enabled */
+	 
 	_debug("send fragment");
 
 	txb->last_sent = ktime_get_real();
@@ -519,9 +467,7 @@ send_fragmentable:
 	goto done;
 }
 
-/*
- * Transmit a connection-level abort.
- */
+ 
 void rxrpc_send_conn_abort(struct rxrpc_connection *conn)
 {
 	struct rxrpc_wire_header whdr;
@@ -575,9 +521,7 @@ void rxrpc_send_conn_abort(struct rxrpc_connection *conn)
 	conn->peer->last_tx_at = ktime_get_seconds();
 }
 
-/*
- * Reject a packet through the local endpoint.
- */
+ 
 void rxrpc_reject_packet(struct rxrpc_local *local, struct sk_buff *skb)
 {
 	struct rxrpc_wire_header whdr;
@@ -641,9 +585,7 @@ void rxrpc_reject_packet(struct rxrpc_local *local, struct sk_buff *skb)
 	}
 }
 
-/*
- * Send a VERSION reply to a peer as a keepalive.
- */
+ 
 void rxrpc_send_keepalive(struct rxrpc_peer *peer)
 {
 	struct rxrpc_wire_header whdr;
@@ -665,7 +607,7 @@ void rxrpc_send_keepalive(struct rxrpc_peer *peer)
 	whdr.callNumber	= 0;
 	whdr.seq	= 0;
 	whdr.serial	= 0;
-	whdr.type	= RXRPC_PACKET_TYPE_VERSION; /* Not client-initiated */
+	whdr.type	= RXRPC_PACKET_TYPE_VERSION;  
 	whdr.flags	= RXRPC_LAST_PACKET;
 	whdr.userStatus	= 0;
 	whdr.securityIndex = 0;
@@ -692,9 +634,7 @@ void rxrpc_send_keepalive(struct rxrpc_peer *peer)
 	_leave("");
 }
 
-/*
- * Schedule an instant Tx resend.
- */
+ 
 static inline void rxrpc_instant_resend(struct rxrpc_call *call,
 					struct rxrpc_txbuf *txb)
 {
@@ -702,9 +642,7 @@ static inline void rxrpc_instant_resend(struct rxrpc_call *call,
 		kdebug("resend");
 }
 
-/*
- * Transmit one packet.
- */
+ 
 void rxrpc_transmit_one(struct rxrpc_call *call, struct rxrpc_txbuf *txb)
 {
 	int ret;

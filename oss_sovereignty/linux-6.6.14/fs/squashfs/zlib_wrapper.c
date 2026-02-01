@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Squashfs - a compressed read only filesystem for Linux
- *
- * Copyright (c) 2002, 2003, 2004, 2005, 2006, 2007, 2008, 2009
- * Phillip Lougher <phillip@squashfs.org.uk>
- *
- * zlib_wrapper.c
- */
+
+ 
 
 
 #include <linux/mutex.h>
@@ -75,7 +68,7 @@ static int zlib_uncompress(struct squashfs_sb_info *msblk, void *strm,
 			int avail;
 
 			if (!bio_next_segment(bio, &iter_all)) {
-				/* Z_STREAM_END must be reached. */
+				 
 				error = -EIO;
 				break;
 			}

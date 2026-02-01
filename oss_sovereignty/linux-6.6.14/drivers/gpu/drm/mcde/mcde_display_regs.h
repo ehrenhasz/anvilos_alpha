@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __DRM_MCDE_DISPLAY_REGS
 #define __DRM_MCDE_DISPLAY_REGS
 
-/* PP (pixel processor) interrupts */
+ 
 #define MCDE_IMSCPP 0x00000104
 #define MCDE_RISPP 0x00000114
 #define MCDE_MISPP 0x00000124
@@ -17,19 +17,19 @@
 #define MCDE_PP_ROTFD_A BIT(6)
 #define MCDE_PP_ROTFD_B BIT(7)
 
-/* Overlay interrupts */
+ 
 #define MCDE_IMSCOVL 0x00000108
 #define MCDE_RISOVL 0x00000118
 #define MCDE_MISOVL 0x00000128
 #define MCDE_SISOVL 0x00000138
 
-/* Channel interrupts */
+ 
 #define MCDE_IMSCCHNL 0x0000010C
 #define MCDE_RISCHNL 0x0000011C
 #define MCDE_MISCHNL 0x0000012C
 #define MCDE_SISCHNL 0x0000013C
 
-/* X = 0..9 */
+ 
 #define MCDE_EXTSRCXA0 0x00000200
 #define MCDE_EXTSRCXA0_GROUPOFFSET 0x20
 #define MCDE_EXTSRCXA0_BASEADDRESS0_SHIFT 3
@@ -40,7 +40,7 @@
 #define MCDE_EXTSRCXA1_BASEADDRESS1_SHIFT 3
 #define MCDE_EXTSRCXA1_BASEADDRESS1_MASK 0xFFFFFFF8
 
-/* External sources 0..9 */
+ 
 #define MCDE_EXTSRC0CONF 0x0000020C
 #define MCDE_EXTSRC1CONF 0x0000022C
 #define MCDE_EXTSRC2CONF 0x0000024C
@@ -78,7 +78,7 @@
 #define MCDE_EXTSRCXCONF_TUNNELING_BUFFER_HEIGHT_SHIFT 16
 #define MCDE_EXTSRCXCONF_TUNNELING_BUFFER_HEIGHT_MASK 0x0FFF0000
 
-/* External sources 0..9 */
+ 
 #define MCDE_EXTSRC0CR 0x00000210
 #define MCDE_EXTSRC1CR 0x00000230
 #define MCDE_EXTSRC2CR 0x00000250
@@ -94,14 +94,14 @@
 #define MCDE_EXTSRCXCR_SEL_MOD_EXTERNAL_SEL 0
 #define MCDE_EXTSRCXCR_SEL_MOD_AUTO_TOGGLE 1
 #define MCDE_EXTSRCXCR_SEL_MOD_SOFTWARE_SEL 2
-#define MCDE_EXTSRCXCR_MULTIOVL_CTRL_PRIMARY BIT(2) /* 0 = all */
+#define MCDE_EXTSRCXCR_MULTIOVL_CTRL_PRIMARY BIT(2)  
 #define MCDE_EXTSRCXCR_FS_DIV_DISABLE BIT(3)
 #define MCDE_EXTSRCXCR_FORCE_FS_DIV BIT(4)
 
-/* Only external source 6 has a second address register */
+ 
 #define MCDE_EXTSRC6A2 0x000002C8
 
-/* 6 overlays */
+ 
 #define MCDE_OVL0CR 0x00000400
 #define MCDE_OVL1CR 0x00000420
 #define MCDE_OVL2CR 0x00000440
@@ -215,10 +215,10 @@
 #define MCDE_OVLXCOMP_Z_SHIFT 27
 #define MCDE_OVLXCOMP_Z_MASK 0x78000000
 
-/* DPI/TV configuration registers, channel A and B */
+ 
 #define MCDE_TVCRA 0x00000838
 #define MCDE_TVCRB 0x00000A38
-#define MCDE_TVCR_MOD_TV BIT(0) /* 0 = LCD mode */
+#define MCDE_TVCR_MOD_TV BIT(0)  
 #define MCDE_TVCR_INTEREN BIT(1)
 #define MCDE_TVCR_IFIELD BIT(2)
 #define MCDE_TVCR_TVMODE_SDTV_656P (0 << 3)
@@ -229,64 +229,60 @@
 #define MCDE_TVCR_AVRGEN BIT(8)
 #define MCDE_TVCR_CKINV BIT(9)
 
-/* TV blanking control register 1, channel A and B */
+ 
 #define MCDE_TVBL1A 0x0000083C
 #define MCDE_TVBL1B 0x00000A3C
-#define MCDE_TVBL1_BEL1_SHIFT 0 /* VFP vertical front porch 11 bits */
-#define MCDE_TVBL1_BSL1_SHIFT 16 /* VSW vertical sync pulse width 11 bits */
+#define MCDE_TVBL1_BEL1_SHIFT 0  
+#define MCDE_TVBL1_BSL1_SHIFT 16  
 
-/* Pixel processing TV start line, channel A and B */
+ 
 #define MCDE_TVISLA 0x00000840
 #define MCDE_TVISLB 0x00000A40
-#define MCDE_TVISL_FSL1_SHIFT 0 /* Field 1 identification start line 11 bits */
-#define MCDE_TVISL_FSL2_SHIFT 16 /* Field 2 identification start line 11 bits */
+#define MCDE_TVISL_FSL1_SHIFT 0  
+#define MCDE_TVISL_FSL2_SHIFT 16  
 
-/* Pixel processing TV DVO offset */
+ 
 #define MCDE_TVDVOA 0x00000844
 #define MCDE_TVDVOB 0x00000A44
-#define MCDE_TVDVO_DVO1_SHIFT 0 /* VBP vertical back porch 0 = 0 */
+#define MCDE_TVDVO_DVO1_SHIFT 0  
 #define MCDE_TVDVO_DVO2_SHIFT 16
 
-/*
- * Pixel processing TV Timing 1
- * HBP horizontal back porch 11 bits horizontal offset
- * 0 = 1 pixel HBP, 255 = 256 pixels, so actual value - 1
- */
+ 
 #define MCDE_TVTIM1A 0x0000084C
 #define MCDE_TVTIM1B 0x00000A4C
 
-/* Pixel processing TV LBALW */
-/* 0 = 1 clock cycle, 255 = 256 clock cycles */
+ 
+ 
 #define MCDE_TVLBALWA 0x00000850
 #define MCDE_TVLBALWB 0x00000A50
-#define MCDE_TVLBALW_LBW_SHIFT 0 /* HSW horizonal sync width, line blanking width 11 bits */
-#define MCDE_TVLBALW_ALW_SHIFT 16 /* HFP horizontal front porch, active line width 11 bits */
+#define MCDE_TVLBALW_LBW_SHIFT 0  
+#define MCDE_TVLBALW_ALW_SHIFT 16  
 
-/* TV blanking control register 1, channel A and B */
+ 
 #define MCDE_TVBL2A 0x00000854
 #define MCDE_TVBL2B 0x00000A54
-#define MCDE_TVBL2_BEL2_SHIFT 0 /* Field 2 blanking end line 11 bits */
-#define MCDE_TVBL2_BSL2_SHIFT 16 /* Field 2 blanking start line 11 bits */
+#define MCDE_TVBL2_BEL2_SHIFT 0  
+#define MCDE_TVBL2_BSL2_SHIFT 16  
 
-/* Pixel processing TV background */
+ 
 #define MCDE_TVBLUA 0x00000858
 #define MCDE_TVBLUB 0x00000A58
-#define MCDE_TVBLU_TVBLU_SHIFT 0 /* 8 bits luminance */
-#define MCDE_TVBLU_TVBCB_SHIFT 8 /* 8 bits Cb chrominance */
-#define MCDE_TVBLU_TVBCR_SHIFT 16 /* 8 bits Cr chrominance */
+#define MCDE_TVBLU_TVBLU_SHIFT 0  
+#define MCDE_TVBLU_TVBCB_SHIFT 8  
+#define MCDE_TVBLU_TVBCR_SHIFT 16  
 
-/* Pixel processing LCD timing 1 */
+ 
 #define MCDE_LCDTIM1A 0x00000860
 #define MCDE_LCDTIM1B 0x00000A60
-/* inverted vertical sync pulse for HRTFT 0 = active low, 1 active high */
+ 
 #define MCDE_LCDTIM1B_IVP BIT(19)
-/* inverted vertical sync, 0 = active high (the normal), 1 = active low */
+ 
 #define MCDE_LCDTIM1B_IVS BIT(20)
-/* inverted horizontal sync, 0 = active high (the normal), 1 = active low */
+ 
 #define MCDE_LCDTIM1B_IHS BIT(21)
-/* inverted panel clock 0 = rising edge data out, 1 = falling edge data out */
+ 
 #define MCDE_LCDTIM1B_IPC BIT(22)
-/* invert output enable 0 = active high, 1 = active low */
+ 
 #define MCDE_LCDTIM1B_IOE BIT(23)
 
 #define MCDE_CRC 0x00000C00
@@ -330,11 +326,11 @@
 #define MCDE_VSCRC_VSPDIV_MCDECLK_DIV_32 5
 #define MCDE_VSCRC_VSPDIV_MCDECLK_DIV_64 6
 #define MCDE_VSCRC_VSPDIV_MCDECLK_DIV_128 7
-#define MCDE_VSCRC_VSPOL BIT(27) /* 0 active high, 1 active low */
-#define MCDE_VSCRC_VSSEL BIT(28) /* 0 VSYNC0, 1 VSYNC1 */
+#define MCDE_VSCRC_VSPOL BIT(27)  
+#define MCDE_VSCRC_VSSEL BIT(28)  
 #define MCDE_VSCRC_VSDBL BIT(29)
 
-/* Channel config 0..3 */
+ 
 #define MCDE_CHNL0CONF 0x00000600
 #define MCDE_CHNL1CONF 0x00000620
 #define MCDE_CHNL2CONF 0x00000640
@@ -345,7 +341,7 @@
 #define MCDE_CHNLXCONF_LPF_MASK 0x07FF0000
 #define MCDE_MAX_WIDTH 2048
 
-/* Channel status 0..3 */
+ 
 #define MCDE_CHNL0STAT 0x00000604
 #define MCDE_CHNL1STAT 0x00000624
 #define MCDE_CHNL2STAT 0x00000644
@@ -356,7 +352,7 @@
 #define MCDE_CHNLXSTAT_PPLX2_V422 BIT(17)
 #define MCDE_CHNLXSTAT_LPFX2_V422 BIT(18)
 
-/* Sync settings for channel 0..3 */
+ 
 #define MCDE_CHNL0SYNCHMOD 0x00000608
 #define MCDE_CHNL1SYNCHMOD 0x00000628
 #define MCDE_CHNL2SYNCHMOD 0x00000648
@@ -373,7 +369,7 @@
 #define MCDE_CHNLXSYNCHMOD_OUT_SYNCH_SRC_TE0 1
 #define MCDE_CHNLXSYNCHMOD_OUT_SYNCH_SRC_TE1 2
 
-/* Software sync triggers for channel 0..3 */
+ 
 #define MCDE_CHNL0SYNCHSW 0x0000060C
 #define MCDE_CHNL1SYNCHSW 0x0000062C
 #define MCDE_CHNL2SYNCHSW 0x0000064C
@@ -400,7 +396,7 @@
 #define MCDE_CHNLXMUXING_FIFO_ID_FIFO_C0 2
 #define MCDE_CHNLXMUXING_FIFO_ID_FIFO_C1 3
 
-/* Pixel processing control registers for channel A B,  */
+ 
 #define MCDE_CRA0 0x00000800
 #define MCDE_CRB0 0x00000A00
 #define MCDE_CRX0_FLOEN BIT(0)
@@ -423,8 +419,8 @@
 #define MCDE_CRX0_FLICKMODE_FORCE_FILTER_0 0
 #define MCDE_CRX0_FLICKMODE_ADAPTIVE 1
 #define MCDE_CRX0_FLICKMODE_TEST_MODE 2
-#define MCDE_CRX0_FLOCKFORMAT_RGB BIT(13) /* 0 = YCVCR */
-#define MCDE_CRX0_PALMODE_GAMMA BIT(14) /* 0 = palette */
+#define MCDE_CRX0_FLOCKFORMAT_RGB BIT(13)  
+#define MCDE_CRX0_PALMODE_GAMMA BIT(14)  
 #define MCDE_CRX0_OLEDEN BIT(15)
 #define MCDE_CRX0_ALPHABLEND_SHIFT 16
 #define MCDE_CRX0_ALPHABLEND_MASK 0x00FF0000
@@ -466,7 +462,7 @@
 #define MCDE_CRX1_OUTBPP_18BPP 8
 #define MCDE_CRX1_OUTBPP_24BPP 9
 #define MCDE_CRX1_BCD BIT(29)
-#define MCDE_CRA1_CLKTYPE_TVXCLKSEL1 BIT(30) /* 0 = TVXCLKSEL1 */
+#define MCDE_CRA1_CLKTYPE_TVXCLKSEL1 BIT(30)  
 
 #define MCDE_COLKEYA 0x00000808
 #define MCDE_COLKEYB 0x00000A08
@@ -492,11 +488,11 @@
 #define MCDE_RGBCONV6A 0x00000824
 #define MCDE_RGBCONV6B 0x00000A24
 
-/* Rotation */
+ 
 #define MCDE_ROTACONF 0x0000087C
 #define MCDE_ROTBCONF 0x00000A7C
 
-/* Synchronization event configuration */
+ 
 #define MCDE_SYNCHCONFA 0x00000880
 #define MCDE_SYNCHCONFB 0x00000A80
 #define MCDE_SYNCHCONF_HWREQVEVENT_SHIFT 0
@@ -504,14 +500,14 @@
 #define MCDE_SYNCHCONF_HWREQVEVENT_BACK_PORCH (1 << 0)
 #define MCDE_SYNCHCONF_HWREQVEVENT_ACTIVE_VIDEO (2 << 0)
 #define MCDE_SYNCHCONF_HWREQVEVENT_FRONT_PORCH (3 << 0)
-#define MCDE_SYNCHCONF_HWREQVCNT_SHIFT 2 /* 14 bits */
+#define MCDE_SYNCHCONF_HWREQVCNT_SHIFT 2  
 #define MCDE_SYNCHCONF_SWINTVEVENT_VSYNC (0 << 16)
 #define MCDE_SYNCHCONF_SWINTVEVENT_BACK_PORCH (1 << 16)
 #define MCDE_SYNCHCONF_SWINTVEVENT_ACTIVE_VIDEO (2 << 16)
 #define MCDE_SYNCHCONF_SWINTVEVENT_FRONT_PORCH (3 << 16)
-#define MCDE_SYNCHCONF_SWINTVCNT_SHIFT 18 /* 14 bits */
+#define MCDE_SYNCHCONF_SWINTVCNT_SHIFT 18  
 
-/* Channel A+B control registers */
+ 
 #define MCDE_CTRLA 0x00000884
 #define MCDE_CTRLB 0x00000A84
 #define MCDE_CTRLX_FIFOWTRMRK_SHIFT 0
@@ -602,4 +598,4 @@
 #define MCDE_DSIVID2DELAY1 0x00000E98
 #define MCDE_DSICMD2DELAY1 0x00000EB8
 
-#endif /* __DRM_MCDE_DISPLAY_REGS */
+#endif  

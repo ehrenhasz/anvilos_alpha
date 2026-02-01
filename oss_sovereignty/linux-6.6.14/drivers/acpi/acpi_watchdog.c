@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ACPI watchdog table parsing support.
- *
- * Copyright (C) 2016, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: watchdog: " fmt
 
@@ -17,14 +12,7 @@
 #ifdef CONFIG_RTC_MC146818_LIB
 #include <linux/mc146818rtc.h>
 
-/*
- * There are several systems where the WDAT table is accessing RTC SRAM to
- * store persistent information. This does not work well with the Linux RTC
- * driver so on those systems we skip WDAT driver and prefer iTCO_wdt
- * instead.
- *
- * See also https://bugzilla.kernel.org/show_bug.cgi?id=199033.
- */
+ 
 static bool acpi_watchdog_uses_rtc(const struct acpi_table_wdat *wdat)
 {
 	const struct acpi_wdat_entry *entries;
@@ -68,7 +56,7 @@ static const struct acpi_table_wdat *acpi_watchdog_get_wdat(void)
 	status = acpi_get_table(ACPI_SIG_WDAT, 0,
 				(struct acpi_table_header **)&wdat);
 	if (ACPI_FAILURE(status)) {
-		/* It is fine if there is no WDAT */
+		 
 		return NULL;
 	}
 
@@ -81,17 +69,14 @@ static const struct acpi_table_wdat *acpi_watchdog_get_wdat(void)
 	return wdat;
 }
 
-/**
- * Returns true if this system should prefer ACPI based watchdog instead of
- * the native one (which are typically the same hardware).
- */
+ 
 bool acpi_has_watchdog(void)
 {
 	return !!acpi_watchdog_get_wdat();
 }
 EXPORT_SYMBOL_GPL(acpi_has_watchdog);
 
-/* ACPI watchdog can be disabled on boot command line */
+ 
 static int __init disable_acpi_watchdog(char *str)
 {
 	acpi_no_watchdog = true;
@@ -112,15 +97,15 @@ void __init acpi_watchdog_init(void)
 
 	wdat = acpi_watchdog_get_wdat();
 	if (!wdat) {
-		/* It is fine if there is no WDAT */
+		 
 		return;
 	}
 
-	/* Watchdog disabled by BIOS */
+	 
 	if (!(wdat->flags & ACPI_WDAT_ENABLED))
 		goto fail_put_wdat;
 
-	/* Skip legacy PCI WDT devices */
+	 
 	if (wdat->pci_segment != 0xff || wdat->pci_bus != 0xff ||
 	    wdat->pci_device != 0xff || wdat->pci_function != 0xff)
 		goto fail_put_wdat;

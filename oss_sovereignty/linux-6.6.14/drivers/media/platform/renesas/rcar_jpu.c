@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Author: Mikhail Ulyanov
- * Copyright (C) 2014-2015 Cogent Embedded, Inc.  <source@cogentembedded.com>
- * Copyright (C) 2014-2015 Renesas Electronics Corporation
- *
- * This is based on the drivers/media/platform/samsung/s5p-jpeg driver by
- * Andrzej Pietrasiewicz and Jacek Anaszewski.
- * Some portions of code inspired by VSP1 driver by Laurent Pinchart.
- *
- * TODO in order of priority:
- *      1) Rotation
- *      2) Cropping
- *      3) V4L2_CID_JPEG_ACTIVE_MARKER
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/clk.h>
@@ -40,13 +27,10 @@
 
 #define DRV_NAME "rcar_jpu"
 
-/*
- * Align JPEG header end to cache line to make sure we will not have any issues
- * with cache; additionally to requirement (33.3.27 R01UH0501EJ0100 Rev.1.00)
- */
+ 
 #define JPU_JPEG_HDR_SIZE		(ALIGN(0x258, L1_CACHE_BYTES))
-#define JPU_JPEG_MAX_BYTES_PER_PIXEL	2	/* 16 bit precision format */
-#define JPU_JPEG_MIN_SIZE		25	/* SOI + SOF + EOI */
+#define JPU_JPEG_MAX_BYTES_PER_PIXEL	2	 
+#define JPU_JPEG_MIN_SIZE		25	 
 #define JPU_JPEG_QTBL_SIZE		0x40
 #define JPU_JPEG_HDCTBL_SIZE		0x1c
 #define JPU_JPEG_HACTBL_SIZE		0xb2
@@ -71,8 +55,8 @@
 #define JPU_JPEG_DEFAULT_422_PIX_FMT V4L2_PIX_FMT_NV16M
 #define JPU_JPEG_DEFAULT_420_PIX_FMT V4L2_PIX_FMT_NV12M
 
-#define JPU_RESET_TIMEOUT	100 /* ms */
-#define JPU_JOB_TIMEOUT		300 /* ms */
+#define JPU_RESET_TIMEOUT	100  
+#define JPU_JOB_TIMEOUT		300  
 #define JPU_MAX_QUALITY		4
 #define JPU_WIDTH_MIN		16
 #define JPU_HEIGHT_MIN		16
@@ -80,7 +64,7 @@
 #define JPU_HEIGHT_MAX		4096
 #define JPU_MEMALIGN		8
 
-/* Flags that indicate a format can be used for capture/output */
+ 
 #define JPU_FMT_TYPE_OUTPUT	0
 #define JPU_FMT_TYPE_CAPTURE	1
 #define JPU_ENC_CAPTURE		(1 << 0)
@@ -88,11 +72,9 @@
 #define JPU_DEC_CAPTURE		(1 << 2)
 #define JPU_DEC_OUTPUT		(1 << 3)
 
-/*
- * JPEG registers and bits
- */
+ 
 
-/* JPEG code mode register */
+ 
 #define JCMOD	0x00
 #define JCMOD_PCTR		(1 << 7)
 #define JCMOD_MSKIP_ENABLE	(1 << 5)
@@ -102,92 +84,78 @@
 #define JCMOD_REDU_422		(1 << 0)
 #define JCMOD_REDU_420		(2 << 0)
 
-/* JPEG code command register */
+ 
 #define JCCMD	0x04
 #define JCCMD_SRST	(1 << 12)
 #define JCCMD_JEND	(1 << 2)
 #define JCCMD_JSRT	(1 << 0)
 
-/* JPEG code quantization table number register */
+ 
 #define JCQTN	0x0c
 #define JCQTN_SHIFT(t)		(((t) - 1) << 1)
 
-/* JPEG code Huffman table number register */
+ 
 #define JCHTN	0x10
 #define JCHTN_AC_SHIFT(t)	(((t) << 1) - 1)
 #define JCHTN_DC_SHIFT(t)	(((t) - 1) << 1)
 
-#define JCVSZU	0x1c /* JPEG code vertical size upper register */
-#define JCVSZD	0x20 /* JPEG code vertical size lower register */
-#define JCHSZU	0x24 /* JPEG code horizontal size upper register */
-#define JCHSZD	0x28 /* JPEG code horizontal size lower register */
-#define JCSZ_MASK 0xff /* JPEG code h/v size register contains only 1 byte*/
+#define JCVSZU	0x1c  
+#define JCVSZD	0x20  
+#define JCHSZU	0x24  
+#define JCHSZD	0x28  
+#define JCSZ_MASK 0xff  
 
-#define JCDTCU	0x2c /* JPEG code data count upper register */
-#define JCDTCM	0x30 /* JPEG code data count middle register */
-#define JCDTCD	0x34 /* JPEG code data count lower register */
+#define JCDTCU	0x2c  
+#define JCDTCM	0x30  
+#define JCDTCD	0x34  
 
-/* JPEG interrupt enable register */
+ 
 #define JINTE	0x38
-#define JINTE_ERR		(7 << 5) /* INT5 + INT6 + INT7 */
+#define JINTE_ERR		(7 << 5)  
 #define JINTE_TRANSF_COMPL	(1 << 10)
 
-/* JPEG interrupt status register */
+ 
 #define JINTS	0x3c
 #define JINTS_MASK	0x7c68
 #define JINTS_ERR		(1 << 5)
 #define JINTS_PROCESS_COMPL	(1 << 6)
 #define JINTS_TRANSF_COMPL	(1 << 10)
 
-#define JCDERR	0x40 /* JPEG code decode error register */
-#define JCDERR_MASK	0xf /* JPEG code decode error register mask*/
+#define JCDERR	0x40  
+#define JCDERR_MASK	0xf  
 
-/* JPEG interface encoding */
+ 
 #define JIFECNT	0x70
 #define JIFECNT_INFT_422	0
 #define JIFECNT_INFT_420	1
-#define JIFECNT_SWAP_WB		(3 << 4) /* to JPU */
+#define JIFECNT_SWAP_WB		(3 << 4)  
 
-#define JIFESYA1	0x74	/* encode source Y address register 1 */
-#define JIFESCA1	0x78	/* encode source C address register 1 */
-#define JIFESYA2	0x7c	/* encode source Y address register 2 */
-#define JIFESCA2	0x80	/* encode source C address register 2 */
-#define JIFESMW		0x84	/* encode source memory width register */
-#define JIFESVSZ	0x88	/* encode source vertical size register */
-#define JIFESHSZ	0x8c	/* encode source horizontal size register */
-#define JIFEDA1		0x90	/* encode destination address register 1 */
-#define JIFEDA2		0x94	/* encode destination address register 2 */
+#define JIFESYA1	0x74	 
+#define JIFESCA1	0x78	 
+#define JIFESYA2	0x7c	 
+#define JIFESCA2	0x80	 
+#define JIFESMW		0x84	 
+#define JIFESVSZ	0x88	 
+#define JIFESHSZ	0x8c	 
+#define JIFEDA1		0x90	 
+#define JIFEDA2		0x94	 
 
-/* JPEG decoding control register */
+ 
 #define JIFDCNT	0xa0
-#define JIFDCNT_SWAP_WB		(3 << 1) /* from JPU */
+#define JIFDCNT_SWAP_WB		(3 << 1)  
 
-#define JIFDSA1		0xa4	/* decode source address register 1 */
-#define JIFDDMW		0xb0	/* decode destination  memory width register */
-#define JIFDDVSZ	0xb4	/* decode destination  vert. size register */
-#define JIFDDHSZ	0xb8	/* decode destination  horiz. size register */
-#define JIFDDYA1	0xbc	/* decode destination  Y address register 1 */
-#define JIFDDCA1	0xc0	/* decode destination  C address register 1 */
+#define JIFDSA1		0xa4	 
+#define JIFDDMW		0xb0	 
+#define JIFDDVSZ	0xb4	 
+#define JIFDDHSZ	0xb8	 
+#define JIFDDYA1	0xbc	 
+#define JIFDDCA1	0xc0	 
 
-#define JCQTBL(n)	(0x10000 + (n) * 0x40)	/* quantization tables regs */
-#define JCHTBD(n)	(0x10100 + (n) * 0x100)	/* Huffman table DC regs */
-#define JCHTBA(n)	(0x10120 + (n) * 0x100)	/* Huffman table AC regs */
+#define JCQTBL(n)	(0x10000 + (n) * 0x40)	 
+#define JCHTBD(n)	(0x10100 + (n) * 0x100)	 
+#define JCHTBA(n)	(0x10120 + (n) * 0x100)	 
 
-/**
- * struct jpu - JPEG IP abstraction
- * @mutex: the mutex protecting this structure
- * @lock: spinlock protecting the device contexts
- * @v4l2_dev: v4l2 device for mem2mem mode
- * @vfd_encoder: video device node for encoder mem2mem mode
- * @vfd_decoder: video device node for decoder mem2mem mode
- * @m2m_dev: v4l2 mem2mem device data
- * @curr: pointer to current context
- * @regs: JPEG IP registers mapping
- * @irq: JPEG IP irq
- * @clk: JPEG IP clock
- * @dev: JPEG IP struct device
- * @ref_count: reference counter
- */
+ 
 struct jpu {
 	struct mutex	mutex;
 	spinlock_t	lock;
@@ -204,29 +172,14 @@ struct jpu {
 	int			ref_count;
 };
 
-/**
- * struct jpu_buffer - driver's specific video buffer
- * @buf: m2m buffer
- * @compr_quality: destination image quality in compression mode
- * @subsampling: source image subsampling in decompression mode
- */
+ 
 struct jpu_buffer {
 	struct v4l2_m2m_buffer buf;
 	unsigned short	compr_quality;
 	unsigned char	subsampling;
 };
 
-/**
- * struct jpu_fmt - driver's internal format data
- * @fourcc: the fourcc code, 0 if not applicable
- * @colorspace: the colorspace specifier
- * @bpp: number of bits per pixel per plane
- * @h_align: horizontal alignment order (align to 2^h_align)
- * @v_align: vertical alignment order (align to 2^v_align)
- * @subsampling: (horizontal:4 | vertical:4) subsampling factor
- * @num_planes: number of planes
- * @types: types of queue this format is applicable to
- */
+ 
 struct jpu_fmt {
 	u32 fourcc;
 	u32 colorspace;
@@ -238,28 +191,14 @@ struct jpu_fmt {
 	u16 types;
 };
 
-/**
- * struct jpu_q_data - parameters of one queue
- * @fmtinfo: driver-specific format of this queue
- * @format: multiplanar format of this queue
- * @sequence: sequence number
- */
+ 
 struct jpu_q_data {
 	struct jpu_fmt *fmtinfo;
 	struct v4l2_pix_format_mplane format;
 	unsigned int sequence;
 };
 
-/**
- * struct jpu_ctx - the device context data
- * @jpu: JPEG IP device for this context
- * @encoder: compression (encode) operation or decompression (decode)
- * @compr_quality: destination image quality in compression (encode) mode
- * @out_q: source (output) queue information
- * @cap_q: destination (capture) queue information
- * @fh: file handler
- * @ctrl_handler: controls handler
- */
+ 
 struct jpu_ctx {
 	struct jpu		*jpu;
 	bool			encoder;
@@ -270,11 +209,7 @@ struct jpu_ctx {
 	struct v4l2_ctrl_handler ctrl_handler;
 };
 
- /**
- * jpeg_buffer - description of memory containing input JPEG data
- * @end: end position in the buffer
- * @curr: current position in the buffer
- */
+  
 struct jpeg_buffer {
 	void *end;
 	void *curr;
@@ -310,12 +245,7 @@ static const u8 zigzag[] = {
 			  sizeof(unsigned int)) / sizeof(unsigned int))
 #define HACTBL_SIZE (ALIGN(JPU_JPEG_HACTBL_SIZE, \
 			  sizeof(unsigned int)) / sizeof(unsigned int))
-/*
- * Start of image; Quantization tables
- * SOF0 (17 bytes payload) is Baseline DCT - Sample precision, height, width,
- * Number of image components, (Ci:8 - Hi:4 - Vi:4 - Tq:8) * 3 - Y,Cb,Cr;
- * Huffman tables; Padding with 0xff (33.3.27 R01UH0501EJ0100 Rev.1.00)
- */
+ 
 #define JPU_JPEG_HDR_BLOB {                                                    \
 	0xff, JPEG_MARKER_SOI, 0xff, JPEG_MARKER_DQT, 0x00,		       \
 	JPU_JPEG_QTBL_SIZE + 0x3, JPU_JPEG_LUM,				       \
@@ -530,11 +460,7 @@ static int jpu_reset(struct jpu *jpu)
 	return jpu_wait_reset(jpu);
 }
 
-/*
- * ============================================================================
- * video ioctl operations
- * ============================================================================
- */
+ 
 static void put_qtbl(u8 *p, const u8 *qtbl)
 {
 	unsigned int i;
@@ -602,10 +528,7 @@ static u8 jpu_parse_hdr(void *buffer, unsigned long size, unsigned int *width,
 	jpeg_buffer.end = buffer + size;
 	jpeg_buffer.curr = buffer;
 
-	/*
-	 * basic size check and EOI - we don't want to let JPU cross
-	 * buffer bounds in any case. Hope it's stopping by EOI.
-	 */
+	 
 	if (size < JPU_JPEG_MIN_SIZE ||
 	    *(u8 *)(buffer + size - 1) != JPEG_MARKER_EOI)
 		return 0;
@@ -613,7 +536,7 @@ static u8 jpu_parse_hdr(void *buffer, unsigned long size, unsigned int *width,
 	for (;;) {
 		int c;
 
-		/* skip preceding filler bytes */
+		 
 		do
 			c = get_byte(&jpeg_buffer);
 		while (c == 0xff || c == 0);
@@ -625,11 +548,11 @@ static u8 jpu_parse_hdr(void *buffer, unsigned long size, unsigned int *width,
 			return 0;
 
 		switch (c) {
-		case JPEG_MARKER_SOF0: /* SOF0: baseline JPEG */
-			skip(&jpeg_buffer, 3); /* segment length and bpp */
+		case JPEG_MARKER_SOF0:  
+			skip(&jpeg_buffer, 3);  
 			if (get_word_be(&jpeg_buffer, height) ||
 			    get_word_be(&jpeg_buffer, width) ||
-			    get_byte(&jpeg_buffer) != 3) /* YCbCr only */
+			    get_byte(&jpeg_buffer) != 3)  
 				return 0;
 
 			skip(&jpeg_buffer, 1);
@@ -795,7 +718,7 @@ static int __jpu_try_fmt(struct jpu_ctx *ctx, struct jpu_fmt **fmtinfo,
 	h = pix->height;
 
 	if (fmt->fourcc == V4L2_PIX_FMT_JPEG) {
-		/* ignore userspaces's sizeimage for encoding */
+		 
 		if (pix->plane_fmt[0].sizeimage <= 0 || ctx->encoder)
 			pix->plane_fmt[0].sizeimage = JPU_JPEG_HDR_SIZE +
 				(JPU_JPEG_MAX_BYTES_PER_PIXEL * w * h);
@@ -875,9 +798,7 @@ static int jpu_g_fmt(struct file *file, void *priv, struct v4l2_format *f)
 	return 0;
 }
 
-/*
- * V4L2 controls
- */
+ 
 static int jpu_s_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct jpu_ctx *ctx = ctrl_to_ctx(ctrl);
@@ -924,7 +845,7 @@ static int jpu_streamon(struct file *file, void *priv, enum v4l2_buf_type type)
 	if (adj.format.width != orig->format.width ||
 	    adj.format.height != orig->format.height) {
 		dev_err(ctx->jpu->dev, "src and dst formats do not match.\n");
-		/* maybe we can return -EPIPE here? */
+		 
 		return -EINVAL;
 	}
 
@@ -988,11 +909,7 @@ error_free:
 	return ret;
 }
 
-/*
- * ============================================================================
- * Queue operations
- * ============================================================================
- */
+ 
 static int jpu_queue_setup(struct vb2_queue *vq,
 			   unsigned int *nbuffers, unsigned int *nplanes,
 			   unsigned int sizes[], struct device *alloc_devs[])
@@ -1053,7 +970,7 @@ static int jpu_buf_prepare(struct vb2_buffer *vb)
 			return -EINVAL;
 		}
 
-		/* decoder capture queue */
+		 
 		if (!ctx->encoder && V4L2_TYPE_IS_CAPTURE(vb->vb2_queue->type))
 			vb2_set_plane_payload(vb, i, size);
 	}
@@ -1076,7 +993,7 @@ static void jpu_buf_queue(struct vb2_buffer *vb)
 		u8 subsampling = jpu_parse_hdr(buffer, buf_size, &width,
 						 &height);
 
-		/* check if JPEG data basic parsing was successful */
+		 
 		if (subsampling != JPU_JPEG_422 && subsampling != JPU_JPEG_420)
 			goto format_error;
 
@@ -1093,10 +1010,7 @@ static void jpu_buf_queue(struct vb2_buffer *vb)
 		    adjust.format.height != q_data->format.height)
 			goto format_error;
 
-		/*
-		 * keep subsampling in buffer to check it
-		 * for compatibility in device_run
-		 */
+		 
 		jpu_buf->subsampling = subsampling;
 	}
 
@@ -1210,11 +1124,7 @@ static int jpu_queue_init(void *priv, struct vb2_queue *src_vq,
 	return vb2_queue_init(dst_vq);
 }
 
-/*
- * ============================================================================
- * Device file operations
- * ============================================================================
- */
+ 
 static int jpu_open(struct file *file)
 {
 	struct jpu *jpu = video_drvdata(file);
@@ -1258,7 +1168,7 @@ static int jpu_open(struct file *file)
 		ret = clk_prepare_enable(jpu->clk);
 		if (ret < 0)
 			goto device_prepare_rollback;
-		/* ...issue software reset */
+		 
 		ret = jpu_reset(jpu);
 		if (ret)
 			goto jpu_reset_rollback;
@@ -1308,14 +1218,10 @@ static const struct v4l2_file_operations jpu_fops = {
 	.mmap		= v4l2_m2m_fop_mmap,
 };
 
-/*
- * ============================================================================
- * mem2mem callbacks
- * ============================================================================
- */
+ 
 static void jpu_cleanup(struct jpu_ctx *ctx, bool reset)
 {
-	/* remove current buffers and finish job */
+	 
 	struct vb2_v4l2_buffer *src_buf, *dst_buf;
 	unsigned long flags;
 
@@ -1327,7 +1233,7 @@ static void jpu_cleanup(struct jpu_ctx *ctx, bool reset)
 	v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_ERROR);
 	v4l2_m2m_buf_done(dst_buf, VB2_BUF_STATE_ERROR);
 
-	/* ...and give it a chance on next run */
+	 
 	if (reset)
 		jpu_write(ctx->jpu, JCCMD_SRST, JCCMD);
 
@@ -1347,7 +1253,7 @@ static void jpu_device_run(void *priv)
 	unsigned char num_planes, subsampling;
 	unsigned long flags;
 
-	/* ...wait until module reset completes; we have mutex locked here */
+	 
 	if (jpu_wait_reset(jpu)) {
 		jpu_cleanup(ctx, true);
 		return;
@@ -1397,7 +1303,7 @@ static void jpu_device_run(void *priv)
 			inft = JIFECNT_INFT_422;
 		}
 
-		/* only no marker mode works for encoding */
+		 
 		jpu_write(jpu, JCMOD_DSP_ENC | JCMOD_PCTR | redu |
 			  JCMOD_MSKIP_ENABLE, JCMOD);
 
@@ -1405,11 +1311,11 @@ static void jpu_device_run(void *priv)
 		jpu_write(jpu, JIFDCNT_SWAP_WB, JIFDCNT);
 		jpu_write(jpu, JINTE_TRANSF_COMPL, JINTE);
 
-		/* Y and C components source addresses */
+		 
 		jpu_write(jpu, src_1_addr, JIFESYA1);
 		jpu_write(jpu, src_2_addr, JIFESCA1);
 
-		/* memory width */
+		 
 		jpu_write(jpu, bpl, JIFESMW);
 
 		jpu_write(jpu, (w >> 8) & JCSZ_MASK, JCHSZU);
@@ -1453,15 +1359,15 @@ static void jpu_device_run(void *priv)
 		else
 			dst_2_addr = dst_1_addr + w * h;
 
-		/* ...set up decoder operation */
+		 
 		jpu_write(jpu, JCMOD_DSP_DEC | JCMOD_PCTR, JCMOD);
 		jpu_write(jpu, JIFECNT_SWAP_WB, JIFECNT);
 		jpu_write(jpu, JIFDCNT_SWAP_WB, JIFDCNT);
 
-		/* ...enable interrupts on transfer completion and d-g error */
+		 
 		jpu_write(jpu, JINTE_TRANSF_COMPL | JINTE_ERR, JINTE);
 
-		/* ...set source/destination addresses of encoded data */
+		 
 		jpu_write(jpu, src_addr, JIFDSA1);
 		jpu_write(jpu, dst_1_addr, JIFDDYA1);
 		jpu_write(jpu, dst_2_addr, JIFDDCA1);
@@ -1469,7 +1375,7 @@ static void jpu_device_run(void *priv)
 		jpu_write(jpu, bpl, JIFDDMW);
 	}
 
-	/* ...start encoder/decoder operation */
+	 
 	jpu_write(jpu, JCCMD_JSRT, JCCMD);
 
 	spin_unlock_irqrestore(&ctx->jpu->lock, flags);
@@ -1479,11 +1385,7 @@ static const struct v4l2_m2m_ops jpu_m2m_ops = {
 	.device_run	= jpu_device_run,
 };
 
-/*
- * ============================================================================
- * IRQ handler
- * ============================================================================
- */
+ 
 static irqreturn_t jpu_irq_handler(int irq, void *dev_id)
 {
 	struct jpu *jpu = dev_id;
@@ -1493,12 +1395,12 @@ static irqreturn_t jpu_irq_handler(int irq, void *dev_id)
 
 	int_status = jpu_read(jpu, JINTS);
 
-	/* ...spurious interrupt */
+	 
 	if (!((JINTS_TRANSF_COMPL | JINTS_PROCESS_COMPL | JINTS_ERR) &
 	    int_status))
 		return IRQ_NONE;
 
-	/* ...clear interrupts */
+	 
 	jpu_write(jpu, ~(int_status & JINTS_MASK), JINTS);
 	if (int_status & (JINTS_ERR | JINTS_PROCESS_COMPL))
 		jpu_write(jpu, JCCMD_JEND, JCCMD);
@@ -1511,7 +1413,7 @@ static irqreturn_t jpu_irq_handler(int irq, void *dev_id)
 
 	curr_ctx = v4l2_m2m_get_curr_priv(jpu->m2m_dev);
 	if (!curr_ctx) {
-		/* ...instance is not running */
+		 
 		dev_err(jpu->dev, "no active context for m2m\n");
 		goto handled;
 	}
@@ -1551,7 +1453,7 @@ static irqreturn_t jpu_irq_handler(int irq, void *dev_id)
 
 	jpu->curr = NULL;
 
-	/* ...reset JPU after completion */
+	 
 	jpu_write(jpu, JCCMD_SRST, JCCMD);
 	spin_unlock(&jpu->lock);
 
@@ -1564,16 +1466,12 @@ handled:
 	return IRQ_HANDLED;
 }
 
-/*
- * ============================================================================
- * Driver basic infrastructure
- * ============================================================================
- */
+ 
 static const struct of_device_id jpu_dt_ids[] = {
-	{ .compatible = "renesas,jpu-r8a7790" }, /* H2 */
-	{ .compatible = "renesas,jpu-r8a7791" }, /* M2-W */
-	{ .compatible = "renesas,jpu-r8a7792" }, /* V2H */
-	{ .compatible = "renesas,jpu-r8a7793" }, /* M2-N */
+	{ .compatible = "renesas,jpu-r8a7790" },  
+	{ .compatible = "renesas,jpu-r8a7791" },  
+	{ .compatible = "renesas,jpu-r8a7792" },  
+	{ .compatible = "renesas,jpu-r8a7793" },  
 	{ .compatible = "renesas,rcar-gen2-jpu" },
 	{ },
 };
@@ -1593,12 +1491,12 @@ static int jpu_probe(struct platform_device *pdev)
 	spin_lock_init(&jpu->lock);
 	jpu->dev = &pdev->dev;
 
-	/* memory-mapped registers */
+	 
 	jpu->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(jpu->regs))
 		return PTR_ERR(jpu->regs);
 
-	/* interrupt service routine registration */
+	 
 	jpu->irq = ret = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		return ret;
@@ -1610,21 +1508,21 @@ static int jpu_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* clocks */
+	 
 	jpu->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(jpu->clk)) {
 		dev_err(&pdev->dev, "cannot get clock\n");
 		return PTR_ERR(jpu->clk);
 	}
 
-	/* v4l2 device */
+	 
 	ret = v4l2_device_register(&pdev->dev, &jpu->v4l2_dev);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to register v4l2 device\n");
 		return ret;
 	}
 
-	/* mem2mem device */
+	 
 	jpu->m2m_dev = v4l2_m2m_init(&jpu_m2m_ops);
 	if (IS_ERR(jpu->m2m_dev)) {
 		v4l2_err(&jpu->v4l2_dev, "Failed to init mem2mem device\n");
@@ -1632,7 +1530,7 @@ static int jpu_probe(struct platform_device *pdev)
 		goto device_register_rollback;
 	}
 
-	/* fill in quantization and Huffman tables for encoder */
+	 
 	for (i = 0; i < JPU_MAX_QUALITY; i++)
 		jpu_generate_hdr(i, (unsigned char *)jpeg_hdrs[i]);
 

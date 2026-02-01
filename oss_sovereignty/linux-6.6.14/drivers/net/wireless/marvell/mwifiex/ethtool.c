@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP Wireless LAN device driver: ethtool
- *
- * Copyright 2011-2020 NXP
- */
+
+ 
 
 #include "main.h"
 

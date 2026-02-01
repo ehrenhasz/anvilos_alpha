@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2021 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+
+ 
 #include "iwl-drv.h"
 #include "runtime.h"
 #include "fw/api/commands.h"
@@ -60,7 +56,7 @@ static void iwl_parse_shared_mem(struct iwl_fw_runtime *fwrt,
 		le32_to_cpu(mem_cfg->rxfifo_size[0]);
 	fwrt->smem_cfg.rxfifo2_size = le32_to_cpu(mem_cfg->rxfifo_size[1]);
 
-	/* new API has more data, from rxfifo_addr field and on */
+	 
 	if (fw_has_capa(&fwrt->fw->ucode_capa,
 			IWL_UCODE_TLV_CAPA_EXTEND_SHARED_MEM_CFG)) {
 		BUILD_BUG_ON(sizeof(fwrt->smem_cfg.internal_txfifo_size) !=

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2022 - 2023 Intel Corporation
- */
+
+ 
 #include "mvm.h"
 
 static void iwl_mvm_mld_set_he_support(struct iwl_mvm *mvm,
@@ -33,7 +31,7 @@ static void iwl_mvm_mld_mac_ctxt_cmd_common(struct iwl_mvm *mvm,
 	cmd->he_support = 0;
 	cmd->eht_support = 0;
 
-	/* should be set by specific context type handler */
+	 
 	cmd->filter_flags = 0;
 
 	cmd->nic_not_ack_enabled =
@@ -42,14 +40,7 @@ static void iwl_mvm_mld_mac_ctxt_cmd_common(struct iwl_mvm *mvm,
 	if (iwlwifi_mod_params.disable_11ax)
 		return;
 
-	/* If we have MLO enabled, then the firmware needs to enable
-	 * address translation for the station(s) we add. That depends
-	 * on having EHT enabled in firmware, which in turn depends on
-	 * mac80211 in the code below.
-	 * However, mac80211 doesn't enable HE/EHT until it has parsed
-	 * the association response successfully, so just skip all that
-	 * and enable both when we have MLO.
-	 */
+	 
 	if (ieee80211_vif_is_mld(vif)) {
 		iwl_mvm_mld_set_he_support(mvm, vif, cmd);
 		cmd->eht_support = cpu_to_le32(1);
@@ -65,9 +56,7 @@ static void iwl_mvm_mld_mac_ctxt_cmd_common(struct iwl_mvm *mvm,
 		if (link_conf->he_support)
 			iwl_mvm_mld_set_he_support(mvm, vif, cmd);
 
-		/* it's not reasonable to have EHT without HE and FW API doesn't
-		 * support it. Ignore EHT in this case.
-		 */
+		 
 		if (!link_conf->he_support && link_conf->eht_support)
 			continue;
 
@@ -100,13 +89,10 @@ static int iwl_mvm_mld_mac_ctxt_cmd_sta(struct iwl_mvm *mvm,
 
 	WARN_ON(vif->type != NL80211_IFTYPE_STATION);
 
-	/* Fill the common data for all mac context types */
+	 
 	iwl_mvm_mld_mac_ctxt_cmd_common(mvm, vif, &cmd, action);
 
-	/*
-	 * We always want to hear MCAST frames, if we're not authorized yet,
-	 * we'll drop them.
-	 */
+	 
 	cmd.filter_flags |= cpu_to_le32(MAC_CFG_FILTER_ACCEPT_GRP);
 
 	if (vif->p2p)
@@ -127,9 +113,7 @@ static int iwl_mvm_mld_mac_ctxt_cmd_sta(struct iwl_mvm *mvm,
 	} else {
 		cmd.client.is_assoc = 0;
 
-		/* Allow beacons to pass through as long as we are not
-		 * associated, or we do not have dtim period information.
-		 */
+		 
 		cmd.filter_flags |= cpu_to_le32(MAC_CFG_FILTER_ACCEPT_BEACON);
 	}
 
@@ -205,7 +189,7 @@ static int iwl_mvm_mld_mac_ctxt_cmd_p2p_device(struct iwl_mvm *mvm,
 	cmd.p2p_dev.is_disc_extended =
 		iwl_mac_ctxt_p2p_dev_has_extended_disc(mvm, vif);
 
-	/* Override the filter flags to accept only probe requests */
+	 
 	cmd.filter_flags = cpu_to_le32(MAC_CFG_FILTER_ACCEPT_PROBE_REQ);
 
 	return iwl_mvm_mld_mac_ctxt_send_cmd(mvm, &cmd);
@@ -220,7 +204,7 @@ static int iwl_mvm_mld_mac_ctxt_cmd_ap_go(struct iwl_mvm *mvm,
 
 	WARN_ON(vif->type != NL80211_IFTYPE_AP);
 
-	/* Fill the common data for all mac context types */
+	 
 	iwl_mvm_mld_mac_ctxt_cmd_common(mvm, vif, &cmd, action);
 
 	iwl_mvm_mac_ctxt_cmd_ap_set_filter_flags(mvm, mvmvif,
@@ -271,7 +255,7 @@ int iwl_mvm_mld_mac_ctxt_add(struct iwl_mvm *mvm, struct ieee80211_vif *vif)
 	if (ret)
 		return ret;
 
-	/* will only do anything at resume from D3 time */
+	 
 	iwl_mvm_set_last_nonqos_seq(mvm, vif);
 
 	mvmvif->uploaded = true;

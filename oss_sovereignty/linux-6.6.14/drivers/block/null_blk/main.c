@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Add configfs and memory store: Kyungchan Koh <kkc6196@fb.com> and
- * Shaohua Li <shli@fb.com>
- */
+
+ 
 #include <linux/module.h>
 
 #include <linux/moduleparam.h>
@@ -30,14 +27,7 @@ static inline u64 mb_per_tick(int mbps)
 	return (1 << 20) / TICKS_PER_SEC * ((u64) mbps);
 }
 
-/*
- * Status flags for nullb_device.
- *
- * CONFIGURED:	Device has been configured and turned on. Cannot reconfigure.
- * UP:		Device is currently on and visible in userspace.
- * THROTTLED:	Device is being throttled.
- * CACHE:	Device is using a write-back cache.
- */
+ 
 enum nullb_device_flags {
 	NULLB_DEV_FL_CONFIGURED	= 0,
 	NULLB_DEV_FL_UP		= 1,
@@ -46,18 +36,7 @@ enum nullb_device_flags {
 };
 
 #define MAP_SZ		((PAGE_SIZE >> SECTOR_SHIFT) + 2)
-/*
- * nullb_page is a page in memory for nullb devices.
- *
- * @page:	The page holding the data.
- * @bitmap:	The bitmap represents which sector in the page has data.
- *		Each bit represents one block size. For example, sector 8
- *		will use the 7th bit
- * The highest 2 bits of bitmap are for special purpose. LOCK means the cache
- * page is being flushing to storage. FREE means the cache page is freed and
- * should be skipped from flushing to storage. Please see
- * null_make_cache_space
- */
+ 
 struct nullb_page {
 	struct page *page;
 	DECLARE_BITMAP(bitmap, MAP_SZ);
@@ -98,10 +77,7 @@ module_param_named(home_node, g_home_node, int, 0444);
 MODULE_PARM_DESC(home_node, "Home node for the device");
 
 #ifdef CONFIG_BLK_DEV_NULL_BLK_FAULT_INJECTION
-/*
- * For more details about fault injection, please refer to
- * Documentation/fault-injection/fault-injection.rst.
- */
+ 
 static char g_timeout_str[80];
 module_param_string(timeout, g_timeout_str, sizeof(g_timeout_str), 0444);
 MODULE_PARM_DESC(timeout, "Fault injection. timeout=<interval>,<probability>,<space>,<times>");
@@ -311,7 +287,7 @@ static ssize_t nullb_device_bool_attr_store(bool *val, const char *page,
 	return count;
 }
 
-/* The following macro should only be used with TYPE = {uint, ulong, bool}. */
+ 
 #define NULLB_DEVICE_ATTR(NAME, TYPE, APPLY)				\
 static ssize_t								\
 nullb_device_##NAME##_show(struct config_item *item, char *page)	\
@@ -353,23 +329,15 @@ static int nullb_update_nr_hw_queues(struct nullb_device *dev,
 	if (!dev->nullb)
 		return 0;
 
-	/*
-	 * Make sure at least one submit queue exists.
-	 */
+	 
 	if (!submit_queues)
 		return -EINVAL;
 
-	/*
-	 * Make sure that null_init_hctx() does not access nullb->queues[] past
-	 * the end of that array.
-	 */
+	 
 	if (submit_queues > nr_cpu_ids || poll_queues > g_poll_queues)
 		return -EINVAL;
 
-	/*
-	 * Keep previous and new queue numbers in nullb_device for reference in
-	 * the call back function null_map_queues().
-	 */
+	 
 	dev->prev_submit_queues = dev->submit_queues;
 	dev->prev_poll_queues = dev->poll_queues;
 	dev->submit_queues = submit_queues;
@@ -381,7 +349,7 @@ static int nullb_update_nr_hw_queues(struct nullb_device *dev,
 	ret = set->nr_hw_queues == nr_hw_queues ? 0 : -ENOMEM;
 
 	if (ret) {
-		/* on error, revert the queue numbers */
+		 
 		dev->submit_queues = dev->prev_submit_queues;
 		dev->poll_queues = dev->prev_poll_queues;
 	}
@@ -507,7 +475,7 @@ static ssize_t nullb_device_badblocks_store(struct config_item *item,
 	ret = -EINVAL;
 	if (start > end)
 		goto out;
-	/* enable badblocks */
+	 
 	cmpxchg(&t_dev->badblocks.shift, -1, 0);
 	if (buf[0] == '+')
 		ret = badblocks_set(&t_dev->badblocks, start,
@@ -808,10 +776,7 @@ static struct nullb_cmd *alloc_cmd(struct nullb_queue *nq, struct bio *bio)
 	DEFINE_WAIT(wait);
 
 	do {
-		/*
-		 * This avoids multiple return statements, multiple calls to
-		 * __alloc_cmd() and a fast path call to prepare_to_wait().
-		 */
+		 
 		cmd = __alloc_cmd(nq);
 		if (cmd) {
 			cmd->bio = bio;
@@ -1095,16 +1060,10 @@ again:
 
 	nr_pages = radix_tree_gang_lookup(&nullb->dev->cache,
 			(void **)c_pages, nullb->cache_flush_pos, FREE_BATCH);
-	/*
-	 * nullb_flush_cache_page could unlock before using the c_pages. To
-	 * avoid race, we don't allow page free
-	 */
+	 
 	for (i = 0; i < nr_pages; i++) {
 		nullb->cache_flush_pos = c_pages[i]->page->index;
-		/*
-		 * We found the page which is being flushed to disk by other
-		 * threads
-		 */
+		 
 		if (test_bit(NULLB_PAGE_LOCK, c_pages[i]->bitmap))
 			c_pages[i] = NULL;
 		else
@@ -1126,7 +1085,7 @@ again:
 		if (nr_pages == 0)
 			nullb->cache_flush_pos = 0;
 		if (one_round == 0) {
-			/* give other threads a chance */
+			 
 			spin_unlock_irq(&nullb->lock);
 			spin_lock_irq(&nullb->lock);
 		}
@@ -1352,10 +1311,10 @@ static inline blk_status_t null_handle_throttled(struct nullb_cmd *cmd)
 
 	if (atomic_long_sub_return(blk_rq_bytes(rq), &nullb->cur_bytes) < 0) {
 		null_stop_queue(nullb);
-		/* race with timer */
+		 
 		if (atomic_long_read(&nullb->cur_bytes) > 0)
 			null_restart_queue_async(nullb);
-		/* requeue request */
+		 
 		sts = BLK_STS_DEV_RESOURCE;
 	}
 	return sts;
@@ -1412,17 +1371,11 @@ static void nullb_zero_read_cmd_buffer(struct nullb_cmd *cmd)
 
 static inline void nullb_complete_cmd(struct nullb_cmd *cmd)
 {
-	/*
-	 * Since root privileges are required to configure the null_blk
-	 * driver, it is fine that this driver does not initialize the
-	 * data buffers of read commands. Zero-initialize these buffers
-	 * anyway if KMSAN is enabled to prevent that KMSAN complains
-	 * about null_blk not initializing read data buffers.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_KMSAN))
 		nullb_zero_read_cmd_buffer(cmd);
 
-	/* Complete IO by inline, softirq or timer */
+	 
 	switch (cmd->nq->dev->irqmode) {
 	case NULL_IRQ_SOFTIRQ:
 		switch (cmd->nq->dev->queue_mode) {
@@ -1430,9 +1383,7 @@ static inline void nullb_complete_cmd(struct nullb_cmd *cmd)
 			blk_mq_complete_request(cmd->rq);
 			break;
 		case NULL_Q_BIO:
-			/*
-			 * XXX: no proper submitting cpu information available.
-			 */
+			 
 			end_cmd(cmd);
 			break;
 		}
@@ -1487,7 +1438,7 @@ static blk_status_t null_handle_cmd(struct nullb_cmd *cmd, sector_t sector,
 	else
 		sts = null_process_cmd(cmd, op, sector, nr_sectors);
 
-	/* Do not overwrite errors (e.g. timeout errors) */
+	 
 	if (cmd->error == BLK_STS_OK)
 		cmd->error = sts;
 
@@ -1595,12 +1546,7 @@ static void null_map_queues(struct blk_mq_tag_set *set)
 	if (nullb) {
 		struct nullb_device *dev = nullb->dev;
 
-		/*
-		 * Refer nr_hw_queues of the tag set to check if the expected
-		 * number of hardware queues are prepared. If block layer failed
-		 * to prepare them, use previous numbers of submit queues and
-		 * poll queues to map queues.
-		 */
+		 
 		if (set->nr_hw_queues ==
 		    dev->submit_queues + dev->poll_queues) {
 			submit_queues = dev->submit_queues;
@@ -1678,7 +1624,7 @@ static enum blk_eh_timer_return null_timeout_rq(struct request *rq)
 		struct nullb_queue *nq = hctx->driver_data;
 
 		spin_lock(&nq->poll_lock);
-		/* The request may have completed meanwhile. */
+		 
 		if (blk_mq_request_completed(rq)) {
 			spin_unlock(&nq->poll_lock);
 			return BLK_EH_DONE;
@@ -1689,13 +1635,7 @@ static enum blk_eh_timer_return null_timeout_rq(struct request *rq)
 
 	pr_info("rq %p timed out\n", rq);
 
-	/*
-	 * If the device is marked as blocking (i.e. memory backed or zoned
-	 * device), the submission path may be blocked waiting for resources
-	 * and cause real timeouts. For these real timeouts, the submission
-	 * path will complete the request using blk_mq_complete_request().
-	 * Only fake timeouts need to execute blk_mq_complete_request() here.
-	 */
+	 
 	cmd->error = BLK_STS_TIMEOUT;
 	if (cmd->fake_timeout || hctx->type == HCTX_TYPE_POLL)
 		blk_mq_complete_request(rq);
@@ -1727,10 +1667,7 @@ static blk_status_t null_queue_rq(struct blk_mq_hw_ctx *hctx,
 	blk_mq_start_request(rq);
 
 	if (should_requeue_request(rq)) {
-		/*
-		 * Alternate between hitting the core BUSY path, and the
-		 * driver driven requeue path
-		 */
+		 
 		nq->requeue_selection++;
 		if (nq->requeue_selection & 1)
 			return BLK_STS_RESOURCE;
@@ -2032,15 +1969,15 @@ static int null_validate_conf(struct nullb_device *dev)
 	dev->queue_mode = min_t(unsigned int, dev->queue_mode, NULL_Q_MQ);
 	dev->irqmode = min_t(unsigned int, dev->irqmode, NULL_IRQ_TIMER);
 
-	/* Do memory allocation, so set blocking */
+	 
 	if (dev->memory_backed)
 		dev->blocking = true;
-	else /* cache is meaningless */
+	else  
 		dev->cache_size = 0;
 	dev->cache_size = min_t(unsigned long, ULONG_MAX / 1024 / 1024,
 						dev->cache_size);
 	dev->mbps = min_t(unsigned int, 1024 * 40, dev->mbps);
-	/* can not stop a queue */
+	 
 	if (dev->queue_mode == NULL_Q_BIO)
 		dev->mbps = 0;
 
@@ -2174,7 +2111,7 @@ static int null_add_dev(struct nullb_device *dev)
 	null_config_discard(nullb);
 
 	if (config_item_name(&dev->group.cg_item)) {
-		/* Use configfs dir name as the device name */
+		 
 		snprintf(nullb->disk_name, sizeof(nullb->disk_name),
 			 "%s", config_item_name(&dev->group.cg_item));
 	} else {

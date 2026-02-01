@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for TPS61050/61052 boost converters, typically used for white LEDs
- * or audio amplifiers.
- *
- * Copyright (C) 2011 ST-Ericsson SA
- * Written on behalf of Linaro for ST-Ericsson
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -23,7 +15,7 @@ static const unsigned int tps6105x_voltages[] = {
 	4500000,
 	5000000,
 	5250000,
-	5000000, /* There is an additional 5V */
+	5000000,  
 };
 
 static const struct regulator_ops tps6105x_regulator_ops = {
@@ -52,9 +44,7 @@ static const struct regulator_desc tps6105x_regulator_desc = {
 			  TPS6105X_REG0_MODE_SHIFT,
 };
 
-/*
- * Registers the chip as a voltage regulator
- */
+ 
 static int tps6105x_regulator_probe(struct platform_device *pdev)
 {
 	struct tps6105x *tps6105x = dev_get_platdata(&pdev->dev);
@@ -62,7 +52,7 @@ static int tps6105x_regulator_probe(struct platform_device *pdev)
 	struct regulator_config config = { };
 	int ret;
 
-	/* This instance is not set for regulator mode so bail out */
+	 
 	if (pdata->mode != TPS6105X_MODE_VOLTAGE) {
 		dev_info(&pdev->dev,
 			"chip not in voltage mode mode, exit probe\n");
@@ -75,7 +65,7 @@ static int tps6105x_regulator_probe(struct platform_device *pdev)
 	config.of_node = pdev->dev.parent->of_node;
 	config.regmap = tps6105x->regmap;
 
-	/* Register regulator with framework */
+	 
 	tps6105x->regulator = devm_regulator_register(&pdev->dev,
 						      &tps6105x_regulator_desc,
 						      &config);

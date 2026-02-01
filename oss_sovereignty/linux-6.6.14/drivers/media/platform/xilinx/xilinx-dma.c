@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx Video DMA
- *
- * Copyright (C) 2013-2015 Ideas on Board
- * Copyright (C) 2013-2015 Xilinx, Inc.
- *
- * Contacts: Hyun Kwon <hyun.kwon@xilinx.com>
- *           Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/dma/xilinx_dma.h>
 #include <linux/lcm.h>
@@ -29,15 +21,13 @@
 #define XVIP_DMA_DEF_WIDTH		1920
 #define XVIP_DMA_DEF_HEIGHT		1080
 
-/* Minimum and maximum widths are expressed in bytes */
+ 
 #define XVIP_DMA_MIN_WIDTH		1U
 #define XVIP_DMA_MAX_WIDTH		65535U
 #define XVIP_DMA_MIN_HEIGHT		1U
 #define XVIP_DMA_MAX_HEIGHT		8191U
 
-/* -----------------------------------------------------------------------------
- * Helper functions
- */
+ 
 
 static struct v4l2_subdev *
 xvip_dma_remote_subdev(struct media_pad *local, u32 *pad)
@@ -79,21 +69,9 @@ static int xvip_dma_verify_format(struct xvip_dma *dma)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * Pipeline Stream Management
- */
+ 
 
-/**
- * xvip_pipeline_start_stop - Start ot stop streaming on a pipeline
- * @pipe: The pipeline
- * @start: Start (when true) or stop (when false) the pipeline
- *
- * Walk the entities chain starting at the pipeline output video node and start
- * or stop all of them.
- *
- * Return: 0 if successful, or the return value of the failed video::s_stream
- * operation otherwise.
- */
+ 
 static int xvip_pipeline_start_stop(struct xvip_pipeline *pipe, bool start)
 {
 	struct xvip_dma *dma = pipe->output;
@@ -123,31 +101,7 @@ static int xvip_pipeline_start_stop(struct xvip_pipeline *pipe, bool start)
 	return 0;
 }
 
-/**
- * xvip_pipeline_set_stream - Enable/disable streaming on a pipeline
- * @pipe: The pipeline
- * @on: Turn the stream on when true or off when false
- *
- * The pipeline is shared between all DMA engines connect at its input and
- * output. While the stream state of DMA engines can be controlled
- * independently, pipelines have a shared stream state that enable or disable
- * all entities in the pipeline. For this reason the pipeline uses a streaming
- * counter that tracks the number of DMA engines that have requested the stream
- * to be enabled.
- *
- * When called with the @on argument set to true, this function will increment
- * the pipeline streaming count. If the streaming count reaches the number of
- * DMA engines in the pipeline it will enable all entities that belong to the
- * pipeline.
- *
- * Similarly, when called with the @on argument set to false, this function will
- * decrement the pipeline streaming count and disable all entities in the
- * pipeline when the streaming count reaches zero.
- *
- * Return: 0 if successful, or the return value of the failed video::s_stream
- * operation otherwise. Stopping the pipeline never fails. The pipeline state is
- * not updated when the operation fails.
- */
+ 
 static int xvip_pipeline_set_stream(struct xvip_pipeline *pipe, bool on)
 {
 	int ret = 0;
@@ -179,7 +133,7 @@ static int xvip_pipeline_validate(struct xvip_pipeline *pipe,
 	unsigned int num_outputs = 0;
 	struct media_pad *pad;
 
-	/* Locate the video nodes in the pipeline. */
+	 
 	media_pipeline_for_each_pad(&pipe->pipe, &iter, pad) {
 		struct xvip_dma *dma;
 
@@ -196,7 +150,7 @@ static int xvip_pipeline_validate(struct xvip_pipeline *pipe,
 		}
 	}
 
-	/* We need exactly one output and zero or one input. */
+	 
 	if (num_outputs != 1 || num_inputs > 1)
 		return -EPIPE;
 
@@ -211,33 +165,19 @@ static void __xvip_pipeline_cleanup(struct xvip_pipeline *pipe)
 	pipe->output = NULL;
 }
 
-/**
- * xvip_pipeline_cleanup - Cleanup the pipeline after streaming
- * @pipe: the pipeline
- *
- * Decrease the pipeline use count and clean it up if we were the last user.
- */
+ 
 static void xvip_pipeline_cleanup(struct xvip_pipeline *pipe)
 {
 	mutex_lock(&pipe->lock);
 
-	/* If we're the last user clean up the pipeline. */
+	 
 	if (--pipe->use_count == 0)
 		__xvip_pipeline_cleanup(pipe);
 
 	mutex_unlock(&pipe->lock);
 }
 
-/**
- * xvip_pipeline_prepare - Prepare the pipeline for streaming
- * @pipe: the pipeline
- * @dma: DMA engine at one end of the pipeline
- *
- * Validate the pipeline if no user exists yet, otherwise just increase the use
- * count.
- *
- * Return: 0 if successful or -EPIPE if the pipeline is not valid.
- */
+ 
 static int xvip_pipeline_prepare(struct xvip_pipeline *pipe,
 				 struct xvip_dma *dma)
 {
@@ -245,7 +185,7 @@ static int xvip_pipeline_prepare(struct xvip_pipeline *pipe,
 
 	mutex_lock(&pipe->lock);
 
-	/* If we're the first user validate and initialize the pipeline. */
+	 
 	if (pipe->use_count == 0) {
 		ret = xvip_pipeline_validate(pipe, dma);
 		if (ret < 0) {
@@ -262,16 +202,9 @@ done:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * videobuf2 queue operations
- */
+ 
 
-/**
- * struct xvip_dma_buffer - Video DMA buffer
- * @buf: vb2 buffer base object
- * @queue: buffer list entry in the DMA engine queued buffers list
- * @dma: DMA channel that uses the buffer
- */
+ 
 struct xvip_dma_buffer {
 	struct vb2_v4l2_buffer buf;
 	struct list_head queue;
@@ -303,7 +236,7 @@ xvip_dma_queue_setup(struct vb2_queue *vq,
 {
 	struct xvip_dma *dma = vb2_get_drv_priv(vq);
 
-	/* Make sure the image size is large enough. */
+	 
 	if (*nplanes)
 		return sizes[0] < dma->format.sizeimage ? -EINVAL : 0;
 
@@ -380,22 +313,14 @@ static int xvip_dma_start_streaming(struct vb2_queue *vq, unsigned int count)
 
 	dma->sequence = 0;
 
-	/*
-	 * Start streaming on the pipeline. No link touching an entity in the
-	 * pipeline can be activated or deactivated once streaming is started.
-	 *
-	 * Use the pipeline object embedded in the first DMA object that starts
-	 * streaming.
-	 */
+	 
 	pipe = to_xvip_pipeline(&dma->video) ? : &dma->pipe;
 
 	ret = video_device_pipeline_start(&dma->video, &pipe->pipe);
 	if (ret < 0)
 		goto error;
 
-	/* Verify that the configured format matches the output of the
-	 * connected subdev.
-	 */
+	 
 	ret = xvip_dma_verify_format(dma);
 	if (ret < 0)
 		goto error_stop;
@@ -404,12 +329,10 @@ static int xvip_dma_start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (ret < 0)
 		goto error_stop;
 
-	/* Start the DMA engine. This must be done before starting the blocks
-	 * in the pipeline to avoid DMA synchronization issues.
-	 */
+	 
 	dma_async_issue_pending(dma->dma);
 
-	/* Start the pipeline. */
+	 
 	xvip_pipeline_set_stream(pipe, true);
 
 	return 0;
@@ -418,7 +341,7 @@ error_stop:
 	video_device_pipeline_stop(&dma->video);
 
 error:
-	/* Give back all queued buffers to videobuf2. */
+	 
 	spin_lock_irq(&dma->queued_lock);
 	list_for_each_entry_safe(buf, nbuf, &dma->queued_bufs, queue) {
 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_QUEUED);
@@ -435,17 +358,17 @@ static void xvip_dma_stop_streaming(struct vb2_queue *vq)
 	struct xvip_pipeline *pipe = to_xvip_pipeline(&dma->video);
 	struct xvip_dma_buffer *buf, *nbuf;
 
-	/* Stop the pipeline. */
+	 
 	xvip_pipeline_set_stream(pipe, false);
 
-	/* Stop and reset the DMA engine. */
+	 
 	dmaengine_terminate_all(dma->dma);
 
-	/* Cleanup the pipeline and mark it as being stopped. */
+	 
 	xvip_pipeline_cleanup(pipe);
 	video_device_pipeline_stop(&dma->video);
 
-	/* Give back all queued buffers to videobuf2. */
+	 
 	spin_lock_irq(&dma->queued_lock);
 	list_for_each_entry_safe(buf, nbuf, &dma->queued_bufs, queue) {
 		vb2_buffer_done(&buf->buf.vb2_buf, VB2_BUF_STATE_ERROR);
@@ -464,9 +387,7 @@ static const struct vb2_ops xvip_dma_queue_qops = {
 	.stop_streaming = xvip_dma_stop_streaming,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 ioctls
- */
+ 
 
 static int
 xvip_dma_querycap(struct file *file, void *fh, struct v4l2_capability *cap)
@@ -485,11 +406,7 @@ xvip_dma_querycap(struct file *file, void *fh, struct v4l2_capability *cap)
 	return 0;
 }
 
-/* FIXME: without this callback function, some applications are not configured
- * with correct formats, and it results in frames in wrong format. Whether this
- * callback needs to be required is not clearly defined, so it should be
- * clarified through the mailing list.
- */
+ 
 static int
 xvip_dma_enum_format(struct file *file, void *fh, struct v4l2_fmtdesc *f)
 {
@@ -528,18 +445,13 @@ __xvip_dma_try_format(struct xvip_dma *dma, struct v4l2_pix_format *pix,
 	unsigned int align;
 	unsigned int bpl;
 
-	/* Retrieve format information and select the default format if the
-	 * requested format isn't supported.
-	 */
+	 
 	info = xvip_get_format_by_fourcc(pix->pixelformat);
 
 	pix->pixelformat = info->fourcc;
 	pix->field = V4L2_FIELD_NONE;
 
-	/* The transfer alignment requirements are expressed in bytes. Compute
-	 * the minimum and maximum values, clamp the requested width and convert
-	 * it back to pixels.
-	 */
+	 
 	align = lcm(dma->align, info->bpp);
 	min_width = roundup(XVIP_DMA_MIN_WIDTH, align);
 	max_width = rounddown(XVIP_DMA_MAX_WIDTH, align);
@@ -549,10 +461,7 @@ __xvip_dma_try_format(struct xvip_dma *dma, struct v4l2_pix_format *pix,
 	pix->height = clamp(pix->height, XVIP_DMA_MIN_HEIGHT,
 			    XVIP_DMA_MAX_HEIGHT);
 
-	/* Clamp the requested bytes per line value. If the maximum bytes per
-	 * line value is zero, the module doesn't support user configurable line
-	 * sizes. Override the requested value with the minimum in that case.
-	 */
+	 
 	min_bpl = pix->width * info->bpp;
 	max_bpl = rounddown(XVIP_DMA_MAX_WIDTH, dma->align);
 	bpl = rounddown(pix->bytesperline, dma->align);
@@ -611,9 +520,7 @@ static const struct v4l2_ioctl_ops xvip_dma_ioctl_ops = {
 	.vidioc_streamoff		= vb2_ioctl_streamoff,
 };
 
-/* -----------------------------------------------------------------------------
- * V4L2 file operations
- */
+ 
 
 static const struct v4l2_file_operations xvip_dma_fops = {
 	.owner		= THIS_MODULE,
@@ -624,9 +531,7 @@ static const struct v4l2_file_operations xvip_dma_fops = {
 	.mmap		= vb2_fop_mmap,
 };
 
-/* -----------------------------------------------------------------------------
- * Xilinx Video DMA Core
- */
+ 
 
 int xvip_dma_init(struct xvip_composite_device *xdev, struct xvip_dma *dma,
 		  enum v4l2_buf_type type, unsigned int port)
@@ -650,7 +555,7 @@ int xvip_dma_init(struct xvip_composite_device *xdev, struct xvip_dma *dma,
 	dma->format.bytesperline = dma->format.width * dma->fmtinfo->bpp;
 	dma->format.sizeimage = dma->format.bytesperline * dma->format.height;
 
-	/* Initialize the media entity... */
+	 
 	dma->pad.flags = type == V4L2_BUF_TYPE_VIDEO_CAPTURE
 		       ? MEDIA_PAD_FL_SINK : MEDIA_PAD_FL_SOURCE;
 
@@ -658,7 +563,7 @@ int xvip_dma_init(struct xvip_composite_device *xdev, struct xvip_dma *dma,
 	if (ret < 0)
 		goto error;
 
-	/* ... and the video node... */
+	 
 	dma->video.fops = &xvip_dma_fops;
 	dma->video.v4l2_dev = &xdev->v4l2_dev;
 	dma->video.queue = &dma->queue;
@@ -680,14 +585,8 @@ int xvip_dma_init(struct xvip_composite_device *xdev, struct xvip_dma *dma,
 
 	video_set_drvdata(&dma->video, dma);
 
-	/* ... and the buffers queue... */
-	/* Don't enable VB2_READ and VB2_WRITE, as using the read() and write()
-	 * V4L2 APIs would be inefficient. Testing on the command line with a
-	 * 'cat /dev/video?' thus won't be possible, but given that the driver
-	 * anyway requires a test tool to setup the pipeline before any video
-	 * stream can be started, requiring a specific V4L2 test tool as well
-	 * instead of 'cat' isn't really a drawback.
-	 */
+	 
+	 
 	dma->queue.type = type;
 	dma->queue.io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF;
 	dma->queue.lock = &dma->lock;
@@ -704,7 +603,7 @@ int xvip_dma_init(struct xvip_composite_device *xdev, struct xvip_dma *dma,
 		goto error;
 	}
 
-	/* ... and the DMA channel. */
+	 
 	snprintf(name, sizeof(name), "port%u", port);
 	dma->dma = dma_request_chan(dma->xdev->dev, name);
 	if (IS_ERR(dma->dma)) {

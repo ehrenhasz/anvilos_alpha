@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "pp_debug.h"
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -104,7 +83,7 @@ static struct profile_mode_setting smu7_profiling[7] = {
 #define STRAP_EVV_REVISION_MSB		2211
 #define STRAP_EVV_REVISION_LSB		2208
 
-/** Values for the CG_THERMAL_CTRL::DPM_EVENT_SRC field. */
+ 
 enum DPM_EVENT_SRC {
 	DPM_EVENT_SRC_ANALOG = 0,
 	DPM_EVENT_SRC_EXTERNAL = 1,
@@ -166,7 +145,7 @@ uint32_t DIDTEDCConfig_P12[] = {
     ixDIDT_DB_EDC_STALL_PATTERN_7,
     ixDIDT_DB_EDC_THRESHOLD,
     ixDIDT_DB_EDC_CTRL,
-    0xFFFFFFFF // End of list
+    0xFFFFFFFF 
 };
 
 static const unsigned long PhwVIslands_Magic = (unsigned long)(PHM_VIslands_Magic);
@@ -194,12 +173,7 @@ static const struct smu7_power_state *cast_const_phw_smu7_power_state(
 	return (const struct smu7_power_state *)hw_ps;
 }
 
-/**
- * smu7_get_mc_microcode_version - Find the MC microcode version and store it in the HwMgr struct
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- */
+ 
 static int smu7_get_mc_microcode_version(struct pp_hwmgr *hwmgr)
 {
 	cgs_write_register(hwmgr->device, mmMC_SEQ_IO_DEBUG_INDEX, 0x9F);
@@ -213,7 +187,7 @@ static uint16_t smu7_get_current_pcie_speed(struct pp_hwmgr *hwmgr)
 {
 	uint32_t speedCntl = 0;
 
-	/* mmPCIE_PORT_INDEX rename as mmPCIE_INDEX */
+	 
 	speedCntl = cgs_read_ind_register(hwmgr->device, CGS_IND_REG__PCIE,
 			ixPCIE_LC_SPEED_CNTL);
 	return((uint16_t)PHM_GET_FIELD(speedCntl,
@@ -224,7 +198,7 @@ static int smu7_get_current_pcie_lane_number(struct pp_hwmgr *hwmgr)
 {
 	uint32_t link_width;
 
-	/* mmPCIE_PORT_INDEX rename as mmPCIE_INDEX */
+	 
 	link_width = PHM_READ_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__PCIE,
 			PCIE_LC_LINK_WIDTH_CNTL, LC_LINK_WIDTH_RD);
 
@@ -234,12 +208,7 @@ static int smu7_get_current_pcie_lane_number(struct pp_hwmgr *hwmgr)
 	return decode_pcie_lane_width(link_width);
 }
 
-/**
- * smu7_enable_smc_voltage_controller - Enable voltage control
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always PP_Result_OK
- */
+ 
 static int smu7_enable_smc_voltage_controller(struct pp_hwmgr *hwmgr)
 {
 	if (hwmgr->chip_id >= CHIP_POLARIS10 &&
@@ -256,11 +225,7 @@ static int smu7_enable_smc_voltage_controller(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_voltage_control - Checks if we want to support voltage control
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- */
+ 
 static bool smu7_voltage_control(const struct pp_hwmgr *hwmgr)
 {
 	const struct smu7_hwmgr *data =
@@ -269,15 +234,10 @@ static bool smu7_voltage_control(const struct pp_hwmgr *hwmgr)
 	return (SMU7_VOLTAGE_CONTROL_NONE != data->voltage_control);
 }
 
-/**
- * smu7_enable_voltage_control - Enable voltage control
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- */
+ 
 static int smu7_enable_voltage_control(struct pp_hwmgr *hwmgr)
 {
-	/* enable voltage control */
+	 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 			GENERAL_PWRMGT, VOLT_PWRMGT_EN, 1);
 
@@ -307,12 +267,7 @@ static int phm_get_svi2_voltage_table_v0(pp_atomctrl_voltage_table *voltage_tabl
 }
 
 
-/**
- * smu7_construct_voltage_tables - Create Voltage Tables.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- */
+ 
 static int smu7_construct_voltage_tables(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
@@ -361,7 +316,7 @@ static int smu7_construct_voltage_tables(struct pp_hwmgr *hwmgr)
 	}
 
 	if (SMU7_VOLTAGE_CONTROL_BY_SVID2 == data->vdd_gfx_control) {
-		/* VDDGFX has only SVI2 voltage control */
+		 
 		result = phm_get_svi2_vdd_voltage_table(&(data->vddgfx_voltage_table),
 					table_info->vddgfx_lookup_table);
 		PP_ASSERT_WITH_CODE((0 == result),
@@ -419,22 +374,17 @@ static int smu7_construct_voltage_tables(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_program_static_screen_threshold_parameters - Programs static screed detection parameters
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- */
+ 
 static int smu7_program_static_screen_threshold_parameters(
 							struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
 
-	/* Set static screen threshold unit */
+	 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 			CG_STATIC_SCREEN_PARAMETER, STATIC_SCREEN_THRESHOLD_UNIT,
 			data->static_screen_threshold_unit);
-	/* Set static screen threshold */
+	 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 			CG_STATIC_SCREEN_PARAMETER, STATIC_SCREEN_THRESHOLD,
 			data->static_screen_threshold);
@@ -442,12 +392,7 @@ static int smu7_program_static_screen_threshold_parameters(
 	return 0;
 }
 
-/**
- * smu7_enable_display_gap - Setup display gap for glitch free memory clock switching.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always  0
- */
+ 
 static int smu7_enable_display_gap(struct pp_hwmgr *hwmgr)
 {
 	uint32_t display_gap =
@@ -466,18 +411,13 @@ static int smu7_enable_display_gap(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_program_voting_clients - Programs activity state transition voting clients
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always  0
- */
+ 
 static int smu7_program_voting_clients(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
 	int i;
 
-	/* Clear reset for voting clients before enabling DPM */
+	 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 			SCLK_PWRMGT_CNTL, RESET_SCLK_CNT, 0);
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
@@ -494,7 +434,7 @@ static int smu7_clear_voting_clients(struct pp_hwmgr *hwmgr)
 {
 	int i;
 
-	/* Reset voting clients before disabling DPM */
+	 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
 			SCLK_PWRMGT_CNTL, RESET_SCLK_CNT, 1);
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
@@ -507,9 +447,7 @@ static int smu7_clear_voting_clients(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/* Copy one arb setting to another and then switch the active set.
- * arb_src and arb_dest is one of the MC_CG_ARB_FREQ_Fx constants.
- */
+ 
 static int smu7_copy_and_switch_arb_sets(struct pp_hwmgr *hwmgr,
 		uint32_t arb_src, uint32_t arb_dest)
 {
@@ -561,13 +499,7 @@ static int smu7_reset_to_default(struct pp_hwmgr *hwmgr)
 	return smum_send_msg_to_smc(hwmgr, PPSMC_MSG_ResetToDefaults, NULL);
 }
 
-/**
- * smu7_initial_switch_from_arbf0_to_f1 - Initial switch from ARB F0->F1
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- * This function is to be called from the SetPowerState table.
- */
+ 
 static int smu7_initial_switch_from_arbf0_to_f1(struct pp_hwmgr *hwmgr)
 {
 	return smu7_copy_and_switch_arb_sets(hwmgr,
@@ -664,10 +596,7 @@ static int smu7_setup_default_pcie_table(struct pp_hwmgr *hwmgr)
 					MAX_REGULAR_DPM_NUMBER);
 
 	if (pcie_table != NULL) {
-		/* max_entry is used to make sure we reserve one PCIE level
-		 * for boot level (fix for A+A PSPP issue).
-		 * If PCIE table from PPTable have ULV entry + 8 entries,
-		 * then ignore the last entry.*/
+		 
 		max_entry = (tmp < pcie_table->count) ? tmp : pcie_table->count;
 		for (i = 1; i < max_entry; i++) {
 			phm_setup_pcie_table_entry(&data->dpm_table.pcie_speed_table, i - 1,
@@ -679,7 +608,7 @@ static int smu7_setup_default_pcie_table(struct pp_hwmgr *hwmgr)
 		data->dpm_table.pcie_speed_table.count = max_entry - 1;
 		smum_update_smc_table(hwmgr, SMU_BIF_TABLE);
 	} else {
-		/* Hardcode Pcie Table */
+		 
 		phm_setup_pcie_table_entry(&data->dpm_table.pcie_speed_table, 0,
 				get_pcie_gen_support(data->pcie_gen_cap,
 						PP_Min_PCIEGen),
@@ -713,7 +642,7 @@ static int smu7_setup_default_pcie_table(struct pp_hwmgr *hwmgr)
 
 		data->dpm_table.pcie_speed_table.count = 6;
 	}
-	/* Populate last level for boot PCIE level, but do not increment count. */
+	 
 	if (hwmgr->chip_family == AMDGPU_FAMILY_CI) {
 		for (i = 0; i <= data->dpm_table.pcie_speed_table.count; i++)
 			phm_setup_pcie_table_entry(&data->dpm_table.pcie_speed_table, i,
@@ -769,14 +698,7 @@ static int smu7_reset_dpm_tables(struct pp_hwmgr *hwmgr)
 					MAX_REGULAR_DPM_NUMBER);
 	return 0;
 }
-/*
- * This function is to initialize all DPM state tables
- * for SMU7 based on the dependency table.
- * Dynamic state patching function will then trim these
- * state tables to the allowed range based
- * on the power policy or external client requests,
- * such as UVD request, etc.
- */
+ 
 
 static int smu7_setup_dpm_tables_v0(struct pp_hwmgr *hwmgr)
 {
@@ -800,7 +722,7 @@ static int smu7_setup_dpm_tables_v0(struct pp_hwmgr *hwmgr)
 		"VMCLK dependency table has to have is missing. This table is mandatory", return -EINVAL);
 
 
-	/* Initialize Sclk DPM table based on allow Sclk values*/
+	 
 	data->dpm_table.sclk_table.count = 0;
 
 	for (i = 0; i < allowed_vdd_sclk_table->count; i++) {
@@ -815,7 +737,7 @@ static int smu7_setup_dpm_tables_v0(struct pp_hwmgr *hwmgr)
 
 	PP_ASSERT_WITH_CODE(allowed_vdd_mclk_table != NULL,
 		"MCLK dependency table is missing. This table is mandatory", return -EINVAL);
-	/* Initialize Mclk DPM table based on allow Mclk values */
+	 
 	data->dpm_table.mclk_table.count = 0;
 	for (i = 0; i < allowed_vdd_mclk_table->count; i++) {
 		if (i == 0 || data->dpm_table.mclk_table.dpm_levels[data->dpm_table.mclk_table.count-1].value !=
@@ -827,11 +749,11 @@ static int smu7_setup_dpm_tables_v0(struct pp_hwmgr *hwmgr)
 		}
 	}
 
-	/* Initialize Vddc DPM table based on allow Vddc values.  And populate corresponding std values. */
+	 
 	for (i = 0; i < allowed_vdd_sclk_table->count; i++) {
 		data->dpm_table.vddc_table.dpm_levels[i].value = allowed_vdd_mclk_table->entries[i].v;
 		data->dpm_table.vddc_table.dpm_levels[i].param1 = std_voltage_table->entries[i].Leakage;
-		/* param1 is for corresponding std voltage */
+		 
 		data->dpm_table.vddc_table.dpm_levels[i].enabled = true;
 	}
 
@@ -839,7 +761,7 @@ static int smu7_setup_dpm_tables_v0(struct pp_hwmgr *hwmgr)
 	allowed_vdd_mclk_table = hwmgr->dyn_state.vddci_dependency_on_mclk;
 
 	if (NULL != allowed_vdd_mclk_table) {
-		/* Initialize Vddci DPM table based on allow Mclk values */
+		 
 		for (i = 0; i < allowed_vdd_mclk_table->count; i++) {
 			data->dpm_table.vddci_table.dpm_levels[i].value = allowed_vdd_mclk_table->entries[i].v;
 			data->dpm_table.vddci_table.dpm_levels[i].enabled = true;
@@ -850,10 +772,7 @@ static int smu7_setup_dpm_tables_v0(struct pp_hwmgr *hwmgr)
 	allowed_vdd_mclk_table = hwmgr->dyn_state.mvdd_dependency_on_mclk;
 
 	if (NULL != allowed_vdd_mclk_table) {
-		/*
-		 * Initialize MVDD DPM table based on allow Mclk
-		 * values
-		 */
+		 
 		for (i = 0; i < allowed_vdd_mclk_table->count; i++) {
 			data->dpm_table.mvdd_table.dpm_levels[i].value = allowed_vdd_mclk_table->entries[i].v;
 			data->dpm_table.mvdd_table.dpm_levels[i].enabled = true;
@@ -894,7 +813,7 @@ static int smu7_setup_dpm_tables_v1(struct pp_hwmgr *hwmgr)
 			"MCLK dependency table count is 0",
 			return -EINVAL);
 
-	/* Initialize Sclk DPM table based on allow Sclk values */
+	 
 	data->dpm_table.sclk_table.count = 0;
 	for (i = 0; i < dep_sclk_table->count; i++) {
 		if (i == 0 || data->dpm_table.sclk_table.dpm_levels[data->dpm_table.sclk_table.count - 1].value !=
@@ -910,7 +829,7 @@ static int smu7_setup_dpm_tables_v1(struct pp_hwmgr *hwmgr)
 	}
 	if (hwmgr->platform_descriptor.overdriveLimit.engineClock == 0)
 		hwmgr->platform_descriptor.overdriveLimit.engineClock = dep_sclk_table->entries[i-1].clk;
-	/* Initialize Mclk DPM table based on allow Mclk values */
+	 
 	data->dpm_table.mclk_table.count = 0;
 	for (i = 0; i < dep_mclk_table->count; i++) {
 		if (i == 0 || data->dpm_table.mclk_table.dpm_levels
@@ -1069,11 +988,11 @@ static int smu7_setup_default_dpm_tables(struct pp_hwmgr *hwmgr)
 
 	smu7_setup_default_pcie_table(hwmgr);
 
-	/* save a copy of the default DPM table */
+	 
 	memcpy(&(data->golden_dpm_table), &(data->dpm_table),
 			sizeof(struct smu7_dpm_table));
 
-	/* initialize ODN table */
+	 
 	if (hwmgr->od_enabled) {
 		if (data->odn_dpm_table.max_vddc) {
 			smu7_check_dpm_table_updated(hwmgr);
@@ -1198,7 +1117,7 @@ static int smu7_enable_sclk_mclk_dpm(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
 
-	/* enable SCLK dpm */
+	 
 	if (!data->sclk_dpm_key_disabled) {
 		if (hwmgr->chip_id >= CHIP_POLARIS10 &&
 		    hwmgr->chip_id <= CHIP_VEGAM)
@@ -1210,7 +1129,7 @@ static int smu7_enable_sclk_mclk_dpm(struct pp_hwmgr *hwmgr)
 		return -EINVAL);
 	}
 
-	/* enable MCLK dpm */
+	 
 	if (0 == data->mclk_dpm_key_disabled) {
 		if (!(hwmgr->feature_mask & PP_UVD_HANDSHAKE_MASK))
 			smu7_disable_handshake_uvd(hwmgr);
@@ -1262,17 +1181,17 @@ static int smu7_start_dpm(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
 
-	/*enable general power management */
+	 
 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC, GENERAL_PWRMGT,
 			GLOBAL_PWRMGT_EN, 1);
 
-	/* enable sclk deep sleep */
+	 
 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC, SCLK_PWRMGT_CNTL,
 			DYNAMIC_PM_EN, 1);
 
-	/* prepare for PCIE DPM */
+	 
 
 	cgs_write_ind_register(hwmgr->device, CGS_IND_REG__SMC,
 			data->soft_regs_start +
@@ -1290,7 +1209,7 @@ static int smu7_start_dpm(struct pp_hwmgr *hwmgr)
 		return -EINVAL;
 	}
 
-	/* enable PCIE dpm */
+	 
 	if (0 == data->pcie_dpm_key_disabled) {
 		PP_ASSERT_WITH_CODE(
 				(0 == smum_send_msg_to_smc(hwmgr,
@@ -1323,7 +1242,7 @@ static int smu7_disable_sclk_mclk_dpm(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
 
-	/* disable SCLK dpm */
+	 
 	if (!data->sclk_dpm_key_disabled) {
 		PP_ASSERT_WITH_CODE(true == smum_is_dpm_running(hwmgr),
 				"Trying to disable SCLK DPM when DPM is disabled",
@@ -1331,7 +1250,7 @@ static int smu7_disable_sclk_mclk_dpm(struct pp_hwmgr *hwmgr)
 		smum_send_msg_to_smc(hwmgr, PPSMC_MSG_DPM_Disable, NULL);
 	}
 
-	/* disable MCLK dpm */
+	 
 	if (!data->mclk_dpm_key_disabled) {
 		PP_ASSERT_WITH_CODE(true == smum_is_dpm_running(hwmgr),
 				"Trying to disable MCLK DPM when DPM is disabled",
@@ -1346,14 +1265,14 @@ static int smu7_stop_dpm(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
 
-	/* disable general power management */
+	 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC, GENERAL_PWRMGT,
 			GLOBAL_PWRMGT_EN, 0);
-	/* disable sclk deep sleep */
+	 
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC, SCLK_PWRMGT_CNTL,
 			DYNAMIC_PM_EN, 0);
 
-	/* disable PCIE dpm */
+	 
 	if (!data->pcie_dpm_key_disabled) {
 		PP_ASSERT_WITH_CODE(
 				(smum_send_msg_to_smc(hwmgr,
@@ -1385,7 +1304,7 @@ static void smu7_set_dpm_event_sources(struct pp_hwmgr *hwmgr, uint32_t sources)
 		fallthrough;
 	case 0:
 		protection = false;
-		/* src is unused */
+		 
 		break;
 	case (1 << PHM_AutoThrottleSource_Thermal):
 		protection = true;
@@ -1401,7 +1320,7 @@ static void smu7_set_dpm_event_sources(struct pp_hwmgr *hwmgr, uint32_t sources)
 		src = DPM_EVENT_SRC_DIGITAL_OR_EXTERNAL;
 		break;
 	}
-	/* Order matters - don't enable thermal protection for the wrong source. */
+	 
 	if (protection) {
 		PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC, CG_THERMAL_CTRL,
 				DPM_EVENT_SRC, src);
@@ -1554,7 +1473,7 @@ static void smu7_populate_umdpstate_clocks(struct pp_hwmgr *hwmgr)
 	hwmgr->pstate_mclk_peak =
 		golden_dpm_table->mclk_table.dpm_levels[golden_dpm_table->mclk_table.count - 1].value;
 
-	/* make sure the output is in Mhz */
+	 
 	hwmgr->pstate_sclk /= 100;
 	hwmgr->pstate_mclk /= 100;
 	hwmgr->pstate_sclk_peak /= 100;
@@ -1824,7 +1743,7 @@ static void smu7_init_dpm_defaults(struct pp_hwmgr *hwmgr)
 	data->mclk_dpm_key_disabled = hwmgr->feature_mask & PP_MCLK_DPM_MASK ? false : true;
 	data->sclk_dpm_key_disabled = hwmgr->feature_mask & PP_SCLK_DPM_MASK ? false : true;
 	data->pcie_dpm_key_disabled = !(hwmgr->feature_mask & PP_PCIE_DPM_MASK);
-	/* need to set voltage control types before EVV patching */
+	 
 	data->voltage_control = SMU7_VOLTAGE_CONTROL_NONE;
 	data->vddci_control = SMU7_VOLTAGE_CONTROL_NONE;
 	data->mvdd_control = SMU7_VOLTAGE_CONTROL_NONE;
@@ -2013,7 +1932,7 @@ static int smu7_calculate_ro_range(struct pp_hwmgr *hwmgr)
 				if (asicrev1 == 326) {
 					min = 1200;
 					max = 2500;
-					/* TODO: PATCH RO in VBIOS */
+					 
 				} else {
 					min = 1200;
 					max = 2000;
@@ -2031,17 +1950,12 @@ static int smu7_calculate_ro_range(struct pp_hwmgr *hwmgr)
 	data->ro_range_minimum = min;
 	data->ro_range_maximum = max;
 
-	/* TODO: PATCH RO in VBIOS here */
+	 
 
 	return 0;
 }
 
-/**
- * smu7_get_evv_voltages - Get Leakage VDDC based on leakage ID.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- */
+ 
 static int smu7_get_evv_voltages(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
@@ -2081,10 +1995,10 @@ static int smu7_get_evv_voltages(struct pp_hwmgr *hwmgr)
 				if (0 == atomctrl_get_voltage_evv_on_sclk
 				    (hwmgr, VOLTAGE_TYPE_VDDGFX, sclk,
 				     vv_id, &vddgfx)) {
-					/* need to make sure vddgfx is less than 2v or else, it could burn the ASIC. */
+					 
 					PP_ASSERT_WITH_CODE((vddgfx < 2000 && vddgfx != 0), "Invalid VDDGFX value!", return -EINVAL);
 
-					/* the voltage should not be zero nor equal to leakage ID */
+					 
 					if (vddgfx != 0 && vddgfx != vv_id) {
 						data->vddcgfx_leakage.actual_voltage[data->vddcgfx_leakage.count] = vddgfx;
 						data->vddcgfx_leakage.leakage_id[data->vddcgfx_leakage.count] = vv_id;
@@ -2123,7 +2037,7 @@ static int smu7_get_evv_voltages(struct pp_hwmgr *hwmgr)
 					continue;
 				}
 
-				/* the voltage should not be zero nor equal to leakage ID */
+				 
 				if (vddc != 0 && vddc != vv_id) {
 					data->vddc_leakage.actual_voltage[data->vddc_leakage.count] = (uint16_t)(vddc);
 					data->vddc_leakage.leakage_id[data->vddc_leakage.count] = vv_id;
@@ -2136,22 +2050,16 @@ static int smu7_get_evv_voltages(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_patch_ppt_v1_with_vdd_leakage - Change virtual leakage voltage to actual value.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * @voltage: pointer to changing voltage
- * @leakage_table: pointer to leakage table
- */
+ 
 static void smu7_patch_ppt_v1_with_vdd_leakage(struct pp_hwmgr *hwmgr,
 		uint16_t *voltage, struct smu7_leakage_voltage *leakage_table)
 {
 	uint32_t index;
 
-	/* search for leakage voltage ID 0xff01 ~ 0xff08 */
+	 
 	for (index = 0; index < leakage_table->count; index++) {
-		/* if this voltage matches a leakage voltage ID */
-		/* patch with actual leakage voltage */
+		 
+		 
 		if (leakage_table->leakage_id[index] == *voltage) {
 			*voltage = leakage_table->actual_voltage[index];
 			break;
@@ -2162,14 +2070,7 @@ static void smu7_patch_ppt_v1_with_vdd_leakage(struct pp_hwmgr *hwmgr,
 		pr_info("Voltage value looks like a Leakage ID but it's not patched\n");
 }
 
-/**
- * smu7_patch_lookup_table_with_leakage - Patch voltage lookup table by EVV leakages.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * @lookup_table: pointer to voltage lookup table
- * @leakage_table: pointer to leakage table
- * Return:     always 0
- */
+ 
 static int smu7_patch_lookup_table_with_leakage(struct pp_hwmgr *hwmgr,
 		phm_ppt_v1_voltage_lookup_table *lookup_table,
 		struct smu7_leakage_voltage *leakage_table)
@@ -2256,7 +2157,7 @@ static int phm_add_voltage(struct pp_hwmgr *hwmgr,
 	PP_ASSERT_WITH_CODE((i >= look_up_table->count),
 		"Lookup Table is full.", return -EINVAL);
 
-	/* This is to avoid entering duplicate calculated records. */
+	 
 	for (i = 0; i < look_up_table->count; i++) {
 		if (look_up_table->entries[i].us_vdd == record->us_vdd) {
 			if (look_up_table->entries[i].us_calculated == 1)
@@ -2270,7 +2171,7 @@ static int phm_add_voltage(struct pp_hwmgr *hwmgr,
 	look_up_table->entries[i].us_cac_low = record->us_cac_low;
 	look_up_table->entries[i].us_cac_mid = record->us_cac_mid;
 	look_up_table->entries[i].us_cac_high = record->us_cac_high;
-	/* Only increment the count when we're appending, not replacing duplicate entry. */
+	 
 	if (i == look_up_table->count)
 		look_up_table->count++;
 
@@ -2337,7 +2238,7 @@ static int smu7_calc_mm_voltage_dependency_table(struct pp_hwmgr *hwmgr)
 				v_record.us_vdd = mm_table->entries[entry_id].vddc +
 					mm_table->entries[entry_id].vddgfx_offset;
 
-			/* Add the calculated VDDGFX to the VDDGFX lookup table */
+			 
 			mm_table->entries[entry_id].vddgfx = v_record.us_cac_low =
 				v_record.us_cac_mid = v_record.us_cac_high = v_record.us_vdd;
 			phm_add_voltage(hwmgr, pptable_info->vddgfx_lookup_table, &v_record);
@@ -2355,7 +2256,7 @@ static int smu7_sort_lookup_table(struct pp_hwmgr *hwmgr,
 	PP_ASSERT_WITH_CODE(0 != lookup_table->count,
 		"Lookup table is empty", return -EINVAL);
 
-	/* Sorting voltages */
+	 
 	for (i = 0; i < table_size - 1; i++) {
 		for (j = i + 1; j > 0; j--) {
 			if (lookup_table->entries[j].us_vdd <
@@ -2619,22 +2520,16 @@ static int smu7_thermal_parameter_init(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_patch_ppt_v0_with_vdd_leakage - Change virtual leakage voltage to actual value.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * @voltage: pointer to changing voltage
- * @leakage_table: pointer to leakage table
- */
+ 
 static void smu7_patch_ppt_v0_with_vdd_leakage(struct pp_hwmgr *hwmgr,
 		uint32_t *voltage, struct smu7_leakage_voltage *leakage_table)
 {
 	uint32_t index;
 
-	/* search for leakage voltage ID 0xff01 ~ 0xff08 */
+	 
 	for (index = 0; index < leakage_table->count; index++) {
-		/* if this voltage matches a leakage voltage ID */
-		/* patch with actual leakage voltage */
+		 
+		 
 		if (leakage_table->leakage_id[index] == *voltage) {
 			*voltage = leakage_table->actual_voltage[index];
 			break;
@@ -2968,7 +2863,7 @@ static int smu7_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 	smu7_patch_voltage_workaround(hwmgr);
 	smu7_init_dpm_defaults(hwmgr);
 
-	/* Get leakage voltage based on leakage ID. */
+	 
 	if (phm_cap_enabled(hwmgr->platform_descriptor.platformCaps,
 			PHM_PlatformCaps_EVV)) {
 		result = smu7_get_evv_voltages(hwmgr);
@@ -2990,7 +2885,7 @@ static int smu7_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 		smu7_set_private_data_based_on_pptable_v0(hwmgr);
 	}
 
-	/* Initalize Dynamic State Adjustment Rule Settings */
+	 
 	result = phm_initializa_dynamic_state_adjustment_rule_settings(hwmgr);
 
 	if (0 == result) {
@@ -3010,13 +2905,13 @@ static int smu7_hwmgr_backend_init(struct pp_hwmgr *hwmgr)
 			data->pcie_spc_cap = 16;
 		data->pcie_lane_cap = adev->pm.pcie_mlw_mask;
 
-		hwmgr->platform_descriptor.vbiosInterruptId = 0x20000400; /* IRQ_SOURCE1_SW_INT */
-/* The true clock step depends on the frequency, typically 4.5 or 9 MHz. Here we use 5. */
+		hwmgr->platform_descriptor.vbiosInterruptId = 0x20000400;  
+ 
 		hwmgr->platform_descriptor.clockStep.engineClock = 500;
 		hwmgr->platform_descriptor.clockStep.memoryClock = 500;
 		smu7_thermal_parameter_init(hwmgr);
 	} else {
-		/* Ignore return value in here, we are cleaning up a mess. */
+		 
 		smu7_hwmgr_backend_fini(hwmgr);
 	}
 
@@ -3087,7 +2982,7 @@ static int smu7_upload_dpm_level_enable_mask(struct pp_hwmgr *hwmgr)
 
 	if (hwmgr->pp_table_version == PP_TABLE_V1)
 		phm_apply_dal_min_voltage_request(hwmgr);
-/* TO DO  for v0 iceland and Ci*/
+ 
 
 	if (!data->sclk_dpm_key_disabled) {
 		if (data->dpm_level_enable_mask.sclk_dpm_enable_mask)
@@ -3342,7 +3237,7 @@ static int smu7_apply_state_adjust_rules(struct pp_hwmgr *hwmgr,
 			&(hwmgr->dyn_state.max_clock_voltage_on_ac) :
 			&(hwmgr->dyn_state.max_clock_voltage_on_dc);
 
-	/* Cap clock DPM tables at DC MAX if it is in DC. */
+	 
 	if (!adev->pm.ac_power) {
 		for (i = 0; i < smu7_ps->performance_level_count; i++) {
 			if (smu7_ps->performance_levels[i].memory_clock > max_limits->mclk)
@@ -3430,9 +3325,7 @@ static int smu7_apply_state_adjust_rules(struct pp_hwmgr *hwmgr,
 
 		if (hwmgr->chip_id >= CHIP_POLARIS10 && hwmgr->chip_id <= CHIP_VEGAM) {
 			if (disable_mclk_switching_for_display) {
-				/* Find the lowest MCLK frequency that is within
-				 * the tolerable latency defined in DAL
-				 */
+				 
 				latency = hwmgr->display_config->dce_tolerable_mclk_in_active_latency;
 				for (i = 0; i < data->mclk_latency_table.count; i++) {
 					if (data->mclk_latency_table.entries[i].latency <= latency) {
@@ -3537,16 +3430,14 @@ static int smu7_dpm_patch_boot_state(struct pp_hwmgr *hwmgr,
 	uint8_t frev, crev;
 	int index = GetIndexIntoMasterTable(DATA, FirmwareInfo);
 
-	/* First retrieve the Boot clocks and VDDC from the firmware info table.
-	 * We assume here that fw_info is unchanged if this call fails.
-	 */
+	 
 	fw_info = (ATOM_FIRMWARE_INFO_V2_2 *)smu_atom_get_data_table(hwmgr->adev, index,
 			&size, &frev, &crev);
 	if (!fw_info)
-		/* During a test, there is no firmware info table. */
+		 
 		return 0;
 
-	/* Patch the state. */
+	 
 	data->vbios_boot_state.sclk_bootup_value =
 			le32_to_cpu(fw_info->ulDefaultEngineClock);
 	data->vbios_boot_state.mclk_bootup_value =
@@ -3563,7 +3454,7 @@ static int smu7_dpm_patch_boot_state(struct pp_hwmgr *hwmgr,
 	data->vbios_boot_state.pcie_lane_bootup_value =
 			(uint16_t)smu7_get_current_pcie_lane_number(hwmgr);
 
-	/* set boot power state */
+	 
 	ps->performance_levels[0].memory_clock = data->vbios_boot_state.mclk_bootup_value;
 	ps->performance_levels[0].engine_clock = data->vbios_boot_state.sclk_bootup_value;
 	ps->performance_levels[0].pcie_gen = data->vbios_boot_state.pcie_gen_bootup_value;
@@ -3608,13 +3499,13 @@ static int smu7_get_pp_table_entry_callback_func_v1(struct pp_hwmgr *hwmgr,
 			(((unsigned long)powerplay_table) +
 				le16_to_cpu(powerplay_table->usMclkDependencyTableOffset));
 
-	/* The following fields are not initialized here: id orderedList allStatesList */
+	 
 	power_state->classification.ui_label =
 			(le16_to_cpu(state_entry->usClassification) &
 			ATOM_PPLIB_CLASSIFICATION_UI_MASK) >>
 			ATOM_PPLIB_CLASSIFICATION_UI_SHIFT;
 	power_state->classification.flags = classification_flag;
-	/* NOTE: There is a classification2 flag in BIOS that is not being used right now */
+	 
 
 	power_state->classification.temporary_state = false;
 	power_state->classification.to_be_deleted = false;
@@ -3651,7 +3542,7 @@ static int smu7_get_pp_table_entry_callback_func_v1(struct pp_hwmgr *hwmgr,
 			"Performance levels exceeds Driver limit!",
 			return -EINVAL);
 
-	/* Performance levels are arranged from low to high. */
+	 
 	performance_level->memory_clock = mclk_dep_table->entries
 			[state_entry->ucMemoryClockIndexLow].ulMclk;
 	if (sclk_dep_table->ucRevId == 0)
@@ -3703,10 +3594,7 @@ static int smu7_get_pp_table_entry_v1(struct pp_hwmgr *hwmgr,
 	result = get_powerplay_table_entry_v1_0(hwmgr, entry_index, state,
 			smu7_get_pp_table_entry_callback_func_v1);
 
-	/* This is the earliest time we have all the dependency table and the VBIOS boot state
-	 * as PP_Tables_GetPowerPlayTableEntry retrieves the VBIOS boot state
-	 * if there is only one VDDCI/MCLK level, check if it's the same as VBIOS boot state
-	 */
+	 
 	if (dep_mclk_table != NULL && dep_mclk_table->count == 1) {
 		if (dep_mclk_table->entries[0].clk !=
 				data->vbios_boot_state.mclk_bootup_value)
@@ -3718,7 +3606,7 @@ static int smu7_get_pp_table_entry_v1(struct pp_hwmgr *hwmgr,
 					"does not match VBIOS boot VDDCI level");
 	}
 
-	/* set DC compatible flag if this state supports DC */
+	 
 	if (!state->validation.disallowOnDC)
 		ps->dc_compatible = true;
 
@@ -3818,7 +3706,7 @@ static int smu7_get_pp_table_entry_callback_func_v0(struct pp_hwmgr *hwmgr,
 	performance_level = &(ps->performance_levels
 			[ps->performance_level_count++]);
 
-	/* Performance levels are arranged from low to high. */
+	 
 	performance_level->memory_clock = memory_clock;
 	performance_level->engine_clock = engine_clock;
 
@@ -3848,13 +3736,7 @@ static int smu7_get_pp_table_entry_v0(struct pp_hwmgr *hwmgr,
 	result = pp_tables_get_entry(hwmgr, entry_index, state,
 			smu7_get_pp_table_entry_callback_func_v0);
 
-	/*
-	 * This is the earliest time we have all the dependency table
-	 * and the VBIOS boot state as
-	 * PP_Tables_GetPowerPlayTableEntry retrieves the VBIOS boot
-	 * state if there is only one VDDCI/MCLK level, check if it's
-	 * the same as VBIOS boot state
-	 */
+	 
 	if (dep_mclk_table != NULL && dep_mclk_table->count == 1) {
 		if (dep_mclk_table->entries[0].clk !=
 				data->vbios_boot_state.mclk_bootup_value)
@@ -3866,7 +3748,7 @@ static int smu7_get_pp_table_entry_v0(struct pp_hwmgr *hwmgr,
 					"does not match VBIOS boot VDDCI level");
 	}
 
-	/* set DC compatible flag if this state supports DC */
+	 
 	if (!state->validation.disallowOnDC)
 		ps->dc_compatible = true;
 
@@ -3957,13 +3839,7 @@ static int smu7_get_gpu_power(struct pp_hwmgr *hwmgr, u32 *query)
 	if (!query)
 		return -EINVAL;
 
-	/*
-	 * PPSMC_MSG_GetCurrPkgPwr is not supported on:
-	 *  - Hawaii
-	 *  - Bonaire
-	 *  - Fiji
-	 *  - Tonga
-	 */
+	 
 	if ((adev->asic_type != CHIP_HAWAII) &&
 	    (adev->asic_type != CHIP_BONAIRE) &&
 	    (adev->asic_type != CHIP_FIJI) &&
@@ -4000,7 +3876,7 @@ static int smu7_read_sensor(struct pp_hwmgr *hwmgr, int idx,
 	uint32_t offset, val_vid;
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
 
-	/* size must be at least 4 bytes for all sensors */
+	 
 	if (*size < 4)
 		return -EINVAL;
 
@@ -4086,9 +3962,7 @@ static int smu7_find_dpm_states_clocks_in_dpm_table(struct pp_hwmgr *hwmgr, cons
 			sclk_table->dpm_levels[i-1].value = sclk;
 		}
 	} else {
-	/* TODO: Check SCLK in DAL's minimum clocks
-	 * in case DeepSleep divider update is required.
-	 */
+	 
 		if (data->display_timing.min_clock_in_sr != min_clocks.engineClockInSR &&
 			(min_clocks.engineClockInSR >= SMU7_MINIMUM_ENGINE_CLOCK ||
 				data->display_timing.min_clock_in_sr >= SMU7_MINIMUM_ENGINE_CLOCK))
@@ -4262,7 +4136,7 @@ static int smu7_populate_and_upload_sclk_mclk_dpm_levels(
 
 	if (data->need_update_smu7_dpm_table &
 			(DPMTABLE_OD_UPDATE_MCLK | DPMTABLE_UPDATE_MCLK)) {
-		/*populate MCLK dpm table to SMU7 */
+		 
 		result = smum_populate_all_memory_levels(hwmgr);
 		PP_ASSERT_WITH_CODE((0 == result),
 				"Failed to populate MCLK during PopulateNewDPMClocksStates Function!",
@@ -4278,10 +4152,10 @@ static int smu7_trim_single_dpm_states(struct pp_hwmgr *hwmgr,
 {
 	uint32_t i;
 
-	/* force the trim if mclk_switching is disabled to prevent flicker */
+	 
 	bool force_trim = (low_limit == high_limit);
 	for (i = 0; i < dpm_table->count; i++) {
-	/*skip the trim if od is enabled*/
+	 
 		if ((!hwmgr->od_enabled || force_trim)
 			&& (dpm_table->dpm_levels[i].value < low_limit
 			|| dpm_table->dpm_levels[i].value > high_limit))
@@ -4484,10 +4358,7 @@ static int smu7_set_power_state_tasks(struct pp_hwmgr *hwmgr, const void *input)
 			"Failed to populate and upload SCLK MCLK DPM levels!",
 			result = tmp_result);
 
-	/*
-	 * If a custom pp table is loaded, set DPMTABLE_OD_UPDATE_VDDC flag.
-	 * That effectively disables AVFS feature.
-	 */
+	 
 	if (hwmgr->hardcode_pp_table != NULL)
 		data->need_update_smu7_dpm_table |= DPMTABLE_OD_UPDATE_VDDC;
 
@@ -4549,12 +4420,7 @@ smu7_notify_smc_display_config_after_ps_adjustment(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_program_display_gap - Programs the display gap
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always OK
- */
+ 
 static int smu7_program_display_gap(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
@@ -4607,13 +4473,7 @@ static int smu7_display_configuration_changed_task(struct pp_hwmgr *hwmgr)
 	return smu7_program_display_gap(hwmgr);
 }
 
-/**
- * smu7_set_max_fan_rpm_output - Set maximum target operating fan output RPM
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * @us_max_fan_rpm:  max operating fan RPM value.
- * Return:   The response that came from the SMC.
- */
+ 
 static int smu7_set_max_fan_rpm_output(struct pp_hwmgr *hwmgr, uint16_t us_max_fan_rpm)
 {
 	hwmgr->thermal_controller.
@@ -4647,7 +4507,7 @@ static int smu7_register_irq_handlers(struct pp_hwmgr *hwmgr)
 			VISLANDS30_IV_SRCID_CG_TSS_THERMAL_HIGH_TO_LOW,
 			source);
 
-	/* Register CTF(GPIO_19) interrupt */
+	 
 	amdgpu_irq_add_id((struct amdgpu_device *)(hwmgr->adev),
 			AMDGPU_IRQ_CLIENTID_LEGACY,
 			VISLANDS30_IV_SRCID_GPIO_19,
@@ -4705,7 +4565,7 @@ static int smu7_check_states_equal(struct pp_hwmgr *hwmgr,
 
 	psa = cast_const_phw_smu7_power_state(pstate1);
 	psb = cast_const_phw_smu7_power_state(pstate2);
-	/* If the two states don't even have the same number of performance levels they cannot be the same state. */
+	 
 	if (psa->performance_level_count != psb->performance_level_count) {
 		*equal = false;
 		return 0;
@@ -4713,17 +4573,17 @@ static int smu7_check_states_equal(struct pp_hwmgr *hwmgr,
 
 	for (i = 0; i < psa->performance_level_count; i++) {
 		if (!smu7_are_power_levels_equal(&(psa->performance_levels[i]), &(psb->performance_levels[i]))) {
-			/* If we have found even one performance level pair that is different the states are different. */
+			 
 			*equal = false;
 			return 0;
 		}
 	}
 
-	/* If all performance levels are the same try to use the UVD clocks to break the tie.*/
+	 
 	*equal = ((psa->uvd_clks.vclk == psb->uvd_clks.vclk) && (psa->uvd_clks.dclk == psb->uvd_clks.dclk));
 	*equal &= ((psa->vce_clks.evclk == psb->vce_clks.evclk) && (psa->vce_clks.ecclk == psb->vce_clks.ecclk));
 	*equal &= (psa->sclk_threshold == psb->sclk_threshold);
-	/* For OD call, set value based on flag */
+	 
 	*equal &= !(data->need_update_smu7_dpm_table & (DPMTABLE_OD_UPDATE_SCLK |
 							DPMTABLE_OD_UPDATE_MCLK |
 							DPMTABLE_OD_UPDATE_VDDC));
@@ -4737,10 +4597,7 @@ static int smu7_check_mc_firmware(struct pp_hwmgr *hwmgr)
 
 	uint32_t tmp;
 
-	/* Read MC indirect register offset 0x9F bits [3:0] to see
-	 * if VBIOS has already loaded a full version of MC ucode
-	 * or not.
-	 */
+	 
 
 	smu7_get_mc_microcode_version(hwmgr);
 
@@ -4807,12 +4664,7 @@ static int smu7_read_clock_registers(struct pp_hwmgr *hwmgr)
 
 }
 
-/**
- * smu7_get_memory_type - Find out if memory is GDDR5.
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- */
+ 
 static int smu7_get_memory_type(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
@@ -4823,12 +4675,7 @@ static int smu7_get_memory_type(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_enable_acpi_power_management - Enables Dynamic Power Management by SMC
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- */
+ 
 static int smu7_enable_acpi_power_management(struct pp_hwmgr *hwmgr)
 {
 	PHM_WRITE_INDIRECT_FIELD(hwmgr->device, CGS_IND_REG__SMC,
@@ -4837,12 +4684,7 @@ static int smu7_enable_acpi_power_management(struct pp_hwmgr *hwmgr)
 	return 0;
 }
 
-/**
- * smu7_init_power_gate_state - Initialize PowerGating States for different engines
- *
- * @hwmgr:  the address of the powerplay hardware manager.
- * Return:   always 0
- */
+ 
 static int smu7_init_power_gate_state(struct pp_hwmgr *hwmgr)
 {
 	struct smu7_hwmgr *data = (struct smu7_hwmgr *)(hwmgr->backend);
@@ -5627,10 +5469,7 @@ static int smu7_set_power_profile_mode(struct pp_hwmgr *hwmgr, long *input, uint
 	case PP_SMC_POWER_PROFILE_CUSTOM:
 		if (size < 8 && size != 0)
 			return -EINVAL;
-		/* If only CUSTOM is passed in, use the saved values. Check
-		 * that we actually have a CUSTOM profile by ensuring that
-		 * the "use sclk" or the "use mclk" bits are set
-		 */
+		 
 		tmp = smu7_profiling[PP_SMC_POWER_PROFILE_CUSTOM];
 		if (size == 0) {
 			if (tmp.bupdate_sclk == 0 && tmp.bupdate_mclk == 0)

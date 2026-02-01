@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt5682.c  --  RT5682 ALSA SoC audio component driver
-//
-// Copyright 2018 Realtek Semiconductor Corp.
-// Author: Bard Liao <bardliao@realtek.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -58,7 +58,7 @@ static void rt5682_jd_check_handler(struct work_struct *work)
 		jd_check_work.work);
 
 	if (snd_soc_component_read(rt5682->component, RT5682_AJD1_CTRL) & RT5682_JDH_RS_MASK)
-		/* jack out */
+		 
 		mod_delayed_work(system_power_efficient_wq,
 				 &rt5682->jack_detect_work, 0);
 	else
@@ -173,7 +173,7 @@ static int rt5682_i2c_probe(struct i2c_client *i2c)
 	if (ret)
 		return ret;
 
-	/* Sleep for 300 ms miniumum */
+	 
 	usleep_range(300000, 350000);
 
 	regmap_write(rt5682->regmap, RT5682_I2C_MODE, 0x1);
@@ -193,17 +193,17 @@ static int rt5682_i2c_probe(struct i2c_client *i2c)
 
 	regmap_write(rt5682->regmap, RT5682_DEPOP_1, 0x0000);
 
-	/* DMIC pin*/
+	 
 	if (rt5682->pdata.dmic1_data_pin != RT5682_DMIC1_NULL) {
 		switch (rt5682->pdata.dmic1_data_pin) {
-		case RT5682_DMIC1_DATA_GPIO2: /* share with LRCK2 */
+		case RT5682_DMIC1_DATA_GPIO2:  
 			regmap_update_bits(rt5682->regmap, RT5682_DMIC_CTRL_1,
 				RT5682_DMIC_1_DP_MASK, RT5682_DMIC_1_DP_GPIO2);
 			regmap_update_bits(rt5682->regmap, RT5682_GPIO_CTRL_1,
 				RT5682_GP2_PIN_MASK, RT5682_GP2_PIN_DMIC_SDA);
 			break;
 
-		case RT5682_DMIC1_DATA_GPIO5: /* share with DACDAT1 */
+		case RT5682_DMIC1_DATA_GPIO5:  
 			regmap_update_bits(rt5682->regmap, RT5682_DMIC_CTRL_1,
 				RT5682_DMIC_1_DP_MASK, RT5682_DMIC_1_DP_GPIO5);
 			regmap_update_bits(rt5682->regmap, RT5682_GPIO_CTRL_1,
@@ -216,12 +216,12 @@ static int rt5682_i2c_probe(struct i2c_client *i2c)
 		}
 
 		switch (rt5682->pdata.dmic1_clk_pin) {
-		case RT5682_DMIC1_CLK_GPIO1: /* share with IRQ */
+		case RT5682_DMIC1_CLK_GPIO1:  
 			regmap_update_bits(rt5682->regmap, RT5682_GPIO_CTRL_1,
 				RT5682_GP1_PIN_MASK, RT5682_GP1_PIN_DMIC_CLK);
 			break;
 
-		case RT5682_DMIC1_CLK_GPIO3: /* share with BCLK2 */
+		case RT5682_DMIC1_CLK_GPIO3:  
 			regmap_update_bits(rt5682->regmap, RT5682_GPIO_CTRL_1,
 				RT5682_GP3_PIN_MASK, RT5682_GP3_PIN_DMIC_CLK);
 			if (rt5682->pdata.dmic_clk_driving_high)
@@ -270,17 +270,17 @@ static int rt5682_i2c_probe(struct i2c_client *i2c)
 	}
 
 #ifdef CONFIG_COMMON_CLK
-	/* Check if MCLK provided */
+	 
 	rt5682->mclk = devm_clk_get_optional(&i2c->dev, "mclk");
 	if (IS_ERR(rt5682->mclk))
 		return PTR_ERR(rt5682->mclk);
 
-	/* Register CCF DAI clock control */
+	 
 	ret = rt5682_register_dai_clks(rt5682);
 	if (ret)
 		return ret;
 
-	/* Initial setup for CCF */
+	 
 	rt5682->lrck[RT5682_AIF1] = 48000;
 #endif
 

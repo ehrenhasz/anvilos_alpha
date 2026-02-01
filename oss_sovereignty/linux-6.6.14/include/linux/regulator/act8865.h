@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * act8865.h  --  Voltage regulation for active-semi act88xx PMUs
- *
- * Copyright (C) 2013 Atmel Corporation.
- */
+ 
+ 
 
 #ifndef __LINUX_REGULATOR_ACT8865_H
 #define __LINUX_REGULATOR_ACT8865_H
@@ -56,13 +52,7 @@ enum {
 	ACT8846,
 };
 
-/**
- * act8865_regulator_data - regulator data
- * @id: regulator id
- * @name: regulator name
- * @init_data: regulator init data
- * @of_node: device tree node (optional)
- */
+ 
 struct act8865_regulator_data {
 	int id;
 	const char *name;
@@ -70,11 +60,7 @@ struct act8865_regulator_data {
 	struct device_node *of_node;
 };
 
-/**
- * act8865_platform_data - platform data for act8865
- * @num_regulators: number of regulators used
- * @regulators: pointer to regulators used
- */
+ 
 struct act8865_platform_data {
 	int num_regulators;
 	struct act8865_regulator_data *regulators;

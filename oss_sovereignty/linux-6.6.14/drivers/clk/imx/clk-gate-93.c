@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2022 NXP
- *
- * Peng Fan <peng.fan@nxp.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/errno.h>
@@ -16,10 +12,7 @@
 
 #define DIRECT_OFFSET		0x0
 
-/*
- * 0b000 - LPCG will be OFF in any CPU mode.
- * 0b100 - LPCG will be ON in any CPU mode.
- */
+ 
 #define LPM_SETTING_OFF		0x0
 #define LPM_SETTING_ON		0x4
 

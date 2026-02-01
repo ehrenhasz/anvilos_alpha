@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/if_bridge.h>
 #include <net/switchdev.h>
@@ -16,9 +16,7 @@ static void lan966x_port_set_mcast_ip_flood(struct lan966x_port *port,
 	flood_mask_ip = lan_rd(lan966x, ANA_PGID(pgid_ip));
 	flood_mask_ip = ANA_PGID_PGID_GET(flood_mask_ip);
 
-	/* If mcast snooping is not enabled then use mcast flood mask
-	 * to decide to enable multicast flooding or not.
-	 */
+	 
 	if (!port->mcast_ena) {
 		u32 flood_mask;
 
@@ -293,7 +291,7 @@ static void lan966x_port_bridge_leave(struct lan966x_port *port,
 	if (!lan966x->bridge_mask)
 		lan966x->bridge = NULL;
 
-	/* Set the port back to host mode */
+	 
 	lan966x_vlan_port_set_vlan_aware(port, false);
 	lan966x_vlan_port_set_vid(port, HOST_PVID, false, false);
 	lan966x_vlan_port_apply(port);
@@ -372,26 +370,19 @@ static int lan966x_foreign_bridging_check(struct net_device *upper,
 			struct lan966x_port *port = netdev_priv(dev);
 
 			if (lan966x) {
-				/* Upper already has at least one port of a
-				 * lan966x switch inside it, check that it's
-				 * the same instance of the driver.
-				 */
+				 
 				if (port->lan966x != lan966x) {
 					NL_SET_ERR_MSG_MOD(extack,
 							   "Bridging between multiple lan966x switches disallowed");
 					return -EINVAL;
 				}
 			} else {
-				/* This is the first lan966x port inside this
-				 * upper device
-				 */
+				 
 				lan966x = port->lan966x;
 				*seen_lan966x = true;
 			}
 		} else if (netif_is_lag_master(dev)) {
-			/* Allow to have bond interfaces that have only lan966x
-			 * devices
-			 */
+			 
 			if (lan966x_foreign_bridging_check(dev, has_foreign,
 							   seen_lan966x,
 							   extack))

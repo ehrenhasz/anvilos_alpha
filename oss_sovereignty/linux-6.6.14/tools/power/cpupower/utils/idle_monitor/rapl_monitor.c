@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2016 SUSE Software Solutions GmbH
- *           Thomas Renninger <trenn@suse.de>
- */
+
+ 
 
 #if defined(__i386__) || defined(__x86_64__)
 
@@ -32,7 +29,7 @@ static int rapl_get_count_uj(unsigned int id, unsigned long long *count,
 			     unsigned int cpu)
 {
 	if (rapl_zones_pt[id] == NULL)
-		/* error */
+		 
 		return -1;
 
 	*count = rapl_zone_current_count[id] - rapl_zone_previous_count[id];
@@ -142,7 +139,7 @@ struct cpuidle_monitor rapl_monitor = {
 	.stop			= rapl_stop,
 	.do_register		= rapl_register,
 	.flags.needs_root	= 0,
-	.overflow_s		= 60 * 60 * 24 * 100, /* To be implemented */
+	.overflow_s		= 60 * 60 * 24 * 100,  
 };
 
 #endif

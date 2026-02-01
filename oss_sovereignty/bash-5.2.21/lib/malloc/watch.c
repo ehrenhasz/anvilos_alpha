@@ -1,22 +1,6 @@
-/* watch.c - watchpoint functions for malloc */
+ 
 
-/* Copyright (C) 2001-2003 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -78,7 +62,7 @@ _malloc_ckwatch (addr, file, line, type, data)
 	}
     }
 }
-#endif /* MALLOC_WATCH */
+#endif  
 
 PTR_T
 malloc_watch (addr)
@@ -99,7 +83,7 @@ malloc_watch (addr)
     }
   if (i < 0)
     {
-      if (_malloc_nwatch == WATCH_MAX)	/* full, take out first */
+      if (_malloc_nwatch == WATCH_MAX)	 
 	{
 	  ret = _malloc_watch_list[0];
 	  _malloc_nwatch--;
@@ -113,9 +97,7 @@ malloc_watch (addr)
   return ret;  
 }
 
-/* Remove a watchpoint set on ADDR.  If ADDR is NULL, remove all
-   watchpoints.  Returns ADDR if everything went OK, NULL if ADDR was
-   not being watched. */
+ 
 PTR_T
 malloc_unwatch (addr)
      PTR_T addr;
@@ -138,8 +120,8 @@ malloc_unwatch (addr)
 	    break;
 	}
       if (i == _malloc_nwatch)
-        return ((PTR_T)0);		/* not found */
-      /* shuffle everything from i+1 to end down 1 */
+        return ((PTR_T)0);		 
+       
       _malloc_nwatch--;
       for ( ; i < _malloc_nwatch; i++)
         _malloc_watch_list[i] = _malloc_watch_list[i+1];

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * kselftest suite for mincore().
- *
- * Copyright (C) 2020 Collabora, Ltd.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -18,15 +14,12 @@
 #include "../kselftest.h"
 #include "../kselftest_harness.h"
 
-/* Default test file size: 4MB */
+ 
 #define MB (1UL << 20)
 #define FILE_SIZE (4 * MB)
 
 
-/*
- * Tests the user interface. This test triggers most of the documented
- * error conditions in mincore().
- */
+ 
 TEST(basic_interface)
 {
 	int retval;
@@ -36,11 +29,11 @@ TEST(basic_interface)
 
 	page_size = sysconf(_SC_PAGESIZE);
 
-	/* Query a 0 byte sized range */
+	 
 	retval = mincore(0, 0, vec);
 	EXPECT_EQ(0, retval);
 
-	/* Addresses in the specified range are invalid or unmapped */
+	 
 	errno = 0;
 	retval = mincore(NULL, page_size, vec);
 	EXPECT_EQ(-1, retval);
@@ -53,19 +46,19 @@ TEST(basic_interface)
 		TH_LOG("mmap error: %s", strerror(errno));
 	}
 
-	/* <addr> argument is not page-aligned */
+	 
 	errno = 0;
 	retval = mincore(addr + 1, page_size, vec);
 	EXPECT_EQ(-1, retval);
 	EXPECT_EQ(EINVAL, errno);
 
-	/* <length> argument is too large */
+	 
 	errno = 0;
 	retval = mincore(addr, -1, vec);
 	EXPECT_EQ(-1, retval);
 	EXPECT_EQ(ENOMEM, errno);
 
-	/* <vec> argument points to an illegal address */
+	 
 	errno = 0;
 	retval = mincore(addr, page_size, NULL);
 	EXPECT_EQ(-1, retval);
@@ -74,12 +67,7 @@ TEST(basic_interface)
 }
 
 
-/*
- * Test mincore() behavior on a private anonymous page mapping.
- * Check that the page is not loaded into memory right after the mapping
- * but after accessing it (on-demand allocation).
- * Then free the page and check that it's not memory-resident.
- */
+ 
 TEST(check_anonymous_locked_pages)
 {
 	unsigned char vec[1];
@@ -89,7 +77,7 @@ TEST(check_anonymous_locked_pages)
 
 	page_size = sysconf(_SC_PAGESIZE);
 
-	/* Map one page and check it's not memory-resident */
+	 
 	errno = 0;
 	addr = mmap(NULL, page_size, PROT_READ | PROT_WRITE,
 			MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
@@ -102,7 +90,7 @@ TEST(check_anonymous_locked_pages)
 		TH_LOG("Page found in memory before use");
 	}
 
-	/* Touch the page and check again. It should now be in memory */
+	 
 	addr[0] = 1;
 	mlock(addr, page_size);
 	retval = mincore(addr, page_size, vec);
@@ -111,10 +99,7 @@ TEST(check_anonymous_locked_pages)
 		TH_LOG("Page not found in memory after use");
 	}
 
-	/*
-	 * It shouldn't be memory-resident after unlocking it and
-	 * marking it as unneeded.
-	 */
+	 
 	munlock(addr, page_size);
 	madvise(addr, page_size, MADV_DONTNEED);
 	retval = mincore(addr, page_size, vec);
@@ -126,16 +111,7 @@ TEST(check_anonymous_locked_pages)
 }
 
 
-/*
- * Check mincore() behavior on huge pages.
- * This test will be skipped if the mapping fails (ie. if there are no
- * huge pages available).
- *
- * Make sure the system has at least one free huge page, check
- * "HugePages_Free" in /proc/meminfo.
- * Increment /sys/kernel/mm/hugepages/hugepages-2048kB/nr_hugepages if
- * needed.
- */
+ 
 TEST(check_huge_pages)
 {
 	unsigned char vec[1];
@@ -174,16 +150,7 @@ TEST(check_huge_pages)
 }
 
 
-/*
- * Test mincore() behavior on a file-backed page.
- * No pages should be loaded into memory right after the mapping. Then,
- * accessing any address in the mapping range should load the page
- * containing the address and a number of subsequent pages (readahead).
- *
- * The actual readahead settings depend on the test environment, so we
- * can't make a lot of assumptions about that. This test covers the most
- * general cases.
- */
+ 
 TEST(check_file_mmap)
 {
 	unsigned char *vec;
@@ -224,9 +191,7 @@ TEST(check_file_mmap)
 		SKIP(goto out_close, "fallocate not supported by filesystem.");
 	}
 
-	/*
-	 * Map the whole file, the pages shouldn't be fetched yet.
-	 */
+	 
 	errno = 0;
 	addr = mmap(NULL, FILE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_SHARED, fd, 0);
@@ -241,10 +206,7 @@ TEST(check_file_mmap)
 		}
 	}
 
-	/*
-	 * Touch a page in the middle of the mapping. We expect the next
-	 * few pages (the readahead window) to be populated too.
-	 */
+	 
 	addr[FILE_SIZE / 2] = 1;
 	retval = mincore(addr, FILE_SIZE, vec);
 	ASSERT_EQ(0, retval);
@@ -264,10 +226,7 @@ TEST(check_file_mmap)
 	EXPECT_LT(i, vec_size) {
 		TH_LOG("Read-ahead pages reached the end of the file");
 	}
-	/*
-	 * End of the readahead window. The rest of the pages shouldn't
-	 * be in memory.
-	 */
+	 
 	if (i < vec_size) {
 		while (i < vec_size && !vec[i])
 			i++;
@@ -284,11 +243,7 @@ out_free:
 }
 
 
-/*
- * Test mincore() behavior on a page backed by a tmpfs file.  This test
- * performs the same steps as the previous one. However, we don't expect
- * any readahead in this case.
- */
+ 
 TEST(check_tmpfs_mmap)
 {
 	unsigned char *vec;
@@ -323,9 +278,7 @@ TEST(check_tmpfs_mmap)
 			strerror(errno));
 	}
 
-	/*
-	 * Map the whole file, the pages shouldn't be fetched yet.
-	 */
+	 
 	errno = 0;
 	addr = mmap(NULL, FILE_SIZE, PROT_READ | PROT_WRITE,
 			MAP_SHARED, fd, 0);
@@ -340,10 +293,7 @@ TEST(check_tmpfs_mmap)
 		}
 	}
 
-	/*
-	 * Touch a page in the middle of the mapping. We expect only
-	 * that page to be fetched into memory.
-	 */
+	 
 	addr[FILE_SIZE / 2] = 1;
 	retval = mincore(addr, FILE_SIZE, vec);
 	ASSERT_EQ(0, retval);

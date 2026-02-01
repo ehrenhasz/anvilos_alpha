@@ -1,21 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*****************************************************************************/
-/*
- *           moxa.c  -- MOXA Intellio family multiport serial driver.
- *
- *      Copyright (C) 1999-2000  Moxa Technologies (support@moxa.com).
- *      Copyright (c) 2007 Jiri Slaby <jirislaby@gmail.com>
- *
- *      This code is loosely based on the Linux serial driver, written by
- *      Linus Torvalds, Theodore T'so and others.
- */
 
-/*
- *    MOXA Intellio Series Driver
- *      for             : LINUX
- *      date            : 1999/1/7
- *      version         : 5.1
- */
+ 
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -46,67 +33,59 @@
 #include <linux/uaccess.h>
 
 #define	MOXA			0x400
-#define MOXA_GET_IQUEUE		(MOXA + 1)	/* get input buffered count */
-#define MOXA_GET_OQUEUE		(MOXA + 2)	/* get output buffered count */
+#define MOXA_GET_IQUEUE		(MOXA + 1)	 
+#define MOXA_GET_OQUEUE		(MOXA + 2)	 
 #define MOXA_GETDATACOUNT       (MOXA + 23)
 #define MOXA_GET_IOQUEUE	(MOXA + 27)
 #define MOXA_FLUSH_QUEUE	(MOXA + 28)
 #define MOXA_GETMSTATUS         (MOXA + 65)
 
-/*
- *    System Configuration
- */
+ 
 
 #define Magic_code	0x404
 
-/*
- *    for C218 BIOS initialization
- */
+ 
 #define C218_ConfBase	0x800
-#define C218_status	(C218_ConfBase + 0)	/* BIOS running status    */
-#define C218_diag	(C218_ConfBase + 2)	/* diagnostic status      */
-#define C218_key	(C218_ConfBase + 4)	/* WORD (0x218 for C218) */
-#define C218DLoad_len	(C218_ConfBase + 6)	/* WORD           */
-#define C218check_sum	(C218_ConfBase + 8)	/* BYTE           */
-#define C218chksum_ok	(C218_ConfBase + 0x0a)	/* BYTE (1:ok)            */
-#define C218_TestRx	(C218_ConfBase + 0x10)	/* 8 bytes for 8 ports    */
-#define C218_TestTx	(C218_ConfBase + 0x18)	/* 8 bytes for 8 ports    */
-#define C218_RXerr	(C218_ConfBase + 0x20)	/* 8 bytes for 8 ports    */
-#define C218_ErrFlag	(C218_ConfBase + 0x28)	/* 8 bytes for 8 ports    */
+#define C218_status	(C218_ConfBase + 0)	 
+#define C218_diag	(C218_ConfBase + 2)	 
+#define C218_key	(C218_ConfBase + 4)	 
+#define C218DLoad_len	(C218_ConfBase + 6)	 
+#define C218check_sum	(C218_ConfBase + 8)	 
+#define C218chksum_ok	(C218_ConfBase + 0x0a)	 
+#define C218_TestRx	(C218_ConfBase + 0x10)	 
+#define C218_TestTx	(C218_ConfBase + 0x18)	 
+#define C218_RXerr	(C218_ConfBase + 0x20)	 
+#define C218_ErrFlag	(C218_ConfBase + 0x28)	 
 
 #define C218_LoadBuf	0x0F00
 #define C218_KeyCode	0x218
 #define CP204J_KeyCode	0x204
 
-/*
- *    for C320 BIOS initialization
- */
+ 
 #define C320_ConfBase	0x800
 #define C320_LoadBuf	0x0f00
-#define STS_init	0x05	/* for C320_status        */
+#define STS_init	0x05	 
 
-#define C320_status	C320_ConfBase + 0	/* BIOS running status    */
-#define C320_diag	C320_ConfBase + 2	/* diagnostic status      */
-#define C320_key	C320_ConfBase + 4	/* WORD (0320H for C320) */
-#define C320DLoad_len	C320_ConfBase + 6	/* WORD           */
-#define C320check_sum	C320_ConfBase + 8	/* WORD           */
-#define C320chksum_ok	C320_ConfBase + 0x0a	/* WORD (1:ok)            */
-#define C320bapi_len	C320_ConfBase + 0x0c	/* WORD           */
-#define C320UART_no	C320_ConfBase + 0x0e	/* WORD           */
+#define C320_status	C320_ConfBase + 0	 
+#define C320_diag	C320_ConfBase + 2	 
+#define C320_key	C320_ConfBase + 4	 
+#define C320DLoad_len	C320_ConfBase + 6	 
+#define C320check_sum	C320_ConfBase + 8	 
+#define C320chksum_ok	C320_ConfBase + 0x0a	 
+#define C320bapi_len	C320_ConfBase + 0x0c	 
+#define C320UART_no	C320_ConfBase + 0x0e	 
 
 #define C320_KeyCode	0x320
 
-#define FixPage_addr	0x0000	/* starting addr of static page  */
-#define DynPage_addr	0x2000	/* starting addr of dynamic page */
-#define C218_start	0x3000	/* starting addr of C218 BIOS prg */
-#define Control_reg	0x1ff0	/* select page and reset control */
+#define FixPage_addr	0x0000	 
+#define DynPage_addr	0x2000	 
+#define C218_start	0x3000	 
+#define Control_reg	0x1ff0	 
 #define HW_reset	0x80
 
-/*
- *    Function Codes
- */
+ 
 #define FC_CardReset	0x80
-#define FC_ChannelReset 1	/* C320 firmware not supported */
+#define FC_ChannelReset 1	 
 #define FC_EnableCH	2
 #define FC_DisableCH	3
 #define FC_SetParam	4
@@ -122,8 +101,8 @@
 #define FC_LoopbackOFF	14
 #define FC_ClrIrqTable	15
 #define FC_SendXon	16
-#define FC_SetTermIrq	17	/* C320 firmware not supported */
-#define FC_SetCntIrq	18	/* C320 firmware not supported */
+#define FC_SetTermIrq	17	 
+#define FC_SetCntIrq	18	 
 #define FC_SetBreakIrq	19
 #define FC_SetLineIrq	20
 #define FC_SetFlowCtl	21
@@ -157,9 +136,7 @@
 #define	RxFIFOTrig8	2
 #define	RxFIFOTrig14	3
 
-/*
- *    Dual-Ported RAM
- */
+ 
 #define DRAM_global	0
 #define INT_data	(DRAM_global + 0)
 #define Config_base	(DRAM_global + 0x108)
@@ -168,21 +145,18 @@
 #define IRQpending	(INT_data + 4)
 #define IRQtable	(INT_data + 8)
 
-/*
- *    Interrupt Status
- */
-#define IntrRx		0x01	/* receiver data O.K.             */
-#define IntrTx		0x02	/* transmit buffer empty  */
-#define IntrFunc	0x04	/* function complete              */
-#define IntrBreak	0x08	/* received break         */
-#define IntrLine	0x10	/* line status change
-				   for transmitter                */
-#define IntrIntr	0x20	/* received INTR code             */
-#define IntrQuit	0x40	/* received QUIT code             */
-#define IntrEOF		0x80	/* received EOF code              */
+ 
+#define IntrRx		0x01	 
+#define IntrTx		0x02	 
+#define IntrFunc	0x04	 
+#define IntrBreak	0x08	 
+#define IntrLine	0x10	 
+#define IntrIntr	0x20	 
+#define IntrQuit	0x40	 
+#define IntrEOF		0x80	 
 
-#define IntrRxTrigger	0x100	/* rx data count reach trigger value */
-#define IntrTxTrigger	0x200	/* tx data count below trigger value */
+#define IntrRxTrigger	0x100	 
+#define IntrTxTrigger	0x200	 
 
 #define Magic_no	(Config_base + 0)
 #define Card_model_no	(Config_base + 2)
@@ -195,27 +169,23 @@
 #define TMS320_PORT2	(Config_base + 24)
 #define TMS320_CLOCK	(Config_base + 26)
 
-/*
- *    DATA BUFFER in DRAM
- */
-#define Extern_table	0x400	/* Base address of the external table
-				   (24 words *    64) total 3K bytes
-				   (24 words * 128) total 6K bytes */
-#define Extern_size	0x60	/* 96 bytes                       */
-#define RXrptr		0x00	/* read pointer for RX buffer     */
-#define RXwptr		0x02	/* write pointer for RX buffer    */
-#define TXrptr		0x04	/* read pointer for TX buffer     */
-#define TXwptr		0x06	/* write pointer for TX buffer    */
-#define HostStat	0x08	/* IRQ flag and general flag      */
+ 
+#define Extern_table	0x400	 
+#define Extern_size	0x60	 
+#define RXrptr		0x00	 
+#define RXwptr		0x02	 
+#define TXrptr		0x04	 
+#define TXwptr		0x06	 
+#define HostStat	0x08	 
 #define FlagStat	0x0A
-#define FlowControl	0x0C	/* B7 B6 B5 B4 B3 B2 B1 B0              */
-				/*  x  x  x  x  |  |  |  |            */
-				/*              |  |  |  + CTS flow   */
-				/*              |  |  +--- RTS flow   */
-				/*              |  +------ TX Xon/Xoff */
-				/*              +--------- RX Xon/Xoff */
-#define Break_cnt	0x0E	/* received break count   */
-#define CD180TXirq	0x10	/* if non-0: enable TX irq        */
+#define FlowControl	0x0C	 
+				 
+				 
+				 
+				 
+				 
+#define Break_cnt	0x0E	 
+#define CD180TXirq	0x10	 
 #define RX_mask		0x12
 #define TX_mask		0x14
 #define Ofs_rxb		0x16
@@ -235,8 +205,8 @@
 #define FuncArg		0x42
 #define FuncArg1	0x44
 
-#define C218rx_size	0x2000	/* 8K bytes */
-#define C218tx_size	0x8000	/* 32K bytes */
+#define C218rx_size	0x2000	 
+#define C218tx_size	0x8000	 
 
 #define C218rx_mask	(C218rx_size - 1)
 #define C218tx_mask	(C218tx_size - 1)
@@ -292,21 +262,17 @@
 #define C320p32tx_spage 3
 #define C320p32buf_pgno 1
 
-/*
- *    Host Status
- */
+ 
 #define WakeupRx	0x01
 #define WakeupTx	0x02
 #define WakeupBreak	0x08
 #define WakeupLine	0x10
 #define WakeupIntr	0x20
 #define WakeupQuit	0x40
-#define WakeupEOF	0x80	/* used in VTIME control */
+#define WakeupEOF	0x80	 
 #define WakeupRxTrigger	0x100
 #define WakeupTxTrigger	0x200
-/*
- *    Flag status
- */
+ 
 #define Rx_over		0x01
 #define Xoff_state	0x02
 #define Tx_flowOff	0x04
@@ -314,9 +280,7 @@
 #define CTS_state	0x10
 #define DSR_state	0x20
 #define DCD_state	0x80
-/*
- *    FlowControl
- */
+ 
 #define CTS_FlowCtl	1
 #define RTS_FlowCtl	2
 #define Tx_FlowCtl	4
@@ -331,7 +295,7 @@
 #define DSR_ON		2
 #define DCD_ON		8
 
-/* mode definition */
+ 
 #define	MX_CS8		0x03
 #define	MX_CS7		0x02
 #define	MX_CS6		0x01
@@ -353,16 +317,14 @@
 
 #define MOXAMAJOR		172
 
-#define MAX_BOARDS		4	/* Don't change this value */
-#define MAX_PORTS_PER_BOARD	32	/* Don't change this value */
+#define MAX_BOARDS		4	 
+#define MAX_PORTS_PER_BOARD	32	 
 #define MAX_PORTS		(MAX_BOARDS * MAX_PORTS_PER_BOARD)
 
 #define MOXA_IS_320(brd) ((brd)->boardType == MOXA_BOARD_C320_ISA || \
 		(brd)->boardType == MOXA_BOARD_C320_PCI)
 
-/*
- *    Define the Moxa PCI vendor and device IDs.
- */
+ 
 #define MOXA_BUS_TYPE_ISA	0
 #define MOXA_BUS_TYPE_PCI	1
 
@@ -394,7 +356,7 @@ static const struct pci_device_id moxa_pcibrds[] = {
 	{ 0 }
 };
 MODULE_DEVICE_TABLE(pci, moxa_pcibrds);
-#endif /* CONFIG_PCI */
+#endif  
 
 struct moxa_port;
 
@@ -435,7 +397,7 @@ struct moxa_port {
 	int cflag;
 	unsigned long statusflags;
 
-	u8 DCDState;		/* Protected by the port lock */
+	u8 DCDState;		 
 	u8 lineCtrl;
 	u8 lowChkFlag;
 };
@@ -446,7 +408,7 @@ struct mon_str {
 	int txcnt[MAX_PORTS];
 };
 
-/* statusflags */
+ 
 #define TXSTOPPED	1
 #define LOWWAIT 	2
 #define EMPTYWAIT	3
@@ -482,9 +444,7 @@ MODULE_PARM_DESC(numports, "numports (ignored for C218)");
 
 module_param(ttymajor, int, 0);
 
-/*
- * static functions:
- */
+ 
 static int moxa_open(struct tty_struct *, struct file *);
 static void moxa_close(struct tty_struct *, struct file *);
 static ssize_t moxa_write(struct tty_struct *, const u8 *, size_t);
@@ -503,9 +463,7 @@ static void moxa_set_tty_param(struct tty_struct *, const struct ktermios *);
 static void moxa_shutdown(struct tty_port *);
 static bool moxa_carrier_raised(struct tty_port *);
 static void moxa_dtr_rts(struct tty_port *, bool);
-/*
- * moxa board interface functions:
- */
+ 
 static void MoxaPortEnable(struct moxa_port *);
 static void MoxaPortDisable(struct moxa_port *);
 static int MoxaPortSetTermio(struct moxa_port *, struct ktermios *, speed_t);
@@ -525,9 +483,7 @@ static int moxa_get_serial_info(struct tty_struct *, struct serial_struct *);
 static int moxa_set_serial_info(struct tty_struct *, struct serial_struct *);
 static void MoxaSetFifo(struct moxa_port *port, int enable);
 
-/*
- * I/O functions
- */
+ 
 
 static DEFINE_SPINLOCK(moxafunc_lock);
 
@@ -579,9 +535,7 @@ static void moxa_low_water_check(void __iomem *ofsAddr)
 	}
 }
 
-/*
- * TTY operations
- */
+ 
 
 static int moxa_ioctl(struct tty_struct *tty,
 		      unsigned int cmd, unsigned long arg)
@@ -718,9 +672,7 @@ static const struct tty_port_operations moxa_port_ops = {
 static struct tty_driver *moxaDriver;
 static DEFINE_TIMER(moxaTimer, moxa_poll);
 
-/*
- * HW init
- */
+ 
 
 static int moxa_check_fw_model(struct moxa_board_conf *brd, u8 model)
 {
@@ -760,11 +712,11 @@ static int moxa_load_bios(struct moxa_board_conf *brd, const u8 *buf,
 	void __iomem *baseAddr = brd->basemem;
 	u16 tmp;
 
-	writeb(HW_reset, baseAddr + Control_reg);	/* reset */
+	writeb(HW_reset, baseAddr + Control_reg);	 
 	msleep(10);
 	memset_io(baseAddr, 0, 4096);
-	memcpy_toio(baseAddr, buf, len);	/* download BIOS */
-	writeb(0, baseAddr + Control_reg);	/* restart */
+	memcpy_toio(baseAddr, buf, len);	 
+	writeb(0, baseAddr + Control_reg);	 
 
 	msleep(2000);
 
@@ -810,9 +762,9 @@ static int moxa_load_320b(struct moxa_board_conf *brd, const u8 *ptr,
 	}
 
 	writew(len - 7168 - 2, baseAddr + C320bapi_len);
-	writeb(1, baseAddr + Control_reg);	/* Select Page 1 */
+	writeb(1, baseAddr + Control_reg);	 
 	memcpy_toio(baseAddr + DynPage_addr, ptr, 7168);
-	writeb(2, baseAddr + Control_reg);	/* Select Page 2 */
+	writeb(2, baseAddr + Control_reg);	 
 	memcpy_toio(baseAddr + DynPage_addr, ptr + 7168, len - 7168);
 
 	return 0;
@@ -898,7 +850,7 @@ static int moxa_real_load_code(struct moxa_board_conf *brd, const void *ptr,
 		return -EIO;
 
 	if (MOXA_IS_320(brd)) {
-		if (brd->busType == MOXA_BUS_TYPE_PCI) {	/* ASIC board */
+		if (brd->busType == MOXA_BUS_TYPE_PCI) {	 
 			writew(0x3800, baseAddr + TMS320_PORT1);
 			writew(0x3900, baseAddr + TMS320_PORT2);
 			writew(28499, baseAddr + TMS320_CLOCK);
@@ -952,7 +904,7 @@ static int moxa_load_code(struct moxa_board_conf *brd, const void *ptr,
 		return -EINVAL;
 	}
 
-	retval = moxa_real_load_code(brd, ptr, len); /* may change numPorts */
+	retval = moxa_real_load_code(brd, ptr, len);  
 	if (retval)
 		return retval;
 
@@ -1037,10 +989,10 @@ static int moxa_load_fw(struct moxa_board_conf *brd, const struct firmware *fw)
 	unsigned int a, lenp, lencnt;
 	int ret = -EINVAL;
 	struct {
-		__le32 magic;	/* 0x34303430 */
+		__le32 magic;	 
 		u8 reserved1[2];
-		u8 type;	/* UNIX = 3 */
-		u8 model;	/* C218T=1, C320T=2, CP204=3 */
+		u8 type;	 
+		u8 model;	 
 		u8 reserved2[8];
 		__le16 len[5];
 	} const *hdr = ptr;
@@ -1086,7 +1038,7 @@ static int moxa_load_fw(struct moxa_board_conf *brd, const struct firmware *fw)
 	}
 
 	ptr += MOXA_FW_HDRLEN;
-	lenp = 0; /* bios */
+	lenp = 0;  
 
 	strcpy(rsn, "read above");
 
@@ -1094,15 +1046,15 @@ static int moxa_load_fw(struct moxa_board_conf *brd, const struct firmware *fw)
 	if (ret)
 		goto err;
 
-	/* we skip the tty section (lens[1]), since we don't need it */
+	 
 	ptr += lens[lenp] + lens[lenp + 1];
-	lenp += 2; /* comm */
+	lenp += 2;  
 
 	if (hdr->model == 2) {
 		ret = moxa_load_320b(brd, ptr, lens[lenp]);
 		if (ret)
 			goto err;
-		/* skip another tty */
+		 
 		ptr += lens[lenp] + lens[lenp + 1];
 		lenp += 2;
 	}
@@ -1198,7 +1150,7 @@ static void moxa_board_deinit(struct moxa_board_conf *brd)
 	brd->ready = 0;
 	spin_unlock_bh(&moxa_lock);
 
-	/* pci hot-un-plug support */
+	 
 	for (a = 0; a < brd->numPorts; a++)
 		if (tty_port_initialized(&brd->ports[a].port))
 			tty_port_tty_hangup(&brd->ports[a].port, false);
@@ -1318,7 +1270,7 @@ static struct pci_driver moxa_pci_driver = {
 	.probe = moxa_pci_probe,
 	.remove = moxa_pci_remove
 };
-#endif /* CONFIG_PCI */
+#endif  
 
 static int __init moxa_init(void)
 {
@@ -1348,7 +1300,7 @@ static int __init moxa_init(void)
 	moxaDriver->init_termios.c_ispeed = 9600;
 	moxaDriver->init_termios.c_ospeed = 9600;
 	tty_set_operations(moxaDriver, &moxa_ops);
-	/* Having one more port only for ioctls is ugly */
+	 
 	tty_port_link_device(&moxa_service_port, moxaDriver, MAX_PORTS);
 
 	if (tty_register_driver(moxaDriver)) {
@@ -1357,7 +1309,7 @@ static int __init moxa_init(void)
 		return -1;
 	}
 
-	/* Find the boards defined from module args. */
+	 
 
 	for (i = 0; i < MAX_BOARDS; i++) {
 		if (!baseaddr[i])
@@ -1412,7 +1364,7 @@ static void __exit moxa_exit(void)
 	pci_unregister_driver(&moxa_pci_driver);
 #endif
 
-	for (i = 0; i < MAX_BOARDS; i++) /* ISA boards */
+	for (i = 0; i < MAX_BOARDS; i++)  
 		if (moxa_boards[i].ready)
 			moxa_board_deinit(&moxa_boards[i]);
 
@@ -1545,10 +1497,7 @@ static unsigned int moxa_chars_in_buffer(struct tty_struct *tty)
 
 	chars = MoxaPortTxQueue(ch);
 	if (chars)
-		/*
-		 * Make it possible to wakeup anything waiting for output
-		 * in tty_ioctl.c, etc.
-		 */
+		 
         	set_bit(EMPTYWAIT, &ch->statusflags);
 	return chars;
 }
@@ -1682,32 +1631,32 @@ static int moxa_poll_port(struct moxa_port *p, unsigned int handle,
 		}
 
 		if (inited && !tty_throttled(tty) &&
-				MoxaPortRxQueue(p) > 0) { /* RX */
+				MoxaPortRxQueue(p) > 0) {  
 			MoxaPortReadData(p);
 			tty_flip_buffer_push(&p->port);
 		}
 	} else {
 		clear_bit(EMPTYWAIT, &p->statusflags);
-		MoxaPortFlushData(p, 0); /* flush RX */
+		MoxaPortFlushData(p, 0);  
 	}
 
-	if (!handle) /* nothing else to do */
+	if (!handle)  
 		goto put;
 
-	intr = readw(ip); /* port irq status */
+	intr = readw(ip);  
 	if (intr == 0)
 		goto put;
 
-	writew(0, ip); /* ACK port */
+	writew(0, ip);  
 	ofsAddr = p->tableAddr;
-	if (intr & IntrTx) /* disable tx intr */
+	if (intr & IntrTx)  
 		writew(readw(ofsAddr + HostStat) & ~WakeupTx,
 				ofsAddr + HostStat);
 
 	if (!inited)
 		goto put;
 
-	if (tty && (intr & IntrBreak) && !I_IGNBRK(tty)) { /* BREAK */
+	if (tty && (intr & IntrBreak) && !I_IGNBRK(tty)) {  
 		tty_insert_flip_char(&p->port, 0, TTY_BREAK);
 		tty_flip_buffer_push(&p->port);
 	}
@@ -1742,7 +1691,7 @@ static void moxa_poll(struct timer_list *unused)
 			moxa_poll_port(&brd->ports[port], !!ip, ip + port);
 
 		if (ip)
-			writeb(0, brd->intPend); /* ACK */
+			writeb(0, brd->intPend);  
 
 		if (moxaLowWaterChk) {
 			struct moxa_port *p = brd->ports;
@@ -1760,7 +1709,7 @@ static void moxa_poll(struct timer_list *unused)
 	spin_unlock(&moxa_lock);
 }
 
-/******************************************************************************/
+ 
 
 static void moxa_set_tty_param(struct tty_struct *tty,
 			       const struct ktermios *old_termios)
@@ -1783,13 +1732,11 @@ static void moxa_set_tty_param(struct tty_struct *tty,
 	baud = MoxaPortSetTermio(ch, ts, tty_get_baud_rate(tty));
 	if (baud == -1)
 		baud = tty_termios_baud_rate(old_termios);
-	/* Not put the baud rate into the termios data */
+	 
 	tty_encode_baud_rate(tty, baud, baud);
 }
 
-/*****************************************************************************
- *	Driver level functions: 					     *
- *****************************************************************************/
+ 
 
 static void MoxaPortFlushData(struct moxa_port *port, int mode)
 {
@@ -1804,197 +1751,7 @@ static void MoxaPortFlushData(struct moxa_port *port, int mode)
 	}
 }
 
-/*
- *    Moxa Port Number Description:
- *
- *      MOXA serial driver supports up to 4 MOXA-C218/C320 boards. And,
- *      the port number using in MOXA driver functions will be 0 to 31 for
- *      first MOXA board, 32 to 63 for second, 64 to 95 for third and 96
- *      to 127 for fourth. For example, if you setup three MOXA boards,
- *      first board is C218, second board is C320-16 and third board is
- *      C320-32. The port number of first board (C218 - 8 ports) is from
- *      0 to 7. The port number of second board (C320 - 16 ports) is form
- *      32 to 47. The port number of third board (C320 - 32 ports) is from
- *      64 to 95. And those port numbers form 8 to 31, 48 to 63 and 96 to
- *      127 will be invalid.
- *
- *
- *      Moxa Functions Description:
- *
- *      Function 1:     Driver initialization routine, this routine must be
- *                      called when initialized driver.
- *      Syntax:
- *      void MoxaDriverInit();
- *
- *
- *      Function 2:     Moxa driver private IOCTL command processing.
- *      Syntax:
- *      int  MoxaDriverIoctl(unsigned int cmd, unsigned long arg, int port);
- *
- *           unsigned int cmd   : IOCTL command
- *           unsigned long arg  : IOCTL argument
- *           int port           : port number (0 - 127)
- *
- *           return:    0  (OK)
- *                      -EINVAL
- *                      -ENOIOCTLCMD
- *
- *
- *      Function 6:     Enable this port to start Tx/Rx data.
- *      Syntax:
- *      void MoxaPortEnable(int port);
- *           int port           : port number (0 - 127)
- *
- *
- *      Function 7:     Disable this port
- *      Syntax:
- *      void MoxaPortDisable(int port);
- *           int port           : port number (0 - 127)
- *
- *
- *      Function 10:    Setting baud rate of this port.
- *      Syntax:
- *      speed_t MoxaPortSetBaud(int port, speed_t baud);
- *           int port           : port number (0 - 127)
- *           long baud          : baud rate (50 - 115200)
- *
- *           return:    0       : this port is invalid or baud < 50
- *                      50 - 115200 : the real baud rate set to the port, if
- *                                    the argument baud is large than maximun
- *                                    available baud rate, the real setting
- *                                    baud rate will be the maximun baud rate.
- *
- *
- *      Function 12:    Configure the port.
- *      Syntax:
- *      int  MoxaPortSetTermio(int port, struct ktermios *termio, speed_t baud);
- *           int port           : port number (0 - 127)
- *           struct ktermios * termio : termio structure pointer
- *	     speed_t baud	: baud rate
- *
- *           return:    -1      : this port is invalid or termio == NULL
- *                      0       : setting O.K.
- *
- *
- *      Function 13:    Get the DTR/RTS state of this port.
- *      Syntax:
- *      int  MoxaPortGetLineOut(int port, bool *dtrState, bool *rtsState);
- *           int port           : port number (0 - 127)
- *           bool * dtr_active  : pointer to bool to receive the current DTR
- *                                state. (if NULL, this function will not
- *                                write to this address)
- *           bool * rts_active  : pointer to bool to receive the current RTS
- *                                state. (if NULL, this function will not
- *                                write to this address)
- *
- *           return:    -1      : this port is invalid
- *                      0       : O.K.
- *
- *
- *      Function 14:    Setting the DTR/RTS output state of this port.
- *      Syntax:
- *      void MoxaPortLineCtrl(int port, bool dtrState, bool rtsState);
- *           int port           : port number (0 - 127)
- *           bool dtr_active    : DTR output state
- *           bool rts_active    : RTS output state
- *
- *
- *      Function 15:    Setting the flow control of this port.
- *      Syntax:
- *      void MoxaPortFlowCtrl(int port, int rtsFlow, int ctsFlow, int rxFlow,
- *                            int txFlow,int xany);
- *           int port           : port number (0 - 127)
- *           int rtsFlow        : H/W RTS flow control (0: no, 1: yes)
- *           int ctsFlow        : H/W CTS flow control (0: no, 1: yes)
- *           int rxFlow         : S/W Rx XON/XOFF flow control (0: no, 1: yes)
- *           int txFlow         : S/W Tx XON/XOFF flow control (0: no, 1: yes)
- *           int xany           : S/W XANY flow control (0: no, 1: yes)
- *
- *
- *      Function 16:    Get ths line status of this port
- *      Syntax:
- *      int  MoxaPortLineStatus(int port);
- *           int port           : port number (0 - 127)
- *
- *           return:    Bit 0 - CTS state (0: off, 1: on)
- *                      Bit 1 - DSR state (0: off, 1: on)
- *                      Bit 2 - DCD state (0: off, 1: on)
- *
- *
- *      Function 19:    Flush the Rx/Tx buffer data of this port.
- *      Syntax:
- *      void MoxaPortFlushData(int port, int mode);
- *           int port           : port number (0 - 127)
- *           int mode    
- *                      0       : flush the Rx buffer 
- *                      1       : flush the Tx buffer 
- *                      2       : flush the Rx and Tx buffer 
- *
- *
- *      Function 20:    Write data.
- *      Syntax:
- *      int  MoxaPortWriteData(int port, unsigned char * buffer, int length);
- *           int port           : port number (0 - 127)
- *           unsigned char * buffer     : pointer to write data buffer.
- *           int length         : write data length
- *
- *           return:    0 - length      : real write data length
- *
- *
- *      Function 21:    Read data.
- *      Syntax:
- *      int  MoxaPortReadData(int port, struct tty_struct *tty);
- *           int port           : port number (0 - 127)
- *	     struct tty_struct *tty : tty for data
- *
- *           return:    0 - length      : real read data length
- *
- *
- *      Function 24:    Get the Tx buffer current queued data bytes
- *      Syntax:
- *      int  MoxaPortTxQueue(int port);
- *           int port           : port number (0 - 127)
- *
- *           return:    ..      : Tx buffer current queued data bytes
- *
- *
- *      Function 25:    Get the Tx buffer current free space
- *      Syntax:
- *      int  MoxaPortTxFree(int port);
- *           int port           : port number (0 - 127)
- *
- *           return:    ..      : Tx buffer current free space
- *
- *
- *      Function 26:    Get the Rx buffer current queued data bytes
- *      Syntax:
- *      int  MoxaPortRxQueue(int port);
- *           int port           : port number (0 - 127)
- *
- *           return:    ..      : Rx buffer current queued data bytes
- *
- *
- *      Function 28:    Disable port data transmission.
- *      Syntax:
- *      void MoxaPortTxDisable(int port);
- *           int port           : port number (0 - 127)
- *
- *
- *      Function 29:    Enable port data transmission.
- *      Syntax:
- *      void MoxaPortTxEnable(int port);
- *           int port           : port number (0 - 127)
- *
- *
- *      Function 31:    Get the received BREAK signal count and reset it.
- *      Syntax:
- *      int  MoxaPortResetBrkCnt(int port);
- *           int port           : port number (0 - 127)
- *
- *           return:    0 - ..  : BREAK signal count
- *
- *
- */
+ 
 
 static void MoxaPortEnable(struct moxa_port *port)
 {
@@ -2020,7 +1777,7 @@ static void MoxaPortDisable(struct moxa_port *port)
 {
 	void __iomem *ofsAddr = port->tableAddr;
 
-	moxafunc(ofsAddr, FC_SetFlowCtl, 0);	/* disable flow control */
+	moxafunc(ofsAddr, FC_SetFlowCtl, 0);	 
 	moxafunc(ofsAddr, FC_ClrLineIrq, Magic_code);
 	writew(0, ofsAddr + HostStat);
 	moxafunc(ofsAddr, FC_DisableCH, Magic_code);
@@ -2217,7 +1974,7 @@ static int MoxaPortWriteData(struct tty_struct *tty, const u8 *buffer, int len)
 		tail = (tail + total) & tx_mask;
 	}
 	writew(tail, ofsAddr + TXwptr);
-	writeb(1, ofsAddr + CD180TXirq);	/* start to send */
+	writeb(1, ofsAddr + CD180TXirq);	 
 	return total;
 }
 
@@ -2380,9 +2137,7 @@ static int moxa_set_serial_info(struct tty_struct *tty,
 
 
 
-/*****************************************************************************
- *	Static local functions: 					     *
- *****************************************************************************/
+ 
 
 static void MoxaSetFifo(struct moxa_port *port, int enable)
 {

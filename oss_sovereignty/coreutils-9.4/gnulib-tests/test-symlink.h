@@ -1,26 +1,6 @@
-/* Tests of symlink.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>, 2009.  */
-
-/* This file is designed to test both symlink(a,b) and
-   symlinkat(a,AT_FDCWD,b).  FUNC is the function to test.  Assumes
-   that BASE and ASSERT are already defined, and that appropriate
-   headers are already included.  If PRINT, warn before skipping
-   symlink tests with status 77.  */
+ 
 
 static int
 test_symlink (int (*func) (char const *, char const *), bool print)
@@ -33,8 +13,7 @@ test_symlink (int (*func) (char const *, char const *), bool print)
       return 77;
     }
 
-  /* Some systems allow the creation of 0-length symlinks as a synonym
-     for "."; but most reject it.  */
+   
   {
     int status;
     errno = 0;
@@ -48,7 +27,7 @@ test_symlink (int (*func) (char const *, char const *), bool print)
       }
   }
 
-  /* Sanity checks of failures.  */
+   
   errno = 0;
   ASSERT (func ("nowhere", "") == -1);
   ASSERT (errno == ENOENT);
@@ -68,7 +47,7 @@ test_symlink (int (*func) (char const *, char const *), bool print)
   errno = 0;
   ASSERT (func ("nowhere", BASE "dir/") == -1);
   ASSERT (errno == EEXIST || errno == EINVAL
-          || errno == ENOENT /* Lustre FS on Linux */);
+          || errno == ENOENT  );
   ASSERT (close (creat (BASE "file", 0600)) == 0);
   errno = 0;
   ASSERT (func ("nowhere", BASE "file") == -1);
@@ -77,7 +56,7 @@ test_symlink (int (*func) (char const *, char const *), bool print)
   ASSERT (func ("nowhere", BASE "file/") == -1);
   ASSERT (errno == EEXIST || errno == ENOTDIR || errno == ENOENT);
 
-  /* Trailing slash must always be rejected.  */
+   
   ASSERT (unlink (BASE "link1") == 0);
   ASSERT (func (BASE "link2", BASE "link1") == 0);
   errno = 0;
@@ -87,7 +66,7 @@ test_symlink (int (*func) (char const *, char const *), bool print)
   ASSERT (unlink (BASE "link2") == -1);
   ASSERT (errno == ENOENT);
 
-  /* Cleanup.  */
+   
   ASSERT (rmdir (BASE "dir") == 0);
   ASSERT (unlink (BASE "file") == 0);
   ASSERT (unlink (BASE "link1") == 0);

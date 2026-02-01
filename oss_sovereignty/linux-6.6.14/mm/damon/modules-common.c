@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common Primitives for DAMON Modules
- *
- * Author: SeongJae Park <sjpark@amazon.de>
- */
+
+ 
 
 #include <linux/damon.h>
 
 #include "modules-common.h"
 
-/*
- * Allocate, set, and return a DAMON context for the physical address space.
- * @ctxp:	Pointer to save the point to the newly created context
- * @targetp:	Pointer to save the point to the newly created target
- */
+ 
 int damon_modules_new_paddr_ctx_target(struct damon_ctx **ctxp,
 		struct damon_target **targetp)
 {

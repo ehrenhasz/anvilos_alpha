@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * zswap.c - zswap driver file
- *
- * zswap is a cache that takes pages that are in the process
- * of being swapped out and attempts to compress and store them in a
- * RAM-based memory pool.  This can result in a significant I/O reduction on
- * the swap device and, in the case where decompressing from RAM is faster
- * than reading from the swap device, can also improve workload performance.
- *
- * Copyright (C) 2012  Seth Jennings <sjenning@linux.vnet.ibm.com>
-*/
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -38,52 +28,43 @@
 #include "swap.h"
 #include "internal.h"
 
-/*********************************
-* statistics
-**********************************/
-/* Total bytes used by the compressed storage */
+ 
+ 
 u64 zswap_pool_total_size;
-/* The number of compressed pages currently stored in zswap */
+ 
 atomic_t zswap_stored_pages = ATOMIC_INIT(0);
-/* The number of same-value filled pages currently stored in zswap */
+ 
 static atomic_t zswap_same_filled_pages = ATOMIC_INIT(0);
 
-/*
- * The statistics below are not protected from concurrent access for
- * performance reasons so they may not be a 100% accurate.  However,
- * they do provide useful information on roughly how many times a
- * certain event is occurring.
-*/
+ 
 
-/* Pool limit was hit (see zswap_max_pool_percent) */
+ 
 static u64 zswap_pool_limit_hit;
-/* Pages written back when pool limit was reached */
+ 
 static u64 zswap_written_back_pages;
-/* Store failed due to a reclaim failure after pool limit was reached */
+ 
 static u64 zswap_reject_reclaim_fail;
-/* Compressed page was too big for the allocator to (optimally) store */
+ 
 static u64 zswap_reject_compress_poor;
-/* Store failed because underlying allocator could not get memory */
+ 
 static u64 zswap_reject_alloc_fail;
-/* Store failed because the entry metadata could not be allocated (rare) */
+ 
 static u64 zswap_reject_kmemcache_fail;
-/* Duplicate store was encountered (rare) */
+ 
 static u64 zswap_duplicate_entry;
 
-/* Shrinker work queue */
+ 
 static struct workqueue_struct *shrink_wq;
-/* Pool limit was hit, we need to calm down */
+ 
 static bool zswap_pool_reached_full;
 
-/*********************************
-* tunables
-**********************************/
+ 
 
 #define ZSWAP_PARAM_UNSET ""
 
 static int zswap_setup(void);
 
-/* Enable/disable zswap */
+ 
 static bool zswap_enabled = IS_ENABLED(CONFIG_ZSWAP_DEFAULT_ON);
 static int zswap_enabled_param_set(const char *,
 				   const struct kernel_param *);
@@ -93,7 +74,7 @@ static const struct kernel_param_ops zswap_enabled_param_ops = {
 };
 module_param_cb(enabled, &zswap_enabled_param_ops, &zswap_enabled, 0644);
 
-/* Crypto compressor to use */
+ 
 static char *zswap_compressor = CONFIG_ZSWAP_COMPRESSOR_DEFAULT;
 static int zswap_compressor_param_set(const char *,
 				      const struct kernel_param *);
@@ -105,7 +86,7 @@ static const struct kernel_param_ops zswap_compressor_param_ops = {
 module_param_cb(compressor, &zswap_compressor_param_ops,
 		&zswap_compressor, 0644);
 
-/* Compressed storage zpool to use */
+ 
 static char *zswap_zpool_type = CONFIG_ZSWAP_ZPOOL_DEFAULT;
 static int zswap_zpool_param_set(const char *, const struct kernel_param *);
 static const struct kernel_param_ops zswap_zpool_param_ops = {
@@ -115,24 +96,21 @@ static const struct kernel_param_ops zswap_zpool_param_ops = {
 };
 module_param_cb(zpool, &zswap_zpool_param_ops, &zswap_zpool_type, 0644);
 
-/* The maximum percentage of memory that the compressed pool can occupy */
+ 
 static unsigned int zswap_max_pool_percent = 20;
 module_param_named(max_pool_percent, zswap_max_pool_percent, uint, 0644);
 
-/* The threshold for accepting new pages after the max_pool_percent was hit */
-static unsigned int zswap_accept_thr_percent = 90; /* of max pool size */
+ 
+static unsigned int zswap_accept_thr_percent = 90;  
 module_param_named(accept_threshold_percent, zswap_accept_thr_percent,
 		   uint, 0644);
 
-/*
- * Enable/disable handling same-value filled pages (enabled by default).
- * If disabled every page is considered non-same-value filled.
- */
+ 
 static bool zswap_same_filled_pages_enabled = true;
 module_param_named(same_filled_pages_enabled, zswap_same_filled_pages_enabled,
 		   bool, 0644);
 
-/* Enable/disable handling non-same-value filled pages (enabled by default) */
+ 
 static bool zswap_non_same_filled_pages_enabled = true;
 module_param_named(non_same_filled_pages_enabled, zswap_non_same_filled_pages_enabled,
 		   bool, 0644);
@@ -141,12 +119,10 @@ static bool zswap_exclusive_loads_enabled = IS_ENABLED(
 		CONFIG_ZSWAP_EXCLUSIVE_LOADS_DEFAULT_ON);
 module_param_named(exclusive_loads, zswap_exclusive_loads_enabled, bool, 0644);
 
-/* Number of zpools in zswap_pool (empirically determined for scalability) */
+ 
 #define ZSWAP_NR_ZPOOLS 32
 
-/*********************************
-* data structures
-**********************************/
+ 
 
 struct crypto_acomp_ctx {
 	struct crypto_acomp *acomp;
@@ -156,12 +132,7 @@ struct crypto_acomp_ctx {
 	struct mutex *mutex;
 };
 
-/*
- * The lock ordering is zswap_tree.lock -> zswap_pool.lru_lock.
- * The only case where lru_lock is not acquired while holding tree.lock is
- * when a zswap_entry is taken off the lru for writeback, in that case it
- * needs to be verified that it's still valid in the tree.
- */
+ 
 struct zswap_pool {
 	struct zpool *zpools[ZSWAP_NR_ZPOOLS];
 	struct crypto_acomp_ctx __percpu *acomp_ctx;
@@ -175,29 +146,7 @@ struct zswap_pool {
 	spinlock_t lru_lock;
 };
 
-/*
- * struct zswap_entry
- *
- * This structure contains the metadata for tracking a single compressed
- * page within zswap.
- *
- * rbnode - links the entry into red-black tree for the appropriate swap type
- * swpentry - associated swap entry, the offset indexes into the red-black tree
- * refcount - the number of outstanding reference to the entry. This is needed
- *            to protect against premature freeing of the entry by code
- *            concurrent calls to load, invalidate, and writeback.  The lock
- *            for the zswap_tree structure that contains the entry must
- *            be held while changing the refcount.  Since the lock must
- *            be held, there is no reason to also make refcount atomic.
- * length - the length in bytes of the compressed page data.  Needed during
- *          decompression. For a same value filled page length is 0, and both
- *          pool and lru are invalid and must be ignored.
- * pool - the zswap_pool the entry's data is in
- * handle - zpool allocation handle that stores the compressed page data
- * value - value of the same-value filled pages which have same content
- * objcg - the obj_cgroup that the compressed memory is charged to
- * lru - handle to the pool's lru used to evict pages.
- */
+ 
 struct zswap_entry {
 	struct rb_node rbnode;
 	swp_entry_t swpentry;
@@ -212,11 +161,7 @@ struct zswap_entry {
 	struct list_head lru;
 };
 
-/*
- * The tree lock in the zswap_tree struct protects a few things:
- * - the rbtree
- * - the refcount field of each entry in the tree
- */
+ 
 struct zswap_tree {
 	struct rb_root rbroot;
 	spinlock_t lock;
@@ -224,11 +169,11 @@ struct zswap_tree {
 
 static struct zswap_tree *zswap_trees[MAX_SWAPFILES];
 
-/* RCU-protected iteration */
+ 
 static LIST_HEAD(zswap_pools);
-/* protects zswap_pools list modification */
+ 
 static DEFINE_SPINLOCK(zswap_pools_lock);
-/* pool counter to provide unique names to zpool */
+ 
 static atomic_t zswap_pools_count = ATOMIC_INIT(0);
 
 enum zswap_init_type {
@@ -239,15 +184,13 @@ enum zswap_init_type {
 
 static enum zswap_init_type zswap_init_state;
 
-/* used to ensure the integrity of initialization */
+ 
 static DEFINE_MUTEX(zswap_init_lock);
 
-/* init completed, but couldn't create the initial pool */
+ 
 static bool zswap_has_pool;
 
-/*********************************
-* helpers and fwd declarations
-**********************************/
+ 
 
 #define zswap_pool_debug(msg, p)				\
 	pr_debug("%s pool %s/%s\n", msg, (p)->tfm_name,		\
@@ -288,9 +231,7 @@ static void zswap_update_total_size(void)
 	zswap_pool_total_size = total;
 }
 
-/*********************************
-* zswap entry functions
-**********************************/
+ 
 static struct kmem_cache *zswap_entry_cache;
 
 static struct zswap_entry *zswap_entry_cache_alloc(gfp_t gfp)
@@ -309,9 +250,7 @@ static void zswap_entry_cache_free(struct zswap_entry *entry)
 	kmem_cache_free(zswap_entry_cache, entry);
 }
 
-/*********************************
-* rbtree functions
-**********************************/
+ 
 static struct zswap_entry *zswap_rb_search(struct rb_root *root, pgoff_t offset)
 {
 	struct rb_node *node = root->rb_node;
@@ -331,10 +270,7 @@ static struct zswap_entry *zswap_rb_search(struct rb_root *root, pgoff_t offset)
 	return NULL;
 }
 
-/*
- * In the case that a entry with the same offset is found, a pointer to
- * the existing entry is stored in dupentry and the function returns -EEXIST
- */
+ 
 static int zswap_rb_insert(struct rb_root *root, struct zswap_entry *entry,
 			struct zswap_entry **dupentry)
 {
@@ -380,10 +316,7 @@ static struct zpool *zswap_find_zpool(struct zswap_entry *entry)
 	return entry->pool->zpools[i];
 }
 
-/*
- * Carries out the common pattern of freeing and entry's zpool allocation,
- * freeing the entry itself, and decrementing the number of stored pages.
- */
+ 
 static void zswap_free_entry(struct zswap_entry *entry)
 {
 	if (entry->objcg) {
@@ -404,15 +337,13 @@ static void zswap_free_entry(struct zswap_entry *entry)
 	zswap_update_total_size();
 }
 
-/* caller must hold the tree lock */
+ 
 static void zswap_entry_get(struct zswap_entry *entry)
 {
 	entry->refcount++;
 }
 
-/* caller must hold the tree lock
-* remove from the tree and free it, if nobody reference the entry
-*/
+ 
 static void zswap_entry_put(struct zswap_tree *tree,
 			struct zswap_entry *entry)
 {
@@ -425,7 +356,7 @@ static void zswap_entry_put(struct zswap_tree *tree,
 	}
 }
 
-/* caller must hold the tree lock */
+ 
 static struct zswap_entry *zswap_entry_find_get(struct rb_root *root,
 				pgoff_t offset)
 {
@@ -438,15 +369,9 @@ static struct zswap_entry *zswap_entry_find_get(struct rb_root *root,
 	return entry;
 }
 
-/*********************************
-* per-cpu code
-**********************************/
+ 
 static DEFINE_PER_CPU(u8 *, zswap_dstmem);
-/*
- * If users dynamically change the zpool type and compressor at runtime, i.e.
- * zswap is running, zswap can have more than one zpool on one cpu, but they
- * are sharing dtsmem. So we need this mutex to be per-cpu.
- */
+ 
 static DEFINE_PER_CPU(struct mutex *, zswap_mutex);
 
 static int zswap_dstmem_prepare(unsigned int cpu)
@@ -511,11 +436,7 @@ static int zswap_cpu_comp_prepare(unsigned int cpu, struct hlist_node *node)
 	acomp_ctx->req = req;
 
 	crypto_init_wait(&acomp_ctx->wait);
-	/*
-	 * if the backend of acomp is async zip, crypto_req_done() will wakeup
-	 * crypto_wait_req(); if the backend of acomp is scomp, the callback
-	 * won't be called, crypto_wait_req() will return without blocking.
-	 */
+	 
 	acomp_request_set_callback(req, CRYPTO_TFM_REQ_MAY_BACKLOG,
 				   crypto_req_done, &acomp_ctx->wait);
 
@@ -540,9 +461,7 @@ static int zswap_cpu_comp_dead(unsigned int cpu, struct hlist_node *node)
 	return 0;
 }
 
-/*********************************
-* pool functions
-**********************************/
+ 
 
 static struct zswap_pool *__zswap_pool_current(void)
 {
@@ -595,7 +514,7 @@ static struct zswap_pool *zswap_pool_last_get(void)
 	return last;
 }
 
-/* type and compressor must be null-terminated */
+ 
 static struct zswap_pool *zswap_pool_find_get(char *type, char *compressor)
 {
 	struct zswap_pool *pool;
@@ -605,10 +524,10 @@ static struct zswap_pool *zswap_pool_find_get(char *type, char *compressor)
 	list_for_each_entry_rcu(pool, &zswap_pools, list) {
 		if (strcmp(pool->tfm_name, compressor))
 			continue;
-		/* all zpools share the same type */
+		 
 		if (strcmp(zpool_get_type(pool->zpools[0]), type))
 			continue;
-		/* if we can't get it, it's about to be destroyed */
+		 
 		if (!zswap_pool_get(pool))
 			continue;
 		return pool;
@@ -617,11 +536,7 @@ static struct zswap_pool *zswap_pool_find_get(char *type, char *compressor)
 	return NULL;
 }
 
-/*
- * If the entry is still valid in the tree, drop the initial ref and remove it
- * from the tree. This function must be called with an additional ref held,
- * otherwise it may race with another invalidation freeing the entry.
- */
+ 
 static void zswap_invalidate_entry(struct zswap_tree *tree,
 				   struct zswap_entry *entry)
 {
@@ -636,7 +551,7 @@ static int zswap_reclaim_entry(struct zswap_pool *pool)
 	pgoff_t swpoffset;
 	int ret;
 
-	/* Get an entry off the LRU */
+	 
 	spin_lock(&pool->lru_lock);
 	if (list_empty(&pool->lru)) {
 		spin_unlock(&pool->lru_lock);
@@ -644,22 +559,18 @@ static int zswap_reclaim_entry(struct zswap_pool *pool)
 	}
 	entry = list_last_entry(&pool->lru, struct zswap_entry, lru);
 	list_del_init(&entry->lru);
-	/*
-	 * Once the lru lock is dropped, the entry might get freed. The
-	 * swpoffset is copied to the stack, and entry isn't deref'd again
-	 * until the entry is verified to still be alive in the tree.
-	 */
+	 
 	swpoffset = swp_offset(entry->swpentry);
 	tree = zswap_trees[swp_type(entry->swpentry)];
 	spin_unlock(&pool->lru_lock);
 
-	/* Check for invalidate() race */
+	 
 	spin_lock(&tree->lock);
 	if (entry != zswap_rb_search(&tree->rbroot, swpoffset)) {
 		ret = -EAGAIN;
 		goto unlock;
 	}
-	/* Hold a reference to prevent a free during writeback */
+	 
 	zswap_entry_get(entry);
 	spin_unlock(&tree->lock);
 
@@ -667,22 +578,18 @@ static int zswap_reclaim_entry(struct zswap_pool *pool)
 
 	spin_lock(&tree->lock);
 	if (ret) {
-		/* Writeback failed, put entry back on LRU */
+		 
 		spin_lock(&pool->lru_lock);
 		list_move(&entry->lru, &pool->lru);
 		spin_unlock(&pool->lru_lock);
 		goto put_unlock;
 	}
 
-	/*
-	 * Writeback started successfully, the page now belongs to the
-	 * swapcache. Drop the entry from zswap - unless invalidate already
-	 * took it out while we had the tree->lock released for IO.
-	 */
+	 
 	zswap_invalidate_entry(tree, entry);
 
 put_unlock:
-	/* Drop local reference */
+	 
 	zswap_entry_put(tree, entry);
 unlock:
 	spin_unlock(&tree->lock);
@@ -713,15 +620,12 @@ static struct zswap_pool *zswap_pool_create(char *type, char *compressor)
 {
 	int i;
 	struct zswap_pool *pool;
-	char name[38]; /* 'zswap' + 32 char (max) num + \0 */
+	char name[38];  
 	gfp_t gfp = __GFP_NORETRY | __GFP_NOWARN | __GFP_KSWAPD_RECLAIM;
 	int ret;
 
 	if (!zswap_has_pool) {
-		/* if either are unset, pool initialization failed, and we
-		 * need both params to be set correctly before trying to
-		 * create a pool.
-		 */
+		 
 		if (!strcmp(type, ZSWAP_PARAM_UNSET))
 			return NULL;
 		if (!strcmp(compressor, ZSWAP_PARAM_UNSET))
@@ -733,7 +637,7 @@ static struct zswap_pool *zswap_pool_create(char *type, char *compressor)
 		return NULL;
 
 	for (i = 0; i < ZSWAP_NR_ZPOOLS; i++) {
-		/* unique name for each pool specifically required by zsmalloc */
+		 
 		snprintf(name, 38, "zswap%x",
 			 atomic_inc_return(&zswap_pools_count));
 
@@ -759,9 +663,7 @@ static struct zswap_pool *zswap_pool_create(char *type, char *compressor)
 		goto error;
 	pr_debug("using %s compressor\n", pool->tfm_name);
 
-	/* being the current pool takes 1 ref; this func expects the
-	 * caller to always add the new pool as the current pool
-	 */
+	 
 	kref_init(&pool->kref);
 	INIT_LIST_HEAD(&pool->list);
 	INIT_LIST_HEAD(&pool->lru);
@@ -851,10 +753,10 @@ static void __zswap_pool_release(struct work_struct *work)
 
 	synchronize_rcu();
 
-	/* nobody should have been able to get a kref... */
+	 
 	WARN_ON(kref_get_unless_zero(&pool->kref));
 
-	/* pool is now off zswap_pools list and has no references. */
+	 
 	zswap_pool_destroy(pool);
 }
 
@@ -881,19 +783,17 @@ static void zswap_pool_put(struct zswap_pool *pool)
 	kref_put(&pool->kref, __zswap_pool_empty);
 }
 
-/*********************************
-* param callbacks
-**********************************/
+ 
 
 static bool zswap_pool_changed(const char *s, const struct kernel_param *kp)
 {
-	/* no change required */
+	 
 	if (!strcmp(s, *(char **)kp->arg) && zswap_has_pool)
 		return false;
 	return true;
 }
 
-/* val must be a null-terminated string */
+ 
 static int __zswap_param_set(const char *val, const struct kernel_param *kp,
 			     char *type, char *compressor)
 {
@@ -905,9 +805,7 @@ static int __zswap_param_set(const char *val, const struct kernel_param *kp,
 	mutex_lock(&zswap_init_lock);
 	switch (zswap_init_state) {
 	case ZSWAP_UNINIT:
-		/* if this is load-time (pre-init) param setting,
-		 * don't create a pool; that's done during init.
-		 */
+		 
 		ret = param_set_charp(s, kp);
 		break;
 	case ZSWAP_INIT_SUCCEED:
@@ -919,7 +817,7 @@ static int __zswap_param_set(const char *val, const struct kernel_param *kp,
 	}
 	mutex_unlock(&zswap_init_lock);
 
-	/* no need to create a new pool, return directly */
+	 
 	if (!new_pool)
 		return ret;
 
@@ -966,10 +864,7 @@ static int __zswap_param_set(const char *val, const struct kernel_param *kp,
 		list_add_rcu(&pool->list, &zswap_pools);
 		zswap_has_pool = true;
 	} else if (pool) {
-		/* add the possibly pre-existing pool to the end of the pools
-		 * list; if it's new (and empty) then it'll be removed and
-		 * destroyed by the put after we drop the lock
-		 */
+		 
 		list_add_tail_rcu(&pool->list, &zswap_pools);
 		put_pool = pool;
 	}
@@ -977,19 +872,11 @@ static int __zswap_param_set(const char *val, const struct kernel_param *kp,
 	spin_unlock(&zswap_pools_lock);
 
 	if (!zswap_has_pool && !pool) {
-		/* if initial pool creation failed, and this pool creation also
-		 * failed, maybe both compressor and zpool params were bad.
-		 * Allow changing this param, so pool creation will succeed
-		 * when the other param is changed. We already verified this
-		 * param is ok in the zpool_has_pool() or crypto_has_acomp()
-		 * checks above.
-		 */
+		 
 		ret = param_set_charp(s, kp);
 	}
 
-	/* drop the ref from either the old current pool,
-	 * or the new pool we failed to add
-	 */
+	 
 	if (put_pool)
 		zswap_pool_put(put_pool);
 
@@ -1013,7 +900,7 @@ static int zswap_enabled_param_set(const char *val,
 {
 	int ret = -ENODEV;
 
-	/* if this is load-time (pre-init) param setting, only set param. */
+	 
 	if (system_state != SYSTEM_RUNNING)
 		return param_set_bool(val, kp);
 
@@ -1037,21 +924,8 @@ static int zswap_enabled_param_set(const char *val,
 	return ret;
 }
 
-/*********************************
-* writeback code
-**********************************/
-/*
- * Attempts to free an entry by adding a page to the swap cache,
- * decompressing the entry data into the page, and issuing a
- * bio write to write the page back to the swap device.
- *
- * This can be thought of as a "resumed writeback" of the page
- * to the swap device.  We are basically resuming the same swap
- * writeback path that was intercepted with the zswap_store()
- * in the first place.  After the page has been decompressed into
- * the swap cache, the compressed version stored by zswap can be
- * freed.
- */
+ 
+ 
 static int zswap_writeback_entry(struct zswap_entry *entry,
 				 struct zswap_tree *tree)
 {
@@ -1074,7 +948,7 @@ static int zswap_writeback_entry(struct zswap_entry *entry,
 			return -ENOMEM;
 	}
 
-	/* try to allocate swap cache page */
+	 
 	page = __read_swap_cache_async(swpentry, GFP_KERNEL, NULL, 0,
 				       &page_was_allocated);
 	if (!page) {
@@ -1082,20 +956,14 @@ static int zswap_writeback_entry(struct zswap_entry *entry,
 		goto fail;
 	}
 
-	/* Found an existing page, we raced with load/swapin */
+	 
 	if (!page_was_allocated) {
 		put_page(page);
 		ret = -EEXIST;
 		goto fail;
 	}
 
-	/*
-	 * Page is locked, and the swapcache is now secured against
-	 * concurrent swapping to and from the slot. Verify that the
-	 * swap entry hasn't been invalidated and recycled behind our
-	 * backs (our zswap_entry reference doesn't prevent that), to
-	 * avoid overwriting a new swap page with old compressed data.
-	 */
+	 
 	spin_lock(&tree->lock);
 	if (zswap_rb_search(&tree->rbroot, swp_offset(entry->swpentry)) != entry) {
 		spin_unlock(&tree->lock);
@@ -1105,7 +973,7 @@ static int zswap_writeback_entry(struct zswap_entry *entry,
 	}
 	spin_unlock(&tree->lock);
 
-	/* decompress */
+	 
 	acomp_ctx = raw_cpu_ptr(entry->pool->acomp_ctx);
 	dlen = PAGE_SIZE;
 
@@ -1133,13 +1001,13 @@ static int zswap_writeback_entry(struct zswap_entry *entry,
 	BUG_ON(ret);
 	BUG_ON(dlen != PAGE_SIZE);
 
-	/* page is up to date */
+	 
 	SetPageUptodate(page);
 
-	/* move it to the tail of the inactive list after end_writeback */
+	 
 	SetPageReclaim(page);
 
-	/* start writeback */
+	 
 	__swap_writepage(page, &wbc);
 	put_page(page);
 	zswap_written_back_pages++;
@@ -1150,11 +1018,7 @@ fail:
 	if (!zpool_can_sleep_mapped(pool))
 		kfree(tmp);
 
-	/*
-	 * If we get here because the page is already in swapcache, a
-	 * load may be happening concurrently. It is safe and okay to
-	 * not free the entry. It is also okay to return !0.
-	 */
+	 
 	return ret;
 }
 
@@ -1211,18 +1075,14 @@ bool zswap_store(struct folio *folio)
 	VM_WARN_ON_ONCE(!folio_test_locked(folio));
 	VM_WARN_ON_ONCE(!folio_test_swapcache(folio));
 
-	/* Large folios aren't supported */
+	 
 	if (folio_test_large(folio))
 		return false;
 
 	if (!zswap_enabled || !tree)
 		return false;
 
-	/*
-	 * If this is a duplicate, it must be removed before attempting to store
-	 * it, otherwise, if the store fails the old page won't be removed from
-	 * the tree, and it might be written back overriding the new data.
-	 */
+	 
 	spin_lock(&tree->lock);
 	dupentry = zswap_rb_search(&tree->rbroot, offset);
 	if (dupentry) {
@@ -1231,16 +1091,12 @@ bool zswap_store(struct folio *folio)
 	}
 	spin_unlock(&tree->lock);
 
-	/*
-	 * XXX: zswap reclaim does not work with cgroups yet. Without a
-	 * cgroup-aware entry LRU, we will push out entries system-wide based on
-	 * local cgroup limits.
-	 */
+	 
 	objcg = get_obj_cgroup_from_folio(folio);
 	if (objcg && !obj_cgroup_may_zswap(objcg))
 		goto reject;
 
-	/* reclaim space if needed */
+	 
 	if (zswap_is_full()) {
 		zswap_pool_limit_hit++;
 		zswap_pool_reached_full = true;
@@ -1254,7 +1110,7 @@ bool zswap_store(struct folio *folio)
 			zswap_pool_reached_full = false;
 	}
 
-	/* allocate entry */
+	 
 	entry = zswap_entry_cache_alloc(GFP_KERNEL);
 	if (!entry) {
 		zswap_reject_kmemcache_fail++;
@@ -1277,12 +1133,12 @@ bool zswap_store(struct folio *folio)
 	if (!zswap_non_same_filled_pages_enabled)
 		goto freepage;
 
-	/* if entry is successfully added, it keeps the reference */
+	 
 	entry->pool = zswap_pool_current_get();
 	if (!entry->pool)
 		goto freepage;
 
-	/* compress */
+	 
 	acomp_ctx = raw_cpu_ptr(entry->pool->acomp_ctx);
 
 	mutex_lock(acomp_ctx->mutex);
@@ -1291,28 +1147,17 @@ bool zswap_store(struct folio *folio)
 	sg_init_table(&input, 1);
 	sg_set_page(&input, page, PAGE_SIZE, 0);
 
-	/* zswap_dstmem is of size (PAGE_SIZE * 2). Reflect same in sg_list */
+	 
 	sg_init_one(&output, dst, PAGE_SIZE * 2);
 	acomp_request_set_params(acomp_ctx->req, &input, &output, PAGE_SIZE, dlen);
-	/*
-	 * it maybe looks a little bit silly that we send an asynchronous request,
-	 * then wait for its completion synchronously. This makes the process look
-	 * synchronous in fact.
-	 * Theoretically, acomp supports users send multiple acomp requests in one
-	 * acomp instance, then get those requests done simultaneously. but in this
-	 * case, zswap actually does store and load page by page, there is no
-	 * existing method to send the second page before the first page is done
-	 * in one thread doing zwap.
-	 * but in different threads running on different cpu, we have different
-	 * acomp instance, so multiple threads can do (de)compression in parallel.
-	 */
+	 
 	ret = crypto_wait_req(crypto_acomp_compress(acomp_ctx->req), &acomp_ctx->wait);
 	dlen = acomp_ctx->req->dlen;
 
 	if (ret)
 		goto put_dstmem;
 
-	/* store */
+	 
 	zpool = zswap_find_zpool(entry);
 	gfp = __GFP_NORETRY | __GFP_NOWARN | __GFP_KSWAPD_RECLAIM;
 	if (zpool_malloc_support_movable(zpool))
@@ -1331,7 +1176,7 @@ bool zswap_store(struct folio *folio)
 	zpool_unmap_handle(zpool, handle);
 	mutex_unlock(acomp_ctx->mutex);
 
-	/* populate entry */
+	 
 	entry->swpentry = swp_entry(type, offset);
 	entry->handle = handle;
 	entry->length = dlen;
@@ -1340,18 +1185,13 @@ insert_entry:
 	entry->objcg = objcg;
 	if (objcg) {
 		obj_cgroup_charge_zswap(objcg, entry->length);
-		/* Account before objcg ref is moved to tree */
+		 
 		count_objcg_event(objcg, ZSWPOUT);
 	}
 
-	/* map */
+	 
 	spin_lock(&tree->lock);
-	/*
-	 * A duplicate entry should have been removed at the beginning of this
-	 * function. Since the swap entry should be pinned, if a duplicate is
-	 * found again here it means that something went wrong in the swap
-	 * cache.
-	 */
+	 
 	while (zswap_rb_insert(&tree->rbroot, entry, &dupentry) == -EEXIST) {
 		WARN_ON(1);
 		zswap_duplicate_entry++;
@@ -1364,7 +1204,7 @@ insert_entry:
 	}
 	spin_unlock(&tree->lock);
 
-	/* update stats */
+	 
 	atomic_inc(&zswap_stored_pages);
 	zswap_update_total_size();
 	count_vm_event(ZSWPOUT);
@@ -1405,7 +1245,7 @@ bool zswap_load(struct folio *folio)
 
 	VM_WARN_ON_ONCE(!folio_test_locked(folio));
 
-	/* find */
+	 
 	spin_lock(&tree->lock);
 	entry = zswap_entry_find_get(&tree->rbroot, offset);
 	if (!entry) {
@@ -1431,7 +1271,7 @@ bool zswap_load(struct folio *folio)
 		}
 	}
 
-	/* decompress */
+	 
 	dlen = PAGE_SIZE;
 	src = zpool_map_handle(zpool, entry->handle, ZPOOL_MM_RO);
 
@@ -1482,11 +1322,11 @@ void zswap_invalidate(int type, pgoff_t offset)
 	struct zswap_tree *tree = zswap_trees[type];
 	struct zswap_entry *entry;
 
-	/* find */
+	 
 	spin_lock(&tree->lock);
 	entry = zswap_rb_search(&tree->rbroot, offset);
 	if (!entry) {
-		/* entry was written back */
+		 
 		spin_unlock(&tree->lock);
 		return;
 	}
@@ -1517,7 +1357,7 @@ void zswap_swapoff(int type)
 	if (!tree)
 		return;
 
-	/* walk the tree and free everything */
+	 
 	spin_lock(&tree->lock);
 	rbtree_postorder_for_each_entry_safe(entry, n, &tree->rbroot, rbnode)
 		zswap_free_entry(entry);
@@ -1527,9 +1367,7 @@ void zswap_swapoff(int type)
 	zswap_trees[type] = NULL;
 }
 
-/*********************************
-* debugfs functions
-**********************************/
+ 
 #ifdef CONFIG_DEBUG_FS
 #include <linux/debugfs.h>
 
@@ -1572,9 +1410,7 @@ static int zswap_debugfs_init(void)
 }
 #endif
 
-/*********************************
-* module init and exit
-**********************************/
+ 
 static int zswap_setup(void)
 {
 	struct zswap_pool *pool;
@@ -1628,7 +1464,7 @@ hp_fail:
 dstmem_fail:
 	kmem_cache_destroy(zswap_entry_cache);
 cache_fail:
-	/* if built-in, we aren't unloaded on failure; don't allow use */
+	 
 	zswap_init_state = ZSWAP_INIT_FAILED;
 	zswap_enabled = false;
 	return -ENOMEM;
@@ -1640,7 +1476,7 @@ static int __init zswap_init(void)
 		return 0;
 	return zswap_setup();
 }
-/* must be late so crypto has time to come up */
+ 
 late_initcall(zswap_init);
 
 MODULE_AUTHOR("Seth Jennings <sjennings@variantweb.net>");

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
+
 
 #include <linux/ethtool.h>
 #include <linux/linkmode.h>
@@ -12,10 +12,7 @@
 #include "fun_port.h"
 #include "funeth_txrx.h"
 
-/* Min queue depth. The smallest power-of-2 supporting jumbo frames with 4K
- * pages is 8. Require it for all types of queues though some could work with
- * fewer entries.
- */
+ 
 #define FUNETH_MIN_QDEPTH 8
 
 static const char mac_tx_stat_names[][ETH_GSTRING_LEN] = {
@@ -212,7 +209,7 @@ static int fun_get_link_ksettings(struct net_device *netdev,
 	ethtool_link_ksettings_zero_link_mode(ks, advertising);
 	ethtool_link_ksettings_zero_link_mode(ks, lp_advertising);
 
-	/* Link settings change asynchronously, take a consistent snapshot */
+	 
 	do {
 		seq = read_seqcount_begin(&fp->link_seq);
 		link_up = netif_carrier_ok(netdev);
@@ -320,7 +317,7 @@ static int fun_set_link_ksettings(struct net_device *netdev,
 	struct funeth_priv *fp = netdev_priv(netdev);
 	u64 new_advert;
 
-	/* eswitch ports don't support mode changes */
+	 
 	if (fp->port_caps & FUN_PORT_CAP_VPORT)
 		return -EOPNOTSUPP;
 
@@ -370,7 +367,7 @@ static int fun_set_pauseparam(struct net_device *netdev,
 
 	if (fp->port_caps & FUN_PORT_CAP_VPORT)
 		return -EOPNOTSUPP;
-	/* Forcing PAUSE settings with AN enabled is unsupported. */
+	 
 	if (!pause->autoneg && (fp->advertising & FUN_PORT_CAP_AUTONEG))
 		return -EOPNOTSUPP;
 	if (pause->autoneg && !(fp->advertising & FUN_PORT_CAP_AUTONEG))
@@ -494,7 +491,7 @@ static int fun_set_coalesce(struct net_device *netdev,
 	    (coal->tx_coalesce_usecs | coal->tx_max_coalesced_frames) == 0)
 		return -EINVAL;
 
-	/* a timer is required if there's any coalescing */
+	 
 	if ((coal->rx_max_coalesced_frames > 1 && !coal->rx_coalesce_usecs) ||
 	    (coal->tx_max_coalesced_frames > 1 && !coal->tx_coalesce_usecs))
 		return -EINVAL;
@@ -557,9 +554,7 @@ static void fun_get_ringparam(struct net_device *netdev,
 	const struct funeth_priv *fp = netdev_priv(netdev);
 	unsigned int max_depth = fp->fdev->q_depth;
 
-	/* We size CQs to be twice the RQ depth so max RQ depth is half the
-	 * max queue depth.
-	 */
+	 
 	ring->rx_max_pending = max_depth / 2;
 	ring->tx_max_pending = max_depth;
 
@@ -581,7 +576,7 @@ static int fun_set_ringparam(struct net_device *netdev,
 	if (ring->rx_mini_pending || ring->rx_jumbo_pending)
 		return -EINVAL;
 
-	/* queue depths must be powers-of-2 */
+	 
 	if (!is_power_of_2(ring->rx_pending) ||
 	    !is_power_of_2(ring->tx_pending))
 		return -EINVAL;
@@ -766,7 +761,7 @@ static void fun_get_ethtool_stats(struct net_device *netdev,
 	*data = (cnt); *tot++ += *data++; \
 } while (0)
 
-	/* Tx queues */
+	 
 	totals = data + netdev->real_num_tx_queues * ARRAY_SIZE(txq_stat_names);
 
 	for (i = 0; i < netdev->real_num_tx_queues; i++) {
@@ -791,7 +786,7 @@ static void fun_get_ethtool_stats(struct net_device *netdev,
 	}
 	data += ARRAY_SIZE(txq_stat_names);
 
-	/* XDP Tx queues */
+	 
 	xdpqs = rtnl_dereference(fp->xdpqs);
 	totals = data + fp->num_xdpqs * ARRAY_SIZE(xdpq_stat_names);
 
@@ -807,7 +802,7 @@ static void fun_get_ethtool_stats(struct net_device *netdev,
 	}
 	data += ARRAY_SIZE(xdpq_stat_names);
 
-	/* Rx queues */
+	 
 	totals = data + netdev->real_num_rx_queues * ARRAY_SIZE(rxq_stat_names);
 
 	for (i = 0; i < netdev->real_num_rx_queues; i++) {
@@ -1019,10 +1014,7 @@ static int fun_set_rxfh(struct net_device *netdev, const u32 *indir,
 	else
 		return -EINVAL;
 
-	/* If the port is enabled try to reconfigure RSS and keep the new
-	 * settings if successful. If it is down we update the RSS settings
-	 * and apply them at the next UP time.
-	 */
+	 
 	if (netif_running(netdev)) {
 		int rc = fun_config_rss(netdev, algo, rss_key, rss_indir,
 					FUN_ADMIN_SUBOP_MODIFY);

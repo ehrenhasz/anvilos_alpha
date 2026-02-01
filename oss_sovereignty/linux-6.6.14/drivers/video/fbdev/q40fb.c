@@ -1,14 +1,4 @@
-/*
- * linux/drivers/video/q40fb.c -- Q40 frame buffer device
- *
- * Copyright (C) 2001
- *
- *      Richard Zidlicky <rz@linux-m68k.org>
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License. See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -54,11 +44,7 @@ static int q40fb_setcolreg(unsigned regno, unsigned red, unsigned green,
 			   unsigned blue, unsigned transp,
 			   struct fb_info *info)
 {
-    /*
-     *  Set a single color register. The values supplied have a 16 bit
-     *  magnitude.
-     *  Return != 0 for invalid regno.
-     */
+     
 
     if (regno > 255)
 	    return 1;
@@ -87,7 +73,7 @@ static int q40fb_probe(struct platform_device *dev)
 	if (!MACH_IS_Q40)
 		return -ENXIO;
 
-	/* mapped in q40/config.c */
+	 
 	q40fb_fix.smem_start = Q40_PHYS_SCREEN_ADDR;
 
 	info = framebuffer_alloc(sizeof(u32) * 16, &dev->dev);

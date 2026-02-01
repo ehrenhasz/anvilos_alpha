@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2012-2014, 2018, 2020 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2016-2017 Intel Deutschland GmbH
- */
+ 
+ 
 #ifndef __fw_api_h__
 #define __fw_api_h__
 
@@ -38,4 +34,4 @@
 #include "fw/api/tx.h"
 #include "fw/api/rfi.h"
 
-#endif /* __fw_api_h__ */
+#endif  

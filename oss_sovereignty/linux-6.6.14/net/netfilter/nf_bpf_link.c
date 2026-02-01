@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <linux/filter.h>
 #include <linux/kmod.h>
@@ -37,7 +37,7 @@ get_proto_defrag_hook(struct bpf_nf_link *link,
 	const struct nf_defrag_hook *hook;
 	int err;
 
-	/* RCU protects us from races against module unloading */
+	 
 	rcu_read_lock();
 	hook = rcu_dereference(*ptr_global_hook);
 	if (!hook) {
@@ -51,7 +51,7 @@ get_proto_defrag_hook(struct bpf_nf_link *link,
 	}
 
 	if (hook && try_module_get(hook->owner)) {
-		/* Once we have a refcnt on the module, we no longer need RCU */
+		 
 		hook = rcu_pointer_handoff(hook);
 	} else {
 		WARN_ONCE(!hook, "%s has bad registration", mod);
@@ -116,7 +116,7 @@ static void bpf_nf_link_release(struct bpf_link *link)
 	if (nf_link->dead)
 		return;
 
-	/* do not double release in case .detach was already called */
+	 
 	if (!cmpxchg(&nf_link->dead, 0, 1)) {
 		nf_unregister_net_hook(nf_link->net, &nf_link->hook_ops);
 		bpf_nf_disable_defrag(nf_link);
@@ -191,15 +191,15 @@ static int bpf_nf_check_pf_and_hooks(const union bpf_attr *attr)
 	if (attr->link_create.netfilter.flags & ~BPF_F_NETFILTER_IP_DEFRAG)
 		return -EOPNOTSUPP;
 
-	/* make sure conntrack confirm is always last */
+	 
 	prio = attr->link_create.netfilter.priority;
 	if (prio == NF_IP_PRI_FIRST)
-		return -ERANGE;  /* sabotage_in and other warts */
+		return -ERANGE;   
 	else if (prio == NF_IP_PRI_LAST)
-		return -ERANGE;  /* e.g. conntrack confirm */
+		return -ERANGE;   
 	else if ((attr->link_create.netfilter.flags & BPF_F_NETFILTER_IP_DEFRAG) &&
 		 prio <= NF_IP_PRI_CONNTRACK_DEFRAG)
-		return -ERANGE;  /* cannot use defrag if prog runs before nf_defrag */
+		return -ERANGE;   
 
 	return 0;
 }

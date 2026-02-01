@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/** -*- linux-c -*- ***********************************************************
- * Linux PPP over X/Ethernet (PPPoX/PPPoE) Sockets
- *
- * PPPoX --- Generic PPP encapsulation socket family
- * PPPoE --- PPP over Ethernet (RFC 2516)
- *
- * Version:	0.5.2
- *
- * Author:	Michal Ostrowski <mostrows@speakeasy.net>
- *
- * 051000 :	Initialization cleanup
- *
- * License:
- */
+
+ 
 
 #include <linux/string.h>
 #include <linux/module.h>
@@ -52,7 +39,7 @@ void unregister_pppox_proto(int proto_num)
 
 void pppox_unbind_sock(struct sock *sk)
 {
-	/* Clear connection to ppp device, if attached. */
+	 
 
 	if (sk->sk_state & (PPPOX_BOUND | PPPOX_CONNECTED)) {
 		ppp_unregister_channel(&pppox_sk(sk)->chan);

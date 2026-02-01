@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * proc_tty.c -- handles /proc/tty
- *
- * Copyright 1997, Theodore Ts'o
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -15,14 +11,10 @@
 #include <linux/bitops.h>
 #include "internal.h"
 
-/*
- * The /proc/tty directory inodes...
- */
+ 
 static struct proc_dir_entry *proc_tty_driver;
 
-/*
- * This is the handler for /proc/tty/drivers
- */
+ 
 static void show_tty_range(struct seq_file *m, struct tty_driver *p,
 	dev_t from, int num)
 {
@@ -71,7 +63,7 @@ static int show_tty_driver(struct seq_file *m, void *v)
 	dev_t to = from + p->num;
 
 	if (&p->tty_drivers == tty_drivers.next) {
-		/* pseudo-drivers first */
+		 
 		seq_printf(m, "%-20s /dev/%-8s ", "/dev/tty", "tty");
 		seq_printf(m, "%3d %7d ", TTYAUX_MAJOR, 0);
 		seq_puts(m, "system:/dev/tty\n");
@@ -100,7 +92,7 @@ static int show_tty_driver(struct seq_file *m, void *v)
 	return 0;
 }
 
-/* iterator */
+ 
 static void *t_start(struct seq_file *m, loff_t *pos)
 {
 	mutex_lock(&tty_mutex);
@@ -124,10 +116,7 @@ static const struct seq_operations tty_drivers_op = {
 	.show	= show_tty_driver
 };
 
-/*
- * This function is called by tty_register_driver() to handle
- * registering the driver's /proc handler into /proc/tty/driver/<foo>
- */
+ 
 void proc_tty_register_driver(struct tty_driver *driver)
 {
 	struct proc_dir_entry *ent;
@@ -141,9 +130,7 @@ void proc_tty_register_driver(struct tty_driver *driver)
 	driver->proc_entry = ent;
 }
 
-/*
- * This function is called by tty_unregister_driver()
- */
+ 
 void proc_tty_unregister_driver(struct tty_driver *driver)
 {
 	struct proc_dir_entry *ent;
@@ -157,20 +144,13 @@ void proc_tty_unregister_driver(struct tty_driver *driver)
 	driver->proc_entry = NULL;
 }
 
-/*
- * Called by proc_root_init() to initialize the /proc/tty subtree
- */
+ 
 void __init proc_tty_init(void)
 {
 	if (!proc_mkdir("tty", NULL))
 		return;
-	proc_mkdir("tty/ldisc", NULL);	/* Preserved: it's userspace visible */
-	/*
-	 * /proc/tty/driver/serial reveals the exact character counts for
-	 * serial links which is just too easy to abuse for inferring
-	 * password lengths and inter-keystroke timings during password
-	 * entry.
-	 */
+	proc_mkdir("tty/ldisc", NULL);	 
+	 
 	proc_tty_driver = proc_mkdir_mode("tty/driver", S_IRUSR|S_IXUSR, NULL);
 	proc_create_seq("tty/ldiscs", 0, NULL, &tty_ldiscs_seq_ops);
 	proc_create_seq("tty/drivers", 0, NULL, &tty_drivers_op);

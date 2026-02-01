@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  skl-topology.c - Implements Platform component ALSA controls/widget
- *  handlers.
- *
- *  Copyright (C) 2014-2015 Intel Corp
- *  Author: Jeeja KP <jeeja.kp@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/types.h>
@@ -85,10 +78,7 @@ void skl_tplg_d0i3_put(struct skl_dev *skl, enum d0i3_capability caps)
 	}
 }
 
-/*
- * SKL DSP driver modelling uses only few DAPM widgets so for rest we will
- * ignore. This helpers checks if the SKL driver handles this widget type
- */
+ 
 static int is_skl_dsp_widget_type(struct snd_soc_dapm_widget *w,
 				  struct device *dev)
 {
@@ -137,10 +127,7 @@ static void skl_tplg_update_chmap(struct skl_module_fmt *fmt, int chs)
 	int i;
 
 	for (i = 0; i < chs; i++) {
-		/*
-		 * For 2 channels with starting slot as 0, slot map will
-		 * look like 0xFFFFFF10.
-		 */
+		 
 		slot_map &= (~(0xF << (4 * i)) | (start_slot << (4 * i)));
 		start_slot++;
 	}
@@ -159,10 +146,7 @@ static void skl_tplg_update_params(struct skl_module_fmt *fmt,
 	if (fixup & SKL_FMT_FIXUP_MASK) {
 		fmt->valid_bit_depth = skl_get_bit_depth(params->s_fmt);
 
-		/*
-		 * 16 bit is 16 bit container whereas 24 bit is in 32 bit
-		 * container so update bit depth accordingly
-		 */
+		 
 		switch (fmt->valid_bit_depth) {
 		case SKL_DEPTH_16BIT:
 			fmt->bit_depth = fmt->valid_bit_depth;
@@ -176,25 +160,14 @@ static void skl_tplg_update_params(struct skl_module_fmt *fmt,
 
 }
 
-/*
- * A pipeline may have modules which impact the pcm parameters, like SRC,
- * channel converter, format converter.
- * We need to calculate the output params by applying the 'fixup'
- * Topology will tell driver which type of fixup is to be applied by
- * supplying the fixup mask, so based on that we calculate the output
- *
- * Now In FE the pcm hw_params is source/target format. Same is applicable
- * for BE with its hw_params invoked.
- * here based on FE, BE pipeline and direction we calculate the input and
- * outfix and then apply that for a module
- */
+ 
 static void skl_tplg_update_params_fixup(struct skl_module_cfg *m_cfg,
 		struct skl_pipe_params *params, bool is_fe)
 {
 	int in_fixup, out_fixup;
 	struct skl_module_fmt *in_fmt, *out_fmt;
 
-	/* Fixups will be applied to pin 0 only */
+	 
 	in_fmt = &m_cfg->module->formats[m_cfg->fmt_idx].inputs[0].fmt;
 	out_fmt = &m_cfg->module->formats[m_cfg->fmt_idx].outputs[0].fmt;
 
@@ -224,11 +197,7 @@ static void skl_tplg_update_params_fixup(struct skl_module_cfg *m_cfg,
 	skl_tplg_update_params(out_fmt, params, out_fixup);
 }
 
-/*
- * A module needs input and output buffers, which are dependent upon pcm
- * params, so once we have calculate params, we need buffer calculation as
- * well.
- */
+ 
 static void skl_tplg_update_buffer_size(struct skl_dev *skl,
 				struct skl_module_cfg *mcfg)
 {
@@ -236,9 +205,7 @@ static void skl_tplg_update_buffer_size(struct skl_dev *skl,
 	struct skl_module_fmt *in_fmt, *out_fmt;
 	struct skl_module_res *res;
 
-	/* Since fixups is applied to pin 0 only, ibs, obs needs
-	 * change for pin 0 only
-	 */
+	 
 	res = &mcfg->module->resources[mcfg->res_idx];
 	in_fmt = &mcfg->module->formats[mcfg->fmt_idx].inputs[0].fmt;
 	out_fmt = &mcfg->module->formats[mcfg->fmt_idx].outputs[0].fmt;
@@ -291,7 +258,7 @@ static int skl_tplg_update_be_blob(struct snd_soc_dapm_widget *w,
 	int fmt_idx = m_cfg->fmt_idx;
 	struct skl_module_iface *m_iface = &m_cfg->module->formats[fmt_idx];
 
-	/* check if we already have blob */
+	 
 	if (m_cfg->formats_config[SKL_PARAM_INIT].caps_size > 0)
 		return 0;
 
@@ -327,7 +294,7 @@ static int skl_tplg_update_be_blob(struct snd_soc_dapm_widget *w,
 		return -EINVAL;
 	}
 
-	/* update the blob based on virtual bus_id and default params */
+	 
 	cfg = intel_nhlt_get_endpoint_blob(skl->dev, skl->nhlt, m_cfg->vbus_id,
 					   link_type, s_fmt, s_cont, ch,
 					   s_freq, dir, dev_type);
@@ -375,11 +342,7 @@ static void skl_tplg_update_module_params(struct snd_soc_dapm_widget *w,
 	skl_dump_mconfig(skl, m_cfg);
 }
 
-/*
- * some modules can have multiple params set from user control and
- * need to be set after module is initialized. If set_param flag is
- * set module params will be done after module is initialised.
- */
+ 
 static int skl_tplg_set_module_params(struct snd_soc_dapm_widget *w,
 						struct skl_dev *skl)
 {
@@ -419,12 +382,7 @@ static int skl_tplg_set_module_params(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/*
- * some module param can set from user control and this is required as
- * when module is initailzed. if module param is required in init it is
- * identifed by set_param flag. if set_param flag is not set, then this
- * parameter needs to set as part of module init.
- */
+ 
 static int skl_tplg_set_module_init_data(struct snd_soc_dapm_widget *w)
 {
 	const struct snd_kcontrol_new *k;
@@ -468,11 +426,7 @@ static int skl_tplg_module_prepare(struct skl_dev *skl, struct skl_pipe *pipe,
 	return 0;
 }
 
-/*
- * Inside a pipe instance, we can have various modules. These modules need
- * to instantiated in DSP by invoking INIT_MODULE IPC, which is achieved by
- * skl_init_module() routine, so invoke that for all modules in a pipeline
- */
+ 
 static int
 skl_tplg_init_pipe_modules(struct skl_dev *skl, struct skl_pipe *pipe)
 {
@@ -487,7 +441,7 @@ skl_tplg_init_pipe_modules(struct skl_dev *skl, struct skl_pipe *pipe)
 		w = w_module->w;
 		mconfig = w->priv;
 
-		/* check if module ids are populated */
+		 
 		if (mconfig->id.module_id < 0) {
 			dev_err(skl->dev,
 					"module %pUL id not populated\n",
@@ -506,18 +460,15 @@ skl_tplg_init_pipe_modules(struct skl_dev *skl, struct skl_pipe *pipe)
 				return ret;
 		}
 
-		/* prepare the DMA if the module is gateway cpr */
+		 
 		ret = skl_tplg_module_prepare(skl, pipe, w, mconfig);
 		if (ret < 0)
 			return ret;
 
-		/* update blob if blob is null for be with default value */
+		 
 		skl_tplg_update_be_blob(w, skl);
 
-		/*
-		 * apply fix/conversion to module params based on
-		 * FE/BE params
-		 */
+		 
 		skl_tplg_update_module_params(w, skl);
 		uuid_mod = (guid_t *)mconfig->guid;
 		mconfig->id.pvt_id = skl_get_pvt_id(skl, uuid_mod,
@@ -572,13 +523,13 @@ static int skl_tplg_unload_pipe_modules(struct skl_dev *skl,
 
 		ret = skl_dsp_put_core(skl->dsp, mconfig->core_id);
 		if (ret < 0) {
-			/* don't return; continue with other modules */
+			 
 			dev_err(skl->dev, "Failed to sleep core %d ret=%d\n",
 				mconfig->core_id, ret);
 		}
 	}
 
-	/* no modules to unload in this path, so return */
+	 
 	return ret;
 }
 
@@ -588,13 +539,7 @@ static void skl_tplg_set_pipe_config_idx(struct skl_pipe *pipe, int idx)
 	pipe->memory_pages = pipe->configs[idx].mem_pages;
 }
 
-/*
- * Here, we select pipe format based on the pipe type and pipe
- * direction to determine the current config index for the pipeline.
- * The config index is then used to select proper module resources.
- * Intermediate pipes currently have a fixed format hence we select the
- * 0th configuratation by default for such pipes.
- */
+ 
 static int
 skl_tplg_get_pipe_config(struct skl_dev *skl, struct skl_module_cfg *mconfig)
 {
@@ -643,13 +588,7 @@ skl_tplg_get_pipe_config(struct skl_dev *skl, struct skl_module_cfg *mconfig)
 	return -EINVAL;
 }
 
-/*
- * Mixer module represents a pipeline. So in the Pre-PMU event of mixer we
- * need create the pipeline. So we do following:
- *   - Create the pipeline
- *   - Initialize the modules in pipeline
- *   - finally bind all modules together
- */
+ 
 static int skl_tplg_mixer_dapm_pre_pmu_event(struct snd_soc_dapm_widget *w,
 							struct skl_dev *skl)
 {
@@ -664,20 +603,17 @@ static int skl_tplg_mixer_dapm_pre_pmu_event(struct snd_soc_dapm_widget *w,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Create a list of modules for pipe.
-	 * This list contains modules from source to sink
-	 */
+	 
 	ret = skl_create_pipeline(skl, mconfig->pipe);
 	if (ret < 0)
 		return ret;
 
-	/* Init all pipe modules from source to sink */
+	 
 	ret = skl_tplg_init_pipe_modules(skl, s_pipe);
 	if (ret < 0)
 		return ret;
 
-	/* Bind modules from source to sink */
+	 
 	list_for_each_entry(w_module, &s_pipe->w_list, node) {
 		dst_module = w_module->w->priv;
 
@@ -693,10 +629,7 @@ static int skl_tplg_mixer_dapm_pre_pmu_event(struct snd_soc_dapm_widget *w,
 		src_module = dst_module;
 	}
 
-	/*
-	 * When the destination module is initialized, check for these modules
-	 * in deferred bind list. If found, bind them.
-	 */
+	 
 	list_for_each_entry(w_module, &s_pipe->w_list, node) {
 		if (list_empty(&skl->bind_list))
 			break;
@@ -735,13 +668,7 @@ static int skl_fill_sink_instance_id(struct skl_dev *skl, u32 *params,
 
 	return 0;
 }
-/*
- * Some modules require params to be set after the module is bound to
- * all pins connected.
- *
- * The module provider initializes set_param flag for such modules and we
- * send params after binding
- */
+ 
 static int skl_tplg_set_module_bind_params(struct snd_soc_dapm_widget *w,
 			struct skl_module_cfg *mcfg, struct skl_dev *skl)
 {
@@ -753,10 +680,7 @@ static int skl_tplg_set_module_bind_params(struct snd_soc_dapm_widget *w,
 	struct skl_specific_cfg *sp_cfg;
 	u32 *params;
 
-	/*
-	 * check all out/in pins are in bind state.
-	 * if so set the module param
-	 */
+	 
 	for (i = 0; i < mcfg->module->max_output_pins; i++) {
 		if (mcfg->m_out_pin[i].pin_state != SKL_PIN_BIND_DONE)
 			return 0;
@@ -857,21 +781,14 @@ static int skl_tplg_find_moduleid_from_uuid(struct skl_dev *skl,
 	return 0;
 }
 
-/*
- * Retrieve the module id from UUID mentioned in the
- * post bind params
- */
+ 
 void skl_tplg_add_moduleid_in_bind_params(struct skl_dev *skl,
 				struct snd_soc_dapm_widget *w)
 {
 	struct skl_module_cfg *mconfig = w->priv;
 	int i;
 
-	/*
-	 * Post bind params are used for only for KPB
-	 * to set copier instances to drain the data
-	 * in fast mode
-	 */
+	 
 	if (mconfig->m_type != SKL_MODULE_TYPE_KPB)
 		return;
 
@@ -891,7 +808,7 @@ static int skl_tplg_module_add_deferred_bind(struct skl_dev *skl,
 	struct skl_module_deferred_bind *m_list, *modules;
 	int i;
 
-	/* only supported for module with static pin connection */
+	 
 	for (i = 0; i < dst->module->max_input_pins; i++) {
 		struct skl_module_pin *pin = &dst->m_in_pin[i];
 
@@ -946,27 +863,14 @@ static int skl_tplg_bind_sinks(struct snd_soc_dapm_widget *w,
 		if (!is_skl_dsp_widget_type(p->sink, skl->dev))
 			return skl_tplg_bind_sinks(p->sink, skl, src_w, src_mconfig);
 
-		/*
-		 * here we will check widgets in sink pipelines, so that
-		 * can be any widgets type and we are only interested if
-		 * they are ones used for SKL so check that first
-		 */
+		 
 		if ((p->sink->priv != NULL) &&
 				is_skl_dsp_widget_type(p->sink, skl->dev)) {
 
 			sink = p->sink;
 			sink_mconfig = sink->priv;
 
-			/*
-			 * Modules other than PGA leaf can be connected
-			 * directly or via switch to a module in another
-			 * pipeline. EX: reference path
-			 * when the path is enabled, the dst module that needs
-			 * to be bound may not be initialized. if the module is
-			 * not initialized, add these modules in the deferred
-			 * bind list and when the dst module is initialised,
-			 * bind this module to the dst_module in deferred list.
-			 */
+			 
 			if (((src_mconfig->m_state == SKL_MODULE_INIT_DONE)
 				&& (sink_mconfig->m_state == SKL_MODULE_UNINIT))) {
 
@@ -983,18 +887,18 @@ static int skl_tplg_bind_sinks(struct snd_soc_dapm_widget *w,
 				sink_mconfig->m_state == SKL_MODULE_UNINIT)
 				continue;
 
-			/* Bind source to sink, mixin is always source */
+			 
 			ret = skl_bind_modules(skl, src_mconfig, sink_mconfig);
 			if (ret)
 				return ret;
 
-			/* set module params after bind */
+			 
 			skl_tplg_set_module_bind_params(src_w,
 					src_mconfig, skl);
 			skl_tplg_set_module_bind_params(sink,
 					sink_mconfig, skl);
 
-			/* Start sinks pipe first */
+			 
 			if (sink_mconfig->pipe->state != SKL_PIPE_STARTED) {
 				if (sink_mconfig->pipe->conn_type !=
 							SKL_PIPE_CONN_TYPE_FE)
@@ -1012,16 +916,7 @@ static int skl_tplg_bind_sinks(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/*
- * A PGA represents a module in a pipeline. So in the Pre-PMU event of PGA
- * we need to do following:
- *   - Bind to sink pipeline
- *      Since the sink pipes can be running and we don't get mixer event on
- *      connect for already running mixer, we need to find the sink pipes
- *      here and bind to them. This way dynamic connect works.
- *   - Start sink pipeline, if not running
- *   - Then run current pipe
- */
+ 
 static int skl_tplg_pga_dapm_pre_pmu_event(struct snd_soc_dapm_widget *w,
 							struct skl_dev *skl)
 {
@@ -1030,16 +925,12 @@ static int skl_tplg_pga_dapm_pre_pmu_event(struct snd_soc_dapm_widget *w,
 
 	src_mconfig = w->priv;
 
-	/*
-	 * find which sink it is connected to, bind with the sink,
-	 * if sink is not started, start sink pipe first, then start
-	 * this pipe
-	 */
+	 
 	ret = skl_tplg_bind_sinks(w, skl, w, src_mconfig);
 	if (ret)
 		return ret;
 
-	/* Start source pipe last after starting all sinks */
+	 
 	if (src_mconfig->pipe->conn_type != SKL_PIPE_CONN_TYPE_FE)
 		return skl_run_pipe(skl, src_mconfig->pipe);
 
@@ -1060,11 +951,7 @@ static struct snd_soc_dapm_widget *skl_get_src_dsp_widget(
 		dev_dbg(skl->dev, "sink widget=%s\n", w->name);
 		dev_dbg(skl->dev, "src widget=%s\n", p->source->name);
 
-		/*
-		 * here we will check widgets in sink pipelines, so that can
-		 * be any widgets type and we are only interested if they are
-		 * ones used for SKL so check that first
-		 */
+		 
 		if ((p->source->priv != NULL) &&
 				is_skl_dsp_widget_type(p->source, skl->dev)) {
 			return p->source;
@@ -1077,15 +964,7 @@ static struct snd_soc_dapm_widget *skl_get_src_dsp_widget(
 	return NULL;
 }
 
-/*
- * in the Post-PMU event of mixer we need to do following:
- *   - Check if this pipe is running
- *   - if not, then
- *	- bind this pipeline to its source pipeline
- *	  if source pipe is already running, this means it is a dynamic
- *	  connection and we need to bind only to that pipe
- *	- start this pipeline
- */
+ 
 static int skl_tplg_mixer_dapm_post_pmu_event(struct snd_soc_dapm_widget *w,
 							struct skl_dev *skl)
 {
@@ -1097,21 +976,14 @@ static int skl_tplg_mixer_dapm_post_pmu_event(struct snd_soc_dapm_widget *w,
 	sink = w;
 	sink_mconfig = sink->priv;
 
-	/*
-	 * If source pipe is already started, that means source is driving
-	 * one more sink before this sink got connected, Since source is
-	 * started, bind this sink to source and start this pipe.
-	 */
+	 
 	source = skl_get_src_dsp_widget(w, skl);
 	if (source != NULL) {
 		src_mconfig = source->priv;
 		sink_mconfig = sink->priv;
 		src_pipe_started = 1;
 
-		/*
-		 * check pipe state, then no need to bind or start the
-		 * pipe
-		 */
+		 
 		if (src_mconfig->pipe->state != SKL_PIPE_STARTED)
 			src_pipe_started = 0;
 	}
@@ -1121,7 +993,7 @@ static int skl_tplg_mixer_dapm_post_pmu_event(struct snd_soc_dapm_widget *w,
 		if (ret)
 			return ret;
 
-		/* set module params after bind */
+		 
 		skl_tplg_set_module_bind_params(source, src_mconfig, skl);
 		skl_tplg_set_module_bind_params(sink, sink_mconfig, skl);
 
@@ -1132,12 +1004,7 @@ static int skl_tplg_mixer_dapm_post_pmu_event(struct snd_soc_dapm_widget *w,
 	return ret;
 }
 
-/*
- * in the Pre-PMD event of mixer we need to do following:
- *   - Stop the pipe
- *   - find the source connections and remove that from dapm_path_list
- *   - unbind with source pipelines if still connected
- */
+ 
 static int skl_tplg_mixer_dapm_pre_pmd_event(struct snd_soc_dapm_widget *w,
 							struct skl_dev *skl)
 {
@@ -1146,7 +1013,7 @@ static int skl_tplg_mixer_dapm_pre_pmd_event(struct snd_soc_dapm_widget *w,
 
 	sink_mconfig = w->priv;
 
-	/* Stop the pipe */
+	 
 	ret = skl_stop_pipe(skl, sink_mconfig->pipe);
 	if (ret)
 		return ret;
@@ -1165,12 +1032,7 @@ static int skl_tplg_mixer_dapm_pre_pmd_event(struct snd_soc_dapm_widget *w,
 	return ret;
 }
 
-/*
- * in the Post-PMD event of mixer we need to do following:
- *   - Unbind the modules within the pipeline
- *   - Delete the pipeline (modules are not required to be explicitly
- *     deleted, pipeline delete is enough here
- */
+ 
 static int skl_tplg_mixer_dapm_post_pmd_event(struct snd_soc_dapm_widget *w,
 							struct skl_dev *skl)
 {
@@ -1190,19 +1052,13 @@ static int skl_tplg_mixer_dapm_post_pmd_event(struct snd_soc_dapm_widget *w,
 		src_module = w_module->w->priv;
 
 		list_for_each_entry_safe(modules, tmp, &skl->bind_list, node) {
-			/*
-			 * When the destination module is deleted, Unbind the
-			 * modules from deferred bind list.
-			 */
+			 
 			if (modules->dst == src_module) {
 				skl_unbind_modules(skl, modules->src,
 						modules->dst);
 			}
 
-			/*
-			 * When the source module is deleted, remove this entry
-			 * from the deferred bind list.
-			 */
+			 
 			if (modules->src == src_module) {
 				list_del(&modules->node);
 				modules->src = NULL;
@@ -1234,11 +1090,7 @@ static int skl_tplg_mixer_dapm_post_pmd_event(struct snd_soc_dapm_widget *w,
 	return skl_tplg_unload_pipe_modules(skl, s_pipe);
 }
 
-/*
- * in the Post-PMD event of PGA we need to do following:
- *   - Stop the pipeline
- *   - In source pipe is connected, unbind with source pipelines
- */
+ 
 static int skl_tplg_pga_dapm_post_pmd_event(struct snd_soc_dapm_widget *w,
 							struct skl_dev *skl)
 {
@@ -1247,7 +1099,7 @@ static int skl_tplg_pga_dapm_post_pmd_event(struct snd_soc_dapm_widget *w,
 
 	src_mconfig = w->priv;
 
-	/* Stop the pipe since this is a mixin module */
+	 
 	ret = skl_stop_pipe(skl, src_mconfig->pipe);
 	if (ret)
 		return ret;
@@ -1257,10 +1109,7 @@ static int skl_tplg_pga_dapm_post_pmd_event(struct snd_soc_dapm_widget *w,
 			sink_mconfig = src_mconfig->m_out_pin[i].tgt_mcfg;
 			if (!sink_mconfig)
 				continue;
-			/*
-			 * This is a connecter and if path is found that means
-			 * unbind between source and sink has not happened yet
-			 */
+			 
 			ret = skl_unbind_modules(skl, src_mconfig,
 							sink_mconfig);
 		}
@@ -1269,12 +1118,7 @@ static int skl_tplg_pga_dapm_post_pmd_event(struct snd_soc_dapm_widget *w,
 	return ret;
 }
 
-/*
- * In modelling, we assume there will be ONLY one mixer in a pipeline. If a
- * second one is required that is created as another pipe entity.
- * The mixer is responsible for pipe management and represent a pipeline
- * instance
- */
+ 
 static int skl_tplg_mixer_event(struct snd_soc_dapm_widget *w,
 				struct snd_kcontrol *k, int event)
 {
@@ -1298,12 +1142,7 @@ static int skl_tplg_mixer_event(struct snd_soc_dapm_widget *w,
 	return 0;
 }
 
-/*
- * In modelling, we assumed rest of the modules in pipeline are PGA. But we
- * are interested in last PGA (leaf PGA) in a pipeline to disconnect with
- * the sink when it is running (two FE to one BE or one FE to two BE)
- * scenarios
- */
+ 
 static int skl_tplg_pga_event(struct snd_soc_dapm_widget *w,
 			struct snd_kcontrol *k, int event)
 
@@ -1398,10 +1237,10 @@ static int skl_tplg_tlv_control_get(struct snd_kcontrol *kcontrol,
 		skl_get_module_params(skl, (u32 *)bc->params,
 				      bc->size, bc->param_id, mconfig);
 
-	/* decrement size for TLV header */
+	 
 	size -= 2 * sizeof(u32);
 
-	/* check size as we don't want to send kernel data */
+	 
 	if (size > bc->max)
 		size = bc->max;
 
@@ -1499,11 +1338,11 @@ static int skl_tplg_mic_control_set(struct snd_kcontrol *kcontrol,
 	mconfig->dmic_ch_type = ch_type;
 	mconfig->dmic_ch_combo_index = ucontrol->value.enumerated.item[0];
 
-	/* enum control index 0 is INVALID, so no channels to be set */
+	 
 	if (mconfig->dmic_ch_combo_index == 0)
 		return 0;
 
-	/* No valid channel selection map for index 0, so offset by 1 */
+	 
 	index = mconfig->dmic_ch_combo_index - 1;
 
 	switch (ch_type) {
@@ -1543,7 +1382,7 @@ static int skl_tplg_mic_control_set(struct snd_kcontrol *kcontrol,
 
 	}
 
-	/* channel type enum map to number of chanels for that type */
+	 
 	for (out_ch = 0; out_ch < ch_type; out_ch++) {
 		in_ch = list[out_ch];
 		mic_cfg.blob[out_ch][in_ch] = SKL_DEFAULT_MIC_SEL_GAIN;
@@ -1552,11 +1391,7 @@ static int skl_tplg_mic_control_set(struct snd_kcontrol *kcontrol,
 	return skl_fill_mic_sel_params(mconfig, &mic_cfg, w->dapm->dev);
 }
 
-/*
- * Fill the dma id for host and link. In case of passthrough
- * pipeline, this will both host and link in the same
- * pipeline, so need to copy the link and host based on dev_type
- */
+ 
 static void skl_tplg_fill_dma_id(struct skl_module_cfg *mcfg,
 				struct skl_pipe_params *params)
 {
@@ -1589,12 +1424,7 @@ static void skl_tplg_fill_dma_id(struct skl_module_cfg *mcfg,
 	}
 }
 
-/*
- * The FE params are passed by hw_params of the DAI.
- * On hw_params, the params are stored in Gateway module of the FE and we
- * need to calculate the format in DSP module configuration, that
- * conversion is done here
- */
+ 
 int skl_tplg_update_pipe_params(struct device *dev,
 			struct skl_module_cfg *mconfig,
 			struct skl_pipe_params *params)
@@ -1617,15 +1447,12 @@ int skl_tplg_update_pipe_params(struct device *dev,
 	else
 		format = &mconfig->module->formats[mconfig->fmt_idx].outputs[0].fmt;
 
-	/* set the hw_params */
+	 
 	format->s_freq = params->s_freq;
 	format->channels = params->ch;
 	format->valid_bit_depth = skl_get_bit_depth(params->s_fmt);
 
-	/*
-	 * 16 bit is 16 bit container whereas 24 bit is in 32 bit
-	 * container so update bit depth accordingly
-	 */
+	 
 	switch (format->valid_bit_depth) {
 	case SKL_DEPTH_16BIT:
 		format->bit_depth = format->valid_bit_depth;
@@ -1655,11 +1482,7 @@ int skl_tplg_update_pipe_params(struct device *dev,
 	return 0;
 }
 
-/*
- * Query the module config for the FE DAI
- * This is used to find the hw_params set for that DAI and apply to FE
- * pipeline
- */
+ 
 struct skl_module_cfg *
 skl_tplg_fe_get_cpr_module(struct snd_soc_dai *dai, int stream)
 {
@@ -1782,13 +1605,7 @@ static u8 skl_tplg_be_link_type(int dev_type)
 	return ret;
 }
 
-/*
- * Fill the BE gateway parameters
- * The BE gateway expects a blob of parameters which are kept in the ACPI
- * NHLT blob, so query the blob for interface type (i2s/pdm) and instance.
- * The port can have multiple settings so pick based on the pipeline
- * parameters
- */
+ 
 static int skl_tplg_be_fill_pipe_params(struct snd_soc_dai *dai,
 				struct skl_module_cfg *mconfig,
 				struct skl_pipe_params *params)
@@ -1818,7 +1635,7 @@ static int skl_tplg_be_fill_pipe_params(struct snd_soc_dai *dai,
 	else
 		pipe_fmt = &pipe->configs[pipe->cur_config_idx].in_fmt;
 
-	/* update the blob based on virtual bus_id*/
+	 
 	cfg = intel_nhlt_get_endpoint_blob(dai->dev, skl->nhlt,
 					mconfig->vbus_id, link_type,
 					pipe_fmt->bps, params->s_cont,
@@ -1893,11 +1710,7 @@ static int skl_tplg_be_set_sink_pipe_params(struct snd_soc_dai *dai,
 	return ret;
 }
 
-/*
- * BE hw_params can be a source parameters (capture) or sink parameters
- * (playback). Based on sink and source we need to either find the source
- * list or the sink list and set the pipeline parameters
- */
+ 
 int skl_tplg_be_update_params(struct snd_soc_dai *dai,
 				struct skl_pipe_params *params)
 {
@@ -2025,10 +1838,7 @@ static int skl_tplg_fill_pipe_tkn(struct device *dev,
 	return 0;
 }
 
-/*
- * Add pipeline by parsing the relevant tokens
- * Return an existing pipe if the pipe already exists.
- */
+ 
 static int skl_tplg_add_pipe(struct device *dev,
 		struct skl_module_cfg *mconfig, struct skl_dev *skl,
 		struct snd_soc_tplg_vendor_value_elem *tkn_elem)
@@ -2114,10 +1924,7 @@ static int skl_tplg_fill_pin(struct device *dev,
 	return 0;
 }
 
-/*
- * Parse for pin config specific tokens to fill up the
- * module private data
- */
+ 
 static int skl_tplg_fill_pins_info(struct device *dev,
 		struct skl_module_cfg *mconfig,
 		struct snd_soc_tplg_vendor_value_elem *tkn_elem,
@@ -2150,10 +1957,7 @@ static int skl_tplg_fill_pins_info(struct device *dev,
 	return 0;
 }
 
-/*
- * Fill up input/output module config format based
- * on the direction
- */
+ 
 static int skl_tplg_fill_fmt(struct device *dev,
 		struct skl_module_fmt *dst_fmt,
 		u32 tkn, u32 value)
@@ -2234,10 +2038,7 @@ static void skl_tplg_fill_pin_dynamic_val(
 		mpin[i].is_dynamic = value;
 }
 
-/*
- * Resource table in the manifest has pin specific resources
- * like pin and pin buffer size
- */
+ 
 static int skl_tplg_manifest_pin_res_tkn(struct device *dev,
 		struct snd_soc_tplg_vendor_value_elem *tkn_elem,
 		struct skl_module_res *res, int pin_idx, int dir)
@@ -2275,10 +2076,7 @@ static int skl_tplg_manifest_pin_res_tkn(struct device *dev,
 	return 0;
 }
 
-/*
- * Fill module specific resources from the manifest's resource
- * table like CPS, DMA size, mem_pages.
- */
+ 
 static int skl_tplg_fill_res_tkn(struct device *dev,
 		struct snd_soc_tplg_vendor_value_elem *tkn_elem,
 		struct skl_module_res *res,
@@ -2320,7 +2118,7 @@ static int skl_tplg_fill_res_tkn(struct device *dev,
 
 	case SKL_TKN_MM_U32_CPS:
 	case SKL_TKN_U32_MAX_MCPS:
-		/* ignore unused tokens */
+		 
 		break;
 
 	default:
@@ -2333,9 +2131,7 @@ static int skl_tplg_fill_res_tkn(struct device *dev,
 	return tkn_count;
 }
 
-/*
- * Parse tokens to fill up the module private data
- */
+ 
 static int skl_tplg_get_token(struct device *dev,
 		struct snd_soc_tplg_vendor_value_elem *tkn_elem,
 		struct skl_dev *skl, struct skl_module_cfg *mconfig)
@@ -2349,11 +2145,7 @@ static int skl_tplg_get_token(struct device *dev,
 	int res_idx = mconfig->res_idx;
 	int fmt_idx = mconfig->fmt_idx;
 
-	/*
-	 * If the manifest structure contains no modules, fill all
-	 * the module data to 0th index.
-	 * res_idx and fmt_idx are default set to 0.
-	 */
+	 
 	if (skl->nr_modules == 0) {
 		res = &mconfig->module->resources[res_idx];
 		iface = &mconfig->module->formats[fmt_idx];
@@ -2502,11 +2294,7 @@ static int skl_tplg_get_token(struct device *dev,
 		mconfig->mod_cfg[conf_idx].fmt_idx = tkn_elem->value;
 		break;
 
-	/*
-	 * SKL_TKN_U32_DIR_PIN_COUNT token has the value for both
-	 * direction and the pin count. The first four bits represent
-	 * direction and next four the pin count.
-	 */
+	 
 	case SKL_TKN_U32_DIR_PIN_COUNT:
 		dir = tkn_elem->value & SKL_IN_DIR_BIT_MASK;
 		pin_index = (tkn_elem->value &
@@ -2590,10 +2378,7 @@ static int skl_tplg_get_token(struct device *dev,
 	return tkn_count;
 }
 
-/*
- * Parse the vendor array for specific tokens to construct
- * module private data
- */
+ 
 static int skl_tplg_get_tokens(struct device *dev,
 		char *pvt_data,	struct skl_dev *skl,
 		struct skl_module_cfg *mconfig, int block_size)
@@ -2657,10 +2442,7 @@ static int skl_tplg_get_tokens(struct device *dev,
 	return off;
 }
 
-/*
- * Every data block is preceded by a descriptor to read the number
- * of data blocks, they type of the block and it's size
- */
+ 
 static int skl_tplg_get_desc_blocks(struct device *dev,
 		struct snd_soc_tplg_vendor_array *array)
 {
@@ -2682,14 +2464,9 @@ static int skl_tplg_get_desc_blocks(struct device *dev,
 	return -EINVAL;
 }
 
-/* Functions to parse private data from configuration file format v4 */
+ 
 
-/*
- * Add pipeline from topology binary into driver pipeline list
- *
- * If already added we return that instance
- * Otherwise we create a new instance and add into driver list
- */
+ 
 static int skl_tplg_add_pipe_v4(struct device *dev,
 			struct skl_module_cfg *mconfig, struct skl_dev *skl,
 			struct skl_dfw_v4_pipe *dfw_pipe)
@@ -2862,12 +2639,7 @@ static int skl_tplg_get_caps_data(struct device *dev, char *data,
 	return mconfig->formats_config[idx].caps_size;
 }
 
-/*
- * Parse the private data for the token and corresponding value.
- * The private data can have multiple data blocks. So, a data block
- * is preceded by a descriptor for number of blocks and a descriptor
- * for the type and size of the suceeding data block.
- */
+ 
 static int skl_tplg_get_pvt_data(struct snd_soc_tplg_dapm_widget *tplg_w,
 				struct skl_dev *skl, struct device *dev,
 				struct skl_module_cfg *mconfig)
@@ -2877,14 +2649,11 @@ static int skl_tplg_get_pvt_data(struct snd_soc_tplg_dapm_widget *tplg_w,
 	char *data;
 	int ret;
 
-	/*
-	 * v4 configuration files have a valid UUID at the start of
-	 * the widget's private data.
-	 */
+	 
 	if (uuid_is_valid((char *)tplg_w->priv.data))
 		return skl_tplg_get_pvt_data_v4(tplg_w, skl, dev, mconfig);
 
-	/* Read the NUM_DATA_BLOCKS descriptor */
+	 
 	array = (struct snd_soc_tplg_vendor_array *)tplg_w->priv.data;
 	ret = skl_tplg_get_desc_blocks(dev, array);
 	if (ret < 0)
@@ -2892,7 +2661,7 @@ static int skl_tplg_get_pvt_data(struct snd_soc_tplg_dapm_widget *tplg_w,
 	num_blocks = ret;
 
 	off += array->size;
-	/* Read the BLOCK_TYPE and BLOCK_SIZE descriptor */
+	 
 	while (num_blocks > 0) {
 		array = (struct snd_soc_tplg_vendor_array *)
 				(tplg_w->priv.data + off);
@@ -2978,13 +2747,7 @@ void skl_cleanup_resources(struct skl_dev *skl)
 	skl_clear_module_cnt(skl->dsp);
 }
 
-/*
- * Topology core widget load callback
- *
- * This is used to save the private data for each widget which gives
- * information to the driver about module and pipeline parameters which DSP
- * FW expects like ids, resource values, formats etc
- */
+ 
 static int skl_tplg_widget_load(struct snd_soc_component *cmpnt, int index,
 				struct snd_soc_dapm_widget *w,
 				struct snd_soc_tplg_dapm_widget *tplg_w)
@@ -3011,16 +2774,13 @@ static int skl_tplg_widget_load(struct snd_soc_component *cmpnt, int index,
 
 	w->priv = mconfig;
 
-	/*
-	 * module binary can be loaded later, so set it to query when
-	 * module is load for a use case
-	 */
+	 
 	mconfig->id.module_id = -1;
 
-	/* To provide backward compatibility, set default as SKL_PARAM_INIT */
+	 
 	mconfig->fmt_cfg_idx = SKL_PARAM_INIT;
 
-	/* Parse private data for tuples */
+	 
 	ret = skl_tplg_get_pvt_data(tplg_w, skl, bus->dev, mconfig);
 	if (ret < 0)
 		return ret;
@@ -3057,7 +2817,7 @@ static int skl_init_algo_data(struct device *dev, struct soc_bytes_ext *be,
 	if (!ac)
 		return -ENOMEM;
 
-	/* Fill private data */
+	 
 	ac->max = dfw_ac->max;
 	ac->param_id = dfw_ac->param_id;
 	ac->set_params = dfw_ac->set_params;
@@ -3125,11 +2885,7 @@ static int skl_tplg_control_load(struct snd_soc_component *cmpnt,
 				skl_init_enum_data(bus->dev, se, tplg_ec);
 		}
 
-		/*
-		 * now that the control initializations are done, remove
-		 * write permission for the DMIC configuration enums to
-		 * avoid conflicts between NHLT settings and user interaction
-		 */
+		 
 
 		if (hdr->ops.get == SKL_CONTROL_TYPE_MULTI_IO_SELECT_DMIC)
 			kctl->access = SNDRV_CTL_ELEM_ACCESS_READ;
@@ -3449,10 +3205,7 @@ static int skl_tplg_get_int_tkn(struct device *dev,
 	return tkn_count;
 }
 
-/*
- * Fill the manifest structure by parsing the tokens based on the
- * type.
- */
+ 
 static int skl_tplg_get_manifest_tkn(struct device *dev,
 		char *pvt_data, struct skl_dev *skl,
 		int block_size)
@@ -3519,10 +3272,7 @@ static int skl_tplg_get_manifest_tkn(struct device *dev,
 	return off;
 }
 
-/*
- * Parse manifest private data for tokens. The private data block is
- * preceded by descriptors for type and size of data block.
- */
+ 
 static int skl_tplg_get_manifest_data(struct snd_soc_tplg_manifest *manifest,
 			struct device *dev, struct skl_dev *skl)
 {
@@ -3531,7 +3281,7 @@ static int skl_tplg_get_manifest_data(struct snd_soc_tplg_manifest *manifest,
 	char *data;
 	int ret;
 
-	/* Read the NUM_DATA_BLOCKS descriptor */
+	 
 	array = (struct snd_soc_tplg_vendor_array *)manifest->priv.data;
 	ret = skl_tplg_get_desc_blocks(dev, array);
 	if (ret < 0)
@@ -3539,7 +3289,7 @@ static int skl_tplg_get_manifest_data(struct snd_soc_tplg_manifest *manifest,
 	num_blocks = ret;
 
 	off += array->size;
-	/* Read the BLOCK_TYPE and BLOCK_SIZE descriptor */
+	 
 	while (num_blocks > 0) {
 		array = (struct snd_soc_tplg_vendor_array *)
 				(manifest->priv.data + off);
@@ -3585,7 +3335,7 @@ static int skl_manifest_load(struct snd_soc_component *cmpnt, int index,
 	struct hdac_bus *bus = snd_soc_component_get_drvdata(cmpnt);
 	struct skl_dev *skl = bus_to_skl(bus);
 
-	/* proceed only if we have private data defined */
+	 
 	if (manifest->priv.size == 0)
 		return 0;
 
@@ -3651,12 +3401,7 @@ static struct snd_soc_tplg_ops skl_tplg_ops  = {
 	.complete = skl_tplg_complete,
 };
 
-/*
- * A pipe can have multiple modules, each of them will be a DAPM widget as
- * well. While managing a pipeline we need to get the list of all the
- * widgets in a pipelines, so this helper - skl_tplg_create_pipe_widget_list()
- * helps to get the SKL type widgets in that pipeline
- */
+ 
 static int skl_tplg_create_pipe_widget_list(struct snd_soc_component *component)
 {
 	struct snd_soc_dapm_widget *w;
@@ -3705,9 +3450,7 @@ static void skl_tplg_set_pipe_type(struct skl_dev *skl, struct skl_pipe *pipe)
 		pipe->passthru = false;
 }
 
-/*
- * SKL topology init routine
- */
+ 
 int skl_tplg_init(struct snd_soc_component *component, struct hdac_bus *bus)
 {
 	int ret;
@@ -3769,6 +3512,6 @@ void skl_tplg_exit(struct snd_soc_component *component, struct hdac_bus *bus)
 	list_for_each_entry_safe(ppl, tmp, &skl->ppl_list, node)
 		list_del(&ppl->node);
 
-	/* clean up topology */
+	 
 	snd_soc_tplg_component_remove(component);
 }

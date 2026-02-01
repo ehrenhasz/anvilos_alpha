@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/highmem.h>
@@ -194,20 +192,20 @@ ivpu_mmu_context_map_page(struct ivpu_device *vdev, struct ivpu_mmu_context *ctx
 	int pmd_idx = FIELD_GET(IVPU_MMU_PMD_INDEX_MASK, vpu_addr);
 	int pte_idx = FIELD_GET(IVPU_MMU_PTE_INDEX_MASK, vpu_addr);
 
-	/* Allocate PUD - second level page table if needed */
+	 
 	if (!ivpu_mmu_ensure_pud(vdev, &ctx->pgtable, pgd_idx))
 		return -ENOMEM;
 
-	/* Allocate PMD - third level page table if needed */
+	 
 	if (!ivpu_mmu_ensure_pmd(vdev, &ctx->pgtable, pgd_idx, pud_idx))
 		return -ENOMEM;
 
-	/* Allocate PTE - fourth level page table if needed */
+	 
 	pte = ivpu_mmu_ensure_pte(vdev, &ctx->pgtable, pgd_idx, pud_idx, pmd_idx);
 	if (!pte)
 		return -ENOMEM;
 
-	/* Update PTE */
+	 
 	pte[pte_idx] = dma_addr | prot;
 
 	return 0;
@@ -245,7 +243,7 @@ static void ivpu_mmu_context_unmap_page(struct ivpu_mmu_context *ctx, u64 vpu_ad
 	int pmd_idx = FIELD_GET(IVPU_MMU_PMD_INDEX_MASK, vpu_addr);
 	int pte_idx = FIELD_GET(IVPU_MMU_PTE_INDEX_MASK, vpu_addr);
 
-	/* Update PTE with dummy physical address and clear flags */
+	 
 	ctx->pgtable.pte_ptrs[pgd_idx][pud_idx][pmd_idx][pte_idx] = IVPU_MMU_ENTRY_INVALID;
 }
 
@@ -255,7 +253,7 @@ ivpu_mmu_context_flush_page_tables(struct ivpu_mmu_context *ctx, u64 vpu_addr, s
 	struct ivpu_mmu_pgtable *pgtable = &ctx->pgtable;
 	u64 end_addr = vpu_addr + size;
 
-	/* Align to PMD entry (2 MB) */
+	 
 	vpu_addr &= ~(IVPU_MMU_PTE_MAP_SIZE - 1);
 
 	while (vpu_addr < end_addr) {

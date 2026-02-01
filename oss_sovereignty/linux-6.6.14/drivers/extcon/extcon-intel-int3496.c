@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel INT3496 ACPI device extcon driver
- *
- * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
- *
- * Based on android x86 kernel code which is:
- *
- * Copyright (c) 2014, Intel Corporation.
- * Author: David Cohen <david.a.cohen@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/devm-helpers.h>
@@ -46,10 +37,7 @@ static const struct acpi_gpio_params vbus_gpios = { INT3496_GPIO_VBUS_EN, 0, fal
 static const struct acpi_gpio_params mux_gpios = { INT3496_GPIO_USB_MUX, 0, false };
 
 static const struct acpi_gpio_mapping acpi_int3496_default_gpios[] = {
-	/*
-	 * Some platforms have a bug in ACPI GPIO description making IRQ
-	 * GPIO to be output only. Ask the GPIO core to ignore this limit.
-	 */
+	 
 	{ "id-gpios", &id_gpios, 1, ACPI_GPIO_QUIRK_NO_IO_RESTRICTION },
 	{ "vbus-gpios", &vbus_gpios, 1 },
 	{ "mux-gpios", &mux_gpios, 1 },
@@ -83,13 +71,10 @@ static void int3496_do_usb_id(struct work_struct *work)
 		container_of(work, struct int3496_data, work.work);
 	int id = gpiod_get_value_cansleep(data->gpio_usb_id);
 
-	/* id == 1: PERIPHERAL, id == 0: HOST */
+	 
 	dev_dbg(data->dev, "Connected %s cable\n", id ? "PERIPHERAL" : "HOST");
 
-	/*
-	 * Peripheral: set USB mux to peripheral and disable VBUS
-	 * Host: set USB mux to host and enable VBUS
-	 */
+	 
 	if (!IS_ERR(data->gpio_usb_mux))
 		gpiod_direction_output(data->gpio_usb_mux, id);
 
@@ -105,7 +90,7 @@ static irqreturn_t int3496_thread_isr(int irq, void *priv)
 {
 	struct int3496_data *data = priv;
 
-	/* Let the pin settle before processing it */
+	 
 	mod_delayed_work(system_wq, &data->work, DEBOUNCE_TIME);
 
 	return IRQ_HANDLED;
@@ -158,7 +143,7 @@ static int int3496_probe(struct platform_device *pdev)
 	if (IS_ERR(data->gpio_usb_mux))
 		dev_dbg(dev, "can't request USB MUX GPIO\n");
 
-	/* register extcon device */
+	 
 	data->edev = devm_extcon_dev_allocate(dev, int3496_cable);
 	if (IS_ERR(data->edev))
 		return -ENOMEM;
@@ -180,7 +165,7 @@ static int int3496_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* process id-pin so that we start with the right status */
+	 
 	queue_delayed_work(system_wq, &data->work, 0);
 	flush_delayed_work(&data->work);
 

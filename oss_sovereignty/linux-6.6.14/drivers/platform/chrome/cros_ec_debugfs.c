@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Debug logs for the ChromeOS EC
-//
-// Copyright (C) 2015 Google, Inc.
+
+
+
+
 
 #include <linux/circ_buf.h>
 #include <linux/debugfs.h>
@@ -25,39 +25,24 @@
 
 #define CIRC_ADD(idx, size, value)	(((idx) + (value)) & ((size) - 1))
 
-/* waitqueue for log readers */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(cros_ec_debugfs_log_wq);
 
-/**
- * struct cros_ec_debugfs - EC debugging information.
- *
- * @ec: EC device this debugfs information belongs to
- * @dir: dentry for debugfs files
- * @log_buffer: circular buffer for console log information
- * @read_msg: preallocated EC command and buffer to read console log
- * @log_mutex: mutex to protect circular buffer
- * @log_poll_work: recurring task to poll EC for new console log data
- * @panicinfo_blob: panicinfo debugfs blob
- * @notifier_panic: notifier_block to let kernel to flush buffered log
- *                  when EC panic
- */
+ 
 struct cros_ec_debugfs {
 	struct cros_ec_dev *ec;
 	struct dentry *dir;
-	/* EC log */
+	 
 	struct circ_buf log_buffer;
 	struct cros_ec_command *read_msg;
 	struct mutex log_mutex;
 	struct delayed_work log_poll_work;
-	/* EC panicinfo */
+	 
 	struct debugfs_blob_wrapper panicinfo_blob;
 	struct notifier_block notifier_panic;
 };
 
-/*
- * We need to make sure that the EC log buffer on the UART is large enough,
- * so that it is unlikely enough to overlow within LOG_POLL_SEC.
- */
+ 
 static void cros_ec_console_log_work(struct work_struct *__work)
 {
 	struct cros_ec_debugfs *debug_info =
@@ -81,7 +66,7 @@ static void cros_ec_console_log_work(struct work_struct *__work)
 	if (ret < 0)
 		goto resched;
 
-	/* Loop until we have read everything, or there's an error. */
+	 
 	mutex_lock(&debug_info->log_mutex);
 	buf_space = CIRC_SPACE(cb->head, cb->tail, LOG_SIZE);
 
@@ -99,7 +84,7 @@ static void cros_ec_console_log_work(struct work_struct *__work)
 		if (ret < 0)
 			break;
 
-		/* If the buffer is empty, we're done here. */
+		 
 		if (ret == 0 || ec_buffer[0] == '\0')
 			break;
 
@@ -153,9 +138,7 @@ static ssize_t cros_ec_console_log_read(struct file *file, char __user *buf,
 		mutex_lock(&debug_info->log_mutex);
 	}
 
-	/* Only copy until the end of the circular buffer, and let userspace
-	 * retry to get the rest of the data.
-	 */
+	 
 	ret = min_t(size_t, CIRC_CNT_TO_END(cb->head, cb->tail, LOG_SIZE),
 		    count);
 
@@ -223,10 +206,7 @@ static ssize_t cros_ec_pdinfo_read(struct file *file,
 	msg->insize = sizeof(*resp);
 	msg->outsize = sizeof(*params);
 
-	/*
-	 * Read status from all PD ports until failure, typically caused
-	 * by attempting to read status on a port that doesn't exist.
-	 */
+	 
 	for (i = 0; i < EC_USB_PD_MAX_PORTS; ++i) {
 		params->port = i;
 		params->role = 0;
@@ -261,7 +241,7 @@ static bool cros_ec_uptime_is_supported(struct cros_ec_device *ec_dev)
 	if (ret == -EPROTO && msg.cmd.result == EC_RES_INVALID_COMMAND)
 		return false;
 
-	/* Other errors maybe a transient error, do not rule about support. */
+	 
 	return true;
 }
 
@@ -352,10 +332,7 @@ static int cros_ec_create_console_log(struct cros_ec_debugfs *debug_info)
 	int read_params_size;
 	int read_response_size;
 
-	/*
-	 * If the console log feature is not supported return silently and
-	 * don't create the console_log entry.
-	 */
+	 
 	if (!ec_read_version_supported(ec))
 		return 0;
 
@@ -400,9 +377,7 @@ static void cros_ec_cleanup_console_log(struct cros_ec_debugfs *debug_info)
 	}
 }
 
-/*
- * Returns the size of the panicinfo data fetched from the EC
- */
+ 
 static int cros_ec_get_panicinfo(struct cros_ec_device *ec_dev, uint8_t *data,
 				 int data_size)
 {
@@ -447,7 +422,7 @@ static int cros_ec_create_panicinfo(struct cros_ec_debugfs *debug_info)
 		goto free;
 	}
 
-	/* No panic data */
+	 
 	if (ret == 0)
 		goto free;
 
@@ -471,9 +446,9 @@ static int cros_ec_debugfs_panic_event(struct notifier_block *nb,
 		container_of(nb, struct cros_ec_debugfs, notifier_panic);
 
 	if (debug_info->log_buffer.buf) {
-		/* Force log poll work to run immediately */
+		 
 		mod_delayed_work(debug_info->log_poll_work.wq, &debug_info->log_poll_work, 0);
-		/* Block until log poll work finishes */
+		 
 		flush_delayed_work(&debug_info->log_poll_work);
 	}
 

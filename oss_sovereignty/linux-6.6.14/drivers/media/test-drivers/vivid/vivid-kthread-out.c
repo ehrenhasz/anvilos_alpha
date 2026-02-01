@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-kthread-out.h - video/vbi output thread support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -49,16 +45,13 @@ static void vivid_thread_vid_out_tick(struct vivid_dev *dev)
 
 	dprintk(dev, 1, "Video Output Thread Tick\n");
 
-	/* Drop a certain percentage of buffers. */
+	 
 	if (dev->perc_dropped_buffers &&
 	    get_random_u32_below(100) < dev->perc_dropped_buffers)
 		return;
 
 	spin_lock(&dev->slock);
-	/*
-	 * Only dequeue buffer if there is at least one more pending.
-	 * This makes video loopback possible.
-	 */
+	 
 	if (!list_empty(&dev->vid_out_active) &&
 	    !list_is_singular(&dev->vid_out_active)) {
 		vid_out_buf = list_entry(dev->vid_out_active.next,
@@ -89,10 +82,7 @@ static void vivid_thread_vid_out_tick(struct vivid_dev *dev)
 					   &dev->ctrl_hdl_vid_out);
 		vid_out_buf->vb.sequence = dev->vid_out_seq_count;
 		if (dev->field_out == V4L2_FIELD_ALTERNATE) {
-			/*
-			 * The sequence counter counts frames, not fields.
-			 * So divide by two.
-			 */
+			 
 			vid_out_buf->vb.sequence /= 2;
 		}
 		vid_out_buf->vb.vb2_buf.timestamp =
@@ -153,7 +143,7 @@ static int vivid_thread_vid_out(void *data)
 
 	set_freezable();
 
-	/* Resets frame counters */
+	 
 	dev->out_seq_offset = 0;
 	dev->out_seq_count = 0;
 	dev->jiffies_vid_out = jiffies;
@@ -186,19 +176,14 @@ static int vivid_thread_vid_out(void *data)
 		if (dev->field_out == V4L2_FIELD_ALTERNATE)
 			denominator *= 2;
 
-		/* Calculate the number of jiffies since we started streaming */
+		 
 		jiffies_since_start = cur_jiffies - dev->jiffies_vid_out;
-		/* Get the number of buffers streamed since the start */
+		 
 		buffers_since_start = (u64)jiffies_since_start * denominator +
 				      (HZ * numerator) / 2;
 		do_div(buffers_since_start, HZ * numerator);
 
-		/*
-		 * After more than 0xf0000000 (rounded down to a multiple of
-		 * 'jiffies-per-day' to ease jiffies_to_msecs calculation)
-		 * jiffies have passed since we started streaming reset the
-		 * counters and keep track of the sequence offset.
-		 */
+		 
 		if (jiffies_since_start > JIFFIES_RESYNC) {
 			dev->jiffies_vid_out = cur_jiffies;
 			dev->out_seq_offset = buffers_since_start;
@@ -212,25 +197,19 @@ static int vivid_thread_vid_out(void *data)
 		vivid_thread_vid_out_tick(dev);
 		mutex_unlock(&dev->mutex);
 
-		/*
-		 * Calculate the number of 'numerators' streamed since we started,
-		 * not including the current buffer.
-		 */
+		 
 		numerators_since_start = buffers_since_start * numerator;
 
-		/* And the number of jiffies since we started */
+		 
 		jiffies_since_start = jiffies - dev->jiffies_vid_out;
 
-		/* Increase by the 'numerator' of one buffer */
+		 
 		numerators_since_start += numerator;
-		/*
-		 * Calculate when that next buffer is supposed to start
-		 * in jiffies since we started streaming.
-		 */
+		 
 		next_jiffies_since_start = numerators_since_start * HZ +
 					   denominator / 2;
 		do_div(next_jiffies_since_start, denominator);
-		/* If it is in the past, then just schedule asap */
+		 
 		if (next_jiffies_since_start < jiffies_since_start)
 			next_jiffies_since_start = jiffies_since_start;
 
@@ -269,7 +248,7 @@ int vivid_start_generating_vid_out(struct vivid_dev *dev, bool *pstreaming)
 		return 0;
 	}
 
-	/* Resets frame counters */
+	 
 	dev->jiffies_vid_out = jiffies;
 	dev->vid_out_seq_start = dev->seq_wrap * 128;
 	dev->vbi_out_seq_start = dev->seq_wrap * 128;
@@ -301,7 +280,7 @@ void vivid_stop_generating_vid_out(struct vivid_dev *dev, bool *pstreaming)
 
 	*pstreaming = false;
 	if (pstreaming == &dev->vid_out_streaming) {
-		/* Release all active buffers */
+		 
 		while (!list_empty(&dev->vid_out_active)) {
 			struct vivid_buffer *buf;
 
@@ -350,7 +329,7 @@ void vivid_stop_generating_vid_out(struct vivid_dev *dev, bool *pstreaming)
 	    dev->meta_out_streaming)
 		return;
 
-	/* shutdown control thread */
+	 
 	vivid_grab_controls(dev, false);
 	kthread_stop(dev->kthread_vid_out);
 	dev->kthread_vid_out = NULL;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * shmob_drm_drv.c  --  SH Mobile DRM driver
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- *
- * Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -27,9 +21,7 @@
 #include "shmob_drm_plane.h"
 #include "shmob_drm_regs.h"
 
-/* -----------------------------------------------------------------------------
- * Hardware initialization
- */
+ 
 
 static int shmob_drm_init_interface(struct shmob_drm_device *sdev)
 {
@@ -98,9 +90,7 @@ static int shmob_drm_setup_clocks(struct shmob_drm_device *sdev,
 	return 0;
 }
 
-/* -----------------------------------------------------------------------------
- * DRM operations
- */
+ 
 
 static irqreturn_t shmob_drm_irq(int irq, void *arg)
 {
@@ -109,10 +99,7 @@ static irqreturn_t shmob_drm_irq(int irq, void *arg)
 	unsigned long flags;
 	u32 status;
 
-	/* Acknowledge interrupts. Putting interrupt enable and interrupt flag
-	 * bits in the same register is really brain-dead design and requires
-	 * taking a spinlock.
-	 */
+	 
 	spin_lock_irqsave(&sdev->irq_lock, flags);
 	status = lcdc_read(sdev, LDINTR);
 	lcdc_write(sdev, LDINTR, status ^ LDINTR_STATUS_MASK);
@@ -139,9 +126,7 @@ static const struct drm_driver shmob_drm_driver = {
 	.minor			= 0,
 };
 
-/* -----------------------------------------------------------------------------
- * Power management
- */
+ 
 
 static int shmob_drm_pm_suspend(struct device *dev)
 {
@@ -168,9 +153,7 @@ static int shmob_drm_pm_resume(struct device *dev)
 static DEFINE_SIMPLE_DEV_PM_OPS(shmob_drm_pm_ops,
 				shmob_drm_pm_suspend, shmob_drm_pm_resume);
 
-/* -----------------------------------------------------------------------------
- * Platform driver
- */
+ 
 
 static int shmob_drm_remove(struct platform_device *pdev)
 {
@@ -198,10 +181,7 @@ static int shmob_drm_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Allocate and initialize the driver private data, I/O resources and
-	 * clocks.
-	 */
+	 
 	sdev = devm_kzalloc(&pdev->dev, sizeof(*sdev), GFP_KERNEL);
 	if (sdev == NULL)
 		return -ENOMEM;
@@ -224,7 +204,7 @@ static int shmob_drm_probe(struct platform_device *pdev)
 	if (ret < 0)
 		return ret;
 
-	/* Allocate and initialize the DRM device. */
+	 
 	ddev = drm_dev_alloc(&shmob_drm_driver, &pdev->dev);
 	if (IS_ERR(ddev))
 		return PTR_ERR(ddev);
@@ -264,10 +244,7 @@ static int shmob_drm_probe(struct platform_device *pdev)
 		goto err_modeset_cleanup;
 	}
 
-	/*
-	 * Register the DRM device with the core and the connectors with
-	 * sysfs.
-	 */
+	 
 	ret = drm_dev_register(ddev, 0);
 	if (ret < 0)
 		goto err_irq_uninstall;

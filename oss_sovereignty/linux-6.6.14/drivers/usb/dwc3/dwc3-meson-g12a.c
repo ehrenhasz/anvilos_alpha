@@ -1,18 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * USB Glue for Amlogic G12A SoCs
- *
- * Copyright (c) 2019 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
 
-/*
- * The USB is organized with a glue around the DWC3 Controller IP as :
- * - Control registers for each USB2 Ports
- * - Control registers for the USB PHY layer
- * - SuperSpeed PHY can be enabled only if port is used
- * - Dynamic OTG switching with ID change interrupt
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -30,7 +19,7 @@
 #include <linux/usb/role.h>
 #include <linux/regulator/consumer.h>
 
-/* USB2 Ports Control Registers, offsets are per-port */
+ 
 
 #define U2P_REG_SIZE						0x20
 
@@ -48,7 +37,7 @@
 	#define U2P_R1_OTG_SESSION_VALID			BIT(2)
 	#define U2P_R1_VBUS_VALID				BIT(3)
 
-/* USB Glue Control Registers */
+ 
 
 #define G12A_GLUE_OFFSET					0x80
 
@@ -124,15 +113,7 @@ static const char * const meson_g12a_phy_names[] = {
 	"usb2-phy0", "usb2-phy1", "usb3-phy0",
 };
 
-/*
- * Amlogic A1 has a single physical PHY, in slot 1, but still has the
- * two U2 PHY controls register blocks like G12A.
- * AXG has the similar scheme, thus needs the same tweak.
- * Handling the first PHY on slot 1 would need a large amount of code
- * changes, and the current management is generic enough to handle it
- * correctly when only the "usb2-phy1" phy is specified on-par with the
- * DT bindings.
- */
+ 
 static const char * const meson_a1_phy_names[] = {
 	"usb2-phy0", "usb2-phy1"
 };
@@ -174,18 +155,7 @@ static int dwc3_meson_gxl_usb_init(struct dwc3_meson_g12a *priv);
 
 static int dwc3_meson_gxl_usb_post_init(struct dwc3_meson_g12a *priv);
 
-/*
- * For GXL and GXM SoCs:
- * USB Phy muxing between the DWC2 Device controller and the DWC3 Host
- * controller is buggy when switching from Device to Host when USB port
- * is unpopulated, it causes the DWC3 to hard crash.
- * When populated (including OTG switching with ID pin), the switch works
- * like a charm like on the G12A platforms.
- * In order to still switch from Host to Device on an USB Type-A port,
- * an U2_PORT_DISABLE bit has been added to disconnect the DWC3 Host
- * controller from the port, but when used the DWC3 controller must be
- * reset to recover usage of the port.
- */
+ 
 
 static const struct dwc3_meson_g12a_drvdata gxl_drvdata = {
 	.otg_phy_host_port_disable = true,
@@ -272,7 +242,7 @@ static int dwc3_meson_gxl_set_phy_mode(struct dwc3_meson_g12a *priv,
 static int dwc3_meson_gxl_usb2_init_phy(struct dwc3_meson_g12a *priv, int i,
 					enum phy_mode mode)
 {
-	/* On GXL PHY must be started in device mode for DWC2 init */
+	 
 	return priv->drvdata->set_phy_mode(priv, i,
 				(i == USB2_OTG_PHY) ? PHY_MODE_USB_DEVICE
 						    : PHY_MODE_USB_HOST);
@@ -375,7 +345,7 @@ static void dwc3_meson_g12a_usb_otg_apply_mode(struct dwc3_meson_g12a *priv,
 	if (mode == PHY_MODE_USB_DEVICE) {
 		if (priv->otg_mode != USB_DR_MODE_OTG &&
 		    priv->drvdata->otg_phy_host_port_disable)
-			/* Isolate the OTG PHY port from the Host Controller */
+			 
 			regmap_update_bits(priv->usb_glue_regmap, USB_R1,
 				USB_R1_U3H_HOST_U2_PORT_DISABLE_MASK,
 				FIELD_PREP(USB_R1_U3H_HOST_U2_PORT_DISABLE_MASK,
@@ -424,7 +394,7 @@ static int dwc3_meson_g12a_usb_init_glue(struct dwc3_meson_g12a *priv,
 			USB_R5_ID_DIG_TH_MASK,
 			FIELD_PREP(USB_R5_ID_DIG_TH_MASK, 0xff));
 
-	/* If we have an actual SuperSpeed port, initialize it */
+	 
 	if (priv->usb3_ports)
 		dwc3_meson_g12a_usb3_init(priv);
 
@@ -584,7 +554,7 @@ static int dwc3_meson_g12a_otg_init(struct platform_device *pdev,
 	struct device *dev = &pdev->dev;
 
 	if (priv->otg_mode == USB_DR_MODE_OTG) {
-		/* Ack irq before registering */
+		 
 		regmap_update_bits(priv->usb_glue_regmap, USB_R5,
 				   USB_R5_ID_DIG_IRQ, 0);
 
@@ -598,7 +568,7 @@ static int dwc3_meson_g12a_otg_init(struct platform_device *pdev,
 			return ret;
 	}
 
-	/* Setup OTG mode corresponding to the ID pin */
+	 
 	if (priv->otg_mode == USB_DR_MODE_OTG) {
 		otg_id = dwc3_meson_g12a_get_id(priv);
 		if (otg_id != priv->otg_phy_mode) {
@@ -607,7 +577,7 @@ static int dwc3_meson_g12a_otg_init(struct platform_device *pdev,
 		}
 	}
 
-	/* Setup role switcher */
+	 
 	priv->switch_desc.usb2_port = dwc3_meson_g12_find_child(dev,
 								"snps,dwc3");
 	priv->switch_desc.udc = dwc3_meson_g12_find_child(dev, "snps,dwc2");
@@ -626,7 +596,7 @@ static int dwc3_meson_g12a_otg_init(struct platform_device *pdev,
 static int dwc3_meson_gxl_setup_regmaps(struct dwc3_meson_g12a *priv,
 					void __iomem *base)
 {
-	/* GXL controls the PHY mode in the PHY registers unlike G12A */
+	 
 	priv->usb_glue_regmap = devm_regmap_init_mmio(priv->dev, base,
 					&phy_meson_g12a_usb_glue_regmap_conf);
 	return PTR_ERR_OR_ZERO(priv->usb_glue_regmap);
@@ -643,7 +613,7 @@ static int dwc3_meson_g12a_setup_regmaps(struct dwc3_meson_g12a *priv,
 	if (IS_ERR(priv->usb_glue_regmap))
 		return PTR_ERR(priv->usb_glue_regmap);
 
-	/* Create a regmap for each USB2 PHY control register set */
+	 
 	for (i = 0; i < priv->drvdata->num_phys; i++) {
 		struct regmap_config u2p_regmap_config = {
 			.reg_bits = 8,
@@ -758,7 +728,7 @@ static int dwc3_meson_g12a_probe(struct platform_device *pdev)
 			goto err_rearm;
 	}
 
-	/* Get dr_mode */
+	 
 	priv->otg_mode = usb_get_dr_mode(dev);
 
 	if (priv->otg_mode == USB_DR_MODE_PERIPHERAL)
@@ -770,14 +740,14 @@ static int dwc3_meson_g12a_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_disable_regulator;
 
-	/* Init PHYs */
+	 
 	for (i = 0 ; i < PHY_COUNT ; ++i) {
 		ret = phy_init(priv->phys[i]);
 		if (ret)
 			goto err_disable_regulator;
 	}
 
-	/* Set PHY Power */
+	 
 	for (i = 0 ; i < PHY_COUNT ; ++i) {
 		ret = phy_power_on(priv->phys[i]);
 		if (ret)
@@ -906,14 +876,14 @@ static int __maybe_unused dwc3_meson_g12a_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Init PHYs */
+	 
 	for (i = 0 ; i < PHY_COUNT ; ++i) {
 		ret = phy_init(priv->phys[i]);
 		if (ret)
 			return ret;
 	}
 
-	/* Set PHY Power */
+	 
 	for (i = 0 ; i < PHY_COUNT ; ++i) {
 		ret = phy_power_on(priv->phys[i]);
 		if (ret)
@@ -962,7 +932,7 @@ static const struct of_device_id dwc3_meson_g12a_match[] = {
 		.compatible = "amlogic,meson-a1-usb-ctrl",
 		.data = &a1_drvdata,
 	},
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, dwc3_meson_g12a_match);
 

@@ -1,13 +1,4 @@
-/*
- * Driver for the MPC5200 Fast Ethernet Controller - MDIO bus driver
- *
- * Copyright (C) 2007  Domen Puncer, Telargo, Inc.
- * Copyright (C) 2008  Wolfram Sang, Pengutronix
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -39,7 +30,7 @@ static int mpc52xx_fec_mdio_transfer(struct mii_bus *bus, int phy_id,
 	out_be32(&fec->ievent, FEC_IEVENT_MII);
 	out_be32(&fec->mii_data, value);
 
-	/* wait for it to finish, this takes about 23 us on lite5200b */
+	 
 	while (!(in_be32(&fec->ievent) & FEC_IEVENT_MII) && --tries)
 		msleep(1);
 
@@ -84,7 +75,7 @@ static int mpc52xx_fec_mdio_probe(struct platform_device *of)
 	bus->read = mpc52xx_fec_mdio_read;
 	bus->write = mpc52xx_fec_mdio_write;
 
-	/* setup registers */
+	 
 	err = of_address_to_resource(np, 0, &res);
 	if (err)
 		goto out_free;
@@ -100,7 +91,7 @@ static int mpc52xx_fec_mdio_probe(struct platform_device *of)
 	bus->parent = dev;
 	dev_set_drvdata(dev, bus);
 
-	/* set MII speed */
+	 
 	out_be32(&priv->regs->mii_speed, ((mpc5xxx_get_bus_frequency(dev) >> 20) / 5) << 1);
 
 	err = of_mdiobus_register(bus, np);
@@ -147,7 +138,7 @@ struct platform_driver mpc52xx_fec_mdio_driver = {
 	.remove_new = mpc52xx_fec_mdio_remove,
 };
 
-/* let fec driver call it, since this has to be registered before it */
+ 
 EXPORT_SYMBOL_GPL(mpc52xx_fec_mdio_driver);
 
 MODULE_LICENSE("Dual BSD/GPL");

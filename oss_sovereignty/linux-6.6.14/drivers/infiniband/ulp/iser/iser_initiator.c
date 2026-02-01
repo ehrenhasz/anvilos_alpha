@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2004, 2005, 2006 Voltaire, Inc. All rights reserved.
- * Copyright (c) 2013-2014 Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *	- Redistributions of source code must retain the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer.
- *
- *	- Redistributions in binary form must reproduce the above
- *	  copyright notice, this list of conditions and the following
- *	  disclaimer in the documentation and/or other materials
- *	  provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/slab.h>
 #include <linux/mm.h>
@@ -40,11 +9,7 @@
 
 #include "iscsi_iser.h"
 
-/* Register user buffer memory and initialize passive rdma
- *  dto descriptor. Data size is stored in
- *  task->data[ISER_DIR_IN].data_len, Protection size
- *  os stored in task->prot[ISER_DIR_IN].data_len
- */
+ 
 static int iser_prepare_read_cmd(struct iscsi_task *task)
 
 {
@@ -81,11 +46,7 @@ out_err:
 	return err;
 }
 
-/* Register user buffer memory and initialize passive rdma
- *  dto descriptor. Data size is stored in
- *  task->data[ISER_DIR_OUT].data_len, Protection size
- *  is stored at task->prot[ISER_DIR_OUT].data_len
- */
+ 
 static int iser_prepare_write_cmd(struct iscsi_task *task, unsigned int imm_sz,
 				  unsigned int unsol_sz, unsigned int edtl)
 {
@@ -139,7 +100,7 @@ out_err:
 	return err;
 }
 
-/* creates a new tx descriptor and adds header regd buffer */
+ 
 static void iser_create_send_desc(struct iser_conn *iser_conn,
 		struct iser_tx_desc *tx_desc, enum iser_desc_type type,
 		void (*done)(struct ib_cq *cq, struct ib_wc *wc))
@@ -174,7 +135,7 @@ static void iser_free_login_buf(struct iser_conn *iser_conn)
 	kfree(desc->req);
 	kfree(desc->rsp);
 
-	/* make sure we never redo any unmapping */
+	 
 	desc->req = NULL;
 	desc->rsp = NULL;
 }
@@ -294,7 +255,7 @@ void iser_free_rx_descriptors(struct iser_conn *iser_conn)
 		ib_dma_unmap_single(device->ib_device, rx_desc->dma_addr,
 				    ISER_RX_PAYLOAD_SIZE, DMA_FROM_DEVICE);
 	kfree(iser_conn->rx_descs);
-	/* make sure we never redo any unmapping */
+	 
 	iser_conn->rx_descs = NULL;
 
 	iser_free_login_buf(iser_conn);
@@ -308,7 +269,7 @@ static int iser_post_rx_bufs(struct iscsi_conn *conn, struct iscsi_hdr *req)
 	int i;
 
 	iser_dbg("req op %x flags %x\n", req->opcode, req->flags);
-	/* check if this is the last login - going to full feature phase */
+	 
 	if ((req->flags & ISCSI_FULL_FEATURE_PHASE) != ISCSI_FULL_FEATURE_PHASE)
 		goto out;
 
@@ -320,11 +281,7 @@ static int iser_post_rx_bufs(struct iscsi_conn *conn, struct iscsi_hdr *req)
 	iser_info("Normal session, posting batch of RX %d buffers\n",
 		  iser_conn->qp_max_recv_dtos - 1);
 
-	/*
-	 * Initial post receive buffers.
-	 * There is one already posted recv buffer (for the last login
-	 * response). Therefore, the first recv buffer is skipped here.
-	 */
+	 
 	for (i = 1; i < iser_conn->qp_max_recv_dtos; i++) {
 		err = iser_post_recvm(iser_conn, &iser_conn->rx_descs[i]);
 		if (err)
@@ -334,11 +291,7 @@ out:
 	return err;
 }
 
-/**
- * iser_send_command - send command PDU
- * @conn: link to matching iscsi connection
- * @task: SCSI command task
- */
+ 
 int iser_send_command(struct iscsi_conn *conn, struct iscsi_task *task)
 {
 	struct iser_conn *iser_conn = conn->dd_data;
@@ -352,7 +305,7 @@ int iser_send_command(struct iscsi_conn *conn, struct iscsi_task *task)
 
 	edtl = ntohl(hdr->data_length);
 
-	/* build the tx desc regd header and add it to the tx desc dto */
+	 
 	iser_create_send_desc(iser_conn, tx_desc, ISCSI_TX_SCSI_COMMAND,
 			      iser_cmd_comp);
 
@@ -364,7 +317,7 @@ int iser_send_command(struct iscsi_conn *conn, struct iscsi_task *task)
 		prot_buf = &iser_task->prot[ISER_DIR_OUT];
 	}
 
-	if (scsi_sg_count(sc)) { /* using a scatter list */
+	if (scsi_sg_count(sc)) {  
 		data_buf->sg = scsi_sglist(sc);
 		data_buf->size = scsi_sg_count(sc);
 	}
@@ -403,12 +356,7 @@ send_command_error:
 	return err;
 }
 
-/**
- * iser_send_data_out - send data out PDU
- * @conn: link to matching iscsi connection
- * @task: SCSI command task
- * @hdr: pointer to the LLD's iSCSI message header
- */
+ 
 int iser_send_data_out(struct iscsi_conn *conn, struct iscsi_task *task,
 		       struct iscsi_data *hdr)
 {
@@ -438,7 +386,7 @@ int iser_send_data_out(struct iscsi_conn *conn, struct iscsi_task *task,
 	tx_desc->iser_header.flags = ISER_VER;
 	memcpy(&tx_desc->iscsi_header, hdr, sizeof(struct iscsi_hdr));
 
-	/* build the tx desc */
+	 
 	err = iser_initialize_task_headers(task, tx_desc);
 	if (err)
 		goto send_data_out_error;
@@ -479,7 +427,7 @@ int iser_send_control(struct iscsi_conn *conn, struct iscsi_task *task)
 	int err = 0;
 	struct iser_device *device;
 
-	/* build the tx desc regd header and add it to the tx desc dto */
+	 
 	iser_create_send_desc(iser_conn, mdesc, ISCSI_TX_CONTROL,
 			      iser_ctrl_comp);
 
@@ -569,7 +517,7 @@ void iser_login_rsp(struct ib_cq *cq, struct ib_wc *wc)
 	    iser_conn->iscsi_conn->session->discovery_sess)
 		return;
 
-	/* Post the first RX buffer that is skipped in iser_post_rx_bufs() */
+	 
 	iser_post_recvm(iser_conn, iser_conn->rx_descs);
 }
 
@@ -687,7 +635,7 @@ void iser_ctrl_comp(struct ib_cq *cq, struct ib_wc *wc)
 		return;
 	}
 
-	/* this arithmetic is legal by libiscsi dd_data allocation */
+	 
 	task = (void *)desc - sizeof(struct iscsi_task);
 	if (task->hdr->itt == RESERVED_ITT)
 		iscsi_put_task(task);

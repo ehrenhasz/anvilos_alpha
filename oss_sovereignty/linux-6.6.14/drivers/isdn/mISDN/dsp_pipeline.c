@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * dsp_pipeline.c: pipelined audio processing
- *
- * Copyright (C) 2007, Nadi Sarrar
- *
- * Nadi Sarrar <nadi@beronet.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -30,7 +24,7 @@ struct dsp_element_entry {
 
 static LIST_HEAD(dsp_elements);
 
-/* sysfs */
+ 
 static struct class *elements_class;
 
 static ssize_t
@@ -230,8 +224,7 @@ int dsp_pipeline_build(struct dsp_pipeline *pipeline, const char *cfg)
 				pipeline_entry->elem = elem;
 
 				if (elem == dsp_hwec) {
-					/* This is a hack to make the hwec
-					   available as a pipeline module */
+					 
 					dsp_hwec_enable(container_of(pipeline,
 								     struct dsp, pipeline), args);
 					list_add_tail(&pipeline_entry->list,

@@ -1,118 +1,4 @@
-/*
- * AMD 10Gb Ethernet driver
- *
- * This file is available to you under your choice of the following two
- * licenses:
- *
- * License 1: GPLv2
- *
- * Copyright (c) 2014-2016 Advanced Micro Devices, Inc.
- *
- * This file is free software; you may copy, redistribute and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 2 of the License, or (at
- * your option) any later version.
- *
- * This file is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- *
- *
- * License 2: Modified BSD
- *
- * Copyright (c) 2014-2016 Advanced Micro Devices, Inc.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *       notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *       notice, this list of conditions and the following disclaimer in the
- *       documentation and/or other materials provided with the distribution.
- *     * Neither the name of Advanced Micro Devices, Inc. nor the
- *       names of its contributors may be used to endorse or promote products
- *       derived from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL <COPYRIGHT HOLDER> BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *     The Synopsys DWC ETHER XGMAC Software Driver and documentation
- *     (hereinafter "Software") is an unsupported proprietary work of Synopsys,
- *     Inc. unless otherwise expressly agreed to in writing between Synopsys
- *     and you.
- *
- *     The Software IS NOT an item of Licensed Software or Licensed Product
- *     under any End User Software License Agreement or Agreement for Licensed
- *     Product with Synopsys or any supplement thereto.  Permission is hereby
- *     granted, free of charge, to any person obtaining a copy of this software
- *     annotated with this license and the Software, to deal in the Software
- *     without restriction, including without limitation the rights to use,
- *     copy, modify, merge, publish, distribute, sublicense, and/or sell copies
- *     of the Software, and to permit persons to whom the Software is furnished
- *     to do so, subject to the following conditions:
- *
- *     The above copyright notice and this permission notice shall be included
- *     in all copies or substantial portions of the Software.
- *
- *     THIS SOFTWARE IS BEING DISTRIBUTED BY SYNOPSYS SOLELY ON AN "AS IS"
- *     BASIS AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED
- *     TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A
- *     PARTICULAR PURPOSE ARE HEREBY DISCLAIMED. IN NO EVENT SHALL SYNOPSYS
- *     BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- *     CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- *     SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- *     INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- *     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- *     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF
- *     THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -218,77 +104,77 @@ static void xgbe_an_clear_interrupts_all(struct xgbe_prv_data *pdata)
 
 static void xgbe_kr_mode(struct xgbe_prv_data *pdata)
 {
-	/* Set MAC to 10G speed */
+	 
 	pdata->hw_if.set_speed(pdata, SPEED_10000);
 
-	/* Call PHY implementation support to complete rate change */
+	 
 	pdata->phy_if.phy_impl.set_mode(pdata, XGBE_MODE_KR);
 }
 
 static void xgbe_kx_2500_mode(struct xgbe_prv_data *pdata)
 {
-	/* Set MAC to 2.5G speed */
+	 
 	pdata->hw_if.set_speed(pdata, SPEED_2500);
 
-	/* Call PHY implementation support to complete rate change */
+	 
 	pdata->phy_if.phy_impl.set_mode(pdata, XGBE_MODE_KX_2500);
 }
 
 static void xgbe_kx_1000_mode(struct xgbe_prv_data *pdata)
 {
-	/* Set MAC to 1G speed */
+	 
 	pdata->hw_if.set_speed(pdata, SPEED_1000);
 
-	/* Call PHY implementation support to complete rate change */
+	 
 	pdata->phy_if.phy_impl.set_mode(pdata, XGBE_MODE_KX_1000);
 }
 
 static void xgbe_sfi_mode(struct xgbe_prv_data *pdata)
 {
-	/* If a KR re-driver is present, change to KR mode instead */
+	 
 	if (pdata->kr_redrv)
 		return xgbe_kr_mode(pdata);
 
-	/* Set MAC to 10G speed */
+	 
 	pdata->hw_if.set_speed(pdata, SPEED_10000);
 
-	/* Call PHY implementation support to complete rate change */
+	 
 	pdata->phy_if.phy_impl.set_mode(pdata, XGBE_MODE_SFI);
 }
 
 static void xgbe_x_mode(struct xgbe_prv_data *pdata)
 {
-	/* Set MAC to 1G speed */
+	 
 	pdata->hw_if.set_speed(pdata, SPEED_1000);
 
-	/* Call PHY implementation support to complete rate change */
+	 
 	pdata->phy_if.phy_impl.set_mode(pdata, XGBE_MODE_X);
 }
 
 static void xgbe_sgmii_1000_mode(struct xgbe_prv_data *pdata)
 {
-	/* Set MAC to 1G speed */
+	 
 	pdata->hw_if.set_speed(pdata, SPEED_1000);
 
-	/* Call PHY implementation support to complete rate change */
+	 
 	pdata->phy_if.phy_impl.set_mode(pdata, XGBE_MODE_SGMII_1000);
 }
 
 static void xgbe_sgmii_10_mode(struct xgbe_prv_data *pdata)
 {
-	/* Set MAC to 10M speed */
+	 
 	pdata->hw_if.set_speed(pdata, SPEED_10);
 
-	/* Call PHY implementation support to complete rate change */
+	 
 	pdata->phy_if.phy_impl.set_mode(pdata, XGBE_MODE_SGMII_10);
 }
 
 static void xgbe_sgmii_100_mode(struct xgbe_prv_data *pdata)
 {
-	/* Set MAC to 1G speed */
+	 
 	pdata->hw_if.set_speed(pdata, SPEED_1000);
 
-	/* Call PHY implementation support to complete rate change */
+	 
 	pdata->phy_if.phy_impl.set_mode(pdata, XGBE_MODE_SGMII_100);
 }
 
@@ -398,12 +284,12 @@ static void xgbe_an73_set(struct xgbe_prv_data *pdata, bool enable,
 {
 	unsigned int reg;
 
-	/* Disable KR training for now */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_PMD_CTRL);
 	reg &= ~XGBE_KR_TRAINING_ENABLE;
 	XMDIO_WRITE(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_PMD_CTRL, reg);
 
-	/* Update AN settings */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_CTRL1);
 	reg &= ~MDIO_AN_CTRL1_ENABLE;
 
@@ -485,11 +371,11 @@ static enum xgbe_an xgbe_an73_tx_training(struct xgbe_prv_data *pdata,
 
 	*state = XGBE_RX_COMPLETE;
 
-	/* If we're not in KR mode then we're done */
+	 
 	if (!xgbe_in_kr_mode(pdata))
 		return XGBE_AN_PAGE_RECEIVED;
 
-	/* Enable/Disable FEC */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 2);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA + 2);
 
@@ -500,7 +386,7 @@ static enum xgbe_an xgbe_an73_tx_training(struct xgbe_prv_data *pdata,
 
 	XMDIO_WRITE(pdata, MDIO_MMD_PMAPMD, MDIO_PMA_10GBR_FECCTRL, reg);
 
-	/* Start KR training */
+	 
 	if (pdata->phy_if.phy_impl.kr_training_pre)
 		pdata->phy_if.phy_impl.kr_training_pre(pdata);
 
@@ -542,15 +428,15 @@ static enum xgbe_an xgbe_an73_rx_bpa(struct xgbe_prv_data *pdata,
 	unsigned int link_support;
 	unsigned int reg, ad_reg, lp_reg;
 
-	/* Read Base Ability register 2 first */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA + 1);
 
-	/* Check for a supported mode, otherwise restart in a different one */
+	 
 	link_support = xgbe_in_kr_mode(pdata) ? 0x80 : 0x20;
 	if (!(reg & link_support))
 		return XGBE_AN_INCOMPAT_LINK;
 
-	/* Check Extended Next Page support */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPA);
 
@@ -565,7 +451,7 @@ static enum xgbe_an xgbe_an73_rx_xnp(struct xgbe_prv_data *pdata,
 {
 	unsigned int ad_reg, lp_reg;
 
-	/* Check Extended Next Page support */
+	 
 	ad_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_XNP);
 	lp_reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_LPX);
 
@@ -587,7 +473,7 @@ static enum xgbe_an xgbe_an73_page_received(struct xgbe_prv_data *pdata)
 		an_timeout = pdata->an_start +
 			     msecs_to_jiffies(XGBE_AN_MS_TIMEOUT);
 		if (time_after(jiffies, an_timeout)) {
-			/* Auto-negotiation timed out, reset state */
+			 
 			pdata->kr_state = XGBE_RX_BPA;
 			pdata->kx_state = XGBE_RX_BPA;
 
@@ -621,7 +507,7 @@ static enum xgbe_an xgbe_an73_incompat_link(struct xgbe_prv_data *pdata)
 {
 	struct ethtool_link_ksettings *lks = &pdata->phy.lks;
 
-	/* Be sure we aren't looping trying to negotiate */
+	 
 	if (xgbe_in_kr_mode(pdata)) {
 		pdata->kr_state = XGBE_RX_ERROR;
 
@@ -656,25 +542,25 @@ static void xgbe_an37_isr(struct xgbe_prv_data *pdata)
 {
 	unsigned int reg;
 
-	/* Disable AN interrupts */
+	 
 	xgbe_an37_disable_interrupts(pdata);
 
-	/* Save the interrupt(s) that fired */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_VEND2, MDIO_VEND2_AN_STAT);
 	pdata->an_int = reg & XGBE_AN_CL37_INT_MASK;
 	pdata->an_status = reg & ~XGBE_AN_CL37_INT_MASK;
 
 	if (pdata->an_int) {
-		/* Clear the interrupt(s) that fired and process them */
+		 
 		reg &= ~XGBE_AN_CL37_INT_MASK;
 		XMDIO_WRITE(pdata, MDIO_MMD_VEND2, MDIO_VEND2_AN_STAT, reg);
 
 		queue_work(pdata->an_workqueue, &pdata->an_irq_work);
 	} else {
-		/* Enable AN interrupts */
+		 
 		xgbe_an37_enable_interrupts(pdata);
 
-		/* Reissue interrupt if status is not clear */
+		 
 		if (pdata->vdata->irq_reissue_support)
 			XP_IOWRITE(pdata, XP_INT_REISSUE_EN, 1 << 3);
 	}
@@ -682,22 +568,22 @@ static void xgbe_an37_isr(struct xgbe_prv_data *pdata)
 
 static void xgbe_an73_isr(struct xgbe_prv_data *pdata)
 {
-	/* Disable AN interrupts */
+	 
 	xgbe_an73_disable_interrupts(pdata);
 
-	/* Save the interrupt(s) that fired */
+	 
 	pdata->an_int = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_INT);
 
 	if (pdata->an_int) {
-		/* Clear the interrupt(s) that fired and process them */
+		 
 		XMDIO_WRITE(pdata, MDIO_MMD_AN, MDIO_AN_INT, ~pdata->an_int);
 
 		queue_work(pdata->an_workqueue, &pdata->an_irq_work);
 	} else {
-		/* Enable AN interrupts */
+		 
 		xgbe_an73_enable_interrupts(pdata);
 
-		/* Reissue interrupt if status is not clear */
+		 
 		if (pdata->vdata->irq_reissue_support)
 			XP_IOWRITE(pdata, XP_INT_REISSUE_EN, 1 << 3);
 	}
@@ -748,9 +634,7 @@ static void xgbe_an_irq_work(struct work_struct *work)
 						   struct xgbe_prv_data,
 						   an_irq_work);
 
-	/* Avoid a race between enabling the IRQ and exiting the work by
-	 * waiting for the work to finish and then queueing it
-	 */
+	 
 	flush_work(&pdata->an_work);
 	queue_work(pdata->an_workqueue, &pdata->an_work);
 }
@@ -786,7 +670,7 @@ static void xgbe_an37_state_machine(struct xgbe_prv_data *pdata)
 		pdata->an_state = XGBE_AN_COMPLETE;
 		pdata->an_int &= ~XGBE_AN_CL37_INT_CMPLT;
 
-		/* If SGMII is enabled, check the link status */
+		 
 		if ((pdata->an_mode == XGBE_AN_MODE_CL37_SGMII) &&
 		    !(pdata->an_status & XGBE_SGMII_AN_LINK_STATUS))
 			pdata->an_state = XGBE_AN_NO_LINK;
@@ -949,7 +833,7 @@ static void xgbe_an_state_machine(struct work_struct *work)
 		break;
 	}
 
-	/* Reissue interrupt if status is not clear */
+	 
 	if (pdata->vdata->irq_reissue_support)
 		XP_IOWRITE(pdata, XP_INT_REISSUE_EN, 1 << 3);
 
@@ -963,7 +847,7 @@ static void xgbe_an37_init(struct xgbe_prv_data *pdata)
 
 	pdata->phy_if.phy_impl.an_advertising(pdata, &lks);
 
-	/* Set up Advertisement register */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_VEND2, MDIO_VEND2_AN_ADVERTISE);
 	if (XGBE_ADV(&lks, Pause))
 		reg |= 0x100;
@@ -975,13 +859,13 @@ static void xgbe_an37_init(struct xgbe_prv_data *pdata)
 	else
 		reg &= ~0x80;
 
-	/* Full duplex, but not half */
+	 
 	reg |= XGBE_AN_CL37_FD_MASK;
 	reg &= ~XGBE_AN_CL37_HD_MASK;
 
 	XMDIO_WRITE(pdata, MDIO_MMD_VEND2, MDIO_VEND2_AN_ADVERTISE, reg);
 
-	/* Set up the Control register */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_VEND2, MDIO_VEND2_AN_CTRL);
 	reg &= ~XGBE_AN_CL37_TX_CONFIG_MASK;
 	reg &= ~XGBE_AN_CL37_PCS_MODE_MASK;
@@ -1012,7 +896,7 @@ static void xgbe_an73_init(struct xgbe_prv_data *pdata)
 
 	pdata->phy_if.phy_impl.an_advertising(pdata, &lks);
 
-	/* Set up Advertisement register 3 first */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 2);
 	if (XGBE_ADV(&lks, 10000baseR_FEC))
 		reg |= 0xc000;
@@ -1021,7 +905,7 @@ static void xgbe_an73_init(struct xgbe_prv_data *pdata)
 
 	XMDIO_WRITE(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 2, reg);
 
-	/* Set up Advertisement register 2 next */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 1);
 	if (XGBE_ADV(&lks, 10000baseKR_Full))
 		reg |= 0x80;
@@ -1036,7 +920,7 @@ static void xgbe_an73_init(struct xgbe_prv_data *pdata)
 
 	XMDIO_WRITE(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE + 1, reg);
 
-	/* Set up Advertisement register 1 last */
+	 
 	reg = XMDIO_READ(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE);
 	if (XGBE_ADV(&lks, Pause))
 		reg |= 0x400;
@@ -1048,7 +932,7 @@ static void xgbe_an73_init(struct xgbe_prv_data *pdata)
 	else
 		reg &= ~0x800;
 
-	/* We don't intend to perform XNP */
+	 
 	reg &= ~XGBE_XNP_NP_EXCHANGE;
 
 	XMDIO_WRITE(pdata, MDIO_MMD_AN, MDIO_AN_ADVERTISE, reg);
@@ -1058,7 +942,7 @@ static void xgbe_an73_init(struct xgbe_prv_data *pdata)
 
 static void xgbe_an_init(struct xgbe_prv_data *pdata)
 {
-	/* Set up advertisement registers based on current settings */
+	 
 	pdata->an_mode = pdata->phy_if.phy_impl.an_mode(pdata);
 	switch (pdata->an_mode) {
 	case XGBE_AN_MODE_CL73:
@@ -1123,7 +1007,7 @@ static void xgbe_phy_adjust_link(struct xgbe_prv_data *pdata)
 	int new_state = 0;
 
 	if (pdata->phy.link) {
-		/* Flow control support */
+		 
 		pdata->pause_autoneg = pdata->phy.pause_autoneg;
 
 		if (pdata->tx_pause != pdata->phy.tx_pause) {
@@ -1138,7 +1022,7 @@ static void xgbe_phy_adjust_link(struct xgbe_prv_data *pdata)
 			pdata->hw_if.config_rx_flow_control(pdata);
 		}
 
-		/* Speed support */
+		 
 		if (pdata->phy_speed != pdata->phy.speed) {
 			new_state = 1;
 			pdata->phy_speed = pdata->phy.speed;
@@ -1169,10 +1053,10 @@ static int xgbe_phy_config_fixed(struct xgbe_prv_data *pdata)
 
 	netif_dbg(pdata, link, pdata->netdev, "fixed PHY configuration\n");
 
-	/* Disable auto-negotiation */
+	 
 	xgbe_an_disable(pdata);
 
-	/* Set specified mode for specified speed */
+	 
 	mode = pdata->phy_if.phy_impl.get_mode(pdata, pdata->phy.speed);
 	switch (mode) {
 	case XGBE_MODE_KX_1000:
@@ -1189,19 +1073,11 @@ static int xgbe_phy_config_fixed(struct xgbe_prv_data *pdata)
 		return -EINVAL;
 	}
 
-	/* Validate duplex mode */
+	 
 	if (pdata->phy.duplex != DUPLEX_FULL)
 		return -EINVAL;
 
-	/* Force the mode change for SFI in Fixed PHY config.
-	 * Fixed PHY configs needs PLL to be enabled while doing mode set.
-	 * When the SFP module isn't connected during boot, driver assumes
-	 * AN is ON and attempts autonegotiation. However, if the connected
-	 * SFP comes up in Fixed PHY config, the link will not come up as
-	 * PLL isn't enabled while the initial mode set command is issued.
-	 * So, force the mode change for SFI in Fixed PHY configuration to
-	 * fix link issues.
-	 */
+	 
 	if (mode == XGBE_MODE_SFI)
 		xgbe_change_mode(pdata, mode);
 	else
@@ -1233,11 +1109,11 @@ static int __xgbe_phy_config_aneg(struct xgbe_prv_data *pdata, bool set_mode)
 		netif_dbg(pdata, link, pdata->netdev, "AN PHY configuration\n");
 	}
 
-	/* Disable auto-negotiation interrupt */
+	 
 	disable_irq(pdata->an_irq);
 
 	if (set_mode) {
-		/* Start auto-negotiation in a supported mode */
+		 
 		if (xgbe_use_mode(pdata, XGBE_MODE_KR)) {
 			xgbe_set_mode(pdata, XGBE_MODE_KR);
 		} else if (xgbe_use_mode(pdata, XGBE_MODE_KX_2500)) {
@@ -1261,10 +1137,10 @@ static int __xgbe_phy_config_aneg(struct xgbe_prv_data *pdata, bool set_mode)
 		}
 	}
 
-	/* Disable and stop any in progress auto-negotiation */
+	 
 	xgbe_an_disable_all(pdata);
 
-	/* Clear any auto-negotitation interrupts */
+	 
 	xgbe_an_clear_interrupts_all(pdata);
 
 	pdata->an_result = XGBE_AN_READY;
@@ -1272,7 +1148,7 @@ static int __xgbe_phy_config_aneg(struct xgbe_prv_data *pdata, bool set_mode)
 	pdata->kr_state = XGBE_RX_BPA;
 	pdata->kx_state = XGBE_RX_BPA;
 
-	/* Re-enable auto-negotiation interrupt */
+	 
 	enable_irq(pdata->an_irq);
 
 	xgbe_an_init(pdata);
@@ -1314,18 +1190,14 @@ static void xgbe_check_link_timeout(struct xgbe_prv_data *pdata)
 	if (time_after(jiffies, link_timeout)) {
 		if ((xgbe_cur_mode(pdata) == XGBE_MODE_KR) &&
 		    pdata->phy.autoneg == AUTONEG_ENABLE) {
-			/* AN restart should not happen while KR training is in progress.
-			 * The while loop ensures no AN restart during KR training,
-			 * waits up to 500ms and AN restart is triggered only if KR
-			 * training is failed.
-			 */
+			 
 			wait = XGBE_KR_TRAINING_WAIT_ITER;
 			while (wait--) {
 				kr_time = pdata->kr_start_time +
 					  msecs_to_jiffies(XGBE_AN_MS_TIMEOUT);
 				if (time_after(jiffies, kr_time))
 					break;
-				/* AN restart is not required, if AN result is COMPLETE */
+				 
 				if (pdata->an_result == XGBE_AN_COMPLETE)
 					return;
 				usleep_range(10000, 11000);
@@ -1446,10 +1318,10 @@ static void xgbe_phy_stop(struct xgbe_prv_data *pdata)
 	if (!pdata->phy_started)
 		return;
 
-	/* Indicate the PHY is down */
+	 
 	pdata->phy_started = 0;
 
-	/* Disable auto-negotiation */
+	 
 	xgbe_an_disable_all(pdata);
 
 	if (pdata->dev_irq != pdata->an_irq) {
@@ -1475,7 +1347,7 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
 	if (ret)
 		return ret;
 
-	/* If we have a separate AN irq, enable it */
+	 
 	if (pdata->dev_irq != pdata->an_irq) {
 		tasklet_setup(&pdata->tasklet_an, xgbe_an_isr_task);
 
@@ -1488,9 +1360,7 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
 		}
 	}
 
-	/* Set initial mode - call the mode setting routines
-	 * directly to insure we are properly configured
-	 */
+	 
 	if (xgbe_use_mode(pdata, XGBE_MODE_KR)) {
 		xgbe_kr_mode(pdata);
 	} else if (xgbe_use_mode(pdata, XGBE_MODE_KX_2500)) {
@@ -1512,7 +1382,7 @@ static int xgbe_phy_start(struct xgbe_prv_data *pdata)
 		goto err_irq;
 	}
 
-	/* Indicate the PHY is up and running */
+	 
 	pdata->phy_started = 1;
 
 	xgbe_an_init(pdata);
@@ -1538,10 +1408,10 @@ static int xgbe_phy_reset(struct xgbe_prv_data *pdata)
 	if (ret)
 		return ret;
 
-	/* Disable auto-negotiation for now */
+	 
 	xgbe_an_disable_all(pdata);
 
-	/* Clear auto-negotiation interrupts */
+	 
 	xgbe_an_clear_interrupts_all(pdata);
 
 	return 0;
@@ -1625,18 +1495,18 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 	INIT_WORK(&pdata->an_work, xgbe_an_state_machine);
 	pdata->mdio_mmd = MDIO_MMD_PCS;
 
-	/* Check for FEC support */
+	 
 	pdata->fec_ability = XMDIO_READ(pdata, MDIO_MMD_PMAPMD,
 					MDIO_PMA_10GBR_FECABLE);
 	pdata->fec_ability &= (MDIO_PMA_10GBR_FECABLE_ABLE |
 			       MDIO_PMA_10GBR_FECABLE_ERRABLE);
 
-	/* Setup the phy (including supported features) */
+	 
 	ret = pdata->phy_if.phy_impl.init(pdata);
 	if (ret)
 		return ret;
 
-	/* Copy supported link modes to advertising link modes */
+	 
 	XGBE_LM_COPY(lks, advertising, lks, supported);
 
 	pdata->phy.address = 0;
@@ -1657,7 +1527,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 	pdata->phy.tx_pause = pdata->tx_pause;
 	pdata->phy.rx_pause = pdata->rx_pause;
 
-	/* Fix up Flow Control advertising */
+	 
 	XGBE_CLR_ADV(lks, Pause);
 	XGBE_CLR_ADV(lks, Asym_Pause);
 
@@ -1667,7 +1537,7 @@ static int xgbe_phy_init(struct xgbe_prv_data *pdata)
 	}
 
 	if (pdata->tx_pause) {
-		/* Equivalent to XOR of Asym_Pause */
+		 
 		if (XGBE_ADV(lks, Asym_Pause))
 			XGBE_CLR_ADV(lks, Asym_Pause);
 		else

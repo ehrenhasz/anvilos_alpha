@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8186-audsys-clk.h  --  Mediatek 8186 audsys clock control
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -48,7 +48,7 @@ struct afe_gate {
 	GATE_AFE(_id, _name, _parent, AUDIO_TOP_CON2, _bit)
 
 static const struct afe_gate aud_clks[CLK_AUD_NR_CLK] = {
-	/* AUD0 */
+	 
 	GATE_AUD0(CLK_AUD_AFE, "aud_afe_clk", "top_audio", 2),
 	GATE_AUD0(CLK_AUD_22M, "aud_apll22m_clk", "top_aud_engen1", 8),
 	GATE_AUD0(CLK_AUD_24M, "aud_apll24m_clk", "top_aud_engen2", 9),
@@ -61,7 +61,7 @@ static const struct afe_gate aud_clks[CLK_AUD_NR_CLK] = {
 	GATE_AUD0(CLK_AUD_TML, "aud_tml_clk", "top_audio", 27),
 	GATE_AUD0(CLK_AUD_NLE, "aud_nle_clk", "top_audio", 28),
 
-	/* AUD1 */
+	 
 	GATE_AUD1(CLK_AUD_I2S1_BCLK, "aud_i2s1_bclk", "top_audio", 4),
 	GATE_AUD1(CLK_AUD_I2S2_BCLK, "aud_i2s2_bclk", "top_audio", 5),
 	GATE_AUD1(CLK_AUD_I2S3_BCLK, "aud_i2s3_bclk", "top_audio", 6),
@@ -79,7 +79,7 @@ static const struct afe_gate aud_clks[CLK_AUD_NR_CLK] = {
 	GATE_AUD1(CLK_AUD_3RD_DAC_TML, "aud_3rd_dac_tml", "top_audio", 30),
 	GATE_AUD1(CLK_AUD_3RD_DAC_HIRES, "aud_3rd_dac_hires", "top_audio_h", 31),
 
-	/* AUD2 */
+	 
 	GATE_AUD2(CLK_AUD_ETDM_IN1_BCLK, "aud_etdm_in1_bclk", "top_audio", 23),
 	GATE_AUD2(CLK_AUD_ETDM_OUT1_BCLK, "aud_etdm_out1_bclk", "top_audio", 24),
 };
@@ -134,7 +134,7 @@ int mt8186_audsys_clk_register(struct mtk_base_afe *afe)
 			continue;
 		}
 
-		/* add clk_lookup for devm_clk_get(SND_SOC_DAPM_CLOCK_SUPPLY) */
+		 
 		cl = kzalloc(sizeof(*cl), GFP_KERNEL);
 		if (!cl)
 			return -ENOMEM;

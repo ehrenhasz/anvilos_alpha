@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <linux/cfm_bridge.h>
 #include <uapi/linux/cfm_bridge.h>
@@ -53,7 +53,7 @@ static struct net_bridge_port *br_mep_get_port(struct net_bridge *br,
 	return NULL;
 }
 
-/* Calculate the CCM interval in us. */
+ 
 static u32 interval_to_us(enum br_cfm_ccm_interval interval)
 {
 	switch (interval) {
@@ -77,7 +77,7 @@ static u32 interval_to_us(enum br_cfm_ccm_interval interval)
 	return 0;
 }
 
-/* Convert the interface interval to CCM PDU value. */
+ 
 static u32 interval_to_pdu(enum br_cfm_ccm_interval interval)
 {
 	switch (interval) {
@@ -101,7 +101,7 @@ static u32 interval_to_pdu(enum br_cfm_ccm_interval interval)
 	return 0;
 }
 
-/* Convert the CCM PDU value to interval on interface. */
+ 
 static u32 pdu_to_interval(u32 value)
 {
 	switch (value) {
@@ -130,10 +130,7 @@ static void ccm_rx_timer_start(struct br_cfm_peer_mep *peer_mep)
 	u32 interval_us;
 
 	interval_us = interval_to_us(peer_mep->mep->cc_config.exp_interval);
-	/* Function ccm_rx_dwork must be called with 1/4
-	 * of the configured CC 'expected_interval'
-	 * in order to detect CCM defect after 3.25 interval.
-	 */
+	 
 	queue_delayed_work(system_wq, &peer_mep->ccm_rx_dwork,
 			   usecs_to_jiffies(interval_us / 4));
 }
@@ -185,21 +182,18 @@ static struct sk_buff *ccm_frame_build(struct br_cfm_mep *mep,
 	}
 	skb->dev = b_port->dev;
 	rcu_read_unlock();
-	/* The device cannot be deleted until the work_queue functions has
-	 * completed. This function is called from ccm_tx_work_expired()
-	 * that is a work_queue functions.
-	 */
+	 
 
 	skb->protocol = htons(ETH_P_CFM);
 	skb->priority = CFM_FRAME_PRIO;
 
-	/* Ethernet header */
+	 
 	eth_hdr = skb_put(skb, sizeof(*eth_hdr));
 	ether_addr_copy(eth_hdr->h_dest, tx_info->dmac.addr);
 	ether_addr_copy(eth_hdr->h_source, mep->config.unicast_mac.addr);
 	eth_hdr->h_proto = htons(ETH_P_CFM);
 
-	/* Common CFM Header */
+	 
 	common_hdr = skb_put(skb, sizeof(*common_hdr));
 	common_hdr->mdlevel_version = mep->config.mdlevel << 5;
 	common_hdr->opcode = BR_CFM_OPCODE_CCM;
@@ -207,7 +201,7 @@ static struct sk_buff *ccm_frame_build(struct br_cfm_mep *mep,
 			    interval_to_pdu(mep->cc_config.exp_interval);
 	common_hdr->tlv_offset = CFM_CCM_TLV_OFFSET;
 
-	/* Sequence number */
+	 
 	snumber = skb_put(skb, sizeof(*snumber));
 	if (tx_info->seq_no_update) {
 		*snumber = cpu_to_be32(mep->ccm_tx_snumber);
@@ -222,33 +216,29 @@ static struct sk_buff *ccm_frame_build(struct br_cfm_mep *mep,
 	maid = skb_put(skb, sizeof(*maid));
 	memcpy(maid->data, mep->cc_config.exp_maid.data, sizeof(maid->data));
 
-	/* ITU reserved (CFM_CCM_ITU_RESERVED_SIZE octets) */
+	 
 	itu_reserved = skb_put(skb, CFM_CCM_ITU_RESERVED_SIZE);
 	memset(itu_reserved, 0, CFM_CCM_ITU_RESERVED_SIZE);
 
-	/* Generel CFM TLV format:
-	 * TLV type:		one byte
-	 * TLV value length:	two bytes
-	 * TLV value:		'TLV value length' bytes
-	 */
+	 
 
-	/* Port status TLV. The value length is 1. Total of 4 bytes. */
+	 
 	if (tx_info->port_tlv) {
 		status_tlv = skb_put(skb, sizeof(*status_tlv));
 		*status_tlv = cpu_to_be32((CFM_PORT_STATUS_TLV_TYPE << 24) |
-					  (1 << 8) |	/* Value length */
+					  (1 << 8) |	 
 					  (tx_info->port_tlv_value & 0xFF));
 	}
 
-	/* Interface status TLV. The value length is 1. Total of 4 bytes. */
+	 
 	if (tx_info->if_tlv) {
 		status_tlv = skb_put(skb, sizeof(*status_tlv));
 		*status_tlv = cpu_to_be32((CFM_IF_STATUS_TLV_TYPE << 24) |
-					  (1 << 8) |	/* Value length */
+					  (1 << 8) |	 
 					  (tx_info->if_tlv_value & 0xFF));
 	}
 
-	/* End TLV */
+	 
 	e_tlv = skb_put(skb, sizeof(*e_tlv));
 	*e_tlv = CFM_ENDE_TLV_TYPE;
 
@@ -261,9 +251,7 @@ static void ccm_frame_tx(struct sk_buff *skb)
 	dev_queue_xmit(skb);
 }
 
-/* This function is called with the configured CC 'expected_interval'
- * in order to drive CCM transmission when enabled.
- */
+ 
 static void ccm_tx_work_expired(struct work_struct *work)
 {
 	struct delayed_work *del_work;
@@ -275,7 +263,7 @@ static void ccm_tx_work_expired(struct work_struct *work)
 	mep = container_of(del_work, struct br_cfm_mep, ccm_tx_dwork);
 
 	if (time_before_eq(mep->ccm_tx_end, jiffies)) {
-		/* Transmission period has ended */
+		 
 		mep->cc_ccm_tx_info.period = 0;
 		return;
 	}
@@ -289,9 +277,7 @@ static void ccm_tx_work_expired(struct work_struct *work)
 			   usecs_to_jiffies(interval_us));
 }
 
-/* This function is called with 1/4 of the configured CC 'expected_interval'
- * in order to detect CCM defect after 3.25 interval.
- */
+ 
 static void ccm_rx_work_expired(struct work_struct *work)
 {
 	struct br_cfm_peer_mep *peer_mep;
@@ -301,20 +287,18 @@ static void ccm_rx_work_expired(struct work_struct *work)
 	del_work = to_delayed_work(work);
 	peer_mep = container_of(del_work, struct br_cfm_peer_mep, ccm_rx_dwork);
 
-	/* After 13 counts (4 * 3,25) then 3.25 intervals are expired */
+	 
 	if (peer_mep->ccm_rx_count_miss < 13) {
-		/* 3.25 intervals are NOT expired without CCM reception */
+		 
 		peer_mep->ccm_rx_count_miss++;
 
-		/* Start timer again */
+		 
 		ccm_rx_timer_start(peer_mep);
 	} else {
-		/* 3.25 intervals are expired without CCM reception.
-		 * CCM defect detected
-		 */
+		 
 		peer_mep->cc_status.ccm_defect = true;
 
-		/* Change in CCM defect status - notify */
+		 
 		rcu_read_lock();
 		b_port = rcu_dereference(peer_mep->mep->b_port);
 		if (b_port)
@@ -336,7 +320,7 @@ static u32 ccm_tlv_extract(struct sk_buff *skb, u32 index,
 	if (!e_tlv)
 		return 0;
 
-	/* TLV is present - get the status TLV */
+	 
 	s_tlv = skb_header_pointer(skb,
 				   index,
 				   sizeof(_s_tlv), &_s_tlv);
@@ -345,28 +329,25 @@ static u32 ccm_tlv_extract(struct sk_buff *skb, u32 index,
 
 	h_s_tlv = ntohl(*s_tlv);
 	if ((h_s_tlv >> 24) == CFM_IF_STATUS_TLV_TYPE) {
-		/* Interface status TLV */
+		 
 		peer_mep->cc_status.tlv_seen = true;
 		peer_mep->cc_status.if_tlv_value = (h_s_tlv & 0xFF);
 	}
 
 	if ((h_s_tlv >> 24) == CFM_PORT_STATUS_TLV_TYPE) {
-		/* Port status TLV */
+		 
 		peer_mep->cc_status.tlv_seen = true;
 		peer_mep->cc_status.port_tlv_value = (h_s_tlv & 0xFF);
 	}
 
-	/* The Sender ID TLV is not handled */
-	/* The Organization-Specific TLV is not handled */
+	 
+	 
 
-	/* Return the length of this tlv.
-	 * This is the length of the value field plus 3 bytes for size of type
-	 * field and length field
-	 */
+	 
 	return ((h_s_tlv >> 8) & 0xFFFF) + 3;
 }
 
-/* note: already called with rcu_read_lock */
+ 
 static int br_cfm_frame_rx(struct net_bridge_port *port, struct sk_buff *skb)
 {
 	u32 mdlevel, interval, size, index, max;
@@ -392,29 +373,29 @@ static int br_cfm_frame_rx(struct net_bridge_port *port, struct sk_buff *skb)
 	br = port->br;
 	mep = br_mep_find_ifindex(br, port->dev->ifindex);
 	if (unlikely(!mep))
-		/* No MEP on this port - must be forwarded */
+		 
 		return 0;
 
 	mdlevel = hdr->mdlevel_version >> 5;
 	if (mdlevel > mep->config.mdlevel)
-		/* The level is above this MEP level - must be forwarded */
+		 
 		return 0;
 
 	if ((hdr->mdlevel_version & 0x1F) != 0) {
-		/* Invalid version */
+		 
 		mep->status.version_unexp_seen = true;
 		return 1;
 	}
 
 	if (mdlevel < mep->config.mdlevel) {
-		/* The level is below this MEP level */
+		 
 		mep->status.rx_level_low_seen = true;
 		return 1;
 	}
 
 	if (hdr->opcode == BR_CFM_OPCODE_CCM) {
-		/* CCM PDU received. */
-		/* MA ID is after common header + sequence number + MEP ID */
+		 
+		 
 		maid = skb_header_pointer(skb,
 					  CFM_CCM_PDU_MAID_OFFSET,
 					  sizeof(_maid), &_maid);
@@ -422,10 +403,10 @@ static int br_cfm_frame_rx(struct net_bridge_port *port, struct sk_buff *skb)
 			return 1;
 		if (memcmp(maid->data, mep->cc_config.exp_maid.data,
 			   sizeof(maid->data)))
-			/* MA ID not as expected */
+			 
 			return 1;
 
-		/* MEP ID is after common header + sequence number */
+		 
 		mepid = skb_header_pointer(skb,
 					   CFM_CCM_PDU_MEPID_OFFSET,
 					   sizeof(_mepid), &_mepid);
@@ -435,51 +416,49 @@ static int br_cfm_frame_rx(struct net_bridge_port *port, struct sk_buff *skb)
 		if (!peer_mep)
 			return 1;
 
-		/* Interval is in common header flags */
+		 
 		interval = hdr->flags & 0x07;
 		if (mep->cc_config.exp_interval != pdu_to_interval(interval))
-			/* Interval not as expected */
+			 
 			return 1;
 
-		/* A valid CCM frame is received */
+		 
 		if (peer_mep->cc_status.ccm_defect) {
 			peer_mep->cc_status.ccm_defect = false;
 
-			/* Change in CCM defect status - notify */
+			 
 			br_cfm_notify(RTM_NEWLINK, port);
 
-			/* Start CCM RX timer */
+			 
 			ccm_rx_timer_start(peer_mep);
 		}
 
 		peer_mep->cc_status.seen = true;
 		peer_mep->ccm_rx_count_miss = 0;
 
-		/* RDI is in common header flags */
+		 
 		peer_mep->cc_status.rdi = (hdr->flags & 0x80) ? true : false;
 
-		/* Sequence number is after common header */
+		 
 		snumber = skb_header_pointer(skb,
 					     CFM_CCM_PDU_SEQNR_OFFSET,
 					     sizeof(_snumber), &_snumber);
 		if (!snumber)
 			return 1;
 		if (ntohl(*snumber) != (mep->ccm_rx_snumber + 1))
-			/* Unexpected sequence number */
+			 
 			peer_mep->cc_status.seq_unexp_seen = true;
 
 		mep->ccm_rx_snumber = ntohl(*snumber);
 
-		/* TLV end is after common header + sequence number + MEP ID +
-		 * MA ID + ITU reserved
-		 */
+		 
 		index = CFM_CCM_PDU_TLV_OFFSET;
 		max = 0;
-		do { /* Handle all TLVs */
+		do {  
 			size = ccm_tlv_extract(skb, index, peer_mep);
 			index += size;
 			max += 1;
-		} while (size != 0 && max < 4); /* Max four TLVs possible */
+		} while (size != 0 && max < 4);  
 
 		return 1;
 	}
@@ -537,7 +516,7 @@ int br_cfm_mep_create(struct net_bridge *br,
 		return -EEXIST;
 	}
 
-	/* In PORT domain only one instance can be created per port */
+	 
 	if (create->domain == BR_CFM_PORT) {
 		mep = br_mep_find_ifindex(br, create->ifindex);
 		if (mep) {
@@ -574,7 +553,7 @@ static void mep_delete_implementation(struct net_bridge *br,
 
 	ASSERT_RTNL();
 
-	/* Empty and free peer MEP list */
+	 
 	hlist_for_each_entry_safe(peer_mep, n_store, &mep->peer_mep_list, head) {
 		cancel_delayed_work_sync(&peer_mep->ccm_rx_dwork);
 		hlist_del_rcu(&peer_mep->head);
@@ -649,17 +628,17 @@ int br_cfm_cc_config_set(struct net_bridge *br,
 		return -ENOENT;
 	}
 
-	/* Check for no change in configuration */
+	 
 	if (memcmp(config, &mep->cc_config, sizeof(*config)) == 0)
 		return 0;
 
 	if (config->enable && !mep->cc_config.enable)
-		/* CC is enabled */
+		 
 		hlist_for_each_entry(peer_mep, &mep->peer_mep_list, head)
 			cc_peer_enable(peer_mep);
 
 	if (!config->enable && mep->cc_config.enable)
-		/* CC is disabled */
+		 
 		hlist_for_each_entry(peer_mep, &mep->peer_mep_list, head)
 			cc_peer_disable(peer_mep);
 
@@ -775,25 +754,23 @@ int br_cfm_cc_ccm_tx(struct net_bridge *br, const u32 instance,
 	}
 
 	if (memcmp(tx_info, &mep->cc_ccm_tx_info, sizeof(*tx_info)) == 0) {
-		/* No change in tx_info. */
+		 
 		if (mep->cc_ccm_tx_info.period == 0)
-			/* Transmission is not enabled - just return */
+			 
 			return 0;
 
-		/* Transmission is ongoing, the end time is recalculated */
+		 
 		mep->ccm_tx_end = jiffies +
 				  usecs_to_jiffies(tx_info->period * 1000000);
 		return 0;
 	}
 
 	if (tx_info->period == 0 && mep->cc_ccm_tx_info.period == 0)
-		/* Some change in info and transmission is not ongoing */
+		 
 		goto save;
 
 	if (tx_info->period != 0 && mep->cc_ccm_tx_info.period != 0) {
-		/* Some change in info and transmission is ongoing
-		 * The end time is recalculated
-		 */
+		 
 		mep->ccm_tx_end = jiffies +
 				  usecs_to_jiffies(tx_info->period * 1000000);
 
@@ -805,9 +782,7 @@ int br_cfm_cc_ccm_tx(struct net_bridge *br, const u32 instance,
 		goto save;
 	}
 
-	/* Start delayed work to transmit CCM frames. It is done with zero delay
-	 * to send first frame immediately
-	 */
+	 
 	mep->ccm_tx_end = jiffies + usecs_to_jiffies(tx_info->period * 1000000);
 	queue_delayed_work(system_wq, &mep->ccm_tx_dwork, 0);
 
@@ -852,8 +827,7 @@ bool br_cfm_created(struct net_bridge *br)
 	return !hlist_empty(&br->mep_list);
 }
 
-/* Deletes the CFM instances on a specific bridge port
- */
+ 
 void br_cfm_port_del(struct net_bridge *br, struct net_bridge_port *port)
 {
 	struct hlist_node *n_store;

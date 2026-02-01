@@ -1,19 +1,8 @@
-/*
- * block2mtd.c - create an mtd from a block device
- *
- * Copyright (C) 2001,2002	Simon Evans <spse@secret.org.uk>
- * Copyright (C) 2004-2006	Joern Engel <joern@wh.fh-wedel.de>
- *
- * Licence: GPL
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
-/*
- * When the first attempt at device initialization fails, we may need to
- * wait a little bit and retry. This timeout, by default 3 seconds, gives
- * device time to start up. Required on BCM2708 and a few other chipsets.
- */
+ 
 #define MTD_DEFAULT_TIMEOUT	3
 
 #include <linux/module.h>
@@ -31,10 +20,10 @@
 #include <linux/slab.h>
 #include <linux/major.h>
 
-/* Maximum number of comma-separated items in the 'block2mtd=' parameter */
+ 
 #define BLOCK2MTD_PARAM_MAX_COUNT 3
 
-/* Info for the block device */
+ 
 struct block2mtd_dev {
 	struct list_head list;
 	struct block_device *blkdev;
@@ -43,7 +32,7 @@ struct block2mtd_dev {
 };
 
 
-/* Static info about the MTD, used in cleanup_module */
+ 
 static LIST_HEAD(blkmtd_device_list);
 
 
@@ -52,12 +41,12 @@ static struct page *page_read(struct address_space *mapping, pgoff_t index)
 	return read_mapping_page(mapping, index, NULL);
 }
 
-/* erase a specified part of the device */
+ 
 static int _block2mtd_erase(struct block2mtd_dev *dev, loff_t to, size_t len)
 {
 	struct address_space *mapping = dev->blkdev->bd_inode->i_mapping;
 	struct page *page;
-	pgoff_t index = to >> PAGE_SHIFT;	// page index
+	pgoff_t index = to >> PAGE_SHIFT;	
 	int pages = len >> PAGE_SHIFT;
 	u_long *p;
 	u_long *max;
@@ -112,9 +101,9 @@ static int block2mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 
 	while (len) {
 		if ((offset + len) > PAGE_SIZE)
-			cpylen = PAGE_SIZE - offset;	// multiple pages
+			cpylen = PAGE_SIZE - offset;	
 		else
-			cpylen = len;	// this page
+			cpylen = len;	
 		len = len - cpylen;
 
 		page = page_read(dev->blkdev->bd_inode->i_mapping, index);
@@ -134,21 +123,21 @@ static int block2mtd_read(struct mtd_info *mtd, loff_t from, size_t len,
 }
 
 
-/* write data to the underlying device */
+ 
 static int _block2mtd_write(struct block2mtd_dev *dev, const u_char *buf,
 		loff_t to, size_t len, size_t *retlen)
 {
 	struct page *page;
 	struct address_space *mapping = dev->blkdev->bd_inode->i_mapping;
-	pgoff_t index = to >> PAGE_SHIFT;	// page index
-	int offset = to & ~PAGE_MASK;	// page offset
+	pgoff_t index = to >> PAGE_SHIFT;	
+	int offset = to & ~PAGE_MASK;	
 	int cpylen;
 
 	while (len) {
 		if ((offset+len) > PAGE_SIZE)
-			cpylen = PAGE_SIZE - offset;	// multiple pages
+			cpylen = PAGE_SIZE - offset;	
 		else
-			cpylen = len;			// this page
+			cpylen = len;			
 		len = len - cpylen;
 
 		page = page_read(mapping, index);
@@ -190,7 +179,7 @@ static int block2mtd_write(struct mtd_info *mtd, loff_t to, size_t len,
 }
 
 
-/* sync the device - wait until the write queue is empty */
+ 
 static void block2mtd_sync(struct mtd_info *mtd)
 {
 	struct block2mtd_dev *dev = mtd->priv;
@@ -215,10 +204,7 @@ static void block2mtd_free_device(struct block2mtd_dev *dev)
 	kfree(dev);
 }
 
-/*
- * This function is marked __ref because it calls the __init marked
- * early_lookup_bdev when called from the early boot code.
- */
+ 
 static struct block_device __ref *mdtblock_early_get_bdev(const char *devname,
 		blk_mode_t mode, int timeout, struct block2mtd_dev *dev)
 {
@@ -226,25 +212,16 @@ static struct block_device __ref *mdtblock_early_get_bdev(const char *devname,
 #ifndef MODULE
 	int i;
 
-	/*
-	 * We can't use early_lookup_bdev from a running system.
-	 */
+	 
 	if (system_state >= SYSTEM_RUNNING)
 		return bdev;
 
-	/*
-	 * We might not have the root device mounted at this point.
-	 * Try to resolve the device name by other means.
-	 */
+	 
 	for (i = 0; i <= timeout; i++) {
 		dev_t devt;
 
 		if (i)
-			/*
-			 * Calling wait_for_device_probe in the first loop
-			 * was not enough, sleep for a bit in subsequent
-			 * go-arounds.
-			 */
+			 
 			msleep(1000);
 		wait_for_device_probe();
 
@@ -273,7 +250,7 @@ static struct block2mtd_dev *add_device(char *devname, int erase_size,
 	if (!dev)
 		return NULL;
 
-	/* Get a handle on the device */
+	 
 	bdev = blkdev_get_by_path(devname, mode, dev, NULL);
 	if (IS_ERR(bdev))
 		bdev = mdtblock_early_get_bdev(devname, mode, timeout, dev);
@@ -295,8 +272,8 @@ static struct block2mtd_dev *add_device(char *devname, int erase_size,
 
 	mutex_init(&dev->write_mutex);
 
-	/* Setup the MTD structure */
-	/* make the name contain the block device in */
+	 
+	 
 	if (!label)
 		name = kasprintf(GFP_KERNEL, "block2mtd: %s", devname);
 	else
@@ -320,7 +297,7 @@ static struct block2mtd_dev *add_device(char *devname, int erase_size,
 	dev->mtd.owner = THIS_MODULE;
 
 	if (mtd_device_register(&dev->mtd, NULL, 0)) {
-		/* Device didn't get added, so free the entry */
+		 
 		goto err_destroy_mutex;
 	}
 
@@ -339,12 +316,7 @@ err_free_block2mtd:
 }
 
 
-/* This function works similar to reguler strtoul.  In addition, it
- * allows some suffixes for a more human-readable number format:
- * ki, Ki, kiB, KiB	- multiply result with 1024
- * Mi, MiB		- multiply result with 1024^2
- * Gi, GiB		- multiply result with 1024^3
- */
+ 
 static int ustrtoul(const char *cp, char **endp, unsigned int base)
 {
 	unsigned long result = simple_strtoul(cp, endp, base);
@@ -358,7 +330,7 @@ static int ustrtoul(const char *cp, char **endp, unsigned int base)
 	case 'K':
 	case 'k':
 		result *= 1024;
-	/* By dwmw2 editorial decree, "ki", "Mi" or "Gi" are to be used. */
+	 
 		if ((*endp)[1] == 'i') {
 			if ((*endp)[2] == 'B')
 				(*endp) += 3;
@@ -394,13 +366,13 @@ static inline void kill_final_newline(char *str)
 
 #ifndef MODULE
 static int block2mtd_init_called = 0;
-/* 80 for device, 12 for erase size */
+ 
 static char block2mtd_paramline[80 + 12];
 #endif
 
 static int block2mtd_setup2(const char *val)
 {
-	/* 80 for device, 12 for erase size, 80 for name, 8 for timeout */
+	 
 	char buf[80 + 12 + 80 + 8];
 	char *str = buf;
 	char *token[BLOCK2MTD_PARAM_MAX_COUNT];
@@ -437,7 +409,7 @@ static int block2mtd_setup2(const char *val)
 		return 0;
 	}
 
-	/* Optional argument when custom label is used */
+	 
 	if (token[1] && strlen(token[1])) {
 		ret = parse_num(&erase_size, token[1]);
 		if (ret) {
@@ -462,20 +434,12 @@ static int block2mtd_setup(const char *val, const struct kernel_param *kp)
 #ifdef MODULE
 	return block2mtd_setup2(val);
 #else
-	/* If more parameters are later passed in via
-	   /sys/module/block2mtd/parameters/block2mtd
-	   and block2mtd_init() has already been called,
-	   we can parse the argument now. */
+	 
 
 	if (block2mtd_init_called)
 		return block2mtd_setup2(val);
 
-	/* During early boot stage, we only save the parameters
-	   here. We must parse them later: if the param passed
-	   from kernel boot command line, block2mtd_setup() is
-	   called so early that it is not possible to resolve
-	   the device (even kmalloc() fails). Deter that work to
-	   block2mtd_setup2(). */
+	 
 
 	strscpy(block2mtd_paramline, val, sizeof(block2mtd_paramline));
 
@@ -505,7 +469,7 @@ static void block2mtd_exit(void)
 {
 	struct list_head *pos, *next;
 
-	/* Remove the MTD devices */
+	 
 	list_for_each_safe(pos, next, &blkmtd_device_list) {
 		struct block2mtd_dev *dev = list_entry(pos, typeof(*dev), list);
 		block2mtd_sync(&dev->mtd);

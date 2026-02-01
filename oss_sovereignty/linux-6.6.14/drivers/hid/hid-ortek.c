@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  HID driver for various devices which are apparently based on the same chipset
- *  from certain vendor which produces chips that contain wrong LogicalMaximum
- *  value in their HID report descriptor. Currently supported devices are:
- *
- *    Ortek PKB-1700
- *    Ortek WKB-2000
- *    iHome IMAC-A210S
- *    Skycable wireless presenter
- *
- *  Copyright (c) 2010 Johnathon Harris <jmharris@gmail.com>
- *  Copyright (c) 2011 Jiri Kosina
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/device.h>
 #include <linux/hid.h>

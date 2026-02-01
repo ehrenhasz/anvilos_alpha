@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <vmlinux.h>
 #include <bpf/bpf_tracing.h>
@@ -17,11 +17,7 @@ struct {
 	__type(value, u64);
 } sk_storage_map SEC(".maps");
 
-/* Prototype for all of the program trace events below:
- *
- * TRACE_EVENT(task_newtask,
- *         TP_PROTO(struct task_struct *p, u64 clone_flags)
- */
+ 
 
 SEC("tp_btf/task_newtask")
 __failure __msg("R2 must be")
@@ -39,7 +35,7 @@ int BPF_PROG(test_invalid_nested_offset, struct task_struct *task, u64 clone_fla
 	return 0;
 }
 
-/* Although R2 is of type sk_buff but sock_common is expected, we will hit untrusted ptr first. */
+ 
 SEC("tp_btf/tcp_probe")
 __failure __msg("R2 type=untrusted_ptr_ expected=ptr_, trusted_ptr_, rcu_ptr_")
 int BPF_PROG(test_invalid_skb_field, struct sock *sk, struct sk_buff *skb)

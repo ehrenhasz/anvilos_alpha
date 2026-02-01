@@ -1,34 +1,4 @@
-/* dircolors - output commands to set the LS_COLOR environment variable
-   Copyright (C) 1996-2023 Free Software Foundation, Inc.
-   Copyright (C) 1994, 1995, 1997, 1998, 1999, 2000 H. Peter Anvin
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <sys/types.h>
-#include <fnmatch.h>
-#include <getopt.h>
-
-#include "system.h"
-#include "dircolors.h"
-#include "c-strcase.h"
-#include "obstack.h"
-#include "quote.h"
-#include "stdio--.h"
-
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "dircolors"
 
 #define AUTHORS proper_name ("H. Peter Anvin")
@@ -45,8 +15,7 @@ enum Shell_syntax
 
 #define APPEND_CHAR(C) obstack_1grow (&lsc_obstack, C)
 
-/* Accumulate in this obstack the value for the LS_COLORS environment
-   variable.  */
+ 
 static struct obstack lsc_obstack;
 
 static char const *const slack_codes[] =
@@ -68,11 +37,10 @@ static char const *const ls_codes[] =
 };
 static_assert (ARRAY_CARDINALITY (slack_codes) == ARRAY_CARDINALITY (ls_codes));
 
-/* Whether to output escaped ls color codes for display.  */
+ 
 static bool print_ls_colors;
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   PRINT_LS_COLORS_OPTION = CHAR_MAX + 1,

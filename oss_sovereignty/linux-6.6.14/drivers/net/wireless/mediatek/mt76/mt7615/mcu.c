@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2019 MediaTek Inc.
- *
- * Author: Roy Luo <royluo@google.com>
- *         Ryder Lee <ryder.lee@mediatek.com>
- */
+
+ 
 
 #include <linux/firmware.h>
 #include "mt7615.h"
@@ -69,7 +65,7 @@ void mt7615_mcu_fill_msg(struct mt7615_dev *dev, struct sk_buff *skb,
 	__le32 *txd;
 	u32 val;
 
-	/* TODO: make dynamic based on msg type */
+	 
 	dev->mt76.mcu.timeout = 20 * HZ;
 
 	seq = ++dev->mt76.mcu.msg_seq & 0xf;
@@ -247,7 +243,7 @@ static int mt7615_mcu_drv_pmctrl(struct mt7615_dev *dev)
 	int err;
 
 	if (is_mt7663(mdev)) {
-		/* Clear firmware own via N9 eint */
+		 
 		mt76_wr(dev, MT_PCIE_DOORBELL_PUSH, MT_CFG_LPCR_HOST_DRV_OWN);
 		mt76_poll(dev, MT_CONN_ON_MISC, MT_CFG_LPCR_HOST_FW_OWN, 0, 3000);
 
@@ -495,7 +491,7 @@ mt7615_mcu_beacon_loss_event(struct mt7615_dev *dev, struct sk_buff *skb)
 {
 	struct mt76_connac_beacon_loss_event *event;
 	struct mt76_phy *mphy;
-	u8 band_idx = 0; /* DBDC support */
+	u8 band_idx = 0;  
 
 	skb_pull(skb, sizeof(struct mt7615_mcu_rxd));
 	event = (struct mt76_connac_beacon_loss_event *)skb->data;
@@ -515,7 +511,7 @@ mt7615_mcu_bss_event(struct mt7615_dev *dev, struct sk_buff *skb)
 {
 	struct mt76_connac_mcu_bss_event *event;
 	struct mt76_phy *mphy;
-	u8 band_idx = 0; /* DBDC support */
+	u8 band_idx = 0;  
 
 	skb_pull(skb, sizeof(struct mt7615_mcu_rxd));
 	event = (struct mt76_connac_mcu_bss_event *)skb->data;
@@ -684,7 +680,7 @@ mt7615_mcu_add_beacon_offload(struct mt7615_dev *dev,
 		__le16 tim_ie_pos;
 		u8 pkt[512];
 		u8 csa_cnt;
-		/* bss color change */
+		 
 		u8 bcc_cnt;
 		__le16 bcc_ie_pos;
 	} __packed req = {
@@ -1047,14 +1043,9 @@ mt7615_mcu_uni_add_beacon_offload(struct mt7615_dev *dev,
 			__le16 tim_ie_pos;
 			__le16 csa_ie_pos;
 			__le16 bcc_ie_pos;
-			/* 0: disable beacon offload
-			 * 1: enable beacon offload
-			 * 2: update probe respond offload
-			 */
+			 
 			u8 enable;
-			/* 0: legacy format (TXD + payload)
-			 * 1: only cap field IE
-			 */
+			 
 			u8 type;
 			__le16 pkt_len;
 			u8 pkt[512];
@@ -1664,7 +1655,7 @@ int __mt7663_load_firmware(struct mt7615_dev *dev)
 #ifdef CONFIG_PM
 	if (mt7615_firmware_offload(dev))
 		dev->mt76.hw->wiphy->wowlan = &mt76_connac_wowlan_support;
-#endif /* CONFIG_PM */
+#endif  
 
 	dev_dbg(dev->mt76.dev, "Firmware init done\n");
 
@@ -1905,13 +1896,13 @@ int mt7615_mcu_set_pulse_th(struct mt7615_dev *dev,
 {
 	struct {
 		__le16 tag;
-		__le32 max_width;	/* us */
-		__le32 max_pwr;		/* dbm */
-		__le32 min_pwr;		/* dbm */
-		__le32 min_stgr_pri;	/* us */
-		__le32 max_stgr_pri;	/* us */
-		__le32 min_cr_pri;	/* us */
-		__le32 max_cr_pri;	/* us */
+		__le32 max_width;	 
+		__le32 max_pwr;		 
+		__le32 min_pwr;		 
+		__le32 min_stgr_pri;	 
+		__le32 max_stgr_pri;	 
+		__le32 min_cr_pri;	 
+		__le32 max_cr_pri;	 
 	} req = {
 		.tag = cpu_to_le16(0x3),
 #define __req_field(field) .field = cpu_to_le32(pulse->field)
@@ -1995,7 +1986,7 @@ int mt7615_mcu_rdd_send_pattern(struct mt7615_dev *dev)
 	if (dev->radar_pattern.n_pulses > ARRAY_SIZE(req.pattern))
 		return -EINVAL;
 
-	/* TODO: add some noise here */
+	 
 	for (i = 0; i < dev->radar_pattern.n_pulses; i++) {
 		u32 ts = start_time + i * dev->radar_pattern.period;
 
@@ -2128,7 +2119,7 @@ int mt7615_mcu_set_chan_info(struct mt7615_phy *phy, int cmd)
 		u8 rx_streams_mask;
 		u8 switch_reason;
 		u8 band_idx;
-		/* for 80+80 only */
+		 
 		u8 center_chan2;
 		__le16 cac_case;
 		u8 channel_band;

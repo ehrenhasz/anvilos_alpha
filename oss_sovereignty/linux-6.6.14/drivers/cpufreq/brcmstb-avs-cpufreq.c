@@ -1,45 +1,6 @@
-/*
- * CPU frequency scaling for Broadcom SoCs with AVS firmware that
- * supports DVS or DVFS
- *
- * Copyright (c) 2016 Broadcom
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
-/*
- * "AVS" is the name of a firmware developed at Broadcom. It derives
- * its name from the technique called "Adaptive Voltage Scaling".
- * Adaptive voltage scaling was the original purpose of this firmware.
- * The AVS firmware still supports "AVS mode", where all it does is
- * adaptive voltage scaling. However, on some newer Broadcom SoCs, the
- * AVS Firmware, despite its unchanged name, also supports DFS mode and
- * DVFS mode.
- *
- * In the context of this document and the related driver, "AVS" by
- * itself always means the Broadcom firmware and never refers to the
- * technique called "Adaptive Voltage Scaling".
- *
- * The Broadcom STB AVS CPUfreq driver provides voltage and frequency
- * scaling on Broadcom SoCs using AVS firmware with support for DFS and
- * DVFS. The AVS firmware is running on its own co-processor. The
- * driver supports both uniprocessor (UP) and symmetric multiprocessor
- * (SMP) systems which share clock and voltage across all CPUs.
- *
- * Actual voltage and frequency scaling is done solely by the AVS
- * firmware. This driver does not change frequency or voltage itself.
- * It provides a standard CPUfreq interface to the rest of the kernel
- * and to userland. It interfaces with the AVS firmware to effect the
- * requested changes and to report back the current system status in a
- * way that is expected by existing tools.
- */
+ 
 
 #include <linux/cpufreq.h>
 #include <linux/delay.h>
@@ -50,16 +11,12 @@
 #include <linux/platform_device.h>
 #include <linux/semaphore.h>
 
-/* Max number of arguments AVS calls take */
+ 
 #define AVS_MAX_CMD_ARGS	4
-/*
- * This macro is used to generate AVS parameter register offsets. For
- * x >= AVS_MAX_CMD_ARGS, it returns 0 to protect against accidental memory
- * access outside of the parameter range. (Offset 0 is the first parameter.)
- */
+ 
 #define AVS_PARAM_MULT(x)	((x) < AVS_MAX_CMD_ARGS ? (x) : 0)
 
-/* AVS Mailbox Register offsets */
+ 
 #define AVS_MBOX_COMMAND	0x00
 #define AVS_MBOX_STATUS		0x04
 #define AVS_MBOX_VOLTAGE0	0x08
@@ -79,7 +36,7 @@
 #define AVS_MBOX_MV1		0x4c
 #define AVS_MBOX_FREQUENCY	0x50
 
-/* AVS Commands */
+ 
 #define AVS_CMD_AVAILABLE	0x00
 #define AVS_CMD_DISABLE		0x10
 #define AVS_CMD_ENABLE		0x11
@@ -90,32 +47,26 @@
 #define AVS_CMD_S3_ENTER	0x16
 #define AVS_CMD_S3_EXIT		0x17
 #define AVS_CMD_BALANCE		0x18
-/* PMAP and P-STATE commands */
+ 
 #define AVS_CMD_GET_PMAP	0x30
 #define AVS_CMD_SET_PMAP	0x31
 #define AVS_CMD_GET_PSTATE	0x40
 #define AVS_CMD_SET_PSTATE	0x41
 
-/* Different modes AVS supports (for GET_PMAP/SET_PMAP) */
+ 
 #define AVS_MODE_AVS		0x0
 #define AVS_MODE_DFS		0x1
 #define AVS_MODE_DVS		0x2
 #define AVS_MODE_DVFS		0x3
 
-/*
- * PMAP parameter p1
- * unused:31-24, mdiv_p0:23-16, unused:15-14, pdiv:13-10 , ndiv_int:9-0
- */
+ 
 #define NDIV_INT_SHIFT		0
 #define NDIV_INT_MASK		0x3ff
 #define PDIV_SHIFT		10
 #define PDIV_MASK		0xf
 #define MDIV_P0_SHIFT		16
 #define MDIV_P0_MASK		0xff
-/*
- * PMAP parameter p2
- * mdiv_p4:31-24, mdiv_p3:23-16, mdiv_p2:15:8, mdiv_p1:7:0
- */
+ 
 #define MDIV_P1_SHIFT		0
 #define MDIV_P1_MASK		0xff
 #define MDIV_P2_SHIFT		8
@@ -125,7 +76,7 @@
 #define MDIV_P4_SHIFT		24
 #define MDIV_P4_MASK		0xff
 
-/* Different P-STATES AVS supports (for GET_PSTATE/SET_PSTATE) */
+ 
 #define AVS_PSTATE_P0		0x0
 #define AVS_PSTATE_P1		0x1
 #define AVS_PSTATE_P2		0x2
@@ -133,30 +84,30 @@
 #define AVS_PSTATE_P4		0x4
 #define AVS_PSTATE_MAX		AVS_PSTATE_P4
 
-/* CPU L2 Interrupt Controller Registers */
+ 
 #define AVS_CPU_L2_SET0		0x04
 #define AVS_CPU_L2_INT_MASK	BIT(31)
 
-/* AVS Command Status Values */
+ 
 #define AVS_STATUS_CLEAR	0x00
-/* Command/notification accepted */
+ 
 #define AVS_STATUS_SUCCESS	0xf0
-/* Command/notification rejected */
+ 
 #define AVS_STATUS_FAILURE	0xff
-/* Invalid command/notification (unknown) */
+ 
 #define AVS_STATUS_INVALID	0xf1
-/* Non-AVS modes are not supported */
+ 
 #define AVS_STATUS_NO_SUPP	0xf2
-/* Cannot set P-State until P-Map supplied */
+ 
 #define AVS_STATUS_NO_MAP	0xf3
-/* Cannot change P-Map after initial P-Map set */
+ 
 #define AVS_STATUS_MAP_SET	0xf4
-/* Max AVS status; higher numbers are used for debugging */
+ 
 #define AVS_STATUS_MAX		0xff
 
-/* Other AVS related constants */
+ 
 #define AVS_LOOP_LIMIT		10000
-#define AVS_TIMEOUT		300 /* in ms; expected completion is < 10ms */
+#define AVS_TIMEOUT		300  
 #define AVS_FIRMWARE_MAGIC	0xa11600d1
 
 #define BRCM_AVS_CPUFREQ_PREFIX	"brcmstb-avs"
@@ -203,12 +154,12 @@ static unsigned long wait_for_avs_command(struct private_data *priv,
 	unsigned long time_left = 0;
 	u32 val;
 
-	/* Event driven, wait for the command interrupt */
+	 
 	if (priv->host_irq >= 0)
 		return wait_for_completion_timeout(&priv->done,
 						   msecs_to_jiffies(timeout));
 
-	/* Polling for command completion */
+	 
 	do {
 		time_left = timeout;
 		val = readl(priv->base + AVS_MBOX_STATUS);
@@ -235,42 +186,34 @@ static int __issue_avs_command(struct private_data *priv, unsigned int cmd,
 	if (ret)
 		return ret;
 
-	/*
-	 * Make sure no other command is currently running: cmd is 0 if AVS
-	 * co-processor is idle. Due to the guard above, we should almost never
-	 * have to wait here.
-	 */
+	 
 	for (i = 0, val = 1; val != 0 && i < AVS_LOOP_LIMIT; i++)
 		val = readl(base + AVS_MBOX_COMMAND);
 
-	/* Give the caller a chance to retry if AVS is busy. */
+	 
 	if (i == AVS_LOOP_LIMIT) {
 		ret = -EAGAIN;
 		goto out;
 	}
 
-	/* Clear status before we begin. */
+	 
 	writel(AVS_STATUS_CLEAR, base + AVS_MBOX_STATUS);
 
-	/* Provide input parameters */
+	 
 	for (i = 0; i < num_in; i++)
 		writel(args[i], base + AVS_MBOX_PARAM(i));
 
-	/* Protect from spurious interrupts. */
+	 
 	reinit_completion(&priv->done);
 
-	/* Now issue the command & tell firmware to wake up to process it. */
+	 
 	writel(cmd, base + AVS_MBOX_COMMAND);
 	writel(AVS_CPU_L2_INT_MASK, priv->avs_intr_base + AVS_CPU_L2_SET0);
 
-	/* Wait for AVS co-processor to finish processing the command. */
+	 
 	time_left = wait_for_avs_command(priv, AVS_TIMEOUT);
 
-	/*
-	 * If the AVS status is not in the expected range, it means AVS didn't
-	 * complete our command in time, and we return an error. Also, if there
-	 * is no "time left", we timed out waiting for the interrupt.
-	 */
+	 
 	val = readl(base + AVS_MBOX_STATUS);
 	if (time_left == 0 || val == 0 || val > AVS_STATUS_MAX) {
 		dev_err(priv->dev, "AVS command %#x didn't complete in time\n",
@@ -281,14 +224,14 @@ static int __issue_avs_command(struct private_data *priv, unsigned int cmd,
 		goto out;
 	}
 
-	/* Process returned values */
+	 
 	for (i = 0; i < num_out; i++)
 		args[i] = readl(base + AVS_MBOX_PARAM(i));
 
-	/* Clear status to tell AVS co-processor we are done. */
+	 
 	writel(AVS_STATUS_CLEAR, base + AVS_MBOX_STATUS);
 
-	/* Convert firmware errors to errno's as much as possible. */
+	 
 	switch (val) {
 	case AVS_STATUS_INVALID:
 		ret = -EINVAL;
@@ -317,7 +260,7 @@ static irqreturn_t irq_handler(int irq, void *data)
 {
 	struct private_data *priv = data;
 
-	/* AVS command completed execution. Wake up __issue_avs_command(). */
+	 
 	complete(&priv->done);
 
 	return IRQ_HANDLED;
@@ -415,13 +358,10 @@ static u32 brcm_avs_get_voltage(void __iomem *base)
 
 static u32 brcm_avs_get_frequency(void __iomem *base)
 {
-	return readl(base + AVS_MBOX_FREQUENCY) * 1000;	/* in kHz */
+	return readl(base + AVS_MBOX_FREQUENCY) * 1000;	 
 }
 
-/*
- * We determine which frequencies are supported by cycling through all P-states
- * and reading back what frequency we are running at for each P-state.
- */
+ 
 static struct cpufreq_frequency_table *
 brcm_avs_get_freq_table(struct device *dev, struct private_data *priv)
 {
@@ -429,15 +369,12 @@ brcm_avs_get_freq_table(struct device *dev, struct private_data *priv)
 	unsigned int pstate;
 	int i, ret;
 
-	/* Remember P-state for later */
+	 
 	ret = brcm_avs_get_pstate(priv, &pstate);
 	if (ret)
 		return ERR_PTR(ret);
 
-	/*
-	 * We allocate space for the 5 different P-STATES AVS,
-	 * plus extra space for a terminating element.
-	 */
+	 
 	table = devm_kcalloc(dev, AVS_PSTATE_MAX + 1 + 1, sizeof(*table),
 			     GFP_KERNEL);
 	if (!table)
@@ -452,7 +389,7 @@ brcm_avs_get_freq_table(struct device *dev, struct private_data *priv)
 	}
 	table[i].frequency = CPUFREQ_TABLE_END;
 
-	/* Restore P-state */
+	 
 	ret = brcm_avs_set_pstate(priv, pstate);
 	if (ret)
 		return ERR_PTR(ret);
@@ -460,12 +397,7 @@ brcm_avs_get_freq_table(struct device *dev, struct private_data *priv)
 	return table;
 }
 
-/*
- * To ensure the right firmware is running we need to
- *    - check the MAGIC matches what we expect
- *    - brcm_avs_get_pmap() doesn't return -ENOTSUPP or -EINVAL
- * We need to set up our interrupt handling before calling brcm_avs_get_pmap()!
- */
+ 
 static bool brcm_avs_is_firmware_loaded(struct private_data *priv)
 {
 	u32 magic;
@@ -504,17 +436,12 @@ static int brcm_avs_suspend(struct cpufreq_policy *policy)
 	if (ret)
 		return ret;
 
-	/*
-	 * We can't use the P-state returned by brcm_avs_get_pmap(), since
-	 * that's the initial P-state from when the P-map was downloaded to the
-	 * AVS co-processor, not necessarily the P-state we are running at now.
-	 * So, we get the current P-state explicitly.
-	 */
+	 
 	ret = brcm_avs_get_pstate(priv, &priv->pmap.state);
 	if (ret)
 		return ret;
 
-	/* This is best effort. Nothing to do if it fails. */
+	 
 	(void)__issue_avs_command(priv, AVS_CMD_S2_ENTER, 0, 0, NULL);
 
 	return 0;
@@ -525,7 +452,7 @@ static int brcm_avs_resume(struct cpufreq_policy *policy)
 	struct private_data *priv = policy->driver_data;
 	int ret;
 
-	/* This is best effort. Nothing to do if it fails. */
+	 
 	(void)__issue_avs_command(priv, AVS_CMD_S2_EXIT, 0, 0, NULL);
 
 	ret = brcm_avs_set_pmap(priv, &priv->pmap);
@@ -540,11 +467,7 @@ static int brcm_avs_resume(struct cpufreq_policy *policy)
 	return ret;
 }
 
-/*
- * All initialization code that we only want to execute once goes here. Setup
- * code that can be re-tried on every core (if it failed before) can go into
- * brcm_avs_cpufreq_init().
- */
+ 
 static int brcm_avs_prepare_init(struct platform_device *pdev)
 {
 	struct private_data *priv;
@@ -633,7 +556,7 @@ static int brcm_avs_cpufreq_init(struct cpufreq_policy *policy)
 
 	policy->freq_table = freq_table;
 
-	/* All cores share the same clock and thus the same policy. */
+	 
 	cpumask_setall(policy->cpus);
 
 	ret = __issue_avs_command(priv, AVS_CMD_ENABLE, 0, 0, NULL);

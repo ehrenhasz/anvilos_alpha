@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Clovertrail PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2013 Intel Corporation. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 
 #include <media/videobuf-vmalloc.h>
 #include <media/v4l2-dev.h>
@@ -40,16 +25,13 @@
 #include <linux/io.h>
 #include <linux/pm_runtime.h>
 
-/* Assume max number of ACC stages */
+ 
 #define MAX_ACC_STAGES	20
 
-/* Ideally, this should come from CSS headers */
+ 
 #define NO_LINK -1
 
-/*
- * to serialize MMIO access , this is due to ISP2400 silicon issue Sighting
- * #4684168, if concurrency access happened, system may hard hang.
- */
+ 
 static DEFINE_SPINLOCK(mmio_lock);
 
 enum frame_info_type {
@@ -570,22 +552,20 @@ static void __apply_additional_pipe_config(
 		return;
 	}
 
-	/* apply default pipe config */
+	 
 	stream_env->pipe_configs[pipe_id].isp_pipe_version = 2;
 	stream_env->pipe_configs[pipe_id].enable_dz =
 	    asd->disable_dz->val ? false : true;
-	/* apply isp 2.2 specific config for baytrail*/
+	 
 	switch (pipe_id) {
 	case IA_CSS_PIPE_ID_CAPTURE:
-		/* enable capture pp/dz manually or digital zoom would
-		 * fail*/
+		 
 		if (stream_env->pipe_configs[pipe_id].
 		    default_capture_config.mode == IA_CSS_CAPTURE_MODE_RAW)
 			stream_env->pipe_configs[pipe_id].enable_dz = false;
 		break;
 	case IA_CSS_PIPE_ID_VIDEO:
-		/* enable reduced pipe to have binary
-		 * video_dz_2_min selected*/
+		 
 		stream_env->pipe_extra_configs[pipe_id]
 		.enable_reduced_pipe = true;
 		stream_env->pipe_configs[pipe_id]
@@ -757,7 +737,7 @@ int atomisp_css_init(struct atomisp_device *isp)
 	if (ret)
 		return ret;
 
-	/* Init ISP */
+	 
 	err = ia_css_init(isp->dev, &isp->css_env.isp_css_env, NULL,
 			  (uint32_t)mmu_base_addr, IA_CSS_IRQ_TYPE_PULSE);
 	if (err) {
@@ -790,7 +770,7 @@ int atomisp_css_load_firmware(struct atomisp_device *isp)
 {
 	int err;
 
-	/* set css env */
+	 
 	isp->css_env.isp_css_fw.data = (void *)isp->firmware->data;
 	isp->css_env.isp_css_fw.bytes = isp->firmware->size;
 
@@ -814,7 +794,7 @@ int atomisp_css_load_firmware(struct atomisp_device *isp)
 
 	isp->css_env.isp_css_env.print_env.error_print = atomisp_vprintk;
 
-	/* load isp fw into ISP memory */
+	 
 	err = ia_css_load_firmware(isp->dev, &isp->css_env.isp_css_env,
 				   &isp->css_env.isp_css_fw);
 	if (err) {
@@ -1016,10 +996,7 @@ int atomisp_css_start(struct atomisp_sub_device *asd)
 	return 0;
 
 start_err:
-	/*
-	 * CSS 2.0 API limitation: ia_css_stop_sp() can only be called after
-	 * destroying all pipes.
-	 */
+	 
 	if (sp_is_started) {
 		atomisp_destroy_pipes_stream(asd);
 		ia_css_stop_sp();
@@ -1031,15 +1008,7 @@ start_err:
 
 void atomisp_css_update_isp_params(struct atomisp_sub_device *asd)
 {
-	/*
-	 * FIXME!
-	 * for ISP2401 new input system, this api is under development.
-	 * Calling it would cause kernel panic.
-	 *
-	 * VIED BZ: 1458
-	 *
-	 * Check if it is Cherry Trail and also new input system
-	 */
+	 
 	if (asd->copy_mode) {
 		dev_warn(asd->isp->dev,
 			 "%s: ia_css_stream_set_isp_config() not supported in copy mode!.\n",
@@ -1211,7 +1180,7 @@ void atomisp_css_free_stat_buffers(struct atomisp_sub_device *asd)
 	    atomisp_css_get_dvs_grid_info(&asd->params.curr_grid_info);
 	unsigned int i;
 
-	/* 3A statistics use vmalloc, DIS use kmalloc */
+	 
 	if (dvs_grid_info && dvs_grid_info->enable) {
 		ia_css_dvs2_coefficients_free(asd->params.css_param.dvs2_coeff);
 		ia_css_dvs2_statistics_free(asd->params.dvs_stat);
@@ -1311,10 +1280,7 @@ int atomisp_css_get_grid_info(struct atomisp_sub_device *asd,
 	       sizeof(struct ia_css_grid_info));
 	memcpy(&asd->params.curr_grid_info, &p_info.grid_info,
 	       sizeof(struct ia_css_grid_info));
-	/*
-	 * Record which css pipe enables s3a_grid.
-	 * Currently would have one css pipe that need it
-	 */
+	 
 	if (asd->params.curr_grid_info.s3a_grid.enable) {
 		if (asd->params.s3a_enabled_pipe != IA_CSS_PIPE_ID_NUM)
 			dev_dbg(isp->dev, "css pipe %d enabled s3a grid replaced by: %d.\n",
@@ -1322,9 +1288,7 @@ int atomisp_css_get_grid_info(struct atomisp_sub_device *asd,
 		asd->params.s3a_enabled_pipe = pipe_id;
 	}
 
-	/* If the grid info has not changed and the buffers for 3A and
-	 * DIS statistics buffers are allocated or buffer size would be zero
-	 * then no need to do anything. */
+	 
 	if (((!memcmp(&old_info, &asd->params.curr_grid_info, sizeof(old_info))
 	      && asd->params.s3a_user_stat && asd->params.dvs_stat)
 	     || asd->params.curr_grid_info.s3a_grid.width == 0
@@ -1355,7 +1319,7 @@ int atomisp_alloc_3a_output_buf(struct atomisp_sub_device *asd)
 					&asd->params.curr_grid_info.s3a_grid);
 	if (!asd->params.s3a_user_stat)
 		return -ENOMEM;
-	/* 3A statistics. These can be big, so we use vmalloc. */
+	 
 	asd->params.s3a_output_bytes =
 	    asd->params.curr_grid_info.s3a_grid.width *
 	    asd->params.curr_grid_info.s3a_grid.height *
@@ -1377,7 +1341,7 @@ int atomisp_alloc_dis_coef_buf(struct atomisp_sub_device *asd)
 		return 0;
 	}
 
-	/* DIS coefficients. */
+	 
 	asd->params.css_param.dvs2_coeff = ia_css_dvs2_coefficients_allocate(
 					       dvs_grid);
 	if (!asd->params.css_param.dvs2_coeff)
@@ -1389,7 +1353,7 @@ int atomisp_alloc_dis_coef_buf(struct atomisp_sub_device *asd)
 	asd->params.dvs_ver_coef_bytes = dvs_grid->num_ver_coefs *
 					 sizeof(*asd->params.css_param.dvs2_coeff->ver_coefs.odd_real);
 
-	/* DIS projections. */
+	 
 	asd->params.dis_proj_data_valid = false;
 	asd->params.dvs_stat = ia_css_dvs2_statistics_allocate(dvs_grid);
 	if (!asd->params.dvs_stat)
@@ -1410,8 +1374,7 @@ int atomisp_alloc_metadata_output_buf(struct atomisp_sub_device *asd)
 {
 	int i;
 
-	/* We allocate the cpu-side buffer used for communication with user
-	 * space */
+	 
 	for (i = 0; i < ATOMISP_METADATA_TYPE_NUM; i++) {
 		asd->params.metadata_user[i] = kvmalloc(
 						   asd->stream_env[ATOMISP_INPUT_STREAM_GENERAL].
@@ -1443,12 +1406,7 @@ void atomisp_free_metadata_output_buf(struct atomisp_sub_device *asd)
 void atomisp_css_temp_pipe_to_pipe_id(struct atomisp_sub_device *asd,
 				      struct atomisp_css_event *current_event)
 {
-	/*
-	 * FIXME!
-	 * Pipe ID reported in CSS event is not correct for new system's
-	 * copy pipe.
-	 * VIED BZ: 1463
-	 */
+	 
 	ia_css_temp_pipe_to_pipe_id(current_event->event.pipe,
 				    &current_event->pipe);
 	if (asd && asd->copy_mode &&
@@ -1551,10 +1509,7 @@ int atomisp_css_set_default_isys_config(struct atomisp_sub_device *asd,
 	int i;
 	struct ia_css_stream_config *s_config =
 		    &asd->stream_env[stream_id].stream_config;
-	/*
-	 * Set all isys configs to not valid.
-	 * Currently we support only one stream per channel
-	 */
+	 
 	for (i = IA_CSS_STREAM_ISYS_STREAM_0;
 	     i < IA_CSS_STREAM_MAX_ISYS_STREAM_PER_CH; i++)
 		s_config->isys_config[i].valid = false;
@@ -1699,11 +1654,7 @@ void atomisp_css_input_set_mode(struct atomisp_sub_device *asd,
 		return;
 
 	for (i = 0; i < ATOMISP_INPUT_STREAM_NUM; i++) {
-		/*
-		 * TODO: sensor needs to export the embedded_data_size_words
-		 * information to atomisp for each setting.
-		 * Here using a large safe value.
-		 */
+		 
 		struct ia_css_stream_config *s_config =
 			    &asd->stream_env[i].stream_config;
 
@@ -1769,17 +1720,7 @@ int atomisp_css_input_configure_port(
 {
 	int i;
 	struct atomisp_stream_env *stream_env;
-	/*
-	 * Calculate rx_count as follows:
-	 * Input: mipi_freq                 : CSI-2 bus frequency in Hz
-	 * UI = 1 / (2 * mipi_freq)         : period of one bit on the bus
-	 * min = 85e-9 + 6 * UI             : Limits for rx_count in seconds
-	 * max = 145e-9 + 10 * UI
-	 * rxcount0 = min / (4 / mipi_freq) : convert seconds to byte clocks
-	 * rxcount = rxcount0 - 2           : adjust for better results
-	 * The formula below is simplified version of the above with
-	 * 10-bit fixed points for improved accuracy.
-	 */
+	 
 	const unsigned int rxcount =
 	    min(((mipi_freq / 46000) - 1280) >> 10, 0xffU) * 0x01010101U;
 
@@ -1806,10 +1747,7 @@ void atomisp_css_stop(struct atomisp_sub_device *asd, bool in_reset)
 	unsigned long irqflags;
 	unsigned int i;
 
-	/*
-	 * CSS 2.0 API limitation: ia_css_stop_sp() can only be called after
-	 * destroying all pipes.
-	 */
+	 
 	atomisp_destroy_pipes_stream(asd);
 
 	atomisp_init_raw_buffer_bitmap(asd);
@@ -1835,7 +1773,7 @@ void atomisp_css_stop(struct atomisp_sub_device *asd, bool in_reset)
 		asd->params.css_update_params_needed = false;
 	}
 
-	/* move stats buffers to free queue list */
+	 
 	list_splice_init(&asd->s3a_stats_in_css, &asd->s3a_stats);
 	list_splice_init(&asd->s3a_stats_ready, &asd->s3a_stats);
 
@@ -1892,10 +1830,7 @@ static enum ia_css_pipe_mode __pipe_id_to_pipe_mode(
 
 	switch (pipe_id) {
 	case IA_CSS_PIPE_ID_COPY:
-		/* Currently only YUVPP mode supports YUV420_Legacy format.
-		 * Revert this when other pipe modes can support
-		 * YUV420_Legacy format.
-		 */
+		 
 		if (mipi_info && mipi_info->input_format ==
 		    ATOMISP_INPUT_FORMAT_YUV420_8_LEGACY)
 			return IA_CSS_PIPE_MODE_YUVPP;
@@ -1935,7 +1870,7 @@ static void __configure_output(struct atomisp_sub_device *asd,
 	stream_env->pipe_configs[pipe_id].output_info[0].format = format;
 	stream_env->pipe_configs[pipe_id].output_info[0].padded_width = min_width;
 
-	/* isp binary 2.2 specific setting*/
+	 
 	if (width > s_config->input_config.effective_res.width ||
 	    height > s_config->input_config.effective_res.height) {
 		s_config->input_config.effective_res.width = width;
@@ -1946,10 +1881,7 @@ static void __configure_output(struct atomisp_sub_device *asd,
 		pipe_id, width, height, format);
 }
 
-/*
- * For CSS2.1, capture pipe uses capture_pp_in_res to configure yuv
- * downscaling input resolution.
- */
+ 
 static void __configure_capture_pp_input(struct atomisp_sub_device *asd,
 	unsigned int width, unsigned int height,
 	enum ia_css_pipe_id pipe_id)
@@ -1970,7 +1902,7 @@ static void __configure_capture_pp_input(struct atomisp_sub_device *asd,
 	if (width * 9 / 10 < pipe_configs->output_info[0].res.width ||
 	    height * 9 / 10 < pipe_configs->output_info[0].res.height)
 		return;
-	/* here just copy the calculation in css */
+	 
 	hor_ds_factor = CEIL_DIV(width >> 1,
 				 pipe_configs->output_info[0].res.width);
 	ver_ds_factor = CEIL_DIV(height >> 1,
@@ -1998,10 +1930,7 @@ static void __configure_capture_pp_input(struct atomisp_sub_device *asd,
 		pipe_id, width, height);
 }
 
-/*
- * For CSS2.1, preview pipe could support bayer downscaling, yuv decimation and
- * yuv downscaling, which needs addtional configurations.
- */
+ 
 static void __configure_preview_pp_input(struct atomisp_sub_device *asd,
 	unsigned int width, unsigned int height,
 	enum ia_css_pipe_id pipe_id)
@@ -2023,11 +1952,7 @@ static void __configure_preview_pp_input(struct atomisp_sub_device *asd,
 		    &stream_config->input_config.effective_res;
 
 	static const struct bayer_ds_factor bds_fct[] = {{2, 1}, {3, 2}, {5, 4} };
-	/*
-	 * BZ201033: YUV decimation factor of 4 causes couple of rightmost
-	 * columns to be shaded. Remove this factor to work around the CSS bug.
-	 * const unsigned int yuv_dec_fct[] = {4, 2};
-	 */
+	 
 	static const unsigned int yuv_dec_fct[] = { 2 };
 	unsigned int i;
 
@@ -2040,27 +1965,7 @@ static void __configure_preview_pp_input(struct atomisp_sub_device *asd,
 	out_width = pipe_configs->output_info[0].res.width;
 	out_height = pipe_configs->output_info[0].res.height;
 
-	/*
-	 * The ISP could do bayer downscaling, yuv decimation and yuv
-	 * downscaling:
-	 * 1: Bayer Downscaling: between effective resolution and
-	 * bayer_ds_res_out;
-	 * 2: YUV Decimation: between bayer_ds_res_out and vf_pp_in_res;
-	 * 3: YUV Downscaling: between vf_pp_in_res and final vf output
-	 *
-	 * Rule for Bayer Downscaling: support factor 2, 1.5 and 1.25
-	 * Rule for YUV Decimation: support factor 2, 4
-	 * Rule for YUV Downscaling: arbitrary value below 2
-	 *
-	 * General rule of factor distribution among these stages:
-	 * 1: try to do Bayer downscaling first if not in online mode.
-	 * 2: try to do maximum of 2 for YUV downscaling
-	 * 3: the remainling for YUV decimation
-	 *
-	 * Note:
-	 * Do not configure bayer_ds_out_res if:
-	 * online == 1 or continuous == 0 or raw_binning = 0
-	 */
+	 
 	if (stream_config->online || !stream_config->continuous ||
 	    !pipe_extra_configs->enable_raw_binning) {
 		bayer_ds_out_res->width = 0;
@@ -2086,12 +1991,8 @@ static void __configure_preview_pp_input(struct atomisp_sub_device *asd,
 			}
 		}
 	}
-	/*
-	 * calculate YUV Decimation, YUV downscaling facor:
-	 * YUV Downscaling factor must not exceed 2.
-	 * YUV Decimation factor could be 2, 4.
-	 */
-	/* first decide the yuv_ds input resolution */
+	 
+	 
 	if (bayer_ds_out_res->width == 0) {
 		yuv_ds_in_width = effective_res->width;
 		yuv_ds_in_height = effective_res->height;
@@ -2103,7 +2004,7 @@ static void __configure_preview_pp_input(struct atomisp_sub_device *asd,
 	vf_pp_in_res->width = yuv_ds_in_width;
 	vf_pp_in_res->height = yuv_ds_in_height;
 
-	/* find out the yuv decimation factor */
+	 
 	for (i = 0; i < ARRAY_SIZE(yuv_dec_fct); i++) {
 		if (yuv_ds_in_width >= out_width * yuv_dec_fct[i] &&
 		    yuv_ds_in_height >= out_height * yuv_dec_fct[i]) {
@@ -2126,10 +2027,7 @@ static void __configure_preview_pp_input(struct atomisp_sub_device *asd,
 		pipe_id, width, height);
 }
 
-/*
- * For CSS2.1, offline video pipe could support bayer decimation, and
- * yuv downscaling, which needs addtional configurations.
- */
+ 
 static void __configure_video_pp_input(struct atomisp_sub_device *asd,
 				       unsigned int width, unsigned int height,
 				       enum ia_css_pipe_id pipe_id)
@@ -2161,14 +2059,8 @@ static void __configure_video_pp_input(struct atomisp_sub_device *asd,
 
 	pipe_extra_configs->enable_yuv_ds = false;
 
-	/*
-	 * If DVS is enabled,  video binary will take care the dvs envelope
-	 * and usually the bayer_ds_out_res should be larger than 120% of
-	 * destination resolution, the extra 20% will be cropped as DVS
-	 * envelope. But,  if the bayer_ds_out_res is less than 120% of the
-	 * destination. The ISP can still work,  but DVS quality is not good.
-	 */
-	/* taking at least 10% as envelope */
+	 
+	 
 	if (asd->params.video_dis_en) {
 		out_width = pipe_configs->output_info[0].res.width * 110 / 100;
 		out_height = pipe_configs->output_info[0].res.height * 110 / 100;
@@ -2177,12 +2069,7 @@ static void __configure_video_pp_input(struct atomisp_sub_device *asd,
 		out_height = pipe_configs->output_info[0].res.height;
 	}
 
-	/*
-	 * calculate bayer decimate factor:
-	 * 1: only 1.5, 2, 4 and 8 get supported
-	 * 2: Do not configure bayer_ds_out_res if:
-	 *    online == 1 or continuous == 0 or raw_binning = 0
-	 */
+	 
 	if (stream_config->online || !stream_config->continuous) {
 		bayer_ds_out_res->width = 0;
 		bayer_ds_out_res->height = 0;
@@ -2209,11 +2096,7 @@ static void __configure_video_pp_input(struct atomisp_sub_device *asd,
 		}
 	}
 
-	/*
-	 * DVS is cropped from BDS output, so we do not really need to set the
-	 * envelope to 20% of output resolution here. always set it to 12x12
-	 * per firmware requirement.
-	 */
+	 
 	pipe_configs->dvs_envelope.width = 12;
 	pipe_configs->dvs_envelope.height = 12;
 
@@ -2259,7 +2142,7 @@ static int __get_frame_info(struct atomisp_sub_device *asd,
 	int ret;
 	struct ia_css_pipe_info p_info;
 
-	/* FIXME! No need to destroy/recreate all streams */
+	 
 	ret = atomisp_css_update_stream(asd);
 	if (ret)
 		return ret;
@@ -2523,7 +2406,7 @@ int atomisp_css_exp_id_capture(struct atomisp_sub_device *asd, int exp_id)
 		  asd->stream_env[ATOMISP_INPUT_STREAM_GENERAL].stream,
 		  exp_id);
 	if (ret == -ENOBUFS) {
-		/* capture cmd queue is full */
+		 
 		return -EBUSY;
 	} else if (ret) {
 		return -EIO;
@@ -2568,7 +2451,7 @@ void atomisp_css_set_ctc_table(struct atomisp_sub_device *asd,
 	int data_size = IA_CSS_VAMEM_1_CTC_TABLE_SIZE;
 	bool valid = false;
 
-	/* workaround: if ctc_table is all 0, do not apply it */
+	 
 	if (ctc_table->vamem_type == IA_CSS_VAMEM_TYPE_2) {
 		vamem_ptr = ctc_table->data.vamem_2;
 		data_size = IA_CSS_VAMEM_2_CTC_TABLE_SIZE;
@@ -2645,9 +2528,7 @@ int atomisp_css_set_dis_coefs(struct atomisp_sub_device *asd,
 			      struct atomisp_dis_coefficients *coefs)
 {
 	if (atomisp_compare_dvs_grid(asd, &coefs->grid_info) != 0)
-		/* If the grid info in the argument differs from the current
-		   grid info, we tell the caller to reset the grid size and
-		   try again. */
+		 
 		return -EAGAIN;
 
 	if (!coefs->hor_coefs.odd_real ||
@@ -2697,8 +2578,8 @@ int atomisp_css_set_dis_coefs(struct atomisp_sub_device *asd,
 	asd->params.css_param.update_flag.dvs2_coefs =
 		(struct atomisp_dis_coefficients *)
 		asd->params.css_param.dvs2_coeff;
-	/* FIXME! */
-	/*	asd->params.dis_proj_data_valid = false; */
+	 
+	 
 	asd->params.css_update_params_needed = true;
 
 	return 0;
@@ -2967,7 +2848,7 @@ int atomisp_css_get_gc_config(struct atomisp_sub_device *asd,
 	ia_css_stream_get_isp_config(
 	    asd->stream_env[ATOMISP_INPUT_STREAM_GENERAL].stream,
 	    &isp_config);
-	/* Get gamma correction params from current setup */
+	 
 	memcpy(config, &gc_config, sizeof(*config));
 
 	return 0;
@@ -2991,7 +2872,7 @@ int atomisp_css_get_3a_config(struct atomisp_sub_device *asd,
 	ia_css_stream_get_isp_config(
 	    asd->stream_env[ATOMISP_INPUT_STREAM_GENERAL].stream,
 	    &isp_config);
-	/* Get white balance from current setup */
+	 
 	memcpy(config, &s3a_config, sizeof(*config));
 
 	return 0;
@@ -3015,7 +2896,7 @@ int atomisp_css_get_formats_config(struct atomisp_sub_device *asd,
 	ia_css_stream_get_isp_config(
 	    asd->stream_env[ATOMISP_INPUT_STREAM_GENERAL].stream,
 	    &isp_config);
-	/* Get narrow gamma from current setup */
+	 
 	memcpy(config, &formats_config, sizeof(*config));
 
 	return 0;
@@ -3024,7 +2905,7 @@ int atomisp_css_get_formats_config(struct atomisp_sub_device *asd,
 int atomisp_css_get_zoom_factor(struct atomisp_sub_device *asd,
 				unsigned int *zoom)
 {
-	struct ia_css_dz_config dz_config;  /** Digital Zoom */
+	struct ia_css_dz_config dz_config;   
 	struct ia_css_isp_config isp_config;
 	struct atomisp_device *isp = asd->isp;
 
@@ -3044,9 +2925,7 @@ int atomisp_css_get_zoom_factor(struct atomisp_sub_device *asd,
 	return 0;
 }
 
-/*
- * Function to set/get image stablization statistics
- */
+ 
 int atomisp_css_get_dis_stat(struct atomisp_sub_device *asd,
 			     struct atomisp_dis_statistics *stats)
 {
@@ -3066,14 +2945,12 @@ int atomisp_css_get_dis_stat(struct atomisp_sub_device *asd,
 	    !asd->params.dvs_stat->ver_prod.even_imag)
 		return -EINVAL;
 
-	/* isp needs to be streaming to get DIS statistics */
+	 
 	if (!asd->streaming)
 		return -EINVAL;
 
 	if (atomisp_compare_dvs_grid(asd, &stats->dvs2_stat.grid_info) != 0)
-		/* If the grid info in the argument differs from the current
-		   grid info, we tell the caller to reset the grid size and
-		   try again. */
+		 
 		return -EAGAIN;
 
 	spin_lock_irqsave(&asd->dis_stats_lock, flags);
@@ -3222,10 +3099,7 @@ int atomisp_css_isr_thread(struct atomisp_device *isp)
 	while (!ia_css_dequeue_psys_event(&current_event.event)) {
 		if (current_event.event.type ==
 		    IA_CSS_EVENT_TYPE_FW_ASSERT) {
-			/*
-			 * Received FW assertion signal,
-			 * trigger WDT to recover
-			 */
+			 
 			dev_err(isp->dev,
 				"%s: ISP reports FW_ASSERT event! fw_assert_module_id %d fw_assert_line_no %d\n",
 				__func__,
@@ -3317,7 +3191,7 @@ bool atomisp_css_valid_sof(struct atomisp_device *isp)
 {
 	unsigned int i;
 
-	/* Loop for each css vc stream */
+	 
 	for (i = 0; i < ATOMISP_INPUT_STREAM_NUM; i++) {
 		if (!isp->asd.stream_env[i].stream)
 			continue;
@@ -3367,10 +3241,7 @@ int atomisp_css_dump_blob_infor(struct atomisp_device *isp)
 	if (!bd)
 		return -EPERM;
 
-	/*
-	 * The sh_css_load_firmware function discard the initial
-	 * "SPS" binaries
-	 */
+	 
 	for (i = 0; i < sh_css_num_binaries - NUM_OF_SPS; i++) {
 		switch (bd[i].header.type) {
 		case ia_css_isp_firmware:

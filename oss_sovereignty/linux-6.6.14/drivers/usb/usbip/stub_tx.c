@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2003-2008 Takahiro Hirofuchi
- */
+
+ 
 
 #include <linux/kthread.h>
 #include <linux/socket.h>
@@ -10,7 +8,7 @@
 #include "usbip_common.h"
 #include "stub.h"
 
-/* be in spin_lock_irqsave(&sdev->priv_lock, flags) */
+ 
 void stub_enqueue_ret_unlink(struct stub_device *sdev, __u32 seqnum,
 			     __u32 status)
 {
@@ -28,15 +26,7 @@ void stub_enqueue_ret_unlink(struct stub_device *sdev, __u32 seqnum,
 	list_add_tail(&unlink->list, &sdev->unlink_tx);
 }
 
-/**
- * stub_complete - completion handler of a usbip urb
- * @urb: pointer to the urb completed
- *
- * When a urb has completed, the USB core driver calls this function mostly in
- * the interrupt context. To return the result of a urb, the completed urb is
- * linked to the pending list of returning.
- *
- */
+ 
 void stub_complete(struct urb *urb)
 {
 	struct stub_priv *priv = (struct stub_priv *) urb->context;
@@ -47,7 +37,7 @@ void stub_complete(struct urb *urb)
 
 	switch (urb->status) {
 	case 0:
-		/* OK */
+		 
 		break;
 	case -ENOENT:
 		dev_info(&urb->dev->dev,
@@ -71,15 +61,11 @@ void stub_complete(struct urb *urb)
 		break;
 	}
 
-	/*
-	 * If the server breaks single SG request into the several URBs, the
-	 * URBs must be reassembled before sending completed URB to the vhci.
-	 * Don't wake up the tx thread until all the URBs are completed.
-	 */
+	 
 	if (priv->sgl) {
 		priv->completed_urbs++;
 
-		/* Only save the first error status */
+		 
 		if (urb->status && !priv->urb_status)
 			priv->urb_status = urb->status;
 
@@ -87,11 +73,11 @@ void stub_complete(struct urb *urb)
 			return;
 	}
 
-	/* link a urb to the queue of tx. */
+	 
 	spin_lock_irqsave(&sdev->priv_lock, flags);
 	if (sdev->ud.tcp_socket == NULL) {
 		usbip_dbg_stub_tx("ignore urb for closed connection\n");
-		/* It will be freed in stub_device_cleanup_urbs(). */
+		 
 	} else if (priv->unlinking) {
 		stub_enqueue_ret_unlink(sdev, priv->seqnum, urb->status);
 		stub_free_priv_and_urb(priv);
@@ -100,7 +86,7 @@ void stub_complete(struct urb *urb)
 	}
 	spin_unlock_irqrestore(&sdev->priv_lock, flags);
 
-	/* wake up tx_thread */
+	 
 	wake_up(&sdev->tx_waitq);
 }
 
@@ -199,7 +185,7 @@ static int stub_send_ret_submit(struct stub_device *sdev)
 
 		iovnum = 0;
 
-		/* 1. setup usbip_header */
+		 
 		setup_ret_submit_pdu(&pdu_header, urb);
 		usbip_dbg_stub_tx("setup txdata seqnum: %d\n",
 				  pdu_header.base.seqnum);
@@ -219,13 +205,9 @@ static int stub_send_ret_submit(struct stub_device *sdev)
 		iovnum++;
 		txsize += sizeof(pdu_header);
 
-		/* 2. setup transfer buffer */
+		 
 		if (usb_pipein(urb->pipe) && priv->sgl) {
-			/* If the server split a single SG request into several
-			 * URBs because the server's HCD doesn't support SG,
-			 * reassemble the split URB buffers into a single
-			 * return command.
-			 */
+			 
 			for (i = 0; i < priv->num_urbs; i++) {
 				iov[iovnum].iov_base =
 					priv->urbs[i]->transfer_buffer;
@@ -264,13 +246,7 @@ static int stub_send_ret_submit(struct stub_device *sdev)
 			txsize += urb->actual_length;
 		} else if (usb_pipein(urb->pipe) &&
 			   usb_pipetype(urb->pipe) == PIPE_ISOCHRONOUS) {
-			/*
-			 * For isochronous packets: actual length is the sum of
-			 * the actual length of the individual, packets, but as
-			 * the packet offsets are not changed there will be
-			 * padding between the packets. To optimally use the
-			 * bandwidth the padding is not transmitted.
-			 */
+			 
 
 			int i;
 
@@ -295,7 +271,7 @@ static int stub_send_ret_submit(struct stub_device *sdev)
 			}
 		}
 
-		/* 3. setup iso_packet_descriptor */
+		 
 		if (usb_pipetype(urb->pipe) == PIPE_ISOCHRONOUS) {
 			ssize_t len = 0;
 
@@ -380,7 +356,7 @@ static int stub_send_ret_unlink(struct stub_device *sdev)
 
 		usbip_dbg_stub_tx("setup ret unlink %lu\n", unlink->seqnum);
 
-		/* 1. setup usbip_header */
+		 
 		setup_ret_unlink_pdu(&pdu_header, unlink);
 		usbip_header_correct_endian(&pdu_header, 1);
 
@@ -423,20 +399,7 @@ int stub_tx_loop(void *data)
 		if (usbip_event_happened(ud))
 			break;
 
-		/*
-		 * send_ret_submit comes earlier than send_ret_unlink.  stub_rx
-		 * looks at only priv_init queue. If the completion of a URB is
-		 * earlier than the receive of CMD_UNLINK, priv is moved to
-		 * priv_tx queue and stub_rx does not find the target priv. In
-		 * this case, vhci_rx receives the result of the submit request
-		 * and then receives the result of the unlink request. The
-		 * result of the submit is given back to the usbcore as the
-		 * completion of the unlink request. The request of the
-		 * unlink is ignored. This is ok because a driver who calls
-		 * usb_unlink_urb() understands the unlink was too late by
-		 * getting the status of the given-backed URB which has the
-		 * status of usb_submit_urb().
-		 */
+		 
 		if (stub_send_ret_submit(sdev) < 0)
 			break;
 

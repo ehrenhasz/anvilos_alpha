@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/smp.h>
 #include <linux/timex.h>
 #include <linux/string.h>
@@ -13,9 +13,7 @@
 extern const char * const x86_vmx_flags[NVMXINTS*32];
 #endif
 
-/*
- *	Get CPU information for use by the procfs.
- */
+ 
 static void show_cpuinfo_core(struct seq_file *m, struct cpuinfo_x86 *c,
 			      unsigned int cpu)
 {
@@ -91,7 +89,7 @@ static int show_cpuinfo(struct seq_file *m, void *v)
 		seq_printf(m, "cpu MHz\t\t: %u.%03u\n", freq / 1000, (freq % 1000));
 	}
 
-	/* Cache size */
+	 
 	if (c->x86_cache_size)
 		seq_printf(m, "cache size\t: %u KB\n", c->x86_cache_size);
 
@@ -197,4 +195,4 @@ void arch_proc_pid_thread_features(struct seq_file *m, struct task_struct *task)
 	dump_x86_features(m, task->thread.features_locked);
 	seq_putc(m, '\n');
 }
-#endif /* CONFIG_X86_USER_SHADOW_STACK */
+#endif  

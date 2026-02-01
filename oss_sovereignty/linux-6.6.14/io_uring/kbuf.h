@@ -1,14 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifndef IOU_KBUF_H
 #define IOU_KBUF_H
 
 #include <uapi/linux/io_uring.h>
 
 struct io_buffer_list {
-	/*
-	 * If ->buf_nr_pages is set, then buf_pages/buf_ring are used. If not,
-	 * then these are classic provided buffers and ->buf_list is used.
-	 */
+	 
 	union {
 		struct list_head buf_list;
 		struct {
@@ -19,17 +16,17 @@ struct io_buffer_list {
 	};
 	__u16 bgid;
 
-	/* below is for ring provided buffers */
+	 
 	__u16 buf_nr_pages;
 	__u16 nr_entries;
 	__u16 head;
 	__u16 mask;
 
-	/* ring mapped provided buffers */
+	 
 	__u8 is_mapped;
-	/* ring mapped provided buffers, but mmap'ed by application */
+	 
 	__u8 is_mmap;
-	/* bl is visible from an RCU point of view for lookup */
+	 
 	__u8 is_ready;
 };
 
@@ -64,22 +61,10 @@ void *io_pbuf_get_address(struct io_ring_ctx *ctx, unsigned long bgid);
 
 static inline void io_kbuf_recycle_ring(struct io_kiocb *req)
 {
-	/*
-	 * We don't need to recycle for REQ_F_BUFFER_RING, we can just clear
-	 * the flag and hence ensure that bl->head doesn't get incremented.
-	 * If the tail has already been incremented, hang on to it.
-	 * The exception is partial io, that case we should increment bl->head
-	 * to monopolize the buffer.
-	 */
+	 
 	if (req->buf_list) {
 		if (req->flags & REQ_F_PARTIAL_IO) {
-			/*
-			 * If we end up here, then the io_uring_lock has
-			 * been kept held since we retrieved the buffer.
-			 * For the io-wq case, we already cleared
-			 * req->buf_list when the buffer was retrieved,
-			 * hence it cannot be set here for that case.
-			 */
+			 
 			req->buf_list->head++;
 			req->buf_list = NULL;
 		} else {

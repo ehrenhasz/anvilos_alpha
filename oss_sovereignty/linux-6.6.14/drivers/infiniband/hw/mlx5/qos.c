@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/*
- * Copyright (c) 2020, Mellanox Technologies inc.  All rights reserved.
- */
+
+ 
 
 #include <rdma/uverbs_ioctl.h>
 #include <rdma/mlx5_user_ioctl_cmds.h>
@@ -40,7 +38,7 @@ static int UVERBS_HANDLER(MLX5_IB_METHOD_PP_OBJ_ALLOC)(
 	if (IS_ERR(c))
 		return PTR_ERR(c);
 
-	/* The allocated entry can be used only by a DEVX context */
+	 
 	if (!c->devx_uid)
 		return -EINVAL;
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_INTR_H__
 #define __NVKM_INTR_H__
 #include <core/os.h>
@@ -12,7 +12,7 @@ enum nvkm_intr_prio {
 };
 
 enum nvkm_intr_type {
-	NVKM_INTR_SUBDEV   = -1, /* lookup vector by requesting subdev, in mapping table. */
+	NVKM_INTR_SUBDEV   = -1,  
 	NVKM_INTR_VECTOR_0 = 0,
 };
 
@@ -26,11 +26,11 @@ struct nvkm_intr {
 		void (*reset)(struct nvkm_intr *, int leaf, u32 mask);
 	} *func;
 	const struct nvkm_intr_data {
-		int type; /* enum nvkm_subdev_type (+ve), enum nvkm_intr_type (-ve) */
+		int type;  
 		int inst;
 		int leaf;
-		u32 mask; /* 0-terminated. */
-		bool legacy; /* auto-create "legacy" nvkm_subdev_intr() handler */
+		u32 mask;  
+		bool legacy;  
 	} *data;
 
 	struct nvkm_subdev *subdev;

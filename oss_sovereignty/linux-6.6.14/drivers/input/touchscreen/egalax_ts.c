@@ -1,18 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for EETI eGalax Multiple Touch Controller
- *
- * Copyright (C) 2011 Freescale Semiconductor, Inc.
- *
- * based on max11801_ts.c
- */
 
-/* EETI eGalax serial touch screen controller is a I2C based multiple
- * touch screen controller, it supports 5 point multiple touch. */
+ 
 
-/* TODO:
-  - auto idle mode support
-*/
+ 
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -26,19 +17,11 @@
 #include <linux/bitops.h>
 #include <linux/input/mt.h>
 
-/*
- * Mouse Mode: some panel may configure the controller to mouse mode,
- * which can only report one point at a given time.
- * This driver will ignore events in this mode.
- */
+ 
 #define REPORT_MODE_MOUSE		0x1
-/*
- * Vendor Mode: this mode is used to transfer some vendor specific
- * messages.
- * This driver will ignore events in this mode.
- */
+ 
 #define REPORT_MODE_VENDOR		0x3
-/* Multiple Touch Mode */
+ 
 #define REPORT_MODE_MTTOUCH		0x4
 
 #define MAX_SUPPORT_POINTS		5
@@ -80,7 +63,7 @@ static irqreturn_t egalax_ts_interrupt(int irq, void *dev_id)
 		return IRQ_HANDLED;
 
 	if (buf[0] != REPORT_MODE_MTTOUCH) {
-		/* ignore mouse events and vendor events */
+		 
 		return IRQ_HANDLED;
 	}
 
@@ -116,13 +99,13 @@ static irqreturn_t egalax_ts_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/* wake up controller by an falling edge of interrupt gpio.  */
+ 
 static int egalax_wake_up_device(struct i2c_client *client)
 {
 	struct gpio_desc *gpio;
 	int ret;
 
-	/* wake up controller via an falling edge on IRQ gpio. */
+	 
 	gpio = gpiod_get(&client->dev, "wakeup", GPIOD_OUT_HIGH);
 	ret = PTR_ERR_OR_ZERO(gpio);
 	if (ret) {
@@ -133,10 +116,10 @@ static int egalax_wake_up_device(struct i2c_client *client)
 		return ret;
 	}
 
-	/* release the line */
+	 
 	gpiod_set_value_cansleep(gpio, 0);
 
-	/* controller should be woken up, return irq.  */
+	 
 	gpiod_direction_input(gpio);
 	gpiod_put(gpio);
 
@@ -176,7 +159,7 @@ static int egalax_ts_probe(struct i2c_client *client)
 	ts->client = client;
 	ts->input_dev = input_dev;
 
-	/* controller may be in sleep, wake it up. */
+	 
 	error = egalax_wake_up_device(client);
 	if (error)
 		return error;
@@ -253,7 +236,7 @@ static DEFINE_SIMPLE_DEV_PM_OPS(egalax_ts_pm_ops,
 
 static const struct of_device_id egalax_ts_dt_ids[] = {
 	{ .compatible = "eeti,egalax_ts" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, egalax_ts_dt_ids);
 

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* CAN bus driver for Holt HI3110 CAN Controller with SPI Interface
- *
- * Copyright(C) Timesys Corporation 2016
- *
- * Based on Microchip 251x CAN Controller (mcp251x) Linux kernel driver
- * Copyright 2009 Christian Pellegrin EVOL S.r.l.
- * Copyright 2007 Raymarine UK, Ltd. All Rights Reserved.
- * Copyright 2006 Arcom Control Systems Ltd.
- *
- * Based on CAN bus driver for the CCAN controller written by
- * - Sascha Hauer, Marc Kleine-Budde, Pengutronix
- * - Simon Kallweit, intefo AG
- * Copyright 2007
- */
+
+ 
 
 #include <linux/can/core.h>
 #include <linux/can/dev.h>
@@ -117,7 +104,7 @@
 #define HI3110_TX_STD_BUF_LEN 12
 #define HI3110_TX_EXT_BUF_LEN 14
 #define HI3110_CAN_FRAME_MAX_BITS 128
-#define HI3110_EFF_FLAGS 0x18 /* IDE + SRR */
+#define HI3110_EFF_FLAGS 0x18  
 
 #define HI3110_TX_ECHO_SKB_MAX 1
 
@@ -147,7 +134,7 @@ struct hi3110_priv {
 	struct spi_device *spi;
 	enum hi3110_model model;
 
-	struct mutex hi3110_lock; /* SPI device lock */
+	struct mutex hi3110_lock;  
 
 	u8 *spi_tx_buf;
 	u8 *spi_rx_buf;
@@ -185,18 +172,7 @@ static void hi3110_clean(struct net_device *net)
 	priv->tx_busy = false;
 }
 
-/* Note about handling of error return of hi3110_spi_trans: accessing
- * registers via SPI is not really different conceptually than using
- * normal I/O assembler instructions, although it's much more
- * complicated from a practical POV. So it's not advisable to always
- * check the return value of this function. Imagine that every
- * read{b,l}, write{b,l} and friends would be bracketed in "if ( < 0)
- * error();", it would be a great mess (well there are some situation
- * when exception handling C++ like could be useful after all). So we
- * just check that transfers are OK at the beginning of our
- * conversation with the chip and to avoid doing really nasty things
- * (like injecting bogus packets in the network stack).
- */
+ 
 static int hi3110_spi_trans(struct spi_device *spi, int len)
 {
 	struct hi3110_priv *priv = spi_get_drvdata(spi);
@@ -266,7 +242,7 @@ static void hi3110_hw_tx(struct spi_device *spi, struct can_frame *frame)
 	buf[HI3110_FIFO_TAG_OFF] = 0;
 
 	if (frame->can_id & CAN_EFF_FLAG) {
-		/* Extended frame */
+		 
 		buf[HI3110_FIFO_ID_OFF] = (frame->can_id & CAN_EFF_MASK) >> 21;
 		buf[HI3110_FIFO_ID_OFF + 1] =
 			(((frame->can_id & CAN_EFF_MASK) >> 13) & 0xe0) |
@@ -286,7 +262,7 @@ static void hi3110_hw_tx(struct spi_device *spi, struct can_frame *frame)
 		hi3110_hw_tx_frame(spi, buf, HI3110_TX_EXT_BUF_LEN -
 				   (HI3110_CAN_MAX_DATA_LEN - frame->len));
 	} else {
-		/* Standard frame */
+		 
 		buf[HI3110_FIFO_ID_OFF] =   (frame->can_id & CAN_SFF_MASK) >> 3;
 		buf[HI3110_FIFO_ID_OFF + 1] =
 			((frame->can_id & CAN_SFF_MASK) << 5) |
@@ -326,7 +302,7 @@ static void hi3110_hw_rx(struct spi_device *spi)
 
 	hi3110_hw_rx_frame(spi, buf);
 	if (buf[HI3110_FIFO_WOTIME_TAG_OFF] & HI3110_FIFO_WOTIME_TAG_IDE) {
-		/* IDE is recessive (1), indicating extended 29-bit frame */
+		 
 		frame->can_id = CAN_EFF_FLAG;
 		frame->can_id |=
 			(buf[HI3110_FIFO_WOTIME_ID_OFF] << 21) |
@@ -335,13 +311,13 @@ static void hi3110_hw_rx(struct spi_device *spi)
 			(buf[HI3110_FIFO_WOTIME_ID_OFF + 2] << 7) |
 			(buf[HI3110_FIFO_WOTIME_ID_OFF + 3] >> 1);
 	} else {
-		/* IDE is dominant (0), frame indicating standard 11-bit */
+		 
 		frame->can_id =
 			(buf[HI3110_FIFO_WOTIME_ID_OFF] << 3) |
 			((buf[HI3110_FIFO_WOTIME_ID_OFF + 1] & 0xE0) >> 5);
 	}
 
-	/* Data length */
+	 
 	frame->len = can_cc_dlc2len(buf[HI3110_FIFO_WOTIME_DLC_OFF] & 0x0F);
 
 	if (buf[HI3110_FIFO_WOTIME_ID_OFF + 3] & HI3110_FIFO_WOTIME_ID_RTR) {
@@ -390,7 +366,7 @@ static int hi3110_do_set_mode(struct net_device *net, enum can_mode mode)
 	switch (mode) {
 	case CAN_MODE_START:
 		hi3110_clean(net);
-		/* We have to delay work since SPI I/O may sleep */
+		 
 		priv->can.state = CAN_STATE_ERROR_ACTIVE;
 		priv->restart_tx = 1;
 		if (priv->can.restart_ms == 0)
@@ -426,7 +402,7 @@ static int hi3110_set_normal_mode(struct spi_device *spi)
 	hi3110_write(spi, HI3110_WRITE_INTE, HI3110_INT_BUSERR |
 		     HI3110_INT_RXFIFO | HI3110_INT_TXCPLT);
 
-	/* Enable TX */
+	 
 	hi3110_write(spi, HI3110_WRITE_CTRL1, HI3110_CTRL1_TXEN);
 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_LOOPBACK)
@@ -438,7 +414,7 @@ static int hi3110_set_normal_mode(struct spi_device *spi)
 
 	hi3110_write(spi, HI3110_WRITE_CTRL0, reg);
 
-	/* Wait for the device to enter the mode */
+	 
 	mdelay(HI3110_OST_DELAY_MS);
 	reg = hi3110_read(spi, HI3110_READ_CTRL0);
 	if ((reg & HI3110_CTRL0_MODE_MASK) != reg)
@@ -484,23 +460,21 @@ static int hi3110_hw_reset(struct spi_device *spi)
 	u8 reg;
 	int ret;
 
-	/* Wait for oscillator startup timer after power up */
+	 
 	mdelay(HI3110_OST_DELAY_MS);
 
 	ret = hi3110_cmd(spi, HI3110_MASTER_RESET);
 	if (ret)
 		return ret;
 
-	/* Wait for oscillator startup timer after reset */
+	 
 	mdelay(HI3110_OST_DELAY_MS);
 
 	reg = hi3110_read(spi, HI3110_READ_CTRL0);
 	if ((reg & HI3110_CTRL0_MODE_MASK) != HI3110_CTRL0_INIT_MODE)
 		return -ENODEV;
 
-	/* As per the datasheet it appears the error flags are
-	 * not cleared on reset. Explicitly clear them by performing a read
-	 */
+	 
 	hi3110_read(spi, HI3110_READ_ERR);
 
 	return 0;
@@ -512,9 +486,7 @@ static int hi3110_hw_probe(struct spi_device *spi)
 
 	hi3110_hw_reset(spi);
 
-	/* Confirm correct operation by checking against reset values
-	 * in datasheet
-	 */
+	 
 	statf = hi3110_read(spi, HI3110_READ_STATF);
 
 	dev_dbg(&spi->dev, "statf: %02X\n", statf);
@@ -550,7 +522,7 @@ static int hi3110_stop(struct net_device *net)
 
 	mutex_lock(&priv->hi3110_lock);
 
-	/* Disable transmit, interrupts and clear flags */
+	 
 	hi3110_write(spi, HI3110_WRITE_CTRL1, 0x0);
 	hi3110_write(spi, HI3110_WRITE_INTE, 0x0);
 	hi3110_read(spi, HI3110_READ_INTF);
@@ -646,7 +618,7 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
 
 		intf = hi3110_read(spi, HI3110_READ_INTF);
 		eflag = hi3110_read(spi, HI3110_READ_ERR);
-		/* Update can state */
+		 
 		if (eflag & HI3110_ERR_BUSOFF)
 			new_state = CAN_STATE_BUS_OFF;
 		else if (eflag & HI3110_ERR_PASSIVE_MASK)
@@ -687,13 +659,13 @@ static irqreturn_t hi3110_can_ist(int irq, void *dev_id)
 			}
 		}
 
-		/* Update bus errors */
+		 
 		if ((intf & HI3110_INT_BUSERR) &&
 		    (priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING)) {
 			struct can_frame *cf;
 			struct sk_buff *skb;
 
-			/* Check for protocol errors */
+			 
 			if (eflag & HI3110_ERR_PROTOCOL_MASK) {
 				skb = alloc_can_err_skb(net, &cf);
 				if (!skb)
@@ -847,11 +819,11 @@ static int hi3110_can_probe(struct spi_device *spi)
 			return dev_err_probe(dev, ret, "Failed to get clock-frequency!\n");
 	}
 
-	/* Sanity check */
+	 
 	if (freq > 40000000)
 		return -ERANGE;
 
-	/* Allocate can/net device */
+	 
 	net = alloc_candev(sizeof(struct hi3110_priv), HI3110_TX_ECHO_SKB_MAX);
 	if (!net)
 		return -ENOMEM;
@@ -884,7 +856,7 @@ static int hi3110_can_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, priv);
 
-	/* Configure the SPI bus */
+	 
 	spi->bits_per_word = 8;
 	ret = spi_setup(spi);
 	if (ret)
@@ -971,9 +943,7 @@ static int __maybe_unused hi3110_can_suspend(struct device *dev)
 	priv->force_quit = 1;
 	disable_irq(spi->irq);
 
-	/* Note: at this point neither IST nor workqueues are running.
-	 * open/stop cannot be called anyway so locking is not needed
-	 */
+	 
 	if (netif_running(net)) {
 		netif_device_detach(net);
 

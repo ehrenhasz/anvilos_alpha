@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* ECDH key-agreement protocol
- *
- * Copyright (c) 2016, Intel Corporation
- * Authors: Salvator Benedetto <salvatore.benedetto@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <crypto/internal/ecc.h>
@@ -58,7 +54,7 @@ static int ecdh_compute_value(struct kpp_request *req)
 	int ret = -ENOMEM;
 
 	nbytes = ctx->ndigits << ECC_DIGITS_TO_BYTES_SHIFT;
-	/* Public part is a point thus it has both coordinates */
+	 
 	public_key_sz = 2 * nbytes;
 
 	public_key = kmalloc(public_key_sz, GFP_KERNEL);
@@ -70,10 +66,10 @@ static int ecdh_compute_value(struct kpp_request *req)
 		if (!shared_secret)
 			goto free_pubkey;
 
-		/* from here on it's invalid parameters */
+		 
 		ret = -EINVAL;
 
-		/* must have exactly two points to be on the curve */
+		 
 		if (public_key_sz != req->src_len)
 			goto free_all;
 
@@ -99,7 +95,7 @@ static int ecdh_compute_value(struct kpp_request *req)
 	if (ret < 0)
 		goto free_all;
 
-	/* might want less than we've got */
+	 
 	nbytes = min_t(size_t, nbytes, req->dst_len);
 	copied = sg_copy_from_buffer(req->dst, sg_nents_for_len(req->dst,
 								nbytes),
@@ -107,7 +103,7 @@ static int ecdh_compute_value(struct kpp_request *req)
 	if (copied != nbytes)
 		ret = -EINVAL;
 
-	/* fall through */
+	 
 free_all:
 	kfree_sensitive(shared_secret);
 free_pubkey:
@@ -119,7 +115,7 @@ static unsigned int ecdh_max_size(struct crypto_kpp *tfm)
 {
 	struct ecdh_ctx *ctx = ecdh_get_ctx(tfm);
 
-	/* Public key is made of two coordinates, add one to the left shift */
+	 
 	return ctx->ndigits << (ECC_DIGITS_TO_BYTES_SHIFT + 1);
 }
 
@@ -204,7 +200,7 @@ static int __init ecdh_init(void)
 {
 	int ret;
 
-	/* NIST p192 will fail to register in FIPS mode */
+	 
 	ret = crypto_register_kpp(&ecdh_nist_p192);
 	ecdh_nist_p192_registered = ret == 0;
 

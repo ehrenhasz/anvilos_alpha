@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2008-2013 Jozsef Kadlecsik <kadlec@netfilter.org> */
 
-/* Kernel module implementing an IP set type: the list:set type */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/ip.h>
@@ -13,20 +13,20 @@
 #include <linux/netfilter/ipset/ip_set_list.h>
 
 #define IPSET_TYPE_REV_MIN	0
-/*				1    Counters support added */
-/*				2    Comments support added */
-#define IPSET_TYPE_REV_MAX	3 /* skbinfo support added */
+ 
+ 
+#define IPSET_TYPE_REV_MAX	3  
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
 IP_SET_MODULE_DESC("list:set", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_list:set");
 
-/* Member elements  */
+ 
 struct set_elem {
 	struct rcu_head rcu;
 	struct list_head list;
-	struct ip_set *set;	/* Sigh, in order to cleanup reference */
+	struct ip_set *set;	 
 	ip_set_id_t id;
 } __aligned(__alignof__(u64));
 
@@ -36,13 +36,13 @@ struct set_adt_elem {
 	int before;
 };
 
-/* Type structure */
+ 
 struct list_set {
-	u32 size;		/* size of set list array */
-	struct timer_list gc;	/* garbage collection */
-	struct ip_set *set;	/* attached to this ip_set */
-	struct net *net;	/* namespace */
-	struct list_head members; /* the set members */
+	u32 size;		 
+	struct timer_list gc;	 
+	struct ip_set *set;	 
+	struct net *net;	 
+	struct list_head members;  
 };
 
 static int
@@ -56,7 +56,7 @@ list_set_ktest(struct ip_set *set, const struct sk_buff *skb,
 	u32 flags = opt->cmdflags;
 	int ret;
 
-	/* Don't lookup sub-counters at all */
+	 
 	opt->cmdflags &= ~IPSET_FLAG_MATCH_COUNTERS;
 	if (opt->cmdflags & IPSET_FLAG_SKIP_SUBCOUNTER_UPDATE)
 		opt->cmdflags |= IPSET_FLAG_SKIP_COUNTER_UPDATE;
@@ -137,7 +137,7 @@ list_set_kadt(struct ip_set *set, const struct sk_buff *skb,
 	return ret;
 }
 
-/* Userspace interfaces: we are protected by the nfnl mutex */
+ 
 
 static void
 __list_set_del_rcu(struct rcu_head * rcu)
@@ -223,7 +223,7 @@ list_set_init_extensions(struct ip_set *set, const struct ip_set_ext *ext,
 		ip_set_init_comment(set, ext_comment(e, set), ext);
 	if (SET_WITH_SKBINFO(set))
 		ip_set_init_skbinfo(ext_skbinfo(e, set), ext);
-	/* Update timeout last */
+	 
 	if (SET_WITH_TIMEOUT(set))
 		ip_set_timeout_set(ext_timeout(e, set), ext->timeout);
 }
@@ -237,7 +237,7 @@ list_set_uadd(struct ip_set *set, void *value, const struct ip_set_ext *ext,
 	struct set_elem *e, *n, *prev, *next;
 	bool flag_exist = flags & IPSET_FLAG_EXIST;
 
-	/* Find where to add the new entry */
+	 
 	n = prev = next = NULL;
 	list_for_each_entry(e, &map->members, list) {
 		if (SET_WITH_TIMEOUT(set) &&
@@ -253,38 +253,38 @@ list_set_uadd(struct ip_set *set, void *value, const struct ip_set_ext *ext,
 			prev = e;
 	}
 
-	/* If before/after is used on an empty set */
+	 
 	if ((d->before > 0 && !next) ||
 	    (d->before < 0 && !prev))
 		return -IPSET_ERR_REF_EXIST;
 
-	/* Re-add already existing element */
+	 
 	if (n) {
 		if (!flag_exist)
 			return -IPSET_ERR_EXIST;
-		/* Update extensions */
+		 
 		ip_set_ext_destroy(set, n);
 		list_set_init_extensions(set, ext, n);
 
-		/* Set is already added to the list */
+		 
 		ip_set_put_byindex(map->net, d->id);
 		return 0;
 	}
-	/* Add new entry */
+	 
 	if (d->before == 0) {
-		/* Append  */
+		 
 		n = list_empty(&map->members) ? NULL :
 		    list_last_entry(&map->members, struct set_elem, list);
 	} else if (d->before > 0) {
-		/* Insert after next element */
+		 
 		if (!list_is_last(&next->list, &map->members))
 			n = list_next_entry(next, list);
 	} else {
-		/* Insert before prev element */
+		 
 		if (prev->list.prev != &map->members)
 			n = list_prev_entry(prev, list);
 	}
-	/* Can we replace a timed out entry? */
+	 
 	if (n &&
 	    !(SET_WITH_TIMEOUT(set) &&
 	      ip_set_timeout_expired(ext_timeout(n, set))))
@@ -366,7 +366,7 @@ list_set_uadt(struct ip_set *set, struct nlattr *tb[],
 	e.id = ip_set_get_byname(map->net, nla_data(tb[IPSET_ATTR_NAME]), &s);
 	if (e.id == IPSET_INVALID_ID)
 		return -IPSET_ERR_NAME;
-	/* "Loop detection" */
+	 
 	if (s->type->features & IPSET_TYPE_NAME) {
 		ret = -IPSET_ERR_LOOP;
 		goto finish;
@@ -440,7 +440,7 @@ list_set_destroy(struct ip_set *set)
 	set->data = NULL;
 }
 
-/* Calculate the actual memory size of the set data */
+ 
 static size_t
 list_set_memsize(const struct list_set *map, size_t dsize)
 {
@@ -515,7 +515,7 @@ list_set_list(const struct ip_set *set,
 	}
 
 	nla_nest_end(skb, atd);
-	/* Set listing finished */
+	 
 	cb->args[IPSET_CB_ARG0] = 0;
 	goto out;
 
@@ -583,7 +583,7 @@ list_set_gc_init(struct ip_set *set, void (*gc)(struct timer_list *t))
 	mod_timer(&map->gc, jiffies + IPSET_GC_PERIOD(set->timeout) * HZ);
 }
 
-/* Create list:set type of sets */
+ 
 
 static bool
 init_list_set(struct net *net, struct ip_set *set, u32 size)

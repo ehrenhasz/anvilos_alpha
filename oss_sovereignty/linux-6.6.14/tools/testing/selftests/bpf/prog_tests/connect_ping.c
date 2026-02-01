@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright 2022 Google LLC.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <sys/mount.h>
@@ -13,7 +11,7 @@
 
 #include "connect_ping.skel.h"
 
-/* 2001:db8::1 */
+ 
 #define BINDADDR_V6 { { { 0x20,0x01,0x0d,0xb8,0,0,0,0,0,0,0,0,0,0,0,1 } } }
 static const struct in6_addr bindaddr_v6 = BINDADDR_V6;
 
@@ -101,9 +99,7 @@ void test_connect_ping(void)
 	if (!ASSERT_OK(unshare(CLONE_NEWNET | CLONE_NEWNS), "unshare"))
 		return;
 
-	/* overmount sysfs, and making original sysfs private so overmount
-	 * does not propagate to other mntns.
-	 */
+	 
 	if (!ASSERT_OK(mount("none", "/sys", NULL, MS_PRIVATE, NULL),
 		       "remount-private-sys"))
 		return;
@@ -139,31 +135,19 @@ void test_connect_ping(void)
 	if (!ASSERT_OK_PTR(skel->links.connect_v6_prog, "cg-attach-v6"))
 		goto skel_destroy;
 
-	/* Connect a v4 ping socket to localhost, assert that only v4 is called,
-	 * and called exactly once, and that the socket's bound address is
-	 * original loopback address.
-	 */
+	 
 	if (test__start_subtest("ipv4"))
 		subtest(cgroup_fd, skel, AF_INET, 0);
 
-	/* Connect a v4 ping socket to localhost, assert that only v4 is called,
-	 * and called exactly once, and that the socket's bound address is
-	 * address we explicitly bound.
-	 */
+	 
 	if (test__start_subtest("ipv4-bind"))
 		subtest(cgroup_fd, skel, AF_INET, 1);
 
-	/* Connect a v6 ping socket to localhost, assert that only v6 is called,
-	 * and called exactly once, and that the socket's bound address is
-	 * original loopback address.
-	 */
+	 
 	if (test__start_subtest("ipv6"))
 		subtest(cgroup_fd, skel, AF_INET6, 0);
 
-	/* Connect a v6 ping socket to localhost, assert that only v6 is called,
-	 * and called exactly once, and that the socket's bound address is
-	 * address we explicitly bound.
-	 */
+	 
 	if (test__start_subtest("ipv6-bind"))
 		subtest(cgroup_fd, skel, AF_INET6, 1);
 

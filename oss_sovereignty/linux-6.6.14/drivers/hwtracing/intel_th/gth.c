@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel(R) Trace Hub Global Trace Hub
- *
- * Copyright (C) 2014-2015 Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -21,14 +17,7 @@
 
 struct gth_device;
 
-/**
- * struct gth_output - GTH view on an output port
- * @gth:	backlink to the GTH device
- * @output:	link to output device's output descriptor
- * @index:	output port number
- * @port_type:	one of GTH_* port type values
- * @master:	bitmap of masters configured for this output
- */
+ 
 struct gth_output {
 	struct gth_device	*gth;
 	struct intel_th_output	*output;
@@ -37,16 +26,7 @@ struct gth_output {
 	DECLARE_BITMAP(master, TH_CONFIGURABLE_MASTERS + 1);
 };
 
-/**
- * struct gth_device - GTH device
- * @dev:	driver core's device
- * @base:	register window base address
- * @output_group:	attributes describing output ports
- * @master_group:	attributes describing master assignments
- * @output:		output ports
- * @master:		master/output port assignments
- * @gth_lock:		serializes accesses to GTH bits
- */
+ 
 struct gth_device {
 	struct device		*dev;
 	void __iomem		*base;
@@ -110,9 +90,7 @@ static unsigned int gth_smcfreq_get(struct gth_device *gth, int port)
 	return val;
 }
 
-/*
- * "masters" attribute group
- */
+ 
 
 struct master_attribute {
 	struct device_attribute	attr;
@@ -178,23 +156,20 @@ static ssize_t master_attr_store(struct device *dev,
 
 	spin_lock(&gth->gth_lock);
 
-	/* disconnect from the previous output port, if any */
+	 
 	old_port = gth->master[ma->master];
 	if (old_port >= 0) {
 		gth->master[ma->master] = -1;
 		clear_bit(ma->master, gth->output[old_port].master);
 
-		/*
-		 * if the port is active, program this setting,
-		 * implies that runtime PM is on
-		 */
+		 
 		if (gth->output[old_port].output->active)
 			gth_master_set(gth, ma->master, -1);
 	}
 
-	/* connect to the new output port, if any */
+	 
 	if (port >= 0) {
-		/* check if there's a driver for this port */
+		 
 		if (!gth->output[port].output) {
 			count = -ENODEV;
 			goto unlock;
@@ -202,7 +177,7 @@ static ssize_t master_attr_store(struct device *dev,
 
 		set_bit(ma->master, gth->output[port].master);
 
-		/* if the port is active, program this setting, see above */
+		 
 		if (gth->output[port].output->active)
 			gth_master_set(gth, ma->master, port);
 	}
@@ -272,9 +247,7 @@ gth_output_parm_get(struct gth_device *gth, int port, unsigned int parm)
 	return config;
 }
 
-/*
- * Reset outputs and sources
- */
+ 
 static int intel_th_gth_reset(struct gth_device *gth)
 {
 	u32 reg;
@@ -284,11 +257,11 @@ static int intel_th_gth_reset(struct gth_device *gth)
 	if (reg & SCRPD_DEBUGGER_IN_USE)
 		return -EBUSY;
 
-	/* Always save/restore STH and TU registers in S0ix entry/exit */
+	 
 	reg |= SCRPD_STH_IS_ENABLED | SCRPD_TRIGGER_IS_ENABLED;
 	iowrite32(reg, gth->base + REG_GTH_SCRPD0);
 
-	/* output ports */
+	 
 	for (port = 0; port < 8; port++) {
 		if (gth_output_parm_get(gth, port, TH_OUTPUT_PARM(port)) ==
 		    GTH_NONE)
@@ -297,18 +270,18 @@ static int intel_th_gth_reset(struct gth_device *gth)
 		gth_output_set(gth, port, 0);
 		gth_smcfreq_set(gth, port, 16);
 	}
-	/* disable overrides */
+	 
 	iowrite32(0, gth->base + REG_GTH_DESTOVR);
 
-	/* masters swdest_0~31 and gswdest */
+	 
 	for (i = 0; i < 33; i++)
 		iowrite32(0, gth->base + REG_GTH_SWDEST0 + i * 4);
 
-	/* sources */
+	 
 	iowrite32(0, gth->base + REG_GTH_SCR);
 	iowrite32(0xfc, gth->base + REG_GTH_SCR2);
 
-	/* setup CTS for single trigger */
+	 
 	iowrite32(CTS_EVENT_ENABLE_IF_ANYTHING, gth->base + REG_CTS_C0S0_EN);
 	iowrite32(CTS_ACTION_CONTROL_SET_STATE(CTS_STATE_IDLE) |
 		  CTS_ACTION_CONTROL_TRIGGER, gth->base + REG_CTS_C0S0_ACT);
@@ -316,9 +289,7 @@ static int intel_th_gth_reset(struct gth_device *gth)
 	return 0;
 }
 
-/*
- * "outputs" attribute group
- */
+ 
 
 static ssize_t output_attr_show(struct device *dev,
 				struct device_attribute *attr,
@@ -461,15 +432,7 @@ static int intel_th_output_attributes(struct gth_device *gth)
 	return sysfs_create_group(&gth->dev->kobj, &gth->output_group);
 }
 
-/**
- * intel_th_gth_stop() - stop tracing to an output device
- * @gth:		GTH device
- * @output:		output device's descriptor
- * @capture_done:	set when no more traces will be captured
- *
- * This will stop tracing using force storeEn off signal and wait for the
- * pipelines to be empty for the corresponding output port.
- */
+ 
 static void intel_th_gth_stop(struct gth_device *gth,
 			      struct intel_th_output *output,
 			      bool capture_done)
@@ -485,7 +448,7 @@ static void intel_th_gth_stop(struct gth_device *gth,
 	iowrite32(0, gth->base + REG_GTH_SCR);
 	iowrite32(scr2, gth->base + REG_GTH_SCR2);
 
-	/* wait on pipeline empty for the given port */
+	 
 	for (reg = 0, count = GTH_PLE_WAITLOOP_DEPTH;
 	     count && !(reg & BIT(output->port)); count--) {
 		reg = ioread32(gth->base + REG_GTH_STAT);
@@ -496,21 +459,15 @@ static void intel_th_gth_stop(struct gth_device *gth,
 		dev_dbg(gth->dev, "timeout waiting for GTH[%d] PLE\n",
 			output->port);
 
-	/* wait on output piepline empty */
+	 
 	if (outdrv->wait_empty)
 		outdrv->wait_empty(outdev);
 
-	/* clear force capture done for next captures */
+	 
 	iowrite32(0xfc, gth->base + REG_GTH_SCR2);
 }
 
-/**
- * intel_th_gth_start() - start tracing to an output device
- * @gth:	GTH device
- * @output:	output device's descriptor
- *
- * This will start tracing using force storeEn signal.
- */
+ 
 static void intel_th_gth_start(struct gth_device *gth,
 			       struct intel_th_output *output)
 {
@@ -523,15 +480,7 @@ static void intel_th_gth_start(struct gth_device *gth,
 	iowrite32(0, gth->base + REG_GTH_SCR2);
 }
 
-/**
- * intel_th_gth_disable() - disable tracing to an output device
- * @thdev:	GTH device
- * @output:	output device's descriptor
- *
- * This will deconfigure all masters set to output to this device,
- * disable tracing using force storeEn off signal and wait for the
- * "pipeline empty" bit for corresponding output port.
- */
+ 
 static void intel_th_gth_disable(struct intel_th_device *thdev,
 				 struct intel_th_output *output)
 {
@@ -570,23 +519,13 @@ static void intel_th_gth_prepare(struct intel_th_device *thdev,
 	struct gth_device *gth = dev_get_drvdata(&thdev->dev);
 	int count;
 
-	/*
-	 * Wait until the output port is in reset before we start
-	 * programming it.
-	 */
+	 
 	for (count = GTH_PLE_WAITLOOP_DEPTH;
 	     count && !(gth_output_get(gth, output->port) & BIT(5)); count--)
 		cpu_relax();
 }
 
-/**
- * intel_th_gth_enable() - enable tracing to an output device
- * @thdev:	GTH device
- * @output:	output device's descriptor
- *
- * This will configure all masters set to output to this device and
- * enable tracing using force storeEn signal.
- */
+ 
 static void intel_th_gth_enable(struct intel_th_device *thdev,
 				struct intel_th_output *output)
 {
@@ -614,14 +553,7 @@ static void intel_th_gth_enable(struct intel_th_device *thdev,
 	intel_th_gth_start(gth, output);
 }
 
-/**
- * intel_th_gth_switch() - execute a switch sequence
- * @thdev:	GTH device
- * @output:	output device's descriptor
- *
- * This will execute a switch sequence that will trigger a switch window
- * when tracing to MSC in multi-block mode.
- */
+ 
 static void intel_th_gth_switch(struct intel_th_device *thdev,
 				struct intel_th_output *output)
 {
@@ -629,10 +561,10 @@ static void intel_th_gth_switch(struct intel_th_device *thdev,
 	unsigned long count;
 	u32 reg;
 
-	/* trigger */
+	 
 	iowrite32(0, gth->base + REG_CTS_CTL);
 	iowrite32(CTS_CTL_SEQUENCER_ENABLE, gth->base + REG_CTS_CTL);
-	/* wait on trigger status */
+	 
 	for (reg = 0, count = CTS_TRIG_WAITLOOP_DEPTH;
 	     count && !(reg & BIT(4)); count--) {
 		reg = ioread32(gth->base + REG_CTS_STAT);
@@ -641,24 +573,14 @@ static void intel_th_gth_switch(struct intel_th_device *thdev,
 	if (!count)
 		dev_dbg(&thdev->dev, "timeout waiting for CTS Trigger\n");
 
-	/* De-assert the trigger */
+	 
 	iowrite32(0, gth->base + REG_CTS_CTL);
 
 	intel_th_gth_stop(gth, output, false);
 	intel_th_gth_start(gth, output);
 }
 
-/**
- * intel_th_gth_assign() - assign output device to a GTH output port
- * @thdev:	GTH device
- * @othdev:	output device
- *
- * This will match a given output device parameters against present
- * output ports on the GTH and fill out relevant bits in output device's
- * descriptor.
- *
- * Return:	0 on success, -errno on error.
- */
+ 
 static int intel_th_gth_assign(struct intel_th_device *thdev,
 			       struct intel_th_device *othdev)
 {
@@ -693,11 +615,7 @@ found:
 	return 0;
 }
 
-/**
- * intel_th_gth_unassign() - deassociate an output device from its output port
- * @thdev:	GTH device
- * @othdev:	output device
- */
+ 
 static void intel_th_gth_unassign(struct intel_th_device *thdev,
 				  struct intel_th_device *othdev)
 {
@@ -722,12 +640,9 @@ static int
 intel_th_gth_set_output(struct intel_th_device *thdev, unsigned int master)
 {
 	struct gth_device *gth = dev_get_drvdata(&thdev->dev);
-	int port = 0; /* FIXME: make default output configurable */
+	int port = 0;  
 
-	/*
-	 * everything above TH_CONFIGURABLE_MASTERS is controlled by the
-	 * same register
-	 */
+	 
 	if (master > TH_CONFIGURABLE_MASTERS)
 		master = TH_CONFIGURABLE_MASTERS;
 
@@ -768,12 +683,7 @@ static int intel_th_gth_probe(struct intel_th_device *thdev)
 
 	dev_set_drvdata(dev, gth);
 
-	/*
-	 * Host mode can be signalled via SW means or via SCRPD_DEBUGGER_IN_USE
-	 * bit. Either way, don't reset HW in this case, and don't export any
-	 * capture configuration attributes. Also, refuse to assign output
-	 * drivers to ports, see intel_th_gth_assign().
-	 */
+	 
 	if (thdev->host_mode)
 		return 0;
 
@@ -799,7 +709,7 @@ static int intel_th_gth_probe(struct intel_th_device *thdev)
 			continue;
 
 		ret = intel_th_output_enable(th, gth->output[i].port_type);
-		/* -ENODEV is ok, we just won't have that device enumerated */
+		 
 		if (ret && ret != -ENODEV)
 			return ret;
 	}

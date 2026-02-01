@@ -1,13 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2013 - 2015 Fujitsu Semiconductor, Ltd
- *              Vincent Yang <vincent.yang@tw.fujitsu.com>
- * Copyright (C) 2015 Linaro Ltd  Andy Green <andy.green@linaro.org>
- * Copyright (C) 2019 Socionext Inc.
- *
- */
+ 
+ 
 
-/* F_SDH30 extended Controller registers */
+ 
 #define F_SDH30_AHB_CONFIG      0x100
 #define  F_SDH30_AHB_BIGED      BIT(6)
 #define  F_SDH30_BUSLOCK_DMA    BIT(5)

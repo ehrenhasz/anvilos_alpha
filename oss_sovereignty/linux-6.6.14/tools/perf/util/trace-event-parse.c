@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2009, Steven Rostedt <srostedt@redhat.com>
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -140,7 +138,7 @@ void parse_ftrace_printk(struct tep_handle *pevent,
 			break;
 		}
 		addr = strtoull(addr_str, NULL, 16);
-		/* fmt still has a space, skip it */
+		 
 		printk = strdup(fmt+1);
 		line = strtok_r(NULL, "\n", &next);
 		tep_register_print_string(pevent, printk, addr);
@@ -151,7 +149,7 @@ void parse_ftrace_printk(struct tep_handle *pevent,
 void parse_saved_cmdline(struct tep_handle *pevent,
 			 char *file, unsigned int size __maybe_unused)
 {
-	char comm[17]; /* Max comm length in the kernel is 16. */
+	char comm[17];  
 	char *line;
 	char *next = NULL;
 	int pid;
@@ -200,11 +198,7 @@ unsigned long long eval_flag(const char *flag)
 {
 	int i;
 
-	/*
-	 * Some flags in the format files do not get converted.
-	 * If the flag is not numeric, see if it is something that
-	 * we already know about.
-	 */
+	 
 	if (isdigit(flag[0]))
 		return strtoull(flag, NULL, 0);
 

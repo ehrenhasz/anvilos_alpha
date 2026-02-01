@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2012 Broadcom Corporation
- */
+
+ 
 #include <linux/debugfs.h>
 #include <linux/netdevice.h>
 #include <linux/module.h>

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Mediatek Hardware Random Number Generator
- *
- * Copyright (C) 2017 Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 #define MTK_RNG_DEV KBUILD_MODNAME
 
 #include <linux/clk.h>
@@ -18,7 +14,7 @@
 #include <linux/platform_device.h>
 #include <linux/pm_runtime.h>
 
-/* Runtime PM autosuspend timeout: */
+ 
 #define RNG_AUTOSUSPEND_TIMEOUT		100
 
 #define USEC_POLL			2
@@ -174,9 +170,9 @@ static const struct dev_pm_ops mtk_rng_pm_ops = {
 };
 
 #define MTK_RNG_PM_OPS (&mtk_rng_pm_ops)
-#else	/* CONFIG_PM */
+#else	 
 #define MTK_RNG_PM_OPS NULL
-#endif	/* CONFIG_PM */
+#endif	 
 
 static const struct of_device_id mtk_rng_match[] = {
 	{ .compatible = "mediatek,mt7986-rng" },

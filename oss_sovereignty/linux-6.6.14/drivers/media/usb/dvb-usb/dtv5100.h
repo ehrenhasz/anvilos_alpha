@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * DVB USB Linux driver for AME DTV-5100 USB2.0 DVB-T
- *
- * Copyright (C) 2008  Antoine Jacquet <royale@zerezo.com>
- * http://royale.zerezo.com/dtv5100/
- */
+ 
+ 
 
 #ifndef _DVB_USB_DTV5100_H_
 #define _DVB_USB_DTV5100_H_
@@ -32,7 +27,7 @@ static struct {
 } dtv5100_init[] = {
 	{ 0x000000c5, 0x00000000, 0x00000001 },
 	{ 0x000000c5, 0x00000001, 0x00000001 },
-	{ }		/* Terminating entry */
+	{ }		 
 };
 
 #endif

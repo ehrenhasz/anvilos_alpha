@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for Realtek PCI-Express card reader
- *
- * Copyright(c) 2009-2013 Realtek Semiconductor Corp. All rights reserved.
- *
- * Author:
- *   Wei WANG (wei_wang@realsil.com.cn)
- *   Micky Ching (micky_ching@realsil.com.cn)
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/kthread.h>
@@ -445,19 +437,19 @@ static int test_unit_ready(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 static unsigned char formatter_inquiry_str[20] = {
 	'M', 'E', 'M', 'O', 'R', 'Y', 'S', 'T', 'I', 'C', 'K',
 #ifdef SUPPORT_MAGIC_GATE
-	'-', 'M', 'G', /* Byte[47:49] */
+	'-', 'M', 'G',  
 #else
-	0x20, 0x20, 0x20,  /* Byte[47:49] */
+	0x20, 0x20, 0x20,   
 #endif
 
 #ifdef SUPPORT_MAGIC_GATE
-	0x0B,  /* Byte[50]: MG, MS, MSPro, MSXC */
+	0x0B,   
 #else
-	0x09,  /* Byte[50]: MS, MSPro, MSXC */
+	0x09,   
 #endif
-	0x00,  /* Byte[51]: Category Specific Commands */
-	0x00,  /* Byte[52]: Access Control and feature */
-	0x20, 0x20, 0x20, /* Byte[53:55] */
+	0x00,   
+	0x00,   
+	0x20, 0x20, 0x20,  
 };
 
 static int inquiry(struct scsi_cmnd *srb, struct rtsx_chip *chip)
@@ -525,7 +517,7 @@ static int inquiry(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 		memcpy(buf, inquiry_buf, 8);
 		strncpy(buf + 8, inquiry_string, sendbytes - 8);
 		if (pro_formatter_flag) {
-			/* Additional Length */
+			 
 			buf[4] = 0x33;
 		}
 	} else {
@@ -556,11 +548,11 @@ static int start_stop_unit(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 
 	switch (srb->cmnd[0x4]) {
 	case STOP_MEDIUM:
-		/* Media disabled */
+		 
 		return TRANSPORT_GOOD;
 
 	case UNLOAD_MEDIUM:
-		/* Media shall be unload */
+		 
 		if (check_card_ready(chip, lun))
 			eject_card(chip, lun);
 		return TRANSPORT_GOOD;
@@ -611,11 +603,11 @@ static int request_sense(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 			ms_card->pro_under_formatting = 0;
 			ms_card->progress = 0;
 		} else if (ms_card->format_status == FORMAT_IN_PROGRESS) {
-			/* Logical Unit Not Ready Format in Progress */
+			 
 			set_sense_data(chip, lun, CUR_ERR, 0x02, 0, 0x04, 0x04,
 				       0, (u16)(ms_card->progress));
 		} else {
-			/* Format Command Failed */
+			 
 			set_sense_type(chip, lun, SENSE_TYPE_FORMAT_CMD_FAILED);
 			ms_card->pro_under_formatting = 0;
 			ms_card->progress = 0;
@@ -635,7 +627,7 @@ static int request_sense(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 	vfree(buf);
 
 	scsi_set_resid(srb, 0);
-	/* Reset Sense Data */
+	 
 	set_sense_type(chip, lun, SENSE_TYPE_NO_SENSE);
 	return TRANSPORT_GOOD;
 }
@@ -654,17 +646,17 @@ static void ms_mode_sense(struct rtsx_chip *chip, u8 cmd,
 		if (data_size > 0x68)
 			data_size = 0x68;
 
-		buf[i++] = 0x67;  /* Mode Data Length */
+		buf[i++] = 0x67;   
 	} else {
 		sys_info_offset = 12;
 		if (data_size > 0x6C)
 			data_size = 0x6C;
 
-		buf[i++] = 0x00;  /* Mode Data Length (MSB) */
-		buf[i++] = 0x6A;  /* Mode Data Length (LSB) */
+		buf[i++] = 0x00;   
+		buf[i++] = 0x6A;   
 	}
 
-	/* Medium Type Code */
+	 
 	if (check_card_ready(chip, lun)) {
 		if (CHK_MSXC(ms_card)) {
 			support_format = true;
@@ -676,55 +668,55 @@ static void ms_mode_sense(struct rtsx_chip *chip, u8 cmd,
 			buf[i++] = 0x10;
 		}
 
-		/* WP */
+		 
 		if (check_card_wp(chip, lun))
 			buf[i++] = 0x80;
 		else
 			buf[i++] = 0x00;
 
 	} else {
-		buf[i++] = 0x00;	/* MediaType */
-		buf[i++] = 0x00;	/* WP */
+		buf[i++] = 0x00;	 
+		buf[i++] = 0x00;	 
 	}
 
-	buf[i++] = 0x00;		/* Reserved */
+	buf[i++] = 0x00;		 
 
 	if (cmd == MODE_SENSE_10) {
-		buf[i++] = 0x00;  /* Reserved */
-		buf[i++] = 0x00;  /* Block descriptor length(MSB) */
-		buf[i++] = 0x00;  /* Block descriptor length(LSB) */
+		buf[i++] = 0x00;   
+		buf[i++] = 0x00;   
+		buf[i++] = 0x00;   
 
-		/* The Following Data is the content of "Page 0x20" */
+		 
 		if (data_size >= 9)
-			buf[i++] = 0x20;		/* Page Code */
+			buf[i++] = 0x20;		 
 		if (data_size >= 10)
-			buf[i++] = 0x62;		/* Page Length */
+			buf[i++] = 0x62;		 
 		if (data_size >= 11)
-			buf[i++] = 0x00;		/* No Access Control */
+			buf[i++] = 0x00;		 
 		if (data_size >= 12) {
 			if (support_format)
-				buf[i++] = 0xC0;	/* SF, SGM */
+				buf[i++] = 0xC0;	 
 			else
 				buf[i++] = 0x00;
 		}
 	} else {
-		/* The Following Data is the content of "Page 0x20" */
+		 
 		if (data_size >= 5)
-			buf[i++] = 0x20;		/* Page Code */
+			buf[i++] = 0x20;		 
 		if (data_size >= 6)
-			buf[i++] = 0x62;		/* Page Length */
+			buf[i++] = 0x62;		 
 		if (data_size >= 7)
-			buf[i++] = 0x00;		/* No Access Control */
+			buf[i++] = 0x00;		 
 		if (data_size >= 8) {
 			if (support_format)
-				buf[i++] = 0xC0;	/* SF, SGM */
+				buf[i++] = 0xC0;	 
 			else
 				buf[i++] = 0x00;
 		}
 	}
 
 	if (data_size > sys_info_offset) {
-		/* 96 Bytes Attribute Data */
+		 
 		int len = data_size - sys_info_offset;
 
 		len = (len < 96) ? len : 96;
@@ -861,9 +853,7 @@ static int read_write(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 
 #ifdef SUPPORT_SD_LOCK
 	if (sd_card->sd_erase_status) {
-		/* Accessing to any card is forbidden
-		 * until the erase procedure of SD is completed
-		 */
+		 
 		dev_dbg(rtsx_dev(chip), "SD card being erased!\n");
 		set_sense_type(chip, lun, SENSE_TYPE_MEDIA_READ_FORBIDDEN);
 		return TRANSPORT_FAILED;
@@ -902,10 +892,7 @@ static int read_write(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 		return TRANSPORT_FAILED;
 	}
 
-	/* In some test, we will receive a start_sec like 0xFFFFFFFF.
-	 * In this situation, start_sec + sec_cnt will overflow, so we
-	 * need to judge start_sec at first
-	 */
+	 
 	if (start_sec > get_card_size(chip, lun) ||
 	    ((start_sec + sec_cnt) > get_card_size(chip, lun))) {
 		set_sense_type(chip, lun, SENSE_TYPE_MEDIA_LBA_OVER_RANGE);
@@ -992,7 +979,7 @@ static int read_format_capacity(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 	buf[i++] = 0;
 	buf[i++] = 0;
 
-	/* Capacity List Length */
+	 
 	if (buf_len > 12 && chip->mspro_formatter_enable &&
 	    (chip->lun2card[lun] & MS_CARD) &&
 	    (!card || card == MS_CARD)) {
@@ -1395,7 +1382,7 @@ static int set_variable(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 	unsigned int lun = SCSI_LUN(srb);
 
 	if (srb->cmnd[3] == 1) {
-		/* Variable Clock */
+		 
 		struct xd_info *xd_card = &chip->xd_card;
 		struct sd_info *sd_card = &chip->sd_card;
 		struct ms_info *ms_card = &chip->ms_card;
@@ -2814,43 +2801,43 @@ static int get_ms_information(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 		return TRANSPORT_ERROR;
 
 	i = 0;
-	/*  GET Memory Stick Media Information Response Header */
-	buf[i++] = 0x00;		/* Data length MSB */
-	buf[i++] = data_len;		/* Data length LSB */
-	/* Device Information Type Code */
+	 
+	buf[i++] = 0x00;		 
+	buf[i++] = data_len;		 
+	 
 	if (CHK_MSXC(ms_card))
 		buf[i++] = 0x03;
 	else
 		buf[i++] = 0x02;
 
-	/* SGM bit */
+	 
 	buf[i++] = 0x01;
-	/* Reserved */
+	 
 	buf[i++] = 0x00;
 	buf[i++] = 0x00;
 	buf[i++] = 0x00;
-	/* Number of Device Information */
+	 
 	buf[i++] = 0x01;
 
-	/*  Device Information Body */
+	 
 
-	/* Device Information ID Number */
+	 
 	buf[i++] = dev_info_id;
-	/* Device Information Length */
+	 
 	if (dev_info_id == 0x15)
 		data_len = 0x31;
 	else
 		data_len = 0x61;
 
-	buf[i++] = 0x00;		/* Data length MSB */
-	buf[i++] = data_len;		/* Data length LSB */
-	/* Valid Bit */
+	buf[i++] = 0x00;		 
+	buf[i++] = data_len;		 
+	 
 	buf[i++] = 0x80;
 	if (dev_info_id == 0x10 || dev_info_id == 0x13) {
-		/* System Information */
+		 
 		memcpy(buf + i, ms_card->raw_sys_info, 96);
 	} else {
-		/* Model Name */
+		 
 		memcpy(buf + i, ms_card->raw_model_name, 48);
 	}
 
@@ -3165,14 +3152,12 @@ int rtsx_scsi_handler(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 
 #ifdef SUPPORT_SD_LOCK
 	if (sd_card->sd_erase_status) {
-		/* Block all SCSI command except for
-		 * REQUEST_SENSE and rs_ppstatus
-		 */
+		 
 		if (!(srb->cmnd[0] == VENDOR_CMND &&
 		      srb->cmnd[1] == SCSI_APP_CMD &&
 		      srb->cmnd[2] == GET_DEV_STATUS) &&
 			srb->cmnd[0] != REQUEST_SENSE) {
-			/* Logical Unit Not Ready Format in Progress */
+			 
 			set_sense_data(chip, lun, CUR_ERR,
 				       0x02, 0, 0x04, 0x04, 0, 0);
 			return TRANSPORT_FAILED;
@@ -3184,7 +3169,7 @@ int rtsx_scsi_handler(struct scsi_cmnd *srb, struct rtsx_chip *chip)
 	    ms_card->format_status == FORMAT_IN_PROGRESS) {
 		if (srb->cmnd[0] != REQUEST_SENSE &&
 		    srb->cmnd[0] != INQUIRY) {
-			/* Logical Unit Not Ready Format in Progress */
+			 
 			set_sense_data(chip, lun, CUR_ERR, 0x02, 0, 0x04, 0x04,
 				       0, (u16)(ms_card->progress));
 			return TRANSPORT_FAILED;

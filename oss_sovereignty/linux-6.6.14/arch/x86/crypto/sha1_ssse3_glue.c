@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API.
- *
- * Glue code for the SHA1 Secure Hash Algorithm assembler implementation using
- * Supplemental SSE3 instructions.
- *
- * This file is based on sha1_generic.c
- *
- * Copyright (c) Alan Smithee.
- * Copyright (c) Andrew McDonald <andrew@mcdonald.org.uk>
- * Copyright (c) Jean-Francois Dive <jef@linuxbe.org>
- * Copyright (c) Mathias Krause <minipli@googlemail.com>
- * Copyright (c) Chandramouli Narayanan <mouli@linux.intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -44,10 +31,7 @@ static int sha1_update(struct shash_desc *desc, const u8 *data,
 	    (sctx->count % SHA1_BLOCK_SIZE) + len < SHA1_BLOCK_SIZE)
 		return crypto_sha1_update(desc, data, len);
 
-	/*
-	 * Make sure struct sha1_state begins directly with the SHA1
-	 * 160-bit internal state, as this is what the asm functions expect.
-	 */
+	 
 	BUILD_BUG_ON(offsetof(struct sha1_state, state) != 0);
 
 	kernel_fpu_begin();
@@ -87,7 +71,7 @@ static int sha1_ssse3_finup(struct shash_desc *desc, const u8 *data,
 	return sha1_finup(desc, data, len, out, sha1_transform_ssse3);
 }
 
-/* Add padding and return the message digest. */
+ 
 static int sha1_ssse3_final(struct shash_desc *desc, u8 *out)
 {
 	return sha1_ssse3_finup(desc, NULL, 0, out);
@@ -182,7 +166,7 @@ static void unregister_sha1_avx(void)
 		crypto_unregister_shash(&sha1_avx_alg);
 }
 
-#define SHA1_AVX2_BLOCK_OPTSIZE	4	/* optimal 4*64 bytes of SHA1 blocks */
+#define SHA1_AVX2_BLOCK_OPTSIZE	4	 
 
 asmlinkage void sha1_transform_avx2(struct sha1_state *state,
 				    const u8 *data, int blocks);
@@ -200,7 +184,7 @@ static bool avx2_usable(void)
 static void sha1_apply_transform_avx2(struct sha1_state *state,
 				      const u8 *data, int blocks)
 {
-	/* Select the optimal transform based on data block size */
+	 
 	if (blocks >= SHA1_AVX2_BLOCK_OPTSIZE)
 		sha1_transform_avx2(state, data, blocks);
 	else

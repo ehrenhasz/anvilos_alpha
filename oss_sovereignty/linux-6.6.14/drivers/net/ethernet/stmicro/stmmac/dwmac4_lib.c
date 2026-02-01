@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007-2015  STMicroelectronics Ltd
- *
- * Author: Alexandre Torgue <alexandre.torgue@st.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/iopoll.h>
@@ -17,7 +13,7 @@ int dwmac4_dma_reset(void __iomem *ioaddr)
 {
 	u32 value = readl(ioaddr + DMA_BUS_MODE);
 
-	/* DMA SW reset */
+	 
 	value |= DMA_BUS_MODE_SFT_RESET;
 	writel(value, ioaddr + DMA_BUS_MODE);
 
@@ -180,7 +176,7 @@ int dwmac4_dma_interrupt(struct stmmac_priv *priv, void __iomem *ioaddr,
 	else if (dir == DMA_DIR_TX)
 		intr_status &= DMA_CHAN_STATUS_MSK_TX;
 
-	/* ABNORMAL interrupts */
+	 
 	if (unlikely(intr_status & DMA_CHAN_STATUS_AIS)) {
 		if (unlikely(intr_status & DMA_CHAN_STATUS_RBU))
 			x->rx_buf_unav_irq++;
@@ -199,7 +195,7 @@ int dwmac4_dma_interrupt(struct stmmac_priv *priv, void __iomem *ioaddr,
 			ret = tx_hard_error;
 		}
 	}
-	/* TX/RX NORMAL interrupts */
+	 
 	if (likely(intr_status & DMA_CHAN_STATUS_RI)) {
 		u64_stats_update_begin(&rxq_stats->syncp);
 		rxq_stats->rx_normal_irq_n++;
@@ -229,17 +225,14 @@ void stmmac_dwmac4_set_mac_addr(void __iomem *ioaddr, const u8 addr[6],
 	unsigned long data;
 
 	data = (addr[5] << 8) | addr[4];
-	/* For MAC Addr registers se have to set the Address Enable (AE)
-	 * bit that has no effect on the High Reg 0 where the bit 31 (MO)
-	 * is RO.
-	 */
+	 
 	data |= (STMMAC_CHAN0 << GMAC_HI_DCS_SHIFT);
 	writel(data | GMAC_HI_REG_AE, ioaddr + high);
 	data = (addr[3] << 24) | (addr[2] << 16) | (addr[1] << 8) | addr[0];
 	writel(data, ioaddr + low);
 }
 
-/* Enable disable MAC RX/TX */
+ 
 void stmmac_dwmac4_set_mac(void __iomem *ioaddr, bool enable)
 {
 	u32 value = readl(ioaddr + GMAC_CONFIG);
@@ -259,11 +252,11 @@ void stmmac_dwmac4_get_mac_addr(void __iomem *ioaddr, unsigned char *addr,
 {
 	unsigned int hi_addr, lo_addr;
 
-	/* Read the MAC address from the hardware */
+	 
 	hi_addr = readl(ioaddr + high);
 	lo_addr = readl(ioaddr + low);
 
-	/* Extract the MAC address from the high and low words */
+	 
 	addr[0] = lo_addr & 0xff;
 	addr[1] = (lo_addr >> 8) & 0xff;
 	addr[2] = (lo_addr >> 16) & 0xff;

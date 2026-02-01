@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_pt_log.c: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -169,7 +166,7 @@ static void log_buf__dump(struct log_buf *b)
 	if (!b->buf)
 		return;
 
-	fflush(f); /* Could update b->head and b->wrapped */
+	fflush(f);  
 	fprintf(b->backend, "Dumping debug log buffer\n");
 	if (b->wrapped) {
 		remove_first = true;

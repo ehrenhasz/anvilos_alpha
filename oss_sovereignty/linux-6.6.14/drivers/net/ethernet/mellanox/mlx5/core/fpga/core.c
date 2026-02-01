@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2017, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/mlx5/driver.h>
@@ -121,7 +91,7 @@ static int mlx5_fpga_device_load_check(struct mlx5_fpga_device *fdev)
 	mlx5_fpga_info(fdev, "Status %u; Admin image %u; Oper image %u\n",
 		       query.status, query.admin_image, query.oper_image);
 
-	/* for FPGA lookaside projects FPGA load status is not important */
+	 
 	if (mlx5_is_fpga_lookaside(MLX5_CAP_FPGA(fdev->mdev, fpga_id)))
 		return 0;
 
@@ -196,7 +166,7 @@ int mlx5_fpga_device_start(struct mlx5_core_dev *mdev)
 	fpga_id = MLX5_CAP_FPGA(fdev->mdev, fpga_id);
 	mlx5_fpga_info(fdev, "FPGA card %s:%u\n", mlx5_fpga_name(fpga_id), fpga_id);
 
-	/* No QPs if FPGA does not participate in net processing */
+	 
 	if (mlx5_is_fpga_lookaside(fpga_id))
 		goto out;
 
@@ -363,11 +333,7 @@ static int mlx5_fpga_event(struct mlx5_fpga_device *fdev,
 					   syndrome, event_name);
 	}
 	spin_unlock_irqrestore(&fdev->state_lock, flags);
-	/* We tear-down the card's interfaces and functionality because
-	 * the FPGA bump-on-the-wire is misbehaving and we lose ability
-	 * to communicate with the network. User may still be able to
-	 * recover by re-programming or debugging the FPGA
-	 */
+	 
 	if (teardown)
 		mlx5_trigger_health_work(fdev->mdev);
 

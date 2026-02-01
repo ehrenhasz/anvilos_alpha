@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk/tegra.h>
 #include <linux/genalloc.h>
@@ -328,7 +326,7 @@ int tegra_bpmp_transfer_atomic(struct tegra_bpmp *bpmp,
 		return -EINVAL;
 
 	if (bpmp->suspended) {
-		/* Reset BPMP IPC channels during resume based on flags passed */
+		 
 		if (msg->flags & TEGRA_BPMP_MESSAGE_RESET)
 			tegra_bpmp_resume(bpmp->dev);
 		else
@@ -375,7 +373,7 @@ int tegra_bpmp_transfer(struct tegra_bpmp *bpmp,
 		return -EINVAL;
 
 	if (bpmp->suspended) {
-		/* Reset BPMP IPC channels during resume based on flags passed */
+		 
 		if (msg->flags & TEGRA_BPMP_MESSAGE_RESET)
 			tegra_bpmp_resume(bpmp->dev);
 		else
@@ -593,7 +591,7 @@ static int tegra_bpmp_ping(struct tegra_bpmp *bpmp)
 	return err;
 }
 
-/* deprecated version of tag query */
+ 
 static int tegra_bpmp_get_firmware_tag_old(struct tegra_bpmp *bpmp, char *tag,
 					   size_t size)
 {

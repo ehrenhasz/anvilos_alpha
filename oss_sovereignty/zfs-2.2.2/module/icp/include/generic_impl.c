@@ -1,58 +1,29 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2003, 2010 Oracle and/or its affiliates.
- * Copyright (c) 2022 Tino Reichardt <milky-zfs@mcmilk.de>
- */
+ 
 
-/*
- * This file gets included by c files for implementing the full set
- * of zfs_impl.h defines.
- *
- * It's ment for easier maintaining multiple implementations of
- * algorithms. Look into blake3_impl.c, sha256_impl.c or sha512_impl.c
- * for reference.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/zio_checksum.h>
 #include <sys/zfs_impl.h>
 
-/* Two default implementations */
+ 
 #define	IMPL_FASTEST	(UINT32_MAX)
 #define	IMPL_CYCLE	(UINT32_MAX - 1)
 
 #define	IMPL_READ(i)	(*(volatile uint32_t *) &(i))
 
-/* Implementation that contains the fastest method */
+ 
 static IMPL_OPS_T generic_fastest_impl = {
 	.name = "fastest"
 };
 
-/* Hold all supported implementations */
+ 
 static const IMPL_OPS_T *generic_supp_impls[ARRAY_SIZE(IMPL_ARRAY)];
 static uint32_t generic_supp_impls_cnt = 0;
 
-/* Currently selected implementation */
+ 
 static uint32_t generic_impl_chosen = IMPL_FASTEST;
 
 static struct generic_impl_selector {
@@ -63,17 +34,17 @@ static struct generic_impl_selector {
 	{ "fastest",	IMPL_FASTEST }
 };
 
-/* check the supported implementations */
+ 
 static void
 generic_impl_init(void)
 {
 	int i, c;
 
-	/* init only once */
+	 
 	if (likely(generic_supp_impls_cnt != 0))
 		return;
 
-	/* Move supported implementations into generic_supp_impls */
+	 
 	for (i = 0, c = 0; i < ARRAY_SIZE(IMPL_ARRAY); i++) {
 		const IMPL_OPS_T *impl = IMPL_ARRAY[i];
 
@@ -82,12 +53,12 @@ generic_impl_init(void)
 	}
 	generic_supp_impls_cnt = c;
 
-	/* first init generic impl, may be changed via set_fastest() */
+	 
 	memcpy(&generic_fastest_impl, generic_supp_impls[0],
 	    sizeof (generic_fastest_impl));
 }
 
-/* get number of supported implementations */
+ 
 static uint32_t
 generic_impl_getcnt(void)
 {
@@ -95,7 +66,7 @@ generic_impl_getcnt(void)
 	return (generic_supp_impls_cnt);
 }
 
-/* get id of selected implementation */
+ 
 static uint32_t
 generic_impl_getid(void)
 {
@@ -103,7 +74,7 @@ generic_impl_getid(void)
 	return (IMPL_READ(generic_impl_chosen));
 }
 
-/* get name of selected implementation */
+ 
 static const char *
 generic_impl_getname(void)
 {
@@ -120,7 +91,7 @@ generic_impl_getname(void)
 	}
 }
 
-/* set implementation by id */
+ 
 static void
 generic_impl_setid(uint32_t id)
 {
@@ -139,7 +110,7 @@ generic_impl_setid(uint32_t id)
 	}
 }
 
-/* set implementation by name */
+ 
 static int
 generic_impl_setname(const char *val)
 {
@@ -149,10 +120,10 @@ generic_impl_setname(const char *val)
 
 	generic_impl_init();
 	val_len = strlen(val);
-	while ((val_len > 0) && !!isspace(val[val_len-1])) /* trim '\n' */
+	while ((val_len > 0) && !!isspace(val[val_len-1]))  
 		val_len--;
 
-	/* check mandatory implementations */
+	 
 	for (i = 0; i < ARRAY_SIZE(generic_impl_selectors); i++) {
 		const char *name = generic_impl_selectors[i].name;
 
@@ -164,7 +135,7 @@ generic_impl_setname(const char *val)
 		}
 	}
 
-	/* check all supported implementations */
+	 
 	if (err != 0) {
 		for (i = 0; i < generic_supp_impls_cnt; i++) {
 			const char *name = generic_supp_impls[i]->name;
@@ -185,7 +156,7 @@ generic_impl_setname(const char *val)
 	return (err);
 }
 
-/* setup id as fastest implementation */
+ 
 static void
 generic_impl_set_fastest(uint32_t id)
 {
@@ -194,7 +165,7 @@ generic_impl_set_fastest(uint32_t id)
 	    sizeof (generic_fastest_impl));
 }
 
-/* return impl iterating functions */
+ 
 const zfs_impl_t ZFS_IMPL_OPS = {
 	.name = IMPL_NAME,
 	.getcnt = generic_impl_getcnt,
@@ -205,7 +176,7 @@ const zfs_impl_t ZFS_IMPL_OPS = {
 	.setname = generic_impl_setname
 };
 
-/* get impl ops_t of selected implementation */
+ 
 const IMPL_OPS_T *
 IMPL_GET_OPS(void)
 {

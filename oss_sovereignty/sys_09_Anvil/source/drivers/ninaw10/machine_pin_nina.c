@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2022 Ibrahim Abdelkader <iabdalkader@openmv.io>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -47,28 +23,28 @@
 #define NINA_GPIO_IS_INPUT_ONLY(p)  ((p >= 3 && p <= 6))
 #define NINA_GPIO_IS_ADC_CHANNEL(p) ((p >= 3 && p <= 6))
 
-// This maps logical pin ID (0..MICROPY_HW_PIN_EXT_COUNT) to
-// physical pins on the Nina module.
+
+
 static uint8_t pin_map[MICROPY_HW_PIN_EXT_COUNT] = {
-    27, // LEDR
-    25, // LEDG
-    26, // LEDB
-    34, // A4
-    39, // A5
-    36, // A6
-    35, // A7
+    27, 
+    25, 
+    26, 
+    34, 
+    39, 
+    36, 
+    35, 
 };
 
-// This maps logical pin ID (0..MICROPY_HW_PIN_EXT_COUNT) to
-// ADC channel numbers on the Nina module.
+
+
 static uint8_t adc_map[MICROPY_HW_PIN_EXT_COUNT] = {
-    -1, // LEDR
-    -1, // LEDG
-    -1, // LEDB
-    6, // A4
-    3, // A5
-    0, // A6
-    7, // A7
+    -1, 
+    -1, 
+    -1, 
+    6, 
+    3, 
+    0, 
+    7, 
 };
 
 void machine_pin_ext_init(void) {
@@ -128,4 +104,4 @@ void machine_pin_ext_config(machine_pin_obj_t *self, int mode, int value) {
     }
 }
 
-#endif // defined(MICROPY_PY_NETWORK_NINAW10) && defined(MICROPY_HW_PIN_EXT_COUNT)
+#endif 

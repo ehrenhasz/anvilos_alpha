@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef KERNEL_H
 #define KERNEL_H
 #include <stdbool.h>
@@ -27,7 +27,7 @@
 #define PAGE_MASK (~(PAGE_SIZE-1))
 #define PAGE_ALIGN(x) ((x + PAGE_SIZE - 1) & PAGE_MASK)
 
-/* generic data direction definitions */
+ 
 #define READ                    0
 #define WRITE                   1
 
@@ -39,10 +39,10 @@ struct page {
 	unsigned long long dummy;
 };
 
-/* Physical == Virtual */
+ 
 #define virt_to_phys(p) ((unsigned long)p)
 #define phys_to_virt(a) ((void *)(unsigned long)(a))
-/* Page address: Virtual / 4K */
+ 
 #define page_to_phys(p) ((dma_addr_t)(unsigned long)(p))
 #define virt_to_page(p) ((struct page *)((unsigned long)p & PAGE_MASK))
 
@@ -141,4 +141,4 @@ static inline void *krealloc_array(void *p, size_t new_n, size_t new_size, gfp_t
 	(void) (&_min1 == &_min2);		\
 	_min1 < _min2 ? _min1 : _min2; })
 
-#endif /* KERNEL_H */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017-2018 HUAWEI, Inc.
- *             https://www.huawei.com/
- * Copyright (C) 2021-2022, Alibaba Cloud
- */
+
+ 
 #include <linux/security.h>
 #include <linux/xxhash.h>
 #include "xattr.h"
@@ -17,11 +13,11 @@ struct erofs_xattr_iter {
 	char *buffer;
 	int buffer_size, buffer_ofs;
 
-	/* getxattr */
+	 
 	int index, infix_len;
 	struct qstr name;
 
-	/* listxattr */
+	 
 	struct dentry *dentry;
 };
 
@@ -34,12 +30,9 @@ static int erofs_init_inode_xattrs(struct inode *inode)
 	struct super_block *sb = inode->i_sb;
 	int ret = 0;
 
-	/* the most case is that xattrs of this inode are initialized. */
+	 
 	if (test_bit(EROFS_I_EA_INITED_BIT, &vi->flags)) {
-		/*
-		 * paired with smp_mb() at the end of the function to ensure
-		 * fields will only be observed after the bit is set.
-		 */
+		 
 		smp_mb();
 		return 0;
 	}
@@ -47,18 +40,11 @@ static int erofs_init_inode_xattrs(struct inode *inode)
 	if (wait_on_bit_lock(&vi->flags, EROFS_I_BL_XATTR_BIT, TASK_KILLABLE))
 		return -ERESTARTSYS;
 
-	/* someone has initialized xattrs for us? */
+	 
 	if (test_bit(EROFS_I_EA_INITED_BIT, &vi->flags))
 		goto out_unlock;
 
-	/*
-	 * bypass all xattr operations if ->xattr_isize is not greater than
-	 * sizeof(struct erofs_xattr_ibody_header), in detail:
-	 * 1) it is not enough to contain erofs_xattr_ibody_header then
-	 *    ->xattr_isize should be 0 (it means no xattr);
-	 * 2) it is just to contain erofs_xattr_ibody_header, which is on-disk
-	 *    undefined right now (maybe use later with some new sb feature).
-	 */
+	 
 	if (vi->xattr_isize == sizeof(struct erofs_xattr_ibody_header)) {
 		erofs_err(sb,
 			  "xattr_isize %d of nid %llu is not supported yet",
@@ -70,7 +56,7 @@ static int erofs_init_inode_xattrs(struct inode *inode)
 			erofs_err(sb, "bogus xattr ibody @ nid %llu", vi->nid);
 			DBG_BUGON(1);
 			ret = -EFSCORRUPTED;
-			goto out_unlock;	/* xattr ondisk layout error */
+			goto out_unlock;	 
 		}
 		ret = -ENOATTR;
 		goto out_unlock;
@@ -80,7 +66,7 @@ static int erofs_init_inode_xattrs(struct inode *inode)
 	erofs_init_metabuf(&it.buf, sb);
 	it.pos = erofs_iloc(inode) + vi->inode_isize;
 
-	/* read in shared xattr array (non-atomic, see kmalloc below) */
+	 
 	it.kaddr = erofs_bread(&it.buf, erofs_blknr(sb, it.pos), EROFS_KMAP);
 	if (IS_ERR(it.kaddr)) {
 		ret = PTR_ERR(it.kaddr);
@@ -98,7 +84,7 @@ static int erofs_init_inode_xattrs(struct inode *inode)
 		goto out_unlock;
 	}
 
-	/* let's skip ibody header */
+	 
 	it.pos += sizeof(struct erofs_xattr_ibody_header);
 
 	for (i = 0; i < vi->xattr_shared_count; ++i) {
@@ -116,7 +102,7 @@ static int erofs_init_inode_xattrs(struct inode *inode)
 	}
 	erofs_put_metabuf(&it.buf);
 
-	/* paired with smp_mb() at the beginning of the function. */
+	 
 	smp_mb();
 	set_bit(EROFS_I_EA_INITED_BIT, &vi->flags);
 
@@ -207,7 +193,7 @@ static int erofs_listxattr_foreach(struct erofs_xattr_iter *it)
 	const char *prefix, *infix = NULL;
 	int err;
 
-	/* 1. handle xattr entry */
+	 
 	entry = *(struct erofs_xattr_entry *)
 			(it->kaddr + erofs_blkoff(it->sb, it->pos));
 	it->pos += sizeof(struct erofs_xattr_entry);
@@ -243,7 +229,7 @@ static int erofs_listxattr_foreach(struct erofs_xattr_iter *it)
 	memcpy(it->buffer + it->buffer_ofs + prefix_len, infix, infix_len);
 	it->buffer_ofs += prefix_len + infix_len;
 
-	/* 2. handle xattr name */
+	 
 	err = erofs_xattr_copy_to_buffer(it, entry.e_name_len);
 	if (err)
 		return err;
@@ -258,13 +244,13 @@ static int erofs_getxattr_foreach(struct erofs_xattr_iter *it)
 	struct erofs_xattr_entry entry;
 	unsigned int slice, processed, value_sz;
 
-	/* 1. handle xattr entry */
+	 
 	entry = *(struct erofs_xattr_entry *)
 			(it->kaddr + erofs_blkoff(sb, it->pos));
 	it->pos += sizeof(struct erofs_xattr_entry);
 	value_sz = le16_to_cpu(entry.e_value_size);
 
-	/* should also match the infix for long name prefixes */
+	 
 	if (entry.e_name_index & EROFS_XATTR_LONG_PREFIX) {
 		struct erofs_sb_info *sbi = EROFS_SB(sb);
 		struct erofs_xattr_prefix_item *pf = sbi->xattr_prefixes +
@@ -289,7 +275,7 @@ static int erofs_getxattr_foreach(struct erofs_xattr_iter *it)
 		it->infix_len = 0;
 	}
 
-	/* 2. handle xattr name */
+	 
 	for (processed = 0; processed < entry.e_name_len; processed += slice) {
 		it->kaddr = erofs_bread(&it->buf, erofs_blknr(sb, it->pos),
 					EROFS_KMAP);
@@ -305,7 +291,7 @@ static int erofs_getxattr_foreach(struct erofs_xattr_iter *it)
 		it->pos += slice;
 	}
 
-	/* 3. handle xattr value */
+	 
 	if (!it->buffer) {
 		it->buffer_ofs = value_sz;
 		return 0;
@@ -343,7 +329,7 @@ static int erofs_xattr_iter_inline(struct erofs_xattr_iter *it,
 
 		entry_sz = erofs_xattr_entry_size(it->kaddr +
 				erofs_blkoff(it->sb, it->pos));
-		/* xattr on-disk corruption: xattr entry beyond xattr_isize */
+		 
 		if (remaining < entry_sz) {
 			DBG_BUGON(1);
 			return -EFSCORRUPTED;
@@ -406,7 +392,7 @@ int erofs_getxattr(struct inode *inode, int index, const char *name,
 	if (ret)
 		return ret;
 
-	/* reserved flag is non-zero if there's any change of on-disk format */
+	 
 	if (erofs_sb_has_xattr_filter(sbi) && !sbi->xattr_filter_reserved) {
 		hashbit = xxh32(name, strlen(name),
 				EROFS_XATTR_FILTER_SEED + index);

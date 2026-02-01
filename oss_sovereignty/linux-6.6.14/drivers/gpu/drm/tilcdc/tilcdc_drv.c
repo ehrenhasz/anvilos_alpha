@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Texas Instruments
- * Author: Rob Clark <robdclark@gmail.com>
- */
 
-/* LCDC DRM driver, based on da8xx-fb */
+ 
+
+ 
 
 #include <linux/component.h>
 #include <linux/mod_devicetable.h>
@@ -73,10 +70,7 @@ static int tilcdc_atomic_check(struct drm_device *dev,
 	if (ret)
 		return ret;
 
-	/*
-	 * tilcdc ->atomic_check can update ->mode_changed if pixel format
-	 * changes, hence will we check modeset changes again.
-	 */
+	 
 	ret = drm_atomic_helper_check_modeset(dev, state);
 	if (ret)
 		return ret;
@@ -154,9 +148,7 @@ static void tilcdc_irq_uninstall(struct drm_device *dev)
 	priv->irq_enabled = false;
 }
 
-/*
- * DRM operations:
- */
+ 
 
 static void tilcdc_fini(struct drm_device *dev)
 {
@@ -249,7 +241,7 @@ static int tilcdc_init(const struct drm_driver *ddrv, struct device *dev)
 
 	pm_runtime_enable(dev);
 
-	/* Determine LCD IP Version */
+	 
 	pm_runtime_get_sync(dev);
 	switch (tilcdc_read(ddev, LCDC_PID_REG)) {
 	case 0x4c100102:
@@ -283,20 +275,20 @@ static int tilcdc_init(const struct drm_driver *ddrv, struct device *dev)
 			priv->pixelformats = tilcdc_crossed_formats;
 			priv->num_pixelformats =
 				ARRAY_SIZE(tilcdc_crossed_formats);
-			bpp = 32; /* Choose bpp with RGB support for fbdef */
+			bpp = 32;  
 		} else if (0 == strcmp(str, "straight")) {
 			DBG("Configured for straight blue and red wires");
 			priv->pixelformats = tilcdc_straight_formats;
 			priv->num_pixelformats =
 				ARRAY_SIZE(tilcdc_straight_formats);
-			bpp = 16; /* Choose bpp with RGB support for fbdef */
+			bpp = 16;  
 		} else {
 			DBG("Blue and red wiring '%s' unknown, use legacy mode",
 			    str);
 			priv->pixelformats = tilcdc_legacy_formats;
 			priv->num_pixelformats =
 				ARRAY_SIZE(tilcdc_legacy_formats);
-			bpp = 16; /* This is just a guess */
+			bpp = 16;  
 		}
 	}
 
@@ -403,7 +395,7 @@ static const struct {
 	uint32_t reg;
 } registers[] =		{
 #define REG(rev, save, reg) { #reg, rev, save, reg }
-		/* exists in revision 1: */
+		 
 		REG(1, false, LCDC_PID_REG),
 		REG(1, true,  LCDC_CTRL_REG),
 		REG(1, false, LCDC_STAT_REG),
@@ -416,7 +408,7 @@ static const struct {
 		REG(1, true,  LCDC_DMA_FB_CEILING_ADDR_0_REG),
 		REG(1, true,  LCDC_DMA_FB_BASE_ADDR_1_REG),
 		REG(1, true,  LCDC_DMA_FB_CEILING_ADDR_1_REG),
-		/* new in revision 2: */
+		 
 		REG(2, false, LCDC_RAW_STAT_REG),
 		REG(2, false, LCDC_MASKED_STAT_REG),
 		REG(2, true, LCDC_INT_ENABLE_SET_REG),
@@ -494,9 +486,7 @@ static const struct drm_driver tilcdc_driver = {
 	.minor              = 0,
 };
 
-/*
- * Power management:
- */
+ 
 
 static int tilcdc_pm_suspend(struct device *dev)
 {
@@ -505,7 +495,7 @@ static int tilcdc_pm_suspend(struct device *dev)
 
 	ret = drm_mode_config_helper_suspend(ddev);
 
-	/* Select sleep pin state */
+	 
 	pinctrl_pm_select_sleep_state(dev);
 
 	return ret;
@@ -515,7 +505,7 @@ static int tilcdc_pm_resume(struct device *dev)
 {
 	struct drm_device *ddev = dev_get_drvdata(dev);
 
-	/* Select default pin state */
+	 
 	pinctrl_pm_select_default_state(dev);
 	return  drm_mode_config_helper_resume(ddev);
 }
@@ -523,9 +513,7 @@ static int tilcdc_pm_resume(struct device *dev)
 static DEFINE_SIMPLE_DEV_PM_OPS(tilcdc_pm_ops,
 				tilcdc_pm_suspend, tilcdc_pm_resume);
 
-/*
- * Platform driver:
- */
+ 
 static int tilcdc_bind(struct device *dev)
 {
 	return tilcdc_init(&tilcdc_driver, dev);
@@ -535,7 +523,7 @@ static void tilcdc_unbind(struct device *dev)
 {
 	struct drm_device *ddev = dev_get_drvdata(dev);
 
-	/* Check if a subcomponent has already triggered the unloading. */
+	 
 	if (!ddev->dev_private)
 		return;
 
@@ -553,7 +541,7 @@ static int tilcdc_pdev_probe(struct platform_device *pdev)
 	struct component_match *match = NULL;
 	int ret;
 
-	/* bail out early if no DT data: */
+	 
 	if (!pdev->dev.of_node) {
 		dev_err(&pdev->dev, "device-tree data is missing\n");
 		return -ENXIO;

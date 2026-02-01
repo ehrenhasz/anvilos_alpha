@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-// Copyright (c) 2016-2017 Hisilicon Limited.
+ 
+
 
 #ifndef __HCLGE_DCB_H__
 #define __HCLGE_DCB_H__
@@ -12,4 +12,4 @@ void hclge_dcb_ops_set(struct hclge_dev *hdev);
 static inline void hclge_dcb_ops_set(struct hclge_dev *hdev) {}
 #endif
 
-#endif /* __HCLGE_DCB_H__ */
+#endif  

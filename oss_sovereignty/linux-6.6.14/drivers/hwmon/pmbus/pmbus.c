@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for PMBus devices
- *
- * Copyright (c) 2010, 2011 Ericsson AB.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,15 +18,13 @@ struct pmbus_device_info {
 
 static const struct i2c_device_id pmbus_id[];
 
-/*
- * Find sensor groups and status registers on each page.
- */
+ 
 static void pmbus_find_sensor_groups(struct i2c_client *client,
 				     struct pmbus_driver_info *info)
 {
 	int page;
 
-	/* Sensors detected on page 0 only */
+	 
 	if (pmbus_check_word_register(client, 0, PMBUS_READ_VIN))
 		info->func[0] |= PMBUS_HAVE_VIN;
 	if (pmbus_check_word_register(client, 0, PMBUS_READ_VCAP))
@@ -66,7 +60,7 @@ static void pmbus_find_sensor_groups(struct i2c_client *client,
 					 PMBUS_STATUS_TEMPERATURE))
 			info->func[0] |= PMBUS_HAVE_STATUS_TEMP;
 
-	/* Sensors detected on all pages */
+	 
 	for (page = 0; page < info->pages; page++) {
 		if (pmbus_check_word_register(client, page, PMBUS_READ_VOUT)) {
 			info->func[page] |= PMBUS_HAVE_VOUT;
@@ -85,21 +79,14 @@ static void pmbus_find_sensor_groups(struct i2c_client *client,
 	}
 }
 
-/*
- * Identify chip parameters.
- */
+ 
 static int pmbus_identify(struct i2c_client *client,
 			  struct pmbus_driver_info *info)
 {
 	int ret = 0;
 
 	if (!info->pages) {
-		/*
-		 * Check if the PAGE command is supported. If it is,
-		 * keep setting the page number until it fails or until the
-		 * maximum number of pages has been reached. Assume that
-		 * this is the number of pages supported by the chip.
-		 */
+		 
 		if (pmbus_check_byte_register(client, 0, PMBUS_PAGE)) {
 			int page;
 
@@ -139,23 +126,13 @@ static int pmbus_identify(struct i2c_client *client,
 		}
 	}
 
-	/*
-	 * We should check if the COEFFICIENTS register is supported.
-	 * If it is, and the chip is configured for direct mode, we can read
-	 * the coefficients from the chip, one set per group of sensor
-	 * registers.
-	 *
-	 * To do this, we will need access to a chip which actually supports the
-	 * COEFFICIENTS command, since the command is too complex to implement
-	 * without testing it. Until then, abort if a chip configured for direct
-	 * mode was detected.
-	 */
+	 
 	if (info->format[PSC_VOLTAGE_OUT] == direct) {
 		ret = -ENODEV;
 		goto abort;
 	}
 
-	/* Try to find sensor groups  */
+	 
 	pmbus_find_sensor_groups(client, info);
 abort:
 	return ret;
@@ -209,9 +186,7 @@ static const struct pmbus_device_info pmbus_info_one_status = {
 	.flags = PMBUS_READ_STATUS_AFTER_FAILED_CHECK
 };
 
-/*
- * Use driver_data to set the number of pages supported by the chip.
- */
+ 
 static const struct i2c_device_id pmbus_id[] = {
 	{"adp4000", (kernel_ulong_t)&pmbus_info_one},
 	{"bmr310", (kernel_ulong_t)&pmbus_info_one_status},
@@ -247,7 +222,7 @@ static const struct i2c_device_id pmbus_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, pmbus_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver pmbus_driver = {
 	.driver = {
 		   .name = "pmbus",

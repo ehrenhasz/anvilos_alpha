@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+
+ 
 
 #include <linux/genalloc.h>
 #include <linux/highmem.h>
@@ -57,7 +55,7 @@ ivpu_ipc_rx_mark_free(struct ivpu_device *vdev, struct ivpu_ipc_hdr *ipc_hdr,
 	ipc_hdr->status = IVPU_IPC_HDR_FREE;
 	if (jsm_msg)
 		jsm_msg->status = VPU_JSM_MSG_FREE;
-	wmb(); /* Flush WC buffers for message statuses */
+	wmb();  
 }
 
 static void ivpu_ipc_mem_fini(struct ivpu_device *vdev)
@@ -102,7 +100,7 @@ ivpu_ipc_tx_prepare(struct ivpu_device *vdev, struct ivpu_ipc_consumer *cons,
 
 	memset(tx_buf, 0, sizeof(*tx_buf));
 	tx_buf->ipc.data_addr = jsm_vpu_addr;
-	/* TODO: Set data_size to actual JSM message size, not union of all messages */
+	 
 	tx_buf->ipc.data_size = sizeof(*req);
 	tx_buf->ipc.channel = cons->channel;
 	tx_buf->ipc.src_node = 0;
@@ -115,7 +113,7 @@ ivpu_ipc_tx_prepare(struct ivpu_device *vdev, struct ivpu_ipc_consumer *cons,
 	req->request_id = atomic_inc_return(&ipc->request_id);
 	tx_buf->jsm.request_id = req->request_id;
 	cons->request_id = req->request_id;
-	wmb(); /* Flush WC buffers for IPC, JSM msgs */
+	wmb();  
 
 	cons->tx_vpu_addr = tx_buf_vpu_addr;
 
@@ -365,10 +363,7 @@ int ivpu_ipc_irq_handler(struct ivpu_device *vdev)
 	bool dispatched;
 	u32 vpu_addr;
 
-	/*
-	 * Driver needs to purge all messages from IPC FIFO to clear IPC interrupt.
-	 * Without purge IPC FIFO to 0 next IPC interrupts won't be generated.
-	 */
+	 
 	while (ivpu_hw_reg_ipc_rx_count_get(vdev)) {
 		vpu_addr = ivpu_hw_reg_ipc_rx_addr_get(vdev);
 		if (vpu_addr == REG_IO_ERROR) {
@@ -499,7 +494,7 @@ void ivpu_ipc_reset(struct ivpu_device *vdev)
 
 	memset(ipc->mem_tx->kvaddr, 0, ipc->mem_tx->base.size);
 	memset(ipc->mem_rx->kvaddr, 0, ipc->mem_rx->base.size);
-	wmb(); /* Flush WC buffers for TX and RX rings */
+	wmb();  
 
 	mutex_unlock(&ipc->lock);
 }

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hisilicon Hi3620 clock driver
- *
- * Copyright (c) 2012-2013 Hisilicon Limited.
- * Copyright (c) 2012-2013 Linaro Limited.
- *
- * Author: Haojian Zhuang <haojian.zhuang@linaro.org>
- *	   Xin Li <li.xin@linaro.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -20,7 +12,7 @@
 
 #include "clk.h"
 
-/* clock parent list */
+ 
 static const char *const timer0_mux_p[] __initconst = { "osc32k", "timerclk01", };
 static const char *const timer1_mux_p[] __initconst = { "osc32k", "timerclk01", };
 static const char *const timer2_mux_p[] __initconst = { "osc32k", "timerclk23", };
@@ -39,7 +31,7 @@ static const char *const uart4_mux_p[] __initconst = { "osc26m", "pclk", };
 static const char *const spi0_mux_p[] __initconst = { "osc26m", "rclk_cfgaxi", };
 static const char *const spi1_mux_p[] __initconst = { "osc26m", "rclk_cfgaxi", };
 static const char *const spi2_mux_p[] __initconst = { "osc26m", "rclk_cfgaxi", };
-/* share axi parent */
+ 
 static const char *const saxi_mux_p[] __initconst = { "armpll3", "armpll2", };
 static const char *const pwm0_mux_p[] __initconst = { "osc32k", "osc26m", };
 static const char *const pwm1_mux_p[] __initconst = { "osc32k", "osc26m", };
@@ -61,7 +53,7 @@ static const char *const mmc2_mux_p[] __initconst = { "armpll2", "armpll3", };
 static const char *const mmc3_mux_p[] __initconst = { "armpll2", "armpll3", };
 
 
-/* fixed rate clocks */
+ 
 static struct hisi_fixed_rate_clock hi3620_fixed_rate_clks[] __initdata = {
 	{ HI3620_OSC32K,   "osc32k",   NULL, 0, 32768, },
 	{ HI3620_OSC26M,   "osc26m",   NULL, 0, 26000000, },
@@ -74,7 +66,7 @@ static struct hisi_fixed_rate_clock hi3620_fixed_rate_clks[] __initdata = {
 	{ HI3620_PLL_GPU,  "armpll5",  NULL, 0, 1300000000, },
 };
 
-/* fixed factor clocks */
+ 
 static struct hisi_fixed_factor_clock hi3620_fixed_factor_clks[] __initdata = {
 	{ HI3620_RCLK_TCXO,   "rclk_tcxo",   "osc26m",   1, 4,  0, },
 	{ HI3620_RCLK_CFGAXI, "rclk_cfgaxi", "armpll2",  1, 30, 0, },
@@ -295,7 +287,7 @@ static int mmc_clk_determine_rate(struct clk_hw *hw,
 		req->rate = 100000000;
 		req->best_parent_rate = 720000000;
 	} else {
-		/* max is 180M */
+		 
 		req->rate = 180000000;
 		req->best_parent_rate = 1440000000;
 	}

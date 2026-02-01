@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 - 2016 Red Hat, Inc
- * Copyright (c) 2011, 2012 Synaptics Incorporated
- * Copyright (c) 2011 Unixphere
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/delay.h>
@@ -19,7 +15,7 @@
 
 #define SMB_PROTOCOL_VERSION_ADDRESS	0xfd
 #define SMB_MAX_COUNT			32
-#define RMI_SMB2_MAP_SIZE		8 /* 8 entry of 4 bytes each */
+#define RMI_SMB2_MAP_SIZE		8  
 #define RMI_SMB2_MAP_FLAGS_WE		0x01
 
 struct mapping_table_entry {
@@ -44,7 +40,7 @@ static int rmi_smb_get_version(struct rmi_smb_xport *rmi_smb)
 	struct i2c_client *client = rmi_smb->client;
 	int retval;
 
-	/* Check if for SMBus new version device by reading version byte. */
+	 
 	retval = i2c_smbus_read_byte_data(client, SMB_PROTOCOL_VERSION_ADDRESS);
 	if (retval < 0) {
 		dev_err(&client->dev, "failed to get SMBus version number!\n");
@@ -54,7 +50,7 @@ static int rmi_smb_get_version(struct rmi_smb_xport *rmi_smb)
 	return retval + 1;
 }
 
-/* SMB block write - wrapper over ic2_smb_write_block */
+ 
 static int smb_block_write(struct rmi_transport_dev *xport,
 			      u8 commandcode, const void *buf, size_t len)
 {
@@ -72,10 +68,7 @@ static int smb_block_write(struct rmi_transport_dev *xport,
 	return retval;
 }
 
-/*
- * The function to get command code for smbus operations and keeps
- * records to the driver mapping table
- */
+ 
 static int rmi_smb_get_command_code(struct rmi_transport_dev *xport,
 		u16 rmiaddr, int bytecount, bool isread, u8 *commandcode)
 {
@@ -105,7 +98,7 @@ static int rmi_smb_get_command_code(struct rmi_transport_dev *xport,
 	i = rmi_smb->table_index;
 	rmi_smb->table_index = (i + 1) % RMI_SMB2_MAP_SIZE;
 
-	/* constructs mapping table data entry. 4 bytes each entry */
+	 
 	memset(&new_map, 0, sizeof(new_map));
 	new_map.rmiaddr = cpu_to_le16(rmiaddr);
 	new_map.readcount = bytecount;
@@ -113,14 +106,11 @@ static int rmi_smb_get_command_code(struct rmi_transport_dev *xport,
 
 	retval = smb_block_write(xport, i + 0x80, &new_map, sizeof(new_map));
 	if (retval < 0) {
-		/*
-		 * if not written to device mapping table
-		 * clear the driver mapping table records
-		 */
+		 
 		memset(&new_map, 0, sizeof(new_map));
 	}
 
-	/* save to the driver level mapping table */
+	 
 	rmi_smb->mapping_table[i] = new_map;
 
 exit:
@@ -145,9 +135,7 @@ static int rmi_smb_write_block(struct rmi_transport_dev *xport, u16 rmiaddr,
 	mutex_lock(&rmi_smb->page_mutex);
 
 	while (cur_len > 0) {
-		/*
-		 * break into 32 bytes chunks to write get command code
-		 */
+		 
 		int block_len = min_t(int, len, SMB_MAX_COUNT);
 
 		retval = rmi_smb_get_command_code(xport, rmiaddr, block_len,
@@ -160,7 +148,7 @@ static int rmi_smb_write_block(struct rmi_transport_dev *xport, u16 rmiaddr,
 		if (retval < 0)
 			goto exit;
 
-		/* prepare to write next block of bytes */
+		 
 		cur_len -= SMB_MAX_COUNT;
 		databuff += SMB_MAX_COUNT;
 		rmiaddr += SMB_MAX_COUNT;
@@ -170,7 +158,7 @@ exit:
 	return retval;
 }
 
-/* SMB block read - wrapper over ic2_smb_read_block */
+ 
 static int smb_block_read(struct rmi_transport_dev *xport,
 			     u8 commandcode, void *buf, size_t len)
 {
@@ -199,7 +187,7 @@ static int rmi_smb_read_block(struct rmi_transport_dev *xport, u16 rmiaddr,
 	memset(databuff, 0, len);
 
 	while (cur_len > 0) {
-		/* break into 32 bytes chunks to write get command code */
+		 
 		int block_len =  min_t(int, cur_len, SMB_MAX_COUNT);
 
 		retval = rmi_smb_get_command_code(xport, rmiaddr, block_len,
@@ -212,7 +200,7 @@ static int rmi_smb_read_block(struct rmi_transport_dev *xport, u16 rmiaddr,
 		if (retval < 0)
 			goto exit;
 
-		/* prepare to read next block of bytes */
+		 
 		cur_len -= SMB_MAX_COUNT;
 		databuff += SMB_MAX_COUNT;
 		rmiaddr += SMB_MAX_COUNT;
@@ -227,7 +215,7 @@ exit:
 
 static void rmi_smb_clear_state(struct rmi_smb_xport *rmi_smb)
 {
-	/* the mapping table has been flushed, discard the current one */
+	 
 	mutex_lock(&rmi_smb->mappingtable_mutex);
 	memset(rmi_smb->mapping_table, 0, sizeof(rmi_smb->mapping_table));
 	mutex_unlock(&rmi_smb->mappingtable_mutex);
@@ -238,14 +226,11 @@ static int rmi_smb_enable_smbus_mode(struct rmi_smb_xport *rmi_smb)
 	struct i2c_client *client = rmi_smb->client;
 	int smbus_version;
 
-	/*
-	 * psmouse driver resets the controller, we only need to wait
-	 * to give the firmware chance to fully reinitialize.
-	 */
+	 
 	if (rmi_smb->xport.pdata.reset_delay_ms)
 		msleep(rmi_smb->xport.pdata.reset_delay_ms);
 
-	/* we need to get the smbus version to activate the touchpad */
+	 
 	smbus_version = rmi_smb_get_version(rmi_smb);
 	if (smbus_version < 0)
 		return smbus_version;
@@ -269,12 +254,7 @@ static int rmi_smb_reset(struct rmi_transport_dev *xport, u16 reset_addr)
 
 	rmi_smb_clear_state(rmi_smb);
 
-	/*
-	 * We do not call the actual reset command, it has to be handled in
-	 * PS/2 or there will be races between PS/2 and SMBus. PS/2 should
-	 * ensure that a psmouse_reset is called before initializing the
-	 * device and after it has been removed to be in a known state.
-	 */
+	 
 	return rmi_smb_enable_smbus_mode(rmi_smb);
 }
 

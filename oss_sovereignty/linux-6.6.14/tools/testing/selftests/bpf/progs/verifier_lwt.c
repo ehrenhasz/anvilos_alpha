@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/lwt.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -158,7 +158,7 @@ __naked void make_headroom_for_lwt_xmit(void)
 	r2 = 34;					\
 	r3 = 0;						\
 	call %[bpf_skb_change_head];			\
-	/* split for s390 to succeed */			\
+	 			\
 	r1 = r6;					\
 	r2 = 42;					\
 	r3 = 0;						\

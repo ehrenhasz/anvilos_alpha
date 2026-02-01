@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <stdio.h>
 #include <signal.h>
@@ -47,10 +47,7 @@ static int check_error_paths(pid_t child)
 	int ret, exit_code = -1;
 	void *addr_rw, *addr_ro;
 
-	/*
-	 * Allocate two contiguous pages. The first one is for read-write,
-	 * another is for read-only.
-	 */
+	 
 	addr_rw = mmap(NULL, 2 * PAGE_SIZE, PROT_READ | PROT_WRITE,
 				MAP_PRIVATE | MAP_ANONYMOUS, -1, 0);
 	if (addr_rw == MAP_FAILED) {
@@ -68,7 +65,7 @@ static int check_error_paths(pid_t child)
 	arg.nr = SIGNR;
 	arg.off = 0;
 
-	/* Unsupported flags */
+	 
 	arg.flags = ~0;
 	ret = sys_ptrace(PTRACE_PEEKSIGINFO, child, &arg, addr_rw);
 	if (ret != -1 || errno != EINVAL) {
@@ -79,7 +76,7 @@ static int check_error_paths(pid_t child)
 	}
 	arg.flags = 0;
 
-	/* A part of the buffer is read-only */
+	 
 	ret = sys_ptrace(PTRACE_PEEKSIGINFO, child, &arg,
 					addr_ro - sizeof(siginfo_t) * 2);
 	if (ret != 2) {
@@ -87,7 +84,7 @@ static int check_error_paths(pid_t child)
 		goto out;
 	}
 
-	/* Read-only buffer */
+	 
 	ret = sys_ptrace(PTRACE_PEEKSIGINFO, child, &arg, addr_ro);
 	if (ret != -1 && errno != EFAULT) {
 		err("sys_ptrace() returns %d (expected -1),"
@@ -174,7 +171,7 @@ int main(int argc, char *argv[])
 		return 1;
 	}
 
-	/* Send signals in process-wide and per-thread queues */
+	 
 	for (i = 0; i < SIGNR; i++) {
 		siginfo.si_code = TEST_SICODE_SHARE;
 		siginfo.si_int = i;
@@ -190,17 +187,14 @@ int main(int argc, char *argv[])
 
 	waitpid(child, NULL, 0);
 
-	/* Dump signals one by one*/
+	 
 	if (check_direct_path(child, 0, 1))
 		goto out;
-	/* Dump all signals for one call */
+	 
 	if (check_direct_path(child, 0, SIGNR))
 		goto out;
 
-	/*
-	 * Dump signal from the process-wide queue.
-	 * The number of signals is not multible to the buffer size
-	 */
+	 
 	if (check_direct_path(child, 1, 3))
 		goto out;
 

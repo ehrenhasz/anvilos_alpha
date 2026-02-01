@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Qualcomm self-authenticating modem subsystem remoteproc driver
- *
- * Copyright (C) 2016 Linaro Ltd.
- * Copyright (C) 2014 Sony Mobile Communications AB
- * Copyright (c) 2012-2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -42,7 +36,7 @@
 
 #define MPSS_PAS_ID			5
 
-/* RMB Status Register Values */
+ 
 #define RMB_PBL_SUCCESS			0x1
 
 #define RMB_MBA_XPU_UNLOCKED		0x1
@@ -50,7 +44,7 @@
 #define RMB_MBA_META_DATA_AUTH_SUCCESS	0x3
 #define RMB_MBA_AUTH_COMPLETE		0x4
 
-/* PBL/MBA interface registers */
+ 
 #define RMB_MBA_IMAGE_REG		0x00
 #define RMB_PBL_STATUS_REG		0x04
 #define RMB_MBA_COMMAND_REG		0x08
@@ -64,7 +58,7 @@
 #define RMB_CMD_META_DATA_READY		0x1
 #define RMB_CMD_LOAD_READY		0x2
 
-/* QDSP6SS Register Offsets */
+ 
 #define QDSP6SS_RESET_REG		0x014
 #define QDSP6SS_GFMUX_CTL_REG		0x020
 #define QDSP6SS_PWR_CTL_REG		0x030
@@ -73,7 +67,7 @@
 #define QDSP6SS_STRAP_ACC		0x110
 #define QDSP6V62SS_BHS_STATUS		0x0C4
 
-/* AXI Halt Register Offsets */
+ 
 #define AXI_HALTREQ_REG			0x0
 #define AXI_HALTACK_REG			0x4
 #define AXI_IDLE_REG			0x8
@@ -81,7 +75,7 @@
 
 #define HALT_ACK_TIMEOUT_US		100000
 
-/* QACCEPT Register Offsets */
+ 
 #define QACCEPT_ACCEPT_REG		0x0
 #define QACCEPT_ACTIVE_REG		0x4
 #define QACCEPT_DENY_REG		0x8
@@ -89,20 +83,20 @@
 
 #define QACCEPT_TIMEOUT_US		50
 
-/* QDSP6SS_RESET */
+ 
 #define Q6SS_STOP_CORE			BIT(0)
 #define Q6SS_CORE_ARES			BIT(1)
 #define Q6SS_BUS_ARES_ENABLE		BIT(2)
 
-/* QDSP6SS CBCR */
+ 
 #define Q6SS_CBCR_CLKEN			BIT(0)
 #define Q6SS_CBCR_CLKOFF		BIT(31)
 #define Q6SS_CBCR_TIMEOUT_US		200
 
-/* QDSP6SS_GFMUX_CTL */
+ 
 #define Q6SS_CLK_ENABLE			BIT(1)
 
-/* QDSP6SS_PWR_CTL */
+ 
 #define Q6SS_L2DATA_SLP_NRET_N_0	BIT(0)
 #define Q6SS_L2DATA_SLP_NRET_N_1	BIT(1)
 #define Q6SS_L2DATA_SLP_NRET_N_2	BIT(2)
@@ -114,10 +108,10 @@
 #define QDSS_BHS_ON			BIT(21)
 #define QDSS_LDO_BYP			BIT(22)
 
-/* QDSP6v55 parameters */
+ 
 #define QDSP6V55_MEM_BITS		GENMASK(16, 8)
 
-/* QDSP6v56 parameters */
+ 
 #define QDSP6v56_LDO_BYP		BIT(25)
 #define QDSP6v56_BHS_ON		BIT(24)
 #define QDSP6v56_CLAMP_WL		BIT(21)
@@ -126,7 +120,7 @@
 #define QDSP6SS_ACC_OVERRIDE_VAL		0x20
 #define QDSP6v55_BHS_EN_REST_ACK	BIT(0)
 
-/* QDSP6v65 parameters */
+ 
 #define QDSP6SS_CORE_CBCR		0x20
 #define QDSP6SS_SLEEP                   0x3C
 #define QDSP6SS_BOOT_CORE_START         0x400
@@ -468,7 +462,7 @@ static int q6v5_load(struct rproc *rproc, const struct firmware *fw)
 	struct q6v5 *qproc = rproc->priv;
 	void *mba_region;
 
-	/* MBA is restricted to a maximum size of 1M */
+	 
 	if (fw->size > qproc->mba_size || fw->size > SZ_1M) {
 		dev_err(qproc->dev, "MBA firmware load failed\n");
 		return -EINVAL;
@@ -497,15 +491,7 @@ static int q6v5_reset_assert(struct q6v5 *qproc)
 		ret = reset_control_reset(qproc->mss_restart);
 		reset_control_deassert(qproc->pdc_reset);
 	} else if (qproc->has_spare_reg) {
-		/*
-		 * When the AXI pipeline is being reset with the Q6 modem partly
-		 * operational there is possibility of AXI valid signal to
-		 * glitch, leading to spurious transactions and Q6 hangs. A work
-		 * around is employed by asserting the AXI_GATING_VALID_OVERRIDE
-		 * BIT before triggering Q6 MSS reset. AXI_GATING_VALID_OVERRIDE
-		 * is withdrawn post MSS assert followed by a MSS deassert,
-		 * while holding the PDC reset.
-		 */
+		 
 		reset_control_assert(qproc->pdc_reset);
 		regmap_update_bits(qproc->conn_map, qproc->conn_box,
 				   AXI_GATING_VALID_OVERRIDE, 1);
@@ -636,16 +622,16 @@ static int q6v5proc_reset(struct q6v5 *qproc)
 			return -ETIMEDOUT;
 		}
 
-		/* De-assert QDSP6 stop core */
+		 
 		writel(1, qproc->reg_base + QDSP6SS_BOOT_CORE_START);
-		/* Trigger boot FSM */
+		 
 		writel(1, qproc->reg_base + QDSP6SS_BOOT_CMD);
 
 		ret = readl_poll_timeout(qproc->rmb_base + RMB_MBA_MSS_STATUS,
 				val, (val & BIT(0)) != 0, 10, BOOT_FSM_TIMEOUT);
 		if (ret) {
 			dev_err(qproc->dev, "Boot FSM failed to complete.\n");
-			/* Reset the modem so that boot FSM is in reset state */
+			 
 			q6v5_reset_deassert(qproc);
 			return ret;
 		}
@@ -664,7 +650,7 @@ static int q6v5proc_reset(struct q6v5 *qproc)
 			return -ETIMEDOUT;
 		}
 
-		/* Turn on the XO clock needed for PLL setup */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_XO_CBCR);
 		val |= Q6SS_CBCR_CLKEN;
 		writel(val, qproc->reg_base + QDSP6SS_XO_CBCR);
@@ -677,26 +663,26 @@ static int q6v5proc_reset(struct q6v5 *qproc)
 			return -ETIMEDOUT;
 		}
 
-		/* Configure Q6 core CBCR to auto-enable after reset sequence */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_CORE_CBCR);
 		val |= Q6SS_CBCR_CLKEN;
 		writel(val, qproc->reg_base + QDSP6SS_CORE_CBCR);
 
-		/* De-assert the Q6 stop core signal */
+		 
 		writel(1, qproc->reg_base + QDSP6SS_BOOT_CORE_START);
 
-		/* Wait for 10 us for any staggering logic to settle */
+		 
 		usleep_range(10, 20);
 
-		/* Trigger the boot FSM to start the Q6 out-of-reset sequence */
+		 
 		writel(1, qproc->reg_base + QDSP6SS_BOOT_CMD);
 
-		/* Poll the MSS_STATUS for FSM completion */
+		 
 		ret = readl_poll_timeout(qproc->rmb_base + RMB_MBA_MSS_STATUS,
 					 val, (val & BIT(0)) != 0, 10, BOOT_FSM_TIMEOUT);
 		if (ret) {
 			dev_err(qproc->dev, "Boot FSM failed to complete.\n");
-			/* Reset the modem so that boot FSM is in reset state */
+			 
 			q6v5_reset_deassert(qproc);
 			return ret;
 		}
@@ -709,21 +695,21 @@ static int q6v5proc_reset(struct q6v5 *qproc)
 
 		if (qproc->version != MSS_MSM8909 &&
 		    qproc->version != MSS_MSM8953)
-			/* Override the ACC value if required */
+			 
 			writel(QDSP6SS_ACC_OVERRIDE_VAL,
 			       qproc->reg_base + QDSP6SS_STRAP_ACC);
 
-		/* Assert resets, stop core */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_RESET_REG);
 		val |= Q6SS_CORE_ARES | Q6SS_BUS_ARES_ENABLE | Q6SS_STOP_CORE;
 		writel(val, qproc->reg_base + QDSP6SS_RESET_REG);
 
-		/* BHS require xo cbcr to be enabled */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_XO_CBCR);
 		val |= Q6SS_CBCR_CLKEN;
 		writel(val, qproc->reg_base + QDSP6SS_XO_CBCR);
 
-		/* Read CLKOFF bit to go low indicating CLK is enabled */
+		 
 		ret = readl_poll_timeout(qproc->reg_base + QDSP6SS_XO_CBCR,
 					 val, !(val & Q6SS_CBCR_CLKOFF), 1,
 					 Q6SS_CBCR_TIMEOUT_US);
@@ -732,7 +718,7 @@ static int q6v5proc_reset(struct q6v5 *qproc)
 				"xo cbcr enabling timed out (rc:%d)\n", ret);
 			return ret;
 		}
-		/* Enable power block headswitch and wait for it to stabilize */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 		val |= QDSP6v56_BHS_ON;
 		writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
@@ -749,29 +735,29 @@ static int q6v5proc_reset(struct q6v5 *qproc)
 			}
 		}
 
-		/* Put LDO in bypass mode */
+		 
 		val |= QDSP6v56_LDO_BYP;
 		writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 
 		if (qproc->version != MSS_MSM8909) {
 			int mem_pwr_ctl;
 
-			/* Deassert QDSP6 compiler memory clamp */
+			 
 			val = readl(qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 			val &= ~QDSP6v56_CLAMP_QMC_MEM;
 			writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 
-			/* Deassert memory peripheral sleep and L2 memory standby */
+			 
 			val |= Q6SS_L2DATA_STBY_N | Q6SS_SLP_RET_N;
 			writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 
-			/* Turn on L1, L2, ETB and JU memories 1 at a time */
+			 
 			if (qproc->version == MSS_MSM8953 ||
 			    qproc->version == MSS_MSM8996) {
 				mem_pwr_ctl = QDSP6SS_MEM_PWR_CTL;
 				i = 19;
 			} else {
-				/* MSS_MSM8998, MSS_SDM660 */
+				 
 				mem_pwr_ctl = QDSP6V6SS_MEM_PWR_CTL;
 				i = 28;
 			}
@@ -779,48 +765,41 @@ static int q6v5proc_reset(struct q6v5 *qproc)
 			for (; i >= 0; i--) {
 				val |= BIT(i);
 				writel(val, qproc->reg_base + mem_pwr_ctl);
-				/*
-				 * Read back value to ensure the write is done then
-				 * wait for 1us for both memory peripheral and data
-				 * array to turn on.
-				 */
+				 
 				val |= readl(qproc->reg_base + mem_pwr_ctl);
 				udelay(1);
 			}
 		} else {
-			/* Turn on memories */
+			 
 			val = readl(qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 			val |= Q6SS_SLP_RET_N | Q6SS_L2DATA_STBY_N |
 			       Q6SS_ETB_SLP_NRET_N | QDSP6V55_MEM_BITS;
 			writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 
-			/* Turn on L2 banks 1 at a time */
+			 
 			for (i = 0; i <= 7; i++) {
 				val |= BIT(i);
 				writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 			}
 		}
 
-		/* Remove word line clamp */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 		val &= ~QDSP6v56_CLAMP_WL;
 		writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 	} else {
-		/* Assert resets, stop core */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_RESET_REG);
 		val |= Q6SS_CORE_ARES | Q6SS_BUS_ARES_ENABLE | Q6SS_STOP_CORE;
 		writel(val, qproc->reg_base + QDSP6SS_RESET_REG);
 
-		/* Enable power block headswitch and wait for it to stabilize */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 		val |= QDSS_BHS_ON | QDSS_LDO_BYP;
 		writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 		val |= readl(qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 		udelay(1);
-		/*
-		 * Turn on memories. L2 banks should be done individually
-		 * to minimize inrush current.
-		 */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 		val |= Q6SS_SLP_RET_N | Q6SS_L2TAG_SLP_NRET_N |
 			Q6SS_ETB_SLP_NRET_N | Q6SS_L2DATA_STBY_N;
@@ -832,27 +811,27 @@ static int q6v5proc_reset(struct q6v5 *qproc)
 		val |= Q6SS_L2DATA_SLP_NRET_N_0;
 		writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 	}
-	/* Remove IO clamp */
+	 
 	val &= ~Q6SS_CLAMP_IO;
 	writel(val, qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 
-	/* Bring core out of reset */
+	 
 	val = readl(qproc->reg_base + QDSP6SS_RESET_REG);
 	val &= ~Q6SS_CORE_ARES;
 	writel(val, qproc->reg_base + QDSP6SS_RESET_REG);
 
-	/* Turn on core clock */
+	 
 	val = readl(qproc->reg_base + QDSP6SS_GFMUX_CTL_REG);
 	val |= Q6SS_CLK_ENABLE;
 	writel(val, qproc->reg_base + QDSP6SS_GFMUX_CTL_REG);
 
-	/* Start core execution */
+	 
 	val = readl(qproc->reg_base + QDSP6SS_RESET_REG);
 	val &= ~Q6SS_STOP_CORE;
 	writel(val, qproc->reg_base + QDSP6SS_RESET_REG);
 
 pbl_wait:
-	/* Wait for PBL status */
+	 
 	ret = q6v5_rmb_pbl_wait(qproc, 1000);
 	if (ret == -ETIMEDOUT) {
 		dev_err(qproc->dev, "PBL boot timed out\n");
@@ -888,7 +867,7 @@ static int q6v5proc_enable_qchannel(struct q6v5 *qproc, struct regmap *map, u32 
 
 	regmap_write(map, offset + QACCEPT_REQ_REG, 1);
 
-	/* Wait for accept */
+	 
 	ret = regmap_read_poll_timeout(map, offset + QACCEPT_ACCEPT_REG, val, val, 5,
 				       QACCEPT_TIMEOUT_US);
 	if (ret) {
@@ -912,17 +891,14 @@ static void q6v5proc_disable_qchannel(struct q6v5 *qproc, struct regmap *map, u3
 	while (!takedown_complete && nretry) {
 		nretry--;
 
-		/* Wait for active transactions to complete */
+		 
 		regmap_read_poll_timeout(map, offset + QACCEPT_ACTIVE_REG, val, !val, 5,
 					 QACCEPT_TIMEOUT_US);
 
-		/* Request Q-channel transaction takedown */
+		 
 		regmap_write(map, offset + QACCEPT_REQ_REG, 0);
 
-		/*
-		 * If the request is denied, reset the Q-channel takedown request,
-		 * wait for active transactions to complete and retry takedown.
-		 */
+		 
 		retry = 10;
 		while (retry) {
 			usleep_range(5, 10);
@@ -944,7 +920,7 @@ static void q6v5proc_disable_qchannel(struct q6v5 *qproc, struct regmap *map, u3
 			break;
 	}
 
-	/* Rely on mss_restart to clear out pending transactions on takedown failure */
+	 
 	if (!takedown_complete)
 		dev_err(qproc->dev, "qchannel takedown failed\n");
 }
@@ -956,15 +932,15 @@ static void q6v5proc_halt_axi_port(struct q6v5 *qproc,
 	unsigned int val;
 	int ret;
 
-	/* Check if we're already idle */
+	 
 	ret = regmap_read(halt_map, offset + AXI_IDLE_REG, &val);
 	if (!ret && val)
 		return;
 
-	/* Assert halt request */
+	 
 	regmap_write(halt_map, offset + AXI_HALTREQ_REG, 1);
 
-	/* Wait for halt */
+	 
 	regmap_read_poll_timeout(halt_map, offset + AXI_HALTACK_REG, val,
 				 val, 1000, HALT_ACK_TIMEOUT_US);
 
@@ -972,7 +948,7 @@ static void q6v5proc_halt_axi_port(struct q6v5 *qproc,
 	if (ret || !val)
 		dev_err(qproc->dev, "port failed halt\n");
 
-	/* Clear halt request (port will remain halted until reset) */
+	 
 	regmap_write(halt_map, offset + AXI_HALTREQ_REG, 0);
 }
 
@@ -1021,7 +997,7 @@ static int q6v5_mpss_init_image(struct q6v5 *qproc, const struct firmware *fw,
 	if (qproc->mdata_phys)
 		memunmap(ptr);
 
-	/* Hypervisor mapping to access metadata by modem */
+	 
 	mdata_perm = BIT(QCOM_SCM_VMID_HLOS);
 	ret = q6v5_xfer_mem_ownership(qproc, &mdata_perm, false, true,
 				      phys, size);
@@ -1041,7 +1017,7 @@ static int q6v5_mpss_init_image(struct q6v5 *qproc, const struct firmware *fw,
 	else if (ret < 0)
 		dev_err(qproc->dev, "MPSS header authentication failed: %d\n", ret);
 
-	/* Metadata authentication done, remove modem access */
+	 
 	xferop_ret = q6v5_xfer_mem_ownership(qproc, &mdata_perm, true, false,
 					     phys, size);
 	if (xferop_ret)
@@ -1141,10 +1117,7 @@ static int q6v5_mba_load(struct q6v5 *qproc)
 		goto disable_active_clks;
 	}
 
-	/*
-	 * Some versions of the MBA firmware will upon boot wipe the MPSS region as well, so provide
-	 * the Q6 access to this region.
-	 */
+	 
 	ret = q6v5_xfer_mem_ownership(qproc, &qproc->mpss_perm, false, true,
 				      qproc->mpss_phys, qproc->mpss_size);
 	if (ret) {
@@ -1152,7 +1125,7 @@ static int q6v5_mba_load(struct q6v5 *qproc)
 		goto disable_active_clks;
 	}
 
-	/* Assign MBA image access in DDR to q6 */
+	 
 	ret = q6v5_xfer_mem_ownership(qproc, &qproc->mba_perm, false, true,
 				      qproc->mba_phys, qproc->mba_size);
 	if (ret) {
@@ -1251,9 +1224,7 @@ static void q6v5_mba_reclaim(struct q6v5 *qproc)
 	q6v5proc_halt_axi_port(qproc, qproc->halt_map, qproc->halt_modem);
 	q6v5proc_halt_axi_port(qproc, qproc->halt_map, qproc->halt_nc);
 	if (qproc->version == MSS_MSM8996) {
-		/*
-		 * To avoid high MX current during LPASS/MSS restart.
-		 */
+		 
 		val = readl(qproc->reg_base + QDSP6SS_PWR_CTL_REG);
 		val |= Q6SS_CLAMP_IO | QDSP6v56_CLAMP_WL |
 			QDSP6v56_CLAMP_QMC_MEM;
@@ -1287,9 +1258,7 @@ static void q6v5_mba_reclaim(struct q6v5 *qproc)
 	q6v5_regulator_disable(qproc, qproc->active_regs,
 			       qproc->active_reg_count);
 
-	/* In case of failure or coredump scenario where reclaiming MBA memory
-	 * could not happen reclaim it here.
-	 */
+	 
 	ret = q6v5_xfer_mem_ownership(qproc, &qproc->mba_perm, true, false,
 				      qproc->mba_phys,
 				      qproc->mba_size);
@@ -1360,7 +1329,7 @@ static int q6v5_mpss_load(struct q6v5 *qproc)
 		goto out;
 	}
 
-	/* Initialize the RMB validator */
+	 
 	writel(0, qproc->rmb_base + RMB_PMI_CODE_LENGTH_REG);
 
 	ret = q6v5_mpss_init_image(qproc, fw, qproc->hexagon_mdt_image);
@@ -1395,14 +1364,11 @@ static int q6v5_mpss_load(struct q6v5 *qproc)
 		}
 	}
 
-	/*
-	 * In case of a modem subsystem restart on secure devices, the modem
-	 * memory can be reclaimed only after MBA is loaded.
-	 */
+	 
 	q6v5_xfer_mem_ownership(qproc, &qproc->mpss_perm, true, false,
 				qproc->mpss_phys, qproc->mpss_size);
 
-	/* Share ownership between Linux and MSS, during segment loading */
+	 
 	ret = q6v5_xfer_mem_ownership(qproc, &qproc->mpss_perm, true, true,
 				      qproc->mpss_phys, qproc->mpss_size);
 	if (ret) {
@@ -1414,7 +1380,7 @@ static int q6v5_mpss_load(struct q6v5 *qproc)
 
 	mpss_reloc = relocate ? min_addr : qproc->mpss_phys;
 	qproc->mpss_reloc = mpss_reloc;
-	/* Load firmware segments */
+	 
 	for (i = 0; i < ehdr->e_phnum; i++) {
 		phdr = &phdrs[i];
 
@@ -1445,7 +1411,7 @@ static int q6v5_mpss_load(struct q6v5 *qproc)
 		}
 
 		if (phdr->p_filesz && phdr->p_offset < fw->size) {
-			/* Firmware is large enough to be non-split */
+			 
 			if (phdr->p_offset + phdr->p_filesz > fw->size) {
 				dev_err(qproc->dev,
 					"failed to load segment %d from truncated file %s\n",
@@ -1457,7 +1423,7 @@ static int q6v5_mpss_load(struct q6v5 *qproc)
 
 			memcpy(ptr, fw->data + phdr->p_offset, phdr->p_filesz);
 		} else if (phdr->p_filesz) {
-			/* Replace "xxx.xxx" with "xxx.bxx" */
+			 
 			sprintf(fw_name + fw_name_len - 3, "b%02d", i);
 			ret = request_firmware_into_buf(&seg_fw, fw_name, qproc->dev,
 							ptr, phdr->p_filesz);
@@ -1503,7 +1469,7 @@ static int q6v5_mpss_load(struct q6v5 *qproc)
 		}
 	}
 
-	/* Transfer ownership of modem ddr region to q6 */
+	 
 	ret = q6v5_xfer_mem_ownership(qproc, &qproc->mpss_perm, false, true,
 				      qproc->mpss_phys, qproc->mpss_size);
 	if (ret) {
@@ -1538,11 +1504,11 @@ static void qcom_q6v5_dump_segment(struct rproc *rproc,
 	int offset = segment->da - qproc->mpss_reloc;
 	void *ptr = NULL;
 
-	/* Unlock mba before copying segments */
+	 
 	if (!qproc->dump_mba_loaded) {
 		ret = q6v5_reload_mba(rproc);
 		if (!ret) {
-			/* Reset ownership back to Linux to copy segments */
+			 
 			ret = q6v5_xfer_mem_ownership(qproc, &qproc->mpss_perm,
 						      true, false,
 						      qproc->mpss_phys,
@@ -1562,10 +1528,10 @@ static void qcom_q6v5_dump_segment(struct rproc *rproc,
 
 	qproc->current_dump_size += size;
 
-	/* Reclaim mba after copying segments */
+	 
 	if (qproc->current_dump_size == qproc->total_dump_size) {
 		if (qproc->dump_mba_loaded) {
-			/* Try to reset ownership back to Q6 */
+			 
 			q6v5_xfer_mem_ownership(qproc, &qproc->mpss_perm,
 						false, true,
 						qproc->mpss_phys,
@@ -1605,7 +1571,7 @@ static int q6v5_start(struct rproc *rproc)
 		dev_err(qproc->dev,
 			"Failed to reclaim mba buffer system may become unstable\n");
 
-	/* Reset Dump Segment Mask */
+	 
 	qproc->current_dump_size = 0;
 
 	return 0;
@@ -1891,10 +1857,7 @@ static int q6v5_alloc_memory_region(struct q6v5 *qproc)
 	struct reserved_mem *rmem;
 	struct device_node *node;
 
-	/*
-	 * In the absence of mba/mpss sub-child, extract the mba and mpss
-	 * reserved memory regions from device's memory-region property.
-	 */
+	 
 	child = of_get_child_by_name(qproc->dev->of_node, "mba");
 	if (!child) {
 		node = of_parse_phandle(qproc->dev->of_node,
@@ -2067,7 +2030,7 @@ static int q6v5_probe(struct platform_device *pdev)
 
 	ret = q6v5_pds_attach(&pdev->dev, qproc->proxy_pds,
 			      desc->proxy_pd_names);
-	/* Fallback to regulators for old device trees */
+	 
 	if (ret == -ENODATA && desc->fallback_proxy_supply) {
 		ret = q6v5_regulator_init(&pdev->dev,
 					  qproc->fallback_proxy_regs,

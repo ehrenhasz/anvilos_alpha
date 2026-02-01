@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -401,13 +399,10 @@ static int lpass_core_cc_sc7180_probe(struct platform_device *pdev)
 		goto exit;
 	}
 
-	/*
-	 * Keep the CLK always-ON
-	 * LPASS_AUDIO_CORE_SYSNOC_SWAY_CORE_CLK
-	 */
+	 
 	regmap_update_bits(regmap, 0x24000, BIT(0), BIT(0));
 
-	/* PLL settings */
+	 
 	regmap_write(regmap, 0x1008, 0x20);
 	regmap_update_bits(regmap, 0x1014, BIT(0), BIT(0));
 

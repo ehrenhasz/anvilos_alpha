@@ -1,13 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ptrace test for VMX/VSX registers
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #include "ptrace.h"
 #include "ptrace-vsx.h"
 
-/* Tracer and Tracee Shared Data */
+ 
 int shm_id;
 int *cptr, *pptr;
 

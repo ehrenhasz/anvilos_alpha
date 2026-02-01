@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2014-2023, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -177,19 +175,19 @@ static int m31usb_phy_init(struct phy *phy)
 		return ret;
 	}
 
-	/* Perform phy reset */
+	 
 	reset_control_assert(qphy->reset);
 	udelay(5);
 	reset_control_deassert(qphy->reset);
 
-	/* configure for ULPI mode if requested */
+	 
 	if (qphy->ulpi_mode)
 		writel(0x0, qphy->base + USB2PHY_PORT_UTMI_CTRL2);
 
-	/* Enable the PHY */
+	 
 	writel(POWER_UP, qphy->base + USB2PHY_PORT_POWERDOWN);
 
-	/* Turn on phy ref clock */
+	 
 	for (i = 0; i < qphy->nregs; i++) {
 		writel(regs[i].val, qphy->base + regs[i].off);
 		if (regs[i].delay)
@@ -203,7 +201,7 @@ static int m31usb_phy_shutdown(struct phy *phy)
 {
 	struct m31usb_phy *qphy = phy_get_drvdata(phy);
 
-	/* Disable the PHY */
+	 
 	writel_relaxed(POWER_DOWN, qphy->base + USB2PHY_PORT_POWERDOWN);
 
 	clk_disable_unprepare(qphy->clk);

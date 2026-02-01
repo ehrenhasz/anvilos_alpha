@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-keystone.c - Keystone Specific Glue layer
- *
- * Copyright (C) 2010-2013 Texas Instruments Incorporated - https://www.ti.com
- *
- * Author: WingMan Kwok <w-kwok2@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -18,7 +12,7 @@
 #include <linux/phy/phy.h>
 #include <linux/pm_runtime.h>
 
-/* USBSS register offsets */
+ 
 #define USBSS_REVISION		0x0000
 #define USBSS_SYSCONFIG		0x0010
 #define USBSS_IRQ_EOI		0x0018
@@ -27,7 +21,7 @@
 #define USBSS_IRQENABLE_SET_0	0x0028
 #define USBSS_IRQENABLE_CLR_0	0x002c
 
-/* IRQ register bits */
+ 
 #define USBSS_IRQ_EOI_LINE(n)	BIT(n)
 #define USBSS_IRQ_EVENT_ST	BIT(0)
 #define USBSS_IRQ_COREIRQ_EN	BIT(0)
@@ -98,7 +92,7 @@ static int kdwc3_probe(struct platform_device *pdev)
 	if (IS_ERR(kdwc->usbss))
 		return PTR_ERR(kdwc->usbss);
 
-	/* PSC dependency on AM65 needs SERDES0 to be powered before USB0 */
+	 
 	kdwc->usb3_phy = devm_phy_optional_get(dev, "usb3-phy");
 	if (IS_ERR(kdwc->usb3_phy))
 		return dev_err_probe(dev, PTR_ERR(kdwc->usb3_phy), "couldn't get usb3 phy\n");
@@ -132,7 +126,7 @@ static int kdwc3_probe(struct platform_device *pdev)
 		goto err_irq;
 	}
 
-	/* IRQ processing not required currently for AM65 */
+	 
 	if (of_device_is_compatible(node, "ti,am654-dwc3"))
 		goto skip_irq;
 

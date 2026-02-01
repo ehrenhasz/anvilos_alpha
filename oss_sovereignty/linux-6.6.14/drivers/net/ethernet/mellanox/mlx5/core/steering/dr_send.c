@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include <linux/smp.h>
 #include "dr_types.h"
@@ -363,7 +363,7 @@ static void dr_cmd_notify_hw(struct mlx5dr_qp *dr_qp, void *ctrl)
 	dma_wmb();
 	*dr_qp->wq.sq.db = cpu_to_be32(dr_qp->sq.pc & 0xffff);
 
-	/* After wmb() the hw aware of new work */
+	 
 	wmb();
 
 	mlx5_write64(ctrl, dr_qp->uar->map + MLX5_BF_OFFSET);
@@ -381,7 +381,7 @@ dr_rdma_handle_flow_access_arg_segments(struct mlx5_wqe_ctrl_seg *wq_ctrl,
 	wq_ctrl->general_id = cpu_to_be32(remote_addr);
 	wq_flow_seg = (void *)(wq_ctrl + 1);
 
-	/* mlx5_wqe_flow_update_ctrl_seg - all reserved */
+	 
 	memset(wq_flow_seg, 0, sizeof(*wq_flow_seg));
 	wq_arg_seg = (void *)(wq_flow_seg + 1);
 
@@ -389,9 +389,9 @@ dr_rdma_handle_flow_access_arg_segments(struct mlx5_wqe_ctrl_seg *wq_ctrl,
 	       (void *)(uintptr_t)data_seg->addr,
 	       data_seg->length);
 
-	*size = (sizeof(*wq_ctrl) +      /* WQE ctrl segment */
-		 sizeof(*wq_flow_seg) +  /* WQE flow update ctrl seg - reserved */
-		 sizeof(*wq_arg_seg)) /  /* WQE hdr modify arg seg - data */
+	*size = (sizeof(*wq_ctrl) +       
+		 sizeof(*wq_flow_seg) +   
+		 sizeof(*wq_arg_seg)) /   
 		MLX5_SEND_WQE_DS;
 }
 
@@ -417,9 +417,9 @@ dr_rdma_handle_icm_write_segments(struct mlx5_wqe_ctrl_seg *wq_ctrl,
 	wq_dseg->lkey = cpu_to_be32(data_seg->lkey);
 	wq_dseg->addr = cpu_to_be64(data_seg->addr);
 
-	*size = (sizeof(*wq_ctrl) +    /* WQE ctrl segment */
-		 sizeof(*wq_dseg) +    /* WQE data segment */
-		 sizeof(*wq_raddr)) /  /* WQE remote addr segment */
+	*size = (sizeof(*wq_ctrl) +     
+		 sizeof(*wq_dseg) +     
+		 sizeof(*wq_raddr)) /   
 		MLX5_SEND_WQE_DS;
 }
 
@@ -464,10 +464,7 @@ static void dr_rdma_segments(struct mlx5dr_qp *dr_qp, u64 remote_addr,
 		return;
 	}
 
-	/* --------------------------------------------------------
-	 * |opcode_mod (8 bit)|wqe_index (16 bits)| opcod (8 bits)|
-	 * --------------------------------------------------------
-	 */
+	 
 	wq_ctrl->opmod_idx_opcode =
 		cpu_to_be32((opcode_mod << 24) |
 			    ((dr_qp->sq.pc & 0xffff) << 8) |
@@ -488,28 +485,14 @@ static void dr_post_send(struct mlx5dr_qp *dr_qp, struct postsend_info *send_inf
 				 &send_info->write, MLX5_OPCODE_RDMA_WRITE, false);
 		dr_rdma_segments(dr_qp, send_info->remote_addr, send_info->rkey,
 				 &send_info->read, MLX5_OPCODE_RDMA_READ, true);
-	} else { /* GTA_ARG */
+	} else {  
 		dr_rdma_segments(dr_qp, send_info->remote_addr, send_info->rkey,
 				 &send_info->write, MLX5_OPCODE_FLOW_TBL_ACCESS, true);
 	}
 
 }
 
-/**
- * mlx5dr_send_fill_and_append_ste_send_info: Add data to be sent
- * with send_list parameters:
- *
- *     @ste:       The data that attached to this specific ste
- *     @size:      of data to write
- *     @offset:    of the data from start of the hw_ste entry
- *     @data:      data
- *     @ste_info:  ste to be sent with send_list
- *     @send_list: to append into it
- *     @copy_data: if true indicates that the data should be kept because
- *                 it's not backuped any where (like in re-hash).
- *                 if false, it lets the data to be updated after
- *                 it was added to the list.
- */
+ 
 void mlx5dr_send_fill_and_append_ste_send_info(struct mlx5dr_ste *ste, u16 size,
 					       u16 offset, u8 *data,
 					       struct mlx5dr_ste_send_info *ste_info,
@@ -530,10 +513,7 @@ void mlx5dr_send_fill_and_append_ste_send_info(struct mlx5dr_ste *ste, u16 size,
 	list_add_tail(&ste_info->send_list, send_list);
 }
 
-/* The function tries to consume one wc each time, unless the queue is full, in
- * that case, which means that the hw is behind the sw in a full queue len
- * the function will drain the cq till it empty.
- */
+ 
 static int dr_handle_pending_wc(struct mlx5dr_domain *dmn,
 				struct mlx5dr_send_ring *send_ring)
 {
@@ -543,7 +523,7 @@ static int dr_handle_pending_wc(struct mlx5dr_domain *dmn,
 	if (send_ring->pending_wqe < send_ring->signal_th)
 		return 0;
 
-	/* Queue is full start drain it */
+	 
 	if (send_ring->pending_wqe >=
 	    dmn->send_ring->signal_th * TH_NUMS_TO_DRAIN)
 		is_drain = true;
@@ -585,7 +565,7 @@ static void dr_fill_write_icm_segs(struct mlx5dr_domain *dmn,
 		buff_offset = (send_ring->tx_head &
 			       (dmn->send_ring->signal_th - 1)) *
 			      send_ring->max_post_send_size;
-		/* Copy to ring mr */
+		 
 		memcpy(send_ring->buf + buff_offset,
 		       (void *)(uintptr_t)send_info->write.addr,
 		       send_info->write.length);
@@ -603,7 +583,7 @@ static void dr_fill_write_icm_segs(struct mlx5dr_domain *dmn,
 	send_ring->pending_wqe++;
 	send_info->read.length = send_info->write.length;
 
-	/* Read into dedicated sync buffer */
+	 
 	send_info->read.addr = (uintptr_t)send_ring->sync_mr->dma_addr;
 	send_info->read.lkey = send_ring->sync_mr->mkey;
 
@@ -619,7 +599,7 @@ static void dr_fill_data_segs(struct mlx5dr_domain *dmn,
 {
 	if (send_info->type == WRITE_ICM)
 		dr_fill_write_icm_segs(dmn, send_ring, send_info);
-	else /* args */
+	else  
 		dr_fill_write_args_segs(send_ring, send_info);
 }
 
@@ -679,20 +659,7 @@ static int dr_get_tbl_copy_details(struct mlx5dr_domain *dmn,
 	return 0;
 }
 
-/**
- * mlx5dr_send_postsend_ste: write size bytes into offset from the hw cm.
- *
- *     @dmn:    Domain
- *     @ste:    The ste struct that contains the data (at
- *              least part of it)
- *     @data:   The real data to send size data
- *     @size:   for writing.
- *     @offset: The offset from the icm mapped data to
- *              start write to this for write only part of the
- *              buffer.
- *
- * Return: 0 on success.
- */
+ 
 int mlx5dr_send_postsend_ste(struct mlx5dr_domain *dmn, struct mlx5dr_ste *ste,
 			     u8 *data, u16 size, u16 offset)
 {
@@ -728,14 +695,12 @@ int mlx5dr_send_postsend_htbl(struct mlx5dr_domain *dmn,
 
 	mlx5dr_ste_prepare_for_postsend(dmn->ste_ctx, formatted_ste, DR_STE_SIZE);
 
-	/* Send the data iteration times */
+	 
 	for (i = 0; i < iterations; i++) {
 		u32 ste_index = i * (byte_size / DR_STE_SIZE);
 		struct postsend_info send_info = {};
 
-		/* Copy all ste's on the data buffer
-		 * need to add the bit_mask
-		 */
+		 
 		for (j = 0; j < num_stes_per_iter; j++) {
 			struct mlx5dr_ste *ste = &htbl->chunk->ste_arr[ste_index + j];
 			u32 ste_off = j * DR_STE_SIZE;
@@ -744,15 +709,15 @@ int mlx5dr_send_postsend_htbl(struct mlx5dr_domain *dmn,
 				memcpy(data + ste_off,
 				       formatted_ste, DR_STE_SIZE);
 			} else {
-				/* Copy data */
+				 
 				memcpy(data + ste_off,
 				       htbl->chunk->hw_ste_arr +
 				       DR_STE_SIZE_REDUCED * (ste_index + j),
 				       DR_STE_SIZE_REDUCED);
-				/* Copy bit_mask */
+				 
 				memcpy(data + ste_off + DR_STE_SIZE_REDUCED,
 				       mask, DR_STE_SIZE_MASK);
-				/* Only when we have mask we need to re-arrange the STE */
+				 
 				mlx5dr_ste_prepare_for_postsend(dmn->ste_ctx,
 								data + (j * DR_STE_SIZE),
 								DR_STE_SIZE);
@@ -776,7 +741,7 @@ out_free:
 	return ret;
 }
 
-/* Initialize htble with default STEs */
+ 
 int mlx5dr_send_postsend_formatted_htbl(struct mlx5dr_domain *dmn,
 					struct mlx5dr_ste_htbl *htbl,
 					u8 *ste_init_data,
@@ -796,7 +761,7 @@ int mlx5dr_send_postsend_formatted_htbl(struct mlx5dr_domain *dmn,
 		return ret;
 
 	if (update_hw_ste) {
-		/* Copy the reduced STE to hash table ste_arr */
+		 
 		for (i = 0; i < num_stes; i++) {
 			copy_dst = htbl->chunk->hw_ste_arr + i * DR_STE_SIZE_REDUCED;
 			memcpy(copy_dst, ste_init_data, DR_STE_SIZE_REDUCED);
@@ -805,13 +770,13 @@ int mlx5dr_send_postsend_formatted_htbl(struct mlx5dr_domain *dmn,
 
 	mlx5dr_ste_prepare_for_postsend(dmn->ste_ctx, ste_init_data, DR_STE_SIZE);
 
-	/* Copy the same STE on the data buffer */
+	 
 	for (i = 0; i < num_stes; i++) {
 		copy_dst = data + i * DR_STE_SIZE;
 		memcpy(copy_dst, ste_init_data, DR_STE_SIZE);
 	}
 
-	/* Send the data iteration times */
+	 
 	for (i = 0; i < iterations; i++) {
 		u8 ste_index = i * (byte_size / DR_STE_SIZE);
 		struct postsend_info send_info = {};
@@ -935,7 +900,7 @@ static int dr_cmd_modify_qp_rtr2rts(struct mlx5_core_dev *mdev,
 
 	MLX5_SET(qpc, qpc, retry_count, attr->retry_cnt);
 	MLX5_SET(qpc, qpc, rnr_retry, attr->rnr_retry);
-	MLX5_SET(qpc, qpc, primary_address_path.ack_timeout, 0x8); /* ~1ms */
+	MLX5_SET(qpc, qpc, primary_address_path.ack_timeout, 0x8);  
 
 	MLX5_SET(rtr2rts_qp_in, in, opcode, MLX5_CMD_OP_RTR2RTS_QP);
 	MLX5_SET(rtr2rts_qp_in, in, qpn, dr_qp->qpn);
@@ -980,11 +945,7 @@ static int dr_cmd_modify_qp_init2rtr(struct mlx5_core_dev *mdev,
 
 static bool dr_send_allow_fl(struct mlx5dr_cmd_caps *caps)
 {
-	/* Check whether RC RoCE QP creation with force loopback is allowed.
-	 * There are two separate capability bits for this:
-	 *  - force loopback when RoCE is enabled
-	 *  - force loopback when RoCE is disabled
-	 */
+	 
 	return ((caps->roce_caps.roce_en &&
 		 caps->roce_caps.fl_rc_qp_when_roce_enabled) ||
 		(!caps->roce_caps.roce_en &&
@@ -1001,24 +962,21 @@ static int dr_prepare_qp_to_rts(struct mlx5dr_domain *dmn)
 	int port = 1;
 	int ret;
 
-	/* Init */
+	 
 	ret = dr_modify_qp_rst2init(dmn->mdev, dr_qp, port);
 	if (ret) {
 		mlx5dr_err(dmn, "Failed modify QP rst2init\n");
 		return ret;
 	}
 
-	/* RTR */
+	 
 	rtr_attr.mtu		= mtu;
 	rtr_attr.qp_num		= dr_qp->qpn;
 	rtr_attr.min_rnr_timer	= 12;
 	rtr_attr.port_num	= port;
 	rtr_attr.udp_src_port	= dmn->info.caps.roce_min_src_udp;
 
-	/* If QP creation with force loopback is allowed, then there
-	 * is no need for GID index when creating the QP.
-	 * Otherwise we query GID attributes and use GID index.
-	 */
+	 
 	rtr_attr.fl = dr_send_allow_fl(&dmn->info.caps);
 	if (!rtr_attr.fl) {
 		ret = mlx5dr_cmd_query_gid(dmn->mdev, port, gid_index,
@@ -1035,7 +993,7 @@ static int dr_prepare_qp_to_rts(struct mlx5dr_domain *dmn)
 		return ret;
 	}
 
-	/* RTS */
+	 
 	rts_attr.timeout	= 14;
 	rts_attr.retry_cnt	= 7;
 	rts_attr.rnr_retry	= 7;
@@ -1127,9 +1085,7 @@ static struct mlx5dr_cq *dr_create_cq(struct mlx5_core_dev *mdev,
 	cq->mcq.arm_db = cq->wq_ctrl.db.db + 1;
 	*cq->mcq.set_ci_db = 0;
 
-	/* set no-zero value, in order to avoid the HW to run db-recovery on
-	 * CQ that used in polling mode.
-	 */
+	 
 	*cq->mcq.arm_db = cpu_to_be32(2 << 28);
 
 	cq->mcq.vector = 0;
@@ -1241,7 +1197,7 @@ int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn)
 	init_attr.uar = dmn->uar;
 	init_attr.max_send_wr = QUEUE_SIZE;
 
-	/* Isolated VL is applicable only if force loopback is supported */
+	 
 	if (dr_send_allow_fl(&dmn->info.caps))
 		init_attr.isolate_vl_tc = dmn->info.caps.isolate_vl_tc;
 
@@ -1263,7 +1219,7 @@ int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn)
 	dmn->send_ring->signal_th = dmn->info.max_send_wr /
 		SIGNAL_PER_DIV_QUEUE;
 
-	/* Prepare qp to be used */
+	 
 	ret = dr_prepare_qp_to_rts(dmn);
 	if (ret)
 		goto clean_qp;
@@ -1272,7 +1228,7 @@ int mlx5dr_send_ring_alloc(struct mlx5dr_domain *dmn)
 		mlx5dr_icm_pool_chunk_size_to_byte(DR_CHUNK_SIZE_1K,
 						   DR_ICM_TYPE_STE);
 
-	/* Allocating the max size as a buffer for writing */
+	 
 	size = dmn->send_ring->signal_th * dmn->send_ring->max_post_send_size;
 	dmn->send_ring->buf = kzalloc(size, GFP_KERNEL);
 	if (!dmn->send_ring->buf) {
@@ -1343,14 +1299,14 @@ int mlx5dr_send_ring_force_drain(struct mlx5dr_domain *dmn)
 	int ret;
 	int i;
 
-	/* Sending this amount of requests makes sure we will get drain */
+	 
 	num_of_sends_req = send_ring->signal_th * TH_NUMS_TO_DRAIN / 2;
 
-	/* Send fake requests forcing the last to be signaled */
+	 
 	send_info.write.addr = (uintptr_t)data;
 	send_info.write.length = DR_STE_SIZE;
 	send_info.write.lkey = 0;
-	/* Using the sync_mr in order to write/read */
+	 
 	send_info.remote_addr = (uintptr_t)send_ring->sync_mr->addr;
 	send_info.rkey = send_ring->sync_mr->mkey;
 

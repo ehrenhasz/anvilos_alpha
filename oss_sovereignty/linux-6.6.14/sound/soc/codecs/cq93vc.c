@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ALSA SoC CQ0093 Voice Codec Driver for DaVinci platforms
- *
- * Copyright (C) 2010 Texas Instruments, Inc
- *
- * Author: Miguel Aguilar <miguel.aguilar@ridgerun.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/init.h>
@@ -74,7 +68,7 @@ static int cq93vc_set_bias_level(struct snd_soc_component *component,
 			     DAVINCI_VC_REG12_POWER_ALL_OFF);
 		break;
 	case SND_SOC_BIAS_OFF:
-		/* force all power off */
+		 
 		snd_soc_component_write(component, DAVINCI_VC_REG12,
 			     DAVINCI_VC_REG12_POWER_ALL_OFF);
 		break;

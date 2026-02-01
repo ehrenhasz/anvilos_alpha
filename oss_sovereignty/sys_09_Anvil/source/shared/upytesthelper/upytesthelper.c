@@ -1,28 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2017 Linaro Limited
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 #include <string.h>
 
 #include "py/mphal.h"
@@ -67,11 +43,11 @@ bool upytest_is_failed(void) {
     return test_rem_output_len != 0;
 }
 
-// MP_PLAT_PRINT_STRN() should be redirected to this function.
-// It will pass-through any content to mp_hal_stdout_tx_strn_cooked()
-// (the default value of MP_PLAT_PRINT_STRN), but will also match
-// it to the expected output as set by upytest_set_expected_output().
-// If mismatch happens, upytest_is_failed() returns true.
+
+
+
+
+
 void upytest_output(const char *str, mp_uint_t len) {
     if (!test_failed) {
         if (len > test_rem_output_len) {
@@ -97,8 +73,8 @@ void upytest_output(const char *str, mp_uint_t len) {
 }
 
 void upytest_execute_test(const char *src) {
-    // To provide clean room for each test, interpreter and heap are
-    // reinitialized before running each.
+    
+    
     gc_init(heap_start, heap_end);
     mp_init();
     mp_sys_path = mp_obj_new_list(0, NULL);
@@ -118,9 +94,9 @@ void upytest_execute_test(const char *src) {
     } else {
         mp_obj_t exc = (mp_obj_t)nlr.ret_val;
         if (mp_obj_is_subclass_fast(mp_obj_get_type(exc), &mp_type_SystemExit)) {
-            // Assume that sys.exit() is called to skip the test.
-            // TODO: That can be always true, we should set up convention to
-            // use specific exit code as skip indicator.
+            
+            
+            
             tinytest_set_test_skipped_();
             goto end;
         }

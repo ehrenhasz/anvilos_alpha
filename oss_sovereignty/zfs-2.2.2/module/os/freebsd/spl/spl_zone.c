@@ -1,28 +1,4 @@
-/*
- * Copyright (c) 2007 Pawel Jakub Dawidek <pjd@FreeBSD.org>
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHORS AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE AUTHORS OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
 #include <sys/cdefs.h>
 __FBSDID("$FreeBSD$");
@@ -46,9 +22,7 @@ __FBSDID("$FreeBSD$");
 
 static MALLOC_DEFINE(M_ZONES, "zones_data", "Zones data");
 
-/*
- * Structure to record list of ZFS datasets exported to a zone.
- */
+ 
 typedef struct zone_dataset {
 	LIST_ENTRY(zone_dataset) zd_next;
 	char	zd_dataset[0];
@@ -69,11 +43,11 @@ zone_dataset_attach(struct ucred *cred, const char *dataset, int jailid)
 	if ((error = spl_priv_check_cred(cred, PRIV_ZFS_JAIL)) != 0)
 		return (error);
 
-	/* Allocate memory before we grab prison's mutex. */
+	 
 	zd = malloc(sizeof (*zd) + strlen(dataset) + 1, M_ZONES, M_WAITOK);
 
 	sx_slock(&allprison_lock);
-	pr = prison_find(jailid);	/* Locks &pr->pr_mtx. */
+	pr = prison_find(jailid);	 
 	sx_sunlock(&allprison_lock);
 	if (pr == NULL) {
 		free(zd, M_ZONES);
@@ -150,10 +124,7 @@ end:
 	return (error);
 }
 
-/*
- * Returns true if the named dataset is visible in the current zone.
- * The 'write' parameter is set to 1 if the dataset is also writable.
- */
+ 
 int
 zone_dataset_visible(const char *dataset, int *write)
 {
@@ -176,11 +147,7 @@ zone_dataset_visible(const char *dataset, int *write)
 	if (head == NULL)
 		goto end;
 
-	/*
-	 * Walk the list once, looking for datasets which match exactly, or
-	 * specify a dataset underneath an exported dataset.  If found, return
-	 * true and note that it is writable.
-	 */
+	 
 	LIST_FOREACH(zd, head, zd_next) {
 		len = strlen(zd->zd_dataset);
 		if (strlen(dataset) >= len &&
@@ -194,17 +161,11 @@ zone_dataset_visible(const char *dataset, int *write)
 		}
 	}
 
-	/*
-	 * Walk the list a second time, searching for datasets which are parents
-	 * of exported datasets.  These should be visible, but read-only.
-	 *
-	 * Note that we also have to support forms such as 'pool/dataset/', with
-	 * a trailing slash.
-	 */
+	 
 	LIST_FOREACH(zd, head, zd_next) {
 		len = strlen(dataset);
 		if (dataset[len - 1] == '/')
-			len--;	/* Ignore trailing slash */
+			len--;	 
 		if (len < strlen(zd->zd_dataset) &&
 		    memcmp(dataset, zd->zd_dataset, len) == 0 &&
 		    zd->zd_dataset[len] == '/') {

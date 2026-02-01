@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef __SSP_SENSORHUB_H__
 #define __SSP_SENSORHUB_H__
@@ -21,7 +19,7 @@
 #endif
 
 #define SSP_SW_RESET_TIME		3000
-/* Sensor polling in ms */
+ 
 #define SSP_DEFAULT_POLLING_DELAY	200
 #define SSP_DEFAULT_RETRIES		3
 #define SSP_DATA_PACKET_SIZE		960
@@ -39,7 +37,7 @@ enum {
 	SSP_RUNNING_SENSOR_STATE,
 };
 
-/* Firmware download STATE */
+ 
 enum {
 	SSP_FW_DL_STATE_FAIL = -1,
 	SSP_FW_DL_STATE_NONE = 0,
@@ -53,7 +51,7 @@ enum {
 #define SSP_INVALID_REVISION			99999
 #define SSP_INVALID_REVISION2			0xffffff
 
-/* AP -> SSP Instruction */
+ 
 #define SSP_MSG2SSP_INST_BYPASS_SENSOR_ADD	0xa1
 #define SSP_MSG2SSP_INST_BYPASS_SENSOR_RM	0xa2
 #define SSP_MSG2SSP_INST_REMOVE_ALL		0xa3
@@ -99,12 +97,12 @@ enum {
 
 #define SSP_MSG2SSP_AP_FUSEROM				0x01
 
-/* voice data */
+ 
 #define SSP_TYPE_WAKE_UP_VOICE_SERVICE			0x01
 #define SSP_TYPE_WAKE_UP_VOICE_SOUND_SOURCE_AM		0x01
 #define SSP_TYPE_WAKE_UP_VOICE_SOUND_SOURCE_GRAMMER	0x02
 
-/* Factory Test */
+ 
 #define SSP_ACCELEROMETER_FACTORY			0x80
 #define SSP_GYROSCOPE_FACTORY				0x81
 #define SSP_GEOMAGNETIC_FACTORY				0x82
@@ -116,9 +114,9 @@ enum {
 #define SSP_MCU_FACTORY					0x8c
 #define SSP_MCU_SLEEP_FACTORY				0x8d
 
-/* SSP -> AP ACK about write CMD */
-#define SSP_MSG_ACK		0x80	/* ACK from SSP to AP */
-#define SSP_MSG_NAK		0x70	/* NAK from SSP to AP */
+ 
+#define SSP_MSG_ACK		0x80	 
+#define SSP_MSG_NAK		0x70	 
 
 struct ssp_sensorhub_info {
 	char *fw_name;
@@ -128,7 +126,7 @@ struct ssp_sensorhub_info {
 	const unsigned int mag_length;
 };
 
-/* ssp_msg options bit */
+ 
 #define SSP_RW		0
 #define SSP_INDEX	3
 
@@ -138,44 +136,7 @@ struct ssp_sensorhub_info {
 #define SSP_AP2HUB_READY	3
 #define SSP_AP2HUB_RETURN	4
 
-/**
- * struct ssp_data - ssp platformdata structure
- * @spi:		spi device
- * @sensorhub_info:	info about sensorhub board specific features
- * @wdt_timer:		watchdog timer
- * @work_wdt:		watchdog work
- * @work_firmware:	firmware upgrade work queue
- * @work_refresh:	refresh work queue for reset request from MCU
- * @shut_down:		shut down flag
- * @mcu_dump_mode:	mcu dump mode for debug
- * @time_syncing:	time syncing indication flag
- * @timestamp:		previous time in ns calculated for time syncing
- * @check_status:	status table for each sensor
- * @com_fail_cnt:	communication fail count
- * @reset_cnt:		reset count
- * @timeout_cnt:	timeout count
- * @available_sensors:	available sensors seen by sensorhub (bit array)
- * @cur_firm_rev:	cached current firmware revision
- * @last_resume_state:	last AP resume/suspend state used to handle the PM
- *                      state of ssp
- * @last_ap_state:	(obsolete) sleep notification for MCU
- * @sensor_enable:	sensor enable mask
- * @delay_buf:		data acquisition intervals table
- * @batch_latency_buf:	yet unknown but existing in communication protocol
- * @batch_opt_buf:	yet unknown but existing in communication protocol
- * @accel_position:	yet unknown but existing in communication protocol
- * @mag_position:	yet unknown but existing in communication protocol
- * @fw_dl_state:	firmware download state
- * @comm_lock:		lock protecting the handshake
- * @pending_lock:	lock protecting pending list and completion
- * @mcu_reset_gpiod:	mcu reset line
- * @ap_mcu_gpiod:	ap to mcu gpio line
- * @mcu_ap_gpiod:	mcu to ap gpio line
- * @pending_list:	pending list for messages queued to be sent/read
- * @sensor_devs:	registered IIO devices table
- * @enable_refcount:	enable reference count for wdt (watchdog timer)
- * @header_buffer:	cache aligned buffer for packet header
- */
+ 
 struct ssp_data {
 	struct spi_device *spi;
 	const struct ssp_sensorhub_info *sensorhub_info;
@@ -243,4 +204,4 @@ unsigned int ssp_get_firmware_rev(struct ssp_data *data);
 
 int ssp_queue_ssp_refresh_task(struct ssp_data *data, unsigned int delay);
 
-#endif /* __SSP_SENSORHUB_H__ */
+#endif  

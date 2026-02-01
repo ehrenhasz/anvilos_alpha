@@ -1,27 +1,4 @@
-/*
- * Copyright 2023 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "amdgpu_dm_replay.h"
 #include "dc.h"
@@ -31,12 +8,7 @@
 #include "dmub/inc/dmub_cmd.h"
 #include "dc/inc/link.h"
 
-/*
- * link_supports_replay() - check if the link supports replay
- * @link: link
- * @aconnector: aconnector
- *
- */
+ 
 static bool link_supports_replay(struct dc_link *link, struct amdgpu_dm_connector *aconnector)
 {
 	struct dm_connector_state *state = to_dm_connector_state(aconnector->base.state);
@@ -49,32 +21,27 @@ static bool link_supports_replay(struct dc_link *link, struct amdgpu_dm_connecto
 	if (!aconnector->vsdb_info.replay_mode)
 		return false;
 
-	// Check the eDP version
+	
 	if (dpcd_caps->edp_rev < EDP_REVISION_13)
 		return false;
 
 	if (!dpcd_caps->alpm_caps.bits.AUX_WAKE_ALPM_CAP)
 		return false;
 
-	// Check adaptive sync support cap
+	
 	if (!as_caps->dp_adap_sync_caps.bits.ADAPTIVE_SYNC_SDP_SUPPORT)
 		return false;
 
 	return true;
 }
 
-/*
- * amdgpu_dm_setup_replay() - setup replay configuration
- * @link: link
- * @aconnector: aconnector
- *
- */
+ 
 bool amdgpu_dm_setup_replay(struct dc_link *link, struct amdgpu_dm_connector *aconnector)
 {
 	struct replay_config pr_config;
 	union replay_debug_flags *debug_flags = NULL;
 
-	// For eDP, if Replay is supported, return true to skip checks
+	
 	if (link->replay_settings.config.replay_supported)
 		return true;
 
@@ -87,7 +54,7 @@ bool amdgpu_dm_setup_replay(struct dc_link *link, struct amdgpu_dm_connector *ac
 	if (!link_supports_replay(link, aconnector))
 		return false;
 
-	// Mark Replay is supported in link and update related attributes
+	
 	pr_config.replay_supported = true;
 	pr_config.replay_power_opt_supported = 0;
 	pr_config.replay_enable_option |= pr_enable_option_static_screen;
@@ -109,12 +76,7 @@ bool amdgpu_dm_setup_replay(struct dc_link *link, struct amdgpu_dm_connector *ac
 }
 
 
-/*
- * amdgpu_dm_replay_enable() - enable replay f/w
- * @stream: stream state
- *
- * Return: true if success
- */
+ 
 bool amdgpu_dm_replay_enable(struct dc_stream_state *stream, bool wait)
 {
 	uint64_t state;
@@ -154,22 +116,17 @@ bool amdgpu_dm_replay_enable(struct dc_stream_state *stream, bool wait)
 			udelay(500);
 		}
 
-		/* assert if max retry hit */
+		 
 		if (retry_count >= max_retry)
 			ASSERT(0);
 	} else {
-		/* To-do: Add trace log */
+		 
 	}
 
 	return true;
 }
 
-/*
- * amdgpu_dm_replay_disable() - disable replay f/w
- * @stream:  stream state
- *
- * Return: true if success
- */
+ 
 bool amdgpu_dm_replay_disable(struct dc_stream_state *stream)
 {
 

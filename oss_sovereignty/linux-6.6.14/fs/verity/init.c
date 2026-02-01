@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs-verity module initialization and logging
- *
- * Copyright 2019 Google LLC
- */
+
+ 
 
 #include "fsverity_private.h"
 
@@ -34,11 +30,11 @@ static void __init fsverity_init_sysctl(void)
 	if (!fsverity_sysctl_header)
 		panic("fsverity sysctl registration failed");
 }
-#else /* CONFIG_SYSCTL */
+#else  
 static inline void fsverity_init_sysctl(void)
 {
 }
-#endif /* !CONFIG_SYSCTL */
+#endif  
 
 void fsverity_msg(const struct inode *inode, const char *level,
 		  const char *fmt, ...)

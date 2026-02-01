@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Analog Devices AD5110 digital potentiometer driver
- *
- * Copyright (C) 2021 Mugilraj Dhavachelvan <dmugil2000@gmail.com>
- *
- * Datasheet: https://www.analog.com/media/en/technical-documentation/data-sheets/AD5110_5112_5114.pdf
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -16,7 +10,7 @@
 #include <linux/iio/iio.h>
 #include <linux/iio/sysfs.h>
 
-/* AD5110 commands */
+ 
 #define AD5110_EEPROM_WR	1
 #define AD5110_RDAC_WR		2
 #define AD5110_SHUTDOWN	3
@@ -24,7 +18,7 @@
 #define AD5110_RDAC_RD		5
 #define AD5110_EEPROM_RD	6
 
-/* AD5110_EEPROM_RD data */
+ 
 #define AD5110_WIPER_POS	0
 #define AD5110_RESISTOR_TOL	1
 
@@ -58,14 +52,11 @@ static const struct ad5110_cfg ad5110_cfg[] = {
 
 struct ad5110_data {
 	struct i2c_client       *client;
-	s16			tol;		/* resistor tolerance */
+	s16			tol;		 
 	bool			enable;
 	struct mutex            lock;
 	const struct ad5110_cfg	*cfg;
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u8			buf[2] __aligned(IIO_DMA_MINALIGN);
 };
 
@@ -179,7 +170,7 @@ static ssize_t store_eeprom_store(struct device *dev,
 		return ret;
 	}
 
-	/* The storing of EEPROM data takes approximately 18 ms. */
+	 
 	msleep(20);
 
 	return len;
@@ -307,7 +298,7 @@ static int ad5110_probe(struct i2c_client *client)
 	data->enable = 1;
 	data->cfg = device_get_match_data(dev);
 
-	/* refresh RDAC register with EEPROM */
+	 
 	ret = ad5110_write(data, AD5110_RESET, 0);
 	if (ret) {
 		dev_err(dev, "Refresh RDAC with EEPROM failed\n");

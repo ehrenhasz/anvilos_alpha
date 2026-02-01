@@ -1,25 +1,4 @@
-/*
- * Copyright 2012 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include "priv.h"
 
 struct priv {
@@ -59,13 +38,13 @@ pramin_init(struct nvkm_bios *bios, const char *name)
 	struct priv *priv = NULL;
 	u64 addr = 0;
 
-	/* PRAMIN always potentially available prior to nv50 */
+	 
 	if (device->card_type < NV_50)
 		return NULL;
 
-	/* we can't get the bios image pointer without PDISP */
+	 
 	if (device->card_type >= GA100)
-		addr = device->chipset == 0x170; /*XXX: find the fuse reg for this */
+		addr = device->chipset == 0x170;  
 	else
 	if (device->card_type >= GM100)
 		addr = nvkm_rd32(device, 0x021c04);
@@ -77,10 +56,7 @@ pramin_init(struct nvkm_bios *bios, const char *name)
 		return ERR_PTR(-ENODEV);
 	}
 
-	/* check that the window is enabled and in vram, particularly
-	 * important as we don't want to be touching vram on an
-	 * uninitialised board
-	 */
+	 
 	if (device->card_type >= GV100)
 		addr = nvkm_rd32(device, 0x625f04);
 	else
@@ -94,14 +70,14 @@ pramin_init(struct nvkm_bios *bios, const char *name)
 		return ERR_PTR(-ENODEV);
 	}
 
-	/* some alternate method inherited from xf86-video-nv... */
+	 
 	addr = (addr & 0xffffff00) << 8;
 	if (!addr) {
 		addr  = (u64)nvkm_rd32(device, 0x001700) << 16;
 		addr += 0xf0000;
 	}
 
-	/* modify bar0 PRAMIN window to cover the bios image */
+	 
 	if (!(priv = kmalloc(sizeof(*priv), GFP_KERNEL))) {
 		nvkm_error(subdev, "... out of memory\n");
 		return ERR_PTR(-ENOMEM);

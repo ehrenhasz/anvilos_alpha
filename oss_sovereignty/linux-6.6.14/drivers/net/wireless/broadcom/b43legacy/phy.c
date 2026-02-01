@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43legacy wireless driver
-
-  Copyright (c) 2005 Martin Langer <martin-langer@gmx.de>,
-		     Stefano Brivio <stefano.brivio@polimi.it>
-		     Michael Buesch <m@bues.ch>
-		     Danny van Dyk <kugelfang@gentoo.org>
-     Andreas Jaggi <andreas.jaggi@waterwave.ch>
-  Copyright (c) 2007 Larry Finger <Larry.Finger@lwfinger.net>
-
-  Some parts of the code in this file are derived from the ipw2200
-  driver  Copyright(c) 2003 - 2004 Intel Corporation.
-
-
-*/
+ 
 
 #include <linux/delay.h>
 #include <linux/pci.h>
@@ -69,8 +54,7 @@ static const s8 b43legacy_tssi2dbm_g_table[] = {
 
 static void b43legacy_phy_initg(struct b43legacy_wldev *dev);
 
-/* Lock the PHY registers against concurrent access from the microcode.
- * This lock is nonrecursive. */
+ 
 void b43legacy_phy_lock(struct b43legacy_wldev *dev)
 {
 #if B43legacy_DEBUG
@@ -117,7 +101,7 @@ void b43legacy_phy_calibrate(struct b43legacy_wldev *dev)
 {
 	struct b43legacy_phy *phy = &dev->phy;
 
-	b43legacy_read32(dev, B43legacy_MMIO_MACCTL); /* Dummy read. */
+	b43legacy_read32(dev, B43legacy_MMIO_MACCTL);  
 	if (phy->calibrated)
 		return;
 	if (phy->type == B43legacy_PHYTYPE_G && phy->rev == 1) {
@@ -128,9 +112,7 @@ void b43legacy_phy_calibrate(struct b43legacy_wldev *dev)
 	phy->calibrated = 1;
 }
 
-/* initialize B PHY power control
- * as described in https://bcm-specs.sipsolutions.net/InitPowerControl
- */
+ 
 static void b43legacy_phy_init_pctl(struct b43legacy_wldev *dev)
 {
 	struct b43legacy_phy *phy = &dev->phy;
@@ -171,7 +153,7 @@ static void b43legacy_phy_init_pctl(struct b43legacy_wldev *dev)
 		saved_ratt = phy->rfatt;
 		saved_txctl1 = phy->txctl1;
 		if ((phy->radio_rev >= 6) && (phy->radio_rev <= 8)
-		    && /*FIXME: incomplete specs for 5 < revision < 9 */ 0)
+		    &&   0)
 			b43legacy_radio_set_txpower_bg(dev, 0xB, 0x1F, 0);
 		else
 			b43legacy_radio_set_txpower_bg(dev, 0xB, 9, 0);
@@ -330,7 +312,7 @@ static void b43legacy_phy_setupg(struct b43legacy_wldev *dev)
 			b43legacy_ilt_write32(dev, 0x2000 + i,
 					      b43legacy_ilt_rotor[i]);
 	} else {
-		/* nrssi values are signed 6-bit values. Why 0x7654 here? */
+		 
 		b43legacy_nrssi_hw_write(dev, 0xBA98, (s16)0x7654);
 
 		if (phy->rev == 2) {
@@ -392,7 +374,7 @@ static void b43legacy_phy_setupg(struct b43legacy_wldev *dev)
 		for (i = 0; i <= 0x20; i++)
 			b43legacy_ilt_write(dev, 0x1000 + i, 0x0820);
 		b43legacy_phy_agcsetup(dev);
-		b43legacy_phy_read(dev, 0x0400); /* dummy read */
+		b43legacy_phy_read(dev, 0x0400);  
 		b43legacy_phy_write(dev, 0x0403, 0x1000);
 		b43legacy_ilt_write(dev, 0x3C02, 0x000F);
 		b43legacy_ilt_write(dev, 0x3C03, 0x0014);
@@ -407,7 +389,7 @@ static void b43legacy_phy_setupg(struct b43legacy_wldev *dev)
 	}
 }
 
-/* Initialize the APHY portion of a GPHY. */
+ 
 static void b43legacy_phy_inita(struct b43legacy_wldev *dev)
 {
 
@@ -601,7 +583,7 @@ static void b43legacy_phy_initb5(struct b43legacy_wldev *dev)
 		b43legacy_write16(dev, 0x03E4, 0x3000);
 
 	old_channel = (phy->channel == 0xFF) ? 1 : phy->channel;
-	/* Force to channel 7, even if not supported. */
+	 
 	b43legacy_radio_selectchannel(dev, 7, 0);
 
 	if (phy->radio_ver != 0x2050) {
@@ -810,7 +792,7 @@ static void b43legacy_calc_loopback_gain(struct b43legacy_wldev *dev)
 	backup_phy[12] = b43legacy_phy_read(dev, 0x0810);
 	backup_phy[13] = b43legacy_phy_read(dev, 0x002B);
 	backup_phy[14] = b43legacy_phy_read(dev, 0x0015);
-	b43legacy_phy_read(dev, 0x002D); /* dummy read */
+	b43legacy_phy_read(dev, 0x002D);  
 	backup_bband = phy->bbatt;
 	backup_radio[0] = b43legacy_radio_read16(dev, 0x0052);
 	backup_radio[1] = b43legacy_radio_read16(dev, 0x0043);
@@ -1067,12 +1049,7 @@ static void b43legacy_phy_initg(struct b43legacy_wldev *dev)
 	}
 
 	if (!(dev->dev->bus->sprom.boardflags_lo & B43legacy_BFL_RSSI)) {
-		/* The specs state to update the NRSSI LT with
-		 * the value 0x7FFFFFFF here. I think that is some weird
-		 * compiler optimization in the original driver.
-		 * Essentially, what we do here is resetting all NRSSI LT
-		 * entries to -32 (see the clamp_val() in nrssi_hw_update())
-		 */
+		 
 		b43legacy_nrssi_hw_update(dev, 0xFFFF);
 		b43legacy_calc_nrssi_threshold(dev);
 	} else if (phy->gmode || phy->rev >= 2) {
@@ -1259,7 +1236,7 @@ static u32 b43legacy_phy_lo_g_singledeviation(struct b43legacy_wldev *dev,
 	return ret;
 }
 
-/* Write the LocalOscillator CONTROL */
+ 
 static inline
 void b43legacy_lo_write(struct b43legacy_wldev *dev,
 			struct b43legacy_lopair *pair)
@@ -1270,7 +1247,7 @@ void b43legacy_lo_write(struct b43legacy_wldev *dev,
 	value |= ((u8)(pair->high)) << 8;
 
 #ifdef CONFIG_B43LEGACY_DEBUG
-	/* Sanity check. */
+	 
 	if (pair->low < -8 || pair->low > 8 ||
 	    pair->high < -8 || pair->high > 8) {
 		b43legacydbg(dev->wl,
@@ -1311,13 +1288,13 @@ struct b43legacy_lopair *b43legacy_current_lopair(struct b43legacy_wldev *dev)
 				     phy->rfatt, phy->txctl1);
 }
 
-/* Adjust B/G LO */
+ 
 void b43legacy_phy_lo_adjust(struct b43legacy_wldev *dev, int fixed)
 {
 	struct b43legacy_lopair *pair;
 
 	if (fixed) {
-		/* Use fixed values. Only for initialization. */
+		 
 		pair = b43legacy_find_lopair(dev, 2, 3, 0);
 	} else
 		pair = b43legacy_current_lopair(dev);
@@ -1378,8 +1355,7 @@ void b43legacy_phy_lo_g_state(struct b43legacy_wldev *dev,
 	u32 lowest_deviation;
 	u32 tmp;
 
-	/* Note that in_pair and out_pair can point to the same pair.
-	 * Be careful. */
+	 
 
 	b43legacy_lo_write(dev, &lowest_transition);
 	lowest_deviation = b43legacy_phy_lo_g_singledeviation(dev, r27);
@@ -1437,7 +1413,7 @@ void b43legacy_phy_lo_g_state(struct b43legacy_wldev *dev,
 	out_pair->low = lowest_transition.low;
 }
 
-/* Set the baseband attenuation value on chip. */
+ 
 void b43legacy_phy_set_baseband_attenuation(struct b43legacy_wldev *dev,
 					    u16 bbatt)
 {
@@ -1461,29 +1437,12 @@ void b43legacy_phy_set_baseband_attenuation(struct b43legacy_wldev *dev,
 	b43legacy_phy_write(dev, 0x0060, value);
 }
 
-/* https://bcm-specs.sipsolutions.net/LocalOscillator/Measure */
-void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
-{
-	static const u8 pairorder[10] = { 3, 1, 5, 7, 9, 2, 0, 4, 6, 8 };
-	const int is_initializing = (b43legacy_status(dev)
-				     < B43legacy_STAT_STARTED);
-	struct b43legacy_phy *phy = &dev->phy;
-	u16 h;
-	u16 i;
-	u16 oldi = 0;
-	u16 j;
-	struct b43legacy_lopair control;
-	struct b43legacy_lopair *tmp_control;
-	u16 tmp;
-	u16 regstack[16] = { 0 };
-	u8 oldchannel;
-
-	/* XXX: What are these? */
+ 
 	u8 r27 = 0;
 	u16 r31;
 
 	oldchannel = phy->channel;
-	/* Setup */
+	 
 	if (phy->gmode) {
 		regstack[0] = b43legacy_phy_read(dev, B43legacy_PHY_G_CRS);
 		regstack[1] = b43legacy_phy_read(dev, 0x0802);
@@ -1535,11 +1494,11 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 		b43legacy_phy_lo_g_measure_txctl2(dev);
 	b43legacy_phy_write(dev, 0x080F, 0x8078);
 
-	/* Measure */
+	 
 	control.low = 0;
 	control.high = 0;
 	for (h = 0; h < 10; h++) {
-		/* Loop over each possible RadioAttenuation (0-9) */
+		 
 		i = pairorder[h];
 		if (is_initializing) {
 			if (i == 3) {
@@ -1555,7 +1514,7 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 				memcpy(&control, tmp_control, sizeof(control));
 			}
 		}
-		/* Loop over each possible BasebandAttenuation/2 */
+		 
 		for (j = 0; j < 4; j++) {
 			if (is_initializing) {
 				tmp = i * 2 + j;
@@ -1595,16 +1554,15 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 		}
 		oldi = i;
 	}
-	/* Loop over each possible RadioAttenuation (10-13) */
+	 
 	for (i = 10; i < 14; i++) {
-		/* Loop over each possible BasebandAttenuation/2 */
+		 
 		for (j = 0; j < 4; j++) {
 			if (is_initializing) {
 				tmp_control = b43legacy_get_lopair(phy, i - 9,
 								 j * 2);
 				memcpy(&control, tmp_control, sizeof(control));
-				/* FIXME: The next line is wrong, as the
-				 * following if statement can never trigger. */
+				 
 				tmp = (i - 9) * 2 + j - 5;
 				r27 = 0;
 				r31 = 0;
@@ -1625,11 +1583,10 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 				r31 = 0;
 			}
 			b43legacy_radio_write16(dev, 0x43, i - 9);
-			/* FIXME: shouldn't txctl1 be zero in the next line
-			 * and 3 in the loop above? */
+			 
 			b43legacy_radio_write16(dev, 0x52,
 					      phy->txctl2
-					      | (3/*txctl1*/ << 4));
+					      | (3  << 4));
 			udelay(10);
 			cond_resched();
 
@@ -1646,7 +1603,7 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 		}
 	}
 
-	/* Restoration */
+	 
 	if (phy->gmode) {
 		b43legacy_phy_write(dev, 0x0015, 0xE300);
 		b43legacy_phy_write(dev, 0x0812, (r27 << 8) | 0xA0);
@@ -1686,7 +1643,7 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 
 #ifdef CONFIG_B43LEGACY_DEBUG
 	{
-		/* Sanity check for all lopairs. */
+		 
 		for (i = 0; i < B43legacy_LO_COUNT; i++) {
 			tmp_control = phy->_lo_pairs + i;
 			if (tmp_control->low < -8 || tmp_control->low > 8 ||
@@ -1697,7 +1654,7 @@ void b43legacy_phy_lo_g_measure(struct b43legacy_wldev *dev)
 				       tmp_control->low, tmp_control->high, i);
 		}
 	}
-#endif /* CONFIG_B43LEGACY_DEBUG */
+#endif  
 }
 
 static
@@ -1721,9 +1678,7 @@ void b43legacy_phy_lo_mark_all_unused(struct b43legacy_wldev *dev)
 	}
 }
 
-/* https://bcm-specs.sipsolutions.net/EstimatePowerOut
- * This function converts a TSSI value to dBm in Q5.2
- */
+ 
 static s8 b43legacy_phy_estimate_power_out(struct b43legacy_wldev *dev, s8 tssi)
 {
 	struct b43legacy_phy *phy = &dev->phy;
@@ -1747,129 +1702,42 @@ static s8 b43legacy_phy_estimate_power_out(struct b43legacy_wldev *dev, s8 tssi)
 	return dbm;
 }
 
-/* https://bcm-specs.sipsolutions.net/RecalculateTransmissionPower */
-void b43legacy_phy_xmitpower(struct b43legacy_wldev *dev)
-{
-	struct b43legacy_phy *phy = &dev->phy;
-	u16 tmp;
-	u16 txpower;
-	s8 v0;
-	s8 v1;
-	s8 v2;
-	s8 v3;
-	s8 average;
-	int max_pwr;
-	s16 desired_pwr;
-	s16 estimated_pwr;
-	s16 pwr_adjust;
-	s16 radio_att_delta;
-	s16 baseband_att_delta;
-	s16 radio_attenuation;
-	s16 baseband_attenuation;
-
-	if (phy->savedpctlreg == 0xFFFF)
-		return;
-	if ((dev->dev->bus->boardinfo.type == 0x0416) &&
-	    is_bcm_board_vendor(dev))
-		return;
-#ifdef CONFIG_B43LEGACY_DEBUG
-	if (phy->manual_txpower_control)
-		return;
-#endif
-
-	B43legacy_BUG_ON(!(phy->type == B43legacy_PHYTYPE_B ||
-			 phy->type == B43legacy_PHYTYPE_G));
-	tmp = b43legacy_shm_read16(dev, B43legacy_SHM_SHARED, 0x0058);
-	v0 = (s8)(tmp & 0x00FF);
-	v1 = (s8)((tmp & 0xFF00) >> 8);
-	tmp = b43legacy_shm_read16(dev, B43legacy_SHM_SHARED, 0x005A);
-	v2 = (s8)(tmp & 0x00FF);
-	v3 = (s8)((tmp & 0xFF00) >> 8);
-	tmp = 0;
-
-	if (v0 == 0x7F || v1 == 0x7F || v2 == 0x7F || v3 == 0x7F) {
-		tmp = b43legacy_shm_read16(dev, B43legacy_SHM_SHARED,
-					 0x0070);
-		v0 = (s8)(tmp & 0x00FF);
-		v1 = (s8)((tmp & 0xFF00) >> 8);
-		tmp = b43legacy_shm_read16(dev, B43legacy_SHM_SHARED,
-					 0x0072);
-		v2 = (s8)(tmp & 0x00FF);
-		v3 = (s8)((tmp & 0xFF00) >> 8);
-		if (v0 == 0x7F || v1 == 0x7F || v2 == 0x7F || v3 == 0x7F)
-			return;
-		v0 = (v0 + 0x20) & 0x3F;
-		v1 = (v1 + 0x20) & 0x3F;
-		v2 = (v2 + 0x20) & 0x3F;
-		v3 = (v3 + 0x20) & 0x3F;
-		tmp = 1;
-	}
-	b43legacy_radio_clear_tssi(dev);
-
-	average = (v0 + v1 + v2 + v3 + 2) / 4;
-
-	if (tmp && (b43legacy_shm_read16(dev, B43legacy_SHM_SHARED, 0x005E)
-	    & 0x8))
-		average -= 13;
-
-	estimated_pwr = b43legacy_phy_estimate_power_out(dev, average);
-
-	max_pwr = dev->dev->bus->sprom.maxpwr_bg;
-
-	if ((dev->dev->bus->sprom.boardflags_lo
-	     & B43legacy_BFL_PACTRL) &&
-	    (phy->type == B43legacy_PHYTYPE_G))
-		max_pwr -= 0x3;
-	if (unlikely(max_pwr <= 0)) {
-		b43legacywarn(dev->wl, "Invalid max-TX-power value in SPROM."
-			"\n");
-		max_pwr = 74; /* fake it */
+ 
 		dev->dev->bus->sprom.maxpwr_bg = max_pwr;
 	}
 
-	/* Use regulatory information to get the maximum power.
-	 * In the absence of such data from mac80211, we will use 20 dBm, which
-	 * is the value for the EU, US, Canada, and most of the world.
-	 * The regulatory maximum is reduced by the antenna gain (from sprom)
-	 * and 1.5 dBm (a safety factor??). The result is in Q5.2 format
-	 * which accounts for the factor of 4 */
+	 
 #define REG_MAX_PWR 20
 	max_pwr = min(REG_MAX_PWR * 4
 		      - dev->dev->bus->sprom.antenna_gain.a0
 		      - 0x6, max_pwr);
 
-	/* find the desired power in Q5.2 - power_level is in dBm
-	 * and limit it - max_pwr is already in Q5.2 */
+	 
 	desired_pwr = clamp_val(phy->power_level << 2, 0, max_pwr);
 	if (b43legacy_debug(dev, B43legacy_DBG_XMITPOWER))
 		b43legacydbg(dev->wl, "Current TX power output: " Q52_FMT
 		       " dBm, Desired TX power output: " Q52_FMT
 		       " dBm\n", Q52_ARG(estimated_pwr),
 		       Q52_ARG(desired_pwr));
-	/* Check if we need to adjust the current power. The factor of 2 is
-	 * for damping */
+	 
 	pwr_adjust = (desired_pwr - estimated_pwr) / 2;
-	/* RF attenuation delta
-	 * The minus sign is because lower attenuation => more power */
+	 
 	radio_att_delta = -(pwr_adjust + 7) >> 3;
-	/* Baseband attenuation delta */
+	 
 	baseband_att_delta = -(pwr_adjust >> 1) - (4 * radio_att_delta);
-	/* Do we need to adjust anything? */
+	 
 	if ((radio_att_delta == 0) && (baseband_att_delta == 0)) {
 		b43legacy_phy_lo_mark_current_used(dev);
 		return;
 	}
 
-	/* Calculate the new attenuation values. */
+	 
 	baseband_attenuation = phy->bbatt;
 	baseband_attenuation += baseband_att_delta;
 	radio_attenuation = phy->rfatt;
 	radio_attenuation += radio_att_delta;
 
-	/* Get baseband and radio attenuation values into permitted ranges.
-	 * baseband 0-11, radio 0-9.
-	 * Radio attenuation affects power level 4 times as much as baseband.
-	 */
+	 
 	if (radio_attenuation < 0) {
 		baseband_attenuation -= (4 * -radio_attenuation);
 		radio_attenuation = 0;
@@ -1912,14 +1780,14 @@ void b43legacy_phy_xmitpower(struct b43legacy_wldev *dev)
 			}
 		}
 	}
-	/* Save the control values */
+	 
 	phy->txctl1 = txpower;
 	baseband_attenuation = clamp_val(baseband_attenuation, 0, 11);
 	radio_attenuation = clamp_val(radio_attenuation, 0, 9);
 	phy->rfatt = radio_attenuation;
 	phy->bbatt = baseband_attenuation;
 
-	/* Adjust the hardware */
+	 
 	b43legacy_phy_lock(dev);
 	b43legacy_radio_lock(dev);
 	b43legacy_radio_set_txpower_bg(dev, baseband_attenuation,
@@ -1965,31 +1833,7 @@ s8 b43legacy_tssi2dbm_entry(s8 entry [], u8 index, s16 pab0, s16 pab1, s16 pab2)
 	return 0;
 }
 
-/* http://bcm-specs.sipsolutions.net/TSSI_to_DBM_Table */
-int b43legacy_phy_init_tssi2dbm_table(struct b43legacy_wldev *dev)
-{
-	struct b43legacy_phy *phy = &dev->phy;
-	s16 pab0;
-	s16 pab1;
-	s16 pab2;
-	u8 idx;
-	s8 *dyn_tssi2dbm;
-
-	B43legacy_WARN_ON(!(phy->type == B43legacy_PHYTYPE_B ||
-			  phy->type == B43legacy_PHYTYPE_G));
-	pab0 = (s16)(dev->dev->bus->sprom.pa0b0);
-	pab1 = (s16)(dev->dev->bus->sprom.pa0b1);
-	pab2 = (s16)(dev->dev->bus->sprom.pa0b2);
-
-	if ((dev->dev->bus->chip_id == 0x4301) && (phy->radio_ver != 0x2050)) {
-		phy->idle_tssi = 0x34;
-		phy->tssi2dbm = b43legacy_tssi2dbm_b_table;
-		return 0;
-	}
-
-	if (pab0 != 0 && pab1 != 0 && pab2 != 0 &&
-	    pab0 != -1 && pab1 != -1 && pab2 != -1) {
-		/* The pabX values are set in SPROM. Use them. */
+ 
 		if ((s8)dev->dev->bus->sprom.itssi_bg != 0 &&
 		    (s8)dev->dev->bus->sprom.itssi_bg != -1)
 			phy->idle_tssi = (s8)(dev->dev->bus->sprom.
@@ -2014,7 +1858,7 @@ int b43legacy_phy_init_tssi2dbm_table(struct b43legacy_wldev *dev)
 		phy->tssi2dbm = dyn_tssi2dbm;
 		phy->dyn_tssi_tbl = 1;
 	} else {
-		/* pabX values not set in SPROM. */
+		 
 		switch (phy->type) {
 		case B43legacy_PHYTYPE_B:
 			phy->idle_tssi = 0x34;
@@ -2092,7 +1936,7 @@ void b43legacy_phy_set_antenna_diversity(struct b43legacy_wldev *dev)
 		offset = 0x0400;
 
 		if (antennadiv == 2)
-			value = (3/*automatic*/ << 7);
+			value = (3  << 7);
 		else
 			value = (antennadiv << 7);
 		b43legacy_phy_write(dev, offset + 1,
@@ -2103,7 +1947,7 @@ void b43legacy_phy_set_antenna_diversity(struct b43legacy_wldev *dev)
 			if (antennadiv == 2)
 				value = (antennadiv << 7);
 			else
-				value = (0/*force0*/ << 7);
+				value = (0  << 7);
 			b43legacy_phy_write(dev, offset + 0x2B,
 					    (b43legacy_phy_read(dev,
 					    offset + 0x2B)
@@ -2163,7 +2007,7 @@ void b43legacy_phy_set_antenna_diversity(struct b43legacy_wldev *dev)
 		break;
 	case B43legacy_PHYTYPE_B:
 		if (dev->dev->id.revision == 2)
-			value = (3/*automatic*/ << 7);
+			value = (3  << 7);
 		else
 			value = (antennadiv << 7);
 		b43legacy_phy_write(dev, 0x03E2,
@@ -2185,32 +2029,22 @@ void b43legacy_phy_set_antenna_diversity(struct b43legacy_wldev *dev)
 	phy->antenna_diversity = antennadiv;
 }
 
-/* Set the PowerSavingControlBits.
- * Bitvalues:
- *   0  => unset the bit
- *   1  => set the bit
- *   -1 => calculate the bit
- */
+ 
 void b43legacy_power_saving_ctl_bits(struct b43legacy_wldev *dev,
 				     int bit25, int bit26)
 {
 	int i;
 	u32 status;
 
-/* FIXME: Force 25 to off and 26 to on for now: */
+ 
 bit25 = 0;
 bit26 = 1;
 
 	if (bit25 == -1) {
-		/* TODO: If powersave is not off and FIXME is not set and we
-		 *	are not in adhoc and thus is not an AP and we arei
-		 *	associated, set bit 25 */
+		 
 	}
 	if (bit26 == -1) {
-		/* TODO: If the device is awake or this is an AP, or we are
-		 *	scanning, or FIXME, or we are associated, or FIXME,
-		 *	or the latest PS-Poll packet sent was successful,
-		 *	set bit26  */
+		 
 	}
 	status = b43legacy_read32(dev, B43legacy_MMIO_MACCTL);
 	if (bit25)

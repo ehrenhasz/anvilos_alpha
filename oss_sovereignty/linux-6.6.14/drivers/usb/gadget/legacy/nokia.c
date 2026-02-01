@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * nokia.c -- Nokia Composite Gadget Driver
- *
- * Copyright (C) 2008-2010 Nokia Corporation
- * Contact: Felipe Balbi <felipe.balbi@nokia.com>
- *
- * This gadget driver borrows from serial.c which is:
- *
- * Copyright (C) 2003 Al Borchers (alborchers@steinerpoint.com)
- * Copyright (C) 2008 by David Brownell
- * Copyright (C) 2008 by Nokia Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -22,7 +11,7 @@
 #include "u_ecm.h"
 #include "f_mass_storage.h"
 
-/* Defines */
+ 
 
 #define NOKIA_VERSION_NUM		0x0211
 #define NOKIA_LONG_NAME			"N900 (PC-Suite Mode)"
@@ -44,20 +33,17 @@ static unsigned int fsg_num_buffers = CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS;
 
 #else
 
-/*
- * Number of buffers we will use.
- * 2 is usually enough for good buffering pipeline
- */
+ 
 #define fsg_num_buffers	CONFIG_USB_GADGET_STORAGE_NUM_BUFFERS
 
-#endif /* CONFIG_USB_DEBUG */
+#endif  
 
-FSG_MODULE_PARAMETERS(/* no prefix */, fsg_mod_data);
+FSG_MODULE_PARAMETERS( , fsg_mod_data);
 
-#define NOKIA_VENDOR_ID			0x0421	/* Nokia */
-#define NOKIA_PRODUCT_ID		0x01c8	/* Nokia Gadget */
+#define NOKIA_VENDOR_ID			0x0421	 
+#define NOKIA_PRODUCT_ID		0x01c8	 
 
-/* string IDs are assigned dynamically */
+ 
 
 #define STRING_DESCRIPTION_IDX		USB_GADGET_FIRST_AVAIL_IDX
 
@@ -69,11 +55,11 @@ static struct usb_string strings_dev[] = {
 	[USB_GADGET_PRODUCT_IDX].s = NOKIA_LONG_NAME,
 	[USB_GADGET_SERIAL_IDX].s = "",
 	[STRING_DESCRIPTION_IDX].s = description_nokia,
-	{  } /* end of list */
+	{  }  
 };
 
 static struct usb_gadget_strings stringtab_dev = {
-	.language	= 0x0409,	/* en-us */
+	.language	= 0x0409,	 
 	.strings	= strings_dev,
 };
 
@@ -85,24 +71,24 @@ static struct usb_gadget_strings *dev_strings[] = {
 static struct usb_device_descriptor device_desc = {
 	.bLength		= USB_DT_DEVICE_SIZE,
 	.bDescriptorType	= USB_DT_DEVICE,
-	/* .bcdUSB = DYNAMIC */
+	 
 	.bDeviceClass		= USB_CLASS_COMM,
 	.idVendor		= cpu_to_le16(NOKIA_VENDOR_ID),
 	.idProduct		= cpu_to_le16(NOKIA_PRODUCT_ID),
 	.bcdDevice		= cpu_to_le16(NOKIA_VERSION_NUM),
-	/* .iManufacturer = DYNAMIC */
-	/* .iProduct = DYNAMIC */
+	 
+	 
 	.bNumConfigurations =	1,
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/* Module */
+ 
 MODULE_DESCRIPTION("Nokia composite gadget driver for N900");
 MODULE_AUTHOR("Felipe Balbi");
 MODULE_LICENSE("GPL");
 
-/*-------------------------------------------------------------------------*/
+ 
 static struct usb_function *f_acm_cfg1;
 static struct usb_function *f_acm_cfg2;
 static struct usb_function *f_ecm_cfg1;
@@ -120,7 +106,7 @@ static struct usb_function *f_msg_cfg2;
 static struct usb_configuration nokia_config_500ma_driver = {
 	.label		= "Bus Powered",
 	.bConfigurationValue = 1,
-	/* .iConfiguration = DYNAMIC */
+	 
 	.bmAttributes	= USB_CONFIG_ATT_ONE,
 	.MaxPower	= 500,
 };
@@ -128,7 +114,7 @@ static struct usb_configuration nokia_config_500ma_driver = {
 static struct usb_configuration nokia_config_100ma_driver = {
 	.label		= "Self Powered",
 	.bConfigurationValue = 2,
-	/* .iConfiguration = DYNAMIC */
+	 
 	.bmAttributes	= USB_CONFIG_ATT_ONE | USB_CONFIG_ATT_SELFPOWER,
 	.MaxPower	= 100,
 };
@@ -315,7 +301,7 @@ static int nokia_bind(struct usb_composite_dev *cdev)
 		goto err_ecm_inst;
 	}
 
-	/* set up mass storage function */
+	 
 	fsg_config_from_params(&fsg_config, &fsg_mod_data, fsg_num_buffers);
 	fsg_config.vendor_name = "Nokia";
 	fsg_config.product_name = "N900";
@@ -340,7 +326,7 @@ static int nokia_bind(struct usb_composite_dev *cdev)
 	fsg_common_set_inquiry_string(fsg_opts->common, fsg_config.vendor_name,
 				      fsg_config.product_name);
 
-	/* finally register the configuration */
+	 
 	status = usb_add_config(cdev, &nokia_config_500ma_driver,
 			nokia_bind_config);
 	if (status < 0)

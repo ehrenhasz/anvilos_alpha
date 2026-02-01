@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Coda multi-standard codec IP
- *
- * Copyright (C) 2014 Philipp Zabel, Pengutronix
- */
+
+ 
 
 #include <linux/bitops.h>
 #include "coda.h"
@@ -57,11 +53,7 @@ static const u16 xy2ca_tiled_map[16] = {
 	XY2(ZERO, 0, ZERO, 0),
 };
 
-/*
- * RA[15:0], CA[15:8] are hardwired to contain the 24-bit macroblock
- * start offset (macroblock size is 16x16 for luma, 16x8 for chroma).
- * Bits CA[4:0] are set using XY2CA above. BA[3:0] seems to be unused.
- */
+ 
 
 #define RBC_CA		(0 << 4)
 #define RBC_BA		(1 << 4)

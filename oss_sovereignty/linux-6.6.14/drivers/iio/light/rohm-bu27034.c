@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * BU27034 ROHM Ambient Light Sensor
- *
- * Copyright (c) 2023, ROHM Semiconductor.
- * https://fscdn.rohm.com/en/products/databook/datasheet/ic/sensor/light/bu27034nuc-e.pdf
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -44,40 +39,7 @@
 #define BU27034_REG_MANUFACTURER_ID	0x92
 #define BU27034_REG_MAX BU27034_REG_MANUFACTURER_ID
 
-/*
- * The BU27034 does not have interrupt to trigger the data read when a
- * measurement has finished. Hence we poll the VALID bit in a thread. We will
- * try to wake the thread BU27034_MEAS_WAIT_PREMATURE_MS milliseconds before
- * the expected sampling time to prevent the drifting.
- *
- * If we constantly wake up a bit too late we would eventually skip a sample.
- * And because the sleep can't wake up _exactly_ at given time this would be
- * inevitable even if the sensor clock would be perfectly phase-locked to CPU
- * clock - which we can't say is the case.
- *
- * This is still fragile. No matter how big advance do we have, we will still
- * risk of losing a sample because things can in a rainy-day scenario be
- * delayed a lot. Yet, more we reserve the time for polling, more we also lose
- * the performance by spending cycles polling the register. So, selecting this
- * value is a balancing dance between severity of wasting CPU time and severity
- * of losing samples.
- *
- * In most cases losing the samples is not _that_ crucial because light levels
- * tend to change slowly.
- *
- * Other option that was pointed to me would be always sleeping 1/2 of the
- * measurement time, checking the VALID bit and just sleeping again if the bit
- * was not set. That should be pretty tolerant against missing samples due to
- * the scheduling delays while also not wasting much of cycles for polling.
- * Downside is that the time-stamps would be very inaccurate as the wake-up
- * would not really be tied to the sensor toggling the valid bit. This would also
- * result 'jumps' in the time-stamps when the delay drifted so that wake-up was
- * performed during the consecutive wake-ups (Or, when sensor and CPU clocks
- * were very different and scheduling the wake-ups was very close to given
- * timeout - and when the time-outs were very close to the actual sensor
- * sampling, Eg. once in a blue moon, two consecutive time-outs would occur
- * without having a sample ready).
- */
+ 
 #define BU27034_MEAS_WAIT_PREMATURE_MS	5
 #define BU27034_DATA_WAIT_TIME_US	1000
 #define BU27034_TOTAL_DATA_WAIT_TIME_US (BU27034_MEAS_WAIT_PREMATURE_MS * 1000)
@@ -96,30 +58,22 @@ static const unsigned long bu27034_scan_masks[] = {
 	GENMASK(BU27034_CHAN_DATA2, BU27034_CHAN_ALS), 0
 };
 
-/*
- * Available scales with gain 1x - 4096x, timings 55, 100, 200, 400 mS
- * Time impacts to gain: 1x, 2x, 4x, 8x.
- *
- * => Max total gain is HWGAIN * gain by integration time (8 * 4096) = 32768
- *
- * Using NANO precision for scale we must use scale 64x corresponding gain 1x
- * to avoid precision loss. (32x would result scale 976 562.5(nanos).
- */
+ 
 #define BU27034_SCALE_1X	64
 
-/* See the data sheet for the "Gain Setting" table */
-#define BU27034_GSEL_1X		0x00 /* 00000 */
-#define BU27034_GSEL_4X		0x08 /* 01000 */
-#define BU27034_GSEL_16X	0x0a /* 01010 */
-#define BU27034_GSEL_32X	0x0b /* 01011 */
-#define BU27034_GSEL_64X	0x0c /* 01100 */
-#define BU27034_GSEL_256X	0x18 /* 11000 */
-#define BU27034_GSEL_512X	0x19 /* 11001 */
-#define BU27034_GSEL_1024X	0x1a /* 11010 */
-#define BU27034_GSEL_2048X	0x1b /* 11011 */
-#define BU27034_GSEL_4096X	0x1c /* 11100 */
+ 
+#define BU27034_GSEL_1X		0x00  
+#define BU27034_GSEL_4X		0x08  
+#define BU27034_GSEL_16X	0x0a  
+#define BU27034_GSEL_32X	0x0b  
+#define BU27034_GSEL_64X	0x0c  
+#define BU27034_GSEL_256X	0x18  
+#define BU27034_GSEL_512X	0x19  
+#define BU27034_GSEL_1024X	0x1a  
+#define BU27034_GSEL_2048X	0x1b  
+#define BU27034_GSEL_4096X	0x1c  
 
-/* Available gain settings */
+ 
 static const struct iio_gain_sel_pair bu27034_gains[] = {
 	GAIN_SCALE_GAIN(1, BU27034_GSEL_1X),
 	GAIN_SCALE_GAIN(4, BU27034_GSEL_4X),
@@ -133,17 +87,7 @@ static const struct iio_gain_sel_pair bu27034_gains[] = {
 	GAIN_SCALE_GAIN(4096, BU27034_GSEL_4096X),
 };
 
-/*
- * The IC has 5 modes for sampling time. 5 mS mode is exceptional as it limits
- * the data collection to data0-channel only and cuts the supported range to
- * 10 bit. It is not supported by the driver.
- *
- * "normal" modes are 55, 100, 200 and 400 mS modes - which do have direct
- * multiplying impact to the register values (similar to gain).
- *
- * This means that if meas-mode is changed for example from 400 => 200,
- * the scale is doubled. Eg, time impact to total gain is x1, x2, x4, x8.
- */
+ 
 #define BU27034_MEAS_MODE_100MS		0
 #define BU27034_MEAS_MODE_55MS		1
 #define BU27034_MEAS_MODE_200MS		2
@@ -192,13 +136,7 @@ static const struct iio_chan_spec bu27034_channels[] = {
 			.endianness = IIO_CPU,
 		},
 	},
-	/*
-	 * The BU27034 DATA0 and DATA1 channels are both on the visible light
-	 * area (mostly). The data0 sensitivity peaks at 500nm, DATA1 at 600nm.
-	 * These wave lengths are pretty much on the border of colours making
-	 * these a poor candidates for R/G/B standardization. Hence they're both
-	 * marked as clear channels
-	 */
+	 
 	BU27034_CHAN_DATA(DATA0, IIO_MOD_LIGHT_CLEAR),
 	BU27034_CHAN_DATA(DATA1, IIO_MOD_LIGHT_CLEAR),
 	BU27034_CHAN_DATA(DATA2, IIO_MOD_LIGHT_IR),
@@ -208,10 +146,7 @@ static const struct iio_chan_spec bu27034_channels[] = {
 struct bu27034_data {
 	struct regmap *regmap;
 	struct device *dev;
-	/*
-	 * Protect gain and time during scale adjustment and data reading.
-	 * Protect measurement enabling/disabling.
-	 */
+	 
 	struct mutex mutex;
 	struct iio_gts gts;
 	struct task_struct *task;
@@ -303,11 +238,7 @@ static int bu27034_get_gain_sel(struct bu27034_data *data, int chan)
 		if (ret)
 			return ret;
 
-		/*
-		 * The data2 channel gain is composed by 5 non continuous bits
-		 * [7:6], [2:0]. Thus when we combine the 5-bit 'selector'
-		 * from register value we must right shift the high bits by 3.
-		 */
+		 
 		return FIELD_GET(BU27034_MASK_D2_GAIN_HI, val) << d2_lo_bits |
 		       FIELD_GET(BU27034_MASK_D2_GAIN_LO, val);
 	}
@@ -387,7 +318,7 @@ static int bu27034_get_scale(struct bu27034_data *data, int channel, int *val,
 	return IIO_VAL_INT_PLUS_NANO;
 }
 
-/* Caller should hold the lock to protect lux reading */
+ 
 static int bu27034_write_gain_sel(struct bu27034_data *data, int chan, int sel)
 {
 	static const int reg[] = {
@@ -404,33 +335,10 @@ static int bu27034_write_gain_sel(struct bu27034_data *data, int chan, int sel)
 	mask = BU27034_MASK_D01_GAIN;
 
 	if (chan == BU27034_CHAN_DATA0) {
-		/*
-		 * We keep the same gain for channel 2 as we set for channel 0
-		 * We can't allow them to be individually controlled because
-		 * setting one will impact also the other. Also, if we don't
-		 * always update both gains we may result unsupported bit
-		 * combinations.
-		 *
-		 * This is not nice but this is yet another place where the
-		 * user space must be prepared to surprizes. Namely, see chan 2
-		 * gain changed when chan 0 gain is changed.
-		 *
-		 * This is not fatal for most users though. I don't expect the
-		 * channel 2 to be used in any generic cases - the intensity
-		 * values provided by the sensor for IR area are not openly
-		 * documented. Also, channel 2 is not used for visible light.
-		 *
-		 * So, if there is application which is written to utilize the
-		 * channel 2 - then it is probably specifically targeted to this
-		 * sensor and knows how to utilize those values. It is safe to
-		 * hope such user can also cope with the gain changes.
-		 */
+		 
 		mask |=  BU27034_MASK_D2_GAIN_LO;
 
-		/*
-		 * The D2 gain bits are directly the lowest bits of selector.
-		 * Just do add those bits to the value
-		 */
+		 
 		val |= sel & BU27034_MASK_D2_GAIN_LO;
 	}
 
@@ -441,10 +349,7 @@ static int bu27034_set_gain(struct bu27034_data *data, int chan, int gain)
 {
 	int ret;
 
-	/*
-	 * We don't allow setting channel 2 gain as it messes up the
-	 * gain for channel 0 - which shares the high bits
-	 */
+	 
 	if (chan != BU27034_CHAN_DATA0 && chan != BU27034_CHAN_DATA1)
 		return -EINVAL;
 
@@ -455,7 +360,7 @@ static int bu27034_set_gain(struct bu27034_data *data, int chan, int gain)
 	return bu27034_write_gain_sel(data, chan, ret);
 }
 
-/* Caller should hold the lock to protect data->int_time */
+ 
 static int bu27034_set_int_time(struct bu27034_data *data, int time)
 {
 	int ret;
@@ -468,10 +373,7 @@ static int bu27034_set_int_time(struct bu27034_data *data, int time)
 				 BU27034_MASK_MEAS_MODE, ret);
 }
 
-/*
- * We try to change the time in such way that the scale is maintained for
- * given channels by adjusting gain so that it compensates the time change.
- */
+ 
 static int bu27034_try_set_int_time(struct bu27034_data *data, int time_us)
 {
 	struct bu27034_gain_check gains[] = {
@@ -522,12 +424,7 @@ static int bu27034_try_set_int_time(struct bu27034_data *data, int time_us)
 			if (gains[i].new_gain < 0)
 				goto unlock_out;
 
-			/*
-			 * If caller requests for integration time change and we
-			 * can't support the scale - then the caller should be
-			 * prepared to 'pick up the pieces and deal with the
-			 * fact that the scale changed'.
-			 */
+			 
 			ret = iio_find_closest_gain_low(&data->gts,
 							gains[i].new_gain, &ok);
 
@@ -589,19 +486,11 @@ static int bu27034_set_scale(struct bu27034_data *data, int chan,
 	ret = iio_gts_find_gain_sel_for_scale_using_time(&data->gts, time_sel,
 						val, val2, &gain_sel);
 	if (ret) {
-		/*
-		 * Could not support scale with given time. Need to change time.
-		 * We still want to maintain the scale for all channels
-		 */
+		 
 		struct bu27034_gain_check gain;
 		int new_time_sel;
 
-		/*
-		 * Populate information for the other channel which should also
-		 * maintain the scale. (Due to the HW limitations the chan2
-		 * gets the same gain as chan0, so we only need to explicitly
-		 * set the chan 0 and 1).
-		 */
+		 
 		if (chan == BU27034_CHAN_DATA0)
 			gain.chan = BU27034_CHAN_DATA1;
 		else if (chan == BU27034_CHAN_DATA1)
@@ -611,30 +500,26 @@ static int bu27034_set_scale(struct bu27034_data *data, int chan,
 		if (ret)
 			goto unlock_out;
 
-		/*
-		 * Iterate through all the times to see if we find one which
-		 * can support requested scale for requested channel, while
-		 * maintaining the scale for other channels
-		 */
+		 
 		for (i = 0; i < data->gts.num_itime; i++) {
 			new_time_sel = data->gts.itime_table[i].sel;
 
 			if (new_time_sel == time_sel)
 				continue;
 
-			/* Can we provide requested scale with this time? */
+			 
 			ret = iio_gts_find_gain_sel_for_scale_using_time(
 				&data->gts, new_time_sel, val, val2,
 				&gain_sel);
 			if (ret)
 				continue;
 
-			/* Can the other channel(s) maintain scale? */
+			 
 			ret = iio_gts_find_new_gain_sel_by_old_gain_time(
 				&data->gts, gain.old_gain, time_sel,
 				new_time_sel, &gain.new_gain);
 			if (!ret) {
-				/* Yes - we found suitable time */
+				 
 				found = true;
 				break;
 			}
@@ -664,149 +549,20 @@ unlock_out:
 	return ret;
 }
 
-/*
- * for (D1/D0 < 0.87):
- * lx = 0.004521097 * D1 - 0.002663996 * D0 +
- *	0.00012213 * D1 * D1 / D0
- *
- * =>	115.7400832 * ch1 / gain1 / mt -
- *	68.1982976 * ch0 / gain0 / mt +
- *	0.00012213 * 25600 * (ch1 / gain1 / mt) * 25600 *
- *	(ch1 /gain1 / mt) / (25600 * ch0 / gain0 / mt)
- *
- * A =	0.00012213 * 25600 * (ch1 /gain1 / mt) * 25600 *
- *	(ch1 /gain1 / mt) / (25600 * ch0 / gain0 / mt)
- * =>	0.00012213 * 25600 * (ch1 /gain1 / mt) *
- *	(ch1 /gain1 / mt) / (ch0 / gain0 / mt)
- * =>	0.00012213 * 25600 * (ch1 / gain1) * (ch1 /gain1 / mt) /
- *	(ch0 / gain0)
- * =>	0.00012213 * 25600 * (ch1 / gain1) * (ch1 /gain1 / mt) *
- *	gain0 / ch0
- * =>	3.126528 * ch1 * ch1 * gain0 / gain1 / gain1 / mt /ch0
- *
- * lx = (115.7400832 * ch1 / gain1 - 68.1982976 * ch0 / gain0) /
- *	mt + A
- * =>	(115.7400832 * ch1 / gain1 - 68.1982976 * ch0 / gain0) /
- *	mt + 3.126528 * ch1 * ch1 * gain0 / gain1 / gain1 / mt /
- *	ch0
- *
- * =>	(115.7400832 * ch1 / gain1 - 68.1982976 * ch0 / gain0 +
- *	  3.126528 * ch1 * ch1 * gain0 / gain1 / gain1 / ch0) /
- *	  mt
- *
- * For (0.87 <= D1/D0 < 1.00)
- * lx = (0.001331* D0 + 0.0000354 * D1) * ((D1/D0 – 0.87) * (0.385) + 1)
- * =>	(0.001331 * 256 * 100 * ch0 / gain0 / mt + 0.0000354 * 256 *
- *	100 * ch1 / gain1 / mt) * ((D1/D0 -  0.87) * (0.385) + 1)
- * =>	(34.0736 * ch0 / gain0 / mt + 0.90624 * ch1 / gain1 / mt) *
- *	((D1/D0 -  0.87) * (0.385) + 1)
- * =>	(34.0736 * ch0 / gain0 / mt + 0.90624 * ch1 / gain1 / mt) *
- *	(0.385 * D1/D0 - 0.66505)
- * =>	(34.0736 * ch0 / gain0 / mt + 0.90624 * ch1 / gain1 / mt) *
- *	(0.385 * 256 * 100 * ch1 / gain1 / mt / (256 * 100 * ch0 / gain0 / mt) - 0.66505)
- * =>	(34.0736 * ch0 / gain0 / mt + 0.90624 * ch1 / gain1 / mt) *
- *	(9856 * ch1 / gain1 / mt / (25600 * ch0 / gain0 / mt) + 0.66505)
- * =>	13.118336 * ch1 / (gain1 * mt)
- *	+ 22.66064768 * ch0 / (gain0 * mt)
- *	+ 8931.90144 * ch1 * ch1 * gain0 /
- *	  (25600 * ch0 * gain1 * gain1 * mt)
- *	+ 0.602694912 * ch1 / (gain1 * mt)
- *
- * =>	[0.3489024 * ch1 * ch1 * gain0 / (ch0 * gain1 * gain1)
- *	 + 22.66064768 * ch0 / gain0
- *	 + 13.721030912 * ch1 / gain1
- *	] / mt
- *
- * For (D1/D0 >= 1.00)
- *
- * lx	= (0.001331* D0 + 0.0000354 * D1) * ((D1/D0 – 2.0) * (-0.05) + 1)
- *	=> (0.001331* D0 + 0.0000354 * D1) * (-0.05D1/D0 + 1.1)
- *	=> (0.001331 * 256 * 100 * ch0 / gain0 / mt + 0.0000354 * 256 *
- *	   100 * ch1 / gain1 / mt) * (-0.05D1/D0 + 1.1)
- *	=> (34.0736 * ch0 / gain0 / mt + 0.90624 * ch1 / gain1 / mt) *
- *	   (-0.05 * 256 * 100 * ch1 / gain1 / mt / (256 * 100 * ch0 / gain0 / mt) + 1.1)
- *	=> (34.0736 * ch0 / gain0 / mt + 0.90624 * ch1 / gain1 / mt) *
- *	   (-1280 * ch1 / (gain1 * mt * 25600 * ch0 / gain0 / mt) + 1.1)
- *	=> (34.0736 * ch0 * -1280 * ch1 * gain0 * mt /( gain0 * mt * gain1 * mt * 25600 * ch0)
- *	    + 34.0736 * 1.1 * ch0 / (gain0 * mt)
- *	    + 0.90624 * ch1 * -1280 * ch1 *gain0 * mt / (gain1 * mt *gain1 * mt * 25600 * ch0)
- *	    + 1.1 * 0.90624 * ch1 / (gain1 * mt)
- *	=> -43614.208 * ch1 / (gain1 * mt * 25600)
- *	    + 37.48096  ch0 / (gain0 * mt)
- *	    - 1159.9872 * ch1 * ch1 * gain0 / (gain1 * gain1 * mt * 25600 * ch0)
- *	    + 0.996864 ch1 / (gain1 * mt)
- *	=> [
- *		- 0.045312 * ch1 * ch1 * gain0 / (gain1 * gain1 * ch0)
- *		- 0.706816 * ch1 / gain1
- *		+ 37.48096  ch0 /gain0
- *	   ] * mt
- *
- *
- * So, the first case (D1/D0 < 0.87) can be computed to a form:
- *
- * lx = (3.126528 * ch1 * ch1 * gain0 / (ch0 * gain1 * gain1) +
- *	 115.7400832 * ch1 / gain1 +
- *	-68.1982976 * ch0 / gain0
- *	 / mt
- *
- * Second case (0.87 <= D1/D0 < 1.00) goes to form:
- *
- *	=> [0.3489024 * ch1 * ch1 * gain0 / (ch0 * gain1 * gain1) +
- *	    13.721030912 * ch1 / gain1 +
- *	    22.66064768 * ch0 / gain0
- *	   ] / mt
- *
- * Third case (D1/D0 >= 1.00) goes to form:
- *	=> [-0.045312 * ch1 * ch1 * gain0 / (ch0 * gain1 * gain1) +
- *	    -0.706816 * ch1 / gain1 +
- *	    37.48096  ch0 /(gain0
- *	   ] / mt
- *
- * This can be unified to format:
- * lx = [
- *	 A * ch1 * ch1 * gain0 / (ch0 * gain1 * gain1) +
- *	 B * ch1 / gain1 +
- *	 C * ch0 / gain0
- *	] / mt
- *
- * For case 1:
- * A = 3.126528,
- * B = 115.7400832
- * C = -68.1982976
- *
- * For case 2:
- * A = 0.3489024
- * B = 13.721030912
- * C = 22.66064768
- *
- * For case 3:
- * A = -0.045312
- * B = -0.706816
- * C = 37.48096
- */
+ 
 
 struct bu27034_lx_coeff {
 	unsigned int A;
 	unsigned int B;
 	unsigned int C;
-	/* Indicate which of the coefficients above are negative */
+	 
 	bool is_neg[3];
 };
 
 static inline u64 gain_mul_div_helper(u64 val, unsigned int gain,
 				      unsigned int div)
 {
-	/*
-	 * Max gain for a channel is 4096. The max u64 (0xffffffffffffffffULL)
-	 * divided by 4096 is 0xFFFFFFFFFFFFF (GENMASK_ULL(51, 0)) (floored).
-	 * Thus, the 0xFFFFFFFFFFFFF is the largest value we can safely multiply
-	 * with the gain, no matter what gain is set.
-	 *
-	 * So, multiplication with max gain may overflow if val is greater than
-	 * 0xFFFFFFFFFFFFF (52 bits set)..
-	 *
-	 * If this is the case we divide first.
-	 */
+	 
 	if (val < GENMASK_ULL(51, 0)) {
 		val *= gain;
 		do_div(val, div);
@@ -846,11 +602,7 @@ static u64 bu27034_fixp_calc_t1(unsigned int coeff, unsigned int ch0,
 {
 	unsigned int helper, tmp;
 
-	/*
-	 * Here we could overflow even the 64bit value. Hence we
-	 * multiply with gain0 only after the divisions - even though
-	 * it may result loss of accuracy
-	 */
+	 
 	helper = coeff * ch1 * ch1;
 	tmp = helper * gain0;
 
@@ -887,19 +639,19 @@ static int bu27034_fixp_calc_lx(unsigned int ch0, unsigned int ch1,
 {
 	static const struct bu27034_lx_coeff coeff[] = {
 		{
-			.A = 31265280,		/* 3.126528 */
-			.B = 1157400832,	/*115.7400832 */
-			.C = 681982976,		/* -68.1982976 */
+			.A = 31265280,		 
+			.B = 1157400832,	 
+			.C = 681982976,		 
 			.is_neg = {false, false, true},
 		}, {
-			.A = 3489024,		/* 0.3489024 */
-			.B = 137210309,		/* 13.721030912 */
-			.C = 226606476,		/* 22.66064768 */
-			/* All terms positive */
+			.A = 3489024,		 
+			.B = 137210309,		 
+			.C = 226606476,		 
+			 
 		}, {
-			.A = 453120,		/* -0.045312 */
-			.B = 7068160,		/* -0.706816 */
-			.C = 374809600,		/* 37.48096 */
+			.A = 453120,		 
+			.B = 7068160,		 
+			.C = 374809600,		 
 			.is_neg = {true, true, false},
 		}
 	};
@@ -914,23 +666,19 @@ static int bu27034_fixp_calc_lx(unsigned int ch0, unsigned int ch1,
 	terms[1] = bu27034_fixp_calc_t23(c->B, ch1, gain1);
 	terms[2] = bu27034_fixp_calc_t23(c->C, ch0, gain0);
 
-	/* First, add positive terms */
+	 
 	for (i = 0; i < 3; i++)
 		if (!c->is_neg[i])
 			res += terms[i];
 
-	/* No positive term => zero lux */
+	 
 	if (!res)
 		return 0;
 
-	/* Then, subtract negative terms (if any) */
+	 
 	for (i = 0; i < 3; i++)
 		if (c->is_neg[i]) {
-			/*
-			 * If the negative term is greater than positive - then
-			 * the darkness has taken over and we are all doomed! Eh,
-			 * I mean, then we can just return 0 lx and go out
-			 */
+			 
 			if (terms[i] >= res)
 				return 0;
 
@@ -957,12 +705,7 @@ static bool bu27034_has_valid_sample(struct bu27034_data *data)
 	return val & BU27034_MASK_VALID;
 }
 
-/*
- * Reading the register where VALID bit is clears this bit. (So does changing
- * any gain / integration time configuration registers) The bit gets
- * set when we have acquired new data. We use this bit to indicate data
- * validity.
- */
+ 
 static void bu27034_invalidate_read_data(struct bu27034_data *data)
 {
 	bu27034_has_valid_sample(data);
@@ -999,7 +742,7 @@ static int bu27034_get_result_unlocked(struct bu27034_data *data, __le16 *res,
 	int ret = 0, retry_cnt = 0;
 
 retry:
-	/* Get new value from sensor if data is ready */
+	 
 	if (bu27034_has_valid_sample(data)) {
 		ret = regmap_bulk_read(data->regmap, BU27034_REG_DATA0_LO,
 				       res, size);
@@ -1008,7 +751,7 @@ retry:
 
 		bu27034_invalidate_read_data(data);
 	} else {
-		/* No new data in sensor. Wait and retry */
+		 
 		retry_cnt++;
 
 		if (retry_cnt > BU27034_RETRY_LIMIT) {
@@ -1056,26 +799,7 @@ static int bu27034_get_single_result(struct bu27034_data *data, int chan,
 	return bu27034_read_result(data, chan, val);
 }
 
-/*
- * The formula given by vendor for computing luxes out of data0 and data1
- * (in open air) is as follows:
- *
- * Let's mark:
- * D0 = data0/ch0_gain/meas_time_ms * 25600
- * D1 = data1/ch1_gain/meas_time_ms * 25600
- *
- * Then:
- * if (D1/D0 < 0.87)
- *	lx = (0.001331 * D0 + 0.0000354 * D1) * ((D1 / D0 - 0.87) * 3.45 + 1)
- * else if (D1/D0 < 1)
- *	lx = (0.001331 * D0 + 0.0000354 * D1) * ((D1 / D0 - 0.87) * 0.385 + 1)
- * else
- *	lx = (0.001331 * D0 + 0.0000354 * D1) * ((D1 / D0 - 2) * -0.05 + 1)
- *
- * We use it here. Users who have for example some colored lens
- * need to modify the calculation but I hope this gives a starting point for
- * those working with such devices.
- */
+ 
 
 static int bu27034_calc_mlux(struct bu27034_data *data, __le16 *res, int *val)
 {
@@ -1085,11 +809,7 @@ static int bu27034_calc_mlux(struct bu27034_data *data, __le16 *res, int *val)
 	u64 helper64;
 	int ret;
 
-	/*
-	 * We return 0 lux if calculation fails. This should be reasonably
-	 * easy to spot from the buffers especially if raw-data channels show
-	 * valid values
-	 */
+	 
 	*val = 0;
 
 	ch0 = max_t(u16, 1, le16_to_cpu(res[0]));
@@ -1191,17 +911,13 @@ static int bu27034_read_raw(struct iio_dev *idev,
 		else
 			return -EINVAL;
 
-		/* Don't mess with measurement enabling while buffering */
+		 
 		ret = iio_device_claim_direct_mode(idev);
 		if (ret)
 			return ret;
 
 		mutex_lock(&data->mutex);
-		/*
-		 * Reading one channel at a time is inefficient but we
-		 * don't care here. Buffered version should be used if
-		 * performance is an issue.
-		 */
+		 
 		ret = result_get(data, chan->channel, val);
 
 		mutex_unlock(&data->mutex);
@@ -1290,7 +1006,7 @@ static int bu27034_chip_init(struct bu27034_data *data)
 {
 	int ret, sel;
 
-	/* Reset */
+	 
 	ret = regmap_write_bits(data->regmap, BU27034_REG_SYSTEM_CONTROL,
 			   BU27034_MASK_SW_RESET, BU27034_MASK_SW_RESET);
 	if (ret)
@@ -1304,13 +1020,7 @@ static int bu27034_chip_init(struct bu27034_data *data)
 		return ret;
 	}
 
-	/*
-	 * Read integration time here to ensure it is in regmap cache. We do
-	 * this to speed-up the int-time acquisition in the start of the buffer
-	 * handling thread where longer delays could make it more likely we end
-	 * up skipping a sample, and where the longer delays make timestamps
-	 * less accurate.
-	 */
+	 
 	ret = regmap_read(data->regmap, BU27034_REG_MODE_CONTROL1, &sel);
 	if (ret)
 		dev_err(data->dev, "reading integration time failed\n");
@@ -1376,12 +1086,7 @@ static int bu27034_buffer_thread(void *arg)
 			if (ret)
 				dev_err(data->dev, "failed to calculate lux\n");
 
-			/*
-			 * The maximum Milli lux value we get with gain 1x time
-			 * 55mS data ch0 = 0xffff ch1 = 0xffff fits in 26 bits
-			 * so there should be no problem returning int from
-			 * computations and casting it to u32
-			 */
+			 
 			data->scan.mlux = (u32)mlux;
 		}
 		iio_push_to_buffers_with_timestamp(idev, &data->scan, tstamp);

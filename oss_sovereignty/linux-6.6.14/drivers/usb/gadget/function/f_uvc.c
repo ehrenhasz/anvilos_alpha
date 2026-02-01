@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	uvc_gadget.c  --  USB Video Class Gadget driver
- *
- *	Copyright (C) 2009-2010
- *	    Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -33,20 +28,18 @@ unsigned int uvc_gadget_trace_param;
 module_param_named(trace, uvc_gadget_trace_param, uint, 0644);
 MODULE_PARM_DESC(trace, "Trace level bitmask");
 
-/* --------------------------------------------------------------------------
- * Function descriptors
- */
+ 
 
-/* string IDs are assigned dynamically */
+ 
 
 static struct usb_string uvc_en_us_strings[] = {
-	/* [UVC_STRING_CONTROL_IDX].s = DYNAMIC, */
+	 
 	[UVC_STRING_STREAMING_IDX].s = "Video Streaming",
 	{  }
 };
 
 static struct usb_gadget_strings uvc_stringtab = {
-	.language = 0x0409,	/* en-us */
+	.language = 0x0409,	 
 	.strings = uvc_en_us_strings,
 };
 
@@ -58,7 +51,7 @@ static struct usb_gadget_strings *uvc_function_strings[] = {
 #define UVC_INTF_VIDEO_CONTROL			0
 #define UVC_INTF_VIDEO_STREAMING		1
 
-#define UVC_STATUS_MAX_PACKET_SIZE		16	/* 16 bytes status */
+#define UVC_STATUS_MAX_PACKET_SIZE		16	 
 
 static struct usb_interface_assoc_descriptor uvc_iad = {
 	.bLength		= sizeof(uvc_iad),
@@ -95,7 +88,7 @@ static struct usb_endpoint_descriptor uvc_interrupt_ep = {
 static struct usb_ss_ep_comp_descriptor uvc_ss_interrupt_comp = {
 	.bLength		= sizeof(uvc_ss_interrupt_comp),
 	.bDescriptorType	= USB_DT_SS_ENDPOINT_COMP,
-	/* The following 3 values can be tweaked if necessary. */
+	 
 	.bMaxBurst		= 0,
 	.bmAttributes		= 0,
 	.wBytesPerInterval	= cpu_to_le16(UVC_STATUS_MAX_PACKET_SIZE),
@@ -138,10 +131,7 @@ static struct usb_endpoint_descriptor uvc_fs_streaming_ep = {
 	.bEndpointAddress	= USB_DIR_IN,
 	.bmAttributes		= USB_ENDPOINT_SYNC_ASYNC
 				| USB_ENDPOINT_XFER_ISOC,
-	/*
-	 * The wMaxPacketSize and bInterval values will be initialized from
-	 * module parameters.
-	 */
+	 
 };
 
 static struct usb_endpoint_descriptor uvc_hs_streaming_ep = {
@@ -150,10 +140,7 @@ static struct usb_endpoint_descriptor uvc_hs_streaming_ep = {
 	.bEndpointAddress	= USB_DIR_IN,
 	.bmAttributes		= USB_ENDPOINT_SYNC_ASYNC
 				| USB_ENDPOINT_XFER_ISOC,
-	/*
-	 * The wMaxPacketSize and bInterval values will be initialized from
-	 * module parameters.
-	 */
+	 
 };
 
 static struct usb_endpoint_descriptor uvc_ss_streaming_ep = {
@@ -163,19 +150,13 @@ static struct usb_endpoint_descriptor uvc_ss_streaming_ep = {
 	.bEndpointAddress	= USB_DIR_IN,
 	.bmAttributes		= USB_ENDPOINT_SYNC_ASYNC
 				| USB_ENDPOINT_XFER_ISOC,
-	/*
-	 * The wMaxPacketSize and bInterval values will be initialized from
-	 * module parameters.
-	 */
+	 
 };
 
 static struct usb_ss_ep_comp_descriptor uvc_ss_streaming_comp = {
 	.bLength		= sizeof(uvc_ss_streaming_comp),
 	.bDescriptorType	= USB_DT_SS_ENDPOINT_COMP,
-	/*
-	 * The bMaxBurst, bmAttributes and wBytesPerInterval values will be
-	 * initialized from module parameters.
-	 */
+	 
 };
 
 static const struct usb_descriptor_header * const uvc_fs_streaming[] = {
@@ -197,9 +178,7 @@ static const struct usb_descriptor_header * const uvc_ss_streaming[] = {
 	NULL,
 };
 
-/* --------------------------------------------------------------------------
- * Control requests
- */
+ 
 
 static void
 uvc_function_ep0_complete(struct usb_ep *ep, struct usb_request *req)
@@ -234,14 +213,11 @@ uvc_function_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 		return -EINVAL;
 	}
 
-	/* Stall too big requests. */
+	 
 	if (le16_to_cpu(ctrl->wLength) > UVC_MAX_REQUEST_SIZE)
 		return -EINVAL;
 
-	/*
-	 * Tell the complete callback to generate an event for the next request
-	 * that will be enqueued by UVCIOC_SEND_RESPONSE.
-	 */
+	 
 	uvc->event_setup_out = !(ctrl->bRequestType & USB_DIR_IN);
 	uvc->event_length = le16_to_cpu(ctrl->wLength);
 
@@ -249,10 +225,7 @@ uvc_function_setup(struct usb_function *f, const struct usb_ctrlrequest *ctrl)
 	v4l2_event.type = UVC_EVENT_SETUP;
 	memcpy(&uvc_event->req, ctrl, sizeof(uvc_event->req));
 
-	/* check for the interface number, fixup the interface number in
-	 * the ctrl request so the userspace doesn't have to bother with
-	 * offset and configfs parsing
-	 */
+	 
 	mctrl = &uvc_event->req;
 	mctrl->wIndex &= ~cpu_to_le16(0xff);
 	if (interface == uvc->streaming_intf)
@@ -327,10 +300,7 @@ uvc_function_set_alt(struct usb_function *f, unsigned interface, unsigned alt)
 	if (interface != uvc->streaming_intf)
 		return -EINVAL;
 
-	/* TODO
-	if (usb_endpoint_xfer_bulk(&uvc->desc.vs_ep))
-		return alt ? -EINVAL : 0;
-	*/
+	 
 
 	switch (alt) {
 	case 0:
@@ -392,9 +362,7 @@ uvc_function_disable(struct usb_function *f)
 		usb_ep_disable(uvc->interrupt_ep);
 }
 
-/* --------------------------------------------------------------------------
- * Connection / disconnection
- */
+ 
 
 void
 uvc_function_connect(struct uvc_device *uvc)
@@ -414,9 +382,7 @@ uvc_function_disconnect(struct uvc_device *uvc)
 		uvcg_info(&uvc->func, "UVC disconnect failed with %d\n", ret);
 }
 
-/* --------------------------------------------------------------------------
- * USB probe and disconnect
- */
+ 
 
 static ssize_t function_name_show(struct device *dev,
 				  struct device_attribute *attr, char *buf)
@@ -434,7 +400,7 @@ uvc_register_video(struct uvc_device *uvc)
 	struct usb_composite_dev *cdev = uvc->func.config->cdev;
 	int ret;
 
-	/* TODO reference counting. */
+	 
 	memset(&uvc->vdev, 0, sizeof(uvc->vdev));
 	uvc->vdev.v4l2_dev = &uvc->v4l2_dev;
 	uvc->vdev.v4l2_dev->dev = &cdev->gadget->dev;
@@ -481,7 +447,7 @@ uvc_register_video(struct uvc_device *uvc)
 #define UVC_COPY_XU_DESCRIPTOR(mem, dst, desc)					\
 	do {									\
 		*(dst)++ = mem;							\
-		memcpy(mem, desc, 22); /* bLength to bNrInPins */		\
+		memcpy(mem, desc, 22);  		\
 		mem += 22;							\
 										\
 		memcpy(mem, (desc)->baSourceID, (desc)->bNrInPins);		\
@@ -539,21 +505,9 @@ uvc_copy_descriptors(struct uvc_device *uvc, enum usb_device_speed speed)
 	if (!uvc_control_desc || !uvc_streaming_cls)
 		return ERR_PTR(-ENODEV);
 
-	/*
-	 * Descriptors layout
-	 *
-	 * uvc_iad
-	 * uvc_control_intf
-	 * Class-specific UVC control descriptors
-	 * uvc_interrupt_ep
-	 * uvc_interrupt_cs_ep
-	 * uvc_ss_interrupt_comp (for SS only)
-	 * uvc_streaming_intf_alt0
-	 * Class-specific UVC streaming descriptors
-	 * uvc_{fs|hs}_streaming
-	 */
+	 
 
-	/* Count descriptors and compute their size. */
+	 
 	control_size = 0;
 	streaming_size = 0;
 	bytes = uvc_iad.bLength + uvc_control_intf.bLength
@@ -602,7 +556,7 @@ uvc_copy_descriptors(struct uvc_device *uvc, enum usb_device_speed speed)
 	dst = mem;
 	mem += (n_desc + 1) * sizeof(*src);
 
-	/* Copy the descriptors. */
+	 
 	UVC_COPY_DESCRIPTOR(mem, dst, &uvc_iad);
 	UVC_COPY_DESCRIPTOR(mem, dst, &uvc_control_intf);
 
@@ -655,12 +609,12 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 	uvcg_info(f, "%s()\n", __func__);
 
 	opts = fi_to_f_uvc_opts(f->fi);
-	/* Sanity check the streaming endpoint module parameters. */
+	 
 	opts->streaming_interval = clamp(opts->streaming_interval, 1U, 16U);
 	opts->streaming_maxpacket = clamp(opts->streaming_maxpacket, 1U, 3072U);
 	opts->streaming_maxburst = min(opts->streaming_maxburst, 15U);
 
-	/* For SS, wMaxPacketSize has to be 1024 if bMaxBurst is not 0 */
+	 
 	if (opts->streaming_maxburst &&
 	    (opts->streaming_maxpacket % 1024) != 0) {
 		opts->streaming_maxpacket = roundup(opts->streaming_maxpacket, 1024);
@@ -668,13 +622,7 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 			  opts->streaming_maxpacket);
 	}
 
-	/*
-	 * Fill in the FS/HS/SS Video Streaming specific descriptors from the
-	 * module parameters.
-	 *
-	 * NOTE: We assume that the user knows what they are doing and won't
-	 * give parameters that their UDC doesn't support.
-	 */
+	 
 	if (opts->streaming_maxpacket <= 1024) {
 		max_packet_mult = 1;
 		max_packet_size = opts->streaming_maxpacket;
@@ -693,7 +641,7 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 	uvc_hs_streaming_ep.wMaxPacketSize =
 		cpu_to_le16(max_packet_size | ((max_packet_mult - 1) << 11));
 
-	/* A high-bandwidth endpoint must specify a bInterval value of 1 */
+	 
 	if (max_packet_mult > 1)
 		uvc_hs_streaming_ep.bInterval = 1;
 	else
@@ -707,7 +655,7 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 		cpu_to_le16(max_packet_size * max_packet_mult *
 			    (opts->streaming_maxburst + 1));
 
-	/* Allocate endpoints. */
+	 
 	if (opts->enable_interrupt_ep) {
 		ep = usb_ep_autoconfig(cdev->gadget, &uvc_interrupt_ep);
 		if (!ep) {
@@ -719,14 +667,7 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 	}
 	uvc->enable_interrupt_ep = opts->enable_interrupt_ep;
 
-	/*
-	 * gadget_is_{super|dual}speed() API check UDC controller capitblity. It should pass down
-	 * highest speed endpoint descriptor to UDC controller. So UDC controller driver can reserve
-	 * enough resource at check_config(), especially mult and maxburst. So UDC driver (such as
-	 * cdns3) can know need at least (mult + 1) * (maxburst + 1) * wMaxPacketSize internal
-	 * memory for this uvc functions. This is the only straightforward method to resolve the UDC
-	 * resource allocation issue in the current gadget framework.
-	 */
+	 
 	if (gadget_is_superspeed(c->cdev->gadget))
 		ep = usb_ep_autoconfig_ss(cdev->gadget, &uvc_ss_streaming_ep,
 					  &uvc_ss_streaming_comp);
@@ -745,18 +686,12 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 	uvc_hs_streaming_ep.bEndpointAddress = uvc->video.ep->address;
 	uvc_ss_streaming_ep.bEndpointAddress = uvc->video.ep->address;
 
-	/*
-	 * XUs can have an arbitrary string descriptor describing them. If they
-	 * have one pick up the ID.
-	 */
+	 
 	list_for_each_entry(xu, &opts->extension_units, list)
 		if (xu->string_descriptor_index)
 			xu->desc.iExtension = cdev->usb_strings[xu->string_descriptor_index].id;
 
-	/*
-	 * We attach the hard-coded defaults incase the user does not provide
-	 * any more appropriate strings through configfs.
-	 */
+	 
 	uvc_en_us_strings[UVC_STRING_CONTROL_IDX].s = opts->function_name;
 	us = usb_gstrings_attach(cdev, uvc_function_strings,
 				 ARRAY_SIZE(uvc_en_us_strings));
@@ -774,7 +709,7 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 					     cdev->usb_strings[opts->vs1_index].id :
 					     us[UVC_STRING_STREAMING_IDX].id;
 
-	/* Allocate interface IDs. */
+	 
 	if ((ret = usb_interface_id(c, f)) < 0)
 		goto error;
 	uvc_iad.bFirstInterface = ret;
@@ -789,7 +724,7 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 	uvc->streaming_intf = ret;
 	opts->streaming_interface = ret;
 
-	/* Copy descriptors */
+	 
 	f->fs_descriptors = uvc_copy_descriptors(uvc, USB_SPEED_FULL);
 	if (IS_ERR(f->fs_descriptors)) {
 		ret = PTR_ERR(f->fs_descriptors);
@@ -811,7 +746,7 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 		goto error;
 	}
 
-	/* Preallocate control endpoint request. */
+	 
 	uvc->control_req = usb_ep_alloc_request(cdev->gadget->ep0, GFP_KERNEL);
 	uvc->control_buf = kmalloc(UVC_MAX_REQUEST_SIZE, GFP_KERNEL);
 	if (uvc->control_req == NULL || uvc->control_buf == NULL) {
@@ -828,12 +763,12 @@ uvc_function_bind(struct usb_configuration *c, struct usb_function *f)
 		goto error;
 	}
 
-	/* Initialise video. */
+	 
 	ret = uvcg_video_init(&uvc->video, uvc);
 	if (ret < 0)
 		goto v4l2_error;
 
-	/* Register a V4L2 device. */
+	 
 	ret = uvc_register_video(uvc);
 	if (ret < 0) {
 		uvcg_err(f, "failed to register video device\n");
@@ -853,9 +788,7 @@ error:
 	return ret;
 }
 
-/* --------------------------------------------------------------------------
- * USB gadget function
- */
+ 
 
 static void uvc_free_inst(struct usb_function_instance *f)
 {
@@ -919,30 +852,26 @@ static struct usb_function_instance *uvc_alloc_inst(void)
 	od->bSourceID			= 2;
 	od->iTerminal			= 0;
 
-	/*
-	 * With the ability to add XUs to the UVC function graph, we need to be
-	 * able to allocate unique unit IDs to them. The IDs are 1-based, with
-	 * the CT, PU and OT above consuming the first 3.
-	 */
+	 
 	opts->last_unit_id		= 3;
 
-	/* Prepare fs control class descriptors for configfs-based gadgets */
+	 
 	ctl_cls = opts->uvc_fs_control_cls;
-	ctl_cls[0] = NULL;	/* assigned elsewhere by configfs */
+	ctl_cls[0] = NULL;	 
 	ctl_cls[1] = (struct uvc_descriptor_header *)cd;
 	ctl_cls[2] = (struct uvc_descriptor_header *)pd;
 	ctl_cls[3] = (struct uvc_descriptor_header *)od;
-	ctl_cls[4] = NULL;	/* NULL-terminate */
+	ctl_cls[4] = NULL;	 
 	opts->fs_control =
 		(const struct uvc_descriptor_header * const *)ctl_cls;
 
-	/* Prepare hs control class descriptors for configfs-based gadgets */
+	 
 	ctl_cls = opts->uvc_ss_control_cls;
-	ctl_cls[0] = NULL;	/* assigned elsewhere by configfs */
+	ctl_cls[0] = NULL;	 
 	ctl_cls[1] = (struct uvc_descriptor_header *)cd;
 	ctl_cls[2] = (struct uvc_descriptor_header *)pd;
 	ctl_cls[3] = (struct uvc_descriptor_header *)od;
-	ctl_cls[4] = NULL;	/* NULL-terminate */
+	ctl_cls[4] = NULL;	 
 	opts->ss_control =
 		(const struct uvc_descriptor_header * const *)ctl_cls;
 
@@ -985,12 +914,7 @@ static void uvc_function_unbind(struct usb_configuration *c,
 	if (video->async_wq)
 		destroy_workqueue(video->async_wq);
 
-	/*
-	 * If we know we're connected via v4l2, then there should be a cleanup
-	 * of the device from userspace either via UVC_EVENT_DISCONNECT or
-	 * though the video device removal uevent. Allow some time for the
-	 * application to close out before things get deleted.
-	 */
+	 
 	if (uvc->func_connected) {
 		uvcg_dbg(f, "waiting for clean disconnect\n");
 		wait_ret = wait_event_interruptible_timeout(uvc->func_connected_queue,
@@ -1003,11 +927,7 @@ static void uvc_function_unbind(struct usb_configuration *c,
 	v4l2_device_unregister(&uvc->v4l2_dev);
 
 	if (uvc->func_connected) {
-		/*
-		 * Wait for the release to occur to ensure there are no longer any
-		 * pending operations that may cause panics when resources are cleaned
-		 * up.
-		 */
+		 
 		uvcg_warn(f, "%s no clean disconnect, wait for release\n", __func__);
 		wait_ret = wait_event_interruptible_timeout(uvc->func_connected_queue,
 				uvc->func_connected == false, msecs_to_jiffies(1000));
@@ -1089,7 +1009,7 @@ static struct usb_function *uvc_alloc(struct usb_function_instance *fi)
 	++opts->refcnt;
 	mutex_unlock(&opts->lock);
 
-	/* Register the function. */
+	 
 	uvc->func.name = "uvc";
 	uvc->func.bind = uvc_function_bind;
 	uvc->func.unbind = uvc_function_unbind;

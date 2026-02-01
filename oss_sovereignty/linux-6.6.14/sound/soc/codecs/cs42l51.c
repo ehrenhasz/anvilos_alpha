@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs42l51.c
- *
- * ASoC Driver for Cirrus Logic CS42L51 codecs
- *
- * Copyright (c) 2010 Arnaud Patard <apatard@mandriva.com>
- *
- * Based on cs4270.c - Copyright (c) Freescale Semiconductor
- *
- * For now:
- *  - Only I2C is support. Not SPI
- *  - master mode *NOT* supported
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -44,7 +32,7 @@ static const char * const cs42l51_supply_names[] = {
 struct cs42l51_private {
 	unsigned int mclk;
 	struct clk *mclk_handle;
-	unsigned int audio_mode;	/* The mode (I2S or left-justified) */
+	unsigned int audio_mode;	 
 	enum master_slave_mode func;
 	struct regulator_bulk_data supplies[ARRAY_SIZE(cs42l51_supply_names)];
 	struct gpio_desc *reset_gpio;
@@ -65,7 +53,7 @@ static int cs42l51_get_chan_mix(struct snd_kcontrol *kcontrol,
 	case 0:
 		ucontrol->value.enumerated.item[0] = 0;
 		break;
-	/* same value : (L+R)/2 and (R+L)/2 */
+	 
 	case 1:
 	case 2:
 		ucontrol->value.enumerated.item[0] = 1;
@@ -159,12 +147,7 @@ static const struct snd_kcontrol_new cs42l51_snd_controls[] = {
 			cs42l51_get_chan_mix, cs42l51_set_chan_mix),
 };
 
-/*
- * to power down, one must:
- * 1.) Enable the PDN bit
- * 2.) enable power-down for the select channels
- * 3.) disable the PDN bit.
- */
+ 
 static int cs42l51_pdn_event(struct snd_soc_dapm_widget *w,
 		struct snd_kcontrol *kcontrol, int event)
 {
@@ -225,7 +208,7 @@ static const struct snd_soc_dapm_widget cs42l51_dapm_widgets[] = {
 	SND_SOC_DAPM_DAC_E("Right DAC", NULL, CS42L51_POWER_CTL1, 6, 1,
 			   cs42l51_pdn_event, SND_SOC_DAPM_PRE_POST_PMD),
 
-	/* analog/mic */
+	 
 	SND_SOC_DAPM_INPUT("AIN1L"),
 	SND_SOC_DAPM_INPUT("AIN1R"),
 	SND_SOC_DAPM_INPUT("AIN2L"),
@@ -238,11 +221,11 @@ static const struct snd_soc_dapm_widget cs42l51_dapm_widgets[] = {
 	SND_SOC_DAPM_MIXER("Mic Preamp Right",
 		CS42L51_MIC_POWER_CTL, 3, 1, NULL, 0),
 
-	/* HP */
+	 
 	SND_SOC_DAPM_OUTPUT("HPL"),
 	SND_SOC_DAPM_OUTPUT("HPR"),
 
-	/* mux */
+	 
 	SND_SOC_DAPM_MUX("DAC Mux", SND_SOC_NOPM, 0, 0,
 		&cs42l51_dac_mux_controls),
 	SND_SOC_DAPM_MUX("PGA-ADC Mux Left", SND_SOC_NOPM, 0, 0,
@@ -261,7 +244,7 @@ static int mclk_event(struct snd_soc_dapm_widget *w,
 	case SND_SOC_DAPM_PRE_PMU:
 		return clk_prepare_enable(cs42l51->mclk_handle);
 	case SND_SOC_DAPM_POST_PMD:
-		/* Delay mclk shutdown to fulfill power-down sequence requirements */
+		 
 		msleep(20);
 		clk_disable_unprepare(cs42l51->mclk_handle);
 		break;
@@ -367,15 +350,7 @@ static struct cs42l51_ratios slave_auto_ratios[] = {
 	{  256, CS42L51_DSM_MODE, 1 }, {  384, CS42L51_DSM_MODE, 1 },
 };
 
-/*
- * Master mode mclk/fs ratios.
- * Recommended configurations are SSM for 4-50khz and DSM for 50-100kHz ranges
- * The table below provides support of following ratios:
- * 128: SSM (%128) with div2 disabled
- * 256: SSM (%128) with div2 enabled
- * In both cases, if sampling rate is above 50kHz, SSM is overridden
- * with DSM (%128) configuration
- */
+ 
 static struct cs42l51_ratios master_ratios[] = {
 	{ 128, CS42L51_SSM_MODE, 0 }, { 256, CS42L51_SSM_MODE, 1 },
 };
@@ -419,16 +394,16 @@ static int cs42l51_hw_params(struct snd_pcm_substream *substream,
 		break;
 	}
 
-	/* Figure out which MCLK/LRCK ratio to use */
-	rate = params_rate(params);     /* Sampling rate, in Hz */
-	ratio = cs42l51->mclk / rate;    /* MCLK/LRCK ratio */
+	 
+	rate = params_rate(params);      
+	ratio = cs42l51->mclk / rate;     
 	for (i = 0; i < nr_ratios; i++) {
 		if (ratios[i].ratio == ratio)
 			break;
 	}
 
 	if (i == nr_ratios) {
-		/* We did not find a matching ratio */
+		 
 		dev_err(component->dev, "could not find matching ratio\n");
 		return -EINVAL;
 	}
@@ -445,14 +420,11 @@ static int cs42l51_hw_params(struct snd_pcm_substream *substream,
 	case MODE_MASTER:
 		intf_ctl |= CS42L51_INTF_CTL_MASTER;
 		mode = ratios[i].speed_mode;
-		/* Force DSM mode if sampling rate is above 50kHz */
+		 
 		if (rate > 50000)
 			mode = CS42L51_DSM_MODE;
 		power_ctl |= CS42L51_MIC_POWER_CTL_SPEED(mode);
-		/*
-		 * Auto detect mode is not applicable for master mode and has to
-		 * be disabled. Otherwise SPEED[1:0] bits will be ignored.
-		 */
+		 
 		power_ctl &= ~CS42L51_MIC_POWER_CTL_AUTO;
 		break;
 	case MODE_SLAVE:
@@ -529,7 +501,7 @@ static int cs42l51_dai_mute(struct snd_soc_dai *dai, int mute, int direction)
 static int cs42l51_of_xlate_dai_id(struct snd_soc_component *component,
 				   struct device_node *endpoint)
 {
-	/* return dai id 0, whatever the endpoint index */
+	 
 	return 0;
 }
 
@@ -572,13 +544,7 @@ static int cs42l51_component_probe(struct snd_soc_component *component)
 	if (cs42l51->mclk_handle)
 		snd_soc_dapm_new_controls(dapm, cs42l51_dapm_mclk_widgets, 1);
 
-	/*
-	 * DAC configuration
-	 * - Use signal processor
-	 * - auto mute
-	 * - vol changes immediate
-	 * - no de-emphasize
-	 */
+	 
 	reg = CS42L51_DAC_CTL_DATA_SEL(1)
 		| CS42L51_DAC_CTL_AMUTE | CS42L51_DAC_CTL_DACSZ(0);
 	ret = snd_soc_component_write(component, CS42L51_DAC_CTL, reg);
@@ -756,7 +722,7 @@ int cs42l51_probe(struct device *dev, struct regmap *regmap)
 		mdelay(2);
 	}
 
-	/* Verify that we have a CS42L51 */
+	 
 	ret = regmap_read(regmap, CS42L51_CHIP_REV_ID, &val);
 	if (ret < 0) {
 		dev_err(dev, "failed to read I2C\n");

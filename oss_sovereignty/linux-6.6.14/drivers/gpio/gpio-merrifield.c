@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Merrifield SoC GPIO driver
- *
- * Copyright (c) 2016, 2023 Intel Corporation.
- * Author: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -17,7 +12,7 @@
 
 #include "gpio-tangier.h"
 
-/* Intel Merrifield has 192 GPIO pins */
+ 
 #define MRFLD_NGPIO	192
 
 static const struct tng_gpio_pinrange mrfld_gpio_ranges[] = {
@@ -87,7 +82,7 @@ static int mrfld_gpio_probe(struct pci_dev *pdev, const struct pci_device_id *id
 	irq_base = readl(base + 0 * sizeof(u32));
 	gpio_base = readl(base + 1 * sizeof(u32));
 
-	/* Release the IO mapping, since we already get the info from BAR1 */
+	 
 	pcim_iounmap_regions(pdev, BIT(1));
 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);

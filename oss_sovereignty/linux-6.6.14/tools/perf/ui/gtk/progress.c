@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <inttypes.h>
 
 #include "gtk.h"
@@ -35,14 +35,14 @@ static void gtk_ui_progress__update(struct ui_progress *p)
 	snprintf(buf, sizeof(buf), "%"PRIu64" / %"PRIu64, p->curr, p->total);
 	gtk_progress_bar_set_text(GTK_PROGRESS_BAR(progress), buf);
 
-	/* we didn't call gtk_main yet, so do it manually */
+	 
 	while (gtk_events_pending())
 		gtk_main_iteration();
 }
 
 static void gtk_ui_progress__finish(void)
 {
-	/* this will also destroy all of its children */
+	 
 	gtk_widget_destroy(dialog);
 
 	dialog = NULL;

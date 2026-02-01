@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef _PKEYS_POWERPC_H
 #define _PKEYS_POWERPC_H
@@ -14,19 +14,15 @@
 #define si_pkey_offset		0x20
 
 #undef PKEY_DISABLE_ACCESS
-#define PKEY_DISABLE_ACCESS	0x3  /* disable read and write */
+#define PKEY_DISABLE_ACCESS	0x3   
 
 #undef PKEY_DISABLE_WRITE
 #define PKEY_DISABLE_WRITE	0x2
 
 #define NR_PKEYS		32
-#define NR_RESERVED_PKEYS_4K	27 /* pkey-0, pkey-1, exec-only-pkey
-				      and 24 other keys that cannot be
-				      represented in the PTE */
-#define NR_RESERVED_PKEYS_64K_3KEYS	3 /* PowerNV and KVM: pkey-0,
-					     pkey-1 and exec-only key */
-#define NR_RESERVED_PKEYS_64K_4KEYS	4 /* PowerVM: pkey-0, pkey-1,
-					     pkey-31 and exec-only key */
+#define NR_RESERVED_PKEYS_4K	27  
+#define NR_RESERVED_PKEYS_64K_3KEYS	3  
+#define NR_RESERVED_PKEYS_64K_4KEYS	4  
 #define PKEY_BITS_PER_PKEY	2
 #define HPAGE_SIZE		(1UL << 24)
 #define PAGE_SIZE		sysconf(_SC_PAGESIZE)
@@ -61,7 +57,7 @@ static inline void __write_pkey_reg(u64 pkey_reg)
 
 static inline int cpu_has_pkeys(void)
 {
-	/* No simple way to determine this */
+	 
 	return 1;
 }
 
@@ -90,16 +86,11 @@ static inline int get_arch_reserved_keys(void)
 
 void expect_fault_on_read_execonly_key(void *p1, int pkey)
 {
-	/*
-	 * powerpc does not allow userspace to change permissions of exec-only
-	 * keys since those keys are not allocated by userspace. The signal
-	 * handler wont be able to reset the permissions, which means the code
-	 * will infinitely continue to segfault here.
-	 */
+	 
 	return;
 }
 
-/* 4-byte instructions * 16384 = 64K page */
+ 
 #define __page_o_noops() asm(".rept 16384 ; nop; .endr")
 
 void *malloc_pkey_with_mprotect_subpage(long size, int prot, u16 pkey)
@@ -127,4 +118,4 @@ void *malloc_pkey_with_mprotect_subpage(long size, int prot, u16 pkey)
 	return ptr;
 }
 
-#endif /* _PKEYS_POWERPC_H */
+#endif  

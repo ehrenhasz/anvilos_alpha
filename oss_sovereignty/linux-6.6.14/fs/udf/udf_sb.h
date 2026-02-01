@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_UDF_SB_H
 #define __LINUX_UDF_SB_H
 
@@ -6,10 +6,7 @@
 #include <linux/bitops.h>
 #include <linux/magic.h>
 
-/*
- * Even UDF 2.6 media should have version <= 0x250 but apparently there are
- * some broken filesystems with version set to 0x260. Accommodate those.
- */
+ 
 #define UDF_MAX_READ_VERSION		0x0260
 #define UDF_MAX_WRITE_VERSION		0x0201
 
@@ -23,7 +20,7 @@
 #define UDF_FLAG_STRICT			5
 #define UDF_FLAG_UNDELETE		6
 #define UDF_FLAG_UNHIDE			7
-#define UDF_FLAG_UID_FORGET     11    /* save -1 for uid to disk */
+#define UDF_FLAG_UID_FORGET     11     
 #define UDF_FLAG_GID_FORGET     12
 #define UDF_FLAG_UID_SET	13
 #define UDF_FLAG_GID_SET	14
@@ -31,8 +28,7 @@
 #define UDF_FLAG_LASTBLOCK_SET	16
 #define UDF_FLAG_BLOCKSIZE_SET	17
 #define UDF_FLAG_INCONSISTENT	18
-#define UDF_FLAG_RW_INCOMPAT	19	/* Set when we find RW incompatible
-					 * feature */
+#define UDF_FLAG_RW_INCOMPAT	19	 
 
 #define UDF_PART_FLAG_UNALLOC_BITMAP	0x0001
 #define UDF_PART_FLAG_UNALLOC_TABLE	0x0002
@@ -62,10 +58,7 @@ struct udf_meta_data {
 	__u32	s_bitmap_file_loc;
 	__u32	s_alloc_unit_size;
 	__u16	s_align_unit_size;
-	/*
-	 * Partition Reference Number of the associated physical / sparable
-	 * partition
-	 */
+	 
 	__u16   s_phys_partition_ref;
 	int	s_flags;
 	struct inode *s_metadata_fe;
@@ -114,46 +107,46 @@ struct udf_sb_info {
 	struct udf_part_map	*s_partmaps;
 	__u8			s_volume_ident[32];
 
-	/* Overall info */
+	 
 	__u16			s_partitions;
 	__u16			s_partition;
 
-	/* Sector headers */
+	 
 	__s32			s_session;
 	__u32			s_anchor;
 	__u32			s_last_block;
 
 	struct buffer_head	*s_lvid_bh;
 
-	/* Default permissions */
+	 
 	umode_t			s_umask;
 	kgid_t			s_gid;
 	kuid_t			s_uid;
 	umode_t			s_fmode;
 	umode_t			s_dmode;
-	/* Lock protecting consistency of above permission settings */
+	 
 	rwlock_t		s_cred_lock;
 
-	/* Root Info */
+	 
 	struct timespec64	s_record_time;
 
-	/* Fileset Info */
+	 
 	__u16			s_serial_number;
 
-	/* highest UDF revision we have recorded to this media */
+	 
 	__u16			s_udfrev;
 
-	/* Miscellaneous flags */
+	 
 	unsigned long		s_flags;
 
-	/* Encoding info */
+	 
 	struct nls_table	*s_nls_map;
 
-	/* VAT inode */
+	 
 	struct inode		*s_vat_inode;
 
 	struct mutex		s_alloc_mutex;
-	/* Protected by s_alloc_mutex */
+	 
 	unsigned int		s_lvid_dirty;
 };
 
@@ -181,4 +174,4 @@ static inline void UDF_CLEAR_FLAG(struct super_block *sb, int flag)
 	clear_bit(flag, &UDF_SB(sb)->s_flags);
 }
 
-#endif /* __LINUX_UDF_SB_H */
+#endif  

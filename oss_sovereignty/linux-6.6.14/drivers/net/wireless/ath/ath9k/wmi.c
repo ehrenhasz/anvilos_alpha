@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2010-2011 Atheros Communications Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "htc.h"
 
@@ -169,7 +155,7 @@ void ath9k_wmi_event_tasklet(struct tasklet_struct *t)
 					     &wmi->drv_priv->fatal_work);
 			break;
 		case WMI_TXSTATUS_EVENTID:
-			/* Check if ath9k_tx_init() completed. */
+			 
 			if (!data_race(priv->tx.initialized))
 				break;
 
@@ -221,7 +207,7 @@ static void ath9k_wmi_ctrl_rx(void *priv, struct sk_buff *skb,
 	if (unlikely(wmi->stopped))
 		goto free_skb;
 
-	/* Validate the obtained SKB. */
+	 
 	if (unlikely(skb->len < sizeof(struct wmi_cmd_hdr)))
 		goto free_skb;
 
@@ -236,14 +222,14 @@ static void ath9k_wmi_ctrl_rx(void *priv, struct sk_buff *skb,
 		return;
 	}
 
-	/* Check if there has been a timeout. */
+	 
 	spin_lock_irqsave(&wmi->wmi_lock, flags);
 	if (be16_to_cpu(hdr->seq_no) != wmi->last_seq_id) {
 		spin_unlock_irqrestore(&wmi->wmi_lock, flags);
 		goto free_skb;
 	}
 
-	/* WMI command response */
+	 
 	ath9k_wmi_rsp_callback(wmi, skb);
 	spin_unlock_irqrestore(&wmi->wmi_lock, flags);
 
@@ -295,7 +281,7 @@ static int ath9k_wmi_cmd_issue(struct wmi *wmi,
 
 	spin_lock_irqsave(&wmi->wmi_lock, flags);
 
-	/* record the rsp buffer and length */
+	 
 	wmi->cmd_rsp_buf = rsp_buf;
 	wmi->cmd_rsp_len = rsp_len;
 
@@ -333,7 +319,7 @@ int ath9k_wmi_cmd(struct wmi *wmi, enum wmi_cmd_id cmd_id,
 
 	mutex_lock(&wmi->op_mutex);
 
-	/* check if wmi stopped flag is set */
+	 
 	if (unlikely(wmi->stopped)) {
 		ret = -EPROTO;
 		goto out;

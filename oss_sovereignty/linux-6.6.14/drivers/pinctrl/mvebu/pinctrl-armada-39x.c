@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell Armada 39x pinctrl driver based on mvebu pinctrl core
- *
- * Copyright (C) 2015 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>

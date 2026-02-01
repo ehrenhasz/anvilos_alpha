@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015, Michael Neuling, IBM Corp.
- *
- * Edited: Rashmica Gupta, Nov 2015
- *
- * This test does a fork syscall inside a transaction. Basic sniff test
- * to see if we can enter the kernel during a transaction.
- */
+
+ 
 
 #include <errno.h>
 #include <inttypes.h>
@@ -26,13 +19,12 @@ int test_fork(void)
 	asm __volatile__(
 		"tbegin.;"
 		"blt    1f; "
-		"li     0, 2;"  /* fork syscall */
+		"li     0, 2;"   
 		"sc  ;"
 		"tend.;"
 		"1: ;"
 		: : : "memory", "r0");
-	/* If we reach here, we've passed.  Otherwise we've probably crashed
-	 * the kernel */
+	 
 
 	return 0;
 }

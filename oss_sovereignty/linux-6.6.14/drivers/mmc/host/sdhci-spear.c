@@ -1,17 +1,4 @@
-/*
- * drivers/mmc/host/sdhci-spear.c
- *
- * Support of SDHCI platform devices for spear soc family
- *
- * Copyright (C) 2010 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * Inspired by sdhci-pltfm.c
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -32,7 +19,7 @@ struct spear_sdhci {
 	struct clk *clk;
 };
 
-/* sdhci ops */
+ 
 static const struct sdhci_ops sdhci_pltfm_ops = {
 	.set_clock = sdhci_set_clock,
 	.set_bus_width = sdhci_set_bus_width,
@@ -73,7 +60,7 @@ static int sdhci_probe(struct platform_device *pdev)
 
 	sdhci = sdhci_priv(host);
 
-	/* clk enable */
+	 
 	sdhci->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(sdhci->clk)) {
 		ret = PTR_ERR(sdhci->clk);
@@ -92,10 +79,7 @@ static int sdhci_probe(struct platform_device *pdev)
 		dev_dbg(&pdev->dev, "Error setting desired clk, clk=%lu\n",
 				clk_get_rate(sdhci->clk));
 
-	/*
-	 * It is optional to use GPIOs for sdhci card detection. If we
-	 * find a descriptor using slot GPIO, we use it.
-	 */
+	 
 	ret = mmc_gpiod_request_cd(host->mmc, "cd", 0, false, 0);
 	if (ret == -EPROBE_DEFER)
 		goto disable_clk;

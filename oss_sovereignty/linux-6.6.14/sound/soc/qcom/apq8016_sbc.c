@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -71,16 +69,16 @@ static int apq8016_dai_init(struct snd_soc_pcm_runtime *rtd, int mi2s)
 		break;
 
 	case MI2S_QUATERNARY:
-		/* Configure the Quat MI2S to TLMM */
+		 
 		writel(readl(pdata->mic_iomux) | MIC_CTRL_QUA_WS_SLAVE_SEL_10 |
 			MIC_CTRL_TLMM_SCLK_EN,
 			pdata->mic_iomux);
 		break;
 	case MI2S_SECONDARY:
-		/* Clear TLMM_WS_OUT_SEL and TLMM_WS_EN_SEL fields */
+		 
 		value = readl(pdata->spkr_iomux) &
 			~(SPKR_CTL_TLMM_WS_OUT_SEL_MASK | SPKR_CTL_TLMM_WS_EN_SEL_MASK);
-		/* Configure the Sec MI2S to TLMM */
+		 
 		writel(value | SPKR_CTL_TLMM_MCLK_EN | SPKR_CTL_TLMM_SCLK_EN |
 			SPKR_CTL_TLMM_DATA1_EN | SPKR_CTL_TLMM_WS_OUT_SEL_SEC |
 			SPKR_CTL_TLMM_WS_EN_SEL_SEC, pdata->spkr_iomux);
@@ -128,7 +126,7 @@ static int apq8016_dai_init(struct snd_soc_pcm_runtime *rtd, int mi2s)
 	for_each_rtd_codec_dais(rtd, i, codec_dai) {
 
 		component = codec_dai->component;
-		/* Set default mclk for internal codec */
+		 
 		rval = snd_soc_component_set_sysclk(component, 0, 0, DEFAULT_MCLK_RATE,
 				       SND_SOC_CLOCK_IN);
 		if (rval != 0 && rval != -ENOTSUPP) {
@@ -256,7 +254,7 @@ static void msm8916_qdsp6_add_ops(struct snd_soc_card *card)
 	struct snd_soc_dai_link *link;
 	int i;
 
-	/* Make it obvious to userspace that QDSP6 is used */
+	 
 	card->components = "qdsp6";
 
 	for_each_card_prelinks(card, i, link) {

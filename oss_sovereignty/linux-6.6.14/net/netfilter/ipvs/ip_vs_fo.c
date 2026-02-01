@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IPVS:        Weighted Fail Over module
- *
- * Authors:     Kenny Mathis <kmathis@chokepoint.net>
- *
- * Changes:
- *     Kenny Mathis            :     added initial functionality based on weight
- */
+
+ 
 
 #define KMSG_COMPONENT "IPVS"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -16,19 +9,17 @@
 
 #include <net/ip_vs.h>
 
-/* Weighted Fail Over Module */
+ 
 static struct ip_vs_dest *
 ip_vs_fo_schedule(struct ip_vs_service *svc, const struct sk_buff *skb,
 		  struct ip_vs_iphdr *iph)
 {
 	struct ip_vs_dest *dest, *hweight = NULL;
-	int hw = 0; /* Track highest weight */
+	int hw = 0;  
 
 	IP_VS_DBG(6, "ip_vs_fo_schedule(): Scheduling...\n");
 
-	/* Basic failover functionality
-	 * Find virtual server with highest weight and send it traffic
-	 */
+	 
 	list_for_each_entry_rcu(dest, &svc->destinations, n_list) {
 		if (!(dest->flags & IP_VS_DEST_F_OVERLOAD) &&
 		    atomic_read(&dest->weight) > hw) {

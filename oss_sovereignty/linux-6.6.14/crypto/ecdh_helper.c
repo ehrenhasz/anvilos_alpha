@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016, Intel Corporation
- * Authors: Salvatore Benedetto <salvatore.benedetto@intel.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/err.h>
@@ -73,9 +70,7 @@ int crypto_ecdh_decode_key(const char *buf, unsigned int len,
 	if (secret.len != crypto_ecdh_key_len(params))
 		return -EINVAL;
 
-	/* Don't allocate memory. Set pointer to data
-	 * within the given buffer
-	 */
+	 
 	params->key = (void *)ptr;
 
 	return 0;

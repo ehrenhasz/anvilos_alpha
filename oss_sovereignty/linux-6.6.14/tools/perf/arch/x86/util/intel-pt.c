@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_pt.c: Intel Processor Trace support
- * Copyright (c) 2013-2015, Intel Corporation.
- */
+
+ 
 
 #include <errno.h>
 #include <stdbool.h>
@@ -30,7 +27,7 @@
 #include "../../../util/record.h"
 #include "../../../util/target.h"
 #include "../../../util/tsc.h"
-#include <internal/lib.h> // page_size
+#include <internal/lib.h> 
 #include "../../../util/intel-pt.h"
 
 #define KiB(x) ((x) * 1024)
@@ -74,12 +71,12 @@ static int intel_pt_parse_terms_with_default(struct perf_pmu *pmu,
 
 	INIT_LIST_HEAD(terms);
 
-	err = parse_events_terms(terms, str, /*input=*/ NULL);
+	err = parse_events_terms(terms, str,   NULL);
 	if (err)
 		goto out_free;
 
 	attr.config = *config;
-	err = perf_pmu__config_terms(pmu, &attr, terms, /*zero=*/true, /*err=*/NULL);
+	err = perf_pmu__config_terms(pmu, &attr, terms,  true,  NULL);
 	if (err)
 		goto out_free;
 
@@ -147,10 +144,7 @@ static size_t intel_pt_psb_period(struct perf_pmu *intel_pt_pmu,
 				"%d", &topa_multiple_entries) != 1)
 		topa_multiple_entries = 0;
 
-	/*
-	 * Use caps/topa_multiple_entries to indicate early hardware that had
-	 * extra frequent PSBs.
-	 */
+	 
 	if (!topa_multiple_entries) {
 		psb_period = 256;
 		goto out;
@@ -306,7 +300,7 @@ intel_pt_info_priv_size(struct auxtrace_record *itr, struct evlist *evlist)
 
 	ptr->priv_size = (INTEL_PT_AUXTRACE_PRIV_MAX * sizeof(u64)) +
 			 intel_pt_filter_bytes(filter);
-	ptr->priv_size += sizeof(u64); /* Cap Event Trace */
+	ptr->priv_size += sizeof(u64);  
 
 	return ptr->priv_size;
 }
@@ -449,7 +443,7 @@ static void intel_pt_valid_str(char *str, size_t len, u64 valid)
 			switch (state) {
 			case 0:
 				p += scnprintf(str + p, len - p, ",");
-				/* Fall through */
+				 
 			case 1:
 				p += scnprintf(str + p, len - p, "%u", val);
 				state = 2;
@@ -535,10 +529,7 @@ static int intel_pt_validate_config(struct perf_pmu *intel_pt_pmu,
 	if (dirfd < 0)
 		return dirfd;
 
-	/*
-	 * If supported, force pass-through config term (pt=1) even if user
-	 * sets pt=0, which avoids senseless kernel errors.
-	 */
+	 
 	if (perf_pmu__scan_file_at(intel_pt_pmu, dirfd, "format/pt", "%c", &c) == 1 &&
 	    !(evsel->core.attr.config & 1)) {
 		pr_warning("pt=0 doesn't make sense, forcing pt=1\n");
@@ -583,10 +574,7 @@ static void intel_pt_min_max_sample_sz(struct evlist *evlist,
 	}
 }
 
-/*
- * Currently, there is not enough information to disambiguate different PEBS
- * events, so only allow one.
- */
+ 
 static bool intel_pt_too_many_aux_output(struct evlist *evlist)
 {
 	struct evsel *evsel;
@@ -664,7 +652,7 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
 	if (err)
 		return err;
 
-	/* Set default sizes for snapshot mode */
+	 
 	if (opts->auxtrace_snapshot_mode) {
 		size_t psb_period = intel_pt_psb_period(intel_pt_pmu, evlist);
 
@@ -709,7 +697,7 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
 				    opts->auxtrace_snapshot_size, psb_period);
 	}
 
-	/* Set default sizes for sample mode */
+	 
 	if (opts->auxtrace_sample_mode) {
 		size_t psb_period = intel_pt_psb_period(intel_pt_pmu, evlist);
 		size_t min_sz = 0, max_sz = 0;
@@ -737,7 +725,7 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
 				    min_sz, psb_period);
 	}
 
-	/* Set default sizes for full trace mode */
+	 
 	if (opts->full_auxtrace && !opts->auxtrace_mmap_pages) {
 		if (privileged) {
 			opts->auxtrace_mmap_pages = MiB(4) / page_size;
@@ -748,7 +736,7 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
 		}
 	}
 
-	/* Validate auxtrace_mmap_pages */
+	 
 	if (opts->auxtrace_mmap_pages) {
 		size_t sz = opts->auxtrace_mmap_pages * (size_t)page_size;
 		size_t min_sz;
@@ -778,10 +766,7 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
 	else
 		have_timing_info = false;
 
-	/*
-	 * Per-cpu recording needs sched_switch events to distinguish different
-	 * threads.
-	 */
+	 
 	if (have_timing_info && !perf_cpu_map__empty(cpus) &&
 	    !record_opts__no_switch_events(opts)) {
 		if (perf_can_record_switch_events()) {
@@ -831,28 +816,19 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
 		opts->text_poke = true;
 
 	if (intel_pt_evsel) {
-		/*
-		 * To obtain the auxtrace buffer file descriptor, the auxtrace
-		 * event must come first.
-		 */
+		 
 		evlist__to_front(evlist, intel_pt_evsel);
-		/*
-		 * In the case of per-cpu mmaps, we need the CPU on the
-		 * AUX event.
-		 */
+		 
 		if (!perf_cpu_map__empty(cpus))
 			evsel__set_sample_bit(intel_pt_evsel, CPU);
 	}
 
-	/* Add dummy event to keep tracking */
+	 
 	if (opts->full_auxtrace) {
 		bool need_system_wide_tracking;
 		struct evsel *tracking_evsel;
 
-		/*
-		 * User space tasks can migrate between CPUs, so when tracing
-		 * selected CPUs, sideband for all CPUs is still needed.
-		 */
+		 
 		need_system_wide_tracking = opts->target.cpu_list &&
 					    !intel_pt_evsel->core.attr.exclude_user;
 
@@ -865,19 +841,16 @@ static int intel_pt_recording_options(struct auxtrace_record *itr,
 		if (need_immediate)
 			tracking_evsel->immediate = true;
 
-		/* In per-cpu case, always need the time of mmap events etc */
+		 
 		if (!perf_cpu_map__empty(cpus)) {
 			evsel__set_sample_bit(tracking_evsel, TIME);
-			/* And the CPU for switch events */
+			 
 			evsel__set_sample_bit(tracking_evsel, CPU);
 		}
 		evsel__reset_sample_bit(tracking_evsel, BRANCH_STACK);
 	}
 
-	/*
-	 * Warn the user when we do not have enough information to decode i.e.
-	 * per-cpu with no sched_switch (except workload-only).
-	 */
+	 
 	if (!ptr->have_sched_switch && !perf_cpu_map__empty(cpus) &&
 	    !target__none(&opts->target) &&
 	    !intel_pt_evsel->core.attr.exclude_user)
@@ -1009,19 +982,7 @@ static int intel_pt_snapshot_init(struct intel_pt_recording *ptr,
 	return 0;
 }
 
-/**
- * intel_pt_compare_buffers - compare bytes in a buffer to a circular buffer.
- * @buf1: first buffer
- * @compare_size: number of bytes to compare
- * @buf2: second buffer (a circular buffer)
- * @offs2: offset in second buffer
- * @buf2_size: size of second buffer
- *
- * The comparison allows for the possibility that the bytes to compare in the
- * circular buffer are not contiguous.  It is assumed that @compare_size <=
- * @buf2_size.  This function returns %false if the bytes are identical, %true
- * otherwise.
- */
+ 
 static bool intel_pt_compare_buffers(void *buf1, size_t compare_size,
 				     void *buf2, size_t offs2, size_t buf2_size)
 {
@@ -1139,12 +1100,7 @@ static int intel_pt_find_snapshot(struct auxtrace_record *itr, int idx,
 		}
 	}
 
-	/*
-	 * In full trace mode 'head' continually increases.  However in snapshot
-	 * mode 'head' is an offset within the buffer.  Here 'old' and 'head'
-	 * are adjusted to match the full trace case which expects that 'old' is
-	 * always less than 'head'.
-	 */
+	 
 	if (wrapped) {
 		*old = *head;
 		*head += mm->len;
@@ -1203,10 +1159,7 @@ struct auxtrace_record *intel_pt_recording_init(int *err)
 	ptr->itr.parse_snapshot_options = intel_pt_parse_snapshot_options;
 	ptr->itr.reference = intel_pt_reference;
 	ptr->itr.read_finish = auxtrace_record__read_finish;
-	/*
-	 * Decoding starts at a PSB packet. Minimum PSB period is 2K so 4K
-	 * should give at least 1 PSB per sample.
-	 */
+	 
 	ptr->itr.default_aux_sample_size = 4096;
 	return &ptr->itr;
 }

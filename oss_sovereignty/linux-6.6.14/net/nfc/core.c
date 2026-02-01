@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2011 Instituto Nokia de Tecnologia
- *
- * Authors:
- *    Lauro Ramos Venancio <lauro.venancio@openbossa.org>
- *    Aloisio Almeida Jr <aloisio.almeida@openbossa.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": %s: " fmt, __func__
 
@@ -27,7 +21,7 @@
 int nfc_devlist_generation;
 DEFINE_MUTEX(nfc_devlist_mutex);
 
-/* NFC device ID bitmap */
+ 
 static DEFINE_IDA(nfc_index_ida);
 
 int nfc_fw_download(struct nfc_dev *dev, const char *firmware_name)
@@ -63,13 +57,7 @@ error:
 	return rc;
 }
 
-/**
- * nfc_fw_download_done - inform that a firmware download was completed
- *
- * @dev: The nfc device to which firmware was downloaded
- * @firmware_name: The firmware filename
- * @result: The positive value of a standard errno value
- */
+ 
 int nfc_fw_download_done(struct nfc_dev *dev, const char *firmware_name,
 			 u32 result)
 {
@@ -79,13 +67,7 @@ int nfc_fw_download_done(struct nfc_dev *dev, const char *firmware_name,
 }
 EXPORT_SYMBOL(nfc_fw_download_done);
 
-/**
- * nfc_dev_up - turn on the NFC device
- *
- * @dev: The nfc device to be turned on
- *
- * The device remains up until the nfc_dev_down function is called.
- */
+ 
 int nfc_dev_up(struct nfc_dev *dev)
 {
 	int rc = 0;
@@ -120,7 +102,7 @@ int nfc_dev_up(struct nfc_dev *dev)
 	if (!rc)
 		dev->dev_up = true;
 
-	/* We have to enable the device before discovering SEs */
+	 
 	if (dev->ops->discover_se && dev->ops->discover_se(dev))
 		pr_err("SE discovery failed\n");
 
@@ -129,11 +111,7 @@ error:
 	return rc;
 }
 
-/**
- * nfc_dev_down - turn off the NFC device
- *
- * @dev: The nfc device to be turned off
- */
+ 
 int nfc_dev_down(struct nfc_dev *dev)
 {
 	int rc = 0;
@@ -185,16 +163,7 @@ static const struct rfkill_ops nfc_rfkill_ops = {
 	.set_block = nfc_rfkill_set_block,
 };
 
-/**
- * nfc_start_poll - start polling for nfc targets
- *
- * @dev: The nfc device that must start polling
- * @im_protocols: bitset of nfc initiator protocols to be used for polling
- * @tm_protocols: bitset of nfc transport protocols to be used for polling
- *
- * The device remains polling for targets until a target is found or
- * the nfc_stop_poll function is called.
- */
+ 
 int nfc_start_poll(struct nfc_dev *dev, u32 im_protocols, u32 tm_protocols)
 {
 	int rc;
@@ -233,11 +202,7 @@ error:
 	return rc;
 }
 
-/**
- * nfc_stop_poll - stop polling for nfc targets
- *
- * @dev: The nfc device that must stop polling
- */
+ 
 int nfc_stop_poll(struct nfc_dev *dev)
 {
 	int rc = 0;
@@ -384,13 +349,7 @@ int nfc_dep_link_is_up(struct nfc_dev *dev, u32 target_idx,
 }
 EXPORT_SYMBOL(nfc_dep_link_is_up);
 
-/**
- * nfc_activate_target - prepare the target for data exchange
- *
- * @dev: The nfc device that found the target
- * @target_idx: index of the target that must be activated
- * @protocol: nfc protocol that will be used for data exchange
- */
+ 
 int nfc_activate_target(struct nfc_dev *dev, u32 target_idx, u32 protocol)
 {
 	int rc;
@@ -432,13 +391,7 @@ error:
 	return rc;
 }
 
-/**
- * nfc_deactivate_target - deactivate a nfc target
- *
- * @dev: The nfc device that found the target
- * @target_idx: index of the target that must be deactivated
- * @mode: idle or sleep?
- */
+ 
 int nfc_deactivate_target(struct nfc_dev *dev, u32 target_idx, u8 mode)
 {
 	int rc = 0;
@@ -474,17 +427,7 @@ error:
 	return rc;
 }
 
-/**
- * nfc_data_exchange - transceive data
- *
- * @dev: The nfc device that found the target
- * @target_idx: index of the target
- * @skb: data to be sent
- * @cb: callback called when the response is received
- * @cb_context: parameter for the callback function
- *
- * The user must wait for the callback before calling this function again.
- */
+ 
 int nfc_data_exchange(struct nfc_dev *dev, u32 target_idx, struct sk_buff *skb,
 		      data_exchange_cb_t cb, void *cb_context)
 {
@@ -654,7 +597,7 @@ EXPORT_SYMBOL(nfc_get_local_general_bytes);
 
 int nfc_tm_data_received(struct nfc_dev *dev, struct sk_buff *skb)
 {
-	/* Only LLCP target mode for now */
+	 
 	if (dev->dep_link_up == false) {
 		kfree_skb(skb);
 		return -ENOLINK;
@@ -702,15 +645,7 @@ int nfc_tm_deactivated(struct nfc_dev *dev)
 }
 EXPORT_SYMBOL(nfc_tm_deactivated);
 
-/**
- * nfc_alloc_send_skb - allocate a skb for data exchange responses
- *
- * @dev: device sending the response
- * @sk: socket sending the response
- * @flags: MSG_DONTWAIT flag
- * @size: size to allocate
- * @err: pointer to memory to store the error code
- */
+ 
 struct sk_buff *nfc_alloc_send_skb(struct nfc_dev *dev, struct sock *sk,
 				   unsigned int flags, unsigned int size,
 				   unsigned int *err)
@@ -728,12 +663,7 @@ struct sk_buff *nfc_alloc_send_skb(struct nfc_dev *dev, struct sock *sk,
 	return skb;
 }
 
-/**
- * nfc_alloc_recv_skb - allocate a skb for data exchange responses
- *
- * @size: size to allocate
- * @gfp: gfp flags
- */
+ 
 struct sk_buff *nfc_alloc_recv_skb(unsigned int size, gfp_t gfp)
 {
 	struct sk_buff *skb;
@@ -749,22 +679,7 @@ struct sk_buff *nfc_alloc_recv_skb(unsigned int size, gfp_t gfp)
 }
 EXPORT_SYMBOL(nfc_alloc_recv_skb);
 
-/**
- * nfc_targets_found - inform that targets were found
- *
- * @dev: The nfc device that found the targets
- * @targets: array of nfc targets found
- * @n_targets: targets array size
- *
- * The device driver must call this function when one or many nfc targets
- * are found. After calling this function, the device driver must stop
- * polling for targets.
- * NOTE: This function can be called with targets=NULL and n_targets=0 to
- * notify a driver error, meaning that the polling operation cannot complete.
- * IMPORTANT: this function must not be called from an atomic context.
- * In addition, it must also not be called from a context that would prevent
- * the NFC Core to call other nfc ops entry point concurrently.
- */
+ 
 int nfc_targets_found(struct nfc_dev *dev,
 		      struct nfc_target *targets, int n_targets)
 {
@@ -810,18 +725,7 @@ int nfc_targets_found(struct nfc_dev *dev,
 }
 EXPORT_SYMBOL(nfc_targets_found);
 
-/**
- * nfc_target_lost - inform that an activated target went out of field
- *
- * @dev: The nfc device that had the activated target in field
- * @target_idx: the nfc index of the target
- *
- * The device driver must call this function when the activated target
- * goes out of the field.
- * IMPORTANT: this function must not be called from an atomic context.
- * In addition, it must also not be called from a context that would prevent
- * the NFC Core to call other nfc ops entry point concurrently.
- */
+ 
 int nfc_target_lost(struct nfc_dev *dev, u32 target_idx)
 {
 	const struct nfc_target *tg;
@@ -1040,14 +944,7 @@ struct nfc_dev *nfc_get_device(unsigned int idx)
 	return to_nfc_dev(d);
 }
 
-/**
- * nfc_allocate_device - allocate a new nfc device
- *
- * @ops: device operations
- * @supported_protocols: NFC protocols supported by the device
- * @tx_headroom: reserved space at beginning of skb
- * @tx_tailroom: reserved space at end of skb
- */
+ 
 struct nfc_dev *nfc_allocate_device(const struct nfc_ops *ops,
 				    u32 supported_protocols,
 				    int tx_headroom, int tx_tailroom)
@@ -1085,7 +982,7 @@ struct nfc_dev *nfc_allocate_device(const struct nfc_ops *ops,
 
 	dev->rf_mode = NFC_RF_NONE;
 
-	/* first generation must not be 0 */
+	 
 	dev->targets_generation = 1;
 
 	if (ops->check_presence) {
@@ -1102,11 +999,7 @@ err_free_dev:
 }
 EXPORT_SYMBOL(nfc_allocate_device);
 
-/**
- * nfc_register_device - register a nfc device in the nfc subsystem
- *
- * @dev: The nfc device to register
- */
+ 
 int nfc_register_device(struct nfc_dev *dev)
 {
 	int rc;
@@ -1146,11 +1039,7 @@ int nfc_register_device(struct nfc_dev *dev)
 }
 EXPORT_SYMBOL(nfc_register_device);
 
-/**
- * nfc_unregister_device - unregister a nfc device in the nfc subsystem
- *
- * @dev: The nfc device to unregister
- */
+ 
 void nfc_unregister_device(struct nfc_dev *dev)
 {
 	int rc;
@@ -1199,7 +1088,7 @@ static int __init nfc_init(void)
 	if (rc)
 		goto err_genl;
 
-	/* the first generation must not be 0 */
+	 
 	nfc_devlist_generation = 1;
 
 	rc = rawsock_init();

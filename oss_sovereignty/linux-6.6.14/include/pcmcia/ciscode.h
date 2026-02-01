@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * ciscode.h
- *
- * The initial developer of the original code is David A. Hinds
- * <dahinds@users.sourceforge.net>.  Portions created by David A. Hinds
- * are Copyright (C) 1999 David A. Hinds.  All Rights Reserved.
- *
- * (C) 1999		David A. Hinds
- */
+ 
+ 
 
 #ifndef _LINUX_CISCODE_H
 #define _LINUX_CISCODE_H
 
-/* Manufacturer and Product ID codes */
+ 
 
 #define MANFID_3COM			0x0101
 #define PRODID_3COM_3CXEM556		0x0035
@@ -125,4 +117,4 @@
 
 #define MANFID_NEC			0x0010
 
-#endif /* _LINUX_CISCODE_H */
+#endif  

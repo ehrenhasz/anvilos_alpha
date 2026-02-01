@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * GPIO driver for Marvell SoCs
- *
- * Copyright (C) 2012 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- * Andrew Lunn <andrew@lunn.ch>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- *
- * This driver is a fairly straightforward GPIO driver for the
- * complete family of Marvell EBU SoC platforms (Orion, Dove,
- * Kirkwood, Discovery, Armada 370/XP). The only complexity of this
- * driver is the different register layout that exists between the
- * non-SMP platforms (Orion, Dove, Kirkwood, Armada 370) and the SMP
- * platforms (MV78200 from the Discovery family and the Armada
- * XP). Therefore, this driver handles three variants of the GPIO
- * block:
- * - the basic variant, called "orion-gpio", with the simplest
- *   register set. Used on Orion, Dove, Kirkwoord, Armada 370 and
- *   non-SMP Discovery systems
- * - the mv78200 variant for MV78200 Discovery systems. This variant
- *   turns the edge mask and level mask registers into CPU0 edge
- *   mask/level mask registers, and adds CPU1 edge mask/level mask
- *   registers.
- * - the armadaxp variant for Armada XP systems. This variant keeps
- *   the normal cause/edge mask/level mask registers when the global
- *   interrupts are used, but adds per-CPU cause/edge mask/level mask
- *   registers n a separate memory area for the per-CPU GPIO
- *   interrupts.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -49,9 +20,7 @@
 #include <linux/regmap.h>
 #include <linux/slab.h>
 
-/*
- * GPIO unit register offsets.
- */
+ 
 #define GPIO_OUT_OFF			0x0000
 #define GPIO_IO_CONF_OFF		0x0004
 #define GPIO_BLINK_EN_OFF		0x0008
@@ -62,26 +31,21 @@
 #define GPIO_LEVEL_MASK_OFF		0x001c
 #define GPIO_BLINK_CNT_SELECT_OFF	0x0020
 
-/*
- * PWM register offsets.
- */
+ 
 #define PWM_BLINK_ON_DURATION_OFF	0x0
 #define PWM_BLINK_OFF_DURATION_OFF	0x4
 #define PWM_BLINK_COUNTER_B_OFF		0x8
 
-/* Armada 8k variant gpios register offsets */
+ 
 #define AP80X_GPIO0_OFF_A8K		0x1040
 #define CP11X_GPIO0_OFF_A8K		0x100
 #define CP11X_GPIO1_OFF_A8K		0x140
 
-/* The MV78200 has per-CPU registers for edge mask and level mask */
+ 
 #define GPIO_EDGE_MASK_MV78200_OFF(cpu)	  ((cpu) ? 0x30 : 0x18)
 #define GPIO_LEVEL_MASK_MV78200_OFF(cpu)  ((cpu) ? 0x34 : 0x1C)
 
-/*
- * The Armada XP has per-CPU registers for interrupt cause, interrupt
- * mask and interrupt level mask. Those are in percpu_regs range.
- */
+ 
 #define GPIO_EDGE_CAUSE_ARMADAXP_OFF(cpu) ((cpu) * 0x4)
 #define GPIO_EDGE_MASK_ARMADAXP_OFF(cpu)  (0x10 + (cpu) * 0x4)
 #define GPIO_LEVEL_MASK_ARMADAXP_OFF(cpu) (0x20 + (cpu) * 0x4)
@@ -102,7 +66,7 @@ struct mvebu_pwm {
 	spinlock_t		 lock;
 	struct mvebu_gpio_chip	*mvchip;
 
-	/* Used to preserve GPIO/PWM registers across suspend/resume */
+	 
 	u32			 blink_select;
 	u32			 blink_on_duration;
 	u32			 blink_off_duration;
@@ -117,11 +81,11 @@ struct mvebu_gpio_chip {
 	struct irq_domain *domain;
 	int		   soc_variant;
 
-	/* Used for PWM support */
+	 
 	struct clk	  *clk;
 	struct mvebu_pwm  *mvpwm;
 
-	/* Used to preserve GPIO registers across suspend/resume */
+	 
 	u32		   out_reg;
 	u32		   io_conf_reg;
 	u32		   blink_en_reg;
@@ -130,10 +94,7 @@ struct mvebu_gpio_chip {
 	u32		   level_mask_regs[4];
 };
 
-/*
- * Functions returning addresses of individual registers for a given
- * GPIO controller.
- */
+ 
 
 static void mvebu_gpioreg_edge_cause(struct mvebu_gpio_chip *mvchip,
 			 struct regmap **map, unsigned int *offset)
@@ -280,10 +241,7 @@ mvebu_gpio_write_level_mask(struct mvebu_gpio_chip *mvchip, u32 val)
 	regmap_write(map, offset, val);
 }
 
-/*
- * Functions returning offsets of individual registers for a given
- * PWM controller.
- */
+ 
 static unsigned int mvebu_pwmreg_blink_on_duration(struct mvebu_pwm *mvpwm)
 {
 	return mvpwm->offset + PWM_BLINK_ON_DURATION_OFF;
@@ -294,9 +252,7 @@ static unsigned int mvebu_pwmreg_blink_off_duration(struct mvebu_pwm *mvpwm)
 	return mvpwm->offset + PWM_BLINK_OFF_DURATION_OFF;
 }
 
-/*
- * Functions implementing the gpio_chip methods
- */
+ 
 static void mvebu_gpio_set(struct gpio_chip *chip, unsigned int pin, int value)
 {
 	struct mvebu_gpio_chip *mvchip = gpiochip_get_data(chip);
@@ -341,10 +297,7 @@ static int mvebu_gpio_direction_input(struct gpio_chip *chip, unsigned int pin)
 	struct mvebu_gpio_chip *mvchip = gpiochip_get_data(chip);
 	int ret;
 
-	/*
-	 * Check with the pinctrl driver whether this pin is usable as
-	 * an input GPIO
-	 */
+	 
 	ret = pinctrl_gpio_direction_input(chip->base + pin);
 	if (ret)
 		return ret;
@@ -361,10 +314,7 @@ static int mvebu_gpio_direction_output(struct gpio_chip *chip, unsigned int pin,
 	struct mvebu_gpio_chip *mvchip = gpiochip_get_data(chip);
 	int ret;
 
-	/*
-	 * Check with the pinctrl driver whether this pin is usable as
-	 * an output GPIO
-	 */
+	 
 	ret = pinctrl_gpio_direction_output(chip->base + pin);
 	if (ret)
 		return ret;
@@ -398,9 +348,7 @@ static int mvebu_gpio_to_irq(struct gpio_chip *chip, unsigned int pin)
 	return irq_create_mapping(mvchip->domain, pin);
 }
 
-/*
- * Functions implementing the irq_chip methods
- */
+ 
 static void mvebu_gpio_irq_ack(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
@@ -465,31 +413,7 @@ static void mvebu_gpio_level_irq_unmask(struct irq_data *d)
 	irq_gc_unlock(gc);
 }
 
-/*****************************************************************************
- * MVEBU GPIO IRQ
- *
- * GPIO_IN_POL register controls whether GPIO_DATA_IN will hold the same
- * value of the line or the opposite value.
- *
- * Level IRQ handlers: DATA_IN is used directly as cause register.
- *		       Interrupt are masked by LEVEL_MASK registers.
- * Edge IRQ handlers:  Change in DATA_IN are latched in EDGE_CAUSE.
- *		       Interrupt are masked by EDGE_MASK registers.
- * Both-edge handlers: Similar to regular Edge handlers, but also swaps
- *		       the polarity to catch the next line transaction.
- *		       This is a race condition that might not perfectly
- *		       work on some use cases.
- *
- * Every eight GPIO lines are grouped (OR'ed) before going up to main
- * cause register.
- *
- *		      EDGE  cause    mask
- *	  data-in   /--------| |-----| |----\
- *     -----| |-----			     ---- to main cause reg
- *	     X	    \----------------| |----/
- *	  polarity    LEVEL	     mask
- *
- ****************************************************************************/
+ 
 
 static int mvebu_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 {
@@ -509,14 +433,12 @@ static int mvebu_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 	if (type == IRQ_TYPE_NONE)
 		return -EINVAL;
 
-	/* Check if we need to change chip and handler */
+	 
 	if (!(ct->type & type))
 		if (irq_setup_alt_chip(d, type))
 			return -EINVAL;
 
-	/*
-	 * Configure interrupt polarity.
-	 */
+	 
 	switch (type) {
 	case IRQ_TYPE_EDGE_RISING:
 	case IRQ_TYPE_LEVEL_HIGH:
@@ -538,13 +460,11 @@ static int mvebu_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 		regmap_read(mvchip->regs,
 			    GPIO_DATA_IN_OFF + mvchip->offset, &data_in);
 
-		/*
-		 * set initial polarity based on current input level
-		 */
+		 
 		if ((data_in ^ in_pol) & BIT(pin))
-			val = BIT(pin); /* falling */
+			val = BIT(pin);  
 		else
-			val = 0; /* raising */
+			val = 0;  
 
 		regmap_update_bits(mvchip->regs,
 				   GPIO_IN_POL_OFF + mvchip->offset,
@@ -584,7 +504,7 @@ static void mvebu_gpio_irq_handler(struct irq_desc *desc)
 
 		type = irq_get_trigger_type(irq);
 		if ((type & IRQ_TYPE_SENSE_MASK) == IRQ_TYPE_EDGE_BOTH) {
-			/* Swap polarity (race with GPIO line) */
+			 
 			u32 polarity;
 
 			regmap_read(mvchip->regs,
@@ -609,9 +529,7 @@ static const struct regmap_config mvebu_gpio_regmap_config = {
 	.fast_io = true,
 };
 
-/*
- * Functions implementing the pwm_chip methods
- */
+ 
 static struct mvebu_pwm *to_mvebu_pwm(struct pwm_chip *chip)
 {
 	return container_of(chip, struct mvebu_pwm, chip);
@@ -671,7 +589,7 @@ static int mvebu_pwm_get_state(struct pwm_chip *chip,
 	spin_lock_irqsave(&mvpwm->lock, flags);
 
 	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_on_duration(mvpwm), &u);
-	/* Hardware treats zero as 2^32. See mvebu_pwm_apply(). */
+	 
 	if (u > 0)
 		val = u;
 	else
@@ -680,7 +598,7 @@ static int mvebu_pwm_get_state(struct pwm_chip *chip,
 			mvpwm->clk_rate);
 
 	regmap_read(mvpwm->regs, mvebu_pwmreg_blink_off_duration(mvpwm), &u);
-	/* period = on + off duration */
+	 
 	if (u > 0)
 		val += u;
 	else
@@ -714,10 +632,7 @@ static int mvebu_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	do_div(val, NSEC_PER_SEC);
 	if (val > UINT_MAX + 1ULL)
 		return -EINVAL;
-	/*
-	 * Zero on/off values don't work as expected. Experimentation shows
-	 * that zero value is treated as 2^32. This behavior is not documented.
-	 */
+	 
 	if (val == UINT_MAX + 1ULL)
 		on = 0;
 	else if (val)
@@ -799,12 +714,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
 		if (ret < 0)
 			return 0;
 	} else {
-		/*
-		 * There are only two sets of PWM configuration registers for
-		 * all the GPIO lines on those SoCs which this driver reserves
-		 * for the first two GPIO chips. So if the resource is missing
-		 * we can't treat it as an error.
-		 */
+		 
 		if (!platform_get_resource_byname(pdev, IORESOURCE_MEM, "pwm"))
 			return 0;
 		offset = 0;
@@ -826,11 +736,11 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
 		switch (mvchip->offset) {
 		case AP80X_GPIO0_OFF_A8K:
 		case CP11X_GPIO0_OFF_A8K:
-			/* Blink counter A */
+			 
 			set = 0;
 			break;
 		case CP11X_GPIO1_OFF_A8K:
-			/* Blink counter B */
+			 
 			set = U32_MAX;
 			mvpwm->offset += PWM_BLINK_COUNTER_B_OFF;
 			break;
@@ -847,10 +757,7 @@ static int mvebu_pwm_probe(struct platform_device *pdev,
 		if (IS_ERR(mvpwm->regs))
 			return PTR_ERR(mvpwm->regs);
 
-		/*
-		 * Use set A for lines of GPIO chip with id 0, B for GPIO chip
-		 * with id 1. Don't allow further GPIO chips to be used for PWM.
-		 */
+		 
 		if (id == 0)
 			set = 0;
 		else if (id == 1)
@@ -952,7 +859,7 @@ static const struct of_device_id mvebu_gpio_of_match[] = {
 		.data       = (void *) MVEBU_GPIO_SOC_VARIANT_A8K,
 	},
 	{
-		/* sentinel */
+		 
 	},
 };
 
@@ -1074,16 +981,10 @@ static int mvebu_gpio_probe_raw(struct platform_device *pdev,
 	if (IS_ERR(mvchip->regs))
 		return PTR_ERR(mvchip->regs);
 
-	/*
-	 * For the legacy SoCs, the regmap directly maps to the GPIO
-	 * registers, so no offset is needed.
-	 */
+	 
 	mvchip->offset = 0;
 
-	/*
-	 * The Armada XP has a second range of registers for the
-	 * per-CPU registers
-	 */
+	 
 	if (mvchip->soc_variant == MVEBU_GPIO_SOC_VARIANT_ARMADAXP) {
 		base = devm_platform_ioremap_resource(pdev, 1);
 		if (IS_ERR(base))
@@ -1138,7 +1039,7 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
 	else
 		soc_variant = MVEBU_GPIO_SOC_VARIANT_ORION;
 
-	/* Some gpio controllers do not provide irq support */
+	 
 	err = platform_irq_count(pdev);
 	if (err < 0)
 		return err;
@@ -1164,7 +1065,7 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
 	}
 
 	mvchip->clk = devm_clk_get(&pdev->dev, NULL);
-	/* Not all SoCs require a clock.*/
+	 
 	if (!IS_ERR(mvchip->clk))
 		clk_prepare_enable(mvchip->clk);
 
@@ -1193,9 +1094,7 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/*
-	 * Mask and clear GPIO interrupts.
-	 */
+	 
 	switch (soc_variant) {
 	case MVEBU_GPIO_SOC_VARIANT_ORION:
 	case MVEBU_GPIO_SOC_VARIANT_A8K:
@@ -1234,14 +1133,14 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
 
 	devm_gpiochip_add_data(&pdev->dev, &mvchip->chip, mvchip);
 
-	/* Some MVEBU SoCs have simple PWM support for GPIO lines */
+	 
 	if (IS_REACHABLE(CONFIG_PWM)) {
 		err = mvebu_pwm_probe(pdev, mvchip, id);
 		if (err)
 			return err;
 	}
 
-	/* Some gpio controllers do not provide irq support */
+	 
 	if (!have_irqs)
 		return 0;
 
@@ -1267,10 +1166,7 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/*
-	 * NOTE: The common accessors cannot be used because of the percpu
-	 * access to the mask registers
-	 */
+	 
 	gc = irq_get_domain_generic_chip(mvchip->domain, 0);
 	gc->private = mvchip;
 	ct = &gc->chip_types[0];
@@ -1289,11 +1185,7 @@ static int mvebu_gpio_probe(struct platform_device *pdev)
 	ct->handler = handle_edge_irq;
 	ct->chip.name = mvchip->chip.label;
 
-	/*
-	 * Setup the interrupt handlers. Each chip can have up to 4
-	 * interrupt handlers, with each handler dealing with 8 GPIO
-	 * pins.
-	 */
+	 
 	for (i = 0; i < 4; i++) {
 		int irq = platform_get_irq_optional(pdev, i);
 

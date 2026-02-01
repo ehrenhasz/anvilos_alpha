@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Parts of this driver are based on the following:
- *  - Kvaser linux leaf driver (version 4.78)
- *  - CAN driver for esd CAN-USB/2
- *  - Kvaser linux usbcanII driver (version 5.3)
- *  - Kvaser linux mhydra driver (version 5.24)
- *
- * Copyright (C) 2002-2018 KVASER AB, Sweden. All rights reserved.
- * Copyright (C) 2010 Matthias Fuchs <matthias.fuchs@esd.eu>, esd gmbh
- * Copyright (C) 2012 Olivier Sobrie <olivier@sobrie.be>
- * Copyright (C) 2015 Valeo S.A.
- */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/device.h>
@@ -30,10 +20,10 @@
 
 #include "kvaser_usb.h"
 
-/* Kvaser USB vendor id. */
+ 
 #define KVASER_VENDOR_ID 0x0bfd
 
-/* Kvaser Leaf USB devices product ids */
+ 
 #define USB_LEAF_DEVEL_PRODUCT_ID 0x000a
 #define USB_LEAF_LITE_PRODUCT_ID 0x000b
 #define USB_LEAF_PRO_PRODUCT_ID 0x000c
@@ -63,13 +53,13 @@
 #define USB_LEAF_LIGHT_R_V2_PRODUCT_ID 0x0127
 #define USB_LEAF_LIGHT_HS_V2_OEM2_PRODUCT_ID 0x0128
 
-/* Kvaser USBCan-II devices product ids */
+ 
 #define USB_USBCAN_REVB_PRODUCT_ID 0x0002
 #define USB_VCI2_PRODUCT_ID 0x0003
 #define USB_USBCAN2_PRODUCT_ID 0x0004
 #define USB_MEMORATOR_PRODUCT_ID 0x0005
 
-/* Kvaser Minihydra USB devices product ids */
+ 
 #define USB_BLACKBIRD_V2_PRODUCT_ID 0x0102
 #define USB_MEMO_PRO_5HS_PRODUCT_ID 0x0104
 #define USB_USBCAN_PRO_5HS_PRODUCT_ID 0x0105
@@ -128,7 +118,7 @@ static const struct kvaser_usb_driver_info kvaser_usb_driver_info_leafimx = {
 };
 
 static const struct usb_device_id kvaser_usb_table[] = {
-	/* Leaf M32C USB product IDs */
+	 
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_DEVEL_PRODUCT_ID),
 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf },
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_PRODUCT_ID),
@@ -170,7 +160,7 @@ static const struct usb_device_id kvaser_usb_table[] = {
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_CAN_R_PRODUCT_ID),
 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leaf_err },
 
-	/* Leaf i.MX28 USB product IDs */
+	 
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LITE_V2_PRODUCT_ID),
 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MINI_PCIE_HS_PRODUCT_ID),
@@ -188,7 +178,7 @@ static const struct usb_device_id kvaser_usb_table[] = {
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_LEAF_LIGHT_HS_V2_OEM2_PRODUCT_ID),
 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_leafimx },
 
-	/* USBCANII USB product IDs */
+	 
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN2_PRODUCT_ID),
 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_usbcan },
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_USBCAN_REVB_PRODUCT_ID),
@@ -198,7 +188,7 @@ static const struct usb_device_id kvaser_usb_table[] = {
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_VCI2_PRODUCT_ID),
 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_usbcan },
 
-	/* Minihydra USB product IDs */
+	 
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_BLACKBIRD_V2_PRODUCT_ID),
 		.driver_info = (kernel_ulong_t)&kvaser_usb_driver_info_hydra },
 	{ USB_DEVICE(KVASER_VENDOR_ID, USB_MEMO_PRO_5HS_PRODUCT_ID),
@@ -470,9 +460,7 @@ static void kvaser_usb_reset_tx_urb_contexts(struct kvaser_usb_net_priv *priv)
 		priv->tx_contexts[i].echo_index = max_tx_urbs;
 }
 
-/* This method might sleep. Do not call it in the atomic context
- * of URB completions.
- */
+ 
 void kvaser_usb_unlink_tx_urbs(struct kvaser_usb_net_priv *priv)
 {
 	usb_kill_anchored_urbs(&priv->tx_submitted);
@@ -521,7 +509,7 @@ static int kvaser_usb_close(struct net_device *netdev)
 	if (err)
 		netdev_warn(netdev, "Cannot stop device, error %d\n", err);
 
-	/* reset tx contexts */
+	 
 	kvaser_usb_unlink_tx_urbs(priv);
 
 	priv->can.state = CAN_STATE_STOPPED;
@@ -561,7 +549,7 @@ static int kvaser_usb_set_bittiming(struct net_device *netdev)
 
 	err = ops->dev_get_busparams(priv);
 	if (err) {
-		/* Treat EOPNOTSUPP as success */
+		 
 		if (err == -EOPNOTSUPP)
 			err = 0;
 		return err;
@@ -676,7 +664,7 @@ static netdev_tx_t kvaser_usb_start_xmit(struct sk_buff *skb,
 	}
 	spin_unlock_irqrestore(&priv->tx_contexts_lock, flags);
 
-	/* This should never happen; it implies a flow control bug */
+	 
 	if (!context) {
 		netdev_warn(netdev, "cannot find free context\n");
 

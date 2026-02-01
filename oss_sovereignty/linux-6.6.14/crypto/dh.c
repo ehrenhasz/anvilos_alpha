@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*  Diffie-Hellman Key Agreement Method [RFC2631]
- *
- * Copyright (c) 2016, Intel Corporation
- * Authors: Salvatore Benedetto <salvatore.benedetto@intel.com>
- */
+
+ 
 
 #include <linux/fips.h>
 #include <linux/module.h>
@@ -14,9 +10,9 @@
 #include <linux/mpi.h>
 
 struct dh_ctx {
-	MPI p;	/* Value is guaranteed to be set. */
-	MPI g;	/* Value is guaranteed to be set. */
-	MPI xa;	/* Value is guaranteed to be set. */
+	MPI p;	 
+	MPI g;	 
+	MPI xa;	 
 };
 
 static void dh_clear_ctx(struct dh_ctx *ctx)
@@ -27,15 +23,10 @@ static void dh_clear_ctx(struct dh_ctx *ctx)
 	memset(ctx, 0, sizeof(*ctx));
 }
 
-/*
- * If base is g we compute the public key
- *	ya = g^xa mod p; [RFC2631 sec 2.1.1]
- * else if base if the counterpart public key we compute the shared secret
- *	ZZ = yb^xa mod p; [RFC2631 sec 2.1.1]
- */
+ 
 static int _compute_val(const struct dh_ctx *ctx, MPI base, MPI val)
 {
-	/* val = base^xa mod p */
+	 
 	return mpi_powm(val, base, ctx->xa, ctx->p);
 }
 
@@ -74,7 +65,7 @@ static int dh_set_secret(struct crypto_kpp *tfm, const void *buf,
 	struct dh_ctx *ctx = dh_get_ctx(tfm);
 	struct dh params;
 
-	/* Free the old MPI key if any */
+	 
 	dh_clear_ctx(ctx);
 
 	if (crypto_dh_decode_key(buf, len, &params) < 0)
@@ -94,37 +85,17 @@ err_clear_ctx:
 	return -EINVAL;
 }
 
-/*
- * SP800-56A public key verification:
- *
- * * For the safe-prime groups in FIPS mode, Q can be computed
- *   trivially from P and a full validation according to SP800-56A
- *   section 5.6.2.3.1 is performed.
- *
- * * For all other sets of group parameters, only a partial validation
- *   according to SP800-56A section 5.6.2.3.2 is performed.
- */
+ 
 static int dh_is_pubkey_valid(struct dh_ctx *ctx, MPI y)
 {
 	if (unlikely(!ctx->p))
 		return -EINVAL;
 
-	/*
-	 * Step 1: Verify that 2 <= y <= p - 2.
-	 *
-	 * The upper limit check is actually y < p instead of y < p - 1
-	 * in order to save one mpi_sub_ui() invocation here. Note that
-	 * p - 1 is the non-trivial element of the subgroup of order 2 and
-	 * thus, the check on y^q below would fail if y == p - 1.
-	 */
+	 
 	if (mpi_cmp_ui(y, 1) < 1 || mpi_cmp(y, ctx->p) >= 0)
 		return -EINVAL;
 
-	/*
-	 * Step 2: Verify that 1 = y^q mod p
-	 *
-	 * For the safe-prime groups q = (p - 1)/2.
-	 */
+	 
 	if (fips_enabled) {
 		MPI val, q;
 		int ret;
@@ -139,10 +110,7 @@ static int dh_is_pubkey_valid(struct dh_ctx *ctx, MPI y)
 			return -ENOMEM;
 		}
 
-		/*
-		 * ->p is odd, so no need to explicitly subtract one
-		 * from it before shifting to the right.
-		 */
+		 
 		mpi_rshift(q, ctx->p, 1);
 
 		ret = mpi_powm(val, y, q, ctx->p);
@@ -197,17 +165,17 @@ static int dh_compute_value(struct kpp_request *req)
 		goto err_free_base;
 
 	if (fips_enabled) {
-		/* SP800-56A rev3 5.7.1.1 check: Validation of shared secret */
+		 
 		if (req->src) {
 			MPI pone;
 
-			/* z <= 1 */
+			 
 			if (mpi_cmp_ui(val, 1) < 1) {
 				ret = -EBADMSG;
 				goto err_free_base;
 			}
 
-			/* z == p - 1 */
+			 
 			pone = mpi_alloc(0);
 
 			if (!pone) {
@@ -224,7 +192,7 @@ static int dh_compute_value(struct kpp_request *req)
 			if (ret)
 				goto err_free_base;
 
-		/* SP800-56A rev 3 5.6.2.1.3 key check */
+		 
 		} else {
 			if (dh_is_pubkey_valid(ctx, val)) {
 				ret = -EAGAIN;
@@ -354,39 +322,18 @@ static void *dh_safe_prime_gen_privkey(const struct dh_safe_prime *safe_prime,
 	int err;
 	u64 h, o;
 
-	/*
-	 * Generate a private key following NIST SP800-56Ar3,
-	 * sec. 5.6.1.1.1 and 5.6.1.1.3 resp..
-	 *
-	 * 5.6.1.1.1: choose key length N such that
-	 * 2 * ->max_strength <= N <= log2(q) + 1 = ->p_size * 8 - 1
-	 * with q = (p - 1) / 2 for the safe-prime groups.
-	 * Choose the lower bound's next power of two for N in order to
-	 * avoid excessively large private keys while still
-	 * maintaining some extra reserve beyond the bare minimum in
-	 * most cases. Note that for each entry in safe_prime_groups[],
-	 * the following holds for such N:
-	 * - N >= 256, in particular it is a multiple of 2^6 = 64
-	 *   bits and
-	 * - N < log2(q) + 1, i.e. N respects the upper bound.
-	 */
+	 
 	n = roundup_pow_of_two(2 * safe_prime->max_strength);
 	WARN_ON_ONCE(n & ((1u << 6) - 1));
-	n >>= 6; /* Convert N into units of u64. */
+	n >>= 6;  
 
-	/*
-	 * Reserve one extra u64 to hold the extra random bits
-	 * required as per 5.6.1.1.3.
-	 */
+	 
 	oversampling_size = (n + 1) * sizeof(__be64);
 	key = kmalloc(oversampling_size, GFP_KERNEL);
 	if (!key)
 		return ERR_PTR(-ENOMEM);
 
-	/*
-	 * 5.6.1.1.3, step 3 (and implicitly step 4): obtain N + 64
-	 * random bits and interpret them as a big endian integer.
-	 */
+	 
 	err = -EFAULT;
 	if (crypto_get_default_rng())
 		goto out_err;
@@ -397,53 +344,21 @@ static void *dh_safe_prime_gen_privkey(const struct dh_safe_prime *safe_prime,
 	if (err)
 		goto out_err;
 
-	/*
-	 * 5.6.1.1.3, step 5 is implicit: 2^N < q and thus,
-	 * M = min(2^N, q) = 2^N.
-	 *
-	 * For step 6, calculate
-	 * key = (key[] mod (M - 1)) + 1 = (key[] mod (2^N - 1)) + 1.
-	 *
-	 * In order to avoid expensive divisions, note that
-	 * 2^N mod (2^N - 1) = 1 and thus, for any integer h,
-	 * 2^N * h mod (2^N - 1) = h mod (2^N - 1) always holds.
-	 * The big endian integer key[] composed of n + 1 64bit words
-	 * may be written as key[] = h * 2^N + l, with h = key[0]
-	 * representing the 64 most significant bits and l
-	 * corresponding to the remaining 2^N bits. With the remark
-	 * from above,
-	 * h * 2^N + l mod (2^N - 1) = l + h mod (2^N - 1).
-	 * As both, l and h are less than 2^N, their sum after
-	 * this first reduction is guaranteed to be <= 2^(N + 1) - 2.
-	 * Or equivalently, that their sum can again be written as
-	 * h' * 2^N + l' with h' now either zero or one and if one,
-	 * then l' <= 2^N - 2. Thus, all bits at positions >= N will
-	 * be zero after a second reduction:
-	 * h' * 2^N + l' mod (2^N - 1) = l' + h' mod (2^N - 1).
-	 * At this point, it is still possible that
-	 * l' + h' = 2^N - 1, i.e. that l' + h' mod (2^N - 1)
-	 * is zero. This condition will be detected below by means of
-	 * the final increment overflowing in this case.
-	 */
+	 
 	h = be64_to_cpu(key[0]);
 	h = __add_u64_to_be(key + 1, n, h);
 	h = __add_u64_to_be(key + 1, n, h);
 	WARN_ON_ONCE(h);
 
-	/* Increment to obtain the final result. */
+	 
 	o = __add_u64_to_be(key + 1, n, 1);
-	/*
-	 * The overflow bit o from the increment is either zero or
-	 * one. If zero, key[1:n] holds the final result in big-endian
-	 * order. If one, key[1:n] is zero now, but needs to be set to
-	 * one, c.f. above.
-	 */
+	 
 	if (o)
 		key[n] = cpu_to_be64(1);
 
-	/* n is in units of u64, convert to bytes. */
+	 
 	*key_size = n << 3;
-	/* Strip the leading extra __be64, which is (virtually) zero by now. */
+	 
 	memmove(key, &key[1], *key_size);
 
 	return key;
@@ -887,11 +802,11 @@ static struct crypto_template crypto_ffdhe_templates[] = {
 	},
 };
 
-#else /* ! CONFIG_CRYPTO_DH_RFC7919_GROUPS */
+#else  
 
 static struct crypto_template crypto_ffdhe_templates[] = {};
 
-#endif /* CONFIG_CRYPTO_DH_RFC7919_GROUPS */
+#endif  
 
 
 static int __init dh_init(void)

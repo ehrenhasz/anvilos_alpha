@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Arizona interrupt support
- *
- * Copyright 2012 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio.h>
@@ -84,10 +78,7 @@ static irqreturn_t arizona_ctrlif_err(int irq, void *data)
 {
 	struct arizona *arizona = data;
 
-	/*
-	 * For pretty much all potential sources a register cache sync
-	 * won't help, we've just got a software bug somewhere.
-	 */
+	 
 	dev_err(arizona->dev, "Control interface error\n");
 
 	return IRQ_HANDLED;
@@ -110,10 +101,7 @@ static irqreturn_t arizona_irq_thread(int irq, void *data)
 		poll = false;
 
 		if (arizona->aod_irq_chip) {
-			/*
-			 * Check the AOD status register to determine whether
-			 * the nested IRQ handler should be called.
-			 */
+			 
 			ret = regmap_read(arizona->regmap,
 					  ARIZONA_AOD_IRQ1, &val);
 			if (ret)
@@ -124,10 +112,7 @@ static irqreturn_t arizona_irq_thread(int irq, void *data)
 					irq_find_mapping(arizona->virq, 0));
 		}
 
-		/*
-		 * Check if one of the main interrupts is asserted and only
-		 * check that domain if it is.
-		 */
+		 
 		ret = regmap_read(arizona->regmap, ARIZONA_IRQ_PIN_STATUS,
 				  &val);
 		if (ret == 0 && val & ARIZONA_IRQ1_STS) {
@@ -137,10 +122,7 @@ static irqreturn_t arizona_irq_thread(int irq, void *data)
 				"Failed to read main IRQ status: %d\n", ret);
 		}
 
-		/*
-		 * Poll the IRQ pin status to see if we're really done
-		 * if the interrupt controller can't do it for us.
-		 */
+		 
 		if (!arizona->pdata.irq_gpio) {
 			break;
 		} else if (arizona->pdata.irq_flags & IRQF_TRIGGER_RISING &&
@@ -270,10 +252,10 @@ int arizona_irq_init(struct arizona *arizona)
 		return -EINVAL;
 	}
 
-	/* Disable all wake sources by default */
+	 
 	regmap_write(arizona->regmap, ARIZONA_WAKE_CONTROL, 0);
 
-	/* Read the flags from the interrupt controller if not specified */
+	 
 	if (!arizona->pdata.irq_flags) {
 		irq_data = irq_get_irq_data(arizona->irq);
 		if (!irq_data) {
@@ -292,7 +274,7 @@ int arizona_irq_init(struct arizona *arizona)
 
 		case IRQ_TYPE_NONE:
 		default:
-			/* Device default */
+			 
 			arizona->pdata.irq_flags = IRQF_TRIGGER_LOW;
 			break;
 		}
@@ -311,7 +293,7 @@ int arizona_irq_init(struct arizona *arizona)
 
 	flags |= arizona->pdata.irq_flags;
 
-	/* Allocate a virtual IRQ domain to distribute to the regmap domains */
+	 
 	arizona->virq = irq_domain_add_linear(NULL, 2, &arizona_domain_ops,
 					      arizona);
 	if (!arizona->virq) {
@@ -351,7 +333,7 @@ int arizona_irq_init(struct arizona *arizona)
 		goto err_map_main_irq;
 	}
 
-	/* Used to emulate edge trigger and to work around broken pinmux */
+	 
 	if (arizona->pdata.irq_gpio) {
 		if (gpio_to_irq(arizona->pdata.irq_gpio) != arizona->irq) {
 			dev_warn(arizona->dev, "IRQ %d is not GPIO %d (%d)\n",
@@ -380,7 +362,7 @@ int arizona_irq_init(struct arizona *arizona)
 		goto err_main_irq;
 	}
 
-	/* Make sure the boot done IRQ is unmasked for resumes */
+	 
 	ret = arizona_request_irq(arizona, ARIZONA_IRQ_BOOT_DONE, "Boot done",
 				  arizona_boot_done, arizona);
 	if (ret != 0) {
@@ -389,7 +371,7 @@ int arizona_irq_init(struct arizona *arizona)
 		goto err_boot_done;
 	}
 
-	/* Handle control interface errors in the core */
+	 
 	if (arizona->ctrlif_error) {
 		ret = arizona_request_irq(arizona, ARIZONA_IRQ_CTRLIF_ERR,
 					  "Control interface error",

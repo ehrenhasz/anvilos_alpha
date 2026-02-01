@@ -42,7 +42,7 @@ static int parse_one_sublevel_option(const char *str,
 	return 0;
 }
 
-/* parse options like --foo a=<n>,b,c... */
+ 
 int perf_parse_sublevel_options(const char *str, struct sublevel_option *opts)
 {
 	char *s = strdup(str);

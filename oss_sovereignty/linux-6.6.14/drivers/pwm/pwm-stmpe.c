@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Linaro Ltd.
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -84,11 +80,11 @@ static int stmpe_24xx_pwm_disable(struct pwm_chip *chip,
 	return ret;
 }
 
-/* STMPE 24xx PWM instructions */
+ 
 #define SMAX		0x007f
 #define SMIN		0x00ff
 #define GTS		0x0000
-#define LOAD		BIT(14) /* Only available on 2403 */
+#define LOAD		BIT(14)  
 #define RAMPUP		0x0000
 #define RAMPDOWN	BIT(7)
 #define PRESCALE_512	BIT(14)
@@ -108,16 +104,16 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	u8 offset;
 	int ret;
 
-	/* Make sure we are disabled */
+	 
 	if (pwm_is_enabled(pwm)) {
 		ret = stmpe_24xx_pwm_disable(chip, pwm);
 		if (ret)
 			return ret;
 	} else {
-		/* Connect the PWM to the pin */
+		 
 		pin = pwm->hwpwm;
 
-		/* On STMPE2401 and 2403 pins 21,22,23 are used */
+		 
 		if (stmpe_pwm->stmpe->partnum == STMPE2401 ||
 		    stmpe_pwm->stmpe->partnum == STMPE2403)
 			pin += STMPE_PWM_24XX_PINBASE;
@@ -131,7 +127,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		}
 	}
 
-	/* STMPE24XX */
+	 
 	switch (pwm->hwpwm) {
 	case 0:
 		offset = STMPE24XX_PWMIC0;
@@ -146,7 +142,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		break;
 
 	default:
-		/* Should not happen as npwm is 3 */
+		 
 		return -ENODEV;
 	}
 
@@ -155,64 +151,56 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	if (duty_ns == 0) {
 		if (stmpe_pwm->stmpe->partnum == STMPE2401)
-			program[0] = SMAX; /* off all the time */
+			program[0] = SMAX;  
 
 		if (stmpe_pwm->stmpe->partnum == STMPE2403)
-			program[0] = LOAD | 0xff; /* LOAD 0xff */
+			program[0] = LOAD | 0xff;  
 
 		stmpe_pwm->last_duty = 0x00;
 	} else if (duty_ns == period_ns) {
 		if (stmpe_pwm->stmpe->partnum == STMPE2401)
-			program[0] = SMIN; /* on all the time */
+			program[0] = SMIN;  
 
 		if (stmpe_pwm->stmpe->partnum == STMPE2403)
-			program[0] = LOAD | 0x00; /* LOAD 0x00 */
+			program[0] = LOAD | 0x00;  
 
 		stmpe_pwm->last_duty = 0xff;
 	} else {
 		u8 value, last = stmpe_pwm->last_duty;
 		unsigned long duty;
 
-		/*
-		 * Counter goes from 0x00 to 0xff repeatedly at 32768 Hz,
-		 * (means a period of 30517 ns) then this is compared to the
-		 * counter from the ramp, if this is >= PWM counter the output
-		 * is high. With LOAD we can define how much of the cycle it
-		 * is on.
-		 *
-		 * Prescale = 0 -> 2 kHz -> T = 1/f = 488281.25 ns
-		 */
+		 
 
-		/* Scale to 0..0xff */
+		 
 		duty = duty_ns * 256;
 		duty = DIV_ROUND_CLOSEST(duty, period_ns);
 		value = duty;
 
 		if (value == last) {
-			/* Run the old program */
+			 
 			if (pwm_is_enabled(pwm))
 				stmpe_24xx_pwm_enable(chip, pwm);
 
 			return 0;
 		} else if (stmpe_pwm->stmpe->partnum == STMPE2403) {
-			/* STMPE2403 can simply set the right PWM value */
+			 
 			program[0] = LOAD | value;
 			program[1] = 0x0000;
 		} else if (stmpe_pwm->stmpe->partnum == STMPE2401) {
-			/* STMPE2401 need a complex program */
+			 
 			u16 incdec = 0x0000;
 
 			if (last < value)
-				/* Count up */
+				 
 				incdec = RAMPUP | (value - last);
 			else
-				/* Count down */
+				 
 				incdec = RAMPDOWN | (last - value);
 
-			/* Step to desired value, smoothly */
+			 
 			program[0] = PRESCALE_512 | STEPTIME_1 | incdec;
 
-			/* Loop eternally to 0x00 */
+			 
 			program[1] = BRANCH;
 		}
 
@@ -223,9 +211,7 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		stmpe_pwm->last_duty = value;
 	}
 
-	/*
-	 * We can write programs of up to 64 16-bit words into this channel.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(program); i++) {
 		u8 value;
 
@@ -248,11 +234,11 @@ static int stmpe_24xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 		}
 	}
 
-	/* If we were enabled, re-enable this PWM */
+	 
 	if (pwm_is_enabled(pwm))
 		stmpe_24xx_pwm_enable(chip, pwm);
 
-	/* Sleep for 200ms so we're sure it will take effect */
+	 
 	msleep(200);
 
 	dev_dbg(chip->dev, "programmed PWM#%u, %u bytes\n", pwm->hwpwm, i);

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+ 
+ 
 
 #if !defined(__EFCT_IO_H__)
 #define __EFCT_IO_H__
@@ -42,57 +39,7 @@ enum efct_els_state {
 	EFCT_ELS_ABORT_IO_COMPL,
 };
 
-/**
- * Scsi target IO object
- * @efct:		pointer back to efct
- * @instance_index:	unique instance index value
- * @io:			IO display name
- * @node:		pointer to node
- * @list_entry:		io list entry
- * @io_pending_link:	io pending list entry
- * @ref:		reference counter
- * @release:		release callback function
- * @init_task_tag:	initiator task tag (OX_ID) for back-end and SCSI logging
- * @tgt_task_tag:	target task tag (RX_ID) for back-end and SCSI logging
- * @hw_tag:		HW layer unique IO id
- * @tag:		unique IO identifier
- * @sgl:		SGL
- * @sgl_allocated:	Number of allocated SGEs
- * @sgl_count:		Number of SGEs in this SGL
- * @tgt_io:		backend target private IO data
- * @exp_xfer_len:	expected data transfer length, based on FC header
- * @hw_priv:		Declarations private to HW/SLI
- * @io_type:		indicates what this struct efct_io structure is used for
- * @hio:		hw io object
- * @transferred:	Number of bytes transferred
- * @auto_resp:		set if auto_trsp was set
- * @low_latency:	set if low latency request
- * @wq_steering:	selected WQ steering request
- * @wq_class:		selected WQ class if steering is class
- * @xfer_req:		transfer size for current request
- * @scsi_tgt_cb:	target callback function
- * @scsi_tgt_cb_arg:	target callback function argument
- * @abort_cb:		abort callback function
- * @abort_cb_arg:	abort callback function argument
- * @bls_cb:		BLS callback function
- * @bls_cb_arg:		BLS callback function argument
- * @tmf_cmd:		TMF command being processed
- * @abort_rx_id:	rx_id from the ABTS that initiated the command abort
- * @cmd_tgt:		True if this is a Target command
- * @send_abts:		when aborting, indicates ABTS is to be sent
- * @cmd_ini:		True if this is an Initiator command
- * @seq_init:		True if local node has sequence initiative
- * @iparam:		iparams for hw io send call
- * @hio_type:		HW IO type
- * @wire_len:		wire length
- * @hw_cb:		saved HW callback
- * @io_to_abort:	for abort handling, pointer to IO to abort
- * @rspbuf:		SCSI Response buffer
- * @timeout:		Timeout value in seconds for this IO
- * @cs_ctl:		CS_CTL priority for this IO
- * @io_free:		Is io object in freelist
- * @app_id:		application id
- */
+ 
 struct efct_io {
 	struct efct		*efct;
 	u32			instance_index;
@@ -171,4 +118,4 @@ efct_io_pool_io_free(struct efct_io_pool *io_pool, struct efct_io *io);
 struct efct_io *
 efct_io_find_tgt_io(struct efct *efct, struct efct_node *node,
 		    u16 ox_id, u16 rx_id);
-#endif /* __EFCT_IO_H__ */
+#endif  

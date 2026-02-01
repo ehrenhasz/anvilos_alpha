@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef _ROCKCHIP_AV1_FILMGRAIN_H_
 #define _ROCKCHIP_AV1_FILMGRAIN_H_

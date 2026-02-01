@@ -1,29 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Helper library for PATA timings
- *
- *  Copyright 2003-2004 Red Hat, Inc.  All rights reserved.
- *  Copyright 2003-2004 Jeff Garzik
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/libata.h>
 
-/*
- * This mode timing computation functionality is ported over from
- * drivers/ide/ide-timing.h and was originally written by Vojtech Pavlik
- */
-/*
- * PIO 0-4, MWDMA 0-2 and UDMA 0-6 timings (in nanoseconds).
- * These were taken from ATA/ATAPI-6 standard, rev 0a, except
- * for UDMA6, which is currently supported only by Maxtor drives.
- *
- * For PIO 5/6 MWDMA 3/4 see the CFA specification 3.0.
- */
+ 
+ 
 
 static const struct ata_timing ata_timing[] = {
-/*	{ XFER_PIO_SLOW, 120, 290, 240, 960, 290, 240, 0,  960,   0 }, */
+ 
 	{ XFER_PIO_0,     70, 290, 240, 600, 165, 150, 0,  600,   0 },
 	{ XFER_PIO_1,     50, 290,  93, 383, 125, 100, 0,  383,   0 },
 	{ XFER_PIO_2,     30, 290,  40, 330, 100,  90, 0,  240,   0 },
@@ -42,7 +28,7 @@ static const struct ata_timing ata_timing[] = {
 	{ XFER_MW_DMA_3,  25,   0,   0,   0,  65,  25, 5,  100,   0 },
 	{ XFER_MW_DMA_4,  25,   0,   0,   0,  55,  20, 5,   80,   0 },
 
-/*	{ XFER_UDMA_SLOW,  0,   0,   0,   0,   0,   0, 0,    0, 150 }, */
+ 
 	{ XFER_UDMA_0,     0,   0,   0,   0,   0,   0, 0,    0, 120 },
 	{ XFER_UDMA_1,     0,   0,   0,   0,   0,   0, 0,    0,  80 },
 	{ XFER_UDMA_2,     0,   0,   0,   0,   0,   0, 0,    0,  60 },
@@ -119,21 +105,16 @@ int ata_timing_compute(struct ata_device *adev, unsigned short speed,
 	const struct ata_timing *s;
 	struct ata_timing p;
 
-	/*
-	 * Find the mode.
-	 */
+	 
 	s = ata_timing_find_mode(speed);
 	if (!s)
 		return -EINVAL;
 
 	memcpy(t, s, sizeof(*s));
 
-	/*
-	 * If the drive is an EIDE drive, it can tell us it needs extended
-	 * PIO/MW_DMA cycle timing.
-	 */
+	 
 
-	if (id[ATA_ID_FIELD_VALID] & 2) {	/* EIDE drive */
+	if (id[ATA_ID_FIELD_VALID] & 2) {	 
 		memset(&p, 0, sizeof(p));
 
 		if (speed >= XFER_PIO_0 && speed < XFER_SW_DMA_0) {
@@ -148,26 +129,18 @@ int ata_timing_compute(struct ata_device *adev, unsigned short speed,
 		ata_timing_merge(&p, t, t, ATA_TIMING_CYCLE | ATA_TIMING_CYC8B);
 	}
 
-	/*
-	 * Convert the timing to bus clock counts.
-	 */
+	 
 
 	ata_timing_quantize(t, t, T, UT);
 
-	/*
-	 * Even in DMA/UDMA modes we still use PIO access for IDENTIFY,
-	 * S.M.A.R.T * and some other commands. We have to ensure that the
-	 * DMA cycle timing is slower/equal than the fastest PIO timing.
-	 */
+	 
 
 	if (speed > XFER_PIO_6) {
 		ata_timing_compute(adev, adev->pio_mode, &p, T, UT);
 		ata_timing_merge(&p, t, t, ATA_TIMING_ALL);
 	}
 
-	/*
-	 * Lengthen active & recovery time so that cycle time is correct.
-	 */
+	 
 
 	if (t->act8b + t->rec8b < t->cyc8b) {
 		t->act8b += (t->cyc8b - (t->act8b + t->rec8b)) / 2;
@@ -179,11 +152,7 @@ int ata_timing_compute(struct ata_device *adev, unsigned short speed,
 		t->recover = t->cycle - t->active;
 	}
 
-	/*
-	 * In a few cases quantisation may produce enough errors to
-	 * leave t->cycle too low for the sum of active and recovery
-	 * if so we must correct this.
-	 */
+	 
 	if (t->active + t->recover > t->cycle)
 		t->cycle = t->active + t->recover;
 

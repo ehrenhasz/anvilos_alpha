@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -11,30 +9,19 @@
 #include <linux/platform_device.h>
 #include <linux/watchdog.h>
 
-/* minimum and maximum watchdog trigger timeout, in seconds */
+ 
 #define MIN_WDT_TIMEOUT			1
 #define MAX_WDT_TIMEOUT			255
 
-/*
- * Base of the WDT registers, from the timer base address.  There are
- * actually 5 watchdogs that can be configured (by pairing with an available
- * timer), at bases 0x100 + (WDT ID) * 0x20, where WDT ID is 0 through 4.
- * This driver only configures the first watchdog (WDT ID 0).
- */
+ 
 #define WDT_BASE			0x100
 #define WDT_ID				0
 
-/*
- * Register base of the timer that's selected for pairing with the watchdog.
- * This driver arbitrarily uses timer 5, which is currently unused by
- * other drivers (in particular, the Tegra clocksource driver).  If this
- * needs to change, take care that the new timer is not used by the
- * clocksource driver.
- */
+ 
 #define WDT_TIMER_BASE			0x60
 #define WDT_TIMER_ID			5
 
-/* WDT registers */
+ 
 #define WDT_CFG				0x0
 #define WDT_CFG_PERIOD_SHIFT		4
 #define WDT_CFG_PERIOD_MASK		0xff
@@ -51,7 +38,7 @@
 #define WDT_UNLOCK			(0xc)
 #define WDT_UNLOCK_PATTERN		(0xc45a << 0)
 
-/* Timer registers */
+ 
 #define TIMER_PTV			0x0
 #define TIMER_EN			(1 << 31)
 #define TIMER_PERIODIC			(1 << 30)
@@ -80,23 +67,12 @@ static int tegra_wdt_start(struct watchdog_device *wdd)
 	struct tegra_wdt *wdt = watchdog_get_drvdata(wdd);
 	u32 val;
 
-	/*
-	 * This thing has a fixed 1MHz clock.  Normally, we would set the
-	 * period to 1 second by writing 1000000ul, but the watchdog system
-	 * reset actually occurs on the 4th expiration of this counter,
-	 * so we set the period to 1/4 of this amount.
-	 */
+	 
 	val = 1000000ul / 4;
 	val |= (TIMER_EN | TIMER_PERIODIC);
 	writel(val, wdt->tmr_regs + TIMER_PTV);
 
-	/*
-	 * Set number of periods and start counter.
-	 *
-	 * Interrupt handler is not required for user space
-	 * WDT accesses, since the caller is responsible to ping the
-	 * WDT to reset the counter before expiration, through ioctls.
-	 */
+	 
 	val = WDT_TIMER_ID |
 	      (wdd->timeout << WDT_CFG_PERIOD_SHIFT) |
 	      WDT_CFG_PMC2CAR_RST_EN;
@@ -149,16 +125,13 @@ static unsigned int tegra_wdt_get_timeleft(struct watchdog_device *wdd)
 
 	val = readl(wdt->wdt_regs + WDT_STS);
 
-	/* Current countdown (from timeout) */
+	 
 	count = (val >> WDT_STS_COUNT_SHIFT) & WDT_STS_COUNT_MASK;
 
-	/* Number of expirations (we are waiting for the 4th expiration) */
+	 
 	exp = (val >> WDT_STS_EXP_SHIFT) & WDT_STS_EXP_MASK;
 
-	/*
-	 * The entire thing is divided by 4 because we are ticking down 4 times
-	 * faster due to needing to wait for the 4th expiration.
-	 */
+	 
 	return (((3 - exp) * wdd->timeout) + count) / 4;
 }
 
@@ -187,24 +160,21 @@ static int tegra_wdt_probe(struct platform_device *pdev)
 	void __iomem *regs;
 	int ret;
 
-	/* This is the timer base. */
+	 
 	regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(regs))
 		return PTR_ERR(regs);
 
-	/*
-	 * Allocate our watchdog driver data, which has the
-	 * struct watchdog_device nested within it.
-	 */
+	 
 	wdt = devm_kzalloc(dev, sizeof(*wdt), GFP_KERNEL);
 	if (!wdt)
 		return -ENOMEM;
 
-	/* Initialize struct tegra_wdt. */
+	 
 	wdt->wdt_regs = regs + WDT_BASE;
 	wdt->tmr_regs = regs + WDT_TIMER_BASE;
 
-	/* Initialize struct watchdog_device. */
+	 
 	wdd = &wdt->wdd;
 	wdd->timeout = heartbeat;
 	wdd->info = &tegra_wdt_info;

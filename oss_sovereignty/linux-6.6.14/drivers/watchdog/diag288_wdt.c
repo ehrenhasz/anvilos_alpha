@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Watchdog driver for z/VM and LPAR using the diag 288 interface.
- *
- * Under z/VM, expiration of the watchdog will send a "system restart" command
- * to CP.
- *
- * The command can be altered using the module parameter "cmd". This is
- * not recommended because it's only supported on z/VM but not whith LPAR.
- *
- * On LPAR, the watchdog will always trigger a system restart. the module
- * paramter cmd is meaningless here.
- *
- *
- * Copyright IBM Corp. 2004, 2013
- * Author(s): Arnd Bergmann (arndb@de.ibm.com)
- *	      Philipp Hachtmann (phacht@de.ibm.com)
- *
- */
+
+ 
 
 #define KMSG_COMPONENT "diag288_wdt"
 #define pr_fmt(fmt) KMSG_COMPONENT ": " fmt
@@ -34,18 +17,18 @@
 #define MAX_CMDLEN 240
 #define DEFAULT_CMD "SYSTEM RESTART"
 
-#define MIN_INTERVAL 15     /* Minimal time supported by diag88 */
-#define MAX_INTERVAL 3600   /* One hour should be enough - pure estimation */
+#define MIN_INTERVAL 15      
+#define MAX_INTERVAL 3600    
 
 #define WDT_DEFAULT_TIMEOUT 30
 
-/* Function codes - init, change, cancel */
+ 
 #define WDT_FUNC_INIT 0
 #define WDT_FUNC_CHANGE 1
 #define WDT_FUNC_CANCEL 2
 #define WDT_FUNC_CONCEAL 0x80000000
 
-/* Action codes for LPAR watchdog */
+ 
 #define LPARWDT_RESTART 0
 
 static char wdt_cmd[MAX_CMDLEN] = DEFAULT_CMD;
@@ -137,11 +120,7 @@ static int wdt_ping(struct watchdog_device *dev)
 	unsigned int func;
 
 	if (MACHINE_IS_VM) {
-		/*
-		 * It seems to be ok to z/VM to use the init function to
-		 * retrigger the watchdog. On LPAR WDT_FUNC_CHANGE must
-		 * be used when the watchdog is running.
-		 */
+		 
 		func = conceal_on ? (WDT_FUNC_INIT | WDT_FUNC_CONCEAL)
 			: WDT_FUNC_INIT;
 

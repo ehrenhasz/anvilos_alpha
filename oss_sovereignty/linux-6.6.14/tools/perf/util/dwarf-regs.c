@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwarf-regs.c : Mapping of DWARF debug register numbers into register names.
- *
- * Written by: Masami Hiramatsu <mhiramat@kernel.org>
- */
+
+ 
 
 #include <debug.h>
 #include <dwarf-regs.h>
@@ -11,14 +7,14 @@
 #include <linux/kernel.h>
 
 #ifndef EM_AARCH64
-#define EM_AARCH64	183  /* ARM 64 bit */
+#define EM_AARCH64	183   
 #endif
 
 #ifndef EM_LOONGARCH
-#define EM_LOONGARCH	258 /* LoongArch */
+#define EM_LOONGARCH	258  
 #endif
 
-/* Define const char * {arch}_register_tbl[] */
+ 
 #define DEFINE_DWARF_REGSTR_TABLE
 #include "../arch/x86/include/dwarf-regs-table.h"
 #include "../arch/arm/include/dwarf-regs-table.h"
@@ -33,11 +29,11 @@
 
 #define __get_dwarf_regstr(tbl, n) (((n) < ARRAY_SIZE(tbl)) ? (tbl)[(n)] : NULL)
 
-/* Return architecture dependent register string (for kprobe-tracer) */
+ 
 const char *get_dwarf_regstr(unsigned int n, unsigned int machine)
 {
 	switch (machine) {
-	case EM_NONE:	/* Generic arch - use host arch */
+	case EM_NONE:	 
 		return get_arch_regstr(n);
 	case EM_386:
 		return __get_dwarf_regstr(x86_32_regstr_tbl, n);

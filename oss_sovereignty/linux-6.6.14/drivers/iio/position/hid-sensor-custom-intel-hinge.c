@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 #include <linux/hid-sensor-hub.h>
 #include <linux/iio/buffer.h>
 #include <linux/iio/iio.h>
@@ -53,7 +50,7 @@ static const u32 hinge_sensitivity_addresses[] = {
 	HID_USAGE_SENSOR_DATA_FIELD_CUSTOM_VALUE(1),
 };
 
-/* Channel definitions */
+ 
 static const struct iio_chan_spec hinge_channels[] = {
 	{
 		.type = IIO_ANGL,
@@ -98,14 +95,14 @@ static const struct iio_chan_spec hinge_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_SCAN_INDEX_TIMESTAMP)
 };
 
-/* Adjust channel real bits based on report descriptor */
+ 
 static void hinge_adjust_channel_realbits(struct iio_chan_spec *channels,
 					  int channel, int size)
 {
 	channels[channel].scan_type.realbits = size * 8;
 }
 
-/* Channel read_raw handler */
+ 
 static int hinge_read_raw(struct iio_dev *indio_dev,
 			  struct iio_chan_spec const *chan, int *val, int *val2,
 			  long mask)
@@ -152,7 +149,7 @@ static int hinge_read_raw(struct iio_dev *indio_dev,
 	}
 }
 
-/* Channel write_raw handler */
+ 
 static int hinge_write_raw(struct iio_dev *indio_dev,
 			   struct iio_chan_spec const *chan, int val, int val2,
 			   long mask)
@@ -185,10 +182,7 @@ static const struct iio_info hinge_info = {
 	.read_label = hinge_read_label,
 };
 
-/*
- * Callback handler to send event after all samples are received
- * and captured.
- */
+ 
 static int hinge_proc_event(struct hid_sensor_hub_device *hsdev,
 			    unsigned int usage_id, void *priv)
 {
@@ -207,7 +201,7 @@ static int hinge_proc_event(struct hid_sensor_hub_device *hsdev,
 	return 0;
 }
 
-/* Capture samples in local storage */
+ 
 static int hinge_capture_sample(struct hid_sensor_hub_device *hsdev,
 				unsigned int usage_id, size_t raw_len,
 				char *raw_data, void *priv)
@@ -232,7 +226,7 @@ static int hinge_capture_sample(struct hid_sensor_hub_device *hsdev,
 	}
 }
 
-/* Parse report which is specific to an usage id */
+ 
 static int hinge_parse_report(struct platform_device *pdev,
 			      struct hid_sensor_hub_device *hsdev,
 			      struct iio_chan_spec *channels,
@@ -260,7 +254,7 @@ static int hinge_parse_report(struct platform_device *pdev,
 	return ret;
 }
 
-/* Function to initialize the processing for usage id */
+ 
 static int hid_hinge_probe(struct platform_device *pdev)
 {
 	struct hinge_state *st;
@@ -341,7 +335,7 @@ error_remove_trigger:
 	return ret;
 }
 
-/* Function to deinitialize the processing for usage id */
+ 
 static int hid_hinge_remove(struct platform_device *pdev)
 {
 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
@@ -357,10 +351,10 @@ static int hid_hinge_remove(struct platform_device *pdev)
 
 static const struct platform_device_id hid_hinge_ids[] = {
 	{
-		/* Format: HID-SENSOR-INT-usage_id_in_hex_lowercase */
+		 
 		.name = "HID-SENSOR-INT-020b",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, hid_hinge_ids);
 

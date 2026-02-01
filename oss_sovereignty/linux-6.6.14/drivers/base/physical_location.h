@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Device physical location support
- *
- * Author: Won Chung <wonchung@google.com>
- */
+ 
+ 
 
 #include <linux/device.h>
 

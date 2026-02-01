@@ -1,14 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8821AE_DEF_H__
 #define __RTL8821AE_DEF_H__
 
-/*--------------------------Define -------------------------------------------*/
+ 
 #define	USE_SPECIFIC_FW_TO_SUPPORT_WOWLAN	1
 
-/* BIT 7 HT Rate*/
-/*TxHT = 0*/
+ 
+ 
 #define	MGN_1M				0x02
 #define	MGN_2M				0x04
 #define	MGN_5_5M			0x0b
@@ -23,7 +23,7 @@
 #define	MGN_48M				0x60
 #define	MGN_54M				0x6c
 
-/* TxHT = 1 */
+ 
 #define	MGN_MCS0			0x80
 #define	MGN_MCS1			0x81
 #define	MGN_MCS2			0x82
@@ -40,7 +40,7 @@
 #define	MGN_MCS13			0x8d
 #define	MGN_MCS14			0x8e
 #define	MGN_MCS15			0x8f
-/* VHT rate */
+ 
 #define	MGN_VHT1SS_MCS0		0x90
 #define	MGN_VHT1SS_MCS1		0x91
 #define	MGN_VHT1SS_MCS2		0x92
@@ -92,7 +92,7 @@
 
 #define	MGN_UNKNOWN			0xff
 
-/* 30 ms */
+ 
 #define	WIFI_NAV_UPPER_US				30000
 #define HAL_92C_NAV_UPPER_UNIT			128
 
@@ -151,7 +151,7 @@ enum vht_data_sc {
 	VHT_DATA_SC_40_LOWER_OF_80MHZ = 10,
 };
 
-/* MASK */
+ 
 #define IC_TYPE_MASK			(BIT(0)|BIT(1)|BIT(2))
 #define CHIP_TYPE_MASK			BIT(3)
 #define RF_TYPE_MASK			(BIT(4)|BIT(5)|BIT(6))
@@ -159,7 +159,7 @@ enum vht_data_sc {
 #define ROM_VERSION_MASK		(BIT(11)|BIT(10)|BIT(9)|BIT(8))
 #define CUT_VERSION_MASK		(BIT(15)|BIT(14)|BIT(13)|BIT(12))
 
-/* Get element */
+ 
 #define GET_CVID_IC_TYPE(version)	((version) & IC_TYPE_MASK)
 #define GET_CVID_CHIP_TYPE(version)	((version) & CHIP_TYPE_MASK)
 #define GET_CVID_RF_TYPE(version)	((version) & RF_TYPE_MASK)
@@ -200,15 +200,15 @@ enum vht_data_sc {
 					B_CUT_VERSION) ? \
 					true : false) : false)
 enum board_type {
-	ODM_BOARD_DEFAULT = 0,	  /* The DEFAULT case. */
-	ODM_BOARD_MINICARD = BIT(0), /* 0 = non-mini card, 1 = mini card. */
-	ODM_BOARD_SLIM = BIT(1), /* 0 = non-slim card, 1 = slim card */
-	ODM_BOARD_BT = BIT(2), /* 0 = without BT card, 1 = with BT */
-	ODM_BOARD_EXT_PA = BIT(3), /* 1 = existing 2G ext-PA */
-	ODM_BOARD_EXT_LNA = BIT(4), /* 1 = existing 2G ext-LNA */
-	ODM_BOARD_EXT_TRSW = BIT(5), /* 1 = existing ext-TRSW */
-	ODM_BOARD_EXT_PA_5G = BIT(6), /* 1 = existing 5G ext-PA */
-	ODM_BOARD_EXT_LNA_5G = BIT(7), /* 1 = existing 5G ext-LNA */
+	ODM_BOARD_DEFAULT = 0,	   
+	ODM_BOARD_MINICARD = BIT(0),  
+	ODM_BOARD_SLIM = BIT(1),  
+	ODM_BOARD_BT = BIT(2),  
+	ODM_BOARD_EXT_PA = BIT(3),  
+	ODM_BOARD_EXT_LNA = BIT(4),  
+	ODM_BOARD_EXT_TRSW = BIT(5),  
+	ODM_BOARD_EXT_PA_5G = BIT(6),  
+	ODM_BOARD_EXT_LNA_5G = BIT(7),  
 };
 
 enum rf_optype {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>

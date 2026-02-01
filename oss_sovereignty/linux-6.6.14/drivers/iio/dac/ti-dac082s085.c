@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ti-dac082s085.c - Texas Instruments 8/10/12-bit 2/4-channel DAC driver
- *
- * Copyright (C) 2017 KUNBUS GmbH
- *
- * https://www.ti.com/lit/ds/symlink/dac082s085.pdf
- * https://www.ti.com/lit/ds/symlink/dac102s085.pdf
- * https://www.ti.com/lit/ds/symlink/dac122s085.pdf
- * https://www.ti.com/lit/ds/symlink/dac084s085.pdf
- * https://www.ti.com/lit/ds/symlink/dac104s085.pdf
- * https://www.ti.com/lit/ds/symlink/dac124s085.pdf
- */
+
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/module.h>
@@ -34,18 +23,7 @@ static const struct ti_dac_spec ti_dac_spec[] = {
 	[quad_12bit] = { .num_channels = 4, .resolution = 12 },
 };
 
-/**
- * struct ti_dac_chip - TI DAC chip
- * @lock: protects write sequences
- * @vref: regulator generating Vref
- * @mesg: SPI message to perform a write
- * @xfer: SPI transfer used by @mesg
- * @val: cached value of each output
- * @powerdown: whether the chip is powered down
- * @powerdown_mode: selected by the user
- * @resolution: resolution of the chip
- * @buf: buffer for @xfer
- */
+ 
 struct ti_dac_chip {
 	struct mutex lock;
 	struct regulator *vref;

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2017, 2018 Oracle.  All rights reserved.
- *
- * Trace point definitions for the "rpcrdma" subsystem.
- */
+ 
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM rpcrdma
 
@@ -18,9 +14,7 @@
 #include <trace/misc/rdma.h>
 #include <trace/misc/sunrpc.h>
 
-/**
- ** Event classes
- **/
+ 
 
 DECLARE_EVENT_CLASS(rpcrdma_completion_class,
 	TP_PROTO(
@@ -627,9 +621,7 @@ DECLARE_EVENT_CLASS(xprtrdma_callback_class,
 				),					\
 				TP_ARGS(r_xprt, rqst))
 
-/**
- ** Connection events
- **/
+ 
 
 TRACE_EVENT(xprtrdma_inline_thresh,
 	TP_PROTO(
@@ -727,9 +719,7 @@ TRACE_EVENT(xprtrdma_op_set_cto,
 	)
 );
 
-/**
- ** Call events
- **/
+ 
 
 TRACE_EVENT(xprtrdma_createmrs,
 	TP_PROTO(
@@ -1089,9 +1079,7 @@ TRACE_EVENT(xprtrdma_post_linv_err,
 	)
 );
 
-/**
- ** Completion events
- **/
+ 
 
 DEFINE_RECEIVE_COMPLETION_EVENT(xprtrdma_wc_receive);
 
@@ -1245,9 +1233,7 @@ TRACE_EVENT(xprtrdma_dma_maperr,
 	TP_printk("dma addr=0x%llx\n", __entry->addr)
 );
 
-/**
- ** Reply events
- **/
+ 
 
 TRACE_EVENT(xprtrdma_reply,
 	TP_PROTO(
@@ -1446,9 +1432,7 @@ TRACE_EVENT(xprtrdma_mrs_zap,
 	)
 );
 
-/**
- ** Callback events
- **/
+ 
 
 TRACE_EVENT(xprtrdma_cb_setup,
 	TP_PROTO(
@@ -1478,9 +1462,7 @@ TRACE_EVENT(xprtrdma_cb_setup,
 DEFINE_CALLBACK_EVENT(call);
 DEFINE_CALLBACK_EVENT(reply);
 
-/**
- ** Server-side RPC/RDMA events
- **/
+ 
 
 DECLARE_EVENT_CLASS(svcrdma_accept_class,
 	TP_PROTO(
@@ -1777,9 +1759,7 @@ DECLARE_EVENT_CLASS(svcrdma_error_event,
 DEFINE_ERROR_EVENT(vers);
 DEFINE_ERROR_EVENT(chunk);
 
-/**
- ** Server-side RDMA API events
- **/
+ 
 
 DECLARE_EVENT_CLASS(svcrdma_dma_map_class,
 	TP_PROTO(
@@ -2246,6 +2226,6 @@ TRACE_EVENT(svcrdma_sq_post_err,
 	)
 );
 
-#endif /* _TRACE_RPCRDMA_H */
+#endif  
 
 #include <trace/define_trace.h>

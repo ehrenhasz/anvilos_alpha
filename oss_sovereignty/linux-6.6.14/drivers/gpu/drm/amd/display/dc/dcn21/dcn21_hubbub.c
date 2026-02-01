@@ -1,27 +1,4 @@
-/*
-* Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include <linux/delay.h>
 #include "dm_services.h"
 #include "dcn20/dcn20_hubbub.h"
@@ -70,10 +47,10 @@ void dcn21_dchvm_init(struct hubbub *hubbub)
 	uint32_t riommu_active;
 	int i;
 
-	//Init DCHVM block
+	
 	REG_UPDATE(DCHVM_CTRL0, HOSTVM_INIT_REQ, 1);
 
-	//Poll until RIOMMU_ACTIVE = 1
+	
 	for (i = 0; i < 100; i++) {
 		REG_GET(DCHVM_RIOMMU_STAT0, RIOMMU_ACTIVE, &riommu_active);
 
@@ -84,20 +61,20 @@ void dcn21_dchvm_init(struct hubbub *hubbub)
 	}
 
 	if (riommu_active) {
-		//Reflect the power status of DCHUBBUB
+		
 		REG_UPDATE(DCHVM_RIOMMU_CTRL0, HOSTVM_POWERSTATUS, 1);
 
-		//Start rIOMMU prefetching
+		
 		REG_UPDATE(DCHVM_RIOMMU_CTRL0, HOSTVM_PREFETCH_REQ, 1);
 
-		// Enable dynamic clock gating
+		
 		REG_UPDATE_4(DCHVM_CLK_CTRL,
 						HVM_DISPCLK_R_GATE_DIS, 0,
 						HVM_DISPCLK_G_GATE_DIS, 0,
 						HVM_DCFCLK_R_GATE_DIS, 0,
 						HVM_DCFCLK_G_GATE_DIS, 0);
 
-		//Poll until HOSTVM_PREFETCH_DONE = 1
+		
 		REG_WAIT(DCHVM_RIOMMU_STAT0, HOSTVM_PREFETCH_DONE, 1, 5, 100);
 
 		hubbub->riommu_active = true;
@@ -126,10 +103,10 @@ int hubbub21_init_dchub(struct hubbub *hubbub,
 	if (pa_config->gart_config.page_table_start_addr != pa_config->gart_config.page_table_end_addr) {
 		phys_config.page_table_start_addr = pa_config->gart_config.page_table_start_addr >> 12;
 		phys_config.page_table_end_addr = pa_config->gart_config.page_table_end_addr >> 12;
-		phys_config.page_table_base_addr = pa_config->gart_config.page_table_base_addr | 1; //Note: hack
+		phys_config.page_table_base_addr = pa_config->gart_config.page_table_base_addr | 1; 
 		phys_config.depth = 0;
 		phys_config.block_size = 0;
-		// Init VMID 0 based on PA config
+		
 		dcn20_vmid_setup(&hubbub1->vmid[0], &phys_config);
 	}
 
@@ -148,8 +125,8 @@ bool hubbub21_program_urgent_watermarks(
 	uint32_t prog_wm_value;
 	bool wm_pending = false;
 
-	/* Repeat for water mark set A, B, C and D. */
-	/* clock state A */
+	 
+	 
 	if (safe_to_lower || watermarks->a.urgent_ns > hubbub1->watermarks.a.urgent_ns) {
 		hubbub1->watermarks.a.urgent_ns = watermarks->a.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->a.urgent_ns,
@@ -164,7 +141,7 @@ bool hubbub21_program_urgent_watermarks(
 	} else if (watermarks->a.urgent_ns < hubbub1->watermarks.a.urgent_ns)
 		wm_pending = true;
 
-	/* determine the transfer time for a quantity of data for a particular requestor.*/
+	 
 	if (safe_to_lower || watermarks->a.frac_urg_bw_flip
 			> hubbub1->watermarks.a.frac_urg_bw_flip) {
 		hubbub1->watermarks.a.frac_urg_bw_flip = watermarks->a.frac_urg_bw_flip;
@@ -194,7 +171,7 @@ bool hubbub21_program_urgent_watermarks(
 	} else if (watermarks->a.urgent_latency_ns < hubbub1->watermarks.a.urgent_latency_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.urgent_ns > hubbub1->watermarks.b.urgent_ns) {
 		hubbub1->watermarks.b.urgent_ns = watermarks->b.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->b.urgent_ns,
@@ -209,7 +186,7 @@ bool hubbub21_program_urgent_watermarks(
 	} else if (watermarks->b.urgent_ns < hubbub1->watermarks.b.urgent_ns)
 		wm_pending = true;
 
-	/* determine the transfer time for a quantity of data for a particular requestor.*/
+	 
 	if (safe_to_lower || watermarks->a.frac_urg_bw_flip
 			> hubbub1->watermarks.a.frac_urg_bw_flip) {
 		hubbub1->watermarks.a.frac_urg_bw_flip = watermarks->a.frac_urg_bw_flip;
@@ -239,7 +216,7 @@ bool hubbub21_program_urgent_watermarks(
 	} else if (watermarks->b.urgent_latency_ns < hubbub1->watermarks.b.urgent_latency_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.urgent_ns > hubbub1->watermarks.c.urgent_ns) {
 		hubbub1->watermarks.c.urgent_ns = watermarks->c.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->c.urgent_ns,
@@ -254,7 +231,7 @@ bool hubbub21_program_urgent_watermarks(
 	} else if (watermarks->c.urgent_ns < hubbub1->watermarks.c.urgent_ns)
 		wm_pending = true;
 
-	/* determine the transfer time for a quantity of data for a particular requestor.*/
+	 
 	if (safe_to_lower || watermarks->a.frac_urg_bw_flip
 			> hubbub1->watermarks.a.frac_urg_bw_flip) {
 		hubbub1->watermarks.a.frac_urg_bw_flip = watermarks->a.frac_urg_bw_flip;
@@ -284,7 +261,7 @@ bool hubbub21_program_urgent_watermarks(
 	} else if (watermarks->c.urgent_latency_ns < hubbub1->watermarks.c.urgent_latency_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.urgent_ns > hubbub1->watermarks.d.urgent_ns) {
 		hubbub1->watermarks.d.urgent_ns = watermarks->d.urgent_ns;
 		prog_wm_value = convert_and_clamp(watermarks->d.urgent_ns,
@@ -299,7 +276,7 @@ bool hubbub21_program_urgent_watermarks(
 	} else if (watermarks->d.urgent_ns < hubbub1->watermarks.d.urgent_ns)
 		wm_pending = true;
 
-	/* determine the transfer time for a quantity of data for a particular requestor.*/
+	 
 	if (safe_to_lower || watermarks->a.frac_urg_bw_flip
 			> hubbub1->watermarks.a.frac_urg_bw_flip) {
 		hubbub1->watermarks.a.frac_urg_bw_flip = watermarks->a.frac_urg_bw_flip;
@@ -342,7 +319,7 @@ bool hubbub21_program_stutter_watermarks(
 	uint32_t prog_wm_value;
 	bool wm_pending = false;
 
-	/* clock state A */
+	 
 	if (safe_to_lower || watermarks->a.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub1->watermarks.a.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub1->watermarks.a.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -377,7 +354,7 @@ bool hubbub21_program_stutter_watermarks(
 			< hubbub1->watermarks.a.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub1->watermarks.b.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub1->watermarks.b.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -412,7 +389,7 @@ bool hubbub21_program_stutter_watermarks(
 			< hubbub1->watermarks.b.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub1->watermarks.c.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub1->watermarks.c.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -447,7 +424,7 @@ bool hubbub21_program_stutter_watermarks(
 			< hubbub1->watermarks.c.cstate_pstate.cstate_exit_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.cstate_pstate.cstate_enter_plus_exit_ns
 			> hubbub1->watermarks.d.cstate_pstate.cstate_enter_plus_exit_ns) {
 		hubbub1->watermarks.d.cstate_pstate.cstate_enter_plus_exit_ns =
@@ -496,7 +473,7 @@ bool hubbub21_program_pstate_watermarks(
 
 	bool wm_pending = false;
 
-	/* clock state A */
+	 
 	if (safe_to_lower || watermarks->a.cstate_pstate.pstate_change_ns
 			> hubbub1->watermarks.a.cstate_pstate.pstate_change_ns) {
 		hubbub1->watermarks.a.cstate_pstate.pstate_change_ns =
@@ -514,7 +491,7 @@ bool hubbub21_program_pstate_watermarks(
 			< hubbub1->watermarks.a.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state B */
+	 
 	if (safe_to_lower || watermarks->b.cstate_pstate.pstate_change_ns
 			> hubbub1->watermarks.b.cstate_pstate.pstate_change_ns) {
 		hubbub1->watermarks.b.cstate_pstate.pstate_change_ns =
@@ -532,7 +509,7 @@ bool hubbub21_program_pstate_watermarks(
 			< hubbub1->watermarks.b.cstate_pstate.pstate_change_ns)
 		wm_pending = false;
 
-	/* clock state C */
+	 
 	if (safe_to_lower || watermarks->c.cstate_pstate.pstate_change_ns
 			> hubbub1->watermarks.c.cstate_pstate.pstate_change_ns) {
 		hubbub1->watermarks.c.cstate_pstate.pstate_change_ns =
@@ -550,7 +527,7 @@ bool hubbub21_program_pstate_watermarks(
 			< hubbub1->watermarks.c.cstate_pstate.pstate_change_ns)
 		wm_pending = true;
 
-	/* clock state D */
+	 
 	if (safe_to_lower || watermarks->d.cstate_pstate.pstate_change_ns
 			> hubbub1->watermarks.d.cstate_pstate.pstate_change_ns) {
 		hubbub1->watermarks.d.cstate_pstate.pstate_change_ns =
@@ -589,19 +566,7 @@ bool hubbub21_program_watermarks(
 	if (hubbub21_program_pstate_watermarks(hubbub, watermarks, refclk_mhz, safe_to_lower))
 		wm_pending = true;
 
-	/*
-	 * The DCHub arbiter has a mechanism to dynamically rate limit the DCHub request stream to the fabric.
-	 * If the memory controller is fully utilized and the DCHub requestors are
-	 * well ahead of their amortized schedule, then it is safe to prevent the next winner
-	 * from being committed and sent to the fabric.
-	 * The utilization of the memory controller is approximated by ensuring that
-	 * the number of outstanding requests is greater than a threshold specified
-	 * by the ARB_MIN_REQ_OUTSTANDING. To determine that the DCHub requestors are well ahead of the amortized schedule,
-	 * the slack of the next winner is compared with the ARB_SAT_LEVEL in DLG RefClk cycles.
-	 *
-	 * TODO: Revisit request limit after figure out right number. request limit for Renoir isn't decided yet, set maximum value (0x1FF)
-	 * to turn off it for now.
-	 */
+	 
 	REG_SET(DCHUBBUB_ARB_SAT_LEVEL, 0,
 			DCHUBBUB_ARB_SAT_LEVEL, 60 * refclk_mhz);
 	REG_UPDATE_2(DCHUBBUB_ARB_DF_REQ_OUTSTAND,
@@ -719,5 +684,5 @@ void hubbub21_construct(struct dcn20_hubbub *hubbub,
 	hubbub->masks = hubbub_mask;
 
 	hubbub->debug_test_index_pstate = 0xB;
-	hubbub->detile_buf_size = 164 * 1024; /* 164KB for DCN2.0 */
+	hubbub->detile_buf_size = 164 * 1024;  
 }

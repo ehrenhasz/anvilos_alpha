@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016-2022 NVIDIA Corporation
- *
- * Author: Thierry Reding <treding@nvidia.com>
- *	   Dipen Patel <dpatel@nvidia.com>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/hte.h>
@@ -20,7 +15,7 @@
 #include <dt-bindings/gpio/tegra234-gpio.h>
 #include <dt-bindings/gpio/tegra241-gpio.h>
 
-/* security registers */
+ 
 #define TEGRA186_GPIO_CTL_SCR 0x0c
 #define  TEGRA186_GPIO_CTL_SCR_SEC_WEN BIT(28)
 #define  TEGRA186_GPIO_CTL_SCR_SEC_REN BIT(27)
@@ -43,7 +38,7 @@
 #define  TEGRA186_GPIO_SCR_SEC_ENABLE		(TEGRA186_GPIO_SCR_SEC_WEN | \
 						 TEGRA186_GPIO_SCR_SEC_REN)
 
-/* control registers */
+ 
 #define TEGRA186_GPIO_ENABLE_CONFIG 0x00
 #define  TEGRA186_GPIO_ENABLE_CONFIG_ENABLE BIT(0)
 #define  TEGRA186_GPIO_ENABLE_CONFIG_OUT BIT(1)
@@ -247,14 +242,14 @@ static int tegra186_gpio_direction_output(struct gpio_chip *chip,
 	void __iomem *base;
 	u32 value;
 
-	/* configure output level first */
+	 
 	chip->set(chip, offset, level);
 
 	base = tegra186_gpio_get_base(gpio, offset);
 	if (WARN_ON(base == NULL))
 		return -EINVAL;
 
-	/* set the direction */
+	 
 	value = readl(base + TEGRA186_GPIO_OUTPUT_CONTROL);
 	value &= ~TEGRA186_GPIO_OUTPUT_CONTROL_FLOATED;
 	writel(value, base + TEGRA186_GPIO_OUTPUT_CONTROL);
@@ -393,10 +388,7 @@ static int tegra186_gpio_set_config(struct gpio_chip *chip,
 
 	debounce = pinconf_to_config_argument(config);
 
-	/*
-	 * The Tegra186 GPIO controller supports a maximum of 255 ms debounce
-	 * time.
-	 */
+	 
 	if (debounce > 255000)
 		return -EINVAL;
 
@@ -639,7 +631,7 @@ static void tegra186_gpio_irq(struct irq_desc *desc)
 
 		base = gpio->base + port->bank * 0x1000 + port->port * 0x200;
 
-		/* skip ports that are not associated with this bank */
+		 
 		for (j = 0; j < gpio->num_irqs_per_bank; j++) {
 			if (parent == gpio->irq[port->bank * gpio->num_irqs_per_bank + j])
 				break;
@@ -740,7 +732,7 @@ static const struct of_device_id tegra186_pmc_of_match[] = {
 	{ .compatible = "nvidia,tegra186-pmc" },
 	{ .compatible = "nvidia,tegra194-pmc" },
 	{ .compatible = "nvidia,tegra234-pmc" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static void tegra186_gpio_init_route_mapping(struct tegra_gpio *gpio)
@@ -758,30 +750,16 @@ static void tegra186_gpio_init_route_mapping(struct tegra_gpio *gpio)
 
 		value = readl(base + TEGRA186_GPIO_CTL_SCR);
 
-		/*
-		 * For controllers that haven't been locked down yet, make
-		 * sure to program the default interrupt route mapping.
-		 */
+		 
 		if ((value & TEGRA186_GPIO_CTL_SCR_SEC_REN) == 0 &&
 		    (value & TEGRA186_GPIO_CTL_SCR_SEC_WEN) == 0) {
-			/*
-			 * On Tegra194 and later, each pin can be routed to one or more
-			 * interrupts.
-			 */
+			 
 			dev_dbg(dev, "programming default interrupt routing for port %s\n",
 				port->name);
 
 			offset = TEGRA186_GPIO_INT_ROUTE_MAPPING(p, 0);
 
-			/*
-			 * By default we only want to route GPIO pins to IRQ 0. This works
-			 * only under the assumption that we're running as the host kernel
-			 * and hence all GPIO pins are owned by Linux.
-			 *
-			 * For cases where Linux is the guest OS, the hypervisor will have
-			 * to configure the interrupt routing and pass only the valid
-			 * interrupts via device tree.
-			 */
+			 
 			value = readl(base + offset);
 			value = BIT(port->pins) - 1;
 			writel(value, base + offset);
@@ -831,14 +809,14 @@ static int tegra186_gpio_probe(struct platform_device *pdev)
 	gpio->gpio.label = gpio->soc->name;
 	gpio->gpio.parent = &pdev->dev;
 
-	/* count the number of banks in the controller */
+	 
 	for (i = 0; i < gpio->soc->num_ports; i++)
 		if (gpio->soc->ports[i].bank > gpio->num_banks)
 			gpio->num_banks = gpio->soc->ports[i].bank;
 
 	gpio->num_banks++;
 
-	/* get register apertures */
+	 
 	gpio->secure = devm_platform_ioremap_resource_byname(pdev, "security");
 	if (IS_ERR(gpio->secure)) {
 		gpio->secure = devm_platform_ioremap_resource(pdev, 0);
@@ -922,7 +900,7 @@ static int tegra186_gpio_probe(struct platform_device *pdev)
 #if defined(CONFIG_OF_GPIO)
 	gpio->gpio.of_gpio_n_cells = 2;
 	gpio->gpio.of_xlate = tegra186_gpio_of_xlate;
-#endif /* CONFIG_OF_GPIO */
+#endif  
 
 	irq = &gpio->gpio.irq;
 	gpio_irq_chip_set_chip(irq, &tegra186_gpio_irq_chip);
@@ -937,13 +915,7 @@ static int tegra186_gpio_probe(struct platform_device *pdev)
 	irq->parent_handler_data = gpio;
 	irq->num_parents = gpio->num_irq;
 
-	/*
-	 * To simplify things, use a single interrupt per bank for now. Some
-	 * chips support up to 8 interrupts per bank, which can be useful to
-	 * distribute the load and decrease the processing latency for GPIOs
-	 * but it also requires a more complicated interrupt routing than we
-	 * currently program.
-	 */
+	 
 	if (gpio->num_irqs_per_bank > 1) {
 		irq->parents = devm_kcalloc(&pdev->dev, gpio->num_banks,
 					    sizeof(*irq->parents), GFP_KERNEL);
@@ -1290,7 +1262,7 @@ static const struct of_device_id tegra186_gpio_of_match[] = {
 		.compatible = "nvidia,tegra234-gpio-aon",
 		.data = &tegra234_aon_soc
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, tegra186_gpio_of_match);

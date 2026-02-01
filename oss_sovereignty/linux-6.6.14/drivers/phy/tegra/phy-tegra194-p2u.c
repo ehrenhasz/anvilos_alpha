@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * P2U (PIPE to UPHY) driver for Tegra T194 SoC
- *
- * Copyright (C) 2019-2022 NVIDIA Corporation.
- *
- * Author: Vidya Sagar <vidyas@nvidia.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -37,7 +31,7 @@ struct tegra_p2u_of_data {
 
 struct tegra_p2u {
 	void __iomem *base;
-	bool skip_sz_protection_en; /* Needed to support two retimers */
+	bool skip_sz_protection_en;  
 	struct tegra_p2u_of_data *of_data;
 };
 

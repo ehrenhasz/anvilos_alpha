@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Common values for SM3 algorithm
- *
- * Copyright (C) 2017 ARM Limited or its affiliates.
- * Copyright (C) 2017 Gilad Ben-Yossef <gilad@benyossef.com>
- * Copyright (C) 2021 Tianjia Zhang <tianjia.zhang@linux.alibaba.com>
- */
+ 
+ 
 
 #ifndef _CRYPTO_SM3_H
 #define _CRYPTO_SM3_H
@@ -35,15 +29,7 @@ struct sm3_state {
 	u8 buffer[SM3_BLOCK_SIZE];
 };
 
-/*
- * Stand-alone implementation of the SM3 algorithm. It is designed to
- * have as little dependencies as possible so it can be used in the
- * kexec_file purgatory. In other cases you should generally use the
- * hash APIs from include/crypto/hash.h. Especially when hashing large
- * amounts of data as those APIs may be hw-accelerated.
- *
- * For details see lib/crypto/sm3.c
- */
+ 
 
 static inline void sm3_init(struct sm3_state *sctx)
 {

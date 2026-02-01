@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Google, Inc.
- * Author: Erik Gilling <konkers@android.com>
- *
- * Copyright (C) 2011-2013 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/pm_runtime.h>
@@ -171,7 +166,7 @@ static void host1x_debugfs_init(struct host1x *host1x)
 {
 	struct dentry *de = debugfs_create_dir("tegra-host1x", NULL);
 
-	/* Store the created entry */
+	 
 	host1x->debugfs = de;
 
 	debugfs_create_file("status", S_IRUGO, de, host1x, &host1x_debug_fops);

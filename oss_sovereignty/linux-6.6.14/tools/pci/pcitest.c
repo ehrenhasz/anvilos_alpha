@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**
- * Userspace PCI Endpoint Test Module
- *
- * Copyright (C) 2017 Texas Instruments
- * Author: Kishon Vijay Abraham I <kishon@ti.com>
- */
+
+ 
 
 #include <errno.h>
 #include <fcntl.h>
@@ -151,7 +146,7 @@ static int run_test(struct pci_test *test)
 
 	fflush(stdout);
 	close(fd);
-	return (ret < 0) ? ret : 1 - ret; /* return 0 if test succeeded */
+	return (ret < 0) ? ret : 1 - ret;  
 }
 
 int main(int argc, char **argv)
@@ -165,13 +160,13 @@ int main(int argc, char **argv)
 		return -ENOMEM;
 	}
 
-	/* since '0' is a valid BAR number, initialize it to -1 */
+	 
 	test->barnum = -1;
 
-	/* set default size as 100KB */
+	 
 	test->size = 0x19000;
 
-	/* set default endpoint device */
+	 
 	test->device = "/dev/pci-endpoint-test.0";
 
 	while ((c = getopt(argc, argv, "D:b:m:x:i:deIlhrwcs:")) != EOF)

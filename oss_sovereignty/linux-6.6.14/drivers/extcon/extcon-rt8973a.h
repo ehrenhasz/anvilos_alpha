@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * rt8973a.h
- *
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- */
+ 
+ 
 
 #ifndef __LINUX_EXTCON_RT8973A_H
 #define __LINUX_EXTCON_RT8973A_H
@@ -12,7 +8,7 @@ enum rt8973a_types {
 	TYPE_RT8973A,
 };
 
-/* RT8973A registers */
+ 
 enum rt8973A_reg {
 	RT8973A_REG_DEVICE_ID = 0x1,
 	RT8973A_REG_CONTROL1,
@@ -45,7 +41,7 @@ enum rt8973A_reg {
 	RT8973A_REG_END,
 };
 
-/* Define RT8973A MASK/SHIFT constant */
+ 
 #define RT8973A_REG_DEVICE_ID_VENDOR_SHIFT	0
 #define RT8973A_REG_DEVICE_ID_VERSION_SHIFT	3
 #define RT8973A_REG_DEVICE_ID_VENDOR_MASK	(0x7 << RT8973A_REG_DEVICE_ID_VENDOR_SHIFT)
@@ -156,9 +152,9 @@ enum rt8973A_reg {
 #define RT8973A_REG_RESET_MASK			(0x1 << RT8973A_REG_RESET_SHIFT)
 #define RT8973A_REG_RESET			0x1
 
-/* RT8973A Interrupts */
+ 
 enum rt8973a_irq {
-	/* Interrupt1*/
+	 
 	RT8973A_INT1_ATTACH,
 	RT8973A_INT1_DETACH,
 	RT8973A_INT1_CHGDET,
@@ -168,7 +164,7 @@ enum rt8973a_irq {
 	RT8973A_INT1_ADC_CHG,
 	RT8973A_INT1_OTP,
 
-	/* Interrupt2*/
+	 
 	RT8973A_INT2_UVLO,
 	RT8973A_INT2_POR,
 	RT8973A_INT2_OTP_FET,
@@ -196,4 +192,4 @@ enum rt8973a_irq {
 #define RT8973A_INT2_OCP_MASK			BIT(5)
 #define RT8973A_INT2_OVP_OCP_MASK		BIT(6)
 
-#endif /*  __LINUX_EXTCON_RT8973A_H */
+#endif  

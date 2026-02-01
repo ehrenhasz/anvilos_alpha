@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Panel driver for the WideChips WS2401 480x800 DPI RGB panel, used in
- * the Samsung Mobile Display (SMD) LMS380KF01.
- * Found in the Samsung Galaxy Ace 2 GT-I8160 mobile phone.
- * Linus Walleij <linus.walleij@linaro.org>
- * Inspired by code and know-how in the vendor driver by Gareth Phillips.
- */
+
+ 
 #include <drm/drm_mipi_dbi.h>
 #include <drm/drm_modes.h>
 #include <drm/drm_panel.h>
@@ -22,66 +16,60 @@
 
 #include <video/mipi_display.h>
 
-#define WS2401_RESCTL			0xb8 /* Resolution select control */
-#define WS2401_PSMPS			0xbd /* SMPS positive control */
-#define WS2401_NSMPS			0xbe /* SMPS negative control */
+#define WS2401_RESCTL			0xb8  
+#define WS2401_PSMPS			0xbd  
+#define WS2401_NSMPS			0xbe  
 #define WS2401_SMPS			0xbf
-#define WS2401_BCMODE			0xc1 /* Backlight control mode */
-#define WS2401_WRBLCTL			0xc3 /* Backlight control */
-#define WS2401_WRDISBV			0xc4 /* Write manual brightness */
-#define WS2401_WRCTRLD			0xc6 /* Write BL control */
-#define WS2401_WRMIE			0xc7 /* Write MIE mode */
-#define WS2401_READ_ID1			0xda /* Read panel ID 1 */
-#define WS2401_READ_ID2			0xdb /* Read panel ID 2 */
-#define WS2401_READ_ID3			0xdc /* Read panel ID 3 */
-#define WS2401_GAMMA_R1			0xe7 /* Gamma red 1 */
-#define WS2401_GAMMA_G1			0xe8 /* Gamma green 1 */
-#define WS2401_GAMMA_B1			0xe9 /* Gamma blue 1 */
-#define WS2401_GAMMA_R2			0xea /* Gamma red 2 */
-#define WS2401_GAMMA_G2			0xeb /* Gamma green 2 */
-#define WS2401_GAMMA_B2			0xec /* Gamma blue 2 */
-#define WS2401_PASSWD1			0xf0 /* Password command for level 2 */
-#define WS2401_DISCTL			0xf2 /* Display control */
-#define WS2401_PWRCTL			0xf3 /* Power control */
-#define WS2401_VCOMCTL			0xf4 /* VCOM control */
-#define WS2401_SRCCTL			0xf5 /* Source control */
-#define WS2401_PANELCTL			0xf6 /* Panel control */
+#define WS2401_BCMODE			0xc1  
+#define WS2401_WRBLCTL			0xc3  
+#define WS2401_WRDISBV			0xc4  
+#define WS2401_WRCTRLD			0xc6  
+#define WS2401_WRMIE			0xc7  
+#define WS2401_READ_ID1			0xda  
+#define WS2401_READ_ID2			0xdb  
+#define WS2401_READ_ID3			0xdc  
+#define WS2401_GAMMA_R1			0xe7  
+#define WS2401_GAMMA_G1			0xe8  
+#define WS2401_GAMMA_B1			0xe9  
+#define WS2401_GAMMA_R2			0xea  
+#define WS2401_GAMMA_G2			0xeb  
+#define WS2401_GAMMA_B2			0xec  
+#define WS2401_PASSWD1			0xf0  
+#define WS2401_DISCTL			0xf2  
+#define WS2401_PWRCTL			0xf3  
+#define WS2401_VCOMCTL			0xf4  
+#define WS2401_SRCCTL			0xf5  
+#define WS2401_PANELCTL			0xf6  
 
 static const u8 ws2401_dbi_read_commands[] = {
 	WS2401_READ_ID1,
 	WS2401_READ_ID2,
 	WS2401_READ_ID3,
-	0, /* sentinel */
+	0,  
 };
 
-/**
- * struct ws2401 - state container for a panel controlled by the WS2401
- * controller
- */
+ 
 struct ws2401 {
-	/** @dev: the container device */
+	 
 	struct device *dev;
-	/** @dbi: the DBI bus abstraction handle */
+	 
 	struct mipi_dbi dbi;
-	/** @panel: the DRM panel instance for this device */
+	 
 	struct drm_panel panel;
-	/** @width: the width of this panel in mm */
+	 
 	u32 width;
-	/** @height: the height of this panel in mm */
+	 
 	u32 height;
-	/** @reset: reset GPIO line */
+	 
 	struct gpio_desc *reset;
-	/** @regulators: VCCIO and VIO supply regulators */
+	 
 	struct regulator_bulk_data regulators[2];
-	/** @internal_bl: If using internal backlight */
+	 
 	bool internal_bl;
 };
 
 static const struct drm_display_mode lms380kf01_480_800_mode = {
-	/*
-	 * The vendor driver states that the "SMD panel" has a clock
-	 * frequency of 49920000 Hz / 2 = 24960000 Hz.
-	 */
+	 
 	.clock = 24960,
 	.hdisplay = 480,
 	.hsync_start = 480 + 8,
@@ -130,7 +118,7 @@ static int ws2401_power_on(struct ws2401 *ws)
 	struct mipi_dbi *dbi = &ws->dbi;
 	int ret;
 
-	/* Power up */
+	 
 	ret = regulator_bulk_enable(ARRAY_SIZE(ws->regulators),
 				    ws->regulators);
 	if (ret) {
@@ -139,53 +127,50 @@ static int ws2401_power_on(struct ws2401 *ws)
 	}
 	msleep(10);
 
-	/* Assert reset >=1 ms */
+	 
 	gpiod_set_value_cansleep(ws->reset, 1);
 	usleep_range(1000, 5000);
-	/* De-assert reset */
+	 
 	gpiod_set_value_cansleep(ws->reset, 0);
-	/* Wait >= 10 ms */
+	 
 	msleep(10);
 	dev_dbg(ws->dev, "de-asserted RESET\n");
 
-	/*
-	 * Exit sleep mode and initialize display - some hammering is
-	 * necessary.
-	 */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_EXIT_SLEEP_MODE);
 	mipi_dbi_command(dbi, MIPI_DCS_EXIT_SLEEP_MODE);
 	msleep(50);
 
-	/* Magic to unlock level 2 control of the display */
+	 
 	mipi_dbi_command(dbi, WS2401_PASSWD1, 0x5a, 0x5a);
-	/* Configure resolution to 480RGBx800 */
+	 
 	mipi_dbi_command(dbi, WS2401_RESCTL, 0x12);
-	/* Set addressing mode Flip V(d0), Flip H(d1) RGB/BGR(d3) */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_ADDRESS_MODE, 0x01);
-	/* Set pixel format: 24 bpp */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_SET_PIXEL_FORMAT, 0x70);
 	mipi_dbi_command(dbi, WS2401_SMPS, 0x00, 0x0f);
-	mipi_dbi_command(dbi, WS2401_PSMPS, 0x06, 0x03, /* DDVDH: 4.6v */
+	mipi_dbi_command(dbi, WS2401_PSMPS, 0x06, 0x03,  
 			 0x7e, 0x03, 0x12, 0x37);
-	mipi_dbi_command(dbi, WS2401_NSMPS, 0x06, 0x03, /* DDVDH: -4.6v */
+	mipi_dbi_command(dbi, WS2401_NSMPS, 0x06, 0x03,  
 			 0x7e, 0x02, 0x15, 0x37);
 	mipi_dbi_command(dbi, WS2401_SMPS, 0x02, 0x0f);
 	mipi_dbi_command(dbi, WS2401_PWRCTL, 0x10, 0xA9, 0x00, 0x01, 0x44,
-			 0xb4,	/* VGH:16.1v, VGL:-13.8v */
-			 0x50,	/* GREFP:4.2v (default) */
-			 0x50,	/* GREFN:-4.2v (default) */
+			 0xb4,	 
+			 0x50,	 
+			 0x50,	 
 			 0x00,
-			 0x44);	/* VOUTL:-10v (default) */
+			 0x44);	 
 	mipi_dbi_command(dbi, WS2401_DISCTL, 0x01, 0x00, 0x00, 0x00, 0x14,
 			 0x16);
 	mipi_dbi_command(dbi, WS2401_VCOMCTL, 0x30, 0x53, 0x53);
 	mipi_dbi_command(dbi, WS2401_SRCCTL, 0x03, 0x0C, 0x00, 0x00, 0x00,
-			 0x01,	/* 2 dot inversion */
+			 0x01,	 
 			 0x01, 0x06, 0x03);
 	mipi_dbi_command(dbi, WS2401_PANELCTL, 0x14, 0x00, 0x80, 0x00);
 	mipi_dbi_command(dbi, WS2401_WRMIE, 0x01);
 
-	/* Set up gamma, probably these are P-gamma and N-gamma for each color */
+	 
 	mipi_dbi_command(dbi, WS2401_GAMMA_R1, 0x00,
 			 0x5b, 0x42, 0x41, 0x3f, 0x42, 0x3d, 0x38, 0x2e,
 			 0x2b, 0x2a, 0x27, 0x22, 0x27, 0x0f, 0x00, 0x00);
@@ -209,11 +194,7 @@ static int ws2401_power_on(struct ws2401 *ws)
 		mipi_dbi_command(dbi, WS2401_WRCTRLD, 0x2c);
 	} else {
 		mipi_dbi_command(dbi, WS2401_WRCTRLD, 0x00);
-		/*
-		 * When not using internal backlight we do not need any further
-		 * L2 accesses to the panel so we close the door on our way out.
-		 * Otherwise we need to leave the L2 door open.
-		 */
+		 
 		mipi_dbi_command(dbi, WS2401_PASSWD1, 0xa5, 0xa5);
 	}
 
@@ -222,7 +203,7 @@ static int ws2401_power_on(struct ws2401 *ws)
 
 static int ws2401_power_off(struct ws2401 *ws)
 {
-	/* Go into RESET and disable regulators */
+	 
 	gpiod_set_value_cansleep(ws->reset, 1);
 	return regulator_bulk_disable(ARRAY_SIZE(ws->regulators),
 				      ws->regulators);
@@ -233,7 +214,7 @@ static int ws2401_unprepare(struct drm_panel *panel)
 	struct ws2401 *ws = to_ws2401(panel);
 	struct mipi_dbi *dbi = &ws->dbi;
 
-	/* Make sure we disable backlight, if any */
+	 
 	if (ws->internal_bl)
 		mipi_dbi_command(dbi, WS2401_WRCTRLD, 0x00);
 	mipi_dbi_command(dbi, MIPI_DCS_ENTER_SLEEP_MODE);
@@ -267,11 +248,7 @@ static int ws2401_enable(struct drm_panel *panel)
 	return 0;
 }
 
-/**
- * ws2401_get_modes() - return the mode
- * @panel: the panel to get the mode for
- * @connector: reference to the central DRM connector control structure
- */
+ 
 static int ws2401_get_modes(struct drm_panel *panel,
 			    struct drm_connector *connector)
 {
@@ -279,12 +256,7 @@ static int ws2401_get_modes(struct drm_panel *panel,
 	struct drm_display_mode *mode;
 	static const u32 bus_format = MEDIA_BUS_FMT_RGB888_1X24;
 
-	/*
-	 * We just support the LMS380KF01 so far, if we implement more panels
-	 * this mode, the following connector display_info settings and
-	 * probably the custom DCS sequences needs to selected based on what
-	 * the target panel needs.
-	 */
+	 
 	mode = drm_mode_duplicate(connector->dev, &lms380kf01_480_800_mode);
 	if (!mode) {
 		dev_err(ws->dev, "failed to add mode\n");
@@ -352,10 +324,7 @@ static int ws2401_probe(struct spi_device *spi)
 		return -ENOMEM;
 	ws->dev = dev;
 
-	/*
-	 * VCI   is the analog voltage supply
-	 * VCCIO is the digital I/O voltage supply
-	 */
+	 
 	ws->regulators[0].supply = "vci";
 	ws->regulators[1].supply = "vccio";
 	ret = devm_regulator_bulk_get(dev,
@@ -414,11 +383,7 @@ static void ws2401_remove(struct spi_device *spi)
 	drm_panel_remove(&ws->panel);
 }
 
-/*
- * Samsung LMS380KF01 is the one instance of this display controller that we
- * know about, but if more are found, the controller can be parameterized
- * here and used for other configurations.
- */
+ 
 static const struct of_device_id ws2401_match[] = {
 	{ .compatible = "samsung,lms380kf01", },
 	{},

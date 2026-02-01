@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef NFP_CRYPTO_H
 #define NFP_CRYPTO_H 1
@@ -12,9 +12,7 @@ struct nfp_net_tls_offload_ctx {
 	__be32 fw_handle[2];
 
 	u8 rx_end[0];
-	/* Tx only fields follow - Rx side does not have enough driver state
-	 * to fit these
-	 */
+	 
 
 	u32 next_seq;
 };
@@ -39,7 +37,7 @@ nfp_net_tls_rx_resync_req(struct net_device *netdev,
 }
 #endif
 
-/* IPsec related structures and functions */
+ 
 struct nfp_ipsec_offload {
 	u32 seq_hi;
 	u32 seq_low;

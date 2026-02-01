@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright (c) 2014 Linaro Ltd.
- * Copyright (c) 2014 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -184,7 +182,7 @@
 #define DESC_SG				BIT(30)
 #define DESC_FRAGS_NUM_OFF		11
 
-/* DMA descriptor ring helpers */
+ 
 #define dma_ring_incr(n, s)		(((n) + 1) & ((s) - 1))
 #define dma_cnt(n)			((n) >> 5)
 #define dma_byte(n)			((n) << 5)
@@ -225,14 +223,14 @@ struct frags_info {
 	__le32 size;
 };
 
-/* hardware supported max skb frags num */
+ 
 #define SG_MAX_SKB_FRAGS	17
 struct sg_desc {
 	__le32 total_len;
 	__le32 resvd0;
 	__le32 linear_addr;
 	__le32 linear_len;
-	/* reserve one more frags for memory alignment */
+	 
 	struct frags_info frags[SG_MAX_SKB_FRAGS + 1];
 };
 
@@ -386,7 +384,7 @@ static void hix5hd2_hw_init(struct hix5hd2_priv *priv)
 {
 	u32 val;
 
-	/* disable and clear all interrupts */
+	 
 	writel_relaxed(0, priv->base + ENA_PMU_INT);
 	writel_relaxed(~0, priv->base + RAW_PMU_INT);
 
@@ -469,9 +467,9 @@ static void hix5hd2_rx_refill(struct hix5hd2_priv *priv)
 	u32 len = MAC_MAX_FRAME_SIZE;
 	dma_addr_t addr;
 
-	/* software write pointer */
+	 
 	start = dma_cnt(readl_relaxed(priv->base + RX_FQ_WR_ADDR));
-	/* logic read pointer */
+	 
 	end = dma_cnt(readl_relaxed(priv->base + RX_FQ_RD_ADDR));
 	num = CIRC_SPACE(start, end, RX_DESC_NUM);
 
@@ -498,7 +496,7 @@ static void hix5hd2_rx_refill(struct hix5hd2_priv *priv)
 		pos = dma_ring_incr(pos, RX_DESC_NUM);
 	}
 
-	/* ensure desc updated */
+	 
 	wmb();
 
 	if (pos != start)
@@ -513,15 +511,15 @@ static int hix5hd2_rx(struct net_device *dev, int limit)
 	dma_addr_t addr;
 	u32 start, end, num, pos, i, len;
 
-	/* software read pointer */
+	 
 	start = dma_cnt(readl_relaxed(priv->base + RX_BQ_RD_ADDR));
-	/* logic write pointer */
+	 
 	end = dma_cnt(readl_relaxed(priv->base + RX_BQ_WR_ADDR));
 	num = CIRC_CNT(end, start, RX_DESC_NUM);
 	if (num > limit)
 		num = limit;
 
-	/* ensure get updated desc */
+	 
 	rmb();
 	for (i = 0, pos = start; i < num; i++) {
 		skb = priv->rx_skb[pos];
@@ -595,9 +593,9 @@ static void hix5hd2_xmit_reclaim(struct net_device *dev)
 
 	netif_tx_lock(dev);
 
-	/* software read */
+	 
 	start = dma_cnt(readl_relaxed(priv->base + TX_RQ_RD_ADDR));
-	/* logic write */
+	 
 	end = dma_cnt(readl_relaxed(priv->base + TX_RQ_WR_ADDR));
 	num = CIRC_CNT(end, start, TX_DESC_NUM);
 
@@ -741,7 +739,7 @@ static netdev_tx_t hix5hd2_net_xmit(struct sk_buff *skb, struct net_device *dev)
 	u32 cmd;
 	int ret;
 
-	/* software write pointer */
+	 
 	pos = dma_cnt(readl_relaxed(priv->base + TX_BQ_WR_ADDR));
 	if (unlikely(priv->tx_skb[pos])) {
 		dev->stats.tx_dropped++;
@@ -776,7 +774,7 @@ static netdev_tx_t hix5hd2_net_xmit(struct sk_buff *skb, struct net_device *dev)
 
 	priv->tx_skb[pos] = skb;
 
-	/* ensure desc updated */
+	 
 	wmb();
 
 	pos = dma_ring_incr(pos, TX_DESC_NUM);
@@ -1071,20 +1069,15 @@ static void hix5hd2_sleep_us(u32 time_us)
 
 static void hix5hd2_phy_reset(struct hix5hd2_priv *priv)
 {
-	/* To make sure PHY hardware reset success,
-	 * we must keep PHY in deassert state first and
-	 * then complete the hardware reset operation
-	 */
+	 
 	reset_control_deassert(priv->phy_rst);
 	hix5hd2_sleep_us(priv->phy_reset_delays[PRE_DELAY]);
 
 	reset_control_assert(priv->phy_rst);
-	/* delay some time to ensure reset ok,
-	 * this depends on PHY hardware feature
-	 */
+	 
 	hix5hd2_sleep_us(priv->phy_reset_delays[PULSE]);
 	reset_control_deassert(priv->phy_rst);
-	/* delay some time to ensure later MDIO access */
+	 
 	hix5hd2_sleep_us(priv->phy_reset_delays[POST_DELAY]);
 }
 

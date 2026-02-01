@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Intel Corporation
- *
- * Author:
- * Dmitry Kasatkin <dmitry.kasatkin@intel.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/ratelimit.h>
@@ -16,9 +11,7 @@
 
 #include "integrity.h"
 
-/*
- * Request an asymmetric key.
- */
+ 
 static struct key *request_asymmetric_key(struct key *keyring, uint32_t keyid)
 {
 	struct key *key;
@@ -41,7 +34,7 @@ static struct key *request_asymmetric_key(struct key *keyring, uint32_t keyid)
 	}
 
 	if (keyring) {
-		/* search in specific keyring */
+		 
 		key_ref_t kref;
 
 		kref = keyring_search(make_key_ref(keyring, 1),
@@ -64,7 +57,7 @@ static struct key *request_asymmetric_key(struct key *keyring, uint32_t keyid)
 					   name, PTR_ERR(key));
 
 		switch (PTR_ERR(key)) {
-			/* Hide some search errors */
+			 
 		case -EACCES:
 		case -ENOTDIR:
 		case -EAGAIN:
@@ -112,7 +105,7 @@ int asymmetric_verify(struct key *keyring, const char *sig,
 	if (!strcmp(pk->pkey_algo, "rsa")) {
 		pks.encoding = "pkcs1";
 	} else if (!strncmp(pk->pkey_algo, "ecdsa-", 6)) {
-		/* edcsa-nist-p192 etc. */
+		 
 		pks.encoding = "x962";
 	} else if (!strcmp(pk->pkey_algo, "ecrdsa") ||
 		   !strcmp(pk->pkey_algo, "sm2")) {
@@ -133,21 +126,7 @@ out:
 	return ret;
 }
 
-/**
- * integrity_kernel_module_request - prevent crypto-pkcs1pad(rsa,*) requests
- * @kmod_name: kernel module name
- *
- * We have situation, when public_key_verify_signature() in case of RSA
- * algorithm use alg_name to store internal information in order to
- * construct an algorithm on the fly, but crypto_larval_lookup() will try
- * to use alg_name in order to load kernel module with same name.
- * Since we don't have any real "crypto-pkcs1pad(rsa,*)" kernel modules,
- * we are safe to fail such module request from crypto_larval_lookup().
- *
- * In this way we prevent modprobe execution during digsig verification
- * and avoid possible deadlock if modprobe and/or it's dependencies
- * also signed with digsig.
- */
+ 
 int integrity_kernel_module_request(char *kmod_name)
 {
 	if (strncmp(kmod_name, "crypto-pkcs1pad(rsa,", 20) == 0)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ADC driver for the RICOH RN5T618 power management chip family
- *
- * Copyright (C) 2019 Andreas Kemnade
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -23,15 +19,13 @@
 #define RN5T618_ADC_CONVERSION_TIMEOUT   (msecs_to_jiffies(500))
 #define RN5T618_REFERENCE_VOLT 2500
 
-/* mask for selecting channels for single conversion */
+ 
 #define RN5T618_ADCCNT3_CHANNEL_MASK 0x7
-/* average 4-time conversion mode */
+ 
 #define RN5T618_ADCCNT3_AVG BIT(3)
-/* set for starting a single conversion, gets cleared by hw when done */
+ 
 #define RN5T618_ADCCNT3_GODONE BIT(4)
-/* automatic conversion, period is in ADCCNT2, selected channels are
- * in ADCCNT1
- */
+ 
 #define RN5T618_ADCCNT3_AUTO BIT(5)
 #define RN5T618_ADCEND_IRQ BIT(0)
 
@@ -54,7 +48,7 @@ enum rn5t618_channels {
 };
 
 static const struct u16_fract rn5t618_ratios[8] = {
-	[LIMMON] = {50, 32}, /* measured across 20mOhm, amplified by 32 */
+	[LIMMON] = {50, 32},  
 	[VBAT] = {2, 1},
 	[VADP] = {3, 1},
 	[VUSB] = {3, 1},
@@ -84,7 +78,7 @@ static irqreturn_t rn5t618_adc_irq(int irq, void *data)
 	unsigned int r = 0;
 	int ret;
 
-	/* clear low & high threshold irqs */
+	 
 	regmap_write(adc->rn5t618->regmap, RN5T618_IR_ADC1, 0);
 	regmap_write(adc->rn5t618->regmap, RN5T618_IR_ADC2, 0);
 
@@ -116,7 +110,7 @@ static int rn5t618_adc_read(struct iio_dev *iio_dev,
 		return IIO_VAL_FRACTIONAL;
 	}
 
-	/* select channel */
+	 
 	ret = regmap_update_bits(adc->rn5t618->regmap, RN5T618_ADCCNT3,
 				 RN5T618_ADCCNT3_CHANNEL_MASK,
 				 chan->channel);
@@ -136,7 +130,7 @@ static int rn5t618_adc_read(struct iio_dev *iio_dev,
 		return ret;
 
 	init_completion(&adc->conv_completion);
-	/* single conversion */
+	 
 	ret = regmap_update_bits(adc->rn5t618->regmap, RN5T618_ADCCNT3,
 				 RN5T618_ADCCNT3_GODONE,
 				 RN5T618_ADCCNT3_GODONE);
@@ -189,7 +183,7 @@ static const struct iio_chan_spec rn5t618_adc_iio_channels[] = {
 static struct iio_map rn5t618_maps[] = {
 	IIO_MAP("VADP", "rn5t618-power", "vadp"),
 	IIO_MAP("VUSB", "rn5t618-power", "vusb"),
-	{ /* sentinel */ }
+	{   }
 };
 
 static int rn5t618_adc_probe(struct platform_device *pdev)
@@ -226,7 +220,7 @@ static int rn5t618_adc_probe(struct platform_device *pdev)
 	iio_dev->channels = rn5t618_adc_iio_channels;
 	iio_dev->num_channels = ARRAY_SIZE(rn5t618_adc_iio_channels);
 
-	/* stop any auto-conversion */
+	 
 	ret = regmap_write(rn5t618->regmap, RN5T618_ADCCNT3, 0);
 	if (ret < 0)
 		return ret;

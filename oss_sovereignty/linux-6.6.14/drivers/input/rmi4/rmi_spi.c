@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2016 Synaptics Incorporated
- * Copyright (c) 2011 Unixphere
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -88,10 +85,7 @@ static int rmi_spi_manage_pools(struct rmi_spi_xport *rmi_spi, int len)
 	else
 		rmi_spi->tx_xfer_count = 1;
 
-	/*
-	 * Allocate a pool of spi_transfer buffers for devices which need
-	 * per byte delays.
-	 */
+	 
 	tmp = rmi_spi->rx_xfers;
 	xfer_buf = devm_kcalloc(&spi->dev,
 		rmi_spi->rx_xfer_count + rmi_spi->tx_xfer_count,
@@ -152,10 +146,7 @@ static int rmi_spi_xfer(struct rmi_spi_xport *rmi_spi,
 	}
 
 	if (addr == 0)
-		/*
-		 * SPI needs an address. Use 0x7FF if we want to keep
-		 * reading from the last position of the register pointer.
-		 */
+		 
 		addr = 0x7FF;
 
 	switch (cmd->op) {
@@ -239,20 +230,7 @@ static int rmi_spi_xfer(struct rmi_spi_xport *rmi_spi,
 	return 0;
 }
 
-/*
- * rmi_set_page - Set RMI page
- * @xport: The pointer to the rmi_transport_dev struct
- * @page: The new page address.
- *
- * RMI devices have 16-bit addressing, but some of the transport
- * implementations (like SMBus) only have 8-bit addressing. So RMI implements
- * a page address at 0xff of every page so we can reliable page addresses
- * every 256 registers.
- *
- * The page_mutex lock must be held when this function is entered.
- *
- * Returns zero on success, non-zero on failure.
- */
+ 
 static int rmi_set_page(struct rmi_spi_xport *rmi_spi, u8 page)
 {
 	struct rmi_spi_cmd cmd;
@@ -420,10 +398,7 @@ static int rmi_spi_probe(struct spi_device *spi)
 	if (error)
 		return error;
 
-	/*
-	 * Setting the page to zero will (a) make sure the PSR is in a
-	 * known state, and (b) make sure we can talk to the device.
-	 */
+	 
 	error = rmi_set_page(rmi_spi, 0);
 	if (error) {
 		dev_err(&spi->dev, "Failed to set page select to 0.\n");

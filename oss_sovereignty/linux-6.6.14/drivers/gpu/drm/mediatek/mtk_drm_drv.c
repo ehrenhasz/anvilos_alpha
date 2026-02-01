@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: YT SHEN <yt.shen@mediatek.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/iommu.h>
@@ -434,11 +431,7 @@ static int mtk_drm_kms_init(struct drm_device *drm)
 	drm->mode_config.min_width = 64;
 	drm->mode_config.min_height = 64;
 
-	/*
-	 * set max width and height as default value(4096x4096).
-	 * this value would be used to check framebuffer size limitation
-	 * at drm_mode_addfb().
-	 */
+	 
 	drm->mode_config.max_width = 4096;
 	drm->mode_config.max_height = 4096;
 	drm->mode_config.funcs = &mtk_drm_mode_config_funcs;
@@ -451,21 +444,10 @@ static int mtk_drm_kms_init(struct drm_device *drm)
 			goto put_mutex_dev;
 	}
 
-	/*
-	 * Ensure internal panels are at the top of the connector list before
-	 * crtc creation.
-	 */
+	 
 	drm_helper_move_panel_connectors_to_head(drm);
 
-	/*
-	 * 1. We currently support two fixed data streams, each optional,
-	 *    and each statically assigned to a crtc:
-	 *    OVL0 -> COLOR0 -> AAL -> OD -> RDMA0 -> UFOE -> DSI0 ...
-	 * 2. For multi mmsys architecture, crtc path data are located in
-	 *    different drm private data structures. Loop through crtc index to
-	 *    create crtc from the main path and then ext_path and finally the
-	 *    third path.
-	 */
+	 
 	for (i = 0; i < MAX_CRTC; i++) {
 		for (j = 0; j < private->data->mmsys_dev_num; j++) {
 			priv_n = private->all_drm_private[j];
@@ -495,7 +477,7 @@ static int mtk_drm_kms_init(struct drm_device *drm)
 		}
 	}
 
-	/* Use OVL device for all DMA memory allocations */
+	 
 	crtc = drm_crtc_from_index(drm, 0);
 	if (crtc)
 		dma_dev = mtk_drm_crtc_dma_dev_get(crtc);
@@ -508,10 +490,7 @@ static int mtk_drm_kms_init(struct drm_device *drm)
 	for (i = 0; i < private->data->mmsys_dev_num; i++)
 		private->all_drm_private[i]->dma_dev = dma_dev;
 
-	/*
-	 * Configure the DMA segment size to make sure we get contiguous IOVA
-	 * when importing PRIME buffers.
-	 */
+	 
 	ret = dma_set_max_seg_size(dma_dev, UINT_MAX);
 	if (ret) {
 		dev_err(dma_dev, "Failed to set DMA segment size\n");
@@ -547,10 +526,7 @@ static void mtk_drm_kms_deinit(struct drm_device *drm)
 
 DEFINE_DRM_GEM_FOPS(mtk_drm_fops);
 
-/*
- * We need to override this because the device used to import the memory is
- * not dev->dev, as drm_gem_prime_import() expects.
- */
+ 
 static struct drm_gem_object *mtk_drm_gem_prime_import(struct drm_device *dev,
 						       struct dma_buf *dma_buf)
 {
@@ -638,7 +614,7 @@ static void mtk_drm_unbind(struct device *dev)
 {
 	struct mtk_drm_private *private = dev_get_drvdata(dev);
 
-	/* for multi mmsys dev, unregister drm dev in mmsys master */
+	 
 	if (private->drm_master) {
 		drm_dev_unregister(private->drm);
 		mtk_drm_kms_deinit(private->drm);
@@ -806,7 +782,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
 	if (!private->all_drm_private)
 		return -ENOMEM;
 
-	/* Bringup ovl_adaptor */
+	 
 	if (mtk_drm_find_mmsys_comp(private, DDP_COMPONENT_DRM_OVL_ADAPTOR)) {
 		ovl_adaptor = platform_device_register_data(dev, "mediatek-disp-ovl-adaptor",
 							    PLATFORM_DEVID_AUTO,
@@ -818,7 +794,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
 		component_match_add(dev, &match, compare_dev, &ovl_adaptor->dev);
 	}
 
-	/* Iterate over sibling DISP function blocks */
+	 
 	for_each_child_of_node(phandle->parent, node) {
 		const struct of_device_id *of_id;
 		enum mtk_ddp_comp_type comp_type;
@@ -859,11 +835,7 @@ static int mtk_drm_probe(struct platform_device *pdev)
 
 		private->comp_node[comp_id] = of_node_get(node);
 
-		/*
-		 * Currently only the AAL, CCORR, COLOR, GAMMA, MERGE, OVL, RDMA, DSI, and DPI
-		 * blocks have separate component platform drivers and initialize their own
-		 * DDP component structure. The others are initialized here.
-		 */
+		 
 		if (comp_type == MTK_DISP_AAL ||
 		    comp_type == MTK_DISP_CCORR ||
 		    comp_type == MTK_DISP_COLOR ||

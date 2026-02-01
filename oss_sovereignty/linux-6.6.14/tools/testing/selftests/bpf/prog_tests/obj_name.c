@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 void test_obj_name(void)
@@ -26,7 +26,7 @@ void test_obj_name(void)
 		size_t ncopy;
 		int fd;
 
-		/* test different attr.prog_name during BPF_PROG_LOAD */
+		 
 		ncopy = name_len < sizeof(attr.prog_name) ?
 			name_len : sizeof(attr.prog_name);
 		bzero(&attr, sizeof(attr));
@@ -47,7 +47,7 @@ void test_obj_name(void)
 		if (fd >= 0)
 			close(fd);
 
-		/* test different attr.map_name during BPF_MAP_CREATE */
+		 
 		ncopy = name_len < sizeof(attr.map_name) ?
 			name_len : sizeof(attr.map_name);
 		bzero(&attr, sizeof(attr));

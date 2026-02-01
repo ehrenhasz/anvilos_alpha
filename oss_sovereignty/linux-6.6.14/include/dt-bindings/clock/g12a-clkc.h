@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ OR MIT */
-/*
- * Meson-G12A clock tree IDs
- *
- * Copyright (c) 2018 Amlogic, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef __G12A_CLKC_H
 #define __G12A_CLKC_H
@@ -280,4 +276,4 @@
 #define CLKID_MIPI_DSI_PXCLK_SEL		269
 #define CLKID_MIPI_DSI_PXCLK			270
 
-#endif /* __G12A_CLKC_H */
+#endif  

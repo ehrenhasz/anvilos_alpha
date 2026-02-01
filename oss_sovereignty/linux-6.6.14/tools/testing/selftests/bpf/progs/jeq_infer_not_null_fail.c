@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -22,14 +22,7 @@ int jeq_infer_not_null_ptr_to_btfid(void *ctx)
 	u64 key = 0, ret = 0, *val;
 
 	val = bpf_map_lookup_elem(map, &key);
-	/* Do not mark ptr as non-null if one of them is
-	 * PTR_TO_BTF_ID (R9), reject because of invalid
-	 * access to map value (R8).
-	 *
-	 * Here, we need to inline those insns to access
-	 * R8 directly, since compiler may use other reg
-	 * once it figures out val==inner_map.
-	 */
+	 
 	asm volatile("r8 = %[val];\n"
 		     "r9 = %[inner_map];\n"
 		     "if r8 != r9 goto +1;\n"

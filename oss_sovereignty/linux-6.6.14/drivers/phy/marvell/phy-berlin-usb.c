@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2014 Marvell Technology Group Ltd.
- *
- * Antoine Tenart <antoine.tenart@free-electrons.com>
- * Jisheng Zhang <jszhang@marvell.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -21,11 +16,11 @@
 #define USB_PHY_RX_CTRL		0x20
 #define USB_PHY_ANALOG		0x34
 
-/* USB_PHY_PLL */
+ 
 #define CLK_REF_DIV(x)		((x) << 4)
 #define FEEDBACK_CLK_DIV(x)	((x) << 8)
 
-/* USB_PHY_PLL_CONTROL */
+ 
 #define CLK_STABLE		BIT(0)
 #define PLL_CTRL_PIN		BIT(1)
 #define PLL_CTRL_REG		BIT(2)
@@ -38,14 +33,14 @@
 #define KVC0_LOW		(0x3 << 10)
 #define CLK_BLK_EN		BIT(13)
 
-/* USB_PHY_TX_CTRL0 */
+ 
 #define EXT_HS_RCAL_EN		BIT(3)
 #define EXT_FS_RCAL_EN		BIT(4)
 #define IMPCAL_VTH_DIV(x)	((x) << 5)
 #define EXT_RS_RCAL_DIV(x)	((x) << 8)
 #define EXT_FS_RCAL_DIV(x)	((x) << 12)
 
-/* USB_PHY_TX_CTRL1 */
+ 
 #define TX_VDD15_14		(0x0 << 4)
 #define TX_VDD15_15		BIT(4)
 #define TX_VDD15_16		(0x2 << 4)
@@ -57,7 +52,7 @@
 #define LOW_VDD_EN		BIT(8)
 #define TX_OUT_AMP(x)		((x) << 9)
 
-/* USB_PHY_TX_CTRL2 */
+ 
 #define TX_CHAN_CTRL_REG(x)	((x) << 0)
 #define DRV_SLEWRATE(x)		((x) << 4)
 #define IMP_CAL_FS_HS_DLY_0	(0x0 << 6)
@@ -67,7 +62,7 @@
 #define FS_DRV_EN_MASK(x)	((x) << 8)
 #define HS_DRV_EN_MASK(x)	((x) << 12)
 
-/* USB_PHY_RX_CTRL */
+ 
 #define PHASE_FREEZE_DLY_2_CL	(0x0 << 0)
 #define PHASE_FREEZE_DLY_4_CL	BIT(0)
 #define ACK_LENGTH_8_CL		(0x0 << 2)
@@ -89,7 +84,7 @@
 #define INTPL_CUR_30		(0x2 << 14)
 #define INTPL_CUR_40		(0x3 << 14)
 
-/* USB_PHY_ANALOG */
+ 
 #define ANA_PWR_UP		BIT(1)
 #define ANA_PWR_DOWN		BIT(2)
 #define V2I_VCO_RATIO(x)	((x) << 7)
@@ -99,9 +94,9 @@
 #define ANA_TEST_DC_CTRL(x)	((x) << 12)
 
 static const u32 phy_berlin_pll_dividers[] = {
-	/* Berlin 2 */
+	 
 	CLK_REF_DIV(0x6) | FEEDBACK_CLK_DIV(0x55),
-	/* Berlin 2CD/Q */
+	 
 	CLK_REF_DIV(0xc) | FEEDBACK_CLK_DIV(0x54),
 };
 

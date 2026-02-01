@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- *
- *   Copyright (C) International Business Machines  Corp., 2002, 2011
- *                 Etersoft, 2012
- *   Author(s): Steve French (sfrench@us.ibm.com)
- *              Jeremy Allison (jra@samba.org) 2006
- *              Pavel Shilovsky (pshilovsky@samba.org) 2012
- *
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/list.h>
@@ -85,7 +77,7 @@ int smb2_get_sign_key(__u64 ses_id, struct TCP_Server_Info *server, u8 *key)
 
 	spin_lock(&cifs_tcp_ses_lock);
 
-	/* If server is a channel, select the primary channel */
+	 
 	pserver = SERVER_IS_CHAN(server) ? server->primary_server : server;
 
 	list_for_each_entry(ses, &pserver->smb_ses_list, smb_ses_list) {
@@ -105,20 +97,14 @@ found:
 	is_binding = (cifs_chan_needs_reconnect(ses, server) &&
 		      ses->ses_status == SES_GOOD);
 	if (is_binding) {
-		/*
-		 * If we are in the process of binding a new channel
-		 * to an existing session, use the master connection
-		 * session key
-		 */
+		 
 		memcpy(key, ses->smb3signingkey, SMB3_SIGN_KEY_SIZE);
 		spin_unlock(&ses->chan_lock);
 		spin_unlock(&ses->ses_lock);
 		goto out;
 	}
 
-	/*
-	 * Otherwise, use the channel key.
-	 */
+	 
 
 	for (i = 0; i < ses->chan_count; i++) {
 		chan = ses->chans + i;
@@ -148,7 +134,7 @@ smb2_find_smb_ses_unlocked(struct TCP_Server_Info *server, __u64 ses_id)
 	struct TCP_Server_Info *pserver;
 	struct cifs_ses *ses;
 
-	/* If server is a channel, select the primary channel */
+	 
 	pserver = SERVER_IS_CHAN(server) ? server->primary_server : server;
 
 	list_for_each_entry(ses, &pserver->smb_ses_list, smb_ses_list) {
@@ -195,10 +181,7 @@ smb2_find_smb_sess_tcon_unlocked(struct cifs_ses *ses, __u32  tid)
 	return NULL;
 }
 
-/*
- * Obtain tcon corresponding to the tid in the given
- * cifs_ses
- */
+ 
 
 struct cifs_tcon *
 smb2_find_smb_tcon(struct TCP_Server_Info *server, __u64 ses_id, __u32  tid)
@@ -219,7 +202,7 @@ smb2_find_smb_tcon(struct TCP_Server_Info *server, __u64 ses_id, __u32  tid)
 		return NULL;
 	}
 	spin_unlock(&cifs_tcp_ses_lock);
-	/* tcon already has a ref to ses, so we don't need ses anymore */
+	 
 	cifs_put_smb_ses(ses);
 
 	return tcon;
@@ -273,13 +256,7 @@ smb2_calc_signature(struct smb_rqst *rqst, struct TCP_Server_Info *server,
 		goto out;
 	}
 
-	/*
-	 * For SMB2+, __cifs_calc_signature() expects to sign only the actual
-	 * data, that is, iov[0] should not contain a rfc1002 length.
-	 *
-	 * Sign the rfc1002 length prior to passing the data (iov[1-N]) down to
-	 * __cifs_calc_signature().
-	 */
+	 
 	drqst = *rqst;
 	if (drqst.rq_nvec >= 2 && iov[0].iov_len == 4) {
 		rc = crypto_shash_update(shash, iov[0].iov_base,
@@ -413,19 +390,11 @@ generate_smb3signingkey(struct cifs_ses *ses,
 		      ses->ses_status == SES_GOOD);
 
 	chan_index = cifs_ses_get_chan_index(ses, server);
-	/* TODO: introduce ref counting for channels when the can be freed */
+	 
 	spin_unlock(&ses->chan_lock);
 	spin_unlock(&ses->ses_lock);
 
-	/*
-	 * All channels use the same encryption/decryption keys but
-	 * they have their own signing key.
-	 *
-	 * When we generate the keys, check if it is for a new channel
-	 * (binding) in which case we only need to generate a signing
-	 * key and store it in the channel as to not overwrite the
-	 * master connection signing key stored in the session
-	 */
+	 
 
 	if (is_binding) {
 		rc = generate_key(ses, ptriplet->signing.label,
@@ -442,7 +411,7 @@ generate_smb3signingkey(struct cifs_ses *ses,
 		if (rc)
 			return rc;
 
-		/* safe to access primary channel, since it will never go away */
+		 
 		spin_lock(&ses->chan_lock);
 		memcpy(ses->chans[chan_index].signkey, ses->smb3signingkey,
 		       SMB3_SIGN_KEY_SIZE);
@@ -464,10 +433,7 @@ generate_smb3signingkey(struct cifs_ses *ses,
 
 #ifdef CONFIG_CIFS_DEBUG_DUMP_KEYS
 	cifs_dbg(VFS, "%s: dumping generated AES session keys\n", __func__);
-	/*
-	 * The session id is opaque in terms of endianness, so we can't
-	 * print it as a long long. we dump it as we got it on the wire
-	 */
+	 
 	cifs_dbg(VFS, "Session Id    %*ph\n", (int)sizeof(ses->Suid),
 			&ses->Suid);
 	cifs_dbg(VFS, "Cipher type   %d\n", server->cipher_type);
@@ -585,24 +551,14 @@ smb3_calc_signature(struct smb_rqst *rqst, struct TCP_Server_Info *server,
 		goto out;
 	}
 
-	/*
-	 * we already allocate aes_cmac when we init smb3 signing key,
-	 * so unlike smb2 case we do not have to check here if secmech are
-	 * initialized
-	 */
+	 
 	rc = crypto_shash_init(shash);
 	if (rc) {
 		cifs_server_dbg(VFS, "%s: Could not init cmac aes\n", __func__);
 		goto out;
 	}
 
-	/*
-	 * For SMB2+, __cifs_calc_signature() expects to sign only the actual
-	 * data, that is, iov[0] should not contain a rfc1002 length.
-	 *
-	 * Sign the rfc1002 length prior to passing the data (iov[1-N]) down to
-	 * __cifs_calc_signature().
-	 */
+	 
 	drqst = *rqst;
 	if (drqst.rq_nvec >= 2 && iov[0].iov_len == 4) {
 		rc = crypto_shash_update(shash, iov[0].iov_base,
@@ -626,7 +582,7 @@ out:
 	return rc;
 }
 
-/* must be called with server->srv_mutex held */
+ 
 static int
 smb2_sign_rqst(struct smb_rqst *rqst, struct TCP_Server_Info *server)
 {
@@ -677,20 +633,14 @@ smb2_verify_signature(struct smb_rqst *rqst, struct TCP_Server_Info *server)
 	    (!server->session_estab))
 		return 0;
 
-	/*
-	 * BB what if signatures are supposed to be on for session but
-	 * server does not send one? BB
-	 */
+	 
 
-	/* Do not need to verify session setups with signature "BSRSPYL " */
+	 
 	if (memcmp(shdr->Signature, "BSRSPYL ", 8) == 0)
 		cifs_dbg(FYI, "dummy signature received for smb command 0x%x\n",
 			 shdr->Command);
 
-	/*
-	 * Save off the origiginal signature so we can modify the smb and check
-	 * our calculated signature against what the server sent.
-	 */
+	 
 	memcpy(server_response_sig, shdr->Signature, SMB2_SIGNATURE_SIZE);
 
 	memset(shdr->Signature, 0, SMB2_SIGNATURE_SIZE);
@@ -708,10 +658,7 @@ smb2_verify_signature(struct smb_rqst *rqst, struct TCP_Server_Info *server)
 		return 0;
 }
 
-/*
- * Set message id for the request. Should be called after wait_for_free_request
- * and when srv_mutex is held.
- */
+ 
 static inline void
 smb2_seq_num_into_buf(struct TCP_Server_Info *server,
 		      struct smb2_hdr *shdr)
@@ -719,7 +666,7 @@ smb2_seq_num_into_buf(struct TCP_Server_Info *server,
 	unsigned int i, num = le16_to_cpu(shdr->CreditCharge);
 
 	shdr->MessageId = get_next_mid64(server);
-	/* skip message numbers according to CreditCharge field */
+	 
 	for (i = 1; i < num; i++)
 		get_next_mid(server);
 }
@@ -742,14 +689,11 @@ smb2_mid_entry_alloc(const struct smb2_hdr *shdr,
 	temp->mid = le64_to_cpu(shdr->MessageId);
 	temp->credits = credits > 0 ? credits : 1;
 	temp->pid = current->pid;
-	temp->command = shdr->Command; /* Always LE */
+	temp->command = shdr->Command;  
 	temp->when_alloc = jiffies;
 	temp->server = server;
 
-	/*
-	 * The default is for the mid to be synchronous, so the
-	 * default callback just wakes up the current task.
-	 */
+	 
 	get_task_struct(current);
 	temp->creator = current;
 	temp->callback = cifs_wake_up_task;
@@ -793,7 +737,7 @@ smb2_get_mid_entry(struct cifs_ses *ses, struct TCP_Server_Info *server,
 			spin_unlock(&ses->ses_lock);
 			return -EAGAIN;
 		}
-		/* else ok - we are setting up session */
+		 
 	}
 
 	if (ses->ses_status == SES_EXITING) {
@@ -801,7 +745,7 @@ smb2_get_mid_entry(struct cifs_ses *ses, struct TCP_Server_Info *server,
 			spin_unlock(&ses->ses_lock);
 			return -EAGAIN;
 		}
-		/* else ok - we are shutting down the session */
+		 
 	}
 	spin_unlock(&ses->ses_lock);
 
@@ -828,7 +772,7 @@ smb2_check_receive(struct mid_q_entry *mid, struct TCP_Server_Info *server,
 	iov[0].iov_len = len;
 
 	dump_smb(mid->resp_buf, min_t(u32, 80, len));
-	/* convert the length into a more usable form */
+	 
 	if (len > 24 && server->sign && !mid->decrypted) {
 		int rc;
 

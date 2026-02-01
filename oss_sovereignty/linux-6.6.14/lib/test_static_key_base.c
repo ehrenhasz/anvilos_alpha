@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kernel module for testing static keys.
- *
- * Copyright 2015 Akamai Technologies Inc. All Rights Reserved
- *
- * Authors:
- *      Jason Baron       <jbaron@akamai.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/jump_label.h>
 
-/* old keys */
+ 
 struct static_key base_old_true_key = STATIC_KEY_INIT_TRUE;
 EXPORT_SYMBOL_GPL(base_old_true_key);
 struct static_key base_inv_old_true_key = STATIC_KEY_INIT_TRUE;
@@ -21,7 +14,7 @@ EXPORT_SYMBOL_GPL(base_old_false_key);
 struct static_key base_inv_old_false_key = STATIC_KEY_INIT_FALSE;
 EXPORT_SYMBOL_GPL(base_inv_old_false_key);
 
-/* new keys */
+ 
 DEFINE_STATIC_KEY_TRUE(base_true_key);
 EXPORT_SYMBOL_GPL(base_true_key);
 DEFINE_STATIC_KEY_TRUE(base_inv_true_key);

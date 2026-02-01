@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: Flora Fu, MediaTek
- */
+ 
+ 
 
 #ifndef _DT_BINDINGS_RESET_CONTROLLER_MT8135
 #define _DT_BINDINGS_RESET_CONTROLLER_MT8135
 
-/* INFRACFG resets */
+ 
 #define MT8135_INFRA_EMI_REG_RST        0
 #define MT8135_INFRA_DRAMC0_A0_RST      1
 #define MT8135_INFRA_CCIF0_RST          2
@@ -22,7 +19,7 @@
 #define MT8135_INFRA_SMI_RST            35
 #define MT8135_INFRA_M4U_RST            36
 
-/*  PERICFG resets */
+ 
 #define MT8135_PERI_UART0_SW_RST        0
 #define MT8135_PERI_UART1_SW_RST        1
 #define MT8135_PERI_UART2_SW_RST        2
@@ -53,4 +50,4 @@
 #define MT8135_PERI_SPI1_SW_RST         33
 #define MT8135_PERI_PWRAP_BRIDGE_SW_RST 34
 
-#endif  /* _DT_BINDINGS_RESET_CONTROLLER_MT8135 */
+#endif   

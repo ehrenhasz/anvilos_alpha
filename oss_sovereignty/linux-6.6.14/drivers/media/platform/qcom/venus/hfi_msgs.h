@@ -1,12 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+ 
+ 
 #ifndef __VENUS_HFI_MSGS_H__
 #define __VENUS_HFI_MSGS_H__
 
-/* message calls */
+ 
 #define HFI_MSG_SYS_INIT			0x20001
 #define HFI_MSG_SYS_PC_PREP			0x20002
 #define HFI_MSG_SYS_RELEASE_RESOURCE		0x20003
@@ -44,7 +41,7 @@
 #define HFI_FRAME_YUV				0x7f004000
 #define HFI_UNUSED_PICT				0x10000000
 
-/* message packets */
+ 
 struct hfi_msg_event_notify_pkt {
 	struct hfi_session_hdr_pkt shdr;
 	u32 event_id;

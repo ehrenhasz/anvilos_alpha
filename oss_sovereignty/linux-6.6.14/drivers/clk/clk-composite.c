@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2013 NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -292,7 +290,7 @@ static struct clk_hw *__clk_hw_register_composite(struct device *dev,
 			clk_composite_ops->round_rate =
 				clk_composite_round_rate;
 
-		/* .set_rate requires either .round_rate or .determine_rate */
+		 
 		if (rate_ops->set_rate) {
 			if (rate_ops->determine_rate || rate_ops->round_rate)
 				clk_composite_ops->set_rate =

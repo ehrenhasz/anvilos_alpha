@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * altera.h
- *
- * altera FPGA driver
- *
- * Copyright (C) Altera Corporation 1998-2001
- * Copyright (C) 2010 NetUP Inc.
- * Copyright (C) 2010 Igor M. Liplianin <liplianin@netup.ru>
- */
+ 
+ 
 
 #ifndef _ALTERA_H_
 #define _ALTERA_H_
@@ -30,6 +22,6 @@ static inline int altera_init(struct altera_config *config,
 	printk(KERN_WARNING "%s: driver disabled by Kconfig\n", __func__);
 	return 0;
 }
-#endif /* CONFIG_ALTERA_STAPL */
+#endif  
 
-#endif /* _ALTERA_H_ */
+#endif  

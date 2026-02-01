@@ -1,8 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _FIREWIRE_OHCI_H
 #define _FIREWIRE_OHCI_H
 
-/* OHCI register map */
+ 
 
 #define OHCI1394_Version                      0x000
 #define OHCI1394_GUID_ROM                     0x004
@@ -101,20 +101,20 @@
 #define OHCI1394_AsRspRcvContextControlClear  0x1E4
 #define OHCI1394_AsRspRcvCommandPtr           0x1EC
 
-/* Isochronous transmit registers */
+ 
 #define OHCI1394_IsoXmitContextBase(n)           (0x200 + 16 * (n))
 #define OHCI1394_IsoXmitContextControlSet(n)     (0x200 + 16 * (n))
 #define OHCI1394_IsoXmitContextControlClear(n)   (0x204 + 16 * (n))
 #define OHCI1394_IsoXmitCommandPtr(n)            (0x20C + 16 * (n))
 
-/* Isochronous receive registers */
+ 
 #define OHCI1394_IsoRcvContextBase(n)         (0x400 + 32 * (n))
 #define OHCI1394_IsoRcvContextControlSet(n)   (0x400 + 32 * (n))
 #define OHCI1394_IsoRcvContextControlClear(n) (0x404 + 32 * (n))
 #define OHCI1394_IsoRcvCommandPtr(n)          (0x40C + 32 * (n))
 #define OHCI1394_IsoRcvContextMatch(n)        (0x410 + 32 * (n))
 
-/* Interrupts Mask/Events */
+ 
 #define OHCI1394_reqTxComplete		0x00000001
 #define OHCI1394_respTxComplete		0x00000002
 #define OHCI1394_ARRQ			0x00000004
@@ -156,4 +156,4 @@
 
 #define OHCI1394_phy_tcode		0xe
 
-#endif /* _FIREWIRE_OHCI_H */
+#endif  

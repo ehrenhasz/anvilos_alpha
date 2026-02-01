@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for SMSC USB3503 USB 2.0 hub controller driver
- *
- * Copyright (c) 2012-2013 Dongjin Kim (tobetter@gmail.com)
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/i2c.h>
@@ -59,7 +55,7 @@ static int usb3503_connect(struct usb3503 *hub)
 	int err;
 
 	if (hub->regmap) {
-		/* SP_ILOCK: set connect_n, config_n for config */
+		 
 		err = regmap_write(hub->regmap, USB3503_SP_ILOCK,
 			   (USB3503_SPILOCK_CONNECT
 				 | USB3503_SPILOCK_CONFIG));
@@ -68,7 +64,7 @@ static int usb3503_connect(struct usb3503 *hub)
 			return err;
 		}
 
-		/* PDS : Set the ports which are disabled in self-powered mode. */
+		 
 		if (hub->port_off_mask) {
 			err = regmap_update_bits(hub->regmap, USB3503_PDS,
 					hub->port_off_mask,
@@ -79,7 +75,7 @@ static int usb3503_connect(struct usb3503 *hub)
 			}
 		}
 
-		/* CFG1 : Set SELF_BUS_PWR, this enables self-powered operation. */
+		 
 		err = regmap_update_bits(hub->regmap, USB3503_CFG1,
 					 USB3503_SELF_BUS_PWR,
 					 USB3503_SELF_BUS_PWR);
@@ -88,7 +84,7 @@ static int usb3503_connect(struct usb3503 *hub)
 			return err;
 		}
 
-		/* SP_LOCK: clear connect_n, config_n for hub connect */
+		 
 		err = regmap_update_bits(hub->regmap, USB3503_SP_ILOCK,
 					 (USB3503_SPILOCK_CONNECT
 					  | USB3503_SPILOCK_CONFIG), 0);
@@ -144,7 +140,7 @@ static int usb3503_switch_mode(struct usb3503 *hub, enum usb3503_mode mode)
 		gpiod_set_value_cansleep(hub->bypass, bypass);
 
 	if (conn) {
-		/* Wait T_HUBINIT == 4ms for hub logic to stabilize */
+		 
 		usleep_range(4000, 10000);
 		return usb3503_connect(hub);
 	}
@@ -272,7 +268,7 @@ static int usb3503_probe(struct usb3503 *hub)
 		goto err_clk;
 	}
 	if (hub->reset) {
-		/* Datasheet defines a hardware reset to be at least 100us */
+		 
 		usleep_range(100, 10000);
 		gpiod_set_consumer_name(hub->reset, "usb3503 reset");
 	}

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015-2016 Mentor Graphics
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/printk.h>
@@ -9,12 +7,7 @@
 
 #include "watchdog_pretimeout.h"
 
-/**
- * pretimeout_noop - No operation on watchdog pretimeout event
- * @wdd - watchdog_device
- *
- * This function prints a message about pretimeout to kernel log.
- */
+ 
 static void pretimeout_noop(struct watchdog_device *wdd)
 {
 	pr_alert("watchdog%d: pretimeout event\n", wdd->id);

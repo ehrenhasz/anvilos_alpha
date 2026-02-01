@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 STMicroelectronics - All Rights Reserved
- *
- * The rpmsg tty driver implements serial communication on the RPMsg bus to makes
- * possible for user-space programs to send and receive rpmsg messages as a standard
- * tty protocol.
- *
- * The remote processor can instantiate a new tty by requesting a "rpmsg-tty" RPMsg service.
- * The "rpmsg-tty" service is directly used for data exchange. No flow control is implemented yet.
- */
+
+ 
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 
@@ -21,15 +12,15 @@
 #define RPMSG_TTY_NAME	"ttyRPMSG"
 #define MAX_TTY_RPMSG	32
 
-static DEFINE_IDR(tty_idr);	/* tty instance id */
-static DEFINE_MUTEX(idr_lock);	/* protects tty_idr */
+static DEFINE_IDR(tty_idr);	 
+static DEFINE_MUTEX(idr_lock);	 
 
 static struct tty_driver *rpmsg_tty_driver;
 
 struct rpmsg_tty_port {
-	struct tty_port		port;	 /* TTY port data */
-	int			id;	 /* TTY rpmsg index */
-	struct rpmsg_device	*rpdev;	 /* rpmsg device */
+	struct tty_port		port;	  
+	int			id;	  
+	struct rpmsg_device	*rpdev;	  
 };
 
 static int rpmsg_tty_cb(struct rpmsg_device *rpdev, void *data, int len, void *priv, u32 src)
@@ -89,10 +80,7 @@ static ssize_t rpmsg_tty_write(struct tty_struct *tty, const u8 *buf,
 
 	msg_size = min_t(unsigned int, len, msg_max_size);
 
-	/*
-	 * Use rpmsg_trysend instead of rpmsg_send to send the message so the caller is not
-	 * hung until a rpmsg buffer is available. In such case rpmsg_trysend returns -ENOMEM.
-	 */
+	 
 	ret = rpmsg_trysend(rpdev->ept, (void *)buf, msg_size);
 	if (ret) {
 		dev_dbg_ratelimited(&rpdev->dev, "rpmsg_send failed: %d\n", ret);
@@ -206,7 +194,7 @@ static void rpmsg_tty_remove(struct rpmsg_device *rpdev)
 
 	dev_dbg(&rpdev->dev, "Removing rpmsg tty device %d\n", cport->id);
 
-	/* User hang up to release the tty */
+	 
 	tty_port_tty_hangup(&cport->port, false);
 
 	tty_unregister_device(rpmsg_tty_driver, cport->id);
@@ -242,7 +230,7 @@ static int __init rpmsg_tty_init(void)
 	rpmsg_tty_driver->major = 0;
 	rpmsg_tty_driver->type = TTY_DRIVER_TYPE_CONSOLE;
 
-	/* Disable unused mode by default */
+	 
 	rpmsg_tty_driver->init_termios = tty_std_termios;
 	rpmsg_tty_driver->init_termios.c_lflag &= ~(ECHO | ICANON);
 	rpmsg_tty_driver->init_termios.c_oflag &= ~(OPOST | ONLCR);

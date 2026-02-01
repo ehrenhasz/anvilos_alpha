@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for ADAU1381/ADAU1781 CODEC
- *
- * Copyright 2014 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/mod_devicetable.h>

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: ISC */
+ 
 
 #ifndef __MT7603_EEPROM_H
 #define __MT7603_EEPROM_H
@@ -29,7 +29,7 @@ enum mt7603_eeprom_field {
 	MT_EE_TX_POWER_0_START_2G =		0x056,
 	MT_EE_TX_POWER_1_START_2G =		0x05c,
 
-	/* used as byte arrays */
+	 
 #define MT_TX_POWER_GROUP_SIZE_5G		5
 #define MT_TX_POWER_GROUPS_5G			6
 	MT_EE_TX_POWER_0_START_5G =		0x062,

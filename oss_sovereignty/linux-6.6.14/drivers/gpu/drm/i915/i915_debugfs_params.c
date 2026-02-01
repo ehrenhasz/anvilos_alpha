@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -21,7 +19,7 @@
 		(i915) = container_of(params, typeof(*(i915)), params);	\
 	} while (0)
 
-/* int param */
+ 
 static int i915_param_int_show(struct seq_file *m, void *data)
 {
 	int *value = m->private;
@@ -56,7 +54,7 @@ static ssize_t i915_param_int_write(struct file *file,
 
 	ret = kstrtoint_from_user(ubuf, len, 0, value);
 	if (ret) {
-		/* support boolean values too */
+		 
 		bool b;
 
 		ret = kstrtobool_from_user(ubuf, len, &b);
@@ -84,7 +82,7 @@ static const struct file_operations i915_param_int_fops_ro = {
 	.release = single_release,
 };
 
-/* unsigned int param */
+ 
 static int i915_param_uint_show(struct seq_file *m, void *data)
 {
 	unsigned int *value = m->private;
@@ -111,7 +109,7 @@ static ssize_t i915_param_uint_write(struct file *file,
 
 	ret = kstrtouint_from_user(ubuf, len, 0, value);
 	if (ret) {
-		/* support boolean values too */
+		 
 		bool b;
 
 		ret = kstrtobool_from_user(ubuf, len, &b);
@@ -147,7 +145,7 @@ static const struct file_operations i915_param_uint_fops_ro = {
 	.release = single_release,
 };
 
-/* char * param */
+ 
 static int i915_param_charp_show(struct seq_file *m, void *data)
 {
 	const char **s = m->private;
@@ -241,7 +239,7 @@ i915_debugfs_create_charp(const char *name, umode_t mode,
 				 char **: i915_debugfs_create_charp)(name, mode, parent, valp); \
 	} while(0)
 
-/* add a subdirectory with files for each i915 param */
+ 
 struct dentry *i915_debugfs_params(struct drm_i915_private *i915)
 {
 	struct drm_minor *minor = i915->drm.primary;
@@ -252,11 +250,7 @@ struct dentry *i915_debugfs_params(struct drm_i915_private *i915)
 	if (IS_ERR(dir))
 		return dir;
 
-	/*
-	 * Note: We could create files for params needing special handling
-	 * here. Set mode in params to 0 to skip the generic create file, or
-	 * just let the generic create file fail silently with -EEXIST.
-	 */
+	 
 
 #define REGISTER(T, x, unused, mode, ...) _i915_param_create_file(dir, #x, mode, &params->x);
 	I915_PARAMS_FOR_EACH(REGISTER);

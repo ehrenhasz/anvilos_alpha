@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Delta modules, Q54SJ108A2 series 1/4 Brick DC/DC
- * Regulated Power Module
- *
- * Copyright 2020 Delta LLC.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/i2c.h>
@@ -57,7 +52,7 @@ static struct pmbus_driver_info q54sj108a2_info[] = {
 	[q54sj108a2] = {
 		.pages = 1,
 
-		/* Source : Delta Q54SJ108A2 */
+		 
 		.format[PSC_TEMPERATURE] = linear,
 		.format[PSC_VOLTAGE_IN] = linear,
 		.format[PSC_CURRENT_OUT] = linear,
@@ -306,9 +301,7 @@ static int q54sj108a2_probe(struct i2c_client *client)
 		return -ENODEV;
 	}
 
-	/*
-	 * The chips support reading PMBUS_MFR_MODEL.
-	 */
+	 
 	ret = i2c_smbus_read_block_data(client, PMBUS_MFR_MODEL, buf);
 	if (ret < 0) {
 		dev_err(dev, "Failed to read Manufacturer Model\n");

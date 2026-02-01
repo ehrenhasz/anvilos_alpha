@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/lockdep.h>
@@ -244,7 +244,7 @@ nfp_flower_dev_get(struct nfp_app *app, u32 port_id, bool *redir_egress)
 	struct nfp_reprs *reprs;
 	u8 port = 0;
 
-	/* Check if the port is internal. */
+	 
 	if (FIELD_GET(NFP_FLOWER_CMSG_PORT_TYPE, port_id) ==
 	    NFP_FLOWER_CMSG_PORT_TYPE_OTHER_PORT) {
 		if (redir_egress)
@@ -417,7 +417,7 @@ nfp_flower_spawn_vnic_reprs(struct nfp_app *app,
 		nfp_repr->app_priv = repr_priv;
 		repr_priv->nfp_repr = nfp_repr;
 
-		/* For now we only support 1 PF */
+		 
 		WARN_ON(repr_type == NFP_REPR_TYPE_PF && i);
 
 		port = nfp_port_alloc(app, port_type, repr);
@@ -575,13 +575,7 @@ nfp_flower_spawn_phy_reprs(struct nfp_app *app, struct nfp_flower_priv *priv)
 
 	nfp_app_reprs_set(app, NFP_REPR_TYPE_PHYS_PORT, reprs);
 
-	/* The REIFY/MAC_REPR control messages should be sent after the MAC
-	 * representors are registered using nfp_app_reprs_set().  This is
-	 * because the firmware may respond with control messages for the
-	 * MAC representors, f.e. to provide the driver with information
-	 * about their state, and without registration the driver will drop
-	 * any such messages.
-	 */
+	 
 	atomic_set(replies, 0);
 	reify_cnt = nfp_flower_reprs_reify(app, NFP_REPR_TYPE_PHYS_PORT, true);
 	if (reify_cnt < 0) {
@@ -680,7 +674,7 @@ static void nfp_flower_wait_host_bit(struct nfp_app *app)
 	u64 feat;
 	int err;
 
-	/* Wait for HOST_ACK flag bit to propagate */
+	 
 	err_at = jiffies + msecs_to_jiffies(100);
 	do {
 		feat = nfp_rtsym_read_le(app->pf->rtbl,
@@ -704,7 +698,7 @@ static int nfp_flower_sync_feature_bits(struct nfp_app *app)
 	struct nfp_flower_priv *app_priv = app->priv;
 	int err;
 
-	/* Tell the firmware of the host supported features. */
+	 
 	err = nfp_rtsym_write_le(app->pf->rtbl, "_abi_flower_host_mask",
 				 app_priv->flower_ext_feats |
 				 NFP_FL_FEATS_HOST_ACK);
@@ -713,7 +707,7 @@ static int nfp_flower_sync_feature_bits(struct nfp_app *app)
 	else if (err != -ENOENT)
 		return err;
 
-	/* Tell the firmware that the driver supports lag. */
+	 
 	err = nfp_rtsym_write_le(app->pf->rtbl,
 				 "_abi_flower_balance_sync_enable", 1);
 	if (!err) {
@@ -726,7 +720,7 @@ static int nfp_flower_sync_feature_bits(struct nfp_app *app)
 	}
 
 	if (app_priv->flower_ext_feats & NFP_FL_FEATS_FLOW_MOD) {
-		/* Tell the firmware that the driver supports flow merging. */
+		 
 		err = nfp_rtsym_write_le(app->pf->rtbl,
 					 "_abi_flower_merge_hint_enable", 1);
 		if (!err) {
@@ -800,7 +794,7 @@ static int nfp_flower_init(struct nfp_app *app)
 		ctx_count = BIT(17);
 	}
 
-	/* We need to ensure hardware has enough flower capabilities. */
+	 
 	if (version != NFP_FLOWER_ALLOWED_VER) {
 		nfp_warn(app->cpp, "FlowerNIC: unsupported firmware version\n");
 		return -EINVAL;
@@ -827,7 +821,7 @@ static int nfp_flower_init(struct nfp_app *app)
 	if (err)
 		goto err_free_app_priv;
 
-	/* Extract the extra features supported by the firmware. */
+	 
 	features = nfp_rtsym_read_le(app->pf->rtbl,
 				     "_abi_flower_extra_features", &err);
 	if (err)
@@ -898,7 +892,7 @@ nfp_flower_repr_change_mtu(struct nfp_app *app, struct net_device *netdev,
 	struct nfp_repr *repr = netdev_priv(netdev);
 	int err;
 
-	/* Only need to config FW for physical port MTU change. */
+	 
 	if (repr->port->type != NFP_PORT_PHYS_PORT)
 		return 0;
 
@@ -922,7 +916,7 @@ nfp_flower_repr_change_mtu(struct nfp_app *app, struct net_device *netdev,
 		return err;
 	}
 
-	/* Wait for fw to ack the change. */
+	 
 	if (!wait_event_timeout(app_priv->mtu_conf.wait_q,
 				nfp_flower_check_ack(app_priv),
 				NFP_FL_REPLY_TIMEOUT)) {

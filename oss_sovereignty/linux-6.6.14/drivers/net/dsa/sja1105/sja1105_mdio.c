@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright 2021 NXP
- */
+
+ 
 #include <linux/pcs/pcs-xpcs.h>
 #include <linux/of_mdio.h>
 #include "sja1105.h"
@@ -72,9 +71,7 @@ int sja1110_pcs_mdio_read_c45(struct mii_bus *bus, int phy, int mmd, int reg)
 	bank = addr >> 8;
 	offset = addr & GENMASK(7, 0);
 
-	/* This addressing scheme reserves register 0xff for the bank address
-	 * register, so that can never be addressed.
-	 */
+	 
 	if (WARN_ON(offset == 0xff))
 		return -ENODEV;
 
@@ -113,9 +110,7 @@ int sja1110_pcs_mdio_write_c45(struct mii_bus *bus, int phy, int reg, int mmd,
 	bank = addr >> 8;
 	offset = addr & GENMASK(7, 0);
 
-	/* This addressing scheme reserves register 0xff for the bank address
-	 * register, so that can never be addressed.
-	 */
+	 
 	if (WARN_ON(offset == 0xff))
 		return -ENODEV;
 
@@ -386,9 +381,7 @@ static int sja1105_mdiobus_pcs_register(struct sja1105_private *priv)
 	bus->read_c45 = priv->info->pcs_mdio_read_c45;
 	bus->write_c45 = priv->info->pcs_mdio_write_c45;
 	bus->parent = ds->dev;
-	/* There is no PHY on this MDIO bus => mask out all PHY addresses
-	 * from auto probing.
-	 */
+	 
 	bus->phy_mask = ~0;
 	mdio_priv = bus->priv;
 	mdio_priv->priv = priv;

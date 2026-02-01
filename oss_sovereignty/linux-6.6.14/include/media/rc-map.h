@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * rc-map.h - define RC map names used by RC drivers
- *
- * Copyright (c) 2010 by Mauro Carvalho Chehab
- */
+ 
+ 
 
 #ifndef _MEDIA_RC_MAP_H
 #define _MEDIA_RC_MAP_H
@@ -106,7 +102,7 @@
 #define __RC_PROTO_RCMM_CODEC 0
 #endif
 
-/* All kernel-based codecs have encoders and decoders */
+ 
 #define RC_PROTO_BIT_ALL_IR_DECODER \
 	(__RC_PROTO_RC5_CODEC | __RC_PROTO_JVC_CODEC | __RC_PROTO_SONY_CODEC | \
 	 __RC_PROTO_NEC_CODEC | __RC_PROTO_SANYO_CODEC | \
@@ -131,29 +127,13 @@
 #define RC_SCANCODE_RC6_0(sys, cmd)		(((sys) << 8) | (cmd))
 #define RC_SCANCODE_RC6_6A(vendor, sys, cmd)	(((vendor) << 16) | ((sys) << 8) | (cmd))
 
-/**
- * struct rc_map_table - represents a scancode/keycode pair
- *
- * @scancode: scan code (u64)
- * @keycode: Linux input keycode
- */
+ 
 struct rc_map_table {
 	u64	scancode;
 	u32	keycode;
 };
 
-/**
- * struct rc_map - represents a keycode map table
- *
- * @scan: pointer to struct &rc_map_table
- * @size: Max number of entries
- * @len: Number of entries that are in use
- * @alloc: size of \*scan, in bytes
- * @rc_proto: type of the remote controller protocol, as defined at
- *	     enum &rc_proto
- * @name: name of the key map table
- * @lock: lock to protect access to this structure
- */
+ 
 struct rc_map {
 	struct rc_map_table	*scan;
 	unsigned int		size;
@@ -164,47 +144,29 @@ struct rc_map {
 	spinlock_t		lock;
 };
 
-/**
- * struct rc_map_list - list of the registered &rc_map maps
- *
- * @list: pointer to struct &list_head
- * @map: pointer to struct &rc_map
- */
+ 
 struct rc_map_list {
 	struct list_head	 list;
 	struct rc_map map;
 };
 
 #ifdef CONFIG_MEDIA_CEC_RC
-/*
- * rc_map_list from rc-cec.c
- */
+ 
 extern struct rc_map_list cec_map;
 #endif
 
-/* Routines from rc-map.c */
+ 
 
-/**
- * rc_map_register() - Registers a Remote Controller scancode map
- *
- * @map:	pointer to struct rc_map_list
- */
+ 
 int rc_map_register(struct rc_map_list *map);
 
-/**
- * rc_map_unregister() - Unregisters a Remote Controller scancode map
- *
- * @map:	pointer to struct rc_map_list
- */
+ 
 void rc_map_unregister(struct rc_map_list *map);
 
-/**
- * rc_map_get - gets an RC map from its name
- * @name: name of the RC scancode map
- */
+ 
 struct rc_map *rc_map_get(const char *name);
 
-/* Names of the several keytables defined in-kernel */
+ 
 
 #define RC_MAP_ADSTECH_DVB_T_PCI         "rc-adstech-dvb-t-pci"
 #define RC_MAP_ALINK_DTU_M               "rc-alink-dtu-m"
@@ -347,9 +309,6 @@ struct rc_map *rc_map_get(const char *name);
 #define RC_MAP_XBOX_DVD                  "rc-xbox-dvd"
 #define RC_MAP_ZX_IRDEC                  "rc-zx-irdec"
 
-/*
- * Please, do not just append newer Remote Controller names at the end.
- * The names should be ordered in alphabetical order
- */
+ 
 
-#endif /* _MEDIA_RC_MAP_H */
+#endif  

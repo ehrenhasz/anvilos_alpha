@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Test handler for the s390x DIAGNOSE 0x0318 instruction.
- *
- * Copyright (C) 2020, IBM
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -18,11 +14,7 @@ static void guest_code(void)
 	asm volatile ("diag %0,0,0x318\n" : : "d" (diag318_info));
 }
 
-/*
- * The DIAGNOSE 0x0318 instruction call must be handled via userspace. As such,
- * we create an ad-hoc VM here to handle the instruction then extract the
- * necessary data. It is up to the caller to decide what to do with that data.
- */
+ 
 static uint64_t diag318_handler(void)
 {
 	struct kvm_vcpu *vcpu;
@@ -56,10 +48,7 @@ uint64_t get_diag318_info(void)
 	static uint64_t diag318_info;
 	static bool printed_skip;
 
-	/*
-	 * If KVM does not support diag318, then return 0 to
-	 * ensure tests do not break.
-	 */
+	 
 	if (!kvm_has_cap(KVM_CAP_S390_DIAG318)) {
 		if (!printed_skip) {
 			fprintf(stdout, "KVM_CAP_S390_DIAG318 not supported. "
@@ -69,10 +58,7 @@ uint64_t get_diag318_info(void)
 		return 0;
 	}
 
-	/*
-	 * If a test has previously requested the diag318 info,
-	 * then don't bother spinning up a temporary VM again.
-	 */
+	 
 	if (!diag318_info)
 		diag318_info = diag318_handler();
 

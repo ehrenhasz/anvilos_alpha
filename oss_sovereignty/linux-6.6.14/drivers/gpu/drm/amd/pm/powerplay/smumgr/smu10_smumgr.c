@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/pci.h>
 
@@ -248,7 +227,7 @@ static int smu10_smu_init(struct pp_hwmgr *hwmgr)
 
 	hwmgr->smu_backend = priv;
 
-	/* allocate space for watermarks table */
+	 
 	r = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(Watermarks_t), PAGE_SIZE,
 			AMDGPU_GEM_DOMAIN_VRAM | AMDGPU_GEM_DOMAIN_GTT,
@@ -263,7 +242,7 @@ static int smu10_smu_init(struct pp_hwmgr *hwmgr)
 	priv->smu_tables.entry[SMU10_WMTABLE].size = sizeof(Watermarks_t);
 	priv->smu_tables.entry[SMU10_WMTABLE].table_id = TABLE_WATERMARKS;
 
-	/* allocate space for watermarks table */
+	 
 	r = amdgpu_bo_create_kernel((struct amdgpu_device *)hwmgr->adev,
 			sizeof(DpmClocks_t), PAGE_SIZE,
 			AMDGPU_GEM_DOMAIN_VRAM | AMDGPU_GEM_DOMAIN_GTT,

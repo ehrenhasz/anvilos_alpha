@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-    yuv support
-
-    Copyright (C) 2007  Ian Armstrong <ian@iarmst.demon.co.uk>
-
- */
+ 
+ 
 
 #ifndef IVTV_YUV_H
 #define IVTV_YUV_H
 
-#define IVTV_YUV_BUFFER_UV_OFFSET 0x65400	/* Offset to UV Buffer */
+#define IVTV_YUV_BUFFER_UV_OFFSET 0x65400	 
 
-/* Offset to filter table in firmware */
+ 
 #define IVTV_YUV_HORIZONTAL_FILTER_OFFSET 0x025d8
 #define IVTV_YUV_VERTICAL_FILTER_OFFSET 0x03358
 

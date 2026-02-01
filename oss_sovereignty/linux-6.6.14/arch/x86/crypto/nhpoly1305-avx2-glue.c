@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NHPoly1305 - ε-almost-∆-universal hash function for Adiantum
- * (AVX2 accelerated version)
- *
- * Copyright 2018 Google LLC
- */
+
+ 
 
 #include <crypto/internal/hash.h>
 #include <crypto/internal/simd.h>

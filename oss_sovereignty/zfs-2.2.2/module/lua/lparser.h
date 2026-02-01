@@ -1,8 +1,4 @@
-/*
-** $Id: lparser.h,v 1.70.1.1 2013/04/12 18:48:47 roberto Exp $
-** Lua Parser
-** See Copyright Notice in lua.h
-*/
+ 
 
 #ifndef lparser_h
 #define lparser_h
@@ -12,25 +8,23 @@
 #include "lzio.h"
 
 
-/*
-** Expression descriptor
-*/
+ 
 
 typedef enum {
-  VVOID,	/* no value */
+  VVOID,	 
   VNIL,
   VTRUE,
   VFALSE,
-  VK,		/* info = index of constant in `k' */
-  VKNUM,	/* nval = numerical value */
-  VNONRELOC,	/* info = result register */
-  VLOCAL,	/* info = local register */
-  VUPVAL,       /* info = index of upvalue in 'upvalues' */
-  VINDEXED,	/* t = table register/upvalue; idx = index R/K */
-  VJMP,		/* info = instruction pc */
-  VRELOCABLE,	/* info = instruction pc */
-  VCALL,	/* info = instruction pc */
-  VVARARG	/* info = instruction pc */
+  VK,		 
+  VKNUM,	 
+  VNONRELOC,	 
+  VLOCAL,	 
+  VUPVAL,        
+  VINDEXED,	 
+  VJMP,		 
+  VRELOCABLE,	 
+  VCALL,	 
+  VVARARG	 
 } expkind;
 
 
@@ -40,75 +34,75 @@ typedef enum {
 typedef struct expdesc {
   expkind k;
   union {
-    struct {  /* for indexed variables (VINDEXED) */
-      short idx;  /* index (R/K) */
-      lu_byte t;  /* table (register or upvalue) */
-      lu_byte vt;  /* whether 't' is register (VLOCAL) or upvalue (VUPVAL) */
+    struct {   
+      short idx;   
+      lu_byte t;   
+      lu_byte vt;   
     } ind;
-    int info;  /* for generic use */
-    lua_Number nval;  /* for VKNUM */
+    int info;   
+    lua_Number nval;   
   } u;
-  int t;  /* patch list of `exit when true' */
-  int f;  /* patch list of `exit when false' */
+  int t;   
+  int f;   
 } expdesc;
 
 
-/* description of active local variable */
+ 
 typedef struct Vardesc {
-  short idx;  /* variable index in stack */
+  short idx;   
 } Vardesc;
 
 
-/* description of pending goto statements and label statements */
+ 
 typedef struct Labeldesc {
-  TString *name;  /* label identifier */
-  int pc;  /* position in code */
-  int line;  /* line where it appeared */
-  lu_byte nactvar;  /* local level where it appears in current block */
+  TString *name;   
+  int pc;   
+  int line;   
+  lu_byte nactvar;   
 } Labeldesc;
 
 
-/* list of labels or gotos */
+ 
 typedef struct Labellist {
-  Labeldesc *arr;  /* array */
-  int n;  /* number of entries in use */
-  int size;  /* array size */
+  Labeldesc *arr;   
+  int n;   
+  int size;   
 } Labellist;
 
 
-/* dynamic structures used by the parser */
+ 
 typedef struct Dyndata {
-  struct {  /* list of active local variables */
+  struct {   
     Vardesc *arr;
     int n;
     int size;
   } actvar;
-  Labellist gt;  /* list of pending gotos */
-  Labellist label;   /* list of active labels */
+  Labellist gt;   
+  Labellist label;    
 } Dyndata;
 
 
-/* control of blocks */
-struct BlockCnt;  /* defined in lparser.c */
+ 
+struct BlockCnt;   
 
 
-/* state needed to generate code for a given function */
+ 
 typedef struct FuncState {
-  Proto *f;  /* current function header */
-  Table *h;  /* table to find (and reuse) elements in `k' */
-  struct FuncState *prev;  /* enclosing function */
-  struct LexState *ls;  /* lexical state */
-  struct BlockCnt *bl;  /* chain of current blocks */
-  int pc;  /* next position to code (equivalent to `ncode') */
-  int lasttarget;   /* 'label' of last 'jump label' */
-  int jpc;  /* list of pending jumps to `pc' */
-  int nk;  /* number of elements in `k' */
-  int np;  /* number of elements in `p' */
-  int firstlocal;  /* index of first local var (in Dyndata array) */
-  short nlocvars;  /* number of elements in 'f->locvars' */
-  lu_byte nactvar;  /* number of active local variables */
-  lu_byte nups;  /* number of upvalues */
-  lu_byte freereg;  /* first free register */
+  Proto *f;   
+  Table *h;   
+  struct FuncState *prev;   
+  struct LexState *ls;   
+  struct BlockCnt *bl;   
+  int pc;   
+  int lasttarget;    
+  int jpc;   
+  int nk;   
+  int np;   
+  int firstlocal;   
+  short nlocvars;   
+  lu_byte nactvar;   
+  lu_byte nups;   
+  lu_byte freereg;   
 } FuncState;
 
 

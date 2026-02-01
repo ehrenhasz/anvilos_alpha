@@ -1,23 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * Copyright 2016-2018 HabanaLabs, Ltd.
- * All Rights Reserved.
- *
- */
+ 
 
-/************************************
- ** This is an auto-generated file **
- **       DO NOT EDIT BELOW        **
- ************************************/
+ 
 
 #ifndef ASIC_REG_STLB_REGS_H_
 #define ASIC_REG_STLB_REGS_H_
 
-/*
- *****************************************
- *   STLB (Prototype: STLB)
- *****************************************
- */
+ 
 
 #define mmSTLB_CACHE_INV                                             0x490010
 
@@ -51,4 +39,4 @@
 
 #define mmSTLB_SRAM_INIT                                             0x49004C
 
-#endif /* ASIC_REG_STLB_REGS_H_ */
+#endif  

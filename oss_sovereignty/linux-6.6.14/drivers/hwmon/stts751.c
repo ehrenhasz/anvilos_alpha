@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * STTS751 sensor driver
- *
- * Copyright (C) 2016-2017 Istituto Italiano di Tecnologia - RBCS - EDL
- * Robotics, Brain and Cognitive Sciences department
- * Electronic Design Laboratory
- *
- * Written by Andrea Merello <andrea.merello@gmail.com>
- *
- * Based on  LM95241 driver and LM90 driver
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -29,8 +19,8 @@
 #define DEVNAME "stts751"
 
 static const unsigned short normal_i2c[] = {
-	0x48, 0x49, 0x38, 0x39,  /* STTS751-0 */
-	0x4A, 0x4B, 0x3A, 0x3B,  /* STTS751-1 */
+	0x48, 0x49, 0x38, 0x39,   
+	0x4A, 0x4B, 0x3A, 0x3B,   
 	I2C_CLIENT_END };
 
 #define STTS751_REG_TEMP_H	0x00
@@ -61,12 +51,7 @@ static const unsigned short normal_i2c[] = {
 #define STTS751_1_PROD_ID	0x01
 #define ST_MAN_ID		0x53
 
-/*
- * Possible update intervals are (in mS):
- * 16000, 8000, 4000, 2000, 1000, 500, 250, 125, 62.5, 31.25
- * However we are not going to complicate things too much and we stick to the
- * approx value in mS.
- */
+ 
 static const int stts751_intervals[] = {
 	16000, 8000, 4000, 2000, 1000, 500, 250, 125, 63, 31
 };
@@ -100,10 +85,7 @@ struct stts751_priv {
 	bool notify_max, notify_min;
 };
 
-/*
- * These functions converts temperature from HW format to integer format and
- * vice-vers. They are (mostly) taken from lm90 driver. Unit is in mC.
- */
+ 
 static int stts751_to_deg(s16 hw_val)
 {
 	return hw_val * 125 / 32;
@@ -120,15 +102,15 @@ static int stts751_adjust_resolution(struct stts751_priv *priv)
 
 	switch (priv->interval) {
 	case 9:
-		/* 10 bits */
+		 
 		res = 0;
 		break;
 	case 8:
-		/* 11 bits */
+		 
 		res = 1;
 		break;
 	default:
-		/* 12 bits */
+		 
 		res = 3;
 		break;
 	}
@@ -150,17 +132,7 @@ static int stts751_update_temp(struct stts751_priv *priv)
 {
 	s32 integer1, integer2, frac;
 
-	/*
-	 * There is a trick here, like in the lm90 driver. We have to read two
-	 * registers to get the sensor temperature, but we have to beware a
-	 * conversion could occur between the readings. We could use the
-	 * one-shot conversion register, but we don't want to do this (disables
-	 * hardware monitoring). So the solution used here is to read the high
-	 * byte once, then the low byte, then the high byte again. If the new
-	 * high byte matches the old one, then we have a valid reading. Else we
-	 * have to read the low byte again, and now we believe we have a correct
-	 * reading.
-	 */
+	 
 	integer1 = i2c_smbus_read_byte_data(priv->client, STTS751_REG_TEMP_H);
 	if (integer1 < 0) {
 		dev_dbg(&priv->client->dev,
@@ -251,22 +223,14 @@ static int stts751_read_reg8(struct stts751_priv *priv, int *temp, u8 reg)
 	return 0;
 }
 
-/*
- * Update alert flags without waiting for cache to expire. We detects alerts
- * immediately for the sake of the alert handler; we still need to deal with
- * caching to workaround the fact that alarm flags int the status register,
- * despite what the datasheet claims, gets always cleared on read.
- */
+ 
 static int stts751_update_alert(struct stts751_priv *priv)
 {
 	int ret;
 	bool conv_done;
 	int cache_time = msecs_to_jiffies(stts751_intervals[priv->interval]);
 
-	/*
-	 * Add another 10% because if we run faster than the HW conversion
-	 * rate we will end up in reporting incorrectly alarms.
-	 */
+	 
 	cache_time += cache_time / 10;
 
 	ret = i2c_smbus_read_byte_data(priv->client, STTS751_REG_STATUS);
@@ -275,18 +239,7 @@ static int stts751_update_alert(struct stts751_priv *priv)
 
 	dev_dbg(&priv->client->dev, "status reg %x\n", ret);
 	conv_done = ret & (STTS751_STATUS_TRIPH | STTS751_STATUS_TRIPL);
-	/*
-	 * Reset the cache if the cache time expired, or if we are sure
-	 * we have valid data from a device conversion, or if we know
-	 * our cache has been never written.
-	 *
-	 * Note that when the cache has been never written the point is
-	 * to correctly initialize the timestamp, rather than clearing
-	 * the cache values.
-	 *
-	 * Note that updating the cache timestamp when we get an alarm flag
-	 * is required, otherwise we could incorrectly report alarms to be zero.
-	 */
+	 
 	if (time_after(jiffies,	priv->last_alert_update + cache_time) ||
 	    conv_done || !priv->alert_valid) {
 		priv->max_alert = false;
@@ -320,7 +273,7 @@ static void stts751_alert(struct i2c_client *client,
 	mutex_lock(&priv->access_lock);
 	ret = stts751_update_alert(priv);
 	if (ret < 0) {
-		/* default to worst case */
+		 
 		priv->max_alert = true;
 		priv->min_alert = true;
 
@@ -333,7 +286,7 @@ static void stts751_alert(struct i2c_client *client,
 			dev_notice(priv->dev, "got alert for HIGH temperature");
 		priv->notify_max = false;
 
-		/* unblock alert poll */
+		 
 		sysfs_notify(&priv->dev->kobj, NULL, "temp1_max_alarm");
 	}
 
@@ -342,7 +295,7 @@ static void stts751_alert(struct i2c_client *client,
 			dev_notice(priv->dev, "got alert for LOW temperature");
 		priv->notify_min = false;
 
-		/* unblock alert poll */
+		 
 		sysfs_notify(&priv->dev->kobj, NULL, "temp1_min_alarm");
 	}
 
@@ -440,7 +393,7 @@ static ssize_t therm_store(struct device *dev, struct device_attribute *attr,
 	if (kstrtol(buf, 10, &temp) < 0)
 		return -EINVAL;
 
-	/* HW works in range -64C to +127.937C */
+	 
 	temp = clamp_val(temp, -64000, 127937);
 	mutex_lock(&priv->access_lock);
 	ret = stts751_set_temp_reg8(priv, temp, STTS751_REG_TLIM);
@@ -449,10 +402,7 @@ static ssize_t therm_store(struct device *dev, struct device_attribute *attr,
 
 	dev_dbg(&priv->client->dev, "setting therm %ld", temp);
 
-	/*
-	 * hysteresis reg is relative to therm, so the HW does not need to be
-	 * adjusted, we need to update our local copy only.
-	 */
+	 
 	priv->hyst = temp - (priv->therm - priv->hyst);
 	priv->therm = temp;
 
@@ -484,7 +434,7 @@ static ssize_t hyst_store(struct device *dev, struct device_attribute *attr,
 		return -EINVAL;
 
 	mutex_lock(&priv->access_lock);
-	/* HW works in range -64C to +127.937C */
+	 
 	temp = clamp_val(temp, -64000, priv->therm);
 	priv->hyst = temp;
 	dev_dbg(&priv->client->dev, "setting hyst %ld", temp);
@@ -531,7 +481,7 @@ static ssize_t max_store(struct device *dev, struct device_attribute *attr,
 		return -EINVAL;
 
 	mutex_lock(&priv->access_lock);
-	/* HW works in range -64C to +127.937C */
+	 
 	temp = clamp_val(temp, priv->event_min, 127937);
 	ret = stts751_set_temp_reg16(priv, temp,
 				     STTS751_REG_HLIM_H, STTS751_REG_HLIM_L);
@@ -565,7 +515,7 @@ static ssize_t min_store(struct device *dev, struct device_attribute *attr,
 		return -EINVAL;
 
 	mutex_lock(&priv->access_lock);
-	/* HW works in range -64C to +127.937C */
+	 
 	temp = clamp_val(temp, -64000, priv->event_max);
 	ret = stts751_set_temp_reg16(priv, temp,
 				     STTS751_REG_LLIM_H, STTS751_REG_LLIM_L);
@@ -611,15 +561,9 @@ static ssize_t interval_store(struct device *dev,
 	if (priv->interval == idx)
 		goto exit;
 
-	/*
-	 * In early development stages I've become suspicious about the chip
-	 * starting to misbehave if I ever set, even briefly, an invalid
-	 * configuration. While I'm not sure this is really needed, be
-	 * conservative and set rate/resolution in such an order that avoids
-	 * passing through an invalid configuration.
-	 */
+	 
 
-	/* speed up: lower the resolution, then modify convrate */
+	 
 	if (priv->interval < idx) {
 		dev_dbg(&priv->client->dev, "lower resolution, then modify convrate");
 		priv->interval = idx;
@@ -631,7 +575,7 @@ static ssize_t interval_store(struct device *dev,
 	ret = i2c_smbus_write_byte_data(priv->client, STTS751_REG_RATE, idx);
 	if (ret)
 		goto exit;
-	/* slow down: modify convrate, then raise resolution */
+	 
 	if (priv->interval != idx) {
 		dev_dbg(&priv->client->dev, "modify convrate, then raise resolution");
 		priv->interval = idx;
@@ -660,7 +604,7 @@ static int stts751_detect(struct i2c_client *new_client,
 	if (tmp != ST_MAN_ID)
 		return -ENODEV;
 
-	/* lower temperaure registers always have bits 0-3 set to zero */
+	 
 	tmp = i2c_smbus_read_byte_data(new_client, STTS751_REG_TEMP_L);
 	if (tmp & 0xf)
 		return -ENODEV;
@@ -673,7 +617,7 @@ static int stts751_detect(struct i2c_client *new_client,
 	if (tmp & 0xf)
 		return -ENODEV;
 
-	/* smbus timeout register always have bits 0-7 set to zero */
+	 
 	tmp = i2c_smbus_read_byte_data(new_client, STTS751_REG_SMBUS_TO);
 	if (tmp & 0x7f)
 		return -ENODEV;

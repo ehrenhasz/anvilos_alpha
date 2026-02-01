@@ -1,23 +1,4 @@
-/*
- * Copyright (C) 2018  Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #ifndef _vega10_ip_offset_HEADER
 #define _vega10_ip_offset_HEADER
 
@@ -79,47 +60,47 @@ static const struct IP_BASE __maybe_unused UVD_BASE	= { { { { 0x00007800, 0x0000
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } };  //note: GLN does not use the first segment
+										{ { 0, 0, 0, 0, 0 } } } };  
 static const struct IP_BASE __maybe_unused VCN_BASE	= { { { { 0x00007800, 0x00007E00, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } };  //note: GLN does not use the first segment
+										{ { 0, 0, 0, 0, 0 } } } };  
 static const struct IP_BASE __maybe_unused DBGU_BASE	= { { { { 0x00000180, 0x000001A0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } }; // not exist
+										{ { 0, 0, 0, 0, 0 } } } }; 
 static const struct IP_BASE __maybe_unused DBGU_NBIO_BASE	= { { { { 0x000001C0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } }; // not exist
+										{ { 0, 0, 0, 0, 0 } } } }; 
 static const struct IP_BASE __maybe_unused DBGU_IO_BASE	= { { { { 0x000001E0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } }; // not exist
+										{ { 0, 0, 0, 0, 0 } } } }; 
 static const struct IP_BASE __maybe_unused DFX_DAP_BASE	= { { { { 0x000005A0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } }; // not exist
+										{ { 0, 0, 0, 0, 0 } } } }; 
 static const struct IP_BASE __maybe_unused DFX_BASE	= { { { { 0x00000580, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } }; // this file does not contain registers
+										{ { 0, 0, 0, 0, 0 } } } }; 
 static const struct IP_BASE __maybe_unused ISP_BASE	= { { { { 0x00018000, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } }; // not exist
+										{ { 0, 0, 0, 0, 0 } } } }; 
 static const struct IP_BASE __maybe_unused SYSTEMHUB_BASE	= { { { { 0x00000EA0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
-										{ { 0, 0, 0, 0, 0 } } } }; // not exist
+										{ { 0, 0, 0, 0, 0 } } } }; 
 static const struct IP_BASE __maybe_unused L2IMU_BASE	= { { { { 0x00007DC0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },
 										{ { 0, 0, 0, 0, 0 } },

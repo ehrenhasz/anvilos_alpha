@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright 2014 Embest Technology Co. Ltd. Inc.
-// bd71815-regulator.c ROHM BD71815 regulator driver
-//
-// Author: Tony Luo <luofc@embedinfo.com>
-//
-// Partially rewritten at 2021 by
-// Matti Vaittinen <matti.vaitinen@fi.rohmeurope.com>
+
+
+
+
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -179,18 +179,7 @@ static int set_hw_dvs_levels(struct device_node *np,
 	return rohm_regulator_set_dvs_levels(data->dvs, np, desc, cfg->regmap);
 }
 
-/*
- * Bucks 1 and 2 have two voltage selection registers where selected
- * voltage can be set. Which of the registers is used can be either controlled
- * by a control bit in register - or by HW state. If HW state specific voltages
- * are given - then we assume HW state based control should be used.
- *
- * If volatge value is updated to currently selected register - then output
- * voltage is immediately changed no matter what is set as ramp rate. Thus we
- * default changing voltage by writing new value to inactive register and
- * then updating the 'register selection' bit. This naturally only works when
- * HW state machine is not used to select the voltage.
- */
+ 
 static int buck12_set_hw_dvs_levels(struct device_node *np,
 				    const struct regulator_desc *desc,
 				    struct regulator_config *cfg)
@@ -212,12 +201,7 @@ static int buck12_set_hw_dvs_levels(struct device_node *np,
 		    !(BD71815_BUCK_DVSSEL & val)) {
 			int val2;
 
-			/*
-			 * We are currently using voltage from _L.
-			 * We'd better copy it to _H and switch to it to
-			 * avoid shutting us down if LPSR or SUSPEND is set to
-			 * disabled. _L value is at reg _H + 1
-			 */
+			 
 			ret = regmap_read(cfg->regmap, desc->vsel_reg + 1,
 					  &val2);
 			if (ret)
@@ -234,12 +218,7 @@ static int buck12_set_hw_dvs_levels(struct device_node *np,
 						    cfg->regmap);
 		if (ret)
 			return ret;
-		/*
-		 * DVS levels were given => use HW-state machine for voltage
-		 * controls. NOTE: AFAIK, This means that if voltage is changed
-		 * by SW the ramp-rate is not respected. Should we disable
-		 * SW voltage control when the HW state machine is used?
-		 */
+		 
 		ret = regmap_update_bits(cfg->regmap, desc->vsel_reg,
 					 BD71815_BUCK_STBY_DVS,
 					 BD71815_BUCK_STBY_DVS);
@@ -248,14 +227,7 @@ static int buck12_set_hw_dvs_levels(struct device_node *np,
 	return ret;
 }
 
-/*
- * BUCK1/2
- * BUCK1RAMPRATE[1:0] BUCK1 DVS ramp rate setting
- * 00: 10.00mV/usec	10mV 1uS
- * 01: 5.00mV/usec	10mV 2uS
- * 10: 2.50mV/usec	10mV 4uS
- * 11: 1.25mV/usec	10mV 8uS
- */
+ 
 static const unsigned int bd7181x_ramp_table[] = { 1250, 2500, 5000, 10000 };
 
 static int bd7181x_led_set_current_limit(struct regulator_dev *rdev,
@@ -272,10 +244,7 @@ static int bd7181x_led_set_current_limit(struct regulator_dev *rdev,
 
 		newstatus = regulator_is_enabled_regmap(rdev);
 		if (onstatus != newstatus) {
-			/*
-			 * HW FIX: spurious led status change detected. Toggle
-			 * state as a workaround
-			 */
+			 
 			if (onstatus)
 				ret = regulator_enable_regmap(rdev);
 			else
@@ -303,13 +272,7 @@ static int bd7181x_buck12_get_voltage_sel(struct regulator_dev *rdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * If we use HW state machine based voltage reg selection - then we
-	 * return BD71815_REG_BUCK1_VOLT_H which is used at RUN.
-	 * Else we do return the BD71815_REG_BUCK1_VOLT_H or
-	 * BD71815_REG_BUCK1_VOLT_L depending on which is selected to be used
-	 * by BD71815_BUCK_DVSSEL bit
-	 */
+	 
 	if ((!(val & BD71815_BUCK_STBY_DVS)) && (!(val & BD71815_BUCK_DVSSEL)))
 		ret = regmap_read(rdev->regmap, regl, &val);
 
@@ -319,9 +282,7 @@ static int bd7181x_buck12_get_voltage_sel(struct regulator_dev *rdev)
 	return val & BD71815_VOLT_MASK;
 }
 
-/*
- * For Buck 1/2.
- */
+ 
 static int bd7181x_buck12_set_voltage_sel(struct regulator_dev *rdev,
 					  unsigned int sel)
 {
@@ -335,16 +296,12 @@ static int bd7181x_buck12_set_voltage_sel(struct regulator_dev *rdev,
 	if (ret)
 		return ret;
 
-	/*
-	 * If bucks 1 & 2 are controlled by state machine - then the RUN state
-	 * voltage is set to BD71815_REG_BUCK1_VOLT_H. Changing SUSPEND/LPSR
-	 * voltages at runtime is not supported by this driver.
-	 */
+	 
 	if (((val & BD71815_BUCK_STBY_DVS))) {
 		return regmap_update_bits(rdev->regmap, regh, BD71815_VOLT_MASK,
 					  sel);
 	}
-	/* Update new voltage to the register which is not selected now */
+	 
 	if (val & BD71815_BUCK_DVSSEL)
 		reg = regl;
 	else
@@ -354,7 +311,7 @@ static int bd7181x_buck12_set_voltage_sel(struct regulator_dev *rdev,
 	if (ret)
 		return ret;
 
-	/* Select the other DVS register to be used */
+	 
 	return regmap_update_bits(rdev->regmap, regh, BD71815_BUCK_DVSSEL,
 				  ~val);
 }
@@ -536,10 +493,7 @@ static const struct bd71815_regulator bd71815_regulators[] = {
 	BD71815_LDO_REG(ldo2, BD71815_LDO2, BD71815_REG_LDO2_VOLT,
 			BD71815_REG_LDO_MODE2, LDO2_RUN_ON, 800000, 3300000,
 			50000, &ldo2_dvs),
-	/*
-	 * Let's default LDO3 to be enabled by SW. We can override ops if DT
-	 * says LDO3 should be enabled by HW when DCIN is connected.
-	 */
+	 
 	BD71815_LDO_REG(ldo3, BD71815_LDO3, BD71815_REG_LDO3_VOLT,
 			BD71815_REG_LDO_MODE2, LDO3_RUN_ON, 800000, 3300000,
 			50000, &ldo3_dvs),
@@ -581,7 +535,7 @@ static int bd7181x_probe(struct platform_device *pdev)
 		ldo4_en = NULL;
 	}
 
-	/* Disable to go to ship-mode */
+	 
 	ret = regmap_update_bits(regmap, BD71815_REG_PWRCTRL, RESTARTEN, 0);
 	if (ret)
 		return ret;

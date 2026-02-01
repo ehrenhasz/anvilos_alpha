@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_pmic.c - Intel PMIC operation region driver
- *
- * Copyright (C) 2014 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/acpi.h>
@@ -325,22 +321,7 @@ out_error:
 }
 EXPORT_SYMBOL_GPL(intel_pmic_install_opregion_handler);
 
-/**
- * intel_soc_pmic_exec_mipi_pmic_seq_element - Execute PMIC MIPI sequence
- * @i2c_address:  I2C client address for the PMIC
- * @reg_address:  PMIC register address
- * @value:        New value for the register bits to change
- * @mask:         Mask indicating which register bits to change
- *
- * DSI LCD panels describe an initialization sequence in the i915 VBT (Video
- * BIOS Tables) using so called MIPI sequences. One possible element in these
- * sequences is a PMIC specific element of 15 bytes.
- *
- * This function executes these PMIC specific elements sending the embedded
- * commands to the PMIC.
- *
- * Return 0 on success, < 0 on failure.
- */
+ 
 int intel_soc_pmic_exec_mipi_pmic_seq_element(u16 i2c_address, u32 reg_address,
 					      u32 value, u32 mask)
 {

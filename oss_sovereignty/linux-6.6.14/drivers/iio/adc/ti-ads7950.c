@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments ADS7950 SPI ADC driver
- *
- * Copyright 2016 David Lechner <david@lechnology.com>
- *
- * Based on iio/ad7923.c:
- * Copyright 2011 Analog Devices Inc
- * Copyright 2012 CS Systemes d'Information
- *
- * And also on hwmon/ads79xx.c
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com/
- *	Nishanth Menon
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -31,10 +19,7 @@
 #include <linux/iio/trigger_consumer.h>
 #include <linux/iio/triggered_buffer.h>
 
-/*
- * In case of ACPI, we use the 5000 mV as default for the reference pin.
- * Device tree users encode that via the vref-supply regulator.
- */
+ 
 #define TI_ADS7950_VA_MV_ACPI_DEFAULT	5000
 
 #define TI_ADS7950_CR_GPIO	BIT(14)
@@ -49,17 +34,17 @@
 
 #define TI_ADS7950_TIMESTAMP_SIZE (sizeof(int64_t) / sizeof(__be16))
 
-/* val = value, dec = left shift, bits = number of bits of the mask */
+ 
 #define TI_ADS7950_EXTRACT(val, dec, bits) \
 	(((val) >> (dec)) & ((1 << (bits)) - 1))
 
 #define TI_ADS7950_MAN_CMD(cmd)         (TI_ADS7950_CR_MANUAL | (cmd))
 #define TI_ADS7950_GPIO_CMD(cmd)        (TI_ADS7950_CR_GPIO | (cmd))
 
-/* Manual mode configuration */
+ 
 #define TI_ADS7950_MAN_CMD_SETTINGS(st) \
 	(TI_ADS7950_MAN_CMD(TI_ADS7950_CR_WRITE | st->cmd_settings_bitmask))
-/* GPIO mode configuration */
+ 
 #define TI_ADS7950_GPIO_CMD_SETTINGS(st) \
 	(TI_ADS7950_GPIO_CMD(st->gpio_cmd_settings_bitmask))
 
@@ -70,41 +55,20 @@ struct ti_ads7950_state {
 	struct spi_message	ring_msg;
 	struct spi_message	scan_single_msg;
 
-	/* Lock to protect the spi xfer buffers */
+	 
 	struct mutex		slock;
 	struct gpio_chip	chip;
 
 	struct regulator	*reg;
 	unsigned int		vref_mv;
 
-	/*
-	 * Bitmask of lower 7 bits used for configuration
-	 * These bits only can be written when TI_ADS7950_CR_WRITE
-	 * is set, otherwise it retains its original state.
-	 * [0-3] GPIO signal
-	 * [4]   Set following frame to return GPIO signal values
-	 * [5]   Powers down device
-	 * [6]   Sets Vref range1(2.5v) or range2(5v)
-	 *
-	 * Bits present on Manual/Auto1/Auto2 commands
-	 */
+	 
 	unsigned int		cmd_settings_bitmask;
 
-	/*
-	 * Bitmask of GPIO command
-	 * [0-3] GPIO direction
-	 * [4-6] Different GPIO alarm mode configurations
-	 * [7]   GPIO 2 as device range input
-	 * [8]   GPIO 3 as device power down input
-	 * [9]   Reset all registers
-	 * [10-11] N/A
-	 */
+	 
 	unsigned int		gpio_cmd_settings_bitmask;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u16 rx_buf[TI_ADS7950_MAX_CHAN + 2 + TI_ADS7950_TIMESTAMP_SIZE]
 		__aligned(IIO_DMA_MINALIGN);
 	u16 tx_buf[TI_ADS7950_MAX_CHAN + 2];
@@ -276,10 +240,7 @@ static const struct ti_ads7950_chip_info ti_ads7950_chip_info[] = {
 	},
 };
 
-/*
- * ti_ads7950_update_scan_mode() setup the spi transfer buffer for the new
- * scan mask
- */
+ 
 static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
 				       const unsigned long *active_scan_mask)
 {
@@ -292,7 +253,7 @@ static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
 		st->tx_buf[len++] = cmd;
 	}
 
-	/* Data for the 1st channel is not returned until the 3rd transfer */
+	 
 	st->tx_buf[len++] = 0;
 	st->tx_buf[len++] = 0;
 
@@ -428,13 +389,13 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
 
 	mutex_lock(&st->slock);
 
-	/* If set as output, return the output */
+	 
 	if (st->gpio_cmd_settings_bitmask & BIT(offset)) {
 		ret = st->cmd_settings_bitmask & BIT(offset);
 		goto out;
 	}
 
-	/* GPIO data bit sets SDO bits 12-15 to GPIO input */
+	 
 	st->cmd_settings_bitmask |= TI_ADS7950_CR_GPIO_DATA;
 	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
 	ret = spi_sync(st->spi, &st->scan_single_msg);
@@ -443,7 +404,7 @@ static int ti_ads7950_get(struct gpio_chip *chip, unsigned int offset)
 
 	ret = ((st->single_rx >> 12) & BIT(offset)) ? 1 : 0;
 
-	/* Revert back to original settings */
+	 
 	st->cmd_settings_bitmask &= ~TI_ADS7950_CR_GPIO_DATA;
 	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
 	ret = spi_sync(st->spi, &st->scan_single_msg);
@@ -461,7 +422,7 @@ static int ti_ads7950_get_direction(struct gpio_chip *chip,
 {
 	struct ti_ads7950_state *st = gpiochip_get_data(chip);
 
-	/* Bitmask is inverted from GPIO framework 0=input/1=output */
+	 
 	return !(st->gpio_cmd_settings_bitmask & BIT(offset));
 }
 
@@ -473,7 +434,7 @@ static int _ti_ads7950_set_direction(struct gpio_chip *chip, int offset,
 
 	mutex_lock(&st->slock);
 
-	/* Only change direction if needed */
+	 
 	if (input && (st->gpio_cmd_settings_bitmask & BIT(offset)))
 		st->gpio_cmd_settings_bitmask &= ~BIT(offset);
 	else if (!input && !(st->gpio_cmd_settings_bitmask & BIT(offset)))
@@ -510,15 +471,15 @@ static int ti_ads7950_init_hw(struct ti_ads7950_state *st)
 
 	mutex_lock(&st->slock);
 
-	/* Settings for Manual/Auto1/Auto2 commands */
-	/* Default to 5v ref */
+	 
+	 
 	st->cmd_settings_bitmask = TI_ADS7950_CR_RANGE_5V;
 	st->single_tx = TI_ADS7950_MAN_CMD_SETTINGS(st);
 	ret = spi_sync(st->spi, &st->scan_single_msg);
 	if (ret)
 		goto out;
 
-	/* Settings for GPIO command */
+	 
 	st->gpio_cmd_settings_bitmask = 0x0;
 	st->single_tx = TI_ADS7950_GPIO_CMD_SETTINGS(st);
 	ret = spi_sync(st->spi, &st->scan_single_msg);
@@ -562,23 +523,16 @@ static int ti_ads7950_probe(struct spi_device *spi)
 	indio_dev->num_channels = info->num_channels;
 	indio_dev->info = &ti_ads7950_info;
 
-	/* build spi ring message */
+	 
 	spi_message_init(&st->ring_msg);
 
 	st->ring_xfer.tx_buf = &st->tx_buf[0];
 	st->ring_xfer.rx_buf = &st->rx_buf[0];
-	/* len will be set later */
+	 
 
 	spi_message_add_tail(&st->ring_xfer, &st->ring_msg);
 
-	/*
-	 * Setup default message. The sample is read at the end of the first
-	 * transfer, then it takes one full cycle to convert the sample and one
-	 * more cycle to send the value. The conversion process is driven by
-	 * the SPI clock, which is why we have 3 transfers. The middle one is
-	 * just dummy data sent while the chip is converting the sample that
-	 * was read at the end of the first transfer.
-	 */
+	 
 
 	st->scan_single_xfer[0].tx_buf = &st->single_tx;
 	st->scan_single_xfer[0].len = 2;
@@ -592,7 +546,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
 	spi_message_init_with_transfers(&st->scan_single_msg,
 					st->scan_single_xfer, 3);
 
-	/* Use hard coded value for reference voltage in ACPI case */
+	 
 	if (ACPI_COMPANION(&spi->dev))
 		st->vref_mv = TI_ADS7950_VA_MV_ACPI_DEFAULT;
 
@@ -630,7 +584,7 @@ static int ti_ads7950_probe(struct spi_device *spi)
 		goto error_cleanup_ring;
 	}
 
-	/* Add GPIO chip */
+	 
 	st->chip.label = dev_name(&st->spi->dev);
 	st->chip.parent = &st->spi->dev;
 	st->chip.owner = THIS_MODULE;

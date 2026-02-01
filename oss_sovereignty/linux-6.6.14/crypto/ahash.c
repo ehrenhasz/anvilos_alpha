@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Asynchronous Cryptographic Hash operations.
- *
- * This is the asynchronous version of hash.c with notification of
- * completion via a callback.
- *
- * Copyright (c) 2008 Loc Ho <lho@amcc.com>
- */
+
+ 
 
 #include <crypto/scatterwalk.h>
 #include <linux/cryptouser.h>
@@ -256,11 +249,11 @@ static void ahash_op_unaligned_done(void *data, int err)
 	if (err == -EINPROGRESS)
 		goto out;
 
-	/* First copy req->result into req->priv.result */
+	 
 	ahash_restore_req(areq, err);
 
 out:
-	/* Complete the ORIGINAL request. */
+	 
 	ahash_request_complete(areq, err);
 }
 

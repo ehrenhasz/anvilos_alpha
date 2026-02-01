@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2020-2021 NXP
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interconnect.h>
@@ -167,9 +165,7 @@ static int vpu_calc_fmt_bytesperline(struct v4l2_format *f, struct vpu_format *f
 	if (pixmp->num_planes > 1)
 		return -EINVAL;
 
-	/*amphion vpu only support nv12 and nv12 tiled,
-	 * so the bytesperline of luma and chroma should be same
-	 */
+	 
 	for (i = 0; i < fmt->comp_planes; i++)
 		fmt->bytesperline[i] = pixmp->plane_fmt[0].bytesperline;
 

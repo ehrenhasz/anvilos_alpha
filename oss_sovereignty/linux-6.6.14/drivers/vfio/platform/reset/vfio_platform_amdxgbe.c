@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO platform driver specialized for AMD xgbe reset
- * reset code is inherited from AMD xgbe native driver
- *
- * Copyright (c) 2015 Linaro Ltd.
- *              www.linaro.org
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -65,7 +59,7 @@ static int vfio_platform_amdxgbe_reset(struct vfio_platform_device *vdev)
 			return -ENOMEM;
 	}
 
-	/* reset the PHY through MDIO*/
+	 
 	pcs_value = xmdio_read(xpcs_regs->ioaddr, MDIO_MMD_PCS, MDIO_CTRL1);
 	pcs_value |= MDIO_CTRL1_RESET;
 	xmdio_write(xpcs_regs->ioaddr, MDIO_MMD_PCS, MDIO_CTRL1, pcs_value);
@@ -81,18 +75,18 @@ static int vfio_platform_amdxgbe_reset(struct vfio_platform_device *vdev)
 		dev_warn(vdev->device, "%s: XGBE PHY reset timeout\n",
 			 __func__);
 
-	/* disable auto-negotiation */
+	 
 	value = xmdio_read(xpcs_regs->ioaddr, MDIO_MMD_AN, MDIO_CTRL1);
 	value &= ~MDIO_AN_CTRL1_ENABLE;
 	xmdio_write(xpcs_regs->ioaddr, MDIO_MMD_AN, MDIO_CTRL1, value);
 
-	/* disable AN IRQ */
+	 
 	xmdio_write(xpcs_regs->ioaddr, MDIO_MMD_AN, MDIO_AN_INTMASK, 0);
 
-	/* clear AN IRQ */
+	 
 	xmdio_write(xpcs_regs->ioaddr, MDIO_MMD_AN, MDIO_AN_INT, 0);
 
-	/* MAC software reset */
+	 
 	dma_mr_value = ioread32(xgmac_regs->ioaddr + DMA_MR);
 	dma_mr_value |= 0x1;
 	iowrite32(dma_mr_value, xgmac_regs->ioaddr + DMA_MR);

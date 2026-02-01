@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2018 Intel Corporation. All rights reserved. */
+
+ 
 
 #include <linux/module.h>
 #include <linux/device.h>
@@ -42,11 +42,7 @@ static void nvdimm_put_key(struct key *key)
 	key_put(key);
 }
 
-/*
- * Retrieve kernel key for DIMM and request from user space if
- * necessary. Returns a key held for read and must be put by
- * nvdimm_put_key() before the usage goes out of scope.
- */
+ 
 static struct key *nvdimm_request_key(struct nvdimm *nvdimm)
 {
 	struct key *key = NULL;
@@ -147,10 +143,7 @@ static int nvdimm_key_revalidate(struct nvdimm *nvdimm)
 
 	data = nvdimm_get_key_payload(nvdimm, &key);
 
-	/*
-	 * Send the same key to the hardware as new and old key to
-	 * verify that the key is good.
-	 */
+	 
 	rc = nvdimm->sec.ops->change_key(nvdimm, data, data, NVDIMM_USER);
 	if (rc < 0) {
 		nvdimm_put_key(key);
@@ -170,18 +163,18 @@ static int __nvdimm_security_unlock(struct nvdimm *nvdimm)
 	const void *data;
 	int rc;
 
-	/* The bus lock should be held at the top level of the call stack */
+	 
 	lockdep_assert_held(&nvdimm_bus->reconfig_mutex);
 
 	if (!nvdimm->sec.ops || !nvdimm->sec.ops->unlock
 			|| !nvdimm->sec.flags)
 		return -EIO;
 
-	/* cxl_test needs this to pre-populate the security state */
+	 
 	if (IS_ENABLED(CONFIG_NVDIMM_SECURITY_TEST))
 		nvdimm->sec.flags = nvdimm_security_flags(nvdimm, NVDIMM_USER);
 
-	/* No need to go further if security is disabled */
+	 
 	if (test_bit(NVDIMM_SECURITY_DISABLED, &nvdimm->sec.flags))
 		return 0;
 
@@ -190,13 +183,7 @@ static int __nvdimm_security_unlock(struct nvdimm *nvdimm)
 		return -EBUSY;
 	}
 
-	/*
-	 * If the pre-OS has unlocked the DIMM, attempt to send the key
-	 * from request_key() to the hardware for verification.  Failure
-	 * to revalidate the key against the hardware results in a
-	 * freeze of the security configuration. I.e. if the OS does not
-	 * have the key, security is being managed pre-OS.
-	 */
+	 
 	if (test_bit(NVDIMM_SECURITY_UNLOCKED, &nvdimm->sec.flags)) {
 		if (!key_revalidate)
 			return 0;
@@ -254,7 +241,7 @@ static int security_disable(struct nvdimm *nvdimm, unsigned int keyid,
 	int rc;
 	const void *data;
 
-	/* The bus lock should be held at the top level of the call stack */
+	 
 	lockdep_assert_held(&nvdimm_bus->reconfig_mutex);
 
 	if (!nvdimm->sec.ops || !nvdimm->sec.flags)
@@ -303,7 +290,7 @@ static int security_update(struct nvdimm *nvdimm, unsigned int keyid,
 	int rc;
 	const void *data, *newdata;
 
-	/* The bus lock should be held at the top level of the call stack */
+	 
 	lockdep_assert_held(&nvdimm_bus->reconfig_mutex);
 
 	if (!nvdimm->sec.ops || !nvdimm->sec.ops->change_key
@@ -352,7 +339,7 @@ static int security_erase(struct nvdimm *nvdimm, unsigned int keyid,
 	int rc;
 	const void *data;
 
-	/* The bus lock should be held at the top level of the call stack */
+	 
 	lockdep_assert_held(&nvdimm_bus->reconfig_mutex);
 
 	if (!nvdimm->sec.ops || !nvdimm->sec.ops->erase
@@ -395,7 +382,7 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
 	int rc;
 	const void *data;
 
-	/* The bus lock should be held at the top level of the call stack */
+	 
 	lockdep_assert_held(&nvdimm_bus->reconfig_mutex);
 
 	if (!nvdimm->sec.ops || !nvdimm->sec.ops->overwrite
@@ -422,10 +409,7 @@ static int security_overwrite(struct nvdimm *nvdimm, unsigned int keyid)
 		set_bit(NDD_SECURITY_OVERWRITE, &nvdimm->flags);
 		set_bit(NDD_WORK_PENDING, &nvdimm->flags);
 		set_bit(NVDIMM_SECURITY_OVERWRITE, &nvdimm->sec.flags);
-		/*
-		 * Make sure we don't lose device while doing overwrite
-		 * query.
-		 */
+		 
 		get_device(dev);
 		queue_delayed_work(system_wq, &nvdimm->dwork, 0);
 	}
@@ -439,13 +423,10 @@ static void __nvdimm_security_overwrite_query(struct nvdimm *nvdimm)
 	int rc;
 	unsigned int tmo;
 
-	/* The bus lock should be held at the top level of the call stack */
+	 
 	lockdep_assert_held(&nvdimm_bus->reconfig_mutex);
 
-	/*
-	 * Abort and release device if we no longer have the overwrite
-	 * flag set. It means the work has been canceled.
-	 */
+	 
 	if (!test_bit(NDD_WORK_PENDING, &nvdimm->flags))
 		return;
 
@@ -458,7 +439,7 @@ static void __nvdimm_security_overwrite_query(struct nvdimm *nvdimm)
 	rc = nvdimm->sec.ops->query_overwrite(nvdimm);
 	if (rc == -EBUSY) {
 
-		/* setup delayed work again */
+		 
 		tmo += 10;
 		queue_delayed_work(system_wq, &nvdimm->dwork, tmo * HZ);
 		nvdimm->sec.overwrite_tmo = min(15U * 60U, tmo);
@@ -470,11 +451,7 @@ static void __nvdimm_security_overwrite_query(struct nvdimm *nvdimm)
 	else
 		dev_dbg(&nvdimm->dev, "overwrite completed\n");
 
-	/*
-	 * Mark the overwrite work done and update dimm security flags,
-	 * then send a sysfs event notification to wake up userspace
-	 * poll threads to picked up the changed state.
-	 */
+	 
 	nvdimm->sec.overwrite_tmo = 0;
 	clear_bit(NDD_SECURITY_OVERWRITE, &nvdimm->flags);
 	clear_bit(NDD_WORK_PENDING, &nvdimm->flags);

@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "amdgpu.h"
 #include "umc_v6_7.h"
@@ -57,9 +36,7 @@ int amdgpu_umc_page_retirement_mca(struct amdgpu_device *adev,
 		return AMDGPU_RAS_FAIL;
 	}
 
-	/*
-	 * Translate UMC channel address to Physical address
-	 */
+	 
 	ret = amdgpu_umc_convert_error_address(adev, &err_data, err_addr,
 					ch_inst, umc_inst);
 	if (ret)
@@ -99,16 +76,12 @@ static int amdgpu_umc_do_page_retirement(struct amdgpu_device *adev,
 				kcalloc(adev->umc.max_ras_err_cnt_per_query,
 					sizeof(struct eeprom_table_record), GFP_KERNEL);
 
-			/* still call query_ras_error_address to clear error status
-			 * even NOMEM error is encountered
-			 */
+			 
 			if(!err_data->err_addr)
 				dev_warn(adev->dev, "Failed to alloc memory for "
 						"umc error address record!\n");
 
-			/* umc query_ras_error_address is also responsible for clearing
-			 * error status
-			 */
+			 
 			adev->umc.ras->ras_block.hw_ops->query_ras_error_address(adev, ras_error_status);
 		}
 	} else if (!ret) {
@@ -123,21 +96,17 @@ static int amdgpu_umc_do_page_retirement(struct amdgpu_device *adev,
 				kcalloc(adev->umc.max_ras_err_cnt_per_query,
 					sizeof(struct eeprom_table_record), GFP_KERNEL);
 
-			/* still call query_ras_error_address to clear error status
-			 * even NOMEM error is encountered
-			 */
+			 
 			if(!err_data->err_addr)
 				dev_warn(adev->dev, "Failed to alloc memory for "
 						"umc error address record!\n");
 
-			/* umc query_ras_error_address is also responsible for clearing
-			 * error status
-			 */
+			 
 			adev->umc.ras->ecc_info_query_ras_error_address(adev, ras_error_status);
 		}
 	}
 
-	/* only uncorrectable error needs gpu reset */
+	 
 	if (err_data->ue_count) {
 		dev_info(adev->dev, "%ld uncorrectable hardware errors "
 				"detected in UMC block\n",
@@ -172,9 +141,7 @@ int amdgpu_umc_poison_handler(struct amdgpu_device *adev, bool reset)
 	if (adev->gmc.xgmi.connected_to_cpu ||
 		adev->gmc.is_app_apu) {
 		if (reset) {
-			/* MCA poison handler is only responsible for GPU reset,
-			 * let MCA notifier do page retirement.
-			 */
+			 
 			kgd2kfd_set_sram_ecc_flag(adev->kfd.dev);
 			amdgpu_ras_reset_gpu(adev);
 		}
@@ -256,7 +223,7 @@ int amdgpu_umc_ras_late_init(struct amdgpu_device *adev, struct ras_common_if *r
 			goto late_fini;
 	}
 
-	/* ras init of specific umc version */
+	 
 	if (adev->umc.ras &&
 	    adev->umc.ras->err_cnt_init)
 		adev->umc.ras->err_cnt_init(adev);
@@ -296,7 +263,7 @@ void amdgpu_umc_fill_error_record(struct ras_err_data *err_data,
 		&err_data->err_addr[err_data->err_addr_cnt];
 
 	err_rec->address = err_addr;
-	/* page frame address is saved */
+	 
 	err_rec->retired_page = retired_page >> AMDGPU_GPU_PAGE_SHIFT;
 	err_rec->ts = (uint64_t)ktime_get_real_seconds();
 	err_rec->err_type = AMDGPU_RAS_EEPROM_ERR_NON_RECOVERABLE;

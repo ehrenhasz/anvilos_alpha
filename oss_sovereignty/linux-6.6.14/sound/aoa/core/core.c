@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Apple Onboard Audio driver core
- *
- * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -15,8 +11,7 @@ MODULE_DESCRIPTION("Apple Onboard Audio Sound Driver");
 MODULE_AUTHOR("Johannes Berg <johannes@sipsolutions.net>");
 MODULE_LICENSE("GPL");
 
-/* We allow only one fabric. This simplifies things,
- * and more don't really make that much sense */
+ 
 static struct aoa_fabric *fabric;
 static LIST_HEAD(codec_list);
 
@@ -26,7 +21,7 @@ static int attach_codec_to_fabric(struct aoa_codec *c)
 
 	if (!try_module_get(c->owner))
 		return -EBUSY;
-	/* found_codec has to be assigned */
+	 
 	err = -ENOENT;
 	if (fabric->found_codec)
 		err = fabric->found_codec(c);
@@ -58,9 +53,7 @@ int aoa_codec_register(struct aoa_codec *codec)
 {
 	int err = 0;
 
-	/* if there's a fabric already, we can tell if we
-	 * will want to have this codec, so propagate error
-	 * through. Otherwise, this will happen later... */
+	 
 	if (fabric)
 		err = attach_codec_to_fabric(codec);
 	if (!err)
@@ -86,8 +79,7 @@ int aoa_fabric_register(struct aoa_fabric *new_fabric, struct device *dev)
 	struct aoa_codec *c;
 	int err;
 
-	/* allow querying for presence of fabric
-	 * (i.e. do this test first!) */
+	 
 	if (new_fabric == fabric) {
 		err = -EALREADY;
 		goto attach;

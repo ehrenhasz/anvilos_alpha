@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Intel Corporation. */
 
-/* flow director ethtool support for iavf */
+ 
+
+ 
 
 #include "iavf.h"
 
@@ -26,14 +26,7 @@ static const struct in6_addr ipv6_addr_zero_mask = {
 	}
 };
 
-/**
- * iavf_validate_fdir_fltr_masks - validate Flow Director filter fields masks
- * @adapter: pointer to the VF adapter structure
- * @fltr: Flow Director filter data structure
- *
- * Returns 0 if all masks of packet fields are either full or empty. Returns
- * error on at least one partial mask.
- */
+ 
 int iavf_validate_fdir_fltr_masks(struct iavf_adapter *adapter,
 				  struct iavf_fdir_fltr *fltr)
 {
@@ -91,10 +84,7 @@ partial_mask:
 	return -EOPNOTSUPP;
 }
 
-/**
- * iavf_pkt_udp_no_pay_len - the length of UDP packet without payload
- * @fltr: Flow Director filter data structure
- */
+ 
 static u16 iavf_pkt_udp_no_pay_len(struct iavf_fdir_fltr *fltr)
 {
 	return sizeof(struct ethhdr) +
@@ -102,20 +92,14 @@ static u16 iavf_pkt_udp_no_pay_len(struct iavf_fdir_fltr *fltr)
 	       sizeof(struct udphdr);
 }
 
-/**
- * iavf_fill_fdir_gtpu_hdr - fill the GTP-U protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the GTP-U protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_gtpu_hdr(struct iavf_fdir_fltr *fltr,
 			struct virtchnl_proto_hdrs *proto_hdrs)
 {
 	struct virtchnl_proto_hdr *uhdr = &proto_hdrs->proto_hdr[proto_hdrs->count - 1];
 	struct virtchnl_proto_hdr *ghdr = &proto_hdrs->proto_hdr[proto_hdrs->count++];
-	struct virtchnl_proto_hdr *ehdr = NULL; /* Extension Header if it exists */
+	struct virtchnl_proto_hdr *ehdr = NULL;  
 	u16 adj_offs, hdr_offs;
 	int i;
 
@@ -127,11 +111,11 @@ iavf_fill_fdir_gtpu_hdr(struct iavf_fdir_fltr *fltr,
 #define IAVF_GTPU_HDR_TEID_OFFS0	4
 #define IAVF_GTPU_HDR_TEID_OFFS1	6
 #define IAVF_GTPU_HDR_N_PDU_AND_NEXT_EXTHDR_OFFS	10
-#define IAVF_GTPU_HDR_NEXT_EXTHDR_TYPE_MASK		0x00FF /* skip N_PDU */
-/* PDU Session Container Extension Header (PSC) */
+#define IAVF_GTPU_HDR_NEXT_EXTHDR_TYPE_MASK		0x00FF  
+ 
 #define IAVF_GTPU_PSC_EXTHDR_TYPE			0x85
 #define IAVF_GTPU_HDR_PSC_PDU_TYPE_AND_QFI_OFFS		13
-#define IAVF_GTPU_HDR_PSC_PDU_QFI_MASK			0x3F /* skip Type */
+#define IAVF_GTPU_HDR_PSC_PDU_QFI_MASK			0x3F  
 #define IAVF_GTPU_EH_QFI_IDX				1
 
 		if (fltr->flex_words[i].offset < adj_offs)
@@ -170,18 +154,12 @@ iavf_fill_fdir_gtpu_hdr(struct iavf_fdir_fltr *fltr,
 		}
 	}
 
-	uhdr->field_selector = 0; /* The PF ignores the UDP header fields */
+	uhdr->field_selector = 0;  
 
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_pfcp_hdr - fill the PFCP protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the PFCP protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_pfcp_hdr(struct iavf_fdir_fltr *fltr,
 			struct virtchnl_proto_hdrs *proto_hdrs)
@@ -212,18 +190,12 @@ iavf_fill_fdir_pfcp_hdr(struct iavf_fdir_fltr *fltr,
 		}
 	}
 
-	uhdr->field_selector = 0; /* The PF ignores the UDP header fields */
+	uhdr->field_selector = 0;  
 
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_nat_t_esp_hdr - fill the NAT-T-ESP protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the NAT-T-ESP protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_nat_t_esp_hdr(struct iavf_fdir_fltr *fltr,
 			     struct virtchnl_proto_hdrs *proto_hdrs)
@@ -259,23 +231,17 @@ iavf_fill_fdir_nat_t_esp_hdr(struct iavf_fdir_fltr *fltr,
 	}
 
 	if (!spi)
-		return -EOPNOTSUPP; /* Not support IKE Header Format with SPI 0 */
+		return -EOPNOTSUPP;  
 
 	*(__be32 *)hdr->buffer = htonl(spi);
 	VIRTCHNL_ADD_PROTO_HDR_FIELD_BIT(hdr, ESP, SPI);
 
-	uhdr->field_selector = 0; /* The PF ignores the UDP header fields */
+	uhdr->field_selector = 0;  
 
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_udp_flex_pay_hdr - fill the UDP payload header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the UDP payload defined protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_udp_flex_pay_hdr(struct iavf_fdir_fltr *fltr,
 				struct virtchnl_proto_hdrs *proto_hdrs)
@@ -300,13 +266,7 @@ iavf_fill_fdir_udp_flex_pay_hdr(struct iavf_fdir_fltr *fltr,
 	return err;
 }
 
-/**
- * iavf_fill_fdir_ip4_hdr - fill the IPv4 protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the IPv4 protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_ip4_hdr(struct iavf_fdir_fltr *fltr,
 		       struct virtchnl_proto_hdrs *proto_hdrs)
@@ -339,13 +299,7 @@ iavf_fill_fdir_ip4_hdr(struct iavf_fdir_fltr *fltr,
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_ip6_hdr - fill the IPv6 protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the IPv6 protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_ip6_hdr(struct iavf_fdir_fltr *fltr,
 		       struct virtchnl_proto_hdrs *proto_hdrs)
@@ -383,13 +337,7 @@ iavf_fill_fdir_ip6_hdr(struct iavf_fdir_fltr *fltr,
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_tcp_hdr - fill the TCP protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the TCP protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_tcp_hdr(struct iavf_fdir_fltr *fltr,
 		       struct virtchnl_proto_hdrs *proto_hdrs)
@@ -412,13 +360,7 @@ iavf_fill_fdir_tcp_hdr(struct iavf_fdir_fltr *fltr,
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_udp_hdr - fill the UDP protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the UDP protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_udp_hdr(struct iavf_fdir_fltr *fltr,
 		       struct virtchnl_proto_hdrs *proto_hdrs)
@@ -444,13 +386,7 @@ iavf_fill_fdir_udp_hdr(struct iavf_fdir_fltr *fltr,
 	return iavf_fill_fdir_udp_flex_pay_hdr(fltr, proto_hdrs);
 }
 
-/**
- * iavf_fill_fdir_sctp_hdr - fill the SCTP protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the SCTP protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_sctp_hdr(struct iavf_fdir_fltr *fltr,
 			struct virtchnl_proto_hdrs *proto_hdrs)
@@ -473,13 +409,7 @@ iavf_fill_fdir_sctp_hdr(struct iavf_fdir_fltr *fltr,
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_ah_hdr - fill the AH protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the AH protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_ah_hdr(struct iavf_fdir_fltr *fltr,
 		      struct virtchnl_proto_hdrs *proto_hdrs)
@@ -497,13 +427,7 @@ iavf_fill_fdir_ah_hdr(struct iavf_fdir_fltr *fltr,
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_esp_hdr - fill the ESP protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the ESP protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_esp_hdr(struct iavf_fdir_fltr *fltr,
 		       struct virtchnl_proto_hdrs *proto_hdrs)
@@ -521,13 +445,7 @@ iavf_fill_fdir_esp_hdr(struct iavf_fdir_fltr *fltr,
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_l4_hdr - fill the L4 protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the L4 protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_l4_hdr(struct iavf_fdir_fltr *fltr,
 		      struct virtchnl_proto_hdrs *proto_hdrs)
@@ -535,13 +453,13 @@ iavf_fill_fdir_l4_hdr(struct iavf_fdir_fltr *fltr,
 	struct virtchnl_proto_hdr *hdr;
 	__be32 *l4_4_data;
 
-	if (!fltr->ip_mask.proto) /* IPv4/IPv6 header only */
+	if (!fltr->ip_mask.proto)  
 		return 0;
 
 	hdr = &proto_hdrs->proto_hdr[proto_hdrs->count++];
 	l4_4_data = (__be32 *)hdr->buffer;
 
-	/* L2TPv3 over IP with 'Session ID' */
+	 
 	if (fltr->ip_data.proto == 115 && fltr->ip_mask.l4_header == htonl(U32_MAX)) {
 		VIRTCHNL_SET_PROTO_HDR_TYPE(hdr, L2TPV3);
 		VIRTCHNL_ADD_PROTO_HDR_FIELD_BIT(hdr, L2TPV3, SESS_ID);
@@ -554,13 +472,7 @@ iavf_fill_fdir_l4_hdr(struct iavf_fdir_fltr *fltr,
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_eth_hdr - fill the Ethernet protocol header
- * @fltr: Flow Director filter data structure
- * @proto_hdrs: Flow Director protocol headers data structure
- *
- * Returns 0 if the Ethernet protocol header is set successfully
- */
+ 
 static int
 iavf_fill_fdir_eth_hdr(struct iavf_fdir_fltr *fltr,
 		       struct virtchnl_proto_hdrs *proto_hdrs)
@@ -582,13 +494,7 @@ iavf_fill_fdir_eth_hdr(struct iavf_fdir_fltr *fltr,
 	return 0;
 }
 
-/**
- * iavf_fill_fdir_add_msg - fill the Flow Director filter into virtchnl message
- * @adapter: pointer to the VF adapter structure
- * @fltr: Flow Director filter data structure
- *
- * Returns 0 if the add Flow Director virtchnl message is filled successfully
- */
+ 
 int iavf_fill_fdir_add_msg(struct iavf_adapter *adapter, struct iavf_fdir_fltr *fltr)
 {
 	struct virtchnl_fdir_add *vc_msg = &fltr->vc_add_msg;
@@ -597,7 +503,7 @@ int iavf_fill_fdir_add_msg(struct iavf_adapter *adapter, struct iavf_fdir_fltr *
 
 	proto_hdrs = &vc_msg->rule_cfg.proto_hdrs;
 
-	err = iavf_fill_fdir_eth_hdr(fltr, proto_hdrs); /* L2 always exists */
+	err = iavf_fill_fdir_eth_hdr(fltr, proto_hdrs);  
 	if (err)
 		return err;
 
@@ -668,10 +574,7 @@ int iavf_fill_fdir_add_msg(struct iavf_adapter *adapter, struct iavf_fdir_fltr *
 	return 0;
 }
 
-/**
- * iavf_fdir_flow_proto_name - get the flow protocol name
- * @flow_type: Flow Director filter flow type
- **/
+ 
 static const char *iavf_fdir_flow_proto_name(enum iavf_fdir_flow_type flow_type)
 {
 	switch (flow_type) {
@@ -700,13 +603,7 @@ static const char *iavf_fdir_flow_proto_name(enum iavf_fdir_flow_type flow_type)
 	}
 }
 
-/**
- * iavf_print_fdir_fltr
- * @adapter: adapter structure
- * @fltr: Flow Director filter to print
- *
- * Print the Flow Director filter
- **/
+ 
 void iavf_print_fdir_fltr(struct iavf_adapter *adapter, struct iavf_fdir_fltr *fltr)
 {
 	const char *proto = iavf_fdir_flow_proto_name(fltr->flow_type);
@@ -781,13 +678,7 @@ void iavf_print_fdir_fltr(struct iavf_adapter *adapter, struct iavf_fdir_fltr *f
 	}
 }
 
-/**
- * iavf_fdir_is_dup_fltr - test if filter is already in list
- * @adapter: pointer to the VF adapter structure
- * @fltr: Flow Director filter data structure
- *
- * Returns true if the filter is found in the list
- */
+ 
 bool iavf_fdir_is_dup_fltr(struct iavf_adapter *adapter, struct iavf_fdir_fltr *fltr)
 {
 	struct iavf_fdir_fltr *tmp;
@@ -813,13 +704,7 @@ bool iavf_fdir_is_dup_fltr(struct iavf_adapter *adapter, struct iavf_fdir_fltr *
 	return ret;
 }
 
-/**
- * iavf_find_fdir_fltr_by_loc - find filter with location
- * @adapter: pointer to the VF adapter structure
- * @loc: location to find.
- *
- * Returns pointer to Flow Director filter if found or null
- */
+ 
 struct iavf_fdir_fltr *iavf_find_fdir_fltr_by_loc(struct iavf_adapter *adapter, u32 loc)
 {
 	struct iavf_fdir_fltr *rule;
@@ -831,11 +716,7 @@ struct iavf_fdir_fltr *iavf_find_fdir_fltr_by_loc(struct iavf_adapter *adapter, 
 	return NULL;
 }
 
-/**
- * iavf_fdir_list_add_fltr - add a new node to the flow director filter list
- * @adapter: pointer to the VF adapter structure
- * @fltr: filter node to add to structure
- */
+ 
 void iavf_fdir_list_add_fltr(struct iavf_adapter *adapter, struct iavf_fdir_fltr *fltr)
 {
 	struct iavf_fdir_fltr *rule, *parent = NULL;

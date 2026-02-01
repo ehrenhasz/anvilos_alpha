@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * LED driver for Mediatek MT6323 PMIC
- *
- * Copyright (C) 2017 Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/leds.h>
 #include <linux/mfd/mt6323/registers.h>
@@ -13,42 +9,33 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/*
- * Register field for TOP_CKPDN0 to enable
- * 32K clock common for LED device.
- */
+ 
 #define RG_DRV_32K_CK_PDN		BIT(11)
 #define RG_DRV_32K_CK_PDN_MASK		BIT(11)
 
-/* 32K/1M/6M clock common for WLED device */
+ 
 #define RG_VWLED_1M_CK_PDN		BIT(0)
 #define RG_VWLED_32K_CK_PDN		BIT(12)
 #define RG_VWLED_6M_CK_PDN		BIT(13)
 
-/*
- * Register field for TOP_CKPDN2 to enable
- * individual clock for LED device.
- */
+ 
 #define RG_ISINK_CK_PDN(i)	BIT(i)
 #define RG_ISINK_CK_PDN_MASK(i)	BIT(i)
 
-/*
- * Register field for TOP_CKCON1 to select
- * clock source.
- */
+ 
 #define RG_ISINK_CK_SEL_MASK(i)	(BIT(10) << (i))
 
 #define ISINK_CON(r, i)		(r + 0x8 * (i))
 
-/* ISINK_CON0: Register to setup the duty cycle of the blink. */
+ 
 #define ISINK_DIM_DUTY_MASK	(0x1f << 8)
 #define ISINK_DIM_DUTY(i)	(((i) << 8) & ISINK_DIM_DUTY_MASK)
 
-/* ISINK_CON1: Register to setup the period of the blink. */
+ 
 #define ISINK_DIM_FSEL_MASK	(0xffff)
 #define ISINK_DIM_FSEL(i)	((i) & ISINK_DIM_FSEL_MASK)
 
-/* ISINK_CON2: Register to control the brightness. */
+ 
 #define ISINK_CH_STEP_SHIFT	12
 #define ISINK_CH_STEP_MASK	(0x7 << 12)
 #define ISINK_CH_STEP(i)	(((i) << 12) & ISINK_CH_STEP_MASK)
@@ -57,7 +44,7 @@
 #define ISINK_SFSTR0_EN_MASK	BIT(0)
 #define ISINK_SFSTR0_EN		BIT(0)
 
-/* Register to LED channel enablement. */
+ 
 #define ISINK_CH_EN_MASK(i)	BIT(i)
 #define ISINK_CH_EN(i)		BIT(i)
 
@@ -65,13 +52,7 @@
 
 struct mt6323_leds;
 
-/**
- * struct mt6323_led - state container for the LED device
- * @id:			the identifier in MT6323 LED device
- * @parent:		the pointer to MT6323 LED controller
- * @cdev:		LED class device for this LED device
- * @current_brightness: current state of the LED device
- */
+ 
 struct mt6323_led {
 	int			id;
 	struct mt6323_leds	*parent;
@@ -79,18 +60,7 @@ struct mt6323_led {
 	enum led_brightness	current_brightness;
 };
 
-/**
- * struct mt6323_regs - register spec for the LED device
- * @top_ckpdn:		Offset to ISINK_CKPDN[0..x] registers
- * @num_top_ckpdn:	Number of ISINK_CKPDN registers
- * @top_ckcon:		Offset to ISINK_CKCON[0..x] registers
- * @num_top_ckcon:	Number of ISINK_CKCON registers
- * @isink_con:		Offset to ISINKx_CON[0..x] registers
- * @num_isink_con:	Number of ISINKx_CON registers
- * @isink_max_regs:	Number of ISINK[0..x] registers
- * @isink_en_ctrl:	Offset to ISINK_EN_CTRL register
- * @iwled_en_ctrl:	Offset to IWLED_EN_CTRL register
- */
+ 
 struct mt6323_regs {
 	const u16 *top_ckpdn;
 	u8 num_top_ckpdn;
@@ -103,14 +73,7 @@ struct mt6323_regs {
 	u16 iwled_en_ctrl;
 };
 
-/**
- * struct mt6323_hwspec - hardware specific parameters
- * @max_period:		Maximum period for all LEDs
- * @max_leds:		Maximum number of supported LEDs
- * @max_wleds:		Maximum number of WLEDs
- * @max_brightness:	Maximum brightness for all LEDs
- * @unit_duty:		Steps of duty per period
- */
+ 
 struct mt6323_hwspec {
 	u16 max_period;
 	u8 max_leds;
@@ -119,32 +82,18 @@ struct mt6323_hwspec {
 	u16 unit_duty;
 };
 
-/**
- * struct mt6323_data - device specific data
- * @regs:		Register spec for this device
- * @spec:		Hardware specific parameters
- */
+ 
 struct mt6323_data {
 	const struct mt6323_regs *regs;
 	const struct mt6323_hwspec *spec;
 };
 
-/**
- * struct mt6323_leds -	state container for holding LED controller
- *			of the driver
- * @dev:		the device pointer
- * @hw:			the underlying hardware providing shared
- *			bus for the register operations
- * @pdata:		device specific data
- * @lock:		the lock among process context
- * @led:		the array that contains the state of individual
- *			LED device
- */
+ 
 struct mt6323_leds {
 	struct device		*dev;
 	struct mt6397_chip	*hw;
 	const struct mt6323_data *pdata;
-	/* protect among process context */
+	 
 	struct mutex		lock;
 	struct mt6323_led	*led[MAX_SUPPORTED_LEDS];
 };
@@ -159,10 +108,7 @@ static int mt6323_led_hw_brightness(struct led_classdev *cdev,
 	u32 con2_mask = 0, con2_val = 0;
 	int ret;
 
-	/*
-	 * Setup current output for the corresponding
-	 * brightness level.
-	 */
+	 
 	con2_mask |= ISINK_CH_STEP_MASK |
 		     ISINK_SFSTR0_TC_MASK |
 		     ISINK_SFSTR0_EN_MASK;
@@ -242,11 +188,7 @@ static int mt6323_led_hw_on(struct led_classdev *cdev,
 	unsigned int status;
 	int ret;
 
-	/*
-	 * Setup required clock source, enable the corresponding
-	 * clock and channel and let work with continuous blink as
-	 * the default.
-	 */
+	 
 	ret = regmap_update_bits(regmap, regs->top_ckcon[1],
 				 RG_ISINK_CK_SEL_MASK(led->id), 0);
 	if (ret < 0)
@@ -299,41 +241,27 @@ static int mt6323_led_set_blink(struct led_classdev *cdev,
 	u8 duty_hw;
 	int ret;
 
-	/*
-	 * LED subsystem requires a default user
-	 * friendly blink pattern for the LED so using
-	 * 1Hz duty cycle 50% here if without specific
-	 * value delay_on and delay off being assigned.
-	 */
+	 
 	if (!*delay_on && !*delay_off) {
 		*delay_on = 500;
 		*delay_off = 500;
 	}
 
-	/*
-	 * Units are in ms, if over the hardware able
-	 * to support, fallback into software blink
-	 */
+	 
 	period = *delay_on + *delay_off;
 
 	if (period > spec->max_period)
 		return -EINVAL;
 
-	/*
-	 * Calculate duty_hw based on the percentage of period during
-	 * which the led is ON.
-	 */
+	 
 	duty_hw = DIV_ROUND_CLOSEST(*delay_on * 100000ul, period * spec->unit_duty);
 
-	/* hardware doesn't support zero duty cycle. */
+	 
 	if (!duty_hw)
 		return -EINVAL;
 
 	mutex_lock(&leds->lock);
-	/*
-	 * Set max_brightness as the software blink behavior
-	 * when no blink brightness.
-	 */
+	 
 	if (!led->current_brightness) {
 		ret = mt6323_led_hw_on(cdev, cdev->max_brightness);
 		if (ret < 0)
@@ -408,7 +336,7 @@ static int mtk_wled_hw_on(struct led_classdev *cdev)
 
 	usleep_range(5000, 6000);
 
-	/* Enable WLED channel pair */
+	 
 	ret = regmap_set_bits(regmap, regs->iwled_en_ctrl, BIT(led->id));
 	if (ret)
 		return ret;
@@ -464,7 +392,7 @@ static enum led_brightness mt6323_get_wled_brightness(struct led_classdev *cdev)
 	if (ret)
 		return 0;
 
-	/* Always two channels per WLED */
+	 
 	status &= BIT(led->id) | BIT(led->id + 1);
 
 	return status ? led->current_brightness : 0;
@@ -549,10 +477,7 @@ static int mt6323_led_probe(struct platform_device *pdev)
 	spec = leds->pdata->spec;
 	max_leds = spec->max_leds + spec->max_wleds;
 
-	/*
-	 * leds->hw points to the underlying bus for the register
-	 * controlled.
-	 */
+	 
 	leds->hw = hw;
 	mutex_init(&leds->lock);
 
@@ -638,7 +563,7 @@ static int mt6323_led_remove(struct platform_device *pdev)
 	const struct mt6323_regs *regs = leds->pdata->regs;
 	int i;
 
-	/* Turn the LEDs off on driver removal. */
+	 
 	for (i = 0 ; leds->led[i] ; i++)
 		mt6323_led_hw_off(&leds->led[i]->cdev);
 
@@ -658,7 +583,7 @@ static const struct mt6323_regs mt6323_registers = {
 	.num_top_ckcon = 2,
 	.isink_con = (const u16[]){ 0x330, 0x332, 0x334 },
 	.num_isink_con = 3,
-	.isink_max_regs = 4, /* ISINK[0..3] */
+	.isink_max_regs = 4,  
 	.isink_en_ctrl = 0x356,
 };
 
@@ -669,7 +594,7 @@ static const struct mt6323_regs mt6331_registers = {
 	.num_top_ckcon = 2,
 	.isink_con = (const u16[]){ 0x40c, 0x40e, 0x410, 0x412, 0x414 },
 	.num_isink_con = 5,
-	.isink_max_regs = 4, /* ISINK[0..3] */
+	.isink_max_regs = 4,  
 	.isink_en_ctrl = 0x43a,
 };
 
@@ -680,7 +605,7 @@ static const struct mt6323_regs mt6332_registers = {
 	.num_top_ckcon = 2,
 	.isink_con = (const u16[]){ 0x8cd4 },
 	.num_isink_con = 1,
-	.isink_max_regs = 12, /* IWLED[0..2, 3..9] */
+	.isink_max_regs = 12,  
 	.iwled_en_ctrl = 0x8cda,
 };
 
@@ -692,7 +617,7 @@ static const struct mt6323_hwspec mt6323_spec = {
 };
 
 static const struct mt6323_hwspec mt6332_spec = {
-	/* There are no LEDs in MT6332. Only WLEDs are present. */
+	 
 	.max_leds = 0,
 	.max_wleds = 1,
 	.max_brightness = 1024,

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <malloc.h>
 #include <string.h>
 #include <stdlib.h>
@@ -78,7 +78,7 @@ int test_copy_loop(void)
 
 	memset(redzone, POISON, BUFLEN);
 
-	/* Fill with sequential bytes */
+	 
 	for (i = 0; i < BUFLEN; i++)
 		fill[i] = i & 0xff;
 

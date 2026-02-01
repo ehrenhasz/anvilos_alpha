@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW_COEX_H__
 #define __RTW_COEX_H__
@@ -9,8 +8,8 @@
 #define COEX_RESP_ACK_BY_WL_FW	0x1
 #define COEX_REQUEST_TIMEOUT	msecs_to_jiffies(10)
 
-#define COEX_MIN_DELAY		10 /* delay unit in ms */
-#define COEX_RFK_TIMEOUT	600 /* RFK timeout in ms */
+#define COEX_MIN_DELAY		10  
+#define COEX_RFK_TIMEOUT	600  
 #define COEX_BT_GAMEHID_CNT	800
 
 #define COEX_RF_OFF	0x0

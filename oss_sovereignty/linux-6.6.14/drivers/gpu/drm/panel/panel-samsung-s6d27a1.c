@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Panel driver for the Samsung S6D27A1 480x800 DPI RGB panel.
- * Found in the Samsung Galaxy Ace 2 GT-I8160 mobile phone.
- */
+
+ 
 
 #include <drm/drm_mipi_dbi.h>
 #include <drm/drm_modes.h>
@@ -20,23 +17,23 @@
 
 #include <video/mipi_display.h>
 
-#define S6D27A1_PASSWD_L2	0xF0	/* Password Command for Level 2 Control */
-#define S6D27A1_RESCTL		0xB3	/* Resolution Select Control */
-#define S6D27A1_PANELCTL2	0xB4	/* ASG Signal Control */
-#define S6D27A1_READID1		0xDA	/* Read panel ID 1 */
-#define S6D27A1_READID2		0xDB	/* Read panel ID 2 */
-#define S6D27A1_READID3		0xDC	/* Read panel ID 3 */
-#define S6D27A1_DISPCTL		0xF2	/* Display Control */
-#define S6D27A1_MANPWR		0xF3	/* Manual Control */
-#define S6D27A1_PWRCTL1		0xF4	/* Power Control */
-#define S6D27A1_SRCCTL		0xF6	/* Source Control */
-#define S6D27A1_PANELCTL	0xF7	/* Panel Control*/
+#define S6D27A1_PASSWD_L2	0xF0	 
+#define S6D27A1_RESCTL		0xB3	 
+#define S6D27A1_PANELCTL2	0xB4	 
+#define S6D27A1_READID1		0xDA	 
+#define S6D27A1_READID2		0xDB	 
+#define S6D27A1_READID3		0xDC	 
+#define S6D27A1_DISPCTL		0xF2	 
+#define S6D27A1_MANPWR		0xF3	 
+#define S6D27A1_PWRCTL1		0xF4	 
+#define S6D27A1_SRCCTL		0xF6	 
+#define S6D27A1_PANELCTL	0xF7	 
 
 static const u8 s6d27a1_dbi_read_commands[] = {
 	S6D27A1_READID1,
 	S6D27A1_READID2,
 	S6D27A1_READID3,
-	0, /* sentinel */
+	0,  
 };
 
 struct s6d27a1 {
@@ -48,10 +45,7 @@ struct s6d27a1 {
 };
 
 static const struct drm_display_mode s6d27a1_480_800_mode = {
-	/*
-	 * The vendor driver states that the S6D27A1 panel
-	 * has a pixel clock frequency of 49920000 Hz / 2 = 24960000 Hz.
-	 */
+	 
 	.clock = 24960,
 	.hdisplay = 480,
 	.hsync_start = 480 + 63,
@@ -100,7 +94,7 @@ static int s6d27a1_power_on(struct s6d27a1 *ctx)
 	struct mipi_dbi *dbi = &ctx->dbi;
 	int ret;
 
-	/* Power up */
+	 
 	ret = regulator_bulk_enable(ARRAY_SIZE(ctx->regulators),
 				    ctx->regulators);
 	if (ret) {
@@ -110,26 +104,23 @@ static int s6d27a1_power_on(struct s6d27a1 *ctx)
 
 	msleep(20);
 
-	/* Assert reset >=1 ms */
+	 
 	gpiod_set_value_cansleep(ctx->reset, 1);
 	usleep_range(1000, 5000);
-	/* De-assert reset */
+	 
 	gpiod_set_value_cansleep(ctx->reset, 0);
-	/* Wait >= 10 ms */
+	 
 	msleep(20);
 
-	/*
-	 * Exit sleep mode and initialize display - some hammering is
-	 * necessary.
-	 */
+	 
 	mipi_dbi_command(dbi, MIPI_DCS_EXIT_SLEEP_MODE);
 	mipi_dbi_command(dbi, MIPI_DCS_EXIT_SLEEP_MODE);
 	msleep(120);
 
-	/* Magic to unlock level 2 control of the display */
+	 
 	mipi_dbi_command(dbi, S6D27A1_PASSWD_L2, 0x5A, 0x5A);
 
-	/* Configure resolution to 480RGBx800 */
+	 
 	mipi_dbi_command(dbi, S6D27A1_RESCTL, 0x22);
 
 	mipi_dbi_command(dbi, S6D27A1_PANELCTL2, 0x00, 0x02, 0x03, 0x04, 0x05, 0x08, 0x00, 0x0c);
@@ -152,7 +143,7 @@ static int s6d27a1_power_on(struct s6d27a1 *ctx)
 					0x0C, 0x10, 0x01, 0x11, 0x12,
 					0x13, 0x14);
 
-	/* lock the level 2 control */
+	 
 	mipi_dbi_command(dbi, S6D27A1_PASSWD_L2, 0xA5, 0xA5);
 
 	s6d27a1_read_mtp_id(ctx);
@@ -162,7 +153,7 @@ static int s6d27a1_power_on(struct s6d27a1 *ctx)
 
 static int s6d27a1_power_off(struct s6d27a1 *ctx)
 {
-	/* Go into RESET and disable regulators */
+	 
 	gpiod_set_value_cansleep(ctx->reset, 1);
 	return regulator_bulk_disable(ARRAY_SIZE(ctx->regulators),
 				      ctx->regulators);
@@ -253,10 +244,7 @@ static int s6d27a1_probe(struct spi_device *spi)
 
 	ctx->dev = dev;
 
-	/*
-	 * VCI   is the analog voltage supply
-	 * VCCIO is the digital I/O voltage supply
-	 */
+	 
 	ctx->regulators[0].supply = "vci";
 	ctx->regulators[1].supply = "vccio";
 	ret = devm_regulator_bulk_get(dev,
@@ -300,7 +288,7 @@ static void s6d27a1_remove(struct spi_device *spi)
 
 static const struct of_device_id s6d27a1_match[] = {
 	{ .compatible = "samsung,s6d27a1", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, s6d27a1_match);
 

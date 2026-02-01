@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR BSD-3-Clause)
-/*
- * Copyright(c) 2020 Intel Corporation.
- *
- */
 
-/*
- * This file contains HFI1 support for ipoib functionality
- */
+ 
+
+ 
 
 #include "ipoib.h"
 #include "hfi.h"
@@ -132,7 +127,7 @@ static int hfi1_ipoib_mcast_attach(struct net_device *dev,
 		if (set_qkey)
 			priv->qkey = qkey;
 
-		/* attach QP to multicast group */
+		 
 		ret = ib_attach_mcast(&qp->ibqp, mgid, mlid);
 		rvt_put_qp(qp);
 	} else {

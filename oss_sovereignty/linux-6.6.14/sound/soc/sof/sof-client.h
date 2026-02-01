@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef __SOC_SOF_CLIENT_H
 #define __SOC_SOF_CLIENT_H
@@ -15,13 +15,7 @@ struct dentry;
 
 struct sof_ipc4_fw_module;
 
-/**
- * struct sof_client_dev - SOF client device
- * @auxdev:	auxiliary device
- * @sdev:	pointer to SOF core device struct
- * @list:	item in SOF core client dev list
- * @data:	device specific data
- */
+ 
 struct sof_client_dev {
 	struct auxiliary_device auxdev;
 	struct snd_sof_dev *sdev;
@@ -54,11 +48,11 @@ const struct sof_ipc_fw_version *sof_client_get_fw_version(struct sof_client_dev
 size_t sof_client_get_ipc_max_payload_size(struct sof_client_dev *cdev);
 enum sof_ipc_type sof_client_get_ipc_type(struct sof_client_dev *cdev);
 
-/* module refcount management of SOF core */
+ 
 int sof_client_core_module_get(struct sof_client_dev *cdev);
 void sof_client_core_module_put(struct sof_client_dev *cdev);
 
-/* IPC notification */
+ 
 typedef void (*sof_client_event_callback)(struct sof_client_dev *cdev, void *msg_buf);
 
 int sof_client_register_ipc_rx_handler(struct sof_client_dev *cdev,
@@ -67,7 +61,7 @@ int sof_client_register_ipc_rx_handler(struct sof_client_dev *cdev,
 void sof_client_unregister_ipc_rx_handler(struct sof_client_dev *cdev,
 					  u32 ipc_msg_type);
 
-/* DSP state notification and query */
+ 
 typedef void (*sof_client_fw_state_callback)(struct sof_client_dev *cdev,
 					     enum sof_fw_state state);
 
@@ -77,4 +71,4 @@ void sof_client_unregister_fw_state_handler(struct sof_client_dev *cdev);
 enum sof_fw_state sof_client_get_fw_state(struct sof_client_dev *cdev);
 int sof_client_ipc_rx_message(struct sof_client_dev *cdev, void *ipc_msg, void *msg_buf);
 
-#endif /* __SOC_SOF_CLIENT_H */
+#endif  

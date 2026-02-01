@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright 2013 Cisco Systems, Inc.  All rights reserved. */
+ 
+ 
 #ifndef _FNIC_STATS_H_
 #define _FNIC_STATS_H_
 
@@ -126,4 +126,4 @@ struct stats_debug_info {
 int fnic_get_stats_data(struct stats_debug_info *, struct fnic_stats *);
 void fnic_stats_debugfs_init(struct fnic *);
 void fnic_stats_debugfs_remove(struct fnic *);
-#endif /* _FNIC_STATS_H_ */
+#endif  

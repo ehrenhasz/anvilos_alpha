@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __LINUX_ATALK_H__
 #define __LINUX_ATALK_H__
 
@@ -14,26 +14,19 @@ struct atalk_route {
 	struct atalk_route *next;
 };
 
-/**
- *	struct atalk_iface - AppleTalk Interface
- *	@dev - Network device associated with this interface
- *	@address - Our address
- *	@status - What are we doing?
- *	@nets - Associated direct netrange
- *	@next - next element in the list of interfaces
- */
+ 
 struct atalk_iface {
 	struct net_device	*dev;
 	struct atalk_addr	address;
 	int			status;
-#define ATIF_PROBE	1		/* Probing for an address */
-#define ATIF_PROBE_FAIL	2		/* Probe collided */
+#define ATIF_PROBE	1		 
+#define ATIF_PROBE_FAIL	2		 
 	struct atalk_netrange	nets;
 	struct atalk_iface	*next;
 };
 	
 struct atalk_sock {
-	/* struct sock has to be the first member of atalk_sock */
+	 
 	struct sock	sk;
 	__be16		dest_net;
 	__be16		src_net;
@@ -49,7 +42,7 @@ static inline struct atalk_sock *at_sk(struct sock *sk)
 }
 
 struct ddpehdr {
-	__be16	deh_len_hops;	/* lower 10 bits are length, next 4 - hops */
+	__be16	deh_len_hops;	 
 	__be16	deh_sum;
 	__be16	deh_dnet;
 	__be16	deh_snet;
@@ -57,7 +50,7 @@ struct ddpehdr {
 	__u8	deh_snode;
 	__u8	deh_dport;
 	__u8	deh_sport;
-	/* And netatalk apps expect to stick the type in themselves */
+	 
 };
 
 static __inline__ struct ddpehdr *ddp_hdr(struct sk_buff *skb)
@@ -65,7 +58,7 @@ static __inline__ struct ddpehdr *ddp_hdr(struct sk_buff *skb)
 	return (struct ddpehdr *)skb_transport_header(skb);
 }
 
-/* AppleTalk AARP headers */
+ 
 struct elapaarp {
 	__be16	hw_type;
 #define AARP_HW_TYPE_ETHERNET		1
@@ -93,26 +86,23 @@ static __inline__ struct elapaarp *aarp_hdr(struct sk_buff *skb)
 	return (struct elapaarp *)skb_transport_header(skb);
 }
 
-/* Not specified - how long till we drop a resolved entry */
+ 
 #define AARP_EXPIRY_TIME	(5 * 60 * HZ)
-/* Size of hash table */
+ 
 #define AARP_HASH_SIZE		16
-/* Fast retransmission timer when resolving */
+ 
 #define AARP_TICK_TIME		(HZ / 5)
-/* Send 10 requests then give up (2 seconds) */
+ 
 #define AARP_RETRANSMIT_LIMIT	10
-/*
- * Some value bigger than total retransmit time + a bit for last reply to
- * appear and to stop continual requests
- */
+ 
 #define AARP_RESOLVE_TIME	(10 * HZ)
 
 extern struct datalink_proto *ddp_dl, *aarp_dl;
 extern int aarp_proto_init(void);
 
-/* Inter module exports */
+ 
 
-/* Give a device find its atif control structure */
+ 
 #if IS_ENABLED(CONFIG_ATALK)
 static inline struct atalk_iface *atalk_find_dev(struct net_device *dev)
 {
@@ -181,6 +171,6 @@ static inline int atalk_proc_init(void)
 static inline void atalk_proc_exit(void)
 {
 }
-#endif /* CONFIG_PROC_FS */
+#endif  
 
-#endif /* __LINUX_ATALK_H__ */
+#endif  

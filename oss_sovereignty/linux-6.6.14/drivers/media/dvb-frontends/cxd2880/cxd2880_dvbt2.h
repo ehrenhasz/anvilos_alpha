@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * cxd2880_dvbt2.h
- * Sony CXD2880 DVB-T2/T tuner + demodulator driver
- * DVB-T2 related definitions
- *
- * Copyright (C) 2016, 2017, 2018 Sony Semiconductor Solutions Corporation
- */
+ 
+ 
 
 #ifndef CXD2880_DVBT2_H
 #define CXD2880_DVBT2_H

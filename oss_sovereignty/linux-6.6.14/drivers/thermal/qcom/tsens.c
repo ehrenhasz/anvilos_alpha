@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- * Copyright (c) 2019, 2020, Linaro Ltd.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/err.h>
@@ -21,24 +18,7 @@
 #include "../thermal_hwmon.h"
 #include "tsens.h"
 
-/**
- * struct tsens_irq_data - IRQ status and temperature violations
- * @up_viol:        upper threshold violated
- * @up_thresh:      upper threshold temperature value
- * @up_irq_mask:    mask register for upper threshold irqs
- * @up_irq_clear:   clear register for uppper threshold irqs
- * @low_viol:       lower threshold violated
- * @low_thresh:     lower threshold temperature value
- * @low_irq_mask:   mask register for lower threshold irqs
- * @low_irq_clear:  clear register for lower threshold irqs
- * @crit_viol:      critical threshold violated
- * @crit_thresh:    critical threshold temperature value
- * @crit_irq_mask:  mask register for critical threshold irqs
- * @crit_irq_clear: clear register for critical threshold irqs
- *
- * Structure containing data about temperature threshold settings and
- * irq status if they were violated.
- */
+ 
 struct tsens_irq_data {
 	u32 up_viol;
 	int up_thresh;
@@ -74,7 +54,7 @@ int tsens_read_calibration(struct tsens_priv *priv, int shift, u32 *p1, u32 *p2,
 {
 	u32 mode;
 	u32 base1, base2;
-	char name[] = "sXX_pY_backup"; /* s10_p1_backup */
+	char name[] = "sXX_pY_backup";  
 	int i, ret;
 
 	if (priv->num_sensors > MAX_SENSORS)
@@ -151,7 +131,7 @@ int tsens_read_calibration(struct tsens_priv *priv, int shift, u32 *p1, u32 *p2,
 		}
 	}
 
-	/* Apply calibration offset workaround except for _NO_OFFSET modes */
+	 
 	switch (mode) {
 	case TWO_PT_CALIB:
 		for (i = 0; i < priv->num_sensors; i++)
@@ -249,12 +229,7 @@ int tsens_read_calibration_legacy(struct tsens_priv *priv,
 	return mode;
 }
 
-/*
- * Use this function on devices where slope and offset calculations
- * depend on calibration data read from qfprom. On others the slope
- * and offset values are derived from tz->tzp->slope and tz->tzp->offset
- * resp.
- */
+ 
 void compute_intercept_slope(struct tsens_priv *priv, u32 *p1,
 			     u32 *p2, u32 mode)
 {
@@ -269,10 +244,7 @@ void compute_intercept_slope(struct tsens_priv *priv, u32 *p1,
 		if (!priv->sensor[i].slope)
 			priv->sensor[i].slope = SLOPE_DEFAULT;
 		if (mode == TWO_PT_CALIB || mode == TWO_PT_CALIB_NO_OFFSET) {
-			/*
-			 * slope (m) = adc_code2 - adc_code1 (y2 - y1)/
-			 *	temp_120_degc - temp_30_degc (x2 - x1)
-			 */
+			 
 			num = p2[i] - p1[i];
 			num *= SLOPE_FACTOR;
 			den = CAL_DEGC_PT2 - CAL_DEGC_PT1;
@@ -314,17 +286,7 @@ static inline int code_to_degc(u32 adc_code, const struct tsens_sensor *s)
 	return degc;
 }
 
-/**
- * tsens_hw_to_mC - Return sign-extended temperature in mCelsius.
- * @s:     Pointer to sensor struct
- * @field: Index into regmap_field array pointing to temperature data
- *
- * This function handles temperature returned in ADC code or deciCelsius
- * depending on IP version.
- *
- * Return: Temperature in milliCelsius on success, a negative errno will
- * be returned in error cases
- */
+ 
 static int tsens_hw_to_mC(const struct tsens_sensor *s, int field)
 {
 	struct tsens_priv *priv = s->priv;
@@ -339,33 +301,24 @@ static int tsens_hw_to_mC(const struct tsens_sensor *s, int field)
 	if (ret)
 		return ret;
 
-	/* Convert temperature from ADC code to milliCelsius */
+	 
 	if (priv->feat->adc)
 		return code_to_degc(temp, s) * 1000;
 
-	/* deciCelsius -> milliCelsius along with sign extension */
+	 
 	return sign_extend32(temp, resolution) * 100;
 }
 
-/**
- * tsens_mC_to_hw - Convert temperature to hardware register value
- * @s: Pointer to sensor struct
- * @temp: temperature in milliCelsius to be programmed to hardware
- *
- * This function outputs the value to be written to hardware in ADC code
- * or deciCelsius depending on IP version.
- *
- * Return: ADC code or temperature in deciCelsius.
- */
+ 
 static int tsens_mC_to_hw(const struct tsens_sensor *s, int temp)
 {
 	struct tsens_priv *priv = s->priv;
 
-	/* milliC to adc code */
+	 
 	if (priv->feat->adc)
 		return degc_to_code(temp / 1000, s);
 
-	/* milliC to deciC */
+	 
 	return temp / 100;
 }
 
@@ -387,7 +340,7 @@ static void tsens_set_interrupt_v1(struct tsens_priv *priv, u32 hw_id,
 		index = LOW_INT_CLEAR_0 + hw_id;
 		break;
 	case CRITICAL:
-		/* No critical interrupts before v2 */
+		 
 		return;
 	}
 	regmap_field_write(priv->rf[index], enable ? 0 : 1);
@@ -398,13 +351,7 @@ static void tsens_set_interrupt_v2(struct tsens_priv *priv, u32 hw_id,
 {
 	u32 index_mask = 0, index_clear = 0;
 
-	/*
-	 * To enable the interrupt flag for a sensor:
-	 *    - clear the mask bit
-	 * To disable the interrupt flag for a sensor:
-	 *    - Mask further interrupts for this sensor
-	 *    - Write 1 followed by 0 to clear the interrupt
-	 */
+	 
 	switch (irq_type) {
 	case UPPER:
 		index_mask  = UP_INT_MASK_0 + hw_id;
@@ -429,17 +376,7 @@ static void tsens_set_interrupt_v2(struct tsens_priv *priv, u32 hw_id,
 	}
 }
 
-/**
- * tsens_set_interrupt - Set state of an interrupt
- * @priv: Pointer to tsens controller private data
- * @hw_id: Hardware ID aka. sensor number
- * @irq_type: irq_type from enum tsens_irq_type
- * @enable: false = disable, true = enable
- *
- * Call IP-specific function to set state of an interrupt
- *
- * Return: void
- */
+ 
 static void tsens_set_interrupt(struct tsens_priv *priv, u32 hw_id,
 				enum tsens_irq_type irq_type, bool enable)
 {
@@ -452,15 +389,7 @@ static void tsens_set_interrupt(struct tsens_priv *priv, u32 hw_id,
 		tsens_set_interrupt_v1(priv, hw_id, irq_type, enable);
 }
 
-/**
- * tsens_threshold_violated - Check if a sensor temperature violated a preset threshold
- * @priv: Pointer to tsens controller private data
- * @hw_id: Hardware ID aka. sensor number
- * @d: Pointer to irq state data
- *
- * Return: 0 if threshold was not violated, 1 if it was violated and negative
- * errno in case of errors
- */
+ 
 static int tsens_threshold_violated(struct tsens_priv *priv, u32 hw_id,
 				    struct tsens_irq_data *d)
 {
@@ -516,7 +445,7 @@ static int tsens_read_irq_state(struct tsens_priv *priv, u32 hw_id,
 
 		d->crit_thresh = tsens_hw_to_mC(s, CRIT_THRESH_0 + hw_id);
 	} else {
-		/* No mask register on older TSENS */
+		 
 		d->up_irq_mask = 0;
 		d->low_irq_mask = 0;
 		d->crit_irq_clear = 0;
@@ -545,25 +474,11 @@ static inline u32 masked_irq(u32 hw_id, u32 mask, enum tsens_ver ver)
 	if (ver > VER_1_X)
 		return mask & (1 << hw_id);
 
-	/* v1, v0.1 don't have a irq mask register */
+	 
 	return 0;
 }
 
-/**
- * tsens_critical_irq_thread() - Threaded handler for critical interrupts
- * @irq: irq number
- * @data: tsens controller private data
- *
- * Check FSM watchdog bark status and clear if needed.
- * Check all sensors to find ones that violated their critical threshold limits.
- * Clear and then re-enable the interrupt.
- *
- * The level-triggered interrupt might deassert if the temperature returned to
- * within the threshold limits by the time the handler got scheduled. We
- * consider the irq to have been handled in that case.
- *
- * Return: IRQ_HANDLED
- */
+ 
 static irqreturn_t tsens_critical_irq_thread(int irq, void *data)
 {
 	struct tsens_priv *priv = data;
@@ -578,7 +493,7 @@ static irqreturn_t tsens_critical_irq_thread(int irq, void *data)
 			return ret;
 
 		if (wdog_status) {
-			/* Clear WDOG interrupt */
+			 
 			regmap_field_write(priv->rf[WDOG_BARK_CLEAR], 1);
 			regmap_field_write(priv->rf[WDOG_BARK_CLEAR], 0);
 			ret = regmap_field_read(priv->rf[WDOG_BARK_COUNT],
@@ -589,7 +504,7 @@ static irqreturn_t tsens_critical_irq_thread(int irq, void *data)
 				dev_dbg(priv->dev, "%s: watchdog count: %d\n",
 					__func__, wdog_count);
 
-			/* Fall through to handle critical interrupts if any */
+			 
 		}
 	}
 
@@ -611,7 +526,7 @@ static irqreturn_t tsens_critical_irq_thread(int irq, void *data)
 		tsens_read_irq_state(priv, hw_id, s, &d);
 		if (d.crit_viol &&
 		    !masked_irq(hw_id, d.crit_irq_mask, tsens_version(priv))) {
-			/* Mask critical interrupts, unused on Linux */
+			 
 			tsens_set_interrupt(priv, hw_id, CRITICAL, false);
 		}
 	}
@@ -619,21 +534,7 @@ static irqreturn_t tsens_critical_irq_thread(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * tsens_irq_thread - Threaded interrupt handler for uplow interrupts
- * @irq: irq number
- * @data: tsens controller private data
- *
- * Check all sensors to find ones that violated their threshold limits. If the
- * temperature is still outside the limits, call thermal_zone_device_update() to
- * update the thresholds, else re-enable the interrupts.
- *
- * The level-triggered interrupt might deassert if the temperature returned to
- * within the threshold limits by the time the handler got scheduled. We
- * consider the irq to have been handled in that case.
- *
- * Return: IRQ_HANDLED
- */
+ 
 static irqreturn_t tsens_irq_thread(int irq, void *data)
 {
 	struct tsens_priv *priv = data;
@@ -652,11 +553,7 @@ static irqreturn_t tsens_irq_thread(int irq, void *data)
 		thermal_zone_device_update(s->tzd, THERMAL_EVENT_UNSPECIFIED);
 
 		if (tsens_version(priv) < VER_0_1) {
-			/* Constraint: There is only 1 interrupt control register for all
-			 * 11 temperature sensor. So monitoring more than 1 sensor based
-			 * on interrupts will yield inconsistent result. To overcome this
-			 * issue we will monitor only sensor 0 which is the master sensor.
-			 */
+			 
 			break;
 		}
 	}
@@ -664,16 +561,7 @@ static irqreturn_t tsens_irq_thread(int irq, void *data)
 	return IRQ_HANDLED;
 }
 
-/**
- * tsens_combined_irq_thread() - Threaded interrupt handler for combined interrupts
- * @irq: irq number
- * @data: tsens controller private data
- *
- * Handle the combined interrupt as if it were 2 separate interrupts, so call the
- * critical handler first and then the up/low one.
- *
- * Return: IRQ_HANDLED
- */
+ 
 static irqreturn_t tsens_combined_irq_thread(int irq, void *data)
 {
 	irqreturn_t ret;
@@ -696,9 +584,7 @@ static int tsens_set_trips(struct thermal_zone_device *tz, int low, int high)
 	u32 hw_id = s->hw_id;
 
 	if (tsens_version(priv) < VER_0_1) {
-		/* Pre v0.1 IP had a single register for each type of interrupt
-		 * and thresholds
-		 */
+		 
 		hw_id = 0;
 	}
 
@@ -715,7 +601,7 @@ static int tsens_set_trips(struct thermal_zone_device *tz, int low, int high)
 
 	tsens_read_irq_state(priv, hw_id, s, &d);
 
-	/* Write the new thresholds and clear the status */
+	 
 	regmap_field_write(priv->rf[LOW_THRESH_0 + hw_id], low_val);
 	regmap_field_write(priv->rf[UP_THRESH_0 + hw_id], high_val);
 	tsens_set_interrupt(priv, hw_id, LOWER, true);
@@ -756,23 +642,18 @@ int get_temp_tsens_valid(const struct tsens_sensor *s, int *temp)
 	u32 valid;
 	int ret;
 
-	/* VER_0 doesn't have VALID bit */
+	 
 	if (tsens_version(priv) == VER_0)
 		goto get_temp;
 
-	/* Valid bit is 0 for 6 AHB clock cycles.
-	 * At 19.2MHz, 1 AHB clock is ~60ns.
-	 * We should enter this loop very, very rarely.
-	 * Wait 1 us since it's the min of poll_timeout macro.
-	 * Old value was 400 ns.
-	 */
+	 
 	ret = regmap_field_read_poll_timeout(priv->rf[valid_idx], valid,
 					     valid, 1, 20 * USEC_PER_MSEC);
 	if (ret)
 		return ret;
 
 get_temp:
-	/* Valid bit is set, OK to read the temperature */
+	 
 	*temp = tsens_hw_to_mC(s, temp_idx);
 
 	return 0;
@@ -862,7 +743,7 @@ static void tsens_debug_init(struct platform_device *pdev)
 	if (!priv->debug_root)
 		priv->debug_root = debugfs_create_dir("tsens", NULL);
 
-	/* A directory for each instance of the TSENS IP */
+	 
 	priv->debug = debugfs_create_dir(dev_name(&pdev->dev), priv->debug_root);
 	debugfs_create_file("version", 0444, priv->debug, pdev, &dbg_version_fops);
 	debugfs_create_file("sensors", 0444, priv->debug, pdev, &dbg_sensors_fops);
@@ -899,7 +780,7 @@ int __init init_common(struct tsens_priv *priv)
 		return -EINVAL;
 
 	if (op->num_resources > 1) {
-		/* DT with separate SROT and TM address space */
+		 
 		priv->tm_offset = 0;
 		res = platform_get_resource(op, IORESOURCE_MEM, 1);
 		srot_base = devm_ioremap_resource(dev, res);
@@ -915,7 +796,7 @@ int __init init_common(struct tsens_priv *priv)
 			goto err_put_device;
 		}
 	} else {
-		/* old DTs where SROT and TM were in a contiguous 2K block */
+		 
 		priv->tm_offset = 0x1000;
 	}
 
@@ -928,7 +809,7 @@ int __init init_common(struct tsens_priv *priv)
 		}
 
 		priv->tm_map = devm_regmap_init_mmio(dev, tm_base, &tsens_config);
-	} else { /* VER_0 share the same gcc regs using a syscon */
+	} else {  
 		struct device *parent = priv->dev->parent;
 
 		if (parent)
@@ -943,7 +824,7 @@ int __init init_common(struct tsens_priv *priv)
 		goto err_put_device;
 	}
 
-	/* VER_0 have only tm_map */
+	 
 	if (!priv->srot_map)
 		priv->srot_map = priv->tm_map;
 
@@ -967,7 +848,7 @@ int __init init_common(struct tsens_priv *priv)
 		ret = PTR_ERR(priv->rf[TSENS_EN]);
 		goto err_put_device;
 	}
-	/* in VER_0 TSENS need to be explicitly enabled */
+	 
 	if (tsens_version(priv) == VER_0)
 		regmap_field_write(priv->rf[TSENS_EN], 1);
 
@@ -1006,7 +887,7 @@ int __init init_common(struct tsens_priv *priv)
 		goto err_put_device;
 	}
 
-	/* This loop might need changes if enum regfield_ids is reordered */
+	 
 	for (j = LAST_TEMP_0; j <= UP_THRESH_15; j += 16) {
 		for (i = 0; i < priv->feat->max_sensors; i++) {
 			int idx = j + i;
@@ -1022,7 +903,7 @@ int __init init_common(struct tsens_priv *priv)
 	}
 
 	if (priv->feat->crit_int || tsens_version(priv) < VER_0_1) {
-		/* Loop might need changes if enum regfield_ids is reordered */
+		 
 		for (j = CRITICAL_STATUS_0; j <= CRIT_THRESH_15; j += 16) {
 			for (i = 0; i < priv->feat->max_sensors; i++) {
 				int idx = j + i;
@@ -1040,7 +921,7 @@ int __init init_common(struct tsens_priv *priv)
 	}
 
 	if (tsens_version(priv) > VER_1_X &&  ver_minor > 2) {
-		/* Watchdog is present only on v2.3+ */
+		 
 		priv->feat->has_watchdog = 1;
 		for (i = WDOG_BARK_STATUS; i <= CC_MON_MASK; i++) {
 			priv->rf[i] = devm_regmap_field_alloc(dev, priv->tm_map,
@@ -1050,17 +931,14 @@ int __init init_common(struct tsens_priv *priv)
 				goto err_put_device;
 			}
 		}
-		/*
-		 * Watchdog is already enabled, unmask the bark.
-		 * Disable cycle completion monitoring
-		 */
+		 
 		regmap_field_write(priv->rf[WDOG_BARK_MASK], 0);
 		regmap_field_write(priv->rf[CC_MON_MASK], 1);
 	}
 
 	spin_lock_init(&priv->ul_lock);
 
-	/* VER_0 interrupt doesn't need to be enabled */
+	 
 	if (tsens_version(priv) >= VER_0_1)
 		tsens_enable_irq(priv);
 
@@ -1165,11 +1043,11 @@ static int tsens_register_irq(struct tsens_priv *priv, char *irqname,
 	irq = platform_get_irq_byname(pdev, irqname);
 	if (irq < 0) {
 		ret = irq;
-		/* For old DTs with no IRQ defined */
+		 
 		if (irq == -ENXIO)
 			ret = 0;
 	} else {
-		/* VER_0 interrupt is TRIGGER_RISING, VER_0_1 and up is ONESHOT */
+		 
 		if (tsens_version(priv) == VER_0)
 			ret = devm_request_threaded_irq(&pdev->dev, irq,
 							thread_fn, NULL,
@@ -1212,11 +1090,7 @@ static int tsens_register(struct tsens_priv *priv)
 		devm_thermal_add_hwmon_sysfs(priv->dev, tzd);
 	}
 
-	/* VER_0 require to set MIN and MAX THRESH
-	 * These 2 regs are set using the:
-	 * - CRIT_THRESH_0 for MAX THRESH hardcoded to 120°C
-	 * - CRIT_THRESH_1 for MIN THRESH hardcoded to   0°C
-	 */
+	 
 	if (tsens_version(priv) < VER_0_1) {
 		regmap_field_write(priv->rf[CRIT_THRESH_0],
 				   tsens_mC_to_hw(priv->sensor, 120000));

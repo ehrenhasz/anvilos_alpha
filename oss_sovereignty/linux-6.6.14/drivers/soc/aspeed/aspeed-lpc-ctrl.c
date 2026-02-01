@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2017 IBM Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/log2.h>
@@ -55,7 +53,7 @@ static int aspeed_lpc_ctrl_mmap(struct file *file, struct vm_area_struct *vma)
 	if (vma->vm_pgoff + vma_pages(vma) > lpc_ctrl->mem_size >> PAGE_SHIFT)
 		return -EINVAL;
 
-	/* ast2400/2500 AHB accesses are not cache coherent */
+	 
 	prot = pgprot_noncached(prot);
 
 	if (remap_pfn_range(vma, vma->vm_start,
@@ -85,15 +83,15 @@ static long aspeed_lpc_ctrl_ioctl(struct file *file, unsigned int cmd,
 
 	switch (cmd) {
 	case ASPEED_LPC_CTRL_IOCTL_GET_SIZE:
-		/* The flash windows don't report their size */
+		 
 		if (map.window_type != ASPEED_LPC_CTRL_WINDOW_MEMORY)
 			return -EINVAL;
 
-		/* Support more than one window id in the future */
+		 
 		if (map.window_id != 0)
 			return -EINVAL;
 
-		/* If memory-region is not described in device tree */
+		 
 		if (!lpc_ctrl->mem_size) {
 			dev_dbg(dev, "Didn't find reserved memory\n");
 			return -ENXIO;
@@ -104,33 +102,14 @@ static long aspeed_lpc_ctrl_ioctl(struct file *file, unsigned int cmd,
 		return copy_to_user(p, &map, sizeof(map)) ? -EFAULT : 0;
 	case ASPEED_LPC_CTRL_IOCTL_MAP:
 
-		/*
-		 * The top half of HICR7 is the MSB of the BMC address of the
-		 * mapping.
-		 * The bottom half of HICR7 is the MSB of the HOST LPC
-		 * firmware space address of the mapping.
-		 *
-		 * The 1 bits in the top of half of HICR8 represent the bits
-		 * (in the requested address) that should be ignored and
-		 * replaced with those from the top half of HICR7.
-		 * The 1 bits in the bottom half of HICR8 represent the bits
-		 * (in the requested address) that should be kept and pass
-		 * into the BMC address space.
-		 */
+		 
 
-		/*
-		 * It doesn't make sense to talk about a size or offset with
-		 * low 16 bits set. Both HICR7 and HICR8 talk about the top 16
-		 * bits of addresses and sizes.
-		 */
+		 
 
 		if ((map.size & 0x0000ffff) || (map.offset & 0x0000ffff))
 			return -EINVAL;
 
-		/*
-		 * Because of the way the masks work in HICR8 offset has to
-		 * be a multiple of size.
-		 */
+		 
 		if (map.offset & (map.size - 1))
 			return -EINVAL;
 
@@ -142,7 +121,7 @@ static long aspeed_lpc_ctrl_ioctl(struct file *file, unsigned int cmd,
 			addr = lpc_ctrl->pnor_base;
 			size = lpc_ctrl->pnor_size;
 		} else if (map.window_type == ASPEED_LPC_CTRL_WINDOW_MEMORY) {
-			/* If memory-region is not described in device tree */
+			 
 			if (!lpc_ctrl->mem_size) {
 				dev_dbg(dev, "Didn't find reserved memory\n");
 				return -ENXIO;
@@ -153,7 +132,7 @@ static long aspeed_lpc_ctrl_ioctl(struct file *file, unsigned int cmd,
 			return -EINVAL;
 		}
 
-		/* Check overflow first! */
+		 
 		if (map.offset + map.size < map.offset ||
 			map.offset + map.size > size)
 			return -EINVAL;
@@ -163,14 +142,7 @@ static long aspeed_lpc_ctrl_ioctl(struct file *file, unsigned int cmd,
 
 		addr += map.offset;
 
-		/*
-		 * addr (host lpc address) is safe regardless of values. This
-		 * simply changes the address the host has to request on its
-		 * side of the LPC bus. This cannot impact the hosts own
-		 * memory space by surprise as LPC specific accessors are
-		 * required. The only strange thing that could be done is
-		 * setting the lower 16 bits but the shift takes care of that.
-		 */
+		 
 
 		rc = regmap_write(lpc_ctrl->regmap, HICR7,
 				(addr | (map.addr >> 16)));
@@ -182,29 +154,16 @@ static long aspeed_lpc_ctrl_ioctl(struct file *file, unsigned int cmd,
 		if (rc)
 			return rc;
 
-		/*
-		 * Switch to FWH2AHB mode, AST2600 only.
-		 */
+		 
 		if (lpc_ctrl->fwh2ahb) {
-			/*
-			 * Enable FWH2AHB in SCU debug control register 2. This
-			 * does not turn it on, but makes it available for it
-			 * to be configured in HICR6.
-			 */
+			 
 			regmap_update_bits(lpc_ctrl->scu, 0x0D8, BIT(2), 0);
 
-			/*
-			 * The other bits in this register are interrupt status bits
-			 * that are cleared by writing 1. As we don't want to clear
-			 * them, set only the bit of interest.
-			 */
+			 
 			regmap_write(lpc_ctrl->regmap, HICR6, SW_FWH2AHB);
 		}
 
-		/*
-		 * Enable LPC FHW cycles. This is required for the host to
-		 * access the regions specified.
-		 */
+		 
 		return regmap_update_bits(lpc_ctrl->regmap, HICR5,
 				HICR5_ENFWH | HICR5_ENL2H,
 				HICR5_ENFWH | HICR5_ENL2H);
@@ -234,7 +193,7 @@ static int aspeed_lpc_ctrl_probe(struct platform_device *pdev)
 	if (!lpc_ctrl)
 		return -ENOMEM;
 
-	/* If flash is described in device tree then store */
+	 
 	node = of_parse_phandle(dev->of_node, "flash", 0);
 	if (!node) {
 		dev_dbg(dev, "Didn't find host pnor flash node\n");
@@ -253,7 +212,7 @@ static int aspeed_lpc_ctrl_probe(struct platform_device *pdev)
 
 	dev_set_drvdata(&pdev->dev, lpc_ctrl);
 
-	/* If memory-region is described in device tree then store */
+	 
 	node = of_parse_phandle(dev->of_node, "memory-region", 0);
 	if (!node) {
 		dev_dbg(dev, "Didn't find reserved memory\n");

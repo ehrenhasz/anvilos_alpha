@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiaEn Wu <chiaen_wu@richtek.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -56,10 +52,7 @@
 struct mt6370_adc_data {
 	struct device *dev;
 	struct regmap *regmap;
-	/*
-	 * This mutex lock is for preventing the different ADC channels
-	 * from being read at the same time.
-	 */
+	 
 	struct mutex adc_lock;
 	unsigned int vid;
 };

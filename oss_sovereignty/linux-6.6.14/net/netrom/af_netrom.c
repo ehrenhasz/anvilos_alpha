@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- * Copyright Alan Cox GW4PTS (alan@lxorguk.ukuu.org.uk)
- * Copyright Darryl Miles G7LED (dlm@g7led.demon.co.uk)
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/capability.h>
@@ -29,7 +24,7 @@
 #include <net/sock.h>
 #include <linux/uaccess.h>
 #include <linux/fcntl.h>
-#include <linux/termios.h>	/* For TIOCINQ/OUTQ */
+#include <linux/termios.h>	 
 #include <linux/mm.h>
 #include <linux/interrupt.h>
 #include <linux/notifier.h>
@@ -63,12 +58,7 @@ static DEFINE_SPINLOCK(nr_list_lock);
 
 static const struct proto_ops nr_proto_ops;
 
-/*
- * NETROM network devices are virtual network devices encapsulating NETROM
- * frames into AX.25 which will be sent through an AX.25 device, so form a
- * special "super class" of normal net devices; split their locks off into a
- * separate class since they always nest.
- */
+ 
 static struct lock_class_key nr_netdev_xmit_lock_key;
 static struct lock_class_key nr_netdev_addr_lock_key;
 
@@ -85,9 +75,7 @@ static void nr_set_lockdep_key(struct net_device *dev)
 	netdev_for_each_tx_queue(dev, nr_set_lockdep_one, NULL);
 }
 
-/*
- *	Socket removal during an interrupt is now safe.
- */
+ 
 static void nr_remove_socket(struct sock *sk)
 {
 	spin_lock_bh(&nr_list_lock);
@@ -95,9 +83,7 @@ static void nr_remove_socket(struct sock *sk)
 	spin_unlock_bh(&nr_list_lock);
 }
 
-/*
- *	Kill all bound sockets on a dropped device.
- */
+ 
 static void nr_kill_by_device(struct net_device *dev)
 {
 	struct sock *s;
@@ -109,9 +95,7 @@ static void nr_kill_by_device(struct net_device *dev)
 	spin_unlock_bh(&nr_list_lock);
 }
 
-/*
- *	Handle device status changes.
- */
+ 
 static int nr_device_event(struct notifier_block *this, unsigned long event, void *ptr)
 {
 	struct net_device *dev = netdev_notifier_info_to_dev(ptr);
@@ -128,9 +112,7 @@ static int nr_device_event(struct notifier_block *this, unsigned long event, voi
 	return NOTIFY_DONE;
 }
 
-/*
- *	Add a socket to the bound sockets list.
- */
+ 
 static void nr_insert_socket(struct sock *sk)
 {
 	spin_lock_bh(&nr_list_lock);
@@ -138,10 +120,7 @@ static void nr_insert_socket(struct sock *sk)
 	spin_unlock_bh(&nr_list_lock);
 }
 
-/*
- *	Find a socket that wants to accept the Connect Request we just
- *	received.
- */
+ 
 static struct sock *nr_find_listener(ax25_address *addr)
 {
 	struct sock *s;
@@ -159,9 +138,7 @@ found:
 	return s;
 }
 
-/*
- *	Find a connected NET/ROM socket given my circuit IDs.
- */
+ 
 static struct sock *nr_find_socket(unsigned char index, unsigned char id)
 {
 	struct sock *s;
@@ -181,9 +158,7 @@ found:
 	return s;
 }
 
-/*
- *	Find a connected NET/ROM socket given their circuit IDs.
- */
+ 
 static struct sock *nr_find_peer(unsigned char index, unsigned char id,
 	ax25_address *dest)
 {
@@ -205,9 +180,7 @@ found:
 	return s;
 }
 
-/*
- *	Find next free circuit ID.
- */
+ 
 static unsigned short nr_find_next_circuit(void)
 {
 	unsigned short id = circuit;
@@ -230,14 +203,10 @@ static unsigned short nr_find_next_circuit(void)
 	return id;
 }
 
-/*
- *	Deferred destroy.
- */
+ 
 void nr_destroy_socket(struct sock *);
 
-/*
- *	Handler for deferred kills.
- */
+ 
 static void nr_destroy_timer(struct timer_list *t)
 {
 	struct sock *sk = from_timer(sk, t, sk_timer);
@@ -248,12 +217,7 @@ static void nr_destroy_timer(struct timer_list *t)
 	sock_put(sk);
 }
 
-/*
- *	This is called from user mode and the timers. Thus it protects itself
- *	against interrupt users but doesn't worry about being called during
- *	work. Once it is removed from the queue no interrupt or bottom half
- *	will touch it and we are (fairly 8-) ) safe.
- */
+ 
 void nr_destroy_socket(struct sock *sk)
 {
 	struct sk_buff *skb;
@@ -266,11 +230,11 @@ void nr_destroy_socket(struct sock *sk)
 	nr_stop_t4timer(sk);
 	nr_stop_idletimer(sk);
 
-	nr_clear_queues(sk);		/* Flush the queues */
+	nr_clear_queues(sk);		 
 
 	while ((skb = skb_dequeue(&sk->sk_receive_queue)) != NULL) {
-		if (skb->sk != sk) { /* A pending connection */
-			/* Queue the unaccepted socket for death */
+		if (skb->sk != sk) {  
+			 
 			sock_set_flag(skb->sk, SOCK_DEAD);
 			nr_start_heartbeat(skb->sk);
 			nr_sk(skb->sk)->state = NR_STATE_0;
@@ -280,7 +244,7 @@ void nr_destroy_socket(struct sock *sk)
 	}
 
 	if (sk_has_allocations(sk)) {
-		/* Defer: outstanding buffers */
+		 
 		sk->sk_timer.function = nr_destroy_timer;
 		sk->sk_timer.expires  = jiffies + 2 * HZ;
 		add_timer(&sk->sk_timer);
@@ -288,10 +252,7 @@ void nr_destroy_socket(struct sock *sk)
 		sock_put(sk);
 }
 
-/*
- *	Handling for system calls applied via the various interfaces to a
- *	NET/ROM socket object.
- */
+ 
 
 static int nr_setsockopt(struct socket *sock, int level, int optname,
 		sockptr_t optval, unsigned int optlen)
@@ -592,9 +553,7 @@ static int nr_bind(struct socket *sock, struct sockaddr *uaddr, int addr_len)
 		return -EADDRNOTAVAIL;
 	}
 
-	/*
-	 * Only the super user can set an arbitrary user callsign.
-	 */
+	 
 	if (addr->fsa_ax25.sax25_ndigis == 1) {
 		if (!capable(CAP_NET_BIND_SERVICE)) {
 			dev_put(dev);
@@ -646,7 +605,7 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 	lock_sock(sk);
 	if (sk->sk_state == TCP_ESTABLISHED && sock->state == SS_CONNECTING) {
 		sock->state = SS_CONNECTED;
-		goto out_release;	/* Connect completed during a ERESTARTSYS event */
+		goto out_release;	 
 	}
 
 	if (sk->sk_state == TCP_CLOSE && sock->state == SS_CONNECTING) {
@@ -656,7 +615,7 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 	}
 
 	if (sk->sk_state == TCP_ESTABLISHED) {
-		err = -EISCONN;	/* No reconnect on a seqpacket socket */
+		err = -EISCONN;	 
 		goto out_release;
 	}
 
@@ -676,7 +635,7 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 		err = -EINVAL;
 		goto out_release;
 	}
-	if (sock_flag(sk, SOCK_ZAPPED)) {	/* Must bind first - autobinding in this may or may not work */
+	if (sock_flag(sk, SOCK_ZAPPED)) {	 
 		sock_reset_flag(sk, SOCK_ZAPPED);
 
 		if ((dev = nr_dev_first()) == NULL) {
@@ -702,7 +661,7 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 		nr->device      = dev;
 
 		dev_put(dev);
-		nr_insert_socket(sk);		/* Finish the bind */
+		nr_insert_socket(sk);		 
 	}
 
 	nr->dest_addr = addr->sax25_call;
@@ -716,7 +675,7 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 
 	circuit++;
 
-	/* Move to connecting socket, start sending Connect Requests */
+	 
 	sock->state  = SS_CONNECTING;
 	sk->sk_state = TCP_SYN_SENT;
 
@@ -726,16 +685,13 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 
 	nr_start_heartbeat(sk);
 
-	/* Now the loop */
+	 
 	if (sk->sk_state != TCP_ESTABLISHED && (flags & O_NONBLOCK)) {
 		err = -EINPROGRESS;
 		goto out_release;
 	}
 
-	/*
-	 * A Connect Ack with Choke or timeout or failed routing will go to
-	 * closed.
-	 */
+	 
 	if (sk->sk_state == TCP_SYN_SENT) {
 		DEFINE_WAIT(wait);
 
@@ -760,7 +716,7 @@ static int nr_connect(struct socket *sock, struct sockaddr *uaddr,
 
 	if (sk->sk_state != TCP_ESTABLISHED) {
 		sock->state = SS_UNCONNECTED;
-		err = sock_error(sk);	/* Always set at this point */
+		err = sock_error(sk);	 
 		goto out_release;
 	}
 
@@ -795,10 +751,7 @@ static int nr_accept(struct socket *sock, struct socket *newsock, int flags,
 		goto out_release;
 	}
 
-	/*
-	 *	The write queue this time is holding sockets ready to use
-	 *	hooked into the SABM we saved
-	 */
+	 
 	for (;;) {
 		prepare_to_wait(sk_sleep(sk), &wait, TASK_INTERRUPTIBLE);
 		skb = skb_dequeue(&sk->sk_receive_queue);
@@ -825,7 +778,7 @@ static int nr_accept(struct socket *sock, struct socket *newsock, int flags,
 	newsk = skb->sk;
 	sock_graft(newsk, newsock);
 
-	/* Now attach up the new socket */
+	 
 	kfree_skb(skb);
 	sk_acceptq_removed(sk);
 
@@ -881,9 +834,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 
 	skb_orphan(skb);
 
-	/*
-	 *	skb->data points to the netrom frame start
-	 */
+	 
 
 	src  = (ax25_address *)(skb->data + 0);
 	dest = (ax25_address *)(skb->data + 7);
@@ -895,9 +846,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	frametype          = skb->data[19] & 0x0F;
 	flags              = skb->data[19] & 0xF0;
 
-	/*
-	 * Check for an incoming IP over NET/ROM frame.
-	 */
+	 
 	if (frametype == NR_PROTOEXT &&
 	    circuit_index == NR_PROTO_IP && circuit_id == NR_PROTO_IP) {
 		skb_pull(skb, NR_NETWORK_LEN + NR_TRANSPORT_LEN);
@@ -906,13 +855,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 		return nr_rx_ip(skb, dev);
 	}
 
-	/*
-	 * Find an existing socket connection, based on circuit ID, if it's
-	 * a Connect Request base it on their circuit ID.
-	 *
-	 * Circuit ID 0/0 is not valid but it could still be a "reset" for a
-	 * circuit that no longer exists at the other end ...
-	 */
+	 
 
 	sk = NULL;
 
@@ -941,19 +884,9 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 		return ret;
 	}
 
-	/*
-	 * Now it should be a CONNREQ.
-	 */
+	 
 	if (frametype != NR_CONNREQ) {
-		/*
-		 * Here it would be nice to be able to send a reset but
-		 * NET/ROM doesn't have one.  We've tried to extend the protocol
-		 * by sending NR_CONNACK | NR_CHOKE_FLAGS replies but that
-		 * apparently kills BPQ boxes... :-(
-		 * So now we try to follow the established behaviour of
-		 * G8PZT's Xrouter which is sending packets with command type 7
-		 * as an extension of the protocol.
-		 */
+		 
 		if (sysctl_netrom_reset_circuit &&
 		    (frametype != NR_RESET || flags != 0))
 			nr_transmit_reset(skb, 1);
@@ -982,7 +915,7 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 	skb->destructor     = sock_efree;
 	make->sk_state	    = TCP_ESTABLISHED;
 
-	/* Fill in his circuit details */
+	 
 	nr_make = nr_sk(make);
 	nr_make->source_addr = *dest;
 	nr_make->dest_addr   = *src;
@@ -1000,11 +933,11 @@ int nr_rx_frame(struct sk_buff *skb, struct net_device *dev)
 
 	circuit++;
 
-	/* Window negotiation */
+	 
 	if (window < nr_make->window)
 		nr_make->window = window;
 
-	/* L4 timeout negotiation */
+	 
 	if (skb->len == 37) {
 		timeout = skb->data[36] * 256 + skb->data[35];
 		if (timeout * HZ < nr_make->t1)
@@ -1093,8 +1026,7 @@ static int nr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 		sax.sax25_call   = nr->dest_addr;
 	}
 
-	/* Build a packet - the conventional user limit is 236 bytes. We can
-	   do ludicrously large NetROM frames but must not overflow */
+	 
 	if (len > 65536) {
 		err = -EMSGSIZE;
 		goto out;
@@ -1108,26 +1040,22 @@ static int nr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 	skb_reserve(skb, size - len);
 	skb_reset_transport_header(skb);
 
-	/*
-	 *	Push down the NET/ROM header
-	 */
+	 
 
 	asmptr = skb_push(skb, NR_TRANSPORT_LEN);
 
-	/* Build a NET/ROM Transport header */
+	 
 
 	*asmptr++ = nr->your_index;
 	*asmptr++ = nr->your_id;
-	*asmptr++ = 0;		/* To be filled in later */
-	*asmptr++ = 0;		/*      Ditto            */
+	*asmptr++ = 0;		 
+	*asmptr++ = 0;		 
 	*asmptr++ = NR_INFO;
 
-	/*
-	 *	Put the data on the end
-	 */
+	 
 	skb_put(skb, len);
 
-	/* User data follows immediately after the NET/ROM transport header */
+	 
 	if (memcpy_from_msg(skb_transport_header(skb), msg, len)) {
 		kfree_skb(skb);
 		err = -EFAULT;
@@ -1140,7 +1068,7 @@ static int nr_sendmsg(struct socket *sock, struct msghdr *msg, size_t len)
 		goto out;
 	}
 
-	nr_output(sk, skb);	/* Shove it onto the queue */
+	nr_output(sk, skb);	 
 
 	err = len;
 out:
@@ -1157,10 +1085,7 @@ static int nr_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 	struct sk_buff *skb;
 	int er;
 
-	/*
-	 * This works for seqpacket too. The receiver has ordered the queue for
-	 * us! We do one quick check first though
-	 */
+	 
 
 	lock_sock(sk);
 	if (sk->sk_state != TCP_ESTABLISHED) {
@@ -1168,7 +1093,7 @@ static int nr_recvmsg(struct socket *sock, struct msghdr *msg, size_t size,
 		return -ENOTCONN;
 	}
 
-	/* Now we can treat all alike */
+	 
 	skb = skb_recv_datagram(sk, flags, &er);
 	if (!skb) {
 		release_sock(sk);
@@ -1227,7 +1152,7 @@ static int nr_ioctl(struct socket *sock, unsigned int cmd, unsigned long arg)
 		long amount = 0L;
 
 		lock_sock(sk);
-		/* These two are safe on a single CPU system as only user tasks fiddle here */
+		 
 		if ((skb = skb_peek(&sk->sk_receive_queue)) != NULL)
 			amount = skb->len;
 		release_sock(sk);
@@ -1342,7 +1267,7 @@ static const struct seq_operations nr_info_seqops = {
 	.stop = nr_info_stop,
 	.show = nr_info_show,
 };
-#endif	/* CONFIG_PROC_FS */
+#endif	 
 
 static const struct net_proto_family nr_family_ops = {
 	.family		=	PF_NETROM,

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An I2C driver for the Epson RX8581 RTC
- *
- * Author: Martyn Welch <martyn.welch@ge.com>
- * Copyright 2008 GE Intelligent Platforms Embedded Systems, Inc.
- *
- * Based on: rtc-pcf8563.c (An I2C driver for the Philips PCF8563 RTC)
- * Copyright 2005-06 Tower Technologies
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -17,37 +9,37 @@
 #include <linux/rtc.h>
 #include <linux/log2.h>
 
-#define RX8581_REG_SC		0x00 /* Second in BCD */
-#define RX8581_REG_MN		0x01 /* Minute in BCD */
-#define RX8581_REG_HR		0x02 /* Hour in BCD */
-#define RX8581_REG_DW		0x03 /* Day of Week */
-#define RX8581_REG_DM		0x04 /* Day of Month in BCD */
-#define RX8581_REG_MO		0x05 /* Month in BCD */
-#define RX8581_REG_YR		0x06 /* Year in BCD */
-#define RX8581_REG_RAM		0x07 /* RAM */
-#define RX8581_REG_AMN		0x08 /* Alarm Min in BCD*/
-#define RX8581_REG_AHR		0x09 /* Alarm Hour in BCD */
+#define RX8581_REG_SC		0x00  
+#define RX8581_REG_MN		0x01  
+#define RX8581_REG_HR		0x02  
+#define RX8581_REG_DW		0x03  
+#define RX8581_REG_DM		0x04  
+#define RX8581_REG_MO		0x05  
+#define RX8581_REG_YR		0x06  
+#define RX8581_REG_RAM		0x07  
+#define RX8581_REG_AMN		0x08  
+#define RX8581_REG_AHR		0x09  
 #define RX8581_REG_ADM		0x0A
 #define RX8581_REG_ADW		0x0A
 #define RX8581_REG_TMR0		0x0B
 #define RX8581_REG_TMR1		0x0C
-#define RX8581_REG_EXT		0x0D /* Extension Register */
-#define RX8581_REG_FLAG		0x0E /* Flag Register */
-#define RX8581_REG_CTRL		0x0F /* Control Register */
+#define RX8581_REG_EXT		0x0D  
+#define RX8581_REG_FLAG		0x0E  
+#define RX8581_REG_CTRL		0x0F  
 
 
-/* Flag Register bit definitions */
-#define RX8581_FLAG_UF		0x20 /* Update */
-#define RX8581_FLAG_TF		0x10 /* Timer */
-#define RX8581_FLAG_AF		0x08 /* Alarm */
-#define RX8581_FLAG_VLF		0x02 /* Voltage Low */
+ 
+#define RX8581_FLAG_UF		0x20  
+#define RX8581_FLAG_TF		0x10  
+#define RX8581_FLAG_AF		0x08  
+#define RX8581_FLAG_VLF		0x02  
 
-/* Control Register bit definitions */
-#define RX8581_CTRL_UIE		0x20 /* Update Interrupt Enable */
-#define RX8581_CTRL_TIE		0x10 /* Timer Interrupt Enable */
-#define RX8581_CTRL_AIE		0x08 /* Alarm Interrupt Enable */
-#define RX8581_CTRL_STOP	0x02 /* STOP bit */
-#define RX8581_CTRL_RESET	0x01 /* RESET bit */
+ 
+#define RX8581_CTRL_UIE		0x20  
+#define RX8581_CTRL_TIE		0x10  
+#define RX8581_CTRL_AIE		0x08  
+#define RX8581_CTRL_STOP	0x02  
+#define RX8581_CTRL_RESET	0x01  
 
 #define RX8571_USER_RAM		0x10
 #define RX8571_NVRAM_SIZE	0x10
@@ -62,10 +54,7 @@ struct rx85x1_config {
 	unsigned int num_nvram;
 };
 
-/*
- * In the routines that deal directly with the rx8581 hardware, we use
- * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
- */
+ 
 static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct i2c_client *client = to_i2c_client(dev);
@@ -74,11 +63,7 @@ static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	int err;
 	struct rx8581 *rx8581 = i2c_get_clientdata(client);
 
-	/* First we ensure that the "update flag" is not set, we read the
-	 * time and date then re-read the "update flag". If the update flag
-	 * has been set, we know that the time has changed during the read so
-	 * we repeat the whole process again.
-	 */
+	 
 	err = regmap_read(rx8581->regmap, RX8581_REG_FLAG, &data);
 	if (err < 0)
 		return err;
@@ -90,7 +75,7 @@ static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	}
 
 	do {
-		/* If update flag set, clear it */
+		 
 		if (data & RX8581_FLAG_UF) {
 			err = regmap_write(rx8581->regmap, RX8581_REG_FLAG,
 					  data & ~RX8581_FLAG_UF);
@@ -98,13 +83,13 @@ static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 				return err;
 		}
 
-		/* Now read time and date */
+		 
 		err = regmap_bulk_read(rx8581->regmap, RX8581_REG_SC, date,
 				       sizeof(date));
 		if (err < 0)
 			return err;
 
-		/* Check flag register */
+		 
 		err = regmap_read(rx8581->regmap, RX8581_REG_FLAG, &data);
 		if (err < 0)
 			return err;
@@ -117,10 +102,10 @@ static int rx8581_rtc_read_time(struct device *dev, struct rtc_time *tm)
 
 	tm->tm_sec = bcd2bin(date[RX8581_REG_SC] & 0x7F);
 	tm->tm_min = bcd2bin(date[RX8581_REG_MN] & 0x7F);
-	tm->tm_hour = bcd2bin(date[RX8581_REG_HR] & 0x3F); /* rtc hr 0-23 */
+	tm->tm_hour = bcd2bin(date[RX8581_REG_HR] & 0x3F);  
 	tm->tm_wday = ilog2(date[RX8581_REG_DW] & 0x7F);
 	tm->tm_mday = bcd2bin(date[RX8581_REG_DM] & 0x3F);
-	tm->tm_mon = bcd2bin(date[RX8581_REG_MO] & 0x1F) - 1; /* rtc mn 1-12 */
+	tm->tm_mon = bcd2bin(date[RX8581_REG_MO] & 0x1F) - 1;  
 	tm->tm_year = bcd2bin(date[RX8581_REG_YR]) + 100;
 
 	dev_dbg(dev, "%s: tm is secs=%d, mins=%d, hours=%d, "
@@ -145,39 +130,39 @@ static int rx8581_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		tm->tm_sec, tm->tm_min, tm->tm_hour,
 		tm->tm_mday, tm->tm_mon, tm->tm_year, tm->tm_wday);
 
-	/* hours, minutes and seconds */
+	 
 	buf[RX8581_REG_SC] = bin2bcd(tm->tm_sec);
 	buf[RX8581_REG_MN] = bin2bcd(tm->tm_min);
 	buf[RX8581_REG_HR] = bin2bcd(tm->tm_hour);
 
 	buf[RX8581_REG_DM] = bin2bcd(tm->tm_mday);
 
-	/* month, 1 - 12 */
+	 
 	buf[RX8581_REG_MO] = bin2bcd(tm->tm_mon + 1);
 
-	/* year and century */
+	 
 	buf[RX8581_REG_YR] = bin2bcd(tm->tm_year - 100);
 	buf[RX8581_REG_DW] = (0x1 << tm->tm_wday);
 
-	/* Stop the clock */
+	 
 	err = regmap_update_bits(rx8581->regmap, RX8581_REG_CTRL,
 				 RX8581_CTRL_STOP, RX8581_CTRL_STOP);
 	if (err < 0)
 		return err;
 
-	/* write register's data */
+	 
 	err = regmap_bulk_write(rx8581->regmap, RX8581_REG_SC,
 				buf, sizeof(buf));
 	if (err < 0)
 		return err;
 
-	/* get VLF and clear it */
+	 
 	err = regmap_update_bits(rx8581->regmap, RX8581_REG_FLAG,
 				 RX8581_FLAG_VLF, 0);
 	if (err < 0)
 		return err;
 
-	/* Restart the clock */
+	 
 	return regmap_update_bits(rx8581->regmap, RX8581_REG_CTRL,
 				 RX8581_CTRL_STOP, 0);
 }
@@ -315,7 +300,7 @@ MODULE_DEVICE_TABLE(i2c, rx8581_id);
 static const __maybe_unused struct of_device_id rx8581_of_match[] = {
 	{ .compatible = "epson,rx8571", .data = &rx8571_config },
 	{ .compatible = "epson,rx8581", .data = &rx8581_config },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rx8581_of_match);
 

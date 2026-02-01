@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/affs/inode.c
- *
- *  (c) 1996  Hans-Joachim Widmaier - Rewritten
- *
- *  (C) 1993  Ray Burr - Modified for Amiga FFS filesystem.
- *
- *  (C) 1992  Eric Youngdale Modified for ISO9660 filesystem.
- *
- *  (C) 1991  Linus Torvalds - minix filesystem
- */
+
+ 
 #include <linux/sched.h>
 #include <linux/cred.h>
 #include <linux/gfp.h>
@@ -106,8 +96,8 @@ struct inode *affs_iget(struct super_block *sb, unsigned long ino)
 			inode->i_mode |= S_IFDIR;
 		} else
 			inode->i_mode = S_IRUGO | S_IXUGO | S_IWUSR | S_IFDIR;
-		/* Maybe it should be controlled by mount parameter? */
-		//inode->i_mode |= S_ISVTX;
+		 
+		
 		inode->i_op = &affs_dir_inode_operations;
 		inode->i_fop = &affs_dir_operations;
 		break;
@@ -117,7 +107,7 @@ struct inode *affs_iget(struct super_block *sb, unsigned long ino)
 		goto bad_inode;
 #else
 		inode->i_mode |= S_IFDIR;
-		/* ... and leave ->i_op and ->i_fop pointing to empty */
+		 
 		break;
 #endif
 	case ST_LINKFILE:
@@ -178,7 +168,7 @@ affs_write_inode(struct inode *inode, struct writeback_control *wbc)
 	pr_debug("write_inode(%lu)\n", inode->i_ino);
 
 	if (!inode->i_nlink)
-		// possibly free block
+		
 		return 0;
 	bh = affs_bread(sb, inode->i_ino);
 	if (!bh) {
@@ -342,10 +332,7 @@ err_inode:
 	return NULL;
 }
 
-/*
- * Add an entry to a directory. Create the header block
- * and insert it into the hash table.
- */
+ 
 
 int
 affs_add_entry(struct inode *dir, struct inode *inode, struct dentry *dentry, s32 type)

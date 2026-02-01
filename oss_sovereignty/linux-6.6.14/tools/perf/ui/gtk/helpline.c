@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "gtk.h"
 #include <stdio.h>
 #include <string.h>
@@ -35,7 +35,7 @@ static int gtk_helpline_show(const char *fmt, va_list ap)
 			 sizeof(ui_helpline__current) - backlog, fmt, ap);
 	backlog += ret;
 
-	/* only first line can be displayed */
+	 
 	ptr = strchr(ui_helpline__current, '\n');
 	if (ptr && (ptr - ui_helpline__current) <= backlog) {
 		*ptr = '\0';

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ad73311.c  --  ALSA Soc AD73311 codec support
- *
- * Copyright:	Analog Devices Inc.
- * Author:	Cliff Cai <cliff.cai@analog.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>

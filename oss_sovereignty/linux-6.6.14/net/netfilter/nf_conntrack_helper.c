@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Helper handling for netfilter. */
 
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
- * (C) 2003,2004 USAGI/WIDE Project <http://www.linux-ipv6.org>
- * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
- */
+ 
+
+ 
 
 #include <linux/types.h>
 #include <linux/netfilter.h>
@@ -40,8 +36,7 @@ static unsigned int nf_ct_helper_count __read_mostly;
 static DEFINE_MUTEX(nf_ct_nat_helpers_mutex);
 static struct list_head nf_ct_nat_helpers __read_mostly;
 
-/* Stupid hash, but collision free for the default registrations of the
- * helpers currently in the kernel. */
+ 
 static unsigned int helper_hash(const struct nf_conntrack_tuple *tuple)
 {
 	return (((tuple->src.l3num << 8) | tuple->dst.protonum) ^
@@ -194,12 +189,7 @@ int __nf_ct_try_assign_helper(struct nf_conn *ct, struct nf_conn *tmpl,
 	struct nf_conntrack_helper *helper = NULL;
 	struct nf_conn_help *help;
 
-	/* We already got a helper explicitly attached. The function
-	 * nf_conntrack_alter_reply - in case NAT is in use - asks for looking
-	 * the helper up again. Since now the user is in full control of
-	 * making consistent helper configurations, skip this automatic
-	 * re-lookup, otherwise we'll lose the helper.
-	 */
+	 
 	if (test_bit(IPS_HELPER_BIT, &ct->status))
 		return 0;
 
@@ -225,9 +215,7 @@ int __nf_ct_try_assign_helper(struct nf_conn *ct, struct nf_conn *tmpl,
 		if (help == NULL)
 			return -ENOMEM;
 	} else {
-		/* We only allow helper re-assignment of the same sort since
-		 * we cannot reallocate the helper extension area.
-		 */
+		 
 		struct nf_conntrack_helper *tmp = rcu_dereference(help->helper);
 
 		if (tmp && tmp->help != helper->help) {
@@ -242,7 +230,7 @@ int __nf_ct_try_assign_helper(struct nf_conn *ct, struct nf_conn *tmpl,
 }
 EXPORT_SYMBOL_GPL(__nf_ct_try_assign_helper);
 
-/* appropriate ct lock protecting must be taken by caller */
+ 
 static int unhelp(struct nf_conn *ct, void *me)
 {
 	struct nf_conn_help *help = nfct_help(ct);
@@ -252,7 +240,7 @@ static int unhelp(struct nf_conn *ct, void *me)
 		RCU_INIT_POINTER(help->helper, NULL);
 	}
 
-	/* We are not intended to delete this conntrack. */
+	 
 	return 0;
 }
 
@@ -288,7 +276,7 @@ void nf_ct_helper_expectfn_unregister(struct nf_ct_helper_expectfn *n)
 }
 EXPORT_SYMBOL_GPL(nf_ct_helper_expectfn_unregister);
 
-/* Caller should hold the rcu lock */
+ 
 struct nf_ct_helper_expectfn *
 nf_ct_helper_expectfn_find_by_name(const char *name)
 {
@@ -305,7 +293,7 @@ nf_ct_helper_expectfn_find_by_name(const char *name)
 }
 EXPORT_SYMBOL_GPL(nf_ct_helper_expectfn_find_by_name);
 
-/* Caller should hold the rcu lock */
+ 
 struct nf_ct_helper_expectfn *
 nf_ct_helper_expectfn_find_by_symbol(const void *symbol)
 {
@@ -336,10 +324,10 @@ void nf_ct_helper_log(struct sk_buff *skb, const struct nf_conn *ct,
 	vaf.fmt = fmt;
 	vaf.va = &args;
 
-	/* Called from the helper function, this call never fails */
+	 
 	help = nfct_help(ct);
 
-	/* rcu_read_lock()ed by nf_hook_thresh */
+	 
 	helper = rcu_dereference(help->helper);
 
 	nf_log_packet(nf_ct_net(ct), nf_ct_l3num(ct), 0, skb, NULL, NULL, NULL,
@@ -379,7 +367,7 @@ int nf_conntrack_helper_register(struct nf_conntrack_helper *me)
 		}
 	}
 
-	/* avoid unpredictable behaviour for auto_assign_helper */
+	 
 	if (!(me->flags & NF_CT_HELPER_F_USERSPACE)) {
 		hlist_for_each_entry(cur, &nf_ct_helper_hash[h], hnode) {
 			if (nf_ct_tuple_src_mask_cmp(&cur->tuple, &me->tuple,
@@ -419,9 +407,7 @@ void nf_conntrack_helper_unregister(struct nf_conntrack_helper *me)
 	nf_ct_helper_count--;
 	mutex_unlock(&nf_ct_helper_mutex);
 
-	/* Make sure every nothing is still using the helper unless its a
-	 * connection in the hash.
-	 */
+	 
 	synchronize_rcu();
 
 	nf_ct_expect_iterate_destroy(expect_iter_me, NULL);
@@ -505,7 +491,7 @@ EXPORT_SYMBOL_GPL(nf_nat_helper_unregister);
 
 int nf_conntrack_helper_init(void)
 {
-	nf_ct_helper_hsize = 1; /* gets rounded up to use one page */
+	nf_ct_helper_hsize = 1;  
 	nf_ct_helper_hash =
 		nf_ct_alloc_hashtable(&nf_ct_helper_hsize, 0);
 	if (!nf_ct_helper_hash)

@@ -1,25 +1,4 @@
-/* Copyright (C) 1991-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
-   <https://www.gnu.org/licenses/>.  */
-
-#ifndef _LIBC
-# include <libc-config.h>
-#endif
-
-/* Enable GNU extensions in fnmatch.h.  */
+ 
 #ifndef _GNU_SOURCE
 # define _GNU_SOURCE    1
 #endif
@@ -38,7 +17,7 @@
 #include <stddef.h>
 #include <uchar.h>
 #if defined _LIBC || !_GL_SMALL_WCHAR_T
-/* It's OK to use wchar_t, since it's wide enough.  */
+ 
 # include <wchar.h>
 # include <wctype.h>
 # define WCHAR_T wchar_t
@@ -54,7 +33,7 @@
 # define WCTYPE wctype
 # define ISWCTYPE iswctype
 #else
-/* wchar_t is too small, use char32_t instead.  */
+ 
 # include "unistr.h"
 # define WCHAR_T char32_t
 # define WINT_T char32_t
@@ -70,9 +49,7 @@
 # define ISWCTYPE c32_apply_type_test
 #endif
 
-/* We need some of the locale data (the collation sequence information)
-   but there is no interface to get this information in general.  Therefore
-   we support a correct implementation only in glibc.  */
+ 
 #ifdef _LIBC
 # include "../locale/localeinfo.h"
 # include "../locale/coll-lookup.h"
@@ -112,19 +89,16 @@ typedef ptrdiff_t idx_t;
 # include "idx.h"
 #endif
 
-/* We often have to test for FNM_FILE_NAME and FNM_PERIOD being both set.  */
+ 
 #define NO_LEADING_PERIOD(flags) \
   ((flags & (FNM_FILE_NAME | FNM_PERIOD)) == (FNM_FILE_NAME | FNM_PERIOD))
 
 #ifndef _LIBC
 # if HAVE_ALLOCA
-/* The OS usually guarantees only one guard page at the bottom of the stack,
-   and a page size can be as small as 4096 bytes.  So we cannot safely
-   allocate anything larger than 4096 bytes.  Also care for the possibility
-   of a few compiler-allocated temporary stack slots.  */
+ 
 #  define __libc_use_alloca(n) ((n) < 4032)
 # else
-/* Just use malloc.  */
+ 
 #  define __libc_use_alloca(n) false
 #  undef alloca
 #  define alloca(n) malloc (n)
@@ -132,25 +106,22 @@ typedef ptrdiff_t idx_t;
 # define alloca_account(size, avar) ((avar) += (size), alloca (size))
 #endif
 
-/* Provide support for user-defined character classes, based on the functions
-   from ISO C 90 amendment 1.  */
+ 
 #ifdef CHARCLASS_NAME_MAX
 # define CHAR_CLASS_MAX_LENGTH CHARCLASS_NAME_MAX
 #else
-/* This shouldn't happen but some implementation might still have this
-   problem.  Use a reasonable default value.  */
+ 
 # define CHAR_CLASS_MAX_LENGTH 256
 #endif
 
 #define IS_CHAR_CLASS(string) WCTYPE (string)
 
-/* Avoid depending on library functions or files
-   whose names are inconsistent.  */
+ 
 
-/* Global variable.  */
+ 
 static int posixly_correct;
 
-/* Note that this evaluates C many times.  */
+ 
 #define FOLD(c) ((flags & FNM_CASEFOLD) ? tolower (c) : (c))
 #define CHAR    char
 #define UCHAR   unsigned char
@@ -188,8 +159,7 @@ static int posixly_correct;
 #define MEMCHR(S, C, N) WMEMCHR (S, C, N)
 #define WIDE_CHAR_VERSION 1
 #ifdef _LIBC
-/* Change the name the header defines so it doesn't conflict with
-   the <locale/weight.h> version included above.  */
+ 
 # define findidx findidxwc
 # include <locale/weightwc.h>
 # undef findidx
@@ -197,12 +167,7 @@ static int posixly_correct;
 #endif
 
 #undef IS_CHAR_CLASS
-/* We have to convert the wide character string in a multibyte string.  But
-   we know that the character class names consist of alphanumeric characters
-   from the portable character set, and since the wide character encoding
-   for a member of the portable character set is the same code point as
-   its single-byte encoding, we can use a simplified method to convert the
-   string to a multibyte character string.  */
+ 
 static WCTYPE_T
 is_char_class (const WCHAR_T *wcs)
 {
@@ -211,7 +176,7 @@ is_char_class (const WCHAR_T *wcs)
 
   do
     {
-      /* Test for a printable character from the portable character set.  */
+       
 #ifdef _LIBC
       if (*wcs < 0x20 || *wcs > 0x7e
           || *wcs == 0x24 || *wcs == 0x40 || *wcs == 0x60)
@@ -245,7 +210,7 @@ is_char_class (const WCHAR_T *wcs)
         }
 #endif
 
-      /* Avoid overrunning the buffer.  */
+       
       if (cp == s + CHAR_CLASS_MAX_LENGTH)
         return (WCTYPE_T) 0;
 
@@ -276,7 +241,7 @@ fnmatch (const char *pattern, const char *string, int flags)
       WCHAR_T *wstring;
       size_t alloca_used = 0;
 
-      /* Convert the strings into wide characters.  */
+       
       memset (&ps, '\0', sizeof (ps));
       p = pattern;
       n = strnlen (pattern, 1024);
@@ -286,9 +251,7 @@ fnmatch (const char *pattern, const char *string, int flags)
                                                  alloca_used);
           n = MBSRTOWCS (wpattern, &p, n + 1, &ps);
           if (__glibc_unlikely (n == (size_t) -1))
-            /* Something wrong.
-               XXX Do we have to set 'errno' to something which mbsrtows hasn't
-               already done?  */
+             
             return -1;
           if (p)
             {
@@ -301,9 +264,7 @@ fnmatch (const char *pattern, const char *string, int flags)
         prepare_wpattern:
           n = MBSRTOWCS (NULL, &pattern, 0, &ps);
           if (__glibc_unlikely (n == (size_t) -1))
-            /* Something wrong.
-               XXX Do we have to set 'errno' to something which mbsrtows hasn't
-               already done?  */
+             
             return -1;
           if (__glibc_unlikely (n >= (size_t) -1 / sizeof (WCHAR_T)))
             {
@@ -328,9 +289,7 @@ fnmatch (const char *pattern, const char *string, int flags)
           n = MBSRTOWCS (wstring, &p, n + 1, &ps);
           if (__glibc_unlikely (n == (size_t) -1))
             {
-              /* Something wrong.
-                 XXX Do we have to set 'errno' to something which
-                 mbsrtows hasn't already done?  */
+               
             free_return:
               free (wpattern_malloc);
               return -1;
@@ -346,9 +305,7 @@ fnmatch (const char *pattern, const char *string, int flags)
         prepare_wstring:
           n = MBSRTOWCS (NULL, &string, 0, &ps);
           if (__glibc_unlikely (n == (size_t) -1))
-            /* Something wrong.
-               XXX Do we have to set 'errno' to something which mbsrtows hasn't
-               already done?  */
+             
             goto free_return;
           if (__glibc_unlikely (n >= (size_t) -1 / sizeof (WCHAR_T)))
             {

@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2022 Advanced Micro Devices, Inc. All rights reserved.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-/*
- * Generic PCI interface for ACP device
- */
+
+
+
+
+
+
+
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -211,14 +209,14 @@ static void acp_pci_remove(struct pci_dev *pci)
 		dev_err(&pci->dev, "ACP de-init failed\n");
 }
 
-/* PCI IDs */
+ 
 static const struct pci_device_id acp_pci_ids[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_AMD, ACP_PCI_DEV_ID)},
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, acp_pci_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver snd_amd_acp_pci_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = acp_pci_ids,

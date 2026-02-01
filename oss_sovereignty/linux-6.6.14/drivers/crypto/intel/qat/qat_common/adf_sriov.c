@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2015 - 2021 Intel Corporation */
+
+ 
 #include <linux/workqueue.h>
 #include <linux/pci.h>
 #include <linux/device.h>
@@ -28,7 +28,7 @@ static void adf_iov_send_resp(struct work_struct *work)
 
 	ret = adf_recv_and_handle_vf2pf_msg(accel_dev, vf_nr);
 	if (ret)
-		/* re-enable interrupt on PF from this VF */
+		 
 		adf_enable_vf2pf_interrupts(accel_dev, 1 << vf_nr);
 
 	kfree(pf2vf_resp);
@@ -57,7 +57,7 @@ static int adf_enable_sriov(struct adf_accel_dev *accel_dev)
 
 	for (i = 0, vf_info = accel_dev->pf.vf_info; i < totalvfs;
 	     i++, vf_info++) {
-		/* This ptr will be populated when VFs will be created */
+		 
 		vf_info->accel_dev = accel_dev;
 		vf_info->vf_nr = i;
 		vf_info->vf_compat_ver = 0;
@@ -68,30 +68,18 @@ static int adf_enable_sriov(struct adf_accel_dev *accel_dev)
 				     ADF_VF2PF_RATELIMIT_BURST);
 	}
 
-	/* Set Valid bits in AE Thread to PCIe Function Mapping */
+	 
 	if (hw_data->configure_iov_threads)
 		hw_data->configure_iov_threads(accel_dev, true);
 
-	/* Enable VF to PF interrupts for all VFs */
+	 
 	adf_enable_vf2pf_interrupts(accel_dev, BIT_ULL(totalvfs) - 1);
 
-	/*
-	 * Due to the hardware design, when SR-IOV and the ring arbiter
-	 * are enabled all the VFs supported in hardware must be enabled in
-	 * order for all the hardware resources (i.e. bundles) to be usable.
-	 * When SR-IOV is enabled, each of the VFs will own one bundle.
-	 */
+	 
 	return pci_enable_sriov(pdev, totalvfs);
 }
 
-/**
- * adf_disable_sriov() - Disable SRIOV for the device
- * @accel_dev:  Pointer to accel device.
- *
- * Function disables SRIOV for the accel device.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 void adf_disable_sriov(struct adf_accel_dev *accel_dev)
 {
 	struct adf_hw_device_data *hw_data = accel_dev->hw_device;
@@ -105,10 +93,10 @@ void adf_disable_sriov(struct adf_accel_dev *accel_dev)
 	adf_pf2vf_notify_restarting(accel_dev);
 	pci_disable_sriov(accel_to_pci_dev(accel_dev));
 
-	/* Disable VF to PF interrupts */
+	 
 	adf_disable_all_vf2pf_interrupts(accel_dev);
 
-	/* Clear Valid bits in AE Thread to PCIe Function Mapping */
+	 
 	if (hw_data->configure_iov_threads)
 		hw_data->configure_iov_threads(accel_dev, false);
 
@@ -120,18 +108,7 @@ void adf_disable_sriov(struct adf_accel_dev *accel_dev)
 }
 EXPORT_SYMBOL_GPL(adf_disable_sriov);
 
-/**
- * adf_sriov_configure() - Enable SRIOV for the device
- * @pdev:  Pointer to PCI device.
- * @numvfs: Number of virtual functions (VFs) to enable.
- *
- * Note that the @numvfs parameter is ignored and all VFs supported by the
- * device are enabled due to the design of the hardware.
- *
- * Function enables SRIOV for the PCI device.
- *
- * Return: number of VFs enabled on success, error code otherwise.
- */
+ 
 int adf_sriov_configure(struct pci_dev *pdev, int numvfs)
 {
 	struct adf_accel_dev *accel_dev = adf_devmgr_pci_to_accel_dev(pdev);
@@ -177,7 +154,7 @@ int adf_sriov_configure(struct pci_dev *pdev, int numvfs)
 
 	set_bit(ADF_STATUS_CONFIGURED, &accel_dev->status);
 
-	/* Allocate memory for VF info structs */
+	 
 	accel_dev->pf.vf_info = kcalloc(totalvfs,
 					sizeof(struct adf_accel_vf_info),
 					GFP_KERNEL);
@@ -200,7 +177,7 @@ EXPORT_SYMBOL_GPL(adf_sriov_configure);
 
 int __init adf_init_pf_wq(void)
 {
-	/* Workqueue for PF2VF responses */
+	 
 	pf2vf_resp_wq = alloc_workqueue("qat_pf2vf_resp_wq", WQ_MEM_RECLAIM, 0);
 
 	return !pf2vf_resp_wq ? -ENOMEM : 0;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Core support for ATC260x PMICs
- *
- * Copyright (C) 2019 Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
- * Copyright (C) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/mfd/atc260x/core.h>
@@ -27,17 +22,7 @@ static void regmap_lock_mutex(void *__mutex)
 {
 	struct mutex *mutex = __mutex;
 
-	/*
-	 * Using regmap within an atomic context (e.g. accessing a PMIC when
-	 * powering system down) is normally allowed only if the regmap type
-	 * is MMIO and the regcache type is either REGCACHE_NONE or
-	 * REGCACHE_FLAT. For slow buses like I2C and SPI, the regmap is
-	 * internally protected by a mutex which is acquired non-atomically.
-	 *
-	 * Let's improve this by using a customized locking scheme inspired
-	 * from I2C atomic transfer. See i2c_in_atomic_xfer_mode() for a
-	 * starting point.
-	 */
+	 
 	if (system_state > SYSTEM_RUNNING && irqs_disabled())
 		mutex_trylock(mutex);
 	else
@@ -159,11 +144,11 @@ static void atc260x_cmu_reset(struct atc260x *atc260x)
 {
 	const struct atc260x_init_regs *regs = atc260x->init_regs;
 
-	/* Assert reset */
+	 
 	regmap_update_bits(atc260x->regmap, regs->cmu_devrst,
 			   regs->cmu_devrst_ints, ~regs->cmu_devrst_ints);
 
-	/* De-assert reset */
+	 
 	regmap_update_bits(atc260x->regmap, regs->cmu_devrst,
 			   regs->cmu_devrst_ints, regs->cmu_devrst_ints);
 }
@@ -172,26 +157,18 @@ static void atc260x_dev_init(struct atc260x *atc260x)
 {
 	const struct atc260x_init_regs *regs = atc260x->init_regs;
 
-	/* Initialize interrupt block */
+	 
 	atc260x_cmu_reset(atc260x);
 
-	/* Disable all interrupt sources */
+	 
 	regmap_write(atc260x->regmap, regs->ints_msk, 0);
 
-	/* Enable EXTIRQ pad */
+	 
 	regmap_update_bits(atc260x->regmap, regs->pad_en,
 			   regs->pad_en_extirq, regs->pad_en_extirq);
 }
 
-/**
- * atc260x_match_device(): Setup ATC260x variant related fields
- *
- * @atc260x: ATC260x device to setup (.dev field must be set)
- * @regmap_cfg: regmap config associated with this ATC260x device
- *
- * This lets the ATC260x core configure the MFD cells and register maps
- * for later use.
- */
+ 
 int atc260x_match_device(struct atc260x *atc260x, struct regmap_config *regmap_cfg)
 {
 	struct device *dev = atc260x->dev;
@@ -243,15 +220,7 @@ int atc260x_match_device(struct atc260x *atc260x, struct regmap_config *regmap_c
 }
 EXPORT_SYMBOL_GPL(atc260x_match_device);
 
-/**
- * atc260x_device_probe(): Probe a configured ATC260x device
- *
- * @atc260x: ATC260x device to probe (must be configured)
- *
- * This function lets the ATC260x core register the ATC260x MFD devices
- * and IRQCHIP. The ATC260x device passed in must be fully configured
- * with atc260x_match_device, its IRQ set, and regmap created.
- */
+ 
 int atc260x_device_probe(struct atc260x *atc260x)
 {
 	struct device *dev = atc260x->dev;
@@ -263,7 +232,7 @@ int atc260x_device_probe(struct atc260x *atc260x)
 		return -EINVAL;
 	}
 
-	/* Initialize the hardware */
+	 
 	atc260x_dev_init(atc260x);
 
 	ret = regmap_read(atc260x->regmap, atc260x->rev_reg, &chip_rev);

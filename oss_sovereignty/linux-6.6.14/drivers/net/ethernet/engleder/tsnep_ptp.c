@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2021 Gerhard Engleder <gerhard@engleder-embedded.com> */
+
+ 
 
 #include "tsnep.h"
 
@@ -9,7 +9,7 @@ void tsnep_get_system_time(struct tsnep_adapter *adapter, u64 *time)
 	u32 low;
 	u32 high;
 
-	/* read high dword twice to detect overrun */
+	 
 	high = ioread32(adapter->addr + ECM_SYSTEM_TIME_HIGH);
 	do {
 		low = ioread32(adapter->addr + ECM_SYSTEM_TIME_LOW);
@@ -85,10 +85,7 @@ static int tsnep_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 		negative = true;
 	}
 
-	/* convert from 16 bit to 32 bit binary fractional, divide by 1000000 to
-	 * eliminate ppm, multiply with 8 to compensate 8ns clock cycle time,
-	 * simplify calculation because 15625 * 8 = 1000000 / 8
-	 */
+	 
 	rate_offset = scaled_ppm;
 	rate_offset <<= 16 - 3;
 	rate_offset = div_u64(rate_offset, 15625);
@@ -114,9 +111,7 @@ static int tsnep_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 
 	system_time += delta;
 
-	/* high dword is buffered in hardware and synchronously written to
-	 * system time when low dword is written
-	 */
+	 
 	iowrite32(system_time >> 32, adapter->addr + ECM_SYSTEM_TIME_HIGH);
 	iowrite32(system_time & 0xFFFFFFFF,
 		  adapter->addr + ECM_SYSTEM_TIME_LOW);
@@ -137,7 +132,7 @@ static int tsnep_ptp_gettimex64(struct ptp_clock_info *ptp,
 	u32 high;
 	u64 system_time;
 
-	/* read high dword twice to detect overrun */
+	 
 	high = ioread32(adapter->addr + ECM_SYSTEM_TIME_HIGH);
 	do {
 		ptp_read_system_prets(sts);
@@ -163,9 +158,7 @@ static int tsnep_ptp_settime64(struct ptp_clock_info *ptp,
 
 	spin_lock_irqsave(&adapter->ptp_lock, flags);
 
-	/* high dword is buffered in hardware and synchronously written to
-	 * system time when low dword is written
-	 */
+	 
 	iowrite32(system_time >> 32, adapter->addr + ECM_SYSTEM_TIME_HIGH);
 	iowrite32(system_time & 0xFFFFFFFF,
 		  adapter->addr + ECM_SYSTEM_TIME_LOW);
@@ -186,7 +179,7 @@ static int tsnep_ptp_getcyclesx64(struct ptp_clock_info *ptp,
 	u32 high;
 	u64 counter;
 
-	/* read high dword twice to detect overrun */
+	 
 	high = ioread32(adapter->addr + ECM_COUNTER_HIGH);
 	do {
 		ptp_read_system_prets(sts);
@@ -211,9 +204,7 @@ int tsnep_ptp_init(struct tsnep_adapter *adapter)
 
 	snprintf(adapter->ptp_clock_info.name, 16, "%s", TSNEP);
 	adapter->ptp_clock_info.owner = THIS_MODULE;
-	/* at most 2^-1ns adjustment every clock cycle for 8ns clock cycle time,
-	 * stay slightly below because only bits below 2^-1ns are supported
-	 */
+	 
 	adapter->ptp_clock_info.max_adj = (500000000 / 8 - 1);
 	adapter->ptp_clock_info.adjfine = tsnep_ptp_adjfine;
 	adapter->ptp_clock_info.adjtime = tsnep_ptp_adjtime;

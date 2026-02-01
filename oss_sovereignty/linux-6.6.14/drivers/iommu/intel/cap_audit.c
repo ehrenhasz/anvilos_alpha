@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * cap_audit.c - audit iommu capabilities for boot time and hot plug
- *
- * Copyright (C) 2021 Intel Corporation
- *
- * Author: Kyung Min Park <kyung.min.park@intel.com>
- *         Lu Baolu <baolu.lu@linux.intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"DMAR: " fmt
 
@@ -116,7 +109,7 @@ static int cap_audit_hotplug(struct intel_iommu *iommu, enum cap_audit_type type
 	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, qis, ECAP_QI_MASK);
 	CHECK_FEATURE_MISMATCH_HOTPLUG(iommu, ecap, coherent, ECAP_C_MASK);
 
-	/* Abort hot plug if the hot plug iommu feature is smaller than global */
+	 
 	MINIMAL_FEATURE_HOTPLUG(iommu, cap, max_amask_val, CAP_MAMV_MASK, mismatch);
 	MINIMAL_FEATURE_HOTPLUG(iommu, cap, num_fault_regs, CAP_NFR_MASK, mismatch);
 	MINIMAL_FEATURE_HOTPLUG(iommu, cap, super_page_val, CAP_SLLPS_MASK, mismatch);
@@ -162,10 +155,7 @@ static int cap_audit_static(struct intel_iommu *iommu, enum cap_audit_type type)
 			check_irq_capabilities(iommu, i);
 	}
 
-	/*
-	 * If the system is sane to support scalable mode, either SL or FL
-	 * should be sane.
-	 */
+	 
 	if (intel_cap_smts_sanity() &&
 	    !intel_cap_flts_sanity() && !intel_cap_slts_sanity())
 		rc = -EOPNOTSUPP;

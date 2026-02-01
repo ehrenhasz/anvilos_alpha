@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/bounds_deduction.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -161,7 +161,7 @@ __naked void deducing_bounds_from_const_10(void)
 	asm volatile ("					\
 	r0 = 0;						\
 	if r0 s<= 0 goto l0_%=;				\
-l0_%=:	/* Marks reg as unknown. */			\
+l0_%=:	 			\
 	r0 = -r0;					\
 	r0 -= r1;					\
 	exit;						\

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <fcntl.h>
@@ -12,7 +12,7 @@ static int lock_set(int fd, struct flock *fl)
 {
 	int ret;
 
-	fl->l_pid = 0;		// needed for OFD locks
+	fl->l_pid = 0;		
 	fl->l_whence = SEEK_SET;
 	ret = fcntl(fd, F_OFD_SETLK, fl);
 	if (ret)
@@ -24,7 +24,7 @@ static int lock_get(int fd, struct flock *fl)
 {
 	int ret;
 
-	fl->l_pid = 0;		// needed for OFD locks
+	fl->l_pid = 0;		
 	fl->l_whence = SEEK_SET;
 	ret = fcntl(fd, F_OFD_GETLK, fl);
 	if (ret)
@@ -44,7 +44,7 @@ int main(void)
 	assert(fd2 != -1);
 	ksft_print_msg("[INFO] opened fds %i %i\n", fd, fd2);
 
-	/* Set some read lock */
+	 
 	fl.l_type = F_RDLCK;
 	fl.l_start = 5;
 	fl.l_len = 3;
@@ -56,7 +56,7 @@ int main(void)
 		ksft_print_msg("[FAIL] to set OFD read lock on first fd\n");
 		return -1;
 	}
-	/* Make sure read locks do not conflict on different fds. */
+	 
 	fl.l_type = F_RDLCK;
 	fl.l_start = 5;
 	fl.l_len = 1;
@@ -67,7 +67,7 @@ int main(void)
 		ksft_print_msg("[FAIL] read locks conflicted\n");
 		return -1;
 	}
-	/* Make sure read/write locks do conflict on different fds. */
+	 
 	fl.l_type = F_WRLCK;
 	fl.l_start = 5;
 	fl.l_len = 1;
@@ -82,7 +82,7 @@ int main(void)
 		    ("[SUCCESS] read and write locks not conflicted\n");
 		return -1;
 	}
-	/* Get info about the lock on first fd. */
+	 
 	fl.l_type = F_UNLCK;
 	fl.l_start = 5;
 	fl.l_len = 1;
@@ -101,7 +101,7 @@ int main(void)
 		    ("[FAIL] F_OFD_GETLK with F_UNLCK did not return lock info\n");
 		return -1;
 	}
-	/* Try the same but by locking everything by len==0. */
+	 
 	fl2.l_type = F_UNLCK;
 	fl2.l_start = 0;
 	fl2.l_len = 0;
@@ -118,7 +118,7 @@ int main(void)
 		return -1;
 	}
 	ksft_print_msg("[SUCCESS] F_UNLCK with len==0 returned the same\n");
-	/* Get info about the lock on second fd - no locks on it. */
+	 
 	fl.l_type = F_UNLCK;
 	fl.l_start = 0;
 	fl.l_len = 0;

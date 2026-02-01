@@ -1,10 +1,4 @@
-/*
- * Copyright (c) 2011 Peter Korsgaard <jacmet@sunsite.dk>
- *
- * This file is licensed under  the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -25,9 +19,9 @@
 #define TRNG_ISR_DATRDY	BIT(0)
 #define TRNG_ODATA	0x50
 
-#define TRNG_KEY	0x524e4700 /* RNG */
+#define TRNG_KEY	0x524e4700  
 
-#define TRNG_HALFR	BIT(0) /* generate RN every 168 cycles */
+#define TRNG_HALFR	BIT(0)  
 
 struct atmel_trng_data {
 	bool has_half_rate;
@@ -70,11 +64,7 @@ static int atmel_trng_read(struct hwrng *rng, void *buf, size_t max,
 		goto out;
 
 	*data = readl(trng->base + TRNG_ODATA);
-	/*
-	 * ensure data ready is only set again AFTER the next data word is ready
-	 * in case it got set between checking ISR and reading ODATA, so we
-	 * don't risk re-reading the same word
-	 */
+	 
 	readl(trng->base + TRNG_ISR);
 	ret = 4;
 
@@ -96,7 +86,7 @@ static int atmel_trng_init(struct atmel_trng *trng)
 	if (trng->has_half_rate) {
 		rate = clk_get_rate(trng->clk);
 
-		/* if peripheral clk is above 100MHz, set HALFR */
+		 
 		if (rate > 100000000)
 			writel(TRNG_HALFR, trng->base + TRNG_MR);
 	}
@@ -211,7 +201,7 @@ static const struct of_device_id atmel_trng_dt_ids[] = {
 		.compatible = "microchip,sam9x60-trng",
 		.data = &sam9x60_config,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, atmel_trng_dt_ids);

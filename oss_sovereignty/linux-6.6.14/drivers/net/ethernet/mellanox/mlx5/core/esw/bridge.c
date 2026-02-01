@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2021 Mellanox Technologies. */
+
+ 
 
 #include <linux/build_bug.h>
 #include <linux/list.h>
@@ -1308,18 +1308,14 @@ mlx5_esw_bridge_port_vlan_lookup(u16 vid, u16 vport_num, u16 esw_owner_vhca_id,
 
 	port = mlx5_esw_bridge_port_lookup(vport_num, esw_owner_vhca_id, bridge->br_offloads);
 	if (!port) {
-		/* FDB is added asynchronously on wq while port might have been deleted
-		 * concurrently. Report on 'info' logging level and skip the FDB offload.
-		 */
+		 
 		esw_info(esw->dev, "Failed to lookup bridge port (vport=%u)\n", vport_num);
 		return ERR_PTR(-EINVAL);
 	}
 
 	vlan = mlx5_esw_bridge_vlan_lookup(vid, port);
 	if (!vlan) {
-		/* FDB is added asynchronously on wq while vlan might have been deleted
-		 * concurrently. Report on 'info' logging level and skip the FDB offload.
-		 */
+		 
 		esw_info(esw->dev, "Failed to lookup bridge port vlan metadata (vport=%u)\n",
 			 vport_num);
 		return ERR_PTR(-EINVAL);
@@ -1794,7 +1790,7 @@ void mlx5_esw_bridge_fdb_create(struct net_device *dev, u16 vport_num, u16 esw_o
 		mlx5_esw_bridge_fdb_offload_notify(dev, entry->key.addr, entry->key.vid,
 						   SWITCHDEV_FDB_OFFLOADED);
 	else if (!(entry->flags & MLX5_ESW_BRIDGE_FLAG_PEER))
-		/* Take over dynamic entries to prevent kernel bridge from aging them out. */
+		 
 		mlx5_esw_bridge_fdb_offload_notify(dev, entry->key.addr, entry->key.vid,
 						   SWITCHDEV_FDB_ADD_TO_BRIDGE);
 }

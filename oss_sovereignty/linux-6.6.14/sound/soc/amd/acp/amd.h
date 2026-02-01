@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/*
- * This file is provided under a dual BSD/GPLv2 license. When using or
- * redistributing this file, you may do so under either license.
- *
- * Copyright(c) 2021 Advanced Micro Devices, Inc. All rights reserved.
- *
- * Author: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
- */
+ 
+ 
 
 #ifndef __AMD_ACP_H
 #define __AMD_ACP_H
@@ -125,9 +118,9 @@
 #define ACP_REGION2_OFFSET      0x02000000
 
 struct acp_chip_info {
-	char *name;		/* Platform name */
-	unsigned int acp_rev;	/* ACP Revision id */
-	void __iomem *base;	/* ACP memory PCI base */
+	char *name;		 
+	unsigned int acp_rev;	 
+	void __iomem *base;	 
 	struct platform_device *chip_pdev;
 };
 
@@ -163,7 +156,7 @@ struct acp_dev_data {
 	unsigned int i2s_irq;
 
 	bool tdm_mode;
-	/* SOC specific dais */
+	 
 	struct snd_soc_dai_driver *dai_driver;
 	int num_dai;
 
@@ -210,7 +203,7 @@ int acp_init(struct acp_chip_info *chip);
 int acp_deinit(void __iomem *base);
 void acp_enable_interrupts(struct acp_dev_data *adata);
 void acp_disable_interrupts(struct acp_dev_data *adata);
-/* Machine configuration */
+ 
 int snd_amd_acp_find_config(struct pci_dev *pci);
 
 void config_pte_for_stream(struct acp_dev_data *adata, struct acp_stream *stream);
@@ -266,7 +259,7 @@ static inline u64 acp_get_byte_count(struct acp_dev_data *adata, int dai_id, int
 			goto POINTER_RETURN_BYTES;
 		}
 	}
-	/* Get 64 bit value from two 32 bit registers */
+	 
 	byte_count = (high << 32) | low;
 
 POINTER_RETURN_BYTES:

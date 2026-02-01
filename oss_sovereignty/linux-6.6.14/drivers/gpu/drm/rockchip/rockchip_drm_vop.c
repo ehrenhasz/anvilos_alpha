@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Fuzhou Rockchip Electronics Co.Ltd
- * Author:Mark Yao <mark.yao@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -112,11 +109,7 @@
 
 #define AFBC_TILE_16x16		BIT(4)
 
-/*
- * The coefficients of the following matrix are all fixed points.
- * The format is S2.10 for the 3x3 part of the matrix, and S9.12 for the offsets.
- * They are all represented in two's complement.
- */
+ 
 static const uint32_t bt601_yuv2rgb[] = {
 	0x4A8, 0x0,    0x662,
 	0x4A8, 0x1E6F, 0x1CBF,
@@ -145,7 +138,7 @@ struct vop {
 	struct completion dsp_hold_completion;
 	unsigned int win_enabled;
 
-	/* protected by dev->event_lock */
+	 
 	struct drm_pending_vblank_event *event;
 
 	struct drm_flip_work fb_unref_work;
@@ -159,29 +152,29 @@ struct vop {
 	void __iomem *regs;
 	void __iomem *lut_regs;
 
-	/* physical map length of vop register */
+	 
 	uint32_t len;
 
-	/* one time only one process allowed to config the register */
+	 
 	spinlock_t reg_lock;
-	/* lock vop irq reg */
+	 
 	spinlock_t irq_lock;
-	/* protects crtc enable/disable */
+	 
 	struct mutex vop_lock;
 
 	unsigned int irq;
 
-	/* vop AHP clk */
+	 
 	struct clk *hclk;
-	/* vop dclk */
+	 
 	struct clk *dclk;
-	/* vop share memory frequency */
+	 
 	struct clk *aclk;
 
-	/* vop dclk reset */
+	 
 	struct reset_control *dclk_rst;
 
-	/* optional internal rgb encoder */
+	 
 	struct rockchip_rgb *rgb;
 
 	struct vop_win win[];
@@ -254,11 +247,7 @@ static bool has_rb_swapped(uint32_t version, uint32_t format)
 	case DRM_FORMAT_ABGR8888:
 	case DRM_FORMAT_BGR565:
 		return true;
-	/*
-	 * full framework (IP version 3.x) only need rb swapped for RGB888 and
-	 * little framework (IP version 2.x) only need rb swapped for BGR888,
-	 * check for 3.x to also only rb swap BGR888 for unknown vop version
-	 */
+	 
 	case DRM_FORMAT_RGB888:
 		return VOP_MAJOR(version) == 3;
 	case DRM_FORMAT_BGR888:
@@ -496,28 +485,7 @@ static void vop_dsp_hold_valid_irq_disable(struct vop *vop)
 	spin_unlock_irqrestore(&vop->irq_lock, flags);
 }
 
-/*
- * (1) each frame starts at the start of the Vsync pulse which is signaled by
- *     the "FRAME_SYNC" interrupt.
- * (2) the active data region of each frame ends at dsp_vact_end
- * (3) we should program this same number (dsp_vact_end) into dsp_line_frag_num,
- *      to get "LINE_FLAG" interrupt at the end of the active on screen data.
- *
- * VOP_INTR_CTRL0.dsp_line_frag_num = VOP_DSP_VACT_ST_END.dsp_vact_end
- * Interrupts
- * LINE_FLAG -------------------------------+
- * FRAME_SYNC ----+                         |
- *                |                         |
- *                v                         v
- *                | Vsync | Vbp |  Vactive  | Vfp |
- *                        ^     ^           ^     ^
- *                        |     |           |     |
- *                        |     |           |     |
- * dsp_vs_end ------------+     |           |     |   VOP_DSP_VTOTAL_VS_END
- * dsp_vact_start --------------+           |     |   VOP_DSP_VACT_ST_END
- * dsp_vact_end ----------------------------+     |   VOP_DSP_VACT_ST_END
- * dsp_total -------------------------------------+   VOP_DSP_VTOTAL_VS_END
- */
+ 
 static bool vop_line_flag_irq_is_enabled(struct vop *vop)
 {
 	uint32_t line_flag_irq;
@@ -620,12 +588,7 @@ static int vop_enable(struct drm_crtc *crtc, struct drm_crtc_state *old_state)
 	if (WARN_ON(ret < 0))
 		goto err_disable_core;
 
-	/*
-	 * Slave iommu shares power, irq and clock with vop.  It was associated
-	 * automatically with this master device via common driver code.
-	 * Now that we have enabled the clock we attach it to the shared drm
-	 * mapping.
-	 */
+	 
 	ret = rockchip_drm_dma_attach_device(vop->drm_dev, vop->dev);
 	if (ret) {
 		DRM_DEV_ERROR(vop->dev,
@@ -637,15 +600,7 @@ static int vop_enable(struct drm_crtc *crtc, struct drm_crtc_state *old_state)
 	for (i = 0; i < vop->len; i += 4)
 		writel_relaxed(vop->regsbak[i / 4], vop->regs + i);
 
-	/*
-	 * We need to make sure that all windows are disabled before we
-	 * enable the crtc. Otherwise we might try to scan from a destroyed
-	 * buffer later.
-	 *
-	 * In the case of enable-after-PSR, we don't need to worry about this
-	 * case since the buffer is guaranteed to be valid and disabling the
-	 * window will result in screen glitches on PSR exit.
-	 */
+	 
 	if (!old_state || !old_state->self_refresh_active) {
 		for (i = 0; i < vop->data->win_size; i++) {
 			struct vop_win *vop_win = &vop->win[i];
@@ -656,9 +611,7 @@ static int vop_enable(struct drm_crtc *crtc, struct drm_crtc_state *old_state)
 
 	if (vop->data->afbc) {
 		struct rockchip_crtc_state *s;
-		/*
-		 * Disable AFBC and forget there was a vop window with AFBC
-		 */
+		 
 		VOP_AFBC_SET(vop, enable, 0);
 		s = to_rockchip_crtc_state(crtc->state);
 		s->enable_afbc = false;
@@ -668,9 +621,7 @@ static int vop_enable(struct drm_crtc *crtc, struct drm_crtc_state *old_state)
 
 	spin_unlock(&vop->reg_lock);
 
-	/*
-	 * At here, vop clock & iommu is enable, R/W vop regs would be safe.
-	 */
+	 
 	vop->is_enabled = true;
 
 	spin_lock(&vop->reg_lock);
@@ -728,13 +679,7 @@ static void vop_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	drm_crtc_vblank_off(crtc);
 
-	/*
-	 * Vop standby will take effect at end of current frame,
-	 * if dsp hold valid irq happen, it means standby complete.
-	 *
-	 * we must wait standby complete when we want to disable aclk,
-	 * if not, memory bus maybe dead.
-	 */
+	 
 	reinit_completion(&vop->dsp_hold_completion);
 	vop_dsp_hold_valid_irq_enable(vop);
 
@@ -752,9 +697,7 @@ static void vop_crtc_atomic_disable(struct drm_crtc *crtc,
 
 	vop->is_enabled = false;
 
-	/*
-	 * vop standby complete, so iommu detach is safe.
-	 */
+	 
 	rockchip_drm_dma_detach_device(vop->drm_dev, vop->dev);
 
 	clk_disable(vop->dclk);
@@ -835,10 +778,7 @@ static int vop_plane_atomic_check(struct drm_plane *plane,
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Src.x1 can be odd when do clip, but yuv plane start point
-	 * need align with 2 pixel.
-	 */
+	 
 	if (fb->format->is_yuv && ((new_plane_state->src.x1 >> 16) % 2)) {
 		DRM_DEBUG_KMS("Invalid Source: Yuv format not support odd xpos\n");
 		return -EINVAL;
@@ -924,9 +864,7 @@ static void vop_plane_atomic_update(struct drm_plane *plane,
 	int is_yuv = fb->format->is_yuv;
 	int i;
 
-	/*
-	 * can't update plane when vop is disabled.
-	 */
+	 
 	if (WARN_ON(!crtc))
 		return;
 
@@ -956,10 +894,7 @@ static void vop_plane_atomic_update(struct drm_plane *plane,
 	offset += (src->y1 >> 16) * fb->pitches[0];
 	dma_addr = rk_obj->dma_addr + offset + fb->offsets[0];
 
-	/*
-	 * For y-mirroring we need to move address
-	 * to the beginning of the last line.
-	 */
+	 
 	if (new_state->rotation & DRM_MODE_REFLECT_Y)
 		dma_addr += (actual_h - 1) * fb->pitches[0];
 
@@ -1024,13 +959,7 @@ static void vop_plane_atomic_update(struct drm_plane *plane,
 	rb_swap = has_rb_swapped(vop->data->version, fb->format->format);
 	VOP_WIN_SET(vop, win, rb_swap, rb_swap);
 
-	/*
-	 * Blending win0 with the background color doesn't seem to work
-	 * correctly. We only get the background color, no matter the contents
-	 * of the win0 framebuffer.  However, blending pre-multiplied color
-	 * with the default opaque black default background color is a no-op,
-	 * so we can just disable blending to get the correct result.
-	 */
+	 
 	if (fb->format->has_alpha && win_index > 0) {
 		VOP_WIN_SET(vop, win, dst_alpha_ctl,
 			    DST_FACTOR_M0(ALPHA_SRC_INVERSE));
@@ -1079,7 +1008,7 @@ static int vop_plane_atomic_async_check(struct drm_plane *plane,
 	if (state)
 		crtc_state = drm_atomic_get_existing_crtc_state(state,
 								new_plane_state->crtc);
-	else /* Special case for asynchronous cursor updates. */
+	else  
 		crtc_state = plane->crtc->state;
 
 	return drm_atomic_helper_check_plane_state(plane->state, crtc_state,
@@ -1111,14 +1040,7 @@ static void vop_plane_atomic_async_update(struct drm_plane *plane,
 		vop_cfg_done(vop);
 		spin_unlock(&vop->reg_lock);
 
-		/*
-		 * A scanout can still be occurring, so we can't drop the
-		 * reference to the old framebuffer. To solve this we get a
-		 * reference to old_fb and set a worker to release it later.
-		 * FIXME: if we perform 500 async_update calls before the
-		 * vblank, then we can have 500 different framebuffers waiting
-		 * to be released.
-		 */
+		 
 		if (old_fb && plane->state->fb != old_fb) {
 			drm_framebuffer_get(old_fb);
 			WARN_ON(drm_crtc_vblank_get(plane->state->crtc) != 0);
@@ -1197,32 +1119,7 @@ static bool vop_crtc_mode_fixup(struct drm_crtc *crtc,
 	struct vop *vop = to_vop(crtc);
 	unsigned long rate;
 
-	/*
-	 * Clock craziness.
-	 *
-	 * Key points:
-	 *
-	 * - DRM works in kHz.
-	 * - Clock framework works in Hz.
-	 * - Rockchip's clock driver picks the clock rate that is the
-	 *   same _OR LOWER_ than the one requested.
-	 *
-	 * Action plan:
-	 *
-	 * 1. Try to set the exact rate first, and confirm the clock framework
-	 *    can provide it.
-	 *
-	 * 2. If the clock framework cannot provide the exact rate, we should
-	 *    add 999 Hz to the requested rate.  That way if the clock we need
-	 *    is 60000001 Hz (~60 MHz) and DRM tells us to make 60000 kHz then
-	 *    the clock framework will actually give us the right clock.
-	 *
-	 * 3. Get the clock framework to round the rate for us to tell us
-	 *    what it will actually make.
-	 *
-	 * 4. Store the rounded up rate so that we don't need to worry about
-	 *    this in the actual clk_set_rate().
-	 */
+	 
 	rate = clk_round_rate(vop->dclk, adjusted_mode->clock * 1000);
 	if (rate / 1000 != adjusted_mode->clock)
 		rate = clk_round_rate(vop->dclk,
@@ -1269,19 +1166,13 @@ static void vop_crtc_gamma_set(struct vop *vop, struct drm_crtc *crtc,
 		return;
 
 	if (!state->gamma_lut || !VOP_HAS_REG(vop, common, update_gamma_lut)) {
-		/*
-		 * To disable gamma (gamma_lut is null) or to write
-		 * an update to the LUT, clear dsp_lut_en.
-		 */
+		 
 		spin_lock(&vop->reg_lock);
 		VOP_REG_SET(vop, common, dsp_lut_en, 0);
 		vop_cfg_done(vop);
 		spin_unlock(&vop->reg_lock);
 
-		/*
-		 * In order to write the LUT to the internal memory,
-		 * we need to first make sure the dsp_lut_en bit is cleared.
-		 */
+		 
 		ret = readx_poll_timeout(vop_dsp_lut_is_enabled, vop,
 					 idle, !idle, 5, 30 * 1000);
 		if (ret) {
@@ -1292,10 +1183,7 @@ static void vop_crtc_gamma_set(struct vop *vop, struct drm_crtc *crtc,
 		if (!state->gamma_lut)
 			return;
 	} else {
-		/*
-		 * On RK3399 the gamma LUT can updated without clearing dsp_lut_en,
-		 * by setting update_gamma_lut then waiting for lut_buffer_index change
-		 */
+		 
 		old_idx = vop_lut_buffer_index(vop);
 	}
 
@@ -1314,10 +1202,7 @@ static void vop_crtc_gamma_set(struct vop *vop, struct drm_crtc *crtc,
 			return;
 		}
 
-		/*
-		 * update_gamma_lut is auto cleared by HW, but write 0 to clear the bit
-		 * in our backup of the regs.
-		 */
+		 
 		spin_lock(&vop->reg_lock);
 		VOP_REG_SET(vop, common, update_gamma_lut, 0);
 		spin_unlock(&vop->reg_lock);
@@ -1333,10 +1218,7 @@ static void vop_crtc_atomic_begin(struct drm_crtc *crtc,
 									      crtc);
 	struct vop *vop = to_vop(crtc);
 
-	/*
-	 * Only update GAMMA if the 'active' flag is not changed,
-	 * otherwise it's updated by .atomic_enable.
-	 */
+	 
 	if (crtc_state->color_mgmt_changed &&
 	    !crtc_state->active_changed)
 		vop_crtc_gamma_set(vop, crtc, old_crtc_state);
@@ -1421,9 +1303,7 @@ static void vop_crtc_atomic_enable(struct drm_crtc *crtc,
 			      s->output_type);
 	}
 
-	/*
-	 * if vop is not support RGB10 output, need force RGB10 to RGB888.
-	 */
+	 
 	if (s->output_mode == ROCKCHIP_OUT_MODE_AAAA &&
 	    !(vop_data->feature & VOP_FEATURE_OUTPUT_RGB10))
 		s->output_mode = ROCKCHIP_OUT_MODE_P888;
@@ -1462,11 +1342,7 @@ static void vop_crtc_atomic_enable(struct drm_crtc *crtc,
 	VOP_REG_SET(vop, common, standby, 0);
 	mutex_unlock(&vop->vop_lock);
 
-	/*
-	 * If we have a GAMMA LUT in the state, then let's make sure
-	 * it's updated. We might be coming out of suspend,
-	 * which means the LUT internal memory needs to be re-written.
-	 */
+	 
 	if (crtc->state->gamma_lut)
 		vop_crtc_gamma_set(vop, crtc, old_state);
 }
@@ -1481,14 +1357,7 @@ static void vop_wait_for_irq_handler(struct vop *vop)
 	bool pending;
 	int ret;
 
-	/*
-	 * Spin until frame start interrupt status bit goes low, which means
-	 * that interrupt handler was invoked and cleared it. The timeout of
-	 * 10 msecs is really too long, but it is just a safety measure if
-	 * something goes really wrong. The wait will only happen in the very
-	 * unlikely case of a vblank happening exactly at the same time and
-	 * shouldn't exceed microseconds range.
-	 */
+	 
 	ret = readx_poll_timeout_atomic(vop_fs_irq_is_pending, vop, pending,
 					!pending, 0, 10 * 1000);
 	if (ret)
@@ -1561,18 +1430,14 @@ static void vop_crtc_atomic_flush(struct drm_crtc *crtc,
 
 	spin_lock(&vop->reg_lock);
 
-	/* Enable AFBC if there is some AFBC window, disable otherwise. */
+	 
 	s = to_rockchip_crtc_state(crtc->state);
 	VOP_AFBC_SET(vop, enable, s->enable_afbc);
 	vop_cfg_done(vop);
 
 	spin_unlock(&vop->reg_lock);
 
-	/*
-	 * There is a (rather unlikely) possiblity that a vblank interrupt
-	 * fired before we set the cfg_done bit. To avoid spuriously
-	 * signalling flip completion we need to wait for it to finish.
-	 */
+	 
 	vop_wait_for_irq_handler(vop);
 
 	spin_lock_irq(&crtc->dev->event_lock);
@@ -1765,10 +1630,7 @@ static irqreturn_t vop_isr(int irq, void *data)
 	uint32_t active_irqs;
 	int ret = IRQ_NONE;
 
-	/*
-	 * The irq is shared with the iommu. If the runtime-pm state of the
-	 * vop-device is disabled the irq has to be targeted at the iommu.
-	 */
+	 
 	if (!pm_runtime_get_if_in_use(vop->dev))
 		return IRQ_NONE;
 
@@ -1777,20 +1639,17 @@ static irqreturn_t vop_isr(int irq, void *data)
 		goto out;
 	}
 
-	/*
-	 * interrupt register has interrupt status, enable and clear bits, we
-	 * must hold irq_lock to avoid a race with enable/disable_vblank().
-	*/
+	 
 	spin_lock(&vop->irq_lock);
 
 	active_irqs = VOP_INTR_GET_TYPE(vop, status, INTR_MASK);
-	/* Clear all active interrupt sources */
+	 
 	if (active_irqs)
 		VOP_INTR_SET_TYPE(vop, clear, active_irqs, 1);
 
 	spin_unlock(&vop->irq_lock);
 
-	/* This is expected for vop iommu irqs, since the irq is shared */
+	 
 	if (!active_irqs)
 		goto out_disable;
 
@@ -1813,7 +1672,7 @@ static irqreturn_t vop_isr(int irq, void *data)
 		ret = IRQ_HANDLED;
 	}
 
-	/* Unhandled irqs are spurious. */
+	 
 	if (active_irqs)
 		DRM_DEV_ERROR(vop->dev, "Unknown VOP IRQs: %#02x\n",
 			      active_irqs);
@@ -1848,11 +1707,7 @@ static int vop_create_crtc(struct vop *vop)
 	int ret;
 	int i;
 
-	/*
-	 * Create drm_plane for primary and cursor planes first, since we need
-	 * to pass them to drm_crtc_init_with_planes, which sets the
-	 * "possible_crtcs" to the newly initialized crtc.
-	 */
+	 
 	for (i = 0; i < vop_data->win_size; i++) {
 		struct vop_win *vop_win = &vop->win[i];
 		const struct vop_win_data *win_data = vop_win->data;
@@ -1893,10 +1748,7 @@ static int vop_create_crtc(struct vop *vop)
 		drm_crtc_enable_color_mgmt(crtc, 0, false, vop_data->lut_size);
 	}
 
-	/*
-	 * Create drm_planes for overlay windows with possible_crtcs restricted
-	 * to the newly created crtc.
-	 */
+	 
 	for (i = 0; i < vop_data->win_size; i++) {
 		struct vop_win *vop_win = &vop->win[i];
 		const struct vop_win_data *win_data = vop_win->data;
@@ -1963,22 +1815,12 @@ static void vop_destroy_crtc(struct vop *vop)
 
 	of_node_put(crtc->port);
 
-	/*
-	 * We need to cleanup the planes now.  Why?
-	 *
-	 * The planes are "&vop->win[i].base".  That means the memory is
-	 * all part of the big "struct vop" chunk of memory.  That memory
-	 * was devm allocated and associated with this component.  We need to
-	 * free it ourselves before vop_unbind() finishes.
-	 */
+	 
 	list_for_each_entry_safe(plane, tmp, &drm_dev->mode_config.plane_list,
 				 head)
 		vop_plane_destroy(plane);
 
-	/*
-	 * Destroy CRTC after vop_plane_destroy() since vop_disable_plane()
-	 * references the CRTC.
-	 */
+	 
 	drm_crtc_cleanup(crtc);
 	drm_flip_work_cleanup(&vop->fb_unref_work);
 }
@@ -2016,7 +1858,7 @@ static int vop_initial(struct vop *vop)
 		goto err_put_pm_runtime;
 	}
 
-	/* Enable both the hclk and aclk to setup the vop */
+	 
 	ret = clk_prepare_enable(vop->hclk);
 	if (ret < 0) {
 		DRM_DEV_ERROR(vop->dev, "failed to prepare/enable hclk\n");
@@ -2029,9 +1871,7 @@ static int vop_initial(struct vop *vop)
 		goto err_disable_hclk;
 	}
 
-	/*
-	 * do hclk_reset, reset all vop registers.
-	 */
+	 
 	ahb_rst = devm_reset_control_get(vop->dev, "ahb");
 	if (IS_ERR(ahb_rst)) {
 		DRM_DEV_ERROR(vop->dev, "failed to get ahb reset\n");
@@ -2063,9 +1903,7 @@ static int vop_initial(struct vop *vop)
 
 	vop_cfg_done(vop);
 
-	/*
-	 * do dclk_reset, let all config take affect.
-	 */
+	 
 	vop->dclk_rst = devm_reset_control_get(vop->dev, "dclk");
 	if (IS_ERR(vop->dclk_rst)) {
 		DRM_DEV_ERROR(vop->dev, "failed to get dclk reset\n");
@@ -2096,9 +1934,7 @@ err_put_pm_runtime:
 	return ret;
 }
 
-/*
- * Initialize the vop->win array elements.
- */
+ 
 static void vop_win_init(struct vop *vop)
 {
 	const struct vop_data *vop_data = vop->data;
@@ -2116,16 +1952,7 @@ static void vop_win_init(struct vop *vop)
 	}
 }
 
-/**
- * rockchip_drm_wait_vact_end
- * @crtc: CRTC to enable line flag
- * @mstimeout: millisecond for timeout
- *
- * Wait for vact_end line flag irq or timeout.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int rockchip_drm_wait_vact_end(struct drm_crtc *crtc, unsigned int mstimeout)
 {
 	struct vop *vop = to_vop(crtc);
@@ -2178,7 +2005,7 @@ static int vop_bind(struct device *dev, struct device *master, void *data)
 	if (!vop_data)
 		return -ENODEV;
 
-	/* Allocate vop struct and its vop_win array */
+	 
 	vop = devm_kzalloc(dev, struct_size(vop, win, vop_data->win_size),
 			   GFP_KERNEL);
 	if (!vop)

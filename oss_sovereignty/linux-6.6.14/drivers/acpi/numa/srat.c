@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  acpi_numa.c - ACPI NUMA support
- *
- *  Copyright (C) 2002 Takayoshi Kochi <t-kochi@bq.jp.nec.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ACPI: " fmt
 
@@ -20,7 +16,7 @@
 
 static nodemask_t nodes_found_map = NODE_MASK_NONE;
 
-/* maps to convert between proximity domain and logical node ID */
+ 
 static int pxm_to_node_map[MAX_PXM_DOMAINS]
 			= { [0 ... MAX_PXM_DOMAINS - 1] = NUMA_NO_NODE };
 static int node_to_pxm_map[MAX_NUMNODES]
@@ -141,10 +137,7 @@ acpi_table_print_srat_entry(struct acpi_subtable_header *header)
 			(struct acpi_srat_generic_affinity *)header;
 
 		if (p->device_handle_type == 0) {
-			/*
-			 * For pci devices this may be the only place they
-			 * are assigned a proximity domain
-			 */
+			 
 			pr_debug("SRAT Generic Initiator(Seg:%u BDF:%u) in proximity domain %d %s\n",
 				 *(u16 *)(&p->device_handle[0]),
 				 *(u16 *)(&p->device_handle[2]),
@@ -152,10 +145,7 @@ acpi_table_print_srat_entry(struct acpi_subtable_header *header)
 				 (p->flags & ACPI_SRAT_GENERIC_AFFINITY_ENABLED) ?
 				"enabled" : "disabled");
 		} else {
-			/*
-			 * In this case we can rely on the device having a
-			 * proximity domain reference
-			 */
+			 
 			pr_debug("SRAT Generic Initiator(HID=%.8s UID=%.4s) in proximity domain %d %s\n",
 				(char *)(&p->device_handle[0]),
 				(char *)(&p->device_handle[8]),
@@ -172,12 +162,7 @@ acpi_table_print_srat_entry(struct acpi_subtable_header *header)
 	}
 }
 
-/*
- * A lot of BIOS fill in 10 (= no distance) everywhere. This messes
- * up the NUMA heuristics which wants the local node to have a smaller
- * distance than the others.
- * Do some quick checks here and only use the SLIT if it passes.
- */
+ 
 static int __init slit_valid(struct acpi_table_slit *slit)
 {
 	int i, j;
@@ -207,11 +192,7 @@ int __init srat_disabled(void)
 }
 
 #if defined(CONFIG_X86) || defined(CONFIG_ARM64) || defined(CONFIG_LOONGARCH)
-/*
- * Callback for SLIT parsing.  pxm_to_node() returns NUMA_NO_NODE for
- * I/O localities since SRAT does not list them.  I/O localities are
- * not supported at this point.
- */
+ 
 void __init acpi_numa_slit_init(struct acpi_table_slit *slit)
 {
 	int i, j;
@@ -234,10 +215,7 @@ void __init acpi_numa_slit_init(struct acpi_table_slit *slit)
 	}
 }
 
-/*
- * Default callback for parsing of the Proximity Domain <-> Memory
- * Area mappings
- */
+ 
 int __init
 acpi_numa_memory_affinity_init(struct acpi_srat_mem_affinity *ma)
 {
@@ -284,7 +262,7 @@ acpi_numa_memory_affinity_init(struct acpi_srat_mem_affinity *ma)
 		hotpluggable ? " hotplug" : "",
 		ma->flags & ACPI_SRAT_MEM_NON_VOLATILE ? " non-volatile" : "");
 
-	/* Mark hotplug range in memblock. */
+	 
 	if (hotpluggable && memblock_mark_hotplug(start, ma->length))
 		pr_warn("SRAT: Failed to mark hotplug range [mem %#010Lx-%#010Lx] in memblock\n",
 			(unsigned long long)start, (unsigned long long)end - 1);
@@ -310,16 +288,11 @@ static int __init acpi_parse_cfmws(union acpi_subtable_headers *header,
 	start = cfmws->base_hpa;
 	end = cfmws->base_hpa + cfmws->window_size;
 
-	/*
-	 * The SRAT may have already described NUMA details for all,
-	 * or a portion of, this CFMWS HPA range. Extend the memblks
-	 * found for any portion of the window to cover the entire
-	 * window.
-	 */
+	 
 	if (!numa_fill_memblks(start, end))
 		return 0;
 
-	/* No SRAT description. Create a new node. */
+	 
 	node = acpi_map_pxm_to_node(*fake_pxm);
 
 	if (node == NUMA_NO_NODE) {
@@ -328,13 +301,13 @@ static int __init acpi_parse_cfmws(union acpi_subtable_headers *header,
 	}
 
 	if (numa_add_memblk(node, start, end) < 0) {
-		/* CXL driver must handle the NUMA_NO_NODE case */
+		 
 		pr_warn("ACPI NUMA: Failed to add memblk for CFMWS node %d [mem %#llx-%#llx]\n",
 			node, start, end);
 	}
 	node_set(node, numa_nodes_parsed);
 
-	/* Set the next available fake_pxm value */
+	 
 	(*fake_pxm)++;
 	return 0;
 }
@@ -344,7 +317,7 @@ static int __init acpi_parse_cfmws(union acpi_subtable_headers *header,
 {
 	return 0;
 }
-#endif /* defined(CONFIG_X86) || defined (CONFIG_ARM64) */
+#endif  
 
 static int __init acpi_parse_slit(struct acpi_table_header *table)
 {
@@ -375,7 +348,7 @@ acpi_parse_x2apic_affinity(union acpi_subtable_headers *header,
 
 	acpi_table_print_srat_entry(&header->common);
 
-	/* let architecture-dependent part to do it */
+	 
 	acpi_numa_x2apic_affinity_init(processor_affinity);
 
 	return 0;
@@ -391,7 +364,7 @@ acpi_parse_processor_affinity(union acpi_subtable_headers *header,
 
 	acpi_table_print_srat_entry(&header->common);
 
-	/* let architecture-dependent part to do it */
+	 
 	acpi_numa_processor_affinity_init(processor_affinity);
 
 	return 0;
@@ -407,7 +380,7 @@ acpi_parse_gicc_affinity(union acpi_subtable_headers *header,
 
 	acpi_table_print_srat_entry(&header->common);
 
-	/* let architecture-dependent part to do it */
+	 
 	acpi_numa_gicc_affinity_init(processor_affinity);
 
 	return 0;
@@ -446,7 +419,7 @@ acpi_parse_gi_affinity(union acpi_subtable_headers *header,
 {
 	return 0;
 }
-#endif /* defined(CONFIG_X86) || defined (CONFIG_ARM64) */
+#endif  
 
 static int __initdata parsed_numa_memblks;
 
@@ -460,7 +433,7 @@ acpi_parse_memory_affinity(union acpi_subtable_headers * header,
 
 	acpi_table_print_srat_entry(&header->common);
 
-	/* let architecture-dependent part to do it */
+	 
 	if (!acpi_numa_memory_affinity_init(memory_affinity))
 		parsed_numa_memblks++;
 	return 0;
@@ -472,7 +445,7 @@ static int __init acpi_parse_srat(struct acpi_table_header *table)
 
 	acpi_srat_revision = srat->header.revision;
 
-	/* Real work done in acpi_table_parse_srat below. */
+	 
 
 	return 0;
 }
@@ -493,13 +466,9 @@ int __init acpi_numa_init(void)
 	if (acpi_disabled)
 		return -EINVAL;
 
-	/*
-	 * Should not limit number with cpu num that is from NR_CPUS or nr_cpus=
-	 * SRAT cpu entries could have different order with that in MADT.
-	 * So go over all cpu entries in SRAT to get apicid to node mapping.
-	 */
+	 
 
-	/* SRAT: System Resource Affinity Table */
+	 
 	if (!acpi_table_parse(ACPI_SIG_SRAT, acpi_parse_srat)) {
 		struct acpi_subtable_proc srat_proc[4];
 
@@ -521,17 +490,12 @@ int __init acpi_numa_init(void)
 					    acpi_parse_memory_affinity, 0);
 	}
 
-	/* SLIT: System Locality Information Table */
+	 
 	acpi_table_parse(ACPI_SIG_SLIT, acpi_parse_slit);
 
-	/*
-	 * CXL Fixed Memory Window Structures (CFMWS) must be parsed
-	 * after the SRAT. Create NUMA Nodes for CXL memory ranges that
-	 * are defined in the CFMWS and not already defined in the SRAT.
-	 * Initialize a fake_pxm as the first available PXM to emulate.
-	 */
+	 
 
-	/* fake_pxm is the next unused PXM value after SRAT parsing */
+	 
 	for (i = 0, fake_pxm = -1; i < MAX_NUMNODES - 1; i++) {
 		if (node_to_pxm_map[i] > fake_pxm)
 			fake_pxm = node_to_pxm_map[i];

@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/pci.h>
 
@@ -37,13 +16,7 @@
 
 static void vega10_ih_set_interrupt_funcs(struct amdgpu_device *adev);
 
-/**
- * vega10_ih_init_register_offset - Initialize register offset for ih rings
- *
- * @adev: amdgpu_device pointer
- *
- * Initialize register offset ih rings (VEGA10).
- */
+ 
 static void vega10_ih_init_register_offset(struct amdgpu_device *adev)
 {
 	struct amdgpu_ih_regs *ih_regs;
@@ -84,15 +57,7 @@ static void vega10_ih_init_register_offset(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * vega10_ih_toggle_ring_interrupts - toggle the interrupt ring buffer
- *
- * @adev: amdgpu_device pointer
- * @ih: amdgpu_ih_ring pointet
- * @enable: true - enable the interrupts, false - disable the interrupts
- *
- * Toggle the interrupt ring buffer (VEGA10)
- */
+ 
 static int vega10_ih_toggle_ring_interrupts(struct amdgpu_device *adev,
 					    struct amdgpu_ih_ring *ih,
 					    bool enable)
@@ -105,7 +70,7 @@ static int vega10_ih_toggle_ring_interrupts(struct amdgpu_device *adev,
 	tmp = RREG32(ih_regs->ih_rb_cntl);
 	tmp = REG_SET_FIELD(tmp, IH_RB_CNTL, RB_ENABLE, (enable ? 1 : 0));
 	tmp = REG_SET_FIELD(tmp, IH_RB_CNTL, RB_GPU_TS_ENABLE, 1);
-	/* enable_intr field is only valid in ring0 */
+	 
 	if (ih == &adev->irq.ih)
 		tmp = REG_SET_FIELD(tmp, IH_RB_CNTL, ENABLE_INTR, (enable ? 1 : 0));
 	if (amdgpu_sriov_vf(adev)) {
@@ -120,7 +85,7 @@ static int vega10_ih_toggle_ring_interrupts(struct amdgpu_device *adev,
 	if (enable) {
 		ih->enabled = true;
 	} else {
-		/* set rptr, wptr to 0 */
+		 
 		WREG32(ih_regs->ih_rb_rptr, 0);
 		WREG32(ih_regs->ih_rb_wptr, 0);
 		ih->enabled = false;
@@ -130,14 +95,7 @@ static int vega10_ih_toggle_ring_interrupts(struct amdgpu_device *adev,
 	return 0;
 }
 
-/**
- * vega10_ih_toggle_interrupts - Toggle all the available interrupt ring buffers
- *
- * @adev: amdgpu_device pointer
- * @enable: enable or disable interrupt ring buffers
- *
- * Toggle all the available interrupt ring buffers (VEGA10).
- */
+ 
 static int vega10_ih_toggle_interrupts(struct amdgpu_device *adev, bool enable)
 {
 	struct amdgpu_ih_ring *ih[] = {&adev->irq.ih, &adev->irq.ih1, &adev->irq.ih2};
@@ -166,9 +124,7 @@ static uint32_t vega10_ih_rb_cntl(struct amdgpu_ih_ring *ih, uint32_t ih_rb_cntl
 	ih_rb_cntl = REG_SET_FIELD(ih_rb_cntl, IH_RB_CNTL,
 				   WPTR_OVERFLOW_ENABLE, 1);
 	ih_rb_cntl = REG_SET_FIELD(ih_rb_cntl, IH_RB_CNTL, RB_SIZE, rb_bufsz);
-	/* Ring Buffer write pointer writeback. If enabled, IH_RB_WPTR register
-	 * value is written to memory
-	 */
+	 
 	ih_rb_cntl = REG_SET_FIELD(ih_rb_cntl, IH_RB_CNTL,
 				   WPTR_WRITEBACK_ENABLE, 1);
 	ih_rb_cntl = REG_SET_FIELD(ih_rb_cntl, IH_RB_CNTL, MC_SNOOP, 1);
@@ -197,14 +153,7 @@ static uint32_t vega10_ih_doorbell_rptr(struct amdgpu_ih_ring *ih)
 	return ih_doorbell_rtpr;
 }
 
-/**
- * vega10_ih_enable_ring - enable an ih ring buffer
- *
- * @adev: amdgpu_device pointer
- * @ih: amdgpu_ih_ring pointer
- *
- * Enable an ih ring buffer (VEGA10)
- */
+ 
 static int vega10_ih_enable_ring(struct amdgpu_device *adev,
 				 struct amdgpu_ih_ring *ih)
 {
@@ -213,7 +162,7 @@ static int vega10_ih_enable_ring(struct amdgpu_device *adev,
 
 	ih_regs = &ih->ih_regs;
 
-	/* Ring Buffer base. [39:8] of 40-bit address of the beginning of the ring buffer*/
+	 
 	WREG32(ih_regs->ih_rb_base, ih->gpu_addr >> 8);
 	WREG32(ih_regs->ih_rb_base_hi, (ih->gpu_addr >> 40) & 0xff);
 
@@ -233,12 +182,12 @@ static int vega10_ih_enable_ring(struct amdgpu_device *adev,
 	}
 
 	if (ih == &adev->irq.ih) {
-		/* set the ih ring 0 writeback address whether it's enabled or not */
+		 
 		WREG32(ih_regs->ih_rb_wptr_addr_lo, lower_32_bits(ih->wptr_addr));
 		WREG32(ih_regs->ih_rb_wptr_addr_hi, upper_32_bits(ih->wptr_addr) & 0xFFFF);
 	}
 
-	/* set rptr, wptr to 0 */
+	 
 	WREG32(ih_regs->ih_rb_wptr, 0);
 	WREG32(ih_regs->ih_rb_rptr, 0);
 
@@ -247,17 +196,7 @@ static int vega10_ih_enable_ring(struct amdgpu_device *adev,
 	return 0;
 }
 
-/**
- * vega10_ih_irq_init - init and enable the interrupt ring
- *
- * @adev: amdgpu_device pointer
- *
- * Allocate a ring buffer for the interrupt controller,
- * enable the RLC, disable interrupts, enable the IH
- * ring buffer and enable it (VI).
- * Called at device load and reume.
- * Returns 0 for success, errors for failure.
- */
+ 
 static int vega10_ih_irq_init(struct amdgpu_device *adev)
 {
 	struct amdgpu_ih_ring *ih[] = {&adev->irq.ih, &adev->irq.ih1, &adev->irq.ih2};
@@ -265,7 +204,7 @@ static int vega10_ih_irq_init(struct amdgpu_device *adev)
 	int ret;
 	int i;
 
-	/* disable irqs */
+	 
 	ret = vega10_ih_toggle_interrupts(adev, false);
 	if (ret)
 		return ret;
@@ -295,7 +234,7 @@ static int vega10_ih_irq_init(struct amdgpu_device *adev)
 
 	pci_set_master(adev->pdev);
 
-	/* enable interrupts */
+	 
 	ret = vega10_ih_toggle_interrupts(adev, true);
 	if (ret)
 		return ret;
@@ -306,32 +245,16 @@ static int vega10_ih_irq_init(struct amdgpu_device *adev)
 	return 0;
 }
 
-/**
- * vega10_ih_irq_disable - disable interrupts
- *
- * @adev: amdgpu_device pointer
- *
- * Disable interrupts on the hw (VEGA10).
- */
+ 
 static void vega10_ih_irq_disable(struct amdgpu_device *adev)
 {
 	vega10_ih_toggle_interrupts(adev, false);
 
-	/* Wait and acknowledge irq */
+	 
 	mdelay(1);
 }
 
-/**
- * vega10_ih_get_wptr - get the IH ring buffer wptr
- *
- * @adev: amdgpu_device pointer
- * @ih: IH ring buffer to fetch wptr
- *
- * Get the IH ring buffer wptr from either the register
- * or the writeback memory buffer (VEGA10).  Also check for
- * ring buffer overflow and deal with it.
- * Returns the value of the wptr.
- */
+ 
 static u32 vega10_ih_get_wptr(struct amdgpu_device *adev,
 			      struct amdgpu_ih_ring *ih)
 {
@@ -339,11 +262,7 @@ static u32 vega10_ih_get_wptr(struct amdgpu_device *adev,
 	struct amdgpu_ih_regs *ih_regs;
 
 	if (ih == &adev->irq.ih || ih == &adev->irq.ih_soft) {
-		/* Only ring0 supports writeback. On other rings fall back
-		 * to register-based code with overflow checking below.
-		 * ih_soft ring doesn't have any backing hardware registers,
-		 * update wptr and return.
-		 */
+		 
 		wptr = le32_to_cpu(*ih->wptr_cpu);
 
 		if (!REG_GET_FIELD(wptr, IH_RB_WPTR, RB_OVERFLOW))
@@ -352,17 +271,14 @@ static u32 vega10_ih_get_wptr(struct amdgpu_device *adev,
 
 	ih_regs = &ih->ih_regs;
 
-	/* Double check that the overflow wasn't already cleared. */
+	 
 	wptr = RREG32_NO_KIQ(ih_regs->ih_rb_wptr);
 	if (!REG_GET_FIELD(wptr, IH_RB_WPTR, RB_OVERFLOW))
 		goto out;
 
 	wptr = REG_SET_FIELD(wptr, IH_RB_WPTR, RB_OVERFLOW, 0);
 
-	/* When a ring buffer overflow happen start parsing interrupt
-	 * from the last not overwritten vector (wptr + 32). Hopefully
-	 * this should allow us to catchup.
-	 */
+	 
 	tmp = (wptr + 32) & ih->ptr_mask;
 	dev_warn(adev->dev, "IH ring buffer overflow "
 		 "(0x%08X, 0x%08X, 0x%08X)\n",
@@ -377,13 +293,7 @@ out:
 	return (wptr & ih->ptr_mask);
 }
 
-/**
- * vega10_ih_irq_rearm - rearm IRQ if lost
- *
- * @adev: amdgpu_device pointer
- * @ih: IH ring to match
- *
- */
+ 
 static void vega10_ih_irq_rearm(struct amdgpu_device *adev,
 			       struct amdgpu_ih_ring *ih)
 {
@@ -392,7 +302,7 @@ static void vega10_ih_irq_rearm(struct amdgpu_device *adev,
 	struct amdgpu_ih_regs *ih_regs;
 
 	ih_regs = &ih->ih_regs;
-	/* Rearm IRQ / re-wwrite doorbell if doorbell write is lost */
+	 
 	for (i = 0; i < MAX_REARM_RETRY; i++) {
 		v = RREG32_NO_KIQ(ih_regs->ih_rb_rptr);
 		if ((v < ih->ring_size) && (v != ih->rptr))
@@ -402,14 +312,7 @@ static void vega10_ih_irq_rearm(struct amdgpu_device *adev,
 	}
 }
 
-/**
- * vega10_ih_set_rptr - set the IH ring buffer rptr
- *
- * @adev: amdgpu_device pointer
- * @ih: IH ring buffer to set rptr
- *
- * Set the IH ring buffer rptr.
- */
+ 
 static void vega10_ih_set_rptr(struct amdgpu_device *adev,
 			       struct amdgpu_ih_ring *ih)
 {
@@ -419,7 +322,7 @@ static void vega10_ih_set_rptr(struct amdgpu_device *adev,
 		return;
 
 	if (ih->use_doorbell) {
-		/* XXX check if swapping is necessary on BE */
+		 
 		*ih->rptr_cpu = ih->rptr;
 		WDOORBELL32(ih->doorbell_index, ih->rptr);
 
@@ -431,15 +334,7 @@ static void vega10_ih_set_rptr(struct amdgpu_device *adev,
 	}
 }
 
-/**
- * vega10_ih_self_irq - dispatch work for ring 1 and 2
- *
- * @adev: amdgpu_device pointer
- * @source: irq source
- * @entry: IV with WPTR update
- *
- * Update the WPTR from the IV and schedule work to handle the entries.
- */
+ 
 static int vega10_ih_self_irq(struct amdgpu_device *adev,
 			      struct amdgpu_irq_src *source,
 			      struct amdgpu_iv_entry *entry)
@@ -507,7 +402,7 @@ static int vega10_ih_sw_init(void *handle)
 		adev->irq.ih2.use_doorbell = true;
 		adev->irq.ih2.doorbell_index = (adev->doorbell_index.ih + 2) << 1;
 	}
-	/* initialize ih control registers offset */
+	 
 	vega10_ih_init_register_offset(adev);
 
 	r = amdgpu_ih_ring_init(adev, &adev->irq.ih_soft, IH_SW_RING_SIZE, true);
@@ -560,19 +455,19 @@ static int vega10_ih_resume(void *handle)
 
 static bool vega10_ih_is_idle(void *handle)
 {
-	/* todo */
+	 
 	return true;
 }
 
 static int vega10_ih_wait_for_idle(void *handle)
 {
-	/* todo */
+	 
 	return -ETIMEDOUT;
 }
 
 static int vega10_ih_soft_reset(void *handle)
 {
-	/* todo */
+	 
 
 	return 0;
 }
@@ -585,9 +480,7 @@ static void vega10_ih_update_clockgating_state(struct amdgpu_device *adev,
 	if (adev->cg_flags & AMD_CG_SUPPORT_IH_CG) {
 		def = data = RREG32_SOC15(OSSSYS, 0, mmIH_CLK_CTRL);
 		field_val = enable ? 0 : 1;
-		/**
-		 * Vega10/12 and RAVEN don't have IH_BUFFER_MEM_CLK_SOFT_OVERRIDE field.
-		 */
+		 
 		if (adev->asic_type == CHIP_RENOIR)
 			data = REG_SET_FIELD(data, IH_CLK_CTRL,
 				     IH_BUFFER_MEM_CLK_SOFT_OVERRIDE, field_val);

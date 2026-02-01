@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_RATELIMIT_TYPES_H
 #define _LINUX_RATELIMIT_TYPES_H
 
@@ -9,11 +9,11 @@
 #define DEFAULT_RATELIMIT_INTERVAL	(5 * HZ)
 #define DEFAULT_RATELIMIT_BURST		10
 
-/* issue num suppressed message on exit */
+ 
 #define RATELIMIT_MSG_ON_RELEASE	BIT(0)
 
 struct ratelimit_state {
-	raw_spinlock_t	lock;		/* protect the state */
+	raw_spinlock_t	lock;		 
 
 	int		interval;
 	int		burst;
@@ -44,4 +44,4 @@ struct ratelimit_state {
 extern int ___ratelimit(struct ratelimit_state *rs, const char *func);
 #define __ratelimit(state) ___ratelimit(state, __func__)
 
-#endif /* _LINUX_RATELIMIT_TYPES_H */
+#endif  

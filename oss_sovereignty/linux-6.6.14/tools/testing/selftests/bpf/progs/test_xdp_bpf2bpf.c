@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/bpf.h>
 #include <bpf/bpf_tracing.h>
 #include <bpf/bpf_helpers.h>
@@ -6,16 +6,12 @@
 char _license[] SEC("license") = "GPL";
 
 struct net_device {
-	/* Structure does not need to contain all entries,
-	 * as "preserve_access_index" will use BTF to fix this...
-	 */
+	 
 	int ifindex;
 } __attribute__((preserve_access_index));
 
 struct xdp_rxq_info {
-	/* Structure does not need to contain all entries,
-	 * as "preserve_access_index" will use BTF to fix this...
-	 */
+	 
 	struct net_device *dev;
 	__u32 queue_index;
 } __attribute__((preserve_access_index));

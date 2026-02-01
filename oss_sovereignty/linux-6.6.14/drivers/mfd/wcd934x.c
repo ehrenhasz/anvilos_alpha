@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019, Linaro Limited
+
+
 
 #include <linux/clk.h>
 #include <linux/gpio/consumer.h>
@@ -142,7 +142,7 @@ static int wcd934x_bring_up(struct wcd934x_ddata *ddata)
 	regmap_write(regmap, WCD934X_CODEC_RPM_RST_CTL, 0x01);
 	regmap_write(regmap, WCD934X_SIDO_NEW_VOUT_A_STARTUP, 0x19);
 	regmap_write(regmap, WCD934X_SIDO_NEW_VOUT_D_STARTUP, 0x15);
-	/* Add 1msec delay for VOUT to settle */
+	 
 	usleep_range(1000, 1100);
 	regmap_write(regmap, WCD934X_CODEC_RPM_PWR_CDC_DIG_HM_CTL, 0x5);
 	regmap_write(regmap, WCD934X_CODEC_RPM_PWR_CDC_DIG_HM_CTL, 0x7);
@@ -245,11 +245,7 @@ static int wcd934x_slim_probe(struct slim_device *sdev)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to enable supplies\n");
 
-	/*
-	 * For WCD934X, it takes about 600us for the Vout_A and
-	 * Vout_D to be ready after BUCK_SIDO is powered up.
-	 * SYS_RST_N shouldn't be pulled high during this time
-	 */
+	 
 	usleep_range(600, 650);
 	reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(reset_gpio)) {

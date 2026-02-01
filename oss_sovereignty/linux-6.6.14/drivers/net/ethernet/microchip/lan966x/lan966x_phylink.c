@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/module.h>
 #include <linux/phylink.h>
@@ -74,7 +74,7 @@ static void lan966x_phylink_mac_link_down(struct phylink_config *config,
 
 	lan966x_port_config_down(port);
 
-	/* Take PCS out of reset */
+	 
 	lan_rmw(DEV_CLOCK_CFG_PCS_RX_RST_SET(0) |
 		DEV_CLOCK_CFG_PCS_TX_RST_SET(0),
 		DEV_CLOCK_CFG_PCS_RX_RST |
@@ -119,7 +119,7 @@ static int lan966x_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 
 static void lan966x_pcs_aneg_restart(struct phylink_pcs *pcs)
 {
-	/* Currently not used */
+	 
 }
 
 const struct phylink_mac_ops lan966x_phylink_mac_ops = {

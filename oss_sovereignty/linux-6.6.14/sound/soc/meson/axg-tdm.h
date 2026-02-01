@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT)
- *
- * Copyright (c) 2018 Baylibre SAS.
- * Author: Jerome Brunet <jbrunet@baylibre.com>
- */
+ 
 
 #ifndef _MESON_AXG_TDM_H
 #define _MESON_AXG_TDM_H
@@ -29,12 +25,12 @@ struct axg_tdm_iface {
 	struct clk *mclk;
 	unsigned long mclk_rate;
 
-	/* format is common to all the DAIs of the iface */
+	 
 	unsigned int fmt;
 	unsigned int slots;
 	unsigned int slot_width;
 
-	/* For component wide symmetry */
+	 
 	int rate;
 };
 
@@ -75,4 +71,4 @@ int axg_tdm_set_tdm_slots(struct snd_soc_dai *dai, u32 *tx_mask,
 			  u32 *rx_mask, unsigned int slots,
 			  unsigned int slot_width);
 
-#endif /* _MESON_AXG_TDM_H */
+#endif  

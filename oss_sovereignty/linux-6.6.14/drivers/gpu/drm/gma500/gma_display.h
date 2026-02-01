@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright © 2006-2011 Intel Corporation
- *
- * Authors:
- *	Eric Anholt <eric@anholt.net>
- *	Patrik Jakobsson <patrik.r.jakobsson@gmail.com>
- */
+ 
+ 
 
 #ifndef _GMA_DISPLAY_H_
 #define _GMA_DISPLAY_H_
@@ -17,11 +11,11 @@ struct drm_encoder;
 struct drm_mode_set;
 
 struct gma_clock_t {
-	/* given values */
+	 
 	int n;
 	int m1, m2;
 	int p1, p2;
-	/* derived values */
+	 
 	int dot;
 	int vco;
 	int m;
@@ -53,7 +47,7 @@ struct gma_clock_funcs {
 			     struct gma_clock_t *clock);
 };
 
-/* Common pipe related functions */
+ 
 extern bool gma_pipe_has_type(struct drm_crtc *crtc, int type);
 extern void gma_wait_for_vblank(struct drm_device *dev);
 extern int gma_pipe_set_base(struct drm_crtc *crtc, int x, int y,
@@ -79,7 +73,7 @@ extern void gma_encoder_prepare(struct drm_encoder *encoder);
 extern void gma_encoder_commit(struct drm_encoder *encoder);
 extern void gma_encoder_destroy(struct drm_encoder *encoder);
 
-/* Common clock related functions */
+ 
 extern const struct gma_limit_t *gma_limit(struct drm_crtc *crtc, int refclk);
 extern void gma_clock(int refclk, struct gma_clock_t *clock);
 extern bool gma_pll_is_valid(struct drm_crtc *crtc,

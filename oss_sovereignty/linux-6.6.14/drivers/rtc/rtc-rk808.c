@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * RTC driver for Rockchip RK808
- *
- * Copyright (c) 2014, Fuzhou Rockchip Electronics Co., Ltd
- *
- * Author: Chris Zhong <zyw@rock-chips.com>
- * Author: Zhang Qing <zhangqing@rock-chips.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -15,14 +8,10 @@
 #include <linux/mfd/rk808.h>
 #include <linux/platform_device.h>
 
-/* RTC_CTRL_REG bitfields */
+ 
 #define BIT_RTC_CTRL_REG_STOP_RTC_M		BIT(0)
 
-/* RK808 has a shadowed register for saving a "frozen" RTC time.
- * When user setting "GET_TIME" to 1, the time will save in this shadowed
- * register. If set "READSEL" to 1, user read rtc time register, actually
- * get the time of that moment. If we need the real time, clr this bit.
- */
+ 
 #define BIT_RTC_CTRL_REG_RTC_GET_TIME		BIT(6)
 #define BIT_RTC_CTRL_REG_RTC_READSEL_M		BIT(7)
 #define BIT_RTC_INTERRUPTS_REG_IT_ALARM_M	BIT(3)
@@ -36,7 +25,7 @@
 #define YEARS_REG_MSK		0xFF
 #define WEEKS_REG_MSK		0x7
 
-/* REG_SECONDS_REG through REG_YEARS_REG is how many registers? */
+ 
 
 #define NUM_TIME_REGS	(RK808_WEEKS_REG - RK808_SECONDS_REG + 1)
 #define NUM_ALARM_REGS	(RK808_ALARM_YEARS_REG - RK808_ALARM_SECONDS_REG + 1)
@@ -56,15 +45,7 @@ struct rk808_rtc {
 	int irq;
 };
 
-/*
- * The Rockchip calendar used by the RK808 counts November with 31 days. We use
- * these translation functions to convert its dates to/from the Gregorian
- * calendar used by the rest of the world. We arbitrarily define Jan 1st, 2016
- * as the day when both calendars were in sync, and treat all other dates
- * relative to that.
- * NOTE: Other system software (e.g. firmware) that reads the same hardware must
- * implement this exact same conversion algorithm, with the same anchor date.
- */
+ 
 static time64_t nov2dec_transitions(struct rtc_time *tm)
 {
 	return (tm->tm_year + 1900) - 2016 + (tm->tm_mon + 1 > 11 ? 1 : 0);
@@ -72,7 +53,7 @@ static time64_t nov2dec_transitions(struct rtc_time *tm)
 
 static void rockchip_to_gregorian(struct rtc_time *tm)
 {
-	/* If it's Nov 31st, rtc_tm_to_time64() will count that like Dec 1st */
+	 
 	time64_t time = rtc_tm_to_time64(tm);
 	rtc_time64_to_tm(time + nov2dec_transitions(tm) * 86400, tm);
 }
@@ -83,23 +64,23 @@ static void gregorian_to_rockchip(struct rtc_time *tm)
 	time64_t time = rtc_tm_to_time64(tm);
 	rtc_time64_to_tm(time - extra_days * 86400, tm);
 
-	/* Compensate if we went back over Nov 31st (will work up to 2381) */
+	 
 	if (nov2dec_transitions(tm) < extra_days) {
 		if (tm->tm_mon + 1 == 11)
-			tm->tm_mday++;	/* This may result in 31! */
+			tm->tm_mday++;	 
 		else
 			rtc_time64_to_tm(time - (extra_days - 1) * 86400, tm);
 	}
 }
 
-/* Read current time and date in RTC */
+ 
 static int rk808_rtc_readtime(struct device *dev, struct rtc_time *tm)
 {
 	struct rk808_rtc *rk808_rtc = dev_get_drvdata(dev);
 	u8 rtc_data[NUM_TIME_REGS];
 	int ret;
 
-	/* Force an update of the shadowed registers right now */
+	 
 	ret = regmap_update_bits(rk808_rtc->regmap, rk808_rtc->creg->ctrl_reg,
 				 BIT_RTC_CTRL_REG_RTC_GET_TIME,
 				 BIT_RTC_CTRL_REG_RTC_GET_TIME);
@@ -108,12 +89,7 @@ static int rk808_rtc_readtime(struct device *dev, struct rtc_time *tm)
 		return ret;
 	}
 
-	/*
-	 * After we set the GET_TIME bit, the rtc time can't be read
-	 * immediately. So we should wait up to 31.25 us, about one cycle of
-	 * 32khz. If we clear the GET_TIME bit here, the time of i2c transfer
-	 * certainly more than 31.25us: 16 * 2.5us at 400kHz bus frequency.
-	 */
+	 
 	ret = regmap_update_bits(rk808_rtc->regmap, rk808_rtc->creg->ctrl_reg,
 				 BIT_RTC_CTRL_REG_RTC_GET_TIME,
 				 0);
@@ -142,7 +118,7 @@ static int rk808_rtc_readtime(struct device *dev, struct rtc_time *tm)
 	return ret;
 }
 
-/* Set current time and date in RTC */
+ 
 static int rk808_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct rk808_rtc *rk808_rtc = dev_get_drvdata(dev);
@@ -159,7 +135,7 @@ static int rk808_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	rtc_data[5] = bin2bcd(tm->tm_year - 100);
 	rtc_data[6] = bin2bcd(tm->tm_wday);
 
-	/* Stop RTC while updating the RTC registers */
+	 
 	ret = regmap_update_bits(rk808_rtc->regmap, rk808_rtc->creg->ctrl_reg,
 				 BIT_RTC_CTRL_REG_STOP_RTC_M,
 				 BIT_RTC_CTRL_REG_STOP_RTC_M);
@@ -174,7 +150,7 @@ static int rk808_rtc_set_time(struct device *dev, struct rtc_time *tm)
 		dev_err(dev, "Failed to bull write rtc_data: %d\n", ret);
 		return ret;
 	}
-	/* Start RTC again */
+	 
 	ret = regmap_update_bits(rk808_rtc->regmap, rk808_rtc->creg->ctrl_reg,
 				 BIT_RTC_CTRL_REG_STOP_RTC_M, 0);
 	if (ret) {
@@ -184,7 +160,7 @@ static int rk808_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	return 0;
 }
 
-/* Read alarm time and date in RTC */
+ 
 static int rk808_rtc_readalarm(struct device *dev, struct rtc_wkalrm *alrm)
 {
 	struct rk808_rtc *rk808_rtc = dev_get_drvdata(dev);
@@ -293,16 +269,7 @@ static int rk808_rtc_alarm_irq_enable(struct device *dev,
 	return rk808_rtc_stop_alarm(rk808_rtc);
 }
 
-/*
- * We will just handle setting the frequency and make use the framework for
- * reading the periodic interupts.
- *
- * @freq: Current periodic IRQ freq:
- * bit 0: every second
- * bit 1: every minute
- * bit 2: every hour
- * bit 3: every day
- */
+ 
 static irqreturn_t rk808_alarm_irq(int irq, void *data)
 {
 	struct rk808_rtc *rk808_rtc = data;
@@ -331,7 +298,7 @@ static const struct rtc_class_ops rk808_rtc_ops = {
 };
 
 #ifdef CONFIG_PM_SLEEP
-/* Turn off the alarm if it should not be a wake source. */
+ 
 static int rk808_rtc_suspend(struct device *dev)
 {
 	struct rk808_rtc *rk808_rtc = dev_get_drvdata(dev);
@@ -342,9 +309,7 @@ static int rk808_rtc_suspend(struct device *dev)
 	return 0;
 }
 
-/* Enable the alarm if it should be enabled (in case it was disabled to
- * prevent use as a wake source).
- */
+ 
 static int rk808_rtc_resume(struct device *dev)
 {
 	struct rk808_rtc *rk808_rtc = dev_get_drvdata(dev);
@@ -399,7 +364,7 @@ static int rk808_rtc_probe(struct platform_device *pdev)
 	if (!rk808_rtc->regmap)
 		return -ENODEV;
 
-	/* start rtc running by default, and use shadowed timer. */
+	 
 	ret = regmap_update_bits(rk808_rtc->regmap, rk808_rtc->creg->ctrl_reg,
 				 BIT_RTC_CTRL_REG_STOP_RTC_M |
 				 BIT_RTC_CTRL_REG_RTC_READSEL_M,
@@ -430,7 +395,7 @@ static int rk808_rtc_probe(struct platform_device *pdev)
 	if (rk808_rtc->irq < 0)
 		return rk808_rtc->irq;
 
-	/* request alarm irq of rk808 */
+	 
 	ret = devm_request_threaded_irq(&pdev->dev, rk808_rtc->irq, NULL,
 					rk808_alarm_irq, 0,
 					"RTC alarm", rk808_rtc);

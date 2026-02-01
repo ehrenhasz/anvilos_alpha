@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Broadcom SATA3 AHCI Controller Driver
- *
- * Copyright © 2009-2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/ahci_platform.h>
 #include <linux/compiler.h>
@@ -25,9 +21,9 @@
 
 #define SATA_TOP_CTRL_VERSION				0x0
 #define SATA_TOP_CTRL_BUS_CTRL				0x4
- #define MMIO_ENDIAN_SHIFT				0 /* CPU->AHCI */
- #define DMADESC_ENDIAN_SHIFT				2 /* AHCI->DDR */
- #define DMADATA_ENDIAN_SHIFT				4 /* AHCI->DDR */
+ #define MMIO_ENDIAN_SHIFT				0  
+ #define DMADESC_ENDIAN_SHIFT				2  
+ #define DMADATA_ENDIAN_SHIFT				4  
  #define PIODATA_ENDIAN_SHIFT				6
   #define ENDIAN_SWAP_NONE				0
   #define ENDIAN_SWAP_FULL				2
@@ -48,10 +44,10 @@
 #define SATA_NEXT_PORT_CTRL_OFFSET			0x80
 #define SATA_PORT_PCTRL6(reg_base)			(reg_base + 0x18)
 
-/* On big-endian MIPS, buses are reversed to big endian, so switch them back */
+ 
 #if defined(CONFIG_MIPS) && defined(__BIG_ENDIAN)
-#define DATA_ENDIAN			 2 /* AHCI->DDR inbound accesses */
-#define MMIO_ENDIAN			 2 /* CPU->AHCI outbound accesses */
+#define DATA_ENDIAN			 2  
+#define MMIO_ENDIAN			 2  
 #else
 #define DATA_ENDIAN			 0
 #define MMIO_ENDIAN			 0
@@ -92,14 +88,7 @@ struct brcm_ahci_priv {
 
 static inline u32 brcm_sata_readreg(void __iomem *addr)
 {
-	/*
-	 * MIPS endianness is configured by boot strap, which also reverses all
-	 * bus endianness (i.e., big-endian CPU + big endian bus ==> native
-	 * endian I/O).
-	 *
-	 * Other architectures (e.g., ARM) either do not support big endian, or
-	 * else leave I/O in little endian mode.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		return __raw_readl(addr);
 	else
@@ -108,7 +97,7 @@ static inline u32 brcm_sata_readreg(void __iomem *addr)
 
 static inline void brcm_sata_writereg(u32 val, void __iomem *addr)
 {
-	/* See brcm_sata_readreg() comments */
+	 
 	if (IS_ENABLED(CONFIG_MIPS) && IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		__raw_writel(val, addr);
 	else
@@ -121,15 +110,12 @@ static void brcm_sata_alpm_init(struct ahci_host_priv *hpriv)
 	u32 port_ctrl, host_caps;
 	int i;
 
-	/* Enable support for ALPM */
+	 
 	host_caps = readl(hpriv->mmio + HOST_CAP);
 	if (!(host_caps & HOST_CAP_ALPM))
 		hpriv->flags |= AHCI_HFLAG_YES_ALPM;
 
-	/*
-	 * Adjust timeout to allow PLL sufficient time to lock while waking
-	 * up from slumber mode.
-	 */
+	 
 	for (i = 0, port_ctrl = SATA_FIRST_PORT_CTRL;
 	     i < SATA_TOP_MAX_PHYS;
 	     i++, port_ctrl += SATA_NEXT_PORT_CTRL_OFFSET) {
@@ -149,13 +135,13 @@ static void brcm_sata_phy_enable(struct brcm_ahci_priv *priv, int port)
 	if (priv->quirks & BRCM_AHCI_QUIRK_SKIP_PHY_ENABLE)
 		return;
 
-	/* clear PHY_DEFAULT_POWER_STATE */
+	 
 	p = phyctrl + SATA_TOP_CTRL_PHY_CTRL_1;
 	reg = brcm_sata_readreg(p);
 	reg &= ~SATA_TOP_CTRL_1_PHY_DEFAULT_POWER_STATE;
 	brcm_sata_writereg(reg, p);
 
-	/* reset the PHY digital logic */
+	 
 	p = phyctrl + SATA_TOP_CTRL_PHY_CTRL_2;
 	reg = brcm_sata_readreg(p);
 	reg &= ~(SATA_TOP_CTRL_2_SW_RST_MDIOREG | SATA_TOP_CTRL_2_SW_RST_OOB |
@@ -181,7 +167,7 @@ static void brcm_sata_phy_disable(struct brcm_ahci_priv *priv, int port)
 	if (priv->quirks & BRCM_AHCI_QUIRK_SKIP_PHY_ENABLE)
 		return;
 
-	/* power-off the PHY digital logic */
+	 
 	p = phyctrl + SATA_TOP_CTRL_PHY_CTRL_2;
 	reg = brcm_sata_readreg(p);
 	reg |= (SATA_TOP_CTRL_2_SW_RST_MDIOREG | SATA_TOP_CTRL_2_SW_RST_OOB |
@@ -189,7 +175,7 @@ static void brcm_sata_phy_disable(struct brcm_ahci_priv *priv, int port)
 		SATA_TOP_CTRL_2_PHY_GLOBAL_RESET);
 	brcm_sata_writereg(reg, p);
 
-	/* set PHY_DEFAULT_POWER_STATE */
+	 
 	p = phyctrl + SATA_TOP_CTRL_PHY_CTRL_1;
 	reg = brcm_sata_readreg(p);
 	reg |= SATA_TOP_CTRL_1_PHY_DEFAULT_POWER_STATE;
@@ -235,7 +221,7 @@ static void brcm_sata_init(struct brcm_ahci_priv *priv)
 	void __iomem *ctrl = priv->top_ctrl + SATA_TOP_CTRL_BUS_CTRL;
 	u32 data;
 
-	/* Configure endianness */
+	 
 	data = brcm_sata_readreg(ctrl);
 	data &= ~BUS_CTRL_ENDIAN_CONF_MASK;
 	if (priv->version == BRCM_SATA_NSP)
@@ -258,35 +244,33 @@ static unsigned int brcm_ahci_read_id(struct ata_device *dev,
 	int i, rc;
 	u32 ctl;
 
-	/* Try to read the device ID and, if this fails, proceed with the
-	 * recovery sequence below
-	 */
+	 
 	err_mask = ata_do_dev_read_id(dev, tf, id);
 	if (likely(!err_mask))
 		return err_mask;
 
-	/* Disable host interrupts */
+	 
 	spin_lock_irqsave(&host->lock, flags);
 	ctl = readl(mmio + HOST_CTL);
 	ctl &= ~HOST_IRQ_EN;
 	writel(ctl, mmio + HOST_CTL);
-	readl(mmio + HOST_CTL); /* flush */
+	readl(mmio + HOST_CTL);  
 	spin_unlock_irqrestore(&host->lock, flags);
 
-	/* Perform the SATA PHY reset sequence */
+	 
 	brcm_sata_phy_disable(priv, ap->port_no);
 
-	/* Reset the SATA clock */
+	 
 	ahci_platform_disable_clks(hpriv);
 	msleep(10);
 
 	ahci_platform_enable_clks(hpriv);
 	msleep(10);
 
-	/* Bring the PHY back on */
+	 
 	brcm_sata_phy_enable(priv, ap->port_no);
 
-	/* Re-initialize and calibrate the PHY */
+	 
 	for (i = 0; i < hpriv->nports; i++) {
 		rc = phy_init(hpriv->phys[i]);
 		if (rc)
@@ -299,12 +283,12 @@ static unsigned int brcm_ahci_read_id(struct ata_device *dev,
 		}
 	}
 
-	/* Re-enable host interrupts */
+	 
 	spin_lock_irqsave(&host->lock, flags);
 	ctl = readl(mmio + HOST_CTL);
 	ctl |= HOST_IRQ_EN;
 	writel(ctl, mmio + HOST_CTL);
-	readl(mmio + HOST_CTL); /* flush */
+	readl(mmio + HOST_CTL);  
 	spin_unlock_irqrestore(&host->lock, flags);
 
 	return ata_do_dev_read_id(dev, tf, id);
@@ -373,7 +357,7 @@ static int __maybe_unused brcm_ahci_resume(struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Make sure clocks are turned on before re-configuration */
+	 
 	ret = ahci_platform_enable_clks(hpriv);
 	if (ret)
 		return ret;
@@ -386,12 +370,7 @@ static int __maybe_unused brcm_ahci_resume(struct device *dev)
 	brcm_sata_phys_enable(priv);
 	brcm_sata_alpm_init(hpriv);
 
-	/* Since we had to enable clocks earlier on, we cannot use
-	 * ahci_platform_resume() as-is since a second call to
-	 * ahci_platform_enable_resources() would bump up the resources
-	 * (regulators, clocks, PHYs) count artificially so we copy the part
-	 * after ahci_platform_enable_resources().
-	 */
+	 
 	ret = ahci_platform_enable_phys(hpriv);
 	if (ret)
 		goto out_disable_phys;
@@ -400,7 +379,7 @@ static int __maybe_unused brcm_ahci_resume(struct device *dev)
 	if (ret)
 		goto out_disable_platform_phys;
 
-	/* We resumed so update PM runtime state */
+	 
 	pm_runtime_disable(dev);
 	pm_runtime_set_active(dev);
 	pm_runtime_enable(dev);
@@ -427,7 +406,7 @@ static const struct of_device_id ahci_of_match[] = {
 	{.compatible = "brcm,bcm63138-ahci", .data = (void *)BRCM_SATA_BCM7445},
 	{.compatible = "brcm,bcm-nsp-ahci", .data = (void *)BRCM_SATA_NSP},
 	{.compatible = "brcm,bcm7216-ahci", .data = (void *)BRCM_SATA_BCM7216},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ahci_of_match);
 
@@ -500,19 +479,17 @@ static int brcm_ahci_probe(struct platform_device *pdev)
 	if (ret)
 		goto out_disable_clks;
 
-	/* Must be first so as to configure endianness including that
-	 * of the standard AHCI register space.
-	 */
+	 
 	brcm_sata_init(priv);
 
-	/* Initializes priv->port_mask which is used below */
+	 
 	priv->port_mask = brcm_ahci_get_portmask(hpriv, priv);
 	if (!priv->port_mask) {
 		ret = -ENODEV;
 		goto out_disable_regulators;
 	}
 
-	/* Must be done before ahci_platform_enable_phys() */
+	 
 	brcm_sata_phys_enable(priv);
 
 	brcm_sata_alpm_init(hpriv);
@@ -559,11 +536,7 @@ static void brcm_ahci_shutdown(struct platform_device *pdev)
 {
 	int ret;
 
-	/* All resources releasing happens via devres, but our device, unlike a
-	 * proper remove is not disappearing, therefore using
-	 * brcm_ahci_suspend() here which does explicit power management is
-	 * appropriate.
-	 */
+	 
 	ret = brcm_ahci_suspend(&pdev->dev);
 	if (ret)
 		dev_err(&pdev->dev, "failed to shutdown\n");

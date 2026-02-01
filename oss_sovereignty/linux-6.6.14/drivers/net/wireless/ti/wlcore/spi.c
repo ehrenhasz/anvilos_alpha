@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2008-2009 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -33,7 +27,7 @@
 
 #define WSPI_INIT_CMD_START         0x00
 #define WSPI_INIT_CMD_TX            0x40
-/* the extra bypass bit is sampled by the TNET as '1' */
+ 
 #define WSPI_INIT_CMD_BYPASS_BIT    0x80
 #define WSPI_INIT_CMD_FIXEDBUSY_LEN 0x07
 #define WSPI_INIT_CMD_EN_FIXEDBUSY  0x80
@@ -51,16 +45,13 @@
 		((WL1271_BUSY_WORD_LEN - 4) / sizeof(u32))
 #define HW_ACCESS_WSPI_INIT_CMD_MASK  0
 
-/* HW limitation: maximum possible chunk size is 4095 bytes */
+ 
 #define WSPI_MAX_CHUNK_SIZE    4092
 
-/*
- * wl18xx driver aggregation buffer size is (13 * 4K) compared to
- * (4 * 4K) for wl12xx, so use the larger buffer needed for wl18xx
- */
+ 
 #define SPI_AGGR_BUFFER_SIZE (13 * SZ_4K)
 
-/* Maximum number of SPI write chunks */
+ 
 #define WSPI_MAX_NUM_OF_CHUNKS \
 	((SPI_AGGR_BUFFER_SIZE / WSPI_MAX_CHUNK_SIZE) + 1)
 
@@ -83,7 +74,7 @@ static const struct wilink_family_data wl18xx_data = {
 struct wl12xx_spi_glue {
 	struct device *dev;
 	struct platform_device *core;
-	struct regulator *reg; /* Power regulator */
+	struct regulator *reg;  
 };
 
 static void wl12xx_spi_reset(struct device *child)
@@ -131,10 +122,7 @@ static void wl12xx_spi_init(struct device *child)
 	memset(&t, 0, sizeof(t));
 	spi_message_init(&m);
 
-	/*
-	 * Set WSPI_INIT_COMMAND
-	 * the data is being send from the MSB to LSB
-	 */
+	 
 	cmd[0] = 0xff;
 	cmd[1] = 0xff;
 	cmd[2] = WSPI_INIT_CMD_START | WSPI_INIT_CMD_TX;
@@ -153,10 +141,7 @@ static void wl12xx_spi_init(struct device *child)
 
 	cmd[7] = crc7_be(0, cmd+2, WSPI_INIT_CMD_CRC_LEN) | WSPI_INIT_CMD_END;
 
-	/*
-	 * The above is the logical order; it must actually be stored
-	 * in the buffer byte-swapped.
-	 */
+	 
 	__swab32s((u32 *)cmd);
 	__swab32s((u32 *)cmd+1);
 
@@ -166,9 +151,7 @@ static void wl12xx_spi_init(struct device *child)
 
 	spi_sync(to_spi_device(glue->dev), &m);
 
-	/* Send extra clocks with inverted CS (high). this is required
-	 * by the wilink family in order to successfully enter WSPI mode.
-	 */
+	 
 	spi->mode ^= SPI_CS_HIGH;
 	memset(&m, 0, sizeof(m));
 	spi_message_init(&m);
@@ -185,7 +168,7 @@ static void wl12xx_spi_init(struct device *child)
 
 	spi_sync(to_spi_device(glue->dev), &m);
 
-	/* Restore chip select configuration to normal */
+	 
 	spi->mode ^= SPI_CS_HIGH;
 	kfree(cmd);
 }
@@ -201,10 +184,7 @@ static int wl12xx_spi_read_busy(struct device *child)
 	u32 *busy_buf;
 	int num_busy_bytes = 0;
 
-	/*
-	 * Read further busy words from SPI until a non-busy word is
-	 * encountered, then read the data itself into the buffer.
-	 */
+	 
 
 	num_busy_bytes = WL1271_BUSY_WORD_TIMEOUT;
 	busy_buf = wl->buffer_busyword;
@@ -222,7 +202,7 @@ static int wl12xx_spi_read_busy(struct device *child)
 			return 0;
 	}
 
-	/* The SPI bus is unresponsive, the read failed. */
+	 
 	dev_err(child->parent, "SPI read busy-word timeout!\n");
 	return -ETIMEDOUT;
 }
@@ -261,7 +241,7 @@ static int __must_check wl12xx_spi_raw_read(struct device *child, int addr,
 		t[0].cs_change = true;
 		spi_message_add_tail(&t[0], &m);
 
-		/* Busy and non busy words read */
+		 
 		t[1].rx_buf = busy_buf;
 		t[1].len = WL1271_BUSY_WORD_LEN;
 		t[1].cs_change = true;
@@ -300,12 +280,12 @@ static int __wl12xx_spi_raw_write(struct device *child, int addr,
 	struct wl12xx_spi_glue *glue = dev_get_drvdata(child->parent);
 	struct spi_transfer *t;
 	struct spi_message m;
-	u32 commands[WSPI_MAX_NUM_OF_CHUNKS]; /* 1 command per chunk */
+	u32 commands[WSPI_MAX_NUM_OF_CHUNKS];  
 	u32 *cmd;
 	u32 chunk_len;
 	int i;
 
-	/* SPI write buffers - 2 for each chunk */
+	 
 	t = kzalloc(sizeof(*t) * 2 * WSPI_MAX_NUM_OF_CHUNKS, GFP_KERNEL);
 	if (!t)
 		return -ENOMEM;
@@ -352,23 +332,14 @@ static int __wl12xx_spi_raw_write(struct device *child, int addr,
 static int __must_check wl12xx_spi_raw_write(struct device *child, int addr,
 					     void *buf, size_t len, bool fixed)
 {
-	/* The ELP wakeup write may fail the first time due to internal
-	 * hardware latency. It is safer to send the wakeup command twice to
-	 * avoid unexpected failures.
-	 */
+	 
 	if (addr == HW_ACCESS_ELP_CTRL_REG)
 		__wl12xx_spi_raw_write(child, addr, buf, len, fixed);
 
 	return __wl12xx_spi_raw_write(child, addr, buf, len, fixed);
 }
 
-/**
- * wl12xx_spi_set_power - power on/off the wl12xx unit
- * @child: wl12xx device handle.
- * @enable: true/false to power on/off the unit.
- *
- * use the WiFi enable regulator to enable/disable the WiFi unit.
- */
+ 
 static int wl12xx_spi_set_power(struct device *child, bool enable)
 {
 	int ret = 0;
@@ -376,7 +347,7 @@ static int wl12xx_spi_set_power(struct device *child, bool enable)
 
 	WARN_ON(!glue->reg);
 
-	/* Update regulator state */
+	 
 	if (enable) {
 		ret = regulator_enable(glue->reg);
 		if (ret)
@@ -390,13 +361,7 @@ static int wl12xx_spi_set_power(struct device *child, bool enable)
 	return ret;
 }
 
-/*
- * wl12xx_spi_set_block_size
- *
- * This function is not needed for spi mode, but need to be present.
- * Without it defined the wlcore fallback to use the wrong packet
- * allignment on tx.
- */
+ 
 static void wl12xx_spi_set_block_size(struct device *child,
 				      unsigned int blksz)
 {
@@ -427,12 +392,7 @@ static const struct of_device_id wlcore_spi_of_match_table[] = {
 };
 MODULE_DEVICE_TABLE(of, wlcore_spi_of_match_table);
 
-/**
- * wlcore_probe_of - DT node parsing.
- * @spi: SPI slave device parameters.
- * @glue: wl12xx SPI bus to slave device glue parameters.
- * @pdev_data: wlcore device parameters
- */
+ 
 static int wlcore_probe_of(struct spi_device *spi, struct wl12xx_spi_glue *glue,
 			   struct wlcore_platdev_data *pdev_data)
 {
@@ -449,7 +409,7 @@ static int wlcore_probe_of(struct spi_device *spi, struct wl12xx_spi_glue *glue,
 
 	pdev_data->ref_clock_xtal = of_property_read_bool(dt_node, "clock-xtal");
 
-	/* optional clock frequency params */
+	 
 	of_property_read_u32(dt_node, "ref-clock-frequency",
 			     &pdev_data->ref_clock_freq);
 	of_property_read_u32(dt_node, "tcxo-clock-frequency",
@@ -481,8 +441,7 @@ static int wl1271_probe(struct spi_device *spi)
 
 	spi_set_drvdata(spi, glue);
 
-	/* This is the only SPI value that we need to set here, the rest
-	 * comes from the board-peripherals file */
+	 
 	spi->bits_per_word = 32;
 
 	glue->reg = devm_regulator_get(&spi->dev, "vwlan");

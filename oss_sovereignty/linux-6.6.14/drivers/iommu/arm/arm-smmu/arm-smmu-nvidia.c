@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2019-2020 NVIDIA CORPORATION.  All rights reserved.
+
+
 
 #include <linux/bitfield.h>
 #include <linux/delay.h>
@@ -11,24 +11,7 @@
 
 #include "arm-smmu.h"
 
-/*
- * Tegra194 has three ARM MMU-500 Instances.
- * Two of them are used together and must be programmed identically for
- * interleaved IOVA accesses across them and translates accesses from
- * non-isochronous HW devices.
- * Third one is used for translating accesses from isochronous HW devices.
- *
- * In addition, the SMMU driver needs to coordinate with the memory controller
- * driver to ensure that the right SID override is programmed for any given
- * memory client. This is necessary to allow for use-case such as seamlessly
- * handing over the display controller configuration from the firmware to the
- * kernel.
- *
- * This implementation supports programming of the two instances that must
- * be programmed identically and takes care of invoking the memory controller
- * driver for SID override programming after devices have been attached to an
- * SMMU instance.
- */
+ 
 #define MAX_SMMU_INSTANCES 2
 
 struct nvidia_smmu {
@@ -139,7 +122,7 @@ static int nvidia_smmu_reset(struct arm_smmu_device *smmu)
 		void __iomem *reg = nvidia_smmu_page(smmu, i, ARM_SMMU_GR0) +
 				    ARM_SMMU_GR0_sGFSR;
 
-		/* clear global FSR */
+		 
 		val = readl_relaxed(reg);
 		writel_relaxed(val, reg);
 	}
@@ -232,10 +215,7 @@ static irqreturn_t nvidia_smmu_context_fault(int irq, void *dev)
 	for (inst = 0; inst < nvidia->num_instances; inst++) {
 		irqreturn_t irq_ret;
 
-		/*
-		 * Interrupt line is shared between all contexts.
-		 * Check for faults across all contexts.
-		 */
+		 
 		for (idx = 0; idx < smmu->num_context_banks; idx++) {
 			irq_ret = nvidia_smmu_context_fault_bank(irq, smmu,
 								 idx, inst);
@@ -265,18 +245,7 @@ static int nvidia_smmu_init_context(struct arm_smmu_domain *smmu_domain,
 	struct arm_smmu_device *smmu = smmu_domain->smmu;
 	const struct device_node *np = smmu->dev->of_node;
 
-	/*
-	 * Tegra194 and Tegra234 SoCs have the erratum that causes walk cache
-	 * entries to not be invalidated correctly. The problem is that the walk
-	 * cache index generated for IOVA is not same across translation and
-	 * invalidation requests. This is leading to page faults when PMD entry
-	 * is released during unmap and populated with new PTE table during
-	 * subsequent map request. Disabling large page mappings avoids the
-	 * release of PMD entry and avoid translations seeing stale PMD entry in
-	 * walk cache.
-	 * Fix this by limiting the page mappings to PAGE_SIZE on Tegra194 and
-	 * Tegra234.
-	 */
+	 
 	if (of_device_is_compatible(np, "nvidia,tegra234-smmu") ||
 	    of_device_is_compatible(np, "nvidia,tegra194-smmu")) {
 		smmu->pgsize_bitmap = PAGE_SIZE;
@@ -320,7 +289,7 @@ struct arm_smmu_device *nvidia_smmu_impl_init(struct arm_smmu_device *smmu)
 	if (IS_ERR(nvidia_smmu->mc))
 		return ERR_CAST(nvidia_smmu->mc);
 
-	/* Instance 0 is ioremapped by arm-smmu.c. */
+	 
 	nvidia_smmu->bases[0] = smmu->base;
 	nvidia_smmu->num_instances++;
 

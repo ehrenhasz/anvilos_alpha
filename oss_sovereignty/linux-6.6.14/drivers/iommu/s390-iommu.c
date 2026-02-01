@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * IOMMU API for s390 PCI devices
- *
- * Copyright IBM Corp. 2015
- * Author(s): Gerald Schaefer <gerald.schaefer@de.ibm.com>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/iommu.h>
@@ -124,10 +119,7 @@ static int s390_iommu_attach_device(struct iommu_domain *domain,
 
 	cc = zpci_register_ioat(zdev, 0, zdev->start_dma, zdev->end_dma,
 				virt_to_phys(s390_domain->dma_table), &status);
-	/*
-	 * If the device is undergoing error recovery the reset code
-	 * will re-establish the new domain.
-	 */
+	 
 	if (cc && status != ZPCI_PCI_ST_FUNC_NOT_AVAIL)
 		return -EIO;
 	zdev->dma_table = s390_domain->dma_table;
@@ -197,10 +189,7 @@ static void s390_iommu_release_device(struct device *dev)
 {
 	struct zpci_dev *zdev = to_zpci_dev(dev);
 
-	/*
-	 * release_device is expected to detach any domain currently attached
-	 * to the device, but keep it attached to other devices in the group.
-	 */
+	 
 	if (zdev)
 		__s390_iommu_detach_device(zdev);
 }
@@ -225,7 +214,7 @@ static void s390_iommu_iotlb_sync(struct iommu_domain *domain,
 	size_t size = gather->end - gather->start + 1;
 	struct zpci_dev *zdev;
 
-	/* If gather was never added to there is nothing to flush */
+	 
 	if (!gather->end)
 		return;
 

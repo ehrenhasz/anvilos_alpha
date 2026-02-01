@@ -1,10 +1,5 @@
-/* $OpenBSD: xmss_commons.c,v 1.2 2018/02/26 03:56:44 dtucker Exp $ */
-/*
-xmss_commons.c 20160722
-Andreas Hülsing
-Joost Rijneveld
-Public domain.
-*/
+ 
+ 
 
 #include "includes.h"
 #ifdef WITH_XMSS
@@ -33,4 +28,4 @@ void hexdump(const unsigned char *a, size_t len)
     printf("%02x", a[i]);
 }
 #endif
-#endif /* WITH_XMSS */
+#endif  

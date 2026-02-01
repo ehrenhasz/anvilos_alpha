@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments Ethernet Switch Driver
- *
- * Copyright (C) 2012 Texas Instruments
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -100,10 +95,7 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
 	if (cpsw->data.dual_emac) {
 		bool flag = false;
 
-		/* Enabling promiscuous mode for one interface will be
-		 * common for both the interface as the interface shares
-		 * the same hardware resource.
-		 */
+		 
 		for (i = 0; i < cpsw->data.slaves; i++)
 			if (cpsw->slaves[i].ndev->flags & IFF_PROMISC)
 				flag = true;
@@ -114,12 +106,12 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
 		}
 
 		if (enable) {
-			/* Enable Bypass */
+			 
 			cpsw_ale_control_set(ale, 0, ALE_BYPASS, 1);
 
 			dev_dbg(&ndev->dev, "promiscuity enabled\n");
 		} else {
-			/* Disable Bypass */
+			 
 			cpsw_ale_control_set(ale, 0, ALE_BYPASS, 0);
 			dev_dbg(&ndev->dev, "promiscuity disabled\n");
 		}
@@ -127,7 +119,7 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
 		if (enable) {
 			unsigned long timeout = jiffies + HZ;
 
-			/* Disable Learn for all ports (host is port 0 and slaves are port 1 and up */
+			 
 			for (i = 0; i <= cpsw->data.slaves; i++) {
 				cpsw_ale_control_set(ale, i,
 						     ALE_PORT_NOLEARN, 1);
@@ -135,7 +127,7 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
 						     ALE_PORT_NO_SA_UPDATE, 1);
 			}
 
-			/* Clear All Untouched entries */
+			 
 			cpsw_ale_control_set(ale, 0, ALE_AGEOUT, 1);
 			do {
 				cpu_relax();
@@ -144,18 +136,18 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
 			} while (time_after(timeout, jiffies));
 			cpsw_ale_control_set(ale, 0, ALE_AGEOUT, 1);
 
-			/* Clear all mcast from ALE */
+			 
 			cpsw_ale_flush_multicast(ale, ALE_ALL_PORTS, -1);
 			__hw_addr_ref_unsync_dev(&ndev->mc, ndev, NULL);
 
-			/* Flood All Unicast Packets to Host port */
+			 
 			cpsw_ale_control_set(ale, 0, ALE_P0_UNI_FLOOD, 1);
 			dev_dbg(&ndev->dev, "promiscuity enabled\n");
 		} else {
-			/* Don't Flood All Unicast Packets to Host port */
+			 
 			cpsw_ale_control_set(ale, 0, ALE_P0_UNI_FLOOD, 0);
 
-			/* Enable Learn for all ports (host is port 0 and slaves are port 1 and up */
+			 
 			for (i = 0; i <= cpsw->data.slaves; i++) {
 				cpsw_ale_control_set(ale, i,
 						     ALE_PORT_NOLEARN, 0);
@@ -167,14 +159,7 @@ static void cpsw_set_promiscious(struct net_device *ndev, bool enable)
 	}
 }
 
-/**
- * cpsw_set_mc - adds multicast entry to the table if it's not added or deletes
- * if it's not deleted
- * @ndev: device to sync
- * @addr: address to be added or deleted
- * @vid: vlan id, if vid < 0 set/unset address for real device
- * @add: add address if the flag is set or remove otherwise
- */
+ 
 static int cpsw_set_mc(struct net_device *ndev, const u8 *addr,
 		       int vid, int add)
 {
@@ -209,7 +194,7 @@ static int cpsw_update_vlan_mc(struct net_device *vdev, int vid, void *ctx)
 	if (!vdev || !(vdev->flags & IFF_UP))
 		return 0;
 
-	/* vlan address is relevant if its sync_cnt != 0 */
+	 
 	netdev_for_each_mc_addr(ha, vdev) {
 		if (ether_addr_equal(ha->addr, sync_ctx->addr)) {
 			found = ha->sync_cnt;
@@ -274,7 +259,7 @@ static int cpsw_purge_vlan_mc(struct net_device *vdev, int vid, void *ctx)
 	if (!vdev || !(vdev->flags & IFF_UP))
 		return 0;
 
-	/* vlan address is relevant if its sync_cnt != 0 */
+	 
 	netdev_for_each_mc_addr(ha, vdev) {
 		if (ether_addr_equal(ha->addr, sync_ctx->addr)) {
 			found = ha->sync_cnt;
@@ -315,20 +300,20 @@ static void cpsw_ndo_set_rx_mode(struct net_device *ndev)
 		slave_port = priv->emac_port + 1;
 
 	if (ndev->flags & IFF_PROMISC) {
-		/* Enable promiscuous mode */
+		 
 		cpsw_set_promiscious(ndev, true);
 		cpsw_ale_set_allmulti(cpsw->ale, IFF_ALLMULTI, slave_port);
 		return;
 	} else {
-		/* Disable promiscuous mode */
+		 
 		cpsw_set_promiscious(ndev, false);
 	}
 
-	/* Restore allmulti on vlans if necessary */
+	 
 	cpsw_ale_set_allmulti(cpsw->ale,
 			      ndev->flags & IFF_ALLMULTI, slave_port);
 
-	/* add/remove mcast address either for real netdev or for vlan */
+	 
 	__hw_addr_ref_sync_dev(&ndev->mc, ndev, cpsw_add_mc_addr,
 			       cpsw_del_mc_addr);
 }
@@ -366,20 +351,15 @@ static void cpsw_rx_handler(void *token, int len, int status)
 	priv = netdev_priv(ndev);
 	pool = cpsw->page_pool[ch];
 	if (unlikely(status < 0) || unlikely(!netif_running(ndev))) {
-		/* In dual emac mode check for all interfaces */
+		 
 		if (cpsw->data.dual_emac && cpsw->usage_count &&
 		    (status >= 0)) {
-			/* The packet received is for the interface which
-			 * is already down and the other interface is up
-			 * and running, instead of freeing which results
-			 * in reducing of the number of rx descriptor in
-			 * DMA engine, requeue page back to cpdma.
-			 */
+			 
 			new_page = page;
 			goto requeue;
 		}
 
-		/* the interface is going down, pages are purged */
+		 
 		page_pool_recycle_direct(pool, page);
 		return;
 	}
@@ -409,11 +389,11 @@ static void cpsw_rx_handler(void *token, int len, int status)
 
 		headroom = xdp.data - xdp.data_hard_start;
 
-		/* XDP prog can modify vlan tag, so can't use encap header */
+		 
 		status &= ~CPDMA_RX_VLAN_ENCAP;
 	}
 
-	/* pass skb to netstack if no XDP prog or returned XDP_PASS */
+	 
 	skb = build_skb(pa, cpsw_rxbuf_total_len(pkt_size));
 	if (!skb) {
 		ndev->stats.rx_dropped++;
@@ -430,7 +410,7 @@ static void cpsw_rx_handler(void *token, int len, int status)
 		cpts_rx_timestamp(cpsw->cpts, skb);
 	skb->protocol = eth_type_trans(skb, ndev);
 
-	/* mark skb for recycling */
+	 
 	skb_mark_for_recycle(skb);
 	netif_receive_skb(skb);
 
@@ -472,12 +452,12 @@ static void _cpsw_adjust_link(struct cpsw_slave *slave,
 		if (phy->duplex)
 			mac_control |= CPSW_SL_CTL_FULLDUPLEX;
 
-		/* set speed_in input in case RMII mode is used in 100Mbps */
+		 
 		if (phy->speed == 100)
 			mac_control |= CPSW_SL_CTL_IFCTL_A;
-		/* in band mode only works in 10Mbps RGMII mode */
+		 
 		else if ((phy->speed == 10) && phy_interface_is_rgmii(phy))
-			mac_control |= CPSW_SL_CTL_EXT_EN; /* In Band mode */
+			mac_control |= CPSW_SL_CTL_EXT_EN;  
 
 		if (priv->rx_pause)
 			mac_control |= CPSW_SL_CTL_RX_FLOW_EN;
@@ -488,7 +468,7 @@ static void _cpsw_adjust_link(struct cpsw_slave *slave,
 		if (mac_control != slave->mac_control)
 			cpsw_sl_ctl_set(slave->mac_sl, mac_control);
 
-		/* enable forwarding */
+		 
 		cpsw_ale_control_set(cpsw->ale, slave_port,
 				     ALE_PORT_STATE, ALE_PORT_STATE_FORWARD);
 
@@ -501,7 +481,7 @@ static void _cpsw_adjust_link(struct cpsw_slave *slave,
 				 "Speed was changed, CBS shaper speeds are changed!");
 	} else {
 		mac_control = 0;
-		/* disable forwarding */
+		 
 		cpsw_ale_control_set(cpsw->ale, slave_port,
 				     ALE_PORT_STATE, ALE_PORT_STATE_DISABLE);
 
@@ -568,16 +548,14 @@ static void cpsw_slave_open(struct cpsw_slave *slave, struct cpsw_priv *priv)
 	cpsw_sl_reset(slave->mac_sl, 100);
 	cpsw_sl_ctl_reset(slave->mac_sl);
 
-	/* setup priority mapping */
+	 
 	cpsw_sl_reg_write(slave->mac_sl, CPSW_SL_RX_PRI_MAP,
 			  RX_PRIORITY_MAPPING);
 
 	switch (cpsw->version) {
 	case CPSW_VERSION_1:
 		slave_write(slave, TX_PRIORITY_MAPPING, CPSW1_TX_PRI_MAP);
-		/* Increase RX FIFO size to 5 for supporting fullduplex
-		 * flow control mode
-		 */
+		 
 		slave_write(slave,
 			    (CPSW_MAX_BLKS_TX << CPSW_MAX_BLKS_TX_SHIFT) |
 			    CPSW_MAX_BLKS_RX, CPSW1_MAX_BLKS);
@@ -586,21 +564,19 @@ static void cpsw_slave_open(struct cpsw_slave *slave, struct cpsw_priv *priv)
 	case CPSW_VERSION_3:
 	case CPSW_VERSION_4:
 		slave_write(slave, TX_PRIORITY_MAPPING, CPSW2_TX_PRI_MAP);
-		/* Increase RX FIFO size to 5 for supporting fullduplex
-		 * flow control mode
-		 */
+		 
 		slave_write(slave,
 			    (CPSW_MAX_BLKS_TX << CPSW_MAX_BLKS_TX_SHIFT) |
 			    CPSW_MAX_BLKS_RX, CPSW2_MAX_BLKS);
 		break;
 	}
 
-	/* setup max packet size, and mac address */
+	 
 	cpsw_sl_reg_write(slave->mac_sl, CPSW_SL_RX_MAXLEN,
 			  cpsw->rx_packet_max);
 	cpsw_set_slave_mac(slave, priv);
 
-	slave->mac_control = 0;	/* no link yet */
+	slave->mac_control = 0;	 
 
 	slave_port = cpsw_get_slave_port(slave->slave_num);
 
@@ -637,7 +613,7 @@ static void cpsw_slave_open(struct cpsw_slave *slave, struct cpsw_priv *priv)
 
 	phy_start(slave->phy);
 
-	/* Configure GMII_SEL register */
+	 
 	if (!IS_ERR(slave->data->ifphy))
 		phy_set_mode_ext(slave->data->ifphy, PHY_MODE_ETHERNET,
 				 slave->data->phy_if);
@@ -678,11 +654,11 @@ static void cpsw_init_host_port(struct cpsw_priv *priv)
 	u32 control_reg;
 	struct cpsw_common *cpsw = priv->cpsw;
 
-	/* soft reset the controller and initialize ale */
+	 
 	soft_reset("cpsw", &cpsw->regs->soft_reset);
 	cpsw_ale_start(cpsw->ale);
 
-	/* switch to vlan unaware mode */
+	 
 	cpsw_ale_control_set(cpsw->ale, HOST_PORT_NUM, ALE_VLAN_AWARE,
 			     CPSW_ALE_VLAN_AWARE);
 	control_reg = readl(&cpsw->regs->control);
@@ -692,7 +668,7 @@ static void cpsw_init_host_port(struct cpsw_priv *priv)
 		     CPSW_FIFO_NORMAL_MODE;
 	writel(fifo_mode, &cpsw->host_port_regs->tx_in_ctl);
 
-	/* setup host port priority mapping */
+	 
 	writel_relaxed(CPDMA_TX_PRIORITY_MAP,
 		       &cpsw->host_port_regs->cpdma_tx_pri_map);
 	writel_relaxed(0, &cpsw->host_port_regs->cpdma_rx_chan_map);
@@ -736,16 +712,16 @@ static int cpsw_restore_vlans(struct net_device *vdev, int vid, void *arg)
 	return 0;
 }
 
-/* restore resources after port reset */
+ 
 static void cpsw_restore(struct cpsw_priv *priv)
 {
-	/* restore vlan configurations */
+	 
 	vlan_for_each(priv->ndev, cpsw_restore_vlans, priv);
 
-	/* restore MQPRIO offload */
+	 
 	for_each_slave(priv, cpsw_mqprio_resume, priv);
 
-	/* restore CBS offload */
+	 
 	for_each_slave(priv, cpsw_cbs_resume, priv);
 }
 
@@ -762,7 +738,7 @@ static int cpsw_ndo_open(struct net_device *ndev)
 
 	netif_carrier_off(ndev);
 
-	/* Notify the stack of the actual queue counts. */
+	 
 	ret = netif_set_real_num_tx_queues(ndev, cpsw->tx_ch_num);
 	if (ret) {
 		dev_err(priv->dev, "cannot set real number of tx queues\n");
@@ -781,27 +757,27 @@ static int cpsw_ndo_open(struct net_device *ndev)
 		 CPSW_MAJOR_VERSION(reg), CPSW_MINOR_VERSION(reg),
 		 CPSW_RTL_VERSION(reg));
 
-	/* Initialize host and slave ports */
+	 
 	if (!cpsw->usage_count)
 		cpsw_init_host_port(priv);
 	for_each_slave(priv, cpsw_slave_open, priv);
 
-	/* Add default VLAN */
+	 
 	if (!cpsw->data.dual_emac)
 		cpsw_add_default_vlan(priv);
 	else
 		cpsw_ale_add_vlan(cpsw->ale, cpsw->data.default_vlan,
 				  ALE_ALL_PORTS, ALE_ALL_PORTS, 0, 0);
 
-	/* initialize shared resources for every ndev */
+	 
 	if (!cpsw->usage_count) {
-		/* disable priority elevation */
+		 
 		writel_relaxed(0, &cpsw->regs->ptype);
 
-		/* enable statistics collection only on all ports */
+		 
 		writel_relaxed(0x7, &cpsw->regs->stat_port_en);
 
-		/* Enable internal fifo flow control */
+		 
 		writel(0x7, &cpsw->regs->flow_control);
 
 		napi_enable(&cpsw->napi_rx);
@@ -817,9 +793,7 @@ static int cpsw_ndo_open(struct net_device *ndev)
 			enable_irq(cpsw->irqs_table[0]);
 		}
 
-		/* create rxqs for both infs in dual mac as they use same pool
-		 * and must be destroyed together when no users.
-		 */
+		 
 		ret = cpsw_create_xdp_rxqs(cpsw);
 		if (ret < 0)
 			goto err_cleanup;
@@ -838,7 +812,7 @@ static int cpsw_ndo_open(struct net_device *ndev)
 
 	cpsw_restore(priv);
 
-	/* Enable Interrupt pacing if configured */
+	 
 	if (cpsw->coal_intvl != 0) {
 		struct ethtool_coalesce coal;
 
@@ -929,13 +903,11 @@ static netdev_tx_t cpsw_ndo_start_xmit(struct sk_buff *skb,
 		goto fail;
 	}
 
-	/* If there is no more tx desc left free then we need to
-	 * tell the kernel to stop sending us tx frames.
-	 */
+	 
 	if (unlikely(!cpdma_check_free_tx_desc(txch))) {
 		netif_tx_stop_queue(txq);
 
-		/* Barrier, so that stop_queue visible to other cpus */
+		 
 		smp_mb__after_atomic();
 
 		if (cpdma_check_free_tx_desc(txch))
@@ -947,7 +919,7 @@ fail:
 	ndev->stats.tx_dropped++;
 	netif_tx_stop_queue(txq);
 
-	/* Barrier, so that stop_queue visible to other cpus */
+	 
 	smp_mb__after_atomic();
 
 	if (cpdma_check_free_tx_desc(txch))
@@ -1055,10 +1027,7 @@ static int cpsw_ndo_vlan_rx_add_vid(struct net_device *ndev,
 		return ret;
 
 	if (cpsw->data.dual_emac) {
-		/* In dual EMAC, reserved VLAN id should not be used for
-		 * creating VLAN interfaces as this can break the dual
-		 * EMAC port separation
-		 */
+		 
 		int i;
 
 		for (i = 0; i < cpsw->data.slaves; i++) {
@@ -1280,11 +1249,9 @@ static int cpsw_probe_dt(struct cpsw_platform_data *data,
 	if (of_property_read_bool(node, "dual_emac"))
 		data->dual_emac = true;
 
-	/*
-	 * Populate all the child nodes here...
-	 */
+	 
 	ret = of_platform_populate(node, NULL, NULL, &pdev->dev);
-	/* We do not want to force this, as in some cases may not have child */
+	 
 	if (ret)
 		dev_warn(&pdev->dev, "Doesn't have any child node\n");
 
@@ -1293,7 +1260,7 @@ static int cpsw_probe_dt(struct cpsw_platform_data *data,
 		int lenp;
 		const __be32 *parp;
 
-		/* This is no slave child node, continue */
+		 
 		if (!of_node_name_eq(slave_node, "slave"))
 			continue;
 
@@ -1316,9 +1283,7 @@ static int cpsw_probe_dt(struct cpsw_platform_data *data,
 				"slave[%d] using phy-handle=\"%pOF\"\n",
 				i, slave_data->phy_node);
 		} else if (of_phy_is_fixed_link(slave_node)) {
-			/* In the case of a fixed PHY, the DT node associated
-			 * to the PHY is the Ethernet MAC DT node.
-			 */
+			 
 			ret = of_phy_register_fixed_link(slave_node);
 			if (ret) {
 				dev_err_probe(&pdev->dev, ret, "failed to register fixed-link phy\n");
@@ -1464,7 +1429,7 @@ static int cpsw_probe_dual_emac(struct cpsw_priv *priv)
 	ndev->netdev_ops = &cpsw_netdev_ops;
 	ndev->ethtool_ops = &cpsw_ethtool_ops;
 
-	/* register the network device */
+	 
 	SET_NETDEV_DEV(ndev, cpsw->dev);
 	ndev->dev.of_node = cpsw->slaves[1].data->slave_node;
 	ret = register_netdev(ndev);
@@ -1479,13 +1444,13 @@ static const struct of_device_id cpsw_of_mtable[] = {
 	{ .compatible = "ti,am335x-cpsw"},
 	{ .compatible = "ti,am4372-cpsw"},
 	{ .compatible = "ti,dra7-cpsw"},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, cpsw_of_mtable);
 
 static const struct soc_device_attribute cpsw_soc_devices[] = {
 	{ .family = "AM33xx", .revision = "ES1.0"},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int cpsw_probe(struct platform_device *pdev)
@@ -1536,32 +1501,28 @@ static int cpsw_probe(struct platform_device *pdev)
 	if (IS_ERR(cpsw->wr_regs))
 		return PTR_ERR(cpsw->wr_regs);
 
-	/* RX IRQ */
+	 
 	irq = platform_get_irq(pdev, 1);
 	if (irq < 0)
 		return irq;
 	cpsw->irqs_table[0] = irq;
 
-	/* TX IRQ */
+	 
 	irq = platform_get_irq(pdev, 2);
 	if (irq < 0)
 		return irq;
 	cpsw->irqs_table[1] = irq;
 
-	/* get misc irq*/
+	 
 	irq = platform_get_irq(pdev, 3);
 	if (irq <= 0)
 		return irq;
 	cpsw->misc_irq = irq;
 
-	/*
-	 * This may be required here for child devices.
-	 */
+	 
 	pm_runtime_enable(dev);
 
-	/* Need to enable clocks with runtime PM api to access module
-	 * registers
-	 */
+	 
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret < 0)
 		goto clean_runtime_disable_ret;
@@ -1608,7 +1569,7 @@ static int cpsw_probe(struct platform_device *pdev)
 	}
 	cpsw_split_res(cpsw);
 
-	/* setup netdev */
+	 
 	ndev = devm_alloc_etherdev_mqs(dev, sizeof(struct cpsw_priv),
 				       CPSW_MAX_QUEUES, CPSW_MAX_QUEUES);
 	if (!ndev) {
@@ -1647,7 +1608,7 @@ static int cpsw_probe(struct platform_device *pdev)
 	netif_napi_add_tx(ndev, &cpsw->napi_tx,
 			  cpsw->quirk_irq ? cpsw_tx_poll : cpsw_tx_mq_poll);
 
-	/* register the network device */
+	 
 	SET_NETDEV_DEV(ndev, dev);
 	ndev->dev.of_node = cpsw->slaves[0].data->slave_node;
 	ret = register_netdev(ndev);
@@ -1665,13 +1626,7 @@ static int cpsw_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Grab RX and TX IRQs. Note that we also have RX_THRESHOLD and
-	 * MISC IRQs which are always kept disabled with this driver so
-	 * we will not request them.
-	 *
-	 * If anyone wants to implement support for those, make sure to
-	 * first request and append them to irqs_table array.
-	 */
+	 
 	ret = devm_request_irq(dev, cpsw->irqs_table[0], cpsw_rx_interrupt,
 			       0, dev_name(dev), cpsw);
 	if (ret < 0) {
@@ -1697,7 +1652,7 @@ static int cpsw_probe(struct platform_device *pdev)
 		goto clean_unregister_netdev_ret;
 	}
 
-	/* Enable misc CPTS evnt_pend IRQ */
+	 
 	cpts_set_irqpoll(cpsw->cpts, false);
 
 skip_cpts:
@@ -1758,7 +1713,7 @@ static int cpsw_suspend(struct device *dev)
 
 	rtnl_unlock();
 
-	/* Select sleep pin state */
+	 
 	pinctrl_pm_select_sleep_state(dev);
 
 	return 0;
@@ -1769,10 +1724,10 @@ static int cpsw_resume(struct device *dev)
 	struct cpsw_common *cpsw = dev_get_drvdata(dev);
 	int i;
 
-	/* Select default pin state */
+	 
 	pinctrl_pm_select_default_state(dev);
 
-	/* shut up ASSERT_RTNL() warning in netif_set_real_num_tx/rx_queues */
+	 
 	rtnl_lock();
 
 	for (i = 0; i < cpsw->data.slaves; i++)

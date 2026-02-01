@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generate definitions needed by assembly language modules.
- * This code generates raw asm output which is post-processed to extract
- * and format the required data.
- */
+
+ 
 #define COMPILE_OFFSETS
 
 #include <linux/crypto.h>
@@ -102,15 +98,15 @@ static void __used common(void)
 	BLANK();
 	DEFINE(PTREGS_SIZE, sizeof(struct pt_regs));
 
-	/* TLB state for the entry code */
+	 
 	OFFSET(TLB_STATE_user_pcid_flush_mask, tlb_state, user_pcid_flush_mask);
 
-	/* Layout info for cpu_entry_area */
+	 
 	OFFSET(CPU_ENTRY_AREA_entry_stack, cpu_entry_area, entry_stack_page);
 	DEFINE(SIZEOF_entry_stack, sizeof(struct entry_stack));
 	DEFINE(MASK_entry_stack, (~(sizeof(struct entry_stack) - 1)));
 
-	/* Offset for fields in tss_struct */
+	 
 	OFFSET(TSS_sp0, tss_struct, x86_tss.sp0);
 	OFFSET(TSS_sp1, tss_struct, x86_tss.sp1);
 	OFFSET(TSS_sp2, tss_struct, x86_tss.sp2);
@@ -120,7 +116,7 @@ static void __used common(void)
 	OFFSET(X86_call_depth, pcpu_hot, call_depth);
 #endif
 #if IS_ENABLED(CONFIG_CRYPTO_ARIA_AESNI_AVX_X86_64)
-	/* Offset for fields in aria_ctx */
+	 
 	BLANK();
 	OFFSET(ARIA_CTX_enc_key, aria_ctx, enc_key);
 	OFFSET(ARIA_CTX_dec_key, aria_ctx, dec_key);

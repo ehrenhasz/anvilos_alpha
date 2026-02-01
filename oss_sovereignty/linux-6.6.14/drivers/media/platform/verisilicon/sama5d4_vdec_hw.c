@@ -1,15 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VDEC driver
- *
- * Copyright (C) 2021 Collabora Ltd, Emil Velikov <emil.velikov@collabora.com>
- */
+
+ 
 
 #include "hantro.h"
 
-/*
- * Supported formats.
- */
+ 
 
 static const struct hantro_fmt sama5d4_vdec_postproc_fmts[] = {
 	{
@@ -81,9 +75,7 @@ static const struct hantro_fmt sama5d4_vdec_fmts[] = {
 	},
 };
 
-/*
- * Supported codec ops.
- */
+ 
 
 static const struct hantro_codec_ops sama5d4_vdec_codec_ops[] = {
 	[HANTRO_MODE_MPEG2_DEC] = {

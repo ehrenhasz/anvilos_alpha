@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_SUBDEV_H__
 #define __NVKM_SUBDEV_H__
 #include <core/device.h>
@@ -69,7 +69,7 @@ int  nvkm_subdev_fini(struct nvkm_subdev *, bool suspend);
 int  nvkm_subdev_info(struct nvkm_subdev *, u64, u64 *);
 void nvkm_subdev_intr(struct nvkm_subdev *);
 
-/* subdev logging */
+ 
 #define nvkm_printk_ok(s,u,l)                                                                \
 	((CONFIG_NOUVEAU_DEBUG >= (l)) && ((s)->debug >= (l) || ((u) && (u)->debug >= (l))))
 #define nvkm_printk___(s,u,l,p,f,a...) do {                                                  \

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <fcntl.h>
 #include "bench.h"
 #include "test_overhead.skel.h"
 
-/* BPF triggering benchmarks */
+ 
 static struct ctx {
 	struct test_overhead *skel;
 	struct counter hits;

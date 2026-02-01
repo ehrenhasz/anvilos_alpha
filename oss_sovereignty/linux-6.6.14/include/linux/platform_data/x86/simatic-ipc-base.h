@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Siemens SIMATIC IPC drivers
- *
- * Copyright (c) Siemens AG, 2018-2023
- *
- * Authors:
- *  Henning Schild <henning.schild@siemens.com>
- *  Gerd Haeussler <gerd.haeussler.ext@siemens.com>
- */
+ 
+ 
 
 #ifndef __PLATFORM_DATA_X86_SIMATIC_IPC_BASE_H
 #define __PLATFORM_DATA_X86_SIMATIC_IPC_BASE_H
@@ -28,4 +20,4 @@ struct simatic_ipc_platform {
 	u8	devmode;
 };
 
-#endif /* __PLATFORM_DATA_X86_SIMATIC_IPC_BASE_H */
+#endif  

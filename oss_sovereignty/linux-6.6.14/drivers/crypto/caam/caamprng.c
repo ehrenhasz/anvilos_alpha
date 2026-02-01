@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver to expose SEC4 PRNG via crypto RNG API
- *
- * Copyright 2022 NXP
- *
- */
+
+ 
 
 #include <linux/completion.h>
 #include <crypto/internal/rng.h>
@@ -17,14 +12,12 @@
 #include "jr.h"
 #include "error.h"
 
-/*
- * Length of used descriptors, see caam_init_desc()
- */
+ 
 #define CAAM_PRNG_MAX_DESC_LEN (CAAM_CMD_SZ +				\
 			    CAAM_CMD_SZ +				\
 			    CAAM_CMD_SZ + CAAM_PTR_SZ_MAX)
 
-/* prng per-device context */
+ 
 struct caam_prng_ctx {
 	int err;
 	struct completion done;
@@ -47,8 +40,8 @@ static void caam_prng_done(struct device *jrdev, u32 *desc, u32 err,
 
 static u32 *caam_init_reseed_desc(u32 *desc)
 {
-	init_job_desc(desc, 0);	/* + 1 cmd_sz */
-	/* Generate random bytes: + 1 cmd_sz */
+	init_job_desc(desc, 0);	 
+	 
 	append_operation(desc, OP_TYPE_CLASS1_ALG | OP_ALG_ALGSEL_RNG |
 			OP_ALG_AS_FINALIZE);
 
@@ -60,10 +53,10 @@ static u32 *caam_init_reseed_desc(u32 *desc)
 
 static u32 *caam_init_prng_desc(u32 *desc, dma_addr_t dst_dma, u32 len)
 {
-	init_job_desc(desc, 0);	/* + 1 cmd_sz */
-	/* Generate random bytes: + 1 cmd_sz */
+	init_job_desc(desc, 0);	 
+	 
 	append_operation(desc, OP_ALG_ALGSEL_RNG | OP_TYPE_CLASS1_ALG);
-	/* Store bytes: + 1 cmd_sz + caam_ptr_sz  */
+	 
 	append_fifo_store(desc, dst_dma,
 			  len, FIFOST_TYPE_RNGSTORE);
 
@@ -212,7 +205,7 @@ int caam_prng_register(struct device *ctrldev)
 	u32 rng_inst;
 	int ret = 0;
 
-	/* Check for available RNG blocks before registration */
+	 
 	if (priv->era < 10)
 		rng_inst = (rd_reg32(&priv->jr[0]->perfmon.cha_num_ls) &
 			    CHA_ID_LS_RNG_MASK) >> CHA_ID_LS_RNG_SHIFT;

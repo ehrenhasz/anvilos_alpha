@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * crash.c - kernel crash support code.
- * Copyright (C) 2002-2004 Eric Biederman  <ebiederm@xmission.com>
- */
+
+ 
 
 #include <linux/buildid.h>
 #include <linux/crash_core.h>
@@ -22,31 +19,21 @@
 #include "kallsyms_internal.h"
 #include "kexec_internal.h"
 
-/* Per cpu memory for storing cpu states in case of system crash. */
+ 
 note_buf_t __percpu *crash_notes;
 
-/* vmcoreinfo stuff */
+ 
 unsigned char *vmcoreinfo_data;
 size_t vmcoreinfo_size;
 u32 *vmcoreinfo_note;
 
-/* trusted vmcoreinfo, e.g. we can make a copy in the crash memory */
+ 
 static unsigned char *vmcoreinfo_data_safecopy;
 
-/*
- * parsing the "crashkernel" commandline
- *
- * this code is intended to be called from architecture specific code
- */
+ 
 
 
-/*
- * This function parses command lines in the format
- *
- *   crashkernel=ramsize-range:size[,...][@offset]
- *
- * The function returns 0 on success and -EINVAL on failure.
- */
+ 
 static int __init parse_crashkernel_mem(char *cmdline,
 					unsigned long long system_ram,
 					unsigned long long *crash_size,
@@ -55,19 +42,14 @@ static int __init parse_crashkernel_mem(char *cmdline,
 	char *cur = cmdline, *tmp;
 	unsigned long long total_mem = system_ram;
 
-	/*
-	 * Firmware sometimes reserves some memory regions for its own use,
-	 * so the system memory size is less than the actual physical memory
-	 * size. Work around this by rounding up the total size to 128M,
-	 * which is enough for most test cases.
-	 */
+	 
 	total_mem = roundup(total_mem, SZ_128M);
 
-	/* for each entry of the comma-separated list */
+	 
 	do {
 		unsigned long long start, end = ULLONG_MAX, size;
 
-		/* get the start of the range */
+		 
 		start = memparse(cur, &tmp);
 		if (cur == tmp) {
 			pr_warn("crashkernel: Memory value expected\n");
@@ -80,7 +62,7 @@ static int __init parse_crashkernel_mem(char *cmdline,
 		}
 		cur++;
 
-		/* if no ':' is here, than we read the end */
+		 
 		if (*cur != ':') {
 			end = memparse(cur, &tmp);
 			if (cur == tmp) {
@@ -111,7 +93,7 @@ static int __init parse_crashkernel_mem(char *cmdline,
 			return -EINVAL;
 		}
 
-		/* match ? */
+		 
 		if (total_mem >= start && total_mem < end) {
 			*crash_size = size;
 			break;
@@ -135,13 +117,7 @@ static int __init parse_crashkernel_mem(char *cmdline,
 	return 0;
 }
 
-/*
- * That function parses "simple" (old) crashkernel command lines like
- *
- *	crashkernel=size[@offset]
- *
- * It returns 0 on success and -EINVAL on failure.
- */
+ 
 static int __init parse_crashkernel_simple(char *cmdline,
 					   unsigned long long *crash_size,
 					   unsigned long long *crash_base)
@@ -173,13 +149,7 @@ static __initdata char *suffix_tbl[] = {
 	[SUFFIX_NULL] = NULL,
 };
 
-/*
- * That function parses "suffix"  crashkernel command lines like
- *
- *	crashkernel=size,[high|low]
- *
- * It returns 0 on success and -EINVAL on failure.
- */
+ 
 static int __init parse_crashkernel_suffix(char *cmdline,
 					   unsigned long long	*crash_size,
 					   const char *suffix)
@@ -192,7 +162,7 @@ static int __init parse_crashkernel_suffix(char *cmdline,
 		return -EINVAL;
 	}
 
-	/* check with suffix */
+	 
 	if (strncmp(cur, suffix, strlen(suffix))) {
 		pr_warn("crashkernel: unrecognized char: %c\n", *cur);
 		return -EINVAL;
@@ -212,7 +182,7 @@ static __init char *get_last_crashkernel(char *cmdline,
 {
 	char *p = cmdline, *ck_cmdline = NULL;
 
-	/* find crashkernel and use the last one if there are more */
+	 
 	p = strstr(p, name);
 	while (p) {
 		char *end_p = strchr(p, ' ');
@@ -224,7 +194,7 @@ static __init char *get_last_crashkernel(char *cmdline,
 		if (!suffix) {
 			int i;
 
-			/* skip the one with any known suffix */
+			 
 			for (i = 0; suffix_tbl[i]; i++) {
 				q = end_p - strlen(suffix_tbl[i]);
 				if (!strncmp(q, suffix_tbl[i],
@@ -267,10 +237,7 @@ static int __init __parse_crashkernel(char *cmdline,
 	if (suffix)
 		return parse_crashkernel_suffix(ck_cmdline, crash_size,
 				suffix);
-	/*
-	 * if the commandline contains a ':', then that's the extended
-	 * syntax -- if not, it must be the classic syntax
-	 */
+	 
 	first_colon = strchr(ck_cmdline, ':');
 	first_space = strchr(ck_cmdline, ' ');
 	if (first_colon && (!first_space || first_colon < first_space))
@@ -280,10 +247,7 @@ static int __init __parse_crashkernel(char *cmdline,
 	return parse_crashkernel_simple(ck_cmdline, crash_size, crash_base);
 }
 
-/*
- * That function is the entry point for command line parsing and should be
- * called from the arch-specific code.
- */
+ 
 int __init parse_crashkernel(char *cmdline,
 			     unsigned long long system_ram,
 			     unsigned long long *crash_size,
@@ -311,10 +275,7 @@ int __init parse_crashkernel_low(char *cmdline,
 				"crashkernel=", suffix_tbl[SUFFIX_LOW]);
 }
 
-/*
- * Add a dummy early_param handler to mark crashkernel= as a known command line
- * parameter and suppress incorrect warnings in init/main.c.
- */
+ 
 static int __init parse_crashkernel_dummy(char *arg)
 {
 	return 0;
@@ -332,17 +293,11 @@ int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
 	unsigned long long notes_addr;
 	unsigned long mstart, mend;
 
-	/* extra phdr for vmcoreinfo ELF note */
+	 
 	nr_phdr = nr_cpus + 1;
 	nr_phdr += mem->nr_ranges;
 
-	/*
-	 * kexec-tools creates an extra PT_LOAD phdr for kernel text mapping
-	 * area (for example, ffffffff80000000 - ffffffffa0000000 on x86_64).
-	 * I think this is required by tools like gdb. So same physical
-	 * memory will be mapped in two ELF headers. One will contain kernel
-	 * text virtual addresses and other will have __va(physical) addresses.
-	 */
+	 
 
 	nr_phdr++;
 	elf_sz = sizeof(Elf64_Ehdr) + nr_phdr * sizeof(Elf64_Phdr);
@@ -367,7 +322,7 @@ int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
 	ehdr->e_ehsize = sizeof(Elf64_Ehdr);
 	ehdr->e_phentsize = sizeof(Elf64_Phdr);
 
-	/* Prepare one phdr of type PT_NOTE for each possible CPU */
+	 
 	for_each_possible_cpu(cpu) {
 		phdr->p_type = PT_NOTE;
 		notes_addr = per_cpu_ptr_to_phys(per_cpu_ptr(crash_notes, cpu));
@@ -377,14 +332,14 @@ int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
 		phdr++;
 	}
 
-	/* Prepare one PT_NOTE header for vmcoreinfo */
+	 
 	phdr->p_type = PT_NOTE;
 	phdr->p_offset = phdr->p_paddr = paddr_vmcoreinfo_note();
 	phdr->p_filesz = phdr->p_memsz = VMCOREINFO_NOTE_SIZE;
 	(ehdr->e_phnum)++;
 	phdr++;
 
-	/* Prepare PT_LOAD type program header for kernel text region */
+	 
 	if (need_kernel_map) {
 		phdr->p_type = PT_LOAD;
 		phdr->p_flags = PF_R|PF_W|PF_X;
@@ -395,7 +350,7 @@ int crash_prepare_elf64_headers(struct crash_mem *mem, int need_kernel_map,
 		phdr++;
 	}
 
-	/* Go through all the ranges in mem->ranges[] and prepare phdr */
+	 
 	for (i = 0; i < mem->nr_ranges; i++) {
 		mstart = mem->ranges[i].start;
 		mend = mem->ranges[i].end;
@@ -436,18 +391,18 @@ int crash_exclude_mem_range(struct crash_mem *mem,
 		if (mstart > end || mend < start)
 			continue;
 
-		/* Truncate any area outside of range */
+		 
 		if (mstart < start)
 			p_start = start;
 		if (mend > end)
 			p_end = end;
 
-		/* Found completely overlapping range */
+		 
 		if (p_start == start && p_end == end) {
 			mem->ranges[i].start = 0;
 			mem->ranges[i].end = 0;
 			if (i < mem->nr_ranges - 1) {
-				/* Shift rest of the ranges to left */
+				 
 				for (j = i; j < mem->nr_ranges - 1; j++) {
 					mem->ranges[j].start =
 						mem->ranges[j+1].start;
@@ -455,11 +410,7 @@ int crash_exclude_mem_range(struct crash_mem *mem,
 							mem->ranges[j+1].end;
 				}
 
-				/*
-				 * Continue to check if there are another overlapping ranges
-				 * from the current position because of shifting the above
-				 * mem ranges.
-				 */
+				 
 				i--;
 				mem->nr_ranges--;
 				continue;
@@ -469,7 +420,7 @@ int crash_exclude_mem_range(struct crash_mem *mem,
 		}
 
 		if (p_start > start && p_end < end) {
-			/* Split original range */
+			 
 			mem->ranges[i].end = p_start - 1;
 			temp_range.start = p_end + 1;
 			temp_range.end = end;
@@ -480,18 +431,18 @@ int crash_exclude_mem_range(struct crash_mem *mem,
 		break;
 	}
 
-	/* If a split happened, add the split to array */
+	 
 	if (!temp_range.end)
 		return 0;
 
-	/* Split happened */
+	 
 	if (i == mem->max_nr_ranges - 1)
 		return -ENOMEM;
 
-	/* Location where new range should go */
+	 
 	j = i + 1;
 	if (j < mem->nr_ranges) {
-		/* Move over all ranges one slot towards the end */
+		 
 		for (i = mem->nr_ranges - 1; i >= j; i--)
 			mem->ranges[i + 1] = mem->ranges[i];
 	}
@@ -548,7 +499,7 @@ void crash_save_vmcoreinfo(void)
 	if (!vmcoreinfo_note)
 		return;
 
-	/* Use the safe copy to generate vmcoreinfo note if have */
+	 
 	if (vmcoreinfo_data_safecopy)
 		vmcoreinfo_data = vmcoreinfo_data_safecopy;
 
@@ -576,10 +527,7 @@ void vmcoreinfo_append_str(const char *fmt, ...)
 		  "vmcoreinfo data exceeds allocated size, truncating");
 }
 
-/*
- * provide an empty default implementation here -- architecture
- * code may override this
- */
+ 
 void __weak arch_crash_save_vmcoreinfo(void)
 {}
 
@@ -691,8 +639,8 @@ static int __init crash_save_vmcoreinfo_init(void)
 	VMCOREINFO_SYMBOL(kallsyms_relative_base);
 #else
 	VMCOREINFO_SYMBOL(kallsyms_addresses);
-#endif /* CONFIG_KALLSYMS_BASE_RELATIVE */
-#endif /* CONFIG_KALLSYMS */
+#endif  
+#endif  
 
 	arch_crash_save_vmcoreinfo();
 	update_vmcoreinfo_note();
@@ -704,26 +652,14 @@ subsys_initcall(crash_save_vmcoreinfo_init);
 
 static int __init crash_notes_memory_init(void)
 {
-	/* Allocate memory for saving cpu registers. */
+	 
 	size_t size, align;
 
-	/*
-	 * crash_notes could be allocated across 2 vmalloc pages when percpu
-	 * is vmalloc based . vmalloc doesn't guarantee 2 continuous vmalloc
-	 * pages are also on 2 continuous physical pages. In this case the
-	 * 2nd part of crash_notes in 2nd page could be lost since only the
-	 * starting address and size of crash_notes are exported through sysfs.
-	 * Here round up the size of crash_notes to the nearest power of two
-	 * and pass it to __alloc_percpu as align value. This can make sure
-	 * crash_notes is allocated inside one physical page.
-	 */
+	 
 	size = sizeof(note_buf_t);
 	align = min(roundup_pow_of_two(sizeof(note_buf_t)), PAGE_SIZE);
 
-	/*
-	 * Break compile if size is bigger than PAGE_SIZE since crash_notes
-	 * definitely will be in 2 pages with that.
-	 */
+	 
 	BUILD_BUG_ON(size > PAGE_SIZE);
 
 	crash_notes = __alloc_percpu(size, align);
@@ -739,28 +675,18 @@ subsys_initcall(crash_notes_memory_init);
 #undef pr_fmt
 #define pr_fmt(fmt) "crash hp: " fmt
 
-/*
- * Different than kexec/kdump loading/unloading/jumping/shrinking which
- * usually rarely happen, there will be many crash hotplug events notified
- * during one short period, e.g one memory board is hot added and memory
- * regions are online. So mutex lock  __crash_hotplug_lock is used to
- * serialize the crash hotplug handling specifically.
- */
+ 
 DEFINE_MUTEX(__crash_hotplug_lock);
 #define crash_hotplug_lock() mutex_lock(&__crash_hotplug_lock)
 #define crash_hotplug_unlock() mutex_unlock(&__crash_hotplug_lock)
 
-/*
- * This routine utilized when the crash_hotplug sysfs node is read.
- * It reflects the kernel's ability/permission to update the crash
- * elfcorehdr directly.
- */
+ 
 int crash_check_update_elfcorehdr(void)
 {
 	int rc = 0;
 
 	crash_hotplug_lock();
-	/* Obtain lock while reading crash information */
+	 
 	if (!kexec_trylock()) {
 		pr_info("kexec_trylock() failed, elfcorehdr may be inaccurate\n");
 		crash_hotplug_unlock();
@@ -772,46 +698,33 @@ int crash_check_update_elfcorehdr(void)
 		else
 			rc = kexec_crash_image->update_elfcorehdr;
 	}
-	/* Release lock now that update complete */
+	 
 	kexec_unlock();
 	crash_hotplug_unlock();
 
 	return rc;
 }
 
-/*
- * To accurately reflect hot un/plug changes of cpu and memory resources
- * (including onling and offlining of those resources), the elfcorehdr
- * (which is passed to the crash kernel via the elfcorehdr= parameter)
- * must be updated with the new list of CPUs and memories.
- *
- * In order to make changes to elfcorehdr, two conditions are needed:
- * First, the segment containing the elfcorehdr must be large enough
- * to permit a growing number of resources; the elfcorehdr memory size
- * is based on NR_CPUS_DEFAULT and CRASH_MAX_MEMORY_RANGES.
- * Second, purgatory must explicitly exclude the elfcorehdr from the
- * list of segments it checks (since the elfcorehdr changes and thus
- * would require an update to purgatory itself to update the digest).
- */
+ 
 static void crash_handle_hotplug_event(unsigned int hp_action, unsigned int cpu)
 {
 	struct kimage *image;
 
 	crash_hotplug_lock();
-	/* Obtain lock while changing crash information */
+	 
 	if (!kexec_trylock()) {
 		pr_info("kexec_trylock() failed, elfcorehdr may be inaccurate\n");
 		crash_hotplug_unlock();
 		return;
 	}
 
-	/* Check kdump is not loaded */
+	 
 	if (!kexec_crash_image)
 		goto out;
 
 	image = kexec_crash_image;
 
-	/* Check that updating elfcorehdr is permitted */
+	 
 	if (!(image->file_mode || image->update_elfcorehdr))
 		goto out;
 
@@ -821,11 +734,7 @@ static void crash_handle_hotplug_event(unsigned int hp_action, unsigned int cpu)
 	else
 		pr_debug("hp_action %u\n", hp_action);
 
-	/*
-	 * The elfcorehdr_index is set to -1 when the struct kimage
-	 * is allocated. Find the segment containing the elfcorehdr,
-	 * if not already found.
-	 */
+	 
 	if (image->elfcorehdr_index < 0) {
 		unsigned long mem;
 		unsigned char *ptr;
@@ -835,7 +744,7 @@ static void crash_handle_hotplug_event(unsigned int hp_action, unsigned int cpu)
 			mem = image->segment[n].mem;
 			ptr = kmap_local_page(pfn_to_page(mem >> PAGE_SHIFT));
 			if (ptr) {
-				/* The segment containing elfcorehdr */
+				 
 				if (memcmp(ptr, ELFMAG, SELFMAG) == 0)
 					image->elfcorehdr_index = (int)n;
 				kunmap_local(ptr);
@@ -848,25 +757,25 @@ static void crash_handle_hotplug_event(unsigned int hp_action, unsigned int cpu)
 		goto out;
 	}
 
-	/* Needed in order for the segments to be updated */
+	 
 	arch_kexec_unprotect_crashkres();
 
-	/* Differentiate between normal load and hotplug update */
+	 
 	image->hp_action = hp_action;
 
-	/* Now invoke arch-specific update handler */
+	 
 	arch_crash_handle_hotplug_event(image);
 
-	/* No longer handling a hotplug event */
+	 
 	image->hp_action = KEXEC_CRASH_HP_NONE;
 	image->elfcorehdr_updated = true;
 
-	/* Change back to read-only */
+	 
 	arch_kexec_protect_crashkres();
 
-	/* Errors in the callback is not a reason to rollback state */
+	 
 out:
-	/* Release lock now that update complete */
+	 
 	kexec_unlock();
 	crash_hotplug_unlock();
 }

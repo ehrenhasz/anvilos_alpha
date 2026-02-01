@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C driver for Marvell 88PM80x
- *
- * Copyright (C) 2012 Marvell International Ltd.
- * Haojian Zhuang <haojian.zhuang@marvell.com>
- * Joseph(Yossi) Hanin <yhanin@marvell.com>
- * Qiao Zhou <zhouqiao@marvell.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -15,7 +8,7 @@
 #include <linux/uaccess.h>
 #include <linux/err.h>
 
-/* 88pm80x chips have same definition for chip id register. */
+ 
 #define PM80X_CHIP_ID			(0x00)
 #define PM80X_CHIP_ID_NUM(x)		(((x) >> 5) & 0x7)
 #define PM80X_CHIP_ID_REVISION(x)	((x) & 0x1F)
@@ -26,19 +19,15 @@ struct pm80x_chip_mapping {
 };
 
 static struct pm80x_chip_mapping chip_mapping[] = {
-	/* 88PM800 chip id number */
+	 
 	{0x3,	CHIP_PM800},
-	/* 88PM805 chip id number */
+	 
 	{0x0,	CHIP_PM805},
-	/* 88PM860 chip id number */
+	 
 	{0x4,	CHIP_PM860},
 };
 
-/*
- * workaround: some registers needed by pm805 are defined in pm800, so
- * need to use this global variable to maintain the relation between
- * pm800 and pm805. would remove it after HW chip fixes the issue.
- */
+ 
 static struct pm80x_chip *g_pm80x_chip;
 
 const struct regmap_config pm80x_regmap_config = {
@@ -97,12 +86,7 @@ int pm80x_init(struct i2c_client *client)
 
 	device_init_wakeup(&client->dev, 1);
 
-	/*
-	 * workaround: set g_pm80x_chip to the first probed chip. if the
-	 * second chip is probed, just point to the companion to each
-	 * other so that pm805 can access those specific register. would
-	 * remove it after HW chip fixes the issue.
-	 */
+	 
 	if (!g_pm80x_chip)
 		g_pm80x_chip = chip;
 	else {
@@ -116,10 +100,7 @@ EXPORT_SYMBOL_GPL(pm80x_init);
 
 int pm80x_deinit(void)
 {
-	/*
-	 * workaround: clear the dependency between pm800 and pm805.
-	 * would remove it after HW chip fixes the issue.
-	 */
+	 
 	if (g_pm80x_chip->companion)
 		g_pm80x_chip->companion = NULL;
 	else

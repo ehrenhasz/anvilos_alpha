@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2018 Intel Corporation
- */
+ 
 
 #ifndef __IGT_GEM_UTILS_H__
 #define __IGT_GEM_UTILS_H__
@@ -43,4 +39,4 @@ igt_vma_move_to_active_unlocked(struct i915_vma *vma, struct i915_request *rq,
 	return err;
 }
 
-#endif /* __IGT_GEM_UTILS_H__ */
+#endif  

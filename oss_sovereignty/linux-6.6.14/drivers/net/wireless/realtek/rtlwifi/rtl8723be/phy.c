@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -139,18 +139,18 @@ static bool _rtl8723be_check_positive(struct ieee80211_hw *hw,
 					>> CHIP_VER_RTL_SHIFT);
 	u32 intf = (rtlhal->interface == INTF_USB ? BIT(1) : BIT(0));
 
-	u8  board_type = ((rtlhal->board_type & BIT(4)) >> 4) << 0 | /* _GLNA */
-			 ((rtlhal->board_type & BIT(3)) >> 3) << 1 | /* _GPA  */
-			 ((rtlhal->board_type & BIT(7)) >> 7) << 2 | /* _ALNA */
-			 ((rtlhal->board_type & BIT(6)) >> 6) << 3 | /* _APA  */
-			 ((rtlhal->board_type & BIT(2)) >> 2) << 4;  /* _BT   */
+	u8  board_type = ((rtlhal->board_type & BIT(4)) >> 4) << 0 |  
+			 ((rtlhal->board_type & BIT(3)) >> 3) << 1 |  
+			 ((rtlhal->board_type & BIT(7)) >> 7) << 2 |  
+			 ((rtlhal->board_type & BIT(6)) >> 6) << 3 |  
+			 ((rtlhal->board_type & BIT(2)) >> 2) << 4;   
 
 	u32 cond1 = condition1, cond2 = condition2;
-	u32 driver1 = cut_ver << 24 |	/* CUT ver */
-		      0 << 20 |			/* interface 2/2 */
-		      0x04 << 16 |		/* platform */
+	u32 driver1 = cut_ver << 24 |	 
+		      0 << 20 |			 
+		      0x04 << 16 |		 
 		      rtlhal->package_type << 12 |
-		      intf << 8 |			/* interface 1/2 */
+		      intf << 8 |			 
 		      board_type;
 
 	u32 driver2 = rtlhal->type_glna <<  0 |
@@ -171,8 +171,8 @@ static bool _rtl8723be_check_positive(struct ieee80211_hw *hw,
 		"(Board, Package) = (0x%X, 0x%X)\n",
 		rtlhal->board_type, rtlhal->package_type);
 
-	/*============== Value Defined Check ===============*/
-	/*QFN Type [15:12] and Cut Version [27:24] need to do value check*/
+	 
+	 
 
 	if (((cond1 & 0x0000F000) != 0) && ((cond1 & 0x0000F000) !=
 		(driver1 & 0x0000F000)))
@@ -181,8 +181,8 @@ static bool _rtl8723be_check_positive(struct ieee80211_hw *hw,
 		(driver1 & 0x0F000000)))
 		return false;
 
-	/*=============== Bit Defined Check ================*/
-	/* We don't care [31:28] */
+	 
+	 
 
 	cond1   &= 0x00FF0FFF;
 	driver1 &= 0x00FF0FFF;
@@ -190,19 +190,19 @@ static bool _rtl8723be_check_positive(struct ieee80211_hw *hw,
 	if ((cond1 & driver1) == cond1) {
 		u32 mask = 0;
 
-		if ((cond1 & 0x0F) == 0) /* BoardType is DONTCARE*/
+		if ((cond1 & 0x0F) == 0)  
 			return true;
 
-		if ((cond1 & BIT(0)) != 0) /*GLNA*/
+		if ((cond1 & BIT(0)) != 0)  
 			mask |= 0x000000FF;
-		if ((cond1 & BIT(1)) != 0) /*GPA*/
+		if ((cond1 & BIT(1)) != 0)  
 			mask |= 0x0000FF00;
-		if ((cond1 & BIT(2)) != 0) /*ALNA*/
+		if ((cond1 & BIT(2)) != 0)  
 			mask |= 0x00FF0000;
-		if ((cond1 & BIT(3)) != 0) /*APA*/
+		if ((cond1 & BIT(3)) != 0)  
 			mask |= 0xFF000000;
 
-		/* BoardType of each RF path is matched*/
+		 
 		if ((cond2 & mask) == (driver2 & mask))
 			return true;
 		else
@@ -216,9 +216,7 @@ static void _rtl8723be_config_rf_reg(struct ieee80211_hw *hw, u32 addr,
 				     u32 regaddr)
 {
 	if (addr == 0xfe || addr == 0xffe) {
-		/* In order not to disturb BT music
-		 *	when wifi init.(1ant NIC only)
-		 */
+		 
 		mdelay(50);
 	} else {
 		rtl_set_rfreg(hw, rfpath, regaddr, RFREG_OFFSET_MASK, data);
@@ -228,7 +226,7 @@ static void _rtl8723be_config_rf_reg(struct ieee80211_hw *hw, u32 addr,
 static void _rtl8723be_config_rf_radio_a(struct ieee80211_hw *hw,
 					 u32 addr, u32 data)
 {
-	u32 content = 0x1000; /*RF Content: radio_a_txt*/
+	u32 content = 0x1000;  
 	u32 maskforphyset = (u32)(content & 0xE000);
 
 	_rtl8723be_config_rf_reg(hw, addr, data, RF90_PATH_A,
@@ -415,11 +413,11 @@ static void _phy_convert_txpower_dbm_to_relative_value(u32 *data, u8 start,
 
 	for (i = 3; i >= 0; --i) {
 		if (i >= start && i <= end) {
-			/* Get the exact value */
+			 
 			temp_value = (u8)(*data >> (i * 8)) & 0xF;
 			temp_value += ((u8)((*data >> (i*8 + 4)) & 0xF)) * 10;
 
-			/* Change the value to a relative value */
+			 
 			temp_value = (temp_value > base_val) ?
 				     temp_value - base_val :
 				     base_val - temp_value;
@@ -494,7 +492,7 @@ static bool _rtl8723be_phy_bb8723b_config_parafile(struct ieee80211_hw *hw)
 	struct rtl_efuse *rtlefuse = rtl_efuse(rtl_priv(hw));
 	bool rtstatus;
 
-	/* switch ant to BT */
+	 
 	if (rtlpriv->rtlhal.interface == INTF_USB) {
 		rtl_write_dword(rtlpriv, 0x948, 0x0);
 	} else {
@@ -549,15 +547,15 @@ static bool rtl8723be_phy_config_with_headerfile(struct ieee80211_hw *hw,
 		u32 v1 = array_table[i];
 		u32 v2 = array_table[i + 1];
 
-		if (v1 & (BIT(31) | BIT(30))) {/*positive & negative condition*/
-			if (v1 & BIT(31)) {/* positive condition*/
+		if (v1 & (BIT(31) | BIT(30))) { 
+			if (v1 & BIT(31)) { 
 				cond  = (u8)((v1 & (BIT(29) | BIT(28))) >> 28);
-				if (cond == COND_ENDIF) { /*end*/
+				if (cond == COND_ENDIF) {  
 					matched = true;
 					skipped = false;
-				} else if (cond == COND_ELSE) { /*else*/
+				} else if (cond == COND_ELSE) {  
 					matched = skipped ? false : true;
-				} else {/*if , else if*/
+				} else { 
 					if (skipped) {
 						matched = false;
 					} else {
@@ -571,8 +569,8 @@ static bool rtl8723be_phy_config_with_headerfile(struct ieee80211_hw *hw,
 						}
 					}
 				}
-			} else if (v1 & BIT(30)) { /*negative condition*/
-			/*do nothing*/
+			} else if (v1 & BIT(30)) {  
+			 
 			}
 		} else {
 			if (matched)
@@ -1222,7 +1220,7 @@ void rtl8723be_phy_set_bw_mode_callback(struct ieee80211_hw *hw)
 	case HT_CHANNEL_WIDTH_20:
 		rtl_set_bbreg(hw, RFPGA0_RFMOD, BRFMOD, 0x0);
 		rtl_set_bbreg(hw, RFPGA1_RFMOD, BRFMOD, 0x0);
-	/*	rtl_set_bbreg(hw, RFPGA0_ANALOGPARAMETER2, BIT(10), 1);*/
+	 
 		break;
 	case HT_CHANNEL_WIDTH_20_40:
 		rtl_set_bbreg(hw, RFPGA0_RFMOD, BRFMOD, 0x1);
@@ -1231,7 +1229,7 @@ void rtl8723be_phy_set_bw_mode_callback(struct ieee80211_hw *hw)
 		rtl_set_bbreg(hw, RCCK0_SYSTEM, BCCK_SIDEBAND,
 			      (mac->cur_40_prime_sc >> 1));
 		rtl_set_bbreg(hw, ROFDM1_LSTF, 0xC00, mac->cur_40_prime_sc);
-		/*rtl_set_bbreg(hw, RFPGA0_ANALOGPARAMETER2, BIT(10), 0);*/
+		 
 
 		rtl_set_bbreg(hw, 0x818, (BIT(26) | BIT(27)),
 			      (mac->cur_40_prime_sc ==
@@ -1447,22 +1445,22 @@ static u8 _rtl8723be_phy_path_a_iqk(struct ieee80211_hw *hw)
 	u32 reg_eac, reg_e94, reg_e9c, tmp;
 	u8 result = 0x00;
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
-	/* switch to path A */
+	 
 	rtl_set_bbreg(hw, 0x948, MASKDWORD, 0x00000000);
-	/* enable path A PA in TXIQK mode */
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_WE_LUT, RFREG_OFFSET_MASK, 0x800a0);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_RCK_OS, RFREG_OFFSET_MASK, 0x20000);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G1, RFREG_OFFSET_MASK, 0x0003f);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G2, RFREG_OFFSET_MASK, 0xc7f87);
 
-	/* 1. TX IQK */
-	/* path-A IQK setting */
-	/* IQK setting */
+	 
+	 
+	 
 	rtl_set_bbreg(hw, RTX_IQK, MASKDWORD, 0x01007c00);
 	rtl_set_bbreg(hw, RRX_IQK, MASKDWORD, 0x01004800);
-	/* path-A IQK setting */
+	 
 	rtl_set_bbreg(hw, RTX_IQK_TONE_A, MASKDWORD, 0x18008c1c);
 	rtl_set_bbreg(hw, RRX_IQK_TONE_A, MASKDWORD, 0x38008c1c);
 	rtl_set_bbreg(hw, RTX_IQK_TONE_B, MASKDWORD, 0x38008c1c);
@@ -1472,21 +1470,21 @@ static u8 _rtl8723be_phy_path_a_iqk(struct ieee80211_hw *hw)
 	rtl_set_bbreg(hw, RRX_IQK_PI_A, MASKDWORD, 0x28160000);
 	rtl_set_bbreg(hw, RTX_IQK_PI_B, MASKDWORD, 0x82110000);
 	rtl_set_bbreg(hw, RRX_IQK_PI_B, MASKDWORD, 0x28110000);
-	/* LO calibration setting */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_RSP, MASKDWORD, 0x00462911);
-	/* enter IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x80800000);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf9000000);
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf8000000);
 
 	mdelay(IQK_DELAY_TIME);
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
 
-	/* Check failed */
+	 
 	reg_eac = rtl_get_bbreg(hw, 0xeac, MASKDWORD);
 	reg_e94 = rtl_get_bbreg(hw, 0xe94, MASKDWORD);
 	reg_e9c = rtl_get_bbreg(hw, 0xe9c, MASKDWORD);
@@ -1495,10 +1493,10 @@ static u8 _rtl8723be_phy_path_a_iqk(struct ieee80211_hw *hw)
 	    (((reg_e94 & 0x03FF0000) >> 16) != 0x142) &&
 	    (((reg_e9c & 0x03FF0000) >> 16) != 0x42))
 		result |= 0x01;
-	else /* if Tx not OK, ignore Rx */
+	else  
 		return result;
 
-	/* Allen 20131125 */
+	 
 	tmp = (reg_e9c & 0x03FF0000) >> 16;
 	if ((tmp & 0x200) > 0)
 		tmp = 0x400 - tmp;
@@ -1508,38 +1506,38 @@ static u8 _rtl8723be_phy_path_a_iqk(struct ieee80211_hw *hw)
 	    (((reg_e94 & 0x03FF0000) >> 16) > 0xf0) &&
 	    (tmp < 0xf))
 		result |= 0x01;
-	else /* if Tx not OK, ignore Rx */
+	else  
 		return result;
 
 	return result;
 }
 
-/* bit0 = 1 => Tx OK, bit1 = 1 => Rx OK */
+ 
 static u8 _rtl8723be_phy_path_a_rx_iqk(struct ieee80211_hw *hw)
 {
 	u32 reg_eac, reg_e94, reg_e9c, reg_ea4, u32tmp, tmp;
 	u8 result = 0x00;
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
 
-	/* switch to path A */
+	 
 	rtl_set_bbreg(hw, 0x948, MASKDWORD, 0x00000000);
 
-	/* 1 Get TXIMR setting */
-	/* modify RXIQK mode table */
+	 
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_WE_LUT, 0x80000, 0x1);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_RCK_OS, RFREG_OFFSET_MASK, 0x30000);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G1, RFREG_OFFSET_MASK, 0x0001f);
-	/* LNA2 off, PA on for Dcut */
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G2, RFREG_OFFSET_MASK, 0xf7fb7);
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x80800000);
 
-	/* IQK setting */
+	 
 	rtl_set_bbreg(hw, RTX_IQK, MASKDWORD, 0x01007c00);
 	rtl_set_bbreg(hw, RRX_IQK, MASKDWORD, 0x01004800);
 
-	/* path-A IQK setting */
+	 
 	rtl_set_bbreg(hw, RTX_IQK_TONE_A, MASKDWORD, 0x18008c1c);
 	rtl_set_bbreg(hw, RRX_IQK_TONE_A, MASKDWORD, 0x38008c1c);
 	rtl_set_bbreg(hw, RTX_IQK_TONE_B, MASKDWORD, 0x38008c1c);
@@ -1550,22 +1548,22 @@ static u8 _rtl8723be_phy_path_a_rx_iqk(struct ieee80211_hw *hw)
 	rtl_set_bbreg(hw, RTX_IQK_PI_B, MASKDWORD, 0x82110000);
 	rtl_set_bbreg(hw, RRX_IQK_PI_B, MASKDWORD, 0x28110000);
 
-	/* LO calibration setting */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_RSP, MASKDWORD, 0x0046a911);
 
-	/* enter IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x80800000);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf9000000);
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf8000000);
 
 	mdelay(IQK_DELAY_TIME);
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
 
-	/* Check failed */
+	 
 	reg_eac = rtl_get_bbreg(hw, RRX_POWER_AFTER_IQK_A_2, MASKDWORD);
 	reg_e94 = rtl_get_bbreg(hw, RTX_POWER_BEFORE_IQK_A, MASKDWORD);
 	reg_e9c = rtl_get_bbreg(hw, RTX_POWER_AFTER_IQK_A, MASKDWORD);
@@ -1574,10 +1572,10 @@ static u8 _rtl8723be_phy_path_a_rx_iqk(struct ieee80211_hw *hw)
 	    (((reg_e94 & 0x03FF0000) >> 16) != 0x142) &&
 	    (((reg_e9c & 0x03FF0000) >> 16) != 0x42))
 		result |= 0x01;
-	else /* if Tx not OK, ignore Rx */
+	else  
 		return result;
 
-	/* Allen 20131125 */
+	 
 	tmp = (reg_e9c & 0x03FF0000) >> 16;
 	if ((tmp & 0x200) > 0)
 		tmp = 0x400 - tmp;
@@ -1587,30 +1585,30 @@ static u8 _rtl8723be_phy_path_a_rx_iqk(struct ieee80211_hw *hw)
 	    (((reg_e94 & 0x03FF0000) >> 16) > 0xf0) &&
 	    (tmp < 0xf))
 		result |= 0x01;
-	else /* if Tx not OK, ignore Rx */
+	else  
 		return result;
 
 	u32tmp = 0x80007C00 | (reg_e94 & 0x3FF0000) |
 		 ((reg_e9c & 0x3FF0000) >> 16);
 	rtl_set_bbreg(hw, RTX_IQK, MASKDWORD, u32tmp);
 
-	/* 1 RX IQK */
-	/* modify RXIQK mode table */
+	 
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_WE_LUT, 0x80000, 0x1);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_RCK_OS, RFREG_OFFSET_MASK, 0x30000);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G1, RFREG_OFFSET_MASK, 0x0001f);
-	/* LAN2 on, PA off for Dcut */
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G2, RFREG_OFFSET_MASK, 0xf7d77);
 
-	/* PA, PAD setting */
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, 0xdf, RFREG_OFFSET_MASK, 0xf80);
 	rtl_set_rfreg(hw, RF90_PATH_A, 0x55, RFREG_OFFSET_MASK, 0x4021f);
 
-	/* IQK setting */
+	 
 	rtl_set_bbreg(hw, RRX_IQK, MASKDWORD, 0x01004800);
 
-	/* path-A IQK setting */
+	 
 	rtl_set_bbreg(hw, RTX_IQK_TONE_A, MASKDWORD, 0x38008c1c);
 	rtl_set_bbreg(hw, RRX_IQK_TONE_A, MASKDWORD, 0x18008c1c);
 	rtl_set_bbreg(hw, RTX_IQK_TONE_B, MASKDWORD, 0x38008c1c);
@@ -1621,34 +1619,34 @@ static u8 _rtl8723be_phy_path_a_rx_iqk(struct ieee80211_hw *hw)
 	rtl_set_bbreg(hw, RTX_IQK_PI_B, MASKDWORD, 0x82110000);
 	rtl_set_bbreg(hw, RRX_IQK_PI_B, MASKDWORD, 0x28110000);
 
-	/* LO calibration setting */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_RSP, MASKDWORD, 0x0046a8d1);
 
-	/* enter IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x80800000);
 
-	/* One shot, path A LOK & IQK */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf9000000);
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf8000000);
 
 	mdelay(IQK_DELAY_TIME);
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
 
-	/* Check failed */
+	 
 	reg_eac = rtl_get_bbreg(hw, RRX_POWER_AFTER_IQK_A_2, MASKDWORD);
 	reg_ea4 = rtl_get_bbreg(hw, RRX_POWER_BEFORE_IQK_A_2, MASKDWORD);
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
 	rtl_set_rfreg(hw, RF90_PATH_A, 0xdf, RFREG_OFFSET_MASK, 0x780);
 
-	/* Allen 20131125 */
+	 
 	tmp = (reg_eac & 0x03FF0000) >> 16;
 	if ((tmp & 0x200) > 0)
 		tmp = 0x400 - tmp;
-	/* if Tx is OK, check whether Rx is OK */
+	 
 	if (!(reg_eac & BIT(27)) &&
 	    (((reg_ea4 & 0x03FF0000) >> 16) != 0x132) &&
 	    (((reg_eac & 0x03FF0000) >> 16) != 0x36))
@@ -1667,20 +1665,20 @@ static u8 _rtl8723be_phy_path_b_iqk(struct ieee80211_hw *hw)
 	u32 reg_eac, reg_e94, reg_e9c, tmp;
 	u8 result = 0x00;
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
-	/* switch to path B */
+	 
 	rtl_set_bbreg(hw, 0x948, MASKDWORD, 0x00000280);
 
-	/* enable path B PA in TXIQK mode */
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, 0xed, RFREG_OFFSET_MASK, 0x00020);
 	rtl_set_rfreg(hw, RF90_PATH_A, 0x43, RFREG_OFFSET_MASK, 0x40fc1);
 
-	/* 1 Tx IQK */
-	/* IQK setting */
+	 
+	 
 	rtl_set_bbreg(hw, RTX_IQK, MASKDWORD, 0x01007c00);
 	rtl_set_bbreg(hw, RRX_IQK, MASKDWORD, 0x01004800);
-	/* path-A IQK setting */
+	 
 	rtl_set_bbreg(hw, RTX_IQK_TONE_A, MASKDWORD, 0x18008c1c);
 	rtl_set_bbreg(hw, RRX_IQK_TONE_A, MASKDWORD, 0x38008c1c);
 	rtl_set_bbreg(hw, RTX_IQK_TONE_B, MASKDWORD, 0x38008c1c);
@@ -1691,22 +1689,22 @@ static u8 _rtl8723be_phy_path_b_iqk(struct ieee80211_hw *hw)
 	rtl_set_bbreg(hw, RTX_IQK_PI_B, MASKDWORD, 0x82110000);
 	rtl_set_bbreg(hw, RRX_IQK_PI_B, MASKDWORD, 0x28110000);
 
-	/* LO calibration setting */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_RSP, MASKDWORD, 0x00462911);
 
-	/* enter IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x80800000);
 
-	/* One shot, path B LOK & IQK */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf9000000);
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf8000000);
 
 	mdelay(IQK_DELAY_TIME);
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
 
-	/* Check failed */
+	 
 	reg_eac = rtl_get_bbreg(hw, RRX_POWER_AFTER_IQK_A_2, MASKDWORD);
 	reg_e94 = rtl_get_bbreg(hw, RTX_POWER_BEFORE_IQK_A, MASKDWORD);
 	reg_e9c = rtl_get_bbreg(hw, RTX_POWER_AFTER_IQK_A, MASKDWORD);
@@ -1718,7 +1716,7 @@ static u8 _rtl8723be_phy_path_b_iqk(struct ieee80211_hw *hw)
 	else
 		return result;
 
-	/* Allen 20131125 */
+	 
 	tmp = (reg_e9c & 0x03FF0000) >> 16;
 	if ((tmp & 0x200) > 0)
 		tmp = 0x400 - tmp;
@@ -1734,33 +1732,33 @@ static u8 _rtl8723be_phy_path_b_iqk(struct ieee80211_hw *hw)
 	return result;
 }
 
-/* bit0 = 1 => Tx OK, bit1 = 1 => Rx OK */
+ 
 static u8 _rtl8723be_phy_path_b_rx_iqk(struct ieee80211_hw *hw)
 {
 	u32 reg_e94, reg_e9c, reg_ea4, reg_eac, u32tmp, tmp;
 	u8 result = 0x00;
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
-	/* switch to path B */
+	 
 	rtl_set_bbreg(hw, 0x948, MASKDWORD, 0x00000280);
 
-	/* 1 Get TXIMR setting */
-	/* modify RXIQK mode table */
+	 
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_WE_LUT, RFREG_OFFSET_MASK, 0x800a0);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_RCK_OS, RFREG_OFFSET_MASK, 0x30000);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G1, RFREG_OFFSET_MASK, 0x0001f);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G2, RFREG_OFFSET_MASK, 0xf7ff7);
 
-	/* open PA S1 & SMIXER */
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, 0xed, RFREG_OFFSET_MASK, 0x00020);
 	rtl_set_rfreg(hw, RF90_PATH_A, 0x43, RFREG_OFFSET_MASK, 0x60fed);
 
-	/* IQK setting */
+	 
 	rtl_set_bbreg(hw, RTX_IQK, MASKDWORD, 0x01007c00);
 	rtl_set_bbreg(hw, RRX_IQK, MASKDWORD, 0x01004800);
 
-	/* path-B IQK setting */
+	 
 	rtl_set_bbreg(hw, RTX_IQK_TONE_A, MASKDWORD, 0x18008c1c);
 	rtl_set_bbreg(hw, RRX_IQK_TONE_A, MASKDWORD, 0x38008c1c);
 	rtl_set_bbreg(hw, RTX_IQK_TONE_B, MASKDWORD, 0x38008c1c);
@@ -1771,20 +1769,20 @@ static u8 _rtl8723be_phy_path_b_rx_iqk(struct ieee80211_hw *hw)
 	rtl_set_bbreg(hw, RTX_IQK_PI_B, MASKDWORD, 0x82110000);
 	rtl_set_bbreg(hw, RRX_IQK_PI_B, MASKDWORD, 0x28110000);
 
-	/* LO calibration setting */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_RSP, MASKDWORD, 0x0046a911);
-	/* enter IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x80800000);
 
-	/* One shot, path B TXIQK @ RXIQK */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf9000000);
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf8000000);
 
 	mdelay(IQK_DELAY_TIME);
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
-	/* Check failed */
+	 
 	reg_eac = rtl_get_bbreg(hw, RRX_POWER_AFTER_IQK_A_2, MASKDWORD);
 	reg_e94 = rtl_get_bbreg(hw, RTX_POWER_BEFORE_IQK_A, MASKDWORD);
 	reg_e9c = rtl_get_bbreg(hw, RTX_POWER_AFTER_IQK_A, MASKDWORD);
@@ -1793,10 +1791,10 @@ static u8 _rtl8723be_phy_path_b_rx_iqk(struct ieee80211_hw *hw)
 	    (((reg_e94 & 0x03FF0000) >> 16) != 0x142) &&
 	    (((reg_e9c & 0x03FF0000) >> 16) != 0x42))
 		result |= 0x01;
-	else	/* if Tx not OK, ignore Rx */
+	else	 
 		return result;
 
-	/* Allen 20131125 */
+	 
 	tmp = (reg_e9c & 0x03FF0000) >> 16;
 	if ((tmp & 0x200) > 0)
 		tmp = 0x400 - tmp;
@@ -1813,9 +1811,9 @@ static u8 _rtl8723be_phy_path_b_rx_iqk(struct ieee80211_hw *hw)
 		 ((reg_e9c & 0x3FF0000) >> 16);
 	rtl_set_bbreg(hw, RTX_IQK, MASKDWORD, u32tmp);
 
-	/* 1 RX IQK */
+	 
 
-	/* <20121009, Kordan> RF Mode = 3 */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_WE_LUT, 0x80000, 0x1);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_RCK_OS, RFREG_OFFSET_MASK, 0x30000);
@@ -1823,14 +1821,14 @@ static u8 _rtl8723be_phy_path_b_rx_iqk(struct ieee80211_hw *hw)
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_TXPA_G2, RFREG_OFFSET_MASK, 0xf7d77);
 	rtl_set_rfreg(hw, RF90_PATH_A, RF_WE_LUT, 0x80000, 0x0);
 
-	/* open PA S1 & close SMIXER */
+	 
 	rtl_set_rfreg(hw, RF90_PATH_A, 0xed, RFREG_OFFSET_MASK, 0x00020);
 	rtl_set_rfreg(hw, RF90_PATH_A, 0x43, RFREG_OFFSET_MASK, 0x60fbd);
 
-	/* IQK setting */
+	 
 	rtl_set_bbreg(hw, RRX_IQK, MASKDWORD, 0x01004800);
 
-	/* path-B IQK setting */
+	 
 	rtl_set_bbreg(hw, RTX_IQK_TONE_A, MASKDWORD, 0x38008c1c);
 	rtl_set_bbreg(hw, RRX_IQK_TONE_A, MASKDWORD, 0x18008c1c);
 	rtl_set_bbreg(hw, RTX_IQK_TONE_B, MASKDWORD, 0x38008c1c);
@@ -1841,29 +1839,29 @@ static u8 _rtl8723be_phy_path_b_rx_iqk(struct ieee80211_hw *hw)
 	rtl_set_bbreg(hw, RTX_IQK_PI_B, MASKDWORD, 0x82110000);
 	rtl_set_bbreg(hw, RRX_IQK_PI_B, MASKDWORD, 0x28110000);
 
-	/* LO calibration setting */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_RSP, MASKDWORD, 0x0046a8d1);
-	/* enter IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x80800000);
 
-	/* One shot, path B LOK & IQK */
+	 
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf9000000);
 	rtl_set_bbreg(hw, RIQK_AGC_PTS, MASKDWORD, 0xf8000000);
 
 	mdelay(IQK_DELAY_TIME);
 
-	/* leave IQK mode */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0x00000000);
-	/* Check failed */
+	 
 	reg_eac = rtl_get_bbreg(hw, RRX_POWER_AFTER_IQK_A_2, MASKDWORD);
 	reg_ea4 = rtl_get_bbreg(hw, RRX_POWER_BEFORE_IQK_A_2, MASKDWORD);
 
-	/* Allen 20131125 */
+	 
 	tmp = (reg_eac & 0x03FF0000) >> 16;
 	if ((tmp & 0x200) > 0)
 		tmp = 0x400 - tmp;
 
-	/* if Tx is OK, check whether Rx is OK */
+	 
 	if (!(reg_eac & BIT(27)) &&
 	    (((reg_ea4 & 0x03FF0000) >> 16) != 0x132) &&
 	    (((reg_eac & 0x03FF0000) >> 16) != 0x36))
@@ -1917,7 +1915,7 @@ static void _rtl8723be_phy_path_b_fill_iqk_matrix(struct ieee80211_hw *hw,
 		reg = result[final_candidate][7] & 0x3F;
 		rtl_set_bbreg(hw, ROFDM0_XBRXIQIMBALANCE, 0xFC00, reg);
 		reg = (result[final_candidate][7] >> 6) & 0xF;
-		/* rtl_set_bbreg(hw, 0xca0, 0xF0000000, reg); */
+		 
 	}
 }
 
@@ -1926,8 +1924,8 @@ static bool _rtl8723be_phy_simularity_compare(struct ieee80211_hw *hw,
 {
 	u32 i, j, diff, simularity_bitmap, bound = 0;
 
-	u8 final_candidate[2] = {0xFF, 0xFF}; /* for path A and path B */
-	bool bresult = true; /* is2t = true*/
+	u8 final_candidate[2] = {0xFF, 0xFF};  
+	bool bresult = true;  
 	s32 tmp1 = 0, tmp2 = 0;
 
 	bound = 8;
@@ -1976,19 +1974,19 @@ static bool _rtl8723be_phy_simularity_compare(struct ieee80211_hw *hw,
 		}
 		return bresult;
 	} else {
-		if (!(simularity_bitmap & 0x03)) { /* path A TX OK */
+		if (!(simularity_bitmap & 0x03)) {  
 			for (i = 0; i < 2; i++)
 				result[3][i] = result[c1][i];
 		}
-		if (!(simularity_bitmap & 0x0c)) { /* path A RX OK */
+		if (!(simularity_bitmap & 0x0c)) {  
 			for (i = 2; i < 4; i++)
 				result[3][i] = result[c1][i];
 		}
-		if (!(simularity_bitmap & 0x30)) { /* path B TX OK */
+		if (!(simularity_bitmap & 0x30)) {  
 			for (i = 4; i < 6; i++)
 				result[3][i] = result[c1][i];
 		}
-		if (!(simularity_bitmap & 0xc0)) { /* path B RX OK */
+		if (!(simularity_bitmap & 0xc0)) {  
 			for (i = 6; i < 8; i++)
 				result[3][i] = result[c1][i];
 		}
@@ -2021,7 +2019,7 @@ static void _rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw,
 	};
 	const u32 retrycount = 2;
 
-	u32 path_sel_bb;/* path_sel_rf */
+	u32 path_sel_bb; 
 
 	u8 tmp_reg_c50, tmp_reg_c58;
 
@@ -2048,13 +2046,13 @@ static void _rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw,
 
 	rtl8723_phy_mac_setting_calibration(hw, iqk_mac_reg,
 					    rtlphy->iqk_mac_backup);
-	/*BB Setting*/
+	 
 	rtl_set_bbreg(hw, 0xa04, 0x0f000000, 0xf);
 	rtl_set_bbreg(hw, 0xc04, MASKDWORD, 0x03a05600);
 	rtl_set_bbreg(hw, 0xc08, MASKDWORD, 0x000800e4);
 	rtl_set_bbreg(hw, 0x874, MASKDWORD, 0x22204000);
 
-	/* path A TX IQK */
+	 
 	for (i = 0; i < retrycount; i++) {
 		patha_ok = _rtl8723be_phy_path_a_iqk(hw);
 		if (patha_ok == 0x01) {
@@ -2070,7 +2068,7 @@ static void _rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw,
 				"Path A Tx IQK Fail!!\n");
 		}
 	}
-	/* path A RX IQK */
+	 
 	for (i = 0; i < retrycount; i++) {
 		patha_ok = _rtl8723be_phy_path_a_rx_iqk(hw);
 		if (patha_ok == 0x03) {
@@ -2090,7 +2088,7 @@ static void _rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw,
 		rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD, "Path A IQK Fail!!\n");
 
 	if (is2t) {
-		/* path B TX IQK */
+		 
 		for (i = 0; i < retrycount; i++) {
 			pathb_ok = _rtl8723be_phy_path_b_iqk(hw);
 			if (pathb_ok == 0x01) {
@@ -2107,7 +2105,7 @@ static void _rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw,
 			rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 				"Path B Tx IQK Fail!!\n");
 		}
-		/* path B RX IQK */
+		 
 		for (i = 0; i < retrycount; i++) {
 			pathb_ok = _rtl8723be_phy_path_b_rx_iqk(hw);
 			if (pathb_ok == 0x03) {
@@ -2126,7 +2124,7 @@ static void _rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw,
 		}
 	}
 
-	/* Back to BB mode, load original value */
+	 
 	rtl_set_bbreg(hw, RFPGA0_IQK, MASKDWORD, 0);
 
 	if (t != 0) {
@@ -2139,7 +2137,7 @@ static void _rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw,
 						  IQK_BB_REG_NUM);
 
 		rtl_set_bbreg(hw, 0x948, MASKDWORD, path_sel_bb);
-		/*rtl_set_rfreg(hw, RF90_PATH_B, 0xb0, 0xfffff, path_sel_rf);*/
+		 
 
 		rtl_set_bbreg(hw, 0xc50, MASKBYTE0, 0x50);
 		rtl_set_bbreg(hw, 0xc50, MASKBYTE0, tmp_reg_c50);
@@ -2207,9 +2205,9 @@ static void _rtl8723be_phy_lc_calibrate(struct ieee80211_hw *hw, bool is2t)
 	rtl_set_rfreg(hw, RF90_PATH_A, 0xb0, RFREG_OFFSET_MASK, 0xdfbe0);
 	rtl_set_rfreg(hw, RF90_PATH_A, 0x18, MASK12BITS, 0x8c0a);
 
-	/* In order not to disturb BT music when wifi init.(1ant NIC only) */
-	/*mdelay(100);*/
-	/* In order not to disturb BT music when wifi init.(1ant NIC only) */
+	 
+	 
+	 
 	mdelay(50);
 
 	rtl_set_rfreg(hw, RF90_PATH_A, 0xb0, RFREG_OFFSET_MASK, 0xdffe0);
@@ -2233,7 +2231,7 @@ static void _rtl8723be_phy_set_rfpath_switch(struct ieee80211_hw *hw,
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD, "\n");
 
-	if (bmain) /* left antenna */
+	if (bmain)  
 		rtl_set_bbreg(hw, 0x92C, MASKDWORD, 0x1);
 	else
 		rtl_set_bbreg(hw, 0x92C, MASKDWORD, 0x2);
@@ -2241,7 +2239,7 @@ static void _rtl8723be_phy_set_rfpath_switch(struct ieee80211_hw *hw,
 
 #undef IQK_ADDA_REG_NUM
 #undef IQK_DELAY_TIME
-/* IQK is merge from Merge Temp */
+ 
 void rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw, bool b_recovery)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
@@ -2263,7 +2261,7 @@ void rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw, bool b_recovery)
 		ROFDM0_XDTXAFE,
 		ROFDM0_RXIQEXTANTA
 	};
-	u32 path_sel_bb = 0; /* path_sel_rf = 0 */
+	u32 path_sel_bb = 0;  
 
 	if (rtlphy->lck_inprogress)
 		return;
@@ -2277,9 +2275,9 @@ void rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw, bool b_recovery)
 						  rtlphy->iqk_bb_backup, 9);
 		goto label_done;
 	}
-	/* Save RF Path */
+	 
 	path_sel_bb = rtl_get_bbreg(hw, 0x948, MASKDWORD);
-	/* path_sel_rf = rtl_get_rfreg(hw, RF90_PATH_A, 0xb0, 0xfffff); */
+	 
 
 	for (i = 0; i < 8; i++) {
 		result[0][i] = 0;
@@ -2377,7 +2375,7 @@ void rtl8723be_phy_iq_calibrate(struct ieee80211_hw *hw, bool b_recovery)
 				    rtlphy->iqk_bb_backup, 9);
 
 	rtl_set_bbreg(hw, 0x948, MASKDWORD, path_sel_bb);
-	/* rtl_set_rfreg(hw, RF90_PATH_A, 0xb0, 0xfffff, path_sel_rf); */
+	 
 
 label_done:
 	spin_lock(&rtlpriv->locks.iqk_lock);
@@ -2462,7 +2460,7 @@ static void rtl8723be_phy_set_io(struct ieee80211_hw *hw)
 	switch (rtlphy->current_io_type) {
 	case IO_CMD_RESUME_DM_BY_SCAN:
 		dm_digtable->cur_igvalue = rtlphy->initgain_backup.xaagccore1;
-		/*rtl92c_dm_write_dig(hw);*/
+		 
 		rtl8723be_phy_set_txpower_level(hw, rtlphy->current_channel);
 		rtl_set_bbreg(hw, RCCK0_CCA, 0xff0000, 0x83);
 		break;
@@ -2546,10 +2544,7 @@ static bool _rtl8723be_phy_set_rf_power_state(struct ieee80211_hw *hw,
 		for (queue_id = 0, i = 0;
 		     queue_id < RTL_PCI_MAX_TX_QUEUE_COUNT;) {
 			ring = &pcipriv->dev.tx_ring[queue_id];
-			/* Don't check BEACON Q.
-			 * BEACON Q is always not empty,
-			 * because '_rtl8723be_cmd_send_packet'
-			 */
+			 
 			if (queue_id == BEACON_QUEUE ||
 			    skb_queue_len(&ring->queue) == 0) {
 				queue_id++;

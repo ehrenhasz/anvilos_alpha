@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*---------------------------------------------------------------------------+
- |  fpu_etc.c                                                                |
- |                                                                           |
- | Implement a few FPU instructions.                                         |
- |                                                                           |
- | Copyright (C) 1992,1993,1994,1997                                         |
- |                       W. Metzenthen, 22 Parker St, Ormond, Vic 3163,      |
- |                       Australia.  E-mail   billm@suburbia.net             |
- |                                                                           |
- |                                                                           |
- +---------------------------------------------------------------------------*/
+
+ 
 
 #include "fpu_system.h"
 #include "exception.h"
@@ -56,15 +46,15 @@ static void ftst_(FPU_REG *st0_ptr, u_char st0tag)
 				setcc(SW_C0);
 			if (denormal_operand() < 0) {
 #ifdef PECULIAR_486
-				/* This is weird! */
+				 
 				if (getsign(st0_ptr) == SIGN_POS)
 					setcc(SW_C3);
-#endif /* PECULIAR_486 */
+#endif  
 				return;
 			}
 			break;
 		case TW_NaN:
-			setcc(SW_C0 | SW_C2 | SW_C3);	/* Operand is not comparable */
+			setcc(SW_C0 | SW_C2 | SW_C3);	 
 			EXCEPTION(EX_Invalid);
 			break;
 		case TW_Infinity:
@@ -74,7 +64,7 @@ static void ftst_(FPU_REG *st0_ptr, u_char st0tag)
 				setcc(SW_C0);
 			break;
 		default:
-			setcc(SW_C0 | SW_C2 | SW_C3);	/* Operand is not comparable */
+			setcc(SW_C0 | SW_C2 | SW_C3);	 
 			EXCEPTION(EX_INTERNAL | 0x14);
 			break;
 		}
@@ -102,10 +92,10 @@ static void fxam(FPU_REG *st0_ptr, u_char st0tag)
 	case TAG_Special:
 		switch (FPU_Special(st0_ptr)) {
 		case TW_Denormal:
-			c = SW_C2 | SW_C3;	/* Denormal */
+			c = SW_C2 | SW_C3;	 
 			break;
 		case TW_NaN:
-			/* We also use NaN for unsupported types. */
+			 
 			if ((st0_ptr->sigh & 0x80000000)
 			    && (exponent(st0_ptr) == EXP_OVER))
 				c = SW_C0;

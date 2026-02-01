@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2016-2017 Hisilicon Limited. */
+ 
+ 
 
 #ifndef __HCLGEVF_CMD_H
 #define __HCLGEVF_CMD_H
@@ -23,14 +23,14 @@ struct hclgevf_dev;
 #define HCLGEVF_TQP_EXT_REG_OFFSET	0x100
 
 struct hclgevf_tqp_map {
-	__le16 tqp_id;	/* Absolute tqp id for in this pf */
-	u8 tqp_vf; /* VF id */
+	__le16 tqp_id;	 
+	u8 tqp_vf;  
 #define HCLGEVF_TQP_MAP_TYPE_PF		0
 #define HCLGEVF_TQP_MAP_TYPE_VF		1
 #define HCLGEVF_TQP_MAP_TYPE_B		0
 #define HCLGEVF_TQP_MAP_EN_B		1
-	u8 tqp_flag;	/* Indicate it's pf or vf tqp */
-	__le16 tqp_vid; /* Virtual id in this pf/vf */
+	u8 tqp_flag;	 
+	__le16 tqp_vid;  
 	u8 rsv[18];
 };
 
@@ -99,7 +99,7 @@ struct hclgevf_cfg_tx_queue_pointer_cmd {
 	u8 rsv[14];
 };
 
-/* this bit indicates that the driver is ready for hardware reset */
+ 
 #define HCLGEVF_NIC_SW_RST_RDY_B	16
 #define HCLGEVF_NIC_SW_RST_RDY		BIT(HCLGEVF_NIC_SW_RST_RDY_B)
 

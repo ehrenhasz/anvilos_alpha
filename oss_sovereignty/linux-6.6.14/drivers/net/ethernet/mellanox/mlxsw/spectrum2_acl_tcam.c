@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2018 Mellanox Technologies. All rights reserved */
+
+ 
 
 #include <linux/kernel.h>
 
@@ -77,10 +77,7 @@ static int mlxsw_sp2_acl_tcam_init(struct mlxsw_sp *mlxsw_sp, void *priv,
 	int i;
 	int err;
 
-	/* Some TCAM regions are not exposed to the host and used internally
-	 * by the device. Allocate KVDL entries for the default actions of
-	 * these regions to avoid the host from overwriting them.
-	 */
+	 
 	tcam->kvdl_count = _tcam->max_regions;
 	if (MLXSW_CORE_RES_VALID(mlxsw_sp->core, ACL_MAX_DEFAULT_ACTIONS))
 		tcam->kvdl_count = MLXSW_CORE_RES_GET(mlxsw_sp->core,
@@ -90,10 +87,7 @@ static int mlxsw_sp2_acl_tcam_init(struct mlxsw_sp *mlxsw_sp, void *priv,
 	if (err)
 		return err;
 
-	/* Create flex action block, set default action (continue)
-	 * but don't commit. We need just the current set encoding
-	 * to be written using PEFA register to all indexes for all regions.
-	 */
+	 
 	afa_block = mlxsw_afa_block_create(mlxsw_sp->afa);
 	if (IS_ERR(afa_block)) {
 		err = PTR_ERR(afa_block);
@@ -104,9 +98,7 @@ static int mlxsw_sp2_acl_tcam_init(struct mlxsw_sp *mlxsw_sp, void *priv,
 		goto err_afa_block_continue;
 	enc_actions = mlxsw_afa_block_cur_set(afa_block);
 
-	/* Only write to KVDL entries used by TCAM regions exposed to the
-	 * host.
-	 */
+	 
 	for (i = 0; i < _tcam->max_regions; i++) {
 		mlxsw_reg_pefa_pack(pefa_pl, tcam->kvdl_index + i,
 				    true, enc_actions);

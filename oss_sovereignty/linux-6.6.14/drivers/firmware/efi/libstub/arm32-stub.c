@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013 Linaro Ltd;  <roy.franz@linaro.org>
- */
+
+ 
 #include <linux/efi.h>
 #include <asm/efi.h>
 
@@ -50,11 +48,11 @@ efi_status_t check_platform_features(void)
 		goto free_state;
 	}
 
-	/* non-LPAE kernels can run anywhere */
+	 
 	if (!IS_ENABLED(CONFIG_ARM_LPAE))
 		return EFI_SUCCESS;
 
-	/* LPAE kernels need compatible hardware */
+	 
 	block = cpuid_feature_extract(CPUID_EXT_MMFR0, 0);
 	if (block < 5) {
 		efi_err("This LPAE kernel is not supported by your CPU\n");
@@ -88,12 +86,7 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
 	unsigned long alloc_base, kernel_base;
 	efi_status_t status;
 
-	/*
-	 * Allocate space for the decompressed kernel as low as possible.
-	 * The region should be 16 MiB aligned, but the first 'slack' bytes
-	 * are not used by Linux, so we allow those to be occupied by the
-	 * firmware.
-	 */
+	 
 	status = efi_low_alloc_above(alloc_size, EFI_PAGE_SIZE, &alloc_base, 0x0);
 	if (status != EFI_SUCCESS) {
 		efi_err("Unable to allocate memory for uncompressed kernel.\n");
@@ -101,10 +94,7 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
 	}
 
 	if ((alloc_base % EFI_PHYS_ALIGN) > slack) {
-		/*
-		 * More than 'slack' bytes are already occupied at the base of
-		 * the allocation, so we need to advance to the next 16 MiB block.
-		 */
+		 
 		kernel_base = round_up(alloc_base, EFI_PHYS_ALIGN);
 		efi_info("Free memory starts at 0x%lx, setting kernel_base to 0x%lx\n",
 			 alloc_base, kernel_base);
@@ -115,7 +105,7 @@ efi_status_t handle_kernel_image(unsigned long *image_addr,
 	*reserve_addr = kernel_base + slack;
 	*reserve_size = MAX_UNCOMP_KERNEL_SIZE;
 
-	/* now free the parts that we will not use */
+	 
 	if (*reserve_addr > alloc_base) {
 		efi_bs_call(free_pages, alloc_base,
 			    (*reserve_addr - alloc_base) / EFI_PAGE_SIZE);

@@ -1,11 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __SOUND_INITVAL_H
 #define __SOUND_INITVAL_H
 
-/*
- *  Init values for soundcard modules
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+ 
 
 #define SNDRV_AUTO_PORT		1
 #define SNDRV_AUTO_IRQ		0xffff
@@ -87,4 +84,4 @@ static int snd_legacy_find_free_dma(const int *dma_table)
 }
 #endif
 
-#endif /* __SOUND_INITVAL_H */
+#endif  

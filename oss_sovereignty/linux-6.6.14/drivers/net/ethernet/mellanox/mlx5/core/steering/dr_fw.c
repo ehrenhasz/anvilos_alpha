@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include <linux/types.h>
 #include "dr_types.h"
@@ -38,7 +38,7 @@ mlx5dr_fw_create_recalc_cs_ft(struct mlx5dr_domain *dmn, u16 vport_num)
 		goto destroy_flow_table;
 	}
 
-	/* Modify TTL action by adding zero to trigger CS recalculation */
+	 
 	modify_ttl_action = 0;
 	MLX5_SET(set_action_in, &modify_ttl_action, action_type, MLX5_ACTION_TYPE_ADD);
 	MLX5_SET(set_action_in, &modify_ttl_action, field, MLX5_ACTION_IN_FIELD_OUT_IP_TTL);

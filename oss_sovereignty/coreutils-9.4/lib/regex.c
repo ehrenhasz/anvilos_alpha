@@ -1,44 +1,10 @@
-/* Extended regular expression matching and search library.
-   Copyright (C) 2002-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Isamu Hasegawa <isamu@yamato.ibm.com>.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
-   <https://www.gnu.org/licenses/>.  */
-
-#define __STDC_WANT_IEC_60559_BFP_EXT__
-
-#ifndef _LIBC
-# include <libc-config.h>
-
-# if __GNUC_PREREQ (4, 6)
-#  pragma GCC diagnostic ignored "-Wsuggest-attribute=pure"
-#  pragma GCC diagnostic ignored "-Wvla"
-# endif
-# if __GNUC_PREREQ (4, 3)
-#  pragma GCC diagnostic ignored "-Wold-style-definition"
-#  pragma GCC diagnostic ignored "-Wtype-limits"
-# endif
-#endif
-
-/* Make sure no one compiles this code with a C++ compiler.  */
+ 
 #if defined __cplusplus && defined _LIBC
 # error "This is C code, use a C compiler"
 #endif
 
 #ifdef _LIBC
-/* We have to keep the namespace clean.  */
+ 
 # define regfree(preg) __regfree (preg)
 # define regexec(pr, st, nm, pm, ef) __regexec (pr, st, nm, pm, ef)
 # define regcomp(preg, pattern, cflags) __regcomp (preg, pattern, cflags)
@@ -62,9 +28,7 @@
 # include "../locale/localeinfo.h"
 #endif
 
-/* On some systems, limits.h sets RE_DUP_MAX to a lower value than
-   GNU regex allows.  Include it before <regex.h>, which correctly
-   #undefs RE_DUP_MAX and sets it to the right value.  */
+ 
 #include <limits.h>
 
 #include <regex.h>
@@ -74,7 +38,7 @@
 #include "regcomp.c"
 #include "regexec.c"
 
-/* Binary backward compatibility.  */
+ 
 #if _LIBC
 # include <shlib-compat.h>
 # if SHLIB_COMPAT (libc, GLIBC_2_0, GLIBC_2_3)

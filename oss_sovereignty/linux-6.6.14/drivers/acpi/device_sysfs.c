@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/acpi/device_sysfs.c - ACPI device sysfs attributes and modalias.
- *
- * Copyright (C) 2015, Intel Corp.
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- * Author: Rafael J. Wysocki <rafael.j.wysocki@intel.com>
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/device.h>
@@ -120,19 +110,7 @@ static void acpi_hide_nondev_subnodes(struct acpi_device_data *data)
 	}
 }
 
-/**
- * create_pnp_modalias - Create hid/cid(s) string for modalias and uevent
- * @acpi_dev: ACPI device object.
- * @modalias: Buffer to print into.
- * @size: Size of the buffer.
- *
- * Creates hid/cid(s) string needed for modalias and uevent
- * e.g. on a device with hid:IBM0001 and cid:ACPI0001 you get:
- * char *modalias: "acpi:IBM0001:ACPI0001"
- * Return: 0: no _HID and no _CID
- *         -EINVAL: output error
- *         -ENOMEM: output is truncated
- */
+ 
 static int create_pnp_modalias(const struct acpi_device *acpi_dev, char *modalias,
 			       int size)
 {
@@ -140,15 +118,11 @@ static int create_pnp_modalias(const struct acpi_device *acpi_dev, char *modalia
 	int count;
 	struct acpi_hardware_id *id;
 
-	/* Avoid unnecessarily loading modules for non present devices. */
+	 
 	if (!acpi_device_is_present(acpi_dev))
 		return 0;
 
-	/*
-	 * Since we skip ACPI_DT_NAMESPACE_HID from the modalias below, 0 should
-	 * be returned if ACPI_DT_NAMESPACE_HID is the only ACPI/PNP ID in the
-	 * device's list.
-	 */
+	 
 	count = 0;
 	list_for_each_entry(id, &acpi_dev->pnp.ids, list)
 		if (strcmp(id->id, ACPI_DT_NAMESPACE_HID))
@@ -181,16 +155,7 @@ static int create_pnp_modalias(const struct acpi_device *acpi_dev, char *modalia
 	return len;
 }
 
-/**
- * create_of_modalias - Creates DT compatible string for modalias and uevent
- * @acpi_dev: ACPI device object.
- * @modalias: Buffer to print into.
- * @size: Size of the buffer.
- *
- * Expose DT compatible modalias as of:NnameTCcompatible.  This function should
- * only be called for devices having ACPI_DT_NAMESPACE_HID in their list of
- * ACPI/PNP IDs.
- */
+ 
 static int create_of_modalias(const struct acpi_device *acpi_dev, char *modalias,
 			      int size)
 {
@@ -205,7 +170,7 @@ static int create_of_modalias(const struct acpi_device *acpi_dev, char *modalias
 	if (ACPI_FAILURE(status))
 		return -ENODEV;
 
-	/* DT strings are all in lower case */
+	 
 	for (c = buf.pointer; *c != '\0'; c++)
 		*c = tolower(*c);
 
@@ -221,7 +186,7 @@ static int create_of_modalias(const struct acpi_device *acpi_dev, char *modalias
 	if (of_compatible->type == ACPI_TYPE_PACKAGE) {
 		nval = of_compatible->package.count;
 		obj = of_compatible->package.elements;
-	} else { /* Must be ACPI_TYPE_STRING. */
+	} else {  
 		nval = 1;
 		obj = of_compatible;
 	}
@@ -269,16 +234,7 @@ int __acpi_device_uevent_modalias(const struct acpi_device *adev,
 	return 0;
 }
 
-/**
- * acpi_device_uevent_modalias - uevent modalias for ACPI-enumerated devices.
- * @dev: Struct device to get ACPI device node.
- * @env: Environment variables of the kobject uevent.
- *
- * Create the uevent modalias field for ACPI-enumerated devices.
- *
- * Because other buses do not support ACPI HIDs & CIDs, e.g. for a device with
- * hid:IBM0001 and cid:ACPI0001 you get: "acpi:IBM0001:ACPI0001".
- */
+ 
 int acpi_device_uevent_modalias(const struct device *dev, struct kobj_uevent_env *env)
 {
 	return __acpi_device_uevent_modalias(acpi_companion_match(dev), env);
@@ -316,17 +272,7 @@ static int __acpi_device_modalias(const struct acpi_device *adev, char *buf, int
 	return len;
 }
 
-/**
- * acpi_device_modalias - modalias sysfs attribute for ACPI-enumerated devices.
- * @dev: Struct device to get ACPI device node.
- * @buf: The buffer to save pnp_modalias and of_modalias.
- * @size: Size of buffer.
- *
- * Create the modalias sysfs attribute for ACPI-enumerated devices.
- *
- * Because other buses do not support ACPI HIDs & CIDs, e.g. for a device with
- * hid:IBM0001 and cid:ACPI0001 you get: "acpi:IBM0001:ACPI0001".
- */
+ 
 int acpi_device_modalias(struct device *dev, char *buf, int size)
 {
 	return __acpi_device_modalias(acpi_companion_match(dev), buf, size);
@@ -437,7 +383,7 @@ static ssize_t path_show(struct device *dev,
 }
 static DEVICE_ATTR_RO(path);
 
-/* sysfs file that shows description text from the ACPI _STR method */
+ 
 static ssize_t description_show(struct device *dev,
 				struct device_attribute *attr,
 				char *buf)
@@ -448,10 +394,7 @@ static ssize_t description_show(struct device *dev,
 	if (acpi_dev->pnp.str_obj == NULL)
 		return 0;
 
-	/*
-	 * The _STR object contains a Unicode identifier for a device.
-	 * We need to convert to utf-8 so it can be displayed.
-	 */
+	 
 	result = utf16s_to_utf8s(
 		(wchar_t *)acpi_dev->pnp.str_obj->buffer.pointer,
 		acpi_dev->pnp.str_obj->buffer.length,
@@ -511,19 +454,14 @@ static ssize_t status_show(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RO(status);
 
-/**
- * acpi_device_setup_files - Create sysfs attributes of an ACPI device.
- * @dev: ACPI device object.
- */
+ 
 int acpi_device_setup_files(struct acpi_device *dev)
 {
 	struct acpi_buffer buffer = {ACPI_ALLOCATE_BUFFER, NULL};
 	acpi_status status;
 	int result = 0;
 
-	/*
-	 * Devices gotten from FADT don't have a "path" attribute
-	 */
+	 
 	if (dev->handle) {
 		result = device_create_file(&dev->dev, &dev_attr_path);
 		if (result)
@@ -540,9 +478,7 @@ int acpi_device_setup_files(struct acpi_device *dev)
 			goto end;
 	}
 
-	/*
-	 * If device has _STR, 'description' file is created
-	 */
+	 
 	if (acpi_has_method(dev->handle, "_STR")) {
 		status = acpi_evaluate_object(dev->handle, "_STR",
 					NULL, &buffer);
@@ -577,10 +513,7 @@ int acpi_device_setup_files(struct acpi_device *dev)
 			goto end;
 	}
 
-	/*
-	 * If device has _EJ0, 'eject' file is created that is used to trigger
-	 * hot-removal function from userland.
-	 */
+	 
 	if (acpi_has_method(dev->handle, "_EJ0")) {
 		result = device_create_file(&dev->dev, &dev_attr_eject);
 		if (result)
@@ -603,10 +536,7 @@ end:
 	return result;
 }
 
-/**
- * acpi_device_remove_files - Remove sysfs attributes of an ACPI device.
- * @dev: ACPI device object.
- */
+ 
 void acpi_device_remove_files(struct acpi_device *dev)
 {
 	acpi_hide_nondev_subnodes(&dev->data);
@@ -618,16 +548,12 @@ void acpi_device_remove_files(struct acpi_device *dev)
 					   &dev_attr_real_power_state);
 	}
 
-	/*
-	 * If device has _STR, remove 'description' file
-	 */
+	 
 	if (acpi_has_method(dev->handle, "_STR")) {
 		kfree(dev->pnp.str_obj);
 		device_remove_file(&dev->dev, &dev_attr_description);
 	}
-	/*
-	 * If device has _EJ0, remove 'eject' file.
-	 */
+	 
 	if (acpi_has_method(dev->handle, "_EJ0"))
 		device_remove_file(&dev->dev, &dev_attr_eject);
 

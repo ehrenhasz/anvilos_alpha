@@ -1,9 +1,5 @@
-/* 	$OpenBSD: test_argv.c,v 1.4 2021/12/14 21:25:27 deraadt Exp $ */
-/*
- * Regress test for misc argv handling functions.
- *
- * Placed in the public domain.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -182,5 +178,5 @@ test_argv(void)
 	RESET_ARGV();
 	TEST_DONE();
 
-	/* XXX test char *argv_assemble(int argc, char **argv) */
+	 
 }

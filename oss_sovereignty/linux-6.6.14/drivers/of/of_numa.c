@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OF NUMA Parsing support.
- *
- * Copyright (C) 2015 - 2016 Cavium Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) "OF: NUMA: " fmt
 
@@ -13,13 +9,10 @@
 
 #include <asm/numa.h>
 
-/* define default numa node to 0 */
+ 
 #define DEFAULT_NODE 0
 
-/*
- * Even though we connect cpus to numa domains later in SMP
- * init, we need to know the node ids now for all cpus.
-*/
+ 
 static void __init of_numa_parse_cpu_nodes(void)
 {
 	u32 nid;
@@ -49,11 +42,7 @@ static int __init of_numa_parse_memory_nodes(void)
 	for_each_node_by_type(np, "memory") {
 		r = of_property_read_u32(np, "numa-node-id", &nid);
 		if (r == -EINVAL)
-			/*
-			 * property doesn't exist if -EINVAL, continue
-			 * looking for more memory nodes with
-			 * "numa-node-id" property
-			 */
+			 
 			continue;
 
 		if (nid >= MAX_NUMNODES) {
@@ -115,7 +104,7 @@ static int __init of_numa_parse_distance_map_v1(struct device_node *map)
 
 		numa_set_distance(nodea, nodeb, distance);
 
-		/* Set default distance of node B->A same as A->B */
+		 
 		if (nodeb > nodea)
 			numa_set_distance(nodeb, nodea, distance);
 	}
@@ -147,12 +136,7 @@ int of_node_to_nid(struct device_node *device)
 
 	while (np) {
 		r = of_property_read_u32(np, "numa-node-id", &nid);
-		/*
-		 * -EINVAL indicates the property was not found, and
-		 *  we walk up the tree trying to find a parent with a
-		 *  "numa-node-id".  Any other type of error indicates
-		 *  a bad device tree and we give up.
-		 */
+		 
 		if (r != -EINVAL)
 			break;
 
@@ -163,11 +147,7 @@ int of_node_to_nid(struct device_node *device)
 			np);
 	of_node_put(np);
 
-	/*
-	 * If numa=off passed on command line, or with a defective
-	 * device tree, the nid may not be in the set of possible
-	 * nodes.  Check for this case and return NUMA_NO_NODE.
-	 */
+	 
 	if (!r && nid < MAX_NUMNODES && node_possible(nid))
 		return nid;
 

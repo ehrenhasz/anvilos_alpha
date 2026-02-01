@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * base64.c - RFC4648-compliant base64 encoding
- *
- * Copyright (c) 2020 Hannes Reinecke, SUSE
- *
- * Based on the base64url routines from fs/crypto/fname.c
- * (which are using the URL-safe base64 encoding),
- * modified to use the standard coding table from RFC4648 section 4.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -18,17 +10,7 @@
 static const char base64_table[65] =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-/**
- * base64_encode() - base64-encode some binary data
- * @src: the binary data to encode
- * @srclen: the length of @src in bytes
- * @dst: (output) the base64-encoded string.  Not NUL-terminated.
- *
- * Encodes data using base64 encoding, i.e. the "Base 64 Encoding" specified
- * by RFC 4648, including the  '='-padding.
- *
- * Return: the length of the resulting base64-encoded string in bytes.
- */
+ 
 int base64_encode(const u8 *src, int srclen, char *dst)
 {
 	u32 ac = 0;
@@ -56,20 +38,7 @@ int base64_encode(const u8 *src, int srclen, char *dst)
 }
 EXPORT_SYMBOL_GPL(base64_encode);
 
-/**
- * base64_decode() - base64-decode a string
- * @src: the string to decode.  Doesn't need to be NUL-terminated.
- * @srclen: the length of @src in bytes
- * @dst: (output) the decoded binary data
- *
- * Decodes a string using base64 encoding, i.e. the "Base 64 Encoding"
- * specified by RFC 4648, including the  '='-padding.
- *
- * This implementation hasn't been optimized for performance.
- *
- * Return: the length of the resulting decoded binary data in bytes,
- *	   or -1 if the string isn't a valid base64 string.
- */
+ 
 int base64_decode(const char *src, int srclen, u8 *dst)
 {
 	u32 ac = 0;

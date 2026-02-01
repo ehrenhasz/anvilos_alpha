@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011 Patrick McHardy <kaber@trash.net>
- *
- * Based on Rusty Russell's IPv4 NAT code. Development of IPv6 NAT
- * funded by Astaro.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/netfilter.h>

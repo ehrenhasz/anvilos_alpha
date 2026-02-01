@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Debugfs support for hosts and cards
- *
- * Copyright (C) 2008 Atmel Corporation
- */
+
+ 
 #include <linux/moduleparam.h>
 #include <linux/export.h>
 #include <linux/debugfs.h>
@@ -28,9 +24,9 @@ static char *fail_request;
 module_param(fail_request, charp, 0);
 MODULE_PARM_DESC(fail_request, "default fault injection attributes");
 
-#endif /* CONFIG_FAIL_MMC_REQUEST */
+#endif  
 
-/* The debugfs functions are optimized away when CONFIG_DEBUG_FS isn't set. */
+ 
 static int mmc_ios_show(struct seq_file *s, void *data)
 {
 	static const char *vdd_str[] = {
@@ -209,7 +205,7 @@ static int mmc_clock_opt_set(void *data, u64 val)
 {
 	struct mmc_host *host = data;
 
-	/* We need this check due to input value is u64 */
+	 
 	if (val != 0 && (val > host->f_max || val < host->f_min))
 		return -EINVAL;
 

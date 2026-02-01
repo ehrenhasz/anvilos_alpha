@@ -1,63 +1,10 @@
-/*
- * Copyright(c) 2017 Intel Corporation.
- *
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * GPL LICENSE SUMMARY
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * BSD LICENSE
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *  - Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *  - Neither the name of Intel Corporation nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+ 
 
-/*
- * This file contains OPA VNIC EMA Interface functions.
- */
+ 
 
 #include "opa_vnic_internal.h"
 
-/**
- * opa_vnic_vema_report_event - sent trap to report the specified event
- * @adapter: vnic port adapter
- * @event: event to be reported
- *
- * This function calls vema api to sent a trap for the given event.
- */
+ 
 void opa_vnic_vema_report_event(struct opa_vnic_adapter *adapter, u8 event)
 {
 	struct __opa_veswport_info *info = &adapter->info;
@@ -73,14 +20,7 @@ void opa_vnic_vema_report_event(struct opa_vnic_adapter *adapter, u8 event)
 	opa_vnic_vema_send_trap(adapter, &trap_data, info->vport.encap_slid);
 }
 
-/**
- * opa_vnic_get_summary_counters - get summary counters
- * @adapter: vnic port adapter
- * @cntrs: pointer to destination summary counters structure
- *
- * This function populates the summary counters that is maintained by the
- * given adapter to destination address provided.
- */
+ 
 void opa_vnic_get_summary_counters(struct opa_vnic_adapter *adapter,
 				   struct opa_veswport_summary_counters *cntrs)
 {
@@ -104,24 +44,14 @@ void opa_vnic_get_summary_counters(struct opa_vnic_adapter *adapter,
 	cntrs->tx_bytes = cpu_to_be64(vstats.netstats.tx_bytes);
 	cntrs->rx_bytes = cpu_to_be64(vstats.netstats.rx_bytes);
 
-	/*
-	 * This loop depends on layout of
-	 * opa_veswport_summary_counters opa_vnic_stats structures.
-	 */
+	 
 	for (dst = &cntrs->tx_unicast, src = &vstats.tx_grp.unicast;
 	     dst < &cntrs->reserved[0]; dst++, src++) {
 		*dst = cpu_to_be64(*src);
 	}
 }
 
-/**
- * opa_vnic_get_error_counters - get error counters
- * @adapter: vnic port adapter
- * @cntrs: pointer to destination error counters structure
- *
- * This function populates the error counters that is maintained by the
- * given adapter to destination address provided.
- */
+ 
 void opa_vnic_get_error_counters(struct opa_vnic_adapter *adapter,
 				 struct opa_veswport_error_counters *cntrs)
 {
@@ -150,14 +80,7 @@ void opa_vnic_get_error_counters(struct opa_vnic_adapter *adapter,
 	cntrs->rx_logic = cpu_to_be64(vstats.netstats.rx_fifo_errors);
 }
 
-/**
- * opa_vnic_get_vesw_info -- Get the vesw information
- * @adapter: vnic port adapter
- * @info: pointer to destination vesw info structure
- *
- * This function copies the vesw info that is maintained by the
- * given adapter to destination address provided.
- */
+ 
 void opa_vnic_get_vesw_info(struct opa_vnic_adapter *adapter,
 			    struct opa_vesw_info *info)
 {
@@ -183,15 +106,7 @@ void opa_vnic_get_vesw_info(struct opa_vnic_adapter *adapter,
 	memcpy(info->rsvd4, src->rsvd4, ARRAY_SIZE(src->rsvd4));
 }
 
-/**
- * opa_vnic_set_vesw_info -- Set the vesw information
- * @adapter: vnic port adapter
- * @info: pointer to vesw info structure
- *
- * This function updates the vesw info that is maintained by the
- * given adapter with vesw info provided. Reserved fields are stored
- * and returned back to EM as is.
- */
+ 
 void opa_vnic_set_vesw_info(struct opa_vnic_adapter *adapter,
 			    struct opa_vesw_info *info)
 {
@@ -217,15 +132,7 @@ void opa_vnic_set_vesw_info(struct opa_vnic_adapter *adapter,
 	memcpy(dst->rsvd4, info->rsvd4, ARRAY_SIZE(info->rsvd4));
 }
 
-/**
- * opa_vnic_get_per_veswport_info -- Get the vesw per port information
- * @adapter: vnic port adapter
- * @info: pointer to destination vport info structure
- *
- * This function copies the vesw per port info that is maintained by the
- * given adapter to destination address provided.
- * Note that the read only fields are not copied.
- */
+ 
 void opa_vnic_get_per_veswport_info(struct opa_vnic_adapter *adapter,
 				    struct opa_per_veswport_info *info)
 {
@@ -264,15 +171,7 @@ void opa_vnic_get_per_veswport_info(struct opa_vnic_adapter *adapter,
 	memcpy(info->rsvd3, src->rsvd3, ARRAY_SIZE(src->rsvd3));
 }
 
-/**
- * opa_vnic_set_per_veswport_info -- Set vesw per port information
- * @adapter: vnic port adapter
- * @info: pointer to vport info structure
- *
- * This function updates the vesw per port info that is maintained by the
- * given adapter with vesw per port info provided. Reserved fields are
- * stored and returned back to EM as is.
- */
+ 
 void opa_vnic_set_per_veswport_info(struct opa_vnic_adapter *adapter,
 				    struct opa_per_veswport_info *info)
 {
@@ -303,14 +202,7 @@ void opa_vnic_set_per_veswport_info(struct opa_vnic_adapter *adapter,
 	memcpy(dst->rsvd3, info->rsvd3, ARRAY_SIZE(info->rsvd3));
 }
 
-/**
- * opa_vnic_query_mcast_macs - query multicast mac list
- * @adapter: vnic port adapter
- * @macs: pointer mac list
- *
- * This function populates the provided mac list with the configured
- * multicast addresses in the adapter.
- */
+ 
 void opa_vnic_query_mcast_macs(struct opa_vnic_adapter *adapter,
 			       struct opa_veswport_iface_macs *macs)
 {
@@ -335,14 +227,7 @@ void opa_vnic_query_mcast_macs(struct opa_vnic_adapter *adapter,
 	macs->gen_count = cpu_to_be16(adapter->info.vport.mc_macs_gen_count);
 }
 
-/**
- * opa_vnic_query_ucast_macs - query unicast mac list
- * @adapter: vnic port adapter
- * @macs: pointer mac list
- *
- * This function populates the provided mac list with the configured
- * unicast addresses in the adapter.
- */
+ 
 void opa_vnic_query_ucast_macs(struct opa_vnic_adapter *adapter,
 			       struct opa_veswport_iface_macs *macs)
 {
@@ -351,11 +236,11 @@ void opa_vnic_query_ucast_macs(struct opa_vnic_adapter *adapter,
 
 	start_idx = be16_to_cpu(macs->start_idx);
 	num_macs = be16_to_cpu(macs->num_macs_in_msg);
-	/* loop through dev_addrs list first */
+	 
 	for_each_dev_addr(adapter->netdev, ha) {
 		struct opa_vnic_iface_mac_entry *entry = &macs->entry[count];
 
-		/* Do not include EM specified MAC address */
+		 
 		if (!memcmp(adapter->info.vport.base_mac_addr, ha->addr,
 			    ARRAY_SIZE(adapter->info.vport.base_mac_addr))) {
 			em_macs++;
@@ -370,7 +255,7 @@ void opa_vnic_query_ucast_macs(struct opa_vnic_adapter *adapter,
 		count++;
 	}
 
-	/* loop through uc list */
+	 
 	netdev_for_each_uc_addr(ha, adapter->netdev) {
 		struct opa_vnic_iface_mac_entry *entry = &macs->entry[count];
 

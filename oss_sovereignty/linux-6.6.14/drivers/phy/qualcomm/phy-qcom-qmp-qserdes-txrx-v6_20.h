@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023, Linaro Limited
- */
+ 
+ 
 
 #ifndef QCOM_PHY_QMP_QSERDES_TXRX_PCIE_V6_20_H_
 #define QCOM_PHY_QMP_QSERDES_TXRX_PCIE_V6_20_H_

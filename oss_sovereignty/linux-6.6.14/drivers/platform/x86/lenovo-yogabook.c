@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Platform driver for Lenovo Yoga Book YB1-X90F/L tablets (Android model)
- * WMI driver for Lenovo Yoga Book YB1-X91F/L tablets (Windows model)
- *
- * The keyboard half of the YB1 models can function as both a capacitive
- * touch keyboard or as a Wacom digitizer, but not at the same time.
- *
- * This driver takes care of switching between the 2 functions.
- *
- * Copyright 2023 Hans de Goede <hansg@kernel.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/gpio/consumer.h>
@@ -31,7 +21,7 @@
 
 #define YB_PDEV_NAME		"yogabook-touch-kbd-digitizer-switch"
 
-/* flags */
+ 
 enum {
 	YB_KBD_IS_ON,
 	YB_DIGITIZER_IS_ON,
@@ -81,10 +71,7 @@ static void yogabook_work(struct work_struct *work)
 	}
 
 	if (!kbd_on && test_bit(YB_KBD_IS_ON, &data->flags)) {
-		/*
-		 * Must be done before releasing the keyboard touchscreen driver,
-		 * so that the keyboard touchscreen dev is still in D0.
-		 */
+		 
 		data->set_kbd_backlight(data, 0);
 		device_release_driver(data->kbd_dev);
 		clear_bit(YB_KBD_IS_ON, &data->flags);
@@ -125,10 +112,7 @@ static void yogabook_toggle_digitizer_mode(struct yogabook_data *data)
 	else
 		set_bit(YB_DIGITIZER_MODE, &data->flags);
 
-	/*
-	 * We are called from the ACPI core and the driver [un]binding which is
-	 * done also needs ACPI functions, use a workqueue to avoid deadlocking.
-	 */
+	 
 	schedule_work(&data->work);
 }
 
@@ -217,7 +201,7 @@ static int yogabook_probe(struct device *dev, struct yogabook_data *data,
 
 	data->backside_hall_irq = r;
 
-	/* Set default brightness before enabling the IRQ */
+	 
 	data->set_kbd_backlight(data, YB_KBD_BL_DEFAULT);
 
 	r = request_irq(data->backside_hall_irq, yogabook_backside_hall_irq,
@@ -287,7 +271,7 @@ static int yogabook_resume(struct device *dev)
 
 	clear_bit(YB_SUSPENDED, &data->flags);
 
-	/* Check for YB_TABLET_MODE changes made during suspend */
+	 
 	schedule_work(&data->work);
 
 	return 0;
@@ -295,12 +279,9 @@ static int yogabook_resume(struct device *dev)
 
 static DEFINE_SIMPLE_DEV_PM_OPS(yogabook_pm_ops, yogabook_suspend, yogabook_resume);
 
-/********** WMI driver code **********/
+ 
 
-/*
- * To control keyboard backlight, call the method KBLC() of the TCS1 ACPI
- * device (Goodix touchpad acts as virtual sensor keyboard).
- */
+ 
 static int yogabook_wmi_set_kbd_backlight(struct yogabook_data *data,
 					  uint8_t level)
 {
@@ -311,7 +292,7 @@ static int yogabook_wmi_set_kbd_backlight(struct yogabook_data *data,
 
 	dev_dbg(data->dev, "Set KBLC level to %u\n", level);
 
-	/* Ensure keyboard touchpad is on before we call KBLC() */
+	 
 	acpi_device_set_power(data->kbd_adev, ACPI_STATE_D0);
 
 	input.count = 1;
@@ -400,7 +381,7 @@ static const struct wmi_device_id yogabook_wmi_id_table[] = {
 	{
 		.guid_string = YB_MBTN_EVENT_GUID,
 	},
-	{ } /* Terminating entry */
+	{ }  
 };
 MODULE_DEVICE_TABLE(wmi, yogabook_wmi_id_table);
 
@@ -416,7 +397,7 @@ static struct wmi_driver yogabook_wmi_driver = {
 	.notify = yogabook_wmi_notify,
 };
 
-/********** platform driver code **********/
+ 
 
 static struct gpiod_lookup_table yogabook_pdev_gpios = {
 	.dev_id = YB_PDEV_NAME,

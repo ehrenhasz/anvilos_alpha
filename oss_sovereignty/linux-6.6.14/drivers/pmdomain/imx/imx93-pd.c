@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2022 NXP
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -66,7 +64,7 @@ static int imx93_pd_off(struct generic_pm_domain *genpd)
 	int ret;
 	u32 val;
 
-	/* Power off MIX */
+	 
 	val = readl(addr + MIX_SLICE_SW_CTRL_OFF);
 	val |= SLICE_SW_CTRL_PDN_SOFT_MASK;
 	writel(val, addr + MIX_SLICE_SW_CTRL_OFF);
@@ -123,7 +121,7 @@ static int imx93_pd_probe(struct platform_device *pdev)
 	domain->dev = dev;
 
 	domain->init_off = readl(domain->addr + MIX_FUNC_STAT_OFF) & FUNC_STAT_ISO_STAT_MASK;
-	/* Just to sync the status of hardware */
+	 
 	if (!domain->init_off) {
 		ret = clk_bulk_prepare_enable(domain->num_clks, domain->clks);
 		if (ret) {

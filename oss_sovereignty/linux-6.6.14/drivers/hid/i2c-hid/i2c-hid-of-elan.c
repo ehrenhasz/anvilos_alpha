@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Elan touchscreens that use the i2c-hid protocol.
- *
- * Copyright 2020 Google LLC
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -87,7 +83,7 @@ static int i2c_hid_of_elan_probe(struct i2c_client *client)
 	ihid_elan->ops.power_up = elan_i2c_hid_power_up;
 	ihid_elan->ops.power_down = elan_i2c_hid_power_down;
 
-	/* Start out with reset asserted */
+	 
 	ihid_elan->reset_gpio =
 		devm_gpiod_get_optional(&client->dev, "reset", GPIOD_OUT_HIGH);
 	if (IS_ERR(ihid_elan->reset_gpio))
@@ -122,11 +118,7 @@ static const struct elan_i2c_hid_chip_data ilitek_ili9882t_chip_data = {
 	.post_gpio_reset_on_delay_ms = 200,
 	.post_gpio_reset_off_delay_ms = 65,
 	.hid_descriptor_address = 0x0001,
-	/*
-	 * this touchscreen is tightly integrated with the panel and assumes
-	 * that the relevant power rails (other than the IO rail) have already
-	 * been turned on by the panel driver because we're a panel follower.
-	 */
+	 
 	.main_supply_name = NULL,
 };
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Arturo Borrero Gonzalez <arturo@debian.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>

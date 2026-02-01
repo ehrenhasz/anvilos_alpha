@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 AmLogic, Inc.
- * Michael Turquette <mturquette@baylibre.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>
@@ -53,7 +50,7 @@ static const struct pll_params_table gxbb_gp0_pll_params_table[] = {
 	PLL_PARAMS(60, 1),
 	PLL_PARAMS(61, 1),
 	PLL_PARAMS(62, 1),
-	{ /* sentinel */ },
+	{   },
 };
 
 static const struct pll_params_table gxl_gp0_pll_params_table[] = {
@@ -82,7 +79,7 @@ static const struct pll_params_table gxl_gp0_pll_params_table[] = {
 	PLL_PARAMS(64, 1),
 	PLL_PARAMS(65, 1),
 	PLL_PARAMS(66, 1),
-	{ /* sentinel */ },
+	{   },
 };
 
 static struct clk_regmap gxbb_fixed_pll_dco = {
@@ -142,10 +139,7 @@ static struct clk_regmap gxbb_fixed_pll = {
 			&gxbb_fixed_pll_dco.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock won't ever change at runtime so
-		 * CLK_SET_RATE_PARENT is not required
-		 */
+		 
 	},
 };
 
@@ -202,10 +196,7 @@ static struct clk_regmap gxbb_hdmi_pll_dco = {
 			&gxbb_hdmi_pll_pre_mult.hw
 		},
 		.num_parents = 1,
-		/*
-		 * Display directly handle hdmi pll registers ATM, we need
-		 * NOCACHE to keep our view of the clock as accurate as possible
-		 */
+		 
 		.flags = CLK_GET_RATE_NOCACHE,
 	},
 };
@@ -227,12 +218,7 @@ static struct clk_regmap gxl_hdmi_pll_dco = {
 			.shift   = 9,
 			.width   = 5,
 		},
-		/*
-		 * On gxl, there is a register shift due to
-		 * HHI_HDMI_PLL_CNTL1 which does not exist on gxbb,
-		 * so we use the HHI_HDMI_PLL_CNTL2 define from GXBB
-		 * instead which is defined at the same offset.
-		 */
+		 
 		.frac = {
 			.reg_off = HHI_HDMI_PLL_CNTL2,
 			.shift   = 0,
@@ -256,10 +242,7 @@ static struct clk_regmap gxl_hdmi_pll_dco = {
 			.fw_name = "xtal",
 		},
 		.num_parents = 1,
-		/*
-		 * Display directly handle hdmi pll registers ATM, we need
-		 * NOCACHE to keep our view of the clock as accurate as possible
-		 */
+		 
 		.flags = CLK_GET_RATE_NOCACHE,
 	},
 };
@@ -540,13 +523,7 @@ static struct clk_regmap gxbb_gp0_pll = {
 		.name = "gp0_pll",
 		.ops = &clk_regmap_divider_ops,
 		.parent_data = &(const struct clk_parent_data) {
-			/*
-			 * Note:
-			 * GXL and GXBB have different gp0_pll_dco (with
-			 * different struct clk_hw). We fallback to the global
-			 * naming string mechanism so gp0_pll picks up the
-			 * appropriate one.
-			 */
+			 
 			.name = "gp0_pll_dco",
 			.index = -1,
 		},
@@ -607,17 +584,7 @@ static struct clk_regmap gxbb_fclk_div3 = {
 			&gxbb_fclk_div3_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * FIXME:
-		 * This clock, as fdiv2, is used by the SCPI FW and is required
-		 * by the platform to operate correctly.
-		 * Until the following condition are met, we need this clock to
-		 * be marked as critical:
-		 * a) The SCPI generic driver claims and enable all the clocks
-		 *    it needs
-		 * b) CCF has a clock hand-off mechanism to make the sure the
-		 *    clock stays on until the proper driver comes along
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -781,12 +748,7 @@ static struct clk_regmap gxbb_mpll0 = {
 		.name = "mpll0",
 		.ops = &clk_regmap_gate_ops,
 		.parent_data = &(const struct clk_parent_data) {
-			/*
-			 * Note:
-			 * GXL and GXBB have different SDM_EN registers. We
-			 * fallback to the global naming string mechanism so
-			 * mpll0_div picks up the appropriate one.
-			 */
+			 
 			.name = "mpll0_div",
 			.index = -1,
 		},
@@ -902,11 +864,7 @@ static struct clk_regmap gxbb_mpeg_clk_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "mpeg_clk_sel",
 		.ops = &clk_regmap_mux_ro_ops,
-		/*
-		 * bits 14:12 selects from 8 possible parents:
-		 * xtal, 1'b0 (wtf), fclk_div7, mpll_clkout1, mpll_clkout2,
-		 * fclk_div4, fclk_div3, fclk_div5
-		 */
+		 
 		.parent_data = clk81_parent_data,
 		.num_parents = ARRAY_SIZE(clk81_parent_data),
 	},
@@ -928,7 +886,7 @@ static struct clk_regmap gxbb_mpeg_clk_div = {
 	},
 };
 
-/* the mother of dragons gates */
+ 
 static struct clk_regmap gxbb_clk81 = {
 	.data = &(struct clk_regmap_gate_data){
 		.offset = HHI_MPEG_CLK_CNTL,
@@ -954,7 +912,7 @@ static struct clk_regmap gxbb_sar_adc_clk_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "sar_adc_clk_sel",
 		.ops = &clk_regmap_mux_ops,
-		/* NOTE: The datasheet doesn't list the parents for bit 10 */
+		 
 		.parent_data = (const struct clk_parent_data []) {
 			{ .fw_name = "xtal", },
 			{ .hw = &gxbb_clk81.hw },
@@ -996,12 +954,7 @@ static struct clk_regmap gxbb_sar_adc_clk = {
 	},
 };
 
-/*
- * The MALI IP is clocked by two identical clocks (mali_0 and mali_1)
- * muxed by a glitch-free switch. The CCF can manage this glitch-free
- * mux because it does top-to-bottom updates the each clock tree and
- * switches to the "inactive" one when CLK_SET_RATE_GATE is set.
- */
+ 
 
 static const struct clk_parent_data gxbb_mali_0_1_parent_data[] = {
 	{ .fw_name = "xtal", },
@@ -1025,12 +978,7 @@ static struct clk_regmap gxbb_mali_0_sel = {
 		.ops = &clk_regmap_mux_ops,
 		.parent_data = gxbb_mali_0_1_parent_data,
 		.num_parents = 8,
-		/*
-		 * Don't request the parent to change the rate because
-		 * all GPU frequencies can be derived from the fclk_*
-		 * clocks and one special GP0_PLL setting. This is
-		 * important because we need the MPLL clocks for audio.
-		 */
+		 
 		.flags = 0,
 	},
 };
@@ -1079,12 +1027,7 @@ static struct clk_regmap gxbb_mali_1_sel = {
 		.ops = &clk_regmap_mux_ops,
 		.parent_data = gxbb_mali_0_1_parent_data,
 		.num_parents = 8,
-		/*
-		 * Don't request the parent to change the rate because
-		 * all GPU frequencies can be derived from the fclk_*
-		 * clocks and one special GP0_PLL setting. This is
-		 * important because we need the MPLL clocks for audio.
-		 */
+		 
 		.flags = 0,
 	},
 };
@@ -1264,21 +1207,14 @@ static struct clk_regmap gxbb_cts_i958 = {
 			&gxbb_cts_mclk_i958.hw
 		},
 		.num_parents = 2,
-		/*
-		 *The parent is specific to origin of the audio data. Let the
-		 * consumer choose the appropriate parent
-		 */
+		 
 		.flags = CLK_SET_RATE_PARENT | CLK_SET_RATE_NO_REPARENT,
 	},
 };
 
 static const struct clk_parent_data gxbb_32k_clk_parent_data[] = {
 	{ .fw_name = "xtal", },
-	/*
-	 * FIXME: This clock is provided by the ao clock controller but the
-	 * clock is not yet part of the binding of this controller, so string
-	 * name must be use to set this parent.
-	 */
+	 
 	{ .name = "cts_slow_oscin", .index = -1 },
 	{ .hw = &gxbb_fclk_div3.hw },
 	{ .hw = &gxbb_fclk_div5.hw },
@@ -1338,15 +1274,10 @@ static const struct clk_parent_data gxbb_sd_emmc_clk0_parent_data[] = {
 	{ .hw = &gxbb_fclk_div3.hw },
 	{ .hw = &gxbb_fclk_div5.hw },
 	{ .hw = &gxbb_fclk_div7.hw },
-	/*
-	 * Following these parent clocks, we should also have had mpll2, mpll3
-	 * and gp0_pll but these clocks are too precious to be used here. All
-	 * the necessary rates for MMC and NAND operation can be acheived using
-	 * xtal or fclk_div clocks
-	 */
+	 
 };
 
-/* SDIO clock */
+ 
 static struct clk_regmap gxbb_sd_emmc_a_clk0_sel = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SD_EMMC_CLK_CNTL,
@@ -1396,7 +1327,7 @@ static struct clk_regmap gxbb_sd_emmc_a_clk0 = {
 	},
 };
 
-/* SDcard clock */
+ 
 static struct clk_regmap gxbb_sd_emmc_b_clk0_sel = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_SD_EMMC_CLK_CNTL,
@@ -1446,7 +1377,7 @@ static struct clk_regmap gxbb_sd_emmc_b_clk0 = {
 	},
 };
 
-/* EMMC/NAND clock */
+ 
 static struct clk_regmap gxbb_sd_emmc_c_clk0_sel = {
 	.data = &(struct clk_regmap_mux_data){
 		.offset = HHI_NAND_CLK_CNTL,
@@ -1496,7 +1427,7 @@ static struct clk_regmap gxbb_sd_emmc_c_clk0 = {
 	},
 };
 
-/* VPU Clock */
+ 
 
 static const struct clk_hw *gxbb_vpu_parent_hws[] = {
 	&gxbb_fclk_div4.hw,
@@ -1514,10 +1445,7 @@ static struct clk_regmap gxbb_vpu_0_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vpu_0_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 9:10 selects from 4 possible parents:
-		 * fclk_div4, fclk_div3, fclk_div5, fclk_div7,
-		 */
+		 
 		.parent_hws = gxbb_vpu_parent_hws,
 		.num_parents = ARRAY_SIZE(gxbb_vpu_parent_hws),
 		.flags = CLK_SET_RATE_NO_REPARENT,
@@ -1562,10 +1490,7 @@ static struct clk_regmap gxbb_vpu_1_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vpu_1_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 25:26 selects from 4 possible parents:
-		 * fclk_div4, fclk_div3, fclk_div5, fclk_div7,
-		 */
+		 
 		.parent_hws = gxbb_vpu_parent_hws,
 		.num_parents = ARRAY_SIZE(gxbb_vpu_parent_hws),
 		.flags = CLK_SET_RATE_NO_REPARENT,
@@ -1610,10 +1535,7 @@ static struct clk_regmap gxbb_vpu = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vpu",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bit 31 selects from 2 possible parents:
-		 * vpu_0 or vpu_1
-		 */
+		 
 		.parent_hws = (const struct clk_hw *[]) {
 			&gxbb_vpu_0.hw,
 			&gxbb_vpu_1.hw
@@ -1623,7 +1545,7 @@ static struct clk_regmap gxbb_vpu = {
 	},
 };
 
-/* VAPB Clock */
+ 
 
 static const struct clk_hw *gxbb_vapb_parent_hws[] = {
 	&gxbb_fclk_div4.hw,
@@ -1641,10 +1563,7 @@ static struct clk_regmap gxbb_vapb_0_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vapb_0_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 9:10 selects from 4 possible parents:
-		 * fclk_div4, fclk_div3, fclk_div5, fclk_div7,
-		 */
+		 
 		.parent_hws = gxbb_vapb_parent_hws,
 		.num_parents = ARRAY_SIZE(gxbb_vapb_parent_hws),
 		.flags = CLK_SET_RATE_NO_REPARENT,
@@ -1693,10 +1612,7 @@ static struct clk_regmap gxbb_vapb_1_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vapb_1_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 25:26 selects from 4 possible parents:
-		 * fclk_div4, fclk_div3, fclk_div5, fclk_div7,
-		 */
+		 
 		.parent_hws = gxbb_vapb_parent_hws,
 		.num_parents = ARRAY_SIZE(gxbb_vapb_parent_hws),
 		.flags = CLK_SET_RATE_NO_REPARENT,
@@ -1745,10 +1661,7 @@ static struct clk_regmap gxbb_vapb_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vapb_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bit 31 selects from 2 possible parents:
-		 * vapb_0 or vapb_1
-		 */
+		 
 		.parent_hws = (const struct clk_hw *[]) {
 			&gxbb_vapb_0.hw,
 			&gxbb_vapb_1.hw
@@ -1772,7 +1685,7 @@ static struct clk_regmap gxbb_vapb = {
 	},
 };
 
-/* Video Clocks */
+ 
 
 static struct clk_regmap gxbb_vid_pll_div = {
 	.data = &(struct meson_vid_pll_div_data){
@@ -1791,13 +1704,7 @@ static struct clk_regmap gxbb_vid_pll_div = {
 		.name = "vid_pll_div",
 		.ops = &meson_vid_pll_div_ro_ops,
 		.parent_data = &(const struct clk_parent_data) {
-			/*
-			 * Note:
-			 * GXL and GXBB have different hdmi_plls (with
-			 * different struct clk_hw). We fallback to the global
-			 * naming string mechanism so vid_pll_div picks up the
-			 * appropriate one.
-			 */
+			 
 			.name = "hdmi_pll",
 			.index = -1,
 		},
@@ -1808,13 +1715,7 @@ static struct clk_regmap gxbb_vid_pll_div = {
 
 static const struct clk_parent_data gxbb_vid_pll_parent_data[] = {
 	{ .hw = &gxbb_vid_pll_div.hw },
-	/*
-	 * Note:
-	 * GXL and GXBB have different hdmi_plls (with
-	 * different struct clk_hw). We fallback to the global
-	 * naming string mechanism so vid_pll_div picks up the
-	 * appropriate one.
-	 */
+	 
 	{ .name = "hdmi_pll", .index = -1 },
 };
 
@@ -1827,10 +1728,7 @@ static struct clk_regmap gxbb_vid_pll_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vid_pll_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bit 18 selects from 2 possible parents:
-		 * vid_pll_div or hdmi_pll
-		 */
+		 
 		.parent_data = gxbb_vid_pll_parent_data,
 		.num_parents = ARRAY_SIZE(gxbb_vid_pll_parent_data),
 		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
@@ -1872,11 +1770,7 @@ static struct clk_regmap gxbb_vclk_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vclk_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 16:18 selects from 8 possible parents:
-		 * vid_pll, fclk_div4, fclk_div3, fclk_div5,
-		 * vid_pll, fclk_div7, mp1
-		 */
+		 
 		.parent_hws = gxbb_vclk_parent_hws,
 		.num_parents = ARRAY_SIZE(gxbb_vclk_parent_hws),
 		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
@@ -1892,11 +1786,7 @@ static struct clk_regmap gxbb_vclk2_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "vclk2_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 16:18 selects from 8 possible parents:
-		 * vid_pll, fclk_div4, fclk_div3, fclk_div5,
-		 * vid_pll, fclk_div7, mp1
-		 */
+		 
 		.parent_hws = gxbb_vclk_parent_hws,
 		.num_parents = ARRAY_SIZE(gxbb_vclk_parent_hws),
 		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
@@ -2299,7 +2189,7 @@ static struct clk_regmap gxbb_cts_vdac_sel = {
 	},
 };
 
-/* TOFIX: add support for cts_tcon */
+ 
 static u32 mux_table_hdmi_tx_sel[] = { 0, 1, 2, 3, 4, 8, 9, 10, 11, 12 };
 static const struct clk_hw *gxbb_cts_hdmi_tx_parent_hws[] = {
 	&gxbb_vclk_div1.hw,
@@ -2324,12 +2214,7 @@ static struct clk_regmap gxbb_hdmi_tx_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "hdmi_tx_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 31:28 selects from 12 possible parents:
-		 * vclk_div1, vclk_div2, vclk_div4, vclk_div6, vclk_div12
-		 * vclk2_div1, vclk2_div2, vclk2_div4, vclk2_div6, vclk2_div12,
-		 * cts_tcon
-		 */
+		 
 		.parent_hws = gxbb_cts_hdmi_tx_parent_hws,
 		.num_parents = ARRAY_SIZE(gxbb_cts_hdmi_tx_parent_hws),
 		.flags = CLK_SET_RATE_NO_REPARENT | CLK_GET_RATE_NOCACHE,
@@ -2400,7 +2285,7 @@ static struct clk_regmap gxbb_hdmi_tx = {
 	},
 };
 
-/* HDMI Clocks */
+ 
 
 static const struct clk_parent_data gxbb_hdmi_parent_data[] = {
 	{ .fw_name = "xtal", },
@@ -2454,7 +2339,7 @@ static struct clk_regmap gxbb_hdmi = {
 	},
 };
 
-/* VDEC clocks */
+ 
 
 static const struct clk_hw *gxbb_vdec_parent_hws[] = {
 	&gxbb_fclk_div4.hw,
@@ -2589,12 +2474,7 @@ static struct clk_regmap gxbb_gen_clk_sel = {
 	.hw.init = &(struct clk_init_data){
 		.name = "gen_clk_sel",
 		.ops = &clk_regmap_mux_ops,
-		/*
-		 * bits 15:12 selects from 14 possible parents:
-		 * xtal, [rtc_oscin_i], [sys_cpu_div16], [ddr_dpll_pt],
-		 * vid_pll, vid2_pll (hevc), mpll0, mpll1, mpll2, fdiv4,
-		 * fdiv3, fdiv5, [cts_msr_clk], fdiv7, gp0_pll
-		 */
+		 
 		.parent_data = gen_clk_parent_data,
 		.num_parents = ARRAY_SIZE(gen_clk_parent_data),
 	},
@@ -2636,7 +2516,7 @@ static struct clk_regmap gxbb_gen_clk = {
 #define MESON_GATE(_name, _reg, _bit) \
 	MESON_PCLK(_name, _reg, _bit, &gxbb_clk81.hw)
 
-/* Everything Else (EE) domain gates */
+ 
 static MESON_GATE(gxbb_ddr, HHI_GCLK_MPEG0, 0);
 static MESON_GATE(gxbb_dos, HHI_GCLK_MPEG0, 1);
 static MESON_GATE(gxbb_isa, HHI_GCLK_MPEG0, 5);
@@ -2710,7 +2590,7 @@ static MESON_GATE(gxbb_vclk2_vencl, HHI_GCLK_OTHER, 25);
 static MESON_GATE(gxbb_vclk_other, HHI_GCLK_OTHER, 26);
 static MESON_GATE(gxbb_edp, HHI_GCLK_OTHER, 31);
 
-/* Always On (AO) domain gates */
+ 
 
 static MESON_GATE(gxbb_ao_media_cpu, HHI_GCLK_AO, 0);
 static MESON_GATE(gxbb_ao_ahb_sram, HHI_GCLK_AO, 1);
@@ -2718,7 +2598,7 @@ static MESON_GATE(gxbb_ao_ahb_bus, HHI_GCLK_AO, 2);
 static MESON_GATE(gxbb_ao_iface, HHI_GCLK_AO, 3);
 static MESON_GATE(gxbb_ao_i2c, HHI_GCLK_AO, 4);
 
-/* AIU gates */
+ 
 static MESON_PCLK(gxbb_aiu_glue, HHI_GCLK_MPEG1, 6, &gxbb_aiu.hw);
 static MESON_PCLK(gxbb_iec958, HHI_GCLK_MPEG1, 7, &gxbb_aiu_glue.hw);
 static MESON_PCLK(gxbb_i2s_out, HHI_GCLK_MPEG1, 8, &gxbb_aiu_glue.hw);
@@ -2728,7 +2608,7 @@ static MESON_PCLK(gxbb_mixer, HHI_GCLK_MPEG1, 11, &gxbb_aiu_glue.hw);
 static MESON_PCLK(gxbb_mixer_iface, HHI_GCLK_MPEG1, 12, &gxbb_aiu_glue.hw);
 static MESON_PCLK(gxbb_adc, HHI_GCLK_MPEG1, 13, &gxbb_aiu_glue.hw);
 
-/* Array of all clocks provided by this provider */
+ 
 
 static struct clk_hw *gxbb_hw_clks[] = {
 	[CLKID_SYS_PLL]		    = &gxbb_sys_pll.hw,

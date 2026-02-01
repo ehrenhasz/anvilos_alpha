@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * amlogic-cipher.c - hardware cryptographic offloader for Amlogic GXL SoC
- *
- * Copyright (C) 2018-2019 Corentin LABBE <clabbe@baylibre.com>
- *
- * This file add support for AES cipher with 128,192,256 bits keysize in
- * CBC and ECB mode.
- */
+
+ 
 
 #include <linux/crypto.h>
 #include <linux/delay.h>
@@ -33,7 +26,7 @@ static bool meson_cipher_need_fallback(struct skcipher_request *areq)
 	if (sg_nents(src_sg) != sg_nents(dst_sg))
 		return true;
 
-	/* KEY/IV descriptors use 3 desc */
+	 
 	if (sg_nents(src_sg) > MAXDESC - 3 || sg_nents(dst_sg) > MAXDESC - 3)
 		return true;
 
@@ -114,11 +107,7 @@ static int meson_cipher(struct skcipher_request *areq)
 	mc->chanlist[flow].stat_req++;
 #endif
 
-	/*
-	 * The hardware expect a list of meson_desc structures.
-	 * The 2 first structures store key
-	 * The third stores IV
-	 */
+	 
 	bkeyiv = kzalloc(48, GFP_KERNEL | GFP_DMA);
 	if (!bkeyiv)
 		return -ENOMEM;

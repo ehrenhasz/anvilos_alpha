@@ -162,14 +162,7 @@ int ga102_flcn_fw_boot(struct nvkm_falcon_fw *, u32 *, u32 *, u32, u32);
 #define FLCNFW_DBG(f,fmt,a...) FLCNFW_PRINTK((f), DEBUG, info, fmt"\n", ##a)
 #define FLCNFW_ERR(f,fmt,a...) FLCNFW_PRINTK((f), ERROR, err, fmt"\n", ##a)
 
-/**
- * struct nvfw_falcon_msg - header for all messages
- *
- * @unit_id:	id of firmware process that sent the message
- * @size:	total size of message
- * @ctrl_flags:	control flags
- * @seq_id:	used to match a message from its corresponding command
- */
+ 
 struct nvfw_falcon_msg {
 	u8 unit_id;
 	u8 size;

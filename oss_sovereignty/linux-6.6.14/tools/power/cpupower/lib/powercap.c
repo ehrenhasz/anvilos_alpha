@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2016 SUSE Software Solutions GmbH
- *           Thomas Renninger <trenn@suse.de>
- */
+
+ 
 
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -77,11 +74,7 @@ int powercap_get_enabled(int *mode)
 	return sysfs_get_enabled(path, mode);
 }
 
-/*
- * Hardcoded, because rapl is the only powercap implementation
-- * this needs to get more generic if more powercap implementations
- * should show up
- */
+ 
 int powercap_get_driver(char *driver, int buflen)
 {
 	char file[SYSFS_PATH_MAX] = PATH_TO_RAPL;
@@ -172,7 +165,7 @@ int powercap_zone_get_enabled(struct powercap_zone *zone, int *mode)
 
 int powercap_zone_set_enabled(struct powercap_zone *zone, int mode)
 {
-	/* To be done if needed */
+	 
 	return 0;
 }
 
@@ -277,7 +270,7 @@ struct powercap_zone *powercap_init_zones(void)
 	return root_zone;
 }
 
-/* Call function *f on the passed zone and all its children */
+ 
 
 int powercap_walk_zones(struct powercap_zone *zone,
 			int (*f)(struct powercap_zone *zone))

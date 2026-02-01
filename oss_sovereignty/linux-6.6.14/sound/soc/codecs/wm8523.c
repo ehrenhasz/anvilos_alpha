@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8523.c  --  WM8523 ALSA SoC Audio driver
- *
- * Copyright 2009 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -34,7 +28,7 @@ static const char *wm8523_supply_names[WM8523_NUM_SUPPLIES] = {
 
 #define WM8523_NUM_RATES 7
 
-/* codec private data */
+ 
 struct wm8523_priv {
 	struct regmap *regmap;
 	struct regulator_bulk_data supplies[WM8523_NUM_SUPPLIES];
@@ -44,13 +38,13 @@ struct wm8523_priv {
 };
 
 static const struct reg_default wm8523_reg_defaults[] = {
-	{ 2, 0x0000 },     /* R2 - PSCTRL1 */
-	{ 3, 0x1812 },     /* R3 - AIF_CTRL1 */
-	{ 4, 0x0000 },     /* R4 - AIF_CTRL2 */
-	{ 5, 0x0001 },     /* R5 - DAC_CTRL3 */
-	{ 6, 0x0190 },     /* R6 - DAC_GAINL */
-	{ 7, 0x0190 },     /* R7 - DAC_GAINR */
-	{ 8, 0x0000 },     /* R8 - ZERO_DETECT */
+	{ 2, 0x0000 },      
+	{ 3, 0x1812 },      
+	{ 4, 0x0000 },      
+	{ 5, 0x0001 },      
+	{ 6, 0x0190 },      
+	{ 7, 0x0190 },      
+	{ 8, 0x0000 },      
 };
 
 static bool wm8523_volatile_register(struct device *dev, unsigned int reg)
@@ -124,9 +118,7 @@ static int wm8523_startup(struct snd_pcm_substream *substream,
 	struct snd_soc_component *component = dai->component;
 	struct wm8523_priv *wm8523 = snd_soc_component_get_drvdata(component);
 
-	/* The set of sample rates that can be supported depends on the
-	 * MCLK supplied to the CODEC - enforce this.
-	 */
+	 
 	if (!wm8523->sysclk) {
 		dev_err(component->dev,
 			"No MCLK configured, call set_sysclk() on init\n");
@@ -150,14 +142,14 @@ static int wm8523_hw_params(struct snd_pcm_substream *substream,
 	u16 aifctrl1 = snd_soc_component_read(component, WM8523_AIF_CTRL1);
 	u16 aifctrl2 = snd_soc_component_read(component, WM8523_AIF_CTRL2);
 
-	/* Find a supported LRCLK ratio */
+	 
 	for (i = 0; i < ARRAY_SIZE(lrclk_ratios); i++) {
 		if (wm8523->sysclk / params_rate(params) ==
 		    lrclk_ratios[i].ratio)
 			break;
 	}
 
-	/* Should never happen, should be handled by constraints */
+	 
 	if (i == ARRAY_SIZE(lrclk_ratios)) {
 		dev_err(component->dev, "MCLK/fs ratio %d unsupported\n",
 			wm8523->sysclk / params_rate(params));
@@ -168,7 +160,7 @@ static int wm8523_hw_params(struct snd_pcm_substream *substream,
 	aifctrl2 |= lrclk_ratios[i].value;
 
 	if (aifctrl1 & WM8523_AIF_MSTR) {
-		/* Find a fs->bclk ratio */
+		 
 		for (i = 0; i < ARRAY_SIZE(bclk_ratios); i++)
 			if (params_width(params) * 2 <= bclk_ratios[i].ratio)
 				break;
@@ -218,10 +210,7 @@ static int wm8523_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 	wm8523->rate_constraint.count = 0;
 	for (i = 0; i < ARRAY_SIZE(lrclk_ratios); i++) {
 		val = freq / lrclk_ratios[i].ratio;
-		/* Check that it's a standard rate since core can't
-		 * cope with others and having the odd rates confuses
-		 * constraint matching.
-		 */
+		 
 		switch (val) {
 		case 8000:
 		case 11025:
@@ -246,7 +235,7 @@ static int wm8523_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		}
 	}
 
-	/* Need at least one supported rate... */
+	 
 	if (wm8523->rate_constraint.count == 0)
 		return -EINVAL;
 
@@ -324,7 +313,7 @@ static int wm8523_set_bias_level(struct snd_soc_component *component,
 		break;
 
 	case SND_SOC_BIAS_PREPARE:
-		/* Full power on */
+		 
 		snd_soc_component_update_bits(component, WM8523_PSCTRL1,
 				    WM8523_SYS_ENA_MASK, 3);
 		break;
@@ -340,24 +329,24 @@ static int wm8523_set_bias_level(struct snd_soc_component *component,
 				return ret;
 			}
 
-			/* Sync back default/cached values */
+			 
 			regcache_sync(wm8523->regmap);
 
-			/* Initial power up */
+			 
 			snd_soc_component_update_bits(component, WM8523_PSCTRL1,
 					    WM8523_SYS_ENA_MASK, 1);
 
 			msleep(100);
 		}
 
-		/* Power up to mute */
+		 
 		snd_soc_component_update_bits(component, WM8523_PSCTRL1,
 				    WM8523_SYS_ENA_MASK, 2);
 
 		break;
 
 	case SND_SOC_BIAS_OFF:
-		/* The chip runs through the power down sequence for us. */
+		 
 		snd_soc_component_update_bits(component, WM8523_PSCTRL1,
 				    WM8523_SYS_ENA_MASK, 0);
 		msleep(100);
@@ -385,7 +374,7 @@ static struct snd_soc_dai_driver wm8523_dai = {
 	.name = "wm8523-hifi",
 	.playback = {
 		.stream_name = "Playback",
-		.channels_min = 2,  /* Mono modes not yet supported */
+		.channels_min = 2,   
 		.channels_max = 2,
 		.rates = WM8523_RATES,
 		.formats = WM8523_FORMATS,
@@ -401,7 +390,7 @@ static int wm8523_probe(struct snd_soc_component *component)
 	wm8523->rate_constraint.count =
 		ARRAY_SIZE(wm8523->rate_constraint_list);
 
-	/* Change some default settings - latch VU and enable ZC */
+	 
 	snd_soc_component_update_bits(component, WM8523_DAC_GAINR,
 			    WM8523_DACR_VU, WM8523_DACR_VU);
 	snd_soc_component_update_bits(component, WM8523_DAC_CTRL3, WM8523_ZC, WM8523_ZC);

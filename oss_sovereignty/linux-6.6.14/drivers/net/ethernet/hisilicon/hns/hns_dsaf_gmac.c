@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/of_mdio.h>
@@ -62,12 +60,12 @@ static void hns_gmac_enable(void *mac_drv, enum mac_commom_mode mode)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
 
-	/*enable GE rX/tX */
+	 
 	if (mode == MAC_COMM_MODE_TX || mode == MAC_COMM_MODE_RX_AND_TX)
 		dsaf_set_dev_bit(drv, GMAC_PORT_EN_REG, GMAC_PORT_TX_EN_B, 1);
 
 	if (mode == MAC_COMM_MODE_RX || mode == MAC_COMM_MODE_RX_AND_TX) {
-		/* enable rx pcs */
+		 
 		dsaf_set_dev_bit(drv, GMAC_PCS_RX_EN_REG, 0, 0);
 		dsaf_set_dev_bit(drv, GMAC_PORT_EN_REG, GMAC_PORT_RX_EN_B, 1);
 	}
@@ -77,22 +75,18 @@ static void hns_gmac_disable(void *mac_drv, enum mac_commom_mode mode)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
 
-	/*disable GE rX/tX */
+	 
 	if (mode == MAC_COMM_MODE_TX || mode == MAC_COMM_MODE_RX_AND_TX)
 		dsaf_set_dev_bit(drv, GMAC_PORT_EN_REG, GMAC_PORT_TX_EN_B, 0);
 
 	if (mode == MAC_COMM_MODE_RX || mode == MAC_COMM_MODE_RX_AND_TX) {
-		/* disable rx pcs */
+		 
 		dsaf_set_dev_bit(drv, GMAC_PCS_RX_EN_REG, 0, 1);
 		dsaf_set_dev_bit(drv, GMAC_PORT_EN_REG, GMAC_PORT_RX_EN_B, 0);
 	}
 }
 
-/* hns_gmac_get_en - get port enable
- * @mac_drv:mac device
- * @rx:rx enable
- * @tx:tx enable
- */
+ 
 static void hns_gmac_get_en(void *mac_drv, u32 *rx, u32 *tx)
 {
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
@@ -314,7 +308,7 @@ static int hns_gmac_wait_fifo_clean(void *mac_drv)
 	wait_cnt = 0;
 	while (wait_cnt++ < HNS_MAX_WAIT_CNT) {
 		val = dsaf_read_dev(drv, GMAC_FIFO_STATE_REG);
-		/* bit5~bit0 is not send complete pkts */
+		 
 		if ((val & 0x3f) == 0)
 			break;
 		usleep_range(100, 200);
@@ -352,9 +346,7 @@ static void hns_gmac_init(void *mac_drv)
 	dsaf_set_dev_bit(drv, GMAC_MODE_CHANGE_EN_REG,
 			 GMAC_MODE_CHANGE_EB_B, 1);
 
-	/* reduce gmac tx water line to avoid gmac hang-up
-	 * in speed 100M and duplex half.
-	 */
+	 
 	dsaf_set_dev_field(drv, GMAC_TX_WATER_LINE_REG, GMAC_TX_WATER_LINE_MASK,
 			   GMAC_TX_WATER_LINE_SHIFT, 8);
 }
@@ -366,7 +358,7 @@ static void hns_gmac_update_stats(void *mac_drv)
 
 	hw_stats = &drv->mac_cb->hw_stats;
 
-	/* RX */
+	 
 	hw_stats->rx_good_bytes
 		+= dsaf_read_dev(drv, GMAC_RX_OCTETS_TOTAL_OK_REG);
 	hw_stats->rx_bad_bytes
@@ -418,7 +410,7 @@ static void hns_gmac_update_stats(void *mac_drv)
 	hw_stats->rx_comma_err
 		+= dsaf_read_dev(drv, GMAC_RX_FAIL_COMMA_CNT_REG);
 
-	/* TX */
+	 
 	hw_stats->tx_good_bytes
 		+= dsaf_read_dev(drv, GMAC_OCTETS_TRANSMITTED_OK_REG);
 	hw_stats->tx_bad_bytes
@@ -552,7 +544,7 @@ static void hns_gmac_get_regs(void *mac_drv, void *data)
 	int i;
 	struct mac_driver *drv = (struct mac_driver *)mac_drv;
 
-	/* base config registers */
+	 
 	regs[0] = dsaf_read_dev(drv, GMAC_DUPLEX_TYPE_REG);
 	regs[1] = dsaf_read_dev(drv, GMAC_FD_FC_TYPE_REG);
 	regs[2] = dsaf_read_dev(drv, GMAC_FC_TX_TIMER_REG);
@@ -571,7 +563,7 @@ static void hns_gmac_get_regs(void *mac_drv, void *data)
 	regs[15] = dsaf_read_dev(drv, GMAC_REC_FILT_CONTROL_REG);
 	regs[16] = dsaf_read_dev(drv, GMAC_PTP_CONFIG_REG);
 
-	/* rx static registers */
+	 
 	regs[17] = dsaf_read_dev(drv, GMAC_RX_OCTETS_TOTAL_OK_REG);
 	regs[18] = dsaf_read_dev(drv, GMAC_RX_OCTETS_BAD_REG);
 	regs[19] = dsaf_read_dev(drv, GMAC_RX_UC_PKTS_REG);
@@ -598,7 +590,7 @@ static void hns_gmac_get_regs(void *mac_drv, void *data)
 	regs[40] = dsaf_read_dev(drv, GMAC_RX_FILT_PKT_CNT_REG);
 	regs[41] = dsaf_read_dev(drv, GMAC_RX_OCTETS_TOTAL_FILT_REG);
 
-	/* tx static registers */
+	 
 	regs[42] = dsaf_read_dev(drv, GMAC_OCTETS_TRANSMITTED_OK_REG);
 	regs[43] = dsaf_read_dev(drv, GMAC_OCTETS_TRANSMITTED_BAD_REG);
 	regs[44] = dsaf_read_dev(drv, GMAC_TX_UC_PKTS_REG);
@@ -649,7 +641,7 @@ static void hns_gmac_get_regs(void *mac_drv, void *data)
 	regs[87] = dsaf_read_dev(drv, GMAC_MAC_SKIP_LEN_REG);
 	regs[88] = dsaf_read_dev(drv, GMAC_TX_LOOP_PKT_PRI_REG);
 
-	/* mark end of mac regs */
+	 
 	for (i = 89; i < 96; i++)
 		regs[i] = 0xaaaaaaaa;
 }

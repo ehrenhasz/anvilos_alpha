@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * JZ4780 NAND/external memory controller (NEMC)
- *
- * Copyright (c) 2015 Imagination Technologies
- * Author: Alex Smith <alex@alex-smith.me.uk>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -57,14 +52,7 @@ struct jz4780_nemc {
 	unsigned long banks_present;
 };
 
-/**
- * jz4780_nemc_num_banks() - count the number of banks referenced by a device
- * @dev: device to count banks for, must be a child of the NEMC.
- *
- * Return: The number of unique NEMC banks referred to by the specified NEMC
- * child device. Unique here means that a device that references the same bank
- * multiple times in its "reg" property will only count once.
- */
+ 
 unsigned int jz4780_nemc_num_banks(struct device *dev)
 {
 	const __be32 *prop;
@@ -84,12 +72,7 @@ unsigned int jz4780_nemc_num_banks(struct device *dev)
 }
 EXPORT_SYMBOL(jz4780_nemc_num_banks);
 
-/**
- * jz4780_nemc_set_type() - set the type of device connected to a bank
- * @dev: child device of the NEMC.
- * @bank: bank number to configure.
- * @type: type of device connected to the bank.
- */
+ 
 void jz4780_nemc_set_type(struct device *dev, unsigned int bank,
 			  enum jz4780_nemc_bank_type type)
 {
@@ -98,7 +81,7 @@ void jz4780_nemc_set_type(struct device *dev, unsigned int bank,
 
 	nfcsr = readl(nemc->base + NEMC_NFCSR);
 
-	/* TODO: Support toggle NAND devices. */
+	 
 	switch (type) {
 	case JZ4780_NEMC_BANK_SRAM:
 		nfcsr &= ~(NEMC_NFCSR_TNFEn(bank) | NEMC_NFCSR_NFEn(bank));
@@ -113,15 +96,7 @@ void jz4780_nemc_set_type(struct device *dev, unsigned int bank,
 }
 EXPORT_SYMBOL(jz4780_nemc_set_type);
 
-/**
- * jz4780_nemc_assert() - (de-)assert a NAND device's chip enable pin
- * @dev: child device of the NEMC.
- * @bank: bank number of device.
- * @assert: whether the chip enable pin should be asserted.
- *
- * (De-)asserts the chip enable pin for the NAND device connected to the
- * specified bank.
- */
+ 
 void jz4780_nemc_assert(struct device *dev, unsigned int bank, bool assert)
 {
 	struct jz4780_nemc *nemc = dev_get_drvdata(dev->parent);
@@ -146,7 +121,7 @@ static uint32_t jz4780_nemc_clk_period(struct jz4780_nemc *nemc)
 	if (!rate)
 		return 0;
 
-	/* Return in picoseconds. */
+	 
 	return div64_ul(1000000000000ull, rate);
 }
 
@@ -161,26 +136,23 @@ static bool jz4780_nemc_configure_bank(struct jz4780_nemc *nemc,
 {
 	uint32_t smcr, val, cycles;
 
-	/*
-	 * Conversion of tBP and tAW cycle counts to values supported by the
-	 * hardware (round up to the next supported value).
-	 */
+	 
 	static const u8 convert_tBP_tAW[] = {
 		0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10,
 
-		/* 11 - 12 -> 12 cycles */
+		 
 		11, 11,
 
-		/* 13 - 15 -> 15 cycles */
+		 
 		12, 12, 12,
 
-		/* 16 - 20 -> 20 cycles */
+		 
 		13, 13, 13, 13, 13,
 
-		/* 21 - 25 -> 25 cycles */
+		 
 		14, 14, 14, 14, 14,
 
-		/* 26 - 31 -> 31 cycles */
+		 
 		15, 15, 15, 15, 15, 15
 	};
 
@@ -194,10 +166,7 @@ static bool jz4780_nemc_configure_bank(struct jz4780_nemc *nemc,
 			smcr |= NEMC_SMCR_BW_8;
 			break;
 		default:
-			/*
-			 * Earlier SoCs support a 16 bit bus width (the 4780
-			 * does not), until those are properly supported, error.
-			 */
+			 
 			dev_err(nemc->dev, "unsupported bus width: %u\n", val);
 			return false;
 		}
@@ -293,12 +262,7 @@ static int jz4780_nemc_probe(struct platform_device *pdev)
 	if (!res)
 		return -EINVAL;
 
-	/*
-	 * The driver currently only uses the registers up to offset
-	 * NEMC_REG_LEN. Since the EFUSE registers are in the middle of the
-	 * NEMC registers, we only request the registers we will use for now;
-	 * that way the EFUSE driver can probe too.
-	 */
+	 
 	if (!devm_request_mem_region(dev, res->start, NEMC_REG_LEN, dev_name(dev))) {
 		dev_err(dev, "unable to request I/O memory region\n");
 		return -EBUSY;
@@ -331,12 +295,7 @@ static int jz4780_nemc_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Iterate over child devices, check that they do not conflict with
-	 * each other, and register child devices for them. If a child device
-	 * has invalid properties, it is ignored and no platform device is
-	 * registered for it.
-	 */
+	 
 	for_each_child_of_node(nemc->dev->of_node, child) {
 		referenced = 0;
 		i = 0;
@@ -347,7 +306,7 @@ static int jz4780_nemc_probe(struct platform_device *pdev)
 					"%pOF requests invalid bank %u\n",
 					child, bank);
 
-				/* Will continue the outer loop below. */
+				 
 				referenced = 0;
 				break;
 			}
@@ -365,7 +324,7 @@ static int jz4780_nemc_probe(struct platform_device *pdev)
 			continue;
 		}
 
-		/* Configure bank parameters. */
+		 
 		for_each_set_bit(bank, &referenced, JZ4780_NEMC_NUM_BANKS) {
 			if (!jz4780_nemc_configure_bank(nemc, bank, child)) {
 				referenced = 0;

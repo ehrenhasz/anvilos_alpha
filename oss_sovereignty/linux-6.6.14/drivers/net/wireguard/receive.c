@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include "queueing.h"
 #include "device.h"
@@ -16,7 +14,7 @@
 #include <linux/udp.h>
 #include <net/ip_tunnels.h>
 
-/* Must be called with bh disabled. */
+ 
 static void update_rx_stats(struct wg_peer *peer, size_t len)
 {
 	dev_sw_netstats_rx_add(peer->device->dev, len);
@@ -53,21 +51,17 @@ static int prepare_skb_header(struct sk_buff *skb, struct wg_device *wg)
 		     skb_transport_header(skb) < skb->head ||
 		     (skb_transport_header(skb) + sizeof(struct udphdr)) >
 			     skb_tail_pointer(skb)))
-		return -EINVAL; /* Bogus IP header */
+		return -EINVAL;  
 	udp = udp_hdr(skb);
 	data_offset = (u8 *)udp - skb->data;
 	if (unlikely(data_offset > U16_MAX ||
 		     data_offset + sizeof(struct udphdr) > skb->len))
-		/* Packet has offset at impossible location or isn't big enough
-		 * to have UDP fields.
-		 */
+		 
 		return -EINVAL;
 	data_len = ntohs(udp->len);
 	if (unlikely(data_len < sizeof(struct udphdr) ||
 		     data_len > skb->len - data_offset))
-		/* UDP packet is reporting too small of a size or lying about
-		 * its size.
-		 */
+		 
 		return -EINVAL;
 	data_len -= sizeof(struct udphdr);
 	data_offset = (u8 *)udp + sizeof(struct udphdr) - skb->data;
@@ -77,7 +71,7 @@ static int prepare_skb_header(struct sk_buff *skb, struct wg_device *wg)
 		return -EINVAL;
 	skb_pull(skb, data_offset);
 	if (unlikely(skb->len != data_len))
-		/* Final len does not agree with calculated len */
+		 
 		return -EINVAL;
 	header_len = validate_header_len(skb);
 	if (unlikely(!header_len))
@@ -94,9 +88,7 @@ static void wg_receive_handshake_packet(struct wg_device *wg,
 {
 	enum cookie_mac_state mac_state;
 	struct wg_peer *peer = NULL;
-	/* This is global, so that our load calculation applies to the whole
-	 * system. We don't care about races with it at all.
-	 */
+	 
 	static u64 last_under_load;
 	bool packet_needs_cookie;
 	bool under_load;
@@ -177,12 +169,7 @@ static void wg_receive_handshake_packet(struct wg_device *wg,
 						     &peer->keypairs)) {
 			wg_timers_session_derived(peer);
 			wg_timers_handshake_complete(peer);
-			/* Calling this function will either send any existing
-			 * packets in the queue and not send a keepalive, which
-			 * is the best case, Or, if there's nothing in the
-			 * queue, it will send a keepalive, in order to give
-			 * immediate confirmation of the session.
-			 */
+			 
 			wg_packet_send_keepalive(peer);
 		}
 		break;
@@ -259,10 +246,7 @@ static bool decrypt_packet(struct sk_buff *skb, struct noise_keypair *keypair)
 	PACKET_CB(skb)->nonce =
 		le64_to_cpu(((struct message_data *)skb->data)->counter);
 
-	/* We ensure that the network header is part of the packet before we
-	 * call skb_cow_data, so that there's no chance that data is removed
-	 * from the skb, so that later we can extract the original endpoint.
-	 */
+	 
 	offset = skb->data - skb_network_header(skb);
 	skb_push(skb, offset);
 	num_frags = skb_cow_data(skb, 0, &trailer);
@@ -280,9 +264,7 @@ static bool decrypt_packet(struct sk_buff *skb, struct noise_keypair *keypair)
 						 keypair->receiving.key))
 		return false;
 
-	/* Another ugly situation of pushing and pulling the header so as to
-	 * keep endpoint information intact.
-	 */
+	 
 	skb_push(skb, offset);
 	if (pskb_trim(skb, skb->len - noise_encrypted_len(0)))
 		return false;
@@ -291,7 +273,7 @@ static bool decrypt_packet(struct sk_buff *skb, struct noise_keypair *keypair)
 	return true;
 }
 
-/* This is RFC6479, a replay detection bitmap algorithm that avoids bitshifts */
+ 
 static bool counter_validate(struct noise_replay_counter *counter, u64 their_counter)
 {
 	unsigned long index, index_current, top, i;
@@ -353,7 +335,7 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
 	wg_timers_any_authenticated_packet_received(peer);
 	wg_timers_any_authenticated_packet_traversal(peer);
 
-	/* A packet with length 0 is a keepalive packet */
+	 
 	if (unlikely(!skb->len)) {
 		update_rx_stats(peer, message_data_len(0));
 		net_dbg_ratelimited("%s: Receiving keepalive packet from peer %llu (%pISpfsc)\n",
@@ -373,14 +355,9 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
 		goto dishonest_packet_type;
 
 	skb->dev = dev;
-	/* We've already verified the Poly1305 auth tag, which means this packet
-	 * was not modified in transit. We can therefore tell the networking
-	 * stack that all checksums of every layer of encapsulation have already
-	 * been checked "by the hardware" and therefore is unnecessary to check
-	 * again in software.
-	 */
+	 
 	skb->ip_summed = CHECKSUM_UNNECESSARY;
-	skb->csum_level = ~0; /* All levels */
+	skb->csum_level = ~0;  
 	skb->protocol = ip_tunnel_parse_protocol(skb);
 	if (skb->protocol == htons(ETH_P_IP)) {
 		len = ntohs(ip_hdr(skb)->tot_len);
@@ -403,7 +380,7 @@ static void wg_packet_consume_data_done(struct wg_peer *peer,
 
 	routed_peer = wg_allowedips_lookup_src(&peer->device->peer_allowedips,
 					       skb);
-	wg_peer_put(routed_peer); /* We don't need the extra reference. */
+	wg_peer_put(routed_peer);  
 
 	if (unlikely(routed_peer != peer))
 		goto dishonest_packet_peer;
@@ -566,7 +543,7 @@ void wg_packet_receive(struct wg_device *wg, struct sk_buff *skb)
 		}
 		atomic_inc(&wg->handshake_queue_len);
 		cpu = wg_cpumask_next_online(&wg->handshake_queue.last_cpu);
-		/* Queues up a call to packet_process_queued_handshake_packets(skb): */
+		 
 		queue_work_on(cpu, wg->handshake_receive_wq,
 			      &per_cpu_ptr(wg->handshake_queue.worker, cpu)->work);
 		break;

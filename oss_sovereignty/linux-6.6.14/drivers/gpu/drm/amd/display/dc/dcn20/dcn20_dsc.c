@@ -1,27 +1,4 @@
-/*
- * Copyright 2017 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <drm/display/drm_dsc_helper.h>
 
@@ -32,7 +9,7 @@
 
 static void dsc_write_to_registers(struct display_stream_compressor *dsc, const struct dsc_reg_values *reg_vals);
 
-/* Object I/F functions */
+ 
 static void dsc2_read_state(struct display_stream_compressor *dsc, struct dcn_dsc_state *s);
 static bool dsc2_validate_stream(struct display_stream_compressor *dsc, const struct dsc_config *dsc_cfg);
 static void dsc2_set_config(struct display_stream_compressor *dsc, const struct dsc_config *dsc_cfg,
@@ -52,7 +29,7 @@ static const struct dsc_funcs dcn20_dsc_funcs = {
 	.dsc_disconnect = dsc2_disconnect,
 };
 
-/* Macro definitios for REG_SET macros*/
+ 
 #define CTX \
 	dsc20->base.ctx
 
@@ -72,7 +49,7 @@ enum dsc_bits_per_comp {
 	DSC_BPC_UNKNOWN
 };
 
-/* API functions (external or via structure->function_pointer) */
+ 
 
 void dsc2_construct(struct dcn20_dsc *dsc,
 		struct dc_context *ctx,
@@ -96,12 +73,10 @@ void dsc2_construct(struct dcn20_dsc *dsc,
 #define DCN20_MAX_PIXEL_CLOCK_Mhz      1188
 #define DCN20_MAX_DISPLAY_CLOCK_Mhz    1200
 
-/* This returns the capabilities for a single DSC encoder engine. Number of slices and total throughput
- * can be doubled, tripled etc. by using additional DSC engines.
- */
+ 
 void dsc2_get_enc_caps(struct dsc_enc_caps *dsc_enc_caps, int pixel_clock_100Hz)
 {
-	dsc_enc_caps->dsc_version = 0x21; /* v1.2 - DP spec defined it in reverse order and we kept it */
+	dsc_enc_caps->dsc_version = 0x21;  
 
 	dsc_enc_caps->slice_caps.bits.NUM_SLICES_1 = 1;
 	dsc_enc_caps->slice_caps.bits.NUM_SLICES_2 = 1;
@@ -121,31 +96,23 @@ void dsc2_get_enc_caps(struct dsc_enc_caps *dsc_enc_caps, int pixel_clock_100Hz)
 	dsc_enc_caps->color_depth.bits.COLOR_DEPTH_10_BPC = 1;
 	dsc_enc_caps->color_depth.bits.COLOR_DEPTH_12_BPC = 1;
 
-	/* Maximum total throughput with all the slices combined. This is different from how DP spec specifies it.
-	 * Our decoder's total throughput in Pix/s is equal to DISPCLK. This is then shared between slices.
-	 * The value below is the absolute maximum value. The actual throughput may be lower, but it'll always
-	 * be sufficient to process the input pixel rate fed into a single DSC engine.
-	 */
+	 
 	dsc_enc_caps->max_total_throughput_mps = DCN20_MAX_DISPLAY_CLOCK_Mhz;
 
-	/* For pixel clock bigger than a single-pipe limit we'll need two engines, which then doubles our
-	 * throughput and number of slices, but also introduces a lower limit of 2 slices
-	 */
+	 
 	if (pixel_clock_100Hz >= DCN20_MAX_PIXEL_CLOCK_Mhz*10000) {
 		dsc_enc_caps->slice_caps.bits.NUM_SLICES_1 = 0;
 		dsc_enc_caps->slice_caps.bits.NUM_SLICES_8 = 1;
 		dsc_enc_caps->max_total_throughput_mps = DCN20_MAX_DISPLAY_CLOCK_Mhz * 2;
 	}
 
-	// TODO DSC: This is actually image width limitation, not a slice width. This should be added to the criteria to use ODM.
-	dsc_enc_caps->max_slice_width = 5184; /* (including 64 overlap pixels for eDP MSO mode) */
-	dsc_enc_caps->bpp_increment_div = 16; /* 1/16th of a bit */
+	 
+	dsc_enc_caps->max_slice_width = 5184;  
+	dsc_enc_caps->bpp_increment_div = 16;  
 }
 
 
-/* this function read dsc related register fields to be logged later in dcn10_log_hw_state
- * into a dcn_dsc_state struct.
- */
+ 
 static void dsc2_read_state(struct display_stream_compressor *dsc, struct dcn_dsc_state *s)
 {
 	struct dcn20_dsc *dsc20 = TO_DCN20_DSC(dsc);
@@ -281,7 +248,7 @@ static void dsc2_disconnect(struct display_stream_compressor *dsc)
 		DSCRM_DSC_FORWARD_EN, 0);
 }
 
-/* This module's internal functions */
+ 
 void dsc_log_pps(struct display_stream_compressor *dsc, struct drm_dsc_config *pps)
 {
 	int i;
@@ -313,7 +280,7 @@ void dsc_log_pps(struct display_stream_compressor *dsc, struct drm_dsc_config *p
 	DC_LOG_DSC("\tfinal_offset %d", pps->final_offset);
 	DC_LOG_DSC("\tflatness_min_qp %d", pps->flatness_min_qp);
 	DC_LOG_DSC("\tflatness_max_qp %d", pps->flatness_max_qp);
-	/* DC_LOG_DSC("\trc_parameter_set %d", pps->rc_parameter_set); */
+	 
 	DC_LOG_DSC("\tnative_420 %d", pps->native_420);
 	DC_LOG_DSC("\tnative_422 %d", pps->native_422);
 	DC_LOG_DSC("\tsecond_line_bpg_offset %d", pps->second_line_bpg_offset);
@@ -369,7 +336,7 @@ bool dsc_prepare_config(const struct dsc_config *dsc_cfg, struct dsc_reg_values 
 	struct dsc_parameters dsc_params;
 	struct rc_params rc;
 
-	/* Validate input parameters */
+	 
 	ASSERT(dsc_cfg->dc_dsc_cfg.num_slices_h);
 	ASSERT(dsc_cfg->dc_dsc_cfg.num_slices_v);
 	ASSERT(dsc_cfg->dc_dsc_cfg.version_minor == 1 || dsc_cfg->dc_dsc_cfg.version_minor == 2);
@@ -380,14 +347,14 @@ bool dsc_prepare_config(const struct dsc_config *dsc_cfg, struct dsc_reg_values 
 		(dsc_cfg->dc_dsc_cfg.version_minor == 2 &&
 		  ((8 <= dsc_cfg->dc_dsc_cfg.linebuf_depth && dsc_cfg->dc_dsc_cfg.linebuf_depth <= 15) ||
 		    dsc_cfg->dc_dsc_cfg.linebuf_depth == 0)));
-	ASSERT(96 <= dsc_cfg->dc_dsc_cfg.bits_per_pixel && dsc_cfg->dc_dsc_cfg.bits_per_pixel <= 0x3ff); // 6.0 <= bits_per_pixel <= 63.9375
+	ASSERT(96 <= dsc_cfg->dc_dsc_cfg.bits_per_pixel && dsc_cfg->dc_dsc_cfg.bits_per_pixel <= 0x3ff); 
 
 	if (!dsc_cfg->dc_dsc_cfg.num_slices_v || !dsc_cfg->dc_dsc_cfg.num_slices_h ||
 		!(dsc_cfg->dc_dsc_cfg.version_minor == 1 || dsc_cfg->dc_dsc_cfg.version_minor == 2) ||
 		!dsc_cfg->pic_width || !dsc_cfg->pic_height ||
-		!((dsc_cfg->dc_dsc_cfg.version_minor == 1 && // v1.1 line buffer depth range:
+		!((dsc_cfg->dc_dsc_cfg.version_minor == 1 && 
 			8 <= dsc_cfg->dc_dsc_cfg.linebuf_depth && dsc_cfg->dc_dsc_cfg.linebuf_depth <= 13) ||
-		(dsc_cfg->dc_dsc_cfg.version_minor == 2 && // v1.2 line buffer depth range:
+		(dsc_cfg->dc_dsc_cfg.version_minor == 2 && 
 			((8 <= dsc_cfg->dc_dsc_cfg.linebuf_depth && dsc_cfg->dc_dsc_cfg.linebuf_depth <= 15) ||
 			dsc_cfg->dc_dsc_cfg.linebuf_depth == 0))) ||
 		!(96 <= dsc_cfg->dc_dsc_cfg.bits_per_pixel && dsc_cfg->dc_dsc_cfg.bits_per_pixel <= 0x3ff)) {
@@ -397,7 +364,7 @@ bool dsc_prepare_config(const struct dsc_config *dsc_cfg, struct dsc_reg_values 
 
 	dsc_init_reg_values(dsc_reg_vals);
 
-	/* Copy input config */
+	 
 	dsc_reg_vals->pixel_format = dsc_dc_pixel_encoding_to_dsc_pixel_format(dsc_cfg->pixel_encoding, dsc_cfg->dc_dsc_cfg.ycbcr422_simple);
 	dsc_reg_vals->num_slices_h = dsc_cfg->dc_dsc_cfg.num_slices_h;
 	dsc_reg_vals->num_slices_v = dsc_cfg->dc_dsc_cfg.num_slices_v;
@@ -410,8 +377,8 @@ bool dsc_prepare_config(const struct dsc_config *dsc_cfg, struct dsc_reg_values 
 	dsc_reg_vals->alternate_ich_encoding_en = dsc_reg_vals->pps.dsc_version_minor == 1 ? 0 : 1;
 	dsc_reg_vals->ich_reset_at_eol = (dsc_cfg->is_odm || dsc_reg_vals->num_slices_h > 1) ? 0xF : 0;
 
-	// TODO: in addition to validating slice height (pic height must be divisible by slice height),
-	// see what happens when the same condition doesn't apply for slice_width/pic_width.
+	
+	
 	dsc_reg_vals->pps.slice_width = dsc_cfg->pic_width / dsc_cfg->dc_dsc_cfg.num_slices_h;
 	dsc_reg_vals->pps.slice_height = dsc_cfg->pic_height / dsc_cfg->dc_dsc_cfg.num_slices_v;
 
@@ -458,7 +425,7 @@ enum dsc_pixel_format dsc_dc_pixel_encoding_to_dsc_pixel_format(enum dc_pixel_en
 {
 	enum dsc_pixel_format dsc_pix_fmt = DSC_PIXFMT_UNKNOWN;
 
-	/* NOTE: We don't support DSC_PIXFMT_SIMPLE_YCBCR422 */
+	 
 
 	switch (dc_pix_enc) {
 	case PIXEL_ENCODING_RGB:
@@ -515,7 +482,7 @@ void dsc_init_reg_values(struct dsc_reg_values *reg_vals)
 
 	memset(reg_vals, 0, sizeof(struct dsc_reg_values));
 
-	/* Non-PPS values */
+	 
 	reg_vals->dsc_clock_enable            = 1;
 	reg_vals->dsc_clock_gating_disable    = 0;
 	reg_vals->underflow_recovery_en       = 0;
@@ -524,13 +491,13 @@ void dsc_init_reg_values(struct dsc_reg_values *reg_vals)
 	reg_vals->ich_reset_at_eol            = 0;
 	reg_vals->alternate_ich_encoding_en   = 0;
 	reg_vals->rc_buffer_model_size        = 0;
-	/*reg_vals->disable_ich                 = 0;*/
+	 
 	reg_vals->dsc_dbg_en                  = 0;
 
 	for (i = 0; i < 4; i++)
 		reg_vals->rc_buffer_model_overflow_int_en[i] = 0;
 
-	/* PPS values */
+	 
 	reg_vals->pps.dsc_version_minor           = 2;
 	reg_vals->pps.dsc_version_major           = 1;
 	reg_vals->pps.line_buf_depth              = 9;
@@ -561,17 +528,14 @@ void dsc_init_reg_values(struct dsc_reg_values *reg_vals)
 	reg_vals->pps.rc_tgt_offset_high          = 3;
 }
 
-/* Updates dsc_reg_values::reg_vals::xxx fields based on the values from computed params.
- * This is required because dscc_compute_dsc_parameters returns a modified PPS, which in turn
- * affects non-PPS register values.
- */
+ 
 void dsc_update_from_dsc_parameters(struct dsc_reg_values *reg_vals, const struct dsc_parameters *dsc_params)
 {
 	int i;
 
 	reg_vals->pps = dsc_params->pps;
 
-	// pps_computed will have the "expanded" values; need to shift them to make them fit for regs.
+	
 	for (i = 0; i < NUM_BUF_RANGES - 1; i++)
 		reg_vals->pps.rc_buf_thresh[i] = reg_vals->pps.rc_buf_thresh[i] >> 6;
 
@@ -586,7 +550,7 @@ static void dsc_write_to_registers(struct display_stream_compressor *dsc, const 
 	REG_SET(DSC_DEBUG_CONTROL, 0,
 		DSC_DBG_EN, reg_vals->dsc_dbg_en);
 
-	// dsccif registers
+	
 	REG_SET_5(DSCCIF_CONFIG0, 0,
 		INPUT_INTERFACE_UNDERFLOW_RECOVERY_EN, reg_vals->underflow_recovery_en,
 		INPUT_INTERFACE_UNDERFLOW_OCCURRED_INT_EN, reg_vals->underflow_occurred_int_en,
@@ -598,7 +562,7 @@ static void dsc_write_to_registers(struct display_stream_compressor *dsc, const 
 		PIC_WIDTH, reg_vals->pps.pic_width,
 		PIC_HEIGHT, reg_vals->pps.pic_height);
 
-	// dscc registers
+	
 	if (dsc20->dsc_mask->ICH_RESET_AT_END_OF_LINE == 0) {
 		REG_SET_3(DSCC_CONFIG0, 0,
 			  NUMBER_OF_SLICES_PER_LINE, reg_vals->num_slices_h - 1,
@@ -614,9 +578,7 @@ static void dsc_write_to_registers(struct display_stream_compressor *dsc, const 
 
 	REG_SET(DSCC_CONFIG1, 0,
 			DSCC_RATE_CONTROL_BUFFER_MODEL_SIZE, reg_vals->rc_buffer_model_size);
-	/*REG_SET_2(DSCC_CONFIG1, 0,
-		DSCC_RATE_CONTROL_BUFFER_MODEL_SIZE, reg_vals->rc_buffer_model_size,
-		DSCC_DISABLE_ICH, reg_vals->disable_ich);*/
+	 
 
 	REG_SET_4(DSCC_INTERRUPT_CONTROL_STATUS, 0,
 		DSCC_RATE_CONTROL_BUFFER_MODEL0_OVERFLOW_OCCURRED_INT_EN, reg_vals->rc_buffer_model_overflow_int_en[0],

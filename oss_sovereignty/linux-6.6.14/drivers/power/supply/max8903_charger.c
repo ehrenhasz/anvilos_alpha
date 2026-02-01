@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * max8903_charger.c - Maxim 8903 USB/Adapter Charger Driver
- *
- * Copyright (C) 2011 Samsung Electronics
- * MyungJoo Ham <myungjoo.ham@samsung.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/interrupt.h>
@@ -18,28 +13,23 @@ struct max8903_data {
 	struct device *dev;
 	struct power_supply *psy;
 	struct power_supply_desc psy_desc;
-	/*
-	 * GPIOs
-	 * chg, flt, dcm and usus are optional.
-	 * dok or uok must be present.
-	 * If dok is present, cen must be present.
-	 */
-	struct gpio_desc *cen; /* Charger Enable input */
-	struct gpio_desc *dok; /* DC (Adapter) Power OK output */
-	struct gpio_desc *uok; /* USB Power OK output */
-	struct gpio_desc *chg; /* Charger status output */
-	struct gpio_desc *flt; /* Fault output */
-	struct gpio_desc *dcm; /* Current-Limit Mode input (1: DC, 2: USB) */
-	struct gpio_desc *usus; /* USB Suspend Input (1: suspended) */
+	 
+	struct gpio_desc *cen;  
+	struct gpio_desc *dok;  
+	struct gpio_desc *uok;  
+	struct gpio_desc *chg;  
+	struct gpio_desc *flt;  
+	struct gpio_desc *dcm;  
+	struct gpio_desc *usus;  
 	bool fault;
 	bool usb_in;
 	bool ta_in;
 };
 
 static enum power_supply_property max8903_charger_props[] = {
-	POWER_SUPPLY_PROP_STATUS, /* Charger status output */
-	POWER_SUPPLY_PROP_ONLINE, /* External power source */
-	POWER_SUPPLY_PROP_HEALTH, /* Fault or OK */
+	POWER_SUPPLY_PROP_STATUS,  
+	POWER_SUPPLY_PROP_ONLINE,  
+	POWER_SUPPLY_PROP_HEALTH,  
 };
 
 static int max8903_get_property(struct power_supply *psy,
@@ -53,7 +43,7 @@ static int max8903_get_property(struct power_supply *psy,
 		val->intval = POWER_SUPPLY_STATUS_UNKNOWN;
 		if (data->chg) {
 			if (gpiod_get_value(data->chg))
-				/* CHG asserted */
+				 
 				val->intval = POWER_SUPPLY_STATUS_CHARGING;
 			else if (data->usb_in || data->ta_in)
 				val->intval = POWER_SUPPLY_STATUS_NOT_CHARGING;
@@ -84,13 +74,7 @@ static irqreturn_t max8903_dcin(int irq, void *_data)
 	bool ta_in;
 	enum power_supply_type old_type;
 
-	/*
-	 * This means the line is asserted.
-	 *
-	 * The signal is active low, but the inversion is handled in the GPIO
-	 * library as the line should be flagged GPIO_ACTIVE_LOW in the device
-	 * tree.
-	 */
+	 
 	ta_in = gpiod_get_value(data->dok);
 
 	if (ta_in == data->ta_in)
@@ -98,22 +82,22 @@ static irqreturn_t max8903_dcin(int irq, void *_data)
 
 	data->ta_in = ta_in;
 
-	/* Set Current-Limit-Mode 1:DC 0:USB */
+	 
 	if (data->dcm)
 		gpiod_set_value(data->dcm, ta_in);
 
-	/* Charger Enable / Disable */
+	 
 	if (data->cen) {
 		int val;
 
 		if (ta_in)
-			/* Certainly enable if DOK is asserted */
+			 
 			val = 1;
 		else if (data->usb_in)
-			/* Enable if the USB charger is enabled */
+			 
 			val = 1;
 		else
-			/* Else default-disable */
+			 
 			val = 0;
 
 		gpiod_set_value(data->cen, val);
@@ -143,13 +127,7 @@ static irqreturn_t max8903_usbin(int irq, void *_data)
 	bool usb_in;
 	enum power_supply_type old_type;
 
-	/*
-	 * This means the line is asserted.
-	 *
-	 * The signal is active low, but the inversion is handled in the GPIO
-	 * library as the line should be flagged GPIO_ACTIVE_LOW in the device
-	 * tree.
-	 */
+	 
 	usb_in = gpiod_get_value(data->uok);
 
 	if (usb_in == data->usb_in)
@@ -157,20 +135,20 @@ static irqreturn_t max8903_usbin(int irq, void *_data)
 
 	data->usb_in = usb_in;
 
-	/* Do not touch Current-Limit-Mode */
+	 
 
-	/* Charger Enable / Disable */
+	 
 	if (data->cen) {
 		int val;
 
 		if (usb_in)
-			/* Certainly enable if UOK is asserted */
+			 
 			val = 1;
 		else if (data->ta_in)
-			/* Enable if the DC charger is enabled */
+			 
 			val = 1;
 		else
-			/* Else default-disable */
+			 
 			val = 0;
 
 		gpiod_set_value(data->cen, val);
@@ -199,13 +177,7 @@ static irqreturn_t max8903_fault(int irq, void *_data)
 	struct max8903_data *data = _data;
 	bool fault;
 
-	/*
-	 * This means the line is asserted.
-	 *
-	 * The signal is active low, but the inversion is handled in the GPIO
-	 * library as the line should be flagged GPIO_ACTIVE_LOW in the device
-	 * tree.
-	 */
+	 
 	fault = gpiod_get_value(data->flt);
 
 	if (fault == data->fault)
@@ -235,12 +207,7 @@ static int max8903_setup_gpios(struct platform_device *pdev)
 				     "failed to get DOK GPIO");
 	if (data->dok) {
 		gpiod_set_consumer_name(data->dok, data->psy_desc.name);
-		/*
-		 * The DC OK is pulled up to 1 and goes low when a charger
-		 * is plugged in (active low) but in the device tree the
-		 * line is marked as GPIO_ACTIVE_LOW so we get a 1 (asserted)
-		 * here if the DC charger is plugged in.
-		 */
+		 
 		ta_in = gpiod_get_value(data->dok);
 	}
 
@@ -250,47 +217,26 @@ static int max8903_setup_gpios(struct platform_device *pdev)
 				     "failed to get UOK GPIO");
 	if (data->uok) {
 		gpiod_set_consumer_name(data->uok, data->psy_desc.name);
-		/*
-		 * The USB OK is pulled up to 1 and goes low when a USB charger
-		 * is plugged in (active low) but in the device tree the
-		 * line is marked as GPIO_ACTIVE_LOW so we get a 1 (asserted)
-		 * here if the USB charger is plugged in.
-		 */
+		 
 		usb_in = gpiod_get_value(data->uok);
 	}
 
-	/* Either DC OK or USB OK must be provided */
+	 
 	if (!data->dok && !data->uok) {
 		dev_err(dev, "no valid power source\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * If either charger is already connected at this point,
-	 * assert the CEN line and enable charging from the start.
-	 *
-	 * The line is active low but also marked with GPIO_ACTIVE_LOW
-	 * in the device tree, so when we assert the line with
-	 * GPIOD_OUT_HIGH the line will be driven low.
-	 */
+	 
 	flags = (ta_in || usb_in) ? GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
-	/*
-	 * If DC OK is provided, Charger Enable CEN is compulsory
-	 * so this is not optional here.
-	 */
+	 
 	data->cen = devm_gpiod_get(dev, "cen", flags);
 	if (IS_ERR(data->cen))
 		return dev_err_probe(dev, PTR_ERR(data->cen),
 				     "failed to get CEN GPIO");
 	gpiod_set_consumer_name(data->cen, data->psy_desc.name);
 
-	/*
-	 * If the DC charger is connected, then select it.
-	 *
-	 * The DCM line should be marked GPIO_ACTIVE_HIGH in the
-	 * device tree. Driving it high will enable the DC charger
-	 * input over the USB charger input.
-	 */
+	 
 	flags = ta_in ? GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
 	data->dcm = devm_gpiod_get_optional(dev, "dcm", flags);
 	if (IS_ERR(data->dcm))
@@ -402,7 +348,7 @@ static int max8903_probe(struct platform_device *pdev)
 
 static const struct of_device_id max8903_match_ids[] = {
 	{ .compatible = "maxim,max8903", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, max8903_match_ids);
 

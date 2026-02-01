@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/* Copyright (C) 2020 MediaTek Inc. */
+ 
+ 
 
 #ifndef __MT7915_H
 #define __MT7915_H
@@ -63,8 +63,8 @@
 #define MT7915_HW_TOKEN_SIZE		4096
 #define MT7915_TOKEN_SIZE		8192
 
-#define MT7915_CFEND_RATE_DEFAULT	0x49	/* OFDM 24M */
-#define MT7915_CFEND_RATE_11B		0x03	/* 11B LP, 11M */
+#define MT7915_CFEND_RATE_DEFAULT	0x49	 
+#define MT7915_CFEND_RATE_11B		0x03	 
 
 #define MT7915_THERMAL_THROTTLE_MAX	100
 #define MT7915_CDEV_THROTTLE_MAX	99
@@ -132,7 +132,7 @@ struct mt7915_twt_flow {
 DECLARE_EWMA(avg_signal, 10, 8)
 
 struct mt7915_sta {
-	struct mt76_wcid wcid; /* must be first */
+	struct mt76_wcid wcid;  
 
 	struct mt7915_vif *vif;
 
@@ -166,7 +166,7 @@ struct mt7915_vif_cap {
 };
 
 struct mt7915_vif {
-	struct mt76_vif mt76; /* must be first */
+	struct mt76_vif mt76;  
 
 	struct mt7915_vif_cap cap;
 	struct mt7915_sta sta;
@@ -176,7 +176,7 @@ struct mt7915_vif {
 	struct cfg80211_bitrate_mask bitrate_mask;
 };
 
-/* crash-dump */
+ 
 struct mt7915_crash_data {
 	guid_t guid;
 	struct timespec64 timestamp;
@@ -204,7 +204,7 @@ struct mt7915_phy {
 	struct thermal_cooling_device *cdev;
 	u8 cdev_state;
 	u8 throttle_state;
-	u32 throttle_temp[2]; /* 0: critical high, 1: maximum */
+	u32 throttle_temp[2];  
 
 	u32 rxfilter;
 	u64 omac_mask;
@@ -240,7 +240,7 @@ struct mt7915_phy {
 };
 
 struct mt7915_dev {
-	union { /* must be first */
+	union {  
 		struct mt76_dev mt76;
 		struct mt76_phy mphy;
 	};
@@ -254,7 +254,7 @@ struct mt7915_dev {
 	const struct mt76_bus_ops *bus_ops;
 	struct mt7915_phy phy;
 
-	/* monitor rx chain configured channel */
+	 
 	struct cfg80211_chan_def rdd2_chandef;
 	struct mt7915_phy *rdd2_phy;
 
@@ -277,7 +277,7 @@ struct mt7915_dev {
 		bool restart:1;
 	} recovery;
 
-	/* protects coredump data */
+	 
 	struct mutex dump_mutex;
 #ifdef CONFIG_DEV_COREDUMP
 	struct {
@@ -326,7 +326,7 @@ enum {
 enum {
 	MT_RX_SEL0,
 	MT_RX_SEL1,
-	MT_RX_SEL2, /* monitor chain */
+	MT_RX_SEL2,  
 };
 
 enum mt7915_rdd_cmd {

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// rt711-sdw-sdca.c -- rt711 SDCA ALSA SoC audio driver
-//
-// Copyright(c) 2021 Realtek Semiconductor Corp.
-//
-//
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -52,8 +52,8 @@ static bool rt711_sdca_volatile_register(struct device *dev, unsigned int reg)
 	case 0x2021:
 	case 0x2023:
 	case 0x2230:
-	case 0x202d ... 0x202f: /* BRA */
-	case 0x2200 ... 0x2212: /* i2c debug */
+	case 0x202d ... 0x202f:  
+	case 0x2200 ... 0x2212:  
 	case RT711_RC_CAL_STATUS:
 	case SDW_SDCA_CTL(FUNC_NUM_JACK_CODEC, RT711_SDCA_ENT_GE49, RT711_SDCA_CTL_DETECTED_MODE, 0):
 	case SDW_SDCA_CTL(FUNC_NUM_HID, RT711_SDCA_ENT_HID01, RT711_SDCA_CTL_HIDTX_CURRENT_OWNER, 0) ...
@@ -148,12 +148,7 @@ static int rt711_sdca_update_status(struct sdw_slave *slave,
 
 	if (status == SDW_SLAVE_ATTACHED) {
 		if (rt711->hs_jack) {
-			/*
-			 * Due to the SCP_SDCA_INTMASK will be cleared by any reset, and then
-			 * if the device attached again, we will need to set the setting back.
-			 * It could avoid losing the jack detection interrupt.
-			 * This also could sync with the cache value as the rt711_sdca_jack_init set.
-			 */
+			 
 			sdw_write_no_pm(rt711->slave, SDW_SCP_SDCA_INTMASK1,
 				SDW_SCP_SDCA_INTMASK_SDCA_0);
 			sdw_write_no_pm(rt711->slave, SDW_SCP_SDCA_INTMASK2,
@@ -161,14 +156,11 @@ static int rt711_sdca_update_status(struct sdw_slave *slave,
 		}
 	}
 
-	/*
-	 * Perform initialization only if slave status is present and
-	 * hw_init flag is false
-	 */
+	 
 	if (rt711->hw_init || status != SDW_SLAVE_ATTACHED)
 		return 0;
 
-	/* perform I/O transfers required for Slave initialization */
+	 
 	return rt711_sdca_io_init(&slave->dev, slave);
 }
 
@@ -186,9 +178,9 @@ static int rt711_sdca_read_prop(struct sdw_slave *slave)
 
 	prop->paging_support = true;
 
-	/* first we need to allocate memory for set bits in port lists */
-	prop->source_ports = 0x14; /* BITMAP: 00010100 */
-	prop->sink_ports = 0x8; /* BITMAP:  00001000 */
+	 
+	prop->source_ports = 0x14;  
+	prop->sink_ports = 0x8;  
 
 	nval = hweight32(prop->source_ports);
 	prop->src_dpn_prop = devm_kcalloc(&slave->dev, nval,
@@ -207,7 +199,7 @@ static int rt711_sdca_read_prop(struct sdw_slave *slave)
 		i++;
 	}
 
-	/* do this again for sink now */
+	 
 	nval = hweight32(prop->sink_ports);
 	prop->sink_dpn_prop = devm_kcalloc(&slave->dev, nval,
 		sizeof(*prop->sink_dpn_prop), GFP_KERNEL);
@@ -225,10 +217,10 @@ static int rt711_sdca_read_prop(struct sdw_slave *slave)
 		j++;
 	}
 
-	/* set the timeout values */
+	 
 	prop->clk_stop_timeout = 700;
 
-	/* wake-up event */
+	 
 	prop->wake_capable = 1;
 
 	return 0;
@@ -248,18 +240,12 @@ static int rt711_sdca_interrupt_callback(struct sdw_slave *slave,
 
 	if (cancel_delayed_work_sync(&rt711->jack_detect_work)) {
 		dev_warn(&slave->dev, "%s the pending delayed_work was cancelled", __func__);
-		/* avoid the HID owner doesn't change to device */
+		 
 		if (rt711->scp_sdca_stat2)
 			scp_sdca_stat2 = rt711->scp_sdca_stat2;
 	}
 
-	/*
-	 * The critical section below intentionally protects a rather large piece of code.
-	 * We don't want to allow the system suspend to disable an interrupt while we are
-	 * processing it, which could be problematic given the quirky SoundWire interrupt
-	 * scheme. We do want however to prevent new workqueues from being scheduled if
-	 * the disable_irq flag was set during system suspend.
-	 */
+	 
 	mutex_lock(&rt711->disable_irq_lock);
 
 	ret = sdw_read_no_pm(rt711->slave, SDW_SCP_SDCA_INT1);
@@ -274,7 +260,7 @@ static int rt711_sdca_interrupt_callback(struct sdw_slave *slave,
 		rt711->scp_sdca_stat2 |= scp_sdca_stat2;
 
 	do {
-		/* clear flag */
+		 
 		ret = sdw_read_no_pm(rt711->slave, SDW_SCP_SDCA_INT1);
 		if (ret < 0)
 			goto io_error;
@@ -294,7 +280,7 @@ static int rt711_sdca_interrupt_callback(struct sdw_slave *slave,
 				goto io_error;
 		}
 
-		/* check if flag clear or not */
+		 
 		ret = sdw_read_no_pm(rt711->slave, SDW_DP0_INT);
 		if (ret < 0)
 			goto io_error;
@@ -345,7 +331,7 @@ static int rt711_sdca_sdw_probe(struct sdw_slave *slave,
 {
 	struct regmap *regmap, *mbq_regmap;
 
-	/* Regmap Initialization */
+	 
 	mbq_regmap = devm_regmap_init_sdw_mbq(slave, &rt711_sdca_mbq_regmap);
 	if (IS_ERR(mbq_regmap))
 		return PTR_ERR(mbq_regmap);
@@ -405,11 +391,7 @@ static int __maybe_unused rt711_sdca_dev_system_suspend(struct device *dev)
 	if (!rt711_sdca->hw_init)
 		return 0;
 
-	/*
-	 * prevent new interrupts from being handled after the
-	 * deferred work completes and before the parent disables
-	 * interrupts on the link
-	 */
+	 
 	mutex_lock(&rt711_sdca->disable_irq_lock);
 	rt711_sdca->disable_irq = true;
 	ret1 = sdw_update_no_pm(slave, SDW_SCP_SDCA_INTMASK1,
@@ -419,7 +401,7 @@ static int __maybe_unused rt711_sdca_dev_system_suspend(struct device *dev)
 	mutex_unlock(&rt711_sdca->disable_irq_lock);
 
 	if (ret1 < 0 || ret2 < 0) {
-		/* log but don't prevent suspend from happening */
+		 
 		dev_dbg(&slave->dev, "%s: could not disable SDCA interrupts\n:", __func__);
 	}
 

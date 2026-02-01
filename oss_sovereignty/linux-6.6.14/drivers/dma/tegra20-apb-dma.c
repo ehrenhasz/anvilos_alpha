@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DMA driver for Nvidia's Tegra20 APB DMA controller.
- *
- * Copyright (c) 2012-2013, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -37,7 +33,7 @@
 #define TEGRA_APBDMA_IRQ_MASK			0x01c
 #define TEGRA_APBDMA_IRQ_MASK_SET		0x020
 
-/* CSR register */
+ 
 #define TEGRA_APBDMA_CHAN_CSR			0x00
 #define TEGRA_APBDMA_CSR_ENB			BIT(31)
 #define TEGRA_APBDMA_CSR_IE_EOC			BIT(30)
@@ -49,7 +45,7 @@
 #define TEGRA_APBDMA_CSR_REQ_SEL_MASK		0x1F
 #define TEGRA_APBDMA_CSR_WCOUNT_MASK		0xFFFC
 
-/* STATUS register */
+ 
 #define TEGRA_APBDMA_CHAN_STATUS		0x004
 #define TEGRA_APBDMA_STATUS_BUSY		BIT(31)
 #define TEGRA_APBDMA_STATUS_ISE_EOC		BIT(30)
@@ -61,10 +57,10 @@
 #define TEGRA_APBDMA_CHAN_CSRE			0x00C
 #define TEGRA_APBDMA_CHAN_CSRE_PAUSE		BIT(31)
 
-/* AHB memory address */
+ 
 #define TEGRA_APBDMA_CHAN_AHBPTR		0x010
 
-/* AHB sequence register */
+ 
 #define TEGRA_APBDMA_CHAN_AHBSEQ		0x14
 #define TEGRA_APBDMA_AHBSEQ_INTR_ENB		BIT(31)
 #define TEGRA_APBDMA_AHBSEQ_BUS_WIDTH_8		(0 << 28)
@@ -80,10 +76,10 @@
 #define TEGRA_APBDMA_AHBSEQ_WRAP_SHIFT		16
 #define TEGRA_APBDMA_AHBSEQ_WRAP_NONE		0
 
-/* APB address */
+ 
 #define TEGRA_APBDMA_CHAN_APBPTR		0x018
 
-/* APB sequence register */
+ 
 #define TEGRA_APBDMA_CHAN_APBSEQ		0x01c
 #define TEGRA_APBDMA_APBSEQ_BUS_WIDTH_8		(0 << 28)
 #define TEGRA_APBDMA_APBSEQ_BUS_WIDTH_16	(1 << 28)
@@ -93,32 +89,22 @@
 #define TEGRA_APBDMA_APBSEQ_DATA_SWAP		BIT(27)
 #define TEGRA_APBDMA_APBSEQ_WRAP_WORD_1		(1 << 16)
 
-/* Tegra148 specific registers */
+ 
 #define TEGRA_APBDMA_CHAN_WCOUNT		0x20
 
 #define TEGRA_APBDMA_CHAN_WORD_TRANSFER		0x24
 
-/*
- * If any burst is in flight and DMA paused then this is the time to complete
- * on-flight burst and update DMA status register.
- */
+ 
 #define TEGRA_APBDMA_BURST_COMPLETE_TIME	20
 
-/* Channel base address offset from APBDMA base address */
+ 
 #define TEGRA_APBDMA_CHANNEL_BASE_ADD_OFFSET	0x1000
 
 #define TEGRA_APBDMA_SLAVE_ID_INVALID	(TEGRA_APBDMA_CSR_REQ_SEL_MASK + 1)
 
 struct tegra_dma;
 
-/*
- * tegra_dma_chip_data Tegra chip specific DMA data
- * @nr_channels: Number of channels available in the controller.
- * @channel_reg_size: Channel register size/stride.
- * @max_dma_count: Maximum DMA transfer count supported by DMA controller.
- * @support_channel_pause: Support channel wise pause of dma.
- * @support_separate_wcount_reg: Support separate word count register.
- */
+ 
 struct tegra_dma_chip_data {
 	unsigned int nr_channels;
 	unsigned int channel_reg_size;
@@ -127,7 +113,7 @@ struct tegra_dma_chip_data {
 	bool support_separate_wcount_reg;
 };
 
-/* DMA channel registers */
+ 
 struct tegra_dma_channel_regs {
 	u32 csr;
 	u32 ahb_ptr;
@@ -137,14 +123,7 @@ struct tegra_dma_channel_regs {
 	u32 wcount;
 };
 
-/*
- * tegra_dma_sg_req: DMA request details to configure hardware. This
- * contains the details for one transfer to configure DMA hw.
- * The client's request for data transfer can be broken into multiple
- * sub-transfer as per requester details and hw support.
- * This sub transfer get added in the list of transfer and point to Tegra
- * DMA descriptor which manages the transfer details.
- */
+ 
 struct tegra_dma_sg_req {
 	struct tegra_dma_channel_regs	ch_regs;
 	unsigned int			req_len;
@@ -155,11 +134,7 @@ struct tegra_dma_sg_req {
 	unsigned int			words_xferred;
 };
 
-/*
- * tegra_dma_desc: Tegra DMA descriptors which manages the client requests.
- * This descriptor keep track of transfer status, callbacks and request
- * counts etc.
- */
+ 
 struct tegra_dma_desc {
 	struct dma_async_tx_descriptor	txd;
 	unsigned int			bytes_requested;
@@ -176,7 +151,7 @@ struct tegra_dma_channel;
 typedef void (*dma_isr_handler)(struct tegra_dma_channel *tdc,
 				bool to_terminate);
 
-/* tegra_dma_channel: Channel specific information */
+ 
 struct tegra_dma_channel {
 	struct dma_chan		dma_chan;
 	char			name[12];
@@ -188,17 +163,17 @@ struct tegra_dma_channel {
 	struct tegra_dma	*tdma;
 	bool			cyclic;
 
-	/* Different lists for managing the requests */
+	 
 	struct list_head	free_sg_req;
 	struct list_head	pending_sg_req;
 	struct list_head	free_dma_desc;
 	struct list_head	cb_desc;
 
-	/* ISR handler and tasklet for bottom half of isr handling */
+	 
 	dma_isr_handler		isr_handler;
 	struct tasklet_struct	tasklet;
 
-	/* Channel-slave specific configuration */
+	 
 	unsigned int slave_id;
 	struct dma_slave_config dma_sconfig;
 	struct tegra_dma_channel_regs channel_reg;
@@ -206,7 +181,7 @@ struct tegra_dma_channel {
 	struct wait_queue_head wq;
 };
 
-/* tegra_dma: Tegra DMA specific information */
+ 
 struct tegra_dma {
 	struct dma_device		dma_dev;
 	struct device			*dev;
@@ -216,14 +191,10 @@ struct tegra_dma {
 	void __iomem			*base_addr;
 	const struct tegra_dma_chip_data *chip_data;
 
-	/*
-	 * Counter for managing global pausing of the DMA controller.
-	 * Only applicable for devices that don't support individual
-	 * channel pausing.
-	 */
+	 
 	u32				global_pause_count;
 
-	/* Last member of the structure */
+	 
 	struct tegra_dma_channel channels[];
 };
 
@@ -261,7 +232,7 @@ static inline struct device *tdc2dev(struct tegra_dma_channel *tdc)
 
 static dma_cookie_t tegra_dma_tx_submit(struct dma_async_tx_descriptor *tx);
 
-/* Get DMA desc from free list, if not there then allocate it.  */
+ 
 static struct tegra_dma_desc *tegra_dma_desc_get(struct tegra_dma_channel *tdc)
 {
 	struct tegra_dma_desc *dma_desc;
@@ -269,7 +240,7 @@ static struct tegra_dma_desc *tegra_dma_desc_get(struct tegra_dma_channel *tdc)
 
 	spin_lock_irqsave(&tdc->lock, flags);
 
-	/* Do not allocate if desc are waiting for ack */
+	 
 	list_for_each_entry(dma_desc, &tdc->free_dma_desc, node) {
 		if (async_tx_test_ack(&dma_desc->txd) && !dma_desc->cb_count) {
 			list_del(&dma_desc->node);
@@ -281,7 +252,7 @@ static struct tegra_dma_desc *tegra_dma_desc_get(struct tegra_dma_channel *tdc)
 
 	spin_unlock_irqrestore(&tdc->lock, flags);
 
-	/* Allocate DMA desc */
+	 
 	dma_desc = kzalloc(sizeof(*dma_desc), GFP_NOWAIT);
 	if (!dma_desc)
 		return NULL;
@@ -406,16 +377,16 @@ static void tegra_dma_stop(struct tegra_dma_channel *tdc)
 {
 	u32 csr, status;
 
-	/* Disable interrupts */
+	 
 	csr = tdc_read(tdc, TEGRA_APBDMA_CHAN_CSR);
 	csr &= ~TEGRA_APBDMA_CSR_IE_EOC;
 	tdc_write(tdc, TEGRA_APBDMA_CHAN_CSR, csr);
 
-	/* Disable DMA */
+	 
 	csr &= ~TEGRA_APBDMA_CSR_ENB;
 	tdc_write(tdc, TEGRA_APBDMA_CHAN_CSR, csr);
 
-	/* Clear interrupt status if it is there */
+	 
 	status = tdc_read(tdc, TEGRA_APBDMA_CHAN_STATUS);
 	if (status & TEGRA_APBDMA_STATUS_ISE_EOC) {
 		dev_dbg(tdc2dev(tdc), "%s():clearing interrupt\n", __func__);
@@ -437,7 +408,7 @@ static void tegra_dma_start(struct tegra_dma_channel *tdc,
 	if (tdc->tdma->chip_data->support_separate_wcount_reg)
 		tdc_write(tdc, TEGRA_APBDMA_CHAN_WCOUNT, ch_regs->wcount);
 
-	/* Start DMA */
+	 
 	tdc_write(tdc, TEGRA_APBDMA_CHAN_CSR,
 		  ch_regs->csr | TEGRA_APBDMA_CSR_ENB);
 }
@@ -447,24 +418,11 @@ static void tegra_dma_configure_for_next(struct tegra_dma_channel *tdc,
 {
 	unsigned long status;
 
-	/*
-	 * The DMA controller reloads the new configuration for next transfer
-	 * after last burst of current transfer completes.
-	 * If there is no IEC status then this makes sure that last burst
-	 * has not be completed. There may be case that last burst is on
-	 * flight and so it can complete but because DMA is paused, it
-	 * will not generates interrupt as well as not reload the new
-	 * configuration.
-	 * If there is already IEC status then interrupt handler need to
-	 * load new configuration.
-	 */
+	 
 	tegra_dma_pause(tdc, false);
 	status = tdc_read(tdc, TEGRA_APBDMA_CHAN_STATUS);
 
-	/*
-	 * If interrupt is pending then do nothing as the ISR will handle
-	 * the programing for new request.
-	 */
+	 
 	if (status & TEGRA_APBDMA_STATUS_ISE_EOC) {
 		dev_err(tdc2dev(tdc),
 			"Skipping new configuration as interrupt is pending\n");
@@ -472,7 +430,7 @@ static void tegra_dma_configure_for_next(struct tegra_dma_channel *tdc,
 		return;
 	}
 
-	/* Safe to program new configuration */
+	 
 	tdc_write(tdc, TEGRA_APBDMA_CHAN_APBPTR, nsg_req->ch_regs.apb_ptr);
 	tdc_write(tdc, TEGRA_APBDMA_CHAN_AHBPTR, nsg_req->ch_regs.ahb_ptr);
 	if (tdc->tdma->chip_data->support_separate_wcount_reg)
@@ -531,7 +489,7 @@ static void tegra_dma_abort_all(struct tegra_dma_channel *tdc)
 			dma_desc->dma_status = DMA_ERROR;
 			list_add_tail(&dma_desc->node, &tdc->free_dma_desc);
 
-			/* Add in cb list if it is not there. */
+			 
 			if (!dma_desc->cb_count)
 				list_add_tail(&dma_desc->cb_node,
 					      &tdc->cb_desc);
@@ -546,11 +504,7 @@ static bool handle_continuous_head_request(struct tegra_dma_channel *tdc,
 {
 	struct tegra_dma_sg_req *hsgreq;
 
-	/*
-	 * Check that head req on list should be in flight.
-	 * If it is not in flight then abort transfer as
-	 * looping of transfer can not continue.
-	 */
+	 
 	hsgreq = list_first_entry(&tdc->pending_sg_req, typeof(*hsgreq), node);
 	if (!hsgreq->configured) {
 		tegra_dma_stop(tdc);
@@ -560,7 +514,7 @@ static bool handle_continuous_head_request(struct tegra_dma_channel *tdc,
 		return false;
 	}
 
-	/* Configure next request */
+	 
 	if (!to_terminate)
 		tdc_configure_next_head_desc(tdc);
 
@@ -589,7 +543,7 @@ static void handle_once_dma_done(struct tegra_dma_channel *tdc,
 	}
 	list_add_tail(&sgreq->node, &tdc->free_sg_req);
 
-	/* Do not start DMA if it is going to be terminate */
+	 
 	if (to_terminate)
 		return;
 
@@ -610,19 +564,19 @@ static void handle_cont_sngl_cycle_dma_done(struct tegra_dma_channel *tdc,
 
 	sgreq = list_first_entry(&tdc->pending_sg_req, typeof(*sgreq), node);
 	dma_desc = sgreq->dma_desc;
-	/* if we dma for long enough the transfer count will wrap */
+	 
 	dma_desc->bytes_transferred =
 		(dma_desc->bytes_transferred + sgreq->req_len) %
 		dma_desc->bytes_requested;
 
-	/* Callback need to be call */
+	 
 	if (!dma_desc->cb_count)
 		list_add_tail(&dma_desc->cb_node, &tdc->cb_desc);
 	dma_desc->cb_count++;
 
 	sgreq->words_xferred = 0;
 
-	/* If not last req then put at end of pending list */
+	 
 	if (!list_is_last(&sgreq->node, &tdc->pending_sg_req)) {
 		list_move_tail(&sgreq->node, &tdc->pending_sg_req);
 		sgreq->configured = false;
@@ -719,12 +673,9 @@ static void tegra_dma_issue_pending(struct dma_chan *dc)
 
 		tdc_start_head_req(tdc);
 
-		/* Continuous single mode: Configure next req */
+		 
 		if (tdc->cyclic) {
-			/*
-			 * Wait for 1 burst time for configure DMA for
-			 * next transfer.
-			 */
+			 
 			udelay(TEGRA_APBDMA_BURST_COMPLETE_TIME);
 			tdc_configure_next_head_desc(tdc);
 		}
@@ -747,7 +698,7 @@ static int tegra_dma_terminate_all(struct dma_chan *dc)
 	if (!tdc->busy)
 		goto skip_dma_stop;
 
-	/* Pause DMA before checking the queue status */
+	 
 	tegra_dma_pause(tdc, true);
 
 	status = tdc_read(tdc, TEGRA_APBDMA_CHAN_STATUS);
@@ -812,11 +763,7 @@ static void tegra_dma_synchronize(struct dma_chan *dc)
 		return;
 	}
 
-	/*
-	 * CPU, which handles interrupt, could be busy in
-	 * uninterruptible state, in this case sibling CPU
-	 * should wait until interrupt is handled.
-	 */
+	 
 	wait_event(tdc->wq, tegra_dma_eoc_interrupt_deasserted(tdc));
 
 	tasklet_kill(&tdc->tasklet);
@@ -846,33 +793,12 @@ static unsigned int tegra_dma_sg_bytes_xferred(struct tegra_dma_channel *tdc,
 	wcount = get_current_xferred_count(tdc, sg_req, wcount);
 
 	if (!wcount) {
-		/*
-		 * If wcount wasn't ever polled for this SG before, then
-		 * simply assume that transfer hasn't started yet.
-		 *
-		 * Otherwise it's the end of the transfer.
-		 *
-		 * The alternative would be to poll the status register
-		 * until EOC bit is set or wcount goes UP. That's so
-		 * because EOC bit is getting set only after the last
-		 * burst's completion and counter is less than the actual
-		 * transfer size by 4 bytes. The counter value wraps around
-		 * in a cyclic mode before EOC is set(!), so we can't easily
-		 * distinguish start of transfer from its end.
-		 */
+		 
 		if (sg_req->words_xferred)
 			wcount = sg_req->req_len - 4;
 
 	} else if (wcount < sg_req->words_xferred) {
-		/*
-		 * This case will never happen for a non-cyclic transfer.
-		 *
-		 * For a cyclic transfer, although it is possible for the
-		 * next transfer to have already started (resetting the word
-		 * count), this case should still not happen because we should
-		 * have detected that the EOC bit is set and hence the transfer
-		 * was completed.
-		 */
+		 
 		WARN_ON_ONCE(1);
 
 		wcount = sg_req->req_len - 4;
@@ -901,7 +827,7 @@ static enum dma_status tegra_dma_tx_status(struct dma_chan *dc,
 
 	spin_lock_irqsave(&tdc->lock, flags);
 
-	/* Check on wait_ack desc status */
+	 
 	list_for_each_entry(dma_desc, &tdc->free_dma_desc, node) {
 		if (dma_desc->txd.cookie == cookie) {
 			ret = dma_desc->dma_status;
@@ -909,7 +835,7 @@ static enum dma_status tegra_dma_tx_status(struct dma_chan *dc,
 		}
 	}
 
-	/* Check in pending list */
+	 
 	list_for_each_entry(sg_req, &tdc->pending_sg_req, node) {
 		dma_desc = sg_req->dma_desc;
 		if (dma_desc->txd.cookie == cookie) {
@@ -962,14 +888,11 @@ static inline unsigned int get_burst_size(struct tegra_dma_channel *tdc,
 {
 	unsigned int burst_byte, burst_ahb_width;
 
-	/*
-	 * burst_size from client is in terms of the bus_width.
-	 * convert them into AHB memory width which is 4 byte.
-	 */
+	 
 	burst_byte = burst_size * slave_bw;
 	burst_ahb_width = burst_byte / 4;
 
-	/* If burst size is 0 then calculate the burst size based on length */
+	 
 	if (!burst_ahb_width) {
 		if (len & 0xF)
 			return TEGRA_APBDMA_AHBSEQ_BURST_1;
@@ -1097,7 +1020,7 @@ tegra_dma_prep_slave_sg(struct dma_chan *dc,
 	dma_desc->bytes_transferred = 0;
 	dma_desc->dma_status = DMA_IN_PROGRESS;
 
-	/* Make transfer requests */
+	 
 	for_each_sg(sgl, sg, sg_len, i) {
 		u32 len, mem;
 
@@ -1139,10 +1062,7 @@ tegra_dma_prep_slave_sg(struct dma_chan *dc,
 	if (flags & DMA_CTRL_ACK)
 		dma_desc->txd.flags = DMA_CTRL_ACK;
 
-	/*
-	 * Make sure that mode should not be conflicting with currently
-	 * configured mode.
-	 */
+	 
 	if (!tdc->isr_handler) {
 		tdc->isr_handler = handle_once_dma_done;
 		tdc->cyclic = false;
@@ -1183,21 +1103,13 @@ tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr,
 		return NULL;
 	}
 
-	/*
-	 * We allow to take more number of requests till DMA is
-	 * not started. The driver will loop over all requests.
-	 * Once DMA is started then new requests can be queued only after
-	 * terminating the DMA.
-	 */
+	 
 	if (tdc->busy) {
 		dev_err(tdc2dev(tdc), "Request not allowed when DMA running\n");
 		return NULL;
 	}
 
-	/*
-	 * We only support cycle transfer when buf_len is multiple of
-	 * period_len.
-	 */
+	 
 	if (buf_len % period_len) {
 		dev_err(tdc2dev(tdc), "buf_len is not multiple of period_len\n");
 		return NULL;
@@ -1247,7 +1159,7 @@ tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr,
 	dma_desc->bytes_requested = buf_len;
 	remain_len = buf_len;
 
-	/* Split transfer equal to period size */
+	 
 	while (remain_len) {
 		sg_req = tegra_dma_sg_req_get(tdc);
 		if (!sg_req) {
@@ -1276,10 +1188,7 @@ tegra_dma_prep_dma_cyclic(struct dma_chan *dc, dma_addr_t buf_addr,
 	if (flags & DMA_CTRL_ACK)
 		dma_desc->txd.flags = DMA_CTRL_ACK;
 
-	/*
-	 * Make sure that mode should not be conflicting with currently
-	 * configured mode.
-	 */
+	 
 	if (!tdc->isr_handler) {
 		tdc->isr_handler = handle_cont_sngl_cycle_dma_done;
 		tdc->cyclic = true;
@@ -1364,7 +1273,7 @@ static struct dma_chan *tegra_dma_of_xlate(struct of_phandle_args *dma_spec,
 	return chan;
 }
 
-/* Tegra20 specific DMA controller information */
+ 
 static const struct tegra_dma_chip_data tegra20_dma_chip_data = {
 	.nr_channels		= 16,
 	.channel_reg_size	= 0x20,
@@ -1373,7 +1282,7 @@ static const struct tegra_dma_chip_data tegra20_dma_chip_data = {
 	.support_separate_wcount_reg = false,
 };
 
-/* Tegra30 specific DMA controller information */
+ 
 static const struct tegra_dma_chip_data tegra30_dma_chip_data = {
 	.nr_channels		= 32,
 	.channel_reg_size	= 0x20,
@@ -1382,7 +1291,7 @@ static const struct tegra_dma_chip_data tegra30_dma_chip_data = {
 	.support_separate_wcount_reg = false,
 };
 
-/* Tegra114 specific DMA controller information */
+ 
 static const struct tegra_dma_chip_data tegra114_dma_chip_data = {
 	.nr_channels		= 32,
 	.channel_reg_size	= 0x20,
@@ -1391,7 +1300,7 @@ static const struct tegra_dma_chip_data tegra114_dma_chip_data = {
 	.support_separate_wcount_reg = false,
 };
 
-/* Tegra148 specific DMA controller information */
+ 
 static const struct tegra_dma_chip_data tegra148_dma_chip_data = {
 	.nr_channels		= 32,
 	.channel_reg_size	= 0x40,
@@ -1416,11 +1325,11 @@ static int tegra_dma_init_hw(struct tegra_dma *tdma)
 		return err;
 	}
 
-	/* reset DMA controller */
+	 
 	udelay(2);
 	reset_control_deassert(tdma->rst);
 
-	/* enable global DMA registers */
+	 
 	tdma_write(tdma, TEGRA_APBDMA_GENERAL, TEGRA_APBDMA_GENERAL_ENABLE);
 	tdma_write(tdma, TEGRA_APBDMA_CONTROL, 0);
 	tdma_write(tdma, TEGRA_APBDMA_IRQ_MASK_SET, 0xFFFFFFFF);

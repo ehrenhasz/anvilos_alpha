@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014  Google, Inc.
- */
+
+ 
 
 #include <linux/cdev.h>
 #include <linux/device.h>
@@ -24,7 +22,7 @@ static ssize_t write_pmsg(struct file *file, const char __user *buf,
 	record.type = PSTORE_TYPE_PMSG;
 	record.size = count;
 
-	/* check outside lock, page in any data. write_user also checks */
+	 
 	if (!access_ok(buf, count))
 		return -EFAULT;
 

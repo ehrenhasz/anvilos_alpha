@@ -1,22 +1,6 @@
-/* mailstat.c -- stat a mailbox file, handling maildir-type mail directories */
+ 
 
-/* Copyright (C) 2001 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
  
@@ -34,22 +18,7 @@
 
 #include <maxpath.h>
 
-/*
- *     Stat a file. If it's a maildir, check all messages
- *     in the maildir and present the grand total as a file.
- *     The fields in the 'struct stat' are from the mail directory.
- *     The following fields are emulated:
- *
- *     st_nlink	always 1, unless st_blocks is not present, in which case it's
- *		the total number of messages
- *     st_size	 total number of bytes in all files
- *     st_blocks       total number of messages, if present in struct stat
- *     st_atime	access time of newest file in maildir
- *     st_mtime	modify time of newest file in maildir
- *     st_mode	 S_IFDIR changed to S_IFREG
- *
- *     This is good enough for most mail-checking applications.
- */
+ 
 
 int
 mailstat(path, st)
@@ -66,7 +35,7 @@ mailstat(path, st)
 
   atime = mtime = 0;
 
-  /* First see if it's a directory. */
+   
   if ((i = stat(path, st)) != 0 || S_ISDIR(st->st_mode) == 0)
     return i;
 
@@ -91,25 +60,25 @@ mailstat(path, st)
   st_ret.st_mode  &= ~S_IFDIR;
   st_ret.st_mode  |= S_IFREG;
 
-  /* See if cur/ is present */
+   
   sprintf(dir, "%s/cur", path);
   if (stat(dir, &st_tmp) || S_ISDIR(st_tmp.st_mode) == 0)
     return 0;
   st_ret.st_atime = st_tmp.st_atime;
 
-  /* See if tmp/ is present */
+   
   sprintf(dir, "%s/tmp", path);
   if (stat(dir, &st_tmp) || S_ISDIR(st_tmp.st_mode) == 0)
     return 0;
   st_ret.st_mtime = st_tmp.st_mtime;
 
-  /* And new/ */
+   
   sprintf(dir, "%s/new", path);
   if (stat(dir, &st_tmp) || S_ISDIR(st_tmp.st_mode) == 0)
     return 0;
   st_ret.st_mtime = st_tmp.st_mtime;
 
-  /* Optimization - if new/ didn't change, nothing else did. */
+   
   if (st_tmp.st_dev == st_new_last.st_dev &&
       st_tmp.st_ino == st_new_last.st_ino &&
       st_tmp.st_atime == st_new_last.st_atime &&
@@ -120,7 +89,7 @@ mailstat(path, st)
     }
   st_new_last = st_tmp;
 
-  /* Loop over new/ and cur/ */
+   
   for (i = 0; i < 2; i++)
     {
       sprintf(dir, "%s/%s", path, i ? "cur" : "new");
@@ -149,7 +118,7 @@ mailstat(path, st)
       closedir(dd);
     }
 
-/*  if (atime) */	/* Set atime even if cur/ is empty */
+ 	 
       st_ret.st_atime = atime;
     if (mtime)
       st_ret.st_mtime = mtime;

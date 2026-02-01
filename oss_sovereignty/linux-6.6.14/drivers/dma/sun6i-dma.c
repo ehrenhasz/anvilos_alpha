@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2013-2014 Allwinner Tech Co., Ltd
- * Author: Sugar <shuge@allwinnertech.com>
- *
- * Copyright (C) 2014 Maxime Ripard
- * Maxime Ripard <maxime.ripard@free-electrons.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -23,9 +17,7 @@
 
 #include "virt-dma.h"
 
-/*
- * Common registers
- */
+ 
 #define DMA_IRQ_EN(x)		((x) * 0x04)
 #define DMA_IRQ_HALF			BIT(0)
 #define DMA_IRQ_PKG			BIT(1)
@@ -39,21 +31,17 @@
 
 #define DMA_STAT		0x30
 
-/* Offset between DMA_IRQ_EN and DMA_IRQ_STAT limits number of channels */
+ 
 #define DMA_MAX_CHANNELS	(DMA_IRQ_CHAN_NR * 0x10 / 4)
 
-/*
- * sun8i specific registers
- */
+ 
 #define SUN8I_DMA_GATE		0x20
 #define SUN8I_DMA_GATE_ENABLE	0x4
 
 #define SUNXI_H3_SECURE_REG		0x20
 #define SUNXI_H3_DMA_GATE		0x28
 #define SUNXI_H3_DMA_GATE_ENABLE	0x4
-/*
- * Channels specific registers
- */
+ 
 #define DMA_CHAN_ENABLE		0x00
 #define DMA_CHAN_ENABLE_START		BIT(0)
 #define DMA_CHAN_ENABLE_STOP		0
@@ -91,48 +79,26 @@
 
 #define DMA_CHAN_CUR_PARA	0x1c
 
-/*
- * LLI address mangling
- *
- * The LLI link physical address is also mangled, but we avoid dealing
- * with that by allocating LLIs from the DMA32 zone.
- */
+ 
 #define SRC_HIGH_ADDR(x)		(((x) & 0x3U) << 16)
 #define DST_HIGH_ADDR(x)		(((x) & 0x3U) << 18)
 
-/*
- * Various hardware related defines
- */
+ 
 #define LLI_LAST_ITEM	0xfffff800
 #define NORMAL_WAIT	8
 #define DRQ_SDRAM	1
 #define LINEAR_MODE     0
 #define IO_MODE         1
 
-/* forward declaration */
+ 
 struct sun6i_dma_dev;
 
-/*
- * Hardware channels / ports representation
- *
- * The hardware is used in several SoCs, with differing numbers
- * of channels and endpoints. This structure ties those numbers
- * to a certain compatible string.
- */
+ 
 struct sun6i_dma_config {
 	u32 nr_max_channels;
 	u32 nr_max_requests;
 	u32 nr_max_vchans;
-	/*
-	 * In the datasheets/user manuals of newer Allwinner SoCs, a special
-	 * bit (bit 2 at register 0x20) is present.
-	 * It's named "DMA MCLK interface circuit auto gating bit" in the
-	 * documents, and the footnote of this register says that this bit
-	 * should be set up when initializing the DMA controller.
-	 * Allwinner A23/A33 user manuals do not have this bit documented,
-	 * however these SoCs really have and need this bit, as seen in the
-	 * BSP kernel source code.
-	 */
+	 
 	void (*clock_autogate_enable)(struct sun6i_dma_dev *);
 	void (*set_burst_length)(u32 *p_cfg, s8 src_burst, s8 dst_burst);
 	void (*set_drq)(u32 *p_cfg, s8 src_drq, s8 dst_drq);
@@ -145,12 +111,7 @@ struct sun6i_dma_config {
 	bool has_mbus_clk;
 };
 
-/*
- * Hardware representation of the LLI
- *
- * The hardware will be fed the physical address of this structure,
- * and read its content in order to start the transfer.
- */
+ 
 struct sun6i_dma_lli {
 	u32			cfg;
 	u32			src;
@@ -159,11 +120,7 @@ struct sun6i_dma_lli {
 	u32			para;
 	u32			p_lli_next;
 
-	/*
-	 * This field is not used by the DMA controller, but will be
-	 * used by the CPU to go through the list (mostly for dumping
-	 * or freeing it).
-	 */
+	 
 	struct sun6i_dma_lli	*v_lli_next;
 };
 
@@ -489,13 +446,11 @@ static void sun6i_dma_tasklet(struct tasklet_struct *t)
 
 		if (pchan && pchan->done) {
 			if (sun6i_dma_start_desc(vchan)) {
-				/*
-				 * No current txd associated with this channel
-				 */
+				 
 				dev_dbg(sdev->slave.dev, "pchan %u: free\n",
 					pchan->idx);
 
-				/* Mark this channel free */
+				 
 				vchan->phy = NULL;
 				pchan->vchan = NULL;
 			}
@@ -513,11 +468,11 @@ static void sun6i_dma_tasklet(struct tasklet_struct *t)
 		vchan = list_first_entry(&sdev->pending,
 					 struct sun6i_vchan, node);
 
-		/* Remove from pending channels */
+		 
 		list_del_init(&vchan->node);
 		pchan_alloc |= BIT(pchan_idx);
 
-		/* Mark this channel allocated */
+		 
 		pchan->vchan = vchan;
 		vchan->phy = pchan;
 		dev_dbg(sdev->slave.dev, "pchan %u: alloc vchan %p\n",
@@ -837,7 +792,7 @@ static struct dma_async_tx_descriptor *sun6i_dma_prep_dma_cyclic(
 		prev = sun6i_dma_lli_add(prev, v_lli, p_lli, txd);
 	}
 
-	prev->p_lli_next = txd->p_lli;		/* cyclic list */
+	prev->p_lli_next = txd->p_lli;		 
 
 	vchan->cyclic = true;
 
@@ -1050,17 +1005,17 @@ static struct dma_chan *sun6i_dma_of_xlate(struct of_phandle_args *dma_spec,
 
 static inline void sun6i_kill_tasklet(struct sun6i_dma_dev *sdev)
 {
-	/* Disable all interrupts from DMA */
+	 
 	writel(0, sdev->base + DMA_IRQ_EN(0));
 	writel(0, sdev->base + DMA_IRQ_EN(1));
 
-	/* Prevent spurious interrupts from scheduling the tasklet */
+	 
 	atomic_inc(&sdev->tasklet_shutdown);
 
-	/* Make sure we won't have any further interrupts */
+	 
 	devm_free_irq(sdev->slave.dev, sdev->irq, sdev);
 
-	/* Actually prevent the tasklet from being scheduled */
+	 
 	tasklet_kill(&sdev->task);
 }
 
@@ -1076,21 +1031,7 @@ static inline void sun6i_dma_free(struct sun6i_dma_dev *sdev)
 	}
 }
 
-/*
- * For A31:
- *
- * There's 16 physical channels that can work in parallel.
- *
- * However we have 30 different endpoints for our requests.
- *
- * Since the channels are able to handle only an unidirectional
- * transfer, we need to allocate more virtual channels so that
- * everyone can grab one channel.
- *
- * Some devices can't work in both direction (mostly because it
- * wouldn't make sense), so we have a bit fewer virtual channels than
- * 2 channels per endpoints.
- */
+ 
 
 static struct sun6i_dma_config sun6i_a31_dma_cfg = {
 	.nr_max_channels = 16,
@@ -1109,10 +1050,7 @@ static struct sun6i_dma_config sun6i_a31_dma_cfg = {
 			     BIT(DMA_SLAVE_BUSWIDTH_4_BYTES),
 };
 
-/*
- * The A23 only has 8 physical channels, a maximum DRQ port id of 24,
- * and a total of 37 usable source and destination endpoints.
- */
+ 
 
 static struct sun6i_dma_config sun8i_a23_dma_cfg = {
 	.nr_max_channels = 8,
@@ -1150,12 +1088,7 @@ static struct sun6i_dma_config sun8i_a83t_dma_cfg = {
 			     BIT(DMA_SLAVE_BUSWIDTH_4_BYTES),
 };
 
-/*
- * The H3 has 12 physical channels, a maximum DRQ port id of 27,
- * and a total of 34 usable source and destination endpoints.
- * It also supports additional burst lengths and bus widths,
- * and the burst length fields have different offsets.
- */
+ 
 
 static struct sun6i_dma_config sun8i_h3_dma_cfg = {
 	.nr_max_channels = 12,
@@ -1177,10 +1110,7 @@ static struct sun6i_dma_config sun8i_h3_dma_cfg = {
 			     BIT(DMA_SLAVE_BUSWIDTH_8_BYTES),
 };
 
-/*
- * The A64 binding uses the number of dma channels from the
- * device tree node.
- */
+ 
 static struct sun6i_dma_config sun50i_a64_dma_cfg = {
 	.clock_autogate_enable = sun6i_enable_clock_autogate_h3,
 	.set_burst_length = sun6i_set_burst_length_h3,
@@ -1198,10 +1128,7 @@ static struct sun6i_dma_config sun50i_a64_dma_cfg = {
 			     BIT(DMA_SLAVE_BUSWIDTH_8_BYTES),
 };
 
-/*
- * The A100 binding uses the number of dma channels from the
- * device tree node.
- */
+ 
 static struct sun6i_dma_config sun50i_a100_dma_cfg = {
 	.clock_autogate_enable = sun6i_enable_clock_autogate_h3,
 	.set_burst_length = sun6i_set_burst_length_h3,
@@ -1221,10 +1148,7 @@ static struct sun6i_dma_config sun50i_a100_dma_cfg = {
 	.has_mbus_clk = true,
 };
 
-/*
- * The H6 binding uses the number of dma channels from the
- * device tree node.
- */
+ 
 static struct sun6i_dma_config sun50i_h6_dma_cfg = {
 	.clock_autogate_enable = sun6i_enable_clock_autogate_h3,
 	.set_burst_length = sun6i_set_burst_length_h3,
@@ -1243,10 +1167,7 @@ static struct sun6i_dma_config sun50i_h6_dma_cfg = {
 	.has_mbus_clk = true,
 };
 
-/*
- * The V3s have only 8 physical channels, a maximum DRQ port id of 23,
- * and a total of 24 usable source and destination endpoints.
- */
+ 
 
 static struct sun6i_dma_config sun8i_v3s_dma_cfg = {
 	.nr_max_channels = 8,
@@ -1276,7 +1197,7 @@ static const struct of_device_id sun6i_dma_match[] = {
 	{ .compatible = "allwinner,sun50i-a64-dma", .data = &sun50i_a64_dma_cfg },
 	{ .compatible = "allwinner,sun50i-a100-dma", .data = &sun50i_a100_dma_cfg },
 	{ .compatible = "allwinner,sun50i-h6-dma", .data = &sun50i_h6_dma_cfg },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sun6i_dma_match);
 
@@ -1376,10 +1297,7 @@ static int sun6i_dma_probe(struct platform_device *pdev)
 		sdc->max_request = DMA_CHAN_MAX_DRQ_A31;
 	}
 
-	/*
-	 * If the number of vchans is not specified, derive it from the
-	 * highest port number, at most one channel per port and direction.
-	 */
+	 
 	if (!sdc->num_vchans)
 		sdc->num_vchans = 2 * (sdc->max_request + 1);
 

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains iSCSI Target Portal Group related functions.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
+
+ 
 
 #include <linux/slab.h>
 #include <target/target_core_base.h>
@@ -58,10 +51,7 @@ int iscsit_load_discovery_tpg(void)
 		pr_err("Unable to allocate struct iscsi_portal_group\n");
 		return -1;
 	}
-	/*
-	 * Save iscsi_ops pointer for special case discovery TPG that
-	 * doesn't exist as se_wwn->wwn_group within configfs.
-	 */
+	 
 	tpg->tpg_se_tpg.se_tpg_tfo = &iscsi_ops;
 	ret = core_tpg_register(NULL, &tpg->tpg_se_tpg, -1);
 	if (ret < 0) {
@@ -69,17 +59,12 @@ int iscsit_load_discovery_tpg(void)
 		return -1;
 	}
 
-	tpg->sid = 1; /* First Assigned LIO Session ID */
+	tpg->sid = 1;  
 	iscsit_set_default_tpg_attribs(tpg);
 
 	if (iscsi_create_default_params(&tpg->param_list) < 0)
 		goto out;
-	/*
-	 * By default we disable authentication for discovery sessions,
-	 * this can be changed with:
-	 *
-	 * /sys/kernel/config/target/iscsi/discovery_auth/enforce_discovery_auth
-	 */
+	 
 	param = iscsi_find_param_from_key(AUTHMETHOD, tpg->param_list);
 	if (!param)
 		goto free_pl_out;
@@ -311,11 +296,7 @@ int iscsit_tpg_enable_portal_group(struct iscsi_portal_group *tpg)
 			" active, ignoring request.\n", tpg->tpgt);
 		return -EINVAL;
 	}
-	/*
-	 * Make sure that AuthMethod does not contain None as an option
-	 * unless explictly disabled.  Set the default to CHAP if authentication
-	 * is enforced (as per default), and remove the NONE option.
-	 */
+	 
 	param = iscsi_find_param_from_key(AUTHMETHOD, tpg->param_list);
 	if (!param)
 		return -EINVAL;
@@ -527,9 +508,7 @@ static int iscsit_tpg_release_np(
 	tpg_np->tpg_np = NULL;
 	tpg_np->tpg = NULL;
 	kfree(tpg_np);
-	/*
-	 * iscsit_del_np() will shutdown struct iscsi_np when last TPG reference is released.
-	 */
+	 
 	return iscsit_del_np(np);
 }
 
@@ -549,11 +528,7 @@ int iscsit_tpg_del_network_portal(
 	}
 
 	if (!tpg_np->tpg_np_parent) {
-		/*
-		 * We are the parent tpg network portal.  Release all of the
-		 * child tpg_np's (eg: the non ISCSI_TCP ones) on our parent
-		 * list first.
-		 */
+		 
 		list_for_each_entry_safe(tpg_np_child, tpg_np_child_tmp,
 				&tpg_np->tpg_np_parent_list,
 				tpg_np_child_list) {
@@ -563,10 +538,7 @@ int iscsit_tpg_del_network_portal(
 					" failed: %d\n", ret);
 		}
 	} else {
-		/*
-		 * We are not the parent ISCSI_TCP tpg network portal.  Release
-		 * our own network portals from the child list.
-		 */
+		 
 		spin_lock(&tpg_np->tpg_np_parent->tpg_np_parent_lock);
 		list_del(&tpg_np->tpg_np_child_list);
 		spin_unlock(&tpg_np->tpg_np_parent->tpg_np_parent_lock);

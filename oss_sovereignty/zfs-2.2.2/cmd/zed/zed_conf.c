@@ -1,16 +1,4 @@
-/*
- * This file is part of the ZFS Event Daemon (ZED).
- *
- * Developed at Lawrence Livermore National Laboratory (LLNL-CODE-403049).
- * Copyright (C) 2013-2014 Lawrence Livermore National Security, LLC.
- * Refer to the OpenZFS git commit log for authoritative copyright attribution.
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License Version 1.0 (CDDL-1.0).
- * You can obtain a copy of the license from the top-level file
- * "OPENSOLARIS.LICENSE" or at <http://opensource.org/licenses/CDDL-1.0>.
- * You may not use this file except in compliance with the license.
- */
+ 
 
 #include <assert.h>
 #include <ctype.h>
@@ -32,20 +20,18 @@
 #include "zed_log.h"
 #include "zed_strings.h"
 
-/*
- * Initialise the configuration with default values.
- */
+ 
 void
 zed_conf_init(struct zed_conf *zcp)
 {
 	memset(zcp, 0, sizeof (*zcp));
 
-	/* zcp->zfs_hdl opened in zed_event_init() */
-	/* zcp->zedlets created in zed_conf_scan_dir() */
+	 
+	 
 
-	zcp->pid_fd = -1;		/* opened in zed_conf_write_pid() */
-	zcp->state_fd = -1;		/* opened in zed_conf_open_state() */
-	zcp->zevent_fd = -1;		/* opened in zed_event_init() */
+	zcp->pid_fd = -1;		 
+	zcp->state_fd = -1;		 
+	zcp->zevent_fd = -1;		 
 
 	zcp->max_jobs = 16;
 	zcp->max_zevent_buf_len = 1 << 20;
@@ -56,11 +42,7 @@ zed_conf_init(struct zed_conf *zcp)
 		zed_log_die("Failed to create conf: %s", strerror(errno));
 }
 
-/*
- * Destroy the configuration [zcp].
- *
- * Note: zfs_hdl & zevent_fd are destroyed via zed_event_fini().
- */
+ 
 void
 zed_conf_destroy(struct zed_conf *zcp)
 {
@@ -102,12 +84,7 @@ zed_conf_destroy(struct zed_conf *zcp)
 	}
 }
 
-/*
- * Display command-line help and exit.
- *
- * If [got_err] is 0, output to stdout and exit normally;
- * otherwise, output to stderr and exit with a failure status.
- */
+ 
 static void
 _zed_conf_display_help(const char *prog, boolean_t got_err)
 {
@@ -162,9 +139,7 @@ _zed_conf_display_help(const char *prog, boolean_t got_err)
 	exit(got_err ? EXIT_FAILURE : EXIT_SUCCESS);
 }
 
-/*
- * Display license information to stdout and exit.
- */
+ 
 static void
 _zed_conf_display_license(void)
 {
@@ -180,9 +155,7 @@ _zed_conf_display_license(void)
 	exit(EXIT_SUCCESS);
 }
 
-/*
- * Display version information to stdout and exit.
- */
+ 
 static void
 _zed_conf_display_version(void)
 {
@@ -192,11 +165,7 @@ _zed_conf_display_version(void)
 	exit(EXIT_SUCCESS);
 }
 
-/*
- * Copy the [path] string to the [resultp] ptr.
- * If [path] is not an absolute path, prefix it with the current working dir.
- * If [resultp] is non-null, free its existing string before assignment.
- */
+ 
 static void
 _zed_conf_parse_path(char **resultp, const char *path)
 {
@@ -227,9 +196,7 @@ _zed_conf_parse_path(char **resultp, const char *path)
 		zed_log_die("Failed to copy path: %s", strerror(ENOMEM));
 }
 
-/*
- * Parse the command-line options into the configuration [zcp].
- */
+ 
 void
 zed_conf_parse_opts(struct zed_conf *zcp, int argc, char **argv)
 {
@@ -240,7 +207,7 @@ zed_conf_parse_opts(struct zed_conf *zcp, int argc, char **argv)
 	if (!zcp || !argv || !argv[0])
 		zed_log_die("Failed to parse options: Internal error");
 
-	opterr = 0;			/* suppress default getopt err msgs */
+	opterr = 0;			 
 
 	while ((opt = getopt(argc, argv, opts)) != -1) {
 		switch (opt) {
@@ -318,14 +285,7 @@ zed_conf_parse_opts(struct zed_conf *zcp, int argc, char **argv)
 	}
 }
 
-/*
- * Scan the [zcp] zedlet_dir for files to exec based on the event class.
- * Files must be executable by user, but not writable by group or other.
- * Dotfiles are ignored.
- *
- * Return 0 on success with an updated set of zedlets,
- * or -1 on error with errno set.
- */
+ 
 int
 zed_conf_scan_dir(struct zed_conf *zcp)
 {
@@ -429,14 +389,7 @@ zed_conf_scan_dir(struct zed_conf *zcp)
 	return (0);
 }
 
-/*
- * Write the PID file specified in [zcp].
- * Return 0 on success, -1 on error.
- *
- * This must be called after fork()ing to become a daemon (so the correct PID
- * is recorded), but before daemonization is complete and the parent process
- * exits (for synchronization with systemd).
- */
+ 
 int
 zed_conf_write_pid(struct zed_conf *zcp)
 {
@@ -453,9 +406,7 @@ zed_conf_write_pid(struct zed_conf *zcp)
 		return (-1);
 	}
 	assert(zcp->pid_fd == -1);
-	/*
-	 * Create PID file directory if needed.
-	 */
+	 
 	n = strlcpy(buf, zcp->pid_file, sizeof (buf));
 	if (n >= sizeof (buf)) {
 		errno = ENAMETOOLONG;
@@ -472,9 +423,7 @@ zed_conf_write_pid(struct zed_conf *zcp)
 		    buf, strerror(errno));
 		goto err;
 	}
-	/*
-	 * Obtain PID file lock.
-	 */
+	 
 	mask = umask(0);
 	umask(mask | 022);
 	zcp->pid_fd = open(zcp->pid_file, O_RDWR | O_CREAT | O_CLOEXEC, 0644);
@@ -506,9 +455,7 @@ zed_conf_write_pid(struct zed_conf *zcp)
 		}
 		goto err;
 	}
-	/*
-	 * Write PID file.
-	 */
+	 
 	n = snprintf(buf, sizeof (buf), "%d\n", (int)getpid());
 	if ((n < 0) || (n >= sizeof (buf))) {
 		errno = ERANGE;
@@ -532,12 +479,7 @@ err:
 	return (-1);
 }
 
-/*
- * Open and lock the [zcp] state_file.
- * Return 0 on success, -1 on error.
- *
- * FIXME: Move state information into kernel.
- */
+ 
 int
 zed_conf_open_state(struct zed_conf *zcp)
 {
@@ -613,12 +555,7 @@ zed_conf_open_state(struct zed_conf *zcp)
 	return (0);
 }
 
-/*
- * Read the opened [zcp] state_file to obtain the eid & etime of the last event
- * processed.  Write the state from the last event to the [eidp] & [etime] args
- * passed by reference.  Note that etime[] is an array of size 2.
- * Return 0 on success, -1 on error.
- */
+ 
 int
 zed_conf_read_state(struct zed_conf *zcp, uint64_t *eidp, int64_t etime[])
 {
@@ -664,11 +601,7 @@ zed_conf_read_state(struct zed_conf *zcp, uint64_t *eidp, int64_t etime[])
 	return (0);
 }
 
-/*
- * Write the [eid] & [etime] of the last processed event to the opened
- * [zcp] state_file.  Note that etime[] is an array of size 2.
- * Return 0 on success, -1 on error.
- */
+ 
 int
 zed_conf_write_state(struct zed_conf *zcp, uint64_t eid, int64_t etime[])
 {

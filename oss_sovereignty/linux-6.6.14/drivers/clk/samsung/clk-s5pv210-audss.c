@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Tomasz Figa <t.figa@samsung.com>
- *
- * Based on Exynos Audio Subsystem Clock Controller driver:
- *
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Author: Padmavathi Venna <padma.v@samsung.com>
- *
- * Driver for Audio Subsystem Clock Controller of S5PV210-compatible SoCs.
-*/
+
+ 
 
 #include <linux/io.h>
 #include <linux/clk.h>
@@ -57,9 +48,9 @@ static struct syscore_ops s5pv210_audss_clk_syscore_ops = {
 	.suspend	= s5pv210_audss_clk_suspend,
 	.resume		= s5pv210_audss_clk_resume,
 };
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
-/* register s5pv210_audss clocks */
+ 
 static int s5pv210_audss_clk_probe(struct platform_device *pdev)
 {
 	int i, ret = 0;
@@ -101,7 +92,7 @@ static int s5pv210_audss_clk_probe(struct platform_device *pdev)
 		return PTR_ERR(sclk_audio);
 	}
 
-	/* iiscdclk0 is an optional external I2S codec clock */
+	 
 	cdclk = devm_clk_get(&pdev->dev, "iiscdclk0");
 	pll_ref = devm_clk_get(&pdev->dev, "xxti");
 

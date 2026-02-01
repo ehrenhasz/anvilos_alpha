@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select Interface: Mbox via MSR Interface
- * Copyright (c) 2019, Intel Corporation.
- * All rights reserved.
- *
- * Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/cpuhotplug.h>
@@ -25,10 +19,7 @@
 #define MSR_OS_MAILBOX_DATA		0xB1
 #define MSR_OS_MAILBOX_BUSY_BIT		31
 
-/*
- * Based on experiments count is never more than 1, as the MSR overhead
- * is enough to finish the command. So here this is the worst case number.
- */
+ 
 #define OS_MAILBOX_RETRY_COUNT		3
 
 static int isst_if_send_mbox_cmd(u8 command, u8 sub_command, u32 parameter,
@@ -38,7 +29,7 @@ static int isst_if_send_mbox_cmd(u8 command, u8 sub_command, u32 parameter,
 	u64 data;
 	int ret;
 
-	/* Poll for rb bit == 0 */
+	 
 	retries = OS_MAILBOX_RETRY_COUNT;
 	do {
 		rdmsrl(MSR_OS_MAILBOX_INTERFACE, data);
@@ -53,17 +44,17 @@ static int isst_if_send_mbox_cmd(u8 command, u8 sub_command, u32 parameter,
 	if (ret)
 		return ret;
 
-	/* Write DATA register */
+	 
 	wrmsrl(MSR_OS_MAILBOX_DATA, command_data);
 
-	/* Write command register */
+	 
 	data = BIT_ULL(MSR_OS_MAILBOX_BUSY_BIT) |
 		      (parameter & GENMASK_ULL(13, 0)) << 16 |
 		      (sub_command << 8) |
 		      command;
 	wrmsrl(MSR_OS_MAILBOX_INTERFACE, data);
 
-	/* Poll for rb bit == 0 */
+	 
 	retries = OS_MAILBOX_RETRY_COUNT;
 	do {
 		rdmsrl(MSR_OS_MAILBOX_INTERFACE, data);
@@ -91,7 +82,7 @@ struct msrl_action {
 	struct isst_if_mbox_cmd *mbox_cmd;
 };
 
-/* revisit, smp_call_function_single should be enough for atomic mailbox! */
+ 
 static void msrl_update_func(void *info)
 {
 	struct msrl_action *act = info;
@@ -117,13 +108,7 @@ static long isst_if_mbox_proc_cmd(u8 *cmd_ptr, int *write_only, int resume)
 	    !capable(CAP_SYS_ADMIN))
 		return -EPERM;
 
-	/*
-	 * To complete mailbox command, we need to access two MSRs.
-	 * So we don't want race to complete a mailbox transcation.
-	 * Here smp_call ensures that msrl_update_func() has no race
-	 * and also with wait flag, wait for completion.
-	 * smp_call_function_single is using get_cpu() and put_cpu().
-	 */
+	 
 	ret = smp_call_function_single(action.mbox_cmd->logical_cpu,
 				       msrl_update_func, &action, 1);
 	if (ret)
@@ -177,7 +162,7 @@ static int __init isst_if_mbox_init(void)
 	if (!id)
 		return -ENODEV;
 
-	/* Check presence of mailbox MSRs */
+	 
 	ret = rdmsrl_safe(MSR_OS_MAILBOX_INTERFACE, &data);
 	if (ret)
 		return ret;

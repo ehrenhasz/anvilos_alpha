@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "aldebaran.h"
 #include "amdgpu_reset.h"
@@ -111,7 +90,7 @@ aldebaran_mode2_prepare_hwcontext(struct amdgpu_reset_control *reset_ctl,
 	struct amdgpu_device *adev = (struct amdgpu_device *)reset_ctl->handle;
 
 	dev_dbg(adev->dev, "Aldebaran prepare hw context\n");
-	/* Don't suspend on bare metal if we are not going to HW reset the ASIC */
+	 
 	if (!amdgpu_sriov_vf(adev))
 		r = aldebaran_mode2_suspend_ip(adev);
 
@@ -137,7 +116,7 @@ static void aldebaran_async_reset(struct work_struct *work)
 
 static int aldebaran_mode2_reset(struct amdgpu_device *adev)
 {
-	/* disable BM */
+	 
 	pci_clear_master(adev->pdev);
 	adev->asic_reset_res = amdgpu_dpm_mode2_reset(adev);
 	return adev->asic_reset_res;
@@ -159,7 +138,7 @@ aldebaran_mode2_perform_reset(struct amdgpu_reset_control *reset_ctl,
 
 	if (adev->ip_versions[MP1_HWIP][0] == IP_VERSION(13, 0, 2) &&
 	    reset_context->hive == NULL) {
-		/* Wrong context, return error */
+		 
 		return -EINVAL;
 	}
 
@@ -167,12 +146,9 @@ aldebaran_mode2_perform_reset(struct amdgpu_reset_control *reset_ctl,
 		mutex_lock(&tmp_adev->reset_cntl->reset_lock);
 		tmp_adev->reset_cntl->active_reset = AMD_RESET_METHOD_MODE2;
 	}
-	/*
-	 * Mode2 reset doesn't need any sync between nodes in XGMI hive, instead launch
-	 * them together so that they can be completed asynchronously on multiple nodes
-	 */
+	 
 	list_for_each_entry(tmp_adev, reset_device_list, reset_list) {
-		/* For XGMI run all resets in parallel to speed up the process */
+		 
 		if (tmp_adev->gmc.xgmi.num_physical_nodes > 1) {
 			if (!queue_work(system_unbound_wq,
 					&tmp_adev->reset_cntl->reset_work))
@@ -187,7 +163,7 @@ aldebaran_mode2_perform_reset(struct amdgpu_reset_control *reset_ctl,
 		}
 	}
 
-	/* For XGMI wait for all resets to complete before proceed */
+	 
 	if (!r) {
 		list_for_each_entry(tmp_adev, reset_device_list, reset_list) {
 			if (tmp_adev->gmc.xgmi.num_physical_nodes > 1) {
@@ -242,7 +218,7 @@ static int aldebaran_mode2_restore_ip(struct amdgpu_device *adev)
 		}
 	}
 
-	/* Reinit NBIF block */
+	 
 	cmn_block =
 		amdgpu_device_ip_get_ip_block(adev, AMD_IP_BLOCK_TYPE_COMMON);
 	if (unlikely(!cmn_block)) {
@@ -253,7 +229,7 @@ static int aldebaran_mode2_restore_ip(struct amdgpu_device *adev)
 	if (r)
 		return r;
 
-	/* Reinit GFXHUB */
+	 
 	adev->gfxhub.funcs->init(adev);
 	r = adev->gfxhub.funcs->gart_enable(adev);
 	if (r) {
@@ -261,17 +237,17 @@ static int aldebaran_mode2_restore_ip(struct amdgpu_device *adev)
 		return r;
 	}
 
-	/* Reload GFX firmware */
+	 
 	r = psp_load_fw_list(&adev->psp, ucode_list, ucode_count);
 	if (r) {
 		dev_err(adev->dev, "GFX ucode load failed after reset\n");
 		return r;
 	}
 
-	/* Resume RLC, FW needs RLC alive to complete reset process */
+	 
 	adev->gfx.rlc.funcs->resume(adev);
 
-	/* Wait for FW reset event complete */
+	 
 	r = amdgpu_dpm_wait_for_event(adev, SMU_EVENT_RESET_COMPLETE, 0);
 	if (r) {
 		dev_err(adev->dev,
@@ -341,7 +317,7 @@ aldebaran_mode2_restore_hwcontext(struct amdgpu_reset_control *reset_ctl,
 	if (reset_context->reset_req_dev->ip_versions[MP1_HWIP][0] ==
 		    IP_VERSION(13, 0, 2) &&
 	    reset_context->hive == NULL) {
-		/* Wrong context, return error */
+		 
 		return -EINVAL;
 	}
 
@@ -352,16 +328,13 @@ aldebaran_mode2_restore_hwcontext(struct amdgpu_reset_control *reset_ctl,
 		if (r)
 			goto end;
 
-		/*
-		 * Add this ASIC as tracked as reset was already
-		 * complete successfully.
-		 */
+		 
 		amdgpu_register_gpu_instance(tmp_adev);
 
-		/* Resume RAS */
+		 
 		amdgpu_ras_resume(tmp_adev);
 
-		/* Update PSP FW topology after reset */
+		 
 		if (reset_context->hive &&
 		    tmp_adev->gmc.xgmi.num_physical_nodes > 1)
 			r = amdgpu_xgmi_update_topology(reset_context->hive,
@@ -410,7 +383,7 @@ int aldebaran_reset_init(struct amdgpu_device *adev)
 
 	INIT_LIST_HEAD(&reset_ctl->reset_handlers);
 	INIT_WORK(&reset_ctl->reset_work, reset_ctl->async_reset);
-	/* Only mode2 is handled through reset control now */
+	 
 	amdgpu_reset_add_handler(reset_ctl, &aldebaran_mode2_handler);
 
 	adev->reset_cntl = reset_ctl;

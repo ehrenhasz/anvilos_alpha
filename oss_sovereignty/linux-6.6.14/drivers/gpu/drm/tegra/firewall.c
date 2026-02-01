@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2010-2020 NVIDIA Corporation */
+
+ 
 
 #include "drm.h"
 #include "submit.h"
@@ -209,7 +209,7 @@ int tegra_drm_fw_validate(struct tegra_drm_client *client, u32 *data, u32 start,
 					 offset, mask, fw.class, fw.pos-1);
 			break;
 		case HOST1X_OPCODE_IMM:
-			/* IMM cannot reasonably be used to write a pointer */
+			 
 			offset = (word >> 16) & 0xfff;
 			err = fw_check_regs_imm(&fw, offset);
 			if (err)

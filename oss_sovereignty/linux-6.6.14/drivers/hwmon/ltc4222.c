@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Linear Technology LTC4222 Dual Hot Swap controller
- *
- * Copyright (c) 2014 Guenter Roeck
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -16,7 +12,7 @@
 #include <linux/jiffies.h>
 #include <linux/regmap.h>
 
-/* chip registers */
+ 
 
 #define LTC4222_CONTROL1	0xd0
 #define LTC4222_ALERT1		0xd1
@@ -34,16 +30,14 @@
 #define LTC4222_SENSE2		0xe2
 #define LTC4222_ADC_CONTROL	0xe4
 
-/*
- * Fault register bits
- */
+ 
 #define FAULT_OV	BIT(0)
 #define FAULT_UV	BIT(1)
 #define FAULT_OC	BIT(2)
 #define FAULT_POWER_BAD	BIT(3)
 #define FAULT_FET_BAD	BIT(5)
 
-/* Return the voltage from the given register in mV or mA */
+ 
 static int ltc4222_get_value(struct device *dev, u8 reg)
 {
 	struct regmap *regmap = dev_get_drvdata(dev);
@@ -60,23 +54,17 @@ static int ltc4222_get_value(struct device *dev, u8 reg)
 	switch (reg) {
 	case LTC4222_ADIN1:
 	case LTC4222_ADIN2:
-		/* 1.25 mV resolution. Convert to mV. */
+		 
 		val = DIV_ROUND_CLOSEST(val * 5, 4);
 		break;
 	case LTC4222_SOURCE1:
 	case LTC4222_SOURCE2:
-		/* 31.25 mV resolution. Convert to mV. */
+		 
 		val = DIV_ROUND_CLOSEST(val * 125, 4);
 		break;
 	case LTC4222_SENSE1:
 	case LTC4222_SENSE2:
-		/*
-		 * 62.5 uV resolution. Convert to current as measured with
-		 * an 1 mOhm sense resistor, in mA. If a different sense
-		 * resistor is installed, calculate the actual current by
-		 * dividing the reported current by the sense resistor value
-		 * in mOhm.
-		 */
+		 
 		val = DIV_ROUND_CLOSEST(val * 125, 2);
 		break;
 	default:
@@ -109,23 +97,19 @@ static ssize_t ltc4222_bool_show(struct device *dev,
 	if (ret < 0)
 		return ret;
 	fault &= attr->index;
-	if (fault)		/* Clear reported faults in chip register */
+	if (fault)		 
 		regmap_update_bits(regmap, attr->nr, attr->index, 0);
 
 	return sysfs_emit(buf, "%d\n", !!fault);
 }
 
-/* Voltages */
+ 
 static SENSOR_DEVICE_ATTR_RO(in1_input, ltc4222_value, LTC4222_SOURCE1);
 static SENSOR_DEVICE_ATTR_RO(in2_input, ltc4222_value, LTC4222_ADIN1);
 static SENSOR_DEVICE_ATTR_RO(in3_input, ltc4222_value, LTC4222_SOURCE2);
 static SENSOR_DEVICE_ATTR_RO(in4_input, ltc4222_value, LTC4222_ADIN2);
 
-/*
- * Voltage alarms
- * UV/OV faults are associated with the input voltage, and power bad and fet
- * faults are associated with the output voltage.
- */
+ 
 static SENSOR_DEVICE_ATTR_2_RO(in1_min_alarm, ltc4222_bool, LTC4222_FAULT1,
 			       FAULT_UV);
 static SENSOR_DEVICE_ATTR_2_RO(in1_max_alarm, ltc4222_bool, LTC4222_FAULT1,
@@ -140,11 +124,11 @@ static SENSOR_DEVICE_ATTR_2_RO(in3_max_alarm, ltc4222_bool, LTC4222_FAULT2,
 static SENSOR_DEVICE_ATTR_2_RO(in4_alarm, ltc4222_bool, LTC4222_FAULT2,
 			       FAULT_POWER_BAD | FAULT_FET_BAD);
 
-/* Current (via sense resistor) */
+ 
 static SENSOR_DEVICE_ATTR_RO(curr1_input, ltc4222_value, LTC4222_SENSE1);
 static SENSOR_DEVICE_ATTR_RO(curr2_input, ltc4222_value, LTC4222_SENSE2);
 
-/* Overcurrent alarm */
+ 
 static SENSOR_DEVICE_ATTR_2_RO(curr1_max_alarm, ltc4222_bool, LTC4222_FAULT1,
 			       FAULT_OC);
 static SENSOR_DEVICE_ATTR_2_RO(curr2_max_alarm, ltc4222_bool, LTC4222_FAULT2,
@@ -189,7 +173,7 @@ static int ltc4222_probe(struct i2c_client *client)
 		return PTR_ERR(regmap);
 	}
 
-	/* Clear faults */
+	 
 	regmap_write(regmap, LTC4222_FAULT1, 0x00);
 	regmap_write(regmap, LTC4222_FAULT2, 0x00);
 

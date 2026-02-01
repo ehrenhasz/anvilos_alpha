@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015-2021, Linaro Limited
- * Copyright (c) 2016, EPAM Systems
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -33,29 +30,12 @@
 #define CREATE_TRACE_POINTS
 #include "optee_trace.h"
 
-/*
- * This file implement the SMC ABI used when communicating with secure world
- * OP-TEE OS via raw SMCs.
- * This file is divided into the following sections:
- * 1. Convert between struct tee_param and struct optee_msg_param
- * 2. Low level support functions to register shared memory in secure world
- * 3. Dynamic shared memory pool based on alloc_pages()
- * 4. Do a normal scheduled call into secure world
- * 5. Asynchronous notification
- * 6. Driver initialization.
- */
+ 
 
-/*
- * A typical OP-TEE private shm allocation is 224 bytes (argument struct
- * with 6 parameters, needed for open session). So with an alignment of 512
- * we'll waste a bit more than 50%. However, it's only expected that we'll
- * have a handful of these structs allocated at a time. Most memory will
- * be allocated aligned to the page size, So all in all this should scale
- * up and down quite well.
- */
-#define OPTEE_MIN_STATIC_POOL_ALIGN    9 /* 512 bytes aligned */
+ 
+#define OPTEE_MIN_STATIC_POOL_ALIGN    9  
 
-/* SMC ABI considers at most a single TEE firmware */
+ 
 static unsigned int pcpu_irq_num;
 
 static int optee_cpuhp_enable_pcpu_irq(unsigned int cpu)
@@ -72,12 +52,7 @@ static int optee_cpuhp_disable_pcpu_irq(unsigned int cpu)
 	return 0;
 }
 
-/*
- * 1. Convert between struct tee_param and struct optee_msg_param
- *
- * optee_from_msg_param() and optee_to_msg_param() are the main
- * functions.
- */
+ 
 
 static int from_msg_param_tmp_mem(struct tee_param *p, u32 attr,
 				  const struct optee_msg_param *mp)
@@ -125,15 +100,7 @@ static void from_msg_param_reg_mem(struct tee_param *p, u32 attr,
 	}
 }
 
-/**
- * optee_from_msg_param() - convert from OPTEE_MSG parameters to
- *			    struct tee_param
- * @optee:	main service struct
- * @params:	subsystem internal parameter representation
- * @num_params:	number of elements in the parameter arrays
- * @msg_params:	OPTEE_MSG parameters
- * Returns 0 on success or <0 on failure
- */
+ 
 static int optee_from_msg_param(struct optee *optee, struct tee_param *params,
 				size_t num_params,
 				const struct optee_msg_param *msg_params)
@@ -216,14 +183,7 @@ static int to_msg_param_reg_mem(struct optee_msg_param *mp,
 	return 0;
 }
 
-/**
- * optee_to_msg_param() - convert from struct tee_params to OPTEE_MSG parameters
- * @optee:	main service struct
- * @msg_params:	OPTEE_MSG parameters
- * @num_params:	number of elements in the parameter arrays
- * @params:	subsystem itnernal parameter representation
- * Returns 0 on success or <0 on failure
- */
+ 
 static int optee_to_msg_param(struct optee *optee,
 			      struct optee_msg_param *msg_params,
 			      size_t num_params, const struct tee_param *params)
@@ -262,27 +222,14 @@ static int optee_to_msg_param(struct optee *optee,
 	return 0;
 }
 
-/*
- * 2. Low level support functions to register shared memory in secure world
- *
- * Functions to enable/disable shared memory caching in secure world, that
- * is, lazy freeing of previously allocated shared memory. Freeing is
- * performed when a request has been compled.
- *
- * Functions to register and unregister shared memory both for normal
- * clients and for tee-supplicant.
- */
+ 
 
-/**
- * optee_enable_shm_cache() - Enables caching of some shared memory allocation
- *			      in OP-TEE
- * @optee:	main service struct
- */
+ 
 static void optee_enable_shm_cache(struct optee *optee)
 {
 	struct optee_call_waiter w;
 
-	/* We need to retry until secure world isn't busy. */
+	 
 	optee_cq_wait_init(&optee->call_queue, &w);
 	while (true) {
 		struct arm_smccc_res res;
@@ -296,18 +243,12 @@ static void optee_enable_shm_cache(struct optee *optee)
 	optee_cq_wait_final(&optee->call_queue, &w);
 }
 
-/**
- * __optee_disable_shm_cache() - Disables caching of some shared memory
- *				 allocation in OP-TEE
- * @optee:	main service struct
- * @is_mapped:	true if the cached shared memory addresses were mapped by this
- *		kernel, are safe to dereference, and should be freed
- */
+ 
 static void __optee_disable_shm_cache(struct optee *optee, bool is_mapped)
 {
 	struct optee_call_waiter w;
 
-	/* We need to retry until secure world isn't busy. */
+	 
 	optee_cq_wait_init(&optee->call_queue, &w);
 	while (true) {
 		union {
@@ -318,14 +259,11 @@ static void __optee_disable_shm_cache(struct optee *optee, bool is_mapped)
 		optee->smc.invoke_fn(OPTEE_SMC_DISABLE_SHM_CACHE,
 				     0, 0, 0, 0, 0, 0, 0, &res.smccc);
 		if (res.result.status == OPTEE_SMC_RETURN_ENOTAVAIL)
-			break; /* All shm's freed */
+			break;  
 		if (res.result.status == OPTEE_SMC_RETURN_OK) {
 			struct tee_shm *shm;
 
-			/*
-			 * Shared memory references that were not mapped by
-			 * this kernel must be ignored to prevent a crash.
-			 */
+			 
 			if (!is_mapped)
 				continue;
 
@@ -339,22 +277,13 @@ static void __optee_disable_shm_cache(struct optee *optee, bool is_mapped)
 	optee_cq_wait_final(&optee->call_queue, &w);
 }
 
-/**
- * optee_disable_shm_cache() - Disables caching of mapped shared memory
- *			       allocations in OP-TEE
- * @optee:	main service struct
- */
+ 
 static void optee_disable_shm_cache(struct optee *optee)
 {
 	return __optee_disable_shm_cache(optee, true);
 }
 
-/**
- * optee_disable_unmapped_shm_cache() - Disables caching of shared memory
- *					allocations in OP-TEE which are not
- *					currently mapped
- * @optee:	main service struct
- */
+ 
 static void optee_disable_unmapped_shm_cache(struct optee *optee)
 {
 	return __optee_disable_shm_cache(optee, false);
@@ -363,10 +292,7 @@ static void optee_disable_unmapped_shm_cache(struct optee *optee)
 #define PAGELIST_ENTRIES_PER_PAGE				\
 	((OPTEE_MSG_NONCONTIG_PAGE_SIZE / sizeof(u64)) - 1)
 
-/*
- * The final entry in each pagelist page is a pointer to the next
- * pagelist page.
- */
+ 
 static size_t get_pages_list_size(size_t num_entries)
 {
 	int pages = DIV_ROUND_UP(num_entries, PAGELIST_ENTRIES_PER_PAGE);
@@ -384,48 +310,23 @@ static void optee_free_pages_list(void *list, size_t num_entries)
 	free_pages_exact(list, get_pages_list_size(num_entries));
 }
 
-/**
- * optee_fill_pages_list() - write list of user pages to given shared
- * buffer.
- *
- * @dst: page-aligned buffer where list of pages will be stored
- * @pages: array of pages that represents shared buffer
- * @num_pages: number of entries in @pages
- * @page_offset: offset of user buffer from page start
- *
- * @dst should be big enough to hold list of user page addresses and
- *	links to the next pages of buffer
- */
+ 
 static void optee_fill_pages_list(u64 *dst, struct page **pages, int num_pages,
 				  size_t page_offset)
 {
 	int n = 0;
 	phys_addr_t optee_page;
-	/*
-	 * Refer to OPTEE_MSG_ATTR_NONCONTIG description in optee_msg.h
-	 * for details.
-	 */
+	 
 	struct {
 		u64 pages_list[PAGELIST_ENTRIES_PER_PAGE];
 		u64 next_page_data;
 	} *pages_data;
 
-	/*
-	 * Currently OP-TEE uses 4k page size and it does not looks
-	 * like this will change in the future.  On other hand, there are
-	 * no know ARM architectures with page size < 4k.
-	 * Thus the next built assert looks redundant. But the following
-	 * code heavily relies on this assumption, so it is better be
-	 * safe than sorry.
-	 */
+	 
 	BUILD_BUG_ON(PAGE_SIZE < OPTEE_MSG_NONCONTIG_PAGE_SIZE);
 
 	pages_data = (void *)dst;
-	/*
-	 * If linux page is bigger than 4k, and user buffer offset is
-	 * larger than 4k/8k/12k/etc this will skip first 4k pages,
-	 * because they bear no value data for OP-TEE.
-	 */
+	 
 	optee_page = page_to_phys(*pages) +
 		round_down(page_offset, OPTEE_MSG_NONCONTIG_PAGE_SIZE);
 
@@ -471,13 +372,7 @@ static int optee_shm_register(struct tee_context *ctx, struct tee_shm *shm,
 	if (!pages_list)
 		return -ENOMEM;
 
-	/*
-	 * We're about to register shared memory we can't register shared
-	 * memory for this request or there's a catch-22.
-	 *
-	 * So in this we'll have to do the good old temporary private
-	 * allocation instead of using optee_get_msg_arg().
-	 */
+	 
 	sz = optee_msg_arg_size(optee->rpc_param_count);
 	shm_arg = tee_shm_alloc_priv_buf(ctx, sz);
 	if (IS_ERR(shm_arg)) {
@@ -500,10 +395,7 @@ static int optee_shm_register(struct tee_context *ctx, struct tee_shm *shm,
 				OPTEE_MSG_ATTR_NONCONTIG;
 	msg_arg->params->u.tmem.shm_ref = (unsigned long)shm;
 	msg_arg->params->u.tmem.size = tee_shm_get_size(shm);
-	/*
-	 * In the least bits of msg_arg->params->u.tmem.buf_ptr we
-	 * store buffer offset from 4k page, as described in OP-TEE ABI.
-	 */
+	 
 	msg_arg->params->u.tmem.buf_ptr = virt_to_phys(pages_list) |
 	  (tee_shm_get_page_offset(shm) & (OPTEE_MSG_NONCONTIG_PAGE_SIZE - 1));
 
@@ -525,15 +417,7 @@ static int optee_shm_unregister(struct tee_context *ctx, struct tee_shm *shm)
 	int rc = 0;
 	size_t sz;
 
-	/*
-	 * We're about to unregister shared memory and we may not be able
-	 * register shared memory for this request in case we're called
-	 * from optee_shm_arg_cache_uninit().
-	 *
-	 * So in order to keep things simple in this function just as in
-	 * optee_shm_register() we'll use temporary private allocation
-	 * instead of using optee_get_msg_arg().
-	 */
+	 
 	sz = optee_msg_arg_size(optee->rpc_param_count);
 	shm_arg = tee_shm_alloc_priv_buf(ctx, sz);
 	if (IS_ERR(shm_arg))
@@ -562,10 +446,7 @@ static int optee_shm_register_supp(struct tee_context *ctx, struct tee_shm *shm,
 				   struct page **pages, size_t num_pages,
 				   unsigned long start)
 {
-	/*
-	 * We don't want to register supplicant memory in OP-TEE.
-	 * Instead information about it will be passed in RPC code.
-	 */
+	 
 	return optee_check_mem_type(start, num_pages);
 }
 
@@ -575,22 +456,12 @@ static int optee_shm_unregister_supp(struct tee_context *ctx,
 	return 0;
 }
 
-/*
- * 3. Dynamic shared memory pool based on alloc_pages()
- *
- * Implements an OP-TEE specific shared memory pool which is used
- * when dynamic shared memory is supported by secure world.
- *
- * The main function is optee_shm_pool_alloc_pages().
- */
+ 
 
 static int pool_op_alloc(struct tee_shm_pool *pool,
 			 struct tee_shm *shm, size_t size, size_t align)
 {
-	/*
-	 * Shared memory private to the OP-TEE driver doesn't need
-	 * to be registered with OP-TEE.
-	 */
+	 
 	if (shm->flags & TEE_SHM_PRIV)
 		return optee_pool_op_alloc_helper(pool, shm, size, align, NULL);
 
@@ -618,12 +489,7 @@ static const struct tee_shm_pool_ops pool_ops = {
 	.destroy_pool = pool_op_destroy_pool,
 };
 
-/**
- * optee_shm_pool_alloc_pages() - create page-based allocator pool
- *
- * This pool is used when OP-TEE supports dymanic SHM. In this case
- * command buffers and such are allocated from kernel's own memory.
- */
+ 
 static struct tee_shm_pool *optee_shm_pool_alloc_pages(void)
 {
 	struct tee_shm_pool *pool = kzalloc(sizeof(*pool), GFP_KERNEL);
@@ -636,15 +502,7 @@ static struct tee_shm_pool *optee_shm_pool_alloc_pages(void)
 	return pool;
 }
 
-/*
- * 4. Do a normal scheduled call into secure world
- *
- * The function optee_smc_do_call_with_arg() performs a normal scheduled
- * call into secure world. During this call may normal world request help
- * from normal world using RPCs, Remote Procedure Calls. This includes
- * delivery of non-secure interrupts to for instance allow rescheduling of
- * the current task.
- */
+ 
 
 static void handle_rpc_func_cmd_shm_free(struct tee_context *ctx,
 					 struct optee_msg_arg *arg)
@@ -745,10 +603,7 @@ static void handle_rpc_func_cmd_shm_alloc(struct tee_context *ctx,
 
 		arg->params[0].attr = OPTEE_MSG_ATTR_TYPE_TMEM_OUTPUT |
 				      OPTEE_MSG_ATTR_NONCONTIG;
-		/*
-		 * In the least bits of u.tmem.buf_ptr we store buffer offset
-		 * from 4k page, as described in OP-TEE ABI.
-		 */
+		 
 		arg->params[0].u.tmem.buf_ptr = virt_to_phys(pages_list) |
 			(tee_shm_get_page_offset(shm) &
 			 (OPTEE_MSG_NONCONTIG_PAGE_SIZE - 1));
@@ -803,14 +658,7 @@ static void handle_rpc_func_cmd(struct tee_context *ctx, struct optee *optee,
 	}
 }
 
-/**
- * optee_handle_rpc() - handle RPC from secure world
- * @ctx:	context doing the RPC
- * @param:	value of registers for the RPC
- * @call_ctx:	call context. Preserved during one OP-TEE invocation
- *
- * Result of RPC is written back into @param.
- */
+ 
 static void optee_handle_rpc(struct tee_context *ctx,
 			     struct optee_msg_arg *rpc_arg,
 			     struct optee_rpc_param *param,
@@ -842,12 +690,7 @@ static void optee_handle_rpc(struct tee_context *ctx,
 		tee_shm_free(shm);
 		break;
 	case OPTEE_SMC_RPC_FUNC_FOREIGN_INTR:
-		/*
-		 * A foreign interrupt was raised while secure world was
-		 * executing, since they are handled in Linux a dummy RPC is
-		 * performed to let Linux take the interrupt through the normal
-		 * vector.
-		 */
+		 
 		break;
 	case OPTEE_SMC_RPC_FUNC_CMD:
 		if (rpc_arg) {
@@ -873,17 +716,7 @@ static void optee_handle_rpc(struct tee_context *ctx,
 	param->a0 = OPTEE_SMC_CALL_RETURN_FROM_RPC;
 }
 
-/**
- * optee_smc_do_call_with_arg() - Do an SMC to OP-TEE in secure world
- * @ctx:	calling context
- * @shm:	shared memory holding the message to pass to secure world
- * @offs:	offset of the message in @shm
- *
- * Does and SMC to OP-TEE in secure world and handles eventual resulting
- * Remote Procedure Calls (RPC) from OP-TEE.
- *
- * Returns return code from secure world, 0 is OK
- */
+ 
 static int optee_smc_do_call_with_arg(struct tee_context *ctx,
 				      struct tee_shm *shm, u_int offs)
 {
@@ -925,7 +758,7 @@ static int optee_smc_do_call_with_arg(struct tee_context *ctx,
 			param.a0 = OPTEE_SMC_CALL_WITH_ARG;
 		reg_pair_from_64(&param.a1, &param.a2, parg);
 	}
-	/* Initialize waiter */
+	 
 	optee_cq_wait_init(&optee->call_queue, &w);
 	while (true) {
 		struct arm_smccc_res res;
@@ -937,10 +770,7 @@ static int optee_smc_do_call_with_arg(struct tee_context *ctx,
 		trace_optee_invoke_fn_end(&param, &res);
 
 		if (res.a0 == OPTEE_SMC_RETURN_ETHREAD_LIMIT) {
-			/*
-			 * Out of threads in secure world, wait for a thread
-			 * become available.
-			 */
+			 
 			optee_cq_wait_for_completion(&optee->call_queue, &w);
 		} else if (OPTEE_SMC_RETURN_IS_RPC(res.a0)) {
 			cond_resched();
@@ -956,10 +786,7 @@ static int optee_smc_do_call_with_arg(struct tee_context *ctx,
 	}
 
 	optee_rpc_finalize_call(&call_ctx);
-	/*
-	 * We're done with our thread in secure world, if there's any
-	 * thread waiters wake up one.
-	 */
+	 
 	optee_cq_wait_final(&optee->call_queue, &w);
 
 	return rc;
@@ -993,9 +820,7 @@ static int optee_smc_stop_async_notif(struct tee_context *ctx)
 	return simple_call_with_arg(ctx, OPTEE_MSG_CMD_STOP_ASYNC_NOTIF);
 }
 
-/*
- * 5. Asynchronous notification
- */
+ 
 
 static u32 get_async_notif_value(optee_invoke_fn *invoke_fn, bool *value_valid,
 				 bool *value_pending)
@@ -1170,14 +995,7 @@ static void optee_smc_notif_uninit_irq(struct optee *optee)
 	}
 }
 
-/*
- * 6. Driver initialization
- *
- * During driver initialization is secure world probed to find out which
- * features it supports so the driver can be initialized with a matching
- * configuration. This involves for instance support for dynamic shared
- * memory instead of a static memory carvout.
- */
+ 
 
 static void optee_get_version(struct tee_device *teedev,
 			      struct tee_ioctl_version_data *vers)
@@ -1330,11 +1148,7 @@ static bool optee_msg_exchange_capabilities(optee_invoke_fn *invoke_fn,
 	} res;
 	u32 a1 = 0;
 
-	/*
-	 * TODO This isn't enough to tell if it's UP system (from kernel
-	 * point of view) or not, is_smp() returns the information
-	 * needed, but can't be called directly from here.
-	 */
+	 
 	if (!IS_ENABLED(CONFIG_SMP) || nr_cpu_ids == 1)
 		a1 |= OPTEE_SMC_NSEC_CAP_UNIPROCESSOR;
 
@@ -1405,7 +1219,7 @@ optee_config_shm_memremap(optee_invoke_fn *invoke_fn, void **memremaped_shm)
 	return rc;
 }
 
-/* Simple wrapper functions to be able to use a function pointer */
+ 
 static void optee_smccc_smc(unsigned long a0, unsigned long a1,
 			    unsigned long a2, unsigned long a3,
 			    unsigned long a4, unsigned long a5,
@@ -1444,21 +1258,12 @@ static optee_invoke_fn *get_invoke_func(struct device *dev)
 	return ERR_PTR(-EINVAL);
 }
 
-/* optee_remove - Device Removal Routine
- * @pdev: platform device information struct
- *
- * optee_remove is called by platform subsystem to alert the driver
- * that it should release the device
- */
+ 
 static int optee_smc_remove(struct platform_device *pdev)
 {
 	struct optee *optee = platform_get_drvdata(pdev);
 
-	/*
-	 * Ask OP-TEE to free all cached shared memory objects to decrease
-	 * reference counters and also avoid wild pointers in secure world
-	 * into the old shared memory range.
-	 */
+	 
 	if (!optee->rpc_param_count)
 		optee_disable_shm_cache(optee);
 
@@ -1474,13 +1279,7 @@ static int optee_smc_remove(struct platform_device *pdev)
 	return 0;
 }
 
-/* optee_shutdown - Device Removal Routine
- * @pdev: platform device information struct
- *
- * platform_shutdown is called by the platform subsystem to alert
- * the driver that a shutdown, reboot, or kexec is happening and
- * device must be disabled.
- */
+ 
 static void optee_shutdown(struct platform_device *pdev)
 {
 	struct optee *optee = platform_get_drvdata(pdev);
@@ -1497,11 +1296,7 @@ static optee_invoke_fn *cpuhp_invoke_fn;
 
 static int optee_cpuhp_probe(unsigned int cpu)
 {
-	/*
-	 * Invoking a call on a CPU will cause OP-TEE to perform the required
-	 * setup for that CPU. Just invoke the call to get the UID since that
-	 * has no side effects.
-	 */
+	 
 	if (optee_msg_api_uid_is_optee_api(cpuhp_invoke_fn))
 		return 0;
 	else
@@ -1526,21 +1321,14 @@ static int optee_load_fw(struct platform_device *pdev,
 
 	rc = request_firmware(&fw, OPTEE_FW_IMAGE, &pdev->dev);
 	if (rc) {
-		/*
-		 * The firmware in the rootfs will not be accessible until we
-		 * are in the SYSTEM_RUNNING state, so return EPROBE_DEFER until
-		 * that point.
-		 */
+		 
 		if (system_state < SYSTEM_RUNNING)
 			return -EPROBE_DEFER;
 		goto fw_err;
 	}
 
 	data_size = fw->size;
-	/*
-	 * This uses the GFP_DMA flag to ensure we are allocated memory in the
-	 * 32-bit space since TF-A cannot map memory beyond the 32-bit boundary.
-	 */
+	 
 	data_buf = kmemdup(fw->data, fw->size, GFP_KERNEL | GFP_DMA);
 	if (!data_buf) {
 		rc = -ENOMEM;
@@ -1559,11 +1347,7 @@ fw_err:
 	data_size_low = 0;
 
 fw_load:
-	/*
-	 * Always invoke the SMC, even if loading the image fails, to indicate
-	 * to EL3 that we have passed the point where it should allow invoking
-	 * this SMC.
-	 */
+	 
 	pr_warn("OP-TEE image loaded from kernel, this can be insecure");
 	invoke_fn(OPTEE_SMC_CALL_LOAD_IMAGE, data_size_high, data_size_low,
 		  data_pa_high, data_pa_low, 0, 0, 0, &res);
@@ -1574,13 +1358,7 @@ fw_load:
 	kfree(data_buf);
 
 	if (!rc) {
-		/*
-		 * We need to initialize OP-TEE on all other running cores as
-		 * well. Any cores that aren't running yet will get initialized
-		 * when they are brought up by the power management functions in
-		 * TF-A which are registered by the OP-TEE SPD. Due to that we
-		 * can un-register the callback right after registering it.
-		 */
+		 
 		cpuhp_invoke_fn = invoke_fn;
 		hp_state = cpuhp_setup_state(CPUHP_AP_ONLINE_DYN, "optee:probe",
 					     optee_cpuhp_probe, NULL);
@@ -1643,23 +1421,9 @@ static int optee_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * Try to use dynamic shared memory if possible
-	 */
+	 
 	if (sec_caps & OPTEE_SMC_SEC_CAP_DYNAMIC_SHM) {
-		/*
-		 * If we have OPTEE_SMC_SEC_CAP_RPC_ARG we can ask
-		 * optee_get_msg_arg() to pre-register (by having
-		 * OPTEE_SHM_ARG_ALLOC_PRIV cleared) the page used to pass
-		 * an argument struct.
-		 *
-		 * With the page is pre-registered we can use a non-zero
-		 * offset for argument struct, this is indicated with
-		 * OPTEE_SHM_ARG_SHARED.
-		 *
-		 * This means that optee_smc_do_call_with_arg() will use
-		 * OPTEE_SMC_CALL_WITH_REGD_ARG for pre-registered pages.
-		 */
+		 
 		if (sec_caps & OPTEE_SMC_SEC_CAP_RPC_ARG)
 			arg_cache_flags = OPTEE_SHM_ARG_SHARED;
 		else
@@ -1668,22 +1432,9 @@ static int optee_probe(struct platform_device *pdev)
 		pool = optee_shm_pool_alloc_pages();
 	}
 
-	/*
-	 * If dynamic shared memory is not available or failed - try static one
-	 */
+	 
 	if (IS_ERR(pool) && (sec_caps & OPTEE_SMC_SEC_CAP_HAVE_RESERVED_SHM)) {
-		/*
-		 * The static memory pool can use non-zero page offsets so
-		 * let optee_get_msg_arg() know that with OPTEE_SHM_ARG_SHARED.
-		 *
-		 * optee_get_msg_arg() should not pre-register the
-		 * allocated page used to pass an argument struct, this is
-		 * indicated with OPTEE_SHM_ARG_ALLOC_PRIV.
-		 *
-		 * This means that optee_smc_do_call_with_arg() will use
-		 * OPTEE_SMC_CALL_WITH_ARG if rpc_param_count is 0, else
-		 * OPTEE_SMC_CALL_WITH_RPC_ARG.
-		 */
+		 
 		arg_cache_flags = OPTEE_SHM_ARG_SHARED |
 				  OPTEE_SHM_ARG_ALLOC_PRIV;
 		pool = optee_config_shm_memremap(invoke_fn, &memremaped_shm);
@@ -1762,19 +1513,10 @@ static int optee_probe(struct platform_device *pdev)
 		pr_info("Asynchronous notifications enabled\n");
 	}
 
-	/*
-	 * Ensure that there are no pre-existing shm objects before enabling
-	 * the shm cache so that there's no chance of receiving an invalid
-	 * address during shutdown. This could occur, for example, if we're
-	 * kexec booting from an older kernel that did not properly cleanup the
-	 * shm cache.
-	 */
+	 
 	optee_disable_unmapped_shm_cache(optee);
 
-	/*
-	 * Only enable the shm cache in case we're not able to pass the RPC
-	 * arg struct right after the normal arg struct.
-	 */
+	 
 	if (!optee->rpc_param_count)
 		optee_enable_shm_cache(optee);
 

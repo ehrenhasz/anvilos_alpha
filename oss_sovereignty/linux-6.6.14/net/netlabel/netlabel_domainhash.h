@@ -1,18 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * NetLabel Domain Hash Table
- *
- * This file manages the domain hash table that NetLabel uses to determine
- * which network labeling protocol to use for a given domain.  The NetLabel
- * system manages static and dynamic label mappings for network protocols such
- * as CIPSO and RIPSO.
- *
- * Author: Paul Moore <paul@paul-moore.com>
- */
+ 
+ 
 
-/*
- * (c) Copyright Hewlett-Packard Development Company, L.P., 2006, 2008
- */
+ 
 
 #ifndef _NETLABEL_DOMAINHASH_H
 #define _NETLABEL_DOMAINHASH_H
@@ -23,11 +12,11 @@
 
 #include "netlabel_addrlist.h"
 
-/* Domain hash table size */
-/* XXX - currently this number is an uneducated guess */
+ 
+ 
 #define NETLBL_DOMHSH_BITSIZE       7
 
-/* Domain mapping definition structures */
+ 
 struct netlbl_domaddr_map {
 	struct list_head list4;
 	struct list_head list6;
@@ -65,10 +54,10 @@ struct netlbl_dom_map {
 	struct rcu_head rcu;
 };
 
-/* init function */
+ 
 int netlbl_domhsh_init(u32 size);
 
-/* Manipulate the domain hash table */
+ 
 int netlbl_domhsh_add(struct netlbl_dom_map *entry,
 		      struct netlbl_audit *audit_info);
 int netlbl_domhsh_add_default(struct netlbl_dom_map *entry,
@@ -96,7 +85,7 @@ int netlbl_domhsh_remove_af6(const char *domain,
 			     const struct in6_addr *addr,
 			     const struct in6_addr *mask,
 			     struct netlbl_audit *audit_info);
-#endif /* IPv6 */
+#endif  
 
 int netlbl_domhsh_walk(u32 *skip_bkt,
 		     u32 *skip_chain,

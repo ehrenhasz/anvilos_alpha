@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_HDCP_REGS_H__
 #define __INTEL_HDCP_REGS_H__
 
 #include "intel_display_reg_defs.h"
 
-/* HDCP Key Registers */
+ 
 #define HDCP_KEY_CONF			_MMIO(0x66c00)
 #define  HDCP_AKSV_SEND_TRIGGER		REG_BIT(31)
 #define  HDCP_CLEAR_KEYS_TRIGGER	REG_BIT(30)
@@ -22,7 +20,7 @@
 #define HDCP_AKSV_LO			_MMIO(0x66c10)
 #define HDCP_AKSV_HI			_MMIO(0x66c14)
 
-/* HDCP Repeater Registers */
+ 
 #define HDCP_REP_CTL			_MMIO(0x66d00)
 #define  HDCP_TRANSA_REP_PRESENT	REG_BIT(31)
 #define  HDCP_TRANSB_REP_PRESENT	REG_BIT(30)
@@ -43,7 +41,7 @@
 #define  HDCP_DDIC_SHA1_M0		(3 << 20)
 #define  HDCP_DDID_SHA1_M0		(4 << 20)
 #define  HDCP_DDIF_SHA1_M0		(5 << 20)
-#define  HDCP_DDIE_SHA1_M0		(6 << 20) /* Bspec says 5? */
+#define  HDCP_DDIE_SHA1_M0		(6 << 20)  
 #define  HDCP_SHA1_BUSY			REG_BIT(16)
 #define  HDCP_SHA1_READY		REG_BIT(17)
 #define  HDCP_SHA1_COMPLETE		REG_BIT(18)
@@ -62,7 +60,7 @@
 #define HDCP_SHA_V_PRIME(h)		_MMIO((0x66d04 + (h) * 4))
 #define HDCP_SHA_TEXT			_MMIO(0x66d18)
 
-/* HDCP Auth Registers */
+ 
 #define _PORTA_HDCP_AUTHENC		0x66800
 #define _PORTB_HDCP_AUTHENC		0x66500
 #define _PORTC_HDCP_AUTHENC		0x66600
@@ -175,7 +173,7 @@
 #define  HDCP_STATUS_CIPHER		REG_BIT(16)
 #define  HDCP_STATUS_FRAME_CNT(x)	(((x) >> 8) & 0xff)
 
-/* HDCP2.2 Registers */
+ 
 #define _PORTA_HDCP2_BASE		0x66800
 #define _PORTB_HDCP2_BASE		0x66500
 #define _PORTC_HDCP2_BASE		0x66600
@@ -267,4 +265,4 @@
 					 TRANS_HDCP2_AUTH_STREAM(trans) : \
 					 PORT_HDCP2_AUTH_STREAM(port))
 
-#endif /* __INTEL_HDCP_REGS_H__ */
+#endif  

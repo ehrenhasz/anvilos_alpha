@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  SR-IPv6 implementation
- *
- *  Authors:
- *  David Lebrun <david.lebrun@uclouvain.be>
- *  eBPF support: Mathieu Xhonneux <m.xhonneux@gmail.com>
- */
+
+ 
 
 #include <linux/filter.h>
 #include <linux/types.h>
@@ -37,7 +31,7 @@
 
 struct seg6_local_lwt;
 
-/* callbacks used for customizing the creation and destruction of a behavior */
+ 
 struct seg6_local_lwtunnel_ops {
 	int (*build_state)(struct seg6_local_lwt *slwt, const void *cfg,
 			   struct netlink_ext_ack *extack);
@@ -48,18 +42,7 @@ struct seg6_action_desc {
 	int action;
 	unsigned long attrs;
 
-	/* The optattrs field is used for specifying all the optional
-	 * attributes supported by a specific behavior.
-	 * It means that if one of these attributes is not provided in the
-	 * netlink message during the behavior creation, no errors will be
-	 * returned to the userspace.
-	 *
-	 * Each attribute can be only of two types (mutually exclusive):
-	 * 1) required or 2) optional.
-	 * Every user MUST obey to this rule! If you set an attribute as
-	 * required the same attribute CANNOT be set as optional and vice
-	 * versa.
-	 */
+	 
 	unsigned long optattrs;
 
 	int (*input)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
@@ -73,30 +56,11 @@ struct bpf_lwt_prog {
 	char *name;
 };
 
-/* default length values (expressed in bits) for both Locator-Block and
- * Locator-Node Function.
- *
- * Both SEG6_LOCAL_LCBLOCK_DBITS and SEG6_LOCAL_LCNODE_FN_DBITS *must* be:
- *    i) greater than 0;
- *   ii) evenly divisible by 8. In other terms, the lengths of the
- *	 Locator-Block and Locator-Node Function must be byte-aligned (we can
- *	 relax this constraint in the future if really needed).
- *
- * Moreover, a third condition must hold:
- *  iii) SEG6_LOCAL_LCBLOCK_DBITS + SEG6_LOCAL_LCNODE_FN_DBITS <= 128.
- *
- * The correctness of SEG6_LOCAL_LCBLOCK_DBITS and SEG6_LOCAL_LCNODE_FN_DBITS
- * values are checked during the kernel compilation. If the compilation stops,
- * check the value of these parameters to see if they meet conditions (i), (ii)
- * and (iii).
- */
+ 
 #define SEG6_LOCAL_LCBLOCK_DBITS	32
 #define SEG6_LOCAL_LCNODE_FN_DBITS	16
 
-/* The following next_csid_chk_{cntr,lcblock,lcblock_fn}_bits macros can be
- * used directly to check whether the lengths (in bits) of Locator-Block and
- * Locator-Node Function are valid according to (i), (ii), (iii).
- */
+ 
 #define next_csid_chk_cntr_bits(blen, flen)		\
 	((blen) + (flen) > 128)
 
@@ -109,14 +73,14 @@ struct bpf_lwt_prog {
 #define next_csid_chk_lcnode_fn_bits(flen)		\
 	next_csid_chk_lcblock_bits(flen)
 
-/* flag indicating that flavors are set up for a given End* behavior */
+ 
 #define SEG6_F_LOCAL_FLAVORS		SEG6_F_ATTR(SEG6_LOCAL_FLAVORS)
 
 #define SEG6_F_LOCAL_FLV_OP(flvname)	BIT(SEG6_LOCAL_FLV_OP_##flvname)
 #define SEG6_F_LOCAL_FLV_NEXT_CSID	SEG6_F_LOCAL_FLV_OP(NEXT_CSID)
 #define SEG6_F_LOCAL_FLV_PSP		SEG6_F_LOCAL_FLV_OP(PSP)
 
-/* Supported RFC8986 Flavor operations are reported in this bitmask */
+ 
 #define SEG6_LOCAL_FLV8986_SUPP_OPS	SEG6_F_LOCAL_FLV_PSP
 
 #define SEG6_LOCAL_END_FLV_SUPP_OPS	(SEG6_F_LOCAL_FLV_NEXT_CSID | \
@@ -124,12 +88,12 @@ struct bpf_lwt_prog {
 #define SEG6_LOCAL_END_X_FLV_SUPP_OPS	SEG6_F_LOCAL_FLV_NEXT_CSID
 
 struct seg6_flavors_info {
-	/* Flavor operations */
+	 
 	__u32 flv_ops;
 
-	/* Locator-Block length, expressed in bits */
+	 
 	__u8 lcblock_bits;
-	/* Locator-Node Function length, expressed in bits*/
+	 
 	__u8 lcnode_func_bits;
 };
 
@@ -143,15 +107,11 @@ struct seg6_end_dt_info {
 	enum seg6_end_dt_mode mode;
 
 	struct net *net;
-	/* VRF device associated to the routing table used by the SRv6
-	 * End.DT4/DT6 behavior for routing IPv4/IPv6 packets.
-	 */
+	 
 	int vrf_ifindex;
 	int vrf_table;
 
-	/* tunneled packet family (IPv4 or IPv6).
-	 * Protocol and header length are inferred from family.
-	 */
+	 
 	u16 family;
 };
 
@@ -163,15 +123,7 @@ struct pcpu_seg6_local_counters {
 	struct u64_stats_sync syncp;
 };
 
-/* This struct groups all the SRv6 Behavior counters supported so far.
- *
- * put_nla_counters() makes use of this data structure to collect all counter
- * values after the per-CPU counter evaluation has been performed.
- * Finally, each counter value (in seg6_local_counters) is stored in the
- * corresponding netlink attribute and sent to user space.
- *
- * NB: we don't want to expose this structure to user space!
- */
+ 
 struct seg6_local_counters {
 	__u64 packets;
 	__u64 bytes;
@@ -202,9 +154,7 @@ struct seg6_local_lwt {
 
 	int headroom;
 	struct seg6_action_desc *desc;
-	/* unlike the required attrs, we have to track the optional attributes
-	 * that have been effectively parsed.
-	 */
+	 
 	unsigned long parsed_optattrs;
 };
 
@@ -304,9 +254,7 @@ seg6_lookup_any_nexthop(struct sk_buff *skb, struct in6_addr *nhaddr,
 		dst = &rt->dst;
 	}
 
-	/* we want to discard traffic destined for local packet processing,
-	 * if @local_delivery is set to false.
-	 */
+	 
 	if (!local_delivery)
 		dev_flags |= IFF_LOOPBACK;
 
@@ -360,14 +308,14 @@ static bool seg6_next_csid_is_arg_zero(const struct in6_addr *addr,
 	return true;
 }
 
-/* assume that DA.Argument length > 0 */
+ 
 static void seg6_next_csid_advance_arg(struct in6_addr *addr,
 				       const struct seg6_flavors_info *finfo)
 {
 	__u8 fnc_octects = seg6_flv_lcnode_func_octects(finfo);
 	__u8 blk_octects = seg6_flv_lcblock_octects(finfo);
 
-	/* advance DA.Argument */
+	 
 	memmove(&addr->s6_addr[blk_octects],
 		&addr->s6_addr[blk_octects + fnc_octects],
 		16 - blk_octects - fnc_octects);
@@ -409,7 +357,7 @@ static int end_next_csid_core(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 	if (seg6_next_csid_is_arg_zero(daddr, finfo))
 		return input_action_end_core(skb, slwt);
 
-	/* update DA */
+	 
 	seg6_next_csid_advance_arg(daddr, finfo);
 
 	return input_action_end_finish(skb, slwt);
@@ -450,7 +398,7 @@ static int end_x_next_csid_core(struct sk_buff *skb,
 	if (seg6_next_csid_is_arg_zero(daddr, finfo))
 		return input_action_end_x_core(skb, slwt);
 
-	/* update DA */
+	 
 	seg6_next_csid_advance_arg(daddr, finfo);
 
 	return input_action_end_x_finish(skb, slwt);
@@ -461,12 +409,7 @@ static bool seg6_next_csid_enabled(__u32 fops)
 	return fops & SEG6_F_LOCAL_FLV_NEXT_CSID;
 }
 
-/* Processing of SRv6 End, End.X, and End.T behaviors can be extended through
- * the flavors framework. These behaviors must report the subset of (flavor)
- * operations they currently implement. In this way, if a user specifies a
- * flavor combination that is not supported by a given End* behavior, the
- * kernel refuses to instantiate the tunnel reporting the error.
- */
+ 
 static int seg6_flv_supp_ops_by_action(int action, __u32 *fops)
 {
 	switch (action) {
@@ -483,13 +426,9 @@ static int seg6_flv_supp_ops_by_action(int action, __u32 *fops)
 	return 0;
 }
 
-/* We describe the packet state in relation to the absence/presence of the SRH
- * and the Segment Left (SL) field.
- * For our purposes, it is not necessary to record the exact value of the SL
- * when the SID List consists of two or more segments.
- */
+ 
 enum seg6_local_pktinfo {
-	/* the order really matters! */
+	 
 	SEG6_LOCAL_PKTINFO_NOHDR	= 0,
 	SEG6_LOCAL_PKTINFO_SL_ZERO,
 	SEG6_LOCAL_PKTINFO_SL_ONE,
@@ -524,93 +463,42 @@ enum seg6_local_flv_action {
 
 #define SEG6_LOCAL_FLV_ACT_MAX (__SEG6_LOCAL_FLV_ACT_MAX - 1)
 
-/* The action table for RFC8986 flavors (see the flv8986_act_tbl below)
- * contains the actions (i.e. processing operations) to be applied on packets
- * when flavors are configured for an End* behavior.
- * By combining the pkinfo data and from the flavors mask, the macro
- * computes the index used to access the elements (actions) stored in the
- * action table. The index is structured as follows:
- *
- *                     index
- *       _______________/\________________
- *      /                                 \
- *      +----------------+----------------+
- *      |        pf      |      afm       |
- *      +----------------+----------------+
- *        ph-1 ... p1 p0   fk-1 ... f1 f0
- *     MSB                               LSB
- *
- * where:
- *  - 'afm' (adjusted flavor mask) is the mask containing a combination of the
- *     RFC8986 flavors currently supported. 'afm' corresponds to the @fm
- *     argument of the macro whose value is righ-shifted by 1 bit. By doing so,
- *     we discard the SEG6_LOCAL_FLV_OP_UNSPEC flag (bit 0 in @fm) which is
- *     never used here;
- *  - 'pf' encodes the packet info (pktinfo) regarding the presence/absence of
- *    the SRH, SL = 0, etc. 'pf' is set with the value of @pf provided as
- *    argument to the macro.
- */
+ 
 #define flv8986_act_tbl_idx(pf, fm)					\
 	((((pf) << bits_per(SEG6_LOCAL_FLV8986_SUPP_OPS)) |		\
 	  ((fm) & SEG6_LOCAL_FLV8986_SUPP_OPS)) >> SEG6_LOCAL_FLV_OP_PSP)
 
-/* We compute the size of the action table by considering the RFC8986 flavors
- * actually supported by the kernel. In this way, the size is automatically
- * adjusted when new flavors are supported.
- */
+ 
 #define FLV8986_ACT_TBL_SIZE						\
 	roundup_pow_of_two(flv8986_act_tbl_idx(SEG6_LOCAL_PKTINFO_MAX,	\
 					       SEG6_LOCAL_FLV8986_SUPP_OPS))
 
-/* tbl_cfg(act, pf, fm) macro is used to easily configure the action
- * table; it accepts 3 arguments:
- *     i) @act, the suffix from SEG6_LOCAL_FLV_ACT_{act} representing
- *        the action that should be applied on the packet;
- *    ii) @pf, the suffix from SEG6_LOCAL_PKTINFO_{pf} reporting the packet
- *        info about the lack/presence of SRH, SRH with SL = 0, etc;
- *   iii) @fm, the mask of flavors.
- */
+ 
 #define tbl_cfg(act, pf, fm)						\
 	[flv8986_act_tbl_idx(SEG6_LOCAL_PKTINFO_##pf,			\
 			     (fm))] = SEG6_LOCAL_FLV_ACT_##act
 
-/* shorthand for improving readability */
+ 
 #define F_PSP	SEG6_F_LOCAL_FLV_PSP
 
-/* The table contains, for each combination of the pktinfo data and
- * flavors, the action that should be taken on a packet (e.g.
- * "standard" Endpoint processing, Penultimate Segment Pop, etc).
- *
- * By default, table entries not explicitly configured are initialized with the
- * SEG6_LOCAL_FLV_ACT_UNSPEC action, which generally has the effect of
- * discarding the processed packet.
- */
+ 
 static const u8 flv8986_act_tbl[FLV8986_ACT_TBL_SIZE] = {
-	/* PSP variant for packet where SRH with SL = 1 */
+	 
 	tbl_cfg(PSP, SL_ONE, F_PSP),
-	/* End for packet where the SRH with SL > 1*/
+	 
 	tbl_cfg(END, SL_MORE, F_PSP),
 };
 
 #undef F_PSP
 #undef tbl_cfg
 
-/* For each flavor defined in RFC8986 (or a combination of them) an action is
- * performed on the packet. The specific action depends on:
- *  - info extracted from the packet (i.e. pktinfo data) regarding the
- *    lack/presence of the SRH, and if the SRH is available, on the value of
- *    Segment Left field;
- *  - the mask of flavors configured for the specific SRv6 End* behavior.
- *
- * The function combines both the pkinfo and the flavors mask to evaluate the
- * corresponding action to be taken on the packet.
- */
+ 
 static enum seg6_local_flv_action
 seg6_local_flv8986_act_lookup(enum seg6_local_pktinfo pinfo, __u32 flvmask)
 {
 	unsigned long index;
 
-	/* check if the provided mask of flavors is supported */
+	 
 	if (unlikely(flvmask & ~SEG6_LOCAL_FLV8986_SUPP_OPS))
 		return SEG6_LOCAL_FLV_ACT_UNSPEC;
 
@@ -621,7 +509,7 @@ seg6_local_flv8986_act_lookup(enum seg6_local_pktinfo pinfo, __u32 flvmask)
 	return flv8986_act_tbl[index];
 }
 
-/* skb->data must be aligned with skb->network_header */
+ 
 static bool seg6_pop_srh(struct sk_buff *skb, int srhoff)
 {
 	struct ipv6_sr_hdr *srh;
@@ -638,11 +526,11 @@ static bool seg6_pop_srh(struct sk_buff *skb, int srhoff)
 	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
 	srhlen = ipv6_optlen(srh);
 
-	/* we are about to mangle the pkt, let's check if we can write on it */
+	 
 	if (unlikely(skb_ensure_writable(skb, srhoff + srhlen)))
 		return false;
 
-	/* skb_ensure_writable() may change skb pointers; evaluate srh again */
+	 
 	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
 	srh_nexthdr = srh->nexthdr;
 
@@ -650,30 +538,17 @@ static bool seg6_pop_srh(struct sk_buff *skb, int srhoff)
 		goto pull;
 
 	nhlen = skb_network_header_len(skb);
-	/* we have to deal with the transport header: it could be set before
-	 * the SRH, after the SRH, or within it (which is considered wrong,
-	 * however).
-	 */
+	 
 	if (likely(nhlen <= srhoff))
 		thoff = nhlen;
 	else if (nhlen >= srhoff + srhlen)
-		/* transport_header is set after the SRH */
+		 
 		thoff = nhlen - srhlen;
 	else
-		/* transport_header falls inside the SRH; hence, we can't
-		 * restore the transport_header pointer properly after
-		 * SRH removing operation.
-		 */
+		 
 		return false;
 pull:
-	/* we need to pop the SRH:
-	 *  1) first of all, we pull out everything from IPv6 header up to SRH
-	 *     (included) evaluating also the rcsum;
-	 *  2) we overwrite (and then remove) the SRH by properly moving the
-	 *     IPv6 along with any extension header that precedes the SRH;
-	 *  3) At the end, we push back the pulled headers (except for SRH,
-	 *     obviously).
-	 */
+	 
 	skb_pull_rcsum(skb, srhoff + srhlen);
 	memmove(skb_network_header(skb) + srhlen, skb_network_header(skb),
 		srhoff);
@@ -688,11 +563,7 @@ pull:
 	if (iph->nexthdr == NEXTHDR_ROUTING) {
 		iph->nexthdr = srh_nexthdr;
 	} else {
-		/* we must look for the extension header (EXTH, for short) that
-		 * immediately precedes the SRH we have just removed.
-		 * Then, we update the value of the EXTH nexthdr with the one
-		 * contained in the SRH nexthdr.
-		 */
+		 
 		unsigned int off = sizeof(*iph);
 		struct ipv6_opt_hdr *hp, _hdr;
 		__u8 nexthdr = iph->nexthdr;
@@ -715,7 +586,7 @@ pull:
 			case NEXTHDR_FRAGMENT:
 				fallthrough;
 			case NEXTHDR_AUTH:
-				/* we expect SRH before FRAG and AUTH */
+				 
 				return false;
 			default:
 				off += ipv6_optlen(hp);
@@ -733,9 +604,7 @@ pull:
 	return true;
 }
 
-/* process the packet on the basis of the RFC8986 flavors set for the given
- * SRv6 End behavior instance.
- */
+ 
 static int end_flv8986_core(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 {
 	const struct seg6_flavors_info *finfo = &slwt->flv_info;
@@ -758,13 +627,11 @@ static int end_flv8986_core(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 		goto drop;
 	}
 
-	/* retrieve the action triggered by the combination of pktinfo data and
-	 * the flavors mask.
-	 */
+	 
 	action = seg6_local_flv8986_act_lookup(pinfo, flvmask);
 	switch (action) {
 	case SEG6_LOCAL_FLV_ACT_END:
-		/* process the packet as the "standard" End behavior */
+		 
 		advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
 		break;
 	case SEG6_LOCAL_FLV_ACT_PSP:
@@ -776,9 +643,7 @@ static int end_flv8986_core(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 	case SEG6_LOCAL_FLV_ACT_UNSPEC:
 		fallthrough;
 	default:
-		/* by default, we drop the packet since we could not find a
-		 * suitable action.
-		 */
+		 
 		goto drop;
 	}
 
@@ -789,7 +654,7 @@ drop:
 	return -EINVAL;
 }
 
-/* regular endpoint function */
+ 
 static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 {
 	const struct seg6_flavors_info *finfo = &slwt->flv_info;
@@ -798,25 +663,21 @@ static int input_action_end(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 	if (!fops)
 		return input_action_end_core(skb, slwt);
 
-	/* check for the presence of NEXT-C-SID since it applies first */
+	 
 	if (seg6_next_csid_enabled(fops))
 		return end_next_csid_core(skb, slwt);
 
-	/* the specific processing function to be performed on the packet
-	 * depends on the combination of flavors defined in RFC8986 and some
-	 * information extracted from the packet, e.g. presence/absence of SRH,
-	 * Segment Left = 0, etc.
-	 */
+	 
 	return end_flv8986_core(skb, slwt);
 }
 
-/* regular endpoint, and forward to specified nexthop */
+ 
 static int input_action_end_x(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 {
 	const struct seg6_flavors_info *finfo = &slwt->flv_info;
 	__u32 fops = finfo->flv_ops;
 
-	/* check for the presence of NEXT-C-SID since it applies first */
+	 
 	if (seg6_next_csid_enabled(fops))
 		return end_x_next_csid_core(skb, slwt);
 
@@ -842,7 +703,7 @@ drop:
 	return -EINVAL;
 }
 
-/* decapsulate and forward inner L2 frame on specified interface */
+ 
 static int input_action_end_dx2(struct sk_buff *skb,
 				struct seg6_local_lwt *slwt)
 {
@@ -859,10 +720,7 @@ static int input_action_end_dx2(struct sk_buff *skb,
 	skb_reset_mac_header(skb);
 	eth = (struct ethhdr *)skb->data;
 
-	/* To determine the frame's protocol, we assume it is 802.3. This avoids
-	 * a call to eth_type_trans(), which is not really relevant for our
-	 * use case.
-	 */
+	 
 	if (!eth_proto_is_802_3(eth->h_proto))
 		goto drop;
 
@@ -870,9 +728,7 @@ static int input_action_end_dx2(struct sk_buff *skb,
 	if (!odev)
 		goto drop;
 
-	/* As we accept Ethernet frames, make sure the egress device is of
-	 * the correct type.
-	 */
+	 
 	if (odev->type != ARPHRD_ETHER)
 		goto drop;
 
@@ -908,12 +764,7 @@ static int input_action_end_dx6_finish(struct net *net, struct sock *sk,
 
 	slwt = seg6_local_lwtunnel(orig_dst->lwtstate);
 
-	/* The inner packet is not associated to any local interface,
-	 * so we do not call netif_rx().
-	 *
-	 * If slwt->nh6 is set to ::, then lookup the nexthop for the
-	 * inner packet's DA. Otherwise, use the specified nexthop.
-	 */
+	 
 	if (!ipv6_addr_any(&slwt->nh6))
 		nhaddr = &slwt->nh6;
 
@@ -922,13 +773,11 @@ static int input_action_end_dx6_finish(struct net *net, struct sock *sk,
 	return dst_input(skb);
 }
 
-/* decapsulate and forward to specified nexthop */
+ 
 static int input_action_end_dx6(struct sk_buff *skb,
 				struct seg6_local_lwt *slwt)
 {
-	/* this function accepts IPv6 encapsulated packets, with either
-	 * an SRH with SL=0, or no SRH.
-	 */
+	 
 
 	if (!decap_and_validate(skb, IPPROTO_IPV6))
 		goto drop;
@@ -1017,7 +866,7 @@ static int __seg6_end_dt_vrf_build(struct seg6_local_lwt *slwt, const void *cfg,
 
 	net = fib6_config_get_net(cfg);
 
-	/* note that vrf_table was already set by parse_nla_vrftable() */
+	 
 	vrf_ifindex = l3mdev_ifindex_lookup_by_table_id(L3MDEV_TYPE_VRF, net,
 							info->vrf_table);
 	if (vrf_ifindex < 0) {
@@ -1044,59 +893,26 @@ static int __seg6_end_dt_vrf_build(struct seg6_local_lwt *slwt, const void *cfg,
 	return 0;
 }
 
-/* The SRv6 End.DT4/DT6 behavior extracts the inner (IPv4/IPv6) packet and
- * routes the IPv4/IPv6 packet by looking at the configured routing table.
- *
- * In the SRv6 End.DT4/DT6 use case, we can receive traffic (IPv6+Segment
- * Routing Header packets) from several interfaces and the outer IPv6
- * destination address (DA) is used for retrieving the specific instance of the
- * End.DT4/DT6 behavior that should process the packets.
- *
- * However, the inner IPv4/IPv6 packet is not really bound to any receiving
- * interface and thus the End.DT4/DT6 sets the VRF (associated with the
- * corresponding routing table) as the *receiving* interface.
- * In other words, the End.DT4/DT6 processes a packet as if it has been received
- * directly by the VRF (and not by one of its slave devices, if any).
- * In this way, the VRF interface is used for routing the IPv4/IPv6 packet in
- * according to the routing table configured by the End.DT4/DT6 instance.
- *
- * This design allows you to get some interesting features like:
- *  1) the statistics on rx packets;
- *  2) the possibility to install a packet sniffer on the receiving interface
- *     (the VRF one) for looking at the incoming packets;
- *  3) the possibility to leverage the netfilter prerouting hook for the inner
- *     IPv4 packet.
- *
- * This function returns:
- *  - the sk_buff* when the VRF rcv handler has processed the packet correctly;
- *  - NULL when the skb is consumed by the VRF rcv handler;
- *  - a pointer which encodes a negative error number in case of error.
- *    Note that in this case, the function takes care of freeing the skb.
- */
+ 
 static struct sk_buff *end_dt_vrf_rcv(struct sk_buff *skb, u16 family,
 				      struct net_device *dev)
 {
-	/* based on l3mdev_ip_rcv; we are only interested in the master */
+	 
 	if (unlikely(!netif_is_l3_master(dev) && !netif_has_l3_rx_handler(dev)))
 		goto drop;
 
 	if (unlikely(!dev->l3mdev_ops->l3mdev_l3_rcv))
 		goto drop;
 
-	/* the decap packet IPv4/IPv6 does not come with any mac header info.
-	 * We must unset the mac header to allow the VRF device to rebuild it,
-	 * just in case there is a sniffer attached on the device.
-	 */
+	 
 	skb_unset_mac_header(skb);
 
 	skb = dev->l3mdev_ops->l3mdev_l3_rcv(dev, skb, family);
 	if (!skb)
-		/* the skb buffer was consumed by the handler */
+		 
 		return NULL;
 
-	/* when a packet is received by a VRF or by one of its slaves, the
-	 * master device reference is set into the skb.
-	 */
+	 
 	if (unlikely(skb->dev != dev || skb->skb_iif != dev->ifindex))
 		goto drop;
 
@@ -1185,7 +1001,7 @@ static int input_action_end_dt4(struct sk_buff *skb,
 
 	skb = end_dt_vrf_core(skb, slwt, AF_INET);
 	if (!skb)
-		/* packet has been processed and consumed by the VRF */
+		 
 		return 0;
 
 	if (IS_ERR(skb))
@@ -1220,7 +1036,7 @@ seg6_end_dt_mode seg6_end_dt6_parse_mode(struct seg6_local_lwt *slwt)
 	vrfmode	= !!(parsed_optattrs & SEG6_F_ATTR(SEG6_LOCAL_VRFTABLE));
 
 	if (!(legacy ^ vrfmode))
-		/* both are absent or present: invalid DT6 mode */
+		 
 		return DT_INVALID_MODE;
 
 	return legacy ? DT_LEGACY_MODE : DT_VRF_MODE;
@@ -1265,18 +1081,16 @@ static int input_action_end_dt6(struct sk_buff *skb,
 	if (seg6_end_dt6_get_mode(slwt) == DT_LEGACY_MODE)
 		goto legacy_mode;
 
-	/* DT6_VRF_MODE */
+	 
 	skb = end_dt_vrf_core(skb, slwt, AF_INET6);
 	if (!skb)
-		/* packet has been processed and consumed by the VRF */
+		 
 		return 0;
 
 	if (IS_ERR(skb))
 		return PTR_ERR(skb);
 
-	/* note: this time we do not need to specify the table because the VRF
-	 * takes care of selecting the correct table.
-	 */
+	 
 	seg6_lookup_any_nexthop(skb, NULL, 0, true);
 
 	return dst_input(skb);
@@ -1324,7 +1138,7 @@ drop:
 }
 #endif
 
-/* push an SRH on top of the current one */
+ 
 static int input_action_end_b6(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 {
 	struct ipv6_sr_hdr *srh;
@@ -1349,7 +1163,7 @@ drop:
 	return err;
 }
 
-/* encapsulate within an outer IPv6 header and a specified SRH */
+ 
 static int input_action_end_b6_encap(struct sk_buff *skb,
 				     struct seg6_local_lwt *slwt)
 {
@@ -1420,9 +1234,7 @@ static int input_action_end_bpf(struct sk_buff *skb,
 	}
 	advance_nextseg(srh, &ipv6_hdr(skb)->daddr);
 
-	/* preempt_disable is needed to protect the per-CPU buffer srh_state,
-	 * which is also accessed by the bpf_lwt_seg6_* helpers
-	 */
+	 
 	preempt_disable();
 	srh_state->srh = srh;
 	srh_state->hdrlen = srh->hdrlen << 3;
@@ -1658,7 +1470,7 @@ static int parse_nla_srh(struct nlattr **attrs, struct seg6_local_lwt *slwt,
 	srh = nla_data(attrs[SEG6_LOCAL_SRH]);
 	len = nla_len(attrs[SEG6_LOCAL_SRH]);
 
-	/* SRH must contain at least one segment */
+	 
 	if (len < sizeof(*srh) + sizeof(struct in6_addr))
 		return -EINVAL;
 
@@ -1980,14 +1792,12 @@ static int parse_nla_counters(struct nlattr **attrs,
 	if (ret < 0)
 		return ret;
 
-	/* basic support for SRv6 Behavior counters requires at least:
-	 * packets, bytes and errors.
-	 */
+	 
 	if (!tb[SEG6_LOCAL_CNT_PACKETS] || !tb[SEG6_LOCAL_CNT_BYTES] ||
 	    !tb[SEG6_LOCAL_CNT_ERRORS])
 		return -EINVAL;
 
-	/* counters are always zero initialized */
+	 
 	pcounters = seg6_local_alloc_pcpu_counters(GFP_KERNEL);
 	if (!pcounters)
 		return -ENOMEM;
@@ -2056,7 +1866,7 @@ static int put_nla_counters(struct sk_buff *skb, struct seg6_local_lwt *slwt)
 
 static int cmp_nla_counters(struct seg6_local_lwt *a, struct seg6_local_lwt *b)
 {
-	/* a and b are equal if both have pcpu_counters set or not */
+	 
 	return (!!((unsigned long)a->pcpu_counters)) ^
 		(!!((unsigned long)b->pcpu_counters));
 }
@@ -2073,26 +1883,18 @@ struct nla_policy seg6_local_flavors_policy[SEG6_LOCAL_FLV_MAX + 1] = {
 	[SEG6_LOCAL_FLV_LCNODE_FN_BITS]	= { .type = NLA_U8 },
 };
 
-/* check whether the lengths of the Locator-Block and Locator-Node Function
- * are compatible with the dimension of a C-SID container.
- */
+ 
 static int seg6_chk_next_csid_cfg(__u8 block_len, __u8 func_len)
 {
-	/* Locator-Block and Locator-Node Function cannot exceed 128 bits
-	 * (i.e. C-SID container lenghts).
-	 */
+	 
 	if (next_csid_chk_cntr_bits(block_len, func_len))
 		return -EINVAL;
 
-	/* Locator-Block length must be greater than zero and evenly divisible
-	 * by 8. There must be room for a Locator-Node Function, at least.
-	 */
+	 
 	if (next_csid_chk_lcblock_bits(block_len))
 		return -EINVAL;
 
-	/* Locator-Node Function length must be greater than zero and evenly
-	 * divisible by 8. There must be room for the Locator-Block.
-	 */
+	 
 	if (next_csid_chk_lcnode_fn_bits(func_len))
 		return -EINVAL;
 
@@ -2141,9 +1943,7 @@ static int parse_nla_flavors(struct nlattr **attrs, struct seg6_local_lwt *slwt,
 	if (rc < 0)
 		return rc;
 
-	/* this attribute MUST always be present since it represents the Flavor
-	 * operation(s) to be carried out.
-	 */
+	 
 	if (!tb[SEG6_LOCAL_FLV_OPERATION])
 		return -EINVAL;
 
@@ -2157,10 +1957,7 @@ static int parse_nla_flavors(struct nlattr **attrs, struct seg6_local_lwt *slwt,
 	finfo->flv_ops = fops;
 
 	if (seg6_next_csid_enabled(fops)) {
-		/* Locator-Block and Locator-Node Function lengths can be
-		 * provided by the user space. Otherwise, default values are
-		 * applied.
-		 */
+		 
 		rc = seg6_parse_nla_next_csid_cfg(tb, finfo, extack);
 		if (rc < 0)
 			return rc;
@@ -2244,12 +2041,12 @@ static int encap_size_flavors(struct seg6_local_lwt *slwt)
 	struct seg6_flavors_info *finfo = &slwt->flv_info;
 	int nlsize;
 
-	nlsize = nla_total_size(0) +	/* nest SEG6_LOCAL_FLAVORS */
-		 nla_total_size(4);	/* SEG6_LOCAL_FLV_OPERATION */
+	nlsize = nla_total_size(0) +	 
+		 nla_total_size(4);	 
 
 	if (seg6_next_csid_enabled(finfo->flv_ops))
-		nlsize += nla_total_size(1) + /* SEG6_LOCAL_FLV_LCBLOCK_BITS */
-			  nla_total_size(1); /* SEG6_LOCAL_FLV_LCNODE_FN_BITS */
+		nlsize += nla_total_size(1) +  
+			  nla_total_size(1);  
 
 	return nlsize;
 }
@@ -2260,10 +2057,7 @@ struct seg6_action_param {
 	int (*put)(struct sk_buff *skb, struct seg6_local_lwt *slwt);
 	int (*cmp)(struct seg6_local_lwt *a, struct seg6_local_lwt *b);
 
-	/* optional destroy() callback useful for releasing resources which
-	 * have been previously acquired in the corresponding parse()
-	 * function.
-	 */
+	 
 	void (*destroy)(struct seg6_local_lwt *slwt);
 };
 
@@ -2312,25 +2106,14 @@ static struct seg6_action_param seg6_action_params[SEG6_LOCAL_MAX + 1] = {
 				    .cmp = cmp_nla_flavors },
 };
 
-/* call the destroy() callback (if available) for each set attribute in
- * @parsed_attrs, starting from the first attribute up to the @max_parsed
- * (excluded) attribute.
- */
+ 
 static void __destroy_attrs(unsigned long parsed_attrs, int max_parsed,
 			    struct seg6_local_lwt *slwt)
 {
 	struct seg6_action_param *param;
 	int i;
 
-	/* Every required seg6local attribute is identified by an ID which is
-	 * encoded as a flag (i.e: 1 << ID) in the 'attrs' bitmask;
-	 *
-	 * We scan the 'parsed_attrs' bitmask, starting from the first attribute
-	 * up to the @max_parsed (excluded) attribute.
-	 * For each set attribute, we retrieve the corresponding destroy()
-	 * callback. If the callback is not available, then we skip to the next
-	 * attribute; otherwise, we call the destroy() callback.
-	 */
+	 
 	for (i = SEG6_LOCAL_SRH; i < max_parsed; ++i) {
 		if (!(parsed_attrs & SEG6_F_ATTR(i)))
 			continue;
@@ -2342,9 +2125,7 @@ static void __destroy_attrs(unsigned long parsed_attrs, int max_parsed,
 	}
 }
 
-/* release all the resources that may have been acquired during parsing
- * operations.
- */
+ 
 static void destroy_attrs(struct seg6_local_lwt *slwt)
 {
 	unsigned long attrs = slwt->desc->attrs | slwt->parsed_optattrs;
@@ -2365,22 +2146,18 @@ static int parse_nla_optional_attrs(struct nlattr **attrs,
 		if (!(desc->optattrs & SEG6_F_ATTR(i)) || !attrs[i])
 			continue;
 
-		/* once here, the i-th attribute is provided by the
-		 * userspace AND it is identified optional as well.
-		 */
+		 
 		param = &seg6_action_params[i];
 
 		err = param->parse(attrs, slwt, extack);
 		if (err < 0)
 			goto parse_optattrs_err;
 
-		/* current attribute has been correctly parsed */
+		 
 		parsed_optattrs |= SEG6_F_ATTR(i);
 	}
 
-	/* store in the tunnel state all the optional attributed successfully
-	 * parsed.
-	 */
+	 
 	slwt->parsed_optattrs = parsed_optattrs;
 
 	return 0;
@@ -2391,9 +2168,7 @@ parse_optattrs_err:
 	return err;
 }
 
-/* call the custom constructor of the behavior during its initialization phase
- * and after that all its attributes have been parsed successfully.
- */
+ 
 static int
 seg6_local_lwtunnel_build_state(struct seg6_local_lwt *slwt, const void *cfg,
 				struct netlink_ext_ack *extack)
@@ -2408,9 +2183,7 @@ seg6_local_lwtunnel_build_state(struct seg6_local_lwt *slwt, const void *cfg,
 	return ops->build_state(slwt, cfg, extack);
 }
 
-/* call the custom destructor of the behavior which is invoked before the
- * tunnel is going to be destroyed.
- */
+ 
 static void seg6_local_lwtunnel_destroy_state(struct seg6_local_lwt *slwt)
 {
 	struct seg6_action_desc *desc = slwt->desc;
@@ -2441,18 +2214,7 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt,
 	slwt->desc = desc;
 	slwt->headroom += desc->static_headroom;
 
-	/* Forcing the desc->optattrs *set* and the desc->attrs *set* to be
-	 * disjoined, this allow us to release acquired resources by optional
-	 * attributes and by required attributes independently from each other
-	 * without any interference.
-	 * In other terms, we are sure that we do not release some the acquired
-	 * resources twice.
-	 *
-	 * Note that if an attribute is configured both as required and as
-	 * optional, it means that the user has messed something up in the
-	 * seg6_action_table. Therefore, this check is required for SRv6
-	 * behaviors to work properly.
-	 */
+	 
 	invalid_attrs = desc->attrs & desc->optattrs;
 	if (invalid_attrs) {
 		WARN_ONCE(1,
@@ -2460,7 +2222,7 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt,
 		return -EINVAL;
 	}
 
-	/* parse the required attributes */
+	 
 	for (i = SEG6_LOCAL_SRH; i < SEG6_LOCAL_MAX + 1; i++) {
 		if (desc->attrs & SEG6_F_ATTR(i)) {
 			if (!attrs[i])
@@ -2474,7 +2236,7 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt,
 		}
 	}
 
-	/* parse the optional attributes, if any */
+	 
 	err = parse_nla_optional_attrs(attrs, slwt, extack);
 	if (err < 0)
 		goto parse_attrs_err;
@@ -2482,9 +2244,7 @@ static int parse_nla_action(struct nlattr **attrs, struct seg6_local_lwt *slwt,
 	return 0;
 
 parse_attrs_err:
-	/* release any resource that may have been acquired during the i-1
-	 * parse() operations.
-	 */
+	 
 	__destroy_attrs(desc->attrs, i, slwt);
 
 	return err;
@@ -2584,7 +2344,7 @@ static int seg6_local_get_encap_size(struct lwtunnel_state *lwt)
 	unsigned long attrs;
 	int nlsize;
 
-	nlsize = nla_total_size(4); /* action */
+	nlsize = nla_total_size(4);  
 
 	attrs = slwt->desc->attrs | slwt->parsed_optattrs;
 
@@ -2615,12 +2375,12 @@ static int seg6_local_get_encap_size(struct lwtunnel_state *lwt)
 		nlsize += nla_total_size(4);
 
 	if (attrs & SEG6_F_LOCAL_COUNTERS)
-		nlsize += nla_total_size(0) + /* nest SEG6_LOCAL_COUNTERS */
-			  /* SEG6_LOCAL_CNT_PACKETS */
+		nlsize += nla_total_size(0) +  
+			   
 			  nla_total_size_64bit(sizeof(__u64)) +
-			  /* SEG6_LOCAL_CNT_BYTES */
+			   
 			  nla_total_size_64bit(sizeof(__u64)) +
-			  /* SEG6_LOCAL_CNT_ERRORS */
+			   
 			  nla_total_size_64bit(sizeof(__u64));
 
 	if (attrs & SEG6_F_ATTR(SEG6_LOCAL_FLAVORS))
@@ -2672,34 +2432,19 @@ static const struct lwtunnel_encap_ops seg6_local_ops = {
 
 int __init seg6_local_init(void)
 {
-	/* If the max total number of defined attributes is reached, then your
-	 * kernel build stops here.
-	 *
-	 * This check is required to avoid arithmetic overflows when processing
-	 * behavior attributes and the maximum number of defined attributes
-	 * exceeds the allowed value.
-	 */
+	 
 	BUILD_BUG_ON(SEG6_LOCAL_MAX + 1 > BITS_PER_TYPE(unsigned long));
 
-	/* Check whether the number of defined flavors exceeds the maximum
-	 * allowed value.
-	 */
+	 
 	BUILD_BUG_ON(SEG6_LOCAL_FLV_OP_MAX + 1 > BITS_PER_TYPE(__u32));
 
-	/* If the default NEXT-C-SID Locator-Block/Node Function lengths (in
-	 * bits) have been changed with invalid values, kernel build stops
-	 * here.
-	 */
+	 
 	BUILD_BUG_ON(next_csid_chk_cntr_bits(SEG6_LOCAL_LCBLOCK_DBITS,
 					     SEG6_LOCAL_LCNODE_FN_DBITS));
 	BUILD_BUG_ON(next_csid_chk_lcblock_bits(SEG6_LOCAL_LCBLOCK_DBITS));
 	BUILD_BUG_ON(next_csid_chk_lcnode_fn_bits(SEG6_LOCAL_LCNODE_FN_DBITS));
 
-	/* To be memory efficient, we use 'u8' to represent the different
-	 * actions related to RFC8986 flavors. If the kernel build stops here,
-	 * it means that it is not possible to correctly encode these actions
-	 * with the data type chosen for the action table.
-	 */
+	 
 	BUILD_BUG_ON(SEG6_LOCAL_FLV_ACT_MAX > (typeof(flv8986_act_tbl[0]))~0U);
 
 	return lwtunnel_encap_add_ops(&seg6_local_ops,

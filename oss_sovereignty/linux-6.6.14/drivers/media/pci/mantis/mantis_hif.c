@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-	Mantis PCI bridge driver
 
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
 
 #include <linux/kernel.h>
 #include <linux/signal.h>
@@ -22,7 +17,7 @@
 #include "mantis_common.h"
 
 #include "mantis_hif.h"
-#include "mantis_link.h" /* temporary due to physical layer stuff */
+#include "mantis_link.h"  
 
 #include "mantis_reg.h"
 
@@ -116,7 +111,7 @@ int mantis_hif_write_mem(struct mantis_ca *ca, u32 addr, u8 data)
 	hif_addr |=  MANTIS_HIF_STATUS;
 	hif_addr |=  addr;
 
-	mmwrite(slot->slave_cfg, MANTIS_GPIF_CFGSLA); /* Slot0 alone for now */
+	mmwrite(slot->slave_cfg, MANTIS_GPIF_CFGSLA);  
 	mmwrite(hif_addr, MANTIS_GPIF_ADDR);
 	mmwrite(data, MANTIS_GPIF_DOUT);
 

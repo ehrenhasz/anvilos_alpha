@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
+ 
 
 #ifndef _VKMS_FORMATS_H_
 #define _VKMS_FORMATS_H_
@@ -9,4 +9,4 @@ void *get_pixel_conversion_function(u32 format);
 
 void *get_pixel_write_function(u32 format);
 
-#endif /* _VKMS_FORMATS_H_ */
+#endif  

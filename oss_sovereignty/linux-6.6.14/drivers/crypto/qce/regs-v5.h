@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef _REGS_V5_H_
 #define _REGS_V5_H_
@@ -102,7 +100,7 @@
 #define REG_AUTH_KEY14			0x3078
 #define REG_AUTH_KEY15			0x307c
 
-/* Register bits - REG_VERSION */
+ 
 #define CORE_STEP_REV_SHIFT		0
 #define CORE_STEP_REV_MASK		GENMASK(15, 0)
 #define CORE_MINOR_REV_SHIFT		16
@@ -110,7 +108,7 @@
 #define CORE_MAJOR_REV_SHIFT		24
 #define CORE_MAJOR_REV_MASK		GENMASK(31, 24)
 
-/* Register bits - REG_STATUS */
+ 
 #define MAC_FAILED_SHIFT		31
 #define DOUT_SIZE_AVAIL_SHIFT		26
 #define DOUT_SIZE_AVAIL_MASK		GENMASK(30, 26)
@@ -136,11 +134,11 @@
 #define OPERATION_DONE_SHIFT		1
 #define SW_ERR_SHIFT			0
 
-/* Register bits - REG_STATUS2 */
+ 
 #define AXI_EXTRA_SHIFT			1
 #define LOCKED_SHIFT			2
 
-/* Register bits - REG_CONFIG */
+ 
 #define REQ_SIZE_SHIFT			17
 #define REQ_SIZE_MASK			GENMASK(20, 17)
 #define REQ_SIZE_ENUM_1_BEAT		0
@@ -179,7 +177,7 @@
 #define MASK_OP_DONE_INTR_SHIFT		1
 #define MASK_ERR_INTR_SHIFT		0
 
-/* Register bits - REG_AUTH_SEG_CFG */
+ 
 #define COMP_EXP_MAC_SHIFT		24
 #define COMP_EXP_MAC_DISABLED		0
 #define COMP_EXP_MAC_ENABLED		1
@@ -243,11 +241,11 @@
 #define AUTH_ALG_SNOW3G			4
 #define AUTH_ALG_ZUC			5
 
-/* Register bits - REG_ENCR_XTS_DU_SIZE */
+ 
 #define ENCR_XTS_DU_SIZE_SHIFT		0
 #define ENCR_XTS_DU_SIZE_MASK		GENMASK(19, 0)
 
-/* Register bits - REG_ENCR_SEG_CFG */
+ 
 #define F8_KEYSTREAM_ENABLE_SHIFT	17
 #define F8_KEYSTREAM_DISABLED		0
 #define F8_KEYSTREAM_ENABLED		1
@@ -298,12 +296,12 @@
 #define ENCR_ALG_SNOW_3G		5
 #define ENCR_ALG_ZUC			6
 
-/* Register bits - REG_GOPROC */
+ 
 #define GO_SHIFT			0
 #define CLR_CNTXT_SHIFT			1
 #define RESULTS_DUMP_SHIFT		2
 
-/* Register bits - REG_ENGINES_AVAIL */
+ 
 #define ENCR_AES_SEL_SHIFT		0
 #define DES_SEL_SHIFT			1
 #define ENCR_SNOW3G_SEL_SHIFT		2
@@ -323,4 +321,4 @@
 #define AUTH_ZUC_SEL_SHIFT		27
 #define ZUC_ENABLE_SHIFT		28
 
-#endif /* _REGS_V5_H_ */
+#endif  

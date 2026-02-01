@@ -1,22 +1,4 @@
-/*
- * Atmel SAMA5D2-Compatible Shutdown Controller (SHDWC) driver.
- * Found on some SoCs as the sama5d2 (obviously).
- *
- * Copyright (C) 2015 Atmel Corporation,
- *                    Nicolas Ferre <nicolas.ferre@atmel.com>
- *
- * Evolved from driver at91-poweroff.c.
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- *
- * TODO:
- * - addition to status of other wake-up inputs [1 - 15]
- * - Analog Comparator wake-up alarm
- * - Serial RX wake-up alarm
- * - low power debouncer
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/clk/at91_pmc.h>
@@ -31,23 +13,23 @@
 
 #define SLOW_CLOCK_FREQ	32768
 
-#define AT91_SHDW_CR	0x00		/* Shut Down Control Register */
-#define AT91_SHDW_SHDW		BIT(0)			/* Shut Down command */
-#define AT91_SHDW_KEY		(0xa5UL << 24)		/* KEY Password */
+#define AT91_SHDW_CR	0x00		 
+#define AT91_SHDW_SHDW		BIT(0)			 
+#define AT91_SHDW_KEY		(0xa5UL << 24)		 
 
-#define AT91_SHDW_MR	0x04		/* Shut Down Mode Register */
+#define AT91_SHDW_MR	0x04		 
 #define AT91_SHDW_WKUPDBC_SHIFT	24
 #define AT91_SHDW_WKUPDBC_MASK	GENMASK(26, 24)
 #define AT91_SHDW_WKUPDBC(x)	(((x) << AT91_SHDW_WKUPDBC_SHIFT) \
 						& AT91_SHDW_WKUPDBC_MASK)
 
-#define AT91_SHDW_SR	0x08		/* Shut Down Status Register */
+#define AT91_SHDW_SR	0x08		 
 #define AT91_SHDW_WKUPIS_SHIFT	16
 #define AT91_SHDW_WKUPIS_MASK	GENMASK(31, 16)
 #define AT91_SHDW_WKUPIS(x)	((1 << (x)) << AT91_SHDW_WKUPIS_SHIFT \
 						& AT91_SHDW_WKUPIS_MASK)
 
-#define AT91_SHDW_WUIR	0x0c		/* Shutdown Wake-up Inputs Register */
+#define AT91_SHDW_WUIR	0x0c		 
 #define AT91_SHDW_WKUPEN_MASK	GENMASK(15, 0)
 #define AT91_SHDW_WKUPEN(x)	((1 << (x)) & AT91_SHDW_WKUPEN_MASK)
 #define AT91_SHDW_WKUPT_SHIFT	16
@@ -97,10 +79,7 @@ struct shdwc {
 	void __iomem *pmc_base;
 };
 
-/*
- * Hold configuration here, cannot be more than one instance of the driver
- * since pm_power_off itself is global.
- */
+ 
 static struct shdwc *at91_shdwc;
 
 static const unsigned long long sdwc_dbc_period[] = {
@@ -118,7 +97,7 @@ static void __init at91_wakeup_status(struct platform_device *pdev)
 
 	dev_dbg(&pdev->dev, "%s: status = %#x\n", __func__, reg);
 
-	/* Simple power-on, just bail out */
+	 
 	if (!reg)
 		return;
 
@@ -135,27 +114,27 @@ static void __init at91_wakeup_status(struct platform_device *pdev)
 static void at91_poweroff(void)
 {
 	asm volatile(
-		/* Align to cache lines */
+		 
 		".balign 32\n\t"
 
-		/* Ensure AT91_SHDW_CR is in the TLB by reading it */
+		 
 		"	ldr	r6, [%2, #" __stringify(AT91_SHDW_CR) "]\n\t"
 
-		/* Power down SDRAM0 */
+		 
 		"	tst	%0, #0\n\t"
 		"	beq	1f\n\t"
 		"	str	%1, [%0, #" __stringify(AT91_DDRSDRC_LPR) "]\n\t"
 
-		/* Switch the master clock source to slow clock. */
+		 
 		"1:	ldr	r6, [%4, %5]\n\t"
 		"	bic	r6, r6,  #" __stringify(AT91_PMC_CSS) "\n\t"
 		"	str	r6, [%4, %5]\n\t"
-		/* Wait for clock switch. */
+		 
 		"2:	ldr	r6, [%4, #" __stringify(AT91_PMC_SR) "]\n\t"
 		"	tst	r6, #"	    __stringify(AT91_PMC_MCKRDY) "\n\t"
 		"	beq	2b\n\t"
 
-		/* Shutdown CPU */
+		 
 		"	str	%3, [%2, #" __stringify(AT91_SHDW_CR) "]\n\t"
 
 		"	b	.\n\t"
@@ -317,7 +296,7 @@ static const struct of_device_id at91_shdwc_of_match[] = {
 		.compatible = "microchip,sama7g5-shdwc",
 		.data = &sama7g5_reg_config,
 	}, {
-		/*sentinel*/
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, at91_shdwc_of_match);
@@ -326,7 +305,7 @@ static const struct of_device_id at91_pmc_ids[] = {
 	{ .compatible = "atmel,sama5d2-pmc" },
 	{ .compatible = "microchip,sam9x60-pmc" },
 	{ .compatible = "microchip,sama7g5-pmc" },
-	{ /* Sentinel. */ }
+	{   }
 };
 
 static int __init at91_shdwc_probe(struct platform_device *pdev)
@@ -428,7 +407,7 @@ static int __exit at91_shdwc_remove(struct platform_device *pdev)
 	if (pm_power_off == at91_poweroff)
 		pm_power_off = NULL;
 
-	/* Reset values to disable wake-up features  */
+	 
 	writel(0, shdw->shdwc_base + AT91_SHDW_MR);
 	writel(0, shdw->shdwc_base + AT91_SHDW_WUIR);
 

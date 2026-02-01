@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (c) 2014 Samsung Electronics Co., Ltd.
- * Author: Ajay Kumar <ajaykumar.rs@samsung.com>
- */
+ 
+ 
 
 #ifndef EXYNOS_REGS_DECON7_H
 #define EXYNOS_REGS_DECON7_H
 
-/* VIDCON0 */
+ 
 #define VIDCON0					0x00
 
 #define VIDCON0_SWRESET				(1 << 28)
@@ -15,7 +12,7 @@
 #define VIDCON0_ENVID				(1 << 1)
 #define VIDCON0_ENVID_F				(1 << 0)
 
-/* VIDOUTCON0 */
+ 
 #define VIDOUTCON0				0x4
 
 #define VIDOUTCON0_DUAL_MASK			(0x3 << 24)
@@ -28,29 +25,29 @@
 #define VIDOUTCON0_RGBIF			(0x0 << 23)
 #define VIDOUTCON0_I80IF			(0x1 << 23)
 
-/* VIDCON3 */
+ 
 #define VIDCON3					0x8
 
-/* VIDCON4 */
+ 
 #define VIDCON4					0xC
 #define VIDCON4_FIFOCNT_START_EN		(1 << 0)
 
-/* VCLKCON0 */
+ 
 #define VCLKCON0				0x10
 #define VCLKCON0_CLKVALUP			(1 << 8)
 #define VCLKCON0_VCLKFREE			(1 << 0)
 
-/* VCLKCON */
+ 
 #define VCLKCON1				0x14
 #define VCLKCON1_CLKVAL_NUM_VCLK(val)		(((val) & 0xff) << 0)
 #define VCLKCON2				0x18
 
-/* SHADOWCON */
+ 
 #define SHADOWCON				0x30
 
 #define SHADOWCON_WINx_PROTECT(_win)		(1 << (10 + (_win)))
 
-/* WINCONx */
+ 
 #define WINCON(_win)				(0x50 + ((_win) * 4))
 
 #define WINCONx_BUFSTATUS			(0x3 << 30)
@@ -85,10 +82,10 @@
 #define WINCON3_ALPHA_MUL_F			(1 << 7)
 #define WINCON4_ALPHA_MUL_F			(1 << 7)
 
-/*  VIDOSDxH: The height for the OSD image(READ ONLY)*/
+ 
 #define VIDOSD_H(_x)				(0x80 + ((_x) * 4))
 
-/* Frame buffer start addresses: VIDWxxADD0n */
+ 
 #define VIDW_BUF_START(_win)			(0x80 + ((_win) * 0x10))
 #define VIDW_BUF_START1(_win)			(0x84 + ((_win) * 0x10))
 #define VIDW_BUF_START2(_win)			(0x88 + ((_win) * 0x10))
@@ -100,19 +97,19 @@
 #define VIDW_BLKOFFSET(_win)			(0x01B0 + ((_win) * 4))
 #define VIDW_BLKSIZE(win)			(0x0200 + ((_win) * 4))
 
-/* Interrupt controls register */
+ 
 #define VIDINTCON2				0x228
 
 #define VIDINTCON1_INTEXTRA1_EN			(1 << 1)
 #define VIDINTCON1_INTEXTRA0_EN			(1 << 0)
 
-/* Interrupt controls and status register */
+ 
 #define VIDINTCON3				0x22C
 
 #define VIDINTCON1_INTEXTRA1_PEND		(1 << 1)
 #define VIDINTCON1_INTEXTRA0_PEND		(1 << 0)
 
-/* VIDOSDxA ~ VIDOSDxE */
+ 
 #define VIDOSD_BASE				0x230
 
 #define OSD_STRIDE				0x20
@@ -156,7 +153,7 @@
 #define VIDOSDxD_ALPHA1_G_F(_x)			(((_x) & 0xFF) << 8)
 #define VIDOSDxD_ALPHA1_B_F(_x)			(((_x) & 0xFF) >> 0)
 
-/* Window MAP (Color map) */
+ 
 #define WINxMAP(_win)				(0x340 + ((_win) * 4))
 
 #define WINxMAP_MAP				(1 << 24)
@@ -165,7 +162,7 @@
 #define WINxMAP_MAP_COLOUR_LIMIT		0xffffff
 #define WINxMAP_MAP_COLOUR(_x)			((_x) << 0)
 
-/* Window colour-key control registers */
+ 
 #define WKEYCON					0x370
 
 #define WKEYCON0				0x00
@@ -182,19 +179,19 @@
 #define WxKEYCON1_COLVAL_LIMIT			0xffffff
 #define WxKEYCON1_COLVAL(_x)			((_x) << 0)
 
-/* color key control register for hardware window 1 ~ 4. */
+ 
 #define WKEYCON0_BASE(x)		((WKEYCON + WKEYCON0) + ((x - 1) * 8))
-/* color key value register for hardware window 1 ~ 4. */
+ 
 #define WKEYCON1_BASE(x)		((WKEYCON + WKEYCON1) + ((x - 1) * 8))
 
-/* Window KEY Alpha value */
+ 
 #define WxKEYALPHA(_win)			(0x3A0 + (((_win) - 1) * 0x4))
 
 #define Wx_KEYALPHA_R_F_SHIFT			16
 #define Wx_KEYALPHA_G_F_SHIFT			8
 #define Wx_KEYALPHA_B_F_SHIFT			0
 
-/* Blending equation */
+ 
 #define BLENDE(_win)				(0x03C0 + ((_win) * 4))
 #define BLENDE_COEF_ZERO			0x0
 #define BLENDE_COEF_ONE				0x1
@@ -212,13 +209,13 @@
 #define BLENDE_B_FUNC(_v)			((_v) << 6)
 #define BLENDE_A_FUNC(_v)			((_v) << 0)
 
-/* Blending equation control */
+ 
 #define BLENDCON				0x3D8
 #define BLENDCON_NEW_MASK			(1 << 0)
 #define BLENDCON_NEW_8BIT_ALPHA_VALUE		(1 << 0)
 #define BLENDCON_NEW_4BIT_ALPHA_VALUE		(0 << 0)
 
-/* Interrupt control register */
+ 
 #define VIDINTCON0				0x500
 
 #define VIDINTCON0_WAKEUP_MASK			(0x3f << 26)
@@ -245,7 +242,7 @@
 
 #define VIDINTCON0_INT_ENABLE			(1 << 0)
 
-/* Interrupt controls and status register */
+ 
 #define VIDINTCON1				0x504
 
 #define VIDINTCON1_INT_EXTRA			(1 << 3)
@@ -253,7 +250,7 @@
 #define VIDINTCON1_INT_FRAME			(1 << 1)
 #define VIDINTCON1_INT_FIFO			(1 << 0)
 
-/* VIDCON1 */
+ 
 #define VIDCON1(_x)				(0x0600 + ((_x) * 0x50))
 #define VIDCON1_LINECNT_GET(_v)			(((_v) >> 17) & 0x1fff)
 #define VIDCON1_VCLK_MASK			(0x3 << 9)
@@ -268,7 +265,7 @@
 #define VIDCON1_RGB_ORDER_O_RBG			(0x5 << 4)
 #define VIDCON1_RGB_ORDER_O_GRB			(0x6 << 4)
 
-/* VIDTCON0 */
+ 
 #define VIDTCON0				0x610
 
 #define VIDTCON0_VBPD_MASK			(0xffff << 16)
@@ -281,7 +278,7 @@
 #define VIDTCON0_VFPD_LIMIT			0xffff
 #define VIDTCON0_VFPD(_x)			((_x) << 0)
 
-/* VIDTCON1 */
+ 
 #define VIDTCON1				0x614
 
 #define VIDTCON1_VSPW_MASK			(0xffff << 16)
@@ -289,7 +286,7 @@
 #define VIDTCON1_VSPW_LIMIT			0xffff
 #define VIDTCON1_VSPW(_x)			((_x) << 16)
 
-/* VIDTCON2 */
+ 
 #define VIDTCON2				0x618
 
 #define VIDTCON2_HBPD_MASK			(0xffff << 16)
@@ -302,7 +299,7 @@
 #define VIDTCON2_HFPD_LIMIT			0xffff
 #define VIDTCON2_HFPD(_x)			((_x) << 0)
 
-/* VIDTCON3 */
+ 
 #define VIDTCON3				0x61C
 
 #define VIDTCON3_HSPW_MASK			(0xffff << 16)
@@ -310,7 +307,7 @@
 #define VIDTCON3_HSPW_LIMIT			0xffff
 #define VIDTCON3_HSPW(_x)			((_x) << 16)
 
-/* VIDTCON4 */
+ 
 #define VIDTCON4				0x620
 
 #define VIDTCON4_LINEVAL_MASK			(0xfff << 16)
@@ -323,16 +320,16 @@
 #define VIDTCON4_HOZVAL_LIMIT			0xfff
 #define VIDTCON4_HOZVAL(_x)			(((_x) & 0xfff) << 0)
 
-/* LINECNT OP THRSHOLD*/
+ 
 #define LINECNT_OP_THRESHOLD			0x630
 
-/* CRCCTRL */
+ 
 #define CRCCTRL					0x6C8
 #define CRCCTRL_CRCCLKEN			(0x1 << 2)
 #define CRCCTRL_CRCSTART_F			(0x1 << 1)
 #define CRCCTRL_CRCEN				(0x1 << 0)
 
-/* DECON_CMU */
+ 
 #define DECON_CMU				0x704
 
 #define DECON_CMU_ALL_CLKGATE_ENABLE		0x3
@@ -340,10 +337,10 @@
 #define DECON_CMU_SFR_CLKGATE_ENABLE		(0x1 << 1)
 #define DECON_CMU_MEM_CLKGATE_ENABLE		(0x1 << 0)
 
-/* DECON_UPDATE */
+ 
 #define DECON_UPDATE				0x710
 
 #define DECON_UPDATE_SLAVE_SYNC			(1 << 4)
 #define DECON_UPDATE_STANDALONE_F		(1 << 0)
 
-#endif /* EXYNOS_REGS_DECON7_H */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Lynxpoint PCH pinctrl/GPIO driver
- *
- * Copyright (c) 2012, 2019, Intel Corporation
- * Authors: Mathias Nyman <mathias.nyman@linux.intel.com>
- *          Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -143,68 +137,39 @@ static const struct intel_pinctrl_soc_data lptlp_soc_data = {
 	.ncommunities	= ARRAY_SIZE(lptlp_communities),
 };
 
-/* LynxPoint chipset has support for 95 GPIO pins */
+ 
 
 #define LP_NUM_GPIO	95
 
-/* Bitmapped register offsets */
-#define LP_ACPI_OWNED	0x00 /* Bitmap, set by bios, 0: pin reserved for ACPI */
-#define LP_IRQ2IOXAPIC	0x10 /* Bitmap, set by bios, 1: pin routed to IOxAPIC */
-#define LP_GC		0x7C /* set APIC IRQ to IRQ14 or IRQ15 for all pins */
+ 
+#define LP_ACPI_OWNED	0x00  
+#define LP_IRQ2IOXAPIC	0x10  
+#define LP_GC		0x7C  
 #define LP_INT_STAT	0x80
 #define LP_INT_ENABLE	0x90
 
-/* Each pin has two 32 bit config registers, starting at 0x100 */
+ 
 #define LP_CONFIG1	0x100
 #define LP_CONFIG2	0x104
 
-/* LP_CONFIG1 reg bits */
+ 
 #define OUT_LVL_BIT	BIT(31)
 #define IN_LVL_BIT	BIT(30)
-#define TRIG_SEL_BIT	BIT(4) /* 0: Edge, 1: Level */
-#define INT_INV_BIT	BIT(3) /* Invert interrupt triggering */
-#define DIR_BIT		BIT(2) /* 0: Output, 1: Input */
-#define USE_SEL_MASK	GENMASK(1, 0)	/* 0: Native, 1: GPIO, ... */
+#define TRIG_SEL_BIT	BIT(4)  
+#define INT_INV_BIT	BIT(3)  
+#define DIR_BIT		BIT(2)  
+#define USE_SEL_MASK	GENMASK(1, 0)	 
 #define USE_SEL_NATIVE	(0 << 0)
 #define USE_SEL_GPIO	(1 << 0)
 
-/* LP_CONFIG2 reg bits */
-#define GPINDIS_BIT	BIT(2) /* disable input sensing */
-#define GPIWP_MASK	GENMASK(1, 0)	/* weak pull options */
-#define GPIWP_NONE	0		/* none */
-#define GPIWP_DOWN	1		/* weak pull down */
-#define GPIWP_UP	2		/* weak pull up */
+ 
+#define GPINDIS_BIT	BIT(2)  
+#define GPIWP_MASK	GENMASK(1, 0)	 
+#define GPIWP_NONE	0		 
+#define GPIWP_DOWN	1		 
+#define GPIWP_UP	2		 
 
-/*
- * Lynxpoint gpios are controlled through both bitmapped registers and
- * per gpio specific registers. The bitmapped registers are in chunks of
- * 3 x 32bit registers to cover all 95 GPIOs
- *
- * per gpio specific registers consist of two 32bit registers per gpio
- * (LP_CONFIG1 and LP_CONFIG2), with 95 GPIOs there's a total of
- * 190 config registers.
- *
- * A simplified view of the register layout look like this:
- *
- * LP_ACPI_OWNED[31:0] gpio ownerships for gpios 0-31  (bitmapped registers)
- * LP_ACPI_OWNED[63:32] gpio ownerships for gpios 32-63
- * LP_ACPI_OWNED[94:64] gpio ownerships for gpios 63-94
- * ...
- * LP_INT_ENABLE[31:0] ...
- * LP_INT_ENABLE[63:32] ...
- * LP_INT_ENABLE[94:64] ...
- * LP0_CONFIG1 (gpio 0) config1 reg for gpio 0 (per gpio registers)
- * LP0_CONFIG2 (gpio 0) config2 reg for gpio 0
- * LP1_CONFIG1 (gpio 1) config1 reg for gpio 1
- * LP1_CONFIG2 (gpio 1) config2 reg for gpio 1
- * LP2_CONFIG1 (gpio 2) ...
- * LP2_CONFIG2 (gpio 2) ...
- * ...
- * LP94_CONFIG1 (gpio 94) ...
- * LP94_CONFIG2 (gpio 94) ...
- *
- * IOxAPIC redirection map applies only for gpio 8-10, 13-14, 45-55.
- */
+ 
 
 static void __iomem *lp_gpio_reg(struct gpio_chip *chip, unsigned int offset,
 				 int reg)
@@ -220,10 +185,10 @@ static void __iomem *lp_gpio_reg(struct gpio_chip *chip, unsigned int offset,
 	offset -= comm->pin_base;
 
 	if (reg == LP_CONFIG1 || reg == LP_CONFIG2)
-		/* per gpio specific config registers */
+		 
 		reg_offset = offset * 8;
 	else
-		/* bitmapped registers */
+		 
 		reg_offset = (offset / 32) * 4;
 
 	return comm->regs + reg_offset + reg;
@@ -296,7 +261,7 @@ static int lp_pinmux_set_mux(struct pinctrl_dev *pctldev,
 
 	raw_spin_lock_irqsave(&lg->lock, flags);
 
-	/* Now enable the mux setting for each pin in the group */
+	 
 	for (i = 0; i < grp->grp.npins; i++) {
 		void __iomem *reg = lp_gpio_reg(&lg->chip, grp->grp.pins[i], LP_CONFIG1);
 		u32 value;
@@ -341,17 +306,14 @@ static int lp_gpio_request_enable(struct pinctrl_dev *pctldev,
 
 	raw_spin_lock_irqsave(&lg->lock, flags);
 
-	/*
-	 * Reconfigure pin to GPIO mode if needed and issue a warning,
-	 * since we expect firmware to configure it properly.
-	 */
+	 
 	value = ioread32(reg);
 	if ((value & USE_SEL_MASK) != USE_SEL_GPIO) {
 		iowrite32((value & USE_SEL_MASK) | USE_SEL_GPIO, reg);
 		dev_warn(lg->dev, FW_BUG "pin %u forcibly reconfigured as GPIO\n", pin);
 	}
 
-	/* Enable input sensing */
+	 
 	lp_gpio_enable_input(conf2);
 
 	raw_spin_unlock_irqrestore(&lg->lock, flags);
@@ -369,7 +331,7 @@ static void lp_gpio_disable_free(struct pinctrl_dev *pctldev,
 
 	raw_spin_lock_irqsave(&lg->lock, flags);
 
-	/* Disable input sensing */
+	 
 	lp_gpio_disable_input(conf2);
 
 	raw_spin_unlock_irqrestore(&lg->lock, flags);
@@ -393,12 +355,7 @@ static int lp_gpio_set_direction(struct pinctrl_dev *pctldev,
 	if (input) {
 		value |= DIR_BIT;
 	} else {
-		/*
-		 * Before making any direction modifications, do a check if GPIO
-		 * is set for direct IRQ. On Lynxpoint, setting GPIO to output
-		 * does not make sense, so let's at least warn the caller before
-		 * they shoot themselves in the foot.
-		 */
+		 
 		WARN(lp_gpio_ioxapic_use(&lg->chip, pin),
 		     "Potential Error: Setting GPIO to output with IOxAPIC redirection");
 	}
@@ -576,12 +533,12 @@ static void lp_gpio_irq_handler(struct irq_desc *desc)
 	unsigned long pending;
 	u32 base, pin;
 
-	/* check from GPIO controller which pin triggered the interrupt */
+	 
 	for (base = 0; base < lg->chip.ngpio; base += 32) {
 		reg = lp_gpio_reg(&lg->chip, base, LP_INT_STAT);
 		ena = lp_gpio_reg(&lg->chip, base, LP_INT_ENABLE);
 
-		/* Only interrupts that are enabled */
+		 
 		pending = ioread32(reg) & ioread32(ena);
 
 		for_each_set_bit(pin, &pending, 32)
@@ -654,7 +611,7 @@ static int lp_irq_set_type(struct irq_data *d, unsigned int type)
 	if (!reg)
 		return -EINVAL;
 
-	/* Fail if BIOS reserved pin for ACPI use */
+	 
 	if (lp_gpio_acpi_use(lg, hwirq)) {
 		dev_err(lg->dev, "pin %lu can't be used as IRQ\n", hwirq);
 		return -EBUSY;
@@ -663,19 +620,19 @@ static int lp_irq_set_type(struct irq_data *d, unsigned int type)
 	raw_spin_lock_irqsave(&lg->lock, flags);
 	value = ioread32(reg);
 
-	/* set both TRIG_SEL and INV bits to 0 for rising edge */
+	 
 	if (type & IRQ_TYPE_EDGE_RISING)
 		value &= ~(TRIG_SEL_BIT | INT_INV_BIT);
 
-	/* TRIG_SEL bit 0, INV bit 1 for falling edge */
+	 
 	if (type & IRQ_TYPE_EDGE_FALLING)
 		value = (value | INT_INV_BIT) & ~TRIG_SEL_BIT;
 
-	/* TRIG_SEL bit 1, INV bit 0 for level low */
+	 
 	if (type & IRQ_TYPE_LEVEL_LOW)
 		value = (value | TRIG_SEL_BIT) & ~INT_INV_BIT;
 
-	/* TRIG_SEL bit 1, INV bit 1 for level high */
+	 
 	if (type & IRQ_TYPE_LEVEL_HIGH)
 		value |= TRIG_SEL_BIT | INT_INV_BIT;
 
@@ -710,10 +667,10 @@ static int lp_gpio_irq_init_hw(struct gpio_chip *chip)
 	unsigned int base;
 
 	for (base = 0; base < lg->chip.ngpio; base += 32) {
-		/* disable gpio pin interrupts */
+		 
 		reg = lp_gpio_reg(&lg->chip, base, LP_INT_ENABLE);
 		iowrite32(0, reg);
-		/* Clear interrupt status register */
+		 
 		reg = lp_gpio_reg(&lg->chip, base, LP_INT_STAT);
 		iowrite32(0xffffffff, reg);
 	}
@@ -815,7 +772,7 @@ static int lp_gpio_probe(struct platform_device *pdev)
 	gc->add_pin_ranges = lp_gpio_add_pin_ranges;
 	gc->parent = dev;
 
-	/* set up interrupts  */
+	 
 	irq = platform_get_irq_optional(pdev, 0);
 	if (irq > 0) {
 		struct gpio_irq_chip *girq;
@@ -869,7 +826,7 @@ static int lp_gpio_resume(struct device *dev)
 	const char *dummy;
 	int i;
 
-	/* on some hardware suspend clears input sensing, re-enable it here */
+	 
 	for_each_requested_gpio(chip, i, dummy)
 		lp_gpio_enable_input(lp_gpio_reg(chip, i, LP_CONFIG2));
 

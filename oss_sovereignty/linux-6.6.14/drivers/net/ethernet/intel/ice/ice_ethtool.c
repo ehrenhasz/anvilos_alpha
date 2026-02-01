@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018, Intel Corporation. */
 
-/* ethtool support for ice */
+ 
+
+ 
 
 #include "ice.h"
 #include "ice_ethtool.h"
@@ -85,15 +85,7 @@ static const char ice_gstrings_test[][ETH_GSTRING_LEN] = {
 
 #define ICE_TEST_LEN (sizeof(ice_gstrings_test) / ETH_GSTRING_LEN)
 
-/* These PF_STATs might look like duplicates of some NETDEV_STATs,
- * but they aren't. This device is capable of supporting multiple
- * VSIs/netdevs on a single PF. The NETDEV_STATs are for individual
- * netdevs whereas the PF_STATs are for the physical function that's
- * hosting these netdevs.
- *
- * The PF_STATs are appended to the netdev stats only when ethtool -S
- * is queried on the base PF netdev.
- */
+ 
 static const struct ice_stats ice_gstrings_pf_stats[] = {
 	ICE_PF_STAT("rx_bytes.nic", stats.eth.rx_bytes),
 	ICE_PF_STAT("tx_bytes.nic", stats.eth.tx_bytes),
@@ -325,7 +317,7 @@ static const u32 ice_regs_dump_list[] = {
 
 struct ice_priv_flag {
 	char name[ETH_GSTRING_LEN];
-	u32 bitno;			/* bit position in pf->flags */
+	u32 bitno;			 
 };
 
 #define ICE_PRIV_FLAG(_name, _bitno) { \
@@ -359,9 +351,7 @@ __ice_get_drvinfo(struct net_device *netdev, struct ethtool_drvinfo *drvinfo,
 
 	strscpy(drvinfo->driver, KBUILD_MODNAME, sizeof(drvinfo->driver));
 
-	/* Display NVM version (from which the firmware version can be
-	 * determined) which contains more pertinent information.
-	 */
+	 
 	snprintf(drvinfo->fw_version, sizeof(drvinfo->fw_version),
 		 "%x.%02x 0x%x %d.%d.%d", nvm->major, nvm->minor,
 		 nvm->eetrack, orom->major, orom->build, orom->patch);
@@ -408,7 +398,7 @@ static u32 ice_get_msglevel(struct net_device *netdev)
 	if (pf->hw.debug_mask)
 		netdev_info(netdev, "hw debug_mask: 0x%llX\n",
 			    pf->hw.debug_mask);
-#endif /* !CONFIG_DYNAMIC_DEBUG */
+#endif  
 
 	return pf->msg_enable;
 }
@@ -425,7 +415,7 @@ static void ice_set_msglevel(struct net_device *netdev, u32 data)
 		pf->msg_enable = data;
 #else
 	pf->msg_enable = data;
-#endif /* !CONFIG_DYNAMIC_DEBUG */
+#endif  
 }
 
 static int ice_get_eeprom_len(struct net_device *netdev)
@@ -481,12 +471,7 @@ out:
 	return ret;
 }
 
-/**
- * ice_active_vfs - check if there are any active VFs
- * @pf: board private structure
- *
- * Returns true if an active VF is found, otherwise returns false
- */
+ 
 static bool ice_active_vfs(struct ice_pf *pf)
 {
 	bool active = false;
@@ -505,13 +490,7 @@ static bool ice_active_vfs(struct ice_pf *pf)
 	return active;
 }
 
-/**
- * ice_link_test - perform a link test on a given net_device
- * @netdev: network interface device structure
- *
- * This function performs one of the self-tests required by ethtool.
- * Returns 0 on success, non-zero on failure.
- */
+ 
 static u64 ice_link_test(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -532,13 +511,7 @@ static u64 ice_link_test(struct net_device *netdev)
 	return 0;
 }
 
-/**
- * ice_eeprom_test - perform an EEPROM test on a given net_device
- * @netdev: network interface device structure
- *
- * This function performs one of the self-tests required by ethtool.
- * Returns 0 on success, non-zero on failure.
- */
+ 
 static u64 ice_eeprom_test(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -548,12 +521,7 @@ static u64 ice_eeprom_test(struct net_device *netdev)
 	return !!(ice_nvm_validate_checksum(&pf->hw));
 }
 
-/**
- * ice_reg_pattern_test
- * @hw: pointer to the HW struct
- * @reg: reg to be tested
- * @mask: bits to be touched
- */
+ 
 static int ice_reg_pattern_test(struct ice_hw *hw, u32 reg, u32 mask)
 {
 	struct ice_pf *pf = (struct ice_pf *)hw->back;
@@ -589,13 +557,7 @@ static int ice_reg_pattern_test(struct ice_hw *hw, u32 reg, u32 mask)
 	return 0;
 }
 
-/**
- * ice_reg_test - perform a register test on a given net_device
- * @netdev: network interface device structure
- *
- * This function performs one of the self-tests required by ethtool.
- * Returns 0 on success, non-zero on failure.
- */
+ 
 static u64 ice_reg_test(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -627,7 +589,7 @@ static u64 ice_reg_test(struct net_device *netdev)
 			u32 reg = ice_reg_list[i].address +
 				(j * ice_reg_list[i].elem_size);
 
-			/* bail on failure (non-zero return) */
+			 
 			if (ice_reg_pattern_test(hw, reg, mask))
 				return 1;
 		}
@@ -636,15 +598,7 @@ static u64 ice_reg_test(struct net_device *netdev)
 	return 0;
 }
 
-/**
- * ice_lbtest_prepare_rings - configure Tx/Rx test rings
- * @vsi: pointer to the VSI structure
- *
- * Function configures rings of a VSI for loopback test without
- * enabling interrupts or informing the kernel about new queues.
- *
- * Returns 0 on success, negative on failure.
- */
+ 
 static int ice_lbtest_prepare_rings(struct ice_vsi *vsi)
 {
 	int status;
@@ -677,13 +631,7 @@ err_setup_tx_ring:
 	return status;
 }
 
-/**
- * ice_lbtest_disable_rings - disable Tx/Rx test rings after loopback test
- * @vsi: pointer to the VSI structure
- *
- * Function stops and frees VSI rings after a loopback test.
- * Returns 0 on success, negative on failure.
- */
+ 
 static int ice_lbtest_disable_rings(struct ice_vsi *vsi)
 {
 	int status;
@@ -704,15 +652,7 @@ static int ice_lbtest_disable_rings(struct ice_vsi *vsi)
 	return status;
 }
 
-/**
- * ice_lbtest_create_frame - create test packet
- * @pf: pointer to the PF structure
- * @ret_data: allocated frame buffer
- * @size: size of the packet data
- *
- * Function allocates a frame with a test pattern on specific offsets.
- * Returns 0 on success, non-zero on failure.
- */
+ 
 static int ice_lbtest_create_frame(struct ice_pf *pf, u8 **ret_data, u16 size)
 {
 	u8 *data;
@@ -724,9 +664,7 @@ static int ice_lbtest_create_frame(struct ice_pf *pf, u8 **ret_data, u16 size)
 	if (!data)
 		return -ENOMEM;
 
-	/* Since the ethernet test frame should always be at least
-	 * 64 bytes long, fill some octets in the payload with test data.
-	 */
+	 
 	memset(data, 0xFF, size);
 	data[32] = 0xDE;
 	data[42] = 0xAD;
@@ -738,16 +676,10 @@ static int ice_lbtest_create_frame(struct ice_pf *pf, u8 **ret_data, u16 size)
 	return 0;
 }
 
-/**
- * ice_lbtest_check_frame - verify received loopback frame
- * @frame: pointer to the raw packet data
- *
- * Function verifies received test frame with a pattern.
- * Returns true if frame matches the pattern, false otherwise.
- */
+ 
 static bool ice_lbtest_check_frame(u8 *frame)
 {
-	/* Validate bytes of a frame under offsets chosen earlier */
+	 
 	if (frame[32] == 0xDE &&
 	    frame[42] == 0xAD &&
 	    frame[44] == 0xBE &&
@@ -758,14 +690,7 @@ static bool ice_lbtest_check_frame(u8 *frame)
 	return false;
 }
 
-/**
- * ice_diag_send - send test frames to the test ring
- * @tx_ring: pointer to the transmit ring
- * @data: pointer to the raw packet data
- * @size: size of the packet to send
- *
- * Function sends loopback packets on a test Tx ring.
- */
+ 
 static int ice_diag_send(struct ice_tx_ring *tx_ring, u8 *data, u16 size)
 {
 	struct ice_tx_desc *tx_desc;
@@ -782,7 +707,7 @@ static int ice_diag_send(struct ice_tx_ring *tx_ring, u8 *data, u16 size)
 
 	tx_desc->buf_addr = cpu_to_le64(dma);
 
-	/* These flags are required for a descriptor to be pushed out */
+	 
 	td_cmd = (u64)(ICE_TX_DESC_CMD_EOP | ICE_TX_DESC_CMD_RS);
 	tx_desc->cmd_type_offset_bsz =
 		cpu_to_le64(ICE_TX_DESC_DTYPE_DATA |
@@ -793,9 +718,7 @@ static int ice_diag_send(struct ice_tx_ring *tx_ring, u8 *data, u16 size)
 
 	tx_buf->next_to_watch = tx_desc;
 
-	/* Force memory write to complete before letting h/w know
-	 * there are new descriptors to fetch.
-	 */
+	 
 	wmb();
 
 	tx_ring->next_to_use++;
@@ -804,7 +727,7 @@ static int ice_diag_send(struct ice_tx_ring *tx_ring, u8 *data, u16 size)
 
 	writel_relaxed(tx_ring->next_to_use, tx_ring->tail);
 
-	/* Wait until the packets get transmitted to the receive queue. */
+	 
 	usleep_range(1000, 2000);
 	dma_unmap_single(tx_ring->dev, dma, size, DMA_TO_DEVICE);
 
@@ -812,13 +735,7 @@ static int ice_diag_send(struct ice_tx_ring *tx_ring, u8 *data, u16 size)
 }
 
 #define ICE_LB_FRAME_SIZE 64
-/**
- * ice_lbtest_receive_frames - receive and verify test frames
- * @rx_ring: pointer to the receive ring
- *
- * Function receives loopback packets and verify their correctness.
- * Returns number of received valid frames.
- */
+ 
 static int ice_lbtest_receive_frames(struct ice_rx_ring *rx_ring)
 {
 	struct ice_rx_buf *rx_buf;
@@ -847,13 +764,7 @@ static int ice_lbtest_receive_frames(struct ice_rx_ring *rx_ring)
 	return valid_frames;
 }
 
-/**
- * ice_loopback_test - perform a loopback test on a given net_device
- * @netdev: network interface device structure
- *
- * This function performs one of the self-tests required by ethtool.
- * Returns 0 on success, non-zero on failure.
- */
+ 
 static u64 ice_loopback_test(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -890,13 +801,13 @@ static u64 ice_loopback_test(struct net_device *netdev)
 		goto lbtest_rings_dis;
 	}
 
-	/* Enable MAC loopback in firmware */
+	 
 	if (ice_aq_set_mac_loopback(&pf->hw, true, NULL)) {
 		ret = 4;
 		goto lbtest_mac_dis;
 	}
 
-	/* Test VSI needs to receive broadcast packets */
+	 
 	eth_broadcast_addr(broadcast);
 	if (ice_fltr_add_mac(test_vsi, broadcast, ICE_FWD_TO_VSI)) {
 		ret = 5;
@@ -928,7 +839,7 @@ remove_mac_filters:
 	if (ice_fltr_remove_mac(test_vsi, broadcast, ICE_FWD_TO_VSI))
 		netdev_err(netdev, "Could not remove MAC filter for the test VSI\n");
 lbtest_mac_dis:
-	/* Disable MAC loopback after the test is completed. */
+	 
 	if (ice_aq_set_mac_loopback(&pf->hw, false, NULL))
 		netdev_err(netdev, "Could not disable MAC loopback\n");
 lbtest_rings_dis:
@@ -942,13 +853,7 @@ lbtest_vsi_close:
 	return ret;
 }
 
-/**
- * ice_intr_test - perform an interrupt test on a given net_device
- * @netdev: network interface device structure
- *
- * This function performs one of the self-tests required by ethtool.
- * Returns 0 on success, non-zero on failure.
- */
+ 
 static u64 ice_intr_test(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -966,16 +871,7 @@ static u64 ice_intr_test(struct net_device *netdev)
 	return (swic_old == pf->sw_int_count);
 }
 
-/**
- * ice_self_test - handler function for performing a self-test by ethtool
- * @netdev: network interface device structure
- * @eth_test: ethtool_test structure
- * @data: required by ethtool.self_test
- *
- * This function is called after invoking 'ethtool -t devname' command where
- * devname is the name of the network device on which ethtool should operate.
- * It performs a set of self-tests to check if a device works properly.
- */
+ 
 static void
 ice_self_test(struct net_device *netdev, struct ethtool_test *eth_test,
 	      u64 *data)
@@ -1003,9 +899,9 @@ ice_self_test(struct net_device *netdev, struct ethtool_test *eth_test,
 			clear_bit(ICE_TESTING, pf->state);
 			goto skip_ol_tests;
 		}
-		/* If the device is online then take it offline */
+		 
 		if (if_running)
-			/* indicate we're in test mode */
+			 
 			ice_stop(netdev);
 
 		data[ICE_ETH_TEST_LINK] = ice_link_test(netdev);
@@ -1032,14 +928,14 @@ ice_self_test(struct net_device *netdev, struct ethtool_test *eth_test,
 			}
 		}
 	} else {
-		/* Online tests */
+		 
 		netdev_info(netdev, "online testing starting\n");
 
 		data[ICE_ETH_TEST_LINK] = ice_link_test(netdev);
 		if (data[ICE_ETH_TEST_LINK])
 			eth_test->flags |= ETH_TEST_FL_FAILED;
 
-		/* Offline only tests, not run in online; pass by default */
+		 
 		data[ICE_ETH_TEST_REG] = 0;
 		data[ICE_ETH_TEST_EEPROM] = 0;
 		data[ICE_ETH_TEST_INTR] = 0;
@@ -1134,11 +1030,7 @@ ice_set_phys_id(struct net_device *netdev, enum ethtool_phys_id_state state)
 	return 0;
 }
 
-/**
- * ice_set_fec_cfg - Set link FEC options
- * @netdev: network interface device structure
- * @req_fec: FEC mode to configure
- */
+ 
 static int ice_set_fec_cfg(struct net_device *netdev, enum ice_fec_mode req_fec)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -1150,20 +1042,17 @@ static int ice_set_fec_cfg(struct net_device *netdev, enum ice_fec_mode req_fec)
 	if (!pi)
 		return -EOPNOTSUPP;
 
-	/* Changing the FEC parameters is not supported if not the PF VSI */
+	 
 	if (vsi->type != ICE_VSI_PF) {
 		netdev_info(netdev, "Changing FEC parameters only supported for PF VSI\n");
 		return -EOPNOTSUPP;
 	}
 
-	/* Proceed only if requesting different FEC mode */
+	 
 	if (pi->phy.curr_user_fec_req == req_fec)
 		return 0;
 
-	/* Copy the current user PHY configuration. The current user PHY
-	 * configuration is initialized during probe from PHY capabilities
-	 * software mode, and updated on set PHY configuration.
-	 */
+	 
 	memcpy(&config, &pi->phy.curr_user_phy_cfg, sizeof(config));
 
 	ice_cfg_phy_fec(pi, &config, req_fec);
@@ -1172,17 +1061,13 @@ static int ice_set_fec_cfg(struct net_device *netdev, enum ice_fec_mode req_fec)
 	if (ice_aq_set_phy_cfg(pi->hw, pi, &config, NULL))
 		return -EAGAIN;
 
-	/* Save requested FEC config */
+	 
 	pi->phy.curr_user_fec_req = req_fec;
 
 	return 0;
 }
 
-/**
- * ice_set_fecparam - Set FEC link options
- * @netdev: network interface device structure
- * @fecparam: Ethtool structure to retrieve FEC parameters
- */
+ 
 static int
 ice_set_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
 {
@@ -1213,11 +1098,7 @@ ice_set_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
 	return ice_set_fec_cfg(netdev, fec);
 }
 
-/**
- * ice_get_fecparam - Get link FEC options
- * @netdev: network interface device structure
- * @fecparam: Ethtool structure to retrieve FEC parameters
- */
+ 
 static int
 ice_get_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
 {
@@ -1234,7 +1115,7 @@ ice_get_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
 		return -EOPNOTSUPP;
 	link_info = &pi->phy.link_info;
 
-	/* Set FEC mode based on negotiated link info */
+	 
 	switch (link_info->fec_info) {
 	case ICE_AQ_LINK_25G_KR_FEC_EN:
 		fecparam->active_fec = ETHTOOL_FEC_BASER;
@@ -1257,7 +1138,7 @@ ice_get_fecparam(struct net_device *netdev, struct ethtool_fecparam *fecparam)
 	if (err)
 		goto done;
 
-	/* Set supported/configured FEC modes based on PHY capability */
+	 
 	if (caps->caps & ICE_AQC_PHY_EN_AUTO_FEC)
 		fecparam->fec |= ETHTOOL_FEC_AUTO;
 	if (caps->link_fec_options & ICE_AQC_PHY_FEC_10G_KR_40G_KR4_EN ||
@@ -1277,17 +1158,14 @@ done:
 	return err;
 }
 
-/**
- * ice_nway_reset - restart autonegotiation
- * @netdev: network interface device structure
- */
+ 
 static int ice_nway_reset(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
 	struct ice_vsi *vsi = np->vsi;
 	int err;
 
-	/* If VSI state is up, then restart autoneg with link up */
+	 
 	if (!test_bit(ICE_DOWN, vsi->back->state))
 		err = ice_set_link(vsi, true);
 	else
@@ -1296,16 +1174,7 @@ static int ice_nway_reset(struct net_device *netdev)
 	return err;
 }
 
-/**
- * ice_get_priv_flags - report device private flags
- * @netdev: network interface device structure
- *
- * The get string set count and the string set should be matched for each
- * flag returned.  Add new strings for each flag to the ice_gstrings_priv_flags
- * array.
- *
- * Returns a u32 bitmap of flags.
- */
+ 
 static u32 ice_get_priv_flags(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -1325,11 +1194,7 @@ static u32 ice_get_priv_flags(struct net_device *netdev)
 	return ret_flags;
 }
 
-/**
- * ice_set_priv_flags - set private flags
- * @netdev: network interface device structure
- * @flags: bit flags to be set
- */
+ 
 static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -1361,9 +1226,7 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
 
 	bitmap_xor(change_flags, pf->flags, orig_flags, ICE_PF_FLAGS_NBITS);
 
-	/* Do not allow change to link-down-on-close when Total Port Shutdown
-	 * is enabled.
-	 */
+	 
 	if (test_bit(ICE_FLAG_LINK_DOWN_ON_CLOSE_ENA, change_flags) &&
 	    test_bit(ICE_FLAG_TOTAL_PORT_SHUTDOWN_ENA, pf->flags)) {
 		dev_err(dev, "Setting link-down-on-close not supported on this port\n");
@@ -1376,26 +1239,18 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
 		if (!test_bit(ICE_FLAG_FW_LLDP_AGENT, pf->flags)) {
 			int status;
 
-			/* Disable FW LLDP engine */
+			 
 			status = ice_cfg_lldp_mib_change(&pf->hw, false);
 
-			/* If unregistering for LLDP events fails, this is
-			 * not an error state, as there shouldn't be any
-			 * events to respond to.
-			 */
+			 
 			if (status)
 				dev_info(dev, "Failed to unreg for LLDP events\n");
 
-			/* The AQ call to stop the FW LLDP agent will generate
-			 * an error if the agent is already stopped.
-			 */
+			 
 			status = ice_aq_stop_lldp(&pf->hw, true, true, NULL);
 			if (status)
 				dev_warn(dev, "Fail to stop LLDP agent\n");
-			/* Use case for having the FW LLDP agent stopped
-			 * will likely not need DCB, so failure to init is
-			 * not a concern of ethtool
-			 */
+			 
 			status = ice_init_pf_dcb(pf, true);
 			if (status)
 				dev_warn(dev, "Fail to init DCB\n");
@@ -1413,21 +1268,15 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
 				goto ethtool_exit;
 			}
 
-			/* Remove rule to direct LLDP packets to default VSI.
-			 * The FW LLDP engine will now be consuming them.
-			 */
+			 
 			ice_cfg_sw_lldp(vsi, false, false);
 
-			/* AQ command to start FW LLDP agent will return an
-			 * error if the agent is already started
-			 */
+			 
 			status = ice_aq_start_lldp(&pf->hw, true, NULL);
 			if (status)
 				dev_warn(dev, "Fail to start LLDP Agent\n");
 
-			/* AQ command to start FW DCBX agent will fail if
-			 * the agent is already started
-			 */
+			 
 			status = ice_aq_start_stop_dcbx(&pf->hw, true,
 							&dcbx_agent_status,
 							NULL);
@@ -1437,16 +1286,12 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
 			dev_info(dev, "FW DCBX agent is %s\n",
 				 dcbx_agent_status ? "ACTIVE" : "DISABLED");
 
-			/* Failure to configure MIB change or init DCB is not
-			 * relevant to ethtool.  Print notification that
-			 * registration/init failed but do not return error
-			 * state to ethtool
-			 */
+			 
 			status = ice_init_pf_dcb(pf, true);
 			if (status)
 				dev_dbg(dev, "Fail to init DCB\n");
 
-			/* Register for MIB change events */
+			 
 			status = ice_cfg_lldp_mib_change(&pf->hw, true);
 			if (status)
 				dev_dbg(dev, "Fail to enable MIB change events\n");
@@ -1458,16 +1303,14 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
 		}
 	}
 	if (test_bit(ICE_FLAG_LEGACY_RX, change_flags)) {
-		/* down and up VSI so that changes of Rx cfg are reflected. */
+		 
 		ice_down_up(vsi);
 	}
-	/* don't allow modification of this flag when a single VF is in
-	 * promiscuous mode because it's not supported
-	 */
+	 
 	if (test_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, change_flags) &&
 	    ice_is_any_vf_in_unicast_promisc(pf)) {
 		dev_err(dev, "Changing vf-true-promisc-support flag while VF(s) are in promiscuous mode not supported\n");
-		/* toggle bit back to previous state */
+		 
 		change_bit(ICE_FLAG_VF_TRUE_PROMISC_ENA, pf->flags);
 		ret = -EAGAIN;
 	}
@@ -1475,7 +1318,7 @@ static int ice_set_priv_flags(struct net_device *netdev, u32 flags)
 	if (test_bit(ICE_FLAG_VF_VLAN_PRUNING, change_flags) &&
 	    ice_has_vfs(pf)) {
 		dev_err(dev, "vf-vlan-pruning: VLAN pruning cannot be changed while VFs are active.\n");
-		/* toggle bit back to previous state */
+		 
 		change_bit(ICE_FLAG_VF_VLAN_PRUNING, pf->flags);
 		ret = -EOPNOTSUPP;
 	}
@@ -1488,24 +1331,7 @@ static int ice_get_sset_count(struct net_device *netdev, int sset)
 {
 	switch (sset) {
 	case ETH_SS_STATS:
-		/* The number (and order) of strings reported *must* remain
-		 * constant for a given netdevice. This function must not
-		 * report a different number based on run time parameters
-		 * (such as the number of queues in use, or the setting of
-		 * a private ethtool flag). This is due to the nature of the
-		 * ethtool stats API.
-		 *
-		 * Userspace programs such as ethtool must make 3 separate
-		 * ioctl requests, one for size, one for the strings, and
-		 * finally one for the stats. Since these cross into
-		 * userspace, changes to the number or size could result in
-		 * undefined memory access or incorrect string<->value
-		 * correlations for statistics.
-		 *
-		 * Even if it appears to be safe, changes to the size or
-		 * order of strings will suffer from race conditions and are
-		 * not safe.
-		 */
+		 
 		return ICE_ALL_STATS_LEN(netdev);
 	case ETH_SS_TEST:
 		return ICE_TEST_LEN;
@@ -1540,7 +1366,7 @@ __ice_get_ethtool_stats(struct net_device *netdev,
 	if (ice_is_port_repr_netdev(netdev))
 		return;
 
-	/* populate per queue stats */
+	 
 	rcu_read_lock();
 
 	ice_for_each_alloc_txq(vsi, j) {
@@ -1638,20 +1464,12 @@ ice_get_ethtool_stats(struct net_device *netdev,
 					 ICE_PHY_TYPE_HIGH_100G_AUI2_AOC_ACC | \
 					 ICE_PHY_TYPE_HIGH_100G_AUI2)
 
-/**
- * ice_mask_min_supported_speeds
- * @hw: pointer to the HW structure
- * @phy_types_high: PHY type high
- * @phy_types_low: PHY type low to apply minimum supported speeds mask
- *
- * Apply minimum supported speeds mask to PHY type low. These are the speeds
- * for ethtool supported link mode.
- */
+ 
 static void
 ice_mask_min_supported_speeds(struct ice_hw *hw,
 			      u64 phy_types_high, u64 *phy_types_low)
 {
-	/* if QSFP connection with 100G speed, minimum supported speed is 25G */
+	 
 	if (*phy_types_low & ICE_PHY_TYPE_LOW_MASK_100G ||
 	    phy_types_high & ICE_PHY_TYPE_HIGH_MASK_100G)
 		*phy_types_low &= ~ICE_PHY_TYPE_LOW_MASK_MIN_25G;
@@ -1659,14 +1477,7 @@ ice_mask_min_supported_speeds(struct ice_hw *hw,
 		*phy_types_low &= ~ICE_PHY_TYPE_LOW_MASK_MIN_1G;
 }
 
-/**
- * ice_linkmode_set_bit - set link mode bit
- * @phy_to_ethtool: PHY type to ethtool link mode struct to set
- * @ks: ethtool link ksettings struct to fill out
- * @req_speeds: speed requested by user
- * @advert_phy_type: advertised PHY type
- * @phy_type: PHY type
- */
+ 
 static void
 ice_linkmode_set_bit(const struct ice_phy_type_to_ethtool *phy_to_ethtool,
 		     struct ethtool_link_ksettings *ks, u32 req_speeds,
@@ -1680,11 +1491,7 @@ ice_linkmode_set_bit(const struct ice_phy_type_to_ethtool *phy_to_ethtool,
 				 ks->link_modes.advertising);
 }
 
-/**
- * ice_phy_type_to_ethtool - convert the phy_types to ethtool link modes
- * @netdev: network interface device structure
- * @ks: ethtool link ksettings struct to fill out
- */
+ 
 static void
 ice_phy_type_to_ethtool(struct net_device *netdev,
 			struct ethtool_link_ksettings *ks)
@@ -1701,35 +1508,20 @@ ice_phy_type_to_ethtool(struct net_device *netdev,
 
 	req_speeds = vsi->port_info->phy.link_info.req_speeds;
 
-	/* Check if lenient mode is supported and enabled, or in strict mode.
-	 *
-	 * In lenient mode the Supported link modes are the PHY types without
-	 * media. The Advertising link mode is either 1. the user requested
-	 * speed, 2. the override PHY mask, or 3. the PHY types with media.
-	 *
-	 * In strict mode Supported link mode are the PHY type with media,
-	 * and Advertising link modes are the media PHY type or the speed
-	 * requested by user.
-	 */
+	 
 	if (test_bit(ICE_FLAG_LINK_LENIENT_MODE_ENA, pf->flags)) {
 		phy_types_low = le64_to_cpu(pf->nvm_phy_type_lo);
 		phy_types_high = le64_to_cpu(pf->nvm_phy_type_hi);
 
 		ice_mask_min_supported_speeds(&pf->hw, phy_types_high,
 					      &phy_types_low);
-		/* determine advertised modes based on link override only
-		 * if it's supported and if the FW doesn't abstract the
-		 * driver from having to account for link overrides
-		 */
+		 
 		if (ice_fw_supports_link_override(&pf->hw) &&
 		    !ice_fw_supports_report_dflt_cfg(&pf->hw)) {
 			struct ice_link_default_override_tlv *ldo;
 
 			ldo = &pf->link_dflt_override;
-			/* If override enabled and PHY mask set, then
-			 * Advertising link mode is the intersection of the PHY
-			 * types without media and the override PHY mask.
-			 */
+			 
 			if (ldo->options & ICE_LINK_OVERRIDE_EN &&
 			    (ldo->phy_type_low || ldo->phy_type_high)) {
 				advert_phy_type_lo =
@@ -1741,14 +1533,12 @@ ice_phy_type_to_ethtool(struct net_device *netdev,
 			}
 		}
 	} else {
-		/* strict mode */
+		 
 		phy_types_low = vsi->port_info->phy.phy_type_low;
 		phy_types_high = vsi->port_info->phy.phy_type_high;
 	}
 
-	/* If Advertising link mode PHY type is not using override PHY type,
-	 * then use PHY type with media.
-	 */
+	 
 	if (!advert_phy_type_lo && !advert_phy_type_hi) {
 		advert_phy_type_lo = vsi->port_info->phy.phy_type_low;
 		advert_phy_type_hi = vsi->port_info->phy.phy_type_high;
@@ -1776,11 +1566,7 @@ ice_phy_type_to_ethtool(struct net_device *netdev,
 #define TEST_SET_BITS_SLEEP_MAX	2000
 #define TEST_SET_BITS_SLEEP_MIN	1000
 
-/**
- * ice_get_settings_link_up - Get Link settings for when link is up
- * @ks: ethtool ksettings to fill in
- * @netdev: network interface device structure
- */
+ 
 static void
 ice_get_settings_link_up(struct ethtool_link_ksettings *ks,
 			 struct net_device *netdev)
@@ -1792,7 +1578,7 @@ ice_get_settings_link_up(struct ethtool_link_ksettings *ks,
 
 	link_info = &vsi->port_info->phy.link_info;
 
-	/* Get supported and advertised settings from PHY ability with media */
+	 
 	ice_phy_type_to_ethtool(netdev, ks);
 
 	switch (link_info->link_speed) {
@@ -1837,7 +1623,7 @@ ice_get_settings_link_up(struct ethtool_link_ksettings *ks,
 		ethtool_link_ksettings_add_link_mode(ks, lp_advertising,
 						     Autoneg);
 
-	/* Set flow control negotiated Rx/Tx pause */
+	 
 	switch (pi->fc.current_mode) {
 	case ICE_FC_FULL:
 		ethtool_link_ksettings_add_link_mode(ks, lp_advertising, Pause);
@@ -1860,34 +1646,20 @@ ice_get_settings_link_up(struct ethtool_link_ksettings *ks,
 	}
 }
 
-/**
- * ice_get_settings_link_down - Get the Link settings when link is down
- * @ks: ethtool ksettings to fill in
- * @netdev: network interface device structure
- *
- * Reports link settings that can be determined when link is down
- */
+ 
 static void
 ice_get_settings_link_down(struct ethtool_link_ksettings *ks,
 			   struct net_device *netdev)
 {
-	/* link is down and the driver needs to fall back on
-	 * supported PHY types to figure out what info to display
-	 */
+	 
 	ice_phy_type_to_ethtool(netdev, ks);
 
-	/* With no link, speed and duplex are unknown */
+	 
 	ks->base.speed = SPEED_UNKNOWN;
 	ks->base.duplex = DUPLEX_UNKNOWN;
 }
 
-/**
- * ice_get_link_ksettings - Get Link Speed and Duplex settings
- * @netdev: network interface device structure
- * @ks: ethtool ksettings
- *
- * Reports speed/duplex settings based on media_type
- */
+ 
 static int
 ice_get_link_ksettings(struct net_device *netdev,
 		       struct ethtool_link_ksettings *ks)
@@ -1903,17 +1675,17 @@ ice_get_link_ksettings(struct net_device *netdev,
 	ethtool_link_ksettings_zero_link_mode(ks, lp_advertising);
 	hw_link_info = &vsi->port_info->phy.link_info;
 
-	/* set speed and duplex */
+	 
 	if (hw_link_info->link_info & ICE_AQ_LINK_UP)
 		ice_get_settings_link_up(ks, netdev);
 	else
 		ice_get_settings_link_down(ks, netdev);
 
-	/* set autoneg settings */
+	 
 	ks->base.autoneg = (hw_link_info->an_info & ICE_AQ_AN_COMPLETED) ?
 		AUTONEG_ENABLE : AUTONEG_DISABLE;
 
-	/* set media type settings */
+	 
 	switch (vsi->port_info->phy.media_type) {
 	case ICE_MEDIA_FIBER:
 		ethtool_link_ksettings_add_link_mode(ks, supported, FIBRE);
@@ -1940,7 +1712,7 @@ ice_get_link_ksettings(struct net_device *netdev,
 		break;
 	}
 
-	/* flow control is symmetric and always supported */
+	 
 	ethtool_link_ksettings_add_link_mode(ks, supported, Pause);
 
 	caps = kzalloc(sizeof(*caps), GFP_KERNEL);
@@ -1952,7 +1724,7 @@ ice_get_link_ksettings(struct net_device *netdev,
 	if (err)
 		goto done;
 
-	/* Set the advertised flow control based on the PHY capability */
+	 
 	if ((caps->caps & ICE_AQC_PHY_EN_TX_LINK_PAUSE) &&
 	    (caps->caps & ICE_AQC_PHY_EN_RX_LINK_PAUSE)) {
 		ethtool_link_ksettings_add_link_mode(ks, advertising, Pause);
@@ -1971,7 +1743,7 @@ ice_get_link_ksettings(struct net_device *netdev,
 						     Asym_Pause);
 	}
 
-	/* Set advertised FEC modes based on PHY capability */
+	 
 	ethtool_link_ksettings_add_link_mode(ks, advertising, FEC_NONE);
 
 	if (caps->link_fec_options & ICE_AQC_PHY_FEC_10G_KR_40G_KR4_REQ ||
@@ -1987,7 +1759,7 @@ ice_get_link_ksettings(struct net_device *netdev,
 	if (err)
 		goto done;
 
-	/* Set supported FEC modes based on PHY capability */
+	 
 	ethtool_link_ksettings_add_link_mode(ks, supported, FEC_NONE);
 
 	if (caps->link_fec_options & ICE_AQC_PHY_FEC_10G_KR_40G_KR4_EN ||
@@ -1996,7 +1768,7 @@ ice_get_link_ksettings(struct net_device *netdev,
 	if (caps->link_fec_options & ICE_AQC_PHY_FEC_25G_RS_CLAUSE91_EN)
 		ethtool_link_ksettings_add_link_mode(ks, supported, FEC_RS);
 
-	/* Set supported and advertised autoneg */
+	 
 	if (ice_is_phy_caps_an_enabled(caps)) {
 		ethtool_link_ksettings_add_link_mode(ks, supported, Autoneg);
 		ethtool_link_ksettings_add_link_mode(ks, advertising, Autoneg);
@@ -2007,10 +1779,7 @@ done:
 	return err;
 }
 
-/**
- * ice_ksettings_find_adv_link_speed - Find advertising link speed
- * @ks: ethtool ksettings
- */
+ 
 static u16
 ice_ksettings_find_adv_link_speed(const struct ethtool_link_ksettings *ks)
 {
@@ -2085,17 +1854,7 @@ ice_ksettings_find_adv_link_speed(const struct ethtool_link_ksettings *ks)
 	return adv_link_speed;
 }
 
-/**
- * ice_setup_autoneg
- * @p: port info
- * @ks: ethtool_link_ksettings
- * @config: configuration that will be sent down to FW
- * @autoneg_enabled: autonegotiation is enabled or not
- * @autoneg_changed: will there a change in autonegotiation
- * @netdev: network interface device structure
- *
- * Setup PHY autonegotiation feature
- */
+ 
 static int
 ice_setup_autoneg(struct ice_port_info *p, struct ethtool_link_ksettings *ks,
 		  struct ice_aqc_set_phy_cfg_data *config,
@@ -2106,35 +1865,33 @@ ice_setup_autoneg(struct ice_port_info *p, struct ethtool_link_ksettings *ks,
 
 	*autoneg_changed = 0;
 
-	/* Check autoneg */
+	 
 	if (autoneg_enabled == AUTONEG_ENABLE) {
-		/* If autoneg was not already enabled */
+		 
 		if (!(p->phy.link_info.an_info & ICE_AQ_AN_COMPLETED)) {
-			/* If autoneg is not supported, return error */
+			 
 			if (!ethtool_link_ksettings_test_link_mode(ks,
 								   supported,
 								   Autoneg)) {
 				netdev_info(netdev, "Autoneg not supported on this phy.\n");
 				err = -EINVAL;
 			} else {
-				/* Autoneg is allowed to change */
+				 
 				config->caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
 				*autoneg_changed = 1;
 			}
 		}
 	} else {
-		/* If autoneg is currently enabled */
+		 
 		if (p->phy.link_info.an_info & ICE_AQ_AN_COMPLETED) {
-			/* If autoneg is supported 10GBASE_T is the only PHY
-			 * that can disable it, so otherwise return error
-			 */
+			 
 			if (ethtool_link_ksettings_test_link_mode(ks,
 								  supported,
 								  Autoneg)) {
 				netdev_info(netdev, "Autoneg cannot be disabled on this phy\n");
 				err = -EINVAL;
 			} else {
-				/* Autoneg is allowed to change */
+				 
 				config->caps &= ~ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
 				*autoneg_changed = 1;
 			}
@@ -2144,23 +1901,13 @@ ice_setup_autoneg(struct ice_port_info *p, struct ethtool_link_ksettings *ks,
 	return err;
 }
 
-/**
- * ice_set_phy_type_from_speed - set phy_types based on speeds
- * and advertised modes
- * @ks: ethtool link ksettings struct
- * @phy_type_low: pointer to the lower part of phy_type
- * @phy_type_high: pointer to the higher part of phy_type
- * @adv_link_speed: targeted link speeds bitmap
- */
+ 
 static void
 ice_set_phy_type_from_speed(const struct ethtool_link_ksettings *ks,
 			    u64 *phy_type_low, u64 *phy_type_high,
 			    u16 adv_link_speed)
 {
-	/* Handle 1000M speed in a special way because ice_update_phy_type
-	 * enables all link modes, but having mixed copper and optical
-	 * standards is not supported.
-	 */
+	 
 	adv_link_speed &= ~ICE_AQ_LINK_SPEED_1000MB;
 
 	if (ethtool_link_ksettings_test_link_mode(ks, advertising,
@@ -2180,13 +1927,7 @@ ice_set_phy_type_from_speed(const struct ethtool_link_ksettings *ks,
 	ice_update_phy_type(phy_type_low, phy_type_high, adv_link_speed);
 }
 
-/**
- * ice_set_link_ksettings - Set Speed and Duplex
- * @netdev: network interface device structure
- * @ks: ethtool ksettings
- *
- * Set speed/duplex per media_types advertised/forced
- */
+ 
 static int
 ice_set_link_ksettings(struct net_device *netdev,
 		       const struct ethtool_link_ksettings *ks)
@@ -2222,7 +1963,7 @@ ice_set_link_ksettings(struct net_device *netdev,
 	if (!phy_caps)
 		return -ENOMEM;
 
-	/* Get the PHY capabilities based on media */
+	 
 	if (ice_fw_supports_report_dflt_cfg(pi->hw))
 		err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_DFLT_CFG,
 					  phy_caps, NULL);
@@ -2232,15 +1973,13 @@ ice_set_link_ksettings(struct net_device *netdev,
 	if (err)
 		goto done;
 
-	/* save autoneg out of ksettings */
+	 
 	autoneg = copy_ks.base.autoneg;
 
-	/* Get link modes supported by hardware.*/
+	 
 	ice_phy_type_to_ethtool(netdev, &safe_ks);
 
-	/* and check against modes requested by user.
-	 * Return an error if unsupported mode was set.
-	 */
+	 
 	if (!bitmap_subset(copy_ks.link_modes.advertising,
 			   safe_ks.link_modes.supported,
 			   __ETHTOOL_LINK_MODE_MASK_NBITS)) {
@@ -2250,21 +1989,19 @@ ice_set_link_ksettings(struct net_device *netdev,
 		goto done;
 	}
 
-	/* get our own copy of the bits to check against */
+	 
 	memset(&safe_ks, 0, sizeof(safe_ks));
 	safe_ks.base.cmd = copy_ks.base.cmd;
 	safe_ks.base.link_mode_masks_nwords =
 		copy_ks.base.link_mode_masks_nwords;
 	ice_get_link_ksettings(netdev, &safe_ks);
 
-	/* set autoneg back to what it currently is */
+	 
 	copy_ks.base.autoneg = safe_ks.base.autoneg;
-	/* we don't compare the speed */
+	 
 	copy_ks.base.speed = safe_ks.base.speed;
 
-	/* If copy_ks.base and safe_ks.base are not the same now, then they are
-	 * trying to set something that we do not support.
-	 */
+	 
 	if (memcmp(&copy_ks.base, &safe_ks.base, sizeof(copy_ks.base))) {
 		err = -EOPNOTSUPP;
 		goto done;
@@ -2279,22 +2016,19 @@ ice_set_link_ksettings(struct net_device *netdev,
 		usleep_range(TEST_SET_BITS_SLEEP_MIN, TEST_SET_BITS_SLEEP_MAX);
 	}
 
-	/* Copy the current user PHY configuration. The current user PHY
-	 * configuration is initialized during probe from PHY capabilities
-	 * software mode, and updated on set PHY configuration.
-	 */
+	 
 	config = pi->phy.curr_user_phy_cfg;
 
 	config.caps |= ICE_AQ_PHY_ENA_AUTO_LINK_UPDT;
 
-	/* Check autoneg */
+	 
 	err = ice_setup_autoneg(pi, &safe_ks, &config, autoneg, &autoneg_changed,
 				netdev);
 
 	if (err)
 		goto done;
 
-	/* Call to get the current link speed */
+	 
 	pi->phy.get_link_info = true;
 	err = ice_get_link_status(pi, &linkup);
 	if (err)
@@ -2303,14 +2037,11 @@ ice_set_link_ksettings(struct net_device *netdev,
 	curr_link_speed = pi->phy.curr_user_speed_req;
 	adv_link_speed = ice_ksettings_find_adv_link_speed(ks);
 
-	/* If speed didn't get set, set it to what it currently is.
-	 * This is needed because if advertise is 0 (as it is when autoneg
-	 * is disabled) then speed won't get set.
-	 */
+	 
 	if (!adv_link_speed)
 		adv_link_speed = curr_link_speed;
 
-	/* Convert the advertise link speeds to their corresponded PHY_TYPE */
+	 
 	ice_set_phy_type_from_speed(ks, &phy_type_low, &phy_type_high,
 				    adv_link_speed);
 
@@ -2319,32 +2050,27 @@ ice_set_link_ksettings(struct net_device *netdev,
 		goto done;
 	}
 
-	/* save the requested speeds */
+	 
 	pi->phy.link_info.req_speeds = adv_link_speed;
 
-	/* set link and auto negotiation so changes take effect */
+	 
 	config.caps |= ICE_AQ_PHY_ENA_LINK;
 
-	/* check if there is a PHY type for the requested advertised speed */
+	 
 	if (!(phy_type_low || phy_type_high)) {
 		netdev_info(netdev, "The selected speed is not supported by the current media. Please select a link speed that is supported by the current media.\n");
 		err = -EOPNOTSUPP;
 		goto done;
 	}
 
-	/* intersect requested advertised speed PHY types with media PHY types
-	 * for set PHY configuration
-	 */
+	 
 	config.phy_type_high = cpu_to_le64(phy_type_high) &
 			phy_caps->phy_type_high;
 	config.phy_type_low = cpu_to_le64(phy_type_low) &
 			phy_caps->phy_type_low;
 
 	if (!(config.phy_type_high || config.phy_type_low)) {
-		/* If there is no intersection and lenient mode is enabled, then
-		 * intersect the requested advertised speed with NVM media type
-		 * PHY types.
-		 */
+		 
 		if (test_bit(ICE_FLAG_LINK_LENIENT_MODE_ENA, pf->flags)) {
 			config.phy_type_high = cpu_to_le64(phy_type_high) &
 					       pf->nvm_phy_type_hi;
@@ -2357,24 +2083,22 @@ ice_set_link_ksettings(struct net_device *netdev,
 		}
 	}
 
-	/* If link is up put link down */
+	 
 	if (pi->phy.link_info.link_info & ICE_AQ_LINK_UP) {
-		/* Tell the OS link is going down, the link will go
-		 * back up when fw says it is ready asynchronously
-		 */
+		 
 		ice_print_link_msg(np->vsi, false);
 		netif_carrier_off(netdev);
 		netif_tx_stop_all_queues(netdev);
 	}
 
-	/* make the aq call */
+	 
 	err = ice_aq_set_phy_cfg(&pf->hw, pi, &config, NULL);
 	if (err) {
 		netdev_info(netdev, "Set phy config failed,\n");
 		goto done;
 	}
 
-	/* Save speed request */
+	 
 	pi->phy.curr_user_speed_req = adv_link_speed;
 done:
 	kfree(phy_caps);
@@ -2383,13 +2107,7 @@ done:
 	return err;
 }
 
-/**
- * ice_parse_hdrs - parses headers from RSS hash input
- * @nfc: ethtool rxnfc command
- *
- * This function parses the rxnfc command and returns intended
- * header types for RSS configuration
- */
+ 
 static u32 ice_parse_hdrs(struct ethtool_rxnfc *nfc)
 {
 	u32 hdrs = ICE_FLOW_SEG_HDR_NONE;
@@ -2432,13 +2150,7 @@ static u32 ice_parse_hdrs(struct ethtool_rxnfc *nfc)
 #define ICE_FLOW_HASH_FLD_SCTP_DST_PORT	\
 	BIT_ULL(ICE_FLOW_FIELD_IDX_SCTP_DST_PORT)
 
-/**
- * ice_parse_hash_flds - parses hash fields from RSS hash input
- * @nfc: ethtool rxnfc command
- *
- * This function parses the rxnfc command and returns intended
- * hash fields for RSS configuration
- */
+ 
 static u64 ice_parse_hash_flds(struct ethtool_rxnfc *nfc)
 {
 	u64 hfld = ICE_HASH_INVALID;
@@ -2497,13 +2209,7 @@ static u64 ice_parse_hash_flds(struct ethtool_rxnfc *nfc)
 	return hfld;
 }
 
-/**
- * ice_set_rss_hash_opt - Enable/Disable flow types for RSS hash
- * @vsi: the VSI being configured
- * @nfc: ethtool rxnfc command
- *
- * Returns Success if the flow input set is supported.
- */
+ 
 static int
 ice_set_rss_hash_opt(struct ice_vsi *vsi, struct ethtool_rxnfc *nfc)
 {
@@ -2544,11 +2250,7 @@ ice_set_rss_hash_opt(struct ice_vsi *vsi, struct ethtool_rxnfc *nfc)
 	return 0;
 }
 
-/**
- * ice_get_rss_hash_opt - Retrieve hash fields for a given flow-type
- * @vsi: the VSI being configured
- * @nfc: ethtool rxnfc command
- */
+ 
 static void
 ice_get_rss_hash_opt(struct ice_vsi *vsi, struct ethtool_rxnfc *nfc)
 {
@@ -2599,13 +2301,7 @@ ice_get_rss_hash_opt(struct ice_vsi *vsi, struct ethtool_rxnfc *nfc)
 		nfc->data |= (u64)RXH_L4_B_2_3;
 }
 
-/**
- * ice_set_rxnfc - command to set Rx flow rules.
- * @netdev: network interface device structure
- * @cmd: ethtool rxnfc command
- *
- * Returns 0 for success and negative values for errors
- */
+ 
 static int ice_set_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -2624,14 +2320,7 @@ static int ice_set_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd)
 	return -EOPNOTSUPP;
 }
 
-/**
- * ice_get_rxnfc - command to get Rx flow classification rules
- * @netdev: network interface device structure
- * @cmd: ethtool rxnfc command
- * @rule_locs: buffer to rturn Rx flow classification rules
- *
- * Returns Success if the command is supported.
- */
+ 
 static int
 ice_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd,
 	      u32 __always_unused *rule_locs)
@@ -2650,7 +2339,7 @@ ice_get_rxnfc(struct net_device *netdev, struct ethtool_rxnfc *cmd,
 		break;
 	case ETHTOOL_GRXCLSRLCNT:
 		cmd->rule_cnt = hw->fdir_active_fltr;
-		/* report total rule count */
+		 
 		cmd->data = ice_get_fdir_cnt_all(hw);
 		ret = 0;
 		break;
@@ -2689,7 +2378,7 @@ ice_get_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
 		ring->tx_pending = 0;
 	}
 
-	/* Rx mini and jumbo rings are not supported */
+	 
 	ring->rx_mini_max_pending = 0;
 	ring->rx_jumbo_max_pending = 0;
 	ring->rx_mini_pending = 0;
@@ -2721,7 +2410,7 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
 		return -EINVAL;
 	}
 
-	/* Return if there is no rings (device is reloading) */
+	 
 	if (!vsi->tx_rings || !vsi->rx_rings)
 		return -EBUSY;
 
@@ -2734,17 +2423,14 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
 		netdev_info(netdev, "Requested Rx descriptor count rounded up to %d\n",
 			    new_rx_cnt);
 
-	/* if nothing to do return success */
+	 
 	if (new_tx_cnt == vsi->tx_rings[0]->count &&
 	    new_rx_cnt == vsi->rx_rings[0]->count) {
 		netdev_dbg(netdev, "Nothing to change, descriptor count is same as requested\n");
 		return 0;
 	}
 
-	/* If there is a AF_XDP UMEM attached to any of Rx rings,
-	 * disallow changing the number of descriptors -- regardless
-	 * if the netdev is running or not.
-	 */
+	 
 	if (ice_xsk_any_rx_ring_ena(vsi))
 		return -EBUSY;
 
@@ -2755,7 +2441,7 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
 		usleep_range(1000, 2000);
 	}
 
-	/* set for the next time the netdev is started */
+	 
 	if (!netif_running(vsi->netdev)) {
 		ice_for_each_alloc_txq(vsi, i)
 			vsi->tx_rings[i]->count = new_tx_cnt;
@@ -2773,7 +2459,7 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
 	if (new_tx_cnt == vsi->tx_rings[0]->count)
 		goto process_rx;
 
-	/* alloc updated Tx resources */
+	 
 	netdev_info(netdev, "Changing Tx descriptor count from %d to %d\n",
 		    vsi->tx_rings[0]->count, new_tx_cnt);
 
@@ -2784,7 +2470,7 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
 	}
 
 	ice_for_each_txq(vsi, i) {
-		/* clone ring and setup updated count */
+		 
 		tx_rings[i] = *vsi->tx_rings[i];
 		tx_rings[i].count = new_tx_cnt;
 		tx_rings[i].desc = NULL;
@@ -2802,7 +2488,7 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
 	if (!ice_is_xdp_ena_vsi(vsi))
 		goto process_rx;
 
-	/* alloc updated XDP resources */
+	 
 	netdev_info(netdev, "Changing XDP descriptor count from %d to %d\n",
 		    vsi->xdp_rings[0]->count, new_tx_cnt);
 
@@ -2813,7 +2499,7 @@ ice_set_ringparam(struct net_device *netdev, struct ethtool_ringparam *ring,
 	}
 
 	ice_for_each_xdp_txq(vsi, i) {
-		/* clone ring and setup updated count */
+		 
 		xdp_rings[i] = *vsi->xdp_rings[i];
 		xdp_rings[i].count = new_tx_cnt;
 		xdp_rings[i].desc = NULL;
@@ -2832,7 +2518,7 @@ process_rx:
 	if (new_rx_cnt == vsi->rx_rings[0]->count)
 		goto process_link;
 
-	/* alloc updated Rx resources */
+	 
 	netdev_info(netdev, "Changing Rx descriptor count from %d to %d\n",
 		    vsi->rx_rings[0]->count, new_rx_cnt);
 
@@ -2843,22 +2529,20 @@ process_rx:
 	}
 
 	ice_for_each_rxq(vsi, i) {
-		/* clone ring and setup updated count */
+		 
 		rx_rings[i] = *vsi->rx_rings[i];
 		rx_rings[i].count = new_rx_cnt;
 		rx_rings[i].cached_phctime = pf->ptp.cached_phc_time;
 		rx_rings[i].desc = NULL;
 		rx_rings[i].rx_buf = NULL;
-		/* this is to allow wr32 to have something to write to
-		 * during early allocation of Rx buffers
-		 */
+		 
 		rx_rings[i].tail = vsi->back->hw.hw_addr + PRTGEN_STATUS;
 
 		err = ice_setup_rx_ring(&rx_rings[i]);
 		if (err)
 			goto rx_unwind;
 
-		/* allocate Rx buffers */
+		 
 		err = ice_alloc_rx_bufs(&rx_rings[i],
 					ICE_RX_DESC_UNUSED(&rx_rings[i]));
 rx_unwind:
@@ -2874,9 +2558,7 @@ rx_unwind:
 	}
 
 process_link:
-	/* Bring interface down, copy in the new ring info, then restore the
-	 * interface. if VSI is up, bring it down and then back up
-	 */
+	 
 	if (!test_and_set_bit(ICE_VSI_DOWN, vsi->state)) {
 		ice_down(vsi);
 
@@ -2891,13 +2573,9 @@ process_link:
 		if (rx_rings) {
 			ice_for_each_rxq(vsi, i) {
 				ice_free_rx_ring(vsi->rx_rings[i]);
-				/* copy the real tail offset */
+				 
 				rx_rings[i].tail = vsi->rx_rings[i]->tail;
-				/* this is to fake out the allocation routine
-				 * into thinking it has to realloc everything
-				 * but the recycling logic will let us re-use
-				 * the buffers allocated above
-				 */
+				 
 				rx_rings[i].next_to_use = 0;
 				rx_rings[i].next_to_clean = 0;
 				rx_rings[i].next_to_alloc = 0;
@@ -2921,7 +2599,7 @@ process_link:
 	goto done;
 
 free_tx:
-	/* error cleanup if the Rx allocations failed after getting Tx */
+	 
 	if (tx_rings) {
 		ice_for_each_txq(vsi, i)
 			ice_free_tx_ring(&tx_rings[i]);
@@ -2933,16 +2611,7 @@ done:
 	return err;
 }
 
-/**
- * ice_get_pauseparam - Get Flow Control status
- * @netdev: network interface device structure
- * @pause: ethernet pause (flow control) parameters
- *
- * Get requested flow control status from PHY capability.
- * If autoneg is true, then ethtool will send the ETHTOOL_GSET ioctl which
- * is handled by ice_get_link_ksettings. ice_get_link_ksettings will report
- * the negotiated Rx/Tx pause via lp_advertising.
- */
+ 
 static void
 ice_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 {
@@ -2952,7 +2621,7 @@ ice_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 	struct ice_dcbx_cfg *dcbx_cfg;
 	int status;
 
-	/* Initialize pause params */
+	 
 	pause->rx_pause = 0;
 	pause->tx_pause = 0;
 
@@ -2962,7 +2631,7 @@ ice_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 	if (!pcaps)
 		return;
 
-	/* Get current PHY config */
+	 
 	status = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
 				     NULL);
 	if (status)
@@ -2972,7 +2641,7 @@ ice_get_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 							     AUTONEG_DISABLE;
 
 	if (dcbx_cfg->pfc.pfcena)
-		/* PFC enabled so report LFC as off */
+		 
 		goto out;
 
 	if (pcaps->caps & ICE_AQC_PHY_EN_TX_LINK_PAUSE)
@@ -2984,11 +2653,7 @@ out:
 	kfree(pcaps);
 }
 
-/**
- * ice_set_pauseparam - Set Flow Control parameter
- * @netdev: network interface device structure
- * @pause: return Tx/Rx flow control status
- */
+ 
 static int
 ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 {
@@ -3010,25 +2675,18 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 	dcbx_cfg = &pi->qos_cfg.local_dcbx_cfg;
 	link_up = hw_link_info->link_info & ICE_AQ_LINK_UP;
 
-	/* Changing the port's flow control is not supported if this isn't the
-	 * PF VSI
-	 */
+	 
 	if (vsi->type != ICE_VSI_PF) {
 		netdev_info(netdev, "Changing flow control parameters only supported for PF VSI\n");
 		return -EOPNOTSUPP;
 	}
 
-	/* Get pause param reports configured and negotiated flow control pause
-	 * when ETHTOOL_GLINKSETTINGS is defined. Since ETHTOOL_GLINKSETTINGS is
-	 * defined get pause param pause->autoneg reports SW configured setting,
-	 * so compare pause->autoneg with SW configured to prevent the user from
-	 * using set pause param to chance autoneg.
-	 */
+	 
 	pcaps = kzalloc(sizeof(*pcaps), GFP_KERNEL);
 	if (!pcaps)
 		return -ENOMEM;
 
-	/* Get current PHY config */
+	 
 	err = ice_aq_get_phy_caps(pi, false, ICE_AQC_REPORT_ACTIVE_CFG, pcaps,
 				  NULL);
 	if (err) {
@@ -3046,10 +2704,10 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 		return -EOPNOTSUPP;
 	}
 
-	/* If we have link and don't have autoneg */
+	 
 	if (!test_bit(ICE_DOWN, pf->state) &&
 	    !(hw_link_info->an_info & ICE_AQ_AN_COMPLETED)) {
-		/* Send message that it might not necessarily work*/
+		 
 		netdev_info(netdev, "Autoneg did not complete so changing settings may not result in an actual change.\n");
 	}
 
@@ -3068,7 +2726,7 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 	else
 		return -EINVAL;
 
-	/* Set the FC mode and only restart AN if link is up */
+	 
 	err = ice_set_fc(pi, &aq_failures, link_up);
 
 	if (aq_failures & ICE_SET_FC_AQ_FAIL_GET) {
@@ -3088,23 +2746,13 @@ ice_set_pauseparam(struct net_device *netdev, struct ethtool_pauseparam *pause)
 	return err;
 }
 
-/**
- * ice_get_rxfh_key_size - get the RSS hash key size
- * @netdev: network interface device structure
- *
- * Returns the table size.
- */
+ 
 static u32 ice_get_rxfh_key_size(struct net_device __always_unused *netdev)
 {
 	return ICE_VSIQF_HKEY_ARRAY_SIZE;
 }
 
-/**
- * ice_get_rxfh_indir_size - get the Rx flow hash indirection table size
- * @netdev: network interface device structure
- *
- * Returns the table size.
- */
+ 
 static u32 ice_get_rxfh_indir_size(struct net_device *netdev)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -3143,7 +2791,7 @@ ice_get_rxfh_context(struct net_device *netdev, u32 *indir,
 				   rss_context, num_tc);
 			return -EINVAL;
 		}
-		/* Use channel VSI of given TC */
+		 
 		vsi = vsi->tc_map_vsi[rss_context];
 	}
 
@@ -3179,31 +2827,14 @@ out:
 	return err;
 }
 
-/**
- * ice_get_rxfh - get the Rx flow hash indirection table
- * @netdev: network interface device structure
- * @indir: indirection table
- * @key: hash key
- * @hfunc: hash function
- *
- * Reads the indirection table directly from the hardware.
- */
+ 
 static int
 ice_get_rxfh(struct net_device *netdev, u32 *indir, u8 *key, u8 *hfunc)
 {
 	return ice_get_rxfh_context(netdev, indir, key, hfunc, 0);
 }
 
-/**
- * ice_set_rxfh - set the Rx flow hash indirection table
- * @netdev: network interface device structure
- * @indir: indirection table
- * @key: hash key
- * @hfunc: hash function
- *
- * Returns -EINVAL if the table specifies an invalid queue ID, otherwise
- * returns 0 after programming the table.
- */
+ 
 static int
 ice_set_rxfh(struct net_device *netdev, const u32 *indir, const u8 *key,
 	     const u8 hfunc)
@@ -3219,7 +2850,7 @@ ice_set_rxfh(struct net_device *netdev, const u32 *indir, const u8 *key,
 		return -EOPNOTSUPP;
 
 	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags)) {
-		/* RSS not supported return error here */
+		 
 		netdev_warn(netdev, "RSS is not configured on this VSI!\n");
 		return -EIO;
 	}
@@ -3251,7 +2882,7 @@ ice_set_rxfh(struct net_device *netdev, const u32 *indir, const u8 *key,
 			return -ENOMEM;
 	}
 
-	/* Each 32 bits pointed by 'indir' is stored with a lut entry */
+	 
 	if (indir) {
 		int i;
 
@@ -3274,7 +2905,7 @@ ice_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info)
 {
 	struct ice_pf *pf = ice_netdev_to_pf(dev);
 
-	/* only report timestamping if PTP is enabled */
+	 
 	if (!test_bit(ICE_FLAG_PTP, pf->flags))
 		return ethtool_op_get_ts_info(dev, info);
 
@@ -3294,33 +2925,21 @@ ice_get_ts_info(struct net_device *dev, struct ethtool_ts_info *info)
 	return 0;
 }
 
-/**
- * ice_get_max_txq - return the maximum number of Tx queues for in a PF
- * @pf: PF structure
- */
+ 
 static int ice_get_max_txq(struct ice_pf *pf)
 {
 	return min3(pf->num_lan_msix, (u16)num_online_cpus(),
 		    (u16)pf->hw.func_caps.common_cap.num_txq);
 }
 
-/**
- * ice_get_max_rxq - return the maximum number of Rx queues for in a PF
- * @pf: PF structure
- */
+ 
 static int ice_get_max_rxq(struct ice_pf *pf)
 {
 	return min3(pf->num_lan_msix, (u16)num_online_cpus(),
 		    (u16)pf->hw.func_caps.common_cap.num_rxq);
 }
 
-/**
- * ice_get_combined_cnt - return the current number of combined channels
- * @vsi: PF VSI pointer
- *
- * Go through all queue vectors and count ones that have both Rx and Tx ring
- * attached
- */
+ 
 static u32 ice_get_combined_cnt(struct ice_vsi *vsi)
 {
 	u32 combined = 0;
@@ -3336,11 +2955,7 @@ static u32 ice_get_combined_cnt(struct ice_vsi *vsi)
 	return combined;
 }
 
-/**
- * ice_get_channels - get the current and max supported channels
- * @dev: network interface device structure
- * @ch: ethtool channel data structure
- */
+ 
 static void
 ice_get_channels(struct net_device *dev, struct ethtool_channels *ch)
 {
@@ -3348,26 +2963,22 @@ ice_get_channels(struct net_device *dev, struct ethtool_channels *ch)
 	struct ice_vsi *vsi = np->vsi;
 	struct ice_pf *pf = vsi->back;
 
-	/* report maximum channels */
+	 
 	ch->max_rx = ice_get_max_rxq(pf);
 	ch->max_tx = ice_get_max_txq(pf);
 	ch->max_combined = min_t(int, ch->max_rx, ch->max_tx);
 
-	/* report current channels */
+	 
 	ch->combined_count = ice_get_combined_cnt(vsi);
 	ch->rx_count = vsi->num_rxq - ch->combined_count;
 	ch->tx_count = vsi->num_txq - ch->combined_count;
 
-	/* report other queues */
+	 
 	ch->other_count = test_bit(ICE_FLAG_FD_ENA, pf->flags) ? 1 : 0;
 	ch->max_other = ch->other_count;
 }
 
-/**
- * ice_get_valid_rss_size - return valid number of RSS queues
- * @hw: pointer to the HW structure
- * @new_size: requested RSS queues
- */
+ 
 static int ice_get_valid_rss_size(struct ice_hw *hw, int new_size)
 {
 	struct ice_hw_common_caps *caps = &hw->func_caps.common_cap;
@@ -3375,13 +2986,7 @@ static int ice_get_valid_rss_size(struct ice_hw *hw, int new_size)
 	return min_t(int, new_size, BIT(caps->rss_table_entry_width));
 }
 
-/**
- * ice_vsi_set_dflt_rss_lut - set default RSS LUT with requested RSS size
- * @vsi: VSI to reconfigure RSS LUT on
- * @req_rss_size: requested range of queue numbers for hashing
- *
- * Set the VSI's RSS parameters, configure the RSS LUT based on these.
- */
+ 
 static int ice_vsi_set_dflt_rss_lut(struct ice_vsi *vsi, int req_rss_size)
 {
 	struct ice_pf *pf = vsi->back;
@@ -3400,13 +3005,13 @@ static int ice_vsi_set_dflt_rss_lut(struct ice_vsi *vsi, int req_rss_size)
 	if (!lut)
 		return -ENOMEM;
 
-	/* set RSS LUT parameters */
+	 
 	if (!test_bit(ICE_FLAG_RSS_ENA, pf->flags))
 		vsi->rss_size = 1;
 	else
 		vsi->rss_size = ice_get_valid_rss_size(hw, req_rss_size);
 
-	/* create/set RSS LUT */
+	 
 	ice_fill_rss_lut(lut, vsi->rss_table_size, vsi->rss_size);
 	err = ice_set_rss_lut(vsi, lut, vsi->rss_table_size);
 	if (err)
@@ -3417,11 +3022,7 @@ static int ice_vsi_set_dflt_rss_lut(struct ice_vsi *vsi, int req_rss_size)
 	return err;
 }
 
-/**
- * ice_set_channels - set the number channels
- * @dev: network interface device structure
- * @ch: ethtool channel data structure
- */
+ 
 static int ice_set_channels(struct net_device *dev, struct ethtool_channels *ch)
 {
 	struct ice_netdev_priv *np = netdev_priv(dev);
@@ -3432,12 +3033,12 @@ static int ice_set_channels(struct net_device *dev, struct ethtool_channels *ch)
 	u32 curr_combined;
 	int ret = 0;
 
-	/* do not support changing channels in Safe Mode */
+	 
 	if (ice_is_safe_mode(pf)) {
 		netdev_err(dev, "Changing channel in Safe Mode is not supported\n");
 		return -EOPNOTSUPP;
 	}
-	/* do not support changing other_count */
+	 
 	if (ch->other_count != (test_bit(ICE_FLAG_FD_ENA, pf->flags) ? 1U : 0U))
 		return -EINVAL;
 
@@ -3453,11 +3054,7 @@ static int ice_set_channels(struct net_device *dev, struct ethtool_channels *ch)
 
 	curr_combined = ice_get_combined_cnt(vsi);
 
-	/* these checks are for cases where user didn't specify a particular
-	 * value on cmd line but we get non-zero value anyway via
-	 * get_channels(); look at ethtool.c in ethtool repository (the user
-	 * space part), particularly, do_schannels() routine
-	 */
+	 
 	if (ch->rx_count == vsi->num_rxq - curr_combined)
 		ch->rx_count = 0;
 	if (ch->tx_count == vsi->num_txq - curr_combined)
@@ -3512,7 +3109,7 @@ static int ice_set_channels(struct net_device *dev, struct ethtool_channels *ch)
 		goto adev_unlock;
 	}
 
-	/* Update rss_size due to change in Rx queues */
+	 
 	vsi->rss_size = ice_get_valid_rss_size(&pf->hw, new_rx);
 
 adev_unlock:
@@ -3523,11 +3120,7 @@ adev_unlock:
 	return ret;
 }
 
-/**
- * ice_get_wol - get current Wake on LAN configuration
- * @netdev: network interface device structure
- * @wol: Ethtool structure to retrieve WoL settings
- */
+ 
 static void ice_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -3536,7 +3129,7 @@ static void ice_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 	if (np->vsi->type != ICE_VSI_PF)
 		netdev_warn(netdev, "Wake on LAN is not supported on this interface!\n");
 
-	/* Get WoL settings based on the HW capability */
+	 
 	if (ice_is_wol_supported(&pf->hw)) {
 		wol->supported = WAKE_MAGIC;
 		wol->wolopts = pf->wol_ena ? WAKE_MAGIC : 0;
@@ -3546,11 +3139,7 @@ static void ice_get_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 	}
 }
 
-/**
- * ice_set_wol - set Wake on LAN on supported device
- * @netdev: network interface device structure
- * @wol: Ethtool structure to set WoL
- */
+ 
 static int ice_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -3560,11 +3149,11 @@ static int ice_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 	if (vsi->type != ICE_VSI_PF || !ice_is_wol_supported(&pf->hw))
 		return -EOPNOTSUPP;
 
-	/* only magic packet is supported */
+	 
 	if (wol->wolopts && wol->wolopts != WAKE_MAGIC)
 		return -EOPNOTSUPP;
 
-	/* Set WoL only if there is a new value */
+	 
 	if (pf->wol_ena != !!wol->wolopts) {
 		pf->wol_ena = !!wol->wolopts;
 		device_set_wakeup_enable(ice_pf_to_dev(pf), pf->wol_ena);
@@ -3575,17 +3164,7 @@ static int ice_set_wol(struct net_device *netdev, struct ethtool_wolinfo *wol)
 	return 0;
 }
 
-/**
- * ice_get_rc_coalesce - get ITR values for specific ring container
- * @ec: ethtool structure to fill with driver's coalesce settings
- * @rc: ring container that the ITR values will come from
- *
- * Query the device for ice_ring_container specific ITR values. This is
- * done per ice_ring_container because each q_vector can have 1 or more rings
- * and all of said ring(s) will have the same ITR values.
- *
- * Returns 0 on success, negative otherwise.
- */
+ 
 static int
 ice_get_rc_coalesce(struct ethtool_coalesce *ec, struct ice_ring_container *rc)
 {
@@ -3610,16 +3189,7 @@ ice_get_rc_coalesce(struct ethtool_coalesce *ec, struct ice_ring_container *rc)
 	return 0;
 }
 
-/**
- * ice_get_q_coalesce - get a queue's ITR/INTRL (coalesce) settings
- * @vsi: VSI associated to the queue for getting ITR/INTRL (coalesce) settings
- * @ec: coalesce settings to program the device with
- * @q_num: update ITR/INTRL (coalesce) settings for this queue number/index
- *
- * Return 0 on success, and negative under the following conditions:
- * 1. Getting Tx or Rx ITR/INTRL (coalesce) settings failed.
- * 2. The q_num passed in is not a valid number/index for Tx and Rx rings.
- */
+ 
 static int
 ice_get_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
 {
@@ -3645,15 +3215,7 @@ ice_get_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
 	return 0;
 }
 
-/**
- * __ice_get_coalesce - get ITR/INTRL values for the device
- * @netdev: pointer to the netdev associated with this query
- * @ec: ethtool structure to fill with driver's coalesce settings
- * @q_num: queue number to get the coalesce settings for
- *
- * If the caller passes in a negative q_num then we return coalesce settings
- * based on queue number 0, else use the actual q_num passed in.
- */
+ 
 static int
 __ice_get_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
 		   int q_num)
@@ -3685,18 +3247,7 @@ ice_get_per_q_coalesce(struct net_device *netdev, u32 q_num,
 	return __ice_get_coalesce(netdev, ec, q_num);
 }
 
-/**
- * ice_set_rc_coalesce - set ITR values for specific ring container
- * @ec: ethtool structure from user to update ITR settings
- * @rc: ring container that the ITR values will come from
- * @vsi: VSI associated to the ring container
- *
- * Set specific ITR values. This is done per ice_ring_container because each
- * q_vector can have 1 or more rings and all of said ring(s) will have the same
- * ITR values.
- *
- * Returns 0 on success, negative otherwise.
- */
+ 
 static int
 ice_set_rc_coalesce(struct ethtool_coalesce *ec,
 		    struct ice_ring_container *rc, struct ice_vsi *vsi)
@@ -3764,30 +3315,18 @@ ice_set_rc_coalesce(struct ethtool_coalesce *ec,
 		rc->itr_mode = ITR_DYNAMIC;
 	} else {
 		rc->itr_mode = ITR_STATIC;
-		/* store user facing value how it was set */
+		 
 		rc->itr_setting = coalesce_usecs;
-		/* write the change to the register */
+		 
 		ice_write_itr(rc, coalesce_usecs);
-		/* force writes to take effect immediately, the flush shouldn't
-		 * be done in the functions above because the intent is for
-		 * them to do lazy writes.
-		 */
+		 
 		ice_flush(&pf->hw);
 	}
 
 	return 0;
 }
 
-/**
- * ice_set_q_coalesce - set a queue's ITR/INTRL (coalesce) settings
- * @vsi: VSI associated to the queue that need updating
- * @ec: coalesce settings to program the device with
- * @q_num: update ITR/INTRL (coalesce) settings for this queue number/index
- *
- * Return 0 on success, and negative under the following conditions:
- * 1. Setting Tx or Rx ITR/INTRL (coalesce) settings failed.
- * 2. The q_num passed in is not a valid number/index for Tx and Rx rings.
- */
+ 
 static int
 ice_set_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
 {
@@ -3818,14 +3357,7 @@ ice_set_q_coalesce(struct ice_vsi *vsi, struct ethtool_coalesce *ec, int q_num)
 	return 0;
 }
 
-/**
- * ice_print_if_odd_usecs - print message if user tries to set odd [tx|rx]-usecs
- * @netdev: netdev used for print
- * @itr_setting: previous user setting
- * @use_adaptive_coalesce: if adaptive coalesce is enabled or being enabled
- * @coalesce_usecs: requested value of [tx|rx]-usecs
- * @c_type_str: either "rx" or "tx" to match user set field of [tx|rx]-usecs
- */
+ 
 static void
 ice_print_if_odd_usecs(struct net_device *netdev, u16 itr_setting,
 		       u32 use_adaptive_coalesce, u32 coalesce_usecs,
@@ -3840,15 +3372,7 @@ ice_print_if_odd_usecs(struct net_device *netdev, u16 itr_setting,
 			    ITR_REG_ALIGN(coalesce_usecs));
 }
 
-/**
- * __ice_set_coalesce - set ITR/INTRL values for the device
- * @netdev: pointer to the netdev associated with this query
- * @ec: ethtool structure to fill with driver's coalesce settings
- * @q_num: queue number to get the coalesce settings for
- *
- * If the caller passes in a negative q_num then we set the coalesce settings
- * for all Tx/Rx queues, else use the actual q_num passed in.
- */
+ 
 static int
 __ice_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
 		   int q_num)
@@ -3871,10 +3395,7 @@ __ice_set_coalesce(struct net_device *netdev, struct ethtool_coalesce *ec,
 		}
 
 		ice_for_each_q_vector(vsi, v_idx) {
-			/* In some cases if DCB is configured the num_[rx|tx]q
-			 * can be less than vsi->num_q_vectors. This check
-			 * accounts for that so we don't report a false failure
-			 */
+			 
 			if (v_idx >= vsi->num_rxq && v_idx >= vsi->num_txq)
 				goto set_complete;
 
@@ -3927,7 +3448,7 @@ ice_repr_get_strings(struct net_device *netdev, u32 stringset, u8 *data)
 {
 	struct ice_repr *repr = ice_netdev_to_repr(netdev);
 
-	/* for port representors only ETH_SS_STATS is supported */
+	 
 	if (ice_check_vf_ready_for_cfg(repr->vf) ||
 	    stringset != ETH_SS_STATS)
 		return;
@@ -3970,11 +3491,7 @@ static int ice_repr_get_sset_count(struct net_device *netdev, int sset)
 #define ICE_MODULE_SFF_8472_SWAP	0x5C
 #define ICE_MODULE_QSFP_MAX_LEN		640
 
-/**
- * ice_get_module_info - get SFF module type and revision information
- * @netdev: network interface device structure
- * @modinfo: module EEPROM size and layout information structure
- */
+ 
 static int
 ice_get_module_info(struct net_device *netdev,
 		    struct ethtool_modinfo *modinfo)
@@ -4026,9 +3543,9 @@ ice_get_module_info(struct net_device *netdev,
 					   &sff8636_rev, 1, 0, NULL);
 		if (status)
 			return status;
-		/* Check revision compliance */
+		 
 		if (sff8636_rev > 0x02) {
-			/* Module is SFF-8636 compliant */
+			 
 			modinfo->type = ETH_MODULE_SFF_8636;
 			modinfo->eeprom_len = ICE_MODULE_QSFP_MAX_LEN;
 		} else {
@@ -4043,12 +3560,7 @@ ice_get_module_info(struct net_device *netdev,
 	return 0;
 }
 
-/**
- * ice_get_module_eeprom - fill buffer with SFF EEPROM contents
- * @netdev: network interface device structure
- * @ee: EEPROM dump request structure
- * @data: buffer to be filled with EEPROM contents
- */
+ 
 static int
 ice_get_module_eeprom(struct net_device *netdev,
 		      struct ethtool_eeprom *ee, u8 *data)
@@ -4082,7 +3594,7 @@ ice_get_module_eeprom(struct net_device *netdev,
 		offset = i + ee->offset;
 		page = 0;
 
-		/* Check if we need to access the other memory page */
+		 
 		if (is_sfp) {
 			if (offset >= ETH_MODULE_SFF_8079_LEN) {
 				offset -= ETH_MODULE_SFF_8079_LEN;
@@ -4090,23 +3602,17 @@ ice_get_module_eeprom(struct net_device *netdev,
 			}
 		} else {
 			while (offset >= ETH_MODULE_SFF_8436_LEN) {
-				/* Compute memory page number and offset. */
+				 
 				offset -= ETH_MODULE_SFF_8436_LEN / 2;
 				page++;
 			}
 		}
 
-		/* Bit 2 of EEPROM address 0x02 declares upper
-		 * pages are disabled on QSFP modules.
-		 * SFP modules only ever use page 0.
-		 */
+		 
 		if (page == 0 || !(data[0x2] & 0x4)) {
 			u32 copy_len;
 
-			/* If i2c bus is busy due to slow page change or
-			 * link management access, call can fail. This is normal.
-			 * So we retry this a few times.
-			 */
+			 
 			for (j = 0; j < 4; j++) {
 				status = ice_aq_sff_eeprom(hw, 0, addr, offset, page,
 							   !is_sfp, value,
@@ -4125,7 +3631,7 @@ ice_get_module_eeprom(struct net_device *netdev,
 				break;
 			}
 
-			/* Make sure we have enough room for the new block */
+			 
 			copy_len = min_t(u32, SFF_READ_BLOCK_SIZE, ee->len - i);
 			memcpy(data + i, value, copy_len);
 		}
@@ -4203,10 +3709,7 @@ static const struct ethtool_ops ice_ethtool_safe_mode_ops = {
 	.get_channels		= ice_get_channels,
 };
 
-/**
- * ice_set_ethtool_safe_mode_ops - setup safe mode ethtool ops
- * @netdev: network interface device structure
- */
+ 
 void ice_set_ethtool_safe_mode_ops(struct net_device *netdev)
 {
 	netdev->ethtool_ops = &ice_ethtool_safe_mode_ops;
@@ -4220,21 +3723,13 @@ static const struct ethtool_ops ice_ethtool_repr_ops = {
 	.get_sset_count		= ice_repr_get_sset_count,
 };
 
-/**
- * ice_set_ethtool_repr_ops - setup VF's port representor ethtool ops
- * @netdev: network interface device structure
- */
+ 
 void ice_set_ethtool_repr_ops(struct net_device *netdev)
 {
 	netdev->ethtool_ops = &ice_ethtool_repr_ops;
 }
 
-/**
- * ice_set_ethtool_ops - setup netdev ethtool ops
- * @netdev: network interface device structure
- *
- * setup netdev ethtool ops with ice specific ops
- */
+ 
 void ice_set_ethtool_ops(struct net_device *netdev)
 {
 	netdev->ethtool_ops = &ice_ethtool_ops;

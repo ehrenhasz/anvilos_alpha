@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * LTC2688 16 channel, 16 bit Voltage Output SoftSpan DAC driver
- *
- * Copyright 2022 Analog Devices Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -40,7 +36,7 @@
 
 #define LTC2688_READ_OPERATION			0x80
 
-/* Channel Settings */
+ 
 #define LTC2688_CH_SPAN_MSK			GENMASK(2, 0)
 #define LTC2688_CH_OVERRANGE_MSK		BIT(3)
 #define LTC2688_CH_TD_SEL_MSK			GENMASK(5, 4)
@@ -54,7 +50,7 @@
 #define LTC2688_DITHER_RAW_MAX_VAL		(BIT(14) - 1)
 #define LTC2688_CH_CALIBBIAS_MAX_VAL		(BIT(14) - 1)
 
-/* Configuration register */
+ 
 #define LTC2688_CONFIG_RST			BIT(15)
 #define LTC2688_CONFIG_EXT_REF			BIT(1)
 
@@ -86,13 +82,10 @@ struct ltc2688_state {
 	struct regmap *regmap;
 	struct ltc2688_chan channels[LTC2688_DAC_CHANNELS];
 	struct iio_chan_spec *iio_chan;
-	/* lock to protect against multiple access to the device and shared data */
+	 
 	struct mutex lock;
 	int vref;
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	u8 tx_data[6] __aligned(IIO_DMA_MINALIGN);
 	u8 rx_data[3];
 };
@@ -143,7 +136,7 @@ static int ltc2688_span_get(const struct ltc2688_state *st, int c)
 		return ret;
 
 	span = FIELD_GET(LTC2688_CH_SPAN_MSK, reg);
-	/* sanity check to make sure we don't get any weird value from the HW */
+	 
 	if (span >= LTC2688_SPAN_RANGE_MAX)
 		return -EIO;
 
@@ -202,7 +195,7 @@ static int ltc2688_dac_code_write(struct ltc2688_state *st, u32 chan, u32 input,
 	struct ltc2688_chan *c = &st->channels[chan];
 	int ret, reg;
 
-	/* 2 LSBs set to 0 if writing dither amplitude */
+	 
 	if (!c->toggle_chan && input == LTC2688_INPUT_B) {
 		if (code > LTC2688_DITHER_RAW_MAX_VAL)
 			return -EINVAL;
@@ -211,16 +204,13 @@ static int ltc2688_dac_code_write(struct ltc2688_state *st, u32 chan, u32 input,
 	}
 
 	mutex_lock(&st->lock);
-	/* select the correct input register to read from */
+	 
 	ret = regmap_update_bits(st->regmap, LTC2688_CMD_A_B_SELECT, BIT(chan),
 				 input << chan);
 	if (ret)
 		goto out_unlock;
 
-	/*
-	 * If in dither/toggle mode the dac should be updated by an
-	 * external signal (or sw toggle) and not here.
-	 */
+	 
 	if (c->mode == LTC2688_MODE_DEFAULT)
 		reg = LTC2688_CMD_CH_CODE_UPDATE(chan);
 	else
@@ -592,10 +582,7 @@ static const struct iio_enum ltc2688_dither_phase_enum = {
 	.shared = (_shared),						\
 }
 
-/*
- * For toggle mode we only expose the symbol attr (sw_toggle) in case a TGPx is
- * not provided in dts.
- */
+ 
 static const struct iio_chan_spec_ext_info ltc2688_toggle_sym_ext_info[] = {
 	LTC2688_CHAN_EXT_INFO("raw0", LTC2688_INPUT_A, IIO_SEPARATE,
 			      ltc2688_dac_input_read, ltc2688_dac_input_write),
@@ -632,10 +619,7 @@ static struct iio_chan_spec_ext_info ltc2688_dither_ext_info[] = {
 			      ltc2688_dac_input_write),
 	LTC2688_CHAN_EXT_INFO("dither_offset", LTC2688_DITHER_OFF, IIO_SEPARATE,
 			      ltc2688_dac_input_read, ltc2688_dac_input_write),
-	/*
-	 * Not IIO_ENUM because the available freq needs to be computed at
-	 * probe. We could still use it, but it didn't felt much right.
-	 */
+	 
 	LTC2688_CHAN_EXT_INFO("dither_frequency", 0, IIO_SEPARATE,
 			      ltc2688_dither_freq_get, ltc2688_dither_freq_set),
 	LTC2688_CHAN_EXT_INFO("dither_frequency_available",
@@ -722,7 +706,7 @@ static int ltc2688_tgp_clk_setup(struct ltc2688_state *st,
 	if (chan->toggle_chan)
 		return 0;
 
-	/* calculate available dither frequencies */
+	 
 	rate = clk_get_rate(clk);
 	for (f = 0; f < ARRAY_SIZE(chan->dither_frequency); f++)
 		chan->dither_frequency[f] = DIV_ROUND_CLOSEST(rate, ltc2688_period[f]);
@@ -771,12 +755,9 @@ static int ltc2688_channel_config(struct ltc2688_state *st)
 		chan = &st->channels[reg];
 		if (fwnode_property_read_bool(child, "adi,toggle-mode")) {
 			chan->toggle_chan = true;
-			/* assume sw toggle ABI */
+			 
 			st->iio_chan[reg].ext_info = ltc2688_toggle_sym_ext_info;
-			/*
-			 * Clear IIO_CHAN_INFO_RAW bit as toggle channels expose
-			 * out_voltage_raw{0|1} files.
-			 */
+			 
 			__clear_bit(IIO_CHAN_INFO_RAW,
 				    &st->iio_chan[reg].info_mask_separate);
 		}
@@ -812,24 +793,15 @@ static int ltc2688_channel_config(struct ltc2688_state *st)
 				return ret;
 			}
 
-			/*
-			 * 0 means software toggle which is the default mode.
-			 * Hence the +1.
-			 */
+			 
 			val |= FIELD_PREP(LTC2688_CH_TD_SEL_MSK, clk_input + 1);
 
-			/*
-			 * If a TGPx is given, we automatically assume a dither
-			 * capable channel (unless toggle is already enabled).
-			 * On top of this we just set here the dither bit in the
-			 * channel settings. It won't have any effect until the
-			 * global toggle/dither bit is enabled.
-			 */
+			 
 			if (!chan->toggle_chan) {
 				val |= FIELD_PREP(LTC2688_CH_MODE_MSK, 1);
 				st->iio_chan[reg].ext_info = ltc2688_dither_ext_info;
 			} else {
-				/* wait, no sw toggle after all */
+				 
 				st->iio_chan[reg].ext_info = ltc2688_toggle_ext_info;
 			}
 		}
@@ -860,16 +832,13 @@ static int ltc2688_setup(struct ltc2688_state *st, struct regulator *vref)
 	struct gpio_desc *gpio;
 	int ret;
 
-	/*
-	 * If we have a reset pin, use that to reset the board, If not, use
-	 * the reset bit.
-	 */
+	 
 	gpio = devm_gpiod_get_optional(dev, "clr", GPIOD_OUT_HIGH);
 	if (IS_ERR(gpio))
 		return dev_err_probe(dev, PTR_ERR(gpio), "Failed to get reset gpio");
 	if (gpio) {
 		usleep_range(1000, 1200);
-		/* bring device out of reset */
+		 
 		gpiod_set_value_cansleep(gpio, 0);
 	} else {
 		ret = regmap_update_bits(st->regmap, LTC2688_CMD_CONFIG,
@@ -881,10 +850,7 @@ static int ltc2688_setup(struct ltc2688_state *st, struct regulator *vref)
 
 	usleep_range(10000, 12000);
 
-	/*
-	 * Duplicate the default channel configuration as it can change during
-	 * @ltc2688_channel_config()
-	 */
+	 
 	st->iio_chan = devm_kmemdup(dev, ltc2688_channels,
 				    sizeof(ltc2688_channels), GFP_KERNEL);
 	if (!st->iio_chan)
@@ -920,11 +886,7 @@ static bool ltc2688_reg_readable(struct device *dev, unsigned int reg)
 
 static bool ltc2688_reg_writable(struct device *dev, unsigned int reg)
 {
-	/*
-	 * There's a jump from 0x76 to 0x78 in the write codes and the thermal
-	 * status code is 0x77 (which is read only) so that we need to check
-	 * that special condition.
-	 */
+	 
 	if (reg <= LTC2688_CMD_UPDATE_ALL && reg != LTC2688_CMD_THERMAL_STAT)
 		return true;
 
@@ -944,7 +906,7 @@ static const struct regmap_config ltc2688_regmap_config = {
 	.val_bits = 16,
 	.readable_reg = ltc2688_reg_readable,
 	.writeable_reg = ltc2688_reg_writable,
-	/* ignoring the no op command */
+	 
 	.max_register = LTC2688_CMD_UPDATE_ALL,
 };
 
@@ -971,7 +933,7 @@ static int ltc2688_probe(struct spi_device *spi)
 	st = iio_priv(indio_dev);
 	st->spi = spi;
 
-	/* Just write this once. No need to do it in every regmap read. */
+	 
 	st->tx_data[3] = LTC2688_CMD_NOOP;
 	mutex_init(&st->lock);
 
@@ -993,7 +955,7 @@ static int ltc2688_probe(struct spi_device *spi)
 					     "Failed to get vref regulator");
 
 		vref_reg = NULL;
-		/* internal reference */
+		 
 		st->vref = 4096;
 	} else {
 		ret = regulator_enable(vref_reg);

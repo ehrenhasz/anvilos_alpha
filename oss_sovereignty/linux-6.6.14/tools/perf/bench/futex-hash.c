@@ -1,15 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013  Davidlohr Bueso <davidlohr@hp.com>
- *
- * futex-hash: Stress the hell out of the Linux kernel futex uaddr hashing.
- *
- * This program is particularly useful for measuring the kernel's futex hash
- * table/function implementation. In order for it to make sense, use with as
- * many threads and futexes as possible.
- */
 
-/* For the CLR_() macros */
+ 
+
+ 
 #include <string.h>
 #include <pthread.h>
 
@@ -72,7 +64,7 @@ static void *workerfn(void *arg)
 	int ret;
 	struct worker *w = (struct worker *) arg;
 	unsigned int i;
-	unsigned long ops = w->ops; /* avoid cacheline bouncing */
+	unsigned long ops = w->ops;  
 
 	mutex_lock(&thread_lock);
 	threads_starting--;
@@ -83,12 +75,7 @@ static void *workerfn(void *arg)
 
 	do {
 		for (i = 0; i < params.nfutexes; i++, ops++) {
-			/*
-			 * We want the futex calls to fail in order to stress
-			 * the hashing of uaddr and not measure other steps,
-			 * such as internal waitqueue handling, thus enlarging
-			 * the critical region protected by hb->lock.
-			 */
+			 
 			ret = futex_wait(&w->futex[i], 1234, NULL, futex_flag);
 			if (!params.silent &&
 			    (!ret || errno != EAGAIN || errno != EWOULDBLOCK))
@@ -104,7 +91,7 @@ static void toggle_done(int sig __maybe_unused,
 			siginfo_t *info __maybe_unused,
 			void *uc __maybe_unused)
 {
-	/* inform all threads that we're done for the day */
+	 
 	done = true;
 	gettimeofday(&bench__end, NULL);
 	timersub(&bench__end, &bench__start, &bench__runtime);
@@ -152,7 +139,7 @@ int bench_futex_hash(int argc, const char **argv)
 			err(EXIT_FAILURE, "mlockall");
 	}
 
-	if (!params.nthreads) /* default to the number of CPUs */
+	if (!params.nthreads)  
 		params.nthreads = perf_cpu_map__nr(cpu);
 
 	worker = calloc(params.nthreads, sizeof(*worker));
@@ -219,7 +206,7 @@ int bench_futex_hash(int argc, const char **argv)
 			err(EXIT_FAILURE, "pthread_join");
 	}
 
-	/* cleanup & report results */
+	 
 	cond_destroy(&thread_parent);
 	cond_destroy(&thread_worker);
 	mutex_destroy(&thread_lock);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #define _GNU_SOURCE
 #include <asm/unistd.h>
@@ -153,13 +153,7 @@ static void *emitter_entry2(void *data)
 	return NULL;
 }
 
-/*
- *          t0
- *           | (ew)
- *          e0
- *           | (lt)
- *          s0
- */
+ 
 TEST(epoll1)
 {
 	int efd;
@@ -184,13 +178,7 @@ TEST(epoll1)
 	close(sfd[1]);
 }
 
-/*
- *          t0
- *           | (ew)
- *          e0
- *           | (et)
- *          s0
- */
+ 
 TEST(epoll2)
 {
 	int efd;
@@ -215,13 +203,7 @@ TEST(epoll2)
 	close(sfd[1]);
 }
 
-/*
- *           t0
- *            | (ew)
- *           e0
- *     (lt) /  \ (lt)
- *        s0    s2
- */
+ 
 TEST(epoll3)
 {
 	int efd;
@@ -253,13 +235,7 @@ TEST(epoll3)
 	close(sfd[3]);
 }
 
-/*
- *           t0
- *            | (ew)
- *           e0
- *     (et) /  \ (et)
- *        s0    s2
- */
+ 
 TEST(epoll4)
 {
 	int efd;
@@ -291,13 +267,7 @@ TEST(epoll4)
 	close(sfd[3]);
 }
 
-/*
- *          t0
- *           | (p)
- *          e0
- *           | (lt)
- *          s0
- */
+ 
 TEST(epoll5)
 {
 	int efd;
@@ -330,13 +300,7 @@ TEST(epoll5)
 	close(sfd[1]);
 }
 
-/*
- *          t0
- *           | (p)
- *          e0
- *           | (et)
- *          s0
- */
+ 
 TEST(epoll6)
 {
 	int efd;
@@ -369,13 +333,7 @@ TEST(epoll6)
 	close(sfd[1]);
 }
 
-/*
- *           t0
- *            | (p)
- *           e0
- *     (lt) /  \ (lt)
- *        s0    s2
- */
+ 
 
 TEST(epoll7)
 {
@@ -416,13 +374,7 @@ TEST(epoll7)
 	close(sfd[3]);
 }
 
-/*
- *           t0
- *            | (p)
- *           e0
- *     (et) /  \ (et)
- *        s0    s2
- */
+ 
 TEST(epoll8)
 {
 	int efd;
@@ -462,13 +414,7 @@ TEST(epoll8)
 	close(sfd[3]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll9)
 {
 	pthread_t emitter;
@@ -505,13 +451,7 @@ TEST(epoll9)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll10)
 {
 	pthread_t emitter;
@@ -548,13 +488,7 @@ TEST(epoll10)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *     (lt) /  \ (lt)
- *        s0    s2
- */
+ 
 TEST(epoll11)
 {
 	pthread_t emitter;
@@ -597,13 +531,7 @@ TEST(epoll11)
 	close(ctx.sfd[3]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *     (et) /  \ (et)
- *        s0    s2
- */
+ 
 TEST(epoll12)
 {
 	pthread_t emitter;
@@ -646,13 +574,7 @@ TEST(epoll12)
 	close(ctx.sfd[3]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll13)
 {
 	pthread_t emitter;
@@ -689,13 +611,7 @@ TEST(epoll13)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll14)
 {
 	pthread_t emitter;
@@ -732,13 +648,7 @@ TEST(epoll14)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *     (lt) /  \ (lt)
- *        s0    s2
- */
+ 
 TEST(epoll15)
 {
 	pthread_t emitter;
@@ -781,13 +691,7 @@ TEST(epoll15)
 	close(ctx.sfd[3]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *     (et) /  \ (et)
- *        s0    s2
- */
+ 
 TEST(epoll16)
 {
 	pthread_t emitter;
@@ -830,15 +734,7 @@ TEST(epoll16)
 	close(ctx.sfd[3]);
 }
 
-/*
- *          t0
- *           | (ew)
- *          e0
- *           | (lt)
- *          e1
- *           | (lt)
- *          s0
- */
+ 
 TEST(epoll17)
 {
 	int efd[2];
@@ -870,15 +766,7 @@ TEST(epoll17)
 	close(sfd[1]);
 }
 
-/*
- *          t0
- *           | (ew)
- *          e0
- *           | (lt)
- *          e1
- *           | (et)
- *          s0
- */
+ 
 TEST(epoll18)
 {
 	int efd[2];
@@ -910,15 +798,7 @@ TEST(epoll18)
 	close(sfd[1]);
 }
 
-/*
- *           t0
- *            | (ew)
- *           e0
- *            | (et)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll19)
 {
 	int efd[2];
@@ -950,15 +830,7 @@ TEST(epoll19)
 	close(sfd[1]);
 }
 
-/*
- *           t0
- *            | (ew)
- *           e0
- *            | (et)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll20)
 {
 	int efd[2];
@@ -990,15 +862,7 @@ TEST(epoll20)
 	close(sfd[1]);
 }
 
-/*
- *          t0
- *           | (p)
- *          e0
- *           | (lt)
- *          e1
- *           | (lt)
- *          s0
- */
+ 
 TEST(epoll21)
 {
 	int efd[2];
@@ -1038,15 +902,7 @@ TEST(epoll21)
 	close(sfd[1]);
 }
 
-/*
- *          t0
- *           | (p)
- *          e0
- *           | (lt)
- *          e1
- *           | (et)
- *          s0
- */
+ 
 TEST(epoll22)
 {
 	int efd[2];
@@ -1086,15 +942,7 @@ TEST(epoll22)
 	close(sfd[1]);
 }
 
-/*
- *          t0
- *           | (p)
- *          e0
- *           | (et)
- *          e1
- *           | (lt)
- *          s0
- */
+ 
 TEST(epoll23)
 {
 	int efd[2];
@@ -1134,15 +982,7 @@ TEST(epoll23)
 	close(sfd[1]);
 }
 
-/*
- *          t0
- *           | (p)
- *          e0
- *           | (et)
- *          e1
- *           | (et)
- *          s0
- */
+ 
 TEST(epoll24)
 {
 	int efd[2];
@@ -1182,15 +1022,7 @@ TEST(epoll24)
 	close(sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *            | (lt)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll25)
 {
 	pthread_t emitter;
@@ -1234,15 +1066,7 @@ TEST(epoll25)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *            | (lt)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll26)
 {
 	pthread_t emitter;
@@ -1286,15 +1110,7 @@ TEST(epoll26)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *            | (et)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll27)
 {
 	pthread_t emitter;
@@ -1338,15 +1154,7 @@ TEST(epoll27)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *            | (et)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll28)
 {
 	pthread_t emitter;
@@ -1390,15 +1198,7 @@ TEST(epoll28)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *            | (lt)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll29)
 {
 	pthread_t emitter;
@@ -1441,15 +1241,7 @@ TEST(epoll29)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *            | (lt)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll30)
 {
 	pthread_t emitter;
@@ -1492,15 +1284,7 @@ TEST(epoll30)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *            | (et)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll31)
 {
 	pthread_t emitter;
@@ -1543,15 +1327,7 @@ TEST(epoll31)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *            | (et)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll32)
 {
 	pthread_t emitter;
@@ -1594,15 +1370,7 @@ TEST(epoll32)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *    (ew) |    | (ew)
- *         |   e0
- *          \  / (lt)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll33)
 {
 	pthread_t emitter;
@@ -1646,15 +1414,7 @@ TEST(epoll33)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *    (ew) |    | (ew)
- *         |   e0
- *          \  / (lt)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll34)
 {
 	pthread_t emitter;
@@ -1698,15 +1458,7 @@ TEST(epoll34)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *    (ew) |    | (ew)
- *         |   e0
- *          \  / (et)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll35)
 {
 	pthread_t emitter;
@@ -1750,15 +1502,7 @@ TEST(epoll35)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *    (ew) |    | (ew)
- *         |   e0
- *          \  / (et)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll36)
 {
 	pthread_t emitter;
@@ -1802,15 +1546,7 @@ TEST(epoll36)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *     (p) |    | (ew)
- *         |   e0
- *          \  / (lt)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll37)
 {
 	pthread_t emitter;
@@ -1859,15 +1595,7 @@ TEST(epoll37)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *     (p) |    | (ew)
- *         |   e0
- *          \  / (lt)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll38)
 {
 	pthread_t emitter;
@@ -1916,15 +1644,7 @@ TEST(epoll38)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *     (p) |    | (ew)
- *         |   e0
- *          \  / (et)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll39)
 {
 	pthread_t emitter;
@@ -1973,15 +1693,7 @@ TEST(epoll39)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *     (p) |    | (ew)
- *         |   e0
- *          \  / (et)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll40)
 {
 	pthread_t emitter;
@@ -2030,15 +1742,7 @@ TEST(epoll40)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *    (ew) |    | (p)
- *         |   e0
- *          \  / (lt)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll41)
 {
 	pthread_t emitter;
@@ -2082,15 +1786,7 @@ TEST(epoll41)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *    (ew) |    | (p)
- *         |   e0
- *          \  / (lt)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll42)
 {
 	pthread_t emitter;
@@ -2134,15 +1830,7 @@ TEST(epoll42)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *    (ew) |    | (p)
- *         |   e0
- *          \  / (et)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll43)
 {
 	pthread_t emitter;
@@ -2186,15 +1874,7 @@ TEST(epoll43)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *    (ew) |    | (p)
- *         |   e0
- *          \  / (et)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll44)
 {
 	pthread_t emitter;
@@ -2238,15 +1918,7 @@ TEST(epoll44)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *     (p) |    | (p)
- *         |   e0
- *          \  / (lt)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll45)
 {
 	pthread_t emitter;
@@ -2295,15 +1967,7 @@ TEST(epoll45)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *     (p) |    | (p)
- *         |   e0
- *          \  / (lt)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll46)
 {
 	pthread_t emitter;
@@ -2347,15 +2011,7 @@ TEST(epoll46)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *     (p) |    | (p)
- *         |   e0
- *          \  / (et)
- *           e1
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll47)
 {
 	pthread_t emitter;
@@ -2404,15 +2060,7 @@ TEST(epoll47)
 	close(ctx.sfd[1]);
 }
 
-/*
- *        t0   t1
- *     (p) |    | (p)
- *         |   e0
- *          \  / (et)
- *           e1
- *            | (et)
- *           s0
- */
+ 
 TEST(epoll48)
 {
 	pthread_t emitter;
@@ -2456,15 +2104,7 @@ TEST(epoll48)
 	close(ctx.sfd[1]);
 }
 
-/*
- *           t0
- *            | (ew)
- *           e0
- *     (lt) /  \ (lt)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll49)
 {
 	int efd[3];
@@ -2510,15 +2150,7 @@ TEST(epoll49)
 	close(sfd[3]);
 }
 
-/*
- *           t0
- *            | (ew)
- *           e0
- *     (et) /  \ (et)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll50)
 {
 	int efd[3];
@@ -2564,15 +2196,7 @@ TEST(epoll50)
 	close(sfd[3]);
 }
 
-/*
- *           t0
- *            | (p)
- *           e0
- *     (lt) /  \ (lt)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll51)
 {
 	int efd[3];
@@ -2626,15 +2250,7 @@ TEST(epoll51)
 	close(sfd[3]);
 }
 
-/*
- *           t0
- *            | (p)
- *           e0
- *     (et) /  \ (et)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll52)
 {
 	int efd[3];
@@ -2688,15 +2304,7 @@ TEST(epoll52)
 	close(sfd[3]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *     (lt) /  \ (lt)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll53)
 {
 	pthread_t emitter;
@@ -2753,15 +2361,7 @@ TEST(epoll53)
 	close(ctx.sfd[3]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *     (et) /  \ (et)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll54)
 {
 	pthread_t emitter;
@@ -2818,15 +2418,7 @@ TEST(epoll54)
 	close(ctx.sfd[3]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *     (lt) /  \ (lt)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll55)
 {
 	pthread_t emitter;
@@ -2883,15 +2475,7 @@ TEST(epoll55)
 	close(ctx.sfd[3]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (p)
- *           e0
- *     (et) /  \ (et)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll56)
 {
 	pthread_t emitter;
@@ -2948,15 +2532,7 @@ TEST(epoll56)
 	close(ctx.sfd[3]);
 }
 
-/*
- *        t0    t1
- *      (p) \  / (p)
- *           e0
- *     (lt) /  \ (lt)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll57)
 {
 	pthread_t emitter;
@@ -3018,15 +2594,7 @@ TEST(epoll57)
 	close(ctx.sfd[3]);
 }
 
-/*
- *        t0    t1
- *      (p) \  / (p)
- *           e0
- *     (et) /  \ (et)
- *        e1    e2
- *    (lt) |     | (lt)
- *        s0    s2
- */
+ 
 TEST(epoll58)
 {
 	pthread_t emitter;
@@ -3106,15 +2674,7 @@ static void *epoll59_thread(void *ctx_)
 	return NULL;
 }
 
-/*
- *        t0
- *      (p) \
- *           e0
- *     (et) /
- *        e0
- *
- * Based on https://bugzilla.kernel.org/show_bug.cgi?id=205933
- */
+ 
 TEST(epoll59)
 {
 	pthread_t emitter;
@@ -3172,35 +2732,35 @@ static void *epoll60_wait_thread(void *ctx_)
 	uint64_t v;
 	int ret;
 
-	/* Block SIGUSR1 */
+	 
 	sigemptyset(&sigmask);
 	sigaddset(&sigmask, SIGUSR1);
 	sigprocmask(SIG_SETMASK, &sigmask, NULL);
 
-	/* Prepare empty mask for epoll_pwait() */
+	 
 	sigemptyset(&sigmask);
 
 	while (!ctx->stopped) {
-		/* Mark we are ready */
+		 
 		__atomic_fetch_add(&ctx->ready, 1, __ATOMIC_ACQUIRE);
 
-		/* Start when all are ready */
+		 
 		while (__atomic_load_n(&ctx->ready, __ATOMIC_ACQUIRE) &&
 		       !ctx->stopped);
 
-		/* Account this waiter */
+		 
 		__atomic_fetch_add(&ctx->waiters, 1, __ATOMIC_ACQUIRE);
 
 		ret = epoll_pwait(ctx->epfd, &e, 1, 2000, &sigmask);
 		if (ret != 1) {
-			/* We expect only signal delivery on stop */
+			 
 			assert(ret < 0 && errno == EINTR && "Lost wakeup!\n");
 			assert(ctx->stopped);
 			break;
 		}
 
 		ret = read(e.data.fd, &v, sizeof(v));
-		/* Since we are on ET mode, thus each thread gets its own fd. */
+		 
 		assert(ret == sizeof(v));
 
 		__atomic_fetch_sub(&ctx->waiters, 1, __ATOMIC_RELEASE);
@@ -3238,7 +2798,7 @@ TEST(epoll60)
 	ctx.epfd = epoll_create1(0);
 	ASSERT_GE(ctx.epfd, 0);
 
-	/* Create event fds */
+	 
 	for (i = 0; i < ARRAY_SIZE(ctx.evfd); i++) {
 		ctx.evfd[i] = eventfd(0, EFD_NONBLOCK);
 		ASSERT_GE(ctx.evfd[i], 0);
@@ -3248,7 +2808,7 @@ TEST(epoll60)
 		ASSERT_EQ(epoll_ctl(ctx.epfd, EPOLL_CTL_ADD, ctx.evfd[i], &e), 0);
 	}
 
-	/* Create waiter threads */
+	 
 	for (i = 0; i < ARRAY_SIZE(waiters); i++)
 		ASSERT_EQ(pthread_create(&waiters[i], NULL,
 					 epoll60_wait_thread, &ctx), 0);
@@ -3256,29 +2816,29 @@ TEST(epoll60)
 	for (i = 0; i < 300; i++) {
 		uint64_t v = 1, ms;
 
-		/* Wait for all to be ready */
+		 
 		while (__atomic_load_n(&ctx.ready, __ATOMIC_ACQUIRE) !=
 		       ARRAY_SIZE(ctx.evfd))
 			;
 
-		/* Steady, go */
+		 
 		__atomic_fetch_sub(&ctx.ready, ARRAY_SIZE(ctx.evfd),
 				   __ATOMIC_ACQUIRE);
 
-		/* Wait all have gone to kernel */
+		 
 		while (count_waiters(&ctx) != ARRAY_SIZE(ctx.evfd))
 			;
 
-		/* 1ms should be enough to schedule away */
+		 
 		usleep(1000);
 
-		/* Quickly signal all handles at once */
+		 
 		for (n = 0; n < ARRAY_SIZE(ctx.evfd); n++) {
 			ret = write(ctx.evfd[n], &v, sizeof(v));
 			ASSERT_EQ(ret, sizeof(v));
 		}
 
-		/* Busy loop for 1s and wait for all waiters to wake up */
+		 
 		ms = msecs();
 		while (count_waiters(&ctx) && msecs() < ms + 1000)
 			;
@@ -3286,7 +2846,7 @@ TEST(epoll60)
 		ASSERT_EQ(count_waiters(&ctx), 0);
 	}
 	ctx.stopped = 1;
-	/* Stop waiters */
+	 
 	for (i = 0; i < ARRAY_SIZE(waiters); i++)
 		ret = pthread_kill(waiters[i], SIGUSR1);
 	for (i = 0; i < ARRAY_SIZE(waiters); i++)
@@ -3319,10 +2879,7 @@ static void *epoll61_epoll_with_timeout(void *ctx_)
 	int n;
 
 	n = epoll_wait(ctx->epfd, events, 1, 11);
-	/*
-	 * If epoll returned the eventfd, write on the eventfd to wake up the
-	 * blocking poller.
-	 */
+	 
 	if (n == 1) {
 		int64_t l = 1;
 
@@ -3356,27 +2913,12 @@ TEST(epoll61)
 	r = epoll_ctl(ctx.epfd, EPOLL_CTL_ADD, ctx.evfd, &ev);
 	ASSERT_EQ(r, 0);
 
-	/*
-	 * We are testing a race.  Repeat the test case 1000 times to make it
-	 * more likely to fail in case of a bug.
-	 */
+	 
 	for (i = 0; i < 1000; i++) {
 		pthread_t threads[3];
 		int n;
 
-		/*
-		 * Start 3 threads:
-		 * Thread 1 sleeps for 10.9ms and writes to the evenfd.
-		 * Thread 2 calls epoll with a timeout of 11ms.
-		 * Thread 3 calls epoll with a timeout of -1.
-		 *
-		 * The eventfd write by Thread 1 should either wakeup Thread 2
-		 * or Thread 3.  If it wakes up Thread 2, Thread 2 writes on the
-		 * eventfd to wake up Thread 3.
-		 *
-		 * If no events are missed, all three threads should eventually
-		 * be joinable.
-		 */
+		 
 		ASSERT_EQ(pthread_create(&threads[0], NULL,
 					 epoll61_write_eventfd, &ctx), 0);
 		ASSERT_EQ(pthread_create(&threads[1], NULL,
@@ -3392,7 +2934,7 @@ TEST(epoll61)
 	close(ctx.evfd);
 }
 
-/* Equivalent to basic test epoll1, but exercising epoll_pwait2. */
+ 
 TEST(epoll62)
 {
 	int efd;
@@ -3417,7 +2959,7 @@ TEST(epoll62)
 	close(sfd[1]);
 }
 
-/* Epoll_pwait2 basic timeout test. */
+ 
 TEST(epoll63)
 {
 	const int cfg_delay_ms = 10;
@@ -3449,13 +2991,7 @@ TEST(epoll63)
 	close(sfd[1]);
 }
 
-/*
- *        t0    t1
- *     (ew) \  / (ew)
- *           e0
- *            | (lt)
- *           s0
- */
+ 
 TEST(epoll64)
 {
 	pthread_t waiter[2];
@@ -3472,10 +3008,7 @@ TEST(epoll64)
 	e.events = EPOLLIN;
 	ASSERT_EQ(epoll_ctl(ctx.efd[0], EPOLL_CTL_ADD, ctx.sfd[0], &e), 0);
 
-	/*
-	 * main will act as the emitter once both waiter threads are
-	 * blocked and expects to both be awoken upon the ready event.
-	 */
+	 
 	ctx.main = pthread_self();
 	ASSERT_EQ(pthread_create(&waiter[0], NULL, waiter_entry1a, &ctx), 0);
 	ASSERT_EQ(pthread_create(&waiter[1], NULL, waiter_entry1a, &ctx), 0);

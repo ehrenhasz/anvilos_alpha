@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Loongson-2F/3A/3B GPIO Support
- *
- *  Copyright (c) 2008 Richard Liu,  STMicroelectronics	 <richard.liu@st.com>
- *  Copyright (c) 2008-2010 Arnaud Patard <apatard@mandriva.com>
- *  Copyright (c) 2013 Hongbing Hu <huhb@lemote.com>
- *  Copyright (c) 2014 Huacai Chen <chenhc@lemote.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -28,11 +21,7 @@
 #define LOONGSON_N_GPIO	STLS2F_N_GPIO
 #endif
 
-/*
- * Offset into the register where we read lines, we write them from offset 0.
- * This offset is the only thing that stand between us and using
- * GPIO_GENERIC.
- */
+ 
 #define LOONGSON_GPIO_IN_OFFSET	16
 
 static DEFINE_SPINLOCK(gpio_lock);

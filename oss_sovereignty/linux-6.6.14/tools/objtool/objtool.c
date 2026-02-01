@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2015 Josh Poimboeuf <jpoimboe@redhat.com>
- */
+
+ 
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -122,15 +120,12 @@ void objtool_pv_add(struct objtool_file *f, int idx, struct symbol *func)
 		return;
 	}
 
-	/*
-	 * These functions will be patched into native code,
-	 * see paravirt_patch().
-	 */
+	 
 	if (!strcmp(func->name, "_paravirt_nop") ||
 	    !strcmp(func->name, "_paravirt_ident_64"))
 		return;
 
-	/* already added this function */
+	 
 	if (!list_empty(&func->pv_target))
 		return;
 
@@ -142,7 +137,7 @@ int main(int argc, const char **argv)
 {
 	static const char *UNUSED = "OBJTOOL_NOT_IMPLEMENTED";
 
-	/* libsubcmd init */
+	 
 	exec_cmd_init("objtool", UNUSED, UNUSED, UNUSED);
 	pager_init(UNUSED);
 

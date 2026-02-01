@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+ 
+ 
 #ifndef _R819XU_PHYREG_H
 #define _R819XU_PHYREG_H
 
@@ -40,8 +36,8 @@
 #define MCS_TXAGC		0x340
 #define CCK_TXAGC		0x348
 
-/* Mac block on/off control register */
-#define rFPGA0_RFMOD			0x800 /* RF mode & CCK TxSC */
+ 
+#define rFPGA0_RFMOD			0x800  
 #define rFPGA0_TxInfo			0x804
 #define rFPGA0_PSDFunction		0x808
 #define rFPGA0_TxGainStage		0x80c
@@ -64,7 +60,7 @@
 #define rFPGA0_XB_LSSIReadBack		0x8a4
 #define rFPGA0_PSDReport		0x8b4
 
-/* Page 9 - RF mode & OFDM TxSC */
+ 
 #define rFPGA1_RFMOD			0x900
 #define rFPGA1_TxBlock			0x904
 #define rFPGA1_DebugSelect		0x908
@@ -73,16 +69,16 @@
 #define rCCK0_System			0xa00
 #define rCCK0_AFESetting		0xa04
 #define rCCK0_CCA			0xa08
-/* AGC default value, saturation level */
+ 
 #define rCCK0_RxAGC1			0xa0c
-#define rCCK0_RxAGC2			0xa10 /* AGC & DAGC */
+#define rCCK0_RxAGC2			0xa10  
 #define rCCK0_RxHP			0xa14
-/* Timing recovery & channel estimation threshold */
+ 
 #define rCCK0_DSPParameter1		0xa18
-#define rCCK0_DSPParameter2		0xa1c /* SQ threshold */
+#define rCCK0_DSPParameter2		0xa1c  
 #define rCCK0_TxFilter1			0xa20
 #define rCCK0_TxFilter2			0xa24
-#define rCCK0_DebugPort			0xa28 /* Debug port and TX filter 3 */
+#define rCCK0_DebugPort			0xa28  
 #define rCCK0_FalseAlarmReport		0xa2c
 #define rCCK0_TRSSIReport		0xa50
 #define rCCK0_RxReport			0xa54
@@ -93,15 +89,15 @@
 #define rOFDM0_TRxPathEnable		0xc04
 #define rOFDM0_TRMuxPar			0xc08
 #define rOFDM0_TRSWIsolation		0xc0c
-#define rOFDM0_RxDetector1		0xc30 /* PD, BW & SBD */
-#define rOFDM0_RxDetector2		0xc34 /* SBD */
-#define rOFDM0_RxDetector3		0xc38 /* Frame Sync */
-/* PD, SBD, Frame Sync & Short-GI */
+#define rOFDM0_RxDetector1		0xc30  
+#define rOFDM0_RxDetector2		0xc34  
+#define rOFDM0_RxDetector3		0xc38  
+ 
 #define rOFDM0_RxDetector4		0xc3c
-#define rOFDM0_RxDSP			0xc40 /* Rx Sync Path */
-#define rOFDM0_CFOandDAGC		0xc44 /* CFO & DAGC */
+#define rOFDM0_RxDSP			0xc40  
+#define rOFDM0_CFOandDAGC		0xc44  
 #define rOFDM0_CCADropThreshold		0xc48
-#define rOFDM0_ECCAThreshold		0xc4c /* Energy CCA */
+#define rOFDM0_ECCAThreshold		0xc4c  
 #define rOFDM0_XAAGCCore1		0xc50
 #define rOFDM0_XBAGCCore1		0xc58
 #define rOFDM0_XCAGCCore1		0xc60
@@ -136,9 +132,9 @@
 #define rOFDM1_PseudoNoiseStateAB	0xd50
 #define rOFDM1_PseudoNoiseStateCD	0xd54
 #define rOFDM1_RxPseudoNoiseWgt		0xd58
-#define rOFDM_PHYCounter1		0xda0 /* cca, parity fail */
-#define rOFDM_PHYCounter2		0xda4 /* rate illegal, crc8 fail */
-#define rOFDM_PHYCounter3		0xda8 /* MCS not supported */
+#define rOFDM_PHYCounter1		0xda0  
+#define rOFDM_PHYCounter2		0xda4  
+#define rOFDM_PHYCounter3		0xda8  
 #define rOFDM_ShortCFOAB		0xdac
 #define rOFDM_ShortCFOCD		0xdb0
 #define rOFDM_LongCFOAB			0xdb4
@@ -172,17 +168,17 @@
 #define rZebra1_RxLPF			0xb
 #define rZebra1_RxHPFCorner		0xc
 
-/* Zebra 4 */
+ 
 #define rGlobalCtrl			0
 #define rRTL8256_TxLPF			19
 #define rRTL8256_RxLPF			11
 
-/* RTL8258 */
+ 
 #define rRTL8258_TxLPF			0x11
 #define rRTL8258_RxLPF			0x13
 #define rRTL8258_RSSILPF		0xa
 
-/* Bit Mask - Page 1*/
+ 
 #define bBBResetB			0x100
 #define bGlobalResetB			0x200
 #define bOFDMTxStart			0x4
@@ -227,7 +223,7 @@
 #define bCCKTxCRC16			0xffff
 #define bCCKTxStatus			0x1
 #define bOFDMTxStatus			0x2
-/* Bit Mask - Page 8 */
+ 
 #define bRFMOD				0x1
 #define bJapanMode			0x2
 #define bCCKTxSC			0x30
@@ -244,16 +240,16 @@
 #define bRFStart			0x0000f000
 #define bBBStart			0x000000f0
 #define bBBCCKStart			0x0000000f
-/* Bit Mask - rFPGA0_RFTiming2 */
+ 
 #define bPAEnd				0xf
 #define bTREnd				0x0f000000
 #define bRFEnd				0x000f0000
-/* T2R */
+ 
 #define bCCAMask			0x000000f0
 #define bR2RCCAMask			0x00000f00
 #define bHSSI_R2TDelay			0xf8000000
 #define bHSSI_T2RDelay			0xf80000
-/* Channel gain at continue TX. */
+ 
 #define bContTxHSSI			0x400
 #define bIGFromCCK			0x200
 #define bAGCAddress			0x3f
@@ -265,7 +261,7 @@
 #define b3WireDataLength		0x800
 #define b3WireAddressLength		0x400
 #define b3WireRFPowerDown		0x1
-/*#define bHWSISelect			0x8 */
+ 
 #define b2GPAPEPolarity			0x80000000
 #define bRFSW_TxDefaultAnt		0x3
 #define bRFSW_TxOptionAnt		0x30
@@ -275,7 +271,7 @@
 #define bRFSI_3WireClock		0x2
 #define bRFSI_3WireLoad			0x4
 #define bRFSI_3WireRW			0x8
-/* 3-wire total control */
+ 
 #define bRFSI_3Wire			0xf
 #define bRFSI_RFENV			0x10
 #define bRFSI_TRSW			0x20
@@ -300,11 +296,11 @@
 #define bLSIG_Length			0x1fffe
 #define bLSIG_Parity			0x20
 #define bCCKRxPhase			0x4
-#define bLSSIReadAddress		0x3f000000 /* LSSI "read" address */
-#define bLSSIReadEdge			0x80000000 /* LSSI "read" edge signal */
+#define bLSSIReadAddress		0x3f000000  
+#define bLSSIReadEdge			0x80000000  
 #define bLSSIReadBackData		0xfff
 #define bLSSIReadOKFlag			0x1000
-#define bCCKSampleRate			0x8 /* 0: 44 MHz, 1: 88MHz */
+#define bCCKSampleRate			0x8  
 
 #define bRegulator0Standby		0x1
 #define bRegulatorPLLStandby		0x2
@@ -361,13 +357,13 @@
 #define bPSDSineToneScale		0x7f000000
 #define bPSDReport			0xffff
 
-/* Page 8 */
+ 
 #define bOFDMTxSC			0x30000000
 #define bCCKTxOn			0x1
 #define bOFDMTxOn			0x2
-/* Reset debug page and also HWord, LWord */
+ 
 #define bDebugPage			0xfff
-/* Reset debug page and LWord */
+ 
 #define bDebugItem			0xff
 #define bAntL				0x10
 #define bAntNonHT			0x100
@@ -376,7 +372,7 @@
 #define bAntHT1S1			0x100000
 #define bAntNonHTS1			0x1000000
 
-/* Page a */
+ 
 #define bCCKBBMode			0x3
 #define bCCKTxPowerSaving		0x80
 #define bCCKRxPowerSaving		0x40
@@ -397,7 +393,7 @@
 #define bCCKBistMode			0x80000000
 #define bCCKCCAMask			0x40000000
 #define bCCKTxDACPhase			0x4
-#define bCCKRxADCPhase			0x20000000 /* r_rx_clk */
+#define bCCKRxADCPhase			0x20000000  
 #define bCCKr_cp_mode0			0x0100
 #define bCCKTxDCOffset			0xf0
 #define bCCKRxDCOffset			0xf
@@ -411,14 +407,14 @@
 #define bCCKRxIG			0x7f00
 #define bCCKLNAPolarity			0x800000
 #define bCCKRx1stGain			0x7f0000
-/* CCK Rx Initial gain polarity */
+ 
 #define bCCKRFExtend			0x20000000
 #define bCCKRxAGCSatLevel		0x1f000000
 #define bCCKRxAGCSatCount		0xe0
-/* AGCSAmp_dly */
+ 
 #define bCCKRxRFSettle			0x1f
 #define bCCKFixedRxAGC			0x8000
-/*#define bCCKRxAGCFormat		0x4000  remove to HSSI register 0x824 */
+ 
 #define bCCKAntennaPolarity		0x2000
 #define bCCKTxFilterType		0x0c00
 #define bCCKRxAGCReportType		0x0300
@@ -459,7 +455,7 @@
 #define bCCKDefaultRxPath		0xc000000
 #define bCCKOptionRxPath		0x3000000
 
-/* Page c */
+ 
 #define bNumOfSTF			0x3
 #define bShift_L			0xc0
 #define bGI_TH				0xc
@@ -561,9 +557,9 @@
 #define bRxHP_BBP1			0x7000
 #define bRxHP_BBP2			0x70000
 #define bRxHP_BBP3			0x700000
-/* The threshold for high power */
+ 
 #define bRSSI_H				0x7f0000
-/* The threshold for ant diversity */
+ 
 #define bRSSI_Gen			0x7f000000
 #define bRxSettle_TRSW			0x7
 #define bRxSettle_LNA			0x38
@@ -598,7 +594,7 @@
 #define bRxPD_Delay_TH1			0x38
 #define bRxPD_Delay_TH2			0x1c0
 #define bRxPD_DC_COUNT_MAX		0x600
-/*#define bRxMF_Hold			0x3800*/
+ 
 #define bRxPD_Delay_TH			0x8000
 #define bRxProcess_Delay		0xf0000
 #define bRxSearchrange_GI2_Early	0x700000
@@ -624,7 +620,7 @@
 
 #define bExtLNAGain		0x7c00
 
-/* Page d */
+ 
 #define bSTBCEn			0x4
 #define bAntennaMapping		0x10
 #define bNss			0x20
@@ -634,13 +630,7 @@
 #define bOFDMContinueTx		0x10000000
 #define bOFDMSingleCarrier	0x20000000
 #define bOFDMSingleTone		0x40000000
-/* #define bRxPath1		0x01
- * #define bRxPath2		0x02
- * #define bRxPath3		0x04
- * #define bRxPath4		0x08
- * #define bTxPath1		0x10
- * #define bTxPath2		0x20
- */
+ 
 #define bHTDetect		0x100
 #define bCFOEn			0x10000
 #define bCFOValue		0xfff00000
@@ -653,8 +643,8 @@
 #define bCounter_MCSNoSupport	0xffff
 #define bCounter_FastSync	0xffff
 #define bShortCFO		0xfff
-#define bShortCFOTLength	12 /* total */
-#define bShortCFOFLength	11 /* fraction */
+#define bShortCFOTLength	12  
+#define bShortCFOFLength	11  
 #define bLongCFO		0x7ff
 #define bLongCFOTLength		11
 #define bLongCFOFLength		11
@@ -731,7 +721,7 @@
 #define bUChCfg			0x7000000
 #define bUpdEqz			0x8000000
 
-/* Page e */
+ 
 #define bTxAGCRate18_06		0x7f7f7f7f
 #define bTxAGCRate54_24		0x7f7f7f7f
 #define bTxAGCRateMCS32		0x7f
@@ -741,7 +731,7 @@
 #define bTxAGCRateMCS11_MCS8	0x7f7f7f7f
 #define bTxAGCRateMCS15_MCS12	0x7f7f7f7f
 
-#define bRxPesudoNoiseOn	0x20000000 /* Rx Pseduo noise */
+#define bRxPesudoNoiseOn	0x20000000  
 #define bRxPesudoNoise_A	0xff
 #define bRxPesudoNoise_B	0xff00
 #define bRxPesudoNoise_C	0xff0000
@@ -751,7 +741,7 @@
 #define bPesudoNoiseState_C	0xffff
 #define bPesudoNoiseState_D	0xffff0000
 
-/* RF Zebra 1 */
+ 
 #define bZebra1_HSSIEnable	0x8
 #define bZebra1_TRxControl	0xc00
 #define bZebra1_TRxGainSetting	0x07f
@@ -762,18 +752,18 @@
 #define bZebra1_TxLPFBW	0x400
 #define bZebra1_RxLPFBW	0x600
 
-/* Zebra4 */
+ 
 #define bRTL8256RegModeCtrl1	0x100
 #define bRTL8256RegModeCtrl0	0x40
 #define bRTL8256_TxLPFBW	0x18
 #define bRTL8256_RxLPFBW	0x600
 
-/* RTL8258 */
+ 
 #define bRTL8258_TxLPFBW	0xc
 #define bRTL8258_RxLPFBW	0xc00
 #define bRTL8258_RSSILPFBW	0xc0
 
-/* byte enable for sb_write */
+ 
 #define bByte0	0x1
 #define bByte1	0x2
 #define bByte2	0x4
@@ -782,7 +772,7 @@
 #define bWord1	0xc
 #define bDWord	0xf
 
-/* for PutRegsetting & GetRegSetting BitMask */
+ 
 #define bMaskByte0	0xff
 #define bMaskByte1	0xff00
 #define bMaskByte2	0xff0000
@@ -791,7 +781,7 @@
 #define bMaskLWord	0x0000ffff
 #define bMaskDWord	0xffffffff
 
-/* for PutRFRegsetting & GetRFRegSetting BitMask */
+ 
 #define bMask12Bits	0xfff
 
 #define bEnable		0x1
@@ -800,14 +790,14 @@
 #define LeftAntenna	0x0
 #define RightAntenna	0x1
 
-#define tCheckTxStatus		500 /* 500 ms */
-#define tUpdateRxCounter	100 /* 100 ms */
+#define tCheckTxStatus		500  
+#define tUpdateRxCounter	100  
 
 #define rateCCK		0
 #define rateOFDM	1
 #define rateHT		2
 
-#define bPMAC_End	0x1ff /* define Register-End */
+#define bPMAC_End	0x1ff  
 #define bFPGAPHY0_End	0x8ff
 #define bFPGAPHY1_End	0x9ff
 #define bCCKPHY0_End	0xaff

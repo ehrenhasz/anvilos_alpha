@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TI OMAP4 ISS V4L2 Driver - CSI PHY module
- *
- * Copyright (C) 2012 Texas Instruments, Inc.
- *
- * Author: Sergio Aguirre <sergio.a.aguirre@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -17,12 +11,7 @@
 #include "iss_regs.h"
 #include "iss_csiphy.h"
 
-/*
- * csiphy_lanes_config - Configuration of CSIPHY lanes.
- *
- * Updates HW configuration.
- * Called with phy->mutex taken.
- */
+ 
 static void csiphy_lanes_config(struct iss_csiphy *phy)
 {
 	unsigned int i;
@@ -47,12 +36,7 @@ static void csiphy_lanes_config(struct iss_csiphy *phy)
 	iss_reg_write(phy->iss, phy->cfg_regs, CSI2_COMPLEXIO_CFG, reg);
 }
 
-/*
- * csiphy_set_power
- * @power: Power state to be set.
- *
- * Returns 0 if successful, or -EBUSY if the retry count is exceeded.
- */
+ 
 static int csiphy_set_power(struct iss_csiphy *phy, u32 power)
 {
 	u32 reg;
@@ -81,22 +65,18 @@ static int csiphy_set_power(struct iss_csiphy *phy, u32 power)
 	return 0;
 }
 
-/*
- * csiphy_dphy_config - Configure CSI2 D-PHY parameters.
- *
- * Called with phy->mutex taken.
- */
+ 
 static void csiphy_dphy_config(struct iss_csiphy *phy)
 {
 	u32 reg;
 
-	/* Set up REGISTER0 */
+	 
 	reg = phy->dphy.ths_term << REGISTER0_THS_TERM_SHIFT;
 	reg |= phy->dphy.ths_settle << REGISTER0_THS_SETTLE_SHIFT;
 
 	iss_reg_write(phy->iss, phy->phy_regs, REGISTER0, reg);
 
-	/* Set up REGISTER1 */
+	 
 	reg = phy->dphy.tclk_term << REGISTER1_TCLK_TERM_SHIFT;
 	reg |= phy->dphy.tclk_miss << REGISTER1_CTRLCLK_DIV_FACTOR_SHIFT;
 	reg |= phy->dphy.tclk_settle << REGISTER1_TCLK_SETTLE_SHIFT;
@@ -105,9 +85,7 @@ static void csiphy_dphy_config(struct iss_csiphy *phy)
 	iss_reg_write(phy->iss, phy->phy_regs, REGISTER1, reg);
 }
 
-/*
- * TCLK values are OK at their reset values
- */
+ 
 #define TCLK_TERM	0
 #define TCLK_MISS	1
 #define TCLK_SETTLE	14
@@ -127,50 +105,38 @@ int omap4iss_csiphy_config(struct iss_device *iss,
 
 	lanes = &subdevs->bus.csi2.lanecfg;
 
-	/*
-	 * SCM.CONTROL_CAMERA_RX
-	 * - bit [31] : CSIPHY2 lane 2 enable (4460+ only)
-	 * - bit [30:29] : CSIPHY2 per-lane enable (1 to 0)
-	 * - bit [28:24] : CSIPHY1 per-lane enable (4 to 0)
-	 * - bit [21] : CSIPHY2 CTRLCLK enable
-	 * - bit [20:19] : CSIPHY2 config: 00 d-phy, 01/10 ccp2
-	 * - bit [18] : CSIPHY1 CTRLCLK enable
-	 * - bit [17:16] : CSIPHY1 config: 00 d-phy, 01/10 ccp2
-	 */
-	/*
-	 * TODO: When implementing DT support specify the CONTROL_CAMERA_RX
-	 * register offset in the syscon property instead of hardcoding it.
-	 */
+	 
+	 
 	regmap_read(iss->syscon, 0x68, &cam_rx_ctrl);
 
 	if (subdevs->interface == ISS_INTERFACE_CSI2A_PHY1) {
 		cam_rx_ctrl &= ~(OMAP4_CAMERARX_CSI21_LANEENABLE_MASK |
 				OMAP4_CAMERARX_CSI21_CAMMODE_MASK);
-		/* NOTE: Leave CSIPHY1 config to 0x0: D-PHY mode */
-		/* Enable all lanes for now */
+		 
+		 
 		cam_rx_ctrl |=
 			0x1f << OMAP4_CAMERARX_CSI21_LANEENABLE_SHIFT;
-		/* Enable CTRLCLK */
+		 
 		cam_rx_ctrl |= OMAP4_CAMERARX_CSI21_CTRLCLKEN_MASK;
 	}
 
 	if (subdevs->interface == ISS_INTERFACE_CSI2B_PHY2) {
 		cam_rx_ctrl &= ~(OMAP4_CAMERARX_CSI22_LANEENABLE_MASK |
 				OMAP4_CAMERARX_CSI22_CAMMODE_MASK);
-		/* NOTE: Leave CSIPHY2 config to 0x0: D-PHY mode */
-		/* Enable all lanes for now */
+		 
+		 
 		cam_rx_ctrl |=
 			0x3 << OMAP4_CAMERARX_CSI22_LANEENABLE_SHIFT;
-		/* Enable CTRLCLK */
+		 
 		cam_rx_ctrl |= OMAP4_CAMERARX_CSI22_CTRLCLKEN_MASK;
 	}
 
 	regmap_write(iss->syscon, 0x68, cam_rx_ctrl);
 
-	/* Reset used lane count */
+	 
 	csi2->phy->used_data_lanes = 0;
 
-	/* Clock and data lanes verification */
+	 
 	for (i = 0; i < csi2->phy->max_data_lanes; i++) {
 		if (lanes->data[i].pos == 0)
 			continue;
@@ -197,10 +163,7 @@ int omap4iss_csiphy_config(struct iss_device *iss,
 		/ (2 * csi2->phy->used_data_lanes)
 		* pipe->external_bpp;
 
-	/*
-	 * THS_TERM: Programmed value = ceil(12.5 ns/DDRClk period) - 1.
-	 * THS_SETTLE: Programmed value = ceil(90 ns/DDRClk period) + 3.
-	 */
+	 
 	csi2phy.ths_term = DIV_ROUND_UP(25 * csi2_ddrclk_khz, 2000000) - 1;
 	csi2phy.ths_settle = DIV_ROUND_UP(90 * csi2_ddrclk_khz, 1000000) + 3;
 	csi2phy.tclk_term = TCLK_TERM;
@@ -249,9 +212,7 @@ void omap4iss_csiphy_release(struct iss_csiphy *phy)
 	mutex_unlock(&phy->mutex);
 }
 
-/*
- * omap4iss_csiphy_init - Initialize the CSI PHY frontends
- */
+ 
 int omap4iss_csiphy_init(struct iss_device *iss)
 {
 	struct iss_csiphy *phy1 = &iss->csiphy1;

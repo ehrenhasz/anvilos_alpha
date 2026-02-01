@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <errno.h>
 #include <stdbool.h>
@@ -38,7 +38,7 @@ static int parse_attr_cb(const struct nlattr *attr, void *data)
 	const struct nlattr **tb = data;
 	int type = mnl_attr_get_type(attr);
 
-	/* skip unsupported attribute in user-space */
+	 
 	if (mnl_attr_type_valid(attr, NFQA_MAX) < 0)
 		return MNL_CB_OK;
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * libfdt - Flat Device Tree manipulation
- * Copyright (C) 2006 David Gibson, IBM Corporation.
- */
+
+ 
 #include "libfdt_env.h"
 
 #include <fdt.h>
@@ -10,11 +7,7 @@
 
 #include "libfdt_internal.h"
 
-/*
- * Minimal sanity check for a read-only tree. fdt_ro_probe_() checks
- * that the given buffer contains what appears to be a flattened
- * device tree with sane information in its header.
- */
+ 
 int32_t fdt_ro_probe_(const void *fdt)
 {
 	uint32_t totalsize = fdt_totalsize(fdt);
@@ -22,12 +15,12 @@ int32_t fdt_ro_probe_(const void *fdt)
 	if (can_assume(VALID_DTB))
 		return totalsize;
 
-	/* The device tree must be at an 8-byte aligned address */
+	 
 	if ((uintptr_t)fdt & 7)
 		return -FDT_ERR_ALIGNMENT;
 
 	if (fdt_magic(fdt) == FDT_MAGIC) {
-		/* Complete tree */
+		 
 		if (!can_assume(LATEST)) {
 			if (fdt_version(fdt) < FDT_FIRST_SUPPORTED_VERSION)
 				return -FDT_ERR_BADVERSION;
@@ -36,7 +29,7 @@ int32_t fdt_ro_probe_(const void *fdt)
 				return -FDT_ERR_BADVERSION;
 		}
 	} else if (fdt_magic(fdt) == FDT_SW_MAGIC) {
-		/* Unfinished sequential-write blob */
+		 
 		if (!can_assume(VALID_INPUT) && fdt_size_dt_struct(fdt) == 0)
 			return -FDT_ERR_BADSTATE;
 	} else {
@@ -58,11 +51,11 @@ static int check_block_(uint32_t hdrsize, uint32_t totalsize,
 			uint32_t base, uint32_t size)
 {
 	if (!check_off_(hdrsize, totalsize, base))
-		return 0; /* block start out of bounds */
+		return 0;  
 	if ((base + size) < base)
-		return 0; /* overflow */
+		return 0;  
 	if (!check_off_(hdrsize, totalsize, base + size))
-		return 0; /* block end out of bounds */
+		return 0;  
 	return 1;
 }
 
@@ -90,7 +83,7 @@ int fdt_check_header(const void *fdt)
 {
 	size_t hdrsize;
 
-	/* The device tree must be at an 8-byte aligned address */
+	 
 	if ((uintptr_t)fdt & 7)
 		return -FDT_ERR_ALIGNMENT;
 
@@ -110,12 +103,12 @@ int fdt_check_header(const void *fdt)
 		    || (fdt_totalsize(fdt) > INT_MAX))
 			return -FDT_ERR_TRUNCATED;
 
-		/* Bounds check memrsv block */
+		 
 		if (!check_off_(hdrsize, fdt_totalsize(fdt),
 				fdt_off_mem_rsvmap(fdt)))
 			return -FDT_ERR_TRUNCATED;
 
-		/* Bounds check structure block */
+		 
 		if (!can_assume(LATEST) && fdt_version(fdt) < 17) {
 			if (!check_off_(hdrsize, fdt_totalsize(fdt),
 					fdt_off_dt_struct(fdt)))
@@ -127,7 +120,7 @@ int fdt_check_header(const void *fdt)
 				return -FDT_ERR_TRUNCATED;
 		}
 
-		/* Bounds check strings block */
+		 
 		if (!check_block_(hdrsize, fdt_totalsize(fdt),
 				  fdt_off_dt_strings(fdt),
 				  fdt_size_dt_strings(fdt)))
@@ -169,33 +162,33 @@ uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
 	*nextoffset = -FDT_ERR_TRUNCATED;
 	tagp = fdt_offset_ptr(fdt, offset, FDT_TAGSIZE);
 	if (!can_assume(VALID_DTB) && !tagp)
-		return FDT_END; /* premature end */
+		return FDT_END;  
 	tag = fdt32_to_cpu(*tagp);
 	offset += FDT_TAGSIZE;
 
 	*nextoffset = -FDT_ERR_BADSTRUCTURE;
 	switch (tag) {
 	case FDT_BEGIN_NODE:
-		/* skip name */
+		 
 		do {
 			p = fdt_offset_ptr(fdt, offset++, 1);
 		} while (p && (*p != '\0'));
 		if (!can_assume(VALID_DTB) && !p)
-			return FDT_END; /* premature end */
+			return FDT_END;  
 		break;
 
 	case FDT_PROP:
 		lenp = fdt_offset_ptr(fdt, offset, sizeof(*lenp));
 		if (!can_assume(VALID_DTB) && !lenp)
-			return FDT_END; /* premature end */
+			return FDT_END;  
 
 		len = fdt32_to_cpu(*lenp);
 		sum = len + offset;
 		if (!can_assume(VALID_DTB) &&
 		    (INT_MAX <= sum || sum < (uint32_t) offset))
-			return FDT_END; /* premature end */
+			return FDT_END;  
 
-		/* skip-name offset, length and value */
+		 
 		offset += sizeof(struct fdt_property) - FDT_TAGSIZE + len;
 
 		if (!can_assume(LATEST) &&
@@ -214,7 +207,7 @@ uint32_t fdt_next_tag(const void *fdt, int startoffset, int *nextoffset)
 	}
 
 	if (!fdt_offset_ptr(fdt, startoffset, offset - startoffset))
-		return FDT_END; /* premature end */
+		return FDT_END;  
 
 	*nextoffset = FDT_TAGALIGN(offset);
 	return tag;
@@ -299,10 +292,7 @@ int fdt_next_subnode(const void *fdt, int offset)
 {
 	int depth = 1;
 
-	/*
-	 * With respect to the parent, the depth of the next subnode will be
-	 * the same as the last.
-	 */
+	 
 	do {
 		offset = fdt_next_node(fdt, offset, &depth);
 		if (offset < 0 || depth < 1)

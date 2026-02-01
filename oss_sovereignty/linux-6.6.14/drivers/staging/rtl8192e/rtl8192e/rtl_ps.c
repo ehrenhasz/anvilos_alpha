@@ -1,17 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Based on the r8180 driver, which is:
- * Copyright 2004-2005 Andrea Merello <andrea.merello@gmail.com>, et al.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include "rtl_ps.h"
 #include "rtl_core.h"
 #include "r8192E_phy.h"
 #include "r8192E_phyreg.h"
-#include "r8190P_rtl8256.h" /* RTL8225 Radio frontend */
+#include "r8190P_rtl8256.h"  
 #include "r8192E_cmdpkt.h"
 #include <linux/jiffies.h>
 

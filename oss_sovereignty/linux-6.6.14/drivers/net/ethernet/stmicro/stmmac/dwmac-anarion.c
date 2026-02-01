@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Adaptrum Anarion DWMAC glue layer
- *
- * Copyright (C) 2017, Adaptrum, Inc.
- * (Written by Alexandru Gagniuc <alex.g at adaptrum.com> for Adaptrum, Inc.)
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -39,7 +34,7 @@ static int anarion_gmac_init(struct platform_device *pdev, void *priv)
 	uint32_t sw_config;
 	struct anarion_gmac *gmac = priv;
 
-	/* Reset logic, configure interface mode, then release reset. SIMPLE! */
+	 
 	gmac_write_reg(gmac, GMAC_RESET_CONTROL_REG, 1);
 
 	sw_config = gmac_read_reg(gmac, GMAC_SW_CONFIG_REG);

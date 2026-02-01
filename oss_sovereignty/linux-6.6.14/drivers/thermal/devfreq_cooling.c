@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * devfreq_cooling: Thermal cooling device implementation for devices using
- *                  devfreq
- *
- * Copyright (C) 2014-2015 ARM Limited
- *
- * TODO:
- *    - If OPPs are added or removed after devfreq cooling has
- *      registered, the devfreq cooling won't react to it.
- */
+
+ 
 
 #include <linux/devfreq.h>
 #include <linux/devfreq_cooling.h>
@@ -24,29 +15,7 @@
 
 #define SCALE_ERROR_MITIGATION	100
 
-/**
- * struct devfreq_cooling_device - Devfreq cooling device
- *		devfreq_cooling_device registered.
- * @cdev:	Pointer to associated thermal cooling device.
- * @cooling_ops: devfreq callbacks to thermal cooling device ops
- * @devfreq:	Pointer to associated devfreq device.
- * @cooling_state:	Current cooling state.
- * @freq_table:	Pointer to a table with the frequencies sorted in descending
- *		order.  You can index the table by cooling device state
- * @max_state:	It is the last index, that is, one less than the number of the
- *		OPPs
- * @power_ops:	Pointer to devfreq_cooling_power, a more precised model.
- * @res_util:	Resource utilization scaling factor for the power.
- *		It is multiplied by 100 to minimize the error. It is used
- *		for estimation of the power budget instead of using
- *		'utilization' (which is	'busy_time' / 'total_time').
- *		The 'res_util' range is from 100 to power * 100	for the
- *		corresponding 'state'.
- * @capped_state:	index to cooling state with in dynamic power budget
- * @req_max_freq:	PM QoS request for limiting the maximum frequency
- *			of the devfreq device.
- * @em_pd:		Energy Model for the associated Devfreq device
- */
+ 
 struct devfreq_cooling_device {
 	struct thermal_cooling_device *cdev;
 	struct thermal_cooling_device_ops cooling_ops;
@@ -113,14 +82,7 @@ static int devfreq_cooling_set_cur_state(struct thermal_cooling_device *cdev,
 	return 0;
 }
 
-/**
- * get_perf_idx() - get the performance index corresponding to a frequency
- * @em_pd:	Pointer to device's Energy Model
- * @freq:	frequency in kHz
- *
- * Return: the performance index associated with the @freq, or
- * -EINVAL if it wasn't found.
- */
+ 
 static int get_perf_idx(struct em_perf_domain *em_pd, unsigned long freq)
 {
 	int i;
@@ -149,7 +111,7 @@ static unsigned long get_voltage(struct devfreq *df, unsigned long freq)
 		return 0;
 	}
 
-	voltage = dev_pm_opp_get_voltage(opp) / 1000; /* mV */
+	voltage = dev_pm_opp_get_voltage(opp) / 1000;  
 	dev_pm_opp_put(opp);
 
 	if (voltage == 0) {
@@ -203,7 +165,7 @@ static int devfreq_cooling_get_requested_power(struct thermal_cooling_device *cd
 		if (!res) {
 			state = dfc->capped_state;
 
-			/* Convert EM power into milli-Watts first */
+			 
 			dfc->res_util = dfc->em_pd->table[state].power;
 			dfc->res_util /= MICROWATT_PER_MILLIWATT;
 
@@ -215,7 +177,7 @@ static int devfreq_cooling_get_requested_power(struct thermal_cooling_device *cd
 			goto fail;
 		}
 	} else {
-		/* Energy Model frequencies are in kHz */
+		 
 		perf_idx = get_perf_idx(dfc->em_pd, freq / 1000);
 		if (perf_idx < 0) {
 			res = -EAGAIN;
@@ -224,10 +186,10 @@ static int devfreq_cooling_get_requested_power(struct thermal_cooling_device *cd
 
 		_normalize_load(&status);
 
-		/* Convert EM power into milli-Watts first */
+		 
 		*power = dfc->em_pd->table[perf_idx].power;
 		*power /= MICROWATT_PER_MILLIWATT;
-		/* Scale power for utilization */
+		 
 		*power *= status.busy_time;
 		*power >>= 10;
 	}
@@ -236,7 +198,7 @@ static int devfreq_cooling_get_requested_power(struct thermal_cooling_device *cd
 
 	return 0;
 fail:
-	/* It is safe to set max in this case */
+	 
 	dfc->res_util = SCALE_ERROR_MITIGATION;
 	return res;
 }
@@ -274,22 +236,19 @@ static int devfreq_cooling_power2state(struct thermal_cooling_device *cdev,
 	freq = status.current_frequency;
 
 	if (dfc->power_ops && dfc->power_ops->get_real_power) {
-		/* Scale for resource utilization */
+		 
 		est_power = power * dfc->res_util;
 		est_power /= SCALE_ERROR_MITIGATION;
 	} else {
-		/* Scale dynamic power for utilization */
+		 
 		_normalize_load(&status);
 		est_power = power << 10;
 		est_power /= status.busy_time;
 	}
 
-	/*
-	 * Find the first cooling state that is within the power
-	 * budget. The EM power table is sorted ascending.
-	 */
+	 
 	for (i = dfc->max_state; i > 0; i--) {
-		/* Convert EM power to milli-Watts to make safe comparison */
+		 
 		em_power_mw = dfc->em_pd->table[i].power;
 		em_power_mw /= MICROWATT_PER_MILLIWATT;
 		if (est_power >= em_power_mw)
@@ -303,17 +262,7 @@ static int devfreq_cooling_power2state(struct thermal_cooling_device *cdev,
 	return 0;
 }
 
-/**
- * devfreq_cooling_gen_tables() - Generate frequency table.
- * @dfc:	Pointer to devfreq cooling device.
- * @num_opps:	Number of OPPs
- *
- * Generate frequency table which holds the frequencies in descending
- * order. That way its indexed by cooling device state. This is for
- * compatibility with drivers which do not register Energy Model.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 static int devfreq_cooling_gen_tables(struct devfreq_cooling_device *dfc,
 				      int num_opps)
 {
@@ -343,21 +292,7 @@ static int devfreq_cooling_gen_tables(struct devfreq_cooling_device *dfc,
 	return 0;
 }
 
-/**
- * of_devfreq_cooling_register_power() - Register devfreq cooling device,
- *                                      with OF and power information.
- * @np:	Pointer to OF device_node.
- * @df:	Pointer to devfreq device.
- * @dfc_power:	Pointer to devfreq_cooling_power.
- *
- * Register a devfreq cooling device.  The available OPPs must be
- * registered on the device.
- *
- * If @dfc_power is provided, the cooling device is registered with the
- * power extensions.  For the power extensions to work correctly,
- * devfreq should use the simple_ondemand governor, other governors
- * are not currently supported.
- */
+ 
 struct thermal_cooling_device *
 of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
 				  struct devfreq_cooling_power *dfc_power)
@@ -394,7 +329,7 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
 
 		num_opps = em_pd_nr_perf_states(dfc->em_pd);
 	} else {
-		/* Backward compatibility for drivers which do not use IPA */
+		 
 		dev_dbg(dev, "missing proper EM for cooling device\n");
 
 		num_opps = dev_pm_opp_get_opp_count(dev);
@@ -409,7 +344,7 @@ of_devfreq_cooling_register_power(struct device_node *np, struct devfreq *df,
 		goto free_dfc;
 	}
 
-	/* max_state is an index, not a counter */
+	 
 	dfc->max_state = num_opps - 1;
 
 	err = dev_pm_qos_add_request(dev, &dfc->req_max_freq,
@@ -449,12 +384,7 @@ free_dfc:
 }
 EXPORT_SYMBOL_GPL(of_devfreq_cooling_register_power);
 
-/**
- * of_devfreq_cooling_register() - Register devfreq cooling device,
- *                                with OF information.
- * @np: Pointer to OF device_node.
- * @df: Pointer to devfreq device.
- */
+ 
 struct thermal_cooling_device *
 of_devfreq_cooling_register(struct device_node *np, struct devfreq *df)
 {
@@ -462,32 +392,14 @@ of_devfreq_cooling_register(struct device_node *np, struct devfreq *df)
 }
 EXPORT_SYMBOL_GPL(of_devfreq_cooling_register);
 
-/**
- * devfreq_cooling_register() - Register devfreq cooling device.
- * @df: Pointer to devfreq device.
- */
+ 
 struct thermal_cooling_device *devfreq_cooling_register(struct devfreq *df)
 {
 	return of_devfreq_cooling_register(NULL, df);
 }
 EXPORT_SYMBOL_GPL(devfreq_cooling_register);
 
-/**
- * devfreq_cooling_em_register() - Register devfreq cooling device with
- *		power information and automatically register Energy Model (EM)
- * @df:		Pointer to devfreq device.
- * @dfc_power:	Pointer to devfreq_cooling_power.
- *
- * Register a devfreq cooling device and automatically register EM. The
- * available OPPs must be registered for the device.
- *
- * If @dfc_power is provided, the cooling device is registered with the
- * power extensions. It is using the simple Energy Model which requires
- * "dynamic-power-coefficient" a devicetree property. To not break drivers
- * which miss that DT property, the function won't bail out when the EM
- * registration failed. The cooling device will be registered if everything
- * else is OK.
- */
+ 
 struct thermal_cooling_device *
 devfreq_cooling_em_register(struct devfreq *df,
 			    struct devfreq_cooling_power *dfc_power)
@@ -515,13 +427,7 @@ devfreq_cooling_em_register(struct devfreq *df,
 }
 EXPORT_SYMBOL_GPL(devfreq_cooling_em_register);
 
-/**
- * devfreq_cooling_unregister() - Unregister devfreq cooling device.
- * @cdev: Pointer to devfreq cooling device to unregister.
- *
- * Unregisters devfreq cooling device and related Energy Model if it was
- * present.
- */
+ 
 void devfreq_cooling_unregister(struct thermal_cooling_device *cdev)
 {
 	struct devfreq_cooling_device *dfc;

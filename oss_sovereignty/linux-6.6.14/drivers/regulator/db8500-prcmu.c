@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Authors: Sundar Iyer <sundar.iyer@stericsson.com> for ST-Ericsson
- *          Bengt Jonsson <bengt.g.jonsson@stericsson.com> for ST-Ericsson
- *
- * Power domain regulators on DB8500
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -74,16 +67,14 @@ static int db8500_regulator_is_enabled(struct regulator_dev *rdev)
 	return info->is_enabled;
 }
 
-/* db8500 regulator operations */
+ 
 static const struct regulator_ops db8500_regulator_ops = {
 	.enable			= db8500_regulator_enable,
 	.disable		= db8500_regulator_disable,
 	.is_enabled		= db8500_regulator_is_enabled,
 };
 
-/*
- * EPOD control
- */
+ 
 static bool epod_on[NUM_EPOD_ID];
 static bool epod_ramret[NUM_EPOD_ID];
 
@@ -135,9 +126,7 @@ static int disable_epod(u16 epod_id, bool ramret)
 	return 0;
 }
 
-/*
- * Regulator switch
- */
+ 
 static int db8500_regulator_switch_enable(struct regulator_dev *rdev)
 {
 	struct dbx500_regulator_info *info = rdev_get_drvdata(rdev);
@@ -206,9 +195,7 @@ static const struct regulator_ops db8500_regulator_switch_ops = {
 	.is_enabled		= db8500_regulator_switch_is_enabled,
 };
 
-/*
- * Regulator information
- */
+ 
 static struct dbx500_regulator_info
 dbx500_regulator_info[DB8500_NUM_REGULATORS] = {
 	[DB8500_REGULATOR_VAPE] = {
@@ -445,7 +432,7 @@ static int db8500_regulator_probe(struct platform_device *pdev)
 	db8500_init_data = dev_get_platdata(&pdev->dev);
 
 	for (i = 0; i < ARRAY_SIZE(dbx500_regulator_info); i++) {
-		/* assign per-regulator data */
+		 
 		info = &dbx500_regulator_info[i];
 
 		config.driver_data = info;

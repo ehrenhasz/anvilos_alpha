@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * k10temp.c - AMD Family 10h/11h/12h/14h/15h/16h/17h
- *		processor hardware monitoring
- *
- * Copyright (c) 2009 Clemens Ladisch <clemens@ladisch.de>
- * Copyright (c) 2020 Guenter Roeck <linux@roeck-us.net>
- *
- * Implementation notes:
- * - CCD register address information as well as the calculation to
- *   convert raw register values is from https://github.com/ocerman/zenpower.
- *   The information is not confirmed from chip datasheets, but experiments
- *   suggest that it provides reasonable temperature values.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -31,23 +19,23 @@ static bool force;
 module_param(force, bool, 0444);
 MODULE_PARM_DESC(force, "force loading on processors with erratum 319");
 
-/* Provide lock for writing to NB_SMU_IND_ADDR */
+ 
 static DEFINE_MUTEX(nb_smu_ind_mutex);
 
 #ifndef PCI_DEVICE_ID_AMD_15H_M70H_NB_F3
 #define PCI_DEVICE_ID_AMD_15H_M70H_NB_F3	0x15b3
 #endif
 
-/* CPUID function 0x80000001, ebx */
+ 
 #define CPUID_PKGTYPE_MASK	GENMASK(31, 28)
 #define CPUID_PKGTYPE_F		0x00000000
 #define CPUID_PKGTYPE_AM2R2_AM3	0x10000000
 
-/* DRAM controller (PCI function 2) */
+ 
 #define REG_DCT0_CONFIG_HIGH		0x094
 #define  DDR3_MODE			BIT(8)
 
-/* miscellaneous (PCI function 3) */
+ 
 #define REG_HARDWARE_THERMAL_CONTROL	0x64
 #define  HTC_ENABLE			BIT(0)
 
@@ -56,16 +44,11 @@ static DEFINE_MUTEX(nb_smu_ind_mutex);
 #define REG_NORTHBRIDGE_CAPABILITIES	0xe8
 #define  NB_CAP_HTC			BIT(10)
 
-/*
- * For F15h M60h and M70h, REG_HARDWARE_THERMAL_CONTROL
- * and REG_REPORTED_TEMPERATURE have been moved to
- * D0F0xBC_xD820_0C64 [Hardware Temperature Control]
- * D0F0xBC_xD820_0CA4 [Reported Temperature Control]
- */
+ 
 #define F15H_M60H_HARDWARE_TEMP_CTRL_OFFSET	0xd8200c64
 #define F15H_M60H_REPORTED_TEMP_CTRL_OFFSET	0xd8200ca4
 
-/* Common for Zen CPU families (Family 17h and 18h and 19h and 1Ah) */
+ 
 #define ZEN_REPORTED_TEMP_CTRL_BASE		0x00059800
 
 #define ZEN_CCD_TEMP(offset, x)			(ZEN_REPORTED_TEMP_CTRL_BASE + \
@@ -77,11 +60,7 @@ static DEFINE_MUTEX(nb_smu_ind_mutex);
 #define ZEN_CUR_TEMP_RANGE_SEL_MASK		BIT(19)
 #define ZEN_CUR_TEMP_TJ_SEL_MASK		GENMASK(17, 16)
 
-/*
- * AMD's Industrial processor 3255 supports temperature from -40 deg to 105 deg Celsius.
- * Use the model name to identify 3255 CPUs and set a flag to display negative temperature.
- * Do not round off to zero for negative Tctl or Tdie values if the flag is set
- */
+ 
 #define AMD_I3255_STR				"3255"
 
 struct k10temp_data {
@@ -114,8 +93,8 @@ static const struct tctl_offset tctl_offset_table[] = {
 	{ 0x17, "AMD Ryzen 7 1700X", 20000 },
 	{ 0x17, "AMD Ryzen 7 1800X", 20000 },
 	{ 0x17, "AMD Ryzen 7 2700X", 10000 },
-	{ 0x17, "AMD Ryzen Threadripper 19", 27000 }, /* 19{00,20,50}X */
-	{ 0x17, "AMD Ryzen Threadripper 29", 27000 }, /* 29{20,50,70,90}[W]X */
+	{ 0x17, "AMD Ryzen Threadripper 19", 27000 },  
+	{ 0x17, "AMD Ryzen Threadripper 29", 27000 },  
 };
 
 static void read_htcreg_pci(struct pci_dev *pdev, u32 *regval)
@@ -210,17 +189,17 @@ static int k10temp_read_temp(struct device *dev, u32 attr, int channel,
 	switch (attr) {
 	case hwmon_temp_input:
 		switch (channel) {
-		case 0:		/* Tctl */
+		case 0:		 
 			*val = get_raw_temp(data);
 			if (*val < 0 && !data->disp_negative)
 				*val = 0;
 			break;
-		case 1:		/* Tdie */
+		case 1:		 
 			*val = get_raw_temp(data) - data->temp_offset;
 			if (*val < 0 && !data->disp_negative)
 				*val = 0;
 			break;
-		case 2 ... 13:		/* Tccd{1-12} */
+		case 2 ... 13:		 
 			amd_smn_read(amd_pci_dev_to_node_id(data->pdev),
 				     ZEN_CCD_TEMP(data->ccd_offset, channel - 2),
 						  &regval);
@@ -294,7 +273,7 @@ static umode_t k10temp_is_visible(const void *_data,
 				return 0;
 			break;
 		case hwmon_temp_label:
-			/* Show temperature labels only on Zen CPUs */
+			 
 			if (!data->is_zen || !HAVE_TEMP(data, channel))
 				return 0;
 			break;
@@ -315,29 +294,21 @@ static bool has_erratum_319(struct pci_dev *pdev)
 	if (boot_cpu_data.x86 != 0x10)
 		return false;
 
-	/*
-	 * Erratum 319: The thermal sensor of Socket F/AM2+ processors
-	 *              may be unreliable.
-	 */
+	 
 	pkg_type = cpuid_ebx(0x80000001) & CPUID_PKGTYPE_MASK;
 	if (pkg_type == CPUID_PKGTYPE_F)
 		return true;
 	if (pkg_type != CPUID_PKGTYPE_AM2R2_AM3)
 		return false;
 
-	/* DDR3 memory implies socket AM3, which is good */
+	 
 	pci_bus_read_config_dword(pdev->bus,
 				  PCI_DEVFN(PCI_SLOT(pdev->devfn), 2),
 				  REG_DCT0_CONFIG_HIGH, &reg_dram_cfg);
 	if (reg_dram_cfg & DDR3_MODE)
 		return false;
 
-	/*
-	 * Unfortunately it is possible to run a socket AM3 CPU with DDR2
-	 * memory. We blacklist all the cores which do exist in socket AM2+
-	 * format. It still isn't perfect, as RB-C2 cores exist in both AM2+
-	 * and AM3 formats, but that's the best we can do.
-	 */
+	 
 	return boot_cpu_data.x86_model < 4 ||
 	       (boot_cpu_data.x86_model == 4 && boot_cpu_data.x86_stepping <= 2);
 }
@@ -411,7 +382,7 @@ static int k10temp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		return -ENOMEM;
 
 	data->pdev = pdev;
-	data->show_temp |= BIT(TCTL_BIT);	/* Always show Tctl */
+	data->show_temp |= BIT(TCTL_BIT);	 
 
 	if (boot_cpu_data.x86 == 0x17 &&
 	    strstr(boot_cpu_data.x86_model_id, AMD_I3255_STR)) {
@@ -429,17 +400,17 @@ static int k10temp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		data->is_zen = true;
 
 		switch (boot_cpu_data.x86_model) {
-		case 0x1:	/* Zen */
-		case 0x8:	/* Zen+ */
-		case 0x11:	/* Zen APU */
-		case 0x18:	/* Zen+ APU */
+		case 0x1:	 
+		case 0x8:	 
+		case 0x11:	 
+		case 0x18:	 
 			data->ccd_offset = 0x154;
 			k10temp_get_ccd_support(pdev, data, 4);
 			break;
-		case 0x31:	/* Zen2 Threadripper */
-		case 0x60:	/* Renoir */
-		case 0x68:	/* Lucienne */
-		case 0x71:	/* Zen2 */
+		case 0x31:	 
+		case 0x60:	 
+		case 0x68:	 
+		case 0x71:	 
 			data->ccd_offset = 0x154;
 			k10temp_get_ccd_support(pdev, data, 8);
 			break;
@@ -454,13 +425,13 @@ static int k10temp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 		data->is_zen = true;
 
 		switch (boot_cpu_data.x86_model) {
-		case 0x0 ... 0x1:	/* Zen3 SP3/TR */
-		case 0x21:		/* Zen3 Ryzen Desktop */
-		case 0x50 ... 0x5f:	/* Green Sardine */
+		case 0x0 ... 0x1:	 
+		case 0x21:		 
+		case 0x50 ... 0x5f:	 
 			data->ccd_offset = 0x154;
 			k10temp_get_ccd_support(pdev, data, 8);
 			break;
-		case 0x40 ... 0x4f:	/* Yellow Carp */
+		case 0x40 ... 0x4f:	 
 			data->ccd_offset = 0x300;
 			k10temp_get_ccd_support(pdev, data, 8);
 			break;
@@ -489,7 +460,7 @@ static int k10temp_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 
 		if (boot_cpu_data.x86 == entry->model &&
 		    strstr(boot_cpu_data.x86_model_id, entry->id)) {
-			data->show_temp |= BIT(TDIE_BIT);	/* show Tdie */
+			data->show_temp |= BIT(TDIE_BIT);	 
 			data->temp_offset = entry->offset;
 			break;
 		}

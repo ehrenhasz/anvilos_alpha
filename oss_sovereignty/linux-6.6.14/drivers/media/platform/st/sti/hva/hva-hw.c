@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2015
- * Authors: Yannick Fertre <yannick.fertre@st.com>
- *          Hugues Fruchet <hugues.fruchet@st.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -16,7 +12,7 @@
 #include "hva.h"
 #include "hva-hw.h"
 
-/* HVA register offsets */
+ 
 #define HVA_HIF_REG_RST                 0x0100U
 #define HVA_HIF_REG_RST_ACK             0x0104U
 #define HVA_HIF_REG_MIF_CFG             0x0108U
@@ -39,49 +35,33 @@
 #define HVA_HIF_REG_VERSION             0x014CU
 #define HVA_HIF_REG_BSM                 0x0150U
 
-/* define value for version id register (HVA_HIF_REG_VERSION) */
+ 
 #define VERSION_ID_MASK	0x0000FFFF
 
-/* define values for BSM register (HVA_HIF_REG_BSM) */
+ 
 #define BSM_CFG_VAL1	0x0003F000
 #define BSM_CFG_VAL2	0x003F0000
 
-/* define values for memory interface register (HVA_HIF_REG_MIF_CFG) */
+ 
 #define MIF_CFG_VAL1	0x04460446
 #define MIF_CFG_VAL2	0x04460806
 #define MIF_CFG_VAL3	0x00000000
 
-/* define value for HEC memory interface register (HVA_HIF_REG_MIF_CFG) */
+ 
 #define HEC_MIF_CFG_VAL	0x000000C4
 
-/*  Bits definition for clock gating register (HVA_HIF_REG_CLK_GATING) */
+ 
 #define CLK_GATING_HVC	BIT(0)
 #define CLK_GATING_HEC	BIT(1)
 #define CLK_GATING_HJE	BIT(2)
 
-/* fix hva clock rate */
+ 
 #define CLK_RATE		300000000
 
-/* fix delay for pmruntime */
+ 
 #define AUTOSUSPEND_DELAY_MS	3
 
-/*
- * hw encode error values
- * NO_ERROR: Success, Task OK
- * H264_BITSTREAM_OVERSIZE: VECH264 Bitstream size > bitstream buffer
- * H264_FRAME_SKIPPED: VECH264 Frame skipped (refers to CPB Buffer Size)
- * H264_SLICE_LIMIT_SIZE: VECH264 MB > slice limit size
- * H264_MAX_SLICE_NUMBER: VECH264 max slice number reached
- * H264_SLICE_READY: VECH264 Slice ready
- * TASK_LIST_FULL: HVA/FPC task list full
-		   (discard latest transform command)
- * UNKNOWN_COMMAND: Transform command not known by HVA/FPC
- * WRONG_CODEC_OR_RESOLUTION: Wrong Codec or Resolution Selection
- * NO_INT_COMPLETION: Time-out on interrupt completion
- * LMI_ERR: Local Memory Interface Error
- * EMI_ERR: External Memory Interface Error
- * HECMI_ERR: HEC Memory Interface Error
- */
+ 
 enum hva_hw_error {
 	NO_ERROR = 0x0,
 	H264_BITSTREAM_OVERSIZE = 0x2,
@@ -102,11 +82,11 @@ static irqreturn_t hva_hw_its_interrupt(int irq, void *data)
 {
 	struct hva_dev *hva = data;
 
-	/* read status registers */
+	 
 	hva->sts_reg = readl_relaxed(hva->regs + HVA_HIF_FIFO_STS);
 	hva->sfl_reg = readl_relaxed(hva->regs + HVA_HIF_REG_SFL);
 
-	/* acknowledge interruption */
+	 
 	writel_relaxed(0x1, hva->regs + HVA_HIF_REG_IT_ACK);
 
 	return IRQ_WAKE_THREAD;
@@ -123,10 +103,7 @@ static irqreturn_t hva_hw_its_irq_thread(int irq, void *arg)
 	dev_dbg(dev, "%s     %s: status: 0x%02x fifo level: 0x%02x\n",
 		HVA_PREFIX, __func__, hva->sts_reg & 0xFF, hva->sfl_reg & 0xF);
 
-	/*
-	 * status: task_id[31:16] client_id[15:8] status[7:0]
-	 * the context identifier is retrieved from the client identifier
-	 */
+	 
 	ctx_id = (hva->sts_reg & 0xFF00) >> 8;
 	if (ctx_id >= HVA_MAX_INSTANCES) {
 		dev_err(dev, "%s     %s: bad context identifier: %d\n",
@@ -200,17 +177,17 @@ static irqreturn_t hva_hw_err_interrupt(int irq, void *data)
 {
 	struct hva_dev *hva = data;
 
-	/* read status registers */
+	 
 	hva->sts_reg = readl_relaxed(hva->regs + HVA_HIF_FIFO_STS);
 	hva->sfl_reg = readl_relaxed(hva->regs + HVA_HIF_REG_SFL);
 
-	/* read error registers */
+	 
 	hva->lmi_err_reg = readl_relaxed(hva->regs + HVA_HIF_REG_LMI_ERR);
 	hva->emi_err_reg = readl_relaxed(hva->regs + HVA_HIF_REG_EMI_ERR);
 	hva->hec_mif_err_reg = readl_relaxed(hva->regs +
 					     HVA_HIF_REG_HEC_MIF_ERR);
 
-	/* acknowledge interruption */
+	 
 	writel_relaxed(0x1, hva->regs + HVA_HIF_REG_IT_ACK);
 
 	return IRQ_WAKE_THREAD;
@@ -226,10 +203,7 @@ static irqreturn_t hva_hw_err_irq_thread(int irq, void *arg)
 	dev_dbg(dev, "%s     status: 0x%02x fifo level: 0x%02x\n",
 		HVA_PREFIX, hva->sts_reg & 0xFF, hva->sfl_reg & 0xF);
 
-	/*
-	 * status: task_id[31:16] client_id[15:8] status[7:0]
-	 * the context identifier is retrieved from the client identifier
-	 */
+	 
 	ctx_id = (hva->sts_reg & 0xFF00) >> 8;
 	if (ctx_id >= HVA_MAX_INSTANCES) {
 		dev_err(dev, "%s     bad context identifier: %d\n", HVA_PREFIX,
@@ -303,14 +277,14 @@ int hva_hw_probe(struct platform_device *pdev, struct hva_dev *hva)
 
 	WARN_ON(!hva);
 
-	/* get memory for registers */
+	 
 	hva->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(hva->regs)) {
 		dev_err(dev, "%s     failed to get regs\n", HVA_PREFIX);
 		return PTR_ERR(hva->regs);
 	}
 
-	/* get memory for esram */
+	 
 	esram = platform_get_resource(pdev, IORESOURCE_MEM, 1);
 	if (!esram) {
 		dev_err(dev, "%s     failed to get esram\n", HVA_PREFIX);
@@ -322,7 +296,7 @@ int hva_hw_probe(struct platform_device *pdev, struct hva_dev *hva)
 	dev_info(dev, "%s     esram reserved for address: 0x%x size:%d\n",
 		 HVA_PREFIX, hva->esram_addr, hva->esram_size);
 
-	/* get clock resource */
+	 
 	hva->clk = devm_clk_get(dev, "clk_hva");
 	if (IS_ERR(hva->clk)) {
 		dev_err(dev, "%s     failed to get clock\n", HVA_PREFIX);
@@ -336,7 +310,7 @@ int hva_hw_probe(struct platform_device *pdev, struct hva_dev *hva)
 		return ret;
 	}
 
-	/* get status interruption resource */
+	 
 	ret  = platform_get_irq(pdev, 0);
 	if (ret < 0)
 		goto err_clk;
@@ -353,7 +327,7 @@ int hva_hw_probe(struct platform_device *pdev, struct hva_dev *hva)
 	}
 	disable_irq(hva->irq_its);
 
-	/* get error interruption resource */
+	 
 	ret = platform_get_irq(pdev, 1);
 	if (ret < 0)
 		goto err_clk;
@@ -370,13 +344,13 @@ int hva_hw_probe(struct platform_device *pdev, struct hva_dev *hva)
 	}
 	disable_irq(hva->irq_err);
 
-	/* initialise protection mutex */
+	 
 	mutex_init(&hva->protect_mutex);
 
-	/* initialise completion signal */
+	 
 	init_completion(&hva->interrupt);
 
-	/* initialise runtime power management */
+	 
 	pm_runtime_set_autosuspend_delay(dev, AUTOSUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_set_suspended(dev);
@@ -388,7 +362,7 @@ int hva_hw_probe(struct platform_device *pdev, struct hva_dev *hva)
 		goto err_disable;
 	}
 
-	/* check IP hardware version */
+	 
 	hva->ip_version = hva_hw_get_ip_version(hva);
 
 	if (hva->ip_version == HVA_VERSION_UNKNOWN) {
@@ -464,7 +438,7 @@ int hva_hw_execute_task(struct hva_ctx *ctx, enum hva_hw_cmd_type cmd,
 
 	mutex_lock(&hva->protect_mutex);
 
-	/* enable irqs */
+	 
 	enable_irq(hva->irq_its);
 	enable_irq(hva->irq_err);
 
@@ -492,19 +466,14 @@ int hva_hw_execute_task(struct hva_ctx *ctx, enum hva_hw_cmd_type cmd,
 	dev_dbg(dev, "%s     %s: write configuration registers\n", ctx->name,
 		__func__);
 
-	/* byte swap config */
+	 
 	writel_relaxed(BSM_CFG_VAL1, hva->regs + HVA_HIF_REG_BSM);
 
-	/* define Max Opcode Size and Max Message Size for LMI and EMI */
+	 
 	writel_relaxed(MIF_CFG_VAL3, hva->regs + HVA_HIF_REG_MIF_CFG);
 	writel_relaxed(HEC_MIF_CFG_VAL, hva->regs + HVA_HIF_REG_HEC_MIF_CFG);
 
-	/*
-	 * command FIFO: task_id[31:16] client_id[15:8] command_type[7:0]
-	 * the context identifier is provided as client identifier to the
-	 * hardware, and is retrieved in the interrupt functions from the
-	 * status register
-	 */
+	 
 	dev_dbg(dev, "%s     %s: send task (cmd: %d, task_desc: %pad)\n",
 		ctx->name, __func__, cmd + (client_id << 8), &task->paddr);
 	writel_relaxed(cmd + (client_id << 8), hva->regs + HVA_HIF_FIFO_CMD);
@@ -519,7 +488,7 @@ int hva_hw_execute_task(struct hva_ctx *ctx, enum hva_hw_cmd_type cmd,
 		goto out;
 	}
 
-	/* get encoding status */
+	 
 	ret = ctx->hw_err ? -EFAULT : 0;
 
 	ctx->encode_errors += ctx->hw_err ? 1 : 0;

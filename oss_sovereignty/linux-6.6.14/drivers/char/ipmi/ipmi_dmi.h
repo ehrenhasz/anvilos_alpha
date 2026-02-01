@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * DMI defines for use by IPMI
- */
+ 
+ 
 #include "ipmi_si.h"
 
 #ifdef CONFIG_IPMI_DMI_DECODE

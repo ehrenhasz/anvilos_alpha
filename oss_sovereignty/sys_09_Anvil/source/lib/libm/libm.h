@@ -1,20 +1,11 @@
-/*****************************************************************************/
-/*****************************************************************************/
-// portions extracted from musl-0.9.15 libm.h
-/*****************************************************************************/
-/*****************************************************************************/
+ 
+ 
 
-/* origin: FreeBSD /usr/src/lib/msun/src/math_private.h */
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice
- * is preserved.
- * ====================================================
- */
+ 
+ 
+
+ 
+ 
 
 #include <stdint.h>
 #include <math.h>
@@ -37,7 +28,7 @@
 	}                                         \
 } while(0)
 
-/* Get a 32 bit int from a float.  */
+ 
 #define GET_FLOAT_WORD(w,d)                       \
 do {                                              \
   union {float f; uint32_t i;} __u;               \
@@ -45,7 +36,7 @@ do {                                              \
   (w) = __u.i;                                    \
 } while (0)
 
-/* Set a float from a 32 bit int.  */
+ 
 #define SET_FLOAT_WORD(d,w)                       \
 do {                                              \
       union {float f; uint32_t i;} __u;           \

@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8723E_HAL_BT_COEXIST_H__
 #define __RTL8723E_HAL_BT_COEXIST_H__
 
 #include "../wifi.h"
 
-/* The reg define is for 8723 */
+ 
 #define	REG_HIGH_PRIORITY_TXRX			0x770
 #define	REG_LOW_PRIORITY_TXRX			0x774
 

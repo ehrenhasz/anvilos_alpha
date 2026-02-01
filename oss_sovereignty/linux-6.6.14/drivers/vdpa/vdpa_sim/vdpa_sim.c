@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VDPA device simulator core.
- *
- * Copyright (c) 2020, Red Hat Inc. All rights reserved.
- *     Author: Jason Wang <jasowang@redhat.com>
- *
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -59,7 +53,7 @@ static void vdpasim_mm_work_fn(struct kthread_work *work)
 
 	mm_work->ret = 0;
 
-	//TODO: should we attach the cgroup of the mm owner?
+	
 	vdpasim->mm_bound = mm_work->mm_to_bind;
 }
 
@@ -111,15 +105,7 @@ static void vdpasim_queue_ready(struct vdpasim *vdpasim, unsigned int idx)
 
 	vq->vring.last_avail_idx = last_avail_idx;
 
-	/*
-	 * Since vdpa_sim does not support receive inflight descriptors as a
-	 * destination of a migration, let's set both avail_idx and used_idx
-	 * the same at vq start.  This is how vhost-user works in a
-	 * VHOST_SET_VRING_BASE call.
-	 *
-	 * Although the simple fix is to set last_used_idx at
-	 * vdpasim_set_vq_state, it would be reset at vdpasim_queue_ready.
-	 */
+	 
 	vq->vring.last_used_idx = last_avail_idx;
 	vq->vring.notify = vdpasim_vq_notify;
 }
@@ -397,7 +383,7 @@ static u32 vdpasim_get_vq_align(struct vdpa_device *vdpa)
 
 static u32 vdpasim_get_vq_group(struct vdpa_device *vdpa, u16 idx)
 {
-	/* RX and TX belongs to group 0, CVQ belongs to group 1 */
+	 
 	if (idx == 2)
 		return 1;
 	else
@@ -420,7 +406,7 @@ static int vdpasim_set_driver_features(struct vdpa_device *vdpa, u64 features)
 {
 	struct vdpasim *vdpasim = vdpa_to_sim(vdpa);
 
-	/* DMA mapping must be done by driver */
+	 
 	if (!(features & (1ULL << VIRTIO_F_ACCESS_PLATFORM)))
 		return -EINVAL;
 
@@ -439,7 +425,7 @@ static u64 vdpasim_get_driver_features(struct vdpa_device *vdpa)
 static void vdpasim_set_config_cb(struct vdpa_device *vdpa,
 				  struct vdpa_callback *cb)
 {
-	/* We don't support config interrupt */
+	 
 }
 
 static u16 vdpasim_get_vq_num_max(struct vdpa_device *vdpa)
@@ -512,7 +498,7 @@ static int vdpasim_resume(struct vdpa_device *vdpa)
 	vdpasim->running = true;
 
 	if (vdpasim->pending_kick) {
-		/* Process pending descriptors */
+		 
 		for (i = 0; i < vdpasim->dev_attr.nvqs; ++i)
 			vdpasim_kick_vq(vdpa, i);
 

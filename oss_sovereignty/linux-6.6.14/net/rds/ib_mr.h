@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016 Oracle.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #ifndef _RDS_IB_MR_H
 #define _RDS_IB_MR_H
 
@@ -44,9 +14,9 @@
 #define RDS_MR_8K_POOL_SIZE		(RDS_MR_8K_SCALE * (8192 / 2))
 
 enum rds_ib_fr_state {
-	FRMR_IS_FREE,	/* mr invalidated & ready for use */
-	FRMR_IS_INUSE,	/* mr is in use or used & can be invalidated */
-	FRMR_IS_STALE,	/* Stale MR and needs to be dropped  */
+	FRMR_IS_FREE,	 
+	FRMR_IS_INUSE,	 
+	FRMR_IS_STALE,	 
 };
 
 struct rds_ib_frmr {
@@ -61,7 +31,7 @@ struct rds_ib_frmr {
 	unsigned int		sg_byte_len;
 };
 
-/* This is stored as mr->r_trans_private. */
+ 
 struct rds_ib_mr {
 	struct delayed_work		work;
 	struct rds_ib_device		*device;
@@ -70,7 +40,7 @@ struct rds_ib_mr {
 
 	struct llist_node		llnode;
 
-	/* unmap_list is for freeing */
+	 
 	struct list_head		unmap_list;
 	unsigned int			remap_count;
 
@@ -85,22 +55,22 @@ struct rds_ib_mr {
 	} u;
 };
 
-/* Our own little MR pool */
+ 
 struct rds_ib_mr_pool {
 	unsigned int            pool_type;
-	struct mutex		flush_lock;	/* serialize fmr invalidate */
-	struct delayed_work	flush_worker;	/* flush worker */
+	struct mutex		flush_lock;	 
+	struct delayed_work	flush_worker;	 
 
-	atomic_t		item_count;	/* total # of MRs */
-	atomic_t		dirty_count;	/* # dirty of MRs */
+	atomic_t		item_count;	 
+	atomic_t		dirty_count;	 
 
-	struct llist_head	drop_list;	/* MRs not reached max_maps */
-	struct llist_head	free_list;	/* unused MRs */
-	struct llist_head	clean_list;	/* unused & unmapped MRs */
+	struct llist_head	drop_list;	 
+	struct llist_head	free_list;	 
+	struct llist_head	clean_list;	 
 	wait_queue_head_t	flush_wait;
-	spinlock_t		clean_lock;	/* "clean_list" concurrency */
+	spinlock_t		clean_lock;	 
 
-	atomic_t		free_pinned;	/* memory pinned by free MRs */
+	atomic_t		free_pinned;	 
 	unsigned long		max_items;
 	unsigned long		max_items_soft;
 	unsigned long		max_free_pinned;

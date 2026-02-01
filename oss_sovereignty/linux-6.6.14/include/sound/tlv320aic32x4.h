@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tlv320aic32x4.h  --  TLV320AIC32X4 Soc Audio driver platform data
- *
- * Copyright 2011 Vista Silicon S.L.
- *
- * Author: Javier Martin <javier.martin@vista-silicon.com>
- */
+ 
+ 
 
 #ifndef _AIC32X4_PDATA_H
 #define _AIC32X4_PDATA_H
@@ -19,7 +13,7 @@
 #define AIC32X4_MICPGA_ROUTE_LMIC_IN2R_10K	0x00000001
 #define AIC32X4_MICPGA_ROUTE_RMIC_IN1L_10K	0x00000002
 
-/* GPIO API */
+ 
 #define AIC32X4_MFPX_DEFAULT_VALUE	0xff
 
 #define AIC32X4_MFP1_DIN_DISABLED	0

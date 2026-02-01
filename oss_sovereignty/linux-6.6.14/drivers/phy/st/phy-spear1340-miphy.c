@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ST spear1340-miphy driver
- *
- * Copyright (C) 2014 ST Microelectronics
- * Pratyush Anand <pratyush.anand@gmail.com>
- * Mohit Kumar <mohit.kumar.dhaka@gmail.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -18,8 +12,8 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* SPEAr1340 Registers */
-/* Power Management Registers */
+ 
+ 
 #define SPEAR1340_PCM_CFG			0x100
 	#define SPEAR1340_PCM_CFG_SATA_POWER_EN		BIT(11)
 #define SPEAR1340_PCM_WKUP_CFG			0x104
@@ -30,9 +24,9 @@
 #define SPEAR1340_PERIP2_SW_RST			0x31C
 #define SPEAR1340_PERIP3_SW_RST			0x320
 
-/* PCIE - SATA configuration registers */
+ 
 #define SPEAR1340_PCIE_SATA_CFG			0x424
-	/* PCIE CFG MASks */
+	 
 	#define SPEAR1340_PCIE_CFG_DEVICE_PRESENT	BIT(11)
 	#define SPEAR1340_PCIE_CFG_POWERUP_RESET	BIT(10)
 	#define SPEAR1340_PCIE_CFG_CORE_CLK_EN		BIT(9)
@@ -78,11 +72,11 @@ enum spear1340_miphy_mode {
 };
 
 struct spear1340_miphy_priv {
-	/* phy mode: 0 for SATA 1 for PCIe */
+	 
 	enum spear1340_miphy_mode	mode;
-	/* regmap for any soc specific misc registers */
+	 
 	struct regmap			*misc;
-	/* phy struct pointer */
+	 
 	struct phy			*phy;
 };
 
@@ -94,17 +88,17 @@ static int spear1340_miphy_sata_init(struct spear1340_miphy_priv *priv)
 	regmap_update_bits(priv->misc, SPEAR1340_PCIE_MIPHY_CFG,
 			   SPEAR1340_PCIE_MIPHY_CFG_MASK,
 			   SPEAR1340_PCIE_SATA_MIPHY_CFG_SATA_25M_CRYSTAL_CLK);
-	/* Switch on sata power domain */
+	 
 	regmap_update_bits(priv->misc, SPEAR1340_PCM_CFG,
 			   SPEAR1340_PCM_CFG_SATA_POWER_EN,
 			   SPEAR1340_PCM_CFG_SATA_POWER_EN);
-	/* Wait for SATA power domain on */
+	 
 	msleep(20);
 
-	/* Disable PCIE SATA Controller reset */
+	 
 	regmap_update_bits(priv->misc, SPEAR1340_PERIP1_SW_RST,
 			   SPEAR1340_PERIP1_SW_RSATA, 0);
-	/* Wait for SATA reset de-assert completion */
+	 
 	msleep(20);
 
 	return 0;
@@ -117,16 +111,16 @@ static int spear1340_miphy_sata_exit(struct spear1340_miphy_priv *priv)
 	regmap_update_bits(priv->misc, SPEAR1340_PCIE_MIPHY_CFG,
 			   SPEAR1340_PCIE_MIPHY_CFG_MASK, 0);
 
-	/* Enable PCIE SATA Controller reset */
+	 
 	regmap_update_bits(priv->misc, SPEAR1340_PERIP1_SW_RST,
 			   SPEAR1340_PERIP1_SW_RSATA,
 			   SPEAR1340_PERIP1_SW_RSATA);
-	/* Wait for SATA power domain off */
+	 
 	msleep(20);
-	/* Switch off sata power domain */
+	 
 	regmap_update_bits(priv->misc, SPEAR1340_PCM_CFG,
 			   SPEAR1340_PCM_CFG_SATA_POWER_EN, 0);
-	/* Wait for SATA reset assert completion */
+	 
 	msleep(20);
 
 	return 0;

@@ -1,29 +1,11 @@
-/*
- * Ceph - scalable distributed file system
- *
- * Copyright (C) 2004-2010 Sage Weil <sage@newdream.net>
- *
- * This is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License version 2.1, as published by the Free Software
- * Foundation.  See file COPYING.
- *
- */
+ 
 
 #ifndef CEPH_RBD_TYPES_H
 #define CEPH_RBD_TYPES_H
 
 #include <linux/types.h>
 
-/* For format version 2, rbd image 'foo' consists of objects
- *   rbd_id.foo		- id of image
- *   rbd_header.<id>	- image metadata
- *   rbd_object_map.<id> - optional image object map
- *   rbd_data.<id>.0000000000000000
- *   rbd_data.<id>.0000000000000001
- *   ...		- data
- * Clients do not access header data directly in rbd format 2.
- */
+ 
 
 #define RBD_HEADER_PREFIX      "rbd_header."
 #define RBD_OBJECT_MAP_PREFIX  "rbd_object_map."
@@ -49,14 +31,7 @@ enum rbd_notify_op {
 #define RBD_FLAG_OBJECT_MAP_INVALID	(1ULL << 0)
 #define RBD_FLAG_FAST_DIFF_INVALID	(1ULL << 1)
 
-/*
- * For format version 1, rbd image 'foo' consists of objects
- *   foo.rbd		- image metadata
- *   rb.<idhi>.<idlo>.<extra>.000000000000
- *   rb.<idhi>.<idlo>.<extra>.000000000001
- *   ...		- data
- * There is no notion of a persistent image id in rbd format 1.
- */
+ 
 
 #define RBD_SUFFIX		".rbd"
 #define RBD_V1_DATA_FORMAT	"%s.%012llx"
@@ -64,7 +39,7 @@ enum rbd_notify_op {
 #define RBD_DIRECTORY           "rbd_directory"
 #define RBD_INFO                "rbd_info"
 
-#define RBD_DEFAULT_OBJ_ORDER	22   /* 4MB */
+#define RBD_DEFAULT_OBJ_ORDER	22    
 #define RBD_MIN_OBJ_ORDER       16
 #define RBD_MAX_OBJ_ORDER       30
 

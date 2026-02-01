@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _XFS_PNFS_H
 #define _XFS_PNFS_H 1
 
@@ -17,5 +17,5 @@ xfs_break_leased_layouts(struct inode *inode, uint *iolock, bool *did_unlock)
 {
 	return 0;
 }
-#endif /* CONFIG_EXPORTFS_BLOCK_OPS */
-#endif /* _XFS_PNFS_H */
+#endif  
+#endif  

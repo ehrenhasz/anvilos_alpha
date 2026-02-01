@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2003-2008 Takahiro Hirofuchi
- * Copyright (C) 2015-2016 Nobuo Iwata
- */
+
+ 
 
 #include <linux/kthread.h>
 #include <linux/file.h>
@@ -10,37 +7,21 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* Hardening for Spectre-v1 */
+ 
 #include <linux/nospec.h>
 
 #include "usbip_common.h"
 #include "vhci.h"
 
-/* TODO: refine locking ?*/
+ 
 
-/*
- * output example:
- * hub port sta spd dev       sockfd local_busid
- * hs  0000 004 000 00000000  000003 1-2.3
- * ................................................
- * ss  0008 004 000 00000000  000004 2-3.4
- * ................................................
- *
- * Output includes socket fd instead of socket pointer address to avoid
- * leaking kernel memory address in:
- *	/sys/devices/platform/vhci_hcd.0/status and in debug output.
- * The socket pointer address is not used at the moment and it was made
- * visible as a convenient way to find IP address from socket pointer
- * address by looking up /proc/net/{tcp,tcp6}. As this opens a security
- * hole, the change is made to use sockfd instead.
- *
- */
+ 
 static void port_show_vhci(char **out, int hub, int port, struct vhci_device *vdev)
 {
 	if (hub == HUB_SPEED_HIGH)
 		*out += sprintf(*out, "hs  %04u %03u ",
 				      port, vdev->ud.status);
-	else /* hub == HUB_SPEED_SUPER */
+	else  
 		*out += sprintf(*out, "ss  %04u %03u ",
 				      port, vdev->ud.status);
 
@@ -59,7 +40,7 @@ static void port_show_vhci(char **out, int hub, int port, struct vhci_device *vd
 	*out += sprintf(*out, "\n");
 }
 
-/* Sysfs entry to show port status */
+ 
 static ssize_t status_show_vhci(int pdev_nr, char *out)
 {
 	struct platform_device *pdev = vhcis[pdev_nr].pdev;
@@ -167,16 +148,13 @@ static ssize_t nports_show(struct device *dev, struct device_attribute *attr,
 {
 	char *s = out;
 
-	/*
-	 * Half the ports are for SPEED_HIGH and half for SPEED_SUPER,
-	 * thus the * 2.
-	 */
+	 
 	out += sprintf(out, "%d\n", VHCI_PORTS * vhci_num_controllers);
 	return out - s;
 }
 static DEVICE_ATTR_RO(nports);
 
-/* Sysfs entry to shutdown a virtual connection */
+ 
 static int vhci_port_disconnect(struct vhci_hcd *vhci_hcd, __u32 rhport)
 {
 	struct vhci_device *vdev = &vhci_hcd->vdev[rhport];
@@ -187,14 +165,14 @@ static int vhci_port_disconnect(struct vhci_hcd *vhci_hcd, __u32 rhport)
 
 	mutex_lock(&vdev->ud.sysfs_lock);
 
-	/* lock */
+	 
 	spin_lock_irqsave(&vhci->lock, flags);
 	spin_lock(&vdev->ud.lock);
 
 	if (vdev->ud.status == VDEV_ST_NULL) {
 		pr_err("not connected %d\n", vdev->ud.status);
 
-		/* unlock */
+		 
 		spin_unlock(&vdev->ud.lock);
 		spin_unlock_irqrestore(&vhci->lock, flags);
 		mutex_unlock(&vdev->ud.sysfs_lock);
@@ -202,7 +180,7 @@ static int vhci_port_disconnect(struct vhci_hcd *vhci_hcd, __u32 rhport)
 		return -EINVAL;
 	}
 
-	/* unlock */
+	 
 	spin_unlock(&vdev->ud.lock);
 	spin_unlock_irqrestore(&vhci->lock, flags);
 
@@ -293,18 +271,8 @@ static int valid_args(__u32 *pdev_nr, __u32 *rhport,
 	return 1;
 }
 
-/* Sysfs entry to establish a virtual connection */
-/*
- * To start a new USB/IP attachment, a userland program needs to setup a TCP
- * connection and then write its socket descriptor with remote device
- * information into this sysfs file.
- *
- * A remote device is virtually attached to the root-hub port of @rhport with
- * @speed. @devid is embedded into a request to specify the remote device in a
- * server host.
- *
- * write() returns 0 on success, else negative errno.
- */
+ 
+ 
 static ssize_t attach_store(struct device *dev, struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
@@ -320,12 +288,7 @@ static ssize_t attach_store(struct device *dev, struct device_attribute *attr,
 	struct task_struct *tcp_rx = NULL;
 	struct task_struct *tcp_tx = NULL;
 
-	/*
-	 * @rhport: port number of vhci_hcd
-	 * @sockfd: socket descriptor of an established TCP connection
-	 * @devid: unique device identifier in a remote host
-	 * @speed: usb device speed in a remote host
-	 */
+	 
 	if (sscanf(buf, "%u %u %u %u", &port, &sockfd, &devid, &speed) != 4)
 		return -EINVAL;
 	pdev_nr = port_to_pdev_nr(port);
@@ -336,7 +299,7 @@ static ssize_t attach_store(struct device *dev, struct device_attribute *attr,
 	usbip_dbg_vhci_sysfs("sockfd(%u) devid(%u) speed(%u)\n",
 			     sockfd, devid, speed);
 
-	/* check received parameters */
+	 
 	if (!valid_args(&pdev_nr, &rhport, speed))
 		return -EINVAL;
 
@@ -356,7 +319,7 @@ static ssize_t attach_store(struct device *dev, struct device_attribute *attr,
 
 	mutex_lock(&vdev->ud.sysfs_lock);
 
-	/* Extract socket from fd. */
+	 
 	socket = sockfd_lookup(sockfd, &err);
 	if (!socket) {
 		dev_err(dev, "failed to lookup sock");
@@ -371,7 +334,7 @@ static ssize_t attach_store(struct device *dev, struct device_attribute *attr,
 		goto unlock_mutex;
 	}
 
-	/* create threads before locking */
+	 
 	tcp_rx = kthread_create(vhci_rx_loop, &vdev->ud, "vhci_rx");
 	if (IS_ERR(tcp_rx)) {
 		sockfd_put(socket);
@@ -386,16 +349,16 @@ static ssize_t attach_store(struct device *dev, struct device_attribute *attr,
 		goto unlock_mutex;
 	}
 
-	/* get task structs now */
+	 
 	get_task_struct(tcp_rx);
 	get_task_struct(tcp_tx);
 
-	/* now begin lock until setting vdev status set */
+	 
 	spin_lock_irqsave(&vhci->lock, flags);
 	spin_lock(&vdev->ud.lock);
 
 	if (vdev->ud.status != VDEV_ST_NULL) {
-		/* end of the lock */
+		 
 		spin_unlock(&vdev->ud.lock);
 		spin_unlock_irqrestore(&vhci->lock, flags);
 
@@ -404,10 +367,7 @@ static ssize_t attach_store(struct device *dev, struct device_attribute *attr,
 		kthread_stop_put(tcp_tx);
 
 		dev_err(dev, "port %d already used\n", rhport);
-		/*
-		 * Will be retried from userspace
-		 * if there's another free port.
-		 */
+		 
 		err = -EBUSY;
 		goto unlock_mutex;
 	}
@@ -428,7 +388,7 @@ static ssize_t attach_store(struct device *dev, struct device_attribute *attr,
 
 	spin_unlock(&vdev->ud.lock);
 	spin_unlock_irqrestore(&vhci->lock, flags);
-	/* end the lock */
+	 
 
 	wake_up_process(vdev->ud.tcp_rx);
 	wake_up_process(vdev->ud.tcp_tx);

@@ -187,10 +187,7 @@ enum flow_action_id {
 	NUM_FLOW_ACTIONS,
 };
 
-/* This is mirroring enum pedit_header_type definition for easy mapping between
- * tc pedit action. Legacy TCA_PEDIT_KEY_EX_HDR_TYPE_NETWORK is mapped to
- * FLOW_ACT_MANGLE_UNSPEC, which is supported by no driver.
- */
+ 
 enum flow_action_mangle_base {
 	FLOW_ACT_MANGLE_UNSPEC		= 0,
 	FLOW_ACT_MANGLE_HDR_TYPE_ETH,
@@ -240,42 +237,42 @@ struct flow_action_entry {
 	action_destr			destructor;
 	void				*destructor_priv;
 	union {
-		u32			chain_index;	/* FLOW_ACTION_GOTO */
-		struct net_device	*dev;		/* FLOW_ACTION_REDIRECT */
-		struct {				/* FLOW_ACTION_VLAN */
+		u32			chain_index;	 
+		struct net_device	*dev;		 
+		struct {				 
 			u16		vid;
 			__be16		proto;
 			u8		prio;
 		} vlan;
-		struct {				/* FLOW_ACTION_VLAN_PUSH_ETH */
+		struct {				 
 			unsigned char dst[ETH_ALEN];
 			unsigned char src[ETH_ALEN];
 		} vlan_push_eth;
-		struct {				/* FLOW_ACTION_MANGLE */
-							/* FLOW_ACTION_ADD */
+		struct {				 
+							 
 			enum flow_action_mangle_base htype;
 			u32		offset;
 			u32		mask;
 			u32		val;
 		} mangle;
-		struct ip_tunnel_info	*tunnel;	/* FLOW_ACTION_TUNNEL_ENCAP */
-		u32			csum_flags;	/* FLOW_ACTION_CSUM */
-		u32			mark;		/* FLOW_ACTION_MARK */
-		u16                     ptype;          /* FLOW_ACTION_PTYPE */
-		u16			rx_queue;	/* FLOW_ACTION_RX_QUEUE_MAPPING */
-		u32			priority;	/* FLOW_ACTION_PRIORITY */
-		struct {				/* FLOW_ACTION_QUEUE */
+		struct ip_tunnel_info	*tunnel;	 
+		u32			csum_flags;	 
+		u32			mark;		 
+		u16                     ptype;           
+		u16			rx_queue;	 
+		u32			priority;	 
+		struct {				 
 			u32		ctx;
 			u32		index;
 			u8		vf;
 		} queue;
-		struct {				/* FLOW_ACTION_SAMPLE */
+		struct {				 
 			struct psample_group	*psample_group;
 			u32			rate;
 			u32			trunc_size;
 			bool			truncate;
 		} sample;
-		struct {				/* FLOW_ACTION_POLICE */
+		struct {				 
 			u32			burst;
 			u64			rate_bytes_ps;
 			u64			peakrate_bytes_ps;
@@ -289,7 +286,7 @@ struct flow_action_entry {
 				u32			extval;
 			} exceed, notexceed;
 		} police;
-		struct {				/* FLOW_ACTION_CT */
+		struct {				 
 			int action;
 			u16 zone;
 			struct nf_flowtable *flow_table;
@@ -300,17 +297,17 @@ struct flow_action_entry {
 			u32 labels[4];
 			bool orig_dir;
 		} ct_metadata;
-		struct {				/* FLOW_ACTION_MPLS_PUSH */
+		struct {				 
 			u32		label;
 			__be16		proto;
 			u8		tc;
 			u8		bos;
 			u8		ttl;
 		} mpls_push;
-		struct {				/* FLOW_ACTION_MPLS_POP */
+		struct {				 
 			__be16		proto;
 		} mpls_pop;
-		struct {				/* FLOW_ACTION_MPLS_MANGLE */
+		struct {				 
 			u32		label;
 			u8		tc;
 			u8		bos;
@@ -324,11 +321,11 @@ struct flow_action_entry {
 			u32		num_entries;
 			struct action_gate_entry *entries;
 		} gate;
-		struct {				/* FLOW_ACTION_PPPOE_PUSH */
+		struct {				 
 			u16		sid;
 		} pppoe;
 	};
-	struct flow_action_cookie *user_cookie; /* user defined action cookie */
+	struct flow_action_cookie *user_cookie;  
 };
 
 struct flow_action {
@@ -341,12 +338,7 @@ static inline bool flow_action_has_entries(const struct flow_action *action)
 	return action->num_entries;
 }
 
-/**
- * flow_offload_has_one_action() - check if exactly one action is present
- * @action: tc filter flow offload action
- *
- * Returns true if exactly one action is present.
- */
+ 
 static inline bool flow_offload_has_one_action(const struct flow_action *action)
 {
 	return action->num_entries == 1;
@@ -406,7 +398,7 @@ __flow_action_hw_stats_check(const struct flow_action *action,
 
 	action_entry = flow_action_first_entry_get(action);
 
-	/* Zero is not a legal value for hw_stats, catch anyone passing it */
+	 
 	WARN_ON_ONCE(!action_entry->hw_stats);
 
 	if (!check_allow_bit &&
@@ -468,9 +460,7 @@ static inline void flow_stats_update(struct flow_stats *flow_stats,
 	flow_stats->drops	+= drops;
 	flow_stats->lastused	= max_t(u64, flow_stats->lastused, lastused);
 
-	/* The driver should pass value with a maximum of one bit set.
-	 * Passing FLOW_ACTION_HW_STATS_ANY is invalid.
-	 */
+	 
 	WARN_ON(used_hw_stats == FLOW_ACTION_HW_STATS_ANY);
 	flow_stats->used_hw_stats |= used_hw_stats;
 	flow_stats->used_hw_stats_valid = true;
@@ -615,7 +605,7 @@ enum offload_act_command  {
 };
 
 struct flow_offload_action {
-	struct netlink_ext_ack *extack; /* NULL in FLOW_ACT_STATS process*/
+	struct netlink_ext_ack *extack;  
 	enum offload_act_command  command;
 	enum flow_action_id id;
 	u32 index;
@@ -651,4 +641,4 @@ int flow_indr_dev_setup_offload(struct net_device *dev, struct Qdisc *sch,
 				void (*cleanup)(struct flow_block_cb *block_cb));
 bool flow_indr_dev_exists(void);
 
-#endif /* _NET_FLOW_OFFLOAD_H */
+#endif  

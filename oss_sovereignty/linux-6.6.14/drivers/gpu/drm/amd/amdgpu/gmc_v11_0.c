@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/firmware.h>
 #include <linux/pci.h>
 
@@ -63,26 +42,18 @@ gmc_v11_0_vm_fault_interrupt_state(struct amdgpu_device *adev,
 {
 	switch (state) {
 	case AMDGPU_IRQ_STATE_DISABLE:
-		/* MM HUB */
+		 
 		amdgpu_gmc_set_vm_fault_masks(adev, AMDGPU_MMHUB0(0), false);
-		/* GFX HUB */
-		/* This works because this interrupt is only
-		 * enabled at init/resume and disabled in
-		 * fini/suspend, so the overall state doesn't
-		 * change over the course of suspend/resume.
-		 */
+		 
+		 
 		if (!adev->in_s0ix)
 			amdgpu_gmc_set_vm_fault_masks(adev, AMDGPU_GFXHUB(0), false);
 		break;
 	case AMDGPU_IRQ_STATE_ENABLE:
-		/* MM HUB */
+		 
 		amdgpu_gmc_set_vm_fault_masks(adev, AMDGPU_MMHUB0(0), true);
-		/* GFX HUB */
-		/* This works because this interrupt is only
-		 * enabled at init/resume and disabled in
-		 * fini/suspend, so the overall state doesn't
-		 * change over the course of suspend/resume.
-		 */
+		 
+		 
 		if (!adev->in_s0ix)
 			amdgpu_gmc_set_vm_fault_masks(adev, AMDGPU_GFXHUB(0), true);
 		break;
@@ -107,11 +78,7 @@ static int gmc_v11_0_process_interrupt(struct amdgpu_device *adev,
 	addr |= ((u64)entry->src_data[1] & 0xf) << 44;
 
 	if (!amdgpu_sriov_vf(adev)) {
-		/*
-		 * Issue a dummy read to wait for the status register to
-		 * be updated to avoid reading an incorrect value due to
-		 * the new fast GRBM interface.
-		 */
+		 
 		if (entry->vmid_src == AMDGPU_GFXHUB(0))
 			RREG32(hub->vm_l2_pro_fault_status);
 
@@ -161,13 +128,7 @@ static void gmc_v11_0_set_irq_funcs(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * gmc_v11_0_use_invalidate_semaphore - judge whether to use semaphore
- *
- * @adev: amdgpu_device pointer
- * @vmhub: vmhub type
- *
- */
+ 
 static bool gmc_v11_0_use_invalidate_semaphore(struct amdgpu_device *adev,
 				       uint32_t vmhub)
 {
@@ -184,12 +145,7 @@ static bool gmc_v11_0_get_vmid_pasid_mapping_info(
 	return !!(*p_pasid);
 }
 
-/*
- * GART
- * VMID 0 is the physical GPU addresses as used by the kernel.
- * VMIDs 1-15 are used for userspace clients and are handled
- * by the amdgpu vm/hsa code.
- */
+ 
 
 static void gmc_v11_0_flush_vm_hub(struct amdgpu_device *adev, uint32_t vmid,
 				   unsigned int vmhub, uint32_t flush_type)
@@ -198,7 +154,7 @@ static void gmc_v11_0_flush_vm_hub(struct amdgpu_device *adev, uint32_t vmid,
 	struct amdgpu_vmhub *hub = &adev->vmhub[vmhub];
 	u32 inv_req = hub->vmhub_funcs->get_invalidate_req(vmid, flush_type);
 	u32 tmp;
-	/* Use register 17 for GART */
+	 
 	const unsigned int eng = 17;
 	unsigned int i;
 	unsigned char hub_ip = 0;
@@ -207,17 +163,12 @@ static void gmc_v11_0_flush_vm_hub(struct amdgpu_device *adev, uint32_t vmid,
 		   GC_HWIP : MMHUB_HWIP;
 
 	spin_lock(&adev->gmc.invalidate_lock);
-	/*
-	 * It may lose gpuvm invalidate acknowldege state across power-gating
-	 * off cycle, add semaphore acquire before invalidation and semaphore
-	 * release after invalidation to avoid entering power gated state
-	 * to WA the Issue
-	 */
+	 
 
-	/* TODO: It needs to continue working on debugging with semaphore for GFXHUB as well. */
+	 
 	if (use_semaphore) {
 		for (i = 0; i < adev->usec_timeout; i++) {
-			/* a read return value of 1 means semaphore acuqire */
+			 
 			tmp = RREG32_RLC_NO_KIQ(hub->vm_inv_eng0_sem +
 					    hub->eng_distance * eng, hub_ip);
 			if (tmp & 0x1)
@@ -231,7 +182,7 @@ static void gmc_v11_0_flush_vm_hub(struct amdgpu_device *adev, uint32_t vmid,
 
 	WREG32_RLC_NO_KIQ(hub->vm_inv_eng0_req + hub->eng_distance * eng, inv_req, hub_ip);
 
-	/* Wait for ACK with a delay.*/
+	 
 	for (i = 0; i < adev->usec_timeout; i++) {
 		tmp = RREG32_RLC_NO_KIQ(hub->vm_inv_eng0_ack +
 				    hub->eng_distance * eng, hub_ip);
@@ -242,25 +193,22 @@ static void gmc_v11_0_flush_vm_hub(struct amdgpu_device *adev, uint32_t vmid,
 		udelay(1);
 	}
 
-	/* TODO: It needs to continue working on debugging with semaphore for GFXHUB as well. */
+	 
 	if (use_semaphore)
-		/*
-		 * add semaphore release after invalidation,
-		 * write with 0 means semaphore release
-		 */
+		 
 		WREG32_RLC_NO_KIQ(hub->vm_inv_eng0_sem +
 			      hub->eng_distance * eng, 0, hub_ip);
 
-	/* Issue additional private vm invalidation to MMHUB */
+	 
 	if ((vmhub != AMDGPU_GFXHUB(0)) &&
 	    (hub->vm_l2_bank_select_reserved_cid2) &&
 		!amdgpu_sriov_vf(adev)) {
 		inv_req = RREG32_NO_KIQ(hub->vm_l2_bank_select_reserved_cid2);
-		/* bit 25: RSERVED_CACHE_PRIVATE_INVALIDATION */
+		 
 		inv_req |= (1 << 25);
-		/* Issue private invalidation */
+		 
 		WREG32_NO_KIQ(hub->vm_l2_bank_select_reserved_cid2, inv_req);
-		/* Read back to ensure invalidation is done*/
+		 
 		RREG32_NO_KIQ(hub->vm_l2_bank_select_reserved_cid2);
 	}
 
@@ -272,28 +220,17 @@ static void gmc_v11_0_flush_vm_hub(struct amdgpu_device *adev, uint32_t vmid,
 	DRM_ERROR("Timeout waiting for VM flush ACK!\n");
 }
 
-/**
- * gmc_v11_0_flush_gpu_tlb - gart tlb flush callback
- *
- * @adev: amdgpu_device pointer
- * @vmid: vm instance to flush
- * @vmhub: which hub to flush
- * @flush_type: the flush type
- *
- * Flush the TLB for the requested page table.
- */
+ 
 static void gmc_v11_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 					uint32_t vmhub, uint32_t flush_type)
 {
 	if ((vmhub == AMDGPU_GFXHUB(0)) && !adev->gfx.is_poweron)
 		return;
 
-	/* flush hdp cache */
+	 
 	adev->hdp.funcs->flush_hdp(adev, NULL);
 
-	/* For SRIOV run time, driver shouldn't access the register through MMIO
-	 * Directly use kiq to do the vm invalidation instead
-	 */
+	 
 	if ((adev->gfx.kiq[0].ring.sched.ready || adev->mes.ring.sched.ready) &&
 	    (amdgpu_sriov_runtime(adev) || !amdgpu_sriov_vf(adev))) {
 		struct amdgpu_vmhub *hub = &adev->vmhub[vmhub];
@@ -312,17 +249,7 @@ static void gmc_v11_0_flush_gpu_tlb(struct amdgpu_device *adev, uint32_t vmid,
 	mutex_unlock(&adev->mman.gtt_window_lock);
 }
 
-/**
- * gmc_v11_0_flush_gpu_tlb_pasid - tlb flush via pasid
- *
- * @adev: amdgpu_device pointer
- * @pasid: pasid to be flush
- * @flush_type: the flush type
- * @all_hub: flush all hubs
- * @inst: is used to select which instance of KIQ to use for the invalidation
- *
- * Flush the TLB for the requested pasid.
- */
+ 
 static int gmc_v11_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
 					uint16_t pasid, uint32_t flush_type,
 					bool all_hub, uint32_t inst)
@@ -337,7 +264,7 @@ static int gmc_v11_0_flush_gpu_tlb_pasid(struct amdgpu_device *adev,
 
 	if (amdgpu_emu_mode == 0 && ring->sched.ready) {
 		spin_lock(&adev->gfx.kiq[0].ring_lock);
-		/* 2 dwords flush + 8 dwords fence */
+		 
 		amdgpu_ring_alloc(ring, kiq->pmf->invalidate_tlbs_size + 8);
 		kiq->pmf->kiq_invalidate_tlbs(ring,
 					pasid, flush_type, all_hub);
@@ -386,16 +313,11 @@ static uint64_t gmc_v11_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
 	uint32_t req = hub->vmhub_funcs->get_invalidate_req(vmid, 0);
 	unsigned int eng = ring->vm_inv_eng;
 
-	/*
-	 * It may lose gpuvm invalidate acknowldege state across power-gating
-	 * off cycle, add semaphore acquire before invalidation and semaphore
-	 * release after invalidation to avoid entering power gated state
-	 * to WA the Issue
-	 */
+	 
 
-	/* TODO: It needs to continue working on debugging with semaphore for GFXHUB as well. */
+	 
 	if (use_semaphore)
-		/* a read return value of 1 means semaphore acuqire */
+		 
 		amdgpu_ring_emit_reg_wait(ring,
 					  hub->vm_inv_eng0_sem +
 					  hub->eng_distance * eng, 0x1, 0x1);
@@ -414,12 +336,9 @@ static uint64_t gmc_v11_0_emit_flush_gpu_tlb(struct amdgpu_ring *ring,
 					    hub->eng_distance * eng,
 					    req, 1 << vmid);
 
-	/* TODO: It needs to continue working on debugging with semaphore for GFXHUB as well. */
+	 
 	if (use_semaphore)
-		/*
-		 * add semaphore release after invalidation,
-		 * write with 0 means semaphore release
-		 */
+		 
 		amdgpu_ring_emit_wreg(ring, hub->vm_inv_eng0_sem +
 				      hub->eng_distance * eng, 0);
 
@@ -432,7 +351,7 @@ static void gmc_v11_0_emit_pasid_mapping(struct amdgpu_ring *ring, unsigned int 
 	struct amdgpu_device *adev = ring->adev;
 	uint32_t reg;
 
-	/* MES fw manages IH_VMID_x_LUT updating */
+	 
 	if (ring->is_mes_queue)
 		return;
 
@@ -444,37 +363,7 @@ static void gmc_v11_0_emit_pasid_mapping(struct amdgpu_ring *ring, unsigned int 
 	amdgpu_ring_emit_wreg(ring, reg, pasid);
 }
 
-/*
- * PTE format:
- * 63:59 reserved
- * 58:57 reserved
- * 56 F
- * 55 L
- * 54 reserved
- * 53:52 SW
- * 51 T
- * 50:48 mtype
- * 47:12 4k physical page base address
- * 11:7 fragment
- * 6 write
- * 5 read
- * 4 exe
- * 3 Z
- * 2 snooped
- * 1 system
- * 0 valid
- *
- * PDE format:
- * 63:59 block fragment size
- * 58:55 reserved
- * 54 P
- * 53:48 reserved
- * 47:6 physical base address of PD or PTE
- * 5:3 reserved
- * 2 C
- * 1 system
- * 0 valid
- */
+ 
 
 static uint64_t gmc_v11_0_map_mtype(struct amdgpu_device *adev, uint32_t flags)
 {
@@ -506,7 +395,7 @@ static void gmc_v11_0_get_vm_pde(struct amdgpu_device *adev, int level,
 		return;
 
 	if (level == AMDGPU_VM_PDB1) {
-		/* Set the block fragment size */
+		 
 		if (!(*flags & AMDGPU_PDE_PTE))
 			*flags |= AMDGPU_PDE_BFS(0x9);
 
@@ -683,27 +572,19 @@ static void gmc_v11_0_vram_gtt_location(struct amdgpu_device *adev,
 	amdgpu_gmc_gart_location(adev, mc);
 	amdgpu_gmc_agp_location(adev, mc);
 
-	/* base offset of vram pages */
+	 
 	if (amdgpu_sriov_vf(adev))
 		adev->vm_manager.vram_base_offset = 0;
 	else
 		adev->vm_manager.vram_base_offset = adev->mmhub.funcs->get_mc_fb_offset(adev);
 }
 
-/**
- * gmc_v11_0_mc_init - initialize the memory controller driver params
- *
- * @adev: amdgpu_device pointer
- *
- * Look up the amount of vram, vram width, and decide how to place
- * vram and gart within the GPU's physical address space.
- * Returns 0 for success.
- */
+ 
 static int gmc_v11_0_mc_init(struct amdgpu_device *adev)
 {
 	int r;
 
-	/* size in MB on si */
+	 
 	adev->gmc.mc_vram_size =
 		adev->nbio.funcs->get_memsize(adev) * 1024ULL * 1024ULL;
 	adev->gmc.real_vram_size = adev->gmc.mc_vram_size;
@@ -722,12 +603,12 @@ static int gmc_v11_0_mc_init(struct amdgpu_device *adev)
 		adev->gmc.aper_size = adev->gmc.real_vram_size;
 	}
 #endif
-	/* In case the PCI BAR is larger than the actual amount of vram */
+	 
 	adev->gmc.visible_vram_size = adev->gmc.aper_size;
 	if (adev->gmc.visible_vram_size > adev->gmc.real_vram_size)
 		adev->gmc.visible_vram_size = adev->gmc.real_vram_size;
 
-	/* set the gart size */
+	 
 	if (amdgpu_gart_size == -1)
 		adev->gmc.gart_size = 512ULL << 20;
 	else
@@ -747,7 +628,7 @@ static int gmc_v11_0_gart_init(struct amdgpu_device *adev)
 		return 0;
 	}
 
-	/* Initialize common gart structure */
+	 
 	r = amdgpu_gart_init(adev);
 	if (r)
 		return r;
@@ -783,18 +664,14 @@ static int gmc_v11_0_sw_init(void *handle)
 	case IP_VERSION(11, 0, 4):
 		set_bit(AMDGPU_GFXHUB(0), adev->vmhubs_mask);
 		set_bit(AMDGPU_MMHUB0(0), adev->vmhubs_mask);
-		/*
-		 * To fulfill 4-level page support,
-		 * vm size is 256TB (48bit), maximum size,
-		 * block size 512 (9bit)
-		 */
+		 
 		amdgpu_vm_adjust_size(adev, 256 * 1024, 9, 3, 48);
 		break;
 	default:
 		break;
 	}
 
-	/* This interrupt is VMC page fault.*/
+	 
 	r = amdgpu_irq_add_id(adev, SOC21_IH_CLIENTID_VMC,
 			      VMC_1_0__SRCID__VM_FAULT,
 			      &adev->gmc.vm_fault);
@@ -809,18 +686,15 @@ static int gmc_v11_0_sw_init(void *handle)
 		return r;
 
 	if (!amdgpu_sriov_vf(adev)) {
-		/* interrupt sent to DF. */
+		 
 		r = amdgpu_irq_add_id(adev, SOC21_IH_CLIENTID_DF, 0,
 				      &adev->gmc.ecc_irq);
 		if (r)
 			return r;
 	}
 
-	/*
-	 * Set the internal MC address mask This is the max address of the GPU's
-	 * internal address space.
-	 */
-	adev->gmc.mc_mask = 0xffffffffffffULL; /* 48 bit MC */
+	 
+	adev->gmc.mc_mask = 0xffffffffffffULL;  
 
 	r = dma_set_mask_and_coherent(adev->dev, DMA_BIT_MASK(44));
 	if (r) {
@@ -836,7 +710,7 @@ static int gmc_v11_0_sw_init(void *handle)
 
 	amdgpu_gmc_get_vbios_allocations(adev);
 
-	/* Memory manager */
+	 
 	r = amdgpu_bo_init(adev);
 	if (r)
 		return r;
@@ -845,12 +719,7 @@ static int gmc_v11_0_sw_init(void *handle)
 	if (r)
 		return r;
 
-	/*
-	 * number of VMs
-	 * VMID 0 is reserved for System
-	 * amdgpu graphics/compute will use VMIDs 1-7
-	 * amdkfd will use VMIDs 8-15
-	 */
+	 
 	adev->vm_manager.first_kfd_vmid = 8;
 
 	amdgpu_vm_manager_init(adev);
@@ -862,13 +731,7 @@ static int gmc_v11_0_sw_init(void *handle)
 	return 0;
 }
 
-/**
- * gmc_v11_0_gart_fini - vm fini callback
- *
- * @adev: amdgpu_device pointer
- *
- * Tears down the driver GART/VM setup (CIK).
- */
+ 
 static void gmc_v11_0_gart_fini(struct amdgpu_device *adev)
 {
 	amdgpu_gart_table_vram_free(adev);
@@ -896,11 +759,7 @@ static void gmc_v11_0_init_golden_registers(struct amdgpu_device *adev)
 	}
 }
 
-/**
- * gmc_v11_0_gart_enable - gart enable
- *
- * @adev: amdgpu_device pointer
- */
+ 
 static int gmc_v11_0_gart_enable(struct amdgpu_device *adev)
 {
 	int r;
@@ -917,7 +776,7 @@ static int gmc_v11_0_gart_enable(struct amdgpu_device *adev)
 	if (r)
 		return r;
 
-	/* Flush HDP after it is initialized */
+	 
 	adev->hdp.funcs->flush_hdp(adev, NULL);
 
 	value = (amdgpu_vm_fault_stop == AMDGPU_VM_FAULT_STOP_ALWAYS) ?
@@ -938,7 +797,7 @@ static int gmc_v11_0_hw_init(void *handle)
 	int r;
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* The sequence of these two function calls matters.*/
+	 
 	gmc_v11_0_init_golden_registers(adev);
 
 	r = gmc_v11_0_gart_enable(adev);
@@ -951,13 +810,7 @@ static int gmc_v11_0_hw_init(void *handle)
 	return 0;
 }
 
-/**
- * gmc_v11_0_gart_disable - gart disable
- *
- * @adev: amdgpu_device pointer
- *
- * This disables all VM page table.
- */
+ 
 static void gmc_v11_0_gart_disable(struct amdgpu_device *adev)
 {
 	adev->mmhub.funcs->gart_disable(adev);
@@ -968,7 +821,7 @@ static int gmc_v11_0_hw_fini(void *handle)
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
 	if (amdgpu_sriov_vf(adev)) {
-		/* full access mode, so don't touch any GMC register */
+		 
 		DRM_DEBUG("For SRIOV client, shouldn't do anything.\n");
 		return 0;
 	}
@@ -1004,13 +857,13 @@ static int gmc_v11_0_resume(void *handle)
 
 static bool gmc_v11_0_is_idle(void *handle)
 {
-	/* MC is always ready in GMC v11.*/
+	 
 	return true;
 }
 
 static int gmc_v11_0_wait_for_idle(void *handle)
 {
-	/* There is no need to wait for MC idle in GMC v11.*/
+	 
 	return 0;
 }
 

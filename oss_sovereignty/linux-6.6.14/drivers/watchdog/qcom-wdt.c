@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -119,10 +118,7 @@ static int qcom_wdt_restart(struct watchdog_device *wdd, unsigned long action,
 	struct qcom_wdt *wdt = to_qcom_wdt(wdd);
 	u32 timeout;
 
-	/*
-	 * Trigger watchdog bite:
-	 *    Setup BITE_TIME to be 128ms, and enable WDT.
-	 */
+	 
 	timeout = 128 * wdt->rate / 1000;
 
 	writel(0, wdt_addr(wdt, WDT_EN));
@@ -131,9 +127,7 @@ static int qcom_wdt_restart(struct watchdog_device *wdd, unsigned long action,
 	writel(timeout, wdt_addr(wdt, WDT_BITE_TIME));
 	writel(QCOM_WDT_ENABLE, wdt_addr(wdt, WDT_EN));
 
-	/*
-	 * Actually make sure the above sequence hits hardware before sleeping.
-	 */
+	 
 	wmb();
 
 	mdelay(150);
@@ -209,7 +203,7 @@ static int qcom_wdt_probe(struct platform_device *pdev)
 	if (!res)
 		return -ENOMEM;
 
-	/* We use CPU0's DGT for the watchdog */
+	 
 	if (of_property_read_u32(np, "cpu-offset", &percpu_offset))
 		percpu_offset = 0;
 
@@ -226,14 +220,7 @@ static int qcom_wdt_probe(struct platform_device *pdev)
 		return PTR_ERR(clk);
 	}
 
-	/*
-	 * We use the clock rate to calculate the max timeout, so ensure it's
-	 * not zero to avoid a divide-by-zero exception.
-	 *
-	 * WATCHDOG_CORE assumes units of seconds, if the WDT is clocked such
-	 * that it would bite before a second elapses it's usefulness is
-	 * limited.  Bail if this is the case.
-	 */
+	 
 	wdt->rate = clk_get_rate(clk);
 	if (wdt->rate == 0 ||
 	    wdt->rate > 0x10000000U) {
@@ -241,7 +228,7 @@ static int qcom_wdt_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* check if there is pretimeout support */
+	 
 	irq = platform_get_irq_optional(pdev, 0);
 	if (data->pretimeout && irq > 0) {
 		ret = devm_request_irq(dev, irq, qcom_wdt_isr, 0,
@@ -267,20 +254,11 @@ static int qcom_wdt_probe(struct platform_device *pdev)
 	if (readl(wdt_addr(wdt, WDT_STS)) & 1)
 		wdt->wdd.bootstatus = WDIOF_CARDRESET;
 
-	/*
-	 * If 'timeout-sec' unspecified in devicetree, assume a 30 second
-	 * default, unless the max timeout is less than 30 seconds, then use
-	 * the max instead.
-	 */
+	 
 	wdt->wdd.timeout = min(wdt->wdd.max_timeout, 30U);
 	watchdog_init_timeout(&wdt->wdd, 0, dev);
 
-	/*
-	 * If WDT is already running, call WDT start which
-	 * will stop the WDT, set timeouts as bootloader
-	 * might use different ones and set running bit
-	 * to inform the WDT subsystem to ping the WDT
-	 */
+	 
 	if (qcom_wdt_is_running(&wdt->wdd)) {
 		qcom_wdt_start(&wdt->wdd);
 		set_bit(WDOG_HW_RUNNING, &wdt->wdd.status);

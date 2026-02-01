@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pin controller and GPIO driver for Amlogic Meson GXL.
- *
- * Copyright (C) 2016 Endless Mobile, Inc.
- * Author: Carlo Caione <carlo@endlessm.com>
- */
+
+ 
 
 #include <dt-bindings/gpio/meson-gxl-gpio.h>
 #include "pinctrl-meson.h"
@@ -410,7 +405,7 @@ static struct meson_pmx_group meson_gxl_periphs_groups[] = {
 
 	GPIO_GROUP(GPIO_TEST_N),
 
-	/* Bank X */
+	 
 	GROUP(sdio_d0,		5,	31),
 	GROUP(sdio_d1,		5,	30),
 	GROUP(sdio_d2,		5,	29),
@@ -434,7 +429,7 @@ static struct meson_pmx_group meson_gxl_periphs_groups[] = {
 	GROUP(spi_ss0,		5,	1),
 	GROUP(spi_sclk,		5,	0),
 
-	/* Bank Z */
+	 
 	GROUP(eth_mdio,		4,	23),
 	GROUP(eth_mdc,		4,	22),
 	GROUP(eth_clk_rx_clk,	4,	21),
@@ -461,7 +456,7 @@ static struct meson_pmx_group meson_gxl_periphs_groups[] = {
 	GROUP(eth_link_led,	4,	25),
 	GROUP(eth_act_led,	4,	24),
 
-	/* Bank H */
+	 
 	GROUP(hdmi_hpd,		6,	31),
 	GROUP(hdmi_sda,		6,	30),
 	GROUP(hdmi_scl,		6,	29),
@@ -475,7 +470,7 @@ static struct meson_pmx_group meson_gxl_periphs_groups[] = {
 	GROUP(tsin_b_d_valid,	6,	19),
 	GROUP(tsin_b_clk,	6,	20),
 
-	/* Bank DV */
+	 
 	GROUP(uart_tx_b,	2,	16),
 	GROUP(uart_rx_b,	2,	15),
 	GROUP(uart_cts_b,	2,	14),
@@ -497,7 +492,7 @@ static struct meson_pmx_group meson_gxl_periphs_groups[] = {
 	GROUP(tsin_a_d_valid,	2,	0),
 	GROUP(tsin_a_fail,	1,	31),
 
-	/* Bank BOOT */
+	 
 	GROUP(emmc_nand_d07,	7,	31),
 	GROUP(emmc_clk,		7,	30),
 	GROUP(emmc_cmd,		7,	29),
@@ -515,7 +510,7 @@ static struct meson_pmx_group meson_gxl_periphs_groups[] = {
 	GROUP(nand_ren_wr,	7,	1),
 	GROUP(nand_dqs,		7,	0),
 
-	/* Bank CARD */
+	 
 	GROUP(sdcard_d1,	6,	5),
 	GROUP(sdcard_d0,	6,	4),
 	GROUP(sdcard_d3,	6,	1),
@@ -523,7 +518,7 @@ static struct meson_pmx_group meson_gxl_periphs_groups[] = {
 	GROUP(sdcard_cmd,	6,	2),
 	GROUP(sdcard_clk,	6,	3),
 
-	/* Bank CLK */
+	 
 	GROUP(pwm_f_clk,	8,	30),
 };
 
@@ -539,7 +534,7 @@ static struct meson_pmx_group meson_gxl_aobus_groups[] = {
 	GPIO_GROUP(GPIOAO_8),
 	GPIO_GROUP(GPIOAO_9),
 
-	/* bank AO */
+	 
 	GROUP(uart_tx_ao_b_0,	0,	26),
 	GROUP(uart_rx_ao_b_1,	0,	25),
 	GROUP(uart_tx_ao_b,	0,	24),
@@ -566,7 +561,7 @@ static struct meson_pmx_group meson_gxl_aobus_groups[] = {
 	GROUP(ao_cec,		0,	15),
 	GROUP(ee_cec,		0,	14),
 
-	/* test n pin */
+	 
 	GROUP(i2s_out_ch67_ao,	1,	2),
 };
 
@@ -808,7 +803,7 @@ static struct meson_pmx_func meson_gxl_aobus_functions[] = {
 };
 
 static struct meson_bank meson_gxl_periphs_banks[] = {
-	/*   name    first      last       irq	     pullen  pull    dir     out     in  */
+	 
 	BANK("X",    GPIOX_0,	GPIOX_18,   89, 107, 4,  0,  4,  0,  12, 0,  13, 0,  14, 0),
 	BANK("DV",   GPIODV_0,	GPIODV_29,  83,  88, 0,  0,  0,  0,  0,  0,  1,  0,  2,  0),
 	BANK("H",    GPIOH_0,	GPIOH_9,    26,  35, 1, 20,  1, 20,  3, 20,  4, 20,  5, 20),
@@ -819,7 +814,7 @@ static struct meson_bank meson_gxl_periphs_banks[] = {
 };
 
 static struct meson_bank meson_gxl_aobus_banks[] = {
-	/*   name    first      last      irq	pullen  pull    dir     out     in  */
+	 
 	BANK("AO",   GPIOAO_0,  GPIOAO_9, 0, 9, 0,  16, 0, 0,   0,  0,  0, 16,  1,  0),
 };
 

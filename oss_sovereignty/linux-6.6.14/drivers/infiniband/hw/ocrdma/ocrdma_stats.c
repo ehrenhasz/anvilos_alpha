@@ -1,44 +1,4 @@
-/* This file is part of the Emulex RoCE Device Driver for
- * RoCE (RDMA over Converged Ethernet) adapters.
- * Copyright (C) 2012-2015 Emulex. All rights reserved.
- * EMULEX and SLI are trademarks of Emulex.
- * www.emulex.com
- *
- * This software is available to you under a choice of one of two licenses.
- * You may choose to be licensed under the terms of the GNU General Public
- * License (GPL) Version 2, available from the file COPYING in the main
- * directory of this source tree, or the BSD license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * - Redistributions of source code must retain the above copyright notice,
- *   this list of conditions and the following disclaimer.
- *
- * - Redistributions in binary form must reproduce the above copyright
- *   notice, this list of conditions and the following disclaimer in
- *   the documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR
- * BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF
- * ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- * Contact Information:
- * linux-drivers@emulex.com
- *
- * Emulex
- * 3333 Susan Street
- * Costa Mesa, CA 92626
- */
+ 
 
 #include <rdma/ib_addr.h>
 #include <rdma/ib_pma.h>
@@ -69,7 +29,7 @@ bool ocrdma_alloc_stats_resources(struct ocrdma_dev *dev)
 	struct stats_mem *mem = &dev->stats_mem;
 
 	mutex_init(&dev->stats_lock);
-	/* Alloc mbox command mem*/
+	 
 	mem->size = max_t(u32, sizeof(struct ocrdma_rdma_stats_req),
 			sizeof(struct ocrdma_rdma_stats_resp));
 
@@ -80,7 +40,7 @@ bool ocrdma_alloc_stats_resources(struct ocrdma_dev *dev)
 		return false;
 	}
 
-	/* Alloc debugfs mem */
+	 
 	mem->debugfs_mem = kzalloc(OCRDMA_MAX_DBGFS_MEM, GFP_KERNEL);
 	if (!mem->debugfs_mem)
 		return false;
@@ -160,7 +120,7 @@ static char *ocrdma_resource_stats(struct ocrdma_dev *dev)
 	pcur += ocrdma_add_stat(stats, pcur, "active_mw",
 				(u64)rsrc_stats->mw);
 
-	/* Print the threshold stats */
+	 
 	rsrc_stats = &rdma_stats->th_rsrc_stats;
 
 	pcur += ocrdma_add_stat(stats, pcur, "threshold_dpp_pds",
@@ -613,16 +573,16 @@ static void ocrdma_update_stats(struct ocrdma_dev *dev)
 
 	secs = jiffies_to_msecs(now - dev->last_stats_time) / 1000U;
 	if (secs) {
-		/* update */
+		 
 		status = ocrdma_mbx_rdma_stats(dev, false);
 		if (status)
 			pr_err("%s: stats mbox failed with status = %d\n",
 			       __func__, status);
-		/* Update PD counters from PD resource manager */
+		 
 		if (dev->pd_mgr->pd_prealloc_valid) {
 			rsrc_stats->dpp_pds = dev->pd_mgr->pd_dpp_count;
 			rsrc_stats->non_dpp_pds = dev->pd_mgr->pd_norm_count;
-			/* Threshold stata*/
+			 
 			rsrc_stats = &rdma_stats->th_rsrc_stats;
 			rsrc_stats->dpp_pds = dev->pd_mgr->pd_dpp_thrsh;
 			rsrc_stats->non_dpp_pds = dev->pd_mgr->pd_norm_thrsh;
@@ -691,7 +651,7 @@ static ssize_t ocrdma_dbgfs_ops_read(struct file *filp, char __user *buffer,
 	ssize_t status = 0;
 	char *data = NULL;
 
-	/* No partial reads */
+	 
 	if (*ppos != 0)
 		return 0;
 
@@ -762,7 +722,7 @@ void ocrdma_add_port_stats(struct ocrdma_dev *dev)
 	if (!ocrdma_dbgfs_dir)
 		return;
 
-	/* Create post stats base dir */
+	 
 	dev->dir = debugfs_create_dir(pci_name(pdev), ocrdma_dbgfs_dir);
 
 	dev->rsrc_stats.type = OCRDMA_RSRC_STATS;
@@ -828,7 +788,7 @@ void ocrdma_rem_port_stats(struct ocrdma_dev *dev)
 
 void ocrdma_init_debugfs(void)
 {
-	/* Create base dir in debugfs root dir */
+	 
 	ocrdma_dbgfs_dir = debugfs_create_dir("ocrdma", NULL);
 }
 

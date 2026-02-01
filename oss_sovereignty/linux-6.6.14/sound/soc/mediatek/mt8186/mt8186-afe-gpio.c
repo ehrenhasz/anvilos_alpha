@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mt8186-afe-gpio.c  --  Mediatek 8186 afe gpio ctrl
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Jiaxin Yu <jiaxin.yu@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/gpio.h>
 #include <linux/pinctrl/consumer.h>
@@ -92,7 +92,7 @@ int mt8186_afe_gpio_init(struct device *dev)
 		}
 	}
 
-	/* gpio status init */
+	 
 	for (i = MT8186_DAI_ADDA; i <= MT8186_DAI_TDM_IN; i++) {
 		for (j = 0; j <= 1; j++)
 			mt8186_afe_gpio_request(dev, false, i, j);

@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Linaro Ltd.
- * Copyright (c) 2016 Hisilicon Limited.
- */
+
+ 
 
 #include "hisi_sas.h"
 #define DRV_NAME "hisi_sas_v2_hw"
 
-/* global registers need init*/
+ 
 #define DLVRY_QUEUE_ENABLE		0x0
 #define IOST_BASE_ADDR_LO		0x8
 #define IOST_BASE_ADDR_HI		0xc
@@ -166,7 +163,7 @@
 #define HGC_RXM_DFX_STATUS15_MEM3_OFF		0
 #define HGC_RXM_DFX_STATUS15_MEM3_MSK		(0x1ff << \
 						 HGC_RXM_DFX_STATUS15_MEM3_OFF)
-/* phy registers need init */
+ 
 #define PORT_BASE			(0x2000)
 
 #define PHY_CFG				(PORT_BASE + 0x0)
@@ -280,9 +277,9 @@
 #define AM_CTRL_GLOBAL			(0x0)
 #define AM_CURR_TRANS_RETURN	(0x150)
 
-/* HW dma structures */
-/* Delivery queue header */
-/* dw0 */
+ 
+ 
+ 
 #define CMD_HDR_ABORT_FLAG_OFF		0
 #define CMD_HDR_ABORT_FLAG_MSK		(0x3 << CMD_HDR_ABORT_FLAG_OFF)
 #define CMD_HDR_ABORT_DEVICE_TYPE_OFF	2
@@ -301,7 +298,7 @@
 #define CMD_HDR_PRIORITY_MSK		(0x1 << CMD_HDR_PRIORITY_OFF)
 #define CMD_HDR_CMD_OFF			29
 #define CMD_HDR_CMD_MSK			(0x7 << CMD_HDR_CMD_OFF)
-/* dw1 */
+ 
 #define CMD_HDR_DIR_OFF			5
 #define CMD_HDR_DIR_MSK			(0x3 << CMD_HDR_DIR_OFF)
 #define CMD_HDR_RESET_OFF		7
@@ -312,7 +309,7 @@
 #define CMD_HDR_FRAME_TYPE_MSK		(0x1f << CMD_HDR_FRAME_TYPE_OFF)
 #define CMD_HDR_DEV_ID_OFF		16
 #define CMD_HDR_DEV_ID_MSK		(0xffff << CMD_HDR_DEV_ID_OFF)
-/* dw2 */
+ 
 #define CMD_HDR_CFL_OFF			0
 #define CMD_HDR_CFL_MSK			(0x1ff << CMD_HDR_CFL_OFF)
 #define CMD_HDR_NCQ_TAG_OFF		10
@@ -323,10 +320,10 @@
 #define CMD_HDR_SG_MOD_MSK		(0x3 << CMD_HDR_SG_MOD_OFF)
 #define CMD_HDR_FIRST_BURST_OFF		26
 #define CMD_HDR_FIRST_BURST_MSK		(0x1 << CMD_HDR_SG_MOD_OFF)
-/* dw3 */
+ 
 #define CMD_HDR_IPTT_OFF		0
 #define CMD_HDR_IPTT_MSK		(0xffff << CMD_HDR_IPTT_OFF)
-/* dw6 */
+ 
 #define CMD_HDR_DIF_SGL_LEN_OFF		0
 #define CMD_HDR_DIF_SGL_LEN_MSK		(0xffff << CMD_HDR_DIF_SGL_LEN_OFF)
 #define CMD_HDR_DATA_SGL_LEN_OFF	16
@@ -334,8 +331,8 @@
 #define CMD_HDR_ABORT_IPTT_OFF		16
 #define CMD_HDR_ABORT_IPTT_MSK		(0xffff << CMD_HDR_ABORT_IPTT_OFF)
 
-/* Completion header */
-/* dw0 */
+ 
+ 
 #define CMPLT_HDR_ERR_PHASE_OFF	2
 #define CMPLT_HDR_ERR_PHASE_MSK	(0xff << CMPLT_HDR_ERR_PHASE_OFF)
 #define CMPLT_HDR_RSPNS_XFRD_OFF	10
@@ -344,19 +341,19 @@
 #define CMPLT_HDR_ERX_MSK		(0x1 << CMPLT_HDR_ERX_OFF)
 #define CMPLT_HDR_ABORT_STAT_OFF	13
 #define CMPLT_HDR_ABORT_STAT_MSK	(0x7 << CMPLT_HDR_ABORT_STAT_OFF)
-/* abort_stat */
+ 
 #define STAT_IO_NOT_VALID		0x1
 #define STAT_IO_NO_DEVICE		0x2
 #define STAT_IO_COMPLETE		0x3
 #define STAT_IO_ABORTED			0x4
-/* dw1 */
+ 
 #define CMPLT_HDR_IPTT_OFF		0
 #define CMPLT_HDR_IPTT_MSK		(0xffff << CMPLT_HDR_IPTT_OFF)
 #define CMPLT_HDR_DEV_ID_OFF		16
 #define CMPLT_HDR_DEV_ID_MSK		(0xffff << CMPLT_HDR_DEV_ID_OFF)
 
-/* ITCT header */
-/* qw0 */
+ 
+ 
 #define ITCT_HDR_DEV_TYPE_OFF		0
 #define ITCT_HDR_DEV_TYPE_MSK		(0x3 << ITCT_HDR_DEV_TYPE_OFF)
 #define ITCT_HDR_VALID_OFF		2
@@ -368,11 +365,11 @@
 #define ITCT_HDR_SMP_TIMEOUT_OFF	16
 #define ITCT_HDR_SMP_TIMEOUT_8US	1
 #define ITCT_HDR_SMP_TIMEOUT		(ITCT_HDR_SMP_TIMEOUT_8US * \
-					 250) /* 2ms */
+					 250)  
 #define ITCT_HDR_AWT_CONTINUE_OFF	25
 #define ITCT_HDR_PORT_ID_OFF		28
 #define ITCT_HDR_PORT_ID_MSK		(0xf << ITCT_HDR_PORT_ID_OFF)
-/* qw2 */
+ 
 #define ITCT_HDR_INLT_OFF		0
 #define ITCT_HDR_INLT_MSK		(0xffffULL << ITCT_HDR_INLT_OFF)
 #define ITCT_HDR_BITLT_OFF		16
@@ -392,17 +389,17 @@ struct hisi_sas_complete_v2_hdr {
 };
 
 struct hisi_sas_err_record_v2 {
-	/* dw0 */
+	 
 	__le32 trans_tx_fail_type;
 
-	/* dw1 */
+	 
 	__le32 trans_rx_fail_type;
 
-	/* dw2 */
+	 
 	__le16 dma_tx_err_type;
 	__le16 sipc_rx_err_type;
 
-	/* dw3 */
+	 
 	__le32 dma_rx_err_type;
 };
 
@@ -570,143 +567,143 @@ enum {
 };
 
 enum {
-	TRANS_TX_FAIL_BASE = 0x0, /* dw0 */
-	TRANS_RX_FAIL_BASE = 0x20, /* dw1 */
-	DMA_TX_ERR_BASE = 0x40, /* dw2 bit 15-0 */
-	SIPC_RX_ERR_BASE = 0x50, /* dw2 bit 31-16*/
-	DMA_RX_ERR_BASE = 0x60, /* dw3 */
+	TRANS_TX_FAIL_BASE = 0x0,  
+	TRANS_RX_FAIL_BASE = 0x20,  
+	DMA_TX_ERR_BASE = 0x40,  
+	SIPC_RX_ERR_BASE = 0x50,  
+	DMA_RX_ERR_BASE = 0x60,  
 
-	/* trans tx*/
-	TRANS_TX_OPEN_FAIL_WITH_IT_NEXUS_LOSS = TRANS_TX_FAIL_BASE, /* 0x0 */
-	TRANS_TX_ERR_PHY_NOT_ENABLE, /* 0x1 */
-	TRANS_TX_OPEN_CNX_ERR_WRONG_DESTINATION, /* 0x2 */
-	TRANS_TX_OPEN_CNX_ERR_ZONE_VIOLATION, /* 0x3 */
-	TRANS_TX_OPEN_CNX_ERR_BY_OTHER, /* 0x4 */
-	RESERVED0, /* 0x5 */
-	TRANS_TX_OPEN_CNX_ERR_AIP_TIMEOUT, /* 0x6 */
-	TRANS_TX_OPEN_CNX_ERR_STP_RESOURCES_BUSY, /* 0x7 */
-	TRANS_TX_OPEN_CNX_ERR_PROTOCOL_NOT_SUPPORTED, /* 0x8 */
-	TRANS_TX_OPEN_CNX_ERR_CONNECTION_RATE_NOT_SUPPORTED, /* 0x9 */
-	TRANS_TX_OPEN_CNX_ERR_BAD_DESTINATION, /* 0xa */
-	TRANS_TX_OPEN_CNX_ERR_BREAK_RCVD, /* 0xb */
-	TRANS_TX_OPEN_CNX_ERR_LOW_PHY_POWER, /* 0xc */
-	TRANS_TX_OPEN_CNX_ERR_PATHWAY_BLOCKED, /* 0xd */
-	TRANS_TX_OPEN_CNX_ERR_OPEN_TIMEOUT, /* 0xe */
-	TRANS_TX_OPEN_CNX_ERR_NO_DESTINATION, /* 0xf */
-	TRANS_TX_OPEN_RETRY_ERR_THRESHOLD_REACHED, /* 0x10 */
-	TRANS_TX_ERR_FRAME_TXED, /* 0x11 */
-	TRANS_TX_ERR_WITH_BREAK_TIMEOUT, /* 0x12 */
-	TRANS_TX_ERR_WITH_BREAK_REQUEST, /* 0x13 */
-	TRANS_TX_ERR_WITH_BREAK_RECEVIED, /* 0x14 */
-	TRANS_TX_ERR_WITH_CLOSE_TIMEOUT, /* 0x15 */
-	TRANS_TX_ERR_WITH_CLOSE_NORMAL, /* 0x16 for ssp*/
-	TRANS_TX_ERR_WITH_CLOSE_PHYDISALE, /* 0x17 */
-	TRANS_TX_ERR_WITH_CLOSE_DWS_TIMEOUT, /* 0x18 */
-	TRANS_TX_ERR_WITH_CLOSE_COMINIT, /* 0x19 */
-	TRANS_TX_ERR_WITH_NAK_RECEVIED, /* 0x1a for ssp*/
-	TRANS_TX_ERR_WITH_ACK_NAK_TIMEOUT, /* 0x1b for ssp*/
-	/*IO_TX_ERR_WITH_R_ERR_RECEVIED, [> 0x1b for sata/stp<] */
-	TRANS_TX_ERR_WITH_CREDIT_TIMEOUT, /* 0x1c for ssp */
-	/*IO_RX_ERR_WITH_SATA_DEVICE_LOST 0x1c for sata/stp */
-	TRANS_TX_ERR_WITH_IPTT_CONFLICT, /* 0x1d for ssp/smp */
-	TRANS_TX_ERR_WITH_OPEN_BY_DES_OR_OTHERS, /* 0x1e */
-	/*IO_TX_ERR_WITH_SYNC_RXD, [> 0x1e <] for sata/stp */
-	TRANS_TX_ERR_WITH_WAIT_RECV_TIMEOUT, /* 0x1f for sata/stp */
+	 
+	TRANS_TX_OPEN_FAIL_WITH_IT_NEXUS_LOSS = TRANS_TX_FAIL_BASE,  
+	TRANS_TX_ERR_PHY_NOT_ENABLE,  
+	TRANS_TX_OPEN_CNX_ERR_WRONG_DESTINATION,  
+	TRANS_TX_OPEN_CNX_ERR_ZONE_VIOLATION,  
+	TRANS_TX_OPEN_CNX_ERR_BY_OTHER,  
+	RESERVED0,  
+	TRANS_TX_OPEN_CNX_ERR_AIP_TIMEOUT,  
+	TRANS_TX_OPEN_CNX_ERR_STP_RESOURCES_BUSY,  
+	TRANS_TX_OPEN_CNX_ERR_PROTOCOL_NOT_SUPPORTED,  
+	TRANS_TX_OPEN_CNX_ERR_CONNECTION_RATE_NOT_SUPPORTED,  
+	TRANS_TX_OPEN_CNX_ERR_BAD_DESTINATION,  
+	TRANS_TX_OPEN_CNX_ERR_BREAK_RCVD,  
+	TRANS_TX_OPEN_CNX_ERR_LOW_PHY_POWER,  
+	TRANS_TX_OPEN_CNX_ERR_PATHWAY_BLOCKED,  
+	TRANS_TX_OPEN_CNX_ERR_OPEN_TIMEOUT,  
+	TRANS_TX_OPEN_CNX_ERR_NO_DESTINATION,  
+	TRANS_TX_OPEN_RETRY_ERR_THRESHOLD_REACHED,  
+	TRANS_TX_ERR_FRAME_TXED,  
+	TRANS_TX_ERR_WITH_BREAK_TIMEOUT,  
+	TRANS_TX_ERR_WITH_BREAK_REQUEST,  
+	TRANS_TX_ERR_WITH_BREAK_RECEVIED,  
+	TRANS_TX_ERR_WITH_CLOSE_TIMEOUT,  
+	TRANS_TX_ERR_WITH_CLOSE_NORMAL,  
+	TRANS_TX_ERR_WITH_CLOSE_PHYDISALE,  
+	TRANS_TX_ERR_WITH_CLOSE_DWS_TIMEOUT,  
+	TRANS_TX_ERR_WITH_CLOSE_COMINIT,  
+	TRANS_TX_ERR_WITH_NAK_RECEVIED,  
+	TRANS_TX_ERR_WITH_ACK_NAK_TIMEOUT,  
+	 
+	TRANS_TX_ERR_WITH_CREDIT_TIMEOUT,  
+	 
+	TRANS_TX_ERR_WITH_IPTT_CONFLICT,  
+	TRANS_TX_ERR_WITH_OPEN_BY_DES_OR_OTHERS,  
+	 
+	TRANS_TX_ERR_WITH_WAIT_RECV_TIMEOUT,  
 
-	/* trans rx */
-	TRANS_RX_ERR_WITH_RXFRAME_CRC_ERR = TRANS_RX_FAIL_BASE, /* 0x20 */
-	TRANS_RX_ERR_WITH_RXFIS_8B10B_DISP_ERR, /* 0x21 for sata/stp */
-	TRANS_RX_ERR_WITH_RXFRAME_HAVE_ERRPRM, /* 0x22 for ssp/smp */
-	/*IO_ERR_WITH_RXFIS_8B10B_CODE_ERR, [> 0x22 <] for sata/stp */
-	TRANS_RX_ERR_WITH_RXFIS_DECODE_ERROR, /* 0x23 for sata/stp */
-	TRANS_RX_ERR_WITH_RXFIS_CRC_ERR, /* 0x24 for sata/stp */
-	TRANS_RX_ERR_WITH_RXFRAME_LENGTH_OVERRUN, /* 0x25 for smp */
-	/*IO_ERR_WITH_RXFIS_TX SYNCP, [> 0x25 <] for sata/stp */
-	TRANS_RX_ERR_WITH_RXFIS_RX_SYNCP, /* 0x26 for sata/stp*/
-	TRANS_RX_ERR_WITH_LINK_BUF_OVERRUN, /* 0x27 */
-	TRANS_RX_ERR_WITH_BREAK_TIMEOUT, /* 0x28 */
-	TRANS_RX_ERR_WITH_BREAK_REQUEST, /* 0x29 */
-	TRANS_RX_ERR_WITH_BREAK_RECEVIED, /* 0x2a */
-	RESERVED1, /* 0x2b */
-	TRANS_RX_ERR_WITH_CLOSE_NORMAL, /* 0x2c */
-	TRANS_RX_ERR_WITH_CLOSE_PHY_DISABLE, /* 0x2d */
-	TRANS_RX_ERR_WITH_CLOSE_DWS_TIMEOUT, /* 0x2e */
-	TRANS_RX_ERR_WITH_CLOSE_COMINIT, /* 0x2f */
-	TRANS_RX_ERR_WITH_DATA_LEN0, /* 0x30 for ssp/smp */
-	TRANS_RX_ERR_WITH_BAD_HASH, /* 0x31 for ssp */
-	/*IO_RX_ERR_WITH_FIS_TOO_SHORT, [> 0x31 <] for sata/stp */
-	TRANS_RX_XRDY_WLEN_ZERO_ERR, /* 0x32 for ssp*/
-	/*IO_RX_ERR_WITH_FIS_TOO_LONG, [> 0x32 <] for sata/stp */
-	TRANS_RX_SSP_FRM_LEN_ERR, /* 0x33 for ssp */
-	/*IO_RX_ERR_WITH_SATA_DEVICE_LOST, [> 0x33 <] for sata */
-	RESERVED2, /* 0x34 */
-	RESERVED3, /* 0x35 */
-	RESERVED4, /* 0x36 */
-	RESERVED5, /* 0x37 */
-	TRANS_RX_ERR_WITH_BAD_FRM_TYPE, /* 0x38 */
-	TRANS_RX_SMP_FRM_LEN_ERR, /* 0x39 */
-	TRANS_RX_SMP_RESP_TIMEOUT_ERR, /* 0x3a */
-	RESERVED6, /* 0x3b */
-	RESERVED7, /* 0x3c */
-	RESERVED8, /* 0x3d */
-	RESERVED9, /* 0x3e */
-	TRANS_RX_R_ERR, /* 0x3f */
+	 
+	TRANS_RX_ERR_WITH_RXFRAME_CRC_ERR = TRANS_RX_FAIL_BASE,  
+	TRANS_RX_ERR_WITH_RXFIS_8B10B_DISP_ERR,  
+	TRANS_RX_ERR_WITH_RXFRAME_HAVE_ERRPRM,  
+	 
+	TRANS_RX_ERR_WITH_RXFIS_DECODE_ERROR,  
+	TRANS_RX_ERR_WITH_RXFIS_CRC_ERR,  
+	TRANS_RX_ERR_WITH_RXFRAME_LENGTH_OVERRUN,  
+	 
+	TRANS_RX_ERR_WITH_RXFIS_RX_SYNCP,  
+	TRANS_RX_ERR_WITH_LINK_BUF_OVERRUN,  
+	TRANS_RX_ERR_WITH_BREAK_TIMEOUT,  
+	TRANS_RX_ERR_WITH_BREAK_REQUEST,  
+	TRANS_RX_ERR_WITH_BREAK_RECEVIED,  
+	RESERVED1,  
+	TRANS_RX_ERR_WITH_CLOSE_NORMAL,  
+	TRANS_RX_ERR_WITH_CLOSE_PHY_DISABLE,  
+	TRANS_RX_ERR_WITH_CLOSE_DWS_TIMEOUT,  
+	TRANS_RX_ERR_WITH_CLOSE_COMINIT,  
+	TRANS_RX_ERR_WITH_DATA_LEN0,  
+	TRANS_RX_ERR_WITH_BAD_HASH,  
+	 
+	TRANS_RX_XRDY_WLEN_ZERO_ERR,  
+	 
+	TRANS_RX_SSP_FRM_LEN_ERR,  
+	 
+	RESERVED2,  
+	RESERVED3,  
+	RESERVED4,  
+	RESERVED5,  
+	TRANS_RX_ERR_WITH_BAD_FRM_TYPE,  
+	TRANS_RX_SMP_FRM_LEN_ERR,  
+	TRANS_RX_SMP_RESP_TIMEOUT_ERR,  
+	RESERVED6,  
+	RESERVED7,  
+	RESERVED8,  
+	RESERVED9,  
+	TRANS_RX_R_ERR,  
 
-	/* dma tx */
-	DMA_TX_DIF_CRC_ERR = DMA_TX_ERR_BASE, /* 0x40 */
-	DMA_TX_DIF_APP_ERR, /* 0x41 */
-	DMA_TX_DIF_RPP_ERR, /* 0x42 */
-	DMA_TX_DATA_SGL_OVERFLOW, /* 0x43 */
-	DMA_TX_DIF_SGL_OVERFLOW, /* 0x44 */
-	DMA_TX_UNEXP_XFER_ERR, /* 0x45 */
-	DMA_TX_UNEXP_RETRANS_ERR, /* 0x46 */
-	DMA_TX_XFER_LEN_OVERFLOW, /* 0x47 */
-	DMA_TX_XFER_OFFSET_ERR, /* 0x48 */
-	DMA_TX_RAM_ECC_ERR, /* 0x49 */
-	DMA_TX_DIF_LEN_ALIGN_ERR, /* 0x4a */
+	 
+	DMA_TX_DIF_CRC_ERR = DMA_TX_ERR_BASE,  
+	DMA_TX_DIF_APP_ERR,  
+	DMA_TX_DIF_RPP_ERR,  
+	DMA_TX_DATA_SGL_OVERFLOW,  
+	DMA_TX_DIF_SGL_OVERFLOW,  
+	DMA_TX_UNEXP_XFER_ERR,  
+	DMA_TX_UNEXP_RETRANS_ERR,  
+	DMA_TX_XFER_LEN_OVERFLOW,  
+	DMA_TX_XFER_OFFSET_ERR,  
+	DMA_TX_RAM_ECC_ERR,  
+	DMA_TX_DIF_LEN_ALIGN_ERR,  
 	DMA_TX_MAX_ERR_CODE,
 
-	/* sipc rx */
-	SIPC_RX_FIS_STATUS_ERR_BIT_VLD = SIPC_RX_ERR_BASE, /* 0x50 */
-	SIPC_RX_PIO_WRSETUP_STATUS_DRQ_ERR, /* 0x51 */
-	SIPC_RX_FIS_STATUS_BSY_BIT_ERR, /* 0x52 */
-	SIPC_RX_WRSETUP_LEN_ODD_ERR, /* 0x53 */
-	SIPC_RX_WRSETUP_LEN_ZERO_ERR, /* 0x54 */
-	SIPC_RX_WRDATA_LEN_NOT_MATCH_ERR, /* 0x55 */
-	SIPC_RX_NCQ_WRSETUP_OFFSET_ERR, /* 0x56 */
-	SIPC_RX_NCQ_WRSETUP_AUTO_ACTIVE_ERR, /* 0x57 */
-	SIPC_RX_SATA_UNEXP_FIS_ERR, /* 0x58 */
-	SIPC_RX_WRSETUP_ESTATUS_ERR, /* 0x59 */
-	SIPC_RX_DATA_UNDERFLOW_ERR, /* 0x5a */
+	 
+	SIPC_RX_FIS_STATUS_ERR_BIT_VLD = SIPC_RX_ERR_BASE,  
+	SIPC_RX_PIO_WRSETUP_STATUS_DRQ_ERR,  
+	SIPC_RX_FIS_STATUS_BSY_BIT_ERR,  
+	SIPC_RX_WRSETUP_LEN_ODD_ERR,  
+	SIPC_RX_WRSETUP_LEN_ZERO_ERR,  
+	SIPC_RX_WRDATA_LEN_NOT_MATCH_ERR,  
+	SIPC_RX_NCQ_WRSETUP_OFFSET_ERR,  
+	SIPC_RX_NCQ_WRSETUP_AUTO_ACTIVE_ERR,  
+	SIPC_RX_SATA_UNEXP_FIS_ERR,  
+	SIPC_RX_WRSETUP_ESTATUS_ERR,  
+	SIPC_RX_DATA_UNDERFLOW_ERR,  
 	SIPC_RX_MAX_ERR_CODE,
 
-	/* dma rx */
-	DMA_RX_DIF_CRC_ERR = DMA_RX_ERR_BASE, /* 0x60 */
-	DMA_RX_DIF_APP_ERR, /* 0x61 */
-	DMA_RX_DIF_RPP_ERR, /* 0x62 */
-	DMA_RX_DATA_SGL_OVERFLOW, /* 0x63 */
-	DMA_RX_DIF_SGL_OVERFLOW, /* 0x64 */
-	DMA_RX_DATA_LEN_OVERFLOW, /* 0x65 */
-	DMA_RX_DATA_LEN_UNDERFLOW, /* 0x66 */
-	DMA_RX_DATA_OFFSET_ERR, /* 0x67 */
-	RESERVED10, /* 0x68 */
-	DMA_RX_SATA_FRAME_TYPE_ERR, /* 0x69 */
-	DMA_RX_RESP_BUF_OVERFLOW, /* 0x6a */
-	DMA_RX_UNEXP_RETRANS_RESP_ERR, /* 0x6b */
-	DMA_RX_UNEXP_NORM_RESP_ERR, /* 0x6c */
-	DMA_RX_UNEXP_RDFRAME_ERR, /* 0x6d */
-	DMA_RX_PIO_DATA_LEN_ERR, /* 0x6e */
-	DMA_RX_RDSETUP_STATUS_ERR, /* 0x6f */
-	DMA_RX_RDSETUP_STATUS_DRQ_ERR, /* 0x70 */
-	DMA_RX_RDSETUP_STATUS_BSY_ERR, /* 0x71 */
-	DMA_RX_RDSETUP_LEN_ODD_ERR, /* 0x72 */
-	DMA_RX_RDSETUP_LEN_ZERO_ERR, /* 0x73 */
-	DMA_RX_RDSETUP_LEN_OVER_ERR, /* 0x74 */
-	DMA_RX_RDSETUP_OFFSET_ERR, /* 0x75 */
-	DMA_RX_RDSETUP_ACTIVE_ERR, /* 0x76 */
-	DMA_RX_RDSETUP_ESTATUS_ERR, /* 0x77 */
-	DMA_RX_RAM_ECC_ERR, /* 0x78 */
-	DMA_RX_UNKNOWN_FRM_ERR, /* 0x79 */
+	 
+	DMA_RX_DIF_CRC_ERR = DMA_RX_ERR_BASE,  
+	DMA_RX_DIF_APP_ERR,  
+	DMA_RX_DIF_RPP_ERR,  
+	DMA_RX_DATA_SGL_OVERFLOW,  
+	DMA_RX_DIF_SGL_OVERFLOW,  
+	DMA_RX_DATA_LEN_OVERFLOW,  
+	DMA_RX_DATA_LEN_UNDERFLOW,  
+	DMA_RX_DATA_OFFSET_ERR,  
+	RESERVED10,  
+	DMA_RX_SATA_FRAME_TYPE_ERR,  
+	DMA_RX_RESP_BUF_OVERFLOW,  
+	DMA_RX_UNEXP_RETRANS_RESP_ERR,  
+	DMA_RX_UNEXP_NORM_RESP_ERR,  
+	DMA_RX_UNEXP_RDFRAME_ERR,  
+	DMA_RX_PIO_DATA_LEN_ERR,  
+	DMA_RX_RDSETUP_STATUS_ERR,  
+	DMA_RX_RDSETUP_STATUS_DRQ_ERR,  
+	DMA_RX_RDSETUP_STATUS_BSY_ERR,  
+	DMA_RX_RDSETUP_LEN_ODD_ERR,  
+	DMA_RX_RDSETUP_LEN_ZERO_ERR,  
+	DMA_RX_RDSETUP_LEN_OVER_ERR,  
+	DMA_RX_RDSETUP_OFFSET_ERR,  
+	DMA_RX_RDSETUP_ACTIVE_ERR,  
+	DMA_RX_RDSETUP_ESTATUS_ERR,  
+	DMA_RX_RAM_ECC_ERR,  
+	DMA_RX_UNKNOWN_FRM_ERR,  
 	DMA_RX_MAX_ERR_CODE,
 };
 
@@ -763,7 +760,7 @@ static u32 hisi_sas_phy_read32(struct hisi_hba *hisi_hba,
 	return readl(regs);
 }
 
-/* This function needs to be protected from pre-emption. */
+ 
 static int
 slot_index_alloc_quirk_v2_hw(struct hisi_hba *hisi_hba,
 			     struct domain_device *device)
@@ -775,23 +772,14 @@ slot_index_alloc_quirk_v2_hw(struct hisi_hba *hisi_hba,
 	int start, end;
 
 	if (!sata_dev) {
-		/*
-		 * STP link SoC bug workaround: index starts from 1.
-		 * additionally, we can only allocate odd IPTT(1~4095)
-		 * for SAS/SMP device.
-		 */
+		 
 		start = 1;
 		end = hisi_hba->slot_index_count;
 	} else {
 		if (sata_idx >= HISI_MAX_SATA_SUPPORT_V2_HW)
 			return -EINVAL;
 
-		/*
-		 * For SATA device: allocate even IPTT in this interval
-		 * [64*(sata_idx+1), 64*(sata_idx+2)], then each SATA device
-		 * own 32 IPTTs. IPTT 0 shall not be used duing to STP link
-		 * SoC bug workaround. So we ignore the first 32 even IPTTs.
-		 */
+		 
 		start = 64 * (sata_idx + 1);
 		end = 64 * (sata_idx + 2);
 	}
@@ -804,9 +792,7 @@ slot_index_alloc_quirk_v2_hw(struct hisi_hba *hisi_hba,
 			spin_unlock(&hisi_hba->lock);
 			return -SAS_QUEUE_FULL;
 		}
-		/*
-		 * SAS IPTT bit0 should be 1, and SATA IPTT bit0 should be 0.
-		 */
+		 
 		if (sata_dev ^ (start & 1))
 			break;
 		start++;
@@ -850,9 +836,7 @@ hisi_sas_device *alloc_dev_quirk_v2_hw(struct domain_device *device)
 			goto out;
 
 	for (i = 0; i < HISI_SAS_MAX_DEVICES; i++) {
-		/*
-		 * SATA device id bit0 should be 0
-		 */
+		 
 		if (sata_dev && (i & 1))
 			continue;
 		if (hisi_hba->devices[i].dev_type == SAS_PHY_UNUSED) {
@@ -932,7 +916,7 @@ static void setup_itct_v2_hw(struct hisi_hba *hisi_hba,
 
 	memset(itct, 0, sizeof(*itct));
 
-	/* qw0 */
+	 
 	qw0 = 0;
 	switch (sas_dev->dev_type) {
 	case SAS_END_DEVICE:
@@ -960,11 +944,11 @@ static void setup_itct_v2_hw(struct hisi_hba *hisi_hba,
 		(port->id << ITCT_HDR_PORT_ID_OFF));
 	itct->qw0 = cpu_to_le64(qw0);
 
-	/* qw1 */
+	 
 	memcpy(&sas_addr, device->sas_addr, SAS_ADDR_SIZE);
 	itct->sas_addr = cpu_to_le64(__swab64(sas_addr));
 
-	/* qw2 */
+	 
 	if (!dev_is_sata(device))
 		itct->qw2 = cpu_to_le64((5000ULL << ITCT_HDR_INLT_OFF) |
 					(0x1ULL << ITCT_HDR_BITLT_OFF) |
@@ -984,12 +968,12 @@ static int clear_itct_v2_hw(struct hisi_hba *hisi_hba,
 
 	sas_dev->completion = &completion;
 
-	/* clear the itct interrupt state */
+	 
 	if (ENT_INT_SRC3_ITC_INT_MSK & reg_val)
 		hisi_sas_write32(hisi_hba, ENT_INT_SRC3,
 				 ENT_INT_SRC3_ITC_INT_MSK);
 
-	/* need to set register twice to clear ITCT for v2 hw */
+	 
 	for (i = 0; i < 2; i++) {
 		reg_val = ITCT_CLR_EN_MSK | (dev_id & ITCT_DEV_MSK);
 		hisi_sas_write32(hisi_hba, ITCT_CLR, reg_val);
@@ -1008,7 +992,7 @@ static void free_device_v2_hw(struct hisi_sas_device *sas_dev)
 {
 	struct hisi_hba *hisi_hba = sas_dev->hisi_hba;
 
-	/* SoC bug workaround */
+	 
 	if (dev_is_sata(sas_dev->sas_device))
 		clear_bit(sas_dev->sata_idx, hisi_hba->sata_dev_bitmap);
 }
@@ -1020,7 +1004,7 @@ static int reset_hw_v2_hw(struct hisi_hba *hisi_hba)
 	unsigned long end_time;
 	struct device *dev = hisi_hba->dev;
 
-	/* The mask needs to be set depending on the number of phys */
+	 
 	if (hisi_hba->n_phy == 9)
 		reset_val = 0x1fffff;
 	else
@@ -1028,7 +1012,7 @@ static int reset_hw_v2_hw(struct hisi_hba *hisi_hba)
 
 	hisi_sas_write32(hisi_hba, DLVRY_QUEUE_ENABLE, 0);
 
-	/* Disable all of the PHYs */
+	 
 	for (i = 0; i < hisi_hba->n_phy; i++) {
 		u32 phy_cfg = hisi_sas_phy_read32(hisi_hba, i, PHY_CFG);
 
@@ -1037,7 +1021,7 @@ static int reset_hw_v2_hw(struct hisi_hba *hisi_hba)
 	}
 	udelay(50);
 
-	/* Ensure DMA tx & rx idle */
+	 
 	for (i = 0; i < hisi_hba->n_phy; i++) {
 		u32 dma_tx_status, dma_rx_status;
 
@@ -1059,7 +1043,7 @@ static int reset_hw_v2_hw(struct hisi_hba *hisi_hba)
 		}
 	}
 
-	/* Ensure axi bus idle */
+	 
 	end_time = jiffies + msecs_to_jiffies(1000);
 	while (1) {
 		u32 axi_status =
@@ -1082,7 +1066,7 @@ static int reset_hw_v2_hw(struct hisi_hba *hisi_hba)
 			return -EIO;
 		}
 	} else if (hisi_hba->ctrl) {
-		/* reset and disable clock*/
+		 
 		regmap_write(hisi_hba->ctrl, hisi_hba->ctrl_reset_reg,
 				reset_val);
 		regmap_write(hisi_hba->ctrl, hisi_hba->ctrl_clock_ena_reg + 4,
@@ -1094,7 +1078,7 @@ static int reset_hw_v2_hw(struct hisi_hba *hisi_hba)
 			return -EIO;
 		}
 
-		/* De-reset and enable clock*/
+		 
 		regmap_write(hisi_hba->ctrl, hisi_hba->ctrl_reset_reg + 4,
 				reset_val);
 		regmap_write(hisi_hba->ctrl, hisi_hba->ctrl_clock_ena_reg,
@@ -1114,7 +1098,7 @@ static int reset_hw_v2_hw(struct hisi_hba *hisi_hba)
 	return 0;
 }
 
-/* This function needs to be called after resetting SAS controller. */
+ 
 static void phys_reject_stp_links_v2_hw(struct hisi_hba *hisi_hba)
 {
 	u32 cfg;
@@ -1166,14 +1150,14 @@ static void init_reg_v2_hw(struct hisi_hba *hisi_hba)
 	u32 signal[3];
 	int i;
 
-	/* Global registers init */
+	 
 
-	/* Deal with am-max-transmissions quirk */
+	 
 	if (device_property_present(dev, "hip06-sas-v2-quirk-amt")) {
 		hisi_sas_write32(hisi_hba, AM_CFG_MAX_TRANS, 0x2020);
 		hisi_sas_write32(hisi_hba, AM_CFG_SINGLE_PORT_MAX_TRANS,
 				 0x2020);
-	} /* Else, use defaults -> do nothing */
+	}  
 
 	hisi_sas_write32(hisi_hba, DLVRY_QUEUE_ENABLE,
 			 (u32)((1ULL << hisi_hba->queue_count) - 1));
@@ -1207,7 +1191,7 @@ static void init_reg_v2_hw(struct hisi_hba *hisi_hba)
 	hisi_sas_write32(hisi_hba, AXI_AHB_CLK_CFG, 1);
 	hisi_sas_write32(hisi_hba, HYPER_STREAM_ID_EN_CFG, 1);
 
-	/* Get sas_phy_ctrl value to deal with TX FFE issue. */
+	 
 	if (!device_property_read_u32_array(dev, "hisilicon,signal-attenuation",
 					    signal, ARRAY_SIZE(signal))) {
 		for (i = 0; i < ARRAY_SIZE(sig_atten_lu); i++) {
@@ -1264,11 +1248,11 @@ static void init_reg_v2_hw(struct hisi_hba *hisi_hba)
 		hisi_sas_phy_write32(hisi_hba, i, PHYCTRL_OOB_RESTART_MSK, 0x0);
 		if (hisi_hba->refclk_frequency_mhz == 66)
 			hisi_sas_phy_write32(hisi_hba, i, PHY_CTRL, 0x199B694);
-		/* else, do nothing -> leave it how you found it */
+		 
 	}
 
 	for (i = 0; i < hisi_hba->queue_count; i++) {
-		/* Delivery queue */
+		 
 		hisi_sas_write32(hisi_hba,
 				 DLVRY_Q_0_BASE_ADDR_HI + (i * 0x14),
 				 upper_32_bits(hisi_hba->cmd_hdr_dma[i]));
@@ -1279,7 +1263,7 @@ static void init_reg_v2_hw(struct hisi_hba *hisi_hba)
 		hisi_sas_write32(hisi_hba, DLVRY_Q_0_DEPTH + (i * 0x14),
 				 HISI_SAS_QUEUE_SLOTS);
 
-		/* Completion queue */
+		 
 		hisi_sas_write32(hisi_hba, COMPL_Q_0_BASE_ADDR_HI + (i * 0x14),
 				 upper_32_bits(hisi_hba->complete_hdr_dma[i]));
 
@@ -1290,35 +1274,35 @@ static void init_reg_v2_hw(struct hisi_hba *hisi_hba)
 				 HISI_SAS_QUEUE_SLOTS);
 	}
 
-	/* itct */
+	 
 	hisi_sas_write32(hisi_hba, ITCT_BASE_ADDR_LO,
 			 lower_32_bits(hisi_hba->itct_dma));
 
 	hisi_sas_write32(hisi_hba, ITCT_BASE_ADDR_HI,
 			 upper_32_bits(hisi_hba->itct_dma));
 
-	/* iost */
+	 
 	hisi_sas_write32(hisi_hba, IOST_BASE_ADDR_LO,
 			 lower_32_bits(hisi_hba->iost_dma));
 
 	hisi_sas_write32(hisi_hba, IOST_BASE_ADDR_HI,
 			 upper_32_bits(hisi_hba->iost_dma));
 
-	/* breakpoint */
+	 
 	hisi_sas_write32(hisi_hba, IO_BROKEN_MSG_ADDR_LO,
 			 lower_32_bits(hisi_hba->breakpoint_dma));
 
 	hisi_sas_write32(hisi_hba, IO_BROKEN_MSG_ADDR_HI,
 			 upper_32_bits(hisi_hba->breakpoint_dma));
 
-	/* SATA broken msg */
+	 
 	hisi_sas_write32(hisi_hba, IO_SATA_BROKEN_MSG_ADDR_LO,
 			 lower_32_bits(hisi_hba->sata_breakpoint_dma));
 
 	hisi_sas_write32(hisi_hba, IO_SATA_BROKEN_MSG_ADDR_HI,
 			 upper_32_bits(hisi_hba->sata_breakpoint_dma));
 
-	/* SATA initial fis */
+	 
 	hisi_sas_write32(hisi_hba, SATA_INITI_D2H_STORE_ADDR_LO,
 			 lower_32_bits(hisi_hba->initial_fis_dma));
 
@@ -1492,7 +1476,7 @@ static void disable_phy_v2_hw(struct hisi_hba *hisi_hba, int phy_no)
 	u32 cfg, axi_val, dfx0_val, txid_auto;
 	struct device *dev = hisi_hba->dev;
 
-	/* Close axi bus. */
+	 
 	axi_val = hisi_sas_read32(hisi_hba, AXI_MASTER_CFG_BASE +
 				AM_CTRL_GLOBAL);
 	axi_val |= 0x1;
@@ -1503,7 +1487,7 @@ static void disable_phy_v2_hw(struct hisi_hba *hisi_hba, int phy_no)
 		if (allowed_disable_phy_v2_hw(hisi_hba, phy_no))
 			goto do_disable;
 
-		/* Reset host controller. */
+		 
 		queue_work(hisi_hba->wq, &hisi_hba->rst_work);
 		return;
 	}
@@ -1528,7 +1512,7 @@ do_disable:
 	cfg &= ~PHY_CFG_ENA_MSK;
 	hisi_sas_phy_write32(hisi_hba, phy_no, PHY_CFG, cfg);
 
-	/* Open axi bus. */
+	 
 	axi_val &= ~0x1;
 	hisi_sas_write32(hisi_hba, AXI_MASTER_CFG_BASE +
 		AM_CTRL_GLOBAL, axi_val);
@@ -1563,10 +1547,10 @@ static void phy_get_events_v2_hw(struct hisi_hba *hisi_hba, int phy_no)
 	struct sas_phy *sphy = sas_phy->phy;
 	u32 err4_reg_val, err6_reg_val;
 
-	/* loss dword syn, phy reset problem */
+	 
 	err4_reg_val = hisi_sas_phy_read32(hisi_hba, phy_no, SAS_ERR_CNT4_REG);
 
-	/* disparity err, invalid dword */
+	 
 	err6_reg_val = hisi_sas_phy_read32(hisi_hba, phy_no, SAS_ERR_CNT6_REG);
 
 	sphy->loss_of_dword_sync_count += (err4_reg_val >> 16) & 0xFFFF;
@@ -1642,7 +1626,7 @@ static int get_wideport_bitmap_v2_hw(struct hisi_hba *hisi_hba, int port_id)
 	return bitmap;
 }
 
-/* DQ lock must be taken here */
+ 
 static void start_delivery_v2_hw(struct hisi_sas_dq *dq)
 {
 	struct hisi_hba *hisi_hba = dq->hisi_hba;
@@ -1660,9 +1644,7 @@ static void start_delivery_v2_hw(struct hisi_sas_dq *dq)
 	if (!s2)
 		return;
 
-	/*
-	 * Ensure that memories for slots built on other CPUs is observed.
-	 */
+	 
 	smp_rmb();
 	wp = (s2->dlvry_queue_slot + 1) % HISI_SAS_QUEUE_SLOTS;
 
@@ -1705,23 +1687,23 @@ static void prep_smp_v2_hw(struct hisi_hba *hisi_hba,
 	dma_addr_t req_dma_addr;
 	unsigned int req_len;
 
-	/* req */
+	 
 	sg_req = &task->smp_task.smp_req;
 	req_dma_addr = sg_dma_address(sg_req);
 	req_len = sg_dma_len(&task->smp_task.smp_req);
 
-	/* create header */
-	/* dw0 */
+	 
+	 
 	hdr->dw0 = cpu_to_le32((port->id << CMD_HDR_PORT_OFF) |
-			       (1 << CMD_HDR_PRIORITY_OFF) | /* high pri */
-			       (2 << CMD_HDR_CMD_OFF)); /* smp */
+			       (1 << CMD_HDR_PRIORITY_OFF) |  
+			       (2 << CMD_HDR_CMD_OFF));  
 
-	/* map itct entry */
+	 
 	hdr->dw1 = cpu_to_le32((sas_dev->device_id << CMD_HDR_DEV_ID_OFF) |
 			       (1 << CMD_HDR_FRAME_TYPE_OFF) |
 			       (DIR_NO_DATA << CMD_HDR_DIR_OFF));
 
-	/* dw2 */
+	 
 	hdr->dw2 = cpu_to_le32((((req_len - 4) / 4) << CMD_HDR_CFL_OFF) |
 			       (HISI_SAS_MAX_SMP_RESP_SZ / 4 <<
 			       CMD_HDR_MRFL_OFF));
@@ -1751,7 +1733,7 @@ static void prep_ssp_v2_hw(struct hisi_hba *hisi_hba,
 			       (2 << CMD_HDR_TLR_CTRL_OFF) |
 			       (port->id << CMD_HDR_PORT_OFF) |
 			       (priority << CMD_HDR_PRIORITY_OFF) |
-			       (1 << CMD_HDR_CMD_OFF)); /* ssp */
+			       (1 << CMD_HDR_CMD_OFF));  
 
 	dw1 = 1 << CMD_HDR_VDTL_OFF;
 	if (tmf) {
@@ -1773,7 +1755,7 @@ static void prep_ssp_v2_hw(struct hisi_hba *hisi_hba,
 		}
 	}
 
-	/* map itct entry */
+	 
 	dw1 |= sas_dev->device_id << CMD_HDR_DEV_ID_OFF;
 	hdr->dw1 = cpu_to_le32(dw1);
 
@@ -2011,7 +1993,7 @@ static int parse_dma_rx_err_code_v2_hw(u32 err_msk)
 	return -1;
 }
 
-/* by default, task resp is complete */
+ 
 static void slot_err_v2_hw(struct hisi_hba *hisi_hba,
 			   struct sas_task *task,
 			   struct hisi_sas_slot *slot,
@@ -2033,13 +2015,13 @@ static void slot_err_v2_hw(struct hisi_hba *hisi_hba,
 	int error = -1;
 
 	if (err_phase == 1) {
-		/* error in TX phase, the priority of error is: DW2 > DW0 */
+		 
 		error = parse_dma_tx_err_code_v2_hw(dma_tx_err_type);
 		if (error == -1)
 			error = parse_trans_tx_err_code_v2_hw(
 					trans_tx_fail_type);
 	} else if (err_phase == 2) {
-		/* error in RX phase, the priority is: DW1 > DW3 > DW2 */
+		 
 		error = parse_trans_rx_err_code_v2_hw(trans_rx_fail_type);
 		if (error == -1) {
 			error = parse_dma_rx_err_code_v2_hw(
@@ -2094,7 +2076,7 @@ static void slot_err_v2_hw(struct hisi_hba *hisi_hba,
 		}
 		case TRANS_TX_OPEN_CNX_ERR_LOW_PHY_POWER:
 		{
-			/* not sure */
+			 
 			ts->stat = SAS_DEV_NO_RESPONSE;
 			break;
 		}
@@ -2161,7 +2143,7 @@ static void slot_err_v2_hw(struct hisi_hba *hisi_hba,
 		case DMA_RX_SATA_FRAME_TYPE_ERR:
 		case DMA_RX_UNKNOWN_FRM_ERR:
 		{
-			/* This will request a retry */
+			 
 			ts->stat = SAS_QUEUE_FULL;
 			slot->abort = 1;
 			break;
@@ -2361,16 +2343,16 @@ static void slot_complete_v2_hw(struct hisi_hba *hisi_hba,
 		goto out;
 	}
 
-	/* Use SAS+TMF status codes */
+	 
 	dw0 = le32_to_cpu(complete_hdr->dw0);
 	switch ((dw0 & CMPLT_HDR_ABORT_STAT_MSK) >>
 		CMPLT_HDR_ABORT_STAT_OFF) {
 	case STAT_IO_ABORTED:
-		/* this io has been aborted by abort command */
+		 
 		ts->stat = SAS_ABORTED_TASK;
 		goto out;
 	case STAT_IO_COMPLETE:
-		/* internal abort command complete */
+		 
 		ts->stat = TMF_RESP_FUNC_SUCC;
 		del_timer_sync(&slot->internal_abort_timer);
 		goto out;
@@ -2379,9 +2361,7 @@ static void slot_complete_v2_hw(struct hisi_hba *hisi_hba,
 		del_timer_sync(&slot->internal_abort_timer);
 		goto out;
 	case STAT_IO_NOT_VALID:
-		/* abort single io, controller don't find
-		 * the io need to abort
-		 */
+		 
 		ts->stat = TMF_RESP_FUNC_FAILED;
 		del_timer_sync(&slot->internal_abort_timer);
 		goto out;
@@ -2394,7 +2374,7 @@ static void slot_complete_v2_hw(struct hisi_hba *hisi_hba,
 				>> CMPLT_HDR_ERR_PHASE_OFF;
 		u32 *error_info = hisi_sas_status_buf_addr_mem(slot);
 
-		/* Analyse error happens on which phase TX or RX */
+		 
 		if (ERR_ON_TX_PHASE(err_phase))
 			slot_err_v2_hw(hisi_hba, task, slot, 1);
 		else if (ERR_ON_RX_PHASE(err_phase))
@@ -2505,8 +2485,8 @@ static void prep_ata_v2_hw(struct hisi_hba *hisi_hba,
 	int has_data = 0, hdr_tag = 0;
 	u32 dw0, dw1 = 0, dw2 = 0;
 
-	/* create header */
-	/* dw0 */
+	 
+	 
 	dw0 = port->id << CMD_HDR_PORT_OFF;
 	if (parent_dev && dev_is_expander(parent_dev->dev_type))
 		dw0 |= 3 << CMD_HDR_CMD_OFF;
@@ -2520,7 +2500,7 @@ static void prep_ata_v2_hw(struct hisi_hba *hisi_hba,
 
 	hdr->dw0 = cpu_to_le32(dw0);
 
-	/* dw1 */
+	 
 	switch (task->data_dir) {
 	case DMA_TO_DEVICE:
 		has_data = 1;
@@ -2544,7 +2524,7 @@ static void prep_ata_v2_hw(struct hisi_hba *hisi_hba,
 	dw1 |= sas_dev->device_id << CMD_HDR_DEV_ID_OFF;
 	hdr->dw1 = cpu_to_le32(dw1);
 
-	/* dw2 */
+	 
 	if (task->ata_task.use_ncq) {
 		struct ata_queued_cmd *qc = task->uldd_task;
 
@@ -2557,7 +2537,7 @@ static void prep_ata_v2_hw(struct hisi_hba *hisi_hba,
 			2 << CMD_HDR_SG_MOD_OFF;
 	hdr->dw2 = cpu_to_le32(dw2);
 
-	/* dw3 */
+	 
 	hdr->transfer_tags = cpu_to_le32(slot->idx);
 
 	if (has_data)
@@ -2571,8 +2551,8 @@ static void prep_ata_v2_hw(struct hisi_hba *hisi_hba,
 	buf_cmd = hisi_sas_cmd_hdr_addr_mem(slot);
 
 	if (likely(!task->ata_task.device_control_reg_update))
-		task->ata_task.fis.flags |= 0x80; /* C=1: update ATA cmd reg */
-	/* fill in command FIS */
+		task->ata_task.fis.flags |= 0x80;  
+	 
 	memcpy(buf_cmd, &task->ata_task.fis, sizeof(struct host_to_dev_fis));
 }
 
@@ -2588,7 +2568,7 @@ static void hisi_sas_internal_abort_quirk_timeout(struct timer_list *t)
 
 	asd_sas_port = &port->sas_port;
 
-	/* Kick the hardware - send break command */
+	 
 	list_for_each_entry(sas_phy, &asd_sas_port->phy_list, port_phy_el) {
 		struct hisi_sas_phy *phy = sas_phy->lldd_phy;
 		struct hisi_hba *hisi_hba = phy->hisi_hba;
@@ -2621,22 +2601,22 @@ static void prep_abort_v2_hw(struct hisi_hba *hisi_hba,
 	struct timer_list *timer = &slot->internal_abort_timer;
 	struct hisi_sas_device *sas_dev = dev->lldd_dev;
 
-	/* setup the quirk timer */
+	 
 	timer_setup(timer, hisi_sas_internal_abort_quirk_timeout, 0);
-	/* Set the timeout to 10ms less than internal abort timeout */
+	 
 	mod_timer(timer, jiffies + msecs_to_jiffies(100));
 
-	/* dw0 */
-	hdr->dw0 = cpu_to_le32((5 << CMD_HDR_CMD_OFF) | /*abort*/
+	 
+	hdr->dw0 = cpu_to_le32((5 << CMD_HDR_CMD_OFF) |  
 			       (port->id << CMD_HDR_PORT_OFF) |
 			       (dev_is_sata(dev) <<
 				CMD_HDR_ABORT_DEVICE_TYPE_OFF) |
 			       (abort->type << CMD_HDR_ABORT_FLAG_OFF));
 
-	/* dw1 */
+	 
 	hdr->dw1 = cpu_to_le32(sas_dev->device_id << CMD_HDR_DEV_ID_OFF);
 
-	/* dw7 */
+	 
 	hdr->dw7 = cpu_to_le32(abort->tag << CMD_HDR_ABORT_IPTT_OFF);
 	hdr->transfer_tags = cpu_to_le32(slot->idx);
 }
@@ -2776,14 +2756,14 @@ static irqreturn_t int_phy_updown_v2_hw(int irq_no, void *p)
 					CHL_INT0_SL_PHY_ENABLE_MSK)) {
 
 			case CHL_INT0_SL_PHY_ENABLE_MSK:
-				/* phy up */
+				 
 				if (phy_up_v2_hw(phy_no, hisi_hba) ==
 				    IRQ_HANDLED)
 					res = IRQ_HANDLED;
 				break;
 
 			case CHL_INT0_NOT_RDY_MSK:
-				/* phy down */
+				 
 				if (phy_down_v2_hw(phy_no, hisi_hba) ==
 				    IRQ_HANDLED)
 					res = IRQ_HANDLED;
@@ -2794,12 +2774,12 @@ static irqreturn_t int_phy_updown_v2_hw(int irq_no, void *p)
 				reg_value = hisi_sas_read32(hisi_hba,
 						PHY_STATE);
 				if (reg_value & BIT(phy_no)) {
-					/* phy up */
+					 
 					if (phy_up_v2_hw(phy_no, hisi_hba) ==
 					    IRQ_HANDLED)
 						res = IRQ_HANDLED;
 				} else {
-					/* phy down */
+					 
 					if (phy_down_v2_hw(phy_no, hisi_hba) ==
 					    IRQ_HANDLED)
 						res = IRQ_HANDLED;
@@ -3132,7 +3112,7 @@ static irqreturn_t  cq_thread_v2_hw(int irq_no, void *p)
 
 		complete_hdr = &complete_queue[rd_point];
 
-		/* Check for NCQ completion */
+		 
 		if (complete_hdr->act) {
 			u32 act_tmp = le32_to_cpu(complete_hdr->act);
 			int ncq_tag_count = ffs(act_tmp);
@@ -3142,7 +3122,7 @@ static irqreturn_t  cq_thread_v2_hw(int irq_no, void *p)
 				 CMPLT_HDR_DEV_ID_OFF;
 			itct = &hisi_hba->itct[dev_id];
 
-			/* The NCQ tags are held in the itct header */
+			 
 			while (ncq_tag_count) {
 				__le64 *_ncq_tag = &itct->qw4_15[0], __ncq_tag;
 				u64 ncq_tag;
@@ -3175,7 +3155,7 @@ static irqreturn_t  cq_thread_v2_hw(int irq_no, void *p)
 			rd_point = 0;
 	}
 
-	/* update rd_point */
+	 
 	cq->rd_point = rd_point;
 	hisi_sas_write32(hisi_hba, COMPL_Q_0_RD_PTR + (0x14 * queue), rd_point);
 
@@ -3227,7 +3207,7 @@ static irqreturn_t sata_int_v2_hw(int irq_no, void *p)
 		goto end;
 	}
 
-	/* check ERR bit of Status Register */
+	 
 	if (fis->status & ATA_ERR) {
 		dev_warn(dev, "sata int: phy%d FIS status: 0x%x\n", phy_no,
 			 fis->status);
@@ -3263,7 +3243,7 @@ static irqreturn_t sata_int_v2_hw(int irq_no, void *p)
 	phy->minimum_linkrate = (hard_phy_linkrate >> 4) & 0xf;
 
 	sas_phy->oob_mode = SATA_OOB_MODE;
-	/* Make up some unique SAS address */
+	 
 	attached_sas_addr[0] = 0x50;
 	attached_sas_addr[6] = hisi_hba->shost->host_no;
 	attached_sas_addr[7] = phy_no;
@@ -3320,10 +3300,7 @@ static int hisi_sas_v2_interrupt_preinit(struct hisi_hba *hisi_hba)
 	return 0;
 }
 
-/*
- * There is a limitation in the hip06 chipset that we need
- * to map in all mbigen interrupts, even if they are not used.
- */
+ 
 static int interrupt_init_v2_hw(struct hisi_hba *hisi_hba)
 {
 	struct platform_device *pdev = hisi_hba->platform_dev;
@@ -3332,7 +3309,7 @@ static int interrupt_init_v2_hw(struct hisi_hba *hisi_hba)
 	int i, phy_no, fatal_no, queue_no;
 
 	for (i = 0; i < HISI_SAS_PHY_INT_NR; i++) {
-		irq = hisi_hba->irq_map[i + 1]; /* Phy up/down is irq1 */
+		irq = hisi_hba->irq_map[i + 1];  
 		rc = devm_request_irq(dev, irq, phy_interrupts[i], 0,
 				      DRV_NAME " phy", hisi_hba);
 		if (rc) {
@@ -3448,7 +3425,7 @@ static int soft_reset_v2_hw(struct hisi_hba *hisi_hba)
 
 	hisi_sas_write32(hisi_hba, AXI_MASTER_CFG_BASE + AM_CTRL_GLOBAL, 0x1);
 
-	/* wait until bus idle */
+	 
 	cnt = 0;
 	while (1) {
 		u32 status = hisi_sas_read32_relaxed(hisi_hba,
@@ -3490,12 +3467,7 @@ static int write_gpio_v2_hw(struct hisi_hba *hisi_hba, u8 reg_type,
 		count = min(count, hisi_hba->n_phy);
 
 		for (phy_no = 0; phy_no < count; phy_no++) {
-			/*
-			 * GPIO_TX[n] register has the highest numbered drive
-			 * of the four in the first byte and the lowest
-			 * numbered drive in the fourth byte.
-			 * See SFF-8485 Rev. 0.7 Table 24.
-			 */
+			 
 			void __iomem  *reg_addr = hisi_hba->sgpio_regs +
 					reg_index * 4 + phy_no;
 			int data_idx = phy_no + 3 - (phy_no % 4) * 2;

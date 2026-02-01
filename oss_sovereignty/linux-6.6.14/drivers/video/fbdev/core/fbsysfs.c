@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * fbsysfs.c - framebuffer device class and attributes
- *
- * Copyright (c) 2004 James Simmons <jsimmons@infradead.org>
- */
+
+ 
 
 #include <linux/console.h>
 #include <linux/fb.h>
@@ -234,7 +230,7 @@ static ssize_t store_blank(struct device *device,
 	arg = simple_strtoul(buf, &last, 0);
 	console_lock();
 	err = fb_blank(fb_info, arg);
-	/* might again call into fb_blank */
+	 
 	fbcon_fb_blanked(fb_info, arg);
 	console_unlock();
 	if (err < 0)
@@ -245,7 +241,7 @@ static ssize_t store_blank(struct device *device,
 static ssize_t show_blank(struct device *device,
 			  struct device_attribute *attr, char *buf)
 {
-//	struct fb_info *fb_info = dev_get_drvdata(device);
+
 	return 0;
 }
 
@@ -253,14 +249,14 @@ static ssize_t store_console(struct device *device,
 			     struct device_attribute *attr,
 			     const char *buf, size_t count)
 {
-//	struct fb_info *fb_info = dev_get_drvdata(device);
+
 	return 0;
 }
 
 static ssize_t show_console(struct device *device,
 			    struct device_attribute *attr, char *buf)
 {
-//	struct fb_info *fb_info = dev_get_drvdata(device);
+
 	return 0;
 }
 
@@ -268,14 +264,14 @@ static ssize_t store_cursor(struct device *device,
 			    struct device_attribute *attr,
 			    const char *buf, size_t count)
 {
-//	struct fb_info *fb_info = dev_get_drvdata(device);
+
 	return 0;
 }
 
 static ssize_t show_cursor(struct device *device,
 			   struct device_attribute *attr, char *buf)
 {
-//	struct fb_info *fb_info = dev_get_drvdata(device);
+
 	return 0;
 }
 
@@ -357,9 +353,7 @@ static ssize_t store_bl_curve(struct device *device,
 	u8 tmp_curve[FB_BACKLIGHT_LEVELS];
 	unsigned int i;
 
-	/* Some drivers don't use framebuffer_alloc(), but those also
-	 * don't have backlights.
-	 */
+	 
 	if (!fb_info || !fb_info->bl_dev)
 		return -ENODEV;
 
@@ -379,9 +373,7 @@ static ssize_t store_bl_curve(struct device *device,
 			&tmp_curve[i * 8 + 7]) != 8)
 			return -EINVAL;
 
-	/* If there has been an error in the input data, we won't
-	 * reach this loop.
-	 */
+	 
 	mutex_lock(&fb_info->bl_curve_mutex);
 	for (i = 0; i < FB_BACKLIGHT_LEVELS; ++i)
 		fb_info->bl_curve[i] = tmp_curve[i];
@@ -397,9 +389,7 @@ static ssize_t show_bl_curve(struct device *device,
 	ssize_t len = 0;
 	unsigned int i;
 
-	/* Some drivers don't use framebuffer_alloc(), but those also
-	 * don't have backlights.
-	 */
+	 
 	if (!fb_info || !fb_info->bl_dev)
 		return -ENODEV;
 
@@ -413,9 +403,7 @@ static ssize_t show_bl_curve(struct device *device,
 }
 #endif
 
-/* When cmap is added back in it should be a binary attribute
- * not a text one. Consideration should also be given to converting
- * fbdev to use configfs instead of sysfs */
+ 
 static struct device_attribute device_attrs[] = {
 	__ATTR(bits_per_pixel, S_IRUGO|S_IWUSR, show_bpp, store_bpp),
 	__ATTR(blank, S_IRUGO|S_IWUSR, show_blank, store_blank),
@@ -478,7 +466,7 @@ int fb_device_create(struct fb_info *fb_info)
 
 	fb_info->dev = device_create(fb_class, fb_info->device, devt, NULL, "fb%d", node);
 	if (IS_ERR(fb_info->dev)) {
-		/* Not fatal */
+		 
 		ret = PTR_ERR(fb_info->dev);
 		pr_warn("Unable to create device for framebuffer %d; error %d\n", node, ret);
 		fb_info->dev = NULL;

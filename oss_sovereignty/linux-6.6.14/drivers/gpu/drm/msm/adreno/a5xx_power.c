@@ -1,15 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/pm_opp.h>
 #include "a5xx_gpu.h"
 
-/*
- * The GPMU data block is a block of shared registers that can be used to
- * communicate back and forth. These "registers" are by convention with the GPMU
- * firwmare and not bound to any specific hardware design
- */
+ 
 
 #define AGC_INIT_BASE REG_A5XX_GPMU_DATA_RAM_BASE
 #define AGC_INIT_MSG_MAGIC (AGC_INIT_BASE + 5)
@@ -23,7 +18,7 @@
 #define AGC_POWER_CONFIG_PRODUCTION_ID 1
 #define AGC_INIT_MSG_VALUE 0xBABEFACE
 
-/* AGC_LM_CONFIG (A540+) */
+ 
 #define AGC_LM_CONFIG (136/4)
 #define AGC_LM_CONFIG_GPU_VERSION_SHIFT 17
 #define AGC_LM_CONFIG_ENABLE_GPMU_ADAPTIVE 1
@@ -96,10 +91,7 @@ static struct {
 	{ 0xB9BA, 0x00000008 },
 };
 
-/*
- * Get the actual voltage value for the operating point at the specified
- * frequency
- */
+ 
 static inline uint32_t _get_mvolts(struct msm_gpu *gpu, uint32_t freq)
 {
 	struct drm_device *dev = gpu->dev;
@@ -118,49 +110,46 @@ static inline uint32_t _get_mvolts(struct msm_gpu *gpu, uint32_t freq)
 	return ret;
 }
 
-/* Setup thermal limit management */
+ 
 static void a530_lm_setup(struct msm_gpu *gpu)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	struct a5xx_gpu *a5xx_gpu = to_a5xx_gpu(adreno_gpu);
 	unsigned int i;
 
-	/* Write the block of sequence registers */
+	 
 	for (i = 0; i < ARRAY_SIZE(a5xx_sequence_regs); i++)
 		gpu_write(gpu, a5xx_sequence_regs[i].reg,
 			a5xx_sequence_regs[i].value);
 
-	/* Hard code the A530 GPU thermal sensor ID for the GPMU */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_TEMP_SENSOR_ID, 0x60007);
 	gpu_write(gpu, REG_A5XX_GPMU_DELTA_TEMP_THRESHOLD, 0x01);
 	gpu_write(gpu, REG_A5XX_GPMU_TEMP_SENSOR_CONFIG, 0x01);
 
-	/* Until we get clock scaling 0 is always the active power level */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_GPMU_VOLTAGE, 0x80000000 | 0);
 
 	gpu_write(gpu, REG_A5XX_GPMU_BASE_LEAKAGE, a5xx_gpu->lm_leakage);
 
-	/* The threshold is fixed at 6000 for A530 */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_GPMU_PWR_THRESHOLD, 0x80000000 | 6000);
 
 	gpu_write(gpu, REG_A5XX_GPMU_BEC_ENABLE, 0x10001FFF);
 	gpu_write(gpu, REG_A5XX_GDPM_CONFIG1, 0x00201FF1);
 
-	/* Write the voltage table */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_BEC_ENABLE, 0x10001FFF);
 	gpu_write(gpu, REG_A5XX_GDPM_CONFIG1, 0x201FF1);
 
 	gpu_write(gpu, AGC_MSG_STATE, 1);
 	gpu_write(gpu, AGC_MSG_COMMAND, AGC_POWER_CONFIG_PRODUCTION_ID);
 
-	/* Write the max power - hard coded to 5448 for A530 */
+	 
 	gpu_write(gpu, AGC_MSG_PAYLOAD(0), 5448);
 	gpu_write(gpu, AGC_MSG_PAYLOAD(1), 1);
 
-	/*
-	 * For now just write the one voltage level - we will do more when we
-	 * can do scaling
-	 */
+	 
 	gpu_write(gpu, AGC_MSG_PAYLOAD(2), _get_mvolts(gpu, gpu->fast_rate));
 	gpu_write(gpu, AGC_MSG_PAYLOAD(3), gpu->fast_rate / 1000000);
 
@@ -177,17 +166,17 @@ static void a540_lm_setup(struct msm_gpu *gpu)
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	u32 config;
 
-	/* The battery current limiter isn't enabled for A540 */
+	 
 	config = AGC_LM_CONFIG_BCL_DISABLED;
 	config |= adreno_patchid(adreno_gpu) << AGC_LM_CONFIG_GPU_VERSION_SHIFT;
 
-	/* For now disable GPMU side throttling */
+	 
 	config |= AGC_LM_CONFIG_THROTTLE_DISABLE;
 
-	/* Until we get clock scaling 0 is always the active power level */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_GPMU_VOLTAGE, 0x80000000 | 0);
 
-	/* Fixed at 6000 for now */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_GPMU_PWR_THRESHOLD, 0x80000000 | 6000);
 
 	gpu_write(gpu, AGC_MSG_STATE, 0x80000001);
@@ -207,7 +196,7 @@ static void a540_lm_setup(struct msm_gpu *gpu)
 	gpu_write(gpu, AGC_INIT_MSG_MAGIC, AGC_INIT_MSG_VALUE);
 }
 
-/* Enable SP/TP cpower collapse */
+ 
 static void a5xx_pc_init(struct msm_gpu *gpu)
 {
 	gpu_write(gpu, REG_A5XX_GPMU_PWR_COL_INTER_FRAME_CTRL, 0x7F);
@@ -216,7 +205,7 @@ static void a5xx_pc_init(struct msm_gpu *gpu)
 	gpu_write(gpu, REG_A5XX_GPMU_PWR_COL_STAGGER_DELAY, 0x600040);
 }
 
-/* Enable the GPMU microcontroller */
+ 
 static int a5xx_gpmu_init(struct msm_gpu *gpu)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
@@ -226,17 +215,17 @@ static int a5xx_gpmu_init(struct msm_gpu *gpu)
 	if (!a5xx_gpu->gpmu_dwords)
 		return 0;
 
-	/* Turn off protected mode for this operation */
+	 
 	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
 	OUT_RING(ring, 0);
 
-	/* Kick off the IB to load the GPMU microcode */
+	 
 	OUT_PKT7(ring, CP_INDIRECT_BUFFER_PFE, 3);
 	OUT_RING(ring, lower_32_bits(a5xx_gpu->gpmu_iova));
 	OUT_RING(ring, upper_32_bits(a5xx_gpu->gpmu_iova));
 	OUT_RING(ring, a5xx_gpu->gpmu_dwords);
 
-	/* Turn back on protected mode */
+	 
 	OUT_PKT7(ring, CP_SET_PROTECTED_MODE, 1);
 	OUT_RING(ring, 1);
 
@@ -251,13 +240,10 @@ static int a5xx_gpmu_init(struct msm_gpu *gpu)
 	if (adreno_is_a530(adreno_gpu))
 		gpu_write(gpu, REG_A5XX_GPMU_WFI_CONFIG, 0x4014);
 
-	/* Kick off the GPMU */
+	 
 	gpu_write(gpu, REG_A5XX_GPMU_CM3_SYSRESET, 0x0);
 
-	/*
-	 * Wait for the GPMU to respond. It isn't fatal if it doesn't, we just
-	 * won't have advanced power collapse.
-	 */
+	 
 	if (spin_usecs(gpu, 25, REG_A5XX_GPMU_GENERAL_0, 0xFFFFFFFF,
 		0xBABEFACE))
 		DRM_ERROR("%s: GPMU firmware initialization timed out\n",
@@ -274,12 +260,12 @@ static int a5xx_gpmu_init(struct msm_gpu *gpu)
 	return 0;
 }
 
-/* Enable limits management */
+ 
 static void a5xx_lm_enable(struct msm_gpu *gpu)
 {
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 
-	/* This init sequence only applies to A530 */
+	 
 	if (!adreno_is_a530(adreno_gpu))
 		return;
 
@@ -297,25 +283,25 @@ int a5xx_power_init(struct msm_gpu *gpu)
 	struct adreno_gpu *adreno_gpu = to_adreno_gpu(gpu);
 	int ret;
 
-	/* Not all A5xx chips have a GPMU */
+	 
 	if (!(adreno_is_a530(adreno_gpu) || adreno_is_a540(adreno_gpu)))
 		return 0;
 
-	/* Set up the limits management */
+	 
 	if (adreno_is_a530(adreno_gpu))
 		a530_lm_setup(gpu);
 	else if (adreno_is_a540(adreno_gpu))
 		a540_lm_setup(gpu);
 
-	/* Set up SP/TP power collpase */
+	 
 	a5xx_pc_init(gpu);
 
-	/* Start the GPMU */
+	 
 	ret = a5xx_gpmu_init(gpu);
 	if (ret)
 		return ret;
 
-	/* Start the limits management */
+	 
 	a5xx_lm_enable(gpu);
 
 	return 0;
@@ -338,28 +324,21 @@ void a5xx_gpmu_ucode_init(struct msm_gpu *gpu)
 
 	data = (unsigned int *) adreno_gpu->fw[ADRENO_FW_GPMU]->data;
 
-	/*
-	 * The first dword is the size of the remaining data in dwords. Use it
-	 * as a checksum of sorts and make sure it matches the actual size of
-	 * the firmware that we read
-	 */
+	 
 
 	if (adreno_gpu->fw[ADRENO_FW_GPMU]->size < 8 ||
 		(data[0] < 2) || (data[0] >=
 			(adreno_gpu->fw[ADRENO_FW_GPMU]->size >> 2)))
 		return;
 
-	/* The second dword is an ID - look for 2 (GPMU_FIRMWARE_ID) */
+	 
 	if (data[1] != 2)
 		return;
 
 	cmds = data + data[2] + 3;
 	cmds_size = data[0] - data[2] - 2;
 
-	/*
-	 * A single type4 opcode can only have so many values attached so
-	 * add enough opcodes to load the all the commands
-	 */
+	 
 	bosize = (cmds_size + (cmds_size / TYPE4_MAX_PAYLOAD) + 1) << 2;
 
 	ptr = msm_gem_kernel_new(drm, bosize,

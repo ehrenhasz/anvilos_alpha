@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
@@ -56,11 +56,7 @@ int handle_uretprobe(struct pt_regs *ctx)
 	return 0;
 }
 
-/* bpf_prog_array, used by kernel internally to keep track of attached BPF
- * programs to a given BPF hook (e.g., for tracepoints) doesn't allow the same
- * BPF program to be attached multiple times. So have three identical copies
- * ready to attach to the same tracepoint.
- */
+ 
 SEC("tp/syscalls/sys_enter_nanosleep")
 int handle_tp1(struct pt_regs *ctx)
 {

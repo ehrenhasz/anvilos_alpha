@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/****************************************************************
 
- Siano Mobile Silicon, Inc.
- MDTV receiver kernel modules.
- Copyright (C) 2006-2009, Uri Shkolnik
-
-
- ****************************************************************/
+ 
 
 #include <linux/export.h>
 #include <asm/byteorder.h>
@@ -37,7 +30,7 @@ void smsendian_handle_tx_message(void *buffer)
 
 		break;
 	}
-#endif /* __BIG_ENDIAN */
+#endif  
 }
 EXPORT_SYMBOL_GPL(smsendian_handle_tx_message);
 
@@ -75,7 +68,7 @@ void smsendian_handle_rx_message(void *buffer)
 		break;
 	}
 	}
-#endif /* __BIG_ENDIAN */
+#endif  
 }
 EXPORT_SYMBOL_GPL(smsendian_handle_rx_message);
 
@@ -87,6 +80,6 @@ void smsendian_handle_message_header(void *msg)
 	phdr->msg_type = le16_to_cpu((__force __le16)phdr->msg_type);
 	phdr->msg_length = le16_to_cpu((__force __le16)phdr->msg_length);
 	phdr->msg_flags = le16_to_cpu((__force __le16)phdr->msg_flags);
-#endif /* __BIG_ENDIAN */
+#endif  
 }
 EXPORT_SYMBOL_GPL(smsendian_handle_message_header);

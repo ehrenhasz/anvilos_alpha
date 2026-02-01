@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+ 
+ 
 
 #ifndef _NVMET_H
 #define _NVMET_H
@@ -31,26 +29,19 @@
 #define NVMET_SN_MAX_SIZE		20
 #define NVMET_FR_MAX_SIZE		8
 
-/*
- * Supported optional AENs:
- */
+ 
 #define NVMET_AEN_CFG_OPTIONAL \
 	(NVME_AEN_CFG_NS_ATTR | NVME_AEN_CFG_ANA_CHANGE)
 #define NVMET_DISC_AEN_CFG_OPTIONAL \
 	(NVME_AEN_CFG_DISC_CHANGE)
 
-/*
- * Plus mandatory SMART AENs (we'll never send them, but allow enabling them):
- */
+ 
 #define NVMET_AEN_CFG_ALL \
 	(NVME_SMART_CRIT_SPARE | NVME_SMART_CRIT_TEMPERATURE | \
 	 NVME_SMART_CRIT_RELIABILITY | NVME_SMART_CRIT_MEDIA | \
 	 NVME_SMART_CRIT_VOLATILE_MEMORY | NVMET_AEN_CFG_OPTIONAL)
 
-/* Helper Macros when NVMe error is NVME_SC_CONNECT_INVALID_PARAM
- * The 16 bit shift is to set IATTR bit to 1, which means offending
- * offset starts in the data section of connect()
- */
+ 
 #define IPO_IATTR_CONNECT_DATA(x)	\
 	(cpu_to_le32((1 << 16) | (offsetof(struct nvmf_connect_data, x))))
 #define IPO_IATTR_CONNECT_SQE(x)	\
@@ -137,15 +128,7 @@ static inline struct nvmet_ana_group *to_ana_group(struct config_item *item)
 			group);
 }
 
-/**
- * struct nvmet_port -	Common structure to keep port
- *				information for the target.
- * @entry:		Entry into referrals or transport list.
- * @disc_addr:		Address information is stored in a format defined
- *				for a discovery log page entry.
- * @group:		ConfigFS group for this element's folder.
- * @priv:		Private data for the transport.
- */
+ 
 struct nvmet_port {
 	struct list_head		entry;
 	struct nvmf_disc_rsp_page_entry	disc_addr;
@@ -274,11 +257,11 @@ struct nvmet_subsys {
 	unsigned int		admin_timeout;
 	unsigned int		io_timeout;
 	unsigned int		clear_ids;
-#endif /* CONFIG_NVME_TARGET_PASSTHRU */
+#endif  
 
 #ifdef CONFIG_BLK_DEV_ZONED
 	u8			zasl;
-#endif /* CONFIG_BLK_DEV_ZONED */
+#endif  
 };
 
 static inline struct nvmet_subsys *to_subsys(struct config_item *item)
@@ -376,11 +359,11 @@ struct nvmet_req {
 			struct bio		inline_bio;
 			struct work_struct	zmgmt_work;
 		} z;
-#endif /* CONFIG_BLK_DEV_ZONED */
+#endif  
 	};
 	int			sg_cnt;
 	int			metadata_sg_cnt;
-	/* data length as parsed from the SGL descriptor: */
+	 
 	size_t			transfer_len;
 	size_t			metadata_len;
 
@@ -406,9 +389,7 @@ static inline void nvmet_set_result(struct nvmet_req *req, u32 result)
 	req->cqe->result.u32 = cpu_to_le32(result);
 }
 
-/*
- * NVMe command writes actually are DMA reads for us on the target side.
- */
+ 
 static inline enum dma_data_direction
 nvmet_data_dir(struct nvmet_req *req)
 {
@@ -535,18 +516,10 @@ void nvmet_add_async_event(struct nvmet_ctrl *ctrl, u8 event_type,
 #define NVMET_NR_QUEUES		128
 #define NVMET_MAX_CMD		NVMET_QUEUE_SIZE
 
-/*
- * Nice round number that makes a list of nsids fit into a page.
- * Should become tunable at some point in the future.
- */
+ 
 #define NVMET_MAX_NAMESPACES	1024
 
-/*
- * 0 is not a valid ANA group ID, so we start numbering at 1.
- *
- * ANA Group 1 exists without manual intervention, has namespaces assigned to it
- * by default, and is available in an optimized state through all ports.
- */
+ 
 #define NVMET_MAX_ANAGRPS	128
 #define NVMET_DEFAULT_ANA_GRPID	1
 
@@ -627,7 +600,7 @@ static inline bool nvmet_is_passthru_subsys(struct nvmet_subsys *subsys)
 {
 	return subsys->passthru_ctrl;
 }
-#else /* CONFIG_NVME_TARGET_PASSTHRU */
+#else  
 static inline void nvmet_passthru_subsys_free(struct nvmet_subsys *subsys)
 {
 }
@@ -646,7 +619,7 @@ static inline bool nvmet_is_passthru_subsys(struct nvmet_subsys *subsys)
 {
 	return NULL;
 }
-#endif /* CONFIG_NVME_TARGET_PASSTHRU */
+#endif  
 
 static inline bool nvmet_is_passthru_req(struct nvmet_req *req)
 {
@@ -658,7 +631,7 @@ void nvmet_passthrough_override_cap(struct nvmet_ctrl *ctrl);
 u16 errno_to_nvme_status(struct nvmet_req *req, int errno);
 u16 nvmet_report_invalid_opcode(struct nvmet_req *req);
 
-/* Convert a 32-bit number to a 16-bit 0's based number */
+ 
 static inline __le16 to0based(u32 a)
 {
 	return cpu_to_le16(max(1U, min(1U << 16, a)) - 1);
@@ -738,4 +711,4 @@ static inline bool nvmet_has_auth(struct nvmet_ctrl *ctrl)
 static inline const char *nvmet_dhchap_dhgroup_name(u8 dhgid) { return NULL; }
 #endif
 
-#endif /* _NVMET_H */
+#endif  

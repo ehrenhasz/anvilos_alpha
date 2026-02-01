@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * INET		An implementation of the TCP/IP protocol suite for the LINUX
- *		operating system.  INET  is implemented using the  BSD Socket
- *		interface as the means of communication with the user level.
- *
- *		Definitions for the Forwarding Information Base.
- *
- * Authors:	A.N.Kuznetsov, <kuznet@ms2.inr.ac.ru>
- */
+ 
+ 
 
 #ifndef _NET_IP_FIB_H
 #define _NET_IP_FIB_H
@@ -30,7 +22,7 @@ struct fib_config {
 	u8			fc_scope;
 	u8			fc_type;
 	u8			fc_gw_family;
-	/* 2 bytes unused */
+	 
 	u32			fc_table;
 	__be32			fc_dst;
 	union {
@@ -96,7 +88,7 @@ struct fib_nh_common {
 	int			nhc_weight;
 	atomic_t		nhc_upper_bound;
 
-	/* v4 specific, but allows fib6_nh with v4 routes */
+	 
 	struct rtable __rcu * __percpu *nhc_pcpu_rth_output;
 	struct rtable __rcu     *nhc_rth_input;
 	struct fnhe_hash_bucket	__rcu *nhc_exceptions;
@@ -125,9 +117,7 @@ struct fib_nh {
 #define fib_nh_upper_bound	nh_common.nhc_upper_bound
 };
 
-/*
- * This structure contains data shared by many of routes.
- */
+ 
 
 struct nexthop;
 
@@ -180,13 +170,13 @@ struct fib_result {
 };
 
 struct fib_result_nl {
-	__be32		fl_addr;   /* To be looked up*/
+	__be32		fl_addr;    
 	u32		fl_mark;
 	unsigned char	fl_tos;
 	unsigned char   fl_scope;
 	unsigned char   tb_id_in;
 
-	unsigned char   tb_id;      /* Results */
+	unsigned char   tb_id;       
 	unsigned char	prefixlen;
 	unsigned char	nh_sel;
 	unsigned char	type;
@@ -222,7 +212,7 @@ struct fib_rt_info {
 };
 
 struct fib_entry_notifier_info {
-	struct fib_notifier_info info; /* must be first */
+	struct fib_notifier_info info;  
 	u32 dst;
 	int dst_len;
 	struct fib_info *fi;
@@ -232,7 +222,7 @@ struct fib_entry_notifier_info {
 };
 
 struct fib_nh_notifier_info {
-	struct fib_notifier_info info; /* must be first */
+	struct fib_notifier_info info;  
 	struct fib_nh *fib_nh;
 };
 
@@ -260,7 +250,7 @@ struct fib_table {
 
 struct fib_dump_filter {
 	u32			table_id;
-	/* filter_set is an optimization that an entry is set */
+	 
 	bool			filter_set;
 	bool			dump_routes;
 	bool			dump_exceptions;
@@ -355,7 +345,7 @@ static inline bool fib4_rules_early_flow_dissect(struct net *net,
 {
 	return false;
 }
-#else /* CONFIG_IP_MULTIPLE_TABLES */
+#else  
 int __net_init fib4_rules_init(struct net *net);
 void __net_exit fib4_rules_exit(struct net *net);
 
@@ -430,9 +420,9 @@ static inline bool fib4_rules_early_flow_dissect(struct net *net,
 	return true;
 }
 
-#endif /* CONFIG_IP_MULTIPLE_TABLES */
+#endif  
 
-/* Exported by fib_frontend.c */
+ 
 extern const struct nla_policy rtm_ipv4_policy[];
 void ip_fib_init(void);
 int fib_gw_from_via(struct fib_config *cfg, struct nlattr *nla,
@@ -465,7 +455,7 @@ const struct net_device *dev)
 	return false;
 }
 
-/* Exported by fib_semantics.c */
+ 
 int ip_fib_check_default(__be32 gw, struct net_device *dev);
 int fib_sync_down_dev(struct net_device *dev, unsigned long event, bool force);
 int fib_sync_down_addr(struct net_device *dev, __be32 local);
@@ -473,11 +463,7 @@ int fib_sync_up(struct net_device *dev, unsigned char nh_flags);
 void fib_sync_mtu(struct net_device *dev, u32 orig_mtu);
 void fib_nhc_update_mtu(struct fib_nh_common *nhc, u32 new, u32 orig);
 
-/* Fields used for sysctl_fib_multipath_hash_fields.
- * Common to IPv4 and IPv6.
- *
- * Add new fields at the end. This is user API.
- */
+ 
 #define FIB_MULTIPATH_HASH_FIELD_SRC_IP			BIT(0)
 #define FIB_MULTIPATH_HASH_FIELD_DST_IP			BIT(1)
 #define FIB_MULTIPATH_HASH_FIELD_IP_PROTO		BIT(2)
@@ -536,7 +522,7 @@ int fib_nh_common_init(struct net *net, struct fib_nh_common *nhc,
 		       struct netlink_ext_ack *extack);
 void fib_nh_common_release(struct fib_nh_common *nhc);
 
-/* Exported by fib_trie.c */
+ 
 void fib_alias_hw_flags_set(struct net *net, const struct fib_rt_info *fri);
 void fib_trie_init(void);
 struct fib_table *fib_trie_table(u32 id, struct fib_table *alias);
@@ -605,4 +591,4 @@ int fib_nexthop_info(struct sk_buff *skb, const struct fib_nh_common *nh,
 		     u8 rt_family, unsigned char *flags, bool skip_oif);
 int fib_add_nexthop(struct sk_buff *skb, const struct fib_nh_common *nh,
 		    int nh_weight, u8 rt_family, u32 nh_tclassid);
-#endif  /* _NET_FIB_H */
+#endif   

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel IFC VF NIC driver for virtio dataplane offloading
- *
- * Copyright (C) 2020 Intel Corporation.
- *
- * Author: Zhu Lingshan <lingshan.zhu@intel.com>
- *
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -108,10 +101,7 @@ static void ifcvf_free_config_irq(struct ifcvf_hw *vf)
 	if (vf->config_irq == -EINVAL)
 		return;
 
-	/* If the irq is shared by all vqs and the config interrupt,
-	 * it is already freed in ifcvf_free_vq_irq, so here only
-	 * need to free config irq when msix_vector_status != MSIX_VECTOR_DEV_SHARED
-	 */
+	 
 	if (vf->msix_vector_status != MSIX_VECTOR_DEV_SHARED) {
 		devm_free_irq(&pdev->dev, vf->config_irq, vf);
 		vf->config_irq = -EINVAL;
@@ -128,17 +118,13 @@ static void ifcvf_free_irq(struct ifcvf_hw *vf)
 	vf->num_msix_vectors = 0;
 }
 
-/* ifcvf MSIX vectors allocator, this helper tries to allocate
- * vectors for all virtqueues and the config interrupt.
- * It returns the number of allocated vectors, negative
- * return value when fails.
- */
+ 
 static int ifcvf_alloc_vectors(struct ifcvf_hw *vf)
 {
 	struct pci_dev *pdev = vf->pdev;
 	int max_intr, ret;
 
-	/* all queues and config interrupt  */
+	 
 	max_intr = vf->nr_vring + 1;
 	ret = pci_alloc_irq_vectors(pdev, 1, max_intr, PCI_IRQ_MSIX | PCI_IRQ_AFFINITY);
 
@@ -283,10 +269,10 @@ static int ifcvf_request_config_irq(struct ifcvf_hw *vf)
 	if (vf->msix_vector_status == MSIX_VECTOR_PER_VQ_AND_CONFIG)
 		config_vector = vf->nr_vring;
 	else if (vf->msix_vector_status ==  MSIX_VECTOR_SHARED_VQ_AND_CONFIG)
-		/* vector 0 for vqs and 1 for config interrupt */
+		 
 		config_vector = 1;
 	else if (vf->msix_vector_status == MSIX_VECTOR_DEV_SHARED)
-		/* re-use the vqs vector */
+		 
 		return 0;
 	else
 		return -EINVAL;
@@ -612,10 +598,7 @@ static struct vdpa_notification_area ifcvf_get_vq_notification(struct vdpa_devic
 	return area;
 }
 
-/*
- * IFCVF currently doesn't have on-chip IOMMU, so not
- * implemented set_map()/dma_map()/dma_unmap()
- */
+ 
 static const struct vdpa_config_ops ifc_vdpa_ops = {
 	.get_device_features = ifcvf_vdpa_get_device_features,
 	.set_driver_features = ifcvf_vdpa_set_driver_features,
@@ -659,13 +642,7 @@ static u32 get_dev_type(struct pci_dev *pdev)
 {
 	u32 dev_type;
 
-	/* This drirver drives both modern virtio devices and transitional
-	 * devices in modern mode.
-	 * vDPA requires feature bit VIRTIO_F_ACCESS_PLATFORM,
-	 * so legacy devices and transitional devices in legacy
-	 * mode will not work for vDPA, this driver will not
-	 * drive devices with legacy interface.
-	 */
+	 
 
 	if (pdev->device < 0x1040)
 		dev_type =  pdev->subsystem_device;
@@ -848,19 +825,17 @@ static void ifcvf_remove(struct pci_dev *pdev)
 }
 
 static struct pci_device_id ifcvf_pci_ids[] = {
-	/* N3000 network device */
+	 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_REDHAT_QUMRANET,
 			 N3000_DEVICE_ID,
 			 PCI_VENDOR_ID_INTEL,
 			 N3000_SUBSYS_DEVICE_ID) },
-	/* C5000X-PL network device
-	 * F2000X-PL network device
-	 */
+	 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_REDHAT_QUMRANET,
 			 VIRTIO_TRANS_ID_NET,
 			 PCI_VENDOR_ID_INTEL,
 			 VIRTIO_ID_NET) },
-	/* C5000X-PL block device */
+	 
 	{ PCI_DEVICE_SUB(PCI_VENDOR_ID_REDHAT_QUMRANET,
 			 VIRTIO_TRANS_ID_BLOCK,
 			 PCI_VENDOR_ID_INTEL,

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018 The Linux Foundation. All rights reserved. */
+
+ 
 
 #include "a2xx_gpu.h"
 #include "msm_gem.h"
@@ -18,10 +18,10 @@ static void a2xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 	for (i = 0; i < submit->nr_cmds; i++) {
 		switch (submit->cmd[i].type) {
 		case MSM_SUBMIT_CMD_IB_TARGET_BUF:
-			/* ignore IB-targets */
+			 
 			break;
 		case MSM_SUBMIT_CMD_CTX_RESTORE_BUF:
-			/* ignore if there has not been a ctx switch: */
+			 
 			if (gpu->cur_ctx_seqno == submit->queue->ctx->seqno)
 				break;
 			fallthrough;
@@ -37,7 +37,7 @@ static void a2xx_submit(struct msm_gpu *gpu, struct msm_gem_submit *submit)
 	OUT_PKT0(ring, REG_AXXX_CP_SCRATCH_REG2, 1);
 	OUT_RING(ring, submit->seqno);
 
-	/* wait for idle before cache flush/interrupt */
+	 
 	OUT_PKT3(ring, CP_WAIT_FOR_IDLE, 1);
 	OUT_RING(ring, 0x00000000);
 
@@ -59,11 +59,11 @@ static bool a2xx_me_init(struct msm_gpu *gpu)
 
 	OUT_PKT3(ring, CP_ME_INIT, 18);
 
-	/* All fields present (bits 9:0) */
+	 
 	OUT_RING(ring, 0x000003ff);
-	/* Disable/Enable Real-Time Stream processing (present but ignored) */
+	 
 	OUT_RING(ring, 0x00000000);
-	/* Enable (2D <-> 3D) implicit synchronization (present but ignored) */
+	 
 	OUT_RING(ring, 0x00000000);
 
 	OUT_RING(ring, REG_A2XX_RB_SURFACE_INFO - 0x2000);
@@ -75,28 +75,26 @@ static bool a2xx_me_init(struct msm_gpu *gpu)
 	OUT_RING(ring, REG_A2XX_PA_SC_LINE_CNTL - 0x2000);
 	OUT_RING(ring, REG_A2XX_PA_SU_POLY_OFFSET_FRONT_SCALE - 0x2000);
 
-	/* Vertex and Pixel Shader Start Addresses in instructions
-	 * (3 DWORDS per instruction) */
+	 
 	OUT_RING(ring, 0x80000180);
-	/* Maximum Contexts */
+	 
 	OUT_RING(ring, 0x00000001);
-	/* Write Confirm Interval and The CP will wait the
-	 * wait_interval * 16 clocks between polling  */
+	 
 	OUT_RING(ring, 0x00000000);
-	/* NQ and External Memory Swap */
+	 
 	OUT_RING(ring, 0x00000000);
-	/* protected mode error checking (0x1f2 is REG_AXXX_CP_INT_CNTL) */
+	 
 	if (a2xx_gpu->protection_disabled)
 		OUT_RING(ring, 0x00000000);
 	else
 		OUT_RING(ring, 0x200001f2);
-	/* Disable header dumping and Header dump address */
+	 
 	OUT_RING(ring, 0x00000000);
-	/* Header dump size */
+	 
 	OUT_RING(ring, 0x00000000);
 
 	if (!a2xx_gpu->protection_disabled) {
-		/* enable protected mode */
+		 
 		OUT_PKT3(ring, CP_SET_PROTECTED_MODE, 1);
 		OUT_RING(ring, 1);
 	}
@@ -117,13 +115,13 @@ static int a2xx_hw_init(struct msm_gpu *gpu)
 
 	DBG("%s", gpu->name);
 
-	/* halt ME to avoid ucode upload issues on a20x */
+	 
 	gpu_write(gpu, REG_AXXX_CP_ME_CNTL, AXXX_CP_ME_CNTL_HALT);
 
 	gpu_write(gpu, REG_A2XX_RBBM_PM_OVERRIDE1, 0xfffffffe);
 	gpu_write(gpu, REG_A2XX_RBBM_PM_OVERRIDE2, 0xffffffff);
 
-	/* note: kgsl uses 0x00000001 after first reset on a22x */
+	 
 	gpu_write(gpu, REG_A2XX_RBBM_SOFT_RESET, 0xffffffff);
 	msleep(30);
 	gpu_write(gpu, REG_A2XX_RBBM_SOFT_RESET, 0x00000000);
@@ -131,10 +129,10 @@ static int a2xx_hw_init(struct msm_gpu *gpu)
 	if (adreno_is_a225(adreno_gpu))
 		gpu_write(gpu, REG_A2XX_SQ_FLOW_CONTROL, 0x18000000);
 
-	/* note: kgsl uses 0x0000ffff for a20x */
+	 
 	gpu_write(gpu, REG_A2XX_RBBM_CNTL, 0x00004442);
 
-	/* MPU: physical range */
+	 
 	gpu_write(gpu, REG_A2XX_MH_MMU_MPU_BASE, 0x00000000);
 	gpu_write(gpu, REG_A2XX_MH_MMU_MPU_END, 0xfffff000);
 
@@ -151,7 +149,7 @@ static int a2xx_hw_init(struct msm_gpu *gpu)
 		A2XX_MH_MMU_CONFIG_TC_R_CLNT_BEHAVIOR(BEH_TRAN_RNG) |
 		A2XX_MH_MMU_CONFIG_PA_W_CLNT_BEHAVIOR(BEH_TRAN_RNG));
 
-	/* same as parameters in adreno_gpu */
+	 
 	gpu_write(gpu, REG_A2XX_MH_MMU_VA_RANGE, SZ_16M |
 		A2XX_MH_MMU_VA_RANGE_NUM_64KB_REGIONS(0xfff));
 
@@ -182,10 +180,10 @@ static int a2xx_hw_init(struct msm_gpu *gpu)
 	gpu_write(gpu, REG_A2XX_SQ_VS_PROGRAM, 0x00000000);
 	gpu_write(gpu, REG_A2XX_SQ_PS_PROGRAM, 0x00000000);
 
-	gpu_write(gpu, REG_A2XX_RBBM_PM_OVERRIDE1, 0); /* 0x200 for msm8960? */
-	gpu_write(gpu, REG_A2XX_RBBM_PM_OVERRIDE2, 0); /* 0x80/0x1a0 for a22x? */
+	gpu_write(gpu, REG_A2XX_RBBM_PM_OVERRIDE1, 0);  
+	gpu_write(gpu, REG_A2XX_RBBM_PM_OVERRIDE2, 0);  
 
-	/* note: gsl doesn't set this */
+	 
 	gpu_write(gpu, REG_A2XX_RBBM_DEBUG, 0x00080000);
 
 	gpu_write(gpu, REG_A2XX_RBBM_INT_CNTL,
@@ -218,22 +216,14 @@ static int a2xx_hw_init(struct msm_gpu *gpu)
 
 	gpu_write(gpu, REG_AXXX_CP_RB_BASE, lower_32_bits(gpu->rb[0]->iova));
 
-	/* NOTE: PM4/micro-engine firmware registers look to be the same
-	 * for a2xx and a3xx.. we could possibly push that part down to
-	 * adreno_gpu base class.  Or push both PM4 and PFP but
-	 * parameterize the pfp ucode addr/data registers..
-	 */
+	 
 
-	/* Load PM4: */
+	 
 	ptr = (uint32_t *)(adreno_gpu->fw[ADRENO_FW_PM4]->data);
 	len = adreno_gpu->fw[ADRENO_FW_PM4]->size / 4;
 	DBG("loading PM4 ucode version: %x", ptr[1]);
 
-	/*
-	 * New firmware files seem to have GPU and firmware version in this
-	 * word (0x20xxxx for A200, 0x220xxx for A220, 0x225xxx for A225).
-	 * Older firmware files, which lack protection support, have 0 instead.
-	 */
+	 
 	if (ptr[1] == 0) {
 		dev_warn(gpu->dev->dev,
 			 "Legacy firmware detected, disabling protection support\n");
@@ -246,7 +236,7 @@ static int a2xx_hw_init(struct msm_gpu *gpu)
 	for (i = 1; i < len; i++)
 		gpu_write(gpu, REG_AXXX_CP_ME_RAM_DATA, ptr[i]);
 
-	/* Load PFP: */
+	 
 	ptr = (uint32_t *)(adreno_gpu->fw[ADRENO_FW_PFP]->data);
 	len = adreno_gpu->fw[ADRENO_FW_PFP]->size / 4;
 	DBG("loading PFP ucode version: %x", ptr[5]);
@@ -257,7 +247,7 @@ static int a2xx_hw_init(struct msm_gpu *gpu)
 
 	gpu_write(gpu, REG_AXXX_CP_QUEUE_THRESHOLDS, 0x000C0804);
 
-	/* clear ME_HALT to start micro engine */
+	 
 	gpu_write(gpu, REG_AXXX_CP_ME_CNTL, 0);
 
 	return a2xx_me_init(gpu) ? 0 : -EINVAL;
@@ -274,7 +264,7 @@ static void a2xx_recover(struct msm_gpu *gpu)
 			gpu_read(gpu, REG_AXXX_CP_SCRATCH_REG0 + i));
 	}
 
-	/* dump registers before resetting gpu, if enabled: */
+	 
 	if (hang_debug)
 		a2xx_dump(gpu);
 
@@ -298,16 +288,16 @@ static void a2xx_destroy(struct msm_gpu *gpu)
 
 static bool a2xx_idle(struct msm_gpu *gpu)
 {
-	/* wait for ringbuffer to drain: */
+	 
 	if (!adreno_idle(gpu, gpu->rb[0]))
 		return false;
 
-	/* then wait for GPU to finish: */
+	 
 	if (spin_until(!(gpu_read(gpu, REG_A2XX_RBBM_STATUS) &
 			A2XX_RBBM_STATUS_GUI_ACTIVE))) {
 		DRM_ERROR("%s: timeout waiting for GPU to idle!\n", gpu->name);
 
-		/* TODO maybe we need to reset GPU here to recover from hang? */
+		 
 		return false;
 	}
 
@@ -333,7 +323,7 @@ static irqreturn_t a2xx_irq(struct msm_gpu *gpu)
 	if (mstatus & A2XX_MASTER_INT_SIGNAL_CP_INT_STAT) {
 		status = gpu_read(gpu, REG_AXXX_CP_INT_STATUS);
 
-		/* only RB_INT is expected */
+		 
 		if (status & ~AXXX_CP_INT_CNTL_RB_INT_MASK)
 			dev_warn(gpu->dev->dev, "CP_INT: %08X\n", status);
 
@@ -379,7 +369,7 @@ static const unsigned int a200_registers[] = {
 	0x2600, 0x2608, 0x2680, 0x2683, 0x2693, 0x2694, 0x2700, 0x2708,
 	0x2712, 0x2712, 0x2716, 0x271D, 0x2724, 0x2726, 0x2780, 0x2783,
 	0x4000, 0x4003, 0x4800, 0x4805, 0x4900, 0x4900, 0x4908, 0x4908,
-	~0   /* sentinel */
+	~0    
 };
 
 static const unsigned int a220_registers[] = {
@@ -409,7 +399,7 @@ static const unsigned int a220_registers[] = {
 	0x2700, 0x2708, 0x2712, 0x2712, 0x2716, 0x2716, 0x2718, 0x271D,
 	0x2724, 0x2726, 0x2780, 0x2783, 0x4000, 0x4003, 0x4800, 0x4805,
 	0x4900, 0x4900, 0x4908, 0x4908,
-	~0   /* sentinel */
+	~0    
 };
 
 static const unsigned int a225_registers[] = {
@@ -441,10 +431,10 @@ static const unsigned int a225_registers[] = {
 	0x2724, 0x2726, 0x2740, 0x2757, 0x2760, 0x2760, 0x2780, 0x2783,
 	0x4000, 0x4003, 0x4800, 0x4806, 0x4808, 0x4808, 0x4900, 0x4900,
 	0x4908, 0x4908,
-	~0   /* sentinel */
+	~0    
 };
 
-/* would be nice to not have to duplicate the _show() stuff with printk(): */
+ 
 static void a2xx_dump(struct msm_gpu *gpu)
 {
 	printk("status:   %08x\n",
@@ -510,7 +500,7 @@ static const struct adreno_gpu_funcs funcs = {
 };
 
 static const struct msm_gpu_perfcntr perfcntrs[] = {
-/* TODO */
+ 
 };
 
 struct msm_gpu *a2xx_gpu_init(struct drm_device *dev)

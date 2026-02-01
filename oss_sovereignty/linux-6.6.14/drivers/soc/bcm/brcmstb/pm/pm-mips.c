@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MIPS-specific support for Broadcom STB S2/S3/S5 power management
- *
- * Copyright (C) 2016-2017 Broadcom
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/printk.h>
@@ -20,7 +16,7 @@
 #define S2_NUM_PARAMS		6
 #define MAX_NUM_MEMC		3
 
-/* S3 constants */
+ 
 #define MAX_GP_REGS		16
 #define MAX_CP0_REGS		32
 #define NUM_MEMC_CLIENTS	128
@@ -29,7 +25,7 @@
 
 #define CLEAR_RESET_MASK	0x01
 
-/* Index each CP0 register that needs to be saved */
+ 
 #define CONTEXT		0
 #define USER_LOCAL	1
 #define PGMK		2
@@ -80,7 +76,7 @@ struct brcmstb_mem_transfer {
 #define AON_SAVE_SRAM(base, idx, val) \
 	__raw_writel(val, base + (idx << 2))
 
-/* Used for saving registers in asm */
+ 
 u32 gp_regs[MAX_GP_REGS];
 
 #define	BSP_CLOCK_STOP		0x00
@@ -90,7 +86,7 @@ static struct brcmstb_pm_control ctrl;
 
 static void brcm_pm_save_cp0_context(struct brcm_pm_s3_context *ctx)
 {
-	/* Generic MIPS */
+	 
 	ctx->cp0_regs[CONTEXT] = read_c0_context();
 	ctx->cp0_regs[USER_LOCAL] = read_c0_userlocal();
 	ctx->cp0_regs[PGMK] = read_c0_pagemask();
@@ -98,7 +94,7 @@ static void brcm_pm_save_cp0_context(struct brcm_pm_s3_context *ctx)
 	ctx->cp0_regs[COMPARE] = read_c0_compare();
 	ctx->cp0_regs[STATUS] = read_c0_status();
 
-	/* Broadcom specific */
+	 
 	ctx->cp0_regs[CONFIG] = read_c0_brcm_config();
 	ctx->cp0_regs[MODE] = read_c0_brcm_mode();
 	ctx->cp0_regs[EDSP] = read_c0_brcm_edsp();
@@ -110,10 +106,10 @@ static void brcm_pm_save_cp0_context(struct brcm_pm_s3_context *ctx)
 
 static void brcm_pm_restore_cp0_context(struct brcm_pm_s3_context *ctx)
 {
-	/* Restore cp0 state */
+	 
 	bmips_write_zscm_reg(0xa0, ctx->sc_boot_vec);
 
-	/* Generic MIPS */
+	 
 	write_c0_context(ctx->cp0_regs[CONTEXT]);
 	write_c0_userlocal(ctx->cp0_regs[USER_LOCAL]);
 	write_c0_pagemask(ctx->cp0_regs[PGMK]);
@@ -121,7 +117,7 @@ static void brcm_pm_restore_cp0_context(struct brcm_pm_s3_context *ctx)
 	write_c0_compare(ctx->cp0_regs[COMPARE]);
 	write_c0_status(ctx->cp0_regs[STATUS]);
 
-	/* Broadcom specific */
+	 
 	write_c0_brcm_config(ctx->cp0_regs[CONFIG]);
 	write_c0_brcm_mode(ctx->cp0_regs[MODE]);
 	write_c0_brcm_edsp(ctx->cp0_regs[EDSP]);
@@ -134,7 +130,7 @@ static void  brcmstb_pm_handshake(void)
 	void __iomem *base = ctrl.aon_ctrl_base;
 	u32 tmp;
 
-	/* BSP power handshake, v1 */
+	 
 	tmp = __raw_readl(base + AON_CTRL_HOST_MISC_CMDS);
 	tmp &= ~1UL;
 	__raw_writel(tmp, base + AON_CTRL_HOST_MISC_CMDS);
@@ -144,10 +140,7 @@ static void  brcmstb_pm_handshake(void)
 	(void)__raw_readl(base + AON_CTRL_PM_INITIATE);
 	__raw_writel(BSP_CLOCK_STOP | PM_INITIATE,
 		     base + AON_CTRL_PM_INITIATE);
-	/*
-	 * HACK: BSP may have internal race on the CLOCK_STOP command.
-	 * Avoid touching the BSP for a few milliseconds.
-	 */
+	 
 	mdelay(3);
 }
 
@@ -157,14 +150,14 @@ static void brcmstb_pm_s5(void)
 
 	brcmstb_pm_handshake();
 
-	/* Clear magic s3 warm-boot value */
+	 
 	AON_SAVE_SRAM(ctrl.aon_sram_base, 0, 0);
 
-	/* Set the countdown */
+	 
 	__raw_writel(0x10, base + AON_CTRL_PM_CPU_WAIT_COUNT);
 	(void)__raw_readl(base + AON_CTRL_PM_CPU_WAIT_COUNT);
 
-	/* Prepare to S5 cold boot */
+	 
 	__raw_writel(PM_COLD_CONFIG, base + AON_CTRL_PM_CTRL);
 	(void)__raw_readl(base + AON_CTRL_PM_CTRL);
 
@@ -185,19 +178,19 @@ static int brcmstb_pm_s3(void)
 	u32 tmp;
 	int i;
 
-	/* Prepare for s3 */
+	 
 	AON_SAVE_SRAM(ctrl.aon_sram_base, 0, BRCMSTB_S3_MAGIC);
 	AON_SAVE_SRAM(ctrl.aon_sram_base, 1, (u32)&s3_reentry);
 	AON_SAVE_SRAM(ctrl.aon_sram_base, 2, 0);
 
-	/* Clear RESET_HISTORY */
+	 
 	tmp = __raw_readl(ctrl.aon_ctrl_base + AON_CTRL_RESET_CTRL);
 	tmp &= ~CLEAR_RESET_MASK;
 	__raw_writel(tmp, ctrl.aon_ctrl_base + AON_CTRL_RESET_CTRL);
 
 	local_irq_save(flags);
 
-	/* Inhibit DDR_RSTb pulse for both MMCs*/
+	 
 	for (i = 0; i < ctrl.num_memc; i++) {
 		tmp = __raw_readl(ctrl.memcs[i].ddr_phy_base +
 			DDR40_PHY_CONTROL_REGS_0_STANDBY_CTRL);
@@ -210,35 +203,35 @@ static int brcmstb_pm_s3(void)
 			DDR40_PHY_CONTROL_REGS_0_STANDBY_CTRL);
 	}
 
-	/* Save CP0 context */
+	 
 	brcm_pm_save_cp0_context(&s3_context);
 
-	/* Save RTS(skip debug register) */
+	 
 	memc_arb_base = ctrl.memcs[0].arb_base + 4;
 	for (i = 0; i < NUM_MEMC_CLIENTS; i++) {
 		s3_context.memc0_rts[i] = __raw_readl(memc_arb_base);
 		memc_arb_base += 4;
 	}
 
-	/* Save I/O context */
+	 
 	local_flush_tlb_all();
 	_dma_cache_wback_inv(0, ~0);
 
 	brcm_pm_do_s3(ctrl.aon_ctrl_base, current_cpu_data.dcache.linesz);
 
-	/* CPU reconfiguration */
+	 
 	local_flush_tlb_all();
 	bmips_cpu_setup();
 	cpumask_clear(&bmips_booted_mask);
 
-	/* Restore RTS (skip debug register) */
+	 
 	memc_arb_base = ctrl.memcs[0].arb_base + 4;
 	for (i = 0; i < NUM_MEMC_CLIENTS; i++) {
 		__raw_writel(s3_context.memc0_rts[i], memc_arb_base);
 		memc_arb_base += 4;
 	}
 
-	/* restore CP0 context */
+	 
 	brcm_pm_restore_cp0_context(&s3_context);
 
 	local_irq_restore(flags);
@@ -248,22 +241,10 @@ static int brcmstb_pm_s3(void)
 
 static int brcmstb_pm_s2(void)
 {
-	/*
-	 * We need to pass 6 arguments to an assembly function. Lets avoid the
-	 * stack and pass arguments in a explicit 4 byte array. The assembly
-	 * code assumes all arguments are 4 bytes and arguments are ordered
-	 * like so:
-	 *
-	 * 0: AON_CTRl base register
-	 * 1: DDR_PHY base register
-	 * 2: TIMERS base resgister
-	 * 3: I-Cache line size
-	 * 4: Restart vector address
-	 * 5: Restart vector size
-	 */
+	 
 	u32 s2_params[6];
 
-	/* Prepare s2 parameters */
+	 
 	s2_params[0] = (u32)ctrl.aon_ctrl_base;
 	s2_params[1] = (u32)ctrl.memcs[0].ddr_phy_base;
 	s2_params[2] = (u32)ctrl.timers_base;
@@ -272,7 +253,7 @@ static int brcmstb_pm_s2(void)
 	s2_params[5] = (u32)(bmips_smp_int_vec_end -
 		bmips_smp_int_vec);
 
-	/* Drop to standby */
+	 
 	brcm_pm_do_s2(s2_params);
 
 	return 0;
@@ -282,7 +263,7 @@ static int brcmstb_pm_standby(bool deep_standby)
 {
 	brcmstb_pm_handshake();
 
-	/* Send IRQs to BMIPS_WARM_RESTART_VEC */
+	 
 	clear_c0_cause(CAUSEF_IV);
 	irq_disable_hazard();
 	set_c0_status(ST0_BEV);
@@ -293,7 +274,7 @@ static int brcmstb_pm_standby(bool deep_standby)
 	else
 		brcmstb_pm_s2();
 
-	/* Send IRQs to normal runtime vectors */
+	 
 	clear_c0_status(ST0_BEV);
 	irq_disable_hazard();
 	set_c0_cause(CAUSEF_IV);
@@ -337,22 +318,22 @@ static const struct platform_suspend_ops brcmstb_pm_ops = {
 
 static const struct of_device_id aon_ctrl_dt_ids[] = {
 	{ .compatible = "brcm,brcmstb-aon-ctrl" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct of_device_id ddr_phy_dt_ids[] = {
 	{ .compatible = "brcm,brcmstb-ddr-phy" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct of_device_id arb_dt_ids[] = {
 	{ .compatible = "brcm,brcmstb-memc-arb" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct of_device_id timers_ids[] = {
 	{ .compatible = "brcm,brcmstb-timers" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static inline void __iomem *brcmstb_ioremap_node(struct device_node *dn,
@@ -383,7 +364,7 @@ static int brcmstb_pm_init(void)
 	void __iomem *base;
 	int i;
 
-	/* AON ctrl registers */
+	 
 	base = brcmstb_ioremap_match(aon_ctrl_dt_ids, 0, NULL);
 	if (IS_ERR(base)) {
 		pr_err("error mapping AON_CTRL\n");
@@ -391,7 +372,7 @@ static int brcmstb_pm_init(void)
 	}
 	ctrl.aon_ctrl_base = base;
 
-	/* AON SRAM registers */
+	 
 	base = brcmstb_ioremap_match(aon_ctrl_dt_ids, 1, NULL);
 	if (IS_ERR(base)) {
 		pr_err("error mapping AON_SRAM\n");
@@ -400,7 +381,7 @@ static int brcmstb_pm_init(void)
 	ctrl.aon_sram_base = base;
 
 	ctrl.num_memc = 0;
-	/* Map MEMC DDR PHY registers */
+	 
 	for_each_matching_node(dn, ddr_phy_dt_ids) {
 		i = ctrl.num_memc;
 		if (i >= MAX_NUM_MEMC) {
@@ -418,7 +399,7 @@ static int brcmstb_pm_init(void)
 		ctrl.num_memc++;
 	}
 
-	/* MEMC ARB registers */
+	 
 	base = brcmstb_ioremap_match(arb_dt_ids, 0, NULL);
 	if (IS_ERR(base)) {
 		pr_err("error mapping MEMC ARB\n");
@@ -426,7 +407,7 @@ static int brcmstb_pm_init(void)
 	}
 	ctrl.memcs[0].arb_base = base;
 
-	/* Timer registers */
+	 
 	base = brcmstb_ioremap_match(timers_ids, 0, NULL);
 	if (IS_ERR(base)) {
 		pr_err("error mapping timers\n");
@@ -434,7 +415,7 @@ static int brcmstb_pm_init(void)
 	}
 	ctrl.timers_base = base;
 
-	/* s3 cold boot aka s5 */
+	 
 	pm_power_off = brcmstb_pm_s5;
 
 	suspend_set_ops(&brcmstb_pm_ops);

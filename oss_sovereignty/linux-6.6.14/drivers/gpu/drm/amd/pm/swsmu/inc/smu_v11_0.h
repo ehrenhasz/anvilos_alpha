@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __SMU_V11_0_H__
 #define __SMU_V11_0_H__
 
@@ -37,13 +16,13 @@
 #define SMU11_DRIVER_IF_VERSION_Beige_Goby 0xD
 #define SMU11_DRIVER_IF_VERSION_Cyan_Skillfish 0x8
 
-/* MP Apertures */
+ 
 #define MP0_Public			0x03800000
 #define MP0_SRAM			0x03900000
 #define MP1_Public			0x03b00000
 #define MP1_SRAM			0x03c00004
 
-/* address block */
+ 
 #define smnMP1_FIRMWARE_FLAGS		0x3010024
 #define smnMP0_FW_INTF			0x30101c0
 #define smnMP1_PUB_CTRL			0x3010b14
@@ -86,8 +65,8 @@ struct smu_11_0_dpm_clk_level {
 };
 
 struct smu_11_0_dpm_table {
-	uint32_t			min;        /* MHz */
-	uint32_t			max;        /* MHz */
+	uint32_t			min;         
+	uint32_t			max;         
 	uint32_t			count;
 	bool				is_fine_grained;
 	struct smu_11_0_dpm_clk_level	dpm_levels[MAX_DPM_LEVELS];
@@ -124,9 +103,9 @@ struct smu_11_0_dpm_context {
 enum smu_11_0_power_state {
 	SMU_11_0_POWER_STATE__D0 = 0,
 	SMU_11_0_POWER_STATE__D1,
-	SMU_11_0_POWER_STATE__D3, /* Sleep*/
-	SMU_11_0_POWER_STATE__D4, /* Hibernate*/
-	SMU_11_0_POWER_STATE__D5, /* Power off*/
+	SMU_11_0_POWER_STATE__D3,  
+	SMU_11_0_POWER_STATE__D4,  
+	SMU_11_0_POWER_STATE__D5,  
 };
 
 struct smu_11_0_power_context {

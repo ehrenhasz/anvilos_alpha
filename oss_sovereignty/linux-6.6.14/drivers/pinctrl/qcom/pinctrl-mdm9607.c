@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- *
- * based on pinctrl-msm8916.c
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>

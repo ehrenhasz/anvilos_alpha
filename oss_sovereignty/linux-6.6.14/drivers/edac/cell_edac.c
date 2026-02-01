@@ -1,12 +1,4 @@
-/*
- * Cell MIC driver for ECC counting
- *
- * Copyright 2007 Benjamin Herrenschmidt, IBM Corp.
- *                <benh@kernel.crashing.org>
- *
- * This file may be distributed under the terms of the
- * GNU General Public License.
- */
+ 
 #undef DEBUG
 
 #include <linux/edac.h>
@@ -40,7 +32,7 @@ static void cell_edac_count_ce(struct mem_ctl_info *mci, int chan, u64 ar)
 	dev_dbg(mci->pdev, "ECC CE err on node %d, channel %d, ar = 0x%016llx\n",
 		priv->node, chan, ar);
 
-	/* Address decoding is likely a bit bogus, to dbl check */
+	 
 	address = (ar & 0xffffffffe0000000ul) >> 29;
 	if (priv->chanmask == 0x3)
 		address = (address << 1) | chan;
@@ -48,7 +40,7 @@ static void cell_edac_count_ce(struct mem_ctl_info *mci, int chan, u64 ar)
 	offset = address & ~PAGE_MASK;
 	syndrome = (ar & 0x000000001fe00000ul) >> 21;
 
-	/* TODO: Decoding of the error address */
+	 
 	edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci, 1,
 			     csrow->first_page + pfn, offset, syndrome,
 			     0, chan, -1, "", "");
@@ -63,14 +55,14 @@ static void cell_edac_count_ue(struct mem_ctl_info *mci, int chan, u64 ar)
 	dev_dbg(mci->pdev, "ECC UE err on node %d, channel %d, ar = 0x%016llx\n",
 		priv->node, chan, ar);
 
-	/* Address decoding is likely a bit bogus, to dbl check */
+	 
 	address = (ar & 0xffffffffe0000000ul) >> 29;
 	if (priv->chanmask == 0x3)
 		address = (address << 1) | chan;
 	pfn = address >> PAGE_SHIFT;
 	offset = address & ~PAGE_MASK;
 
-	/* TODO: Decoding of the error address */
+	 
 	edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci, 1,
 			     csrow->first_page + pfn, offset, 0,
 			     0, chan, -1, "", "");
@@ -109,7 +101,7 @@ static void cell_edac_check(struct mem_ctl_info *mci)
 		cell_edac_count_ue(mci, 1, addreg);
 	}
 
-	/* The procedure for clearing FIR bits is a bit ... weird */
+	 
 	if (clear) {
 		fir &= ~(CBE_MIC_FIR_ECC_ERR_MASK | CBE_MIC_FIR_ECC_SET_MASK);
 		fir |= CBE_MIC_FIR_ECC_RESET_MASK;
@@ -117,7 +109,7 @@ static void cell_edac_check(struct mem_ctl_info *mci)
 		out_be64(&priv->regs->mic_fir, fir);
 		(void)in_be64(&priv->regs->mic_fir);
 
-		mb();	/* sync up */
+		mb();	 
 #ifdef DEBUG
 		fir = in_be64(&priv->regs->mic_fir);
 		dev_dbg(mci->pdev, "fir clear  : 0x%016lx\n", fir);
@@ -137,10 +129,7 @@ static void cell_edac_init_csrows(struct mem_ctl_info *mci)
 	for_each_node_by_name(np, "memory") {
 		struct resource r;
 
-		/* We "know" that the Cell firmware only creates one entry
-		 * in the "memory" nodes. If that changes, this code will
-		 * need to be adapted.
-		 */
+		 
 		if (of_address_to_resource(np, 0, &r))
 			continue;
 		if (of_node_to_nid(np) != priv->node)
@@ -180,7 +169,7 @@ static int cell_edac_probe(struct platform_device *pdev)
 
 	edac_op_state = EDAC_OPSTATE_POLL;
 
-	/* Get channel population */
+	 
 	reg = in_be64(&regs->mic_mnt_cfg);
 	dev_dbg(&pdev->dev, "MIC_MNT_CFG = 0x%016llx\n", reg);
 	chanmask = 0;
@@ -196,7 +185,7 @@ static int cell_edac_probe(struct platform_device *pdev)
 	dev_dbg(&pdev->dev, "Initial FIR = 0x%016llx\n",
 		in_be64(&regs->mic_fir));
 
-	/* Allocate & init EDAC MC data structure */
+	 
 	num_chans = chanmask == 3 ? 2 : 1;
 
 	layers[0].type = EDAC_MC_LAYER_CHIP_SELECT;
@@ -223,7 +212,7 @@ static int cell_edac_probe(struct platform_device *pdev)
 	mci->edac_check = cell_edac_check;
 	cell_edac_init_csrows(mci);
 
-	/* Register with EDAC core */
+	 
 	rc = edac_mc_add_mc(mci);
 	if (rc) {
 		dev_err(&pdev->dev, "failed to register with EDAC core\n");
@@ -252,7 +241,7 @@ static struct platform_driver cell_edac_driver = {
 
 static int __init cell_edac_init(void)
 {
-	/* Sanity check registers data structure */
+	 
 	BUILD_BUG_ON(offsetof(struct cbe_mic_tm_regs,
 			      mic_df_ecc_address_0) != 0xf8);
 	BUILD_BUG_ON(offsetof(struct cbe_mic_tm_regs,

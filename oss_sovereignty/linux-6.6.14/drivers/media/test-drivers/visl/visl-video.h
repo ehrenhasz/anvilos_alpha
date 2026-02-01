@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Contains the driver implementation for the V4L2 stateless interface.
- */
+ 
+ 
 
 #ifndef _VISL_VIDEO_H_
 #define _VISL_VIDEO_H_
@@ -24,4 +22,4 @@ int visl_queue_init(void *priv, struct vb2_queue *src_vq,
 int visl_set_default_format(struct visl_ctx *ctx);
 int visl_request_validate(struct media_request *req);
 
-#endif /* _VISL_VIDEO_H_ */
+#endif  

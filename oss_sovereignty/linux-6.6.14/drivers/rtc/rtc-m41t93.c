@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Driver for ST M41T93 SPI RTC
- *
- * (c) 2010 Nikolaus Voss, Weinmann Medical GmbH
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/kernel.h>
@@ -35,7 +30,7 @@ static inline int m41t93_set_reg(struct spi_device *spi, u8 addr, u8 data)
 {
 	u8 buf[2];
 
-	/* MSB must be '1' to write */
+	 
 	buf[0] = addr | 0x80;
 	buf[1] = data;
 
@@ -46,8 +41,8 @@ static int m41t93_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct spi_device *spi = to_spi_device(dev);
 	int tmp;
-	u8 buf[9] = {0x80};        /* write cmd + 8 data bytes */
-	u8 * const data = &buf[1]; /* ptr to first data byte */
+	u8 buf[9] = {0x80};         
+	u8 * const data = &buf[1];  
 
 	dev_dbg(dev, "%s secs=%d, mins=%d, "
 		"hours=%d, mday=%d, mon=%d, year=%d, wday=%d\n",
@@ -72,8 +67,7 @@ static int m41t93_set_time(struct device *dev, struct rtc_time *tm)
 		if (tmp < 0) {
 			return tmp;
 		} else if (tmp & M41T93_FLAG_OF) {
-			/* OF cannot be immediately reset: oscillator has to be
-			 * restarted. */
+			 
 			u8 reset_osc = buf[M41T93_REG_ST_SEC] | M41T93_FLAG_ST;
 
 			dev_warn(&spi->dev,
@@ -107,12 +101,7 @@ static int m41t93_get_time(struct device *dev, struct rtc_time *tm)
 	int tmp;
 	int ret = 0;
 
-	/* Check status of clock. Two states must be considered:
-	   1. halt bit (HT) is set: the clock is running but update of readout
-	      registers has been disabled due to power failure. This is normal
-	      case after poweron. Time is valid after resetting HT bit.
-	   2. oscillator fail bit (OF) is set: time is invalid.
-	*/
+	 
 	tmp = spi_w8r8(spi, M41T93_REG_ALM_HOUR_HT);
 	if (tmp < 0)
 		return tmp;
@@ -135,7 +124,7 @@ static int m41t93_get_time(struct device *dev, struct rtc_time *tm)
 	if (tmp & M41T93_FLAG_BL)
 		dev_warn(&spi->dev, "BL bit is set, replace battery.\n");
 
-	/* read actual time/date */
+	 
 	tmp = spi_write_then_read(spi, &start_addr, 1, buf, sizeof(buf));
 	if (tmp < 0)
 		return tmp;

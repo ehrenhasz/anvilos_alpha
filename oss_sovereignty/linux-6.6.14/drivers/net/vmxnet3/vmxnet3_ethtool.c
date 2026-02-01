@@ -1,28 +1,4 @@
-/*
- * Linux driver for VMware's vmxnet3 ethernet NIC.
- *
- * Copyright (C) 2008-2022, VMware, Inc. All Rights Reserved.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License as published by the
- * Free Software Foundation; version 2 of the License and no later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA.
- *
- * The full GNU General Public License is included in this distribution in
- * the file called "COPYING".
- *
- * Maintained by: pv-drivers@vmware.com
- *
- */
+ 
 
 
 #include "vmxnet3_int.h"
@@ -38,10 +14,10 @@ struct vmxnet3_stat_desc {
 };
 
 
-/* per tq stats maintained by the device */
+ 
 static const struct vmxnet3_stat_desc
 vmxnet3_tq_dev_stats[] = {
-	/* description,         offset */
+	 
 	{ "Tx Queue#",        0 },
 	{ "  TSO pkts tx",	offsetof(struct UPT1_TxStats, TSOPktsTxOK) },
 	{ "  TSO bytes tx",	offsetof(struct UPT1_TxStats, TSOBytesTxOK) },
@@ -55,10 +31,10 @@ vmxnet3_tq_dev_stats[] = {
 	{ "  pkts tx discard",	offsetof(struct UPT1_TxStats, pktsTxDiscard) },
 };
 
-/* per tq stats maintained by the driver */
+ 
 static const struct vmxnet3_stat_desc
 vmxnet3_tq_driver_stats[] = {
-	/* description,         offset */
+	 
 	{"  drv dropped tx total",	offsetof(struct vmxnet3_tq_driver_stats,
 						 drop_total) },
 	{ "     too many frags", offsetof(struct vmxnet3_tq_driver_stats,
@@ -83,7 +59,7 @@ vmxnet3_tq_driver_stats[] = {
 					 xdp_xmit_err) },
 };
 
-/* per rq stats maintained by the device */
+ 
 static const struct vmxnet3_stat_desc
 vmxnet3_rq_dev_stats[] = {
 	{ "Rx Queue#",        0 },
@@ -99,10 +75,10 @@ vmxnet3_rq_dev_stats[] = {
 	{ "  pkts rx err",	offsetof(struct UPT1_RxStats, pktsRxError) },
 };
 
-/* per rq stats maintained by the driver */
+ 
 static const struct vmxnet3_stat_desc
 vmxnet3_rq_driver_stats[] = {
-	/* description,         offset */
+	 
 	{ "  drv dropped rx total", offsetof(struct vmxnet3_rq_driver_stats,
 					     drop_total) },
 	{ "     err",		offsetof(struct vmxnet3_rq_driver_stats,
@@ -123,10 +99,10 @@ vmxnet3_rq_driver_stats[] = {
 				       xdp_aborted) },
 };
 
-/* global stats maintained by the driver */
+ 
 static const struct vmxnet3_stat_desc
 vmxnet3_global_stats[] = {
-	/* description,         offset */
+	 
 	{ "tx timeout count",	offsetof(struct vmxnet3_adapter,
 					 tx_timeout_count) }
 };
@@ -146,7 +122,7 @@ vmxnet3_get_stats64(struct net_device *netdev,
 
 	adapter = netdev_priv(netdev);
 
-	/* Collect the dev stats into the shared area */
+	 
 	spin_lock_irqsave(&adapter->cmd_lock, flags);
 	VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_STATS);
 	spin_unlock_irqrestore(&adapter->cmd_lock, flags);
@@ -200,21 +176,16 @@ vmxnet3_get_sset_count(struct net_device *netdev, int sset)
 }
 
 
-/* This is a version 2 of the vmxnet3 ethtool_regs which goes hand in hand with
- * the version 2 of the vmxnet3 support for ethtool(8) --register-dump.
- * Therefore, if any registers are added, removed or modified, then a version
- * bump and a corresponding change in the vmxnet3 support for ethtool(8)
- * --register-dump would be required.
- */
+ 
 static int
 vmxnet3_get_regs_len(struct net_device *netdev)
 {
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 
-	return ((9 /* BAR1 registers */ +
+	return ((9   +
 		(1 + adapter->intr.num_intrs) +
-		(1 + adapter->num_tx_queues * 17 /* Tx queue registers */) +
-		(1 + adapter->num_rx_queues * 23 /* Rx queue registers */)) *
+		(1 + adapter->num_tx_queues * 17  ) +
+		(1 + adapter->num_rx_queues * 23  )) *
 		sizeof(u32));
 }
 
@@ -266,11 +237,11 @@ netdev_features_t vmxnet3_fix_features(struct net_device *netdev,
 {
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 
-	/* If Rx checksum is disabled, then LRO should also be disabled */
+	 
 	if (!(features & NETIF_F_RXCSUM))
 		features &= ~NETIF_F_LRO;
 
-	/* If XDP is enabled, then LRO should not be enabled */
+	 
 	if (vmxnet3_xdp_enabled(adapter) && (features & NETIF_F_LRO)) {
 		netdev_err(netdev, "LRO is not supported with XDP");
 		features &= ~NETIF_F_LRO;
@@ -285,7 +256,7 @@ netdev_features_t vmxnet3_features_check(struct sk_buff *skb,
 {
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 
-	/* Validate if the tunneled packet is being offloaded by the device */
+	 
 	if (VMXNET3_VERSION_GE_4(adapter) &&
 	    skb->encapsulation && skb->ip_summed == CHECKSUM_PARTIAL) {
 		u8 l4_proto = 0;
@@ -307,7 +278,7 @@ netdev_features_t vmxnet3_features_check(struct sk_buff *skb,
 		case IPPROTO_UDP:
 			udph = udp_hdr(skb);
 			port = be16_to_cpu(udph->dest);
-			/* Check if offloaded port is supported */
+			 
 			if (port != GENEVE_UDP_PORT &&
 			    port != IANA_VXLAN_UDP_PORT &&
 			    port != VXLAN_UDP_PORT) {
@@ -429,7 +400,7 @@ int vmxnet3_set_features(struct net_device *netdev, netdev_features_t features)
 			adapter->shared->devRead.misc.uptFeatures &=
 			~UPT1_F_RXCSUM;
 
-		/* update hardware LRO capability accordingly */
+		 
 		if (features & NETIF_F_LRO)
 			adapter->shared->devRead.misc.uptFeatures |=
 							UPT1_F_LRO;
@@ -477,7 +448,7 @@ vmxnet3_get_ethtool_stats(struct net_device *netdev,
 	VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD, VMXNET3_CMD_GET_STATS);
 	spin_unlock_irqrestore(&adapter->cmd_lock, flags);
 
-	/* this does assume each counter is 64-bit wide */
+	 
 	for (j = 0; j < adapter->num_tx_queues; j++) {
 		base = (u8 *)&adapter->tqd_start[j].stats;
 		*buf++ = (u64)j;
@@ -510,12 +481,7 @@ vmxnet3_get_ethtool_stats(struct net_device *netdev,
 }
 
 
-/* This is a version 2 of the vmxnet3 ethtool_regs which goes hand in hand with
- * the version 2 of the vmxnet3 support for ethtool(8) --register-dump.
- * Therefore, if any registers are added, removed or modified, then a version
- * bump and a corresponding change in the vmxnet3 support for ethtool(8)
- * --register-dump would be required.
- */
+ 
 static void
 vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
 {
@@ -527,7 +493,7 @@ vmxnet3_get_regs(struct net_device *netdev, struct ethtool_regs *regs, void *p)
 
 	regs->version = 2;
 
-	/* Update vmxnet3_get_regs_len if we want to dump more registers */
+	 
 
 	buf[j++] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_VRRS);
 	buf[j++] = VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_UVRS);
@@ -707,7 +673,7 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 	    param->rx_jumbo_pending > VMXNET3_RX_RING2_MAX_SIZE)
 		return -EINVAL;
 
-	/* if adapter not yet initialized, do nothing */
+	 
 	if (adapter->rx_buf_per_pkt == 0) {
 		netdev_err(netdev, "adapter not completely initialized, "
 			   "ring size cannot be changed yet\n");
@@ -721,7 +687,7 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 		return -EINVAL;
 	}
 
-	/* round it up to a multiple of VMXNET3_RING_SIZE_ALIGN */
+	 
 	new_tx_ring_size = (param->tx_pending + VMXNET3_RING_SIZE_MASK) &
 							~VMXNET3_RING_SIZE_MASK;
 	new_tx_ring_size = min_t(u32, new_tx_ring_size,
@@ -730,9 +696,7 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 						VMXNET3_RING_SIZE_ALIGN) != 0)
 		return -EINVAL;
 
-	/* ring0 has to be a multiple of
-	 * rx_buf_per_pkt * VMXNET3_RING_SIZE_ALIGN
-	 */
+	 
 	sz = adapter->rx_buf_per_pkt * VMXNET3_RING_SIZE_ALIGN;
 	new_rx_ring_size = (param->rx_pending + sz - 1) / sz * sz;
 	new_rx_ring_size = min_t(u32, new_rx_ring_size,
@@ -741,22 +705,20 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 							   sz) != 0)
 		return -EINVAL;
 
-	/* ring2 has to be a multiple of VMXNET3_RING_SIZE_ALIGN */
+	 
 	new_rx_ring2_size = (param->rx_jumbo_pending + VMXNET3_RING_SIZE_MASK) &
 				~VMXNET3_RING_SIZE_MASK;
 	new_rx_ring2_size = min_t(u32, new_rx_ring2_size,
 				  VMXNET3_RX_RING2_MAX_SIZE);
 
-	/* For v7 and later, keep ring size power of 2 for UPT */
+	 
 	if (VMXNET3_VERSION_GE_7(adapter)) {
 		new_tx_ring_size = rounddown_pow_of_two(new_tx_ring_size);
 		new_rx_ring_size = rounddown_pow_of_two(new_rx_ring_size);
 		new_rx_ring2_size = rounddown_pow_of_two(new_rx_ring2_size);
 	}
 
-	/* rx data ring buffer size has to be a multiple of
-	 * VMXNET3_RXDATA_DESC_SIZE_ALIGN
-	 */
+	 
 	new_rxdata_desc_size =
 		(param->rx_mini_pending + VMXNET3_RXDATA_DESC_SIZE_MASK) &
 		~VMXNET3_RXDATA_DESC_SIZE_MASK;
@@ -770,10 +732,7 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 		return 0;
 	}
 
-	/*
-	 * Reset_work may be in the middle of resetting the device, wait for its
-	 * completion.
-	 */
+	 
 	while (test_and_set_bit(VMXNET3_STATE_BIT_RESETTING, &adapter->state))
 		usleep_range(1000, 2000);
 
@@ -781,8 +740,7 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 		vmxnet3_quiesce_dev(adapter);
 		vmxnet3_reset_dev(adapter);
 
-		/* recreate the rx queue and the tx queue based on the
-		 * new sizes */
+		 
 		vmxnet3_tq_destroy_all(adapter);
 		vmxnet3_rq_destroy_all(adapter);
 
@@ -791,8 +749,7 @@ vmxnet3_set_ringparam(struct net_device *netdev,
 					    adapter->txdata_desc_size,
 					    new_rxdata_desc_size);
 		if (err) {
-			/* failed, most likely because of OOM, try default
-			 * size */
+			 
 			netdev_err(netdev, "failed to apply new sizes, "
 				   "try the default ones\n");
 			new_rx_ring_size = VMXNET3_DEF_RX_RING_SIZE;
@@ -853,7 +810,7 @@ vmxnet3_get_rss_hash_opts(struct vmxnet3_adapter *adapter,
 
 	info->data = 0;
 
-	/* Report default options for RSS on vmxnet3 */
+	 
 	switch (info->flow_type) {
 	case TCP_V4_FLOW:
 	case TCP_V6_FLOW:
@@ -905,9 +862,7 @@ vmxnet3_set_rss_hash_opt(struct net_device *netdev,
 {
 	enum Vmxnet3_RSSField rss_fields = adapter->rss_fields;
 
-	/* RSS does not support anything other than hashing
-	 * to queues on src and dst IPs and ports
-	 */
+	 
 	if (nfc->data & ~(RXH_IP_SRC | RXH_IP_DST |
 			  RXH_L4_B_0_1 | RXH_L4_B_2_3))
 		return -EINVAL;
@@ -999,7 +954,7 @@ vmxnet3_set_rss_hash_opt(struct net_device *netdev,
 		return -EINVAL;
 	}
 
-	/* if we changed something we need to update flags */
+	 
 	if (rss_fields != adapter->rss_fields) {
 		adapter->default_rss_fields = false;
 		if (netif_running(netdev)) {
@@ -1045,18 +1000,14 @@ vmxnet3_set_rss_hash_opt(struct net_device *netdev,
 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
 					       VMXNET3_CMD_SET_RSS_FIELDS);
 
-			/* Not all requested RSS may get applied, so get and
-			 * cache what was actually applied.
-			 */
+			 
 			VMXNET3_WRITE_BAR1_REG(adapter, VMXNET3_REG_CMD,
 					       VMXNET3_CMD_GET_RSS_FIELDS);
 			adapter->rss_fields =
 				VMXNET3_READ_BAR1_REG(adapter, VMXNET3_REG_CMD);
 			spin_unlock_irqrestore(&adapter->cmd_lock, flags);
 		} else {
-			/* When the device is activated, we will try to apply
-			 * these rules and cache the applied value later.
-			 */
+			 
 			adapter->rss_fields = rss_fields;
 		}
 	}
@@ -1163,7 +1114,7 @@ vmxnet3_set_rss(struct net_device *netdev, const u32 *p, const u8 *key,
 	struct vmxnet3_adapter *adapter = netdev_priv(netdev);
 	struct UPT1_RSSConf *rssConf = adapter->rss_conf;
 
-	/* We do not allow change in unsupported parameters */
+	 
 	if (key ||
 	    (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP))
 		return -EOPNOTSUPP;
@@ -1194,7 +1145,7 @@ static int vmxnet3_get_coalesce(struct net_device *netdev,
 
 	switch (adapter->coal_conf->coalMode) {
 	case VMXNET3_COALESCE_DISABLED:
-		/* struct ethtool_coalesce is already initialized to 0 */
+		 
 		break;
 	case VMXNET3_COALESCE_ADAPT:
 		ec->use_adaptive_rx_coalesce = true;
@@ -1335,8 +1286,8 @@ static void vmxnet3_get_channels(struct net_device *netdev,
 
 	ec->other_count = 1;
 
-	/* Number of interrupts cannot be changed on the fly */
-	/* Just set maximums to actual values */
+	 
+	 
 	ec->max_rx = ec->rx_count;
 	ec->max_tx = ec->tx_count;
 	ec->max_combined = ec->combined_count;

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "cache.h"
 #include "debug.h"
 #include "strbuf.h"
@@ -10,11 +10,7 @@
 #include <stdlib.h>
 #include <unistd.h>
 
-/*
- * Used as the default ->buf value, so that people can always assume
- * buf is non NULL and ->buf is NUL terminated even for a freshly
- * initialized strbuf.
- */
+ 
 char strbuf_slopbuf[1];
 
 int strbuf_init(struct strbuf *sb, ssize_t hint)
@@ -57,10 +53,7 @@ int strbuf_grow(struct strbuf *sb, size_t extra)
 	if (alloc_nr(sb->alloc) > nr)
 		nr = alloc_nr(sb->alloc);
 
-	/*
-	 * Note that sb->buf == strbuf_slopbuf if sb->alloc == 0, and it is
-	 * a static variable. Thus we have to avoid passing it to realloc.
-	 */
+	 
 	buf = realloc(sb->alloc ? sb->buf : NULL, nr * sizeof(*buf));
 	if (!buf)
 		return -ENOMEM;

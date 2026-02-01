@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2018 Chelsio, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/rdma_cm.h>
 
@@ -38,7 +8,7 @@
 
 static int fill_sq(struct sk_buff *msg, struct t4_wq *wq)
 {
-	/* WQ+SQ */
+	 
 	if (rdma_nl_put_driver_u32(msg, "sqid", wq->sq.qid))
 		goto err;
 	if (rdma_nl_put_driver_u32(msg, "flushed", wq->flushed))
@@ -66,7 +36,7 @@ err:
 
 static int fill_rq(struct sk_buff *msg, struct t4_wq *wq)
 {
-	/* RQ */
+	 
 	if (rdma_nl_put_driver_u32(msg, "rqid", wq->rq.qid))
 		goto err;
 	if (rdma_nl_put_driver_u32(msg, "memsize", wq->rq.memsize))
@@ -113,9 +83,7 @@ err:
 	return -EMSGSIZE;
 }
 
-/*
- * Dump the first and last pending sqes.
- */
+ 
 static int fill_swsqes(struct sk_buff *msg, struct t4_sq *sq,
 		       u16 first_idx, struct t4_swsqe *first_sqe,
 		       u16 last_idx, struct t4_swsqe *last_sqe)
@@ -143,7 +111,7 @@ int c4iw_fill_res_qp_entry(struct sk_buff *msg, struct ib_qp *ibqp)
 	struct nlattr *table_attr;
 	struct t4_wq wq;
 
-	/* User qp state is not available, so don't dump user qps */
+	 
 	if (qhp->ucontext)
 		return 0;
 
@@ -151,11 +119,11 @@ int c4iw_fill_res_qp_entry(struct sk_buff *msg, struct ib_qp *ibqp)
 	if (!table_attr)
 		goto err;
 
-	/* Get a consistent snapshot */
+	 
 	spin_lock_irq(&qhp->lock);
 	wq = qhp->wq;
 
-	/* If there are any pending sqes, copy the first and last */
+	 
 	if (wq.sq.cidx != wq.sq.pidx) {
 		first_sq_idx = wq.sq.cidx;
 		first_sqe = qhp->wq.sq.sw_sq[first_sq_idx];
@@ -217,7 +185,7 @@ int c4iw_fill_res_cm_id_entry(struct sk_buff *msg,
 	if (!table_attr)
 		goto err_free_uep;
 
-	/* Get a consistent snapshot */
+	 
 	mutex_lock(&epcp->mutex);
 	if (epcp->state == LISTEN) {
 		uep->lep = *(struct c4iw_listen_ep *)epcp;
@@ -378,7 +346,7 @@ int c4iw_fill_res_cq_entry(struct sk_buff *msg, struct ib_cq *ibcq)
 	struct t4_cq cq;
 	u16 idx;
 
-	/* User cq state is not available, so don't dump user cqs */
+	 
 	if (ibcq->uobject)
 		return 0;
 
@@ -386,20 +354,20 @@ int c4iw_fill_res_cq_entry(struct sk_buff *msg, struct ib_cq *ibcq)
 	if (!table_attr)
 		goto err;
 
-	/* Get a consistent snapshot */
+	 
 	spin_lock_irq(&chp->lock);
 
-	/* t4_cq struct */
+	 
 	cq = chp->cq;
 
-	/* get 2 hw cqes: cidx-1, and cidx */
+	 
 	idx = (cq.cidx > 0) ? cq.cidx - 1 : cq.size - 1;
 	hwcqes[0] = chp->cq.queue[idx];
 
 	idx = cq.cidx;
 	hwcqes[1] = chp->cq.queue[idx];
 
-	/* get first and last sw cqes */
+	 
 	if (cq.sw_in_use) {
 		swcqes[0] = chp->cq.sw_queue[cq.sw_cidx];
 		if (cq.sw_in_use > 1) {

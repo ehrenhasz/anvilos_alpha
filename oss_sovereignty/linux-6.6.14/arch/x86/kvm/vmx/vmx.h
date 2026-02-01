@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __KVM_X86_VMX_H
 #define __KVM_X86_VMX_H
 
@@ -94,83 +94,47 @@ union vmx_exit_reason {
 };
 
 struct lbr_desc {
-	/* Basic info about guest LBR records. */
+	 
 	struct x86_pmu_lbr records;
 
-	/*
-	 * Emulate LBR feature via passthrough LBR registers when the
-	 * per-vcpu guest LBR event is scheduled on the current pcpu.
-	 *
-	 * The records may be inaccurate if the host reclaims the LBR.
-	 */
+	 
 	struct perf_event *event;
 
-	/* True if LBRs are marked as not intercepted in the MSR bitmap */
+	 
 	bool msr_passthrough;
 };
 
-/*
- * The nested_vmx structure is part of vcpu_vmx, and holds information we need
- * for correct emulation of VMX (i.e., nested VMX) on this vcpu.
- */
+ 
 struct nested_vmx {
-	/* Has the level1 guest done vmxon? */
+	 
 	bool vmxon;
 	gpa_t vmxon_ptr;
 	bool pml_full;
 
-	/* The guest-physical address of the current VMCS L1 keeps for L2 */
+	 
 	gpa_t current_vmptr;
-	/*
-	 * Cache of the guest's VMCS, existing outside of guest memory.
-	 * Loaded from guest memory during VMPTRLD. Flushed to guest
-	 * memory during VMCLEAR and VMPTRLD.
-	 */
+	 
 	struct vmcs12 *cached_vmcs12;
-	/*
-	 * Cache of the guest's shadow VMCS, existing outside of guest
-	 * memory. Loaded from guest memory during VM entry. Flushed
-	 * to guest memory during VM exit.
-	 */
+	 
 	struct vmcs12 *cached_shadow_vmcs12;
 
-	/*
-	 * GPA to HVA cache for accessing vmcs12->vmcs_link_pointer
-	 */
+	 
 	struct gfn_to_hva_cache shadow_vmcs12_cache;
 
-	/*
-	 * GPA to HVA cache for VMCS12
-	 */
+	 
 	struct gfn_to_hva_cache vmcs12_cache;
 
-	/*
-	 * Indicates if the shadow vmcs or enlightened vmcs must be updated
-	 * with the data held by struct vmcs12.
-	 */
+	 
 	bool need_vmcs12_to_shadow_sync;
 	bool dirty_vmcs12;
 
-	/*
-	 * Indicates whether MSR bitmap for L2 needs to be rebuilt due to
-	 * changes in MSR bitmap for L1 or switching to a different L2. Note,
-	 * this flag can only be used reliably in conjunction with a paravirt L1
-	 * which informs L0 whether any changes to MSR bitmap for L2 were done
-	 * on its side.
-	 */
+	 
 	bool force_msr_bitmap_recalc;
 
-	/*
-	 * Indicates lazily loaded guest state has not yet been decached from
-	 * vmcs02.
-	 */
+	 
 	bool need_sync_vmcs02_to_vmcs12_rare;
 
-	/*
-	 * vmcs02 has been initialized, i.e. state that is constant for
-	 * vmcs02 has been written to the backing VMCS.  Initialization
-	 * is delayed until L1 actually attempts to run a nested VM.
-	 */
+	 
 	bool vmcs02_initialized;
 
 	bool change_vmcs01_virtual_apic_mode;
@@ -178,25 +142,18 @@ struct nested_vmx {
 	bool update_vmcs01_cpu_dirty_logging;
 	bool update_vmcs01_apicv_status;
 
-	/*
-	 * Enlightened VMCS has been enabled. It does not mean that L1 has to
-	 * use it. However, VMX features available to L1 will be limited based
-	 * on what the enlightened VMCS supports.
-	 */
+	 
 	bool enlightened_vmcs_enabled;
 
-	/* L2 must run next, and mustn't decide to exit to L1. */
+	 
 	bool nested_run_pending;
 
-	/* Pending MTF VM-exit into L1.  */
+	 
 	bool mtf_pending;
 
 	struct loaded_vmcs vmcs02;
 
-	/*
-	 * Guest pages referred to in the vmcs02 with host-physical
-	 * pointers, so we must keep them pinned while L2 runs.
-	 */
+	 
 	struct kvm_host_map apic_access_page_map;
 	struct kvm_host_map virtual_apic_map;
 	struct kvm_host_map pi_desc_map;
@@ -212,20 +169,11 @@ struct nested_vmx {
 	bool has_preemption_timer_deadline;
 	bool preemption_timer_expired;
 
-	/*
-	 * Used to snapshot MSRs that are conditionally loaded on VM-Enter in
-	 * order to propagate the guest's pre-VM-Enter value into vmcs02.  For
-	 * emulation of VMLAUNCH/VMRESUME, the snapshot will be of L1's value.
-	 * For KVM_SET_NESTED_STATE, the snapshot is of L2's value, _if_
-	 * userspace restores MSRs before nested state.  If userspace restores
-	 * MSRs after nested state, the snapshot holds garbage, but KVM can't
-	 * detect that, and the garbage value in vmcs02 will be overwritten by
-	 * MSR restoration in any case.
-	 */
+	 
 	u64 pre_vmenter_debugctl;
 	u64 pre_vmenter_bndcfgs;
 
-	/* to migrate it to L1 if L2 writes to L1's CR8 directly */
+	 
 	int l1_tpr_threshold;
 
 	u16 vpid02;
@@ -233,11 +181,11 @@ struct nested_vmx {
 
 	struct nested_vmx_msrs msrs;
 
-	/* SMM related state */
+	 
 	struct {
-		/* in VMX operation on SMM entry? */
+		 
 		bool vmxon;
-		/* in guest mode on SMM entry? */
+		 
 		bool guest_mode;
 	} smm;
 
@@ -251,13 +199,7 @@ struct vcpu_vmx {
 	u8                    fail;
 	u8		      x2apic_msr_bitmap_mode;
 
-	/*
-	 * If true, host state has been stored in vmx->loaded_vmcs for
-	 * the CPU registers that only need to be switched when transitioning
-	 * to/from the kernel, and the registers have been loaded with guest
-	 * values.  If false, host state is loaded in the CPU registers
-	 * and vmx->loaded_vmcs->host_state is invalid.
-	 */
+	 
 	bool		      guest_state_loaded;
 
 	unsigned long         exit_qualification;
@@ -265,12 +207,7 @@ struct vcpu_vmx {
 	u32                   idt_vectoring_info;
 	ulong                 rflags;
 
-	/*
-	 * User return MSRs are always emulated when enabled in the guest, but
-	 * only loaded into hardware when necessary, e.g. SYSCALL #UDs outside
-	 * of 64-bit mode or if EFER.SCE=1, thus the SYSCALL MSRs don't need to
-	 * be loaded into hardware if those conditions aren't met.
-	 */
+	 
 	struct vmx_uret_msr   guest_uret_msrs[MAX_NR_USER_RETURN_MSRS];
 	bool                  guest_uret_msrs_loaded;
 #ifdef CONFIG_X86_64
@@ -281,11 +218,7 @@ struct vcpu_vmx {
 	u64		      spec_ctrl;
 	u32		      msr_ia32_umwait_control;
 
-	/*
-	 * loaded_vmcs points to the VMCS currently used in this vcpu. For a
-	 * non-nested (L1) guest, it always points to vmcs01. For a nested
-	 * guest (L2), it points to a different VMCS.
-	 */
+	 
 	struct loaded_vmcs    vmcs01;
 	struct loaded_vmcs   *loaded_vmcs;
 
@@ -304,7 +237,7 @@ struct vcpu_vmx {
 		struct kvm_segment segs[8];
 	} rmode;
 	struct {
-		u32 bitmask; /* 4 bits per segment (1 bit per field) */
+		u32 bitmask;  
 		struct kvm_save_segment {
 			u16 selector;
 			unsigned long base;
@@ -317,38 +250,34 @@ struct vcpu_vmx {
 
 	union vmx_exit_reason exit_reason;
 
-	/* Posted interrupt descriptor */
+	 
 	struct pi_desc pi_desc;
 
-	/* Used if this vCPU is waiting for PI notification wakeup. */
+	 
 	struct list_head pi_wakeup_list;
 
-	/* Support for a guest hypervisor (nested VMX) */
+	 
 	struct nested_vmx nested;
 
-	/* Dynamic PLE window. */
+	 
 	unsigned int ple_window;
 	bool ple_window_dirty;
 
 	bool req_immediate_exit;
 
-	/* Support for PML */
+	 
 #define PML_ENTITY_NUM		512
 	struct page *pml_pg;
 
-	/* apic deadline value in host tsc */
+	 
 	u64 hv_deadline_tsc;
 
 	unsigned long host_debugctlmsr;
 
-	/*
-	 * Only bits masked by msr_ia32_feature_control_valid_bits can be set in
-	 * msr_ia32_feature_control. FEAT_CTL_LOCKED is always included
-	 * in msr_ia32_feature_control_valid_bits.
-	 */
+	 
 	u64 msr_ia32_feature_control;
 	u64 msr_ia32_feature_control_valid_bits;
-	/* SGX Launch Control public key hash */
+	 
 	u64 msr_ia32_sgxlepubkeyhash[4];
 	u64 msr_ia32_mcu_opt_ctrl;
 	bool disable_fb_clear;
@@ -356,7 +285,7 @@ struct vcpu_vmx {
 	struct pt_desc pt_desc;
 	struct lbr_desc lbr_desc;
 
-	/* Save desired MSR intercept (read: pass-through) state */
+	 
 #define MAX_POSSIBLE_PASSTHROUGH_MSRS	16
 	struct {
 		DECLARE_BITMAP(read, MAX_POSSIBLE_PASSTHROUGH_MSRS);
@@ -370,7 +299,7 @@ struct kvm_vmx {
 	unsigned int tss_addr;
 	bool ept_identity_pagetable_done;
 	gpa_t ept_identity_map_addr;
-	/* Posted Interrupt Descriptor (PID) table for IPI virtualization */
+	 
 	u64 *pid_table;
 };
 
@@ -431,14 +360,7 @@ static inline void vmx_set_intercept_for_msr(struct kvm_vcpu *vcpu, u32 msr,
 
 void vmx_update_cpu_dirty_logging(struct kvm_vcpu *vcpu);
 
-/*
- * Note, early Intel manuals have the write-low and read-high bitmap offsets
- * the wrong way round.  The bitmaps control MSRs 0x00000000-0x00001fff and
- * 0xc0000000-0xc0001fff.  The former (low) uses bytes 0-0x3ff for reads and
- * 0x800-0xbff for writes.  The latter (high) uses 0x400-0x7ff for reads and
- * 0xc00-0xfff for writes.  MSRs not covered by either of the ranges always
- * VM-Exit.
- */
+ 
 #define __BUILD_VMX_MSR_BITMAP_HELPER(rtype, action, bitop, access, base)      \
 static inline rtype vmx_##action##_msr_bitmap_##access(unsigned long *bitmap,  \
 						       u32 msr)		       \
@@ -611,11 +533,7 @@ BUILD_CONTROLS_SHADOW(exec, CPU_BASED_VM_EXEC_CONTROL, 32)
 BUILD_CONTROLS_SHADOW(secondary_exec, SECONDARY_VM_EXEC_CONTROL, 32)
 BUILD_CONTROLS_SHADOW(tertiary_exec, TERTIARY_VM_EXEC_CONTROL, 64)
 
-/*
- * VMX_REGS_LAZY_LOAD_SET - The set of registers that will be updated in the
- * cache on demand.  Other registers not listed here are synced to
- * the cache immediately after VM-Exit.
- */
+ 
 #define VMX_REGS_LAZY_LOAD_SET	((1 << VCPU_REGS_RIP) |         \
 				(1 << VCPU_REGS_RSP) |          \
 				(1 << VCPU_EXREG_RFLAGS) |      \
@@ -631,15 +549,7 @@ static inline unsigned long vmx_l1_guest_owned_cr0_bits(void)
 {
 	unsigned long bits = KVM_POSSIBLE_CR0_GUEST_BITS;
 
-	/*
-	 * CR0.WP needs to be intercepted when KVM is shadowing legacy paging
-	 * in order to construct shadow PTEs with the correct protections.
-	 * Note!  CR0.WP technically can be passed through to the guest if
-	 * paging is disabled, but checking CR0.PG would generate a cyclical
-	 * dependency of sorts due to forcing the caller to ensure CR0 holds
-	 * the correct value prior to determining which CR0 bits can be owned
-	 * by L1.  Keep it simple and limit the optimization to EPT.
-	 */
+	 
 	if (!enable_ept)
 		bits &= ~X86_CR0_WP;
 	return bits;
@@ -747,12 +657,9 @@ static inline bool vmx_can_use_ipiv(struct kvm_vcpu *vcpu)
 
 static inline bool guest_cpuid_has_evmcs(struct kvm_vcpu *vcpu)
 {
-	/*
-	 * eVMCS is exposed to the guest if Hyper-V is enabled in CPUID and
-	 * eVMCS has been explicitly enabled by userspace.
-	 */
+	 
 	return vcpu->arch.hyperv_enabled &&
 	       to_vmx(vcpu)->nested.enlightened_vmcs_enabled;
 }
 
-#endif /* __KVM_X86_VMX_H */
+#endif  

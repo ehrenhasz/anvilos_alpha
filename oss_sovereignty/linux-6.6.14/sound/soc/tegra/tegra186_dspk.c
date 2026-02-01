@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra186_dspk.c - Tegra186 DSPK driver
-//
-// Copyright (c) 2020 NVIDIA CORPORATION. All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -227,7 +227,7 @@ static int tegra186_dspk_hw_params(struct snd_pcm_substream *substream,
 	channels = params_channels(params);
 	cif_conf.audio_ch = channels;
 
-	/* Client channel */
+	 
 	switch (dspk->ch_sel) {
 	case DSPK_CH_SELECT_LEFT:
 	case DSPK_CH_SELECT_RIGHT:
@@ -257,7 +257,7 @@ static int tegra186_dspk_hw_params(struct snd_pcm_substream *substream,
 
 	srate = params_rate(params);
 
-	/* RX FIFO threshold in terms of frames */
+	 
 	max_th = (TEGRA186_DSPK_RX_FIFO_DEPTH / cif_conf.audio_ch) - 1;
 
 	if (dspk->rx_fifo_th > max_th)
@@ -270,12 +270,7 @@ static int tegra186_dspk_hw_params(struct snd_pcm_substream *substream,
 	tegra_set_cif(dspk->regmap, TEGRA186_DSPK_RX_CIF_CTRL,
 		      &cif_conf);
 
-	/*
-	 * DSPK clock and PDM codec clock should be synchronous with 4:1 ratio,
-	 * this is because it takes 4 clock cycles to send out one sample to
-	 * codec by sigma delta modulator. Finally the clock rate is a multiple
-	 * of 'Over Sampling Ratio', 'Sample Rate' and 'Interface Clock Ratio'.
-	 */
+	 
 	dspk_clk = (DSPK_OSR_FACTOR << dspk->osr_val) * srate * DSPK_CLK_RATIO;
 
 	err = clk_set_rate(dspk->clk_dspk, dspk_clk);
@@ -287,13 +282,13 @@ static int tegra186_dspk_hw_params(struct snd_pcm_substream *substream,
 	}
 
 	regmap_update_bits(dspk->regmap,
-			   /* Reg */
+			    
 			   TEGRA186_DSPK_CORE_CTRL,
-			   /* Mask */
+			    
 			   TEGRA186_DSPK_OSR_MASK |
 			   TEGRA186_DSPK_CHANNEL_SELECT_MASK |
 			   TEGRA186_DSPK_CTRL_LRSEL_POLARITY_MASK,
-			   /* Value */
+			    
 			   (dspk->osr_val << DSPK_OSR_SHIFT) |
 			   ((dspk->ch_sel + 1) << CH_SEL_SHIFT) |
 			   (dspk->lrsel << LRSEL_POL_SHIFT));
@@ -488,7 +483,7 @@ static int tegra186_dspk_platform_probe(struct platform_device *pdev)
 	dspk->osr_val = DSPK_OSR_64;
 	dspk->lrsel = DSPK_LRSEL_LEFT;
 	dspk->ch_sel = DSPK_CH_SELECT_STEREO;
-	dspk->mono_to_stereo = 0; /* "Zero" */
+	dspk->mono_to_stereo = 0;  
 
 	dev_set_drvdata(dev, dspk);
 

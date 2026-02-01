@@ -1,18 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// motu-command-dsp-message-parser.c - a part of driver for MOTU FireWire series
-//
-// Copyright (c) 2021 Takashi Sakamoto <o-takashi@sakamocchi.jp>
 
-// Below models allow software to configure their DSP function by command transferred in
-// asynchronous transaction:
-//  * 828 mk3 (FireWire only and Hybrid)
-//  * 896 mk3 (FireWire only and Hybrid)
-//  * Ultralite mk3 (FireWire only and Hybrid)
-//  * Traveler mk3
-//  * Track 16
-//
-// Isochronous packets from the above models includes messages to report state of hardware meter.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include "motu.h"
 
@@ -52,7 +52,7 @@ int snd_motu_command_dsp_message_parser_init(struct snd_motu *motu, enum cip_sfc
 
 	parser->state = INITIALIZED;
 
-	// All of data blocks don't have messages with meaningful information.
+	
 	switch (sfc) {
 	case CIP_SFC_176400:
 	case CIP_SFC_192000:
@@ -76,7 +76,7 @@ int snd_motu_command_dsp_message_parser_init(struct snd_motu *motu, enum cip_sfc
 #define FRAGMENT_POS			6
 #define MIDI_BYTE_POS			7
 #define MIDI_FLAG_POS			8
-// One value of hardware meter consists of 4 messages.
+
 #define FRAGMENTS_PER_VALUE		4
 #define VALUES_AT_IMAGE_END		0xffffffffffffffff
 
@@ -144,9 +144,9 @@ void snd_motu_command_dsp_message_parser_parse(const struct amdtp_stream *s,
 					++parser->fragment_pos;
 
 					if (parser->fragment_pos == 4) {
-						// Skip the last two quadlets since they could be
-						// invalid value (0xffffffff) as floating point
-						// number.
+						
+						
+						
 						if (parser->value_index <
 						    SNDRV_FIREWIRE_MOTU_COMMAND_DSP_METER_COUNT - 2) {
 							u32 val = (u32)(parser->value >> 32);

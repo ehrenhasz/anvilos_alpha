@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2005-2006 Fen Systems Ltd.
- * Copyright 2005-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/socket.h>
 #include <linux/in.h>
@@ -24,34 +20,24 @@
 #include "selftest.h"
 #include "workarounds.h"
 
-/* Preferred number of descriptors to fill at once */
+ 
 #define EF4_RX_PREFERRED_BATCH 8U
 
-/* Number of RX buffers to recycle pages for.  When creating the RX page recycle
- * ring, this number is divided by the number of buffers per page to calculate
- * the number of pages to store in the RX page recycle ring.
- */
+ 
 #define EF4_RECYCLE_RING_SIZE_IOMMU 4096
 #define EF4_RECYCLE_RING_SIZE_NOIOMMU (2 * EF4_RX_PREFERRED_BATCH)
 
-/* Size of buffer allocated for skb header area. */
+ 
 #define EF4_SKB_HEADERS  128u
 
-/* This is the percentage fill level below which new RX descriptors
- * will be added to the RX descriptor ring.
- */
+ 
 static unsigned int rx_refill_threshold;
 
-/* Each packet can consume up to ceil(max_frame_len / buffer_size) buffers */
+ 
 #define EF4_RX_MAX_FRAGS DIV_ROUND_UP(EF4_MAX_FRAME_LEN(EF4_MAX_MTU), \
 				      EF4_RX_USR_BUF_SIZE)
 
-/*
- * RX maximum head room required.
- *
- * This must be at least 1 to prevent overflow, plus one packet-worth
- * to allow pipelined receives.
- */
+ 
 #define EF4_RXD_HEAD_ROOM (1 + EF4_RX_MAX_FRAGS)
 
 static inline u8 *ef4_rx_buf_va(struct ef4_rx_buffer *buf)
@@ -102,7 +88,7 @@ void ef4_rx_config_page_split(struct ef4_nic *efx)
 					       efx->rx_bufs_per_page);
 }
 
-/* Check the RX page recycle ring for a page that can be reused. */
+ 
 static struct page *ef4_reuse_page(struct ef4_rx_queue *rx_queue)
 {
 	struct ef4_nic *efx = rx_queue->efx;
@@ -118,11 +104,11 @@ static struct page *ef4_reuse_page(struct ef4_rx_queue *rx_queue)
 		return NULL;
 
 	rx_queue->page_ring[index] = NULL;
-	/* page_remove cannot exceed page_add. */
+	 
 	if (rx_queue->page_remove != rx_queue->page_add)
 		++rx_queue->page_remove;
 
-	/* If page_count is 1 then we hold the only reference to this page. */
+	 
 	if (page_count(page) == 1) {
 		++rx_queue->page_recycle_count;
 		return page;
@@ -138,17 +124,7 @@ static struct page *ef4_reuse_page(struct ef4_rx_queue *rx_queue)
 	return NULL;
 }
 
-/**
- * ef4_init_rx_buffers - create EF4_RX_BATCH page-based RX buffers
- *
- * @rx_queue:		Efx RX queue
- * @atomic:		control memory allocation flags
- *
- * This allocates a batch of pages, maps them for DMA, and populates
- * struct ef4_rx_buffers for each one. Return a negative error code or
- * 0 on success. If a single page can be used for multiple buffers,
- * then the page will either be inserted fully, or not at all.
- */
+ 
 static int ef4_init_rx_buffers(struct ef4_rx_queue *rx_queue, bool atomic)
 {
 	struct ef4_nic *efx = rx_queue->efx;
@@ -207,9 +183,7 @@ static int ef4_init_rx_buffers(struct ef4_rx_queue *rx_queue, bool atomic)
 	return 0;
 }
 
-/* Unmap a DMA-mapped page.  This function is only called for the final RX
- * buffer in a page.
- */
+ 
 static void ef4_unmap_rx_buffer(struct ef4_nic *efx,
 				struct ef4_rx_buffer *rx_buf)
 {
@@ -237,10 +211,7 @@ static void ef4_free_rx_buffers(struct ef4_rx_queue *rx_queue,
 	} while (--num_bufs);
 }
 
-/* Attempt to recycle the page if there is an RX recycle ring; the page can
- * only be added if this is the final RX buffer, to prevent pages being used in
- * the descriptor ring and appearing in the recycle ring simultaneously.
- */
+ 
 static void ef4_recycle_rx_page(struct ef4_channel *channel,
 				struct ef4_rx_buffer *rx_buf)
 {
@@ -249,7 +220,7 @@ static void ef4_recycle_rx_page(struct ef4_channel *channel,
 	struct ef4_nic *efx = rx_queue->efx;
 	unsigned index;
 
-	/* Only recycle the page after processing the final buffer. */
+	 
 	if (!(rx_buf->flags & EF4_RX_BUF_LAST_IN_PAGE))
 		return;
 
@@ -258,10 +229,7 @@ static void ef4_recycle_rx_page(struct ef4_channel *channel,
 		unsigned read_index = rx_queue->page_remove &
 			rx_queue->page_ptr_mask;
 
-		/* The next slot in the recycle ring is available, but
-		 * increment page_remove if the read pointer currently
-		 * points here.
-		 */
+		 
 		if (read_index == index)
 			++rx_queue->page_remove;
 		rx_queue->page_ring[index] = page;
@@ -276,11 +244,11 @@ static void ef4_recycle_rx_page(struct ef4_channel *channel,
 static void ef4_fini_rx_buffer(struct ef4_rx_queue *rx_queue,
 			       struct ef4_rx_buffer *rx_buf)
 {
-	/* Release the page reference we hold for the buffer. */
+	 
 	if (rx_buf->page)
 		put_page(rx_buf->page);
 
-	/* If this is the last buffer in a page, unmap and free it. */
+	 
 	if (rx_buf->flags & EF4_RX_BUF_LAST_IN_PAGE) {
 		ef4_unmap_rx_buffer(rx_queue->efx, rx_buf);
 		ef4_free_rx_buffers(rx_queue, rx_buf, 1);
@@ -288,7 +256,7 @@ static void ef4_fini_rx_buffer(struct ef4_rx_queue *rx_queue,
 	rx_buf->page = NULL;
 }
 
-/* Recycle the pages that are used by buffers that have just been received. */
+ 
 static void ef4_recycle_rx_pages(struct ef4_channel *channel,
 				 struct ef4_rx_buffer *rx_buf,
 				 unsigned int n_frags)
@@ -315,19 +283,7 @@ static void ef4_discard_rx_packet(struct ef4_channel *channel,
 	ef4_free_rx_buffers(rx_queue, rx_buf, n_frags);
 }
 
-/**
- * ef4_fast_push_rx_descriptors - push new RX descriptors quickly
- * @rx_queue:		RX descriptor queue
- *
- * This will aim to fill the RX descriptor queue up to
- * @rx_queue->@max_fill. If there is insufficient atomic
- * memory to do so, a slow fill will be scheduled.
- * @atomic: control memory allocation flags
- *
- * The caller must provide serialisation (none is used here). In practise,
- * this means this function must run from the NAPI handler, or be called
- * when NAPI is disabled.
- */
+ 
 void ef4_fast_push_rx_descriptors(struct ef4_rx_queue *rx_queue, bool atomic)
 {
 	struct ef4_nic *efx = rx_queue->efx;
@@ -337,13 +293,13 @@ void ef4_fast_push_rx_descriptors(struct ef4_rx_queue *rx_queue, bool atomic)
 	if (!rx_queue->refill_enabled)
 		return;
 
-	/* Calculate current fill level, and exit if we don't need to fill */
+	 
 	fill_level = (rx_queue->added_count - rx_queue->removed_count);
 	EF4_BUG_ON_PARANOID(fill_level > rx_queue->efx->rxq_entries);
 	if (fill_level >= rx_queue->fast_fill_trigger)
 		goto out;
 
-	/* Record minimum fill level */
+	 
 	if (unlikely(fill_level < rx_queue->min_fill)) {
 		if (fill_level)
 			rx_queue->min_fill = fill_level;
@@ -363,7 +319,7 @@ void ef4_fast_push_rx_descriptors(struct ef4_rx_queue *rx_queue, bool atomic)
 	do {
 		rc = ef4_init_rx_buffers(rx_queue, atomic);
 		if (unlikely(rc)) {
-			/* Ensure that we don't leave the rx queue empty */
+			 
 			if (rx_queue->added_count == rx_queue->removed_count)
 				ef4_schedule_slow_fill(rx_queue);
 			goto out;
@@ -384,7 +340,7 @@ void ef4_rx_slow_fill(struct timer_list *t)
 {
 	struct ef4_rx_queue *rx_queue = from_timer(rx_queue, t, slow_fill);
 
-	/* Post an event to cause NAPI to run and refill the queue */
+	 
 	ef4_nic_generate_fill_event(rx_queue);
 	++rx_queue->slow_fill_count;
 }
@@ -399,9 +355,7 @@ static void ef4_rx_packet__check_len(struct ef4_rx_queue *rx_queue,
 	if (likely(len <= max_len))
 		return;
 
-	/* The packet must be discarded, but this is only a fatal error
-	 * if the caller indicated it was
-	 */
+	 
 	rx_buf->flags |= EF4_RX_PKT_DISCARD;
 
 	if ((len > rx_buf->len) && EF4_WORKAROUND_8071(efx)) {
@@ -423,9 +377,7 @@ static void ef4_rx_packet__check_len(struct ef4_rx_queue *rx_queue,
 	ef4_rx_queue_channel(rx_queue)->n_rx_overlength++;
 }
 
-/* Pass a received packet up through GRO.  GRO can handle pages
- * regardless of checksum state and skbs with a good checksum.
- */
+ 
 static void
 ef4_rx_packet_gro(struct ef4_channel *channel, struct ef4_rx_buffer *rx_buf,
 		  unsigned int n_frags, u8 *eh)
@@ -469,7 +421,7 @@ ef4_rx_packet_gro(struct ef4_channel *channel, struct ef4_rx_buffer *rx_buf,
 	napi_gro_frags(napi);
 }
 
-/* Allocate and construct an SKB around page fragments */
+ 
 static struct sk_buff *ef4_rx_mk_skb(struct ef4_channel *channel,
 				     struct ef4_rx_buffer *rx_buf,
 				     unsigned int n_frags,
@@ -478,7 +430,7 @@ static struct sk_buff *ef4_rx_mk_skb(struct ef4_channel *channel,
 	struct ef4_nic *efx = channel->efx;
 	struct sk_buff *skb;
 
-	/* Allocate an SKB to store the headers */
+	 
 	skb = netdev_alloc_skb(efx->net_dev,
 			       efx->rx_ip_align + efx->rx_prefix_size +
 			       hdr_len);
@@ -494,7 +446,7 @@ static struct sk_buff *ef4_rx_mk_skb(struct ef4_channel *channel,
 	skb_reserve(skb, efx->rx_ip_align + efx->rx_prefix_size);
 	__skb_put(skb, hdr_len);
 
-	/* Append the remaining page(s) onto the frag list */
+	 
 	if (rx_buf->len > hdr_len) {
 		rx_buf->page_offset += hdr_len;
 		rx_buf->len -= hdr_len;
@@ -519,7 +471,7 @@ static struct sk_buff *ef4_rx_mk_skb(struct ef4_channel *channel,
 
 	skb->truesize += n_frags * efx->rx_buffer_truesize;
 
-	/* Move past the ethernet header */
+	 
 	skb->protocol = eth_type_trans(skb, efx->net_dev);
 
 	skb_mark_napi_id(skb, &channel->napi_str);
@@ -539,7 +491,7 @@ void ef4_rx_packet(struct ef4_rx_queue *rx_queue, unsigned int index,
 	rx_buf = ef4_rx_buffer(rx_queue, index);
 	rx_buf->flags |= flags;
 
-	/* Validate the number of fragments and completed length */
+	 
 	if (n_frags == 1) {
 		if (!(flags & EF4_RX_PKT_PREFIX_LEN))
 			ef4_rx_packet__check_len(rx_queue, rx_buf, len);
@@ -547,9 +499,7 @@ void ef4_rx_packet(struct ef4_rx_queue *rx_queue, unsigned int index,
 		   unlikely(len <= (n_frags - 1) * efx->rx_dma_len) ||
 		   unlikely(len > n_frags * efx->rx_dma_len) ||
 		   unlikely(!efx->rx_scatter)) {
-		/* If this isn't an explicit discard request, either
-		 * the hardware or the driver is broken.
-		 */
+		 
 		WARN_ON(!(len == 0 && rx_buf->flags & EF4_RX_PKT_DISCARD));
 		rx_buf->flags |= EF4_RX_PKT_DISCARD;
 	}
@@ -561,9 +511,7 @@ void ef4_rx_packet(struct ef4_rx_queue *rx_queue, unsigned int index,
 		   (rx_buf->flags & EF4_RX_PKT_CSUMMED) ? " [SUMMED]" : "",
 		   (rx_buf->flags & EF4_RX_PKT_DISCARD) ? " [DISCARD]" : "");
 
-	/* Discard packet, if instructed to do so.  Process the
-	 * previous receive first.
-	 */
+	 
 	if (unlikely(rx_buf->flags & EF4_RX_PKT_DISCARD)) {
 		ef4_rx_flush_packet(channel);
 		ef4_discard_rx_packet(channel, rx_buf, n_frags);
@@ -573,23 +521,17 @@ void ef4_rx_packet(struct ef4_rx_queue *rx_queue, unsigned int index,
 	if (n_frags == 1 && !(flags & EF4_RX_PKT_PREFIX_LEN))
 		rx_buf->len = len;
 
-	/* Release and/or sync the DMA mapping - assumes all RX buffers
-	 * consumed in-order per RX queue.
-	 */
+	 
 	ef4_sync_rx_buffer(efx, rx_buf, rx_buf->len);
 
-	/* Prefetch nice and early so data will (hopefully) be in cache by
-	 * the time we look at it.
-	 */
+	 
 	prefetch(ef4_rx_buf_va(rx_buf));
 
 	rx_buf->page_offset += efx->rx_prefix_size;
 	rx_buf->len -= efx->rx_prefix_size;
 
 	if (n_frags > 1) {
-		/* Release/sync DMA mapping for additional fragments.
-		 * Fix length for last fragment.
-		 */
+		 
 		unsigned int tail_frags = n_frags - 1;
 
 		for (;;) {
@@ -602,13 +544,11 @@ void ef4_rx_packet(struct ef4_rx_queue *rx_queue, unsigned int index,
 		ef4_sync_rx_buffer(efx, rx_buf, rx_buf->len);
 	}
 
-	/* All fragments have been DMA-synced, so recycle pages. */
+	 
 	rx_buf = ef4_rx_buffer(rx_queue, index);
 	ef4_recycle_rx_pages(channel, rx_buf, n_frags);
 
-	/* Pipeline receives so that we give time for packet headers to be
-	 * prefetched into cache.
-	 */
+	 
 	ef4_rx_flush_packet(channel);
 	channel->rx_pkt_n_frags = n_frags;
 	channel->rx_pkt_index = index;
@@ -631,7 +571,7 @@ static void ef4_rx_deliver(struct ef4_channel *channel, u8 *eh,
 	}
 	skb_record_rx_queue(skb, channel->rx_queue.core_index);
 
-	/* Set the SKB flags */
+	 
 	skb_checksum_none_assert(skb);
 	if (likely(rx_buf->flags & EF4_RX_PKT_CSUMMED))
 		skb->ip_summed = CHECKSUM_UNNECESSARY;
@@ -640,11 +580,11 @@ static void ef4_rx_deliver(struct ef4_channel *channel, u8 *eh,
 		if (channel->type->receive_skb(channel, skb))
 			return;
 
-	/* Pass the packet up */
+	 
 	netif_receive_skb(skb);
 }
 
-/* Handle a received packet.  Second half: Touches packet payload. */
+ 
 void __ef4_rx_packet(struct ef4_channel *channel)
 {
 	struct ef4_nic *efx = channel->efx;
@@ -652,16 +592,12 @@ void __ef4_rx_packet(struct ef4_channel *channel)
 		ef4_rx_buffer(&channel->rx_queue, channel->rx_pkt_index);
 	u8 *eh = ef4_rx_buf_va(rx_buf);
 
-	/* Read length from the prefix if necessary.  This already
-	 * excludes the length of the prefix itself.
-	 */
+	 
 	if (rx_buf->flags & EF4_RX_PKT_PREFIX_LEN)
 		rx_buf->len = le16_to_cpup((__le16 *)
 					   (eh + efx->rx_packet_len_offset));
 
-	/* If we're in loopback test, then pass the packet directly to the
-	 * loopback layer, and free the rx_buf here
-	 */
+	 
 	if (unlikely(efx->loopback_selftest)) {
 		struct ef4_rx_queue *rx_queue;
 
@@ -689,7 +625,7 @@ int ef4_probe_rx_queue(struct ef4_rx_queue *rx_queue)
 	unsigned int entries;
 	int rc;
 
-	/* Create the smallest power-of-two aligned ring */
+	 
 	entries = max(roundup_pow_of_two(efx->rxq_entries), EF4_MIN_DMAQ_SIZE);
 	EF4_BUG_ON_PARANOID(entries > EF4_MAX_DMAQ_SIZE);
 	rx_queue->ptr_mask = entries - 1;
@@ -699,7 +635,7 @@ int ef4_probe_rx_queue(struct ef4_rx_queue *rx_queue)
 		  ef4_rx_queue_index(rx_queue), efx->rxq_entries,
 		  rx_queue->ptr_mask);
 
-	/* Allocate RX buffers */
+	 
 	rx_queue->buffer = kcalloc(entries, sizeof(*rx_queue->buffer),
 				   GFP_KERNEL);
 	if (!rx_queue->buffer)
@@ -720,7 +656,7 @@ static void ef4_init_rx_recycle_ring(struct ef4_nic *efx,
 	unsigned int bufs_in_recycle_ring, page_ring_size;
 	struct iommu_domain __maybe_unused *domain;
 
-	/* Set the RX recycle ring size */
+	 
 #ifdef CONFIG_PPC64
 	bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_IOMMU;
 #else
@@ -729,7 +665,7 @@ static void ef4_init_rx_recycle_ring(struct ef4_nic *efx,
 		bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_IOMMU;
 	else
 		bufs_in_recycle_ring = EF4_RECYCLE_RING_SIZE_NOIOMMU;
-#endif /* CONFIG_PPC64 */
+#endif  
 
 	page_ring_size = roundup_pow_of_two(bufs_in_recycle_ring /
 					    efx->rx_bufs_per_page);
@@ -749,7 +685,7 @@ void ef4_init_rx_queue(struct ef4_rx_queue *rx_queue)
 	netif_dbg(rx_queue->efx, drv, rx_queue->efx->net_dev,
 		  "initialising RX queue %d\n", ef4_rx_queue_index(rx_queue));
 
-	/* Initialise ptr fields */
+	 
 	rx_queue->added_count = 0;
 	rx_queue->notified_count = 0;
 	rx_queue->removed_count = 0;
@@ -762,7 +698,7 @@ void ef4_init_rx_queue(struct ef4_rx_queue *rx_queue)
 	rx_queue->page_recycle_failed = 0;
 	rx_queue->page_recycle_full = 0;
 
-	/* Initialise limit fields */
+	 
 	max_fill = efx->rxq_entries - EF4_RXD_HEAD_ROOM;
 	max_trigger =
 		max_fill - efx->rx_pages_per_batch * efx->rx_bufs_per_page;
@@ -778,7 +714,7 @@ void ef4_init_rx_queue(struct ef4_rx_queue *rx_queue)
 	rx_queue->fast_fill_trigger = trigger;
 	rx_queue->refill_enabled = true;
 
-	/* Set up RX descriptor ring */
+	 
 	ef4_nic_init_rx(rx_queue);
 }
 
@@ -793,7 +729,7 @@ void ef4_fini_rx_queue(struct ef4_rx_queue *rx_queue)
 
 	del_timer_sync(&rx_queue->slow_fill);
 
-	/* Release RX buffers from the current read ptr to the write ptr */
+	 
 	if (rx_queue->buffer) {
 		for (i = rx_queue->removed_count; i < rx_queue->added_count;
 		     i++) {
@@ -803,7 +739,7 @@ void ef4_fini_rx_queue(struct ef4_rx_queue *rx_queue)
 		}
 	}
 
-	/* Unmap and release the pages in the recycle ring. Remove the ring. */
+	 
 	for (i = 0; i <= rx_queue->page_ptr_mask; i++) {
 		struct page *page = rx_queue->page_ring[i];
 		struct ef4_rx_page_state *state;
@@ -884,7 +820,7 @@ int ef4_filter_rfs(struct net_device *net_dev, const struct sk_buff *skb,
 	if (rc < 0)
 		return rc;
 
-	/* Remember this so we can check whether to expire the filter later */
+	 
 	channel = ef4_get_channel(efx, rxq_index);
 	channel->rps_flow_id[rc] = flow_id;
 	++channel->rfs_filters_added;
@@ -942,17 +878,9 @@ bool __ef4_filter_rfs_expire(struct ef4_nic *efx, unsigned int quota)
 	return true;
 }
 
-#endif /* CONFIG_RFS_ACCEL */
+#endif  
 
-/**
- * ef4_filter_is_mc_recipient - test whether spec is a multicast recipient
- * @spec: Specification to test
- *
- * Return: %true if the specification is a non-drop RX filter that
- * matches a local MAC address I/G bit value of 1 or matches a local
- * IPv4 or IPv6 address value in the respective multicast address
- * range.  Otherwise %false.
- */
+ 
 bool ef4_filter_is_mc_recipient(const struct ef4_filter_spec *spec)
 {
 	if (!(spec->flags & EF4_FILTER_FLAG_RX) ||

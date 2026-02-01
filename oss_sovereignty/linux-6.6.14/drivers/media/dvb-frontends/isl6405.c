@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * isl6405.c - driver for dual lnb supply and control ic ISL6405
- *
- * Copyright (C) 2008 Hartmut Hackmann
- * Copyright (C) 2006 Oliver Endriss
- *
- * the project's page is at https://linuxtv.org
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -95,10 +88,10 @@ static int isl6405_enable_high_lnb_voltage(struct dvb_frontend *fe, long arg)
 
 static void isl6405_release(struct dvb_frontend *fe)
 {
-	/* power off */
+	 
 	isl6405_set_voltage(fe, SEC_VOLTAGE_OFF);
 
-	/* free */
+	 
 	kfree(fe->sec_priv);
 	fe->sec_priv = NULL;
 }
@@ -110,7 +103,7 @@ struct dvb_frontend *isl6405_attach(struct dvb_frontend *fe, struct i2c_adapter 
 	if (!isl6405)
 		return NULL;
 
-	/* default configuration */
+	 
 	if (override_set & 0x80)
 		isl6405->config = ISL6405_ISEL2;
 	else
@@ -119,23 +112,23 @@ struct dvb_frontend *isl6405_attach(struct dvb_frontend *fe, struct i2c_adapter 
 	isl6405->i2c_addr = i2c_addr;
 	fe->sec_priv = isl6405;
 
-	/* bits which should be forced to '1' */
+	 
 	isl6405->override_or = override_set;
 
-	/* bits which should be forced to '0' */
+	 
 	isl6405->override_and = ~override_clear;
 
-	/* detect if it is present or not */
+	 
 	if (isl6405_set_voltage(fe, SEC_VOLTAGE_OFF)) {
 		kfree(isl6405);
 		fe->sec_priv = NULL;
 		return NULL;
 	}
 
-	/* install release callback */
+	 
 	fe->ops.release_sec = isl6405_release;
 
-	/* override frontend ops */
+	 
 	fe->ops.set_voltage = isl6405_set_voltage;
 	fe->ops.enable_high_lnb_voltage = isl6405_enable_high_lnb_voltage;
 

@@ -1,20 +1,4 @@
-/* Tests of fstatat.
-   Copyright (C) 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Eric Blake <ebb9@byu.net>, 2009.  */
+ 
 
 #include <config.h>
 
@@ -43,7 +27,7 @@ SIGNATURE_CHECK (fstatat, int, (int, char const *, struct stat *, int));
 
 static int dfd = AT_FDCWD;
 
-/* Wrapper around fstatat to test stat behavior.  */
+ 
 static int
 do_stat (char const *name, struct stat *st)
 {
@@ -54,7 +38,7 @@ do_stat (char const *name, struct stat *st)
 #endif
 }
 
-/* Wrapper around fstatat to test lstat behavior.  */
+ 
 static int
 do_lstat (char const *name, struct stat *st)
 {
@@ -70,10 +54,10 @@ main (_GL_UNUSED int argc, char *argv[])
 {
   int result;
 
-  /* Remove any leftovers from a previous partial run.  */
+   
   ignore_value (system ("rm -rf " BASE "*"));
 
-  /* Test behaviour for invalid file descriptors.  */
+   
   {
     struct stat statbuf;
 
@@ -98,7 +82,7 @@ main (_GL_UNUSED int argc, char *argv[])
   ASSERT (test_lstat_func (do_lstat, false) == result);
   ASSERT (close (dfd) == 0);
 
-  /* FIXME - add additional tests of dfd not at current directory.  */
+   
 
   if (result == 77)
     fputs ("skipping test: symlinks not supported on this file system\n",

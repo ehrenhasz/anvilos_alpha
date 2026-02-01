@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NXP i.MX8QXP ADC driver
- *
- * Based on the work of Haibo Chen <haibo.chen@nxp.com>
- * The initial developer of the original code is Haibo Chen.
- * Portions created by Haibo Chen are Copyright (C) 2018 NXP.
- * All Rights Reserved.
- *
- * Copyright (C) 2018 NXP
- * Copyright (C) 2021 Cai Huoqing
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -29,7 +19,7 @@
 
 #define ADC_DRIVER_NAME		"imx8qxp-adc"
 
-/* Register map definition */
+ 
 #define IMX8QXP_ADR_ADC_CTRL		0x10
 #define IMX8QXP_ADR_ADC_STAT		0x14
 #define IMX8QXP_ADR_ADC_IE		0x18
@@ -43,7 +33,7 @@
 #define IMX8QXP_ADR_ADC_RESFIFO		0x300
 #define IMX8QXP_ADR_ADC_TST		0xffc
 
-/* ADC bit shift */
+ 
 #define IMX8QXP_ADC_IE_FWMIE_MASK		GENMASK(1, 0)
 #define IMX8QXP_ADC_CTRL_FIFO_RESET_MASK	BIT(8)
 #define IMX8QXP_ADC_CTRL_SOFTWARE_RESET_MASK	BIT(1)
@@ -72,7 +62,7 @@
 #define IMX8QXP_ADC_FCTRL_FCOUNT_MASK		GENMASK(4, 0)
 #define IMX8QXP_ADC_RESFIFO_VAL_MASK		GENMASK(18, 3)
 
-/* ADC PARAMETER*/
+ 
 #define IMX8QXP_ADC_CMDL_CHANNEL_SCALE_FULL		GENMASK(5, 0)
 #define IMX8QXP_ADC_CMDL_SEL_A_A_B_CHANNEL		0
 #define IMX8QXP_ADC_CMDL_STANDARD_RESOLUTION		0
@@ -94,7 +84,7 @@ struct imx8qxp_adc {
 	struct clk *clk;
 	struct clk *ipg_clk;
 	struct regulator *vref;
-	/* Serialise ADC channel reads */
+	 
 	struct mutex lock;
 	struct completion completion;
 	u32 fifo[IMX8QXP_ADC_MAX_FIFO_SIZE];
@@ -124,7 +114,7 @@ static void imx8qxp_adc_reset(struct imx8qxp_adc *adc)
 {
 	u32 ctrl;
 
-	/*software reset, need to clear the set bit*/
+	 
 	ctrl = readl(adc->regs + IMX8QXP_ADR_ADC_CTRL);
 	ctrl |= FIELD_PREP(IMX8QXP_ADC_CTRL_SOFTWARE_RESET_MASK, 1);
 	writel(ctrl, adc->regs + IMX8QXP_ADR_ADC_CTRL);
@@ -132,7 +122,7 @@ static void imx8qxp_adc_reset(struct imx8qxp_adc *adc)
 	ctrl &= ~FIELD_PREP(IMX8QXP_ADC_CTRL_SOFTWARE_RESET_MASK, 1);
 	writel(ctrl, adc->regs + IMX8QXP_ADR_ADC_CTRL);
 
-	/* reset the fifo */
+	 
 	ctrl |= FIELD_PREP(IMX8QXP_ADC_CTRL_FIFO_RESET_MASK, 1);
 	writel(ctrl, adc->regs + IMX8QXP_ADR_ADC_CTRL);
 }
@@ -141,7 +131,7 @@ static void imx8qxp_adc_reg_config(struct imx8qxp_adc *adc, int channel)
 {
 	u32 adc_cfg, adc_tctrl, adc_cmdl, adc_cmdh;
 
-	/* ADC configuration */
+	 
 	adc_cfg = FIELD_PREP(IMX8QXP_ADC_CFG_PWREN_MASK, 1) |
 		  FIELD_PREP(IMX8QXP_ADC_CFG_PUDLY_MASK, 0x80)|
 		  FIELD_PREP(IMX8QXP_ADC_CFG_REFSEL_MASK, 0) |
@@ -149,14 +139,14 @@ static void imx8qxp_adc_reg_config(struct imx8qxp_adc *adc, int channel)
 		  FIELD_PREP(IMX8QXP_ADC_CFG_TPRICTRL_MASK, 0);
 	writel(adc_cfg, adc->regs + IMX8QXP_ADR_ADC_CFG);
 
-	/* config the trigger control */
+	 
 	adc_tctrl = FIELD_PREP(IMX8QXP_ADC_TCTRL_TCMD_MASK, 1) |
 		    FIELD_PREP(IMX8QXP_ADC_TCTRL_TDLY_MASK, 0) |
 		    FIELD_PREP(IMX8QXP_ADC_TCTRL_TPRI_MASK, IMX8QXP_ADC_TCTRL_TPRI_PRIORITY_HIGH) |
 		    FIELD_PREP(IMX8QXP_ADC_TCTRL_HTEN_MASK, IMX8QXP_ADC_TCTRL_HTEN_HW_TIRG_DIS);
 	writel(adc_tctrl, adc->regs + IMX8QXP_ADR_ADC_TCTRL(0));
 
-	/* config the cmd */
+	 
 	adc_cmdl = FIELD_PREP(IMX8QXP_ADC_CMDL_CSCALE_MASK, IMX8QXP_ADC_CMDL_CHANNEL_SCALE_FULL) |
 		   FIELD_PREP(IMX8QXP_ADC_CMDL_MODE_MASK, IMX8QXP_ADC_CMDL_STANDARD_RESOLUTION) |
 		   FIELD_PREP(IMX8QXP_ADC_CMDL_DIFF_MASK, IMX8QXP_ADC_CMDL_MODE_SINGLE) |
@@ -179,11 +169,11 @@ static void imx8qxp_adc_fifo_config(struct imx8qxp_adc *adc)
 
 	fifo_ctrl = readl(adc->regs + IMX8QXP_ADR_ADC_FCTRL);
 	fifo_ctrl &= ~IMX8QXP_ADC_FCTRL_FWMARK_MASK;
-	/* set the watermark level to 1 */
+	 
 	fifo_ctrl |= FIELD_PREP(IMX8QXP_ADC_FCTRL_FWMARK_MASK, 0);
 	writel(fifo_ctrl, adc->regs + IMX8QXP_ADR_ADC_FCTRL);
 
-	/* FIFO Watermark Interrupt Enable */
+	 
 	interrupt_en = readl(adc->regs + IMX8QXP_ADR_ADC_IE);
 	interrupt_en |= FIELD_PREP(IMX8QXP_ADC_IE_FWMIE_MASK, 1);
 	writel(interrupt_en, adc->regs + IMX8QXP_ADR_ADC_IE);
@@ -219,11 +209,11 @@ static int imx8qxp_adc_read_raw(struct iio_dev *indio_dev,
 
 		imx8qxp_adc_fifo_config(adc);
 
-		/* adc enable */
+		 
 		ctrl = readl(adc->regs + IMX8QXP_ADR_ADC_CTRL);
 		ctrl |= FIELD_PREP(IMX8QXP_ADC_CTRL_ADC_EN_MASK, 1);
 		writel(ctrl, adc->regs + IMX8QXP_ADR_ADC_CTRL);
-		/* adc start */
+		 
 		writel(1, adc->regs + IMX8QXP_ADR_ADC_SWTRIG);
 
 		ret = wait_for_completion_interruptible_timeout(&adc->completion,
@@ -483,7 +473,7 @@ static DEFINE_RUNTIME_DEV_PM_OPS(imx8qxp_adc_pm_ops,
 
 static const struct of_device_id imx8qxp_adc_match[] = {
 	{ .compatible = "nxp,imx8qxp-adc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8qxp_adc_match);
 

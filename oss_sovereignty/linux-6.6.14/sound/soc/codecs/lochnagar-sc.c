@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Lochnagar sound card driver
-//
-// Copyright (c) 2017-2019 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
-//
-// Author: Charles Keepax <ckeepax@opensource.cirrus.com>
-//         Piotr Stankiewicz <piotrs@opensource.cirrus.com>
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>

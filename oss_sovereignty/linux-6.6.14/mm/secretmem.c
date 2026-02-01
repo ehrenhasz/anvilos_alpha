@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright IBM Corporation, 2021
- *
- * Author: Mike Rapoport <rppt@linux.ibm.com>
- */
+
+ 
 
 #include <linux/mm.h>
 #include <linux/fs.h>
@@ -28,10 +24,7 @@
 #undef pr_fmt
 #define pr_fmt(fmt) "secretmem: " fmt
 
-/*
- * Define mode and flag masks to allow validation of the system call
- * parameters.
- */
+ 
 #define SECRETMEM_MODE_MASK	(0x0)
 #define SECRETMEM_FLAGS_MASK	SECRETMEM_MODE_MASK
 
@@ -85,11 +78,7 @@ retry:
 		err = filemap_add_folio(mapping, folio, offset, gfp);
 		if (unlikely(err)) {
 			folio_put(folio);
-			/*
-			 * If a split of large page was required, it
-			 * already happened when we marked the page invalid
-			 * which guarantees that this call won't fail
-			 */
+			 
 			set_direct_map_default_noflush(page);
 			if (err == -EEXIST)
 				goto retry;
@@ -219,7 +208,7 @@ static struct file *secretmem_file_create(unsigned long flags)
 	inode->i_op = &secretmem_iops;
 	inode->i_mapping->a_ops = &secretmem_aops;
 
-	/* pretend we are a normal file with zero size */
+	 
 	inode->i_mode |= S_IFREG;
 	inode->i_size = 0;
 
@@ -235,7 +224,7 @@ SYSCALL_DEFINE1(memfd_secret, unsigned int, flags)
 	struct file *file;
 	int fd, err;
 
-	/* make sure local flags do not confict with global fcntl.h */
+	 
 	BUILD_BUG_ON(SECRETMEM_FLAGS_MASK & O_CLOEXEC);
 
 	if (!secretmem_enable)
@@ -287,7 +276,7 @@ static int __init secretmem_init(void)
 	if (IS_ERR(secretmem_mnt))
 		return PTR_ERR(secretmem_mnt);
 
-	/* prevent secretmem mappings from ever getting PROT_EXEC */
+	 
 	secretmem_mnt->mnt_flags |= MNT_NOEXEC;
 
 	return 0;

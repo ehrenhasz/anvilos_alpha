@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Controller of read/write threads for virtio-trace
- *
- * Copyright (C) 2012 Hitachi, Ltd.
- * Created by Yoshihiro Yunomae <yoshihiro.yunomae.ez@hitachi.com>
- *            Masami Hiramatsu <masami.hiramatsu.pt@hitachi.com>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <fcntl.h>
@@ -20,10 +14,10 @@
 #define EVENT_WAIT_MSEC		100
 
 static volatile sig_atomic_t global_signal_val;
-bool global_sig_receive;	/* default false */
-bool global_run_operation;	/* default false*/
+bool global_sig_receive;	 
+bool global_run_operation;	 
 
-/* Handle SIGTERM/SIGINT/SIGQUIT to exit */
+ 
 static void signal_handler(int sig)
 {
 	global_signal_val = sig;
@@ -60,7 +54,7 @@ static int wait_order(int ctl_fd)
 			global_sig_receive = true;
 			pr_info("Receive interrupt %d\n", global_signal_val);
 
-			/* Wakes rw-threads when they are sleeping */
+			 
 			if (!global_run_operation)
 				pthread_cond_broadcast(&cond_wakeup);
 
@@ -83,16 +77,14 @@ error:
 	exit(EXIT_FAILURE);
 }
 
-/*
- * contol read/write threads by handling global_run_operation
- */
+ 
 void *rw_ctl_loop(int ctl_fd)
 {
 	ssize_t rlen;
 	char buf[HOST_MSG_SIZE];
 	int ret;
 
-	/* Setup signal handlers */
+	 
 	signal(SIGTERM, signal_handler);
 	signal(SIGINT, signal_handler);
 	signal(SIGQUIT, signal_handler);
@@ -110,18 +102,12 @@ void *rw_ctl_loop(int ctl_fd)
 		}
 
 		if (rlen == 2 && buf[0] == '1') {
-			/*
-			 * If host writes '1' to a control path,
-			 * this controller wakes all read/write threads.
-			 */
+			 
 			global_run_operation = true;
 			pthread_cond_broadcast(&cond_wakeup);
 			pr_debug("Wake up all read/write threads\n");
 		} else if (rlen == 2 && buf[0] == '0') {
-			/*
-			 * If host writes '0' to a control path, read/write
-			 * threads will wait for notification from Host.
-			 */
+			 
 			global_run_operation = false;
 			pr_debug("Stop all read/write threads\n");
 		} else

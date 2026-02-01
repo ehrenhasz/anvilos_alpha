@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ak4671.h  --  audio driver for AK4671
- *
- * Copyright (C) 2009 Samsung Electronics Co.Ltd
- * Author: Joonyoung Shim <jy0922.shim@samsung.com>
- */
+ 
+ 
 
 #ifndef _AK4671_H
 #define _AK4671_H
@@ -100,12 +95,12 @@
 #define AK4671_DIGITAL_MIXING_CONTROL2		0x59
 #define AK4671_SAR_ADC_CONTROL			0x5a
 
-/* Bitfield Definitions */
+ 
 
-/* AK4671_AD_DA_POWER_MANAGEMENT (0x00) Fields */
+ 
 #define AK4671_PMVCM				0x01
 
-/* AK4671_PLL_MODE_SELECT0 (0x01) Fields */
+ 
 #define AK4671_PLL				0x0f
 #define AK4671_PLL_11_2896MHZ			(4 << 0)
 #define AK4671_PLL_12_288MHZ			(5 << 0)
@@ -127,11 +122,11 @@
 #define AK4671_FS_48KHZ				(11 << 4)
 #define AK4671_FS_44_1KHZ			(15 << 4)
 
-/* AK4671_PLL_MODE_SELECT1 (0x02) Fields */
+ 
 #define AK4671_PMPLL				0x01
 #define AK4671_M_S				0x02
 
-/* AK4671_FORMAT_SELECT (0x03) Fields */
+ 
 #define AK4671_DIF				0x03
 #define AK4671_DIF_DSP_MODE			(0 << 0)
 #define AK4671_DIF_MSB_MODE			(2 << 0)
@@ -140,7 +135,7 @@
 #define AK4671_MSBS				0x08
 #define AK4671_SDOD				0x10
 
-/* AK4671_LOUT2_POWER_MANAGEMENT (0x10) Fields */
+ 
 #define AK4671_MUTEN				0x04
 
 #endif

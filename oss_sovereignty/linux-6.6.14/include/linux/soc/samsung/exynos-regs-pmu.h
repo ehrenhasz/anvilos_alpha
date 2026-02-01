@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2010-2015 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Exynos - Power management unit definition
- *
- * Notice:
- * This is not a list of all Exynos Power Management Unit SFRs.
- * There are too many of them, not mentioning subtle differences
- * between SoCs. For now, put here only the used registers.
- */
+ 
+ 
 
 #ifndef __LINUX_SOC_EXYNOS_REGS_PMU_H
 #define __LINUX_SOC_EXYNOS_REGS_PMU_H __FILE__
@@ -42,15 +32,15 @@
 #define EXYNOS_SWRESET				0x0400
 
 #define S5P_WAKEUP_STAT				0x0600
-/* Value for EXYNOS_EINT_WAKEUP_MASK disabling all external wakeup interrupts */
+ 
 #define EXYNOS_EINT_WAKEUP_MASK_DISABLED	0xffffffff
 #define EXYNOS_EINT_WAKEUP_MASK			0x0604
 #define S5P_WAKEUP_MASK				0x0608
 #define S5P_WAKEUP_MASK2				0x0614
 
-/* MIPI_PHYn_CONTROL, valid for Exynos3250, Exynos4, Exynos5250 and Exynos5433 */
+ 
 #define EXYNOS4_MIPI_PHY_CONTROL(n)		(0x0710 + (n) * 4)
-/* Phy enable bit, common for all phy registers, not only MIPI */
+ 
 #define EXYNOS4_PHY_ENABLE			(1 << 0)
 #define EXYNOS4_MIPI_PHY_SRESETN		(1 << 1)
 #define EXYNOS4_MIPI_PHY_MRESETN		(1 << 2)
@@ -182,10 +172,10 @@
 #define S5P_CORE_WAKEUP_FROM_LOCAL_CFG		(0x3 << 8)
 #define S5P_CORE_AUTOWAKEUP_EN			(1 << 31)
 
-/* Only for S5Pv210 */
+ 
 #define S5PV210_EINT_WAKEUP_MASK	0xC004
 
-/* Only for Exynos4210 */
+ 
 #define S5P_CMU_CLKSTOP_LCD1_LOWPWR	0x1154
 #define S5P_CMU_RESET_LCD1_LOWPWR	0x1174
 #define S5P_MODIMIF_MEM_LOWPWR		0x11C4
@@ -193,7 +183,7 @@
 #define S5P_SATA_MEM_LOWPWR		0x11E4
 #define S5P_LCD1_LOWPWR			0x1394
 
-/* Only for Exynos4x12 */
+ 
 #define S5P_ISP_ARM_LOWPWR			0x1050
 #define S5P_DIS_IRQ_ISP_ARM_LOCAL_LOWPWR	0x1054
 #define S5P_DIS_IRQ_ISP_ARM_CENTRAL_LOWPWR	0x1058
@@ -234,7 +224,7 @@
 #define S5P_SECSS_MEM_OPTION			0x2EC8
 #define S5P_ROTATOR_MEM_OPTION			0x2F48
 
-/* Only for Exynos4412 */
+ 
 #define S5P_ARM_CORE2_LOWPWR			0x1020
 #define S5P_DIS_IRQ_CORE2			0x1024
 #define S5P_DIS_IRQ_CENTRAL2			0x1028
@@ -242,7 +232,7 @@
 #define S5P_DIS_IRQ_CORE3			0x1034
 #define S5P_DIS_IRQ_CENTRAL3			0x1038
 
-/* Only for Exynos3XXX */
+ 
 #define EXYNOS3_ARM_CORE0_SYS_PWR_REG			0x1000
 #define EXYNOS3_DIS_IRQ_ARM_CORE0_LOCAL_SYS_PWR_REG	0x1004
 #define EXYNOS3_DIS_IRQ_ARM_CORE0_CENTRAL_SYS_PWR_REG	0x1008
@@ -342,12 +332,12 @@
 #define EXT_REGULATOR_DURATION				0x00001D4C
 #define EXT_REGULATOR_COREBLK_DURATION			EXT_REGULATOR_DURATION
 
-/* for XXX_OPTION */
+ 
 #define EXYNOS3_OPTION_USE_SC_COUNTER			(1 << 0)
 #define EXYNOS3_OPTION_USE_SC_FEEDBACK			(1 << 1)
 #define EXYNOS3_OPTION_SKIP_DEACTIVATE_ACEACP_IN_PWDN	(1 << 7)
 
-/* For Exynos5 */
+ 
 
 #define EXYNOS5_AUTO_WDTRESET_DISABLE				0x0408
 #define EXYNOS5_MASK_WDTRESET_REQUEST				0x040C
@@ -484,7 +474,7 @@
 
 #define EXYNOS5420_SWRESET_KFC_SEL				0x3
 
-/* Only for Exynos5420 */
+ 
 #define EXYNOS5420_L2RSTDISABLE_VALUE				BIT(3)
 
 #define EXYNOS5420_LPI_MASK					0x0004
@@ -639,7 +629,7 @@
 					 | EXYNOS5420_KFC_USE_STANDBY_WFI2  \
 					 | EXYNOS5420_KFC_USE_STANDBY_WFI3)
 
-/* For Exynos5433 */
+ 
 #define EXYNOS5433_EINT_WAKEUP_MASK				(0x060C)
 #define EXYNOS5433_USBHOST30_PHY_CONTROL			(0x0728)
 #define EXYNOS5433_PAD_RETENTION_AUD_OPTION			(0x3028)
@@ -657,4 +647,4 @@
 #define EXYNOS5433_PAD_RETENTION_UFS_OPTION			(0x3268)
 #define EXYNOS5433_PAD_RETENTION_FSYSGENIO_OPTION		(0x32A8)
 
-#endif /* __LINUX_SOC_EXYNOS_REGS_PMU_H */
+#endif  

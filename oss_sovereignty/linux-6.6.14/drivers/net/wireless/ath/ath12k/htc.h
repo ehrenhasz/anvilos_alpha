@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef ATH12K_HTC_H
 #define ATH12K_HTC_H
@@ -72,8 +69,8 @@ enum ath12k_htc_msg_id {
 };
 
 enum ath12k_htc_version {
-	ATH12K_HTC_VERSION_2P0 = 0x00, /* 2.0 */
-	ATH12K_HTC_VERSION_2P1 = 0x01, /* 2.1 */
+	ATH12K_HTC_VERSION_2P0 = 0x00,  
+	ATH12K_HTC_VERSION_2P1 = 0x01,  
 };
 
 enum ath12k_htc_conn_flag_threshold_level {
@@ -134,14 +131,14 @@ enum ath12k_htc_record_id {
 };
 
 struct ath12k_htc_record_hdr {
-	u8 id; /* @enum ath12k_htc_record_id */
+	u8 id;  
 	u8 len;
 	u8 pad0;
 	u8 pad1;
 } __packed;
 
 struct ath12k_htc_credit_report {
-	u8 eid; /* @enum ath12k_htc_ep_id */
+	u8 eid;  
 	u8 credits;
 	u8 pad0;
 	u8 pad1;
@@ -152,25 +149,7 @@ struct ath12k_htc_record {
 	struct ath12k_htc_credit_report credit_report[];
 } __packed __aligned(4);
 
-/* HTC FRAME structure layout draft
- *
- * note: the trailer offset is dynamic depending
- * on payload length. this is only a struct layout draft
- *
- *=======================================================
- *
- *                 HTC HEADER
- *
- *=======================================================
- *                      |
- *      HTC message     |        payload
- *   (variable length)  |    (variable length)
- *=======================================================
- *
- *                  HTC Record
- *
- *=======================================================
- */
+ 
 
 enum ath12k_htc_svc_gid {
 	ATH12K_HTC_SVC_GRP_RSVD = 0,
@@ -189,7 +168,7 @@ enum ath12k_htc_svc_gid {
 	(int)(((int)(group) << 8) | (int)(idx))
 
 enum ath12k_htc_svc_id {
-	/* NOTE: service ID of 0x0000 is reserved and should never be used */
+	 
 	ATH12K_HTC_SVC_ID_RESERVED	= 0x0000,
 	ATH12K_HTC_SVC_ID_UNUSED	= ATH12K_HTC_SVC_ID_RESERVED,
 
@@ -208,7 +187,7 @@ enum ath12k_htc_svc_id {
 
 	ATH12K_HTC_SVC_ID_HTT_DATA_MSG	= SVC(ATH12K_HTC_SVC_GRP_HTT, 0),
 
-	/* raw stream service (i.e. flash, tcmd, calibration apps) */
+	 
 	ATH12K_HTC_SVC_ID_TEST_RAW_STREAMS = SVC(ATH12K_HTC_SVC_GRP_TEST, 0),
 	ATH12K_HTC_SVC_ID_IPA_TX = SVC(ATH12K_HTC_SVC_GRP_IPA, 0),
 	ATH12K_HTC_SVC_ID_PKT_LOG = SVC(ATH12K_HTC_SVC_GRP_PKTLOG, 0),
@@ -236,14 +215,14 @@ struct ath12k_htc_ep_ops {
 	void (*ep_tx_credits)(struct ath12k_base *ab);
 };
 
-/* service connection information */
+ 
 struct ath12k_htc_svc_conn_req {
 	u16 service_id;
 	struct ath12k_htc_ep_ops ep_ops;
 	int max_send_queue_depth;
 };
 
-/* service connection response information */
+ 
 struct ath12k_htc_svc_conn_resp {
 	u8 buffer_len;
 	u8 actual_len;
@@ -272,7 +251,7 @@ struct ath12k_htc_ep {
 	u8 ul_pipe_id;
 	u8 dl_pipe_id;
 
-	u8 seq_no; /* for debugging */
+	u8 seq_no;  
 	int tx_credits;
 	bool tx_credit_flow_enabled;
 };
@@ -286,7 +265,7 @@ struct ath12k_htc {
 	struct ath12k_base *ab;
 	struct ath12k_htc_ep endpoint[ATH12K_HTC_EP_COUNT];
 
-	/* protects endpoints */
+	 
 	spinlock_t tx_lock;
 
 	u8 control_resp_buffer[ATH12K_HTC_MAX_CTRL_MSG_LEN];

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/******************************************************************************
- *
- * Copyright(c) 2003 - 2014 Intel Corporation. All rights reserved.
- *****************************************************************************/
+ 
+ 
 
 #ifndef __iwl_leds_h__
 #define __iwl_leds_h__
@@ -32,4 +29,4 @@ static inline void iwl_leds_exit(struct iwl_priv *priv)
 }
 #endif
 
-#endif /* __iwl_leds_h__ */
+#endif  

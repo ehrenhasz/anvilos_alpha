@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022-2023 Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2015-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "dpu_kms.h"
 #include "dpu_hw_catalog.h"
@@ -15,7 +12,7 @@
 #define LM_BORDER_COLOR_0                 0x08
 #define LM_BORDER_COLOR_1                 0x010
 
-/* These register are offset to mixer base + stage base */
+ 
 #define LM_BLEND0_OP                     0x00
 #define LM_BLEND0_CONST_ALPHA            0x04
 #define LM_FG_COLOR_FILL_COLOR_0         0x08
@@ -30,12 +27,7 @@
 #define LM_MISR_SIGNATURE                0x314
 
 
-/**
- * _stage_offset(): returns the relative offset of the blend registers
- * for the stage to be setup
- * @ctx:     mixer ctx contains the mixer to be programmed
- * @stage: stage index to setup
- */
+ 
 static inline int _stage_offset(struct dpu_hw_mixer *ctx, enum dpu_stage stage)
 {
 	const struct dpu_lm_sub_blks *sblk = ctx->cap->sblk;
@@ -57,7 +49,7 @@ static void dpu_hw_lm_setup_out(struct dpu_hw_mixer *ctx,
 	outsize = mixer->out_height << 16 | mixer->out_width;
 	DPU_REG_WRITE(c, LM_OUT_SIZE, outsize);
 
-	/* SPLIT_LEFT_RIGHT */
+	 
 	if (mixer->right_mixer)
 		op_mode |= BIT(31);
 	else
@@ -134,7 +126,7 @@ static void dpu_hw_lm_setup_color3(struct dpu_hw_mixer *ctx,
 	struct dpu_hw_blk_reg_map *c = &ctx->hw;
 	int op_mode;
 
-	/* read the existing op_mode configuration */
+	 
 	op_mode = DPU_REG_READ(c, LM_OP_MODE);
 
 	op_mode = (op_mode & (BIT(31) | BIT(30))) | mixer_op_mode;
@@ -173,7 +165,7 @@ struct dpu_hw_mixer *dpu_hw_lm_init(const struct dpu_lm_cfg *cfg,
 	c->hw.blk_addr = addr + cfg->base;
 	c->hw.log_mask = DPU_DBG_MASK_LM;
 
-	/* Assign ops */
+	 
 	c->idx = cfg->id;
 	c->cap = cfg;
 	_setup_mixer_ops(&c->ops, c->cap->features);

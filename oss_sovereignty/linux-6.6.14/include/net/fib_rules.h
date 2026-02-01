@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_FIB_RULES_H
 #define __NET_FIB_RULES_H
 
@@ -86,8 +86,7 @@ struct fib_rules_ops {
 					struct fib_rule_hdr *);
 	size_t			(*nlmsg_payload)(struct fib_rule *);
 
-	/* Called after modifications to the rules set, must flush
-	 * the route cache if one exists. */
+	 
 	void			(*flush_cache)(struct fib_rules_ops *ops);
 
 	int			nlgroup;
@@ -98,7 +97,7 @@ struct fib_rules_ops {
 };
 
 struct fib_rule_notifier_info {
-	struct fib_notifier_info info; /* must be first */
+	struct fib_notifier_info info;  
 	struct fib_rule *rule;
 };
 

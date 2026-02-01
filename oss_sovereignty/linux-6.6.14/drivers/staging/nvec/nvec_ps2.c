@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * nvec_ps2: mouse driver for a NVIDIA compliant embedded controller
- *
- * Copyright (C) 2011 The AC100 Kernel Team <ac100@lists.launchpad.net>
- *
- * Authors:  Pierre-Hugues Husson <phhusson@free.fr>
- *           Ilya Petrov <ilya.muromec@gmail.com>
- *           Marc Dietrich <marvin24@gmx.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -90,7 +82,7 @@ static int nvec_ps2_notifier(struct notifier_block *nb,
 			NVEC_PHD("ps/2 mouse reply: ", &msg[4], msg[1] - 2);
 		}
 
-		else if (msg[1] != 2) /* !ack */
+		else if (msg[1] != 2)  
 			NVEC_PHD("unhandled mouse event: ", msg, msg[1] + 2);
 		return NOTIFY_STOP;
 	}
@@ -138,10 +130,10 @@ static void nvec_mouse_remove(struct platform_device *pdev)
 #ifdef CONFIG_PM_SLEEP
 static int nvec_mouse_suspend(struct device *dev)
 {
-	/* disable mouse */
+	 
 	ps2_sendcommand(ps2_dev.ser_dev, DISABLE_MOUSE);
 
-	/* send cancel autoreceive */
+	 
 	ps2_stopstreaming(ps2_dev.ser_dev);
 
 	return 0;
@@ -149,10 +141,10 @@ static int nvec_mouse_suspend(struct device *dev)
 
 static int nvec_mouse_resume(struct device *dev)
 {
-	/* start streaming */
+	 
 	ps2_startstreaming(ps2_dev.ser_dev);
 
-	/* enable mouse */
+	 
 	ps2_sendcommand(ps2_dev.ser_dev, ENABLE_MOUSE);
 
 	return 0;

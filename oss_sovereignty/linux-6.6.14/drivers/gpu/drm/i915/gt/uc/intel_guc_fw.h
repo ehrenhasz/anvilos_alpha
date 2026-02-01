@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2017-2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_GUC_FW_H_
 #define _INTEL_GUC_FW_H_

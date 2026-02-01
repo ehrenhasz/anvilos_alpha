@@ -1,33 +1,9 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2018 by Delphix. All rights reserved.
- * Copyright (c) 2015 by Chunwei Chen. All rights reserved.
- * Copyright 2017 Nexenta Systems, Inc.
- */
+ 
 
-/* Portions Copyright 2007 Jeremy Teo */
-/* Portions Copyright 2010 Robert Milkowski */
+ 
+ 
 
 
 #include <sys/types.h>
@@ -70,110 +46,7 @@
 #include <sys/zil.h>
 #include <sys/sa_impl.h>
 
-/*
- * Programming rules.
- *
- * Each vnode op performs some logical unit of work.  To do this, the ZPL must
- * properly lock its in-core state, create a DMU transaction, do the work,
- * record this work in the intent log (ZIL), commit the DMU transaction,
- * and wait for the intent log to commit if it is a synchronous operation.
- * Moreover, the vnode ops must work in both normal and log replay context.
- * The ordering of events is important to avoid deadlocks and references
- * to freed memory.  The example below illustrates the following Big Rules:
- *
- *  (1) A check must be made in each zfs thread for a mounted file system.
- *	This is done avoiding races using zfs_enter(zfsvfs).
- *      A zfs_exit(zfsvfs) is needed before all returns.  Any znodes
- *      must be checked with zfs_verify_zp(zp).  Both of these macros
- *      can return EIO from the calling function.
- *
- *  (2) zrele() should always be the last thing except for zil_commit() (if
- *	necessary) and zfs_exit(). This is for 3 reasons: First, if it's the
- *	last reference, the vnode/znode can be freed, so the zp may point to
- *	freed memory.  Second, the last reference will call zfs_zinactive(),
- *	which may induce a lot of work -- pushing cached pages (which acquires
- *	range locks) and syncing out cached atime changes.  Third,
- *	zfs_zinactive() may require a new tx, which could deadlock the system
- *	if you were already holding one. This deadlock occurs because the tx
- *	currently being operated on prevents a txg from syncing, which
- *	prevents the new tx from progressing, resulting in a deadlock.  If you
- *	must call zrele() within a tx, use zfs_zrele_async(). Note that iput()
- *	is a synonym for zrele().
- *
- *  (3)	All range locks must be grabbed before calling dmu_tx_assign(),
- *	as they can span dmu_tx_assign() calls.
- *
- *  (4) If ZPL locks are held, pass TXG_NOWAIT as the second argument to
- *      dmu_tx_assign().  This is critical because we don't want to block
- *      while holding locks.
- *
- *	If no ZPL locks are held (aside from zfs_enter()), use TXG_WAIT.  This
- *	reduces lock contention and CPU usage when we must wait (note that if
- *	throughput is constrained by the storage, nearly every transaction
- *	must wait).
- *
- *      Note, in particular, that if a lock is sometimes acquired before
- *      the tx assigns, and sometimes after (e.g. z_lock), then failing
- *      to use a non-blocking assign can deadlock the system.  The scenario:
- *
- *	Thread A has grabbed a lock before calling dmu_tx_assign().
- *	Thread B is in an already-assigned tx, and blocks for this lock.
- *	Thread A calls dmu_tx_assign(TXG_WAIT) and blocks in txg_wait_open()
- *	forever, because the previous txg can't quiesce until B's tx commits.
- *
- *	If dmu_tx_assign() returns ERESTART and zfsvfs->z_assign is TXG_NOWAIT,
- *	then drop all locks, call dmu_tx_wait(), and try again.  On subsequent
- *	calls to dmu_tx_assign(), pass TXG_NOTHROTTLE in addition to TXG_NOWAIT,
- *	to indicate that this operation has already called dmu_tx_wait().
- *	This will ensure that we don't retry forever, waiting a short bit
- *	each time.
- *
- *  (5)	If the operation succeeded, generate the intent log entry for it
- *	before dropping locks.  This ensures that the ordering of events
- *	in the intent log matches the order in which they actually occurred.
- *	During ZIL replay the zfs_log_* functions will update the sequence
- *	number to indicate the zil transaction has replayed.
- *
- *  (6)	At the end of each vnode op, the DMU tx must always commit,
- *	regardless of whether there were any errors.
- *
- *  (7)	After dropping all locks, invoke zil_commit(zilog, foid)
- *	to ensure that synchronous semantics are provided when necessary.
- *
- * In general, this is how things should be ordered in each vnode op:
- *
- *	zfs_enter(zfsvfs);		// exit if unmounted
- * top:
- *	zfs_dirent_lock(&dl, ...)	// lock directory entry (may igrab())
- *	rw_enter(...);			// grab any other locks you need
- *	tx = dmu_tx_create(...);	// get DMU tx
- *	dmu_tx_hold_*();		// hold each object you might modify
- *	error = dmu_tx_assign(tx, (waited ? TXG_NOTHROTTLE : 0) | TXG_NOWAIT);
- *	if (error) {
- *		rw_exit(...);		// drop locks
- *		zfs_dirent_unlock(dl);	// unlock directory entry
- *		zrele(...);		// release held znodes
- *		if (error == ERESTART) {
- *			waited = B_TRUE;
- *			dmu_tx_wait(tx);
- *			dmu_tx_abort(tx);
- *			goto top;
- *		}
- *		dmu_tx_abort(tx);	// abort DMU tx
- *		zfs_exit(zfsvfs);	// finished in zfs
- *		return (error);		// really out of space
- *	}
- *	error = do_real_work();		// do whatever this VOP does
- *	if (error == 0)
- *		zfs_log_*(...);		// on success, make ZIL entry
- *	dmu_tx_commit(tx);		// commit DMU tx -- error or not
- *	rw_exit(...);			// drop locks
- *	zfs_dirent_unlock(dl);		// unlock directory entry
- *	zrele(...);			// release held znodes
- *	zil_commit(zilog, foid);	// synchronous when necessary
- *	zfs_exit(zfsvfs);		// finished in zfs
- *	return (error);			// done, report error
- */
+ 
 int
 zfs_open(struct inode *ip, int mode, int flag, cred_t *cr)
 {
@@ -185,14 +58,14 @@ zfs_open(struct inode *ip, int mode, int flag, cred_t *cr)
 	if ((error = zfs_enter_verify_zp(zfsvfs, zp, FTAG)) != 0)
 		return (error);
 
-	/* Honor ZFS_APPENDONLY file attribute */
+	 
 	if (blk_mode_is_open_write(mode) && (zp->z_pflags & ZFS_APPENDONLY) &&
 	    ((flag & O_APPEND) == 0)) {
 		zfs_exit(zfsvfs, FTAG);
 		return (SET_ERROR(EPERM));
 	}
 
-	/* Keep a count of the synchronous opens in the znode */
+	 
 	if (flag & O_SYNC)
 		atomic_inc_32(&zp->z_sync_cnt);
 
@@ -211,7 +84,7 @@ zfs_close(struct inode *ip, int flag, cred_t *cr)
 	if ((error = zfs_enter_verify_zp(zfsvfs, zp, FTAG)) != 0)
 		return (error);
 
-	/* Decrement the synchronous opens in the znode */
+	 
 	if (flag & O_SYNC)
 		atomic_dec_32(&zp->z_sync_cnt);
 
@@ -223,11 +96,7 @@ zfs_close(struct inode *ip, int flag, cred_t *cr)
 
 static int zfs_fillpage(struct inode *ip, struct page *pp);
 
-/*
- * When a file is memory mapped, we must keep the IO data synchronized
- * between the DMU cache and the memory mapped pages.  Update all mapped
- * pages with the contents of the coresponding dmu buffer.
- */
+ 
 void
 update_pages(znode_t *zp, int64_t start, int len, objset_t *os)
 {
@@ -269,11 +138,7 @@ update_pages(znode_t *zp, int64_t start, int len, objset_t *os)
 	}
 }
 
-/*
- * When a file is memory mapped, we must keep the I/O data synchronized
- * between the DMU cache and the memory mapped pages.  Preferentially read
- * from memory mapped pages, otherwise fallback to reading through the dmu.
- */
+ 
 int
 mappedread(znode_t *zp, int nbytes, zfs_uio_t *uio)
 {
@@ -289,11 +154,7 @@ mappedread(znode_t *zp, int nbytes, zfs_uio_t *uio)
 
 		struct page *pp = find_lock_page(mp, start >> PAGE_SHIFT);
 		if (pp) {
-			/*
-			 * If filemap_fault() retries there exists a window
-			 * where the page will be unlocked and not up to date.
-			 * In this case we must try and fill the page.
-			 */
+			 
 			if (unlikely(!PageUptodate(pp))) {
 				error = zfs_fillpage(ip, pp);
 				if (error) {
@@ -330,27 +191,11 @@ mappedread(znode_t *zp, int nbytes, zfs_uio_t *uio)
 
 	return (error);
 }
-#endif /* _KERNEL */
+#endif  
 
 static unsigned long zfs_delete_blocks = DMU_MAX_DELETEBLKCNT;
 
-/*
- * Write the bytes to a file.
- *
- *	IN:	zp	- znode of file to be written to
- *		data	- bytes to write
- *		len	- number of bytes to write
- *		pos	- offset to start writing at
- *
- *	OUT:	resid	- remaining bytes to write
- *
- *	RETURN:	0 if success
- *		positive error code if failure.  EIO is	returned
- *		for a short write when residp isn't provided.
- *
- * Timestamps:
- *	zp - ctime|mtime updated if byte count > 0
- */
+ 
 int
 zfs_write_simple(znode_t *zp, const void *data, size_t len,
     loff_t pos, size_t *residp)
@@ -394,14 +239,7 @@ zfs_zrele_async(znode_t *zp)
 	ASSERT(atomic_read(&ip->i_count) > 0);
 	ASSERT(os != NULL);
 
-	/*
-	 * If decrementing the count would put us at 0, we can't do it inline
-	 * here, because that would be synchronous. Instead, dispatch an iput
-	 * to run later.
-	 *
-	 * For more information on the dangers of a synchronous iput, see the
-	 * header comment of this file.
-	 */
+	 
 	if (!atomic_add_unless(&ip->i_count, -1, 1)) {
 		VERIFY(taskq_dispatch(dsl_pool_zrele_taskq(dmu_objset_pool(os)),
 		    zfs_rele_async_task, ip, TQ_SLEEP) != TASKQID_INVALID);
@@ -409,24 +247,7 @@ zfs_zrele_async(znode_t *zp)
 }
 
 
-/*
- * Lookup an entry in a directory, or an extended attribute directory.
- * If it exists, return a held inode reference for it.
- *
- *	IN:	zdp	- znode of directory to search.
- *		nm	- name of entry to lookup.
- *		flags	- LOOKUP_XATTR set if looking for an attribute.
- *		cr	- credentials of caller.
- *		direntflags - directory lookup flags
- *		realpnp - returned pathname.
- *
- *	OUT:	zpp	- znode of located entry, NULL if not found.
- *
- *	RETURN:	0 on success, error code on failure.
- *
- * Timestamps:
- *	NA
- */
+ 
 int
 zfs_lookup(znode_t *zdp, char *nm, znode_t **zpp, int flags, cred_t *cr,
     int *direntflags, pathname_t *realpnp)
@@ -434,15 +255,7 @@ zfs_lookup(znode_t *zdp, char *nm, znode_t **zpp, int flags, cred_t *cr,
 	zfsvfs_t *zfsvfs = ZTOZSB(zdp);
 	int error = 0;
 
-	/*
-	 * Fast path lookup, however we must skip DNLC lookup
-	 * for case folding or normalizing lookups because the
-	 * DNLC code only stores the passed in name.  This means
-	 * creating 'a' and removing 'A' on a case insensitive
-	 * file system would work, but DNLC still thinks 'a'
-	 * exists and won't let you create it again on the next
-	 * pass through fast path.
-	 */
+	 
 	if (!(flags & (LOOKUP_XATTR | FIGNORECASE))) {
 
 		if (!S_ISDIR(ZTOI(zdp)->i_mode)) {
@@ -468,10 +281,7 @@ zfs_lookup(znode_t *zdp, char *nm, znode_t **zpp, int flags, cred_t *cr,
 	*zpp = NULL;
 
 	if (flags & LOOKUP_XATTR) {
-		/*
-		 * We don't allow recursive attributes..
-		 * Maybe someday we will.
-		 */
+		 
 		if (zdp->z_pflags & ZFS_XATTR) {
 			zfs_exit(zfsvfs, FTAG);
 			return (SET_ERROR(EINVAL));
@@ -482,9 +292,7 @@ zfs_lookup(znode_t *zdp, char *nm, znode_t **zpp, int flags, cred_t *cr,
 			return (error);
 		}
 
-		/*
-		 * Do we have permission to get into attribute directory?
-		 */
+		 
 
 		if ((error = zfs_zaccess(*zpp, ACE_EXECUTE, 0,
 		    B_TRUE, cr, zfs_init_idmap))) {
@@ -501,9 +309,7 @@ zfs_lookup(znode_t *zdp, char *nm, znode_t **zpp, int flags, cred_t *cr,
 		return (SET_ERROR(ENOTDIR));
 	}
 
-	/*
-	 * Check accessibility of directory.
-	 */
+	 
 
 	if ((error = zfs_zaccess(zdp, ACE_EXECUTE, 0, B_FALSE, cr,
 	    zfs_init_idmap))) {
@@ -525,29 +331,7 @@ zfs_lookup(znode_t *zdp, char *nm, znode_t **zpp, int flags, cred_t *cr,
 	return (error);
 }
 
-/*
- * Attempt to create a new entry in a directory.  If the entry
- * already exists, truncate the file if permissible, else return
- * an error.  Return the ip of the created or trunc'd file.
- *
- *	IN:	dzp	- znode of directory to put new file entry in.
- *		name	- name of new file entry.
- *		vap	- attributes of new file.
- *		excl	- flag indicating exclusive or non-exclusive mode.
- *		mode	- mode to open file with.
- *		cr	- credentials of caller.
- *		flag	- file flag.
- *		vsecp	- ACL to be set
- *		mnt_ns	- user namespace of the mount
- *
- *	OUT:	zpp	- znode of created or trunc'd entry.
- *
- *	RETURN:	0 on success, error code on failure.
- *
- * Timestamps:
- *	dzp - ctime|mtime updated if new entry created
- *	 zp - ctime|mtime always, atime if new
- */
+ 
 int
 zfs_create(znode_t *dzp, char *name, vattr_t *vap, int excl,
     int mode, znode_t **zpp, cred_t *cr, int flag, vsecattr_t *vsecp,
@@ -568,10 +352,7 @@ zfs_create(znode_t *dzp, char *name, vattr_t *vap, int excl,
 	boolean_t	waited = B_FALSE;
 	boolean_t	skip_acl = (flag & ATTR_NOACLCHECK) ? B_TRUE : B_FALSE;
 
-	/*
-	 * If we have an ephemeral id, ACL, or XVATTR then
-	 * make sure file system is at proper version
-	 */
+	 
 
 	gid = crgetgid(cr);
 	uid = crgetuid(cr);
@@ -605,15 +386,13 @@ zfs_create(znode_t *dzp, char *name, vattr_t *vap, int excl,
 top:
 	*zpp = NULL;
 	if (*name == '\0') {
-		/*
-		 * Null component name refers to the directory itself.
-		 */
+		 
 		zhold(dzp);
 		zp = dzp;
 		dl = NULL;
 		error = 0;
 	} else {
-		/* possible igrab(zp) */
+		 
 		int zflg = 0;
 
 		if (flag & FIGNORECASE)
@@ -635,10 +414,7 @@ top:
 		uint64_t txtype;
 		uint64_t projid = ZFS_DEFAULT_PROJID;
 
-		/*
-		 * Create a new file object and update the directory
-		 * to reference it.
-		 */
+		 
 		if ((error = zfs_zaccess(dzp, ACE_ADD_FILE, 0, skip_acl, cr,
 		    mnt_ns))) {
 			if (have_acl)
@@ -646,10 +422,7 @@ top:
 			goto out;
 		}
 
-		/*
-		 * We only support the creation of regular files in
-		 * extended attribute directories.
-		 */
+		 
 
 		if ((dzp->z_pflags & ZFS_XATTR) && !S_ISREG(vap->va_mode)) {
 			if (have_acl)
@@ -706,10 +479,7 @@ top:
 
 		error = zfs_link_create(dl, zp, tx, ZNEW);
 		if (error != 0) {
-			/*
-			 * Since, we failed to add the directory entry for it,
-			 * delete the newly created dnode.
-			 */
+			 
 			zfs_znode_delete(zp, tx);
 			remove_inode_hash(ZTOI(zp));
 			zfs_acl_ids_free(&acl_ids);
@@ -733,26 +503,18 @@ top:
 		if (have_acl)
 			zfs_acl_ids_free(&acl_ids);
 
-		/*
-		 * A directory entry already exists for this name.
-		 */
-		/*
-		 * Can't truncate an existing file if in exclusive mode.
-		 */
+		 
+		 
 		if (excl) {
 			error = SET_ERROR(EEXIST);
 			goto out;
 		}
-		/*
-		 * Can't open a directory for writing.
-		 */
+		 
 		if (S_ISDIR(ZTOI(zp)->i_mode)) {
 			error = SET_ERROR(EISDIR);
 			goto out;
 		}
-		/*
-		 * Verify requested access to file.
-		 */
+		 
 		if (mode && (error = zfs_zaccess_rwx(zp, mode, aflags, cr,
 		    mnt_ns))) {
 			goto out;
@@ -762,12 +524,10 @@ top:
 		dzp->z_seq++;
 		mutex_exit(&dzp->z_lock);
 
-		/*
-		 * Truncate regular files if requested.
-		 */
+		 
 		if (S_ISREG(ZTOI(zp)->i_mode) &&
 		    (vap->va_mask & ATTR_SIZE) && (vap->va_size == 0)) {
-			/* we can't hold any locks when calling zfs_freesp() */
+			 
 			if (dl) {
 				zfs_dirent_unlock(dl);
 				dl = NULL;
@@ -815,10 +575,7 @@ zfs_tmpfile(struct inode *dip, vattr_t *vap, int excl,
 	boolean_t	have_acl = B_FALSE;
 	boolean_t	waited = B_FALSE;
 
-	/*
-	 * If we have an ephemeral id, ACL, or XVATTR then
-	 * make sure file system is at proper version
-	 */
+	 
 
 	gid = crgetgid(cr);
 	uid = crgetuid(cr);
@@ -842,10 +599,7 @@ zfs_tmpfile(struct inode *dip, vattr_t *vap, int excl,
 top:
 	*ipp = NULL;
 
-	/*
-	 * Create a new file object and update the directory
-	 * to reference it.
-	 */
+	 
 	if ((error = zfs_zaccess(dzp, ACE_ADD_FILE, 0, B_FALSE, cr, mnt_ns))) {
 		if (have_acl)
 			zfs_acl_ids_free(&acl_ids);
@@ -897,7 +651,7 @@ top:
 	if (fuid_dirtied)
 		zfs_fuid_sync(zfsvfs, tx);
 
-	/* Add to unlinked set */
+	 
 	zp->z_unlinked = B_TRUE;
 	zfs_unlinked_add(zp, tx);
 	zfs_acl_ids_free(&acl_ids);
@@ -917,21 +671,7 @@ out:
 	return (error);
 }
 
-/*
- * Remove an entry from a directory.
- *
- *	IN:	dzp	- znode of directory to remove entry from.
- *		name	- name of entry to remove.
- *		cr	- credentials of caller.
- *		flags	- case flags.
- *
- *	RETURN:	0 if success
- *		error code if failure
- *
- * Timestamps:
- *	dzp - ctime|mtime
- *	 ip - ctime (if nlink > 0)
- */
+ 
 
 static uint64_t null_xattr = 0;
 
@@ -973,9 +713,7 @@ zfs_remove(znode_t *dzp, char *name, cred_t *cr, int flags)
 top:
 	xattr_obj = 0;
 	xzp = NULL;
-	/*
-	 * Attempt to lock directory; fail if entry doesn't exist.
-	 */
+	 
 	if ((error = zfs_dirent_lock(&dl, dzp, name, &zp, zflg,
 	    NULL, realnmp))) {
 		if (realnmp)
@@ -988,9 +726,7 @@ top:
 		goto out;
 	}
 
-	/*
-	 * Need to use rmdir for removing directories.
-	 */
+	 
 	if (S_ISDIR(ZTOI(zp)->i_mode)) {
 		error = SET_ERROR(EPERM);
 		goto out;
@@ -1001,12 +737,7 @@ top:
 	    !zn_has_cached_data(zp, 0, LLONG_MAX);
 	mutex_exit(&zp->z_lock);
 
-	/*
-	 * We may delete the znode now, or we may put it in the unlinked set;
-	 * it depends on whether we're the last link, and on whether there are
-	 * other holds on the inode.  So we dmu_tx_hold() the right things to
-	 * allow for either case.
-	 */
+	 
 	obj = zp->z_id;
 	tx = dmu_tx_create(zfsvfs->z_os);
 	dmu_tx_hold_zap(tx, dzp->z_id, FALSE, name);
@@ -1015,12 +746,12 @@ top:
 	zfs_sa_upgrade_txholds(tx, dzp);
 	if (may_delete_now) {
 		toobig = zp->z_size > zp->z_blksz * zfs_delete_blocks;
-		/* if the file is too big, only hold_free a token amount */
+		 
 		dmu_tx_hold_free(tx, zp->z_id, 0,
 		    (toobig ? DMU_MAX_ACCESS : DMU_OBJECT_END));
 	}
 
-	/* are there any extended attributes? */
+	 
 	error = sa_lookup(zp->z_sa_hdl, SA_ZPL_XATTR(zfsvfs),
 	    &xattr_obj, sizeof (xattr_obj));
 	if (error == 0 && xattr_obj) {
@@ -1035,12 +766,10 @@ top:
 		dmu_tx_hold_free(tx, acl_obj, 0, DMU_OBJECT_END);
 	mutex_exit(&zp->z_lock);
 
-	/* charge as an update -- would be nice not to charge at all */
+	 
 	dmu_tx_hold_zap(tx, zfsvfs->z_unlinkedobj, FALSE, NULL);
 
-	/*
-	 * Mark this transaction as typically resulting in a net free of space
-	 */
+	 
 	dmu_tx_mark_netfree(tx);
 
 	error = dmu_tx_assign(tx, (waited ? TXG_NOTHROTTLE : 0) | TXG_NOWAIT);
@@ -1065,9 +794,7 @@ top:
 		return (error);
 	}
 
-	/*
-	 * Remove the directory entry.
-	 */
+	 
 	error = zfs_link_destroy(dl, zp, tx, zflg, &unlinked);
 
 	if (error) {
@@ -1076,11 +803,7 @@ top:
 	}
 
 	if (unlinked) {
-		/*
-		 * Hold z_lock so that we can make sure that the ACL obj
-		 * hasn't changed.  Could have been deleted due to
-		 * zfs_sa_upgrade().
-		 */
+		 
 		mutex_enter(&zp->z_lock);
 		(void) sa_lookup(zp->z_sa_hdl, SA_ZPL_XATTR(zfsvfs),
 		    &xattr_obj_unlinked, sizeof (xattr_obj_unlinked));
@@ -1114,10 +837,7 @@ top:
 				    sizeof (uint64_t), tx);
 			ASSERT0(error);
 		}
-		/*
-		 * Add to the unlinked set because a new reference could be
-		 * taken concurrently resulting in a deferred destruction.
-		 */
+		 
 		zfs_unlinked_add(zp, tx);
 		mutex_exit(&zp->z_lock);
 	} else if (unlinked) {
@@ -1156,27 +876,7 @@ out:
 	return (error);
 }
 
-/*
- * Create a new directory and insert it into dzp using the name
- * provided.  Return a pointer to the inserted directory.
- *
- *	IN:	dzp	- znode of directory to add subdir to.
- *		dirname	- name of new directory.
- *		vap	- attributes of new directory.
- *		cr	- credentials of caller.
- *		flags	- case flags.
- *		vsecp	- ACL to be set
- *		mnt_ns	- user namespace of the mount
- *
- *	OUT:	zpp	- znode of created directory.
- *
- *	RETURN:	0 if success
- *		error code if failure
- *
- * Timestamps:
- *	dzp - ctime|mtime updated
- *	zpp - ctime|mtime|atime updated
- */
+ 
 int
 zfs_mkdir(znode_t *dzp, char *dirname, vattr_t *vap, znode_t **zpp,
     cred_t *cr, int flags, vsecattr_t *vsecp, zidmap_t *mnt_ns)
@@ -1197,10 +897,7 @@ zfs_mkdir(znode_t *dzp, char *dirname, vattr_t *vap, znode_t **zpp,
 
 	ASSERT(S_ISDIR(vap->va_mode));
 
-	/*
-	 * If we have an ephemeral id, ACL, or XVATTR then
-	 * make sure file system is at proper version
-	 */
+	 
 
 	uid = crgetuid(cr);
 	if (zfsvfs->z_use_fuids == B_FALSE &&
@@ -1240,13 +937,7 @@ zfs_mkdir(znode_t *dzp, char *dirname, vattr_t *vap, znode_t **zpp,
 		zfs_exit(zfsvfs, FTAG);
 		return (error);
 	}
-	/*
-	 * First make sure the new directory doesn't exist.
-	 *
-	 * Existence is checked first to make sure we don't return
-	 * EACCES instead of EEXIST which can cause some applications
-	 * to fail.
-	 */
+	 
 top:
 	*zpp = NULL;
 
@@ -1272,9 +963,7 @@ top:
 		return (SET_ERROR(EDQUOT));
 	}
 
-	/*
-	 * Add a new entry to the directory.
-	 */
+	 
 	tx = dmu_tx_create(zfsvfs->z_os);
 	dmu_tx_hold_zap(tx, dzp->z_id, TRUE, dirname);
 	dmu_tx_hold_zap(tx, DMU_NEW_OBJECT, FALSE, NULL);
@@ -1304,14 +993,10 @@ top:
 		return (error);
 	}
 
-	/*
-	 * Create new node.
-	 */
+	 
 	zfs_mknode(dzp, vap, tx, cr, 0, &zp, &acl_ids);
 
-	/*
-	 * Now put new name in parent dir.
-	 */
+	 
 	error = zfs_link_create(dl, zp, tx, ZNEW);
 	if (error != 0) {
 		zfs_znode_delete(zp, tx);
@@ -1350,22 +1035,7 @@ out:
 	return (error);
 }
 
-/*
- * Remove a directory subdir entry.  If the current working
- * directory is the same as the subdir to be removed, the
- * remove will fail.
- *
- *	IN:	dzp	- znode of directory to remove from.
- *		name	- name of directory to be removed.
- *		cwd	- inode of current working directory.
- *		cr	- credentials of caller.
- *		flags	- case flags
- *
- *	RETURN:	0 on success, error code on failure.
- *
- * Timestamps:
- *	dzp - ctime|mtime updated
- */
+ 
 int
 zfs_rmdir(znode_t *dzp, char *name, znode_t *cwd, cred_t *cr,
     int flags)
@@ -1391,9 +1061,7 @@ zfs_rmdir(znode_t *dzp, char *name, znode_t *cwd, cred_t *cr,
 top:
 	zp = NULL;
 
-	/*
-	 * Attempt to lock directory; fail if entry doesn't exist.
-	 */
+	 
 	if ((error = zfs_dirent_lock(&dl, dzp, name, &zp, zflg,
 	    NULL, NULL))) {
 		zfs_exit(zfsvfs, FTAG);
@@ -1414,16 +1082,10 @@ top:
 		goto out;
 	}
 
-	/*
-	 * Grab a lock on the directory to make sure that no one is
-	 * trying to add (or lookup) entries while we are removing it.
-	 */
+	 
 	rw_enter(&zp->z_name_lock, RW_WRITER);
 
-	/*
-	 * Grab a lock on the parent pointer to make sure we play well
-	 * with the treewalk and directory rename code.
-	 */
+	 
 	rw_enter(&zp->z_parent_lock, RW_WRITER);
 
 	tx = dmu_tx_create(zfsvfs->z_os);
@@ -1479,25 +1141,7 @@ out:
 	return (error);
 }
 
-/*
- * Read directory entries from the given directory cursor position and emit
- * name and position for each entry.
- *
- *	IN:	ip	- inode of directory to read.
- *		ctx	- directory entry context.
- *		cr	- credentials of caller.
- *
- *	RETURN:	0 if success
- *		error code if failure
- *
- * Timestamps:
- *	ip - atime updated
- *
- * Note that the low 4 bits of the cookie returned by zap is always zero.
- * This allows us to use the low range for "special" directory entries:
- * We use 0 for '.', and 1 for '..'.  If this is the root of the filesystem,
- * we use the offset 2 for the '.zfs' directory.
- */
+ 
 int
 zfs_readdir(struct inode *ip, zpl_dir_context_t *ctx, cred_t *cr)
 {
@@ -1512,7 +1156,7 @@ zfs_readdir(struct inode *ip, zpl_dir_context_t *ctx, cred_t *cr)
 	uint8_t		type;
 	int		done = 0;
 	uint64_t	parent;
-	uint64_t	offset; /* must be unsigned; checks for < 1 */
+	uint64_t	offset;  
 
 	if ((error = zfs_enter_verify_zp(zfsvfs, zp, FTAG)) != 0)
 		return (error);
@@ -1521,9 +1165,7 @@ zfs_readdir(struct inode *ip, zpl_dir_context_t *ctx, cred_t *cr)
 	    &parent, sizeof (parent))) != 0)
 		goto out;
 
-	/*
-	 * Quit if directory has been removed (posix)
-	 */
+	 
 	if (zp->z_unlinked)
 		goto out;
 
@@ -1532,29 +1174,19 @@ zfs_readdir(struct inode *ip, zpl_dir_context_t *ctx, cred_t *cr)
 	offset = ctx->pos;
 	prefetch = zp->z_zn_prefetch;
 
-	/*
-	 * Initialize the iterator cursor.
-	 */
+	 
 	if (offset <= 3) {
-		/*
-		 * Start iteration from the beginning of the directory.
-		 */
+		 
 		zap_cursor_init(&zc, os, zp->z_id);
 	} else {
-		/*
-		 * The offset is a serialized cursor.
-		 */
+		 
 		zap_cursor_init_serialized(&zc, os, zp->z_id, offset);
 	}
 
-	/*
-	 * Transform to file-system independent format
-	 */
+	 
 	while (!done) {
 		uint64_t objnum;
-		/*
-		 * Special case `.', `..', and `.zfs'.
-		 */
+		 
 		if (offset == 0) {
 			(void) strcpy(zap.za_name, ".");
 			zap.za_normalization_conflict = 0;
@@ -1571,9 +1203,7 @@ zfs_readdir(struct inode *ip, zpl_dir_context_t *ctx, cred_t *cr)
 			objnum = ZFSCTL_INO_ROOT;
 			type = DT_DIR;
 		} else {
-			/*
-			 * Grab next entry.
-			 */
+			 
 			if ((error = zap_cursor_retrieve(&zc, &zap))) {
 				if (error == ENOENT)
 					break;
@@ -1581,13 +1211,7 @@ zfs_readdir(struct inode *ip, zpl_dir_context_t *ctx, cred_t *cr)
 					goto update;
 			}
 
-			/*
-			 * Allow multiple entries provided the first entry is
-			 * the object id.  Non-zpl consumers may safely make
-			 * use of the additional space.
-			 *
-			 * XXX: This should be a feature flag for compatibility
-			 */
+			 
 			if (zap.za_integer_length != 8 ||
 			    zap.za_num_integers == 0) {
 				cmn_err(CE_WARN, "zap_readdir: bad directory "
@@ -1610,15 +1234,13 @@ zfs_readdir(struct inode *ip, zpl_dir_context_t *ctx, cred_t *cr)
 		if (done)
 			break;
 
-		/* Prefetch znode */
+		 
 		if (prefetch) {
 			dmu_prefetch(os, objnum, 0, 0, 0,
 			    ZIO_PRIORITY_SYNC_READ);
 		}
 
-		/*
-		 * Move to the next entry, fill in the previous offset.
-		 */
+		 
 		if (offset > 2 || (offset == 2 && !zfs_show_ctldir(zp))) {
 			zap_cursor_advance(&zc);
 			offset = zap_cursor_serialize(&zc);
@@ -1627,7 +1249,7 @@ zfs_readdir(struct inode *ip, zpl_dir_context_t *ctx, cred_t *cr)
 		}
 		ctx->pos = offset;
 	}
-	zp->z_zn_prefetch = B_FALSE; /* a lookup will re-enable pre-fetching */
+	zp->z_zn_prefetch = B_FALSE;  
 
 update:
 	zap_cursor_fini(&zc);
@@ -1639,18 +1261,7 @@ out:
 	return (error);
 }
 
-/*
- * Get the basic file attributes and place them in the provided kstat
- * structure.  The inode is assumed to be the authoritative source
- * for most of the attributes.  However, the znode currently has the
- * authoritative atime, blksize, and block count.
- *
- *	IN:	ip	- inode of file.
- *
- *	OUT:	sp	- kstat values.
- *
- *	RETURN:	0 (always succeeds)
- */
+ 
 int
 #ifdef HAVE_GENERIC_FILLATTR_IDMAP_REQMASK
 zfs_getattr_fast(zidmap_t *user_ns, u32 request_mask, struct inode *ip,
@@ -1675,9 +1286,7 @@ zfs_getattr_fast(zidmap_t *user_ns, struct inode *ip, struct kstat *sp)
 #else
 	zpl_generic_fillattr(user_ns, ip, sp);
 #endif
-	/*
-	 * +1 link count for root inode with visible '.zfs' directory.
-	 */
+	 
 	if ((zp->z_id == zfsvfs->z_root) && zfs_show_ctldir(zp))
 		if (sp->nlink < ZFS_LINK_MAX)
 			sp->nlink++;
@@ -1687,18 +1296,13 @@ zfs_getattr_fast(zidmap_t *user_ns, struct inode *ip, struct kstat *sp)
 	sp->blocks = nblocks;
 
 	if (unlikely(zp->z_blksz == 0)) {
-		/*
-		 * Block size hasn't been set; suggest maximal I/O transfers.
-		 */
+		 
 		sp->blksize = zfsvfs->z_max_blksz;
 	}
 
 	mutex_exit(&zp->z_lock);
 
-	/*
-	 * Required to prevent NFS client from detecting different inode
-	 * numbers of snapshot root dentry before and after snapshot mount.
-	 */
+	 
 	if (zfsvfs->z_issnap) {
 		if (ip->i_sb->s_root->d_inode == ip)
 			sp->ino = ZFSCTL_INO_SNAPDIRS -
@@ -1710,17 +1314,7 @@ zfs_getattr_fast(zidmap_t *user_ns, struct inode *ip, struct kstat *sp)
 	return (0);
 }
 
-/*
- * For the operation of changing file's user/group/project, we need to
- * handle not only the main object that is assigned to the file directly,
- * but also the ones that are used by the file via hidden xattr directory.
- *
- * Because the xattr directory may contains many EA entries, as to it may
- * be impossible to change all of them via the transaction of changing the
- * main object's user/group/project attributes. Then we have to change them
- * via other multiple independent transactions one by one. It may be not good
- * solution, but we have no better idea yet.
- */
+ 
 static int
 zfs_setattr_dir(znode_t *dzp)
 {
@@ -1830,24 +1424,7 @@ next:
 	return (err == ENOENT ? 0 : err);
 }
 
-/*
- * Set the file attributes to the values contained in the
- * vattr structure.
- *
- *	IN:	zp	- znode of file to be modified.
- *		vap	- new attribute values.
- *			  If ATTR_XVATTR set, then optional attrs are being set
- *		flags	- ATTR_UTIME set if non-default time values provided.
- *			- ATTR_NOACLCHECK (CIFS context only).
- *		cr	- credentials of caller.
- *		mnt_ns	- user namespace of the mount
- *
- *	RETURN:	0 if success
- *		error code if failure
- *
- * Timestamps:
- *	ip - ctime updated, mtime updated if size changed.
- */
+ 
 int
 zfs_setattr(znode_t *zp, vattr_t *vap, int flags, cred_t *cr, zidmap_t *mnt_ns)
 {
@@ -1870,7 +1447,7 @@ zfs_setattr(znode_t *zp, vattr_t *vap, int flags, cred_t *cr, zidmap_t *mnt_ns)
 	int		need_policy = FALSE;
 	int		err, err2 = 0;
 	zfs_fuid_info_t *fuidp = NULL;
-	xvattr_t *xvap = (xvattr_t *)vap;	/* vap may be an xvattr_t * */
+	xvattr_t *xvap = (xvattr_t *)vap;	 
 	xoptattr_t	*xoap;
 	zfs_acl_t	*aclp;
 	boolean_t skipaclchk = (flags & ATTR_NOACLCHECK) ? B_TRUE : B_FALSE;
@@ -1886,10 +1463,7 @@ zfs_setattr(znode_t *zp, vattr_t *vap, int flags, cred_t *cr, zidmap_t *mnt_ns)
 		return (err);
 	ip = ZTOI(zp);
 
-	/*
-	 * If this is a xvattr_t, then get a pointer to the structure of
-	 * optional attributes.  If this is NULL, then we have a vattr_t.
-	 */
+	 
 	xoap = xva_getxoptattr(xvap);
 	if (xoap != NULL && (mask & ATTR_XVATTR)) {
 		if (XVA_ISSET_REQ(xvap, XAT_PROJID)) {
@@ -1923,10 +1497,7 @@ zfs_setattr(znode_t *zp, vattr_t *vap, int flags, cred_t *cr, zidmap_t *mnt_ns)
 
 	zilog = zfsvfs->z_log;
 
-	/*
-	 * Make sure that if we have ephemeral uid/gid or xvattr specified
-	 * that file system is at proper version level
-	 */
+	 
 
 	if (zfsvfs->z_use_fuids == B_FALSE &&
 	    (((mask & ATTR_UID) && IS_EPHEMERAL(vap->va_uid)) ||
@@ -1952,9 +1523,7 @@ zfs_setattr(znode_t *zp, vattr_t *vap, int flags, cred_t *cr, zidmap_t *mnt_ns)
 	bulk = kmem_alloc(sizeof (sa_bulk_attr_t) * bulks, KM_SLEEP);
 	xattr_bulk = kmem_alloc(sizeof (sa_bulk_attr_t) * bulks, KM_SLEEP);
 
-	/*
-	 * Immutable files can only alter immutable bit and atime
-	 */
+	 
 	if ((zp->z_pflags & ZFS_IMMUTABLE) &&
 	    ((mask & (ATTR_SIZE|ATTR_UID|ATTR_GID|ATTR_MTIME|ATTR_MODE)) ||
 	    ((mask & ATTR_XVATTR) && XVA_ISSET_REQ(xvap, XAT_CREATETIME)))) {
@@ -1967,12 +1536,7 @@ zfs_setattr(znode_t *zp, vattr_t *vap, int flags, cred_t *cr, zidmap_t *mnt_ns)
 		goto out3;
 	}
 
-	/*
-	 * Verify timestamps doesn't overflow 32 bits.
-	 * ZFS can handle large timestamps, but 32bit syscalls can't
-	 * handle times greater than 2039.  This check should be removed
-	 * once large timestamps are fully supported.
-	 */
+	 
 	if (mask & (ATTR_ATIME | ATTR_MTIME)) {
 		if (((mask & ATTR_ATIME) &&
 		    TIMESPEC_OVERFLOW(&vap->va_atime)) ||
@@ -1987,15 +1551,13 @@ top:
 	attrzp = NULL;
 	aclp = NULL;
 
-	/* Can this be moved to before the top label? */
+	 
 	if (zfs_is_readonly(zfsvfs)) {
 		err = SET_ERROR(EROFS);
 		goto out3;
 	}
 
-	/*
-	 * First validate permissions
-	 */
+	 
 
 	if (mask & ATTR_SIZE) {
 		err = zfs_zaccess(zp, ACE_WRITE_DATA, 0, skipaclchk, cr,
@@ -2003,13 +1565,8 @@ top:
 		if (err)
 			goto out3;
 
-		/*
-		 * XXX - Note, we are not providing any open
-		 * mode flags here (like FNDELAY), so we may
-		 * block if there are locks present... this
-		 * should be addressed in openat().
-		 */
-		/* XXX - would it be OK to generate a log record here? */
+		 
+		 
 		err = zfs_freesp(zp, vap->va_size, 0, 0, FALSE);
 		if (err)
 			goto out3;
@@ -2034,17 +1591,12 @@ top:
 		uid_t	uid;
 		gid_t	gid;
 
-		/*
-		 * NOTE: even if a new mode is being set,
-		 * we may clear S_ISUID/S_ISGID bits.
-		 */
+		 
 
 		if (!(mask & ATTR_MODE))
 			vap->va_mode = zp->z_mode;
 
-		/*
-		 * Take ownership or chgrp to group we are a member of
-		 */
+		 
 
 		uid = zfs_uid_to_vfsuid(mnt_ns, zfs_i_user_ns(ip),
 		    vap->va_uid);
@@ -2054,14 +1606,7 @@ top:
 		take_group = (mask & ATTR_GID) &&
 		    zfs_groupmember(zfsvfs, gid, cr);
 
-		/*
-		 * If both ATTR_UID and ATTR_GID are set then take_owner and
-		 * take_group must both be set in order to allow taking
-		 * ownership.
-		 *
-		 * Otherwise, send the check through secpolicy_vnode_setattr()
-		 *
-		 */
+		 
 
 		if (((idmask == (ATTR_UID|ATTR_GID)) &&
 		    take_owner && take_group) ||
@@ -2069,9 +1614,7 @@ top:
 		    ((idmask == ATTR_GID) && take_group)) {
 			if (zfs_zaccess(zp, ACE_WRITE_OWNER, 0,
 			    skipaclchk, cr, mnt_ns) == 0) {
-				/*
-				 * Remove setuid/setgid for non-privileged users
-				 */
+				 
 				(void) secpolicy_setid_clear(vap, cr);
 				trim_mask = (mask & (ATTR_UID|ATTR_GID));
 			} else {
@@ -2086,13 +1629,7 @@ top:
 	oldva.va_mode = zp->z_mode;
 	zfs_fuid_map_ids(zp, cr, &oldva.va_uid, &oldva.va_gid);
 	if (mask & ATTR_XVATTR) {
-		/*
-		 * Update xvattr mask to include only those attributes
-		 * that are actually changing.
-		 *
-		 * the bits will be restored prior to actually setting
-		 * the attributes so the caller thinks they were set.
-		 */
+		 
 		if (XVA_ISSET_REQ(xvap, XAT_APPENDONLY)) {
 			if (xoap->xoa_appendonly !=
 			    ((zp->z_pflags & ZFS_APPENDONLY) != 0)) {
@@ -2194,13 +1731,7 @@ top:
 	}
 
 	if (need_policy) {
-		/*
-		 * If trim_mask is set then take ownership
-		 * has been granted or write_acl is present and user
-		 * has the ability to modify mode.  In that case remove
-		 * UID|GID and or MODE from mask so that
-		 * secpolicy_vnode_setattr() doesn't revoke it.
-		 */
+		 
 
 		if (trim_mask) {
 			saved_mask = vap->va_mask;
@@ -2215,10 +1746,7 @@ top:
 			vap->va_mask |= saved_mask;
 	}
 
-	/*
-	 * secpolicy_vnode_setattr, or take ownership may have
-	 * changed va_mask
-	 */
+	 
 	mask = vap->va_mask;
 
 	if ((mask & (ATTR_UID | ATTR_GID)) || projid != ZFS_INVALID_PROJID) {
@@ -2283,10 +1811,7 @@ top:
 
 		mutex_enter(&zp->z_lock);
 		if (!zp->z_is_sa && ((acl_obj = zfs_external_acl(zp)) != 0)) {
-			/*
-			 * Are we upgrading ACL from old V0 format
-			 * to V1 format?
-			 */
+			 
 			if (zfsvfs->z_version >= ZPL_VERSION_FUID &&
 			    zfs_znode_acl_version(zp) ==
 			    ZFS_ACL_VERSION_INITIAL) {
@@ -2329,22 +1854,10 @@ top:
 		goto out;
 
 	count = 0;
-	/*
-	 * Set each attribute requested.
-	 * We group settings according to the locks they need to acquire.
-	 *
-	 * Note: you cannot set ctime directly, although it will be
-	 * updated as a side-effect of calling this function.
-	 */
+	 
 
 	if (projid != ZFS_INVALID_PROJID && !(zp->z_pflags & ZFS_PROJID)) {
-		/*
-		 * For the existed object that is upgraded from old system,
-		 * its on-disk layout has no slot for the project ID attribute.
-		 * But quota accounting logic needs to access related slots by
-		 * offset directly. So we need to adjust old objects' layout
-		 * to make the project ID to some unified and fixed offset.
-		 */
+		 
 		if (attrzp)
 			err = sa_add_projid(attrzp->z_sa_hdl, tx, projid);
 		if (err == 0)
@@ -2470,17 +1983,11 @@ top:
 		    sizeof (ctime));
 	}
 
-	/*
-	 * Do this after setting timestamps to prevent timestamp
-	 * update from toggling bit
-	 */
+	 
 
 	if (xoap && (mask & ATTR_XVATTR)) {
 
-		/*
-		 * restore trimmed off masks
-		 * so that return masks can be set for caller.
-		 */
+		 
 
 		if (XVA_ISSET_REQ(tmpxvattr, XAT_APPENDONLY)) {
 			XVA_SET_REQ(xvap, XAT_APPENDONLY);
@@ -2571,14 +2078,12 @@ out3:
 }
 
 typedef struct zfs_zlock {
-	krwlock_t	*zl_rwlock;	/* lock we acquired */
-	znode_t		*zl_znode;	/* znode we held */
-	struct zfs_zlock *zl_next;	/* next in list */
+	krwlock_t	*zl_rwlock;	 
+	znode_t		*zl_znode;	 
+	struct zfs_zlock *zl_next;	 
 } zfs_zlock_t;
 
-/*
- * Drop locks and release vnodes that were held by zfs_rename_lock().
- */
+ 
 static void
 zfs_rename_unlock(zfs_zlock_t **zlpp)
 {
@@ -2593,12 +2098,7 @@ zfs_rename_unlock(zfs_zlock_t **zlpp)
 	}
 }
 
-/*
- * Search back through the directory tree, using the ".." entries.
- * Lock each directory in the chain to prevent concurrent renames.
- * Fail any attempt to move a directory into one of its own descendants.
- * XXX - z_parent_lock can overlap with map or grow locks
- */
+ 
 static int
 zfs_rename_lock(znode_t *szp, znode_t *tdzp, znode_t *sdzp, zfs_zlock_t **zlpp)
 {
@@ -2609,21 +2109,12 @@ zfs_rename_lock(znode_t *szp, znode_t *tdzp, znode_t *sdzp, zfs_zlock_t **zlpp)
 	krwlock_t	*rwlp = &szp->z_parent_lock;
 	krw_t		rw = RW_WRITER;
 
-	/*
-	 * First pass write-locks szp and compares to zp->z_id.
-	 * Later passes read-lock zp and compare to zp->z_parent.
-	 */
+	 
 	do {
 		if (!rw_tryenter(rwlp, rw)) {
-			/*
-			 * Another thread is renaming in this path.
-			 * Note that if we are a WRITER, we don't have any
-			 * parent_locks held yet.
-			 */
+			 
 			if (rw == RW_READER && zp->z_id > szp->z_id) {
-				/*
-				 * Drop our locks and restart
-				 */
+				 
 				zfs_rename_unlock(&zl);
 				*zlpp = NULL;
 				zp = tdzp;
@@ -2632,9 +2123,7 @@ zfs_rename_lock(znode_t *szp, znode_t *tdzp, znode_t *sdzp, zfs_zlock_t **zlpp)
 				rw = RW_WRITER;
 				continue;
 			} else {
-				/*
-				 * Wait for other thread to drop its locks
-				 */
+				 
 				rw_enter(rwlp, rw);
 			}
 		}
@@ -2645,13 +2134,13 @@ zfs_rename_lock(znode_t *szp, znode_t *tdzp, znode_t *sdzp, zfs_zlock_t **zlpp)
 		zl->zl_next = *zlpp;
 		*zlpp = zl;
 
-		if (oidp == szp->z_id)		/* We're a descendant of szp */
+		if (oidp == szp->z_id)		 
 			return (SET_ERROR(EINVAL));
 
-		if (oidp == rootid)		/* We've hit the top */
+		if (oidp == rootid)		 
 			return (0);
 
-		if (rw == RW_READER) {		/* i.e. not the first pass */
+		if (rw == RW_READER) {		 
 			int error = zfs_zget(ZTOZSB(zp), oidp, &zp);
 			if (error)
 				return (error);
@@ -2667,25 +2156,7 @@ zfs_rename_lock(znode_t *szp, znode_t *tdzp, znode_t *sdzp, zfs_zlock_t **zlpp)
 	return (0);
 }
 
-/*
- * Move an entry from the provided source directory to the target
- * directory.  Change the entry name as indicated.
- *
- *	IN:	sdzp	- Source directory containing the "old entry".
- *		snm	- Old entry name.
- *		tdzp	- Target directory to contain the "new entry".
- *		tnm	- New entry name.
- *		cr	- credentials of caller.
- *		flags	- case flags
- *		rflags  - RENAME_* flags
- *		wa_vap  - attributes for RENAME_WHITEOUT (must be a char 0:0).
- *		mnt_ns	- user namespace of the mount
- *
- *	RETURN:	0 on success, error code on failure.
- *
- * Timestamps:
- *	sdzp,tdzp - ctime|mtime updated
- */
+ 
 int
 zfs_rename(znode_t *sdzp, char *snm, znode_t *tdzp, char *tnm,
     cred_t *cr, int flags, uint64_t rflags, vattr_t *wo_vap, zidmap_t *mnt_ns)
@@ -2700,7 +2171,7 @@ zfs_rename(znode_t *sdzp, char *snm, znode_t *tdzp, char *tnm,
 	int		error = 0;
 	int		zflg = 0;
 	boolean_t	waited = B_FALSE;
-	/* Needed for whiteout inode creation. */
+	 
 	boolean_t	fuid_dirtied;
 	zfs_acl_ids_t	acl_ids;
 	boolean_t	have_acl = B_FALSE;
@@ -2713,16 +2184,12 @@ zfs_rename(znode_t *sdzp, char *snm, znode_t *tdzp, char *tnm,
 	if (rflags & ~(RENAME_NOREPLACE | RENAME_EXCHANGE | RENAME_WHITEOUT))
 		return (SET_ERROR(EINVAL));
 
-	/* Already checked by Linux VFS, but just to make sure. */
+	 
 	if (rflags & RENAME_EXCHANGE &&
 	    (rflags & (RENAME_NOREPLACE | RENAME_WHITEOUT)))
 		return (SET_ERROR(EINVAL));
 
-	/*
-	 * Make sure we only get wo_vap iff. RENAME_WHITEOUT and that it's the
-	 * right kind of vattr_t for the whiteout file. These are set
-	 * internally by ZFS so should never be incorrect.
-	 */
+	 
 	VERIFY_EQUIV(rflags & RENAME_WHITEOUT, wo_vap != NULL);
 	VERIFY_IMPLY(wo_vap, wo_vap->va_mode == S_IFCHR);
 	VERIFY_IMPLY(wo_vap, wo_vap->va_rdev == makedevice(0, 0));
@@ -2736,10 +2203,7 @@ zfs_rename(znode_t *sdzp, char *snm, znode_t *tdzp, char *tnm,
 		return (error);
 	}
 
-	/*
-	 * We check i_sb because snapshots and the ctldir must have different
-	 * super blocks.
-	 */
+	 
 	if (ZTOI(tdzp)->i_sb != ZTOI(sdzp)->i_sb ||
 	    zfsctl_is_node(ZTOI(tdzp))) {
 		zfs_exit(zfsvfs, FTAG);
@@ -2760,81 +2224,41 @@ top:
 	tzp = NULL;
 	zl = NULL;
 
-	/*
-	 * This is to prevent the creation of links into attribute space
-	 * by renaming a linked file into/outof an attribute directory.
-	 * See the comment in zfs_link() for why this is considered bad.
-	 */
+	 
 	if ((tdzp->z_pflags & ZFS_XATTR) != (sdzp->z_pflags & ZFS_XATTR)) {
 		zfs_exit(zfsvfs, FTAG);
 		return (SET_ERROR(EINVAL));
 	}
 
-	/*
-	 * Lock source and target directory entries.  To prevent deadlock,
-	 * a lock ordering must be defined.  We lock the directory with
-	 * the smallest object id first, or if it's a tie, the one with
-	 * the lexically first name.
-	 */
+	 
 	if (sdzp->z_id < tdzp->z_id) {
 		cmp = -1;
 	} else if (sdzp->z_id > tdzp->z_id) {
 		cmp = 1;
 	} else {
-		/*
-		 * First compare the two name arguments without
-		 * considering any case folding.
-		 */
+		 
 		int nofold = (zfsvfs->z_norm & ~U8_TEXTPREP_TOUPPER);
 
 		cmp = u8_strcmp(snm, tnm, 0, nofold, U8_UNICODE_LATEST, &error);
 		ASSERT(error == 0 || !zfsvfs->z_utf8);
 		if (cmp == 0) {
-			/*
-			 * POSIX: "If the old argument and the new argument
-			 * both refer to links to the same existing file,
-			 * the rename() function shall return successfully
-			 * and perform no other action."
-			 */
+			 
 			zfs_exit(zfsvfs, FTAG);
 			return (0);
 		}
-		/*
-		 * If the file system is case-folding, then we may
-		 * have some more checking to do.  A case-folding file
-		 * system is either supporting mixed case sensitivity
-		 * access or is completely case-insensitive.  Note
-		 * that the file system is always case preserving.
-		 *
-		 * In mixed sensitivity mode case sensitive behavior
-		 * is the default.  FIGNORECASE must be used to
-		 * explicitly request case insensitive behavior.
-		 *
-		 * If the source and target names provided differ only
-		 * by case (e.g., a request to rename 'tim' to 'Tim'),
-		 * we will treat this as a special case in the
-		 * case-insensitive mode: as long as the source name
-		 * is an exact match, we will allow this to proceed as
-		 * a name-change request.
-		 */
+		 
 		if ((zfsvfs->z_case == ZFS_CASE_INSENSITIVE ||
 		    (zfsvfs->z_case == ZFS_CASE_MIXED &&
 		    flags & FIGNORECASE)) &&
 		    u8_strcmp(snm, tnm, 0, zfsvfs->z_norm, U8_UNICODE_LATEST,
 		    &error) == 0) {
-			/*
-			 * case preserving rename request, require exact
-			 * name matches
-			 */
+			 
 			zflg |= ZCIEXACT;
 			zflg &= ~ZCILOOK;
 		}
 	}
 
-	/*
-	 * If the source and destination directories are the same, we should
-	 * grab the z_name_lock of that directory only once.
-	 */
+	 
 	if (sdzp == tdzp) {
 		zflg |= ZHAVELOCK;
 		rw_enter(&sdzp->z_name_lock, RW_READER);
@@ -2854,9 +2278,7 @@ top:
 	}
 
 	if (serr) {
-		/*
-		 * Source entry invalid or not there.
-		 */
+		 
 		if (!terr) {
 			zfs_dirent_unlock(tdl);
 			if (tzp)
@@ -2884,48 +2306,30 @@ top:
 		return (terr);
 	}
 
-	/*
-	 * If we are using project inheritance, means if the directory has
-	 * ZFS_PROJINHERIT set, then its descendant directories will inherit
-	 * not only the project ID, but also the ZFS_PROJINHERIT flag. Under
-	 * such case, we only allow renames into our tree when the project
-	 * IDs are the same.
-	 */
+	 
 	if (tdzp->z_pflags & ZFS_PROJINHERIT &&
 	    tdzp->z_projid != szp->z_projid) {
 		error = SET_ERROR(EXDEV);
 		goto out;
 	}
 
-	/*
-	 * Must have write access at the source to remove the old entry
-	 * and write access at the target to create the new entry.
-	 * Note that if target and source are the same, this can be
-	 * done in a single check.
-	 */
+	 
 	if ((error = zfs_zaccess_rename(sdzp, szp, tdzp, tzp, cr, mnt_ns)))
 		goto out;
 
 	if (S_ISDIR(ZTOI(szp)->i_mode)) {
-		/*
-		 * Check to make sure rename is valid.
-		 * Can't do a move like this: /usr/a/b to /usr/a/b/c/d
-		 */
+		 
 		if ((error = zfs_rename_lock(szp, tdzp, sdzp, &zl)))
 			goto out;
 	}
 
-	/*
-	 * Does target exist?
-	 */
+	 
 	if (tzp) {
 		if (rflags & RENAME_NOREPLACE) {
 			error = SET_ERROR(EEXIST);
 			goto out;
 		}
-		/*
-		 * Source and target must be the same type (unless exchanging).
-		 */
+		 
 		if (!(rflags & RENAME_EXCHANGE)) {
 			boolean_t s_is_dir = S_ISDIR(ZTOI(szp)->i_mode) != 0;
 			boolean_t t_is_dir = S_ISDIR(ZTOI(tzp)->i_mode) != 0;
@@ -2935,27 +2339,20 @@ top:
 				goto out;
 			}
 		}
-		/*
-		 * POSIX dictates that when the source and target
-		 * entries refer to the same file object, rename
-		 * must do nothing and exit without error.
-		 */
+		 
 		if (szp->z_id == tzp->z_id) {
 			error = 0;
 			goto out;
 		}
 	} else if (rflags & RENAME_EXCHANGE) {
-		/* Target must exist for RENAME_EXCHANGE. */
+		 
 		error = SET_ERROR(ENOENT);
 		goto out;
 	}
 
-	/* Set up inode creation for RENAME_WHITEOUT. */
+	 
 	if (rflags & RENAME_WHITEOUT) {
-		/*
-		 * Whiteout files are not regular files or directories, so to
-		 * match zfs_create() we do not inherit the project id.
-		 */
+		 
 		uint64_t wo_projid = ZFS_DEFAULT_PROJID;
 
 		error = zfs_zaccess(sdzp, ACE_ADD_FILE, 0, B_FALSE, cr, mnt_ns);
@@ -3034,9 +2431,7 @@ top:
 		return (error);
 	}
 
-	/*
-	 * Unlink the source.
-	 */
+	 
 	szp->z_pflags |= ZFS_AV_MODIFIED;
 	if (tdzp->z_pflags & ZFS_PROJINHERIT)
 		szp->z_pflags |= ZFS_PROJINHERIT;
@@ -3049,14 +2444,12 @@ top:
 	if (error)
 		goto commit;
 
-	/*
-	 * Unlink the target.
-	 */
+	 
 	if (tzp) {
 		int tzflg = zflg;
 
 		if (rflags & RENAME_EXCHANGE) {
-			/* This inode will be re-linked soon. */
+			 
 			tzflg |= ZRENAMING;
 
 			tzp->z_pflags |= ZFS_AV_MODIFIED;
@@ -3072,19 +2465,10 @@ top:
 			goto commit_link_szp;
 	}
 
-	/*
-	 * Create the new target links:
-	 *   * We always link the target.
-	 *   * RENAME_EXCHANGE: Link the old target to the source.
-	 *   * RENAME_WHITEOUT: Create a whiteout inode in-place of the source.
-	 */
+	 
 	error = zfs_link_create(tdl, szp, tx, ZRENAMING);
 	if (error) {
-		/*
-		 * If we have removed the existing target, a subsequent call to
-		 * zfs_link_create() to add back the same entry, but with a new
-		 * dnode (szp), should not fail.
-		 */
+		 
 		ASSERT3P(tzp, ==, NULL);
 		goto commit_link_tzp;
 	}
@@ -3092,11 +2476,7 @@ top:
 	switch (rflags & (RENAME_EXCHANGE | RENAME_WHITEOUT)) {
 	case RENAME_EXCHANGE:
 		error = zfs_link_create(sdl, tzp, tx, ZRENAMING);
-		/*
-		 * The same argument as zfs_link_create() failing for
-		 * szp applies here, since the source directory must
-		 * have had an entry we are replacing.
-		 */
+		 
 		ASSERT0(error);
 		if (error)
 			goto commit_unlink_td_szp;
@@ -3169,25 +2549,7 @@ out:
 	zfs_exit(zfsvfs, FTAG);
 	return (error);
 
-	/*
-	 * Clean-up path for broken link state.
-	 *
-	 * At this point we are in a (very) bad state, so we need to do our
-	 * best to correct the state. In particular, all of the nlinks are
-	 * wrong because we were destroying and creating links with ZRENAMING.
-	 *
-	 * In some form, all of these operations have to resolve the state:
-	 *
-	 *  * link_destroy() *must* succeed. Fortunately, this is very likely
-	 *    since we only just created it.
-	 *
-	 *  * link_create()s are allowed to fail (though they shouldn't because
-	 *    we only just unlinked them and are putting the entries back
-	 *    during clean-up). But if they fail, we can just forcefully drop
-	 *    the nlink value to (at the very least) avoid broken nlink values
-	 *    -- though in the case of non-empty directories we will have to
-	 *    panic (otherwise we'd have a leaked directory with a broken ..).
-	 */
+	 
 commit_unlink_td_szp:
 	VERIFY0(zfs_link_destroy(tdl, szp, tx, ZRENAMING, NULL));
 commit_link_tzp:
@@ -3201,24 +2563,7 @@ commit_link_szp:
 	goto commit;
 }
 
-/*
- * Insert the indicated symbolic reference entry into the directory.
- *
- *	IN:	dzp	- Directory to contain new symbolic link.
- *		name	- Name of directory entry in dip.
- *		vap	- Attributes of new entry.
- *		link	- Name for new symlink entry.
- *		cr	- credentials of caller.
- *		flags	- case flags
- *		mnt_ns	- user namespace of the mount
- *
- *	OUT:	zpp	- Znode for new symbolic link.
- *
- *	RETURN:	0 on success, error code on failure.
- *
- * Timestamps:
- *	dip - ctime|mtime updated
- */
+ 
 int
 zfs_symlink(znode_t *dzp, char *name, vattr_t *vap, char *link,
     znode_t **zpp, cred_t *cr, int flags, zidmap_t *mnt_ns)
@@ -3266,9 +2611,7 @@ zfs_symlink(znode_t *dzp, char *name, vattr_t *vap, char *link,
 top:
 	*zpp = NULL;
 
-	/*
-	 * Attempt to lock directory; fail if entry already exists.
-	 */
+	 
 	error = zfs_dirent_lock(&dl, dzp, name, &zp, zflg, NULL, NULL);
 	if (error) {
 		zfs_acl_ids_free(&acl_ids);
@@ -3317,10 +2660,7 @@ top:
 		return (error);
 	}
 
-	/*
-	 * Create a new object for the symlink.
-	 * for version 4 ZPL datasets the symlink will be an SA attribute
-	 */
+	 
 	zfs_mknode(dzp, vap, tx, cr, 0, &zp, &acl_ids);
 
 	if (fuid_dirtied)
@@ -3337,9 +2677,7 @@ top:
 	zp->z_size = len;
 	(void) sa_update(zp->z_sa_hdl, SA_ZPL_SIZE(zfsvfs),
 	    &zp->z_size, sizeof (zp->z_size), tx);
-	/*
-	 * Insert the new object into the directory.
-	 */
+	 
 	error = zfs_link_create(dl, zp, tx, ZNEW);
 	if (error != 0) {
 		zfs_znode_delete(zp, tx);
@@ -3372,20 +2710,7 @@ top:
 	return (error);
 }
 
-/*
- * Return, in the buffer contained in the provided uio structure,
- * the symbolic path referred to by ip.
- *
- *	IN:	ip	- inode of symbolic link
- *		uio	- structure to contain the link path.
- *		cr	- credentials of caller.
- *
- *	RETURN:	0 if success
- *		error code if failure
- *
- * Timestamps:
- *	ip - atime updated
- */
+ 
 int
 zfs_readlink(struct inode *ip, zfs_uio_t *uio, cred_t *cr)
 {
@@ -3409,22 +2734,7 @@ zfs_readlink(struct inode *ip, zfs_uio_t *uio, cred_t *cr)
 	return (error);
 }
 
-/*
- * Insert a new entry into directory tdzp referencing szp.
- *
- *	IN:	tdzp	- Directory to contain new entry.
- *		szp	- znode of new entry.
- *		name	- name of new entry.
- *		cr	- credentials of caller.
- *		flags	- case flags.
- *
- *	RETURN:	0 if success
- *		error code if failure
- *
- * Timestamps:
- *	tdzp - ctime|mtime updated
- *	 szp - ctime updated
- */
+ 
 int
 zfs_link(znode_t *tdzp, znode_t *szp, char *name, cred_t *cr,
     int flags)
@@ -3454,10 +2764,7 @@ zfs_link(znode_t *tdzp, znode_t *szp, char *name, cred_t *cr,
 		return (error);
 	zilog = zfsvfs->z_log;
 
-	/*
-	 * POSIX dictates that we return EPERM here.
-	 * Better choices include ENOTSUP or EISDIR.
-	 */
+	 
 	if (S_ISDIR(sip->i_mode)) {
 		zfs_exit(zfsvfs, FTAG);
 		return (SET_ERROR(EPERM));
@@ -3468,29 +2775,20 @@ zfs_link(znode_t *tdzp, znode_t *szp, char *name, cred_t *cr,
 		return (error);
 	}
 
-	/*
-	 * If we are using project inheritance, means if the directory has
-	 * ZFS_PROJINHERIT set, then its descendant directories will inherit
-	 * not only the project ID, but also the ZFS_PROJINHERIT flag. Under
-	 * such case, we only allow hard link creation in our tree when the
-	 * project IDs are the same.
-	 */
+	 
 	if (tdzp->z_pflags & ZFS_PROJINHERIT &&
 	    tdzp->z_projid != szp->z_projid) {
 		zfs_exit(zfsvfs, FTAG);
 		return (SET_ERROR(EXDEV));
 	}
 
-	/*
-	 * We check i_sb because snapshots and the ctldir must have different
-	 * super blocks.
-	 */
+	 
 	if (sip->i_sb != ZTOI(tdzp)->i_sb || zfsctl_is_node(sip)) {
 		zfs_exit(zfsvfs, FTAG);
 		return (SET_ERROR(EXDEV));
 	}
 
-	/* Prevent links to .zfs/shares files */
+	 
 
 	if ((error = sa_lookup(szp->z_sa_hdl, SA_ZPL_PARENT(zfsvfs),
 	    &parent, sizeof (uint64_t))) != 0) {
@@ -3510,12 +2808,7 @@ zfs_link(znode_t *tdzp, znode_t *szp, char *name, cred_t *cr,
 	if (flags & FIGNORECASE)
 		zf |= ZCILOOK;
 
-	/*
-	 * We do not support links between attributes and non-attributes
-	 * because of the potential security risk of creating links
-	 * into "normal" file space in order to circumvent restrictions
-	 * imposed in attribute space.
-	 */
+	 
 	if ((szp->z_pflags & ZFS_XATTR) != (tdzp->z_pflags & ZFS_XATTR)) {
 		zfs_exit(zfsvfs, FTAG);
 		return (SET_ERROR(EINVAL));
@@ -3535,9 +2828,7 @@ zfs_link(znode_t *tdzp, znode_t *szp, char *name, cred_t *cr,
 	}
 
 top:
-	/*
-	 * Attempt to lock directory; fail if entry already exists.
-	 */
+	 
 	error = zfs_dirent_lock(&dl, tdzp, name, &tzp, zf, NULL, NULL);
 	if (error) {
 		zfs_exit(zfsvfs, FTAG);
@@ -3565,20 +2856,14 @@ top:
 		zfs_exit(zfsvfs, FTAG);
 		return (error);
 	}
-	/* unmark z_unlinked so zfs_link_create will not reject */
+	 
 	if (is_tmpfile)
 		szp->z_unlinked = B_FALSE;
 	error = zfs_link_create(dl, szp, tx, 0);
 
 	if (error == 0) {
 		uint64_t txtype = TX_LINK;
-		/*
-		 * tmpfile is created to be in z_unlinkedobj, so remove it.
-		 * Also, we don't log in ZIL, because all previous file
-		 * operation on the tmpfile are ignored by ZIL. Instead we
-		 * always wait for txg to sync to make sure all previous
-		 * operation are sync safe.
-		 */
+		 
 		if (is_tmpfile) {
 			VERIFY(zap_remove_int(zfsvfs->z_os,
 			    zfsvfs->z_unlinkedobj, szp->z_id, tx) == 0);
@@ -3588,7 +2873,7 @@ top:
 			zfs_log_link(zilog, tx, txtype, tdzp, szp, name);
 		}
 	} else if (is_tmpfile) {
-		/* restore z_unlinked since when linking failed */
+		 
 		szp->z_unlinked = B_TRUE;
 	}
 	txg = dmu_tx_get_txg(tx);
@@ -3628,22 +2913,7 @@ zfs_putpage_async_commit_cb(void *arg)
 	atomic_dec_32(&zp->z_async_writes_cnt);
 }
 
-/*
- * Push a page out to disk, once the page is on stable storage the
- * registered commit callback will be run as notification of completion.
- *
- *	IN:	ip	 - page mapped for inode.
- *		pp	 - page to push (page is locked)
- *		wbc	 - writeback control data
- *		for_sync - does the caller intend to wait synchronously for the
- *			   page writeback to complete?
- *
- *	RETURN:	0 if success
- *		error code if failure
- *
- * Timestamps:
- *	ip - ctime|mtime updated
- */
+ 
 int
 zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
     boolean_t for_sync)
@@ -3667,28 +2937,24 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 
 	ASSERT(PageLocked(pp));
 
-	pgoff = page_offset(pp);	/* Page byte-offset in file */
-	offset = i_size_read(ip);	/* File length in bytes */
-	pglen = MIN(PAGE_SIZE,		/* Page length in bytes */
+	pgoff = page_offset(pp);	 
+	offset = i_size_read(ip);	 
+	pglen = MIN(PAGE_SIZE,		 
 	    P2ROUNDUP(offset, PAGE_SIZE)-pgoff);
 
-	/* Page is beyond end of file */
+	 
 	if (pgoff >= offset) {
 		unlock_page(pp);
 		zfs_exit(zfsvfs, FTAG);
 		return (0);
 	}
 
-	/* Truncate page length to end of file */
+	 
 	if (pgoff + pglen > offset)
 		pglen = offset - pgoff;
 
 #if 0
-	/*
-	 * FIXME: Allow mmap writes past its quota.  The correct fix
-	 * is to register a page_mkwrite() handler to count the page
-	 * against its quota when it is about to be dirtied.
-	 */
+	 
 	if (zfs_id_overblockquota(zfsvfs, DMU_USERUSED_OBJECT,
 	    KUID_TO_SUID(ip->i_uid)) ||
 	    zfs_id_overblockquota(zfsvfs, DMU_GROUPUSED_OBJECT,
@@ -3700,29 +2966,7 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 	}
 #endif
 
-	/*
-	 * The ordering here is critical and must adhere to the following
-	 * rules in order to avoid deadlocking in either zfs_read() or
-	 * zfs_free_range() due to a lock inversion.
-	 *
-	 * 1) The page must be unlocked prior to acquiring the range lock.
-	 *    This is critical because zfs_read() calls find_lock_page()
-	 *    which may block on the page lock while holding the range lock.
-	 *
-	 * 2) Before setting or clearing write back on a page the range lock
-	 *    must be held in order to prevent a lock inversion with the
-	 *    zfs_free_range() function.
-	 *
-	 * This presents a problem because upon entering this function the
-	 * page lock is already held.  To safely acquire the range lock the
-	 * page lock must be dropped.  This creates a window where another
-	 * process could truncate, invalidate, dirty, or write out the page.
-	 *
-	 * Therefore, after successfully reacquiring the range and page locks
-	 * the current page state is checked.  In the common case everything
-	 * will be as is expected and it can be written out.  However, if
-	 * the page state has changed it must be handled accordingly.
-	 */
+	 
 	mapping = pp->mapping;
 	redirty_page_for_writepage(wbc, pp);
 	unlock_page(pp);
@@ -3731,7 +2975,7 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 	    pgoff, pglen, RL_WRITER);
 	lock_page(pp);
 
-	/* Page mapping changed or it was no longer dirty, we're done */
+	 
 	if (unlikely((mapping != pp->mapping) || !PageDirty(pp))) {
 		unlock_page(pp);
 		zfs_rangelock_exit(lr);
@@ -3739,18 +2983,13 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 		return (0);
 	}
 
-	/* Another process started write block if required */
+	 
 	if (PageWriteback(pp)) {
 		unlock_page(pp);
 		zfs_rangelock_exit(lr);
 
 		if (wbc->sync_mode != WB_SYNC_NONE) {
-			/*
-			 * Speed up any non-sync page writebacks since
-			 * they may take several seconds to complete.
-			 * Refer to the comment in zpl_fsync() (when
-			 * HAVE_FSYNC_RANGE is defined) for details.
-			 */
+			 
 			if (atomic_load_32(&zp->z_async_writes_cnt) > 0) {
 				zil_commit(zfsvfs->z_log, zp->z_id);
 			}
@@ -3767,7 +3006,7 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 		return (0);
 	}
 
-	/* Clear the dirty flag the required locks are held */
+	 
 	if (!clear_page_dirty_for_io(pp)) {
 		unlock_page(pp);
 		zfs_rangelock_exit(lr);
@@ -3775,10 +3014,7 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 		return (0);
 	}
 
-	/*
-	 * Counterpart for redirty_page_for_writepage() above.  This page
-	 * was in fact not skipped and should not be counted as if it were.
-	 */
+	 
 	wbc->pages_skipped--;
 	if (!for_sync)
 		atomic_inc_32(&zp->z_async_writes_cnt);
@@ -3820,7 +3056,7 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 	SA_ADD_BULK_ATTR(bulk, cnt, SA_ZPL_FLAGS(zfsvfs), NULL,
 	    &zp->z_pflags, 8);
 
-	/* Preserve the mtime and ctime provided by the inode */
+	 
 	ZFS_TIME_ENCODE(&ip->i_mtime, mtime);
 	tmp_ctime = zpl_inode_get_ctime(ip);
 	ZFS_TIME_ENCODE(&tmp_ctime, ctime);
@@ -3838,21 +3074,10 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 	zfs_rangelock_exit(lr);
 
 	if (wbc->sync_mode != WB_SYNC_NONE) {
-		/*
-		 * Note that this is rarely called under writepages(), because
-		 * writepages() normally handles the entire commit for
-		 * performance reasons.
-		 */
+		 
 		zil_commit(zfsvfs->z_log, zp->z_id);
 	} else if (!for_sync && atomic_load_32(&zp->z_sync_writes_cnt) > 0) {
-		/*
-		 * If the caller does not intend to wait synchronously
-		 * for this page writeback to complete and there are active
-		 * synchronous calls on this file, do a commit so that
-		 * the latter don't accidentally end up waiting for
-		 * our writeback to complete. Refer to the comment in
-		 * zpl_fsync() (when HAVE_FSYNC_RANGE is defined) for details.
-		 */
+		 
 		zil_commit(zfsvfs->z_log, zp->z_id);
 	}
 
@@ -3862,10 +3087,7 @@ zfs_putpage(struct inode *ip, struct page *pp, struct writeback_control *wbc,
 	return (err);
 }
 
-/*
- * Update the system attributes when the inode has been dirtied.  For the
- * moment we only update the mode, atime, mtime, and ctime.
- */
+ 
 int
 zfs_dirty_inode(struct inode *ip, int flags)
 {
@@ -3885,13 +3107,7 @@ zfs_dirty_inode(struct inode *ip, int flags)
 		return (error);
 
 #ifdef I_DIRTY_TIME
-	/*
-	 * This is the lazytime semantic introduced in Linux 4.0
-	 * This flag will only be called from update_time when lazytime is set.
-	 * (Note, I_DIRTY_SYNC will also set if not lazytime)
-	 * Fortunately mtime and ctime are managed within ZFS itself, so we
-	 * only need to dirty atime.
-	 */
+	 
 	if (flags == I_DIRTY_TIME) {
 		zp->z_atime_dirty = B_TRUE;
 		goto out;
@@ -3917,7 +3133,7 @@ zfs_dirty_inode(struct inode *ip, int flags)
 	SA_ADD_BULK_ATTR(bulk, cnt, SA_ZPL_MTIME(zfsvfs), NULL, &mtime, 16);
 	SA_ADD_BULK_ATTR(bulk, cnt, SA_ZPL_CTIME(zfsvfs), NULL, &ctime, 16);
 
-	/* Preserve the mode, mtime and ctime provided by the inode */
+	 
 	ZFS_TIME_ENCODE(&ip->i_atime, atime);
 	ZFS_TIME_ENCODE(&ip->i_mtime, mtime);
 	tmp_ctime = zpl_inode_get_ctime(ip);
@@ -3944,7 +3160,7 @@ zfs_inactive(struct inode *ip)
 	int error;
 	int need_unlock = 0;
 
-	/* Only read lock if we haven't already write locked, e.g. rollback */
+	 
 	if (!RW_WRITE_HELD(&zfsvfs->z_teardown_inactive_lock)) {
 		need_unlock = 1;
 		rw_enter(&zfsvfs->z_teardown_inactive_lock, RW_READER);
@@ -3979,9 +3195,7 @@ zfs_inactive(struct inode *ip)
 		rw_exit(&zfsvfs->z_teardown_inactive_lock);
 }
 
-/*
- * Fill pages with data from the disk.
- */
+ 
 static int
 zfs_fillpage(struct inode *ip, struct page *pp)
 {
@@ -4003,7 +3217,7 @@ zfs_fillpage(struct inode *ip, struct page *pp)
 	kunmap(pp);
 
 	if (error) {
-		/* convert checksum errors into IO errors */
+		 
 		if (error == ECKSUM)
 			error = SET_ERROR(EIO);
 
@@ -4017,17 +3231,7 @@ zfs_fillpage(struct inode *ip, struct page *pp)
 	return (error);
 }
 
-/*
- * Uses zfs_fillpage to read data from the file and fill the page.
- *
- *	IN:	ip	 - inode of file to get data from.
- *		pp	 - page to read
- *
- *	RETURN:	0 on success, error code on failure.
- *
- * Timestamps:
- *	vp - atime updated
- */
+ 
 int
 zfs_getpage(struct inode *ip, struct page *pp)
 {
@@ -4047,18 +3251,7 @@ zfs_getpage(struct inode *ip, struct page *pp)
 	return (error);
 }
 
-/*
- * Check ZFS specific permissions to memory map a section of a file.
- *
- *	IN:	ip	- inode of the file to mmap
- *		off	- file offset
- *		addrp	- start address in memory region
- *		len	- length of memory region
- *		vm_flags- address flags
- *
- *	RETURN:	0 if success
- *		error code if failure
- */
+ 
 int
 zfs_map(struct inode *ip, offset_t off, caddr_t *addrp, size_t len,
     unsigned long vm_flags)
@@ -4092,24 +3285,7 @@ zfs_map(struct inode *ip, offset_t off, caddr_t *addrp, size_t len,
 	return (0);
 }
 
-/*
- * Free or allocate space in a file.  Currently, this function only
- * supports the `F_FREESP' command.  However, this command is somewhat
- * misnamed, as its functionality includes the ability to allocate as
- * well as free space.
- *
- *	IN:	zp	- znode of file to free data in.
- *		cmd	- action to take (only F_FREESP supported).
- *		bfp	- section of file to free/alloc.
- *		flag	- current file open mode flags.
- *		offset	- current file offset.
- *		cr	- credentials of caller.
- *
- *	RETURN:	0 on success, error code on failure.
- *
- * Timestamps:
- *	zp - ctime|mtime updated
- */
+ 
 int
 zfs_space(znode_t *zp, int cmd, flock64_t *bfp, int flag,
     offset_t offset, cred_t *cr)
@@ -4127,10 +3303,7 @@ zfs_space(znode_t *zp, int cmd, flock64_t *bfp, int flag,
 		return (SET_ERROR(EINVAL));
 	}
 
-	/*
-	 * Callers might not be able to detect properly that we are read-only,
-	 * so check it explicitly here.
-	 */
+	 
 	if (zfs_is_readonly(zfsvfs)) {
 		zfs_exit(zfsvfs, FTAG);
 		return (SET_ERROR(EROFS));
@@ -4141,12 +3314,7 @@ zfs_space(znode_t *zp, int cmd, flock64_t *bfp, int flag,
 		return (SET_ERROR(EINVAL));
 	}
 
-	/*
-	 * Permissions aren't checked on Solaris because on this OS
-	 * zfs_space() can only be called with an opened file handle.
-	 * On Linux we can get here through truncate_range() which
-	 * operates directly on inodes, so we need to check access rights.
-	 */
+	 
 	if ((error = zfs_zaccess(zp, ACE_WRITE_DATA, 0, B_FALSE, cr,
 	    zfs_init_idmap))) {
 		zfs_exit(zfsvfs, FTAG);
@@ -4154,7 +3322,7 @@ zfs_space(znode_t *zp, int cmd, flock64_t *bfp, int flag,
 	}
 
 	off = bfp->l_start;
-	len = bfp->l_len; /* 0 means from off to end of file */
+	len = bfp->l_len;  
 
 	error = zfs_freesp(zp, off, len, flag, TRUE);
 
@@ -4204,7 +3372,7 @@ zfs_fid(struct inode *ip, fid_t *fidp)
 	for (i = 0; i < sizeof (zfid->zf_object); i++)
 		zfid->zf_object[i] = (uint8_t)(object >> (8 * i));
 
-	/* Must have a non-zero generation number to distinguish from .zfs */
+	 
 	if (gen == 0)
 		gen = 1;
 	for (i = 0; i < sizeof (zfid->zf_gen); i++)
@@ -4238,11 +3406,11 @@ EXPORT_SYMBOL(zfs_putpage);
 EXPORT_SYMBOL(zfs_dirty_inode);
 EXPORT_SYMBOL(zfs_map);
 
-/* CSTYLED */
+ 
 module_param(zfs_delete_blocks, ulong, 0644);
 MODULE_PARM_DESC(zfs_delete_blocks, "Delete files larger than N blocks async");
 
-/* CSTYLED */
+ 
 module_param(zfs_bclone_enabled, uint, 0644);
 MODULE_PARM_DESC(zfs_bclone_enabled, "Enable block cloning");
 

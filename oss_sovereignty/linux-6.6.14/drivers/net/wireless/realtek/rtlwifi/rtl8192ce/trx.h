@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2012  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL92CE_TRX_H__
 #define __RTL92CE_TRX_H__
@@ -14,7 +14,7 @@
 #define USB_HWDESC_HEADER_LEN			32
 #define CRCLENGTH				4
 
-/* macros to read/write various fields in RX or TX descriptors */
+ 
 
 static inline void set_tx_desc_pkt_size(__le32 *__pdesc, u32  __val)
 {

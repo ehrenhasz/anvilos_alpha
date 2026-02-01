@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <net/pkt_cls.h>
 
@@ -129,7 +129,7 @@ static int nfp_bpf_setup_tc_block_cb(enum tc_setup_type type,
 		return -EOPNOTSUPP;
 	}
 
-	/* Only support TC direct action */
+	 
 	if (!cls_bpf->exts_integrated ||
 	    tcf_exts_has_actions(cls_bpf->exts)) {
 		NL_SET_ERR_MSG_MOD(cls_bpf->common.extack,
@@ -143,7 +143,7 @@ static int nfp_bpf_setup_tc_block_cb(enum tc_setup_type type,
 	bv = nn->app_priv;
 	oldprog = cls_bpf->oldprog;
 
-	/* Don't remove if oldprog doesn't match driver's state */
+	 
 	if (bv->tc_prog != oldprog) {
 		oldprog = NULL;
 		if (!cls_bpf->prog)
@@ -417,7 +417,7 @@ err_release_free:
 
 static void nfp_bpf_init_capabilities(struct nfp_app_bpf *bpf)
 {
-	bpf->abi_version = 2; /* Original BPF ABI version */
+	bpf->abi_version = 2;  
 }
 
 static int nfp_bpf_ndo_init(struct nfp_app *app, struct net_device *netdev)

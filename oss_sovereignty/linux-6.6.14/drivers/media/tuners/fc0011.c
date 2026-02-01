@@ -1,57 +1,50 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Fitipower FC0011 tuner driver
- *
- * Copyright (C) 2012 Michael Buesch <m@bues.ch>
- *
- * Derived from FC0012 tuner driver:
- * Copyright (C) 2012 Hans-Frieder Vogt <hfvogt@gmx.net>
- */
+
+ 
 
 #include "fc0011.h"
 
 
-/* Tuner registers */
+ 
 enum {
 	FC11_REG_0,
-	FC11_REG_FA,		/* FA */
-	FC11_REG_FP,		/* FP */
-	FC11_REG_XINHI,		/* XIN high 8 bit */
-	FC11_REG_XINLO,		/* XIN low 8 bit */
-	FC11_REG_VCO,		/* VCO */
-	FC11_REG_VCOSEL,	/* VCO select */
-	FC11_REG_7,		/* Unknown tuner reg 7 */
-	FC11_REG_8,		/* Unknown tuner reg 8 */
+	FC11_REG_FA,		 
+	FC11_REG_FP,		 
+	FC11_REG_XINHI,		 
+	FC11_REG_XINLO,		 
+	FC11_REG_VCO,		 
+	FC11_REG_VCOSEL,	 
+	FC11_REG_7,		 
+	FC11_REG_8,		 
 	FC11_REG_9,
-	FC11_REG_10,		/* Unknown tuner reg 10 */
-	FC11_REG_11,		/* Unknown tuner reg 11 */
+	FC11_REG_10,		 
+	FC11_REG_11,		 
 	FC11_REG_12,
-	FC11_REG_RCCAL,		/* RC calibrate */
-	FC11_REG_VCOCAL,	/* VCO calibrate */
+	FC11_REG_RCCAL,		 
+	FC11_REG_VCOCAL,	 
 	FC11_REG_15,
-	FC11_REG_16,		/* Unknown tuner reg 16 */
+	FC11_REG_16,		 
 	FC11_REG_17,
 
-	FC11_NR_REGS,		/* Number of registers */
+	FC11_NR_REGS,		 
 };
 
 enum FC11_REG_VCOSEL_bits {
-	FC11_VCOSEL_2		= 0x08, /* VCO select 2 */
-	FC11_VCOSEL_1		= 0x10, /* VCO select 1 */
-	FC11_VCOSEL_CLKOUT	= 0x20, /* Fix clock out */
-	FC11_VCOSEL_BW7M	= 0x40, /* 7MHz bw */
-	FC11_VCOSEL_BW6M	= 0x80, /* 6MHz bw */
+	FC11_VCOSEL_2		= 0x08,  
+	FC11_VCOSEL_1		= 0x10,  
+	FC11_VCOSEL_CLKOUT	= 0x20,  
+	FC11_VCOSEL_BW7M	= 0x40,  
+	FC11_VCOSEL_BW6M	= 0x80,  
 };
 
 enum FC11_REG_RCCAL_bits {
-	FC11_RCCAL_FORCE	= 0x10, /* force */
+	FC11_RCCAL_FORCE	= 0x10,  
 };
 
 enum FC11_REG_VCOCAL_bits {
-	FC11_VCOCAL_RUN		= 0,	/* VCO calibration run */
-	FC11_VCOCAL_VALUEMASK	= 0x3F,	/* VCO calibration value mask */
-	FC11_VCOCAL_OK		= 0x40,	/* VCO calibration Ok */
-	FC11_VCOCAL_RESET	= 0x80, /* VCO calibration reset */
+	FC11_VCOCAL_RUN		= 0,	 
+	FC11_VCOCAL_VALUEMASK	= 0x3F,	 
+	FC11_VCOCAL_OK		= 0x40,	 
+	FC11_VCOCAL_RESET	= 0x80,  
 };
 
 
@@ -129,7 +122,7 @@ static int fc0011_init(struct dvb_frontend *fe)
 	return 0;
 }
 
-/* Initiate VCO calibration */
+ 
 static int fc0011_vcocal_trigger(struct fc0011_priv *priv)
 {
 	int err;
@@ -144,7 +137,7 @@ static int fc0011_vcocal_trigger(struct fc0011_priv *priv)
 	return 0;
 }
 
-/* Read VCO calibration value */
+ 
 static int fc0011_vcocal_read(struct fc0011_priv *priv, u8 *value)
 {
 	int err;
@@ -185,7 +178,7 @@ static int fc0011_set_params(struct dvb_frontend *fe)
 	if (err)
 		return -EIO;
 
-	/* Set VCO freq and VCO div */
+	 
 	if (freq < 54000) {
 		fvco = freq * 64;
 		regs[FC11_REG_VCO] = 0x82;
@@ -203,7 +196,7 @@ static int fc0011_set_params(struct dvb_frontend *fe)
 		regs[FC11_REG_VCO] = 0x0A;
 	}
 
-	/* Calc XIN. The PLL reference frequency is 18 MHz. */
+	 
 	xdiv = fvco / 18000;
 	WARN_ON(xdiv > 0xFF);
 	frac = fvco - xdiv * 18000;
@@ -217,10 +210,10 @@ static int fc0011_set_params(struct dvb_frontend *fe)
 	regs[FC11_REG_XINHI] = xin >> 8;
 	regs[FC11_REG_XINLO] = xin;
 
-	/* Calc FP and FA */
+	 
 	xdivr = xdiv;
 	if (fvco - xdiv * 18000 >= 9000)
-		xdivr += 1; /* round */
+		xdivr += 1;  
 	fp = xdivr / 8;
 	fa = xdivr - fp * 8;
 	if (fa < 2) {
@@ -239,7 +232,7 @@ static int fc0011_set_params(struct dvb_frontend *fe)
 	regs[FC11_REG_FA] = fa;
 	regs[FC11_REG_FP] = fp;
 
-	/* Select bandwidth */
+	 
 	switch (bandwidth) {
 	case 8000:
 		break;
@@ -256,7 +249,7 @@ static int fc0011_set_params(struct dvb_frontend *fe)
 		break;
 	}
 
-	/* Pre VCO select */
+	 
 	if (fvco < 2320000) {
 		vco_sel = 0;
 		regs[FC11_REG_VCOSEL] &= ~(FC11_VCOSEL_1 | FC11_VCOSEL_2);
@@ -270,23 +263,23 @@ static int fc0011_set_params(struct dvb_frontend *fe)
 		regs[FC11_REG_VCOSEL] |= FC11_VCOSEL_2;
 	}
 
-	/* Fix for low freqs */
+	 
 	if (freq < 45000) {
 		regs[FC11_REG_FA] = 0x6;
 		regs[FC11_REG_FP] = 0x11;
 	}
 
-	/* Clock out fix */
+	 
 	regs[FC11_REG_VCOSEL] |= FC11_VCOSEL_CLKOUT;
 
-	/* Write the cached registers */
+	 
 	for (i = FC11_REG_FA; i <= FC11_REG_VCOSEL; i++) {
 		err = fc0011_writereg(priv, i, regs[i]);
 		if (err)
 			return err;
 	}
 
-	/* VCO calibration */
+	 
 	err = fc0011_vcocal_trigger(priv);
 	if (err)
 		return err;
@@ -295,14 +288,14 @@ static int fc0011_set_params(struct dvb_frontend *fe)
 		return err;
 	vco_retries = 0;
 	while (!(vco_cal & FC11_VCOCAL_OK) && vco_retries < 3) {
-		/* Reset the tuner and try again */
+		 
 		err = fe->callback(priv->i2c, DVB_FRONTEND_COMPONENT_TUNER,
 				   FC0011_FE_CALLBACK_RESET, priv->addr);
 		if (err) {
 			dev_err(&priv->i2c->dev, "Failed to reset tuner\n");
 			return err;
 		}
-		/* Reinit tuner config */
+		 
 		err = 0;
 		for (i = FC11_REG_FA; i <= FC11_REG_VCOSEL; i++)
 			err |= fc0011_writereg(priv, i, regs[i]);
@@ -313,7 +306,7 @@ static int fc0011_set_params(struct dvb_frontend *fe)
 		err |= fc0011_writereg(priv, FC11_REG_RCCAL, regs[FC11_REG_RCCAL]);
 		if (err)
 			return -EIO;
-		/* VCO calibration */
+		 
 		err = fc0011_vcocal_trigger(priv);
 		if (err)
 			return err;

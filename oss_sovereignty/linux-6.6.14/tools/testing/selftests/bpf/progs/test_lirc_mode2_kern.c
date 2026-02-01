@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// test ir decoder
-//
-// Copyright (C) 2018 Sean Young <sean@mess.org>
+
+
+
+
 
 #include <linux/bpf.h>
 #include <linux/lirc.h>

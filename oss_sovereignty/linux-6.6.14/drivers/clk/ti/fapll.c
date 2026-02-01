@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -12,7 +12,7 @@
 
 #include "clock.h"
 
-/* FAPLL Control Register PLL_CTRL */
+ 
 #define FAPLL_MAIN_MULT_N_SHIFT	16
 #define FAPLL_MAIN_DIV_P_SHIFT	8
 #define FAPLL_MAIN_LOCK		BIT(7)
@@ -27,7 +27,7 @@
 	 (FAPLL_MAIN_DIV_P_SHIFT << FAPLL_MAIN_DIV_P_SHIFT) | \
 	 FAPLL_MAIN_LOC_CTL)
 
-/* FAPLL powerdown register PWD */
+ 
 #define FAPLL_PWD_OFFSET	4
 
 #define MAX_FAPLL_OUTPUTS	7
@@ -36,20 +36,17 @@
 #define to_fapll(_hw)		container_of(_hw, struct fapll_data, hw)
 #define to_synth(_hw)		container_of(_hw, struct fapll_synth, hw)
 
-/* The bypass bit is inverted on the ddr_pll.. */
+ 
 #define fapll_is_ddr_pll(va)	(((u32)(va) & 0xffff) == 0x0440)
 
-/*
- * The audio_pll_clk1 input is hard wired to the 27MHz bypass clock,
- * and the audio_pll_clk1 synthesizer is hardwared to 32KiHz output.
- */
+ 
 #define is_ddr_pll_clk1(va)	(((u32)(va) & 0xffff) == 0x044c)
 #define is_audio_pll_clk1(va)	(((u32)(va) & 0xffff) == 0x04a8)
 
-/* Synthesizer divider register */
+ 
 #define SYNTH_LDMDIV1		BIT(8)
 
-/* Synthesizer frequency register */
+ 
 #define SYNTH_LDFREQ		BIT(31)
 
 #define SYNTH_PHASE_K		8
@@ -169,7 +166,7 @@ static unsigned long ti_fapll_recalc_rate(struct clk_hw *hw,
 
 	rate = parent_rate;
 
-	/* PLL pre-divider is P and multiplier is N */
+	 
 	v = readl_relaxed(fd->base);
 	fapll_p = (v >> 8) & 0xff;
 	if (fapll_p)
@@ -195,12 +192,7 @@ static int ti_fapll_set_div_mult(unsigned long rate,
 				 unsigned long parent_rate,
 				 u32 *pre_div_p, u32 *mult_n)
 {
-	/*
-	 * So far no luck getting decent clock with PLL divider,
-	 * PLL does not seem to lock and the signal does not look
-	 * right. It seems the divider can only be used together
-	 * with the multiplier?
-	 */
+	 
 	if (rate < parent_rate) {
 		pr_warn("FAPLL main divider rates unsupported\n");
 		return -EINVAL;
@@ -300,9 +292,7 @@ static int ti_fapll_synth_is_enabled(struct clk_hw *hw)
 	return !(v & (1 << synth->index));
 }
 
-/*
- * See dm816x TRM chapter 1.10.3 Flying Adder PLL fore more info
- */
+ 
 static unsigned long ti_fapll_synth_recalc_rate(struct clk_hw *hw,
 						unsigned long parent_rate)
 {
@@ -310,25 +300,17 @@ static unsigned long ti_fapll_synth_recalc_rate(struct clk_hw *hw,
 	u32 synth_div_m;
 	u64 rate;
 
-	/* The audio_pll_clk1 is hardwired to produce 32.768KiHz clock */
+	 
 	if (!synth->div)
 		return 32768;
 
-	/*
-	 * PLL in bypass sets the synths in bypass mode too. The PLL rate
-	 * can be also be set to 27MHz, so we can't use parent_rate to
-	 * check for bypass mode.
-	 */
+	 
 	if (ti_fapll_clock_is_bypass(synth->fd))
 		return parent_rate;
 
 	rate = parent_rate;
 
-	/*
-	 * Synth frequency integer and fractional divider.
-	 * Note that the phase output K is 8, so the result needs
-	 * to be multiplied by SYNTH_PHASE_K.
-	 */
+	 
 	if (synth->freq) {
 		u32 v, synth_int_div, synth_frac_div, synth_div_freq;
 
@@ -341,7 +323,7 @@ static unsigned long ti_fapll_synth_recalc_rate(struct clk_hw *hw,
 		rate *= SYNTH_PHASE_K;
 	}
 
-	/* Synth post-divider M */
+	 
 	synth_div_m = readl_relaxed(synth->div) & SYNTH_MAX_DIV_M;
 
 	return DIV_ROUND_UP_ULL(rate, synth_div_m);
@@ -409,7 +391,7 @@ static long ti_fapll_synth_round_rate(struct clk_hw *hw, unsigned long rate,
 	if (ti_fapll_clock_is_bypass(fd) || !synth->div || !rate)
 		return -EINVAL;
 
-	/* Only post divider m available with no fractional divider? */
+	 
 	if (!synth->freq) {
 		unsigned long frac_rate;
 		u32 synth_post_div_m;
@@ -444,7 +426,7 @@ static int ti_fapll_synth_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (ti_fapll_clock_is_bypass(fd) || !synth->div || !rate)
 		return -EINVAL;
 
-	/* Produce the rate with just post divider M? */
+	 
 	frac_rate = ti_fapll_synth_get_frac_rate(hw, parent_rate);
 	if (frac_rate < rate) {
 		if (!synth->freq)
@@ -457,7 +439,7 @@ static int ti_fapll_synth_set_rate(struct clk_hw *hw, unsigned long rate,
 			return -EINVAL;
 	}
 
-	/* Need to recalculate the fractional divider? */
+	 
 	if ((post_rate != rate) && synth->freq)
 		post_div_m = ti_fapll_synth_set_frac_rate(synth,
 							  rate,
@@ -589,7 +571,7 @@ static void __init ti_fapll_setup(struct device_node *node)
 	fd->name = name;
 	fd->hw.init = init;
 
-	/* Register the parent PLL */
+	 
 	pll_clk = clk_register(NULL, &fd->hw);
 	if (IS_ERR(pll_clk))
 		goto unmap;
@@ -597,13 +579,7 @@ static void __init ti_fapll_setup(struct device_node *node)
 	fd->outputs.clks[0] = pll_clk;
 	fd->outputs.clk_num++;
 
-	/*
-	 * Set up the child synthesizers starting at index 1 as the
-	 * PLL output is at index 0. We need to check the clock-indices
-	 * for numbering in case there are holes in the synth mapping,
-	 * and then probe the synth register to see if it has a FREQ
-	 * register available.
-	 */
+	 
 	for (i = 0; i < MAX_FAPLL_OUTPUTS; i++) {
 		const char *output_name;
 		void __iomem *freq, *div;
@@ -622,12 +598,12 @@ static void __init ti_fapll_setup(struct device_node *node)
 		freq = fd->base + (output_instance * 8);
 		div = freq + 4;
 
-		/* Check for hardwired audio_pll_clk1 */
+		 
 		if (is_audio_pll_clk1(freq)) {
 			freq = NULL;
 			div = NULL;
 		} else {
-			/* Does the synthesizer have a FREQ register? */
+			 
 			v = readl_relaxed(freq);
 			if (!v)
 				freq = NULL;
@@ -643,9 +619,9 @@ static void __init ti_fapll_setup(struct device_node *node)
 		clk_register_clkdev(synth_clk, output_name, NULL);
 	}
 
-	/* Register the child synthesizers as the FAPLL outputs */
+	 
 	of_clk_add_provider(node, of_clk_src_onecell_get, &fd->outputs);
-	/* Add clock alias for the outputs */
+	 
 
 	kfree(init);
 

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AS3711 PMIC regulator driver, using DCDC Step Down and LDO supplies
- *
- * Copyright (C) 2012 Renesas Electronics Corporation
- * Author: Guennadi Liakhovetski, <g.liakhovetski@gmx.de>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -17,13 +12,7 @@
 #include <linux/regulator/of_regulator.h>
 #include <linux/slab.h>
 
-/*
- * The regulator API supports 4 modes of operataion: FAST, NORMAL, IDLE and
- * STANDBY. We map them in the following way to AS3711 SD1-4 DCDC modes:
- * FAST:	sdX_fast=1
- * NORMAL:	low_noise=1
- * IDLE:	low_noise=0
- */
+ 
 
 static int as3711_set_mode_sd(struct regulator_dev *rdev, unsigned int mode)
 {
@@ -148,7 +137,7 @@ static const struct regulator_desc as3711_reg_desc[] = {
 	AS3711_REG(LDO_6, LDO_6_VOLTAGE, 7, 0x3f, dldo),
 	AS3711_REG(LDO_7, LDO_7_VOLTAGE, 7, 0x3f, dldo),
 	AS3711_REG(LDO_8, LDO_8_VOLTAGE, 7, 0x3f, dldo),
-	/* StepUp output voltage depends on supplying regulator */
+	 
 };
 
 #define AS3711_REGULATOR_NUM ARRAY_SIZE(as3711_reg_desc)

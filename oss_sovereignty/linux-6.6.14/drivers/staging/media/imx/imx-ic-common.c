@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * V4L2 Image Converter Subdev for Freescale i.MX5/6 SOC
- *
- * Copyright (c) 2014-2016 Mentor Graphics Inc.
- */
+
+ 
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
 #include "imx-media.h"
@@ -33,7 +29,7 @@ struct v4l2_subdev *imx_media_ic_register(struct v4l2_device *v4l2_dev,
 	priv->ipu_dev = ipu_dev;
 	priv->ipu = ipu;
 
-	/* get our IC task id */
+	 
 	switch (grp_id) {
 	case IMX_MEDIA_GRP_ID_IPU_IC_PRP:
 		priv->task_id = IC_TASK_PRP;

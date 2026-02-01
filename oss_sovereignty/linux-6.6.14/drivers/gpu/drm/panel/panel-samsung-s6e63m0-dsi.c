@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DSI interface to the Samsung S6E63M0 panel.
- * (C) 2019 Linus Walleij
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -14,7 +11,7 @@
 #include "panel-samsung-s6e63m0.h"
 
 #define MCS_GLOBAL_PARAM	0xb0
-#define S6E63M0_DSI_MAX_CHUNK	15 /* CMD + 15 bytes max */
+#define S6E63M0_DSI_MAX_CHUNK	15  
 
 static int s6e63m0_dsi_dcs_read(struct device *dev, void *trsp,
 				const u8 cmd, u8 *data)
@@ -46,14 +43,14 @@ static int s6e63m0_dsi_dcs_write(struct device *dev, void *trsp,
 
 	dev_dbg(dev, "DSI writing dcs seq: %*ph\n", (int)len, data);
 
-	/* Pick out and skip past the DCS command */
+	 
 	cmd = *seqp;
 	seqp++;
 	cmdwritten = 0;
 	remain = len - 1;
 	chunk = remain;
 
-	/* Send max S6E63M0_DSI_MAX_CHUNK bytes at a time */
+	 
 	if (chunk > S6E63M0_DSI_MAX_CHUNK)
 		chunk = S6E63M0_DSI_MAX_CHUNK;
 	ret = mipi_dsi_dcs_write(dsi, cmd, seqp, chunk);
@@ -121,7 +118,7 @@ static void s6e63m0_dsi_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id s6e63m0_dsi_of_match[] = {
 	{ .compatible = "samsung,s6e63m0" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, s6e63m0_dsi_of_match);
 

@@ -1,31 +1,4 @@
-/*
- * Copyright 2000 ATI Technologies Inc., Markham, Ontario, and
- *                VA Linux Systems Inc., Fremont, California.
- * Copyright 2008 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Original Authors:
- *   Kevin E. Martin, Rickard E. Faith, Alan Hourihane
- *
- * Kernel port Author: Dave Airlie
- */
+ 
 
 #ifndef AMDGPU_MODE_H
 #define AMDGPU_MODE_H
@@ -124,31 +97,18 @@ enum amdgpu_flip_status {
 
 #define AMDGPU_MAX_I2C_BUS 16
 
-/* amdgpu gpio-based i2c
- * 1. "mask" reg and bits
- *    grabs the gpio pins for software use
- *    0=not held  1=held
- * 2. "a" reg and bits
- *    output pin value
- *    0=low 1=high
- * 3. "en" reg and bits
- *    sets the pin direction
- *    0=input 1=output
- * 4. "y" reg and bits
- *    input pin value
- *    0=low 1=high
- */
+ 
 struct amdgpu_i2c_bus_rec {
 	bool valid;
-	/* id used by atom */
+	 
 	uint8_t i2c_id;
-	/* id used by atom */
+	 
 	enum amdgpu_hpd_id hpd;
-	/* can be used with hw i2c engine */
+	 
 	bool hw_capable;
-	/* uses multi-media i2c engine */
+	 
 	bool mm_i2c;
-	/* regs and bits */
+	 
 	uint32_t mask_clk_reg;
 	uint32_t mask_data_reg;
 	uint32_t a_clk_reg;
@@ -169,7 +129,7 @@ struct amdgpu_i2c_bus_rec {
 
 #define AMDGPU_MAX_BIOS_CONNECTOR 16
 
-/* pll flags */
+ 
 #define AMDGPU_PLL_USE_BIOS_DIVS        (1 << 0)
 #define AMDGPU_PLL_NO_ODD_POST_DIV      (1 << 1)
 #define AMDGPU_PLL_USE_REF_DIV          (1 << 2)
@@ -187,14 +147,14 @@ struct amdgpu_i2c_bus_rec {
 #define AMDGPU_PLL_PREFER_MINM_OVER_MAXP (1 << 14)
 
 struct amdgpu_pll {
-	/* reference frequency */
+	 
 	uint32_t reference_freq;
 
-	/* fixed dividers */
+	 
 	uint32_t reference_div;
 	uint32_t post_div;
 
-	/* pll in/out limits */
+	 
 	uint32_t pll_in_min;
 	uint32_t pll_in_max;
 	uint32_t pll_out_min;
@@ -203,7 +163,7 @@ struct amdgpu_pll {
 	uint32_t lcd_pll_out_max;
 	uint32_t best_vco;
 
-	/* divider limits */
+	 
 	uint32_t min_ref_div;
 	uint32_t max_ref_div;
 	uint32_t min_post_div;
@@ -213,10 +173,10 @@ struct amdgpu_pll {
 	uint32_t min_frac_feedback_div;
 	uint32_t max_frac_feedback_div;
 
-	/* flags for the current clock */
+	 
 	uint32_t flags;
 
-	/* pll id */
+	 
 	uint32_t id;
 };
 
@@ -238,9 +198,7 @@ struct amdgpu_afmt {
 	struct amdgpu_audio_pin *pin;
 };
 
-/*
- * Audio
- */
+ 
 struct amdgpu_audio_pin {
 	int			channels;
 	int			rate;
@@ -259,26 +217,26 @@ struct amdgpu_audio {
 };
 
 struct amdgpu_display_funcs {
-	/* display watermarks */
+	 
 	void (*bandwidth_update)(struct amdgpu_device *adev);
-	/* get frame count */
+	 
 	u32 (*vblank_get_counter)(struct amdgpu_device *adev, int crtc);
-	/* set backlight level */
+	 
 	void (*backlight_set_level)(struct amdgpu_encoder *amdgpu_encoder,
 				    u8 level);
-	/* get backlight level */
+	 
 	u8 (*backlight_get_level)(struct amdgpu_encoder *amdgpu_encoder);
-	/* hotplug detect */
+	 
 	bool (*hpd_sense)(struct amdgpu_device *adev, enum amdgpu_hpd_id hpd);
 	void (*hpd_set_polarity)(struct amdgpu_device *adev,
 				 enum amdgpu_hpd_id hpd);
 	u32 (*hpd_get_gpio_reg)(struct amdgpu_device *adev);
-	/* pageflipping */
+	 
 	void (*page_flip)(struct amdgpu_device *adev,
 			  int crtc_id, u64 crtc_base, bool async);
 	int (*page_flip_get_scanoutpos)(struct amdgpu_device *adev, int crtc,
 					u32 *vbl, u32 *position);
-	/* display topology setup */
+	 
 	void (*add_encoder)(struct amdgpu_device *adev,
 			    uint32_t encoder_enum,
 			    uint32_t supported_device,
@@ -301,7 +259,7 @@ struct amdgpu_framebuffer {
 	uint64_t tiling_flags;
 	bool tmz_surface;
 
-	/* caching for later use */
+	 
 	uint64_t address;
 };
 
@@ -312,34 +270,34 @@ struct amdgpu_mode_info {
 	struct amdgpu_crtc *crtcs[AMDGPU_MAX_CRTCS];
 	struct drm_plane *planes[AMDGPU_MAX_PLANES];
 	struct amdgpu_afmt *afmt[AMDGPU_MAX_AFMT_BLOCKS];
-	/* DVI-I properties */
+	 
 	struct drm_property *coherent_mode_property;
-	/* DAC enable load detect */
+	 
 	struct drm_property *load_detect_property;
-	/* underscan */
+	 
 	struct drm_property *underscan_property;
 	struct drm_property *underscan_hborder_property;
 	struct drm_property *underscan_vborder_property;
-	/* audio */
+	 
 	struct drm_property *audio_property;
-	/* FMT dithering */
+	 
 	struct drm_property *dither_property;
-	/* Adaptive Backlight Modulation (power feature) */
+	 
 	struct drm_property *abm_level_property;
-	/* hardcoded DFP edid from BIOS */
+	 
 	struct edid *bios_hardcoded_edid;
 	int bios_hardcoded_edid_size;
 
-	/* firmware flags */
+	 
 	u32 firmware_flags;
-	/* pointer to backlight encoder */
+	 
 	struct amdgpu_encoder *bl_encoder;
-	u8 bl_level; /* saved backlight level */
-	struct amdgpu_audio	audio; /* audio stuff */
-	int			num_crtc; /* number of crtcs */
-	int			num_hpd; /* number of hpd pins */
-	int			num_dig; /* number of dig blocks */
-	bool			gpu_vm_support; /* supports display from GTT */
+	u8 bl_level;  
+	struct amdgpu_audio	audio;  
+	int			num_crtc;  
+	int			num_hpd;  
+	int			num_dig;  
+	bool			gpu_vm_support;  
 	int			disp_priority;
 	const struct amdgpu_display_funcs *funcs;
 	const enum drm_plane_type *plane_type;
@@ -360,7 +318,7 @@ struct amdgpu_atom_ss {
 	uint8_t delay;
 	uint8_t range;
 	uint8_t refdiv;
-	/* asic_ss */
+	 
 	uint16_t rate;
 	uint16_t amount;
 };
@@ -388,13 +346,13 @@ struct amdgpu_crtc {
 	fixed20_12 hsc;
 	struct drm_display_mode native_mode;
 	u32 pll_id;
-	/* page flipping */
+	 
 	struct amdgpu_flip_work *pflip_works;
 	enum amdgpu_flip_status pflip_status;
 	int deferred_flip_completion;
-	/* parameters access from DM IRQ handler */
+	 
 	struct dm_irq_params dm_irq_params;
-	/* pll sharing */
+	 
 	struct amdgpu_atom_ss ss;
 	bool ss_enabled;
 	u32 adjusted_clock;
@@ -404,13 +362,13 @@ struct amdgpu_crtc {
 	u32 pll_flags;
 	struct drm_encoder *encoder;
 	struct drm_connector *connector;
-	/* for dpm */
+	 
 	u32 line_time;
 	u32 wm_low;
 	u32 wm_high;
 	u32 lb_vblank_lead_lines;
 	struct drm_display_mode hw_mode;
-	/* for virtual dce */
+	 
 	struct hrtimer vblank_timer;
 	enum amdgpu_interrupt_state vsync_timer_enabled;
 
@@ -420,14 +378,14 @@ struct amdgpu_crtc {
 
 struct amdgpu_encoder_atom_dig {
 	bool linkb;
-	/* atom dig */
+	 
 	bool coherent_mode;
-	int dig_encoder; /* -1 disabled, 0 DIGA, 1 DIGB, etc. */
-	/* atom lvds/edp */
+	int dig_encoder;  
+	 
 	uint32_t lcd_misc;
 	uint16_t panel_pwr_delay;
 	uint32_t lcd_ss_id;
-	/* panel mode */
+	 
 	struct drm_display_mode native_mode;
 	struct backlight_device *bl_dev;
 	int dpms_mode;
@@ -456,7 +414,7 @@ struct amdgpu_encoder {
 };
 
 struct amdgpu_connector_atom_dig {
-	/* displayport */
+	 
 	u8 dpcd[DP_RECEIVER_CAP_SIZE];
 	u8 downstream_ports[DP_MAX_DOWNSTREAM_PORTS];
 	u8 dp_sink_type;
@@ -483,12 +441,12 @@ struct amdgpu_router {
 	u32 router_id;
 	struct amdgpu_i2c_bus_rec i2c_info;
 	u8 i2c_addr;
-	/* i2c mux */
+	 
 	bool ddc_valid;
 	u8 ddc_mux_type;
 	u8 ddc_mux_control_pin;
 	u8 ddc_mux_state;
-	/* clock/data mux */
+	 
 	bool cd_valid;
 	u8 cd_mux_type;
 	u8 cd_mux_control_pin;
@@ -524,16 +482,15 @@ struct amdgpu_connector {
 	uint32_t connector_id;
 	uint32_t devices;
 	struct amdgpu_i2c_chan *ddc_bus;
-	/* some systems have an hdmi and vga port with a shared ddc line */
+	 
 	bool shared_ddc;
 	bool use_digital;
-	/* we need to mind the EDID between detect
-	   and get modes due to analog/digital/tvencoder */
+	 
 	struct edid *edid;
 	void *con_priv;
 	bool dac_load_detect;
-	bool detected_by_load; /* if the connection status was determined by load */
-	bool detected_hpd_without_ddc; /* if an HPD signal was detected on DVI, but ddc probing failed */
+	bool detected_by_load;  
+	bool detected_hpd_without_ddc;  
 	uint16_t connector_object_id;
 	struct amdgpu_hpd hpd;
 	struct amdgpu_router router;
@@ -543,7 +500,7 @@ struct amdgpu_connector {
 	unsigned pixelclock_for_modeset;
 };
 
-/* TODO: start to use this struct and remove same field from base one */
+ 
 struct amdgpu_mst_connector {
 	struct amdgpu_connector base;
 
@@ -558,7 +515,7 @@ struct amdgpu_mst_connector {
 #define ENCODER_MODE_IS_DP(em) (((em) == ATOM_ENCODER_MODE_DP) || \
 				((em) == ATOM_ENCODER_MODE_DP_MST))
 
-/* Driver internal use only flags of amdgpu_display_get_crtc_scanoutpos() */
+ 
 #define DRM_SCANOUTPOS_VALID        (1 << 0)
 #define DRM_SCANOUTPOS_IN_VBLANK    (1 << 1)
 #define DRM_SCANOUTPOS_ACCURATE     (1 << 2)
@@ -603,7 +560,7 @@ bool amdgpu_crtc_get_scanout_position(struct drm_crtc *crtc,
 			int *hpos, ktime_t *stime, ktime_t *etime,
 			const struct drm_display_mode *mode);
 
-/* amdgpu_display.c */
+ 
 void amdgpu_display_print_display_setup(struct drm_device *dev);
 int amdgpu_display_modeset_create_props(struct amdgpu_device *adev);
 int amdgpu_display_crtc_set_config(struct drm_mode_set *set,

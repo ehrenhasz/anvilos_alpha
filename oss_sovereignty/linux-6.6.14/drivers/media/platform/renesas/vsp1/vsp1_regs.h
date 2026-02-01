@@ -1,18 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * vsp1_regs.h  --  R-Car VSP1 Registers Definitions
- *
- * Copyright (C) 2013 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __VSP1_REGS_H__
 #define __VSP1_REGS_H__
 
-/* -----------------------------------------------------------------------------
- * General Control Registers
- */
+ 
 
 #define VI6_CMD(n)			(0x0000 + (n) * 4)
 #define VI6_CMD_UPDHDR			BIT(4)
@@ -54,9 +46,7 @@
 #define VI6_WPF_LINE_COUNT(n)		(0x0084 + (n) * 4)
 #define VI6_WPF_LINE_COUNT_MASK		(0x1fffff << 0)
 
-/* -----------------------------------------------------------------------------
- * Display List Control Registers
- */
+ 
 
 #define VI6_DL_CTRL			0x0100
 #define VI6_DL_CTRL_AR_WAIT_MASK	(0xffff << 16)
@@ -90,9 +80,7 @@
 #define VI6_DL_BODY_SIZE_BS_MASK	(0x1ffff << 0)
 #define VI6_DL_BODY_SIZE_BS_SHIFT	0
 
-/* -----------------------------------------------------------------------------
- * RPF Control Registers
- */
+ 
 
 #define VI6_RPF_OFFSET			0x100
 
@@ -252,9 +240,7 @@
 #define VI6_RPF_BRDITH_CTRL_ODE		BIT(8)
 #define VI6_RPF_BRDITH_CTRL_CBRM	BIT(0)
 
-/* -----------------------------------------------------------------------------
- * WPF Control Registers
- */
+ 
 
 #define VI6_WPF_OFFSET			0x100
 
@@ -334,9 +320,7 @@
 #define VI6_WPF_WRBCK_CTRL(n)		(0x1034 + (n) * 0x100)
 #define VI6_WPF_WRBCK_CTRL_WBMD		BIT(0)
 
-/* -----------------------------------------------------------------------------
- * UIF Control Registers
- */
+ 
 
 #define VI6_UIF_OFFSET			0x100
 
@@ -372,9 +356,7 @@
 #define VI6_UIF_DISCOM_DOCMSZXR		0x1c28
 #define VI6_UIF_DISCOM_DOCMSZYR		0x1c2c
 
-/* -----------------------------------------------------------------------------
- * DPR Control Registers
- */
+ 
 
 #define VI6_DPR_RPF_ROUTE(n)		(0x2000 + (n) * 4)
 
@@ -417,13 +399,11 @@
 #define VI6_DPR_NODE_HST		30
 #define VI6_DPR_NODE_HSI		31
 #define VI6_DPR_NODE_BRS_IN(n)		(38 + (n))
-#define VI6_DPR_NODE_LIF		55		/* Gen2 only */
+#define VI6_DPR_NODE_LIF		55		 
 #define VI6_DPR_NODE_WPF(n)		(56 + (n))
 #define VI6_DPR_NODE_UNUSED		63
 
-/* -----------------------------------------------------------------------------
- * SRU Control Registers
- */
+ 
 
 #define VI6_SRU_CTRL0			0x2200
 #define VI6_SRU_CTRL0_PARAM0_MASK	(0x1ff << 16)
@@ -444,9 +424,7 @@
 #define VI6_SRU_CTRL2_PARAM7_SHIFT	8
 #define VI6_SRU_CTRL2_PARAM8_SHIFT	0
 
-/* -----------------------------------------------------------------------------
- * UDS Control Registers
- */
+ 
 
 #define VI6_UDS_OFFSET			0x100
 
@@ -526,16 +504,12 @@
 #define VI6_UDS_FILL_COLOR_BFILC_MASK	(0xff << 0)
 #define VI6_UDS_FILL_COLOR_BFILC_SHIFT	0
 
-/* -----------------------------------------------------------------------------
- * LUT Control Registers
- */
+ 
 
 #define VI6_LUT_CTRL			0x2800
 #define VI6_LUT_CTRL_EN			BIT(0)
 
-/* -----------------------------------------------------------------------------
- * CLU Control Registers
- */
+ 
 
 #define VI6_CLU_CTRL			0x2900
 #define VI6_CLU_CTRL_AAI		BIT(28)
@@ -548,23 +522,17 @@
 #define VI6_CLU_CTRL_M2D		BIT(1)
 #define VI6_CLU_CTRL_EN			BIT(0)
 
-/* -----------------------------------------------------------------------------
- * HST Control Registers
- */
+ 
 
 #define VI6_HST_CTRL			0x2a00
 #define VI6_HST_CTRL_EN			BIT(0)
 
-/* -----------------------------------------------------------------------------
- * HSI Control Registers
- */
+ 
 
 #define VI6_HSI_CTRL			0x2b00
 #define VI6_HSI_CTRL_EN			BIT(0)
 
-/* -----------------------------------------------------------------------------
- * BRS and BRU Control Registers
- */
+ 
 
 #define VI6_ROP_NOP			0
 #define VI6_ROP_AND			1
@@ -666,7 +634,7 @@
 #define VI6_BRU_BLD_COEFY_MASK		(0xff << 0)
 #define VI6_BRU_BLD_COEFY_SHIFT		0
 
-#define VI6_BRU_ROP			0x0030	/* Only available on BRU */
+#define VI6_BRU_ROP			0x0030	 
 #define VI6_BRU_ROP_DSTSEL_BRUIN(n)	(((n) <= 3 ? (n) : (n)+1) << 20)
 #define VI6_BRU_ROP_DSTSEL_VRPF		(4 << 20)
 #define VI6_BRU_ROP_DSTSEL_MASK		(7 << 20)
@@ -675,9 +643,7 @@
 #define VI6_BRU_ROP_AROP(rop)		((rop) << 0)
 #define VI6_BRU_ROP_AROP_MASK		(0xf << 0)
 
-/* -----------------------------------------------------------------------------
- * HGO Control Registers
- */
+ 
 
 #define VI6_HGO_OFFSET			0x3000
 #define VI6_HGO_OFFSET_HOFFSET_SHIFT	16
@@ -713,9 +679,7 @@
 #define VI6_HGO_REGRST			0x33fc
 #define VI6_HGO_REGRST_RCLEA		BIT(0)
 
-/* -----------------------------------------------------------------------------
- * HGT Control Registers
- */
+ 
 
 #define VI6_HGT_OFFSET			0x3400
 #define VI6_HGT_OFFSET_HOFFSET_SHIFT	16
@@ -739,9 +703,7 @@
 #define VI6_HGT_REGRST			0x37fc
 #define VI6_HGT_REGRST_RCLEA		BIT(0)
 
-/* -----------------------------------------------------------------------------
- * LIF Control Registers
- */
+ 
 
 #define VI6_LIF_OFFSET			(-0x100)
 
@@ -763,16 +725,12 @@
 #define VI6_LIF_LBA_LBA1_MASK		(0xfff << 16)
 #define VI6_LIF_LBA_LBA1_SHIFT		16
 
-/* -----------------------------------------------------------------------------
- * Security Control Registers
- */
+ 
 
 #define VI6_SECURITY_CTRL0		0x3d00
 #define VI6_SECURITY_CTRL1		0x3d04
 
-/* -----------------------------------------------------------------------------
- * IP Version Registers
- */
+ 
 
 #define VI6_IP_VERSION			0x3f00
 #define VI6_IP_VERSION_MASK		(0xffff << 0)
@@ -791,7 +749,7 @@
 #define VI6_IP_VERSION_MODEL_VSPDL_GEN3	(0x19 << 8)
 #define VI6_IP_VERSION_MODEL_VSPBS_GEN3	(0x1a << 8)
 #define VI6_IP_VERSION_MODEL_VSPD_GEN4	(0x1c << 8)
-/* RZ/G2L SoCs have no version register, So use 0x80 as the model version */
+ 
 #define VI6_IP_VERSION_MODEL_VSPD_RZG2L	(0x80 << 8)
 
 #define VI6_IP_VERSION_SOC_MASK		(0xff << 0)
@@ -807,33 +765,25 @@
 #define VI6_IP_VERSION_SOC_E3		(0x04 << 0)
 #define VI6_IP_VERSION_SOC_V3U		(0x05 << 0)
 #define VI6_IP_VERSION_SOC_V4H		(0x06 << 0)
-/* RZ/G2L SoCs have no version register, So use 0x80 for SoC Identification */
+ 
 #define VI6_IP_VERSION_SOC_RZG2L	(0x80 << 0)
 
-#define VI6_IP_VERSION_VSP_SW		(0xfffe << 16) /* SW VSP version */
+#define VI6_IP_VERSION_VSP_SW		(0xfffe << 16)  
 
-/* -----------------------------------------------------------------------------
- * RPF CLUT Registers
- */
+ 
 
 #define VI6_CLUT_TABLE			0x4000
 
-/* -----------------------------------------------------------------------------
- * 1D LUT Registers
- */
+ 
 
 #define VI6_LUT_TABLE			0x7000
 
-/* -----------------------------------------------------------------------------
- * 3D LUT Registers
- */
+ 
 
 #define VI6_CLU_ADDR			0x7400
 #define VI6_CLU_DATA			0x7404
 
-/* -----------------------------------------------------------------------------
- * Formats
- */
+ 
 
 #define VI6_FMT_RGB_332			0x00
 #define VI6_FMT_XRGB_4444		0x01
@@ -883,4 +833,4 @@
 #define VI6_FMT_Y_U_V_422		0x4b
 #define VI6_FMT_Y_U_V_420		0x4c
 
-#endif /* __VSP1_REGS_H__ */
+#endif  

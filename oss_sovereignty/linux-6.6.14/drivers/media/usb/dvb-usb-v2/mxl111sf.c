@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010-2014 Michael Krufky (mkrufky@linuxtv.org)
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <linux/i2c.h>
@@ -53,7 +49,7 @@ int mxl111sf_ctrl_msg(struct mxl111sf_state *state,
 		      u8 cmd, u8 *wbuf, int wlen, u8 *rbuf, int rlen)
 {
 	struct dvb_usb_device *d = state->d;
-	int wo = (rbuf == NULL || rlen == 0); /* write-only */
+	int wo = (rbuf == NULL || rlen == 0);  
 	int ret;
 
 	if (1 + wlen > MXL_MAX_XFER_SIZE) {
@@ -84,7 +80,7 @@ int mxl111sf_ctrl_msg(struct mxl111sf_state *state,
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 #define MXL_CMD_REG_READ	0xaa
 #define MXL_CMD_REG_WRITE	0x55
@@ -126,7 +122,7 @@ int mxl111sf_write_reg(struct mxl111sf_state *state, u8 addr, u8 data)
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 int mxl111sf_write_reg_mask(struct mxl111sf_state *state,
 				   u8 addr, u8 mask, u8 data)
@@ -137,7 +133,7 @@ int mxl111sf_write_reg_mask(struct mxl111sf_state *state,
 	if (mask != 0xff) {
 		ret = mxl111sf_read_reg(state, addr, &val);
 #if 1
-		/* don't know why this usually errors out on the first try */
+		 
 		if (mxl_fail(ret))
 			pr_err("error writing addr: 0x%02x, mask: 0x%02x, data: 0x%02x, retrying...",
 			       addr, mask, data);
@@ -156,7 +152,7 @@ fail:
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 int mxl111sf_ctrl_program_regs(struct mxl111sf_state *state,
 			       struct mxl111sf_reg_ctrl_info *ctrl_reg_info)
@@ -180,7 +176,7 @@ int mxl111sf_ctrl_program_regs(struct mxl111sf_state *state,
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static int mxl1x1sf_get_chip_info(struct mxl111sf_state *state)
 {
@@ -252,12 +248,11 @@ fail:
 	___ret;								\
 })
 
-/* ------------------------------------------------------------------------ */
+ 
 #if 0
 static int mxl111sf_power_ctrl(struct dvb_usb_device *d, int onoff)
 {
-	/* power control depends on which adapter is being woken:
-	 * save this for init, instead, via mxl111sf_adap_fe_init */
+	 
 	return 0;
 }
 #endif
@@ -269,7 +264,7 @@ static int mxl111sf_adap_fe_init(struct dvb_frontend *fe)
 	struct mxl111sf_adap_state *adap_state = &state->adap_state[fe->id];
 	int err;
 
-	/* exit if we didn't initialize the driver yet */
+	 
 	if (!state->chip_id) {
 		mxl_debug("driver not yet initialized, exit.");
 		goto fail;
@@ -310,8 +305,7 @@ static int mxl111sf_adap_fe_init(struct dvb_frontend *fe)
 #if 0
 		err = fe->ops.init(fe);
 #endif
-		msleep(100); /* add short delay after enabling
-			      * the demod before touching it */
+		msleep(100);  
 	}
 
 	return (adap_state->fe_init) ? adap_state->fe_init(fe) : 0;
@@ -325,7 +319,7 @@ static int mxl111sf_adap_fe_sleep(struct dvb_frontend *fe)
 	struct mxl111sf_adap_state *adap_state = &state->adap_state[fe->id];
 	int err;
 
-	/* exit if we didn't initialize the driver yet */
+	 
 	if (!state->chip_id) {
 		mxl_debug("driver not yet initialized, exit.");
 		goto fail;
@@ -409,7 +403,7 @@ static int mxl111sf_ep4_streaming_ctrl(struct dvb_frontend *fe, int onoff)
 	return ret;
 }
 
-/* ------------------------------------------------------------------------ */
+ 
 
 static struct lgdt3305_config hauppauge_lgdt3305_config = {
 	.i2c_addr           = 0xb2 >> 1,
@@ -431,7 +425,7 @@ static int mxl111sf_lgdt3305_frontend_attach(struct dvb_usb_adapter *adap, u8 fe
 
 	pr_debug("%s()\n", __func__);
 
-	/* save a pointer to the dvb_usb_device in device state */
+	 
 	state->d = d;
 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 2 : 1;
 	state->alt_mode = adap_state->alt_mode;
@@ -502,7 +496,7 @@ static int mxl111sf_lg2160_frontend_attach(struct dvb_usb_adapter *adap, u8 fe_i
 
 	pr_debug("%s()\n", __func__);
 
-	/* save a pointer to the dvb_usb_device in device state */
+	 
 	state->d = d;
 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 2 : 1;
 	state->alt_mode = adap_state->alt_mode;
@@ -566,7 +560,7 @@ static struct lg2160_config hauppauge_lg2161_1019_config = {
 	.deny_i2c_rptr      = 1,
 	.spectral_inversion = 0,
 	.if_khz             = 6000,
-	.output_if          = 2, /* LG2161_OIF_SPI_MAS */
+	.output_if          = 2,  
 };
 
 static struct lg2160_config hauppauge_lg2161_1040_config = {
@@ -575,7 +569,7 @@ static struct lg2160_config hauppauge_lg2161_1040_config = {
 	.deny_i2c_rptr      = 1,
 	.spectral_inversion = 0,
 	.if_khz             = 6000,
-	.output_if          = 4, /* LG2161_OIF_SPI_MAS */
+	.output_if          = 4,  
 };
 
 static int mxl111sf_lg2161_frontend_attach(struct dvb_usb_adapter *adap, u8 fe_id)
@@ -587,7 +581,7 @@ static int mxl111sf_lg2161_frontend_attach(struct dvb_usb_adapter *adap, u8 fe_i
 
 	pr_debug("%s()\n", __func__);
 
-	/* save a pointer to the dvb_usb_device in device state */
+	 
 	state->d = d;
 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 2 : 1;
 	state->alt_mode = adap_state->alt_mode;
@@ -653,7 +647,7 @@ static struct lg2160_config hauppauge_lg2161_1019_ep6_config = {
 	.deny_i2c_rptr      = 1,
 	.spectral_inversion = 0,
 	.if_khz             = 6000,
-	.output_if          = 1, /* LG2161_OIF_SERIAL_TS */
+	.output_if          = 1,  
 };
 
 static struct lg2160_config hauppauge_lg2161_1040_ep6_config = {
@@ -662,7 +656,7 @@ static struct lg2160_config hauppauge_lg2161_1040_ep6_config = {
 	.deny_i2c_rptr      = 1,
 	.spectral_inversion = 0,
 	.if_khz             = 6000,
-	.output_if          = 7, /* LG2161_OIF_SERIAL_TS */
+	.output_if          = 7,  
 };
 
 static int mxl111sf_lg2161_ep6_frontend_attach(struct dvb_usb_adapter *adap, u8 fe_id)
@@ -674,7 +668,7 @@ static int mxl111sf_lg2161_ep6_frontend_attach(struct dvb_usb_adapter *adap, u8 
 
 	pr_debug("%s()\n", __func__);
 
-	/* save a pointer to the dvb_usb_device in device state */
+	 
 	state->d = d;
 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 2 : 1;
 	state->alt_mode = adap_state->alt_mode;
@@ -749,7 +743,7 @@ static int mxl111sf_attach_demod(struct dvb_usb_adapter *adap, u8 fe_id)
 
 	pr_debug("%s()\n", __func__);
 
-	/* save a pointer to the dvb_usb_device in device state */
+	 
 	state->d = d;
 	adap_state->alt_mode = (dvb_usb_mxl111sf_isoc) ? 1 : 2;
 	state->alt_mode = adap_state->alt_mode;
@@ -780,7 +774,7 @@ static int mxl111sf_attach_demod(struct dvb_usb_adapter *adap, u8 fe_id)
 	if (mxl_fail(ret))
 		goto fail;
 
-	/* don't care if this fails */
+	 
 	mxl111sf_init_port_expander(state);
 
 	adap->fe[fe_id] = dvb_attach(mxl111sf_demod_attach, state,
@@ -822,7 +816,7 @@ static int mxl111sf_ant_hunt(struct dvb_frontend *fe)
 
 	u16 rxPwrA, rxPwr0, rxPwr1, rxPwr2;
 
-	/* FIXME: must force EXTERNAL for QAM - done elsewhere */
+	 
 	mxl111sf_set_ant_path(state, antctrl == ANT_PATH_AUTO ?
 			      ANT_PATH_EXTERNAL : antctrl);
 
@@ -845,12 +839,12 @@ static int mxl111sf_ant_hunt(struct dvb_frontend *fe)
 		fe->ops.tuner_ops.get_rf_strength(fe, &rxPwr2);
 
 		if (rxPwr1+ANT_EXT_TWEAK >= rxPwr2) {
-			/* return with EXTERNAL enabled */
+			 
 			mxl111sf_set_ant_path(state, ANT_PATH_EXTERNAL);
 			DbgAntHunt(ANT_PATH_EXTERNAL, rxPwrA,
 				   rxPwr0, rxPwr1, rxPwr2);
 		} else {
-			/* return with INTERNAL enabled */
+			 
 			DbgAntHunt(ANT_PATH_INTERNAL, rxPwrA,
 				   rxPwr0, rxPwr1, rxPwr2);
 		}
@@ -859,7 +853,7 @@ static int mxl111sf_ant_hunt(struct dvb_frontend *fe)
 }
 
 static const struct mxl111sf_tuner_config mxl_tuner_config = {
-	.if_freq         = MXL_IF_6_0, /* applies to external IF output, only */
+	.if_freq         = MXL_IF_6_0,  
 	.invert_spectrum = 0,
 	.read_reg        = mxl111sf_read_reg,
 	.write_reg       = mxl111sf_write_reg,
@@ -1053,12 +1047,9 @@ static void mxl111sf_stream_config_isoc(struct usb_data_stream_properties *strea
 	stream->u.isoc.interval = 1;
 }
 
-/* DVB USB Driver stuff */
+ 
 
-/* dvbt       mxl111sf
- * bulk       EP4/BULK/5/8192
- * isoc       EP4/ISOC/5/96/564
- */
+ 
 static int mxl111sf_get_stream_config_dvbt(struct dvb_frontend *fe,
 		u8 *ts_type, struct usb_data_stream_properties *stream)
 {
@@ -1105,10 +1096,7 @@ static struct dvb_usb_device_properties mxl111sf_props_dvbt = {
 	}
 };
 
-/* atsc       lgdt3305
- * bulk       EP6/BULK/5/8192
- * isoc       EP6/ISOC/5/24/3072
- */
+ 
 static int mxl111sf_get_stream_config_atsc(struct dvb_frontend *fe,
 		u8 *ts_type, struct usb_data_stream_properties *stream)
 {
@@ -1147,10 +1135,7 @@ static struct dvb_usb_device_properties mxl111sf_props_atsc = {
 	}
 };
 
-/* mh         lg2160
- * bulk       EP5/BULK/5/8192/RAW
- * isoc       EP5/ISOC/5/96/200/RAW
- */
+ 
 static int mxl111sf_get_stream_config_mh(struct dvb_frontend *fe,
 		u8 *ts_type, struct usb_data_stream_properties *stream)
 {
@@ -1189,10 +1174,7 @@ static struct dvb_usb_device_properties mxl111sf_props_mh = {
 	}
 };
 
-/* atsc mh    lgdt3305           mxl111sf          lg2160
- * bulk       EP6/BULK/5/8192    EP4/BULK/5/8192   EP5/BULK/5/8192/RAW
- * isoc       EP6/ISOC/5/24/3072 EP4/ISOC/5/96/564 EP5/ISOC/5/96/200/RAW
- */
+ 
 static int mxl111sf_get_stream_config_atsc_mh(struct dvb_frontend *fe,
 		u8 *ts_type, struct usb_data_stream_properties *stream)
 {
@@ -1258,12 +1240,7 @@ static struct dvb_usb_device_properties mxl111sf_props_atsc_mh = {
 	}
 };
 
-/* mercury    lgdt3305           mxl111sf          lg2161
- * tp bulk    EP6/BULK/5/8192    EP4/BULK/5/8192   EP6/BULK/5/8192/RAW
- * tp isoc    EP6/ISOC/5/24/3072 EP4/ISOC/5/96/564 EP6/ISOC/5/24/3072/RAW
- * spi bulk   EP6/BULK/5/8192    EP4/BULK/5/8192   EP5/BULK/5/8192/RAW
- * spi isoc   EP6/ISOC/5/24/3072 EP4/ISOC/5/96/564 EP5/ISOC/5/96/200/RAW
- */
+ 
 static int mxl111sf_get_stream_config_mercury(struct dvb_frontend *fe,
 		u8 *ts_type, struct usb_data_stream_properties *stream)
 {
@@ -1337,12 +1314,7 @@ static struct dvb_usb_device_properties mxl111sf_props_mercury = {
 	}
 };
 
-/* mercury mh mxl111sf          lg2161
- * tp bulk    EP4/BULK/5/8192   EP6/BULK/5/8192/RAW
- * tp isoc    EP4/ISOC/5/96/564 EP6/ISOC/5/24/3072/RAW
- * spi bulk   EP4/BULK/5/8192   EP5/BULK/5/8192/RAW
- * spi isoc   EP4/ISOC/5/96/564 EP5/ISOC/5/96/200/RAW
- */
+ 
 static int mxl111sf_get_stream_config_mercury_mh(struct dvb_frontend *fe,
 		u8 *ts_type, struct usb_data_stream_properties *stream)
 {

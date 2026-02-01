@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007-2008 BalaBit IT Ltd.
- * Author: Krisztian Kovacs
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -52,7 +49,7 @@ extract_icmp6_fields(const struct sk_buff *skb,
 					      sizeof(*ipv6_var),
 					 &inside_nexthdr, &inside_fragoff);
 	if (inside_hdrlen < 0)
-		return 1; /* hjm: Packet has no/incomplete transport layer headers. */
+		return 1;  
 
 	if (inside_nexthdr != IPPROTO_TCP &&
 	    inside_nexthdr != IPPROTO_UDP)
@@ -63,8 +60,7 @@ extract_icmp6_fields(const struct sk_buff *skb,
 	if (ports == NULL)
 		return 1;
 
-	/* the inside IP packet is the one quoted from our side, thus
-	 * its saddr is the local address */
+	 
 	*protocol = inside_nexthdr;
 	*laddr = &inside_iph->saddr;
 	*lport = ports[0];

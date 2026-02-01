@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+ 
+ 
 
 #ifndef __OMAP2_DSS_DISPC_COMPAT_H
 #define __OMAP2_DSS_DISPC_COMPAT_H

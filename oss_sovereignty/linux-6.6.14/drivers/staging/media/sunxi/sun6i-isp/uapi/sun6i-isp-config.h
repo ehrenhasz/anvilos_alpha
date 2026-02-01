@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: ((GPL-2.0+ WITH Linux-syscall-note) OR MIT) */
-/*
- * Allwinner A31 ISP Configuration
- */
+ 
+ 
 
 #ifndef _UAPI_SUN6I_ISP_CONFIG_H
 #define _UAPI_SUN6I_ISP_CONFIG_H
 
 #include <linux/types.h>
 
-#define V4L2_META_FMT_SUN6I_ISP_PARAMS v4l2_fourcc('S', '6', 'I', 'P') /* Allwinner A31 ISP Parameters */
+#define V4L2_META_FMT_SUN6I_ISP_PARAMS v4l2_fourcc('S', '6', 'I', 'P')  
 
 #define SUN6I_ISP_MODULE_BAYER			(1U << 0)
 #define SUN6I_ISP_MODULE_BDNF			(1U << 1)
@@ -40,4 +38,4 @@ struct sun6i_isp_params_config {
 	struct sun6i_isp_params_config_bdnf	bdnf;
 };
 
-#endif /* _UAPI_SUN6I_ISP_CONFIG_H */
+#endif  

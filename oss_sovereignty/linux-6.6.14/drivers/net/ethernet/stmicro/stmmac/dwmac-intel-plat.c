@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Intel DWMAC platform driver
- *
- * Copyright(C) 2020 Intel Corporation
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/module.h>
@@ -107,7 +104,7 @@ static int intel_eth_plat_probe(struct platform_device *pdev)
 		if (dwmac->data->fix_mac_speed)
 			plat_dat->fix_mac_speed = dwmac->data->fix_mac_speed;
 
-		/* Enable TX clock */
+		 
 		if (dwmac->data->tx_clk_en) {
 			dwmac->tx_clk = devm_clk_get(&pdev->dev, "tx_clk");
 			if (IS_ERR(dwmac->tx_clk)) {
@@ -117,7 +114,7 @@ static int intel_eth_plat_probe(struct platform_device *pdev)
 
 			clk_prepare_enable(dwmac->tx_clk);
 
-			/* Check and configure TX clock rate */
+			 
 			rate = clk_get_rate(dwmac->tx_clk);
 			if (dwmac->data->tx_clk_rate &&
 			    rate != dwmac->data->tx_clk_rate) {
@@ -131,7 +128,7 @@ static int intel_eth_plat_probe(struct platform_device *pdev)
 			}
 		}
 
-		/* Check and configure PTP ref clock rate */
+		 
 		rate = clk_get_rate(plat_dat->clk_ptp_ref);
 		if (dwmac->data->ptp_ref_clk_rate &&
 		    rate != dwmac->data->ptp_ref_clk_rate) {

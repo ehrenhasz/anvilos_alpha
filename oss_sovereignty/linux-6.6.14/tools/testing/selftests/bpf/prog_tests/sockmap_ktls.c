@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Cloudflare
-/*
- * Tests for sockmap/sockhash holding kTLS sockets.
- */
+
+
+ 
 
 #include <netinet/tcp.h>
 #include "test_progs.h"
@@ -32,7 +30,7 @@ static int disconnect(int fd)
 	return connect(fd, &unspec, sizeof(unspec));
 }
 
-/* Disconnect (unhash) a kTLS socket after removing it from sockmap. */
+ 
 static void test_sockmap_ktls_disconnect_after_delete(int family, int map)
 {
 	struct sockaddr_storage addr = {0};
@@ -114,17 +112,17 @@ static void test_sockmap_ktls_update_fails_when_sock_has_ulp(int family, int map
 	if (!ASSERT_OK(err, "connect"))
 		goto close;
 
-	/* save sk->sk_prot and set it to tls_prots */
+	 
 	err = setsockopt(s, IPPROTO_TCP, TCP_ULP, "tls", strlen("tls"));
 	if (!ASSERT_OK(err, "setsockopt(TCP_ULP)"))
 		goto close;
 
-	/* sockmap update should not affect saved sk_prot */
+	 
 	err = bpf_map_update_elem(map, &zero, &s, BPF_ANY);
 	if (!ASSERT_ERR(err, "sockmap update elem"))
 		goto close;
 
-	/* call sk->sk_prot->setsockopt to dispatch to saved sk_prot */
+	 
 	err = setsockopt(s, IPPROTO_TCP, TCP_NODELAY, &zero, sizeof(zero));
 	ASSERT_OK(err, "setsockopt(TCP_NODELAY)");
 

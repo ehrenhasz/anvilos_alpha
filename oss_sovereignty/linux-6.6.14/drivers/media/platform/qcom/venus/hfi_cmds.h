@@ -1,14 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
- * Copyright (C) 2017 Linaro Ltd.
- */
+ 
+ 
 #ifndef __VENUS_HFI_CMDS_H__
 #define __VENUS_HFI_CMDS_H__
 
 #include "hfi.h"
 
-/* commands */
+ 
 #define HFI_CMD_SYS_INIT			0x10001
 #define HFI_CMD_SYS_PC_PREP			0x10002
 #define HFI_CMD_SYS_SET_RESOURCE		0x10003
@@ -42,7 +39,7 @@
 #define HFI_CMD_SESSION_CONTINUE		0x21100d
 #define HFI_CMD_SESSION_SYNC			0x21100e
 
-/* command packets */
+ 
 struct hfi_sys_init_pkt {
 	struct hfi_pkt_hdr hdr;
 	u32 arch_type;

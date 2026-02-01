@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2017, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #include <elf.h>
 #include <errno.h>
@@ -106,10 +104,10 @@ static int test_cache_shape()
 		print_geo("L3  ", (uint32_t)p->a_un.a_val);
 	}
 
-	/* If we found none we're probably on a system where they don't exist */
+	 
 	SKIP_IF(found == 0);
 
-	/* But if we found any, we expect to find them all */
+	 
 	FAIL_IF(found != 8);
 
 	return 0;

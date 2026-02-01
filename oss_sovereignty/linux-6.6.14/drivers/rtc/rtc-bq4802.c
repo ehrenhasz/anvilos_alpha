@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* rtc-bq4802.c: TI BQ4802 RTC driver.
- *
- * Copyright (C) 2008 David S. Miller <davem@davemloft.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -100,7 +97,7 @@ static int bq4802_set_time(struct device *dev, struct rtc_time *tm)
 	century = year / 100;
 	yrs = year % 100;
 
-	mon = tm->tm_mon + 1;   /* tm_mon starts at zero */
+	mon = tm->tm_mon + 1;    
 	day = tm->tm_mday;
 	hrs = tm->tm_hour;
 	min = tm->tm_min;
@@ -189,7 +186,7 @@ out:
 
 }
 
-/* work with hotplug and coldplug */
+ 
 MODULE_ALIAS("platform:rtc-bq4802");
 
 static struct platform_driver bq4802_driver = {

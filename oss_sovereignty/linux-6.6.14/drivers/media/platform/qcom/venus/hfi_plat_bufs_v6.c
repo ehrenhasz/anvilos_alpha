@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/sizes.h>
 #include <linux/videodev2.h>
@@ -38,20 +36,20 @@
 #define MAX_PE_NBR_DATA_LCU32_LINE_BUFFER_SIZE		(32 * 2 * 3)
 #define MAX_PE_NBR_DATA_LCU16_LINE_BUFFER_SIZE		(16 * 2 * 3)
 
-#define MAX_TILE_COLUMNS				32 /* 8K/256 */
+#define MAX_TILE_COLUMNS				32  
 
 #define VPP_CMD_MAX_SIZE				BIT(20)
 #define NUM_HW_PIC_BUF					32
 #define BIN_BUFFER_THRESHOLD				(1280 * 736)
 #define H264D_MAX_SLICE					1800
-/* sizeof(h264d_buftab_t) aligned to 256 */
+ 
 #define SIZE_H264D_BUFTAB_T				256
-/* sizeof(h264d_hw_pic_t) aligned to 32 */
+ 
 #define SIZE_H264D_HW_PIC_T				BIT(11)
 #define SIZE_H264D_BSE_CMD_PER_BUF			(32 * 4)
 #define SIZE_H264D_VPP_CMD_PER_BUF			512
 
-/* Line Buffer definitions, One for Luma and 1/2 for each Chroma */
+ 
 #define SIZE_H264D_LB_FE_TOP_DATA(width, height)	\
 	(MAX_FE_NBR_DATA_LUMA_LINE_BUFFER_SIZE * ALIGN((width), 16) * 3)
 
@@ -83,10 +81,7 @@
 #define H264_CABAC_HDR_RATIO_HD_TOT	1
 #define H264_CABAC_RES_RATIO_HD_TOT	3
 
-/*
- * Some content need more bin buffer, but limit buffer
- * size for high resolution
- */
+ 
 #define NUM_SLIST_BUF_H264		(256 + 32)
 #define SIZE_SLIST_BUF_H264		512
 #define LCU_MAX_SIZE_PELS		64
@@ -139,10 +134,7 @@ static inline u32 size_h265d_lb_se_left_ctrl(u32 width, u32 height)
 #define H265_CABAC_HDR_RATIO_HD_TOT	2
 #define H265_CABAC_RES_RATIO_HD_TOT	2
 
-/*
- * Some content need more bin buffer, but limit buffer size
- * for high resolution
- */
+ 
 #define SIZE_SLIST_BUF_H265	BIT(10)
 #define NUM_SLIST_BUF_H265	(80 + 20)
 #define H265_NUM_TILE_COL	32
@@ -161,7 +153,7 @@ static inline u32 size_vpxd_lb_fe_left_ctrl(u32 width, u32 height)
 }
 
 #define SIZE_VPXD_LB_FE_TOP_CTRL(width, height)		\
-	(((ALIGN(width, 64) + 8) * 10 * 2)) /* small line */
+	(((ALIGN(width, 64) + 8) * 10 * 2))  
 #define SIZE_VPXD_LB_SE_TOP_CTRL(width, height) \
 	((((width) + 15) >> 4) * MAX_FE_NBR_CTRL_LCU16_LINE_BUFFER_SIZE)
 
@@ -215,7 +207,7 @@ static inline u32 size_vpxd_lb_se_left_ctrl(u32 width, u32 height)
 #define MP2D_QPDUMP_SIZE			115200
 #define HFI_IRIS2_ENC_PERSIST_SIZE		204800
 #define HFI_MAX_COL_FRAME			6
-#define HFI_VENUS_VENC_TRE_WB_BUFF_SIZE		(65 << 4) /* in Bytes */
+#define HFI_VENUS_VENC_TRE_WB_BUFF_SIZE		(65 << 4)  
 #define HFI_VENUS_VENC_DB_LINE_BUFF_PER_MB	512
 #define HFI_VENUS_VPPSG_MAX_REGISTERS		2048
 #define HFI_VENUS_WIDTH_ALIGNMENT		128
@@ -364,13 +356,7 @@ static u32 calculate_enc_output_frame_size(u32 width, u32 height, u32 rc_type)
 	u32 mbs_per_frame;
 	u32 frame_size;
 
-	/*
-	 * Encoder output size calculation: 32 Align width/height
-	 * For resolution < 720p : YUVsize * 4
-	 * For resolution > 720p & <= 4K : YUVsize / 2
-	 * For resolution > 4k : YUVsize / 4
-	 * Initially frame_size = YUVsize * 2;
-	 */
+	 
 	aligned_width = ALIGN(width, 32);
 	aligned_height = ALIGN(height, 32);
 	mbs_per_frame = (ALIGN(aligned_height, 16) *
@@ -387,13 +373,7 @@ static u32 calculate_enc_output_frame_size(u32 width, u32 height, u32 rc_type)
 	if (rc_type == HFI_RATE_CONTROL_OFF || rc_type == HFI_RATE_CONTROL_CQ)
 		frame_size = frame_size << 1;
 
-	/*
-	 * In case of opaque color format bitdepth will be known
-	 * with first ETB, buffers allocated already with 8 bit
-	 * won't be sufficient for 10 bit
-	 * calculate size considering 10-bit by default
-	 * For 10-bit cases size = size * 1.25
-	 */
+	 
 	frame_size *= 5;
 	frame_size /= 4;
 
@@ -844,7 +824,7 @@ calculate_enc_scratch1_size(u32 width, u32 height, u32 lcu_size, u32 num_ref,
 	h265e_framerc_bufsize = (is_h265) ? (256 + 16 *
 		(14 + (((height_coded >> 5) + 7) >> 3))) :
 		(256 + 16 * (14 + (((height_coded >> 4) + 7) >> 3)));
-	h265e_framerc_bufsize *= 6;   /* multiply by max numtilescol */
+	h265e_framerc_bufsize *= 6;    
 	if (num_vpp_pipes > 1)
 		h265e_framerc_bufsize =
 			ALIGN(h265e_framerc_bufsize, HFI_DMA_ALIGNMENT) *
@@ -1122,13 +1102,7 @@ calculate_dec_input_frame_size(u32 width, u32 height, u32 codec,
 	u32 div_factor = 1;
 	u32 base_res_mbs = NUM_MBS_4K;
 
-	/*
-	 * Decoder input size calculation:
-	 * If clip is 8k buffer size is calculated for 8k : 8k mbs/4
-	 * For 8k cases we expect width/height to be set always.
-	 * In all other cases size is calculated for 4k:
-	 * 4k mbs for VP8/VP9 and 4k/2 for remaining codecs
-	 */
+	 
 	num_mbs = (ALIGN(height, 16) * ALIGN(width, 16)) / 256;
 	if (num_mbs > NUM_MBS_4K) {
 		div_factor = 4;
@@ -1143,7 +1117,7 @@ calculate_dec_input_frame_size(u32 width, u32 height, u32 codec,
 
 	frame_size = base_res_mbs * MB_SIZE_IN_PIXEL * 3 / 2 / div_factor;
 
-	/* multiply by 10/8 (1.25) to get size for 10 bit case */
+	 
 	if (codec == V4L2_PIX_FMT_VP9 || codec == V4L2_PIX_FMT_HEVC)
 		frame_size = frame_size + (frame_size >> 2);
 
@@ -1214,7 +1188,7 @@ static int bufreq_dec(struct hfi_plat_buffers_params *params, u32 buftype,
 	}
 
 	out_min_count = output_buffer_count(VIDC_SESSION_TYPE_DEC, codec);
-	/* Max of driver and FW count */
+	 
 	out_min_count = max(out_min_count, hfi_bufreq_get_count_min(bufreq, version));
 
 	bufreq->type = buftype;

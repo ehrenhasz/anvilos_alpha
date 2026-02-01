@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #define _GNU_SOURCE
 
@@ -36,7 +36,7 @@
 # endif
 #endif
 
-/* max length of lines in /proc/self/maps - anything longer is skipped here */
+ 
 #define MAPS_LINE_LEN 128
 
 static void sethandler(int sig, void (*handler)(int, siginfo_t *, void *),
@@ -51,7 +51,7 @@ static void sethandler(int sig, void (*handler)(int, siginfo_t *, void *),
 		err(1, "sigaction");
 }
 
-/* vsyscalls and vDSO */
+ 
 bool vsyscall_map_r = false, vsyscall_map_x = false;
 
 typedef long (*gtod_t)(struct timeval *tv, struct timezone *tz);
@@ -116,7 +116,7 @@ static int init_vsys(void)
 		void *start, *end;
 		char name[MAPS_LINE_LEN];
 
-		/* sscanf() is safe here as strlen(name) >= strlen(line) */
+		 
 		if (sscanf(line, "%p-%p %c-%cp %*x %*x:%*x %*u %s",
 			   &start, &end, &r, &x, name) != 5)
 			continue;
@@ -154,7 +154,7 @@ static int init_vsys(void)
 #endif
 }
 
-/* syscalls */
+ 
 static inline long sys_gtod(struct timeval *tv, struct timezone *tz)
 {
 	return syscall(SYS_gettimeofday, tv, tz);
@@ -429,7 +429,7 @@ static int test_vsys_x(void)
 {
 #ifdef __x86_64__
 	if (vsyscall_map_x) {
-		/* We already tested this adequately. */
+		 
 		return 0;
 	}
 
@@ -446,7 +446,7 @@ static int test_vsys_x(void)
 	if (can_exec) {
 		printf("[FAIL]\tExecuting the vsyscall did not page fault\n");
 		return 1;
-	} else if (segv_err & (1 << 4)) { /* INSTR */
+	} else if (segv_err & (1 << 4)) {  
 		printf("[OK]\tExecuting the vsyscall page failed: #PF(0x%lx)\n",
 		       segv_err);
 	} else {
@@ -459,17 +459,7 @@ static int test_vsys_x(void)
 	return 0;
 }
 
-/*
- * Debuggers expect ptrace() to be able to peek at the vsyscall page.
- * Use process_vm_readv() as a proxy for ptrace() to test this.  We
- * want it to work in the vsyscall=emulate case and to fail in the
- * vsyscall=xonly case.
- *
- * It's worth noting that this ABI is a bit nutty.  write(2) can't
- * read from the vsyscall page on any kernel version or mode.  The
- * fact that ptrace() ever worked was a nice courtesy of old kernels,
- * but the code to support it is fairly gross.
- */
+ 
 static int test_process_vm_readv(void)
 {
 #ifdef __x86_64__
@@ -485,10 +475,7 @@ static int test_process_vm_readv(void)
 	remote.iov_len = 4096;
 	ret = process_vm_readv(getpid(), &local, 1, &remote, 1, 0);
 	if (ret != 4096) {
-		/*
-		 * We expect process_vm_readv() to work if and only if the
-		 * vsyscall page is readable.
-		 */
+		 
 		printf("[%s]\tprocess_vm_readv() failed (ret = %d, errno = %d)\n", vsyscall_map_r ? "FAIL" : "OK", ret, errno);
 		return vsyscall_map_r ? 1 : 0;
 	}
@@ -535,14 +522,7 @@ static int test_emulation(void)
 	vtime(&tmp);
 	set_eflags(get_eflags() & ~X86_EFLAGS_TF);
 
-	/*
-	 * If vsyscalls are emulated, we expect a single trap in the
-	 * vsyscall page -- the call instruction will trap with RIP
-	 * pointing to the entry point before emulation takes over.
-	 * In native mode, we expect two traps, since whatever code
-	 * the vsyscall page contains will be more than just a ret
-	 * instruction.
-	 */
+	 
 	is_native = (num_vsyscall_traps > 1);
 
 	printf("[%s]\tvsyscalls are %s (%d instructions in vsyscall page)\n",

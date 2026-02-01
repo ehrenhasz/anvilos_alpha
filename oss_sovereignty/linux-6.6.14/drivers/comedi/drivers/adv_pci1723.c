@@ -1,42 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * adv_pci1723.c
- * Comedi driver for the Advantech PCI-1723 card.
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: adv_pci1723
- * Description: Advantech PCI-1723
- * Author: yonggang <rsmgnu@gmail.com>, Ian Abbott <abbotti@mev.co.uk>
- * Devices: [Advantech] PCI-1723 (adv_pci1723)
- * Updated: Mon, 14 Apr 2008 15:12:56 +0100
- * Status: works
- *
- * Configuration Options: not applicable, uses comedi PCI auto config
- *
- * Subdevice 0 is 8-channel AO, 16-bit, range +/- 10 V.
- *
- * Subdevice 1 is 16-channel DIO.  The channels are configurable as
- * input or output in 2 groups (0 to 7, 8 to 15). Configuring any
- * channel implicitly configures all channels in the same group.
- *
- * TODO:
- * 1. Add the two milliamp ranges to the AO subdevice (0 to 20 mA,
- *    4 to 20 mA).
- * 2. Read the initial ranges and values of the AO subdevice at
- *    start-up instead of reinitializing them.
- * 3. Implement calibration.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * PCI Bar 2 I/O Register map (dev->iobase)
- */
+ 
 #define PCI1723_AO_REG(x)		(0x00 + ((x) * 2))
 #define PCI1723_BOARD_ID_REG		0x10
 #define PCI1723_BOARD_ID_MASK		(0xf << 0)
@@ -99,7 +69,7 @@ static int pci1723_dio_insn_config(struct comedi_device *dev,
 {
 	unsigned int chan = CR_CHAN(insn->chanspec);
 	unsigned int mask = (chan < 8) ? 0x00ff : 0xff00;
-	unsigned short mode = 0x0000;		/* assume output */
+	unsigned short mode = 0x0000;		 
 	int ret;
 
 	ret = comedi_dio_insn_config(dev, s, insn, data, mask);
@@ -107,9 +77,9 @@ static int pci1723_dio_insn_config(struct comedi_device *dev,
 		return ret;
 
 	if (!(s->io_bits & 0x00ff))
-		mode |= PCI1723_DIO_CTRL_LDIO;	/* low byte input */
+		mode |= PCI1723_DIO_CTRL_LDIO;	 
 	if (!(s->io_bits & 0xff00))
-		mode |= PCI1723_DIO_CTRL_HDIO;	/* high byte input */
+		mode |= PCI1723_DIO_CTRL_HDIO;	 
 	outw(mode, dev->iobase + PCI1723_DIO_CTRL_REG);
 
 	return insn->n;
@@ -158,7 +128,7 @@ static int pci1723_auto_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* synchronously reset all analog outputs to 0V, +/-10V range */
+	 
 	outw(PCI1723_SYNC_CTRL_SYNC, dev->iobase + PCI1723_SYNC_CTRL_REG);
 	for (i = 0; i < s->n_chan; i++) {
 		outw(PCI1723_CTRL_RANGE(0) | PCI1723_CTRL_CHAN(i),
@@ -170,7 +140,7 @@ static int pci1723_auto_attach(struct comedi_device *dev,
 	}
 	outw(0, dev->iobase + PCI1723_SYNC_STROBE_REG);
 
-	/* disable syncronous control */
+	 
 	outw(PCI1723_SYNC_CTRL_ASYNC, dev->iobase + PCI1723_SYNC_CTRL_REG);
 
 	s = &dev->subdevices[1];
@@ -182,12 +152,12 @@ static int pci1723_auto_attach(struct comedi_device *dev,
 	s->insn_config	= pci1723_dio_insn_config;
 	s->insn_bits	= pci1723_dio_insn_bits;
 
-	/* get initial DIO direction and state */
+	 
 	val = inw(dev->iobase + PCI1723_DIO_CTRL_REG);
 	if (!(val & PCI1723_DIO_CTRL_LDIO))
-		s->io_bits |= 0x00ff;	/* low byte output */
+		s->io_bits |= 0x00ff;	 
 	if (!(val & PCI1723_DIO_CTRL_HDIO))
-		s->io_bits |= 0xff00;	/* high byte output */
+		s->io_bits |= 0xff00;	 
 	s->state = inw(dev->iobase + PCI1723_DIO_DATA_REG);
 
 	return 0;

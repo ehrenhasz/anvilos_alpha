@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RZ/G2L A/D Converter driver
- *
- *  Copyright (c) 2021 Renesas Electronics Europe GmbH
- *
- * Author: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -143,13 +137,7 @@ static void rzg2l_set_trigger(struct rzg2l_adc *adc)
 {
 	u32 reg;
 
-	/*
-	 * Setup ADM1 for SW trigger
-	 * EGA[13:12] - Set 00 to indicate hardware trigger is invalid
-	 * BS[4] - Enable 1-buffer mode
-	 * MS[1] - Enable Select mode
-	 * TRG[0] - Enable software trigger mode
-	 */
+	 
 	reg = rzg2l_adc_readl(adc, RZG2L_ADM(1));
 	reg &= ~RZG2L_ADM1_EGA_MASK;
 	reg &= ~RZG2L_ADM1_BS;
@@ -167,18 +155,13 @@ static int rzg2l_adc_conversion_setup(struct rzg2l_adc *adc, u8 ch)
 
 	rzg2l_set_trigger(adc);
 
-	/* Select analog input channel subjected to conversion. */
+	 
 	reg = rzg2l_adc_readl(adc, RZG2L_ADM(2));
 	reg &= ~RZG2L_ADM2_CHSEL_MASK;
 	reg |= BIT(ch);
 	rzg2l_adc_writel(adc, RZG2L_ADM(2), reg);
 
-	/*
-	 * Setup ADINT
-	 * INTS[31] - Select pulse signal
-	 * CSEEN[16] - Enable channel select error interrupt
-	 * INTEN[7:0] - Select channel interrupt
-	 */
+	 
 	reg = rzg2l_adc_readl(adc, RZG2L_ADINT);
 	reg &= ~RZG2L_ADINT_INTS;
 	reg &= ~RZG2L_ADINT_INTEN_MASK;
@@ -278,7 +261,7 @@ static irqreturn_t rzg2l_adc_isr(int irq, void *dev_id)
 
 	reg = rzg2l_adc_readl(adc, RZG2L_ADSTS);
 
-	/* A/D conversion channel select error interrupt */
+	 
 	if (reg & RZG2L_ADSTS_CSEST) {
 		rzg2l_adc_writel(adc, RZG2L_ADSTS, reg);
 		return IRQ_HANDLED;
@@ -291,7 +274,7 @@ static irqreturn_t rzg2l_adc_isr(int irq, void *dev_id)
 	for_each_set_bit(ch, &intst, RZG2L_ADC_MAX_CHANNELS)
 		adc->last_val[ch] = rzg2l_adc_readl(adc, RZG2L_ADCR(ch)) & RZG2L_ADCR_AD_MASK;
 
-	/* clear the channel interrupt */
+	 
 	rzg2l_adc_writel(adc, RZG2L_ADSTS, reg);
 
 	complete(&adc->completion);
@@ -367,7 +350,7 @@ static int rzg2l_adc_hw_init(struct rzg2l_adc *adc)
 	if (ret)
 		return ret;
 
-	/* SW reset */
+	 
 	reg = rzg2l_adc_readl(adc, RZG2L_ADM(0));
 	reg |= RZG2L_ADM0_SRESB;
 	rzg2l_adc_writel(adc, RZG2L_ADM(0), reg);
@@ -381,18 +364,13 @@ static int rzg2l_adc_hw_init(struct rzg2l_adc *adc)
 		usleep_range(100, 200);
 	}
 
-	/* Only division by 4 can be set */
+	 
 	reg = rzg2l_adc_readl(adc, RZG2L_ADIVC);
 	reg &= ~RZG2L_ADIVC_DIVADC_MASK;
 	reg |= RZG2L_ADIVC_DIVADC_4;
 	rzg2l_adc_writel(adc, RZG2L_ADIVC, reg);
 
-	/*
-	 * Setup AMD3
-	 * ADIL[31:24] - Should be always set to 0
-	 * ADCMP[23:16] - Should be always set to 0xe
-	 * ADSMP[15:0] - Set default (0x578) sampling period
-	 */
+	 
 	reg = rzg2l_adc_readl(adc, RZG2L_ADM(3));
 	reg &= ~RZG2L_ADM3_ADIL_MASK;
 	reg &= ~RZG2L_ADM3_ADCMP_MASK;
@@ -543,7 +521,7 @@ static int rzg2l_adc_probe(struct platform_device *pdev)
 
 static const struct of_device_id rzg2l_adc_match[] = {
 	{ .compatible = "renesas,rzg2l-adc",},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzg2l_adc_match);
 

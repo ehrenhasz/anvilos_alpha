@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dwc3-of-simple.c - OF glue layer for simple integrations
- *
- * Copyright (c) 2015 Texas Instruments Incorporated - https://www.ti.com
- *
- * Author: Felipe Balbi <balbi@ti.com>
- *
- * This is a combination of the old dwc3-qcom.c by Ivan T. Ivanov
- * <iivanov@mm-sol.com> and the original patch adding support for Xilinx' SoC
- * by Subbaraya Sundeep Bhatta <subbaraya.sundeep.bhatta@xilinx.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -45,10 +35,7 @@ static int dwc3_of_simple_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, simple);
 	simple->dev = dev;
 
-	/*
-	 * Some controllers need to toggle the usb3-otg reset before trying to
-	 * initialize the PHY, otherwise the PHY times out.
-	 */
+	 
 	if (of_device_is_compatible(np, "rockchip,rk3399-dwc3"))
 		simple->need_reset = true;
 
@@ -174,7 +161,7 @@ static const struct of_device_id of_dwc3_simple_match[] = {
 	{ .compatible = "allwinner,sun50i-h6-dwc3" },
 	{ .compatible = "hisilicon,hi3670-dwc3" },
 	{ .compatible = "intel,keembay-dwc3" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_dwc3_simple_match);
 

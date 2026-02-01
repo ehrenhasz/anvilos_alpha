@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+
+ 
 
 #include "macsec_api.h"
 #include <linux/mdio.h>
@@ -24,9 +22,7 @@
 	ret;                                                                   \
 })
 
-/*******************************************************************************
- *                               MDIO wrappers
- ******************************************************************************/
+ 
 static int aq_mss_mdio_sem_get(struct aq_hw_s *hw)
 {
 	u32 val;
@@ -52,9 +48,7 @@ static int aq_mss_mdio_write(struct aq_hw_s *hw, u16 mmd, u16 addr, u16 data)
 	return 0;
 }
 
-/*******************************************************************************
- *                          MACSEC config and status
- ******************************************************************************/
+ 
 
 static int set_raw_ingress_record(struct aq_hw_s *hw, u16 *packed_record,
 				  u8 num_words, u8 table_id,
@@ -65,20 +59,9 @@ static int set_raw_ingress_record(struct aq_hw_s *hw, u16 *packed_record,
 
 	unsigned int i;
 
-	/* NOTE: MSS registers must always be read/written as adjacent pairs.
-	 * For instance, to write either or both 1E.80A0 and 80A1, we have to:
-	 * 1. Write 1E.80A0 first
-	 * 2. Then write 1E.80A1
-	 *
-	 * For HHD devices: These writes need to be performed consecutively, and
-	 * to ensure this we use the PIF mailbox to delegate the reads/writes to
-	 * the FW.
-	 *
-	 * For EUR devices: Not need to use the PIF mailbox; it is safe to
-	 * write to the registers directly.
-	 */
+	 
 
-	/* Write the packed record words to the data buffer registers. */
+	 
 	for (i = 0; i < num_words; i += 2) {
 		aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
 				  MSS_INGRESS_LUT_DATA_CTL_REGISTER_ADDR + i,
@@ -89,7 +72,7 @@ static int set_raw_ingress_record(struct aq_hw_s *hw, u16 *packed_record,
 				  packed_record[i + 1]);
 	}
 
-	/* Clear out the unused data buffer registers. */
+	 
 	for (i = num_words; i < 24; i += 2) {
 		aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
 				  MSS_INGRESS_LUT_DATA_CTL_REGISTER_ADDR + i,
@@ -98,7 +81,7 @@ static int set_raw_ingress_record(struct aq_hw_s *hw, u16 *packed_record,
 			MSS_INGRESS_LUT_DATA_CTL_REGISTER_ADDR + i + 1, 0);
 	}
 
-	/* Select the table and row index to write to */
+	 
 	lut_sel_reg.bits_0.lut_select = table_id;
 	lut_sel_reg.bits_0.lut_addr = table_index;
 
@@ -114,9 +97,7 @@ static int set_raw_ingress_record(struct aq_hw_s *hw, u16 *packed_record,
 	return 0;
 }
 
-/*! Read the specified Ingress LUT table row.
- *  packed_record - [OUT] The table row data (raw).
- */
+ 
 static int get_raw_ingress_record(struct aq_hw_s *hw, u16 *packed_record,
 				  u8 num_words, u8 table_id,
 				  u16 table_index)
@@ -127,7 +108,7 @@ static int get_raw_ingress_record(struct aq_hw_s *hw, u16 *packed_record,
 
 	unsigned int i;
 
-	/* Select the table and row index to read */
+	 
 	lut_sel_reg.bits_0.lut_select = table_id;
 	lut_sel_reg.bits_0.lut_addr = table_index;
 
@@ -165,7 +146,7 @@ static int get_raw_ingress_record(struct aq_hw_s *hw, u16 *packed_record,
 	return 0;
 }
 
-/*! Write packed_record to the specified Egress LUT table row. */
+ 
 static int set_raw_egress_record(struct aq_hw_s *hw, u16 *packed_record,
 				 u8 num_words, u8 table_id,
 				 u16 table_index)
@@ -175,7 +156,7 @@ static int set_raw_egress_record(struct aq_hw_s *hw, u16 *packed_record,
 
 	unsigned int i;
 
-	/* Write the packed record words to the data buffer registers. */
+	 
 	for (i = 0; i < num_words; i += 2) {
 		aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
 				  MSS_EGRESS_LUT_DATA_CTL_REGISTER_ADDR + i,
@@ -185,7 +166,7 @@ static int set_raw_egress_record(struct aq_hw_s *hw, u16 *packed_record,
 				  packed_record[i + 1]);
 	}
 
-	/* Clear out the unused data buffer registers. */
+	 
 	for (i = num_words; i < 28; i += 2) {
 		aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
 				  MSS_EGRESS_LUT_DATA_CTL_REGISTER_ADDR + i, 0);
@@ -194,7 +175,7 @@ static int set_raw_egress_record(struct aq_hw_s *hw, u16 *packed_record,
 				  0);
 	}
 
-	/* Select the table and row index to write to */
+	 
 	lut_sel_reg.bits_0.lut_select = table_id;
 	lut_sel_reg.bits_0.lut_addr = table_index;
 
@@ -220,7 +201,7 @@ static int get_raw_egress_record(struct aq_hw_s *hw, u16 *packed_record,
 
 	unsigned int i;
 
-	/* Select the table and row index to read */
+	 
 	lut_sel_reg.bits_0.lut_select = table_id;
 	lut_sel_reg.bits_0.lut_addr = table_index;
 
@@ -301,12 +282,7 @@ static int get_ingress_prectlf_record(struct aq_hw_s *hw,
 	if (table_index >= NUMROWS_INGRESSPRECTLFRECORD)
 		return -EINVAL;
 
-	/* If the row that we want to read is odd, first read the previous even
-	 * row, throw that value away, and finally read the desired row.
-	 * This is a workaround for EUR devices that allows us to read
-	 * odd-numbered rows.  For HHD devices: this workaround will not work,
-	 * so don't bother; odd-numbered rows are not readable.
-	 */
+	 
 	if ((table_index % 2) > 0) {
 		ret = get_raw_ingress_record(hw, packed_record, 6, 0,
 					     ROWOFFSET_INGRESSPRECTLFRECORD +
@@ -456,9 +432,7 @@ get_ingress_preclass_record(struct aq_hw_s *hw,
 	if (table_index >= NUMROWS_INGRESSPRECLASSRECORD)
 		return -EINVAL;
 
-	/* If the row that we want to read is odd, first read the previous even
-	 * row, throw that value away, and finally read the desired row.
-	 */
+	 
 	if ((table_index % 2) > 0) {
 		ret = get_raw_ingress_record(hw, packed_record, 20, 1,
 					     ROWOFFSET_INGRESSPRECLASSRECORD +
@@ -963,9 +937,7 @@ get_ingress_postclass_record(struct aq_hw_s *hw,
 	if (table_index >= NUMROWS_INGRESSPOSTCLASSRECORD)
 		return -EINVAL;
 
-	/* If the row that we want to read is odd, first read the previous even
-	 * row, throw that value away, and finally read the desired row.
-	 */
+	 
 	if ((table_index % 2) > 0) {
 		ret = get_raw_ingress_record(hw, packed_record, 8, 4,
 					     ROWOFFSET_INGRESSPOSTCLASSRECORD +
@@ -1105,9 +1077,7 @@ get_ingress_postctlf_record(struct aq_hw_s *hw,
 	if (table_index >= NUMROWS_INGRESSPOSTCTLFRECORD)
 		return -EINVAL;
 
-	/* If the row that we want to read is odd, first read the previous even
-	 * row, throw that value away, and finally read the desired row.
-	 */
+	 
 	if ((table_index % 2) > 0) {
 		ret = get_raw_ingress_record(hw, packed_record, 6, 5,
 					     ROWOFFSET_INGRESSPOSTCTLFRECORD +
@@ -1193,9 +1163,7 @@ static int get_egress_ctlf_record(struct aq_hw_s *hw,
 	if (table_index >= NUMROWS_EGRESSCTLFRECORD)
 		return -EINVAL;
 
-	/* If the row that we want to read is odd, first read the previous even
-	 * row, throw that value away, and finally read the desired row.
-	 */
+	 
 	if ((table_index % 2) > 0) {
 		ret = get_raw_egress_record(hw, packed_record, 6, 0,
 					    ROWOFFSET_EGRESSCTLFRECORD +
@@ -1380,9 +1348,7 @@ static int get_egress_class_record(struct aq_hw_s *hw,
 	if (table_index >= NUMROWS_EGRESSCLASSRECORD)
 		return -EINVAL;
 
-	/* If the row that we want to read is odd, first read the previous even
-	 * row, throw that value away, and finally read the desired row.
-	 */
+	 
 	if ((table_index % 2) > 0) {
 		ret = get_raw_egress_record(hw, packed_record, 28, 1,
 					    ROWOFFSET_EGRESSCLASSRECORD +
@@ -2008,7 +1974,7 @@ static int clear_egress_counters(struct aq_hw_s *hw)
 	if (unlikely(ret))
 		return ret;
 
-	/* Toggle the Egress MIB clear bit 0->1->0 */
+	 
 	ctl_reg.bits_0.clear_counter = 0;
 	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
 				MSS_EGRESS_CTL_REGISTER_ADDR, ctl_reg.word_0);
@@ -2324,7 +2290,7 @@ static int clear_ingress_counters(struct aq_hw_s *hw)
 	if (unlikely(ret))
 		return ret;
 
-	/* Toggle the Ingress MIB clear bit 0->1->0 */
+	 
 	ctl_reg.bits_0.clear_count = 0;
 	ret = aq_mss_mdio_write(hw, MDIO_MMD_VEND1,
 				MSS_INGRESS_CTL_REGISTER_ADDR, ctl_reg.word_0);

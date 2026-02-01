@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * kinect sensor device camera, gspca driver
- *
- * Copyright (C) 2011  Antonio Ospite <ospite@studenti.unina.it>
- *
- * Based on the OpenKinect project and libfreenect
- * http://openkinect.org/wiki/Init_Analysis
- *
- * Special thanks to Steven Toth and kernellabs.com for sponsoring a Kinect
- * sensor device which I tested the driver on.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -43,13 +33,13 @@ struct cam_hdr {
 	__le16 tag;
 };
 
-/* specific webcam descriptor */
+ 
 struct sd {
-	struct gspca_dev gspca_dev; /* !! must be the first item */
-	uint16_t cam_tag;           /* a sequence number for packets */
-	uint8_t stream_flag;        /* to identify different stream types */
-	uint8_t obuf[0x400];        /* output buffer for control commands */
-	uint8_t ibuf[0x200];        /* input buffer for control commands */
+	struct gspca_dev gspca_dev;  
+	uint16_t cam_tag;            
+	uint8_t stream_flag;         
+	uint8_t obuf[0x400];         
+	uint8_t ibuf[0x200];         
 };
 
 #define MODE_640x480   0x0001
@@ -216,7 +206,7 @@ static int write_register(struct gspca_dev *gspca_dev, uint16_t reg,
 	return 0;
 }
 
-/* this function is called at probe time */
+ 
 static int sd_config_video(struct gspca_dev *gspca_dev,
 		     const struct usb_device_id *id)
 {
@@ -235,7 +225,7 @@ static int sd_config_video(struct gspca_dev *gspca_dev,
 	gspca_dev->xfer_ep = 0x81;
 
 #if 0
-	/* Setting those values is not needed for video stream */
+	 
 	cam->npkt = 15;
 	gspca_dev->pkt_size = 960 * 2;
 #endif
@@ -263,7 +253,7 @@ static int sd_config_depth(struct gspca_dev *gspca_dev,
 	return 0;
 }
 
-/* this function is called at probe and resume time */
+ 
 static int sd_init(struct gspca_dev *gspca_dev)
 {
 	gspca_dbg(gspca_dev, D_PROBE, "Kinect Camera device.\n");
@@ -293,7 +283,7 @@ static int sd_start_video(struct gspca_dev *gspca_dev)
 		mode_val = 0x01;
 	}
 
-	/* format */
+	 
 	if (mode & FORMAT_UYVY)
 		fmt_val = 0x05;
 	else
@@ -310,19 +300,13 @@ static int sd_start_video(struct gspca_dev *gspca_dev)
 		fps_val = 0x0f;
 
 
-	/* turn off IR-reset function */
+	 
 	write_register(gspca_dev, 0x105, 0x00);
 
-	/* Reset video stream */
+	 
 	write_register(gspca_dev, 0x05, 0x00);
 
-	/* Due to some ridiculous condition in the firmware, we have to start
-	 * and stop the depth stream before the camera will hand us 1280x1024
-	 * IR.  This is a stupid workaround, but we've yet to find a better
-	 * solution.
-	 *
-	 * Thanks to Drew Fisher for figuring this out.
-	 */
+	 
 	if (mode & (FORMAT_Y10B | MODE_1280x1024)) {
 		write_register(gspca_dev, 0x13, 0x01);
 		write_register(gspca_dev, 0x14, 0x1e);
@@ -334,10 +318,10 @@ static int sd_start_video(struct gspca_dev *gspca_dev)
 	write_register(gspca_dev, res_reg, res_val);
 	write_register(gspca_dev, fps_reg, fps_val);
 
-	/* Start video stream */
+	 
 	write_register(gspca_dev, 0x05, mode_val);
 
-	/* disable Hflip */
+	 
 	write_register(gspca_dev, 0x47, 0x00);
 
 	return 0;
@@ -345,20 +329,20 @@ static int sd_start_video(struct gspca_dev *gspca_dev)
 
 static int sd_start_depth(struct gspca_dev *gspca_dev)
 {
-	/* turn off IR-reset function */
+	 
 	write_register(gspca_dev, 0x105, 0x00);
 
-	/* reset depth stream */
+	 
 	write_register(gspca_dev, 0x06, 0x00);
-	/* Depth Stream Format 0x03: 11 bit stream | 0x02: 10 bit */
+	 
 	write_register(gspca_dev, 0x12, 0x02);
-	/* Depth Stream Resolution 1: standard (640x480) */
+	 
 	write_register(gspca_dev, 0x13, 0x01);
-	/* Depth Framerate / 0x1e (30): 30 fps */
+	 
 	write_register(gspca_dev, 0x14, 0x1e);
-	/* Depth Stream Control  / 2: Open Depth Stream */
+	 
 	write_register(gspca_dev, 0x06, 0x02);
-	/* disable depth hflip / LSB = 0: Smoothing Disabled */
+	 
 	write_register(gspca_dev, 0x17, 0x00);
 
 	return 0;
@@ -366,13 +350,13 @@ static int sd_start_depth(struct gspca_dev *gspca_dev)
 
 static void sd_stopN_video(struct gspca_dev *gspca_dev)
 {
-	/* reset video stream */
+	 
 	write_register(gspca_dev, 0x05, 0x00);
 }
 
 static void sd_stopN_depth(struct gspca_dev *gspca_dev)
 {
-	/* reset depth stream */
+	 
 	write_register(gspca_dev, 0x06, 0x00);
 }
 
@@ -410,7 +394,7 @@ static void sd_pkt_scan(struct gspca_dev *gspca_dev, u8 *__data, int len)
 		pr_warn("Packet type not recognized...\n");
 }
 
-/* sub-driver description */
+ 
 static const struct sd_desc sd_desc_video = {
 	.name      = MODULE_NAME,
 	.config    = sd_config_video,
@@ -418,10 +402,7 @@ static const struct sd_desc sd_desc_video = {
 	.start     = sd_start_video,
 	.stopN     = sd_stopN_video,
 	.pkt_scan  = sd_pkt_scan,
-	/*
-	.get_streamparm = sd_get_streamparm,
-	.set_streamparm = sd_set_streamparm,
-	*/
+	 
 };
 static const struct sd_desc sd_desc_depth = {
 	.name      = MODULE_NAME,
@@ -430,13 +411,10 @@ static const struct sd_desc sd_desc_depth = {
 	.start     = sd_start_depth,
 	.stopN     = sd_stopN_depth,
 	.pkt_scan  = sd_pkt_scan,
-	/*
-	.get_streamparm = sd_get_streamparm,
-	.set_streamparm = sd_set_streamparm,
-	*/
+	 
 };
 
-/* -- module initialisation -- */
+ 
 static const struct usb_device_id device_table[] = {
 	{USB_DEVICE(0x045e, 0x02ae)},
 	{USB_DEVICE(0x045e, 0x02bf)},
@@ -445,7 +423,7 @@ static const struct usb_device_id device_table[] = {
 
 MODULE_DEVICE_TABLE(usb, device_table);
 
-/* -- device connect -- */
+ 
 static int sd_probe(struct usb_interface *intf, const struct usb_device_id *id)
 {
 	if (depth_mode)

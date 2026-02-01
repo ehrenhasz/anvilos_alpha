@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Linaro Ltd.
- *
- * Author: Stanimir Varbanov <stanimir.varbanov@linaro.org>
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/kernel.h>
 

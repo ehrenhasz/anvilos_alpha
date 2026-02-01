@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2008 IBM Corporation
- * Author: Mimi Zohar <zohar@us.ibm.com>
- *
- * ima_policy.c
- *	- initialize default measure policy rules
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/list.h>
@@ -21,7 +15,7 @@
 
 #include "ima.h"
 
-/* flags definitions */
+ 
 #define IMA_FUNC	0x0001
 #define IMA_MASK	0x0002
 #define IMA_FSMAGIC	0x0004
@@ -40,9 +34,9 @@
 #define IMA_FGROUP	0x8000
 
 #define UNKNOWN		0
-#define MEASURE		0x0001	/* same as IMA_MEASURE */
+#define MEASURE		0x0001	 
 #define DONT_MEASURE	0x0002
-#define APPRAISE	0x0004	/* same as IMA_APPRAISE */
+#define APPRAISE	0x0004	 
 #define DONT_APPRAISE	0x0008
 #define AUDIT		0x0040
 #define HASH		0x0100
@@ -71,10 +65,7 @@ struct ima_rule_opt_list {
 	char *items[] __counted_by(count);
 };
 
-/*
- * These comparators are needed nowhere outside of ima so just define them here.
- * This pattern should hopefully never be needed outside of ima.
- */
+ 
 static inline bool vfsuid_gt_kuid(vfsuid_t vfsuid, kuid_t kuid)
 {
 	return __vfsuid_val(vfsuid) > __kuid_val(kuid);
@@ -107,43 +98,31 @@ struct ima_rule_entry {
 	kgid_t gid;
 	kuid_t fowner;
 	kgid_t fgroup;
-	bool (*uid_op)(kuid_t cred_uid, kuid_t rule_uid);    /* Handlers for operators       */
+	bool (*uid_op)(kuid_t cred_uid, kuid_t rule_uid);     
 	bool (*gid_op)(kgid_t cred_gid, kgid_t rule_gid);
-	bool (*fowner_op)(vfsuid_t vfsuid, kuid_t rule_uid); /* vfsuid_eq_kuid(), vfsuid_gt_kuid(), vfsuid_lt_kuid() */
-	bool (*fgroup_op)(vfsgid_t vfsgid, kgid_t rule_gid); /* vfsgid_eq_kgid(), vfsgid_gt_kgid(), vfsgid_lt_kgid() */
+	bool (*fowner_op)(vfsuid_t vfsuid, kuid_t rule_uid);  
+	bool (*fgroup_op)(vfsgid_t vfsgid, kgid_t rule_gid);  
 	int pcr;
-	unsigned int allowed_algos; /* bitfield of allowed hash algorithms */
+	unsigned int allowed_algos;  
 	struct {
-		void *rule;	/* LSM file metadata specific */
-		char *args_p;	/* audit value */
-		int type;	/* audit type */
+		void *rule;	 
+		char *args_p;	 
+		int type;	 
 	} lsm[MAX_LSM_RULES];
 	char *fsname;
-	struct ima_rule_opt_list *keyrings; /* Measure keys added to these keyrings */
-	struct ima_rule_opt_list *label; /* Measure data grouped under this label */
+	struct ima_rule_opt_list *keyrings;  
+	struct ima_rule_opt_list *label;  
 	struct ima_template_desc *template;
 };
 
-/*
- * sanity check in case the kernels gains more hash algorithms that can
- * fit in an unsigned int
- */
+ 
 static_assert(
 	8 * sizeof(unsigned int) >= HASH_ALGO__LAST,
 	"The bitfield allowed_algos in ima_rule_entry is too small to contain all the supported hash algorithms, consider using a bigger type");
 
-/*
- * Without LSM specific knowledge, the default policy can only be
- * written in terms of .action, .func, .mask, .fsmagic, .uid, .gid,
- * .fowner, and .fgroup
- */
+ 
 
-/*
- * The minimum rule set to allow for full TCB coverage.  Measures all files
- * opened or mmap for exec and everything read by root.  Dangerous because
- * normal users can easily run the machine out of memory simply building
- * and running executables.
- */
+ 
 static struct ima_rule_entry dont_measure_rules[] __ro_after_init = {
 	{.action = DONT_MEASURE, .fsmagic = PROC_SUPER_MAGIC, .flags = IMA_FSMAGIC},
 	{.action = DONT_MEASURE, .fsmagic = SYSFS_MAGIC, .flags = IMA_FSMAGIC},
@@ -213,7 +192,7 @@ static struct ima_rule_entry default_appraise_rules[] __ro_after_init = {
 	{.action = APPRAISE, .fowner = GLOBAL_ROOT_UID, .fowner_op = &vfsuid_eq_kuid,
 	 .flags = IMA_FOWNER},
 #else
-	/* force signature */
+	 
 	{.action = APPRAISE, .fowner = GLOBAL_ROOT_UID, .fowner_op = &vfsuid_eq_kuid,
 	 .flags = IMA_FOWNER | IMA_DIGSIG_REQUIRED},
 #endif
@@ -253,7 +232,7 @@ static struct ima_rule_entry critical_data_rules[] __ro_after_init = {
 	{.action = MEASURE, .func = CRITICAL_DATA, .flags = IMA_FUNC},
 };
 
-/* An array of architecture specific rules */
+ 
 static struct ima_rule_entry *arch_policy_entry __ro_after_init;
 
 static LIST_HEAD(ima_default_rules);
@@ -323,7 +302,7 @@ static struct ima_rule_opt_list *ima_alloc_rule_opt_list(const substring_t *src)
 
 	next = src_copy;
 	while ((cur = strsep(&next, "|"))) {
-		/* Don't accept an empty list item */
+		 
 		if (!(*cur)) {
 			kfree(src_copy);
 			return ERR_PTR(-EINVAL);
@@ -331,7 +310,7 @@ static struct ima_rule_opt_list *ima_alloc_rule_opt_list(const substring_t *src)
 		count++;
 	}
 
-	/* Don't accept an empty list */
+	 
 	if (!count) {
 		kfree(src_copy);
 		return ERR_PTR(-EINVAL);
@@ -344,16 +323,7 @@ static struct ima_rule_opt_list *ima_alloc_rule_opt_list(const substring_t *src)
 	}
 	opt_list->count = count;
 
-	/*
-	 * strsep() has already replaced all instances of '|' with '\0',
-	 * leaving a byte sequence of NUL-terminated strings. Reference each
-	 * string with the array of items.
-	 *
-	 * IMPORTANT: Ownership of the allocated buffer is transferred from
-	 * src_copy to the first element in the items array. To free the
-	 * buffer, kfree() must only be called on the first element of the
-	 * array.
-	 */
+	 
 	for (i = 0, cur = src_copy; i < count; i++) {
 		opt_list->items[i] = cur;
 		cur = strchr(cur, '\0') + 1;
@@ -390,11 +360,7 @@ static void ima_free_rule(struct ima_rule_entry *entry)
 	if (!entry)
 		return;
 
-	/*
-	 * entry->template->fields may be allocated in ima_parse_rule() but that
-	 * reference is owned by the corresponding ima_template_desc element in
-	 * the defined_templates list and cannot be freed here
-	 */
+	 
 	kfree(entry->fsname);
 	ima_free_rule_opt_list(entry->keyrings);
 	ima_lsm_free_rule(entry);
@@ -406,10 +372,7 @@ static struct ima_rule_entry *ima_lsm_copy_rule(struct ima_rule_entry *entry)
 	struct ima_rule_entry *nentry;
 	int i;
 
-	/*
-	 * Immutable elements are copied over as pointers and data; only
-	 * lsm rules can change
-	 */
+	 
 	nentry = kmemdup(entry, sizeof(*nentry), GFP_KERNEL);
 	if (!nentry)
 		return NULL;
@@ -444,12 +407,7 @@ static int ima_lsm_update_rule(struct ima_rule_entry *entry)
 
 	list_replace_rcu(&entry->list, &nentry->list);
 	synchronize_rcu();
-	/*
-	 * ima_lsm_copy_rule() shallow copied all references, except for the
-	 * LSM references, from entry to nentry so we only want to free the LSM
-	 * references and the entry itself. All other memory references will now
-	 * be owned by nentry.
-	 */
+	 
 	for (i = 0; i < MAX_LSM_RULES; i++)
 		ima_filter_rule_free(entry->lsm[i].rule);
 	kfree(entry);
@@ -468,11 +426,7 @@ static bool ima_rule_contains_lsm_cond(struct ima_rule_entry *entry)
 	return false;
 }
 
-/*
- * The LSM policy can be reloaded, leaving the IMA LSM based rules referring
- * to the old, stale LSM policy.  Update the IMA LSM based rules to reflect
- * the reloaded LSM policy.
- */
+ 
 static void ima_lsm_update_rules(void)
 {
 	struct ima_rule_entry *entry, *e;
@@ -500,14 +454,7 @@ int ima_lsm_policy_change(struct notifier_block *nb, unsigned long event,
 	return NOTIFY_OK;
 }
 
-/**
- * ima_match_rule_data - determine whether func_data matches the policy rule
- * @rule: a pointer to a rule
- * @func_data: data to match against the measure rule data
- * @cred: a pointer to a credentials structure for user validation
- *
- * Returns true if func_data matches one in the rule, false otherwise.
- */
+ 
 static bool ima_match_rule_data(struct ima_rule_entry *rule,
 				const char *func_data,
 				const struct cred *cred)
@@ -549,19 +496,7 @@ static bool ima_match_rule_data(struct ima_rule_entry *rule,
 	return matched;
 }
 
-/**
- * ima_match_rules - determine whether an inode matches the policy rule.
- * @rule: a pointer to a rule
- * @idmap: idmap of the mount the inode was found from
- * @inode: a pointer to an inode
- * @cred: a pointer to a credentials structure for user validation
- * @secid: the secid of the task to be validated
- * @func: LIM hook identifier
- * @mask: requested action (MAY_READ | MAY_WRITE | MAY_APPEND | MAY_EXEC)
- * @func_data: func specific data, may be NULL
- *
- * Returns true on rule match, false on failure.
- */
+ 
 static bool ima_match_rules(struct ima_rule_entry *rule,
 			    struct mnt_idmap *idmap,
 			    struct inode *inode, const struct cred *cred,
@@ -686,10 +621,7 @@ out:
 	return result;
 }
 
-/*
- * In addition to knowing that we need to appraise the file in general,
- * we need to differentiate between calling hooks, for hook specific rules.
- */
+ 
 static int get_subaction(struct ima_rule_entry *rule, enum ima_hooks func)
 {
 	if (!(rule->flags & IMA_FUNC))
@@ -712,28 +644,7 @@ static int get_subaction(struct ima_rule_entry *rule, enum ima_hooks func)
 	}
 }
 
-/**
- * ima_match_policy - decision based on LSM and other conditions
- * @idmap: idmap of the mount the inode was found from
- * @inode: pointer to an inode for which the policy decision is being made
- * @cred: pointer to a credentials structure for which the policy decision is
- *        being made
- * @secid: LSM secid of the task to be validated
- * @func: IMA hook identifier
- * @mask: requested action (MAY_READ | MAY_WRITE | MAY_APPEND | MAY_EXEC)
- * @flags: IMA actions to consider (e.g. IMA_MEASURE | IMA_APPRAISE)
- * @pcr: set the pcr to extend
- * @template_desc: the template that should be used for this rule
- * @func_data: func specific data, may be NULL
- * @allowed_algos: allowlist of hash algorithms for the IMA xattr
- *
- * Measure decision based on func/mask/fsmagic and LSM(subj/obj/type)
- * conditions.
- *
- * Since the IMA policy may be updated multiple times we need to lock the
- * list when walking it.  Reads are many orders of magnitude more numerous
- * than writes so ima_match_policy() is classical RCU candidate.
- */
+ 
 int ima_match_policy(struct mnt_idmap *idmap, struct inode *inode,
 		     const struct cred *cred, u32 secid, enum ima_hooks func,
 		     int mask, int flags, int *pcr,
@@ -791,21 +702,7 @@ int ima_match_policy(struct mnt_idmap *idmap, struct inode *inode,
 	return action;
 }
 
-/**
- * ima_update_policy_flags() - Update global IMA variables
- *
- * Update ima_policy_flag and ima_setxattr_allowed_hash_algorithms
- * based on the currently loaded policy.
- *
- * With ima_policy_flag, the decision to short circuit out of a function
- * or not call the function in the first place can be made earlier.
- *
- * With ima_setxattr_allowed_hash_algorithms, the policy can restrict the
- * set of hash algorithms accepted when updating the security.ima xattr of
- * a file.
- *
- * Context: called after a policy update and at system initialization.
- */
+ 
 void ima_update_policy_flags(void)
 {
 	struct ima_rule_entry *entry;
@@ -815,22 +712,11 @@ void ima_update_policy_flags(void)
 	rcu_read_lock();
 	ima_rules_tmp = rcu_dereference(ima_rules);
 	list_for_each_entry_rcu(entry, ima_rules_tmp, list) {
-		/*
-		 * SETXATTR_CHECK rules do not implement a full policy check
-		 * because rule checking would probably have an important
-		 * performance impact on setxattr(). As a consequence, only one
-		 * SETXATTR_CHECK can be active at a given time.
-		 * Because we want to preserve that property, we set out to use
-		 * atomic_cmpxchg. Either:
-		 * - the atomic was non-zero: a setxattr hash policy is
-		 *   already enforced, we do nothing
-		 * - the atomic was zero: no setxattr policy was set, enable
-		 *   the setxattr hash policy
-		 */
+		 
 		if (entry->func == SETXATTR_CHECK) {
 			atomic_cmpxchg(&ima_setxattr_allowed_hash_algorithms,
 				       0, entry->allowed_algos);
-			/* SETXATTR_CHECK doesn't impact ima_policy_flag */
+			 
 			continue;
 		}
 
@@ -902,7 +788,7 @@ static int __init ima_init_arch_policy(void)
 	if (!arch_rules)
 		return arch_entries;
 
-	/* Get number of rules */
+	 
 	for (rules = arch_rules; *rules != NULL; rules++)
 		arch_entries++;
 
@@ -911,7 +797,7 @@ static int __init ima_init_arch_policy(void)
 	if (!arch_policy_entry)
 		return 0;
 
-	/* Convert each policy string rules to struct ima_rule_entry format */
+	 
 	for (rules = arch_rules, i = 0; *rules != NULL; rules++) {
 		char rule[255];
 		int result;
@@ -932,16 +818,12 @@ static int __init ima_init_arch_policy(void)
 	return i;
 }
 
-/**
- * ima_init_policy - initialize the default measure rules.
- *
- * ima_rules points to either the ima_default_rules or the new ima_policy_rules.
- */
+ 
 void __init ima_init_policy(void)
 {
 	int build_appraise_entries, arch_entries;
 
-	/* if !ima_policy, we load NO default rules */
+	 
 	if (ima_policy)
 		add_rules(dont_measure_rules, ARRAY_SIZE(dont_measure_rules),
 			  IMA_DEFAULT_POLICY);
@@ -961,12 +843,7 @@ void __init ima_init_policy(void)
 		break;
 	}
 
-	/*
-	 * Based on runtime secure boot flags, insert arch specific measurement
-	 * and appraise rules requiring file signatures for both the initial
-	 * and custom policies, prior to other appraise rules.
-	 * (Highest priority)
-	 */
+	 
 	arch_entries = ima_init_arch_policy();
 	if (!arch_entries)
 		pr_info("No architecture policies found\n");
@@ -974,20 +851,12 @@ void __init ima_init_policy(void)
 		add_rules(arch_policy_entry, arch_entries,
 			  IMA_DEFAULT_POLICY | IMA_CUSTOM_POLICY);
 
-	/*
-	 * Insert the builtin "secure_boot" policy rules requiring file
-	 * signatures, prior to other appraise rules.
-	 */
+	 
 	if (ima_use_secure_boot)
 		add_rules(secure_boot_rules, ARRAY_SIZE(secure_boot_rules),
 			  IMA_DEFAULT_POLICY);
 
-	/*
-	 * Insert the build time appraise rules requiring file signatures
-	 * for both the initial and custom policies, prior to other appraise
-	 * rules. As the secure boot rules includes all of the build time
-	 * rules, include either one or the other set of rules, but not both.
-	 */
+	 
 	build_appraise_entries = ARRAY_SIZE(build_appraise_rules);
 	if (build_appraise_entries) {
 		if (ima_use_secure_boot)
@@ -1013,7 +882,7 @@ void __init ima_init_policy(void)
 	ima_update_policy_flags();
 }
 
-/* Make sure we have a valid policy, at least containing some rules. */
+ 
 int ima_check_policy(void)
 {
 	if (list_empty(&ima_temp_rules))
@@ -1021,17 +890,7 @@ int ima_check_policy(void)
 	return 0;
 }
 
-/**
- * ima_update_policy - update default_rules with new measure rules
- *
- * Called on file .release to update the default rules with a complete new
- * policy.  What we do here is to splice ima_policy_rules and ima_temp_rules so
- * they make a queue.  The policy may be updated multiple times and this is the
- * RCU updater.
- *
- * Policy rules are never deleted so ima_policy_flag gets zeroed only once when
- * we switch from the default policy to user defined.
- */
+ 
 void ima_update_policy(void)
 {
 	struct list_head *policy = &ima_policy_rules;
@@ -1042,21 +901,16 @@ void ima_update_policy(void)
 		ima_policy_flag = 0;
 
 		rcu_assign_pointer(ima_rules, policy);
-		/*
-		 * IMA architecture specific policy rules are specified
-		 * as strings and converted to an array of ima_entry_rules
-		 * on boot.  After loading a custom policy, free the
-		 * architecture specific rules stored as an array.
-		 */
+		 
 		kfree(arch_policy_entry);
 	}
 	ima_update_policy_flags();
 
-	/* Custom IMA policy has been loaded */
+	 
 	ima_process_queued_keys();
 }
 
-/* Keep the enumeration in sync with the policy_tokens! */
+ 
 enum policy_opt {
 	Opt_measure, Opt_dont_measure,
 	Opt_appraise, Opt_dont_appraise,
@@ -1189,12 +1043,7 @@ static void ima_log_string(struct audit_buffer *ab, char *key, char *value)
 	ima_log_string_op(ab, key, value, Opt_err);
 }
 
-/*
- * Validating the appended signature included in the measurement list requires
- * the file hash calculated without the appended signature (i.e., the 'd-modsig'
- * field). Therefore, notify the user if they have the 'modsig' field but not
- * the 'd-modsig' field in the template.
- */
+ 
 static void check_template_modsig(const struct ima_template_desc *template)
 {
 #define MSG "template with 'modsig' field also needs 'd-modsig' field\n"
@@ -1202,7 +1051,7 @@ static void check_template_modsig(const struct ima_template_desc *template)
 	static bool checked;
 	int i;
 
-	/* We only need to notify the user once. */
+	 
 	if (checked)
 		return;
 
@@ -1221,9 +1070,7 @@ static void check_template_modsig(const struct ima_template_desc *template)
 #undef MSG
 }
 
-/*
- * Warn if the template does not contain the given field.
- */
+ 
 static void check_template_field(const struct ima_template_desc *template,
 				 const char *field, const char *msg)
 {
@@ -1238,7 +1085,7 @@ static void check_template_field(const struct ima_template_desc *template,
 
 static bool ima_validate_rule(struct ima_rule_entry *entry)
 {
-	/* Ensure that the action is set and is compatible with the flags */
+	 
 	if (entry->action == UNKNOWN)
 		return false;
 
@@ -1250,20 +1097,12 @@ static bool ima_validate_rule(struct ima_rule_entry *entry)
 			    IMA_CHECK_BLACKLIST | IMA_VALIDATE_ALGOS))
 		return false;
 
-	/*
-	 * The IMA_FUNC bit must be set if and only if there's a valid hook
-	 * function specified, and vice versa. Enforcing this property allows
-	 * for the NONE case below to validate a rule without an explicit hook
-	 * function.
-	 */
+	 
 	if (((entry->flags & IMA_FUNC) && entry->func == NONE) ||
 	    (!(entry->flags & IMA_FUNC) && entry->func != NONE))
 		return false;
 
-	/*
-	 * Ensure that the hook function is compatible with the other
-	 * components of the rule
-	 */
+	 
 	switch (entry->func) {
 	case NONE:
 	case FILE_CHECK:
@@ -1333,18 +1172,15 @@ static bool ima_validate_rule(struct ima_rule_entry *entry)
 
 		break;
 	case SETXATTR_CHECK:
-		/* any action other than APPRAISE is unsupported */
+		 
 		if (entry->action != APPRAISE)
 			return false;
 
-		/* SETXATTR_CHECK requires an appraise_algos parameter */
+		 
 		if (!(entry->flags & IMA_VALIDATE_ALGOS))
 			return false;
 
-		/*
-		 * full policies are not supported, they would have too
-		 * much of a performance impact
-		 */
+		 
 		if (entry->flags & ~(IMA_FUNC | IMA_VALIDATE_ALGOS))
 			return false;
 
@@ -1353,18 +1189,12 @@ static bool ima_validate_rule(struct ima_rule_entry *entry)
 		return false;
 	}
 
-	/* Ensure that combinations of flags are compatible with each other */
+	 
 	if (entry->flags & IMA_CHECK_BLACKLIST &&
 	    !(entry->flags & IMA_DIGSIG_REQUIRED))
 		return false;
 
-	/*
-	 * Unlike for regular IMA 'appraise' policy rules where security.ima
-	 * xattr may contain either a file hash or signature, the security.ima
-	 * xattr for fsverity must contain a file signature (sigv3).  Ensure
-	 * that 'appraise' rules for fsverity require file signatures by
-	 * checking the IMA_DIGSIG_REQUIRED flag is set.
-	 */
+	 
 	if (entry->action == APPRAISE &&
 	    (entry->flags & IMA_VERITY_REQUIRED) &&
 	    !(entry->flags & IMA_DIGSIG_REQUIRED))
@@ -1394,7 +1224,7 @@ static unsigned int ima_parse_appraise_algos(char *arg)
 			return 0;
 		}
 
-		/* Add the hash algorithm to the 'allowed' bitfield */
+		 
 		res |= (1U << idx);
 	}
 
@@ -1406,7 +1236,7 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 	struct audit_buffer *ab;
 	char *from;
 	char *p;
-	bool eid_token; /* either euid or egid */
+	bool eid_token;  
 	struct ima_template_desc *template_desc;
 	int result = 0;
 
@@ -1497,7 +1327,7 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 
 			if (strcmp(args[0].from, "FILE_CHECK") == 0)
 				entry->func = FILE_CHECK;
-			/* PATH_CHECK is for backwards compat */
+			 
 			else if (strcmp(args[0].from, "PATH_CHECK") == 0)
 				entry->func = FILE_CHECK;
 			else if (strcmp(args[0].from, "MODULE_CHECK") == 0)
@@ -1805,7 +1635,7 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 				else
 					entry->flags |= IMA_DIGSIG_REQUIRED | IMA_CHECK_BLACKLIST;
 			} else if (strcmp(args[0].from, "sigv3") == 0) {
-				/* Only fsverity supports sigv3 for now */
+				 
 				if (entry->flags & IMA_VERITY_REQUIRED)
 					entry->flags |= IMA_DIGSIG_REQUIRED | IMA_CHECK_BLACKLIST;
 				else
@@ -1834,7 +1664,7 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 
 			entry->allowed_algos =
 				ima_parse_appraise_algos(args[0].from);
-			/* invalid or empty list of algorithms */
+			 
 			if (!entry->allowed_algos) {
 				result = -EINVAL;
 				break;
@@ -1868,11 +1698,7 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 				break;
 			}
 
-			/*
-			 * template_desc_init_fields() does nothing if
-			 * the template is already initialised, so
-			 * it's safe to do this unconditionally
-			 */
+			 
 			template_desc_init_fields(template_desc->fmt,
 						 &(template_desc->fields),
 						 &(template_desc->num_fields));
@@ -1895,7 +1721,7 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 		check_template_modsig(template_desc);
 	}
 
-	/* d-ngv2 template field recommended for unsigned fs-verity digests */
+	 
 	if (!result && entry->action == MEASURE &&
 	    entry->flags & IMA_VERITY_REQUIRED) {
 		template_desc = entry->template ? entry->template :
@@ -1909,13 +1735,7 @@ static int ima_parse_rule(char *rule, struct ima_rule_entry *entry)
 	return result;
 }
 
-/**
- * ima_parse_add_rule - add a rule to ima_policy_rules
- * @rule: ima measurement policy rule
- *
- * Avoid locking by allowing just one writer at a time in ima_write_policy()
- * Returns the length of the rule parsed, an error code on failure
- */
+ 
 ssize_t ima_parse_add_rule(char *rule)
 {
 	static const char op[] = "update_policy";
@@ -1954,13 +1774,7 @@ ssize_t ima_parse_add_rule(char *rule)
 	return len;
 }
 
-/**
- * ima_delete_rules() - called to cleanup invalid in-flight policy.
- *
- * We don't need locking as we operate on the temp list, which is
- * different from the active one.  There is also only one user of
- * ima_delete_rules() at a time.
- */
+ 
 void ima_delete_rules(void)
 {
 	struct ima_rule_entry *entry, *tmp;
@@ -2028,9 +1842,7 @@ void ima_policy_stop(struct seq_file *m, void *v)
 #define pt(token)	policy_tokens[token].pattern
 #define mt(token)	mask_tokens[token]
 
-/*
- * policy_func_show - display the ima_hooks policy rule
- */
+ 
 static void policy_func_show(struct seq_file *m, enum ima_hooks func)
 {
 	if (func > 0 && func < MAX_CHECK)
@@ -2057,7 +1869,7 @@ static void ima_policy_show_appraise_algos(struct seq_file *m,
 		if (!(allowed_hashes & (1U << idx)))
 			continue;
 
-		/* only add commas if the list contains multiple entries */
+		 
 		if (list_size++)
 			seq_puts(m, ",");
 
@@ -2074,7 +1886,7 @@ int ima_policy_show(struct seq_file *m, void *v)
 
 	rcu_read_lock();
 
-	/* Do not print rules with inactive LSM labels */
+	 
 	for (i = 0; i < MAX_LSM_RULES; i++) {
 		if (entry->lsm[i].args_p && !entry->lsm[i].rule) {
 			rcu_read_unlock();
@@ -2272,15 +2084,10 @@ int ima_policy_show(struct seq_file *m, void *v)
 	seq_puts(m, "\n");
 	return 0;
 }
-#endif	/* CONFIG_IMA_READ_POLICY */
+#endif	 
 
 #if defined(CONFIG_IMA_APPRAISE) && defined(CONFIG_INTEGRITY_TRUSTED_KEYRING)
-/*
- * ima_appraise_signature: whether IMA will appraise a given function using
- * an IMA digital signature. This is restricted to cases where the kernel
- * has a set of built-in trusted keys in order to avoid an attacker simply
- * loading additional keys.
- */
+ 
 bool ima_appraise_signature(enum kernel_read_file_id id)
 {
 	struct ima_rule_entry *entry;
@@ -2303,29 +2110,19 @@ bool ima_appraise_signature(enum kernel_read_file_id id)
 		if (entry->action != APPRAISE)
 			continue;
 
-		/*
-		 * A generic entry will match, but otherwise require that it
-		 * match the func we're looking for
-		 */
+		 
 		if (entry->func && entry->func != func)
 			continue;
 
-		/*
-		 * We require this to be a digital signature, not a raw IMA
-		 * hash.
-		 */
+		 
 		if (entry->flags & IMA_DIGSIG_REQUIRED)
 			found = true;
 
-		/*
-		 * We've found a rule that matches, so break now even if it
-		 * didn't require a digital signature - a later rule that does
-		 * won't override it, so would be a false positive.
-		 */
+		 
 		break;
 	}
 
 	rcu_read_unlock();
 	return found;
 }
-#endif /* CONFIG_IMA_APPRAISE && CONFIG_INTEGRITY_TRUSTED_KEYRING */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019, Oracle and/or its affiliates. All rights reserved. */
+
+ 
 
 #define KBUILD_MODNAME "foo"
 #include <stddef.h>
@@ -109,7 +109,7 @@ int xdping_client(struct xdp_md *ctx)
 	icmph = data + sizeof(*eth) + sizeof(*iph);
 	raddr = iph->saddr;
 
-	/* Record time reply received. */
+	 
 	recvtime = bpf_ktime_get_ns();
 	pinginfo = bpf_map_lookup_elem(&ping_map, &raddr);
 	if (!pinginfo || pinginfo->seq != icmph->un.echo.sequence)
@@ -121,19 +121,19 @@ int xdping_client(struct xdp_md *ctx)
 			if (pinginfo->times[i] == 0)
 				break;
 		}
-		/* verifier is fussy here... */
+		 
 		if (i < XDPING_MAX_COUNT) {
 			pinginfo->times[i] = recvtime -
 					     pinginfo->start;
 			pinginfo->start = 0;
 			i++;
 		}
-		/* No more space for values? */
+		 
 		if (i == pinginfo->count || i == XDPING_MAX_COUNT)
 			return XDP_PASS;
 	}
 
-	/* Now convert reply back into echo request. */
+	 
 	swap_src_dst_mac(data);
 	iph->saddr = iph->daddr;
 	iph->daddr = raddr;
@@ -168,7 +168,7 @@ int xdping_server(struct xdp_md *ctx)
 	icmph = data + sizeof(*eth) + sizeof(*iph);
 	raddr = iph->saddr;
 
-	/* Now convert request into echo reply. */
+	 
 	swap_src_dst_mac(data);
 	iph->saddr = iph->daddr;
 	iph->daddr = raddr;

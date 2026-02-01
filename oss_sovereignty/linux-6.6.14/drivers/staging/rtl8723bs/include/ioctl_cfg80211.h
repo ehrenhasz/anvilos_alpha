@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __IOCTL_CFG80211_H__
 #define __IOCTL_CFG80211_H__
 
 struct rtw_wdev_invit_info {
-	u8 state; /* 0: req, 1:rep */
+	u8 state;  
 	u8 peer_mac[ETH_ALEN];
 	u8 active;
 	u8 token;
@@ -31,7 +27,7 @@ struct rtw_wdev_invit_info {
 	} while (0)
 
 struct rtw_wdev_nego_info {
-	u8 state; /* 0: req, 1:rep, 2:conf */
+	u8 state;  
 	u8 peer_mac[ETH_ALEN];
 	u8 active;
 	u8 token;
@@ -67,8 +63,8 @@ struct rtw_wdev_priv {
 	struct cfg80211_scan_request *scan_request;
 	spinlock_t scan_req_lock;
 
-	struct net_device *pmon_ndev;/* for monitor interface */
-	char ifname_mon[IFNAMSIZ + 1]; /* interface name for monitor interface */
+	struct net_device *pmon_ndev; 
+	char ifname_mon[IFNAMSIZ + 1];  
 
 	u8 p2p_enabled;
 
@@ -114,4 +110,4 @@ bool rtw_cfg80211_pwr_mgmt(struct adapter *adapter);
 #define rtw_cfg80211_ready_on_channel(adapter, cookie, chan, channel_type, duration, gfp)  cfg80211_ready_on_channel((adapter)->rtw_wdev, cookie, chan, duration, gfp)
 #define rtw_cfg80211_remain_on_channel_expired(adapter, cookie, chan, chan_type, gfp) cfg80211_remain_on_channel_expired((adapter)->rtw_wdev, cookie, chan, gfp)
 
-#endif /* __IOCTL_CFG80211_H__ */
+#endif  

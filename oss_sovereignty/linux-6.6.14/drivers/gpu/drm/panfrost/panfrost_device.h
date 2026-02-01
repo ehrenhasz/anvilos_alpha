@@ -1,6 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2018 Marty E. Plummer <hanetzer@startmail.com> */
-/* Copyright 2019 Linaro, Ltd, Rob Herring <robh@kernel.org> */
+ 
+ 
+ 
 
 #ifndef __PANFROST_DEVICE_H__
 #define __PANFROST_DEVICE_H__
@@ -57,23 +57,17 @@ struct panfrost_features {
 	unsigned long hw_issues[64 / BITS_PER_LONG];
 };
 
-/*
- * Features that cannot be automatically detected and need matching using the
- * compatible string, typically SoC-specific.
- */
+ 
 struct panfrost_compatible {
-	/* Supplies count and names. */
+	 
 	int num_supplies;
 	const char * const *supply_names;
-	/*
-	 * Number of power domains required, note that values 0 and 1 are
-	 * handled identically, as only values > 1 need special handling.
-	 */
+	 
 	int num_pm_domains;
-	/* Only required if num_pm_domains > 1. */
+	 
 	const char * const *pm_domain_names;
 
-	/* Vendor implementation quirks callback */
+	 
 	void (*vendor_quirk)(struct panfrost_device *pfdev);
 };
 
@@ -87,7 +81,7 @@ struct panfrost_device {
 	struct clk *bus_clock;
 	struct regulator_bulk_data *regulators;
 	struct reset_control *rstc;
-	/* pm_domains for devices with more than one. */
+	 
 	struct device *pm_domain_devs[MAX_PM_DOMAINS];
 	struct device_link *pm_domain_links[MAX_PM_DOMAINS];
 	bool coherent;

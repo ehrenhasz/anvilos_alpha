@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ov4689 driver
- *
- * Copyright (C) 2017 Fuzhou Rockchip Electronics Co., Ltd.
- * Copyright (C) 2022 Mikhail Rudenko
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -56,9 +51,9 @@
 #define OV4689_LANES			4
 
 static const char *const ov4689_supply_names[] = {
-	"avdd", /* Analog power */
-	"dovdd", /* Digital I/O power */
-	"dvdd", /* Digital core power */
+	"avdd",  
+	"dovdd",  
+	"dvdd",  
 };
 
 struct regval {
@@ -99,7 +94,7 @@ struct ov4689 {
 
 	u32 clock_rate;
 
-	struct mutex mutex; /* lock to protect streaming, ctrls and cur_mode */
+	struct mutex mutex;  
 	bool streaming;
 	struct v4l2_ctrl_handler ctrl_handler;
 	struct v4l2_ctrl *exposure;
@@ -118,11 +113,7 @@ struct ov4689_gain_range {
 	u32 physical_max;
 };
 
-/*
- * Xclk 24Mhz
- * max_framerate 30fps
- * mipi_datarate per lane 1008Mbps
- */
+ 
 static const struct regval ov4689_2688x1520_regs[] = {
 	{0x0103, 0x01}, {0x3638, 0x00}, {0x0300, 0x00},
 	{0x0302, 0x2a}, {0x0303, 0x00}, {0x0304, 0x03},
@@ -239,10 +230,7 @@ static const char *const ov4689_test_pattern_menu[] = {
 	"Vertical Color Bar Type 4"
 };
 
-/*
- * These coefficients are based on those used in Rockchip's camera
- * engine, with minor tweaks for continuity.
- */
+ 
 static const struct ov4689_gain_range ov4689_gain_ranges[] = {
 	{
 		.logical_min = 0,
@@ -278,7 +266,7 @@ static const struct ov4689_gain_range ov4689_gain_ranges[] = {
 	},
 };
 
-/* Write registers up to 4 at a time */
+ 
 static int ov4689_write_reg(struct i2c_client *client, u16 reg, u32 len,
 			    u32 val)
 {
@@ -320,7 +308,7 @@ static int ov4689_write_array(struct i2c_client *client,
 	return ret;
 }
 
-/* Read registers up to 4 at a time */
+ 
 static int ov4689_read_reg(struct i2c_client *client, u16 reg, unsigned int len,
 			   u32 *val)
 {
@@ -334,13 +322,13 @@ static int ov4689_read_reg(struct i2c_client *client, u16 reg, unsigned int len,
 		return -EINVAL;
 
 	data_be_p = (u8 *)&data_be;
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 2;
 	msgs[0].buf = (u8 *)&reg_addr_be;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -371,7 +359,7 @@ static int ov4689_set_fmt(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *mbus_fmt = &fmt->format;
 	struct ov4689 *ov4689 = to_ov4689(sd);
 
-	/* only one mode supported for now */
+	 
 	ov4689_fill_fmt(ov4689->cur_mode, mbus_fmt);
 
 	return 0;
@@ -384,7 +372,7 @@ static int ov4689_get_fmt(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *mbus_fmt = &fmt->format;
 	struct ov4689 *ov4689 = to_ov4689(sd);
 
-	/* only one mode supported for now */
+	 
 	ov4689_fill_fmt(ov4689->cur_mode, mbus_fmt);
 
 	return 0;
@@ -512,7 +500,7 @@ unlock_and_return:
 	return ret;
 }
 
-/* Calculate the delay in us by clock rate and clock cycles */
+ 
 static inline u32 ov4689_cal_delay(struct ov4689 *ov4689, u32 cycles)
 {
 	return DIV_ROUND_UP(cycles * 1000,
@@ -545,7 +533,7 @@ static int __maybe_unused ov4689_power_on(struct device *dev)
 	usleep_range(500, 1000);
 	gpiod_set_value_cansleep(ov4689->pwdn_gpio, 0);
 
-	/* 8192 cycles prior to first SCCB transaction */
+	 
 	delay_us = ov4689_cal_delay(ov4689, 8192);
 	usleep_range(delay_us, delay_us * 2);
 
@@ -578,7 +566,7 @@ static int ov4689_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	mutex_lock(&ov4689->mutex);
 
 	try_fmt = v4l2_subdev_get_try_format(sd, fh->state, 0);
-	/* Initialize try_fmt */
+	 
 	ov4689_fill_fmt(&supported_modes[OV4689_MODE_2688_1520], try_fmt);
 
 	mutex_unlock(&ov4689->mutex);
@@ -611,10 +599,7 @@ static const struct v4l2_subdev_ops ov4689_subdev_ops = {
 	.pad = &ov4689_pad_ops,
 };
 
-/*
- * Map userspace (logical) gain to sensor (physical) gain using
- * ov4689_gain_ranges table.
- */
+ 
 static int ov4689_map_gain(struct ov4689 *ov4689, int logical_gain, int *result)
 {
 	const struct device *dev = &ov4689->client->dev;
@@ -649,10 +634,10 @@ static int ov4689_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max_expo;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max_expo = ov4689->cur_mode->height + ctrl->val - 4;
 		__v4l2_ctrl_modify_range(ov4689->exposure,
 					 ov4689->exposure->minimum, max_expo,
@@ -666,7 +651,7 @@ static int ov4689_set_ctrl(struct v4l2_ctrl *ctrl)
 
 	switch (ctrl->id) {
 	case V4L2_CID_EXPOSURE:
-		/* 4 least significant bits of expsoure are fractional part */
+		 
 		ret = ov4689_write_reg(ov4689->client, OV4689_REG_EXPOSURE,
 				       OV4689_REG_VALUE_24BIT, ctrl->val << 4);
 		break;

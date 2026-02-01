@@ -1,25 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #include "amdgpu.h"
 #include "mmhub_v3_0_2.h"
@@ -77,7 +56,7 @@ static uint32_t mmhub_v3_0_2_get_invalidate_req(unsigned int vmid,
 {
 	u32 req = 0;
 
-	/* invalidate using legacy mode on vmid*/
+	 
 	req = REG_SET_FIELD(req, MMVM_INVALIDATE_ENG0_REQ,
 			    PER_VMID_INVALIDATE_REQ, 1 << vmid);
 	req = REG_SET_FIELD(req, MMVM_INVALIDATE_ENG0_REQ, FLUSH_TYPE, flush_type);
@@ -162,25 +141,21 @@ static void mmhub_v3_0_2_init_system_aperture_regs(struct amdgpu_device *adev)
 	uint64_t value;
 	uint32_t tmp;
 
-	/* Program the AGP BAR */
+	 
 	WREG32_SOC15(MMHUB, 0, regMMMC_VM_AGP_BASE, 0);
 	WREG32_SOC15(MMHUB, 0, regMMMC_VM_AGP_BOT, adev->gmc.agp_start >> 24);
 	WREG32_SOC15(MMHUB, 0, regMMMC_VM_AGP_TOP, adev->gmc.agp_end >> 24);
 
 	if (!amdgpu_sriov_vf(adev)) {
-		/*
-		 * the new L1 policy will block SRIOV guest from writing
-		 * these regs, and they will be programed at host.
-		 * so skip programing these regs.
-		 */
-		/* Program the system aperture low logical page number. */
+		 
+		 
 		WREG32_SOC15(MMHUB, 0, regMMMC_VM_SYSTEM_APERTURE_LOW_ADDR,
 			     min(adev->gmc.fb_start, adev->gmc.agp_start) >> 18);
 		WREG32_SOC15(MMHUB, 0, regMMMC_VM_SYSTEM_APERTURE_HIGH_ADDR,
 			     max(adev->gmc.fb_end, adev->gmc.agp_end) >> 18);
 	}
 
-	/* Set default page address. */
+	 
 	value = adev->mem_scratch.gpu_addr - adev->gmc.vram_start +
 		adev->vm_manager.vram_base_offset;
 	WREG32_SOC15(MMHUB, 0, regMMMC_VM_SYSTEM_APERTURE_DEFAULT_ADDR_LSB,
@@ -188,7 +163,7 @@ static void mmhub_v3_0_2_init_system_aperture_regs(struct amdgpu_device *adev)
 	WREG32_SOC15(MMHUB, 0, regMMMC_VM_SYSTEM_APERTURE_DEFAULT_ADDR_MSB,
 		     (u32)(value >> 44));
 
-	/* Program "protection fault". */
+	 
 	WREG32_SOC15(MMHUB, 0, regMMVM_L2_PROTECTION_FAULT_DEFAULT_ADDR_LO32,
 		     (u32)(adev->dummy_page_addr >> 12));
 	WREG32_SOC15(MMHUB, 0, regMMVM_L2_PROTECTION_FAULT_DEFAULT_ADDR_HI32,
@@ -204,7 +179,7 @@ static void mmhub_v3_0_2_init_tlb_regs(struct amdgpu_device *adev)
 {
 	uint32_t tmp;
 
-	/* Setup TLB control */
+	 
 	tmp = RREG32_SOC15(MMHUB, 0, regMMMC_VM_MX_L1_TLB_CNTL);
 
 	tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 1);
@@ -215,7 +190,7 @@ static void mmhub_v3_0_2_init_tlb_regs(struct amdgpu_device *adev)
 			    SYSTEM_APERTURE_UNMAPPED_ACCESS, 0);
 	tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ECO_BITS, 0);
 	tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL,
-			    MTYPE, MTYPE_UC); /* UC, uncached */
+			    MTYPE, MTYPE_UC);  
 
 	WREG32_SOC15(MMHUB, 0, regMMMC_VM_MX_L1_TLB_CNTL, tmp);
 }
@@ -224,19 +199,17 @@ static void mmhub_v3_0_2_init_cache_regs(struct amdgpu_device *adev)
 {
 	uint32_t tmp;
 
-	/* These registers are not accessible to VF-SRIOV.
-	 * The PF will program them instead.
-	 */
+	 
 	if (amdgpu_sriov_vf(adev))
 		return;
 
-	/* Setup L2 cache */
+	 
 	tmp = RREG32_SOC15(MMHUB, 0, regMMVM_L2_CNTL);
 	tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, ENABLE_L2_CACHE, 1);
 	tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, ENABLE_L2_FRAGMENT_PROCESSING, 0);
 	tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL,
 			    ENABLE_DEFAULT_PAGE_OUT_TO_SYSTEM_MEMORY, 1);
-	/* XXX for emulation, Refer to closed source code.*/
+	 
 	tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, L2_PDE0_CACHE_TAG_GENERATION_MODE,
 			    0);
 	tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, PDE_FAULT_CLASSIFICATION, 0);
@@ -285,9 +258,7 @@ static void mmhub_v3_0_2_enable_system_domain(struct amdgpu_device *adev)
 
 static void mmhub_v3_0_2_disable_identity_aperture(struct amdgpu_device *adev)
 {
-	/* These registers are not accessible to VF-SRIOV.
-	 * The PF will program them instead.
-	 */
+	 
 	if (amdgpu_sriov_vf(adev))
 		return;
 
@@ -338,7 +309,7 @@ static void mmhub_v3_0_2_setup_vmid_config(struct amdgpu_device *adev)
 		tmp = REG_SET_FIELD(tmp, MMVM_CONTEXT1_CNTL,
 				    PAGE_TABLE_BLOCK_SIZE,
 				    adev->vm_manager.block_size - 9);
-		/* Send no-retry XNACK on fault to suppress VM fault storm. */
+		 
 		tmp = REG_SET_FIELD(tmp, MMVM_CONTEXT1_CNTL,
 				    RETRY_PERMISSION_OR_INVALID_PAGE_FAULT,
 				    !amdgpu_noretry);
@@ -374,7 +345,7 @@ static void mmhub_v3_0_2_program_invalidation(struct amdgpu_device *adev)
 
 static int mmhub_v3_0_2_gart_enable(struct amdgpu_device *adev)
 {
-	/* GART Enable. */
+	 
 	mmhub_v3_0_2_init_gart_aperture_regs(adev);
 	mmhub_v3_0_2_init_system_aperture_regs(adev);
 	mmhub_v3_0_2_init_tlb_regs(adev);
@@ -394,38 +365,31 @@ static void mmhub_v3_0_2_gart_disable(struct amdgpu_device *adev)
 	u32 tmp;
 	u32 i;
 
-	/* Disable all tables */
+	 
 	for (i = 0; i < 16; i++)
 		WREG32_SOC15_OFFSET(MMHUB, 0, regMMVM_CONTEXT0_CNTL,
 				    i * hub->ctx_distance, 0);
 
-	/* Setup TLB control */
+	 
 	tmp = RREG32_SOC15(MMHUB, 0, regMMMC_VM_MX_L1_TLB_CNTL);
 	tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL, ENABLE_L1_TLB, 0);
 	tmp = REG_SET_FIELD(tmp, MMMC_VM_MX_L1_TLB_CNTL,
 			    ENABLE_ADVANCED_DRIVER_MODEL, 0);
 	WREG32_SOC15(MMHUB, 0, regMMMC_VM_MX_L1_TLB_CNTL, tmp);
 
-	/* Setup L2 cache */
+	 
 	tmp = RREG32_SOC15(MMHUB, 0, regMMVM_L2_CNTL);
 	tmp = REG_SET_FIELD(tmp, MMVM_L2_CNTL, ENABLE_L2_CACHE, 0);
 	WREG32_SOC15(MMHUB, 0, regMMVM_L2_CNTL, tmp);
 	WREG32_SOC15(MMHUB, 0, regMMVM_L2_CNTL3, 0);
 }
 
-/**
- * mmhub_v3_0_2_set_fault_enable_default - update GART/VM fault handling
- *
- * @adev: amdgpu_device pointer
- * @value: true redirects VM faults to the default page
- */
+ 
 static void mmhub_v3_0_2_set_fault_enable_default(struct amdgpu_device *adev, bool value)
 {
 	u32 tmp;
 
-	/* These registers are not accessible to VF-SRIOV.
-	 * The PF will program them instead.
-	 */
+	 
 	if (amdgpu_sriov_vf(adev))
 		return;
 
@@ -531,13 +495,13 @@ static u64 mmhub_v3_0_2_get_mc_fb_offset(struct amdgpu_device *adev)
 static void mmhub_v3_0_2_update_medium_grain_clock_gating(struct amdgpu_device *adev,
 							bool enable)
 {
-	//TODO
+	
 }
 
 static void mmhub_v3_0_2_update_medium_grain_light_sleep(struct amdgpu_device *adev,
 						       bool enable)
 {
-	//TODO
+	
 }
 
 static int mmhub_v3_0_2_set_clockgating(struct amdgpu_device *adev,
@@ -555,7 +519,7 @@ static int mmhub_v3_0_2_set_clockgating(struct amdgpu_device *adev,
 
 static void mmhub_v3_0_2_get_clockgating(struct amdgpu_device *adev, u64 *flags)
 {
-	//TODO
+	
 }
 
 const struct amdgpu_mmhub_funcs mmhub_v3_0_2_funcs = {

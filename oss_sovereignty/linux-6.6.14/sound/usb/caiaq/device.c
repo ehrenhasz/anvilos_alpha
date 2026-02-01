@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * caiaq.c: ALSA driver for caiaq/NativeInstruments devices
- *
- *   Copyright (c) 2007 Daniel Mack <daniel@caiaq.de>
- *                      Karsten Wiese <fzu@wemgehoertderstaat.de>
-*/
+
+ 
 
 #include <linux/moduleparam.h>
 #include <linux/device.h>
@@ -27,9 +22,9 @@ MODULE_AUTHOR("Daniel Mack <daniel@caiaq.de>");
 MODULE_DESCRIPTION("caiaq USB audio");
 MODULE_LICENSE("GPL");
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX; /* Index 0-max */
-static char* id[SNDRV_CARDS] = SNDRV_DEFAULT_STR; /* Id for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP; /* Enable this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;  
+static char* id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;  
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;  
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for the caiaq sound device");
@@ -125,7 +120,7 @@ static const struct usb_device_id snd_usb_id_table[] = {
 		.idVendor =     USB_VID_NATIVEINSTRUMENTS,
 		.idProduct =    USB_PID_MASCHINECONTROLLER
 	},
-	{ /* terminator */ }
+	{   }
 };
 
 static void usb_ep1_command_reply_dispatch (struct urb* urb)
@@ -258,7 +253,7 @@ int snd_usb_caiaq_set_audio_params (struct snd_usb_caiaqdev *cdev,
 
 	tmp[2] = bpp & 0xff;
 	tmp[3] = bpp >> 8;
-	tmp[4] = 1; /* packets per microframe */
+	tmp[4] = 1;  
 
 	dev_dbg(dev, "setting audio params: %d Hz, %d bits, %d bpp\n",
 		rate, depth, bpp);
@@ -296,17 +291,17 @@ static void setup_card(struct snd_usb_caiaqdev *cdev)
 	char val[4];
 	struct device *dev = caiaqdev_to_dev(cdev);
 
-	/* device-specific startup specials */
+	 
 	switch (cdev->chip.usb_id) {
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL2):
-		/* RigKontrol2 - display centered dash ('-') */
+		 
 		val[0] = 0x00;
 		val[1] = 0x00;
 		val[2] = 0x01;
 		snd_usb_caiaq_send_command(cdev, EP1_CMD_WRITE_IO, val, 3);
 		break;
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_RIGKONTROL3):
-		/* RigKontrol2 - display two centered dashes ('--') */
+		 
 		val[0] = 0x00;
 		val[1] = 0x40;
 		val[2] = 0x40;
@@ -314,12 +309,12 @@ static void setup_card(struct snd_usb_caiaqdev *cdev)
 		snd_usb_caiaq_send_command(cdev, EP1_CMD_WRITE_IO, val, 4);
 		break;
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AK1):
-		/* Audio Kontrol 1 - make USB-LED stop blinking */
+		 
 		val[0] = 0x00;
 		snd_usb_caiaq_send_command(cdev, EP1_CMD_WRITE_IO, val, 1);
 		break;
 	case USB_ID(USB_VID_NATIVEINSTRUMENTS, USB_PID_AUDIO8DJ):
-		/* Audio 8 DJ - trigger read of current settings */
+		 
 		cdev->control_state[0] = 0xff;
 		snd_usb_caiaq_set_auto_msg(cdev, 1, 0, 0);
 		snd_usb_caiaq_send_command(cdev, EP1_CMD_READ_IO, NULL, 0);
@@ -328,7 +323,7 @@ static void setup_card(struct snd_usb_caiaqdev *cdev)
 					cdev->control_state[0] != 0xff, HZ))
 			return;
 
-		/* fix up some defaults */
+		 
 		if ((cdev->control_state[1] != 2) ||
 		    (cdev->control_state[2] != 3) ||
 		    (cdev->control_state[4] != 2)) {
@@ -364,7 +359,7 @@ static void setup_card(struct snd_usb_caiaqdev *cdev)
 		dev_err(dev, "Unable to set up input system (ret=%d)\n", ret);
 #endif
 
-	/* finally, register the card and all its sub-instances */
+	 
 	ret = snd_card_register(cdev->chip.card);
 	if (ret < 0) {
 		dev_err(dev, "snd_card_register() returned %d\n", ret);
@@ -435,7 +430,7 @@ static int init_card(struct snd_usb_caiaqdev *cdev)
 			  cdev->midi_out_buf, EP1_BUFSIZE,
 			  snd_usb_caiaq_midi_output_done, cdev);
 
-	/* sanity checks of EPs before actually submitting */
+	 
 	if (usb_urb_ep_type_check(&cdev->ep1_in_urb) ||
 	    usb_urb_ep_type_check(&cdev->midi_out_urb)) {
 		dev_err(dev, "invalid EPs\n");
@@ -467,9 +462,7 @@ static int init_card(struct snd_usb_caiaqdev *cdev)
 	strscpy(card->shortname, cdev->product_name, sizeof(card->shortname));
 	strscpy(card->mixername, cdev->product_name, sizeof(card->mixername));
 
-	/* if the id was not passed as module option, fill it with a shortened
-	 * version of the product string which does not contain any
-	 * whitespaces */
+	 
 
 	if (*card->id == '\0') {
 		char id[sizeof(card->id)];

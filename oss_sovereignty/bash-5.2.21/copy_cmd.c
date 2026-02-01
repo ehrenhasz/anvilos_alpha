@@ -1,24 +1,6 @@
-/* copy_command.c -- copy a COMMAND structure.  This is needed
-   primarily for making function definitions, but I'm not sure
-   that anyone else will need it.  */
+ 
 
-/* Copyright (C) 1987-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -63,8 +45,7 @@ copy_word (w)
   return (new_word);
 }
 
-/* Copy the chain of words in LIST.  Return a pointer to
-   the new chain. */
+ 
 WORD_LIST *
 copy_word_list (list)
      WORD_LIST *list;
@@ -113,7 +94,7 @@ copy_case_clauses (clauses)
   return (REVERSE_LIST (new_list, PATTERN_LIST *));
 }
 
-/* Copy a single redirect. */
+ 
 REDIRECT *
 copy_redirect (redirect)
      REDIRECT *redirect;
@@ -124,7 +105,7 @@ copy_redirect (redirect)
 #if 0
   FASTCOPY ((char *)redirect, (char *)new_redirect, (sizeof (REDIRECT)));
 #else
-  *new_redirect = *redirect;	/* let the compiler do the fast structure copy */
+  *new_redirect = *redirect;	 
 #endif
 
   if (redirect->rflags & REDIR_VARASSIGN)
@@ -135,7 +116,7 @@ copy_redirect (redirect)
     case r_reading_until:
     case r_deblank_reading_until:
       new_redirect->here_doc_eof = redirect->here_doc_eof ? savestring (redirect->here_doc_eof) : 0;
-      /*FALLTHROUGH*/
+       
     case r_reading_string:
     case r_appending_to:
     case r_output_direction:
@@ -207,7 +188,7 @@ copy_arith_for_command (com)
   new_arith_for->action = copy_command (com->action);
   return (new_arith_for);
 }
-#endif /* ARITH_FOR_COMMAND */
+#endif  
 
 static GROUP_COM *
 copy_group_command (com)
@@ -359,9 +340,7 @@ copy_function_def (com)
   return (new_def);
 }
 
-/* Copy the command structure in COMMAND.  Return a pointer to the
-   copy.  Don't you forget to dispose_command () on this pointer
-   later! */
+ 
 COMMAND *
 copy_command (command)
      COMMAND *command;

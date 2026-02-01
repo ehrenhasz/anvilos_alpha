@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence USBSS DRD Driver.
- *
- * Copyright (C) 2018-2020 Cadence.
- * Copyright (C) 2017-2018 NXP
- * Copyright (C) 2019 Texas Instruments
- *
- *
- * Author: Peter Chen <peter.chen@nxp.com>
- *         Pawel Laszczak <pawell@cadence.com>
- *         Roger Quadros <rogerq@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/irq.h>
@@ -44,12 +33,7 @@ static void set_phy_power_off(struct cdns *cdns)
 	phy_power_off(cdns->usb2_phy);
 }
 
-/**
- * cdns3_plat_probe - probe for cdns3 core device
- * @pdev: Pointer to cdns3 core platform device
- *
- * Returns 0 on success otherwise negative errno
- */
+ 
 static int cdns3_plat_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -149,11 +133,7 @@ static int cdns3_plat_probe(struct platform_device *pdev)
 	if (!(cdns->pdata && (cdns->pdata->quirks & CDNS3_DEFAULT_PM_RUNTIME_ALLOW)))
 		pm_runtime_forbid(dev);
 
-	/*
-	 * The controller needs less time between bus and controller suspend,
-	 * and we also needs a small delay to avoid frequently entering low
-	 * power mode.
-	 */
+	 
 	pm_runtime_set_autosuspend_delay(dev, 20);
 	pm_runtime_mark_last_busy(dev);
 	pm_runtime_use_autosuspend(dev);
@@ -170,12 +150,7 @@ err_phy3_init:
 	return ret;
 }
 
-/**
- * cdns3_plat_remove() - unbind drd driver and clean up
- * @pdev: Pointer to Linux platform device
- *
- * Returns 0 on success otherwise negative errno
- */
+ 
 static void cdns3_plat_remove(struct platform_device *pdev)
 {
 	struct cdns *cdns = platform_get_drvdata(pdev);
@@ -302,8 +277,8 @@ static int cdns3_plat_resume(struct device *dev)
 {
 	return cdns3_controller_resume(dev, PMSG_RESUME);
 }
-#endif /* CONFIG_PM_SLEEP */
-#endif /* CONFIG_PM */
+#endif  
+#endif  
 
 static const struct dev_pm_ops cdns3_pm_ops = {
 	SET_SYSTEM_SLEEP_PM_OPS(cdns3_plat_suspend, cdns3_plat_resume)

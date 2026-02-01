@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mmap_lock
 
@@ -81,7 +81,7 @@ TRACE_EVENT_FN(mmap_lock_acquire_returned,
 	trace_mmap_lock_reg, trace_mmap_lock_unreg
 );
 
-#endif /* _TRACE_MMAP_LOCK_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

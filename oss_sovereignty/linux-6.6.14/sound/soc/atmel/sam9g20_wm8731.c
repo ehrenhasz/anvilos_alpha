@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * sam9g20_wm8731  --  SoC audio for AT91SAM9G20-based
- * 			ATMEL AT91SAM9G20ek board.
- *
- *  Copyright (C) 2005 SAN People
- *  Copyright (C) 2008 Atmel
- *
- * Authors: Sedji Gaouaou <sedji.gaouaou@atmel.com>
- *
- * Based on ati_b1_wm8731.c by:
- * Frank Mandarino <fmandarino@endrelia.com>
- * Copyright 2006 Endrelia Technologies Inc.
- * Based on corgi.c by:
- * Copyright 2005 Wolfson Microelectronics PLC.
- * Copyright 2005 Openedhand Ltd.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -38,11 +23,7 @@
 
 #define MCLK_RATE 12000000
 
-/*
- * As shipped the board does not have inputs.  However, it is relatively
- * straightforward to modify the board to hook them up so support is left
- * in the driver.
- */
+ 
 #undef ENABLE_MIC_INPUT
 
 static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
@@ -52,18 +33,16 @@ static const struct snd_soc_dapm_widget at91sam9g20ek_dapm_widgets[] = {
 
 static const struct snd_soc_dapm_route intercon[] = {
 
-	/* speaker connected to LHPOUT/RHPOUT */
+	 
 	{"Ext Spk", NULL, "LHPOUT"},
 	{"Ext Spk", NULL, "RHPOUT"},
 
-	/* mic is connected to Mic Jack, with WM8731 Mic Bias */
+	 
 	{"MICIN", NULL, "Mic Bias"},
 	{"Mic Bias", NULL, "Int Mic"},
 };
 
-/*
- * Logic for a wm8731 as connected on a at91sam9g20ek board.
- */
+ 
 static int at91sam9g20ek_wm8731_init(struct snd_soc_pcm_runtime *rtd)
 {
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
@@ -135,7 +114,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
 
 	card->dev = &pdev->dev;
 
-	/* Parse device node info */
+	 
 	ret = snd_soc_of_parse_card_name(card, "atmel,model");
 	if (ret)
 		goto err;
@@ -145,7 +124,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
 	if (ret)
 		goto err;
 
-	/* Parse codec info */
+	 
 	at91sam9g20ek_dai.codecs->name = NULL;
 	codec_np = of_parse_phandle(np, "atmel,audio-codec", 0);
 	if (!codec_np) {
@@ -155,7 +134,7 @@ static int at91sam9g20ek_audio_probe(struct platform_device *pdev)
 	}
 	at91sam9g20ek_dai.codecs->of_node = codec_np;
 
-	/* Parse dai and platform info */
+	 
 	at91sam9g20ek_dai.cpus->dai_name = NULL;
 	at91sam9g20ek_dai.platforms->name = NULL;
 	cpu_np = of_parse_phandle(np, "atmel,ssc-controller", 0);
@@ -212,7 +191,7 @@ static struct platform_driver at91sam9g20ek_audio_driver = {
 
 module_platform_driver(at91sam9g20ek_audio_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Sedji Gaouaou <sedji.gaouaou@atmel.com>");
 MODULE_DESCRIPTION("ALSA SoC AT91SAM9G20EK_WM8731");
 MODULE_ALIAS("platform:at91sam9g20ek-audio");

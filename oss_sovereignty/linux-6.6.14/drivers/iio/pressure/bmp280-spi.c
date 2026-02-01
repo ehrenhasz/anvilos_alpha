@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SPI interface for the BMP280 driver
- *
- * Inspired by the older BMP085 driver drivers/misc/bmp085-spi.c
- */
+
+ 
 #include <linux/module.h>
 #include <linux/spi/spi.h>
 #include <linux/err.h>
@@ -19,10 +15,7 @@ static int bmp280_regmap_spi_write(void *context, const void *data,
 	u8 buf[2];
 
 	memcpy(buf, data, 2);
-	/*
-	 * The SPI register address (= full register address without bit 7) and
-	 * the write command (bit7 = RW = '0')
-	 */
+	 
 	buf[0] &= ~0x80;
 
 	return spi_write_then_read(spi, buf, 2, NULL, 0);

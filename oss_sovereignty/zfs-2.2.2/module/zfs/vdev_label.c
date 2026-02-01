@@ -1,139 +1,8 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2012, 2020 by Delphix. All rights reserved.
- * Copyright (c) 2017, Intel Corporation.
- */
+ 
 
-/*
- * Virtual Device Labels
- * ---------------------
- *
- * The vdev label serves several distinct purposes:
- *
- *	1. Uniquely identify this device as part of a ZFS pool and confirm its
- *	   identity within the pool.
- *
- *	2. Verify that all the devices given in a configuration are present
- *         within the pool.
- *
- *	3. Determine the uberblock for the pool.
- *
- *	4. In case of an import operation, determine the configuration of the
- *         toplevel vdev of which it is a part.
- *
- *	5. If an import operation cannot find all the devices in the pool,
- *         provide enough information to the administrator to determine which
- *         devices are missing.
- *
- * It is important to note that while the kernel is responsible for writing the
- * label, it only consumes the information in the first three cases.  The
- * latter information is only consumed in userland when determining the
- * configuration to import a pool.
- *
- *
- * Label Organization
- * ------------------
- *
- * Before describing the contents of the label, it's important to understand how
- * the labels are written and updated with respect to the uberblock.
- *
- * When the pool configuration is altered, either because it was newly created
- * or a device was added, we want to update all the labels such that we can deal
- * with fatal failure at any point.  To this end, each disk has two labels which
- * are updated before and after the uberblock is synced.  Assuming we have
- * labels and an uberblock with the following transaction groups:
- *
- *              L1          UB          L2
- *           +------+    +------+    +------+
- *           |      |    |      |    |      |
- *           | t10  |    | t10  |    | t10  |
- *           |      |    |      |    |      |
- *           +------+    +------+    +------+
- *
- * In this stable state, the labels and the uberblock were all updated within
- * the same transaction group (10).  Each label is mirrored and checksummed, so
- * that we can detect when we fail partway through writing the label.
- *
- * In order to identify which labels are valid, the labels are written in the
- * following manner:
- *
- *	1. For each vdev, update 'L1' to the new label
- *	2. Update the uberblock
- *	3. For each vdev, update 'L2' to the new label
- *
- * Given arbitrary failure, we can determine the correct label to use based on
- * the transaction group.  If we fail after updating L1 but before updating the
- * UB, we will notice that L1's transaction group is greater than the uberblock,
- * so L2 must be valid.  If we fail after writing the uberblock but before
- * writing L2, we will notice that L2's transaction group is less than L1, and
- * therefore L1 is valid.
- *
- * Another added complexity is that not every label is updated when the config
- * is synced.  If we add a single device, we do not want to have to re-write
- * every label for every device in the pool.  This means that both L1 and L2 may
- * be older than the pool uberblock, because the necessary information is stored
- * on another vdev.
- *
- *
- * On-disk Format
- * --------------
- *
- * The vdev label consists of two distinct parts, and is wrapped within the
- * vdev_label_t structure.  The label includes 8k of padding to permit legacy
- * VTOC disk labels, but is otherwise ignored.
- *
- * The first half of the label is a packed nvlist which contains pool wide
- * properties, per-vdev properties, and configuration information.  It is
- * described in more detail below.
- *
- * The latter half of the label consists of a redundant array of uberblocks.
- * These uberblocks are updated whenever a transaction group is committed,
- * or when the configuration is updated.  When a pool is loaded, we scan each
- * vdev for the 'best' uberblock.
- *
- *
- * Configuration Information
- * -------------------------
- *
- * The nvlist describing the pool and vdev contains the following elements:
- *
- *	version		ZFS on-disk version
- *	name		Pool name
- *	state		Pool state
- *	txg		Transaction group in which this label was written
- *	pool_guid	Unique identifier for this pool
- *	vdev_tree	An nvlist describing vdev tree.
- *	features_for_read
- *			An nvlist of the features necessary for reading the MOS.
- *
- * Each leaf device label also contains the following:
- *
- *	top_guid	Unique ID for top-level vdev in which this is contained
- *	guid		Unique ID for the leaf vdev
- *
- * The 'vs' configuration follows the format described in 'spa_config.c'.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -153,10 +22,7 @@
 #include <sys/byteorder.h>
 #include <sys/zfs_bootenv.h>
 
-/*
- * Basic routines to read and write from a vdev label.
- * Used throughout the rest of this file.
- */
+ 
 uint64_t
 vdev_label_offset(uint64_t psize, int l, uint64_t offset)
 {
@@ -167,9 +33,7 @@ vdev_label_offset(uint64_t psize, int l, uint64_t offset)
 	    0 : psize - VDEV_LABELS * sizeof (vdev_label_t)));
 }
 
-/*
- * Returns back the vdev label associated with the passed in offset.
- */
+ 
 int
 vdev_label_number(uint64_t psize, uint64_t offset)
 {
@@ -213,9 +77,7 @@ vdev_label_write(zio_t *zio, vdev_t *vd, int l, abd_t *buf, uint64_t offset,
 	    ZIO_PRIORITY_SYNC_WRITE, flags, B_TRUE));
 }
 
-/*
- * Generate the nvlist representing this vdev's stats
- */
+ 
 void
 vdev_config_generate_stats(vdev_t *vd, nvlist_t *nv)
 {
@@ -230,14 +92,10 @@ vdev_config_generate_stats(vdev_t *vd, nvlist_t *nv)
 	fnvlist_add_uint64_array(nv, ZPOOL_CONFIG_VDEV_STATS,
 	    (uint64_t *)vs, sizeof (*vs) / sizeof (uint64_t));
 
-	/*
-	 * Add extended stats into a special extended stats nvlist.  This keeps
-	 * all the extended stats nicely grouped together.  The extended stats
-	 * nvlist is then added to the main nvlist.
-	 */
+	 
 	nvx = fnvlist_alloc();
 
-	/* ZIOs in flight to disk */
+	 
 	fnvlist_add_uint64(nvx, ZPOOL_CONFIG_VDEV_SYNC_R_ACTIVE_QUEUE,
 	    vsx->vsx_active_queue[ZIO_PRIORITY_SYNC_READ]);
 
@@ -259,7 +117,7 @@ vdev_config_generate_stats(vdev_t *vd, nvlist_t *nv)
 	fnvlist_add_uint64(nvx, ZPOOL_CONFIG_VDEV_REBUILD_ACTIVE_QUEUE,
 	    vsx->vsx_active_queue[ZIO_PRIORITY_REBUILD]);
 
-	/* ZIOs pending */
+	 
 	fnvlist_add_uint64(nvx, ZPOOL_CONFIG_VDEV_SYNC_R_PEND_QUEUE,
 	    vsx->vsx_pend_queue[ZIO_PRIORITY_SYNC_READ]);
 
@@ -281,7 +139,7 @@ vdev_config_generate_stats(vdev_t *vd, nvlist_t *nv)
 	fnvlist_add_uint64(nvx, ZPOOL_CONFIG_VDEV_REBUILD_PEND_QUEUE,
 	    vsx->vsx_pend_queue[ZIO_PRIORITY_REBUILD]);
 
-	/* Histograms */
+	 
 	fnvlist_add_uint64_array(nvx, ZPOOL_CONFIG_VDEV_TOT_R_LAT_HISTO,
 	    vsx->vsx_total_histo[ZIO_TYPE_READ],
 	    ARRAY_SIZE(vsx->vsx_total_histo[ZIO_TYPE_READ]));
@@ -326,7 +184,7 @@ vdev_config_generate_stats(vdev_t *vd, nvlist_t *nv)
 	    vsx->vsx_queue_histo[ZIO_PRIORITY_REBUILD],
 	    ARRAY_SIZE(vsx->vsx_queue_histo[ZIO_PRIORITY_REBUILD]));
 
-	/* Request sizes */
+	 
 	fnvlist_add_uint64_array(nvx, ZPOOL_CONFIG_VDEV_SYNC_IND_R_HISTO,
 	    vsx->vsx_ind_histo[ZIO_PRIORITY_SYNC_READ],
 	    ARRAY_SIZE(vsx->vsx_ind_histo[ZIO_PRIORITY_SYNC_READ]));
@@ -383,10 +241,10 @@ vdev_config_generate_stats(vdev_t *vd, nvlist_t *nv)
 	    vsx->vsx_agg_histo[ZIO_PRIORITY_REBUILD],
 	    ARRAY_SIZE(vsx->vsx_agg_histo[ZIO_PRIORITY_REBUILD]));
 
-	/* IO delays */
+	 
 	fnvlist_add_uint64(nvx, ZPOOL_CONFIG_VDEV_SLOW_IOS, vs->vs_slow_ios);
 
-	/* Add extended stats nvlist to main nvlist */
+	 
 	fnvlist_add_nvlist(nv, ZPOOL_CONFIG_VDEV_STATS_EX, nvx);
 
 	fnvlist_free(nvx);
@@ -402,7 +260,7 @@ root_vdev_actions_getprogress(vdev_t *vd, nvlist_t *nvl)
 	if (vd != spa->spa_root_vdev)
 		return;
 
-	/* provide either current or previous scan information */
+	 
 	pool_scan_stat_t ps;
 	if (spa_scan_get_stats(spa, &ps) == 0) {
 		fnvlist_add_uint64_array(nvl,
@@ -438,9 +296,7 @@ top_vdev_actions_getprogress(vdev_t *vd, nvlist_t *nvl)
 	}
 }
 
-/*
- * Generate the nvlist representing this vdev's config.
- */
+ 
 nvlist_t *
 vdev_config_generate(spa_t *spa, vdev_t *vd, boolean_t getstats,
     vdev_config_flag_t flags)
@@ -504,16 +360,13 @@ vdev_config_generate(spa_t *spa, vdev_t *vd, boolean_t getstats,
 			    vd->vdev_noalloc);
 		}
 
-		/*
-		 * Slog devices are removed synchronously so don't
-		 * persist the vdev_removing flag to the label.
-		 */
+		 
 		if (vd->vdev_removing && !vd->vdev_islog) {
 			fnvlist_add_uint64(nv, ZPOOL_CONFIG_REMOVING,
 			    vd->vdev_removing);
 		}
 
-		/* zpool command expects alloc class data */
+		 
 		if (getstats && vd->vdev_alloc_bias != VDEV_BIAS_NONE) {
 			const char *bias = NULL;
 
@@ -595,11 +448,7 @@ vdev_config_generate(spa_t *spa, vdev_t *vd, boolean_t getstats,
 		root_vdev_actions_getprogress(vd, nv);
 		top_vdev_actions_getprogress(vd, nv);
 
-		/*
-		 * Note: this can be called from open context
-		 * (spa_get_stats()), so we need the rwlock to prevent
-		 * the mapping from being changed by condensing.
-		 */
+		 
 		rw_enter(&vd->vdev_indirect_rwlock, RW_READER);
 		if (vd->vdev_indirect_mapping != NULL) {
 			ASSERT(vd->vdev_indirect_births != NULL);
@@ -611,26 +460,11 @@ vdev_config_generate(spa_t *spa, vdev_t *vd, boolean_t getstats,
 		rw_exit(&vd->vdev_indirect_rwlock);
 		if (vd->vdev_mg != NULL &&
 		    vd->vdev_mg->mg_fragmentation != ZFS_FRAG_INVALID) {
-			/*
-			 * Compute approximately how much memory would be used
-			 * for the indirect mapping if this device were to
-			 * be removed.
-			 *
-			 * Note: If the frag metric is invalid, then not
-			 * enough metaslabs have been converted to have
-			 * histograms.
-			 */
+			 
 			uint64_t seg_count = 0;
 			uint64_t to_alloc = vd->vdev_stat.vs_alloc;
 
-			/*
-			 * There are the same number of allocated segments
-			 * as free segments, so we will have at least one
-			 * entry per free segment.  However, small free
-			 * segments (smaller than vdev_removal_max_span)
-			 * will be combined with adjacent allocated segments
-			 * as a single mapping.
-			 */
+			 
 			for (int i = 0; i < RANGE_TREE_HISTOGRAM_SIZE; i++) {
 				if (i + 1 < highbit64(vdev_removal_max_span)
 				    - 1) {
@@ -643,11 +477,7 @@ vdev_config_generate(spa_t *spa, vdev_t *vd, boolean_t getstats,
 				}
 			}
 
-			/*
-			 * The maximum length of a mapping is
-			 * zfs_remove_max_segment, so we need at least one entry
-			 * per zfs_remove_max_segment of allocated data.
-			 */
+			 
 			seg_count += to_alloc / spa_remove_max_segment(spa);
 
 			fnvlist_add_uint64(nv, ZPOOL_CONFIG_INDIRECT_SIZE,
@@ -700,7 +530,7 @@ vdev_config_generate(spa_t *spa, vdev_t *vd, boolean_t getstats,
 		if (vd->vdev_ishole)
 			fnvlist_add_uint64(nv, ZPOOL_CONFIG_IS_HOLE, B_TRUE);
 
-		/* Set the reason why we're FAULTED/DEGRADED. */
+		 
 		switch (vd->vdev_stat.vs_aux) {
 		case VDEV_AUX_ERR_EXCEEDED:
 			aux = "err_exceeded";
@@ -714,9 +544,7 @@ vdev_config_generate(spa_t *spa, vdev_t *vd, boolean_t getstats,
 		if (aux != NULL && !vd->vdev_tmpoffline) {
 			fnvlist_add_string(nv, ZPOOL_CONFIG_AUX_STATE, aux);
 		} else {
-			/*
-			 * We're healthy - clear any previous AUX_STATE values.
-			 */
+			 
 			if (nvlist_exists(nv, ZPOOL_CONFIG_AUX_STATE))
 				nvlist_remove_all(nv, ZPOOL_CONFIG_AUX_STATE);
 		}
@@ -730,12 +558,7 @@ vdev_config_generate(spa_t *spa, vdev_t *vd, boolean_t getstats,
 	return (nv);
 }
 
-/*
- * Generate a view of the top-level vdevs.  If we currently have holes
- * in the namespace, then generate an array which contains a list of holey
- * vdevs.  Additionally, add the number of top-level children that currently
- * exist.
- */
+ 
 void
 vdev_top_config_generate(spa_t *spa, nvlist_t *config)
 {
@@ -764,14 +587,7 @@ vdev_top_config_generate(spa_t *spa, nvlist_t *config)
 	kmem_free(array, rvd->vdev_children * sizeof (uint64_t));
 }
 
-/*
- * Returns the configuration from the label of the given vdev. For vdevs
- * which don't have a txg value stored on their label (i.e. spares/cache)
- * or have not been completely initialized (txg = 0) just return
- * the configuration from the first valid label we find. Otherwise,
- * find the most up-to-date label that does not exceed the specified
- * 'txg' value.
- */
+ 
 nvlist_t *
 vdev_label_read_config(vdev_t *vd, uint64_t txg)
 {
@@ -792,11 +608,7 @@ vdev_label_read_config(vdev_t *vd, uint64_t txg)
 	if (!vdev_readable(vd))
 		return (NULL);
 
-	/*
-	 * The label for a dRAID distributed spare is not stored on disk.
-	 * Instead it is generated when needed which allows us to bypass
-	 * the pipeline when reading the config from the label.
-	 */
+	 
 	if (vd->vdev_ops == &vdev_draid_spare_ops)
 		return (vdev_draid_read_config_spare(vd));
 
@@ -819,13 +631,7 @@ retry:
 		if (zio_wait(zio[l]) == 0 &&
 		    nvlist_unpack(vp[l]->vp_nvlist, sizeof (vp[l]->vp_nvlist),
 		    &label, 0) == 0) {
-			/*
-			 * Auxiliary vdevs won't have txg values in their
-			 * labels and newly added vdevs may not have been
-			 * completely initialized so just return the
-			 * configuration from the first valid label we
-			 * encounter.
-			 */
+			 
 			error = nvlist_lookup_uint64(label,
 			    ZPOOL_CONFIG_POOL_TXG, &label_txg);
 			if ((error || label_txg == 0) && !config) {
@@ -851,9 +657,7 @@ retry:
 		goto retry;
 	}
 
-	/*
-	 * We found a valid label but it didn't pass txg restrictions.
-	 */
+	 
 	if (config == NULL && label_txg != 0) {
 		vdev_dbgmsg(vd, "label discarded as txg is too large "
 		    "(%llu > %llu)", (u_longlong_t)label_txg,
@@ -867,10 +671,7 @@ retry:
 	return (config);
 }
 
-/*
- * Determine if a device is in use.  The 'spare_guid' parameter will be filled
- * in with the device guid if this spare is active elsewhere on the system.
- */
+ 
 static boolean_t
 vdev_inuse(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason,
     uint64_t *spare_guid, uint64_t *l2cache_guid)
@@ -885,9 +686,7 @@ vdev_inuse(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason,
 	if (l2cache_guid)
 		*l2cache_guid = 0ULL;
 
-	/*
-	 * Read the label, if any, and perform some basic sanity checks.
-	 */
+	 
 	if ((label = vdev_label_read_config(vd, -1ULL)) == NULL)
 		return (B_FALSE);
 
@@ -913,33 +712,19 @@ vdev_inuse(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason,
 
 	nvlist_free(label);
 
-	/*
-	 * Check to see if this device indeed belongs to the pool it claims to
-	 * be a part of.  The only way this is allowed is if the device is a hot
-	 * spare (which we check for later on).
-	 */
+	 
 	if (state != POOL_STATE_SPARE && state != POOL_STATE_L2CACHE &&
 	    !spa_guid_exists(pool_guid, device_guid) &&
 	    !spa_spare_exists(device_guid, NULL, NULL) &&
 	    !spa_l2cache_exists(device_guid, NULL))
 		return (B_FALSE);
 
-	/*
-	 * If the transaction group is zero, then this an initialized (but
-	 * unused) label.  This is only an error if the create transaction
-	 * on-disk is the same as the one we're using now, in which case the
-	 * user has attempted to add the same vdev multiple times in the same
-	 * transaction.
-	 */
+	 
 	if (state != POOL_STATE_SPARE && state != POOL_STATE_L2CACHE &&
 	    txg == 0 && vdtxg == crtxg)
 		return (B_TRUE);
 
-	/*
-	 * Check to see if this is a spare device.  We do an explicit check for
-	 * spa_has_spare() here because it may be on our pending list of spares
-	 * to add.
-	 */
+	 
 	if (spa_spare_exists(device_guid, &spare_pool, NULL) ||
 	    spa_has_spare(spa, device_guid)) {
 		if (spare_guid)
@@ -960,9 +745,7 @@ vdev_inuse(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason,
 		}
 	}
 
-	/*
-	 * Check to see if this is an l2cache device.
-	 */
+	 
 	if (spa_l2cache_exists(device_guid, NULL) ||
 	    spa_has_l2cache(spa, device_guid)) {
 		if (l2cache_guid)
@@ -982,31 +765,17 @@ vdev_inuse(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason,
 		}
 	}
 
-	/*
-	 * We can't rely on a pool's state if it's been imported
-	 * read-only.  Instead we look to see if the pools is marked
-	 * read-only in the namespace and set the state to active.
-	 */
+	 
 	if (state != POOL_STATE_SPARE && state != POOL_STATE_L2CACHE &&
 	    (spa = spa_by_guid(pool_guid, device_guid)) != NULL &&
 	    spa_mode(spa) == SPA_MODE_READ)
 		state = POOL_STATE_ACTIVE;
 
-	/*
-	 * If the device is marked ACTIVE, then this device is in use by another
-	 * pool on the system.
-	 */
+	 
 	return (state == POOL_STATE_ACTIVE);
 }
 
-/*
- * Initialize a vdev label.  We check to make sure each leaf device is not in
- * use, and writable.  We put down an initial label which we will later
- * overwrite with a complete label.  Note that it's important to do this
- * sequentially, not in parallel, so that we catch cases of multiple use of the
- * same leaf vdev in the vdev we're creating -- e.g. mirroring a disk with
- * itself.
- */
+ 
 int
 vdev_label_init(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason)
 {
@@ -1031,31 +800,22 @@ vdev_label_init(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason)
 		    crtxg, reason)) != 0)
 			return (error);
 
-	/* Track the creation time for this vdev */
+	 
 	vd->vdev_crtxg = crtxg;
 
 	if (!vd->vdev_ops->vdev_op_leaf || !spa_writeable(spa))
 		return (0);
 
-	/*
-	 * Dead vdevs cannot be initialized.
-	 */
+	 
 	if (vdev_is_dead(vd))
 		return (SET_ERROR(EIO));
 
-	/*
-	 * Determine if the vdev is in use.
-	 */
+	 
 	if (reason != VDEV_LABEL_REMOVE && reason != VDEV_LABEL_SPLIT &&
 	    vdev_inuse(vd, crtxg, reason, &spare_guid, &l2cache_guid))
 		return (SET_ERROR(EBUSY));
 
-	/*
-	 * If this is a request to add or replace a spare or l2cache device
-	 * that is in use elsewhere on the system, then we must update the
-	 * guid (which was initialized to a random value) to reflect the
-	 * actual GUID (which is shared between multiple pools).
-	 */
+	 
 	if (reason != VDEV_LABEL_REMOVE && reason != VDEV_LABEL_L2CACHE &&
 	    spare_guid != 0ULL) {
 		uint64_t guid_delta = spare_guid - vd->vdev_guid;
@@ -1065,11 +825,7 @@ vdev_label_init(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason)
 		for (vdev_t *pvd = vd; pvd != NULL; pvd = pvd->vdev_parent)
 			pvd->vdev_guid_sum += guid_delta;
 
-		/*
-		 * If this is a replacement, then we want to fallthrough to the
-		 * rest of the code.  If we're adding a spare, then it's already
-		 * labeled appropriately and we can just return.
-		 */
+		 
 		if (reason == VDEV_LABEL_SPARE)
 			return (0);
 		ASSERT(reason == VDEV_LABEL_REPLACE ||
@@ -1085,38 +841,21 @@ vdev_label_init(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason)
 		for (vdev_t *pvd = vd; pvd != NULL; pvd = pvd->vdev_parent)
 			pvd->vdev_guid_sum += guid_delta;
 
-		/*
-		 * If this is a replacement, then we want to fallthrough to the
-		 * rest of the code.  If we're adding an l2cache, then it's
-		 * already labeled appropriately and we can just return.
-		 */
+		 
 		if (reason == VDEV_LABEL_L2CACHE)
 			return (0);
 		ASSERT(reason == VDEV_LABEL_REPLACE);
 	}
 
-	/*
-	 * Initialize its label.
-	 */
+	 
 	vp_abd = abd_alloc_linear(sizeof (vdev_phys_t), B_TRUE);
 	abd_zero(vp_abd, sizeof (vdev_phys_t));
 	vp = abd_to_buf(vp_abd);
 
-	/*
-	 * Generate a label describing the pool and our top-level vdev.
-	 * We mark it as being from txg 0 to indicate that it's not
-	 * really part of an active pool just yet.  The labels will
-	 * be written again with a meaningful txg by spa_sync().
-	 */
+	 
 	if (reason == VDEV_LABEL_SPARE ||
 	    (reason == VDEV_LABEL_REMOVE && vd->vdev_isspare)) {
-		/*
-		 * For inactive hot spares, we generate a special label that
-		 * identifies as a mutually shared hot spare.  We write the
-		 * label if we are adding a hot spare, or if we are removing an
-		 * active hot spare (in which case we want to revert the
-		 * labels).
-		 */
+		 
 		VERIFY(nvlist_alloc(&label, NV_UNIQUE_NAME, KM_SLEEP) == 0);
 
 		VERIFY(nvlist_add_uint64(label, ZPOOL_CONFIG_VERSION,
@@ -1127,9 +866,7 @@ vdev_label_init(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason)
 		    vd->vdev_guid) == 0);
 	} else if (reason == VDEV_LABEL_L2CACHE ||
 	    (reason == VDEV_LABEL_REMOVE && vd->vdev_isl2cache)) {
-		/*
-		 * For level 2 ARC devices, add a special label.
-		 */
+		 
 		VERIFY(nvlist_alloc(&label, NV_UNIQUE_NAME, KM_SLEEP) == 0);
 
 		VERIFY(nvlist_add_uint64(label, ZPOOL_CONFIG_VERSION,
@@ -1139,13 +876,7 @@ vdev_label_init(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason)
 		VERIFY(nvlist_add_uint64(label, ZPOOL_CONFIG_GUID,
 		    vd->vdev_guid) == 0);
 
-		/*
-		 * This is merely to facilitate reporting the ashift of the
-		 * cache device through zdb. The actual retrieval of the
-		 * ashift (in vdev_alloc()) uses the nvlist
-		 * spa->spa_l2cache->sav_config (populated in
-		 * spa_ld_open_aux_vdevs()).
-		 */
+		 
 		VERIFY(nvlist_add_uint64(label, ZPOOL_CONFIG_ASHIFT,
 		    vd->vdev_ashift) == 0);
 	} else {
@@ -1155,11 +886,7 @@ vdev_label_init(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason)
 			txg = spa->spa_uberblock.ub_txg;
 		label = spa_config_generate(spa, vd, txg, B_FALSE);
 
-		/*
-		 * Add our creation time.  This allows us to detect multiple
-		 * vdev uses as described above, and automatically expires if we
-		 * fail.
-		 */
+		 
 		VERIFY(nvlist_add_uint64(label, ZPOOL_CONFIG_CREATE_TXG,
 		    crtxg) == 0);
 	}
@@ -1171,26 +898,22 @@ vdev_label_init(vdev_t *vd, uint64_t crtxg, vdev_labeltype_t reason)
 	if (error != 0) {
 		nvlist_free(label);
 		abd_free(vp_abd);
-		/* EFAULT means nvlist_pack ran out of room */
+		 
 		return (SET_ERROR(error == EFAULT ? ENAMETOOLONG : EINVAL));
 	}
 
-	/*
-	 * Initialize uberblock template.
-	 */
+	 
 	ub_abd = abd_alloc_linear(VDEV_UBERBLOCK_RING, B_TRUE);
 	abd_zero(ub_abd, VDEV_UBERBLOCK_RING);
 	abd_copy_from_buf(ub_abd, &spa->spa_uberblock, sizeof (uberblock_t));
 	ub = abd_to_buf(ub_abd);
 	ub->ub_txg = 0;
 
-	/* Initialize the 2nd padding area. */
+	 
 	bootenv = abd_alloc_for_io(VDEV_PAD_SIZE, B_TRUE);
 	abd_zero(bootenv, VDEV_PAD_SIZE);
 
-	/*
-	 * Write everything in parallel.
-	 */
+	 
 retry:
 	zio = zio_root(spa, NULL, NULL, flags);
 
@@ -1200,11 +923,7 @@ retry:
 		    offsetof(vdev_label_t, vl_vdev_phys),
 		    sizeof (vdev_phys_t), NULL, NULL, flags);
 
-		/*
-		 * Skip the 1st padding area.
-		 * Zero out the 2nd padding area where it might have
-		 * left over data from previous filesystem format.
-		 */
+		 
 		vdev_label_write(zio, vd, l, bootenv,
 		    offsetof(vdev_label_t, vl_be),
 		    VDEV_PAD_SIZE, NULL, NULL, flags);
@@ -1226,12 +945,7 @@ retry:
 	abd_free(ub_abd);
 	abd_free(vp_abd);
 
-	/*
-	 * If this vdev hasn't been previously identified as a spare, then we
-	 * mark it as such only if a) we are labeling it as a spare, or b) it
-	 * exists as a spare elsewhere in the system.  Do the same for
-	 * level 2 ARC devices.
-	 */
+	 
 	if (error == 0 && !vd->vdev_isspare &&
 	    (reason == VDEV_LABEL_SPARE ||
 	    spa_spare_exists(vd->vdev_guid, NULL, NULL)))
@@ -1245,11 +959,7 @@ retry:
 	return (error);
 }
 
-/*
- * Done callback for vdev_label_read_bootenv_impl. If this is the first
- * callback to finish, store our abd in the callback pointer. Otherwise, we
- * just free our abd and return.
- */
+ 
 static void
 vdev_label_read_bootenv_done(zio_t *zio)
 {
@@ -1261,7 +971,7 @@ vdev_label_read_bootenv_done(zio_t *zio)
 	if (zio->io_error == 0) {
 		mutex_enter(&rio->io_lock);
 		if (*cbp == NULL) {
-			/* Will free this buffer in vdev_label_read_bootenv. */
+			 
 			*cbp = zio->io_abd;
 		} else {
 			abd_free(zio->io_abd);
@@ -1278,12 +988,7 @@ vdev_label_read_bootenv_impl(zio_t *zio, vdev_t *vd, int flags)
 	for (int c = 0; c < vd->vdev_children; c++)
 		vdev_label_read_bootenv_impl(zio, vd->vdev_child[c], flags);
 
-	/*
-	 * We just use the first label that has a correct checksum; the
-	 * bootloader should have rewritten them all to be the same on boot,
-	 * and any changes we made since boot have been the same across all
-	 * labels.
-	 */
+	 
 	if (vd->vdev_ops->vdev_op_leaf && vdev_readable(vd)) {
 		for (int l = 0; l < VDEV_LABELS; l++) {
 			vdev_label_read(zio, vd, l,
@@ -1317,10 +1022,7 @@ vdev_label_read_bootenv(vdev_t *rvd, nvlist_t *bootenv)
 		vbe->vbe_version = ntohll(vbe->vbe_version);
 		switch (vbe->vbe_version) {
 		case VB_RAW:
-			/*
-			 * if we have textual data in vbe_bootenv, create nvlist
-			 * with key "envmap".
-			 */
+			 
 			fnvlist_add_uint64(bootenv, BOOTENV_VERSION, VB_RAW);
 			vbe->vbe_bootenv[sizeof (vbe->vbe_bootenv) - 1] = '\0';
 			fnvlist_add_string(bootenv, GRUB_ENVMAP,
@@ -1337,7 +1039,7 @@ vdev_label_read_bootenv(vdev_t *rvd, nvlist_t *bootenv)
 			}
 			zfs_fallthrough;
 		default:
-			/* Check for FreeBSD zfs bootonce command string */
+			 
 			buf = abd_to_buf(abd);
 			if (*buf == '\0') {
 				fnvlist_add_uint64(bootenv, BOOTENV_VERSION,
@@ -1347,14 +1049,9 @@ vdev_label_read_bootenv(vdev_t *rvd, nvlist_t *bootenv)
 			fnvlist_add_string(bootenv, FREEBSD_BOOTONCE, buf);
 		}
 
-		/*
-		 * abd was allocated in vdev_label_read_bootenv_impl()
-		 */
+		 
 		abd_free(abd);
-		/*
-		 * If we managed to read any successfully,
-		 * return success.
-		 */
+		 
 		return (0);
 	}
 	return (err);
@@ -1387,10 +1084,7 @@ vdev_label_write_bootenv(vdev_t *vd, nvlist_t *env)
 		int child_err;
 
 		child_err = vdev_label_write_bootenv(vd->vdev_child[c], env);
-		/*
-		 * As long as any of the disks managed to write all of their
-		 * labels successfully, return success.
-		 */
+		 
 		if (child_err == 0)
 			error = child_err;
 	}
@@ -1452,22 +1146,9 @@ retry:
 	return (error);
 }
 
-/*
- * ==========================================================================
- * uberblock load/sync
- * ==========================================================================
- */
+ 
 
-/*
- * Consider the following situation: txg is safely synced to disk.  We've
- * written the first uberblock for txg + 1, and then we lose power.  When we
- * come back up, we fail to see the uberblock for txg + 1 because, say,
- * it was on a mirrored device and the replica to which we wrote txg + 1
- * is now offline.  If we then make some changes and sync txg + 1, and then
- * the missing replica comes back, then for a few seconds we'll have two
- * conflicting uberblocks on disk with the same txg.  The solution is simple:
- * among uberblocks with equal txg, choose the one with the latest timestamp.
- */
+ 
 static int
 vdev_uberblock_compare(const uberblock_t *ub1, const uberblock_t *ub2)
 {
@@ -1480,17 +1161,7 @@ vdev_uberblock_compare(const uberblock_t *ub1, const uberblock_t *ub2)
 	if (likely(cmp))
 		return (cmp);
 
-	/*
-	 * If MMP_VALID(ub) && MMP_SEQ_VALID(ub) then the host has an MMP-aware
-	 * ZFS, e.g. OpenZFS >= 0.7.
-	 *
-	 * If one ub has MMP and the other does not, they were written by
-	 * different hosts, which matters for MMP.  So we treat no MMP/no SEQ as
-	 * a 0 value.
-	 *
-	 * Since timestamp and txg are the same if we get this far, either is
-	 * acceptable for importing the pool.
-	 */
+	 
 	unsigned int seq1 = 0;
 	unsigned int seq2 = 0;
 
@@ -1504,8 +1175,8 @@ vdev_uberblock_compare(const uberblock_t *ub1, const uberblock_t *ub2)
 }
 
 struct ubl_cbdata {
-	uberblock_t	*ubl_ubbest;	/* Best uberblock */
-	vdev_t		*ubl_vd;	/* vdev associated with the above */
+	uberblock_t	*ubl_ubbest;	 
+	vdev_t		*ubl_vd;	 
 };
 
 static void
@@ -1523,12 +1194,7 @@ vdev_uberblock_load_done(zio_t *zio)
 		mutex_enter(&rio->io_lock);
 		if (ub->ub_txg <= spa->spa_load_max_txg &&
 		    vdev_uberblock_compare(ub, cbp->ubl_ubbest) > 0) {
-			/*
-			 * Keep track of the vdev in which this uberblock
-			 * was found. We will use this information later
-			 * to obtain the config nvlist associated with
-			 * this uberblock.
-			 */
+			 
 			*cbp->ubl_ubbest = *ub;
 			cbp->ubl_vd = vd;
 		}
@@ -1559,12 +1225,7 @@ vdev_uberblock_load_impl(zio_t *zio, vdev_t *vd, int flags,
 	}
 }
 
-/*
- * Reads the 'best' uberblock from disk along with its associated
- * configuration. First, we read the uberblock array of each label of each
- * vdev, keeping track of the uberblock with the highest txg in each array.
- * Then, we read the configuration from the same vdev as the best uberblock.
- */
+ 
 void
 vdev_uberblock_load(vdev_t *rvd, uberblock_t *ub, nvlist_t **config)
 {
@@ -1588,12 +1249,7 @@ vdev_uberblock_load(vdev_t *rvd, uberblock_t *ub, nvlist_t **config)
 	vdev_uberblock_load_impl(zio, rvd, flags, &cb);
 	(void) zio_wait(zio);
 
-	/*
-	 * It's possible that the best uberblock was discovered on a label
-	 * that has a configuration which was written in a future txg.
-	 * Search all labels on this vdev to find the configuration that
-	 * matches the txg for our uberblock.
-	 */
+	 
 	if (cb.ubl_vd != NULL) {
 		vdev_dbgmsg(cb.ubl_vd, "best uberblock found for spa %s. "
 		    "txg %llu", spa->spa_name, (u_longlong_t)ub->ub_txg);
@@ -1611,16 +1267,7 @@ vdev_uberblock_load(vdev_t *rvd, uberblock_t *ub, nvlist_t **config)
 	spa_config_exit(spa, SCL_ALL, FTAG);
 }
 
-/*
- * For use when a leaf vdev is expanded.
- * The location of labels 2 and 3 changed, and at the new location the
- * uberblock rings are either empty or contain garbage.  The sync will write
- * new configs there because the vdev is dirty, but expansion also needs the
- * uberblock rings copied.  Read them from label 0 which did not move.
- *
- * Since the point is to populate labels {2,3} with valid uberblocks,
- * we zero uberblocks we fail to read or which are not valid.
- */
+ 
 
 static void
 vdev_copy_uberblocks(vdev_t *vd)
@@ -1635,10 +1282,7 @@ vdev_copy_uberblocks(vdev_t *vd)
 	    SCL_STATE);
 	ASSERT(vd->vdev_ops->vdev_op_leaf);
 
-	/*
-	 * No uberblocks are stored on distributed spares, they may be
-	 * safely skipped when expanding a leaf vdev.
-	 */
+	 
 	if (vd->vdev_ops == &vdev_draid_spare_ops)
 		return;
 
@@ -1672,10 +1316,7 @@ vdev_copy_uberblocks(vdev_t *vd)
 	abd_free(ub_abd);
 }
 
-/*
- * On success, increment root zio's count of good writes.
- * We only get credit for writes to known-visible vdevs; see spa_vdev_add().
- */
+ 
 static void
 vdev_uberblock_sync_done(zio_t *zio)
 {
@@ -1685,9 +1326,7 @@ vdev_uberblock_sync_done(zio_t *zio)
 		atomic_inc_64(good_writes);
 }
 
-/*
- * Write the uberblock to all labels of all leaves of the specified vdev.
- */
+ 
 static void
 vdev_uberblock_sync(zio_t *zio, uint64_t *good_writes,
     uberblock_t *ub, vdev_t *vd, int flags)
@@ -1703,16 +1342,11 @@ vdev_uberblock_sync(zio_t *zio, uint64_t *good_writes,
 	if (!vdev_writeable(vd))
 		return;
 
-	/*
-	 * There's no need to write uberblocks to a distributed spare, they
-	 * are already stored on all the leaves of the parent dRAID.  For
-	 * this same reason vdev_uberblock_load_impl() skips distributed
-	 * spares when reading uberblocks.
-	 */
+	 
 	if (vd->vdev_ops == &vdev_draid_spare_ops)
 		return;
 
-	/* If the vdev was expanded, need to copy uberblock rings. */
+	 
 	if (vd->vdev_state == VDEV_STATE_HEALTHY &&
 	    vd->vdev_copy_uberblocks == B_TRUE) {
 		vdev_copy_uberblocks(vd);
@@ -1722,7 +1356,7 @@ vdev_uberblock_sync(zio_t *zio, uint64_t *good_writes,
 	int m = spa_multihost(vd->vdev_spa) ? MMP_BLOCKS_PER_LABEL : 0;
 	int n = ub->ub_txg % (VDEV_UBERBLOCK_COUNT(vd) - m);
 
-	/* Copy the uberblock_t into the ABD */
+	 
 	abd_t *ub_abd = abd_alloc_for_io(VDEV_UBERBLOCK_SIZE(vd), B_TRUE);
 	abd_zero(ub_abd, VDEV_UBERBLOCK_SIZE(vd));
 	abd_copy_from_buf(ub_abd, ub, sizeof (uberblock_t));
@@ -1736,7 +1370,7 @@ vdev_uberblock_sync(zio_t *zio, uint64_t *good_writes,
 	abd_free(ub_abd);
 }
 
-/* Sync the uberblocks to all vdevs in svd[] */
+ 
 static int
 vdev_uberblock_sync_list(vdev_t **svd, int svdcount, uberblock_t *ub, int flags)
 {
@@ -1751,11 +1385,7 @@ vdev_uberblock_sync_list(vdev_t **svd, int svdcount, uberblock_t *ub, int flags)
 
 	(void) zio_wait(zio);
 
-	/*
-	 * Flush the uberblocks to disk.  This ensures that the odd labels
-	 * are no longer needed (because the new uberblocks and the even
-	 * labels are safely on disk), so it is safe to overwrite them.
-	 */
+	 
 	zio = zio_root(spa, NULL, NULL, flags);
 
 	for (int v = 0; v < svdcount; v++) {
@@ -1769,9 +1399,7 @@ vdev_uberblock_sync_list(vdev_t **svd, int svdcount, uberblock_t *ub, int flags)
 	return (good_writes >= 1 ? 0 : EIO);
 }
 
-/*
- * On success, increment the count of good writes for our top-level vdev.
- */
+ 
 static void
 vdev_label_sync_done(zio_t *zio)
 {
@@ -1781,9 +1409,7 @@ vdev_label_sync_done(zio_t *zio)
 		atomic_inc_64(good_writes);
 }
 
-/*
- * If there weren't enough good writes, indicate failure to the parent.
- */
+ 
 static void
 vdev_label_sync_top_done(zio_t *zio)
 {
@@ -1795,18 +1421,14 @@ vdev_label_sync_top_done(zio_t *zio)
 	kmem_free(good_writes, sizeof (uint64_t));
 }
 
-/*
- * We ignore errors for log and cache devices, simply free the private data.
- */
+ 
 static void
 vdev_label_sync_ignore_done(zio_t *zio)
 {
 	kmem_free(zio->io_private, sizeof (uint64_t));
 }
 
-/*
- * Write all even or odd labels to all leaves of the specified vdev.
- */
+ 
 static void
 vdev_label_sync(zio_t *zio, uint64_t *good_writes,
     vdev_t *vd, int l, uint64_t txg, int flags)
@@ -1828,17 +1450,11 @@ vdev_label_sync(zio_t *zio, uint64_t *good_writes,
 	if (!vdev_writeable(vd))
 		return;
 
-	/*
-	 * The top-level config never needs to be written to a distributed
-	 * spare.  When read vdev_dspare_label_read_config() will generate
-	 * the config for the vdev_label_read_config().
-	 */
+	 
 	if (vd->vdev_ops == &vdev_draid_spare_ops)
 		return;
 
-	/*
-	 * Generate a label describing the top-level config to which we belong.
-	 */
+	 
 	label = spa_config_generate(vd->vdev_spa, vd, txg, B_FALSE);
 
 	vp_abd = abd_alloc_linear(sizeof (vdev_phys_t), B_TRUE);
@@ -1870,9 +1486,7 @@ vdev_label_sync_list(spa_t *spa, int l, uint64_t txg, int flags)
 	zio_t *zio;
 	int error;
 
-	/*
-	 * Write the new labels to disk.
-	 */
+	 
 	zio = zio_root(spa, NULL, NULL, flags);
 
 	for (vd = list_head(dl); vd != NULL; vd = list_next(dl, vd)) {
@@ -1891,9 +1505,7 @@ vdev_label_sync_list(spa_t *spa, int l, uint64_t txg, int flags)
 
 	error = zio_wait(zio);
 
-	/*
-	 * Flush the new labels to disk.
-	 */
+	 
 	zio = zio_root(spa, NULL, NULL, flags);
 
 	for (vd = list_head(dl); vd != NULL; vd = list_next(dl, vd))
@@ -1904,17 +1516,7 @@ vdev_label_sync_list(spa_t *spa, int l, uint64_t txg, int flags)
 	return (error);
 }
 
-/*
- * Sync the uberblock and any changes to the vdev configuration.
- *
- * The order of operations is carefully crafted to ensure that
- * if the system panics or loses power at any time, the state on disk
- * is still transactionally consistent.  The in-line comments below
- * describe the failure semantics at each stage.
- *
- * Moreover, vdev_config_sync() is designed to be idempotent: if it fails
- * at any time, you can just call it again, and it will resume its work.
- */
+ 
 int
 vdev_config_sync(vdev_t **svd, int svdcount, uint64_t txg)
 {
@@ -1925,13 +1527,7 @@ vdev_config_sync(vdev_t **svd, int svdcount, uint64_t txg)
 
 	ASSERT(svdcount != 0);
 retry:
-	/*
-	 * Normally, we don't want to try too hard to write every label and
-	 * uberblock.  If there is a flaky disk, we don't want the rest of the
-	 * sync process to block while we retry.  But if we can't write a
-	 * single label out, we should retry with ZIO_FLAG_TRYHARD before
-	 * bailing out and declaring the pool faulted.
-	 */
+	 
 	if (error != 0) {
 		if ((flags & ZIO_FLAG_TRYHARD) != 0)
 			return (error);
@@ -1940,12 +1536,7 @@ retry:
 
 	ASSERT(ub->ub_txg <= txg);
 
-	/*
-	 * If this isn't a resync due to I/O errors,
-	 * and nothing changed in this transaction group,
-	 * and the vdev configuration hasn't changed,
-	 * then there's nothing to do.
-	 */
+	 
 	if (ub->ub_txg < txg) {
 		boolean_t changed = uberblock_update(ub, spa->spa_root_vdev,
 		    txg, spa->spa_mmp.mmp_delay);
@@ -1959,12 +1550,7 @@ retry:
 
 	ASSERT(txg <= spa->spa_final_txg);
 
-	/*
-	 * Flush the write cache of every disk that's been written to
-	 * in this transaction group.  This ensures that all blocks
-	 * written in this txg will be committed to stable storage
-	 * before any uberblock that references them.
-	 */
+	 
 	zio_t *zio = zio_root(spa, NULL, NULL, flags);
 
 	for (vdev_t *vd =
@@ -1974,15 +1560,7 @@ retry:
 
 	(void) zio_wait(zio);
 
-	/*
-	 * Sync out the even labels (L0, L2) for every dirty vdev.  If the
-	 * system dies in the middle of this process, that's OK: all of the
-	 * even labels that made it to disk will be newer than any uberblock,
-	 * and will therefore be considered invalid.  The odd labels (L1, L3),
-	 * which have not yet been touched, will still be valid.  We flush
-	 * the new labels to disk to ensure that all even-label updates
-	 * are committed to stable storage before the uberblock update.
-	 */
+	 
 	if ((error = vdev_label_sync_list(spa, 0, txg, flags)) != 0) {
 		if ((flags & ZIO_FLAG_TRYHARD) != 0) {
 			zfs_dbgmsg("vdev_label_sync_list() returned error %d "
@@ -1992,21 +1570,7 @@ retry:
 		goto retry;
 	}
 
-	/*
-	 * Sync the uberblocks to all vdevs in svd[].
-	 * If the system dies in the middle of this step, there are two cases
-	 * to consider, and the on-disk state is consistent either way:
-	 *
-	 * (1)	If none of the new uberblocks made it to disk, then the
-	 *	previous uberblock will be the newest, and the odd labels
-	 *	(which had not yet been touched) will be valid with respect
-	 *	to that uberblock.
-	 *
-	 * (2)	If one or more new uberblocks made it to disk, then they
-	 *	will be the newest, and the even labels (which had all
-	 *	been successfully committed) will be valid with respect
-	 *	to the new uberblocks.
-	 */
+	 
 	if ((error = vdev_uberblock_sync_list(svd, svdcount, ub, flags)) != 0) {
 		if ((flags & ZIO_FLAG_TRYHARD) != 0) {
 			zfs_dbgmsg("vdev_uberblock_sync_list() returned error "
@@ -2018,16 +1582,7 @@ retry:
 	if (spa_multihost(spa))
 		mmp_update_uberblock(spa, ub);
 
-	/*
-	 * Sync out odd labels for every dirty vdev.  If the system dies
-	 * in the middle of this process, the even labels and the new
-	 * uberblocks will suffice to open the pool.  The next time
-	 * the pool is opened, the first thing we'll do -- before any
-	 * user data is modified -- is mark every vdev dirty so that
-	 * all labels will be brought up to date.  We flush the new labels
-	 * to disk to ensure that all odd-label updates are committed to
-	 * stable storage before the next transaction group begins.
-	 */
+	 
 	if ((error = vdev_label_sync_list(spa, 1, txg, flags)) != 0) {
 		if ((flags & ZIO_FLAG_TRYHARD) != 0) {
 			zfs_dbgmsg("vdev_label_sync_list() returned error %d "

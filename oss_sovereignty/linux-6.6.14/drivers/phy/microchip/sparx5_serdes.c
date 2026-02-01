@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Microchip Sparx5 Switch SerDes driver
- *
- * Copyright (c) 2020 Microchip Technology Inc. and its subsidiaries.
- *
- * The Sparx5 Chip Register Model can be browsed at this location:
- * https://github.com/microchip-ung/sparx-5_reginfo
- * and the datasheet is available here:
- * https://ww1.microchip.com/downloads/en/DeviceDoc/SparX-5_Family_L2L3_Enterprise_10G_Ethernet_Switches_Datasheet_00003822B.pdf
- */
+
+ 
 #include <linux/printk.h>
 #include <linux/module.h>
 #include <linux/device.h>
@@ -27,7 +19,7 @@
 #define SPX5_SERDES_25G_START 25
 #define SPX5_SERDES_6G10G_CNT SPX5_SERDES_25G_START
 
-/* Optimal power settings from GUC */
+ 
 #define SPX5_SERDES_QUIET_MODE_VAL 0x01ef4e0c
 
 enum sparx5_10g28cmu_mode {
@@ -101,17 +93,17 @@ struct sparx5_sd25g28_media_preset {
 };
 
 struct sparx5_sd25g28_args {
-	u8 if_width; /* UDL if-width: 10/16/20/32/64 */
-	bool skip_cmu_cfg:1; /* Enable/disable CMU cfg */
-	enum sparx5_10g28cmu_mode cmu_sel; /* Device/Mode serdes uses */
-	bool no_pwrcycle:1; /* Omit initial power-cycle */
-	bool txinvert:1; /* Enable inversion of output data */
-	bool rxinvert:1; /* Enable inversion of input data */
-	u16 txswing; /* Set output level */
-	u8 rate; /* Rate of network interface */
+	u8 if_width;  
+	bool skip_cmu_cfg:1;  
+	enum sparx5_10g28cmu_mode cmu_sel;  
+	bool no_pwrcycle:1;  
+	bool txinvert:1;  
+	bool rxinvert:1;  
+	u16 txswing;  
+	u8 rate;  
 	u8 pi_bw_gen1;
-	u8 duty_cycle; /* Set output level to  half/full */
-	bool mute:1; /* Mute Output Buffer */
+	u8 duty_cycle;  
+	bool mute:1;  
 	bool reg_rst:1;
 	u8 com_pll_reserve;
 };
@@ -232,23 +224,23 @@ struct sparx5_sd10g28_media_preset {
 };
 
 struct sparx5_sd10g28_mode_preset {
-	u8 bwidth; /* interface width: 10/16/20/32/64 */
-	enum sparx5_10g28cmu_mode cmu_sel; /* Device/Mode serdes uses */
-	u8 rate; /* Rate of network interface */
+	u8 bwidth;  
+	enum sparx5_10g28cmu_mode cmu_sel;  
+	u8 rate;  
 	u8 dfe_tap;
 	u8 dfe_enable;
 	u8 pi_bw_gen1;
-	u8 duty_cycle; /* Set output level to  half/full */
+	u8 duty_cycle;  
 };
 
 struct sparx5_sd10g28_args {
-	bool skip_cmu_cfg:1; /* Enable/disable CMU cfg */
-	bool no_pwrcycle:1; /* Omit initial power-cycle */
-	bool txinvert:1; /* Enable inversion of output data */
-	bool rxinvert:1; /* Enable inversion of input data */
-	bool txmargin:1; /* Set output level to  half/full */
-	u16 txswing; /* Set output level */
-	bool mute:1; /* Mute Output Buffer */
+	bool skip_cmu_cfg:1;  
+	bool no_pwrcycle:1;  
+	bool txinvert:1;  
+	bool rxinvert:1;  
+	bool txmargin:1;  
+	u16 txswing;  
+	bool mute:1;  
 	bool is_6g:1;
 	bool reg_rst:1;
 };
@@ -349,7 +341,7 @@ struct sparx5_sd10g28_params {
 };
 
 static struct sparx5_sd25g28_media_preset media_presets_25g[] = {
-	{ /* ETH_MEDIA_DEFAULT */
+	{  
 		.cfg_en_adv               = 0,
 		.cfg_en_main              = 1,
 		.cfg_en_dly               = 0,
@@ -361,7 +353,7 @@ static struct sparx5_sd25g28_media_preset media_presets_25g[] = {
 		.cfg_eq_r_force_3_0       = 12,
 		.cfg_alos_thr_2_0         = 7,
 	},
-	{ /* ETH_MEDIA_SR */
+	{  
 		.cfg_en_adv               = 1,
 		.cfg_en_main              = 1,
 		.cfg_en_dly               = 1,
@@ -373,7 +365,7 @@ static struct sparx5_sd25g28_media_preset media_presets_25g[] = {
 		.cfg_eq_r_force_3_0       = 4,
 		.cfg_alos_thr_2_0         = 0,
 	},
-	{ /* ETH_MEDIA_DAC */
+	{  
 		.cfg_en_adv               = 0,
 		.cfg_en_main              = 1,
 		.cfg_en_dly               = 0,
@@ -388,7 +380,7 @@ static struct sparx5_sd25g28_media_preset media_presets_25g[] = {
 };
 
 static struct sparx5_sd25g28_mode_preset mode_presets_25g[] = {
-	{ /* SPX5_SD25G28_MODE_PRESET_25000 */
+	{  
 		.bitwidth           = 40,
 		.tx_pre_div         = 0,
 		.fifo_ck_div        = 0,
@@ -414,7 +406,7 @@ static struct sparx5_sd25g28_mode_preset mode_presets_25g[] = {
 		.tx_tap_dly         = 8,
 		.tx_tap_adv         = 0xc,
 	},
-	{ /* SPX5_SD25G28_MODE_PRESET_10000 */
+	{  
 		.bitwidth           = 64,
 		.tx_pre_div         = 0,
 		.fifo_ck_div        = 2,
@@ -440,7 +432,7 @@ static struct sparx5_sd25g28_mode_preset mode_presets_25g[] = {
 		.tx_tap_dly         = 0,
 		.tx_tap_adv         = 0,
 	},
-	{ /* SPX5_SD25G28_MODE_PRESET_5000 */
+	{  
 		.bitwidth           = 64,
 		.tx_pre_div         = 0,
 		.fifo_ck_div        = 2,
@@ -463,7 +455,7 @@ static struct sparx5_sd25g28_mode_preset mode_presets_25g[] = {
 		.tx_tap_dly         = 0,
 		.tx_tap_adv         = 0,
 	},
-	{ /* SPX5_SD25G28_MODE_PRESET_SD_2G5 */
+	{  
 		.bitwidth           = 10,
 		.tx_pre_div         = 0,
 		.fifo_ck_div        = 0,
@@ -486,7 +478,7 @@ static struct sparx5_sd25g28_mode_preset mode_presets_25g[] = {
 		.tx_tap_dly         = 0,
 		.tx_tap_adv         = 0,
 	},
-	{ /* SPX5_SD25G28_MODE_PRESET_1000BASEX */
+	{  
 		.bitwidth           = 10,
 		.tx_pre_div         = 0,
 		.fifo_ck_div        = 1,
@@ -512,7 +504,7 @@ static struct sparx5_sd25g28_mode_preset mode_presets_25g[] = {
 };
 
 static struct sparx5_sd10g28_media_preset media_presets_10g[] = {
-	{ /* ETH_MEDIA_DEFAULT */
+	{  
 		.cfg_en_adv               = 0,
 		.cfg_en_main              = 1,
 		.cfg_en_dly               = 0,
@@ -526,7 +518,7 @@ static struct sparx5_sd10g28_media_preset media_presets_10g[] = {
 		.cfg_eq_c_force_3_0       = 0x8,
 		.cfg_alos_thr_3_0         = 0x3,
 	},
-	{ /* ETH_MEDIA_SR */
+	{  
 		.cfg_en_adv               = 1,
 		.cfg_en_main              = 1,
 		.cfg_en_dly               = 1,
@@ -540,7 +532,7 @@ static struct sparx5_sd10g28_media_preset media_presets_10g[] = {
 		.cfg_eq_c_force_3_0       = 0xF,
 		.cfg_alos_thr_3_0         = 0x3,
 	},
-	{ /* ETH_MEDIA_DAC */
+	{  
 		.cfg_en_adv               = 1,
 		.cfg_en_main              = 1,
 		.cfg_en_dly               = 1,
@@ -557,7 +549,7 @@ static struct sparx5_sd10g28_media_preset media_presets_10g[] = {
 };
 
 static struct sparx5_sd10g28_mode_preset mode_presets_10g[] = {
-	{ /* SPX5_SD10G28_MODE_PRESET_10000 */
+	{  
 		.bwidth           = 64,
 		.cmu_sel          = SPX5_SD10G28_CMU_MAIN,
 		.rate             = 0x0,
@@ -566,7 +558,7 @@ static struct sparx5_sd10g28_mode_preset mode_presets_10g[] = {
 		.pi_bw_gen1       = 0x0,
 		.duty_cycle       = 0x2,
 	},
-	{ /* SPX5_SD10G28_MODE_PRESET_SFI_5000_6G */
+	{  
 		.bwidth           = 16,
 		.cmu_sel          = SPX5_SD10G28_CMU_MAIN,
 		.rate             = 0x1,
@@ -575,7 +567,7 @@ static struct sparx5_sd10g28_mode_preset mode_presets_10g[] = {
 		.pi_bw_gen1       = 0x5,
 		.duty_cycle       = 0x0,
 	},
-	{ /* SPX5_SD10G28_MODE_PRESET_SFI_5000_10G */
+	{  
 		.bwidth           = 64,
 		.cmu_sel          = SPX5_SD10G28_CMU_MAIN,
 		.rate             = 0x1,
@@ -584,7 +576,7 @@ static struct sparx5_sd10g28_mode_preset mode_presets_10g[] = {
 		.pi_bw_gen1       = 0x5,
 		.duty_cycle       = 0x0,
 	},
-	{ /* SPX5_SD10G28_MODE_PRESET_QSGMII */
+	{  
 		.bwidth           = 20,
 		.cmu_sel          = SPX5_SD10G28_CMU_AUX1,
 		.rate             = 0x1,
@@ -593,7 +585,7 @@ static struct sparx5_sd10g28_mode_preset mode_presets_10g[] = {
 		.pi_bw_gen1       = 0x5,
 		.duty_cycle       = 0x0,
 	},
-	{ /* SPX5_SD10G28_MODE_PRESET_SD_2G5 */
+	{  
 		.bwidth           = 10,
 		.cmu_sel          = SPX5_SD10G28_CMU_AUX2,
 		.rate             = 0x2,
@@ -602,7 +594,7 @@ static struct sparx5_sd10g28_mode_preset mode_presets_10g[] = {
 		.pi_bw_gen1       = 0x7,
 		.duty_cycle       = 0x0,
 	},
-	{ /* SPX5_SD10G28_MODE_PRESET_1000BASEX */
+	{  
 		.bwidth           = 10,
 		.cmu_sel          = SPX5_SD10G28_CMU_AUX1,
 		.rate             = 0x3,
@@ -613,7 +605,7 @@ static struct sparx5_sd10g28_mode_preset mode_presets_10g[] = {
 	},
 };
 
-/* map from SD25G28 interface width to configuration value */
+ 
 static u8 sd25g28_get_iw_setting(struct device *dev, const u8 interface_width)
 {
 	switch (interface_width) {
@@ -629,7 +621,7 @@ static u8 sd25g28_get_iw_setting(struct device *dev, const u8 interface_width)
 	return 0;
 }
 
-/* map from SD10G28 interface width to configuration value */
+ 
 static u8 sd10g28_get_iw_setting(struct device *dev, const u8 interface_width)
 {
 	switch (interface_width) {
@@ -665,7 +657,7 @@ static int sparx5_sd10g25_get_mode_preset(struct sparx5_serdes_macro *macro,
 		*mode = mode_presets_25g[SPX5_SD25G28_MODE_PRESET_1000BASEX];
 		break;
 	case SPX5_SD_MODE_100FX:
-		 /* Not supported */
+		  
 		return -EINVAL;
 	default:
 		*mode = mode_presets_25g[SPX5_SD25G28_MODE_PRESET_25000];
@@ -1062,7 +1054,7 @@ static int sparx5_cmu_cfg(struct sparx5_serdes_private *priv, u32 cmu_idx)
 	return sparx5_cmu_apply_cfg(priv, cmu_idx, cmu_tgt, cmu_cfg_tgt, spd10g);
 }
 
-/* Map of 6G/10G serdes mode and index to CMU index. */
+ 
 static const int
 sparx5_serdes_cmu_map[SPX5_SD10G28_CMU_MAX][SPX5_SERDES_6G10G_CNT] = {
 	[SPX5_SD10G28_CMU_MAIN] = {  2,  2,  2,  2,  2,
@@ -1087,9 +1079,7 @@ sparx5_serdes_cmu_map[SPX5_SD10G28_CMU_MAX][SPX5_SERDES_6G10G_CNT] = {
 				    10, 13, 13, 13, 13 },
 };
 
-/* Get the index of the CMU which provides the clock for the specified serdes
- * mode and index.
- */
+ 
 static int sparx5_serdes_cmu_get(enum sparx5_10g28cmu_mode mode, int sd_index)
 {
 	return sparx5_serdes_cmu_map[mode][sd_index];
@@ -1100,7 +1090,7 @@ static void sparx5_serdes_cmu_power_off(struct sparx5_serdes_private *priv)
 	void __iomem *cmu_inst, *cmu_cfg_inst;
 	int i;
 
-	/* Power down each CMU */
+	 
 	for (i = 0; i < SPX5_CMU_MAX; i++) {
 		cmu_inst = sdx5_inst_get(priv, TARGET_SD_CMU, i);
 		cmu_cfg_inst = sdx5_inst_get(priv, TARGET_SD_CMU_CFG, i);
@@ -1622,7 +1612,7 @@ static int sparx5_sd25g28_apply_params(struct sparx5_serdes_macro *macro,
 
 static void sparx5_sd10g28_reset(void __iomem *regs[], u32 lane_index)
 {
-	/* Note: SerDes SD10G_LANE_1 is configured in 10G_LAN mode */
+	 
 	sdx5_rmw_addr(SD_LANE_SD_LANE_CFG_EXT_CFG_RST_SET(1),
 		      SD_LANE_SD_LANE_CFG_EXT_CFG_RST,
 		      sdx5_addr(regs, SD_LANE_SD_LANE_CFG(lane_index)));
@@ -1646,7 +1636,7 @@ static int sparx5_sd10g28_apply_params(struct sparx5_serdes_macro *macro,
 	u32 value, cmu_idx;
 	int err;
 
-	/* Do not configure serdes if CMU is not to be configured too */
+	 
 	if (params->skip_cmu_cfg)
 		return 0;
 
@@ -2127,7 +2117,7 @@ static int sparx5_sd10g28_config(struct sparx5_serdes_macro *macro, bool reset)
 	return sparx5_sd10g28_apply_params(macro, &params);
 }
 
-/* Power down serdes TX driver */
+ 
 static int sparx5_serdes_power_save(struct sparx5_serdes_macro *macro, u32 pwdn)
 {
 	struct sparx5_serdes_private *priv = macro->priv;
@@ -2143,12 +2133,12 @@ static int sparx5_serdes_power_save(struct sparx5_serdes_macro *macro, u32 pwdn)
 	if (macro->serdestype == SPX5_SDT_25G) {
 		sd_lane_inst = sdx5_inst_get(priv, TARGET_SD_LANE_25G,
 					     macro->stpidx);
-		/* Take serdes out of reset */
+		 
 		sdx5_inst_rmw(SD_LANE_25G_SD_LANE_CFG_EXT_CFG_RST_SET(0),
 			      SD_LANE_25G_SD_LANE_CFG_EXT_CFG_RST, sd_lane_inst,
 			      SD_LANE_25G_SD_LANE_CFG(0));
 
-		/* Configure optimal settings for quiet mode */
+		 
 		sdx5_inst_rmw(SD_LANE_25G_QUIET_MODE_6G_QUIET_MODE_SET(SPX5_SERDES_QUIET_MODE_VAL),
 			      SD_LANE_25G_QUIET_MODE_6G_QUIET_MODE,
 			      sd_lane_inst, SD_LANE_25G_QUIET_MODE_6G(0));
@@ -2158,15 +2148,15 @@ static int sparx5_serdes_power_save(struct sparx5_serdes_macro *macro, u32 pwdn)
 			      sd_inst,
 			      SD25G_LANE_LANE_04(0));
 	} else {
-		/* 6G and 10G */
+		 
 		sd_lane_inst = sdx5_inst_get(priv, TARGET_SD_LANE, macro->sidx);
 
-		/* Take serdes out of reset */
+		 
 		sdx5_inst_rmw(SD_LANE_SD_LANE_CFG_EXT_CFG_RST_SET(0),
 			      SD_LANE_SD_LANE_CFG_EXT_CFG_RST, sd_lane_inst,
 			      SD_LANE_SD_LANE_CFG(0));
 
-		/* Configure optimal settings for quiet mode */
+		 
 		sdx5_inst_rmw(SD_LANE_QUIET_MODE_6G_QUIET_MODE_SET(SPX5_SERDES_QUIET_MODE_VAL),
 			      SD_LANE_QUIET_MODE_6G_QUIET_MODE, sd_lane_inst,
 			      SD_LANE_QUIET_MODE_6G(0));
@@ -2206,7 +2196,7 @@ static int sparx5_serdes_get_serdesmode(phy_interface_t portmode, int speed)
 			return SPX5_SD_MODE_100FX;
 		return SPX5_SD_MODE_1000BASEX;
 	case PHY_INTERFACE_MODE_SGMII:
-		/* The same Serdes mode is used for both SGMII and 1000BaseX */
+		 
 		return SPX5_SD_MODE_1000BASEX;
 	case PHY_INTERFACE_MODE_QSGMII:
 		return SPX5_SD_MODE_QSGMII;
@@ -2344,7 +2334,7 @@ static int sparx5_serdes_validate(struct phy *phy, enum phy_mode mode,
 
 	switch (submode) {
 	case PHY_INTERFACE_MODE_1000BASEX:
-		if (macro->speed != SPEED_100 && /* This is for 100BASE-FX */
+		if (macro->speed != SPEED_100 &&  
 		    macro->speed != SPEED_1000)
 			return -EINVAL;
 		break;
@@ -2404,110 +2394,110 @@ static int sparx5_phy_create(struct sparx5_serdes_private *priv,
 
 	phy_set_drvdata(*phy, macro);
 
-	/* Power off serdes by default */
+	 
 	sparx5_serdes_power_off(*phy);
 
 	return 0;
 }
 
 static struct sparx5_serdes_io_resource sparx5_serdes_iomap[] =  {
-	{ TARGET_SD_CMU,          0x0 },      /* 0x610808000: sd_cmu_0 */
-	{ TARGET_SD_CMU + 1,      0x8000 },   /* 0x610810000: sd_cmu_1 */
-	{ TARGET_SD_CMU + 2,      0x10000 },  /* 0x610818000: sd_cmu_2 */
-	{ TARGET_SD_CMU + 3,      0x18000 },  /* 0x610820000: sd_cmu_3 */
-	{ TARGET_SD_CMU + 4,      0x20000 },  /* 0x610828000: sd_cmu_4 */
-	{ TARGET_SD_CMU + 5,      0x28000 },  /* 0x610830000: sd_cmu_5 */
-	{ TARGET_SD_CMU + 6,      0x30000 },  /* 0x610838000: sd_cmu_6 */
-	{ TARGET_SD_CMU + 7,      0x38000 },  /* 0x610840000: sd_cmu_7 */
-	{ TARGET_SD_CMU + 8,      0x40000 },  /* 0x610848000: sd_cmu_8 */
-	{ TARGET_SD_CMU_CFG,      0x48000 },  /* 0x610850000: sd_cmu_cfg_0 */
-	{ TARGET_SD_CMU_CFG + 1,  0x50000 },  /* 0x610858000: sd_cmu_cfg_1 */
-	{ TARGET_SD_CMU_CFG + 2,  0x58000 },  /* 0x610860000: sd_cmu_cfg_2 */
-	{ TARGET_SD_CMU_CFG + 3,  0x60000 },  /* 0x610868000: sd_cmu_cfg_3 */
-	{ TARGET_SD_CMU_CFG + 4,  0x68000 },  /* 0x610870000: sd_cmu_cfg_4 */
-	{ TARGET_SD_CMU_CFG + 5,  0x70000 },  /* 0x610878000: sd_cmu_cfg_5 */
-	{ TARGET_SD_CMU_CFG + 6,  0x78000 },  /* 0x610880000: sd_cmu_cfg_6 */
-	{ TARGET_SD_CMU_CFG + 7,  0x80000 },  /* 0x610888000: sd_cmu_cfg_7 */
-	{ TARGET_SD_CMU_CFG + 8,  0x88000 },  /* 0x610890000: sd_cmu_cfg_8 */
-	{ TARGET_SD6G_LANE,       0x90000 },  /* 0x610898000: sd6g_lane_0 */
-	{ TARGET_SD6G_LANE + 1,   0x98000 },  /* 0x6108a0000: sd6g_lane_1 */
-	{ TARGET_SD6G_LANE + 2,   0xa0000 },  /* 0x6108a8000: sd6g_lane_2 */
-	{ TARGET_SD6G_LANE + 3,   0xa8000 },  /* 0x6108b0000: sd6g_lane_3 */
-	{ TARGET_SD6G_LANE + 4,   0xb0000 },  /* 0x6108b8000: sd6g_lane_4 */
-	{ TARGET_SD6G_LANE + 5,   0xb8000 },  /* 0x6108c0000: sd6g_lane_5 */
-	{ TARGET_SD6G_LANE + 6,   0xc0000 },  /* 0x6108c8000: sd6g_lane_6 */
-	{ TARGET_SD6G_LANE + 7,   0xc8000 },  /* 0x6108d0000: sd6g_lane_7 */
-	{ TARGET_SD6G_LANE + 8,   0xd0000 },  /* 0x6108d8000: sd6g_lane_8 */
-	{ TARGET_SD6G_LANE + 9,   0xd8000 },  /* 0x6108e0000: sd6g_lane_9 */
-	{ TARGET_SD6G_LANE + 10,  0xe0000 },  /* 0x6108e8000: sd6g_lane_10 */
-	{ TARGET_SD6G_LANE + 11,  0xe8000 },  /* 0x6108f0000: sd6g_lane_11 */
-	{ TARGET_SD6G_LANE + 12,  0xf0000 },  /* 0x6108f8000: sd6g_lane_12 */
-	{ TARGET_SD10G_LANE,      0xf8000 },  /* 0x610900000: sd10g_lane_0 */
-	{ TARGET_SD10G_LANE + 1,  0x100000 }, /* 0x610908000: sd10g_lane_1 */
-	{ TARGET_SD10G_LANE + 2,  0x108000 }, /* 0x610910000: sd10g_lane_2 */
-	{ TARGET_SD10G_LANE + 3,  0x110000 }, /* 0x610918000: sd10g_lane_3 */
-	{ TARGET_SD_LANE,         0x1a0000 }, /* 0x6109a8000: sd_lane_0 */
-	{ TARGET_SD_LANE + 1,     0x1a8000 }, /* 0x6109b0000: sd_lane_1 */
-	{ TARGET_SD_LANE + 2,     0x1b0000 }, /* 0x6109b8000: sd_lane_2 */
-	{ TARGET_SD_LANE + 3,     0x1b8000 }, /* 0x6109c0000: sd_lane_3 */
-	{ TARGET_SD_LANE + 4,     0x1c0000 }, /* 0x6109c8000: sd_lane_4 */
-	{ TARGET_SD_LANE + 5,     0x1c8000 }, /* 0x6109d0000: sd_lane_5 */
-	{ TARGET_SD_LANE + 6,     0x1d0000 }, /* 0x6109d8000: sd_lane_6 */
-	{ TARGET_SD_LANE + 7,     0x1d8000 }, /* 0x6109e0000: sd_lane_7 */
-	{ TARGET_SD_LANE + 8,     0x1e0000 }, /* 0x6109e8000: sd_lane_8 */
-	{ TARGET_SD_LANE + 9,     0x1e8000 }, /* 0x6109f0000: sd_lane_9 */
-	{ TARGET_SD_LANE + 10,    0x1f0000 }, /* 0x6109f8000: sd_lane_10 */
-	{ TARGET_SD_LANE + 11,    0x1f8000 }, /* 0x610a00000: sd_lane_11 */
-	{ TARGET_SD_LANE + 12,    0x200000 }, /* 0x610a08000: sd_lane_12 */
-	{ TARGET_SD_LANE + 13,    0x208000 }, /* 0x610a10000: sd_lane_13 */
-	{ TARGET_SD_LANE + 14,    0x210000 }, /* 0x610a18000: sd_lane_14 */
-	{ TARGET_SD_LANE + 15,    0x218000 }, /* 0x610a20000: sd_lane_15 */
-	{ TARGET_SD_LANE + 16,    0x220000 }, /* 0x610a28000: sd_lane_16 */
-	{ TARGET_SD_CMU + 9,      0x400000 }, /* 0x610c08000: sd_cmu_9 */
-	{ TARGET_SD_CMU + 10,     0x408000 }, /* 0x610c10000: sd_cmu_10 */
-	{ TARGET_SD_CMU + 11,     0x410000 }, /* 0x610c18000: sd_cmu_11 */
-	{ TARGET_SD_CMU + 12,     0x418000 }, /* 0x610c20000: sd_cmu_12 */
-	{ TARGET_SD_CMU + 13,     0x420000 }, /* 0x610c28000: sd_cmu_13 */
-	{ TARGET_SD_CMU_CFG + 9,  0x428000 }, /* 0x610c30000: sd_cmu_cfg_9 */
-	{ TARGET_SD_CMU_CFG + 10, 0x430000 }, /* 0x610c38000: sd_cmu_cfg_10 */
-	{ TARGET_SD_CMU_CFG + 11, 0x438000 }, /* 0x610c40000: sd_cmu_cfg_11 */
-	{ TARGET_SD_CMU_CFG + 12, 0x440000 }, /* 0x610c48000: sd_cmu_cfg_12 */
-	{ TARGET_SD_CMU_CFG + 13, 0x448000 }, /* 0x610c50000: sd_cmu_cfg_13 */
-	{ TARGET_SD10G_LANE + 4,  0x450000 }, /* 0x610c58000: sd10g_lane_4 */
-	{ TARGET_SD10G_LANE + 5,  0x458000 }, /* 0x610c60000: sd10g_lane_5 */
-	{ TARGET_SD10G_LANE + 6,  0x460000 }, /* 0x610c68000: sd10g_lane_6 */
-	{ TARGET_SD10G_LANE + 7,  0x468000 }, /* 0x610c70000: sd10g_lane_7 */
-	{ TARGET_SD10G_LANE + 8,  0x470000 }, /* 0x610c78000: sd10g_lane_8 */
-	{ TARGET_SD10G_LANE + 9,  0x478000 }, /* 0x610c80000: sd10g_lane_9 */
-	{ TARGET_SD10G_LANE + 10, 0x480000 }, /* 0x610c88000: sd10g_lane_10 */
-	{ TARGET_SD10G_LANE + 11, 0x488000 }, /* 0x610c90000: sd10g_lane_11 */
-	{ TARGET_SD25G_LANE,      0x490000 }, /* 0x610c98000: sd25g_lane_0 */
-	{ TARGET_SD25G_LANE + 1,  0x498000 }, /* 0x610ca0000: sd25g_lane_1 */
-	{ TARGET_SD25G_LANE + 2,  0x4a0000 }, /* 0x610ca8000: sd25g_lane_2 */
-	{ TARGET_SD25G_LANE + 3,  0x4a8000 }, /* 0x610cb0000: sd25g_lane_3 */
-	{ TARGET_SD25G_LANE + 4,  0x4b0000 }, /* 0x610cb8000: sd25g_lane_4 */
-	{ TARGET_SD25G_LANE + 5,  0x4b8000 }, /* 0x610cc0000: sd25g_lane_5 */
-	{ TARGET_SD25G_LANE + 6,  0x4c0000 }, /* 0x610cc8000: sd25g_lane_6 */
-	{ TARGET_SD25G_LANE + 7,  0x4c8000 }, /* 0x610cd0000: sd25g_lane_7 */
-	{ TARGET_SD_LANE + 17,    0x550000 }, /* 0x610d58000: sd_lane_17 */
-	{ TARGET_SD_LANE + 18,    0x558000 }, /* 0x610d60000: sd_lane_18 */
-	{ TARGET_SD_LANE + 19,    0x560000 }, /* 0x610d68000: sd_lane_19 */
-	{ TARGET_SD_LANE + 20,    0x568000 }, /* 0x610d70000: sd_lane_20 */
-	{ TARGET_SD_LANE + 21,    0x570000 }, /* 0x610d78000: sd_lane_21 */
-	{ TARGET_SD_LANE + 22,    0x578000 }, /* 0x610d80000: sd_lane_22 */
-	{ TARGET_SD_LANE + 23,    0x580000 }, /* 0x610d88000: sd_lane_23 */
-	{ TARGET_SD_LANE + 24,    0x588000 }, /* 0x610d90000: sd_lane_24 */
-	{ TARGET_SD_LANE_25G,     0x590000 }, /* 0x610d98000: sd_lane_25g_25 */
-	{ TARGET_SD_LANE_25G + 1, 0x598000 }, /* 0x610da0000: sd_lane_25g_26 */
-	{ TARGET_SD_LANE_25G + 2, 0x5a0000 }, /* 0x610da8000: sd_lane_25g_27 */
-	{ TARGET_SD_LANE_25G + 3, 0x5a8000 }, /* 0x610db0000: sd_lane_25g_28 */
-	{ TARGET_SD_LANE_25G + 4, 0x5b0000 }, /* 0x610db8000: sd_lane_25g_29 */
-	{ TARGET_SD_LANE_25G + 5, 0x5b8000 }, /* 0x610dc0000: sd_lane_25g_30 */
-	{ TARGET_SD_LANE_25G + 6, 0x5c0000 }, /* 0x610dc8000: sd_lane_25g_31 */
-	{ TARGET_SD_LANE_25G + 7, 0x5c8000 }, /* 0x610dd0000: sd_lane_25g_32 */
+	{ TARGET_SD_CMU,          0x0 },       
+	{ TARGET_SD_CMU + 1,      0x8000 },    
+	{ TARGET_SD_CMU + 2,      0x10000 },   
+	{ TARGET_SD_CMU + 3,      0x18000 },   
+	{ TARGET_SD_CMU + 4,      0x20000 },   
+	{ TARGET_SD_CMU + 5,      0x28000 },   
+	{ TARGET_SD_CMU + 6,      0x30000 },   
+	{ TARGET_SD_CMU + 7,      0x38000 },   
+	{ TARGET_SD_CMU + 8,      0x40000 },   
+	{ TARGET_SD_CMU_CFG,      0x48000 },   
+	{ TARGET_SD_CMU_CFG + 1,  0x50000 },   
+	{ TARGET_SD_CMU_CFG + 2,  0x58000 },   
+	{ TARGET_SD_CMU_CFG + 3,  0x60000 },   
+	{ TARGET_SD_CMU_CFG + 4,  0x68000 },   
+	{ TARGET_SD_CMU_CFG + 5,  0x70000 },   
+	{ TARGET_SD_CMU_CFG + 6,  0x78000 },   
+	{ TARGET_SD_CMU_CFG + 7,  0x80000 },   
+	{ TARGET_SD_CMU_CFG + 8,  0x88000 },   
+	{ TARGET_SD6G_LANE,       0x90000 },   
+	{ TARGET_SD6G_LANE + 1,   0x98000 },   
+	{ TARGET_SD6G_LANE + 2,   0xa0000 },   
+	{ TARGET_SD6G_LANE + 3,   0xa8000 },   
+	{ TARGET_SD6G_LANE + 4,   0xb0000 },   
+	{ TARGET_SD6G_LANE + 5,   0xb8000 },   
+	{ TARGET_SD6G_LANE + 6,   0xc0000 },   
+	{ TARGET_SD6G_LANE + 7,   0xc8000 },   
+	{ TARGET_SD6G_LANE + 8,   0xd0000 },   
+	{ TARGET_SD6G_LANE + 9,   0xd8000 },   
+	{ TARGET_SD6G_LANE + 10,  0xe0000 },   
+	{ TARGET_SD6G_LANE + 11,  0xe8000 },   
+	{ TARGET_SD6G_LANE + 12,  0xf0000 },   
+	{ TARGET_SD10G_LANE,      0xf8000 },   
+	{ TARGET_SD10G_LANE + 1,  0x100000 },  
+	{ TARGET_SD10G_LANE + 2,  0x108000 },  
+	{ TARGET_SD10G_LANE + 3,  0x110000 },  
+	{ TARGET_SD_LANE,         0x1a0000 },  
+	{ TARGET_SD_LANE + 1,     0x1a8000 },  
+	{ TARGET_SD_LANE + 2,     0x1b0000 },  
+	{ TARGET_SD_LANE + 3,     0x1b8000 },  
+	{ TARGET_SD_LANE + 4,     0x1c0000 },  
+	{ TARGET_SD_LANE + 5,     0x1c8000 },  
+	{ TARGET_SD_LANE + 6,     0x1d0000 },  
+	{ TARGET_SD_LANE + 7,     0x1d8000 },  
+	{ TARGET_SD_LANE + 8,     0x1e0000 },  
+	{ TARGET_SD_LANE + 9,     0x1e8000 },  
+	{ TARGET_SD_LANE + 10,    0x1f0000 },  
+	{ TARGET_SD_LANE + 11,    0x1f8000 },  
+	{ TARGET_SD_LANE + 12,    0x200000 },  
+	{ TARGET_SD_LANE + 13,    0x208000 },  
+	{ TARGET_SD_LANE + 14,    0x210000 },  
+	{ TARGET_SD_LANE + 15,    0x218000 },  
+	{ TARGET_SD_LANE + 16,    0x220000 },  
+	{ TARGET_SD_CMU + 9,      0x400000 },  
+	{ TARGET_SD_CMU + 10,     0x408000 },  
+	{ TARGET_SD_CMU + 11,     0x410000 },  
+	{ TARGET_SD_CMU + 12,     0x418000 },  
+	{ TARGET_SD_CMU + 13,     0x420000 },  
+	{ TARGET_SD_CMU_CFG + 9,  0x428000 },  
+	{ TARGET_SD_CMU_CFG + 10, 0x430000 },  
+	{ TARGET_SD_CMU_CFG + 11, 0x438000 },  
+	{ TARGET_SD_CMU_CFG + 12, 0x440000 },  
+	{ TARGET_SD_CMU_CFG + 13, 0x448000 },  
+	{ TARGET_SD10G_LANE + 4,  0x450000 },  
+	{ TARGET_SD10G_LANE + 5,  0x458000 },  
+	{ TARGET_SD10G_LANE + 6,  0x460000 },  
+	{ TARGET_SD10G_LANE + 7,  0x468000 },  
+	{ TARGET_SD10G_LANE + 8,  0x470000 },  
+	{ TARGET_SD10G_LANE + 9,  0x478000 },  
+	{ TARGET_SD10G_LANE + 10, 0x480000 },  
+	{ TARGET_SD10G_LANE + 11, 0x488000 },  
+	{ TARGET_SD25G_LANE,      0x490000 },  
+	{ TARGET_SD25G_LANE + 1,  0x498000 },  
+	{ TARGET_SD25G_LANE + 2,  0x4a0000 },  
+	{ TARGET_SD25G_LANE + 3,  0x4a8000 },  
+	{ TARGET_SD25G_LANE + 4,  0x4b0000 },  
+	{ TARGET_SD25G_LANE + 5,  0x4b8000 },  
+	{ TARGET_SD25G_LANE + 6,  0x4c0000 },  
+	{ TARGET_SD25G_LANE + 7,  0x4c8000 },  
+	{ TARGET_SD_LANE + 17,    0x550000 },  
+	{ TARGET_SD_LANE + 18,    0x558000 },  
+	{ TARGET_SD_LANE + 19,    0x560000 },  
+	{ TARGET_SD_LANE + 20,    0x568000 },  
+	{ TARGET_SD_LANE + 21,    0x570000 },  
+	{ TARGET_SD_LANE + 22,    0x578000 },  
+	{ TARGET_SD_LANE + 23,    0x580000 },  
+	{ TARGET_SD_LANE + 24,    0x588000 },  
+	{ TARGET_SD_LANE_25G,     0x590000 },  
+	{ TARGET_SD_LANE_25G + 1, 0x598000 },  
+	{ TARGET_SD_LANE_25G + 2, 0x5a0000 },  
+	{ TARGET_SD_LANE_25G + 3, 0x5a8000 },  
+	{ TARGET_SD_LANE_25G + 4, 0x5b0000 },  
+	{ TARGET_SD_LANE_25G + 5, 0x5b8000 },  
+	{ TARGET_SD_LANE_25G + 6, 0x5c0000 },  
+	{ TARGET_SD_LANE_25G + 7, 0x5c8000 },  
 };
 
-/* Client lookup function, uses serdes index */
+ 
 static struct phy *sparx5_serdes_xlate(struct device *dev,
 				     struct of_phandle_args *args)
 {
@@ -2520,7 +2510,7 @@ static struct phy *sparx5_serdes_xlate(struct device *dev,
 
 	sidx = args->args[0];
 
-	/* Check validity: ERR_PTR(-ENODEV) if not valid */
+	 
 	for (idx = 0; idx < SPX5_SERDES_MAX; idx++) {
 		struct sparx5_serdes_macro *macro =
 			phy_get_drvdata(priv->phys[idx]);
@@ -2555,7 +2545,7 @@ static int sparx5_serdes_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, priv);
 	priv->dev = &pdev->dev;
 
-	/* Get coreclock */
+	 
 	clk = devm_clk_get(priv->dev, NULL);
 	if (IS_ERR(clk)) {
 		dev_err(priv->dev, "Failed to get coreclock\n");
@@ -2590,7 +2580,7 @@ static int sparx5_serdes_probe(struct platform_device *pdev)
 			return err;
 	}
 
-	/* Power down all CMUs by default */
+	 
 	sparx5_serdes_cmu_power_off(priv);
 
 	provider = devm_of_phy_provider_register(priv->dev, sparx5_serdes_xlate);

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- */
+ 
+ 
 #ifndef __VFIO_VFIO_H__
 #define __VFIO_VFIO_H__
 
@@ -21,10 +18,10 @@ struct vfio_device_file {
 	struct vfio_group *group;
 
 	u8 access_granted;
-	u32 devid; /* only valid when iommufd is valid */
-	spinlock_t kvm_ref_lock; /* protect kvm field */
+	u32 devid;  
+	spinlock_t kvm_ref_lock;  
 	struct kvm *kvm;
-	struct iommufd_ctx *iommufd; /* protected by struct vfio_device_set::lock */
+	struct iommufd_ctx *iommufd;  
 };
 
 void vfio_device_put_registration(struct vfio_device *device);
@@ -43,26 +40,13 @@ enum { vfio_noiommu = false };
 #endif
 
 enum vfio_group_type {
-	/*
-	 * Physical device with IOMMU backing.
-	 */
+	 
 	VFIO_IOMMU,
 
-	/*
-	 * Virtual device without IOMMU backing. The VFIO core fakes up an
-	 * iommu_group as the iommu_group sysfs interface is part of the
-	 * userspace ABI.  The user of these devices must not be able to
-	 * directly trigger unmediated DMA.
-	 */
+	 
 	VFIO_EMULATED_IOMMU,
 
-	/*
-	 * Physical device without IOMMU backing. The VFIO core fakes up an
-	 * iommu_group as the iommu_group sysfs interface is part of the
-	 * userspace ABI.  Users can trigger unmediated DMA by the device,
-	 * usage is highly dangerous, requires an explicit opt-in and will
-	 * taint the kernel.
-	 */
+	 
 	VFIO_NO_IOMMU,
 };
 
@@ -70,12 +54,7 @@ enum vfio_group_type {
 struct vfio_group {
 	struct device 			dev;
 	struct cdev			cdev;
-	/*
-	 * When drivers is non-zero a driver is attached to the struct device
-	 * that provided the iommu_group and thus the iommu_group is a valid
-	 * pointer. When drivers is 0 the driver is being detached. Once users
-	 * reaches 0 then the iommu_group is invalid.
-	 */
+	 
 	refcount_t			drivers;
 	unsigned int			container_users;
 	struct iommu_group		*iommu_group;
@@ -193,12 +172,10 @@ static inline bool vfio_device_is_noiommu(struct vfio_device *vdev)
 {
 	return false;
 }
-#endif /* CONFIG_VFIO_GROUP */
+#endif  
 
 #if IS_ENABLED(CONFIG_VFIO_CONTAINER)
-/**
- * struct vfio_iommu_driver_ops - VFIO IOMMU driver callbacks
- */
+ 
 struct vfio_iommu_driver_ops {
 	char		*name;
 	struct module	*owner;
@@ -359,7 +336,7 @@ void vfio_init_device_cdev(struct vfio_device *device);
 
 static inline int vfio_device_add(struct vfio_device *device)
 {
-	/* cdev does not support noiommu device */
+	 
 	if (vfio_device_is_noiommu(device))
 		return device_add(&device->device);
 	vfio_init_device_cdev(device);
@@ -419,7 +396,7 @@ static inline int vfio_cdev_init(struct class *device_class)
 static inline void vfio_cdev_cleanup(void)
 {
 }
-#endif /* CONFIG_VFIO_DEVICE_CDEV */
+#endif  
 
 #if IS_ENABLED(CONFIG_VFIO_VIRQFD)
 int __init vfio_virqfd_init(void);

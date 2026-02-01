@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * some helper function for simple DVB cards which simply DMA the
- * complete transport stream and let the computer sort everything else
- * (i.e. we are using the software demux, ...).  Also uses vb2
- * to manage DMA buffers.
- *
- * (c) 2004 Gerd Knorr <kraxel@bytesex.org> [SUSE Labs]
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -16,12 +8,12 @@
 
 #include <media/videobuf2-dvb.h>
 
-/* ------------------------------------------------------------------ */
+ 
 
 MODULE_AUTHOR("Gerd Knorr <kraxel@bytesex.org> [SuSE Labs]");
 MODULE_LICENSE("GPL");
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int dvb_fnc(struct vb2_buffer *vb, void *priv)
 {
@@ -82,7 +74,7 @@ static int vb2_dvb_register_adapter(struct vb2_dvb_frontends *fe,
 
 	mutex_init(&fe->lock);
 
-	/* register adapter */
+	 
 	result = dvb_register_adapter(&fe->adapter, adapter_name, module,
 		device, adapter_nr);
 	if (result < 0) {
@@ -103,7 +95,7 @@ static int vb2_dvb_register_frontend(struct dvb_adapter *adapter,
 {
 	int result;
 
-	/* register frontend */
+	 
 	result = dvb_register_frontend(adapter, dvb->frontend);
 	if (result < 0) {
 		pr_warn("%s: dvb_register_frontend failed (errno = %d)\n",
@@ -111,7 +103,7 @@ static int vb2_dvb_register_frontend(struct dvb_adapter *adapter,
 		goto fail_frontend;
 	}
 
-	/* register demux stuff */
+	 
 	dvb->demux.dmx.capabilities =
 		DMX_TS_FILTERING | DMX_SECTION_FILTERING |
 		DMX_MEMORY_BASED_FILTERING;
@@ -161,7 +153,7 @@ static int vb2_dvb_register_frontend(struct dvb_adapter *adapter,
 		goto fail_fe_conn;
 	}
 
-	/* register network adapter */
+	 
 	result = dvb_net_init(adapter, &dvb->net, &dvb->demux.dmx);
 	if (result < 0) {
 		pr_warn("%s: dvb_net_init failed (errno = %d)\n",
@@ -187,8 +179,8 @@ fail_frontend:
 	return result;
 }
 
-/* ------------------------------------------------------------------ */
-/* Register a single adapter and one or more frontends */
+ 
+ 
 int vb2_dvb_register_bus(struct vb2_dvb_frontends *f,
 			 struct module *module,
 			 void *adapter_priv,
@@ -207,7 +199,7 @@ int vb2_dvb_register_bus(struct vb2_dvb_frontends *f,
 		return -EINVAL;
 	}
 
-	/* Bring up the adapter */
+	 
 	res = vb2_dvb_register_adapter(f, module, adapter_priv, device, mdev,
 		fe->dvb.name, adapter_nr, mfe_shared);
 	if (res < 0) {
@@ -215,7 +207,7 @@ int vb2_dvb_register_bus(struct vb2_dvb_frontends *f,
 		return res;
 	}
 
-	/* Attach all of the frontends to the adapter */
+	 
 	mutex_lock(&f->lock);
 	list_for_each_safe(list, q, &f->felist) {
 		fe = list_entry(list, struct vb2_dvb_frontend, felist);
@@ -331,10 +323,10 @@ void vb2_dvb_dealloc_frontends(struct vb2_dvb_frontends *f)
 			dvb_unregister_frontend(fe->dvb.frontend);
 		}
 		if (fe->dvb.frontend)
-			/* always allocated, may have been reset */
+			 
 			dvb_frontend_detach(fe->dvb.frontend);
-		list_del(list); /* remove list entry */
-		kfree(fe);	/* free frontend allocation */
+		list_del(list);  
+		kfree(fe);	 
 	}
 	mutex_unlock(&f->lock);
 }

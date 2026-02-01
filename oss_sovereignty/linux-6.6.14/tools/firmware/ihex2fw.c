@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Parser/loader for IHEX formatted data.
- *
- * Copyright © 2008 David Woodhouse <dwmw2@infradead.org>
- * Copyright © 2005 Jan Harkes <jaharkes@cs.cmu.edu>
- */
+
+ 
 
 #include <stdint.h>
 #include <arpa/inet.h>
@@ -26,15 +21,13 @@
 #define ALIGN(x, a)			__ALIGN_KERNEL((x), (a))
 
 struct ihex_binrec {
-	struct ihex_binrec *next; /* not part of the real data structure */
+	struct ihex_binrec *next;  
         uint32_t addr;
         uint16_t len;
         uint8_t data[];
 };
 
-/**
- * nybble/hex are little helpers to parse hexadecimal numbers to a byte value
- **/
+ 
 static uint8_t nybble(const uint8_t n)
 {
 	if      (n >= '0' && n <= '9') return n - '0';
@@ -142,13 +135,13 @@ static int process_ihex(uint8_t *data, ssize_t size)
 
 	i = 0;
 next_record:
-	/* search for the start of record character */
+	 
 	while (i < size) {
 		if (data[i] == '\n') line++;
 		if (data[i++] == ':') break;
 	}
 
-	/* Minimum record length would be about 10 characters */
+	 
 	if (i + 10 > size) {
 		fprintf(stderr, "Can't find valid record at line %d\n", line);
 		return -EINVAL;
@@ -168,7 +161,7 @@ next_record:
 	memset(record, 0, record_size);
 	record->len = len;
 
-	/* now check if we have enough data to read everything */
+	 
 	if (i + 8 + (record->len * 2) > size) {
 		fprintf(stderr, "Not enough data to read complete record at line %d\n",
 			line);
@@ -182,7 +175,7 @@ next_record:
 	for (j = 0; j < record->len; j++, i += 2)
 		record->data[j] = hex(data + i, &crc);
 
-	/* check CRC */
+	 
 	crcbyte = hex(data + i, &crc); i += 2;
 	if (crc != 0) {
 		fprintf(stderr, "CRC failure at line %d: got 0x%X, expected 0x%X\n",
@@ -190,10 +183,10 @@ next_record:
 		return -EINVAL;
 	}
 
-	/* Done reading the record */
+	 
 	switch (type) {
 	case 0:
-		/* old style EOF record? */
+		 
 		if (!record->len)
 			break;
 
@@ -201,7 +194,7 @@ next_record:
 		file_record(record);
 		goto next_record;
 
-	case 1: /* End-Of-File Record */
+	case 1:  
 		if (record->addr || record->len) {
 			fprintf(stderr, "Bad EOF record (type 01) format at line %d",
 				line);
@@ -209,22 +202,21 @@ next_record:
 		}
 		break;
 
-	case 2: /* Extended Segment Address Record (HEX86) */
-	case 4: /* Extended Linear Address Record (HEX386) */
+	case 2:  
+	case 4:  
 		if (record->addr || record->len != 2) {
 			fprintf(stderr, "Bad HEX86/HEX386 record (type %02X) at line %d\n",
 				type, line);
 			return -EINVAL;
 		}
 
-		/* We shouldn't really be using the offset for HEX86 because
-		 * the wraparound case is specified quite differently. */
+		 
 		offset = record->data[0] << 8 | record->data[1];
 		offset <<= (type == 2 ? 4 : 16);
 		goto next_record;
 
-	case 3: /* Start Segment Address Record */
-	case 5: /* Start Linear Address Record */
+	case 3:  
+	case 5:  
 		if (record->addr || record->len != 4) {
 			fprintf(stderr, "Bad Start Address record (type %02X) at line %d\n",
 				type, line);
@@ -235,8 +227,7 @@ next_record:
 		data32 = htonl(data32);
 		memcpy(&record->data[0], &data32, sizeof(data32));
 
-		/* These records contain the CS/IP or EIP where execution
-		 * starts. If requested output this as a record. */
+		 
 		if (include_jump)
 			file_record(record);
 		goto next_record;
@@ -281,8 +272,7 @@ static int output_records(int outfd)
 			return 1;
 		p = p->next;
 	}
-	/* EOF record is zero length, since we don't bother to represent
-	   the type field in the binary version */
+	 
 	if (write(outfd, zeroes, 6) != 6)
 		return 1;
 	return 0;

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (C) 2020 NVIDIA CORPORATION.
+
+
+
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -176,7 +176,7 @@ struct tegra_qspi_client_data {
 struct tegra_qspi {
 	struct device				*dev;
 	struct spi_master			*master;
-	/* lock to protect data accessed by irq */
+	 
 	spinlock_t				lock;
 
 	struct clk				*clk;
@@ -239,7 +239,7 @@ static inline void tegra_qspi_writel(struct tegra_qspi *tqspi, u32 value, unsign
 {
 	writel(value, tqspi->base + offset);
 
-	/* read back register to make sure that register writes completed */
+	 
 	if (offset != QSPI_TX_FIFO)
 		readl(tqspi->base + QSPI_COMMAND1);
 }
@@ -248,7 +248,7 @@ static void tegra_qspi_mask_clear_irq(struct tegra_qspi *tqspi)
 {
 	u32 value;
 
-	/* write 1 to clear status register */
+	 
 	value = tegra_qspi_readl(tqspi, QSPI_TRANS_STATUS);
 	tegra_qspi_writel(tqspi, value, QSPI_TRANS_STATUS);
 
@@ -258,7 +258,7 @@ static void tegra_qspi_mask_clear_irq(struct tegra_qspi *tqspi)
 		tegra_qspi_writel(tqspi, value, QSPI_INTR_MASK);
 	}
 
-	/* clear fifo status error if any */
+	 
 	value = tegra_qspi_readl(tqspi, QSPI_FIFO_STATUS);
 	if (value & QSPI_ERR)
 		tegra_qspi_writel(tqspi, QSPI_ERR | QSPI_FIFO_ERROR, QSPI_FIFO_STATUS);
@@ -273,12 +273,7 @@ tegra_qspi_calculate_curr_xfer_param(struct tegra_qspi *tqspi, struct spi_transf
 
 	tqspi->bytes_per_word = DIV_ROUND_UP(bits_per_word, 8);
 
-	/*
-	 * Tegra QSPI controller supports packed or unpacked mode transfers.
-	 * Packed mode is used for data transfers using 8, 16, or 32 bits per
-	 * word with a minimum transfer of 1 word and for all other transfers
-	 * unpacked mode will be used.
-	 */
+	 
 
 	if ((bits_per_word == 8 || bits_per_word == 16 ||
 	     bits_per_word == 32) && t->len > 3) {
@@ -402,24 +397,14 @@ tegra_qspi_copy_client_txbuf_to_qspi_txbuf(struct tegra_qspi *tqspi, struct spi_
 	dma_sync_single_for_cpu(tqspi->dev, tqspi->tx_dma_phys,
 				tqspi->dma_buf_size, DMA_TO_DEVICE);
 
-	/*
-	 * In packed mode, each word in FIFO may contain multiple packets
-	 * based on bits per word. So all bytes in each FIFO word are valid.
-	 *
-	 * In unpacked mode, each word in FIFO contains single packet and
-	 * based on bits per word any remaining bits in FIFO word will be
-	 * ignored by the hardware and are invalid bits.
-	 */
+	 
 	if (tqspi->is_packed) {
 		tqspi->cur_tx_pos += tqspi->curr_dma_words * tqspi->bytes_per_word;
 	} else {
 		u8 *tx_buf = (u8 *)t->tx_buf + tqspi->cur_tx_pos;
 		unsigned int i, count, consume, write_bytes;
 
-		/*
-		 * Fill tx_dma_buf to contain single packet in each word based
-		 * on bits per word from SPI core tx_buf.
-		 */
+		 
 		consume = tqspi->curr_dma_words * tqspi->bytes_per_word;
 		if (consume > t->len - tqspi->cur_pos)
 			consume = t->len - tqspi->cur_pos;
@@ -452,11 +437,7 @@ tegra_qspi_copy_qspi_rxbuf_to_client_rxbuf(struct tegra_qspi *tqspi, struct spi_
 		u32 rx_mask = ((u32)1 << t->bits_per_word) - 1;
 		unsigned int i, count, consume, read_bytes;
 
-		/*
-		 * Each FIFO word contains single data packet.
-		 * Skip invalid bits in each FIFO word based on bits per word
-		 * and align bytes while filling in SPI core rx_buf.
-		 */
+		 
 		consume = tqspi->curr_dma_words * tqspi->bytes_per_word;
 		if (consume > t->len - tqspi->cur_pos)
 			consume = t->len - tqspi->cur_pos;
@@ -628,7 +609,7 @@ static int tegra_qspi_start_dma_based_transfer(struct tegra_qspi *tqspi, struct 
 	else
 		len = tqspi->curr_dma_words * 4;
 
-	/* set attention level based on length of transfer */
+	 
 	val = 0;
 	if (len & 0xf) {
 		val |= QSPI_TX_TRIG_1 | QSPI_RX_TRIG_1;
@@ -959,7 +940,7 @@ static int tegra_qspi_setup(struct spi_device *spi)
 	}
 	spin_lock_irqsave(&tqspi->lock, flags);
 
-	/* keep default cs state to inactive */
+	 
 	val = tqspi->def_command1_reg;
 	val |= QSPI_CS_SEL(spi_get_chipselect(spi, 0));
 	if (spi->mode & SPI_CS_HIGH)
@@ -1020,7 +1001,7 @@ static u32 tegra_qspi_cmd_config(bool is_ddr, u8 bus_width, u8 len)
 {
 	u32 cmd_config = 0;
 
-	/* Extract Command configuration and value */
+	 
 	if (is_ddr)
 		cmd_config |= QSPI_COMMAND_SDR_DDR;
 	else
@@ -1036,9 +1017,9 @@ static u32 tegra_qspi_addr_config(bool is_ddr, u8 bus_width, u8 len)
 {
 	u32 addr_config = 0;
 
-	/* Extract Address configuration and value */
-	is_ddr = 0; //Only SDR mode supported
-	bus_width = 0; //X1 mode
+	 
+	is_ddr = 0; 
+	bus_width = 0; 
 
 	if (is_ddr)
 		addr_config |= QSPI_ADDRESS_SDR_DDR;
@@ -1064,7 +1045,7 @@ static int tegra_qspi_combined_seq_xfer(struct tegra_qspi *tqspi,
 	u32 cmd_config = 0, addr_config = 0;
 	u8 cmd_value = 0, val = 0;
 
-	/* Enable Combined sequence mode */
+	 
 	val = tegra_qspi_readl(tqspi, QSPI_GLOBAL_CONFIG);
 	if (spi->mode & SPI_TPM_HW_FLOW) {
 		if (tqspi->soc_data->supports_tpm)
@@ -1074,27 +1055,27 @@ static int tegra_qspi_combined_seq_xfer(struct tegra_qspi *tqspi,
 	}
 	val |= QSPI_CMB_SEQ_EN;
 	tegra_qspi_writel(tqspi, val, QSPI_GLOBAL_CONFIG);
-	/* Process individual transfer list */
+	 
 	list_for_each_entry(xfer, &msg->transfers, transfer_list) {
 		switch (transfer_phase) {
 		case CMD_TRANSFER:
-			/* X1 SDR mode */
+			 
 			cmd_config = tegra_qspi_cmd_config(false, 0,
 							   xfer->len);
 			cmd_value = *((const u8 *)(xfer->tx_buf));
 			break;
 		case ADDR_TRANSFER:
-			/* X1 SDR mode */
+			 
 			addr_config = tegra_qspi_addr_config(false, 0,
 							     xfer->len);
 			address_value = *((const u32 *)(xfer->tx_buf));
 			break;
 		case DATA_TRANSFER:
-			/* Program Command, Address value in register */
+			 
 			tegra_qspi_writel(tqspi, cmd_value, QSPI_CMB_SEQ_CMD);
 			tegra_qspi_writel(tqspi, address_value,
 					  QSPI_CMB_SEQ_ADDR);
-			/* Program Command and Address config in register */
+			 
 			tegra_qspi_writel(tqspi, cmd_config,
 					  QSPI_CMB_SEQ_CMD_CFG);
 			tegra_qspi_writel(tqspi, addr_config,
@@ -1130,7 +1111,7 @@ static int tegra_qspi_combined_seq_xfer(struct tegra_qspi *tqspi,
 					dmaengine_terminate_all
 						(tqspi->rx_dma_chan);
 
-				/* Abort transfer by resetting pio/dma bit */
+				 
 				if (!tqspi->is_curr_dma_xfer) {
 					cmd1 = tegra_qspi_readl
 							(tqspi,
@@ -1148,7 +1129,7 @@ static int tegra_qspi_combined_seq_xfer(struct tegra_qspi *tqspi,
 							  QSPI_DMA_CTL);
 				}
 
-				/* Reset controller if timeout happens */
+				 
 				if (device_reset(tqspi->dev) < 0)
 					dev_warn_once(tqspi->dev,
 						      "device reset failed\n");
@@ -1200,7 +1181,7 @@ static int tegra_qspi_non_combined_seq_xfer(struct tegra_qspi *tqspi,
 	tqspi->tx_status = 0;
 	tqspi->rx_status = 0;
 
-	/* Disable Combined sequence mode */
+	 
 	val = tegra_qspi_readl(tqspi, QSPI_GLOBAL_CONFIG);
 	val &= ~QSPI_CMB_SEQ_EN;
 	if (tqspi->soc_data->supports_tpm)
@@ -1212,12 +1193,7 @@ static int tegra_qspi_non_combined_seq_xfer(struct tegra_qspi *tqspi,
 		u32 cmd1;
 
 		tqspi->dummy_cycles = 0;
-		/*
-		 * Tegra QSPI hardware supports dummy bytes transfer after actual transfer
-		 * bytes based on programmed dummy clock cycles in the QSPI_MISC register.
-		 * So, check if the next transfer is dummy data transfer and program dummy
-		 * clock cycles along with the current transfer and skip next transfer.
-		 */
+		 
 		if (!list_is_last(&xfer->transfer_list, &msg->transfers)) {
 			struct spi_transfer *next_xfer;
 
@@ -1272,13 +1248,13 @@ complete_xfer:
 		}
 
 		if (list_is_last(&xfer->transfer_list, &msg->transfers)) {
-			/* de-activate CS after last transfer only when cs_change is not set */
+			 
 			if (!xfer->cs_change) {
 				tegra_qspi_transfer_end(spi);
 				spi_transfer_delay_exec(xfer);
 			}
 		} else if (xfer->cs_change) {
-			 /* de-activated CS between the transfers only when cs_change is set */
+			  
 			tegra_qspi_transfer_end(spi);
 			spi_transfer_delay_exec(xfer);
 		}
@@ -1428,7 +1404,7 @@ static irqreturn_t handle_dma_based_xfer(struct tegra_qspi *tqspi)
 
 	tegra_qspi_dma_unmap_xfer(tqspi, t);
 
-	/* continue transfer in current message */
+	 
 	total_fifo_words = tegra_qspi_calculate_curr_xfer_param(tqspi, t);
 	if (total_fifo_words > QSPI_FIFO_DEPTH)
 		err = tegra_qspi_start_dma_based_transfer(tqspi, t);
@@ -1684,10 +1660,10 @@ static int __maybe_unused tegra_qspi_runtime_suspend(struct device *dev)
 	struct spi_master *master = dev_get_drvdata(dev);
 	struct tegra_qspi *tqspi = spi_master_get_devdata(master);
 
-	/* Runtime pm disabled with ACPI */
+	 
 	if (has_acpi_companion(tqspi->dev))
 		return 0;
-	/* flush all write which are in PPSB queue by reading back */
+	 
 	tegra_qspi_readl(tqspi, QSPI_COMMAND1);
 
 	clk_disable_unprepare(tqspi->clk);
@@ -1701,7 +1677,7 @@ static int __maybe_unused tegra_qspi_runtime_resume(struct device *dev)
 	struct tegra_qspi *tqspi = spi_master_get_devdata(master);
 	int ret;
 
-	/* Runtime pm disabled with ACPI */
+	 
 	if (has_acpi_companion(tqspi->dev))
 		return 0;
 	ret = clk_prepare_enable(tqspi->clk);

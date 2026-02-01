@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #define pr_fmt(fmt) "ipmi_hardcode: " fmt
 
@@ -7,10 +7,7 @@
 #include "ipmi_si.h"
 #include "ipmi_plat_data.h"
 
-/*
- * There can be 4 IO ports passed in (with or without IRQs), 4 addresses,
- * a default IO port, and 1 ACPI/SPMI address.  That sets SI_MAX_DRIVERS.
- */
+ 
 
 #define SI_MAX_PARMS 4
 
@@ -98,7 +95,7 @@ void __init ipmi_hardcode_init(void)
 
 	memset(si_type, 0, sizeof(si_type));
 
-	/* Parse out the si_type string into its components. */
+	 
 	str = si_type_str;
 	if (*str != '\0') {
 		for (i = 0; (i < SI_MAX_PARMS) && (*str != '\0'); i++) {
@@ -129,10 +126,7 @@ void ipmi_si_hardcode_exit(void)
 	ipmi_remove_platform_device_by_name("hardcode-ipmi-si");
 }
 
-/*
- * Returns true of the given address exists as a hardcoded address,
- * false if not.
- */
+ 
 int ipmi_si_hardcode_match(int addr_space, unsigned long addr)
 {
 	unsigned int i;

@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* drivers/nubus/proc.c: Proc FS interface for NuBus.
 
-   By David Huggins-Daines <dhd@debian.org>
-
-   Much code and many ideas from drivers/pci/proc.c:
-   Copyright (c) 1997, 1998 Martin Mares <mj@atrey.karlin.mff.cuni.cz>
-
-   This is initially based on the Zorro and PCI interfaces.  However,
-   it works somewhat differently.  The intent is to provide a
-   structure in /proc analogous to the structure of the NuBus ROM
-   resources.
-
-   Therefore each board function gets a directory, which may in turn
-   contain subdirectories.  Each slot resource is a file.  Unrecognized
-   resources are empty files, since every resource ID requires a special
-   case (e.g. if the resource ID implies a directory or block, then its
-   value has to be interpreted as a slot ROM pointer etc.).
- */
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -29,9 +12,7 @@
 #include <linux/uaccess.h>
 #include <asm/byteorder.h>
 
-/*
- * /proc/bus/nubus/devices stuff
- */
+ 
 
 static int
 nubus_devices_proc_show(struct seq_file *m, void *v)
@@ -47,9 +28,7 @@ nubus_devices_proc_show(struct seq_file *m, void *v)
 
 static struct proc_dir_entry *proc_bus_nubus_dir;
 
-/*
- * /proc/bus/nubus/x/ stuff
- */
+ 
 
 struct proc_dir_entry *nubus_proc_add_board(struct nubus_board *board)
 {
@@ -61,9 +40,7 @@ struct proc_dir_entry *nubus_proc_add_board(struct nubus_board *board)
 	return proc_mkdir(name, proc_bus_nubus_dir);
 }
 
-/* The PDE private data for any directory under /proc/bus/nubus/x/
- * is the bytelanes value for the board in slot x.
- */
+ 
 
 struct proc_dir_entry *nubus_proc_add_rsrc_dir(struct proc_dir_entry *procdir,
 					       const struct nubus_dirent *ent,
@@ -79,12 +56,7 @@ struct proc_dir_entry *nubus_proc_add_rsrc_dir(struct proc_dir_entry *procdir,
 	return proc_mkdir_data(name, 0555, procdir, (void *)lanes);
 }
 
-/* The PDE private data for a file under /proc/bus/nubus/x/ is a pointer to
- * an instance of the following structure, which gives the location and size
- * of the resource data in the slot ROM. For slot resources which hold only a
- * small integer, this integer value is stored directly and size is set to 0.
- * A NULL private data pointer indicates an unrecognized resource.
- */
+ 
 
 struct nubus_proc_pde_data {
 	unsigned char *res_ptr;
@@ -186,9 +158,7 @@ void nubus_proc_add_rsrc(struct proc_dir_entry *procdir,
 			 nubus_proc_alloc_pde_data(data, 0));
 }
 
-/*
- * /proc/nubus stuff
- */
+ 
 
 void __init nubus_proc_init(void)
 {

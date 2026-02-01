@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2017-2019 NXP */
+
+ 
 
 #include <linux/module.h>
 #include "enetc.h"
 
 #define ENETC_DRV_NAME_STR "ENETC VF driver"
 
-/* Messaging */
+ 
 static void enetc_msg_vsi_write_msg(struct enetc_hw *hw,
 				    struct enetc_msg_swbd *msg)
 {
@@ -35,7 +35,7 @@ static int enetc_msg_vsi_send(struct enetc_si *si, struct enetc_msg_swbd *msg)
 	if (!timeout)
 		return -ETIMEDOUT;
 
-	/* check for message delivery error */
+	 
 	if (vsimsgsr & ENETC_VSIMSGSR_MS) {
 		dev_err(&si->pdev->dev, "VSI command execute error: %d\n",
 			ENETC_SIMSGSR_GET_MC(vsimsgsr));
@@ -66,7 +66,7 @@ static int enetc_msg_vsi_set_primary_mac_addr(struct enetc_ndev_priv *priv,
 	cmd->header.id = ENETC_MSG_CMD_MNG_ADD;
 	memcpy(&cmd->mac, saddr, sizeof(struct sockaddr));
 
-	/* send the command and wait */
+	 
 	err = enetc_msg_vsi_send(priv->si, &msg);
 
 	dma_free_coherent(priv->dev, msg.size, msg.vaddr, msg.dma);
@@ -104,7 +104,7 @@ static int enetc_vf_setup_tc(struct net_device *ndev, enum tc_setup_type type,
 	}
 }
 
-/* Probing/ Init */
+ 
 static const struct net_device_ops enetc_ndev_ops = {
 	.ndo_open		= enetc_open,
 	.ndo_stop		= enetc_close,
@@ -147,7 +147,7 @@ static void enetc_vf_netdev_setup(struct enetc_si *si, struct net_device *ndev,
 	if (si->num_rss)
 		ndev->hw_features |= NETIF_F_RXHASH;
 
-	/* pick up primary MAC address from SI */
+	 
 	enetc_load_primary_mac_addr(&si->hw, ndev);
 }
 
@@ -247,7 +247,7 @@ static void enetc_vf_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id enetc_vf_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_FREESCALE, ENETC_DEV_ID_VF) },
-	{ 0, } /* End of table. */
+	{ 0, }  
 };
 MODULE_DEVICE_TABLE(pci, enetc_vf_id_table);
 

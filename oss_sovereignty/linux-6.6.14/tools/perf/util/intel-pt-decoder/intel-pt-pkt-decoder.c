@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * intel_pt_pkt_decoder.c: Intel Processor Trace support
- * Copyright (c) 2013-2014, Intel Corporation.
- */
+
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -210,7 +207,7 @@ static int intel_pt_get_3byte(const unsigned char *buf, size_t len,
 		return INTEL_PT_NEED_MORE_BYTES;
 
 	switch (buf[2]) {
-	case 0x88: /* MNT */
+	case 0x88:  
 		return intel_pt_get_mnt(buf, len, packet);
 	default:
 		return INTEL_PT_BAD_PACKET;
@@ -364,45 +361,45 @@ static int intel_pt_get_ext(const unsigned char *buf, size_t len,
 		return intel_pt_get_ptwrite(buf, len, packet);
 
 	switch (buf[1]) {
-	case 0xa3: /* Long TNT */
+	case 0xa3:  
 		return intel_pt_get_long_tnt(buf, len, packet);
-	case 0x43: /* PIP */
+	case 0x43:  
 		return intel_pt_get_pip(buf, len, packet);
-	case 0x83: /* TraceStop */
+	case 0x83:  
 		return intel_pt_get_tracestop(packet);
-	case 0x03: /* CBR */
+	case 0x03:  
 		return intel_pt_get_cbr(buf, len, packet);
-	case 0xc8: /* VMCS */
+	case 0xc8:  
 		return intel_pt_get_vmcs(buf, len, packet);
-	case 0xf3: /* OVF */
+	case 0xf3:  
 		return intel_pt_get_ovf(packet);
-	case 0x82: /* PSB */
+	case 0x82:  
 		return intel_pt_get_psb(buf, len, packet);
-	case 0x23: /* PSBEND */
+	case 0x23:  
 		return intel_pt_get_psbend(packet);
-	case 0x73: /* TMA */
+	case 0x73:  
 		return intel_pt_get_tma(buf, len, packet);
-	case 0xC3: /* 3-byte header */
+	case 0xC3:  
 		return intel_pt_get_3byte(buf, len, packet);
-	case 0x62: /* EXSTOP no IP */
+	case 0x62:  
 		return intel_pt_get_exstop(packet);
-	case 0xE2: /* EXSTOP with IP */
+	case 0xE2:  
 		return intel_pt_get_exstop_ip(packet);
-	case 0xC2: /* MWAIT */
+	case 0xC2:  
 		return intel_pt_get_mwait(buf, len, packet);
-	case 0x22: /* PWRE */
+	case 0x22:  
 		return intel_pt_get_pwre(buf, len, packet);
-	case 0xA2: /* PWRX */
+	case 0xA2:  
 		return intel_pt_get_pwrx(buf, len, packet);
-	case 0x63: /* BBP */
+	case 0x63:  
 		return intel_pt_get_bbp(buf, len, packet);
-	case 0x33: /* BEP no IP */
+	case 0x33:  
 		return intel_pt_get_bep(len, packet);
-	case 0xb3: /* BEP with IP */
+	case 0xb3:  
 		return intel_pt_get_bep_ip(len, packet);
-	case 0x13: /* CFE */
+	case 0x13:  
 		return intel_pt_get_cfe(buf, len, packet);
-	case 0x53: /* EVD */
+	case 0x53:  
 		return intel_pt_get_evd(buf, len, packet);
 	default:
 		return INTEL_PT_BAD_PACKET;

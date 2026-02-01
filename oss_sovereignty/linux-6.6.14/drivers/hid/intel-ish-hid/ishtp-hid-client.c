@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ISHTP client driver for HID (ISH)
- *
- * Copyright (c) 2014-2016, Intel Corporation.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/hid.h>
@@ -11,7 +7,7 @@
 #include <linux/sched.h>
 #include "ishtp-hid.h"
 
-/* ISH Transport protocol (ISHTP in short) GUID */
+ 
 static const struct ishtp_device_id hid_ishtp_id_table[] = {
 	{ .guid = GUID_INIT(0x33AECD58, 0xB679, 0x4E54,
 		  0x9B, 0xD9, 0xA0, 0x4D, 0x34, 0xF0, 0xC2, 0x26), },
@@ -19,21 +15,13 @@ static const struct ishtp_device_id hid_ishtp_id_table[] = {
 };
 MODULE_DEVICE_TABLE(ishtp, hid_ishtp_id_table);
 
-/* Rx ring buffer pool size */
+ 
 #define HID_CL_RX_RING_SIZE	32
 #define HID_CL_TX_RING_SIZE	16
 
 #define cl_data_to_dev(client_data) ishtp_device(client_data->cl_device)
 
-/**
- * report_bad_packet() - Report bad packets
- * @hid_ishtp_cl:	Client instance to get stats
- * @recv_buf:		Raw received host interface message
- * @cur_pos:		Current position index in payload
- * @payload_len:	Length of payload expected
- *
- * Dumps error in case bad packet is received
- */
+ 
 static void report_bad_packet(struct ishtp_cl *hid_ishtp_cl, void *recv_buf,
 			      size_t cur_pos,  size_t payload_len)
 {
@@ -54,15 +42,7 @@ static void report_bad_packet(struct ishtp_cl *hid_ishtp_cl, void *recv_buf,
 		recv_msg->hdr.command & ~CMD_MASK);
 }
 
-/**
- * process_recv() - Received and parse incoming packet
- * @hid_ishtp_cl:	Client instance to get stats
- * @recv_buf:		Raw received host interface message
- * @data_len:		length of the message
- *
- * Parse the incoming packet. If it is a response packet then it will update
- * per instance flags and wake up the caller waiting to for the response.
- */
+ 
 static void process_recv(struct ishtp_cl *hid_ishtp_cl, void *recv_buf,
 			 size_t data_len)
 {
@@ -98,7 +78,7 @@ static void process_recv(struct ishtp_cl *hid_ishtp_cl, void *recv_buf,
 		recv_msg = (struct hostif_msg *)(recv_buf + cur_pos);
 		payload_len = recv_msg->hdr.size;
 
-		/* Sanity checks */
+		 
 		if (cur_pos + payload_len + sizeof(struct hostif_msg) >
 				total_len) {
 			++client_data->bad_recv_cnt;
@@ -219,7 +199,7 @@ static void process_recv(struct ishtp_cl *hid_ishtp_cl, void *recv_buf,
 		case HOSTIF_GET_INPUT_REPORT:
 			report_type = HID_INPUT_REPORT;
 do_get_report:
-			/* Get index of device that matches this id */
+			 
 			for (i = 0; i < client_data->num_hid_devices; ++i) {
 				if (recv_msg->hdr.device_id ==
 					  client_data->hid_devices[i].dev_id) {
@@ -251,7 +231,7 @@ do_get_report:
 			break;
 
 		case HOSTIF_SET_FEATURE_REPORT:
-			/* Get index of device that matches this id */
+			 
 			for (i = 0; i < client_data->num_hid_devices; ++i) {
 				if (recv_msg->hdr.device_id ==
 					client_data->hid_devices[i].dev_id)
@@ -326,14 +306,7 @@ do_get_report:
 	} while (cur_pos < total_len);
 }
 
-/**
- * ish_cl_event_cb() - bus driver callback for incoming message/packet
- * @device:	Pointer to the ishtp client device for which this message
- *		is targeted
- *
- * Remove the packet from the list and process the message by calling
- * process_recv
- */
+ 
 static void ish_cl_event_cb(struct ishtp_cl_device *device)
 {
 	struct ishtp_cl	*hid_ishtp_cl = ishtp_get_drvdata(device);
@@ -349,23 +322,14 @@ static void ish_cl_event_cb(struct ishtp_cl_device *device)
 
 		r_length = rb_in_proc->buf_idx;
 
-		/* decide what to do with received data */
+		 
 		process_recv(hid_ishtp_cl, rb_in_proc->buffer.data, r_length);
 
 		ishtp_cl_io_rb_recycle(rb_in_proc);
 	}
 }
 
-/**
- * hid_ishtp_set_feature() - send request to ISH FW to set a feature request
- * @hid:	hid device instance for this request
- * @buf:	feature buffer
- * @len:	Length of feature buffer
- * @report_id:	Report id for the feature set request
- *
- * This is called from hid core .request() callback. This function doesn't wait
- * for response.
- */
+ 
 void hid_ishtp_set_feature(struct hid_device *hid, char *buf, unsigned int len,
 			   int report_id)
 {
@@ -403,15 +367,7 @@ void hid_ishtp_set_feature(struct hid_device *hid, char *buf, unsigned int len,
 				__func__, hid);
 }
 
-/**
- * hid_ishtp_get_report() - request to get feature/input report
- * @hid:	hid device instance for this request
- * @report_id:	Report id for the get request
- * @report_type:	Report type for the this request
- *
- * This is called from hid core .request() callback. This function will send
- * request to FW and return without waiting for response.
- */
+ 
 void hid_ishtp_get_report(struct hid_device *hid, int report_id,
 			  int report_type)
 {
@@ -450,15 +406,7 @@ void hid_ishtp_get_report(struct hid_device *hid, int report_id,
 				__func__, hid);
 }
 
-/**
- * ishtp_hid_link_ready_wait() - Wait for link ready
- * @client_data:	client data instance
- *
- * If the transport link started suspend process, then wait, till either
- * resumed or timeout
- *
- * Return: 0 on success, non zero on error
- */
+ 
 int ishtp_hid_link_ready_wait(struct ishtp_cl_data *client_data)
 {
 	int rc;
@@ -480,14 +428,7 @@ int ishtp_hid_link_ready_wait(struct ishtp_cl_data *client_data)
 	return 0;
 }
 
-/**
- * ishtp_enum_enum_devices() - Enumerate hid devices
- * @hid_ishtp_cl:	client instance
- *
- * Helper function to send request to firmware to enumerate HID devices
- *
- * Return: 0 on success, non zero on error
- */
+ 
 static int ishtp_enum_enum_devices(struct ishtp_cl *hid_ishtp_cl)
 {
 	struct hostif_msg msg;
@@ -495,7 +436,7 @@ static int ishtp_enum_enum_devices(struct ishtp_cl *hid_ishtp_cl)
 	int retry_count;
 	int rv;
 
-	/* Send HOSTIF_DM_ENUM_DEVICES */
+	 
 	memset(&msg, 0, sizeof(struct hostif_msg));
 	msg.hdr.command = HOSTIF_DM_ENUM_DEVICES;
 	rv = ishtp_cl_send(hid_ishtp_cl, (unsigned char *)&msg,
@@ -511,7 +452,7 @@ static int ishtp_enum_enum_devices(struct ishtp_cl *hid_ishtp_cl)
 					 3 * HZ);
 		++retry_count;
 		if (!client_data->enum_devices_done)
-			/* Send HOSTIF_DM_ENUM_DEVICES */
+			 
 			rv = ishtp_cl_send(hid_ishtp_cl,
 					   (unsigned char *) &msg,
 					   sizeof(struct hostif_msg));
@@ -535,22 +476,14 @@ static int ishtp_enum_enum_devices(struct ishtp_cl *hid_ishtp_cl)
 	return	0;
 }
 
-/**
- * ishtp_get_hid_descriptor() - Get hid descriptor
- * @hid_ishtp_cl:	client instance
- * @index:		Index into the hid_descr array
- *
- * Helper function to send request to firmware get HID descriptor of a device
- *
- * Return: 0 on success, non zero on error
- */
+ 
 static int ishtp_get_hid_descriptor(struct ishtp_cl *hid_ishtp_cl, int index)
 {
 	struct hostif_msg msg;
 	struct ishtp_cl_data *client_data = ishtp_get_client_data(hid_ishtp_cl);
 	int rv;
 
-	/* Get HID descriptor */
+	 
 	client_data->hid_descr_done = false;
 	memset(&msg, 0, sizeof(struct hostif_msg));
 	msg.hdr.command = HOSTIF_GET_HID_DESCRIPTOR;
@@ -580,16 +513,7 @@ static int ishtp_get_hid_descriptor(struct ishtp_cl *hid_ishtp_cl, int index)
 	return 0;
 }
 
-/**
- * ishtp_get_report_descriptor() - Get report descriptor
- * @hid_ishtp_cl:	client instance
- * @index:		Index into the hid_descr array
- *
- * Helper function to send request to firmware get HID report descriptor of
- * a device
- *
- * Return: 0 on success, non zero on error
- */
+ 
 static int ishtp_get_report_descriptor(struct ishtp_cl *hid_ishtp_cl,
 				       int index)
 {
@@ -597,7 +521,7 @@ static int ishtp_get_report_descriptor(struct ishtp_cl *hid_ishtp_cl,
 	struct ishtp_cl_data *client_data = ishtp_get_client_data(hid_ishtp_cl);
 	int rv;
 
-	/* Get report descriptor */
+	 
 	client_data->report_descr_done = false;
 	memset(&msg, 0, sizeof(struct hostif_msg));
 	msg.hdr.command = HOSTIF_GET_REPORT_DESCRIPTOR;
@@ -625,20 +549,7 @@ static int ishtp_get_report_descriptor(struct ishtp_cl *hid_ishtp_cl,
 	return 0;
 }
 
-/**
- * hid_ishtp_cl_init() - Init function for ISHTP client
- * @hid_ishtp_cl:	ISHTP client instance
- * @reset:		true if called for init after reset
- *
- * This function complete the initializtion of the client. The summary of
- * processing:
- * - Send request to enumerate the hid clients
- *	Get the HID descriptor for each enumearated device
- *	Get report description of each device
- *	Register each device wik hid core by calling ishtp_hid_probe
- *
- * Return: 0 on success, non zero on error
- */
+ 
 static int hid_ishtp_cl_init(struct ishtp_cl *hid_ishtp_cl, int reset)
 {
 	struct ishtp_device *dev;
@@ -661,7 +572,7 @@ static int hid_ishtp_cl_init(struct ishtp_cl *hid_ishtp_cl, int reset)
 
 	dev = ishtp_get_ishtp_device(hid_ishtp_cl);
 
-	/* Connect to FW client */
+	 
 	ishtp_set_tx_ring_size(hid_ishtp_cl, HID_CL_TX_RING_SIZE);
 	ishtp_set_rx_ring_size(hid_ishtp_cl, HID_CL_RX_RING_SIZE);
 
@@ -684,7 +595,7 @@ static int hid_ishtp_cl_init(struct ishtp_cl *hid_ishtp_cl, int reset)
 
 	hid_ishtp_trace(client_data,  "%s client connected\n", __func__);
 
-	/* Register read callback */
+	 
 	ishtp_register_event_cb(client_data->cl_device, ish_cl_event_cb);
 
 	rv = ishtp_enum_enum_devices(hid_ishtp_cl);
@@ -714,7 +625,7 @@ static int hid_ishtp_cl_init(struct ishtp_cl *hid_ishtp_cl, int reset)
 				goto err_cl_disconnect;
 			}
 		}
-	} /* for() on all hid devices */
+	}  
 
 	client_data->init_done = 1;
 	client_data->suspended = false;
@@ -730,18 +641,13 @@ err_cl_unlink:
 	return rv;
 }
 
-/**
- * hid_ishtp_cl_deinit() - Deinit function for ISHTP client
- * @hid_ishtp_cl:	ISHTP client instance
- *
- * Unlink and free hid client
- */
+ 
 static void hid_ishtp_cl_deinit(struct ishtp_cl *hid_ishtp_cl)
 {
 	ishtp_cl_unlink(hid_ishtp_cl);
 	ishtp_cl_flush_queues(hid_ishtp_cl);
 
-	/* disband and free all Tx and Rx client-level rings */
+	 
 	ishtp_cl_free(hid_ishtp_cl);
 }
 
@@ -800,14 +706,7 @@ static void hid_ishtp_cl_resume_handler(struct work_struct *work)
 
 ishtp_print_log ishtp_hid_print_trace;
 
-/**
- * hid_ishtp_cl_probe() - ISHTP client driver probe
- * @cl_device:		ISHTP client device instance
- *
- * This function gets called on device create on ISHTP bus
- *
- * Return: 0 on success, non zero on error
- */
+ 
 static int hid_ishtp_cl_probe(struct ishtp_cl_device *cl_device)
 {
 	struct ishtp_cl *hid_ishtp_cl;
@@ -851,14 +750,7 @@ static int hid_ishtp_cl_probe(struct ishtp_cl_device *cl_device)
 	return 0;
 }
 
-/**
- * hid_ishtp_cl_remove() - ISHTP client driver remove
- * @cl_device:		ISHTP client device instance
- *
- * This function gets called on device remove on ISHTP bus
- *
- * Return: 0
- */
+ 
 static void hid_ishtp_cl_remove(struct ishtp_cl_device *cl_device)
 {
 	struct ishtp_cl *hid_ishtp_cl = ishtp_get_drvdata(cl_device);
@@ -879,14 +771,7 @@ static void hid_ishtp_cl_remove(struct ishtp_cl_device *cl_device)
 	client_data->num_hid_devices = 0;
 }
 
-/**
- * hid_ishtp_cl_reset() - ISHTP client driver reset
- * @cl_device:		ISHTP client device instance
- *
- * This function gets called on device reset on ISHTP bus
- *
- * Return: 0
- */
+ 
 static int hid_ishtp_cl_reset(struct ishtp_cl_device *cl_device)
 {
 	struct ishtp_cl *hid_ishtp_cl = ishtp_get_drvdata(cl_device);
@@ -900,14 +785,7 @@ static int hid_ishtp_cl_reset(struct ishtp_cl_device *cl_device)
 	return 0;
 }
 
-/**
- * hid_ishtp_cl_suspend() - ISHTP client driver suspend
- * @device:	device instance
- *
- * This function gets called on system suspend
- *
- * Return: 0
- */
+ 
 static int hid_ishtp_cl_suspend(struct device *device)
 {
 	struct ishtp_cl_device *cl_device = ishtp_dev_to_cl_device(device);
@@ -921,14 +799,7 @@ static int hid_ishtp_cl_suspend(struct device *device)
 	return 0;
 }
 
-/**
- * hid_ishtp_cl_resume() - ISHTP client driver resume
- * @device:	device instance
- *
- * This function gets called on system resume
- *
- * Return: 0
- */
+ 
 static int hid_ishtp_cl_resume(struct device *device)
 {
 	struct ishtp_cl_device *cl_device = ishtp_dev_to_cl_device(device);
@@ -959,7 +830,7 @@ static int __init ish_hid_init(void)
 {
 	int	rv;
 
-	/* Register ISHTP client device driver with ISHTP Bus */
+	 
 	rv = ishtp_cl_driver_register(&hid_ishtp_cl_driver, THIS_MODULE);
 
 	return rv;
@@ -975,12 +846,9 @@ late_initcall(ish_hid_init);
 module_exit(ish_hid_exit);
 
 MODULE_DESCRIPTION("ISH ISHTP HID client driver");
-/* Primary author */
+ 
 MODULE_AUTHOR("Daniel Drubin <daniel.drubin@intel.com>");
-/*
- * Several modification for multi instance support
- * suspend/resume and clean up
- */
+ 
 MODULE_AUTHOR("Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>");
 
 MODULE_LICENSE("GPL");

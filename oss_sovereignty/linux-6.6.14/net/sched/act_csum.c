@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Checksum updating actions
- *
- * Copyright (c) 2010 Gregoire Baron <baronchon@n7mm.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/init.h>
@@ -77,7 +73,7 @@ static int tcf_csum_init(struct net *net, struct nlattr *nla,
 		}
 		ret = ACT_P_CREATED;
 	} else if (err > 0) {
-		if (bind)/* dont override defaults */
+		if (bind) 
 			return 0;
 		if (!(flags & TCA_ACT_FLAGS_REPLACE)) {
 			tcf_idr_release(*a, bind);
@@ -120,16 +116,7 @@ release_idr:
 	return err;
 }
 
-/**
- * tcf_csum_skb_nextlayer - Get next layer pointer
- * @skb: sk_buff to use
- * @ihl: previous summed headers length
- * @ipl: complete packet length
- * @jhl: next header length
- *
- * Check the expected next layer availability in the specified sk_buff.
- * Return the next layer pointer if pass, NULL otherwise.
- */
+ 
 static void *tcf_csum_skb_nextlayer(struct sk_buff *skb,
 				    unsigned int ihl, unsigned int ipl,
 				    unsigned int jhl)
@@ -261,12 +248,7 @@ static int tcf_csum_ipv4_udp(struct sk_buff *skb, unsigned int ihl,
 	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
 		return 1;
 
-	/*
-	 * Support both UDP and UDPLITE checksum algorithms, Don't use
-	 * udph->len to get the real length without any protocol check,
-	 * UDPLITE uses udph->len for another thing,
-	 * Use iph->tot_len, or just ipl.
-	 */
+	 
 
 	udph = tcf_csum_skb_nextlayer(skb, ihl, ipl, sizeof(*udph));
 	if (udph == NULL)
@@ -317,12 +299,7 @@ static int tcf_csum_ipv6_udp(struct sk_buff *skb, unsigned int ihl,
 	if (skb_is_gso(skb) && skb_shinfo(skb)->gso_type & SKB_GSO_UDP)
 		return 1;
 
-	/*
-	 * Support both UDP and UDPLITE checksum algorithms, Don't use
-	 * udph->len to get the real length without any protocol check,
-	 * UDPLITE uses udph->len for another thing,
-	 * Use ip6h->payload_len + sizeof(*ip6h) ... , or just ipl.
-	 */
+	 
 
 	udph = tcf_csum_skb_nextlayer(skb, ihl, ipl, sizeof(*udph));
 	if (udph == NULL)
@@ -461,14 +438,14 @@ static int tcf_csum_ipv6_hopopts(struct ipv6_opt_hdr *ip6xh, unsigned int ixhl,
 		case IPV6_TLV_JUMBO:
 			optlen = xh[off + 1] + 2;
 			if (optlen != 6 || len < 6 || (off & 3) != 2)
-				/* wrong jumbo option length/alignment */
+				 
 				return 0;
 			*pl = ntohl(*(__be32 *)(xh + off + 2));
 			goto done;
 		default:
 			optlen = xh[off + 1] + 2;
 			if (optlen > len)
-				/* ignore obscure options */
+				 
 				goto done;
 			break;
 		}
@@ -614,7 +591,7 @@ again:
 	}
 
 out:
-	/* Restore the skb for the pulled VLAN tags */
+	 
 	while (vlan_hdr_count--) {
 		skb_push(skb, VLAN_HLEN);
 		skb_reset_network_header(skb);

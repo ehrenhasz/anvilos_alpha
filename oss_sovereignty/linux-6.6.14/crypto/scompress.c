@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Synchronous Compression operations
- *
- * Copyright 2015 LG Electronics Inc.
- * Copyright (c) 2016, Intel Corporation
- * Author: Giovanni Cabiddu <giovanni.cabiddu@intel.com>
- */
+
+ 
 
 #include <crypto/internal/acompress.h>
 #include <crypto/internal/scompress.h>

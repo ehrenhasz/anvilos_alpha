@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Calxeda, Inc.
- *
- * This driver provides the clk notifier callbacks that are used when
- * the cpufreq-dt driver changes to frequency to alert the highbank
- * EnergyCore Management Engine (ECME) about the need to change
- * voltage. The ECME interfaces with the actual voltage regulators.
- */
+
+ 
 
 #define pr_fmt(fmt)	KBUILD_MODNAME ": " fmt
 
@@ -92,7 +85,7 @@ static int __init hb_cpufreq_driver_init(void)
 		goto out_put_node;
 	}
 
-	/* Instantiate cpufreq-dt */
+	 
 	platform_device_register_full(&devinfo);
 
 out_put_node:

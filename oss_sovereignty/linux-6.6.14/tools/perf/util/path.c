@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "path.h"
 #include "cache.h"
 #include <linux/kernel.h>
@@ -12,7 +12,7 @@
 
 static char *cleanup_path(char *path)
 {
-	/* Clean it up */
+	 
 	if (!memcmp(path, "./", 2)) {
 		path += 2;
 		while (*path == '/')
@@ -55,7 +55,7 @@ bool is_regular_file(const char *file)
 	return S_ISREG(st.st_mode);
 }
 
-/* Helper function for filesystems that return a dent->d_type DT_UNKNOWN */
+ 
 bool is_directory(const char *base_path, const struct dirent *dent)
 {
 	char path[PATH_MAX];

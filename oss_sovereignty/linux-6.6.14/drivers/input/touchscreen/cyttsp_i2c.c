@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cyttsp_i2c.c
- * Cypress TrueTouch(TM) Standard Product (TTSP) I2C touchscreen driver.
- * For use with Cypress Txx3xx parts.
- * Supported parts include:
- * CY8CTST341
- * CY8CTMA340
- *
- * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
- * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
- *
- * Contact Cypress Semiconductor at www.cypress.com <ttdrivers@cypress.com>
- */
+
+ 
 
 #include "cyttsp_core.h"
 
@@ -56,7 +44,7 @@ MODULE_DEVICE_TABLE(i2c, cyttsp_i2c_id);
 static const struct of_device_id cyttsp_of_i2c_match[] = {
 	{ .compatible = "cypress,cy8ctma340", },
 	{ .compatible = "cypress,cy8ctst341", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cyttsp_of_i2c_match);
 

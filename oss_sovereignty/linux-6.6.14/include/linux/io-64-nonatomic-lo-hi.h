@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_IO_64_NONATOMIC_LO_HI_H_
 #define _LINUX_IO_64_NONATOMIC_LO_HI_H_
 
@@ -119,4 +119,4 @@ static inline void iowrite64be_lo_hi(u64 val, void __iomem *addr)
 #define iowrite64be iowrite64be_lo_hi
 #endif
 
-#endif	/* _LINUX_IO_64_NONATOMIC_LO_HI_H_ */
+#endif	 

@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2019 Intel Corporation. All rights reserved.
-//
-// Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <trace/events/sof.h>
@@ -56,16 +56,16 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
 
 	trace_sof_widget_free(swidget);
 
-	/* only free when use_count is 0 */
+	 
 	if (--swidget->use_count)
 		return 0;
 
 	pipe_widget = swidget->spipe->pipe_widget;
 
-	/* reset route setup status for all routes that contain this widget */
+	 
 	sof_reset_route_setup_status(sdev, swidget);
 
-	/* free DAI config and continue to free widget even if it fails */
+	 
 	if (WIDGET_IS_DAI(swidget->id)) {
 		struct snd_sof_dai_config_data data;
 		unsigned int flags = SOF_DAI_CONFIG_FLAGS_HW_FREE;
@@ -80,17 +80,14 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
 		}
 	}
 
-	/* continue to disable core even if IPC fails */
+	 
 	if (tplg_ops && tplg_ops->widget_free) {
 		ret = tplg_ops->widget_free(sdev, swidget);
 		if (ret < 0 && !err)
 			err = ret;
 	}
 
-	/*
-	 * decrement ref count for cores associated with all modules in the pipeline and clear
-	 * the complete flag
-	 */
+	 
 	if (swidget->id == snd_soc_dapm_scheduler) {
 		int i;
 
@@ -106,10 +103,7 @@ static int sof_widget_free_unlocked(struct snd_sof_dev *sdev,
 		swidget->spipe->complete = 0;
 	}
 
-	/*
-	 * free the scheduler widget (same as pipe_widget) associated with the current swidget.
-	 * skip for static pipelines
-	 */
+	 
 	if (swidget->dynamic_pipeline_widget && swidget->id != snd_soc_dapm_scheduler) {
 		ret = sof_widget_free_unlocked(sdev, pipe_widget);
 		if (ret < 0 && !err)
@@ -143,23 +137,17 @@ static int sof_widget_setup_unlocked(struct snd_sof_dev *sdev,
 	int ret;
 	int i;
 
-	/* skip if there is no private data */
+	 
 	if (!swidget->private)
 		return 0;
 
 	trace_sof_widget_setup(swidget);
 
-	/* widget already set up */
+	 
 	if (++swidget->use_count > 1)
 		return 0;
 
-	/*
-	 * The scheduler widget for a pipeline is not part of the connected DAPM
-	 * widget list and it needs to be set up before the widgets in the pipeline
-	 * are set up. The use_count for the scheduler widget is incremented for every
-	 * widget in a given pipeline to ensure that it is freed only after the last
-	 * widget in the pipeline is freed. Skip setting up scheduler widget for static pipelines.
-	 */
+	 
 	if (swidget->dynamic_pipeline_widget && swidget->id != snd_soc_dapm_scheduler) {
 		if (!swidget->spipe || !swidget->spipe->pipe_widget) {
 			dev_err(sdev->dev, "No pipeline set for %s\n", swidget->widget->name);
@@ -172,7 +160,7 @@ static int sof_widget_setup_unlocked(struct snd_sof_dev *sdev,
 			goto use_count_dec;
 	}
 
-	/* update ref count for cores associated with all modules in the pipeline */
+	 
 	if (swidget->id == snd_soc_dapm_scheduler) {
 		for_each_set_bit(i, &spipe->core_mask, sdev->num_cores) {
 			ret = snd_sof_dsp_core_get(sdev, i);
@@ -184,21 +172,18 @@ static int sof_widget_setup_unlocked(struct snd_sof_dev *sdev,
 		}
 	}
 
-	/* setup widget in the DSP */
+	 
 	if (tplg_ops && tplg_ops->widget_setup) {
 		ret = tplg_ops->widget_setup(sdev, swidget);
 		if (ret < 0)
 			goto pipe_widget_free;
 	}
 
-	/* send config for DAI components */
+	 
 	if (WIDGET_IS_DAI(swidget->id)) {
 		unsigned int flags = SOF_DAI_CONFIG_FLAGS_HW_PARAMS;
 
-		/*
-		 * The config flags saved during BE DAI hw_params will be used for IPC3. IPC4 does
-		 * not use the flags argument.
-		 */
+		 
 		if (tplg_ops && tplg_ops->dai_config) {
 			ret = tplg_ops->dai_config(sdev, swidget, flags, NULL);
 			if (ret < 0)
@@ -206,7 +191,7 @@ static int sof_widget_setup_unlocked(struct snd_sof_dev *sdev,
 		}
 	}
 
-	/* restore kcontrols for widget */
+	 
 	if (tplg_ops && tplg_ops->control && tplg_ops->control->widget_kcontrol_setup) {
 		ret = tplg_ops->control->widget_kcontrol_setup(sdev, swidget);
 		if (ret < 0)
@@ -218,7 +203,7 @@ static int sof_widget_setup_unlocked(struct snd_sof_dev *sdev,
 	return 0;
 
 widget_free:
-	/* widget use_count will be decremented by sof_widget_free() */
+	 
 	sof_widget_free_unlocked(sdev, swidget);
 	use_count_decremented = true;
 pipe_widget_free:
@@ -227,7 +212,7 @@ pipe_widget_free:
 	} else {
 		int j;
 
-		/* decrement ref count for all cores that were updated previously */
+		 
 		for_each_set_bit(j, &spipe->core_mask, sdev->num_cores) {
 			if (j >= i)
 				break;
@@ -262,12 +247,12 @@ int sof_route_setup(struct snd_sof_dev *sdev, struct snd_soc_dapm_widget *wsourc
 	struct snd_sof_route *sroute;
 	bool route_found = false;
 
-	/* ignore routes involving virtual widgets in topology */
+	 
 	if (is_virtual_widget(sdev, src_widget->widget, __func__) ||
 	    is_virtual_widget(sdev, sink_widget->widget, __func__))
 		return 0;
 
-	/* find route matching source and sink widgets */
+	 
 	list_for_each_entry(sroute, &sdev->route_list, list)
 		if (sroute->src_widget == src_widget && sroute->sink_widget == sink_widget) {
 			route_found = true;
@@ -280,7 +265,7 @@ int sof_route_setup(struct snd_sof_dev *sdev, struct snd_soc_dapm_widget *wsourc
 		return -EINVAL;
 	}
 
-	/* nothing to do if route is already set up */
+	 
 	if (sroute->setup)
 		return 0;
 
@@ -305,12 +290,7 @@ static int sof_setup_pipeline_connections(struct snd_sof_dev *sdev,
 	int ret = 0;
 	int i;
 
-	/*
-	 * Set up connections between widgets in the sink/source paths based on direction.
-	 * Some non-SOF widgets exist in topology either for compatibility or for the
-	 * purpose of connecting a pipeline from a host to a DAI in order to receive the DAPM
-	 * events. But they are not handled by the firmware. So ignore them.
-	 */
+	 
 	if (dir == SNDRV_PCM_STREAM_PLAYBACK) {
 		for_each_dapm_widgets(list, i, widget) {
 			if (!widget->dobj.private)
@@ -345,12 +325,7 @@ static int sof_setup_pipeline_connections(struct snd_sof_dev *sdev,
 		}
 	}
 
-	/*
-	 * The above loop handles connections between widgets that belong to the DAPM widget list.
-	 * This is not sufficient to handle loopback cases between pipelines configured with
-	 * different directions, e.g. a sidetone or an amplifier feedback connected to a speaker
-	 * protection module.
-	 */
+	 
 	list_for_each_entry(sroute, &sdev->route_list, list) {
 		bool src_widget_in_dapm_list, sink_widget_in_dapm_list;
 		struct snd_sof_widget *swidget;
@@ -361,20 +336,11 @@ static int sof_setup_pipeline_connections(struct snd_sof_dev *sdev,
 		src_widget_in_dapm_list = widget_in_list(list, sroute->src_widget->widget);
 		sink_widget_in_dapm_list = widget_in_list(list, sroute->sink_widget->widget);
 
-		/*
-		 * if both source and sink are in the DAPM list, the route must already have been
-		 * set up above. And if neither are in the DAPM list, the route shouldn't be
-		 * handled now.
-		 */
+		 
 		if (src_widget_in_dapm_list == sink_widget_in_dapm_list)
 			continue;
 
-		/*
-		 * At this point either the source widget or the sink widget is in the DAPM list
-		 * with a route that might need to be set up. Check the use_count of the widget
-		 * that is not in the DAPM list to confirm if it is in use currently before setting
-		 * up the route.
-		 */
+		 
 		if (src_widget_in_dapm_list)
 			swidget = sroute->sink_widget;
 		else
@@ -387,10 +353,7 @@ static int sof_setup_pipeline_connections(struct snd_sof_dev *sdev,
 		}
 
 		if (tplg_ops && tplg_ops->route_setup) {
-			/*
-			 * this route will get freed when either the source widget or the sink
-			 * widget is freed during hw_free
-			 */
+			 
 			ret = tplg_ops->route_setup(sdev, sroute);
 			if (!ret)
 				sroute->setup = true;
@@ -417,19 +380,19 @@ sof_unprepare_widgets_in_path(struct snd_sof_dev *sdev, struct snd_soc_dapm_widg
 	if (is_virtual_widget(sdev, widget, __func__))
 		return;
 
-	/* skip if the widget is in use or if it is already unprepared */
+	 
 	if (!swidget || !swidget->prepared || swidget->use_count > 0)
 		goto sink_unprepare;
 
 	widget_ops = tplg_ops ? tplg_ops->widget : NULL;
 	if (widget_ops && widget_ops[widget->id].ipc_unprepare)
-		/* unprepare the source widget */
+		 
 		widget_ops[widget->id].ipc_unprepare(swidget);
 
 	swidget->prepared = false;
 
 sink_unprepare:
-	/* unprepare all widgets in the sink paths */
+	 
 	snd_soc_dapm_widget_for_each_sink_path(widget, p) {
 		if (!widget_in_list(list, p->sink))
 			continue;
@@ -464,7 +427,7 @@ sof_prepare_widgets_in_path(struct snd_sof_dev *sdev, struct snd_soc_dapm_widget
 	if (!swidget || !widget_ops[widget->id].ipc_prepare || swidget->prepared)
 		goto sink_prepare;
 
-	/* prepare the source widget */
+	 
 	ret = widget_ops[widget->id].ipc_prepare(swidget, fe_params, platform_params,
 					     pipeline_params, dir);
 	if (ret < 0) {
@@ -475,7 +438,7 @@ sof_prepare_widgets_in_path(struct snd_sof_dev *sdev, struct snd_soc_dapm_widget
 	swidget->prepared = true;
 
 sink_prepare:
-	/* prepare all widgets in the sink paths */
+	 
 	snd_soc_dapm_widget_for_each_sink_path(widget, p) {
 		if (!widget_in_list(list, p->sink))
 			continue;
@@ -486,7 +449,7 @@ sink_prepare:
 							  list);
 			p->walking = false;
 			if (ret < 0) {
-				/* unprepare the source widget */
+				 
 				if (widget_ops[widget->id].ipc_unprepare &&
 				    swidget && swidget->prepared) {
 					widget_ops[widget->id].ipc_unprepare(swidget);
@@ -500,10 +463,7 @@ sink_prepare:
 	return 0;
 }
 
-/*
- * free all widgets in the sink path starting from the source widget
- * (DAI type for capture, AIF type for playback)
- */
+ 
 static int sof_free_widgets_in_path(struct snd_sof_dev *sdev, struct snd_soc_dapm_widget *widget,
 				    int dir, struct snd_sof_pcm *spcm)
 {
@@ -521,7 +481,7 @@ static int sof_free_widgets_in_path(struct snd_sof_dev *sdev, struct snd_soc_dap
 			ret = err;
 	}
 
-	/* free all widgets in the sink paths even in case of error to keep use counts balanced */
+	 
 	snd_soc_dapm_widget_for_each_sink_path(widget, p) {
 		if (!p->walking) {
 			if (!widget_in_list(list, p->sink))
@@ -539,11 +499,7 @@ static int sof_free_widgets_in_path(struct snd_sof_dev *sdev, struct snd_soc_dap
 	return ret;
 }
 
-/*
- * set up all widgets in the sink path starting from the source widget
- * (DAI type for capture, AIF type for playback).
- * The error path in this function ensures that all successfully set up widgets getting freed.
- */
+ 
 static int sof_set_up_widgets_in_path(struct snd_sof_dev *sdev, struct snd_soc_dapm_widget *widget,
 				      int dir, struct snd_sof_pcm *spcm)
 {
@@ -564,15 +520,11 @@ static int sof_set_up_widgets_in_path(struct snd_sof_dev *sdev, struct snd_soc_d
 		if (ret < 0)
 			return ret;
 
-		/* skip populating the pipe_widgets array if it is NULL */
+		 
 		if (!pipeline_list->pipelines)
 			goto sink_setup;
 
-		/*
-		 * Add the widget's pipe_widget to the list of pipelines to be triggered if not
-		 * already in the list. This will result in the pipelines getting added in the
-		 * order source to sink.
-		 */
+		 
 		for (i = 0; i < pipeline_list->count; i++) {
 			spipe = pipeline_list->pipelines[i];
 			if (spipe == swidget->spipe)
@@ -625,11 +577,11 @@ sof_walk_widgets_in_order(struct snd_sof_dev *sdev, struct snd_sof_pcm *spcm,
 		if (is_virtual_widget(sdev, widget, __func__))
 			continue;
 
-		/* starting widget for playback is AIF type */
+		 
 		if (dir == SNDRV_PCM_STREAM_PLAYBACK && widget->id != snd_soc_dapm_aif_in)
 			continue;
 
-		/* starting widget for capture is DAI type */
+		 
 		if (dir == SNDRV_PCM_STREAM_CAPTURE && widget->id != snd_soc_dapm_dai_out)
 			continue;
 
@@ -647,12 +599,7 @@ sof_walk_widgets_in_order(struct snd_sof_dev *sdev, struct snd_sof_pcm *spcm,
 			struct snd_pcm_hw_params pipeline_params;
 
 			str = "prepare";
-			/*
-			 * When walking the list of connected widgets, the pipeline_params for each
-			 * widget is modified by the source widget in the path. Use a local
-			 * copy of the runtime params as the pipeline_params so that the runtime
-			 * params does not get overwritten.
-			 */
+			 
 			memcpy(&pipeline_params, fe_params, sizeof(*fe_params));
 
 			ret = sof_prepare_widgets_in_path(sdev, widget, fe_params, platform_params,
@@ -685,20 +632,17 @@ int sof_widget_list_setup(struct snd_sof_dev *sdev, struct snd_sof_pcm *spcm,
 	struct snd_soc_dapm_widget *widget;
 	int i, ret;
 
-	/* nothing to set up */
+	 
 	if (!list)
 		return 0;
 
-	/*
-	 * Prepare widgets for set up. The prepare step is used to allocate memory, assign
-	 * instance ID and pick the widget configuration based on the runtime PCM params.
-	 */
+	 
 	ret = sof_walk_widgets_in_order(sdev, spcm, fe_params, platform_params,
 					dir, SOF_WIDGET_PREPARE);
 	if (ret < 0)
 		return ret;
 
-	/* Set up is used to send the IPC to the DSP to create the widget */
+	 
 	ret = sof_walk_widgets_in_order(sdev, spcm, fe_params, platform_params,
 					dir, SOF_WIDGET_SETUP);
 	if (ret < 0) {
@@ -707,15 +651,12 @@ int sof_widget_list_setup(struct snd_sof_dev *sdev, struct snd_sof_pcm *spcm,
 		return ret;
 	}
 
-	/*
-	 * error in setting pipeline connections will result in route status being reset for
-	 * routes that were successfully set up when the widgets are freed.
-	 */
+	 
 	ret = sof_setup_pipeline_connections(sdev, list, dir);
 	if (ret < 0)
 		goto widget_free;
 
-	/* complete pipelines */
+	 
 	for_each_dapm_widgets(list, i, widget) {
 		struct snd_sof_widget *swidget = widget->dobj.private;
 		struct snd_sof_widget *pipe_widget;
@@ -768,14 +709,14 @@ int sof_widget_list_free(struct snd_sof_dev *sdev, struct snd_sof_pcm *spcm, int
 	struct snd_soc_dapm_widget_list *list = spcm->stream[dir].list;
 	int ret;
 
-	/* nothing to free */
+	 
 	if (!list)
 		return 0;
 
-	/* send IPC to free widget in the DSP */
+	 
 	ret = sof_walk_widgets_in_order(sdev, spcm, NULL, NULL, dir, SOF_WIDGET_FREE);
 
-	/* unprepare the widget */
+	 
 	sof_walk_widgets_in_order(sdev, spcm, NULL, NULL, dir, SOF_WIDGET_UNPREPARE);
 
 	snd_soc_dapm_dai_free_widgets(&list);
@@ -786,10 +727,7 @@ int sof_widget_list_free(struct snd_sof_dev *sdev, struct snd_sof_pcm *spcm, int
 	return ret;
 }
 
-/*
- * helper to determine if there are only D0i3 compatible
- * streams active
- */
+ 
 bool snd_sof_dsp_only_d0i3_compatible_stream_active(struct snd_sof_dev *sdev)
 {
 	struct snd_pcm_substream *substream;
@@ -803,11 +741,7 @@ bool snd_sof_dsp_only_d0i3_compatible_stream_active(struct snd_sof_dev *sdev)
 			if (!substream || !substream->runtime)
 				continue;
 
-			/*
-			 * substream->runtime being not NULL indicates
-			 * that the stream is open. No need to check the
-			 * stream state.
-			 */
+			 
 			if (!spcm->stream[dir].d0i3_compatible)
 				return false;
 
@@ -839,11 +773,11 @@ int sof_pcm_stream_free(struct snd_sof_dev *sdev, struct snd_pcm_substream *subs
 	int ret;
 
 	if (spcm->prepared[substream->stream]) {
-		/* stop DMA first if needed */
+		 
 		if (pcm_ops && pcm_ops->platform_stop_during_hw_free)
 			snd_sof_pcm_platform_trigger(sdev, substream, SNDRV_PCM_TRIGGER_STOP);
 
-		/* Send PCM_FREE IPC to reset pipeline */
+		 
 		if (pcm_ops && pcm_ops->hw_free) {
 			ret = pcm_ops->hw_free(sdev->component, substream);
 			if (ret < 0)
@@ -853,12 +787,12 @@ int sof_pcm_stream_free(struct snd_sof_dev *sdev, struct snd_pcm_substream *subs
 		spcm->prepared[substream->stream] = false;
 	}
 
-	/* reset the DMA */
+	 
 	ret = snd_sof_pcm_platform_hw_free(sdev, substream);
 	if (ret < 0)
 		return ret;
 
-	/* free widget list */
+	 
 	if (free_widget_list) {
 		ret = sof_widget_list_free(sdev, spcm, dir);
 		if (ret < 0)
@@ -868,9 +802,7 @@ int sof_pcm_stream_free(struct snd_sof_dev *sdev, struct snd_pcm_substream *subs
 	return ret;
 }
 
-/*
- * Generic object lookup APIs.
- */
+ 
 
 struct snd_sof_pcm *snd_sof_find_spcm_name(struct snd_soc_component *scomp,
 					   const char *name)
@@ -879,16 +811,16 @@ struct snd_sof_pcm *snd_sof_find_spcm_name(struct snd_soc_component *scomp,
 	struct snd_sof_pcm *spcm;
 
 	list_for_each_entry(spcm, &sdev->pcm_list, list) {
-		/* match with PCM dai name */
+		 
 		if (strcmp(spcm->pcm.dai_name, name) == 0)
 			return spcm;
 
-		/* match with playback caps name if set */
+		 
 		if (*spcm->pcm.caps[0].name &&
 		    !strcmp(spcm->pcm.caps[0].name, name))
 			return spcm;
 
-		/* match with capture caps name if set */
+		 
 		if (*spcm->pcm.caps[1].name &&
 		    !strcmp(spcm->pcm.caps[1].name, name))
 			return spcm;
@@ -931,7 +863,7 @@ struct snd_sof_widget *snd_sof_find_swidget(struct snd_soc_component *scomp,
 	return NULL;
 }
 
-/* find widget by stream name and direction */
+ 
 struct snd_sof_widget *
 snd_sof_find_swidget_sname(struct snd_soc_component *scomp,
 			   const char *pcm_name, int dir)
@@ -977,7 +909,7 @@ static int sof_dai_get_clk(struct snd_soc_pcm_runtime *rtd, int clk_type)
 	struct snd_sof_dev *sdev = snd_soc_component_get_drvdata(component);
 	const struct sof_ipc_tplg_ops *tplg_ops = sof_ipc_get_ops(sdev, tplg);
 
-	/* use the tplg configured mclk if existed */
+	 
 	if (!dai)
 		return 0;
 
@@ -987,20 +919,14 @@ static int sof_dai_get_clk(struct snd_soc_pcm_runtime *rtd, int clk_type)
 	return 0;
 }
 
-/*
- * Helper to get SSP MCLK from a pcm_runtime.
- * Return 0 if not exist.
- */
+ 
 int sof_dai_get_mclk(struct snd_soc_pcm_runtime *rtd)
 {
 	return sof_dai_get_clk(rtd, SOF_DAI_CLK_INTEL_SSP_MCLK);
 }
 EXPORT_SYMBOL(sof_dai_get_mclk);
 
-/*
- * Helper to get SSP BCLK from a pcm_runtime.
- * Return 0 if not exist.
- */
+ 
 int sof_dai_get_bclk(struct snd_soc_pcm_runtime *rtd)
 {
 	return sof_dai_get_clk(rtd, SOF_DAI_CLK_INTEL_SSP_BCLK);
@@ -1029,9 +955,7 @@ static struct snd_sof_of_mach *sof_of_machine_select(struct snd_sof_dev *sdev)
 	return NULL;
 }
 
-/*
- * SOF Driver enumeration.
- */
+ 
 int sof_machine_check(struct snd_sof_dev *sdev)
 {
 	struct snd_sof_pdata *sof_pdata = sdev->pdata;
@@ -1045,7 +969,7 @@ int sof_machine_check(struct snd_sof_dev *sdev)
 		    sof_debug_check_flag(SOF_DBG_FORCE_NOCODEC))
 			goto nocodec;
 
-		/* find machine */
+		 
 		mach = snd_sof_machine_select(sdev);
 		if (mach) {
 			sof_pdata->machine = mach;
@@ -1075,7 +999,7 @@ int sof_machine_check(struct snd_sof_dev *sdev)
 	}
 
 nocodec:
-	/* select nocodec mode */
+	 
 	dev_warn(sdev->dev, "Using nocodec machine driver\n");
 	mach = devm_kzalloc(sdev->dev, sizeof(*mach), GFP_KERNEL);
 	if (!mach)
@@ -1103,7 +1027,7 @@ int sof_machine_register(struct snd_sof_dev *sdev, void *pdata)
 	mach = plat_data->machine;
 	size = sizeof(*plat_data->machine);
 
-	/* register machine driver, pass machine info as pdata */
+	 
 	plat_data->pdev_mach =
 		platform_device_register_data(sdev->dev, drv_name,
 					      PLATFORM_DEVID_NONE, mach, size);

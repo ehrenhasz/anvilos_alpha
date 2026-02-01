@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012 Calxeda, Inc.
- */
+
+ 
 #include <linux/types.h>
 #include <linux/err.h>
 #include <linux/delay.h>
@@ -73,7 +71,7 @@ static u32 __ipc_rcv(int mbox, u32 *data)
 	return data[1];
 }
 
-/* blocking implementation from the A9 side, not usable in interrupts! */
+ 
 int pl320_ipc_transmit(u32 *data)
 {
 	int ret;
@@ -142,7 +140,7 @@ static int pl320_probe(struct amba_device *adev, const struct amba_id *id)
 	if (ret < 0)
 		goto err;
 
-	/* Init slow mailbox */
+	 
 	writel_relaxed(CHAN_MASK(A9_SOURCE),
 		       ipc_base + IPCMxSOURCE(IPC_TX_MBOX));
 	writel_relaxed(CHAN_MASK(M3_SOURCE),
@@ -150,7 +148,7 @@ static int pl320_probe(struct amba_device *adev, const struct amba_id *id)
 	writel_relaxed(CHAN_MASK(M3_SOURCE) | CHAN_MASK(A9_SOURCE),
 		       ipc_base + IPCMxMSET(IPC_TX_MBOX));
 
-	/* Init receive mailbox */
+	 
 	writel_relaxed(CHAN_MASK(M3_SOURCE),
 		       ipc_base + IPCMxSOURCE(IPC_RX_MBOX));
 	writel_relaxed(CHAN_MASK(A9_SOURCE),

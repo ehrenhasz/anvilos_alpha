@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Bytedance */
+
+ 
 
 #include "bench.h"
 #include "bpf_hashmap_full_update_bench.skel.h"
 #include "bpf_util.h"
 
-/* BPF triggering benchmarks */
+ 
 static struct ctx {
 	struct bpf_hashmap_full_update_bench *skel;
 } ctx;
@@ -23,7 +23,7 @@ static void validate(void)
 static void *producer(void *input)
 {
 	while (true) {
-		/* trigger the bpf program */
+		 
 		syscall(__NR_getpgid);
 	}
 
@@ -55,7 +55,7 @@ static void setup(void)
 		exit(1);
 	}
 
-	/* fill hash_map */
+	 
 	map_fd = bpf_map__fd(ctx.skel->maps.hash_map_bench);
 	max_entries = bpf_map__max_entries(ctx.skel->maps.hash_map_bench);
 	for (i = 0; i < max_entries; i++)

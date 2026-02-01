@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include "device.h"
 #include "peer.h"
@@ -105,7 +103,7 @@ static int send6(struct wg_device *wg, struct sk_buff *skb,
 		.flowi6_mark = wg->fwmark,
 		.flowi6_oif = endpoint->addr6.sin6_scope_id,
 		.flowi6_proto = IPPROTO_UDP
-		/* TODO: addr->sin6_flowinfo */
+		 
 	};
 	struct dst_entry *dst = NULL;
 	struct sock *sock;
@@ -225,9 +223,7 @@ int wg_socket_send_buffer_as_reply_to_skb(struct wg_device *wg,
 		ret = send4(wg, skb, &endpoint, 0, NULL);
 	else if (endpoint.addr.sa_family == AF_INET6)
 		ret = send6(wg, skb, &endpoint, 0, NULL);
-	/* No other possibilities if the endpoint is valid, which it is,
-	 * as we checked above.
-	 */
+	 
 
 	return ret;
 }
@@ -273,11 +269,7 @@ static bool endpoint_eq(const struct endpoint *a, const struct endpoint *b)
 void wg_socket_set_peer_endpoint(struct wg_peer *peer,
 				 const struct endpoint *endpoint)
 {
-	/* First we check unlocked, in order to optimize, since it's pretty rare
-	 * that an endpoint will change. If we happen to be mid-write, and two
-	 * CPUs wind up writing the same thing or something slightly different,
-	 * it doesn't really matter much either.
-	 */
+	 
 	if (endpoint_eq(endpoint, &peer->endpoint))
 		return;
 	write_lock_bh(&peer->endpoint_lock);

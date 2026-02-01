@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Advanced Micro Devices, Inc.
- *
- * Author: Steven Kinney <Steven.Kinney@amd.com>
- * Author: Suravee Suthikulpanit <Suraveee.Suthikulpanit@amd.com>
- *
- * Perf: amd_iommu - AMD IOMMU Performance Counter PMU implementation
- */
+
+ 
 
 #define pr_fmt(fmt)	"perf/amd_iommu: " fmt
 
@@ -19,13 +12,13 @@
 #include "../perf_event.h"
 #include "iommu.h"
 
-/* iommu pmu conf masks */
+ 
 #define GET_CSOURCE(x)     ((x)->conf & 0xFFULL)
 #define GET_DEVID(x)       (((x)->conf >> 8)  & 0xFFFFULL)
 #define GET_DOMID(x)       (((x)->conf >> 24) & 0xFFFFULL)
 #define GET_PASID(x)       (((x)->conf >> 40) & 0xFFFFFULL)
 
-/* iommu pmu conf1 masks */
+ 
 #define GET_DEVID_MASK(x)  ((x)->conf1  & 0xFFFFULL)
 #define GET_DOMID_MASK(x)  (((x)->conf1 >> 16) & 0xFFFFULL)
 #define GET_PASID_MASK(x)  (((x)->conf1 >> 32) & 0xFFFFFULL)
@@ -45,9 +38,7 @@ struct perf_amd_iommu {
 
 static LIST_HEAD(perf_amd_iommu_list);
 
-/*---------------------------------------------
- * sysfs format attributes
- *---------------------------------------------*/
+ 
 PMU_FORMAT_ATTR(csource,    "config:0-7");
 PMU_FORMAT_ATTR(devid,      "config:8-23");
 PMU_FORMAT_ATTR(domid,      "config:24-39");
@@ -72,9 +63,7 @@ static struct attribute_group amd_iommu_format_group = {
 	.attrs = iommu_format_attrs,
 };
 
-/*---------------------------------------------
- * sysfs events attributes
- *---------------------------------------------*/
+ 
 static struct attribute_group amd_iommu_events_group = {
 	.name = "events",
 };
@@ -123,12 +112,10 @@ static struct amd_iommu_event_desc amd_iommu_v2_event_descs[] = {
 	AMD_IOMMU_EVENT_DESC(vapic_int_guest,         "csource=0x16"),
 	AMD_IOMMU_EVENT_DESC(smi_recv,                "csource=0x17"),
 	AMD_IOMMU_EVENT_DESC(smi_blk,                 "csource=0x18"),
-	{ /* end: all zeroes */ },
+	{   },
 };
 
-/*---------------------------------------------
- * sysfs cpumask attributes
- *---------------------------------------------*/
+ 
 static cpumask_t iommu_cpumask;
 
 static ssize_t _iommu_cpumask_show(struct device *dev,
@@ -148,7 +135,7 @@ static struct attribute_group amd_iommu_cpumask_group = {
 	.attrs = iommu_cpumask_attrs,
 };
 
-/*---------------------------------------------*/
+ 
 
 static int get_next_avail_iommu_bnk_cntr(struct perf_event *event)
 {
@@ -207,22 +194,18 @@ static int perf_iommu_event_init(struct perf_event *event)
 {
 	struct hw_perf_event *hwc = &event->hw;
 
-	/* test the event attr type check for PMU enumeration */
+	 
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/*
-	 * IOMMU counters are shared across all cores.
-	 * Therefore, it does not support per-process mode.
-	 * Also, it does not support event sampling mode.
-	 */
+	 
 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
 		return -EINVAL;
 
 	if (event->cpu < 0)
 		return -EINVAL;
 
-	/* update the hw_perf_event struct with the iommu config data */
+	 
 	hwc->conf  = event->attr.config;
 	hwc->conf1 = event->attr.config1;
 
@@ -284,21 +267,14 @@ static void perf_iommu_start(struct perf_event *event, int flags)
 	WARN_ON_ONCE(!(hwc->state & PERF_HES_UPTODATE));
 	hwc->state = 0;
 
-	/*
-	 * To account for power-gating, which prevents write to
-	 * the counter, we need to enable the counter
-	 * before setting up counter register.
-	 */
+	 
 	perf_iommu_enable_event(event);
 
 	if (flags & PERF_EF_RELOAD) {
 		u64 count = 0;
 		struct amd_iommu *iommu = perf_event_2_iommu(event);
 
-		/*
-		 * Since the IOMMU PMU only support counting mode,
-		 * the counter always start with value zero.
-		 */
+		 
 		amd_iommu_pc_set_reg(iommu, hwc->iommu_bank, hwc->iommu_cntr,
 				     IOMMU_PC_COUNTER_REG, &count);
 	}
@@ -316,13 +292,10 @@ static void perf_iommu_read(struct perf_event *event)
 				 IOMMU_PC_COUNTER_REG, &count))
 		return;
 
-	/* IOMMU pc counter register is only 48 bits */
+	 
 	count &= GENMASK_ULL(47, 0);
 
-	/*
-	 * Since the counter always start with value zero,
-	 * simply just accumulate the count for the event.
-	 */
+	 
 	local64_add(count, &event->count);
 }
 
@@ -333,10 +306,7 @@ static void perf_iommu_stop(struct perf_event *event, int flags)
 	if (hwc->state & PERF_HES_UPTODATE)
 		return;
 
-	/*
-	 * To account for power-gating, in which reading the counter would
-	 * return zero, we need to read the register before disabling.
-	 */
+	 
 	perf_iommu_read(event);
 	hwc->state |= PERF_HES_UPTODATE;
 
@@ -351,7 +321,7 @@ static int perf_iommu_add(struct perf_event *event, int flags)
 
 	event->hw.state = PERF_HES_UPTODATE | PERF_HES_STOPPED;
 
-	/* request an iommu bank/counter */
+	 
 	retval = get_next_avail_iommu_bnk_cntr(event);
 	if (retval)
 		return retval;
@@ -370,7 +340,7 @@ static void perf_iommu_del(struct perf_event *event, int flags)
 
 	perf_iommu_stop(event, PERF_EF_UPDATE);
 
-	/* clear the assigned iommu bank/counter */
+	 
 	clear_avail_iommu_bnk_cntr(perf_iommu,
 				   hwc->iommu_bank, hwc->iommu_cntr);
 
@@ -457,7 +427,7 @@ static __init int amd_iommu_pc_init(void)
 	unsigned int i, cnt = 0;
 	int ret;
 
-	/* Make sure the IOMMU PC resource is available */
+	 
 	if (!amd_iommu_pc_supported())
 		return -ENODEV;
 
@@ -465,11 +435,7 @@ static __init int amd_iommu_pc_init(void)
 	if (ret)
 		return ret;
 
-	/*
-	 * An IOMMU PMU is specific to an IOMMU, and can function independently.
-	 * So we go through all IOMMUs and ignore the one that fails init
-	 * unless all IOMMU are failing.
-	 */
+	 
 	for (i = 0; i < amd_iommu_get_num_iommus(); i++) {
 		ret = init_one_iommu(i);
 		if (!ret)
@@ -481,7 +447,7 @@ static __init int amd_iommu_pc_init(void)
 		return -ENODEV;
 	}
 
-	/* Init cpumask attributes to only core 0 */
+	 
 	cpumask_set_cpu(0, &iommu_cpumask);
 	return 0;
 }

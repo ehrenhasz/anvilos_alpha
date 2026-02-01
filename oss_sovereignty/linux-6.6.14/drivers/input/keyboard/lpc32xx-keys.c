@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * NXP LPC32xx SoC Key Scan Interface
- *
- * Authors:
- *    Kevin Wells <kevin.wells@nxp.com>
- *    Roland Stigge <stigge@antcom.de>
- *
- * Copyright (C) 2010 NXP Semiconductors
- * Copyright (C) 2012 Roland Stigge
- *
- * This controller supports square key matrices from 1x1 up to 8x8
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -26,15 +15,13 @@
 
 #define DRV_NAME				"lpc32xx_keys"
 
-/*
- * Key scanner register offsets
- */
+ 
 #define LPC32XX_KS_DEB(x)			((x) + 0x00)
 #define LPC32XX_KS_STATE_COND(x)		((x) + 0x04)
 #define LPC32XX_KS_IRQ(x)			((x) + 0x08)
 #define LPC32XX_KS_SCAN_CTL(x)			((x) + 0x0C)
 #define LPC32XX_KS_FAST_TST(x)			((x) + 0x10)
-#define LPC32XX_KS_MATRIX_DIM(x)		((x) + 0x14) /* 1..8 */
+#define LPC32XX_KS_MATRIX_DIM(x)		((x) + 0x14)  
 #define LPC32XX_KS_DATA(x, y)			((x) + 0x40 + ((y) << 2))
 
 #define LPC32XX_KSCAN_DEB_NUM_DEB_PASS(n)	((n) & 0xFF)
@@ -59,11 +46,11 @@ struct lpc32xx_kscan_drv {
 	void __iomem *kscan_base;
 	unsigned int irq;
 
-	u32 matrix_sz;		/* Size of matrix in XxY, ie. 3 = 3x3 */
-	u32 deb_clks;		/* Debounce clocks (based on 32KHz clock) */
-	u32 scan_delay;		/* Scan delay (based on 32KHz clock) */
+	u32 matrix_sz;		 
+	u32 deb_clks;		 
+	u32 scan_delay;		 
 
-	unsigned short *keymap;	/* Pointer to key map for the scan matrix */
+	unsigned short *keymap;	 
 	unsigned int row_shift;
 
 	u8 lastkeystates[8];
@@ -81,7 +68,7 @@ static void lpc32xx_mod_states(struct lpc32xx_kscan_drv *kscandat, int col)
 
 	for (row = 0; changed; row++, changed >>= 1) {
 		if (changed & 1) {
-			/* Key state changed, signal an event */
+			 
 			scancode = MATRIX_SCAN_CODE(row, col,
 						    kscandat->row_shift);
 			keycode = kscandat->keymap[scancode];
@@ -191,7 +178,7 @@ static int lpc32xx_kscan_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	}
 
-	/* Setup key input */
+	 
 	input->name		= pdev->name;
 	input->phys		= "lpc32xx/input0";
 	input->id.vendor	= 0x0001;
@@ -218,14 +205,14 @@ static int lpc32xx_kscan_probe(struct platform_device *pdev)
 	if (IS_ERR(kscandat->kscan_base))
 		return PTR_ERR(kscandat->kscan_base);
 
-	/* Get the key scanner clock */
+	 
 	kscandat->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(kscandat->clk)) {
 		dev_err(&pdev->dev, "failed to get clock\n");
 		return PTR_ERR(kscandat->clk);
 	}
 
-	/* Configure the key scanner */
+	 
 	error = clk_prepare_enable(kscandat->clk);
 	if (error)
 		return error;
@@ -266,7 +253,7 @@ static int lpc32xx_kscan_suspend(struct device *dev)
 	mutex_lock(&input->mutex);
 
 	if (input_device_enabled(input)) {
-		/* Clear IRQ and disable clock */
+		 
 		writel(1, LPC32XX_KS_IRQ(kscandat->kscan_base));
 		clk_disable_unprepare(kscandat->clk);
 	}
@@ -285,7 +272,7 @@ static int lpc32xx_kscan_resume(struct device *dev)
 	mutex_lock(&input->mutex);
 
 	if (input_device_enabled(input)) {
-		/* Enable clock and clear IRQ */
+		 
 		retval = clk_prepare_enable(kscandat->clk);
 		if (retval == 0)
 			writel(1, LPC32XX_KS_IRQ(kscandat->kscan_base));

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+ 
+ 
 
 #ifndef __LSDC_DRV_H__
 #define __LSDC_DRV_H__
@@ -23,20 +21,10 @@
 #include "lsdc_pixpll.h"
 #include "lsdc_regs.h"
 
-/* Currently, all Loongson display controllers have two display pipes. */
+ 
 #define LSDC_NUM_CRTC           2
 
-/*
- * LS7A1000/LS7A2000 chipsets function as the south & north bridges of the
- * Loongson 3 series processors, they are equipped with on-board video RAM
- * typically. While Loongson LS2K series are low cost SoCs which share the
- * system RAM as video RAM, they don't has a dedicated VRAM.
- *
- * There is only a 1:1 mapping of crtcs, encoders and connectors for the DC
- *
- * display pipe 0 = crtc0 + dvo0 + encoder0 + connector0 + cursor0 + primary0
- * display pipe 1 = crtc1 + dvo1 + encoder1 + connectro1 + cursor1 + primary1
- */
+ 
 
 enum loongson_chip_id {
 	CHIP_LS7A1000 = 0,
@@ -49,7 +37,7 @@ lsdc_device_probe(struct pci_dev *pdev, enum loongson_chip_id chip);
 
 struct lsdc_kms_funcs;
 
-/* DC specific */
+ 
 
 struct lsdc_desc {
 	u32 num_of_crtc;
@@ -59,27 +47,27 @@ struct lsdc_desc {
 	u32 num_of_hw_cursor;
 	u32 hw_cursor_w;
 	u32 hw_cursor_h;
-	u32 pitch_align;         /* CRTC DMA alignment constraint */
-	bool has_vblank_counter; /* 32 bit hw vsync counter */
+	u32 pitch_align;          
+	bool has_vblank_counter;  
 
-	/* device dependent ops, dc side */
+	 
 	const struct lsdc_kms_funcs *funcs;
 };
 
-/* GFX related resources wrangler */
+ 
 
 struct loongson_gfx_desc {
 	struct lsdc_desc dc;
 
 	u32 conf_reg_base;
 
-	/* GFXPLL shared by the DC, GMC and GPU */
+	 
 	struct {
 		u32 reg_offset;
 		u32 reg_size;
 	} gfxpll;
 
-	/* Pixel PLL, per display pipe */
+	 
 	struct {
 		u32 reg_offset;
 		u32 reg_size;
@@ -100,7 +88,7 @@ struct lsdc_reg32 {
 	u32 offset;
 };
 
-/* crtc hardware related ops */
+ 
 
 struct lsdc_crtc;
 
@@ -132,7 +120,7 @@ struct lsdc_crtc {
 	bool has_vblank;
 };
 
-/* primary plane hardware related ops */
+ 
 
 struct lsdc_primary;
 
@@ -149,7 +137,7 @@ struct lsdc_primary {
 	struct lsdc_device *ldev;
 };
 
-/* cursor plane hardware related ops */
+ 
 
 struct lsdc_cursor;
 
@@ -257,7 +245,7 @@ struct lsdc_crtc_state {
 };
 
 struct lsdc_gem {
-	/* @mutex: protect objects list */
+	 
 	struct mutex mutex;
 	struct list_head objects;
 };
@@ -266,14 +254,14 @@ struct lsdc_device {
 	struct drm_device base;
 	struct ttm_device bdev;
 
-	/* @descp: features description of the DC variant */
+	 
 	const struct lsdc_desc *descp;
 	struct pci_dev *dc;
 	struct pci_dev *gpu;
 
 	struct loongson_gfxpll *gfxpll;
 
-	/* @reglock: protects concurrent access */
+	 
 	spinlock_t reglock;
 
 	void __iomem *reg_base;
@@ -289,11 +277,11 @@ struct lsdc_device {
 
 	u32 irq_status;
 
-	/* tracking pinned memory */
+	 
 	size_t vram_pinned_size;
 	size_t gtt_pinned_size;
 
-	/* @num_output: count the number of active display pipe */
+	 
 	unsigned int num_output;
 };
 
@@ -341,7 +329,7 @@ int ls7a2000_cursor_plane_init(struct drm_device *ddev,
 			       struct drm_plane *plane,
 			       unsigned int index);
 
-/* Registers access helpers */
+ 
 
 static inline u32 lsdc_rreg32(struct lsdc_device *ldev, u32 offset)
 {

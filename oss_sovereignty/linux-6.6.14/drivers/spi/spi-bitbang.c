@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * polling/bitbanging SPI master controller driver utilities
- */
+
+ 
 
 #include <linux/spinlock.h>
 #include <linux/workqueue.h>
@@ -18,27 +16,12 @@
 #define SPI_BITBANG_CS_DELAY	100
 
 
-/*----------------------------------------------------------------------*/
+ 
 
-/*
- * FIRST PART (OPTIONAL):  word-at-a-time spi_transfer support.
- * Use this for GPIO or shift-register level hardware APIs.
- *
- * spi_bitbang_cs is in spi_device->controller_state, which is unavailable
- * to glue code.  These bitbang setup() and cleanup() routines are always
- * used, though maybe they're called from controller-aware code.
- *
- * chipselect() and friends may use spi_device->controller_data and
- * controller registers as appropriate.
- *
- *
- * NOTE:  SPI controller pins can often be used as GPIO pins instead,
- * which means you could use a bitbang driver either to get hardware
- * working quickly, or testing for differences that aren't speed related.
- */
+ 
 
 struct spi_bitbang_cs {
-	unsigned	nsecs;	/* (clock cycle time)/2 */
+	unsigned	nsecs;	 
 	u32		(*txrx_word)(struct spi_device *spi, unsigned nsecs,
 					u32 word, u8 bits, unsigned flags);
 	unsigned	(*txrx_bufs)(struct spi_device *,
@@ -152,7 +135,7 @@ int spi_bitbang_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 		hz = 0;
 	}
 
-	/* spi_transfer level calls that work per-word */
+	 
 	if (!bits_per_word)
 		bits_per_word = spi->bits_per_word;
 	if (bits_per_word <= 8)
@@ -164,7 +147,7 @@ int spi_bitbang_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 	else
 		return -EINVAL;
 
-	/* nsecs = (clock period)/2 */
+	 
 	if (!hz)
 		hz = spi->max_speed_hz;
 	if (hz) {
@@ -177,9 +160,7 @@ int spi_bitbang_setup_transfer(struct spi_device *spi, struct spi_transfer *t)
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_setup_transfer);
 
-/*
- * spi_bitbang_setup - default setup for per-word I/O loops
- */
+ 
 int spi_bitbang_setup(struct spi_device *spi)
 {
 	struct spi_bitbang_cs	*cs = spi->controller_state;
@@ -197,7 +178,7 @@ int spi_bitbang_setup(struct spi_device *spi)
 		initial_setup = true;
 	}
 
-	/* per-word shift register access, in hardware or bitbanging */
+	 
 	cs->txrx_word = bitbang->txrx_word[spi->mode & (SPI_CPOL|SPI_CPHA)];
 	if (!cs->txrx_word) {
 		retval = -EINVAL;
@@ -221,9 +202,7 @@ err_free:
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_setup);
 
-/*
- * spi_bitbang_cleanup - default cleanup for per-word I/O loops
- */
+ 
 void spi_bitbang_cleanup(struct spi_device *spi)
 {
 	kfree(spi->controller_state);
@@ -254,19 +233,9 @@ static int spi_bitbang_bufs(struct spi_device *spi, struct spi_transfer *t)
 	return cs->txrx_bufs(spi, cs->txrx_word, nsecs, t, 0);
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
-/*
- * SECOND PART ... simple transfer queue runner.
- *
- * This costs a task context per controller, running the queue by
- * performing each transfer in sequence.  Smarter hardware can queue
- * several DMA transfers at once, and process several controller queues
- * in parallel; this driver doesn't match such hardware very well.
- *
- * Drivers can provide word-at-a-time i/o primitives, or provide
- * transfer-at-a-time ones to leverage dma or fifo hardware.
- */
+ 
 
 static int spi_bitbang_prepare_hardware(struct spi_master *spi)
 {
@@ -325,10 +294,7 @@ static void spi_bitbang_set_cs(struct spi_device *spi, bool enable)
 {
 	struct spi_bitbang *bitbang = spi_master_get_devdata(spi->master);
 
-	/* SPI core provides CS high / low, but bitbang driver
-	 * expects CS active
-	 * spi device driver takes care of handling SPI_CS_HIGH
-	 */
+	 
 	enable = (!!(spi->mode & SPI_CS_HIGH) == enable);
 
 	ndelay(SPI_BITBANG_CS_DELAY);
@@ -337,7 +303,7 @@ static void spi_bitbang_set_cs(struct spi_device *spi, bool enable)
 	ndelay(SPI_BITBANG_CS_DELAY);
 }
 
-/*----------------------------------------------------------------------*/
+ 
 
 int spi_bitbang_init(struct spi_bitbang *bitbang)
 {
@@ -346,12 +312,7 @@ int spi_bitbang_init(struct spi_bitbang *bitbang)
 
 	if (!master)
 		return -EINVAL;
-	/*
-	 * We only need the chipselect callback if we are actually using it.
-	 * If we just use GPIO descriptors, it is surplus. If the
-	 * SPI_CONTROLLER_GPIO_SS flag is set, we always need to call the
-	 * driver-specific chipselect routine.
-	 */
+	 
 	custom_cs = (!master->use_gpio_descriptors ||
 		     (master->flags & SPI_CONTROLLER_GPIO_SS));
 
@@ -369,10 +330,7 @@ int spi_bitbang_init(struct spi_bitbang *bitbang)
 	master->prepare_transfer_hardware = spi_bitbang_prepare_hardware;
 	master->unprepare_transfer_hardware = spi_bitbang_unprepare_hardware;
 	master->transfer_one = spi_bitbang_transfer_one;
-	/*
-	 * When using GPIO descriptors, the ->set_cs() callback doesn't even
-	 * get called unless SPI_CONTROLLER_GPIO_SS is set.
-	 */
+	 
 	if (custom_cs)
 		master->set_cs = spi_bitbang_set_cs;
 
@@ -392,34 +350,7 @@ int spi_bitbang_init(struct spi_bitbang *bitbang)
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_init);
 
-/**
- * spi_bitbang_start - start up a polled/bitbanging SPI master driver
- * @bitbang: driver handle
- *
- * Caller should have zero-initialized all parts of the structure, and then
- * provided callbacks for chip selection and I/O loops.  If the master has
- * a transfer method, its final step should call spi_bitbang_transfer; or,
- * that's the default if the transfer routine is not initialized.  It should
- * also set up the bus number and number of chipselects.
- *
- * For i/o loops, provide callbacks either per-word (for bitbanging, or for
- * hardware that basically exposes a shift register) or per-spi_transfer
- * (which takes better advantage of hardware like fifos or DMA engines).
- *
- * Drivers using per-word I/O loops should use (or call) spi_bitbang_setup,
- * spi_bitbang_cleanup and spi_bitbang_setup_transfer to handle those spi
- * master methods.  Those methods are the defaults if the bitbang->txrx_bufs
- * routine isn't initialized.
- *
- * This routine registers the spi_master, which will process requests in a
- * dedicated task, keeping IRQs unblocked most of the time.  To stop
- * processing those requests, call spi_bitbang_stop().
- *
- * On success, this routine will take a reference to master. The caller is
- * responsible for calling spi_bitbang_stop() to decrement the reference and
- * spi_master_put() as counterpart of spi_alloc_master() to prevent a memory
- * leak.
- */
+ 
 int spi_bitbang_start(struct spi_bitbang *bitbang)
 {
 	struct spi_master *master = bitbang->master;
@@ -429,9 +360,7 @@ int spi_bitbang_start(struct spi_bitbang *bitbang)
 	if (ret)
 		return ret;
 
-	/* driver may get busy before register() returns, especially
-	 * if someone registered boardinfo for devices
-	 */
+	 
 	ret = spi_register_master(spi_master_get(master));
 	if (ret)
 		spi_master_put(master);
@@ -440,9 +369,7 @@ int spi_bitbang_start(struct spi_bitbang *bitbang)
 }
 EXPORT_SYMBOL_GPL(spi_bitbang_start);
 
-/*
- * spi_bitbang_stop - stops the task providing spi communication
- */
+ 
 void spi_bitbang_stop(struct spi_bitbang *bitbang)
 {
 	spi_unregister_master(bitbang->master);

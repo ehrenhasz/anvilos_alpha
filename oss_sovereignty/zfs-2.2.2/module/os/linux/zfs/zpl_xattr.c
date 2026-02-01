@@ -1,81 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2011, Lawrence Livermore National Security, LLC.
- *
- * Extended attributes (xattr) on Solaris are implemented as files
- * which exist in a hidden xattr directory.  These extended attributes
- * can be accessed using the attropen() system call which opens
- * the extended attribute.  It can then be manipulated just like
- * a standard file descriptor.  This has a couple advantages such
- * as practically no size limit on the file, and the extended
- * attributes permissions may differ from those of the parent file.
- * This interface is really quite clever, but it's also completely
- * different than what is supported on Linux.  It also comes with a
- * steep performance penalty when accessing small xattrs because they
- * are not stored with the parent file.
- *
- * Under Linux extended attributes are manipulated by the system
- * calls getxattr(2), setxattr(2), and listxattr(2).  They consider
- * extended attributes to be name/value pairs where the name is a
- * NULL terminated string.  The name must also include one of the
- * following namespace prefixes:
- *
- *   user     - No restrictions and is available to user applications.
- *   trusted  - Restricted to kernel and root (CAP_SYS_ADMIN) use.
- *   system   - Used for access control lists (system.nfs4_acl, etc).
- *   security - Used by SELinux to store a files security context.
- *
- * The value under Linux to limited to 65536 bytes of binary data.
- * In practice, individual xattrs tend to be much smaller than this
- * and are typically less than 100 bytes.  A good example of this
- * are the security.selinux xattrs which are less than 100 bytes and
- * exist for every file when xattr labeling is enabled.
- *
- * The Linux xattr implementation has been written to take advantage of
- * this typical usage.  When the dataset property 'xattr=sa' is set,
- * then xattrs will be preferentially stored as System Attributes (SA).
- * This allows tiny xattrs (~100 bytes) to be stored with the dnode and
- * up to 64k of xattrs to be stored in the spill block.  If additional
- * xattr space is required, which is unlikely under Linux, they will
- * be stored using the traditional directory approach.
- *
- * This optimization results in roughly a 3x performance improvement
- * when accessing xattrs because it avoids the need to perform a seek
- * for every xattr value.  When multiple xattrs are stored per-file
- * the performance improvements are even greater because all of the
- * xattrs stored in the spill block will be cached.
- *
- * However, by default SA based xattrs are disabled in the Linux port
- * to maximize compatibility with other implementations.  If you do
- * enable SA based xattrs then they will not be visible on platforms
- * which do not support this feature.
- *
- * NOTE: One additional consequence of the xattr directory implementation
- * is that when an extended attribute is manipulated an inode is created.
- * This inode will exist in the Linux inode cache but there will be no
- * associated entry in the dentry cache which references it.  This is
- * safe but it may result in some confusion.  Enabling SA based xattrs
- * largely avoids the issue except in the overflow case.
- */
+ 
+ 
 
 #include <sys/zfs_znode.h>
 #include <sys/zfs_vfsops.h>
@@ -103,21 +27,18 @@ static enum xattr_permission zpl_xattr_permission(xattr_filldir_t *,
 
 static int zfs_xattr_compat = 0;
 
-/*
- * Determine is a given xattr name should be visible and if so copy it
- * in to the provided buffer (xf->buf).
- */
+ 
 static int
 zpl_xattr_filldir(xattr_filldir_t *xf, const char *name, int name_len)
 {
 	enum xattr_permission perm;
 
-	/* Check permissions using the per-namespace list xattr handler. */
+	 
 	perm = zpl_xattr_permission(xf, name, name_len);
 	if (perm == XAPERM_DENY)
 		return (0);
 
-	/* Prefix the name with "user." if it does not have a namespace. */
+	 
 	if (perm == XAPERM_COMPAT) {
 		if (xf->buf) {
 			if (xf->offset + XATTR_USER_PREFIX_LEN + 1 > xf->size)
@@ -131,7 +52,7 @@ zpl_xattr_filldir(xattr_filldir_t *xf, const char *name, int name_len)
 		xf->offset += XATTR_USER_PREFIX_LEN;
 	}
 
-	/* When xf->buf is NULL only calculate the required size. */
+	 
 	if (xf->buf) {
 		if (xf->offset + name_len + 1 > xf->size)
 			return (-ERANGE);
@@ -145,10 +66,7 @@ zpl_xattr_filldir(xattr_filldir_t *xf, const char *name, int name_len)
 	return (0);
 }
 
-/*
- * Read as many directory entry names as will fit in to the provided buffer,
- * or when no buffer is provided calculate the required buffer size.
- */
+ 
 static int
 zpl_xattr_readdir(struct inode *dxip, xattr_filldir_t *xf)
 {
@@ -188,7 +106,7 @@ zpl_xattr_list_dir(xattr_filldir_t *xf, cred_t *cr)
 	znode_t *dxzp;
 	int error;
 
-	/* Lookup the xattr directory */
+	 
 	error = -zfs_lookup(ITOZ(ip), NULL, &dxzp, LOOKUP_XATTR,
 	    cr, NULL, NULL);
 	if (error) {
@@ -282,13 +200,13 @@ zpl_xattr_get_dir(struct inode *ip, const char *name, void *value,
 	znode_t *xzp = NULL;
 	int error;
 
-	/* Lookup the xattr directory */
+	 
 	error = -zfs_lookup(ITOZ(ip), NULL, &dxzp, LOOKUP_XATTR,
 	    cr, NULL, NULL);
 	if (error)
 		goto out;
 
-	/* Lookup a specific xattr name in the directory */
+	 
 	error = -zfs_lookup(dxzp, (char *)name, &xzp, 0, cr, NULL, NULL);
 	if (error)
 		goto out;
@@ -389,7 +307,7 @@ out:
 #define	XATTR_NOENT	0x0
 #define	XATTR_IN_SA	0x1
 #define	XATTR_IN_DIR	0x2
-/* check where the xattr resides */
+ 
 static int
 __zpl_xattr_where(struct inode *ip, const char *name, int *where, cred_t *cr)
 {
@@ -460,12 +378,7 @@ zpl_xattr_set_dir(struct inode *ip, const char *name, const void *value,
 	const int xattr_mode = S_IFREG | 0644;
 	loff_t pos = 0;
 
-	/*
-	 * Lookup the xattr directory.  When we're adding an entry pass
-	 * CREATE_XATTR_DIR to ensure the xattr directory is created.
-	 * When removing an entry this flag is not passed to avoid
-	 * unnecessarily creating a new xattr directory.
-	 */
+	 
 	lookup_flags = LOOKUP_XATTR;
 	if (value != NULL)
 		lookup_flags |= CREATE_XATTR_DIR;
@@ -475,14 +388,14 @@ zpl_xattr_set_dir(struct inode *ip, const char *name, const void *value,
 	if (error)
 		goto out;
 
-	/* Lookup a specific xattr name in the directory */
+	 
 	error = -zfs_lookup(dxzp, (char *)name, &xzp, 0, cr, NULL, NULL);
 	if (error && (error != -ENOENT))
 		goto out;
 
 	error = 0;
 
-	/* Remove a specific name xattr when value is set to NULL. */
+	 
 	if (value == NULL) {
 		if (xzp)
 			error = -zfs_remove(dxzp, (char *)name, cr, 0);
@@ -490,7 +403,7 @@ zpl_xattr_set_dir(struct inode *ip, const char *name, const void *value,
 		goto out;
 	}
 
-	/* Lookup failed create a new xattr. */
+	 
 	if (xzp == NULL) {
 		vap = kmem_zalloc(sizeof (vattr_t), KM_SLEEP);
 		vap->va_mode = xattr_mode;
@@ -559,11 +472,11 @@ zpl_xattr_set_sa(struct inode *ip, const char *name, const void *value,
 		if (error == -ENOENT)
 			error = zpl_xattr_set_dir(ip, name, NULL, 0, flags, cr);
 	} else {
-		/* Limited to 32k to keep nvpair memory allocations small */
+		 
 		if (size > DXATTR_MAX_ENTRY_SIZE)
 			return (-EFBIG);
 
-		/* Prevent the DXATTR SA from consuming the entire SA region */
+		 
 		error = -nvlist_size(nvl, &sa_size, NV_ENCODE_XDR);
 		if (error)
 			return (error);
@@ -575,11 +488,7 @@ zpl_xattr_set_sa(struct inode *ip, const char *name, const void *value,
 		    (uchar_t *)value, size);
 	}
 
-	/*
-	 * Update the SA for additions, modifications, and removals. On
-	 * error drop the inconsistent cached version of the nvlist, it
-	 * will be reconstructed from the ARC when next accessed.
-	 */
+	 
 	if (error == 0)
 		error = -zfs_sa_set_xattr(zp, name, value, size);
 
@@ -610,16 +519,7 @@ zpl_xattr_set(struct inode *ip, const char *name, const void *value,
 		goto out1;
 	rw_enter(&zp->z_xattr_lock, RW_WRITER);
 
-	/*
-	 * Before setting the xattr check to see if it already exists.
-	 * This is done to ensure the following optional flags are honored.
-	 *
-	 *   XATTR_CREATE: fail if xattr already exists
-	 *   XATTR_REPLACE: fail if xattr does not exist
-	 *
-	 * We also want to know if it resides in sa or dir, so we can make
-	 * sure we don't end up with duplicate in both places.
-	 */
+	 
 	error = __zpl_xattr_where(ip, name, &where, cr);
 	if (error < 0) {
 		if (error != -ENODATA)
@@ -627,7 +527,7 @@ zpl_xattr_set(struct inode *ip, const char *name, const void *value,
 		if (flags & XATTR_REPLACE)
 			goto out;
 
-		/* The xattr to be removed already doesn't exist */
+		 
 		error = 0;
 		if (value == NULL)
 			goto out;
@@ -637,15 +537,12 @@ zpl_xattr_set(struct inode *ip, const char *name, const void *value,
 			goto out;
 	}
 
-	/* Preferentially store the xattr as a SA for better performance */
+	 
 	if (zfsvfs->z_use_sa && zp->z_is_sa &&
 	    (zfsvfs->z_xattr_sa || (value == NULL && where & XATTR_IN_SA))) {
 		error = zpl_xattr_set_sa(ip, name, value, size, flags, cr);
 		if (error == 0) {
-			/*
-			 * Successfully put into SA, we need to clear the one
-			 * in dir.
-			 */
+			 
 			if (where & XATTR_IN_DIR)
 				zpl_xattr_set_dir(ip, name, NULL, 0, 0, cr);
 			goto out;
@@ -653,9 +550,7 @@ zpl_xattr_set(struct inode *ip, const char *name, const void *value,
 	}
 
 	error = zpl_xattr_set_dir(ip, name, value, size, flags, cr);
-	/*
-	 * Successfully put into dir, we need to clear the one in SA.
-	 */
+	 
 	if (error == 0 && (where & XATTR_IN_SA))
 		zpl_xattr_set_sa(ip, name, NULL, 0, 0, cr);
 out:
@@ -669,35 +564,7 @@ out1:
 	return (error);
 }
 
-/*
- * Extended user attributes
- *
- * "Extended user attributes may be assigned to files and directories for
- * storing arbitrary additional information such as the mime type,
- * character set or encoding of a file.  The access permissions for user
- * attributes are defined by the file permission bits: read permission
- * is required to retrieve the attribute value, and writer permission is
- * required to change it.
- *
- * The file permission bits of regular files and directories are
- * interpreted differently from the file permission bits of special
- * files and symbolic links.  For regular files and directories the file
- * permission bits define access to the file's contents, while for
- * device special files they define access to the device described by
- * the special file.  The file permissions of symbolic links are not
- * used in access checks.  These differences would allow users to
- * consume filesystem resources in a way not controllable by disk quotas
- * for group or world writable special files and directories.
- *
- * For this reason, extended user attributes are allowed only for
- * regular files and directories, and access to extended user attributes
- * is restricted to the owner and to users with appropriate capabilities
- * for directories with the sticky bit set (see the chmod(1) manual page
- * for an explanation of the sticky bit)." - xattr(7)
- *
- * ZFS allows extended user attributes to be disabled administratively
- * by setting the 'xattr=off' property on the dataset.
- */
+ 
 static int
 __zpl_xattr_user_list(struct inode *ip, char *list, size_t list_size,
     const char *name, size_t name_len)
@@ -711,7 +578,7 @@ __zpl_xattr_user_get(struct inode *ip, const char *name,
     void *value, size_t size)
 {
 	int error;
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") == 0)
 		return (-EINVAL);
@@ -721,12 +588,7 @@ __zpl_xattr_user_get(struct inode *ip, const char *name,
 	if (!(ITOZSB(ip)->z_flags & ZSB_XATTR))
 		return (-EOPNOTSUPP);
 
-	/*
-	 * Try to look up the name with the namespace prefix first for
-	 * compatibility with xattrs from this platform.  If that fails,
-	 * try again without the namespace prefix for compatibility with
-	 * other platforms.
-	 */
+	 
 	char *xattr_name = kmem_asprintf("%s%s", XATTR_USER_PREFIX, name);
 	error = zpl_xattr_get(ip, xattr_name, value, size);
 	kmem_strfree(xattr_name);
@@ -744,7 +606,7 @@ __zpl_xattr_user_set(zidmap_t *user_ns,
 {
 	(void) user_ns;
 	int error = 0;
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") == 0)
 		return (-EINVAL);
@@ -754,15 +616,7 @@ __zpl_xattr_user_set(zidmap_t *user_ns,
 	if (!(ITOZSB(ip)->z_flags & ZSB_XATTR))
 		return (-EOPNOTSUPP);
 
-	/*
-	 * Remove alternate compat version of the xattr so we only set the
-	 * version specified by the zfs_xattr_compat tunable.
-	 *
-	 * The following flags must be handled correctly:
-	 *
-	 *   XATTR_CREATE: fail if xattr already exists
-	 *   XATTR_REPLACE: fail if xattr does not exist
-	 */
+	 
 	char *prefixed_name = kmem_asprintf("%s%s", XATTR_USER_PREFIX, name);
 	const char *clear_name, *set_name;
 	if (zfs_xattr_compat) {
@@ -772,27 +626,15 @@ __zpl_xattr_user_set(zidmap_t *user_ns,
 		clear_name = name;
 		set_name = prefixed_name;
 	}
-	/*
-	 * Clear the old value with the alternative name format, if it exists.
-	 */
+	 
 	error = zpl_xattr_set(ip, clear_name, NULL, 0, flags);
-	/*
-	 * XATTR_CREATE was specified and we failed to clear the xattr
-	 * because it already exists.  Stop here.
-	 */
+	 
 	if (error == -EEXIST)
 		goto out;
-	/*
-	 * If XATTR_REPLACE was specified and we succeeded to clear
-	 * an xattr, we don't need to replace anything when setting
-	 * the new value.  If we failed with -ENODATA that's fine,
-	 * there was nothing to be cleared and we can ignore the error.
-	 */
+	 
 	if (error == 0)
 		flags &= ~XATTR_REPLACE;
-	/*
-	 * Set the new value with the configured name format.
-	 */
+	 
 	error = zpl_xattr_set(ip, set_name, value, size, flags);
 out:
 	kmem_strfree(prefixed_name);
@@ -808,15 +650,7 @@ static xattr_handler_t zpl_xattr_user_handler =
 	.set	= zpl_xattr_user_set,
 };
 
-/*
- * Trusted extended attributes
- *
- * "Trusted extended attributes are visible and accessible only to
- * processes that have the CAP_SYS_ADMIN capability.  Attributes in this
- * class are used to implement mechanisms in user space (i.e., outside
- * the kernel) which keep information in extended attributes to which
- * ordinary processes should not have access." - xattr(7)
- */
+ 
 static int
 __zpl_xattr_trusted_list(struct inode *ip, char *list, size_t list_size,
     const char *name, size_t name_len)
@@ -834,7 +668,7 @@ __zpl_xattr_trusted_get(struct inode *ip, const char *name,
 
 	if (!capable(CAP_SYS_ADMIN))
 		return (-EACCES);
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") == 0)
 		return (-EINVAL);
@@ -858,7 +692,7 @@ __zpl_xattr_trusted_set(zidmap_t *user_ns,
 
 	if (!capable(CAP_SYS_ADMIN))
 		return (-EACCES);
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") == 0)
 		return (-EINVAL);
@@ -878,18 +712,7 @@ static xattr_handler_t zpl_xattr_trusted_handler = {
 	.set	= zpl_xattr_trusted_set,
 };
 
-/*
- * Extended security attributes
- *
- * "The security attribute namespace is used by kernel security modules,
- * such as Security Enhanced Linux, and also to implement file
- * capabilities (see capabilities(7)).  Read and write access
- * permissions to security attributes depend on the policy implemented
- * for each security attribute by the security module.  When no security
- * module is loaded, all processes have read access to extended security
- * attributes, and write access is limited to processes that have the
- * CAP_SYS_ADMIN capability." - xattr(7)
- */
+ 
 static int
 __zpl_xattr_security_list(struct inode *ip, char *list, size_t list_size,
     const char *name, size_t name_len)
@@ -904,7 +727,7 @@ __zpl_xattr_security_get(struct inode *ip, const char *name,
 {
 	char *xattr_name;
 	int error;
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") == 0)
 		return (-EINVAL);
@@ -925,7 +748,7 @@ __zpl_xattr_security_set(zidmap_t *user_ns,
 	(void) user_ns;
 	char *xattr_name;
 	int error;
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") == 0)
 		return (-EINVAL);
@@ -964,9 +787,7 @@ zpl_xattr_security_init(struct inode *ip, struct inode *dip,
 	    &zpl_xattr_security_init_impl, NULL);
 }
 
-/*
- * Security xattr namespace handlers.
- */
+ 
 static xattr_handler_t zpl_xattr_security_handler = {
 	.prefix	= XATTR_SECURITY_PREFIX,
 	.list	= zpl_xattr_security_list,
@@ -974,14 +795,7 @@ static xattr_handler_t zpl_xattr_security_handler = {
 	.set	= zpl_xattr_security_set,
 };
 
-/*
- * Extended system attributes
- *
- * "Extended system attributes are used by the kernel to store system
- * objects such as Access Control Lists.  Read and write access permissions
- * to system attributes depend on the policy implemented for each system
- * attribute implemented by filesystems in the kernel." - xattr(7)
- */
+ 
 #ifdef CONFIG_FS_POSIX_ACL
 static int
 zpl_set_acl_impl(struct inode *ip, struct posix_acl *acl, int type)
@@ -1002,13 +816,7 @@ zpl_set_acl_impl(struct inode *ip, struct posix_acl *acl, int type)
 			if (error < 0) {
 				return (error);
 			} else {
-				/*
-				 * The mode bits will have been set by
-				 * ->zfs_setattr()->zfs_acl_chmod_setattr()
-				 * using the ZFS ACL conversion.  If they
-				 * differ from the Posix ACL conversion dirty
-				 * the inode to write the Posix mode bits.
-				 */
+				 
 				if (ip->i_mode != mode) {
 					ip->i_mode = ITOZ(ip)->z_mode = mode;
 					zpl_inode_set_ctime_to_ts(ip,
@@ -1070,7 +878,7 @@ zpl_set_acl(struct user_namespace *userns, struct dentry *dentry,
     struct posix_acl *acl, int type)
 #else
 zpl_set_acl(struct inode *ip, struct posix_acl *acl, int type)
-#endif /* HAVE_SET_ACL_USERNS */
+#endif  
 {
 #ifdef HAVE_SET_ACL_USERNS_DENTRY_ARG2
 	return (zpl_set_acl_impl(d_inode(dentry), acl, type));
@@ -1078,9 +886,9 @@ zpl_set_acl(struct inode *ip, struct posix_acl *acl, int type)
 	return (zpl_set_acl_impl(d_inode(dentry), acl, type));
 #else
 	return (zpl_set_acl_impl(ip, acl, type));
-#endif /* HAVE_SET_ACL_USERNS_DENTRY_ARG2 */
+#endif  
 }
-#endif /* HAVE_SET_ACL */
+#endif  
 
 static struct posix_acl *
 zpl_get_acl_impl(struct inode *ip, int type)
@@ -1089,11 +897,7 @@ zpl_get_acl_impl(struct inode *ip, int type)
 	void *value = NULL;
 	char *name;
 
-	/*
-	 * As of Linux 3.14, the kernel get_acl will check this for us.
-	 * Also as of Linux 4.7, comparing against ACL_NOT_CACHED is wrong
-	 * as the kernel get_acl will set it to temporary sentinel value.
-	 */
+	 
 #ifndef HAVE_KERNEL_GET_ACL_HANDLE_CACHE
 	acl = get_cached_acl(ip, type);
 	if (acl != ACL_NOT_CACHED)
@@ -1128,7 +932,7 @@ zpl_get_acl_impl(struct inode *ip, int type)
 	if (size > 0)
 		kmem_free(value, size);
 
-	/* As of Linux 4.7, the kernel get_acl will set this for us */
+	 
 #ifndef HAVE_KERNEL_GET_ACL_HANDLE_CACHE
 	if (!IS_ERR(acl))
 		zpl_set_cached_acl(ip, type, acl);
@@ -1154,7 +958,7 @@ zpl_get_acl(struct inode *ip, int type)
 }
 #else
 #error "Unsupported iops->get_acl() implementation"
-#endif /* HAVE_GET_ACL_RCU */
+#endif  
 
 int
 zpl_init_acl(struct inode *ip, struct inode *dir)
@@ -1269,7 +1073,7 @@ __zpl_xattr_acl_get_access(struct inode *ip, const char *name,
 	struct posix_acl *acl;
 	int type = ACL_TYPE_ACCESS;
 	int error;
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") != 0)
 		return (-EINVAL);
@@ -1297,7 +1101,7 @@ __zpl_xattr_acl_get_default(struct inode *ip, const char *name,
 	struct posix_acl *acl;
 	int type = ACL_TYPE_DEFAULT;
 	int error;
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") != 0)
 		return (-EINVAL);
@@ -1326,7 +1130,7 @@ __zpl_xattr_acl_set_access(zidmap_t *mnt_ns,
 	struct posix_acl *acl;
 	int type = ACL_TYPE_ACCESS;
 	int error = 0;
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") != 0)
 		return (-EINVAL);
@@ -1372,7 +1176,7 @@ __zpl_xattr_acl_set_default(zidmap_t *mnt_ns,
 	struct posix_acl *acl;
 	int type = ACL_TYPE_DEFAULT;
 	int error = 0;
-	/* xattr_resolve_name will do this for us if this is defined */
+	 
 #ifndef HAVE_XATTR_HANDLER_NAME
 	if (strcmp(name, "") != 0)
 		return (-EINVAL);
@@ -1411,12 +1215,7 @@ __zpl_xattr_acl_set_default(zidmap_t *mnt_ns,
 }
 ZPL_XATTR_SET_WRAPPER(zpl_xattr_acl_set_default);
 
-/*
- * ACL access xattr namespace handlers.
- *
- * Use .name instead of .prefix when available. xattr_resolve_name will match
- * whole name and reject anything that has .name only as prefix.
- */
+ 
 static xattr_handler_t zpl_xattr_acl_access_handler = {
 #ifdef HAVE_XATTR_HANDLER_NAME
 	.name	= XATTR_NAME_POSIX_ACL_ACCESS,
@@ -1433,12 +1232,7 @@ static xattr_handler_t zpl_xattr_acl_access_handler = {
 #endif
 };
 
-/*
- * ACL default xattr namespace handlers.
- *
- * Use .name instead of .prefix when available. xattr_resolve_name will match
- * whole name and reject anything that has .name only as prefix.
- */
+ 
 static xattr_handler_t zpl_xattr_acl_default_handler = {
 #ifdef HAVE_XATTR_HANDLER_NAME
 	.name	= XATTR_NAME_POSIX_ACL_DEFAULT,
@@ -1455,7 +1249,7 @@ static xattr_handler_t zpl_xattr_acl_default_handler = {
 #endif
 };
 
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
 
 xattr_handler_t *zpl_xattr_handlers[] = {
 	&zpl_xattr_security_handler,
@@ -1464,7 +1258,7 @@ xattr_handler_t *zpl_xattr_handlers[] = {
 #ifdef CONFIG_FS_POSIX_ACL
 	&zpl_xattr_acl_access_handler,
 	&zpl_xattr_acl_default_handler,
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
 	NULL
 };
 
@@ -1491,7 +1285,7 @@ zpl_xattr_handler(const char *name)
 	if (strncmp(name, XATTR_NAME_POSIX_ACL_DEFAULT,
 	    sizeof (XATTR_NAME_POSIX_ACL_DEFAULT)) == 0)
 		return (&zpl_xattr_acl_default_handler);
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
 
 	return (NULL);
 }
@@ -1505,13 +1299,10 @@ zpl_xattr_permission(xattr_filldir_t *xf, const char *name, int name_len)
 
 	handler = zpl_xattr_handler(name);
 	if (handler == NULL) {
-		/* Do not expose FreeBSD system namespace xattrs. */
+		 
 		if (ZFS_XA_NS_PREFIX_MATCH(FREEBSD, name))
 			return (XAPERM_DENY);
-		/*
-		 * Anything that doesn't match a known namespace gets put in the
-		 * user namespace for compatibility with other platforms.
-		 */
+		 
 		perm = XAPERM_COMPAT;
 		handler = &zpl_xattr_user_handler;
 	}
@@ -1545,12 +1336,7 @@ struct acl_rel_struct {
 #define	ACL_REL_WINDOW	(1*HZ)
 #define	ACL_REL_SCHED	(ACL_REL_GRACE+ACL_REL_WINDOW)
 
-/*
- * Lockless multi-producer single-consumer fifo list.
- * Nodes are added to tail and removed from head. Tail pointer is our
- * synchronization point. It always points to the next pointer of the last
- * node, or head if list is empty.
- */
+ 
 static struct acl_rel_struct *acl_rel_head = NULL;
 static struct acl_rel_struct **acl_rel_tail = &acl_rel_head;
 
@@ -1566,11 +1352,7 @@ zpl_posix_acl_free(void *arg)
 	while (acl_rel_head) {
 		a = acl_rel_head;
 		if (ddi_get_lbolt() - a->time >= ACL_REL_GRACE) {
-			/*
-			 * If a is the last node we need to reset tail, but we
-			 * need to use cmpxchg to make sure it is still the
-			 * last node.
-			 */
+			 
 			if (acl_rel_tail == &a->next) {
 				acl_rel_head = NULL;
 				if (cmpxchg(&acl_rel_tail, &a->next,
@@ -1581,21 +1363,14 @@ zpl_posix_acl_free(void *arg)
 					break;
 				}
 			}
-			/*
-			 * a is not last node, make sure next pointer is set
-			 * by the adder and advance the head.
-			 */
+			 
 			while (READ_ONCE(a->next) == NULL)
 				cpu_relax();
 			acl_rel_head = a->next;
 			a->next = freelist;
 			freelist = a;
 		} else {
-			/*
-			 * a is still in grace period. We are responsible to
-			 * reschedule the free task, since adder will only do
-			 * so if list is empty.
-			 */
+			 
 			new_time = a->time + ACL_REL_SCHED;
 			refire = B_TRUE;
 			break;
@@ -1623,11 +1398,11 @@ zpl_posix_acl_release_impl(struct posix_acl *acl)
 	a->next = NULL;
 	a->acl = acl;
 	a->time = ddi_get_lbolt();
-	/* atomically points tail to us and get the previous tail */
+	 
 	prev = xchg(&acl_rel_tail, &a->next);
 	ASSERT3P(*prev, ==, NULL);
 	*prev = a;
-	/* if it was empty before, schedule the free task */
+	 
 	if (prev == &acl_rel_head)
 		taskq_dispatch_delay(system_delay_taskq, zpl_posix_acl_free,
 		    NULL, TQ_SLEEP, ddi_get_lbolt() + ACL_REL_SCHED);

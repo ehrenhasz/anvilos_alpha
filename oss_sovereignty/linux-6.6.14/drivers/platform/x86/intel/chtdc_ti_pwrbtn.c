@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Power-button driver for Dollar Cove TI PMIC
- * Copyright (C) 2014 Intel Corp
- * Copyright (c) 2017 Takashi Iwai <tiwai@suse.de>
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/interrupt.h>

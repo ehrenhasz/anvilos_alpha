@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for ELAN eKTF2127 i2c touchscreen controller
- *
- * For this driver the layout of the Chipone icn8318 i2c
- * touchscreencontroller is used.
- *
- * Author:
- * Michel Verlaan <michel.verl@gmail.com>
- * Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>
- *
- * Original chipone_icn8318 driver:
- * Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/gpio/consumer.h>
 #include <linux/interrupt.h>
@@ -23,7 +11,7 @@
 #include <linux/of.h>
 #include <linux/delay.h>
 
-/* Packet header defines (first byte of data send / received) */
+ 
 #define EKTF2127_NOISE			0x40
 #define EKTF2127_RESPONSE		0x52
 #define EKTF2127_REQUEST		0x53
@@ -32,12 +20,12 @@
 #define EKTF2127_REPORT			0x5d
 #define EKTF2127_CALIB_DONE		0x66
 
-/* Register defines (second byte of data send / received) */
+ 
 #define EKTF2127_ENV_NOISY		0x41
 #define EKTF2127_HEIGHT			0x60
 #define EKTF2127_WIDTH			0x63
 
-/* 2 bytes header + 5 * 3 bytes coordinates + 3 bytes pressure info + footer */
+ 
 #define EKTF2127_TOUCH_REPORT_SIZE	21
 #define EKTF2127_MAX_TOUCHES		5
 
@@ -213,7 +201,7 @@ static int ektf2127_query_dimension(struct i2c_client *client, bool width)
 	int ret;
 	int error;
 
-	/* Request dimension */
+	 
 	buf[0] = EKTF2127_REQUEST;
 	buf[1] = width ? EKTF2127_WIDTH : EKTF2127_HEIGHT;
 	buf[2] = 0x00;
@@ -227,7 +215,7 @@ static int ektf2127_query_dimension(struct i2c_client *client, bool width)
 
 	msleep(20);
 
-	/* Read response */
+	 
 	ret = i2c_master_recv(client, buf, sizeof(buf));
 	if (ret != sizeof(buf)) {
 		error = ret < 0 ? ret : -EIO;
@@ -262,7 +250,7 @@ static int ektf2127_probe(struct i2c_client *client)
 	if (!ts)
 		return -ENOMEM;
 
-	/* This requests the gpio *and* turns on the touchscreen controller */
+	 
 	ts->power_gpios = devm_gpiod_get(dev, "power", GPIOD_OUT_HIGH);
 	if (IS_ERR(ts->power_gpios))
 		return dev_err_probe(dev, PTR_ERR(ts->power_gpios), "Error getting power gpio\n");
@@ -278,11 +266,11 @@ static int ektf2127_probe(struct i2c_client *client)
 
 	ts->client = client;
 
-	/* Read hello (ignore result, depends on initial power state) */
+	 
 	msleep(20);
 	i2c_master_recv(ts->client, buf, sizeof(buf));
 
-	/* Read resolution from chip */
+	 
 	max_x = ektf2127_query_dimension(client, true);
 	if (max_x < 0)
 		return max_x;
@@ -313,7 +301,7 @@ static int ektf2127_probe(struct i2c_client *client)
 		return error;
 	}
 
-	/* Stop device till opened */
+	 
 	ektf2127_stop(ts->input);
 
 	error = input_register_device(input);

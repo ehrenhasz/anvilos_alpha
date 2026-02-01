@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * htu21.c - Support for Measurement-Specialties
- *           htu21 temperature & humidity sensor
- *	     and humidity part of MS8607 sensor
- *
- * Copyright (c) 2014 Measurement-Specialties
- *
- * (7-bit I2C slave address 0x40)
- *
- * Datasheet:
- *  http://www.meas-spec.com/downloads/HTU21D.pdf
- * Datasheet:
- *  http://www.meas-spec.com/downloads/MS8607-02BA01.pdf
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/device.h>
@@ -33,7 +20,7 @@ enum {
 };
 
 static const int htu21_samp_freq[4] = { 20, 40, 70, 120 };
-/* String copy of the above const for readability purpose */
+ 
 static const char htu21_show_samp_freq[] = "20 40 70 120";
 
 static int htu21_read_raw(struct iio_dev *indio_dev,
@@ -47,7 +34,7 @@ static int htu21_read_raw(struct iio_dev *indio_dev,
 	switch (mask) {
 	case IIO_CHAN_INFO_PROCESSED:
 		switch (channel->type) {
-		case IIO_TEMP:	/* in milli °C */
+		case IIO_TEMP:	 
 			ret = ms_sensors_ht_read_temperature(dev_data,
 							     &temperature);
 			if (ret)
@@ -55,7 +42,7 @@ static int htu21_read_raw(struct iio_dev *indio_dev,
 			*val = temperature;
 
 			return IIO_VAL_INT;
-		case IIO_HUMIDITYRELATIVE:	/* in milli %RH */
+		case IIO_HUMIDITYRELATIVE:	 
 			ret = ms_sensors_ht_read_humidity(dev_data,
 							  &humidity);
 			if (ret)
@@ -114,10 +101,7 @@ static const struct iio_chan_spec htu21_channels[] = {
 	 }
 };
 
-/*
- * Meas Spec recommendation is to not read temperature
- * on this driver part for MS8607
- */
+ 
 static const struct iio_chan_spec ms8607_channels[] = {
 	{
 		.type = IIO_HUMIDITYRELATIVE,

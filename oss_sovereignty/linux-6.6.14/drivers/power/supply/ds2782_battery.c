@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C client/driver for the Maxim/Dallas DS2782 Stand-Alone Fuel Gauge IC
- *
- * Copyright (C) 2009 Bluewater Systems Ltd
- *
- * Author: Ryan Mallon
- *
- * DS2786 added by Yulia Vilensky <vilensky@compulab.co.il>
- *
- * UEvent sending added by Evgeny Romanov <romanov@neurosoft.ru>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -23,19 +13,19 @@
 #include <linux/slab.h>
 #include <linux/ds2782_battery.h>
 
-#define DS2782_REG_RARC		0x06	/* Remaining active relative capacity */
+#define DS2782_REG_RARC		0x06	 
 
 #define DS278x_REG_VOLT_MSB	0x0c
 #define DS278x_REG_TEMP_MSB	0x0a
 #define DS278x_REG_CURRENT_MSB	0x0e
 
-/* EEPROM Block */
-#define DS2782_REG_RSNSP	0x69	/* Sense resistor value */
+ 
+#define DS2782_REG_RSNSP	0x69	 
 
-/* Current unit measurement in uA for a 1 milli-ohm sense resistor */
+ 
 #define DS2782_CURRENT_UNITS	1563
 
-#define DS2786_REG_RARC		0x02	/* Remaining active relative capacity */
+#define DS2786_REG_RARC		0x02	 
 
 #define DS2786_CURRENT_UNITS	25
 
@@ -60,7 +50,7 @@ struct ds278x_info {
 	int			id;
 	int                     rsns;
 	int			capacity;
-	int			status;		/* State Of Charge */
+	int			status;		 
 };
 
 static DEFINE_IDR(battery_id);
@@ -100,12 +90,7 @@ static int ds278x_get_temp(struct ds278x_info *info, int *temp)
 	s16 raw;
 	int err;
 
-	/*
-	 * Temperature is measured in units of 0.125 degrees celcius, the
-	 * power_supply class measures temperature in tenths of degrees
-	 * celsius. The temperature value is stored as a 10 bit number, plus
-	 * sign in the upper bits of a 16 bit register.
-	 */
+	 
 	err = ds278x_read_reg16(info, DS278x_REG_TEMP_MSB, &raw);
 	if (err)
 		return err;
@@ -120,10 +105,7 @@ static int ds2782_get_current(struct ds278x_info *info, int *current_uA)
 	u8 sense_res_raw;
 	s16 raw;
 
-	/*
-	 * The units of measurement for current are dependent on the value of
-	 * the sense resistor.
-	 */
+	 
 	err = ds278x_read_reg(info, DS2782_REG_RSNSP, &sense_res_raw);
 	if (err)
 		return err;
@@ -147,10 +129,7 @@ static int ds2782_get_voltage(struct ds278x_info *info, int *voltage_uV)
 	s16 raw;
 	int err;
 
-	/*
-	 * Voltage is measured in units of 4.88mV. The voltage is stored as
-	 * a 10-bit number plus sign, in the upper bits of a 16-bit register
-	 */
+	 
 	err = ds278x_read_reg16(info, DS278x_REG_VOLT_MSB, &raw);
 	if (err)
 		return err;
@@ -187,10 +166,7 @@ static int ds2786_get_voltage(struct ds278x_info *info, int *voltage_uV)
 	s16 raw;
 	int err;
 
-	/*
-	 * Voltage is measured in units of 1.22mV. The voltage is stored as
-	 * a 12-bit number plus sign, in the upper bits of a 16-bit register
-	 */
+	 
 	err = ds278x_read_reg16(info, DS278x_REG_VOLT_MSB, &raw);
 	if (err)
 		return err;
@@ -206,7 +182,7 @@ static int ds2786_get_capacity(struct ds278x_info *info, int *capacity)
 	err = ds278x_read_reg(info, DS2786_REG_RARC, &raw);
 	if (err)
 		return err;
-	/* Relative capacity is displayed with resolution 0.5 % */
+	 
 	*capacity = raw/2 ;
 	return 0;
 }
@@ -346,7 +322,7 @@ static int ds278x_resume(struct device *dev)
 	schedule_delayed_work(&info->bat_work, DS278x_DELAY);
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(ds278x_battery_pm_ops, ds278x_suspend, ds278x_resume);
 
@@ -377,16 +353,13 @@ static int ds278x_battery_probe(struct i2c_client *client)
 	int ret;
 	int num;
 
-	/*
-	 * ds2786 should have the sense resistor value set
-	 * in the platform data
-	 */
+	 
 	if (id->driver_data == DS2786 && !pdata) {
 		dev_err(&client->dev, "missing platform data for ds2786\n");
 		return -EINVAL;
 	}
 
-	/* Get an ID for this battery */
+	 
 	mutex_lock(&battery_lock);
 	ret = idr_alloc(&battery_id, client, 0, 0, GFP_KERNEL);
 	mutex_unlock(&battery_lock);

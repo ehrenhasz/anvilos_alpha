@@ -1,34 +1,9 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __SOC15_IH_CLIENTID_H__
 #define __SOC15_IH_CLIENTID_H__
 
-/*
- * Vega10+ IH clients
- * Whenever this structure is updated, which should not happen, make sure
- * soc15_ih_clientid_name in the below is also updated accordingly.
- */
+ 
 enum soc15_ih_clientid {
 	SOC15_IH_CLIENTID_IH		= 0x00,
 	SOC15_IH_CLIENTID_ACP		= 0x01,
@@ -79,9 +54,7 @@ enum soc15_ih_clientid {
 
 extern const char *soc15_ih_clientid_name[];
 
-/*
- * soc21 IH clients
- */
+ 
 enum soc21_ih_clientid {
 	SOC21_IH_CLIENTID_IH		= 0x00,
 	SOC21_IH_CLIENTID_ATHUB		= 0x02,

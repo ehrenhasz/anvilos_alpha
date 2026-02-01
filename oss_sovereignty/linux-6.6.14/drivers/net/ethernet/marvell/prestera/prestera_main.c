@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/jiffies.h>
@@ -255,7 +255,7 @@ static void prestera_mac_link_down(struct phylink_config *config,
 	struct prestera_port *port = netdev_priv(ndev);
 	struct prestera_port_mac_state state_mac;
 
-	/* Invalidate. Parameters will update on next link event. */
+	 
 	memset(&state_mac, 0, sizeof(state_mac));
 	state_mac.valid = false;
 	prestera_port_mac_state_cache_write(port, &state_mac);
@@ -290,7 +290,7 @@ static void prestera_pcs_get_state(struct phylink_pcs *pcs,
 
 	if (smac.valid) {
 		state->link = smac.oper ? 1 : 0;
-		/* AN is completed, when port is up */
+		 
 		state->an_complete = (smac.oper && port->autoneg) ? 1 : 0;
 		state->speed = smac.speed;
 		state->duplex = smac.duplex;
@@ -347,10 +347,7 @@ static int prestera_pcs_config(struct phylink_pcs *pcs, unsigned int neg_mode,
 
 static void prestera_pcs_an_restart(struct phylink_pcs *pcs)
 {
-	/* TODO: add 1000basex AN restart support
-	 * (Currently FW has no support for 1000baseX AN restart, but it will in the future,
-	 * so as for now the function would stay empty.)
-	 */
+	 
 }
 
 static const struct phylink_mac_ops prestera_mac_ops = {
@@ -452,9 +449,7 @@ int prestera_is_valid_mac_addr(struct prestera_port *port, const u8 *addr)
 	if (!is_valid_ether_addr(addr))
 		return -EADDRNOTAVAIL;
 
-	/* firmware requires that port's MAC address contains first 5 bytes
-	 * of the base MAC address
-	 */
+	 
 	if (memcmp(port->sw->base_mac, addr, ETH_ALEN - 1))
 		return -EINVAL;
 
@@ -659,9 +654,7 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
 	}
 
 	eth_hw_addr_gen(dev, sw->base_mac, port->fp_id);
-	/* firmware requires that port's MAC address consist of the first
-	 * 5 bytes of the base MAC address
-	 */
+	 
 	if (memcmp(dev->dev_addr, sw->base_mac, ETH_ALEN - 1)) {
 		dev_warn(prestera_dev(sw), "Port MAC address wraps for port(%u)\n", id);
 		dev_addr_mod(dev, 0, sw->base_mac, ETH_ALEN - 1);
@@ -683,7 +676,7 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
 	port->adver_fec = 0;
 	port->autoneg = true;
 
-	/* initialize config mac */
+	 
 	if (port->caps.transceiver != PRESTERA_PORT_TCVR_SFP) {
 		cfg_mac.admin = true;
 		cfg_mac.mode = PRESTERA_MAC_MODE_INTERNAL;
@@ -703,7 +696,7 @@ static int prestera_port_create(struct prestera_switch *sw, u32 id)
 		goto err_port_init;
 	}
 
-	/* initialize config phy (if this is inegral) */
+	 
 	if (port->caps.transceiver != PRESTERA_PORT_TCVR_SFP) {
 		port->cfg_phy.mdix = ETH_TP_MDI_AUTO;
 		port->cfg_phy.admin = false;

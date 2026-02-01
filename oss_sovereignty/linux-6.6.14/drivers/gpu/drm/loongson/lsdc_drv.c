@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/vgaarb.h>
@@ -55,7 +53,7 @@ static const struct drm_mode_config_funcs lsdc_mode_config_funcs = {
 	.atomic_commit = drm_atomic_helper_commit,
 };
 
-/* Display related */
+ 
 
 static int lsdc_modeset_init(struct lsdc_device *ldev,
 			     unsigned int num_crtc,
@@ -70,7 +68,7 @@ static int lsdc_modeset_init(struct lsdc_device *ldev,
 	for (i = 0; i < num_crtc; i++) {
 		dispipe = &ldev->dispipe[i];
 
-		/* We need an index before crtc is initialized */
+		 
 		dispipe->index = i;
 
 		ret = funcs->create_i2c(ddev, dispipe, i);
@@ -148,12 +146,7 @@ static int lsdc_mode_config_init(struct drm_device *ddev,
 	return ret;
 }
 
-/*
- * The GPU and display controller in the LS7A1000/LS7A2000/LS2K2000 are
- * separated PCIE devices. They are two devices, not one. Bar 2 of the GPU
- * device contains the base address and size of the VRAM, both the GPU and
- * the DC could access the on-board VRAM.
- */
+ 
 static int lsdc_get_dedicated_vram(struct lsdc_device *ldev,
 				   struct pci_dev *pdev_dc,
 				   const struct lsdc_desc *descp)
@@ -162,10 +155,7 @@ static int lsdc_get_dedicated_vram(struct lsdc_device *ldev,
 	struct pci_dev *pdev_gpu;
 	resource_size_t base, size;
 
-	/*
-	 * The GPU has 00:06.0 as its BDF, while the DC has 00:06.1
-	 * This is true for the LS7A1000, LS7A2000 and LS2K2000.
-	 */
+	 
 	pdev_gpu = pci_get_domain_bus_and_slot(pci_domain_nr(pdev_dc->bus),
 					       pdev_dc->bus->number,
 					       PCI_DEVFN(6, 0));
@@ -229,7 +219,7 @@ lsdc_create_device(struct pci_dev *pdev,
 
 	lsdc_gem_init(ddev);
 
-	/* Bar 0 of the DC device contains the MMIO register's base address */
+	 
 	ldev->reg_base = pcim_iomap(pdev, 0, 0);
 	if (!ldev->reg_base)
 		return ERR_PTR(-ENODEV);
@@ -250,7 +240,7 @@ lsdc_create_device(struct pci_dev *pdev,
 	return ldev;
 }
 
-/* For multiple GPU driver instance co-exixt in the system */
+ 
 
 static unsigned int lsdc_vga_set_decode(struct pci_dev *pdev, bool state)
 {
@@ -333,7 +323,7 @@ static int lsdc_drm_freeze(struct drm_device *ddev)
 	struct lsdc_bo *lbo;
 	int ret;
 
-	/* unpin all of buffers in the VRAM */
+	 
 	mutex_lock(&ldev->gem.mutex);
 	list_for_each_entry(lbo, &ldev->gem.objects, list) {
 		struct ttm_buffer_object *tbo = &lbo->tbo;
@@ -406,7 +396,7 @@ static int lsdc_pm_suspend(struct device *dev)
 		return error;
 
 	pci_save_state(pdev);
-	/* Shut down the device */
+	 
 	pci_disable_device(pdev);
 	pci_set_power_state(pdev, PCI_D3hot);
 

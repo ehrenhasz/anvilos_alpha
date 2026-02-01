@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Rockchip RK3288 VPU codec driver
- *
- * Copyright (c) 2014 Rockchip Electronics Co., Ltd.
- *	Hertz Wong <hertz.wong@rock-chips.com>
- *	Herman Chen <herman.chen@rock-chips.com>
- *
- * Copyright (C) 2014 Google, Inc.
- *	Tomasz Figa <tfiga@chromium.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <media/v4l2-h264.h>
@@ -17,30 +8,22 @@
 #include "hantro.h"
 #include "hantro_hw.h"
 
-/* Size with u32 units. */
+ 
 #define CABAC_INIT_BUFFER_SIZE		(460 * 2)
 #define POC_BUFFER_SIZE			34
 #define SCALING_LIST_SIZE		(6 * 16 + 2 * 64)
 
-/*
- * For valid and long term reference marking, index are reversed, so bit 31
- * indicates the status of the picture 0.
- */
+ 
 #define REF_BIT(i)			BIT(32 - 1 - (i))
 
-/* Data structure describing auxiliary buffer format. */
+ 
 struct hantro_h264_dec_priv_tbl {
 	u32 cabac_table[CABAC_INIT_BUFFER_SIZE];
 	u32 poc[POC_BUFFER_SIZE];
 	u8 scaling_list[SCALING_LIST_SIZE];
 };
 
-/*
- * Constant CABAC table.
- * From drivers/media/platform/rk3288-vpu/rk3288_vpu_hw_h264d.c
- * in https://chromium.googlesource.com/chromiumos/third_party/kernel,
- * chromeos-3.14 branch.
- */
+ 
 static const u32 h264_cabac_table[] = {
 	0x14f10236, 0x034a14f1, 0x0236034a, 0xe47fe968, 0xfa35ff36, 0x07330000,
 	0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000, 0x00000000,
@@ -221,7 +204,7 @@ assemble_scaling_list(struct hantro_ctx *ctx)
 			*dst++ = swab32(src[j]);
 	}
 
-	/* Only Intra/Inter Y lists */
+	 
 	for (i = 0; i < 2; i++) {
 		src = (u32 *)&scaling->scaling_list_8x8[i];
 		for (j = 0; j < list_len_8x8 / 4; j++)
@@ -247,13 +230,7 @@ static void prepare_table(struct hantro_ctx *ctx)
 		if (!(dpb[i].flags & V4L2_H264_DPB_ENTRY_FLAG_VALID))
 			continue;
 
-		/*
-		 * Set up bit maps of valid and long term DPBs.
-		 * NOTE: The bits are reversed, i.e. MSb is DPB 0. For frame
-		 * decoding, bit 31 to 15 are used, while for field decoding,
-		 * all bits are used, with bit 31 being a top field, 30 a bottom
-		 * field and so on.
-		 */
+		 
 		if (dec_param->flags & V4L2_H264_DECODE_PARAM_FLAG_FIELD_PIC) {
 			if (dpb[i].fields & V4L2_H264_TOP_FIELD_REF)
 				dpb_valid |= REF_BIT(i * 2);
@@ -302,21 +279,18 @@ static void update_dpb(struct hantro_ctx *ctx)
 
 	dec_param = ctx->h264_dec.ctrls.decode;
 
-	/* Disable all entries by default. */
+	 
 	for (i = 0; i < ARRAY_SIZE(ctx->h264_dec.dpb); i++)
 		ctx->h264_dec.dpb[i].flags = 0;
 
-	/* Try to match new DPB entries with existing ones by their POCs. */
+	 
 	for (i = 0; i < ARRAY_SIZE(dec_param->dpb); i++) {
 		const struct v4l2_h264_dpb_entry *ndpb = &dec_param->dpb[i];
 
 		if (!(ndpb->flags & V4L2_H264_DPB_ENTRY_FLAG_VALID))
 			continue;
 
-		/*
-		 * To cut off some comparisons, iterate only on target DPB
-		 * entries which are not used yet.
-		 */
+		 
 		for_each_clear_bit(j, used, ARRAY_SIZE(ctx->h264_dec.dpb)) {
 			struct v4l2_h264_dpb_entry *cdpb;
 
@@ -333,16 +307,12 @@ static void update_dpb(struct hantro_ctx *ctx)
 			set_bit(i, new);
 	}
 
-	/* For entries that could not be matched, use remaining free slots. */
+	 
 	for_each_set_bit(i, new, ARRAY_SIZE(dec_param->dpb)) {
 		const struct v4l2_h264_dpb_entry *ndpb = &dec_param->dpb[i];
 		struct v4l2_h264_dpb_entry *cdpb;
 
-		/*
-		 * Both arrays are of the same sizes, so there is no way
-		 * we can end up with no space in target array, unless
-		 * something is buggy.
-		 */
+		 
 		j = find_first_zero_bit(used, ARRAY_SIZE(ctx->h264_dec.dpb));
 		if (WARN_ON(j >= ARRAY_SIZE(ctx->h264_dec.dpb)))
 			return;
@@ -368,10 +338,7 @@ dma_addr_t hantro_h264_get_ref_buf(struct hantro_ctx *ctx,
 		struct vb2_v4l2_buffer *dst_buf;
 		struct vb2_buffer *buf;
 
-		/*
-		 * If a DPB entry is unused or invalid, address of current
-		 * destination buffer is returned.
-		 */
+		 
 		dst_buf = hantro_get_dst_buf(ctx);
 		buf = &dst_buf->vb2_buf;
 		dma_addr = hantro_get_dec_buf_addr(ctx, buf);
@@ -394,19 +361,7 @@ u16 hantro_h264_get_ref_nbr(struct hantro_ctx *ctx, unsigned int dpb_idx)
 	return dpb->frame_num;
 }
 
-/*
- * Removes all references with the same parity as the current picture from the
- * reference list. The remaining list will have references with the opposite
- * parity. This is effectively a deduplication of references since each buffer
- * stores two fields. For this reason, each buffer is found twice in the
- * reference list.
- *
- * This technique has been chosen through trial and error. This simple approach
- * resulted in the highest conformance score. Note that this method may suffer
- * worse quality in the case an opposite reference frame has been lost. If this
- * becomes a problem in the future, it should be possible to add a preprocessing
- * to identify un-paired fields and avoid removing them.
- */
+ 
 static void deduplicate_reflist(struct v4l2_h264_reflist_builder *b,
 				struct v4l2_h264_reference *reflist)
 {
@@ -426,11 +381,11 @@ static void deduplicate_reflist(struct v4l2_h264_reflist_builder *b,
 	}
 
 done:
-	/* Should not happen unless we have a bug in the reflist builder. */
+	 
 	if (WARN_ON(write_idx > 16))
 		write_idx = 16;
 
-	/* Clear the remaining, some streams fails otherwise */
+	 
 	for (; write_idx < 16; write_idx++)
 		reflist[write_idx].index = 15;
 }
@@ -463,26 +418,22 @@ int hantro_h264_dec_prepare_run(struct hantro_ctx *ctx)
 	if (WARN_ON(!ctrls->pps))
 		return -EINVAL;
 
-	/* Update the DPB with new refs. */
+	 
 	update_dpb(ctx);
 
-	/* Build the P/B{0,1} ref lists. */
+	 
 	v4l2_h264_init_reflist_builder(&reflist_builder, ctrls->decode,
 				       ctrls->sps, ctx->h264_dec.dpb);
 	h264_ctx->cur_poc = reflist_builder.cur_pic_order_count;
 
-	/* Prepare data in memory. */
+	 
 	prepare_table(ctx);
 
 	v4l2_h264_build_p_ref_list(&reflist_builder, h264_ctx->reflists.p);
 	v4l2_h264_build_b_ref_lists(&reflist_builder, h264_ctx->reflists.b0,
 				    h264_ctx->reflists.b1);
 
-	/*
-	 * Reduce ref lists to at most 16 entries, Hantro hardware will deduce
-	 * the actual picture lists in field through the dpb_valid,
-	 * dpb_longterm bitmap along with the current frame parity.
-	 */
+	 
 	if (reflist_builder.cur_pic_fields != V4L2_H264_FRAME_REF) {
 		deduplicate_reflist(&reflist_builder, h264_ctx->reflists.p);
 		deduplicate_reflist(&reflist_builder, h264_ctx->reflists.b0);

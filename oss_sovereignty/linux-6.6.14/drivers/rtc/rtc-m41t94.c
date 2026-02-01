@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for ST M41T94 SPI RTC
- *
- * Copyright (C) 2008 Kim B. Heino
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -29,7 +25,7 @@
 static int m41t94_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct spi_device *spi = to_spi_device(dev);
-	u8 buf[8]; /* write cmd + 7 registers */
+	u8 buf[8];  
 
 	dev_dbg(dev, "%s secs=%d, mins=%d, "
 		"hours=%d, mday=%d, mon=%d, year=%d, wday=%d\n",
@@ -37,7 +33,7 @@ static int m41t94_set_time(struct device *dev, struct rtc_time *tm)
 		tm->tm_hour, tm->tm_mday,
 		tm->tm_mon, tm->tm_year, tm->tm_wday);
 
-	buf[0] = 0x80 | M41T94_REG_SECONDS; /* write time + date */
+	buf[0] = 0x80 | M41T94_REG_SECONDS;  
 	buf[M41T94_REG_SECONDS] = bin2bcd(tm->tm_sec);
 	buf[M41T94_REG_MINUTES] = bin2bcd(tm->tm_min);
 	buf[M41T94_REG_HOURS]   = bin2bcd(tm->tm_hour);
@@ -59,7 +55,7 @@ static int m41t94_read_time(struct device *dev, struct rtc_time *tm)
 	u8 buf[2];
 	int ret, hour;
 
-	/* clear halt update bit */
+	 
 	ret = spi_w8r8(spi, M41T94_REG_HT);
 	if (ret < 0)
 		return ret;
@@ -69,7 +65,7 @@ static int m41t94_read_time(struct device *dev, struct rtc_time *tm)
 		spi_write(spi, buf, 2);
 	}
 
-	/* clear stop bit */
+	 
 	ret = spi_w8r8(spi, M41T94_REG_SECONDS);
 	if (ret < 0)
 		return ret;

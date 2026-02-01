@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * trace/beauty/fcntl.c
- *
- *  Copyright (C) 2017, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 
 #include "trace/beauty/beauty.h"
 #include <linux/kernel.h>
@@ -55,9 +51,7 @@ size_t syscall_arg__scnprintf_fcntl_cmd(char *bf, size_t size, struct syscall_ar
 		syscall_arg__set_ret_scnprintf(arg, syscall_arg__scnprintf_fcntl_getlease);
 		goto mask_arg;
 	}
-	/*
-	 * Some commands ignore the third fcntl argument, "arg", so mask it
-	 */
+	 
 	if (arg->val == F_GET_SEALS ||
 	    arg->val == F_GETSIG) {
 mask_arg:
@@ -86,10 +80,7 @@ size_t syscall_arg__scnprintf_fcntl_arg(char *bf, size_t size, struct syscall_ar
 
 	if (cmd == F_SETLEASE)
 		return fcntl__scnprintf_getlease(arg->val, bf, size, show_prefix);
-	/*
-	 * We still don't grab the contents of pointers on entry or exit,
-	 * so just print them as hex numbers
-	 */
+	 
 	if (cmd == F_SETLK || cmd == F_SETLKW || cmd == F_GETLK ||
 	    cmd == F_OFD_SETLK || cmd == F_OFD_SETLKW || cmd == F_OFD_GETLK ||
 	    cmd == F_GETOWN_EX || cmd == F_SETOWN_EX ||

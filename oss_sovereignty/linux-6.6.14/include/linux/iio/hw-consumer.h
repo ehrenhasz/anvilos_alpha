@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Industrial I/O in kernel hardware consumer interface
- *
- * Copyright 2017 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+ 
+ 
 
 #ifndef LINUX_IIO_HW_CONSUMER_H
 #define LINUX_IIO_HW_CONSUMER_H

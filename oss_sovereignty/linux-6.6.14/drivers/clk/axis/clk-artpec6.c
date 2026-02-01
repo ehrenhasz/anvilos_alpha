@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ARTPEC-6 clock initialization
- *
- * Copyright 2015-2016 Axis Communications AB.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -42,7 +38,7 @@ static void of_artpec6_clkctrl_setup(struct device_node *np)
 	u32 pll_mode, pll_m, pll_n;
 	struct clk **clks;
 
-	/* Mandatory parent clock. */
+	 
 	i = of_property_match_string(np, "clock-names", "sys_refclk");
 	if (i < 0)
 		return;
@@ -61,22 +57,22 @@ static void of_artpec6_clkctrl_setup(struct device_node *np)
 	clkdata->syscon_base = of_iomap(np, 0);
 	BUG_ON(clkdata->syscon_base == NULL);
 
-	/* Read PLL1 factors configured by boot strap pins. */
+	 
 	pll_mode = (readl(clkdata->syscon_base) >> 6) & 3;
 	switch (pll_mode) {
-	case 0:		/* DDR3-2133 mode */
+	case 0:		 
 		pll_m = 4;
 		pll_n = 85;
 		break;
-	case 1:		/* DDR3-1866 mode */
+	case 1:		 
 		pll_m = 6;
 		pll_n = 112;
 		break;
-	case 2:		/* DDR3-1600 mode */
+	case 2:		 
 		pll_m = 4;
 		pll_n = 64;
 		break;
-	case 3:		/* DDR3-1333 mode */
+	case 3:		 
 		pll_m = 8;
 		pll_n = 106;
 		break;
@@ -88,7 +84,7 @@ static void of_artpec6_clkctrl_setup(struct device_node *np)
 	clks[ARTPEC6_CLK_CPU_PERIPH] =
 	    clk_register_fixed_factor(NULL, "cpu_periph", "cpu", 0, 1, 2);
 
-	/* EPROBE_DEFER on the apb_clock is not handled in amba devices. */
+	 
 	clks[ARTPEC6_CLK_UART_PCLK] =
 	    clk_register_fixed_factor(NULL, "uart_pclk", "cpu", 0, 1, 8);
 	clks[ARTPEC6_CLK_UART_REFCLK] =
@@ -127,14 +123,14 @@ static int artpec6_clkctrl_probe(struct platform_device *pdev)
 	int i;
 	int err = 0;
 
-	/* Mandatory parent clock. */
+	 
 	propidx = of_property_match_string(np, "clock-names", "sys_refclk");
 	if (propidx < 0)
 		return -EINVAL;
 
 	sys_refclk_name = of_clk_get_parent_name(np, propidx);
 
-	/* Find clock names of optional parent clocks. */
+	 
 	propidx = of_property_match_string(np, "clock-names", "i2s_refclk");
 	if (propidx >= 0)
 		i2s_refclk_name = of_clk_get_parent_name(np, propidx);
@@ -182,7 +178,7 @@ static int artpec6_clkctrl_probe(struct platform_device *pdev)
 					     clkdata->syscon_base + 0x14, i, 1,
 					     0, &clkdata->i2scfg_lock);
 		} else if (frac_clk_name[i]) {
-			/* Lock the mux for internal clock reference. */
+			 
 			muxreg = readl(clkdata->syscon_base + 0x14);
 			muxreg &= ~BIT(i);
 			writel(muxreg, clkdata->syscon_base + 0x14);
@@ -191,7 +187,7 @@ static int artpec6_clkctrl_probe(struct platform_device *pdev)
 						      frac_clk_name[i], 0, 1,
 						      1);
 		} else if (i2s_refclk_name) {
-			/* Lock the mux for external clock reference. */
+			 
 			muxreg = readl(clkdata->syscon_base + 0x14);
 			muxreg |= BIT(i);
 			writel(muxreg, clkdata->syscon_base + 0x14);

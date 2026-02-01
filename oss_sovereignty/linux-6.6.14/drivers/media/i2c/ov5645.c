@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for the OV5645 camera sensor.
- *
- * Copyright (c) 2011-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015 By Tech Design S.L. All Rights Reserved.
- * Copyright (C) 2012-2013 Freescale Semiconductor, Inc. All Rights Reserved.
- *
- * Based on:
- * - the OV5645 driver from QC msm-3.10 kernel on codeaurora.org:
- *   https://us.codeaurora.org/cgit/quic/la/kernel/msm-3.10/tree/drivers/
- *       media/platform/msm/camera_v2/sensor/ov5645.c?h=LA.BR.1.2.4_rb1.41
- * - the OV5640 driver posted on linux-media:
- *   https://www.mail-archive.com/linux-media%40vger.kernel.org/msg92671.html
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -59,11 +46,11 @@
 #define OV5645_SDE_SAT_U		0x5583
 #define OV5645_SDE_SAT_V		0x5584
 
-/* regulator supplies */
+ 
 static const char * const ov5645_supply_name[] = {
-	"vdddo", /* Digital I/O (1.8V) supply */
-	"vdda",  /* Analog (2.8V) supply */
-	"vddd",  /* Digital Core (1.5V) supply */
+	"vdddo",  
+	"vdda",   
+	"vddd",   
 };
 
 #define OV5645_NUM_SUPPLIES ARRAY_SIZE(ov5645_supply_name)
@@ -100,12 +87,12 @@ struct ov5645 {
 	struct v4l2_ctrl *pixel_clock;
 	struct v4l2_ctrl *link_freq;
 
-	/* Cached register values */
+	 
 	u8 aec_pk_manual;
 	u8 timing_tc_reg20;
 	u8 timing_tc_reg21;
 
-	struct mutex power_lock; /* lock to protect power state */
+	struct mutex power_lock;  
 
 	struct gpio_desc *enable_gpio;
 	struct gpio_desc *rst_gpio;
@@ -518,7 +505,7 @@ static const struct ov5645_mode_info ov5645_mode_info_data[] = {
 		.data = ov5645_setting_sxga,
 		.data_size = ARRAY_SIZE(ov5645_setting_sxga),
 		.pixel_clock = 112000000,
-		.link_freq = 0 /* an index in link_freq[] */
+		.link_freq = 0  
 	},
 	{
 		.width = 1920,
@@ -526,7 +513,7 @@ static const struct ov5645_mode_info ov5645_mode_info_data[] = {
 		.data = ov5645_setting_1080p,
 		.data_size = ARRAY_SIZE(ov5645_setting_1080p),
 		.pixel_clock = 168000000,
-		.link_freq = 1 /* an index in link_freq[] */
+		.link_freq = 1  
 	},
 	{
 		.width = 2592,
@@ -534,7 +521,7 @@ static const struct ov5645_mode_info ov5645_mode_info_data[] = {
 		.data = ov5645_setting_full,
 		.data_size = ARRAY_SIZE(ov5645_setting_full),
 		.pixel_clock = 168000000,
-		.link_freq = 1 /* an index in link_freq[] */
+		.link_freq = 1  
 	},
 };
 
@@ -589,7 +576,7 @@ static int ov5645_set_aec_mode(struct ov5645 *ov5645, u32 mode)
 
 	if (mode == V4L2_EXPOSURE_AUTO)
 		val &= ~OV5645_AEC_MANUAL_ENABLE;
-	else /* V4L2_EXPOSURE_MANUAL */
+	else  
 		val |= OV5645_AEC_MANUAL_ENABLE;
 
 	ret = ov5645_write_reg(ov5645, OV5645_AEC_PK_MANUAL, val);
@@ -1074,7 +1061,7 @@ static int ov5645_probe(struct i2c_client *client)
 		return -EINVAL;
 	}
 
-	/* get system clock (xclk) */
+	 
 	ov5645->xclk = devm_clk_get(dev, NULL);
 	if (IS_ERR(ov5645->xclk)) {
 		dev_err(dev, "could not get xclk");
@@ -1087,7 +1074,7 @@ static int ov5645_probe(struct i2c_client *client)
 		return ret;
 	}
 
-	/* external clock must be 24MHz, allow 1% tolerance */
+	 
 	if (xclk_freq < 23760000 || xclk_freq > 24240000) {
 		dev_err(dev, "external clock frequency %u is not supported\n",
 			xclk_freq);
@@ -1272,7 +1259,7 @@ MODULE_DEVICE_TABLE(i2c, ov5645_id);
 
 static const struct of_device_id ov5645_of_match[] = {
 	{ .compatible = "ovti,ov5645" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ov5645_of_match);
 

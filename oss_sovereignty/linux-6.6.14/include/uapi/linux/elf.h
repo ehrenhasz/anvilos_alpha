@@ -1,18 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_LINUX_ELF_H
 #define _UAPI_LINUX_ELF_H
 
 #include <linux/types.h>
 #include <linux/elf-em.h>
 
-/* 32-bit ELF base types. */
+ 
 typedef __u32	Elf32_Addr;
 typedef __u16	Elf32_Half;
 typedef __u32	Elf32_Off;
 typedef __s32	Elf32_Sword;
 typedef __u32	Elf32_Word;
 
-/* 64-bit ELF base types. */
+ 
 typedef __u64	Elf64_Addr;
 typedef __u16	Elf64_Half;
 typedef __s16	Elf64_SHalf;
@@ -22,7 +22,7 @@ typedef __u32	Elf64_Word;
 typedef __u64	Elf64_Xword;
 typedef __s64	Elf64_Sxword;
 
-/* These constants are for the segment types stored in the image headers */
+ 
 #define PT_NULL    0
 #define PT_LOAD    1
 #define PT_DYNAMIC 2
@@ -30,9 +30,9 @@ typedef __s64	Elf64_Sxword;
 #define PT_NOTE    4
 #define PT_SHLIB   5
 #define PT_PHDR    6
-#define PT_TLS     7               /* Thread local storage segment */
-#define PT_LOOS    0x60000000      /* OS-specific */
-#define PT_HIOS    0x6fffffff      /* OS-specific */
+#define PT_TLS     7                
+#define PT_LOOS    0x60000000       
+#define PT_HIOS    0x6fffffff       
 #define PT_LOPROC  0x70000000
 #define PT_HIPROC  0x7fffffff
 #define PT_GNU_EH_FRAME	(PT_LOOS + 0x474e550)
@@ -41,32 +41,13 @@ typedef __s64	Elf64_Sxword;
 #define PT_GNU_PROPERTY	(PT_LOOS + 0x474e553)
 
 
-/* ARM MTE memory tag segment type */
+ 
 #define PT_AARCH64_MEMTAG_MTE	(PT_LOPROC + 0x2)
 
-/*
- * Extended Numbering
- *
- * If the real number of program header table entries is larger than
- * or equal to PN_XNUM(0xffff), it is set to sh_info field of the
- * section header at index 0, and PN_XNUM is set to e_phnum
- * field. Otherwise, the section header at index 0 is zero
- * initialized, if it exists.
- *
- * Specifications are available in:
- *
- * - Oracle: Linker and Libraries.
- *   Part No: 817–1984–19, August 2011.
- *   https://docs.oracle.com/cd/E18752_01/pdf/817-1984.pdf
- *
- * - System V ABI AMD64 Architecture Processor Supplement
- *   Draft Version 0.99.4,
- *   January 13, 2010.
- *   http://www.cs.washington.edu/education/courses/cse351/12wi/supp-docs/abi.pdf
- */
+ 
 #define PN_XNUM 0xffff
 
-/* These constants define the different elf file types */
+ 
 #define ET_NONE   0
 #define ET_REL    1
 #define ET_EXEC   2
@@ -75,7 +56,7 @@ typedef __s64	Elf64_Sxword;
 #define ET_LOPROC 0xff00
 #define ET_HIPROC 0xffff
 
-/* This is the info that is needed to parse the dynamic section of the file */
+ 
 #define DT_NULL		0
 #define DT_NEEDED	1
 #define DT_PLTRELSZ	2
@@ -120,7 +101,7 @@ typedef __s64	Elf64_Sxword;
 #define DT_LOPROC	0x70000000
 #define DT_HIPROC	0x7fffffff
 
-/* This info is needed when parsing the symbol table */
+ 
 #define STB_LOCAL  0
 #define STB_GLOBAL 1
 #define STB_WEAK   2
@@ -149,14 +130,14 @@ typedef struct dynamic {
 } Elf32_Dyn;
 
 typedef struct {
-  Elf64_Sxword d_tag;		/* entry tag value */
+  Elf64_Sxword d_tag;		 
   union {
     Elf64_Xword d_val;
     Elf64_Addr d_ptr;
   } d_un;
 } Elf64_Dyn;
 
-/* The following are used with relocations */
+ 
 #define ELF32_R_SYM(x) ((x) >> 8)
 #define ELF32_R_TYPE(x) ((x) & 0xff)
 
@@ -169,8 +150,8 @@ typedef struct elf32_rel {
 } Elf32_Rel;
 
 typedef struct elf64_rel {
-  Elf64_Addr r_offset;	/* Location at which to apply the action */
-  Elf64_Xword r_info;	/* index and type of relocation */
+  Elf64_Addr r_offset;	 
+  Elf64_Xword r_info;	 
 } Elf64_Rel;
 
 typedef struct elf32_rela {
@@ -180,9 +161,9 @@ typedef struct elf32_rela {
 } Elf32_Rela;
 
 typedef struct elf64_rela {
-  Elf64_Addr r_offset;	/* Location at which to apply the action */
-  Elf64_Xword r_info;	/* index and type of relocation */
-  Elf64_Sxword r_addend;	/* Constant addend used to compute value */
+  Elf64_Addr r_offset;	 
+  Elf64_Xword r_info;	 
+  Elf64_Sxword r_addend;	 
 } Elf64_Rela;
 
 typedef struct elf32_sym {
@@ -195,12 +176,12 @@ typedef struct elf32_sym {
 } Elf32_Sym;
 
 typedef struct elf64_sym {
-  Elf64_Word st_name;		/* Symbol name, index in string tbl */
-  unsigned char	st_info;	/* Type and binding attributes */
-  unsigned char	st_other;	/* No defined meaning, 0 */
-  Elf64_Half st_shndx;		/* Associated section index */
-  Elf64_Addr st_value;		/* Value of the symbol */
-  Elf64_Xword st_size;		/* Associated symbol size */
+  Elf64_Word st_name;		 
+  unsigned char	st_info;	 
+  unsigned char	st_other;	 
+  Elf64_Half st_shndx;		 
+  Elf64_Addr st_value;		 
+  Elf64_Xword st_size;		 
 } Elf64_Sym;
 
 
@@ -211,7 +192,7 @@ typedef struct elf32_hdr {
   Elf32_Half	e_type;
   Elf32_Half	e_machine;
   Elf32_Word	e_version;
-  Elf32_Addr	e_entry;  /* Entry point */
+  Elf32_Addr	e_entry;   
   Elf32_Off	e_phoff;
   Elf32_Off	e_shoff;
   Elf32_Word	e_flags;
@@ -224,13 +205,13 @@ typedef struct elf32_hdr {
 } Elf32_Ehdr;
 
 typedef struct elf64_hdr {
-  unsigned char	e_ident[EI_NIDENT];	/* ELF "magic number" */
+  unsigned char	e_ident[EI_NIDENT];	 
   Elf64_Half e_type;
   Elf64_Half e_machine;
   Elf64_Word e_version;
-  Elf64_Addr e_entry;		/* Entry point virtual address */
-  Elf64_Off e_phoff;		/* Program header table file offset */
-  Elf64_Off e_shoff;		/* Section header table file offset */
+  Elf64_Addr e_entry;		 
+  Elf64_Off e_phoff;		 
+  Elf64_Off e_shoff;		 
   Elf64_Word e_flags;
   Elf64_Half e_ehsize;
   Elf64_Half e_phentsize;
@@ -240,8 +221,7 @@ typedef struct elf64_hdr {
   Elf64_Half e_shstrndx;
 } Elf64_Ehdr;
 
-/* These constants define the permissions on sections in the program
-   header, p_flags. */
+ 
 #define PF_R		0x4
 #define PF_W		0x2
 #define PF_X		0x1
@@ -260,15 +240,15 @@ typedef struct elf32_phdr {
 typedef struct elf64_phdr {
   Elf64_Word p_type;
   Elf64_Word p_flags;
-  Elf64_Off p_offset;		/* Segment file offset */
-  Elf64_Addr p_vaddr;		/* Segment virtual address */
-  Elf64_Addr p_paddr;		/* Segment physical address */
-  Elf64_Xword p_filesz;		/* Segment size in file */
-  Elf64_Xword p_memsz;		/* Segment size in memory */
-  Elf64_Xword p_align;		/* Segment alignment, file & memory */
+  Elf64_Off p_offset;		 
+  Elf64_Addr p_vaddr;		 
+  Elf64_Addr p_paddr;		 
+  Elf64_Xword p_filesz;		 
+  Elf64_Xword p_memsz;		 
+  Elf64_Xword p_align;		 
 } Elf64_Phdr;
 
-/* sh_type */
+ 
 #define SHT_NULL	0
 #define SHT_PROGBITS	1
 #define SHT_SYMTAB	2
@@ -287,7 +267,7 @@ typedef struct elf64_phdr {
 #define SHT_LOUSER	0x80000000
 #define SHT_HIUSER	0xffffffff
 
-/* sh_flags */
+ 
 #define SHF_WRITE		0x1
 #define SHF_ALLOC		0x2
 #define SHF_EXECINSTR		0x4
@@ -295,7 +275,7 @@ typedef struct elf64_phdr {
 #define SHF_RO_AFTER_INIT	0x00200000
 #define SHF_MASKPROC		0xf0000000
 
-/* special section indexes */
+ 
 #define SHN_UNDEF	0
 #define SHN_LORESERVE	0xff00
 #define SHN_LOPROC	0xff00
@@ -319,19 +299,19 @@ typedef struct elf32_shdr {
 } Elf32_Shdr;
 
 typedef struct elf64_shdr {
-  Elf64_Word sh_name;		/* Section name, index in string tbl */
-  Elf64_Word sh_type;		/* Type of section */
-  Elf64_Xword sh_flags;		/* Miscellaneous section attributes */
-  Elf64_Addr sh_addr;		/* Section virtual addr at execution */
-  Elf64_Off sh_offset;		/* Section file offset */
-  Elf64_Xword sh_size;		/* Size of section in bytes */
-  Elf64_Word sh_link;		/* Index of another section */
-  Elf64_Word sh_info;		/* Additional section information */
-  Elf64_Xword sh_addralign;	/* Section alignment */
-  Elf64_Xword sh_entsize;	/* Entry size if section holds table */
+  Elf64_Word sh_name;		 
+  Elf64_Word sh_type;		 
+  Elf64_Xword sh_flags;		 
+  Elf64_Addr sh_addr;		 
+  Elf64_Off sh_offset;		 
+  Elf64_Xword sh_size;		 
+  Elf64_Word sh_link;		 
+  Elf64_Word sh_info;		 
+  Elf64_Xword sh_addralign;	 
+  Elf64_Xword sh_entsize;	 
 } Elf64_Shdr;
 
-#define	EI_MAG0		0		/* e_ident[] indexes */
+#define	EI_MAG0		0		 
 #define	EI_MAG1		1
 #define	EI_MAG2		2
 #define	EI_MAG3		3
@@ -341,23 +321,23 @@ typedef struct elf64_shdr {
 #define	EI_OSABI	7
 #define	EI_PAD		8
 
-#define	ELFMAG0		0x7f		/* EI_MAG */
+#define	ELFMAG0		0x7f		 
 #define	ELFMAG1		'E'
 #define	ELFMAG2		'L'
 #define	ELFMAG3		'F'
 #define	ELFMAG		"\177ELF"
 #define	SELFMAG		4
 
-#define	ELFCLASSNONE	0		/* EI_CLASS */
+#define	ELFCLASSNONE	0		 
 #define	ELFCLASS32	1
 #define	ELFCLASS64	2
 #define	ELFCLASSNUM	3
 
-#define ELFDATANONE	0		/* e_ident[EI_DATA] */
+#define ELFDATANONE	0		 
 #define ELFDATA2LSB	1
 #define ELFDATA2MSB	2
 
-#define EV_NONE		0		/* e_version, EI_VERSION */
+#define EV_NONE		0		 
 #define EV_CURRENT	1
 #define EV_NUM		2
 
@@ -368,114 +348,105 @@ typedef struct elf64_shdr {
 #define ELF_OSABI ELFOSABI_NONE
 #endif
 
-/*
- * Notes used in ET_CORE. Architectures export some of the arch register sets
- * using the corresponding note types via the PTRACE_GETREGSET and
- * PTRACE_SETREGSET requests.
- * The note name for these types is "LINUX", except NT_PRFPREG that is named
- * "CORE".
- */
+ 
 #define NT_PRSTATUS	1
 #define NT_PRFPREG	2
 #define NT_PRPSINFO	3
 #define NT_TASKSTRUCT	4
 #define NT_AUXV		6
-/*
- * Note to userspace developers: size of NT_SIGINFO note may increase
- * in the future to accomodate more fields, don't assume it is fixed!
- */
+ 
 #define NT_SIGINFO      0x53494749
 #define NT_FILE         0x46494c45
-#define NT_PRXFPREG     0x46e62b7f      /* copied from gdb5.1/include/elf/common.h */
-#define NT_PPC_VMX	0x100		/* PowerPC Altivec/VMX registers */
-#define NT_PPC_SPE	0x101		/* PowerPC SPE/EVR registers */
-#define NT_PPC_VSX	0x102		/* PowerPC VSX registers */
-#define NT_PPC_TAR	0x103		/* Target Address Register */
-#define NT_PPC_PPR	0x104		/* Program Priority Register */
-#define NT_PPC_DSCR	0x105		/* Data Stream Control Register */
-#define NT_PPC_EBB	0x106		/* Event Based Branch Registers */
-#define NT_PPC_PMU	0x107		/* Performance Monitor Registers */
-#define NT_PPC_TM_CGPR	0x108		/* TM checkpointed GPR Registers */
-#define NT_PPC_TM_CFPR	0x109		/* TM checkpointed FPR Registers */
-#define NT_PPC_TM_CVMX	0x10a		/* TM checkpointed VMX Registers */
-#define NT_PPC_TM_CVSX	0x10b		/* TM checkpointed VSX Registers */
-#define NT_PPC_TM_SPR	0x10c		/* TM Special Purpose Registers */
-#define NT_PPC_TM_CTAR	0x10d		/* TM checkpointed Target Address Register */
-#define NT_PPC_TM_CPPR	0x10e		/* TM checkpointed Program Priority Register */
-#define NT_PPC_TM_CDSCR	0x10f		/* TM checkpointed Data Stream Control Register */
-#define NT_PPC_PKEY	0x110		/* Memory Protection Keys registers */
-#define NT_PPC_DEXCR	0x111		/* PowerPC DEXCR registers */
-#define NT_PPC_HASHKEYR	0x112		/* PowerPC HASHKEYR register */
-#define NT_386_TLS	0x200		/* i386 TLS slots (struct user_desc) */
-#define NT_386_IOPERM	0x201		/* x86 io permission bitmap (1=deny) */
-#define NT_X86_XSTATE	0x202		/* x86 extended state using xsave */
-/* Old binutils treats 0x203 as a CET state */
-#define NT_X86_SHSTK	0x204		/* x86 SHSTK state */
-#define NT_S390_HIGH_GPRS	0x300	/* s390 upper register halves */
-#define NT_S390_TIMER	0x301		/* s390 timer register */
-#define NT_S390_TODCMP	0x302		/* s390 TOD clock comparator register */
-#define NT_S390_TODPREG	0x303		/* s390 TOD programmable register */
-#define NT_S390_CTRS	0x304		/* s390 control registers */
-#define NT_S390_PREFIX	0x305		/* s390 prefix register */
-#define NT_S390_LAST_BREAK	0x306	/* s390 breaking event address */
-#define NT_S390_SYSTEM_CALL	0x307	/* s390 system call restart data */
-#define NT_S390_TDB	0x308		/* s390 transaction diagnostic block */
-#define NT_S390_VXRS_LOW	0x309	/* s390 vector registers 0-15 upper half */
-#define NT_S390_VXRS_HIGH	0x30a	/* s390 vector registers 16-31 */
-#define NT_S390_GS_CB	0x30b		/* s390 guarded storage registers */
-#define NT_S390_GS_BC	0x30c		/* s390 guarded storage broadcast control block */
-#define NT_S390_RI_CB	0x30d		/* s390 runtime instrumentation */
-#define NT_S390_PV_CPU_DATA	0x30e	/* s390 protvirt cpu dump data */
-#define NT_ARM_VFP	0x400		/* ARM VFP/NEON registers */
-#define NT_ARM_TLS	0x401		/* ARM TLS register */
-#define NT_ARM_HW_BREAK	0x402		/* ARM hardware breakpoint registers */
-#define NT_ARM_HW_WATCH	0x403		/* ARM hardware watchpoint registers */
-#define NT_ARM_SYSTEM_CALL	0x404	/* ARM system call number */
-#define NT_ARM_SVE	0x405		/* ARM Scalable Vector Extension registers */
-#define NT_ARM_PAC_MASK		0x406	/* ARM pointer authentication code masks */
-#define NT_ARM_PACA_KEYS	0x407	/* ARM pointer authentication address keys */
-#define NT_ARM_PACG_KEYS	0x408	/* ARM pointer authentication generic key */
-#define NT_ARM_TAGGED_ADDR_CTRL	0x409	/* arm64 tagged address control (prctl()) */
-#define NT_ARM_PAC_ENABLED_KEYS	0x40a	/* arm64 ptr auth enabled keys (prctl()) */
-#define NT_ARM_SSVE	0x40b		/* ARM Streaming SVE registers */
-#define NT_ARM_ZA	0x40c		/* ARM SME ZA registers */
-#define NT_ARM_ZT	0x40d		/* ARM SME ZT registers */
-#define NT_ARC_V2	0x600		/* ARCv2 accumulator/extra registers */
-#define NT_VMCOREDD	0x700		/* Vmcore Device Dump Note */
-#define NT_MIPS_DSP	0x800		/* MIPS DSP ASE registers */
-#define NT_MIPS_FP_MODE	0x801		/* MIPS floating-point mode */
-#define NT_MIPS_MSA	0x802		/* MIPS SIMD registers */
-#define NT_RISCV_CSR	0x900		/* RISC-V Control and Status Registers */
-#define NT_RISCV_VECTOR	0x901		/* RISC-V vector registers */
-#define NT_LOONGARCH_CPUCFG	0xa00	/* LoongArch CPU config registers */
-#define NT_LOONGARCH_CSR	0xa01	/* LoongArch control and status registers */
-#define NT_LOONGARCH_LSX	0xa02	/* LoongArch Loongson SIMD Extension registers */
-#define NT_LOONGARCH_LASX	0xa03	/* LoongArch Loongson Advanced SIMD Extension registers */
-#define NT_LOONGARCH_LBT	0xa04	/* LoongArch Loongson Binary Translation registers */
-#define NT_LOONGARCH_HW_BREAK	0xa05   /* LoongArch hardware breakpoint registers */
-#define NT_LOONGARCH_HW_WATCH	0xa06   /* LoongArch hardware watchpoint registers */
+#define NT_PRXFPREG     0x46e62b7f       
+#define NT_PPC_VMX	0x100		 
+#define NT_PPC_SPE	0x101		 
+#define NT_PPC_VSX	0x102		 
+#define NT_PPC_TAR	0x103		 
+#define NT_PPC_PPR	0x104		 
+#define NT_PPC_DSCR	0x105		 
+#define NT_PPC_EBB	0x106		 
+#define NT_PPC_PMU	0x107		 
+#define NT_PPC_TM_CGPR	0x108		 
+#define NT_PPC_TM_CFPR	0x109		 
+#define NT_PPC_TM_CVMX	0x10a		 
+#define NT_PPC_TM_CVSX	0x10b		 
+#define NT_PPC_TM_SPR	0x10c		 
+#define NT_PPC_TM_CTAR	0x10d		 
+#define NT_PPC_TM_CPPR	0x10e		 
+#define NT_PPC_TM_CDSCR	0x10f		 
+#define NT_PPC_PKEY	0x110		 
+#define NT_PPC_DEXCR	0x111		 
+#define NT_PPC_HASHKEYR	0x112		 
+#define NT_386_TLS	0x200		 
+#define NT_386_IOPERM	0x201		 
+#define NT_X86_XSTATE	0x202		 
+ 
+#define NT_X86_SHSTK	0x204		 
+#define NT_S390_HIGH_GPRS	0x300	 
+#define NT_S390_TIMER	0x301		 
+#define NT_S390_TODCMP	0x302		 
+#define NT_S390_TODPREG	0x303		 
+#define NT_S390_CTRS	0x304		 
+#define NT_S390_PREFIX	0x305		 
+#define NT_S390_LAST_BREAK	0x306	 
+#define NT_S390_SYSTEM_CALL	0x307	 
+#define NT_S390_TDB	0x308		 
+#define NT_S390_VXRS_LOW	0x309	 
+#define NT_S390_VXRS_HIGH	0x30a	 
+#define NT_S390_GS_CB	0x30b		 
+#define NT_S390_GS_BC	0x30c		 
+#define NT_S390_RI_CB	0x30d		 
+#define NT_S390_PV_CPU_DATA	0x30e	 
+#define NT_ARM_VFP	0x400		 
+#define NT_ARM_TLS	0x401		 
+#define NT_ARM_HW_BREAK	0x402		 
+#define NT_ARM_HW_WATCH	0x403		 
+#define NT_ARM_SYSTEM_CALL	0x404	 
+#define NT_ARM_SVE	0x405		 
+#define NT_ARM_PAC_MASK		0x406	 
+#define NT_ARM_PACA_KEYS	0x407	 
+#define NT_ARM_PACG_KEYS	0x408	 
+#define NT_ARM_TAGGED_ADDR_CTRL	0x409	 
+#define NT_ARM_PAC_ENABLED_KEYS	0x40a	 
+#define NT_ARM_SSVE	0x40b		 
+#define NT_ARM_ZA	0x40c		 
+#define NT_ARM_ZT	0x40d		 
+#define NT_ARC_V2	0x600		 
+#define NT_VMCOREDD	0x700		 
+#define NT_MIPS_DSP	0x800		 
+#define NT_MIPS_FP_MODE	0x801		 
+#define NT_MIPS_MSA	0x802		 
+#define NT_RISCV_CSR	0x900		 
+#define NT_RISCV_VECTOR	0x901		 
+#define NT_LOONGARCH_CPUCFG	0xa00	 
+#define NT_LOONGARCH_CSR	0xa01	 
+#define NT_LOONGARCH_LSX	0xa02	 
+#define NT_LOONGARCH_LASX	0xa03	 
+#define NT_LOONGARCH_LBT	0xa04	 
+#define NT_LOONGARCH_HW_BREAK	0xa05    
+#define NT_LOONGARCH_HW_WATCH	0xa06    
 
-/* Note types with note name "GNU" */
+ 
 #define NT_GNU_PROPERTY_TYPE_0	5
 
-/* Note header in a PT_NOTE section */
+ 
 typedef struct elf32_note {
-  Elf32_Word	n_namesz;	/* Name size */
-  Elf32_Word	n_descsz;	/* Content size */
-  Elf32_Word	n_type;		/* Content type */
+  Elf32_Word	n_namesz;	 
+  Elf32_Word	n_descsz;	 
+  Elf32_Word	n_type;		 
 } Elf32_Nhdr;
 
-/* Note header in a PT_NOTE section */
+ 
 typedef struct elf64_note {
-  Elf64_Word n_namesz;	/* Name size */
-  Elf64_Word n_descsz;	/* Content size */
-  Elf64_Word n_type;	/* Content type */
+  Elf64_Word n_namesz;	 
+  Elf64_Word n_descsz;	 
+  Elf64_Word n_type;	 
 } Elf64_Nhdr;
 
-/* .note.gnu.property types for EM_AARCH64: */
+ 
 #define GNU_PROPERTY_AARCH64_FEATURE_1_AND	0xc0000000
 
-/* Bits for GNU_PROPERTY_AARCH64_FEATURE_1_BTI */
+ 
 #define GNU_PROPERTY_AARCH64_FEATURE_1_BTI	(1U << 0)
 
-#endif /* _UAPI_LINUX_ELF_H */
+#endif  

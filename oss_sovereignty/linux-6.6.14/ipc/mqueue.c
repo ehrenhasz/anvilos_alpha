@@ -1,17 +1,4 @@
-/*
- * POSIX message queues filesystem for Linux.
- *
- * Copyright (C) 2003,2004  Krzysztof Benedyczak    (golbi@mat.uni.torun.pl)
- *                          Michal Wronski          (michal.wronski@gmail.com)
- *
- * Spinlocks:               Mohamed Abbas           (abbas.mohamed@intel.com)
- * Lockless receive & send, fd based notify:
- *			    Manfred Spraul	    (manfred@colorfullife.com)
- *
- * Audit:                   George Wilson           (ltcgcw@us.ibm.com)
- *
- * This file is released under the GPL.
- */
+ 
 
 #include <linux/capability.h>
 #include <linux/init.h>
@@ -45,7 +32,7 @@
 
 struct mqueue_fs_context {
 	struct ipc_namespace	*ipc_ns;
-	bool			 newns;	/* Set if newly created ipc namespace */
+	bool			 newns;	 
 };
 
 #define MQUEUE_MAGIC	0x19800202
@@ -64,71 +51,13 @@ struct posix_msg_tree_node {
 	int			priority;
 };
 
-/*
- * Locking:
- *
- * Accesses to a message queue are synchronized by acquiring info->lock.
- *
- * There are two notable exceptions:
- * - The actual wakeup of a sleeping task is performed using the wake_q
- *   framework. info->lock is already released when wake_up_q is called.
- * - The exit codepaths after sleeping check ext_wait_queue->state without
- *   any locks. If it is STATE_READY, then the syscall is completed without
- *   acquiring info->lock.
- *
- * MQ_BARRIER:
- * To achieve proper release/acquire memory barrier pairing, the state is set to
- * STATE_READY with smp_store_release(), and it is read with READ_ONCE followed
- * by smp_acquire__after_ctrl_dep(). In addition, wake_q_add_safe() is used.
- *
- * This prevents the following races:
- *
- * 1) With the simple wake_q_add(), the task could be gone already before
- *    the increase of the reference happens
- * Thread A
- *				Thread B
- * WRITE_ONCE(wait.state, STATE_NONE);
- * schedule_hrtimeout()
- *				wake_q_add(A)
- *				if (cmpxchg()) // success
- *				   ->state = STATE_READY (reordered)
- * <timeout returns>
- * if (wait.state == STATE_READY) return;
- * sysret to user space
- * sys_exit()
- *				get_task_struct() // UaF
- *
- * Solution: Use wake_q_add_safe() and perform the get_task_struct() before
- * the smp_store_release() that does ->state = STATE_READY.
- *
- * 2) Without proper _release/_acquire barriers, the woken up task
- *    could read stale data
- *
- * Thread A
- *				Thread B
- * do_mq_timedreceive
- * WRITE_ONCE(wait.state, STATE_NONE);
- * schedule_hrtimeout()
- *				state = STATE_READY;
- * <timeout returns>
- * if (wait.state == STATE_READY) return;
- * msg_ptr = wait.msg;		// Access to stale data!
- *				receiver->msg = message; (reordered)
- *
- * Solution: use _release and _acquire barriers.
- *
- * 3) There is intentionally no barrier when setting current->state
- *    to TASK_INTERRUPTIBLE: spin_unlock(&info->lock) provides the
- *    release memory barrier, and the wakeup is triggered when holding
- *    info->lock, i.e. spin_lock(&info->lock) provided a pairing
- *    acquire memory barrier.
- */
+ 
 
-struct ext_wait_queue {		/* queue of sleeping tasks */
+struct ext_wait_queue {		 
 	struct task_struct *task;
 	struct list_head list;
-	struct msg_msg *msg;	/* ptr of loaded message */
-	int state;		/* one of STATE_* values */
+	struct msg_msg *msg;	 
+	int state;		 
 };
 
 struct mqueue_inode_info {
@@ -145,14 +74,14 @@ struct mqueue_inode_info {
 	struct pid *notify_owner;
 	u32 notify_self_exec_id;
 	struct user_namespace *notify_user_ns;
-	struct ucounts *ucounts;	/* user who created, for accounting */
+	struct ucounts *ucounts;	 
 	struct sock *notify_sock;
 	struct sk_buff *notify_cookie;
 
-	/* for tasks waiting for free space and messages, respectively */
+	 
 	struct ext_wait_queue e_wait_q[2];
 
-	unsigned long qsize; /* size of queue in memory (sum of all msgs) */
+	unsigned long qsize;  
 };
 
 static struct file_system_type mqueue_fs_type;
@@ -169,9 +98,7 @@ static inline struct mqueue_inode_info *MQUEUE_I(struct inode *inode)
 	return container_of(inode, struct mqueue_inode_info, vfs_inode);
 }
 
-/*
- * This routine should be called with the mq_lock held.
- */
+ 
 static inline struct ipc_namespace *__get_ns_from_inode(struct inode *inode)
 {
 	return get_ipc_ns(inode->i_sb->s_fs_info);
@@ -187,7 +114,7 @@ static struct ipc_namespace *get_ns_from_inode(struct inode *inode)
 	return ns;
 }
 
-/* Auxiliary functions to manipulate messages' list */
+ 
 static int msg_insert(struct msg_msg *msg, struct mqueue_inode_info *info)
 {
 	struct rb_node **p, *parent = NULL;
@@ -252,11 +179,7 @@ static inline struct msg_msg *msg_get(struct mqueue_inode_info *info)
 	struct msg_msg *msg;
 
 try_again:
-	/*
-	 * During insert, low priorities go to the left and high to the
-	 * right.  On receive, we want the highest priorities first, so
-	 * walk all the way to the right.
-	 */
+	 
 	parent = info->msg_tree_rightmost;
 	if (!parent) {
 		if (info->attr.mq_curmsgs) {
@@ -310,7 +233,7 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 
 		inode->i_fop = &mqueue_file_operations;
 		inode->i_size = FILENT_SIZE;
-		/* mqueue specific info */
+		 
 		info = MQUEUE_I(inode);
 		spin_lock_init(&info->lock);
 		init_waitqueue_head(&info->wait_q);
@@ -319,7 +242,7 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 		info->notify_owner = NULL;
 		info->notify_user_ns = NULL;
 		info->qsize = 0;
-		info->ucounts = NULL;	/* set when all is ok */
+		info->ucounts = NULL;	 
 		info->msg_tree = RB_ROOT;
 		info->msg_tree_rightmost = NULL;
 		info->node_cache = NULL;
@@ -332,19 +255,7 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 			info->attr.mq_maxmsg = attr->mq_maxmsg;
 			info->attr.mq_msgsize = attr->mq_msgsize;
 		}
-		/*
-		 * We used to allocate a static array of pointers and account
-		 * the size of that array as well as one msg_msg struct per
-		 * possible message into the queue size. That's no longer
-		 * accurate as the queue is now an rbtree and will grow and
-		 * shrink depending on usage patterns.  We can, however, still
-		 * account one msg_msg struct per message, but the nodes are
-		 * allocated depending on priority usage, and most programs
-		 * only use one, or a handful, of priorities.  However, since
-		 * this is pinned memory, we need to assume worst case, so
-		 * that means the min(mq_maxmsg, max_priorities) * struct
-		 * posix_msg_tree_node.
-		 */
+		 
 
 		ret = -EINVAL;
 		if (info->attr.mq_maxmsg <= 0 || info->attr.mq_msgsize <= 0)
@@ -359,7 +270,7 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 				goto out_inode;
 		}
 		ret = -EOVERFLOW;
-		/* check for overflow */
+		 
 		if (info->attr.mq_msgsize > ULONG_MAX/info->attr.mq_maxmsg)
 			goto out_inode;
 		mq_treesize = info->attr.mq_maxmsg * sizeof(struct msg_msg) +
@@ -380,7 +291,7 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 				spin_unlock(&mq_lock);
 				put_ucounts(info->ucounts);
 				info->ucounts = NULL;
-				/* mqueue_evict_inode() releases info->messages */
+				 
 				ret = -EMFILE;
 				goto out_inode;
 			}
@@ -388,7 +299,7 @@ static struct inode *mqueue_get_inode(struct super_block *sb,
 		}
 	} else if (S_ISDIR(mode)) {
 		inc_nlink(inode);
-		/* Some things misbehave if size == 0 on a directory */
+		 
 		inode->i_size = 2 * DIRENT_SIZE;
 		inode->i_op = &mqueue_dir_inode_operations;
 		inode->i_fop = &simple_dir_operations;
@@ -426,10 +337,7 @@ static int mqueue_get_tree(struct fs_context *fc)
 {
 	struct mqueue_fs_context *ctx = fc->fs_private;
 
-	/*
-	 * With a newly created ipc namespace, we don't need to do a search
-	 * for an ipc namespace match, but we still need to set s_fs_info.
-	 */
+	 
 	if (ctx->newns) {
 		fc->s_fs_info = ctx->ipc_ns;
 		return get_tree_nodev(fc, mqueue_fill_super);
@@ -461,10 +369,7 @@ static int mqueue_init_fs_context(struct fs_context *fc)
 	return 0;
 }
 
-/*
- * mq_init_ns() is currently the only caller of mq_create_mount().
- * So the ns parameter is always a newly created ipc namespace.
- */
+ 
 static struct vfsmount *mq_create_mount(struct ipc_namespace *ns)
 {
 	struct mqueue_fs_context *ctx;
@@ -537,7 +442,7 @@ static void mqueue_evict_inode(struct inode *inode)
 	if (info->ucounts) {
 		unsigned long mq_bytes, mq_treesize;
 
-		/* Total amount of bytes accounted for the mqueue */
+		 
 		mq_treesize = info->attr.mq_maxmsg * sizeof(struct msg_msg) +
 			min_t(unsigned int, info->attr.mq_maxmsg, MQ_PRIO_MAX) *
 			sizeof(struct posix_msg_tree_node);
@@ -547,12 +452,7 @@ static void mqueue_evict_inode(struct inode *inode)
 
 		spin_lock(&mq_lock);
 		dec_rlimit_ucounts(info->ucounts, UCOUNT_RLIMIT_MSGQUEUE, mq_bytes);
-		/*
-		 * get_ns_from_inode() ensures that the
-		 * (ipc_ns = sb->s_fs_info) is either a valid ipc_ns
-		 * to which we now hold a reference, or it is NULL.
-		 * We can't put it here under mq_lock, though.
-		 */
+		 
 		if (ipc_ns)
 			ipc_ns->mq_queues_count--;
 		spin_unlock(&mq_lock);
@@ -625,13 +525,7 @@ static int mqueue_unlink(struct inode *dir, struct dentry *dentry)
 	return 0;
 }
 
-/*
-*	This is routine for system read from queue file.
-*	To avoid mess with doing here some sort of mq_receive we allow
-*	to read only queue size & notification info (the only values
-*	that are interesting from user point of view and aren't accessible
-*	through std routines)
-*/
+ 
 static ssize_t mqueue_read_file(struct file *filp, char __user *u_data,
 				size_t count, loff_t *off)
 {
@@ -691,7 +585,7 @@ static __poll_t mqueue_poll_file(struct file *filp, struct poll_table_struct *po
 	return retval;
 }
 
-/* Adds current to info->e_wait_q[sr] before element with smaller prio */
+ 
 static void wq_add(struct mqueue_inode_info *info, int sr,
 			struct ext_wait_queue *ewp)
 {
@@ -706,11 +600,7 @@ static void wq_add(struct mqueue_inode_info *info, int sr,
 	list_add_tail(&ewp->list, &info->e_wait_q[sr].list);
 }
 
-/*
- * Puts current task to sleep. Caller must hold queue lock. After return
- * lock isn't held.
- * sr: SEND or RECV
- */
+ 
 static int wq_sleep(struct mqueue_inode_info *info, int sr,
 		    ktime_t *timeout, struct ext_wait_queue *ewp)
 	__releases(&info->lock)
@@ -721,7 +611,7 @@ static int wq_sleep(struct mqueue_inode_info *info, int sr,
 	wq_add(info, sr, ewp);
 
 	for (;;) {
-		/* memory barrier not required, we hold info->lock */
+		 
 		__set_current_state(TASK_INTERRUPTIBLE);
 
 		spin_unlock(&info->lock);
@@ -729,14 +619,14 @@ static int wq_sleep(struct mqueue_inode_info *info, int sr,
 			HRTIMER_MODE_ABS, CLOCK_REALTIME);
 
 		if (READ_ONCE(ewp->state) == STATE_READY) {
-			/* see MQ_BARRIER for purpose/pairing */
+			 
 			smp_acquire__after_ctrl_dep();
 			retval = 0;
 			goto out;
 		}
 		spin_lock(&info->lock);
 
-		/* we hold info->lock, so no memory barrier required */
+		 
 		if (READ_ONCE(ewp->state) == STATE_READY) {
 			retval = 0;
 			goto out_unlock;
@@ -757,9 +647,7 @@ out:
 	return retval;
 }
 
-/*
- * Returns waiting task that should be serviced first or NULL if none exists
- */
+ 
 static struct ext_wait_queue *wq_get_first_waiter(
 		struct mqueue_inode_info *info, int sr)
 {
@@ -777,16 +665,10 @@ static inline void set_cookie(struct sk_buff *skb, char code)
 	((char *)skb->data)[NOTIFY_COOKIE_LEN-1] = code;
 }
 
-/*
- * The next function is only to split too long sys_mq_timedsend
- */
+ 
 static void __do_notify(struct mqueue_inode_info *info)
 {
-	/* notification
-	 * invoked when there is registered process and there isn't process
-	 * waiting synchronously for message AND state of queue changed from
-	 * empty to not empty. Here we are sure that no one is waiting
-	 * synchronously. */
+	 
 	if (info->notify_owner &&
 	    info->attr.mq_curmsgs == 1) {
 		switch (info->notify.sigev_notify) {
@@ -796,7 +678,7 @@ static void __do_notify(struct mqueue_inode_info *info)
 			struct kernel_siginfo sig_i;
 			struct task_struct *task;
 
-			/* do_mq_notify() accepts sigev_signo == 0, why?? */
+			 
 			if (!info->notify.sigev_signo)
 				break;
 
@@ -806,18 +688,12 @@ static void __do_notify(struct mqueue_inode_info *info)
 			sig_i.si_code = SI_MESGQ;
 			sig_i.si_value = info->notify.sigev_value;
 			rcu_read_lock();
-			/* map current pid/uid into info->owner's namespaces */
+			 
 			sig_i.si_pid = task_tgid_nr_ns(current,
 						ns_of_pid(info->notify_owner));
 			sig_i.si_uid = from_kuid_munged(info->notify_user_ns,
 						current_uid());
-			/*
-			 * We can't use kill_pid_info(), this signal should
-			 * bypass check_kill_permission(). It is from kernel
-			 * but si_fromuser() can't know this.
-			 * We do check the self_exec_id, to avoid sending
-			 * signals to programs that don't expect them.
-			 */
+			 
 			task = pid_task(info->notify_owner, PIDTYPE_TGID);
 			if (task && task->self_exec_id ==
 						info->notify_self_exec_id) {
@@ -832,7 +708,7 @@ static void __do_notify(struct mqueue_inode_info *info)
 			netlink_sendskb(info->notify_sock, info->notify_cookie);
 			break;
 		}
-		/* after notification unregisters process */
+		 
 		put_pid(info->notify_owner);
 		put_user_ns(info->notify_user_ns);
 		info->notify_owner = NULL;
@@ -881,7 +757,7 @@ static int prepare_open(struct dentry *dentry, int oflag, int ro,
 		return vfs_mkobj(dentry, mode & ~current_umask(),
 				  mqueue_create_attr, attr);
 	}
-	/* it already existed */
+	 
 	audit_inode(name, dentry, 0);
 	if ((oflag & (O_CREAT|O_EXCL)) == (O_CREAT|O_EXCL))
 		return -EEXIST;
@@ -910,7 +786,7 @@ static int do_mq_open(const char __user *u_name, int oflag, umode_t mode,
 	if (fd < 0)
 		goto out_putname;
 
-	ro = mnt_want_write(mnt);	/* we'll drop it in any case */
+	ro = mnt_want_write(mnt);	 
 	inode_lock(d_inode(root));
 	path.dentry = lookup_one_len(name->name, root, strlen(name->name));
 	if (IS_ERR(path.dentry)) {
@@ -995,24 +871,7 @@ out_name:
 	return err;
 }
 
-/* Pipelined send and receive functions.
- *
- * If a receiver finds no waiting message, then it registers itself in the
- * list of waiting receivers. A sender checks that list before adding the new
- * message into the message array. If there is a waiting receiver, then it
- * bypasses the message array and directly hands the message over to the
- * receiver. The receiver accepts the message and returns without grabbing the
- * queue spinlock:
- *
- * - Set pointer to message.
- * - Queue the receiver task for later wakeup (without the info->lock).
- * - Update its state to STATE_READY. Now the receiver can continue.
- * - Wake up the process after the lock is dropped. Should the process wake up
- *   before this wakeup (due to a timeout or a signal) it will either see
- *   STATE_READY and continue or acquire the lock to check the state again.
- *
- * The same algorithm is used for senders.
- */
+ 
 
 static inline void __pipelined_op(struct wake_q_head *wake_q,
 				  struct mqueue_inode_info *info,
@@ -1023,14 +882,12 @@ static inline void __pipelined_op(struct wake_q_head *wake_q,
 	list_del(&this->list);
 	task = get_task_struct(this->task);
 
-	/* see MQ_BARRIER for purpose/pairing */
+	 
 	smp_store_release(&this->state, STATE_READY);
 	wake_q_add_safe(wake_q, task);
 }
 
-/* pipelined_send() - send a message directly to the task waiting in
- * sys_mq_timedreceive() (without inserting message into a queue).
- */
+ 
 static inline void pipelined_send(struct wake_q_head *wake_q,
 				  struct mqueue_inode_info *info,
 				  struct msg_msg *message,
@@ -1040,15 +897,14 @@ static inline void pipelined_send(struct wake_q_head *wake_q,
 	__pipelined_op(wake_q, info, receiver);
 }
 
-/* pipelined_receive() - if there is task waiting in sys_mq_timedsend()
- * gets its message and put to the queue (we have one free place for sure). */
+ 
 static inline void pipelined_receive(struct wake_q_head *wake_q,
 				     struct mqueue_inode_info *info)
 {
 	struct ext_wait_queue *sender = wq_get_first_waiter(info, SEND);
 
 	if (!sender) {
-		/* for poll */
+		 
 		wake_up_interruptible(&info->wait_q);
 		return;
 	}
@@ -1107,8 +963,7 @@ static int do_mq_timedsend(mqd_t mqdes, const char __user *u_msg_ptr,
 		goto out_fput;
 	}
 
-	/* First try to allocate memory, before doing anything with
-	 * existing queues. */
+	 
 	msg_ptr = load_msg(u_msg_ptr, msg_len);
 	if (IS_ERR(msg_ptr)) {
 		ret = PTR_ERR(msg_ptr);
@@ -1117,18 +972,14 @@ static int do_mq_timedsend(mqd_t mqdes, const char __user *u_msg_ptr,
 	msg_ptr->m_ts = msg_len;
 	msg_ptr->m_type = msg_prio;
 
-	/*
-	 * msg_insert really wants us to have a valid, spare node struct so
-	 * it doesn't have to kmalloc a GFP_ATOMIC allocation, but it will
-	 * fall back to that if necessary.
-	 */
+	 
 	if (!info->node_cache)
 		new_leaf = kmalloc(sizeof(*new_leaf), GFP_KERNEL);
 
 	spin_lock(&info->lock);
 
 	if (!info->node_cache && new_leaf) {
-		/* Save our speculative allocation into the cache */
+		 
 		INIT_LIST_HEAD(&new_leaf->msg_list);
 		info->node_cache = new_leaf;
 		new_leaf = NULL;
@@ -1143,13 +994,10 @@ static int do_mq_timedsend(mqd_t mqdes, const char __user *u_msg_ptr,
 			wait.task = current;
 			wait.msg = (void *) msg_ptr;
 
-			/* memory barrier not required, we hold info->lock */
+			 
 			WRITE_ONCE(wait.state, STATE_NONE);
 			ret = wq_sleep(info, SEND, timeout, &wait);
-			/*
-			 * wq_sleep must be called with info->lock held, and
-			 * returns with the lock released
-			 */
+			 
 			goto out_free;
 		}
 	} else {
@@ -1157,7 +1005,7 @@ static int do_mq_timedsend(mqd_t mqdes, const char __user *u_msg_ptr,
 		if (receiver) {
 			pipelined_send(&wake_q, info, msg_ptr, receiver);
 		} else {
-			/* adds message to the queue */
+			 
 			ret = msg_insert(msg_ptr, info);
 			if (ret)
 				goto out_unlock;
@@ -1216,24 +1064,20 @@ static int do_mq_timedreceive(mqd_t mqdes, char __user *u_msg_ptr,
 		goto out_fput;
 	}
 
-	/* checks if buffer is big enough */
+	 
 	if (unlikely(msg_len < info->attr.mq_msgsize)) {
 		ret = -EMSGSIZE;
 		goto out_fput;
 	}
 
-	/*
-	 * msg_insert really wants us to have a valid, spare node struct so
-	 * it doesn't have to kmalloc a GFP_ATOMIC allocation, but it will
-	 * fall back to that if necessary.
-	 */
+	 
 	if (!info->node_cache)
 		new_leaf = kmalloc(sizeof(*new_leaf), GFP_KERNEL);
 
 	spin_lock(&info->lock);
 
 	if (!info->node_cache && new_leaf) {
-		/* Save our speculative allocation into the cache */
+		 
 		INIT_LIST_HEAD(&new_leaf->msg_list);
 		info->node_cache = new_leaf;
 	} else {
@@ -1247,7 +1091,7 @@ static int do_mq_timedreceive(mqd_t mqdes, char __user *u_msg_ptr,
 		} else {
 			wait.task = current;
 
-			/* memory barrier not required, we hold info->lock */
+			 
 			WRITE_ONCE(wait.state, STATE_NONE);
 			ret = wq_sleep(info, RECV, timeout, &wait);
 			msg_ptr = wait.msg;
@@ -1259,7 +1103,7 @@ static int do_mq_timedreceive(mqd_t mqdes, char __user *u_msg_ptr,
 
 		inode->i_atime = inode->i_mtime = inode_set_ctime_current(inode);
 
-		/* There is now free space in queue. */
+		 
 		pipelined_receive(&wake_q, info);
 		spin_unlock(&info->lock);
 		wake_up_q(&wake_q);
@@ -1308,11 +1152,7 @@ SYSCALL_DEFINE5(mq_timedreceive, mqd_t, mqdes, char __user *, u_msg_ptr,
 	return do_mq_timedreceive(mqdes, u_msg_ptr, msg_len, u_msg_prio, p);
 }
 
-/*
- * Notes: the case when user wants us to deregister (with NULL as pointer)
- * and he isn't currently owner of notification, will be silently discarded.
- * It isn't explicitly defined in the POSIX.
- */
+ 
 static int do_mq_notify(mqd_t mqdes, const struct sigevent *notification)
 {
 	int ret;
@@ -1338,7 +1178,7 @@ static int do_mq_notify(mqd_t mqdes, const struct sigevent *notification)
 		if (notification->sigev_notify == SIGEV_THREAD) {
 			long timeo;
 
-			/* create the notify skb */
+			 
 			nc = alloc_skb(NOTIFY_COOKIE_LEN, GFP_KERNEL);
 			if (!nc)
 				return -ENOMEM;
@@ -1350,9 +1190,9 @@ static int do_mq_notify(mqd_t mqdes, const struct sigevent *notification)
 				goto free_skb;
 			}
 
-			/* TODO: add a header? */
+			 
 			skb_put(nc, NOTIFY_COOKIE_LEN);
-			/* and attach it to the socket */
+			 
 retry:
 			f = fdget(notification->sigev_signo);
 			if (!f.file) {
@@ -1520,11 +1360,11 @@ SYSCALL_DEFINE3(mq_getsetattr, mqd_t, mqdes,
 #ifdef CONFIG_COMPAT
 
 struct compat_mq_attr {
-	compat_long_t mq_flags;      /* message queue flags		     */
-	compat_long_t mq_maxmsg;     /* maximum number of messages	     */
-	compat_long_t mq_msgsize;    /* maximum message size		     */
-	compat_long_t mq_curmsgs;    /* number of messages currently queued  */
-	compat_long_t __reserved[4]; /* ignored for input, zeroed for output */
+	compat_long_t mq_flags;       
+	compat_long_t mq_maxmsg;      
+	compat_long_t mq_msgsize;     
+	compat_long_t mq_curmsgs;     
+	compat_long_t __reserved[4];  
 };
 
 static inline int get_compat_mq_attr(struct mq_attr *attr,

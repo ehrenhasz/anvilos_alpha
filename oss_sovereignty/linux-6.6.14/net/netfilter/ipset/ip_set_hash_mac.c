@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2014 Jozsef Kadlecsik <kadlec@netfilter.org> */
 
-/* Kernel module implementing an IP set type: the hash:mac type */
+ 
+
+ 
 
 #include <linux/jhash.h>
 #include <linux/module.h>
@@ -16,26 +16,26 @@
 #include <linux/netfilter/ipset/ip_set_hash.h>
 
 #define IPSET_TYPE_REV_MIN	0
-#define IPSET_TYPE_REV_MAX	1	/* bucketsize, initval support */
+#define IPSET_TYPE_REV_MAX	1	 
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Jozsef Kadlecsik <kadlec@netfilter.org>");
 IP_SET_MODULE_DESC("hash:mac", IPSET_TYPE_REV_MIN, IPSET_TYPE_REV_MAX);
 MODULE_ALIAS("ip_set_hash:mac");
 
-/* Type specific function prefix */
+ 
 #define HTYPE		hash_mac
 
-/* Member elements */
+ 
 struct hash_mac4_elem {
-	/* Zero valued IP addresses cannot be stored */
+	 
 	union {
 		unsigned char ether[ETH_ALEN];
 		__be32 foo[2];
 	};
 };
 
-/* Common functions */
+ 
 
 static bool
 hash_mac4_data_equal(const struct hash_mac4_elem *e1,

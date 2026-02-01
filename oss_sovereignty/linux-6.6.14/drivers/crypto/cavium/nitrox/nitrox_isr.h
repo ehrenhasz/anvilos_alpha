@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NITROX_ISR_H
 #define __NITROX_ISR_H
 
@@ -18,4 +18,4 @@ static inline int nitrox_sriov_configure(struct pci_dev *pdev, int num_vfs)
 }
 #endif
 
-#endif /* __NITROX_ISR_H */
+#endif  

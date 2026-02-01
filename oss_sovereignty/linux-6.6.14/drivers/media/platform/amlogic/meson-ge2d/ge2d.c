@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2020 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -36,14 +33,7 @@
 #define MAX_WIDTH	8191
 #define MAX_HEIGHT	8191
 
-/*
- * Missing features:
- * - Scaling
- * - Simple 1/2 vertical scaling
- * - YUV input support
- * - Source global alpha
- * - Colorspace conversion
- */
+ 
 
 struct ge2d_fmt {
 	u32 fourcc;
@@ -57,13 +47,13 @@ struct ge2d_fmt {
 struct ge2d_frame {
 	struct vb2_v4l2_buffer *buf;
 
-	/* Image Format */
+	 
 	struct v4l2_pix_format pix_fmt;
 
-	/* Crop */
+	 
 	struct v4l2_rect crop;
 
-	/* Image format */
+	 
 	const struct ge2d_fmt *fmt;
 };
 
@@ -76,7 +66,7 @@ struct ge2d_ctx {
 
 	unsigned long sequence_out, sequence_cap;
 
-	/* Control values */
+	 
 	u32 hflip;
 	u32 vflip;
 	u32 xy_swap;
@@ -91,7 +81,7 @@ struct meson_ge2d {
 	struct regmap *map;
 	struct clk *clk;
 
-	/* vb2 queue lock */
+	 
 	struct mutex mutex;
 
 	struct ge2d_ctx *curr;
@@ -106,9 +96,9 @@ struct meson_ge2d {
 	.hw_map = GE2D_COLOR_MAP_ ## _map,		\
 }
 
-/* TOFIX Handle the YUV input formats */
+ 
 static const struct ge2d_fmt formats[] = {
-	/*  FOURCC Alpha  HW FMT  HW MAP */
+	 
 	FMT(V4L2_PIX_FMT_XRGB32, false, 32, BGRA8888),
 	FMT(V4L2_PIX_FMT_RGB32, true, 32, BGRA8888),
 	FMT(V4L2_PIX_FMT_ARGB32, true, 32, BGRA8888),
@@ -143,12 +133,7 @@ static const struct ge2d_fmt *find_fmt(struct v4l2_format *f)
 			return &formats[i];
 	}
 
-	/*
-	 * TRY_FMT/S_FMT should never return an error when the requested format
-	 * is not supported. Drivers should always return a valid format,
-	 * preferably a format that is as widely supported by applications as
-	 * possible.
-	 */
+	 
 	return &formats[0];
 }
 
@@ -161,7 +146,7 @@ static struct ge2d_frame *get_frame(struct ge2d_ctx *ctx,
 	case V4L2_BUF_TYPE_VIDEO_CAPTURE:
 		return &ctx->out;
 	default:
-		/* This should never happen, warn and return OUTPUT frame */
+		 
 		dev_warn(ctx->ge2d->dev, "%s: invalid buffer type\n", __func__);
 		return &ctx->in;
 	}
@@ -172,7 +157,7 @@ static void ge2d_hw_start(struct meson_ge2d *ge2d)
 	struct ge2d_ctx *ctx = ge2d->curr;
 	u32 reg;
 
-	/* Reset */
+	 
 	regmap_update_bits(ge2d->map, GE2D_GEN_CTRL1,
 			   GE2D_SOFT_RST, GE2D_SOFT_RST);
 	regmap_update_bits(ge2d->map, GE2D_GEN_CTRL1,
@@ -180,7 +165,7 @@ static void ge2d_hw_start(struct meson_ge2d *ge2d)
 
 	usleep_range(100, 200);
 
-	/* Implement CANVAS for non-AXG */
+	 
 	regmap_write(ge2d->map, GE2D_SRC1_BADDR_CTRL,
 		     (vb2_dma_contig_plane_dma_addr(&ctx->in.buf->vb2_buf, 0) + 7) >> 3);
 	regmap_write(ge2d->map, GE2D_SRC1_STRIDE_CTRL,
@@ -245,26 +230,26 @@ static void ge2d_hw_start(struct meson_ge2d *ge2d)
 	regmap_write(ge2d->map, GE2D_DST_X_START_END,
 		     FIELD_PREP(GE2D_END, ctx->out.pix_fmt.width - 1));
 
-	/* Color, no blend, use source color */
+	 
 	reg = GE2D_ALU_DO_COLOR_OPERATION_LOGIC(LOGIC_OPERATION_COPY,
 						COLOR_FACTOR_SRC_COLOR);
 
 	if (ctx->in.fmt->alpha && ctx->out.fmt->alpha)
-		/* Take source alpha */
+		 
 		reg |= GE2D_ALU_DO_ALPHA_OPERATION_LOGIC(LOGIC_OPERATION_COPY,
 							 COLOR_FACTOR_SRC_ALPHA);
 	else if (!ctx->out.fmt->alpha)
-		/* Set alpha to 0 */
+		 
 		reg |= GE2D_ALU_DO_ALPHA_OPERATION_LOGIC(LOGIC_OPERATION_SET,
 							 COLOR_FACTOR_ZERO);
 	else
-		/* Keep original alpha */
+		 
 		reg |= GE2D_ALU_DO_ALPHA_OPERATION_LOGIC(LOGIC_OPERATION_COPY,
 							 COLOR_FACTOR_DST_ALPHA);
 
 	regmap_write(ge2d->map, GE2D_ALU_OP_CTRL, reg);
 
-	/* Start */
+	 
 	regmap_write(ge2d->map, GE2D_CMD_CTRL,
 		     (ctx->xy_swap ? GE2D_DST_XY_SWAP : 0) |
 		     (ctx->hflip ? GE2D_SRC1_Y_REV : 0) |
@@ -517,25 +502,16 @@ static int vidioc_s_selection(struct file *file, void *priv,
 
 	switch (s->target) {
 	case V4L2_SEL_TGT_COMPOSE:
-		/*
-		 * COMPOSE target is only valid for capture buffer type, return
-		 * error for output buffer type
-		 */
+		 
 		if (s->type != V4L2_BUF_TYPE_VIDEO_CAPTURE)
 			return -EINVAL;
 		break;
 	case V4L2_SEL_TGT_CROP:
-		/*
-		 * CROP target is only valid for output buffer type, return
-		 * error for capture buffer type
-		 */
+		 
 		if (s->type != V4L2_BUF_TYPE_VIDEO_OUTPUT)
 			return -EINVAL;
 		break;
-	/*
-	 * bound and default crop/compose targets are invalid targets to
-	 * try/set
-	 */
+	 
 	default:
 		return -EINVAL;
 	}
@@ -598,9 +574,7 @@ static int vidioc_s_fmt_cap(struct file *file, void *priv, struct v4l2_format *f
 	struct ge2d_frame *frm;
 	int ret = 0;
 
-	/* Adjust all values accordingly to the hardware capabilities
-	 * and chosen format.
-	 */
+	 
 	ret = vidioc_try_fmt_cap(file, priv, f);
 	if (ret)
 		return ret;
@@ -617,7 +591,7 @@ static int vidioc_s_fmt_cap(struct file *file, void *priv, struct v4l2_format *f
 	frm->fmt = find_fmt(f);
 	f->fmt.pix.pixelformat = frm->fmt->fourcc;
 
-	/* Reset crop settings */
+	 
 	frm->crop.left = 0;
 	frm->crop.top = 0;
 	frm->crop.width = frm->pix_fmt.width;
@@ -673,9 +647,7 @@ static int vidioc_s_fmt_out(struct file *file, void *priv, struct v4l2_format *f
 	struct ge2d_frame *frm, *frm_cap;
 	int ret = 0;
 
-	/* Adjust all values accordingly to the hardware capabilities
-	 * and chosen format.
-	 */
+	 
 	ret = vidioc_try_fmt_out(file, priv, f);
 	if (ret)
 		return ret;
@@ -693,13 +665,13 @@ static int vidioc_s_fmt_out(struct file *file, void *priv, struct v4l2_format *f
 	frm->fmt = find_fmt(f);
 	f->fmt.pix.pixelformat = frm->fmt->fourcc;
 
-	/* Reset crop settings */
+	 
 	frm->crop.left = 0;
 	frm->crop.top = 0;
 	frm->crop.width = frm->pix_fmt.width;
 	frm->crop.height = frm->pix_fmt.height;
 
-	/* Propagate settings to capture */
+	 
 	vidioc_setup_cap_fmt(ctx, &frm_cap->pix_fmt);
 
 	return 0;
@@ -775,10 +747,7 @@ static int ge2d_s_ctrl(struct v4l2_ctrl *ctrl)
 
 		vidioc_setup_cap_fmt(ctx, &fmt);
 
-		/*
-		 * If the rotation parameter changes the OUTPUT frames
-		 * parameters, take them in account
-		 */
+		 
 		ctx->out.pix_fmt = fmt;
 
 		break;
@@ -841,7 +810,7 @@ static int ge2d_open(struct file *file)
 		return -ENOMEM;
 	ctx->ge2d = ge2d;
 
-	/* Set default formats */
+	 
 	ctx->in = def_frame;
 	ctx->out = def_frame;
 
@@ -862,7 +831,7 @@ static int ge2d_open(struct file *file)
 
 	ge2d_setup_ctrls(ctx);
 
-	/* Write the default values to the ctx struct */
+	 
 	v4l2_ctrl_handler_setup(&ctx->ctrl_handler);
 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;

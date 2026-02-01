@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCIe host controller driver for Xilinx AXI PCIe Bridge
- *
- * Copyright (c) 2012 - 2014 Xilinx, Inc.
- *
- * Based on the Tegra PCIe driver
- *
- * Bits taken from Synopsys DesignWare Host controller driver and
- * ARM PCI Host generic driver.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/irq.h>
@@ -26,7 +17,7 @@
 
 #include "../pci.h"
 
-/* Register definitions */
+ 
 #define XILINX_PCIE_REG_BIR		0x00000130
 #define XILINX_PCIE_REG_IDR		0x00000138
 #define XILINX_PCIE_REG_IMR		0x0000013c
@@ -38,7 +29,7 @@
 #define XILINX_PCIE_REG_RPIFR1		0x00000158
 #define XILINX_PCIE_REG_RPIFR2		0x0000015c
 
-/* Interrupt registers definitions */
+ 
 #define XILINX_PCIE_INTR_LINK_DOWN	BIT(0)
 #define XILINX_PCIE_INTR_ECRC_ERR	BIT(1)
 #define XILINX_PCIE_INTR_STR_ERR	BIT(2)
@@ -62,44 +53,35 @@
 #define XILINX_PCIE_IMR_ENABLE_MASK	0x1FF30F0D
 #define XILINX_PCIE_IDR_ALL_MASK	0xFFFFFFFF
 
-/* Root Port Error FIFO Read Register definitions */
+ 
 #define XILINX_PCIE_RPEFR_ERR_VALID	BIT(18)
 #define XILINX_PCIE_RPEFR_REQ_ID	GENMASK(15, 0)
 #define XILINX_PCIE_RPEFR_ALL_MASK	0xFFFFFFFF
 
-/* Root Port Interrupt FIFO Read Register 1 definitions */
+ 
 #define XILINX_PCIE_RPIFR1_INTR_VALID	BIT(31)
 #define XILINX_PCIE_RPIFR1_MSI_INTR	BIT(30)
 #define XILINX_PCIE_RPIFR1_INTR_MASK	GENMASK(28, 27)
 #define XILINX_PCIE_RPIFR1_ALL_MASK	0xFFFFFFFF
 #define XILINX_PCIE_RPIFR1_INTR_SHIFT	27
 
-/* Bridge Info Register definitions */
+ 
 #define XILINX_PCIE_BIR_ECAM_SZ_MASK	GENMASK(18, 16)
 #define XILINX_PCIE_BIR_ECAM_SZ_SHIFT	16
 
-/* Root Port Interrupt FIFO Read Register 2 definitions */
+ 
 #define XILINX_PCIE_RPIFR2_MSG_DATA	GENMASK(15, 0)
 
-/* Root Port Status/control Register definitions */
+ 
 #define XILINX_PCIE_REG_RPSC_BEN	BIT(0)
 
-/* Phy Status/Control Register definitions */
+ 
 #define XILINX_PCIE_REG_PSCR_LNKUP	BIT(11)
 
-/* Number of MSI IRQs */
+ 
 #define XILINX_NUM_MSI_IRQS		128
 
-/**
- * struct xilinx_pcie - PCIe port information
- * @dev: Device pointer
- * @reg_base: IO Mapped Register Base
- * @msi_map: Bitmap of allocated MSIs
- * @map_lock: Mutex protecting the MSI allocation
- * @msi_domain: MSI IRQ domain pointer
- * @leg_domain: Legacy IRQ domain pointer
- * @resources: Bus Resources
- */
+ 
 struct xilinx_pcie {
 	struct device *dev;
 	void __iomem *reg_base;
@@ -126,10 +108,7 @@ static inline bool xilinx_pcie_link_up(struct xilinx_pcie *pcie)
 		XILINX_PCIE_REG_PSCR_LNKUP) ? 1 : 0;
 }
 
-/**
- * xilinx_pcie_clear_err_interrupts - Clear Error Interrupts
- * @pcie: PCIe port information
- */
+ 
 static void xilinx_pcie_clear_err_interrupts(struct xilinx_pcie *pcie)
 {
 	struct device *dev = pcie->dev;
@@ -143,37 +122,23 @@ static void xilinx_pcie_clear_err_interrupts(struct xilinx_pcie *pcie)
 	}
 }
 
-/**
- * xilinx_pcie_valid_device - Check if a valid device is present on bus
- * @bus: PCI Bus structure
- * @devfn: device/function
- *
- * Return: 'true' on success and 'false' if invalid device is found
- */
+ 
 static bool xilinx_pcie_valid_device(struct pci_bus *bus, unsigned int devfn)
 {
 	struct xilinx_pcie *pcie = bus->sysdata;
 
-	/* Check if link is up when trying to access downstream pcie ports */
+	 
 	if (!pci_is_root_bus(bus)) {
 		if (!xilinx_pcie_link_up(pcie))
 			return false;
 	} else if (devfn > 0) {
-		/* Only one device down on each root port */
+		 
 		return false;
 	}
 	return true;
 }
 
-/**
- * xilinx_pcie_map_bus - Get configuration base
- * @bus: PCI Bus structure
- * @devfn: Device/function
- * @where: Offset from base
- *
- * Return: Base address of the configuration space needed to be
- *	   accessed.
- */
+ 
 static void __iomem *xilinx_pcie_map_bus(struct pci_bus *bus,
 					 unsigned int devfn, int where)
 {
@@ -185,22 +150,18 @@ static void __iomem *xilinx_pcie_map_bus(struct pci_bus *bus,
 	return pcie->reg_base + PCIE_ECAM_OFFSET(bus->number, devfn, where);
 }
 
-/* PCIe operations */
+ 
 static struct pci_ops xilinx_pcie_ops = {
 	.map_bus = xilinx_pcie_map_bus,
 	.read	= pci_generic_config_read,
 	.write	= pci_generic_config_write,
 };
 
-/* MSI functions */
+ 
 
 static void xilinx_msi_top_irq_ack(struct irq_data *d)
 {
-	/*
-	 * xilinx_pcie_intr_handler() will have performed the Ack.
-	 * Eventually, this should be fixed and the Ack be moved in
-	 * the respective callbacks for INTx and MSI.
-	 */
+	 
 }
 
 static struct irq_chip xilinx_msi_top_chip = {
@@ -306,16 +267,9 @@ static void xilinx_free_msi_domains(struct xilinx_pcie *pcie)
 	irq_domain_remove(parent);
 }
 
-/* INTx Functions */
+ 
 
-/**
- * xilinx_pcie_intx_map - Set the handler for the INTx and mark IRQ as valid
- * @domain: IRQ domain
- * @irq: Virtual IRQ number
- * @hwirq: HW interrupt number
- *
- * Return: Always returns 0.
- */
+ 
 static int xilinx_pcie_intx_map(struct irq_domain *domain, unsigned int irq,
 				irq_hw_number_t hwirq)
 {
@@ -325,28 +279,22 @@ static int xilinx_pcie_intx_map(struct irq_domain *domain, unsigned int irq,
 	return 0;
 }
 
-/* INTx IRQ Domain operations */
+ 
 static const struct irq_domain_ops intx_domain_ops = {
 	.map = xilinx_pcie_intx_map,
 	.xlate = pci_irqd_intx_xlate,
 };
 
-/* PCIe HW Functions */
+ 
 
-/**
- * xilinx_pcie_intr_handler - Interrupt Service Handler
- * @irq: IRQ number
- * @data: PCIe port information
- *
- * Return: IRQ_HANDLED on success and IRQ_NONE on failure
- */
+ 
 static irqreturn_t xilinx_pcie_intr_handler(int irq, void *data)
 {
 	struct xilinx_pcie *pcie = (struct xilinx_pcie *)data;
 	struct device *dev = pcie->dev;
 	u32 val, mask, status;
 
-	/* Read interrupt decode and mask registers */
+	 
 	val = pcie_read(pcie, XILINX_PCIE_REG_IDR);
 	mask = pcie_read(pcie, XILINX_PCIE_REG_IMR);
 
@@ -389,13 +337,13 @@ static irqreturn_t xilinx_pcie_intr_handler(int irq, void *data)
 
 		val = pcie_read(pcie, XILINX_PCIE_REG_RPIFR1);
 
-		/* Check whether interrupt valid */
+		 
 		if (!(val & XILINX_PCIE_RPIFR1_INTR_VALID)) {
 			dev_warn(dev, "RP Intr FIFO1 read error\n");
 			goto error;
 		}
 
-		/* Decode the IRQ number */
+		 
 		if (val & XILINX_PCIE_RPIFR1_MSI_INTR) {
 			val = pcie_read(pcie, XILINX_PCIE_REG_RPIFR2) &
 				XILINX_PCIE_RPIFR2_MSG_DATA;
@@ -406,7 +354,7 @@ static irqreturn_t xilinx_pcie_intr_handler(int irq, void *data)
 			domain = pcie->leg_domain;
 		}
 
-		/* Clear interrupt FIFO register 1 */
+		 
 		pcie_write(pcie, XILINX_PCIE_RPIFR1_ALL_MASK,
 			   XILINX_PCIE_REG_RPIFR1);
 
@@ -441,25 +389,20 @@ static irqreturn_t xilinx_pcie_intr_handler(int irq, void *data)
 		dev_warn(dev, "Master error poison\n");
 
 error:
-	/* Clear the Interrupt Decode register */
+	 
 	pcie_write(pcie, status, XILINX_PCIE_REG_IDR);
 
 	return IRQ_HANDLED;
 }
 
-/**
- * xilinx_pcie_init_irq_domain - Initialize IRQ domain
- * @pcie: PCIe port information
- *
- * Return: '0' on success and error value on failure
- */
+ 
 static int xilinx_pcie_init_irq_domain(struct xilinx_pcie *pcie)
 {
 	struct device *dev = pcie->dev;
 	struct device_node *pcie_intc_node;
 	int ret;
 
-	/* Setup INTx */
+	 
 	pcie_intc_node = of_get_next_child(dev->of_node, NULL);
 	if (!pcie_intc_node) {
 		dev_err(dev, "No PCIe Intc node found\n");
@@ -475,7 +418,7 @@ static int xilinx_pcie_init_irq_domain(struct xilinx_pcie *pcie)
 		return -ENODEV;
 	}
 
-	/* Setup MSI */
+	 
 	if (IS_ENABLED(CONFIG_PCI_MSI)) {
 		phys_addr_t pa = ALIGN_DOWN(virt_to_phys(pcie), SZ_4K);
 
@@ -490,10 +433,7 @@ static int xilinx_pcie_init_irq_domain(struct xilinx_pcie *pcie)
 	return 0;
 }
 
-/**
- * xilinx_pcie_init_port - Initialize hardware
- * @pcie: PCIe port information
- */
+ 
 static void xilinx_pcie_init_port(struct xilinx_pcie *pcie)
 {
 	struct device *dev = pcie->dev;
@@ -503,30 +443,25 @@ static void xilinx_pcie_init_port(struct xilinx_pcie *pcie)
 	else
 		dev_info(dev, "PCIe Link is DOWN\n");
 
-	/* Disable all interrupts */
+	 
 	pcie_write(pcie, ~XILINX_PCIE_IDR_ALL_MASK,
 		   XILINX_PCIE_REG_IMR);
 
-	/* Clear pending interrupts */
+	 
 	pcie_write(pcie, pcie_read(pcie, XILINX_PCIE_REG_IDR) &
 			 XILINX_PCIE_IMR_ALL_MASK,
 		   XILINX_PCIE_REG_IDR);
 
-	/* Enable all interrupts we handle */
+	 
 	pcie_write(pcie, XILINX_PCIE_IMR_ENABLE_MASK, XILINX_PCIE_REG_IMR);
 
-	/* Enable the Bridge enable bit */
+	 
 	pcie_write(pcie, pcie_read(pcie, XILINX_PCIE_REG_RPSC) |
 			 XILINX_PCIE_REG_RPSC_BEN,
 		   XILINX_PCIE_REG_RPSC);
 }
 
-/**
- * xilinx_pcie_parse_dt - Parse Device tree
- * @pcie: PCIe port information
- *
- * Return: '0' on success and error value on failure
- */
+ 
 static int xilinx_pcie_parse_dt(struct xilinx_pcie *pcie)
 {
 	struct device *dev = pcie->dev;
@@ -557,12 +492,7 @@ static int xilinx_pcie_parse_dt(struct xilinx_pcie *pcie)
 	return 0;
 }
 
-/**
- * xilinx_pcie_probe - Probe function
- * @pdev: Platform device pointer
- *
- * Return: '0' on success and error value on failure
- */
+ 
 static int xilinx_pcie_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;

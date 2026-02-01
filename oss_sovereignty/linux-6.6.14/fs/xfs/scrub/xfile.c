@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2018-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -16,44 +13,12 @@
 #include "scrub/trace.h"
 #include <linux/shmem_fs.h>
 
-/*
- * Swappable Temporary Memory
- * ==========================
- *
- * Online checking sometimes needs to be able to stage a large amount of data
- * in memory.  This information might not fit in the available memory and it
- * doesn't all need to be accessible at all times.  In other words, we want an
- * indexed data buffer to store data that can be paged out.
- *
- * When CONFIG_TMPFS=y, shmemfs is enough of a filesystem to meet those
- * requirements.  Therefore, the xfile mechanism uses an unlinked shmem file to
- * store our staging data.  This file is not installed in the file descriptor
- * table so that user programs cannot access the data, which means that the
- * xfile must be freed with xfile_destroy.
- *
- * xfiles assume that the caller will handle all required concurrency
- * management; standard vfs locks (freezer and inode) are not taken.  Reads
- * and writes are satisfied directly from the page cache.
- *
- * NOTE: The current shmemfs implementation has a quirk that in-kernel reads
- * of a hole cause a page to be mapped into the file.  If you are going to
- * create a sparse xfile, please be careful about reading from uninitialized
- * parts of the file.  These pages are !Uptodate and will eventually be
- * reclaimed if not written, but in the short term this boosts memory
- * consumption.
- */
+ 
 
-/*
- * xfiles must not be exposed to userspace and require upper layers to
- * coordinate access to the one handle returned by the constructor, so
- * establish a separate lock class for xfiles to avoid confusing lockdep.
- */
+ 
 static struct lock_class_key xfile_i_mutex_key;
 
-/*
- * Create an xfile of the given size.  The description will be used in the
- * trace output.
- */
+ 
 int
 xfile_create(
 	const char		*description,
@@ -76,13 +41,7 @@ xfile_create(
 		goto out_xfile;
 	}
 
-	/*
-	 * We want a large sparse file that we can pread, pwrite, and seek.
-	 * xfile users are responsible for keeping the xfile hidden away from
-	 * all other callers, so we skip timestamp updates and security checks.
-	 * Make the inode only accessible by root, just in case the xfile ever
-	 * escapes.
-	 */
+	 
 	xf->file->f_mode |= FMODE_PREAD | FMODE_PWRITE | FMODE_NOCMTIME |
 			    FMODE_LSEEK;
 	xf->file->f_flags |= O_RDWR | O_LARGEFILE | O_NOATIME;
@@ -103,7 +62,7 @@ out_xfile:
 	return error;
 }
 
-/* Close the file and release all resources. */
+ 
 void
 xfile_destroy(
 	struct xfile		*xf)
@@ -117,12 +76,7 @@ xfile_destroy(
 	kfree(xf);
 }
 
-/*
- * Read a memory object directly from the xfile's page cache.  Unlike regular
- * pread, we return -E2BIG and -EFBIG for reads that are too large or at too
- * high an offset, instead of truncating the read.  Otherwise, we return
- * bytes read or an error code, like regular pread.
- */
+ 
 ssize_t
 xfile_pread(
 	struct xfile		*xf,
@@ -151,11 +105,7 @@ xfile_pread(
 
 		len = min_t(ssize_t, count, PAGE_SIZE - offset_in_page(pos));
 
-		/*
-		 * In-kernel reads of a shmem file cause it to allocate a page
-		 * if the mapping shows a hole.  Therefore, if we hit ENOMEM
-		 * we can continue by zeroing the caller's buffer.
-		 */
+		 
 		page = shmem_read_mapping_page_gfp(mapping, pos >> PAGE_SHIFT,
 				__GFP_NOWARN);
 		if (IS_ERR(page)) {
@@ -168,10 +118,7 @@ xfile_pread(
 		}
 
 		if (PageUptodate(page)) {
-			/*
-			 * xfile pages must never be mapped into userspace, so
-			 * we skip the dcache flush.
-			 */
+			 
 			kaddr = kmap_local_page(page);
 			p = kaddr + offset_in_page(pos);
 			memcpy(buf, p, len);
@@ -194,12 +141,7 @@ advance:
 	return error;
 }
 
-/*
- * Write a memory object directly to the xfile's page cache.  Unlike regular
- * pwrite, we return -E2BIG and -EFBIG for writes that are too large or at too
- * high an offset, instead of truncating the write.  Otherwise, we return
- * bytes written or an error code, like regular pwrite.
- */
+ 
 ssize_t
 xfile_pwrite(
 	struct xfile		*xf,
@@ -231,22 +173,13 @@ xfile_pwrite(
 
 		len = min_t(ssize_t, count, PAGE_SIZE - offset_in_page(pos));
 
-		/*
-		 * We call write_begin directly here to avoid all the freezer
-		 * protection lock-taking that happens in the normal path.
-		 * shmem doesn't support fs freeze, but lockdep doesn't know
-		 * that and will trip over that.
-		 */
+		 
 		error = aops->write_begin(NULL, mapping, pos, len, &page,
 				&fsdata);
 		if (error)
 			break;
 
-		/*
-		 * xfile pages must never be mapped into userspace, so we skip
-		 * the dcache flush.  If the page is not uptodate, zero it
-		 * before writing data.
-		 */
+		 
 		kaddr = kmap_local_page(page);
 		if (!PageUptodate(page)) {
 			memset(kaddr, 0, PAGE_SIZE);
@@ -278,7 +211,7 @@ xfile_pwrite(
 	return error;
 }
 
-/* Find the next written area in the xfile data for a given offset. */
+ 
 loff_t
 xfile_seek_data(
 	struct xfile		*xf,
@@ -291,7 +224,7 @@ xfile_seek_data(
 	return ret;
 }
 
-/* Query stat information for an xfile. */
+ 
 int
 xfile_stat(
 	struct xfile		*xf,
@@ -310,11 +243,7 @@ xfile_stat(
 	return 0;
 }
 
-/*
- * Grab the (locked) page for a memory object.  The object cannot span a page
- * boundary.  Returns 0 (and a locked page) if successful, -ENOTBLK if we
- * cannot grab the page, or the usual negative errno.
- */
+ 
 int
 xfile_get_page(
 	struct xfile		*xf,
@@ -340,25 +269,17 @@ xfile_get_page(
 
 	pflags = memalloc_nofs_save();
 
-	/*
-	 * We call write_begin directly here to avoid all the freezer
-	 * protection lock-taking that happens in the normal path.  shmem
-	 * doesn't support fs freeze, but lockdep doesn't know that and will
-	 * trip over that.
-	 */
+	 
 	error = aops->write_begin(NULL, mapping, key, PAGE_SIZE, &page,
 			&fsdata);
 	if (error)
 		goto out_pflags;
 
-	/* We got the page, so make sure we push out EOF. */
+	 
 	if (i_size_read(inode) < pos + len)
 		i_size_write(inode, pos + len);
 
-	/*
-	 * If the page isn't up to date, fill it with zeroes before we hand it
-	 * to the caller and make sure the backing store will hold on to them.
-	 */
+	 
 	if (!PageUptodate(page)) {
 		void	*kaddr;
 
@@ -368,12 +289,7 @@ xfile_get_page(
 		SetPageUptodate(page);
 	}
 
-	/*
-	 * Mark each page dirty so that the contents are written to some
-	 * backing store when we drop this buffer, and take an extra reference
-	 * to prevent the xfile page from being swapped or removed from the
-	 * page cache by reclaim if the caller unlocks the page.
-	 */
+	 
 	set_page_dirty(page);
 	get_page(page);
 
@@ -385,10 +301,7 @@ out_pflags:
 	return error;
 }
 
-/*
- * Release the (locked) page for a memory object.  Returns 0 or a negative
- * errno.
- */
+ 
 int
 xfile_put_page(
 	struct xfile		*xf,
@@ -402,7 +315,7 @@ xfile_put_page(
 
 	trace_xfile_put_page(xf, xfpage->pos, PAGE_SIZE);
 
-	/* Give back the reference that we took in xfile_get_page. */
+	 
 	put_page(xfpage->page);
 
 	pflags = memalloc_nofs_save();

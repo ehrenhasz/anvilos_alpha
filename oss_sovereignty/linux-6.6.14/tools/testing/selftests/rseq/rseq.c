@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * rseq.c
- *
- * Copyright (C) 2016 Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
- *
- * This library is free software; you can redistribute it and/or
- * modify it under the terms of the GNU Lesser General Public
- * License as published by the Free Software Foundation; only
- * version 2.1 of the License.
- *
- * This library is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
- * Lesser General Public License for more details.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <errno.h>
@@ -36,10 +22,7 @@
 #include "../kselftest.h"
 #include "rseq.h"
 
-/*
- * Define weak versions to play nice with binaries that are statically linked
- * against a libc that doesn't support registering its own rseq.
- */
+ 
 __weak ptrdiff_t __rseq_offset;
 __weak unsigned int __rseq_size;
 __weak unsigned int __rseq_flags;
@@ -48,34 +31,28 @@ static const ptrdiff_t *libc_rseq_offset_p = &__rseq_offset;
 static const unsigned int *libc_rseq_size_p = &__rseq_size;
 static const unsigned int *libc_rseq_flags_p = &__rseq_flags;
 
-/* Offset from the thread pointer to the rseq area. */
+ 
 ptrdiff_t rseq_offset;
 
-/*
- * Size of the registered rseq area. 0 if the registration was
- * unsuccessful.
- */
+ 
 unsigned int rseq_size = -1U;
 
-/* Flags used during rseq registration.  */
+ 
 unsigned int rseq_flags;
 
-/*
- * rseq feature size supported by the kernel. 0 if the registration was
- * unsuccessful.
- */
+ 
 unsigned int rseq_feature_size = -1U;
 
 static int rseq_ownership;
-static int rseq_reg_success;	/* At least one rseq registration has succeded. */
+static int rseq_reg_success;	 
 
-/* Allocate a large area for the TLS. */
+ 
 #define RSEQ_THREAD_AREA_ALLOC_SIZE	1024
 
-/* Original struct rseq feature size is 20 bytes. */
+ 
 #define ORIG_RSEQ_FEATURE_SIZE		20
 
-/* Original struct rseq allocation size is 32 bytes. */
+ 
 #define ORIG_RSEQ_ALLOC_SIZE		32
 
 static
@@ -116,13 +93,13 @@ int rseq_register_current_thread(void)
 	int rc;
 
 	if (!rseq_ownership) {
-		/* Treat libc's ownership as a successful registration. */
+		 
 		return 0;
 	}
 	rc = sys_rseq(&__rseq_abi, rseq_size, 0, RSEQ_SIG);
 	if (rc) {
 		if (RSEQ_READ_ONCE(rseq_reg_success)) {
-			/* Incoherent success/failure within process. */
+			 
 			abort();
 		}
 		return -1;
@@ -137,7 +114,7 @@ int rseq_unregister_current_thread(void)
 	int rc;
 
 	if (!rseq_ownership) {
-		/* Treat libc's ownership as a successful unregistration. */
+		 
 		return 0;
 	}
 	rc = sys_rseq(&__rseq_abi, rseq_size, RSEQ_ABI_FLAG_UNREGISTER, RSEQ_SIG);
@@ -165,12 +142,7 @@ unsigned int get_rseq_feature_size(void)
 static __attribute__((constructor))
 void rseq_init(void)
 {
-	/*
-	 * If the libc's registered rseq size isn't already valid, it may be
-	 * because the binary is dynamically linked and not necessarily due to
-	 * libc not having registered a restartable sequence.  Try to find the
-	 * symbols if that's the case.
-	 */
+	 
 	if (!*libc_rseq_size_p) {
 		libc_rseq_offset_p = dlsym(RTLD_NEXT, "__rseq_offset");
 		libc_rseq_size_p = dlsym(RTLD_NEXT, "__rseq_size");
@@ -178,7 +150,7 @@ void rseq_init(void)
 	}
 	if (libc_rseq_size_p && libc_rseq_offset_p && libc_rseq_flags_p &&
 			*libc_rseq_size_p != 0) {
-		/* rseq registration owned by glibc */
+		 
 		rseq_offset = *libc_rseq_offset_p;
 		rseq_size = *libc_rseq_size_p;
 		rseq_flags = *libc_rseq_flags_p;

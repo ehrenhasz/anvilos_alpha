@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Watchdog driver for the UniPhier watchdog timer
- *
- * (c) Copyright 2014 Panasonic Corporation
- * (c) Copyright 2016 Socionext Inc.
- * All rights reserved.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/mfd/syscon.h>
@@ -15,18 +9,18 @@
 #include <linux/regmap.h>
 #include <linux/watchdog.h>
 
-/* WDT timer setting register */
+ 
 #define WDTTIMSET			0x3004
 #define   WDTTIMSET_PERIOD_MASK		(0xf << 0)
 #define   WDTTIMSET_PERIOD_1_SEC	(0x3 << 0)
 
-/* WDT reset selection register */
+ 
 #define WDTRSTSEL			0x3008
 #define   WDTRSTSEL_RSTSEL_MASK		(0x3 << 0)
 #define   WDTRSTSEL_RSTSEL_BOTH		(0x0 << 0)
 #define   WDTRSTSEL_RSTSEL_IRQ_ONLY	(0x2 << 0)
 
-/* WDT control register */
+ 
 #define WDTCTRL				0x300c
 #define   WDTCTRL_STATUS		BIT(8)
 #define   WDTCTRL_CLEAR			BIT(1)
@@ -35,9 +29,9 @@
 #define SEC_TO_WDTTIMSET_PRD(sec) \
 		(ilog2(sec) + WDTTIMSET_PERIOD_1_SEC)
 
-#define WDTST_TIMEOUT			1000 /* usec */
+#define WDTST_TIMEOUT			1000  
 
-#define WDT_DEFAULT_TIMEOUT		64   /* Default is 64 seconds */
+#define WDT_DEFAULT_TIMEOUT		64    
 #define WDT_PERIOD_MIN			1
 #define WDT_PERIOD_MAX			128
 
@@ -49,23 +43,18 @@ struct uniphier_wdt_dev {
 	struct regmap	*regmap;
 };
 
-/*
- * UniPhier Watchdog operations
- */
+ 
 static int uniphier_watchdog_ping(struct watchdog_device *w)
 {
 	struct uniphier_wdt_dev *wdev = watchdog_get_drvdata(w);
 	unsigned int val;
 	int ret;
 
-	/* Clear counter */
+	 
 	ret = regmap_write_bits(wdev->regmap, WDTCTRL,
 				WDTCTRL_CLEAR, WDTCTRL_CLEAR);
 	if (!ret)
-		/*
-		 * As SoC specification, after clear counter,
-		 * it needs to wait until counter status is 1.
-		 */
+		 
 		ret = regmap_read_poll_timeout(wdev->regmap, WDTCTRL, val,
 					       (val & WDTCTRL_STATUS),
 					       0, WDTST_TIMEOUT);
@@ -84,19 +73,16 @@ static int __uniphier_watchdog_start(struct regmap *regmap, unsigned int sec)
 	if (ret)
 		return ret;
 
-	/* Setup period */
+	 
 	ret = regmap_write(regmap, WDTTIMSET,
 			   SEC_TO_WDTTIMSET_PRD(sec));
 	if (ret)
 		return ret;
 
-	/* Enable and clear watchdog */
+	 
 	ret = regmap_write(regmap, WDTCTRL, WDTCTRL_ENABLE | WDTCTRL_CLEAR);
 	if (!ret)
-		/*
-		 * As SoC specification, after clear counter,
-		 * it needs to wait until counter status is 1.
-		 */
+		 
 		ret = regmap_read_poll_timeout(regmap, WDTCTRL, val,
 					       (val & WDTCTRL_STATUS),
 					       0, WDTST_TIMEOUT);
@@ -106,7 +92,7 @@ static int __uniphier_watchdog_start(struct regmap *regmap, unsigned int sec)
 
 static int __uniphier_watchdog_stop(struct regmap *regmap)
 {
-	/* Disable and stop watchdog */
+	 
 	return regmap_write_bits(regmap, WDTCTRL, WDTCTRL_ENABLE, 0);
 }
 
@@ -160,9 +146,7 @@ static int uniphier_watchdog_set_timeout(struct watchdog_device *w,
 	return 0;
 }
 
-/*
- * Kernel Interfaces
- */
+ 
 static const struct watchdog_info uniphier_wdt_info = {
 	.identity	= "uniphier-wdt",
 	.options	= WDIOF_SETTIMEOUT |
@@ -191,7 +175,7 @@ static int uniphier_wdt_probe(struct platform_device *pdev)
 	if (!wdev)
 		return -ENOMEM;
 
-	parent = of_get_parent(dev->of_node); /* parent should be syscon node */
+	parent = of_get_parent(dev->of_node);  
 	regmap = syscon_node_to_regmap(parent);
 	of_node_put(parent);
 	if (IS_ERR(regmap))
@@ -228,7 +212,7 @@ static int uniphier_wdt_probe(struct platform_device *pdev)
 
 static const struct of_device_id uniphier_wdt_dt_ids[] = {
 	{ .compatible = "socionext,uniphier-wdt" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_wdt_dt_ids);
 

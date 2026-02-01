@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2017-2018 The Linux Foundation. All rights reserved. */
+
+ 
 
 #include <linux/completion.h>
 #include <linux/circ_buf.h>
@@ -38,14 +38,7 @@ static int a6xx_hfi_queue_read(struct a6xx_gmu *gmu,
 
 	queue->history[(queue->history_idx++) % HFI_HISTORY_SZ] = index;
 
-	/*
-	 * If we are to assume that the GMU firmware is in fact a rational actor
-	 * and is programmed to not send us a larger response than we expect
-	 * then we can also assume that if the header size is unexpectedly large
-	 * that it is due to memory corruption and/or hardware failure. In this
-	 * case the only reasonable course of action is to BUG() to help harden
-	 * the failure.
-	 */
+	 
 
 	BUG_ON(HFI_HEADER_SIZE(hdr) > dwords);
 
@@ -84,7 +77,7 @@ static int a6xx_hfi_queue_write(struct a6xx_gmu *gmu,
 		index = (index + 1) % header->size;
 	}
 
-	/* Cookify any non used data at the end of the write buffer */
+	 
 	if (!gmu->legacy) {
 		for (; index % 4; index = (index + 1) % header->size)
 			queue->data[index] = 0xfafafafa;
@@ -104,7 +97,7 @@ static int a6xx_hfi_wait_for_ack(struct a6xx_gmu *gmu, u32 id, u32 seqnum,
 	u32 val;
 	int ret;
 
-	/* Wait for a response */
+	 
 	ret = gmu_poll_timeout(gmu, REG_A6XX_GMU_GMU2HOST_INTR_INFO, val,
 		val & A6XX_GMU_GMU2HOST_INTR_INFO_MSGQ, 100, 5000);
 
@@ -115,18 +108,18 @@ static int a6xx_hfi_wait_for_ack(struct a6xx_gmu *gmu, u32 id, u32 seqnum,
 		return -ETIMEDOUT;
 	}
 
-	/* Clear the interrupt */
+	 
 	gmu_write(gmu, REG_A6XX_GMU_GMU2HOST_INTR_CLR,
 		A6XX_GMU_GMU2HOST_INTR_INFO_MSGQ);
 
 	for (;;) {
 		struct a6xx_hfi_msg_response resp;
 
-		/* Get the next packet */
+		 
 		ret = a6xx_hfi_queue_read(gmu, queue, (u32 *) &resp,
 			sizeof(resp) >> 2);
 
-		/* If the queue is empty our response never made it */
+		 
 		if (!ret) {
 			DRM_DEV_ERROR(gmu->dev,
 				"The HFI response queue is unexpectedly empty\n");
@@ -157,7 +150,7 @@ static int a6xx_hfi_wait_for_ack(struct a6xx_gmu *gmu, u32 id, u32 seqnum,
 			return -EINVAL;
 		}
 
-		/* All is well, copy over the buffer */
+		 
 		if (payload && payload_size)
 			memcpy(payload, resp.payload,
 				min_t(u32, payload_size, sizeof(resp.payload)));
@@ -175,7 +168,7 @@ static int a6xx_hfi_send_msg(struct a6xx_gmu *gmu, int id,
 
 	seqnum = atomic_inc_return(&queue->seqnum) % 0xfff;
 
-	/* First dword of the message is the message header - fill it in */
+	 
 	*((u32 *) data) = (seqnum << 20) | (HFI_MSG_CMD << 16) |
 		(dwords << 8) | id;
 
@@ -205,7 +198,7 @@ static int a6xx_hfi_get_fw_version(struct a6xx_gmu *gmu, u32 *version)
 {
 	struct a6xx_hfi_msg_fw_version msg = { 0 };
 
-	/* Currently supporting version 1.10 */
+	 
 	msg.supported_version = (1 << 28) | (1 << 19) | (1 << 17);
 
 	return a6xx_hfi_send_msg(gmu, HFI_H2F_MSG_FW_VERSION, &msg, sizeof(msg),
@@ -259,7 +252,7 @@ static int a6xx_hfi_send_perf_table(struct a6xx_gmu *gmu)
 
 static void a618_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 {
-	/* Send a single "off" entry since the 618 GMU doesn't do bus scaling */
+	 
 	msg->bw_level_num = 1;
 
 	msg->ddr_cmds_num = 3;
@@ -273,10 +266,7 @@ static void a618_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 	msg->ddr_cmds_data[0][1] =  0x40000000;
 	msg->ddr_cmds_data[0][2] =  0x40000000;
 
-	/*
-	 * These are the CX (CNOC) votes - these are used by the GMU but the
-	 * votes are known and fixed for the target
-	 */
+	 
 	msg->cnoc_cmds_num = 1;
 	msg->cnoc_wait_bitmask = 0x01;
 
@@ -346,10 +336,7 @@ static void a619_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 
 static void a640_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 {
-	/*
-	 * Send a single "off" entry just to get things running
-	 * TODO: bus scaling
-	 */
+	 
 	msg->bw_level_num = 1;
 
 	msg->ddr_cmds_num = 3;
@@ -363,10 +350,7 @@ static void a640_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 	msg->ddr_cmds_data[0][1] =  0x40000000;
 	msg->ddr_cmds_data[0][2] =  0x40000000;
 
-	/*
-	 * These are the CX (CNOC) votes - these are used by the GMU but the
-	 * votes are known and fixed for the target
-	 */
+	 
 	msg->cnoc_cmds_num = 3;
 	msg->cnoc_wait_bitmask = 0x01;
 
@@ -385,10 +369,7 @@ static void a640_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 
 static void a650_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 {
-	/*
-	 * Send a single "off" entry just to get things running
-	 * TODO: bus scaling
-	 */
+	 
 	msg->bw_level_num = 1;
 
 	msg->ddr_cmds_num = 3;
@@ -402,10 +383,7 @@ static void a650_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 	msg->ddr_cmds_data[0][1] =  0x40000000;
 	msg->ddr_cmds_data[0][2] =  0x40000000;
 
-	/*
-	 * These are the CX (CNOC) votes - these are used by the GMU but the
-	 * votes are known and fixed for the target
-	 */
+	 
 	msg->cnoc_cmds_num = 1;
 	msg->cnoc_wait_bitmask = 0x01;
 
@@ -416,10 +394,7 @@ static void a650_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 
 static void a690_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 {
-	/*
-	 * Send a single "off" entry just to get things running
-	 * TODO: bus scaling
-	 */
+	 
 	msg->bw_level_num = 1;
 
 	msg->ddr_cmds_num = 3;
@@ -433,10 +408,7 @@ static void a690_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 	msg->ddr_cmds_data[0][1] =  0x40000000;
 	msg->ddr_cmds_data[0][2] =  0x40000000;
 
-	/*
-	 * These are the CX (CNOC) votes - these are used by the GMU but the
-	 * votes are known and fixed for the target
-	 */
+	 
 	msg->cnoc_cmds_num = 1;
 	msg->cnoc_wait_bitmask = 0x01;
 
@@ -447,10 +419,7 @@ static void a690_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 
 static void a660_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 {
-	/*
-	 * Send a single "off" entry just to get things running
-	 * TODO: bus scaling
-	 */
+	 
 	msg->bw_level_num = 1;
 
 	msg->ddr_cmds_num = 3;
@@ -464,10 +433,7 @@ static void a660_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 	msg->ddr_cmds_data[0][1] =  0x40000000;
 	msg->ddr_cmds_data[0][2] =  0x40000000;
 
-	/*
-	 * These are the CX (CNOC) votes - these are used by the GMU but the
-	 * votes are known and fixed for the target
-	 */
+	 
 	msg->cnoc_cmds_num = 1;
 	msg->cnoc_wait_bitmask = 0x01;
 
@@ -478,10 +444,7 @@ static void a660_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 
 static void adreno_7c3_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 {
-	/*
-	 * Send a single "off" entry just to get things running
-	 * TODO: bus scaling
-	 */
+	 
 	msg->bw_level_num = 1;
 
 	msg->ddr_cmds_num = 3;
@@ -495,10 +458,7 @@ static void adreno_7c3_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 	msg->ddr_cmds_data[0][1] =  0x40000000;
 	msg->ddr_cmds_data[0][2] =  0x40000000;
 
-	/*
-	 * These are the CX (CNOC) votes - these are used by the GMU but the
-	 * votes are known and fixed for the target
-	 */
+	 
 	msg->cnoc_cmds_num = 1;
 	msg->cnoc_wait_bitmask = 0x01;
 
@@ -508,7 +468,7 @@ static void adreno_7c3_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 }
 static void a6xx_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 {
-	/* Send a single "off" entry since the 630 GMU doesn't do bus scaling */
+	 
 	msg->bw_level_num = 1;
 
 	msg->ddr_cmds_num = 3;
@@ -522,10 +482,7 @@ static void a6xx_build_bw_table(struct a6xx_hfi_msg_bw_table *msg)
 	msg->ddr_cmds_data[0][1] =  0x40000000;
 	msg->ddr_cmds_data[0][2] =  0x40000000;
 
-	/*
-	 * These are the CX (CNOC) votes.  This is used but the values for the
-	 * sdm845 GMU are known and fixed so we can hard code them.
-	 */
+	 
 
 	msg->cnoc_cmds_num = 3;
 	msg->cnoc_wait_bitmask = 0x05;
@@ -599,9 +556,9 @@ int a6xx_hfi_set_freq(struct a6xx_gmu *gmu, int index)
 {
 	struct a6xx_hfi_gx_bw_perf_vote_cmd msg = { 0 };
 
-	msg.ack_type = 1; /* blocking */
+	msg.ack_type = 1;  
 	msg.freq = index;
-	msg.bw = 0; /* TODO: bus scaling */
+	msg.bw = 0;  
 
 	return a6xx_hfi_send_msg(gmu, HFI_H2F_MSG_GX_BW_PERF_VOTE, &msg,
 		sizeof(msg), NULL, 0);
@@ -611,7 +568,7 @@ int a6xx_hfi_send_prep_slumber(struct a6xx_gmu *gmu)
 {
 	struct a6xx_hfi_prep_slumber_cmd msg = { 0 };
 
-	/* TODO: should freq and bw fields be non-zero ? */
+	 
 
 	return a6xx_hfi_send_msg(gmu, HFI_H2F_MSG_PREPARE_SLUMBER, &msg,
 		sizeof(msg), NULL, 0);
@@ -629,11 +586,7 @@ static int a6xx_hfi_start_v1(struct a6xx_gmu *gmu, int boot_state)
 	if (ret)
 		return ret;
 
-	/*
-	 * We have to get exchange version numbers per the sequence but at this
-	 * point th kernel driver doesn't need to know the exact version of
-	 * the GMU firmware
-	 */
+	 
 
 	ret = a6xx_hfi_send_perf_table_v1(gmu);
 	if (ret)
@@ -643,10 +596,7 @@ static int a6xx_hfi_start_v1(struct a6xx_gmu *gmu, int boot_state)
 	if (ret)
 		return ret;
 
-	/*
-	 * Let the GMU know that there won't be any more HFI messages until next
-	 * boot
-	 */
+	 
 	a6xx_hfi_send_test(gmu);
 
 	return 0;
@@ -672,10 +622,7 @@ int a6xx_hfi_start(struct a6xx_gmu *gmu, int boot_state)
 	if (ret)
 		return ret;
 
-	/*
-	 * Downstream driver sends this in its "a6xx_hw_init" equivalent,
-	 * but seems to be no harm in sending it here
-	 */
+	 
 	ret = a6xx_hfi_send_start(gmu);
 	if (ret)
 		return ret;
@@ -716,7 +663,7 @@ static void a6xx_hfi_queue_init(struct a6xx_hfi_queue *queue,
 	memset(&queue->history, 0xff, sizeof(queue->history));
 	queue->history_idx = 0;
 
-	/* Set up the shared memory header */
+	 
 	header->iova = iova;
 	header->type =  10 << 8 | id;
 	header->status = 1;
@@ -739,28 +686,25 @@ void a6xx_hfi_init(struct a6xx_gmu *gmu)
 	u64 offset;
 	int table_size;
 
-	/*
-	 * The table size is the size of the table header plus all of the queue
-	 * headers
-	 */
+	 
 	table_size = sizeof(*table);
 	table_size += (ARRAY_SIZE(gmu->queues) *
 		sizeof(struct a6xx_hfi_queue_header));
 
 	table->version = 0;
 	table->size = table_size;
-	/* First queue header is located immediately after the table header */
+	 
 	table->qhdr0_offset = sizeof(*table) >> 2;
 	table->qhdr_size = sizeof(struct a6xx_hfi_queue_header) >> 2;
 	table->num_queues = ARRAY_SIZE(gmu->queues);
 	table->active_queues = ARRAY_SIZE(gmu->queues);
 
-	/* Command queue */
+	 
 	offset = SZ_4K;
 	a6xx_hfi_queue_init(&gmu->queues[0], &headers[0], hfi->virt + offset,
 		hfi->iova + offset, 0);
 
-	/* GMU response queue */
+	 
 	offset += SZ_4K;
 	a6xx_hfi_queue_init(&gmu->queues[1], &headers[1], hfi->virt + offset,
 		hfi->iova + offset, gmu->legacy ? 4 : 1);

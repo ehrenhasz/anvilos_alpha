@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2016-2017, National Instruments Corp.
- *
- * Author: Moritz Fischer <mdf@kernel.org>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/module.h>
@@ -21,51 +18,51 @@
 #define TX_BD_NUM		64
 #define RX_BD_NUM		128
 
-/* Axi DMA Register definitions */
-#define XAXIDMA_TX_CR_OFFSET	0x00 /* Channel control */
-#define XAXIDMA_TX_SR_OFFSET	0x04 /* Status */
-#define XAXIDMA_TX_CDESC_OFFSET	0x08 /* Current descriptor pointer */
-#define XAXIDMA_TX_TDESC_OFFSET	0x10 /* Tail descriptor pointer */
+ 
+#define XAXIDMA_TX_CR_OFFSET	0x00  
+#define XAXIDMA_TX_SR_OFFSET	0x04  
+#define XAXIDMA_TX_CDESC_OFFSET	0x08  
+#define XAXIDMA_TX_TDESC_OFFSET	0x10  
 
-#define XAXIDMA_RX_CR_OFFSET	0x30 /* Channel control */
-#define XAXIDMA_RX_SR_OFFSET	0x34 /* Status */
-#define XAXIDMA_RX_CDESC_OFFSET	0x38 /* Current descriptor pointer */
-#define XAXIDMA_RX_TDESC_OFFSET	0x40 /* Tail descriptor pointer */
+#define XAXIDMA_RX_CR_OFFSET	0x30  
+#define XAXIDMA_RX_SR_OFFSET	0x34  
+#define XAXIDMA_RX_CDESC_OFFSET	0x38  
+#define XAXIDMA_RX_TDESC_OFFSET	0x40  
 
-#define XAXIDMA_CR_RUNSTOP_MASK	0x1 /* Start/stop DMA channel */
-#define XAXIDMA_CR_RESET_MASK	0x4 /* Reset DMA engine */
+#define XAXIDMA_CR_RUNSTOP_MASK	0x1  
+#define XAXIDMA_CR_RESET_MASK	0x4  
 
-#define XAXIDMA_BD_CTRL_LENGTH_MASK	0x007FFFFF /* Requested len */
-#define XAXIDMA_BD_CTRL_TXSOF_MASK	0x08000000 /* First tx packet */
-#define XAXIDMA_BD_CTRL_TXEOF_MASK	0x04000000 /* Last tx packet */
-#define XAXIDMA_BD_CTRL_ALL_MASK	0x0C000000 /* All control bits */
+#define XAXIDMA_BD_CTRL_LENGTH_MASK	0x007FFFFF  
+#define XAXIDMA_BD_CTRL_TXSOF_MASK	0x08000000  
+#define XAXIDMA_BD_CTRL_TXEOF_MASK	0x04000000  
+#define XAXIDMA_BD_CTRL_ALL_MASK	0x0C000000  
 
-#define XAXIDMA_DELAY_MASK		0xFF000000 /* Delay timeout counter */
-#define XAXIDMA_COALESCE_MASK		0x00FF0000 /* Coalesce counter */
+#define XAXIDMA_DELAY_MASK		0xFF000000  
+#define XAXIDMA_COALESCE_MASK		0x00FF0000  
 
 #define XAXIDMA_DELAY_SHIFT		24
 #define XAXIDMA_COALESCE_SHIFT		16
 
-#define XAXIDMA_IRQ_IOC_MASK		0x00001000 /* Completion intr */
-#define XAXIDMA_IRQ_DELAY_MASK		0x00002000 /* Delay interrupt */
-#define XAXIDMA_IRQ_ERROR_MASK		0x00004000 /* Error interrupt */
-#define XAXIDMA_IRQ_ALL_MASK		0x00007000 /* All interrupts */
+#define XAXIDMA_IRQ_IOC_MASK		0x00001000  
+#define XAXIDMA_IRQ_DELAY_MASK		0x00002000  
+#define XAXIDMA_IRQ_ERROR_MASK		0x00004000  
+#define XAXIDMA_IRQ_ALL_MASK		0x00007000  
 
-/* Default TX/RX Threshold and waitbound values for SGDMA mode */
+ 
 #define XAXIDMA_DFT_TX_THRESHOLD	24
 #define XAXIDMA_DFT_TX_WAITBOUND	254
 #define XAXIDMA_DFT_RX_THRESHOLD	24
 #define XAXIDMA_DFT_RX_WAITBOUND	254
 
-#define XAXIDMA_BD_STS_ACTUAL_LEN_MASK	0x007FFFFF /* Actual len */
-#define XAXIDMA_BD_STS_COMPLETE_MASK	0x80000000 /* Completed */
-#define XAXIDMA_BD_STS_DEC_ERR_MASK	0x40000000 /* Decode error */
-#define XAXIDMA_BD_STS_SLV_ERR_MASK	0x20000000 /* Slave error */
-#define XAXIDMA_BD_STS_INT_ERR_MASK	0x10000000 /* Internal err */
-#define XAXIDMA_BD_STS_ALL_ERR_MASK	0x70000000 /* All errors */
-#define XAXIDMA_BD_STS_RXSOF_MASK	0x08000000 /* First rx pkt */
-#define XAXIDMA_BD_STS_RXEOF_MASK	0x04000000 /* Last rx pkt */
-#define XAXIDMA_BD_STS_ALL_MASK		0xFC000000 /* All status bits */
+#define XAXIDMA_BD_STS_ACTUAL_LEN_MASK	0x007FFFFF  
+#define XAXIDMA_BD_STS_COMPLETE_MASK	0x80000000  
+#define XAXIDMA_BD_STS_DEC_ERR_MASK	0x40000000  
+#define XAXIDMA_BD_STS_SLV_ERR_MASK	0x20000000  
+#define XAXIDMA_BD_STS_INT_ERR_MASK	0x10000000  
+#define XAXIDMA_BD_STS_ALL_ERR_MASK	0x70000000  
+#define XAXIDMA_BD_STS_RXSOF_MASK	0x08000000  
+#define XAXIDMA_BD_STS_RXEOF_MASK	0x04000000  
+#define XAXIDMA_BD_STS_ALL_MASK		0xFC000000  
 
 #define NIXGE_REG_CTRL_OFFSET	0x4000
 #define NIXGE_REG_INFO		0x00
@@ -94,11 +91,11 @@
 #define NIXGE_REG_MAC_LSB	0x1000
 #define NIXGE_REG_MAC_MSB	0x1004
 
-/* Packet size info */
-#define NIXGE_HDR_SIZE		14 /* Size of Ethernet header */
-#define NIXGE_TRL_SIZE		4 /* Size of Ethernet trailer (FCS) */
-#define NIXGE_MTU		1500 /* Max MTU of an Ethernet frame */
-#define NIXGE_JUMBO_MTU		9000 /* Max MTU of a jumbo Eth. frame */
+ 
+#define NIXGE_HDR_SIZE		14  
+#define NIXGE_TRL_SIZE		4  
+#define NIXGE_MTU		1500  
+#define NIXGE_JUMBO_MTU		9000  
 
 #define NIXGE_MAX_FRAME_SIZE	 (NIXGE_MTU + NIXGE_HDR_SIZE + NIXGE_TRL_SIZE)
 #define NIXGE_MAX_JUMBO_FRAME_SIZE \
@@ -169,7 +166,7 @@ struct nixge_priv {
 	struct napi_struct napi;
 	struct device *dev;
 
-	/* Connection to PHY device */
+	 
 	struct device_node *phy_node;
 	phy_interface_t		phy_mode;
 
@@ -177,10 +174,10 @@ struct nixge_priv {
 	unsigned int speed;
 	unsigned int duplex;
 
-	/* MDIO bus data */
-	struct mii_bus *mii_bus;	/* MII bus reference */
+	 
+	struct mii_bus *mii_bus;	 
 
-	/* IO registers, dma functions and IRQs */
+	 
 	void __iomem *ctrl_regs;
 	void __iomem *dma_regs;
 
@@ -189,7 +186,7 @@ struct nixge_priv {
 	int tx_irq;
 	int rx_irq;
 
-	/* Buffer descriptors */
+	 
 	struct nixge_hw_dma_bd *tx_bd_v;
 	struct nixge_tx_skb *tx_skb;
 	dma_addr_t tx_bd_p;
@@ -287,12 +284,12 @@ static int nixge_hw_dma_bd_init(struct net_device *ndev)
 	u32 cr;
 	int i;
 
-	/* Reset the indexes which are used for accessing the BDs */
+	 
 	priv->tx_bd_ci = 0;
 	priv->tx_bd_tail = 0;
 	priv->rx_bd_ci = 0;
 
-	/* Allocate the Tx and Rx buffer descriptors. */
+	 
 	priv->tx_bd_v = dma_alloc_coherent(ndev->dev.parent,
 					   sizeof(*priv->tx_bd_v) * TX_BD_NUM,
 					   &priv->tx_bd_p, GFP_KERNEL);
@@ -340,35 +337,33 @@ static int nixge_hw_dma_bd_init(struct net_device *ndev)
 		priv->rx_bd_v[i].cntrl = NIXGE_MAX_JUMBO_FRAME_SIZE;
 	}
 
-	/* Start updating the Rx channel control register */
+	 
 	cr = nixge_dma_read_reg(priv, XAXIDMA_RX_CR_OFFSET);
-	/* Update the interrupt coalesce count */
+	 
 	cr = ((cr & ~XAXIDMA_COALESCE_MASK) |
 	      ((priv->coalesce_count_rx) << XAXIDMA_COALESCE_SHIFT));
-	/* Update the delay timer count */
+	 
 	cr = ((cr & ~XAXIDMA_DELAY_MASK) |
 	      (XAXIDMA_DFT_RX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
-	/* Enable coalesce, delay timer and error interrupts */
+	 
 	cr |= XAXIDMA_IRQ_ALL_MASK;
-	/* Write to the Rx channel control register */
+	 
 	nixge_dma_write_reg(priv, XAXIDMA_RX_CR_OFFSET, cr);
 
-	/* Start updating the Tx channel control register */
+	 
 	cr = nixge_dma_read_reg(priv, XAXIDMA_TX_CR_OFFSET);
-	/* Update the interrupt coalesce count */
+	 
 	cr = (((cr & ~XAXIDMA_COALESCE_MASK)) |
 	      ((priv->coalesce_count_tx) << XAXIDMA_COALESCE_SHIFT));
-	/* Update the delay timer count */
+	 
 	cr = (((cr & ~XAXIDMA_DELAY_MASK)) |
 	      (XAXIDMA_DFT_TX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
-	/* Enable coalesce, delay timer and error interrupts */
+	 
 	cr |= XAXIDMA_IRQ_ALL_MASK;
-	/* Write to the Tx channel control register */
+	 
 	nixge_dma_write_reg(priv, XAXIDMA_TX_CR_OFFSET, cr);
 
-	/* Populate the tail pointer and bring the Rx Axi DMA engine out of
-	 * halted state. This will make the Rx side ready for reception.
-	 */
+	 
 	nixge_dma_write_desc_reg(priv, XAXIDMA_RX_CDESC_OFFSET, priv->rx_bd_p);
 	cr = nixge_dma_read_reg(priv, XAXIDMA_RX_CR_OFFSET);
 	nixge_dma_write_reg(priv, XAXIDMA_RX_CR_OFFSET,
@@ -376,10 +371,7 @@ static int nixge_hw_dma_bd_init(struct net_device *ndev)
 	nixge_dma_write_desc_reg(priv, XAXIDMA_RX_TDESC_OFFSET, priv->rx_bd_p +
 			    (sizeof(*priv->rx_bd_v) * (RX_BD_NUM - 1)));
 
-	/* Write to the RS (Run-stop) bit in the Tx channel control register.
-	 * Tx channel is now ready to run. But only after we write to the
-	 * tail pointer register that the Tx channel will start transmitting.
-	 */
+	 
 	nixge_dma_write_desc_reg(priv, XAXIDMA_TX_CDESC_OFFSET, priv->tx_bd_p);
 	cr = nixge_dma_read_reg(priv, XAXIDMA_TX_CR_OFFSET);
 	nixge_dma_write_reg(priv, XAXIDMA_TX_CR_OFFSET,
@@ -396,11 +388,7 @@ static void __nixge_device_reset(struct nixge_priv *priv, off_t offset)
 	u32 status;
 	int err;
 
-	/* Reset Axi DMA. This would reset NIXGE Ethernet core as well.
-	 * The reset process of Axi DMA takes a while to complete as all
-	 * pending commands/transfers will be flushed or completed during
-	 * this reset process.
-	 */
+	 
 	nixge_dma_write_reg(priv, offset, XAXIDMA_CR_RESET_MASK);
 	err = nixge_dma_poll_timeout(priv, offset, status,
 				     !(status & XAXIDMA_CR_RESET_MASK), 10,
@@ -559,13 +547,13 @@ static netdev_tx_t nixge_start_xmit(struct sk_buff *skb,
 		tx_skb->mapped_as_page = true;
 	}
 
-	/* last buffer of the frame */
+	 
 	tx_skb->skb = skb;
 
 	cur_p->cntrl |= XAXIDMA_BD_CTRL_TXEOF_MASK;
 
 	tail_p = priv->tx_bd_p + sizeof(*priv->tx_bd_v) * priv->tx_bd_tail;
-	/* Start the transfer */
+	 
 	nixge_dma_write_desc_reg(priv, XAXIDMA_TX_TDESC_OFFSET, tail_p);
 	++priv->tx_bd_tail;
 	priv->tx_bd_tail %= TX_BD_NUM;
@@ -626,9 +614,7 @@ static int nixge_recv(struct net_device *ndev, int budget)
 		skb->protocol = eth_type_trans(skb, ndev);
 		skb_checksum_none_assert(skb);
 
-		/* For now mark them as CHECKSUM_NONE since
-		 * we don't have offload capabilities
-		 */
+		 
 		skb->ip_summed = CHECKSUM_NONE;
 
 		napi_gro_receive(&priv->napi, skb);
@@ -645,7 +631,7 @@ static int nixge_recv(struct net_device *ndev, int budget)
 					  NIXGE_MAX_JUMBO_FRAME_SIZE,
 					  DMA_FROM_DEVICE);
 		if (dma_mapping_error(ndev->dev.parent, cur_phys)) {
-			/* FIXME: bail out and clean up */
+			 
 			netdev_err(ndev, "Failed to map ...\n");
 		}
 		nixge_hw_dma_bd_set_phys(cur_p, cur_phys);
@@ -681,11 +667,11 @@ static int nixge_poll(struct napi_struct *napi, int budget)
 		status = nixge_dma_read_reg(priv, XAXIDMA_RX_SR_OFFSET);
 
 		if (status & (XAXIDMA_IRQ_IOC_MASK | XAXIDMA_IRQ_DELAY_MASK)) {
-			/* If there's more, reschedule, but clear */
+			 
 			nixge_dma_write_reg(priv, XAXIDMA_RX_SR_OFFSET, status);
 			napi_reschedule(napi);
 		} else {
-			/* if not, turn on RX IRQs again ... */
+			 
 			cr = nixge_dma_read_reg(priv, XAXIDMA_RX_CR_OFFSET);
 			cr |= (XAXIDMA_IRQ_IOC_MASK | XAXIDMA_IRQ_DELAY_MASK);
 			nixge_dma_write_reg(priv, XAXIDMA_RX_CR_OFFSET, cr);
@@ -721,15 +707,15 @@ static irqreturn_t nixge_tx_irq(int irq, void *_ndev)
 		netdev_err(ndev, "Current BD is at: 0x%llx\n", (u64)phys);
 
 		cr = nixge_dma_read_reg(priv, XAXIDMA_TX_CR_OFFSET);
-		/* Disable coalesce, delay timer and error interrupts */
+		 
 		cr &= (~XAXIDMA_IRQ_ALL_MASK);
-		/* Write to the Tx channel control register */
+		 
 		nixge_dma_write_reg(priv, XAXIDMA_TX_CR_OFFSET, cr);
 
 		cr = nixge_dma_read_reg(priv, XAXIDMA_RX_CR_OFFSET);
-		/* Disable coalesce, delay timer and error interrupts */
+		 
 		cr &= (~XAXIDMA_IRQ_ALL_MASK);
-		/* Write to the Rx channel control register */
+		 
 		nixge_dma_write_reg(priv, XAXIDMA_RX_CR_OFFSET, cr);
 
 		tasklet_schedule(&priv->dma_err_tasklet);
@@ -749,7 +735,7 @@ static irqreturn_t nixge_rx_irq(int irq, void *_ndev)
 
 	status = nixge_dma_read_reg(priv, XAXIDMA_RX_SR_OFFSET);
 	if (status & (XAXIDMA_IRQ_IOC_MASK | XAXIDMA_IRQ_DELAY_MASK)) {
-		/* Turn of IRQs because NAPI */
+		 
 		nixge_dma_write_reg(priv, XAXIDMA_RX_SR_OFFSET, status);
 		cr = nixge_dma_read_reg(priv, XAXIDMA_RX_CR_OFFSET);
 		cr &= ~(XAXIDMA_IRQ_IOC_MASK | XAXIDMA_IRQ_DELAY_MASK);
@@ -770,15 +756,15 @@ static irqreturn_t nixge_rx_irq(int irq, void *_ndev)
 		netdev_err(ndev, "Current BD is at: 0x%llx\n", (u64)phys);
 
 		cr = nixge_dma_read_reg(priv, XAXIDMA_TX_CR_OFFSET);
-		/* Disable coalesce, delay timer and error interrupts */
+		 
 		cr &= (~XAXIDMA_IRQ_ALL_MASK);
-		/* Finally write to the Tx channel control register */
+		 
 		nixge_dma_write_reg(priv, XAXIDMA_TX_CR_OFFSET, cr);
 
 		cr = nixge_dma_read_reg(priv, XAXIDMA_RX_CR_OFFSET);
-		/* Disable coalesce, delay timer and error interrupts */
+		 
 		cr &= (~XAXIDMA_IRQ_ALL_MASK);
-		/* write to the Rx channel control register */
+		 
 		nixge_dma_write_reg(priv, XAXIDMA_RX_CR_OFFSET, cr);
 
 		tasklet_schedule(&priv->dma_err_tasklet);
@@ -818,35 +804,33 @@ static void nixge_dma_err_handler(struct tasklet_struct *t)
 	lp->tx_bd_tail = 0;
 	lp->rx_bd_ci = 0;
 
-	/* Start updating the Rx channel control register */
+	 
 	cr = nixge_dma_read_reg(lp, XAXIDMA_RX_CR_OFFSET);
-	/* Update the interrupt coalesce count */
+	 
 	cr = ((cr & ~XAXIDMA_COALESCE_MASK) |
 	      (XAXIDMA_DFT_RX_THRESHOLD << XAXIDMA_COALESCE_SHIFT));
-	/* Update the delay timer count */
+	 
 	cr = ((cr & ~XAXIDMA_DELAY_MASK) |
 	      (XAXIDMA_DFT_RX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
-	/* Enable coalesce, delay timer and error interrupts */
+	 
 	cr |= XAXIDMA_IRQ_ALL_MASK;
-	/* Finally write to the Rx channel control register */
+	 
 	nixge_dma_write_reg(lp, XAXIDMA_RX_CR_OFFSET, cr);
 
-	/* Start updating the Tx channel control register */
+	 
 	cr = nixge_dma_read_reg(lp, XAXIDMA_TX_CR_OFFSET);
-	/* Update the interrupt coalesce count */
+	 
 	cr = (((cr & ~XAXIDMA_COALESCE_MASK)) |
 	      (XAXIDMA_DFT_TX_THRESHOLD << XAXIDMA_COALESCE_SHIFT));
-	/* Update the delay timer count */
+	 
 	cr = (((cr & ~XAXIDMA_DELAY_MASK)) |
 	      (XAXIDMA_DFT_TX_WAITBOUND << XAXIDMA_DELAY_SHIFT));
-	/* Enable coalesce, delay timer and error interrupts */
+	 
 	cr |= XAXIDMA_IRQ_ALL_MASK;
-	/* Finally write to the Tx channel control register */
+	 
 	nixge_dma_write_reg(lp, XAXIDMA_TX_CR_OFFSET, cr);
 
-	/* Populate the tail pointer and bring the Rx Axi DMA engine out of
-	 * halted state. This will make the Rx side ready for reception.
-	 */
+	 
 	nixge_dma_write_desc_reg(lp, XAXIDMA_RX_CDESC_OFFSET, lp->rx_bd_p);
 	cr = nixge_dma_read_reg(lp, XAXIDMA_RX_CR_OFFSET);
 	nixge_dma_write_reg(lp, XAXIDMA_RX_CR_OFFSET,
@@ -854,10 +838,7 @@ static void nixge_dma_err_handler(struct tasklet_struct *t)
 	nixge_dma_write_desc_reg(lp, XAXIDMA_RX_TDESC_OFFSET, lp->rx_bd_p +
 			    (sizeof(*lp->rx_bd_v) * (RX_BD_NUM - 1)));
 
-	/* Write to the RS (Run-stop) bit in the Tx channel control register.
-	 * Tx channel is now ready to run. But only after we write to the
-	 * tail pointer register that the Tx channel will start transmitting
-	 */
+	 
 	nixge_dma_write_desc_reg(lp, XAXIDMA_TX_CDESC_OFFSET, lp->tx_bd_p);
 	cr = nixge_dma_read_reg(lp, XAXIDMA_TX_CR_OFFSET);
 	nixge_dma_write_reg(lp, XAXIDMA_TX_CR_OFFSET,
@@ -879,16 +860,16 @@ static int nixge_open(struct net_device *ndev)
 
 	phy_start(phy);
 
-	/* Enable tasklets for Axi DMA error handling */
+	 
 	tasklet_setup(&priv->dma_err_tasklet, nixge_dma_err_handler);
 
 	napi_enable(&priv->napi);
 
-	/* Enable interrupts for Axi DMA Tx */
+	 
 	ret = request_irq(priv->tx_irq, nixge_tx_irq, 0, ndev->name, ndev);
 	if (ret)
 		goto err_tx_irq;
-	/* Enable interrupts for Axi DMA Rx */
+	 
 	ret = request_irq(priv->rx_irq, nixge_rx_irq, 0, ndev->name, ndev);
 	if (ret)
 		goto err_rx_irq;
@@ -1045,7 +1026,7 @@ static int nixge_ethtools_set_phys_id(struct net_device *ndev,
 	switch (state) {
 	case ETHTOOL_ID_ACTIVE:
 		ctrl |= NIXGE_ID_LED_CTL_EN;
-		/* Enable identification LED override*/
+		 
 		nixge_ctrl_write_reg(priv, NIXGE_REG_LED_CTL, ctrl);
 		return 2;
 
@@ -1060,7 +1041,7 @@ static int nixge_ethtools_set_phys_id(struct net_device *ndev,
 		break;
 
 	case ETHTOOL_ID_INACTIVE:
-		/* Restore LED settings */
+		 
 		ctrl &= ~NIXGE_ID_LED_CTL_EN;
 		nixge_ctrl_write_reg(priv, NIXGE_REG_LED_CTL, ctrl);
 		break;
@@ -1248,7 +1229,7 @@ static void *nixge_get_nvmem_address(struct device *dev)
 	return mac;
 }
 
-/* Match table for of_platform binding */
+ 
 static const struct of_device_id nixge_dt_ids[] = {
 	{ .compatible = "ni,xge-enet-2.00", .data = (void *)NIXGE_V2 },
 	{ .compatible = "ni,xge-enet-3.00", .data = (void *)NIXGE_V3 },
@@ -1308,7 +1289,7 @@ static int nixge_probe(struct platform_device *pdev)
 	ndev->netdev_ops = &nixge_netdev_ops;
 	ndev->ethtool_ops = &nixge_ethtool_ops;
 
-	/* MTU range: 64 - 9000 */
+	 
 	ndev->min_mtu = 64;
 	ndev->max_mtu = NIXGE_JUMBO_MTU;
 

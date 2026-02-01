@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2020 Intel Corporation. All rights rsvd. */
+ 
+ 
 
 #ifndef _PERFMON_H_
 #define _PERFMON_H_

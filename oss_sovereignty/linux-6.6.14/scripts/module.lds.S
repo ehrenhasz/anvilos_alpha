@@ -1,8 +1,4 @@
-/*
- * Common module linker script, always used when linking a module.
- * Archs are free to supply their own linker scripts.  ld will
- * combine them automatically.
- */
+ 
 #ifdef CONFIG_UNWIND_TABLES
 #define DISCARD_EH_FRAME
 #else
@@ -34,11 +30,7 @@ SECTIONS {
 #endif
 
 #ifdef CONFIG_LTO_CLANG
-	/*
-	 * With CONFIG_LTO_CLANG, LLD always enables -fdata-sections and
-	 * -ffunction-sections, which increases the size of the final module.
-	 * Merge the split sections in the final binary.
-	 */
+	 
 	.bss : {
 		*(.bss .bss.[0-9a-zA-Z_]*)
 		*(.bss..L*)
@@ -56,5 +48,5 @@ SECTIONS {
 #endif
 }
 
-/* bring in arch-specific sections */
+ 
 #include <asm/module.lds.h>

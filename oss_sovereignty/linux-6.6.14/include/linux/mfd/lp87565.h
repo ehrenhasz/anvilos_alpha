@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Functions to access LP87565 power management chip.
- *
- * Copyright (C) 2017 Texas Instruments Incorporated - https://www.ti.com/
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_LP87565_H
 #define __LINUX_MFD_LP87565_H
@@ -19,7 +15,7 @@ enum lp87565_device_type {
 	LP87565_DEVICE_TYPE_LP87565_Q1,
 };
 
-/* All register addresses */
+ 
 #define LP87565_REG_DEV_REV		0X00
 #define LP87565_REG_OTP_REV		0X01
 #define LP87565_REG_BUCK0_CTRL_1		0X02
@@ -87,7 +83,7 @@ enum lp87565_device_type {
 
 #define LP87565_REG_MAX			LP87565_REG_GPIO_OUT
 
-/* Register field definitions */
+ 
 #define LP87565_DEV_REV_DEV_ID			0xC0
 #define LP87565_DEV_REV_ALL_LAYER		0x30
 #define LP87565_DEV_REV_METAL_LAYER		0x0F
@@ -101,7 +97,7 @@ enum lp87565_device_type {
 #define LP87565_BUCK_CTRL_1_ROOF_FLOOR_EN	BIT(3)
 #define LP87565_BUCK_CTRL_1_RDIS_EN		BIT(2)
 #define LP87565_BUCK_CTRL_1_FPWM		BIT(1)
-/* Bit0 is reserved for BUCK1 and BUCK3 and valid only for BUCK0 and BUCK2 */
+ 
 #define LP87565_BUCK_CTRL_1_FPWM_MP_0_2		BIT(0)
 
 #define LP87565_BUCK_CTRL_2_ILIM		0x38
@@ -237,16 +233,7 @@ enum lp87565_device_type {
 #define LP87565_GPIO2_OUT			BIT(1)
 #define LP87565_GPIO1_OUT			BIT(0)
 
-/**
- * struct LP87565 - state holder for the LP87565 driver
- * @dev: struct device pointer for MFD device
- * @rev: revision of the LP87565
- * @dev_type: The device type for example lp87565-q1
- * @lock: lock guarding the data structure
- * @regmap: register map of the LP87565 PMIC
- *
- * Device data may be used to access the LP87565 chip
- */
+ 
 struct lp87565 {
 	struct device *dev;
 	u8 rev;
@@ -254,4 +241,4 @@ struct lp87565 {
 	struct regmap *regmap;
 	struct gpio_desc *reset_gpio;
 };
-#endif /* __LINUX_MFD_LP87565_H */
+#endif  

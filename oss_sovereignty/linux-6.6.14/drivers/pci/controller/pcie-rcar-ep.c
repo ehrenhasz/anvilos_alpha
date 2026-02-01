@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe endpoint driver for Renesas R-Car SoCs
- *  Copyright (c) 2020 Renesas Electronics Europe GmbH
- *
- * Author: Lad Prabhakar <prabhakar.mahadev-lad.rj@bp.renesas.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/of_address.h>
@@ -18,7 +13,7 @@
 
 #define RCAR_EPC_MAX_FUNCTIONS		1
 
-/* Structure representing the PCIe interface */
+ 
 struct rcar_pcie_endpoint {
 	struct rcar_pcie	pcie;
 	phys_addr_t		*ob_mapped_addr;
@@ -36,42 +31,42 @@ static void rcar_pcie_ep_hw_init(struct rcar_pcie *pcie)
 
 	rcar_pci_write_reg(pcie, 0, PCIETCTLR);
 
-	/* Set endpoint mode */
+	 
 	rcar_pci_write_reg(pcie, 0, PCIEMSR);
 
-	/* Initialize default capabilities. */
+	 
 	rcar_rmw32(pcie, REXPCAP(0), 0xff, PCI_CAP_ID_EXP);
 	rcar_rmw32(pcie, REXPCAP(PCI_EXP_FLAGS),
 		   PCI_EXP_FLAGS_TYPE, PCI_EXP_TYPE_ENDPOINT << 4);
 	rcar_rmw32(pcie, RCONF(PCI_HEADER_TYPE), 0x7f,
 		   PCI_HEADER_TYPE_NORMAL);
 
-	/* Write out the physical slot number = 0 */
+	 
 	rcar_rmw32(pcie, REXPCAP(PCI_EXP_SLTCAP), PCI_EXP_SLTCAP_PSN, 0);
 
 	val = rcar_pci_read_reg(pcie, EXPCAP(1));
-	/* device supports fixed 128 bytes MPSS */
+	 
 	val &= ~GENMASK(2, 0);
 	rcar_pci_write_reg(pcie, val, EXPCAP(1));
 
 	val = rcar_pci_read_reg(pcie, EXPCAP(2));
-	/* read requests size 128 bytes */
+	 
 	val &= ~GENMASK(14, 12);
-	/* payload size 128 bytes */
+	 
 	val &= ~GENMASK(7, 5);
 	rcar_pci_write_reg(pcie, val, EXPCAP(2));
 
-	/* Set target link speed to 5.0 GT/s */
+	 
 	rcar_rmw32(pcie, EXPCAP(12), PCI_EXP_LNKSTA_CLS,
 		   PCI_EXP_LNKSTA_CLS_5_0GB);
 
-	/* Set the completion timer timeout to the maximum 50ms. */
+	 
 	rcar_rmw32(pcie, TLCTLR + 1, 0x3f, 50);
 
-	/* Terminate list of capabilities (Next Capability Offset=0) */
+	 
 	rcar_rmw32(pcie, RVCCAP(0), 0xfff00000, 0);
 
-	/* flush modifications */
+	 
 	wmb();
 }
 
@@ -115,9 +110,7 @@ static int rcar_pcie_parse_outbound_ranges(struct rcar_pcie_endpoint *ep,
 
 		ep->ob_window[i].phys_base = res->start;
 		ep->ob_window[i].size = resource_size(res);
-		/* controller doesn't support multiple allocation
-		 * from same window, so set page_size to window size
-		 */
+		 
 		ep->ob_window[i].page_size = resource_size(res);
 	}
 	ep->num_ob_windows = i;
@@ -215,7 +208,7 @@ static int rcar_pcie_ep_set_bar(struct pci_epc *epc, u8 func_no, u8 vfunc_no,
 		flags |= IO_SPACE;
 
 	ep->bar_to_atu[bar] = idx;
-	/* use 64-bit BARs */
+	 
 	set_bit(idx, ep->ib_window_map);
 	set_bit(idx + 1, ep->ib_window_map);
 
@@ -293,7 +286,7 @@ static int rcar_pcie_ep_map_addr(struct pci_epc *epc, u8 fn, u8 vfn,
 	int window;
 	int err;
 
-	/* check if we have a link. */
+	 
 	err = rcar_pcie_wait_for_dl(pcie);
 	if (err) {
 		dev_err(pcie->dev, "link not up\n");
@@ -383,12 +376,12 @@ static int rcar_pcie_ep_assert_msi(struct rcar_pcie *pcie,
 	u16 msi_count;
 	u32 val;
 
-	/* Check MSI enable bit */
+	 
 	val = rcar_pci_read_reg(pcie, MSICAP(fn));
 	if (!(val & MSICAP0_MSIE))
 		return -EINVAL;
 
-	/* Get MSI numbers from MME */
+	 
 	msi_count = ((val & MSICAP0_MMESE_MASK) >> MSICAP0_MMESE_OFFSET);
 	msi_count = 1 << msi_count;
 
@@ -440,7 +433,7 @@ static const struct pci_epc_features rcar_pcie_epc_features = {
 	.linkup_notifier = false,
 	.msi_capable = true,
 	.msix_capable = false,
-	/* use 64-bit BARs so mark BAR[1,3,5] as reserved */
+	 
 	.reserved_bar = 1 << BAR_1 | 1 << BAR_3 | 1 << BAR_5,
 	.bar_fixed_64bit = 1 << BAR_0 | 1 << BAR_2 | 1 << BAR_4,
 	.bar_fixed_size[0] = 128,

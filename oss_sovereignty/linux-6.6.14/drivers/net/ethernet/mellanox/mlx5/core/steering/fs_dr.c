@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies */
+
+ 
 
 #include <linux/mlx5/vport.h>
 #include "mlx5_core.h"
@@ -75,7 +75,7 @@ static int mlx5_cmd_dr_create_flow_table(struct mlx5_flow_root_namespace *ns,
 								    ft_attr,
 								    next_ft);
 	flags = ft->flags;
-	/* turn off encap/decap if not supported for sw-str by fw */
+	 
 	if (!MLX5_CAP_FLOWTABLE(ns->dev, sw_owner_reformat_supported))
 		flags = ft->flags & ~(MLX5_FLOW_TABLE_TUNNEL_EN_REFORMAT |
 				      MLX5_FLOW_TABLE_TUNNEL_EN_DECAP);
@@ -245,10 +245,7 @@ static bool contain_vport_reformat_action(struct mlx5_flow_rule *dst)
 		dst->dest_attr.vport.flags & MLX5_FLOW_DEST_VPORT_REFORMAT_ID;
 }
 
-/* We want to support a rule with 32 destinations, which means we need to
- * account for 32 destinations plus usually a counter plus one more action
- * for a multi-destination flow table.
- */
+ 
 #define MLX5_FLOW_CONTEXT_ACTION_MAX  34
 static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
 				  struct mlx5_flow_table *ft,
@@ -298,7 +295,7 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
 
 	match_sz = sizeof(fte->val);
 
-	/* Drop reformat action bit if destination vport set with reformat */
+	 
 	if (fte->action.action & MLX5_FLOW_CONTEXT_ACTION_FWD_DEST) {
 		list_for_each_entry(dst, &fte->node.children, node.list) {
 			if (!contain_vport_reformat_action(dst))
@@ -309,11 +306,7 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
 		}
 	}
 
-	/* The order of the actions are must to be keep, only the following
-	 * order is supported by SW steering:
-	 * TX: modify header -> push vlan -> encap
-	 * RX: decap -> pop vlan -> modify header
-	 */
+	 
 	if (fte->action.action & MLX5_FLOW_CONTEXT_ACTION_DECAP) {
 		enum mlx5dr_action_reformat_type decap_type =
 			DR_ACTION_REFORMAT_TYP_TNL_L2_TO_L2;
@@ -399,7 +392,7 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
 		actions[num_actions++] =
 			fte->action.pkt_reformat->action.dr_action;
 
-	/* The order of the actions below is not important */
+	 
 
 	if (fte->action.action & MLX5_FLOW_CONTEXT_ACTION_DROP) {
 		tmp_action = mlx5dr_action_create_drop();
@@ -610,7 +603,7 @@ static int mlx5_cmd_dr_create_fte(struct mlx5_flow_root_namespace *ns,
 	return 0;
 
 free_actions:
-	/* Free in reverse order to handle action dependencies */
+	 
 	for (i = fs_dr_num_actions - 1; i >= 0; i--)
 		if (!IS_ERR_OR_NULL(fs_dr_actions[i]))
 			mlx5dr_action_destroy(fs_dr_actions[i]);
@@ -740,7 +733,7 @@ static int mlx5_cmd_dr_delete_fte(struct mlx5_flow_root_namespace *ns,
 	if (err)
 		return err;
 
-	/* Free in reverse order to handle action dependencies */
+	 
 	for (i = rule->num_actions - 1; i >= 0; i--)
 		if (!IS_ERR_OR_NULL(rule->dr_actions[i]))
 			mlx5dr_action_destroy(rule->dr_actions[i]);
@@ -761,11 +754,11 @@ static int mlx5_cmd_dr_update_fte(struct mlx5_flow_root_namespace *ns,
 	if (dr_is_fw_term_table(ft))
 		return mlx5_fs_cmd_get_fw_cmds()->update_fte(ns, ft, group, modify_mask, fte);
 
-	/* Backup current dr rule details */
+	 
 	fte_tmp.fs_dr_rule = fte->fs_dr_rule;
 	memset(&fte->fs_dr_rule, 0, sizeof(struct mlx5_fs_dr_rule));
 
-	/* First add the new updated rule, then delete the old rule */
+	 
 	ret = mlx5_cmd_dr_create_fte(ns, ft, group, fte);
 	if (ret)
 		goto restore_fte;

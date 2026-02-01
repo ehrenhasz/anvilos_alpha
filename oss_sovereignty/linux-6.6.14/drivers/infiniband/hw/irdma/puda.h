@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2020 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_PUDA_H
 #define IRDMA_PUDA_H
 
@@ -11,7 +11,7 @@
 enum puda_rsrc_type {
 	IRDMA_PUDA_RSRC_TYPE_ILQ = 1,
 	IRDMA_PUDA_RSRC_TYPE_IEQ,
-	IRDMA_PUDA_RSRC_TYPE_MAX, /* Must be last entry */
+	IRDMA_PUDA_RSRC_TYPE_MAX,  
 };
 
 enum puda_rsrc_complete {
@@ -33,7 +33,7 @@ struct irdma_puda_cmpl_info {
 	u8 l4proto;
 	u16 vlan;
 	u32 payload_len;
-	u32 compl_error; /* No_err=0, else major and minor err code */
+	u32 compl_error;  
 	u32 qp_id;
 	u32 wqe_idx;
 	bool ipv4:1;
@@ -43,7 +43,7 @@ struct irdma_puda_cmpl_info {
 };
 
 struct irdma_puda_send_info {
-	u64 paddr; /* Physical address */
+	u64 paddr;  
 	u32 len;
 	u32 ah_id;
 	u8 tcplen;
@@ -54,24 +54,24 @@ struct irdma_puda_send_info {
 };
 
 struct irdma_puda_buf {
-	struct list_head list; /* MUST be first entry */
-	struct irdma_dma_mem mem; /* DMA memory for the buffer */
-	struct irdma_puda_buf *next; /* for alloclist in rsrc struct */
-	struct irdma_virt_mem buf_mem; /* Buffer memory for this buffer */
+	struct list_head list;  
+	struct irdma_dma_mem mem;  
+	struct irdma_puda_buf *next;  
+	struct irdma_virt_mem buf_mem;  
 	void *scratch;
 	u8 *iph;
 	u8 *tcph;
 	u8 *data;
 	u16 datalen;
 	u16 vlan_id;
-	u8 tcphlen; /* tcp length in bytes */
-	u8 maclen; /* mac length in bytes */
-	u32 totallen; /* machlen+iphlen+tcphlen+datalen */
+	u8 tcphlen;  
+	u8 maclen;  
+	u32 totallen;  
 	refcount_t refcount;
 	u8 hdrlen;
 	bool ipv4:1;
 	bool vlan_valid:1;
-	bool do_lpb:1; /* Loopback buffer */
+	bool do_lpb:1;  
 	bool smac_valid:1;
 	u32 seqnum;
 	u32 ah_id;
@@ -82,14 +82,14 @@ struct irdma_puda_buf {
 struct irdma_puda_rsrc_info {
 	void (*receive)(struct irdma_sc_vsi *vsi, struct irdma_puda_buf *buf);
 	void (*xmit_complete)(struct irdma_sc_vsi *vsi, void *sqwrid);
-	enum puda_rsrc_type type; /* ILQ or IEQ */
+	enum puda_rsrc_type type;  
 	u32 count;
 	u32 pd_id;
 	u32 cq_id;
 	u32 qp_id;
 	u32 sq_size;
 	u32 rq_size;
-	u32 tx_buf_cnt; /* total bufs allocated will be rq_size + tx_buf_cnt */
+	u32 tx_buf_cnt;  
 	u16 buf_size;
 	u8 stats_idx;
 	bool stats_idx_valid:1;
@@ -107,7 +107,7 @@ struct irdma_puda_rsrc {
 	struct irdma_virt_mem ilq_mem;
 	enum puda_rsrc_complete cmpl;
 	enum puda_rsrc_type type;
-	u16 buf_size; /*buf must be max datalen + tcpip hdr + mac */
+	u16 buf_size;  
 	u32 cq_id;
 	u32 qp_id;
 	u32 sq_size;
@@ -121,21 +121,21 @@ struct irdma_puda_rsrc {
 	u32 tx_wqe_avail_cnt;
 	struct shash_desc *hash_desc;
 	struct list_head txpend;
-	struct list_head bufpool; /* free buffers pool list for recv and xmit */
+	struct list_head bufpool;  
 	u32 alloc_buf_count;
-	u32 avail_buf_count; /* snapshot of currently available buffers */
+	u32 avail_buf_count;  
 	spinlock_t bufpool_lock;
 	struct irdma_puda_buf *alloclist;
 	void (*receive)(struct irdma_sc_vsi *vsi, struct irdma_puda_buf *buf);
 	void (*xmit_complete)(struct irdma_sc_vsi *vsi, void *sqwrid);
-	/* puda stats */
+	 
 	u64 stats_buf_alloc_fail;
 	u64 stats_pkt_rcvd;
 	u64 stats_pkt_sent;
 	u64 stats_rcvd_pkt_err;
 	u64 stats_sent_pkt_q;
 	u64 stats_bad_qp_id;
-	/* IEQ stats */
+	 
 	u64 fpdu_processed;
 	u64 bad_seq_num;
 	u64 crc_err;
@@ -182,4 +182,4 @@ void irdma_puda_free_ah(struct irdma_sc_dev *dev, struct irdma_sc_ah *ah);
 void irdma_ieq_process_fpdus(struct irdma_sc_qp *qp,
 			     struct irdma_puda_rsrc *ieq);
 void irdma_ieq_cleanup_qp(struct irdma_puda_rsrc *ieq, struct irdma_sc_qp *qp);
-#endif /*IRDMA_PROTOS_H */
+#endif  

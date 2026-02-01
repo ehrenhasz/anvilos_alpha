@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * PC-Speaker driver for Linux
- *
- * Copyright (C) 1993-1997  Michael Beck
- * Copyright (C) 1997-2001  David Woodhouse
- * Copyright (C) 2001-2008  Stas Sergeev
- */
+ 
+ 
 
 #ifndef __PCSP_H__
 #define __PCSP_H__
@@ -14,21 +8,21 @@
 #include <linux/i8253.h>
 #include <linux/timex.h>
 
-#define PCSP_SOUND_VERSION 0x400	/* read 4.00 */
+#define PCSP_SOUND_VERSION 0x400	 
 #define PCSP_DEBUG 0
 
-/* default timer freq for PC-Speaker: 18643 Hz */
+ 
 #define DIV_18KHZ 64
 #define MAX_DIV DIV_18KHZ
 #define CALC_DIV(d) (MAX_DIV >> (d))
 #define CUR_DIV() CALC_DIV(chip->treble)
 #define PCSP_MAX_TREBLE 1
 
-/* unfortunately, with hrtimers 37KHz does not work very well :( */
+ 
 #define PCSP_DEFAULT_TREBLE 0
 #define MIN_DIV (MAX_DIV >> PCSP_MAX_TREBLE)
 
-/* wild guess */
+ 
 #define PCSP_MIN_LPJ 1000000
 #define PCSP_DEFAULT_SDIV (DIV_18KHZ >> 1)
 #define PCSP_DEFAULT_SRATE (PIT_TICK_RATE / PCSP_DEFAULT_SDIV)

@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) Jernej Skrabec <jernej.skrabec@gmail.com>
- */
+
+ 
 
 #include <linux/mmc/sdio_func.h>
 #include <linux/mmc/sdio_ids.h>

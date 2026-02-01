@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  LEDs triggers for power supply class
- *
- *  Copyright © 2007  Anton Vorontsov <cbou@mail.ru>
- *  Copyright © 2004  Szabolcs Gyurko
- *  Copyright © 2003  Ian Molton <spyro@f2s.com>
- *
- *  Modified: 2004, Oct     Szabolcs Gyurko
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -17,7 +9,7 @@
 
 #include "power_supply.h"
 
-/* Battery specific LEDs triggers. */
+ 
 
 static void power_supply_update_bat_leds(struct power_supply *psy)
 {
@@ -33,7 +25,7 @@ static void power_supply_update_bat_leds(struct power_supply *psy)
 		led_trigger_event(psy->charging_full_trig, LED_FULL);
 		led_trigger_event(psy->charging_trig, LED_OFF);
 		led_trigger_event(psy->full_trig, LED_FULL);
-		/* Going from blink to LED on requires a LED_OFF event to stop blink */
+		 
 		led_trigger_event(psy->charging_blink_full_solid_trig, LED_OFF);
 		led_trigger_event(psy->charging_blink_full_solid_trig, LED_FULL);
 		break;
@@ -107,7 +99,7 @@ static void power_supply_remove_bat_triggers(struct power_supply *psy)
 	kfree(psy->charging_full_trig_name);
 }
 
-/* Generated power specific LEDs triggers. */
+ 
 
 static void power_supply_update_gen_leds(struct power_supply *psy)
 {
@@ -142,7 +134,7 @@ static void power_supply_remove_gen_triggers(struct power_supply *psy)
 	kfree(psy->online_trig_name);
 }
 
-/* Choice what triggers to create&update. */
+ 
 
 void power_supply_update_leds(struct power_supply *psy)
 {

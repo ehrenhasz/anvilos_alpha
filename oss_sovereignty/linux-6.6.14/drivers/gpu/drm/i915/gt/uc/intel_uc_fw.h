@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_UC_FW_H_
 #define _INTEL_UC_FW_H_
@@ -17,46 +15,24 @@ struct drm_printer;
 struct drm_i915_private;
 struct intel_gt;
 
-/* Home of GuC, HuC and DMC firmwares */
+ 
 #define INTEL_UC_FIRMWARE_URL "https://git.kernel.org/pub/scm/linux/kernel/git/firmware/linux-firmware.git/tree/i915"
 
-/*
- * +------------+---------------------------------------------------+
- * |   PHASE    |           FIRMWARE STATUS TRANSITIONS             |
- * +============+===================================================+
- * |            |               UNINITIALIZED                       |
- * +------------+-               /   |   \                         -+
- * |            |   DISABLED <--/    |    \--> NOT_SUPPORTED        |
- * | init_early |                    V                              |
- * |            |                 SELECTED                          |
- * +------------+-               /   |   \                         -+
- * |            |    MISSING <--/    |    \--> ERROR                |
- * |   fetch    |                    V                              |
- * |            |                 AVAILABLE                         |
- * +------------+-                   |   \                         -+
- * |            |                    |    \--> INIT FAIL            |
- * |   init     |                    V                              |
- * |            |        /------> LOADABLE <----<-----------\       |
- * +------------+-       \         /    \        \           \     -+
- * |            |    LOAD FAIL <--<      \--> TRANSFERRED     \     |
- * |   upload   |                  \           /   \          /     |
- * |            |                   \---------/     \--> RUNNING    |
- * +------------+---------------------------------------------------+
- */
+ 
 
 enum intel_uc_fw_status {
-	INTEL_UC_FIRMWARE_NOT_SUPPORTED = -1, /* no uc HW */
-	INTEL_UC_FIRMWARE_UNINITIALIZED = 0, /* used to catch checks done too early */
-	INTEL_UC_FIRMWARE_DISABLED, /* disabled */
-	INTEL_UC_FIRMWARE_SELECTED, /* selected the blob we want to load */
-	INTEL_UC_FIRMWARE_MISSING, /* blob not found on the system */
-	INTEL_UC_FIRMWARE_ERROR, /* invalid format or version */
-	INTEL_UC_FIRMWARE_AVAILABLE, /* blob found and copied in mem */
-	INTEL_UC_FIRMWARE_INIT_FAIL, /* failed to prepare fw objects for load */
-	INTEL_UC_FIRMWARE_LOADABLE, /* all fw-required objects are ready */
-	INTEL_UC_FIRMWARE_LOAD_FAIL, /* failed to xfer or init/auth the fw */
-	INTEL_UC_FIRMWARE_TRANSFERRED, /* dma xfer done */
-	INTEL_UC_FIRMWARE_RUNNING /* init/auth done */
+	INTEL_UC_FIRMWARE_NOT_SUPPORTED = -1,  
+	INTEL_UC_FIRMWARE_UNINITIALIZED = 0,  
+	INTEL_UC_FIRMWARE_DISABLED,  
+	INTEL_UC_FIRMWARE_SELECTED,  
+	INTEL_UC_FIRMWARE_MISSING,  
+	INTEL_UC_FIRMWARE_ERROR,  
+	INTEL_UC_FIRMWARE_AVAILABLE,  
+	INTEL_UC_FIRMWARE_INIT_FAIL,  
+	INTEL_UC_FIRMWARE_LOADABLE,  
+	INTEL_UC_FIRMWARE_LOAD_FAIL,  
+	INTEL_UC_FIRMWARE_TRANSFERRED,  
+	INTEL_UC_FIRMWARE_RUNNING  
 };
 
 enum intel_uc_fw_type {
@@ -73,25 +49,18 @@ struct intel_uc_fw_ver {
 	u32 build;
 };
 
-/*
- * The firmware build process will generate a version header file with major and
- * minor version defined. The versions are built into CSS header of firmware.
- * i915 kernel driver set the minimal firmware version required per platform.
- */
+ 
 struct intel_uc_fw_file {
 	const char *path;
 	struct intel_uc_fw_ver ver;
 };
 
-/*
- * This structure encapsulates all the data needed during the process
- * of fetching, caching, and loading the firmware image into the uC.
- */
+ 
 struct intel_uc_fw {
 	enum intel_uc_fw_type type;
 	union {
 		const enum intel_uc_fw_status status;
-		enum intel_uc_fw_status __status; /* no accidental overwrites */
+		enum intel_uc_fw_status __status;  
 	};
 	struct intel_uc_fw_file file_wanted;
 	struct intel_uc_fw_file file_selected;
@@ -99,19 +68,10 @@ struct intel_uc_fw {
 	size_t size;
 	struct drm_i915_gem_object *obj;
 
-	/**
-	 * @needs_ggtt_mapping: indicates whether the fw object needs to be
-	 * pinned to ggtt. If true, the fw is pinned at init time and unpinned
-	 * during driver unload.
-	 */
+	 
 	bool needs_ggtt_mapping;
 
-	/**
-	 * @vma_res: A vma resource used in binding the uc fw to ggtt. The fw is
-	 * pinned in a reserved area of the ggtt (above the maximum address
-	 * usable by GuC); therefore, we can't use the normal vma functions to
-	 * do the pinning and we instead use this resource to do so.
-	 */
+	 
 	struct i915_vma_resource vma_res;
 	struct i915_vma *rsa_data;
 
@@ -124,17 +84,7 @@ struct intel_uc_fw {
 	bool has_gsc_headers;
 };
 
-/*
- * When we load the uC binaries, we pin them in a reserved section at the top of
- * the GGTT, which is ~18 MBs. On multi-GT systems where the GTs share the GGTT,
- * we also need to make sure that each binary is pinned to a unique location
- * during load, because the different GT can go through the FW load at the same
- * time (see uc_fw_ggtt_offset() for details).
- * Given that the available space is much greater than what is required by the
- * binaries, to keep things simple instead of dynamically partitioning the
- * reserved section to make space for all the blobs we can just reserve a static
- * chunk for each binary.
- */
+ 
 #define INTEL_UC_RSVD_GGTT_PER_FW SZ_2M
 
 #ifdef CONFIG_DRM_I915_DEBUG_GUC
@@ -223,7 +173,7 @@ static inline const char *intel_uc_fw_type_repr(enum intel_uc_fw_type type)
 static inline enum intel_uc_fw_status
 __intel_uc_fw_status(struct intel_uc_fw *uc_fw)
 {
-	/* shouldn't call this before checking hw/blob availability */
+	 
 	GEM_BUG_ON(uc_fw->status == INTEL_UC_FIRMWARE_UNINITIALIZED);
 	return uc_fw->status;
 }
@@ -274,14 +224,7 @@ static inline u32 __intel_uc_fw_get_upload_size(struct intel_uc_fw *uc_fw)
 	return sizeof(struct uc_css_header) + uc_fw->ucode_size;
 }
 
-/**
- * intel_uc_fw_get_upload_size() - Get size of firmware needed to be uploaded.
- * @uc_fw: uC firmware.
- *
- * Get the size of the firmware and header that will be uploaded to WOPCM.
- *
- * Return: Upload firmware size, or zero on firmware fetch failure.
- */
+ 
 static inline u32 intel_uc_fw_get_upload_size(struct intel_uc_fw *uc_fw)
 {
 	if (!intel_uc_fw_is_available(uc_fw))

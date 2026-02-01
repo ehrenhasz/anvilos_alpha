@@ -1,26 +1,17 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  skl-ssp-clk.h - Skylake ssp clock information and ipc structure
- *
- *  Copyright (C) 2017 Intel Corp
- *  Author: Jaikrishna Nemallapudi <jaikrishnax.nemallapudi@intel.com>
- *  Author: Subhransu S. Prusty <subhransu.s.prusty@intel.com>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+ 
+ 
 
 #ifndef SOUND_SOC_SKL_SSP_CLK_H
 #define SOUND_SOC_SKL_SSP_CLK_H
 
 #define SKL_MAX_SSP		6
-/* xtal/cardinal/pll, parent of ssp clocks and mclk */
+ 
 #define SKL_MAX_CLK_SRC		3
-#define SKL_MAX_SSP_CLK_TYPES	3 /* mclk, sclk, sclkfs */
+#define SKL_MAX_SSP_CLK_TYPES	3  
 
 #define SKL_MAX_CLK_CNT		(SKL_MAX_SSP * SKL_MAX_SSP_CLK_TYPES)
 
-/* Max number of configurations supported for each clock */
+ 
 #define SKL_MAX_CLK_RATES	10
 
 #define SKL_SCLK_OFS		SKL_MAX_SSP
@@ -52,7 +43,7 @@ struct skl_tlv_hdr {
 
 struct skl_dmactrl_mclk_cfg {
 	struct skl_tlv_hdr hdr;
-	/* DMA Clk TLV params */
+	 
 	u32 clk_warm_up:16;
 	u32 mclk:1;
 	u32 warm_up_over:1;
@@ -65,7 +56,7 @@ struct skl_dmactrl_mclk_cfg {
 
 struct skl_dmactrl_sclkfs_cfg {
 	struct skl_tlv_hdr hdr;
-	/* DMA SClk&FS  TLV params */
+	 
 	u32 sampling_frequency;
 	u32 bit_depth;
 	u32 channel_map;
@@ -88,10 +79,7 @@ struct skl_clk_rate_cfg_table {
 	void *config;
 };
 
-/*
- * rate for mclk will be in rates[0]. For sclk and sclkfs, rates[] store
- * all possible clocks ssp can generate for that platform.
- */
+ 
 struct skl_ssp_clk {
 	const char *name;
 	const char *parent_name;
@@ -105,4 +93,4 @@ struct skl_clk_pdata {
 	void *pvt_data;
 };
 
-#endif /* SOUND_SOC_SKL_SSP_CLK_H */
+#endif  

@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// cs35l45.c - CS35L45 ALSA SoC audio driver
-//
-// Copyright 2019-2022 Cirrus Logic, Inc.
-//
-// Author: James Schulman <james.schulman@cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/module.h>
@@ -55,7 +55,7 @@ static int cs35l45_set_cspl_mbox_cmd(struct cs35l45_private *cs35l45,
 		return -EPERM;
 	}
 
-	// Set mailbox cmd
+	
 	ret = regmap_write(regmap, CS35L45_DSP_VIRT1_MBOX_1, cmd);
 	if (ret < 0) {
 		if (cmd != CSPL_MBOX_CMD_OUT_OF_HIBERNATE)
@@ -63,7 +63,7 @@ static int cs35l45_set_cspl_mbox_cmd(struct cs35l45_private *cs35l45,
 		return ret;
 	}
 
-	// Read mailbox status and verify it is appropriate for the given cmd
+	
 	for (i = 0; i < 5; i++) {
 		usleep_range(1000, 1100);
 
@@ -364,7 +364,7 @@ static const struct snd_soc_dapm_widget cs35l45_dapm_widgets[] = {
 	{ name" Source", "DSP_TX2",	"DSP1" }
 
 static const struct snd_soc_dapm_route cs35l45_dapm_routes[] = {
-	/* Feedback */
+	 
 	{ "VMON", NULL, "VMON_SRC" },
 	{ "IMON", NULL, "IMON_SRC" },
 	{ "VDD_BATTMON", NULL, "VDD_BATTMON_SRC" },
@@ -397,7 +397,7 @@ static const struct snd_soc_dapm_route cs35l45_dapm_routes[] = {
 	CS35L45_ASP_MUX_ROUTE("ASP_TX4"),
 	CS35L45_ASP_MUX_ROUTE("ASP_TX5"),
 
-	/* Playback */
+	 
 	{ "ASP_RX1", NULL, "Playback" },
 	{ "ASP_RX2", NULL, "Playback" },
 	{ "ASP_RX1", NULL, "ASP_EN" },
@@ -435,7 +435,7 @@ static const struct snd_soc_dapm_route cs35l45_dapm_routes[] = {
 static const DECLARE_TLV_DB_SCALE(cs35l45_dig_pcm_vol_tlv, -10225, 25, true);
 
 static const struct snd_kcontrol_new cs35l45_controls[] = {
-	/* Ignore bit 0: it is beyond the resolution of TLV_DB_SCALE */
+	 
 	SOC_SINGLE_S_TLV("Digital PCM Volume",
 			 CS35L45_AMP_PCM_CONTROL,
 			 CS35L45_AMP_VOL_PCM_SHIFT + 1,
@@ -590,7 +590,7 @@ static int cs35l45_asp_hw_params(struct snd_pcm_substream *substream,
 	if (cs35l45->sysclk_set)
 		return 0;
 
-	/* I2S always has an even number of channels */
+	 
 	regmap_read(cs35l45->regmap, CS35L45_ASP_CONTROL2, &asp_fmt);
 	asp_fmt = (asp_fmt & CS35L45_ASP_FMT_MASK) >> CS35L45_ASP_FMT_SHIFT;
 	if (asp_fmt == CS35L45_ASP_FMT_I2S)
@@ -777,7 +777,7 @@ static int cs35l45_enter_hibernate(struct cs35l45_private *cs35l45)
 
 	regmap_set_bits(cs35l45->regmap, CS35L45_IRQ1_MASK_2, CS35L45_DSP_VIRT2_MBOX_MASK);
 
-	// Don't wait for ACK since bus activity would wake the device
+	
 	regmap_write(cs35l45->regmap, CS35L45_DSP_VIRT1_MBOX_1, CSPL_MBOX_CMD_HIBERNATE);
 
 	return 0;
@@ -851,7 +851,7 @@ static int cs35l45_runtime_resume(struct device *dev)
 	if (ret != 0)
 		dev_warn(cs35l45->dev, "regcache_sync failed: %d\n", ret);
 
-	/* Clear global error status */
+	 
 	regmap_clear_bits(cs35l45->regmap, CS35L45_ERROR_RELEASE, CS35L45_GLOBAL_ERR_RLS_MASK);
 	regmap_set_bits(cs35l45->regmap, CS35L45_ERROR_RELEASE, CS35L45_GLOBAL_ERR_RLS_MASK);
 	regmap_clear_bits(cs35l45->regmap, CS35L45_ERROR_RELEASE, CS35L45_GLOBAL_ERR_RLS_MASK);
@@ -1016,7 +1016,7 @@ static irqreturn_t cs35l45_dsp_virt2_mbox_cb(int irq, void *data)
 		cs35l45_dsp_virt2_mbox3_irq_handle(cs35l45, mbox_val & CS35L45_MBOX3_CMD_MASK,
 				(mbox_val & CS35L45_MBOX3_DATA_MASK) >> CS35L45_MBOX3_DATA_SHIFT);
 
-	/* Handle DSP trace log IRQ */
+	 
 	ret = regmap_read(cs35l45->regmap, CS35L45_DSP_VIRT2_MBOX_4, &mbox_val);
 	if (!ret && mbox_val != 0) {
 		dev_err(cs35l45->dev, "Spurious DSP MBOX4 IRQ\n");
@@ -1181,7 +1181,7 @@ static int cs35l45_dsp_init(struct cs35l45_private *cs35l45)
 	int ret;
 
 	dsp->part = "cs35l45";
-	dsp->fw = 9; /* 9 is WM_ADSP_FW_SPK_PROT in wm_adsp.c */
+	dsp->fw = 9;  
 	dsp->toggle_preload = true;
 	dsp->cs_dsp.num = 1;
 	dsp->cs_dsp.type = WMFW_HALO;
@@ -1218,7 +1218,7 @@ int cs35l45_probe(struct cs35l45_private *cs35l45)
 		return dev_err_probe(dev, PTR_ERR(cs35l45->vdd_a),
 				     "Failed to request vdd-a\n");
 
-	/* VDD_BATT must always be enabled before other supplies */
+	 
 	ret = regulator_enable(cs35l45->vdd_batt);
 	if (ret < 0)
 		return dev_err_probe(dev, ret, "Failed to enable vdd-batt\n");
@@ -1227,7 +1227,7 @@ int cs35l45_probe(struct cs35l45_private *cs35l45)
 	if (ret < 0)
 		return dev_err_probe(dev, ret, "Failed to enable vdd-a\n");
 
-	/* If reset is shared only one instance can claim it */
+	 
 	cs35l45->reset_gpio = devm_gpiod_get_optional(dev, "reset", GPIOD_OUT_LOW);
 	if (IS_ERR(cs35l45->reset_gpio)) {
 		ret = PTR_ERR(cs35l45->reset_gpio);
@@ -1328,7 +1328,7 @@ void cs35l45_remove(struct cs35l45_private *cs35l45)
 
 	pm_runtime_put_noidle(cs35l45->dev);
 	regulator_disable(cs35l45->vdd_a);
-	/* VDD_BATT must be the last to power-off */
+	 
 	regulator_disable(cs35l45->vdd_batt);
 }
 EXPORT_SYMBOL_NS_GPL(cs35l45_remove, SND_SOC_CS35L45);

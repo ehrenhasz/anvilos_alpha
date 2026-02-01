@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2016-2018 Netronome Systems, Inc. */
 
-/*
- * nfp_net_offload.c
- * Netronome network device driver: TC offload functions for PF and VF
- */
+ 
+
+ 
 
 #define pr_fmt(fmt)	"NFP net bpf: " fmt
 
@@ -34,7 +31,7 @@ nfp_map_ptr_record(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
 	struct nfp_bpf_neutral_map *record;
 	int err;
 
-	/* Reuse path - other offloaded program is already tracking this map. */
+	 
 	record = rhashtable_lookup_fast(&bpf->maps_neutral, &map->id,
 					nfp_bpf_maps_neutral_params);
 	if (record) {
@@ -43,9 +40,7 @@ nfp_map_ptr_record(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
 		return 0;
 	}
 
-	/* Grab a single ref to the map for our record.  The prog destroy ndo
-	 * happens after free_used_maps().
-	 */
+	 
 	bpf_map_inc(map);
 
 	record = kmalloc(sizeof(*record), GFP_KERNEL);
@@ -115,7 +110,7 @@ nfp_map_ptrs_record(struct nfp_app_bpf *bpf, struct nfp_prog *nfp_prog,
 
 	mutex_lock(&prog->aux->used_maps_mutex);
 
-	/* Quickly count the maps we will have to remember */
+	 
 	cnt = 0;
 	for (i = 0; i < prog->aux->used_map_cnt; i++)
 		if (bpf_map_offload_neutral(prog->aux->used_maps[i]))
@@ -223,7 +218,7 @@ static int nfp_bpf_translate(struct bpf_prog *prog)
 	unsigned int max_instr;
 	int err;
 
-	/* We depend on dead code elimination succeeding */
+	 
 	if (prog->aux->offload->opt_failed)
 		return -EINVAL;
 
@@ -253,9 +248,7 @@ static void nfp_bpf_destroy(struct bpf_prog *prog)
 	nfp_prog_free(nfp_prog);
 }
 
-/* Atomic engine requires values to be in big endian, we need to byte swap
- * the value words used with xadd.
- */
+ 
 static void nfp_map_bpf_byte_swap(struct nfp_bpf_map *nfp_map, void *value)
 {
 	u32 *word = value;
@@ -266,9 +259,7 @@ static void nfp_map_bpf_byte_swap(struct nfp_bpf_map *nfp_map, void *value)
 			word[i] = (__force u32)cpu_to_be32(word[i]);
 }
 
-/* Mark value as unsafely initialized in case it becomes atomic later
- * and we didn't byte swap something non-byte swap neutral.
- */
+ 
 static void
 nfp_map_bpf_byte_swap_record(struct nfp_bpf_map *nfp_map, void *value)
 {
@@ -534,7 +525,7 @@ nfp_net_bpf_load(struct nfp_net *nn, struct bpf_prog *prog,
 	nn_writew(nn, NFP_NET_CFG_BPF_SIZE, nfp_prog->prog_len);
 	nn_writeq(nn, NFP_NET_CFG_BPF_ADDR, dma_addr);
 
-	/* Load up the JITed code */
+	 
 	err = nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_BPF);
 	if (err)
 		NL_SET_ERR_MSG_MOD(extack,
@@ -552,7 +543,7 @@ nfp_net_bpf_start(struct nfp_net *nn, struct netlink_ext_ack *extack)
 {
 	int err;
 
-	/* Enable passing packets through BPF function */
+	 
 	nn->dp.ctrl |= NFP_NET_CFG_CTRL_BPF;
 	nn_writel(nn, NFP_NET_CFG_CTRL, nn->dp.ctrl);
 	err = nfp_net_reconfig(nn, NFP_NET_CFG_UPDATE_GEN);
@@ -591,7 +582,7 @@ int nfp_net_bpf_offload(struct nfp_net *nn, struct bpf_prog *prog,
 		}
 	}
 
-	/* Something else is loaded, different program type? */
+	 
 	if (!old_prog && nn->dp.ctrl & NFP_NET_CFG_CTRL_BPF)
 		return -EBUSY;
 

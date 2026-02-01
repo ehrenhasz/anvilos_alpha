@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic Exynos Bus frequency driver with DEVFREQ Framework
- *
- * Copyright (c) 2016 Samsung Electronics Co., Ltd.
- * Author : Chanwoo Choi <cw00.choi@samsung.com>
- *
- * This driver support Exynos Bus frequency feature by using
- * DEVFREQ framework and is based on drivers/devfreq/exynos/exynos4_bus.c.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/devfreq.h>
@@ -38,9 +30,7 @@ struct exynos_bus {
 	unsigned int ratio;
 };
 
-/*
- * Control the devfreq-event device to get the current state of bus
- */
+ 
 #define exynos_bus_ops_edev(ops)				\
 static int exynos_bus_##ops(struct exynos_bus *bus)		\
 {								\
@@ -87,16 +77,14 @@ static int exynos_bus_get_event(struct exynos_bus *bus,
 	return ret;
 }
 
-/*
- * devfreq function for both simple-ondemand and passive governor
- */
+ 
 static int exynos_bus_target(struct device *dev, unsigned long *freq, u32 flags)
 {
 	struct exynos_bus *bus = dev_get_drvdata(dev);
 	struct dev_pm_opp *new_opp;
 	int ret = 0;
 
-	/* Get correct frequency for bus. */
+	 
 	new_opp = devfreq_recommended_opp(dev, freq, flags);
 	if (IS_ERR(new_opp)) {
 		dev_err(dev, "failed to get recommended opp instance\n");
@@ -105,7 +93,7 @@ static int exynos_bus_target(struct device *dev, unsigned long *freq, u32 flags)
 
 	dev_pm_opp_put(new_opp);
 
-	/* Change voltage and frequency according to new OPP level */
+	 
 	mutex_lock(&bus->lock);
 	ret = dev_pm_opp_set_rate(dev, *freq);
 	if (!ret)
@@ -189,10 +177,7 @@ static int exynos_bus_parent_parse_of(struct device_node *np,
 
 	bus->opp_token = ret;
 
-	/*
-	 * Get the devfreq-event devices to get the current utilization of
-	 * buses. This raw data will be used in devfreq ondemand governor.
-	 */
+	 
 	count = devfreq_event_get_edev_count(dev, "devfreq-events");
 	if (count < 0) {
 		dev_err(dev, "failed to get the count of devfreq-event dev\n");
@@ -217,16 +202,7 @@ static int exynos_bus_parent_parse_of(struct device_node *np,
 		}
 	}
 
-	/*
-	 * Optionally, Get the saturation ratio according to Exynos SoC
-	 * When measuring the utilization of each AXI bus with devfreq-event
-	 * devices, the measured real cycle might be much lower than the
-	 * total cycle of bus during sampling rate. In result, the devfreq
-	 * simple-ondemand governor might not decide to change the current
-	 * frequency due to too utilization (= real cycle/total cycle).
-	 * So, this property is used to adjust the utilization when calculating
-	 * the busy_time in exynos_bus_get_dev_status().
-	 */
+	 
 	if (of_property_read_u32(np, "exynos,saturation-ratio", &bus->ratio))
 		bus->ratio = DEFAULT_SATURATION_RATIO;
 
@@ -246,7 +222,7 @@ static int exynos_bus_parse_of(struct device_node *np,
 	unsigned long rate;
 	int ret;
 
-	/* Get the clock to provide each bus with source clock */
+	 
 	bus->clk = devm_clk_get(dev, "bus");
 	if (IS_ERR(bus->clk)) {
 		dev_err(dev, "failed to get bus clock\n");
@@ -259,7 +235,7 @@ static int exynos_bus_parse_of(struct device_node *np,
 		return ret;
 	}
 
-	/* Get the freq and voltage from OPP table to scale the bus freq */
+	 
 	ret = dev_pm_opp_of_add_table(dev);
 	if (ret < 0) {
 		dev_err(dev, "failed to get OPP table\n");
@@ -294,7 +270,7 @@ static int exynos_bus_profile_init(struct exynos_bus *bus,
 	struct devfreq_simple_ondemand_data *ondemand_data;
 	int ret;
 
-	/* Initialize the struct profile and governor data for parent device */
+	 
 	profile->polling_ms = 50;
 	profile->target = exynos_bus_target;
 	profile->get_dev_status = exynos_bus_get_dev_status;
@@ -307,7 +283,7 @@ static int exynos_bus_profile_init(struct exynos_bus *bus,
 	ondemand_data->upthreshold = 40;
 	ondemand_data->downdifferential = 5;
 
-	/* Add devfreq device to monitor and handle the exynos bus */
+	 
 	bus->devfreq = devm_devfreq_add_device(dev, profile,
 						DEVFREQ_GOV_SIMPLE_ONDEMAND,
 						ondemand_data);
@@ -316,17 +292,14 @@ static int exynos_bus_profile_init(struct exynos_bus *bus,
 		return PTR_ERR(bus->devfreq);
 	}
 
-	/* Register opp_notifier to catch the change of OPP  */
+	 
 	ret = devm_devfreq_register_opp_notifier(dev, bus->devfreq);
 	if (ret < 0) {
 		dev_err(dev, "failed to register opp notifier\n");
 		return ret;
 	}
 
-	/*
-	 * Enable devfreq-event to get raw data which is used to determine
-	 * current bus load.
-	 */
+	 
 	ret = exynos_bus_enable_edev(bus);
 	if (ret < 0) {
 		dev_err(dev, "failed to enable devfreq-event devices\n");
@@ -355,11 +328,11 @@ static int exynos_bus_profile_init_passive(struct exynos_bus *bus,
 	struct devfreq_passive_data *passive_data;
 	struct devfreq *parent_devfreq;
 
-	/* Initialize the struct profile and governor data for passive device */
+	 
 	profile->target = exynos_bus_target;
 	profile->exit = exynos_bus_passive_exit;
 
-	/* Get the instance of parent devfreq device */
+	 
 	parent_devfreq = devfreq_get_devfreq_by_phandle(dev, "devfreq", 0);
 	if (IS_ERR(parent_devfreq))
 		return -EPROBE_DEFER;
@@ -370,7 +343,7 @@ static int exynos_bus_profile_init_passive(struct exynos_bus *bus,
 
 	passive_data->parent = parent_devfreq;
 
-	/* Add devfreq device for exynos bus with passive governor */
+	 
 	bus->devfreq = devm_devfreq_add_device(dev, profile, DEVFREQ_GOV_PASSIVE,
 						passive_data);
 	if (IS_ERR(bus->devfreq)) {
@@ -418,7 +391,7 @@ static int exynos_bus_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	/* Parse the device-tree to get the resource information */
+	 
 	ret = exynos_bus_parse_of(np, bus);
 	if (ret < 0)
 		goto err_reg;
@@ -431,7 +404,7 @@ static int exynos_bus_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err;
 
-	/* Create child platform device for the interconnect provider */
+	 
 	if (of_property_present(dev->of_node, "#interconnect-cells")) {
 		bus->icc_pdev = platform_device_register_data(
 						dev, "exynos-generic-icc",
@@ -503,7 +476,7 @@ static const struct dev_pm_ops exynos_bus_pm = {
 
 static const struct of_device_id exynos_bus_of_match[] = {
 	{ .compatible = "samsung,exynos-bus", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, exynos_bus_of_match);
 

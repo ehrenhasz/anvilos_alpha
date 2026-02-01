@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/mfd/ucb1x00-assabet.c
- *
- *  Copyright (C) 2001-2003 Russell King, All Rights Reserved.
- *
- *  We handle the machine-specific bits of the UCB1x00 driver here.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/device.h>

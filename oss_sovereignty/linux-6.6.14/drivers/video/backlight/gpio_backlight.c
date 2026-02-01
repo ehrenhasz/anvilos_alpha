@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * gpio_backlight.c - Simple GPIO-controlled backlight
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/err.h>
@@ -82,9 +80,9 @@ static int gpio_backlight_probe(struct platform_device *pdev)
 		return PTR_ERR(bl);
 	}
 
-	/* Set the initial power state */
+	 
 	if (!of_node || !of_node->phandle)
-		/* Not booted with device tree or no phandle link to the node */
+		 
 		bl->props.power = def_value ? FB_BLANK_UNBLANK
 					    : FB_BLANK_POWERDOWN;
 	else if (gpiod_get_value_cansleep(gbl->gpiod) == 0)
@@ -107,7 +105,7 @@ static int gpio_backlight_probe(struct platform_device *pdev)
 
 static struct of_device_id gpio_backlight_of_match[] = {
 	{ .compatible = "gpio-backlight" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, gpio_backlight_of_match);

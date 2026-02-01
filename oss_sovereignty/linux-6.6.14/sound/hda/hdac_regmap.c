@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Regmap support for HD-audio verbs
- *
- * A virtual register is translated to one or more hda verbs for write,
- * vice versa for read.
- *
- * A few limitations:
- * - Provided for not all verbs but only subset standard non-volatile verbs.
- * - For reading, only AC_VERB_GET_* variants can be used.
- * - For writing, mapped to the *corresponding* AC_VERB_SET_* variants,
- *   so can't handle asymmetric verbs for read and write
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/device.h>
@@ -55,7 +44,7 @@ static bool hda_volatile_reg(struct device *dev, unsigned int reg)
 	case AC_VERB_GET_HDMI_CP_CTRL:
 	case AC_VERB_GET_HDMI_CHAN_SLOT:
 	case AC_VERB_GET_DEVICE_SEL:
-	case AC_VERB_GET_DEVICE_LIST:	/* read-only volatile */
+	case AC_VERB_GET_DEVICE_LIST:	 
 		return true;
 	}
 
@@ -93,15 +82,15 @@ static bool hda_writeable_reg(struct device *dev, unsigned int reg)
 	case AC_VERB_GET_CONNECT_SEL:
 	case AC_VERB_GET_SDI_SELECT:
 	case AC_VERB_GET_PIN_WIDGET_CONTROL:
-	case AC_VERB_GET_UNSOLICITED_RESPONSE: /* only as SET_UNSOLICITED_ENABLE */
+	case AC_VERB_GET_UNSOLICITED_RESPONSE:  
 	case AC_VERB_GET_BEEP_CONTROL:
 	case AC_VERB_GET_EAPD_BTLENABLE:
 	case AC_VERB_GET_DIGI_CONVERT_1:
-	case AC_VERB_GET_DIGI_CONVERT_2: /* only for beep control */
+	case AC_VERB_GET_DIGI_CONVERT_2:  
 	case AC_VERB_GET_VOLUME_KNOB_CONTROL:
 	case AC_VERB_GET_GPIO_MASK:
 	case AC_VERB_GET_GPIO_DIRECTION:
-	case AC_VERB_GET_GPIO_DATA: /* not for volatile read */
+	case AC_VERB_GET_GPIO_DATA:  
 	case AC_VERB_GET_GPIO_WAKE_MASK:
 	case AC_VERB_GET_GPIO_UNSOLICITED_RSP_MASK:
 	case AC_VERB_GET_GPIO_STICKY_MASK:
@@ -124,26 +113,17 @@ static bool hda_readable_reg(struct device *dev, unsigned int reg)
 	case AC_VERB_GET_CONNECT_LIST:
 	case AC_VERB_GET_SUBSYSTEM_ID:
 		return true;
-	/* below are basically writable, but disabled for reducing unnecessary
-	 * writes at sync
-	 */
-	case AC_VERB_GET_CONFIG_DEFAULT: /* usually just read */
-	case AC_VERB_GET_CONV: /* managed in PCM code */
-	case AC_VERB_GET_CVT_CHAN_COUNT: /* managed in HDMI CA code */
+	 
+	case AC_VERB_GET_CONFIG_DEFAULT:  
+	case AC_VERB_GET_CONV:  
+	case AC_VERB_GET_CVT_CHAN_COUNT:  
 		return true;
 	}
 
 	return hda_writeable_reg(dev, reg);
 }
 
-/*
- * Stereo amp pseudo register:
- * for making easier to handle the stereo volume control, we provide a
- * fake register to deal both left and right channels by a single
- * (pseudo) register access.  A verb consisting of SET_AMP_GAIN with
- * *both* SET_LEFT and SET_RIGHT bits takes a 16bit value, the lower 8bit
- * for the left and the upper 8bit for the right channel.
- */
+ 
 static bool is_stereo_amp_verb(unsigned int reg)
 {
 	if (((reg >> 8) & 0x700) != AC_VERB_SET_AMP_GAIN_MUTE)
@@ -152,7 +132,7 @@ static bool is_stereo_amp_verb(unsigned int reg)
 		(AC_AMP_SET_LEFT | AC_AMP_SET_RIGHT);
 }
 
-/* read a pseudo stereo amp register (16bit left+right) */
+ 
 static int hda_reg_read_stereo_amp(struct hdac_device *codec,
 				   unsigned int reg, unsigned int *val)
 {
@@ -170,7 +150,7 @@ static int hda_reg_read_stereo_amp(struct hdac_device *codec,
 	return 0;
 }
 
-/* write a pseudo stereo amp register (16bit left+right) */
+ 
 static int hda_reg_write_stereo_amp(struct hdac_device *codec,
 				    unsigned int reg, unsigned int val)
 {
@@ -200,7 +180,7 @@ static int hda_reg_write_stereo_amp(struct hdac_device *codec,
 	return 0;
 }
 
-/* read a pseudo coef register (16bit) */
+ 
 static int hda_reg_read_coef(struct hdac_device *codec, unsigned int reg,
 			     unsigned int *val)
 {
@@ -209,7 +189,7 @@ static int hda_reg_read_coef(struct hdac_device *codec, unsigned int reg,
 
 	if (!codec->cache_coef)
 		return -EINVAL;
-	/* LSB 8bit = coef index */
+	 
 	verb = (reg & ~0xfff00) | (AC_VERB_SET_COEF_INDEX << 8);
 	err = snd_hdac_exec_verb(codec, verb, 0, NULL);
 	if (err < 0)
@@ -218,7 +198,7 @@ static int hda_reg_read_coef(struct hdac_device *codec, unsigned int reg,
 	return snd_hdac_exec_verb(codec, verb, 0, val);
 }
 
-/* write a pseudo coef register (16bit) */
+ 
 static int hda_reg_write_coef(struct hdac_device *codec, unsigned int reg,
 			      unsigned int val)
 {
@@ -227,7 +207,7 @@ static int hda_reg_write_coef(struct hdac_device *codec, unsigned int reg,
 
 	if (!codec->cache_coef)
 		return -EINVAL;
-	/* LSB 8bit = coef index */
+	 
 	verb = (reg & ~0xfff00) | (AC_VERB_SET_COEF_INDEX << 8);
 	err = snd_hdac_exec_verb(codec, verb, 0, NULL);
 	if (err < 0)
@@ -264,11 +244,11 @@ static int hda_reg_read(void *context, unsigned int reg, unsigned int *val)
 	err = snd_hdac_exec_verb(codec, reg, 0, val);
 	if (err < 0)
 		goto out;
-	/* special handling for asymmetric reads */
+	 
 	if (verb == AC_VERB_GET_POWER_STATE) {
 		if (*val & AC_PWRST_ERROR)
 			*val = -1;
-		else /* take only the actual state */
+		else  
 			*val = (*val >> 4) & 0x0f;
 	}
  out:
@@ -286,7 +266,7 @@ static int hda_reg_write(void *context, unsigned int reg, unsigned int val)
 	if (codec->caps_overwriting)
 		return 0;
 
-	reg &= ~0x00080000U; /* drop GET bit */
+	reg &= ~0x00080000U;  
 	reg |= (codec->addr << 28);
 	verb = get_verb(reg);
 
@@ -365,12 +345,7 @@ static const struct regmap_config hda_regmap_cfg = {
 	.disable_locking = true,
 };
 
-/**
- * snd_hdac_regmap_init - Initialize regmap for HDA register accesses
- * @codec: the codec object
- *
- * Returns zero for success or a negative error code.
- */
+ 
 int snd_hdac_regmap_init(struct hdac_device *codec)
 {
 	struct regmap *regmap;
@@ -384,10 +359,7 @@ int snd_hdac_regmap_init(struct hdac_device *codec)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_regmap_init);
 
-/**
- * snd_hdac_regmap_exit - Release the regmap from HDA codec
- * @codec: the codec object
- */
+ 
 void snd_hdac_regmap_exit(struct hdac_device *codec)
 {
 	if (codec->regmap) {
@@ -398,13 +370,7 @@ void snd_hdac_regmap_exit(struct hdac_device *codec)
 }
 EXPORT_SYMBOL_GPL(snd_hdac_regmap_exit);
 
-/**
- * snd_hdac_regmap_add_vendor_verb - add a vendor-specific verb to regmap
- * @codec: the codec object
- * @verb: verb to allow accessing via regmap
- *
- * Returns zero for success or a negative error code.
- */
+ 
 int snd_hdac_regmap_add_vendor_verb(struct hdac_device *codec,
 				    unsigned int verb)
 {
@@ -412,16 +378,14 @@ int snd_hdac_regmap_add_vendor_verb(struct hdac_device *codec,
 
 	if (!p)
 		return -ENOMEM;
-	*p = verb | 0x800; /* set GET bit */
+	*p = verb | 0x800;  
 	return 0;
 }
 EXPORT_SYMBOL_GPL(snd_hdac_regmap_add_vendor_verb);
 
-/*
- * helper functions
- */
+ 
 
-/* write a pseudo-register value (w/o power sequence) */
+ 
 static int reg_raw_write(struct hdac_device *codec, unsigned int reg,
 			 unsigned int val)
 {
@@ -436,7 +400,7 @@ static int reg_raw_write(struct hdac_device *codec, unsigned int reg,
 	return err;
 }
 
-/* a helper macro to call @func_call; retry with power-up if failed */
+ 
 #define CALL_RAW_FUNC(codec, func_call)				\
 	({							\
 		int _err = func_call;				\
@@ -448,14 +412,7 @@ static int reg_raw_write(struct hdac_device *codec, unsigned int reg,
 		}						\
 		_err;})
 
-/**
- * snd_hdac_regmap_write_raw - write a pseudo register with power mgmt
- * @codec: the codec object
- * @reg: pseudo register
- * @val: value to write
- *
- * Returns zero if successful or a negative error code.
- */
+ 
 int snd_hdac_regmap_write_raw(struct hdac_device *codec, unsigned int reg,
 			      unsigned int val)
 {
@@ -484,14 +441,7 @@ static int __snd_hdac_regmap_read_raw(struct hdac_device *codec,
 	return CALL_RAW_FUNC(codec, reg_raw_read(codec, reg, val, uncached));
 }
 
-/**
- * snd_hdac_regmap_read_raw - read a pseudo register with power mgmt
- * @codec: the codec object
- * @reg: pseudo register
- * @val: pointer to store the read value
- *
- * Returns zero if successful or a negative error code.
- */
+ 
 int snd_hdac_regmap_read_raw(struct hdac_device *codec, unsigned int reg,
 			     unsigned int *val)
 {
@@ -499,9 +449,7 @@ int snd_hdac_regmap_read_raw(struct hdac_device *codec, unsigned int reg,
 }
 EXPORT_SYMBOL_GPL(snd_hdac_regmap_read_raw);
 
-/* Works like snd_hdac_regmap_read_raw(), but this doesn't read from the
- * cache but always via hda verbs.
- */
+ 
 int snd_hdac_regmap_read_raw_uncached(struct hdac_device *codec,
 				      unsigned int reg, unsigned int *val)
 {
@@ -537,15 +485,7 @@ static int reg_raw_update(struct hdac_device *codec, unsigned int reg,
 	return err;
 }
 
-/**
- * snd_hdac_regmap_update_raw - update a pseudo register with power mgmt
- * @codec: the codec object
- * @reg: pseudo register
- * @mask: bit mask to update
- * @val: value to update
- *
- * Returns zero if successful or a negative error code.
- */
+ 
 int snd_hdac_regmap_update_raw(struct hdac_device *codec, unsigned int reg,
 			       unsigned int mask, unsigned int val)
 {
@@ -562,24 +502,14 @@ static int reg_raw_update_once(struct hdac_device *codec, unsigned int reg,
 		return reg_raw_update(codec, reg, mask, val);
 
 	mutex_lock(&codec->regmap_lock);
-	/* Discard any updates to already initialised registers. */
+	 
 	if (!regcache_reg_cached(codec->regmap, reg))
 		err = regmap_update_bits(codec->regmap, reg, mask, val);
 	mutex_unlock(&codec->regmap_lock);
 	return err;
 }
 
-/**
- * snd_hdac_regmap_update_raw_once - initialize the register value only once
- * @codec: the codec object
- * @reg: pseudo register
- * @mask: bit mask to update
- * @val: value to update
- *
- * Performs the update of the register bits only once when the register
- * hasn't been initialized yet.  Used in HD-audio legacy driver.
- * Returns zero if successful or a negative error code
- */
+ 
 int snd_hdac_regmap_update_raw_once(struct hdac_device *codec, unsigned int reg,
 				    unsigned int mask, unsigned int val)
 {
@@ -587,10 +517,7 @@ int snd_hdac_regmap_update_raw_once(struct hdac_device *codec, unsigned int reg,
 }
 EXPORT_SYMBOL_GPL(snd_hdac_regmap_update_raw_once);
 
-/**
- * snd_hdac_regmap_sync - sync out the cached values for PM resume
- * @codec: the codec object
- */
+ 
 void snd_hdac_regmap_sync(struct hdac_device *codec)
 {
 	mutex_lock(&codec->regmap_lock);

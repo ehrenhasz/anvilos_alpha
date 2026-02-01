@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Texas Instruments Incorporated
- * Authors:	Santosh Shilimkar <santosh.shilimkar@ti.com>
- *		Sandeep Nair <sandeep_n@ti.com>
- *		Cyril Chemparathy <cyril@ti.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/sched.h>
@@ -31,7 +26,7 @@
 #define DMA_RX_PRIO_SHIFT	16
 #define DMA_PRIO_MASK		GENMASK(3, 0)
 #define DMA_PRIO_DEFAULT	0
-#define DMA_RX_TIMEOUT_DEFAULT	17500 /* cycles */
+#define DMA_RX_TIMEOUT_DEFAULT	17500  
 #define DMA_RX_TIMEOUT_MASK	GENMASK(16, 0)
 #define DMA_RX_TIMEOUT_SHIFT	0
 
@@ -44,14 +39,10 @@
 #define DESC_TYPE_SHIFT		26
 #define DESC_TYPE_MASK		GENMASK(2, 0)
 
-/*
- * QMGR & QNUM together make up 14 bits with QMGR as the 2 MSb's in the logical
- * navigator cloud mapping scheme.
- * using the 14bit physical queue numbers directly maps into this scheme.
- */
+ 
 #define CHAN_QNUM_MASK		GENMASK(14, 0)
 #define DMA_MAX_QMS		4
-#define DMA_TIMEOUT		1	/* msecs */
+#define DMA_TIMEOUT		1	 
 #define DMA_INVALID_ID		0xffff
 
 struct reg_global {
@@ -109,12 +100,12 @@ struct knav_dma_chan {
 	struct knav_dma_device		*dma;
 	atomic_t			ref_count;
 
-	/* registers */
+	 
 	struct reg_chan __iomem		*reg_chan;
 	struct reg_tx_sched __iomem	*reg_tx_sched;
 	struct reg_rx_flow __iomem	*reg_rx_flow;
 
-	/* configuration stuff */
+	 
 	unsigned			channel, flow;
 	struct knav_dma_cfg		cfg;
 	struct list_head		list;
@@ -192,7 +183,7 @@ static int chan_start(struct knav_dma_chan *chan,
 		writel_relaxed(0, &chan->reg_rx_flow->thresh[2]);
 	}
 
-	/* Keep a copy of the cfg */
+	 
 	memcpy(&chan->cfg, cfg, sizeof(*cfg));
 	spin_unlock(&chan->lock);
 
@@ -206,10 +197,10 @@ static int chan_teardown(struct knav_dma_chan *chan)
 	if (!chan->reg_chan)
 		return 0;
 
-	/* indicate teardown */
+	 
 	writel_relaxed(DMA_TEARDOWN, &chan->reg_chan->control);
 
-	/* wait for the dma to shut itself down */
+	 
 	end = jiffies + msecs_to_jiffies(DMA_TIMEOUT);
 	do {
 		value = readl_relaxed(&chan->reg_chan->control);
@@ -229,7 +220,7 @@ static void chan_stop(struct knav_dma_chan *chan)
 {
 	spin_lock(&chan->lock);
 	if (chan->reg_rx_flow) {
-		/* first detach fdqs, starve out the flow */
+		 
 		writel_relaxed(0, &chan->reg_rx_flow->fdq_sel[0]);
 		writel_relaxed(0, &chan->reg_rx_flow->fdq_sel[1]);
 		writel_relaxed(0, &chan->reg_rx_flow->thresh[0]);
@@ -237,10 +228,10 @@ static void chan_stop(struct knav_dma_chan *chan)
 		writel_relaxed(0, &chan->reg_rx_flow->thresh[2]);
 	}
 
-	/* teardown the dma channel */
+	 
 	chan_teardown(chan);
 
-	/* then disconnect the completion side */
+	 
 	if (chan->reg_rx_flow) {
 		writel_relaxed(0, &chan->reg_rx_flow->control);
 		writel_relaxed(0, &chan->reg_rx_flow->tags);
@@ -282,7 +273,7 @@ static void knav_dma_hw_init(struct knav_dma_device *dma)
 
 	writel_relaxed(v, &dma->reg_global->priority_control);
 
-	/* Always enable all Rx channels. Rx paths are managed using flows */
+	 
 	for (i = 0; i < dma->max_rx_chan; i++)
 		writel_relaxed(DMA_ENABLE, &dma->reg_rx_chan[i].control);
 
@@ -396,14 +387,7 @@ static int of_channel_match_helper(struct device_node *np, const char *name,
 	return args.args[0];
 }
 
-/**
- * knav_dma_open_channel() - try to setup an exclusive slave channel
- * @dev:	pointer to client device structure
- * @name:	slave channel name
- * @config:	dma configuration parameters
- *
- * Returns pointer to appropriate DMA channel on success or error.
- */
+ 
 void *knav_dma_open_channel(struct device *dev, const char *name,
 					struct knav_dma_cfg *config)
 {
@@ -434,7 +418,7 @@ void *knav_dma_open_channel(struct device *dev, const char *name,
 		return (void *)-EINVAL;
 	}
 
-	/* Look for correct dma instance */
+	 
 	list_for_each_entry(iter1, &kdev->list, list) {
 		if (!strcmp(iter1->name, instance)) {
 			dma = iter1;
@@ -446,7 +430,7 @@ void *knav_dma_open_channel(struct device *dev, const char *name,
 		return (void *)-EINVAL;
 	}
 
-	/* Look for correct dma channel from dma instance */
+	 
 	list_for_each_entry(iter2, &dma->chan_list, list) {
 		if (config->direction == DMA_MEM_TO_DEV) {
 			if (iter2->channel == chan_num) {
@@ -487,12 +471,7 @@ void *knav_dma_open_channel(struct device *dev, const char *name,
 }
 EXPORT_SYMBOL_GPL(knav_dma_open_channel);
 
-/**
- * knav_dma_close_channel()	- Destroy a dma channel
- *
- * @channel:	dma channel handle
- *
- */
+ 
 void knav_dma_close_channel(void *channel)
 {
 	struct knav_dma_chan *chan = channel;
@@ -696,10 +675,7 @@ static int dma_init(struct device_node *cloud, struct device_node *dma_node)
 
 	list_add_tail(&dma->list, &kdev->list);
 
-	/*
-	 * For DSP software usecases or userpace transport software, setup all
-	 * the DMA hardware resources.
-	 */
+	 
 	if (dma->enable_all) {
 		atomic_inc(&dma->ref_count);
 		knav_dma_hw_init(dma);
@@ -743,7 +719,7 @@ static int knav_dma_probe(struct platform_device *pdev)
 		goto err_pm_disable;
 	}
 
-	/* Initialise all packet dmas */
+	 
 	for_each_child_of_node(node, child) {
 		ret = dma_init(node, child);
 		if (ret) {

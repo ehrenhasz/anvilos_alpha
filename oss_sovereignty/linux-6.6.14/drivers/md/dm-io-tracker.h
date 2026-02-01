@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2021 Red Hat, Inc. All rights reserved.
- *
- * This file is released under the GPL.
- */
+ 
+ 
 
 #ifndef DM_IO_TRACKER_H
 #define DM_IO_TRACKER_H
@@ -13,15 +9,10 @@
 struct dm_io_tracker {
 	spinlock_t lock;
 
-	/*
-	 * Sectors of in-flight IO.
-	 */
+	 
 	sector_t in_flight;
 
-	/*
-	 * The time, in jiffies, when this device became idle
-	 * (if it is indeed idle).
-	 */
+	 
 	unsigned long idle_time;
 	unsigned long last_update_time;
 };

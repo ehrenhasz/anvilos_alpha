@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Quick & dirty crypto testing module.
- *
- * This will only exist until we have a better testing mechanism
- * (e.g. a char device).
- *
- * Copyright (c) 2002 James Morris <jmorris@intercode.com.au>
- * Copyright (c) 2002 Jean-Francois Dive <jef@linuxbe.org>
- * Copyright (c) 2007 Nokia Siemens Networks
- *
- * Updated RFC4106 AES-GCM testing.
- *    Authors: Aidan O'Mahony (aidan.o.mahony@intel.com)
- *             Adrian Hoban <adrian.hoban@intel.com>
- *             Gabriele Paoloni <gabriele.paoloni@intel.com>
- *             Tadeusz Struk (tadeusz.struk@intel.com)
- *             Copyright (c) 2010, Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -38,27 +22,19 @@
 #include "internal.h"
 #include "tcrypt.h"
 
-/*
- * Need slab memory for testing (size in number of pages).
- */
+ 
 #define TVMEMSIZE	4
 
-/*
-* Used by test_cipher_speed()
-*/
+ 
 #define ENCRYPT 1
 #define DECRYPT 0
 
 #define MAX_DIGEST_SIZE		64
 
-/*
- * return a string with the driver name
- */
+ 
 #define get_driver_name(tfm_type, tfm) crypto_tfm_alg_driver_name(tfm_type ## _tfm(tfm))
 
-/*
- * Used by test_cipher_speed()
- */
+ 
 static unsigned int sec;
 
 static char *alg;
@@ -151,7 +127,7 @@ static int do_mult_aead_op(struct test_mb_aead_data *data, int enc,
 {
 	int i, err = 0;
 
-	/* Fire up a bunch of concurrent requests */
+	 
 	for (i = 0; i < num_mb; i++) {
 		if (enc == ENCRYPT)
 			rc[i] = crypto_aead_encrypt(data[i].req);
@@ -159,7 +135,7 @@ static int do_mult_aead_op(struct test_mb_aead_data *data, int enc,
 			rc[i] = crypto_aead_decrypt(data[i].req);
 	}
 
-	/* Wait for all requests to finish */
+	 
 	for (i = 0; i < num_mb; i++) {
 		rc[i] = crypto_wait_req(rc[i], &data[i].wait);
 
@@ -211,14 +187,14 @@ static int test_mb_aead_cycles(struct test_mb_aead_data *data, int enc,
 	if (!rc)
 		return -ENOMEM;
 
-	/* Warm-up run. */
+	 
 	for (i = 0; i < 4; i++) {
 		ret = do_mult_aead_op(data, enc, num_mb, rc);
 		if (ret)
 			goto out;
 	}
 
-	/* The real thing. */
+	 
 	for (i = 0; i < 8; i++) {
 		cycles_t start, end;
 
@@ -346,7 +322,7 @@ static void test_mb_aead_speed(const char *algo, int enc, int secs,
 			pr_info("test %u (%d bit key, %d byte blocks): ", i,
 				*keysize * 8, bs);
 
-			/* Set up tfm global state, i.e. the key */
+			 
 
 			memset(tvmem[0], 0xff, PAGE_SIZE);
 			key = tvmem[0];
@@ -370,7 +346,7 @@ static void test_mb_aead_speed(const char *algo, int enc, int secs,
 			if (iv_len)
 				memset(iv, 0xff, iv_len);
 
-			/* Now setup per request stuff, i.e. buffers */
+			 
 
 			for (j = 0; j < num_mb; ++j) {
 				struct test_mb_aead_data *cur = &data[j];
@@ -479,7 +455,7 @@ static int test_aead_cycles(struct aead_request *req, int enc, int blen)
 	int ret = 0;
 	int i;
 
-	/* Warm-up run. */
+	 
 	for (i = 0; i < 4; i++) {
 		if (enc)
 			ret = do_one_aead_op(req, crypto_aead_encrypt(req));
@@ -490,7 +466,7 @@ static int test_aead_cycles(struct aead_request *req, int enc, int blen)
 			goto out;
 	}
 
-	/* The real thing. */
+	 
 	for (i = 0; i < 8; i++) {
 		cycles_t start, end;
 
@@ -643,11 +619,7 @@ static void test_aead_speed(const char *algo, int enc, unsigned int secs,
 
 			if (!enc) {
 
-				/*
-				 * For decryption we need a proper auth so
-				 * we do the encryption path once with buffers
-				 * reversed (input <-> output) to calculate it
-				 */
+				 
 				aead_request_set_crypt(req, sgout, sg,
 						       bs, iv);
 				ret = do_one_aead_op(req,
@@ -756,7 +728,7 @@ static int test_ahash_jiffies(struct ahash_request *req, int blen,
 			if (ret)
 				return ret;
 		}
-		/* we assume there is enough space in 'out' for the result */
+		 
 		ret = do_one_ahash_op(req, crypto_ahash_final(req));
 		if (ret)
 			return ret;
@@ -774,14 +746,14 @@ static int test_ahash_cycles_digest(struct ahash_request *req, int blen,
 	unsigned long cycles = 0;
 	int ret, i;
 
-	/* Warm-up run. */
+	 
 	for (i = 0; i < 4; i++) {
 		ret = do_one_ahash_op(req, crypto_ahash_digest(req));
 		if (ret)
 			goto out;
 	}
 
-	/* The real thing. */
+	 
 	for (i = 0; i < 8; i++) {
 		cycles_t start, end;
 
@@ -815,7 +787,7 @@ static int test_ahash_cycles(struct ahash_request *req, int blen,
 	if (plen == blen)
 		return test_ahash_cycles_digest(req, blen, out);
 
-	/* Warm-up run. */
+	 
 	for (i = 0; i < 4; i++) {
 		ret = do_one_ahash_op(req, crypto_ahash_init(req));
 		if (ret)
@@ -830,7 +802,7 @@ static int test_ahash_cycles(struct ahash_request *req, int blen,
 			goto out;
 	}
 
-	/* The real thing. */
+	 
 	for (i = 0; i < 8; i++) {
 		cycles_t start, end;
 
@@ -968,7 +940,7 @@ static int do_mult_acipher_op(struct test_mb_skcipher_data *data, int enc,
 {
 	int i, err = 0;
 
-	/* Fire up a bunch of concurrent requests */
+	 
 	for (i = 0; i < num_mb; i++) {
 		if (enc == ENCRYPT)
 			rc[i] = crypto_skcipher_encrypt(data[i].req);
@@ -976,7 +948,7 @@ static int do_mult_acipher_op(struct test_mb_skcipher_data *data, int enc,
 			rc[i] = crypto_skcipher_decrypt(data[i].req);
 	}
 
-	/* Wait for all requests to finish */
+	 
 	for (i = 0; i < num_mb; i++) {
 		rc[i] = crypto_wait_req(rc[i], &data[i].wait);
 
@@ -1028,14 +1000,14 @@ static int test_mb_acipher_cycles(struct test_mb_skcipher_data *data, int enc,
 	if (!rc)
 		return -ENOMEM;
 
-	/* Warm-up run. */
+	 
 	for (i = 0; i < 4; i++) {
 		ret = do_mult_acipher_op(data, enc, num_mb, rc);
 		if (ret)
 			goto out;
 	}
 
-	/* The real thing. */
+	 
 	for (i = 0; i < 8; i++) {
 		cycles_t start, end;
 
@@ -1129,7 +1101,7 @@ static void test_mb_skcipher_speed(const char *algo, int enc, int secs,
 			pr_info("test %u (%d bit key, %d byte blocks): ", i,
 				*keysize * 8, bs);
 
-			/* Set up tfm global state, i.e. the key */
+			 
 
 			memset(tvmem[0], 0xff, PAGE_SIZE);
 			key = tvmem[0];
@@ -1153,7 +1125,7 @@ static void test_mb_skcipher_speed(const char *algo, int enc, int secs,
 			if (iv_len)
 				memset(&iv, 0xff, iv_len);
 
-			/* Now setup per request stuff, i.e. buffers */
+			 
 
 			for (j = 0; j < num_mb; ++j) {
 				struct test_mb_skcipher_data *cur = &data[j];
@@ -1250,7 +1222,7 @@ static int test_acipher_cycles(struct skcipher_request *req, int enc,
 	int ret = 0;
 	int i;
 
-	/* Warm-up run. */
+	 
 	for (i = 0; i < 4; i++) {
 		if (enc)
 			ret = do_one_acipher_op(req,
@@ -1263,7 +1235,7 @@ static int test_acipher_cycles(struct skcipher_request *req, int enc,
 			goto out;
 	}
 
-	/* The real thing. */
+	 
 	for (i = 0; i < 8; i++) {
 		cycles_t start, end;
 
@@ -1350,7 +1322,7 @@ static void test_skcipher_speed(const char *algo, int enc, unsigned int secs,
 
 			memset(tvmem[0], 0xff, PAGE_SIZE);
 
-			/* set key, plain text and IV */
+			 
 			key = tvmem[0];
 			for (j = 0; j < tcount; j++) {
 				if (template[j].klen == *keysize) {
@@ -1443,7 +1415,7 @@ static inline int tcrypt_test(const char *alg)
 	pr_debug("testing %s\n", alg);
 
 	ret = alg_test(alg, alg, 0, 0);
-	/* non-fips algs return -EINVAL or -ECANCELED in fips mode */
+	 
 	if (fips_enabled && (ret == -EINVAL || ret == -ECANCELED))
 		ret = 0;
 	return ret;
@@ -2905,13 +2877,7 @@ static int __init tcrypt_mod_init(void)
 		pr_debug("all tests passed\n");
 	}
 
-	/* We intentionaly return -EAGAIN to prevent keeping the module,
-	 * unless we're running in fips mode. It does all its work from
-	 * init() and doesn't offer any runtime functionality, but in
-	 * the fips case, checking for a successful load is helpful.
-	 * => we don't need it in the memory, do we?
-	 *                                        -- mludvig
-	 */
+	 
 	if (!fips_enabled)
 		err = -EAGAIN;
 
@@ -2922,10 +2888,7 @@ err_free_tv:
 	return err;
 }
 
-/*
- * If an init function is provided, an exit function must also be provided
- * to allow module unload.
- */
+ 
 static void __exit tcrypt_mod_fini(void) { }
 
 late_initcall(tcrypt_mod_init);

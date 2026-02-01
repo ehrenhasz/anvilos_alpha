@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2019 Linaro Ltd.
-// Copyright (C) 2019 Socionext Inc.
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -18,7 +18,7 @@
 
 #include "virt-dma.h"
 
-#define MLB_HDMAC_DMACR		0x0	/* global */
+#define MLB_HDMAC_DMACR		0x0	 
 #define MLB_HDMAC_DE		BIT(31)
 #define MLB_HDMAC_DS		BIT(30)
 #define MLB_HDMAC_PR		BIT(28)
@@ -26,7 +26,7 @@
 
 #define MLB_HDMAC_CH_STRIDE	0x10
 
-#define MLB_HDMAC_DMACA		0x0	/* channel */
+#define MLB_HDMAC_DMACA		0x0	 
 #define MLB_HDMAC_EB		BIT(31)
 #define MLB_HDMAC_PB		BIT(30)
 #define MLB_HDMAC_ST		BIT(29)
@@ -92,7 +92,7 @@ to_milbeaut_hdmac_desc(struct virt_dma_desc *vd)
 	return container_of(vd, struct milbeaut_hdmac_desc, vd);
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static struct milbeaut_hdmac_desc *
 milbeaut_hdmac_next_desc(struct milbeaut_hdmac_chan *mc)
 {
@@ -111,7 +111,7 @@ milbeaut_hdmac_next_desc(struct milbeaut_hdmac_chan *mc)
 	return mc->md;
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static void milbeaut_chan_start(struct milbeaut_hdmac_chan *mc,
 				struct milbeaut_hdmac_desc *md)
 {
@@ -158,7 +158,7 @@ static void milbeaut_chan_start(struct milbeaut_hdmac_chan *mc,
 	writel_relaxed(ca, mc->reg_ch_base + MLB_HDMAC_DMACA);
 }
 
-/* mc->vc.lock must be held by caller */
+ 
 static void milbeaut_hdmac_start(struct milbeaut_hdmac_chan *mc)
 {
 	struct milbeaut_hdmac_desc *md;
@@ -176,7 +176,7 @@ static irqreturn_t milbeaut_hdmac_interrupt(int irq, void *dev_id)
 
 	spin_lock(&mc->vc.lock);
 
-	/* Ack and Disable irqs */
+	 
 	val = readl_relaxed(mc->reg_ch_base + MLB_HDMAC_DMACB);
 	val &= ~(FIELD_PREP(MLB_HDMAC_SS, HDMAC_PAUSE));
 	writel_relaxed(val, mc->reg_ch_base + MLB_HDMAC_DMACB);
@@ -296,7 +296,7 @@ static int milbeaut_hdmac_terminate_all(struct dma_chan *chan)
 	spin_lock_irqsave(&vc->lock, flags);
 
 	val = readl_relaxed(mc->reg_ch_base + MLB_HDMAC_DMACA);
-	val &= ~MLB_HDMAC_EB; /* disable the channel */
+	val &= ~MLB_HDMAC_EB;  
 	writel_relaxed(val, mc->reg_ch_base + MLB_HDMAC_DMACA);
 
 	if (mc->md) {
@@ -331,7 +331,7 @@ static enum dma_status milbeaut_hdmac_tx_status(struct dma_chan *chan,
 	int i;
 
 	stat = dma_cookie_status(chan, cookie, txstate);
-	/* Return immediately if we do not need to compute the residue. */
+	 
 	if (stat == DMA_COMPLETE || !txstate)
 		return stat;
 
@@ -341,7 +341,7 @@ static enum dma_status milbeaut_hdmac_tx_status(struct dma_chan *chan,
 
 	mc = to_milbeaut_hdmac_chan(vc);
 
-	/* residue from the on-flight chunk */
+	 
 	if (mc->md && mc->md->vd.tx.cookie == cookie) {
 		struct scatterlist *sg;
 		u32 done;
@@ -367,7 +367,7 @@ static enum dma_status milbeaut_hdmac_tx_status(struct dma_chan *chan,
 	}
 
 	if (md) {
-		/* residue from the queued chunks */
+		 
 		for (i = md->sg_cur; i < md->sg_len; i++)
 			txstate->residue += sg_dma_len(&md->sgl[i]);
 	}
@@ -537,13 +537,7 @@ static int milbeaut_hdmac_remove(struct platform_device *pdev)
 	struct dma_chan *chan;
 	int ret;
 
-	/*
-	 * Before reaching here, almost all descriptors have been freed by the
-	 * ->device_free_chan_resources() hook. However, each channel might
-	 * be still holding one descriptor that was on-flight at that moment.
-	 * Terminate it to make sure this hardware is no longer running. Then,
-	 * free the channel resources once again to avoid memory leak.
-	 */
+	 
 	list_for_each_entry(chan, &mdev->ddev.channels, device_node) {
 		ret = dmaengine_terminate_sync(chan);
 		if (ret)
@@ -560,7 +554,7 @@ static int milbeaut_hdmac_remove(struct platform_device *pdev)
 
 static const struct of_device_id milbeaut_hdmac_match[] = {
 	{ .compatible = "socionext,milbeaut-m10v-hdmac" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, milbeaut_hdmac_match);
 

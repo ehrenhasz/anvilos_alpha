@@ -1,23 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * storage_common.c -- Common definitions for mass storage functionality
- *
- * Copyright (C) 2003-2008 Alan Stern
- * Copyeight (C) 2009 Samsung Electronics
- * Author: Michal Nazarewicz (mina86@mina86.com)
- */
 
-/*
- * This file requires the following identifiers used in USB strings to
- * be defined (each of type pointer to char):
- *  - fsg_string_interface    -- name of the interface
- */
+ 
 
-/*
- * When USB_GADGET_DEBUG_FILES is defined the module param num_buffers
- * sets the number of pipeline buffers (length of the fsg_buffhd array).
- * The valid range of num_buffers is: num >= 2 && num <= 4.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/blkdev.h>
@@ -28,24 +14,21 @@
 
 #include "storage_common.h"
 
-/* There is only one interface. */
+ 
 
 struct usb_interface_descriptor fsg_intf_desc = {
 	.bLength =		sizeof fsg_intf_desc,
 	.bDescriptorType =	USB_DT_INTERFACE,
 
-	.bNumEndpoints =	2,		/* Adjusted during fsg_bind() */
+	.bNumEndpoints =	2,		 
 	.bInterfaceClass =	USB_CLASS_MASS_STORAGE,
-	.bInterfaceSubClass =	USB_SC_SCSI,	/* Adjusted during fsg_bind() */
-	.bInterfaceProtocol =	USB_PR_BULK,	/* Adjusted during fsg_bind() */
+	.bInterfaceSubClass =	USB_SC_SCSI,	 
+	.bInterfaceProtocol =	USB_PR_BULK,	 
 	.iInterface =		FSG_STRING_INTERFACE,
 };
 EXPORT_SYMBOL_GPL(fsg_intf_desc);
 
-/*
- * Three full-speed endpoint descriptors: bulk-in, bulk-out, and
- * interrupt-in.
- */
+ 
 
 struct usb_endpoint_descriptor fsg_fs_bulk_in_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
@@ -53,7 +36,7 @@ struct usb_endpoint_descriptor fsg_fs_bulk_in_desc = {
 
 	.bEndpointAddress =	USB_DIR_IN,
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
-	/* wMaxPacketSize set by autoconfiguration */
+	 
 };
 EXPORT_SYMBOL_GPL(fsg_fs_bulk_in_desc);
 
@@ -63,7 +46,7 @@ struct usb_endpoint_descriptor fsg_fs_bulk_out_desc = {
 
 	.bEndpointAddress =	USB_DIR_OUT,
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
-	/* wMaxPacketSize set by autoconfiguration */
+	 
 };
 EXPORT_SYMBOL_GPL(fsg_fs_bulk_out_desc);
 
@@ -76,17 +59,12 @@ struct usb_descriptor_header *fsg_fs_function[] = {
 EXPORT_SYMBOL_GPL(fsg_fs_function);
 
 
-/*
- * USB 2.0 devices need to expose both high speed and full speed
- * descriptors, unless they only run at full speed.
- *
- * That means alternate endpoint descriptors (bigger packets).
- */
+ 
 struct usb_endpoint_descriptor fsg_hs_bulk_in_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
-	/* bEndpointAddress copied from fs_bulk_in_desc during fsg_bind() */
+	 
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
 	.wMaxPacketSize =	cpu_to_le16(512),
 };
@@ -96,10 +74,10 @@ struct usb_endpoint_descriptor fsg_hs_bulk_out_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
-	/* bEndpointAddress copied from fs_bulk_out_desc during fsg_bind() */
+	 
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
 	.wMaxPacketSize =	cpu_to_le16(512),
-	.bInterval =		1,	/* NAK every 1 uframe */
+	.bInterval =		1,	 
 };
 EXPORT_SYMBOL_GPL(fsg_hs_bulk_out_desc);
 
@@ -116,7 +94,7 @@ struct usb_endpoint_descriptor fsg_ss_bulk_in_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
-	/* bEndpointAddress copied from fs_bulk_in_desc during fsg_bind() */
+	 
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
 	.wMaxPacketSize =	cpu_to_le16(1024),
 };
@@ -126,7 +104,7 @@ struct usb_ss_ep_comp_descriptor fsg_ss_bulk_in_comp_desc = {
 	.bLength =		sizeof(fsg_ss_bulk_in_comp_desc),
 	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
 
-	/*.bMaxBurst =		DYNAMIC, */
+	 
 };
 EXPORT_SYMBOL_GPL(fsg_ss_bulk_in_comp_desc);
 
@@ -134,7 +112,7 @@ struct usb_endpoint_descriptor fsg_ss_bulk_out_desc = {
 	.bLength =		USB_DT_ENDPOINT_SIZE,
 	.bDescriptorType =	USB_DT_ENDPOINT,
 
-	/* bEndpointAddress copied from fs_bulk_out_desc during fsg_bind() */
+	 
 	.bmAttributes =		USB_ENDPOINT_XFER_BULK,
 	.wMaxPacketSize =	cpu_to_le16(1024),
 };
@@ -144,7 +122,7 @@ struct usb_ss_ep_comp_descriptor fsg_ss_bulk_out_comp_desc = {
 	.bLength =		sizeof(fsg_ss_bulk_in_comp_desc),
 	.bDescriptorType =	USB_DT_SS_ENDPOINT_COMP,
 
-	/*.bMaxBurst =		DYNAMIC, */
+	 
 };
 EXPORT_SYMBOL_GPL(fsg_ss_bulk_out_comp_desc);
 
@@ -159,12 +137,9 @@ struct usb_descriptor_header *fsg_ss_function[] = {
 EXPORT_SYMBOL_GPL(fsg_ss_function);
 
 
- /*-------------------------------------------------------------------------*/
+  
 
-/*
- * If the next two routines are called while the gadget is registered,
- * the caller must own fsg->filesem for writing.
- */
+ 
 
 void fsg_lun_close(struct fsg_lun *curlun)
 {
@@ -188,7 +163,7 @@ int fsg_lun_open(struct fsg_lun *curlun, const char *filename)
 	unsigned int			blkbits;
 	unsigned int			blksize;
 
-	/* R/W if we can, R/O if we must */
+	 
 	ro = curlun->initially_ro;
 	if (!ro) {
 		filp = filp_open(filename, O_RDWR | O_LARGEFILE, 0);
@@ -211,10 +186,7 @@ int fsg_lun_open(struct fsg_lun *curlun, const char *filename)
 		goto out;
 	}
 
-	/*
-	 * If we can't read the file, it's no good.
-	 * If we can't write the file, use it read-only.
-	 */
+	 
 	if (!(filp->f_mode & FMODE_CAN_READ)) {
 		LINFO(curlun, "file not readable: %s\n", filename);
 		goto out;
@@ -240,10 +212,10 @@ int fsg_lun_open(struct fsg_lun *curlun, const char *filename)
 		blkbits = 9;
 	}
 
-	num_sectors = size >> blkbits; /* File size in logic-block-size blocks */
+	num_sectors = size >> blkbits;  
 	min_sectors = 1;
 	if (curlun->cdrom) {
-		min_sectors = 300;	/* Smallest track is 300 frames */
+		min_sectors = 300;	 
 		if (num_sectors >= 256*60*75) {
 			num_sectors = 256*60*75 - 1;
 			LINFO(curlun, "file too big: %s\n", filename);
@@ -276,12 +248,9 @@ out:
 EXPORT_SYMBOL_GPL(fsg_lun_open);
 
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/*
- * Sync the file data, don't bother with the metadata.
- * This code was copied from fs/buffer.c:sys_fdatasync().
- */
+ 
 int fsg_lun_fsync_sub(struct fsg_lun *curlun)
 {
 	struct file	*filp = curlun->filp;
@@ -295,25 +264,22 @@ EXPORT_SYMBOL_GPL(fsg_lun_fsync_sub);
 void store_cdrom_address(u8 *dest, int msf, u32 addr)
 {
 	if (msf) {
-		/*
-		 * Convert to Minutes-Seconds-Frames.
-		 * Sector size is already set to 2048 bytes.
-		 */
-		addr += 2*75;		/* Lead-in occupies 2 seconds */
-		dest[3] = addr % 75;	/* Frames */
+		 
+		addr += 2*75;		 
+		dest[3] = addr % 75;	 
 		addr /= 75;
-		dest[2] = addr % 60;	/* Seconds */
+		dest[2] = addr % 60;	 
 		addr /= 60;
-		dest[1] = addr;		/* Minutes */
-		dest[0] = 0;		/* Reserved */
+		dest[1] = addr;		 
+		dest[0] = 0;		 
 	} else {
-		/* Absolute sector */
+		 
 		put_unaligned_be32(addr, dest);
 	}
 }
 EXPORT_SYMBOL_GPL(store_cdrom_address);
 
-/*-------------------------------------------------------------------------*/
+ 
 
 
 ssize_t fsg_show_ro(struct fsg_lun *curlun, char *buf)
@@ -337,17 +303,17 @@ ssize_t fsg_show_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
 	ssize_t		rc;
 
 	down_read(filesem);
-	if (fsg_lun_is_open(curlun)) {	/* Get the complete pathname */
+	if (fsg_lun_is_open(curlun)) {	 
 		p = file_path(curlun->filp, buf, PAGE_SIZE - 1);
 		if (IS_ERR(p))
 			rc = PTR_ERR(p);
 		else {
 			rc = strlen(p);
 			memmove(buf, p, rc);
-			buf[rc] = '\n';		/* Add a newline */
+			buf[rc] = '\n';		 
 			buf[++rc] = 0;
 		}
-	} else {				/* No file, return 0 bytes */
+	} else {				 
 		*buf = 0;
 		rc = 0;
 	}
@@ -374,9 +340,7 @@ ssize_t fsg_show_inquiry_string(struct fsg_lun *curlun, char *buf)
 }
 EXPORT_SYMBOL_GPL(fsg_show_inquiry_string);
 
-/*
- * The caller must hold fsg->filesem for reading when calling this function.
- */
+ 
 static ssize_t _fsg_store_ro(struct fsg_lun *curlun, bool ro)
 {
 	if (fsg_lun_is_open(curlun)) {
@@ -401,10 +365,7 @@ ssize_t fsg_store_ro(struct fsg_lun *curlun, struct rw_semaphore *filesem,
 	if (rc)
 		return rc;
 
-	/*
-	 * Allow the write-enable status to change only while the
-	 * backing file is closed.
-	 */
+	 
 	down_read(filesem);
 	rc = _fsg_store_ro(curlun, ro);
 	if (!rc)
@@ -424,7 +385,7 @@ ssize_t fsg_store_nofua(struct fsg_lun *curlun, const char *buf, size_t count)
 	if (ret)
 		return ret;
 
-	/* Sync data when switching from async mode to sync */
+	 
 	if (!nofua && curlun->nofua)
 		fsg_lun_fsync_sub(curlun);
 
@@ -441,17 +402,17 @@ ssize_t fsg_store_file(struct fsg_lun *curlun, struct rw_semaphore *filesem,
 
 	if (curlun->prevent_medium_removal && fsg_lun_is_open(curlun)) {
 		LDBG(curlun, "eject attempt prevented\n");
-		return -EBUSY;				/* "Door is locked" */
+		return -EBUSY;				 
 	}
 
-	/* Remove a trailing newline */
+	 
 	if (count > 0 && buf[count-1] == '\n')
-		((char *) buf)[count-1] = 0;		/* Ugh! */
+		((char *) buf)[count-1] = 0;		 
 
-	/* Load new medium */
+	 
 	down_write(filesem);
 	if (count > 0 && buf[0]) {
-		/* fsg_lun_open() will close existing file if any. */
+		 
 		rc = fsg_lun_open(curlun, buf);
 		if (rc == 0)
 			curlun->unit_attention_data =
@@ -527,10 +488,7 @@ ssize_t fsg_store_forced_eject(struct fsg_lun *curlun, struct rw_semaphore *file
 {
 	int ret;
 
-	/*
-	 * Forcibly detach the backing file from the LUN
-	 * regardless of whether the host has allowed it.
-	 */
+	 
 	curlun->prevent_medium_removal = 0;
 	ret = fsg_store_file(curlun, filesem, "", 0);
 	return ret < 0 ? ret : count;

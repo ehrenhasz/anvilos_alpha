@@ -1,34 +1,11 @@
-/*
- * Copyright 2023 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 #include "link_hwss_dio.h"
 #include "link_hwss_dio_fixed_vs_pe_retimer.h"
 #include "link_enc_cfg.h"
 
 uint8_t dp_dio_fixed_vs_pe_retimer_lane_cfg_to_hw_cfg(struct dc_link *link)
 {
-	// TODO: Get USB-C cable orientation
+	
 	if (link->cur_link_settings.lane_count == LANE_COUNT_FOUR)
 		return 0xF2;
 	else
@@ -86,7 +63,7 @@ static bool set_dio_fixed_vs_pe_retimer_dp_link_test_pattern_override(struct dc_
 
 	if (link->current_test_pattern >= DP_TEST_PATTERN_SQUARE_BEGIN &&
 			link->current_test_pattern <= DP_TEST_PATTERN_SQUARE_END) {
-		// Deprogram overrides from previous test pattern
+		
 		dp_dio_fixed_vs_pe_retimer_exit_manual_automation(link);
 	}
 
@@ -101,7 +78,7 @@ static bool set_dio_fixed_vs_pe_retimer_dp_link_test_pattern_override(struct dc_
 	default:
 		if (link->current_test_pattern == DP_TEST_PATTERN_80BIT_CUSTOM ||
 				link->current_test_pattern == DP_TEST_PATTERN_D102)
-			// Deprogram overrides from previous test pattern
+			
 			link->dc->link_srv->configure_fixed_vs_pe_retimer(link->ddc,
 					&vendor_lttpr_exit_manual_automation_0[0],
 					sizeof(vendor_lttpr_exit_manual_automation_0));

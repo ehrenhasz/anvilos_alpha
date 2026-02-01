@@ -1,21 +1,4 @@
-/* adjtimex() tick adjustment test
- *		by:   John Stultz <john.stultz@linaro.org>
- *		(C) Copyright Linaro Limited 2015
- *		Licensed under the GPLv2
- *
- *  To build:
- *	$ gcc adjtick.c -o adjtick -lrt
- *
- *   This program is free software: you can redistribute it and/or modify
- *   it under the terms of the GNU General Public License as published by
- *   the Free Software Foundation, either version 2 of the License, or
- *   (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU General Public License for more details.
- */
+ 
 #include <stdio.h>
 #include <unistd.h>
 #include <stdlib.h>
@@ -75,7 +58,7 @@ void get_monotonic_and_raw(struct timespec *mon, struct timespec *raw)
 	clock_gettime(CLOCK_MONOTONIC, mon);
 	clock_gettime(CLOCK_MONOTONIC_RAW, raw);
 
-	/* Try to get a more tightly bound pairing */
+	 
 	for (i = 0; i < 3; i++) {
 		long long newdiff;
 
@@ -147,15 +130,7 @@ int check_tick_adj(long tickval)
 		return -1;
 	}
 
-	/*
-	 * Here we use 100ppm difference as an error bound.
-	 * We likely should see better, but some coarse clocksources
-	 * cannot match the HZ tick size accurately, so we have a
-	 * internal correction factor that doesn't scale exactly
-	 * with the adjustment, resulting in > 10ppm error during
-	 * a 10% adjustment. 100ppm also gives us more breathing
-	 * room for interruptions during the measurement.
-	 */
+	 
 	if (llabs(eppm - ppm) > 100) {
 		printf("	[FAILED]\n");
 		return -1;
@@ -183,8 +158,8 @@ int main(int argc, char **argv)
 
 	systick = sysconf(_SC_CLK_TCK);
 	systick = USEC_PER_SEC/sysconf(_SC_CLK_TCK);
-	max = systick/10; /* +/- 10% */
-	interval = max/4; /* in 4 steps each side */
+	max = systick/10;  
+	interval = max/4;  
 
 	for (tick = (systick - max); tick < (systick + max); tick += interval) {
 		if (check_tick_adj(tick)) {
@@ -193,7 +168,7 @@ int main(int argc, char **argv)
 		}
 	}
 
-	/* Reset things to zero */
+	 
 	tx1.modes	 = ADJ_TICK;
 	tx1.modes	|= ADJ_OFFSET;
 	tx1.modes	|= ADJ_FREQUENCY;

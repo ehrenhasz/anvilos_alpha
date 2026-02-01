@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include "gcc-common.h"
 
@@ -15,9 +15,7 @@ static unsigned int arm_pertask_ssp_rtl_execute(void)
 		rtx body;
 		rtx current;
 
-		/*
-		 * Find a SET insn involving a SYMBOL_REF to __stack_chk_guard
-		 */
+		 
 		if (!INSN_P(insn))
 			continue;
 		body = PATTERN(insn);
@@ -28,10 +26,7 @@ static unsigned int arm_pertask_ssp_rtl_execute(void)
 		if (strcmp(sym, "__stack_chk_guard"))
 			continue;
 
-		/*
-		 * Replace the source of the SET insn with an expression that
-		 * produces the address of the current task's stack canary value
-		 */
+		 
 		current = gen_reg_rtx(Pmode);
 
 		emit_insn_before(gen_load_tp_hard(current), insn);
@@ -77,7 +72,7 @@ __visible int plugin_init(struct plugin_name_args *plugin_info,
 		if (!strcmp(argv[i].key, "disable"))
 			return 0;
 
-		/* all remaining options require a value */
+		 
 		if (!argv[i].value) {
 			error(G_("no value supplied for option '-fplugin-arg-%s-%s'"),
 			      plugin_name, argv[i].key);

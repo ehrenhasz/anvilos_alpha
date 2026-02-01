@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// MFD core driver for the Maxim MAX77843
-//
-// Copyright (C) 2015 Samsung Electronics
-// Author: Jaewon Kim <jaewon02.kim@samsung.com>
-// Author: Beomho Seo <beomho.seo@samsung.com>
+
+
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -48,7 +48,7 @@ static const struct regmap_config max77843_regmap_config = {
 };
 
 static const struct regmap_irq max77843_irqs[] = {
-	/* TOPSYS interrupts */
+	 
 	{ .reg_offset = 0, .mask = MAX77843_SYS_IRQ_SYSUVLO_INT, },
 	{ .reg_offset = 0, .mask = MAX77843_SYS_IRQ_SYSOVLO_INT, },
 	{ .reg_offset = 0, .mask = MAX77843_SYS_IRQ_TSHDN_INT, },
@@ -64,7 +64,7 @@ static const struct regmap_irq_chip max77843_irq_chip = {
 	.num_irqs	= ARRAY_SIZE(max77843_irqs),
 };
 
-/* Charger and Charger regulator use same regmap. */
+ 
 static int max77843_chg_init(struct max77693_dev *max77843)
 {
 	int ret;

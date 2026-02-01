@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file provides the ACPI based P-state support. This
- * module works with generic cpufreq infrastructure. Most of
- * the code is based on i386 version
- * (arch/i386/kernel/cpu/cpufreq/acpi-cpufreq.c)
- *
- * Copyright (C) 2005 Intel Corp
- *      Venkatesh Pallipadi <venkatesh.pallipadi@intel.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -83,7 +75,7 @@ processor_get_pstate (
 }
 
 
-/* To be used only after data->acpi_data is initialized */
+ 
 static unsigned
 extract_clock (
 	struct cpufreq_acpi_io *data,
@@ -115,7 +107,7 @@ processor_get_freq (
 	if (smp_processor_id() != cpu)
 		return -EAGAIN;
 
-	/* processor_get_pstate gets the instantaneous frequency */
+	 
 	ret = processor_get_pstate(&value);
 	if (ret) {
 		pr_warn("get performance failed with error %d\n", ret);
@@ -152,10 +144,7 @@ processor_set_freq (
 	pr_debug("Transitioning from P%d to P%d\n",
 		data->acpi_data.state, state);
 
-	/*
-	 * First we write the target state's 'control' value to the
-	 * control_register.
-	 */
+	 
 	value = (u32) data->acpi_data.states[state].control;
 
 	pr_debug("Transitioning to state: 0x%08x\n", value);
@@ -221,7 +210,7 @@ acpi_cpufreq_cpu_init (
 	if (result)
 		goto err_free;
 
-	/* capability check */
+	 
 	if (data->acpi_data.state_count <= 1) {
 		pr_debug("No P-States\n");
 		result = -ENODEV;
@@ -239,7 +228,7 @@ acpi_cpufreq_cpu_init (
 		goto err_unreg;
 	}
 
-	/* alloc freq_table */
+	 
 	freq_table = kcalloc(data->acpi_data.state_count + 1,
 	                           sizeof(*freq_table),
 	                           GFP_KERNEL);
@@ -248,7 +237,7 @@ acpi_cpufreq_cpu_init (
 		goto err_unreg;
 	}
 
-	/* detect transition latency */
+	 
 	policy->cpuinfo.transition_latency = 0;
 	for (i=0; i<data->acpi_data.state_count; i++) {
 		if ((data->acpi_data.states[i].transition_latency * 1000) >
@@ -258,7 +247,7 @@ acpi_cpufreq_cpu_init (
 		}
 	}
 
-	/* table init */
+	 
 	for (i = 0; i <= data->acpi_data.state_count; i++)
 	{
 		if (i < data->acpi_data.state_count) {
@@ -271,7 +260,7 @@ acpi_cpufreq_cpu_init (
 
 	policy->freq_table = freq_table;
 
-	/* notify BIOS that we exist */
+	 
 	acpi_processor_notify_smm(THIS_MODULE);
 
 	pr_info("CPU%u - ACPI performance management activated\n", cpu);
@@ -286,8 +275,7 @@ acpi_cpufreq_cpu_init (
 			(u32) data->acpi_data.states[i].status,
 			(u32) data->acpi_data.states[i].control);
 
-	/* the first call to ->target() should result in us actually
-	 * writing something to the appropriate registers. */
+	 
 	data->resume = 1;
 
 	return (result);

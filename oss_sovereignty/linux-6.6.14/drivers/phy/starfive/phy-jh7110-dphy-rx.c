@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * StarFive JH7110 DPHY RX driver
- *
- * Copyright (C) 2023 StarFive Technology Co., Ltd.
- * Author: Jack Zhu <jack.zhu@starfivetech.com>
- * Author: Changhuang Liang <changhuang.liang@starfivetech.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -52,14 +46,7 @@ struct regval {
 };
 
 struct stf_dphy_info {
-	/**
-	 * @maps:
-	 *
-	 * Physical lanes and logic lanes mapping table.
-	 *
-	 * The default order is:
-	 * [clk lane0, data lane 0, data lane 1, data lane 2, date lane 3, clk lane 1]
-	 */
+	 
 	u8 maps[STF_MAP_LANES_NUM];
 };
 
@@ -213,7 +200,7 @@ static const struct of_device_id stf_dphy_dt_ids[] = {
 		.compatible = "starfive,jh7110-dphy-rx",
 		.data = &starfive_dphy_info,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, stf_dphy_dt_ids);
 

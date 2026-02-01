@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * OHCI HCD (Host Controller Driver) for USB.
- *
- * TI DA8xx (OMAP-L1x) Bus Glue
- *
- * Derived from: ohci-omap.c and ohci-s3c2410.c
- * Copyright (C) 2008-2009 MontaVista Software, Inc. <source@mvista.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/gpio/consumer.h>
@@ -46,7 +39,7 @@ struct da8xx_ohci_hcd {
 
 #define to_da8xx_ohci(hcd) (struct da8xx_ohci_hcd *)(hcd_to_ohci(hcd)->priv)
 
-/* Over-current indicator change bitmask */
+ 
 static volatile u16 ocic_mask;
 
 static int ohci_da8xx_enable(struct usb_hcd *hcd)
@@ -239,10 +232,7 @@ static int ohci_da8xx_reset(struct usb_hcd *hcd)
 	if (result < 0)
 		return result;
 
-	/*
-	 * DA8xx only have 1 port connected to the pins but the HC root hub
-	 * register A reports 2 ports, thus we'll have to override it...
-	 */
+	 
 	ohci->num_ports = 1;
 
 	result = ohci_setup(hcd);
@@ -251,12 +241,7 @@ static int ohci_da8xx_reset(struct usb_hcd *hcd)
 		return result;
 	}
 
-	/*
-	 * Since we're providing a board-specific root hub port power control
-	 * and over-current reporting, we have to override the HC root hub A
-	 * register's default value, so that ohci_hub_control() could return
-	 * the correct hub descriptor...
-	 */
+	 
 	rh_a = ohci_readl(ohci, &ohci->regs->roothub.a);
 	if (ohci_da8xx_has_set_power(hcd)) {
 		rh_a &= ~RH_A_NPS;
@@ -275,14 +260,12 @@ static int ohci_da8xx_reset(struct usb_hcd *hcd)
 	return result;
 }
 
-/*
- * Update the status data from the hub with the over-current indicator change.
- */
+ 
 static int ohci_da8xx_hub_status_data(struct usb_hcd *hcd, char *buf)
 {
 	int length		= orig_ohci_hub_status_data(hcd, buf);
 
-	/* See if we have OCIC bit set on port 1 */
+	 
 	if (ocic_mask & (1 << 1)) {
 		dev_dbg(hcd->self.controller, "over-current indicator change "
 			"on port 1\n");
@@ -295,9 +278,7 @@ static int ohci_da8xx_hub_status_data(struct usb_hcd *hcd, char *buf)
 	return length;
 }
 
-/*
- * Look at the control requests to the root hub and see if we need to override.
- */
+ 
 static int ohci_da8xx_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 				  u16 wIndex, char *buf, u16 wLength)
 {
@@ -306,7 +287,7 @@ static int ohci_da8xx_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 	switch (typeReq) {
 	case GetPortStatus:
-		/* Check the port number */
+		 
 		if (wIndex != 1)
 			break;
 
@@ -314,15 +295,15 @@ static int ohci_da8xx_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 		temp = roothub_portstatus(hcd_to_ohci(hcd), wIndex - 1);
 
-		/* The port power status (PPS) bit defaults to 1 */
+		 
 		if (!ohci_da8xx_get_power(hcd))
 			temp &= ~RH_PS_PPS;
 
-		/* The port over-current indicator (POCI) bit is always 0 */
+		 
 		if (ohci_da8xx_get_oci(hcd) > 0)
 			temp |=  RH_PS_POCI;
 
-		/* The over-current indicator change (OCIC) bit is 0 too */
+		 
 		if (ocic_mask & (1 << wIndex))
 			temp |=  RH_PS_OCIC;
 
@@ -335,7 +316,7 @@ static int ohci_da8xx_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		temp = 0;
 
 check_port:
-		/* Check the port number */
+		 
 		if (wIndex != 1)
 			break;
 
@@ -362,7 +343,7 @@ check_port:
 			wIndex, buf, wLength);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 #ifdef CONFIG_OF
 static const struct of_device_id da8xx_ohci_ids[] = {
 	{ .compatible = "ti,da830-ohci" },
@@ -526,9 +507,7 @@ static const struct ohci_driver_overrides da8xx_overrides __initconst = {
 	.extra_priv_size = sizeof(struct da8xx_ohci_hcd),
 };
 
-/*
- * Driver definition to register with platform structure.
- */
+ 
 static struct platform_driver ohci_hcd_da8xx_driver = {
 	.probe		= ohci_da8xx_probe,
 	.remove_new	= ohci_da8xx_remove,
@@ -551,14 +530,7 @@ static int __init ohci_da8xx_init(void)
 
 	ohci_init_driver(&ohci_da8xx_hc_driver, &da8xx_overrides);
 
-	/*
-	 * The Davinci da8xx HW has some unusual quirks, which require
-	 * da8xx-specific workarounds. We override certain hc_driver
-	 * functions here to achieve that. We explicitly do not enhance
-	 * ohci_driver_overrides to allow this more easily, since this
-	 * is an unusual case, and we don't want to encourage others to
-	 * override these functions by making it too easy.
-	 */
+	 
 
 	orig_ohci_hub_control = ohci_da8xx_hc_driver.hub_control;
 	orig_ohci_hub_status_data = ohci_da8xx_hc_driver.hub_status_data;

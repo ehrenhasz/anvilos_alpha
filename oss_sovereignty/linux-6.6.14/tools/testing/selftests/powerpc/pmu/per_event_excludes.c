@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014, Michael Ellerman, IBM Corp.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -16,9 +14,7 @@
 #include "lib.h"
 #include "utils.h"
 
-/*
- * Test that per-event excludes work.
- */
+ 
 
 static int per_event_excludes(void)
 {
@@ -27,10 +23,7 @@ static int per_event_excludes(void)
 
 	SKIP_IF(!have_hwcap2(PPC_FEATURE2_ARCH_2_07));
 
-	/*
-	 * We need to create the events disabled, otherwise the running/enabled
-	 * counts don't match up.
-	 */
+	 
 	e = &events[0];
 	event_init_opts(e, PERF_COUNT_HW_INSTRUCTIONS,
 			PERF_TYPE_HARDWARE, "instructions");
@@ -59,21 +52,14 @@ static int per_event_excludes(void)
 
 	FAIL_IF(event_open(&events[0]));
 
-	/*
-	 * The open here will fail if we don't have per event exclude support,
-	 * because the second event has an incompatible set of exclude settings
-	 * and we're asking for the events to be in a group.
-	 */
+	 
 	for (i = 1; i < 4; i++)
 		FAIL_IF(event_open_with_group(&events[i], events[0].fd));
 
-	/*
-	 * Even though the above will fail without per-event excludes we keep
-	 * testing in order to be thorough.
-	 */
+	 
 	prctl(PR_TASK_PERF_EVENTS_ENABLE);
 
-	/* Spin for a while */
+	 
 	for (i = 0; i < INT_MAX; i++)
 		asm volatile("" : : : "memory");
 
@@ -84,18 +70,11 @@ static int per_event_excludes(void)
 		event_report(&events[i]);
 	}
 
-	/*
-	 * We should see that all events have enabled == running. That
-	 * shows that they were all on the PMU at once.
-	 */
+	 
 	for (i = 0; i < 4; i++)
 		FAIL_IF(events[i].result.running != events[i].result.enabled);
 
-	/*
-	 * We can also check that the result for instructions is >= all the
-	 * other counts. That's because it is counting all instructions while
-	 * the others are counting a subset.
-	 */
+	 
 	for (i = 1; i < 4; i++)
 		FAIL_IF(events[0].result.value < events[i].result.value);
 

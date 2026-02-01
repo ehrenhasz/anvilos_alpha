@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include "cgroup_helpers.h"
 
@@ -40,12 +40,12 @@ static struct sockopt_test {
 	enum sockopt_test_error		error;
 } tests[] = {
 
-	/* ==================== getsockopt ====================  */
+	 
 
 	{
 		.descr = "getsockopt: no expected_attach_type",
 		.insns = {
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 
@@ -57,7 +57,7 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: wrong expected_attach_type",
 		.insns = {
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 
@@ -69,7 +69,7 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: bypass bpf hook",
 		.insns = {
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -106,15 +106,15 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: no optval bounds check, deny loading",
 		.insns = {
-			/* r6 = ctx->optval */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval)),
 
-			/* ctx->optval[0] = 0x80 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0x80),
 			BPF_STX_MEM(BPF_W, BPF_REG_6, BPF_REG_0, 0),
 
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -125,23 +125,23 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: read ctx->level",
 		.insns = {
-			/* r6 = ctx->level */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, level)),
 
-			/* if (ctx->level == 123) { */
+			 
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_6, 123, 4),
-			/* ctx->retval = 0 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, retval)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
-			/* } else { */
-			/* return 0 */
+			 
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
-			/* } */
+			 
 			BPF_EXIT_INSN(),
 		},
 		.attach_type = BPF_CGROUP_GETSOCKOPT,
@@ -154,7 +154,7 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: deny writing to ctx->level",
 		.insns = {
-			/* ctx->level = 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, level)),
@@ -168,23 +168,23 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: read ctx->optname",
 		.insns = {
-			/* r6 = ctx->optname */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optname)),
 
-			/* if (ctx->optname == 123) { */
+			 
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_6, 123, 4),
-			/* ctx->retval = 0 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, retval)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
-			/* } else { */
-			/* return 0 */
+			 
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
-			/* } */
+			 
 			BPF_EXIT_INSN(),
 		},
 		.attach_type = BPF_CGROUP_GETSOCKOPT,
@@ -197,11 +197,11 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: read ctx->retval",
 		.insns = {
-			/* r6 = ctx->retval */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, retval)),
 
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -215,7 +215,7 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: deny writing to ctx->optname",
 		.insns = {
-			/* ctx->optname = 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optname)),
@@ -229,23 +229,23 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: read ctx->optlen",
 		.insns = {
-			/* r6 = ctx->optlen */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optlen)),
 
-			/* if (ctx->optlen == 64) { */
+			 
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_6, 64, 4),
-			/* ctx->retval = 0 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, retval)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
-			/* } else { */
-			/* return 0 */
+			 
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
-			/* } */
+			 
 			BPF_EXIT_INSN(),
 		},
 		.attach_type = BPF_CGROUP_GETSOCKOPT,
@@ -256,17 +256,17 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: deny bigger ctx->optlen",
 		.insns = {
-			/* ctx->optlen = 65 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 65),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
 
-			/* ctx->retval = 0 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, retval)),
 
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -280,33 +280,33 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: ignore >PAGE_SIZE optlen",
 		.insns = {
-			/* write 0xFF to the first optval byte */
+			 
 
-			/* r6 = ctx->optval */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval)),
-			/* r2 = ctx->optval */
+			 
 			BPF_MOV64_REG(BPF_REG_2, BPF_REG_6),
-			/* r6 = ctx->optval + 1 */
+			 
 			BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, 1),
 
-			/* r7 = ctx->optval_end */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval_end)),
 
-			/* if (ctx->optval + 1 <= ctx->optval_end) { */
+			 
 			BPF_JMP_REG(BPF_JGT, BPF_REG_6, BPF_REG_7, 1),
-			/* ctx->optval[0] = 0xF0 */
+			 
 			BPF_ST_MEM(BPF_B, BPF_REG_2, 0, 0xFF),
-			/* } */
+			 
 
-			/* retval changes are ignored */
-			/* ctx->retval = 5 */
+			 
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 5),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, retval)),
 
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -315,22 +315,22 @@ static struct sockopt_test {
 
 		.get_level = 1234,
 		.get_optname = 5678,
-		.get_optval = {}, /* the changes are ignored */
+		.get_optval = {},  
 		.get_optlen = PAGE_SIZE + 1,
 		.error = EOPNOTSUPP_GETSOCKOPT,
 	},
 	{
 		.descr = "getsockopt: support smaller ctx->optlen",
 		.insns = {
-			/* ctx->optlen = 32 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 32),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
-			/* ctx->retval = 0 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, retval)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -343,7 +343,7 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: deny writing to ctx->optval",
 		.insns = {
-			/* ctx->optval = 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optval)),
@@ -357,7 +357,7 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: deny writing to ctx->optval_end",
 		.insns = {
-			/* ctx->optval_end = 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optval_end)),
@@ -371,30 +371,30 @@ static struct sockopt_test {
 	{
 		.descr = "getsockopt: rewrite value",
 		.insns = {
-			/* r6 = ctx->optval */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval)),
-			/* r2 = ctx->optval */
+			 
 			BPF_MOV64_REG(BPF_REG_2, BPF_REG_6),
-			/* r6 = ctx->optval + 1 */
+			 
 			BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, 1),
 
-			/* r7 = ctx->optval_end */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval_end)),
 
-			/* if (ctx->optval + 1 <= ctx->optval_end) { */
+			 
 			BPF_JMP_REG(BPF_JGT, BPF_REG_6, BPF_REG_7, 1),
-			/* ctx->optval[0] = 0xF0 */
+			 
 			BPF_ST_MEM(BPF_B, BPF_REG_2, 0, 0xF0),
-			/* } */
+			 
 
-			/* ctx->retval = 0 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, retval)),
 
-			/* return 1*/
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -408,12 +408,12 @@ static struct sockopt_test {
 		.get_optlen = 1,
 	},
 
-	/* ==================== setsockopt ====================  */
+	 
 
 	{
 		.descr = "setsockopt: no expected_attach_type",
 		.insns = {
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 
@@ -425,7 +425,7 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: wrong expected_attach_type",
 		.insns = {
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 
@@ -437,7 +437,7 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: bypass bpf hook",
 		.insns = {
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -459,7 +459,7 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: return EPERM from bpf hook",
 		.insns = {
-			/* return 0 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_EXIT_INSN(),
 		},
@@ -475,14 +475,14 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: no optval bounds check, deny loading",
 		.insns = {
-			/* r6 = ctx->optval */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval)),
 
-			/* r0 = ctx->optval[0] */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_0, BPF_REG_6, 0),
 
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -493,23 +493,23 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: read ctx->level",
 		.insns = {
-			/* r6 = ctx->level */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, level)),
 
-			/* if (ctx->level == 123) { */
+			 
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_6, 123, 4),
-			/* ctx->optlen = -1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, -1),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
-			/* } else { */
-			/* return 0 */
+			 
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
-			/* } */
+			 
 			BPF_EXIT_INSN(),
 		},
 		.attach_type = BPF_CGROUP_SETSOCKOPT,
@@ -522,11 +522,11 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: allow changing ctx->level",
 		.insns = {
-			/* ctx->level = SOL_IP */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, SOL_IP),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, level)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -534,7 +534,7 @@ static struct sockopt_test {
 		.expected_attach_type = BPF_CGROUP_SETSOCKOPT,
 
 		.get_level = SOL_IP,
-		.set_level = 234, /* should be rewritten to SOL_IP */
+		.set_level = 234,  
 
 		.get_optname = IP_TOS,
 		.set_optname = IP_TOS,
@@ -547,23 +547,23 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: read ctx->optname",
 		.insns = {
-			/* r6 = ctx->optname */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optname)),
 
-			/* if (ctx->optname == 123) { */
+			 
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_6, 123, 4),
-			/* ctx->optlen = -1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, -1),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
-			/* } else { */
-			/* return 0 */
+			 
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
-			/* } */
+			 
 			BPF_EXIT_INSN(),
 		},
 		.attach_type = BPF_CGROUP_SETSOCKOPT,
@@ -576,11 +576,11 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: allow changing ctx->optname",
 		.insns = {
-			/* ctx->optname = IP_TOS */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, IP_TOS),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optname)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -591,7 +591,7 @@ static struct sockopt_test {
 		.set_level = SOL_IP,
 
 		.get_optname = IP_TOS,
-		.set_optname = 456, /* should be rewritten to IP_TOS */
+		.set_optname = 456,  
 
 		.set_optval = { 1 << 3 },
 		.set_optlen = 1,
@@ -601,23 +601,23 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: read ctx->optlen",
 		.insns = {
-			/* r6 = ctx->optlen */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optlen)),
 
-			/* if (ctx->optlen == 64) { */
+			 
 			BPF_JMP_IMM(BPF_JNE, BPF_REG_6, 64, 4),
-			/* ctx->optlen = -1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, -1),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
-			/* } else { */
-			/* return 0 */
+			 
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
-			/* } */
+			 
 			BPF_EXIT_INSN(),
 		},
 		.attach_type = BPF_CGROUP_SETSOCKOPT,
@@ -628,11 +628,11 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: ctx->optlen == -1 is ok",
 		.insns = {
-			/* ctx->optlen = -1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, -1),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -644,11 +644,11 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: deny ctx->optlen < 0 (except -1)",
 		.insns = {
-			/* ctx->optlen = -2 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, -2),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -662,7 +662,7 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: deny ctx->optlen > input optlen",
 		.insns = {
-			/* ctx->optlen = 65 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 65),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
@@ -679,25 +679,25 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: ignore >PAGE_SIZE optlen",
 		.insns = {
-			/* write 0xFF to the first optval byte */
+			 
 
-			/* r6 = ctx->optval */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval)),
-			/* r2 = ctx->optval */
+			 
 			BPF_MOV64_REG(BPF_REG_2, BPF_REG_6),
-			/* r6 = ctx->optval + 1 */
+			 
 			BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, 1),
 
-			/* r7 = ctx->optval_end */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval_end)),
 
-			/* if (ctx->optval + 1 <= ctx->optval_end) { */
+			 
 			BPF_JMP_REG(BPF_JGT, BPF_REG_6, BPF_REG_7, 1),
-			/* ctx->optval[0] = 0xF0 */
+			 
 			BPF_ST_MEM(BPF_B, BPF_REG_2, 0, 0xF0),
-			/* } */
+			 
 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
@@ -712,36 +712,36 @@ static struct sockopt_test {
 
 		.get_level = SOL_IP,
 		.get_optname = IP_TOS,
-		.get_optval = {}, /* the changes are ignored */
+		.get_optval = {},  
 		.get_optlen = 4,
 	},
 	{
 		.descr = "setsockopt: allow changing ctx->optlen within bounds",
 		.insns = {
-			/* r6 = ctx->optval */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval)),
-			/* r2 = ctx->optval */
+			 
 			BPF_MOV64_REG(BPF_REG_2, BPF_REG_6),
-			/* r6 = ctx->optval + 1 */
+			 
 			BPF_ALU64_IMM(BPF_ADD, BPF_REG_6, 1),
 
-			/* r7 = ctx->optval_end */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_7, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval_end)),
 
-			/* if (ctx->optval + 1 <= ctx->optval_end) { */
+			 
 			BPF_JMP_REG(BPF_JGT, BPF_REG_6, BPF_REG_7, 1),
-			/* ctx->optval[0] = 1 << 3 */
+			 
 			BPF_ST_MEM(BPF_B, BPF_REG_2, 0, 1 << 3),
-			/* } */
+			 
 
-			/* ctx->optlen = 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optlen)),
 
-			/* return 1*/
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -762,12 +762,12 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: deny write ctx->retval",
 		.insns = {
-			/* ctx->retval = 0 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
 			BPF_STX_MEM(BPF_W, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, retval)),
 
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -779,11 +779,11 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: deny read ctx->retval",
 		.insns = {
-			/* r6 = ctx->retval */
+			 
 			BPF_LDX_MEM(BPF_W, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, retval)),
 
-			/* return 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_EXIT_INSN(),
 		},
@@ -795,7 +795,7 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: deny writing to ctx->optval",
 		.insns = {
-			/* ctx->optval = 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optval)),
@@ -809,7 +809,7 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: deny writing to ctx->optval_end",
 		.insns = {
-			/* ctx->optval_end = 1 */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_STX_MEM(BPF_DW, BPF_REG_1, BPF_REG_0,
 				    offsetof(struct bpf_sockopt, optval_end)),
@@ -823,32 +823,32 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: allow IP_TOS <= 128",
 		.insns = {
-			/* r6 = ctx->optval */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval)),
-			/* r7 = ctx->optval + 1 */
+			 
 			BPF_MOV64_REG(BPF_REG_7, BPF_REG_6),
 			BPF_ALU64_IMM(BPF_ADD, BPF_REG_7, 1),
 
-			/* r8 = ctx->optval_end */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_8, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval_end)),
 
-			/* if (ctx->optval + 1 <= ctx->optval_end) { */
+			 
 			BPF_JMP_REG(BPF_JGT, BPF_REG_7, BPF_REG_8, 4),
 
-			/* r9 = ctx->optval[0] */
+			 
 			BPF_LDX_MEM(BPF_B, BPF_REG_9, BPF_REG_6, 0),
 
-			/* if (ctx->optval[0] < 128) */
+			 
 			BPF_JMP_IMM(BPF_JGT, BPF_REG_9, 128, 2),
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
-			/* } */
+			 
 
-			/* } else { */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
-			/* } */
+			 
 
 			BPF_EXIT_INSN(),
 		},
@@ -869,32 +869,32 @@ static struct sockopt_test {
 	{
 		.descr = "setsockopt: deny IP_TOS > 128",
 		.insns = {
-			/* r6 = ctx->optval */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_6, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval)),
-			/* r7 = ctx->optval + 1 */
+			 
 			BPF_MOV64_REG(BPF_REG_7, BPF_REG_6),
 			BPF_ALU64_IMM(BPF_ADD, BPF_REG_7, 1),
 
-			/* r8 = ctx->optval_end */
+			 
 			BPF_LDX_MEM(BPF_DW, BPF_REG_8, BPF_REG_1,
 				    offsetof(struct bpf_sockopt, optval_end)),
 
-			/* if (ctx->optval + 1 <= ctx->optval_end) { */
+			 
 			BPF_JMP_REG(BPF_JGT, BPF_REG_7, BPF_REG_8, 4),
 
-			/* r9 = ctx->optval[0] */
+			 
 			BPF_LDX_MEM(BPF_B, BPF_REG_9, BPF_REG_6, 0),
 
-			/* if (ctx->optval[0] < 128) */
+			 
 			BPF_JMP_IMM(BPF_JGT, BPF_REG_9, 128, 2),
 			BPF_MOV64_IMM(BPF_REG_0, 1),
 			BPF_JMP_A(1),
-			/* } */
+			 
 
-			/* } else { */
+			 
 			BPF_MOV64_IMM(BPF_REG_0, 0),
-			/* } */
+			 
 
 			BPF_EXIT_INSN(),
 		},

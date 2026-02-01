@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Queue between the tx operation and the bh workqueue.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+ 
+ 
 #ifndef WFX_QUEUE_H
 #define WFX_QUEUE_H
 
@@ -16,7 +11,7 @@ struct wfx_vif;
 
 struct wfx_queue {
 	struct sk_buff_head normal;
-	struct sk_buff_head cab; /* Content After (DTIM) Beacon */
+	struct sk_buff_head cab;  
 	atomic_t            pending_frames;
 	int                 priority;
 };

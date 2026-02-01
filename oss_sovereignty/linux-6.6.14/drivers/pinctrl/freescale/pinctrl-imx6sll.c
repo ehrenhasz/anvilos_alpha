@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2016 Freescale Semiconductor, Inc.
-// Copyright 2017-2018 NXP.
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -169,7 +169,7 @@ enum imx6sll_pads {
 	MX6SLL_PAD_GPIO4_IO26 = 152,
 };
 
-/* Pad names for the pinmux subsystem */
+ 
 static const struct pinctrl_pin_desc imx6sll_pinctrl_pads[] = {
 	IMX_PINCTRL_PIN(MX6SLL_PAD_RESERVE0),
 	IMX_PINCTRL_PIN(MX6SLL_PAD_RESERVE1),
@@ -334,7 +334,7 @@ static const struct imx_pinctrl_soc_info imx6sll_pinctrl_info = {
 
 static const struct of_device_id imx6sll_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx6sll-iomuxc", .data = &imx6sll_pinctrl_info, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int imx6sll_pinctrl_probe(struct platform_device *pdev)

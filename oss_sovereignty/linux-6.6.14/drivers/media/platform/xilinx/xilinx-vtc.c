@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx Video Timing Controller
- *
- * Copyright (C) 2013-2015 Ideas on Board
- * Copyright (C) 2013-2015 Xilinx, Inc.
- *
- * Contacts: Hyun Kwon <hyun.kwon@xilinx.com>
- *           Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -62,10 +54,7 @@
 #define XVTC_IRQ_ENABLE_LOCK_LOSS		(1 << 9)
 #define XVTC_IRQ_ENABLE_LOCK			(1 << 8)
 
-/*
- * The following registers exist in two blocks, one at 0x0020 for the detector
- * and one at 0x0060 for the generator.
- */
+ 
 
 #define XVTC_DETECTOR_OFFSET			0x0020
 #define XVTC_GENERATOR_OFFSET			0x0060
@@ -141,14 +130,7 @@
 
 #define XVTC_GENERATOR_GLOBAL_DELAY		0x0104
 
-/**
- * struct xvtc_device - Xilinx Video Timing Controller device structure
- * @xvip: Xilinx Video IP device
- * @list: entry in the global VTC list
- * @has_detector: the VTC has a timing detector
- * @has_generator: the VTC has a timing generator
- * @config: generator timings configuration
- */
+ 
 struct xvtc_device {
 	struct xvip_device xvip;
 	struct list_head list;
@@ -167,9 +149,7 @@ static inline void xvtc_gen_write(struct xvtc_device *xvtc, u32 addr, u32 value)
 	xvip_write(&xvtc->xvip, XVTC_GENERATOR_OFFSET + addr, value);
 }
 
-/* -----------------------------------------------------------------------------
- * Generator Operations
- */
+ 
 
 int xvtc_generator_start(struct xvtc_device *xvtc,
 			 const struct xvtc_config *config)
@@ -183,23 +163,17 @@ int xvtc_generator_start(struct xvtc_device *xvtc,
 	if (ret < 0)
 		return ret;
 
-	/* We don't care about the chroma active signal, encoding parameters are
-	 * not important for now.
-	 */
+	 
 	xvtc_gen_write(xvtc, XVTC_POLARITY,
 		       XVTC_POLARITY_ACTIVE_CHROMA_POL |
 		       XVTC_POLARITY_ACTIVE_VIDEO_POL |
 		       XVTC_POLARITY_HSYNC_POL | XVTC_POLARITY_VSYNC_POL |
 		       XVTC_POLARITY_HBLANK_POL | XVTC_POLARITY_VBLANK_POL);
 
-	/* Hardcode the polarity to active high, as required by the video in to
-	 * AXI4-stream core.
-	 */
+	 
 	xvtc_gen_write(xvtc, XVTC_ENCODING, 0);
 
-	/* Configure the timings. The VBLANK and VSYNC signals assertion and
-	 * deassertion are hardcoded to the first pixel of the line.
-	 */
+	 
 	xvtc_gen_write(xvtc, XVTC_ACTIVE_SIZE,
 		       (config->vblank_start << XVTC_ACTIVE_VSIZE_SHIFT) |
 		       (config->hblank_start << XVTC_ACTIVE_HSIZE_SHIFT));
@@ -214,9 +188,7 @@ int xvtc_generator_start(struct xvtc_device *xvtc,
 		       (config->vsync_start << XVTC_F0_VSYNC_VSTART_SHIFT));
 	xvtc_gen_write(xvtc, XVTC_F0_VSYNC_H, 0);
 
-	/* Enable the generator. Set the source of all generator parameters to
-	 * generator registers.
-	 */
+	 
 	xvip_write(&xvtc->xvip, XVIP_CTRL_CONTROL,
 		   XVTC_CONTROL_ACTIVE_CHROMA_POL_SRC |
 		   XVTC_CONTROL_ACTIVE_VIDEO_POL_SRC |
@@ -284,9 +256,7 @@ void xvtc_put(struct xvtc_device *xvtc)
 }
 EXPORT_SYMBOL_GPL(xvtc_put);
 
-/* -----------------------------------------------------------------------------
- * Registration and Unregistration
- */
+ 
 
 static void xvtc_register_device(struct xvtc_device *xvtc)
 {
@@ -302,9 +272,7 @@ static void xvtc_unregister_device(struct xvtc_device *xvtc)
 	mutex_unlock(&xvtc_lock);
 }
 
-/* -----------------------------------------------------------------------------
- * Platform Device Driver
- */
+ 
 
 static int xvtc_parse_of(struct xvtc_device *xvtc)
 {

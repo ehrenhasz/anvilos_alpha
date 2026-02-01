@@ -1,17 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+
+ 
 #include "main.h"
 #include "i40iw_hw.h"
 #include <linux/net/intel/i40e_client.h>
 
 static struct i40e_client i40iw_client;
 
-/**
- * i40iw_l2param_change - handle mss change
- * @cdev_info: parent lan device information structure with data/ops
- * @client: client for parameter change
- * @params: new parameters from L2
- */
+ 
 static void i40iw_l2param_change(struct i40e_info *cdev_info,
 				 struct i40e_client *client,
 				 struct i40e_params *params)
@@ -34,15 +29,7 @@ static void i40iw_l2param_change(struct i40e_info *cdev_info,
 	ib_device_put(ibdev);
 }
 
-/**
- * i40iw_close - client interface operation close for iwarp/uda device
- * @cdev_info: parent lan device information structure with data/ops
- * @client: client to close
- * @reset: flag to indicate close on reset
- *
- * Called by the lan driver during the processing of client unregister
- * Destroy and clean up the driver resources
- */
+ 
 static void i40iw_close(struct i40e_info *cdev_info, struct i40e_client *client,
 			bool reset)
 {
@@ -93,16 +80,7 @@ static void i40iw_fill_device_info(struct irdma_device *iwdev, struct i40e_info 
 	iwdev->vsi_num = 0;
 }
 
-/**
- * i40iw_open - client interface operation open for iwarp/uda device
- * @cdev_info: parent lan device information structure with data/ops
- * @client: iwarp client information, provided during registration
- *
- * Called by the lan driver during the processing of client register
- * Create device resources, set up queues, pble and hmc objects and
- * register the device with the ib verbs interface
- * Return 0 if successful, otherwise return error
- */
+ 
 static int i40iw_open(struct i40e_info *cdev_info, struct i40e_client *client)
 {
 	struct irdma_l2params l2params = {};
@@ -167,7 +145,7 @@ err_ctrl_init:
 	return err;
 }
 
-/* client interface functions */
+ 
 static const struct i40e_client_ops i40e_ops = {
 	.open = i40iw_open,
 	.close = i40iw_close,

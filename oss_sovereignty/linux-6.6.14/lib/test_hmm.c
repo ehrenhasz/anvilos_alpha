@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This is a module to test the HMM (Heterogeneous Memory Management)
- * mirror and zone device private memory migration APIs of the kernel.
- * Userspace programs can register with the driver to mirror their own address
- * space and can use the device to read/write any valid virtual address.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/fs.h>
 #include <linux/mm.h>
@@ -37,14 +32,7 @@
 #define DEVMEM_CHUNK_SIZE		(256 * 1024 * 1024U)
 #define DEVMEM_CHUNKS_RESERVE		16
 
-/*
- * For device_private pages, dpage is just a dummy struct page
- * representing a piece of device memory. dmirror_devmem_alloc_page
- * allocates a real system memory page as backing storage to fake a
- * real device. zone_device_data points to that backing page. But
- * for device_coherent memory, the struct page represents real
- * physical CPU-accessible memory that we can use directly.
- */
+ 
 #define BACKING_PAGE(page) (is_device_private_page((page)) ? \
 			   (page)->zone_device_data : (page))
 
@@ -74,19 +62,13 @@ struct dmirror_bounce {
 #define DPT_XA_TAG_ATOMIC 1UL
 #define DPT_XA_TAG_WRITE 3UL
 
-/*
- * Data structure to track address ranges and register for mmu interval
- * notifier updates.
- */
+ 
 struct dmirror_interval {
 	struct mmu_interval_notifier	notifier;
 	struct dmirror			*dmirror;
 };
 
-/*
- * Data attached to the open device file.
- * Note that it might be shared after a fork().
- */
+ 
 struct dmirror {
 	struct dmirror_device		*mdevice;
 	struct xarray			pt;
@@ -94,18 +76,14 @@ struct dmirror {
 	struct mutex			mutex;
 };
 
-/*
- * ZONE_DEVICE pages for migration and simulating device memory.
- */
+ 
 struct dmirror_chunk {
 	struct dev_pagemap	pagemap;
 	struct dmirror_device	*mdevice;
 	bool remove;
 };
 
-/*
- * Per device data.
- */
+ 
 struct dmirror_device {
 	struct cdev		cdevice;
 	unsigned int            zone_device_type;
@@ -114,12 +92,12 @@ struct dmirror_device {
 	unsigned int		devmem_capacity;
 	unsigned int		devmem_count;
 	struct dmirror_chunk	**devmem_chunks;
-	struct mutex		devmem_lock;	/* protects the above */
+	struct mutex		devmem_lock;	 
 
 	unsigned long		calloc;
 	unsigned long		cfree;
 	struct page		*free_pages;
-	spinlock_t		lock;		/* protects the above */
+	spinlock_t		lock;		 
 };
 
 static struct dmirror_device dmirror_devices[DMIRROR_NDEVICES];
@@ -163,7 +141,7 @@ static int dmirror_fops_open(struct inode *inode, struct file *filp)
 	struct dmirror *dmirror;
 	int ret;
 
-	/* Mirror this process address space */
+	 
 	dmirror = kzalloc(sizeof(*dmirror), GFP_KERNEL);
 	if (dmirror == NULL)
 		return -ENOMEM;
@@ -215,10 +193,7 @@ static int dmirror_do_fault(struct dmirror *dmirror, struct hmm_range *range)
 		struct page *page;
 		void *entry;
 
-		/*
-		 * Since we asked for hmm_range_fault() to populate pages,
-		 * it shouldn't return an error entry on success.
-		 */
+		 
 		WARN_ON(*pfns & HMM_PFN_ERROR);
 		WARN_ON(!(*pfns & HMM_PFN_VALID));
 
@@ -244,11 +219,7 @@ static void dmirror_do_update(struct dmirror *dmirror, unsigned long start,
 	unsigned long pfn;
 	void *entry;
 
-	/*
-	 * The XArray doesn't hold references to pages since it relies on
-	 * the mmu notifier to clear page pointers when they become stale.
-	 * Therefore, it is OK to just clear the entry.
-	 */
+	 
 	xa_for_each_range(&dmirror->pt, pfn, entry, start >> PAGE_SHIFT,
 			  end >> PAGE_SHIFT)
 		xa_erase(&dmirror->pt, pfn);
@@ -260,10 +231,7 @@ static bool dmirror_interval_invalidate(struct mmu_interval_notifier *mni,
 {
 	struct dmirror *dmirror = container_of(mni, struct dmirror, notifier);
 
-	/*
-	 * Ignore invalidation callbacks for device private pages since
-	 * the invalidation is handled as part of the migration process.
-	 */
+	 
 	if (range->event == MMU_NOTIFY_MIGRATE &&
 	    range->owner == dmirror->mdevice)
 		return true;
@@ -340,7 +308,7 @@ static int dmirror_fault(struct dmirror *dmirror, unsigned long start,
 	};
 	int ret = 0;
 
-	/* Since the mm is for the mirrored process, get a reference first. */
+	 
 	if (!mmget_not_zero(mm))
 		return 0;
 
@@ -602,12 +570,7 @@ static struct page *dmirror_devmem_alloc_page(struct dmirror_device *mdevice)
 	struct page *dpage = NULL;
 	struct page *rpage = NULL;
 
-	/*
-	 * For ZONE_DEVICE private type, this is a fake device so we allocate
-	 * real system memory to store our device memory.
-	 * For ZONE_DEVICE coherent type we use the actual dpage to store the
-	 * data and ignore rpage.
-	 */
+	 
 	if (dmirror_is_private_zone(mdevice)) {
 		rpage = alloc_page(GFP_HIGHUSER);
 		if (!rpage)
@@ -653,10 +616,7 @@ static void dmirror_migrate_alloc_and_copy(struct migrate_vma *args,
 		if (!(*src & MIGRATE_PFN_MIGRATE))
 			continue;
 
-		/*
-		 * Note that spage might be NULL which is OK since it is an
-		 * unallocated pte_none() or read-only zero page.
-		 */
+		 
 		spage = migrate_pfn_to_page(*src);
 		if (WARN(spage && is_zone_device_page(spage),
 		     "page already in device spage pfn: 0x%lx\n",
@@ -673,12 +633,7 @@ static void dmirror_migrate_alloc_and_copy(struct migrate_vma *args,
 		else
 			clear_highpage(rpage);
 
-		/*
-		 * Normally, a device would use the page->zone_device_data to
-		 * point to the mirror but here we use it to hold the page for
-		 * the simulated device memory and that page holds the pointer
-		 * to the mirror.
-		 */
+		 
 		rpage->zone_device_data = dmirror;
 
 		pr_debug("migrating from sys to dev pfn src: 0x%lx pfn dst: 0x%lx\n",
@@ -712,7 +667,7 @@ static int dmirror_atomic_map(unsigned long start, unsigned long end,
 	unsigned long pfn, mapped = 0;
 	int i;
 
-	/* Map the migrated pages into the device's page tables. */
+	 
 	mutex_lock(&dmirror->mutex);
 
 	for (i = 0, pfn = start >> PAGE_SHIFT; pfn < (end >> PAGE_SHIFT); pfn++, i++) {
@@ -745,7 +700,7 @@ static int dmirror_migrate_finalize_and_map(struct migrate_vma *args,
 	const unsigned long *dst = args->dst;
 	unsigned long pfn;
 
-	/* Map the migrated pages into the device's page tables. */
+	 
 	mutex_lock(&dmirror->mutex);
 
 	for (pfn = start >> PAGE_SHIFT; pfn < (end >> PAGE_SHIFT); pfn++,
@@ -790,7 +745,7 @@ static int dmirror_exclusive(struct dmirror *dmirror,
 	if (end < start)
 		return -EINVAL;
 
-	/* Since the mm is for the mirrored process, get a reference first. */
+	 
 	if (!mmget_not_zero(mm))
 		return -EINVAL;
 
@@ -805,11 +760,7 @@ static int dmirror_exclusive(struct dmirror *dmirror,
 			next = addr + (ARRAY_SIZE(pages) << PAGE_SHIFT);
 
 		ret = make_device_exclusive_range(mm, addr, next, pages, NULL);
-		/*
-		 * Do dmirror_atomic_map() iff all pages are marked for
-		 * exclusive access to avoid accessing uninitialized
-		 * fields of pages.
-		 */
+		 
 		if (ret == (next - addr) >> PAGE_SHIFT)
 			mapped = dmirror_atomic_map(addr, next, pages, dmirror);
 		for (i = 0; i < ret; i++) {
@@ -828,7 +779,7 @@ static int dmirror_exclusive(struct dmirror *dmirror,
 	mmap_read_unlock(mm);
 	mmput(mm);
 
-	/* Return the migrated data for verification. */
+	 
 	ret = dmirror_bounce_init(&bounce, start, size);
 	if (ret)
 		return ret;
@@ -915,7 +866,7 @@ static int dmirror_migrate_to_system(struct dmirror *dmirror,
 	if (end < start)
 		return -EINVAL;
 
-	/* Since the mm is for the mirrored process, get a reference first. */
+	 
 	if (!mmget_not_zero(mm))
 		return -EINVAL;
 
@@ -976,7 +927,7 @@ static int dmirror_migrate_to_device(struct dmirror *dmirror,
 	if (end < start)
 		return -EINVAL;
 
-	/* Since the mm is for the mirrored process, get a reference first. */
+	 
 	if (!mmget_not_zero(mm))
 		return -EINVAL;
 
@@ -1011,10 +962,7 @@ static int dmirror_migrate_to_device(struct dmirror *dmirror,
 	mmap_read_unlock(mm);
 	mmput(mm);
 
-	/*
-	 * Return the migrated data for verification.
-	 * Only for pages in device zone
-	 */
+	 
 	ret = dmirror_bounce_init(&bounce, start, size);
 	if (ret)
 		return ret;
@@ -1052,13 +1000,13 @@ static void dmirror_mkentry(struct dmirror *dmirror, struct hmm_range *range,
 
 	page = hmm_pfn_to_page(entry);
 	if (is_device_private_page(page)) {
-		/* Is the page migrated to this device or some other? */
+		 
 		if (dmirror->mdevice == dmirror_page_to_device(page))
 			*perm = HMM_DMIRROR_PROT_DEV_PRIVATE_LOCAL;
 		else
 			*perm = HMM_DMIRROR_PROT_DEV_PRIVATE_REMOTE;
 	} else if (is_device_coherent_page(page)) {
-		/* Is the page migrated to this device or some other? */
+		 
 		if (dmirror->mdevice == dmirror_page_to_device(page))
 			*perm = HMM_DMIRROR_PROT_DEV_COHERENT_LOCAL;
 		else
@@ -1090,10 +1038,7 @@ static bool dmirror_snapshot_invalidate(struct mmu_interval_notifier *mni,
 	else if (!mutex_trylock(&dmirror->mutex))
 		return false;
 
-	/*
-	 * Snapshots only need to set the sequence number since any
-	 * invalidation in the interval invalidates the whole snapshot.
-	 */
+	 
 	mmu_interval_set_seq(mni, cur_seq);
 
 	mutex_unlock(&dmirror->mutex);
@@ -1183,14 +1128,11 @@ static int dmirror_snapshot(struct dmirror *dmirror,
 	if (end < start)
 		return -EINVAL;
 
-	/* Since the mm is for the mirrored process, get a reference first. */
+	 
 	if (!mmget_not_zero(mm))
 		return -EINVAL;
 
-	/*
-	 * Register a temporary notifier to detect invalidations even if it
-	 * overlaps with other mmu_interval_notifiers.
-	 */
+	 
 	uptr = u64_to_user_ptr(cmd->ptr);
 	for (addr = start; addr < end; addr = next) {
 		unsigned long n;
@@ -1254,7 +1196,7 @@ static void dmirror_device_evict_chunk(struct dmirror_chunk *chunk)
 	kfree(dst_pfns);
 }
 
-/* Removes free pages from the free list so they can't be re-allocated */
+ 
 static void dmirror_remove_free_pages(struct dmirror_chunk *devmem)
 {
 	struct dmirror_device *mdevice = devmem->mdevice;
@@ -1410,7 +1352,7 @@ static void dmirror_devmem_free(struct page *page)
 	mdevice = dmirror_page_to_device(page);
 	spin_lock(&mdevice->lock);
 
-	/* Return page to our allocator if not freeing the chunk */
+	 
 	if (!dmirror_page_to_chunk(page)->remove) {
 		mdevice->cfree++;
 		page->zone_device_data = mdevice->free_pages;
@@ -1428,15 +1370,11 @@ static vm_fault_t dmirror_devmem_fault(struct vm_fault *vmf)
 	struct dmirror *dmirror;
 	vm_fault_t ret;
 
-	/*
-	 * Normally, a device would use the page->zone_device_data to point to
-	 * the mirror but here we use it to hold the page for the simulated
-	 * device memory and that page holds the pointer to the mirror.
-	 */
+	 
 	rpage = vmf->page->zone_device_data;
 	dmirror = rpage->zone_device_data;
 
-	/* FIXME demonstrate how we can adjust migrate range */
+	 
 	args.vma = vmf->vma;
 	args.start = vmf->address;
 	args.end = args.start + PAGE_SIZE;
@@ -1453,11 +1391,7 @@ static vm_fault_t dmirror_devmem_fault(struct vm_fault *vmf)
 	if (ret)
 		return ret;
 	migrate_vma_pages(&args);
-	/*
-	 * No device finalize step is needed since
-	 * dmirror_devmem_fault_alloc_and_copy() will have already
-	 * invalidated the device page table.
-	 */
+	 
 	migrate_vma_finalize(&args);
 	return 0;
 }
@@ -1489,7 +1423,7 @@ static int dmirror_device_init(struct dmirror_device *mdevice, int id)
 	if (ret)
 		return ret;
 
-	/* Build a list of free ZONE_DEVICE struct pages */
+	 
 	return dmirror_allocate_chunk(mdevice, NULL);
 }
 

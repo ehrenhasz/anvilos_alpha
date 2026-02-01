@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/of_graph.h>
 
@@ -29,7 +27,7 @@ static void adv7511_dsi_config_timing_gen(struct adv7511 *adv)
 	struct mipi_dsi_device *dsi = adv->dsi;
 	struct drm_display_mode *mode = &adv->curr_mode;
 	unsigned int hsw, hfp, hbp, vsw, vfp, vbp;
-	static const u8 clock_div_by_lanes[] = { 6, 4, 3 };	/* 2, 3, 4 lanes */
+	static const u8 clock_div_by_lanes[] = { 6, 4, 3 };	 
 
 	hsw = mode->hsync_end - mode->hsync_start;
 	hfp = mode->hsync_start - mode->hdisplay;
@@ -38,11 +36,11 @@ static void adv7511_dsi_config_timing_gen(struct adv7511 *adv)
 	vfp = mode->vsync_start - mode->vdisplay;
 	vbp = mode->vtotal - mode->vsync_end;
 
-	/* set pixel clock divider mode */
+	 
 	regmap_write(adv->regmap_cec, 0x16,
 		     clock_div_by_lanes[dsi->lanes - 2] << 3);
 
-	/* horizontal porch params */
+	 
 	regmap_write(adv->regmap_cec, 0x28, mode->htotal >> 4);
 	regmap_write(adv->regmap_cec, 0x29, (mode->htotal << 4) & 0xff);
 	regmap_write(adv->regmap_cec, 0x2a, hsw >> 4);
@@ -52,7 +50,7 @@ static void adv7511_dsi_config_timing_gen(struct adv7511 *adv)
 	regmap_write(adv->regmap_cec, 0x2e, hbp >> 4);
 	regmap_write(adv->regmap_cec, 0x2f, (hbp << 4) & 0xff);
 
-	/* vertical porch params */
+	 
 	regmap_write(adv->regmap_cec, 0x30, mode->vtotal >> 4);
 	regmap_write(adv->regmap_cec, 0x31, (mode->vtotal << 4) & 0xff);
 	regmap_write(adv->regmap_cec, 0x32, vsw >> 4);
@@ -70,22 +68,22 @@ void adv7533_dsi_power_on(struct adv7511 *adv)
 	if (adv->use_timing_gen)
 		adv7511_dsi_config_timing_gen(adv);
 
-	/* set number of dsi lanes */
+	 
 	regmap_write(adv->regmap_cec, 0x1c, dsi->lanes << 4);
 
 	if (adv->use_timing_gen) {
-		/* reset internal timing generator */
+		 
 		regmap_write(adv->regmap_cec, 0x27, 0xcb);
 		regmap_write(adv->regmap_cec, 0x27, 0x8b);
 		regmap_write(adv->regmap_cec, 0x27, 0xcb);
 	} else {
-		/* disable internal timing generator */
+		 
 		regmap_write(adv->regmap_cec, 0x27, 0x0b);
 	}
 
-	/* enable hdmi */
+	 
 	regmap_write(adv->regmap_cec, 0x03, 0x89);
-	/* disable test mode */
+	 
 	regmap_write(adv->regmap_cec, 0x55, 0x00);
 
 	regmap_register_patch(adv->regmap_cec, adv7533_cec_fixed_registers,
@@ -94,9 +92,9 @@ void adv7533_dsi_power_on(struct adv7511 *adv)
 
 void adv7533_dsi_power_off(struct adv7511 *adv)
 {
-	/* disable hdmi */
+	 
 	regmap_write(adv->regmap_cec, 0x03, 0x0b);
-	/* disable internal timing generator */
+	 
 	regmap_write(adv->regmap_cec, 0x27, 0x0b);
 }
 
@@ -107,11 +105,11 @@ enum drm_mode_status adv7533_mode_valid(struct adv7511 *adv,
 	struct mipi_dsi_device *dsi = adv->dsi;
 	u8 bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
 
-	/* Check max clock for either 7533 or 7535 */
+	 
 	if (mode->clock > (adv->type == ADV7533 ? 80000 : 148500))
 		return MODE_CLOCK_HIGH;
 
-	/* Check max clock for each lane */
+	 
 	max_lane_freq = (adv->type == ADV7533 ? 800000 : 891000);
 
 	if (mode->clock * bpp > max_lane_freq * adv->num_dsi_lanes)
@@ -189,7 +187,7 @@ int adv7533_parse_dt(struct device_node *np, struct adv7511 *adv)
 	adv->use_timing_gen = !of_property_read_bool(np,
 						"adi,disable-timing-generator");
 
-	/* TODO: Check if these need to be parsed by DT or not */
+	 
 	adv->rgb = true;
 	adv->embedded_sync = false;
 

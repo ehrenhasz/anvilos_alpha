@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* XSKMAP used for AF_XDP sockets
- * Copyright(c) 2018 Intel Corporation.
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <linux/filter.h>
@@ -134,10 +132,7 @@ static int xsk_map_gen_lookup(struct bpf_map *map, struct bpf_insn *insn_buf)
 	return insn - insn_buf;
 }
 
-/* Elements are kept alive by RCU; either by rcu_read_lock() (from syscall) or
- * by local_bh_disable() (from XDP calls inside NAPI). The
- * rcu_read_lock_bh_held() below makes lockdep accept both.
- */
+ 
 static void *__xsk_map_lookup_elem(struct bpf_map *map, u32 key)
 {
 	struct xsk_map *m = container_of(map, struct xsk_map, map);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Maxime Ripard. All rights reserved.
- */
+ 
+ 
 
 #ifndef _CCU_DIV_H_
 #define _CCU_DIV_H_
@@ -11,23 +9,7 @@
 #include "ccu_common.h"
 #include "ccu_mux.h"
 
-/**
- * struct ccu_div_internal - Internal divider description
- * @shift: Bit offset of the divider in its register
- * @width: Width of the divider field in its register
- * @max: Maximum value allowed for that divider. This is the
- *       arithmetic value, not the maximum value to be set in the
- *       register.
- * @flags: clk_divider flags to apply on this divider
- * @table: Divider table pointer (if applicable)
- *
- * That structure represents a single divider, and is meant to be
- * embedded in other structures representing the various clock
- * classes.
- *
- * It is basically a wrapper around the clk_divider functions
- * arguments.
- */
+ 
 struct ccu_div_internal {
 	u8			shift;
 	u8			width;
@@ -283,4 +265,4 @@ static inline struct ccu_div *hw_to_ccu_div(struct clk_hw *hw)
 
 extern const struct clk_ops ccu_div_ops;
 
-#endif /* _CCU_DIV_H_ */
+#endif  

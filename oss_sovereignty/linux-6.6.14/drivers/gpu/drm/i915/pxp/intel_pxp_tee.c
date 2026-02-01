@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright(c) 2020 Intel Corporation.
- */
+
+ 
 
 #include <linux/component.h>
 
@@ -62,10 +60,7 @@ static int intel_pxp_tee_io_message(struct intel_pxp *pxp,
 
 	mutex_lock(&pxp->tee_mutex);
 
-	/*
-	 * The binding of the component is asynchronous from i915 probe, so we
-	 * can't be sure it has happened.
-	 */
+	 
 	if (!pxp_component) {
 		ret = -ENODEV;
 		goto unlock;
@@ -104,7 +99,7 @@ int intel_pxp_tee_stream_message(struct intel_pxp *pxp,
 				 void *msg_in, size_t msg_in_len,
 				 void *msg_out, size_t msg_out_len)
 {
-	/* TODO: for bigger objects we need to use a sg of 4k pages */
+	 
 	const size_t max_msg_size = PAGE_SIZE;
 	struct drm_i915_private *i915 = pxp->ctrl_gt->i915;
 	struct i915_pxp_component *pxp_component = pxp->pxp_component;
@@ -140,16 +135,7 @@ unlock:
 	return ret;
 }
 
-/**
- * i915_pxp_tee_component_bind - bind function to pass the function pointers to pxp_tee
- * @i915_kdev: pointer to i915 kernel device
- * @tee_kdev: pointer to tee kernel device
- * @data: pointer to pxp_tee_master containing the function pointers
- *
- * This bind function is called during the system boot or resume from system sleep.
- *
- * Return: return 0 if successful.
- */
+ 
 static int i915_pxp_tee_component_bind(struct device *i915_kdev,
 				       struct device *tee_kdev, void *data)
 {
@@ -172,19 +158,19 @@ static int i915_pxp_tee_component_bind(struct device *i915_kdev,
 
 	if (intel_uc_uses_huc(uc) && intel_huc_is_loaded_by_gsc(&uc->huc)) {
 		with_intel_runtime_pm(&i915->runtime_pm, wakeref) {
-			/* load huc via pxp */
+			 
 			ret = intel_huc_fw_load_and_auth_via_gsc(&uc->huc);
 			if (ret < 0)
 				drm_err(&i915->drm, "failed to load huc via gsc %d\n", ret);
 		}
 	}
 
-	/* if we are suspended, the HW will be re-initialized on resume */
+	 
 	wakeref = intel_runtime_pm_get_if_in_use(&i915->runtime_pm);
 	if (!wakeref)
 		return 0;
 
-	/* the component is required to fully start the PXP HW */
+	 
 	if (intel_pxp_is_enabled(pxp))
 		intel_pxp_init_hw(pxp);
 
@@ -232,7 +218,7 @@ static int alloc_streaming_command(struct intel_pxp *pxp)
 	if (!IS_DGFX(i915))
 		return 0;
 
-	/* allocate lmem object of one page for PXP command memory and store it */
+	 
 	obj = i915_gem_object_create_lmem(i915, PAGE_SIZE, I915_BO_ALLOC_CONTIGUOUS);
 	if (IS_ERR(obj)) {
 		drm_err(&i915->drm, "Failed to allocate pxp streaming command!\n");
@@ -245,7 +231,7 @@ static int alloc_streaming_command(struct intel_pxp *pxp)
 		goto out_put;
 	}
 
-	/* map the lmem into the virtual memory pointer */
+	 
 	cmd = i915_gem_object_pin_map_unlocked(obj,
 					       intel_gt_coherent_map_type(pxp->ctrl_gt,
 									  obj, true));
@@ -382,7 +368,7 @@ try_again:
 				       &msg_out, sizeof(msg_out),
 				       NULL);
 
-	/* Cleanup coherency between GT and Firmware is critical, so try again if it fails */
+	 
 	if ((ret || msg_out.header.status != 0x0) && ++trials < 3)
 		goto try_again;
 

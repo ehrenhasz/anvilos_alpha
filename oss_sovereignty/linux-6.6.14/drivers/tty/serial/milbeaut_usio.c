@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Socionext Inc.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/console.h>
@@ -326,7 +324,7 @@ static void mlb_usio_set_termios(struct uart_port *port,
 		if (termios->c_cflag & PARODD)
 			escr |= MLB_USIO_ESCR_P;
 	}
-	/* Set hard flow control */
+	 
 	if (of_property_read_bool(port->dev->of_node, "auto-flow-control") ||
 			(termios->c_cflag & CRTSCTS))
 		escr |= MLB_USIO_ESCR_FLWEN;
@@ -565,7 +563,7 @@ static int mlb_usio_remove(struct platform_device *pdev)
 
 static const struct of_device_id mlb_usio_dt_ids[] = {
 	{ .compatible = "socionext,milbeaut-usio-uart" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mlb_usio_dt_ids);
 

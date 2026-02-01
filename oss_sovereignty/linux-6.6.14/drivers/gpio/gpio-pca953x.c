@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  PCA953x 4/8/16/24/40 bit I/O ports
- *
- *  Copyright (C) 2005 Ben Gardner <bgardner@wabtec.com>
- *  Copyright (C) 2007 Marvell International Ltd.
- *
- *  Derived from drivers/i2c/chips/pca9539.c
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitmap.h>
@@ -145,15 +138,7 @@ static int pca953x_acpi_get_irq(struct device *dev)
 
 static const struct dmi_system_id pca953x_dmi_acpi_irq_info[] = {
 	{
-		/*
-		 * On Intel Galileo Gen 2 board the IRQ pin of one of
-		 * the I²C GPIO expanders, which has GpioInt() resource,
-		 * is provided as an absolute number instead of being
-		 * relative. Since first controller (gpio-sch.c) and
-		 * second (gpio-dwapb.c) are at the fixed bases, we may
-		 * safely refer to the number in the global space to get
-		 * an IRQ out of it.
-		 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "GalileoGen2"),
 		},
@@ -244,33 +229,7 @@ static int pca953x_bank_shift(struct pca953x_chip *chip)
 #define PCAL9xxx_BANK_IRQ_MASK	BIT(8 + 5)
 #define PCAL9xxx_BANK_IRQ_STAT	BIT(8 + 6)
 
-/*
- * We care about the following registers:
- * - Standard set, below 0x40, each port can be replicated up to 8 times
- *   - PCA953x standard
- *     Input port			0x00 + 0 * bank_size	R
- *     Output port			0x00 + 1 * bank_size	RW
- *     Polarity Inversion port		0x00 + 2 * bank_size	RW
- *     Configuration port		0x00 + 3 * bank_size	RW
- *   - PCA957x with mixed up registers
- *     Input port			0x00 + 0 * bank_size	R
- *     Polarity Inversion port		0x00 + 1 * bank_size	RW
- *     Bus hold port			0x00 + 2 * bank_size	RW
- *     Configuration port		0x00 + 4 * bank_size	RW
- *     Output port			0x00 + 5 * bank_size	RW
- *
- * - Extended set, above 0x40, often chip specific.
- *   - PCAL6524/PCAL9555A with custom PCAL IRQ handling:
- *     Input latch register		0x40 + 2 * bank_size	RW
- *     Pull-up/pull-down enable reg	0x40 + 3 * bank_size    RW
- *     Pull-up/pull-down select reg	0x40 + 4 * bank_size    RW
- *     Interrupt mask register		0x40 + 5 * bank_size	RW
- *     Interrupt status register	0x40 + 6 * bank_size	R
- *
- * - Registers with bit 0x80 set, the AI bit
- *   The bit is cleared and the registers fall into one of the
- *   categories above.
- */
+ 
 
 static bool pca953x_check_register(struct pca953x_chip *chip, unsigned int reg,
 				   u32 checkbank)
@@ -279,31 +238,25 @@ static bool pca953x_check_register(struct pca953x_chip *chip, unsigned int reg,
 	int bank = (reg & REG_ADDR_MASK) >> bank_shift;
 	int offset = reg & (BIT(bank_shift) - 1);
 
-	/* Special PCAL extended register check. */
+	 
 	if (reg & REG_ADDR_EXT) {
 		if (!(chip->driver_data & PCA_PCAL))
 			return false;
 		bank += 8;
 	}
 
-	/* Register is not in the matching bank. */
+	 
 	if (!(BIT(bank) & checkbank))
 		return false;
 
-	/* Register is not within allowed range of bank. */
+	 
 	if (offset >= NBANK(chip))
 		return false;
 
 	return true;
 }
 
-/*
- * Unfortunately, whilst the PCAL6534 chip (and compatibles) broadly follow the
- * same register layout as the PCAL6524, the spacing of the registers has been
- * fundamentally altered by compacting them and thus does not obey the same
- * rules, including being able to use bit shifting to determine bank. These
- * chips hence need special handling here.
- */
+ 
 static bool pcal6534_check_register(struct pca953x_chip *chip, unsigned int reg,
 				    u32 checkbank)
 {
@@ -312,17 +265,11 @@ static bool pcal6534_check_register(struct pca953x_chip *chip, unsigned int reg,
 	int offset;
 
 	if (reg >= 0x54) {
-		/*
-		 * Handle lack of reserved registers after output port
-		 * configuration register to form a bank.
-		 */
+		 
 		reg -= 0x54;
 		bank_shift = 16;
 	} else if (reg >= 0x30) {
-		/*
-		 * Reserved block between 14h and 2Fh does not align on
-		 * expected bank boundaries like other devices.
-		 */
+		 
 		reg -= 0x30;
 		bank_shift = 8;
 	} else {
@@ -332,11 +279,11 @@ static bool pcal6534_check_register(struct pca953x_chip *chip, unsigned int reg,
 	bank = bank_shift + reg / NBANK(chip);
 	offset = reg % NBANK(chip);
 
-	/* Register is not in the matching bank. */
+	 
 	if (!(BIT(bank) & checkbank))
 		return false;
 
-	/* Register is not within allowed range of bank. */
+	 
 	if (offset >= NBANK(chip))
 		return false;
 
@@ -444,10 +391,7 @@ static u8 pca953x_recalc_addr(struct pca953x_chip *chip, int reg, int off)
 	return regaddr;
 }
 
-/*
- * The PCAL6534 and compatible chips have altered bank alignment that doesn't
- * fit within the bit shifting scheme used for other devices.
- */
+ 
 static u8 pcal6534_recalc_addr(struct pca953x_chip *chip, int reg, int off)
 {
 	int addr;
@@ -538,12 +482,12 @@ static int pca953x_gpio_direction_output(struct gpio_chip *gc,
 	int ret;
 
 	mutex_lock(&chip->i2c_lock);
-	/* set output level */
+	 
 	ret = regmap_write_bits(chip->regmap, outreg, bit, val ? bit : 0);
 	if (ret)
 		goto exit;
 
-	/* then direction */
+	 
 	ret = regmap_write_bits(chip->regmap, dirreg, bit, 0);
 exit:
 	mutex_unlock(&chip->i2c_lock);
@@ -645,16 +589,13 @@ static int pca953x_gpio_set_pull_up_down(struct pca953x_chip *chip,
 	u8 bit = BIT(offset % BANK_SZ);
 	int ret;
 
-	/*
-	 * pull-up/pull-down configuration requires PCAL extended
-	 * registers
-	 */
+	 
 	if (!(chip->driver_data & PCA_PCAL))
 		return -ENOTSUPP;
 
 	mutex_lock(&chip->i2c_lock);
 
-	/* Configure pull-up/pull-down */
+	 
 	if (param == PIN_CONFIG_BIAS_PULL_UP)
 		ret = regmap_write_bits(chip->regmap, pull_sel_reg, bit, bit);
 	else if (param == PIN_CONFIG_BIAS_PULL_DOWN)
@@ -664,7 +605,7 @@ static int pca953x_gpio_set_pull_up_down(struct pca953x_chip *chip,
 	if (ret)
 		goto exit;
 
-	/* Disable/Enable pull-up/pull-down */
+	 
 	if (param == PIN_CONFIG_BIAS_DISABLE)
 		ret = regmap_write_bits(chip->regmap, pull_en_reg, bit, 0);
 	else
@@ -766,23 +707,23 @@ static void pca953x_irq_bus_sync_unlock(struct irq_data *d)
 	int level;
 
 	if (chip->driver_data & PCA_PCAL) {
-		/* Enable latch on interrupt-enabled inputs */
+		 
 		pca953x_write_regs(chip, PCAL953X_IN_LATCH, chip->irq_mask);
 
 		bitmap_complement(irq_mask, chip->irq_mask, gc->ngpio);
 
-		/* Unmask enabled interrupts */
+		 
 		pca953x_write_regs(chip, PCAL953X_INT_MASK, irq_mask);
 	}
 
-	/* Switch direction to input if needed */
+	 
 	pca953x_read_regs(chip, chip->regs->direction, reg_direction);
 
 	bitmap_or(irq_mask, chip->irq_trig_fall, chip->irq_trig_raise, gc->ngpio);
 	bitmap_complement(reg_direction, reg_direction, gc->ngpio);
 	bitmap_and(irq_mask, irq_mask, reg_direction, gc->ngpio);
 
-	/* Look for any newly setup interrupt */
+	 
 	for_each_set_bit(level, irq_mask, gc->ngpio)
 		pca953x_gpio_direction_input(&chip->gpio_chip, level);
 
@@ -848,17 +789,17 @@ static bool pca953x_irq_pending(struct pca953x_chip *chip, unsigned long *pendin
 	int ret;
 
 	if (chip->driver_data & PCA_PCAL) {
-		/* Read the current interrupt status from the device */
+		 
 		ret = pca953x_read_regs(chip, PCAL953X_INT_STAT, trigger);
 		if (ret)
 			return false;
 
-		/* Check latched inputs and clear interrupt status */
+		 
 		ret = pca953x_read_regs(chip, chip->regs->input, cur_stat);
 		if (ret)
 			return false;
 
-		/* Apply filter for rising/falling edge selection */
+		 
 		bitmap_replace(new_stat, chip->irq_trig_fall, chip->irq_trig_raise, cur_stat, gc->ngpio);
 
 		bitmap_and(pending, new_stat, trigger, gc->ngpio);
@@ -870,7 +811,7 @@ static bool pca953x_irq_pending(struct pca953x_chip *chip, unsigned long *pendin
 	if (ret)
 		return false;
 
-	/* Remove output pins from the equation */
+	 
 	pca953x_read_regs(chip, chip->regs->direction, reg_direction);
 
 	bitmap_copy(old_stat, chip->irq_stat, gc->ngpio);
@@ -952,25 +893,21 @@ static int pca953x_irq_setup(struct pca953x_chip *chip, int irq_base)
 	if (ret)
 		return ret;
 
-	/*
-	 * There is no way to know which GPIO line generated the
-	 * interrupt.  We have to rely on the previous read for
-	 * this purpose.
-	 */
+	 
 	pca953x_read_regs(chip, chip->regs->direction, reg_direction);
 	bitmap_and(chip->irq_stat, irq_stat, reg_direction, chip->gpio_chip.ngpio);
 	mutex_init(&chip->irq_lock);
 
 	girq = &chip->gpio_chip.irq;
 	gpio_irq_chip_set_chip(girq, &pca953x_irq_chip);
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;
 	girq->default_type = IRQ_TYPE_NONE;
 	girq->handler = handle_simple_irq;
 	girq->threaded = true;
-	girq->first = irq_base; /* FIXME: get rid of this */
+	girq->first = irq_base;  
 
 	ret = devm_request_threaded_irq(&client->dev, client->irq,
 					NULL, pca953x_irq_handler,
@@ -985,7 +922,7 @@ static int pca953x_irq_setup(struct pca953x_chip *chip, int irq_base)
 	return 0;
 }
 
-#else /* CONFIG_GPIO_PCA953X_IRQ */
+#else  
 static int pca953x_irq_setup(struct pca953x_chip *chip,
 			     int irq_base)
 {
@@ -1016,7 +953,7 @@ static int device_pca95xx_init(struct pca953x_chip *chip, u32 invert)
 	if (ret)
 		goto out;
 
-	/* set platform specific polarity inversion */
+	 
 	if (invert)
 		bitmap_fill(val, MAX_LINE);
 	else
@@ -1037,7 +974,7 @@ static int device_pca957x_init(struct pca953x_chip *chip, u32 invert)
 	if (ret)
 		goto out;
 
-	/* To enable register 6, 7 to control pull up and pull down */
+	 
 	for (i = 0; i < NBANK(chip); i++)
 		bitmap_set_value8(val, 0x02, i * BANK_SZ);
 
@@ -1076,13 +1013,7 @@ static int pca953x_probe(struct i2c_client *client)
 		chip->gpio_start = -1;
 		irq_base = 0;
 
-		/*
-		 * See if we need to de-assert a reset pin.
-		 *
-		 * There is no known ACPI-enabled platforms that are
-		 * using "reset" GPIO. Otherwise any of those platform
-		 * must use _DSD method with corresponding property.
-		 */
+		 
 		reset_gpio = devm_gpiod_get_optional(&client->dev, "reset",
 						     GPIOD_OUT_LOW);
 		if (IS_ERR(reset_gpio))
@@ -1134,28 +1065,11 @@ static int pca953x_probe(struct i2c_client *client)
 	regcache_mark_dirty(chip->regmap);
 
 	mutex_init(&chip->i2c_lock);
-	/*
-	 * In case we have an i2c-mux controlled by a GPIO provided by an
-	 * expander using the same driver higher on the device tree, read the
-	 * i2c adapter nesting depth and use the retrieved value as lockdep
-	 * subclass for chip->i2c_lock.
-	 *
-	 * REVISIT: This solution is not complete. It protects us from lockdep
-	 * false positives when the expander controlling the i2c-mux is on
-	 * a different level on the device tree, but not when it's on the same
-	 * level on a different branch (in which case the subclass number
-	 * would be the same).
-	 *
-	 * TODO: Once a correct solution is developed, a similar fix should be
-	 * applied to all other i2c-controlled GPIO expanders (and potentially
-	 * regmap-i2c).
-	 */
+	 
 	lockdep_set_subclass(&chip->i2c_lock,
 			     i2c_adapter_depth(client->adapter));
 
-	/* initialize cached registers from their original values.
-	 * we can't share this chip with another i2c master.
-	 */
+	 
 	if (PCA_CHIP_TYPE(chip->driver_data) == PCA957X_TYPE) {
 		chip->regs = &pca957x_regs;
 		ret = device_pca957x_init(chip, invert);
@@ -1208,10 +1122,7 @@ static int pca953x_regcache_sync(struct device *dev)
 	int ret;
 	u8 regaddr;
 
-	/*
-	 * The ordering between direction and output is important,
-	 * sync these registers first and only then sync the rest.
-	 */
+	 
 	regaddr = chip->recalc_addr(chip, chip->regs->direction, 0);
 	ret = regcache_sync_region(chip->regmap, regaddr, regaddr + NBANK(chip) - 1);
 	if (ret) {
@@ -1300,7 +1211,7 @@ static int pca953x_resume(struct device *dev)
 }
 #endif
 
-/* convenience to stop overlong match-table lines */
+ 
 #define OF_653X(__nrgpio, __int) ((void *)(__nrgpio | PCAL653X_TYPE | __int))
 #define OF_953X(__nrgpio, __int) (void *)(__nrgpio | PCA953X_TYPE | __int)
 #define OF_957X(__nrgpio, __int) (void *)(__nrgpio | PCA957X_TYPE | __int)
@@ -1374,9 +1285,7 @@ static int __init pca953x_init(void)
 {
 	return i2c_add_driver(&pca953x_driver);
 }
-/* register after i2c postcore initcall and before
- * subsys initcalls that may rely on these GPIOs
- */
+ 
 subsys_initcall(pca953x_init);
 
 static void __exit pca953x_exit(void)

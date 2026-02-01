@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clock driver for the ARM Integrator/IM-PD1 board
- * Copyright (C) 2012-2013 Linus Walleij
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
 #include <linux/err.h>
@@ -19,12 +16,10 @@
 #define IMPD1_OSC2	0x04
 #define IMPD1_LOCK	0x08
 
-/*
- * There are two VCO's on the IM-PD1
- */
+ 
 
 static const struct icst_params impd1_vco1_params = {
-	.ref		= 24000000,	/* 24 MHz */
+	.ref		= 24000000,	 
 	.vco_max	= ICST525_VCO_MAX_3V,
 	.vco_min	= ICST525_VCO_MIN,
 	.vd_min		= 12,
@@ -42,7 +37,7 @@ static const struct clk_icst_desc impd1_icst1_desc = {
 };
 
 static const struct icst_params impd1_vco2_params = {
-	.ref		= 24000000,	/* 24 MHz */
+	.ref		= 24000000,	 
 	.vco_max	= ICST525_VCO_MAX_3V,
 	.vco_min	= ICST525_VCO_MIN,
 	.vd_min		= 12,

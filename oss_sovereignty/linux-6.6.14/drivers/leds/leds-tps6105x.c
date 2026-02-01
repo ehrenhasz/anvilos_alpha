@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2019 Sven Van Asbroeck
- */
+
+ 
 
 #include <linux/leds.h>
 #include <linux/module.h>
@@ -41,7 +39,7 @@ static int tps6105x_led_probe(struct platform_device *pdev)
 	struct tps6105x_priv *priv;
 	int ret;
 
-	/* This instance is not set for torch mode so bail out */
+	 
 	if (pdata->mode != TPS6105X_MODE_TORCH) {
 		dev_info(&pdev->dev,
 			"chip not in torch mode, exit probe");
@@ -51,7 +49,7 @@ static int tps6105x_led_probe(struct platform_device *pdev)
 	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
-	/* fwnode/devicetree is optional. NULL is allowed for priv->fwnode */
+	 
 	priv->fwnode = device_get_next_child_node(pdev->dev.parent, NULL);
 	ret = devm_add_action_or_reset(&pdev->dev, tps6105x_handle_put, priv);
 	if (ret)

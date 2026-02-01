@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2019 Quantenna Communications. All rights reserved. */
+ 
+ 
 
 #ifndef QTNFMAC_SWITCHDEV_H_
 #define QTNFMAC_SWITCHDEV_H_
@@ -21,4 +21,4 @@ static inline void qtnfmac_switch_mark_skb_flooded(struct sk_buff *skb)
 
 #endif
 
-#endif /* QTNFMAC_SWITCHDEV_H_ */
+#endif  

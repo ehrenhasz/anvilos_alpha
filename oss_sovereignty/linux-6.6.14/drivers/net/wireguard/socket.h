@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef _WG_SOCKET_H
 #define _WG_SOCKET_H
@@ -41,4 +39,4 @@ void wg_socket_clear_peer_endpoint_src(struct wg_peer *peer);
 #define net_dbg_skb_ratelimited(fmt, skb, ...)
 #endif
 
-#endif /* _WG_SOCKET_H */
+#endif  

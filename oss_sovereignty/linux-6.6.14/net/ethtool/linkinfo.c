@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "netlink.h"
 #include "common.h"
@@ -45,11 +45,11 @@ static int linkinfo_prepare_data(const struct ethnl_req_info *req_base,
 static int linkinfo_reply_size(const struct ethnl_req_info *req_base,
 			       const struct ethnl_reply_data *reply_base)
 {
-	return nla_total_size(sizeof(u8)) /* LINKINFO_PORT */
-		+ nla_total_size(sizeof(u8)) /* LINKINFO_PHYADDR */
-		+ nla_total_size(sizeof(u8)) /* LINKINFO_TP_MDIX */
-		+ nla_total_size(sizeof(u8)) /* LINKINFO_TP_MDIX_CTRL */
-		+ nla_total_size(sizeof(u8)) /* LINKINFO_TRANSCEIVER */
+	return nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u8))  
+		+ nla_total_size(sizeof(u8))  
 		+ 0;
 }
 
@@ -73,7 +73,7 @@ static int linkinfo_fill_reply(struct sk_buff *skb,
 	return 0;
 }
 
-/* LINKINFO_SET */
+ 
 
 const struct nla_policy ethnl_linkinfo_set_policy[] = {
 	[ETHTOOL_A_LINKINFO_HEADER]		=

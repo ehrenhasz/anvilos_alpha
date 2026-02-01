@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/media/radio/radio-si476x.c -- V4L2 driver for SI476X chips
- *
- * Copyright (C) 2012 Innovative Converged Devices(ICD)
- * Copyright (C) 2013 Andrey Smirnov
- *
- * Author: Andrey Smirnov <andrew.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -150,17 +143,7 @@ enum si476x_ctrl_idx {
 };
 static struct v4l2_ctrl_config si476x_ctrls[] = {
 
-	/*
-	 * SI476X during its station seeking(or tuning) process uses several
-	 * parameters to determine if "the station" is valid:
-	 *
-	 *	- Signal's SNR(in dBuV) must be lower than
-	 *	#V4L2_CID_SI476X_SNR_THRESHOLD
-	 *	- Signal's RSSI(in dBuV) must be greater than
-	 *	#V4L2_CID_SI476X_RSSI_THRESHOLD
-	 *	- Signal's frequency deviation(in units of 2ppm) must not be
-	 *	more than #V4L2_CID_SI476X_MAX_TUNE_ERROR
-	 */
+	 
 	[SI476X_IDX_RSSI_THRESHOLD] = {
 		.ops	= &si476x_ctrl_ops,
 		.id	= V4L2_CID_SI476X_RSSI_THRESHOLD,
@@ -189,11 +172,7 @@ static struct v4l2_ctrl_config si476x_ctrls[] = {
 		.step	= 2,
 	},
 
-	/*
-	 * #V4L2_CID_SI476X_HARMONICS_COUNT -- number of harmonics
-	 * built-in power-line noise supression filter is to reject
-	 * during AM-mode operation.
-	 */
+	 
 	[SI476X_IDX_HARMONICS_COUNT] = {
 		.ops	= &si476x_ctrl_ops,
 		.id	= V4L2_CID_SI476X_HARMONICS_COUNT,
@@ -205,20 +184,7 @@ static struct v4l2_ctrl_config si476x_ctrls[] = {
 		.step	= 1,
 	},
 
-	/*
-	 * #V4L2_CID_SI476X_DIVERSITY_MODE -- configuration which
-	 * two tuners working in diversity mode are to work in.
-	 *
-	 *  - #SI476X_IDX_PHDIV_DISABLED diversity mode disabled
-	 *  - #SI476X_IDX_PHDIV_PRIMARY_COMBINING diversity mode is
-	 *  on, primary tuner's antenna is the main one.
-	 *  - #SI476X_IDX_PHDIV_PRIMARY_ANTENNA diversity mode is
-	 *  off, primary tuner's antenna is the main one.
-	 *  - #SI476X_IDX_PHDIV_SECONDARY_ANTENNA diversity mode is
-	 *  off, secondary tuner's antenna is the main one.
-	 *  - #SI476X_IDX_PHDIV_SECONDARY_COMBINING diversity mode is
-	 *  on, secondary tuner's antenna is the main one.
-	 */
+	 
 	[SI476X_IDX_DIVERSITY_MODE] = {
 		.ops	= &si476x_ctrl_ops,
 		.id	= V4L2_CID_SI476X_DIVERSITY_MODE,
@@ -229,13 +195,7 @@ static struct v4l2_ctrl_config si476x_ctrls[] = {
 		.max	= ARRAY_SIZE(phase_diversity_modes) - 1,
 	},
 
-	/*
-	 * #V4L2_CID_SI476X_INTERCHIP_LINK -- inter-chip link in
-	 * diversity mode indicator. Allows user to determine if two
-	 * chips working in diversity mode have established a link
-	 * between each other and if the system as a whole uses
-	 * signals from both antennas to receive FM radio.
-	 */
+	 
 	[SI476X_IDX_INTERCHIP_LINK] = {
 		.ops	= &si476x_ctrl_ops,
 		.id	= V4L2_CID_SI476X_INTERCHIP_LINK,
@@ -250,24 +210,7 @@ static struct v4l2_ctrl_config si476x_ctrls[] = {
 
 struct si476x_radio;
 
-/**
- * struct si476x_radio_ops - vtable of tuner functions
- *
- * This table holds pointers to functions implementing particular
- * operations depending on the mode in which the tuner chip was
- * configured to start. If the function is not supported
- * corresponding element is set to #NULL.
- *
- * @tune_freq: Tune chip to a specific frequency
- * @seek_start: Star station seeking
- * @rsq_status: Get Received Signal Quality(RSQ) status
- * @rds_blckcnt: Get received RDS blocks count
- * @phase_diversity: Change phase diversity mode of the tuner
- * @phase_div_status: Get phase diversity mode status
- * @acf_status: Get the status of Automatically Controlled
- * Features(ACF)
- * @agc_status: Get Automatic Gain Control(AGC) status
- */
+ 
 struct si476x_radio_ops {
 	int (*tune_freq)(struct si476x_core *, struct si476x_tune_freq_args *);
 	int (*seek_start)(struct si476x_core *, bool, bool);
@@ -285,27 +228,14 @@ struct si476x_radio_ops {
 			  struct si476x_agc_status_report *);
 };
 
-/**
- * struct si476x_radio - radio device
- *
- * @v4l2dev: Pointer to V4L2 device created by V4L2 subsystem
- * @videodev: Pointer to video device created by V4L2 subsystem
- * @ctrl_handler: V4L2 controls handler
- * @core: Pointer to underlying core device
- * @ops: Vtable of functions. See struct si476x_radio_ops for details
- * @debugfs: pointer to &strucd dentry for debugfs
- * @audmode: audio mode, as defined for the rxsubchans field
- *	     at videodev2.h
- *
- * core structure is the radio device is being used
- */
+ 
 struct si476x_radio {
 	struct v4l2_device v4l2dev;
 	struct video_device videodev;
 	struct v4l2_ctrl_handler ctrl_handler;
 
 	struct si476x_core  *core;
-	/* This field should not be accesses unless core lock is held */
+	 
 	const struct si476x_radio_ops *ops;
 
 	struct dentry	*debugfs;
@@ -318,9 +248,7 @@ v4l2_ctrl_handler_to_radio(struct v4l2_ctrl_handler *d)
 	return container_of(d, struct si476x_radio, ctrl_handler);
 }
 
-/*
- * si476x_vidioc_querycap - query device capabilities
- */
+ 
 static int si476x_radio_querycap(struct file *file, void *priv,
 				 struct v4l2_capability *capability)
 {
@@ -344,7 +272,7 @@ static int si476x_radio_enum_freq_bands(struct file *file, void *priv,
 		return -EINVAL;
 
 	switch (radio->core->chip_id) {
-		/* AM/FM tuners -- all bands are supported */
+		 
 	case SI476X_CHIP_SI4761:
 	case SI476X_CHIP_SI4764:
 		if (band->index < ARRAY_SIZE(si476x_bands)) {
@@ -354,8 +282,7 @@ static int si476x_radio_enum_freq_bands(struct file *file, void *priv,
 			err = -EINVAL;
 		}
 		break;
-		/* FM companion tuner chips -- only FM bands are
-		 * supported */
+		 
 	case SI476X_CHIP_SI4768:
 		if (band->index == SI476X_BAND_FM) {
 			*band = si476x_bands[band->index];
@@ -390,9 +317,7 @@ static int si476x_radio_g_tuner(struct file *file, void *priv,
 		return -EINVAL;
 
 	tuner->type       = V4L2_TUNER_RADIO;
-	tuner->capability = V4L2_TUNER_CAP_LOW /* Measure frequencies
-						 * in multiples of
-						 * 62.5 Hz */
+	tuner->capability = V4L2_TUNER_CAP_LOW  
 		| V4L2_TUNER_CAP_STEREO
 		| V4L2_TUNER_CAP_HWSEEK_BOUNDED
 		| V4L2_TUNER_CAP_HWSEEK_WRAP
@@ -437,10 +362,7 @@ static int si476x_radio_g_tuner(struct file *file, void *priv,
 	if (err < 0) {
 		tuner->signal = 0;
 	} else {
-		/*
-		 * tuner->signal value range: 0x0000 .. 0xFFFF,
-		 * report.rssi: -128 .. 127
-		 */
+		 
 		tuner->signal = (report.rssi + 128) * 257;
 	}
 	si476x_core_unlock(radio->core);
@@ -541,7 +463,7 @@ static int si476x_radio_do_post_powerup_init(struct si476x_radio *radio,
 {
 	int err;
 
-	/* regcache_mark_dirty(radio->core->regmap); */
+	 
 	err = regcache_sync_region(radio->core->regmap,
 				   SI476X_PROP_DIGITAL_IO_INPUT_SAMPLE_RATE,
 				   SI476X_PROP_DIGITAL_IO_OUTPUT_FORMAT);
@@ -560,10 +482,7 @@ static int si476x_radio_do_post_powerup_init(struct si476x_radio *radio,
 	if (err < 0)
 		return err;
 
-	/*
-	 * Is there any point in restoring SNR and the like
-	 * when switching between AM/FM?
-	 */
+	 
 	err = regcache_sync_region(radio->core->regmap,
 				   SI476X_PROP_VALID_MAX_TUNE_ERROR,
 				   SI476X_PROP_VALID_MAX_TUNE_ERROR);
@@ -600,39 +519,27 @@ static int si476x_radio_change_func(struct si476x_radio *radio,
 {
 	int err;
 	bool soft;
-	/*
-	 * Since power/up down is a very time consuming operation,
-	 * try to avoid doing it if the requested mode matches the one
-	 * the tuner is in
-	 */
+	 
 	if (func == radio->core->power_up_parameters.func)
 		return 0;
 
 	soft = true;
 	err = si476x_core_stop(radio->core, soft);
 	if (err < 0) {
-		/*
-		 * OK, if the chip does not want to play nice let's
-		 * try to reset it in more brutal way
-		 */
+		 
 		soft = false;
 		err = si476x_core_stop(radio->core, soft);
 		if (err < 0)
 			return err;
 	}
-	/*
-	  Set the desired radio tuner function
-	 */
+	 
 	radio->core->power_up_parameters.func = func;
 
 	err = si476x_core_start(radio->core, soft);
 	if (err < 0)
 		return err;
 
-	/*
-	 * No need to do the rest of manipulations for the bootlader
-	 * mode
-	 */
+	 
 	if (func != SI476X_FUNC_FM_RECEIVER &&
 	    func != SI476X_FUNC_AM_RECEIVER)
 		return err;
@@ -909,11 +816,7 @@ static int si476x_radio_s_ctrl(struct v4l2_ctrl *ctrl)
 				      ctrl->val);
 		break;
 	case V4L2_CID_RDS_RECEPTION:
-		/*
-		 * It looks like RDS related properties are
-		 * inaccessible when tuner is in AM mode, so cache the
-		 * changes
-		 */
+		 
 		if (si476x_core_is_in_am_receiver_mode(radio->core))
 			regcache_cache_only(radio->core->regmap, true);
 
@@ -932,7 +835,7 @@ static int si476x_radio_s_ctrl(struct v4l2_ctrl *ctrl)
 					break;
 			}
 
-			/* Drain RDS FIFO before enabling RDS processing */
+			 
 			retval = si476x_core_cmd_fm_rds_status(radio->core,
 							       false,
 							       true,
@@ -970,10 +873,7 @@ static int si476x_radio_s_ctrl(struct v4l2_ctrl *ctrl)
 		}
 
 		if (si476x_core_is_in_am_receiver_mode(radio->core)) {
-			/*
-			 * Diversity cannot be configured while tuner
-			 * is in AM mode so save the changes and carry on.
-			 */
+			 
 			radio->core->diversity_mode = mode;
 			retval = 0;
 		} else {
@@ -1054,7 +954,7 @@ static int si476x_radio_fops_open(struct file *file)
 			goto power_down;
 
 		si476x_core_unlock(radio->core);
-		/*Must be done after si476x_core_unlock to prevent a deadlock*/
+		 
 		v4l2_ctrl_handler_setup(&radio->ctrl_handler);
 	}
 
@@ -1091,7 +991,7 @@ static ssize_t si476x_radio_fops_read(struct file *file, char __user *buf,
 
 	struct si476x_radio *radio = video_drvdata(file);
 
-	/* block if no new data available */
+	 
 	if (kfifo_is_empty(&radio->core->rds_fifo)) {
 		if (file->f_flags & O_NONBLOCK)
 			return -EWOULDBLOCK;
@@ -1483,7 +1383,7 @@ static int si476x_radio_probe(struct platform_device *pdev)
 			goto exit;
 	}
 
-	/* register video device */
+	 
 	rval = video_register_device(&radio->videodev, VFL_TYPE_RADIO, -1);
 	if (rval < 0) {
 		dev_err(&pdev->dev, "Could not register video device\n");

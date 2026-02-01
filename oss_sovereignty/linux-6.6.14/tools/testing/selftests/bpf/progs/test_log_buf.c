@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -17,7 +17,7 @@ int good_prog(const void *ctx)
 SEC("raw_tp/sys_enter")
 int bad_prog(const void *ctx)
 {
-	/* out of bounds access */
+	 
 	return a[off];
 }
 

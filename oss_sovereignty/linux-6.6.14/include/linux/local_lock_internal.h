@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_LOCAL_LOCK_H
 # error "Do not include directly, include linux/local_lock.h"
 #endif
@@ -42,12 +42,12 @@ static inline void local_lock_debug_init(local_lock_t *l)
 {
 	l->owner = NULL;
 }
-#else /* CONFIG_DEBUG_LOCK_ALLOC */
+#else  
 # define LOCAL_LOCK_DEBUG_INIT(lockname)
 static inline void local_lock_acquire(local_lock_t *l) { }
 static inline void local_lock_release(local_lock_t *l) { }
 static inline void local_lock_debug_init(local_lock_t *l) { }
-#endif /* !CONFIG_DEBUG_LOCK_ALLOC */
+#endif  
 
 #define INIT_LOCAL_LOCK(lockname)	{ LOCAL_LOCK_DEBUG_INIT(lockname) }
 
@@ -98,12 +98,9 @@ do {								\
 		local_irq_restore(flags);			\
 	} while (0)
 
-#else /* !CONFIG_PREEMPT_RT */
+#else  
 
-/*
- * On PREEMPT_RT local_lock maps to a per CPU spinlock, which protects the
- * critical section while staying preemptible.
- */
+ 
 typedef spinlock_t local_lock_t;
 
 #define INIT_LOCAL_LOCK(lockname) __LOCAL_SPIN_LOCK_UNLOCKED((lockname))
@@ -138,4 +135,4 @@ typedef spinlock_t local_lock_t;
 
 #define __local_unlock_irqrestore(lock, flags)	__local_unlock(lock)
 
-#endif /* CONFIG_PREEMPT_RT */
+#endif  

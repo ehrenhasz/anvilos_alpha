@@ -1,20 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(C) 2020 Linaro Limited. All rights reserved.
- * Author: Mike Leach <mike.leach@linaro.org>
- */
+
+ 
 
 #include "coresight-config.h"
 
-/* ETMv4 includes and features */
+ 
 #if IS_ENABLED(CONFIG_CORESIGHT_SOURCE_ETM4X)
 #include "coresight-etm4x-cfg.h"
 
-/* preload configurations and features */
+ 
 
-/* preload in features for ETMv4 */
+ 
 
-/* strobe feature */
+ 
 static struct cscfg_parameter_desc strobe_params[] = {
 	{
 		.name = "window",
@@ -27,7 +24,7 @@ static struct cscfg_parameter_desc strobe_params[] = {
 };
 
 static struct cscfg_regval_desc strobe_regs[] = {
-	/* resource selectors */
+	 
 	{
 		.type = CS_CFG_REG_TYPE_RESOURCE,
 		.offset = TRCRSCTLRn(2),
@@ -40,7 +37,7 @@ static struct cscfg_regval_desc strobe_regs[] = {
 		.hw_info = ETM4_CFG_RES_SEQ,
 		.val32 = 0x20002,
 	},
-	/* strobe window counter 0 - reload from param 0 */
+	 
 	{
 		.type = CS_CFG_REG_TYPE_RESOURCE | CS_CFG_REG_TYPE_VAL_SAVE,
 		.offset = TRCCNTVRn(0),
@@ -58,7 +55,7 @@ static struct cscfg_regval_desc strobe_regs[] = {
 		.hw_info = ETM4_CFG_RES_CTR,
 		.val32 = 0x10001,
 	},
-	/* strobe period counter 1 - reload from param 1 */
+	 
 	{
 		.type = CS_CFG_REG_TYPE_RESOURCE | CS_CFG_REG_TYPE_VAL_SAVE,
 		.offset = TRCCNTVRn(1),
@@ -76,7 +73,7 @@ static struct cscfg_regval_desc strobe_regs[] = {
 		.hw_info = ETM4_CFG_RES_CTR,
 		.val32 = 0x8102,
 	},
-	/* sequencer */
+	 
 	{
 		.type = CS_CFG_REG_TYPE_RESOURCE,
 		.offset = TRCSEQEVRn(0),
@@ -89,14 +86,14 @@ static struct cscfg_regval_desc strobe_regs[] = {
 		.hw_info = ETM4_CFG_RES_SEQ,
 		.val32 = 0x0000,
 	},
-	/* view-inst */
+	 
 	{
 		.type = CS_CFG_REG_TYPE_STD | CS_CFG_REG_TYPE_VAL_MASK,
 		.offset = TRCVICTLR,
 		.val32 = 0x0003,
 		.mask32 = 0x0003,
 	},
-	/* end of regs */
+	 
 };
 
 struct cscfg_feature_desc strobe_etm4x = {
@@ -111,21 +108,18 @@ struct cscfg_feature_desc strobe_etm4x = {
 	.regs_desc = strobe_regs,
 };
 
-/* create an autofdo configuration */
+ 
 
-/* we will provide 9 sets of preset parameter values */
+ 
 #define AFDO_NR_PRESETS	9
-/* the total number of parameters in used features */
+ 
 #define AFDO_NR_PARAMS	ARRAY_SIZE(strobe_params)
 
 static const char *afdo_ref_names[] = {
 	"strobing",
 };
 
-/*
- * set of presets leaves strobing window constant while varying period to allow
- * experimentation with mark / space ratios for various workloads
- */
+ 
 static u64 afdo_presets[AFDO_NR_PRESETS][AFDO_NR_PARAMS] = {
 	{ 5000, 2 },
 	{ 5000, 4 },
@@ -149,5 +143,5 @@ struct cscfg_config_desc afdo_etm4x = {
 	.presets = &afdo_presets[0][0],
 };
 
-/* end of ETM4x configurations */
-#endif	/* IS_ENABLED(CONFIG_CORESIGHT_SOURCE_ETM4X) */
+ 
+#endif	 

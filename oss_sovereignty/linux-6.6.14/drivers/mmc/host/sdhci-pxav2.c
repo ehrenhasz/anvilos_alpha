@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 Marvell International Ltd.
- *		Zhangfei Gao <zhangfei.gao@marvell.com>
- *		Kevin Wang <dwang4@marvell.com>
- *		Jun Nie <njun@marvell.com>
- *		Qiming Wu <wuqm@marvell.com>
- *		Philip Rakity <prakity@marvell.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -27,9 +20,9 @@
 #include "sdhci-pltfm.h"
 
 #define SD_FIFO_PARAM		0xe0
-#define DIS_PAD_SD_CLK_GATE	0x0400 /* Turn on/off Dynamic SD Clock Gating */
-#define CLK_GATE_ON		0x0200 /* Disable/enable Clock Gate */
-#define CLK_GATE_CTL		0x0100 /* Clock Gate Control */
+#define DIS_PAD_SD_CLK_GATE	0x0400  
+#define CLK_GATE_ON		0x0200  
+#define CLK_GATE_CTL		0x0100  
 #define CLK_GATE_SETTING_BITS	(DIS_PAD_SD_CLK_GATE | \
 		CLK_GATE_ON | CLK_GATE_CTL)
 
@@ -60,10 +53,7 @@ static void pxav2_reset(struct sdhci_host *host, u8 mask)
 	if (mask == SDHCI_RESET_ALL) {
 		u16 tmp = 0;
 
-		/*
-		 * tune timing of read data/command when crc error happen
-		 * no performance impact
-		 */
+		 
 		if (pdata && pdata->clk_delay_sel == 1) {
 			tmp = readw(host->ioaddr + SD_CLOCK_BURST_SIZE_SETUP);
 
@@ -91,7 +81,7 @@ static void pxav2_reset(struct sdhci_host *host, u8 mask)
 
 static u16 pxav1_readw(struct sdhci_host *host, int reg)
 {
-	/* Workaround for data abort exception on SDH2 and SDH4 on PXA168 */
+	 
 	if (reg == SDHCI_HOST_VERSION)
 		return readl(host->ioaddr + SDHCI_HOST_VERSION - 2) >> 16;
 
@@ -104,11 +94,11 @@ static u32 pxav1_irq(struct sdhci_host *host, u32 intmask)
 	struct mmc_request *sdio_mrq;
 
 	if (pxav2_host->sdio_mrq && (intmask & SDHCI_INT_CMD_MASK)) {
-		/* The dummy CMD0 for the SDIO workaround just completed */
+		 
 		sdhci_writel(host, intmask & SDHCI_INT_CMD_MASK, SDHCI_INT_STATUS);
 		intmask &= ~SDHCI_INT_CMD_MASK;
 
-		/* Restore MMC function to CMD pin */
+		 
 		if (pxav2_host->pinctrl && pxav2_host->pins_default)
 			pinctrl_select_state(pxav2_host->pinctrl, pxav2_host->pins_default);
 
@@ -125,20 +115,20 @@ static void pxav1_request_done(struct sdhci_host *host, struct mmc_request *mrq)
 	u16 tmp;
 	struct sdhci_pxav2_host *pxav2_host;
 
-	/* If this is an SDIO command, perform errata workaround for silicon bug */
+	 
 	if (mrq->cmd && !mrq->cmd->error &&
 	    (mrq->cmd->opcode == SD_IO_RW_DIRECT ||
 	     mrq->cmd->opcode == SD_IO_RW_EXTENDED)) {
-		/* Reset data port */
+		 
 		tmp = readw(host->ioaddr + SDHCI_TIMEOUT_CONTROL);
 		tmp |= 0x400;
 		writew(tmp, host->ioaddr + SDHCI_TIMEOUT_CONTROL);
 
-		/* Clock is now stopped, so restart it by sending a dummy CMD0 */
+		 
 		pxav2_host = sdhci_pltfm_priv(sdhci_priv(host));
 		pxav2_host->sdio_mrq = mrq;
 
-		/* Set CMD as high output rather than MMC function while we do CMD0 */
+		 
 		if (pxav2_host->pinctrl && pxav2_host->pins_cmd_gpio)
 			pinctrl_select_state(pxav2_host->pinctrl, pxav2_host->pins_cmd_gpio);
 
@@ -147,7 +137,7 @@ static void pxav1_request_done(struct sdhci_host *host, struct mmc_request *mrq)
 		sdhci_writew(host, SDHCI_MAKE_CMD(MMC_GO_IDLE_STATE, SDHCI_CMD_RESP_NONE),
 			     SDHCI_COMMAND);
 
-		/* Don't finish this request until the dummy CMD0 finishes */
+		 
 		return;
 	}
 
@@ -297,12 +287,12 @@ static int sdhci_pxav2_probe(struct platform_device *pdev)
 
 	if (pdata) {
 		if (pdata->flags & PXA_FLAG_CARD_PERMANENT) {
-			/* on-chip device */
+			 
 			host->quirks |= SDHCI_QUIRK_BROKEN_CARD_DETECTION;
 			host->mmc->caps |= MMC_CAP_NONREMOVABLE;
 		}
 
-		/* If slot design supports 8 bit data, indicate this to MMC. */
+		 
 		if (pdata->flags & PXA_FLAG_SD_8_BIT_CAPABLE_SLOT)
 			host->mmc->caps |= MMC_CAP_8_BIT_DATA;
 
@@ -317,7 +307,7 @@ static int sdhci_pxav2_probe(struct platform_device *pdev)
 	host->quirks |= variant->extra_quirks;
 	host->ops = variant->ops;
 
-	/* Set up optional pinctrl for PXA168 SDIO IRQ fix */
+	 
 	pxav2_host->pinctrl = devm_pinctrl_get(dev);
 	if (!IS_ERR(pxav2_host->pinctrl)) {
 		pxav2_host->pins_cmd_gpio = pinctrl_lookup_state(pxav2_host->pinctrl,

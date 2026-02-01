@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Real time clocks driver for MStar/SigmaStar ARMv7 SoCs.
- * Based on "Real Time Clock driver for msb252x." that was contained
- * in various MStar kernels.
- *
- * (C) 2019 Daniel Palmer
- * (C) 2021 Romain Perier
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -16,7 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/rtc.h>
 
-/* Registers */
+ 
 #define REG_RTC_CTRL		0x00
 #define REG_RTC_FREQ_CW_L	0x04
 #define REG_RTC_FREQ_CW_H	0x08
@@ -28,7 +21,7 @@
 #define REG_RTC_CNT_VAL_L	0x20
 #define REG_RTC_CNT_VAL_H	0x24
 
-/* Control bits for REG_RTC_CTRL */
+ 
 #define SOFT_RSTZ_BIT		BIT(0)
 #define CNT_EN_BIT		BIT(1)
 #define WRAP_EN_BIT		BIT(2)
@@ -38,7 +31,7 @@
 #define INT_FORCE_BIT		BIT(6)
 #define INT_CLEAR_BIT		BIT(7)
 
-/* Control bits for REG_RTC_STATUS_INT */
+ 
 #define RAW_INT_BIT		BIT(0)
 #define ALM_INT_BIT		BIT(1)
 
@@ -117,7 +110,7 @@ static int msc313_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	reg = readw(priv->rtc_base + REG_RTC_CTRL);
 	writew(reg | READ_EN_BIT, priv->rtc_base + REG_RTC_CTRL);
 
-	/* Wait for HW latch done */
+	 
 	while (readw(priv->rtc_base + REG_RTC_CTRL) & READ_EN_BIT)
 		udelay(1);
 
@@ -139,11 +132,11 @@ static int msc313_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	writew(seconds & 0xFFFF, priv->rtc_base + REG_RTC_LOAD_VAL_L);
 	writew((seconds >> 16) & 0xFFFF, priv->rtc_base + REG_RTC_LOAD_VAL_H);
 
-	/* Enable load for loading value into internal RTC counter */
+	 
 	reg = readw(priv->rtc_base + REG_RTC_CTRL);
 	writew(reg | LOAD_EN_BIT, priv->rtc_base + REG_RTC_CTRL);
 
-	/* Wait for HW latch done */
+	 
 	while (readw(priv->rtc_base + REG_RTC_CTRL) & LOAD_EN_BIT)
 		udelay(1);
 	msc313_rtc_set_enabled(priv);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/cls_flow.c		Generic flow classifier
- *
- * Copyright (c) 2007, 2008 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -455,7 +451,7 @@ static int flow_change(struct net *net, struct sk_buff *in_skb,
 		if (fold->handle != handle && handle)
 			goto err2;
 
-		/* Copy fold into fnew */
+		 
 		fnew->tp = fold->tp;
 		fnew->handle = fold->handle;
 		fnew->nkeys = fold->nkeys;

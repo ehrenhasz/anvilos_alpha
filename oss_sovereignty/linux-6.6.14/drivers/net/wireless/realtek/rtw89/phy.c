@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "coex.h"
 #include "debug.h"
@@ -18,23 +17,23 @@ static u16 get_max_amsdu_len(struct rtw89_dev *rtwdev,
 {
 	u32 bit_rate = report->bit_rate;
 
-	/* lower than ofdm, do not aggregate */
+	 
 	if (bit_rate < 550)
 		return 1;
 
-	/* avoid AMSDU for legacy rate */
+	 
 	if (report->might_fallback_legacy)
 		return 1;
 
-	/* lower than 20M vht 2ss mcs8, make it small */
+	 
 	if (bit_rate < 1800)
 		return 1200;
 
-	/* lower than 40M vht 2ss mcs9, make it medium */
+	 
 	if (bit_rate < 4000)
 		return 2600;
 
-	/* not yet 80M vht 2ss mcs8/9, make it twice regular packet size */
+	 
 	if (bit_rate < 7000)
 		return 3500;
 
@@ -84,7 +83,7 @@ static u64 get_he_ra_mask(struct ieee80211_sta *sta)
 		mcs_map = le16_to_cpu(cap.he_mcs_nss_supp.rx_mcs_80);
 	}
 
-	/* MCS11, MCS9, MCS7 */
+	 
 	return get_mcs_ra_mask(mcs_map, 11, 2);
 }
 
@@ -254,7 +253,7 @@ static void rtw89_phy_ra_sta_update(struct rtw89_dev *rtwdev,
 	bool fix_giltf_en = false;
 
 	memset(ra, 0, sizeof(*ra));
-	/* Set the ra mask from sta's capability */
+	 
 	if (sta->deflink.he_cap.has_he) {
 		mode |= RTW89_RA_MODE_HE;
 		csi_mode = RTW89_RA_RPT_MODE_HE;
@@ -272,7 +271,7 @@ static void rtw89_phy_ra_sta_update(struct rtw89_dev *rtwdev,
 
 		mode |= RTW89_RA_MODE_VHT;
 		csi_mode = RTW89_RA_RPT_MODE_VHT;
-		/* MCS9, MCS8, MCS7 */
+		 
 		ra_mask |= get_mcs_ra_mask(mcs_map, 9, 1);
 		high_rate_masks = rtw89_ra_mask_vht_rates;
 		if (sta->deflink.vht_cap.cap & IEEE80211_VHT_CAP_RXSTBC_MASK)
@@ -505,10 +504,7 @@ void rtw89_phy_rate_pattern_vif(struct rtw89_dev *rtwdev,
 					  0, true))
 			goto out;
 
-	/* lagacy cannot be empty for nl80211_parse_tx_bitrate_mask, and
-	 * require at least one basic rate for ieee80211_set_bitrate_mask,
-	 * so the decision just depends on if all bitrates are set or not.
-	 */
+	 
 	sband = rtwdev->hw->wiphy->bands[nl_band];
 	if (band == RTW89_BAND_2G) {
 		if (!__check_rate_pattern(&next_pattern, RTW89_HW_RATE_CCK1,
@@ -758,7 +754,7 @@ bool rtw89_phy_write_rf(struct rtw89_dev *rtwdev, enum rtw89_rf_path rf_path,
 
 	rtw89_phy_write32_mask(rtwdev, direct_addr, mask, data);
 
-	/* delay to ensure writing properly */
+	 
 	udelay(1);
 
 	return true;
@@ -1086,7 +1082,7 @@ static void rtw89_phy_config_bb_gain(struct rtw89_dev *rtwdev,
 		rtw89_phy_cfg_bb_gain_op1db(rtwdev, arg, reg->data);
 		break;
 	case 4:
-		/* This cfg_type is only used by rfe_type >= 50 with eFEM */
+		 
 		if (efuse->rfe_type < 50)
 			break;
 		fallthrough;
@@ -1226,7 +1222,7 @@ static int rtw89_phy_sel_headline(struct rtw89_dev *rtwdev,
 	if (*headline_size == 0)
 		return 0;
 
-	/* case 1: RFE match, CV match */
+	 
 	compare = get_phy_compare(rfe, cv);
 	for (i = 0; i < *headline_size; i++) {
 		reg = &table->regs[i];
@@ -1237,7 +1233,7 @@ static int rtw89_phy_sel_headline(struct rtw89_dev *rtwdev,
 		}
 	}
 
-	/* case 2: RFE match, CV don't care */
+	 
 	compare = get_phy_compare(rfe, PHY_COND_DONT_CARE);
 	for (i = 0; i < *headline_size; i++) {
 		reg = &table->regs[i];
@@ -1248,7 +1244,7 @@ static int rtw89_phy_sel_headline(struct rtw89_dev *rtwdev,
 		}
 	}
 
-	/* case 3: RFE match, CV max in table */
+	 
 	for (i = 0; i < *headline_size; i++) {
 		reg = &table->regs[i];
 		rfe_para = get_phy_cond_rfe(reg->addr);
@@ -1265,7 +1261,7 @@ static int rtw89_phy_sel_headline(struct rtw89_dev *rtwdev,
 	if (case_matched)
 		return 0;
 
-	/* case 4: RFE don't care, CV max in table */
+	 
 	for (i = 0; i < *headline_size; i++) {
 		reg = &table->regs[i];
 		rfe_para = get_phy_cond_rfe(reg->addr);
@@ -1419,7 +1415,7 @@ static void rtw89_phy_init_rf_nctl(struct rtw89_dev *rtwdev)
 	u32 val;
 	int ret;
 
-	/* IQK/DPK clock & reset */
+	 
 	rtw89_phy_write32_set(rtwdev, R_IOQ_IQK_DPK, 0x3);
 	rtw89_phy_write32_set(rtwdev, R_GNT_BT_WGT_EN, 0x1);
 	rtw89_phy_write32_set(rtwdev, R_P0_PATH_RST, 0x8000000);
@@ -1428,7 +1424,7 @@ static void rtw89_phy_init_rf_nctl(struct rtw89_dev *rtwdev)
 	if (chip->chip_id == RTL8852B)
 		rtw89_phy_write32_set(rtwdev, R_IOQ_IQK_DPK, 0x2);
 
-	/* check 0x8080 */
+	 
 	rtw89_phy_write32(rtwdev, R_NCTL_CFG, 0x8);
 
 	ret = read_poll_timeout(rtw89_phy_nctl_poll, val, val == 0x4, 10,
@@ -1466,7 +1462,7 @@ static u32 rtw89_phy0_phy1_offset(struct rtw89_dev *rtwdev, u32 addr)
 		ofst = 0x2000;
 		break;
 	default:
-		/* warning case */
+		 
 		ofst = 0;
 		break;
 	}
@@ -1793,11 +1789,11 @@ static void rtw89_phy_fill_txpwr_limit_160m(struct rtw89_dev *rtwdev,
 	s8 val_2p5_p[RTW89_BF_NUM];
 	u8 i;
 
-	/* fill ofdm section */
+	 
 	__fill_txpwr_limit_nonbf_bf(lmt->ofdm, band, RTW89_CHANNEL_WIDTH_20,
 				    ntx, RTW89_RS_OFDM, pri_ch);
 
-	/* fill mcs 20m section */
+	 
 	__fill_txpwr_limit_nonbf_bf(lmt->mcs_20m[0], band,
 				    RTW89_CHANNEL_WIDTH_20,
 				    ntx, RTW89_RS_MCS, ch - 14);
@@ -1823,7 +1819,7 @@ static void rtw89_phy_fill_txpwr_limit_160m(struct rtw89_dev *rtwdev,
 				    RTW89_CHANNEL_WIDTH_20,
 				    ntx, RTW89_RS_MCS, ch + 14);
 
-	/* fill mcs 40m section */
+	 
 	__fill_txpwr_limit_nonbf_bf(lmt->mcs_40m[0], band,
 				    RTW89_CHANNEL_WIDTH_40,
 				    ntx, RTW89_RS_MCS, ch - 12);
@@ -1837,7 +1833,7 @@ static void rtw89_phy_fill_txpwr_limit_160m(struct rtw89_dev *rtwdev,
 				    RTW89_CHANNEL_WIDTH_40,
 				    ntx, RTW89_RS_MCS, ch + 12);
 
-	/* fill mcs 80m section */
+	 
 	__fill_txpwr_limit_nonbf_bf(lmt->mcs_80m[0], band,
 				    RTW89_CHANNEL_WIDTH_80,
 				    ntx, RTW89_RS_MCS, ch - 8);
@@ -1845,12 +1841,12 @@ static void rtw89_phy_fill_txpwr_limit_160m(struct rtw89_dev *rtwdev,
 				    RTW89_CHANNEL_WIDTH_80,
 				    ntx, RTW89_RS_MCS, ch + 8);
 
-	/* fill mcs 160m section */
+	 
 	__fill_txpwr_limit_nonbf_bf(lmt->mcs_160m, band,
 				    RTW89_CHANNEL_WIDTH_160,
 				    ntx, RTW89_RS_MCS, ch);
 
-	/* fill mcs 40m 0p5 section */
+	 
 	__fill_txpwr_limit_nonbf_bf(val_0p5_n, band, RTW89_CHANNEL_WIDTH_40,
 				    ntx, RTW89_RS_MCS, ch - 4);
 	__fill_txpwr_limit_nonbf_bf(val_0p5_p, band, RTW89_CHANNEL_WIDTH_40,
@@ -1859,7 +1855,7 @@ static void rtw89_phy_fill_txpwr_limit_160m(struct rtw89_dev *rtwdev,
 	for (i = 0; i < RTW89_BF_NUM; i++)
 		lmt->mcs_40m_0p5[i] = min_t(s8, val_0p5_n[i], val_0p5_p[i]);
 
-	/* fill mcs 40m 2p5 section */
+	 
 	__fill_txpwr_limit_nonbf_bf(val_2p5_n, band, RTW89_CHANNEL_WIDTH_40,
 				    ntx, RTW89_RS_MCS, ch - 8);
 	__fill_txpwr_limit_nonbf_bf(val_2p5_p, band, RTW89_CHANNEL_WIDTH_40,
@@ -2678,14 +2674,14 @@ static s32 rtw89_phy_multi_sta_cfo_calc(struct rtw89_dev *rtwdev)
 			max_cfo_lb = max(cfo->cfo_avg[i] - cfo_tol, max_cfo_lb);
 			min_cfo_ub = min(cfo->cfo_avg[i] + cfo_tol, min_cfo_ub);
 			cfo_khz_all += cfo->cfo_avg[i];
-			/* need tp for each entry */
+			 
 			rtw89_debug(rtwdev, RTW89_DBG_CFO,
 				    "[%d] cfo_avg=%d, tp=tbd\n",
 				    i, cfo->cfo_avg[i]);
 			if (sta_cnt >= rtwdev->total_sta_assoc)
 				break;
 		}
-		tp_all = stats->rx_throughput; /* need tp for each entry */
+		tp_all = stats->rx_throughput;  
 		cfo_avg =  phy_div(cfo_khz_all_tp_wgt, (s32)tp_all);
 
 		rtw89_debug(rtwdev, RTW89_DBG_CFO, "Assoc sta cnt=%d\n",
@@ -3341,10 +3337,7 @@ static bool rtw89_phy_ifs_clm_th_update_check(struct rtw89_dev *rtwdev,
 		break;
 	}
 
-	/* Set sampling threshold for 4 different regions, unit in idx_cnt.
-	 * low[i] = high[i-1] + 1
-	 * high[i] = high[i-1] * ifs_th_times
-	 */
+	 
 	ifs_th_l[IFS_CLM_TH_START_IDX] = 0;
 	ifs_th_h_us[IFS_CLM_TH_START_IDX] = ifs_th0_us;
 	ifs_th_h[IFS_CLM_TH_START_IDX] = rtw89_phy_ccx_us_to_idx(rtwdev,
@@ -3682,7 +3675,7 @@ void rtw89_phy_env_monitor_track(struct rtw89_dev *rtwdev)
 		return;
 	}
 
-	/* only ifs_clm for now */
+	 
 	if (rtw89_phy_ifs_clm_get_result(rtwdev))
 		env->ccx_watchdog_result |= RTW89_PHY_ENV_MON_IFS_CLM;
 
@@ -3807,7 +3800,7 @@ static void rtw89_physts_parsing_init(struct rtw89_dev *rtwdev)
 	rtw89_physts_enable_ie_bitmap(rtwdev, RTW89_HE_PKT,
 				      RTW89_PHYSTS_IE13_DL_MU_DEF, true);
 
-	/* force IE01 for channel index, only channel field is valid */
+	 
 	rtw89_physts_enable_ie_bitmap(rtwdev, RTW89_CCK_PKT,
 				      RTW89_PHYSTS_IE01_CMN_OFDM, true);
 }
@@ -4394,7 +4387,7 @@ static void rtw89_phy_antdiv_decision_state(struct rtw89_dev *rtwdev)
 		no_change = true;
 
 	if (no_change) {
-		/* swap back from training antenna to original */
+		 
 		rtw89_phy_swap_hal_antenna(rtwdev);
 		return;
 	}

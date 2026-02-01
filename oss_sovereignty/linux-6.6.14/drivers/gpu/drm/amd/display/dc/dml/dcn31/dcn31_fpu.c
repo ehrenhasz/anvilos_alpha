@@ -1,27 +1,4 @@
-/*
- * Copyright 2019-2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "resource.h"
 #include "clk_mgr.h"
@@ -32,26 +9,7 @@
 #include "dml/dcn20/dcn20_fpu.h"
 #include "dcn31_fpu.h"
 
-/**
- * DOC: DCN31x FPU manipulation Overview
- *
- * The DCN architecture relies on FPU operations, which require special
- * compilation flags and the use of kernel_fpu_begin/end functions; ideally, we
- * want to avoid spreading FPU access across multiple files. With this idea in
- * mind, this file aims to centralize all DCN3.1.x functions that require FPU
- * access in a single place. Code in this file follows the following code
- * pattern:
- *
- * 1. Functions that use FPU operations should be isolated in static functions.
- * 2. The FPU functions should have the noinline attribute to ensure anything
- *    that deals with FP register is contained within this call.
- * 3. All function that needs to be accessed outside this file requires a
- *    public interface that not uses any FPU reference.
- * 4. Developers **must not** use DC_FP_START/END in this file, but they need
- *    to ensure that the caller invokes it before access any function available
- *    in this file. For this reason, public functions in this file must invoke
- *    dc_assert_fp_enabled();
- */
+ 
 
 struct _vcs_dpi_ip_params_st dcn3_1_ip = {
 	.gpuvm_enable = 1,
@@ -118,7 +76,7 @@ struct _vcs_dpi_ip_params_st dcn3_1_ip = {
 };
 
 static struct _vcs_dpi_soc_bounding_box_st dcn3_1_soc = {
-		/*TODO: correct dispclk/dppclk voltage level determination*/
+		 
 	.clock_limits = {
 		{
 			.state = 0,
@@ -361,7 +319,7 @@ struct _vcs_dpi_ip_params_st dcn3_16_ip = {
 };
 
 static struct _vcs_dpi_soc_bounding_box_st dcn3_16_soc = {
-		/*TODO: correct dispclk/dppclk voltage level determination*/
+		 
 	.clock_limits = {
 		{
 			.state = 0,
@@ -465,7 +423,7 @@ void dcn315_update_soc_for_wm_a(struct dc *dc, struct dc_state *context)
 	dc_assert_fp_enabled();
 
 	if (dc->clk_mgr->bw_params->wm_table.entries[WM_A].valid) {
-		/* For 315 pstate change is only supported if possible in vactive */
+		 
 		if (context->bw_ctx.dml.vba.DRAMClockChangeSupport[context->bw_ctx.dml.vba.VoltageLevel][context->bw_ctx.dml.vba.maxMpcComb] != dm_dram_clock_change_vactive)
 			context->bw_ctx.dml.soc.dram_clock_change_latency_us = context->bw_ctx.dml.soc.dummy_pstate_latency_us;
 		else
@@ -491,12 +449,9 @@ void dcn31_calculate_wm_and_dlg_fp(
 	if (context->bw_ctx.dml.soc.min_dcfclk > dcfclk)
 		dcfclk = context->bw_ctx.dml.soc.min_dcfclk;
 
-	/* We don't recalculate clocks for 0 pipe configs, which can block
-	 * S0i3 as high clocks will block low power states
-	 * Override any clocks that can block S0i3 to min here
-	 */
+	 
 	if (pipe_cnt == 0) {
-		context->bw_ctx.bw.dcn.clk.dcfclk_khz = dcfclk; // always should be vlevel 0
+		context->bw_ctx.bw.dcn.clk.dcfclk_khz = dcfclk;  
 		return;
 	}
 
@@ -504,11 +459,7 @@ void dcn31_calculate_wm_and_dlg_fp(
 	pipes[0].clks_cfg.dcfclk_mhz = dcfclk;
 	pipes[0].clks_cfg.socclk_mhz = context->bw_ctx.dml.soc.clock_limits[vlevel].socclk_mhz;
 
-	/* Set A:
-	 * All clocks min required
-	 *
-	 * Set A calculated last so that following calculations are based on Set A
-	 */
+	 
 	dc->res_pool->funcs->update_soc_for_wm_a(dc, context);
 	context->bw_ctx.bw.dcn.watermarks.a.urgent_ns = get_wm_urgent(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
 	context->bw_ctx.bw.dcn.watermarks.a.cstate_pstate.cstate_enter_plus_exit_ns = get_wm_stutter_enter_exit(&context->bw_ctx.dml, pipes, pipe_cnt) * 1000;
@@ -547,10 +498,10 @@ void dcn31_calculate_wm_and_dlg_fp(
 	}
 
 	dcn20_calculate_dlg_params(dc, context, pipes, pipe_cnt, vlevel);
-	/* For 31x apu pstate change is only supported if possible in vactive*/
+	 
 	context->bw_ctx.bw.dcn.clk.p_state_change_support =
 			context->bw_ctx.dml.vba.DRAMClockChangeSupport[vlevel][context->bw_ctx.dml.vba.maxMpcComb] == dm_dram_clock_change_vactive;
-	/* If DCN isn't making memory requests we can allow pstate change and lower clocks */
+	 
 	if (!active_hubp_count) {
 		context->bw_ctx.bw.dcn.clk.socclk_khz = 0;
 		context->bw_ctx.bw.dcn.clk.dppclk_khz = 0;
@@ -589,14 +540,14 @@ void dcn31_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params
 
 	memcpy(s, dcn3_1_soc.clock_limits, sizeof(dcn3_1_soc.clock_limits));
 
-	// Default clock levels are used for diags, which may lead to overclocking.
+	
 	dcn3_1_ip.max_num_otg = dc->res_pool->res_cap->num_timing_generator;
 	dcn3_1_ip.max_num_dpp = dc->res_pool->pipe_count;
 	dcn3_1_soc.num_chans = bw_params->num_channels;
 
 	ASSERT(clk_table->num_entries);
 
-	/* Prepass to find max clocks independent of voltage level. */
+	 
 	for (i = 0; i < clk_table->num_entries; ++i) {
 		if (clk_table->entries[i].dispclk_mhz > max_dispclk_mhz)
 			max_dispclk_mhz = clk_table->entries[i].dispclk_mhz;
@@ -605,7 +556,7 @@ void dcn31_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params
 	}
 
 	for (i = 0; i < clk_table->num_entries; i++) {
-		/* loop backwards*/
+		 
 		for (closest_clk_lvl = 0, j = dcn3_1_soc.num_states - 1; j >= 0; j--) {
 			if ((unsigned int) dcn3_1_soc.clock_limits[j].dcfclk_mhz <= clk_table->entries[i].dcfclk_mhz) {
 				closest_clk_lvl = j;
@@ -615,14 +566,14 @@ void dcn31_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_params
 
 		s[i].state = i;
 
-		/* Clocks dependent on voltage level. */
+		 
 		s[i].dcfclk_mhz = clk_table->entries[i].dcfclk_mhz;
 		s[i].fabricclk_mhz = clk_table->entries[i].fclk_mhz;
 		s[i].socclk_mhz = clk_table->entries[i].socclk_mhz;
 		s[i].dram_speed_mts = clk_table->entries[i].memclk_mhz *
 			2 * clk_table->entries[i].wck_ratio;
 
-		/* Clocks independent of voltage level. */
+		 
 		s[i].dispclk_mhz = max_dispclk_mhz ? max_dispclk_mhz :
 			dcn3_1_soc.clock_limits[closest_clk_lvl].dispclk_mhz;
 
@@ -672,7 +623,7 @@ void dcn315_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_param
 
 	ASSERT(clk_table->num_entries);
 
-	/* Setup soc to always use max dispclk/dppclk to avoid odm-to-lower-voltage */
+	 
 	for (i = 0; i < clk_table->num_entries; ++i) {
 		if (clk_table->entries[i].dispclk_mhz > max_dispclk_mhz)
 			max_dispclk_mhz = clk_table->entries[i].dispclk_mhz;
@@ -683,18 +634,18 @@ void dcn315_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_param
 	for (i = 0; i < clk_table->num_entries; i++) {
 		dcn3_15_soc.clock_limits[i].state = i;
 
-		/* Clocks dependent on voltage level. */
+		 
 		dcn3_15_soc.clock_limits[i].dcfclk_mhz = clk_table->entries[i].dcfclk_mhz;
 		dcn3_15_soc.clock_limits[i].fabricclk_mhz = clk_table->entries[i].fclk_mhz;
 		dcn3_15_soc.clock_limits[i].socclk_mhz = clk_table->entries[i].socclk_mhz;
 		dcn3_15_soc.clock_limits[i].dram_speed_mts = clk_table->entries[i].memclk_mhz * 2 * clk_table->entries[i].wck_ratio;
 
-		/* These aren't actually read from smu, but rather set in clk_mgr defaults */
+		 
 		dcn3_15_soc.clock_limits[i].dtbclk_mhz = clk_table->entries[i].dtbclk_mhz;
 		dcn3_15_soc.clock_limits[i].phyclk_d18_mhz = clk_table->entries[i].phyclk_d18_mhz;
 		dcn3_15_soc.clock_limits[i].phyclk_mhz = clk_table->entries[i].phyclk_mhz;
 
-		/* Clocks independent of voltage level. */
+		 
 		dcn3_15_soc.clock_limits[i].dispclk_mhz = max_dispclk_mhz;
 		dcn3_15_soc.clock_limits[i].dppclk_mhz = max_dppclk_mhz;
 		dcn3_15_soc.clock_limits[i].dscclk_mhz = max_dispclk_mhz / 3.0;
@@ -702,9 +653,7 @@ void dcn315_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_param
 	dcn3_15_soc.num_states = clk_table->num_entries;
 
 
-	/* Set vco to max_dispclk * 2 to make sure the highest dispclk is always available for dml calcs,
-	 * no impact outside of dml validation
-	 */
+	 
 	dcn3_15_soc.dispclk_dppclk_vco_speed_mhz = max_dispclk_mhz * 2;
 
 	if ((int)(dcn3_15_soc.dram_clock_change_latency_us * 1000)
@@ -728,14 +677,14 @@ void dcn316_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_param
 
 	memcpy(s, dcn3_16_soc.clock_limits, sizeof(dcn3_16_soc.clock_limits));
 
-	// Default clock levels are used for diags, which may lead to overclocking.
+	 
 	dcn3_16_ip.max_num_otg = dc->res_pool->res_cap->num_timing_generator;
 	dcn3_16_ip.max_num_dpp = dc->res_pool->pipe_count;
 	dcn3_16_soc.num_chans = bw_params->num_channels;
 
 	ASSERT(clk_table->num_entries);
 
-	/* Prepass to find max clocks independent of voltage level. */
+	 
 	for (i = 0; i < clk_table->num_entries; ++i) {
 		if (clk_table->entries[i].dispclk_mhz > max_dispclk_mhz)
 			max_dispclk_mhz = clk_table->entries[i].dispclk_mhz;
@@ -744,7 +693,7 @@ void dcn316_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_param
 	}
 
 	for (i = 0; i < clk_table->num_entries; i++) {
-		/* loop backwards*/
+		 
 		for (closest_clk_lvl = 0, j = dcn3_16_soc.num_states - 1; j >= 0; j--) {
 			if ((unsigned int) dcn3_16_soc.clock_limits[j].dcfclk_mhz <=
 			    clk_table->entries[i].dcfclk_mhz) {
@@ -752,20 +701,20 @@ void dcn316_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_param
 				break;
 			}
 		}
-		// Ported from DCN315
+		 
 		if (clk_table->num_entries == 1) {
-			/*smu gives one DPM level, let's take the highest one*/
+			 
 			closest_clk_lvl = dcn3_16_soc.num_states - 1;
 		}
 
 		s[i].state = i;
 
-		/* Clocks dependent on voltage level. */
+		 
 		s[i].dcfclk_mhz = clk_table->entries[i].dcfclk_mhz;
 		if (clk_table->num_entries == 1 &&
 		    s[i].dcfclk_mhz <
 		    dcn3_16_soc.clock_limits[closest_clk_lvl].dcfclk_mhz) {
-			/*SMU fix not released yet*/
+			 
 			s[i].dcfclk_mhz =
 				dcn3_16_soc.clock_limits[closest_clk_lvl].dcfclk_mhz;
 		}
@@ -774,7 +723,7 @@ void dcn316_update_bw_bounding_box(struct dc *dc, struct clk_bw_params *bw_param
 		s[i].dram_speed_mts = clk_table->entries[i].memclk_mhz *
 			2 * clk_table->entries[i].wck_ratio;
 
-		/* Clocks independent of voltage level. */
+		 
 		s[i].dispclk_mhz = max_dispclk_mhz ? max_dispclk_mhz :
 			dcn3_16_soc.clock_limits[closest_clk_lvl].dispclk_mhz;
 
@@ -817,9 +766,7 @@ int dcn_get_approx_det_segs_required_for_pstate(
 		struct _vcs_dpi_soc_bounding_box_st *soc,
 		int pix_clk_100hz, int bpp, int seg_size_kb)
 {
-	/* Roughly calculate required crb to hide latency. In practice there is slightly
-	 * more buffer available for latency hiding
-	 */
+	 
 	return (int)(soc->dram_clock_change_latency_us * pix_clk_100hz * bpp
 					/ 10240000 + seg_size_kb - 1) /	seg_size_kb;
 }

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 STMicroelectronics
- *
- * Power off Restart driver, used in STMicroelectronics devices.
- *
- * Author: Christophe Kerello <christophe.kerello@st.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -17,15 +11,15 @@
 
 struct reset_syscfg {
 	struct regmap *regmap;
-	/* syscfg used for reset */
+	 
 	unsigned int offset_rst;
 	unsigned int mask_rst;
-	/* syscfg used for unmask the reset */
+	 
 	unsigned int offset_rst_msk;
 	unsigned int mask_rst_msk;
 };
 
-/* STiH407 */
+ 
 #define STIH407_SYSCFG_4000	0x0
 #define STIH407_SYSCFG_4008	0x20
 
@@ -42,13 +36,13 @@ static struct reset_syscfg *st_restart_syscfg;
 static int st_restart(struct notifier_block *this, unsigned long mode,
 		      void *cmd)
 {
-	/* reset syscfg updated */
+	 
 	regmap_update_bits(st_restart_syscfg->regmap,
 			   st_restart_syscfg->offset_rst,
 			   st_restart_syscfg->mask_rst,
 			   0);
 
-	/* unmask the reset */
+	 
 	regmap_update_bits(st_restart_syscfg->regmap,
 			   st_restart_syscfg->offset_rst_msk,
 			   st_restart_syscfg->mask_rst_msk,

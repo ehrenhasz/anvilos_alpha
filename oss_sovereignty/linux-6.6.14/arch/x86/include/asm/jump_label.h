@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_JUMP_LABEL_H
 #define _ASM_X86_JUMP_LABEL_H
 
@@ -34,7 +34,7 @@ l_yes:
 	return true;
 }
 
-#else /* !CONFIG_HAVE_JUMP_LABEL_HACK */
+#else  
 
 static __always_inline bool arch_static_branch(struct static_key * const key, const bool branch)
 {
@@ -48,7 +48,7 @@ l_yes:
 	return true;
 }
 
-#endif /* CONFIG_HAVE_JUMP_LABEL_HACK */
+#endif  
 
 static __always_inline bool arch_static_branch_jump(struct static_key * const key, const bool branch)
 {
@@ -64,6 +64,6 @@ l_yes:
 
 extern int arch_jump_entry_size(struct jump_entry *entry);
 
-#endif	/* __ASSEMBLY__ */
+#endif	 
 
 #endif

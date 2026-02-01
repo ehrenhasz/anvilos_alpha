@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ads7828.c - driver for TI ADS7828 8-channel A/D converter and compatibles
- * (C) 2007 EADS Astrium
- *
- * This driver is based on the lm75 and other lm_sensors/hwmon drivers
- *
- * Written by Steve Hardy <shardy@redhat.com>
- *
- * ADS7830 support, by Guillaume Roguez <guillaume.roguez@savoirfairelinux.com>
- *
- * For further information, see the Documentation/hwmon/ads7828.rst file.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -24,31 +13,31 @@
 #include <linux/slab.h>
 #include <linux/regulator/consumer.h>
 
-/* The ADS7828 registers */
-#define ADS7828_CMD_SD_SE	0x80	/* Single ended inputs */
-#define ADS7828_CMD_PD1		0x04	/* Internal vref OFF && A/D ON */
-#define ADS7828_CMD_PD3		0x0C	/* Internal vref ON && A/D ON */
-#define ADS7828_INT_VREF_MV	2500	/* Internal vref is 2.5V, 2500mV */
-#define ADS7828_EXT_VREF_MV_MIN	50	/* External vref min value 0.05V */
-#define ADS7828_EXT_VREF_MV_MAX	5250	/* External vref max value 5.25V */
+ 
+#define ADS7828_CMD_SD_SE	0x80	 
+#define ADS7828_CMD_PD1		0x04	 
+#define ADS7828_CMD_PD3		0x0C	 
+#define ADS7828_INT_VREF_MV	2500	 
+#define ADS7828_EXT_VREF_MV_MIN	50	 
+#define ADS7828_EXT_VREF_MV_MAX	5250	 
 
-/* List of supported devices */
+ 
 enum ads7828_chips { ads7828, ads7830 };
 
-/* Client specific data */
+ 
 struct ads7828_data {
 	struct regmap *regmap;
-	u8 cmd_byte;			/* Command byte without channel bits */
-	unsigned int lsb_resol;		/* Resolution of the ADC sample LSB */
+	u8 cmd_byte;			 
+	unsigned int lsb_resol;		 
 };
 
-/* Command byte C2,C1,C0 - see datasheet */
+ 
 static inline u8 ads7828_cmd_byte(u8 cmd, int ch)
 {
 	return cmd | (((ch >> 1) | (ch & 0x01) << 2) << 4);
 }
 
-/* sysfs callback function */
+ 
 static ssize_t ads7828_in_show(struct device *dev,
 			       struct device_attribute *da, char *buf)
 {
@@ -143,11 +132,11 @@ static int ads7828_probe(struct i2c_client *client)
 	else
 		chip = i2c_match_id(ads7828_device_ids, client)->driver_data;
 
-	/* Bound Vref with min/max values */
+	 
 	vref_mv = clamp_val(vref_mv, ADS7828_EXT_VREF_MV_MIN,
 			    ADS7828_EXT_VREF_MV_MAX);
 
-	/* ADS7828 uses 12-bit samples, while ADS7830 is 8-bit */
+	 
 	if (chip == ads7828) {
 		data->lsb_resol = DIV_ROUND_CLOSEST(vref_mv * 1000, 4096);
 		data->regmap = devm_regmap_init_i2c(client,
@@ -165,12 +154,7 @@ static int ads7828_probe(struct i2c_client *client)
 	if (!diff_input)
 		data->cmd_byte |= ADS7828_CMD_SD_SE;
 
-	/*
-	 * Datasheet specifies internal reference voltage is disabled by
-	 * default. The internal reference voltage needs to be enabled and
-	 * voltage needs to settle before getting valid ADC data. So perform a
-	 * dummy read to enable the internal reference voltage.
-	 */
+	 
 	if (!ext_vref)
 		regmap_read(data->regmap, data->cmd_byte, &regval);
 

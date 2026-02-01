@@ -1,21 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more
- * details.
- **********************************************************************/
+ 
 #include <linux/pci.h>
 #include <linux/netdevice.h>
 #include <linux/vmalloc.h>
@@ -40,10 +23,10 @@ static void  __check_db_timeout(struct octeon_device *oct, u64 iq_no);
 
 static void (*reqtype_free_fn[MAX_OCTEON_DEVICES][REQTYPE_LAST + 1]) (void *);
 
-/* Define this to return the request status comaptible to old code */
-/*#define OCTEON_USE_OLD_REQ_STATUS*/
+ 
+ 
 
-/* Return 0 on success, 1 on failure */
+ 
 int octeon_init_instr_queue(struct octeon_device *oct,
 			    union oct_txpciq txpciq,
 			    u32 num_descs)
@@ -83,9 +66,7 @@ int octeon_init_instr_queue(struct octeon_device *oct,
 
 	iq->max_count = num_descs;
 
-	/* Initialize a list to holds requests that have been posted to Octeon
-	 * but has yet to be fetched by octeon
-	 */
+	 
 	iq->request_list = vzalloc_node(array_size(num_descs, sizeof(*iq->request_list)),
 					numa_node);
 	if (!iq->request_list)
@@ -112,7 +93,7 @@ int octeon_init_instr_queue(struct octeon_device *oct,
 	atomic_set(&iq->instr_pending, 0);
 	iq->pkts_processed = 0;
 
-	/* Initialize the spinlock for this instruction queue */
+	 
 	spin_lock_init(&iq->lock);
 	if (iq_no == 0) {
 		iq->allow_soft_cmds = true;
@@ -125,7 +106,7 @@ int octeon_init_instr_queue(struct octeon_device *oct,
 
 	oct->io_qmask.iq |= BIT_ULL(iq_no);
 
-	/* Set the 32B/64B mode for each input queue */
+	 
 	oct->io_qmask.iq64B |= ((conf->instr_type == 64) << iq_no);
 	iq->iqcmd_64B = (conf->instr_type == 64);
 
@@ -187,7 +168,7 @@ int octeon_delete_instr_queue(struct octeon_device *oct, u32 iq_no)
 }
 EXPORT_SYMBOL_GPL(octeon_delete_instr_queue);
 
-/* Return 0 on success, 1 on failure */
+ 
 int octeon_setup_iq(struct octeon_device *oct,
 		    int ifidx,
 		    int q_index,
@@ -266,7 +247,7 @@ ring_doorbell(struct octeon_device *oct, struct octeon_instr_queue *iq)
 {
 	if (atomic_read(&oct->status) == OCT_DEV_RUNNING) {
 		writel(iq->fill_cnt, iq->doorbell_reg);
-		/* make sure doorbell write goes through */
+		 
 		iq->fill_cnt = 0;
 		iq->last_db_time = jiffies;
 		return;
@@ -304,9 +285,7 @@ __post_command2(struct octeon_instr_queue *iq, u8 *cmd)
 
 	st.status = IQ_SEND_OK;
 
-	/* This ensures that the read index does not wrap around to the same
-	 * position if queue gets full before Octeon could fetch any instr.
-	 */
+	 
 	if (atomic_read(&iq->instr_pending) >= (s32)(iq->max_count - 1)) {
 		st.status = IQ_SEND_FAILED;
 		st.index = -1;
@@ -318,15 +297,13 @@ __post_command2(struct octeon_instr_queue *iq, u8 *cmd)
 
 	__copy_cmd_into_iq(iq, cmd);
 
-	/* "index" is returned, host_write_index is modified. */
+	 
 	st.index = iq->host_write_index;
 	iq->host_write_index = incr_index(iq->host_write_index, 1,
 					  iq->max_count);
 	iq->fill_cnt++;
 
-	/* Flush the command into memory. We need to be sure the data is in
-	 * memory before indicating that the instruction is pending.
-	 */
+	 
 	wmb();
 
 	atomic_inc(&iq->instr_pending);
@@ -358,7 +335,7 @@ __add_to_request_list(struct octeon_instr_queue *iq,
 	iq->request_list[idx].reqtype = reqtype;
 }
 
-/* Can only run in process context */
+ 
 int
 lio_process_iq_request_list(struct octeon_device *oct,
 			    struct octeon_instr_queue *iq, u32 napi_budget)
@@ -391,12 +368,7 @@ lio_process_iq_request_list(struct octeon_device *oct,
 		case REQTYPE_RESP_NET:
 		case REQTYPE_SOFT_COMMAND:
 			sc = buf;
-			/* We're expecting a response from Octeon.
-			 * It's up to lio_process_ordered_list() to
-			 * process  sc. Add sc to the ordered soft
-			 * command response list because we expect
-			 * a response from Octeon.
-			 */
+			 
 			spin_lock_irqsave(&oct->response_list
 					  [OCTEON_ORDERED_SC_LIST].lock, flags);
 			atomic_inc(&oct->response_list
@@ -436,7 +408,7 @@ lio_process_iq_request_list(struct octeon_device *oct,
 }
 EXPORT_SYMBOL_GPL(lio_process_iq_request_list);
 
-/* Can only be called from process context */
+ 
 int
 octeon_flush_iq(struct octeon_device *oct, struct octeon_instr_queue *iq,
 		u32 napi_budget)
@@ -453,7 +425,7 @@ octeon_flush_iq(struct octeon_device *oct, struct octeon_instr_queue *iq,
 	iq->octeon_read_index = oct->fn_list.update_iq_read_idx(iq);
 
 	do {
-		/* Process any outstanding IQ packets. */
+		 
 		if (iq->flush_index == iq->octeon_read_index)
 			break;
 
@@ -487,9 +459,7 @@ octeon_flush_iq(struct octeon_device *oct, struct octeon_instr_queue *iq,
 	return tx_done;
 }
 
-/* Process instruction queue after timeout.
- * This routine gets called from a workqueue or when removing the module.
- */
+ 
 static void __check_db_timeout(struct octeon_device *oct, u64 iq_no)
 {
 	struct octeon_instr_queue *iq;
@@ -502,24 +472,22 @@ static void __check_db_timeout(struct octeon_device *oct, u64 iq_no)
 	if (!iq)
 		return;
 
-	/* return immediately, if no work pending */
+	 
 	if (!atomic_read(&iq->instr_pending))
 		return;
-	/* If jiffies - last_db_time < db_timeout do nothing  */
+	 
 	next_time = iq->last_db_time + iq->db_timeout;
 	if (!time_after(jiffies, (unsigned long)next_time))
 		return;
 	iq->last_db_time = jiffies;
 
-	/* Flush the instruction queue */
+	 
 	octeon_flush_iq(oct, iq, 0);
 
 	lio_enable_irq(NULL, iq);
 }
 
-/* Called by the Poll thread at regular intervals to check the instruction
- * queue for commands to be posted and for commands that were fetched by Octeon.
- */
+ 
 static void check_db_timeout(struct work_struct *work)
 {
 	struct cavium_wk *wk = (struct cavium_wk *)work;
@@ -541,9 +509,7 @@ octeon_send_command(struct octeon_device *oct, u32 iq_no,
 	struct iq_post_status st;
 	struct octeon_instr_queue *iq = oct->instr_queue[iq_no];
 
-	/* Get the lock and prevent other tasks and tx interrupt handler from
-	 * running.
-	 */
+	 
 	if (iq->allow_soft_cmds)
 		spin_lock_bh(&iq->post_lock);
 
@@ -565,9 +531,7 @@ octeon_send_command(struct octeon_device *oct, u32 iq_no,
 	if (iq->allow_soft_cmds)
 		spin_unlock_bh(&iq->post_lock);
 
-	/* This is only done here to expedite packets being flushed
-	 * for cases where there are no IQ completion interrupts.
-	 */
+	 
 
 	return st.status;
 }
@@ -622,7 +586,7 @@ octeon_prepare_soft_command(struct octeon_device *oct,
 		irh->opcode    = opcode;
 		irh->subcode   = subcode;
 
-		/* opcode/subcode specific parameters (ossp) */
+		 
 		irh->ossp       = irh_ossp;
 		sc->cmd.cmd3.ossp[0] = ossp0;
 		sc->cmd.cmd3.ossp[1] = ossp1;
@@ -633,13 +597,13 @@ octeon_prepare_soft_command(struct octeon_device *oct,
 			rdp->rlen      = sc->rdatasize;
 
 			irh->rflag =  1;
-			/*PKI IH3*/
-			/* pki_ih3 irh+ossp[0]+ossp[1]+rdp+rptr = 48 bytes */
+			 
+			 
 			ih3->fsz    = LIO_SOFTCMDRESP_IH3;
 		} else {
 			irh->rflag =  0;
-			/*PKI IH3*/
-			/* pki_h3 + irh + ossp[0] + ossp[1] = 32 bytes */
+			 
+			 
 			ih3->fsz    = LIO_PCICMD_O3;
 		}
 
@@ -659,7 +623,7 @@ octeon_prepare_soft_command(struct octeon_device *oct,
 		irh->opcode    = opcode;
 		irh->subcode   = subcode;
 
-		/* opcode/subcode specific parameters (ossp) */
+		 
 		irh->ossp       = irh_ossp;
 		sc->cmd.cmd2.ossp[0] = ossp0;
 		sc->cmd.cmd2.ossp[1] = ossp1;
@@ -670,11 +634,11 @@ octeon_prepare_soft_command(struct octeon_device *oct,
 			rdp->rlen      = sc->rdatasize;
 
 			irh->rflag =  1;
-			/* irh+ossp[0]+ossp[1]+rdp+rptr = 40 bytes */
+			 
 			ih2->fsz   = LIO_SOFTCMDRESP_IH2;
 		} else {
 			irh->rflag =  0;
-			/* irh + ossp[0] + ossp[1] = 24 bytes */
+			 
 			ih2->fsz   = LIO_PCICMD_O2;
 		}
 	}
@@ -770,7 +734,7 @@ int octeon_free_sc_done_list(struct octeon_device *oct)
 	struct octeon_response_list *done_sc_list, *zombie_sc_list;
 	struct octeon_soft_command *sc;
 	struct list_head *tmp, *tmp2;
-	spinlock_t *sc_lists_lock; /* lock for response_list */
+	spinlock_t *sc_lists_lock;  
 
 	done_sc_list = &oct->response_list[OCTEON_DONE_SC_LIST];
 	zombie_sc_list = &oct->response_list[OCTEON_ZOMBIE_SC_LIST];
@@ -790,7 +754,7 @@ int octeon_free_sc_done_list(struct octeon_device *oct)
 			atomic_dec(&done_sc_list->pending_req_count);
 
 			if (*sc->status_word == COMPLETION_WORD_INIT) {
-				/* timeout; move sc to zombie list */
+				 
 				list_add_tail(&sc->node, &zombie_sc_list->head);
 				atomic_inc(&zombie_sc_list->pending_req_count);
 			} else {
@@ -810,7 +774,7 @@ int octeon_free_sc_zombie_list(struct octeon_device *oct)
 	struct octeon_response_list *zombie_sc_list;
 	struct octeon_soft_command *sc;
 	struct list_head *tmp, *tmp2;
-	spinlock_t *sc_lists_lock; /* lock for response_list */
+	spinlock_t *sc_lists_lock;  
 
 	zombie_sc_list = &oct->response_list[OCTEON_ZOMBIE_SC_LIST];
 	sc_lists_lock = &oct->response_list[OCTEON_ORDERED_SC_LIST].lock;
@@ -903,7 +867,7 @@ struct octeon_soft_command *octeon_alloc_soft_command(struct octeon_device *oct,
 		sc->ctxsize = ctxsize;
 	}
 
-	/* Start data at 128 byte boundary */
+	 
 	offset = (offset + ctxsize + 127) & 0xffffff80;
 
 	if (datasize) {
@@ -912,7 +876,7 @@ struct octeon_soft_command *octeon_alloc_soft_command(struct octeon_device *oct,
 		sc->datasize = datasize;
 	}
 
-	/* Start rdata at 128 byte boundary */
+	 
 	offset = (offset + datasize + 127) & 0xffffff80;
 
 	if (rdatasize) {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ov5695 driver
- *
- * Copyright (C) 2017 Fuzhou Rockchip Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -23,7 +19,7 @@
 #define V4L2_CID_DIGITAL_GAIN		V4L2_CID_GAIN
 #endif
 
-/* 45Mhz * 4 Binning */
+ 
 #define OV5695_PIXEL_RATE		(45 * 1000 * 1000 * 4)
 #define OV5695_XVCLK_FREQ		24000000
 
@@ -70,9 +66,9 @@
 #define OV5695_BITS_PER_SAMPLE		10
 
 static const char * const ov5695_supply_names[] = {
-	"avdd",		/* Analog power */
-	"dovdd",	/* Digital I/O power */
-	"dvdd",		/* Digital core power */
+	"avdd",		 
+	"dovdd",	 
+	"dvdd",		 
 };
 
 #define OV5695_NUM_SUPPLIES ARRAY_SIZE(ov5695_supply_names)
@@ -114,16 +110,7 @@ struct ov5695 {
 
 #define to_ov5695(sd) container_of(sd, struct ov5695, subdev)
 
-/*
- * Xclk 24Mhz
- * Pclk 45Mhz
- * linelength 672(0x2a0)
- * framelength 2232(0x8b8)
- * grabwindow_width 1296
- * grabwindow_height 972
- * max_framerate 30fps
- * mipi_datarate per lane 840Mbps
- */
+ 
 static const struct regval ov5695_global_regs[] = {
 	{0x0103, 0x01},
 	{0x0100, 0x00},
@@ -289,16 +276,7 @@ static const struct regval ov5695_global_regs[] = {
 	{REG_NULL, 0x00},
 };
 
-/*
- * Xclk 24Mhz
- * Pclk 45Mhz
- * linelength 740(0x2e4)
- * framelength 2024(0x7e8)
- * grabwindow_width 2592
- * grabwindow_height 1944
- * max_framerate 30fps
- * mipi_datarate per lane 840Mbps
- */
+ 
 static const struct regval ov5695_2592x1944_regs[] = {
 	{0x3501, 0x7e},
 	{0x366e, 0x18},
@@ -331,16 +309,7 @@ static const struct regval ov5695_2592x1944_regs[] = {
 	{REG_NULL, 0x00},
 };
 
-/*
- * Xclk 24Mhz
- * Pclk 45Mhz
- * linelength 672(0x2a0)
- * framelength 2232(0x8b8)
- * grabwindow_width 1920
- * grabwindow_height 1080
- * max_framerate 30fps
- * mipi_datarate per lane 840Mbps
- */
+ 
 static const struct regval ov5695_1920x1080_regs[] = {
 	{0x3501, 0x45},
 	{0x366e, 0x18},
@@ -373,16 +342,7 @@ static const struct regval ov5695_1920x1080_regs[] = {
 	{REG_NULL, 0x00}
 };
 
-/*
- * Xclk 24Mhz
- * Pclk 45Mhz
- * linelength 740(0x02e4)
- * framelength 1012(0x03f4)
- * grabwindow_width 1296
- * grabwindow_height 972
- * max_framerate 60fps
- * mipi_datarate per lane 840Mbps
- */
+ 
 static const struct regval ov5695_1296x972_regs[] = {
 	{0x0103, 0x01},
 	{0x0100, 0x00},
@@ -556,16 +516,7 @@ static const struct regval ov5695_1296x972_regs[] = {
 	{REG_NULL, 0x00}
 };
 
-/*
- * Xclk 24Mhz
- * Pclk 45Mhz
- * linelength 672(0x2a0)
- * framelength 2232(0x8b8)
- * grabwindow_width 1280
- * grabwindow_height 720
- * max_framerate 30fps
- * mipi_datarate per lane 840Mbps
- */
+ 
 static const struct regval ov5695_1280x720_regs[] = {
 	{0x3501, 0x45},
 	{0x366e, 0x0c},
@@ -598,16 +549,7 @@ static const struct regval ov5695_1280x720_regs[] = {
 	{REG_NULL, 0x00}
 };
 
-/*
- * Xclk 24Mhz
- * Pclk 45Mhz
- * linelength 672(0x2a0)
- * framelength 558(0x22e)
- * grabwindow_width 640
- * grabwindow_height 480
- * max_framerate 120fps
- * mipi_datarate per lane 840Mbps
- */
+ 
 static const struct regval ov5695_640x480_regs[] = {
 	{0x3501, 0x22},
 	{0x366e, 0x0c},
@@ -701,7 +643,7 @@ static const char * const ov5695_test_pattern_menu[] = {
 	"Vertical Color Bar Type 4"
 };
 
-/* Write registers up to 4 at a time */
+ 
 static int ov5695_write_reg(struct i2c_client *client, u16 reg,
 			    u32 len, u32 val)
 {
@@ -743,7 +685,7 @@ static int ov5695_write_array(struct i2c_client *client,
 	return ret;
 }
 
-/* Read registers up to 4 at a time */
+ 
 static int ov5695_read_reg(struct i2c_client *client, u16 reg, unsigned int len,
 			   u32 *val)
 {
@@ -757,13 +699,13 @@ static int ov5695_read_reg(struct i2c_client *client, u16 reg, unsigned int len,
 		return -EINVAL;
 
 	data_be_p = (u8 *)&data_be;
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = 2;
 	msgs[0].buf = (u8 *)&reg_addr_be;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -920,7 +862,7 @@ static int __ov5695_start_stream(struct ov5695 *ov5695)
 	if (ret)
 		return ret;
 
-	/* In case these controls are set before streaming */
+	 
 	ret = __v4l2_ctrl_handler_setup(&ov5695->ctrl_handler);
 	if (ret)
 		return ret;
@@ -983,10 +925,7 @@ static int __ov5695_power_on(struct ov5695 *ov5695)
 
 	gpiod_set_value_cansleep(ov5695->reset_gpio, 1);
 
-	/*
-	 * The hardware requires the regulators to be powered on in order,
-	 * so enable them one by one.
-	 */
+	 
 	for (i = 0; i < OV5695_NUM_SUPPLIES; i++) {
 		ret = regulator_enable(ov5695->supplies[i].consumer);
 		if (ret) {
@@ -1018,10 +957,7 @@ static void __ov5695_power_off(struct ov5695 *ov5695)
 	clk_disable_unprepare(ov5695->xvclk);
 	gpiod_set_value_cansleep(ov5695->reset_gpio, 1);
 
-	/*
-	 * The hardware requires the regulators to be powered off in order,
-	 * so disable them one by one.
-	 */
+	 
 	for (i = OV5695_NUM_SUPPLIES - 1; i >= 0; i--) {
 		ret = regulator_disable(ov5695->supplies[i].consumer);
 		if (ret)
@@ -1057,14 +993,14 @@ static int ov5695_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	const struct ov5695_mode *def_mode = &supported_modes[0];
 
 	mutex_lock(&ov5695->mutex);
-	/* Initialize try_fmt */
+	 
 	try_fmt->width = def_mode->width;
 	try_fmt->height = def_mode->height;
 	try_fmt->code = MEDIA_BUS_FMT_SBGGR10_1X10;
 	try_fmt->field = V4L2_FIELD_NONE;
 
 	mutex_unlock(&ov5695->mutex);
-	/* No crop or compose */
+	 
 
 	return 0;
 }
@@ -1105,10 +1041,10 @@ static int ov5695_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max;
 	int ret = 0;
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max = ov5695->cur_mode->height + ctrl->val - 4;
 		__v4l2_ctrl_modify_range(ov5695->exposure,
 					 ov5695->exposure->minimum, max,
@@ -1122,7 +1058,7 @@ static int ov5695_set_ctrl(struct v4l2_ctrl *ctrl)
 
 	switch (ctrl->id) {
 	case V4L2_CID_EXPOSURE:
-		/* 4 least significant bits of exposure are fractional part */
+		 
 		ret = ov5695_write_reg(ov5695->client, OV5695_REG_EXPOSURE,
 				       OV5695_REG_VALUE_24BIT, ctrl->val << 4);
 		break;
@@ -1208,7 +1144,7 @@ static int ov5695_initialize_controls(struct ov5695 *ov5695)
 				ANALOG_GAIN_MAX, ANALOG_GAIN_STEP,
 				ANALOG_GAIN_DEFAULT);
 
-	/* Digital gain */
+	 
 	ov5695->digi_gain = v4l2_ctrl_new_std(handler, &ov5695_ctrl_ops,
 				V4L2_CID_DIGITAL_GAIN, OV5695_DIGI_GAIN_MIN,
 				OV5695_DIGI_GAIN_MAX, OV5695_DIGI_GAIN_STEP,

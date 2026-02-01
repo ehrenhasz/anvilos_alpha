@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef SELFTEST_KVM_FLDS_EMULATION_H
 #define SELFTEST_KVM_FLDS_EMULATION_H
 
@@ -6,12 +6,7 @@
 
 #define FLDS_MEM_EAX ".byte 0xd9, 0x00"
 
-/*
- * flds is an instruction that the KVM instruction emulator is known not to
- * support. This can be used in guest code along with a mechanism to force
- * KVM to emulate the instruction (e.g. by providing an MMIO address) to
- * exercise emulation failures.
- */
+ 
 static inline void flds(uint64_t address)
 {
 	__asm__ __volatile__(FLDS_MEM_EAX :: "a"(address));
@@ -49,4 +44,4 @@ static inline void handle_flds_emulation_failure_exit(struct kvm_vcpu *vcpu)
 	vcpu_regs_set(vcpu, &regs);
 }
 
-#endif /* !SELFTEST_KVM_FLDS_EMULATION_H */
+#endif  

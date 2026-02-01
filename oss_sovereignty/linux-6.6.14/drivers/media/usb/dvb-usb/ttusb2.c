@@ -1,24 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* DVB USB compliant linux driver for Technotrend DVB USB boxes and clones
- * (e.g. Pinnacle 400e DVB-S USB2.0).
- *
- * The Pinnacle 400e uses the same protocol as the Technotrend USB1.1 boxes.
- *
- * TDA8263 + TDA10086
- *
- * I2C addresses:
- * 0x08 - LNBP21PD   - LNB power supply
- * 0x0e - TDA10086   - Demodulator
- * 0x50 - FX2 eeprom
- * 0x60 - TDA8263    - Tuner
- * 0x78 ???
- *
- * Copyright (c) 2002 Holger Waechtler <holger@convergence.de>
- * Copyright (c) 2003 Felix Domke <tmbinc@elitedvb.net>
- * Copyright (C) 2005-6 Patrick Boettcher <pb@linuxtv.org>
- *
- * see Documentation/driver-api/media/drivers/dvb-usb.rst for more information
- */
+
+ 
 #define DVB_USB_LOG_PREFIX "ttusb2"
 #include "dvb-usb.h"
 
@@ -30,10 +11,10 @@
 #include "tda10048.h"
 #include "tda827x.h"
 #include "lnbp21.h"
-/* CA */
+ 
 #include <media/dvb_ca_en50221.h>
 
-/* debug */
+ 
 static int dvb_usb_ttusb2_debug;
 #define deb_info(args...)   dprintk(dvb_usb_ttusb2_debug,0x01,args)
 module_param_named(debug,dvb_usb_ttusb2_debug, int, 0644);
@@ -116,11 +97,11 @@ static int ttusb2_msg(struct dvb_usb_device *d, u8 cmd,
 	return 0;
 }
 
-/* ci */
+ 
 static int tt3650_ci_msg(struct dvb_usb_device *d, u8 cmd, u8 *data, unsigned int write_len, unsigned int read_len)
 {
 	int ret;
-	u8 rx[60];/* (64 -4) */
+	u8 rx[60]; 
 	ret = ttusb2_msg(d, cmd, data, write_len, rx, read_len);
 	if (!ret)
 		memcpy(data, rx, read_len);
@@ -277,7 +258,7 @@ static int tt3650_ci_slot_reset(struct dvb_ca_en50221 *ca, int slot)
 
 	msleep(500);
 
-	buf[0] = 0; /* FTA */
+	buf[0] = 0;  
 
 	ret = tt3650_ci_msg(d, TT3650_CMD_CI_SET_VIDEO_PORT, buf, 1, 1);
 
@@ -352,8 +333,8 @@ static int tt3650_ci_init(struct dvb_usb_adapter *a)
 
 	ret = dvb_ca_en50221_init(&a->dvb_adap,
 				  &state->ca,
-				  /* flags */ 0,
-				  /* n_slots */ 1);
+				    0,
+				    1);
 	if (ret) {
 		err("Cannot initialize CI: Error %d.", ret);
 		memset(&state->ca, 0, sizeof(state->ca));
@@ -403,7 +384,7 @@ static int ttusb2_i2c_xfer(struct i2c_adapter *adap,struct i2c_msg msg[],int num
 		else
 			obuf[1] = msg[i].len;
 
-		/* read request */
+		 
 		if (write_read)
 			obuf[2] = msg[i+1].len;
 		else if (read)
@@ -439,21 +420,21 @@ static struct i2c_algorithm ttusb2_i2c_algo = {
 	.functionality = ttusb2_i2c_func,
 };
 
-/* command to poll IR receiver (copied from pctv452e.c) */
+ 
 #define CMD_GET_IR_CODE     0x1b
 
-/* IR */
+ 
 static int tt3650_rc_query(struct dvb_usb_device *d)
 {
 	int ret;
-	u8 rx[9]; /* A CMD_GET_IR_CODE reply is 9 bytes long */
+	u8 rx[9];  
 	struct ttusb2_state *st = d->priv;
 	ret = ttusb2_msg(d, CMD_GET_IR_CODE, NULL, 0, rx, sizeof(rx));
 	if (ret != 0)
 		return ret;
 
 	if (rx[8] & 0x01) {
-		/* got a "press" event */
+		 
 		st->last_rc_key = RC_SCANCODE_RC5(rx[3], rx[2]);
 		deb_info("%s: cmd=0x%02x sys=0x%02x\n", __func__, rx[2], rx[3]);
 		rc_keydown(d->rc_dev, RC_PROTO_RC5, st->last_rc_key, rx[1]);
@@ -466,7 +447,7 @@ static int tt3650_rc_query(struct dvb_usb_device *d)
 }
 
 
-/* Callbacks for DVB USB */
+ 
 static int ttusb2_identify_state(struct usb_device *udev,
 				 const struct dvb_usb_device_properties *props,
 				 const struct dvb_usb_device_description **desc,
@@ -546,7 +527,7 @@ static int ttusb2_frontend_tda10023_attach(struct dvb_usb_adapter *adap)
 		err("set interface to alts=3 failed");
 
 	if (adap->fe_adap[0].fe == NULL) {
-		/* FE 0 DVB-C */
+		 
 		adap->fe_adap[0].fe = dvb_attach(tda10023_attach,
 			&tda10023_config, &adap->dev->i2c_adap, 0x48);
 
@@ -564,7 +545,7 @@ static int ttusb2_frontend_tda10023_attach(struct dvb_usb_adapter *adap)
 			return -ENODEV;
 		}
 
-		/* tuner is behind TDA10023 I2C-gate */
+		 
 		adap->fe_adap[1].fe->ops.i2c_gate_ctrl = ttusb2_ct3650_i2c_gate_ctrl;
 
 	}
@@ -576,13 +557,13 @@ static int ttusb2_tuner_tda827x_attach(struct dvb_usb_adapter *adap)
 {
 	struct dvb_frontend *fe;
 
-	/* MFE: select correct FE to attach tuner since that's called twice */
+	 
 	if (adap->fe_adap[1].fe == NULL)
 		fe = adap->fe_adap[0].fe;
 	else
 		fe = adap->fe_adap[1].fe;
 
-	/* attach tuner */
+	 
 	if (dvb_attach(tda827x_attach, fe, 0x61, &adap->dev->i2c_adap, &tda827x_config) == NULL) {
 		printk(KERN_ERR "%s: No tda827x found!\n", __func__);
 		return -ENODEV;
@@ -604,7 +585,7 @@ static int ttusb2_tuner_tda826x_attach(struct dvb_usb_adapter *adap)
 	return 0;
 }
 
-/* DVB USB Driver stuff */
+ 
 static struct dvb_usb_device_properties ttusb2_properties;
 static struct dvb_usb_device_properties ttusb2_properties_s2400;
 static struct dvb_usb_device_properties ttusb2_properties_ct3650;
@@ -662,12 +643,12 @@ static struct dvb_usb_device_properties ttusb2_properties = {
 		{
 		.num_frontends = 1,
 		.fe = {{
-			.streaming_ctrl   = NULL, // ttusb2_streaming_ctrl,
+			.streaming_ctrl   = NULL, 
 
 			.frontend_attach  = ttusb2_frontend_tda10086_attach,
 			.tuner_attach     = ttusb2_tuner_tda826x_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_ISOC,
 				.count = 5,
@@ -722,7 +703,7 @@ static struct dvb_usb_device_properties ttusb2_properties_s2400 = {
 			.frontend_attach  = ttusb2_frontend_tda10086_attach,
 			.tuner_attach     = ttusb2_tuner_tda826x_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_ISOC,
 				.count = 5,
@@ -767,7 +748,7 @@ static struct dvb_usb_device_properties ttusb2_properties_ct3650 = {
 	.size_of_priv = sizeof(struct ttusb2_state),
 
 	.rc.core = {
-		.rc_interval      = 150, /* Less than IR_KEYPRESS_TIMEOUT */
+		.rc_interval      = 150,  
 		.rc_codes         = RC_MAP_TT_1500,
 		.rc_query         = tt3650_rc_query,
 		.allowed_protos   = RC_PROTO_BIT_RC5,
@@ -783,7 +764,7 @@ static struct dvb_usb_device_properties ttusb2_properties_ct3650 = {
 			.frontend_attach  = ttusb2_frontend_tda10023_attach,
 			.tuner_attach = ttusb2_tuner_tda827x_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_ISOC,
 				.count = 5,
@@ -802,7 +783,7 @@ static struct dvb_usb_device_properties ttusb2_properties_ct3650 = {
 			.frontend_attach  = ttusb2_frontend_tda10023_attach,
 			.tuner_attach = ttusb2_tuner_tda827x_attach,
 
-			/* parameter for the MPEG2-data transfer */
+			 
 			.stream = {
 				.type = USB_ISOC,
 				.count = 5,

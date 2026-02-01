@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021, Google LLC.
- *
- * Tests for adjusting the system counter from userspace
- */
+
+ 
 #include <asm/kvm_para.h>
 #include <stdint.h>
 #include <string.h>
@@ -49,7 +45,7 @@ static uint64_t host_read_guest_system_counter(struct test_case *test)
 	return rdtsc() + test->tsc_offset;
 }
 
-#else /* __x86_64__ */
+#else  
 
 #error test not implemented for this architecture!
 

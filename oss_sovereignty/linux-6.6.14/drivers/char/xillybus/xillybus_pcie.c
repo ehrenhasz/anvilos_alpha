@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * linux/drivers/misc/xillybus_pcie.c
- *
- * Copyright 2011 Xillybus Ltd, http://xillybus.com
- *
- * Driver for the Xillybus FPGA/host framework using PCI Express.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -29,7 +23,7 @@ static const struct pci_device_id xillyids[] = {
 	{PCI_DEVICE(PCI_VENDOR_ID_ALTERA, PCI_DEVICE_ID_XILLYBUS)},
 	{PCI_DEVICE(PCI_VENDOR_ID_ACTEL, PCI_DEVICE_ID_XILLYBUS)},
 	{PCI_DEVICE(PCI_VENDOR_ID_LATTICE, PCI_DEVICE_ID_XILLYBUS)},
-	{ /* End: all zeroes */ }
+	{   }
 };
 
 static int xilly_probe(struct pci_dev *pdev,
@@ -54,7 +48,7 @@ static int xilly_probe(struct pci_dev *pdev,
 		return rc;
 	}
 
-	/* L0s has caused packet drops. No power saving, thank you. */
+	 
 
 	pci_disable_link_state(pdev, PCIE_LINK_STATE_L0S);
 
@@ -75,7 +69,7 @@ static int xilly_probe(struct pci_dev *pdev,
 
 	pci_set_master(pdev);
 
-	/* Set up a single MSI interrupt */
+	 
 	if (pci_enable_msi(pdev)) {
 		dev_err(endpoint->dev,
 			"Failed to enable MSI interrupts. Aborting.\n");
@@ -89,12 +83,7 @@ static int xilly_probe(struct pci_dev *pdev,
 		return -ENODEV;
 	}
 
-	/*
-	 * Some (old and buggy?) hardware drops 64-bit addressed PCIe packets,
-	 * even when the PCIe driver claims that a 64-bit mask is OK. On the
-	 * other hand, on some architectures, 64-bit addressing is mandatory.
-	 * So go for the 64-bit mask only when failing is the other option.
-	 */
+	 
 
 	if (!dma_set_mask(&pdev->dev, DMA_BIT_MASK(32))) {
 		endpoint->dma_using_dac = 0;

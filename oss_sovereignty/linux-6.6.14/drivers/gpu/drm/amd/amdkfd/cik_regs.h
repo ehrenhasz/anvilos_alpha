@@ -1,38 +1,18 @@
-/*
- * Copyright 2014 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #ifndef CIK_REGS_H
 #define CIK_REGS_H
 
-/* if PTR32, these are the bases for scratch and lds */
-#define	PRIVATE_BASE(x)					((x) << 0) /* scratch */
-#define	SHARED_BASE(x)					((x) << 16) /* LDS */
+ 
+#define	PRIVATE_BASE(x)					((x) << 0)  
+#define	SHARED_BASE(x)					((x) << 16)  
 #define	PTR32						(1 << 0)
 #define	ALIGNMENT_MODE(x)				((x) << 2)
 #define	SH_MEM_ALIGNMENT_MODE_UNALIGNED			3
 #define	DEFAULT_MTYPE(x)				((x) << 4)
 #define	APE1_MTYPE(x)					((x) << 7)
 
-/* valid for both DEFAULT_MTYPE and APE1_MTYPE */
+ 
 #define	MTYPE_CACHED_NV					0
 #define	MTYPE_CACHED					1
 #define	MTYPE_NONCACHED					3

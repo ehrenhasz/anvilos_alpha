@@ -1,48 +1,13 @@
-/*
- * Copyright (c) 2012 Mellanox Technologies.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
-/*#include "core_priv.h"*/
+ 
 #include "mlx4_ib.h"
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/stat.h>
 
 #include <rdma/ib_mad.h>
-/*show_admin_alias_guid returns the administratively assigned value of that GUID.
- * Values returned in buf parameter string:
- *	0			- requests opensm to assign a value.
- *	ffffffffffffffff	- delete this entry.
- *	other			- value assigned by administrator.
- */
+ 
 static ssize_t show_admin_alias_guid(struct device *dev,
 			      struct device_attribute *attr, char *buf)
 {
@@ -59,18 +24,13 @@ static ssize_t show_admin_alias_guid(struct device *dev,
 	return sysfs_emit(buf, "%llx\n", be64_to_cpu(sysadmin_ag_val));
 }
 
-/* store_admin_alias_guid stores the (new) administratively assigned value of that GUID.
- * Values in buf parameter string:
- *	0			- requests opensm to assign a value.
- *	0xffffffffffffffff	- delete this entry.
- *	other			- guid value assigned by the administrator.
- */
+ 
 static ssize_t store_admin_alias_guid(struct device *dev,
 				      struct device_attribute *attr,
 				      const char *buf, size_t count)
 {
-	int record_num;/*0-15*/
-	int guid_index_in_rec; /*0 - 7*/
+	int record_num; 
+	int guid_index_in_rec;  
 	struct mlx4_ib_iov_sysfs_attr *mlx4_ib_iov_dentry =
 		container_of(attr, struct mlx4_ib_iov_sysfs_attr, dentry);
 	struct mlx4_ib_iov_port *port = mlx4_ib_iov_dentry->ctx;
@@ -91,14 +51,14 @@ static ssize_t store_admin_alias_guid(struct device *dev,
 		all_recs[GUID_REC_SIZE * guid_index_in_rec] =
 			cpu_to_be64(sysadmin_ag_val);
 
-	/* Change the state to be pending for update */
+	 
 	mdev->sriov.alias_guid.ports_guid[port->num - 1].all_rec_per_port[record_num].status
 		= MLX4_GUID_INFO_STATUS_IDLE ;
 	mlx4_set_admin_guid(mdev->dev, cpu_to_be64(sysadmin_ag_val),
 			    mlx4_ib_iov_dentry->entry_num,
 			    port->num);
 
-	/* set the record index */
+	 
 	mdev->sriov.alias_guid.ports_guid[port->num - 1].all_rec_per_port[record_num].guid_indexes
 		|= mlx4_ib_get_aguid_comp_mask_from_ix(guid_index_in_rec);
 
@@ -229,7 +189,7 @@ static int add_port_entries(struct mlx4_ib_dev *device, int port_num)
 	struct ib_port_attr attr;
 
 	memset(&attr, 0, sizeof(attr));
-	/* get the physical gid and pkey table sizes.*/
+	 
 	ret = __mlx4_ib_query_port(&device->ib_dev, port_num, &attr, 1);
 	if (ret)
 		goto err;
@@ -237,13 +197,7 @@ static int add_port_entries(struct mlx4_ib_dev *device, int port_num)
 	port = &device->iov_ports[port_num - 1];
 	port->dev = device;
 	port->num = port_num;
-	/* Directory structure:
-	 * iov -
-	 *   port num -
-	 *	admin_guids
-	 *	gids (operational)
-	 *	mcg_table
-	 */
+	 
 	port->dentr_ar = kzalloc(sizeof (struct mlx4_ib_iov_sysfs_attr_ar),
 				 GFP_KERNEL);
 	if (!port->dentr_ar) {
@@ -257,7 +211,7 @@ static int add_port_entries(struct mlx4_ib_dev *device, int port_num)
 		ret = -ENOMEM;
 		goto kobj_create_err;
 	}
-	/* admin GUIDs */
+	 
 	port->admin_alias_parent = kobject_create_and_add("admin_guids",
 						  kobject_get(port->cur_port));
 	if (!port->admin_alias_parent) {
@@ -274,7 +228,7 @@ static int add_port_entries(struct mlx4_ib_dev *device, int port_num)
 			goto err_admin_alias_parent;
 	}
 
-	/* gids subdirectory (operational gids) */
+	 
 	port->gids_parent = kobject_create_and_add("gids",
 						  kobject_get(port->cur_port));
 	if (!port->gids_parent) {
@@ -293,7 +247,7 @@ static int add_port_entries(struct mlx4_ib_dev *device, int port_num)
 			goto err_gids_parent;
 	}
 
-	/* physical port pkey table */
+	 
 	port->pkeys_parent =
 		kobject_create_and_add("pkeys", kobject_get(port->cur_port));
 	if (!port->pkeys_parent) {
@@ -312,7 +266,7 @@ static int add_port_entries(struct mlx4_ib_dev *device, int port_num)
 			goto err_pkeys_parent;
 	}
 
-	/* MCGs table */
+	 
 	port->mcgs_parent =
 		kobject_create_and_add("mcgs", kobject_get(port->cur_port));
 	if (!port->mcgs_parent) {
@@ -341,7 +295,7 @@ err_admin_alias_parent:
 
 err_admin_guids:
 	kobject_put(port->cur_port);
-	kobject_put(port->cur_port); /* once more for create_and_add buff */
+	kobject_put(port->cur_port);  
 
 kobj_create_err:
 	kobject_put(device->ports_parent);
@@ -355,10 +309,7 @@ err:
 
 static void get_name(struct mlx4_ib_dev *dev, char *name, int i, int max)
 {
-	/* pci_name format is: bus:dev:func -> xxxx:yy:zz.n
-	 * with no ARI only 3 last bits are used so when the fn is higher than 8
-	 * need to add it to the dev num, so count in the last number will be
-	 * modulo 8 */
+	 
 	snprintf(name, max, "%.8s%.2d.%d", pci_name(dev->dev->persist->pdev),
 		 i / 8, i % 8);
 }
@@ -459,7 +410,7 @@ static ssize_t store_port_pkey(struct mlx4_port *p, struct port_attribute *attr,
 	int idx;
 	int err;
 
-	/* do not allow remapping Dom0 virtual pkey table */
+	 
 	if (p->slave == mlx4_master_func_num(p->dev->dev))
 		return -EINVAL;
 
@@ -581,7 +532,7 @@ static int add_vf_smi_entries(struct mlx4_port *p)
 			IB_LINK_LAYER_ETHERNET;
 	int ret;
 
-	/* do not display entries if eth transport, or if master */
+	 
 	if (is_eth || p->slave == mlx4_master_func_num(p->dev->dev))
 		return 0;
 
@@ -747,7 +698,7 @@ err_add:
 
 err_ports:
 	kobject_put(dev->pkeys.device_parent[slave]);
-	/* extra put for the device_parent create_and_add */
+	 
 	kobject_put(dev->pkeys.device_parent[slave]);
 
 fail_dev:

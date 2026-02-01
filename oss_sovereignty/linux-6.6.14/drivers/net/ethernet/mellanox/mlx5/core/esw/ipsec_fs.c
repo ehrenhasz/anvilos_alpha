@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include "fs_core.h"
 #include "eswitch.h"
@@ -56,9 +56,7 @@ int mlx5_esw_ipsec_rx_setup_modify_header(struct mlx5e_ipsec_sa_entry *sa_entry,
 	if (err)
 		return err;
 
-	/* reuse tunnel bits for ipsec,
-	 * tun_id is always 0 and tun_opts is mapped to ipsec_obj_id.
-	 */
+	 
 	MLX5_SET(set_action_in, action, action_type, MLX5_ACTION_TYPE_SET);
 	MLX5_SET(set_action_in, action, field,
 		 MLX5_ACTION_IN_FIELD_METADATA_REG_C_1);

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Berlin2 BG2/BG2CD clock tree IDs
- */
+ 
+ 
 
 #define CLKID_SYS		0
 #define CLKID_CPU		1

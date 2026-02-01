@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2020 - 2021 Intel Corporation */
+
+ 
 #include <linux/iopoll.h>
 #include <adf_accel_devices.h>
 #include <adf_cfg.h>
@@ -93,7 +93,7 @@ static_assert(ARRAY_SIZE(adf_fw_cy_config) == ARRAY_SIZE(adf_fw_asym_dc_config))
 static_assert(ARRAY_SIZE(adf_fw_cy_config) == ARRAY_SIZE(adf_fw_sym_dc_config));
 static_assert(ARRAY_SIZE(adf_fw_cy_config) == ARRAY_SIZE(adf_fw_dcc_config));
 
-/* Worker thread to service arbiter mappings */
+ 
 static const u32 default_thrd_to_arb_map[ADF_4XXX_MAX_ACCELENGINES] = {
 	0x5555555, 0x5555555, 0x5555555, 0x5555555,
 	0xAAAAAAA, 0xAAAAAAA, 0xAAAAAAA, 0xAAAAAAA,
@@ -181,17 +181,7 @@ static u32 get_sram_bar_id(struct adf_hw_device_data *self)
 	return ADF_4XXX_SRAM_BAR;
 }
 
-/*
- * The vector routing table is used to select the MSI-X entry to use for each
- * interrupt source.
- * The first ADF_4XXX_ETR_MAX_BANKS entries correspond to ring interrupts.
- * The final entry corresponds to VF2PF or error interrupts.
- * This vector table could be used to configure one MSI-X entry to be shared
- * between multiple interrupt sources.
- *
- * The default routing is set to have a one to one correspondence between the
- * interrupt source and the MSI-X entry used.
- */
+ 
 static void set_msix_default_rttable(struct adf_accel_dev *accel_dev)
 {
 	void __iomem *csr;
@@ -209,7 +199,7 @@ static u32 get_accel_cap(struct adf_accel_dev *accel_dev)
 	u32 capabilities_dcc;
 	u32 fusectl1;
 
-	/* Read accelerator capabilities mask */
+	 
 	pci_read_config_dword(pdev, ADF_4XXX_FUSECTL1_OFFSET, &fusectl1);
 
 	capabilities_sym = ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC |
@@ -224,7 +214,7 @@ static u32 get_accel_cap(struct adf_accel_dev *accel_dev)
 			  ICP_ACCEL_CAPABILITIES_SM4 |
 			  ICP_ACCEL_CAPABILITIES_AES_V2;
 
-	/* A set bit in fusectl1 means the feature is OFF in this SKU */
+	 
 	if (fusectl1 & ICP_ACCEL_4XXX_MASK_CIPHER_SLICE) {
 		capabilities_sym &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC;
 		capabilities_sym &= ~ICP_ACCEL_CAPABILITIES_HKDF;
@@ -280,10 +270,7 @@ static u32 get_accel_cap(struct adf_accel_dev *accel_dev)
 	case SVC_DC:
 		return capabilities_dc;
 	case SVC_DCC:
-		/*
-		 * Sym capabilities are available for chaining operations,
-		 * but sym crypto instances cannot be supported
-		 */
+		 
 		capabilities_dcc = capabilities_dc | capabilities_sym;
 		capabilities_dcc &= ~ICP_ACCEL_CAPABILITIES_CRYPTO_SYMMETRIC;
 		return capabilities_dcc;
@@ -335,9 +322,7 @@ static void get_admin_info(struct admin_info *admin_csrs_info)
 
 static u32 get_heartbeat_clock(struct adf_hw_device_data *self)
 {
-	/*
-	 * 4XXX uses KPT counter for HB
-	 */
+	 
 	return ADF_4XXX_KPT_COUNTER_FREQ;
 }
 
@@ -346,7 +331,7 @@ static void adf_enable_error_correction(struct adf_accel_dev *accel_dev)
 	struct adf_bar *misc_bar = &GET_BARS(accel_dev)[ADF_4XXX_PMISC_BAR];
 	void __iomem *csr = misc_bar->virt_addr;
 
-	/* Enable all in errsou3 except VFLR notification on host */
+	 
 	ADF_CSR_WR(csr, ADF_GEN4_ERRMSK3, ADF_GEN4_VFLNOTIFY);
 }
 
@@ -356,11 +341,11 @@ static void adf_enable_ints(struct adf_accel_dev *accel_dev)
 
 	addr = (&GET_BARS(accel_dev)[ADF_4XXX_PMISC_BAR])->virt_addr;
 
-	/* Enable bundle interrupts */
+	 
 	ADF_CSR_WR(addr, ADF_4XXX_SMIAPF_RP_X0_MASK_OFFSET, 0);
 	ADF_CSR_WR(addr, ADF_4XXX_SMIAPF_RP_X1_MASK_OFFSET, 0);
 
-	/* Enable misc interrupts */
+	 
 	ADF_CSR_WR(addr, ADF_4XXX_SMIAPF_MASK_OFFSET, 0);
 }
 
@@ -373,15 +358,15 @@ static int adf_init_device(struct adf_accel_dev *accel_dev)
 
 	addr = (&GET_BARS(accel_dev)[ADF_4XXX_PMISC_BAR])->virt_addr;
 
-	/* Temporarily mask PM interrupt */
+	 
 	csr = ADF_CSR_RD(addr, ADF_GEN4_ERRMSK2);
 	csr |= ADF_GEN4_PM_SOU;
 	ADF_CSR_WR(addr, ADF_GEN4_ERRMSK2, csr);
 
-	/* Set DRV_ACTIVE bit to power up the device */
+	 
 	ADF_CSR_WR(addr, ADF_GEN4_PM_INTERRUPT, ADF_GEN4_PM_DRV_ACTIVE);
 
-	/* Poll status register to make sure the device is powered up */
+	 
 	ret = read_poll_timeout(ADF_CSR_RD, status,
 				status & ADF_GEN4_PM_INIT_STATE,
 				ADF_GEN4_PM_POLL_DELAY_US,

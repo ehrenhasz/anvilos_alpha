@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// da9211-regulator.c - Regulator device driver for DA9211/DA9212
-// /DA9213/DA9223/DA9214/DA9224/DA9215/DA9225
-// Copyright (C) 2015  Dialog Semiconductor Ltd.
+
+
+
+
+
 
 #include <linux/err.h>
 #include <linux/i2c.h>
@@ -20,12 +20,12 @@
 #include <dt-bindings/regulator/dlg,da9211-regulator.h>
 #include "da9211-regulator.h"
 
-/* DEVICE IDs */
+ 
 #define DA9211_DEVICE_ID	0x22
 #define DA9213_DEVICE_ID	0x23
 #define DA9215_DEVICE_ID	0x24
 
-/* DA9211 REGULATOR IDs */
+ 
 #define DA9211_ID_BUCKA	0
 #define DA9211_ID_BUCKB	1
 
@@ -73,28 +73,22 @@ static const struct regmap_config da9211_regmap_config = {
 	.num_ranges = ARRAY_SIZE(da9211_regmap_range),
 };
 
-/* Default limits measured in millivolts and milliamps */
+ 
 #define DA9211_MIN_MV		300
 #define DA9211_MAX_MV		1570
 #define DA9211_STEP_MV		10
 
-/* Current limits for DA9211 buck (uA) indices
- * corresponds with register values
- */
+ 
 static const int da9211_current_limits[] = {
 	2000000, 2200000, 2400000, 2600000, 2800000, 3000000, 3200000, 3400000,
 	3600000, 3800000, 4000000, 4200000, 4400000, 4600000, 4800000, 5000000
 };
-/* Current limits for DA9213 buck (uA) indices
- * corresponds with register values
- */
+ 
 static const int da9213_current_limits[] = {
 	3000000, 3200000, 3400000, 3600000, 3800000, 4000000, 4200000, 4400000,
 	4600000, 4800000, 5000000, 5200000, 5400000, 5600000, 5800000, 6000000
 };
-/* Current limits for DA9215 buck (uA) indices
- * corresponds with register values
- */
+ 
 static const int da9215_current_limits[] = {
 	4000000, 4200000, 4400000, 4600000, 4800000, 5000000, 5200000, 5400000,
 	5600000, 5800000, 6000000, 6200000, 6400000, 6600000, 6800000, 7000000
@@ -188,7 +182,7 @@ static int da9211_set_current_limit(struct regulator_dev *rdev, int min,
 		return -EINVAL;
 	}
 
-	/* search for closest to maximum */
+	 
 	for (i = max_size; i >= 0; i--) {
 		if (min <= current_limits[i] &&
 		    max >= current_limits[i]) {
@@ -227,9 +221,7 @@ static int da9211_get_current_limit(struct regulator_dev *rdev)
 	if (ret < 0)
 		return ret;
 
-	/* select one of 16 values: 0000 (2000mA or 3000mA)
-	 * to 1111 (5000mA or 6000mA).
-	 */
+	 
 	data = (data >> id*4) & 0x0F;
 	return current_limits[data];
 }
@@ -389,9 +381,7 @@ static int da9211_regulator_init(struct da9211 *chip)
 	}
 
 	data &= DA9211_SLAVE_SEL;
-	/* If configuration for 1/2 bucks is different between platform data
-	 * and the register, driver should exit.
-	 */
+	 
 	if (chip->pdata->num_buck == 1 && data == 0x00)
 		chip->num_regulator = 1;
 	else if (chip->pdata->num_buck == 2 && data != 0x00)
@@ -413,10 +403,7 @@ static int da9211_regulator_init(struct da9211 *chip)
 		else
 			config.ena_gpiod = NULL;
 
-		/*
-		 * Hand the GPIO descriptor management over to the regulator
-		 * core, remove it from GPIO devres management.
-		 */
+		 
 		if (config.ena_gpiod)
 			devm_gpiod_unhinge(chip->dev, config.ena_gpiod);
 		chip->rdev[i] = devm_regulator_register(chip->dev,
@@ -441,9 +428,7 @@ static int da9211_regulator_init(struct da9211 *chip)
 	return 0;
 }
 
-/*
- * I2C driver interface functions
- */
+ 
 static int da9211_i2c_probe(struct i2c_client *i2c)
 {
 	struct da9211 *chip;

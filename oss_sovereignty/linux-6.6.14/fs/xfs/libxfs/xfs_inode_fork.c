@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 
 #include "xfs.h"
 #include "xfs_fs.h"
@@ -39,12 +36,7 @@ xfs_init_local_fork(
 	int			mem_size = size;
 	bool			zero_terminate;
 
-	/*
-	 * If we are using the local fork to store a symlink body we need to
-	 * zero-terminate it so that we can pass it back to the VFS directly.
-	 * Overallocate the in-memory fork by one for that and add a zero
-	 * to terminate it below.
-	 */
+	 
 	zero_terminate = S_ISLNK(VFS_I(ip)->i_mode);
 	if (zero_terminate)
 		mem_size++;
@@ -61,9 +53,7 @@ xfs_init_local_fork(
 	ifp->if_bytes = size;
 }
 
-/*
- * The file is in-lined in the on-disk inode.
- */
+ 
 STATIC int
 xfs_iformat_local(
 	struct xfs_inode	*ip,
@@ -71,11 +61,7 @@ xfs_iformat_local(
 	int			whichfork,
 	int			size)
 {
-	/*
-	 * If the size is unreasonable, then something
-	 * is wrong and we just bail out rather than crash in
-	 * kmem_alloc() or memcpy() below.
-	 */
+	 
 	if (unlikely(size > XFS_DFORK_SIZE(dip, ip->i_mount, whichfork))) {
 		xfs_warn(ip->i_mount,
 	"corrupt inode %llu (bad size %d for local fork, size = %zd).",
@@ -91,10 +77,7 @@ xfs_iformat_local(
 	return 0;
 }
 
-/*
- * The file consists of a set of extents all of which fit into the on-disk
- * inode.
- */
+ 
 STATIC int
 xfs_iformat_extents(
 	struct xfs_inode	*ip,
@@ -111,10 +94,7 @@ xfs_iformat_extents(
 	struct xfs_bmbt_irec	new;
 	int			i;
 
-	/*
-	 * If the number of extents is unreasonable, then something is wrong and
-	 * we just bail out rather than crash in kmem_alloc() or memcpy() below.
-	 */
+	 
 	if (unlikely(size < 0 || size > XFS_DFORK_SIZE(dip, mp, whichfork))) {
 		xfs_warn(ip->i_mount, "corrupt inode %llu ((a)extents = %llu).",
 			ip->i_ino, nex);
@@ -152,14 +132,7 @@ xfs_iformat_extents(
 	return 0;
 }
 
-/*
- * The file has too many extents to fit into
- * the inode, so they are in B-tree format.
- * Allocate a buffer for the root of the B-tree
- * and copy the root into it.  The i_extents
- * field will remain NULL until all of the
- * extents are read in (when they are needed).
- */
+ 
 STATIC int
 xfs_iformat_btree(
 	struct xfs_inode	*ip,
@@ -169,7 +142,7 @@ xfs_iformat_btree(
 	struct xfs_mount	*mp = ip->i_mount;
 	xfs_bmdr_block_t	*dfp;
 	struct xfs_ifork	*ifp;
-	/* REFERENCED */
+	 
 	int			nrecs;
 	int			size;
 	int			level;
@@ -180,13 +153,7 @@ xfs_iformat_btree(
 	nrecs = be16_to_cpu(dfp->bb_numrecs);
 	level = be16_to_cpu(dfp->bb_level);
 
-	/*
-	 * blow out if -- fork has less extents than can fit in
-	 * fork (fork shouldn't be a btree format), root btree
-	 * block has more records than can fit into the fork,
-	 * or the number of extents is greater than the number of
-	 * blocks.
-	 */
+	 
 	if (unlikely(ifp->if_nextents <= XFS_IFORK_MAXEXT(ip, whichfork) ||
 		     nrecs == 0 ||
 		     XFS_BMDR_SPACE_CALC(nrecs) >
@@ -204,10 +171,7 @@ xfs_iformat_btree(
 	ifp->if_broot_bytes = size;
 	ifp->if_broot = kmem_alloc(size, KM_NOFS);
 	ASSERT(ifp->if_broot != NULL);
-	/*
-	 * Copy and convert from the on-disk structure
-	 * to the in-memory structure.
-	 */
+	 
 	xfs_bmdr_to_bmbt(ip, dfp, XFS_DFORK_SIZE(dip, ip->i_mount, whichfork),
 			 ifp->if_broot, size);
 
@@ -225,13 +189,7 @@ xfs_iformat_data_fork(
 	struct inode		*inode = VFS_I(ip);
 	int			error;
 
-	/*
-	 * Initialize the extent count early, as the per-format routines may
-	 * depend on it.  Use release semantics to set needextents /after/ we
-	 * set the format. This ensures that we can use acquire semantics on
-	 * needextents in xfs_need_iread_extents() and be guaranteed to see a
-	 * valid format value after that load.
-	 */
+	 
 	ip->i_df.if_format = dip->di_format;
 	ip->i_df.if_nextents = xfs_dfork_data_extents(dip);
 	smp_store_release(&ip->i_df.if_needextents,
@@ -288,13 +246,7 @@ xfs_ifork_init_attr(
 	enum xfs_dinode_fmt	format,
 	xfs_extnum_t		nextents)
 {
-	/*
-	 * Initialize the extent count early, as the per-format routines may
-	 * depend on it.  Use release semantics to set needextents /after/ we
-	 * set the format. This ensures that we can use acquire semantics on
-	 * needextents in xfs_need_iread_extents() and be guaranteed to see a
-	 * valid format value after that load.
-	 */
+	 
 	ip->i_af.if_format = format;
 	ip->i_af.if_nextents = nextents;
 	smp_store_release(&ip->i_af.if_needextents,
@@ -318,10 +270,7 @@ xfs_iformat_attr_fork(
 	xfs_extnum_t		naextents = xfs_dfork_attr_extents(dip);
 	int			error = 0;
 
-	/*
-	 * Initialize the extent count early, as the per-format routines may
-	 * depend on it.
-	 */
+	 
 	xfs_ifork_init_attr(ip, dip->di_aformat, naextents);
 
 	switch (ip->i_af.if_format) {
@@ -349,24 +298,7 @@ xfs_iformat_attr_fork(
 	return error;
 }
 
-/*
- * Reallocate the space for if_broot based on the number of records
- * being added or deleted as indicated in rec_diff.  Move the records
- * and pointers in if_broot to fit the new size.  When shrinking this
- * will eliminate holes between the records and pointers created by
- * the caller.  When growing this will create holes to be filled in
- * by the caller.
- *
- * The caller must not request to add more records than would fit in
- * the on-disk inode root.  If the if_broot is currently NULL, then
- * if we are adding records, one will be allocated.  The caller must also
- * not request that the number of records go below zero, although
- * it can go to zero.
- *
- * ip -- the inode whose if_broot area is changing
- * ext_diff -- the change in the number of records, positive or negative,
- *	 requested for the if_broot array.
- */
+ 
 void
 xfs_iroot_realloc(
 	xfs_inode_t		*ip,
@@ -382,19 +314,14 @@ xfs_iroot_realloc(
 	char			*np;
 	char			*op;
 
-	/*
-	 * Handle the degenerate case quietly.
-	 */
+	 
 	if (rec_diff == 0) {
 		return;
 	}
 
 	ifp = xfs_ifork_ptr(ip, whichfork);
 	if (rec_diff > 0) {
-		/*
-		 * If there wasn't any memory allocated before, just
-		 * allocate it now and get out.
-		 */
+		 
 		if (ifp->if_broot_bytes == 0) {
 			new_size = XFS_BMAP_BROOT_SPACE_CALC(mp, rec_diff);
 			ifp->if_broot = kmem_alloc(new_size, KM_NOFS);
@@ -402,12 +329,7 @@ xfs_iroot_realloc(
 			return;
 		}
 
-		/*
-		 * If there is already an existing if_broot, then we need
-		 * to realloc() it and shift the pointers to their new
-		 * location.  The records don't change location because
-		 * they are kept butted up against the btree block header.
-		 */
+		 
 		cur_max = xfs_bmbt_maxrecs(mp, ifp->if_broot_bytes, 0);
 		new_max = cur_max + rec_diff;
 		new_size = XFS_BMAP_BROOT_SPACE_CALC(mp, new_max);
@@ -424,11 +346,7 @@ xfs_iroot_realloc(
 		return;
 	}
 
-	/*
-	 * rec_diff is less than 0.  In this case, we are shrinking the
-	 * if_broot buffer.  It must already exist.  If we go to zero
-	 * records, just get rid of the root and clear the status bit.
-	 */
+	 
 	ASSERT((ifp->if_broot != NULL) && (ifp->if_broot_bytes > 0));
 	cur_max = xfs_bmbt_maxrecs(mp, ifp->if_broot_bytes, 0);
 	new_max = cur_max + rec_diff;
@@ -439,29 +357,21 @@ xfs_iroot_realloc(
 		new_size = 0;
 	if (new_size > 0) {
 		new_broot = kmem_alloc(new_size, KM_NOFS);
-		/*
-		 * First copy over the btree block header.
-		 */
+		 
 		memcpy(new_broot, ifp->if_broot,
 			XFS_BMBT_BLOCK_LEN(ip->i_mount));
 	} else {
 		new_broot = NULL;
 	}
 
-	/*
-	 * Only copy the records and pointers if there are any.
-	 */
+	 
 	if (new_max > 0) {
-		/*
-		 * First copy the records.
-		 */
+		 
 		op = (char *)XFS_BMBT_REC_ADDR(mp, ifp->if_broot, 1);
 		np = (char *)XFS_BMBT_REC_ADDR(mp, new_broot, 1);
 		memcpy(np, op, new_max * (uint)sizeof(xfs_bmbt_rec_t));
 
-		/*
-		 * Then copy the pointers.
-		 */
+		 
 		op = (char *)XFS_BMAP_BROOT_PTR_ADDR(mp, ifp->if_broot, 1,
 						     ifp->if_broot_bytes);
 		np = (char *)XFS_BMAP_BROOT_PTR_ADDR(mp, new_broot, 1,
@@ -478,21 +388,7 @@ xfs_iroot_realloc(
 }
 
 
-/*
- * This is called when the amount of space needed for if_data
- * is increased or decreased.  The change in size is indicated by
- * the number of bytes that need to be added or deleted in the
- * byte_diff parameter.
- *
- * If the amount of space needed has decreased below the size of the
- * inline buffer, then switch to using the inline buffer.  Otherwise,
- * use kmem_realloc() or kmem_alloc() to adjust the size of the buffer
- * to what is needed.
- *
- * ip -- the inode whose if_data area is changing
- * byte_diff -- the change in the number of bytes, positive or negative,
- *	 requested for the if_data array.
- */
+ 
 void
 xfs_idata_realloc(
 	struct xfs_inode	*ip,
@@ -542,15 +438,7 @@ xfs_idestroy_fork(
 	}
 }
 
-/*
- * Convert in-core extents to on-disk form
- *
- * In the case of the data fork, the in-core and on-disk fork sizes can be
- * different due to delayed allocation extents. We only copy on-disk extents
- * here, so callers must always use the physical fork size to determine the
- * size of the buffer passed to this routine.  We will return the size actually
- * used.
- */
+ 
 int
 xfs_iextents_copy(
 	struct xfs_inode	*ip,
@@ -581,16 +469,7 @@ xfs_iextents_copy(
 	return copied;
 }
 
-/*
- * Each of the following cases stores data into the same region
- * of the on-disk inode, so only one of them can be valid at
- * any given time. While it is possible to have conflicting formats
- * and log flags, e.g. having XFS_ILOG_?DATA set when the fork is
- * in EXTENTS format, this can only happen when the fork has
- * changed formats after being modified but before being flushed.
- * In these cases, the format always takes precedence, because the
- * format indicates the current state of the fork.
- */
+ 
 void
 xfs_iflush_fork(
 	struct xfs_inode	*ip,
@@ -611,10 +490,7 @@ xfs_iflush_fork(
 	if (!iip)
 		return;
 	ifp = xfs_ifork_ptr(ip, whichfork);
-	/*
-	 * This can happen if we gave up in iformat in an error path,
-	 * for the attribute fork.
-	 */
+	 
 	if (!ifp) {
 		ASSERT(whichfork == XFS_ATTR_FORK);
 		return;
@@ -666,7 +542,7 @@ xfs_iflush_fork(
 	}
 }
 
-/* Convert bmap state flags to an inode fork. */
+ 
 struct xfs_ifork *
 xfs_iext_state_to_fork(
 	struct xfs_inode	*ip,
@@ -679,9 +555,7 @@ xfs_iext_state_to_fork(
 	return &ip->i_df;
 }
 
-/*
- * Initialize an inode's copy-on-write fork.
- */
+ 
 void
 xfs_ifork_init_cow(
 	struct xfs_inode	*ip)
@@ -694,7 +568,7 @@ xfs_ifork_init_cow(
 	ip->i_cowfp->if_format = XFS_DINODE_FMT_EXTENTS;
 }
 
-/* Verify the inline contents of the data fork of an inode. */
+ 
 int
 xfs_ifork_verify_local_data(
 	struct xfs_inode	*ip)
@@ -721,7 +595,7 @@ xfs_ifork_verify_local_data(
 	return 0;
 }
 
-/* Verify the inline contents of the attr fork of an inode. */
+ 
 int
 xfs_ifork_verify_local_attr(
 	struct xfs_inode	*ip)
@@ -769,11 +643,7 @@ xfs_iext_count_may_overflow(
 	return 0;
 }
 
-/*
- * Upgrade this inode's extent counter fields to be able to handle a potential
- * increase in the extent count by nr_to_add.  Normally this is the same
- * quantity that caused xfs_iext_count_may_overflow() to return -EFBIG.
- */
+ 
 int
 xfs_iext_count_upgrade(
 	struct xfs_trans	*tp,

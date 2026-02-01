@@ -1,58 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/amiga/amiflop.c
- *
- *  Copyright (C) 1993  Greg Harp
- *  Portions of this driver are based on code contributed by Brad Pepers
- *  
- *  revised 28.5.95 by Joerg Dorchain
- *  - now no bugs(?) any more for both HD & DD
- *  - added support for 40 Track 5.25" drives, 80-track hopefully behaves
- *    like 3.5" dd (no way to test - are there any 5.25" drives out there
- *    that work on an A4000?)
- *  - wrote formatting routine (maybe dirty, but works)
- *
- *  june/july 1995 added ms-dos support by Joerg Dorchain
- *  (portions based on messydos.device and various contributors)
- *  - currently only 9 and 18 sector disks
- *
- *  - fixed a bug with the internal trackbuffer when using multiple 
- *    disks the same time
- *  - made formatting a bit safer
- *  - added command line and machine based default for "silent" df0
- *
- *  december 1995 adapted for 1.2.13pl4 by Joerg Dorchain
- *  - works but I think it's inefficient. (look in redo_fd_request)
- *    But the changes were very efficient. (only three and a half lines)
- *
- *  january 1996 added special ioctl for tracking down read/write problems
- *  - usage ioctl(d, RAW_TRACK, ptr); the raw track buffer (MFM-encoded data
- *    is copied to area. (area should be large enough since no checking is
- *    done - 30K is currently sufficient). return the actual size of the
- *    trackbuffer
- *  - replaced udelays() by a timer (CIAA timer B) for the waits 
- *    needed for the disk mechanic.
- *
- *  february 1996 fixed error recovery and multiple disk access
- *  - both got broken the first time I tampered with the driver :-(
- *  - still not safe, but better than before
- *
- *  revised Marts 3rd, 1996 by Jes Sorensen for use in the 1.3.28 kernel.
- *  - Minor changes to accept the kdev_t.
- *  - Replaced some more udelays with ms_delays. Udelay is just a loop,
- *    and so the delay will be different depending on the given
- *    processor :-(
- *  - The driver could use a major cleanup because of the new
- *    major/minor handling that came with kdev_t. It seems to work for
- *    the time being, but I can't guarantee that it will stay like
- *    that when we start using 16 (24?) bit minors.
- *
- * restructured jan 1997 by Joerg Dorchain
- * - Fixed Bug accessing multiple disks
- * - some code cleanup
- * - added trackbuffer for each drive to speed things up
- * - fixed some race conditions (who finds the next may send it to me ;-)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -74,169 +21,147 @@
 #include <asm/amigaints.h>
 #include <asm/irq.h>
 
-#undef DEBUG /* print _LOTS_ of infos */
+#undef DEBUG  
 
 #define RAW_IOCTL
 #ifdef RAW_IOCTL
-#define IOCTL_RAW_TRACK 0x5254524B  /* 'RTRK' */
+#define IOCTL_RAW_TRACK 0x5254524B   
 #endif
 
-/*
- *  Defines
- */
+ 
 
-/*
- * CIAAPRA bits (read only)
- */
+ 
 
-#define DSKRDY      (0x1<<5)        /* disk ready when low */
-#define DSKTRACK0   (0x1<<4)        /* head at track zero when low */
-#define DSKPROT     (0x1<<3)        /* disk protected when low */
-#define DSKCHANGE   (0x1<<2)        /* low when disk removed */
+#define DSKRDY      (0x1<<5)         
+#define DSKTRACK0   (0x1<<4)         
+#define DSKPROT     (0x1<<3)         
+#define DSKCHANGE   (0x1<<2)         
 
-/*
- * CIAAPRB bits (read/write)
- */
+ 
 
-#define DSKMOTOR    (0x1<<7)        /* motor on when low */
-#define DSKSEL3     (0x1<<6)        /* select drive 3 when low */
-#define DSKSEL2     (0x1<<5)        /* select drive 2 when low */
-#define DSKSEL1     (0x1<<4)        /* select drive 1 when low */
-#define DSKSEL0     (0x1<<3)        /* select drive 0 when low */
-#define DSKSIDE     (0x1<<2)        /* side selection: 0 = upper, 1 = lower */
-#define DSKDIREC    (0x1<<1)        /* step direction: 0=in, 1=out (to trk 0) */
-#define DSKSTEP     (0x1)           /* pulse low to step head 1 track */
+#define DSKMOTOR    (0x1<<7)         
+#define DSKSEL3     (0x1<<6)         
+#define DSKSEL2     (0x1<<5)         
+#define DSKSEL1     (0x1<<4)         
+#define DSKSEL0     (0x1<<3)         
+#define DSKSIDE     (0x1<<2)         
+#define DSKDIREC    (0x1<<1)         
+#define DSKSTEP     (0x1)            
 
-/*
- * DSKBYTR bits (read only)
- */
+ 
 
-#define DSKBYT      (1<<15)         /* register contains valid byte when set */
-#define DMAON       (1<<14)         /* disk DMA enabled */
-#define DISKWRITE   (1<<13)         /* disk write bit in DSKLEN enabled */
-#define WORDEQUAL   (1<<12)         /* DSKSYNC register match when true */
-/* bits 7-0 are data */
+#define DSKBYT      (1<<15)          
+#define DMAON       (1<<14)          
+#define DISKWRITE   (1<<13)          
+#define WORDEQUAL   (1<<12)          
+ 
 
-/*
- * ADKCON/ADKCONR bits
- */
+ 
 
 #ifndef SETCLR
-#define ADK_SETCLR      (1<<15)     /* control bit */
+#define ADK_SETCLR      (1<<15)      
 #endif
-#define ADK_PRECOMP1    (1<<14)     /* precompensation selection */
-#define ADK_PRECOMP0    (1<<13)     /* 00=none, 01=140ns, 10=280ns, 11=500ns */
-#define ADK_MFMPREC     (1<<12)     /* 0=GCR precomp., 1=MFM precomp. */
-#define ADK_WORDSYNC    (1<<10)     /* enable DSKSYNC auto DMA */
-#define ADK_MSBSYNC     (1<<9)      /* when 1, enable sync on MSbit (for GCR) */
-#define ADK_FAST        (1<<8)      /* bit cell: 0=2us (GCR), 1=1us (MFM) */
+#define ADK_PRECOMP1    (1<<14)      
+#define ADK_PRECOMP0    (1<<13)      
+#define ADK_MFMPREC     (1<<12)      
+#define ADK_WORDSYNC    (1<<10)      
+#define ADK_MSBSYNC     (1<<9)       
+#define ADK_FAST        (1<<8)       
 
-/*
- * DSKLEN bits
- */
+ 
 
 #define DSKLEN_DMAEN    (1<<15)
 #define DSKLEN_WRITE    (1<<14)
 
-/*
- * INTENA/INTREQ bits
- */
+ 
 
-#define DSKINDEX    (0x1<<4)        /* DSKINDEX bit */
+#define DSKINDEX    (0x1<<4)         
 
-/*
- * Misc
- */
+ 
 
-#define MFM_SYNC    0x4489          /* standard MFM sync value */
+#define MFM_SYNC    0x4489           
 
-/* Values for FD_COMMAND */
-#define FD_RECALIBRATE		0x07	/* move to track 0 */
-#define FD_SEEK			0x0F	/* seek track */
-#define FD_READ			0xE6	/* read with MT, MFM, SKip deleted */
-#define FD_WRITE		0xC5	/* write with MT, MFM */
-#define FD_SENSEI		0x08	/* Sense Interrupt Status */
-#define FD_SPECIFY		0x03	/* specify HUT etc */
-#define FD_FORMAT		0x4D	/* format one track */
-#define FD_VERSION		0x10	/* get version code */
-#define FD_CONFIGURE		0x13	/* configure FIFO operation */
-#define FD_PERPENDICULAR	0x12	/* perpendicular r/w mode */
+ 
+#define FD_RECALIBRATE		0x07	 
+#define FD_SEEK			0x0F	 
+#define FD_READ			0xE6	 
+#define FD_WRITE		0xC5	 
+#define FD_SENSEI		0x08	 
+#define FD_SPECIFY		0x03	 
+#define FD_FORMAT		0x4D	 
+#define FD_VERSION		0x10	 
+#define FD_CONFIGURE		0x13	 
+#define FD_PERPENDICULAR	0x12	 
 
-#define FD_MAX_UNITS    4	/* Max. Number of drives */
-#define FLOPPY_MAX_SECTORS	22	/* Max. Number of sectors per track */
+#define FD_MAX_UNITS    4	 
+#define FLOPPY_MAX_SECTORS	22	 
 
 struct fd_data_type {
-	char *name;		/* description of data type */
-	int sects;		/* sectors per track */
-	int (*read_fkt)(int);	/* read whole track */
-	void (*write_fkt)(int);	/* write whole track */
+	char *name;		 
+	int sects;		 
+	int (*read_fkt)(int);	 
+	void (*write_fkt)(int);	 
 };
 
 struct fd_drive_type {
-	unsigned long code;		/* code returned from drive */
-	char *name;			/* description of drive */
-	unsigned int tracks;	/* number of tracks */
-	unsigned int heads;		/* number of heads */
-	unsigned int read_size;	/* raw read size for one track */
-	unsigned int write_size;	/* raw write size for one track */
-	unsigned int sect_mult;	/* sectors and gap multiplier (HD = 2) */
-	unsigned int precomp1;	/* start track for precomp 1 */
-	unsigned int precomp2;	/* start track for precomp 2 */
-	unsigned int step_delay;	/* time (in ms) for delay after step */
-	unsigned int settle_time;	/* time to settle after dir change */
-	unsigned int side_time;	/* time needed to change sides */
+	unsigned long code;		 
+	char *name;			 
+	unsigned int tracks;	 
+	unsigned int heads;		 
+	unsigned int read_size;	 
+	unsigned int write_size;	 
+	unsigned int sect_mult;	 
+	unsigned int precomp1;	 
+	unsigned int precomp2;	 
+	unsigned int step_delay;	 
+	unsigned int settle_time;	 
+	unsigned int side_time;	 
 };
 
 struct amiga_floppy_struct {
-	struct fd_drive_type *type;	/* type of floppy for this unit */
-	struct fd_data_type *dtype;	/* type of floppy for this unit */
-	int track;			/* current track (-1 == unknown) */
-	unsigned char *trackbuf;	/* current track (kmaloc()'d */
+	struct fd_drive_type *type;	 
+	struct fd_data_type *dtype;	 
+	int track;			 
+	unsigned char *trackbuf;	 
 
-	int blocks;			/* total # blocks on disk */
+	int blocks;			 
 
-	int changed;			/* true when not known */
-	int disk;			/* disk in drive (-1 == unknown) */
-	int motor;			/* true when motor is at speed */
-	int busy;			/* true when drive is active */
-	int dirty;			/* true when trackbuf is not on disk */
-	int status;			/* current error code for unit */
+	int changed;			 
+	int disk;			 
+	int motor;			 
+	int busy;			 
+	int dirty;			 
+	int status;			 
 	struct gendisk *gendisk[2];
 	struct blk_mq_tag_set tag_set;
 };
 
-/*
- *  Error codes
- */
-#define FD_OK		0	/* operation succeeded */
-#define FD_ERROR	-1	/* general error (seek, read, write, etc) */
-#define FD_NOUNIT	1	/* unit does not exist */
-#define FD_UNITBUSY	2	/* unit already active */
-#define FD_NOTACTIVE	3	/* unit is not active */
-#define FD_NOTREADY	4	/* unit is not ready (motor not on/no disk) */
+ 
+#define FD_OK		0	 
+#define FD_ERROR	-1	 
+#define FD_NOUNIT	1	 
+#define FD_UNITBUSY	2	 
+#define FD_NOTACTIVE	3	 
+#define FD_NOTREADY	4	 
 
 #define MFM_NOSYNC	1
 #define MFM_HEADER	2
 #define MFM_DATA	3
 #define MFM_TRACK	4
 
-/*
- *  Floppy ID values
- */
-#define FD_NODRIVE	0x00000000  /* response when no unit is present */
-#define FD_DD_3 	0xffffffff  /* double-density 3.5" (880K) drive */
-#define FD_HD_3 	0x55555555  /* high-density 3.5" (1760K) drive */
-#define FD_DD_5 	0xaaaaaaaa  /* double-density 5.25" (440K) drive */
+ 
+#define FD_NODRIVE	0x00000000   
+#define FD_DD_3 	0xffffffff   
+#define FD_HD_3 	0x55555555   
+#define FD_DD_5 	0xaaaaaaaa   
 
 static DEFINE_MUTEX(amiflop_mutex);
-static unsigned long int fd_def_df0 = FD_DD_3;     /* default for df0 if it doesn't identify */
+static unsigned long int fd_def_df0 = FD_DD_3;      
 
 module_param(fd_def_df0, ulong, 0);
 MODULE_LICENSE("GPL");
 
-/*
- *  Macros
- */
+ 
 #define MOTOR_ON	(ciab.prb &= ~DSKMOTOR)
 #define MOTOR_OFF	(ciab.prb |= DSKMOTOR)
 #define SELECT(mask)    (ciab.prb &= ~mask)
@@ -244,8 +169,8 @@ MODULE_LICENSE("GPL");
 #define SELMASK(drive)  (1 << (3 + (drive & 3)))
 
 static struct fd_drive_type drive_types[] = {
-/*  code	name	   tr he   rdsz   wrsz sm pc1 pc2 sd  st st*/
-/*  warning: times are now in milliseconds (ms)                    */
+ 
+ 
 { FD_DD_3,	"DD 3.5",  80, 2, 14716, 13630, 1, 80,161, 3, 18, 1},
 { FD_HD_3,	"HD 3.5",  80, 2, 28344, 27258, 2, 80,161, 3, 18, 1},
 { FD_DD_5,	"DD 5.25", 40, 2, 14716, 13630, 1, 40, 81, 6, 30, 2},
@@ -260,7 +185,7 @@ static struct fd_data_type data_types[] = {
 	{ "MS-Dos", 9, dos_read, dos_write}
 };
 
-/* current info on each unit */
+ 
 static struct amiga_floppy_struct unit[FD_MAX_UNITS];
 
 static struct timer_list flush_track_timer[FD_MAX_UNITS];
@@ -270,15 +195,15 @@ static struct timer_list motor_on_timer;
 static struct timer_list motor_off_timer[FD_MAX_UNITS];
 static int on_attempts;
 
-/* Synchronization of FDC access */
-/* request loop (trackbuffer) */
+ 
+ 
 static volatile int fdc_busy = -1;
 static volatile int fdc_nested;
 static DECLARE_WAIT_QUEUE_HEAD(fdc_wait);
  
 static DECLARE_COMPLETION(motor_on_completion);
 
-static volatile int selected = -1;	/* currently selected drive */
+static volatile int selected = -1;	 
 
 static int writepending;
 static int writefromint;
@@ -286,47 +211,35 @@ static char *raw_buf;
 
 static DEFINE_SPINLOCK(amiflop_lock);
 
-#define RAW_BUF_SIZE 30000  /* size of raw disk data */
+#define RAW_BUF_SIZE 30000   
 
-/*
- * These are global variables, as that's the easiest way to give
- * information to interrupts. They are the data used for the current
- * request.
- */
+ 
 static volatile char block_flag;
 static DECLARE_WAIT_QUEUE_HEAD(wait_fd_block);
 
-/* MS-Dos MFM Coding tables (should go quick and easy) */
+ 
 static unsigned char mfmencode[16]={
 	0x2a, 0x29, 0x24, 0x25, 0x12, 0x11, 0x14, 0x15,
 	0x4a, 0x49, 0x44, 0x45, 0x52, 0x51, 0x54, 0x55
 };
 static unsigned char mfmdecode[128];
 
-/* floppy internal millisecond timer stuff */
+ 
 static DECLARE_COMPLETION(ms_wait_completion);
 #define MS_TICKS ((amiga_eclock+50)/1000)
 
-/*
- * Note that MAX_ERRORS=X doesn't imply that we retry every bad read
- * max X times - some types of errors increase the errorcount by 2 or
- * even 3, so we might actually retry only X/2 times before giving up.
- */
+ 
 #define MAX_ERRORS 12
 
 #define custom amiga_custom
 
-/* Prevent "aliased" accesses. */
+ 
 static int fd_ref[4] = { 0,0,0,0 };
 static int fd_device[4] = { 0, 0, 0, 0 };
 
-/*
- * Here come the actual hardware access and helper functions.
- * They are not reentrant and single threaded because all drives
- * share the same hardware and the same trackbuffer.
- */
+ 
 
-/* Milliseconds timer */
+ 
 
 static irqreturn_t ms_isr(int irq, void *dummy)
 {
@@ -334,8 +247,7 @@ static irqreturn_t ms_isr(int irq, void *dummy)
 	return IRQ_HANDLED;
 }
 
-/* all waits are queued up 
-   A more generic routine would do a schedule a la timer.device */
+ 
 static void ms_delay(int ms)
 {
 	int ticks;
@@ -346,15 +258,15 @@ static void ms_delay(int ms)
 		ticks = MS_TICKS*ms-1;
 		ciaa.tblo=ticks%256;
 		ciaa.tbhi=ticks/256;
-		ciaa.crb=0x19; /*count eclock, force load, one-shoot, start */
+		ciaa.crb=0x19;  
 		wait_for_completion(&ms_wait_completion);
 		mutex_unlock(&mutex);
 	}
 }
 
-/* Hardware semaphore */
+ 
 
-/* returns true when we would get the semaphore */
+ 
 static inline int try_fdc(int drive)
 {
 	drive &= 3;
@@ -492,7 +404,7 @@ static void fd_motor_off(struct timer_list *timer)
 
 	drive&=3;
 	if (!try_fdc(drive)) {
-		/* We would be blocked in an interrupt, so try again later */
+		 
 		timer->expires = jiffies + 1;
 		add_timer(timer);
 		return;
@@ -627,7 +539,7 @@ static unsigned long fd_get_drive_id(int drive)
 
   	drive&=3;
   	get_fdc(drive);
-	/* set up for ID */
+	 
 	MOTOR_ON;
 	udelay(2);
 	SELECT(SELMASK(drive));
@@ -641,32 +553,27 @@ static unsigned long fd_get_drive_id(int drive)
 	DESELECT(SELMASK(drive));
 	udelay(2);
 
-	/* loop and read disk ID */
+	 
 	for (i=0; i<32; i++) {
 		SELECT(SELMASK(drive));
 		udelay(2);
 
-		/* read and store value of DSKRDY */
+		 
 		id <<= 1;
-		id |= (ciaa.pra & DSKRDY) ? 0 : 1;	/* cia regs are low-active! */
+		id |= (ciaa.pra & DSKRDY) ? 0 : 1;	 
 
 		DESELECT(SELMASK(drive));
 	}
 
 	rel_fdc();
 
-        /*
-         * RB: At least A500/A2000's df0: don't identify themselves.
-         * As every (real) Amiga has at least a 3.5" DD drive as df0:
-         * we default to that if df0: doesn't identify as a certain
-         * type.
-         */
+         
         if(drive == 0 && id == FD_NODRIVE)
 	{
                 id = fd_def_df0;
                 printk(KERN_NOTICE "fd: drive 0 didn't identify, setting default %08lx\n", (ulong)fd_def_df0);
 	}
-	/* return the ID value */
+	 
 	return (id);
 }
 
@@ -675,13 +582,13 @@ static irqreturn_t fd_block_done(int irq, void *dummy)
 	if (block_flag)
 		custom.dsklen = 0x4000;
 
-	if (block_flag == 2) { /* writing */
+	if (block_flag == 2) {  
 		writepending = 2;
-		post_write_timer.expires = jiffies + 1; /* at least 2 ms */
+		post_write_timer.expires = jiffies + 1;  
 		post_write_timer_drive = selected;
 		add_timer(&post_write_timer);
 	}
-	else {                /* reading */
+	else {                 
 		block_flag = 0;
 		wake_up (&wait_fd_block);
 	}
@@ -694,7 +601,7 @@ static void raw_read(int drive)
 	get_fdc(drive);
 	wait_event(wait_fd_block, !block_flag);
 	fd_select(drive);
-	/* setup adkcon bits correctly */
+	 
 	custom.adkcon = ADK_MSBSYNC;
 	custom.adkcon = ADK_SETCLR|ADK_WORDSYNC|ADK_FAST;
 
@@ -719,16 +626,16 @@ static int raw_write(int drive)
 	ushort adk;
 
 	drive&=3;
-	get_fdc(drive); /* corresponds to rel_fdc() in post_write() */
+	get_fdc(drive);  
 	if ((ciaa.pra & DSKPROT) == 0) {
 		rel_fdc();
 		return 0;
 	}
 	wait_event(wait_fd_block, !block_flag);
 	fd_select(drive);
-	/* clear adkcon bits */
+	 
 	custom.adkcon = ADK_PRECOMP1|ADK_PRECOMP0|ADK_WORDSYNC|ADK_MSBSYNC;
-	/* set appropriate adkcon bits */
+	 
 	adk = ADK_SETCLR|ADK_FAST;
 	if ((ulong)unit[drive].track >= unit[drive].type->precomp2)
 		adk |= ADK_PRECOMP1;
@@ -745,10 +652,7 @@ static int raw_write(int drive)
 	return 1;
 }
 
-/*
- * to be called at least 2ms after the write has finished but before any
- * other access to the hardware.
- */
+ 
 static void post_write (unsigned long drive)
 {
 #ifdef DEBUG
@@ -762,7 +666,7 @@ static void post_write (unsigned long drive)
 	unit[drive].dirty = 0;
 	wake_up(&wait_fd_block);
 	fd_deselect(drive);
-	rel_fdc(); /* corresponds to get_fdc() in raw_write */
+	rel_fdc();  
 }
 
 static void post_write_callback(struct timer_list *timer)
@@ -770,11 +674,7 @@ static void post_write_callback(struct timer_list *timer)
 	post_write(post_write_timer_drive);
 }
 
-/*
- * The following functions are to convert the block contents into raw data
- * written to disk and vice versa.
- * (Add other formats here ;-))
- */
+ 
 
 static unsigned long scan_sync(unsigned long raw, unsigned long end)
 {
@@ -807,12 +707,12 @@ static unsigned long decode (unsigned long *data, unsigned long *raw,
 {
 	ulong *odd, *even;
 
-	/* convert length from bytes to longwords */
+	 
 	len >>= 2;
 	odd = raw;
 	even = odd + len;
 
-	/* prepare return pointer */
+	 
 	raw += len * 2;
 
 	do {
@@ -870,7 +770,7 @@ static int amiga_read(int drive)
 			return MFM_HEADER;
 		}
 
-		/* verify track */
+		 
 		if (hdr.track != unit[drive].track) {
 			printk(KERN_INFO "MFM_TRACK: %d, %d\n", hdr.track, unit[drive].track);
 			return MFM_TRACK;
@@ -915,13 +815,13 @@ static void encode_block(unsigned long *dest, unsigned long *src, int len)
 	int cnt, to_cnt = 0;
 	unsigned long data;
 
-	/* odd bits */
+	 
 	for (cnt = 0; cnt < len / 4; cnt++) {
 		data = src[cnt] >> 1;
 		encode(data, dest + to_cnt++);
 	}
 
-	/* even bits */
+	 
 	for (cnt = 0; cnt < len / 4; cnt++) {
 		data = src[cnt];
 		encode(data, dest + to_cnt++);
@@ -968,11 +868,11 @@ static void amiga_write(int disk)
 	unsigned long *ptr = (unsigned long *)raw_buf;
 
 	disk&=3;
-	/* gap space */
+	 
 	for (cnt = 0; cnt < 415 * unit[disk].type->sect_mult; cnt++)
 		*ptr++ = 0xaaaaaaaa;
 
-	/* sectors */
+	 
 	for (cnt = 0; cnt < unit[disk].dtype->sects * unit[disk].type->sect_mult; cnt++)
 		ptr = putsec (disk, ptr, cnt);
 	*(ushort *)ptr = (ptr[-1]&1) ? 0x2AA8 : 0xAAA8;
@@ -980,71 +880,17 @@ static void amiga_write(int disk)
 
 
 struct dos_header {
-	unsigned char track,   /* 0-80 */
-		side,    /* 0-1 */
-		sec,     /* 0-...*/
-		len_desc;/* 2 */
-	unsigned short crc;     /* on 68000 we got an alignment problem, 
-				   but this compiler solves it  by adding silently 
-				   adding a pad byte so data won't fit
-				   and this took about 3h to discover.... */
-	unsigned char gap1[22];     /* for longword-alignedness (0x4e) */
+	unsigned char track,    
+		side,     
+		sec,      
+		len_desc; 
+	unsigned short crc;      
+	unsigned char gap1[22];      
 };
 
-/* crc routines are borrowed from the messydos-handler  */
+ 
 
-/* excerpt from the messydos-device           
-; The CRC is computed not only over the actual data, but including
-; the SYNC mark (3 * $a1) and the 'ID/DATA - Address Mark' ($fe/$fb).
-; As we don't read or encode these fields into our buffers, we have to
-; preload the registers containing the CRC with the values they would have
-; after stepping over these fields.
-;
-; How CRCs "really" work:
-;
-; First, you should regard a bitstring as a series of coefficients of
-; polynomials. We calculate with these polynomials in modulo-2
-; arithmetic, in which both add and subtract are done the same as
-; exclusive-or. Now, we modify our data (a very long polynomial) in
-; such a way that it becomes divisible by the CCITT-standard 16-bit
-;		 16   12   5
-; polynomial:	x  + x	+ x + 1, represented by $11021. The easiest
-; way to do this would be to multiply (using proper arithmetic) our
-; datablock with $11021. So we have:
-;   data * $11021		 =
-;   data * ($10000 + $1021)      =
-;   data * $10000 + data * $1021
-; The left part of this is simple: Just add two 0 bytes. But then
-; the right part (data $1021) remains difficult and even could have
-; a carry into the left part. The solution is to use a modified
-; multiplication, which has a result that is not correct, but with
-; a difference of any multiple of $11021. We then only need to keep
-; the 16 least significant bits of the result.
-;
-; The following algorithm does this for us:
-;
-;   unsigned char *data, c, crclo, crchi;
-;   while (not done) {
-;	c = *data++ + crchi;
-;	crchi = (@ c) >> 8 + crclo;
-;	crclo = @ c;
-;   }
-;
-; Remember, + is done with EOR, the @ operator is in two tables (high
-; and low byte separately), which is calculated as
-;
-;      $1021 * (c & $F0)
-;  xor $1021 * (c & $0F)
-;  xor $1021 * (c >> 4)         (* is regular multiplication)
-;
-;
-; Anyway, the end result is the same as the remainder of the division of
-; the data by $11021. I am afraid I need to study theory a bit more...
-
-
-my only works was to code this from manx to C....
-
-*/
+ 
 
 static ushort dos_crc(void * data_a3, int data_d0, int data_d1, int data_d3)
 {
@@ -1086,7 +932,7 @@ static ushort dos_crc(void * data_a3, int data_d0, int data_d1, int data_d3)
 		0x1f,0x3e,0x5d,0x7c,0x9b,0xba,0xd9,0xf8,0x17,0x36,0x55,0x74,0x93,0xb2,0xd1,0xf0
 	};
 
-/* look at the asm-code - what looks in C a bit strange is almost as good as handmade */
+ 
 	register int i;
 	register unsigned char *CRCT1, *CRCT2, *data, c, crch, crcl;
 
@@ -1105,12 +951,12 @@ static ushort dos_crc(void * data_a3, int data_d0, int data_d1, int data_d3)
 
 static inline ushort dos_hdr_crc (struct dos_header *hdr)
 {
-	return dos_crc(&(hdr->track), 0xb2, 0x30, 3); /* precomputed magic */
+	return dos_crc(&(hdr->track), 0xb2, 0x30, 3);  
 }
 
 static inline ushort dos_data_crc(unsigned char *data)
 {
-	return dos_crc(data, 0xe2, 0x95 ,511); /* precomputed magic */
+	return dos_crc(data, 0xe2, 0x95 ,511);  
 }
 
 static inline unsigned char dos_decode_byte(ushort word)
@@ -1160,7 +1006,7 @@ static int dos_read(int drive)
 	end = raw + unit[drive].type->read_size;
 
 	for (scnt=0; scnt < unit[drive].dtype->sects * unit[drive].type->sect_mult; scnt++) {
-		do { /* search for the right sync of each sec-hdr */
+		do {  
 			if (!(raw = scan_sync (raw, end))) {
 				printk(KERN_INFO "dos_read: no hdr sync on "
 				       "track %d, unit %d for sector %d\n",
@@ -1170,8 +1016,8 @@ static int dos_read(int drive)
 #ifdef DEBUG
 			dbg(raw);
 #endif
-		} while (*((ushort *)raw)!=0x5554); /* loop usually only once done */
-		raw+=2; /* skip over headermark */
+		} while (*((ushort *)raw)!=0x5554);  
+		raw+=2;  
 		raw = dos_decode((unsigned char *)&hdr,(ushort *) raw,8);
 		crc = dos_hdr_crc(&hdr);
 
@@ -1224,7 +1070,7 @@ static int dos_read(int drive)
 			return MFM_NOSYNC;
 		}
 
-		raw+=2;  /* skip data mark (included in checksum) */
+		raw+=2;   
 		raw = dos_decode((unsigned char *)(unit[drive].trackbuf + (hdr.sec - 1) * 512), (ushort *) raw, 512);
 		raw = dos_decode((unsigned char  *)data_crc,(ushort *) raw,4);
 		crc = dos_data_crc(unit[drive].trackbuf + (hdr.sec - 1) * 512);
@@ -1276,47 +1122,47 @@ static unsigned long *ms_putsec(int drive, unsigned long *raw, int cnt)
 	static ushort crc[2]={0,0x4e4e};
 
 	drive&=3;
-/* id gap 1 */
-/* the MFM word before is always 9254 */
+ 
+ 
 	for(i=0;i<6;i++)
 		*raw++=0xaaaaaaaa;
-/* 3 sync + 1 headermark */
+ 
 	*raw++=0x44894489;
 	*raw++=0x44895554;
 
-/* fill in the variable parts of the header */
+ 
 	hdr.track=unit[drive].track/unit[drive].type->heads;
 	hdr.side=unit[drive].track%unit[drive].type->heads;
 	hdr.sec=cnt+1;
 	hdr.crc=dos_hdr_crc(&hdr);
 
-/* header (without "magic") and id gap 2*/
+ 
 	dos_encode_block((ushort *)raw,(unsigned char *) &hdr.track,28);
 	raw+=14;
 
-/*id gap 3 */
+ 
 	for(i=0;i<6;i++)
 		*raw++=0xaaaaaaaa;
 
-/* 3 syncs and 1 datamark */
+ 
 	*raw++=0x44894489;
 	*raw++=0x44895545;
 
-/* data */
+ 
 	dos_encode_block((ushort *)raw,
 			 (unsigned char *)unit[drive].trackbuf+cnt*512,512);
 	raw+=256;
 
-/*data crc + jd's special gap (long words :-/) */
+ 
 	crc[0]=dos_data_crc(unit[drive].trackbuf+cnt*512);
 	dos_encode_block((ushort *) raw,(unsigned char *)crc,4);
 	raw+=2;
 
-/* data gap */
+ 
 	for(i=0;i<38;i++)
 		*raw++=0x92549254;
 
-	return raw; /* wrote 652 MFM words */
+	return raw;  
 }
 
 static void dos_write(int disk)
@@ -1326,16 +1172,16 @@ static void dos_write(int disk)
 	unsigned long *ptr=(unsigned long *)raw;
 
 	disk&=3;
-/* really gap4 + indexgap , but we write it first and round it up */
+ 
 	for (cnt=0;cnt<425;cnt++)
 		*ptr++=0x92549254;
 
-/* the following is just guessed */
-	if (unit[disk].type->sect_mult==2)  /* check for HD-Disks */
+ 
+	if (unit[disk].type->sect_mult==2)   
 		for(cnt=0;cnt<473;cnt++)
 			*ptr++=0x92549254;
 
-/* now the index marks...*/
+ 
 	for (cnt=0;cnt<20;cnt++)
 		*ptr++=0x92549254;
 	for (cnt=0;cnt<6;cnt++)
@@ -1345,23 +1191,16 @@ static void dos_write(int disk)
 	for (cnt=0;cnt<20;cnt++)
 		*ptr++=0x92549254;
 
-/* sectors */
+ 
 	for(cnt = 0; cnt < unit[disk].dtype->sects * unit[disk].type->sect_mult; cnt++)
 		ptr=ms_putsec(disk,ptr,cnt);
 
-	*(ushort *)ptr = 0xaaa8; /* MFM word before is always 0x9254 */
+	*(ushort *)ptr = 0xaaa8;  
 }
 
-/*
- * Here comes the high level stuff (i.e. the filesystem interface)
- * and helper functions.
- * Normally this should be the only part that has to be adapted to
- * different kernel versions.
- */
+ 
 
-/* FIXME: this assumes the drive is still spinning -
- * which is only true if we complete writing a track within three seconds
- */
+ 
 static void flush_track_callback(struct timer_list *timer)
 {
 	unsigned long nr = ((unsigned long)timer -
@@ -1371,7 +1210,7 @@ static void flush_track_callback(struct timer_list *timer)
 	nr&=3;
 	writefromint = 1;
 	if (!try_fdc(nr)) {
-		/* we might block in an interrupt, so try again later */
+		 
 		flush_track_timer[nr].expires = jiffies + 1;
 		add_timer(flush_track_timer + nr);
 		return;
@@ -1413,7 +1252,7 @@ static int non_int_flush_track (unsigned long nr)
 	}
 	else {
 		local_irq_restore(flags);
-		ms_delay(2); /* 2 ms post_write delay */
+		ms_delay(2);  
 		post_write(nr);
 	}
 	rel_fdc();
@@ -1447,7 +1286,7 @@ static int get_track(int drive, int track)
 			rel_fdc();
 			return 0;
 		}
-		/* Read Error Handling: recalibrate and try again */
+		 
 		unit[drive].track = -1;
 		errcnt++;
 	}
@@ -1485,15 +1324,12 @@ static blk_status_t amiflop_rw_cur_segment(struct amiga_floppy_struct *floppy,
 		} else {
 			memcpy(floppy->trackbuf + sector * 512, data, 512);
 
-			/* keep the drive spinning while writes are scheduled */
+			 
 			if (!fd_motor_on(drive))
 				return BLK_STS_IOERR;
-			/*
-			 * setup a callback to write the track buffer
-			 * after a short (1 tick) delay.
-			 */
+			 
 			floppy->dirty = 1;
-		        /* reset the timer */
+		         
 			mod_timer (flush_track_timer + drive, jiffies + 1);
 		}
 	}
@@ -1589,7 +1425,7 @@ static int fd_locked_ioctl(struct block_device *bdev, blk_mode_t mode,
 	case FDSETPRM:
 	case FDDEFPRM:
 		return -EINVAL;
-	case FDFLUSH: /* unconditionally, even if not needed */
+	case FDFLUSH:  
 		del_timer (flush_track_timer + drive);
 		non_int_flush_track(drive);
 		break;
@@ -1627,7 +1463,7 @@ static void fd_probe(int dev)
 	drive = dev & 3;
 	code = fd_get_drive_id(drive);
 
-	/* get drive type */
+	 
 	for (type = 0; type < num_dr_types; type++)
 		if (drive_types[type].code == code)
 			break;
@@ -1635,7 +1471,7 @@ static void fd_probe(int dev)
 	if (type >= num_dr_types) {
 		printk(KERN_WARNING "fd_probe: unsupported drive type "
 		       "%08lx found\n", code);
-		unit[drive].type = &drive_types[num_dr_types-1]; /* FD_NODRIVE */
+		unit[drive].type = &drive_types[num_dr_types-1];  
 		return;
 	}
 
@@ -1648,11 +1484,7 @@ static void fd_probe(int dev)
 	unit[drive].status = -1;
 }
 
-/*
- * floppy_open check for aliasing (/dev/fd0 can be the same as
- * /dev/PS0 etc), and disallows simultaneous access to the same
- * drive with different device numbers.
- */
+ 
 static int floppy_open(struct gendisk *disk, blk_mode_t mode)
 {
 	int drive = disk->first_minor & 3;
@@ -1727,12 +1559,7 @@ static void floppy_release(struct gendisk *disk)
 	mutex_unlock(&amiflop_mutex);
 }
 
-/*
- * check_events is never called from an interrupt, so we can relax a bit
- * here, sleep etc. Note that floppy-on tries to set current_DOR to point
- * to the desired drive, but it will probably not survive the sleep if
- * several floppies are used at the same time: thus the loop.
- */
+ 
 static unsigned amiga_check_events(struct gendisk *disk, unsigned int clearing)
 {
 	struct amiga_floppy_struct *p = disk->private_data;
@@ -1754,7 +1581,7 @@ static unsigned amiga_check_events(struct gendisk *disk, unsigned int clearing)
 		fd_probe(drive);
 		p->track = -1;
 		p->dirty = 0;
-		writepending = 0; /* if this was true before, too bad! */
+		writepending = 0;  
 		writefromint = 0;
 		return DISK_EVENT_MEDIA_CHANGE;
 	}
@@ -1889,10 +1716,10 @@ static int __init amiga_floppy_probe(struct platform_device *pdev)
 	}
 
 	ret = -ENODEV;
-	if (fd_probe_drives() < 1) /* No usable drives */
+	if (fd_probe_drives() < 1)  
 		goto out_probe;
 
-	/* initialize variables */
+	 
 	timer_setup(&motor_on_timer, motor_on_callback, 0);
 	motor_on_timer.expires = 0;
 	for (i = 0; i < FD_MAX_UNITS; i++) {
@@ -1912,11 +1739,11 @@ static int __init amiga_floppy_probe(struct platform_device *pdev)
 	for (i = 0; i < 16; i++)
 		mfmdecode[mfmencode[i]]=i;
 
-	/* make sure that disk DMA is enabled */
+	 
 	custom.dmacon = DMAF_SETCLR | DMAF_DISK;
 
-	/* init ms timer */
-	ciaa.crb = 8; /* one-shot, stop */
+	 
+	ciaa.crb = 8;  
 	return 0;
 
 out_probe:

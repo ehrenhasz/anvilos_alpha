@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * typec_wcove.c - WhiskeyCove PMIC USB Type-C PHY driver
- *
- * Copyright (C) 2017 Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -13,7 +8,7 @@
 #include <linux/platform_device.h>
 #include <linux/mfd/intel_soc_pmic.h>
 
-/* Register offsets */
+ 
 #define WCOVE_CHGRIRQ0		0x4e09
 
 #define USBC_CONTROL1		0x7001
@@ -42,7 +37,7 @@
 #define USBC_RX_DATA		0x7028
 #define USBC_TX_DATA		0x7047
 
-/* Register bits */
+ 
 
 #define USBC_CONTROL1_MODE_MASK		0x3
 #define   USBC_CONTROL1_MODE_SNK	0
@@ -144,7 +139,7 @@
 #define USBC_TXINFO_RETRIES(d)		(d << 3)
 
 struct wcove_typec {
-	struct mutex lock; /* device lock */
+	struct mutex lock;  
 	struct device *dev;
 	struct regmap *regmap;
 	guid_t guid;
@@ -206,7 +201,7 @@ static int wcove_init(struct tcpc_dev *tcpc)
 	if (ret)
 		return ret;
 
-	/* Unmask everything */
+	 
 	ret = regmap_write(wcove->regmap, USBC_IRQMASK1, 0);
 	if (ret)
 		return ret;
@@ -408,7 +403,7 @@ static int wcove_pd_transmit(struct tcpc_dev *tcpc,
 		return -EINVAL;
 	}
 
-	/* NOTE Setting maximum number of retries (7) */
+	 
 	ret = regmap_write(wcove->regmap, USBC_TXINFO,
 			   info | USBC_TXINFO_RETRIES(7));
 	if (ret)
@@ -454,7 +449,7 @@ static int wcove_read_rx_buffer(struct wcove_typec *wcove, void *msg)
 	if (ret)
 		return ret;
 
-	/* FIXME: Check that USBC_RXINFO_RXBYTES(info) matches the header */
+	 
 
 	for (i = 0; i < USBC_RXINFO_RXBYTES(info); i++) {
 		ret = regmap_read(wcove->regmap, USBC_RX_DATA + i, msg + i);
@@ -476,7 +471,7 @@ static irqreturn_t wcove_typec_irq(int irq, void *data)
 
 	mutex_lock(&wcove->lock);
 
-	/* Read.. */
+	 
 	ret = regmap_read(wcove->regmap, USBC_IRQ1, &usbc_irq1);
 	if (ret)
 		goto err;
@@ -492,39 +487,36 @@ static irqreturn_t wcove_typec_irq(int irq, void *data)
 	if (!wcove->tcpm)
 		goto err;
 
-	/* ..check.. */
+	 
 	if (usbc_irq1 & USBC_IRQ1_OVERTEMP) {
 		dev_err(wcove->dev, "VCONN Switch Over Temperature!\n");
 		wcove_typec_func(wcove, WCOVE_FUNC_DRIVE_VCONN, false);
-		/* REVISIT: Report an error? */
+		 
 	}
 
 	if (usbc_irq1 & USBC_IRQ1_SHORT) {
 		dev_err(wcove->dev, "VCONN Switch Short Circuit!\n");
 		wcove_typec_func(wcove, WCOVE_FUNC_DRIVE_VCONN, false);
-		/* REVISIT: Report an error? */
+		 
 	}
 
 	if (wcove->vbus != !!(cc1ctrl & USBC_CC_CTRL_VBUSOK))
 		tcpm_vbus_change(wcove->tcpm);
 
-	/* REVISIT: See if tcpm code can be made to consider Type-C HW FSMs */
+	 
 	if (usbc_irq2 & USBC_IRQ2_CC_CHANGE)
 		tcpm_cc_change(wcove->tcpm);
 
 	if (usbc_irq2 & USBC_IRQ2_RX_PD) {
 		unsigned int status;
 
-		/*
-		 * FIXME: Need to check if TX is ongoing and report
-		 * TX_DIREGARDED if needed?
-		 */
+		 
 
 		ret = regmap_read(wcove->regmap, USBC_RXSTATUS, &status);
 		if (ret)
 			goto err;
 
-		/* Flush all buffers */
+		 
 		while (status & USBC_RXSTATUS_RXDATA) {
 			struct pd_message msg;
 
@@ -547,7 +539,7 @@ static irqreturn_t wcove_typec_irq(int irq, void *data)
 	if (usbc_irq2 & USBC_IRQ2_RX_HR)
 		tcpm_pd_hard_reset(wcove->tcpm);
 
-	/* REVISIT: if (usbc_irq2 & USBC_IRQ2_RX_CR) */
+	 
 
 	if (usbc_irq2 & USBC_IRQ2_TX_SUCCESS)
 		tcpm_pd_transmit_complete(wcove->tcpm, TCPC_TX_SUCCESS);
@@ -556,7 +548,7 @@ static irqreturn_t wcove_typec_irq(int irq, void *data)
 		tcpm_pd_transmit_complete(wcove->tcpm, TCPC_TX_FAILED);
 
 err:
-	/* ..and clear. */
+	 
 	if (usbc_irq1) {
 		ret = regmap_write(wcove->regmap, USBC_IRQ1, usbc_irq1);
 		if (ret)
@@ -571,16 +563,14 @@ err:
 				 __func__);
 	}
 
-	/* REVISIT: Clear WhiskeyCove CHGR Type-C interrupt */
+	 
 	regmap_write(wcove->regmap, WCOVE_CHGRIRQ0, BIT(5));
 
 	mutex_unlock(&wcove->lock);
 	return IRQ_HANDLED;
 }
 
-/*
- * The following power levels should be safe to use with Joule board.
- */
+ 
 static const u32 src_pdo[] = {
 	PDO_FIXED(5000, 1500, PDO_FIXED_DUAL_ROLE | PDO_FIXED_DATA_SWAP |
 		  PDO_FIXED_USB_COMM),
@@ -676,7 +666,7 @@ static void wcove_typec_remove(struct platform_device *pdev)
 	struct wcove_typec *wcove = platform_get_drvdata(pdev);
 	unsigned int val;
 
-	/* Mask everything */
+	 
 	regmap_read(wcove->regmap, USBC_IRQMASK1, &val);
 	regmap_write(wcove->regmap, USBC_IRQMASK1, val | USBC_IRQMASK1_ALL);
 	regmap_read(wcove->regmap, USBC_IRQMASK2, &val);

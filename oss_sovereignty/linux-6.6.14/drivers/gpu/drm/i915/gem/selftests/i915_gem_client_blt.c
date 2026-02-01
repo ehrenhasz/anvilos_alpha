@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "i915_selftest.h"
 
@@ -20,12 +18,12 @@
 #include "huge_gem_object.h"
 #include "mock_context.h"
 
-#define OW_SIZE 16                      /* in bytes */
-#define F_SUBTILE_SIZE 64               /* in bytes */
-#define F_TILE_WIDTH 128                /* in bytes */
-#define F_TILE_HEIGHT 32                /* in pixels */
-#define F_SUBTILE_WIDTH  OW_SIZE        /* in bytes */
-#define F_SUBTILE_HEIGHT 4              /* in pixels */
+#define OW_SIZE 16                       
+#define F_SUBTILE_SIZE 64                
+#define F_TILE_WIDTH 128                 
+#define F_TILE_HEIGHT 32                 
+#define F_SUBTILE_WIDTH  OW_SIZE         
+#define F_SUBTILE_HEIGHT 4               
 
 static int linear_x_y_to_ftiled_pos(int x, int y, u32 stride, int bpp)
 {
@@ -35,10 +33,7 @@ static int linear_x_y_to_ftiled_pos(int x, int y, u32 stride, int bpp)
 	int pixel_size = bpp / 8;
 	int pos;
 
-	/*
-	 * Subtile remapping for F tile. Note that map[a]==b implies map[b]==a
-	 * so we can use the same table to tile and until.
-	 */
+	 
 	static const u8 f_subtile_map[] = {
 		 0,  1,  2,  3,  8,  9, 10, 11,
 		 4,  5,  6,  7, 12, 13, 14, 15,
@@ -51,25 +46,22 @@ static int linear_x_y_to_ftiled_pos(int x, int y, u32 stride, int bpp)
 	};
 
 	x *= pixel_size;
-	/*
-	 * Where does the 4k tile start (in bytes)?  This is the same for Y and
-	 * F so we can use the Y-tile algorithm to get to that point.
-	 */
+	 
 	tile_base =
 		y / F_TILE_HEIGHT * stride * F_TILE_HEIGHT +
 		x / F_TILE_WIDTH * 4096;
 
-	/* Find pixel within tile */
+	 
 	tile_x = x % F_TILE_WIDTH;
 	tile_y = y % F_TILE_HEIGHT;
 
-	/* And figure out the subtile within the 4k tile */
+	 
 	subtile = tile_y / F_SUBTILE_HEIGHT * 8 + tile_x / F_SUBTILE_WIDTH;
 
-	/* Swizzle the subtile number according to the bspec diagram */
+	 
 	swizzle = f_subtile_map[subtile];
 
-	/* Calculate new position */
+	 
 	pos = tile_base +
 		swizzle * F_SUBTILE_SIZE +
 		tile_y % F_SUBTILE_HEIGHT * OW_SIZE +
@@ -112,7 +104,7 @@ static bool fastblit_supports_x_tiling(const struct drm_i915_private *i915)
 {
 	int gen = GRAPHICS_VER(i915);
 
-	/* XY_FAST_COPY_BLT does not exist on pre-gen9 platforms */
+	 
 	drm_WARN_ON(&i915->drm, gen < 9);
 
 	if (gen < 12)
@@ -126,11 +118,11 @@ static bool fastblit_supports_x_tiling(const struct drm_i915_private *i915)
 
 static bool fast_blit_ok(const struct blit_buffer *buf)
 {
-	/* XY_FAST_COPY_BLT does not exist on pre-gen9 platforms */
+	 
 	if (GRAPHICS_VER(buf->vma->vm->i915) < 9)
 		return false;
 
-	/* filter out platforms with unsupported X-tile support in fastblit */
+	 
 	if (buf->tiling == CLIENT_TILING_X && !fastblit_supports_x_tiling(buf->vma->vm->i915))
 		return false;
 
@@ -156,15 +148,13 @@ static int prepare_blit(const struct tiled_blits *t,
 		u32 src_tiles = 0, dst_tiles = 0;
 		u32 src_4t = 0, dst_4t = 0;
 
-		/* Need to program BLIT_CCTL if it is not done previously
-		 * before using XY_FAST_COPY_BLT
-		 */
+		 
 		*cs++ = MI_LOAD_REGISTER_IMM(1);
 		*cs++ = i915_mmio_reg_offset(BLIT_CCTL(t->ce->engine->mmio_base));
 		*cs++ = (BLIT_CCTL_SRC_MOCS(gt->mocs.uc_index) |
 			 BLIT_CCTL_DST_MOCS(gt->mocs.uc_index));
 
-		src_pitch = t->width; /* in dwords */
+		src_pitch = t->width;  
 		if (src->tiling == CLIENT_TILING_4) {
 			src_tiles = XY_FAST_COPY_BLT_D0_SRC_TILE_MODE(YMAJOR);
 			src_4t = XY_FAST_COPY_BLT_D1_SRC_TILE4;
@@ -173,10 +163,10 @@ static int prepare_blit(const struct tiled_blits *t,
 		} else if (src->tiling == CLIENT_TILING_X) {
 			src_tiles = XY_FAST_COPY_BLT_D0_SRC_TILE_MODE(TILE_X);
 		} else {
-			src_pitch *= 4; /* in bytes */
+			src_pitch *= 4;  
 		}
 
-		dst_pitch = t->width; /* in dwords */
+		dst_pitch = t->width;  
 		if (dst->tiling == CLIENT_TILING_4) {
 			dst_tiles = XY_FAST_COPY_BLT_D0_DST_TILE_MODE(YMAJOR);
 			dst_4t = XY_FAST_COPY_BLT_D1_DST_TILE4;
@@ -185,7 +175,7 @@ static int prepare_blit(const struct tiled_blits *t,
 		} else if (dst->tiling == CLIENT_TILING_X) {
 			dst_tiles = XY_FAST_COPY_BLT_D0_DST_TILE_MODE(TILE_X);
 		} else {
-			dst_pitch *= 4; /* in bytes */
+			dst_pitch *= 4;  
 		}
 
 		*cs++ = GEN9_XY_FAST_COPY_BLT_CMD | (10 - 2) |
@@ -327,7 +317,7 @@ static int tiled_blits_create_buffers(struct tiled_blits *t,
 		t->buffers[i].tiling =
 			i915_prandom_u32_max_state(CLIENT_NUM_TILING_TYPES, prng);
 
-		/* Platforms support either TileY or Tile4, not both */
+		 
 		if (HAS_4TILE(i915) && t->buffers[i].tiling == CLIENT_TILING_Y)
 			t->buffers[i].tiling = CLIENT_TILING_4;
 		else if (!HAS_4TILE(i915) && t->buffers[i].tiling == CLIENT_TILING_4)
@@ -370,7 +360,7 @@ static u64 tiled_offset(const struct intel_gt *gt,
 	if (tiling == CLIENT_TILING_4) {
 		v = linear_x_y_to_ftiled_pos(x_pos, y_pos, stride, 32);
 
-		/* no swizzling for f-tiling */
+		 
 		swizzle = I915_BIT_6_SWIZZLE_NONE;
 	} else if (tiling == CLIENT_TILING_X) {
 		v = div64_u64_rem(y, 8, &y) * stride * 8;
@@ -560,8 +550,8 @@ tiled_blits_create(struct intel_engine_cs *engine, struct rnd_state *prng)
 		       i915_vm_min_alignment(t->ce->vm, INTEL_MEMORY_SYSTEM));
 
 	hole_size = 2 * round_up(WIDTH * HEIGHT * 4, t->align);
-	hole_size *= 2; /* room to maneuver */
-	hole_size += 2 * t->align; /* padding on either side */
+	hole_size *= 2;  
+	hole_size += 2 * t->align;  
 
 	mutex_lock(&t->ce->vm->mutex);
 	memset(&hole, 0, sizeof(hole));
@@ -614,7 +604,7 @@ static int tiled_blits_prepare(struct tiled_blits *t,
 	if (IS_ERR(map))
 		return PTR_ERR(map);
 
-	/* Use scratch to fill objects */
+	 
 	for (i = 0; i < ARRAY_SIZE(t->buffers); i++) {
 		fill_scratch(t, map, prandom_u32_state(prng));
 		GEM_BUG_ON(verify_buffer(t, &t->scratch, prng));
@@ -639,7 +629,7 @@ static int tiled_blits_bounce(struct tiled_blits *t, struct rnd_state *prng)
 	u64 offset = round_up(t->width * t->height * 4, 2 * t->align);
 	int err;
 
-	/* We want to check position invariant tiling across GTT eviction */
+	 
 
 	err = tiled_blit(t,
 			 &t->buffers[1], t->hole + offset / 2,
@@ -647,10 +637,10 @@ static int tiled_blits_bounce(struct tiled_blits *t, struct rnd_state *prng)
 	if (err)
 		return err;
 
-	/* Simulating GTT eviction of the same buffer / layout */
+	 
 	t->buffers[2].tiling = t->buffers[0].tiling;
 
-	/* Reposition so that we overlap the old addresses, and slightly off */
+	 
 	err = tiled_blit(t,
 			 &t->buffers[2], t->hole + t->align,
 			 &t->buffers[1], t->hole + 3 * offset / 2);
@@ -713,11 +703,11 @@ static int igt_client_tiled_blits(void *arg)
 	I915_RND_STATE(prng);
 	int inst = 0;
 
-	/* Test requires explicit BLT tiling controls */
+	 
 	if (GRAPHICS_VER(i915) < 4)
 		return 0;
 
-	if (bad_swizzling(i915)) /* Requires sane (sub-page) swizzling */
+	if (bad_swizzling(i915))  
 		return 0;
 
 	do {

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010-2011,2013-2015 The Linux Foundation. All rights reserved.
- *
- * lpass-platform.c -- ALSA SoC platform driver for QTi LPASS
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/export.h>
@@ -1031,7 +1027,7 @@ static irqreturn_t lpass_platform_lpaif_irq(int irq, void *data)
 		return IRQ_NONE;
 	}
 
-	/* Handle per channel interrupts */
+	 
 	for (chan = 0; chan < LPASS_MAX_DMA_CHANNELS; chan++) {
 		if (irqs & LPAIF_IRQ_ALL(chan) && drvdata->substream[chan]) {
 			rv = lpass_dma_interrupt_handler(
@@ -1059,7 +1055,7 @@ static irqreturn_t lpass_platform_hdmiif_irq(int irq, void *data)
 		return IRQ_NONE;
 	}
 
-	/* Handle per channel interrupts */
+	 
 	for (chan = 0; chan < LPASS_MAX_HDMI_DMA_CHANNELS; chan++) {
 		if (irqs & (LPAIF_IRQ_ALL(chan) | LPAIF_IRQ_HDMI_REQ_ON_PRELOAD(chan) |
 				LPAIF_IRQ_HDMI_METADONE |
@@ -1086,7 +1082,7 @@ static irqreturn_t lpass_platform_rxtxif_irq(int irq, void *data)
 	rv = regmap_read(drvdata->rxtx_lpaif_map,
 			LPAIF_RXTX_IRQSTAT_REG(v, LPAIF_IRQ_PORT_HOST), &irqs);
 
-	/* Handle per channel interrupts */
+	 
 	for (chan = 0; chan < LPASS_MAX_CDC_DMA_CHANNELS; chan++) {
 		if (irqs & LPAIF_IRQ_ALL(chan) && drvdata->rxtx_substream[chan]) {
 			rv = lpass_dma_interrupt_handler(
@@ -1111,7 +1107,7 @@ static irqreturn_t lpass_platform_vaif_irq(int irq, void *data)
 	rv = regmap_read(drvdata->va_lpaif_map,
 			LPAIF_VA_IRQSTAT_REG(v, LPAIF_IRQ_PORT_HOST), &irqs);
 
-	/* Handle per channel interrupts */
+	 
 	for (chan = 0; chan < LPASS_MAX_VA_CDC_DMA_CHANNELS; chan++) {
 		if (irqs & LPAIF_IRQ_ALL(chan) && drvdata->va_substream[chan]) {
 			rv = lpass_dma_interrupt_handler(
@@ -1140,7 +1136,7 @@ static int lpass_platform_prealloc_cdc_dma_buffer(struct snd_soc_component *comp
 	buf->dev.dev = pcm->card->dev;
 	buf->private_data = NULL;
 
-	/* Assign Codec DMA buffer pointers */
+	 
 	buf->dev.type = SNDRV_DMA_TYPE_CONTINUOUS;
 
 	switch (dai_id) {
@@ -1174,10 +1170,7 @@ static int lpass_platform_pcm_new(struct snd_soc_component *component,
 
 	size_t size = lpass_platform_pcm_hardware.buffer_bytes_max;
 
-	/*
-	 * Lpass codec dma can access only lpass lpm hardware memory.
-	 * ioremap is for HLOS to access hardware memory.
-	 */
+	 
 	if (is_cdc_dma_port(dai_id))
 		return lpass_platform_prealloc_cdc_dma_buffer(component, pcm, dai_id);
 
@@ -1275,7 +1268,7 @@ int asoc_qcom_lpass_platform_register(struct platform_device *pdev)
 	if (drvdata->lpaif_irq < 0)
 		return -ENODEV;
 
-	/* ensure audio hardware is disabled */
+	 
 	ret = regmap_write(drvdata->lpaif_map,
 			LPAIF_IRQEN_REG(v, LPAIF_IRQ_PORT_HOST), 0);
 	if (ret) {

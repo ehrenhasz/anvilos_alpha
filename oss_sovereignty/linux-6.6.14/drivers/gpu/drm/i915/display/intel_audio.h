@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_AUDIO_H__
 #define __INTEL_AUDIO_H__
@@ -32,4 +30,4 @@ void intel_audio_deinit(struct drm_i915_private *dev_priv);
 void intel_audio_sdp_split_update(struct intel_encoder *encoder,
 				  const struct intel_crtc_state *crtc_state);
 
-#endif /* __INTEL_AUDIO_H__ */
+#endif  

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2015 Intel Deutschland GmbH
- */
+ 
+ 
 #ifndef __DEVCOREDUMP_H
 #define __DEVCOREDUMP_H
 
@@ -12,13 +10,7 @@
 #include <linux/scatterlist.h>
 #include <linux/slab.h>
 
-/*
- * _devcd_free_sgtable - free all the memory of the given scatterlist table
- * (i.e. both pages and scatterlist instances)
- * NOTE: if two tables allocated and chained using the sg_chain function then
- * this function should be called only once on the first table
- * @table: pointer to sg_table to free
- */
+ 
 static inline void _devcd_free_sgtable(struct scatterlist *table)
 {
 	int i;
@@ -26,7 +18,7 @@ static inline void _devcd_free_sgtable(struct scatterlist *table)
 	struct scatterlist *iter;
 	struct scatterlist *delete_iter;
 
-	/* free pages */
+	 
 	iter = table;
 	for_each_sg(table, iter, sg_nents(table), i) {
 		page = sg_page(iter);
@@ -34,9 +26,9 @@ static inline void _devcd_free_sgtable(struct scatterlist *table)
 			__free_page(page);
 	}
 
-	/* then free all chained tables */
+	 
 	iter = table;
-	delete_iter = table;	/* always points on a head of a table */
+	delete_iter = table;	 
 	while (!sg_is_last(iter)) {
 		iter++;
 		if (sg_is_chain(iter)) {
@@ -46,7 +38,7 @@ static inline void _devcd_free_sgtable(struct scatterlist *table)
 		}
 	}
 
-	/* free the last table */
+	 
 	kfree(delete_iter);
 }
 
@@ -85,6 +77,6 @@ static inline void dev_coredumpsg(struct device *dev, struct scatterlist *table,
 {
 	_devcd_free_sgtable(table);
 }
-#endif /* CONFIG_DEV_COREDUMP */
+#endif  
 
-#endif /* __DEVCOREDUMP_H */
+#endif  

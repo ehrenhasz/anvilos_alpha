@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/fs.h>
 #include <linux/types.h>
@@ -59,18 +59,7 @@ static int btrfs_encode_fh(struct inode *inode, u32 *fh, int *max_len,
 	return type;
 }
 
-/*
- * Read dentry of inode with @objectid from filesystem root @root_objectid.
- *
- * @sb:             the filesystem super block
- * @objectid:       inode objectid
- * @root_objectid:  object id of the subvolume root where to look up the inode
- * @generation:     optional, if not zero, verify that the found inode
- *                  generation matches
- *
- * Return dentry alias for the inode, otherwise an error. In case the
- * generation does not match return ESTALE.
- */
+ 
 struct dentry *btrfs_get_dentry(struct super_block *sb, u64 objectid,
 				u64 root_objectid, u64 generation)
 {
@@ -175,7 +164,7 @@ struct dentry *btrfs_get_parent(struct dentry *child)
 	if (ret < 0)
 		goto fail;
 
-	BUG_ON(ret == 0); /* Key with offset of -1 found */
+	BUG_ON(ret == 0);  
 	if (path->slots[0] == 0) {
 		ret = -ENOENT;
 		goto fail;
@@ -276,10 +265,7 @@ static int btrfs_get_name(struct dentry *parent, char *name,
 	read_extent_buffer(leaf, name, name_ptr, name_len);
 	btrfs_free_path(path);
 
-	/*
-	 * have to add the null termination to make sure that reconnect_path
-	 * gets the right len for strlen
-	 */
+	 
 	name[name_len] = '\0';
 
 	return 0;

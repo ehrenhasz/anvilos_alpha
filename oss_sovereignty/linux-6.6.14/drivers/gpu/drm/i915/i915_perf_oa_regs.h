@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_PERF_OA_REGS__
 #define __INTEL_PERF_OA_REGS__
@@ -48,7 +46,7 @@
 #define  GEN8_OA_TIMER_ENABLE		    (1 << 1)
 #define  GEN8_OA_COUNTER_RESUME		    (1 << 0)
 
-#define GEN7_OABUFFER _MMIO(0x23B0) /* R/W */
+#define GEN7_OABUFFER _MMIO(0x23B0)  
 #define  GEN7_OABUFFER_OVERRUN_DISABLE	    (1 << 3)
 #define  GEN7_OABUFFER_EDGE_TRIGGER	    (1 << 2)
 #define  GEN7_OABUFFER_STOP_RESUME_ENABLE   (1 << 1)
@@ -56,7 +54,7 @@
 
 #define GEN8_OABUFFER_UDW _MMIO(0x23b4)
 #define GEN8_OABUFFER _MMIO(0x2b14)
-#define  GEN8_OABUFFER_MEM_SELECT_GGTT      (1 << 0)  /* 0: PPGTT, 1: GGTT */
+#define  GEN8_OABUFFER_MEM_SELECT_GGTT      (1 << 0)   
 
 #define GEN7_OASTATUS1 _MMIO(0x2364)
 #define  GEN7_OASTATUS1_TAIL_MASK	    0xffffffc0
@@ -66,7 +64,7 @@
 
 #define GEN7_OASTATUS2 _MMIO(0x2368)
 #define  GEN7_OASTATUS2_HEAD_MASK           0xffffffc0
-#define  GEN7_OASTATUS2_MEM_SELECT_GGTT     (1 << 0) /* 0: PPGTT, 1: GGTT */
+#define  GEN7_OASTATUS2_MEM_SELECT_GGTT     (1 << 0)  
 
 #define GEN8_OASTATUS _MMIO(0x2b08)
 #define  GEN8_OASTATUS_TAIL_POINTER_WRAP    (1 << 17)
@@ -92,7 +90,7 @@
 
 #define GEN12_OA_TLB_INV_CR _MMIO(0xceec)
 
-/* Gen12 OAR unit */
+ 
 #define GEN12_OAR_OACONTROL _MMIO(0x2960)
 #define  GEN12_OAR_OACONTROL_COUNTER_FORMAT_SHIFT 1
 #define  GEN12_OAR_OACONTROL_COUNTER_ENABLE       (1 << 0)
@@ -100,7 +98,7 @@
 #define GEN12_OACTXCONTROL(base) _MMIO((base) + 0x360)
 #define GEN12_OAR_OASTATUS _MMIO(0x2968)
 
-/* Gen12 OAG unit */
+ 
 #define GEN12_OAG_OAHEADPTR _MMIO(0xdb00)
 #define  GEN12_OAG_OAHEADPTR_MASK 0xffffffc0
 #define GEN12_OAG_OATAILPTR _MMIO(0xdb04)
@@ -109,7 +107,7 @@
 #define GEN12_OAG_OABUFFER  _MMIO(0xdb08)
 #define  GEN12_OAG_OABUFFER_BUFFER_SIZE_MASK  (0x7)
 #define  GEN12_OAG_OABUFFER_BUFFER_SIZE_SHIFT (3)
-#define  GEN12_OAG_OABUFFER_MEMORY_SELECT     (1 << 0) /* 0: PPGTT, 1: GGTT */
+#define  GEN12_OAG_OABUFFER_MEMORY_SELECT     (1 << 0)  
 
 #define GEN12_OAG_OAGLBCTXCTRL _MMIO(0x2b28)
 #define  GEN12_OAG_OAGLBCTXCTRL_TIMER_PERIOD_SHIFT 2
@@ -134,7 +132,7 @@
 #define GDT_CHICKEN_BITS    _MMIO(0x9840)
 #define   GT_NOA_ENABLE	    0x00000080
 
-/* Gen12 OAM unit */
+ 
 #define GEN12_OAM_HEAD_POINTER_OFFSET   (0x1a0)
 #define  GEN12_OAM_HEAD_POINTER_MASK    0xffffffc0
 
@@ -144,7 +142,7 @@
 #define GEN12_OAM_BUFFER_OFFSET         (0x1a8)
 #define  GEN12_OAM_BUFFER_SIZE_MASK     (0x7)
 #define  GEN12_OAM_BUFFER_SIZE_SHIFT    (3)
-#define  GEN12_OAM_BUFFER_MEMORY_SELECT REG_BIT(0) /* 0: PPGTT, 1: GGTT */
+#define  GEN12_OAM_BUFFER_MEMORY_SELECT REG_BIT(0)  
 
 #define GEN12_OAM_CONTEXT_CONTROL_OFFSET              (0x1bc)
 #define  GEN12_OAM_CONTEXT_CONTROL_TIMER_PERIOD_SHIFT 2
@@ -212,4 +210,4 @@
 #define GEN12_OAM_PERF_COUNTER_B(base, idx) \
 	_MMIO((base) + GEN12_OAM_PERF_COUNTER_B0_OFFSET + 4 * (idx))
 
-#endif /* __INTEL_PERF_OA_REGS__ */
+#endif  

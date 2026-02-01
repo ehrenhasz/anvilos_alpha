@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Onkey driver for Actions Semi ATC260x PMICs.
- *
- * Copyright (c) 2020 Cristian Ciocaltea <cristian.ciocaltea@gmail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/input.h>
@@ -14,10 +10,10 @@
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* <2s for short press, >2s for long press */
+ 
 #define KEY_PRESS_TIME_SEC	2
 
-/* Driver internals */
+ 
 enum atc260x_onkey_reset_status {
 	KEY_RESET_HW_DEFAULT,
 	KEY_RESET_DISABLED,
@@ -113,20 +109,13 @@ static void atc260x_onkey_query(struct atc260x_onkey *onkey)
 		key_down &= onkey->params->kdwn_state_bm;
 	}
 
-	/*
-	 * The hardware generates interrupt only when the onkey pin is
-	 * asserted. Hence, the deassertion of the pin is simulated through
-	 * work queue.
-	 */
+	 
 	if (key_down) {
 		schedule_delayed_work(&onkey->work, msecs_to_jiffies(200));
 		return;
 	}
 
-	/*
-	 * The key-down status bit is cleared when the On/Off button
-	 * is released.
-	 */
+	 
 	input_report_key(onkey->input_dev, KEY_POWER, 0);
 	input_sync(onkey->input_dev);
 
@@ -136,7 +125,7 @@ static void atc260x_onkey_query(struct atc260x_onkey *onkey)
 		   onkey->params->press_int_en_bm |
 		   onkey->params->kdwn_int_en_bm;
 
-	/* Clear key press pending events and enable key press interrupts. */
+	 
 	regmap_update_bits(onkey->atc260x->regmap, onkey->params->reg_int_ctl,
 			   reg_bits, reg_bits);
 }
@@ -153,7 +142,7 @@ static irqreturn_t atc260x_onkey_irq(int irq, void *data)
 	struct atc260x_onkey *onkey = data;
 	int ret;
 
-	/* Disable key press interrupts. */
+	 
 	ret = regmap_update_bits(onkey->atc260x->regmap,
 				 onkey->params->reg_int_ctl,
 				 onkey->params->press_int_en_bm |
@@ -271,7 +260,7 @@ static int atc260x_onkey_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* Keep IRQ disabled until atc260x_onkey_open() is called. */
+	 
 	disable_irq(onkey->irq);
 
 	error = input_register_device(input_dev);

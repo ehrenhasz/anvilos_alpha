@@ -1,33 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2023 Linus Torvalds <torvalds@linux-foundation.org>
- */
+ 
+ 
 
 #include <linux/linkage.h>
 #include <asm/asm.h>
 #include <asm/export.h>
 
-/*
- * copy_user_nocache - Uncached memory copy with exception handling
- *
- * This copies from user space into kernel space, but the kernel
- * space accesses can take a machine check exception, so they too
- * need exception handling.
- *
- * Note: only 32-bit and 64-bit stores have non-temporal versions,
- * and we only use aligned versions. Any unaligned parts at the
- * start or end of the copy will be done using normal cached stores.
- *
- * Input:
- * rdi destination
- * rsi source
- * edx count
- *
- * Output:
- * rax uncopied bytes or 0 if successful.
- */
+ 
 SYM_FUNC_START(__copy_user_nocache)
-	/* If destination is not 7-byte aligned, we'll have to align it */
+	 
 	testb $7,%dil
 	jne .Lalign
 
@@ -60,33 +40,19 @@ SYM_FUNC_START(__copy_user_nocache)
 	cmp $64,%edx
 	jae .Lunrolled
 
-/*
- * First set of user mode loads have been done
- * without any stores, so if they fail, we can
- * just try the non-unrolled loop.
- */
+ 
 _ASM_EXTABLE_UA(10b, .Lquadwords)
 _ASM_EXTABLE_UA(11b, .Lquadwords)
 _ASM_EXTABLE_UA(12b, .Lquadwords)
 _ASM_EXTABLE_UA(13b, .Lquadwords)
 
-/*
- * The second set of user mode loads have been
- * done with 32 bytes stored to the destination,
- * so we need to take that into account before
- * falling back to the unrolled loop.
- */
+ 
 _ASM_EXTABLE_UA(30b, .Lfixup32)
 _ASM_EXTABLE_UA(31b, .Lfixup32)
 _ASM_EXTABLE_UA(32b, .Lfixup32)
 _ASM_EXTABLE_UA(33b, .Lfixup32)
 
-/*
- * An exception on a write means that we're
- * done, but we need to update the count
- * depending on where in the unrolled loop
- * we were.
- */
+ 
 _ASM_EXTABLE_UA(20b, .Ldone0)
 _ASM_EXTABLE_UA(21b, .Ldone8)
 _ASM_EXTABLE_UA(22b, .Ldone16)
@@ -106,12 +72,7 @@ _ASM_EXTABLE_UA(43b, .Ldone56)
 	sub $8,%edx
 	jmp .Lquadwords
 
-/*
- * If we fail on the last full quadword, we will
- * not try to do any byte-wise cached accesses.
- * We will try to do one more 4-byte uncached
- * one, though.
- */
+ 
 _ASM_EXTABLE_UA(50b, .Llast4)
 _ASM_EXTABLE_UA(51b, .Ldone0)
 
@@ -142,13 +103,7 @@ _ASM_EXTABLE_UA(51b, .Ldone0)
 	mov %edx,%eax
 	RET
 
-/*
- * If we fail on the last four bytes, we won't
- * bother with any fixups. It's dead, Jim. Note
- * that there's no need for 'sfence' for any
- * of this, since the exception will have been
- * serializing.
- */
+ 
 _ASM_EXTABLE_UA(60b, .Ldone)
 _ASM_EXTABLE_UA(61b, .Ldone)
 _ASM_EXTABLE_UA(70b, .Ldone)
@@ -156,12 +111,7 @@ _ASM_EXTABLE_UA(71b, .Ldone)
 _ASM_EXTABLE_UA(80b, .Ldone)
 _ASM_EXTABLE_UA(81b, .Ldone)
 
-/*
- * This is the "head needs aliging" case when
- * the destination isn't 8-byte aligned. The
- * 4-byte case can be done uncached, but any
- * smaller alignment is done with regular stores.
- */
+ 
 .Lalign:
 	test $1,%dil
 	je .Lalign_word
@@ -194,13 +144,7 @@ _ASM_EXTABLE_UA(81b, .Ldone)
 	sub $4,%edx
 	jmp .Lis_aligned
 
-/*
- * If we fail on the initial alignment accesses,
- * we're all done. Again, no point in trying to
- * do byte-by-byte probing if the 4-byte load
- * fails - we're not doing any uncached accesses
- * any more.
- */
+ 
 _ASM_EXTABLE_UA(90b, .Ldone)
 _ASM_EXTABLE_UA(91b, .Ldone)
 _ASM_EXTABLE_UA(92b, .Ldone)
@@ -208,9 +152,7 @@ _ASM_EXTABLE_UA(93b, .Ldone)
 _ASM_EXTABLE_UA(94b, .Ldone)
 _ASM_EXTABLE_UA(95b, .Ldone)
 
-/*
- * Exception table fixups for faults in the middle
- */
+ 
 .Ldone56: sub $8,%edx
 .Ldone48: sub $8,%edx
 .Ldone40: sub $8,%edx

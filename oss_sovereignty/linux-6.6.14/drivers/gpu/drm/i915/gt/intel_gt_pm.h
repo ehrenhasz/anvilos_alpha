@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_GT_PM_H
 #define INTEL_GT_PM_H
@@ -55,14 +53,7 @@ static inline void intel_gt_pm_might_put(struct intel_gt *gt)
 	for (tmp = 1, intel_gt_pm_get(gt); tmp; \
 	     intel_gt_pm_put(gt), tmp = 0)
 
-/**
- * with_intel_gt_pm_if_awake - if GT is PM awake, get a reference to prevent
- *	it to sleep, run some code and then asynchrously put the reference
- *	away.
- *
- * @gt: pointer to the gt
- * @wf: pointer to a temporary wakeref.
- */
+ 
 #define with_intel_gt_pm_if_awake(gt, wf) \
 	for (wf = intel_gt_pm_get_if_awake(gt); wf; intel_gt_pm_put_async(gt), wf = 0)
 
@@ -89,4 +80,4 @@ static inline bool is_mock_gt(const struct intel_gt *gt)
 	return I915_SELFTEST_ONLY(gt->awake == -ENODEV);
 }
 
-#endif /* INTEL_GT_PM_H */
+#endif  

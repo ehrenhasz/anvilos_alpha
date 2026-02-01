@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Specific M_CAN Glue
- *
- * Copyright (C) 2018-2020 Intel Corporation
- * Author: Felipe Balbi (Intel)
- * Author: Jarkko Nikula <jarkko.nikula@linux.intel.com>
- * Author: Raymond Tan <raymond.tan@intel.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -134,7 +127,7 @@ static int m_can_pci_probe(struct pci_dev *pci, const struct pci_device_id *id)
 	if (ret)
 		goto err_free_irq;
 
-	/* Enable interrupt control at CAN wrapper IP */
+	 
 	writel(0x1, base + CTL_CSR_INT_CTL_OFFSET);
 
 	pm_runtime_set_autosuspend_delay(dev, 1000);
@@ -159,7 +152,7 @@ static void m_can_pci_remove(struct pci_dev *pci)
 	pm_runtime_forbid(&pci->dev);
 	pm_runtime_get_noresume(&pci->dev);
 
-	/* Disable interrupt control at CAN wrapper IP */
+	 
 	writel(0x0, priv->base + CTL_CSR_INT_CTL_OFFSET);
 
 	m_can_class_unregister(mcan_class);
@@ -183,7 +176,7 @@ static SIMPLE_DEV_PM_OPS(m_can_pci_pm_ops,
 static const struct pci_device_id m_can_pci_id_table[] = {
 	{ PCI_VDEVICE(INTEL, 0x4bc1), M_CAN_CLOCK_FREQ_EHL, },
 	{ PCI_VDEVICE(INTEL, 0x4bc2), M_CAN_CLOCK_FREQ_EHL, },
-	{  }	/* Terminating Entry */
+	{  }	 
 };
 MODULE_DEVICE_TABLE(pci, m_can_pci_id_table);
 

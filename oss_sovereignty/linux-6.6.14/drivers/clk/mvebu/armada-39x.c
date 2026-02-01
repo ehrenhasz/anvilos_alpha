@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Armada 39x SoC clocks
- *
- * Copyright (C) 2015 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -17,17 +7,7 @@
 #include <linux/of.h>
 #include "common.h"
 
-/*
- * SARL[14:10] : Ratios between CPU, NBCLK, HCLK and DCLK.
- *
- * SARL[15]    : TCLK frequency
- *		 0 = 250 MHz
- *		 1 = 200 MHz
- *
- * SARH[0]     : Reference clock frequency
- *               0 = 25 Mhz
- *               1 = 40 Mhz
- */
+ 
 
 #define SARL 					0
 #define  SARL_A390_TCLK_FREQ_OPT		15
@@ -131,9 +111,7 @@ static void __init armada_39x_coreclk_init(struct device_node *np)
 CLK_OF_DECLARE(armada_39x_core_clk, "marvell,armada-390-core-clock",
 	       armada_39x_coreclk_init);
 
-/*
- * Clock Gating Control
- */
+ 
 static const struct clk_gating_soc_desc armada_39x_gating_desc[] __initconst = {
 	{ "pex1", NULL, 5 },
 	{ "pex2", NULL, 6 },

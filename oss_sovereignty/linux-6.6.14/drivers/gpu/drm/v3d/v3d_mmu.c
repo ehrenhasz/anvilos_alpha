@@ -1,31 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Copyright (C) 2017-2018 Broadcom */
 
-/**
- * DOC: Broadcom V3D MMU
- *
- * The V3D 3.x hardware (compared to VC4) now includes an MMU.  It has
- * a single level of page tables for the V3D's 4GB address space to
- * map to AXI bus addresses, thus it could need up to 4MB of
- * physically contiguous memory to store the PTEs.
- *
- * Because the 4MB of contiguous memory for page tables is precious,
- * and switching between them is expensive, we load all BOs into the
- * same 4GB address space.
- *
- * To protect clients from each other, we should use the GMP to
- * quickly mask out (at 128kb granularity) what pages are available to
- * each client.  This is not yet implemented.
- */
+ 
+
+ 
 
 #include "v3d_drv.h"
 #include "v3d_regs.h"
 
 #define V3D_MMU_PAGE_SHIFT 12
 
-/* Note: All PTEs for the 1MB superpage must be filled with the
- * superpage bit set.
- */
+ 
 #define V3D_PTE_SUPERPAGE BIT(31)
 #define V3D_PTE_WRITEABLE BIT(29)
 #define V3D_PTE_VALID BIT(28)
@@ -34,9 +17,7 @@ static int v3d_mmu_flush_all(struct v3d_dev *v3d)
 {
 	int ret;
 
-	/* Make sure that another flush isn't already running when we
-	 * start this one.
-	 */
+	 
 	ret = wait_for(!(V3D_READ(V3D_MMU_CTL) &
 			 V3D_MMU_CTL_TLB_CLEARING), 100);
 	if (ret)

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/net_tstamp.h>
 
@@ -59,7 +59,7 @@ static int tsinfo_reply_size(const struct ethnl_req_info *req_base,
 					  sof_timestamping_names, compact);
 		if (ret < 0)
 			return ret;
-		len += ret;	/* _TSINFO_TIMESTAMPING */
+		len += ret;	 
 	}
 	if (ts_info->tx_types) {
 		ret = ethnl_bitset32_size(&ts_info->tx_types, NULL,
@@ -67,7 +67,7 @@ static int tsinfo_reply_size(const struct ethnl_req_info *req_base,
 					  ts_tx_type_names, compact);
 		if (ret < 0)
 			return ret;
-		len += ret;	/* _TSINFO_TX_TYPES */
+		len += ret;	 
 	}
 	if (ts_info->rx_filters) {
 		ret = ethnl_bitset32_size(&ts_info->rx_filters, NULL,
@@ -75,10 +75,10 @@ static int tsinfo_reply_size(const struct ethnl_req_info *req_base,
 					  ts_rx_filter_names, compact);
 		if (ret < 0)
 			return ret;
-		len += ret;	/* _TSINFO_RX_FILTERS */
+		len += ret;	 
 	}
 	if (ts_info->phc_index >= 0)
-		len += nla_total_size(sizeof(u32));	/* _TSINFO_PHC_INDEX */
+		len += nla_total_size(sizeof(u32));	 
 
 	return len;
 }

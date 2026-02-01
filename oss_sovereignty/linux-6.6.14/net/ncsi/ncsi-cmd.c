@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright Gavin Shan, IBM Corporation 2016.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -32,9 +30,7 @@ u32 ncsi_calculate_checksum(unsigned char *data, int len)
 	return checksum;
 }
 
-/* This function should be called after the data area has been
- * populated completely.
- */
+ 
 static void ncsi_cmd_build_header(struct ncsi_pkt_hdr *h,
 				  struct ncsi_cmd_arg *nca)
 {
@@ -52,7 +48,7 @@ static void ncsi_cmd_build_header(struct ncsi_pkt_hdr *h,
 	h->reserved1[0] = 0;
 	h->reserved1[1] = 0;
 
-	/* Fill with calculated checksum */
+	 
 	checksum = ncsi_calculate_checksum((unsigned char *)h,
 					   sizeof(*h) + nca->payload);
 	pchecksum = (__be32 *)((void *)h + sizeof(struct ncsi_pkt_hdr) +
@@ -216,12 +212,7 @@ static int ncsi_cmd_handler_oem(struct sk_buff *skb,
 	struct ncsi_cmd_oem_pkt *cmd;
 	unsigned int len;
 	int payload;
-	/* NC-SI spec DSP_0222_1.2.0, section 8.2.2.2
-	 * requires payload to be padded with 0 to
-	 * 32-bit boundary before the checksum field.
-	 * Ensure the padding bytes are accounted for in
-	 * skb allocation
-	 */
+	 
 
 	payload = ALIGN(nca->payload, 4);
 	len = sizeof(struct ncsi_cmd_pkt_hdr) + 4;
@@ -229,7 +220,7 @@ static int ncsi_cmd_handler_oem(struct sk_buff *skb,
 
 	cmd = skb_put_zero(skb, len);
 	unsafe_memcpy(&cmd->mfr_id, nca->data, nca->payload,
-		      /* skb allocated with enough to load the payload */);
+		       );
 	ncsi_cmd_build_header(&cmd->cmd.common, nca);
 
 	return 0;
@@ -289,17 +280,12 @@ static struct ncsi_request *ncsi_alloc_command(struct ncsi_cmd_arg *nca)
 	if (!nr)
 		return NULL;
 
-	/* NCSI command packet has 16-bytes header, payload, 4 bytes checksum.
-	 * Payload needs padding so that the checksum field following payload is
-	 * aligned to 32-bit boundary.
-	 * The packet needs padding if its payload is less than 26 bytes to
-	 * meet 64 bytes minimal ethernet frame length.
-	 */
+	 
 	len += sizeof(struct ncsi_cmd_pkt_hdr) + 4;
 	payload = ALIGN(nca->payload, 4);
 	len += max(payload, padding_bytes);
 
-	/* Allocate skb */
+	 
 	skb = alloc_skb(len, GFP_ATOMIC);
 	if (!skb) {
 		ncsi_free_request(nr);
@@ -324,13 +310,13 @@ int ncsi_xmit_cmd(struct ncsi_cmd_arg *nca)
 	struct ethhdr *eh;
 	int i, ret;
 
-	/* Use OEM generic handler for Netlink request */
+	 
 	if (nca->req_flags == NCSI_REQ_FLAG_NETLINK_DRIVEN)
 		type = NCSI_PKT_CMD_OEM;
 	else
 		type = nca->type;
 
-	/* Search for the handler */
+	 
 	for (i = 0; i < ARRAY_SIZE(ncsi_cmd_handlers); i++) {
 		if (ncsi_cmd_handlers[i].type == type) {
 			if (ncsi_cmd_handlers[i].handler)
@@ -348,25 +334,21 @@ int ncsi_xmit_cmd(struct ncsi_cmd_arg *nca)
 		return -ENOENT;
 	}
 
-	/* Get packet payload length and allocate the request
-	 * It is expected that if length set as negative in
-	 * handler structure means caller is initializing it
-	 * and setting length in nca before calling xmit function
-	 */
+	 
 	if (nch->payload >= 0)
 		nca->payload = nch->payload;
 	nr = ncsi_alloc_command(nca);
 	if (!nr)
 		return -ENOMEM;
 
-	/* track netlink information */
+	 
 	if (nca->req_flags == NCSI_REQ_FLAG_NETLINK_DRIVEN) {
 		nr->snd_seq = nca->info->snd_seq;
 		nr->snd_portid = nca->info->snd_portid;
 		nr->nlhdr = *nca->info->nlhdr;
 	}
 
-	/* Prepare the packet */
+	 
 	nca->id = nr->id;
 	ret = nch->handler(nr->cmd, nca);
 	if (ret) {
@@ -374,28 +356,22 @@ int ncsi_xmit_cmd(struct ncsi_cmd_arg *nca)
 		return ret;
 	}
 
-	/* Fill the ethernet header */
+	 
 	eh = skb_push(nr->cmd, sizeof(*eh));
 	eh->h_proto = htons(ETH_P_NCSI);
 	eth_broadcast_addr(eh->h_dest);
 
-	/* If mac address received from device then use it for
-	 * source address as unicast address else use broadcast
-	 * address as source address
-	 */
+	 
 	if (nca->ndp->gma_flag == 1)
 		memcpy(eh->h_source, nca->ndp->ndev.dev->dev_addr, ETH_ALEN);
 	else
 		eth_broadcast_addr(eh->h_source);
 
-	/* Start the timer for the request that might not have
-	 * corresponding response. Given NCSI is an internal
-	 * connection a 1 second delay should be sufficient.
-	 */
+	 
 	nr->enabled = true;
 	mod_timer(&nr->timer, jiffies + 1 * HZ);
 
-	/* Send NCSI packet */
+	 
 	skb_get(nr->cmd);
 	ret = dev_queue_xmit(nr->cmd);
 	if (ret < 0) {

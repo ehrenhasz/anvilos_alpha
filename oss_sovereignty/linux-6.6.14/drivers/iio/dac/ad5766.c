@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Analog Devices AD5766, AD5767
- * Digital to Analog Converters driver
- * Copyright 2019-2020 Analog Devices Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -61,11 +57,7 @@ enum ad5766_voltage_range {
 	AD5766_VOLTAGE_RANGE_M10V_to_10V,
 };
 
-/**
- * struct ad5766_chip_info - chip specific information
- * @num_channels:	number of channels
- * @channels:	        channel specification
- */
+ 
 struct ad5766_chip_info {
 	unsigned int			num_channels;
 	const struct iio_chan_spec	*channels;
@@ -77,11 +69,7 @@ enum {
 	AD5766_DITHER_SOURCE,
 };
 
-/*
- * Dither signal can also be scaled.
- * Available dither scale strings corresponding to "dither_scale" field in
- * "struct ad5766_state".
- */
+ 
 static const char * const ad5766_dither_scales[] = {
 	"1",
 	"0.75",
@@ -89,26 +77,7 @@ static const char * const ad5766_dither_scales[] = {
 	"0.25",
 };
 
-/**
- * struct ad5766_state - driver instance specific data
- * @spi:		SPI device
- * @lock:		Lock used to restrict concurrent access to SPI device
- * @chip_info:		Chip model specific constants
- * @gpio_reset:		Reset GPIO, used to reset the device
- * @crt_range:		Current selected output range
- * @dither_enable:	Power enable bit for each channel dither block (for
- *			example, D15 = DAC 15,D8 = DAC 8, and D0 = DAC 0)
- *			0 - Normal operation, 1 - Power down
- * @dither_invert:	Inverts the dither signal applied to the selected DAC
- *			outputs
- * @dither_source:	Selects between 2 possible sources:
- *			1: N0, 2: N1
- *			Two bits are used for each channel
- * @dither_scale:	Two bits are used for each of the 16 channels:
- *			0: 1 SCALING, 1: 0.75 SCALING, 2: 0.5 SCALING,
- *			3: 0.25 SCALING.
- * @data:		SPI transfer buffers
- */
+ 
 struct ad5766_state {
 	struct spi_device		*spi;
 	struct mutex			lock;
@@ -209,7 +178,7 @@ static int ad5766_reset(struct ad5766_state *st)
 
 	if (st->gpio_reset) {
 		gpiod_set_value_cansleep(st->gpio_reset, 1);
-		ndelay(100); /* t_reset >= 100ns */
+		ndelay(100);  
 		gpiod_set_value_cansleep(st->gpio_reset, 0);
 	} else {
 		ret = __ad5766_spi_write(st, AD5766_CMD_SW_FULL_RESET,
@@ -218,10 +187,7 @@ static int ad5766_reset(struct ad5766_state *st)
 			return ret;
 	}
 
-	/*
-	 * Minimum time between a reset and the subsequent successful write is
-	 * typically 25 ns
-	 */
+	 
 	ndelay(25);
 
 	return 0;
@@ -523,7 +489,7 @@ static int ad5766_default_setup(struct ad5766_state *st)
 	uint16_t val;
 	int ret, i;
 
-	/* Always issue a reset before writing to the span register. */
+	 
 	ret = ad5766_reset(st);
 	if (ret)
 		return ret;
@@ -532,7 +498,7 @@ static int ad5766_default_setup(struct ad5766_state *st)
 	if (ret)
 		return ret;
 
-	/* Dither power down */
+	 
 	st->dither_enable = GENMASK(15, 0);
 	ret = __ad5766_spi_write(st, AD5766_CMD_WR_PWR_DITHER,
 			     st->dither_enable);
@@ -633,7 +599,7 @@ static int ad5766_probe(struct spi_device *spi)
 	if (ret)
 		return ret;
 
-	/* Configure trigger buffer */
+	 
 	ret = devm_iio_triggered_buffer_setup_ext(&spi->dev, indio_dev, NULL,
 						  ad5766_trigger_handler,
 						  IIO_BUFFER_DIRECTION_OUT,

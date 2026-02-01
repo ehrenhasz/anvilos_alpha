@@ -1,19 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
 
-#include <linux/string.h> /* for memcpy() */
+ 
+
+#include <linux/string.h>  
 
 #include "system_global.h"
 
@@ -26,11 +14,7 @@
 #include "isp.h"
 #include "sh_css_defs.h"
 
-/*************************************************
- *
- * Forwarded Declaration
- *
- *************************************************/
+ 
 
 static bool create_input_system_channel(
     isp2401_input_system_cfg_t	*cfg,
@@ -150,13 +134,9 @@ static int32_t calculate_stride(
     bool	raw_packed,
     int32_t	align_in_bytes);
 
-/* end of Forwarded Declaration */
+ 
 
-/**************************************************
- *
- * Public Methods
- *
- **************************************************/
+ 
 ia_css_isys_error_t ia_css_isys_stream_create(
     ia_css_isys_descr_t	*isys_stream_descr,
     ia_css_isys_stream_h	isys_stream,
@@ -171,7 +151,7 @@ ia_css_isys_error_t ia_css_isys_stream_create(
 	ia_css_debug_dtrace(IA_CSS_DEBUG_TRACE_PRIVATE,
 			    "ia_css_isys_stream_create() enter:\n");
 
-	/*Reset isys_stream to 0*/
+	 
 	memset(isys_stream, 0, sizeof(*isys_stream));
 	isys_stream->enable_metadata = isys_stream_descr->metadata.enable;
 	isys_stream->id = isys_stream_id;
@@ -189,7 +169,7 @@ ia_css_isys_error_t ia_css_isys_stream_create(
 		return false;
 	}
 
-	/* create metadata channel */
+	 
 	if (isys_stream_descr->metadata.enable) {
 		rc = create_input_system_channel(isys_stream_descr, true,
 						 &isys_stream->md_channel);
@@ -211,7 +191,7 @@ void ia_css_isys_stream_destroy(
 	destroy_input_system_input_port(&isys_stream->input_port);
 	destroy_input_system_channel(&isys_stream->channel);
 	if (isys_stream->enable_metadata) {
-		/* Destroy metadata channel only if its allocated*/
+		 
 		destroy_input_system_channel(&isys_stream->md_channel);
 	}
 }
@@ -240,7 +220,7 @@ ia_css_isys_error_t ia_css_isys_stream_calculate_cfg(
 	if (!rc)
 		return false;
 
-	/* configure metadata channel */
+	 
 	if (isys_stream_descr->metadata.enable) {
 		isys_stream_cfg->enable_metadata = true;
 		rc  = calculate_input_system_channel_cfg(
@@ -268,13 +248,9 @@ ia_css_isys_error_t ia_css_isys_stream_calculate_cfg(
 	return rc;
 }
 
-/* end of Public Methods */
+ 
 
-/**************************************************
- *
- * Private Methods
- *
- **************************************************/
+ 
 static bool create_input_system_channel(
     isp2401_input_system_cfg_t	*cfg,
     bool			metadata,
@@ -410,7 +386,7 @@ static bool create_input_system_input_port(
 
 	me->source_type = cfg->mode;
 
-	/* for metadata */
+	 
 	me->metadata.packet_type = CSI_MIPI_PACKET_TYPE_UNDEFINED;
 	if (rc && cfg->metadata.enable) {
 		me->metadata.packet_type = get_csi_mipi_packet_type(
@@ -435,7 +411,7 @@ static void destroy_input_system_input_port(
 	}
 
 	if (me->metadata.packet_type != CSI_MIPI_PACKET_TYPE_UNDEFINED) {
-		/*Free the backend lut allocated for metadata*/
+		 
 		release_be_lut_entry(
 		    me->csi_rx.backend_id,
 		    me->metadata.packet_type,
@@ -554,7 +530,7 @@ static void release_sid(
 	ia_css_isys_stream2mmio_sid_rmgr_release(stream2mmio, sid);
 }
 
-/* See also: ia_css_dma_configure_from_info() */
+ 
 static int32_t calculate_stride(
     s32 bits_per_pixel,
     s32 pixels_per_line,
@@ -589,7 +565,7 @@ static bool acquire_ib_buffer(
 	buf->stride = calculate_stride(bits_per_pixel, pixels_per_line, false,
 				       align_in_bytes);
 	if (online)
-		buf->lines = 4; /* use double buffering for online usecases */
+		buf->lines = 4;  
 	else
 		buf->lines = 2;
 
@@ -743,20 +719,9 @@ static bool calculate_ibuf_ctrl_cfg(
 	cfg->ib_buffer.stride			= channel->ib_buffer.stride;
 	cfg->ib_buffer.lines			= channel->ib_buffer.lines;
 
-	/*
-	#ifndef ISP2401
-	 * zhengjie.lu@intel.com:
-	#endif
-	 * "dest_buf_cfg" should be part of the input system output
-	 * port configuration.
-	 *
-	 * TODO: move "dest_buf_cfg" to the input system output
-	 * port configuration.
-	 */
+	 
 
-	/* input_buf addr only available in sched mode;
-	   this buffer is allocated in isp, crun mode addr
-	   can be passed by after ISP allocation */
+	 
 	if (cfg->online) {
 		cfg->dest_buf_cfg.start_addr	= ISP_INPUT_BUF_START_ADDR + left_padding;
 		cfg->dest_buf_cfg.stride	= bytes_per_pixel
@@ -771,24 +736,14 @@ static bool calculate_ibuf_ctrl_cfg(
 		cfg->dest_buf_cfg.stride	= channel->ib_buffer.stride;
 	}
 
-	/*
-	#ifndef ISP2401
-	 * zhengjie.lu@intel.com:
-	#endif
-	 * "items_per_store" is hard coded as "1", which is ONLY valid
-	 * when the CSI-MIPI long packet is transferred.
-	 *
-	 * TODO: After the 1st stage of MERR+,  make the proper solution to
-	 * configure "items_per_store" so that it can also handle the CSI-MIPI
-	 * short packet.
-	 */
+	 
 	cfg->items_per_store		= 1;
 
 	cfg->stores_per_frame		= isys_cfg->input_port_resolution.lines_per_frame;
 
 	cfg->stream2mmio_cfg.sync_cmd	= _STREAM2MMIO_CMD_TOKEN_SYNC_FRAME;
 
-	/* TODO: Define conditions as when to use store words vs store packets */
+	 
 	cfg->stream2mmio_cfg.store_cmd	= _STREAM2MMIO_CMD_TOKEN_STORE_PACKETS;
 
 	return true;
@@ -801,8 +756,7 @@ static bool calculate_isys2401_dma_cfg(
 {
 	cfg->channel	= channel->dma_channel;
 
-	/* only online/sensor mode goto vmem
-	   offline/buffered_sensor, tpg and prbs will go to ddr */
+	 
 	if (isys_cfg->online)
 		cfg->connection = isys2401_dma_ibuf_to_vmem_connection;
 	else
@@ -814,7 +768,7 @@ static bool calculate_isys2401_dma_cfg(
 	return true;
 }
 
-/* See also: ia_css_dma_configure_from_info() */
+ 
 static bool calculate_isys2401_dma_port_cfg(
     const isp2401_input_system_cfg_t	*isys_cfg,
     bool				raw_packed,
@@ -825,7 +779,7 @@ static bool calculate_isys2401_dma_port_cfg(
 	s32 pixels_per_line;
 	s32 align_req_in_bytes;
 
-	/* TODO: Move metadata away from isys_cfg to application layer */
+	 
 	if (metadata) {
 		bits_per_pixel = isys_cfg->metadata.bits_per_pixel;
 		pixels_per_line = isys_cfg->metadata.pixels_per_line;
@@ -865,5 +819,5 @@ static csi_mipi_packet_type_t get_csi_mipi_packet_type(
 	return packet_type;
 }
 
-/* end of Private Methods */
+ 
 #endif

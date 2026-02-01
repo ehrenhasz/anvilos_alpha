@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Base unit test (KUnit) API.
- *
- * Copyright (C) 2019, Google LLC.
- * Author: Brendan Higgins <brendanhiggins@google.com>
- */
+
+ 
 
 #include <kunit/resource.h>
 #include <kunit/test.h>
@@ -22,9 +17,7 @@
 #include "string-stream.h"
 #include "try-catch-impl.h"
 
-/*
- * Hook to fail the current test and print an error message to the log.
- */
+ 
 void __printf(3, 4) __kunit_fail_current_test_impl(const char *file, int line, const char *fmt, ...)
 {
 	va_list args;
@@ -36,7 +29,7 @@ void __printf(3, 4) __kunit_fail_current_test_impl(const char *file, int line, c
 
 	kunit_set_failure(current->kunit_test);
 
-	/* kunit_err() only accepts literals, so evaluate the args first. */
+	 
 	va_start(args, fmt);
 	len = vsnprintf(NULL, 0, fmt, args) + 1;
 	va_end(args);
@@ -53,9 +46,7 @@ void __printf(3, 4) __kunit_fail_current_test_impl(const char *file, int line, c
 	kunit_kfree(current->kunit_test, buffer);
 }
 
-/*
- * Enable KUnit tests to run.
- */
+ 
 #ifdef CONFIG_KUNIT_DEFAULT_ENABLED
 static bool enable_param = true;
 #else
@@ -64,12 +55,7 @@ static bool enable_param;
 module_param_named(enable, enable_param, bool, 0);
 MODULE_PARM_DESC(enable, "Enable KUnit tests");
 
-/*
- * KUnit statistic mode:
- * 0 - disabled
- * 1 - only when there is more than one subtest
- * 2 - enabled
- */
+ 
 static int kunit_stats_enabled = 1;
 module_param_named(stats_enabled, kunit_stats_enabled, int, 0644);
 MODULE_PARM_DESC(stats_enabled,
@@ -109,11 +95,7 @@ static void kunit_print_test_stats(struct kunit *test,
 		  stats.total);
 }
 
-/**
- * kunit_log_newline() - Add newline to the end of log if one is not
- * already present.
- * @log: The log to add the newline to.
- */
+ 
 static void kunit_log_newline(char *log)
 {
 	int log_len, len_left;
@@ -125,10 +107,7 @@ static void kunit_log_newline(char *log)
 		strncat(log, "\n", len_left);
 }
 
-/*
- * Append formatted message to log, size of which is limited to
- * KUNIT_LOG_SIZE bytes (including null terminating byte).
- */
+ 
 void kunit_log_append(char *log, const char *fmt, ...)
 {
 	va_list args;
@@ -142,17 +121,17 @@ void kunit_log_append(char *log, const char *fmt, ...)
 	if (len_left <= 0)
 		return;
 
-	/* Evaluate length of line to add to log */
+	 
 	va_start(args, fmt);
 	len = vsnprintf(NULL, 0, fmt, args) + 1;
 	va_end(args);
 
-	/* Print formatted line to the log */
+	 
 	va_start(args, fmt);
 	vsnprintf(log + log_len, min(len, len_left), fmt, args);
 	va_end(args);
 
-	/* Add newline to end of log if not already present. */
+	 
 	kunit_log_newline(log);
 }
 EXPORT_SYMBOL_GPL(kunit_log_append);
@@ -169,7 +148,7 @@ size_t kunit_suite_num_test_cases(struct kunit_suite *suite)
 }
 EXPORT_SYMBOL_GPL(kunit_suite_num_test_cases);
 
-/* Currently supported test levels */
+ 
 enum {
 	KUNIT_LEVEL_SUITE = 0,
 	KUNIT_LEVEL_CASE,
@@ -178,14 +157,7 @@ enum {
 
 static void kunit_print_suite_start(struct kunit_suite *suite)
 {
-	/*
-	 * We do not log the test suite header as doing so would
-	 * mean debugfs display would consist of the test suite
-	 * header prior to individual test results.
-	 * Hence directly printk the suite status, and we will
-	 * separately seq_printf() the suite header for the debugfs
-	 * representation.
-	 */
+	 
 	pr_info(KUNIT_SUBTEST_INDENT "KTAP version 1\n");
 	pr_info(KUNIT_SUBTEST_INDENT "# Subtest: %s\n",
 		  suite->name);
@@ -204,19 +176,10 @@ static void kunit_print_ok_not_ok(struct kunit *test,
 	const char *directive_header = (status == KUNIT_SKIPPED) ? " # SKIP " : "";
 	const char *directive_body = (status == KUNIT_SKIPPED) ? directive : "";
 
-	/*
-	 * When test is NULL assume that results are from the suite
-	 * and today suite results are expected at level 0 only.
-	 */
+	 
 	WARN(!test && test_level, "suite test level can't be %u!\n", test_level);
 
-	/*
-	 * We do not log the test suite results as doing so would
-	 * mean debugfs display would consist of an incorrect test
-	 * number. Hence directly printk the suite result, and we will
-	 * separately seq_printf() the suite results for the debugfs
-	 * representation.
-	 */
+	 
 	if (!test)
 		pr_info("%s %zd %s%s%s\n",
 			kunit_status_to_ok_not_ok(status),
@@ -327,14 +290,9 @@ static void kunit_fail(struct kunit *test, const struct kunit_loc *loc,
 
 void __noreturn __kunit_abort(struct kunit *test)
 {
-	kunit_try_catch_throw(&test->try_catch); /* Does not return. */
+	kunit_try_catch_throw(&test->try_catch);  
 
-	/*
-	 * Throw could not abort from test.
-	 *
-	 * XXX: we should never reach this line! As kunit_try_catch_throw is
-	 * marked __noreturn.
-	 */
+	 
 	WARN_ONCE(true, "Throw could not abort from test!\n");
 }
 EXPORT_SYMBOL_GPL(__kunit_abort);
@@ -372,10 +330,10 @@ void kunit_init_test(struct kunit *test, const char *name, char *log)
 }
 EXPORT_SYMBOL_GPL(kunit_init_test);
 
-/* Only warn when a test takes more than twice the threshold */
+ 
 #define KUNIT_SPEED_WARNING_MULTIPLIER	2
 
-/* Slow tests are defined as taking more than 1s */
+ 
 #define KUNIT_SPEED_SLOW_THRESHOLD_S	1
 
 #define KUNIT_SPEED_SLOW_WARNING_THRESHOLD_S	\
@@ -402,9 +360,7 @@ static void kunit_run_case_check_speed(struct kunit *test,
 		   duration.tv_sec, duration.tv_nsec);
 }
 
-/*
- * Initializes and runs test case. Does not clean up or do post validations.
- */
+ 
 static void kunit_run_case_internal(struct kunit *test,
 				    struct kunit_suite *suite,
 				    struct kunit_case *test_case)
@@ -436,10 +392,7 @@ static void kunit_case_internal_cleanup(struct kunit *test)
 	kunit_cleanup(test);
 }
 
-/*
- * Performs post validations and cleanup after a test case was run.
- * XXX: Should ONLY BE CALLED AFTER kunit_run_case_internal!
- */
+ 
 static void kunit_run_case_cleanup(struct kunit *test,
 				   struct kunit_suite *suite)
 {
@@ -464,11 +417,7 @@ static void kunit_try_run_case(void *data)
 
 	current->kunit_test = test;
 
-	/*
-	 * kunit_run_case_internal may encounter a fatal error; if it does,
-	 * abort will be called, this thread will exit, and finally the parent
-	 * thread will resume control and handle any necessary clean up.
-	 */
+	 
 	kunit_run_case_internal(test, suite, test_case);
 }
 
@@ -489,20 +438,14 @@ static void kunit_catch_run_case_cleanup(void *data)
 	struct kunit *test = ctx->test;
 	int try_exit_code = kunit_try_catch_get_result(&test->try_catch);
 
-	/* It is always a failure if cleanup aborts. */
+	 
 	kunit_set_failure(test);
 
 	if (try_exit_code) {
-		/*
-		 * Test case could not finish, we have no idea what state it is
-		 * in, so don't do clean up.
-		 */
+		 
 		if (try_exit_code == -ETIMEDOUT) {
 			kunit_err(test, "test case cleanup timed out\n");
-		/*
-		 * Unknown internal error occurred preventing test case from
-		 * running, so there is nothing to clean up.
-		 */
+		 
 		} else {
 			kunit_err(test, "internal error occurred during test case cleanup: %d\n",
 				  try_exit_code);
@@ -522,16 +465,10 @@ static void kunit_catch_run_case(void *data)
 
 	if (try_exit_code) {
 		kunit_set_failure(test);
-		/*
-		 * Test case could not finish, we have no idea what state it is
-		 * in, so don't do clean up.
-		 */
+		 
 		if (try_exit_code == -ETIMEDOUT) {
 			kunit_err(test, "test case timed out\n");
-		/*
-		 * Unknown internal error occurred preventing test case from
-		 * running, so there is nothing to clean up.
-		 */
+		 
 		} else {
 			kunit_err(test, "internal error occurred preventing test case from running: %d\n",
 				  try_exit_code);
@@ -540,10 +477,7 @@ static void kunit_catch_run_case(void *data)
 	}
 }
 
-/*
- * Performs all logic to run a test case. It also catches most errors that
- * occur in a test case and reports them as failures.
- */
+ 
 static void kunit_run_case_catch_errors(struct kunit_suite *suite,
 					struct kunit_case *test_case,
 					struct kunit *test)
@@ -562,14 +496,14 @@ static void kunit_run_case_catch_errors(struct kunit_suite *suite,
 	context.test_case = test_case;
 	kunit_try_catch_run(try_catch, &context);
 
-	/* Now run the cleanup */
+	 
 	kunit_try_catch_init(try_catch,
 			     test,
 			     kunit_try_run_case_cleanup,
 			     kunit_catch_run_case_cleanup);
 	kunit_try_catch_run(try_catch, &context);
 
-	/* Propagate the parameter result to the test case. */
+	 
 	if (test->status == KUNIT_FAILURE)
 		test_case->status = KUNIT_FAILURE;
 	else if (test_case->status != KUNIT_FAILURE && test->status == KUNIT_SUCCESS)
@@ -634,7 +568,7 @@ int kunit_run_tests(struct kunit_suite *suite)
 	struct kunit_result_stats suite_stats = { 0 };
 	struct kunit_result_stats total_stats = { 0 };
 
-	/* Taint the kernel so we know we've run tests. */
+	 
 	add_taint(TAINT_TEST, LOCKDEP_STILL_OK);
 
 	if (suite->suite_init) {
@@ -654,16 +588,16 @@ int kunit_run_tests(struct kunit_suite *suite)
 
 		kunit_init_test(&test, test_case->name, test_case->log);
 		if (test_case->status == KUNIT_SKIPPED) {
-			/* Test marked as skip */
+			 
 			test.status = KUNIT_SKIPPED;
 			kunit_update_stats(&param_stats, test.status);
 		} else if (!test_case->generate_params) {
-			/* Non-parameterised test. */
+			 
 			test_case->status = KUNIT_SKIPPED;
 			kunit_run_case_catch_errors(suite, test_case, &test);
 			kunit_update_stats(&param_stats, test.status);
 		} else {
-			/* Get initial param. */
+			 
 			param_desc[0] = '\0';
 			test.param_value = test_case->generate_params(NULL, param_desc);
 			test_case->status = KUNIT_SKIPPED;
@@ -686,7 +620,7 @@ int kunit_run_tests(struct kunit_suite *suite)
 						      param_desc,
 						      test.status_comment);
 
-				/* Get next param. */
+				 
 				param_desc[0] = '\0';
 				test.param_value = test_case->generate_params(test.param_value, param_desc);
 				test.param_index++;
@@ -872,15 +806,7 @@ void kunit_cleanup(struct kunit *test)
 	struct kunit_resource *res;
 	unsigned long flags;
 
-	/*
-	 * test->resources is a stack - each allocation must be freed in the
-	 * reverse order from which it was added since one resource may depend
-	 * on another for its entire lifetime.
-	 * Also, we cannot use the normal list_for_each constructs, even the
-	 * safe ones because *arbitrary* nodes may be deleted when
-	 * kunit_resource_free is called; the list_for_each_safe variants only
-	 * protect against the current node being deleted, not the next.
-	 */
+	 
 	while (true) {
 		spin_lock_irqsave(&test->lock, flags);
 		if (list_empty(&test->resources)) {
@@ -890,11 +816,7 @@ void kunit_cleanup(struct kunit *test)
 		res = list_last_entry(&test->resources,
 				      struct kunit_resource,
 				      node);
-		/*
-		 * Need to unlock here as a resource may remove another
-		 * resource, and this can't happen if the test->lock
-		 * is held.
-		 */
+		 
 		spin_unlock_irqrestore(&test->lock, flags);
 		kunit_remove_resource(test, res);
 	}
@@ -904,7 +826,7 @@ EXPORT_SYMBOL_GPL(kunit_cleanup);
 
 static int __init kunit_init(void)
 {
-	/* Install the KUnit hook functions. */
+	 
 	kunit_install_hooks();
 
 	kunit_debugfs_init();

@@ -1,71 +1,71 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for the SPI-NAND mode of Mediatek NAND Flash Interface
-//
-// Copyright (c) 2022 Chuanhong Guo <gch981213@gmail.com>
-//
-// This driver is based on the SPI-NAND mtd driver from Mediatek SDK:
-//
-// Copyright (C) 2020 MediaTek Inc.
-// Author: Weijie Gao <weijie.gao@mediatek.com>
-//
-// This controller organize the page data as several interleaved sectors
-// like the following: (sizeof(FDM + ECC) = snf->nfi_cfg.spare_size)
-// +---------+------+------+---------+------+------+-----+
-// | Sector1 | FDM1 | ECC1 | Sector2 | FDM2 | ECC2 | ... |
-// +---------+------+------+---------+------+------+-----+
-// With auto-format turned on, DMA only returns this part:
-// +---------+---------+-----+
-// | Sector1 | Sector2 | ... |
-// +---------+---------+-----+
-// The FDM data will be filled to the registers, and ECC parity data isn't
-// accessible.
-// With auto-format off, all ((Sector+FDM+ECC)*nsectors) will be read over DMA
-// in it's original order shown in the first table. ECC can't be turned on when
-// auto-format is off.
-//
-// However, Linux SPI-NAND driver expects the data returned as:
-// +------+-----+
-// | Page | OOB |
-// +------+-----+
-// where the page data is continuously stored instead of interleaved.
-// So we assume all instructions matching the page_op template between ECC
-// prepare_io_req and finish_io_req are for page cache r/w.
-// Here's how this spi-mem driver operates when reading:
-//  1. Always set snf->autofmt = true in prepare_io_req (even when ECC is off).
-//  2. Perform page ops and let the controller fill the DMA bounce buffer with
-//     de-interleaved sector data and set FDM registers.
-//  3. Return the data as:
-//     +---------+---------+-----+------+------+-----+
-//     | Sector1 | Sector2 | ... | FDM1 | FDM2 | ... |
-//     +---------+---------+-----+------+------+-----+
-//  4. For other matching spi_mem ops outside a prepare/finish_io_req pair,
-//     read the data with auto-format off into the bounce buffer and copy
-//     needed data to the buffer specified in the request.
-//
-// Write requests operates in a similar manner.
-// As a limitation of this strategy, we won't be able to access any ECC parity
-// data at all in Linux.
-//
-// Here's the bad block mark situation on MTK chips:
-// In older chips like mt7622, MTK uses the first FDM byte in the first sector
-// as the bad block mark. After de-interleaving, this byte appears at [pagesize]
-// in the returned data, which is the BBM position expected by kernel. However,
-// the conventional bad block mark is the first byte of the OOB, which is part
-// of the last sector data in the interleaved layout. Instead of fixing their
-// hardware, MTK decided to address this inconsistency in software. On these
-// later chips, the BootROM expects the following:
-// 1. The [pagesize] byte on a nand page is used as BBM, which will appear at
-//    (page_size - (nsectors - 1) * spare_size) in the DMA buffer.
-// 2. The original byte stored at that position in the DMA buffer will be stored
-//    as the first byte of the FDM section in the last sector.
-// We can't disagree with the BootROM, so after de-interleaving, we need to
-// perform the following swaps in read:
-// 1. Store the BBM at [page_size - (nsectors - 1) * spare_size] to [page_size],
-//    which is the expected BBM position by kernel.
-// 2. Store the page data byte at [pagesize + (nsectors-1) * fdm] back to
-//    [page_size - (nsectors - 1) * spare_size]
-// Similarly, when writing, we need to perform swaps in the other direction.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -83,7 +83,7 @@
 #include <linux/spi/spi-mem.h>
 #include <linux/mtd/nand.h>
 
-// NFI registers
+
 #define NFI_CNFG 0x000
 #define CNFG_OP_MODE_S 12
 #define CNFG_OP_MODE_CUST 6
@@ -162,7 +162,7 @@
 #define NFI_MASTERSTA_MASK_7622 (MAS_ADDR | MAS_RD | MAS_WR | MAS_RDDLY)
 #define NFI_MASTERSTA_MASK_7986 3
 
-// SNFI registers
+
 #define SNF_MAC_CTL 0x500
 #define MAC_XIO_SEL BIT(4)
 #define SF_MAC_EN BIT(3)
@@ -540,7 +540,7 @@ static int mtk_snand_setup_pagefmt(struct mtk_snand *snf, u32 page_size,
 	u8 nsectors;
 	int i;
 
-	// skip if it's already configured as required.
+	
 	if (snf->nfi_cfg.page_size == page_size &&
 	    snf->nfi_cfg.oob_size == oob_size)
 		return 0;
@@ -590,8 +590,8 @@ static int mtk_snand_setup_pagefmt(struct mtk_snand *snf, u32 page_size,
 	}
 
 	spare_size = oob_size / nsectors;
-	// If we're using the 1KB sector size, HW will automatically double the
-	// spare size. We should only use half of the value in this case.
+	
+	
 	if (snf->caps->sector_size == 1024)
 		spare_size /= 2;
 
@@ -634,7 +634,7 @@ err:
 static int mtk_snand_ooblayout_ecc(struct mtd_info *mtd, int section,
 				   struct mtd_oob_region *oobecc)
 {
-	// ECC area is not accessible
+	
 	return -ERANGE;
 }
 
@@ -700,15 +700,15 @@ static int mtk_snand_ecc_init_ctx(struct nand_device *nand)
 	ecc_cfg->sectors = snf->nfi_cfg.nsectors;
 	ecc_cfg->len = snf->caps->sector_size + snf->caps->fdm_ecc_size;
 
-	// calculate the max possible strength under current page format
+	
 	parity_bits = mtk_ecc_get_parity_bits(snf->ecc);
 	max_ecc_bytes = snf->nfi_cfg.spare_size - snf->caps->fdm_size;
 	ecc_cfg->strength = max_ecc_bytes * 8 / parity_bits;
 	mtk_ecc_adjust_strength(snf->ecc, &ecc_cfg->strength);
 
-	// if there's a user requested strength, find the minimum strength that
-	// meets the requirement. Otherwise use the maximum strength which is
-	// expected by BootROM.
+	
+	
+	
 	if (ecc_user && strength) {
 		u32 s_next = ecc_cfg->strength - 1;
 
@@ -834,8 +834,8 @@ static void mtk_snand_bm_swap(struct mtk_snand *snf, u8 *buf)
 	if (!snf->caps->bbm_swap || snf->nfi_cfg.nsectors == 1)
 		return;
 
-	// swap [pagesize] byte on nand with the first fdm byte
-	// in the last sector.
+	
+	
 	buf_bbm_pos = snf->nfi_cfg.page_size -
 		      (snf->nfi_cfg.nsectors - 1) * snf->nfi_cfg.spare_size;
 	fdm_bbm_pos = snf->nfi_cfg.page_size +
@@ -851,7 +851,7 @@ static void mtk_snand_fdm_bm_swap(struct mtk_snand *snf)
 	if (!snf->caps->bbm_swap || snf->nfi_cfg.nsectors == 1)
 		return;
 
-	// swap the first fdm byte in the first and the last sector.
+	
 	fdm_bbm_pos1 = snf->nfi_cfg.page_size;
 	fdm_bbm_pos2 = snf->nfi_cfg.page_size +
 		       (snf->nfi_cfg.nsectors - 1) * snf->caps->fdm_size;
@@ -863,9 +863,9 @@ static int mtk_snand_read_page_cache(struct mtk_snand *snf,
 {
 	u8 *buf = snf->buf;
 	u8 *buf_fdm = buf + snf->nfi_cfg.page_size;
-	// the address part to be sent by the controller
+	
 	u32 op_addr = op->addr.val;
-	// where to start copying data from bounce buffer
+	
 	u32 rd_offset = 0;
 	u32 dummy_clk = (op->dummy.nbytes * BITS_PER_BYTE / op->dummy.buswidth);
 	u32 op_mode = 0;
@@ -882,32 +882,32 @@ static int mtk_snand_read_page_cache(struct mtk_snand *snf,
 		op_mode = CNFG_AUTO_FMT_EN;
 		if (op->data.ecc)
 			op_mode |= CNFG_HW_ECC_EN;
-		// extract the plane bit:
-		// Find the highest bit set in (pagesize+oobsize).
-		// Bits higher than that in op->addr are kept and sent over SPI
-		// Lower bits are used as an offset for copying data from DMA
-		// bounce buffer.
+		
+		
+		
+		
+		
 		last_bit = fls(snf->nfi_cfg.page_size + snf->nfi_cfg.oob_size);
 		mask = (1 << last_bit) - 1;
 		rd_offset = op_addr & mask;
 		op_addr &= ~mask;
 
-		// check if we can dma to the caller memory
+		
 		if (rd_offset == 0 && op->data.nbytes >= snf->nfi_cfg.page_size)
 			buf = op->data.buf.in;
 	}
 	mtk_snand_mac_reset(snf);
 	mtk_nfi_reset(snf);
 
-	// command and dummy cycles
+	
 	nfi_write32(snf, SNF_RD_CTL2,
 		    (dummy_clk << DATA_READ_DUMMY_S) |
 			    (op->cmd.opcode << DATA_READ_CMD_S));
 
-	// read address
+	
 	nfi_write32(snf, SNF_RD_CTL3, op_addr);
 
-	// Set read op_mode
+	
 	if (op->data.buswidth == 4)
 		rd_mode = op->addr.buswidth == 4 ? DATA_READ_MODE_QUAD :
 						   DATA_READ_MODE_X4;
@@ -920,13 +920,13 @@ static int mtk_snand_read_page_cache(struct mtk_snand *snf,
 	nfi_rmw32(snf, SNF_MISC_CTL, DATA_READ_MODE,
 		  rd_mode | DATARD_CUSTOM_EN);
 
-	// Set bytes to read
+	
 	rd_bytes = (snf->nfi_cfg.spare_size + snf->caps->sector_size) *
 		   snf->nfi_cfg.nsectors;
 	nfi_write32(snf, SNF_MISC_CTL2,
 		    (rd_bytes << PROGRAM_LOAD_BYTE_NUM_S) | rd_bytes);
 
-	// NFI read prepare
+	
 	nfi_write16(snf, NFI_CNFG,
 		    (CNFG_OP_MODE_CUST << CNFG_OP_MODE_S) | CNFG_DMA_BURST_EN |
 			    CNFG_READ_MODE | CNFG_DMA_MODE | op_mode);
@@ -946,14 +946,14 @@ static int mtk_snand_read_page_cache(struct mtk_snand *snf,
 		if (ret)
 			goto cleanup_dma;
 	}
-	// Prepare for custom read interrupt
+	
 	nfi_write32(snf, NFI_INTR_EN, NFI_IRQ_INTR_EN | NFI_IRQ_CUS_READ);
 	reinit_completion(&snf->op_done);
 
-	// Trigger NFI into custom mode
+	
 	nfi_write16(snf, NFI_CMD, NFI_CMD_DUMMY_READ);
 
-	// Start DMA read
+	
 	nfi_rmw32(snf, NFI_CON, 0, CON_BRD);
 	nfi_write16(snf, NFI_STRDATA, STR_DATA);
 
@@ -964,7 +964,7 @@ static int mtk_snand_read_page_cache(struct mtk_snand *snf,
 		goto cleanup;
 	}
 
-	// Wait for BUS_SEC_CNTR returning expected value
+	
 	ret = readl_poll_timeout(snf->nfi_base + NFI_BYTELEN, val,
 				 BUS_SEC_CNTR(val) >= snf->nfi_cfg.nsectors, 0,
 				 SNFI_POLL_INTERVAL);
@@ -973,7 +973,7 @@ static int mtk_snand_read_page_cache(struct mtk_snand *snf,
 		goto cleanup2;
 	}
 
-	// Wait for bus becoming idle
+	
 	ret = readl_poll_timeout(snf->nfi_base + NFI_MASTERSTA, val,
 				 !(val & snf->caps->mastersta_mask), 0,
 				 SNFI_POLL_INTERVAL);
@@ -988,7 +988,7 @@ static int mtk_snand_read_page_cache(struct mtk_snand *snf,
 			dev_err(snf->dev, "wait ecc done timeout\n");
 			goto cleanup2;
 		}
-		// save status before disabling ecc
+		
 		mtk_ecc_get_stats(snf->ecc, &snf->ecc_stats,
 				  snf->nfi_cfg.nsectors);
 	}
@@ -1003,7 +1003,7 @@ static int mtk_snand_read_page_cache(struct mtk_snand *snf,
 		}
 	}
 
-	// copy data back
+	
 	if (nfi_read32(snf, NFI_STA) & READ_EMPTY) {
 		memset(op->data.buf.in, 0xff, op->data.nbytes);
 		snf->ecc_stats.bitflips = 0;
@@ -1030,20 +1030,20 @@ cleanup2:
 	if (op->data.ecc)
 		mtk_ecc_disable(snf->ecc);
 cleanup_dma:
-	// unmap dma only if any error happens. (otherwise it's done before
-	// data copying)
+	
+	
 	if (ret)
 		dma_unmap_single(snf->dev, buf_dma, dma_len, DMA_FROM_DEVICE);
 cleanup:
-	// Stop read
+	
 	nfi_write32(snf, NFI_CON, 0);
 	nfi_write16(snf, NFI_CNFG, 0);
 
-	// Clear SNF done flag
+	
 	nfi_rmw32(snf, SNF_STA_CTL1, 0, CUS_READ_DONE);
 	nfi_write32(snf, SNF_STA_CTL1, 0);
 
-	// Disable interrupt
+	
 	nfi_read32(snf, NFI_INTR_STA);
 	nfi_write32(snf, NFI_INTR_EN, 0);
 
@@ -1054,9 +1054,9 @@ cleanup:
 static int mtk_snand_write_page_cache(struct mtk_snand *snf,
 				      const struct spi_mem_op *op)
 {
-	// the address part to be sent by the controller
+	
 	u32 op_addr = op->addr.val;
-	// where to start copying data from bounce buffer
+	
 	u32 wr_offset = 0;
 	u32 op_mode = 0;
 	int ret = 0;
@@ -1098,26 +1098,26 @@ static int mtk_snand_write_page_cache(struct mtk_snand *snf,
 		mtk_snand_write_fdm(snf, snf->buf + snf->nfi_cfg.page_size);
 	}
 
-	// Command
+	
 	nfi_write32(snf, SNF_PG_CTL1, (op->cmd.opcode << PG_LOAD_CMD_S));
 
-	// write address
+	
 	nfi_write32(snf, SNF_PG_CTL2, op_addr);
 
-	// Set read op_mode
+	
 	if (op->data.buswidth == 4)
 		wr_mode = PG_LOAD_X4_EN;
 
 	nfi_rmw32(snf, SNF_MISC_CTL, PG_LOAD_X4_EN,
 		  wr_mode | PG_LOAD_CUSTOM_EN);
 
-	// Set bytes to write
+	
 	wr_bytes = (snf->nfi_cfg.spare_size + snf->caps->sector_size) *
 		   snf->nfi_cfg.nsectors;
 	nfi_write32(snf, SNF_MISC_CTL2,
 		    (wr_bytes << PROGRAM_LOAD_BYTE_NUM_S) | wr_bytes);
 
-	// NFI write prepare
+	
 	nfi_write16(snf, NFI_CNFG,
 		    (CNFG_OP_MODE_PROGRAM << CNFG_OP_MODE_S) |
 			    CNFG_DMA_BURST_EN | CNFG_DMA_MODE | op_mode);
@@ -1136,15 +1136,15 @@ static int mtk_snand_write_page_cache(struct mtk_snand *snf,
 		if (ret)
 			goto cleanup_dma;
 	}
-	// Prepare for custom write interrupt
+	
 	nfi_write32(snf, NFI_INTR_EN, NFI_IRQ_INTR_EN | NFI_IRQ_CUS_PG);
 	reinit_completion(&snf->op_done);
 	;
 
-	// Trigger NFI into custom mode
+	
 	nfi_write16(snf, NFI_CMD, NFI_CMD_DUMMY_WRITE);
 
-	// Start DMA write
+	
 	nfi_rmw32(snf, NFI_CON, 0, CON_BWR);
 	nfi_write16(snf, NFI_STRDATA, STR_DATA);
 
@@ -1155,7 +1155,7 @@ static int mtk_snand_write_page_cache(struct mtk_snand *snf,
 		goto cleanup_ecc;
 	}
 
-	// Wait for NFI_SEC_CNTR returning expected value
+	
 	ret = readl_poll_timeout(snf->nfi_base + NFI_ADDRCNTR, val,
 				 NFI_SEC_CNTR(val) >= snf->nfi_cfg.nsectors, 0,
 				 SNFI_POLL_INTERVAL);
@@ -1168,15 +1168,15 @@ cleanup_ecc:
 cleanup_dma:
 	dma_unmap_single(snf->dev, buf_dma, dma_len, DMA_TO_DEVICE);
 cleanup:
-	// Stop write
+	
 	nfi_write32(snf, NFI_CON, 0);
 	nfi_write16(snf, NFI_CNFG, 0);
 
-	// Clear SNF done flag
+	
 	nfi_rmw32(snf, SNF_STA_CTL1, 0, CUS_PG_DONE);
 	nfi_write32(snf, SNF_STA_CTL1, 0);
 
-	// Disable interrupt
+	
 	nfi_read32(snf, NFI_INTR_STA);
 	nfi_write32(snf, NFI_INTR_EN, 0);
 
@@ -1185,18 +1185,7 @@ cleanup:
 	return ret;
 }
 
-/**
- * mtk_snand_is_page_ops() - check if the op is a controller supported page op.
- * @op spi-mem op to check
- *
- * Check whether op can be executed with read_from_cache or program_load
- * mode in the controller.
- * This controller can execute typical Read From Cache and Program Load
- * instructions found on SPI-NAND with 2-byte address.
- * DTR and cmd buswidth & nbytes should be checked before calling this.
- *
- * Return: true if the op matches the instruction template
- */
+ 
 static bool mtk_snand_is_page_ops(const struct spi_mem_op *op)
 {
 	if (op->addr.nbytes != 2)
@@ -1206,33 +1195,33 @@ static bool mtk_snand_is_page_ops(const struct spi_mem_op *op)
 	    op->addr.buswidth != 4)
 		return false;
 
-	// match read from page instructions
+	
 	if (op->data.dir == SPI_MEM_DATA_IN) {
-		// check dummy cycle first
+		
 		if (op->dummy.nbytes * BITS_PER_BYTE / op->dummy.buswidth >
 		    DATA_READ_MAX_DUMMY)
 			return false;
-		// quad io / quad out
+		
 		if ((op->addr.buswidth == 4 || op->addr.buswidth == 1) &&
 		    op->data.buswidth == 4)
 			return true;
 
-		// dual io / dual out
+		
 		if ((op->addr.buswidth == 2 || op->addr.buswidth == 1) &&
 		    op->data.buswidth == 2)
 			return true;
 
-		// standard spi
+		
 		if (op->addr.buswidth == 1 && op->data.buswidth == 1)
 			return true;
 	} else if (op->data.dir == SPI_MEM_DATA_OUT) {
-		// check dummy cycle first
+		
 		if (op->dummy.nbytes)
 			return false;
-		// program load quad out
+		
 		if (op->addr.buswidth == 1 && op->data.buswidth == 4)
 			return true;
-		// standard spi
+		
 		if (op->addr.buswidth == 1 && op->data.buswidth == 1)
 			return true;
 	}
@@ -1256,13 +1245,13 @@ static bool mtk_snand_supports_op(struct spi_mem *mem,
 static int mtk_snand_adjust_op_size(struct spi_mem *mem, struct spi_mem_op *op)
 {
 	struct mtk_snand *ms = spi_controller_get_devdata(mem->spi->master);
-	// page ops transfer size must be exactly ((sector_size + spare_size) *
-	// nsectors). Limit the op size if the caller requests more than that.
-	// exec_op will read more than needed and discard the leftover if the
-	// caller requests less data.
+	
+	
+	
+	
 	if (mtk_snand_is_page_ops(op)) {
 		size_t l;
-		// skip adjust_op_size for page ops
+		
 		if (ms->autofmt)
 			return 0;
 		l = ms->caps->sector_size + ms->nfi_cfg.spare_size;
@@ -1451,7 +1440,7 @@ static int mtk_snand_probe(struct platform_device *pdev)
 		goto disable_clk;
 	}
 
-	// switch to SNFI mode
+	
 	nfi_write32(ms, SNF_CFG, SPI_MODE);
 
 	ret = of_property_read_u32(np, "rx-sample-delay-ns", &val);
@@ -1467,15 +1456,15 @@ static int mtk_snand_probe(struct platform_device *pdev)
 			  val << DATA_READ_LATCH_LAT_S);
 	}
 
-	// setup an initial page format for ops matching page_cache_op template
-	// before ECC is called.
+	
+	
 	ret = mtk_snand_setup_pagefmt(ms, SZ_2K, SZ_64);
 	if (ret) {
 		dev_err(ms->dev, "failed to set initial page format\n");
 		goto disable_clk;
 	}
 
-	// setup ECC engine
+	
 	ms->ecc_eng.dev = &pdev->dev;
 	ms->ecc_eng.integration = NAND_ECC_ENGINE_INTEGRATION_PIPELINED;
 	ms->ecc_eng.ops = &mtk_snfi_ecc_engine_ops;

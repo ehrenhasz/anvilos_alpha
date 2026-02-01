@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* XDP user-space ring structure
- * Copyright(c) 2018 Intel Corporation.
- */
+
+ 
 
 #include <linux/log2.h>
 #include <linux/slab.h>
@@ -35,10 +33,7 @@ struct xsk_queue *xskq_create(u32 nentries, bool umem_queue)
 
 	size = xskq_get_ring_size(q, umem_queue);
 
-	/* size which is overflowing or close to SIZE_MAX will become 0 in
-	 * PAGE_ALIGN(), checking SIZE_MAX is enough due to the previous
-	 * is_power_of_2(), the rest will be handled by vmalloc_user()
-	 */
+	 
 	if (unlikely(size == SIZE_MAX)) {
 		kfree(q);
 		return NULL;

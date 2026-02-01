@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016, Intel Corporation
- * Authors: Salvatore Benedetto <salvatore.benedetto@intel.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/export.h>
 #include <linux/err.h>
@@ -81,9 +78,7 @@ int __crypto_dh_decode_key(const char *buf, unsigned int len, struct dh *params)
 	if (secret.len != crypto_dh_key_len(params))
 		return -EINVAL;
 
-	/* Don't allocate memory. Set pointers to data within
-	 * the given buffer
-	 */
+	 
 	params->key = (void *)ptr;
 	params->p = (void *)(ptr + params->key_size);
 	params->g = (void *)(ptr + params->key_size + params->p_size);
@@ -99,19 +94,12 @@ int crypto_dh_decode_key(const char *buf, unsigned int len, struct dh *params)
 	if (err)
 		return err;
 
-	/*
-	 * Don't permit the buffer for 'key' or 'g' to be larger than 'p', since
-	 * some drivers assume otherwise.
-	 */
+	 
 	if (params->key_size > params->p_size ||
 	    params->g_size > params->p_size)
 		return -EINVAL;
 
-	/*
-	 * Don't permit 'p' to be 0.  It's not a prime number, and it's subject
-	 * to corner cases such as 'mod 0' being undefined or
-	 * crypto_kpp_maxsize() returning 0.
-	 */
+	 
 	if (memchr_inv(params->p, 0, params->p_size) == NULL)
 		return -EINVAL;
 

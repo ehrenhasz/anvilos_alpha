@@ -1,38 +1,28 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* rc-tivo.c - Keytable for TiVo remotes
- *
- * Copyright (c) 2011 by Jarod Wilson <jarod@redhat.com>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/*
- * Initial mapping is for the TiVo remote included in the Nero LiquidTV bundle,
- * which also ships with a TiVo-branded IR transceiver, supported by the mceusb
- * driver. Note that the remote uses an NEC-ish protocol, but instead of having
- * a command/not_command pair, it has a vendor ID of 0x3085, but some keys, the
- * NEC extended checksums do pass, so the table presently has the intended
- * values and the checksum-passed versions for those keys.
- */
+ 
 static struct rc_map_table tivo[] = {
-	{ 0x3085f009, KEY_MEDIA },	/* TiVo Button */
-	{ 0x3085e010, KEY_POWER2 },	/* TV Power */
-	{ 0x3085e011, KEY_TV },		/* Live TV/Swap */
-	{ 0x3085c034, KEY_VIDEO_NEXT },	/* TV Input */
+	{ 0x3085f009, KEY_MEDIA },	 
+	{ 0x3085e010, KEY_POWER2 },	 
+	{ 0x3085e011, KEY_TV },		 
+	{ 0x3085c034, KEY_VIDEO_NEXT },	 
 	{ 0x3085e013, KEY_INFO },
-	{ 0x3085a05f, KEY_CYCLEWINDOWS }, /* Window */
+	{ 0x3085a05f, KEY_CYCLEWINDOWS },  
 	{ 0x0085305f, KEY_CYCLEWINDOWS },
-	{ 0x3085c036, KEY_EPG },	/* Guide */
+	{ 0x3085c036, KEY_EPG },	 
 
 	{ 0x3085e014, KEY_UP },
 	{ 0x3085e016, KEY_DOWN },
 	{ 0x3085e017, KEY_LEFT },
 	{ 0x3085e015, KEY_RIGHT },
 
-	{ 0x3085e018, KEY_SCROLLDOWN },	/* Red Thumbs Down */
+	{ 0x3085e018, KEY_SCROLLDOWN },	 
 	{ 0x3085e019, KEY_SELECT },
-	{ 0x3085e01a, KEY_SCROLLUP },	/* Green Thumbs Up */
+	{ 0x3085e01a, KEY_SCROLLUP },	 
 
 	{ 0x3085e01c, KEY_VOLUMEUP },
 	{ 0x3085e01d, KEY_VOLUMEDOWN },
@@ -48,11 +38,11 @@ static struct rc_map_table tivo[] = {
 	{ 0x3085d022, KEY_REWIND },
 	{ 0x3085d024, KEY_FASTFORWARD },
 	{ 0x3085d026, KEY_PREVIOUS },
-	{ 0x3085d027, KEY_NEXT },	/* ->| */
+	{ 0x3085d027, KEY_NEXT },	 
 
-	{ 0x3085b044, KEY_ZOOM },	/* Aspect */
+	{ 0x3085b044, KEY_ZOOM },	 
 	{ 0x3085b048, KEY_STOP },
-	{ 0x3085b04a, KEY_DVD },	/* DVD Menu */
+	{ 0x3085b04a, KEY_DVD },	 
 
 	{ 0x3085d028, KEY_NUMERIC_1 },
 	{ 0x3085d029, KEY_NUMERIC_2 },

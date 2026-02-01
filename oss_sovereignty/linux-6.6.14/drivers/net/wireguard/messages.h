@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+ 
+ 
 
 #ifndef _WG_MESSAGES_H
 #define _WG_MESSAGES_H
@@ -48,9 +46,9 @@ enum limits {
 	MAX_PEERS_PER_DEVICE = 1U << 20,
 	KEEPALIVE_TIMEOUT = 10,
 	MAX_TIMER_HANDSHAKES = 90 / REKEY_TIMEOUT,
-	MAX_QUEUED_INCOMING_HANDSHAKES = 4096, /* TODO: replace this with DQL */
+	MAX_QUEUED_INCOMING_HANDSHAKES = 4096,  
 	MAX_STAGED_PACKETS = 128,
-	MAX_QUEUED_PACKETS = 1024 /* TODO: replace this with DQL */
+	MAX_QUEUED_PACKETS = 1024  
 };
 
 enum message_type {
@@ -62,13 +60,7 @@ enum message_type {
 };
 
 struct message_header {
-	/* The actual layout of this that we want is:
-	 * u8 type
-	 * u8 reserved_zero[3]
-	 *
-	 * But it turns out that by encoding this as little endian,
-	 * we achieve the same thing, and it makes checking faster.
-	 */
+	 
 	__le32 type;
 };
 
@@ -123,6 +115,6 @@ enum message_alignments {
 #define DATA_PACKET_HEAD_ROOM \
 	ALIGN(sizeof(struct message_data) + SKB_HEADER_LEN, 4)
 
-enum { HANDSHAKE_DSCP = 0x88 /* AF41, plus 00 ECN */ };
+enum { HANDSHAKE_DSCP = 0x88   };
 
-#endif /* _WG_MESSAGES_H */
+#endif  

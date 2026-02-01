@@ -596,9 +596,7 @@ VARIABLE_OFFSET = 16*8
 
 	vpxor   \T7, \T7, \T7
 
-	/* read the last <16B of AAD. since we have at least 4B of
-	data right after the AAD (the ICV, and maybe some CT), we can
-	read 4B/8B blocks safely, and then get rid of the extra stuff */
+	 
 .L_get_AAD_rest8\@:
 	cmp     $4, %r11
 	jle     .L_get_AAD_rest4\@
@@ -620,9 +618,7 @@ VARIABLE_OFFSET = 16*8
 	vpsrldq $4, \T7, \T7
 	vpxor   \T1, \T7, \T7
 .L_get_AAD_rest0\@:
-	/* finalize: shift out the extra bytes we read, and align
-	left. since pslldq can only shift by an immediate, we use
-	vpshufb and a pair of shuffle masks */
+	 
 	leaq	ALL_F(%rip), %r11
 	subq	%r12, %r11
 	vmovdqu	16(%r11), \T1
@@ -1733,13 +1729,10 @@ VARIABLE_OFFSET = 16*8
 #void   aesni_gcm_precomp_avx_gen2
 #        (gcm_data     *my_ctx_data,
 #         gcm_context_data *data,
-#        u8     *hash_subkey# /* H, the Hash sub key input. Data starts on a 16-byte boundary. */
-#        u8      *iv, /* Pre-counter block j0: 4 byte salt
-#			(from Security Association) concatenated with 8 byte
-#			Initialisation Vector (from IPSec ESP Payload)
-#			concatenated with 0x00000001. 16-byte aligned pointer. */
-#        const   u8 *aad, /* Additional Authentication Data (AAD)*/
-#        u64     aad_len) /* Length of AAD in bytes. With RFC4106 this is going to be 8 or 12 Bytes */
+#        u8     *hash_subkey#  
+#        u8      *iv,  
+#        const   u8 *aad,  
+#        u64     aad_len)  
 #############################################################
 SYM_FUNC_START(aesni_gcm_init_avx_gen2)
         FUNC_SAVE
@@ -1750,11 +1743,11 @@ SYM_FUNC_END(aesni_gcm_init_avx_gen2)
 
 ###############################################################################
 #void   aesni_gcm_enc_update_avx_gen2(
-#        gcm_data        *my_ctx_data,     /* aligned to 16 Bytes */
+#        gcm_data        *my_ctx_data,      
 #        gcm_context_data *data,
-#        u8      *out, /* Ciphertext output. Encrypt in-place is allowed.  */
-#        const   u8 *in, /* Plaintext input */
-#        u64     plaintext_len) /* Length of data in Bytes for encryption. */
+#        u8      *out,  
+#        const   u8 *in,  
+#        u64     plaintext_len)  
 ###############################################################################
 SYM_FUNC_START(aesni_gcm_enc_update_avx_gen2)
         FUNC_SAVE
@@ -1779,11 +1772,11 @@ SYM_FUNC_END(aesni_gcm_enc_update_avx_gen2)
 
 ###############################################################################
 #void   aesni_gcm_dec_update_avx_gen2(
-#        gcm_data        *my_ctx_data,     /* aligned to 16 Bytes */
+#        gcm_data        *my_ctx_data,      
 #        gcm_context_data *data,
-#        u8      *out, /* Plaintext output. Decrypt in-place is allowed.  */
-#        const   u8 *in, /* Ciphertext input */
-#        u64     plaintext_len) /* Length of data in Bytes for encryption. */
+#        u8      *out,  
+#        const   u8 *in,  
+#        u64     plaintext_len)  
 ###############################################################################
 SYM_FUNC_START(aesni_gcm_dec_update_avx_gen2)
         FUNC_SAVE
@@ -1808,11 +1801,10 @@ SYM_FUNC_END(aesni_gcm_dec_update_avx_gen2)
 
 ###############################################################################
 #void   aesni_gcm_finalize_avx_gen2(
-#        gcm_data        *my_ctx_data,     /* aligned to 16 Bytes */
+#        gcm_data        *my_ctx_data,      
 #        gcm_context_data *data,
-#        u8      *auth_tag, /* Authenticated Tag output. */
-#        u64     auth_tag_len)# /* Authenticated Tag Length in bytes.
-#				Valid values are 16 (most likely), 12 or 8. */
+#        u8      *auth_tag,  
+#        u64     auth_tag_len)#  
 ###############################################################################
 SYM_FUNC_START(aesni_gcm_finalize_avx_gen2)
         FUNC_SAVE
@@ -2701,13 +2693,10 @@ SYM_FUNC_END(aesni_gcm_finalize_avx_gen2)
 #void   aesni_gcm_init_avx_gen4
 #        (gcm_data     *my_ctx_data,
 #         gcm_context_data *data,
-#        u8      *iv, /* Pre-counter block j0: 4 byte salt
-#			(from Security Association) concatenated with 8 byte
-#			Initialisation Vector (from IPSec ESP Payload)
-#			concatenated with 0x00000001. 16-byte aligned pointer. */
-#        u8     *hash_subkey# /* H, the Hash sub key input. Data starts on a 16-byte boundary. */
-#        const   u8 *aad, /* Additional Authentication Data (AAD)*/
-#        u64     aad_len) /* Length of AAD in bytes. With RFC4106 this is going to be 8 or 12 Bytes */
+#        u8      *iv,  
+#        u8     *hash_subkey#  
+#        const   u8 *aad,  
+#        u64     aad_len)  
 #############################################################
 SYM_FUNC_START(aesni_gcm_init_avx_gen4)
         FUNC_SAVE
@@ -2718,11 +2707,11 @@ SYM_FUNC_END(aesni_gcm_init_avx_gen4)
 
 ###############################################################################
 #void   aesni_gcm_enc_avx_gen4(
-#        gcm_data        *my_ctx_data,     /* aligned to 16 Bytes */
+#        gcm_data        *my_ctx_data,      
 #        gcm_context_data *data,
-#        u8      *out, /* Ciphertext output. Encrypt in-place is allowed.  */
-#        const   u8 *in, /* Plaintext input */
-#        u64     plaintext_len) /* Length of data in Bytes for encryption. */
+#        u8      *out,  
+#        const   u8 *in,  
+#        u64     plaintext_len)  
 ###############################################################################
 SYM_FUNC_START(aesni_gcm_enc_update_avx_gen4)
         FUNC_SAVE
@@ -2747,11 +2736,11 @@ SYM_FUNC_END(aesni_gcm_enc_update_avx_gen4)
 
 ###############################################################################
 #void   aesni_gcm_dec_update_avx_gen4(
-#        gcm_data        *my_ctx_data,     /* aligned to 16 Bytes */
+#        gcm_data        *my_ctx_data,      
 #        gcm_context_data *data,
-#        u8      *out, /* Plaintext output. Decrypt in-place is allowed.  */
-#        const   u8 *in, /* Ciphertext input */
-#        u64     plaintext_len) /* Length of data in Bytes for encryption. */
+#        u8      *out,  
+#        const   u8 *in,  
+#        u64     plaintext_len)  
 ###############################################################################
 SYM_FUNC_START(aesni_gcm_dec_update_avx_gen4)
         FUNC_SAVE
@@ -2776,11 +2765,10 @@ SYM_FUNC_END(aesni_gcm_dec_update_avx_gen4)
 
 ###############################################################################
 #void   aesni_gcm_finalize_avx_gen4(
-#        gcm_data        *my_ctx_data,     /* aligned to 16 Bytes */
+#        gcm_data        *my_ctx_data,      
 #        gcm_context_data *data,
-#        u8      *auth_tag, /* Authenticated Tag output. */
-#        u64     auth_tag_len)# /* Authenticated Tag Length in bytes.
-#                              Valid values are 16 (most likely), 12 or 8. */
+#        u8      *auth_tag,  
+#        u64     auth_tag_len)#  
 ###############################################################################
 SYM_FUNC_START(aesni_gcm_finalize_avx_gen4)
         FUNC_SAVE

@@ -1,24 +1,4 @@
-/*
- * Base driver for Marvell 88PM805
- *
- * Copyright (C) 2012 Marvell International Ltd.
- * Haojian Zhuang <haojian.zhuang@marvell.com>
- * Joseph(Yossi) Hanin <yhanin@marvell.com>
- * Qiao Zhou <zhouqiao@marvell.com>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -31,36 +11,36 @@
 
 static const struct i2c_device_id pm80x_id_table[] = {
 	{"88PM805", 0},
-	{} /* NULL terminated */
+	{}  
 };
 MODULE_DEVICE_TABLE(i2c, pm80x_id_table);
 
-/* Interrupt Number in 88PM805 */
+ 
 enum {
-	PM805_IRQ_LDO_OFF,	/*0 */
-	PM805_IRQ_SRC_DPLL_LOCK,	/*1 */
+	PM805_IRQ_LDO_OFF,	 
+	PM805_IRQ_SRC_DPLL_LOCK,	 
 	PM805_IRQ_CLIP_FAULT,
 	PM805_IRQ_MIC_CONFLICT,
 	PM805_IRQ_HP2_SHRT,
-	PM805_IRQ_HP1_SHRT,	/*5 */
+	PM805_IRQ_HP1_SHRT,	 
 	PM805_IRQ_FINE_PLL_FAULT,
 	PM805_IRQ_RAW_PLL_FAULT,
 	PM805_IRQ_VOLP_BTN_DET,
 	PM805_IRQ_VOLM_BTN_DET,
-	PM805_IRQ_SHRT_BTN_DET,	/*10 */
-	PM805_IRQ_MIC_DET,	/*11 */
+	PM805_IRQ_SHRT_BTN_DET,	 
+	PM805_IRQ_MIC_DET,	 
 
 	PM805_MAX_IRQ,
 };
 
 static struct resource codec_resources[] = {
-	/* Headset microphone insertion or removal */
+	 
 	DEFINE_RES_IRQ_NAMED(PM805_IRQ_MIC_DET, "micin"),
 
-	/* Audio short HP1 */
+	 
 	DEFINE_RES_IRQ_NAMED(PM805_IRQ_HP1_SHRT, "audio-short1"),
 
-	/* Audio short HP2 */
+	 
 	DEFINE_RES_IRQ_NAMED(PM805_IRQ_HP2_SHRT, "audio-short2"),
 };
 
@@ -74,7 +54,7 @@ static const struct mfd_cell codec_devs[] = {
 };
 
 static struct regmap_irq pm805_irqs[] = {
-	/* INT0 */
+	 
 	[PM805_IRQ_LDO_OFF] = {
 		.mask = PM805_INT1_HP1_SHRT,
 	},
@@ -93,7 +73,7 @@ static struct regmap_irq pm805_irqs[] = {
 	[PM805_IRQ_HP1_SHRT] = {
 		.mask = PM805_INT1_SRC_DPLL_LOCK,
 	},
-	/* INT1 */
+	 
 	[PM805_IRQ_FINE_PLL_FAULT] = {
 		.reg_offset = 1,
 		.mask = PM805_INT2_MIC_DET,
@@ -131,20 +111,14 @@ static int device_irq_init_805(struct pm80x_chip *chip)
 		return -EINVAL;
 	}
 
-	/*
-	 * irq_mode defines the way of clearing interrupt. it's read-clear by
-	 * default.
-	 */
+	 
 	mask =
 	    PM805_STATUS0_INT_CLEAR | PM805_STATUS0_INV_INT |
 	    PM800_STATUS0_INT_MASK;
 
 	data = PM805_STATUS0_INT_CLEAR;
 	ret = regmap_update_bits(map, PM805_INT_STATUS0, mask, data);
-	/*
-	 * PM805_INT_STATUS is under 32K clock domain, so need to
-	 * add proper delay before the next I2C register access.
-	 */
+	 
 	usleep_range(1000, 3000);
 
 	if (ret < 0)

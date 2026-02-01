@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	X.25 Packet Layer release 002
- *
- *	This is ALPHA test software. This code may break your machine,
- *	randomly fail to work with new releases, misbehave and/or generally
- *	screw up. It might even work.
- *
- *	This code REQUIRES 2.4 with seq_file support
- *
- *	History
- *	2002/10/06	Arnaldo Carvalho de Melo  seq_file support
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/proc_fs.h>
@@ -193,7 +182,7 @@ void __exit x25_proc_exit(void)
 	remove_proc_subtree("x25", init_net.proc_net);
 }
 
-#else /* CONFIG_PROC_FS */
+#else  
 
 int __init x25_proc_init(void)
 {
@@ -203,4 +192,4 @@ int __init x25_proc_init(void)
 void __exit x25_proc_exit(void)
 {
 }
-#endif /* CONFIG_PROC_FS */
+#endif  

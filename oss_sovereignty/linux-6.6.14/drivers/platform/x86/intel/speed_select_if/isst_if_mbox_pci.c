@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select Interface: Mbox via PCI Interface
- * Copyright (c) 2019, Intel Corporation.
- * All rights reserved.
- *
- * Author: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
- */
+
+ 
 
 #include <linux/cpufeature.h>
 #include <linux/module.h>
@@ -20,15 +14,7 @@
 #define PUNIT_MAILBOX_INTERFACE		0xA4
 #define PUNIT_MAILBOX_BUSY_BIT		31
 
-/*
- * The average time to complete mailbox commands is less than 40us. Most of
- * the commands complete in few micro seconds. But the same firmware handles
- * requests from all power management features.
- * We can create a scenario where we flood the firmware with requests then
- * the mailbox response can be delayed for 100s of micro seconds. So define
- * two timeouts. One for average case and one for long.
- * If the firmware is taking more than average, just call cond_resched().
- */
+ 
 #define OS_MAILBOX_TIMEOUT_AVG_US	40
 #define OS_MAILBOX_TIMEOUT_MAX_US	1000
 
@@ -44,7 +30,7 @@ static int isst_if_mbox_cmd(struct pci_dev *pdev,
 	u32 data;
 	int ret;
 
-	/* Poll for rb bit == 0 */
+	 
 	tm = ktime_get();
 	do {
 		ret = pci_read_config_dword(pdev, PUNIT_MAILBOX_INTERFACE,
@@ -66,13 +52,13 @@ static int isst_if_mbox_cmd(struct pci_dev *pdev,
 	if (ret)
 		return ret;
 
-	/* Write DATA register */
+	 
 	ret = pci_write_config_dword(pdev, PUNIT_MAILBOX_DATA,
 				     mbox_cmd->req_data);
 	if (ret)
 		return ret;
 
-	/* Write command register */
+	 
 	data = BIT_ULL(PUNIT_MAILBOX_BUSY_BIT) |
 		      (mbox_cmd->parameter & GENMASK_ULL(13, 0)) << 16 |
 		      (mbox_cmd->sub_command << 8) |
@@ -82,7 +68,7 @@ static int isst_if_mbox_cmd(struct pci_dev *pdev,
 	if (ret)
 		return ret;
 
-	/* Poll for rb bit == 0 */
+	 
 	tm_delta = 0;
 	tm = ktime_get();
 	do {
@@ -137,10 +123,7 @@ static long isst_if_mbox_proc_cmd(u8 *cmd_ptr, int *write_only, int resume)
 	if (!punit_dev)
 		return -EINVAL;
 
-	/*
-	 * Basically we are allowing one complete mailbox transaction on
-	 * a mapped PCI device at a time.
-	 */
+	 
 	mutex_lock(&punit_dev->mutex);
 	ret = isst_if_mbox_cmd(pdev, mbox_cmd);
 	if (!ret && !resume && isst_if_mbox_cmd_set_req(mbox_cmd))

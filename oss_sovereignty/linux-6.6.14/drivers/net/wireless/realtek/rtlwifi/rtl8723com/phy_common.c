@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "phy_common.h"
 #include "../rtl8723ae/reg.h"
 #include <linux/module.h>
 
-/* These routines are common to RTL8723AE and RTL8723bE */
+ 
 
 u32 rtl8723_phy_query_bb_reg(struct ieee80211_hw *hw,
 			     u32 regaddr, u32 bitmask)
@@ -375,7 +375,7 @@ void rtl8723_phy_path_adda_on(struct ieee80211_hw *hw, u32 *addareg,
 			rtl_set_bbreg(hw, addareg[0], MASKDWORD, pathon);
 		}
 	} else {
-		/* rtl8723be */
+		 
 		pathon = 0x01c00014;
 		rtl_set_bbreg(hw, addareg[0], MASKDWORD, pathon);
 	}

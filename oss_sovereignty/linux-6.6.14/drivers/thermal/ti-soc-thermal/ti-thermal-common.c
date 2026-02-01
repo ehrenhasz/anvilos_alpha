@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP thermal driver interface
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - http://www.ti.com/
- * Contact:
- *   Eduardo Valentin <eduardo.valentin@ti.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -25,7 +19,7 @@
 
 #define TI_BANDGAP_UPDATE_INTERVAL_MS 250
 
-/* common data structures */
+ 
 struct ti_thermal_data {
 	struct cpufreq_policy *policy;
 	struct thermal_zone_device *ti_thermal;
@@ -49,12 +43,7 @@ static void ti_thermal_work(struct work_struct *work)
 		thermal_zone_device_type(data->ti_thermal));
 }
 
-/**
- * ti_thermal_hotspot_temperature - returns sensor extrapolated temperature
- * @t:	omap sensor temperature
- * @s:	omap sensor slope value
- * @c:	omap sensor const value
- */
+ 
 static inline int ti_thermal_hotspot_temperature(int t, int s, int c)
 {
 	int delta = t * s / 1000 + c;
@@ -65,8 +54,8 @@ static inline int ti_thermal_hotspot_temperature(int t, int s, int c)
 	return t + delta;
 }
 
-/* thermal zone ops */
-/* Get temperature callback function for thermal zone */
+ 
+ 
 static inline int __ti_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
 {
 	struct thermal_zone_device *pcb_tz = NULL;
@@ -86,16 +75,16 @@ static inline int __ti_thermal_get_temp(struct thermal_zone_device *tz, int *tem
 	if (ret)
 		return ret;
 
-	/* Default constants */
+	 
 	slope = thermal_zone_get_slope(tz);
 	constant = thermal_zone_get_offset(tz);
 
 	pcb_tz = data->pcb_tz;
-	/* In case pcb zone is available, use the extrapolation rule with it */
+	 
 	if (!IS_ERR(pcb_tz)) {
 		ret = thermal_zone_get_temp(pcb_tz, &pcb_temp);
 		if (!ret) {
-			tmp -= pcb_temp; /* got a valid PCB temp */
+			tmp -= pcb_temp;  
 			slope = s->slope_pcb;
 			constant = s->constant_pcb;
 		} else {
@@ -152,7 +141,7 @@ static struct ti_thermal_data
 	data->sensor_id = id;
 	data->bgp = bgp;
 	data->mode = THERMAL_DEVICE_ENABLED;
-	/* pcb_tz will be either valid or PTR_ERR() */
+	 
 	data->pcb_tz = thermal_zone_get_zone_by_name("pcb");
 	INIT_WORK(&data->thermal_wq, ti_thermal_work);
 
@@ -172,7 +161,7 @@ int ti_thermal_expose_sensor(struct ti_bandgap *bgp, int id,
 	if (!data)
 		return -EINVAL;
 
-	/* in case this is specified by DT */
+	 
 	data->ti_thermal = devm_thermal_of_zone_register(bgp->dev, id,
 					data, &ti_of_thermal_ops);
 	if (IS_ERR(data->ti_thermal)) {
@@ -219,11 +208,7 @@ int ti_thermal_register_cpu_cooling(struct ti_bandgap *bgp, int id)
 	struct ti_thermal_data *data;
 	struct device_node *np = bgp->dev->of_node;
 
-	/*
-	 * We are assuming here that if one deploys the zone
-	 * using DT, then it must be aware that the cooling device
-	 * loading has to happen via cpufreq driver.
-	 */
+	 
 	if (of_property_present(np, "#thermal-sensor-cells"))
 		return 0;
 
@@ -240,7 +225,7 @@ int ti_thermal_register_cpu_cooling(struct ti_bandgap *bgp, int id)
 		return -EPROBE_DEFER;
 	}
 
-	/* Register cooling device */
+	 
 	data->cool_dev = cpufreq_cooling_register(data->policy);
 	if (IS_ERR(data->cool_dev)) {
 		int ret = PTR_ERR(data->cool_dev);

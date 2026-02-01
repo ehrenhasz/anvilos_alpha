@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * LCD driver for HP Jornada 700 series (710/720/728)
- * Copyright (C) 2006-2009 Kristoffer Ericson <kristoffer.ericson@gmail.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/fb.h>
@@ -54,9 +50,9 @@ static int jornada_lcd_set_contrast(struct lcd_device *ld, int value)
 
 	jornada_ssp_start();
 
-	/* start by sending our set contrast cmd to mcu */
+	 
 	if (jornada_ssp_byte(SETCONTRAST) == TXDUMMY) {
-		/* if successful push the new value */
+		 
 		if (jornada_ssp_byte(value) == TXDUMMY)
 			goto success;
 	}
@@ -104,10 +100,10 @@ static int jornada_lcd_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, lcd_device);
 
-	/* lets set our default values */
+	 
 	jornada_lcd_set_contrast(lcd_device, LCD_DEF_CONTRAST);
 	jornada_lcd_set_power(lcd_device, FB_BLANK_UNBLANK);
-	/* give it some time to startup */
+	 
 	msleep(100);
 
 	return 0;

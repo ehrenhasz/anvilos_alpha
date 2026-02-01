@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * usb-serial driver for Quatech USB 2 devices
- *
- * Copyright (C) 2012 Bill Pemberton (wfp5p@virginia.edu)
- *
- *  These devices all have only 1 bulk in and 1 bulk out that is shared
- *  for all serial ports.
- *
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/errno.h>
@@ -22,7 +14,7 @@
 #include <linux/serial_reg.h>
 #include <linux/uaccess.h>
 
-/* default urb timeout for usb operations */
+ 
 #define QT2_USB_TIMEOUT USB_CTRL_SET_TIMEOUT
 
 #define QT_OPEN_CLOSE_CHANNEL       0xca
@@ -44,33 +36,33 @@
 
 #define  SERIAL_EVEN_PARITY         (UART_LCR_PARITY | UART_LCR_EPAR)
 
-/* status bytes for the device */
+ 
 #define QT2_CONTROL_BYTE    0x1b
-#define QT2_LINE_STATUS     0x00  /* following 1 byte is line status */
-#define QT2_MODEM_STATUS    0x01  /* following 1 byte is modem status */
-#define QT2_XMIT_HOLD       0x02  /* following 2 bytes are ?? */
-#define QT2_CHANGE_PORT     0x03  /* following 1 byte is port to change to */
-#define QT2_REC_FLUSH       0x04  /* no following info */
-#define QT2_XMIT_FLUSH      0x05  /* no following info */
-#define QT2_CONTROL_ESCAPE  0xff  /* pass through previous 2 control bytes */
+#define QT2_LINE_STATUS     0x00   
+#define QT2_MODEM_STATUS    0x01   
+#define QT2_XMIT_HOLD       0x02   
+#define QT2_CHANGE_PORT     0x03   
+#define QT2_REC_FLUSH       0x04   
+#define QT2_XMIT_FLUSH      0x05   
+#define QT2_CONTROL_ESCAPE  0xff   
 
 #define  MAX_BAUD_RATE              921600
 #define  DEFAULT_BAUD_RATE          9600
 
-#define QT2_READ_BUFFER_SIZE    512  /* size of read buffer */
-#define QT2_WRITE_BUFFER_SIZE   512  /* size of write buffer */
-#define QT2_WRITE_CONTROL_SIZE  5    /* control bytes used for a write */
+#define QT2_READ_BUFFER_SIZE    512   
+#define QT2_WRITE_BUFFER_SIZE   512   
+#define QT2_WRITE_CONTROL_SIZE  5     
 
 #define DRIVER_DESC "Quatech 2nd gen USB to Serial Driver"
 
 #define	USB_VENDOR_ID_QUATECH	0x061d
-#define QUATECH_SSU2_100	0xC120	/* RS232 single port */
-#define QUATECH_DSU2_100	0xC140	/* RS232 dual port */
-#define QUATECH_DSU2_400	0xC150	/* RS232/422/485 dual port */
-#define QUATECH_QSU2_100	0xC160	/* RS232 four port */
-#define QUATECH_QSU2_400	0xC170	/* RS232/422/485 four port */
-#define QUATECH_ESU2_100	0xC1A0	/* RS232 eight port */
-#define QUATECH_ESU2_400	0xC180	/* RS232/422/485 eight port */
+#define QUATECH_SSU2_100	0xC120	 
+#define QUATECH_DSU2_100	0xC140	 
+#define QUATECH_DSU2_400	0xC150	 
+#define QUATECH_QSU2_100	0xC160	 
+#define QUATECH_QSU2_400	0xC170	 
+#define QUATECH_ESU2_100	0xC1A0	 
+#define QUATECH_ESU2_400	0xC180	 
 
 struct qt2_device_detail {
 	int product_id;
@@ -89,7 +81,7 @@ static const struct qt2_device_detail qt2_device_details[] = {
 	{QT_DETAILS(QUATECH_QSU2_100, 4)},
 	{QT_DETAILS(QUATECH_ESU2_400, 8)},
 	{QT_DETAILS(QUATECH_ESU2_100, 8)},
-	{QT_DETAILS(0, 0)}	/* Terminating entry */
+	{QT_DETAILS(0, 0)}	 
 };
 
 static const struct usb_device_id id_table[] = {
@@ -100,14 +92,14 @@ static const struct usb_device_id id_table[] = {
 	{USB_DEVICE(USB_VENDOR_ID_QUATECH, QUATECH_QSU2_400)},
 	{USB_DEVICE(USB_VENDOR_ID_QUATECH, QUATECH_ESU2_100)},
 	{USB_DEVICE(USB_VENDOR_ID_QUATECH, QUATECH_ESU2_400)},
-	{}			/* Terminating entry */
+	{}			 
 };
 MODULE_DEVICE_TABLE(usb, id_table);
 
 struct qt2_serial_private {
-	unsigned char current_port;  /* current port for incoming data */
+	unsigned char current_port;   
 
-	struct urb	*read_urb;   /* shared among all ports */
+	struct urb	*read_urb;    
 	char		*read_buffer;
 };
 
@@ -149,7 +141,7 @@ static inline int calc_baud_divisor(int baudrate)
 
 	divisor = MAX_BAUD_RATE / baudrate;
 	rem = MAX_BAUD_RATE % baudrate;
-	/* Round to nearest divisor */
+	 
 	if (((rem * 2) >= baudrate) && (baudrate != 110))
 		divisor++;
 
@@ -215,10 +207,10 @@ static inline int update_mctrl(struct qt2_port_private *port_priv,
 	if (((set | clear) & (TIOCM_DTR | TIOCM_RTS)) == 0) {
 		dev_dbg(&port->dev,
 			"update_mctrl - DTR|RTS not being set|cleared\n");
-		return 0;	/* no change */
+		return 0;	 
 	}
 
-	clear &= ~set;	/* 'set' takes precedence over 'clear' */
+	clear &= ~set;	 
 	urb_value = 0;
 	if (set & TIOCM_DTR)
 		urb_value |= UART_MCR_DTR;
@@ -245,7 +237,7 @@ static int qt2_calc_num_ports(struct usb_serial *serial,
 			return d.num_ports;
 	}
 
-	/* we didn't recognize the device */
+	 
 	dev_err(&serial->dev->dev,
 		 "don't know the number of ports, assuming 1\n");
 
@@ -326,7 +318,7 @@ static int qt2_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	port_priv = usb_get_serial_port_data(port);
 
-	/* set the port to RS232 mode */
+	 
 	status = qt2_control_msg(serial->dev, QT2_GET_SET_QMCR,
 				 QT2_QMCR_RS232, device_port);
 	if (status < 0) {
@@ -340,7 +332,7 @@ static int qt2_open(struct tty_struct *tty, struct usb_serial_port *port)
 	if (!data)
 		return -ENOMEM;
 
-	/* open the port */
+	 
 	status = usb_control_msg(serial->dev,
 				 usb_rcvctrlpipe(serial->dev, 0),
 				 QT_OPEN_CLOSE_CHANNEL,
@@ -363,7 +355,7 @@ static int qt2_open(struct tty_struct *tty, struct usb_serial_port *port)
 
 	kfree(data);
 
-	/* set to default speed and 8bit word size */
+	 
 	status = qt2_set_port_config(serial->dev, device_port,
 				     DEFAULT_BAUD_RATE, UART_LCR_WLEN8);
 	if (status < 0) {
@@ -392,7 +384,7 @@ static void qt2_close(struct usb_serial_port *port)
 
 	usb_kill_urb(port_priv->write_urb);
 
-	/* flush the port transmit buffer */
+	 
 	i = usb_control_msg(serial->dev,
 			    usb_sndctrlpipe(serial->dev, 0),
 			    QT2_FLUSH_DEVICE, 0x40, 1,
@@ -402,7 +394,7 @@ static void qt2_close(struct usb_serial_port *port)
 		dev_err(&port->dev, "%s - transmit buffer flush failed: %i\n",
 			__func__, i);
 
-	/* flush the port receive buffer */
+	 
 	i = usb_control_msg(serial->dev,
 			    usb_sndctrlpipe(serial->dev, 0),
 			    QT2_FLUSH_DEVICE, 0x40, 0,
@@ -412,7 +404,7 @@ static void qt2_close(struct usb_serial_port *port)
 		dev_err(&port->dev, "%s - receive buffer flush failed: %i\n",
 			__func__, i);
 
-	/* close the port */
+	 
 	i = usb_control_msg(serial->dev,
 			    usb_sndctrlpipe(serial->dev, 0),
 			    QT_OPEN_CLOSE_CHANNEL,
@@ -488,7 +480,7 @@ static void qt2_process_read_urb(struct urb *urb)
 						 __func__);
 					break;
 				}
-				/* bytes_written = (ch[1] << 4) + ch[0]; */
+				 
 				i += 4;
 				escapeflag = true;
 				break;
@@ -616,7 +608,7 @@ static int qt2_attach(struct usb_serial *serial)
 	struct qt2_serial_private *serial_priv;
 	int status;
 
-	/* power on unit */
+	 
 	status = usb_control_msg(serial->dev, usb_sndctrlpipe(serial->dev, 0),
 				 0xc2, 0x40, 0x8000, 0, NULL, 0,
 				 QT2_USB_TIMEOUT);
@@ -771,13 +763,13 @@ static void qt2_dtr_rts(struct usb_serial_port *port, int on)
 	struct usb_device *dev = port->serial->dev;
 	struct qt2_port_private *port_priv = usb_get_serial_port_data(port);
 
-	/* Disable flow control */
+	 
 	if (!on) {
 		if (qt2_setregister(dev, port_priv->device_port,
 					   UART_MCR, 0) < 0)
 			dev_warn(&port->dev, "error from flowcontrol urb\n");
 	}
-	/* drop RTS and DTR */
+	 
 	if (on)
 		update_mctrl(port_priv, TIOCM_DTR | TIOCM_RTS, 0);
 	else
@@ -790,7 +782,7 @@ static void qt2_update_msr(struct usb_serial_port *port, unsigned char *ch)
 	u8 newMSR = (u8) *ch;
 	unsigned long flags;
 
-	/* May be called from qt2_process_read_urb() for an unbound port. */
+	 
 	port_priv = usb_get_serial_port_data(port);
 	if (!port_priv)
 		return;
@@ -800,7 +792,7 @@ static void qt2_update_msr(struct usb_serial_port *port, unsigned char *ch)
 	spin_unlock_irqrestore(&port_priv->lock, flags);
 
 	if (newMSR & UART_MSR_ANY_DELTA) {
-		/* update input line counters */
+		 
 		if (newMSR & UART_MSR_DCTS)
 			port->icount.cts++;
 		if (newMSR & UART_MSR_DDSR)
@@ -821,7 +813,7 @@ static void qt2_update_lsr(struct usb_serial_port *port, unsigned char *ch)
 	unsigned long flags;
 	u8 newLSR = (u8) *ch;
 
-	/* May be called from qt2_process_read_urb() for an unbound port. */
+	 
 	port_priv = usb_get_serial_port_data(port);
 	if (!port_priv)
 		return;

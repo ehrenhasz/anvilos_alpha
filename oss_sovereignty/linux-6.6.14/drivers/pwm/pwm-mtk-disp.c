@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MediaTek display pulse-width-modulation controller driver.
- * Copyright (c) 2015 MediaTek Inc.
- * Author: YH Huang <yh.huang@mediatek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -105,16 +101,7 @@ static int mtk_disp_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		}
 	}
 
-	/*
-	 * Find period, high_width and clk_div to suit duty_ns and period_ns.
-	 * Calculate proper div value to keep period value in the bound.
-	 *
-	 * period_ns = 10^9 * (clk_div + 1) * (period + 1) / PWM_CLK_RATE
-	 * duty_ns = 10^9 * (clk_div + 1) * high_width / PWM_CLK_RATE
-	 *
-	 * period = (PWM_CLK_RATE * period_ns) / (10^9 * (clk_div + 1)) - 1
-	 * high_width = (PWM_CLK_RATE * duty_ns) / (10^9 * (clk_div + 1))
-	 */
+	 
 	rate = clk_get_rate(mdp->clk_main);
 	clk_div = mul_u64_u64_div_u64(state->period, rate, NSEC_PER_SEC) >>
 			  PWM_PERIOD_BIT_WIDTH;
@@ -135,10 +122,7 @@ static int mtk_disp_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	value = period | (high_width << PWM_HIGH_WIDTH_SHIFT);
 
 	if (mdp->data->bls_debug && !mdp->data->has_commit) {
-		/*
-		 * For MT2701, disable double buffer before writing register
-		 * and select manual mode and use PWM_PERIOD/PWM_HIGH_WIDTH.
-		 */
+		 
 		mtk_disp_pwm_update_bits(mdp, mdp->data->bls_debug,
 					 mdp->data->bls_debug_mask,
 					 mdp->data->bls_debug_mask);
@@ -192,11 +176,7 @@ static int mtk_disp_pwm_get_state(struct pwm_chip *chip,
 		return err;
 	}
 
-	/*
-	 * Apply DISP_PWM_DEBUG settings to choose whether to enable or disable
-	 * registers double buffer and manual commit to working register before
-	 * performing any read/write operation
-	 */
+	 
 	if (mdp->data->bls_debug)
 		mtk_disp_pwm_update_bits(mdp, mdp->data->bls_debug,
 					 mdp->data->bls_debug_mask,
@@ -209,10 +189,7 @@ static int mtk_disp_pwm_get_state(struct pwm_chip *chip,
 	state->enabled = !!(pwm_en & mdp->data->enable_mask);
 	clk_div = FIELD_GET(PWM_CLKDIV_MASK, con0);
 	period = FIELD_GET(PWM_PERIOD_MASK, con1);
-	/*
-	 * period has 12 bits, clk_div 11 and NSEC_PER_SEC has 30,
-	 * so period * (clk_div + 1) * NSEC_PER_SEC doesn't overflow.
-	 */
+	 
 	state->period = DIV64_U64_ROUND_UP(period * (clk_div + 1) * NSEC_PER_SEC, rate);
 	high_width = FIELD_GET(PWM_HIGH_WIDTH_MASK, con1);
 	state->duty_cycle = DIV64_U64_ROUND_UP(high_width * (clk_div + 1) * NSEC_PER_SEC,

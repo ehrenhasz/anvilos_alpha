@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 TOSHIBA CORPORATION
- * Copyright (c) 2020 Toshiba Electronic Devices & Storage Corporation
- * Copyright (c) 2020 Nobuhiro Iwamatsu <nobuhiro1.iwamatsu@toshiba.co.jp>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -22,8 +18,8 @@
 #define WDT_CMD_START_STOP	0x5354
 #define WDT_DIV			0x30
 
-#define VISCONTI_WDT_FREQ	2000000 /* 2MHz */
-#define WDT_DEFAULT_TIMEOUT	10U /* in seconds */
+#define VISCONTI_WDT_FREQ	2000000  
+#define WDT_DEFAULT_TIMEOUT	10U  
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
 module_param(nowayout, bool, 0);
@@ -91,7 +87,7 @@ static int visconti_wdt_set_timeout(struct watchdog_device *wdev, unsigned int t
 	wdev->timeout = timeout;
 	val = wdev->timeout * VISCONTI_WDT_FREQ;
 
-	/* Clear counter before setting timeout because WDT expires */
+	 
 	writel(WDT_CMD_CLEAR, priv->base + WDT_CMD);
 	writel(val, priv->base + WDT_MAX);
 
@@ -139,7 +135,7 @@ static int visconti_wdt_probe(struct platform_device *pdev)
 
 	priv->div = clk_freq / VISCONTI_WDT_FREQ;
 
-	/* Initialize struct watchdog_device. */
+	 
 	wdev = &priv->wdev;
 	wdev->info = &visconti_wdt_info;
 	wdev->ops = &visconti_wdt_ops;
@@ -152,7 +148,7 @@ static int visconti_wdt_probe(struct platform_device *pdev)
 	watchdog_set_nowayout(wdev, nowayout);
 	watchdog_stop_on_unregister(wdev);
 
-	/* This overrides the default timeout only if DT configuration was found */
+	 
 	ret = watchdog_init_timeout(wdev, 0, dev);
 	if (ret)
 		dev_warn(dev, "Specified timeout value invalid, using default\n");

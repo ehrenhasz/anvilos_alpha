@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -74,17 +72,17 @@
 #define MX6_BM_WAKEUP_INTR		BIT(31)
 
 #define MX6_USB_HSIC_CTRL_OFFSET	0x10
-/* Send resume signal without 480Mhz PHY clock */
+ 
 #define MX6SX_BM_HSIC_AUTO_RESUME	BIT(23)
-/* set before portsc.suspendM = 1 */
+ 
 #define MX6_BM_HSIC_DEV_CONN		BIT(21)
-/* HSIC enable */
+ 
 #define MX6_BM_HSIC_EN			BIT(12)
-/* Force HSIC module 480M clock on, even when in Host is in suspend mode */
+ 
 #define MX6_BM_HSIC_CLK_ON		BIT(11)
 
 #define MX6_USB_OTG1_PHY_CTRL		0x18
-/* For imx6dql, it is host-only controller, for later imx6, it is otg's */
+ 
 #define MX6_USB_OTG2_PHY_CTRL		0x1c
 #define MX6SX_USB_VBUS_WAKEUP_SOURCE(v)	(v << 8)
 #define MX6SX_USB_VBUS_WAKEUP_SOURCE_VBUS	MX6SX_USB_VBUS_WAKEUP_SOURCE(0)
@@ -102,7 +100,7 @@
 #define MX7D_USB_VBUS_WAKEUP_SOURCE_BVALID	MX7D_USB_VBUS_WAKEUP_SOURCE(2)
 #define MX7D_USB_VBUS_WAKEUP_SOURCE_SESS_END	MX7D_USB_VBUS_WAKEUP_SOURCE(3)
 #define MX7D_USBNC_AUTO_RESUME				BIT(2)
-/* The default DM/DP value is pull-down */
+ 
 #define MX7D_USBNC_USB_CTRL2_OPMODE(v)			(v << 6)
 #define MX7D_USBNC_USB_CTRL2_OPMODE_NON_DRIVING	MX7D_USBNC_USB_CTRL2_OPMODE(1)
 #define MX7D_USBNC_USB_CTRL2_OPMODE_OVERRIDE_MASK	(BIT(7) | BIT(6))
@@ -140,19 +138,19 @@
 				 MX6_BM_ID_WAKEUP | MX6SX_BM_DPDM_WAKEUP_EN)
 
 struct usbmisc_ops {
-	/* It's called once when probe a usb device */
+	 
 	int (*init)(struct imx_usbmisc_data *data);
-	/* It's called once after adding a usb device */
+	 
 	int (*post)(struct imx_usbmisc_data *data);
-	/* It's called when we need to enable/disable usb wakeup */
+	 
 	int (*set_wakeup)(struct imx_usbmisc_data *data, bool enabled);
-	/* It's called before setting portsc.suspendM */
+	 
 	int (*hsic_set_connect)(struct imx_usbmisc_data *data);
-	/* It's called during suspend/resume */
+	 
 	int (*hsic_set_clk)(struct imx_usbmisc_data *data, bool enabled);
-	/* usb charger detection */
+	 
 	int (*charger_detection)(struct imx_usbmisc_data *data);
-	/* It's called when system resume from usb power lost */
+	 
 	int (*power_lost_check)(struct imx_usbmisc_data *data);
 	void (*vbus_comparator_on)(struct imx_usbmisc_data *data, bool on);
 };
@@ -182,10 +180,7 @@ static int usbmisc_imx25_init(struct imx_usbmisc_data *data)
 		val |= (MX25_EHCI_INTERFACE_DIFF_UNI & MX25_EHCI_INTERFACE_MASK) << MX25_OTG_SIC_SHIFT;
 		val |= (MX25_OTG_PM_BIT | MX25_OTG_OCPOL_BIT);
 
-		/*
-		 * If the polarity is not configured assume active high for
-		 * historical reasons.
-		 */
+		 
 		if (data->oc_pol_configured && data->oc_pol_active_low)
 			val &= ~MX25_OTG_OCPOL_BIT;
 
@@ -198,10 +193,7 @@ static int usbmisc_imx25_init(struct imx_usbmisc_data *data)
 		val |= (MX25_H1_PM_BIT | MX25_H1_OCPOL_BIT | MX25_H1_TLL_BIT |
 			MX25_H1_USBTE_BIT | MX25_H1_IPPUE_DOWN_BIT);
 
-		/*
-		 * If the polarity is not configured assume active high for
-		 * historical reasons.
-		 */
+		 
 		if (data->oc_pol_configured && data->oc_pol_active_low)
 			val &= ~MX25_H1_OCPOL_BIT;
 
@@ -238,7 +230,7 @@ static int usbmisc_imx25_post(struct imx_usbmisc_data *data)
 
 	writel(val, reg);
 	spin_unlock_irqrestore(&usbmisc->lock, flags);
-	usleep_range(5000, 10000); /* needed to stabilize voltage */
+	usleep_range(5000, 10000);  
 
 	return 0;
 }
@@ -284,7 +276,7 @@ static int usbmisc_imx53_init(struct imx_usbmisc_data *data)
 	if (data->index > 3)
 		return -EINVAL;
 
-	/* Select a 24 MHz reference clock for the PHY  */
+	 
 	val = readl(usbmisc->base + MX53_USB_OTG_PHY_CTRL_1_OFFSET);
 	val &= ~MX53_USB_PHYCTRL1_PLLDIV_MASK;
 	val |= MX53_USB_PLL_DIV_24_MHZ;
@@ -309,20 +301,20 @@ static int usbmisc_imx53_init(struct imx_usbmisc_data *data)
 		break;
 	case 2:
 		if (data->ulpi) {
-			/* set USBH2 into ULPI-mode. */
+			 
 			reg = usbmisc->base + MX53_USB_CTRL_1_OFFSET;
 			val = readl(reg) | MX53_USB_CTRL_1_UH2_ULPI_EN;
-			/* select ULPI clock */
+			 
 			val &= ~MX53_USB_CTRL_1_H2_XCVR_CLK_SEL_MASK;
 			val |= MX53_USB_CTRL_1_H2_XCVR_CLK_SEL_ULPI;
 			writel(val, reg);
-			/* Set interrupt wake up enable */
+			 
 			reg = usbmisc->base + MX53_USB_UH2_CTRL_OFFSET;
 			val = readl(reg) | MX53_USB_UHx_CTRL_WAKE_UP_EN
 				| MX53_USB_UHx_CTRL_ULPI_INT_EN;
 			writel(val, reg);
 			if (is_imx53_usbmisc(data)) {
-				/* Disable internal 60Mhz clock */
+				 
 				reg = usbmisc->base +
 					MX53_USB_CLKONOFF_CTRL_OFFSET;
 				val = readl(reg) |
@@ -339,21 +331,21 @@ static int usbmisc_imx53_init(struct imx_usbmisc_data *data)
 		break;
 	case 3:
 		if (data->ulpi) {
-			/* set USBH3 into ULPI-mode. */
+			 
 			reg = usbmisc->base + MX53_USB_CTRL_1_OFFSET;
 			val = readl(reg) | MX53_USB_CTRL_1_UH3_ULPI_EN;
-			/* select ULPI clock */
+			 
 			val &= ~MX53_USB_CTRL_1_H3_XCVR_CLK_SEL_MASK;
 			val |= MX53_USB_CTRL_1_H3_XCVR_CLK_SEL_ULPI;
 			writel(val, reg);
-			/* Set interrupt wake up enable */
+			 
 			reg = usbmisc->base + MX53_USB_UH3_CTRL_OFFSET;
 			val = readl(reg) | MX53_USB_UHx_CTRL_WAKE_UP_EN
 				| MX53_USB_UHx_CTRL_ULPI_INT_EN;
 			writel(val, reg);
 
 			if (is_imx53_usbmisc(data)) {
-				/* Disable internal 60Mhz clock */
+				 
 				reg = usbmisc->base +
 					MX53_USB_CLKONOFF_CTRL_OFFSET;
 				val = readl(reg) |
@@ -431,26 +423,23 @@ static int usbmisc_imx6q_init(struct imx_usbmisc_data *data)
 	} else {
 		reg &= ~MX6_BM_OVER_CUR_DIS;
 
-		/*
-		 * If the polarity is not configured keep it as setup by the
-		 * bootloader.
-		 */
+		 
 		if (data->oc_pol_configured && data->oc_pol_active_low)
 			reg |= MX6_BM_OVER_CUR_POLARITY;
 		else if (data->oc_pol_configured)
 			reg &= ~MX6_BM_OVER_CUR_POLARITY;
 	}
-	/* If the polarity is not set keep it as setup by the bootlader */
+	 
 	if (data->pwr_pol == 1)
 		reg |= MX6_BM_PWR_POLARITY;
 	writel(reg, usbmisc->base + data->index * 4);
 
-	/* SoC non-burst setting */
+	 
 	reg = readl(usbmisc->base + data->index * 4);
 	writel(reg | MX6_BM_NON_BURST_SETTING,
 			usbmisc->base + data->index * 4);
 
-	/* For HSIC controller */
+	 
 	if (data->hsic) {
 		reg = readl(usbmisc->base + data->index * 4);
 		writel(reg | MX6_BM_UTMI_ON_CLOCK,
@@ -476,11 +465,7 @@ static int usbmisc_imx6_hsic_get_reg_offset(struct imx_usbmisc_data *data)
 	if (data->index == 2 || data->index == 3) {
 		offset = (data->index - 2) * 4;
 	} else if (data->index == 0) {
-		/*
-		 * For SoCs like i.MX7D and later, each USB controller has
-		 * its own non-core register region. For SoCs before i.MX7D,
-		 * the first two USB controllers are non-HSIC controllers.
-		 */
+		 
 		offset = 0;
 	} else {
 		dev_err(data->dev, "index is error for usbmisc\n");
@@ -554,20 +539,17 @@ static int usbmisc_imx6sx_init(struct imx_usbmisc_data *data)
 	if (data->index == 0 || data->index == 1) {
 		reg = usbmisc->base + MX6_USB_OTG1_PHY_CTRL + data->index * 4;
 		spin_lock_irqsave(&usbmisc->lock, flags);
-		/* Set vbus wakeup source as bvalid */
+		 
 		val = readl(reg);
 		writel(val | MX6SX_USB_VBUS_WAKEUP_SOURCE_BVALID, reg);
-		/*
-		 * Disable dp/dm wakeup in device mode when vbus is
-		 * not there.
-		 */
+		 
 		val = readl(usbmisc->base + data->index * 4);
 		writel(val & ~MX6SX_BM_DPDM_WAKEUP_EN,
 			usbmisc->base + data->index * 4);
 		spin_unlock_irqrestore(&usbmisc->lock, flags);
 	}
 
-	/* For HSIC controller */
+	 
 	if (data->hsic) {
 		val = readl(usbmisc->base + MX6_USB_HSIC_CTRL_OFFSET);
 		val |= MX6SX_BM_HSIC_AUTO_RESUME;
@@ -582,10 +564,7 @@ static int usbmisc_vf610_init(struct imx_usbmisc_data *data)
 	struct imx_usbmisc *usbmisc = dev_get_drvdata(data->dev);
 	u32 reg;
 
-	/*
-	 * Vybrid only has one misc register set, but in two different
-	 * areas. These is reflected in two instances of this driver.
-	 */
+	 
 	if (data->index >= 1)
 		return -EINVAL;
 
@@ -636,21 +615,18 @@ static int usbmisc_imx7d_init(struct imx_usbmisc_data *data)
 	} else {
 		reg &= ~MX6_BM_OVER_CUR_DIS;
 
-		/*
-		 * If the polarity is not configured keep it as setup by the
-		 * bootloader.
-		 */
+		 
 		if (data->oc_pol_configured && data->oc_pol_active_low)
 			reg |= MX6_BM_OVER_CUR_POLARITY;
 		else if (data->oc_pol_configured)
 			reg &= ~MX6_BM_OVER_CUR_POLARITY;
 	}
-	/* If the polarity is not set keep it as setup by the bootlader */
+	 
 	if (data->pwr_pol == 1)
 		reg |= MX6_BM_PWR_POLARITY;
 	writel(reg, usbmisc->base);
 
-	/* SoC non-burst setting */
+	 
 	reg = readl(usbmisc->base);
 	writel(reg | MX6_BM_NON_BURST_SETTING, usbmisc->base);
 
@@ -660,7 +636,7 @@ static int usbmisc_imx7d_init(struct imx_usbmisc_data *data)
 		writel(reg | MX7D_USB_VBUS_WAKEUP_SOURCE_BVALID
 			| MX7D_USBNC_AUTO_RESUME,
 			usbmisc->base + MX7D_USBNC_USB_CTRL2);
-		/* PHY tuning for signal quality */
+		 
 		reg = readl(usbmisc->base + MX7D_USB_OTG_PHY_CFG1);
 		if (data->emp_curr_control >= 0 &&
 			data->emp_curr_control <=
@@ -700,17 +676,17 @@ static int imx7d_charger_secondary_detection(struct imx_usbmisc_data *data)
 	int val;
 	unsigned long flags;
 
-	/* Clear VDATSRCENB0 to disable VDP_SRC and IDM_SNK required by BC 1.2 spec */
+	 
 	spin_lock_irqsave(&usbmisc->lock, flags);
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	val &= ~MX7D_USB_OTG_PHY_CFG2_CHRG_VDATSRCENB0;
 	writel(val, usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	spin_unlock_irqrestore(&usbmisc->lock, flags);
 
-	/* TVDMSRC_DIS */
+	 
 	msleep(20);
 
-	/* VDM_SRC is connected to D- and IDP_SINK is connected to D+ */
+	 
 	spin_lock_irqsave(&usbmisc->lock, flags);
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	writel(val | MX7D_USB_OTG_PHY_CFG2_CHRG_VDATSRCENB0 |
@@ -719,14 +695,10 @@ static int imx7d_charger_secondary_detection(struct imx_usbmisc_data *data)
 				usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	spin_unlock_irqrestore(&usbmisc->lock, flags);
 
-	/* TVDMSRC_ON */
+	 
 	msleep(40);
 
-	/*
-	 * Per BC 1.2, check voltage of D+:
-	 * DCP: if greater than VDAT_REF;
-	 * CDP: if less than VDAT_REF.
-	 */
+	 
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_STATUS);
 	if (val & MX7D_USB_OTG_PHY_STATUS_CHRGDET) {
 		dev_dbg(data->dev, "It is a dedicate charging port\n");
@@ -753,7 +725,7 @@ static void imx7_disable_charger_detector(struct imx_usbmisc_data *data)
 			MX7D_USB_OTG_PHY_CFG2_CHRG_CHRGSEL);
 	writel(val, usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 
-	/* Set OPMODE to be 2'b00 and disable its override */
+	 
 	val = readl(usbmisc->base + MX7D_USBNC_USB_CTRL2);
 	val &= ~MX7D_USBNC_USB_CTRL2_OPMODE_OVERRIDE_MASK;
 	writel(val, usbmisc->base + MX7D_USBNC_USB_CTRL2);
@@ -771,7 +743,7 @@ static int imx7d_charger_data_contact_detect(struct imx_usbmisc_data *data)
 	u32 val;
 	int i, data_pin_contact_count = 0;
 
-	/* Enable Data Contact Detect (DCD) per the USB BC 1.2 */
+	 
 	spin_lock_irqsave(&usbmisc->lock, flags);
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	writel(val | MX7D_USB_OTG_PHY_CFG2_CHRG_DCDENB,
@@ -782,7 +754,7 @@ static int imx7d_charger_data_contact_detect(struct imx_usbmisc_data *data)
 		val = readl(usbmisc->base + MX7D_USB_OTG_PHY_STATUS);
 		if (!(val & MX7D_USB_OTG_PHY_STATUS_LINE_STATE0)) {
 			if (data_pin_contact_count++ > 5)
-				/* Data pin makes contact */
+				 
 				break;
 			usleep_range(5000, 10000);
 		} else {
@@ -791,7 +763,7 @@ static int imx7d_charger_data_contact_detect(struct imx_usbmisc_data *data)
 		}
 	}
 
-	/* Disable DCD after finished data contact check */
+	 
 	spin_lock_irqsave(&usbmisc->lock, flags);
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	writel(val & ~MX7D_USB_OTG_PHY_CFG2_CHRG_DCDENB,
@@ -814,7 +786,7 @@ static int imx7d_charger_primary_detection(struct imx_usbmisc_data *data)
 	unsigned long flags;
 	u32 val;
 
-	/* VDP_SRC is connected to D+ and IDM_SINK is connected to D- */
+	 
 	spin_lock_irqsave(&usbmisc->lock, flags);
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	val &= ~MX7D_USB_OTG_PHY_CFG2_CHRG_CHRGSEL;
@@ -823,10 +795,10 @@ static int imx7d_charger_primary_detection(struct imx_usbmisc_data *data)
 				usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	spin_unlock_irqrestore(&usbmisc->lock, flags);
 
-	/* TVDPSRC_ON */
+	 
 	msleep(40);
 
-	/* Check if D- is less than VDAT_REF to determine an SDP per BC 1.2 */
+	 
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_STATUS);
 	if (!(val & MX7D_USB_OTG_PHY_STATUS_CHRGDET)) {
 		dev_dbg(data->dev, "It is a standard downstream port\n");
@@ -836,14 +808,7 @@ static int imx7d_charger_primary_detection(struct imx_usbmisc_data *data)
 	return 0;
 }
 
-/*
- * Whole charger detection process:
- * 1. OPMODE override to be non-driving
- * 2. Data contact check
- * 3. Primary detection
- * 4. Secondary detection
- * 5. Disable charger detection
- */
+ 
 static int imx7d_charger_detection(struct imx_usbmisc_data *data)
 {
 	struct imx_usbmisc *usbmisc = dev_get_drvdata(data->dev);
@@ -852,17 +817,14 @@ static int imx7d_charger_detection(struct imx_usbmisc_data *data)
 	u32 val;
 	int ret;
 
-	/* Check if vbus is valid */
+	 
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_STATUS);
 	if (!(val & MX7D_USB_OTG_PHY_STATUS_VBUS_VLD)) {
 		dev_err(data->dev, "vbus is error\n");
 		return -EINVAL;
 	}
 
-	/*
-	 * Keep OPMODE to be non-driving mode during the whole
-	 * charger detection process.
-	 */
+	 
 	spin_lock_irqsave(&usbmisc->lock, flags);
 	val = readl(usbmisc->base + MX7D_USBNC_USB_CTRL2);
 	val &= ~MX7D_USBNC_USB_CTRL2_OPMODE_OVERRIDE_MASK;
@@ -898,12 +860,7 @@ static void usbmisc_imx7d_vbus_comparator_on(struct imx_usbmisc_data *data,
 		return;
 
 	spin_lock_irqsave(&usbmisc->lock, flags);
-	/*
-	 * Disable VBUS valid comparator when in suspend mode,
-	 * when OTG is disabled and DRVVBUS0 is asserted case
-	 * the Bandgap circuitry and VBUS Valid comparator are
-	 * still powered, even in Suspend or Sleep mode.
-	 */
+	 
 	val = readl(usbmisc->base + MX7D_USB_OTG_PHY_CFG2);
 	if (on)
 		val |= MX7D_USB_OTG_PHY_CFG2_DRVVBUS0;
@@ -930,22 +887,19 @@ static int usbmisc_imx7ulp_init(struct imx_usbmisc_data *data)
 	} else {
 		reg &= ~MX6_BM_OVER_CUR_DIS;
 
-		/*
-		 * If the polarity is not configured keep it as setup by the
-		 * bootloader.
-		 */
+		 
 		if (data->oc_pol_configured && data->oc_pol_active_low)
 			reg |= MX6_BM_OVER_CUR_POLARITY;
 		else if (data->oc_pol_configured)
 			reg &= ~MX6_BM_OVER_CUR_POLARITY;
 	}
-	/* If the polarity is not set keep it as setup by the bootlader */
+	 
 	if (data->pwr_pol == 1)
 		reg |= MX6_BM_PWR_POLARITY;
 
 	writel(reg, usbmisc->base);
 
-	/* SoC non-burst setting */
+	 
 	reg = readl(usbmisc->base);
 	writel(reg | MX6_BM_NON_BURST_SETTING, usbmisc->base);
 
@@ -957,10 +911,7 @@ static int usbmisc_imx7ulp_init(struct imx_usbmisc_data *data)
 		reg |= MX6_BM_HSIC_EN | MX6_BM_HSIC_CLK_ON;
 		writel(reg, usbmisc->base + MX6_USB_HSIC_CTRL_OFFSET);
 
-		/*
-		 * For non-HSIC controller, the autoresume is enabled
-		 * at MXS PHY driver (usbphy_ctrl bit18).
-		 */
+		 
 		reg = readl(usbmisc->base + MX7D_USBNC_USB_CTRL2);
 		writel(reg | MX7D_USBNC_AUTO_RESUME,
 			usbmisc->base + MX7D_USBNC_USB_CTRL2);
@@ -987,10 +938,7 @@ static int usbmisc_imx7d_power_lost_check(struct imx_usbmisc_data *data)
 	spin_lock_irqsave(&usbmisc->lock, flags);
 	val = readl(usbmisc->base);
 	spin_unlock_irqrestore(&usbmisc->lock, flags);
-	/*
-	 * Here use a power on reset value to judge
-	 * if the controller experienced a power lost
-	 */
+	 
 	if (val == 0x30001000)
 		return 1;
 	else
@@ -1006,10 +954,7 @@ static int usbmisc_imx6sx_power_lost_check(struct imx_usbmisc_data *data)
 	spin_lock_irqsave(&usbmisc->lock, flags);
 	val = readl(usbmisc->base + data->index * 4);
 	spin_unlock_irqrestore(&usbmisc->lock, flags);
-	/*
-	 * Here use a power on reset value to judge
-	 * if the controller experienced a power lost
-	 */
+	 
 	if (val == 0x30001000)
 		return 1;
 	else
@@ -1206,7 +1151,7 @@ int imx_usbmisc_resume(struct imx_usbmisc_data *data, bool wakeup)
 	if (usbmisc->ops->power_lost_check)
 		ret = usbmisc->ops->power_lost_check(data);
 	if (ret > 0) {
-		/* re-init if resume from power lost */
+		 
 		ret = imx_usbmisc_init(data);
 		if (ret) {
 			dev_err(data->dev, "re-init failed, ret=%d\n", ret);
@@ -1285,7 +1230,7 @@ static const struct of_device_id usbmisc_imx_dt_ids[] = {
 		.compatible = "fsl,imx7ulp-usbmisc",
 		.data = &imx7ulp_usbmisc_ops,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, usbmisc_imx_dt_ids);
 

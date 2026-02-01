@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Plantower PMS7003 particulate matter sensor driver
- *
- * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/completion.h>
@@ -23,7 +19,7 @@
 #define PMS7003_DRIVER_NAME "pms7003"
 
 #define PMS7003_MAGIC 0x424d
-/* last 2 data bytes hold frame checksum */
+ 
 #define PMS7003_MAX_DATA_LENGTH 28
 #define PMS7003_CHECKSUM_LENGTH 2
 #define PMS7003_PM10_OFFSET 10
@@ -48,13 +44,7 @@ enum pms7003_cmd {
 	CMD_SLEEP,
 };
 
-/*
- * commands have following format:
- *
- * +------+------+-----+------+-----+-----------+-----------+
- * | 0x42 | 0x4d | cmd | 0x00 | arg | cksum msb | cksum lsb |
- * +------+------+-----+------+-----+-----------+-----------+
- */
+ 
 static const u8 pms7003_cmd_tbl[][PMS7003_CMD_LENGTH] = {
 	[CMD_WAKEUP] = { 0x42, 0x4d, 0xe4, 0x00, 0x01, 0x01, 0x74 },
 	[CMD_ENTER_PASSIVE_MODE] = { 0x42, 0x4d, 0xe1, 0x00, 0x00, 0x01, 0x70 },
@@ -72,10 +62,10 @@ struct pms7003_state {
 	struct serdev_device *serdev;
 	struct pms7003_frame frame;
 	struct completion frame_ready;
-	struct mutex lock; /* must be held whenever state gets touched */
-	/* Used to construct scan to push to the IIO buffer */
+	struct mutex lock;  
+	 
 	struct {
-		u16 data[3]; /* PM1, PM2P5, PM10 */
+		u16 data[3];  
 		s64 ts;
 	} scan;
 };
@@ -222,7 +212,7 @@ static int pms7003_receive_buf(struct serdev_device *serdev,
 	if (!frame->expected_length) {
 		u16 magic;
 
-		/* wait for SOF and data length */
+		 
 		if (size < 4)
 			return 0;
 

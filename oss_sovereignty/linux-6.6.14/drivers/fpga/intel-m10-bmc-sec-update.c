@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel MAX10 Board Management Controller Secure Update Driver
- *
- * Copyright (C) 2019-2022 Intel Corporation. All rights reserved.
- *
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/device.h>
 #include <linux/firmware.h>
@@ -32,7 +27,7 @@ struct m10bmc_sec {
 
 static DEFINE_XARRAY_ALLOC(fw_upload_xa);
 
-/* Root Entry Hash (REH) support */
+ 
 #define REH_SHA256_SIZE		32
 #define REH_SHA384_SIZE		48
 #define REH_MAGIC		GENMASK(15, 0)
@@ -59,7 +54,7 @@ static int m10bmc_sec_write(struct m10bmc_sec *sec, const u8 *buf, u32 offset, u
 	if (ret)
 		return ret;
 
-	/* If size is not aligned to stride, handle the remainder bytes with regmap_write() */
+	 
 	if (leftover_size) {
 		memcpy(&leftover_tmp, buf + leftover_offset, leftover_size);
 		ret = regmap_write(m10bmc->regmap, M10BMC_STAGING_BASE + offset + leftover_offset,
@@ -91,7 +86,7 @@ static int m10bmc_sec_read(struct m10bmc_sec *sec, u8 *buf, u32 addr, u32 size)
 	if (ret)
 		return ret;
 
-	/* If size is not aligned to stride, handle the remainder bytes with regmap_read() */
+	 
 	if (leftover_size) {
 		ret = regmap_read(m10bmc->regmap, addr + leftover_offset, &leftover_tmp);
 		if (ret)
@@ -206,7 +201,7 @@ DEVICE_ATTR_SEC_CSK_RO(bmc);
 DEVICE_ATTR_SEC_CSK_RO(sr);
 DEVICE_ATTR_SEC_CSK_RO(pr);
 
-#define FLASH_COUNT_SIZE 4096	/* count stored as inverted bit vector */
+#define FLASH_COUNT_SIZE 4096	 
 
 static ssize_t flash_count_show(struct device *dev,
 				struct device_attribute *attr, char *buf)
@@ -572,7 +567,7 @@ unlock_flash:
 	return ret;
 }
 
-#define WRITE_BLOCK_SIZE 0x4000	/* Default write-block size is 0x4000 bytes */
+#define WRITE_BLOCK_SIZE 0x4000	 
 
 static enum fw_upload_err m10bmc_sec_fw_write(struct fw_upload *fwl, const u8 *data,
 					      u32 offset, u32 size, u32 *written)
@@ -639,13 +634,7 @@ static enum fw_upload_err m10bmc_sec_poll_complete(struct fw_upload *fwl)
 	return FW_UPLOAD_ERR_NONE;
 }
 
-/*
- * m10bmc_sec_cancel() may be called asynchronously with an on-going update.
- * All other functions are called sequentially in a single thread. To avoid
- * contention on register accesses, m10bmc_sec_cancel() must only update
- * the cancel_request flag. Other functions will check this flag and handle
- * the cancel request synchronously.
- */
+ 
 static void m10bmc_sec_cancel(struct fw_upload *fwl)
 {
 	struct m10bmc_sec *sec = fwl->dd_handle;

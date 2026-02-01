@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017-2018 Intel Corporation. All rights reserved. */
+
+ 
 #include <linux/memremap.h>
 #include <linux/device.h>
 #include <linux/mutex.h>
@@ -20,10 +20,7 @@ struct dax_id {
 
 static int dax_bus_uevent(const struct device *dev, struct kobj_uevent_env *env)
 {
-	/*
-	 * We only ever expect to handle device-dax instances, i.e. the
-	 * @type argument to MODULE_ALIAS_DAX_DEVICE() is always zero
-	 */
+	 
 	return add_uevent_var(env, "MODALIAS=" DAX_DEVICE_MODALIAS_FMT, 0);
 }
 
@@ -67,7 +64,7 @@ static int dax_match_type(struct dax_device_driver *dax_drv, struct device *dev)
 	if (dax_drv->type == type)
 		return 1;
 
-	/* default to device mode if dax_kmem is disabled */
+	 
 	if (dax_drv->type == DAXDRV_DEVICE_TYPE &&
 	    !IS_ENABLED(CONFIG_DEV_DAX_KMEM))
 		return 1;
@@ -146,24 +143,7 @@ ATTRIBUTE_GROUPS(dax_drv);
 
 static int dax_bus_match(struct device *dev, struct device_driver *drv);
 
-/*
- * Static dax regions are regions created by an external subsystem
- * nvdimm where a single range is assigned. Its boundaries are by the external
- * subsystem and are usually limited to one physical memory range. For example,
- * for PMEM it is usually defined by NVDIMM Namespace boundaries (i.e. a
- * single contiguous range)
- *
- * On dynamic dax regions, the assigned region can be partitioned by dax core
- * into multiple subdivisions. A subdivision is represented into one
- * /dev/daxN.M device composed by one or more potentially discontiguous ranges.
- *
- * When allocating a dax region, drivers must set whether it's static
- * (IORESOURCE_DAX_STATIC).  On static dax devices, the @pgmap is pre-assigned
- * to dax core when calling devm_create_dev_dax(), whereas in dynamic dax
- * devices it is NULL but afterwards allocated by dax core on device ->probe().
- * Care is needed to make sure that dynamic dax devices are torn down with a
- * cleared @pgmap field (see kill_dev_dax()).
- */
+ 
 static bool is_static(struct dax_region *dax_region)
 {
 	return (dax_region->res.flags & IORESOURCE_DAX_STATIC) != 0;
@@ -203,10 +183,7 @@ static int dax_bus_probe(struct device *dev)
 	if (rc || is_static(dax_region))
 		return rc;
 
-	/*
-	 * Track new seed creation only after successful probe of the
-	 * previous seed.
-	 */
+	 
 	if (dax_region->seed == dev)
 		dax_region->seed = NULL;
 
@@ -240,11 +217,7 @@ static int dax_bus_match(struct device *dev, struct device_driver *drv)
 	return dax_match_type(dax_drv, dev);
 }
 
-/*
- * Rely on the fact that drvdata is set before the attributes are
- * registered, and that the attributes are unregistered before drvdata
- * is cleared to assume that drvdata is always valid.
- */
+ 
 static ssize_t id_show(struct device *dev,
 		struct device_attribute *attr, char *buf)
 {
@@ -373,13 +346,7 @@ static ssize_t create_store(struct device *dev, struct device_attribute *attr,
 		if (IS_ERR(dev_dax))
 			rc = PTR_ERR(dev_dax);
 		else {
-			/*
-			 * In support of crafting multiple new devices
-			 * simultaneously multiple seeds can be created,
-			 * but only the first one that has not been
-			 * successfully bound is tracked as the region
-			 * seed.
-			 */
+			 
 			if (!dax_region->seed)
 				dax_region->seed = &dev_dax->dev;
 			dax_region->youngest = &dev_dax->dev;
@@ -400,11 +367,7 @@ void kill_dev_dax(struct dev_dax *dev_dax)
 	kill_dax(dax_dev);
 	unmap_mapping_range(inode->i_mapping, 0, 0, 1);
 
-	/*
-	 * Dynamic dax region have the pgmap allocated via dev_kzalloc()
-	 * and thus freed by devm. Clear the pgmap to not have stale pgmap
-	 * ranges on probe() from previous reconfigurations of region devices.
-	 */
+	 
 	if (!static_dev_dax(dev_dax))
 		dev_dax->pgmap = NULL;
 }
@@ -459,7 +422,7 @@ static void dax_region_put(struct dax_region *dax_region)
 	kref_put(&dax_region->kref, dax_region_free);
 }
 
-/* a return value >= 0 indicates this invocation invalidated the id */
+ 
 static int __free_dev_dax_id(struct dev_dax *dev_dax)
 {
 	struct device *dev = &dev_dax->dev;
@@ -524,12 +487,7 @@ static ssize_t delete_store(struct device *dev, struct device_attribute *attr,
 	if (victim->driver || dev_dax_size(dev_dax))
 		rc = -EBUSY;
 	else {
-		/*
-		 * Invalidate the device so it does not become active
-		 * again, but always preserve device-id-0 so that
-		 * /sys/bus/dax/ is guaranteed to be populated while any
-		 * dax_region is registered.
-		 */
+		 
 		if (dev_dax->id > 0) {
 			do_del = __free_dev_dax_id(dev_dax) >= 0;
 			rc = len;
@@ -542,7 +500,7 @@ static ssize_t delete_store(struct device *dev, struct device_attribute *attr,
 	}
 	device_unlock(victim);
 
-	/* won the race to invalidate the device, clean it up */
+	 
 	if (do_del)
 		devm_release_action(dev, unregister_dev_dax, victim);
 	device_unlock(dev);
@@ -604,11 +562,7 @@ struct dax_region *alloc_dax_region(struct device *parent, int region_id,
 {
 	struct dax_region *dax_region;
 
-	/*
-	 * The DAX core assumes that it can store its private data in
-	 * parent->driver_data. This WARN is a reminder / safeguard for
-	 * developers of device-dax drivers.
-	 */
+	 
 	if (dev_get_drvdata(parent)) {
 		dev_WARN(parent, "dax core failed to setup private data\n");
 		return NULL;
@@ -822,12 +776,12 @@ static int alloc_dev_dax_range(struct dev_dax *dev_dax, u64 start,
 
 	device_lock_assert(dax_region->dev);
 
-	/* handle the seed alloc special case */
+	 
 	if (!size) {
 		if (dev_WARN_ONCE(dev, dev_dax->nr_range,
 					"0-size allocation must be first\n"))
 			return -EBUSY;
-		/* nr_range == 0 is elsewhere special cased as 0-size device */
+		 
 		return 0;
 	}
 
@@ -855,11 +809,7 @@ static int alloc_dev_dax_range(struct dev_dax *dev_dax, u64 start,
 
 	dev_dbg(dev, "alloc range[%d]: %pa:%pa\n", dev_dax->nr_range - 1,
 			&alloc->start, &alloc->end);
-	/*
-	 * A dev_dax instance must be registered before mapping device
-	 * children can be added. Defer to devm_create_dev_dax() to add
-	 * the initial mapping device.
-	 */
+	 
 	if (!device_is_registered(&dev_dax->dev))
 		return 0;
 
@@ -916,10 +866,7 @@ static ssize_t size_show(struct device *dev,
 
 static bool alloc_is_aligned(struct dev_dax *dev_dax, resource_size_t size)
 {
-	/*
-	 * The minimum mapping granularity for a device instance is a
-	 * single subsection, unless the arch says otherwise.
-	 */
+	 
 	return IS_ALIGNED(size, max_t(unsigned long, dev_dax->align, memremap_compat_align()));
 }
 
@@ -963,10 +910,7 @@ static int dev_dax_shrink(struct dev_dax *dev_dax, resource_size_t size)
 	return 0;
 }
 
-/*
- * Only allow adjustments that preserve the relative pgoff of existing
- * allocations. I.e. the dev_dax->ranges array is ordered by increasing pgoff.
- */
+ 
 static bool adjust_ok(struct dev_dax *dev_dax, struct resource *res)
 {
 	struct dev_dax_range *last;
@@ -1014,11 +958,7 @@ static ssize_t dev_dax_resize(struct dax_region *dax_region,
 			"resize of %pa misaligned\n", &to_alloc))
 		return -ENXIO;
 
-	/*
-	 * Expand the device into the unused portion of the region. This
-	 * may involve adjusting the end of an existing resource, or
-	 * allocating a new resource.
-	 */
+	 
 retry:
 	first = region_res->child;
 	if (!first)
@@ -1028,7 +968,7 @@ retry:
 	for (res = first; res; res = res->sibling) {
 		struct resource *next = res->sibling;
 
-		/* space at the beginning of the region */
+		 
 		if (res == first && res->start > dax_region->res.start) {
 			alloc = min(res->start - dax_region->res.start, to_alloc);
 			rc = alloc_dev_dax_range(dev_dax, dax_region->res.start, alloc);
@@ -1036,11 +976,11 @@ retry:
 		}
 
 		alloc = 0;
-		/* space between allocations */
+		 
 		if (next && next->start > res->end + 1)
 			alloc = min(next->start - (res->end + 1), to_alloc);
 
-		/* space at the end of the region */
+		 
 		if (!alloc && !next && res->end < region_res->end)
 			alloc = min(region_res->end - res->end, to_alloc);
 
@@ -1254,10 +1194,7 @@ static DEVICE_ATTR(resource, 0400, resource_show, NULL);
 static ssize_t modalias_show(struct device *dev, struct device_attribute *attr,
 		char *buf)
 {
-	/*
-	 * We only ever expect to handle device-dax instances, i.e. the
-	 * @type argument to MODULE_ALIAS_DAX_DEVICE() is always zero
-	 */
+	 
 	return sprintf(buf, DAX_DEVICE_MODALIAS_FMT "\n", 0);
 }
 static DEVICE_ATTR_RO(modalias);
@@ -1379,10 +1316,7 @@ struct dev_dax *devm_create_dev_dax(struct dev_dax_data *data)
 		}
 	}
 
-	/*
-	 * No dax_operations since there is no access to this device outside of
-	 * mmap of the resulting character device.
-	 */
+	 
 	dax_dev = alloc_dax(dev_dax, NULL);
 	if (IS_ERR(dax_dev)) {
 		rc = PTR_ERR(dax_dev);
@@ -1392,7 +1326,7 @@ struct dev_dax *devm_create_dev_dax(struct dev_dax_data *data)
 	set_dax_nocache(dax_dev);
 	set_dax_nomc(dax_dev);
 
-	/* a device_dax instance is dead while the driver is not attached */
+	 
 	kill_dax(dax_dev);
 
 	dev_dax->dax_dev = dax_dev;
@@ -1417,7 +1351,7 @@ struct dev_dax *devm_create_dev_dax(struct dev_dax_data *data)
 	if (rc)
 		return ERR_PTR(rc);
 
-	/* register mapping device for the initial allocation range */
+	 
 	if (dev_dax->nr_range && range_len(&dev_dax->ranges[0].range)) {
 		rc = devm_register_dax_mapping(dev_dax, 0);
 		if (rc)
@@ -1444,10 +1378,7 @@ int __dax_driver_register(struct dax_device_driver *dax_drv,
 {
 	struct device_driver *drv = &dax_drv->drv;
 
-	/*
-	 * dax_bus_probe() calls dax_drv->probe() unconditionally.
-	 * So better be safe than sorry and ensure it is provided.
-	 */
+	 
 	if (!dax_drv->probe)
 		return -EINVAL;
 

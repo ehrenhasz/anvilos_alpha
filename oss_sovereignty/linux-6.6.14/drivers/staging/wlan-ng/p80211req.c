@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MPL-1.1)
-/*
- *
- * Request/Indication/MacMgmt interface handling functions
- *
- * Copyright (C) 1999 AbsoluteValue Systems, Inc.  All Rights Reserved.
- * --------------------------------------------------------------------
- *
- * linux-wlan
- *
- * --------------------------------------------------------------------
- *
- * Inquiries regarding the linux-wlan Open Source project can be
- * made directly to:
- *
- * AbsoluteValue Systems Inc.
- * info@linux-wlan.com
- * http://www.linux-wlan.com
- *
- * --------------------------------------------------------------------
- *
- * Portions of the development of this software were funded by
- * Intersil Corporation as part of PRISM(R) chipset product development.
- *
- * --------------------------------------------------------------------
- *
- * This file contains the functions, types, and macros to support the
- * MLME request interface that's implemented via the device ioctls.
- *
- * --------------------------------------------------------------------
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -73,28 +44,12 @@ static void p80211req_handle_action(struct wlandevice *wlandev, u32 *data,
 	}
 }
 
-/*----------------------------------------------------------------
- * p80211req_dorequest
- *
- * Handles an MLME request/confirm message.
- *
- * Arguments:
- *	wlandev		WLAN device struct
- *	msgbuf		Buffer containing a request message
- *
- * Returns:
- *	0 on success, an errno otherwise
- *
- * Call context:
- *	Potentially blocks the caller, so it's a good idea to
- *	not call this function from an interrupt context.
- *----------------------------------------------------------------
- */
+ 
 int p80211req_dorequest(struct wlandevice *wlandev, u8 *msgbuf)
 {
 	struct p80211msg *msg = (struct p80211msg *)msgbuf;
 
-	/* Check to make sure the MSD is running */
+	 
 	if (!((wlandev->msdstate == WLAN_MSD_HWPRESENT &&
 	       msg->msgcode == DIDMSG_LNXREQ_IFSTATE) ||
 	      wlandev->msdstate == WLAN_MSD_RUNNING ||
@@ -102,7 +57,7 @@ int p80211req_dorequest(struct wlandevice *wlandev, u8 *msgbuf)
 		return -ENODEV;
 	}
 
-	/* Check Permissions */
+	 
 	if (!capable(CAP_NET_ADMIN) &&
 	    (msg->msgcode != DIDMSG_DOT11REQ_MIBGET)) {
 		netdev_err(wlandev->netdev,
@@ -111,42 +66,24 @@ int p80211req_dorequest(struct wlandevice *wlandev, u8 *msgbuf)
 		return -EPERM;
 	}
 
-	/* Check for busy status */
+	 
 	if (test_and_set_bit(1, &wlandev->request_pending))
 		return -EBUSY;
 
-	/* Allow p80211 to look at msg and handle if desired. */
-	/* So far, all p80211 msgs are immediate, no waitq/timer necessary */
-	/* This may change. */
+	 
+	 
+	 
 	p80211req_handlemsg(wlandev, msg);
 
-	/* Pass it down to wlandev via wlandev->mlmerequest */
+	 
 	if (wlandev->mlmerequest)
 		wlandev->mlmerequest(wlandev, msg);
 
 	clear_bit(1, &wlandev->request_pending);
-	return 0;	/* if result==0, msg->status still may contain an err */
+	return 0;	 
 }
 
-/*----------------------------------------------------------------
- * p80211req_handlemsg
- *
- * p80211 message handler.  Primarily looks for messages that
- * belong to p80211 and then dispatches the appropriate response.
- * TODO: we don't do anything yet.  Once the linuxMIB is better
- *	defined we'll need a get/set handler.
- *
- * Arguments:
- *	wlandev		WLAN device struct
- *	msg		message structure
- *
- * Returns:
- *	nothing (any results are set in the status field of the msg)
- *
- * Call context:
- *	Process thread
- *----------------------------------------------------------------
- */
+ 
 static void p80211req_handlemsg(struct wlandevice *wlandev,
 				struct p80211msg *msg)
 {
@@ -171,7 +108,7 @@ static void p80211req_handlemsg(struct wlandevice *wlandev,
 		p80211req_mibset_mibget(wlandev, mib_msg, isget);
 		break;
 	}
-	}			/* switch msg->msgcode */
+	}			 
 }
 
 static void p80211req_mibset_mibget(struct wlandevice *wlandev,

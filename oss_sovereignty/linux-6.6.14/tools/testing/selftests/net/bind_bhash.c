@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This times how long it takes to bind to a port when the port already
- * has multiple sockets in its bhash table.
- *
- * In the setup(), we populate the port's bhash table with
- * MAX_THREADS * MAX_CONNECTIONS number of entries.
- */
+
+ 
 
 #include <unistd.h>
 #include <stdio.h>
@@ -109,7 +103,7 @@ int main(int argc, const char *argv[])
 		return -1;
 	}
 
-	/* Set up threads to populate the bhash table entry for the port */
+	 
 	for (i = 0; i < MAX_THREADS; i++)
 		pthread_create(&tid[i], NULL, setup, fd_array[i]);
 
@@ -121,7 +115,7 @@ int main(int argc, const char *argv[])
 
 	begin = clock();
 
-	/* Bind to the same port on a different address */
+	 
 	sock_fd  = bind_socket(0, bind_addr);
 	if (sock_fd < 0)
 		goto done;
@@ -130,7 +124,7 @@ int main(int argc, const char *argv[])
 
 	printf("time spent = %f\n", (double)(end - begin) / CLOCKS_PER_SEC);
 
-	/* clean up */
+	 
 	close(sock_fd);
 
 done:

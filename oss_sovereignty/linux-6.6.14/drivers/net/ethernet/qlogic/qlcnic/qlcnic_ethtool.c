@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/delay.h>
@@ -293,7 +290,7 @@ static int qlcnic_82xx_get_link_ksettings(struct qlcnic_adapter *adapter,
 	u16 pcifn = ahw->pci_func;
 	u32 supported, advertising;
 
-	/* read which mode */
+	 
 	if (adapter->ahw->port_type == QLCNIC_GBE) {
 		supported = (SUPPORTED_10baseT_Half |
 				   SUPPORTED_10baseT_Full |
@@ -450,7 +447,7 @@ static int qlcnic_set_port_config(struct qlcnic_adapter *adapter,
 				  const struct ethtool_link_ksettings *ecmd)
 {
 	u32 ret = 0, config = 0;
-	/* read which mode */
+	 
 	if (ecmd->base.duplex)
 		config |= 0x1;
 
@@ -555,10 +552,10 @@ qlcnic_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *p)
 	if (!test_bit(__QLCNIC_DEV_UP, &adapter->state))
 		return;
 
-	/* Marker btw regs and TX ring count */
+	 
 	regs_buff[i++] = 0xFFEFCDAB;
 
-	regs_buff[i++] = adapter->drv_tx_rings; /* No. of TX ring */
+	regs_buff[i++] = adapter->drv_tx_rings;  
 	for (ring = 0; ring < adapter->drv_tx_rings; ring++) {
 		tx_ring = &adapter->tx_ring[ring];
 		regs_buff[i++] = le32_to_cpu(*(tx_ring->hw_consumer));
@@ -571,14 +568,14 @@ qlcnic_get_regs(struct net_device *dev, struct ethtool_regs *regs, void *p)
 			regs_buff[i++] = QLCNIC_TX_INTR_NOT_CONFIGURED;
 	}
 
-	regs_buff[i++] = adapter->max_rds_rings; /* No. of RX ring */
+	regs_buff[i++] = adapter->max_rds_rings;  
 	for (ring = 0; ring < adapter->max_rds_rings; ring++) {
 		rds_rings = &recv_ctx->rds_rings[ring];
 		regs_buff[i++] = readl(rds_rings->crb_rcv_producer);
 		regs_buff[i++] = rds_rings->producer;
 	}
 
-	regs_buff[i++] = adapter->drv_sds_rings; /* No. of SDS ring */
+	regs_buff[i++] = adapter->drv_sds_rings;  
 	for (ring = 0; ring < adapter->drv_sds_rings; ring++) {
 		sds_ring = &(recv_ctx->sds_rings[ring]);
 		regs_buff[i++] = readl(sds_ring->crb_sts_consumer);
@@ -800,7 +797,7 @@ qlcnic_get_pauseparam(struct net_device *netdev,
 	if (adapter->ahw->port_type == QLCNIC_GBE) {
 		if ((port < 0) || (port > QLCNIC_NIU_MAX_GBE_PORTS))
 			return;
-		/* get flow control settings */
+		 
 		val = QLCRD32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port), &err);
 		if (err == -EIO)
 			return;
@@ -852,11 +849,11 @@ qlcnic_set_pauseparam(struct net_device *netdev,
 	if (qlcnic_83xx_check(adapter))
 		return qlcnic_83xx_set_pauseparam(adapter, pause);
 
-	/* read mode */
+	 
 	if (adapter->ahw->port_type == QLCNIC_GBE) {
 		if ((port < 0) || (port > QLCNIC_NIU_MAX_GBE_PORTS))
 			return -EIO;
-		/* set flow control */
+		 
 		val = QLCRD32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port), &err);
 		if (err == -EIO)
 			return err;
@@ -869,7 +866,7 @@ qlcnic_set_pauseparam(struct net_device *netdev,
 		QLCWR32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port),
 				val);
 		QLCWR32(adapter, QLCNIC_NIU_GB_MAC_CONFIG_0(port), val);
-		/* set autoneg */
+		 
 		val = QLCRD32(adapter, QLCNIC_NIU_GB_PAUSE_CTL, &err);
 		if (err == -EIO)
 			return err;
@@ -1377,7 +1374,7 @@ static void qlcnic_get_ethtool_stats(struct net_device *dev,
 			qlcnic_83xx_get_stats(adapter, data);
 		return;
 	} else {
-		/* Retrieve MAC statistics from firmware */
+		 
 		memset(&mac_stats, 0, sizeof(struct qlcnic_mac_statistics));
 		qlcnic_get_mac_stats(adapter, &mac_stats);
 		data = qlcnic_fill_stats(data, &mac_stats, QLCNIC_MAC_STATS);
@@ -1525,11 +1522,7 @@ qlcnic_set_wol(struct net_device *dev, struct ethtool_wolinfo *wol)
 	return 0;
 }
 
-/*
- * Set the coalescing parameters. Currently only normal is supported.
- * If rx_coalesce_usecs == 0 or rx_max_coalesced_frames == 0 then set the
- * firmware coalescing to default.
- */
+ 
 static int qlcnic_set_intr_coalesce(struct net_device *netdev,
 				    struct ethtool_coalesce *ethcoal,
 				    struct kernel_ethtool_coalesce *kernel_coal,
@@ -1541,10 +1534,7 @@ static int qlcnic_set_intr_coalesce(struct net_device *netdev,
 	if (!test_bit(__QLCNIC_DEV_UP, &adapter->state))
 		return -EINVAL;
 
-	/*
-	* Return Error if unsupported values or
-	* unsupported parameters are set.
-	*/
+	 
 	if (ethcoal->rx_coalesce_usecs > 0xffff ||
 	    ethcoal->rx_max_coalesced_frames > 0xffff ||
 	    ethcoal->tx_coalesce_usecs > 0xffff ||
@@ -1695,19 +1685,19 @@ qlcnic_get_dump_data(struct net_device *netdev, struct ethtool_dump *dump,
 		return -EINVAL;
 	}
 
-	/* Copy template header first */
+	 
 	copy_sz = fw_dump->tmpl_hdr_size;
 	hdr_ptr = (u32 *)fw_dump->tmpl_hdr;
 	data = buffer;
 	for (i = 0; i < copy_sz/sizeof(u32); i++)
 		*data++ = cpu_to_le32(*hdr_ptr++);
 
-	/* Copy captured dump data */
+	 
 	memcpy(buffer + copy_sz, fw_dump->data, fw_dump->size);
 	dump->len = copy_sz + fw_dump->size;
 	dump->flag = fw_dump->cap_mask;
 
-	/* Free dump area once data has been captured */
+	 
 	vfree(fw_dump->data);
 	fw_dump->data = NULL;
 	fw_dump->clr = 0;
@@ -1729,7 +1719,7 @@ static int qlcnic_set_dump_mask(struct qlcnic_adapter *adapter, u32 mask)
 
 	fw_dump->cap_mask = mask;
 
-	/* Store new capture mask in template header as well*/
+	 
 	qlcnic_store_cap_mask(adapter, fw_dump->tmpl_hdr, mask);
 
 	netdev_info(netdev, "Driver mask changed to: 0x%x\n", mask);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdio.h>
 #include <string.h>
 
@@ -8,13 +8,7 @@
 
 #include "netdev-user.h"
 
-/* netdev genetlink family code sample
- * This sample shows off basics of the netdev family but also notification
- * handling, hence the somewhat odd UI. We subscribe to notifications first
- * then wait for ifc selection, so the socket may already accumulate
- * notifications as we wait. This allows us to test that YNL can handle
- * requests and notifications getting interleaved.
- */
+ 
 
 static void netdev_print_device(struct netdev_dev_get_rsp *d, unsigned int op)
 {

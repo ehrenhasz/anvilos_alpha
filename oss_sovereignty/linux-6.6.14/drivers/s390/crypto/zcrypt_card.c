@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Copyright IBM Corp. 2001, 2012
- *  Author(s): Robert Burroughs
- *	       Eric Rossman (edrossma@us.ibm.com)
- *	       Cornelia Huck <cornelia.huck@de.ibm.com>
- *
- *  Hotplug & misc device support: Jochen Roehrig (roehrig@de.ibm.com)
- *  Major cleanup & driver split: Martin Schwidefsky <schwidefsky@de.ibm.com>
- *				  Ralph Wuerthner <rwuerthn@de.ibm.com>
- *  MSGTYPE restruct:		  Holger Dengler <hd@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -32,9 +22,7 @@
 #include "zcrypt_msgtype6.h"
 #include "zcrypt_msgtype50.h"
 
-/*
- * Device attributes common for all crypto card devices.
- */
+ 
 
 static ssize_t type_show(struct device *dev,
 			 struct device_attribute *attr, char *buf)
@@ -81,12 +69,7 @@ static ssize_t online_store(struct device *dev,
 	ap_send_online_uevent(&ac->ap_dev, online);
 
 	spin_lock(&zcrypt_list_lock);
-	/*
-	 * As we are in atomic context here, directly sending uevents
-	 * does not work. So collect the zqueues in a dynamic array
-	 * and process them after zcrypt_list_lock release. As we get/put
-	 * the zqueue objects, we make sure they exist after lock release.
-	 */
+	 
 	list_for_each_entry(zq, &zc->zqueues, list)
 		maxzqs++;
 	if (maxzqs > 0)
@@ -173,12 +156,7 @@ int zcrypt_card_put(struct zcrypt_card *zc)
 }
 EXPORT_SYMBOL(zcrypt_card_put);
 
-/**
- * zcrypt_card_register() - Register a crypto card device.
- * @zc: Pointer to a crypto card device
- *
- * Register a crypto card device. Returns 0 if successful.
- */
+ 
 int zcrypt_card_register(struct zcrypt_card *zc)
 {
 	int rc;
@@ -204,12 +182,7 @@ int zcrypt_card_register(struct zcrypt_card *zc)
 }
 EXPORT_SYMBOL(zcrypt_card_register);
 
-/**
- * zcrypt_card_unregister(): Unregister a crypto card device.
- * @zc: Pointer to crypto card device
- *
- * Unregister a crypto card device.
- */
+ 
 void zcrypt_card_unregister(struct zcrypt_card *zc)
 {
 	ZCRYPT_DBF_INFO("%s card=%02x unregister\n",

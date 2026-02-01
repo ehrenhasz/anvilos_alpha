@@ -1,38 +1,6 @@
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 2004-2011,2016 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/*
-**	lib_add_wch.c
-**
-**	The routine wadd_wch().
-**
-*/
+ 
 
 #include <curses.priv.h>
 
@@ -42,25 +10,17 @@
 
 MODULE_ID("$Id: lib_add_wch.c,v 1.17 2021/06/17 21:26:02 tom Exp $")
 
-/* clone/adapt lib_addch.c */
+ 
 static const cchar_t blankchar = NewChar(BLANK_TEXT);
 
-/*
- * Ugly microtweaking alert.  Everything from here to end of module is
- * likely to be speed-critical -- profiling data sure says it is!
- * Most of the important screen-painting functions are shells around
- * wadd_wch().  So we make every effort to reduce function-call overhead
- * by inlining stuff, even at the cost of making wrapped copies for
- * export.  Also we supply some internal versions that don't call the
- * window sync hook, for use by string-put functions.
- */
+ 
 
-/* Return bit mask for clearing color pair number if given ch has color */
+ 
 #define COLOR_MASK(ch) (~(attr_t)(((ch) & A_COLOR) ? A_COLOR : 0))
 
 static NCURSES_INLINE cchar_t
 render_char(WINDOW *win, cchar_t ch)
-/* compute a rendition of the given char correct for the current context */
+ 
 {
     attr_t a = WINDOW_ATTRS(win);
     int pair = GetPair(ch);
@@ -68,16 +28,16 @@ render_char(WINDOW *win, cchar_t ch)
     if (ISBLANK(ch)
 	&& AttrOf(ch) == A_NORMAL
 	&& pair == 0) {
-	/* color/pair in attrs has precedence over bkgrnd */
+	 
 	ch = win->_nc_bkgd;
 	SetAttr(ch, a | AttrOf(win->_nc_bkgd));
 	if ((pair = GET_WINDOW_PAIR(win)) == 0)
 	    pair = GetPair(win->_nc_bkgd);
 	SetPair(ch, pair);
     } else {
-	/* color in attrs has precedence over bkgrnd */
+	 
 	a |= AttrOf(win->_nc_bkgd) & COLOR_MASK(a);
-	/* color in ch has precedence */
+	 
 	if (pair == 0) {
 	    if ((pair = GET_WINDOW_PAIR(win)) == 0)
 		pair = GetPair(win->_nc_bkgd);
@@ -98,8 +58,8 @@ render_char(WINDOW *win, cchar_t ch)
     return (ch);
 }
 
-/* check if position is legal; if not, return error */
-#ifndef NDEBUG			/* treat this like an assertion */
+ 
+#ifndef NDEBUG			 
 #define CHECK_POSITION(win, x, y) \
 	if (y > win->_maxy \
 	 || x > win->_maxx \
@@ -111,7 +71,7 @@ render_char(WINDOW *win, cchar_t ch)
 		return(ERR); \
 	}
 #else
-#define CHECK_POSITION(win, x, y)	/* nothing */
+#define CHECK_POSITION(win, x, y)	 
 #endif
 
 static bool
@@ -128,15 +88,7 @@ newline_forces_scroll(WINDOW *win, NCURSES_SIZE_T *ypos)
     return result;
 }
 
-/*
- * The _WRAPPED flag is useful only for telling an application that we've just
- * wrapped the cursor.  We don't do anything with this flag except set it when
- * wrapping, and clear it whenever we move the cursor.  If we try to wrap at
- * the lower-right corner of a window, we cannot move the cursor (since that
- * wouldn't be legal).  So we return an error (which is what SVr4 does).
- * Unlike SVr4, we can successfully add a character to the lower-right corner
- * (Solaris 2.6 does this also, however).
- */
+ 
 static int
 wrap_to_next_line(WINDOW *win)
 {
@@ -152,10 +104,7 @@ wrap_to_next_line(WINDOW *win)
 }
 
 static int wadd_wch_literal(WINDOW *, cchar_t);
-/*
- * Fill the given number of cells with blanks using the current background
- * rendition.  This saves/restores the current x-position.
- */
+ 
 static void
 fill_cells(WINDOW *win, int count)
 {
@@ -189,19 +138,14 @@ wadd_wch_literal(WINDOW *win, cchar_t ch)
 
     CHANGED_CELL(line, x);
 
-    /*
-     * Non-spacing characters are added to the current cell.
-     *
-     * Spacing characters that are wider than one column require some display
-     * adjustments.
-     */
+     
     {
 	int len = _nc_wacs_width(CharOf(ch));
 	int i;
 	int j;
 	wchar_t *chars;
 
-	if (len == 0) {		/* non-spacing */
+	if (len == 0) {		 
 	    if ((x > 0 && y >= 0)
 		|| (win->_maxx >= 0 && win->_cury >= 1)) {
 		if (x > 0 && y >= 0)
@@ -219,12 +163,8 @@ wadd_wch_literal(WINDOW *win, cchar_t ch)
 		}
 	    }
 	    goto testwrapping;
-	} else if (len > 1) {	/* multi-column characters */
-	    /*
-	     * Check if the character will fit on the current line.  If it does
-	     * not fit, fill in the remainder of the line with blanks.  and
-	     * move to the next line.
-	     */
+	} else if (len > 1) {	 
+	     
 	    if (len > win->_maxx + 1) {
 		TR(TRACE_VIRTPUT, ("character will not fit"));
 		return ERR;
@@ -238,13 +178,7 @@ wadd_wch_literal(WINDOW *win, cchar_t ch)
 		y = win->_cury;
 		line = win->_line + y;
 	    }
-	    /*
-	     * Check for cells which are orphaned by adding this character, set
-	     * those to blanks.
-	     *
-	     * FIXME: this actually could fill j-i cells, more complicated to
-	     * setup though.
-	     */
+	     
 	    for (i = 0; i < len; ++i) {
 		if (isWidecBase(win->_line[y].text[x + i])) {
 		    break;
@@ -259,9 +193,7 @@ wadd_wch_literal(WINDOW *win, cchar_t ch)
 		    break;
 		}
 	    }
-	    /*
-	     * Finally, add the cells for this character.
-	     */
+	     
 	    for (i = 0; i < len; ++i) {
 		cchar_t value = ch;
 		SetWidecExt(value, i);
@@ -276,13 +208,9 @@ wadd_wch_literal(WINDOW *win, cchar_t ch)
 	}
     }
 
-    /*
-     * Single-column characters.
-     */
+     
     line->text[x++] = ch;
-    /*
-     * This label is used only for wide-characters.
-     */
+     
   testwrapping:
 
     TR(TRACE_VIRTPUT, ("cell (%ld, %ld..%d) = %s",
@@ -298,7 +226,7 @@ wadd_wch_literal(WINDOW *win, cchar_t ch)
 
 static NCURSES_INLINE int
 wadd_wch_nosync(WINDOW *win, cchar_t ch)
-/* the workhorse function -- add a character to the given window */
+ 
 {
     NCURSES_SIZE_T x, y;
     wchar_t *s;
@@ -307,19 +235,12 @@ wadd_wch_nosync(WINDOW *win, cchar_t ch)
     SCREEN *sp = _nc_screen_of(win);
 #endif
 
-    /*
-     * If we are using the alternate character set, forget about locale.
-     * Otherwise, if the locale claims the code is printable, treat it that
-     * way.
-     */
+     
     if ((AttrOf(ch) & A_ALTCHARSET)
 	|| iswprint((wint_t) CharOf(ch)))
 	return wadd_wch_literal(win, ch);
 
-    /*
-     * Handle carriage control and other codes that are not printable, or are
-     * known to expand to more than one character according to unctrl().
-     */
+     
     x = win->_curx;
     y = win->_cury;
 
@@ -331,10 +252,7 @@ wadd_wch_nosync(WINDOW *win, cchar_t ch)
 	tabsize = TABSIZE;
 #endif
 	x = (NCURSES_SIZE_T) (x + (tabsize - (x % tabsize)));
-	/*
-	 * Space-fill the tab on the bottom line so that we'll get the
-	 * "correct" cursor position.
-	 */
+	 
 	if ((!win->_scroll && (y == win->_regbottom))
 	    || (x <= win->_maxx)) {
 	    cchar_t blank = blankchar;
@@ -366,7 +284,7 @@ wadd_wch_nosync(WINDOW *win, cchar_t ch)
 	    else
 		return (ERR);
 	}
-	/* FALLTHRU */
+	 
     case '\r':
 	x = 0;
 	win->_flags &= ~_WRAPPED;
@@ -397,13 +315,9 @@ wadd_wch_nosync(WINDOW *win, cchar_t ch)
     return OK;
 }
 
-/*
- * The versions below call _nc_synchook().  We wanted to avoid this in the
- * version exported for string puts; they'll call _nc_synchook once at end
- * of run.
- */
+ 
 
-/* These are actual entry points */
+ 
 
 NCURSES_EXPORT(int)
 wadd_wch(WINDOW *win, const cchar_t *wch)

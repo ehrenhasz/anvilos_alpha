@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Copyright (C) 2018 Microchip Technology Inc,
- *                     Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
- *
- *
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/of.h>

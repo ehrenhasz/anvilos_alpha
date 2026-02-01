@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (C) 2019 Linaro Ltd. */
+ 
+ 
 #ifndef __VENUS_PM_HELPERS_H__
 #define __VENUS_PM_HELPERS_H__
 

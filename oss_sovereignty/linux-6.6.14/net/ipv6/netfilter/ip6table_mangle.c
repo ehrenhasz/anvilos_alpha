@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IPv6 packet mangling table, a port of the IPv4 mangle table to IPv6
- *
- * Copyright (C) 2000-2001 by Harald Welte <laforge@gnumonks.org>
- * Copyright (C) 2000-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/netfilter_ipv6/ip6_tables.h>
 #include <linux/slab.h>
@@ -37,13 +32,13 @@ ip6t_mangle_out(void *priv, struct sk_buff *skb, const struct nf_hook_state *sta
 	u_int32_t flowlabel, mark;
 	int err;
 
-	/* save source/dest address, mark, hoplimit, flowlabel, priority,  */
+	 
 	memcpy(&saddr, &ipv6_hdr(skb)->saddr, sizeof(saddr));
 	memcpy(&daddr, &ipv6_hdr(skb)->daddr, sizeof(daddr));
 	mark = skb->mark;
 	hop_limit = ipv6_hdr(skb)->hop_limit;
 
-	/* flowlabel and prio (includes version, which shouldn't change either */
+	 
 	flowlabel = *((u_int32_t *)ipv6_hdr(skb));
 
 	ret = ip6t_do_table(priv, skb, state);
@@ -62,7 +57,7 @@ ip6t_mangle_out(void *priv, struct sk_buff *skb, const struct nf_hook_state *sta
 	return ret;
 }
 
-/* The work comes in here from netfilter.c. */
+ 
 static unsigned int
 ip6table_mangle_hook(void *priv, struct sk_buff *skb,
 		     const struct nf_hook_state *state)

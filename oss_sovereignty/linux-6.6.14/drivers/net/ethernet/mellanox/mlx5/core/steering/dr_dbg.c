@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include <linux/debugfs.h>
 #include <linux/kernel.h>
@@ -97,10 +97,10 @@ static void
 dr_dump_hex_print(char hex[DR_HEX_SIZE], char *src, u32 size)
 {
 	if (WARN_ON_ONCE(DR_HEX_SIZE < 2 * size + 1))
-		size = DR_HEX_SIZE / 2 - 1; /* truncate */
+		size = DR_HEX_SIZE / 2 - 1;  
 
 	bin2hex(hex, src, size);
-	hex[2 * size] = 0; /* NULL-terminate */
+	hex[2 * size] = 0;  
 }
 
 static int
@@ -572,7 +572,7 @@ dr_dump_domain_info_caps(struct seq_file *file, struct mlx5dr_cmd_caps *caps,
 	unsigned long i, vports_num;
 
 	xa_for_each(&caps->vports.vports_caps_xa, vports_num, vport_caps)
-		; /* count the number of vports in xarray */
+		;  
 
 	seq_printf(file, "%d,0x%llx,0x%x,0x%llx,0x%llx,0x%x,%lu,%d\n",
 		   DR_DUMP_REC_TYPE_DOMAIN_INFO_CAPS, domain_id, caps->gvmi,
@@ -637,11 +637,11 @@ dr_dump_domain(struct seq_file *file, struct mlx5dr_domain *dmn)
 		   DR_DUMP_REC_TYPE_DOMAIN,
 		   domain_id, dmn->type, dmn->info.caps.gvmi,
 		   dmn->info.supp_sw_steering,
-		   /* package version */
+		    
 		   LINUX_VERSION_MAJOR, LINUX_VERSION_PATCHLEVEL,
 		   LINUX_VERSION_SUBLEVEL,
 		   pci_name(dmn->mdev->pdev),
-		   0, /* domain flags */
+		   0,  
 		   dmn->num_buddies[DR_ICM_TYPE_STE],
 		   dmn->num_buddies[DR_ICM_TYPE_MODIFY_ACTION],
 		   dmn->num_buddies[DR_ICM_TYPE_MODIFY_HDR_PTRN]);

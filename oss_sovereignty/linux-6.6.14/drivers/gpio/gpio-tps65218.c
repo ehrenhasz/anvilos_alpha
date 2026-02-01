@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015 Verifone Int.
- *
- * Author: Nicolas Saenz Julienne <nicolassaenzj@gmail.com>
- *
- * This driver is based on the gpio-tps65912 implementation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -54,7 +48,7 @@ static void tps65218_gpio_set(struct gpio_chip *gc, unsigned offset,
 static int tps65218_gpio_output(struct gpio_chip *gc, unsigned offset,
 				int value)
 {
-	/* Only drives GPOs */
+	 
 	tps65218_gpio_set(gc, offset, value);
 	return 0;
 }
@@ -82,14 +76,14 @@ static int tps65218_gpio_request(struct gpio_chip *gc, unsigned offset)
 			return -EINVAL;
 		}
 
-		/* Disable sequencer for GPO1 */
+		 
 		ret = tps65218_clear_bits(tps65218, TPS65218_REG_SEQ7,
 					  TPS65218_SEQ7_GPO1_SEQ_MASK,
 					  TPS65218_PROTECT_L1);
 		if (ret)
 			return ret;
 
-		/* Setup GPO1 */
+		 
 		ret = tps65218_clear_bits(tps65218, TPS65218_REG_CONFIG1,
 					  TPS65218_CONFIG1_IO1_SEL,
 					  TPS65218_PROTECT_L1);
@@ -98,7 +92,7 @@ static int tps65218_gpio_request(struct gpio_chip *gc, unsigned offset)
 
 		break;
 	case 1:
-		/* Setup GPO2 */
+		 
 		ret = tps65218_clear_bits(tps65218, TPS65218_REG_CONFIG1,
 					  TPS65218_CONFIG1_IO1_SEL,
 					  TPS65218_PROTECT_L1);
@@ -113,14 +107,14 @@ static int tps65218_gpio_request(struct gpio_chip *gc, unsigned offset)
 			return -EINVAL;
 		}
 
-		/* Disable sequencer for GPO3 */
+		 
 		ret = tps65218_clear_bits(tps65218, TPS65218_REG_SEQ7,
 					  TPS65218_SEQ7_GPO3_SEQ_MASK,
 					  TPS65218_PROTECT_L1);
 		if (ret)
 			return ret;
 
-		/* Setup GPO3 */
+		 
 		ret = tps65218_clear_bits(tps65218, TPS65218_REG_CONFIG2,
 					  TPS65218_CONFIG2_DC12_RST,
 					  TPS65218_PROTECT_L1);
@@ -145,12 +139,12 @@ static int tps65218_gpio_set_config(struct gpio_chip *gc, unsigned offset,
 	switch (offset) {
 	case 0:
 	case 2:
-		/* GPO1 is hardwired to be open drain */
+		 
 		if (param == PIN_CONFIG_DRIVE_OPEN_DRAIN)
 			return 0;
 		return -ENOTSUPP;
 	case 1:
-		/* GPO2 is push-pull by default, can be set as open drain. */
+		 
 		if (param == PIN_CONFIG_DRIVE_OPEN_DRAIN)
 			return tps65218_clear_bits(tps65218,
 						   TPS65218_REG_CONFIG1,
@@ -209,7 +203,7 @@ MODULE_DEVICE_TABLE(of, tps65218_dt_match);
 
 static const struct platform_device_id tps65218_gpio_id_table[] = {
 	{ "tps65218-gpio", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65218_gpio_id_table);
 

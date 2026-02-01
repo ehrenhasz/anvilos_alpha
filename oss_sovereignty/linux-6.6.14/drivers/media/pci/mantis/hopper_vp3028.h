@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Hopper VP-3028 driver
-
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 #ifndef __MANTIS_VP3028_H
 #define __MANTIS_VP3028_H
@@ -15,4 +10,4 @@
 
 extern struct mantis_hwconfig vp3028_config;
 
-#endif /* __MANTIS_VP3028_H */
+#endif  

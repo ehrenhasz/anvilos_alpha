@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * INT3400 thermal driver
- *
- * Copyright (C) 2014, Intel Corporation
- * Authors: Zhang Rui <rui.zhang@intel.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -15,7 +10,7 @@
 #define INT3400_THERMAL_TABLE_CHANGED 0x83
 #define INT3400_ODVP_CHANGED 0x88
 #define INT3400_KEEP_ALIVE 0xA0
-#define INT3400_FAKE_TEMP (20 * 1000) /* faked temp sensor with 20C */
+#define INT3400_FAKE_TEMP (20 * 1000)  
 
 enum int3400_thermal_uuid {
 	INT3400_THERMAL_ACTIVE = 0,
@@ -191,13 +186,7 @@ static int set_os_uuid_mask(struct int3400_thermal_priv *priv, u32 mask)
 {
 	int cap = 0;
 
-	/*
-	 * Capability bits:
-	 * Bit 0: set to 1 to indicate DPTF is active
-	 * Bi1 1: set to 1 to active cooling is supported by user space daemon
-	 * Bit 2: set to 1 to passive cooling is supported by user space daemon
-	 * Bit 3: set to 1 to critical trip is handled by user space daemon
-	 */
+	 
 	if (mask)
 		cap = (priv->os_uuid_mask << 1) | 0x01;
 
@@ -216,22 +205,13 @@ static ssize_t current_uuid_store(struct device *dev,
 	for (i = 0; i < INT3400_THERMAL_MAXIMUM_UUID; ++i) {
 		if (!strncmp(buf, int3400_thermal_uuids[i],
 			     sizeof(int3400_thermal_uuids[i]) - 1)) {
-			/*
-			 * If we have a list of supported UUIDs, make sure
-			 * this one is supported.
-			 */
+			 
 			if (priv->uuid_bitmap & BIT(i)) {
 				priv->current_uuid_index = i;
 				return count;
 			}
 
-			/*
-			 * There is support of only 3 policies via the new
-			 * _OSC to inform OS capability:
-			 * INT3400_THERMAL_ACTIVE
-			 * INT3400_THERMAL_PASSIVE_1
-			 * INT3400_THERMAL_CRITICAL
-			 */
+			 
 
 			if (i > INT3400_THERMAL_CRITICAL)
 				return -EINVAL;
@@ -289,7 +269,7 @@ static int int3400_thermal_get_uuids(struct int3400_thermal_priv *priv)
 			goto end;
 		}
 
-		/* UUID must be 16 bytes */
+		 
 		if (objb->buffer.length != 16) {
 			result = -EINVAL;
 			goto end;
@@ -330,7 +310,7 @@ static int production_mode_init(struct int3400_thermal_priv *priv)
 	priv->production_mode = -1;
 
 	status = acpi_evaluate_integer(priv->adev->handle, "DCFG", NULL, &mode);
-	/* If the method is not present, this is not an error */
+	 
 	if (ACPI_FAILURE(status))
 		return 0;
 
@@ -473,7 +453,7 @@ static void int3400_notify(acpi_handle handle,
 		therm_event = THERMAL_DEVICE_POWER_CAPABILITY_CHANGED;
 		break;
 	default:
-		/* Ignore unknown notification codes sent to INT3400 device */
+		 
 		return;
 	}
 
@@ -587,7 +567,7 @@ static int int3400_thermal_probe(struct platform_device *pdev)
 
 	result = int3400_thermal_get_uuids(priv);
 
-	/* Missing IDSP isn't fatal */
+	 
 	if (result && result != -ENODEV)
 		goto free_priv;
 

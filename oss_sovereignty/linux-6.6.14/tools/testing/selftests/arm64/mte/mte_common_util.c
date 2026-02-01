@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 ARM Limited
+
+
 
 #include <fcntl.h>
 #include <sched.h>
@@ -43,7 +43,7 @@ void mte_default_handler(int signum, siginfo_t *si, void *uc)
 					       addr);
 			return;
 		}
-		/* Compare the context for precise error */
+		 
 		else if (si->si_code == SEGV_MTESERR) {
 			if (cur_mte_cxt.trig_si_code == si->si_code &&
 			    ((cur_mte_cxt.trig_range >= 0 &&
@@ -53,7 +53,7 @@ void mte_default_handler(int signum, siginfo_t *si, void *uc)
 			      addr <= MT_CLEAR_TAG(cur_mte_cxt.trig_addr) &&
 			      addr >= (MT_CLEAR_TAG(cur_mte_cxt.trig_addr) + cur_mte_cxt.trig_range)))) {
 				cur_mte_cxt.fault_valid = true;
-				/* Adjust the pc by 4 */
+				 
 				((ucontext_t *)uc)->uc_mcontext.pc += 4;
 			} else {
 				ksft_print_msg("Invalid MTE synchronous exception caught!\n");
@@ -73,7 +73,7 @@ void mte_default_handler(int signum, siginfo_t *si, void *uc)
 		     addr <= MT_CLEAR_TAG(cur_mte_cxt.trig_addr) &&
 		     addr >= (MT_CLEAR_TAG(cur_mte_cxt.trig_addr) + cur_mte_cxt.trig_range))) {
 			cur_mte_cxt.fault_valid = true;
-			/* Adjust the pc by 4 */
+			 
 			((ucontext_t *)uc)->uc_mcontext.pc += 4;
 		}
 	}
@@ -186,7 +186,7 @@ void *mte_allocate_file_memory(size_t size, int mem_type, int mapping, bool tags
 		ksft_print_msg("FAIL: Invalid mmap file request\n");
 		return NULL;
 	}
-	/* Initialize the file for mappable size */
+	 
 	lseek(fd, 0, SEEK_SET);
 	for (index = INIT_BUFFER_SIZE; index < size; index += INIT_BUFFER_SIZE) {
 		if (write(fd, buffer, INIT_BUFFER_SIZE) != INIT_BUFFER_SIZE) {
@@ -213,7 +213,7 @@ void *mte_allocate_file_memory_tag_range(size_t size, int mem_type, int mapping,
 		ksft_print_msg("FAIL: Invalid mmap file request\n");
 		return NULL;
 	}
-	/* Initialize the file for mappable size */
+	 
 	lseek(fd, 0, SEEK_SET);
 	for (index = INIT_BUFFER_SIZE; index < map_size; index += INIT_BUFFER_SIZE)
 		if (write(fd, buffer, INIT_BUFFER_SIZE) != INIT_BUFFER_SIZE) {
@@ -305,7 +305,7 @@ int mte_switch_mode(int mte_option, unsigned long incl_mask)
 	}
 
 	en |= (incl_mask << PR_MTE_TAG_SHIFT);
-	/* Enable address tagging ABI, mte error reporting mode and tag inclusion mask. */
+	 
 	if (prctl(PR_SET_TAGGED_ADDR_CTRL, en, 0, 0, 0) != 0) {
 		ksft_print_msg("FAIL:prctl PR_SET_TAGGED_ADDR_CTRL for mte mode\n");
 		return -EINVAL;
@@ -323,7 +323,7 @@ int mte_default_setup(void)
 		ksft_print_msg("SKIP: MTE features unavailable\n");
 		return KSFT_SKIP;
 	}
-	/* Get current mte mode */
+	 
 	ret = prctl(PR_GET_TAGGED_ADDR_CTRL, en, 0, 0, 0);
 	if (ret < 0) {
 		ksft_print_msg("FAIL:prctl PR_GET_TAGGED_ADDR_CTRL with error =%d\n", ret);
@@ -337,7 +337,7 @@ int mte_default_setup(void)
 		mte_cur_mode = MTE_NONE_ERR;
 
 	mte_cur_pstate_tco = mte_get_pstate_tco();
-	/* Disable PSTATE.TCO */
+	 
 	mte_disable_pstate_tco();
 	return 0;
 }
@@ -356,7 +356,7 @@ int create_temp_file(void)
 	int fd;
 	char filename[] = "/dev/shm/tmp_XXXXXX";
 
-	/* Create a file in the tmpfs filesystem */
+	 
 	fd = mkstemp(&filename[0]);
 	if (fd == -1) {
 		perror(filename);

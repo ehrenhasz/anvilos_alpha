@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCI Express Hot Plug Controller Driver
- *
- * Copyright (C) 1995,2001 Compaq Computer Corporation
- * Copyright (C) 2001 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2001 IBM Corp.
- * Copyright (C) 2003-2004 Intel Corporation
- *
- * All rights reserved.
- *
- * Send feedback to <greg@kroah.com>, <kristen.c.accardi@intel.com>
- *
- */
+
+ 
 
 #define dev_fmt(fmt) "pciehp: " fmt
 
@@ -21,14 +9,7 @@
 #include "../pci.h"
 #include "pciehp.h"
 
-/**
- * pciehp_configure_device() - enumerate PCI devices below a hotplug bridge
- * @ctrl: PCIe hotplug controller
- *
- * Enumerate PCI devices below a hotplug bridge and add them to the system.
- * Return 0 on success, %-EEXIST if the devices are already enumerated or
- * %-ENODEV if enumeration failed.
- */
+ 
 int pciehp_configure_device(struct controller *ctrl)
 {
 	struct pci_dev *dev;
@@ -40,10 +21,7 @@ int pciehp_configure_device(struct controller *ctrl)
 
 	dev = pci_get_slot(parent, PCI_DEVFN(0, 0));
 	if (dev) {
-		/*
-		 * The device is already there. Either configured by the
-		 * boot firmware or a previous hotplug event.
-		 */
+		 
 		ctrl_dbg(ctrl, "Device %s already exists at %04x:%02x:00, skipping hot-add\n",
 			 pci_name(dev), pci_domain_nr(parent), parent->number);
 		pci_dev_put(dev);
@@ -64,10 +42,7 @@ int pciehp_configure_device(struct controller *ctrl)
 	pci_assign_unassigned_bridge_resources(bridge);
 	pcie_bus_configure_settings(parent);
 
-	/*
-	 * Release reset_lock during driver binding
-	 * to avoid AB-BA deadlock with device_lock.
-	 */
+	 
 	up_read(&ctrl->reset_lock);
 	pci_bus_add_devices(parent);
 	down_read_nested(&ctrl->reset_lock, ctrl->depth);
@@ -77,17 +52,7 @@ int pciehp_configure_device(struct controller *ctrl)
 	return ret;
 }
 
-/**
- * pciehp_unconfigure_device() - remove PCI devices below a hotplug bridge
- * @ctrl: PCIe hotplug controller
- * @presence: whether the card is still present in the slot;
- *	true for safe removal via sysfs or an Attention Button press,
- *	false for surprise removal
- *
- * Unbind PCI devices below a hotplug bridge from their drivers and remove
- * them from the system.  Safely removed devices are quiesced.  Surprise
- * removed devices are marked as such to prevent further accesses.
- */
+ 
 void pciehp_unconfigure_device(struct controller *ctrl, bool presence)
 {
 	struct pci_dev *dev, *temp;
@@ -102,28 +67,17 @@ void pciehp_unconfigure_device(struct controller *ctrl, bool presence)
 
 	pci_lock_rescan_remove();
 
-	/*
-	 * Stopping an SR-IOV PF device removes all the associated VFs,
-	 * which will update the bus->devices list and confuse the
-	 * iterator.  Therefore, iterate in reverse so we remove the VFs
-	 * first, then the PF.  We do the same in pci_stop_bus_device().
-	 */
+	 
 	list_for_each_entry_safe_reverse(dev, temp, &parent->devices,
 					 bus_list) {
 		pci_dev_get(dev);
 
-		/*
-		 * Release reset_lock during driver unbinding
-		 * to avoid AB-BA deadlock with device_lock.
-		 */
+		 
 		up_read(&ctrl->reset_lock);
 		pci_stop_and_remove_bus_device(dev);
 		down_read_nested(&ctrl->reset_lock, ctrl->depth);
 
-		/*
-		 * Ensure that no new Requests will be generated from
-		 * the device.
-		 */
+		 
 		if (presence) {
 			pci_read_config_word(dev, PCI_COMMAND, &command);
 			command &= ~(PCI_COMMAND_MASTER | PCI_COMMAND_SERR);

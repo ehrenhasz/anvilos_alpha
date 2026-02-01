@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Device probe and register.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- * Copyright (c) 2006, Michael Wu <flamingice@sourmilk.net>
- * Copyright 2004-2006 Jean-Baptiste Note <jbnote@gmail.com>, et al.
- */
+ 
+ 
 #ifndef WFX_MAIN_H
 #define WFX_MAIN_H
 
@@ -19,13 +12,11 @@ struct wfx_dev;
 struct wfx_hwbus_ops;
 
 struct wfx_platform_data {
-	/* Keyset and ".sec" extension will be appended to this string */
+	 
 	const char *file_fw;
 	const char *file_pds;
 	struct gpio_desc *gpio_wakeup;
-	/* if true HIF D_out is sampled on the rising edge of the clock (intended to be used in
-	 * 50Mhz SDIO)
-	 */
+	 
 	bool use_rising_clk;
 };
 

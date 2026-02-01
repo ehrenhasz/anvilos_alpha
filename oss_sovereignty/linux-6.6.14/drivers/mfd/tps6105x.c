@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Core driver for TPS61050/61052 boost converters, used for while LED
- * driving, audio power amplification, white LED flash, and generic
- * boost conversion. Additionally it provides a 1-bit GPIO pin (out or in)
- * and a flash synchronization pin to synchronize flash events when used as
- * flashgun.
- *
- * Copyright (C) 2011 ST-Ericsson SA
- * Written on behalf of Linaro for ST-Ericsson
- *
- * Author: Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -61,10 +50,7 @@ static int tps6105x_startup(struct tps6105x *tps6105x)
 	return ret;
 }
 
-/*
- * MFD cells - we always have a GPIO cell and we have one cell
- * which is selected operation mode.
- */
+ 
 static struct mfd_cell tps6105x_gpio_cell = {
 	.name = "tps6105x-gpio",
 };
@@ -184,7 +170,7 @@ static void tps6105x_remove(struct i2c_client *client)
 
 	mfd_remove_devices(&client->dev);
 
-	/* Put chip in shutdown mode */
+	 
 	regmap_update_bits(tps6105x->regmap, TPS6105X_REG_0,
 		TPS6105X_REG0_MODE_MASK,
 		TPS6105X_MODE_SHUTDOWN << TPS6105X_REG0_MODE_SHIFT);

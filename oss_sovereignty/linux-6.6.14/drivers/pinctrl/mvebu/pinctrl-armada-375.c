@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell Armada 375 pinctrl driver based on mvebu pinctrl core
- *
- * Copyright (C) 2012 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -398,7 +392,7 @@ static int armada_375_pinctrl_probe(struct platform_device *pdev)
 {
 	struct mvebu_pinctrl_soc_info *soc = &armada_375_pinctrl_info;
 
-	soc->variant = 0; /* no variants for Armada 375 */
+	soc->variant = 0;  
 	soc->controls = mv88f6720_mpp_controls;
 	soc->ncontrols = ARRAY_SIZE(mv88f6720_mpp_controls);
 	soc->modes = mv88f6720_mpp_modes;

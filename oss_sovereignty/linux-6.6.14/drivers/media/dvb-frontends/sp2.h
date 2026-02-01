@@ -1,28 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * CIMaX SP2/HF CI driver
- *
- * Copyright (C) 2014 Olli Salonen <olli.salonen@iki.fi>
- */
+ 
+ 
 
 #ifndef SP2_H
 #define SP2_H
 
 #include <media/dvb_ca_en50221.h>
 
-/*
- * I2C address
- * 0x40 (port 0)
- * 0x41 (port 1)
- */
+ 
 struct sp2_config {
-	/* dvb_adapter to attach the ci to */
+	 
 	struct dvb_adapter *dvb_adap;
 
-	/* function ci_control handles the device specific ci ops */
+	 
 	void *ci_control;
 
-	/* priv is passed back to function ci_control */
+	 
 	void *priv;
 };
 

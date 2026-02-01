@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2018, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "port.h"
 
@@ -208,7 +178,7 @@ int mlx5e_port_set_sbcm(struct mlx5_core_dev *mdev, u32 desc, u8 pg_buff_idx,
 	return mlx5_core_access_reg(mdev, in, sizeof(in), out, sizeof(out), MLX5_REG_SBCM, 0, 1);
 }
 
-/* buffer[i]: buffer that priority i mapped to */
+ 
 int mlx5e_port_query_priority2buffer(struct mlx5_core_dev *mdev, u8 *buffer)
 {
 	int sz = MLX5_ST_SZ_BYTES(pptb_reg);
@@ -257,7 +227,7 @@ int mlx5e_port_set_priority2buffer(struct mlx5_core_dev *mdev, u8 *buffer)
 		goto out;
 	}
 
-	/* First query the pptb register */
+	 
 	MLX5_SET(pptb_reg, in, local_port, 1);
 	err = mlx5_core_access_reg(mdev, in, sz, out, sz, MLX5_REG_PPTB, 0, 0);
 	if (err)
@@ -266,7 +236,7 @@ int mlx5e_port_set_priority2buffer(struct mlx5_core_dev *mdev, u8 *buffer)
 	memcpy(in, out, sz);
 	MLX5_SET(pptb_reg, in, local_port, 1);
 
-	/* Update the pm and prio_x_buff */
+	 
 	MLX5_SET(pptb_reg, in, pm, 0xFF);
 
 	prio_x_buff = 0;
@@ -308,7 +278,7 @@ enum mlx5e_fec_supported_link_mode {
 			*_policy = MLX5_GET(pplm_reg, _buf, fec_override_admin_##link);	\
 	} while (0)
 
-/* get/set FEC admin field for a given speed */
+ 
 static int mlx5e_fec_admin_field(u32 *pplm, u16 *fec_policy, bool write,
 				 enum mlx5e_fec_supported_link_mode link_mode)
 {
@@ -349,7 +319,7 @@ static int mlx5e_fec_admin_field(u32 *pplm, u16 *fec_policy, bool write,
 #define MLX5E_GET_FEC_OVERRIDE_CAP(buf, link)  \
 	MLX5_GET(pplm_reg, buf, fec_override_cap_##link)
 
-/* returns FEC capabilities for a given speed */
+ 
 static int mlx5e_get_fec_cap_field(u32 *pplm, u16 *fec_cap,
 				   enum mlx5e_fec_supported_link_mode link_mode)
 {
@@ -492,22 +462,18 @@ int mlx5e_set_fec_mode(struct mlx5_core_dev *dev, u16 fec_policy)
 		if (i >= MLX5E_FEC_FIRST_50G_PER_LANE_MODE && !fec_50g_per_lane)
 			break;
 
-		/* RS fec in ethtool is mapped to MLX5E_FEC_RS_528_514
-		 * to link modes up to 25G per lane and to
-		 * MLX5E_FEC_RS_544_514 in the new link modes based on
-		 * 50 G per lane
-		 */
+		 
 		if (conf_fec == (1 << MLX5E_FEC_RS_528_514) &&
 		    i >= MLX5E_FEC_FIRST_50G_PER_LANE_MODE)
 			conf_fec = (1 << MLX5E_FEC_RS_544_514);
 
 		mlx5e_get_fec_cap_field(out, &fec_caps, i);
 
-		/* policy supported for link speed */
+		 
 		if (fec_caps & conf_fec)
 			mlx5e_fec_admin_field(out, &conf_fec, 1, i);
 		else
-			/* set FEC to auto*/
+			 
 			mlx5e_fec_admin_field(out, &fec_policy_auto, 1, i);
 	}
 

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2011-2017, The Linux Foundation. All rights reserved.
-// Copyright (c) 2018, Linaro Limited
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,7 +20,7 @@ enum {
 	PR_TYPE_GPR,
 };
 
-/* Some random values tbh which does not collide with static modules */
+ 
 #define GPR_DYNAMIC_PORT_START	0x10000000
 #define GPR_DYNAMIC_PORT_END	0x20000000
 
@@ -44,14 +44,7 @@ struct apr_rx_buf {
 	uint8_t buf[];
 };
 
-/**
- * apr_send_pkt() - Send a apr message from apr device
- *
- * @adev: Pointer to previously registered apr device.
- * @pkt: Pointer to apr packet to send
- *
- * Return: Will be an negative on packet size on success.
- */
+ 
 int apr_send_pkt(struct apr_device *adev, struct apr_pkt *pkt)
 {
 	struct packet_router *apr = dev_get_drvdata(adev->dev.parent);
@@ -247,10 +240,7 @@ static int apr_do_rx_callback(struct packet_router *apr, struct apr_rx_buf *abuf
 	resp.hdr = *hdr;
 	resp.payload_size = hdr->pkt_size - hdr_size;
 
-	/*
-	 * NOTE: hdr_size is not same as APR_HDR_SIZE as remote can include
-	 * optional headers in to apr_hdr which should be ignored
-	 */
+	 
 	if (resp.payload_size > 0)
 		resp.payload = buf + hdr_size;
 
@@ -288,10 +278,7 @@ static int gpr_do_rx_callback(struct packet_router *gpr, struct apr_rx_buf *abuf
 	resp.hdr = *hdr;
 	resp.payload_size = hdr->pkt_size - (hdr_size * 4);
 
-	/*
-	 * NOTE: hdr_size is not same as GPR_HDR_SIZE as remote can include
-	 * optional headers in to gpr_hdr which should be ignored
-	 */
+	 
 	if (resp.payload_size > 0)
 		resp.payload = buf + (hdr_size *  4);
 
@@ -344,7 +331,7 @@ static int apr_device_match(struct device *dev, struct device_driver *drv)
 	struct apr_driver *adrv = to_apr_driver(drv);
 	const struct apr_device_id *id = adrv->id_table;
 
-	/* Attempt an OF style match first */
+	 
 	if (of_driver_match_device(dev, drv))
 		return 1;
 
@@ -461,7 +448,7 @@ static int apr_add_device(struct device *dev, struct device_node *np,
 		goto out;
 	}
 
-	/* Protection domain is optional, it does not exist on older platforms */
+	 
 	ret = of_property_read_string_index(np, "qcom,protection-domain",
 					    1, &adev->service_path);
 	if (ret < 0 && ret != -EINVAL) {
@@ -525,30 +512,20 @@ static void of_register_apr_devices(struct device *dev, const char *svc_path)
 		u32 svc_id;
 		u32 domain_id;
 
-		/*
-		 * This function is called with svc_path NULL during
-		 * apr_probe(), in which case we register any apr devices
-		 * without a qcom,protection-domain specified.
-		 *
-		 * Then as the protection domains becomes available
-		 * (if applicable) this function is again called, but with
-		 * svc_path representing the service becoming available. In
-		 * this case we register any apr devices with a matching
-		 * qcom,protection-domain.
-		 */
+		 
 
 		ret = of_property_read_string_index(node, "qcom,protection-domain",
 						    1, &service_path);
 		if (svc_path) {
-			/* skip APR services that are PD independent */
+			 
 			if (ret)
 				continue;
 
-			/* skip APR services whose PD paths don't match */
+			 
 			if (strcmp(service_path, svc_path))
 				continue;
 		} else {
-			/* skip APR services whose PD lookups are registered */
+			 
 			if (ret == 0)
 				continue;
 		}
@@ -606,7 +583,7 @@ static int apr_probe(struct rpmsg_device *rpdev)
 	if (of_device_is_compatible(dev->of_node, "qcom,gpr")) {
 		apr->type = PR_TYPE_GPR;
 	} else {
-		if (ret) /* try deprecated apr-domain property */
+		if (ret)  
 			ret = of_property_read_u32(dev->of_node, "qcom,apr-domain",
 						   &apr->dest_domain_id);
 		apr->type = PR_TYPE_APR;
@@ -663,15 +640,7 @@ static void apr_remove(struct rpmsg_device *rpdev)
 	destroy_workqueue(apr->rxwq);
 }
 
-/*
- * __apr_driver_register() - Client driver registration with aprbus
- *
- * @drv:Client driver to be associated with client-device.
- * @owner: owning module/driver
- *
- * This API will register the client driver with the aprbus
- * It is called from the driver's module-init function.
- */
+ 
 int __apr_driver_register(struct apr_driver *drv, struct module *owner)
 {
 	drv->driver.bus = &aprbus;
@@ -681,11 +650,7 @@ int __apr_driver_register(struct apr_driver *drv, struct module *owner)
 }
 EXPORT_SYMBOL_GPL(__apr_driver_register);
 
-/*
- * apr_driver_unregister() - Undo effect of apr_driver_register
- *
- * @drv: Client driver to be unregistered
- */
+ 
 void apr_driver_unregister(struct apr_driver *drv)
 {
 	driver_unregister(&drv->driver);

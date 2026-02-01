@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef __RSI_MAIN_H__
 #define __RSI_MAIN_H__
@@ -33,15 +19,15 @@ struct rsi_hw;
 
 #include "rsi_ps.h"
 
-#define ERR_ZONE                        BIT(0)  /* For Error Msgs             */
-#define INFO_ZONE                       BIT(1)  /* For General Status Msgs    */
-#define INIT_ZONE                       BIT(2)  /* For Driver Init Seq Msgs   */
-#define MGMT_TX_ZONE                    BIT(3)  /* For TX Mgmt Path Msgs      */
-#define MGMT_RX_ZONE                    BIT(4)  /* For RX Mgmt Path Msgs      */
-#define DATA_TX_ZONE                    BIT(5)  /* For TX Data Path Msgs      */
-#define DATA_RX_ZONE                    BIT(6)  /* For RX Data Path Msgs      */
-#define FSM_ZONE                        BIT(7)  /* For State Machine Msgs     */
-#define ISR_ZONE                        BIT(8)  /* For Interrupt Msgs         */
+#define ERR_ZONE                        BIT(0)   
+#define INFO_ZONE                       BIT(1)   
+#define INIT_ZONE                       BIT(2)   
+#define MGMT_TX_ZONE                    BIT(3)   
+#define MGMT_RX_ZONE                    BIT(4)   
+#define DATA_TX_ZONE                    BIT(5)   
+#define DATA_RX_ZONE                    BIT(6)   
+#define FSM_ZONE                        BIT(7)   
+#define ISR_ZONE                        BIT(8)   
 
 enum RSI_FSM_STATES {
 	FSM_FW_NOT_LOADED,
@@ -82,7 +68,7 @@ extern __printf(2, 3) void rsi_dbg(u32 zone, const char *fmt, ...);
 #define MAX_CONTINUOUS_VO_PKTS          8
 #define MAX_CONTINUOUS_VI_PKTS          4
 
-/* Hardware queue info */
+ 
 #define BROADCAST_HW_Q			9
 #define MGMT_HW_Q			10
 #define BEACON_HW_Q			11
@@ -108,7 +94,7 @@ extern __printf(2, 3) void rsi_dbg(u32 zone, const char *fmt, ...);
 	((_q) == VI_Q) ? IEEE80211_AC_VI : \
 	IEEE80211_AC_VO)
 
-/* WoWLAN flags */
+ 
 #define RSI_WOW_ENABLED			BIT(0)
 #define RSI_WOW_NO_CONNECTION		BIT(1)
 
@@ -232,7 +218,7 @@ struct rsi_9116_features {
 };
 
 struct rsi_rate_config {
-	u32 configured_mask;	/* configured by mac80211 bits 0-11=legacy 12+ mcs */
+	u32 configured_mask;	 
 	u16 fixed_hw_rate;
 	bool fixed_enabled;
 };
@@ -248,15 +234,15 @@ struct rsi_common {
 	struct rsi_thread tx_thread;
 	struct sk_buff_head tx_queue[NUM_EDCA_QUEUES + 2];
 	struct completion wlan_init_completion;
-	/* Mutex declaration */
+	 
 	struct mutex mutex;
-	/* Mutex used for tx thread */
+	 
 	struct mutex tx_lock;
-	/* Mutex used for rx thread */
+	 
 	struct mutex rx_lock;
 	u8 endpoint;
 
-	/* Channel/band related */
+	 
 	u8 band;
 	u8 num_supp_bands;
 	u8 channel_width;
@@ -272,25 +258,25 @@ struct rsi_common {
 	struct ieee80211_tx_queue_params edca_params[NUM_EDCA_QUEUES];
 	u8 mac_addr[IEEE80211_ADDR_LEN];
 
-	/* state related */
+	 
 	u32 fsm_state;
 	bool init_done;
 	u8 bb_rf_prog_count;
 	bool iface_down;
 
-	/* Generic */
+	 
 	u8 channel;
 	u8 *rx_data_pkt;
 	u8 mac_id;
 	u8 radio_id;
 	u16 rate_pwr[20];
 
-	/* WMM algo related */
+	 
 	u8 selected_qnum;
 	u32 pkt_cnt;
 	u8 min_weight;
 
-	/* bgscan related */
+	 
 	struct cqm_info cqm_info;
 
 	bool hw_data_qs_blocked;
@@ -305,7 +291,7 @@ struct rsi_common {
 	u8 obm_ant_sel_val;
 	int tx_power;
 	u8 ant_in_use;
-	/* Mutex used for writing packet to bus */
+	 
 	struct mutex tx_bus_mutex;
 	bool hibernate_resume;
 	bool reinit_hw;
@@ -313,7 +299,7 @@ struct rsi_common {
 	u16 beacon_interval;
 	u8 dtim_cnt;
 
-	/* AP mode parameters */
+	 
 	u8 beacon_enabled;
 	u16 beacon_cnt;
 	struct rsi_sta stations[RSI_MAX_ASSOC_STAS + 1];
@@ -321,7 +307,7 @@ struct rsi_common {
 	int max_stations;
 	struct ieee80211_key_conf *key;
 
-	/* Wi-Fi direct mode related */
+	 
 	bool p2p_enabled;
 	struct timer_list roc_timer;
 	struct ieee80211_vif *roc_vif;
@@ -365,7 +351,7 @@ struct rsi_hw {
 	u16 block_size;
 	enum ps_state ps_state;
 	struct rsi_ps_info ps_info;
-	spinlock_t ps_lock; /*To protect power save config*/
+	spinlock_t ps_lock;  
 	u32 usb_buffer_status_reg;
 #ifdef CONFIG_RSI_DEBUGFS
 	struct rsi_debugfs *dfsentry;

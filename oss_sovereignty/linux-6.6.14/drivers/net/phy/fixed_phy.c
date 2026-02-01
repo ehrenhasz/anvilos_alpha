@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Fixed MDIO bus (MDIO bus emulation with fixed PHYs)
- *
- * Author: Vitaly Bordug <vbordug@ru.mvista.com>
- *         Anton Vorontsov <avorontsov@ru.mvista.com>
- *
- * Copyright (c) 2006-2007 MontaVista Software, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -81,12 +74,12 @@ static int fixed_mdio_read(struct mii_bus *bus, int phy_addr, int reg_num)
 
 			fp->status.link = !fp->no_carrier;
 
-			/* Issue callback if user registered it. */
+			 
 			if (fp->link_update)
 				fp->link_update(fp->phydev->attached_dev,
 						&fp->status);
 
-			/* Check the GPIO for change in status */
+			 
 			fixed_phy_update(fp);
 			state = fp->status;
 
@@ -103,11 +96,7 @@ static int fixed_mdio_write(struct mii_bus *bus, int phy_addr, int reg_num,
 	return 0;
 }
 
-/*
- * If something weird is required to be done with link/speed,
- * network driver is able to assign a function to implement this.
- * May be useful for PHY's that need to be software-driven.
- */
+ 
 int fixed_phy_set_link_update(struct phy_device *phydev,
 			      int (*link_update)(struct net_device *,
 						 struct fixed_phy_status *))
@@ -199,11 +188,7 @@ static struct gpio_desc *fixed_phy_get_gpiod(struct device_node *np)
 	if (!fixed_link_node)
 		return NULL;
 
-	/*
-	 * As the fixed link is just a device tree node without any
-	 * Linux device associated with it, we simply have obtain
-	 * the GPIO descriptor from the device tree like this.
-	 */
+	 
 	gpiod = fwnode_gpiod_get_index(of_fwnode_handle(fixed_link_node),
 				       "link", 0, GPIOD_IN, "mdio");
 	if (IS_ERR(gpiod) && PTR_ERR(gpiod) != -EPROBE_DEFER) {
@@ -236,14 +221,14 @@ static struct phy_device *__fixed_phy_register(unsigned int irq,
 	if (!fmb->mii_bus || fmb->mii_bus->state != MDIOBUS_REGISTERED)
 		return ERR_PTR(-EPROBE_DEFER);
 
-	/* Check if we have a GPIO associated with this fixed phy */
+	 
 	if (!gpiod) {
 		gpiod = fixed_phy_get_gpiod(np);
 		if (IS_ERR(gpiod))
 			return ERR_CAST(gpiod);
 	}
 
-	/* Get the next available PHY address, up to PHY_MAX_ADDR */
+	 
 	phy_addr = ida_alloc_max(&phy_fixed_ida, PHY_MAX_ADDR - 1, GFP_KERNEL);
 	if (phy_addr < 0)
 		return ERR_PTR(phy_addr);
@@ -260,7 +245,7 @@ static struct phy_device *__fixed_phy_register(unsigned int irq,
 		return ERR_PTR(-EINVAL);
 	}
 
-	/* propagate the fixed link values to struct phy_device */
+	 
 	phy->link = status->link;
 	if (status->link) {
 		phy->speed = status->speed;

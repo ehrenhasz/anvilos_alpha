@@ -1,10 +1,4 @@
-/*
- * Stress test for transparent huge pages, memory compaction and migration.
- *
- * Authors: Konstantin Khlebnikov <koct9i@gmail.com>
- *
- * This is free and unencumbered software released into the public domain.
- */
+ 
 
 #include <stdlib.h>
 #include <stdio.h>
@@ -112,7 +106,7 @@ int main(int argc, char **argv)
 				map[idx] = 1;
 			}
 
-			/* split transhuge page, keep last page */
+			 
 			if (madvise(p, HPAGE_SIZE - psize(), MADV_DONTNEED))
 				err(2, "MADV_DONTNEED");
 		}

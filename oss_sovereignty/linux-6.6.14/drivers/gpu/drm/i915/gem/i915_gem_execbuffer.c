@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2008,2010 Intel Corporation
- */
+ 
 
 #include <linux/dma-resv.h>
 #include <linux/highmem.h>
@@ -38,7 +34,7 @@ struct eb_vma {
 	struct i915_vma *vma;
 	unsigned int flags;
 
-	/** This vma's place in the execbuf reservation list */
+	 
 	struct drm_i915_gem_exec_object2 *exec;
 	struct list_head bind_link;
 	struct list_head reloc_link;
@@ -51,16 +47,16 @@ enum {
 	FORCE_CPU_RELOC = 1,
 	FORCE_GTT_RELOC,
 	FORCE_GPU_RELOC,
-#define DBG_FORCE_RELOC 0 /* choose one of the above! */
+#define DBG_FORCE_RELOC 0  
 };
 
-/* __EXEC_OBJECT_ flags > BIT(29) defined in i915_vma.h */
+ 
 #define __EXEC_OBJECT_HAS_PIN		BIT(29)
 #define __EXEC_OBJECT_HAS_FENCE		BIT(28)
 #define __EXEC_OBJECT_USERPTR_INIT	BIT(27)
 #define __EXEC_OBJECT_NEEDS_MAP		BIT(26)
 #define __EXEC_OBJECT_NEEDS_BIAS	BIT(25)
-#define __EXEC_OBJECT_INTERNAL_FLAGS	(~0u << 25) /* all of the above + */
+#define __EXEC_OBJECT_INTERNAL_FLAGS	(~0u << 25)  
 #define __EXEC_OBJECT_RESERVED (__EXEC_OBJECT_HAS_PIN | __EXEC_OBJECT_HAS_FENCE)
 
 #define __EXEC_HAS_RELOC	BIT(31)
@@ -76,7 +72,7 @@ enum {
 	 I915_EXEC_CONSTANTS_MASK  | \
 	 I915_EXEC_RESOURCE_STREAMER)
 
-/* Catch emission of unexpected errors for CI! */
+ 
 #if IS_ENABLED(CONFIG_DRM_I915_DEBUG_GEM)
 #undef EINVAL
 #define EINVAL ({ \
@@ -85,229 +81,72 @@ enum {
 })
 #endif
 
-/**
- * DOC: User command execution
- *
- * Userspace submits commands to be executed on the GPU as an instruction
- * stream within a GEM object we call a batchbuffer. This instructions may
- * refer to other GEM objects containing auxiliary state such as kernels,
- * samplers, render targets and even secondary batchbuffers. Userspace does
- * not know where in the GPU memory these objects reside and so before the
- * batchbuffer is passed to the GPU for execution, those addresses in the
- * batchbuffer and auxiliary objects are updated. This is known as relocation,
- * or patching. To try and avoid having to relocate each object on the next
- * execution, userspace is told the location of those objects in this pass,
- * but this remains just a hint as the kernel may choose a new location for
- * any object in the future.
- *
- * At the level of talking to the hardware, submitting a batchbuffer for the
- * GPU to execute is to add content to a buffer from which the HW
- * command streamer is reading.
- *
- * 1. Add a command to load the HW context. For Logical Ring Contexts, i.e.
- *    Execlists, this command is not placed on the same buffer as the
- *    remaining items.
- *
- * 2. Add a command to invalidate caches to the buffer.
- *
- * 3. Add a batchbuffer start command to the buffer; the start command is
- *    essentially a token together with the GPU address of the batchbuffer
- *    to be executed.
- *
- * 4. Add a pipeline flush to the buffer.
- *
- * 5. Add a memory write command to the buffer to record when the GPU
- *    is done executing the batchbuffer. The memory write writes the
- *    global sequence number of the request, ``i915_request::global_seqno``;
- *    the i915 driver uses the current value in the register to determine
- *    if the GPU has completed the batchbuffer.
- *
- * 6. Add a user interrupt command to the buffer. This command instructs
- *    the GPU to issue an interrupt when the command, pipeline flush and
- *    memory write are completed.
- *
- * 7. Inform the hardware of the additional commands added to the buffer
- *    (by updating the tail pointer).
- *
- * Processing an execbuf ioctl is conceptually split up into a few phases.
- *
- * 1. Validation - Ensure all the pointers, handles and flags are valid.
- * 2. Reservation - Assign GPU address space for every object
- * 3. Relocation - Update any addresses to point to the final locations
- * 4. Serialisation - Order the request with respect to its dependencies
- * 5. Construction - Construct a request to execute the batchbuffer
- * 6. Submission (at some point in the future execution)
- *
- * Reserving resources for the execbuf is the most complicated phase. We
- * neither want to have to migrate the object in the address space, nor do
- * we want to have to update any relocations pointing to this object. Ideally,
- * we want to leave the object where it is and for all the existing relocations
- * to match. If the object is given a new address, or if userspace thinks the
- * object is elsewhere, we have to parse all the relocation entries and update
- * the addresses. Userspace can set the I915_EXEC_NORELOC flag to hint that
- * all the target addresses in all of its objects match the value in the
- * relocation entries and that they all match the presumed offsets given by the
- * list of execbuffer objects. Using this knowledge, we know that if we haven't
- * moved any buffers, all the relocation entries are valid and we can skip
- * the update. (If userspace is wrong, the likely outcome is an impromptu GPU
- * hang.) The requirement for using I915_EXEC_NO_RELOC are:
- *
- *      The addresses written in the objects must match the corresponding
- *      reloc.presumed_offset which in turn must match the corresponding
- *      execobject.offset.
- *
- *      Any render targets written to in the batch must be flagged with
- *      EXEC_OBJECT_WRITE.
- *
- *      To avoid stalling, execobject.offset should match the current
- *      address of that object within the active context.
- *
- * The reservation is done is multiple phases. First we try and keep any
- * object already bound in its current location - so as long as meets the
- * constraints imposed by the new execbuffer. Any object left unbound after the
- * first pass is then fitted into any available idle space. If an object does
- * not fit, all objects are removed from the reservation and the process rerun
- * after sorting the objects into a priority order (more difficult to fit
- * objects are tried first). Failing that, the entire VM is cleared and we try
- * to fit the execbuf once last time before concluding that it simply will not
- * fit.
- *
- * A small complication to all of this is that we allow userspace not only to
- * specify an alignment and a size for the object in the address space, but
- * we also allow userspace to specify the exact offset. This objects are
- * simpler to place (the location is known a priori) all we have to do is make
- * sure the space is available.
- *
- * Once all the objects are in place, patching up the buried pointers to point
- * to the final locations is a fairly simple job of walking over the relocation
- * entry arrays, looking up the right address and rewriting the value into
- * the object. Simple! ... The relocation entries are stored in user memory
- * and so to access them we have to copy them into a local buffer. That copy
- * has to avoid taking any pagefaults as they may lead back to a GEM object
- * requiring the struct_mutex (i.e. recursive deadlock). So once again we split
- * the relocation into multiple passes. First we try to do everything within an
- * atomic context (avoid the pagefaults) which requires that we never wait. If
- * we detect that we may wait, or if we need to fault, then we have to fallback
- * to a slower path. The slowpath has to drop the mutex. (Can you hear alarm
- * bells yet?) Dropping the mutex means that we lose all the state we have
- * built up so far for the execbuf and we must reset any global data. However,
- * we do leave the objects pinned in their final locations - which is a
- * potential issue for concurrent execbufs. Once we have left the mutex, we can
- * allocate and copy all the relocation entries into a large array at our
- * leisure, reacquire the mutex, reclaim all the objects and other state and
- * then proceed to update any incorrect addresses with the objects.
- *
- * As we process the relocation entries, we maintain a record of whether the
- * object is being written to. Using NORELOC, we expect userspace to provide
- * this information instead. We also check whether we can skip the relocation
- * by comparing the expected value inside the relocation entry with the target's
- * final address. If they differ, we have to map the current object and rewrite
- * the 4 or 8 byte pointer within.
- *
- * Serialising an execbuf is quite simple according to the rules of the GEM
- * ABI. Execution within each context is ordered by the order of submission.
- * Writes to any GEM object are in order of submission and are exclusive. Reads
- * from a GEM object are unordered with respect to other reads, but ordered by
- * writes. A write submitted after a read cannot occur before the read, and
- * similarly any read submitted after a write cannot occur before the write.
- * Writes are ordered between engines such that only one write occurs at any
- * time (completing any reads beforehand) - using semaphores where available
- * and CPU serialisation otherwise. Other GEM access obey the same rules, any
- * write (either via mmaps using set-domain, or via pwrite) must flush all GPU
- * reads before starting, and any read (either using set-domain or pread) must
- * flush all GPU writes before starting. (Note we only employ a barrier before,
- * we currently rely on userspace not concurrently starting a new execution
- * whilst reading or writing to an object. This may be an advantage or not
- * depending on how much you trust userspace not to shoot themselves in the
- * foot.) Serialisation may just result in the request being inserted into
- * a DAG awaiting its turn, but most simple is to wait on the CPU until
- * all dependencies are resolved.
- *
- * After all of that, is just a matter of closing the request and handing it to
- * the hardware (well, leaving it in a queue to be executed). However, we also
- * offer the ability for batchbuffers to be run with elevated privileges so
- * that they access otherwise hidden registers. (Used to adjust L3 cache etc.)
- * Before any batch is given extra privileges we first must check that it
- * contains no nefarious instructions, we check that each instruction is from
- * our whitelist and all registers are also from an allowed list. We first
- * copy the user's batchbuffer to a shadow (so that the user doesn't have
- * access to it, either by the CPU or GPU as we scan it) and then parse each
- * instruction. If everything is ok, we set a flag telling the hardware to run
- * the batchbuffer in trusted mode, otherwise the ioctl is rejected.
- */
+ 
 
 struct eb_fence {
-	struct drm_syncobj *syncobj; /* Use with ptr_mask_bits() */
+	struct drm_syncobj *syncobj;  
 	struct dma_fence *dma_fence;
 	u64 value;
 	struct dma_fence_chain *chain_fence;
 };
 
 struct i915_execbuffer {
-	struct drm_i915_private *i915; /** i915 backpointer */
-	struct drm_file *file; /** per-file lookup tables and limits */
-	struct drm_i915_gem_execbuffer2 *args; /** ioctl parameters */
-	struct drm_i915_gem_exec_object2 *exec; /** ioctl execobj[] */
+	struct drm_i915_private *i915;  
+	struct drm_file *file;  
+	struct drm_i915_gem_execbuffer2 *args;  
+	struct drm_i915_gem_exec_object2 *exec;  
 	struct eb_vma *vma;
 
-	struct intel_gt *gt; /* gt for the execbuf */
-	struct intel_context *context; /* logical state for the request */
-	struct i915_gem_context *gem_context; /** caller's context */
+	struct intel_gt *gt;  
+	struct intel_context *context;  
+	struct i915_gem_context *gem_context;  
 
-	/** our requests to build */
+	 
 	struct i915_request *requests[MAX_ENGINE_INSTANCE + 1];
-	/** identity of the batch obj/vma */
+	 
 	struct eb_vma *batches[MAX_ENGINE_INSTANCE + 1];
-	struct i915_vma *trampoline; /** trampoline used for chaining */
+	struct i915_vma *trampoline;  
 
-	/** used for excl fence in dma_resv objects when > 1 BB submitted */
+	 
 	struct dma_fence *composite_fence;
 
-	/** actual size of execobj[] as we may extend it for the cmdparser */
+	 
 	unsigned int buffer_count;
 
-	/* number of batches in execbuf IOCTL */
+	 
 	unsigned int num_batches;
 
-	/** list of vma not yet bound during reservation phase */
+	 
 	struct list_head unbound;
 
-	/** list of vma that have execobj.relocation_count */
+	 
 	struct list_head relocs;
 
 	struct i915_gem_ww_ctx ww;
 
-	/**
-	 * Track the most recently used object for relocations, as we
-	 * frequently have to perform multiple relocations within the same
-	 * obj/page
-	 */
+	 
 	struct reloc_cache {
-		struct drm_mm_node node; /** temporary GTT binding */
-		unsigned long vaddr; /** Current kmap address */
-		unsigned long page; /** Currently mapped page index */
-		unsigned int graphics_ver; /** Cached value of GRAPHICS_VER */
+		struct drm_mm_node node;  
+		unsigned long vaddr;  
+		unsigned long page;  
+		unsigned int graphics_ver;  
 		bool use_64bit_reloc : 1;
 		bool has_llc : 1;
 		bool has_fence : 1;
 		bool needs_unfenced : 1;
 	} reloc_cache;
 
-	u64 invalid_flags; /** Set of execobj.flags that are invalid */
+	u64 invalid_flags;  
 
-	/** Length of batch within object */
+	 
 	u64 batch_len[MAX_ENGINE_INSTANCE + 1];
-	u32 batch_start_offset; /** Location within object of batch */
-	u32 batch_flags; /** Flags composed for emit_bb_start() */
-	struct intel_gt_buffer_pool_node *batch_pool; /** pool node for batch buffer */
+	u32 batch_start_offset;  
+	u32 batch_flags;  
+	struct intel_gt_buffer_pool_node *batch_pool;  
 
-	/**
-	 * Indicate either the size of the hastable used to resolve
-	 * relocation handles, or if negative that we are using a direct
-	 * index into the execobj[].
-	 */
+	 
 	int lut_size;
-	struct hlist_head *buckets; /** ht for relocation handles */
+	struct hlist_head *buckets;  
 
 	struct eb_fence *fences;
 	unsigned long num_fences;
@@ -333,26 +172,11 @@ static int eb_create(struct i915_execbuffer *eb)
 	if (!(eb->args->flags & I915_EXEC_HANDLE_LUT)) {
 		unsigned int size = 1 + ilog2(eb->buffer_count);
 
-		/*
-		 * Without a 1:1 association between relocation handles and
-		 * the execobject[] index, we instead create a hashtable.
-		 * We size it dynamically based on available memory, starting
-		 * first with 1:1 assocative hash and scaling back until
-		 * the allocation succeeds.
-		 *
-		 * Later on we use a positive lut_size to indicate we are
-		 * using this hashtable, and a negative value to indicate a
-		 * direct lookup.
-		 */
+		 
 		do {
 			gfp_t flags;
 
-			/* While we can still reduce the allocation size, don't
-			 * raise a warning and allow the allocation to fail.
-			 * On the last pass though, we want to try as hard
-			 * as possible to perform the allocation and warn
-			 * if it fails.
-			 */
+			 
 			flags = GFP_KERNEL;
 			if (size > 1)
 				flags |= __GFP_NORETRY | __GFP_NOWARN;
@@ -415,10 +239,7 @@ static u64 eb_pin_flags(const struct drm_i915_gem_exec_object2 *entry,
 	if (exec_flags & EXEC_OBJECT_NEEDS_GTT)
 		pin_flags |= PIN_GLOBAL;
 
-	/*
-	 * Wa32bitGeneralStateOffset & Wa32bitInstructionBaseOffset,
-	 * limit address to the first 4GBs for unflagged objects.
-	 */
+	 
 	if (!(exec_flags & EXEC_OBJECT_SUPPORTS_48B_ADDRESS))
 		pin_flags |= PIN_ZONE_4G;
 
@@ -451,7 +272,7 @@ eb_pin_vma(struct i915_execbuffer *eb,
 	if (unlikely(ev->flags & EXEC_OBJECT_NEEDS_GTT))
 		pin_flags |= PIN_GLOBAL;
 
-	/* Attempt to reuse the current location if available */
+	 
 	err = i915_vma_pin_ww(vma, &eb->ww, 0, 0, pin_flags);
 	if (err == -EDEADLK)
 		return err;
@@ -460,7 +281,7 @@ eb_pin_vma(struct i915_execbuffer *eb,
 		if (entry->flags & EXEC_OBJECT_PINNED)
 			return err;
 
-		/* Failing that pick any _free_ space if suitable */
+		 
 		err = i915_vma_pin_ww(vma, &eb->ww,
 					     entry->pad_to_size,
 					     entry->alignment,
@@ -500,9 +321,7 @@ eb_validate_vma(struct i915_execbuffer *eb,
 		struct drm_i915_gem_exec_object2 *entry,
 		struct i915_vma *vma)
 {
-	/* Relocations are disallowed for all platforms after TGL-LP.  This
-	 * also covers all platforms with local memory.
-	 */
+	 
 	if (entry->relocation_count &&
 	    GRAPHICS_VER(eb->i915) >= 12 && !IS_TIGERLAKE(eb->i915))
 		return -EINVAL;
@@ -514,26 +333,19 @@ eb_validate_vma(struct i915_execbuffer *eb,
 		     !is_power_of_2_u64(entry->alignment)))
 		return -EINVAL;
 
-	/*
-	 * Offset can be used as input (EXEC_OBJECT_PINNED), reject
-	 * any non-page-aligned or non-canonical addresses.
-	 */
+	 
 	if (unlikely(entry->flags & EXEC_OBJECT_PINNED &&
 		     entry->offset != gen8_canonical_addr(entry->offset & I915_GTT_PAGE_MASK)))
 		return -EINVAL;
 
-	/* pad_to_size was once a reserved field, so sanitize it */
+	 
 	if (entry->flags & EXEC_OBJECT_PAD_TO_SIZE) {
 		if (unlikely(offset_in_page(entry->pad_to_size)))
 			return -EINVAL;
 	} else {
 		entry->pad_to_size = 0;
 	}
-	/*
-	 * From drm_mm perspective address space is continuous,
-	 * so from this point we're always using non-canonical
-	 * form internally.
-	 */
+	 
 	entry->offset = gen8_noncanonical_addr(entry->offset);
 
 	if (!eb->reloc_cache.has_fence) {
@@ -580,15 +392,7 @@ eb_add_vma(struct i915_execbuffer *eb,
 	if (entry->relocation_count)
 		list_add_tail(&ev->reloc_link, &eb->relocs);
 
-	/*
-	 * SNA is doing fancy tricks with compressing batch buffers, which leads
-	 * to negative relocation deltas. Usually that works out ok since the
-	 * relocate address is still positive, except when the batch is placed
-	 * very low in the GTT. Ensure this doesn't happen.
-	 *
-	 * Note that actual hangs have only been observed on gen7, but for
-	 * paranoia do it everywhere.
-	 */
+	 
 	if (is_batch_buffer(eb, i)) {
 		if (entry->relocation_count &&
 		    !(ev->flags & EXEC_OBJECT_PINNED))
@@ -617,7 +421,7 @@ eb_add_vma(struct i915_execbuffer *eb,
 				eb->batch_start_offset;
 		else
 			eb->batch_len[*current_batch] = eb->args->batch_len;
-		if (unlikely(eb->batch_len[*current_batch] == 0)) { /* impossible! */
+		if (unlikely(eb->batch_len[*current_batch] == 0)) {  
 			drm_dbg(&i915->drm, "Invalid batch length\n");
 			return -EINVAL;
 		}
@@ -640,12 +444,7 @@ static inline int use_cpu_reloc(const struct reloc_cache *cache,
 	if (DBG_FORCE_RELOC == FORCE_GTT_RELOC)
 		return false;
 
-	/*
-	 * For objects created by userspace through GEM_CREATE with pat_index
-	 * set by set_pat extension, i915_gem_object_has_cache_level() always
-	 * return true, otherwise the call would fall back to checking whether
-	 * the object is un-cached.
-	 */
+	 
 	return (cache->has_llc ||
 		obj->cache_dirty ||
 		!i915_gem_object_has_cache_level(obj, I915_CACHE_NONE));
@@ -699,7 +498,7 @@ static bool eb_unbind(struct i915_execbuffer *eb, bool force)
 	struct list_head last;
 	bool unpinned = false;
 
-	/* Resort *all* the objects into priority order */
+	 
 	INIT_LIST_HEAD(&eb->unbound);
 	INIT_LIST_HEAD(&last);
 
@@ -715,13 +514,13 @@ static bool eb_unbind(struct i915_execbuffer *eb, bool force)
 		eb_unreserve_vma(ev);
 
 		if (flags & EXEC_OBJECT_PINNED)
-			/* Pinned must have their slot */
+			 
 			list_add(&ev->bind_link, &eb->unbound);
 		else if (flags & __EXEC_OBJECT_NEEDS_MAP)
-			/* Map require the lowest 256MiB (aperture) */
+			 
 			list_add_tail(&ev->bind_link, &eb->unbound);
 		else if (!(flags & EXEC_OBJECT_SUPPORTS_48B_ADDRESS))
-			/* Prioritise 4GiB region for restricted bo */
+			 
 			list_add(&ev->bind_link, &last);
 		else
 			list_add_tail(&ev->bind_link, &last);
@@ -737,37 +536,7 @@ static int eb_reserve(struct i915_execbuffer *eb)
 	unsigned int pass;
 	int err = 0;
 
-	/*
-	 * We have one more buffers that we couldn't bind, which could be due to
-	 * various reasons. To resolve this we have 4 passes, with every next
-	 * level turning the screws tighter:
-	 *
-	 * 0. Unbind all objects that do not match the GTT constraints for the
-	 * execbuffer (fenceable, mappable, alignment etc). Bind all new
-	 * objects.  This avoids unnecessary unbinding of later objects in order
-	 * to make room for the earlier objects *unless* we need to defragment.
-	 *
-	 * 1. Reorder the buffers, where objects with the most restrictive
-	 * placement requirements go first (ignoring fixed location buffers for
-	 * now).  For example, objects needing the mappable aperture (the first
-	 * 256M of GTT), should go first vs objects that can be placed just
-	 * about anywhere. Repeat the previous pass.
-	 *
-	 * 2. Consider buffers that are pinned at a fixed location. Also try to
-	 * evict the entire VM this time, leaving only objects that we were
-	 * unable to lock. Try again to bind the buffers. (still using the new
-	 * buffer order).
-	 *
-	 * 3. We likely have object lock contention for one or more stubborn
-	 * objects in the VM, for which we need to evict to make forward
-	 * progress (perhaps we are fighting the shrinker?). When evicting the
-	 * VM this time around, anything that we can't lock we now track using
-	 * the busy_bo, using the full lock (after dropping the vm->mutex to
-	 * prevent deadlocks), instead of trylock. We then continue to evict the
-	 * VM, this time with the stubborn object locked, which we can now
-	 * hopefully unbind (if still bound in the VM). Repeat until the VM is
-	 * evicted. Finally we should be able bind everything.
-	 */
+	 
 	for (pass = 0; pass <= 3; pass++) {
 		int pin_flags = PIN_USER | PIN_VALIDATE;
 
@@ -851,14 +620,14 @@ static int __eb_add_lut(struct i915_execbuffer *eb,
 	lut->handle = handle;
 	lut->ctx = ctx;
 
-	/* Check that the context hasn't been closed in the meantime */
+	 
 	err = -EINTR;
 	if (!mutex_lock_interruptible(&ctx->lut_mutex)) {
 		if (likely(!i915_gem_context_is_closed(ctx)))
 			err = radix_tree_insert(&ctx->handles_vma, handle, vma);
 		else
 			err = -ENOENT;
-		if (err == 0) { /* And nor has this handle */
+		if (err == 0) {  
 			struct drm_i915_gem_object *obj = vma->obj;
 
 			spin_lock(&obj->lut_lock);
@@ -905,13 +674,7 @@ static struct i915_vma *eb_lookup_vma(struct i915_execbuffer *eb, u32 handle)
 		if (unlikely(!obj))
 			return ERR_PTR(-ENOENT);
 
-		/*
-		 * If the user has opted-in for protected-object tracking, make
-		 * sure the object encryption can be used.
-		 * We only need to do this when the object is first used with
-		 * this context, because the context itself will be banned when
-		 * the protected objects become invalid.
-		 */
+		 
 		if (i915_gem_context_uses_protected_content(eb->gem_context) &&
 		    i915_gem_object_is_protected(obj)) {
 			err = intel_pxp_key_check(eb->i915->pxp, obj, true);
@@ -967,12 +730,7 @@ static int eb_lookup_vmas(struct i915_execbuffer *eb)
 			err = i915_gem_object_userptr_submit_init(vma->obj);
 			if (err) {
 				if (i + 1 < eb->buffer_count) {
-					/*
-					 * Execbuffer code expects last vma entry to be NULL,
-					 * since we already initialized this entry,
-					 * set the next value to NULL or we mess up
-					 * cleanup handling.
-					 */
+					 
 					eb->vma[i + 1].vma = NULL;
 				}
 
@@ -1044,7 +802,7 @@ static int eb_validate_vmas(struct i915_execbuffer *eb)
 			}
 		}
 
-		/* Reserve enough slots to accommodate composite fences */
+		 
 		err = dma_resv_reserve_fences(vma->obj->base.resv, eb->num_batches);
 		if (err)
 			return err;
@@ -1119,7 +877,7 @@ static void reloc_cache_init(struct reloc_cache *cache,
 {
 	cache->page = -1;
 	cache->vaddr = 0;
-	/* Must be a variable in the struct to allow GCC to unroll. */
+	 
 	cache->graphics_ver = GRAPHICS_VER(i915);
 	cache->has_llc = HAS_LLC(i915);
 	cache->use_64bit_reloc = HAS_64BIT_RELOC(i915);
@@ -1138,7 +896,7 @@ static inline unsigned int unmask_flags(unsigned long p)
 	return p & ~PAGE_MASK;
 }
 
-#define KMAP 0x4 /* after CLFLUSH_FLAGS */
+#define KMAP 0x4  
 
 static inline struct i915_ggtt *cache_to_ggtt(struct reloc_cache *cache)
 {
@@ -1290,18 +1048,12 @@ static void *reloc_iomap(struct i915_vma *batch,
 		if (err)
 			return ERR_PTR(err);
 
-		/*
-		 * i915_gem_object_ggtt_pin_ww may attempt to remove the batch
-		 * VMA from the object list because we no longer pin.
-		 *
-		 * Only attempt to pin the batch buffer to ggtt if the current batch
-		 * is not inside ggtt, or the batch buffer is not misplaced.
-		 */
+		 
 		if (!i915_is_ggtt(batch->vm) ||
 		    !i915_vma_misplaced(batch, 0, 0, PIN_MAPPABLE)) {
 			vma = i915_gem_object_ggtt_pin_ww(obj, &eb->ww, NULL, 0, 0,
 							  PIN_MAPPABLE |
-							  PIN_NONBLOCK /* NOWARN */ |
+							  PIN_NONBLOCK   |
 							  PIN_NOEVICT);
 		}
 
@@ -1317,7 +1069,7 @@ static void *reloc_iomap(struct i915_vma *batch,
 				 0, ggtt->mappable_end,
 				 DRM_MM_INSERT_LOW);
 			mutex_unlock(&ggtt->vm.mutex);
-			if (err) /* no inactive aperture space, use cpu reloc */
+			if (err)  
 				return NULL;
 		} else {
 			cache->node.start = i915_ggtt_offset(vma);
@@ -1373,13 +1125,7 @@ static void clflush_write32(u32 *addr, u32 value, unsigned int flushes)
 
 		*addr = value;
 
-		/*
-		 * Writes to the same cacheline are serialised by the CPU
-		 * (including clflush). On the write path, we only require
-		 * that it hits memory in an orderly fashion and place
-		 * mb barriers at the start and end of the relocation phase
-		 * to ensure ordering of clflush wrt to the system.
-		 */
+		 
 		if (flushes & CLFLUSH_AFTER)
 			drm_clflush_virt_range(addr, sizeof(*addr));
 	} else
@@ -1427,12 +1173,12 @@ eb_relocate_entry(struct i915_execbuffer *eb,
 	struct eb_vma *target;
 	int err;
 
-	/* we've already hold a reference to all valid objects */
+	 
 	target = eb_get_vma(eb, reloc->target_handle);
 	if (unlikely(!target))
 		return -ENOENT;
 
-	/* Validate that the target is in a valid r/w GPU domain */
+	 
 	if (unlikely(reloc->write_domain & (reloc->write_domain - 1))) {
 		drm_dbg(&i915->drm, "reloc with multiple write domains: "
 			  "target %d offset %d "
@@ -1458,12 +1204,7 @@ eb_relocate_entry(struct i915_execbuffer *eb,
 	if (reloc->write_domain) {
 		target->flags |= EXEC_OBJECT_WRITE;
 
-		/*
-		 * Sandybridge PPGTT errata: We need a global gtt mapping
-		 * for MI and pipe_control writes because the gpu doesn't
-		 * properly redirect them through the ppgtt for non_secure
-		 * batchbuffers.
-		 */
+		 
 		if (reloc->write_domain == I915_GEM_DOMAIN_INSTRUCTION &&
 		    GRAPHICS_VER(eb->i915) == 6 &&
 		    !i915_vma_is_bound(target->vma, I915_VMA_GLOBAL_BIND)) {
@@ -1481,15 +1222,12 @@ eb_relocate_entry(struct i915_execbuffer *eb,
 		}
 	}
 
-	/*
-	 * If the relocation already has the right value in it, no
-	 * more work needs to be done.
-	 */
+	 
 	if (!DBG_FORCE_RELOC &&
 	    gen8_canonical_addr(i915_vma_offset(target->vma)) == reloc->presumed_offset)
 		return 0;
 
-	/* Check that the relocation address is valid... */
+	 
 	if (unlikely(reloc->offset >
 		     ev->vma->size - (eb->reloc_cache.use_64bit_reloc ? 8 : 4))) {
 		drm_dbg(&i915->drm, "Relocation beyond object bounds: "
@@ -1507,17 +1245,10 @@ eb_relocate_entry(struct i915_execbuffer *eb,
 		return -EINVAL;
 	}
 
-	/*
-	 * If we write into the object, we need to force the synchronisation
-	 * barrier, either with an asynchronous clflush or if we executed the
-	 * patching using the GPU (though that should be serialised by the
-	 * timeline). To be completely sure, and since we are required to
-	 * do relocations we are already stalling, disable the user's opt
-	 * out of our synchronisation.
-	 */
+	 
 	ev->flags &= ~EXEC_OBJECT_ASYNC;
 
-	/* and update the user's relocation entry */
+	 
 	return relocate_entry(ev->vma, reloc, eb, target->vma);
 }
 
@@ -1533,11 +1264,7 @@ static int eb_relocate_vma(struct i915_execbuffer *eb, struct eb_vma *ev)
 	if (unlikely(remain > N_RELOC(ULONG_MAX)))
 		return -EINVAL;
 
-	/*
-	 * We must check that the entire relocation array is safe
-	 * to read. However, if the array is not writable the user loses
-	 * the updated relocation values.
-	 */
+	 
 	if (unlikely(!access_ok(urelocs, remain * sizeof(*urelocs))))
 		return -EFAULT;
 
@@ -1547,14 +1274,7 @@ static int eb_relocate_vma(struct i915_execbuffer *eb, struct eb_vma *ev)
 			min_t(unsigned long, remain, ARRAY_SIZE(stack));
 		unsigned int copied;
 
-		/*
-		 * This is the fast path and we cannot handle a pagefault
-		 * whilst holding the struct mutex lest the user pass in the
-		 * relocations contained within a mmaped bo. For in such a case
-		 * we, the page fault handler would call i915_gem_fault() and
-		 * we would try to acquire the struct mutex again. Obviously
-		 * this is bad and so lockdep complains vehemently.
-		 */
+		 
 		pagefault_disable();
 		copied = __copy_from_user_inatomic(r, urelocs, count * sizeof(r[0]));
 		pagefault_enable();
@@ -1572,27 +1292,7 @@ static int eb_relocate_vma(struct i915_execbuffer *eb, struct eb_vma *ev)
 				remain = (int)offset;
 				goto out;
 			} else {
-				/*
-				 * Note that reporting an error now
-				 * leaves everything in an inconsistent
-				 * state as we have *already* changed
-				 * the relocation value inside the
-				 * object. As we have not changed the
-				 * reloc.presumed_offset or will not
-				 * change the execobject.offset, on the
-				 * call we may not rewrite the value
-				 * inside the object, leaving it
-				 * dangling and causing a GPU hang. Unless
-				 * userspace dynamically rebuilds the
-				 * relocations on each execbuf rather than
-				 * presume a static tree.
-				 *
-				 * We did previously check if the relocations
-				 * were writable (access_ok), an error now
-				 * would be a strange race with mprotect,
-				 * having already demonstrated that we
-				 * can read from this userspace address.
-				 */
+				 
 				offset = gen8_canonical_addr(offset & ~UPDATE);
 				__put_user(offset,
 					   &urelocs[r - stack].presumed_offset);
@@ -1684,7 +1384,7 @@ static int eb_copy_relocations(const struct i915_execbuffer *eb)
 			goto err;
 		}
 
-		/* copy_from_user is limited to < 4GiB */
+		 
 		copied = 0;
 		do {
 			unsigned int len =
@@ -1698,16 +1398,7 @@ static int eb_copy_relocations(const struct i915_execbuffer *eb)
 			copied += len;
 		} while (copied < size);
 
-		/*
-		 * As we do not update the known relocation offsets after
-		 * relocating (due to the complexities in lock handling),
-		 * we need to mark them as invalid now so that we force the
-		 * relocation processing next time. Just in case the target
-		 * object is evicted and then rebound into its old
-		 * presumed_offset before the next execbuffer - if that
-		 * happened we would make the mistake of assuming that the
-		 * relocations were valid.
-		 */
+		 
 		if (!user_access_begin(urelocs, size))
 			goto end;
 
@@ -1789,23 +1480,11 @@ repeat:
 		goto out;
 	}
 
-	/* We may process another execbuffer during the unlock... */
+	 
 	eb_release_vmas(eb, false);
 	i915_gem_ww_ctx_fini(&eb->ww);
 
-	/*
-	 * We take 3 passes through the slowpatch.
-	 *
-	 * 1 - we try to just prefault all the user relocation entries and
-	 * then attempt to reuse the atomic pagefault disabled fast path again.
-	 *
-	 * 2 - we copy the user entries to a local buffer here outside of the
-	 * local and allow ourselves to wait upon any rendering before
-	 * relocations
-	 *
-	 * 3 - we already have a local copy of the relocation entries, but
-	 * were interrupted (EAGAIN) whilst waiting for the objects, try again.
-	 */
+	 
 	if (!err) {
 		err = eb_prefault_relocations(eb);
 	} else if (!have_copy) {
@@ -1823,7 +1502,7 @@ repeat:
 	if (err)
 		goto out;
 
-	/* reacquire the objects */
+	 
 repeat_validate:
 	err = eb_pin_engine(eb, false);
 	if (err)
@@ -1856,17 +1535,12 @@ repeat_validate:
 	if (err)
 		goto err;
 
-	/* as last step, parse the command buffer */
+	 
 	err = eb_parse(eb);
 	if (err)
 		goto err;
 
-	/*
-	 * Leave the user relocations as are, this is the painfully slow path,
-	 * and we want to avoid the complication of dropping the lock whilst
-	 * having buffers reserved in the aperture and so causing spurious
-	 * ENOSPC for random operations.
-	 */
+	 
 
 err:
 	if (err == -EDEADLK) {
@@ -1914,7 +1588,7 @@ retry:
 		goto err;
 	}
 
-	/* only throttle once, even if we didn't need to throttle */
+	 
 	throttle = false;
 
 	err = eb_validate_vmas(eb);
@@ -1923,7 +1597,7 @@ retry:
 	else if (err)
 		goto err;
 
-	/* The objects are in their final locations, apply the relocations. */
+	 
 	if (eb->args->flags & __EXEC_HAS_RELOC) {
 		struct eb_vma *ev;
 
@@ -1955,27 +1629,13 @@ err:
 slow:
 	err = eb_relocate_parse_slow(eb);
 	if (err)
-		/*
-		 * If the user expects the execobject.offset and
-		 * reloc.presumed_offset to be an exact match,
-		 * as for using NO_RELOC, then we cannot update
-		 * the execobject.offset until we have completed
-		 * relocation.
-		 */
+		 
 		eb->args->flags &= ~__EXEC_HAS_RELOC;
 
 	return err;
 }
 
-/*
- * Using two helper loops for the order of which requests / batches are created
- * and added the to backend. Requests are created in order from the parent to
- * the last child. Requests are added in the reverse order, from the last child
- * to parent. This is done for locking reasons as the timeline lock is acquired
- * during request creation and released when the request is added to the
- * backend. To make lockdep happy (see intel_context_timeline_lock) this must be
- * the ordering.
- */
+ 
 #define for_each_batch_create_order(_eb, _i) \
 	for ((_i) = 0; (_i) < (_eb)->num_batches; ++(_i))
 #define for_each_batch_add_order(_eb, _i) \
@@ -1998,7 +1658,7 @@ eb_find_first_request_added(struct i915_execbuffer *eb)
 
 #if IS_ENABLED(CONFIG_DRM_I915_CAPTURE_ERROR)
 
-/* Stage with GFP_KERNEL allocations before we enter the signaling critical path */
+ 
 static int eb_capture_stage(struct i915_execbuffer *eb)
 {
 	const unsigned int count = eb->buffer_count;
@@ -2032,7 +1692,7 @@ static int eb_capture_stage(struct i915_execbuffer *eb)
 	return 0;
 }
 
-/* Commit once we're in the critical path */
+ 
 static void eb_capture_commit(struct i915_execbuffer *eb)
 {
 	unsigned int j;
@@ -2048,10 +1708,7 @@ static void eb_capture_commit(struct i915_execbuffer *eb)
 	}
 }
 
-/*
- * Release anything that didn't get committed due to errors.
- * The capture_list will otherwise be freed at request retire.
- */
+ 
 static void eb_capture_release(struct i915_execbuffer *eb)
 {
 	unsigned int j;
@@ -2104,35 +1761,13 @@ static int eb_move_to_gpu(struct i915_execbuffer *eb)
 
 		assert_vma_held(vma);
 
-		/*
-		 * If the GPU is not _reading_ through the CPU cache, we need
-		 * to make sure that any writes (both previous GPU writes from
-		 * before a change in snooping levels and normal CPU writes)
-		 * caught in that cache are flushed to main memory.
-		 *
-		 * We want to say
-		 *   obj->cache_dirty &&
-		 *   !(obj->cache_coherent & I915_BO_CACHE_COHERENT_FOR_READ)
-		 * but gcc's optimiser doesn't handle that as well and emits
-		 * two jumps instead of one. Maybe one day...
-		 *
-		 * FIXME: There is also sync flushing in set_pages(), which
-		 * serves a different purpose(some of the time at least).
-		 *
-		 * We should consider:
-		 *
-		 *   1. Rip out the async flush code.
-		 *
-		 *   2. Or make the sync flushing use the async clflush path
-		 *   using mandatory fences underneath. Currently the below
-		 *   async flush happens after we bind the object.
-		 */
+		 
 		if (unlikely(obj->cache_dirty & ~obj->cache_coherent)) {
 			if (i915_gem_clflush_object(obj, 0))
 				flags &= ~EXEC_OBJECT_ASYNC;
 		}
 
-		/* We only need to await on the first request */
+		 
 		if (err == 0 && !(flags & EXEC_OBJECT_ASYNC)) {
 			err = i915_request_await_object
 				(eb_find_first_request_added(eb), obj,
@@ -2159,10 +1794,7 @@ static int eb_move_to_gpu(struct i915_execbuffer *eb)
 	if (!err && (eb->args->flags & __EXEC_USERPTR_USED)) {
 		read_lock(&eb->i915->mm.notifier_lock);
 
-		/*
-		 * count is always at least 1, otherwise __EXEC_USERPTR_USED
-		 * could not have been set
-		 */
+		 
 		for (i = 0; i < count; i++) {
 			struct eb_vma *ev = &eb->vma[i];
 			struct drm_i915_gem_object *obj = ev->vma->obj;
@@ -2182,7 +1814,7 @@ static int eb_move_to_gpu(struct i915_execbuffer *eb)
 	if (unlikely(err))
 		goto err_skip;
 
-	/* Unconditionally flush any chipset caches (for streaming writes). */
+	 
 	intel_gt_chipset_flush(eb->gt);
 	eb_capture_commit(eb);
 
@@ -2204,7 +1836,7 @@ static int i915_gem_check_execbuffer(struct drm_i915_private *i915,
 	if (exec->flags & __I915_EXEC_ILLEGAL_FLAGS)
 		return -EINVAL;
 
-	/* Kernel clipping was a DRI1 misfeature */
+	 
 	if (!(exec->flags & (I915_EXEC_FENCE_ARRAY |
 			     I915_EXEC_USE_EXTENSIONS))) {
 		if (exec->num_cliprects || exec->cliprects_ptr)
@@ -2271,10 +1903,7 @@ shadow_batch_pin(struct i915_execbuffer *eb,
 
 static struct i915_vma *eb_dispatch_secure(struct i915_execbuffer *eb, struct i915_vma *vma)
 {
-	/*
-	 * snb/ivb/vlv conflate the "batch in ppgtt" bit with the "non-secure
-	 * batch" bit. Hence we need to pin secure batches into the global gtt.
-	 * hsw should have this fixed, but bdw mucks it up again. */
+	 
 	if (eb->batch_flags & I915_DISPATCH_SECURE)
 		return i915_gem_object_ggtt_pin_ww(vma->obj, &eb->ww, NULL, 0, 0, PIN_VALIDATE);
 
@@ -2302,10 +1931,7 @@ static int eb_parse(struct i915_execbuffer *eb)
 
 	len = eb->batch_len[0];
 	if (!CMDPARSER_USES_GGTT(eb->i915)) {
-		/*
-		 * ppGTT backed shadow buffers must be mapped RO, to prevent
-		 * post-scan tampering
-		 */
+		 
 		if (!eb->context->vm->has_read_only) {
 			drm_dbg(&i915->drm,
 				"Cannot prevent post-scan tampering without RO capable vm\n");
@@ -2314,7 +1940,7 @@ static int eb_parse(struct i915_execbuffer *eb)
 	} else {
 		len += I915_CMD_PARSER_TRAMPOLINE_SIZE;
 	}
-	if (unlikely(len < eb->batch_len[0])) /* last paranoid check of overflow */
+	if (unlikely(len < eb->batch_len[0]))  
 		return -EINVAL;
 
 	if (!pool) {
@@ -2403,12 +2029,7 @@ static int eb_request_submit(struct i915_execbuffer *eb,
 			return err;
 	}
 
-	/*
-	 * After we completed waiting for other engines (using HW semaphores)
-	 * then we can signal that this request/batch is ready to run. This
-	 * allows us to determine if the batch is still waiting on the GPU
-	 * or actually running by checking the breadcrumb.
-	 */
+	 
 	if (rq->context->engine->emit_init_breadcrumb) {
 		err = rq->context->engine->emit_init_breadcrumb(rq);
 		if (err)
@@ -2457,17 +2078,14 @@ static int eb_submit(struct i915_execbuffer *eb)
 	return err;
 }
 
-/*
- * Find one BSD ring to dispatch the corresponding BSD command.
- * The engine index is returned.
- */
+ 
 static unsigned int
 gen8_dispatch_bsd_engine(struct drm_i915_private *dev_priv,
 			 struct drm_file *file)
 {
 	struct drm_i915_file_private *file_priv = file->driver_priv;
 
-	/* Check whether the file_priv has already selected one ring. */
+	 
 	if ((int)file_priv->bsd_engine < 0)
 		file_priv->bsd_engine =
 			get_random_u32_below(dev_priv->engine_uabi_class_count[I915_ENGINE_CLASS_VIDEO]);
@@ -2489,20 +2107,11 @@ static struct i915_request *eb_throttle(struct i915_execbuffer *eb, struct intel
 	struct intel_timeline *tl = ce->timeline;
 	struct i915_request *rq;
 
-	/*
-	 * Completely unscientific finger-in-the-air estimates for suitable
-	 * maximum user request size (to avoid blocking) and then backoff.
-	 */
+	 
 	if (intel_ring_update_space(ring) >= PAGE_SIZE)
 		return NULL;
 
-	/*
-	 * Find a request that after waiting upon, there will be at least half
-	 * the ring available. The hysteresis allows us to compete for the
-	 * shared ring and should mean that we sleep less often prior to
-	 * claiming our resources, but not so long that the ring completely
-	 * drains before we can submit our next request.
-	 */
+	 
 	list_for_each_entry(rq, &tl->requests, link) {
 		if (rq->ring != ring)
 			continue;
@@ -2512,7 +2121,7 @@ static struct i915_request *eb_throttle(struct i915_execbuffer *eb, struct intel
 			break;
 	}
 	if (&rq->link == &tl->requests)
-		return NULL; /* weird, we will check again later for real */
+		return NULL;  
 
 	return i915_request_get(rq);
 }
@@ -2523,14 +2132,7 @@ static int eb_pin_timeline(struct i915_execbuffer *eb, struct intel_context *ce,
 	struct intel_timeline *tl;
 	struct i915_request *rq = NULL;
 
-	/*
-	 * Take a local wakeref for preparing to dispatch the execbuf as
-	 * we expect to access the hardware fairly frequently in the
-	 * process, and require the engine to be kept awake between accesses.
-	 * Upon dispatch, we acquire another prolonged wakeref that we hold
-	 * until the timeline is idle, which in turn releases the wakeref
-	 * taken on the engine, and the parent device.
-	 */
+	 
 	tl = intel_context_timeline_lock(ce);
 	if (IS_ERR(tl))
 		return PTR_ERR(tl);
@@ -2548,11 +2150,7 @@ static int eb_pin_timeline(struct i915_execbuffer *eb, struct intel_context *ce,
 				      timeout) < 0) {
 			i915_request_put(rq);
 
-			/*
-			 * Error path, cannot use intel_context_timeline_lock as
-			 * that is user interruptable and this clean up step
-			 * must be done.
-			 */
+			 
 			mutex_lock(&ce->timeline->mutex);
 			intel_context_exit(ce);
 			mutex_unlock(&ce->timeline->mutex);
@@ -2579,17 +2177,13 @@ static int eb_pin_engine(struct i915_execbuffer *eb, bool throttle)
 	if (unlikely(intel_context_is_banned(ce)))
 		return -EIO;
 
-	/*
-	 * Pinning the contexts may generate requests in order to acquire
-	 * GGTT space, so do this first before we reserve a seqno for
-	 * ourselves.
-	 */
+	 
 	err = intel_context_pin_ww(ce, &eb->ww);
 	if (err)
 		return err;
 	for_each_child(ce, child) {
 		err = intel_context_pin_ww(child, &eb->ww);
-		GEM_BUG_ON(err);	/* perma-pinned should incr a counter */
+		GEM_BUG_ON(err);	 
 	}
 
 	for_each_child(ce, child) {
@@ -2720,10 +2314,7 @@ eb_select_engine(struct i915_execbuffer *eb)
 	for_each_child(ce, child)
 		intel_context_get(child);
 	intel_gt_pm_get(gt);
-	/*
-	 * Keep GT0 active on MTL so that i915_vma_parked() doesn't
-	 * free VMAs while execbuf ioctl is validating VMAs.
-	 */
+	 
 	if (gt->info.id)
 		intel_gt_pm_get(to_gt(gt->i915));
 
@@ -2740,10 +2331,7 @@ eb_select_engine(struct i915_execbuffer *eb)
 		}
 	}
 
-	/*
-	 * ABI: Before userspace accesses the GPU (e.g. execbuffer), report
-	 * EIO if the GPU is already wedged.
-	 */
+	 
 	err = intel_gt_terminally_wedged(ce->engine->gt);
 	if (err)
 		goto err;
@@ -2756,11 +2344,7 @@ eb_select_engine(struct i915_execbuffer *eb)
 	eb->context = ce;
 	eb->gt = ce->engine->gt;
 
-	/*
-	 * Make sure engine pool stays alive even if we call intel_context_put
-	 * during ww handling. The pool is destroyed when last pm reference
-	 * is dropped, which breaks our -EDEADLK handling.
-	 */
+	 
 	return err;
 
 err:
@@ -2780,10 +2364,7 @@ eb_put_engine(struct i915_execbuffer *eb)
 	struct intel_context *child;
 
 	i915_vm_put(eb->context->vm);
-	/*
-	 * This works in conjunction with eb_select_engine() to prevent
-	 * i915_vma_parked() from interfering while execbuf validates vmas.
-	 */
+	 
 	if (eb->gt->info.id)
 		intel_gt_pm_put(to_gt(eb->gt->i915));
 	intel_gt_pm_put(eb->gt);
@@ -2817,7 +2398,7 @@ add_timeline_fence_array(struct i915_execbuffer *eb,
 	if (!nfences)
 		return 0;
 
-	/* Check multiplication overflow for access_ok() and kvmalloc_array() */
+	 
 	BUILD_BUG_ON(sizeof(size_t) > sizeof(unsigned long));
 	if (nfences > min_t(unsigned long,
 			    ULONG_MAX / sizeof(*user_fences),
@@ -2890,25 +2471,15 @@ add_timeline_fence_array(struct i915_execbuffer *eb,
 			return err;
 		}
 
-		/*
-		 * A point might have been signaled already and
-		 * garbage collected from the timeline. In this case
-		 * just ignore the point and carry on.
-		 */
+		 
 		if (!fence && !(user_fence.flags & I915_EXEC_FENCE_SIGNAL)) {
 			drm_syncobj_put(syncobj);
 			continue;
 		}
 
-		/*
-		 * For timeline syncobjs we need to preallocate chains for
-		 * later signaling.
-		 */
+		 
 		if (point != 0 && user_fence.flags & I915_EXEC_FENCE_SIGNAL) {
-			/*
-			 * Waiting and signaling the same point (when point !=
-			 * 0) would break the timeline.
-			 */
+			 
 			if (user_fence.flags & I915_EXEC_FENCE_WAIT) {
 				drm_dbg(&eb->i915->drm,
 					"Trying to wait & signal the same timeline point.\n");
@@ -2950,7 +2521,7 @@ static int add_fence_array(struct i915_execbuffer *eb)
 	if (!num_fences)
 		return 0;
 
-	/* Check multiplication overflow for access_ok() and kvmalloc_array() */
+	 
 	BUILD_BUG_ON(sizeof(size_t) > sizeof(unsigned long));
 	if (num_fences > min_t(unsigned long,
 			       ULONG_MAX / sizeof(*user),
@@ -3054,10 +2625,7 @@ static void signal_fence_array(const struct i915_execbuffer *eb,
 					      eb->fences[n].chain_fence,
 					      fence,
 					      eb->fences[n].value);
-			/*
-			 * The chain's ownership is transferred to the
-			 * timeline.
-			 */
+			 
 			eb->fences[n].chain_fence = NULL;
 		} else {
 			drm_syncobj_replace_fence(syncobj, fence);
@@ -3100,14 +2668,14 @@ static int eb_request_add(struct i915_execbuffer *eb, struct i915_request *rq,
 
 	prev = __i915_request_commit(rq);
 
-	/* Check that the context wasn't destroyed before submission */
+	 
 	if (likely(!intel_context_is_closed(eb->context))) {
 		attr = eb->gem_context->sched;
 	} else {
-		/* Serialise with context_close via the add_to_timeline */
+		 
 		i915_request_set_error_once(rq, -ENOENT);
 		__i915_request_skip(rq);
-		err = -ENOENT; /* override any transient errors */
+		err = -ENOENT;  
 	}
 
 	if (intel_context_is_parallel(eb->context)) {
@@ -3123,7 +2691,7 @@ static int eb_request_add(struct i915_execbuffer *eb, struct i915_request *rq,
 
 	__i915_request_queue(rq, &attr);
 
-	/* Try to clean up the client's timeline after submitting the request */
+	 
 	if (prev)
 		retire_requests(tl, prev);
 
@@ -3136,10 +2704,7 @@ static int eb_requests_add(struct i915_execbuffer *eb, int err)
 {
 	int i;
 
-	/*
-	 * We iterate in reverse order of creation to release timeline mutexes in
-	 * same order.
-	 */
+	 
 	for_each_batch_add_order(eb, i) {
 		struct i915_request *rq = eb->requests[i];
 
@@ -3162,9 +2727,7 @@ parse_execbuf2_extensions(struct drm_i915_gem_execbuffer2 *args,
 	if (!(args->flags & I915_EXEC_USE_EXTENSIONS))
 		return 0;
 
-	/* The execbuf2 extension mechanism reuses cliprects_ptr. So we cannot
-	 * have another flag also using it at the same time.
-	 */
+	 
 	if (eb->args->flags & I915_EXEC_FENCE_ARRAY)
 		return -EINVAL;
 
@@ -3231,13 +2794,13 @@ eb_composite_fence_create(struct i915_execbuffer *eb, int out_fence_fd)
 		return ERR_PTR(-ENOMEM);
 	}
 
-	/* Move ownership to the dma_fence_array created above */
+	 
 	for_each_batch_create_order(eb, i)
 		dma_fence_get(fences[i]);
 
 	if (out_fence_fd != -1) {
 		out_fence = sync_file_create(&fence_array->base);
-		/* sync_file now owns fence_arry, drop creation ref */
+		 
 		dma_fence_put(&fence_array->base);
 		if (!out_fence)
 			return ERR_PTR(-ENOMEM);
@@ -3318,7 +2881,7 @@ eb_requests_create(struct i915_execbuffer *eb, struct dma_fence *in_fence,
 	unsigned int i;
 
 	for_each_batch_create_order(eb, i) {
-		/* Allocate a request for this batch buffer nice and early. */
+		 
 		eb->requests[i] = i915_request_create(eb_find_context(eb, i));
 		if (IS_ERR(eb->requests[i])) {
 			out_fence = ERR_CAST(eb->requests[i]);
@@ -3326,11 +2889,7 @@ eb_requests_create(struct i915_execbuffer *eb, struct dma_fence *in_fence,
 			return out_fence;
 		}
 
-		/*
-		 * Only the first request added (committed to backend) has to
-		 * take the in fences into account as all subsequent requests
-		 * will have fences inserted inbetween them.
-		 */
+		 
 		if (i + 1 == eb->num_batches) {
 			out_fence = eb_fences_add(eb, eb->requests[i],
 						  in_fence, out_fence_fd);
@@ -3338,11 +2897,7 @@ eb_requests_create(struct i915_execbuffer *eb, struct dma_fence *in_fence,
 				return out_fence;
 		}
 
-		/*
-		 * Not really on stack, but we don't want to call
-		 * kfree on the batch_snapshot when we put it, so use the
-		 * _onstack interface.
-		 */
+		 
 		if (eb->batches[i]->vma)
 			eb->requests[i]->batch_res =
 				i915_vma_resource_get(eb->batches[i]->vma->resource);
@@ -3405,7 +2960,7 @@ i915_gem_do_execbuffer(struct drm_device *dev,
 		if (GRAPHICS_VER(i915) >= 11)
 			return -ENODEV;
 
-		/* Return -EPERM to trigger fallback code on old binaries. */
+		 
 		if (!HAS_SECURE_BATCHES(i915))
 			return -EPERM;
 
@@ -3470,13 +3025,7 @@ i915_gem_do_execbuffer(struct drm_device *dev,
 
 	err = eb_relocate_parse(&eb);
 	if (err) {
-		/*
-		 * If the user expects the execobject.offset and
-		 * reloc.presumed_offset to be an exact match,
-		 * as for using NO_RELOC, then we cannot update
-		 * the execobject.offset until we have completed
-		 * relocation.
-		 */
+		 
 		args->flags &= ~__EXEC_HAS_RELOC;
 		goto err_vma;
 	}
@@ -3517,7 +3066,7 @@ err_request:
 	if (out_fence) {
 		if (err == 0) {
 			fd_install(out_fence_fd, out_fence->file);
-			args->rsvd2 &= GENMASK_ULL(31, 0); /* keep in-fence */
+			args->rsvd2 &= GENMASK_ULL(31, 0);  
 			args->rsvd2 |= (u64)out_fence_fd << 32;
 			out_fence_fd = -1;
 		} else {
@@ -3562,11 +3111,7 @@ static bool check_buffer_count(size_t count)
 {
 	const size_t sz = eb_element_size();
 
-	/*
-	 * When using LUT_HANDLE, we impose a limit of INT_MAX for the lookup
-	 * array size (see eb_create()). Otherwise, we can accept an array as
-	 * large as can be addressed (though use large arrays at your peril)!
-	 */
+	 
 
 	return !(count < 1 || count > INT_MAX || count > SIZE_MAX / sz - 1);
 }
@@ -3590,7 +3135,7 @@ i915_gem_execbuffer2_ioctl(struct drm_device *dev, void *data,
 	if (err)
 		return err;
 
-	/* Allocate extra slots for use by the command parser */
+	 
 	exec2_list = kvmalloc_array(count + 2, eb_element_size(),
 				    __GFP_NOWARN | GFP_KERNEL);
 	if (exec2_list == NULL) {
@@ -3608,25 +3153,14 @@ i915_gem_execbuffer2_ioctl(struct drm_device *dev, void *data,
 
 	err = i915_gem_do_execbuffer(dev, file, args, exec2_list);
 
-	/*
-	 * Now that we have begun execution of the batchbuffer, we ignore
-	 * any new error after this point. Also given that we have already
-	 * updated the associated relocations, we try to write out the current
-	 * object locations irrespective of any error.
-	 */
+	 
 	if (args->flags & __EXEC_HAS_RELOC) {
 		struct drm_i915_gem_exec_object2 __user *user_exec_list =
 			u64_to_user_ptr(args->buffers_ptr);
 		unsigned int i;
 
-		/* Copy the new buffer offsets back to the user's exec list. */
-		/*
-		 * Note: count * sizeof(*user_exec_list) does not overflow,
-		 * because we checked 'count' in check_buffer_count().
-		 *
-		 * And this range already got effectively checked earlier
-		 * when we did the "copy_from_user()" above.
-		 */
+		 
+		 
 		if (!user_write_access_begin(user_exec_list,
 					     count * sizeof(*user_exec_list)))
 			goto end;

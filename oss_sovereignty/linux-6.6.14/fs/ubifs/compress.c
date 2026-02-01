@@ -1,24 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of UBIFS.
- *
- * Copyright (C) 2006-2008 Nokia Corporation.
- * Copyright (C) 2006, 2007 University of Szeged, Hungary
- *
- * Authors: Adrian Hunter
- *          Artem Bityutskiy (Битюцкий Артём)
- *          Zoltan Sogor
- */
 
-/*
- * This file provides a single place to access to compression and
- * decompression.
- */
+ 
+
+ 
 
 #include <linux/crypto.h>
 #include "ubifs.h"
 
-/* Fake description object for the "none" compressor */
+ 
 static struct ubifs_compressor none_compr = {
 	.compr_type = UBIFS_COMPR_NONE,
 	.name = "none",
@@ -77,27 +65,10 @@ static struct ubifs_compressor zstd_compr = {
 };
 #endif
 
-/* All UBIFS compressors */
+ 
 struct ubifs_compressor *ubifs_compressors[UBIFS_COMPR_TYPES_CNT];
 
-/**
- * ubifs_compress - compress data.
- * @in_buf: data to compress
- * @in_len: length of the data to compress
- * @out_buf: output buffer where compressed data should be stored
- * @out_len: output buffer length is returned here
- * @compr_type: type of compression to use on enter, actually used compression
- *              type on exit
- *
- * This function compresses input buffer @in_buf of length @in_len and stores
- * the result in the output buffer @out_buf and the resulting length in
- * @out_len. If the input buffer does not compress, it is just copied to the
- * @out_buf. The same happens if @compr_type is %UBIFS_COMPR_NONE or if
- * compression error occurred.
- *
- * Note, if the input buffer was not compressed, it is copied to the output
- * buffer and %UBIFS_COMPR_NONE is returned in @compr_type.
- */
+ 
 void ubifs_compress(const struct ubifs_info *c, const void *in_buf,
 		    int in_len, void *out_buf, int *out_len, int *compr_type)
 {
@@ -107,7 +78,7 @@ void ubifs_compress(const struct ubifs_info *c, const void *in_buf,
 	if (*compr_type == UBIFS_COMPR_NONE)
 		goto no_compr;
 
-	/* If the input data is small, do not even try to compress it */
+	 
 	if (in_len < UBIFS_MIN_COMPR_LEN)
 		goto no_compr;
 
@@ -123,10 +94,7 @@ void ubifs_compress(const struct ubifs_info *c, const void *in_buf,
 		goto no_compr;
 	}
 
-	/*
-	 * If the data compressed only slightly, it is better to leave it
-	 * uncompressed to improve read speed.
-	 */
+	 
 	if (in_len - *out_len < UBIFS_MIN_COMPRESS_DIFF)
 		goto no_compr;
 
@@ -138,18 +106,7 @@ no_compr:
 	*compr_type = UBIFS_COMPR_NONE;
 }
 
-/**
- * ubifs_decompress - decompress data.
- * @in_buf: data to decompress
- * @in_len: length of the data to decompress
- * @out_buf: output buffer where decompressed data should
- * @out_len: output length is returned here
- * @compr_type: type of compression
- *
- * This function decompresses data from buffer @in_buf into buffer @out_buf.
- * The length of the uncompressed data is returned in @out_len. This functions
- * returns %0 on success or a negative error code on failure.
- */
+ 
 int ubifs_decompress(const struct ubifs_info *c, const void *in_buf,
 		     int in_len, void *out_buf, int *out_len, int compr_type)
 {
@@ -187,13 +144,7 @@ int ubifs_decompress(const struct ubifs_info *c, const void *in_buf,
 	return err;
 }
 
-/**
- * compr_init - initialize a compressor.
- * @compr: compressor description object
- *
- * This function initializes the requested compressor and returns zero in case
- * of success or a negative error code in case of failure.
- */
+ 
 static int __init compr_init(struct ubifs_compressor *compr)
 {
 	if (compr->capi_name) {
@@ -209,22 +160,14 @@ static int __init compr_init(struct ubifs_compressor *compr)
 	return 0;
 }
 
-/**
- * compr_exit - de-initialize a compressor.
- * @compr: compressor description object
- */
+ 
 static void compr_exit(struct ubifs_compressor *compr)
 {
 	if (compr->capi_name)
 		crypto_free_comp(compr->cc);
 }
 
-/**
- * ubifs_compressors_init - initialize UBIFS compressors.
- *
- * This function initializes the compressor which were compiled in. Returns
- * zero in case of success and a negative error code in case of failure.
- */
+ 
 int __init ubifs_compressors_init(void)
 {
 	int err;
@@ -251,9 +194,7 @@ out_lzo:
 	return err;
 }
 
-/**
- * ubifs_compressors_exit - de-initialize UBIFS compressors.
- */
+ 
 void ubifs_compressors_exit(void)
 {
 	compr_exit(&lzo_compr);

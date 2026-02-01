@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43 wireless driver
-  Common PHY routines
-
-  Copyright (c) 2005 Martin Langer <martin-langer@gmx.de>,
-  Copyright (c) 2005-2007 Stefano Brivio <stefano.brivio@polimi.it>
-  Copyright (c) 2005-2008 Michael Buesch <m@bues.ch>
-  Copyright (c) 2005, 2006 Danny van Dyk <kugelfang@gentoo.org>
-  Copyright (c) 2005, 2006 Andreas Jaggi <andreas.jaggi@waterwave.ch>
-
-
-*/
+ 
 
 #include "phy_common.h"
 #include "phy_g.h"
@@ -86,9 +74,7 @@ int b43_phy_init(struct b43_wldev *dev)
 	const struct b43_phy_operations *ops = phy->ops;
 	int err;
 
-	/* During PHY init we need to use some channel. On the first init this
-	 * function is called *before* b43_op_config, so our pointer is NULL.
-	 */
+	 
 	if (!phy->chandef) {
 		phy->chandef = &dev->wl->hw->conf.chandef;
 		phy->channel = phy->chandef->chan->hw_value;
@@ -153,8 +139,7 @@ void b43_radio_lock(struct b43_wldev *dev)
 	macctl = b43_read32(dev, B43_MMIO_MACCTL);
 	macctl |= B43_MACCTL_RADIOLOCK;
 	b43_write32(dev, B43_MMIO_MACCTL, macctl);
-	/* Commit the write and wait for the firmware
-	 * to finish any radio register access. */
+	 
 	b43_read32(dev, B43_MMIO_MACCTL);
 	udelay(10);
 }
@@ -168,9 +153,9 @@ void b43_radio_unlock(struct b43_wldev *dev)
 	dev->phy.radio_locked = false;
 #endif
 
-	/* Commit any write */
+	 
 	b43_read16(dev, B43_MMIO_PHY_VER);
-	/* unlock */
+	 
 	macctl = b43_read32(dev, B43_MMIO_MACCTL);
 	macctl &= ~B43_MACCTL_RADIOLOCK;
 	b43_write32(dev, B43_MMIO_MACCTL, macctl);
@@ -375,7 +360,7 @@ void b43_phy_take_out_of_reset(struct b43_wldev *dev)
 	switch (dev->dev->bus_type) {
 #ifdef CONFIG_B43_BCMA
 	case B43_BUS_BCMA:
-		/* Unset reset bit (with forcing clock) */
+		 
 		tmp = bcma_aread32(dev->dev->bdev, BCMA_IOCTL);
 		tmp &= ~B43_BCMA_IOCTL_PHY_RESET;
 		tmp &= ~B43_BCMA_IOCTL_PHY_CLKEN;
@@ -383,7 +368,7 @@ void b43_phy_take_out_of_reset(struct b43_wldev *dev)
 		bcma_awrite32(dev->dev->bdev, BCMA_IOCTL, tmp);
 		udelay(1);
 
-		/* Do not force clock anymore */
+		 
 		tmp = bcma_aread32(dev->dev->bdev, BCMA_IOCTL);
 		tmp &= ~BCMA_IOCTL_FGC;
 		tmp |= B43_BCMA_IOCTL_PHY_CLKEN;
@@ -393,20 +378,20 @@ void b43_phy_take_out_of_reset(struct b43_wldev *dev)
 #endif
 #ifdef CONFIG_B43_SSB
 	case B43_BUS_SSB:
-		/* Unset reset bit (with forcing clock) */
+		 
 		tmp = ssb_read32(dev->dev->sdev, SSB_TMSLOW);
 		tmp &= ~B43_TMSLOW_PHYRESET;
 		tmp &= ~B43_TMSLOW_PHYCLKEN;
 		tmp |= SSB_TMSLOW_FGC;
 		ssb_write32(dev->dev->sdev, SSB_TMSLOW, tmp);
-		ssb_read32(dev->dev->sdev, SSB_TMSLOW); /* flush */
+		ssb_read32(dev->dev->sdev, SSB_TMSLOW);  
 		usleep_range(1000, 2000);
 
 		tmp = ssb_read32(dev->dev->sdev, SSB_TMSLOW);
 		tmp &= ~SSB_TMSLOW_FGC;
 		tmp |= B43_TMSLOW_PHYCLKEN;
 		ssb_write32(dev->dev->sdev, SSB_TMSLOW, tmp);
-		ssb_read32(dev->dev->sdev, SSB_TMSLOW); /* flush */
+		ssb_read32(dev->dev->sdev, SSB_TMSLOW);  
 		usleep_range(1000, 2000);
 		break;
 #endif
@@ -419,24 +404,22 @@ int b43_switch_channel(struct b43_wldev *dev, unsigned int new_channel)
 	u16 channelcookie, savedcookie;
 	int err;
 
-	/* First we set the channel radio code to prevent the
-	 * firmware from sending ghost packets.
-	 */
+	 
 	channelcookie = new_channel;
 	if (b43_current_band(dev->wl) == NL80211_BAND_5GHZ)
 		channelcookie |= B43_SHM_SH_CHAN_5GHZ;
-	/* FIXME: set 40Mhz flag if required */
+	 
 	if (0)
 		channelcookie |= B43_SHM_SH_CHAN_40MHZ;
 	savedcookie = b43_shm_read16(dev, B43_SHM_SHARED, B43_SHM_SH_CHAN);
 	b43_shm_write16(dev, B43_SHM_SHARED, B43_SHM_SH_CHAN, channelcookie);
 
-	/* Now try to switch the PHY hardware channel. */
+	 
 	err = phy->ops->switch_channel(dev, new_channel);
 	if (err)
 		goto err_restore_cookie;
 
-	/* Wait for the radio to tune to the channel and stabilize. */
+	 
 	msleep(8);
 
 	return 0;
@@ -458,11 +441,7 @@ void b43_software_rfkill(struct b43_wldev *dev, bool blocked)
 	b43_mac_enable(dev);
 }
 
-/*
- * b43_phy_txpower_adjust_work - TX power workqueue.
- *
- * Workqueue for updating the TX power parameters in hardware.
- */
+ 
 void b43_phy_txpower_adjust_work(struct work_struct *work)
 {
 	struct b43_wl *wl = container_of(work, struct b43_wl,
@@ -485,25 +464,24 @@ void b43_phy_txpower_check(struct b43_wldev *dev, unsigned int flags)
 	enum b43_txpwr_result result;
 
 	if (!(flags & B43_TXPWR_IGNORE_TIME)) {
-		/* Check if it's time for a TXpower check. */
+		 
 		if (time_before(now, phy->next_txpwr_check_time))
-			return; /* Not yet */
+			return;  
 	}
-	/* The next check will be needed in two seconds, or later. */
+	 
 	phy->next_txpwr_check_time = round_jiffies(now + (HZ * 2));
 
 	if ((dev->dev->board_vendor == SSB_BOARDVENDOR_BCM) &&
 	    (dev->dev->board_type == SSB_BOARD_BU4306))
-		return; /* No software txpower adjustment needed */
+		return;  
 
 	result = phy->ops->recalc_txpower(dev, !!(flags & B43_TXPWR_IGNORE_TSSI));
 	if (result == B43_TXPWR_RES_DONE)
-		return; /* We are done. */
+		return;  
 	B43_WARN_ON(result != B43_TXPWR_RES_NEED_ADJUST);
 	B43_WARN_ON(phy->ops->adjust_txpower == NULL);
 
-	/* We must adjust the transmission power in hardware.
-	 * Schedule b43_phy_txpower_adjust_work(). */
+	 
 	ieee80211_queue_work(dev->wl->hw, &dev->wl->txpower_adjust_work);
 }
 
@@ -524,7 +502,7 @@ int b43_phy_shm_tssi_read(struct b43_wldev *dev, u16 shm_offset)
 	    c == 0 || c == B43_TSSI_MAX ||
 	    d == 0 || d == B43_TSSI_MAX)
 		return -ENOENT;
-	/* The values are OK. Clear them. */
+	 
 	tmp = B43_TSSI_MAX | (B43_TSSI_MAX << 8) |
 	      (B43_TSSI_MAX << 16) | (B43_TSSI_MAX << 24);
 	b43_shm_write32(dev, B43_SHM_SHARED, shm_offset, tmp);
@@ -536,10 +514,10 @@ int b43_phy_shm_tssi_read(struct b43_wldev *dev, u16 shm_offset)
 		d = (d + 32) & 0x3F;
 	}
 
-	/* Get the average of the values with 0.5 added to each value. */
+	 
 	average = (a + b + c + d + 2) / 4;
 	if (is_ofdm) {
-		/* Adjust for CCK-boost */
+		 
 		if (b43_shm_read16(dev, B43_SHM_SHARED, B43_SHM_SH_HOSTF1)
 		    & B43_HF_CCKBOOST)
 			average = (average >= 13) ? (average - 13) : 0;
@@ -559,7 +537,7 @@ bool b43_is_40mhz(struct b43_wldev *dev)
 	return dev->phy.chandef->width == NL80211_CHAN_WIDTH_40;
 }
 
-/* https://bcm-v4.sipsolutions.net/802.11/PHY/N/BmacPhyClkFgc */
+/* https:
 void b43_phy_force_clock(struct b43_wldev *dev, bool force)
 {
 	u32 tmp;

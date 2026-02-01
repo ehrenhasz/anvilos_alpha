@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015-2016 Quantenna Communications. All rights reserved. */
+ 
+ 
 
 #ifndef _QTN_FMAC_TRANS_H_
 #define _QTN_FMAC_TRANS_H_
@@ -23,7 +23,7 @@ struct qtnf_cmd_ctl_node {
 	struct sk_buff *resp_skb;
 	u16 seq_num;
 	bool waiting_for_resp;
-	spinlock_t resp_lock; /* lock for resp_skb & waiting_for_resp changes */
+	spinlock_t resp_lock;  
 };
 
 struct qtnf_qlink_transport {
@@ -41,4 +41,4 @@ int qtnf_trans_send_cmd_with_resp(struct qtnf_bus *bus,
 				  struct sk_buff *cmd_skb,
 				  struct sk_buff **response_skb);
 
-#endif /* _QTN_FMAC_TRANS_H_ */
+#endif  

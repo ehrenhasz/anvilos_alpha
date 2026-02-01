@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2012-2017 ASPEED Technology Inc.
-// Copyright (c) 2018-2021 Intel Corporation
+
+
+
 
 #include <asm/unaligned.h>
 
@@ -20,8 +20,8 @@
 #include <linux/platform_device.h>
 #include <linux/reset.h>
 
-/* ASPEED PECI Registers */
-/* Control Register */
+ 
+ 
 #define ASPEED_PECI_CTRL			0x00
 #define   ASPEED_PECI_CTRL_SAMPLING_MASK	GENMASK(19, 16)
 #define   ASPEED_PECI_CTRL_RD_MODE_MASK		GENMASK(13, 12)
@@ -35,12 +35,12 @@
 #define   ASPEED_PECI_CTRL_PECI_EN		BIT(4)
 #define   ASPEED_PECI_CTRL_PECI_CLK_EN		BIT(0)
 
-/* Timing Negotiation Register */
+ 
 #define ASPEED_PECI_TIMING_NEGOTIATION		0x04
 #define   ASPEED_PECI_T_NEGO_MSG_MASK		GENMASK(15, 8)
 #define   ASPEED_PECI_T_NEGO_ADDR_MASK		GENMASK(7, 0)
 
-/* Command Register */
+ 
 #define ASPEED_PECI_CMD				0x08
 #define   ASPEED_PECI_CMD_PIN_MONITORING	BIT(31)
 #define   ASPEED_PECI_CMD_STS_MASK		GENMASK(27, 24)
@@ -49,25 +49,25 @@
 	  (ASPEED_PECI_CMD_STS_MASK | ASPEED_PECI_CMD_PIN_MONITORING)
 #define   ASPEED_PECI_CMD_FIRE			BIT(0)
 
-/* Read/Write Length Register */
+ 
 #define ASPEED_PECI_RW_LENGTH			0x0c
 #define   ASPEED_PECI_AW_FCS_EN			BIT(31)
 #define   ASPEED_PECI_RD_LEN_MASK		GENMASK(23, 16)
 #define   ASPEED_PECI_WR_LEN_MASK		GENMASK(15, 8)
 #define   ASPEED_PECI_TARGET_ADDR_MASK		GENMASK(7, 0)
 
-/* Expected FCS Data Register */
+ 
 #define ASPEED_PECI_EXPECTED_FCS		0x10
 #define   ASPEED_PECI_EXPECTED_RD_FCS_MASK	GENMASK(23, 16)
 #define   ASPEED_PECI_EXPECTED_AW_FCS_AUTO_MASK	GENMASK(15, 8)
 #define   ASPEED_PECI_EXPECTED_WR_FCS_MASK	GENMASK(7, 0)
 
-/* Captured FCS Data Register */
+ 
 #define ASPEED_PECI_CAPTURED_FCS		0x14
 #define   ASPEED_PECI_CAPTURED_RD_FCS_MASK	GENMASK(23, 16)
 #define   ASPEED_PECI_CAPTURED_WR_FCS_MASK	GENMASK(7, 0)
 
-/* Interrupt Register */
+ 
 #define ASPEED_PECI_INT_CTRL			0x18
 #define   ASPEED_PECI_TIMING_NEGO_SEL_MASK	GENMASK(31, 30)
 #define     ASPEED_PECI_1ST_BIT_OF_ADDR_NEGO	0
@@ -80,12 +80,12 @@
 #define     ASPEED_PECI_INT_WR_FCS_ABORT	BIT(1)
 #define     ASPEED_PECI_INT_CMD_DONE		BIT(0)
 
-/* Interrupt Status Register */
+ 
 #define ASPEED_PECI_INT_STS			0x1c
 #define   ASPEED_PECI_INT_TIMING_RESULT_MASK	GENMASK(29, 16)
-	  /* bits[4..0]: Same bit fields in the 'Interrupt Register' */
+	   
 
-/* Rx/Tx Data Buffer Registers */
+ 
 #define ASPEED_PECI_WR_DATA0			0x20
 #define ASPEED_PECI_WR_DATA1			0x24
 #define ASPEED_PECI_WR_DATA2			0x28
@@ -104,12 +104,12 @@
 #define ASPEED_PECI_RD_DATA7			0x5c
 #define   ASPEED_PECI_DATA_BUF_SIZE_MAX		32
 
-/* Timing Negotiation */
+ 
 #define ASPEED_PECI_CLK_FREQUENCY_MIN		2000
 #define ASPEED_PECI_CLK_FREQUENCY_DEFAULT	1000000
 #define ASPEED_PECI_CLK_FREQUENCY_MAX		2000000
 #define ASPEED_PECI_RD_SAMPLING_POINT_DEFAULT	8
-/* Timeout */
+ 
 #define ASPEED_PECI_IDLE_CHECK_TIMEOUT_US	(50 * USEC_PER_MSEC)
 #define ASPEED_PECI_IDLE_CHECK_INTERVAL_US	(10 * USEC_PER_MSEC)
 #define ASPEED_PECI_CMD_TIMEOUT_MS_DEFAULT	1000
@@ -126,7 +126,7 @@ struct aspeed_peci {
 	void __iomem *base;
 	struct reset_control *rst;
 	int irq;
-	spinlock_t lock; /* to sync completion status handling */
+	spinlock_t lock;  
 	struct completion xfer_complete;
 	struct clk *clk;
 	u32 clk_frequency;
@@ -153,10 +153,10 @@ static void aspeed_peci_init_regs(struct aspeed_peci *priv)
 {
 	u32 val;
 
-	/* Clear interrupts */
+	 
 	writel(ASPEED_PECI_INT_MASK, priv->base + ASPEED_PECI_INT_STS);
 
-	/* Set timing negotiation mode and enable interrupts */
+	 
 	val = FIELD_PREP(ASPEED_PECI_TIMING_NEGO_SEL_MASK, ASPEED_PECI_1ST_BIT_OF_ADDR_NEGO);
 	val |= ASPEED_PECI_INT_MASK;
 	writel(val, priv->base + ASPEED_PECI_INT_CTRL);
@@ -170,12 +170,7 @@ static int aspeed_peci_check_idle(struct aspeed_peci *priv)
 	u32 cmd_sts = readl(priv->base + ASPEED_PECI_CMD);
 	int ret;
 
-	/*
-	 * Under normal circumstances, we expect to be idle here.
-	 * In case there were any errors/timeouts that led to the situation
-	 * where the hardware is not in idle state - we need to reset and
-	 * reinitialize it to avoid potential controller hang.
-	 */
+	 
 	if (FIELD_GET(ASPEED_PECI_CMD_STS_MASK, cmd_sts)) {
 		ret = reset_control_assert(priv->rst);
 		if (ret) {
@@ -219,10 +214,10 @@ static int aspeed_peci_xfer(struct peci_controller *controller,
 	    req->rx.len > ASPEED_PECI_DATA_BUF_SIZE_MAX)
 		return -EINVAL;
 
-	/* Check command sts and bus idle state */
+	 
 	ret = aspeed_peci_check_idle(priv);
 	if (ret)
-		return ret; /* -ETIMEDOUT */
+		return ret;  
 
 	spin_lock_irq(&priv->lock);
 	reinit_completion(&priv->xfer_complete);
@@ -267,10 +262,7 @@ static int aspeed_peci_xfer(struct peci_controller *controller,
 
 	spin_unlock_irq(&priv->lock);
 
-	/*
-	 * We need to use dword reads for register access, make sure that the
-	 * buffer size is multiple of 4-bytes.
-	 */
+	 
 	BUILD_BUG_ON(PECI_REQUEST_MAX_BUF_SIZE % 4);
 
 	for (i = 0; i < req->rx.len; i += 4) {
@@ -296,10 +288,7 @@ static irqreturn_t aspeed_peci_irq_handler(int irq, void *arg)
 	writel(status, priv->base + ASPEED_PECI_INT_STS);
 	priv->status |= (status & ASPEED_PECI_INT_MASK);
 
-	/*
-	 * All commands should be ended up with a ASPEED_PECI_INT_CMD_DONE bit
-	 * set even in an error case.
-	 */
+	 
 	if (status & ASPEED_PECI_INT_CMD_DONE)
 		complete(&priv->xfer_complete);
 
@@ -397,15 +386,7 @@ static const struct clk_ops clk_aspeed_peci_ops = {
 	.recalc_rate = clk_aspeed_peci_recalc_rate,
 };
 
-/*
- * PECI HW contains a clock divider which is a combination of:
- *  div0: 4 (fixed divider)
- *  div1: x + 1
- *  div2: 1 << y
- * In other words, out_clk = in_clk / (div0 * div1 * div2)
- * The resulting frequency is used by PECI Controller to drive the PECI bus to
- * negotiate optimal transfer rate.
- */
+ 
 static struct clk *devm_aspeed_peci_register_clk_div(struct device *dev, struct clk *parent,
 						     struct aspeed_peci *priv)
 {

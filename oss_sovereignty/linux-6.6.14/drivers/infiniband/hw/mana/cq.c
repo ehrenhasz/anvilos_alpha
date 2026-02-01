@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022, Microsoft Corporation. All rights reserved.
- */
+
+ 
 
 #include "mana_ib.h"
 
@@ -53,9 +51,7 @@ int mana_ib_create_cq(struct ib_cq *ibcq, const struct ib_cq_init_attr *attr,
 		  "mana_ib_gd_create_dma_region ret %d gdma_region 0x%llx\n",
 		  err, cq->gdma_region);
 
-	/*
-	 * The CQ ID is not known at this time. The ID is generated at create_qp
-	 */
+	 
 
 	return 0;
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains the logic to work with MPEG Program-Specific Information.
- * These are defined both in ISO/IEC 13818-1 (systems) and ETSI EN 300 468.
- * PSI is carried in the form of table structures, and although each table might
- * technically be broken into one or more sections, we do not do this here,
- * hence 'table' and 'section' are interchangeable for vidtv.
- *
- * Copyright (C) 2020 Daniel W. S. Almeida
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ":%s, %d: " fmt, __func__, __LINE__
 
@@ -32,7 +24,7 @@
 #define ISO_LANGUAGE_CODE_LEN 3
 
 static const u32 CRC_LUT[256] = {
-	/* from libdvbv5 */
+	 
 	0x00000000, 0x04c11db7, 0x09823b6e, 0x0d4326d9, 0x130476dc, 0x17c56b6b,
 	0x1a864db2, 0x1e475005, 0x2608edb8, 0x22c9f00f, 0x2f8ad6d6, 0x2b4bcb61,
 	0x350c9b64, 0x31cd86d3, 0x3c8ea00a, 0x384fbdbd, 0x4c11db70, 0x48d0c6c7,
@@ -80,7 +72,7 @@ static const u32 CRC_LUT[256] = {
 
 static u32 dvb_crc32(u32 crc, u8 *data, u32 len)
 {
-	/* from libdvbv5 */
+	 
 	while (len--)
 		crc = (crc << 8) ^ CRC_LUT[((crc >> 24) ^ *data++) & 0xff];
 	return crc;
@@ -149,12 +141,7 @@ static void vidtv_psi_set_sec_len(struct vidtv_psi_table_header *h, u16 new_len)
 	h->bitfield = new;
 }
 
-/*
- * Packetize PSI sections into TS packets:
- * push a TS header (4bytes) every 184 bytes
- * manage the continuity_counter
- * add stuffing (i.e. padding bytes) after the CRC
- */
+ 
 static u32 vidtv_psi_ts_psi_write_into(struct psi_write_args *args)
 {
 	struct vidtv_mpeg_ts ts_header = {
@@ -162,7 +149,7 @@ static u32 vidtv_psi_ts_psi_write_into(struct psi_write_args *args)
 		.bitfield = cpu_to_be16((args->new_psi_section << 14) | args->pid),
 		.scrambling = 0,
 		.payload = 1,
-		.adaptation_field = 0, /* no adaptation field */
+		.adaptation_field = 0,  
 	};
 	u32 nbytes_past_boundary = (args->dest_offset % TS_PACKET_LEN);
 	bool aligned = (nbytes_past_boundary == 0);
@@ -180,7 +167,7 @@ static u32 vidtv_psi_ts_psi_write_into(struct psi_write_args *args)
 	if (args->new_psi_section && !aligned) {
 		pr_warn_ratelimited("Cannot write a new PSI section in a misaligned buffer\n");
 
-		/* forcibly align and hope for the best */
+		 
 		nbytes += vidtv_memset(args->dest_buf,
 				       args->dest_offset + nbytes,
 				       args->dest_buf_sz,
@@ -193,7 +180,7 @@ static u32 vidtv_psi_ts_psi_write_into(struct psi_write_args *args)
 		aligned = (nbytes_past_boundary == 0);
 
 		if (aligned) {
-			/* if at a packet boundary, write a new TS header */
+			 
 			ts_header.continuity_counter = *args->continuity_counter;
 
 			nbytes += vidtv_memcpy(args->dest_buf,
@@ -201,14 +188,11 @@ static u32 vidtv_psi_ts_psi_write_into(struct psi_write_args *args)
 					       args->dest_buf_sz,
 					       &ts_header,
 					       sizeof(ts_header));
-			/*
-			 * This will trigger a discontinuity if the buffer is full,
-			 * effectively dropping the packet.
-			 */
+			 
 			vidtv_ts_inc_cc(args->continuity_counter);
 		}
 
-		/* write the pointer_field in the first byte of the payload */
+		 
 		if (args->new_psi_section)
 			nbytes += vidtv_memset(args->dest_buf,
 					       args->dest_offset + nbytes,
@@ -216,7 +200,7 @@ static u32 vidtv_psi_ts_psi_write_into(struct psi_write_args *args)
 					       0x0,
 					       1);
 
-		/* write as much of the payload as possible */
+		 
 		nbytes_past_boundary = (args->dest_offset + nbytes) % TS_PACKET_LEN;
 		payload_write_len = min(TS_PACKET_LEN - nbytes_past_boundary, remaining_len);
 
@@ -226,14 +210,12 @@ static u32 vidtv_psi_ts_psi_write_into(struct psi_write_args *args)
 				       args->from + payload_offset,
 				       payload_write_len);
 
-		/* 'payload_write_len' written from a total of 'len' requested*/
+		 
 		remaining_len -= payload_write_len;
 		payload_offset += payload_write_len;
 	}
 
-	/*
-	 * fill the rest of the packet if there is any remaining space unused
-	 */
+	 
 
 	nbytes_past_boundary = (args->dest_offset + nbytes) % TS_PACKET_LEN;
 
@@ -261,7 +243,7 @@ static u32 table_section_crc32_write_into(struct crc32_write_args *args)
 		.dest_buf_sz        = args->dest_buf_sz,
 	};
 
-	/* the CRC is the last entry in the section */
+	 
 
 	return vidtv_psi_ts_psi_write_into(&psi_args);
 }
@@ -573,7 +555,7 @@ void vidtv_psi_desc_destroy(struct vidtv_psi_desc *desc)
 
 			break;
 		case REGISTRATION_DESCRIPTOR:
-			/* nothing to do */
+			 
 			break;
 
 		case NETWORK_NAME_DESCRIPTOR:
@@ -616,7 +598,7 @@ vidtv_psi_desc_comp_loop_len(struct vidtv_psi_desc *desc)
 	while (desc) {
 		length += sizeof_field(struct vidtv_psi_desc, type);
 		length += sizeof_field(struct vidtv_psi_desc, length);
-		length += desc->length; /* from 'length' field until the end of the descriptor */
+		length += desc->length;  
 		desc    = desc->next;
 	}
 
@@ -805,12 +787,12 @@ vidtv_psi_pat_table_update_sec_len(struct vidtv_psi_table_pat *pat)
 	u16 length = 0;
 	u32 i;
 
-	/* see ISO/IEC 13818-1 : 2000 p.43 */
+	 
 
-	/* from immediately after 'section_length' until 'last_section_number'*/
+	 
 	length += PAT_LEN_UNTIL_LAST_SECTION_NUMBER;
 
-	/* do not count the pointer */
+	 
 	for (i = 0; i < pat->num_pat; ++i)
 		length += sizeof(struct vidtv_psi_table_pat_program) -
 			  sizeof(struct vidtv_psi_table_pat_program *);
@@ -826,9 +808,9 @@ void vidtv_psi_pmt_table_update_sec_len(struct vidtv_psi_table_pmt *pmt)
 	u16 desc_loop_len;
 	u16 length = 0;
 
-	/* see ISO/IEC 13818-1 : 2000 p.46 */
+	 
 
-	/* from immediately after 'section_length' until 'program_info_length'*/
+	 
 	length += PMT_LEN_UNTIL_PROGRAM_INFO_LENGTH;
 
 	desc_loop_len = vidtv_psi_desc_comp_loop_len(pmt->descriptor);
@@ -837,7 +819,7 @@ void vidtv_psi_pmt_table_update_sec_len(struct vidtv_psi_table_pmt *pmt)
 	length += desc_loop_len;
 
 	while (s) {
-		/* skip both pointers at the end */
+		 
 		length += sizeof(struct vidtv_psi_table_pmt_stream) -
 			  sizeof(struct vidtv_psi_desc *) -
 			  sizeof(struct vidtv_psi_table_pmt_stream *);
@@ -861,16 +843,13 @@ void vidtv_psi_sdt_table_update_sec_len(struct vidtv_psi_table_sdt *sdt)
 	u16 desc_loop_len;
 	u16 length = 0;
 
-	/* see ETSI EN 300 468 V 1.10.1 p.24 */
+	 
 
-	/*
-	 * from immediately after 'section_length' until
-	 * 'reserved_for_future_use'
-	 */
+	 
 	length += SDT_LEN_UNTIL_RESERVED_FOR_FUTURE_USE;
 
 	while (s) {
-		/* skip both pointers at the end */
+		 
 		length += sizeof(struct vidtv_psi_table_sdt_service) -
 			  sizeof(struct vidtv_psi_desc *) -
 			  sizeof(struct vidtv_psi_table_sdt_service *);
@@ -901,7 +880,7 @@ vidtv_psi_pat_program_init(struct vidtv_psi_table_pat_program *head,
 
 	program->service_id = cpu_to_be16(service_id);
 
-	/* pid for the PMT section in the TS */
+	 
 	program->bitfield = cpu_to_be16((RESERVED << 13) | program_map_pid);
 	program->next = NULL;
 
@@ -928,7 +907,7 @@ vidtv_psi_pat_program_destroy(struct vidtv_psi_table_pat_program *p)
 	}
 }
 
-/* This function transfers ownership of p to the table */
+ 
 void
 vidtv_psi_pat_program_assign(struct vidtv_psi_table_pat *pat,
 			     struct vidtv_psi_table_pat_program *p)
@@ -951,7 +930,7 @@ vidtv_psi_pat_program_assign(struct vidtv_psi_table_pat *pat,
 		pat->num_pat = program_count;
 		pat->program  = p;
 
-		/* Recompute section length */
+		 
 		vidtv_psi_pat_table_update_sec_len(pat);
 
 		p = NULL;
@@ -1021,14 +1000,14 @@ u32 vidtv_psi_pat_write_into(struct vidtv_psi_pat_write_args *args)
 
 	nbytes += vidtv_psi_table_header_write_into(&h_args);
 
-	/* note that the field 'u16 programs' is not really part of the PAT */
+	 
 
 	psi_args.crc = &crc;
 
 	while (p) {
-		/* copy the PAT programs */
+		 
 		psi_args.from = p;
-		/* skip the pointer */
+		 
 		psi_args.len = sizeof(*p) -
 			       sizeof(struct vidtv_psi_table_pat_program *);
 		psi_args.dest_offset = args->offset + nbytes;
@@ -1043,7 +1022,7 @@ u32 vidtv_psi_pat_write_into(struct vidtv_psi_pat_write_args *args)
 	c_args.continuity_counter = args->continuity_counter;
 	c_args.crc                = cpu_to_be32(crc);
 
-	/* Write the CRC32 at the end */
+	 
 	nbytes += table_section_crc32_write_into(&c_args);
 
 	return nbytes;
@@ -1109,7 +1088,7 @@ void vidtv_psi_pmt_stream_assign(struct vidtv_psi_table_pmt *pmt,
 				 struct vidtv_psi_table_pmt_stream *s)
 {
 	do {
-		/* This function transfers ownership of s to the table */
+		 
 		if (s == pmt->stream)
 			return;
 
@@ -1127,11 +1106,7 @@ u16 vidtv_psi_pmt_get_pid(struct vidtv_psi_table_pmt *section,
 {
 	struct vidtv_psi_table_pat_program *program = pat->program;
 
-	/*
-	 * service_id is the same as program_number in the
-	 * corresponding program_map_section
-	 * see ETSI EN 300 468 v1.15.1 p. 24
-	 */
+	 
 	while (program) {
 		if (program->service_id == section->header.id)
 			return vidtv_psi_get_pat_program_pid(program);
@@ -1139,7 +1114,7 @@ u16 vidtv_psi_pmt_get_pid(struct vidtv_psi_table_pmt *section,
 		program = program->next;
 	}
 
-	return TS_LAST_VALID_PID + 1; /* not found */
+	return TS_LAST_VALID_PID + 1;  
 }
 
 struct vidtv_psi_table_pmt *vidtv_psi_pmt_table_init(u16 program_number,
@@ -1230,13 +1205,13 @@ u32 vidtv_psi_pmt_write_into(struct vidtv_psi_pmt_write_args *args)
 
 	nbytes += vidtv_psi_table_header_write_into(&h_args);
 
-	/* write the two bitfields */
+	 
 	psi_args.dest_offset        = args->offset + nbytes;
 	psi_args.continuity_counter = args->continuity_counter;
 	nbytes += vidtv_psi_ts_psi_write_into(&psi_args);
 
 	while (table_descriptor) {
-		/* write the descriptors, if any */
+		 
 		d_args.dest_offset        = args->offset + nbytes;
 		d_args.continuity_counter = args->continuity_counter;
 		d_args.crc                = &crc;
@@ -1248,7 +1223,7 @@ u32 vidtv_psi_pmt_write_into(struct vidtv_psi_pmt_write_args *args)
 
 	psi_args.len += sizeof_field(struct vidtv_psi_table_pmt_stream, type);
 	while (stream) {
-		/* write the streams, if any */
+		 
 		psi_args.from = stream;
 		psi_args.dest_offset = args->offset + nbytes;
 		psi_args.continuity_counter = args->continuity_counter;
@@ -1258,7 +1233,7 @@ u32 vidtv_psi_pmt_write_into(struct vidtv_psi_pmt_write_args *args)
 		stream_descriptor = stream->descriptor;
 
 		while (stream_descriptor) {
-			/* write the stream descriptors, if any */
+			 
 			d_args.dest_offset        = args->offset + nbytes;
 			d_args.desc               = stream_descriptor;
 			d_args.continuity_counter = args->continuity_counter;
@@ -1276,7 +1251,7 @@ u32 vidtv_psi_pmt_write_into(struct vidtv_psi_pmt_write_args *args)
 	c_args.crc                = cpu_to_be32(crc);
 	c_args.continuity_counter = args->continuity_counter;
 
-	/* Write the CRC32 at the end */
+	 
 	nbytes += table_section_crc32_write_into(&c_args);
 
 	return nbytes;
@@ -1305,11 +1280,7 @@ struct vidtv_psi_table_sdt *vidtv_psi_sdt_table_init(u16 network_id,
 	sdt->header.table_id = 0x42;
 	sdt->header.bitfield = cpu_to_be16((SYNTAX << 15) | (ONE << 14) | (ONES << 12));
 
-	/*
-	 * This is a 16-bit field which serves as a label for identification
-	 * of the TS, about which the SDT informs, from any other multiplex
-	 * within the delivery system.
-	 */
+	 
 	sdt->header.id = cpu_to_be16(transport_stream_id);
 	sdt->header.current_next = ONE;
 
@@ -1319,13 +1290,7 @@ struct vidtv_psi_table_sdt *vidtv_psi_sdt_table_init(u16 network_id,
 	sdt->header.section_id   = 0;
 	sdt->header.last_section = 0;
 
-	/*
-	 * FIXME: The network_id range from 0xFF01 to 0xFFFF is used to
-	 * indicate temporary private use. For now, let's use the first
-	 * value.
-	 * This can be changed to something more useful, when support for
-	 * NIT gets added
-	 */
+	 
 	sdt->network_id = cpu_to_be16(network_id);
 	sdt->reserved = RESERVED;
 
@@ -1367,7 +1332,7 @@ u32 vidtv_psi_sdt_write_into(struct vidtv_psi_sdt_write_args *args)
 	u32 nbytes  = 0;
 	u32 crc = INITIAL_CRC;
 
-	/* see ETSI EN 300 468 v1.15.1 p. 11 */
+	 
 
 	vidtv_psi_sdt_table_update_sec_len(args->sdt);
 
@@ -1381,16 +1346,16 @@ u32 vidtv_psi_sdt_write_into(struct vidtv_psi_sdt_write_args *args)
 	psi_args.continuity_counter = args->continuity_counter;
 	psi_args.crc                = &crc;
 
-	/* copy u16 network_id + u8 reserved)*/
+	 
 	nbytes += vidtv_psi_ts_psi_write_into(&psi_args);
 
-	/* skip both pointers at the end */
+	 
 	psi_args.len = sizeof(struct vidtv_psi_table_sdt_service) -
 		       sizeof(struct vidtv_psi_desc *) -
 		       sizeof(struct vidtv_psi_table_sdt_service *);
 
 	while (service) {
-		/* copy the services, if any */
+		 
 		psi_args.from = service;
 		psi_args.dest_offset = args->offset + nbytes;
 		psi_args.continuity_counter = args->continuity_counter;
@@ -1400,7 +1365,7 @@ u32 vidtv_psi_sdt_write_into(struct vidtv_psi_sdt_write_args *args)
 		service_desc = service->descriptor;
 
 		while (service_desc) {
-			/* copy the service descriptors, if any */
+			 
 			d_args.dest_offset        = args->offset + nbytes;
 			d_args.desc               = service_desc;
 			d_args.continuity_counter = args->continuity_counter;
@@ -1418,7 +1383,7 @@ u32 vidtv_psi_sdt_write_into(struct vidtv_psi_sdt_write_args *args)
 	c_args.crc                = cpu_to_be32(crc);
 	c_args.continuity_counter = args->continuity_counter;
 
-	/* Write the CRC at the end */
+	 
 	nbytes += table_section_crc32_write_into(&c_args);
 
 	return nbytes;
@@ -1442,12 +1407,7 @@ struct vidtv_psi_table_sdt_service
 	if (!service)
 		return NULL;
 
-	/*
-	 * ETSI 300 468: this is a 16bit field which serves as a label to
-	 * identify this service from any other service within the TS.
-	 * The service id is the same as the program number in the
-	 * corresponding program_map_section
-	 */
+	 
 	service->service_id            = cpu_to_be16(service_id);
 	service->EIT_schedule          = eit_schedule;
 	service->EIT_present_following = eit_present_following;
@@ -1489,7 +1449,7 @@ vidtv_psi_sdt_service_assign(struct vidtv_psi_table_sdt *sdt,
 
 		sdt->service = service;
 
-		/* recompute section length */
+		 
 		vidtv_psi_sdt_table_update_sec_len(sdt);
 
 		service = NULL;
@@ -1498,11 +1458,7 @@ vidtv_psi_sdt_service_assign(struct vidtv_psi_table_sdt *sdt,
 	vidtv_psi_update_version_num(&sdt->header);
 }
 
-/*
- * PMTs contain information about programs. For each program,
- * there is one PMT section. This function will create a section
- * for each program found in the PAT
- */
+ 
 struct vidtv_psi_table_pmt**
 vidtv_psi_pmt_create_sec_for_each_pat_entry(struct vidtv_psi_table_pat *pat,
 					    u16 pcr_pid)
@@ -1512,10 +1468,7 @@ vidtv_psi_pmt_create_sec_for_each_pat_entry(struct vidtv_psi_table_pat *pat,
 	struct vidtv_psi_table_pmt **pmt_secs;
 	u32 i = 0, num_pmt = 0;
 
-	/*
-	 * The number of PMT entries is the number of PAT entries
-	 * that contain service_id. That exclude special tables, like NIT
-	 */
+	 
 	program = pat->program;
 	while (program) {
 		if (program->service_id)
@@ -1549,7 +1502,7 @@ vidtv_psi_pmt_create_sec_for_each_pat_entry(struct vidtv_psi_table_pat *pat,
 	return pmt_secs;
 }
 
-/* find the PMT section associated with 'program_num' */
+ 
 struct vidtv_psi_table_pmt
 *vidtv_psi_find_pmt_sec(struct vidtv_psi_table_pmt **pmt_sections,
 			u16 nsections,
@@ -1564,7 +1517,7 @@ struct vidtv_psi_table_pmt
 			return sec;
 	}
 
-	return NULL; /* not found */
+	return NULL;  
 }
 
 static void vidtv_psi_nit_table_update_sec_len(struct vidtv_psi_table_nit *nit)
@@ -1574,10 +1527,7 @@ static void vidtv_psi_nit_table_update_sec_len(struct vidtv_psi_table_nit *nit)
 	u16 desc_loop_len;
 	u16 transport_loop_len = 0;
 
-	/*
-	 * from immediately after 'section_length' until
-	 * 'network_descriptor_length'
-	 */
+	 
 	length += NIT_LEN_UNTIL_NETWORK_DESCRIPTOR_LEN;
 
 	desc_loop_len = vidtv_psi_desc_comp_loop_len(nit->descriptor);
@@ -1588,7 +1538,7 @@ static void vidtv_psi_nit_table_update_sec_len(struct vidtv_psi_table_nit *nit)
 	length += sizeof_field(struct vidtv_psi_table_nit, bitfield2);
 
 	while (t) {
-		/* skip both pointers at the end */
+		 
 		transport_loop_len += sizeof(struct vidtv_psi_table_transport) -
 				      sizeof(struct vidtv_psi_desc *) -
 				      sizeof(struct vidtv_psi_table_transport *);
@@ -1603,7 +1553,7 @@ static void vidtv_psi_nit_table_update_sec_len(struct vidtv_psi_table_nit *nit)
 		t = t->next;
 	}
 
-	// Actually sets the transport stream loop len, maybe rename this function later
+	 
 	vidtv_psi_set_desc_loop_len(&nit->bitfield2, transport_loop_len, 12);
 	length += CRC_SIZE_IN_BYTES;
 
@@ -1630,7 +1580,7 @@ struct vidtv_psi_table_nit
 	if (!transport)
 		goto free_nit;
 
-	nit->header.table_id = 0x40; // ACTUAL_NETWORK
+	nit->header.table_id = 0x40;  
 
 	nit->header.bitfield = cpu_to_be16((SYNTAX << 15) | (ONE << 14) | (ONES << 12));
 
@@ -1716,7 +1666,7 @@ u32 vidtv_psi_nit_write_into(struct vidtv_psi_nit_write_args *args)
 
 	nbytes += vidtv_psi_table_header_write_into(&h_args);
 
-	/* write the bitfield */
+	 
 
 	psi_args.dest_offset        = args->offset + nbytes;
 	psi_args.continuity_counter = args->continuity_counter;
@@ -1725,7 +1675,7 @@ u32 vidtv_psi_nit_write_into(struct vidtv_psi_nit_write_args *args)
 	nbytes += vidtv_psi_ts_psi_write_into(&psi_args);
 
 	while (table_descriptor) {
-		/* write the descriptors, if any */
+		 
 		d_args.dest_offset        = args->offset + nbytes;
 		d_args.desc               = table_descriptor;
 		d_args.continuity_counter = args->continuity_counter;
@@ -1736,7 +1686,7 @@ u32 vidtv_psi_nit_write_into(struct vidtv_psi_nit_write_args *args)
 		table_descriptor = table_descriptor->next;
 	}
 
-	/* write the second bitfield */
+	 
 	psi_args.from = &args->nit->bitfield2;
 	psi_args.len = sizeof_field(struct vidtv_psi_table_nit, bitfield2);
 	psi_args.dest_offset = args->offset + nbytes;
@@ -1747,7 +1697,7 @@ u32 vidtv_psi_nit_write_into(struct vidtv_psi_nit_write_args *args)
 			sizeof_field(struct vidtv_psi_table_transport, network_id)   +
 			sizeof_field(struct vidtv_psi_table_transport, bitfield);
 	while (transport) {
-		/* write the transport sections, if any */
+		 
 		psi_args.from = transport;
 		psi_args.dest_offset = args->offset + nbytes;
 
@@ -1756,7 +1706,7 @@ u32 vidtv_psi_nit_write_into(struct vidtv_psi_nit_write_args *args)
 		transport_descriptor = transport->descriptor;
 
 		while (transport_descriptor) {
-			/* write the transport descriptors, if any */
+			 
 			d_args.dest_offset        = args->offset + nbytes;
 			d_args.desc               = transport_descriptor;
 			d_args.continuity_counter = args->continuity_counter;
@@ -1774,7 +1724,7 @@ u32 vidtv_psi_nit_write_into(struct vidtv_psi_nit_write_args *args)
 	c_args.crc                = cpu_to_be32(crc);
 	c_args.continuity_counter = args->continuity_counter;
 
-	/* Write the CRC32 at the end */
+	 
 	nbytes += table_section_crc32_write_into(&c_args);
 
 	return nbytes;
@@ -1806,14 +1756,11 @@ void vidtv_psi_eit_table_update_sec_len(struct vidtv_psi_table_eit *eit)
 	u16 desc_loop_len;
 	u16 length = 0;
 
-	/*
-	 * from immediately after 'section_length' until
-	 * 'last_table_id'
-	 */
+	 
 	length += EIT_LEN_UNTIL_LAST_TABLE_ID;
 
 	while (e) {
-		/* skip both pointers at the end */
+		 
 		length += sizeof(struct vidtv_psi_table_eit_event) -
 			  sizeof(struct vidtv_psi_desc *) -
 			  sizeof(struct vidtv_psi_table_eit_event *);
@@ -1861,7 +1808,7 @@ struct vidtv_psi_table_eit
 	if (!eit)
 		return NULL;
 
-	eit->header.table_id = 0x4e; //actual_transport_stream: present/following
+	eit->header.table_id = 0x4e;  
 
 	eit->header.bitfield = cpu_to_be16((SYNTAX << 15) | (ONE << 14) | (ONES << 12));
 
@@ -1877,8 +1824,8 @@ struct vidtv_psi_table_eit
 	eit->transport_id = cpu_to_be16(transport_stream_id);
 	eit->network_id = cpu_to_be16(network_id);
 
-	eit->last_segment = eit->header.last_section; /* not implemented */
-	eit->last_table_id = eit->header.table_id; /* not implemented */
+	eit->last_segment = eit->header.last_section;  
+	eit->last_table_id = eit->header.table_id;  
 
 	vidtv_psi_eit_table_update_sec_len(eit);
 
@@ -1934,12 +1881,12 @@ u32 vidtv_psi_eit_write_into(struct vidtv_psi_eit_write_args *args)
 
 	nbytes += vidtv_psi_ts_psi_write_into(&psi_args);
 
-	/* skip both pointers at the end */
+	 
 	psi_args.len = sizeof(struct vidtv_psi_table_eit_event) -
 		       sizeof(struct vidtv_psi_desc *) -
 		       sizeof(struct vidtv_psi_table_eit_event *);
 	while (event) {
-		/* copy the events, if any */
+		 
 		psi_args.from = event;
 		psi_args.dest_offset = args->offset + nbytes;
 
@@ -1948,7 +1895,7 @@ u32 vidtv_psi_eit_write_into(struct vidtv_psi_eit_write_args *args)
 		event_descriptor = event->descriptor;
 
 		while (event_descriptor) {
-			/* copy the event descriptors, if any */
+			 
 			d_args.dest_offset        = args->offset + nbytes;
 			d_args.desc               = event_descriptor;
 			d_args.continuity_counter = args->continuity_counter;
@@ -1966,7 +1913,7 @@ u32 vidtv_psi_eit_write_into(struct vidtv_psi_eit_write_args *args)
 	c_args.crc                = cpu_to_be32(crc);
 	c_args.continuity_counter = args->continuity_counter;
 
-	/* Write the CRC at the end */
+	 
 	nbytes += table_section_crc32_write_into(&c_args);
 
 	return nbytes;
@@ -1975,7 +1922,7 @@ u32 vidtv_psi_eit_write_into(struct vidtv_psi_eit_write_args *args)
 struct vidtv_psi_table_eit_event
 *vidtv_psi_eit_event_init(struct vidtv_psi_table_eit_event *head, u16 event_id)
 {
-	static const u8 DURATION[] = {0x23, 0x59, 0x59}; /* BCD encoded */
+	static const u8 DURATION[] = {0x23, 0x59, 0x59};  
 	struct vidtv_psi_table_eit_event *e;
 	struct timespec64 ts;
 	struct tm time;
@@ -1991,7 +1938,7 @@ struct vidtv_psi_table_eit_event
 	ts = ktime_to_timespec64(ktime_get_real());
 	time64_to_tm(ts.tv_sec, 0, &time);
 
-	/* Convert date to Modified Julian Date - per EN 300 468 Annex C */
+	 
 	if (time.tm_mon < 2)
 		l = 1;
 	else
@@ -2002,23 +1949,13 @@ struct vidtv_psi_table_eit_event
 	mjd += (time.tm_mon + 2 + l * 12) * 306001 / 10000;
 	mjd_be = cpu_to_be16(mjd);
 
-	/*
-	 * Store MJD and hour/min/sec to the event.
-	 *
-	 * Let's make the event to start on a full hour
-	 */
+	 
 	memcpy(e->start_time, &mjd_be, sizeof(mjd_be));
 	e->start_time[2] = bin2bcd(time.tm_hour);
 	e->start_time[3] = 0;
 	e->start_time[4] = 0;
 
-	/*
-	 * TODO: for now, the event will last for a day. Should be
-	 * enough for testing purposes, but if one runs the driver
-	 * for more than that, the current event will become invalid.
-	 * So, we need a better code here in order to change the start
-	 * time once the event expires.
-	 */
+	 
 	memcpy(e->duration, DURATION, sizeof(e->duration));
 
 	e->bitfield = cpu_to_be16(RUNNING << 13);

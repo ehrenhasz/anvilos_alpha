@@ -1,47 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/*
- * Topology:
- * ---------
- *   NS0 namespace         |   NS1 namespace        | NS2 namespace
- *                         |                        |
- *   +---------------+     |   +---------------+    |
- *   |    ipsec0     |---------|    ipsec0     |    |
- *   | 192.168.1.100 |     |   | 192.168.1.200 |    |
- *   | if_id: bpf    |     |   +---------------+    |
- *   +---------------+     |                        |
- *           |             |                        |   +---------------+
- *           |             |                        |   |    ipsec0     |
- *           \------------------------------------------| 192.168.1.200 |
- *                         |                        |   +---------------+
- *                         |                        |
- *                         |                        | (overlay network)
- *      ------------------------------------------------------
- *                         |                        | (underlay network)
- *   +--------------+      |   +--------------+     |
- *   |    veth01    |----------|    veth10    |     |
- *   | 172.16.1.100 |      |   | 172.16.1.200 |     |
- *   ---------------+      |   +--------------+     |
- *                         |                        |
- *   +--------------+      |                        |   +--------------+
- *   |    veth02    |-----------------------------------|    veth20    |
- *   | 172.16.2.100 |      |                        |   | 172.16.2.200 |
- *   +--------------+      |                        |   +--------------+
- *
- *
- * Test Packet flow
- * -----------
- *  The tests perform 'ping 192.168.1.200' from the NS0 namespace:
- *  1) request is routed to NS0 ipsec0
- *  2) NS0 ipsec0 tc egress BPF program is triggered and sets the if_id based
- *     on the requested value. This makes the ipsec0 device in external mode
- *     select the destination tunnel
- *  3) ping reaches the other namespace (NS1 or NS2 based on which if_id was
- *     used) and response is sent
- *  4) response is received on NS0 ipsec0, tc ingress program is triggered and
- *     records the response if_id
- *  5) requested if_id is compared with received if_id
- */
+
+ 
 
 #include <net/if.h>
 #include <linux/rtnetlink.h>
@@ -115,14 +74,14 @@ static int config_underlay(void)
 	SYS(fail, "ip netns add " NS1);
 	SYS(fail, "ip netns add " NS2);
 
-	/* NS0 <-> NS1 [veth01 <-> veth10] */
+	 
 	SYS(fail, "ip link add veth01 netns " NS0 " type veth peer name veth10 netns " NS1);
 	SYS(fail, "ip -net " NS0 " addr add " IP4_ADDR_VETH01 "/24 dev veth01");
 	SYS(fail, "ip -net " NS0 " link set dev veth01 up");
 	SYS(fail, "ip -net " NS1 " addr add " IP4_ADDR_VETH10 "/24 dev veth10");
 	SYS(fail, "ip -net " NS1 " link set dev veth10 up");
 
-	/* NS0 <-> NS2 [veth02 <-> veth20] */
+	 
 	SYS(fail, "ip link add veth02 netns " NS0 " type veth peer name veth20 netns " NS2);
 	SYS(fail, "ip -net " NS0 " addr add " IP4_ADDR_VETH02 "/24 dev veth02");
 	SYS(fail, "ip -net " NS0 " link set dev veth02 up");
@@ -137,20 +96,20 @@ fail:
 static int setup_xfrm_tunnel_ns(const char *ns, const char *ipv4_local,
 				const char *ipv4_remote, int if_id)
 {
-	/* State: local -> remote */
+	 
 	SYS(fail, "ip -net %s xfrm state add src %s dst %s spi 1 "
 	    ESP_DUMMY_PARAMS "if_id %d", ns, ipv4_local, ipv4_remote, if_id);
 
-	/* State: local <- remote */
+	 
 	SYS(fail, "ip -net %s xfrm state add src %s dst %s spi 1 "
 	    ESP_DUMMY_PARAMS "if_id %d", ns, ipv4_remote, ipv4_local, if_id);
 
-	/* Policy: local -> remote */
+	 
 	SYS(fail, "ip -net %s xfrm policy add dir out src 0.0.0.0/0 dst 0.0.0.0/0 "
 	    "if_id %d tmpl src %s dst %s proto esp mode tunnel if_id %d", ns,
 	    if_id, ipv4_local, ipv4_remote, if_id);
 
-	/* Policy: local <- remote */
+	 
 	SYS(fail, "ip -net %s xfrm policy add dir in src 0.0.0.0/0 dst 0.0.0.0/0 "
 	    "if_id %d tmpl src %s dst %s proto esp mode tunnel if_id %d", ns,
 	    if_id, ipv4_remote, ipv4_local, if_id);
@@ -255,7 +214,7 @@ static int config_overlay(void)
 			      IF_ID_0_TO_2, IF_ID_2))
 		goto fail;
 
-	/* Older iproute2 doesn't support this option */
+	 
 	if (!ASSERT_OK(setup_xfrmi_external_dev(NS0), "xfrmi"))
 		goto fail;
 
@@ -297,7 +256,7 @@ static void _test_xfrm_info(void)
 	struct xfrm_info *skel;
 	int ifindex;
 
-	/* load and attach bpf progs to ipsec dev tc hook point */
+	 
 	skel = xfrm_info__open_and_load();
 	if (!ASSERT_OK_PTR(skel, "xfrm_info__open_and_load"))
 		goto done;
@@ -318,7 +277,7 @@ static void _test_xfrm_info(void)
 			   set_xfrm_info_prog_fd))
 		goto done;
 
-	/* perform test */
+	 
 	if (!ASSERT_EQ(test_xfrm_ping(skel, IF_ID_0_TO_1), 0, "ping " NS1))
 		goto done;
 	if (!ASSERT_EQ(test_xfrm_ping(skel, IF_ID_0_TO_2), 0, "ping " NS2))

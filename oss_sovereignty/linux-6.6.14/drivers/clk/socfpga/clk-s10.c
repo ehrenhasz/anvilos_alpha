@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017, Intel Corporation
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/clk-provider.h>
 #include <linux/of.h>
@@ -178,7 +176,7 @@ static const struct clk_parent_data emac_ptp_mux[] = {
 	  .name = "boot_clk", },
 };
 
-/* clocks in AO (always on) controller */
+ 
 static const struct stratix10_pll_clock s10_pll_clks[] = {
 	{ STRATIX10_BOOT_CLK, "boot_clk", boot_mux, ARRAY_SIZE(boot_mux), 0,
 	  0x0},

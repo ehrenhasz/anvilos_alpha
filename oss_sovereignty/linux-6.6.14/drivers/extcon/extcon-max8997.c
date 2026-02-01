@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// extcon-max8997.c - MAX8997 extcon driver to support MAX8997 MUIC
-//
-//  Copyright (C) 2012 Samsung Electronics
-//  Donggeun Kim <dg77.kim@samsung.com>
+
+
+
+
+
+
 
 #include <linux/devm-helpers.h>
 #include <linux/kernel.h>
@@ -20,13 +20,13 @@
 #include <linux/irqdomain.h>
 
 #define	DEV_NAME			"max8997-muic"
-#define	DELAY_MS_DEFAULT		20000		/* unit: millisecond */
+#define	DELAY_MS_DEFAULT		20000		 
 
 enum max8997_muic_adc_debounce_time {
-	ADC_DEBOUNCE_TIME_0_5MS = 0,	/* 0.5ms */
-	ADC_DEBOUNCE_TIME_10MS,		/* 10ms */
-	ADC_DEBOUNCE_TIME_25MS,		/* 25ms */
-	ADC_DEBOUNCE_TIME_38_62MS,	/* 38.62ms */
+	ADC_DEBOUNCE_TIME_0_5MS = 0,	 
+	ADC_DEBOUNCE_TIME_10MS,		 
+	ADC_DEBOUNCE_TIME_25MS,		 
+	ADC_DEBOUNCE_TIME_38_62MS,	 
 };
 
 struct max8997_muic_irq {
@@ -49,10 +49,10 @@ static struct max8997_muic_irq muic_irqs[] = {
 	{ MAX8997_PMICIRQ_CHGRM,	"pmic-CHGRM" },
 };
 
-/* Define supported cable type */
+ 
 enum max8997_muic_acc_type {
 	MAX8997_MUIC_ADC_GROUND = 0x0,
-	MAX8997_MUIC_ADC_MHL,			/* MHL*/
+	MAX8997_MUIC_ADC_MHL,			 
 	MAX8997_MUIC_ADC_REMOTE_S1_BUTTON,
 	MAX8997_MUIC_ADC_REMOTE_S2_BUTTON,
 	MAX8997_MUIC_ADC_REMOTE_S3_BUTTON,
@@ -75,14 +75,14 @@ enum max8997_muic_acc_type {
 	MAX8997_MUIC_ADC_TTY_CONVERTER,
 	MAX8997_MUIC_ADC_UART_CABLE,
 	MAX8997_MUIC_ADC_CEA936A_TYPE1_CHG,
-	MAX8997_MUIC_ADC_FACTORY_MODE_USB_OFF,	/* JIG-USB-OFF */
-	MAX8997_MUIC_ADC_FACTORY_MODE_USB_ON,	/* JIG-USB-ON */
-	MAX8997_MUIC_ADC_AV_CABLE_NOLOAD,	/* DESKDOCK */
+	MAX8997_MUIC_ADC_FACTORY_MODE_USB_OFF,	 
+	MAX8997_MUIC_ADC_FACTORY_MODE_USB_ON,	 
+	MAX8997_MUIC_ADC_AV_CABLE_NOLOAD,	 
 	MAX8997_MUIC_ADC_CEA936A_TYPE2_CHG,
-	MAX8997_MUIC_ADC_FACTORY_MODE_UART_OFF,	/* JIG-UART */
-	MAX8997_MUIC_ADC_FACTORY_MODE_UART_ON,	/* CARDOCK */
+	MAX8997_MUIC_ADC_FACTORY_MODE_UART_OFF,	 
+	MAX8997_MUIC_ADC_FACTORY_MODE_UART_ON,	 
 	MAX8997_MUIC_ADC_AUDIO_MODE_REMOTE,
-	MAX8997_MUIC_ADC_OPEN,			/* OPEN */
+	MAX8997_MUIC_ADC_OPEN,			 
 };
 
 enum max8997_muic_cable_group {
@@ -122,18 +122,10 @@ struct max8997_muic_info {
 	struct max8997_muic_platform_data *muic_pdata;
 	enum max8997_muic_charger_type pre_charger_type;
 
-	/*
-	 * Use delayed workqueue to detect cable state and then
-	 * notify cable state to notifiee/platform through uevent.
-	 * After completing the booting of platform, the extcon provider
-	 * driver should notify cable state to upper layer.
-	 */
+	 
 	struct delayed_work wq_detcable;
 
-	/*
-	 * Default usb/uart path whether UART/USB or AUX_UART/AUX_USB
-	 * h/w path of COMP2/COMN1 on CONTROL1 register.
-	 */
+	 
 	int path_usb;
 	int path_uart;
 };
@@ -152,11 +144,7 @@ static const unsigned int max8997_extcon_cable[] = {
 	EXTCON_NONE,
 };
 
-/*
- * max8997_muic_set_debounce_time - Set the debounce time of ADC
- * @info: the instance including private data of max8997 MUIC
- * @time: the debounce time of ADC
- */
+ 
 static int max8997_muic_set_debounce_time(struct max8997_muic_info *info,
 		enum max8997_muic_adc_debounce_time time)
 {
@@ -184,16 +172,7 @@ static int max8997_muic_set_debounce_time(struct max8997_muic_info *info,
 	return 0;
 };
 
-/*
- * max8997_muic_set_path - Set hardware line according to attached cable
- * @info: the instance including private data of max8997 MUIC
- * @value: the path according to attached cable
- * @attached: the state of cable (true:attached, false:detached)
- *
- * The max8997 MUIC device share outside H/W line among a varity of cables,
- * so this function set internal path of H/W line according to the type of
- * attached cable.
- */
+ 
 static int max8997_muic_set_path(struct max8997_muic_info *info,
 		u8 val, bool attached)
 {
@@ -213,9 +192,9 @@ static int max8997_muic_set_path(struct max8997_muic_info *info,
 	}
 
 	if (attached)
-		ctrl2 |= CONTROL2_CPEN_MASK;	/* LowPwr=0, CPEn=1 */
+		ctrl2 |= CONTROL2_CPEN_MASK;	 
 	else
-		ctrl2 |= CONTROL2_LOWPWR_MASK;	/* LowPwr=1, CPEn=0 */
+		ctrl2 |= CONTROL2_LOWPWR_MASK;	 
 
 	ret = max8997_update_reg(info->muic,
 			MAX8997_MUIC_REG_CONTROL2, ctrl2,
@@ -232,17 +211,7 @@ static int max8997_muic_set_path(struct max8997_muic_info *info,
 	return 0;
 }
 
-/*
- * max8997_muic_get_cable_type - Return cable type and check cable state
- * @info: the instance including private data of max8997 MUIC
- * @group: the path according to attached cable
- * @attached: store cable state and return
- *
- * This function check the cable state either attached or detached,
- * and then divide precise type of cable according to cable group.
- *	- MAX8997_CABLE_GROUP_ADC
- *	- MAX8997_CABLE_GROUP_CHG
- */
+ 
 static int max8997_muic_get_cable_type(struct max8997_muic_info *info,
 		enum max8997_muic_cable_group group, bool *attached)
 {
@@ -252,18 +221,11 @@ static int max8997_muic_get_cable_type(struct max8997_muic_info *info,
 
 	switch (group) {
 	case MAX8997_CABLE_GROUP_ADC:
-		/*
-		 * Read ADC value to check cable type and decide cable state
-		 * according to cable type
-		 */
+		 
 		adc = info->status[0] & STATUS1_ADC_MASK;
 		adc >>= STATUS1_ADC_SHIFT;
 
-		/*
-		 * Check current cable state/cable type and store cable type
-		 * (info->prev_cable_type) for handling cable when cable is
-		 * detached.
-		 */
+		 
 		if (adc == MAX8997_MUIC_ADC_OPEN) {
 			*attached = false;
 
@@ -276,10 +238,7 @@ static int max8997_muic_get_cable_type(struct max8997_muic_info *info,
 		}
 		break;
 	case MAX8997_CABLE_GROUP_CHG:
-		/*
-		 * Read charger type to check cable type and decide cable state
-		 * according to type of charger cable.
-		 */
+		 
 		chg_type = info->status[1] & STATUS2_CHGTYP_MASK;
 		chg_type >>= STATUS2_CHGTYP_SHIFT;
 
@@ -291,11 +250,7 @@ static int max8997_muic_get_cable_type(struct max8997_muic_info *info,
 		} else {
 			*attached = true;
 
-			/*
-			 * Check current cable state/cable type and store cable
-			 * type(info->prev_chg_type) for handling cable when
-			 * charger cable is detached.
-			 */
+			 
 			cable_type = info->prev_chg_type = chg_type;
 		}
 
@@ -368,7 +323,7 @@ static int max8997_muic_handle_jig_uart(struct max8997_muic_info *info,
 {
 	int ret = 0;
 
-	/* switch to UART */
+	 
 	ret = max8997_muic_set_path(info, info->path_uart, attached);
 	if (ret) {
 		dev_err(info->dev, "failed to update muic register\n");
@@ -386,7 +341,7 @@ static int max8997_muic_adc_handler(struct max8997_muic_info *info)
 	bool attached;
 	int ret = 0;
 
-	/* Check cable state which is either detached or attached */
+	 
 	cable_type = max8997_muic_get_cable_type(info,
 				MAX8997_CABLE_GROUP_ADC, &attached);
 
@@ -439,11 +394,7 @@ static int max8997_muic_adc_handler(struct max8997_muic_info *info)
 	case MAX8997_MUIC_ADC_CEA936A_TYPE1_CHG:
 	case MAX8997_MUIC_ADC_CEA936A_TYPE2_CHG:
 	case MAX8997_MUIC_ADC_AUDIO_MODE_REMOTE:
-		/*
-		 * This cable isn't used in general case if it is specially
-		 * needed to detect additional cable, should implement
-		 * proper operation when this cable is attached/detached.
-		 */
+		 
 		dev_info(info->dev,
 			"cable is %s but it isn't used (type:0x%x)\n",
 			attached ? "attached" : "detached", cable_type);
@@ -533,7 +484,7 @@ static void max8997_muic_irq_work(struct work_struct *work)
 	case MAX8997_MUICIRQ_ADCError:
 	case MAX8997_MUICIRQ_ADCLow:
 	case MAX8997_MUICIRQ_ADC:
-		/* Handle all of cable except for charger cable */
+		 
 		ret = max8997_muic_adc_handler(info);
 		break;
 	case MAX8997_MUICIRQ_VBVolt:
@@ -543,7 +494,7 @@ static void max8997_muic_irq_work(struct work_struct *work)
 	case MAX8997_MUICIRQ_ChgTyp:
 	case MAX8997_PMICIRQ_CHGINS:
 	case MAX8997_PMICIRQ_CHGRM:
-		/* Handle charger cable */
+		 
 		ret = max8997_muic_chg_handler(info);
 		break;
 	case MAX8997_MUICIRQ_OVP:
@@ -582,7 +533,7 @@ static int max8997_muic_detect_dev(struct max8997_muic_info *info)
 
 	mutex_lock(&info->mutex);
 
-	/* Read STATUSx register to detect accessory */
+	 
 	ret = max8997_bulk_read(info->muic,
 			MAX8997_MUIC_REG_STATUS1, 2, info->status);
 	if (ret) {
@@ -678,7 +629,7 @@ static int max8997_muic_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* External connector */
+	 
 	info->edev = devm_extcon_dev_allocate(&pdev->dev, max8997_extcon_cable);
 	if (IS_ERR(info->edev)) {
 		dev_err(&pdev->dev, "failed to allocate memory for extcon\n");
@@ -695,17 +646,14 @@ static int max8997_muic_probe(struct platform_device *pdev)
 		struct max8997_muic_platform_data *muic_pdata
 			= pdata->muic_pdata;
 
-		/* Initialize registers according to platform data */
+		 
 		for (i = 0; i < muic_pdata->num_init_data; i++) {
 			max8997_write_reg(info->muic,
 					muic_pdata->init_data[i].addr,
 					muic_pdata->init_data[i].data);
 		}
 
-		/*
-		 * Default usb/uart path whether UART/USB or AUX_UART/AUX_USB
-		 * h/w path of COMP2/COMN1 on CONTROL1 register.
-		 */
+		 
 		if (muic_pdata->path_uart)
 			info->path_uart = muic_pdata->path_uart;
 		else
@@ -716,10 +664,7 @@ static int max8997_muic_probe(struct platform_device *pdev)
 		else
 			info->path_usb = CONTROL1_SW_USB;
 
-		/*
-		 * Default delay time for detecting cable state
-		 * after certain time.
-		 */
+		 
 		if (muic_pdata->detcable_delay_ms)
 			delay_jiffies =
 				msecs_to_jiffies(muic_pdata->detcable_delay_ms);
@@ -731,7 +676,7 @@ static int max8997_muic_probe(struct platform_device *pdev)
 		delay_jiffies = msecs_to_jiffies(DELAY_MS_DEFAULT);
 	}
 
-	/* Set initial path for UART when JIG is connected to get serial logs */
+	 
 	ret = max8997_bulk_read(info->muic, MAX8997_MUIC_REG_STATUS1,
 				2, info->status);
 	if (ret) {
@@ -743,17 +688,10 @@ static int max8997_muic_probe(struct platform_device *pdev)
 	if (attached && cable_type == MAX8997_MUIC_ADC_FACTORY_MODE_UART_OFF)
 		max8997_muic_set_path(info, info->path_uart, true);
 
-	/* Set ADC debounce time */
+	 
 	max8997_muic_set_debounce_time(info, ADC_DEBOUNCE_TIME_25MS);
 
-	/*
-	 * Detect accessory after completing the initialization of platform
-	 *
-	 * - Use delayed workqueue to detect cable state and then
-	 * notify cable state to notifiee/platform through uevent.
-	 * After completing the booting of platform, the extcon provider
-	 * driver should notify cable state to upper layer.
-	 */
+	 
 	INIT_DELAYED_WORK(&info->wq_detcable, max8997_muic_detect_cable_wq);
 	queue_delayed_work(system_power_efficient_wq, &info->wq_detcable,
 			delay_jiffies);

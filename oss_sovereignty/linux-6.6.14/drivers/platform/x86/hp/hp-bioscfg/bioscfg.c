@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Common methods for use with hp-bioscfg driver
- *
- *  Copyright (c) 2022 HP Development Company, L.P.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -40,7 +36,7 @@ int hp_get_integer_from_buffer(u8 **buffer, u32 *buffer_size, u32 *integer)
 {
 	int *ptr = PTR_ALIGN((int *)*buffer, sizeof(int));
 
-	/* Ensure there is enough space remaining to read the integer */
+	 
 	if (*buffer_size < sizeof(int))
 		return -EINVAL;
 
@@ -64,12 +60,10 @@ int hp_get_string_from_buffer(u8 **buffer, u32 *buffer_size, char *dst, u32 dst_
 		return -EINVAL;
 
 	src_size = *(src++);
-	/* size value in u16 chars */
+	 
 	size = src_size / sizeof(u16);
 
-	/* Ensure there is enough space remaining to read and convert
-	 * the string
-	 */
+	 
 	if (*buffer_size < src_size)
 		return -EINVAL;
 
@@ -80,17 +74,12 @@ int hp_get_string_from_buffer(u8 **buffer, u32 *buffer_size, char *dst, u32 dst_
 		    src[i] == '\t')
 			size++;
 
-	/*
-	 * Conversion is limited to destination string max number of
-	 * bytes.
-	 */
+	 
 	conv_dst_size = size;
 	if (size > dst_size)
 		conv_dst_size = dst_size - 1;
 
-	/*
-	 * convert from UTF-16 unicode to ASCII
-	 */
+	 
 	utf16s_to_utf8s(src, src_size, UTF16_HOST_ENDIAN, dst, conv_dst_size);
 	dst[conv_dst_size] = 0;
 
@@ -129,49 +118,49 @@ int hp_get_common_data_from_buffer(u8 **buffer_ptr, u32 *buffer_size,
 	int ret = 0;
 	int reqs;
 
-	// PATH:
+	
 	ret = hp_get_string_from_buffer(buffer_ptr, buffer_size, common_data->path,
 					sizeof(common_data->path));
 	if (ret < 0)
 		goto common_exit;
 
-	// IS_READONLY:
+	
 	ret = hp_get_integer_from_buffer(buffer_ptr, buffer_size,
 					 &common_data->is_readonly);
 	if (ret < 0)
 		goto common_exit;
 
-	//DISPLAY_IN_UI:
+	
 	ret = hp_get_integer_from_buffer(buffer_ptr, buffer_size,
 					 &common_data->display_in_ui);
 	if (ret < 0)
 		goto common_exit;
 
-	// REQUIRES_PHYSICAL_PRESENCE:
+	
 	ret = hp_get_integer_from_buffer(buffer_ptr, buffer_size,
 					 &common_data->requires_physical_presence);
 	if (ret < 0)
 		goto common_exit;
 
-	// SEQUENCE:
+	
 	ret = hp_get_integer_from_buffer(buffer_ptr, buffer_size,
 					 &common_data->sequence);
 	if (ret < 0)
 		goto common_exit;
 
-	// PREREQUISITES_SIZE:
+	
 	ret = hp_get_integer_from_buffer(buffer_ptr, buffer_size,
 					 &common_data->prerequisites_size);
 	if (ret < 0)
 		goto common_exit;
 
 	if (common_data->prerequisites_size > MAX_PREREQUISITES_SIZE) {
-		/* Report a message and limit prerequisite size to maximum value */
+		 
 		pr_warn("Prerequisites size value exceeded the maximum number of elements supported or data may be malformed\n");
 		common_data->prerequisites_size = MAX_PREREQUISITES_SIZE;
 	}
 
-	// PREREQUISITES:
+	
 	for (reqs = 0; reqs < common_data->prerequisites_size; reqs++) {
 		ret = hp_get_string_from_buffer(buffer_ptr, buffer_size,
 						common_data->prerequisites[reqs],
@@ -180,7 +169,7 @@ int hp_get_common_data_from_buffer(u8 **buffer_ptr, u32 *buffer_size,
 			break;
 	}
 
-	// SECURITY_LEVEL:
+	
 	ret = hp_get_integer_from_buffer(buffer_ptr, buffer_size,
 					 &common_data->security_level);
 
@@ -195,35 +184,30 @@ int hp_enforce_single_line_input(char *buf, size_t count)
 	p = memchr(buf, '\n', count);
 
 	if (p == buf + count - 1)
-		*p = '\0'; /* strip trailing newline */
+		*p = '\0';  
 	else if (p)
-		return -EINVAL;  /* enforce single line input */
+		return -EINVAL;   
 
 	return 0;
 }
 
-/* Set pending reboot value and generate KOBJ_NAME event */
+ 
 void hp_set_reboot_and_signal_event(void)
 {
 	bioscfg_drv.pending_reboot = true;
 	kobject_uevent(&bioscfg_drv.class_dev->kobj, KOBJ_CHANGE);
 }
 
-/**
- * hp_calculate_string_buffer() - determines size of string buffer for
- * use with BIOS communication
- *
- * @str: the string to calculate based upon
- */
+ 
 size_t hp_calculate_string_buffer(const char *str)
 {
 	size_t length = strlen(str);
 
-	/* BIOS expects 4 bytes when an empty string is found */
+	 
 	if (length == 0)
 		return 4;
 
-	/* u16 length field + one UTF16 char for each input char */
+	 
 	return sizeof(u16) + strlen(str) * sizeof(u16);
 }
 
@@ -346,9 +330,7 @@ static ssize_t pending_reboot_show(struct kobject *kobj,
 
 static struct kobj_attribute pending_reboot = __ATTR_RO(pending_reboot);
 
-/*
- * create_attributes_level_sysfs_files() - Creates pending_reboot attributes
- */
+ 
 static int create_attributes_level_sysfs_files(void)
 {
 	return  sysfs_create_file(&bioscfg_drv.main_dir_kset->kobj,
@@ -365,15 +347,7 @@ static const struct kobj_type attr_name_ktype = {
 	.sysfs_ops	= &kobj_sysfs_ops,
 };
 
-/**
- * hp_get_wmiobj_pointer() - Get Content of WMI block for particular instance
- *
- * @instance_id: WMI instance ID
- * @guid_string: WMI GUID (in str form)
- *
- * Fetches the content for WMI block (instance_id) under GUID (guid_string)
- * Caller must kfree the return
- */
+ 
 union acpi_object *hp_get_wmiobj_pointer(int instance_id, const char *guid_string)
 {
 	struct acpi_buffer out = { ACPI_ALLOCATE_BUFFER, NULL };
@@ -383,11 +357,7 @@ union acpi_object *hp_get_wmiobj_pointer(int instance_id, const char *guid_strin
 	return ACPI_SUCCESS(status) ? (union acpi_object *)out.pointer : NULL;
 }
 
-/**
- * hp_get_instance_count() - Compute total number of instances under guid_string
- *
- * @guid_string: WMI GUID (in string form)
- */
+ 
 int hp_get_instance_count(const char *guid_string)
 {
 	union acpi_object *wmi_obj = NULL;
@@ -402,11 +372,7 @@ int hp_get_instance_count(const char *guid_string)
 	return i - 1;
 }
 
-/**
- * hp_alloc_attributes_data() - Allocate attributes data for a particular type
- *
- * @attr_type: Attribute type to allocate
- */
+ 
 static int hp_alloc_attributes_data(int attr_type)
 {
 	switch (attr_type) {
@@ -452,7 +418,7 @@ int hp_convert_hexstr_to_str(const char *input, u32 input_len, char **str, int *
 	for (i = 0; i < input_len; i += 5) {
 		strncpy(tmp, input + i, strlen(tmp));
 		if (kstrtol(tmp, 16, &ch) == 0) {
-			// escape char
+			
 			if (ch == '\\' ||
 			    ch == '\r' ||
 			    ch == '\n' || ch == '\t') {
@@ -487,7 +453,7 @@ int hp_convert_hexstr_to_str(const char *input, u32 input_len, char **str, int *
 	return ret;
 }
 
-/* map output size to the corresponding WMI method id */
+ 
 int hp_encode_outsize_for_pvsz(int outsize)
 {
 	if (outsize > 4096)
@@ -503,10 +469,7 @@ int hp_encode_outsize_for_pvsz(int outsize)
 	return 1;
 }
 
-/*
- * Update friendly display name for several attributes associated to
- * 'Schedule Power-On'
- */
+ 
 void hp_friendly_user_name_update(char *path, const char *attr_name,
 				  char *attr_display, int attr_size)
 {
@@ -516,25 +479,13 @@ void hp_friendly_user_name_update(char *path, const char *attr_name,
 		strscpy(attr_display, attr_name, attr_size);
 }
 
-/**
- * hp_update_attribute_permissions() - Update attributes permissions when
- * isReadOnly value is 1
- *
- * @is_readonly:  bool value to indicate if it a readonly attribute.
- * @current_val: kobj_attribute corresponding to attribute.
- *
- */
+ 
 void hp_update_attribute_permissions(bool is_readonly, struct kobj_attribute *current_val)
 {
 	current_val->attr.mode = is_readonly ? 0444 : 0644;
 }
 
-/**
- * destroy_attribute_objs() - Free a kset of kobjects
- * @kset: The kset to destroy
- *
- * Fress kobjects created for each attribute_name under attribute type kset
- */
+ 
 static void destroy_attribute_objs(struct kset *kset)
 {
 	struct kobject *pos, *next;
@@ -543,9 +494,7 @@ static void destroy_attribute_objs(struct kset *kset)
 		kobject_put(pos);
 }
 
-/**
- * release_attributes_data() - Clean-up all sysfs directories and files created
- */
+ 
 static void release_attributes_data(void)
 {
 	mutex_lock(&bioscfg_drv.mutex);
@@ -572,19 +521,7 @@ static void release_attributes_data(void)
 	mutex_unlock(&bioscfg_drv.mutex);
 }
 
-/**
- * hp_add_other_attributes() - Initialize HP custom attributes not
- * reported by BIOS and required to support Secure Platform and Sure
- * Start.
- *
- * @attr_type: Custom HP attribute not reported by BIOS
- *
- * Initialize all 2 types of attributes: Platform and Sure Start
- * object.  Populates each attribute types respective properties
- * under sysfs files.
- *
- * Returns zero(0) if successful. Otherwise, a negative value.
- */
+ 
 static int hp_add_other_attributes(int attr_type)
 {
 	struct kobject *attr_name_kobj;
@@ -598,7 +535,7 @@ static int hp_add_other_attributes(int attr_type)
 
 	mutex_lock(&bioscfg_drv.mutex);
 
-	/* Check if attribute type is supported */
+	 
 	switch (attr_type) {
 	case HPWMI_SECURE_PLATFORM_TYPE:
 		attr_name_kobj->kset = bioscfg_drv.authentication_dir_kset;
@@ -624,7 +561,7 @@ static int hp_add_other_attributes(int attr_type)
 		goto err_other_attr_init;
 	}
 
-	/* Populate attribute data */
+	 
 	switch (attr_type) {
 	case HPWMI_SECURE_PLATFORM_TYPE:
 		ret = hp_populate_secure_platform_data(attr_name_kobj);
@@ -665,7 +602,7 @@ static int hp_init_bios_package_attribute(enum hp_wmi_data_type attr_type,
 	int str_len;
 	int ret = 0;
 
-	/* Take action appropriate to each ACPI TYPE */
+	 
 	if (obj->package.count < min_elements) {
 		pr_err("ACPI-package does not have enough elements: %d < %d\n",
 		       obj->package.count, min_elements);
@@ -674,7 +611,7 @@ static int hp_init_bios_package_attribute(enum hp_wmi_data_type attr_type,
 
 	elements = obj->package.elements;
 
-	/* sanity checking */
+	 
 	if (elements[NAME].type != ACPI_TYPE_STRING) {
 		pr_debug("incorrect element type\n");
 		goto pack_attr_exit;
@@ -689,7 +626,7 @@ static int hp_init_bios_package_attribute(enum hp_wmi_data_type attr_type,
 	else
 		temp_kset = bioscfg_drv.main_dir_kset;
 
-	/* convert attribute name to string */
+	 
 	ret = hp_convert_hexstr_to_str(elements[NAME].string.pointer,
 				       elements[NAME].string.length,
 				       &str_value, &str_len);
@@ -701,16 +638,16 @@ static int hp_init_bios_package_attribute(enum hp_wmi_data_type attr_type,
 		return ret;
 	}
 
-	/* All duplicate attributes found are ignored */
+	 
 	duplicate = kset_find_obj(temp_kset, str_value);
 	if (duplicate) {
 		pr_debug("Duplicate attribute name found - %s\n", str_value);
-		/* kset_find_obj() returns a reference */
+		 
 		kobject_put(duplicate);
 		goto pack_attr_exit;
 	}
 
-	/* build attribute */
+	 
 	attr_name_kobj = kzalloc(sizeof(*attr_name_kobj), GFP_KERNEL);
 	if (!attr_name_kobj) {
 		ret = -ENOMEM;
@@ -727,7 +664,7 @@ static int hp_init_bios_package_attribute(enum hp_wmi_data_type attr_type,
 		goto pack_attr_exit;
 	}
 
-	/* enumerate all of these attributes */
+	 
 	switch (attr_type) {
 	case HPWMI_STRING_TYPE:
 		ret = hp_populate_string_package_data(elements,
@@ -794,16 +731,16 @@ static int hp_init_bios_buffer_attribute(enum hp_wmi_data_type attr_type,
 	else
 		temp_kset = bioscfg_drv.main_dir_kset;
 
-	/* All duplicate attributes found are ignored */
+	 
 	duplicate = kset_find_obj(temp_kset, str);
 	if (duplicate) {
 		pr_debug("Duplicate attribute name found - %s\n", str);
-		/* kset_find_obj() returns a reference */
+		 
 		kobject_put(duplicate);
 		goto buff_attr_exit;
 	}
 
-	/* build attribute */
+	 
 	attr_name_kobj = kzalloc(sizeof(*attr_name_kobj), GFP_KERNEL);
 	if (!attr_name_kobj) {
 		ret = -ENOMEM;
@@ -823,7 +760,7 @@ static int hp_init_bios_buffer_attribute(enum hp_wmi_data_type attr_type,
 		goto buff_attr_exit;
 	}
 
-	/* enumerate all of these attributes */
+	 
 	switch (attr_type) {
 	case HPWMI_STRING_TYPE:
 		ret = hp_populate_string_buffer_data(buffer_ptr,
@@ -865,23 +802,13 @@ buff_attr_exit:
 	return ret;
 }
 
-/**
- * hp_init_bios_attributes() - Initialize all attributes for a type
- * @attr_type: The attribute type to initialize
- * @guid: The WMI GUID associated with this type to initialize
- *
- * Initialize all 5 types of attributes: enumeration, integer,
- * string, password, ordered list  object.  Populates each attribute types
- * respective properties under sysfs files
- */
+ 
 static int hp_init_bios_attributes(enum hp_wmi_data_type attr_type, const char *guid)
 {
 	union acpi_object *obj = NULL;
 	int min_elements;
 
-	/* instance_id needs to be reset for each type GUID
-	 * also, instance IDs are unique within GUID but not across
-	 */
+	 
 	int instance_id = 0;
 	int cur_instance_id = instance_id;
 	int ret = 0;
@@ -911,14 +838,14 @@ static int hp_init_bios_attributes(enum hp_wmi_data_type attr_type, const char *
 		return -EINVAL;
 	}
 
-	/* need to use specific instance_id and guid combination to get right data */
+	 
 	obj = hp_get_wmiobj_pointer(instance_id, guid);
 	if (!obj)
 		return -ENODEV;
 
 	mutex_lock(&bioscfg_drv.mutex);
 	while (obj) {
-		/* Take action appropriate to each ACPI TYPE */
+		 
 		if (obj->type == ACPI_TYPE_PACKAGE) {
 			ret = hp_init_bios_package_attribute(attr_type, obj,
 							     guid, min_elements,
@@ -936,10 +863,7 @@ static int hp_init_bios_attributes(enum hp_wmi_data_type attr_type, const char *
 			goto err_attr_init;
 		}
 
-		/*
-		 * Failure reported in one attribute must not
-		 * stop process of the remaining attribute values.
-		 */
+		 
 		if (ret >= 0)
 			cur_instance_id++;
 
@@ -1001,10 +925,7 @@ static int __init hp_init(void)
 		goto err_release_attributes_data;
 	}
 
-	/*
-	 * sysfs level attributes.
-	 * - pending_reboot
-	 */
+	 
 	ret = create_attributes_level_sysfs_files();
 	if (ret)
 		pr_debug("Failed to create sysfs level attributes\n");

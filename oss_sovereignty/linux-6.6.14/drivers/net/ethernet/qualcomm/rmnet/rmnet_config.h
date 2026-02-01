@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/* Copyright (c) 2013-2014, 2016-2018, 2021 The Linux Foundation.
- * All rights reserved.
- *
- * RMNET Data configuration engine
- */
+ 
+ 
 
 #include <linux/skbuff.h>
 #include <linux/time.h>
@@ -26,9 +22,7 @@ struct rmnet_egress_agg_params {
 	u64 time_nsec;
 };
 
-/* One instance of this structure is instantiated for each real_dev associated
- * with rmnet.
- */
+ 
 struct rmnet_port {
 	struct net_device *dev;
 	u32 data_format;
@@ -38,9 +32,9 @@ struct rmnet_port {
 	struct net_device *bridge_ep;
 	struct net_device *rmnet_dev;
 
-	/* Egress aggregation information */
+	 
 	struct rmnet_egress_agg_params egress_agg_params;
-	/* Protect aggregation related elements */
+	 
 	spinlock_t agg_lock;
 	struct sk_buff *skbagg_head;
 	struct sk_buff *skbagg_tail;
@@ -98,4 +92,4 @@ int rmnet_del_bridge(struct net_device *rmnet_dev,
 		     struct net_device *slave_dev);
 struct rmnet_port*
 rmnet_get_port_rtnl(const struct net_device *real_dev);
-#endif /* _RMNET_CONFIG_H_ */
+#endif  

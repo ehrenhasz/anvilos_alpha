@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Politecnico di Torino, Italy
- *                    TORSEC group -- https://security.polito.it
- *
- * Author: Roberto Sassu <roberto.sassu@polito.it>
- *
- * File: ima_template.c
- *      Helpers to manage template descriptors.
- */
+
+ 
 
 #include <linux/rculist.h>
 #include "ima.h"
@@ -26,7 +18,7 @@ static struct ima_template_desc builtin_templates[] = {
 	{.name = "ima-modsig", .fmt = "d-ng|n-ng|sig|d-modsig|modsig"},
 	{.name = "evm-sig",
 	 .fmt = "d-ng|n-ng|evmsig|xattrnames|xattrlengths|xattrvalues|iuid|igid|imode"},
-	{.name = "", .fmt = ""},	/* placeholder for a custom format */
+	{.name = "", .fmt = ""},	 
 };
 
 static LIST_HEAD(defined_templates);
@@ -71,24 +63,14 @@ static const struct ima_template_field supported_fields[] = {
 	 .field_show = ima_show_template_sig},
 };
 
-/*
- * Used when restoring measurements carried over from a kexec. 'd' and 'n' don't
- * need to be accounted for since they shouldn't be defined in the same template
- * description as 'd-ng' and 'n-ng' respectively.
- */
+ 
 #define MAX_TEMPLATE_NAME_LEN \
 	sizeof("d-ng|n-ng|evmsig|xattrnames|xattrlengths|xattrvalues|iuid|igid|imode")
 
 static struct ima_template_desc *ima_template;
 static struct ima_template_desc *ima_buf_template;
 
-/**
- * ima_template_has_modsig - Check whether template has modsig-related fields.
- * @ima_template: IMA template to check.
- *
- * Tells whether the given template has fields referencing a file's appended
- * signature.
- */
+ 
 bool ima_template_has_modsig(const struct ima_template_desc *ima_template)
 {
 	int i;
@@ -112,10 +94,7 @@ static int __init ima_template_setup(char *str)
 	if (!ima_template)
 		ima_init_template_list();
 
-	/*
-	 * Verify that a template with the supplied name exists.
-	 * If not, use CONFIG_IMA_DEFAULT_TEMPLATE.
-	 */
+	 
 	template_desc = lookup_template_desc(str);
 	if (!template_desc) {
 		pr_err("template %s not found, using %s\n",
@@ -123,10 +102,7 @@ static int __init ima_template_setup(char *str)
 		return 1;
 	}
 
-	/*
-	 * Verify whether the current hash algorithm is supported
-	 * by the 'ima' template.
-	 */
+	 
 	if (template_len == 3 && strcmp(str, IMA_TEMPLATE_IMA_NAME) == 0 &&
 	    ima_hash_algo != HASH_ALGO_SHA1 && ima_hash_algo != HASH_ALGO_MD5) {
 		pr_err("template does not support hash alg\n");
@@ -214,7 +190,7 @@ int template_desc_init_fields(const char *template_fmt,
 	int template_num_fields;
 	int i, len;
 
-	if (num_fields && *num_fields > 0) /* already initialized? */
+	if (num_fields && *num_fields > 0)  
 		return 0;
 
 	template_num_fields = template_fmt_size(template_fmt);
@@ -410,7 +386,7 @@ static int ima_restore_template_data(struct ima_template_desc *template_desc,
 	return ret;
 }
 
-/* Restore the serialized binary measurement list without extending PCRs. */
+ 
 int ima_restore_measurement_list(loff_t size, void *buf)
 {
 	char template_name[MAX_TEMPLATE_NAME_LEN];
@@ -453,11 +429,7 @@ int ima_restore_measurement_list(loff_t size, void *buf)
 	bitmap_set(hdr_mask, HDR_PCR, 1);
 	bitmap_set(hdr_mask, HDR_DIGEST, 1);
 
-	/*
-	 * ima kexec buffer prefix: version, buffer size, count
-	 * v1 format: pcr, digest, template-name-len, template-name,
-	 *	      template-data-size, template-data
-	 */
+	 
 	bufendp = buf + khdr->buffer_size;
 	while ((bufp < bufendp) && (count++ < khdr->count)) {
 		int enforce_mask = ENFORCE_FIELDS;
@@ -474,7 +446,7 @@ int ima_restore_measurement_list(loff_t size, void *buf)
 			break;
 		}
 
-		/* template name is not null terminated */
+		 
 		memcpy(template_name, hdr[HDR_TEMPLATE_NAME].data,
 		       hdr[HDR_TEMPLATE_NAME].len);
 		template_name[hdr[HDR_TEMPLATE_NAME].len] = 0;
@@ -493,10 +465,7 @@ int ima_restore_measurement_list(loff_t size, void *buf)
 				break;
 		}
 
-		/*
-		 * Only the running system's template format is initialized
-		 * on boot.  As needed, initialize the other template formats.
-		 */
+		 
 		ret = template_desc_init_fields(template_desc->fmt,
 						&(template_desc->fields),
 						&(template_desc->num_fields));

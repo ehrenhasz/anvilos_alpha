@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  Enhanced CPU detection and feature setting code by Mike Jagdis
- *  and Martin Mares, November 1997.
- */
+ 
+ 
 
 .text
 #include <linux/threads.h>
@@ -28,12 +22,10 @@
 #include <asm/export.h>
 #include <asm/pgtable_32.h>
 
-/* Physical address */
+ 
 #define pa(X) ((X) - __PAGE_OFFSET)
 
-/*
- * References to members of the new_cpu_data structure.
- */
+ 
 
 #define X86		new_cpu_data+CPUINFO_x86
 #define X86_VENDOR	new_cpu_data+CPUINFO_x86_vendor
@@ -47,30 +39,18 @@
 
 #define SIZEOF_PTREGS 17*4
 
-/*
- * Worst-case size of the kernel mapping we need to make:
- * a relocatable kernel can live anywhere in lowmem, so we need to be able
- * to map all of lowmem.
- */
+ 
 KERNEL_PAGES = LOWMEM_PAGES
 
 INIT_MAP_SIZE = PAGE_TABLE_SIZE(KERNEL_PAGES) * PAGE_SIZE
 RESERVE_BRK(pagetables, INIT_MAP_SIZE)
 
-/*
- * 32-bit kernel entrypoint; only used by the boot CPU.  On entry,
- * %esi points to the real-mode code as a 32-bit pointer.
- * CS and DS must be 4 GB flat segments, but we don't depend on
- * any particular GDT layout, because we load our own as soon as we
- * can.
- */
+ 
 __HEAD
 SYM_CODE_START(startup_32)
 	movl pa(initial_stack),%ecx
 	
-/*
- * Set segments to known values.
- */
+ 
 	lgdt pa(boot_gdt_descr)
 	movl $(__BOOT_DS),%eax
 	movl %eax,%ds
@@ -80,9 +60,7 @@ SYM_CODE_START(startup_32)
 	movl %eax,%ss
 	leal -__PAGE_OFFSET(%ecx),%esp
 
-/*
- * Clear BSS first so that there are no surprises...
- */
+ 
 	cld
 	xorl %eax,%eax
 	movl $pa(__bss_start),%edi
@@ -90,14 +68,7 @@ SYM_CODE_START(startup_32)
 	subl %edi,%ecx
 	shrl $2,%ecx
 	rep ; stosl
-/*
- * Copy bootup parameters out of the way.
- * Note: %esi still has the pointer to the real-mode data.
- * With the kexec as boot loader, parameter segment might be loaded beyond
- * kernel image and might not even be addressable by early boot page tables.
- * (kexec on panic case). Hence copy out the parameters before initializing
- * page tables.
- */
+ 
 	movl $pa(boot_params),%edi
 	movl $(PARAM_SIZE/4),%ecx
 	cld
@@ -113,23 +84,23 @@ SYM_CODE_START(startup_32)
 1:
 
 #ifdef CONFIG_OLPC
-	/* save OFW's pgdir table for later use when calling into OFW */
+	 
 	movl %cr3, %eax
 	movl %eax, pa(olpc_ofw_pgd)
 #endif
 
 #ifdef CONFIG_MICROCODE
-	/* Early load ucode on BSP. */
+	 
 	call load_ucode_bsp
 #endif
 
-	/* Create early pagetables. */
+	 
 	call  mk_early_pgtbl_32
 
-	/* Do early initialization of the fixmap area */
+	 
 	movl $pa(initial_pg_fixmap)+PDE_IDENT_ATTR,%eax
 #ifdef  CONFIG_X86_PAE
-#define KPMDS (((-__PAGE_OFFSET) >> 30) & 3) /* Number of kernel PMDs */
+#define KPMDS (((-__PAGE_OFFSET) >> 30) & 3)  
 	movl %eax,pa(initial_pg_pmd+0x1000*KPMDS-8)
 #else
 	movl %eax,pa(initial_page_table+0xffc)
@@ -138,14 +109,7 @@ SYM_CODE_START(startup_32)
 	jmp .Ldefault_entry
 SYM_CODE_END(startup_32)
 
-/*
- * Non-boot CPU entry point; entered from trampoline.S
- * We can't lgdt here, because lgdt itself uses a data segment, but
- * we know the trampoline has already loaded the boot_gdt for us.
- *
- * If cpu hotplug is not supported then this code can go in init section
- * which will be freed later
- */
+ 
 SYM_FUNC_START(startup_32_smp)
 	cld
 	movl $(__BOOT_DS),%eax
@@ -158,7 +122,7 @@ SYM_FUNC_START(startup_32_smp)
 	leal -__PAGE_OFFSET(%ecx),%esp
 
 #ifdef CONFIG_MICROCODE
-	/* Early load ucode on AP. */
+	 
 	call load_ucode_ap
 #endif
 
@@ -166,22 +130,11 @@ SYM_FUNC_START(startup_32_smp)
 	movl $(CR0_STATE & ~X86_CR0_PG),%eax
 	movl %eax,%cr0
 
-/*
- * We want to start out with EFLAGS unambiguously cleared. Some BIOSes leave
- * bits like NT set. This would confuse the debugger if this code is traced. So
- * initialize them properly now before switching to protected mode. That means
- * DF in particular (even though we have cleared it earlier after copying the
- * command line) because GCC expects it.
- */
+ 
 	pushl $0
 	popfl
 
-/*
- * New page tables may be in 4Mbyte page mode and may be using the global pages.
- *
- * NOTE! If we are on a 486 we may have no cr4 at all! Specifically, cr4 exists
- * if and only if CPUID exists and has flags other than the FPU flag set.
- */
+ 
 	movl $-1,pa(X86_CPUID)		# preset CPUID level
 	movl $X86_EFLAGS_ID,%ecx
 	pushl %ecx
@@ -207,53 +160,49 @@ SYM_FUNC_START(startup_32_smp)
 	testb $X86_CR4_PAE, %al		# check if PAE is enabled
 	jz .Lenable_paging
 
-	/* Check if extended functions are implemented */
+	 
 	movl $0x80000000, %eax
 	cpuid
-	/* Value must be in the range 0x80000001 to 0x8000ffff */
+	 
 	subl $0x80000001, %eax
 	cmpl $(0x8000ffff-0x80000001), %eax
 	ja .Lenable_paging
 
-	/* Clear bogus XD_DISABLE bits */
+	 
 	call verify_cpu
 
 	mov $0x80000001, %eax
 	cpuid
-	/* Execute Disable bit supported? */
+	 
 	btl $(X86_FEATURE_NX & 31), %edx
 	jnc .Lenable_paging
 
-	/* Setup EFER (Extended Feature Enable Register) */
+	 
 	movl $MSR_EFER, %ecx
 	rdmsr
 
 	btsl $_EFER_NX, %eax
-	/* Make changes effective */
+	 
 	wrmsr
 
 .Lenable_paging:
 
-/*
- * Enable paging
- */
+ 
 	movl $pa(initial_page_table), %eax
-	movl %eax,%cr3		/* set the page table pointer.. */
+	movl %eax,%cr3		 
 	movl $CR0_STATE,%eax
-	movl %eax,%cr0		/* ..and set paging (PG) bit */
-	ljmp $__BOOT_CS,$1f	/* Clear prefetch and normalize %eip */
+	movl %eax,%cr0		 
+	ljmp $__BOOT_CS,$1f	 
 1:
-	/* Shift the stack pointer to a virtual address */
+	 
 	addl $__PAGE_OFFSET, %esp
 
-/*
- * Check if it is 486
- */
+ 
 	movb $4,X86			# at least 486
 	cmpl $-1,X86_CPUID
 	je .Lis486
 
-	/* get vendor info */
+	 
 	xorl %eax,%eax			# call CPUID with 0 -> return vendor ID
 	cpuid
 	movl %eax,X86_CPUID		# save CPUID level
@@ -532,16 +481,13 @@ SYM_DATA_END(boot_gdt_descr)
 	.word 0				# 32 bit align gdt_desc.address
 SYM_DATA_START(early_gdt_descr)
 	.word GDT_ENTRIES*8-1
-	.long gdt_page			/* Overwritten for secondary CPUs */
+	.long gdt_page			 
 SYM_DATA_END(early_gdt_descr)
 
-/*
- * The boot_gdt must mirror the equivalent in setup.S and is
- * used only for booting.
- */
+ 
 	.align L1_CACHE_BYTES
 SYM_DATA_START(boot_gdt)
 	.fill GDT_ENTRY_BOOT_CS,8,0
-	.quad 0x00cf9a000000ffff	/* kernel 4GB code at 0x00000000 */
-	.quad 0x00cf92000000ffff	/* kernel 4GB data at 0x00000000 */
+	.quad 0x00cf9a000000ffff	 
+	.quad 0x00cf92000000ffff	 
 SYM_DATA_END(boot_gdt)

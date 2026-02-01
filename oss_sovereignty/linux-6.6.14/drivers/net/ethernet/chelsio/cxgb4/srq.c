@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio T6 Ethernet driver for Linux.
- *
- * Copyright (c) 2017-2018 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include "cxgb4.h"
 #include "t4_msg.h"
@@ -51,20 +19,7 @@ struct srq_data *t4_init_srq(int srq_size)
 	return s;
 }
 
-/* cxgb4_get_srq_entry: read the SRQ table entry
- * @dev: Pointer to the net_device
- * @idx: Index to the srq
- * @entryp: pointer to the srq entry
- *
- * Sends CPL_SRQ_TABLE_REQ message for the given index.
- * Contents will be returned in CPL_SRQ_TABLE_RPL message.
- *
- * Returns zero if the read is successful, else a error
- * number will be returned. Caller should not use the srq
- * entry if the return value is non-zero.
- *
- *
- */
+ 
 int cxgb4_get_srq_entry(struct net_device *dev,
 			int srq_idx, struct srq_entry *entryp)
 {
@@ -99,7 +54,7 @@ int cxgb4_get_srq_entry(struct net_device *dev,
 	rc = wait_for_completion_timeout(&s->comp, SRQ_WAIT_TO);
 	if (rc)
 		rc = 0;
-	else /* !rc means we timed out */
+	else  
 		rc = -ETIMEDOUT;
 
 	WARN_ON_ONCE(entryp->idx != srq_idx);
@@ -123,7 +78,7 @@ void do_srq_table_rpl(struct adapter *adap,
 		goto out;
 	}
 
-	/* Store the read entry */
+	 
 	e = s->entryp;
 	e->valid = 1;
 	e->idx = idx;

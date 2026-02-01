@@ -1,30 +1,11 @@
-/*
- * Copyright (C) 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #ifndef _dcn_2_0_3_OFFSET_HEADER
 #define _dcn_2_0_3_OFFSET_HEADER
 
 
-// addressBlock: dce_dc_dccg_dccg_dispdec
-// base address: 0x0
+
+
 #define mmPHYPLLA_PIXCLK_RESYNC_CNTL                                                                   0x0040
 #define mmPHYPLLA_PIXCLK_RESYNC_CNTL_BASE_IDX                                                          1
 #define mmPHYPLLB_PIXCLK_RESYNC_CNTL                                                                   0x0041
@@ -151,14 +132,14 @@
 #define mmDCCG_VSYNC_CNT_INT_CTRL_BASE_IDX                                                             1
 
 
-// addressBlock: dce_dc_dccg_dccg_dfs_dispdec
-// base address: 0x0
+
+
 #define mmDENTIST_DISPCLK_CNTL                                                                         0x0064
 #define mmDENTIST_DISPCLK_CNTL_BASE_IDX                                                                1
 
 
-// addressBlock: dce_dc_dmu_rbbmif_dispdec
-// base address: 0x0
+
+
 #define mmRBBMIF_TIMEOUT                                                                               0x005b
 #define mmRBBMIF_TIMEOUT_BASE_IDX                                                                      2
 #define mmRBBMIF_STATUS                                                                                0x005c
@@ -174,30 +155,30 @@
 #define mmRBBMIF_STATUS_FLAG                                                                           0x0061
 #define mmRBBMIF_STATUS_FLAG_BASE_IDX                                                                  2
 
-// addressBlock: dce_dc_hda_az_misc_dispdec
-// base address: 0x0
+
+
 #define mmAZ_CLOCK_CNTL                                                                                0x0372
 #define mmAZ_CLOCK_CNTL_BASE_IDX                                                                       2
 
 
-// addressBlock: dce_dc_hda_azf0endpoint0_dispdec
-// base address: 0x0
+
+
 #define mmAZF0ENDPOINT0_AZALIA_F0_CODEC_ENDPOINT_INDEX                                                 0x0386
 #define mmAZF0ENDPOINT0_AZALIA_F0_CODEC_ENDPOINT_INDEX_BASE_IDX                                        2
 #define mmAZF0ENDPOINT0_AZALIA_F0_CODEC_ENDPOINT_DATA                                                  0x0387
 #define mmAZF0ENDPOINT0_AZALIA_F0_CODEC_ENDPOINT_DATA_BASE_IDX                                         2
 
 
-// addressBlock: dce_dc_hda_azf0endpoint1_dispdec
-// base address: 0x18
+
+
 #define mmAZF0ENDPOINT1_AZALIA_F0_CODEC_ENDPOINT_INDEX                                                 0x038c
 #define mmAZF0ENDPOINT1_AZALIA_F0_CODEC_ENDPOINT_INDEX_BASE_IDX                                        2
 #define mmAZF0ENDPOINT1_AZALIA_F0_CODEC_ENDPOINT_DATA                                                  0x038d
 #define mmAZF0ENDPOINT1_AZALIA_F0_CODEC_ENDPOINT_DATA_BASE_IDX                                         2
 
 
-// addressBlock: dce_dc_hda_azf0controller_dispdec
-// base address: 0x0
+
+
 #define mmAZALIA_CONTROLLER_CLOCK_GATING                                                               0x03c2
 #define mmAZALIA_CONTROLLER_CLOCK_GATING_BASE_IDX                                                      2
 #define mmAZALIA_AUDIO_DTO                                                                             0x03c3
@@ -254,8 +235,8 @@
 #define mmAZALIA_MEM_PWR_STATUS_BASE_IDX                                                               2
 
 
-// addressBlock: dce_dc_hda_azf0root_dispdec
-// base address: 0x0
+
+
 #define mmAZALIA_F0_CODEC_ROOT_PARAMETER_VENDOR_AND_DEVICE_ID                                          0x0406
 #define mmAZALIA_F0_CODEC_ROOT_PARAMETER_VENDOR_AND_DEVICE_ID_BASE_IDX                                 2
 #define mmAZALIA_F0_CODEC_ROOT_PARAMETER_REVISION_ID                                                   0x0407
@@ -285,24 +266,24 @@
 #define mmREG_DC_AUDIO_INPUT_PORT_CONNECTIVITY                                                         0x041d
 #define mmREG_DC_AUDIO_INPUT_PORT_CONNECTIVITY_BASE_IDX                                                2
 
-// addressBlock: dce_dc_hda_azf0inputendpoint0_dispdec
-// base address: 0x0
+
+
 #define mmAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_ENDPOINT_INDEX                                      0x043a
 #define mmAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_ENDPOINT_INDEX_BASE_IDX                             2
 #define mmAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_ENDPOINT_DATA                                       0x043b
 #define mmAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_ENDPOINT_DATA_BASE_IDX                              2
 
 
-// addressBlock: dce_dc_hda_azf0inputendpoint1_dispdec
-// base address: 0x10
+
+
 #define mmAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_ENDPOINT_INDEX                                      0x043e
 #define mmAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_ENDPOINT_INDEX_BASE_IDX                             2
 #define mmAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_ENDPOINT_DATA                                       0x043f
 #define mmAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_ENDPOINT_DATA_BASE_IDX                              2
 
 
-// addressBlock: dce_dc_dchubbub_hubbub_ret_path_dispdec
-// base address: 0x0
+
+
 #define mmDCHUBBUB_RET_PATH_DCC_CFG                                                                    0x04cf
 #define mmDCHUBBUB_RET_PATH_DCC_CFG_BASE_IDX                                                           2
 #define mmDCHUBBUB_RET_PATH_DCC_CFG0_0                                                                 0x04d0
@@ -352,8 +333,8 @@
 #define mmDCHUBBUB_CRC1_VAL_B_A                                                                        0x04f5
 #define mmDCHUBBUB_CRC1_VAL_B_A_BASE_IDX                                                               2
 
-// addressBlock: dce_dc_dchubbub_hubbub_dispdec
-// base address: 0x0
+
+
 #define mmDCHUBBUB_ARB_DF_REQ_OUTSTAND                                                                 0x0505
 #define mmDCHUBBUB_ARB_DF_REQ_OUTSTAND_BASE_IDX                                                        2
 #define mmDCHUBBUB_ARB_SAT_LEVEL                                                                       0x0506
@@ -421,8 +402,8 @@
 
 
 
-// addressBlock: dce_dc_dcbubp0_dispdec_hubp_dispdec
-// base address: 0x0
+
+
 #define mmHUBP0_DCSURF_SURFACE_CONFIG                                                                  0x05e5
 #define mmHUBP0_DCSURF_SURFACE_CONFIG_BASE_IDX                                                         2
 #define mmHUBP0_DCSURF_ADDR_CONFIG                                                                     0x05e6
@@ -463,8 +444,8 @@
 #define mmHUBP0_HUBP_MEASURE_WIN_CTRL_DPPCLK_BASE_IDX                                                  2
 
 
-// addressBlock: dce_dc_dcbubp0_dispdec_hubpreq_dispdec
-// base address: 0x0
+
+
 #define mmHUBPREQ0_DCSURF_SURFACE_PITCH                                                                0x0607
 #define mmHUBPREQ0_DCSURF_SURFACE_PITCH_BASE_IDX                                                       2
 #define mmHUBPREQ0_DCSURF_SURFACE_PITCH_C                                                              0x0608
@@ -593,8 +574,8 @@
 #define mmHUBPREQ0_HUBPREQ_MEM_PWR_STATUS_BASE_IDX                                                     2
 
 
-// addressBlock: dce_dc_dcbubp0_dispdec_hubpret_dispdec
-// base address: 0x0
+
+
 #define mmHUBPRET0_HUBPRET_CONTROL                                                                     0x066a
 #define mmHUBPRET0_HUBPRET_CONTROL_BASE_IDX                                                            2
 #define mmHUBPRET0_HUBPRET_MEM_PWR_CTRL                                                                0x066b
@@ -617,8 +598,8 @@
 #define mmHUBPRET0_HUBPRET_READ_LINE_STATUS_BASE_IDX                                                   2
 
 
-// addressBlock: dce_dc_dcbubp0_dispdec_cursor0_dispdec
-// base address: 0x0
+
+
 #define mmCURSOR0_0_CURSOR_CONTROL                                                                     0x0678
 #define mmCURSOR0_0_CURSOR_CONTROL_BASE_IDX                                                            2
 #define mmCURSOR0_0_CURSOR_SURFACE_ADDRESS                                                             0x0679
@@ -656,8 +637,8 @@
 
 
 
-// addressBlock: dce_dc_dcbubp1_dispdec_hubp_dispdec
-// base address: 0x370
+
+
 #define mmHUBP1_DCSURF_SURFACE_CONFIG                                                                  0x06c1
 #define mmHUBP1_DCSURF_SURFACE_CONFIG_BASE_IDX                                                         2
 #define mmHUBP1_DCSURF_ADDR_CONFIG                                                                     0x06c2
@@ -698,8 +679,8 @@
 #define mmHUBP1_HUBP_MEASURE_WIN_CTRL_DPPCLK_BASE_IDX                                                  2
 
 
-// addressBlock: dce_dc_dcbubp1_dispdec_hubpreq_dispdec
-// base address: 0x370
+
+
 #define mmHUBPREQ1_DCSURF_SURFACE_PITCH                                                                0x06e3
 #define mmHUBPREQ1_DCSURF_SURFACE_PITCH_BASE_IDX                                                       2
 #define mmHUBPREQ1_DCSURF_SURFACE_PITCH_C                                                              0x06e4
@@ -832,8 +813,8 @@
 #define mmHUBPREQ1_HUBPREQ_MEM_PWR_STATUS_BASE_IDX                                                     2
 
 
-// addressBlock: dce_dc_dcbubp1_dispdec_hubpret_dispdec
-// base address: 0x370
+
+
 #define mmHUBPRET1_HUBPRET_CONTROL                                                                     0x0746
 #define mmHUBPRET1_HUBPRET_CONTROL_BASE_IDX                                                            2
 #define mmHUBPRET1_HUBPRET_MEM_PWR_CTRL                                                                0x0747
@@ -856,8 +837,8 @@
 #define mmHUBPRET1_HUBPRET_READ_LINE_STATUS_BASE_IDX                                                   2
 
 
-// addressBlock: dce_dc_dcbubp1_dispdec_cursor0_dispdec
-// base address: 0x370
+
+
 #define mmCURSOR0_1_CURSOR_CONTROL                                                                     0x0754
 #define mmCURSOR0_1_CURSOR_CONTROL_BASE_IDX                                                            2
 #define mmCURSOR0_1_CURSOR_SURFACE_ADDRESS                                                             0x0755
@@ -895,8 +876,8 @@
 
 
 
-// addressBlock: dce_dc_dcbubp2_dispdec_hubp_dispdec
-// base address: 0x6e0
+
+
 #define mmHUBP2_DCSURF_SURFACE_CONFIG                                                                  0x079d
 #define mmHUBP2_DCSURF_SURFACE_CONFIG_BASE_IDX                                                         2
 #define mmHUBP2_DCSURF_ADDR_CONFIG                                                                     0x079e
@@ -937,8 +918,8 @@
 #define mmHUBP2_HUBP_MEASURE_WIN_CTRL_DPPCLK_BASE_IDX                                                  2
 
 
-// addressBlock: dce_dc_dcbubp2_dispdec_hubpreq_dispdec
-// base address: 0x6e0
+
+
 #define mmHUBPREQ2_DCSURF_SURFACE_PITCH                                                                0x07bf
 #define mmHUBPREQ2_DCSURF_SURFACE_PITCH_BASE_IDX                                                       2
 #define mmHUBPREQ2_DCSURF_SURFACE_PITCH_C                                                              0x07c0
@@ -1071,8 +1052,8 @@
 #define mmHUBPREQ2_HUBPREQ_MEM_PWR_STATUS_BASE_IDX                                                     2
 
 
-// addressBlock: dce_dc_dcbubp2_dispdec_hubpret_dispdec
-// base address: 0x6e0
+
+
 #define mmHUBPRET2_HUBPRET_CONTROL                                                                     0x0822
 #define mmHUBPRET2_HUBPRET_CONTROL_BASE_IDX                                                            2
 #define mmHUBPRET2_HUBPRET_MEM_PWR_CTRL                                                                0x0823
@@ -1095,8 +1076,8 @@
 #define mmHUBPRET2_HUBPRET_READ_LINE_STATUS_BASE_IDX                                                   2
 
 
-// addressBlock: dce_dc_dcbubp2_dispdec_cursor0_dispdec
-// base address: 0x6e0
+
+
 #define mmCURSOR0_2_CURSOR_CONTROL                                                                     0x0830
 #define mmCURSOR0_2_CURSOR_CONTROL_BASE_IDX                                                            2
 #define mmCURSOR0_2_CURSOR_SURFACE_ADDRESS                                                             0x0831
@@ -1133,8 +1114,8 @@
 #define mmCURSOR0_2_DMDATA_SW_DATA_BASE_IDX                                                            2
 
 
-// addressBlock: dce_dc_dcbubp3_dispdec_hubp_dispdec
-// base address: 0xa50
+
+
 #define mmHUBP3_DCSURF_SURFACE_CONFIG                                                                  0x0879
 #define mmHUBP3_DCSURF_SURFACE_CONFIG_BASE_IDX                                                         2
 #define mmHUBP3_DCSURF_ADDR_CONFIG                                                                     0x087a
@@ -1175,8 +1156,8 @@
 #define mmHUBP3_HUBP_MEASURE_WIN_CTRL_DPPCLK_BASE_IDX                                                  2
 
 
-// addressBlock: dce_dc_dcbubp3_dispdec_hubpreq_dispdec
-// base address: 0xa50
+
+
 #define mmHUBPREQ3_DCSURF_SURFACE_PITCH                                                                0x089b
 #define mmHUBPREQ3_DCSURF_SURFACE_PITCH_BASE_IDX                                                       2
 #define mmHUBPREQ3_DCSURF_SURFACE_PITCH_C                                                              0x089c
@@ -1305,8 +1286,8 @@
 #define mmHUBPREQ3_HUBPREQ_MEM_PWR_STATUS_BASE_IDX                                                     2
 
 
-// addressBlock: dce_dc_dcbubp3_dispdec_hubpret_dispdec
-// base address: 0xa50
+
+
 #define mmHUBPRET3_HUBPRET_CONTROL                                                                     0x08fe
 #define mmHUBPRET3_HUBPRET_CONTROL_BASE_IDX                                                            2
 #define mmHUBPRET3_HUBPRET_MEM_PWR_CTRL                                                                0x08ff
@@ -1329,8 +1310,8 @@
 #define mmHUBPRET3_HUBPRET_READ_LINE_STATUS_BASE_IDX                                                   2
 
 
-// addressBlock: dce_dc_dcbubp3_dispdec_cursor0_dispdec
-// base address: 0xa50
+
+
 #define mmCURSOR0_3_CURSOR_CONTROL                                                                     0x090c
 #define mmCURSOR0_3_CURSOR_CONTROL_BASE_IDX                                                            2
 #define mmCURSOR0_3_CURSOR_SURFACE_ADDRESS                                                             0x090d
@@ -1366,8 +1347,8 @@
 #define mmCURSOR0_3_DMDATA_SW_DATA                                                                     0x091c
 #define mmCURSOR0_3_DMDATA_SW_DATA_BASE_IDX                                                            2
 
-// addressBlock: dce_dc_dpp0_dispdec_dpp_top_dispdec
-// base address: 0x0
+
+
 #define mmDPP_TOP0_DPP_CONTROL                                                                         0x0cc5
 #define mmDPP_TOP0_DPP_CONTROL_BASE_IDX                                                                2
 #define mmDPP_TOP0_DPP_SOFT_RESET                                                                      0x0cc6
@@ -1382,8 +1363,8 @@
 #define mmDPP_TOP0_HOST_READ_CONTROL_BASE_IDX                                                          2
 
 
-// addressBlock: dce_dc_dpp0_dispdec_cnvc_cfg_dispdec
-// base address: 0x0
+
+
 #define mmCNVC_CFG0_CNVC_SURFACE_PIXEL_FORMAT                                                          0x0ccf
 #define mmCNVC_CFG0_CNVC_SURFACE_PIXEL_FORMAT_BASE_IDX                                                 2
 #define mmCNVC_CFG0_FORMAT_CONTROL                                                                     0x0cd0
@@ -1414,8 +1395,8 @@
 #define mmCNVC_CFG0_ALPHA_2BIT_LUT_BASE_IDX                                                            2
 
 
-// addressBlock: dce_dc_dpp0_dispdec_cnvc_cur_dispdec
-// base address: 0x0
+
+
 #define mmCNVC_CUR0_CURSOR0_CONTROL                                                                    0x0ce0
 #define mmCNVC_CUR0_CURSOR0_CONTROL_BASE_IDX                                                           2
 #define mmCNVC_CUR0_CURSOR0_COLOR0                                                                     0x0ce1
@@ -1426,8 +1407,8 @@
 #define mmCNVC_CUR0_CURSOR0_FP_SCALE_BIAS_BASE_IDX                                                     2
 
 
-// addressBlock: dce_dc_dpp0_dispdec_dscl_dispdec
-// base address: 0x0
+
+
 #define mmDSCL0_SCL_COEF_RAM_TAP_SELECT                                                                0x0cea
 #define mmDSCL0_SCL_COEF_RAM_TAP_SELECT_BASE_IDX                                                       2
 #define mmDSCL0_SCL_COEF_RAM_TAP_DATA                                                                  0x0ceb
@@ -1498,8 +1479,8 @@
 #define mmDSCL0_OBUF_MEM_PWR_CTRL_BASE_IDX                                                             2
 
 
-// addressBlock: dce_dc_dpp0_dispdec_cm_dispdec
-// base address: 0x0
+
+
 #define mmCM0_CM_CONTROL                                                                               0x0d1a
 #define mmCM0_CM_CONTROL_BASE_IDX                                                                      2
 #define mmCM0_CM_ICSC_CONTROL                                                                          0x0d1b
@@ -1917,8 +1898,8 @@
 #define mmCM0_CM_TEST_DEBUG_DATA                                                                       0x0dea
 #define mmCM0_CM_TEST_DEBUG_DATA_BASE_IDX                                                              2
 
-// addressBlock: dce_dc_dpp1_dispdec_dpp_top_dispdec
-// base address: 0x5ac
+
+
 #define mmDPP_TOP1_DPP_CONTROL                                                                         0x0e30
 #define mmDPP_TOP1_DPP_CONTROL_BASE_IDX                                                                2
 #define mmDPP_TOP1_DPP_SOFT_RESET                                                                      0x0e31
@@ -1933,8 +1914,8 @@
 #define mmDPP_TOP1_HOST_READ_CONTROL_BASE_IDX                                                          2
 
 
-// addressBlock: dce_dc_dpp1_dispdec_cnvc_cfg_dispdec
-// base address: 0x5ac
+
+
 #define mmCNVC_CFG1_CNVC_SURFACE_PIXEL_FORMAT                                                          0x0e3a
 #define mmCNVC_CFG1_CNVC_SURFACE_PIXEL_FORMAT_BASE_IDX                                                 2
 #define mmCNVC_CFG1_FORMAT_CONTROL                                                                     0x0e3b
@@ -1964,8 +1945,8 @@
 #define mmCNVC_CFG1_ALPHA_2BIT_LUT                                                                     0x0e48
 #define mmCNVC_CFG1_ALPHA_2BIT_LUT_BASE_IDX                                                            2
 
-// addressBlock: dce_dc_dpp1_dispdec_cnvc_cur_dispdec
-// base address: 0x5ac
+
+
 #define mmCNVC_CUR1_CURSOR0_CONTROL                                                                    0x0e4b
 #define mmCNVC_CUR1_CURSOR0_CONTROL_BASE_IDX                                                           2
 #define mmCNVC_CUR1_CURSOR0_COLOR0                                                                     0x0e4c
@@ -1976,8 +1957,8 @@
 #define mmCNVC_CUR1_CURSOR0_FP_SCALE_BIAS_BASE_IDX                                                     2
 
 
-// addressBlock: dce_dc_dpp1_dispdec_dscl_dispdec
-// base address: 0x5ac
+
+
 #define mmDSCL1_SCL_COEF_RAM_TAP_SELECT                                                                0x0e55
 #define mmDSCL1_SCL_COEF_RAM_TAP_SELECT_BASE_IDX                                                       2
 #define mmDSCL1_SCL_COEF_RAM_TAP_DATA                                                                  0x0e56
@@ -2048,8 +2029,8 @@
 #define mmDSCL1_OBUF_MEM_PWR_CTRL_BASE_IDX                                                             2
 
 
-// addressBlock: dce_dc_dpp1_dispdec_cm_dispdec
-// base address: 0x5ac
+
+
 #define mmCM1_CM_CONTROL                                                                               0x0e85
 #define mmCM1_CM_CONTROL_BASE_IDX                                                                      2
 #define mmCM1_CM_ICSC_CONTROL                                                                          0x0e86
@@ -2468,8 +2449,8 @@
 #define mmCM1_CM_TEST_DEBUG_DATA_BASE_IDX                                                              2
 
 
-// addressBlock: dce_dc_dpp2_dispdec_dpp_top_dispdec
-// base address: 0xb58
+
+
 #define mmDPP_TOP2_DPP_CONTROL                                                                         0x0f9b
 #define mmDPP_TOP2_DPP_CONTROL_BASE_IDX                                                                2
 #define mmDPP_TOP2_DPP_SOFT_RESET                                                                      0x0f9c
@@ -2481,8 +2462,8 @@
 #define mmDPP_TOP2_DPP_CRC_CTRL                                                                        0x0f9f
 #define mmDPP_TOP2_DPP_CRC_CTRL_BASE_IDX                                                               2
 
-// addressBlock: dce_dc_dpp2_dispdec_cnvc_cfg_dispdec
-// base address: 0xb58
+
+
 #define mmCNVC_CFG2_CNVC_SURFACE_PIXEL_FORMAT                                                          0x0fa5
 #define mmCNVC_CFG2_CNVC_SURFACE_PIXEL_FORMAT_BASE_IDX                                                 2
 #define mmCNVC_CFG2_FORMAT_CONTROL                                                                     0x0fa6
@@ -2513,8 +2494,8 @@
 #define mmCNVC_CFG2_ALPHA_2BIT_LUT_BASE_IDX                                                            2
 
 
-// addressBlock: dce_dc_dpp2_dispdec_cnvc_cur_dispdec
-// base address: 0xb58
+
+
 #define mmCNVC_CUR2_CURSOR0_CONTROL                                                                    0x0fb6
 #define mmCNVC_CUR2_CURSOR0_CONTROL_BASE_IDX                                                           2
 #define mmCNVC_CUR2_CURSOR0_COLOR0                                                                     0x0fb7
@@ -2525,8 +2506,8 @@
 #define mmCNVC_CUR2_CURSOR0_FP_SCALE_BIAS_BASE_IDX                                                     2
 
 
-// addressBlock: dce_dc_dpp2_dispdec_dscl_dispdec
-// base address: 0xb58
+
+
 #define mmDSCL2_SCL_COEF_RAM_TAP_SELECT                                                                0x0fc0
 #define mmDSCL2_SCL_COEF_RAM_TAP_SELECT_BASE_IDX                                                       2
 #define mmDSCL2_SCL_COEF_RAM_TAP_DATA                                                                  0x0fc1
@@ -2597,8 +2578,8 @@
 #define mmDSCL2_OBUF_MEM_PWR_CTRL_BASE_IDX                                                             2
 
 
-// addressBlock: dce_dc_dpp2_dispdec_cm_dispdec
-// base address: 0xb58
+
+
 #define mmCM2_CM_CONTROL                                                                               0x0ff0
 #define mmCM2_CM_CONTROL_BASE_IDX                                                                      2
 #define mmCM2_CM_ICSC_CONTROL                                                                          0x0ff1
@@ -3016,8 +2997,8 @@
 #define mmCM2_CM_TEST_DEBUG_DATA                                                                       0x10c0
 #define mmCM2_CM_TEST_DEBUG_DATA_BASE_IDX                                                              2
 
-// addressBlock: dce_dc_dpp3_dispdec_dpp_top_dispdec
-// base address: 0x1104
+
+
 #define mmDPP_TOP3_DPP_CONTROL                                                                         0x1106
 #define mmDPP_TOP3_DPP_CONTROL_BASE_IDX                                                                2
 #define mmDPP_TOP3_DPP_SOFT_RESET                                                                      0x1107
@@ -3030,8 +3011,8 @@
 #define mmDPP_TOP3_DPP_CRC_CTRL_BASE_IDX                                                               2
 
 
-// addressBlock: dce_dc_dpp3_dispdec_cnvc_cfg_dispdec
-// base address: 0x1104
+
+
 #define mmCNVC_CFG3_CNVC_SURFACE_PIXEL_FORMAT                                                          0x1110
 #define mmCNVC_CFG3_CNVC_SURFACE_PIXEL_FORMAT_BASE_IDX                                                 2
 #define mmCNVC_CFG3_FORMAT_CONTROL                                                                     0x1111
@@ -3062,8 +3043,8 @@
 #define mmCNVC_CFG3_ALPHA_2BIT_LUT_BASE_IDX                                                            2
 
 
-// addressBlock: dce_dc_dpp3_dispdec_cnvc_cur_dispdec
-// base address: 0x1104
+
+
 #define mmCNVC_CUR3_CURSOR0_CONTROL                                                                    0x1121
 #define mmCNVC_CUR3_CURSOR0_CONTROL_BASE_IDX                                                           2
 #define mmCNVC_CUR3_CURSOR0_COLOR0                                                                     0x1122
@@ -3074,8 +3055,8 @@
 #define mmCNVC_CUR3_CURSOR0_FP_SCALE_BIAS_BASE_IDX                                                     2
 
 
-// addressBlock: dce_dc_dpp3_dispdec_dscl_dispdec
-// base address: 0x1104
+
+
 #define mmDSCL3_SCL_COEF_RAM_TAP_SELECT                                                                0x112b
 #define mmDSCL3_SCL_COEF_RAM_TAP_SELECT_BASE_IDX                                                       2
 #define mmDSCL3_SCL_COEF_RAM_TAP_DATA                                                                  0x112c
@@ -3146,8 +3127,8 @@
 #define mmDSCL3_OBUF_MEM_PWR_CTRL_BASE_IDX                                                             2
 
 
-// addressBlock: dce_dc_dpp3_dispdec_cm_dispdec
-// base address: 0x1104
+
+
 #define mmCM3_CM_CONTROL                                                                               0x115b
 #define mmCM3_CM_CONTROL_BASE_IDX                                                                      2
 #define mmCM3_CM_ICSC_CONTROL                                                                          0x115c
@@ -3566,8 +3547,8 @@
 #define mmCM3_CM_TEST_DEBUG_DATA_BASE_IDX                                                              2
 
 
-// addressBlock: dce_dc_mpc_mpcc0_dispdec
-// base address: 0x0
+
+
 #define mmMPCC0_MPCC_TOP_SEL                                                                           0x1271
 #define mmMPCC0_MPCC_TOP_SEL_BASE_IDX                                                                  2
 #define mmMPCC0_MPCC_BOT_SEL                                                                           0x1272
@@ -3600,8 +3581,8 @@
 #define mmMPCC0_MPCC_STATUS_BASE_IDX                                                                   2
 
 
-// addressBlock: dce_dc_mpc_mpcc1_dispdec
-// base address: 0x6c
+
+
 #define mmMPCC1_MPCC_TOP_SEL                                                                           0x128c
 #define mmMPCC1_MPCC_TOP_SEL_BASE_IDX                                                                  2
 #define mmMPCC1_MPCC_BOT_SEL                                                                           0x128d
@@ -3634,8 +3615,8 @@
 #define mmMPCC1_MPCC_STATUS_BASE_IDX                                                                   2
 
 
-// addressBlock: dce_dc_mpc_mpcc2_dispdec
-// base address: 0xd8
+
+
 #define mmMPCC2_MPCC_TOP_SEL                                                                           0x12a7
 #define mmMPCC2_MPCC_TOP_SEL_BASE_IDX                                                                  2
 #define mmMPCC2_MPCC_BOT_SEL                                                                           0x12a8
@@ -3668,8 +3649,8 @@
 #define mmMPCC2_MPCC_STATUS_BASE_IDX                                                                   2
 
 
-// addressBlock: dce_dc_mpc_mpcc3_dispdec
-// base address: 0x144
+
+
 #define mmMPCC3_MPCC_TOP_SEL                                                                           0x12c2
 #define mmMPCC3_MPCC_TOP_SEL_BASE_IDX                                                                  2
 #define mmMPCC3_MPCC_BOT_SEL                                                                           0x12c3
@@ -3701,8 +3682,8 @@
 #define mmMPCC3_MPCC_STATUS                                                                            0x12d0
 #define mmMPCC3_MPCC_STATUS_BASE_IDX                                                                   2
 
-// addressBlock: dce_dc_mpc_mpcc4_dispdec
-// base address: 0x1b0
+
+
 #define mmMPCC4_MPCC_TOP_SEL                                                                           0x12dd
 #define mmMPCC4_MPCC_TOP_SEL_BASE_IDX                                                                  2
 #define mmMPCC4_MPCC_BOT_SEL                                                                           0x12de
@@ -3735,8 +3716,8 @@
 #define mmMPCC4_MPCC_STATUS_BASE_IDX                                                                   2
 
 
-// addressBlock: dce_dc_mpc_mpc_cfg_dispdec
-// base address: 0x0
+
+
 #define mmMPC_CLOCK_CONTROL                                                                            0x1349
 #define mmMPC_CLOCK_CONTROL_BASE_IDX                                                                   2
 #define mmMPC_SOFT_RESET                                                                               0x134a
@@ -3819,8 +3800,8 @@
 #define mmMPC_OUT1_DENORM_CLAMP_B_CB_BASE_IDX                                                          2
 
 
-// addressBlock: dce_dc_mpc_mpcc_ogam0_dispdec
-// base address: 0x0
+
+
 #define mmMPCC_OGAM0_MPCC_OGAM_MODE                                                                    0x13ae
 #define mmMPCC_OGAM0_MPCC_OGAM_MODE_BASE_IDX                                                           2
 #define mmMPCC_OGAM0_MPCC_OGAM_LUT_INDEX                                                               0x13af
@@ -3947,8 +3928,8 @@
 #define mmMPCC_OGAM0_MPCC_OGAM_RAMB_REGION_32_33_BASE_IDX                                              2
 
 
-// addressBlock: dce_dc_mpc_mpcc_ogam1_dispdec
-// base address: 0x104
+
+
 #define mmMPCC_OGAM1_MPCC_OGAM_MODE                                                                    0x13ef
 #define mmMPCC_OGAM1_MPCC_OGAM_MODE_BASE_IDX                                                           2
 #define mmMPCC_OGAM1_MPCC_OGAM_LUT_INDEX                                                               0x13f0
@@ -4075,8 +4056,8 @@
 #define mmMPCC_OGAM1_MPCC_OGAM_RAMB_REGION_32_33_BASE_IDX                                              2
 
 
-// addressBlock: dce_dc_mpc_mpcc_ogam2_dispdec
-// base address: 0x208
+
+
 #define mmMPCC_OGAM2_MPCC_OGAM_MODE                                                                    0x1430
 #define mmMPCC_OGAM2_MPCC_OGAM_MODE_BASE_IDX                                                           2
 #define mmMPCC_OGAM2_MPCC_OGAM_LUT_INDEX                                                               0x1431
@@ -4203,8 +4184,8 @@
 #define mmMPCC_OGAM2_MPCC_OGAM_RAMB_REGION_32_33_BASE_IDX                                              2
 
 
-// addressBlock: dce_dc_mpc_mpcc_ogam3_dispdec
-// base address: 0x30c
+
+
 #define mmMPCC_OGAM3_MPCC_OGAM_MODE                                                                    0x1471
 #define mmMPCC_OGAM3_MPCC_OGAM_MODE_BASE_IDX                                                           2
 #define mmMPCC_OGAM3_MPCC_OGAM_LUT_INDEX                                                               0x1472
@@ -4331,8 +4312,8 @@
 #define mmMPCC_OGAM3_MPCC_OGAM_RAMB_REGION_32_33_BASE_IDX                                              2
 
 
-// addressBlock: dce_dc_mpc_mpcc_ogam4_dispdec
-// base address: 0x410
+
+
 #define mmMPCC_OGAM4_MPCC_OGAM_MODE                                                                    0x14b2
 #define mmMPCC_OGAM4_MPCC_OGAM_MODE_BASE_IDX                                                           2
 #define mmMPCC_OGAM4_MPCC_OGAM_LUT_INDEX                                                               0x14b3
@@ -4459,8 +4440,8 @@
 #define mmMPCC_OGAM4_MPCC_OGAM_RAMB_REGION_32_33_BASE_IDX                                              2
 
 
-// addressBlock: dce_dc_mpc_mpc_ocsc_dispdec
-// base address: 0x0
+
+
 #define mmMPC_OUT_CSC_COEF_FORMAT                                                                      0x15b6
 #define mmMPC_OUT_CSC_COEF_FORMAT_BASE_IDX                                                             2
 #define mmMPC_OUT0_CSC_MODE                                                                            0x15b7
@@ -4517,8 +4498,8 @@
 #define mmMPC_OUT1_CSC_C33_C34_B_BASE_IDX                                                              2
 
 
-// addressBlock: dce_dc_opp_fmt0_dispdec
-// base address: 0x0
+
+
 #define mmFMT0_FMT_CLAMP_COMPONENT_R                                                                   0x183c
 #define mmFMT0_FMT_CLAMP_COMPONENT_R_BASE_IDX                                                          2
 #define mmFMT0_FMT_CLAMP_COMPONENT_G                                                                   0x183d
@@ -4547,8 +4528,8 @@
 #define mmFMT0_FMT_422_CONTROL_BASE_IDX                                                                2
 
 
-// addressBlock: dce_dc_opp_dpg0_dispdec
-// base address: 0x0
+
+
 #define mmDPG0_DPG_CONTROL                                                                             0x1854
 #define mmDPG0_DPG_CONTROL_BASE_IDX                                                                    2
 #define mmDPG0_DPG_RAMP_CONTROL                                                                        0x1855
@@ -4567,8 +4548,8 @@
 #define mmDPG0_DPG_STATUS_BASE_IDX                                                                     2
 
 
-// addressBlock: dce_dc_opp_oppbuf0_dispdec
-// base address: 0x0
+
+
 #define mmOPPBUF0_OPPBUF_CONTROL                                                                       0x1884
 #define mmOPPBUF0_OPPBUF_CONTROL_BASE_IDX                                                              2
 #define mmOPPBUF0_OPPBUF_3D_PARAMETERS_0                                                               0x1885
@@ -4577,14 +4558,14 @@
 #define mmOPPBUF0_OPPBUF_3D_PARAMETERS_1_BASE_IDX                                                      2
 
 
-// addressBlock: dce_dc_opp_opp_pipe0_dispdec
-// base address: 0x0
+
+
 #define mmOPP_PIPE0_OPP_PIPE_CONTROL                                                                   0x188c
 #define mmOPP_PIPE0_OPP_PIPE_CONTROL_BASE_IDX                                                          2
 
 
-// addressBlock: dce_dc_opp_opp_pipe_crc0_dispdec
-// base address: 0x0
+
+
 #define mmOPP_PIPE_CRC0_OPP_PIPE_CRC_CONTROL                                                           0x1891
 #define mmOPP_PIPE_CRC0_OPP_PIPE_CRC_CONTROL_BASE_IDX                                                  2
 #define mmOPP_PIPE_CRC0_OPP_PIPE_CRC_MASK                                                              0x1892
@@ -4597,8 +4578,8 @@
 #define mmOPP_PIPE_CRC0_OPP_PIPE_CRC_RESULT2_BASE_IDX                                                  2
 
 
-// addressBlock: dce_dc_opp_fmt1_dispdec
-// base address: 0x168
+
+
 #define mmFMT1_FMT_CLAMP_COMPONENT_R                                                                   0x1896
 #define mmFMT1_FMT_CLAMP_COMPONENT_R_BASE_IDX                                                          2
 #define mmFMT1_FMT_CLAMP_COMPONENT_G                                                                   0x1897
@@ -4627,8 +4608,8 @@
 #define mmFMT1_FMT_422_CONTROL_BASE_IDX                                                                2
 
 
-// addressBlock: dce_dc_opp_dpg1_dispdec
-// base address: 0x168
+
+
 #define mmDPG1_DPG_CONTROL                                                                             0x18ae
 #define mmDPG1_DPG_CONTROL_BASE_IDX                                                                    2
 #define mmDPG1_DPG_RAMP_CONTROL                                                                        0x18af
@@ -4647,8 +4628,8 @@
 #define mmDPG1_DPG_STATUS_BASE_IDX                                                                     2
 
 
-// addressBlock: dce_dc_opp_oppbuf1_dispdec
-// base address: 0x168
+
+
 #define mmOPPBUF1_OPPBUF_CONTROL                                                                       0x18de
 #define mmOPPBUF1_OPPBUF_CONTROL_BASE_IDX                                                              2
 #define mmOPPBUF1_OPPBUF_3D_PARAMETERS_0                                                               0x18df
@@ -4657,13 +4638,13 @@
 #define mmOPPBUF1_OPPBUF_3D_PARAMETERS_1_BASE_IDX                                                      2
 
 
-// addressBlock: dce_dc_opp_opp_pipe1_dispdec
-// base address: 0x168
+
+
 #define mmOPP_PIPE1_OPP_PIPE_CONTROL                                                                   0x18e6
 #define mmOPP_PIPE1_OPP_PIPE_CONTROL_BASE_IDX                                                          2
 
-// addressBlock: dce_dc_opp_opp_pipe_crc1_dispdec
-// base address: 0x168
+
+
 #define mmOPP_PIPE_CRC1_OPP_PIPE_CRC_CONTROL                                                           0x18eb
 #define mmOPP_PIPE_CRC1_OPP_PIPE_CRC_CONTROL_BASE_IDX                                                  2
 #define mmOPP_PIPE_CRC1_OPP_PIPE_CRC_MASK                                                              0x18ec
@@ -4676,14 +4657,14 @@
 #define mmOPP_PIPE_CRC1_OPP_PIPE_CRC_RESULT2_BASE_IDX                                                  2
 
 
-// addressBlock: dce_dc_opp_opp_top_dispdec
-// base address: 0x0
+
+
 #define mmOPP_TOP_CLK_CONTROL                                                                          0x1a5e
 #define mmOPP_TOP_CLK_CONTROL_BASE_IDX                                                                 2
 
 
-// addressBlock: dce_dc_optc_odm0_dispdec
-// base address: 0x0
+
+
 #define mmODM0_OPTC_INPUT_GLOBAL_CONTROL                                                               0x1aca
 #define mmODM0_OPTC_INPUT_GLOBAL_CONTROL_BASE_IDX                                                      2
 #define mmODM0_OPTC_DATA_SOURCE_SELECT                                                                 0x1acb
@@ -4697,8 +4678,8 @@
 #define mmODM0_OPTC_INPUT_CLOCK_CONTROL                                                                0x1acf
 #define mmODM0_OPTC_INPUT_CLOCK_CONTROL_BASE_IDX                                                       2
 
-// addressBlock: dce_dc_optc_odm1_dispdec
-// base address: 0x40
+
+
 #define mmODM1_OPTC_INPUT_GLOBAL_CONTROL                                                               0x1ada
 #define mmODM1_OPTC_INPUT_GLOBAL_CONTROL_BASE_IDX                                                      2
 #define mmODM1_OPTC_DATA_SOURCE_SELECT                                                                 0x1adb
@@ -4713,8 +4694,8 @@
 #define mmODM1_OPTC_INPUT_CLOCK_CONTROL_BASE_IDX                                                       2
 
 
-// addressBlock: dce_dc_optc_otg0_dispdec
-// base address: 0x0
+
+
 #define mmOTG0_OTG_H_TOTAL                                                                             0x1b2a
 #define mmOTG0_OTG_H_TOTAL_BASE_IDX                                                                    2
 #define mmOTG0_OTG_H_BLANK_START_END                                                                   0x1b2b
@@ -4904,8 +4885,8 @@
 #define mmOTG0_OTG_DSC_START_POSITION                                                                  0x1b99
 #define mmOTG0_OTG_DSC_START_POSITION_BASE_IDX                                                         2
 
-// addressBlock: dce_dc_optc_otg1_dispdec
-// base address: 0x200
+
+
 #define mmOTG1_OTG_H_TOTAL                                                                             0x1baa
 #define mmOTG1_OTG_H_TOTAL_BASE_IDX                                                                    2
 #define mmOTG1_OTG_H_BLANK_START_END                                                                   0x1bab
@@ -5096,8 +5077,8 @@
 #define mmOTG1_OTG_DSC_START_POSITION_BASE_IDX                                                         2
 
 
-// addressBlock: dce_dc_optc_optc_misc_dispdec
-// base address: 0x0
+
+
 #define mmDWB_SOURCE_SELECT                                                                            0x1e2a
 #define mmDWB_SOURCE_SELECT_BASE_IDX                                                                   2
 #define mmGSL_SOURCE_SELECT                                                                            0x1e2b
@@ -5106,8 +5087,8 @@
 #define mmOPTC_CLOCK_CONTROL_BASE_IDX                                                                  2
 
 
-// addressBlock: dce_dc_dio_dout_i2c_dispdec
-// base address: 0x0
+
+
 #define mmDC_I2C_CONTROL                                                                               0x1e98
 #define mmDC_I2C_CONTROL_BASE_IDX                                                                      2
 #define mmDC_I2C_ARBITRATION                                                                           0x1e99
@@ -5144,8 +5125,8 @@
 #define mmDC_I2C_READ_REQUEST_INTERRUPT_BASE_IDX                                                       2
 
 
-// addressBlock: dce_dc_dio_dio_misc_dispdec
-// base address: 0x0
+
+
 #define mmDIO_SCRATCH0                                                                                 0x1eca
 #define mmDIO_SCRATCH0_BASE_IDX                                                                        2
 #define mmDIO_SCRATCH1                                                                                 0x1ecb
@@ -5190,8 +5171,8 @@
 #define mmDIO_GENERIC_INTERRUPT_CLEAR_BASE_IDX                                                         2
 
 
-// addressBlock: dce_dc_dio_hpd0_dispdec
-// base address: 0x0
+
+
 #define mmHPD0_DC_HPD_INT_STATUS                                                                       0x1f14
 #define mmHPD0_DC_HPD_INT_STATUS_BASE_IDX                                                              2
 #define mmHPD0_DC_HPD_INT_CONTROL                                                                      0x1f15
@@ -5204,8 +5185,8 @@
 #define mmHPD0_DC_HPD_TOGGLE_FILT_CNTL_BASE_IDX                                                        2
 
 
-// addressBlock: dce_dc_dio_hpd1_dispdec
-// base address: 0x20
+
+
 #define mmHPD1_DC_HPD_INT_STATUS                                                                       0x1f1c
 #define mmHPD1_DC_HPD_INT_STATUS_BASE_IDX                                                              2
 #define mmHPD1_DC_HPD_INT_CONTROL                                                                      0x1f1d
@@ -5217,8 +5198,8 @@
 #define mmHPD1_DC_HPD_TOGGLE_FILT_CNTL                                                                 0x1f20
 #define mmHPD1_DC_HPD_TOGGLE_FILT_CNTL_BASE_IDX                                                        2
 
-// addressBlock: dce_dc_dio_dp_aux0_dispdec
-// base address: 0x0
+
+
 #define mmDP_AUX0_AUX_CONTROL                                                                          0x1f50
 #define mmDP_AUX0_AUX_CONTROL_BASE_IDX                                                                 2
 #define mmDP_AUX0_AUX_SW_CONTROL                                                                       0x1f51
@@ -5249,8 +5230,8 @@
 #define mmDP_AUX0_AUX_DPHY_RX_STATUS_BASE_IDX                                                          2
 
 
-// addressBlock: dce_dc_dio_dp_aux1_dispdec
-// base address: 0x70
+
+
 #define mmDP_AUX1_AUX_CONTROL                                                                          0x1f6c
 #define mmDP_AUX1_AUX_CONTROL_BASE_IDX                                                                 2
 #define mmDP_AUX1_AUX_SW_CONTROL                                                                       0x1f6d
@@ -5281,8 +5262,8 @@
 #define mmDP_AUX1_AUX_DPHY_RX_STATUS_BASE_IDX                                                          2
 
 
-// addressBlock: dce_dc_dio_dig0_dispdec
-// base address: 0x0
+
+
 #define mmDIG0_DIG_FE_CNTL                                                                             0x2068
 #define mmDIG0_DIG_FE_CNTL_BASE_IDX                                                                    2
 #define mmDIG0_DIG_OUTPUT_CRC_CNTL                                                                     0x2069
@@ -5459,8 +5440,8 @@
 #define mmDIG0_HDMI_GENERIC_PACKET_CONTROL5_BASE_IDX                                                   2
 
 
-// addressBlock: dce_dc_dio_dp0_dispdec
-// base address: 0x0
+
+
 #define mmDP0_DP_LINK_CNTL                                                                             0x2108
 #define mmDP0_DP_LINK_CNTL_BASE_IDX                                                                    2
 #define mmDP0_DP_PIXEL_FORMAT                                                                          0x2109
@@ -5601,8 +5582,8 @@
 #define mmDP0_DP_DSC_BYTES_PER_PIXEL_BASE_IDX                                                          2
 
 
-// addressBlock: dce_dc_dio_dig1_dispdec
-// base address: 0x400
+
+
 #define mmDIG1_DIG_FE_CNTL                                                                             0x2168
 #define mmDIG1_DIG_FE_CNTL_BASE_IDX                                                                    2
 #define mmDIG1_DIG_OUTPUT_CRC_CNTL                                                                     0x2169
@@ -5779,8 +5760,8 @@
 #define mmDIG1_HDMI_GENERIC_PACKET_CONTROL5_BASE_IDX                                                   2
 
 
-// addressBlock: dce_dc_dio_dp1_dispdec
-// base address: 0x400
+
+
 #define mmDP1_DP_LINK_CNTL                                                                             0x2208
 #define mmDP1_DP_LINK_CNTL_BASE_IDX                                                                    2
 #define mmDP1_DP_PIXEL_FORMAT                                                                          0x2209
@@ -5921,8 +5902,8 @@
 #define mmDP1_DP_DSC_BYTES_PER_PIXEL_BASE_IDX                                                          2
 
 
-// addressBlock: dce_dc_dcio_dcio_dispdec
-// base address: 0x0
+
+
 #define mmDC_GENERICA                                                                                  0x2868
 #define mmDC_GENERICA_BASE_IDX                                                                         2
 #define mmUNIPHYA_LINK_CNTL                                                                            0x286d
@@ -5943,8 +5924,8 @@
 #define mmDCIO_SOFT_RESET_BASE_IDX                                                                     2
 
 
-// addressBlock: dce_dc_dcio_dcio_chip_dispdec
-// base address: 0x0
+
+
 #define mmDC_GPIO_DDC1_MASK                                                                            0x28d0
 #define mmDC_GPIO_DDC1_MASK_BASE_IDX                                                                   2
 #define mmDC_GPIO_DDC1_A                                                                               0x28d1
@@ -5986,8 +5967,8 @@
 #define mmAUXI2C_PAD_ALL_PWR_OK                                                                        0x291e
 #define mmAUXI2C_PAD_ALL_PWR_OK_BASE_IDX                                                               2
 
-// addressBlock: azf0endpoint0_endpointind
-// base address: 0x0
+
+
 #define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
 #define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
 #define ixAZF0ENDPOINT0_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
@@ -6061,8 +6042,8 @@
 #define ixAZF0ENDPOINT0_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
 
 
-// addressBlock: azf0endpoint1_endpointind
-// base address: 0x0
+
+
 #define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES                  0x0001
 #define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_CONVERTER_FORMAT                             0x0002
 #define ixAZF0ENDPOINT1_AZALIA_F0_CODEC_CONVERTER_CONTROL_CHANNEL_STREAM_ID                            0x0003
@@ -6136,8 +6117,8 @@
 #define ixAZF0ENDPOINT1_AZALIA_F0_AUDIO_FORMAT_CHANGED_INT_STATUS                                      0x006e
 
 
-// addressBlock: azf0inputendpoint0_inputendpointind
-// base address: 0x0
+
+
 #define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
 #define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
 #define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003
@@ -6163,8 +6144,8 @@
 #define ixAZF0INPUTENDPOINT0_AZALIA_F0_CODEC_INPUT_PIN_CONTROL_INFOFRAME                               0x0068
 
 
-// addressBlock: azf0inputendpoint1_inputendpointind
-// base address: 0x0
+
+
 #define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_PARAMETER_AUDIO_WIDGET_CAPABILITIES       0x0001
 #define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CONVERTER_FORMAT                  0x0002
 #define ixAZF0INPUTENDPOINT1_AZALIA_F0_CODEC_INPUT_CONVERTER_CONTROL_CHANNEL_STREAM_ID                 0x0003

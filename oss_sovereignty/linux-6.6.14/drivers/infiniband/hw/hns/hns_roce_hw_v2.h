@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2016-2017 Hisilicon Limited.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef _HNS_ROCE_HW_V2_H
 #define _HNS_ROCE_HW_V2_H
@@ -109,7 +79,7 @@ enum {
 #define CMD_CSQ_DESC_NUM		1024
 #define CMD_CRQ_DESC_NUM		1024
 
-/* Free mr used parameters */
+ 
 #define HNS_ROCE_FREE_MR_USED_CQE_NUM		128
 #define HNS_ROCE_FREE_MR_USED_QP_NUM		0x8
 #define HNS_ROCE_FREE_MR_USED_PSN		0x0808
@@ -157,7 +127,7 @@ enum {
 };
 
 enum {
-	/* rq operations */
+	 
 	HNS_ROCE_V2_OPCODE_RDMA_WRITE_IMM = 0x0,
 	HNS_ROCE_V2_OPCODE_SEND = 0x1,
 	HNS_ROCE_V2_OPCODE_SEND_WITH_IMM = 0x2,
@@ -192,7 +162,7 @@ enum {
 	HNS_ROCE_V2_CQE_STATUS_MASK			= 0xff,
 };
 
-/* CMQ command */
+ 
 enum hns_roce_opcode_type {
 	HNS_QUERY_FW_VER				= 0x0001,
 	HNS_ROCE_OPC_QUERY_HW_VER			= 0x8000,
@@ -646,9 +616,9 @@ struct hns_roce_v2_qp_context {
 #define QPCEX_SQ_RQ_NOT_FORBID_EN QPCEX_FIELD_LOC(23, 23)
 #define QPCEX_STASH QPCEX_FIELD_LOC(82, 82)
 
-#define	V2_QP_RWE_S 1 /* rdma write enable */
-#define	V2_QP_RRE_S 2 /* rdma read enable */
-#define	V2_QP_ATE_S 3 /* rdma atomic enable */
+#define	V2_QP_RWE_S 1  
+#define	V2_QP_RRE_S 2  
+#define	V2_QP_ATE_S 3  
 
 struct hns_roce_v2_cqe {
 	__le32	byte_4;
@@ -948,10 +918,7 @@ struct hns_roce_func_clear {
 
 #define FUNC_CLEAR_RST_FUN_DONE FUNC_CLEAR_FIELD_LOC(32, 32)
 
-/* Each physical function manages up to 248 virtual functions, it takes up to
- * 100ms for each function to execute clear. If an abnormal reset occurs, it is
- * executed twice at most, so it takes up to 249 * 2 * 100ms.
- */
+ 
 #define HNS_ROCE_V2_FUNC_CLEAR_TIMEOUT_MSECS	(249 * 2 * 100)
 #define HNS_ROCE_V2_READ_FUNC_CLEAR_FLAG_INTERVAL	40
 #define HNS_ROCE_V2_READ_FUNC_CLEAR_FLAG_FAIL_WAIT	20
@@ -969,14 +936,11 @@ struct hns_roce_func_clear {
 #define CFG_LLM_B_TAIL_BA_H CMQ_REQ_FIELD_LOC(63, 32)
 #define CFG_LLM_B_TAIL_PTR CMQ_REQ_FIELD_LOC(75, 64)
 
-/* Fields of HNS_ROCE_OPC_CFG_GLOBAL_PARAM */
+ 
 #define CFG_GLOBAL_PARAM_1US_CYCLES CMQ_REQ_FIELD_LOC(9, 0)
 #define CFG_GLOBAL_PARAM_UDP_PORT CMQ_REQ_FIELD_LOC(31, 16)
 
-/*
- * Fields of HNS_ROCE_OPC_QUERY_PF_RES, HNS_ROCE_OPC_QUERY_VF_RES
- * and HNS_ROCE_OPC_ALLOC_VF_RES
- */
+ 
 #define FUNC_RES_A_VF_ID CMQ_REQ_FIELD_LOC(7, 0)
 #define FUNC_RES_A_QPC_BT_IDX CMQ_REQ_FIELD_LOC(42, 32)
 #define FUNC_RES_A_QPC_BT_NUM CMQ_REQ_FIELD_LOC(59, 48)
@@ -1002,7 +966,7 @@ struct hns_roce_func_clear {
 #define FUNC_RES_B_GMV_BT_NUM CMQ_REQ_FIELD_LOC(176, 168)
 #define FUNC_RES_V_GMV_BT_NUM CMQ_REQ_FIELD_LOC(184, 176)
 
-/* Fields of HNS_ROCE_OPC_QUERY_PF_TIMER_RES */
+ 
 #define PF_TIMER_RES_QPC_ITEM_IDX CMQ_REQ_FIELD_LOC(43, 32)
 #define PF_TIMER_RES_QPC_ITEM_NUM CMQ_REQ_FIELD_LOC(60, 48)
 #define PF_TIMER_RES_CQC_ITEM_IDX CMQ_REQ_FIELD_LOC(74, 64)
@@ -1045,7 +1009,7 @@ struct hns_roce_mbox_status {
 
 #define MB_ST_COMPLETE_SUCC 1
 
-/* Fields of HNS_ROCE_OPC_CFG_BT_ATTR */
+ 
 #define CFG_BT_ATTR_QPC_BA_PGSZ CMQ_REQ_FIELD_LOC(3, 0)
 #define CFG_BT_ATTR_QPC_BUF_PGSZ CMQ_REQ_FIELD_LOC(7, 4)
 #define CFG_BT_ATTR_QPC_HOPNUM CMQ_REQ_FIELD_LOC(9, 8)
@@ -1062,7 +1026,7 @@ struct hns_roce_mbox_status {
 #define CFG_BT_ATTR_SCCC_BUF_PGSZ CMQ_REQ_FIELD_LOC(135, 132)
 #define CFG_BT_ATTR_SCCC_HOPNUM CMQ_REQ_FIELD_LOC(137, 136)
 
-/* Fields of HNS_ROCE_OPC_CFG_ENTRY_SIZE */
+ 
 #define CFG_HEM_ENTRY_SIZE_TYPE CMQ_REQ_FIELD_LOC(31, 0)
 enum {
 	HNS_ROCE_CFG_QPC_SIZE = BIT(0),
@@ -1071,12 +1035,12 @@ enum {
 
 #define CFG_HEM_ENTRY_SIZE_VALUE CMQ_REQ_FIELD_LOC(191, 160)
 
-/* Fields of HNS_ROCE_OPC_CFG_GMV_BT */
+ 
 #define CFG_GMV_BT_BA_L CMQ_REQ_FIELD_LOC(31, 0)
 #define CFG_GMV_BT_BA_H CMQ_REQ_FIELD_LOC(51, 32)
 #define CFG_GMV_BT_IDX CMQ_REQ_FIELD_LOC(95, 64)
 
-/* Fields of HNS_ROCE_QUERY_RAM_ECC */
+ 
 #define QUERY_RAM_ECC_1BIT_ERR CMQ_REQ_FIELD_LOC(31, 0)
 #define QUERY_RAM_ECC_RES_TYPE CMQ_REQ_FIELD_LOC(63, 32)
 #define QUERY_RAM_ECC_TAG CMQ_REQ_FIELD_LOC(95, 64)
@@ -1283,7 +1247,7 @@ struct hns_roce_v2_cmq_ring {
 	u16 buf_size;
 	u16 desc_num;
 	u8 flag;
-	spinlock_t lock; /* command queue lock */
+	spinlock_t lock;  
 };
 
 struct hns_roce_v2_cmq {
@@ -1316,7 +1280,7 @@ struct hns_roce_v2_priv {
 struct hns_roce_dip {
 	u8 dgid[GID_LEN_V2];
 	u32 dip_idx;
-	struct list_head node; /* all dips are on a list */
+	struct list_head node;  
 };
 
 struct fmea_ram_ecc {
@@ -1325,7 +1289,7 @@ struct fmea_ram_ecc {
 	u32	index;
 };
 
-/* only for RNR timeout issue of HIP08 */
+ 
 #define HNS_ROCE_CLOCK_ADJUST 1000
 #define HNS_ROCE_MAX_CQ_PERIOD 65
 #define HNS_ROCE_MAX_EQ_PERIOD 65

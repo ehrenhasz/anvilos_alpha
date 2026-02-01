@@ -1,31 +1,4 @@
-/* printenv -- print all or part of environment
-   Copyright (C) 1989-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Usage: printenv [variable...]
-
-   If no arguments are given, print the entire environment.
-   If one or more variable names are given, print the value of
-   each one that is set, and nothing for ones that are not set.
-
-   Exit status:
-   0 if all variables specified were found
-   1 if not
-   2 if some other error occurred
-
-   David MacKenzie and Richard Mlynarik */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -34,10 +7,10 @@
 
 #include "system.h"
 
-/* Exit status for syntax errors, etc.  */
+ 
 enum { PRINTENV_FAILURE = 2 };
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "printenv"
 
 #define AUTHORS \

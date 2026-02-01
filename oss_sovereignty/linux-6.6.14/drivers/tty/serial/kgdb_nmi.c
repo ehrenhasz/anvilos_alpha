@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * KGDB NMI serial console
- *
- * Copyright 2010 Google, Inc.
- *		  Arve Hjønnevåg <arve@android.com>
- *		  Colin Cross <ccross@android.com>
- * Copyright 2012 Linaro Ltd.
- *		  Anton Vorontsov <anton.vorontsov@linaro.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -45,11 +37,7 @@ static int kgdb_nmi_console_setup(struct console *co, char *options)
 {
 	arch_kgdb_ops.enable_nmi(1);
 
-	/* The NMI console uses the dbg_io_ops to issue console messages. To
-	 * avoid duplicate messages during kdb sessions we must inform kdb's
-	 * I/O utilities that messages sent to the console will automatically
-	 * be displayed on the dbg_io.
-	 */
+	 
 	dbg_io_ops->cons = co;
 
 	return 0;
@@ -80,10 +68,7 @@ static struct console kgdb_nmi_console = {
 	.index	= -1,
 };
 
-/*
- * This is usually the maximum rate on debug ports. We make fifo large enough
- * to make copy-pasting to the terminal usable.
- */
+ 
 #define KGDB_NMI_BAUD		115200
 #define KGDB_NMI_FIFO_SIZE	roundup_pow_of_two(KGDB_NMI_BAUD / 8 / HZ)
 
@@ -102,12 +87,7 @@ static void kgdb_tty_recv(int ch)
 
 	if (!kgdb_nmi_port || ch < 0)
 		return;
-	/*
-	 * Can't use port->tty->driver_data as tty might be not there. Timer
-	 * will check for tty and will get the ref, but here we don't have to
-	 * do that, and actually, we can't: we're in NMI context, no locks are
-	 * possible.
-	 */
+	 
 	priv = container_of(kgdb_nmi_port, struct kgdb_nmi_tty_priv, port);
 	kfifo_in(&priv->fifo, &c, 1);
 }
@@ -153,20 +133,7 @@ static int kgdb_nmi_poll_one_knock(void)
 	return 0;
 }
 
-/**
- * kgdb_nmi_poll_knock - Check if it is time to enter the debugger
- *
- * "Serial ports are often noisy, especially when muxed over another port (we
- * often use serial over the headset connector). Noise on the async command
- * line just causes characters that are ignored, on a command line that blocked
- * execution noise would be catastrophic." -- Colin Cross
- *
- * So, this function implements KGDB/KDB knocking on the serial line: we won't
- * enter the debugger until we receive a known magic phrase (which is actually
- * "$3#33", known as "escape to KDB" command. There is also a relaxed variant
- * of knocking, i.e. just pressing the return key is enough to enter the
- * debugger. And if knocking is disabled, the function always returns 1.
- */
+ 
 bool kgdb_nmi_poll_knock(void)
 {
 	if (kgdb_nmi_knock < 0)
@@ -184,10 +151,7 @@ bool kgdb_nmi_poll_knock(void)
 	return true;
 }
 
-/*
- * The tasklet is cheap, it does not cause wakeups when reschedules itself,
- * instead it waits for the next tick.
- */
+ 
 static void kgdb_nmi_tty_receiver(struct timer_list *t)
 {
 	struct kgdb_nmi_tty_priv *priv = from_timer(priv, t, timer);
@@ -300,7 +264,7 @@ static void kgdb_nmi_tty_hangup(struct tty_struct *tty)
 
 static unsigned int kgdb_nmi_tty_write_room(struct tty_struct *tty)
 {
-	/* Actually, we can handle any amount as we use polled writes. */
+	 
 	return 2048;
 }
 

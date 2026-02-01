@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2002 Richard Henderson
- * Copyright (C) 2001 Rusty Russell, 2002, 2010 Rusty Russell IBM.
- * Copyright (C) 2023 Luis Chamberlain <mcgrof@kernel.org>
- */
+
+ 
 
 #define INCLUDE_VERMAGIC
 
@@ -63,17 +59,11 @@
 #define CREATE_TRACE_POINTS
 #include <trace/events/module.h>
 
-/*
- * Mutex protects:
- * 1) List of modules (also safely readable with preempt_disable),
- * 2) module_use links,
- * 3) mod_tree.addr_min/mod_tree.addr_max.
- * (delete and add uses RCU list operations).
- */
+ 
 DEFINE_MUTEX(module_mutex);
 LIST_HEAD(modules);
 
-/* Work queue for freeing init sections in success case */
+ 
 static void do_free_init(struct work_struct *w);
 static DECLARE_WORK(init_free_wq, do_free_init);
 static LLIST_HEAD(init_free_list);
@@ -88,10 +78,7 @@ struct symsearch {
 	enum mod_license license;
 };
 
-/*
- * Bounds of module memory, for speeding up __module_address.
- * Protected by module_mutex.
- */
+ 
 static void __mod_update_bounds(enum mod_mem_type type __maybe_unused, void *base,
 				unsigned int size, struct mod_tree_root *tree)
 {
@@ -123,11 +110,11 @@ static void mod_update_bounds(struct module *mod)
 	}
 }
 
-/* Block module loading/unloading? */
+ 
 int modules_disabled;
 core_param(nomodule, modules_disabled, bint, 0);
 
-/* Waiting for a module to finish initializing? */
+ 
 static DECLARE_WAIT_QUEUE_HEAD(module_wq);
 
 static BLOCKING_NOTIFIER_HEAD(module_notify_list);
@@ -144,11 +131,7 @@ int unregister_module_notifier(struct notifier_block *nb)
 }
 EXPORT_SYMBOL(unregister_module_notifier);
 
-/*
- * We require a truly strong try_module_get(): 0 means success.
- * Otherwise an error is returned due to ongoing or failed
- * initialization etc.
- */
+ 
 static inline int strong_try_module_get(struct module *mod)
 {
 	BUG_ON(mod && mod->state == MODULE_STATE_UNFORMED);
@@ -167,10 +150,7 @@ static inline void add_taint_module(struct module *mod, unsigned flag,
 	set_bit(flag, &mod->taints);
 }
 
-/*
- * A thread that wants to hold a reference to a module only while it
- * is running can call this to safely exit.
- */
+ 
 void __noreturn __module_put_and_kthread_exit(struct module *mod, long code)
 {
 	module_put(mod);
@@ -178,14 +158,14 @@ void __noreturn __module_put_and_kthread_exit(struct module *mod, long code)
 }
 EXPORT_SYMBOL(__module_put_and_kthread_exit);
 
-/* Find a module section: 0 means not found. */
+ 
 static unsigned int find_sec(const struct load_info *info, const char *name)
 {
 	unsigned int i;
 
 	for (i = 1; i < info->hdr->e_shnum; i++) {
 		Elf_Shdr *shdr = &info->sechdrs[i];
-		/* Alloc bit cleared means "ignore it." */
+		 
 		if ((shdr->sh_flags & SHF_ALLOC)
 		    && strcmp(info->secstrings + shdr->sh_name, name) == 0)
 			return i;
@@ -193,14 +173,14 @@ static unsigned int find_sec(const struct load_info *info, const char *name)
 	return 0;
 }
 
-/* Find a module section, or NULL. */
+ 
 static void *section_addr(const struct load_info *info, const char *name)
 {
-	/* Section 0 has sh_addr 0. */
+	 
 	return (void *)info->sechdrs[find_sec(info, name)].sh_addr;
 }
 
-/* Find a module section, or NULL.  Fill in number of "objects" in section. */
+ 
 static void *section_objs(const struct load_info *info,
 			  const char *name,
 			  size_t object_size,
@@ -208,12 +188,12 @@ static void *section_objs(const struct load_info *info,
 {
 	unsigned int sec = find_sec(info, name);
 
-	/* Section 0 has sh_addr 0 and sh_size 0. */
+	 
 	*num = info->sechdrs[sec].sh_size / object_size;
 	return (void *)info->sechdrs[sec].sh_addr;
 }
 
-/* Find a module section: 0 means not found. Ignores SHF_ALLOC flag. */
+ 
 static unsigned int find_any_sec(const struct load_info *info, const char *name)
 {
 	unsigned int i;
@@ -226,10 +206,7 @@ static unsigned int find_any_sec(const struct load_info *info, const char *name)
 	return 0;
 }
 
-/*
- * Find a module section, or NULL. Fill in number of "objects" in section.
- * Ignores SHF_ALLOC flag.
- */
+ 
 static __maybe_unused void *any_section_objs(const struct load_info *info,
 					     const char *name,
 					     size_t object_size,
@@ -237,7 +214,7 @@ static __maybe_unused void *any_section_objs(const struct load_info *info,
 {
 	unsigned int sec = find_any_sec(info, name);
 
-	/* Section 0 has sh_addr 0 and sh_size 0. */
+	 
 	*num = info->sechdrs[sec].sh_size / object_size;
 	return (void *)info->sechdrs[sec].sh_addr;
 }
@@ -295,10 +272,7 @@ static bool find_exported_symbol_in_section(const struct symsearch *syms,
 	return true;
 }
 
-/*
- * Find an exported symbol and return it, along with, (optional) crc and
- * (optional) module which owns it.  Needs preempt disabled or module_mutex.
- */
+ 
 bool find_symbol(struct find_symbol_arg *fsa)
 {
 	static const struct symsearch arr[] = {
@@ -339,10 +313,7 @@ bool find_symbol(struct find_symbol_arg *fsa)
 	return false;
 }
 
-/*
- * Search for module by name: must hold module_mutex (or preempt disabled
- * for read-only access).
- */
+ 
 struct module *find_module_all(const char *name, size_t len,
 			       bool even_unformed)
 {
@@ -448,20 +419,13 @@ bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr)
 	return false;
 }
 
-/**
- * is_module_percpu_address() - test whether address is from module static percpu
- * @addr: address to test
- *
- * Test whether @addr belongs to module static percpu area.
- *
- * Return: %true if @addr is from module static percpu area
- */
+ 
 bool is_module_percpu_address(unsigned long addr)
 {
 	return __is_module_percpu_address(addr, NULL);
 }
 
-#else /* ... !CONFIG_SMP */
+#else  
 
 static inline void __percpu *mod_percpu(struct module *mod)
 {
@@ -469,7 +433,7 @@ static inline void __percpu *mod_percpu(struct module *mod)
 }
 static int percpu_modalloc(struct module *mod, struct load_info *info)
 {
-	/* UP modules shouldn't have this section: ENOMEM isn't quite right */
+	 
 	if (info->sechdrs[info->index.pcpu].sh_size != 0)
 		return -ENOMEM;
 	return 0;
@@ -484,7 +448,7 @@ static unsigned int find_pcpusec(struct load_info *info)
 static inline void percpu_modcopy(struct module *mod,
 				  const void *from, unsigned long size)
 {
-	/* pcpusec should be 0, and size of that section should be 0. */
+	 
 	BUG_ON(size != 0);
 }
 bool is_module_percpu_address(unsigned long addr)
@@ -497,7 +461,7 @@ bool __is_module_percpu_address(unsigned long addr, unsigned long *can_addr)
 	return false;
 }
 
-#endif /* CONFIG_SMP */
+#endif  
 
 #define MODINFO_ATTR(field)	\
 static void setup_modinfo_##field(struct module *mod, const char *s)  \
@@ -538,28 +502,25 @@ static struct {
 
 EXPORT_TRACEPOINT_SYMBOL(module_get);
 
-/* MODULE_REF_BASE is the base reference count by kmodule loader. */
+ 
 #define MODULE_REF_BASE	1
 
-/* Init the unload section of the module. */
+ 
 static int module_unload_init(struct module *mod)
 {
-	/*
-	 * Initialize reference counter to MODULE_REF_BASE.
-	 * refcnt == 0 means module is going.
-	 */
+	 
 	atomic_set(&mod->refcnt, MODULE_REF_BASE);
 
 	INIT_LIST_HEAD(&mod->source_list);
 	INIT_LIST_HEAD(&mod->target_list);
 
-	/* Hold reference count during initialization. */
+	 
 	atomic_inc(&mod->refcnt);
 
 	return 0;
 }
 
-/* Does a already use b? */
+ 
 static int already_uses(struct module *a, struct module *b)
 {
 	struct module_use *use;
@@ -572,13 +533,7 @@ static int already_uses(struct module *a, struct module *b)
 	return 0;
 }
 
-/*
- * Module a uses b
- *  - we add 'a' as a "source", 'b' as a "target" of module use
- *  - the module_use is added to the list of 'b' sources (so
- *    'b' can walk the list to see who sourced them), and of 'a'
- *    targets (so 'a' can see what modules it targets).
- */
+ 
 static int add_module_usage(struct module *a, struct module *b)
 {
 	struct module_use *use;
@@ -595,7 +550,7 @@ static int add_module_usage(struct module *a, struct module *b)
 	return 0;
 }
 
-/* Module a uses b: caller needs module_mutex() */
+ 
 static int ref_module(struct module *a, struct module *b)
 {
 	int err;
@@ -603,7 +558,7 @@ static int ref_module(struct module *a, struct module *b)
 	if (b == NULL || already_uses(a, b))
 		return 0;
 
-	/* If module isn't available, we fail. */
+	 
 	err = strong_try_module_get(b);
 	if (err)
 		return err;
@@ -616,7 +571,7 @@ static int ref_module(struct module *a, struct module *b)
 	return 0;
 }
 
-/* Clear the unload stuff of the module. */
+ 
 static void module_unload_free(struct module *mod)
 {
 	struct module_use *use, *tmp;
@@ -646,18 +601,18 @@ static inline int try_force_unload(unsigned int flags)
 {
 	return 0;
 }
-#endif /* CONFIG_MODULE_FORCE_UNLOAD */
+#endif  
 
-/* Try to release refcount of module, 0 means success. */
+ 
 static int try_release_module_ref(struct module *mod)
 {
 	int ret;
 
-	/* Try to decrement refcnt which we set at loading */
+	 
 	ret = atomic_sub_return(MODULE_REF_BASE, &mod->refcnt);
 	BUG_ON(ret < 0);
 	if (ret)
-		/* Someone can put this right now, recover with checking */
+		 
 		ret = atomic_add_unless(&mod->refcnt, MODULE_REF_BASE, 0);
 
 	return ret;
@@ -665,34 +620,27 @@ static int try_release_module_ref(struct module *mod)
 
 static int try_stop_module(struct module *mod, int flags, int *forced)
 {
-	/* If it's not unused, quit unless we're forcing. */
+	 
 	if (try_release_module_ref(mod) != 0) {
 		*forced = try_force_unload(flags);
 		if (!(*forced))
 			return -EWOULDBLOCK;
 	}
 
-	/* Mark it as dying. */
+	 
 	mod->state = MODULE_STATE_GOING;
 
 	return 0;
 }
 
-/**
- * module_refcount() - return the refcount or -1 if unloading
- * @mod:	the module we're checking
- *
- * Return:
- *	-1 if the module is in the process of unloading
- *	otherwise the number of references in the kernel to the module
- */
+ 
 int module_refcount(struct module *mod)
 {
 	return atomic_read(&mod->refcnt) - MODULE_REF_BASE;
 }
 EXPORT_SYMBOL(module_refcount);
 
-/* This exists whether we can unload or not */
+ 
 static void free_module(struct module *mod);
 
 SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
@@ -722,24 +670,24 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
 	}
 
 	if (!list_empty(&mod->source_list)) {
-		/* Other modules depend on us: get rid of them first. */
+		 
 		ret = -EWOULDBLOCK;
 		goto out;
 	}
 
-	/* Doing init or already dying? */
+	 
 	if (mod->state != MODULE_STATE_LIVE) {
-		/* FIXME: if (force), slam module count damn the torpedoes */
+		 
 		pr_debug("%s already dying\n", mod->name);
 		ret = -EBUSY;
 		goto out;
 	}
 
-	/* If it has an init func, it must have an exit func to unload */
+	 
 	if (mod->init && !mod->exit) {
 		forced = try_force_unload(flags);
 		if (!forced) {
-			/* This module can't be removed */
+			 
 			ret = -EBUSY;
 			goto out;
 		}
@@ -750,7 +698,7 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
 		goto out;
 
 	mutex_unlock(&module_mutex);
-	/* Final destruction now no one is using it. */
+	 
 	if (mod->exit != NULL)
 		mod->exit();
 	blocking_notifier_call_chain(&module_notify_list,
@@ -760,12 +708,12 @@ SYSCALL_DEFINE2(delete_module, const char __user *, name_user,
 
 	async_synchronize_full();
 
-	/* Store the name and taints of the last unloaded module for diagnostic purposes */
+	 
 	strscpy(last_unloaded_module.name, mod->name, sizeof(last_unloaded_module.name));
 	strscpy(last_unloaded_module.taints, module_flags(mod, buf, false), sizeof(last_unloaded_module.taints));
 
 	free_module(mod);
-	/* someone could wait for the module in add_unformed_module() */
+	 
 	wake_up_all(&module_wq);
 	return 0;
 out:
@@ -787,7 +735,7 @@ void __symbol_put(const char *symbol)
 }
 EXPORT_SYMBOL(__symbol_put);
 
-/* Note this assumes addr is a function, which it currently always is. */
+ 
 void symbol_put_addr(void *addr)
 {
 	struct module *modaddr;
@@ -796,10 +744,7 @@ void symbol_put_addr(void *addr)
 	if (core_kernel_text(a))
 		return;
 
-	/*
-	 * Even though we hold a reference on the module; we still need to
-	 * disable preemption in order to safely traverse the data structure.
-	 */
+	 
 	preempt_disable();
 	modaddr = __module_text_address(a);
 	BUG_ON(!modaddr);
@@ -831,7 +776,7 @@ bool try_module_get(struct module *module)
 	bool ret = true;
 
 	if (module) {
-		/* Note: here, we can fail to get a reference */
+		 
 		if (likely(module_is_live(module) &&
 			   atomic_inc_not_zero(&module->refcnt) != 0))
 			trace_module_get(module, _RET_IP_);
@@ -848,13 +793,13 @@ void module_put(struct module *module)
 
 	if (module) {
 		ret = atomic_dec_if_positive(&module->refcnt);
-		WARN_ON(ret < 0);	/* Failed to put refcount */
+		WARN_ON(ret < 0);	 
 		trace_module_put(module, _RET_IP_);
 	}
 }
 EXPORT_SYMBOL(module_put);
 
-#else /* !CONFIG_MODULE_UNLOAD */
+#else  
 static inline void module_unload_free(struct module *mod)
 {
 }
@@ -868,7 +813,7 @@ static inline int module_unload_init(struct module *mod)
 {
 	return 0;
 }
-#endif /* CONFIG_MODULE_UNLOAD */
+#endif  
 
 size_t module_flags_taint(unsigned long taints, char *buf)
 {
@@ -1009,17 +954,17 @@ int try_to_force_load(struct module *mod, const char *reason)
 #endif
 }
 
-/* Parse tag=value strings from .modinfo section */
+ 
 char *module_next_tag_pair(char *string, unsigned long *secsize)
 {
-	/* Skip non-zero chars */
+	 
 	while (string[0]) {
 		string++;
 		if ((*secsize)-- <= 1)
 			return NULL;
 	}
 
-	/* Skip any zero padding. */
+	 
 	while (!string[0]) {
 		string++;
 		if ((*secsize)-- <= 1)
@@ -1036,10 +981,7 @@ static char *get_next_modinfo(const struct load_info *info, const char *tag,
 	Elf_Shdr *infosec = &info->sechdrs[info->index.info];
 	unsigned long size = infosec->sh_size;
 
-	/*
-	 * get_modinfo() calls made before rewrite_section_headers()
-	 * must use sh_offset, as sh_addr isn't set!
-	 */
+	 
 	char *modinfo = (char *)info->hdr + infosec->sh_offset;
 
 	if (prev) {
@@ -1105,7 +1047,7 @@ static bool inherit_taint(struct module *mod, struct module *owner, const char *
 	return true;
 }
 
-/* Resolve a symbol for this module.  I.e. if we find one, record usage. */
+ 
 static const struct kernel_symbol *resolve_symbol(struct module *mod,
 						  const struct load_info *info,
 						  const char *name,
@@ -1118,11 +1060,7 @@ static const struct kernel_symbol *resolve_symbol(struct module *mod,
 	};
 	int err;
 
-	/*
-	 * The module_mutex should not be a heavily contended lock;
-	 * if we get the occasional sleep here, we'll go an extra iteration
-	 * in the wait_event_interruptible(), which is harmless.
-	 */
+	 
 	sched_annotate_sleep();
 	mutex_lock(&module_mutex);
 	if (!find_symbol(&fsa))
@@ -1154,7 +1092,7 @@ static const struct kernel_symbol *resolve_symbol(struct module *mod,
 	}
 
 getname:
-	/* We must make copy under the lock if we failed to get ref. */
+	 
 	strncpy(ownername, module_name(fsa.owner), MODULE_NAME_LEN);
 unlock:
 	mutex_unlock(&module_mutex);
@@ -1181,10 +1119,7 @@ resolve_symbol_wait(struct module *mod,
 
 void __weak module_memfree(void *module_region)
 {
-	/*
-	 * This memory may be RO, and freeing RO memory in an interrupt is not
-	 * supported by vmalloc.
-	 */
+	 
 	WARN_ON(in_interrupt());
 	vfree(module_region);
 }
@@ -1226,59 +1161,56 @@ static void free_mod_mem(struct module *mod)
 		if (type == MOD_DATA)
 			continue;
 
-		/* Free lock-classes; relies on the preceding sync_rcu(). */
+		 
 		lockdep_free_key_range(mod_mem->base, mod_mem->size);
 		if (mod_mem->size)
 			module_memory_free(mod_mem->base, type);
 	}
 
-	/* MOD_DATA hosts mod, so free it at last */
+	 
 	lockdep_free_key_range(mod->mem[MOD_DATA].base, mod->mem[MOD_DATA].size);
 	module_memory_free(mod->mem[MOD_DATA].base, MOD_DATA);
 }
 
-/* Free a module, remove from lists, etc. */
+ 
 static void free_module(struct module *mod)
 {
 	trace_module_free(mod);
 
 	mod_sysfs_teardown(mod);
 
-	/*
-	 * We leave it in list to prevent duplicate loads, but make sure
-	 * that noone uses it while it's being deconstructed.
-	 */
+	 
 	mutex_lock(&module_mutex);
 	mod->state = MODULE_STATE_UNFORMED;
 	mutex_unlock(&module_mutex);
 
-	/* Arch-specific cleanup. */
+	 
 	module_arch_cleanup(mod);
 
-	/* Module unload stuff */
+	 
 	module_unload_free(mod);
 
-	/* Free any allocated parameters. */
+	 
 	destroy_params(mod->kp, mod->num_kp);
 
 	if (is_livepatch_module(mod))
 		free_module_elf(mod);
 
-	/* Now we can delete it from the lists */
+	 
 	mutex_lock(&module_mutex);
-	/* Unlink carefully: kallsyms could be walking list. */
+	 
 	list_del_rcu(&mod->list);
 	mod_tree_remove(mod);
-	/* Remove this module from bug list, this uses list_del_rcu */
+	 
 	module_bug_cleanup(mod);
-	/* Wait for RCU-sched synchronizing before releasing mod->list and buglist. */
+	 
 	synchronize_rcu();
 	if (try_add_tainted_module(mod))
 		pr_err("%s: adding tainted module to the unloaded tainted modules list failed.\n",
 		       mod->name);
 	mutex_unlock(&module_mutex);
 
-	/* This may be empty, but that's OK */
+	 
 	module_arch_freeing_init(mod);
 	kfree(mod->args);
 	percpu_modfree(mod);
@@ -1312,12 +1244,7 @@ fail:
 }
 EXPORT_SYMBOL_GPL(__symbol_get);
 
-/*
- * Ensure that an exported symbol [global namespace] does not already exist
- * in the kernel or in some other module's exported symbol table.
- *
- * You must hold the module_mutex.
- */
+ 
 static int verify_exported_symbols(struct module *mod)
 {
 	unsigned int i;
@@ -1350,20 +1277,13 @@ static int verify_exported_symbols(struct module *mod)
 
 static bool ignore_undef_symbol(Elf_Half emachine, const char *name)
 {
-	/*
-	 * On x86, PIC code and Clang non-PIC code may have call foo@PLT. GNU as
-	 * before 2.37 produces an unreferenced _GLOBAL_OFFSET_TABLE_ on x86-64.
-	 * i386 has a similar problem but may not deserve a fix.
-	 *
-	 * If we ever have to ignore many symbols, consider refactoring the code to
-	 * only warn if referenced by a relocation.
-	 */
+	 
 	if (emachine == EM_386 || emachine == EM_X86_64)
 		return !strcmp(name, "_GLOBAL_OFFSET_TABLE_");
 	return false;
 }
 
-/* Change all symbols so that st_value encodes the pointer directly. */
+ 
 static int simplify_symbols(struct module *mod, const struct load_info *info)
 {
 	Elf_Shdr *symsec = &info->sechdrs[info->index.sym];
@@ -1378,14 +1298,11 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
 
 		switch (sym[i].st_shndx) {
 		case SHN_COMMON:
-			/* Ignore common symbols */
+			 
 			if (!strncmp(name, "__gnu_lto", 9))
 				break;
 
-			/*
-			 * We compiled with -fno-common.  These are not
-			 * supposed to happen.
-			 */
+			 
 			pr_debug("Common symbol: %s\n", name);
 			pr_warn("%s: please compile with -fno-common\n",
 			       mod->name);
@@ -1393,24 +1310,24 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
 			break;
 
 		case SHN_ABS:
-			/* Don't need to do anything */
+			 
 			pr_debug("Absolute symbol: 0x%08lx %s\n",
 				 (long)sym[i].st_value, name);
 			break;
 
 		case SHN_LIVEPATCH:
-			/* Livepatch symbols are resolved by livepatch */
+			 
 			break;
 
 		case SHN_UNDEF:
 			ksym = resolve_symbol_wait(mod, info, name);
-			/* Ok if resolved.  */
+			 
 			if (ksym && !IS_ERR(ksym)) {
 				sym[i].st_value = kernel_symbol_value(ksym);
 				break;
 			}
 
-			/* Ok if weak or ignored.  */
+			 
 			if (!ksym &&
 			    (ELF_ST_BIND(sym[i].st_info) == STB_WEAK ||
 			     ignore_undef_symbol(info->hdr->e_machine, name)))
@@ -1422,7 +1339,7 @@ static int simplify_symbols(struct module *mod, const struct load_info *info)
 			break;
 
 		default:
-			/* Divert to percpu allocation if a percpu var. */
+			 
 			if (sym[i].st_shndx == info->index.pcpu)
 				secbase = (unsigned long)mod_percpu(mod);
 			else
@@ -1440,15 +1357,15 @@ static int apply_relocations(struct module *mod, const struct load_info *info)
 	unsigned int i;
 	int err = 0;
 
-	/* Now do relocations. */
+	 
 	for (i = 1; i < info->hdr->e_shnum; i++) {
 		unsigned int infosec = info->sechdrs[i].sh_info;
 
-		/* Not a valid relocation section? */
+		 
 		if (infosec >= info->hdr->e_shnum)
 			continue;
 
-		/* Don't bother with non-allocated sections */
+		 
 		if (!(info->sechdrs[infosec].sh_flags & SHF_ALLOC))
 			continue;
 
@@ -1470,11 +1387,11 @@ static int apply_relocations(struct module *mod, const struct load_info *info)
 	return err;
 }
 
-/* Additional bytes needed by arch in front of individual sections */
+ 
 unsigned int __weak arch_mod_section_prepend(struct module *mod,
 					     unsigned int section)
 {
-	/* default implementation just returns zero */
+	 
 	return 0;
 }
 
@@ -1506,11 +1423,7 @@ static void __layout_sections(struct module *mod, struct load_info *info, bool i
 	unsigned int m, i;
 
 	static const unsigned long masks[][2] = {
-		/*
-		 * NOTE: all executable code must be the first section
-		 * in this array; otherwise modify the text_size
-		 * finder in the two loops below
-		 */
+		 
 		{ SHF_EXECINSTR | SHF_ALLOC, ARCH_SHF_SMALL },
 		{ SHF_ALLOC, SHF_WRITE | ARCH_SHF_SMALL },
 		{ SHF_RO_AFTER_INIT | SHF_ALLOC, ARCH_SHF_SMALL },
@@ -1554,12 +1467,7 @@ static void __layout_sections(struct module *mod, struct load_info *info, bool i
 	}
 }
 
-/*
- * Lay out the SHF_ALLOC sections in a way not dissimilar to how ld
- * might -- code, read-only data, read-write data, small data.  Tally
- * sizes, and place the offsets into sh_entsize fields: high bit means it
- * belongs in init.
- */
+ 
 static void layout_sections(struct module *mod, struct load_info *info)
 {
 	unsigned int i;
@@ -1635,10 +1543,7 @@ static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
 	unsigned long secend;
 #endif
 
-	/*
-	 * Check for both overflow and offset/size being
-	 * too large.
-	 */
+	 
 	secend = shdr->sh_offset + shdr->sh_size;
 	if (secend < shdr->sh_offset || secend > info->len)
 		return -ENOEXEC;
@@ -1646,26 +1551,7 @@ static int validate_section_offset(struct load_info *info, Elf_Shdr *shdr)
 	return 0;
 }
 
-/*
- * Check userspace passed ELF module against our expectations, and cache
- * useful variables for further processing as we go.
- *
- * This does basic validity checks against section offsets and sizes, the
- * section name string table, and the indices used for it (sh_name).
- *
- * As a last step, since we're already checking the ELF sections we cache
- * useful variables which will be used later for our convenience:
- *
- * 	o pointers to section headers
- * 	o cache the modinfo symbol section
- * 	o cache the string symbol section
- * 	o cache the module section
- *
- * As a last step we set info->mod to the temporary copy of the module in
- * info->hdr. The final one will be allocated in move_module(). Any
- * modifications we make to our copy of the module will be carried over
- * to the final minted module.
- */
+ 
 static int elf_validity_cache_copy(struct load_info *info, int flags)
 {
 	unsigned int i;
@@ -1704,11 +1590,7 @@ static int elf_validity_cache_copy(struct load_info *info, int flags)
 		goto no_exec;
 	}
 
-	/*
-	 * e_shnum is 16 bits, and sizeof(Elf_Shdr) is
-	 * known and small. So e_shnum * sizeof(Elf_Shdr)
-	 * will not overflow unsigned long on any platform.
-	 */
+	 
 	if (info->hdr->e_shoff >= info->len
 	    || (info->hdr->e_shnum * sizeof(Elf_Shdr) >
 		info->len - info->hdr->e_shoff)) {
@@ -1718,9 +1600,7 @@ static int elf_validity_cache_copy(struct load_info *info, int flags)
 
 	info->sechdrs = (void *)info->hdr + info->hdr->e_shoff;
 
-	/*
-	 * Verify if the section name table index is valid.
-	 */
+	 
 	if (info->hdr->e_shstrndx == SHN_UNDEF
 	    || info->hdr->e_shstrndx >= info->hdr->e_shnum) {
 		pr_err("Invalid ELF section name index: %d || e_shstrndx (%d) >= e_shnum (%d)\n",
@@ -1736,11 +1616,7 @@ static int elf_validity_cache_copy(struct load_info *info, int flags)
 		return err;
 	}
 
-	/*
-	 * The section name table must be NUL-terminated, as required
-	 * by the spec. This makes strcmp and pr_* calls that access
-	 * strings in the section safe.
-	 */
+	 
 	info->secstrings = (void *)info->hdr + strhdr->sh_offset;
 	if (strhdr->sh_size == 0) {
 		pr_err("empty section name table\n");
@@ -1751,10 +1627,7 @@ static int elf_validity_cache_copy(struct load_info *info, int flags)
 		goto no_exec;
 	}
 
-	/*
-	 * The code assumes that section 0 has a length of zero and
-	 * an addr of zero, so check for it.
-	 */
+	 
 	if (info->sechdrs[0].sh_type != SHT_NULL
 	    || info->sechdrs[0].sh_size != 0
 	    || info->sechdrs[0].sh_addr != 0) {
@@ -1812,7 +1685,7 @@ static int elf_validity_cache_copy(struct load_info *info, int flags)
 		pr_err("Only one .modinfo section must exist.\n");
 		goto no_exec;
 	} else if (num_info_secs == 1) {
-		/* Try to find a name early so we can log errors with a module name */
+		 
 		info->index.info = info_idx;
 		info->name = get_modinfo(info, "name");
 	}
@@ -1823,27 +1696,13 @@ static int elf_validity_cache_copy(struct load_info *info, int flags)
 		goto no_exec;
 	}
 
-	/* Sets internal symbols and strings. */
+	 
 	info->index.sym = sym_idx;
 	shdr = &info->sechdrs[sym_idx];
 	info->index.str = shdr->sh_link;
 	info->strtab = (char *)info->hdr + info->sechdrs[info->index.str].sh_offset;
 
-	/*
-	 * The ".gnu.linkonce.this_module" ELF section is special. It is
-	 * what modpost uses to refer to __this_module and let's use rely
-	 * on THIS_MODULE to point to &__this_module properly. The kernel's
-	 * modpost declares it on each modules's *.mod.c file. If the struct
-	 * module of the kernel changes a full kernel rebuild is required.
-	 *
-	 * We have a few expectaions for this special section, the following
-	 * code validates all this for us:
-	 *
-	 *   o Only one section must exist
-	 *   o We expect the kernel to always have to allocate it: SHF_ALLOC
-	 *   o The section size must match the kernel's run time's struct module
-	 *     size
-	 */
+	 
 	if (num_mod_secs != 1) {
 		pr_err("module %s: Only one .gnu.linkonce.this_module section must exist.\n",
 		       info->name ?: "(missing .modinfo section or name field)");
@@ -1852,10 +1711,7 @@ static int elf_validity_cache_copy(struct load_info *info, int flags)
 
 	shdr = &info->sechdrs[mod_idx];
 
-	/*
-	 * This is already implied on the switch above, however let's be
-	 * pedantic about it.
-	 */
+	 
 	if (shdr->sh_type == SHT_NOBITS) {
 		pr_err("module %s: .gnu.linkonce.this_module section must have a size set\n",
 		       info->name ?: "(missing .modinfo section or name field)");
@@ -1876,18 +1732,15 @@ static int elf_validity_cache_copy(struct load_info *info, int flags)
 
 	info->index.mod = mod_idx;
 
-	/* This is temporary: point mod into copy of data. */
+	 
 	info->mod = (void *)info->hdr + shdr->sh_offset;
 
-	/*
-	 * If we didn't load the .modinfo 'name' field earlier, fall back to
-	 * on-disk struct mod 'name' field.
-	 */
+	 
 	if (!info->name)
 		info->name = info->mod->name;
 
 	if (flags & MODULE_INIT_IGNORE_MODVERSIONS)
-		info->index.vers = 0; /* Pretend no __versions section! */
+		info->index.vers = 0;  
 	else
 		info->index.vers = find_sec(info, "__versions");
 
@@ -1919,7 +1772,7 @@ static int copy_chunked_from_user(void *dst, const void __user *usrc, unsigned l
 static int check_modinfo_livepatch(struct module *mod, struct load_info *info)
 {
 	if (!get_modinfo(info, "livepatch"))
-		/* Nothing more to do */
+		 
 		return 0;
 
 	if (set_livepatch_module(mod))
@@ -1939,7 +1792,7 @@ static void check_modinfo_retpoline(struct module *mod, struct load_info *info)
 		mod->name);
 }
 
-/* Sets info->hdr and info->len. */
+ 
 static int copy_module_from_user(const void __user *umod, unsigned long len,
 				  struct load_info *info)
 {
@@ -1953,7 +1806,7 @@ static int copy_module_from_user(const void __user *umod, unsigned long len,
 	if (err)
 		return err;
 
-	/* Suck in entire file: we'll want most of it. */
+	 
 	info->hdr = __vmalloc(info->len, GFP_KERNEL | __GFP_NOWARN);
 	if (!info->hdr)
 		return -ENOMEM;
@@ -1984,29 +1837,25 @@ static int rewrite_section_headers(struct load_info *info, int flags)
 {
 	unsigned int i;
 
-	/* This should always be true, but let's be sure. */
+	 
 	info->sechdrs[0].sh_addr = 0;
 
 	for (i = 1; i < info->hdr->e_shnum; i++) {
 		Elf_Shdr *shdr = &info->sechdrs[i];
 
-		/*
-		 * Mark all sections sh_addr with their address in the
-		 * temporary image.
-		 */
+		 
 		shdr->sh_addr = (size_t)info->hdr + shdr->sh_offset;
 
 	}
 
-	/* Track but don't keep modinfo and version sections. */
+	 
 	info->sechdrs[info->index.vers].sh_flags &= ~(unsigned long)SHF_ALLOC;
 	info->sechdrs[info->index.info].sh_flags &= ~(unsigned long)SHF_ALLOC;
 
 	return 0;
 }
 
-/*
- * These calls taint the kernel depending certain module circumstances */
+ 
 static void module_augment_kernel_taints(struct module *mod, struct load_info *info)
 {
 	int prev_taint = test_taint(TAINT_PROPRIETARY_MODULE);
@@ -2050,20 +1899,16 @@ static void module_augment_kernel_taints(struct module *mod, struct load_info *i
 	}
 #endif
 
-	/*
-	 * ndiswrapper is under GPL by itself, but loads proprietary modules.
-	 * Don't use add_taint_module(), as it would prevent ndiswrapper from
-	 * using GPL-only symbols it needs.
-	 */
+	 
 	if (strcmp(mod->name, "ndiswrapper") == 0)
 		add_taint(TAINT_PROPRIETARY_MODULE, LOCKDEP_NOW_UNRELIABLE);
 
-	/* driverloader was caught wrongly pretending to be under GPL */
+	 
 	if (strcmp(mod->name, "driverloader") == 0)
 		add_taint_module(mod, TAINT_PROPRIETARY_MODULE,
 				 LOCKDEP_NOW_UNRELIABLE);
 
-	/* lve claims to be GPL but upstream won't provide source */
+	 
 	if (strcmp(mod->name, "lve") == 0)
 		add_taint_module(mod, TAINT_PROPRIETARY_MODULE,
 				 LOCKDEP_NOW_UNRELIABLE);
@@ -2081,7 +1926,7 @@ static int check_modinfo(struct module *mod, struct load_info *info, int flags)
 	if (flags & MODULE_INIT_IGNORE_VERMAGIC)
 		modmagic = NULL;
 
-	/* This is allowed: modprobe --force will invalidate it. */
+	 
 	if (!modmagic) {
 		err = try_to_force_load(mod, "bad vermagic");
 		if (err)
@@ -2118,10 +1963,7 @@ static int find_module_sections(struct module *mod, struct load_info *info)
 		mod->ctors = section_objs(info, ".init_array",
 				sizeof(*mod->ctors), &mod->num_ctors);
 	else if (find_sec(info, ".init_array")) {
-		/*
-		 * This shouldn't happen with same compiler and binutils
-		 * building all parts of the module.
-		 */
+		 
 		pr_warn("%s: has both .ctors and .init_array.\n",
 		       mod->name);
 		return -EINVAL;
@@ -2168,7 +2010,7 @@ static int find_module_sections(struct module *mod, struct load_info *info)
 					 &mod->num_trace_bprintk_fmt);
 #endif
 #ifdef CONFIG_FTRACE_MCOUNT_RECORD
-	/* sechdrs[0].sh_size is always zero */
+	 
 	mod->ftrace_callsites = section_objs(info, FTRACE_CALLSITE_SECTION,
 					     sizeof(*mod->ftrace_callsites),
 					     &mod->num_ftrace_callsites);
@@ -2233,17 +2075,7 @@ static int move_module(struct module *mod, struct load_info *info)
 		}
 		mod->mem[type].size = PAGE_ALIGN(mod->mem[type].size);
 		ptr = module_memory_alloc(mod->mem[type].size, type);
-		/*
-                 * The pointer to these blocks of memory are stored on the module
-                 * structure and we keep that around so long as the module is
-                 * around. We only free that memory when we unload the module.
-                 * Just mark them as not being a leak then. The .init* ELF
-                 * sections *do* get freed after boot so we *could* treat them
-                 * slightly differently with kmemleak_ignore() and only grey
-                 * them out as they work as typical memory allocations which
-                 * *do* eventually get freed, but let's just keep things simple
-                 * and avoid *any* false positives.
-		 */
+		 
 		kmemleak_not_leak(ptr);
 		if (!ptr) {
 			t = type;
@@ -2253,7 +2085,7 @@ static int move_module(struct module *mod, struct load_info *info)
 		mod->mem[type].base = ptr;
 	}
 
-	/* Transfer each section which specifies SHF_ALLOC */
+	 
 	pr_debug("Final section addresses for %s:\n", mod->name);
 	for (i = 0; i < info->hdr->e_shnum; i++) {
 		void *dest;
@@ -2266,12 +2098,7 @@ static int move_module(struct module *mod, struct load_info *info)
 		dest = mod->mem[type].base + (shdr->sh_entsize & SH_ENTSIZE_OFFSET_MASK);
 
 		if (shdr->sh_type != SHT_NOBITS) {
-			/*
-			 * Our ELF checker already validated this, but let's
-			 * be pedantic and make the goal clearer. We actually
-			 * end up copying over all modifications made to the
-			 * userspace copy of the entire struct module.
-			 */
+			 
 			if (i == info->index.mod &&
 			   (WARN_ON_ONCE(shdr->sh_size != sizeof(struct module)))) {
 				ret = -ENOEXEC;
@@ -2279,12 +2106,7 @@ static int move_module(struct module *mod, struct load_info *info)
 			}
 			memcpy(dest, (void *)shdr->sh_addr, shdr->sh_size);
 		}
-		/*
-		 * Update the userspace copy's ELF section address to point to
-		 * our newly allocated memory as a pure convenience so that
-		 * users of info can keep taking advantage and using the newly
-		 * minted official memory area.
-		 */
+		 
 		shdr->sh_addr = (unsigned long)dest;
 		pr_debug("\t0x%lx 0x%.8lx %s\n", (long)shdr->sh_addr,
 			 (long)shdr->sh_size, info->secstrings + shdr->sh_name);
@@ -2311,11 +2133,7 @@ static int check_export_symbol_versions(struct module *mod)
 
 static void flush_module_icache(const struct module *mod)
 {
-	/*
-	 * Flush the instruction cache, since we've played with text.
-	 * Do it before processing of module parameters, so the module
-	 * can provide parameter accessor functions of its own.
-	 */
+	 
 	for_each_mod_mem_type(type) {
 		const struct module_memory *mod_mem = &mod->mem[type];
 
@@ -2339,7 +2157,7 @@ int __weak module_frob_arch_sections(Elf_Ehdr *hdr,
 	return 0;
 }
 
-/* module_blacklist is a comma-separated list of module names */
+ 
 static char *module_blacklist;
 static bool blacklisted(const char *module_name)
 {
@@ -2366,7 +2184,7 @@ static struct module *layout_and_allocate(struct load_info *info, int flags)
 	unsigned int ndx;
 	int err;
 
-	/* Allow arches to frob section contents and sizes.  */
+	 
 	err = module_frob_arch_sections(info->hdr, info->sechdrs,
 					info->secstrings, info->mod);
 	if (err < 0)
@@ -2377,47 +2195,34 @@ static struct module *layout_and_allocate(struct load_info *info, int flags)
 	if (err < 0)
 		return ERR_PTR(err);
 
-	/* We will do a special allocation for per-cpu sections later. */
+	 
 	info->sechdrs[info->index.pcpu].sh_flags &= ~(unsigned long)SHF_ALLOC;
 
-	/*
-	 * Mark ro_after_init section with SHF_RO_AFTER_INIT so that
-	 * layout_sections() can put it in the right place.
-	 * Note: ro_after_init sections also have SHF_{WRITE,ALLOC} set.
-	 */
+	 
 	ndx = find_sec(info, ".data..ro_after_init");
 	if (ndx)
 		info->sechdrs[ndx].sh_flags |= SHF_RO_AFTER_INIT;
-	/*
-	 * Mark the __jump_table section as ro_after_init as well: these data
-	 * structures are never modified, with the exception of entries that
-	 * refer to code in the __init section, which are annotated as such
-	 * at module load time.
-	 */
+	 
 	ndx = find_sec(info, "__jump_table");
 	if (ndx)
 		info->sechdrs[ndx].sh_flags |= SHF_RO_AFTER_INIT;
 
-	/*
-	 * Determine total sizes, and put offsets in sh_entsize.  For now
-	 * this is done generically; there doesn't appear to be any
-	 * special cases for the architectures.
-	 */
+	 
 	layout_sections(info->mod, info);
 	layout_symtab(info->mod, info);
 
-	/* Allocate and move to the final place */
+	 
 	err = move_module(info->mod, info);
 	if (err)
 		return ERR_PTR(err);
 
-	/* Module has been copied to its final place now: return it. */
+	 
 	mod = (void *)info->sechdrs[info->index.mod].sh_addr;
 	kmemleak_load_module(mod, info);
 	return mod;
 }
 
-/* mod is no longer valid after this! */
+ 
 static void module_deallocate(struct module *mod, struct load_info *info)
 {
 	percpu_modfree(mod);
@@ -2435,21 +2240,21 @@ int __weak module_finalize(const Elf_Ehdr *hdr,
 
 static int post_relocation(struct module *mod, const struct load_info *info)
 {
-	/* Sort exception table now relocations are done. */
+	 
 	sort_extable(mod->extable, mod->extable + mod->num_exentries);
 
-	/* Copy relocated percpu area over. */
+	 
 	percpu_modcopy(mod, (void *)info->sechdrs[info->index.pcpu].sh_addr,
 		       info->sechdrs[info->index.pcpu].sh_size);
 
-	/* Setup kallsyms-specific fields. */
+	 
 	add_kallsyms(mod, info);
 
-	/* Arch-specific module finalizing. */
+	 
 	return module_finalize(info->hdr, info->sechdrs, mod);
 }
 
-/* Call module constructors. */
+ 
 static void do_mod_ctors(struct module *mod)
 {
 #ifdef CONFIG_CONSTRUCTORS
@@ -2460,7 +2265,7 @@ static void do_mod_ctors(struct module *mod)
 #endif
 }
 
-/* For freeing module_init on success, in case kallsyms traversing */
+ 
 struct mod_initfree {
 	struct llist_node node;
 	void *init_text;
@@ -2488,16 +2293,11 @@ static void do_free_init(struct work_struct *w)
 
 #undef MODULE_PARAM_PREFIX
 #define MODULE_PARAM_PREFIX "module."
-/* Default value for module->async_probe_requested */
+ 
 static bool async_probe;
 module_param(async_probe, bool, 0644);
 
-/*
- * This is where the real work happens.
- *
- * Keep it uninlined to provide a reliable breakpoint target, e.g. for the gdb
- * helper command 'lx-symbols'.
- */
+ 
 static noinline int do_init_module(struct module *mod)
 {
 	int ret = 0;
@@ -2525,7 +2325,7 @@ static noinline int do_init_module(struct module *mod)
 	freeinit->init_rodata = mod->mem[MOD_INIT_RODATA].base;
 
 	do_mod_ctors(mod);
-	/* Start the module */
+	 
 	if (mod->init != NULL)
 		ret = do_one_initcall(mod->init);
 	if (ret < 0) {
@@ -2539,33 +2339,26 @@ static noinline int do_init_module(struct module *mod)
 		dump_stack();
 	}
 
-	/* Now it's a first class citizen! */
+	 
 	mod->state = MODULE_STATE_LIVE;
 	blocking_notifier_call_chain(&module_notify_list,
 				     MODULE_STATE_LIVE, mod);
 
-	/* Delay uevent until module has finished its init routine */
+	 
 	kobject_uevent(&mod->mkobj.kobj, KOBJ_ADD);
 
-	/*
-	 * We need to finish all async code before the module init sequence
-	 * is done. This has potential to deadlock if synchronous module
-	 * loading is requested from async (which is not allowed!).
-	 *
-	 * See commit 0fdff3ec6d87 ("async, kmod: warn on synchronous
-	 * request_module() from async workers") for more details.
-	 */
+	 
 	if (!mod->async_probe_requested)
 		async_synchronize_full();
 
 	ftrace_free_mem(mod, mod->mem[MOD_INIT_TEXT].base,
 			mod->mem[MOD_INIT_TEXT].base + mod->mem[MOD_INIT_TEXT].size);
 	mutex_lock(&module_mutex);
-	/* Drop initial reference. */
+	 
 	module_put(mod);
 	trim_init_extable(mod);
 #ifdef CONFIG_KALLSYMS
-	/* Switch to core kallsyms now init is done: kallsyms may be walking! */
+	 
 	rcu_assign_pointer(mod->kallsyms, &mod->core_kallsyms);
 #endif
 	module_enable_ro(mod, true);
@@ -2577,22 +2370,10 @@ static noinline int do_init_module(struct module *mod)
 	}
 
 #ifdef CONFIG_DEBUG_INFO_BTF_MODULES
-	/* .BTF is not SHF_ALLOC and will get removed, so sanitize pointer */
+	 
 	mod->btf_data = NULL;
 #endif
-	/*
-	 * We want to free module_init, but be aware that kallsyms may be
-	 * walking this with preempt disabled.  In all the failure paths, we
-	 * call synchronize_rcu(), but we don't want to slow down the success
-	 * path. module_memfree() cannot be called in an interrupt, so do the
-	 * work and call synchronize_rcu() in a work queue.
-	 *
-	 * Note that module_alloc() on most architectures creates W+X page
-	 * mappings which won't be cleaned up until do_free_init() runs.  Any
-	 * code such as mark_rodata_ro() which depends on those mappings to
-	 * be cleaned up needs to sync with the queued work - ie
-	 * rcu_barrier()
-	 */
+	 
 	if (llist_add(&freeinit->node, &init_free_list))
 		schedule_work(&init_free_wq);
 
@@ -2609,7 +2390,7 @@ static noinline int do_init_module(struct module *mod)
 fail_free_freeinit:
 	kfree(freeinit);
 fail:
-	/* Try to protect us from buggy refcounters. */
+	 
 	mod->state = MODULE_STATE_GOING;
 	synchronize_rcu();
 	module_put(mod);
@@ -2631,17 +2412,13 @@ static int may_init_module(void)
 	return 0;
 }
 
-/* Is this module of this name done loading?  No locks held. */
+ 
 static bool finished_loading(const char *name)
 {
 	struct module *mod;
 	bool ret;
 
-	/*
-	 * The module_mutex should not be a heavily contended lock;
-	 * if we get the occasional sleep here, we'll go an extra iteration
-	 * in the wait_event_interruptible(), which is harmless.
-	 */
+	 
 	sched_annotate_sleep();
 	mutex_lock(&module_mutex);
 	mod = find_module_all(name, strlen(name), true);
@@ -2652,7 +2429,7 @@ static bool finished_loading(const char *name)
 	return ret;
 }
 
-/* Must be called with module_mutex held */
+ 
 static int module_patient_check_exists(const char *name,
 				       enum fail_dup_mod_reason reason)
 {
@@ -2665,7 +2442,7 @@ static int module_patient_check_exists(const char *name,
 
 	if (old->state == MODULE_STATE_COMING ||
 	    old->state == MODULE_STATE_UNFORMED) {
-		/* Wait in case it fails to load. */
+		 
 		mutex_unlock(&module_mutex);
 		err = wait_event_interruptible(module_wq,
 				       finished_loading(name));
@@ -2673,30 +2450,20 @@ static int module_patient_check_exists(const char *name,
 		if (err)
 			return err;
 
-		/* The module might have gone in the meantime. */
+		 
 		old = find_module_all(name, strlen(name), true);
 	}
 
 	if (try_add_failed_module(name, reason))
 		pr_warn("Could not add fail-tracking for module: %s\n", name);
 
-	/*
-	 * We are here only when the same module was being loaded. Do
-	 * not try to load it again right now. It prevents long delays
-	 * caused by serialized module load failures. It might happen
-	 * when more devices of the same type trigger load of
-	 * a particular module.
-	 */
+	 
 	if (old && old->state == MODULE_STATE_LIVE)
 		return -EEXIST;
 	return -EBUSY;
 }
 
-/*
- * We try to place it in the list now to make sure it's unique before
- * we dedicate too many resources.  In particular, temporary percpu
- * memory exhaustion.
- */
+ 
 static int add_unformed_module(struct module *mod)
 {
 	int err;
@@ -2724,12 +2491,12 @@ static int complete_formation(struct module *mod, struct load_info *info)
 
 	mutex_lock(&module_mutex);
 
-	/* Find duplicate symbols (must be called under lock). */
+	 
 	err = verify_exported_symbols(mod);
 	if (err < 0)
 		goto out;
 
-	/* These rely on module_mutex for list integrity. */
+	 
 	module_bug_finalize(info->hdr, info->sechdrs, mod);
 	module_cfi_finalize(info->hdr, info->sechdrs, mod);
 
@@ -2737,10 +2504,7 @@ static int complete_formation(struct module *mod, struct load_info *info)
 	module_enable_nx(mod);
 	module_enable_x(mod);
 
-	/*
-	 * Mark state as coming so strong_try_module_get() ignores us,
-	 * but kallsyms etc. can see us.
-	 */
+	 
 	mod->state = MODULE_STATE_COMING;
 	mutex_unlock(&module_mutex);
 
@@ -2781,22 +2545,19 @@ static int unknown_module_param_cb(char *param, char *val, const char *modname,
 		return 0;
 	}
 
-	/* Check for magic 'dyndbg' arg */
+	 
 	ret = ddebug_dyndbg_module_param_cb(param, val, modname);
 	if (ret != 0)
 		pr_warn("%s: unknown parameter '%s' ignored\n", modname, param);
 	return 0;
 }
 
-/* Module within temporary copy, this doesn't do any allocation  */
+ 
 static int early_mod_check(struct load_info *info, int flags)
 {
 	int err;
 
-	/*
-	 * Now that we know we have the correct module name, check
-	 * if it's blacklisted.
-	 */
+	 
 	if (blacklisted(info->name)) {
 		pr_err("Module %s is blacklisted\n", info->name);
 		return -EPERM;
@@ -2806,7 +2567,7 @@ static int early_mod_check(struct load_info *info, int flags)
 	if (err)
 		return err;
 
-	/* Check module struct version now, before we try to use module. */
+	 
 	if (!check_modstruct_version(info, info->mod))
 		return -ENOEXEC;
 
@@ -2821,10 +2582,7 @@ static int early_mod_check(struct load_info *info, int flags)
 	return err;
 }
 
-/*
- * Allocate and load the module: note that size of section 0 is always
- * zero, and we rely on this for optional sections.
- */
+ 
 static int load_module(struct load_info *info, const char __user *uargs,
 		       int flags)
 {
@@ -2833,27 +2591,12 @@ static int load_module(struct load_info *info, const char __user *uargs,
 	long err = 0;
 	char *after_dashes;
 
-	/*
-	 * Do the signature check (if any) first. All that
-	 * the signature check needs is info->len, it does
-	 * not need any of the section info. That can be
-	 * set up later. This will minimize the chances
-	 * of a corrupt module causing problems before
-	 * we even get to the signature check.
-	 *
-	 * The check will also adjust info->len by stripping
-	 * off the sig length at the end of the module, making
-	 * checks against info->len more correct.
-	 */
+	 
 	err = module_sig_check(info, flags);
 	if (err)
 		goto free_copy;
 
-	/*
-	 * Do basic sanity checks against the ELF header and
-	 * sections. Cache useful sections and set the
-	 * info->mod to the userspace passed struct module.
-	 */
+	 
 	err = elf_validity_cache_copy(info, flags);
 	if (err)
 		goto free_copy;
@@ -2862,7 +2605,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
 	if (err)
 		goto free_copy;
 
-	/* Figure out module layout, and allocate all the memory. */
+	 
 	mod = layout_and_allocate(info, flags);
 	if (IS_ERR(mod)) {
 		err = PTR_ERR(mod);
@@ -2873,33 +2616,27 @@ static int load_module(struct load_info *info, const char __user *uargs,
 
 	audit_log_kern_module(mod->name);
 
-	/* Reserve our place in the list. */
+	 
 	err = add_unformed_module(mod);
 	if (err)
 		goto free_module;
 
-	/*
-	 * We are tainting your kernel if your module gets into
-	 * the modules linked list somehow.
-	 */
+	 
 	module_augment_kernel_taints(mod, info);
 
-	/* To avoid stressing percpu allocator, do this once we're unique. */
+	 
 	err = percpu_modalloc(mod, info);
 	if (err)
 		goto unlink_mod;
 
-	/* Now module is in final location, initialize linked lists, etc. */
+	 
 	err = module_unload_init(mod);
 	if (err)
 		goto unlink_mod;
 
 	init_param_lock(mod);
 
-	/*
-	 * Now we've got everything in the final locations, we can
-	 * find optional sections.
-	 */
+	 
 	err = find_module_sections(mod, info);
 	if (err)
 		goto free_unload;
@@ -2908,10 +2645,10 @@ static int load_module(struct load_info *info, const char __user *uargs,
 	if (err)
 		goto free_unload;
 
-	/* Set up MODINFO_ATTR fields */
+	 
 	setup_modinfo(mod, info);
 
-	/* Fix up syms, so that st_value is a pointer to location. */
+	 
 	err = simplify_symbols(mod, info);
 	if (err < 0)
 		goto free_modinfo;
@@ -2926,7 +2663,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
 
 	flush_module_icache(mod);
 
-	/* Now copy in args */
+	 
 	mod->args = strndup_user(uargs, ~0UL >> 1);
 	if (IS_ERR(mod->args)) {
 		err = PTR_ERR(mod->args);
@@ -2935,10 +2672,10 @@ static int load_module(struct load_info *info, const char __user *uargs,
 
 	init_build_id(mod, info);
 
-	/* Ftrace init must be called in the MODULE_STATE_UNFORMED state */
+	 
 	ftrace_module_init(mod);
 
-	/* Finally it's fully formed, ready to start executing. */
+	 
 	err = complete_formation(mod, info);
 	if (err)
 		goto ddebug_cleanup;
@@ -2949,7 +2686,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
 
 	mod->async_probe_requested = async_probe;
 
-	/* Module is ready to execute: parsing args may do that. */
+	 
 	after_dashes = parse_args(mod->name, mod->args, mod->kp, mod->num_kp,
 				  -32768, 32767, mod,
 				  unknown_module_param_cb);
@@ -2961,7 +2698,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
 		       mod->name, after_dashes);
 	}
 
-	/* Link in to sysfs. */
+	 
 	err = mod_sysfs_setup(mod, info, mod->kp, mod->num_kp);
 	if (err < 0)
 		goto coming_cleanup;
@@ -2972,10 +2709,10 @@ static int load_module(struct load_info *info, const char __user *uargs,
 			goto sysfs_cleanup;
 	}
 
-	/* Get rid of temporary copy. */
+	 
 	free_copy(info, flags);
 
-	/* Done! */
+	 
 	trace_module_load(mod);
 
 	return do_init_module(mod);
@@ -2990,7 +2727,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
 	klp_module_going(mod);
  bug_cleanup:
 	mod->state = MODULE_STATE_GOING;
-	/* module_bug_cleanup needs module_mutex protection */
+	 
 	mutex_lock(&module_mutex);
 	module_bug_cleanup(mod);
 	mutex_unlock(&module_mutex);
@@ -3007,16 +2744,16 @@ static int load_module(struct load_info *info, const char __user *uargs,
 	module_unload_free(mod);
  unlink_mod:
 	mutex_lock(&module_mutex);
-	/* Unlink carefully: kallsyms could be walking list. */
+	 
 	list_del_rcu(&mod->list);
 	mod_tree_remove(mod);
 	wake_up_all(&module_wq);
-	/* Wait for RCU-sched synchronizing before releasing mod->list. */
+	 
 	synchronize_rcu();
 	mutex_unlock(&module_mutex);
  free_module:
 	mod_stat_bump_invalid(info, flags);
-	/* Free lock-classes; relies on the preceding sync_rcu() */
+	 
 	for_class_mod_mem_type(type, core_data) {
 		lockdep_free_key_range(mod->mem[type].base,
 				       mod->mem[type].size);
@@ -3024,11 +2761,7 @@ static int load_module(struct load_info *info, const char __user *uargs,
 
 	module_deallocate(mod, info);
  free_copy:
-	/*
-	 * The info->len is always set. We distinguish between
-	 * failures once the proper module was allocated and
-	 * before that.
-	 */
+	 
 	if (!module_allocated)
 		mod_stat_bump_becoming(info, flags);
 	free_copy(info, flags);
@@ -3094,12 +2827,7 @@ static bool idempotent(struct idempotent *u, const void *cookie)
 	return !first;
 }
 
-/*
- * We were the first one with 'cookie' on the list, and we ended
- * up completing the operation. We now need to walk the list,
- * remove everybody - which includes ourselves - fill in the return
- * value, and then complete the operation.
- */
+ 
 static int idempotent_complete(struct idempotent *u, int ret)
 {
 	const void *cookie = u->cookie;
@@ -3134,7 +2862,7 @@ static int init_module_from_file(struct file *f, const char __user * uargs, int 
 
 	if (flags & MODULE_INIT_COMPRESSED_FILE) {
 		int err = module_decompress(&info, buf, len);
-		vfree(buf); /* compressed data is no longer needed */
+		vfree(buf);  
 		if (err) {
 			mod_stat_inc(&failed_decompress);
 			mod_stat_add_long(len, &invalid_decompress_bytes);
@@ -3155,13 +2883,13 @@ static int idempotent_init_module(struct file *f, const char __user * uargs, int
 	if (!f || !(f->f_mode & FMODE_READ))
 		return -EBADF;
 
-	/* See if somebody else is doing the operation? */
+	 
 	if (idempotent(&idem, file_inode(f))) {
 		wait_for_completion(&idem.complete);
 		return idem.ret;
 	}
 
-	/* Otherwise, we'll do it and complete others */
+	 
 	return idempotent_complete(&idem,
 		init_module_from_file(f, uargs, flags));
 }
@@ -3188,7 +2916,7 @@ SYSCALL_DEFINE3(finit_module, int, fd, const char __user *, uargs, int, flags)
 	return err;
 }
 
-/* Keep in sync with MODULE_FLAGS_BUF_SIZE !!! */
+ 
 char *module_flags(struct module *mod, char *buf, bool show_state)
 {
 	int bx = 0;
@@ -3201,10 +2929,10 @@ char *module_flags(struct module *mod, char *buf, bool show_state)
 	    mod->state == MODULE_STATE_COMING) {
 		buf[bx++] = '(';
 		bx += module_flags_taint(mod->taints, buf + bx);
-		/* Show a - for module-is-being-unloaded */
+		 
 		if (mod->state == MODULE_STATE_GOING && show_state)
 			buf[bx++] = '-';
-		/* Show a + for module-is-being-loaded */
+		 
 		if (mod->state == MODULE_STATE_COMING && show_state)
 			buf[bx++] = '+';
 		buf[bx++] = ')';
@@ -3215,7 +2943,7 @@ out:
 	return buf;
 }
 
-/* Given an address, look for it in the module exception tables. */
+ 
 const struct exception_table_entry *search_module_extables(unsigned long addr)
 {
 	const struct exception_table_entry *e = NULL;
@@ -3235,20 +2963,11 @@ const struct exception_table_entry *search_module_extables(unsigned long addr)
 out:
 	preempt_enable();
 
-	/*
-	 * Now, if we found one, we are running inside it now, hence
-	 * we cannot unload the module, hence no refcnt needed.
-	 */
+	 
 	return e;
 }
 
-/**
- * is_module_address() - is this address inside a module?
- * @addr: the address to check.
- *
- * See is_module_text_address() if you simply want to see if the address
- * is code (not data).
- */
+ 
 bool is_module_address(unsigned long addr)
 {
 	bool ret;
@@ -3260,13 +2979,7 @@ bool is_module_address(unsigned long addr)
 	return ret;
 }
 
-/**
- * __module_address() - get the module which contains an address.
- * @addr: the address.
- *
- * Must be called with preempt disabled or module mutex held so that
- * module doesn't get freed during this.
- */
+ 
 struct module *__module_address(unsigned long addr)
 {
 	struct module *mod;
@@ -3293,14 +3006,7 @@ lookup:
 	return mod;
 }
 
-/**
- * is_module_text_address() - is this address inside module code?
- * @addr: the address to check.
- *
- * See is_module_address() if you simply want to see if the address is
- * anywhere in a module.  See kernel_text_address() for testing if an
- * address corresponds to kernel or module code.
- */
+ 
 bool is_module_text_address(unsigned long addr)
 {
 	bool ret;
@@ -3312,18 +3018,12 @@ bool is_module_text_address(unsigned long addr)
 	return ret;
 }
 
-/**
- * __module_text_address() - get the module whose code contains an address.
- * @addr: the address.
- *
- * Must be called with preempt disabled or module mutex held so that
- * module doesn't get freed during this.
- */
+ 
 struct module *__module_text_address(unsigned long addr)
 {
 	struct module *mod = __module_address(addr);
 	if (mod) {
-		/* Make sure it's within the text section. */
+		 
 		if (!within_module_mem_type(addr, mod, MOD_TEXT) &&
 		    !within_module_mem_type(addr, mod, MOD_INIT_TEXT))
 			mod = NULL;
@@ -3331,14 +3031,14 @@ struct module *__module_text_address(unsigned long addr)
 	return mod;
 }
 
-/* Don't grab lock, we're oopsing. */
+ 
 void print_modules(void)
 {
 	struct module *mod;
 	char buf[MODULE_FLAGS_BUF_SIZE];
 
 	printk(KERN_DEFAULT "Modules linked in:");
-	/* Most callers should already have preempt disabled, but make sure */
+	 
 	preempt_disable();
 	list_for_each_entry_rcu(mod, &modules, list) {
 		if (mod->state == MODULE_STATE_UNFORMED)

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rtc-ds1390.c -- driver for the Dallas/Maxim DS1390/93/94 SPI RTC
- *
- * Copyright (C) 2008 Mercury IMC Ltd
- * Written by Mark Jackson <mpfj@mimc.co.uk>
- *
- * NOTE: Currently this driver only supports the bare minimum for read
- * and write the RTC. The extra features provided by the chip family
- * (alarms, trickle charger, different control registers) are unavailable.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -47,7 +38,7 @@
 
 struct ds1390 {
 	struct rtc_device *rtc;
-	u8 txrx_buf[9];	/* cmd + 8 registers */
+	u8 txrx_buf[9];	 
 };
 
 static void ds1390_set_reg(struct device *dev, unsigned char address,
@@ -56,7 +47,7 @@ static void ds1390_set_reg(struct device *dev, unsigned char address,
 	struct spi_device *spi = to_spi_device(dev);
 	unsigned char buf[2];
 
-	/* MSB must be '1' to write */
+	 
 	buf[0] = address | 0x80;
 	buf[1] = data;
 
@@ -73,9 +64,9 @@ static int ds1390_get_reg(struct device *dev, unsigned char address,
 	if (!data)
 		return -EINVAL;
 
-	/* Clear MSB to indicate read */
+	 
 	chip->txrx_buf[0] = address & 0x7f;
-	/* do the i/o */
+	 
 	status = spi_write_then_read(spi, chip->txrx_buf, 1, chip->txrx_buf, 1);
 	if (status != 0)
 		return status;
@@ -94,14 +85,14 @@ static void ds1390_trickle_of_init(struct spi_device *spi)
 				 &ohms))
 		goto out;
 
-	/* Enable charger */
+	 
 	value = DS1390_TRICKLE_CHARGER_ENABLE;
 	if (of_property_read_bool(spi->dev.of_node, "trickle-diode-disable"))
 		value |= DS1390_TRICKLE_CHARGER_NO_DIODE;
 	else
 		value |= DS1390_TRICKLE_CHARGER_DIODE;
 
-	/* Resistor select */
+	 
 	switch (ohms) {
 	case 250:
 		value |= DS1390_TRICKLE_CHARGER_250_OHM;
@@ -130,24 +121,23 @@ static int ds1390_read_time(struct device *dev, struct rtc_time *dt)
 	struct ds1390 *chip = dev_get_drvdata(dev);
 	int status;
 
-	/* build the message */
+	 
 	chip->txrx_buf[0] = DS1390_REG_SECONDS;
 
-	/* do the i/o */
+	 
 	status = spi_write_then_read(spi, chip->txrx_buf, 1, chip->txrx_buf, 8);
 	if (status != 0)
 		return status;
 
-	/* The chip sends data in this order:
-	 * Seconds, Minutes, Hours, Day, Date, Month / Century, Year */
+	 
 	dt->tm_sec	= bcd2bin(chip->txrx_buf[0]);
 	dt->tm_min	= bcd2bin(chip->txrx_buf[1]);
 	dt->tm_hour	= bcd2bin(chip->txrx_buf[2]);
 	dt->tm_wday	= bcd2bin(chip->txrx_buf[3]);
 	dt->tm_mday	= bcd2bin(chip->txrx_buf[4]);
-	/* mask off century bit */
+	 
 	dt->tm_mon	= bcd2bin(chip->txrx_buf[5] & 0x7f) - 1;
-	/* adjust for century bit */
+	 
 	dt->tm_year = bcd2bin(chip->txrx_buf[6]) + ((chip->txrx_buf[5] & 0x80) ? 100 : 0);
 
 	return 0;
@@ -158,7 +148,7 @@ static int ds1390_set_time(struct device *dev, struct rtc_time *dt)
 	struct spi_device *spi = to_spi_device(dev);
 	struct ds1390 *chip = dev_get_drvdata(dev);
 
-	/* build the message */
+	 
 	chip->txrx_buf[0] = DS1390_REG_SECONDS | 0x80;
 	chip->txrx_buf[1] = bin2bcd(dt->tm_sec);
 	chip->txrx_buf[2] = bin2bcd(dt->tm_min);
@@ -169,7 +159,7 @@ static int ds1390_set_time(struct device *dev, struct rtc_time *dt)
 				((dt->tm_year > 99) ? 0x80 : 0x00);
 	chip->txrx_buf[7] = bin2bcd(dt->tm_year % 100);
 
-	/* do the i/o */
+	 
 	return spi_write_then_read(spi, chip->txrx_buf, 8, NULL, 0);
 }
 

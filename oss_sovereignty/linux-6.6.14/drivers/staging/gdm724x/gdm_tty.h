@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef _GDM_TTY_H_
 #define _GDM_TTY_H_
@@ -56,5 +56,5 @@ void unregister_lte_tty_driver(void);
 int register_lte_tty_device(struct tty_dev *tty_dev, struct device *dev);
 void unregister_lte_tty_device(struct tty_dev *tty_dev);
 
-#endif /* _GDM_USB_H_ */
+#endif  
 

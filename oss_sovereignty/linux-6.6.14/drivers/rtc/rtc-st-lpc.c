@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * rtc-st-lpc.c - ST's LPC RTC, powered by the Low Power Timer
- *
- * Copyright (C) 2014 STMicroelectronics Limited
- *
- * Author: David Paris <david.paris@st.com> for STMicroelectronics
- *         Lee Jones <lee.jones@linaro.org> for STMicroelectronics
- *
- * Based on the original driver written by Stuart Menefy.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -24,17 +15,17 @@
 
 #include <dt-bindings/mfd/st-lpc.h>
 
-/* Low Power Timer */
+ 
 #define LPC_LPT_LSB_OFF		0x400
 #define LPC_LPT_MSB_OFF		0x404
 #define LPC_LPT_START_OFF	0x408
 
-/* Low Power Alarm */
+ 
 #define LPC_LPA_LSB_OFF		0x410
 #define LPC_LPA_MSB_OFF		0x414
 #define LPC_LPA_START_OFF	0x418
 
-/* LPC as WDT */
+ 
 #define LPC_WDT_OFF		0x510
 #define LPC_WDT_FLAG_OFF	0x514
 
@@ -163,7 +154,7 @@ static int st_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 
 	memcpy(&rtc->alarm, t, sizeof(struct rtc_wkalrm));
 
-	/* Now many secs to fire */
+	 
 	alarm_secs -= now_secs;
 	lpa = (unsigned long long)alarm_secs * rtc->clkrate;
 
@@ -194,7 +185,7 @@ static int st_rtc_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* LPC can either run as a Clocksource or in RTC or WDT mode */
+	 
 	if (mode != ST_LPC_MODE_RTC)
 		return -ENODEV;
 
@@ -275,10 +266,7 @@ static int st_rtc_resume(struct device *dev)
 
 	rtc_alarm_irq_enable(rtc->rtc_dev, 0);
 
-	/*
-	 * clean 'rtc->alarm' to allow a new
-	 * .set_alarm to the upper RTC layer
-	 */
+	 
 	memset(&rtc->alarm, 0, sizeof(struct rtc_wkalrm));
 
 	writel_relaxed(0, rtc->ioaddr + LPC_LPA_MSB_OFF);

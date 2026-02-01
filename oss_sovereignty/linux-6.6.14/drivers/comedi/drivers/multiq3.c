@@ -1,36 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * multiq3.c
- * Hardware driver for Quanser Consulting MultiQ-3 board
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1999 Anders Blomdell <anders.blomdell@control.lth.se>
- */
 
-/*
- * Driver: multiq3
- * Description: Quanser Consulting MultiQ-3
- * Devices: [Quanser Consulting] MultiQ-3 (multiq3)
- * Author: Anders Blomdell <anders.blomdell@control.lth.se>
- * Status: works
- *
- * Configuration Options:
- *  [0] - I/O port base address
- *  [1] - IRQ (not used)
- *  [2] - Number of optional encoder chips installed on board
- *	  0 = none
- *	  1 = 2 inputs (Model -2E)
- *	  2 = 4 inputs (Model -4E)
- *	  3 = 6 inputs (Model -6E)
- *	  4 = 8 inputs (Model -8E)
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>
 
-/*
- * Register map
- */
+ 
 #define MULTIQ3_DI_REG			0x00
 #define MULTIQ3_DO_REG			0x00
 #define MULTIQ3_AO_REG			0x02
@@ -54,25 +30,20 @@
 #define MULTIQ3_ENC_DATA_REG		0x0c
 #define MULTIQ3_ENC_CTRL_REG		0x0e
 
-/*
- * Encoder chip commands (from the programming manual)
- */
-#define MULTIQ3_CLOCK_DATA		0x00	/* FCK frequency divider */
-#define MULTIQ3_CLOCK_SETUP		0x18	/* xfer PR0 to PSC */
-#define MULTIQ3_INPUT_SETUP		0x41	/* enable inputs A and B */
-#define MULTIQ3_QUAD_X4			0x38	/* quadrature */
-#define MULTIQ3_BP_RESET		0x01	/* reset byte pointer */
-#define MULTIQ3_CNTR_RESET		0x02	/* reset counter */
-#define MULTIQ3_TRSFRPR_CTR		0x08	/* xfre preset reg to counter */
-#define MULTIQ3_TRSFRCNTR_OL		0x10	/* xfer CNTR to OL (x and y) */
-#define MULTIQ3_EFLAG_RESET		0x06	/* reset E bit of flag reg */
+ 
+#define MULTIQ3_CLOCK_DATA		0x00	 
+#define MULTIQ3_CLOCK_SETUP		0x18	 
+#define MULTIQ3_INPUT_SETUP		0x41	 
+#define MULTIQ3_QUAD_X4			0x38	 
+#define MULTIQ3_BP_RESET		0x01	 
+#define MULTIQ3_CNTR_RESET		0x02	 
+#define MULTIQ3_TRSFRPR_CTR		0x08	 
+#define MULTIQ3_TRSFRCNTR_OL		0x10	 
+#define MULTIQ3_EFLAG_RESET		0x06	 
 
 static void multiq3_set_ctrl(struct comedi_device *dev, unsigned int bits)
 {
-	/*
-	 * According to the programming manual, the SH and CLK bits should
-	 * be kept high at all times.
-	 */
+	 
 	outw(MULTIQ3_CTRL_SH | MULTIQ3_CTRL_CLK | bits,
 	     dev->iobase + MULTIQ3_CTRL_REG);
 }
@@ -115,12 +86,12 @@ static int multiq3_ai_insn_read(struct comedi_device *dev,
 		if (ret)
 			return ret;
 
-		/* get a 16-bit sample; mask it to the subdevice resolution */
+		 
 		val = inb(dev->iobase + MULTIQ3_AI_REG) << 8;
 		val |= inb(dev->iobase + MULTIQ3_AI_REG);
 		val &= s->maxdata;
 
-		/* munge the 2's complement value to offset binary */
+		 
 		data[i] = comedi_offset_munge(s, val);
 	}
 
@@ -180,36 +151,22 @@ static int multiq3_encoder_insn_read(struct comedi_device *dev,
 	int i;
 
 	for (i = 0; i < insn->n; i++) {
-		/* select encoder channel */
+		 
 		multiq3_set_ctrl(dev, MULTIQ3_CTRL_EN |
 				      MULTIQ3_CTRL_E_CHAN(chan));
 
-		/* reset the byte pointer */
+		 
 		outb(MULTIQ3_BP_RESET, dev->iobase + MULTIQ3_ENC_CTRL_REG);
 
-		/* latch the data */
+		 
 		outb(MULTIQ3_TRSFRCNTR_OL, dev->iobase + MULTIQ3_ENC_CTRL_REG);
 
-		/* read the 24-bit encoder data (lsb/mid/msb) */
+		 
 		val = inb(dev->iobase + MULTIQ3_ENC_DATA_REG);
 		val |= (inb(dev->iobase + MULTIQ3_ENC_DATA_REG) << 8);
 		val |= (inb(dev->iobase + MULTIQ3_ENC_DATA_REG) << 16);
 
-		/*
-		 * Munge the data so that the reset value is in the middle
-		 * of the maxdata range, i.e.:
-		 *
-		 * real value	comedi value
-		 * 0xffffff	0x7fffff	1 negative count
-		 * 0x000000	0x800000	reset value
-		 * 0x000001	0x800001	1 positive count
-		 *
-		 * It's possible for the 24-bit counter to overflow but it
-		 * would normally take _quite_ a few turns. A 2000 line
-		 * encoder in quadrature results in 8000 counts/rev. So about
-		 * 1048 turns in either direction can be measured without
-		 * an overflow.
-		 */
+		 
 		data[i] = (val + ((s->maxdata + 1) >> 1)) & s->maxdata;
 	}
 
@@ -262,7 +219,7 @@ static int multiq3_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Analog Input subdevice */
+	 
 	s = &dev->subdevices[0];
 	s->type		= COMEDI_SUBD_AI;
 	s->subdev_flags	= SDF_READABLE | SDF_GROUND;
@@ -271,7 +228,7 @@ static int multiq3_attach(struct comedi_device *dev,
 	s->range_table	= &range_bipolar5;
 	s->insn_read	= multiq3_ai_insn_read;
 
-	/* Analog Output subdevice */
+	 
 	s = &dev->subdevices[1];
 	s->type		= COMEDI_SUBD_AO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -284,7 +241,7 @@ static int multiq3_attach(struct comedi_device *dev,
 	if (ret)
 		return ret;
 
-	/* Digital Input subdevice */
+	 
 	s = &dev->subdevices[2];
 	s->type		= COMEDI_SUBD_DI;
 	s->subdev_flags	= SDF_READABLE;
@@ -293,7 +250,7 @@ static int multiq3_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= multiq3_di_insn_bits;
 
-	/* Digital Output subdevice */
+	 
 	s = &dev->subdevices[3];
 	s->type		= COMEDI_SUBD_DO;
 	s->subdev_flags	= SDF_WRITABLE;
@@ -302,7 +259,7 @@ static int multiq3_attach(struct comedi_device *dev,
 	s->range_table	= &range_digital;
 	s->insn_bits	= multiq3_do_insn_bits;
 
-	/* Encoder (Counter) subdevice */
+	 
 	s = &dev->subdevices[4];
 	s->type		= COMEDI_SUBD_COUNTER;
 	s->subdev_flags	= SDF_READABLE | SDF_LSAMPL;

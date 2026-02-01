@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * This file supports the /sys/firmware/sgi_uv topology tree on HPE UV.
- *
- *  Copyright (c) 2020 Hewlett Packard Enterprise.  All Rights Reserved.
- *  Copyright (c) Justin Ernst
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -540,39 +535,28 @@ static int init_pci_top_obj(struct uv_pci_top_obj *top_obj, char *line)
 	int str_cnt, ret;
 	unsigned int tmp_match[2];
 
-	// Minimum line length
+	
 	if (strlen(line) < 36)
 		return -EINVAL;
 
-	//Line must match format "pcibus %4x:%2x" to be valid
+	
 	str_cnt = sscanf(line, "pcibus %4x:%2x", &tmp_match[0], &tmp_match[1]);
 	if (str_cnt < 2)
 		return -EINVAL;
 
-	/* Connect pcibus to segment:bus number with '_'
-	 * to concatenate name tokens.
-	 * pcibus 0000:00 ... -> pcibus_0000:00 ...
-	 */
+	 
 	line[6] = '_';
 
-	/* Null terminate after the concatencated name tokens
-	 * to produce kobj name string.
-	 */
+	 
 	line[14] = '\0';
 
-	// Use start to index after name tokens string for remainder of line info.
+	
 	start = &line[15];
 
 	top_obj->iio_stack = -1;
 	top_obj->slot = -1;
 
-	/* r001i01b00h0 BASE IO (IIO Stack 0)
-	 * r001i01b00h1 PCIe IO (IIO Stack 1)
-	 * r001i01b03h1 PCIe SLOT
-	 * r001i01b00h0 NODE IO
-	 * r001i01b00h0 Riser
-	 * (IIO Stack #) may not be present.
-	 */
+	 
 	if (start[0] == 'r') {
 		str_cnt = sscanf(start, "%13s %10[^(] %*s %*s %d)",
 				location, type, &top_obj->iio_stack);
@@ -587,9 +571,7 @@ static int init_pci_top_obj(struct uv_pci_top_obj *top_obj, char *line)
 			return -ENOMEM;
 		}
 	}
-	/* PPB at 0000:80:00.00 (slot 3)
-	 * (slot #) may not be present.
-	 */
+	 
 	else if (start[0] == 'P') {
 		str_cnt = sscanf(start, "%10s %*s %14s %*s %d)",
 				type, ppb_addr, &top_obj->slot);

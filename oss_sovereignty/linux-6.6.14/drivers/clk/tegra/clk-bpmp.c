@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016-2022 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -67,13 +65,7 @@ static int tegra_bpmp_clk_transfer(struct tegra_bpmp *bpmp,
 	memset(&request, 0, sizeof(request));
 	request.cmd_and_id = (clk->cmd << 24) | clk->id;
 
-	/*
-	 * The mrq_clk_request structure has an anonymous union at offset 4
-	 * that contains all possible sub-command structures. Copy the data
-	 * to that union. Ideally we'd be able to refer to it by name, but
-	 * doing so would require changing the ABI header and increase the
-	 * maintenance burden.
-	 */
+	 
 	memcpy(req + 4, clk->tx.data, clk->tx.size);
 
 	memset(&msg, 0, sizeof(msg));
@@ -219,7 +211,7 @@ static int tegra_bpmp_clk_set_parent(struct clk_hw *hw, u8 index)
 	if (err < 0)
 		return err;
 
-	/* XXX check parent ID in response */
+	 
 
 	return 0;
 }
@@ -452,7 +444,7 @@ static int tegra_bpmp_probe_clocks(struct tegra_bpmp *bpmp,
 			continue;
 		}
 
-		/* clock not exposed by BPMP */
+		 
 		if (info->name[0] == '\0') {
 			holes++;
 			continue;
@@ -524,7 +516,7 @@ tegra_bpmp_clk_register(struct tegra_bpmp *bpmp,
 
 	clk->num_parents = info->num_parents;
 
-	/* hardware clock initialization */
+	 
 	memset(&init, 0, sizeof(init));
 	init.name = info->name;
 	clk->hw.init = &init;
@@ -564,7 +556,7 @@ tegra_bpmp_clk_register(struct tegra_bpmp *bpmp,
 	for (i = 0; i < info->num_parents; i++) {
 		const struct tegra_bpmp_clk_info *parent;
 
-		/* keep a private copy of the ID to parent index map */
+		 
 		clk->parents[i] = info->parents[i];
 
 		parent = tegra_bpmp_clk_find(clocks, num_clocks,
@@ -600,7 +592,7 @@ static void tegra_bpmp_register_clocks_one(struct tegra_bpmp *bpmp,
 	struct tegra_bpmp_clk *clk;
 
 	if (bpmp->clocks[i]) {
-		/* already registered */
+		 
 		return;
 	}
 
@@ -618,10 +610,7 @@ static void tegra_bpmp_register_clocks_one(struct tegra_bpmp *bpmp,
 		dev_err(bpmp->dev,
 			"failed to register clock %u (%s): %ld\n",
 			info->id, info->name, PTR_ERR(clk));
-		/* intentionally store the error pointer to
-		 * bpmp->clocks[i] to avoid re-attempting the
-		 * registration later
-		 */
+		 
 	}
 
 	bpmp->clocks[i] = clk;

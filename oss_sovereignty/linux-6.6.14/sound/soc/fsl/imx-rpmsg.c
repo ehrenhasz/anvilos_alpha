@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright 2017-2020 NXP
+
+
 
 #include <linux/module.h>
 #include <linux/of_platform.h>
@@ -54,7 +54,7 @@ static int imx_rpmsg_probe(struct platform_device *pdev)
 {
 	struct snd_soc_dai_link_component *dlc;
 	struct device *dev = pdev->dev.parent;
-	/* rpmsg_pdev is the platform device for the rpmsg node that probed us */
+	 
 	struct platform_device *rpmsg_pdev = to_platform_device(dev);
 	struct device_node *np = rpmsg_pdev->dev.of_node;
 	struct of_phandle_args args;
@@ -89,15 +89,10 @@ static int imx_rpmsg_probe(struct platform_device *pdev)
 			    SND_SOC_DAIFMT_NB_NF |
 			    SND_SOC_DAIFMT_CBC_CFC;
 
-	/*
-	 * i.MX rpmsg sound cards work on codec slave mode. MCLK will be
-	 * disabled by CPU DAI driver in hw_free(). Some codec requires MCLK
-	 * present at power up/down sequence. So need to set ignore_pmdown_time
-	 * to power down codec immediately before MCLK is turned off.
-	 */
+	 
 	data->dai.ignore_pmdown_time = 1;
 
-	/* Optional codec node */
+	 
 	ret = of_parse_phandle_with_fixed_args(np, "audio-codec", 0, 0, &args);
 	if (ret) {
 		*data->dai.codecs = asoc_dummy_dlc;
@@ -142,10 +137,7 @@ static int imx_rpmsg_probe(struct platform_device *pdev)
 	data->card.dapm_widgets = imx_rpmsg_dapm_widgets;
 	data->card.num_dapm_widgets = ARRAY_SIZE(imx_rpmsg_dapm_widgets);
 	data->card.late_probe = imx_rpmsg_late_probe;
-	/*
-	 * Inoder to use common api to get card name and audio routing.
-	 * Use parent of_node for this device, revert it after finishing using
-	 */
+	 
 	data->card.dev->of_node = np;
 
 	ret = snd_soc_of_parse_card_name(&data->card, "model");

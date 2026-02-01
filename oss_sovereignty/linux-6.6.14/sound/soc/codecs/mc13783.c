@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2008 Juergen Beisert, kernel@pengutronix.de
- * Copyright 2009 Sascha Hauer, s.hauer@pengutronix.de
- * Copyright 2012 Philippe Retornaz, philippe.retornaz@epfl.ch
- *
- * Initial development of this code was funded by
- * Phytec Messtechnik GmbH, https://www.phytec.de
- */
+
+ 
 #include <linux/module.h>
 #include <linux/device.h>
 #include <linux/of.h>
@@ -57,10 +50,7 @@
 #define SSI_NETWORK_STDCRXSECGAIN(x)	(((x) & 0x3) << 18)
 #define SSI_NETWORK_STDCSUMGAIN		(1 << 20)
 
-/*
- * MC13783_AUDIO_CODEC and MC13783_AUDIO_DAC mostly share the same
- * register layout
- */
+ 
 #define AUDIO_SSI_SEL			(1 << 0)
 #define AUDIO_CLK_SEL			(1 << 1)
 #define AUDIO_CSM			(1 << 2)
@@ -83,7 +73,7 @@ struct mc13783_priv {
 	enum mc13783_ssi_port dac_ssi_port;
 };
 
-/* Mapping between sample rates and register value */
+ 
 static unsigned int mc13783_rates[] = {
 	8000, 11025, 12000, 16000,
 	22050, 24000, 32000, 44100,
@@ -153,7 +143,7 @@ static int mc13783_set_fmt(struct snd_soc_dai *dai, unsigned int fmt,
 				AUDIO_CSM | AUDIO_C_CLK_EN | AUDIO_C_RESET;
 
 
-	/* DAI mode */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		val |= AUDIO_CFS(2);
@@ -165,7 +155,7 @@ static int mc13783_set_fmt(struct snd_soc_dai *dai, unsigned int fmt,
 		return -EINVAL;
 	}
 
-	/* DAI clock inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		val |= AUDIO_BCL_INV;
@@ -180,7 +170,7 @@ static int mc13783_set_fmt(struct snd_soc_dai *dai, unsigned int fmt,
 		break;
 	}
 
-	/* DAI clock master masks */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
 		val |= AUDIO_C_CLK_EN;
@@ -215,10 +205,7 @@ static int mc13783_set_fmt_sync(struct snd_soc_dai *dai, unsigned int fmt)
 	if (ret)
 		return ret;
 
-	/*
-	 * In synchronous mode force the voice codec into consumer mode
-	 * so that the clock / framesync from the stereo DAC is used
-	 */
+	 
 	fmt &= ~SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK;
 	fmt |= SND_SOC_DAIFMT_CBC_CFC;
 	ret = mc13783_set_fmt(dai, fmt, MC13783_AUDIO_CODEC);
@@ -232,8 +219,8 @@ static int mc13783_sysclk[] = {
 	16800000,
 	-1,
 	26000000,
-	-1, /* 12000000, invalid for voice codec */
-	-1, /* 3686400, invalid for voice codec */
+	-1,  
+	-1,  
 	33600000,
 };
 
@@ -349,8 +336,8 @@ static int mc13783_set_tdm_slot_codec(struct snd_soc_dai *dai,
 	if (tx_mask != 0x3)
 		return -EINVAL;
 
-	val |= (0x00 << 2);	/* primary timeslot RX/TX(?) is 0 */
-	val |= (0x01 << 4);	/* secondary timeslot TX is 1 */
+	val |= (0x00 << 2);	 
+	val |= (0x01 << 4);	 
 
 	snd_soc_component_update_bits(component, MC13783_SSI_NETWORK, mask, val);
 
@@ -387,8 +374,7 @@ static const struct snd_kcontrol_new atx_amp_ctl =
 	SOC_DAPM_SINGLE("Switch", MC13783_AUDIO_TX, 11, 1, 0);
 
 
-/* Virtual mux. The chip does the input selection automatically
- * as soon as we enable one input. */
+ 
 static const char * const adcl_enum_text[] = {
 	"MC1L", "RXINL",
 };
@@ -449,7 +435,7 @@ static const struct snd_kcontrol_new lramp_ctl =
 	SOC_DAPM_SINGLE("Switch", MC13783_AUDIO_RX0, 15, 1, 0);
 
 static const struct snd_soc_dapm_widget mc13783_dapm_widgets[] = {
-/* Input */
+ 
 	SND_SOC_DAPM_INPUT("MC1LIN"),
 	SND_SOC_DAPM_INPUT("MC1RIN"),
 	SND_SOC_DAPM_INPUT("MC2IN"),
@@ -486,7 +472,7 @@ static const struct snd_soc_dapm_widget mc13783_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("Voice CODEC Bypass", MC13783_AUDIO_CODEC, 16, 0,
 			&adc_bypass_ctl),
 
-/* Output */
+ 
 	SND_SOC_DAPM_SUPPLY("DAC_E", MC13783_AUDIO_DAC, 11, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAC_Reset", MC13783_AUDIO_DAC, 15, 0, NULL, 0),
 	SND_SOC_DAPM_OUTPUT("RXOUTL"),
@@ -516,7 +502,7 @@ static const struct snd_soc_dapm_widget mc13783_dapm_widgets[] = {
 };
 
 static struct snd_soc_dapm_route mc13783_routes[] = {
-/* Input */
+ 
 	{ "MC1L Amp", NULL, "MC1LIN"},
 	{ "MC1R Amp", NULL, "MC1RIN" },
 	{ "MC2 Amp", NULL, "MC2IN" },
@@ -544,7 +530,7 @@ static struct snd_soc_dapm_route mc13783_routes[] = {
 	{ "Headset Amp Source MUX", "CODEC", "Voice CODEC PGA"},
 	{ "Headset Amp Source MUX", "Mixer", "DAC PGA"},
 
-/* Output */
+ 
 	{ "HSL", NULL, "Headset Amp Left" },
 	{ "HSR", NULL, "Headset Amp Right"},
 	{ "RXOUTL", NULL, "Line out Amp Left"},
@@ -599,7 +585,7 @@ static int mc13783_probe(struct snd_soc_component *component)
 	snd_soc_component_init_regmap(component,
 				  dev_get_regmap(component->dev->parent, NULL));
 
-	/* these are the reset values */
+	 
 	mc13xxx_reg_write(priv->mc13xxx, MC13783_AUDIO_RX0, 0x25893);
 	mc13xxx_reg_write(priv->mc13xxx, MC13783_AUDIO_RX1, 0x00d35A);
 	mc13xxx_reg_write(priv->mc13xxx, MC13783_AUDIO_TX, 0x420000);
@@ -628,7 +614,7 @@ static void mc13783_remove(struct snd_soc_component *component)
 {
 	struct mc13783_priv *priv = snd_soc_component_get_drvdata(component);
 
-	/* Make sure VAUDIOON is off */
+	 
 	mc13xxx_reg_rmw(priv->mc13xxx, MC13783_AUDIO_RX0, 0x3, 0);
 }
 
@@ -651,14 +637,7 @@ static const struct snd_soc_dai_ops mc13783_ops_codec = {
 	.set_tdm_slot	= mc13783_set_tdm_slot_codec,
 };
 
-/*
- * The mc13783 has two SSI ports, both of them can be routed either
- * to the voice codec or the stereo DAC. When two different SSI ports
- * are used for the voice codec and the stereo DAC we can do different
- * formats and sysclock settings for playback and capture
- * (mc13783-hifi-playback and mc13783-hifi-capture). Using the same port
- * forces us to use symmetric rates (mc13783-hifi).
- */
+ 
 static struct snd_soc_dai_driver mc13783_dai_async[] = {
 	{
 		.name = "mc13783-hifi-playback",

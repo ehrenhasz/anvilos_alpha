@@ -1,4 +1,4 @@
-/* public domain */
+ 
 
 #include "includes.h"
 

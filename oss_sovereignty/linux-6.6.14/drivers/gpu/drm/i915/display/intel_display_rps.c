@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2023 Intel Corporation
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_vblank.h>
@@ -24,11 +22,7 @@ static int do_rps_boost(struct wait_queue_entry *_wait,
 	struct wait_rps_boost *wait = container_of(_wait, typeof(*wait), wait);
 	struct i915_request *rq = wait->request;
 
-	/*
-	 * If we missed the vblank, but the request is already running it
-	 * is reasonable to assume that it will complete before the next
-	 * vblank without our intervention, so leave RPS alone.
-	 */
+	 
 	if (!i915_request_started(rq))
 		intel_rps_boost(rq);
 	i915_request_put(rq);

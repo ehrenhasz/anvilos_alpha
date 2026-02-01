@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2011-2014, Intel Corporation.
- * Copyright (c) 2017-2021 Christoph Hellwig.
- */
-#include <linux/ptrace.h>	/* for force_successful_syscall_return */
+
+ 
+#include <linux/ptrace.h>	 
 #include <linux/nvme_ioctl.h>
 #include <linux/io_uring.h>
 #include "nvme.h"
@@ -18,27 +15,16 @@ static bool nvme_cmd_allowed(struct nvme_ns *ns, struct nvme_command *c,
 {
 	u32 effects;
 
-	/*
-	 * Do not allow unprivileged passthrough on partitions, as that allows an
-	 * escape from the containment of the partition.
-	 */
+	 
 	if (flags & NVME_IOCTL_PARTITION)
 		goto admin;
 
-	/*
-	 * Do not allow unprivileged processes to send vendor specific or fabrics
-	 * commands as we can't be sure about their effects.
-	 */
+	 
 	if (c->common.opcode >= nvme_cmd_vendor_start ||
 	    c->common.opcode == nvme_fabrics_command)
 		goto admin;
 
-	/*
-	 * Do not allow unprivileged passthrough of admin commands except
-	 * for a subset of identify commands that contain information required
-	 * to form proper I/O commands in userspace and do not expose any
-	 * potentially sensitive information.
-	 */
+	 
 	if (!ns) {
 		if (c->common.opcode == nvme_admin_identify) {
 			switch (c->identify.cns) {
@@ -53,29 +39,18 @@ static bool nvme_cmd_allowed(struct nvme_ns *ns, struct nvme_command *c,
 		goto admin;
 	}
 
-	/*
-	 * Check if the controller provides a Commands Supported and Effects log
-	 * and marks this command as supported.  If not reject unprivileged
-	 * passthrough.
-	 */
+	 
 	effects = nvme_command_effects(ns->ctrl, ns, c->common.opcode);
 	if (!(effects & NVME_CMD_EFFECTS_CSUPP))
 		goto admin;
 
-	/*
-	 * Don't allow passthrough for command that have intrusive (or unknown)
-	 * effects.
-	 */
+	 
 	if (effects & ~(NVME_CMD_EFFECTS_CSUPP | NVME_CMD_EFFECTS_LBCC |
 			NVME_CMD_EFFECTS_UUID_SEL |
 			NVME_CMD_EFFECTS_SCOPE_MASK))
 		goto admin;
 
-	/*
-	 * Only allow I/O commands that transfer data to the controller or that
-	 * change the logical block contents if the file descriptor is open for
-	 * writing.
-	 */
+	 
 	if ((nvme_is_write(c) || (effects & NVME_CMD_EFFECTS_LBCC)) &&
 	    !open_for_write)
 		goto admin;
@@ -85,11 +60,7 @@ admin:
 	return capable(CAP_SYS_ADMIN);
 }
 
-/*
- * Convert integer values from ioctl structures to user pointers, silently
- * ignoring the upper bits in the compat case to match behaviour of 32-bit
- * kernels.
- */
+ 
 static void __user *nvme_to_user_ptr(uintptr_t ptrval)
 {
 	if (in_compat_syscall())
@@ -178,7 +149,7 @@ static int nvme_map_user_request(struct request *req, u64 ubuffer,
 	if (ioucmd && (ioucmd->flags & IORING_URING_CMD_FIXED)) {
 		struct iov_iter iter;
 
-		/* fixedbufs is only for non-vectored io */
+		 
 		if (WARN_ON_ONCE(flags & NVME_IOCTL_VEC))
 			return -EINVAL;
 		ret = io_uring_cmd_import_fixed(ubuffer, bufflen,
@@ -288,10 +259,7 @@ static int nvme_submit_io(struct nvme_ns *ns, struct nvme_user_io __user *uio)
 
 	if ((io.control & NVME_RW_PRINFO_PRACT) &&
 	    ns->ms == sizeof(struct t10_pi_tuple)) {
-		/*
-		 * Protection information is stripped/inserted by the
-		 * controller.
-		 */
+		 
 		if (nvme_to_user_ptr(io.metadata))
 			return -EINVAL;
 		meta_len = 0;
@@ -442,10 +410,7 @@ struct nvme_uring_data {
 	__u32	timeout_ms;
 };
 
-/*
- * This overlays struct io_uring_cmd pdu.
- * Expect build errors if this grows larger than that.
- */
+ 
 struct nvme_uring_cmd_pdu {
 	union {
 		struct bio *bio;
@@ -455,7 +420,7 @@ struct nvme_uring_cmd_pdu {
 	u32 nvme_status;
 	union {
 		struct {
-			void *meta; /* kernel-resident buffer */
+			void *meta;  
 			void __user *meta_buffer;
 		};
 		u64 result;
@@ -520,10 +485,7 @@ static enum rq_end_io_ret nvme_uring_cmd_end_io(struct request *req,
 	}
 	pdu->u.result = le64_to_cpu(nvme_req(req)->result.u64);
 
-	/*
-	 * For iopoll, complete it directly.
-	 * Otherwise, move the completion to task work.
-	 */
+	 
 	if (blk_rq_is_poll(req)) {
 		WRITE_ONCE(ioucmd->cookie, NULL);
 		nvme_uring_task_cb(ioucmd, IO_URING_F_UNLOCKED);
@@ -543,10 +505,7 @@ static enum rq_end_io_ret nvme_uring_cmd_end_io_meta(struct request *req,
 	req->bio = pdu->bio;
 	pdu->req = req;
 
-	/*
-	 * For iopoll, complete it directly.
-	 * Otherwise, move the completion to task work.
-	 */
+	 
 	if (blk_rq_is_poll(req)) {
 		WRITE_ONCE(ioucmd->cookie, NULL);
 		nvme_uring_task_meta_cb(ioucmd, IO_URING_F_UNLOCKED);
@@ -626,7 +585,7 @@ static int nvme_uring_cmd_io(struct nvme_ctrl *ctrl, struct nvme_ns *ns,
 		WRITE_ONCE(ioucmd->cookie, req);
 	}
 
-	/* to free bio on completion, as req->bio will be null at that time */
+	 
 	pdu->bio = req->bio;
 	pdu->meta_len = d.metadata_len;
 	req->end_io_data = ioucmd;
@@ -679,7 +638,7 @@ struct nvme_user_io32 {
 	__u16	appmask;
 } __attribute__((__packed__));
 #define NVME_IOCTL_SUBMIT_IO32	_IOW('N', 0x42, struct nvme_user_io32)
-#endif /* COMPAT_FOR_U64_ALIGNMENT */
+#endif  
 
 static int nvme_ns_ioctl(struct nvme_ns *ns, unsigned int cmd,
 		void __user *argp, unsigned int flags, bool open_for_write)
@@ -690,11 +649,7 @@ static int nvme_ns_ioctl(struct nvme_ns *ns, unsigned int cmd,
 		return ns->head->ns_id;
 	case NVME_IOCTL_IO_CMD:
 		return nvme_user_cmd(ns->ctrl, ns, argp, flags, open_for_write);
-	/*
-	 * struct nvme_user_io can have different padding on some 32-bit ABIs.
-	 * Just accept the compat version as all fields that are used are the
-	 * same size and at the same offset.
-	 */
+	 
 #ifdef COMPAT_FOR_U64_ALIGNMENT
 	case NVME_IOCTL_SUBMIT_IO32:
 #endif
@@ -742,7 +697,7 @@ long nvme_ns_chr_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 static int nvme_uring_cmd_checks(unsigned int issue_flags)
 {
 
-	/* NVMe passthrough requires big SQE/CQE support */
+	 
 	if ((issue_flags & (IO_URING_F_SQE128|IO_URING_F_CQE32)) !=
 	    (IO_URING_F_SQE128|IO_URING_F_CQE32))
 		return -EOPNOTSUPP;
@@ -833,11 +788,7 @@ int nvme_ns_head_ioctl(struct block_device *bdev, blk_mode_t mode,
 	if (!ns)
 		goto out_unlock;
 
-	/*
-	 * Handle ioctls that apply to the controller instead of the namespace
-	 * seperately and drop the ns SRCU reference early.  This avoids a
-	 * deadlock when deleting namespaces using the passthrough interface.
-	 */
+	 
 	if (is_ctrl_ioctl(cmd))
 		return nvme_ns_head_ctrl_ioctl(ns, cmd, argp, head, srcu_idx,
 					       open_for_write);
@@ -888,14 +839,14 @@ int nvme_ns_head_chr_uring_cmd(struct io_uring_cmd *ioucmd,
 	srcu_read_unlock(&head->srcu, srcu_idx);
 	return ret;
 }
-#endif /* CONFIG_NVME_MULTIPATH */
+#endif  
 
 int nvme_dev_uring_cmd(struct io_uring_cmd *ioucmd, unsigned int issue_flags)
 {
 	struct nvme_ctrl *ctrl = ioucmd->file->private_data;
 	int ret;
 
-	/* IOPOLL not supported yet */
+	 
 	if (issue_flags & IO_URING_F_IOPOLL)
 		return -EOPNOTSUPP;
 

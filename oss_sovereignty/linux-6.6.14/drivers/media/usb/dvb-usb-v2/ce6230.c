@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Intel CE6230 DVB USB driver
- *
- * Copyright (C) 2009 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "ce6230.h"
 
@@ -48,15 +44,15 @@ static int ce6230_ctrl_msg(struct dvb_usb_device *d, struct usb_req *req)
 	}
 
 	if (requesttype == (USB_TYPE_VENDOR | USB_DIR_OUT)) {
-		/* write */
+		 
 		memcpy(buf, req->data, req->data_len);
 		pipe = usb_sndctrlpipe(d->udev, 0);
 	} else {
-		/* read */
+		 
 		pipe = usb_rcvctrlpipe(d->udev, 0);
 	}
 
-	msleep(1); /* avoid I2C errors */
+	msleep(1);  
 
 	ret = usb_control_msg(d->udev, pipe, request, requesttype, value, index,
 			buf, req->data_len, CE6230_USB_TIMEOUT);
@@ -70,7 +66,7 @@ static int ce6230_ctrl_msg(struct dvb_usb_device *d, struct usb_req *req)
 	else
 		ret = 0;
 
-	/* read request, copy returned data to return buf */
+	 
 	if (!ret && requesttype == (USB_TYPE_VENDOR | USB_DIR_IN))
 		memcpy(req->data, buf, req->data_len);
 
@@ -79,7 +75,7 @@ error:
 	return ret;
 }
 
-/* I2C */
+ 
 static struct zl10353_config ce6230_zl10353_config;
 
 static int ce6230_i2c_master_xfer(struct i2c_adapter *adap,
@@ -159,7 +155,7 @@ static struct i2c_algorithm ce6230_i2c_algorithm = {
 	.functionality = ce6230_i2c_functionality,
 };
 
-/* Callbacks for DVB USB */
+ 
 static struct zl10353_config ce6230_zl10353_config = {
 	.demod_address = 0x1e,
 	.adc_clock = 450000,
@@ -219,8 +215,7 @@ static int ce6230_power_ctrl(struct dvb_usb_device *d, int onoff)
 
 	dev_dbg(&d->udev->dev, "%s: onoff=%d\n", __func__, onoff);
 
-	/* InterfaceNumber 1 / AlternateSetting 0     idle
-	   InterfaceNumber 1 / AlternateSetting 1     streaming */
+	 
 	ret = usb_set_interface(d->udev, 1, onoff);
 	if (ret)
 		dev_err(&d->udev->dev, "%s: usb_set_interface() failed=%d\n",
@@ -229,7 +224,7 @@ static int ce6230_power_ctrl(struct dvb_usb_device *d, int onoff)
 	return ret;
 }
 
-/* DVB USB Driver stuff */
+ 
 static struct dvb_usb_device_properties ce6230_props = {
 	.driver_name = KBUILD_MODNAME,
 	.owner = THIS_MODULE,

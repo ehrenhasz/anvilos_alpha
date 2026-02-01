@@ -1,28 +1,11 @@
-/* GNU fmt -- simple text formatter.
-   Copyright (C) 1994-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Ross Paterson <rap@doc.ic.ac.uk>.  */
+ 
 
 #include <config.h>
 #include <stdio.h>
 #include <sys/types.h>
 #include <getopt.h>
 
-/* Redefine.  Otherwise, systems (Unicos for one) with headers that define
-   it to be a type get syntax errors for the variable declaration below.  */
+ 
 #define word unused_word_type
 
 #include "c-ctype.h"
@@ -30,35 +13,25 @@
 #include "fadvise.h"
 #include "xdectoint.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "fmt"
 
 #define AUTHORS proper_name ("Ross Paterson")
 
-/* The following parameters represent the program's idea of what is
-   "best".  Adjust to taste, subject to the caveats given.  */
+ 
 
-/* Default longest permitted line length (max_width).  */
+ 
 #define WIDTH	75
 
-/* Prefer lines to be LEEWAY % shorter than the maximum width, giving
-   room for optimization.  */
+ 
 #define LEEWAY	7
 
-/* The default secondary indent of tagged paragraph used for unindented
-   one-line paragraphs not preceded by any multi-line paragraphs.  */
+ 
 #define DEF_INDENT 3
 
-/* Costs and bonuses are expressed as the equivalent departure from the
-   optimal line length, multiplied by 10.  e.g. assigning something a
-   cost of 50 means that it is as bad as a line 5 characters too short
-   or too long.  The definition of SHORT_COST(n) should not be changed.
-   However, EQUIV(n) may need tuning.  */
+ 
 
-/* FIXME: "fmt" misbehaves given large inputs or options.  One
-   possible workaround for part of the problem is to change COST to be
-   a floating-point type.  There are other problems besides COST,
-   though; see MAXWORDS below.  */
+ 
 
 typedef long int COST;
 
@@ -67,87 +40,75 @@ typedef long int COST;
 #define SQR(n)		((n) * (n))
 #define EQUIV(n)	SQR ((COST) (n))
 
-/* Cost of a filled line n chars longer or shorter than goal_width.  */
+ 
 #define SHORT_COST(n)	EQUIV ((n) * 10)
 
-/* Cost of the difference between adjacent filled lines.  */
+ 
 #define RAGGED_COST(n)	(SHORT_COST (n) / 2)
 
-/* Basic cost per line.  */
+ 
 #define LINE_COST	EQUIV (70)
 
-/* Cost of breaking a line after the first word of a sentence, where
-   the length of the word is N.  */
+ 
 #define WIDOW_COST(n)	(EQUIV (200) / ((n) + 2))
 
-/* Cost of breaking a line before the last word of a sentence, where
-   the length of the word is N.  */
+ 
 #define ORPHAN_COST(n)	(EQUIV (150) / ((n) + 2))
 
-/* Bonus for breaking a line at the end of a sentence.  */
+ 
 #define SENTENCE_BONUS	EQUIV (50)
 
-/* Cost of breaking a line after a period not marking end of a sentence.
-   With the definition of sentence we are using (borrowed from emacs, see
-   get_line()) such a break would then look like a sentence break.  Hence
-   we assign a very high cost -- it should be avoided unless things are
-   really bad.  */
+ 
 #define NOBREAK_COST	EQUIV (600)
 
-/* Bonus for breaking a line before open parenthesis.  */
+ 
 #define PAREN_BONUS	EQUIV (40)
 
-/* Bonus for breaking a line after other punctuation.  */
+ 
 #define PUNCT_BONUS	EQUIV(40)
 
-/* Credit for breaking a long paragraph one line later.  */
+ 
 #define LINE_CREDIT	EQUIV(3)
 
-/* Size of paragraph buffer, in words and characters.  Longer paragraphs
-   are handled neatly (cf. flush_paragraph()), so long as these values
-   are considerably greater than required by the width.  These values
-   cannot be extended indefinitely: doing so would run into size limits
-   and/or cause more overflows in cost calculations.  FIXME: Remove these
-   arbitrary limits.  */
+ 
 
 #define MAXWORDS	1000
 #define MAXCHARS	5000
 
-/* Extra ctype(3)-style macros.  */
+ 
 
 #define isopen(c)	(strchr ("(['`\"", c) != nullptr)
 #define isclose(c)	(strchr (")]'\"", c) != nullptr)
 #define isperiod(c)	(strchr (".?!", c) != nullptr)
 
-/* Size of a tab stop, for expansion on input and re-introduction on
-   output.  */
+ 
 #define TABWIDTH	8
 
-/* Word descriptor structure.  */
+ 
 
 typedef struct Word WORD;
 
 struct Word
   {
 
-    /* Static attributes determined during input.  */
+     
 
-    char const *text;		/* the text of the word */
-    int length;			/* length of this word */
-    int space;			/* the size of the following space */
-    unsigned int paren:1;	/* starts with open paren */
-    unsigned int period:1;	/* ends in [.?!])* */
-    unsigned int punct:1;	/* ends in punctuation */
-    unsigned int final:1;	/* end of sentence */
+    char const *text;		 
+    int length;			 
+    int space;			 
+    unsigned int paren:1;	 
+    unsigned int period:1;	 
+    unsigned int punct:1;	 
+    unsigned int final:1;	 
 
-    /* The remaining fields are computed during the optimization.  */
+     
 
-    int line_length;		/* length of the best line starting here */
-    COST best_cost;		/* cost of best paragraph starting here */
-    WORD *next_break;		/* break which achieves best_cost */
+    int line_length;		 
+    COST best_cost;		 
+    WORD *next_break;		 
   };
 
-/* Forward declarations.  */
+ 
 
 static void set_prefix (char *p);
 static bool fmt (FILE *f, char const *);
@@ -167,95 +128,81 @@ static void put_line (WORD *w, int indent);
 static void put_word (WORD *w);
 static void put_space (int space);
 
-/* Option values.  */
+ 
 
-/* If true, first 2 lines may have different indent (default false).  */
+ 
 static bool crown;
 
-/* If true, first 2 lines _must_ have different indent (default false).  */
+ 
 static bool tagged;
 
-/* If true, each line is a paragraph on its own (default false).  */
+ 
 static bool split;
 
-/* If true, don't preserve inter-word spacing (default false).  */
+ 
 static bool uniform;
 
-/* Prefix minus leading and trailing spaces (default "").  */
+ 
 static char const *prefix;
 
-/* User-supplied maximum line width (default WIDTH).  The only output
-   lines longer than this will each comprise a single word.  */
+ 
 static int max_width;
 
-/* Values derived from the option values.  */
+ 
 
-/* The length of prefix minus leading space.  */
+ 
 static int prefix_full_length;
 
-/* The length of the leading space trimmed from the prefix.  */
+ 
 static int prefix_lead_space;
 
-/* The length of prefix minus leading and trailing space.  */
+ 
 static int prefix_length;
 
-/* The preferred width of text lines, set to LEEWAY % less than max_width.  */
+ 
 static int goal_width;
 
-/* Dynamic variables.  */
+ 
 
-/* Start column of the character most recently read from the input file.  */
+ 
 static int in_column;
 
-/* Start column of the next character to be written to stdout.  */
+ 
 static int out_column;
 
-/* Space for the paragraph text -- longer paragraphs are handled neatly
-   (cf. flush_paragraph()).  */
+ 
 static char parabuf[MAXCHARS];
 
-/* A pointer into parabuf, indicating the first unused character position.  */
+ 
 static char *wptr;
 
-/* The words of a paragraph -- longer paragraphs are handled neatly
-   (cf. flush_paragraph()).  */
+ 
 static WORD word[MAXWORDS];
 
-/* A pointer into the above word array, indicating the first position
-   after the last complete word.  Sometimes it will point at an incomplete
-   word.  */
+ 
 static WORD *word_limit;
 
-/* If true, current input file contains tab characters, and so tabs can be
-   used for white space on output.  */
+ 
 static bool tabs;
 
-/* Space before trimmed prefix on each line of the current paragraph.  */
+ 
 static int prefix_indent;
 
-/* Indentation of the first line of the current paragraph.  */
+ 
 static int first_indent;
 
-/* Indentation of other lines of the current paragraph */
+ 
 static int other_indent;
 
-/* To detect the end of a paragraph, we need to look ahead to the first
-   non-blank character after the prefix on the next line, or the first
-   character on the following line that failed to match the prefix.
-   We can reconstruct the lookahead from that character (next_char), its
-   position on the line (in_column) and the amount of space before the
-   prefix (next_prefix_indent).  See get_paragraph() and copy_rest().  */
+ 
 
-/* The last character read from the input file.  */
+ 
 static int next_char;
 
-/* The space before the trimmed prefix (or part of it) on the next line
-   after the current paragraph.  */
+ 
 static int next_prefix_indent;
 
-/* If nonzero, the length of the last line output in the current
-   paragraph, used to charge for raggedness at the split point for long
-   paragraphs chosen by fmt_paragraph().  */
+ 
 static int last_line_length;
 
 void
@@ -808,15 +755,11 @@ flush_paragraph (void)
       return;
     }
 
-  /* Otherwise:
-     - format what you have so far as a paragraph,
-     - find a low-cost line break near the end,
-     - output to there,
-     - make that the start of the paragraph.  */
+   
 
   fmt_paragraph ();
 
-  /* Choose a good split point.  */
+   
 
   split_point = word_limit;
   best_break = MAXCOST;
@@ -832,28 +775,24 @@ flush_paragraph (void)
     }
   put_paragraph (split_point);
 
-  /* Copy text of words down to start of parabuf -- we use memmove because
-     the source and target may overlap.  */
+   
 
   memmove (parabuf, split_point->text, wptr - split_point->text);
   shift = split_point->text - parabuf;
   wptr -= shift;
 
-  /* Adjust text pointers.  */
+   
 
   for (w = split_point; w <= word_limit; w++)
     w->text -= shift;
 
-  /* Copy words from split_point down to word -- we use memmove because
-     the source and target may overlap.  */
+   
 
   memmove (word, split_point, (word_limit - split_point + 1) * sizeof *word);
   word_limit -= split_point - word;
 }
 
-/* Compute the optimal formatting for the whole paragraph by computing
-   and remembering the optimal formatting for each suffix from the empty
-   one to the whole paragraph.  */
+ 
 
 static void
 fmt_paragraph (void)
@@ -865,14 +804,14 @@ fmt_paragraph (void)
 
   word_limit->best_cost = 0;
   saved_length = word_limit->length;
-  word_limit->length = max_width;	/* sentinel */
+  word_limit->length = max_width;	 
 
   for (start = word_limit - 1; start >= word; start--)
     {
       best = MAXCOST;
       len = start == word ? first_indent : other_indent;
 
-      /* At least one word, however long, in the line.  */
+       
 
       w = start;
       len += w->length;
@@ -880,7 +819,7 @@ fmt_paragraph (void)
         {
           w++;
 
-          /* Consider breaking before w.  */
+           
 
           wcost = line_cost (w, len) + w->best_cost;
           if (start == word && last_line_length > 0)
@@ -892,14 +831,11 @@ fmt_paragraph (void)
               start->line_length = len;
             }
 
-          /* This is a kludge to keep us from computing 'len' as the
-             sum of the sentinel length and some non-zero number.
-             Since the sentinel w->length may be INT_MAX, adding
-             to that would give a negative result.  */
+           
           if (w == word_limit)
             break;
 
-          len += (w - 1)->space + w->length;	/* w > start >= word */
+          len += (w - 1)->space + w->length;	 
         }
       while (len < max_width);
       start->best_cost = best + base_cost (start);
@@ -908,13 +844,7 @@ fmt_paragraph (void)
   word_limit->length = saved_length;
 }
 
-/* Work around <https://gcc.gnu.org/bugzilla/show_bug.cgi?id=109628>.  */
-#if 13 <= __GNUC__
-# pragma GCC diagnostic ignored "-Wanalyzer-use-of-uninitialized-value"
-#endif
-
-/* Return the constant component of the cost of breaking before the
-   word THIS.  */
+ 
 
 static COST
 base_cost (WORD *this)
@@ -946,8 +876,7 @@ base_cost (WORD *this)
   return cost;
 }
 
-/* Return the component of the cost of breaking before word NEXT that
-   depends on LEN, the length of the line beginning there.  */
+ 
 
 static COST
 line_cost (WORD *next, int len)
@@ -967,8 +896,7 @@ line_cost (WORD *next, int len)
   return cost;
 }
 
-/* Output to stdout a paragraph from word up to (but not including)
-   FINISH, which must be in the next_break chain from word.  */
+ 
 
 static void
 put_paragraph (WORD *finish)
@@ -980,8 +908,7 @@ put_paragraph (WORD *finish)
     put_line (w, other_indent);
 }
 
-/* Output to stdout the line beginning with word W, beginning in column
-   INDENT, including the prefix (if any).  */
+ 
 
 static void
 put_line (WORD *w, int indent)
@@ -1005,7 +932,7 @@ put_line (WORD *w, int indent)
   putchar ('\n');
 }
 
-/* Output to stdout the word W.  */
+ 
 
 static void
 put_word (WORD *w)
@@ -1019,7 +946,7 @@ put_word (WORD *w)
   out_column += w->length;
 }
 
-/* Output to stdout SPACE spaces, or equivalent tabs.  */
+ 
 
 static void
 put_space (int space)

@@ -1,15 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * UNISOC UFS Host Controller driver
- *
- * Copyright (C) 2022 Unisoc, Inc.
- * Author: Zhe Wang <zhe.wang1@unisoc.com>
- */
+ 
+ 
 
 #ifndef _UFS_SPRD_H_
 #define _UFS_SPRD_H_
 
-/* Vendor specific attributes */
+ 
 #define RXSQCONTROL	0x8009
 #define CBRATESEL	0x8114
 #define CBCREGADDRLSB	0x8116
@@ -82,4 +77,4 @@ struct ufs_sprd_host {
 	enum ufs_unipro_ver unipro_ver;
 };
 
-#endif /* _UFS_SPRD_H_ */
+#endif  

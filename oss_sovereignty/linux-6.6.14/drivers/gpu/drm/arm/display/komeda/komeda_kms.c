@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 #include <linux/interrupt.h>
 
 #include <drm/drm_atomic.h>
@@ -42,13 +38,13 @@ static irqreturn_t komeda_kms_irq_handler(int irq, void *data)
 	irqreturn_t status;
 	u32 i;
 
-	/* Call into the CHIP to recognize events */
+	 
 	memset(&evts, 0, sizeof(evts));
 	status = mdev->funcs->irq_handler(mdev, &evts);
 
 	komeda_print_events(&evts, drm);
 
-	/* Notify the crtc to handle the events */
+	 
 	for (i = 0; i < kms->n_crtcs; i++)
 		komeda_crtc_handle_event(&kms->crtcs[i], &evts);
 
@@ -119,16 +115,13 @@ static int komeda_plane_state_list_add(struct drm_plane_state *plane_st,
 	last = list_empty(zorder_list) ?
 	       NULL : list_last_entry(zorder_list, typeof(*last), zlist_node);
 
-	/* Considering the list sequence is zpos increasing, so if list is empty
-	 * or the zpos of new node bigger than the last node in list, no need
-	 * loop and just insert the new one to the tail of the list.
-	 */
+	 
 	if (!last || (new->base.zpos > last->base.zpos)) {
 		list_add_tail(&new->zlist_node, zorder_list);
 		return 0;
 	}
 
-	/* Build the list by zpos increasing */
+	 
 	list_for_each_entry(node, zorder_list, zlist_node) {
 		if (new->base.zpos < node->base.zpos) {
 			list_add_tail(&new->zlist_node, &node->zlist_node);
@@ -137,9 +130,7 @@ static int komeda_plane_state_list_add(struct drm_plane_state *plane_st,
 			struct drm_plane *a = node->base.plane;
 			struct drm_plane *b = new->base.plane;
 
-			/* Komeda doesn't support setting a same zpos for
-			 * different planes.
-			 */
+			 
 			DRM_DEBUG_ATOMIC("PLANE: %s and PLANE: %s are configured same zpos: %d.\n",
 					 a->name, b->name, node->base.zpos);
 			return -EINVAL;
@@ -166,13 +157,13 @@ static int komeda_crtc_normalize_zpos(struct drm_crtc *crtc,
 
 	INIT_LIST_HEAD(&zorder_list);
 
-	/* This loop also added all effected planes into the new state */
+	 
 	drm_for_each_plane_mask(plane, crtc->dev, crtc_st->plane_mask) {
 		plane_st = drm_atomic_get_plane_state(state, plane);
 		if (IS_ERR(plane_st))
 			return PTR_ERR(plane_st);
 
-		/* Build a list by zpos increasing */
+		 
 		err = komeda_plane_state_list_add(plane_st, &zorder_list);
 		if (err)
 			return err;
@@ -185,12 +176,7 @@ static int komeda_crtc_normalize_zpos(struct drm_crtc *crtc,
 		plane = plane_st->plane;
 
 		plane_st->normalized_zpos = order++;
-		/* When layer_split has been enabled, one plane will be handled
-		 * by two separated komeda layers (left/right), which may needs
-		 * two zorders.
-		 * - zorder: for left_layer for left display part.
-		 * - zorder + 1: will be reserved for right layer.
-		 */
+		 
 		if (to_kplane_st(plane_st)->layer_split)
 			order++;
 
@@ -198,7 +184,7 @@ static int komeda_crtc_normalize_zpos(struct drm_crtc *crtc,
 				 plane->base.id, plane->name,
 				 plane_st->zpos, plane_st->normalized_zpos);
 
-		/* calculate max slave zorder */
+		 
 		if (has_bit(drm_plane_index(plane), kcrtc->slave_planes))
 			kcrtc_st->max_slave_zorder =
 				max(plane_st->normalized_zpos,
@@ -221,10 +207,7 @@ static int komeda_kms_check(struct drm_device *dev,
 	if (err)
 		return err;
 
-	/* Komeda need to re-calculate resource assumption in every commit
-	 * so need to add all affected_planes (even unchanged) to
-	 * drm_atomic_state.
-	 */
+	 
 	for_each_new_crtc_in_state(state, crtc, new_crtc_st, i) {
 		err = drm_atomic_add_affected_planes(state, crtc);
 		if (err)
@@ -257,7 +240,7 @@ static void komeda_kms_mode_config_init(struct komeda_kms_dev *kms,
 
 	komeda_kms_setup_crtcs(kms, mdev);
 
-	/* Get value from dev */
+	 
 	config->min_width	= 0;
 	config->min_height	= 0;
 	config->max_width	= 4096;

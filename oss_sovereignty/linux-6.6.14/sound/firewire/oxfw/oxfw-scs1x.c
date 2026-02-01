@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * oxfw-scs1x.c - a part of driver for OXFW970/971 based devices
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- * Copyright (c) 2015 Takashi Sakamoto <o-takashi@sakamocchi.jp>
- */
+
+ 
 
 #include "oxfw.h"
 
@@ -18,7 +13,7 @@ struct fw_scs1x {
 	u8 input_escape_count;
 	struct snd_rawmidi_substream *input;
 
-	/* For MIDI playback. */
+	 
 	struct snd_rawmidi_substream *output;
 	bool output_idle;
 	u8 output_status;
@@ -36,9 +31,9 @@ struct fw_scs1x {
 };
 
 static const u8 sysex_escape_prefix[] = {
-	0xf0,			/* SysEx begin */
-	0x00, 0x01, 0x60,	/* Stanton DJ */
-	0x48, 0x53, 0x53,	/* "HSS" */
+	0xf0,			 
+	0x00, 0x01, 0x60,	 
+	0x48, 0x53, 0x53,	 
 };
 
 static void midi_input_escaped_byte(struct snd_rawmidi_substream *stream,
@@ -127,7 +122,7 @@ static void scs_write_callback(struct fw_card *card, int rcode,
 	struct fw_scs1x *scs = callback_data;
 
 	if (!rcode_is_permanent_error(rcode)) {
-		/* Don't retry for this data. */
+		 
 		if (rcode == RCODE_COMPLETE)
 			scs->transaction_bytes = 0;
 	} else {
@@ -200,10 +195,7 @@ static void scs_output_work(struct work_struct *work)
 			wake_up(&scs->idle_wait);
 			return;
 		}
-		/*
-		 * Convert from real MIDI to what I think the device expects (no
-		 * running status, one command per packet, unescaped SysExs).
-		 */
+		 
 		if (scs->output_escaped && byte < 0x80) {
 			if (scs->output_escape_high_nibble) {
 				if (i < HSS1394_MAX_PACKET_SIZE) {
@@ -266,7 +258,7 @@ static void scs_output_work(struct work_struct *work)
 retry:
 	scs->transaction_running = true;
 	generation = scs->fw_dev->generation;
-	smp_rmb(); /* node_id vs. generation */
+	smp_rmb();  
 	fw_send_request(scs->fw_dev->card, &scs->transaction,
 			TCODE_WRITE_BLOCK_REQUEST, scs->fw_dev->node_id,
 			generation, scs->fw_dev->max_speed, HSS1394_ADDRESS,
@@ -378,7 +370,7 @@ int snd_oxfw_scs1x_add(struct snd_oxfw *oxfw)
 	scs->fw_dev = fw_parent_device(oxfw->unit);
 	oxfw->spec = scs;
 
-	/* Allocate own handler for imcoming asynchronous transaction. */
+	 
 	scs->hss_handler.length = HSS1394_MAX_PACKET_SIZE;
 	scs->hss_handler.address_callback = handle_hss;
 	scs->hss_handler.callback_data = scs;
@@ -391,7 +383,7 @@ int snd_oxfw_scs1x_add(struct snd_oxfw *oxfw)
 	if (err < 0)
 		goto err_allocated;
 
-	/* Use unique name for backward compatibility to scs1x module. */
+	 
 	err = snd_rawmidi_new(oxfw->card, "SCS.1x", 0, 1, 1, &rmidi);
 	if (err < 0)
 		goto err_allocated;

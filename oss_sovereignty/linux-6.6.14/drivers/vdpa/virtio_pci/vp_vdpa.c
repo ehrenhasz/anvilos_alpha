@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vDPA bridge driver for modern virtio-pci device
- *
- * Copyright (c) 2020, Red Hat Inc. All rights reserved.
- * Author: Jason Wang <jasowang@redhat.com>
- *
- * Based on virtio_pci_modern.c.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -244,10 +237,7 @@ static u16 vp_vdpa_get_vq_num_max(struct vdpa_device *vdpa)
 static int vp_vdpa_get_vq_state(struct vdpa_device *vdpa, u16 qid,
 				struct vdpa_vq_state *state)
 {
-	/* Note that this is not supported by virtio specification, so
-	 * we return -EOPNOTSUPP here. This means we can't support live
-	 * migration, vhost device start/stop.
-	 */
+	 
 	return -EOPNOTSUPP;
 }
 
@@ -281,10 +271,7 @@ static int vp_vdpa_set_vq_state(struct vdpa_device *vdpa, u16 qid,
 {
 	struct virtio_pci_modern_device *mdev = vdpa_to_mdev(vdpa);
 
-	/* Note that this is not supported by virtio specification.
-	 * But if the state is by chance equal to the device initial
-	 * state, we can let it go.
-	 */
+	 
 	if ((vp_modern_get_status(mdev) & VIRTIO_CONFIG_S_FEATURES_OK) &&
 	    !vp_modern_get_queue_enable(mdev, qid)) {
 		if (vp_modern_get_driver_features(mdev) &
@@ -654,7 +641,7 @@ static void vp_vdpa_remove(struct pci_dev *pdev)
 
 static struct pci_driver vp_vdpa_driver = {
 	.name		= "vp-vdpa",
-	.id_table	= NULL, /* only dynamic ids */
+	.id_table	= NULL,  
 	.probe		= vp_vdpa_probe,
 	.remove		= vp_vdpa_remove,
 };

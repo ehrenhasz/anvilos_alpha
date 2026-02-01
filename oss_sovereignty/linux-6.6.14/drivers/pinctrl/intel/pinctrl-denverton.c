@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Denverton SoC pinctrl/GPIO driver
- *
- * Copyright (C) 2017, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -30,9 +25,9 @@
 #define DNV_COMMUNITY(b, s, e, g)			\
 	INTEL_COMMUNITY_GPPS(b, s, e, g, DNV)
 
-/* Denverton */
+ 
 static const struct pinctrl_pin_desc dnv_pins[] = {
-	/* North ALL */
+	 
 	PINCTRL_PIN(0, "GBE0_SDP0"),
 	PINCTRL_PIN(1, "GBE1_SDP0"),
 	PINCTRL_PIN(2, "GBE0_SDP1"),
@@ -74,7 +69,7 @@ static const struct pinctrl_pin_desc dnv_pins[] = {
 	PINCTRL_PIN(38, "THERMTRIP_N"),
 	PINCTRL_PIN(39, "PROCHOT_N"),
 	PINCTRL_PIN(40, "MEMHOT_N"),
-	/* South DFX */
+	 
 	PINCTRL_PIN(41, "DFX_PORT_CLK0"),
 	PINCTRL_PIN(42, "DFX_PORT_CLK1"),
 	PINCTRL_PIN(43, "DFX_PORT0"),
@@ -93,7 +88,7 @@ static const struct pinctrl_pin_desc dnv_pins[] = {
 	PINCTRL_PIN(56, "DFX_PORT13"),
 	PINCTRL_PIN(57, "DFX_PORT14"),
 	PINCTRL_PIN(58, "DFX_PORT15"),
-	/* South GPP0 */
+	 
 	PINCTRL_PIN(59, "SPI_TPM_CS_N"),
 	PINCTRL_PIN(60, "UART2_CTS"),
 	PINCTRL_PIN(61, "PCIE_CLKREQ5_N"),
@@ -147,7 +142,7 @@ static const struct pinctrl_pin_desc dnv_pins[] = {
 	PINCTRL_PIN(109, "TAP1_TMS"),
 	PINCTRL_PIN(110, "TAP1_TDI"),
 	PINCTRL_PIN(111, "TAP1_TDO"),
-	/* South GPP1 */
+	 
 	PINCTRL_PIN(112, "SUSPWRDNACK"),
 	PINCTRL_PIN(113, "PMU_SUSCLK"),
 	PINCTRL_PIN(114, "ADR_TRIGGER"),
@@ -221,16 +216,16 @@ static const struct intel_function dnv_functions[] = {
 };
 
 static const struct intel_padgroup dnv_north_gpps[] = {
-	DNV_GPP(0, 0, 31),	/* North ALL_0 */
-	DNV_GPP(1, 32, 40),	/* North ALL_1 */
+	DNV_GPP(0, 0, 31),	 
+	DNV_GPP(1, 32, 40),	 
 };
 
 static const struct intel_padgroup dnv_south_gpps[] = {
-	DNV_GPP(0, 41, 58),	/* South DFX */
-	DNV_GPP(1, 59, 90),	/* South GPP0_0 */
-	DNV_GPP(2, 91, 111),	/* South GPP0_1 */
-	DNV_GPP(3, 112, 143),	/* South GPP1_0 */
-	DNV_GPP(4, 144, 153),	/* South GPP1_1 */
+	DNV_GPP(0, 41, 58),	 
+	DNV_GPP(1, 59, 90),	 
+	DNV_GPP(2, 91, 111),	 
+	DNV_GPP(3, 112, 143),	 
+	DNV_GPP(4, 144, 153),	 
 };
 
 static const struct intel_community dnv_communities[] = {

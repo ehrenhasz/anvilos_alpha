@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/* Copyright (C) 2022 Microchip Technology Inc. and its subsidiaries.
- * Microchip VCAP API kunit test suite
- */
+
+ 
 
 #include <kunit/test.h>
 #include "vcap_api.h"
@@ -9,9 +7,7 @@
 #include "vcap_api_debugfs.h"
 #include "vcap_model_kunit.h"
 
-/* First we have the test infrastructure that emulates the platform
- * implementation
- */
+ 
 #define TEST_BUF_CNT 100
 #define TEST_BUF_SZ  350
 #define STREAMWSIZE 64
@@ -31,7 +27,7 @@ static char test_pr_buffer[TEST_BUF_CNT][TEST_BUF_SZ];
 static int test_pr_bufferidx;
 static int test_pr_idx;
 
-/* Callback used by the VCAP API */
+ 
 static enum vcap_keyfield_set test_val_keyset(struct net_device *ndev,
 					      struct vcap_admin *admin,
 					      struct vcap_rule *rule,
@@ -76,7 +72,7 @@ static enum vcap_keyfield_set test_val_keyset(struct net_device *ndev,
 	return -EINVAL;
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_add_def_fields(struct net_device *ndev,
 				struct vcap_admin *admin,
 				struct vcap_rule *rule)
@@ -89,7 +85,7 @@ static void test_add_def_fields(struct net_device *ndev,
 				      VCAP_BIT_0);
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_erase(struct vcap_admin *admin)
 {
 	if (test_cache_erase_count) {
@@ -100,7 +96,7 @@ static void test_cache_erase(struct vcap_admin *admin)
 	}
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_init(struct net_device *ndev, struct vcap_admin *admin,
 			    u32 start, u32 count)
 {
@@ -108,7 +104,7 @@ static void test_cache_init(struct net_device *ndev, struct vcap_admin *admin,
 	test_init_count = count;
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_read(struct net_device *ndev, struct vcap_admin *admin,
 			    enum vcap_selection sel, u32 start, u32 count)
 {
@@ -125,7 +121,7 @@ static void test_cache_read(struct net_device *ndev, struct vcap_admin *admin,
 				 __LINE__, start + idx, keystr[idx]);
 		}
 		for (idx = 0; idx < count; ++idx) {
-			/* Invert the mask before decoding starts */
+			 
 			mskstr[idx] = ~mskstr[idx];
 			pr_debug("%s:%d: mskdata[%02d]: 0x%08x\n", __func__,
 				 __LINE__, start + idx, mskstr[idx]);
@@ -150,7 +146,7 @@ static void test_cache_read(struct net_device *ndev, struct vcap_admin *admin,
 	}
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_write(struct net_device *ndev, struct vcap_admin *admin,
 			     enum vcap_selection sel, u32 start, u32 count)
 {
@@ -166,7 +162,7 @@ static void test_cache_write(struct net_device *ndev, struct vcap_admin *admin,
 				 __LINE__, start + idx, keystr[idx]);
 		}
 		for (idx = 0; idx < count; ++idx) {
-			/* Invert the mask before encoding starts */
+			 
 			mskstr[idx] = ~mskstr[idx];
 			pr_debug("%s:%d: mskdata[%02d]: 0x%08x\n", __func__,
 				 __LINE__, start + idx, mskstr[idx]);
@@ -192,7 +188,7 @@ static void test_cache_write(struct net_device *ndev, struct vcap_admin *admin,
 	}
 }
 
-/* Callback used by the VCAP API */
+ 
 static void test_cache_update(struct net_device *ndev, struct vcap_admin *admin,
 			      enum vcap_command cmd,
 			      enum vcap_selection sel, u32 addr)
@@ -213,7 +209,7 @@ static void test_cache_move(struct net_device *ndev, struct vcap_admin *admin,
 	test_move_count = count;
 }
 
-/* Provide port information via a callback interface */
+ 
 static int vcap_test_port_info(struct net_device *ndev,
 			       struct vcap_admin *admin,
 			       struct vcap_output_print *out)
@@ -241,7 +237,7 @@ static struct vcap_control test_vctrl = {
 
 static void vcap_test_api_init(struct vcap_admin *admin)
 {
-	/* Initialize the shared objects */
+	 
 	INIT_LIST_HEAD(&test_vctrl.list);
 	INIT_LIST_HEAD(&admin->list);
 	INIT_LIST_HEAD(&admin->rules);
@@ -254,7 +250,7 @@ static void vcap_test_api_init(struct vcap_admin *admin)
 	test_pr_idx = 0;
 }
 
-/* callback used by the show_admin function */
+ 
 static __printf(2, 3)
 int test_prf(void *out, const char *fmt, ...)
 {
@@ -287,7 +283,7 @@ int test_prf(void *out, const char *fmt, ...)
 	return cnt;
 }
 
-/* Define the test cases. */
+ 
 
 static void vcap_api_addr_keyset_test(struct kunit *test)
 {
@@ -316,7 +312,7 @@ static void vcap_api_addr_keyset_test(struct kunit *test)
 
 	vcap_test_api_init(&admin);
 
-	/* Go from higher to lower addresses searching for a keyset */
+	 
 	matches.keysets = keysets;
 	matches.cnt = 0;
 	matches.max = ARRAY_SIZE(keysets);
@@ -329,7 +325,7 @@ static void vcap_api_addr_keyset_test(struct kunit *test)
 		KUNIT_EXPECT_EQ(test, -EINVAL, ret);
 	}
 
-	/* Finally we hit the start of the rule */
+	 
 	admin.cache.keystream = &keydata[idx];
 	admin.cache.maskstream = &mskdata[idx];
 	matches.cnt = 0;
@@ -419,7 +415,7 @@ static void vcap_api_show_admin_test(struct kunit *test)
 
 	vcap_show_admin_info(&test_vctrl, &admin, &out);
 	for (idx = 0; idx < test_pr_bufferidx; ++idx) {
-		/* pr_info("log[%02d]: %s", idx, test_pr_buffer[idx]); */
+		 
 		KUNIT_EXPECT_STREQ(test, test_admin_info_expect[idx],
 				   test_pr_buffer[idx]);
 	}
@@ -532,7 +528,7 @@ static void vcap_api_show_admin_rule_test(struct kunit *test)
 	ret = vcap_show_admin(&test_vctrl, &admin, &out);
 	KUNIT_EXPECT_EQ(test, 0, ret);
 	for (idx = 0; idx < test_pr_bufferidx; ++idx) {
-		/* pr_info("log[%02d]: %s", idx, test_pr_buffer[idx]); */
+		 
 		KUNIT_EXPECT_STREQ(test, test_admin_expect[idx],
 				   test_pr_buffer[idx]);
 	}

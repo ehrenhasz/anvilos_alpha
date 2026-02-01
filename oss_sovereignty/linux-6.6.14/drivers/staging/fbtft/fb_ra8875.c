@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * FBTFT driver for the RA8875 LCD Controller
- * Copyright by Pf@nne & NOTRO
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -51,22 +48,22 @@ static int init_display(struct fbtft_par *par)
 	par->fbtftops.reset(par);
 
 	if ((par->info->var.xres == 320) && (par->info->var.yres == 240)) {
-		/* PLL clock frequency */
+		 
 		write_reg(par, 0x88, 0x0A);
 		write_reg(par, 0x89, 0x02);
 		mdelay(10);
-		/* color deep / MCU Interface */
+		 
 		write_reg(par, 0x10, 0x0C);
-		/* pixel clock period  */
+		 
 		write_reg(par, 0x04, 0x03);
 		mdelay(1);
-		/* horizontal settings */
+		 
 		write_reg(par, 0x14, 0x27);
 		write_reg(par, 0x15, 0x00);
 		write_reg(par, 0x16, 0x05);
 		write_reg(par, 0x17, 0x04);
 		write_reg(par, 0x18, 0x03);
-		/* vertical settings */
+		 
 		write_reg(par, 0x19, 0xEF);
 		write_reg(par, 0x1A, 0x00);
 		write_reg(par, 0x1B, 0x05);
@@ -76,22 +73,22 @@ static int init_display(struct fbtft_par *par)
 		write_reg(par, 0x1F, 0x02);
 	} else if ((par->info->var.xres == 480) &&
 		   (par->info->var.yres == 272)) {
-		/* PLL clock frequency  */
+		 
 		write_reg(par, 0x88, 0x0A);
 		write_reg(par, 0x89, 0x02);
 		mdelay(10);
-		/* color deep / MCU Interface */
+		 
 		write_reg(par, 0x10, 0x0C);
-		/* pixel clock period  */
+		 
 		write_reg(par, 0x04, 0x82);
 		mdelay(1);
-		/* horizontal settings */
+		 
 		write_reg(par, 0x14, 0x3B);
 		write_reg(par, 0x15, 0x00);
 		write_reg(par, 0x16, 0x01);
 		write_reg(par, 0x17, 0x00);
 		write_reg(par, 0x18, 0x05);
-		/* vertical settings */
+		 
 		write_reg(par, 0x19, 0x0F);
 		write_reg(par, 0x1A, 0x01);
 		write_reg(par, 0x1B, 0x02);
@@ -101,22 +98,22 @@ static int init_display(struct fbtft_par *par)
 		write_reg(par, 0x1F, 0x09);
 	} else if ((par->info->var.xres == 640) &&
 		   (par->info->var.yres == 480)) {
-		/* PLL clock frequency */
+		 
 		write_reg(par, 0x88, 0x0B);
 		write_reg(par, 0x89, 0x02);
 		mdelay(10);
-		/* color deep / MCU Interface */
+		 
 		write_reg(par, 0x10, 0x0C);
-		/* pixel clock period */
+		 
 		write_reg(par, 0x04, 0x01);
 		mdelay(1);
-		/* horizontal settings */
+		 
 		write_reg(par, 0x14, 0x4F);
 		write_reg(par, 0x15, 0x05);
 		write_reg(par, 0x16, 0x0F);
 		write_reg(par, 0x17, 0x01);
 		write_reg(par, 0x18, 0x00);
-		/* vertical settings */
+		 
 		write_reg(par, 0x19, 0xDF);
 		write_reg(par, 0x1A, 0x01);
 		write_reg(par, 0x1B, 0x0A);
@@ -126,22 +123,22 @@ static int init_display(struct fbtft_par *par)
 		write_reg(par, 0x1F, 0x01);
 	} else if ((par->info->var.xres == 800) &&
 		   (par->info->var.yres == 480)) {
-		/* PLL clock frequency */
+		 
 		write_reg(par, 0x88, 0x0B);
 		write_reg(par, 0x89, 0x02);
 		mdelay(10);
-		/* color deep / MCU Interface */
+		 
 		write_reg(par, 0x10, 0x0C);
-		/* pixel clock period */
+		 
 		write_reg(par, 0x04, 0x81);
 		mdelay(1);
-		/* horizontal settings */
+		 
 		write_reg(par, 0x14, 0x63);
 		write_reg(par, 0x15, 0x03);
 		write_reg(par, 0x16, 0x03);
 		write_reg(par, 0x17, 0x02);
 		write_reg(par, 0x18, 0x00);
-		/* vertical settings */
+		 
 		write_reg(par, 0x19, 0xDF);
 		write_reg(par, 0x1A, 0x01);
 		write_reg(par, 0x1B, 0x14);
@@ -154,12 +151,12 @@ static int init_display(struct fbtft_par *par)
 		return -1;
 	}
 
-	/* PWM clock */
+	 
 	write_reg(par, 0x8a, 0x81);
 	write_reg(par, 0x8b, 0xFF);
 	mdelay(10);
 
-	/* Display ON */
+	 
 	write_reg(par, 0x01, 0x80);
 	mdelay(10);
 
@@ -168,7 +165,7 @@ static int init_display(struct fbtft_par *par)
 
 static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 {
-	/* Set_Active_Window */
+	 
 	write_reg(par, 0x30, xs & 0x00FF);
 	write_reg(par, 0x31, (xs & 0xFF00) >> 8);
 	write_reg(par, 0x32, ys & 0x00FF);
@@ -178,7 +175,7 @@ static void set_addr_win(struct fbtft_par *par, int xs, int ys, int xe, int ye)
 	write_reg(par, 0x36, (ys + ye) & 0x00FF);
 	write_reg(par, 0x37, ((ys + ye) & 0xFF00) >> 8);
 
-	/* Set_Memory_Write_Cursor */
+	 
 	write_reg(par, 0x46,  xs & 0xff);
 	write_reg(par, 0x47, (xs >> 8) & 0x03);
 	write_reg(par, 0x48,  ys & 0xff);
@@ -193,7 +190,7 @@ static void write_reg8_bus8(struct fbtft_par *par, int len, ...)
 	int i, ret;
 	u8 *buf = par->buf;
 
-	/* slow down spi-speed for writing registers */
+	 
 	par->fbtftops.write = write_spi;
 
 	if (unlikely(par->debug & DEBUG_WRITE_REGISTER)) {
@@ -236,7 +233,7 @@ static void write_reg8_bus8(struct fbtft_par *par, int len, ...)
 	}
 	va_end(args);
 
-	/* restore user spi-speed */
+	 
 	par->fbtftops.write = fbtft_write_spi;
 	udelay(100);
 }

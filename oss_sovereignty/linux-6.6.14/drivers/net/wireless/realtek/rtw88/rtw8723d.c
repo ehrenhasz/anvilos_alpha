@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include "main.h"
@@ -138,7 +137,7 @@ static void rtw8723d_phy_set_param(struct rtw_dev *rtwdev)
 	u8 xtal_cap;
 	u32 val32;
 
-	/* power on BB/RF domain */
+	 
 	rtw_write16_set(rtwdev, REG_SYS_FUNC_EN,
 			BIT_FEN_EN_25_1 | BIT_FEN_BB_GLB_RST | BIT_FEN_BB_RSTB);
 	rtw_write8_set(rtwdev, REG_RF_CTRL,
@@ -147,7 +146,7 @@ static void rtw8723d_phy_set_param(struct rtw_dev *rtwdev)
 
 	rtw_phy_load_tables(rtwdev);
 
-	/* post init after header files config */
+	 
 	rtw_write32_clr(rtwdev, REG_RCR, BIT_RCR_ADF);
 	rtw_write8_set(rtwdev, REG_HIQ_NO_LMT_EN, BIT_HIQ_NO_LMT_EN_ROOT);
 	rtw_write16_set(rtwdev, REG_AFE_CTRL_4, BIT_CK320M_AFE_EN | BIT_EN_SYN);
@@ -258,7 +257,7 @@ static int rtw8723d_read_efuse(struct rtw_dev *rtwdev, u8 *log_map)
 		rtw8723ds_efuse_parsing(efuse, map);
 		break;
 	default:
-		/* unsupported now */
+		 
 		return -ENOTSUPP;
 	}
 
@@ -315,7 +314,7 @@ static void query_phy_status_page1(struct rtw_dev *rtwdev, u8 *phy_status,
 	dm_info->cfo_tail[RF_PATH_A] = (pkt_stat->cfo_tail[RF_PATH_A] * 5) >> 1;
 
 	rx_evm = clamp_t(s8, -pkt_stat->rx_evm[RF_PATH_A] >> 1, 0, 64);
-	rx_evm &= 0x3F;	/* 64->0: second path of 1SS rate is 64 */
+	rx_evm &= 0x3F;	 
 	dm_info->rx_evm_dbm[RF_PATH_A] = rx_evm;
 }
 
@@ -363,10 +362,10 @@ static void rtw8723d_query_rx_desc(struct rtw_dev *rtwdev, u8 *rx_desc,
 	pkt_stat->ppdu_cnt = 0;
 	pkt_stat->tsf_low = GET_RX_DESC_TSFL(rx_desc);
 
-	/* drv_info_sz is in unit of 8-bytes */
+	 
 	pkt_stat->drv_info_sz *= 8;
 
-	/* c2h cmd pkt's rx/phy status is not interested */
+	 
 	if (pkt_stat->is_c2h)
 		return;
 
@@ -645,7 +644,7 @@ static void rtw8723d_false_alarm_statistics(struct rtw_dev *rtwdev)
 	u32 crc32_cnt;
 	u32 val32;
 
-	/* hold counter */
+	 
 	rtw_write32_mask(rtwdev, REG_OFDM_FA_HOLDC_11N, BIT_MASK_OFDM_FA_KEEP, 1);
 	rtw_write32_mask(rtwdev, REG_OFDM_FA_RSTD_11N, BIT_MASK_OFDM_FA_KEEP1, 1);
 	rtw_write32_mask(rtwdev, REG_CCK_FA_RST_11N, BIT_MASK_CCK_CNT_KEEP, 1);
@@ -686,7 +685,7 @@ static void rtw8723d_false_alarm_statistics(struct rtw_dev *rtwdev)
 			       u32_get_bits(val32, BIT_MASK_CCK_FA_LSB);
 	dm_info->total_cca_cnt = dm_info->cck_cca_cnt + dm_info->ofdm_cca_cnt;
 
-	/* reset counter */
+	 
 	rtw_write32_mask(rtwdev, REG_OFDM_FA_RSTC_11N, BIT_MASK_OFDM_FA_RST, 1);
 	rtw_write32_mask(rtwdev, REG_OFDM_FA_RSTC_11N, BIT_MASK_OFDM_FA_RST, 0);
 	rtw_write32_mask(rtwdev, REG_OFDM_FA_RSTD_11N, BIT_MASK_OFDM_FA_RST1, 1);
@@ -935,7 +934,7 @@ static void rtw8723d_iqk_one_shot(struct rtw_dev *rtwdev, bool tx,
 {
 	u32 pts = (tx ? iqk_cfg->val_iqkpts : 0xf9000000);
 
-	/* enter IQK mode */
+	 
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, EN_IQK);
 	rtw8723d_iqk_config_lte_path_gnt(rtwdev);
 
@@ -948,7 +947,7 @@ static void rtw8723d_iqk_one_shot(struct rtw_dev *rtwdev, bool tx,
 		iqk_cfg->name, tx ? "TX" : "RX",
 		rtw_read32(rtwdev, REG_BB_SEL_BTG));
 
-	/* One shot, LOK & IQK */
+	 
 	rtw_write32(rtwdev, REG_IQK_AGC_PTS_11N, pts);
 	rtw_write32(rtwdev, REG_IQK_AGC_PTS_11N, 0xf8000000);
 
@@ -964,7 +963,7 @@ static void rtw8723d_iqk_txrx_path_post(struct rtw_dev *rtwdev,
 	rtw8723d_iqk_restore_lte_path_gnt(rtwdev, backup);
 	rtw_write32(rtwdev, REG_BB_SEL_BTG, backup->bb_sel_btg);
 
-	/* leave IQK mode */
+	 
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, RST_IQK);
 	mdelay(1);
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_padlut, 0x800, 0x0);
@@ -992,7 +991,7 @@ static u8 rtw8723d_iqk_tx_path(struct rtw_dev *rtwdev,
 	rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTWD0, RFREG_MASK, 0xBFFE0);
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_lutwe, RFREG_MASK, 0x00000);
 
-	/* IQK setting */
+	 
 	rtw_write32(rtwdev, REG_TXIQK_TONE_A_11N, 0x08008c0c);
 	rtw_write32(rtwdev, REG_RXIQK_TONE_A_11N, 0x38008c1c);
 	rtw_write32(rtwdev, REG_TXIQK_PI_A_11N, iqk_cfg->val_txiqk_pi);
@@ -1000,16 +999,16 @@ static u8 rtw8723d_iqk_tx_path(struct rtw_dev *rtwdev,
 	rtw_write32(rtwdev, REG_TXIQK_11N, 0x01007c00);
 	rtw_write32(rtwdev, REG_RXIQK_11N, 0x01004800);
 
-	/* LOK setting */
+	 
 	rtw_write32(rtwdev, REG_IQK_AGC_RSP_11N, 0x00462911);
 
-	/* PA, PAD setting */
+	 
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_padlut, 0x800, 0x1);
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_gaintx, 0x600, 0x0);
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_gaintx, 0x1E0, 0x3);
 	rtw_write_rf(rtwdev, RF_PATH_A, RF_RXIQGEN, 0x1F, 0xf);
 
-	/* LOK setting for 8723D */
+	 
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_lutwe, 0x10, 0x1);
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_bspad, 0x1, 0x1);
 
@@ -1047,11 +1046,11 @@ static u8 rtw8723d_iqk_rx_path(struct rtw_dev *rtwdev,
 
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, RST_IQK);
 
-	/* IQK setting */
+	 
 	rtw_write32(rtwdev, REG_TXIQK_11N, 0x01007c00);
 	rtw_write32(rtwdev, REG_RXIQK_11N, 0x01004800);
 
-	/* path IQK setting */
+	 
 	rtw_write32(rtwdev, REG_TXIQK_TONE_A_11N, 0x18008c1c);
 	rtw_write32(rtwdev, REG_RXIQK_TONE_A_11N, 0x38008c1c);
 	rtw_write32(rtwdev, REG_TX_IQK_TONE_B, 0x38008c1c);
@@ -1059,17 +1058,17 @@ static u8 rtw8723d_iqk_rx_path(struct rtw_dev *rtwdev,
 	rtw_write32(rtwdev, REG_TXIQK_PI_A_11N, 0x82160000);
 	rtw_write32(rtwdev, REG_RXIQK_PI_A_11N, 0x28160000);
 
-	/* LOK setting */
+	 
 	rtw_write32(rtwdev, REG_IQK_AGC_RSP_11N, 0x0046a911);
 
-	/* RXIQK mode */
+	 
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_lutwe, RFREG_MASK, 0x80000);
 	rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTWA, RFREG_MASK, 0x00006);
 	rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTWD1, RFREG_MASK, 0x0005f);
 	rtw_write_rf(rtwdev, RF_PATH_A, RF_LUTWD0, RFREG_MASK, 0xa7ffb);
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_lutwe, RFREG_MASK, 0x00000);
 
-	/* PA/PAD=0 */
+	 
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_padlut, 0x800, 0x1);
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_gaintx, 0x600, 0x0);
 	rtw_write_rf(rtwdev, RF_PATH_A, RF_WLINT, RFREG_MASK, iqk_cfg->val_wlint);
@@ -1088,7 +1087,7 @@ static u8 rtw8723d_iqk_rx_path(struct rtw_dev *rtwdev,
 	if (!status)
 		goto restore;
 
-	/* second round */
+	 
 	tx_x = rtw_read32_mask(rtwdev, REG_IQK_RES_TX, BIT_MASK_RES_TX);
 	tx_y = rtw_read32_mask(rtwdev, REG_IQK_RES_TY, BIT_MASK_RES_TY);
 
@@ -1111,10 +1110,10 @@ static u8 rtw8723d_iqk_rx_path(struct rtw_dev *rtwdev,
 	rtw_write32(rtwdev, REG_TXIQK_PI_A_11N, 0x82170000);
 	rtw_write32(rtwdev, REG_RXIQK_PI_A_11N, 0x28171400);
 
-	/* LOK setting */
+	 
 	rtw_write32(rtwdev, REG_IQK_AGC_RSP_11N, 0x0046a8d1);
 
-	/* RXIQK mode */
+	 
 	rtw_write32_mask(rtwdev, REG_FPGA0_IQK_11N, BIT_MASK_IQK_MOD, RST_IQK);
 	mdelay(1);
 	rtw_write_rf(rtwdev, RF_PATH_A, iqk_cfg->reg_lutwe, 0x80000, 0x1);
@@ -1293,7 +1292,7 @@ bool rtw8723d_iqk_similarity_cmp(struct rtw_dev *rtwdev, s32 result[][IQK_NR],
 
 check_sim:
 	for (i = 0; i < IQK_NR; i++) {
-		j = i & ~1;	/* 2 bits are a pair for IQ[X, Y] */
+		j = i & ~1;	 
 		if (bitmap & GENMASK(j + 1, j))
 			continue;
 
@@ -1545,24 +1544,24 @@ static void rtw8723d_phy_cck_pd_set(struct rtw_dev *rtwdev, u8 new_lvl)
 			 dm_info->cck_pd_default + new_lvl * 2);
 }
 
-/* for coex */
+ 
 static void rtw8723d_coex_cfg_init(struct rtw_dev *rtwdev)
 {
-	/* enable TBTT nterrupt */
+	 
 	rtw_write8_set(rtwdev, REG_BCN_CTRL, BIT_EN_BCN_FUNCTION);
 
-	/* BT report packet sample rate	 */
-	/* 0x790[5:0]=0x5 */
+	 
+	 
 	rtw_write8_mask(rtwdev, REG_BT_TDMA_TIME, BIT_MASK_SAMPLE_RATE, 0x5);
 
-	/* enable BT counter statistics */
+	 
 	rtw_write8(rtwdev, REG_BT_STAT_CTRL, 0x1);
 
-	/* enable PTA (3-wire function form BT side) */
+	 
 	rtw_write32_set(rtwdev, REG_GPIO_MUXCFG, BIT_BT_PTA_EN);
 	rtw_write32_set(rtwdev, REG_GPIO_MUXCFG, BIT_PO_BT_PTA_PINS);
 
-	/* enable PTA (tx/rx signal form WiFi side) */
+	 
 	rtw_write8_set(rtwdev, REG_QUEUE_CTRL, BIT_PTA_WL_TX_EN);
 }
 
@@ -1596,7 +1595,7 @@ static void rtw8723d_coex_cfg_rfe_type(struct rtw_dev *rtwdev)
 	coex_rfe->ant_switch_diversity = false;
 	coex_rfe->wlg_at_btg = true;
 
-	/* decide antenna at main or aux */
+	 
 	if (efuse->share_ant) {
 		if (aux)
 			rtw_write16(rtwdev, REG_BB_SEL_BTG, 0x80);
@@ -1609,7 +1608,7 @@ static void rtw8723d_coex_cfg_rfe_type(struct rtw_dev *rtwdev)
 			rtw_write16(rtwdev, REG_BB_SEL_BTG, 0x0);
 	}
 
-	/* disable LTE coex in wifi side */
+	 
 	rtw_coex_write_indirect_reg(rtwdev, LTE_COEX_CTRL, BIT_LTE_COEX_EN, 0x0);
 	rtw_coex_write_indirect_reg(rtwdev, LTE_WL_TRX_CTRL, MASKLWORD, 0xffff);
 	rtw_coex_write_indirect_reg(rtwdev, LTE_BT_TRX_CTRL, MASKLWORD, 0xffff);
@@ -1639,7 +1638,7 @@ static void rtw8723d_coex_cfg_wl_rx_gain(struct rtw_dev *rtwdev, bool low_gain)
 {
 	struct rtw_coex *coex = &rtwdev->coex;
 	struct rtw_coex_dm *coex_dm = &coex->dm;
-	/* WL Rx Low gain on */
+	 
 	static const u32 wl_rx_low_gain_on[] = {
 		0xec120101, 0xeb130101, 0xce140101, 0xcd150101, 0xcc160101,
 		0xcb170101, 0xca180101, 0x8d190101, 0x8c1a0101, 0x8b1b0101,
@@ -1647,7 +1646,7 @@ static void rtw8723d_coex_cfg_wl_rx_gain(struct rtw_dev *rtwdev, bool low_gain)
 		0x0d210101, 0x0c220101, 0x0b230101, 0xcf240001, 0xce250001,
 		0xcd260001, 0xcc270001, 0x8f280001
 	};
-	/* WL Rx Low gain off */
+	 
 	static const u32 wl_rx_low_gain_off[] = {
 		0xec120101, 0xeb130101, 0xea140101, 0xe9150101, 0xe8160101,
 		0xe7170101, 0xe6180101, 0xe5190101, 0xe41a0101, 0xe31b0101,
@@ -1726,20 +1725,20 @@ static void rtw8723d_set_iqk_matrix_by_result(struct rtw_dev *rtwdev,
 		break;
 	}
 
-	/* new element D */
+	 
 	ele_D = OFDM_SWING_D(ofdm_swing);
 	iqk_mult(iqk_result_x, ele_D, &ele_D_ext);
-	/* new element A */
+	 
 	iqk_result_x = iqkxy_to_s32(iqk_result_x);
 	ele_A = iqk_mult(iqk_result_x, ele_D, &ele_A_ext);
-	/* new element C */
+	 
 	iqk_result_y = iqkxy_to_s32(iqk_result_y);
 	ele_C = iqk_mult(iqk_result_y, ele_D, &ele_C_ext);
 
 	switch (rf_path) {
 	case RF_PATH_A:
 	default:
-		/* write new elements A, C, D, and element B is always 0 */
+		 
 		value32 = BIT_SET_TXIQ_ELM_ACD(ele_A, ele_C, ele_D);
 		rtw_write32(rtwdev, REG_OFDM_0_XA_TX_IQ_IMBALANCE, value32);
 		value32 = BIT_SET_TXIQ_ELM_C1(ele_C);
@@ -1752,7 +1751,7 @@ static void rtw8723d_set_iqk_matrix_by_result(struct rtw_dev *rtwdev,
 		break;
 
 	case RF_PATH_B:
-		/* write new elements A, C, D, and element B is always 0 */
+		 
 		rtw_write32_mask(rtwdev, REG_TXIQ_CD_S0, BIT_MASK_TXIQ_D_S0, ele_D);
 		rtw_write32_mask(rtwdev, REG_TXIQ_CD_S0, BIT_MASK_TXIQ_C_S0, ele_C);
 		rtw_write32_mask(rtwdev, REG_TXIQ_AB_S0, BIT_MASK_TXIQ_A_S0, ele_A);
@@ -1798,7 +1797,7 @@ static void rtw8723d_set_iqk_matrix(struct rtw_dev *rtwdev, s8 ofdm_index,
 		break;
 
 	case RF_PATH_B:
-		/* image S1:c80 to S0:Cd0 and Cd4 */
+		 
 		rtw_write32_mask(rtwdev, REG_TXIQ_AB_S0, BIT_MASK_TXIQ_A_S0,
 				 OFDM_SWING_A(ofdm_swing));
 		rtw_write32_mask(rtwdev, REG_TXIQ_AB_S0, BIT_MASK_TXIQ_B_S0,
@@ -1967,7 +1966,7 @@ static void rtw8723d_fill_txdesc_checksum(struct rtw_dev *rtwdev,
 					  struct rtw_tx_pkt_info *pkt_info,
 					  u8 *txdesc)
 {
-	size_t words = 32 / 2; /* calculate the first 32 bytes (16 words) */
+	size_t words = 32 / 2;  
 	__le16 chksum = 0;
 	__le16 *data = (__le16 *)(txdesc);
 	struct rtw_tx_desc *tx_desc = (struct rtw_tx_desc *)txdesc;
@@ -2014,130 +2013,130 @@ static struct rtw_chip_ops rtw8723d_ops = {
 	.coex_set_wl_rx_gain	= rtw8723d_coex_cfg_wl_rx_gain,
 };
 
-/* Shared-Antenna Coex Table */
+ 
 static const struct coex_table_para table_sant_8723d[] = {
-	{0xffffffff, 0xffffffff}, /* case-0 */
+	{0xffffffff, 0xffffffff},  
 	{0x55555555, 0x55555555},
 	{0x66555555, 0x66555555},
 	{0xaaaaaaaa, 0xaaaaaaaa},
 	{0x5a5a5a5a, 0x5a5a5a5a},
-	{0xfafafafa, 0xfafafafa}, /* case-5 */
+	{0xfafafafa, 0xfafafafa},  
 	{0x6a5a5555, 0xaaaaaaaa},
 	{0x6a5a56aa, 0x6a5a56aa},
 	{0x6a5a5a5a, 0x6a5a5a5a},
 	{0x66555555, 0x5a5a5a5a},
-	{0x66555555, 0x6a5a5a5a}, /* case-10 */
+	{0x66555555, 0x6a5a5a5a},  
 	{0x66555555, 0x6a5a5aaa},
 	{0x66555555, 0x5a5a5aaa},
 	{0x66555555, 0x6aaa5aaa},
 	{0x66555555, 0xaaaa5aaa},
-	{0x66555555, 0xaaaaaaaa}, /* case-15 */
+	{0x66555555, 0xaaaaaaaa},  
 	{0xffff55ff, 0xfafafafa},
 	{0xffff55ff, 0x6afa5afa},
 	{0xaaffffaa, 0xfafafafa},
 	{0xaa5555aa, 0x5a5a5a5a},
-	{0xaa5555aa, 0x6a5a5a5a}, /* case-20 */
+	{0xaa5555aa, 0x6a5a5a5a},  
 	{0xaa5555aa, 0xaaaaaaaa},
 	{0xffffffff, 0x5a5a5a5a},
 	{0xffffffff, 0x5a5a5a5a},
 	{0xffffffff, 0x55555555},
-	{0xffffffff, 0x5a5a5aaa}, /* case-25 */
+	{0xffffffff, 0x5a5a5aaa},  
 	{0x55555555, 0x5a5a5a5a},
 	{0x55555555, 0xaaaaaaaa},
 	{0x55555555, 0x6a5a6a5a},
 	{0x66556655, 0x66556655},
-	{0x66556aaa, 0x6a5a6aaa}, /* case-30 */
+	{0x66556aaa, 0x6a5a6aaa},  
 	{0xffffffff, 0x5aaa5aaa},
 	{0x56555555, 0x5a5a5aaa},
 };
 
-/* Non-Shared-Antenna Coex Table */
+ 
 static const struct coex_table_para table_nsant_8723d[] = {
-	{0xffffffff, 0xffffffff}, /* case-100 */
+	{0xffffffff, 0xffffffff},  
 	{0x55555555, 0x55555555},
 	{0x66555555, 0x66555555},
 	{0xaaaaaaaa, 0xaaaaaaaa},
 	{0x5a5a5a5a, 0x5a5a5a5a},
-	{0xfafafafa, 0xfafafafa}, /* case-105 */
+	{0xfafafafa, 0xfafafafa},  
 	{0x5afa5afa, 0x5afa5afa},
 	{0x55555555, 0xfafafafa},
 	{0x66555555, 0xfafafafa},
 	{0x66555555, 0x5a5a5a5a},
-	{0x66555555, 0x6a5a5a5a}, /* case-110 */
+	{0x66555555, 0x6a5a5a5a},  
 	{0x66555555, 0xaaaaaaaa},
 	{0xffff55ff, 0xfafafafa},
 	{0xffff55ff, 0x5afa5afa},
 	{0xffff55ff, 0xaaaaaaaa},
-	{0xffff55ff, 0xffff55ff}, /* case-115 */
+	{0xffff55ff, 0xffff55ff},  
 	{0xaaffffaa, 0x5afa5afa},
 	{0xaaffffaa, 0xaaaaaaaa},
 	{0xffffffff, 0xfafafafa},
 	{0xffffffff, 0x5afa5afa},
-	{0xffffffff, 0xaaaaaaaa}, /* case-120 */
+	{0xffffffff, 0xaaaaaaaa},  
 	{0x55ff55ff, 0x5afa5afa},
 	{0x55ff55ff, 0xaaaaaaaa},
 	{0x55ff55ff, 0x55ff55ff}
 };
 
-/* Shared-Antenna TDMA */
+ 
 static const struct coex_tdma_para tdma_sant_8723d[] = {
-	{ {0x00, 0x00, 0x00, 0x00, 0x00} }, /* case-0 */
-	{ {0x61, 0x45, 0x03, 0x11, 0x11} }, /* case-1 */
+	{ {0x00, 0x00, 0x00, 0x00, 0x00} },  
+	{ {0x61, 0x45, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x3a, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x11} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x11} }, /* case-5 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x45, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x3a, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x10} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x10} }, /* case-10 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x10} },  
 	{ {0x61, 0x08, 0x03, 0x11, 0x14} },
 	{ {0x61, 0x08, 0x03, 0x10, 0x14} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x55} },
-	{ {0x51, 0x08, 0x07, 0x10, 0x54} }, /* case-15 */
+	{ {0x51, 0x08, 0x07, 0x10, 0x54} },  
 	{ {0x51, 0x45, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x3a, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x30, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x20, 0x03, 0x10, 0x50} },
-	{ {0x51, 0x10, 0x03, 0x10, 0x50} }, /* case-20 */
+	{ {0x51, 0x10, 0x03, 0x10, 0x50} },  
 	{ {0x51, 0x4a, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x0c, 0x03, 0x10, 0x54} },
 	{ {0x55, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x65, 0x10, 0x03, 0x11, 0x10} },
-	{ {0x51, 0x10, 0x03, 0x10, 0x51} }, /* case-25 */
+	{ {0x51, 0x10, 0x03, 0x10, 0x51} },  
 	{ {0x51, 0x08, 0x03, 0x10, 0x50} },
 	{ {0x61, 0x08, 0x03, 0x11, 0x11} }
 };
 
-/* Non-Shared-Antenna TDMA */
+ 
 static const struct coex_tdma_para tdma_nsant_8723d[] = {
-	{ {0x00, 0x00, 0x00, 0x00, 0x01} }, /* case-100 */
-	{ {0x61, 0x45, 0x03, 0x11, 0x11} }, /* case-101 */
+	{ {0x00, 0x00, 0x00, 0x00, 0x01} },  
+	{ {0x61, 0x45, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x3a, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x11} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x11} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x11} }, /* case-105 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x11} },  
 	{ {0x61, 0x45, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x3a, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x30, 0x03, 0x11, 0x10} },
 	{ {0x61, 0x20, 0x03, 0x11, 0x10} },
-	{ {0x61, 0x10, 0x03, 0x11, 0x10} }, /* case-110 */
+	{ {0x61, 0x10, 0x03, 0x11, 0x10} },  
 	{ {0x61, 0x08, 0x03, 0x11, 0x14} },
 	{ {0x61, 0x08, 0x03, 0x10, 0x14} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x54} },
 	{ {0x51, 0x08, 0x03, 0x10, 0x55} },
-	{ {0x51, 0x08, 0x07, 0x10, 0x54} }, /* case-115 */
+	{ {0x51, 0x08, 0x07, 0x10, 0x54} },  
 	{ {0x51, 0x45, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x3a, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x30, 0x03, 0x10, 0x50} },
 	{ {0x51, 0x20, 0x03, 0x10, 0x50} },
-	{ {0x51, 0x10, 0x03, 0x10, 0x50} }, /* case-120 */
+	{ {0x51, 0x10, 0x03, 0x10, 0x50} },  
 	{ {0x51, 0x08, 0x03, 0x10, 0x50} }
 };
 
-/* rssi in percentage % (dbm = % - 100) */
+ 
 static const u8 wl_rssi_step_8723d[] = {60, 50, 44, 30};
 static const u8 bt_rssi_step_8723d[] = {30, 30, 30, 30};
 static const struct coex_5g_afh_map afh_5g_8723d[] = { {0, 0, 0} };
@@ -2146,10 +2145,10 @@ static const struct rtw_hw_reg btg_reg_8723d = {
 	.addr = REG_BTG_SEL, .mask = BIT_MASK_BTG_WL,
 };
 
-/* wl_tx_dec_power, bt_tx_dec_power, wl_rx_gain, bt_rx_lna_constrain */
+ 
 static const struct coex_rf_para rf_para_tx_8723d[] = {
-	{0, 0, false, 7},  /* for normal */
-	{0, 10, false, 7}, /* for WL-CPT */
+	{0, 0, false, 7},   
+	{0, 10, false, 7},  
 	{1, 0, true, 4},
 	{1, 2, true, 4},
 	{1, 10, true, 4},
@@ -2157,8 +2156,8 @@ static const struct coex_rf_para rf_para_tx_8723d[] = {
 };
 
 static const struct coex_rf_para rf_para_rx_8723d[] = {
-	{0, 0, false, 7},  /* for normal */
-	{0, 10, false, 7}, /* for WL-CPT */
+	{0, 0, false, 7},   
+	{0, 10, false, 7},  
 	{1, 0, true, 5},
 	{1, 2, true, 5},
 	{1, 10, true, 5},

@@ -1,42 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey, 1996 on                                       *
- ****************************************************************************/
+ 
 
-/*
- *	tparm.c
- *
- */
+ 
 
 #define entry _ncu_entry
 #define ENTRY _ncu_ENTRY
@@ -55,70 +21,12 @@
 
 MODULE_ID("$Id: lib_tparm.c,v 1.137 2021/11/20 23:29:15 tom Exp $")
 
-/*
- *	char *
- *	tparm(string, ...)
- *
- *	Substitute the given parameters into the given string by the following
- *	rules (taken from terminfo(5)):
- *
- *	     Cursor addressing and other strings  requiring  parame-
- *	ters in the terminal are described by a parameterized string
- *	capability, with escapes like %x in  it.   For  example,  to
- *	address  the  cursor, the cup capability is given, using two
- *	parameters: the row and column to  address  to.   (Rows  and
- *	columns  are  numbered  from  zero and refer to the physical
- *	screen visible to the user, not to any  unseen  memory.)  If
- *	the terminal has memory relative cursor addressing, that can
- *	be indicated by
- *
- *	     The parameter mechanism uses  a  stack  and  special  %
- *	codes  to manipulate it.  Typically a sequence will push one
- *	of the parameters onto the stack and then print it  in  some
- *	format.  Often more complex operations are necessary.
- *
- *	     The % encodings have the following meanings:
- *
- *	     %%        outputs `%'
- *	     %c        print pop() like %c in printf()
- *	     %s        print pop() like %s in printf()
- *           %[[:]flags][width[.precision]][doxXs]
- *                     as in printf, flags are [-+#] and space
- *                     The ':' is used to avoid making %+ or %-
- *                     patterns (see below).
- *
- *	     %p[1-9]   push ith parm
- *	     %P[a-z]   set dynamic variable [a-z] to pop()
- *	     %g[a-z]   get dynamic variable [a-z] and push it
- *	     %P[A-Z]   set static variable [A-Z] to pop()
- *	     %g[A-Z]   get static variable [A-Z] and push it
- *	     %l        push strlen(pop)
- *	     %'c'      push char constant c
- *	     %{nn}     push integer constant nn
- *
- *	     %+ %- %* %/ %m
- *	               arithmetic (%m is mod): push(pop() op pop())
- *	     %& %| %^  bit operations: push(pop() op pop())
- *	     %= %> %<  logical operations: push(pop() op pop())
- *	     %A %O     logical and & or operations for conditionals
- *	     %! %~     unary operations push(op pop())
- *	     %i        add 1 to first two parms (for ANSI terminals)
- *
- *	     %? expr %t thenpart %e elsepart %;
- *	               if-then-else, %e elsepart is optional.
- *	               else-if's are possible ala Algol 68:
- *	               %? c1 %t b1 %e c2 %t b2 %e c3 %t b3 %e c4 %t b4 %e b5 %;
- *
- *	For those of the above operators which are binary and not commutative,
- *	the stack works in the usual way, with
- *			%gx %gy %m
- *	resulting in x mod y, not the reverse.
- */
+ 
 
 NCURSES_EXPORT_VAR(int) _nc_tparm_err = 0;
 
 #define TPS(var) tps->var
-#define popcount _nc_popcount	/* workaround for NetBSD 6.0 defect */
+#define popcount _nc_popcount	 
 
 #define get_tparm_state(term) \
 	    (term != NULL \
@@ -130,8 +38,8 @@ NCURSES_EXPORT_VAR(int) _nc_tparm_err = 0;
 #define tc_BUMP()  if (level < 0 && number < 2) number++
 
 typedef struct {
-    const char *format;		/* format-string can be used as cache-key */
-    int tparm_type;		/* bit-set for each string-parameter */
+    const char *format;		 
+    int tparm_type;		 
     int num_actual;
     int num_parsed;
     int num_popped;
@@ -144,9 +52,9 @@ typedef struct {
 #define MyCount _nc_globals.count_tparm
 static int which_tparm;
 static TPARM_DATA **delete_tparm;
-#endif /* HAVE_TSEARCH */
+#endif  
 
-static char dummy[] = "";	/* avoid const-cast */
+static char dummy[] = "";	 
 
 #if HAVE_TSEARCH
 static int
@@ -373,11 +281,11 @@ parse_format(const char *s, char *format, int *len)
 	*format++ = '%';
 	while (*s != '\0' && !done) {
 	    switch (*s) {
-	    case 'c':		/* FALLTHRU */
-	    case 'd':		/* FALLTHRU */
-	    case 'o':		/* FALLTHRU */
-	    case 'x':		/* FALLTHRU */
-	    case 'X':		/* FALLTHRU */
+	    case 'c':		 
+	    case 'd':		 
+	    case 'o':		 
+	    case 'x':		 
+	    case 'X':		 
 	    case 's':
 #ifdef EXP_XTERM_1005
 	    case 'u':
@@ -389,7 +297,7 @@ parse_format(const char *s, char *format, int *len)
 		*format++ = *s++;
 		if (dot) {
 		    err = TRUE;
-		} else {	/* value before '.' is the width */
+		} else {	 
 		    dot = TRUE;
 		    my_width = value;
 		}
@@ -424,9 +332,7 @@ parse_format(const char *s, char *format, int *len)
 	    }
 	}
 
-	/*
-	 * If we found an error, ignore (and remove) the flags.
-	 */
+	 
 	if (err) {
 	    my_width = my_prec = value = 0;
 	    format = fmt;
@@ -434,33 +340,20 @@ parse_format(const char *s, char *format, int *len)
 	    *format++ = *s;
 	}
 
-	/*
-	 * Any value after '.' is the precision.  If we did not see '.', then
-	 * the value is the width.
-	 */
+	 
 	if (dot)
 	    my_prec = value;
 	else
 	    my_width = value;
 
 	*format = '\0';
-	/* return maximum string length in print */
+	 
 	*len = (my_width > my_prec) ? my_width : my_prec;
     }
     return s;
 }
 
-/*
- * Analyze the string to see how many parameters we need from the varargs list,
- * and what their types are.  We will only accept string parameters if they
- * appear as a %l or %s format following an explicit parameter reference (e.g.,
- * %p2%s).  All other parameters are numbers.
- *
- * 'number' counts coarsely the number of pop's we see in the string, and
- * 'popcount' shows the highest parameter number in the string.  We would like
- * to simply use the latter count, but if we are reading termcap strings, there
- * may be cases that we cannot see the explicit parameter numbers.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_tparm_analyze(TERMINAL *term, const char *string, char **p_is_s, int *popcount)
 {
@@ -494,11 +387,11 @@ _nc_tparm_analyze(TERMINAL *term, const char *string, char **p_is_s, int *popcou
 	    default:
 		break;
 
-	    case 'd':		/* FALLTHRU */
-	    case 'o':		/* FALLTHRU */
-	    case 'x':		/* FALLTHRU */
-	    case 'X':		/* FALLTHRU */
-	    case 'c':		/* FALLTHRU */
+	    case 'd':		 
+	    case 'o':		 
+	    case 'x':		 
+	    case 'X':		 
+	    case 'c':		 
 #ifdef EXP_XTERM_1005
 	    case 'u':
 #endif
@@ -566,7 +459,7 @@ _nc_tparm_analyze(TERMINAL *term, const char *string, char **p_is_s, int *popcou
 	    case '<':
 	    case '>':
 		tc_BUMP();
-		level -= 1;	/* pop 2, operate, push 1 */
+		level -= 1;	 
 		lastpop = -1;
 		break;
 
@@ -577,7 +470,7 @@ _nc_tparm_analyze(TERMINAL *term, const char *string, char **p_is_s, int *popcou
 		break;
 
 	    case 'i':
-		/* will add 1 to first (usually two) parameters */
+		 
 		break;
 	    }
 	}
@@ -590,12 +483,7 @@ _nc_tparm_analyze(TERMINAL *term, const char *string, char **p_is_s, int *popcou
     return number;
 }
 
-/*
- * Analyze the capability string, finding the number of parameters and their
- * types.
- *
- * TODO: cache the result so that this is done once per capability per term.
- */
+ 
 static int
 tparm_setup(TERMINAL *term, const char *string, TPARM_DATA *result)
 {
@@ -627,11 +515,7 @@ tparm_setup(TERMINAL *term, const char *string, TPARM_DATA *result)
 	} else
 #endif
 	{
-	    /*
-	     * Find the highest parameter-number referred to in the format
-	     * string.  Use this value to limit the number of arguments copied
-	     * from the variable-length argument list.
-	     */
+	     
 	    result->num_parsed = _nc_tparm_analyze(term, string,
 						   result->p_is_s,
 						   &(result->num_popped));
@@ -676,12 +560,7 @@ tparm_setup(TERMINAL *term, const char *string, TPARM_DATA *result)
     return rc;
 }
 
-/*
- * A few caps (such as plab_norm) have string-valued parms.  We'll have to
- * assume that the caller knows the difference, since a char* and an int may
- * not be the same size on the stack.  The normal prototype for tparm uses 9
- * long's, which is consistent with our va_arg() usage.
- */
+ 
 static void
 tparm_copy_valist(TPARM_DATA *data, int use_TPARM_ARG, va_list ap)
 {
@@ -702,13 +581,7 @@ tparm_copy_valist(TPARM_DATA *data, int use_TPARM_ARG, va_list ap)
     }
 }
 
-/*
- * This is a termcap compatibility hack.  If there are no explicit pop
- * operations in the string, load the stack in such a way that successive pops
- * will grab successive parameters.  That will make the expansion of (for
- * example) \E[%d;%dH work correctly in termcap style, which means tparam()
- * will expand termcap strings OK.
- */
+ 
 static bool
 tparm_tc_compat(TPARM_STATE *tps, TPARM_DATA *data)
 {
@@ -756,8 +629,8 @@ tparm_trace_call(TPARM_STATE *tps, const char *string, TPARM_DATA *data)
 }
 
 #else
-#define tparm_trace_call(tps, string, data)	/* nothing */
-#endif /* TRACE */
+#define tparm_trace_call(tps, string, data)	 
+#endif  
 
 #define init_vars(name) \
 	if (!name##_used) { \
@@ -778,19 +651,7 @@ tparam_internal(TPARM_STATE *tps, const char *string, TPARM_DATA *data)
     size_t len2 = strlen(cp);
     bool incremented_two = FALSE;
     bool termcap_hack = tparm_tc_compat(tps, data);
-    /*
-     * SVr4 curses stores variables 'A' to 'Z' in the TERMINAL structure (so
-     * they are initialized once to zero), and variables 'a' to 'z' on the
-     * stack in tparm, referring to the former as "static" and the latter as
-     * "dynamic".  However, it makes no check to ensure that the "dynamic"
-     * variables are initialized.
-     *
-     * Solaris xpg4 curses makes no distinction between the upper/lower, and
-     * stores the common set of 26 variables on the stack, without initializing
-     * them.
-     *
-     * In ncurses, both sets of variables are initialized on the first use.
-     */
+     
     bool dynamic_used = FALSE;
     int dynamic_vars[NUM_VARS];
 
@@ -809,15 +670,15 @@ tparam_internal(TPARM_STATE *tps, const char *string, TPARM_DATA *data)
 		save_char(tps, '%');
 		break;
 
-	    case 'd':		/* FALLTHRU */
-	    case 'o':		/* FALLTHRU */
-	    case 'x':		/* FALLTHRU */
-	    case 'X':		/* FALLTHRU */
+	    case 'd':		 
+	    case 'o':		 
+	    case 'x':		 
+	    case 'X':		 
 		x = npop(tps);
 		save_number(tps, TPS(fmt_buff), x, len);
 		break;
 
-	    case 'c':		/* FALLTHRU */
+	    case 'c':		 
 		x = npop(tps);
 		save_char(tps, x);
 		break;
@@ -987,13 +848,7 @@ tparam_internal(TPARM_STATE *tps, const char *string, TPARM_DATA *data)
 		break;
 
 	    case 'i':
-		/*
-		 * Increment the first two parameters -- if they are numbers
-		 * rather than strings.  As a side effect, assign into the
-		 * stack; if this is termcap, then the stack was populated
-		 * using the termcap hack above rather than via the terminfo
-		 * 'p' case.
-		 */
+		 
 		if (!incremented_two) {
 		    incremented_two = TRUE;
 		    if (data->p_is_s[0] == 0) {
@@ -1015,7 +870,7 @@ tparam_internal(TPARM_STATE *tps, const char *string, TPARM_DATA *data)
 	    case 't':
 		x = npop(tps);
 		if (!x) {
-		    /* scan forward for %e or %; at level zero */
+		     
 		    cp++;
 		    level = 0;
 		    while (*cp) {
@@ -1039,7 +894,7 @@ tparam_internal(TPARM_STATE *tps, const char *string, TPARM_DATA *data)
 		break;
 
 	    case 'e':
-		/* scan forward for a %; at level zero */
+		 
 		cp++;
 		level = 0;
 		while (*cp) {
@@ -1063,14 +918,14 @@ tparam_internal(TPARM_STATE *tps, const char *string, TPARM_DATA *data)
 	    case ';':
 		break;
 
-	    }			/* endswitch (*cp) */
-	}			/* endelse (*cp == '%') */
+	    }			 
+	}			 
 
 	if (*cp == '\0')
 	    break;
 
 	cp++;
-    }				/* endwhile (*cp) */
+    }				 
 
     get_space(tps, (size_t) 1);
     TPS(out_buff)[TPS(out_used)] = '\0';
@@ -1098,7 +953,7 @@ tparm(const char *string, ...)
     _nc_tparm_err = 0;
 #ifdef TRACE
     tps->tname = "tparm";
-#endif /* TRACE */
+#endif  
 
     if (tparm_setup(cur_term, string, &myData) == OK) {
 	va_list ap;
@@ -1112,7 +967,7 @@ tparm(const char *string, ...)
     return result;
 }
 
-#else /* !NCURSES_TPARM_VARARGS */
+#else  
 
 NCURSES_EXPORT(char *)
 tparm(const char *string,
@@ -1133,7 +988,7 @@ tparm(const char *string,
     _nc_tparm_err = 0;
 #ifdef TRACE
     tps->tname = "tparm";
-#endif /* TRACE */
+#endif  
 
     if (tparm_setup(cur_term, string, &myData) == OK) {
 
@@ -1152,7 +1007,7 @@ tparm(const char *string,
     return result;
 }
 
-#endif /* NCURSES_TPARM_VARARGS */
+#endif  
 
 NCURSES_EXPORT(char *)
 tiparm(const char *string, ...)
@@ -1164,7 +1019,7 @@ tiparm(const char *string, ...)
     _nc_tparm_err = 0;
 #ifdef TRACE
     tps->tname = "tiparm";
-#endif /* TRACE */
+#endif  
 
     if (tparm_setup(cur_term, string, &myData) == OK) {
 	va_list ap;
@@ -1178,9 +1033,7 @@ tiparm(const char *string, ...)
     return result;
 }
 
-/*
- * The internal-use flavor ensures that the parameters are numbers, not strings
- */
+ 
 NCURSES_EXPORT(char *)
 _nc_tiparm(int expected, const char *string, ...)
 {
@@ -1191,7 +1044,7 @@ _nc_tiparm(int expected, const char *string, ...)
     _nc_tparm_err = 0;
 #ifdef TRACE
     tps->tname = "_nc_tiparm";
-#endif /* TRACE */
+#endif  
 
     if (tparm_setup(cur_term, string, &myData) == OK
 	&& myData.num_actual <= expected
@@ -1207,10 +1060,7 @@ _nc_tiparm(int expected, const char *string, ...)
     return result;
 }
 
-/*
- * Improve tic's checks by resetting the terminfo "static variables" before
- * calling functions which may update them.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_reset_tparm(TERMINAL *term)
 {

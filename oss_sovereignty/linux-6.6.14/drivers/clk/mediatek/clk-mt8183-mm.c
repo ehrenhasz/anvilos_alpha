@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: Weiyi Lu <weiyi.lu@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -32,7 +32,7 @@ static const struct mtk_gate_regs mm1_cg_regs = {
 		&mtk_clk_gate_ops_setclr)
 
 static const struct mtk_gate mm_clks[] = {
-	/* MM0 */
+	 
 	GATE_MM0(CLK_MM_SMI_COMMON, "mm_smi_common", "mm_sel", 0),
 	GATE_MM0(CLK_MM_SMI_LARB0, "mm_smi_larb0", "mm_sel", 1),
 	GATE_MM0(CLK_MM_SMI_LARB1, "mm_smi_larb1", "mm_sel", 2),
@@ -65,7 +65,7 @@ static const struct mtk_gate mm_clks[] = {
 	GATE_MM0(CLK_MM_DISP_GAMMA0, "mm_disp_gamma0", "mm_sel", 29),
 	GATE_MM0(CLK_MM_DISP_DITHER0, "mm_disp_dither0", "mm_sel", 30),
 	GATE_MM0(CLK_MM_DISP_SPLIT, "mm_disp_split", "mm_sel", 31),
-	/* MM1 */
+	 
 	GATE_MM1(CLK_MM_DSI0_MM, "mm_dsi0_mm", "mm_sel", 0),
 	GATE_MM1(CLK_MM_DSI0_IF, "mm_dsi0_if", "mm_sel", 1),
 	GATE_MM1(CLK_MM_DPI_MM, "mm_dpi_mm", "mm_sel", 2),
@@ -89,7 +89,7 @@ static const struct mtk_clk_desc mm_desc = {
 
 static const struct platform_device_id clk_mt8183_mm_id_table[] = {
 	{ .name = "clk-mt8183-mm", .driver_data = (kernel_ulong_t)&mm_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, clk_mt8183_mm_id_table);
 

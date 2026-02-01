@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  drivers/usb/gadget/emxx_udc.c
- *     EMXX FCD (Function Controller Driver) for USB.
- *
- *  Copyright (C) 2010 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -39,11 +34,11 @@ static int vbus_irq;
 
 static const char	driver_name[] = "emxx_udc";
 
-/*===========================================================================*/
-/* Prototype */
+ 
+ 
 static void _nbu2ss_ep_dma_abort(struct nbu2ss_udc *, struct nbu2ss_ep *);
 static void _nbu2ss_ep0_enable(struct nbu2ss_udc *);
-/*static void _nbu2ss_ep0_disable(struct nbu2ss_udc *);*/
+ 
 static void _nbu2ss_ep_done(struct nbu2ss_ep *, struct nbu2ss_req *, int);
 static void _nbu2ss_set_test_mode(struct nbu2ss_udc *, u32 mode);
 static void _nbu2ss_endpoint_toggle_reset(struct nbu2ss_udc *udc, u8 ep_adrs);
@@ -51,31 +46,31 @@ static void _nbu2ss_endpoint_toggle_reset(struct nbu2ss_udc *udc, u8 ep_adrs);
 static int _nbu2ss_pullup(struct nbu2ss_udc *, int);
 static void _nbu2ss_fifo_flush(struct nbu2ss_udc *, struct nbu2ss_ep *);
 
-/*===========================================================================*/
-/* Macro */
+ 
+ 
 #define	_nbu2ss_zero_len_pkt(udc, epnum)	\
 	_nbu2ss_ep_in_end(udc, epnum, 0, 0)
 
-/*===========================================================================*/
-/* Global */
+ 
+ 
 static struct nbu2ss_udc udc_controller;
 
-/*-------------------------------------------------------------------------*/
-/* Read */
+ 
+ 
 static inline u32 _nbu2ss_readl(void __iomem *address)
 {
 	return __raw_readl(address);
 }
 
-/*-------------------------------------------------------------------------*/
-/* Write */
+ 
+ 
 static inline void _nbu2ss_writel(void __iomem *address, u32 udata)
 {
 	__raw_writel(udata, address);
 }
 
-/*-------------------------------------------------------------------------*/
-/* Set Bit */
+ 
+ 
 static inline void _nbu2ss_bitset(void __iomem *address, u32 udata)
 {
 	u32	reg_dt = __raw_readl(address) | (udata);
@@ -83,8 +78,8 @@ static inline void _nbu2ss_bitset(void __iomem *address, u32 udata)
 	__raw_writel(reg_dt, address);
 }
 
-/*-------------------------------------------------------------------------*/
-/* Clear Bit */
+ 
+ 
 static inline void _nbu2ss_bitclr(void __iomem *address, u32 udata)
 {
 	u32	reg_dt = __raw_readl(address) & ~(udata);
@@ -93,7 +88,7 @@ static inline void _nbu2ss_bitclr(void __iomem *address, u32 udata)
 }
 
 #ifdef UDC_DEBUG_DUMP
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_dump_register(struct nbu2ss_udc *udc)
 {
 	int		i;
@@ -125,10 +120,10 @@ static void _nbu2ss_dump_register(struct nbu2ss_udc *udc)
 
 	spin_lock(&udc->lock);
 }
-#endif /* UDC_DEBUG_DUMP */
+#endif  
 
-/*-------------------------------------------------------------------------*/
-/* Endpoint 0 Callback (Complete) */
+ 
+ 
 static void _nbu2ss_ep0_complete(struct usb_ep *_ep, struct usb_request *_req)
 {
 	u8		recipient;
@@ -145,8 +140,8 @@ static void _nbu2ss_ep0_complete(struct usb_ep *_ep, struct usb_request *_req)
 	p_ctrl = &udc->ctrl;
 	if ((p_ctrl->bRequestType & USB_TYPE_MASK) == USB_TYPE_STANDARD) {
 		if (p_ctrl->bRequest == USB_REQ_SET_FEATURE) {
-			/*-------------------------------------------------*/
-			/* SET_FEATURE */
+			 
+			 
 			recipient = (u8)(p_ctrl->bRequestType & USB_RECIP_MASK);
 			selector  = le16_to_cpu(p_ctrl->wValue);
 			if ((recipient == USB_RECIP_DEVICE) &&
@@ -159,8 +154,8 @@ static void _nbu2ss_ep0_complete(struct usb_ep *_ep, struct usb_request *_req)
 	}
 }
 
-/*-------------------------------------------------------------------------*/
-/* Initialization usb_request */
+ 
+ 
 static void _nbu2ss_create_ep0_packet(struct nbu2ss_udc *udc,
 				      void *p_buf, unsigned int length)
 {
@@ -174,8 +169,8 @@ static void _nbu2ss_create_ep0_packet(struct nbu2ss_udc *udc,
 	udc->ep0_req.req.actual		= 0;
 }
 
-/*-------------------------------------------------------------------------*/
-/* Acquisition of the first address of RAM(FIFO) */
+ 
+ 
 static u32 _nbu2ss_get_begin_ram_address(struct nbu2ss_udc *udc)
 {
 	u32		num, buf_type;
@@ -191,10 +186,10 @@ static u32 _nbu2ss_get_begin_ram_address(struct nbu2ss_udc *udc)
 		data = _nbu2ss_readl(&p_ep_regs->EP_PCKT_ADRS);
 		buf_type = _nbu2ss_readl(&p_ep_regs->EP_CONTROL) & EPN_BUF_TYPE;
 		if (buf_type == 0) {
-			/* Single Buffer */
+			 
 			use_ram_size += (data & EPN_MPKT) / sizeof(u32);
 		} else {
-			/* Double Buffer */
+			 
 			use_ram_size += ((data & EPN_MPKT) / sizeof(u32)) * 2;
 		}
 
@@ -205,8 +200,8 @@ static u32 _nbu2ss_get_begin_ram_address(struct nbu2ss_udc *udc)
 	return last_ram_adr + use_ram_size;
 }
 
-/*-------------------------------------------------------------------------*/
-/* Construction of Endpoint */
+ 
+ 
 static int _nbu2ss_ep_init(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 {
 	u32		num;
@@ -218,20 +213,20 @@ static int _nbu2ss_ep_init(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 
 	num = ep->epnum - 1;
 
-	/*-------------------------------------------------------------*/
-	/* RAM Transfer Address */
+	 
+	 
 	begin_adrs = _nbu2ss_get_begin_ram_address(udc);
 	data = (begin_adrs << 16) | ep->ep.maxpacket;
 	_nbu2ss_writel(&udc->p_regs->EP_REGS[num].EP_PCKT_ADRS, data);
 
-	/*-------------------------------------------------------------*/
-	/* Interrupt Enable */
+	 
+	 
 	data = 1 << (ep->epnum + 8);
 	_nbu2ss_bitset(&udc->p_regs->USB_INT_ENA, data);
 
-	/*-------------------------------------------------------------*/
-	/* Endpoint Type(Mode) */
-	/*   Bulk, Interrupt, ISO */
+	 
+	 
+	 
 	switch (ep->ep_type) {
 	case USB_ENDPOINT_XFER_BULK:
 		data = EPN_BULK;
@@ -254,8 +249,8 @@ static int _nbu2ss_ep_init(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 	_nbu2ss_endpoint_toggle_reset(udc, (ep->epnum | ep->direct));
 
 	if (ep->direct == USB_DIR_OUT) {
-		/*---------------------------------------------------------*/
-		/* OUT */
+		 
+		 
 		data = EPN_EN | EPN_BCLR | EPN_DIR0;
 		_nbu2ss_bitset(&udc->p_regs->EP_REGS[num].EP_CONTROL, data);
 
@@ -265,8 +260,8 @@ static int _nbu2ss_ep_init(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 		data = EPN_OUT_EN | EPN_OUT_END_EN;
 		_nbu2ss_bitset(&udc->p_regs->EP_REGS[num].EP_INT_ENA, data);
 	} else {
-		/*---------------------------------------------------------*/
-		/* IN */
+		 
+		 
 		data = EPN_EN | EPN_BCLR | EPN_AUTO;
 		_nbu2ss_bitset(&udc->p_regs->EP_REGS[num].EP_CONTROL, data);
 
@@ -280,8 +275,8 @@ static int _nbu2ss_ep_init(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
-/* Release of Endpoint */
+ 
+ 
 static int _nbu2ss_epn_exit(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 {
 	u32		num;
@@ -292,18 +287,18 @@ static int _nbu2ss_epn_exit(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 
 	num = ep->epnum - 1;
 
-	/*-------------------------------------------------------------*/
-	/* RAM Transfer Address */
+	 
+	 
 	_nbu2ss_writel(&udc->p_regs->EP_REGS[num].EP_PCKT_ADRS, 0);
 
-	/*-------------------------------------------------------------*/
-	/* Interrupt Disable */
+	 
+	 
 	data = 1 << (ep->epnum + 8);
 	_nbu2ss_bitclr(&udc->p_regs->USB_INT_ENA, data);
 
 	if (ep->direct == USB_DIR_OUT) {
-		/*---------------------------------------------------------*/
-		/* OUT */
+		 
+		 
 		data = EPN_ONAK | EPN_BCLR;
 		_nbu2ss_bitset(&udc->p_regs->EP_REGS[num].EP_CONTROL, data);
 
@@ -313,8 +308,8 @@ static int _nbu2ss_epn_exit(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 		data = EPN_OUT_EN | EPN_OUT_END_EN;
 		_nbu2ss_bitclr(&udc->p_regs->EP_REGS[num].EP_INT_ENA, data);
 	} else {
-		/*---------------------------------------------------------*/
-		/* IN */
+		 
+		 
 		data = EPN_BCLR;
 		_nbu2ss_bitset(&udc->p_regs->EP_REGS[num].EP_CONTROL, data);
 
@@ -328,8 +323,8 @@ static int _nbu2ss_epn_exit(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
-/* DMA setting (without Endpoint 0) */
+ 
+ 
 static void _nbu2ss_ep_dma_init(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 {
 	u32		num;
@@ -337,39 +332,39 @@ static void _nbu2ss_ep_dma_init(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 
 	data = _nbu2ss_readl(&udc->p_regs->USBSSCONF);
 	if (((ep->epnum == 0) || (data & (1 << ep->epnum)) == 0))
-		return;		/* Not Support DMA */
+		return;		 
 
 	num = ep->epnum - 1;
 
 	if (ep->direct == USB_DIR_OUT) {
-		/*---------------------------------------------------------*/
-		/* OUT */
+		 
+		 
 		data = ep->ep.maxpacket;
 		_nbu2ss_writel(&udc->p_regs->EP_DCR[num].EP_DCR2, data);
 
-		/*---------------------------------------------------------*/
-		/* Transfer Direct */
+		 
+		 
 		data = DCR1_EPN_DIR0;
 		_nbu2ss_bitset(&udc->p_regs->EP_DCR[num].EP_DCR1, data);
 
-		/*---------------------------------------------------------*/
-		/* DMA Mode etc. */
+		 
+		 
 		data = EPN_STOP_MODE | EPN_STOP_SET  | EPN_DMAMODE0;
 		_nbu2ss_writel(&udc->p_regs->EP_REGS[num].EP_DMA_CTRL, data);
 	} else {
-		/*---------------------------------------------------------*/
-		/* IN */
+		 
+		 
 		_nbu2ss_bitset(&udc->p_regs->EP_REGS[num].EP_CONTROL, EPN_AUTO);
 
-		/*---------------------------------------------------------*/
-		/* DMA Mode etc. */
+		 
+		 
 		data = EPN_BURST_SET | EPN_DMAMODE0;
 		_nbu2ss_writel(&udc->p_regs->EP_REGS[num].EP_DMA_CTRL, data);
 	}
 }
 
-/*-------------------------------------------------------------------------*/
-/* DMA setting release */
+ 
+ 
 static void _nbu2ss_ep_dma_exit(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 {
 	u32		num;
@@ -377,43 +372,43 @@ static void _nbu2ss_ep_dma_exit(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 	struct fc_regs __iomem *preg = udc->p_regs;
 
 	if (udc->vbus_active == 0)
-		return;		/* VBUS OFF */
+		return;		 
 
 	data = _nbu2ss_readl(&preg->USBSSCONF);
 	if ((ep->epnum == 0) || ((data & (1 << ep->epnum)) == 0))
-		return;		/* Not Support DMA */
+		return;		 
 
 	num = ep->epnum - 1;
 
 	_nbu2ss_ep_dma_abort(udc, ep);
 
 	if (ep->direct == USB_DIR_OUT) {
-		/*---------------------------------------------------------*/
-		/* OUT */
+		 
+		 
 		_nbu2ss_writel(&preg->EP_DCR[num].EP_DCR2, 0);
 		_nbu2ss_bitclr(&preg->EP_DCR[num].EP_DCR1, DCR1_EPN_DIR0);
 		_nbu2ss_writel(&preg->EP_REGS[num].EP_DMA_CTRL, 0);
 	} else {
-		/*---------------------------------------------------------*/
-		/* IN */
+		 
+		 
 		_nbu2ss_bitclr(&preg->EP_REGS[num].EP_CONTROL, EPN_AUTO);
 		_nbu2ss_writel(&preg->EP_REGS[num].EP_DMA_CTRL, 0);
 	}
 }
 
-/*-------------------------------------------------------------------------*/
-/* Abort DMA */
+ 
+ 
 static void _nbu2ss_ep_dma_abort(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 {
 	struct fc_regs __iomem *preg = udc->p_regs;
 
 	_nbu2ss_bitclr(&preg->EP_DCR[ep->epnum - 1].EP_DCR1, DCR1_EPN_REQEN);
-	mdelay(DMA_DISABLE_TIME);	/* DCR1_EPN_REQEN Clear */
+	mdelay(DMA_DISABLE_TIME);	 
 	_nbu2ss_bitclr(&preg->EP_REGS[ep->epnum - 1].EP_DMA_CTRL, EPN_DMA_EN);
 }
 
-/*-------------------------------------------------------------------------*/
-/* Start IN Transfer */
+ 
+ 
 static void _nbu2ss_ep_in_end(struct nbu2ss_udc *udc,
 			      u32 epnum, u32 data32, u32 length)
 {
@@ -427,7 +422,7 @@ static void _nbu2ss_ep_in_end(struct nbu2ss_udc *udc,
 	if (epnum == 0) {
 		_nbu2ss_bitclr(&preg->EP0_CONTROL, EP0_AUTO);
 
-		/* Writing of 1-4 bytes */
+		 
 		if (length)
 			_nbu2ss_writel(&preg->EP0_WRITE, data32);
 
@@ -440,7 +435,7 @@ static void _nbu2ss_ep_in_end(struct nbu2ss_udc *udc,
 
 		_nbu2ss_bitclr(&preg->EP_REGS[num].EP_CONTROL, EPN_AUTO);
 
-		/* Writing of 1-4 bytes */
+		 
 		if (length)
 			_nbu2ss_writel(&preg->EP_REGS[num].EP_WRITE, data32);
 
@@ -452,7 +447,7 @@ static void _nbu2ss_ep_in_end(struct nbu2ss_udc *udc,
 }
 
 #ifdef USE_DMA
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_dma_map_single(struct nbu2ss_udc *udc,
 				   struct nbu2ss_ep *ep,
 				   struct nbu2ss_req *req, u8 direct)
@@ -482,7 +477,7 @@ static void _nbu2ss_dma_map_single(struct nbu2ss_udc *udc,
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_dma_unmap_single(struct nbu2ss_udc *udc,
 				     struct nbu2ss_ep *ep,
 				     struct nbu2ss_req *req, u8 direct)
@@ -531,8 +526,8 @@ static void _nbu2ss_dma_unmap_single(struct nbu2ss_udc *udc,
 }
 #endif
 
-/*-------------------------------------------------------------------------*/
-/* Endpoint 0 OUT Transfer (PIO) */
+ 
+ 
 static int ep0_out_pio(struct nbu2ss_udc *udc, u8 *buf, u32 length)
 {
 	u32		i;
@@ -542,7 +537,7 @@ static int ep0_out_pio(struct nbu2ss_udc *udc, u8 *buf, u32 length)
 	if (!numreads)
 		return 0;
 
-	/* PIO Read */
+	 
 	for (i = 0; i < numreads; i++) {
 		buf32->dw = _nbu2ss_readl(&udc->p_regs->EP0_READ);
 		buf32++;
@@ -551,8 +546,8 @@ static int ep0_out_pio(struct nbu2ss_udc *udc, u8 *buf, u32 length)
 	return  numreads * sizeof(u32);
 }
 
-/*-------------------------------------------------------------------------*/
-/* Endpoint 0 OUT Transfer (PIO, OverBytes) */
+ 
+ 
 static int ep0_out_overbytes(struct nbu2ss_udc *udc, u8 *p_buf, u32 length)
 {
 	u32		i;
@@ -570,8 +565,8 @@ static int ep0_out_overbytes(struct nbu2ss_udc *udc, u8 *p_buf, u32 length)
 	return i_read_size;
 }
 
-/*-------------------------------------------------------------------------*/
-/* Endpoint 0 IN Transfer (PIO) */
+ 
+ 
 static int EP0_in_PIO(struct nbu2ss_udc *udc, u8 *p_buf, u32 length)
 {
 	u32		i;
@@ -580,15 +575,15 @@ static int EP0_in_PIO(struct nbu2ss_udc *udc, u8 *p_buf, u32 length)
 	u32		i_write_length = 0;
 	union usb_reg_access  *p_buf_32 = (union usb_reg_access *)p_buf;
 
-	/*------------------------------------------------------------*/
-	/* Transfer Length */
+	 
+	 
 	if (i_max_length < length)
 		i_word_length = i_max_length / sizeof(u32);
 	else
 		i_word_length = length / sizeof(u32);
 
-	/*------------------------------------------------------------*/
-	/* PIO */
+	 
+	 
 	for (i = 0; i < i_word_length; i++) {
 		_nbu2ss_writel(&udc->p_regs->EP0_WRITE, p_buf_32->dw);
 		p_buf_32++;
@@ -598,8 +593,8 @@ static int EP0_in_PIO(struct nbu2ss_udc *udc, u8 *p_buf, u32 length)
 	return i_write_length;
 }
 
-/*-------------------------------------------------------------------------*/
-/* Endpoint 0 IN Transfer (PIO, OverBytes) */
+ 
+ 
 static int ep0_in_overbytes(struct nbu2ss_udc *udc,
 			    u8 *p_buf,
 			    u32 i_remain_size)
@@ -619,8 +614,8 @@ static int ep0_in_overbytes(struct nbu2ss_udc *udc,
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
-/* Transfer NULL Packet (Epndoint 0) */
+ 
+ 
 static int EP0_send_NULL(struct nbu2ss_udc *udc, bool pid_flag)
 {
 	u32		data;
@@ -638,8 +633,8 @@ static int EP0_send_NULL(struct nbu2ss_udc *udc, bool pid_flag)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
-/* Receive NULL Packet (Endpoint 0) */
+ 
+ 
 static int EP0_receive_NULL(struct nbu2ss_udc *udc, bool pid_flag)
 {
 	u32		data;
@@ -655,17 +650,17 @@ static int EP0_receive_NULL(struct nbu2ss_udc *udc, bool pid_flag)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_ep0_in_transfer(struct nbu2ss_udc *udc,
 				   struct nbu2ss_req *req)
 {
-	u8		*p_buffer;			/* IN Data Buffer */
+	u8		*p_buffer;			 
 	u32		data;
 	u32		i_remain_size = 0;
 	int		result = 0;
 
-	/*-------------------------------------------------------------*/
-	/* End confirmation */
+	 
+	 
 	if (req->req.actual == req->req.length) {
 		if ((req->req.actual % EP0_PACKETSIZE) == 0) {
 			if (req->zero) {
@@ -675,11 +670,11 @@ static int _nbu2ss_ep0_in_transfer(struct nbu2ss_udc *udc,
 			}
 		}
 
-		return 0;		/* Transfer End */
+		return 0;		 
 	}
 
-	/*-------------------------------------------------------------*/
-	/* NAK release */
+	 
+	 
 	data = _nbu2ss_readl(&udc->p_regs->EP0_CONTROL);
 	data |= EP0_INAK_EN;
 	data &= ~(u32)EP0_INAK;
@@ -689,8 +684,8 @@ static int _nbu2ss_ep0_in_transfer(struct nbu2ss_udc *udc,
 	p_buffer = (u8 *)req->req.buf;
 	p_buffer += req->req.actual;
 
-	/*-------------------------------------------------------------*/
-	/* Data transfer */
+	 
+	 
 	result = EP0_in_PIO(udc, p_buffer, i_remain_size);
 
 	req->div_len = result;
@@ -710,7 +705,7 @@ static int _nbu2ss_ep0_in_transfer(struct nbu2ss_udc *udc,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_ep0_out_transfer(struct nbu2ss_udc *udc,
 				    struct nbu2ss_req *req)
 {
@@ -720,8 +715,8 @@ static int _nbu2ss_ep0_out_transfer(struct nbu2ss_udc *udc,
 	int		result = 0;
 	int		f_rcv_zero;
 
-	/*-------------------------------------------------------------*/
-	/* Receive data confirmation */
+	 
+	 
 	i_recv_length = _nbu2ss_readl(&udc->p_regs->EP0_LENGTH) & EP0_LDATA;
 	if (i_recv_length != 0) {
 		f_rcv_zero = 0;
@@ -750,8 +745,8 @@ static int _nbu2ss_ep0_out_transfer(struct nbu2ss_udc *udc,
 		f_rcv_zero = 1;
 	}
 
-	/*-------------------------------------------------------------*/
-	/* End confirmation */
+	 
+	 
 	if (req->req.actual == req->req.length) {
 		if ((req->req.actual % EP0_PACKETSIZE) == 0) {
 			if (req->zero) {
@@ -761,11 +756,11 @@ static int _nbu2ss_ep0_out_transfer(struct nbu2ss_udc *udc,
 			}
 		}
 
-		return 0;		/* Transfer End */
+		return 0;		 
 	}
 
 	if ((req->req.actual % EP0_PACKETSIZE) != 0)
-		return 0;		/* Short Packet Transfer End */
+		return 0;		 
 
 	if (req->req.actual > req->req.length) {
 		dev_err(udc->dev, " *** Overrun Error\n");
@@ -775,8 +770,8 @@ static int _nbu2ss_ep0_out_transfer(struct nbu2ss_udc *udc,
 	if (f_rcv_zero != 0) {
 		i_remain_size = _nbu2ss_readl(&udc->p_regs->EP0_CONTROL);
 		if (i_remain_size & EP0_ONAK) {
-			/*---------------------------------------------------*/
-			/* NACK release */
+			 
+			 
 			_nbu2ss_bitclr(&udc->p_regs->EP0_CONTROL, EP0_ONAK);
 		}
 		result = 1;
@@ -785,7 +780,7 @@ static int _nbu2ss_ep0_out_transfer(struct nbu2ss_udc *udc,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_out_dma(struct nbu2ss_udc *udc, struct nbu2ss_req *req,
 			   u32 num, u32 length)
 {
@@ -799,16 +794,16 @@ static int _nbu2ss_out_dma(struct nbu2ss_udc *udc, struct nbu2ss_req *req,
 	struct fc_regs __iomem *preg = udc->p_regs;
 
 	if (req->dma_flag)
-		return 1;		/* DMA is forwarded */
+		return 1;		 
 
 	req->dma_flag = true;
 	p_buffer = req->req.dma;
 	p_buffer += req->req.actual;
 
-	/* DMA Address */
+	 
 	_nbu2ss_writel(&preg->EP_DCR[num].EP_TADR, (u32)p_buffer);
 
-	/* Number of transfer packets */
+	 
 	mpkt = _nbu2ss_readl(&preg->EP_REGS[num].EP_PCKT_ADRS) & EPN_MPKT;
 	dmacnt = length / mpkt;
 	lmpkt = (length % mpkt) & ~(u32)0x03;
@@ -818,7 +813,7 @@ static int _nbu2ss_out_dma(struct nbu2ss_udc *udc, struct nbu2ss_req *req,
 		lmpkt = 0;
 	} else if (lmpkt != 0) {
 		if (dmacnt == 0)
-			burst = 0;	/* Burst OFF */
+			burst = 0;	 
 		dmacnt++;
 	}
 
@@ -844,7 +839,7 @@ static int _nbu2ss_out_dma(struct nbu2ss_udc *udc, struct nbu2ss_req *req,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_epn_out_pio(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 			       struct nbu2ss_req *req, u32 length)
 {
@@ -858,7 +853,7 @@ static int _nbu2ss_epn_out_pio(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 	struct fc_regs __iomem *preg = udc->p_regs;
 
 	if (req->dma_flag)
-		return 1;		/* DMA is forwarded */
+		return 1;		 
 
 	if (length == 0)
 		return 0;
@@ -868,8 +863,8 @@ static int _nbu2ss_epn_out_pio(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 
 	i_word_length = length / sizeof(u32);
 	if (i_word_length > 0) {
-		/*---------------------------------------------------------*/
-		/* Copy of every four bytes */
+		 
+		 
 		for (i = 0; i < i_word_length; i++) {
 			p_buf_32->dw =
 			_nbu2ss_readl(&preg->EP_REGS[ep->epnum - 1].EP_READ);
@@ -880,8 +875,8 @@ static int _nbu2ss_epn_out_pio(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 
 	data = length - result;
 	if (data > 0) {
-		/*---------------------------------------------------------*/
-		/* Copy of fraction byte */
+		 
+		 
 		temp_32.dw =
 			_nbu2ss_readl(&preg->EP_REGS[ep->epnum - 1].EP_READ);
 		for (i = 0 ; i < data ; i++)
@@ -899,7 +894,7 @@ static int _nbu2ss_epn_out_pio(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_epn_out_data(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 				struct nbu2ss_req *req, u32 data_size)
 {
@@ -925,7 +920,7 @@ static int _nbu2ss_epn_out_data(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 	return nret;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_epn_out_transfer(struct nbu2ss_udc *udc,
 				    struct nbu2ss_ep *ep,
 				    struct nbu2ss_req *req)
@@ -940,8 +935,8 @@ static int _nbu2ss_epn_out_transfer(struct nbu2ss_udc *udc,
 
 	num = ep->epnum - 1;
 
-	/*-------------------------------------------------------------*/
-	/* Receive Length */
+	 
+	 
 	i_recv_length =
 		_nbu2ss_readl(&preg->EP_REGS[num].EP_LEN_DCNT) & EPN_LDATA;
 
@@ -979,21 +974,21 @@ static int _nbu2ss_epn_out_transfer(struct nbu2ss_udc *udc,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_in_dma(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 			  struct nbu2ss_req *req, u32 num, u32 length)
 {
 	dma_addr_t	p_buffer;
-	u32		mpkt;		/* MaxPacketSize */
-	u32		lmpkt;		/* Last Packet Data Size */
-	u32		dmacnt;		/* IN Data Size */
+	u32		mpkt;		 
+	u32		lmpkt;		 
+	u32		dmacnt;		 
 	u32		i_write_length;
 	u32		data;
 	int		result = -EINVAL;
 	struct fc_regs __iomem *preg = udc->p_regs;
 
 	if (req->dma_flag)
-		return 1;		/* DMA is forwarded */
+		return 1;		 
 
 #ifdef USE_DMA
 	if (req->req.actual == 0)
@@ -1001,13 +996,13 @@ static int _nbu2ss_in_dma(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 #endif
 	req->dma_flag = true;
 
-	/* MAX Packet Size */
+	 
 	mpkt = _nbu2ss_readl(&preg->EP_REGS[num].EP_PCKT_ADRS) & EPN_MPKT;
 
 	i_write_length = min(DMA_MAX_COUNT * mpkt, length);
 
-	/*------------------------------------------------------------*/
-	/* Number of transmission packets */
+	 
+	 
 	if (mpkt < i_write_length) {
 		dmacnt = i_write_length / mpkt;
 		lmpkt  = (i_write_length % mpkt) & ~(u32)0x3;
@@ -1021,24 +1016,24 @@ static int _nbu2ss_in_dma(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 		lmpkt  = i_write_length & ~(u32)0x3;
 	}
 
-	/* Packet setting */
+	 
 	data = mpkt | (lmpkt << 16);
 	_nbu2ss_writel(&preg->EP_DCR[num].EP_DCR2, data);
 
-	/* Address setting */
+	 
 	p_buffer = req->req.dma;
 	p_buffer += req->req.actual;
 	_nbu2ss_writel(&preg->EP_DCR[num].EP_TADR, (u32)p_buffer);
 
-	/* Packet and DMA setting */
+	 
 	data = ((dmacnt & 0xff) << 16) | DCR1_EPN_REQEN;
 	_nbu2ss_writel(&preg->EP_DCR[num].EP_DCR1, data);
 
-	/* Packet setting of EPC */
+	 
 	data = dmacnt << 16;
 	_nbu2ss_writel(&preg->EP_REGS[num].EP_LEN_DCNT, data);
 
-	/*DMA setting of EPC */
+	 
 	_nbu2ss_bitset(&preg->EP_REGS[num].EP_DMA_CTRL, EPN_DMA_EN);
 
 	result = i_write_length & ~(u32)0x3;
@@ -1047,7 +1042,7 @@ static int _nbu2ss_in_dma(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_epn_in_pio(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 			      struct nbu2ss_req *req, u32 length)
 {
@@ -1061,7 +1056,7 @@ static int _nbu2ss_epn_in_pio(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 	struct fc_regs __iomem *preg = udc->p_regs;
 
 	if (req->dma_flag)
-		return 1;		/* DMA is forwarded */
+		return 1;		 
 
 	if (length > 0) {
 		p_buffer = (u8 *)req->req.buf;
@@ -1094,7 +1089,7 @@ static int _nbu2ss_epn_in_pio(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_epn_in_data(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 			       struct nbu2ss_req *req, u32 data_size)
 {
@@ -1117,7 +1112,7 @@ static int _nbu2ss_epn_in_data(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep,
 	return nret;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_epn_in_transfer(struct nbu2ss_udc *udc,
 				   struct nbu2ss_ep *ep, struct nbu2ss_req *req)
 {
@@ -1133,19 +1128,19 @@ static int _nbu2ss_epn_in_transfer(struct nbu2ss_udc *udc,
 
 	status = _nbu2ss_readl(&udc->p_regs->EP_REGS[num].EP_STATUS);
 
-	/*-------------------------------------------------------------*/
-	/* State confirmation of FIFO */
+	 
+	 
 	if (req->req.actual == 0) {
 		if ((status & EPN_IN_EMPTY) == 0)
-			return 1;	/* Not Empty */
+			return 1;	 
 
 	} else {
 		if ((status & EPN_IN_FULL) != 0)
-			return 1;	/* Not Empty */
+			return 1;	 
 	}
 
-	/*-------------------------------------------------------------*/
-	/* Start transfer */
+	 
+	 
 	i_buf_size = req->req.length - req->req.actual;
 	if (i_buf_size > 0)
 		result = _nbu2ss_epn_in_data(udc, ep, req, i_buf_size);
@@ -1155,7 +1150,7 @@ static int _nbu2ss_epn_in_transfer(struct nbu2ss_udc *udc,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_start_transfer(struct nbu2ss_udc *udc,
 				  struct nbu2ss_ep *ep,
 				  struct nbu2ss_req *req,
@@ -1176,7 +1171,7 @@ static int _nbu2ss_start_transfer(struct nbu2ss_udc *udc,
 	}
 
 	if (ep->epnum == 0) {
-		/* EP0 */
+		 
 		switch (udc->ep0state) {
 		case EP0_IN_DATA_PHASE:
 			nret = _nbu2ss_ep0_in_transfer(udc, req);
@@ -1195,13 +1190,13 @@ static int _nbu2ss_start_transfer(struct nbu2ss_udc *udc,
 		}
 
 	} else {
-		/* EPN */
+		 
 		if (ep->direct == USB_DIR_OUT) {
-			/* OUT */
+			 
 			if (!bflag)
 				nret = _nbu2ss_epn_out_transfer(udc, ep, req);
 		} else {
-			/* IN */
+			 
 			nret = _nbu2ss_epn_in_transfer(udc, ep, req);
 		}
 	}
@@ -1209,7 +1204,7 @@ static int _nbu2ss_start_transfer(struct nbu2ss_udc *udc,
 	return nret;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_restert_transfer(struct nbu2ss_ep *ep)
 {
 	u32		length;
@@ -1231,8 +1226,8 @@ static void _nbu2ss_restert_transfer(struct nbu2ss_ep *ep)
 	_nbu2ss_start_transfer(ep->udc, ep, req, bflag);
 }
 
-/*-------------------------------------------------------------------------*/
-/*	Endpoint Toggle Reset */
+ 
+ 
 static void _nbu2ss_endpoint_toggle_reset(struct nbu2ss_udc *udc, u8 ep_adrs)
 {
 	u8		num;
@@ -1251,8 +1246,8 @@ static void _nbu2ss_endpoint_toggle_reset(struct nbu2ss_udc *udc, u8 ep_adrs)
 	_nbu2ss_bitset(&udc->p_regs->EP_REGS[num].EP_CONTROL, data);
 }
 
-/*-------------------------------------------------------------------------*/
-/*	Endpoint STALL set */
+ 
+ 
 static void _nbu2ss_set_endpoint_stall(struct nbu2ss_udc *udc,
 				       u8 ep_adrs, bool bstall)
 {
@@ -1263,10 +1258,10 @@ static void _nbu2ss_set_endpoint_stall(struct nbu2ss_udc *udc,
 
 	if ((ep_adrs == 0) || (ep_adrs == 0x80)) {
 		if (bstall) {
-			/* Set STALL */
+			 
 			_nbu2ss_bitset(&preg->EP0_CONTROL, EP0_STL);
 		} else {
-			/* Clear STALL */
+			 
 			_nbu2ss_bitclr(&preg->EP0_CONTROL, EP0_STL);
 		}
 	} else {
@@ -1275,7 +1270,7 @@ static void _nbu2ss_set_endpoint_stall(struct nbu2ss_udc *udc,
 		ep = &udc->ep[epnum];
 
 		if (bstall) {
-			/* Set STALL */
+			 
 			ep->halted = true;
 
 			if (ep_adrs & USB_DIR_IN)
@@ -1299,7 +1294,7 @@ static void _nbu2ss_set_endpoint_stall(struct nbu2ss_udc *udc,
 						, data);
 			}
 
-			/* Clear STALL */
+			 
 			ep->stalled = false;
 			if (ep->halted) {
 				ep->halted = false;
@@ -1309,7 +1304,7 @@ static void _nbu2ss_set_endpoint_stall(struct nbu2ss_udc *udc,
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_set_test_mode(struct nbu2ss_udc *udc, u32 mode)
 {
 	u32		data;
@@ -1327,7 +1322,7 @@ static void _nbu2ss_set_test_mode(struct nbu2ss_udc *udc, u32 mode)
 	_nbu2ss_bitset(&udc->p_regs->TEST_CONTROL, CS_TESTMODEEN);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_set_feature_device(struct nbu2ss_udc *udc,
 				      u16 selector, u16 wIndex)
 {
@@ -1354,7 +1349,7 @@ static int _nbu2ss_set_feature_device(struct nbu2ss_udc *udc,
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_get_ep_stall(struct nbu2ss_udc *udc, u8 ep_adrs)
 {
 	u8		epnum;
@@ -1382,7 +1377,7 @@ static int _nbu2ss_get_ep_stall(struct nbu2ss_udc *udc, u8 ep_adrs)
 	return 1;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline int _nbu2ss_req_feature(struct nbu2ss_udc *udc, bool bset)
 {
 	u8	recipient = (u8)(udc->ctrl.bRequestType & USB_RECIP_MASK);
@@ -1430,7 +1425,7 @@ static inline int _nbu2ss_req_feature(struct nbu2ss_udc *udc, bool bset)
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline enum usb_device_speed _nbu2ss_get_speed(struct nbu2ss_udc *udc)
 {
 	u32		data;
@@ -1443,7 +1438,7 @@ static inline enum usb_device_speed _nbu2ss_get_speed(struct nbu2ss_udc *udc)
 	return speed;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_epn_set_stall(struct nbu2ss_udc *udc,
 				  struct nbu2ss_ep *ep)
 {
@@ -1470,7 +1465,7 @@ static void _nbu2ss_epn_set_stall(struct nbu2ss_udc *udc,
 	_nbu2ss_set_endpoint_stall(udc, ep_adrs, 1);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int std_req_get_status(struct nbu2ss_udc *udc)
 {
 	u32	length;
@@ -1524,19 +1519,19 @@ static int std_req_get_status(struct nbu2ss_udc *udc)
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int std_req_clear_feature(struct nbu2ss_udc *udc)
 {
 	return _nbu2ss_req_feature(udc, false);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int std_req_set_feature(struct nbu2ss_udc *udc)
 {
 	return _nbu2ss_req_feature(udc, true);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int std_req_set_address(struct nbu2ss_udc *udc)
 {
 	int		result = 0;
@@ -1559,7 +1554,7 @@ static int std_req_set_address(struct nbu2ss_udc *udc)
 	return result;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int std_req_set_configuration(struct nbu2ss_udc *udc)
 {
 	u32 config_value = (u32)(le16_to_cpu(udc->ctrl.wValue) & 0x00ff);
@@ -1584,7 +1579,7 @@ static int std_req_set_configuration(struct nbu2ss_udc *udc)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_read_request_data(struct nbu2ss_udc *udc, u32 *pdata)
 {
 	*pdata = _nbu2ss_readl(&udc->p_regs->SETUP_DATA0);
@@ -1592,7 +1587,7 @@ static inline void _nbu2ss_read_request_data(struct nbu2ss_udc *udc, u32 *pdata)
 	*pdata = _nbu2ss_readl(&udc->p_regs->SETUP_DATA1);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline int _nbu2ss_decode_request(struct nbu2ss_udc *udc)
 {
 	bool			bcall_back = true;
@@ -1602,7 +1597,7 @@ static inline int _nbu2ss_decode_request(struct nbu2ss_udc *udc)
 	p_ctrl = &udc->ctrl;
 	_nbu2ss_read_request_data(udc, (u32 *)p_ctrl);
 
-	/* ep0 state control */
+	 
 	if (p_ctrl->wLength == 0) {
 		udc->ep0state = EP0_IN_STATUS_PHASE;
 
@@ -1647,8 +1642,8 @@ static inline int _nbu2ss_decode_request(struct nbu2ss_udc *udc)
 	if (!bcall_back) {
 		if (udc->ep0state == EP0_IN_STATUS_PHASE) {
 			if (nret >= 0) {
-				/*--------------------------------------*/
-				/* Status Stage */
+				 
+				 
 				nret = EP0_send_NULL(udc, true);
 			}
 		}
@@ -1665,7 +1660,7 @@ static inline int _nbu2ss_decode_request(struct nbu2ss_udc *udc)
 	return nret;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline int _nbu2ss_ep0_in_data_stage(struct nbu2ss_udc *udc)
 {
 	int			nret;
@@ -1688,7 +1683,7 @@ static inline int _nbu2ss_ep0_in_data_stage(struct nbu2ss_udc *udc)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline int _nbu2ss_ep0_out_data_stage(struct nbu2ss_udc *udc)
 {
 	int			nret;
@@ -1712,7 +1707,7 @@ static inline int _nbu2ss_ep0_out_data_stage(struct nbu2ss_udc *udc)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline int _nbu2ss_ep0_status_stage(struct nbu2ss_udc *udc)
 {
 	struct nbu2ss_req	*req;
@@ -1734,7 +1729,7 @@ static inline int _nbu2ss_ep0_status_stage(struct nbu2ss_udc *udc)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_ep0_int(struct nbu2ss_udc *udc)
 {
 	int		i;
@@ -1810,12 +1805,12 @@ static inline void _nbu2ss_ep0_int(struct nbu2ss_udc *udc)
 	}
 
 	if (nret < 0) {
-		/* Send Stall */
+		 
 		_nbu2ss_set_endpoint_stall(udc, 0, true);
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_ep_done(struct nbu2ss_ep *ep,
 			    struct nbu2ss_req *req,
 			    int status)
@@ -1848,7 +1843,7 @@ static void _nbu2ss_ep_done(struct nbu2ss_ep *ep,
 	spin_lock(&udc->lock);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_epn_in_int(struct nbu2ss_udc *udc,
 				      struct nbu2ss_ep *ep,
 				      struct nbu2ss_req *req)
@@ -1859,14 +1854,14 @@ static inline void _nbu2ss_epn_in_int(struct nbu2ss_udc *udc,
 	struct fc_regs __iomem *preg = udc->p_regs;
 
 	if (req->dma_flag)
-		return;		/* DMA is forwarded */
+		return;		 
 
 	req->req.actual += req->div_len;
 	req->div_len = 0;
 
 	if (req->req.actual != req->req.length) {
-		/*---------------------------------------------------------*/
-		/* remainder of data */
+		 
+		 
 		result = _nbu2ss_epn_in_transfer(udc, ep, req);
 
 	} else {
@@ -1875,8 +1870,8 @@ static inline void _nbu2ss_epn_in_int(struct nbu2ss_udc *udc,
 			_nbu2ss_readl(&preg->EP_REGS[ep->epnum - 1].EP_STATUS);
 
 			if ((status & EPN_IN_FULL) == 0) {
-				/*-----------------------------------------*/
-				/* 0 Length Packet */
+				 
+				 
 				req->zero = false;
 				_nbu2ss_zero_len_pkt(udc, ep->epnum);
 			}
@@ -1885,13 +1880,13 @@ static inline void _nbu2ss_epn_in_int(struct nbu2ss_udc *udc,
 	}
 
 	if (result <= 0) {
-		/*---------------------------------------------------------*/
-		/* Complete */
+		 
+		 
 		_nbu2ss_ep_done(ep, req, result);
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_epn_out_int(struct nbu2ss_udc *udc,
 				       struct nbu2ss_ep *ep,
 				       struct nbu2ss_req *req)
@@ -1903,7 +1898,7 @@ static inline void _nbu2ss_epn_out_int(struct nbu2ss_udc *udc,
 		_nbu2ss_ep_done(ep, req, result);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_epn_in_dma_int(struct nbu2ss_udc *udc,
 					  struct nbu2ss_ep *ep,
 					  struct nbu2ss_req *req)
@@ -1939,7 +1934,7 @@ static inline void _nbu2ss_epn_in_dma_int(struct nbu2ss_udc *udc,
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_epn_out_dma_int(struct nbu2ss_udc *udc,
 					   struct nbu2ss_ep *ep,
 					   struct nbu2ss_req *req)
@@ -1997,7 +1992,7 @@ static inline void _nbu2ss_epn_out_dma_int(struct nbu2ss_udc *udc,
 	_nbu2ss_epn_out_int(udc, ep, req);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_epn_int(struct nbu2ss_udc *udc, u32 epnum)
 {
 	u32	num;
@@ -2008,15 +2003,15 @@ static inline void _nbu2ss_epn_int(struct nbu2ss_udc *udc, u32 epnum)
 
 	num = epnum - 1;
 
-	/* Interrupt Status */
+	 
 	status = _nbu2ss_readl(&udc->p_regs->EP_REGS[num].EP_STATUS);
 
-	/* Interrupt Clear */
+	 
 	_nbu2ss_writel(&udc->p_regs->EP_REGS[num].EP_STATUS, ~status);
 
 	req = list_first_entry_or_null(&ep->queue, struct nbu2ss_req, queue);
 	if (!req) {
-		/* pr_warn("=== %s(%d) req == NULL\n", __func__, epnum); */
+		 
 		return;
 	}
 
@@ -2037,7 +2032,7 @@ static inline void _nbu2ss_epn_int(struct nbu2ss_udc *udc, u32 epnum)
 		_nbu2ss_epn_in_int(udc, ep, req);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_ep_int(struct nbu2ss_udc *udc, u32 epnum)
 {
 	if (epnum == 0)
@@ -2046,30 +2041,30 @@ static inline void _nbu2ss_ep_int(struct nbu2ss_udc *udc, u32 epnum)
 		_nbu2ss_epn_int(udc, epnum);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_ep0_enable(struct nbu2ss_udc *udc)
 {
 	_nbu2ss_bitset(&udc->p_regs->EP0_CONTROL, (EP0_AUTO | EP0_BCLR));
 	_nbu2ss_writel(&udc->p_regs->EP0_INT_ENA, EP0_INT_EN_BIT);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_nuke(struct nbu2ss_udc *udc,
 			struct nbu2ss_ep *ep,
 			int status)
 {
 	struct nbu2ss_req *req, *n;
 
-	/* Endpoint Disable */
+	 
 	_nbu2ss_epn_exit(udc, ep);
 
-	/* DMA Disable */
+	 
 	_nbu2ss_ep_dma_exit(udc, ep);
 
 	if (list_empty(&ep->queue))
 		return 0;
 
-	/* called with irqs blocked */
+	 
 	list_for_each_entry_safe(req, n, &ep->queue, queue) {
 		_nbu2ss_ep_done(ep, req, status);
 	}
@@ -2077,7 +2072,7 @@ static int _nbu2ss_nuke(struct nbu2ss_udc *udc,
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_quiesce(struct nbu2ss_udc *udc)
 {
 	struct nbu2ss_ep	*ep;
@@ -2086,13 +2081,13 @@ static void _nbu2ss_quiesce(struct nbu2ss_udc *udc)
 
 	_nbu2ss_nuke(udc, &udc->ep[0], -ESHUTDOWN);
 
-	/* Endpoint n */
+	 
 	list_for_each_entry(ep, &udc->gadget.ep_list, ep.ep_list) {
 		_nbu2ss_nuke(udc, ep, -ESHUTDOWN);
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_pullup(struct nbu2ss_udc *udc, int is_on)
 {
 	u32	reg_dt;
@@ -2101,7 +2096,7 @@ static int _nbu2ss_pullup(struct nbu2ss_udc *udc, int is_on)
 		return -ESHUTDOWN;
 
 	if (is_on) {
-		/* D+ Pullup */
+		 
 		if (udc->driver) {
 			reg_dt = (_nbu2ss_readl(&udc->p_regs->USB_CONTROL)
 				| PUE2) & ~(u32)CONNECTB;
@@ -2110,7 +2105,7 @@ static int _nbu2ss_pullup(struct nbu2ss_udc *udc, int is_on)
 		}
 
 	} else {
-		/* D+ Pulldown */
+		 
 		reg_dt = (_nbu2ss_readl(&udc->p_regs->USB_CONTROL) | CONNECTB)
 			& ~(u32)PUE2;
 
@@ -2121,7 +2116,7 @@ static int _nbu2ss_pullup(struct nbu2ss_udc *udc, int is_on)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_fifo_flush(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 {
 	struct fc_regs __iomem *p = udc->p_regs;
@@ -2130,17 +2125,17 @@ static void _nbu2ss_fifo_flush(struct nbu2ss_udc *udc, struct nbu2ss_ep *ep)
 		return;
 
 	if (ep->epnum == 0) {
-		/* EP0 */
+		 
 		_nbu2ss_bitset(&p->EP0_CONTROL, EP0_BCLR);
 
 	} else {
-		/* EPN */
+		 
 		_nbu2ss_ep_dma_abort(udc, ep);
 		_nbu2ss_bitset(&p->EP_REGS[ep->epnum - 1].EP_CONTROL, EPN_BCLR);
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int _nbu2ss_enable_controller(struct nbu2ss_udc *udc)
 {
 	int	waitcnt = 0;
@@ -2148,12 +2143,12 @@ static int _nbu2ss_enable_controller(struct nbu2ss_udc *udc)
 	if (udc->udc_enabled)
 		return 0;
 
-	/* Reset */
+	 
 	_nbu2ss_bitset(&udc->p_regs->EPCTR, (DIRPD | EPC_RST));
-	udelay(EPC_RST_DISABLE_TIME);	/* 1us wait */
+	udelay(EPC_RST_DISABLE_TIME);	 
 
 	_nbu2ss_bitclr(&udc->p_regs->EPCTR, DIRPD);
-	mdelay(EPC_DIRPD_DISABLE_TIME);	/* 1ms wait */
+	mdelay(EPC_DIRPD_DISABLE_TIME);	 
 
 	_nbu2ss_bitclr(&udc->p_regs->EPCTR, EPC_RST);
 
@@ -2164,7 +2159,7 @@ static int _nbu2ss_enable_controller(struct nbu2ss_udc *udc)
 
 	while (!(_nbu2ss_readl(&udc->p_regs->EPCTR) & PLL_LOCK)) {
 		waitcnt++;
-		udelay(1);	/* 1us wait */
+		udelay(1);	 
 		if (waitcnt == EPC_PLL_LOCK_COUNT) {
 			dev_err(udc->dev, "*** Reset Cancel failed\n");
 			return -EINVAL;
@@ -2175,10 +2170,10 @@ static int _nbu2ss_enable_controller(struct nbu2ss_udc *udc)
 
 	_nbu2ss_bitset(&udc->p_regs->USB_CONTROL, (INT_SEL | SOF_RCV));
 
-	/* EP0 */
+	 
 	_nbu2ss_ep0_enable(udc);
 
-	/* USB Interrupt Enable */
+	 
 	_nbu2ss_bitset(&udc->p_regs->USB_INT_ENA, USB_INT_EN_BIT);
 
 	udc->udc_enabled = true;
@@ -2186,14 +2181,14 @@ static int _nbu2ss_enable_controller(struct nbu2ss_udc *udc)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_reset_controller(struct nbu2ss_udc *udc)
 {
 	_nbu2ss_bitset(&udc->p_regs->EPCTR, EPC_RST);
 	_nbu2ss_bitclr(&udc->p_regs->EPCTR, EPC_RST);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void _nbu2ss_disable_controller(struct nbu2ss_udc *udc)
 {
 	if (udc->udc_enabled) {
@@ -2203,16 +2198,16 @@ static void _nbu2ss_disable_controller(struct nbu2ss_udc *udc)
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_check_vbus(struct nbu2ss_udc *udc)
 {
 	int	nret;
 	u32	reg_dt;
 
-	/* chattering */
-	mdelay(VBUS_CHATTERING_MDELAY);		/* wait (ms) */
+	 
+	mdelay(VBUS_CHATTERING_MDELAY);		 
 
-	/* VBUS ON Check*/
+	 
 	reg_dt = gpiod_get_value(vbus_gpio);
 	if (reg_dt == 0) {
 		udc->linux_suspended = 0;
@@ -2221,11 +2216,11 @@ static inline void _nbu2ss_check_vbus(struct nbu2ss_udc *udc)
 		dev_info(udc->dev, " ----- VBUS OFF\n");
 
 		if (udc->vbus_active == 1) {
-			/* VBUS OFF */
+			 
 			udc->vbus_active = 0;
 			if (udc->usb_suspended) {
 				udc->usb_suspended = 0;
-				/* _nbu2ss_reset_controller(udc); */
+				 
 			}
 			udc->devstate = USB_STATE_NOTATTACHED;
 
@@ -2239,7 +2234,7 @@ static inline void _nbu2ss_check_vbus(struct nbu2ss_udc *udc)
 			_nbu2ss_disable_controller(udc);
 		}
 	} else {
-		mdelay(5);		/* wait (5ms) */
+		mdelay(5);		 
 		reg_dt = gpiod_get_value(vbus_gpio);
 		if (reg_dt == 0)
 			return;
@@ -2250,7 +2245,7 @@ static inline void _nbu2ss_check_vbus(struct nbu2ss_udc *udc)
 			return;
 
 		if (udc->vbus_active == 0) {
-			/* VBUS ON */
+			 
 			udc->vbus_active = 1;
 			udc->devstate = USB_STATE_POWERED;
 
@@ -2265,7 +2260,7 @@ static inline void _nbu2ss_check_vbus(struct nbu2ss_udc *udc)
 
 #ifdef UDC_DEBUG_DUMP
 			_nbu2ss_dump_register(udc);
-#endif /* UDC_DEBUG_DUMP */
+#endif  
 
 		} else {
 			if (udc->devstate == USB_STATE_POWERED)
@@ -2274,7 +2269,7 @@ static inline void _nbu2ss_check_vbus(struct nbu2ss_udc *udc)
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_int_bus_reset(struct nbu2ss_udc *udc)
 {
 	udc->devstate		= USB_STATE_DEFAULT;
@@ -2285,7 +2280,7 @@ static inline void _nbu2ss_int_bus_reset(struct nbu2ss_udc *udc)
 	udc->ep0state = EP0_IDLE;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_int_usb_resume(struct nbu2ss_udc *udc)
 {
 	if (udc->usb_suspended == 1) {
@@ -2298,7 +2293,7 @@ static inline void _nbu2ss_int_usb_resume(struct nbu2ss_udc *udc)
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static inline void _nbu2ss_int_usb_suspend(struct nbu2ss_udc *udc)
 {
 	u32	reg_dt;
@@ -2320,8 +2315,8 @@ static inline void _nbu2ss_int_usb_suspend(struct nbu2ss_udc *udc)
 	}
 }
 
-/*-------------------------------------------------------------------------*/
-/* VBUS (GPIO153) Interrupt */
+ 
+ 
 static irqreturn_t _nbu2ss_vbus_irq(int irq, void *_udc)
 {
 	struct nbu2ss_udc	*udc = (struct nbu2ss_udc *)_udc;
@@ -2333,8 +2328,8 @@ static irqreturn_t _nbu2ss_vbus_irq(int irq, void *_udc)
 	return IRQ_HANDLED;
 }
 
-/*-------------------------------------------------------------------------*/
-/* Interrupt (udc) */
+ 
+ 
 static irqreturn_t _nbu2ss_udc_irq(int irq, void *_udc)
 {
 	u8	suspend_flag = 0;
@@ -2367,22 +2362,22 @@ static irqreturn_t _nbu2ss_udc_irq(int irq, void *_udc)
 		_nbu2ss_writel(&preg->USB_INT_STA, ~(status & USB_INT_STA_RW));
 
 		if (status & USB_RST_INT) {
-			/* USB Reset */
+			 
 			_nbu2ss_int_bus_reset(udc);
 		}
 
 		if (status & RSUM_INT) {
-			/* Resume */
+			 
 			_nbu2ss_int_usb_resume(udc);
 		}
 
 		if (status & SPND_INT) {
-			/* Suspend */
+			 
 			suspend_flag = 1;
 		}
 
 		if (status & EPN_INT) {
-			/* EP INT */
+			 
 			int_bit = status >> 8;
 
 			for (epnum = 0; epnum < NUM_ENDPOINTS; epnum++) {
@@ -2405,8 +2400,8 @@ static irqreturn_t _nbu2ss_udc_irq(int irq, void *_udc)
 	return IRQ_HANDLED;
 }
 
-/*-------------------------------------------------------------------------*/
-/* usb_ep_ops */
+ 
+ 
 static int nbu2ss_ep_enable(struct usb_ep *_ep,
 			    const struct usb_endpoint_descriptor *desc)
 {
@@ -2455,10 +2450,10 @@ static int nbu2ss_ep_enable(struct usb_ep *_ep,
 
 	ep->ep.maxpacket = le16_to_cpu(desc->wMaxPacketSize);
 
-	/* DMA setting */
+	 
 	_nbu2ss_ep_dma_init(udc, ep);
 
-	/* Endpoint setting */
+	 
 	_nbu2ss_ep_init(udc, ep);
 
 	spin_unlock_irqrestore(&udc->lock, flags);
@@ -2466,7 +2461,7 @@ static int nbu2ss_ep_enable(struct usb_ep *_ep,
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_ep_disable(struct usb_ep *_ep)
 {
 	struct nbu2ss_ep	*ep;
@@ -2489,13 +2484,13 @@ static int nbu2ss_ep_disable(struct usb_ep *_ep)
 		return -ESHUTDOWN;
 
 	spin_lock_irqsave(&udc->lock, flags);
-	_nbu2ss_nuke(udc, ep, -EINPROGRESS);		/* dequeue request */
+	_nbu2ss_nuke(udc, ep, -EINPROGRESS);		 
 	spin_unlock_irqrestore(&udc->lock, flags);
 
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static struct usb_request *nbu2ss_ep_alloc_request(struct usb_ep *ep,
 						   gfp_t gfp_flags)
 {
@@ -2513,7 +2508,7 @@ static struct usb_request *nbu2ss_ep_alloc_request(struct usb_ep *ep,
 	return &req->req;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void nbu2ss_ep_free_request(struct usb_ep *_ep,
 				   struct usb_request *_req)
 {
@@ -2526,7 +2521,7 @@ static void nbu2ss_ep_free_request(struct usb_ep *_ep,
 	}
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_ep_queue(struct usb_ep *_ep,
 			   struct usb_request *_req, gfp_t gfp_flags)
 {
@@ -2537,7 +2532,7 @@ static int nbu2ss_ep_queue(struct usb_ep *_ep,
 	bool			bflag;
 	int			result = -EINVAL;
 
-	/* catch various bogus parameters */
+	 
 	if (!_ep || !_req) {
 		if (!_ep)
 			pr_err("udc: %s --- _ep == NULL\n", __func__);
@@ -2636,7 +2631,7 @@ static int nbu2ss_ep_queue(struct usb_ep *_ep,
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 {
 	struct nbu2ss_req	*req;
@@ -2644,9 +2639,9 @@ static int nbu2ss_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 	struct nbu2ss_udc	*udc;
 	unsigned long flags;
 
-	/* catch various bogus parameters */
+	 
 	if (!_ep || !_req) {
-		/* pr_err("%s, bad param(1)\n", __func__); */
+		 
 		return -EINVAL;
 	}
 
@@ -2658,7 +2653,7 @@ static int nbu2ss_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 
 	spin_lock_irqsave(&udc->lock, flags);
 
-	/* make sure it's actually queued on this endpoint */
+	 
 	list_for_each_entry(req, &ep->queue, queue) {
 		if (&req->req == _req) {
 			_nbu2ss_ep_done(ep, req, -ECONNRESET);
@@ -2674,7 +2669,7 @@ static int nbu2ss_ep_dequeue(struct usb_ep *_ep, struct usb_request *_req)
 	return -EINVAL;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_ep_set_halt(struct usb_ep *_ep, int value)
 {
 	u8		ep_adrs;
@@ -2722,7 +2717,7 @@ static int nbu2ss_ep_set_wedge(struct usb_ep *_ep)
 	return nbu2ss_ep_set_halt(_ep, 1);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_ep_fifo_status(struct usb_ep *_ep)
 {
 	u32		data;
@@ -2765,7 +2760,7 @@ static int nbu2ss_ep_fifo_status(struct usb_ep *_ep)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void  nbu2ss_ep_fifo_flush(struct usb_ep *_ep)
 {
 	u32			data;
@@ -2795,7 +2790,7 @@ static void  nbu2ss_ep_fifo_flush(struct usb_ep *_ep)
 	spin_unlock_irqrestore(&udc->lock, flags);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static const struct usb_ep_ops nbu2ss_ep_ops = {
 	.enable		= nbu2ss_ep_enable,
 	.disable	= nbu2ss_ep_disable,
@@ -2813,10 +2808,10 @@ static const struct usb_ep_ops nbu2ss_ep_ops = {
 	.fifo_flush	= nbu2ss_ep_fifo_flush,
 };
 
-/*-------------------------------------------------------------------------*/
-/* usb_gadget_ops */
+ 
+ 
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_gad_get_frame(struct usb_gadget *pgadget)
 {
 	u32			data;
@@ -2835,7 +2830,7 @@ static int nbu2ss_gad_get_frame(struct usb_gadget *pgadget)
 	return _nbu2ss_readl(&udc->p_regs->USB_ADDRESS) & FRAME;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_gad_wakeup(struct usb_gadget *pgadget)
 {
 	int	i;
@@ -2870,7 +2865,7 @@ static int nbu2ss_gad_wakeup(struct usb_gadget *pgadget)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_gad_set_selfpowered(struct usb_gadget *pgadget,
 				      int is_selfpowered)
 {
@@ -2891,13 +2886,13 @@ static int nbu2ss_gad_set_selfpowered(struct usb_gadget *pgadget,
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_gad_vbus_session(struct usb_gadget *pgadget, int is_active)
 {
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_gad_vbus_draw(struct usb_gadget *pgadget, unsigned int mA)
 {
 	struct nbu2ss_udc	*udc;
@@ -2917,7 +2912,7 @@ static int nbu2ss_gad_vbus_draw(struct usb_gadget *pgadget, unsigned int mA)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_gad_pullup(struct usb_gadget *pgadget, int is_on)
 {
 	struct nbu2ss_udc	*udc;
@@ -2945,7 +2940,7 @@ static int nbu2ss_gad_pullup(struct usb_gadget *pgadget, int is_on)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_gad_ioctl(struct usb_gadget *pgadget,
 			    unsigned int code, unsigned long param)
 {
@@ -3004,7 +2999,7 @@ static const struct {
 #undef EP_INFO
 };
 
-/*-------------------------------------------------------------------------*/
+ 
 static void nbu2ss_drv_ep_init(struct nbu2ss_udc *udc)
 {
 	int	i;
@@ -3034,8 +3029,8 @@ static void nbu2ss_drv_ep_init(struct nbu2ss_udc *udc)
 	list_del_init(&udc->ep[0].ep.ep_list);
 }
 
-/*-------------------------------------------------------------------------*/
-/* platform_driver */
+ 
+ 
 static int nbu2ss_drv_contest_init(struct platform_device *pdev,
 				   struct nbu2ss_udc *udc)
 {
@@ -3049,15 +3044,15 @@ static int nbu2ss_drv_contest_init(struct platform_device *pdev,
 
 	udc->pdev->dev.coherent_dma_mask = DMA_BIT_MASK(32);
 
-	/* init Endpoint */
+	 
 	nbu2ss_drv_ep_init(udc);
 
-	/* init Gadget */
+	 
 	udc->gadget.ops = &nbu2ss_gadget_ops;
 	udc->gadget.ep0 = &udc->ep[0].ep;
 	udc->gadget.speed = USB_SPEED_UNKNOWN;
 	udc->gadget.name = driver_name;
-	/* udc->gadget.is_dualspeed = 1; */
+	 
 
 	device_initialize(&udc->gadget.dev);
 
@@ -3068,9 +3063,7 @@ static int nbu2ss_drv_contest_init(struct platform_device *pdev,
 	return 0;
 }
 
-/*
- *	probe - binds to the platform device
- */
+ 
 static int nbu2ss_drv_probe(struct platform_device *pdev)
 {
 	int status;
@@ -3083,7 +3076,7 @@ static int nbu2ss_drv_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, udc);
 
-	/* require I/O memory and IRQ to be provided as resources */
+	 
 	mmio_base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(mmio_base))
 		return PTR_ERR(mmio_base);
@@ -3094,23 +3087,23 @@ static int nbu2ss_drv_probe(struct platform_device *pdev)
 	status = devm_request_irq(&pdev->dev, irq, _nbu2ss_udc_irq,
 				  0, driver_name, udc);
 
-	/* IO Memory */
+	 
 	udc->p_regs = (struct fc_regs __iomem *)mmio_base;
 
-	/* USB Function Controller Interrupt */
+	 
 	if (status != 0) {
 		dev_err(udc->dev, "request_irq(USB_UDC_IRQ_1) failed\n");
 		return status;
 	}
 
-	/* Driver Initialization */
+	 
 	status = nbu2ss_drv_contest_init(pdev, udc);
 	if (status < 0) {
-		/* Error */
+		 
 		return status;
 	}
 
-	/* VBUS Interrupt */
+	 
 	vbus_irq = gpiod_to_irq(vbus_gpio);
 	irq_set_irq_type(vbus_irq, IRQ_TYPE_EDGE_BOTH);
 	status = request_irq(vbus_irq,
@@ -3124,7 +3117,7 @@ static int nbu2ss_drv_probe(struct platform_device *pdev)
 	return status;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void nbu2ss_drv_shutdown(struct platform_device *pdev)
 {
 	struct nbu2ss_udc	*udc;
@@ -3136,7 +3129,7 @@ static void nbu2ss_drv_shutdown(struct platform_device *pdev)
 	_nbu2ss_disable_controller(udc);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static void nbu2ss_drv_remove(struct platform_device *pdev)
 {
 	struct nbu2ss_udc	*udc;
@@ -3152,11 +3145,11 @@ static void nbu2ss_drv_remove(struct platform_device *pdev)
 					  ep->phys_buf);
 	}
 
-	/* Interrupt Handler - Release */
+	 
 	free_irq(vbus_irq, udc);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_drv_suspend(struct platform_device *pdev, pm_message_t state)
 {
 	struct nbu2ss_udc	*udc;
@@ -3182,7 +3175,7 @@ static int nbu2ss_drv_suspend(struct platform_device *pdev, pm_message_t state)
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 static int nbu2ss_drv_resume(struct platform_device *pdev)
 {
 	u32	data;

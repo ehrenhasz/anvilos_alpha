@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soundbus
- *
- * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include "soundbus.h"
@@ -72,7 +68,7 @@ static int soundbus_uevent(const struct device *dev, struct kobj_uevent_env *env
 
 	of = &soundbus_dev->ofdev;
 
-	/* stuff we want to pass to /sbin/hotplug */
+	 
 	retval = add_uevent_var(env, "OF_NAME=%pOFn", of->dev.of_node);
 	if (retval)
 		return retval;
@@ -81,9 +77,7 @@ static int soundbus_uevent(const struct device *dev, struct kobj_uevent_env *env
 	if (retval)
 		return retval;
 
-	/* Since the compatible field can contain pretty much anything
-	 * it's not really legal to split it out with commas. We split it
-	 * up using a number of environment variables instead. */
+	 
 
 	compat = of_get_property(of->dev.of_node, "compatible", &cplen);
 	while (compat && cplen > 0) {
@@ -123,7 +117,7 @@ static void soundbus_device_shutdown(struct device *dev)
 		drv->shutdown(soundbus_dev);
 }
 
-/* soundbus_dev_attrs is declared in sysfs.c */
+ 
 ATTRIBUTE_GROUPS(soundbus_dev);
 static struct bus_type soundbus_bus_type = {
 	.name		= "aoa-soundbus",
@@ -138,7 +132,7 @@ int soundbus_add_one(struct soundbus_dev *dev)
 {
 	static int devcount;
 
-	/* sanity checks */
+	 
 	if (!dev->attach_codec ||
 	    !dev->ofdev.dev.of_node ||
 	    dev->pcmname ||
@@ -161,11 +155,11 @@ EXPORT_SYMBOL_GPL(soundbus_remove_one);
 
 int soundbus_register_driver(struct soundbus_driver *drv)
 {
-	/* initialize common driver fields */
+	 
 	drv->driver.name = drv->name;
 	drv->driver.bus = &soundbus_bus_type;
 
-	/* register with core */
+	 
 	return driver_register(&drv->driver);
 }
 EXPORT_SYMBOL_GPL(soundbus_register_driver);

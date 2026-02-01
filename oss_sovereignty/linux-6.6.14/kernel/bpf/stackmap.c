@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/jhash.h>
 #include <linux/filter.h>
@@ -66,7 +65,7 @@ free_elems:
 	return err;
 }
 
-/* Called from syscall */
+ 
 static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
 {
 	u32 value_size = attr->value_size;
@@ -77,7 +76,7 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
 	if (attr->map_flags & ~STACK_CREATE_FLAG_MASK)
 		return ERR_PTR(-EINVAL);
 
-	/* check sanity of attributes */
+	 
 	if (attr->max_entries == 0 || attr->key_size != 4 ||
 	    value_size < 8 || value_size % 8)
 		return ERR_PTR(-EINVAL);
@@ -91,7 +90,7 @@ static struct bpf_map *stack_map_alloc(union bpf_attr *attr)
 	} else if (value_size / 8 > sysctl_perf_event_max_stack)
 		return ERR_PTR(-EINVAL);
 
-	/* hash table size must be power of 2 */
+	 
 	n_buckets = roundup_pow_of_two(attr->max_entries);
 	if (!n_buckets)
 		return ERR_PTR(-E2BIG);
@@ -130,13 +129,10 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
 	struct vm_area_struct *vma, *prev_vma = NULL;
 	const char *prev_build_id;
 
-	/* If the irq_work is in use, fall back to report ips. Same
-	 * fallback is used for kernel stack (!user) on a stackmap with
-	 * build_id.
-	 */
+	 
 	if (!user || !current || !current->mm || irq_work_busy ||
 	    !mmap_read_trylock(current->mm)) {
-		/* cannot access current->mm, fall back to ips */
+		 
 		for (i = 0; i < trace_nr; i++) {
 			id_offs[i].status = BPF_STACK_BUILD_ID_IP;
 			id_offs[i].ip = ips[i];
@@ -154,7 +150,7 @@ static void stack_map_get_build_id_offset(struct bpf_stack_build_id *id_offs,
 		}
 		vma = find_vma(current->mm, ips[i]);
 		if (!vma || build_id_parse(vma, id_offs[i].build_id, NULL)) {
-			/* per entry fall back to ips */
+			 
 			id_offs[i].status = BPF_STACK_BUILD_ID_IP;
 			id_offs[i].ip = ips[i];
 			memset(id_offs[i].build_id, 0, BUILD_ID_SIZE_MAX);
@@ -185,16 +181,13 @@ get_callchain_entry_for_task(struct task_struct *task, u32 max_depth)
 	entry->nr = stack_trace_save_tsk(task, (unsigned long *)entry->ip,
 					 max_depth, 0);
 
-	/* stack_trace_save_tsk() works on unsigned long array, while
-	 * perf_callchain_entry uses u64 array. For 32-bit systems, it is
-	 * necessary to fix this mismatch.
-	 */
+	 
 	if (__BITS_PER_LONG != 64) {
 		unsigned long *from = (unsigned long *) entry->ip;
 		u64 *to = entry->ip;
 		int i;
 
-		/* copy data from the end to avoid using extra buffer */
+		 
 		for (i = entry->nr - 1; i >= 0; i--)
 			to[i] = (u64)(from[i]);
 	}
@@ -202,7 +195,7 @@ get_callchain_entry_for_task(struct task_struct *task, u32 max_depth)
 	put_callchain_entry(rctx);
 
 	return entry;
-#else /* CONFIG_STACKTRACE */
+#else  
 	return NULL;
 #endif
 }
@@ -219,7 +212,7 @@ static long __bpf_get_stackid(struct bpf_map *map,
 	bool hash_matches;
 
 	if (trace->nr <= skip)
-		/* skipping more than usable stack trace */
+		 
 		return -EFAULT;
 
 	trace_nr = trace->nr - skip;
@@ -230,12 +223,12 @@ static long __bpf_get_stackid(struct bpf_map *map,
 	bucket = READ_ONCE(smap->buckets[id]);
 
 	hash_matches = bucket && bucket->hash == hash;
-	/* fast cmp */
+	 
 	if (hash_matches && flags & BPF_F_FAST_STACK_CMP)
 		return id;
 
 	if (stack_map_use_build_id(map)) {
-		/* for build_id+offset, pop a bucket before slow cmp */
+		 
 		new_bucket = (struct stack_map_bucket *)
 			pcpu_freelist_pop(&smap->freelist);
 		if (unlikely(!new_bucket))
@@ -298,7 +291,7 @@ BPF_CALL_3(bpf_get_stackid, struct pt_regs *, regs, struct bpf_map *, map,
 				   false, false);
 
 	if (unlikely(!trace))
-		/* couldn't fetch the stack trace */
+		 
 		return -EFAULT;
 
 	return __bpf_get_stackid(map, trace, flags);
@@ -334,7 +327,7 @@ BPF_CALL_3(bpf_get_stackid_pe, struct bpf_perf_event_data_kern *, ctx,
 	__u64 nr_kernel;
 	int ret;
 
-	/* perf_sample_data doesn't have callchain, use bpf_get_stackid */
+	 
 	if (!(event->attr.sample_type & PERF_SAMPLE_CALLCHAIN))
 		return bpf_get_stackid((unsigned long)(ctx->regs),
 				       (unsigned long) map, flags, 0, 0);
@@ -358,9 +351,9 @@ BPF_CALL_3(bpf_get_stackid_pe, struct bpf_perf_event_data_kern *, ctx,
 		trace->nr = nr_kernel;
 		ret = __bpf_get_stackid(map, trace, flags);
 
-		/* restore nr */
+		 
 		trace->nr = nr;
-	} else { /* user */
+	} else {  
 		u64 skip = flags & BPF_F_SKIP_FIELD_MASK;
 
 		skip += nr_kernel;
@@ -407,13 +400,11 @@ static long __bpf_get_stack(struct pt_regs *regs, struct task_struct *task,
 	if (unlikely(size % elem_size))
 		goto clear;
 
-	/* cannot get valid user stack for task without user_mode regs */
+	 
 	if (task && user && !user_mode(regs))
 		goto err_fault;
 
-	/* get_perf_callchain does not support crosstask user stack walking
-	 * but returns an empty stack instead of NULL.
-	 */
+	 
 	if (crosstask && user) {
 		err = -EOPNOTSUPP;
 		goto clear;
@@ -535,9 +526,9 @@ BPF_CALL_4(bpf_get_stack_pe, struct bpf_perf_event_data_kern *, ctx,
 		trace->nr = nr_kernel;
 		err = __bpf_get_stack(regs, NULL, trace, buf, size, flags);
 
-		/* restore nr */
+		 
 		trace->nr = nr;
-	} else { /* user */
+	} else {  
 		u64 skip = flags & BPF_F_SKIP_FIELD_MASK;
 
 		skip += nr_kernel;
@@ -565,13 +556,13 @@ const struct bpf_func_proto bpf_get_stack_proto_pe = {
 	.arg4_type	= ARG_ANYTHING,
 };
 
-/* Called from eBPF program */
+ 
 static void *stack_map_lookup_elem(struct bpf_map *map, void *key)
 {
 	return ERR_PTR(-EOPNOTSUPP);
 }
 
-/* Called from syscall */
+ 
 int bpf_stackmap_copy(struct bpf_map *map, void *key, void *value)
 {
 	struct bpf_stack_map *smap = container_of(map, struct bpf_stack_map, map);
@@ -630,7 +621,7 @@ static long stack_map_update_elem(struct bpf_map *map, void *key, void *value,
 	return -EINVAL;
 }
 
-/* Called from syscall or from eBPF program */
+ 
 static long stack_map_delete_elem(struct bpf_map *map, void *key)
 {
 	struct bpf_stack_map *smap = container_of(map, struct bpf_stack_map, map);
@@ -649,7 +640,7 @@ static long stack_map_delete_elem(struct bpf_map *map, void *key)
 	}
 }
 
-/* Called when map->refcnt goes to zero, either from workqueue or from syscall */
+ 
 static void stack_map_free(struct bpf_map *map)
 {
 	struct bpf_stack_map *smap = container_of(map, struct bpf_stack_map, map);

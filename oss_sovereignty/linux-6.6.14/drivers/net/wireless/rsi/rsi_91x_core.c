@@ -1,31 +1,11 @@
-/*
- * Copyright (c) 2014 Redpine Signals Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "rsi_mgmt.h"
 #include "rsi_common.h"
 #include "rsi_hal.h"
 #include "rsi_coex.h"
 
-/**
- * rsi_determine_min_weight_queue() - This function determines the queue with
- *				      the min weight.
- * @common: Pointer to the driver private structure.
- *
- * Return: q_num: Corresponding queue number.
- */
+ 
 static u8 rsi_determine_min_weight_queue(struct rsi_common *common)
 {
 	struct wmm_qinfo *tx_qinfo = common->tx_qinfo;
@@ -42,13 +22,7 @@ static u8 rsi_determine_min_weight_queue(struct rsi_common *common)
 	return ii;
 }
 
-/**
- * rsi_recalculate_weights() - This function recalculates the weights
- *			       corresponding to each queue.
- * @common: Pointer to the driver private structure.
- *
- * Return: recontend_queue bool variable
- */
+ 
 static bool rsi_recalculate_weights(struct rsi_common *common)
 {
 	struct wmm_qinfo *tx_qinfo = common->tx_qinfo;
@@ -58,7 +32,7 @@ static bool rsi_recalculate_weights(struct rsi_common *common)
 
 	for (ii = 0; ii < NUM_EDCA_QUEUES; ii++) {
 		q_len = skb_queue_len(&common->tx_queue[ii]);
-		/* Check for the need of contention */
+		 
 		if (q_len) {
 			if (tx_qinfo[ii].pkt_contended) {
 				tx_qinfo[ii].weight =
@@ -69,7 +43,7 @@ static bool rsi_recalculate_weights(struct rsi_common *common)
 				tx_qinfo[ii].weight = tx_qinfo[ii].wme_params;
 				recontend_queue = true;
 			}
-		} else { /* No packets so no contention */
+		} else {  
 			tx_qinfo[ii].weight = 0;
 			tx_qinfo[ii].pkt_contended = 0;
 		}
@@ -78,16 +52,7 @@ static bool rsi_recalculate_weights(struct rsi_common *common)
 	return recontend_queue;
 }
 
-/**
- * rsi_get_num_pkts_dequeue() - This function determines the number of
- *		                packets to be dequeued based on the number
- *			        of bytes calculated using txop.
- *
- * @common: Pointer to the driver private structure.
- * @q_num: the queue from which pkts have to be dequeued
- *
- * Return: pkt_num: Number of pkts to be dequeued.
- */
+ 
 static u32 rsi_get_num_pkts_dequeue(struct rsi_common *common, u8 q_num)
 {
 	struct rsi_hw *adapter = common->priv;
@@ -99,7 +64,7 @@ static u32 rsi_get_num_pkts_dequeue(struct rsi_common *common, u8 q_num)
 	struct ieee80211_hdr *wh;
 	struct ieee80211_vif *vif;
 
-	rate.bitrate = RSI_RATE_MCS0 * 5 * 10; /* Convert to Kbps */
+	rate.bitrate = RSI_RATE_MCS0 * 5 * 10;  
 	if (q_num == VI_Q)
 		txop = ((txop << 5) / 80);
 
@@ -117,7 +82,7 @@ static u32 rsi_get_num_pkts_dequeue(struct rsi_common *common, u8 q_num)
 							  skb->len, &rate);
 		txop -= le16_to_cpu(r_txop);
 		pkt_cnt += 1;
-		/*checking if pkts are still there*/
+		 
 		if (skb_queue_len(&common->tx_queue[q_num]) - pkt_cnt)
 			skb = skb->next;
 		else
@@ -128,13 +93,7 @@ static u32 rsi_get_num_pkts_dequeue(struct rsi_common *common, u8 q_num)
 	return pkt_cnt;
 }
 
-/**
- * rsi_core_determine_hal_queue() - This function determines the queue from
- *				    which packet has to be dequeued.
- * @common: Pointer to the driver private structure.
- *
- * Return: q_num: Corresponding queue number on success.
- */
+ 
 static u8 rsi_core_determine_hal_queue(struct rsi_common *common)
 {
 	bool recontend_queue = false;
@@ -167,7 +126,7 @@ get_queue_num:
 
 	ii = q_num;
 
-	/* Selecting the queue with least back off */
+	 
 	for (; ii < NUM_EDCA_QUEUES; ii++) {
 		q_len = skb_queue_len(&common->tx_queue[ii]);
 		if (((common->tx_qinfo[ii].pkt_contended) &&
@@ -181,15 +140,12 @@ get_queue_num:
 	if (q_num < NUM_EDCA_QUEUES)
 		common->tx_qinfo[q_num].pkt_contended = 0;
 
-	/* Adjust the back off values for all queues again */
+	 
 	recontend_queue = rsi_recalculate_weights(common);
 
 	q_len = skb_queue_len(&common->tx_queue[q_num]);
 	if (!q_len) {
-		/* If any queues are freshly contended and the selected queue
-		 * doesn't have any packets
-		 * then get the queue number again with fresh values
-		 */
+		 
 		if (recontend_queue)
 			goto get_queue_num;
 
@@ -207,14 +163,7 @@ get_queue_num:
 	return q_num;
 }
 
-/**
- * rsi_core_queue_pkt() - This functions enqueues the packet to the queue
- *			  specified by the queue number.
- * @common: Pointer to the driver private structure.
- * @skb: Pointer to the socket buffer structure.
- *
- * Return: None.
- */
+ 
 static void rsi_core_queue_pkt(struct rsi_common *common,
 			       struct sk_buff *skb)
 {
@@ -229,14 +178,7 @@ static void rsi_core_queue_pkt(struct rsi_common *common,
 	skb_queue_tail(&common->tx_queue[q_num], skb);
 }
 
-/**
- * rsi_core_dequeue_pkt() - This functions dequeues the packet from the queue
- *			    specified by the queue number.
- * @common: Pointer to the driver private structure.
- * @q_num: Queue number.
- *
- * Return: Pointer to sk_buff structure.
- */
+ 
 static struct sk_buff *rsi_core_dequeue_pkt(struct rsi_common *common,
 					    u8 q_num)
 {
@@ -249,15 +191,7 @@ static struct sk_buff *rsi_core_dequeue_pkt(struct rsi_common *common,
 	return skb_dequeue(&common->tx_queue[q_num]);
 }
 
-/**
- * rsi_core_qos_processor() - This function is used to determine the wmm queue
- *			      based on the backoff procedure. Data packets are
- *			      dequeued from the selected hal queue and sent to
- *			      the below layers.
- * @common: Pointer to the driver private structure.
- *
- * Return: None.
- */
+ 
 void rsi_core_qos_processor(struct rsi_common *common)
 {
 	struct rsi_hw *adapter = common->priv;
@@ -364,13 +298,7 @@ struct ieee80211_vif *rsi_get_vif(struct rsi_hw *adapter, u8 *mac)
 	return NULL;
 }
 
-/**
- * rsi_core_xmit() - This function transmits the packets received from mac80211
- * @common: Pointer to the driver private structure.
- * @skb: Pointer to the socket buffer structure.
- *
- * Return: None.
- */
+ 
 void rsi_core_xmit(struct rsi_common *common, struct sk_buff *skb)
 {
 	struct rsi_hw *adapter = common->priv;
@@ -399,7 +327,7 @@ void rsi_core_xmit(struct rsi_common *common, struct sk_buff *skb)
 
 	info = IEEE80211_SKB_CB(skb);
 	tx_params = (struct skb_info *)info->driver_data;
-	/* info->driver_data and info->control part of union so make copy */
+	 
 	tx_params->have_key = !!info->control.hw_key;
 	wh = (struct ieee80211_hdr *)&skb->data[0];
 	tx_params->sta_id = 0;
@@ -459,7 +387,7 @@ void rsi_core_xmit(struct rsi_common *common, struct sk_buff *skb)
 		}
 
 		if (rsta) {
-			/* Start aggregation if not done for this tid */
+			 
 			if (!rsta->start_tx_aggr[tid]) {
 				rsta->start_tx_aggr[tid] = true;
 				ieee80211_start_tx_ba_session(rsta->sta,
@@ -496,6 +424,6 @@ void rsi_core_xmit(struct rsi_common *common, struct sk_buff *skb)
 
 xmit_fail:
 	rsi_dbg(ERR_ZONE, "%s: Failed to queue packet\n", __func__);
-	/* Dropping pkt here */
+	 
 	ieee80211_free_txskb(common->priv->hw, skb);
 }

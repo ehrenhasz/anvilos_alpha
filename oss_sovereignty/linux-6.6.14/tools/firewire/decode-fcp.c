@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/firewire-constants.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -45,10 +45,10 @@ struct avc_enum {
 };
 
 struct avc_field {
-	const char *name;	/* Short name for field. */
-	int offset;		/* Location of field, specified in bits; */
-				/* negative means from end of packet.    */
-	int width;		/* Width of field, 0 means use data_length. */
+	const char *name;	 
+	int offset;		 
+				 
+	int width;		 
 	struct avc_enum *names;
 };
 
@@ -65,8 +65,8 @@ struct avc_enum power_field_names[] = {
 
 static const struct avc_opcode_info opcode_info[256] = {
 
-	/* TA Document 1999026 */
-	/* AV/C Digital Interface Command Set General Specification 4.0 */
+	 
+	 
 	[0xb2] = { "power", {
 			{ "state", 0, 8, power_field_names }
 		}
@@ -95,8 +95,8 @@ static const struct avc_opcode_info opcode_info[256] = {
 	[0x18] = { "output plug signal format" },
 	[0x1f] = { "general bus setup" },
 
-	/* TA Document 1999025 */
-	/* AV/C Descriptor Mechanism Specification Version 1.0 */
+	 
+	 
 	[0x0c] = { "create descriptor" },
 	[0x08] = { "open descriptor" },
 	[0x09] = { "read descriptor" },
@@ -107,8 +107,8 @@ static const struct avc_opcode_info opcode_info[256] = {
 	[0x0b] = { "search descriptor" },
 	[0x0d] = { "object number select" },
 
-	/* TA Document 1999015 */
-	/* AV/C Command Set for Rate Control of Isochronous Data Flow 1.0 */
+	 
+	 
 	[0xb3] = { "rate", {
 			{ "subfunction", 0, 8 },
 			{ "result", 8, 8 },
@@ -117,18 +117,18 @@ static const struct avc_opcode_info opcode_info[256] = {
 		}
 	},
 
-	/* TA Document 1999008 */
-	/* AV/C Audio Subunit Specification 1.0 */
+	 
+	 
 	[0xb8] = { "function block" },
 
-	/* TA Document 2001001 */
-	/* AV/C Panel Subunit Specification 1.1 */
+	 
+	 
 	[0x7d] = { "gui update" },
 	[0x7e] = { "push gui data" },
 	[0x7f] = { "user action" },
 	[0x7c] = { "pass through" },
 
-	/* */
+	 
 	[0x26] = { "asynchronous connection" },
 };
 

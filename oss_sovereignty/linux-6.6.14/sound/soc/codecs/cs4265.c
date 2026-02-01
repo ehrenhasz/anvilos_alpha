@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs4265.c -- CS4265 ALSA SoC audio driver
- *
- * Copyright 2014 Cirrus Logic, Inc.
- *
- * Author: Paul Handrigan <paul.handrigan@cirrus.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -226,7 +220,7 @@ static const struct snd_soc_dapm_route cs4265_audio_map[] = {
 	{"DAI1 Capture", NULL, "DOUT"},
 	{"DAI2 Capture", NULL, "DOUT"},
 
-	/* Loopback */
+	 
 	{"Loopback", "Switch", "ADC"},
 	{"DAC", NULL, "Loopback"},
 };
@@ -234,68 +228,68 @@ static const struct snd_soc_dapm_route cs4265_audio_map[] = {
 struct cs4265_clk_para {
 	u32 mclk;
 	u32 rate;
-	u8 fm_mode; /* values 1, 2, or 4 */
+	u8 fm_mode;  
 	u8 mclkdiv;
 };
 
 static const struct cs4265_clk_para clk_map_table[] = {
-	/*32k*/
+	 
 	{8192000, 32000, 0, 0},
 	{12288000, 32000, 0, 1},
 	{16384000, 32000, 0, 2},
 	{24576000, 32000, 0, 3},
 	{32768000, 32000, 0, 4},
 
-	/*44.1k*/
+	 
 	{11289600, 44100, 0, 0},
 	{16934400, 44100, 0, 1},
 	{22579200, 44100, 0, 2},
 	{33868000, 44100, 0, 3},
 	{45158400, 44100, 0, 4},
 
-	/*48k*/
+	 
 	{12288000, 48000, 0, 0},
 	{18432000, 48000, 0, 1},
 	{24576000, 48000, 0, 2},
 	{36864000, 48000, 0, 3},
 	{49152000, 48000, 0, 4},
 
-	/*64k*/
+	 
 	{8192000, 64000, 1, 0},
 	{12288000, 64000, 1, 1},
 	{16934400, 64000, 1, 2},
 	{24576000, 64000, 1, 3},
 	{32768000, 64000, 1, 4},
 
-	/* 88.2k */
+	 
 	{11289600, 88200, 1, 0},
 	{16934400, 88200, 1, 1},
 	{22579200, 88200, 1, 2},
 	{33868000, 88200, 1, 3},
 	{45158400, 88200, 1, 4},
 
-	/* 96k */
+	 
 	{12288000, 96000, 1, 0},
 	{18432000, 96000, 1, 1},
 	{24576000, 96000, 1, 2},
 	{36864000, 96000, 1, 3},
 	{49152000, 96000, 1, 4},
 
-	/* 128k */
+	 
 	{8192000, 128000, 2, 0},
 	{12288000, 128000, 2, 1},
 	{16934400, 128000, 2, 2},
 	{24576000, 128000, 2, 3},
 	{32768000, 128000, 2, 4},
 
-	/* 176.4k */
+	 
 	{11289600, 176400, 2, 0},
 	{16934400, 176400, 2, 1},
 	{22579200, 176400, 2, 2},
 	{33868000, 176400, 2, 3},
 	{49152000, 176400, 2, 4},
 
-	/* 192k */
+	 
 	{12288000, 192000, 2, 0},
 	{18432000, 192000, 2, 1},
 	{24576000, 192000, 2, 2},
@@ -358,7 +352,7 @@ static int cs4265_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	 /* interface format */
+	  
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface |= SND_SOC_DAIFMT_I2S;

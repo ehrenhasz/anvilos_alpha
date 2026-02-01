@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2020 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/sysfs.h>
@@ -69,7 +67,7 @@ static ssize_t ath11k_thermal_show_temp(struct device *dev,
 
 	mutex_lock(&ar->conf_mutex);
 
-	/* Can't get temperature when the card is off */
+	 
 	if (ar->state != ATH11K_STATE_ON) {
 		ret = -ENETDOWN;
 		goto out;
@@ -99,7 +97,7 @@ static ssize_t ath11k_thermal_show_temp(struct device *dev,
 	temperature = ar->thermal.temperature;
 	spin_unlock_bh(&ar->data_lock);
 
-	/* display in millidegree Celsius */
+	 
 	ret = snprintf(buf, PAGE_SIZE, "%d\n", temperature * 1000);
 out:
 	mutex_unlock(&ar->conf_mutex);
@@ -143,7 +141,7 @@ int ath11k_thermal_set_throttling(struct ath11k *ar, u32 throttle_state)
 	param.levelconf[0].tmplwm = ATH11K_THERMAL_TEMP_LOW_MARK;
 	param.levelconf[0].tmphwm = ATH11K_THERMAL_TEMP_HIGH_MARK;
 	param.levelconf[0].dcoffpercent = throttle_state;
-	param.levelconf[0].priority = 0; /* disable all data tx queues */
+	param.levelconf[0].priority = 0;  
 
 	ret = ath11k_wmi_send_thermal_mitigation_param_cmd(ar, &param);
 	if (ret) {

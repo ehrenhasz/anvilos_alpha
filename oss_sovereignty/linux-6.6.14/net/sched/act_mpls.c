@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2019 Netronome Systems, Inc. */
+
+ 
 
 #include <linux/if_arp.h>
 #include <linux/init.h>
@@ -62,9 +62,7 @@ TC_INDIRECT_SCOPE int tcf_mpls_act(struct sk_buff *skb,
 	tcf_lastuse_update(&m->tcf_tm);
 	bstats_update(this_cpu_ptr(m->common.cpu_bstats), skb);
 
-	/* Ensure 'data' points at mac_header prior calling mpls manipulating
-	 * functions.
-	 */
+	 
 	if (skb_at_tc_ingress(skb)) {
 		skb_push_rcsum(skb, skb->mac_len);
 		mac_len = skb->mac_len;
@@ -211,7 +209,7 @@ static int tcf_mpls_init(struct net *net, struct nlattr *nla,
 		return -EEXIST;
 	}
 
-	/* Verify parameters against action type. */
+	 
 	switch (parm->m_action) {
 	case TCA_MPLS_ACT_POP:
 		if (!tb[TCA_MPLS_PROTO]) {
@@ -252,7 +250,7 @@ static int tcf_mpls_init(struct net *net, struct nlattr *nla,
 			err = -EPROTONOSUPPORT;
 			goto release_idr;
 		}
-		/* Push needs a TTL - if not specified, set a default value. */
+		 
 		if (!tb[TCA_MPLS_TTL]) {
 #if IS_ENABLED(CONFIG_MPLS)
 			mpls_ttl = net->mpls.default_ttl ?

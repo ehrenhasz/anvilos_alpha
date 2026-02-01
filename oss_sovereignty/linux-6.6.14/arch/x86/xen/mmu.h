@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _XEN_MMU_H
 
 #include <linux/linkage.h>
@@ -25,4 +25,4 @@ unsigned long xen_read_cr2_direct(void);
 
 extern void xen_init_mmu_ops(void);
 extern void xen_hvm_init_mmu_ops(void);
-#endif	/* _XEN_MMU_H */
+#endif	 

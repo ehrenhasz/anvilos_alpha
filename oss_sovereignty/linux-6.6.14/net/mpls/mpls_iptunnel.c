@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * mpls tunnels	An implementation mpls tunnels using the light weight tunnel
- *		infrastructure
- *
- * Authors:	Roopa Prabhu, <roopa@cumulusnetworks.com>
- */
+
+ 
 #include <linux/types.h>
 #include <linux/skbuff.h>
 #include <linux/net.h>
@@ -29,7 +24,7 @@ static const struct nla_policy mpls_iptunnel_policy[MPLS_IPTUNNEL_MAX + 1] = {
 
 static unsigned int mpls_encap_size(struct mpls_iptunnel_encap *en)
 {
-	/* The size of the layer 2.5 labels to be added for this route */
+	 
 	return en->labels * sizeof(struct mpls_shim_hdr);
 }
 
@@ -51,7 +46,7 @@ static int mpls_xmit(struct sk_buff *skb)
 	int i;
 	unsigned int ttl;
 
-	/* Find the output device */
+	 
 	out_dev = dst->dev;
 	net = dev_net(out_dev);
 
@@ -65,16 +60,7 @@ static int mpls_xmit(struct sk_buff *skb)
 
 	tun_encap_info = mpls_lwtunnel_encap(dst->lwtstate);
 
-	/* Obtain the ttl using the following set of rules.
-	 *
-	 * LWT ttl propagation setting:
-	 *  - disabled => use default TTL value from LWT
-	 *  - enabled  => use TTL value from IPv4/IPv6 header
-	 *  - default  =>
-	 *   Global ttl propagation setting:
-	 *    - disabled => use default TTL value from global setting
-	 *    - enabled => use TTL value from IPv4/IPv6 header
-	 */
+	 
 	if (dst->ops->family == AF_INET) {
 		if (tun_encap_info->ttl_propagate == MPLS_TTL_PROP_DISABLED)
 			ttl = tun_encap_info->default_ttl;
@@ -97,7 +83,7 @@ static int mpls_xmit(struct sk_buff *skb)
 		goto drop;
 	}
 
-	/* Verify the destination can hold the packet */
+	 
 	new_header_size = mpls_encap_size(tun_encap_info);
 	mtu = mpls_dev_mtu(out_dev);
 	if (mpls_pkt_too_big(skb, mtu - new_header_size))
@@ -107,7 +93,7 @@ static int mpls_xmit(struct sk_buff *skb)
 	if (!out_dev->header_ops)
 		hh_len = 0;
 
-	/* Ensure there is enough space for the headers in the skb */
+	 
 	if (skb_cow(skb, hh_len + new_header_size))
 		goto drop;
 
@@ -121,7 +107,7 @@ static int mpls_xmit(struct sk_buff *skb)
 	skb->dev = out_dev;
 	skb->protocol = htons(ETH_P_MPLS_UC);
 
-	/* Push the new labels */
+	 
 	hdr = mpls_hdr(skb);
 	bos = true;
 	for (i = tun_encap_info->labels - 1; i >= 0; i--) {
@@ -141,7 +127,7 @@ static int mpls_xmit(struct sk_buff *skb)
 					 skb);
 	} else if (rt6) {
 		if (ipv6_addr_v4mapped(&rt6->rt6i_gateway)) {
-			/* 6PE (RFC 4798) */
+			 
 			err = neigh_xmit(NEIGH_ARP_TABLE, out_dev, &rt6->rt6i_gateway.s6_addr32[3],
 					 skb);
 		} else
@@ -183,7 +169,7 @@ static int mpls_build_state(struct net *net, struct nlattr *nla,
 		return -EINVAL;
 	}
 
-	/* determine number of labels */
+	 
 	if (nla_get_labels(tb[MPLS_IPTUNNEL_DST], MAX_NEW_LABELS,
 			   &n_labels, NULL, extack))
 		return -EINVAL;
@@ -204,7 +190,7 @@ static int mpls_build_state(struct net *net, struct nlattr *nla,
 
 	if (tb[MPLS_IPTUNNEL_TTL]) {
 		tun_encap_info->default_ttl = nla_get_u8(tb[MPLS_IPTUNNEL_TTL]);
-		/* TTL 0 implies propagate from IP header */
+		 
 		tun_encap_info->ttl_propagate = tun_encap_info->default_ttl ?
 			MPLS_TTL_PROP_DISABLED :
 			MPLS_TTL_PROP_ENABLED;

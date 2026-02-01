@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Check for KVM_GET_REG_LIST regressions.
- *
- * Copyright (C) 2020, Red Hat, Inc.
- *
- * When attempting to migrate from a host with an older kernel to a host
- * with a newer kernel we allow the newer kernel on the destination to
- * list new registers with get-reg-list. We assume they'll be unused, at
- * least until the guest reboots, and so they're relatively harmless.
- * However, if the destination host with the newer kernel is missing
- * registers which the source host with the older kernel has, then that's
- * a regression in get-reg-list. This test checks for that regression by
- * checking the current list against a blessed list. We should never have
- * missing registers, but if new ones appear then they can probably be
- * added to the blessed list. A completely new blessed list can be created
- * by running the test with the --list command line argument.
- *
- * The blessed list should be created from the oldest possible kernel.
- */
+
+ 
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -198,19 +180,7 @@ static void run_test(struct vcpu_reg_list *c)
 			blessed_reg[n++] = s->regs[i];
 	}
 
-	/*
-	 * We only test that we can get the register and then write back the
-	 * same value. Some registers may allow other values to be written
-	 * back, but others only allow some bits to be changed, and at least
-	 * for ID registers set will fail if the value does not exactly match
-	 * what was returned by get. If registers that allow other values to
-	 * be written need to have the other values tested, then we should
-	 * create a new set of tests for those in a new independent test
-	 * executable.
-	 *
-	 * Only do the get/set tests on present, blessed list registers,
-	 * since we don't know the capabilities of any new registers.
-	 */
+	 
 	for_each_present_blessed_reg(i) {
 		uint8_t addr[2048 / 8];
 		struct kvm_one_reg reg = {
@@ -229,7 +199,7 @@ static void run_test(struct vcpu_reg_list *c)
 		}
 
 		for_each_sublist(c, s) {
-			/* rejects_set registers are rejected for set operation */
+			 
 			if (s->rejects_set && find_reg(s->rejects_set, s->rejects_set_n, reg.id)) {
 				reject_reg = true;
 				ret = __vcpu_ioctl(vcpu, KVM_SET_ONE_REG, &reg);
@@ -242,7 +212,7 @@ static void run_test(struct vcpu_reg_list *c)
 				break;
 			}
 
-			/* skips_set registers are skipped for set operation */
+			 
 			if (s->skips_set && find_reg(s->skips_set, s->skips_set_n, reg.id)) {
 				skip_reg = true;
 				++skipped_set;
@@ -371,9 +341,7 @@ int main(int ac, char **av)
 	}
 
 	if (print_list || print_filtered) {
-		/*
-		 * We only want to print the register list of a single config.
-		 */
+		 
 		if (!sel)
 			help(), exit(1);
 	}

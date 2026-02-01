@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Felix Fietkau <nbd@openwrt.org>
- * Copyright (C) 2015 Jakub Kicinski <kubakici@wp.pl>
- */
+
+ 
 
 #include "mt7601u.h"
 #include "trace.h"
@@ -317,11 +314,7 @@ void mt7601u_mac_work(struct work_struct *work)
 	u32 sum, n;
 	int i, j, k;
 
-	/* Note: using MCU_RANDOM_READ is actually slower then reading all the
-	 *	 registers by hand.  MCU takes ca. 20ms to complete read of 24
-	 *	 registers while reading them one by one will takes roughly
-	 *	 24*200us =~ 5ms.
-	 */
+	 
 
 	k = 0;
 	n = 0;
@@ -333,7 +326,7 @@ void mt7601u_mac_work(struct work_struct *work)
 			spans[i].stat_base[j * 2] += val & 0xffff;
 			spans[i].stat_base[j * 2 + 1] += val >> 16;
 
-			/* Calculate average AMPDU length */
+			 
 			if (spans[i].addr_base != MT_TX_AGG_CNT_BASE0 &&
 			    spans[i].addr_base != MT_TX_AGG_CNT_BASE1)
 				continue;
@@ -477,9 +470,7 @@ u32 mt76_mac_process_rx(struct mt7601u_dev *dev, struct sk_buff *skb,
 		status->flag |= RX_FLAG_ICV_STRIPPED;
 		status->flag |= RX_FLAG_IV_STRIPPED;
 	}
-	/* let mac80211 take care of PN validation since apparently
-	 * the hardware does not support it
-	 */
+	 
 	if (rxwi->rxinfo & cpu_to_le32(MT_RXINFO_PN_LEN))
 		status->flag &= ~RX_FLAG_IV_STRIPPED;
 
@@ -547,9 +538,7 @@ int mt76_mac_wcid_set_key(struct mt7601u_dev *dev, u8 idx,
 	if (key) {
 		iv_data[3] = key->keyidx << 6;
 		if (cipher >= MT_CIPHER_TKIP) {
-			/* Note: start with 1 to comply with spec,
-			 *	 (see comment on common/cmm_wpa.c:4291).
-			 */
+			 
 			iv_data[0] |= 1;
 			iv_data[3] |= 0x20;
 		}

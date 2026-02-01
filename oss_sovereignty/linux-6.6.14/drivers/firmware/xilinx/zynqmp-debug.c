@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx Zynq MPSoC Firmware layer for debugfs APIs
- *
- *  Copyright (C) 2014-2018 Xilinx, Inc.
- *
- *  Michal Simek <michal.simek@amd.com>
- *  Davorin Mista <davorin.mista@aggios.com>
- *  Jolly Shah <jollys@xilinx.com>
- *  Rajan Vaja <rajanv@xilinx.com>
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <linux/module.h>
@@ -37,13 +28,7 @@ static struct pm_api_info pm_api_list[] = {
 
 static struct dentry *firmware_debugfs_root;
 
-/**
- * zynqmp_pm_argument_value() - Extract argument value from a PM-API request
- * @arg:	Entered PM-API argument in string format
- *
- * Return: Argument value in unsigned integer format on success
- *	   0 otherwise
- */
+ 
 static u64 zynqmp_pm_argument_value(char *arg)
 {
 	u64 value;
@@ -57,13 +42,7 @@ static u64 zynqmp_pm_argument_value(char *arg)
 	return 0;
 }
 
-/**
- * get_pm_api_id() - Extract API-ID from a PM-API request
- * @pm_api_req:		Entered PM-API argument in string format
- * @pm_id:		API-ID
- *
- * Return: 0 on success else error code
- */
+ 
 static int get_pm_api_id(char *pm_api_req, u32 *pm_id)
 {
 	int i;
@@ -76,7 +55,7 @@ static int get_pm_api_id(char *pm_api_req, u32 *pm_id)
 		}
 	}
 
-	/* If no name was entered look for PM-API ID instead */
+	 
 	if (i == ARRAY_SIZE(pm_api_list) && kstrtouint(pm_api_req, 10, pm_id))
 		return -EINVAL;
 
@@ -129,20 +108,7 @@ static int process_api_request(u32 pm_id, u64 *pm_api_arg, u32 *pm_api_ret)
 	return ret;
 }
 
-/**
- * zynqmp_pm_debugfs_api_write() - debugfs write function
- * @file:	User file
- * @ptr:	User entered PM-API string
- * @len:	Length of the userspace buffer
- * @off:	Offset within the file
- *
- * Used for triggering pm api functions by writing
- * echo <pm_api_id>	> /sys/kernel/debug/zynqmp_pm/power or
- * echo <pm_api_name>	> /sys/kernel/debug/zynqmp_pm/power
- *
- * Return: Number of bytes copied if PM-API request succeeds,
- *	   the corresponding error code otherwise
- */
+ 
 static ssize_t zynqmp_pm_debugfs_api_write(struct file *file,
 					   const char __user *ptr, size_t len,
 					   loff_t *off)
@@ -151,7 +117,7 @@ static ssize_t zynqmp_pm_debugfs_api_write(struct file *file,
 	char *pm_api_req;
 	u32 pm_id = 0;
 	u64 pm_api_arg[4] = {0, 0, 0, 0};
-	/* Return values from PM APIs calls */
+	 
 	u32 pm_api_ret[4] = {0, 0, 0, 0};
 
 	int ret;
@@ -167,14 +133,14 @@ static ssize_t zynqmp_pm_debugfs_api_write(struct file *file,
 		return PTR_ERR(kern_buff);
 	tmp_buff = kern_buff;
 
-	/* Read the API name from a user request */
+	 
 	pm_api_req = strsep(&kern_buff, " ");
 
 	ret = get_pm_api_id(pm_api_req, &pm_id);
 	if (ret < 0)
 		goto err;
 
-	/* Read node_id and arguments from the PM-API request */
+	 
 	pm_api_req = strsep(&kern_buff, " ");
 	while ((i < ARRAY_SIZE(pm_api_arg)) && pm_api_req) {
 		pm_api_arg[i++] = zynqmp_pm_argument_value(pm_api_req);
@@ -191,16 +157,7 @@ err:
 	return len;
 }
 
-/**
- * zynqmp_pm_debugfs_api_read() - debugfs read function
- * @file:	User file
- * @ptr:	Requested pm_api_version string
- * @len:	Length of the userspace buffer
- * @off:	Offset within the file
- *
- * Return: Length of the version string on success
- *	   else error code
- */
+ 
 static ssize_t zynqmp_pm_debugfs_api_read(struct file *file, char __user *ptr,
 					  size_t len, loff_t *off)
 {
@@ -208,31 +165,23 @@ static ssize_t zynqmp_pm_debugfs_api_read(struct file *file, char __user *ptr,
 				       strlen(debugfs_buf));
 }
 
-/* Setup debugfs fops */
+ 
 static const struct file_operations fops_zynqmp_pm_dbgfs = {
 	.owner = THIS_MODULE,
 	.write = zynqmp_pm_debugfs_api_write,
 	.read = zynqmp_pm_debugfs_api_read,
 };
 
-/**
- * zynqmp_pm_api_debugfs_init - Initialize debugfs interface
- *
- * Return:	None
- */
+ 
 void zynqmp_pm_api_debugfs_init(void)
 {
-	/* Initialize debugfs interface */
+	 
 	firmware_debugfs_root = debugfs_create_dir("zynqmp-firmware", NULL);
 	debugfs_create_file("pm", 0660, firmware_debugfs_root, NULL,
 			    &fops_zynqmp_pm_dbgfs);
 }
 
-/**
- * zynqmp_pm_api_debugfs_exit - Remove debugfs interface
- *
- * Return:	None
- */
+ 
 void zynqmp_pm_api_debugfs_exit(void)
 {
 	debugfs_remove_recursive(firmware_debugfs_root);

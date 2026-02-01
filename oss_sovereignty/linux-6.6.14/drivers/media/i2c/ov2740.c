@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Intel Corporation.
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -26,28 +26,28 @@
 #define OV2740_MODE_STANDBY		0x00
 #define OV2740_MODE_STREAMING		0x01
 
-/* vertical-timings from sensor */
+ 
 #define OV2740_REG_VTS			0x380e
 #define OV2740_VTS_DEF			0x088a
 #define OV2740_VTS_MIN			0x0460
 #define OV2740_VTS_MAX			0x7fff
 
-/* horizontal-timings from sensor */
+ 
 #define OV2740_REG_HTS			0x380c
 
-/* Exposure controls from sensor */
+ 
 #define OV2740_REG_EXPOSURE		0x3500
 #define OV2740_EXPOSURE_MIN		4
 #define OV2740_EXPOSURE_MAX_MARGIN	8
 #define OV2740_EXPOSURE_STEP		1
 
-/* Analog gain controls from sensor */
+ 
 #define OV2740_REG_ANALOG_GAIN		0x3508
 #define OV2740_ANAL_GAIN_MIN		128
 #define OV2740_ANAL_GAIN_MAX		1983
 #define OV2740_ANAL_GAIN_STEP		1
 
-/* Digital gain controls from sensor */
+ 
 #define OV2740_REG_MWB_R_GAIN		0x500a
 #define OV2740_REG_MWB_G_GAIN		0x500c
 #define OV2740_REG_MWB_B_GAIN		0x500e
@@ -56,24 +56,24 @@
 #define OV2740_DGTL_GAIN_STEP		1
 #define OV2740_DGTL_GAIN_DEFAULT	1024
 
-/* Test Pattern Control */
+ 
 #define OV2740_REG_TEST_PATTERN		0x5040
 #define OV2740_TEST_PATTERN_ENABLE	BIT(7)
 #define OV2740_TEST_PATTERN_BAR_SHIFT	2
 
-/* Group Access */
+ 
 #define OV2740_REG_GROUP_ACCESS		0x3208
 #define OV2740_GROUP_HOLD_START		0x0
 #define OV2740_GROUP_HOLD_END		0x10
 #define OV2740_GROUP_HOLD_LAUNCH	0xa0
 
-/* ISP CTRL00 */
+ 
 #define OV2740_REG_ISP_CTRL00		0x5000
-/* ISP CTRL01 */
+ 
 #define OV2740_REG_ISP_CTRL01		0x5001
-/* Customer Addresses: 0x7010 - 0x710F */
+ 
 #define CUSTOMER_USE_OTP_SIZE		0x100
-/* OTP registers from sensor */
+ 
 #define OV2740_REG_OTP_CUSTOMER		0x7010
 
 struct nvm_data {
@@ -101,25 +101,25 @@ struct ov2740_link_freq_config {
 };
 
 struct ov2740_mode {
-	/* Frame width in pixels */
+	 
 	u32 width;
 
-	/* Frame height in pixels */
+	 
 	u32 height;
 
-	/* Horizontal timining size */
+	 
 	u32 hts;
 
-	/* Default vertical timining size */
+	 
 	u32 vts_def;
 
-	/* Min vertical timining size */
+	 
 	u32 vts_min;
 
-	/* Link frequency needed for this resolution */
+	 
 	u32 link_freq_index;
 
-	/* Sensor register settings for this resolution */
+	 
 	const struct ov2740_reg_list reg_list;
 };
 
@@ -326,26 +326,26 @@ struct ov2740 {
 	struct media_pad pad;
 	struct v4l2_ctrl_handler ctrl_handler;
 
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
 	struct v4l2_ctrl *hblank;
 	struct v4l2_ctrl *exposure;
 
-	/* Current mode */
+	 
 	const struct ov2740_mode *cur_mode;
 
-	/* To serialize asynchronus callbacks */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
 
-	/* NVM data inforamtion */
+	 
 	struct nvm_data *nvm;
 
-	/* True if the device has been identified */
+	 
 	bool identified;
 };
 
@@ -514,9 +514,9 @@ static int ov2740_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 exposure_max;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	if (ctrl->id == V4L2_CID_VBLANK) {
-		/* Update max exposure while meeting expected vblanking */
+		 
 		exposure_max = ov2740->cur_mode->height + ctrl->val -
 			       OV2740_EXPOSURE_MAX_MARGIN;
 		__v4l2_ctrl_modify_range(ov2740->exposure,
@@ -525,7 +525,7 @@ static int ov2740_set_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_max);
 	}
 
-	/* V4L2 controls values will be applied only when power is already up */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
@@ -540,7 +540,7 @@ static int ov2740_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 
 	case V4L2_CID_EXPOSURE:
-		/* 4 least significant bits of expsoure are fractional part */
+		 
 		ret = ov2740_write_reg(ov2740, OV2740_REG_EXPOSURE, 3,
 				       ctrl->val << 4);
 		break;
@@ -675,7 +675,7 @@ static int ov2740_load_otp_data(struct nvm_data *nvm)
 		goto err;
 	}
 
-	/* Clear bit 5 of ISP CTRL00 */
+	 
 	ret = ov2740_write_reg(ov2740, OV2740_REG_ISP_CTRL00, 1,
 			       isp_ctrl00 & ~BIT(5));
 	if (ret) {
@@ -683,7 +683,7 @@ static int ov2740_load_otp_data(struct nvm_data *nvm)
 		goto err;
 	}
 
-	/* Clear bit 7 of ISP CTRL01 */
+	 
 	ret = ov2740_write_reg(ov2740, OV2740_REG_ISP_CTRL01, 1,
 			       isp_ctrl01 & ~BIT(7));
 	if (ret) {
@@ -698,10 +698,7 @@ static int ov2740_load_otp_data(struct nvm_data *nvm)
 		goto err;
 	}
 
-	/*
-	 * Users are not allowed to access OTP-related registers and memory
-	 * during the 20 ms period after streaming starts (0x100 = 0x01).
-	 */
+	 
 	msleep(20);
 
 	ret = regmap_bulk_read(nvm->regmap, OV2740_REG_OTP_CUSTOMER,
@@ -880,7 +877,7 @@ static int ov2740_set_format(struct v4l2_subdev *sd,
 		__v4l2_ctrl_s_ctrl_int64(ov2740->pixel_rate,
 					 to_pixel_rate(mode->link_freq_index));
 
-		/* Update limits and set FPS to default */
+		 
 		vblank_def = mode->vts_def - mode->height;
 		__v4l2_ctrl_modify_range(ov2740->vblank,
 					 mode->vts_min - mode->height,
@@ -1182,7 +1179,7 @@ static int ov2740_probe(struct i2c_client *client)
 	if (ret)
 		dev_warn(&client->dev, "register nvmem failed, ret %d\n", ret);
 
-	/* Set the device's state to active if it's in D0 state. */
+	 
 	if (full_power)
 		pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);

@@ -1,18 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+ 
 
 #include "iavf_type.h"
 #include "iavf_adminq.h"
 #include "iavf_prototype.h"
 #include <linux/avf/virtchnl.h>
 
-/**
- * iavf_set_mac_type - Sets MAC type
- * @hw: pointer to the HW structure
- *
- * This function sets the mac type of the adapter based on the
- * vendor ID and device ID stored in the hw structure.
- **/
+ 
 enum iavf_status iavf_set_mac_type(struct iavf_hw *hw)
 {
 	enum iavf_status status = 0;
@@ -38,11 +32,7 @@ enum iavf_status iavf_set_mac_type(struct iavf_hw *hw)
 	return status;
 }
 
-/**
- * iavf_aq_str - convert AQ err code to a string
- * @hw: pointer to the HW structure
- * @aq_err: the AQ error code to convert
- **/
+ 
 const char *iavf_aq_str(struct iavf_hw *hw, enum iavf_admin_queue_err aq_err)
 {
 	switch (aq_err) {
@@ -98,11 +88,7 @@ const char *iavf_aq_str(struct iavf_hw *hw, enum iavf_admin_queue_err aq_err)
 	return hw->err_str;
 }
 
-/**
- * iavf_stat_str - convert status err code to a string
- * @hw: pointer to the HW structure
- * @stat_err: the status error code to convert
- **/
+ 
 const char *iavf_stat_str(struct iavf_hw *hw, enum iavf_status stat_err)
 {
 	switch (stat_err) {
@@ -246,16 +232,7 @@ const char *iavf_stat_str(struct iavf_hw *hw, enum iavf_status stat_err)
 	return hw->err_str;
 }
 
-/**
- * iavf_debug_aq
- * @hw: debug mask related to admin queue
- * @mask: debug mask
- * @desc: pointer to admin queue descriptor
- * @buffer: pointer to command buffer
- * @buf_len: max length of buffer
- *
- * Dumps debug log about adminq command with descriptor contents.
- **/
+ 
 void iavf_debug_aq(struct iavf_hw *hw, enum iavf_debug_mask mask, void *desc,
 		   void *buffer, u16 buf_len)
 {
@@ -287,7 +264,7 @@ void iavf_debug_aq(struct iavf_hw *hw, enum iavf_debug_mask mask, void *desc,
 		iavf_debug(hw, mask, "AQ CMD Buffer:\n");
 		if (buf_len < len)
 			len = buf_len;
-		/* write the full 16-byte chunks */
+		 
 		if (hw->debug_mask & mask) {
 			char prefix[27];
 
@@ -303,12 +280,7 @@ void iavf_debug_aq(struct iavf_hw *hw, enum iavf_debug_mask mask, void *desc,
 	}
 }
 
-/**
- * iavf_check_asq_alive
- * @hw: pointer to the hw struct
- *
- * Returns true if Queue is enabled else false.
- **/
+ 
 bool iavf_check_asq_alive(struct iavf_hw *hw)
 {
 	if (hw->aq.asq.len)
@@ -318,14 +290,7 @@ bool iavf_check_asq_alive(struct iavf_hw *hw)
 		return false;
 }
 
-/**
- * iavf_aq_queue_shutdown
- * @hw: pointer to the hw struct
- * @unloading: is the driver unloading itself
- *
- * Tell the Firmware that we're shutting down the AdminQ and whether
- * or not the driver is unloading as well.
- **/
+ 
 enum iavf_status iavf_aq_queue_shutdown(struct iavf_hw *hw, bool unloading)
 {
 	struct iavf_aq_desc desc;
@@ -342,17 +307,7 @@ enum iavf_status iavf_aq_queue_shutdown(struct iavf_hw *hw, bool unloading)
 	return status;
 }
 
-/**
- * iavf_aq_get_set_rss_lut
- * @hw: pointer to the hardware structure
- * @vsi_id: vsi fw index
- * @pf_lut: for PF table set true, for VSI table set false
- * @lut: pointer to the lut buffer provided by the caller
- * @lut_size: size of the lut buffer
- * @set: set true to set the table, false to get the table
- *
- * Internal function to get or set RSS look up table
- **/
+ 
 static enum iavf_status iavf_aq_get_set_rss_lut(struct iavf_hw *hw,
 						u16 vsi_id, bool pf_lut,
 						u8 *lut, u16 lut_size,
@@ -370,7 +325,7 @@ static enum iavf_status iavf_aq_get_set_rss_lut(struct iavf_hw *hw,
 		iavf_fill_default_direct_cmd_desc(&desc,
 						  iavf_aqc_opc_get_rss_lut);
 
-	/* Indirect command */
+	 
 	desc.flags |= cpu_to_le16((u16)IAVF_AQ_FLAG_BUF);
 	desc.flags |= cpu_to_le16((u16)IAVF_AQ_FLAG_RD);
 
@@ -396,31 +351,14 @@ static enum iavf_status iavf_aq_get_set_rss_lut(struct iavf_hw *hw,
 	return status;
 }
 
-/**
- * iavf_aq_set_rss_lut
- * @hw: pointer to the hardware structure
- * @vsi_id: vsi fw index
- * @pf_lut: for PF table set true, for VSI table set false
- * @lut: pointer to the lut buffer provided by the caller
- * @lut_size: size of the lut buffer
- *
- * set the RSS lookup table, PF or VSI type
- **/
+ 
 enum iavf_status iavf_aq_set_rss_lut(struct iavf_hw *hw, u16 vsi_id,
 				     bool pf_lut, u8 *lut, u16 lut_size)
 {
 	return iavf_aq_get_set_rss_lut(hw, vsi_id, pf_lut, lut, lut_size, true);
 }
 
-/**
- * iavf_aq_get_set_rss_key
- * @hw: pointer to the hw struct
- * @vsi_id: vsi fw index
- * @key: pointer to key info struct
- * @set: set true to set the key, false to get the key
- *
- * get the RSS key per VSI
- **/
+ 
 static enum
 iavf_status iavf_aq_get_set_rss_key(struct iavf_hw *hw, u16 vsi_id,
 				    struct iavf_aqc_get_set_rss_key_data *key,
@@ -439,7 +377,7 @@ iavf_status iavf_aq_get_set_rss_key(struct iavf_hw *hw, u16 vsi_id,
 		iavf_fill_default_direct_cmd_desc(&desc,
 						  iavf_aqc_opc_get_rss_key);
 
-	/* Indirect command */
+	 
 	desc.flags |= cpu_to_le16((u16)IAVF_AQ_FLAG_BUF);
 	desc.flags |= cpu_to_le16((u16)IAVF_AQ_FLAG_RD);
 
@@ -454,44 +392,16 @@ iavf_status iavf_aq_get_set_rss_key(struct iavf_hw *hw, u16 vsi_id,
 	return status;
 }
 
-/**
- * iavf_aq_set_rss_key
- * @hw: pointer to the hw struct
- * @vsi_id: vsi fw index
- * @key: pointer to key info struct
- *
- * set the RSS key per VSI
- **/
+ 
 enum iavf_status iavf_aq_set_rss_key(struct iavf_hw *hw, u16 vsi_id,
 				     struct iavf_aqc_get_set_rss_key_data *key)
 {
 	return iavf_aq_get_set_rss_key(hw, vsi_id, key, true);
 }
 
-/* The iavf_ptype_lookup table is used to convert from the 8-bit ptype in the
- * hardware to a bit-field that can be used by SW to more easily determine the
- * packet type.
- *
- * Macros are used to shorten the table lines and make this table human
- * readable.
- *
- * We store the PTYPE in the top byte of the bit field - this is just so that
- * we can check that the table doesn't have a row missing, as the index into
- * the table should be the PTYPE.
- *
- * Typical work flow:
- *
- * IF NOT iavf_ptype_lookup[ptype].known
- * THEN
- *      Packet is unknown
- * ELSE IF iavf_ptype_lookup[ptype].outer_ip == IAVF_RX_PTYPE_OUTER_IP
- *      Use the rest of the fields to look at the tunnels, inner protocols, etc
- * ELSE
- *      Use the enum iavf_rx_l2_ptype to decode the packet type
- * ENDIF
- */
+ 
 
-/* macro to make the table lines short, use explicit indexing with [PTYPE] */
+ 
 #define IAVF_PTT(PTYPE, OUTER_IP, OUTER_IP_VER, OUTER_FRAG, T, TE, TEF, I, PL)\
 	[PTYPE] = { \
 		1, \
@@ -506,14 +416,14 @@ enum iavf_status iavf_aq_set_rss_key(struct iavf_hw *hw, u16 vsi_id,
 
 #define IAVF_PTT_UNUSED_ENTRY(PTYPE) [PTYPE] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 
-/* shorter macros makes the table fit but are terse */
+ 
 #define IAVF_RX_PTYPE_NOF		IAVF_RX_PTYPE_NOT_FRAG
 #define IAVF_RX_PTYPE_FRG		IAVF_RX_PTYPE_FRAG
 #define IAVF_RX_PTYPE_INNER_PROT_TS	IAVF_RX_PTYPE_INNER_PROT_TIMESYNC
 
-/* Lookup table mapping the 8-bit HW PTYPE to the bit field for decoding */
+ 
 struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
-	/* L2 Packet types */
+	 
 	IAVF_PTT_UNUSED_ENTRY(0),
 	IAVF_PTT(1,  L2, NONE, NOF, NONE, NONE, NOF, NONE, PAY2),
 	IAVF_PTT(2,  L2, NONE, NOF, NONE, NONE, NOF, TS,   PAY2),
@@ -537,7 +447,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(20, L2, NONE, NOF, NONE, NONE, NOF, NONE, PAY3),
 	IAVF_PTT(21, L2, NONE, NOF, NONE, NONE, NOF, NONE, PAY3),
 
-	/* Non Tunneled IPv4 */
+	 
 	IAVF_PTT(22, IP, IPV4, FRG, NONE, NONE, NOF, NONE, PAY3),
 	IAVF_PTT(23, IP, IPV4, NOF, NONE, NONE, NOF, NONE, PAY3),
 	IAVF_PTT(24, IP, IPV4, NOF, NONE, NONE, NOF, UDP,  PAY4),
@@ -546,7 +456,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(27, IP, IPV4, NOF, NONE, NONE, NOF, SCTP, PAY4),
 	IAVF_PTT(28, IP, IPV4, NOF, NONE, NONE, NOF, ICMP, PAY4),
 
-	/* IPv4 --> IPv4 */
+	 
 	IAVF_PTT(29, IP, IPV4, NOF, IP_IP, IPV4, FRG, NONE, PAY3),
 	IAVF_PTT(30, IP, IPV4, NOF, IP_IP, IPV4, NOF, NONE, PAY3),
 	IAVF_PTT(31, IP, IPV4, NOF, IP_IP, IPV4, NOF, UDP,  PAY4),
@@ -555,7 +465,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(34, IP, IPV4, NOF, IP_IP, IPV4, NOF, SCTP, PAY4),
 	IAVF_PTT(35, IP, IPV4, NOF, IP_IP, IPV4, NOF, ICMP, PAY4),
 
-	/* IPv4 --> IPv6 */
+	 
 	IAVF_PTT(36, IP, IPV4, NOF, IP_IP, IPV6, FRG, NONE, PAY3),
 	IAVF_PTT(37, IP, IPV4, NOF, IP_IP, IPV6, NOF, NONE, PAY3),
 	IAVF_PTT(38, IP, IPV4, NOF, IP_IP, IPV6, NOF, UDP,  PAY4),
@@ -564,10 +474,10 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(41, IP, IPV4, NOF, IP_IP, IPV6, NOF, SCTP, PAY4),
 	IAVF_PTT(42, IP, IPV4, NOF, IP_IP, IPV6, NOF, ICMP, PAY4),
 
-	/* IPv4 --> GRE/NAT */
+	 
 	IAVF_PTT(43, IP, IPV4, NOF, IP_GRENAT, NONE, NOF, NONE, PAY3),
 
-	/* IPv4 --> GRE/NAT --> IPv4 */
+	 
 	IAVF_PTT(44, IP, IPV4, NOF, IP_GRENAT, IPV4, FRG, NONE, PAY3),
 	IAVF_PTT(45, IP, IPV4, NOF, IP_GRENAT, IPV4, NOF, NONE, PAY3),
 	IAVF_PTT(46, IP, IPV4, NOF, IP_GRENAT, IPV4, NOF, UDP,  PAY4),
@@ -576,7 +486,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(49, IP, IPV4, NOF, IP_GRENAT, IPV4, NOF, SCTP, PAY4),
 	IAVF_PTT(50, IP, IPV4, NOF, IP_GRENAT, IPV4, NOF, ICMP, PAY4),
 
-	/* IPv4 --> GRE/NAT --> IPv6 */
+	 
 	IAVF_PTT(51, IP, IPV4, NOF, IP_GRENAT, IPV6, FRG, NONE, PAY3),
 	IAVF_PTT(52, IP, IPV4, NOF, IP_GRENAT, IPV6, NOF, NONE, PAY3),
 	IAVF_PTT(53, IP, IPV4, NOF, IP_GRENAT, IPV6, NOF, UDP,  PAY4),
@@ -585,10 +495,10 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(56, IP, IPV4, NOF, IP_GRENAT, IPV6, NOF, SCTP, PAY4),
 	IAVF_PTT(57, IP, IPV4, NOF, IP_GRENAT, IPV6, NOF, ICMP, PAY4),
 
-	/* IPv4 --> GRE/NAT --> MAC */
+	 
 	IAVF_PTT(58, IP, IPV4, NOF, IP_GRENAT_MAC, NONE, NOF, NONE, PAY3),
 
-	/* IPv4 --> GRE/NAT --> MAC --> IPv4 */
+	 
 	IAVF_PTT(59, IP, IPV4, NOF, IP_GRENAT_MAC, IPV4, FRG, NONE, PAY3),
 	IAVF_PTT(60, IP, IPV4, NOF, IP_GRENAT_MAC, IPV4, NOF, NONE, PAY3),
 	IAVF_PTT(61, IP, IPV4, NOF, IP_GRENAT_MAC, IPV4, NOF, UDP,  PAY4),
@@ -597,7 +507,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(64, IP, IPV4, NOF, IP_GRENAT_MAC, IPV4, NOF, SCTP, PAY4),
 	IAVF_PTT(65, IP, IPV4, NOF, IP_GRENAT_MAC, IPV4, NOF, ICMP, PAY4),
 
-	/* IPv4 --> GRE/NAT -> MAC --> IPv6 */
+	 
 	IAVF_PTT(66, IP, IPV4, NOF, IP_GRENAT_MAC, IPV6, FRG, NONE, PAY3),
 	IAVF_PTT(67, IP, IPV4, NOF, IP_GRENAT_MAC, IPV6, NOF, NONE, PAY3),
 	IAVF_PTT(68, IP, IPV4, NOF, IP_GRENAT_MAC, IPV6, NOF, UDP,  PAY4),
@@ -606,10 +516,10 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(71, IP, IPV4, NOF, IP_GRENAT_MAC, IPV6, NOF, SCTP, PAY4),
 	IAVF_PTT(72, IP, IPV4, NOF, IP_GRENAT_MAC, IPV6, NOF, ICMP, PAY4),
 
-	/* IPv4 --> GRE/NAT --> MAC/VLAN */
+	 
 	IAVF_PTT(73, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, NONE, NOF, NONE, PAY3),
 
-	/* IPv4 ---> GRE/NAT -> MAC/VLAN --> IPv4 */
+	 
 	IAVF_PTT(74, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV4, FRG, NONE, PAY3),
 	IAVF_PTT(75, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV4, NOF, NONE, PAY3),
 	IAVF_PTT(76, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV4, NOF, UDP,  PAY4),
@@ -618,7 +528,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(79, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV4, NOF, SCTP, PAY4),
 	IAVF_PTT(80, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV4, NOF, ICMP, PAY4),
 
-	/* IPv4 -> GRE/NAT -> MAC/VLAN --> IPv6 */
+	 
 	IAVF_PTT(81, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV6, FRG, NONE, PAY3),
 	IAVF_PTT(82, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV6, NOF, NONE, PAY3),
 	IAVF_PTT(83, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV6, NOF, UDP,  PAY4),
@@ -627,7 +537,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(86, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV6, NOF, SCTP, PAY4),
 	IAVF_PTT(87, IP, IPV4, NOF, IP_GRENAT_MAC_VLAN, IPV6, NOF, ICMP, PAY4),
 
-	/* Non Tunneled IPv6 */
+	 
 	IAVF_PTT(88, IP, IPV6, FRG, NONE, NONE, NOF, NONE, PAY3),
 	IAVF_PTT(89, IP, IPV6, NOF, NONE, NONE, NOF, NONE, PAY3),
 	IAVF_PTT(90, IP, IPV6, NOF, NONE, NONE, NOF, UDP,  PAY4),
@@ -636,7 +546,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(93, IP, IPV6, NOF, NONE, NONE, NOF, SCTP, PAY4),
 	IAVF_PTT(94, IP, IPV6, NOF, NONE, NONE, NOF, ICMP, PAY4),
 
-	/* IPv6 --> IPv4 */
+	 
 	IAVF_PTT(95,  IP, IPV6, NOF, IP_IP, IPV4, FRG, NONE, PAY3),
 	IAVF_PTT(96,  IP, IPV6, NOF, IP_IP, IPV4, NOF, NONE, PAY3),
 	IAVF_PTT(97,  IP, IPV6, NOF, IP_IP, IPV4, NOF, UDP,  PAY4),
@@ -645,7 +555,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(100, IP, IPV6, NOF, IP_IP, IPV4, NOF, SCTP, PAY4),
 	IAVF_PTT(101, IP, IPV6, NOF, IP_IP, IPV4, NOF, ICMP, PAY4),
 
-	/* IPv6 --> IPv6 */
+	 
 	IAVF_PTT(102, IP, IPV6, NOF, IP_IP, IPV6, FRG, NONE, PAY3),
 	IAVF_PTT(103, IP, IPV6, NOF, IP_IP, IPV6, NOF, NONE, PAY3),
 	IAVF_PTT(104, IP, IPV6, NOF, IP_IP, IPV6, NOF, UDP,  PAY4),
@@ -654,10 +564,10 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(107, IP, IPV6, NOF, IP_IP, IPV6, NOF, SCTP, PAY4),
 	IAVF_PTT(108, IP, IPV6, NOF, IP_IP, IPV6, NOF, ICMP, PAY4),
 
-	/* IPv6 --> GRE/NAT */
+	 
 	IAVF_PTT(109, IP, IPV6, NOF, IP_GRENAT, NONE, NOF, NONE, PAY3),
 
-	/* IPv6 --> GRE/NAT -> IPv4 */
+	 
 	IAVF_PTT(110, IP, IPV6, NOF, IP_GRENAT, IPV4, FRG, NONE, PAY3),
 	IAVF_PTT(111, IP, IPV6, NOF, IP_GRENAT, IPV4, NOF, NONE, PAY3),
 	IAVF_PTT(112, IP, IPV6, NOF, IP_GRENAT, IPV4, NOF, UDP,  PAY4),
@@ -666,7 +576,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(115, IP, IPV6, NOF, IP_GRENAT, IPV4, NOF, SCTP, PAY4),
 	IAVF_PTT(116, IP, IPV6, NOF, IP_GRENAT, IPV4, NOF, ICMP, PAY4),
 
-	/* IPv6 --> GRE/NAT -> IPv6 */
+	 
 	IAVF_PTT(117, IP, IPV6, NOF, IP_GRENAT, IPV6, FRG, NONE, PAY3),
 	IAVF_PTT(118, IP, IPV6, NOF, IP_GRENAT, IPV6, NOF, NONE, PAY3),
 	IAVF_PTT(119, IP, IPV6, NOF, IP_GRENAT, IPV6, NOF, UDP,  PAY4),
@@ -675,10 +585,10 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(122, IP, IPV6, NOF, IP_GRENAT, IPV6, NOF, SCTP, PAY4),
 	IAVF_PTT(123, IP, IPV6, NOF, IP_GRENAT, IPV6, NOF, ICMP, PAY4),
 
-	/* IPv6 --> GRE/NAT -> MAC */
+	 
 	IAVF_PTT(124, IP, IPV6, NOF, IP_GRENAT_MAC, NONE, NOF, NONE, PAY3),
 
-	/* IPv6 --> GRE/NAT -> MAC -> IPv4 */
+	 
 	IAVF_PTT(125, IP, IPV6, NOF, IP_GRENAT_MAC, IPV4, FRG, NONE, PAY3),
 	IAVF_PTT(126, IP, IPV6, NOF, IP_GRENAT_MAC, IPV4, NOF, NONE, PAY3),
 	IAVF_PTT(127, IP, IPV6, NOF, IP_GRENAT_MAC, IPV4, NOF, UDP,  PAY4),
@@ -687,7 +597,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(130, IP, IPV6, NOF, IP_GRENAT_MAC, IPV4, NOF, SCTP, PAY4),
 	IAVF_PTT(131, IP, IPV6, NOF, IP_GRENAT_MAC, IPV4, NOF, ICMP, PAY4),
 
-	/* IPv6 --> GRE/NAT -> MAC -> IPv6 */
+	 
 	IAVF_PTT(132, IP, IPV6, NOF, IP_GRENAT_MAC, IPV6, FRG, NONE, PAY3),
 	IAVF_PTT(133, IP, IPV6, NOF, IP_GRENAT_MAC, IPV6, NOF, NONE, PAY3),
 	IAVF_PTT(134, IP, IPV6, NOF, IP_GRENAT_MAC, IPV6, NOF, UDP,  PAY4),
@@ -696,10 +606,10 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(137, IP, IPV6, NOF, IP_GRENAT_MAC, IPV6, NOF, SCTP, PAY4),
 	IAVF_PTT(138, IP, IPV6, NOF, IP_GRENAT_MAC, IPV6, NOF, ICMP, PAY4),
 
-	/* IPv6 --> GRE/NAT -> MAC/VLAN */
+	 
 	IAVF_PTT(139, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, NONE, NOF, NONE, PAY3),
 
-	/* IPv6 --> GRE/NAT -> MAC/VLAN --> IPv4 */
+	 
 	IAVF_PTT(140, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV4, FRG, NONE, PAY3),
 	IAVF_PTT(141, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV4, NOF, NONE, PAY3),
 	IAVF_PTT(142, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV4, NOF, UDP,  PAY4),
@@ -708,7 +618,7 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(145, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV4, NOF, SCTP, PAY4),
 	IAVF_PTT(146, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV4, NOF, ICMP, PAY4),
 
-	/* IPv6 --> GRE/NAT -> MAC/VLAN --> IPv6 */
+	 
 	IAVF_PTT(147, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV6, FRG, NONE, PAY3),
 	IAVF_PTT(148, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV6, NOF, NONE, PAY3),
 	IAVF_PTT(149, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV6, NOF, UDP,  PAY4),
@@ -717,23 +627,11 @@ struct iavf_rx_ptype_decoded iavf_ptype_lookup[BIT(8)] = {
 	IAVF_PTT(152, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV6, NOF, SCTP, PAY4),
 	IAVF_PTT(153, IP, IPV6, NOF, IP_GRENAT_MAC_VLAN, IPV6, NOF, ICMP, PAY4),
 
-	/* unused entries */
+	 
 	[154 ... 255] = { 0, 0, 0, 0, 0, 0, 0, 0, 0 }
 };
 
-/**
- * iavf_aq_send_msg_to_pf
- * @hw: pointer to the hardware structure
- * @v_opcode: opcodes for VF-PF communication
- * @v_retval: return error code
- * @msg: pointer to the msg buffer
- * @msglen: msg length
- * @cmd_details: pointer to command details
- *
- * Send message to PF driver using admin queue. By default, this message
- * is sent asynchronously, i.e. iavf_asq_send_command() does not wait for
- * completion before returning.
- **/
+ 
 enum iavf_status iavf_aq_send_msg_to_pf(struct iavf_hw *hw,
 					enum virtchnl_ops v_opcode,
 					enum iavf_status v_retval,
@@ -764,14 +662,7 @@ enum iavf_status iavf_aq_send_msg_to_pf(struct iavf_hw *hw,
 	return status;
 }
 
-/**
- * iavf_vf_parse_hw_config
- * @hw: pointer to the hardware structure
- * @msg: pointer to the virtual channel VF resource structure
- *
- * Given a VF resource message from the PF, populate the hw struct
- * with appropriate information.
- **/
+ 
 void iavf_vf_parse_hw_config(struct iavf_hw *hw,
 			     struct virtchnl_vf_resource *msg)
 {

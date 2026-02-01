@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * XPower AXP288 PMIC operation region driver
- *
- * Copyright (C) 2014 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/init.h>
@@ -31,104 +27,104 @@ static struct pmic_table power_table[] = {
 		.address = 0x00,
 		.reg = 0x13,
 		.bit = 0x05,
-	}, /* ALD1 */
+	},  
 	{
 		.address = 0x04,
 		.reg = 0x13,
 		.bit = 0x06,
-	}, /* ALD2 */
+	},  
 	{
 		.address = 0x08,
 		.reg = 0x13,
 		.bit = 0x07,
-	}, /* ALD3 */
+	},  
 	{
 		.address = 0x0c,
 		.reg = 0x12,
 		.bit = 0x03,
-	}, /* DLD1 */
+	},  
 	{
 		.address = 0x10,
 		.reg = 0x12,
 		.bit = 0x04,
-	}, /* DLD2 */
+	},  
 	{
 		.address = 0x14,
 		.reg = 0x12,
 		.bit = 0x05,
-	}, /* DLD3 */
+	},  
 	{
 		.address = 0x18,
 		.reg = 0x12,
 		.bit = 0x06,
-	}, /* DLD4 */
+	},  
 	{
 		.address = 0x1c,
 		.reg = 0x12,
 		.bit = 0x00,
-	}, /* ELD1 */
+	},  
 	{
 		.address = 0x20,
 		.reg = 0x12,
 		.bit = 0x01,
-	}, /* ELD2 */
+	},  
 	{
 		.address = 0x24,
 		.reg = 0x12,
 		.bit = 0x02,
-	}, /* ELD3 */
+	},  
 	{
 		.address = 0x28,
 		.reg = 0x13,
 		.bit = 0x02,
-	}, /* FLD1 */
+	},  
 	{
 		.address = 0x2c,
 		.reg = 0x13,
 		.bit = 0x03,
-	}, /* FLD2 */
+	},  
 	{
 		.address = 0x30,
 		.reg = 0x13,
 		.bit = 0x04,
-	}, /* FLD3 */
+	},  
 	{
 		.address = 0x34,
 		.reg = 0x10,
 		.bit = 0x03,
-	}, /* BUC1 */
+	},  
 	{
 		.address = 0x38,
 		.reg = 0x10,
 		.bit = 0x06,
-	}, /* BUC2 */
+	},  
 	{
 		.address = 0x3c,
 		.reg = 0x10,
 		.bit = 0x05,
-	}, /* BUC3 */
+	},  
 	{
 		.address = 0x40,
 		.reg = 0x10,
 		.bit = 0x04,
-	}, /* BUC4 */
+	},  
 	{
 		.address = 0x44,
 		.reg = 0x10,
 		.bit = 0x01,
-	}, /* BUC5 */
+	},  
 	{
 		.address = 0x48,
 		.reg = 0x10,
 		.bit = 0x00
-	}, /* BUC6 */
+	},  
 	{
 		.address = 0x4c,
 		.reg = 0x92,
-	}, /* GPI1 */
+	},  
 };
 
-/* TMP0 - TMP5 are the same, all from GPADC */
+ 
 static struct pmic_table thermal_table[] = {
 	{
 		.address = 0x00,
@@ -164,7 +160,7 @@ static int intel_xpower_pmic_get_power(struct regmap *regmap, int reg,
 	if (regmap_read(regmap, reg, &data))
 		return -EIO;
 
-	/* GPIO1 LDO regulator needs special handling */
+	 
 	if (reg == XPOWER_GPI1_CTRL)
 		*value = ((data & GPI1_LDO_MASK) == GPI1_LDO_ON);
 	else
@@ -182,7 +178,7 @@ static int intel_xpower_pmic_update_power(struct regmap *regmap, int reg,
 	if (ret)
 		return ret;
 
-	/* GPIO1 LDO regulator needs special handling */
+	 
 	if (reg == XPOWER_GPI1_CTRL) {
 		ret = regmap_update_bits(regmap, reg, GPI1_LDO_MASK,
 					 on ? GPI1_LDO_ON : GPI1_LDO_OFF);
@@ -207,47 +203,26 @@ out:
 	return ret;
 }
 
-/**
- * intel_xpower_pmic_get_raw_temp(): Get raw temperature reading from the PMIC
- *
- * @regmap: regmap of the PMIC device
- * @reg: register to get the reading
- *
- * Return a positive value on success, errno on failure.
- */
+ 
 static int intel_xpower_pmic_get_raw_temp(struct regmap *regmap, int reg)
 {
 	int ret, adc_ts_pin_ctrl;
 	u8 buf[2];
 
-	/*
-	 * The current-source used for the battery temp-sensor (TS) is shared
-	 * with the GPADC. For proper fuel-gauge and charger operation the TS
-	 * current-source needs to be permanently on. But to read the GPADC we
-	 * need to temporary switch the TS current-source to ondemand, so that
-	 * the GPADC can use it, otherwise we will always read an all 0 value.
-	 *
-	 * Note that the switching from on to on-ondemand is not necessary
-	 * when the TS current-source is off (this happens on devices which
-	 * do not use the TS-pin).
-	 */
+	 
 	ret = regmap_read(regmap, AXP288_ADC_TS_PIN_CTRL, &adc_ts_pin_ctrl);
 	if (ret)
 		return ret;
 
 	if (adc_ts_pin_ctrl & AXP288_ADC_TS_CURRENT_ON_OFF_MASK) {
-		/*
-		 * AXP288_ADC_TS_PIN_CTRL reads are cached by the regmap, so
-		 * this does to a single I2C-transfer, and thus there is no
-		 * need to explicitly call iosf_mbi_block_punit_i2c_access().
-		 */
+		 
 		ret = regmap_update_bits(regmap, AXP288_ADC_TS_PIN_CTRL,
 					 AXP288_ADC_TS_CURRENT_ON_OFF_MASK,
 					 AXP288_ADC_TS_CURRENT_ON_ONDEMAND);
 		if (ret)
 			return ret;
 
-		/* Wait a bit after switching the current-source */
+		 
 		usleep_range(6000, 10000);
 	}
 
@@ -299,13 +274,7 @@ static int intel_xpower_lpat_raw_to_temp(struct acpi_lpat_conversion_table *lpat
 	struct acpi_lpat first = lpat_table->lpat[0];
 	struct acpi_lpat last = lpat_table->lpat[lpat_table->lpat_count - 1];
 
-	/*
-	 * Some LPAT tables in the ACPI Device for the AXP288 PMIC for some
-	 * reason only describe a small temperature range, e.g. 27° - 37°
-	 * Celcius. Resulting in errors when the tablet is idle in a cool room.
-	 *
-	 * To avoid these errors clamp the raw value to be inside the LPAT.
-	 */
+	 
 	if (first.raw < last.raw)
 		raw = clamp(raw, first.raw, last.raw);
 	else

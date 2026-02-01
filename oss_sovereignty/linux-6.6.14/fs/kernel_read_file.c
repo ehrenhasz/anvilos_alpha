@@ -1,37 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/fs.h>
 #include <linux/fs_struct.h>
 #include <linux/kernel_read_file.h>
 #include <linux/security.h>
 #include <linux/vmalloc.h>
 
-/**
- * kernel_read_file() - read file contents into a kernel buffer
- *
- * @file:	file to read from
- * @offset:	where to start reading from (see below).
- * @buf:	pointer to a "void *" buffer for reading into (if
- *		*@buf is NULL, a buffer will be allocated, and
- *		@buf_size will be ignored)
- * @buf_size:	size of buf, if already allocated. If @buf not
- *		allocated, this is the largest size to allocate.
- * @file_size:	if non-NULL, the full size of @file will be
- *		written here.
- * @id:		the kernel_read_file_id identifying the type of
- *		file contents being read (for LSMs to examine)
- *
- * @offset must be 0 unless both @buf and @file_size are non-NULL
- * (i.e. the caller must be expecting to read partial file contents
- * via an already-allocated @buf, in at most @buf_size chunks, and
- * will be able to determine when the entire file was read by
- * checking @file_size). This isn't a recommended way to read a
- * file, though, since it is possible that the contents might
- * change between calls to kernel_read_file().
- *
- * Returns number of bytes read (no single read will be bigger
- * than SSIZE_MAX), or negative on error.
- *
- */
+ 
 ssize_t kernel_read_file(struct file *file, loff_t offset, void **buf,
 			 size_t buf_size, size_t *file_size,
 			 enum kernel_read_file_id id)
@@ -57,12 +31,12 @@ ssize_t kernel_read_file(struct file *file, loff_t offset, void **buf,
 		ret = -EINVAL;
 		goto out;
 	}
-	/* The file is too big for sane activities. */
+	 
 	if (i_size > SSIZE_MAX) {
 		ret = -EFBIG;
 		goto out;
 	}
-	/* The entire file cannot be read in one buffer. */
+	 
 	if (!file_size && offset == 0 && i_size > buf_size) {
 		ret = -EFBIG;
 		goto out;

@@ -1,25 +1,4 @@
-/*
- * Copyright 2012 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef __NI_DPM_H__
 #define __NI_DPM_H__
 
@@ -176,12 +155,12 @@ struct ni_ps {
 };
 
 struct ni_power_info {
-	/* must be first! */
+	 
 	struct evergreen_power_info eg;
 	struct ni_clock_registers clock_registers;
 	struct ni_mc_reg_table mc_reg_table;
 	u32 mclk_rtt_mode_threshold;
-	/* flags */
+	 
 	bool use_power_boost_limit;
 	bool support_cac_long_term_average;
 	bool cac_enabled;
@@ -191,12 +170,12 @@ struct ni_power_info {
 	bool enable_power_containment;
 	bool enable_cac;
 	bool enable_sq_ramping;
-	/* smc offsets */
+	 
 	u16 arb_table_start;
 	u16 fan_table_start;
 	u16 cac_table_start;
 	u16 spll_table_start;
-	/* CAC stuff */
+	 
 	struct ni_cac_data cac_data;
 	u32 dc_cac_table[NISLANDS_DCCAC_MAX_LEVELS];
 	const struct ni_cac_weights *cac_weights;
@@ -204,7 +183,7 @@ struct ni_power_info {
 	u8 lts_truncate;
 	struct ni_ps current_ps;
 	struct ni_ps requested_ps;
-	/* scratch structs */
+	 
 	SMC_NIslands_MCRegisters smc_mc_reg_table;
 	NISLANDS_SMC_STATETABLE smc_statetable;
 };

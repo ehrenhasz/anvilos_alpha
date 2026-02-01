@@ -1,25 +1,4 @@
-/*
- * Copyright 2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/firmware.h>
 #include <linux/slab.h>
 #include <linux/module.h>
@@ -47,7 +26,7 @@
 
 static const struct amd_ip_funcs soc21_common_ip_funcs;
 
-/* SOC21 */
+ 
 static const struct amdgpu_video_codec_info vcn_4_0_0_video_codecs_encode_array_vcn0[] = {
 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC, 4096, 2304, 0)},
 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_HEVC, 4096, 2304, 0)},
@@ -94,7 +73,7 @@ static const struct amdgpu_video_codecs vcn_4_0_0_video_codecs_decode_vcn1 = {
 	.codec_array = vcn_4_0_0_video_codecs_decode_array_vcn1,
 };
 
-/* SRIOV SOC21, not const since data is controlled by host */
+ 
 static struct amdgpu_video_codec_info sriov_vcn_4_0_0_video_codecs_encode_array_vcn0[] = {
 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_MPEG4_AVC, 4096, 2304, 0)},
 	{codec_info_build(AMDGPU_INFO_VIDEO_CAPS_CODEC_IDX_HEVC, 4096, 2304, 0)},
@@ -242,7 +221,7 @@ void soc21_grbm_select(struct amdgpu_device *adev,
 
 static bool soc21_read_disabled_bios(struct amdgpu_device *adev)
 {
-	/* todo */
+	 
 	return false;
 }
 
@@ -329,7 +308,7 @@ static int soc21_asic_mode1_reset(struct amdgpu_device *adev)
 
 	amdgpu_atombios_scratch_regs_engine_hung(adev, true);
 
-	/* disable BM */
+	 
 	pci_clear_master(adev->pdev);
 
 	amdgpu_device_cache_pci_state(adev->pdev);
@@ -346,7 +325,7 @@ static int soc21_asic_mode1_reset(struct amdgpu_device *adev)
 		dev_err(adev->dev, "GPU mode1 reset failed\n");
 	amdgpu_device_load_pci_state(adev->pdev);
 
-	/* wait for asic to come out of reset */
+	 
 	for (i = 0; i < adev->usec_timeout; i++) {
 		u32 memsize = adev->nbio.funcs->get_memsize(adev);
 
@@ -417,13 +396,13 @@ static int soc21_asic_reset(struct amdgpu_device *adev)
 
 static int soc21_set_uvd_clocks(struct amdgpu_device *adev, u32 vclk, u32 dclk)
 {
-	/* todo */
+	 
 	return 0;
 }
 
 static int soc21_set_vce_clocks(struct amdgpu_device *adev, u32 evclk, u32 ecclk)
 {
-	/* todo */
+	 
 	return 0;
 }
 
@@ -465,9 +444,7 @@ static bool soc21_need_reset_on_init(struct amdgpu_device *adev)
 	if (adev->flags & AMD_IS_APU)
 		return false;
 
-	/* Check sOS sign of life register to confirm sys driver and sOS
-	 * are already been loaded.
-	 */
+	 
 	sol_reg = RREG32_SOC15(MP0, 0, regMP0_SMN_C2PMSG_81);
 	if (sol_reg)
 		return true;
@@ -564,7 +541,7 @@ static int soc21_common_early_init(void *handle)
 	adev->pciep_rreg = amdgpu_device_pcie_port_rreg;
 	adev->pciep_wreg = amdgpu_device_pcie_port_wreg;
 
-	/* TODO: will add them during VCN v2 implementation */
+	 
 	adev->uvd_ctx_rreg = NULL;
 	adev->uvd_ctx_wreg = NULL;
 
@@ -600,7 +577,7 @@ static int soc21_common_early_init(void *handle)
 			AMD_PG_SUPPORT_JPEG |
 			AMD_PG_SUPPORT_ATHUB |
 			AMD_PG_SUPPORT_MMHUB;
-		adev->external_rev_id = adev->rev_id + 0x1; // TODO: need update
+		adev->external_rev_id = adev->rev_id + 0x1; 
 		break;
 	case IP_VERSION(11, 0, 2):
 		adev->cg_flags =
@@ -689,7 +666,7 @@ static int soc21_common_early_init(void *handle)
 		break;
 
 	default:
-		/* FIXME: not supported yet */
+		 
 		return -EINVAL;
 	}
 
@@ -724,16 +701,11 @@ static int soc21_common_late_init(void *handle)
 	} else {
 		if (adev->nbio.ras &&
 		    adev->nbio.ras_err_event_athub_irq.funcs)
-			/* don't need to fail gpu late init
-			 * if enabling athub_err_event interrupt failed
-			 * nbio v4_3 only support fatal error hanlding
-			 * just enable the interrupt directly */
+			 
 			amdgpu_irq_get(adev, &adev->nbio.ras_err_event_athub_irq, 0);
 	}
 
-	/* Enable selfring doorbell aperture late because doorbell BAR
-	 * aperture will change if resize BAR successfully in gmc sw_init.
-	 */
+	 
 	adev->nbio.funcs->enable_doorbell_selfring_aperture(adev, true);
 
 	return 0;
@@ -758,17 +730,14 @@ static int soc21_common_hw_init(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* enable aspm */
+	 
 	soc21_program_aspm(adev);
-	/* setup nbio registers */
+	 
 	adev->nbio.funcs->init_registers(adev);
-	/* remap HDP registers to a hole in mmio space,
-	 * for the purpose of expose those registers
-	 * to process space
-	 */
+	 
 	if (adev->nbio.funcs->remap_hdp_registers && !amdgpu_sriov_vf(adev))
 		adev->nbio.funcs->remap_hdp_registers(adev);
-	/* enable the doorbell aperture */
+	 
 	adev->nbio.funcs->enable_doorbell_aperture(adev, true);
 
 	return 0;
@@ -778,11 +747,7 @@ static int soc21_common_hw_fini(void *handle)
 {
 	struct amdgpu_device *adev = (struct amdgpu_device *)handle;
 
-	/* Disable the doorbell aperture and selfring doorbell aperture
-	 * separately in hw_fini because soc21_enable_doorbell_aperture
-	 * has been removed and there is no need to delay disabling
-	 * selfring doorbell.
-	 */
+	 
 	adev->nbio.funcs->enable_doorbell_aperture(adev, false);
 	adev->nbio.funcs->enable_doorbell_selfring_aperture(adev, false);
 

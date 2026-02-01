@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * Copyright (c) 2008,2009 NEC Software Tohoku, Ltd.
- * Written by Takashi Sato <t-sato@yk.jp.nec.com>
- *            Akira Fujita <a-fujita@rs.jp.nec.com>
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/quotaops.h>
@@ -13,15 +9,7 @@
 #include "ext4.h"
 #include "ext4_extents.h"
 
-/**
- * get_ext_path() - Find an extent path for designated logical block number.
- * @inode:	inode to be searched
- * @lblock:	logical block number to find an extent path
- * @ppath:	pointer to an extent path pointer (for output)
- *
- * ext4_find_extent wrapper. Return 0 on success, or a negative error value
- * on failure.
- */
+ 
 static inline int
 get_ext_path(struct inode *inode, ext4_lblk_t lblock,
 		struct ext4_ext_path **ppath)
@@ -40,13 +28,7 @@ get_ext_path(struct inode *inode, ext4_lblk_t lblock,
 	return 0;
 }
 
-/**
- * ext4_double_down_write_data_sem() - write lock two inodes's i_data_sem
- * @first: inode to be locked
- * @second: inode to be locked
- *
- * Acquire write lock of i_data_sem of the two inodes
- */
+ 
 void
 ext4_double_down_write_data_sem(struct inode *first, struct inode *second)
 {
@@ -60,13 +42,7 @@ ext4_double_down_write_data_sem(struct inode *first, struct inode *second)
 	}
 }
 
-/**
- * ext4_double_up_write_data_sem - Release two inodes' write lock of i_data_sem
- *
- * @orig_inode:		original inode structure to be released its lock first
- * @donor_inode:	donor inode structure to be released its lock second
- * Release write lock of i_data_sem of two inodes (orig and donor).
- */
+ 
 void
 ext4_double_up_write_data_sem(struct inode *orig_inode,
 			      struct inode *donor_inode)
@@ -75,17 +51,7 @@ ext4_double_up_write_data_sem(struct inode *orig_inode,
 	up_write(&EXT4_I(donor_inode)->i_data_sem);
 }
 
-/**
- * mext_check_coverage - Check that all extents in range has the same type
- *
- * @inode:		inode in question
- * @from:		block offset of inode
- * @count:		block count to be checked
- * @unwritten:		extents expected to be unwritten
- * @err:		pointer to save error value
- *
- * Return 1 if all extents in range has expected type, and zero otherwise.
- */
+ 
 static int
 mext_check_coverage(struct inode *inode, ext4_lblk_t from, ext4_lblk_t count,
 		    int unwritten, int *err)
@@ -109,17 +75,7 @@ out:
 	return ret;
 }
 
-/**
- * mext_folio_double_lock - Grab and lock folio on both @inode1 and @inode2
- *
- * @inode1:	the inode structure
- * @inode2:	the inode structure
- * @index1:	folio index
- * @index2:	folio index
- * @folio:	result folio vector
- *
- * Grab two locked folio for inode's by inode order
- */
+ 
 static int
 mext_folio_double_lock(struct inode *inode1, struct inode *inode2,
 		      pgoff_t index1, pgoff_t index2, struct folio *folio[2])
@@ -153,11 +109,7 @@ mext_folio_double_lock(struct inode *inode1, struct inode *inode2,
 		folio_put(folio[0]);
 		return PTR_ERR(folio[1]);
 	}
-	/*
-	 * __filemap_get_folio() may not wait on folio's writeback if
-	 * BDI not demand that. But it is reasonable to be very conservative
-	 * here and explicitly wait on folio's writeback
-	 */
+	 
 	folio_wait_writeback(folio[0]);
 	folio_wait_writeback(folio[1]);
 	if (inode1 > inode2)
@@ -166,7 +118,7 @@ mext_folio_double_lock(struct inode *inode1, struct inode *inode2,
 	return 0;
 }
 
-/* Force page buffers uptodate w/o dropping page's lock */
+ 
 static int
 mext_page_mkuptodate(struct folio *folio, unsigned from, unsigned to)
 {
@@ -214,7 +166,7 @@ mext_page_mkuptodate(struct folio *folio, unsigned from, unsigned to)
 		BUG_ON(nr >= MAX_BUF_PER_PAGE);
 		arr[nr++] = bh;
 	}
-	/* No io required */
+	 
 	if (!nr)
 		goto out;
 
@@ -232,23 +184,7 @@ out:
 	return 0;
 }
 
-/**
- * move_extent_per_page - Move extent data per page
- *
- * @o_filp:			file structure of original file
- * @donor_inode:		donor inode
- * @orig_page_offset:		page index on original file
- * @donor_page_offset:		page index on donor file
- * @data_offset_in_page:	block index where data swapping starts
- * @block_len_in_page:		the number of blocks to be swapped
- * @unwritten:			orig extent is unwritten or not
- * @err:			pointer to save return value
- *
- * Save the data in original inode blocks and replace original inode extents
- * with donor inode extents by calling ext4_swap_extents().
- * Finally, write out the saved data in new original inode blocks. Return
- * replaced block count.
- */
+ 
 static int
 move_extent_per_page(struct file *o_filp, struct inode *donor_inode,
 		     pgoff_t orig_page_offset, pgoff_t donor_page_offset,
@@ -268,10 +204,7 @@ move_extent_per_page(struct file *o_filp, struct inode *donor_inode,
 	struct super_block *sb = orig_inode->i_sb;
 	struct buffer_head *bh = NULL;
 
-	/*
-	 * It needs twice the amount of ordinary journal buffers because
-	 * inode and donor_inode may change each different metadata blocks.
-	 */
+	 
 again:
 	*err = 0;
 	jblocks = ext4_writepage_trans_blocks(orig_inode) * 2;
@@ -287,15 +220,12 @@ again:
 	donor_blk_offset = donor_page_offset * blocks_per_page +
 		data_offset_in_page;
 
-	/* Calculate data_size */
+	 
 	if ((orig_blk_offset + block_len_in_page - 1) ==
 	    ((orig_inode->i_size - 1) >> orig_inode->i_blkbits)) {
-		/* Replace the last block */
+		 
 		tmp_data_size = orig_inode->i_size & (blocksize - 1);
-		/*
-		 * If data_size equal zero, it shows data_size is multiples of
-		 * blocksize. So we set appropriate value.
-		 */
+		 
 		if (tmp_data_size == 0)
 			tmp_data_size = blocksize;
 
@@ -310,13 +240,7 @@ again:
 				     donor_page_offset, folio);
 	if (unlikely(*err < 0))
 		goto stop_journal;
-	/*
-	 * If orig extent was unwritten it can become initialized
-	 * at any time after i_data_sem was dropped, in order to
-	 * serialize with delalloc we have recheck extent while we
-	 * hold page's lock, if it is still the case data copy is not
-	 * necessary, just swap data blocks between orig and donor.
-	 */
+	 
 
 	VM_BUG_ON_FOLIO(folio_test_large(folio[0]), folio[0]);
 	VM_BUG_ON_FOLIO(folio_test_large(folio[1]), folio[1]);
@@ -324,8 +248,7 @@ again:
 
 	if (unwritten) {
 		ext4_double_down_write_data_sem(orig_inode, donor_inode);
-		/* If any of extents in range became initialized we have to
-		 * fallback to data copying */
+		 
 		unwritten = mext_check_coverage(orig_inode, orig_blk_offset,
 						block_len_in_page, 1, err);
 		if (*err)
@@ -358,8 +281,7 @@ data_copy:
 	if (*err)
 		goto unlock_folios;
 
-	/* At this point all buffers in range are uptodate, old mapping layout
-	 * is no longer required, try to drop it now. */
+	 
 	if (!filemap_release_folio(folio[0], 0) ||
 	    !filemap_release_folio(folio[1], 0)) {
 		*err = -EBUSY;
@@ -378,8 +300,7 @@ data_copy:
 		} else
 			goto unlock_folios;
 	}
-	/* Perform all necessary steps similar write_begin()/write_end()
-	 * but keeping in mind that i_size will not change */
+	 
 	if (!folio_buffers(folio[0]))
 		create_empty_buffers(&folio[0]->page, 1 << orig_inode->i_blkbits, 0);
 	bh = folio_buffers(folio[0]);
@@ -394,8 +315,7 @@ data_copy:
 
 	block_commit_write(&folio[0]->page, from, from + replaced_size);
 
-	/* Even in case of data=writeback it is reasonable to pin
-	 * inode to transaction, to prevent unexpected data loss */
+	 
 	*err = ext4_jbd2_inode_add_write(handle, orig_inode,
 			(loff_t)orig_page_offset << PAGE_SHIFT, replaced_size);
 
@@ -409,19 +329,14 @@ stop_journal:
 	if (*err == -ENOSPC &&
 	    ext4_should_retry_alloc(sb, &retries))
 		goto again;
-	/* Buffer was busy because probably is pinned to journal transaction,
-	 * force transaction commit may help to free it. */
+	 
 	if (*err == -EBUSY && retries++ < 4 && EXT4_SB(sb)->s_journal &&
 	    jbd2_journal_force_commit_nested(EXT4_SB(sb)->s_journal))
 		goto again;
 	return replaced_count;
 
 repair_branches:
-	/*
-	 * This should never ever happen!
-	 * Extents are swapped already, but we are not able to copy data.
-	 * Try to swap extents to it's original places
-	 */
+	 
 	ext4_double_down_write_data_sem(orig_inode, donor_inode);
 	replaced_count = ext4_swap_extents(handle, donor_inode, orig_inode,
 					       orig_blk_offset, donor_blk_offset,
@@ -437,19 +352,7 @@ repair_branches:
 	goto unlock_folios;
 }
 
-/**
- * mext_check_arguments - Check whether move extent can be done
- *
- * @orig_inode:		original inode
- * @donor_inode:	donor inode
- * @orig_start:		logical start offset in block for orig
- * @donor_start:	logical start offset in block for donor
- * @len:		the number of blocks to be moved
- *
- * Check the arguments of ext4_move_extents() whether the files can be
- * exchanged with each other.
- * Return 0 on success, or a negative error value on failure.
- */
+ 
 static int
 mext_check_arguments(struct inode *orig_inode,
 		     struct inode *donor_inode, __u64 orig_start,
@@ -473,7 +376,7 @@ mext_check_arguments(struct inode *orig_inode,
 	if (IS_IMMUTABLE(donor_inode) || IS_APPEND(donor_inode))
 		return -EPERM;
 
-	/* Ext4 move extent does not support swap files */
+	 
 	if (IS_SWAPFILE(orig_inode) || IS_SWAPFILE(donor_inode)) {
 		ext4_debug("ext4 move extent: The argument files should not be swap files [ino:orig %lu, donor %lu]\n",
 			orig_inode->i_ino, donor_inode->i_ino);
@@ -486,7 +389,7 @@ mext_check_arguments(struct inode *orig_inode,
 		return -EOPNOTSUPP;
 	}
 
-	/* Ext4 move extent supports only extent based file */
+	 
 	if (!(ext4_test_inode_flag(orig_inode, EXT4_INODE_EXTENTS))) {
 		ext4_debug("ext4 move extent: orig file is not extents "
 			"based file [ino:orig %lu]\n", orig_inode->i_ino);
@@ -502,7 +405,7 @@ mext_check_arguments(struct inode *orig_inode,
 		return -EINVAL;
 	}
 
-	/* Start offset should be same */
+	 
 	if ((orig_start & ~(PAGE_MASK >> orig_inode->i_blkbits)) !=
 	    (donor_start & ~(PAGE_MASK >> orig_inode->i_blkbits))) {
 		ext4_debug("ext4 move extent: orig and donor's start "
@@ -539,20 +442,7 @@ mext_check_arguments(struct inode *orig_inode,
 	return 0;
 }
 
-/**
- * ext4_move_extents - Exchange the specified range of a file
- *
- * @o_filp:		file structure of the original file
- * @d_filp:		file structure of the donor file
- * @orig_blk:		start offset in block for orig
- * @donor_blk:		start offset in block for donor
- * @len:		the number of blocks to be moved
- * @moved_len:		moved block length
- *
- * This function returns 0 and moved block length is set in moved_len
- * if succeed, otherwise returns error value.
- *
- */
+ 
 int
 ext4_move_extents(struct file *o_filp, struct file *d_filp, __u64 orig_blk,
 		  __u64 donor_blk, __u64 len, __u64 *moved_len)
@@ -572,7 +462,7 @@ ext4_move_extents(struct file *o_filp, struct file *d_filp, __u64 orig_blk,
 		return -EINVAL;
 	}
 
-	/* orig and donor should be different inodes */
+	 
 	if (orig_inode == donor_inode) {
 		ext4_debug("ext4 move extent: The argument files should not "
 			"be same inode [ino:orig %lu, donor %lu]\n",
@@ -580,7 +470,7 @@ ext4_move_extents(struct file *o_filp, struct file *d_filp, __u64 orig_blk,
 		return -EINVAL;
 	}
 
-	/* Regular file check */
+	 
 	if (!S_ISREG(orig_inode->i_mode) || !S_ISREG(donor_inode->i_mode)) {
 		ext4_debug("ext4 move extent: The argument files should be "
 			"regular file [ino:orig %lu, donor %lu]\n",
@@ -588,8 +478,7 @@ ext4_move_extents(struct file *o_filp, struct file *d_filp, __u64 orig_blk,
 		return -EINVAL;
 	}
 
-	/* TODO: it's not obvious how to swap blocks for inodes with full
-	   journaling enabled */
+	 
 	if (ext4_should_journal_data(orig_inode) ||
 	    ext4_should_journal_data(donor_inode)) {
 		ext4_msg(orig_inode->i_sb, KERN_ERR,
@@ -603,16 +492,16 @@ ext4_move_extents(struct file *o_filp, struct file *d_filp, __u64 orig_blk,
 		return -EOPNOTSUPP;
 	}
 
-	/* Protect orig and donor inodes against a truncate */
+	 
 	lock_two_nondirectories(orig_inode, donor_inode);
 
-	/* Wait for all existing dio workers */
+	 
 	inode_dio_wait(orig_inode);
 	inode_dio_wait(donor_inode);
 
-	/* Protect extent tree against block allocations via delalloc */
+	 
 	ext4_double_down_write_data_sem(orig_inode, donor_inode);
-	/* Check the filesystem environment whether move_extent can be done */
+	 
 	ret = mext_check_arguments(orig_inode, donor_inode, orig_blk,
 				    donor_blk, &len);
 	if (ret)
@@ -632,7 +521,7 @@ ext4_move_extents(struct file *o_filp, struct file *d_filp, __u64 orig_blk,
 		ex = path[path->p_depth].p_ext;
 		cur_blk = le32_to_cpu(ex->ee_block);
 		cur_len = ext4_ext_get_actual_len(ex);
-		/* Check hole before the start pos */
+		 
 		if (cur_blk + cur_len - 1 < o_start) {
 			next_blk = ext4_ext_next_allocated_block(path);
 			if (next_blk == EXT_MAX_BLOCKS) {
@@ -642,15 +531,15 @@ ext4_move_extents(struct file *o_filp, struct file *d_filp, __u64 orig_blk,
 			d_start += next_blk - o_start;
 			o_start = next_blk;
 			continue;
-		/* Check hole after the start pos */
+		 
 		} else if (cur_blk > o_start) {
-			/* Skip hole */
+			 
 			d_start += cur_blk - o_start;
 			o_start = cur_blk;
-			/* Extent inside requested range ?*/
+			 
 			if (cur_blk >= o_end)
 				goto out;
-		} else { /* in_range(o_start, o_blk, o_len) */
+		} else {  
 			cur_len += cur_blk - o_start;
 		}
 		unwritten = ext4_ext_is_unwritten(ex);
@@ -664,15 +553,9 @@ ext4_move_extents(struct file *o_filp, struct file *d_filp, __u64 orig_blk,
 		offset_in_page = o_start % blocks_per_page;
 		if (cur_len > blocks_per_page - offset_in_page)
 			cur_len = blocks_per_page - offset_in_page;
-		/*
-		 * Up semaphore to avoid following problems:
-		 * a. transaction deadlock among ext4_journal_start,
-		 *    ->write_begin via pagefault, and jbd2_journal_commit
-		 * b. racing with ->read_folio, ->write_begin, and
-		 *    ext4_get_block in move_extent_per_page
-		 */
+		 
 		ext4_double_up_write_data_sem(orig_inode, donor_inode);
-		/* Swap original branches with new branches */
+		 
 		move_extent_per_page(o_filp, donor_inode,
 				     orig_page_index, donor_page_index,
 				     offset_in_page, cur_len,

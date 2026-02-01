@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <sched.h>
 #include <sys/mount.h>
@@ -15,18 +15,7 @@
 #include "cgroup_helpers.h"
 #include "bpf_util.h"
 
-/*
- * To avoid relying on the system setup, when setup_cgroup_env is called
- * we create a new mount namespace, and cgroup namespace. The cgroupv2
- * root is mounted at CGROUP_MOUNT_PATH. Unfortunately, most people don't
- * have cgroupv2 enabled at this point in time. It's easier to create our
- * own mount namespace and manage it ourselves. We assume /mnt exists.
- *
- * Related cgroupv1 helpers are named *classid*(), since we only use the
- * net_cls controller for tagging net_cls.classid. We assume the default
- * mount under /sys/fs/cgroup/net_cls, which should be the case for the
- * vast majority of users.
- */
+ 
 
 #define WALK_FD_LIMIT			16
 
@@ -57,7 +46,7 @@ static int __enable_controllers(const char *cgroup_path, const char *controllers
 	int fd, cfd;
 	ssize_t len;
 
-	/* If not controllers are passed, enable all available controllers */
+	 
 	if (!controllers) {
 		snprintf(path, sizeof(path), "%s/cgroup.controllers",
 			 cgroup_path);
@@ -71,7 +60,7 @@ static int __enable_controllers(const char *cgroup_path, const char *controllers
 			close(fd);
 			log_err("Reading cgroup.controllers: %s", path);
 			return 1;
-		} else if (len == 0) { /* No controllers to enable */
+		} else if (len == 0) {  
 			close(fd);
 			return 0;
 		}
@@ -99,17 +88,7 @@ static int __enable_controllers(const char *cgroup_path, const char *controllers
 	return 0;
 }
 
-/**
- * enable_controllers() - Enable cgroup v2 controllers
- * @relative_path: The cgroup path, relative to the workdir
- * @controllers: List of controllers to enable in cgroup.controllers format
- *
- *
- * Enable given cgroup v2 controllers, if @controllers is NULL, enable all
- * available controllers.
- *
- * If successful, 0 is returned.
- */
+ 
 int enable_controllers(const char *relative_path, const char *controllers)
 {
 	char cgroup_path[PATH_MAX + 1];
@@ -140,16 +119,7 @@ static int __write_cgroup_file(const char *cgroup_path, const char *file,
 	return 0;
 }
 
-/**
- * write_cgroup_file() - Write to a cgroup file
- * @relative_path: The cgroup path, relative to the workdir
- * @file: The name of the file in cgroupfs to write to
- * @buf: Buffer to write to the file
- *
- * Write to a file in the given cgroup's directory.
- *
- * If successful, 0 is returned.
- */
+ 
 int write_cgroup_file(const char *relative_path, const char *file,
 		      const char *buf)
 {
@@ -159,18 +129,7 @@ int write_cgroup_file(const char *relative_path, const char *file,
 	return __write_cgroup_file(cgroup_path, file, buf);
 }
 
-/**
- * write_cgroup_file_parent() - Write to a cgroup file in the parent process
- *                              workdir
- * @relative_path: The cgroup path, relative to the parent process workdir
- * @file: The name of the file in cgroupfs to write to
- * @buf: Buffer to write to the file
- *
- * Write to a file in the given cgroup's directory under the parent process
- * workdir.
- *
- * If successful, 0 is returned.
- */
+ 
 int write_cgroup_file_parent(const char *relative_path, const char *file,
 			     const char *buf)
 {
@@ -180,15 +139,7 @@ int write_cgroup_file_parent(const char *relative_path, const char *file,
 	return __write_cgroup_file(cgroup_path, file, buf);
 }
 
-/**
- * setup_cgroup_environment() - Setup the cgroup environment
- *
- * After calling this function, cleanup_cgroup_environment should be called
- * once testing is complete.
- *
- * This function will print an error to stderr and return 1 if it is unable
- * to setup the cgroup environment. If setup is successful, 0 is returned.
- */
+ 
 int setup_cgroup_environment(void)
 {
 	char cgroup_workdir[PATH_MAX - 24];
@@ -210,7 +161,7 @@ int setup_cgroup_environment(void)
 		return 1;
 	}
 
-	/* Cleanup existing failed runs, now that the environment is setup */
+	 
 	cleanup_cgroup_environment();
 
 	if (mkdir(cgroup_workdir, 0777) && errno != EEXIST) {
@@ -218,7 +169,7 @@ int setup_cgroup_environment(void)
 		return 1;
 	}
 
-	/* Enable all available controllers to increase test coverage */
+	 
 	if (__enable_controllers(CGROUP_MOUNT_PATH, NULL) ||
 	    __enable_controllers(cgroup_workdir, NULL))
 		return 1;
@@ -258,17 +209,7 @@ static int join_cgroup_from_top(const char *cgroup_path)
 	return rc;
 }
 
-/**
- * join_cgroup() - Join a cgroup
- * @relative_path: The cgroup path, relative to the workdir, to join
- *
- * This function expects a cgroup to already be created, relative to the cgroup
- * work dir, and it joins it. For example, passing "/my-cgroup" as the path
- * would actually put the calling process into the cgroup
- * "/cgroup-test-work-dir/my-cgroup"
- *
- * On success, it returns 0, otherwise on failure it returns 1.
- */
+ 
 int join_cgroup(const char *relative_path)
 {
 	char cgroup_path[PATH_MAX + 1];
@@ -277,26 +218,13 @@ int join_cgroup(const char *relative_path)
 	return join_cgroup_from_top(cgroup_path);
 }
 
-/**
- * join_root_cgroup() - Join the root cgroup
- *
- * This function joins the root cgroup.
- *
- * On success, it returns 0, otherwise on failure it returns 1.
- */
+ 
 int join_root_cgroup(void)
 {
 	return join_cgroup_from_top(CGROUP_MOUNT_PATH);
 }
 
-/**
- * join_parent_cgroup() - Join a cgroup in the parent process workdir
- * @relative_path: The cgroup path, relative to parent process workdir, to join
- *
- * See join_cgroup().
- *
- * On success, it returns 0, otherwise on failure it returns 1.
- */
+ 
 int join_parent_cgroup(const char *relative_path)
 {
 	char cgroup_path[PATH_MAX + 1];
@@ -305,19 +233,7 @@ int join_parent_cgroup(const char *relative_path)
 	return join_cgroup_from_top(cgroup_path);
 }
 
-/**
- * cleanup_cgroup_environment() - Cleanup Cgroup Testing Environment
- *
- * This is an idempotent function to delete all temporary cgroups that
- * have been created during the test, including the cgroup testing work
- * directory.
- *
- * At call time, it moves the calling process to the root cgroup, and then
- * runs the deletion process. It is idempotent, and should not fail, unless
- * a process is lingering.
- *
- * On failure, it will print an error to stderr, and try to continue.
- */
+ 
 void cleanup_cgroup_environment(void)
 {
 	char cgroup_workdir[PATH_MAX + 1];
@@ -327,12 +243,7 @@ void cleanup_cgroup_environment(void)
 	nftw(cgroup_workdir, nftwfunc, WALK_FD_LIMIT, FTW_DEPTH | FTW_MOUNT);
 }
 
-/**
- * get_root_cgroup() - Get the FD of the root cgroup
- *
- * On success, it returns the file descriptor. On failure, it returns -1.
- * If there is a failure, it prints the error to stderr.
- */
+ 
 int get_root_cgroup(void)
 {
 	int fd;
@@ -345,16 +256,7 @@ int get_root_cgroup(void)
 	return fd;
 }
 
-/*
- * remove_cgroup() - Remove a cgroup
- * @relative_path: The cgroup path, relative to the workdir, to remove
- *
- * This function expects a cgroup to already be created, relative to the cgroup
- * work dir. It also expects the cgroup doesn't have any children or live
- * processes and it removes the cgroup.
- *
- * On failure, it will print an error to stderr.
- */
+ 
 void remove_cgroup(const char *relative_path)
 {
 	char cgroup_path[PATH_MAX + 1];
@@ -364,16 +266,7 @@ void remove_cgroup(const char *relative_path)
 		log_err("rmdiring cgroup %s .. %s", relative_path, cgroup_path);
 }
 
-/**
- * create_and_get_cgroup() - Create a cgroup, relative to workdir, and get the FD
- * @relative_path: The cgroup path, relative to the workdir, to join
- *
- * This function creates a cgroup under the top level workdir and returns the
- * file descriptor. It is idempotent.
- *
- * On success, it returns the file descriptor. On failure it returns -1.
- * If there is a failure, it prints the error to stderr.
- */
+ 
 int create_and_get_cgroup(const char *relative_path)
 {
 	char cgroup_path[PATH_MAX + 1];
@@ -394,14 +287,7 @@ int create_and_get_cgroup(const char *relative_path)
 	return fd;
 }
 
-/**
- * get_cgroup_id() - Get cgroup id for a particular cgroup path
- * @relative_path: The cgroup path, relative to the workdir, to join
- *
- * On success, it returns the cgroup id. On failure it returns 0,
- * which is an invalid cgroup id.
- * If there is a failure, it prints the error to stderr.
- */
+ 
 unsigned long long get_cgroup_id(const char *relative_path)
 {
 	int dirfd, err, flags, mount_id, fhsize;
@@ -473,15 +359,7 @@ int cgroup_setup_and_join(const char *path) {
 	return cg_fd;
 }
 
-/**
- * setup_classid_environment() - Setup the cgroupv1 net_cls environment
- *
- * After calling this function, cleanup_classid_environment should be called
- * once testing is complete.
- *
- * This function will print an error to stderr and return 1 if it is unable
- * to setup the cgroup environment. If setup is successful, 0 is returned.
- */
+ 
 int setup_classid_environment(void)
 {
 	char cgroup_workdir[PATH_MAX + 1];
@@ -515,16 +393,7 @@ int setup_classid_environment(void)
 	return 0;
 }
 
-/**
- * set_classid() - Set a cgroupv1 net_cls classid
- * @id: the numeric classid
- *
- * Writes the passed classid into the cgroup work dir's net_cls.classid
- * file in order to later on trigger socket tagging.
- *
- * On success, it returns 0, otherwise on failure it returns 1. If there
- * is a failure, it prints the error to stderr.
- */
+ 
 int set_classid(unsigned int id)
 {
 	char cgroup_workdir[PATH_MAX - 42];
@@ -550,15 +419,7 @@ int set_classid(unsigned int id)
 	return rc;
 }
 
-/**
- * join_classid() - Join a cgroupv1 net_cls classid
- *
- * This function expects the cgroup work dir to be already created, as we
- * join it here. This causes the process sockets to be tagged with the given
- * net_cls classid.
- *
- * On success, it returns 0, otherwise on failure it returns 1.
- */
+ 
 int join_classid(void)
 {
 	char cgroup_workdir[PATH_MAX + 1];
@@ -567,14 +428,7 @@ int join_classid(void)
 	return join_cgroup_from_top(cgroup_workdir);
 }
 
-/**
- * cleanup_classid_environment() - Cleanup the cgroupv1 net_cls environment
- *
- * At call time, it moves the calling process to the root cgroup, and then
- * runs the deletion process.
- *
- * On failure, it will print an error to stderr, and try to continue.
- */
+ 
 void cleanup_classid_environment(void)
 {
 	char cgroup_workdir[PATH_MAX + 1];

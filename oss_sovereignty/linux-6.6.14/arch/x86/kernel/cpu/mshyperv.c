@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HyperV  Detection code.
- *
- * Copyright (C) 2010, Novell, Inc.
- * Author : K. Y. Srinivasan <ksrinivasan@novell.com>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/time.h>
@@ -34,13 +29,13 @@
 #include <asm/numa.h>
 #include <asm/svm.h>
 
-/* Is Linux running as the root partition? */
+ 
 bool hv_root_partition;
-/* Is Linux running on nested Microsoft Hypervisor */
+ 
 bool hv_nested;
 struct ms_hyperv_info ms_hyperv;
 
-/* Used in modules via hv_do_hypercall(): see arch/x86/include/asm/mshyperv.h */
+ 
 bool hyperv_paravisor_present __ro_after_init;
 EXPORT_SYMBOL_GPL(hyperv_paravisor_present);
 
@@ -83,7 +78,7 @@ void hv_set_non_nested_register(unsigned int reg, u64 value)
 	if (hv_is_synic_reg(reg) && ms_hyperv.paravisor_present) {
 		hv_ivm_msr_write(reg, value);
 
-		/* Write proxy bit via wrmsl instruction */
+		 
 		if (hv_is_sint_reg(reg))
 			wrmsrl(reg, value | 1 << 20);
 	} else {
@@ -136,14 +131,11 @@ void hv_setup_vmbus_handler(void (*handler)(void))
 
 void hv_remove_vmbus_handler(void)
 {
-	/* We have no way to deallocate the interrupt gate */
+	 
 	vmbus_handler = NULL;
 }
 
-/*
- * Routines to do per-architecture handling of stimer0
- * interrupts when in Direct Mode
- */
+ 
 DEFINE_IDTENTRY_SYSVEC(sysvec_hyperv_stimer0)
 {
 	struct pt_regs *old_regs = set_irq_regs(regs);
@@ -157,7 +149,7 @@ DEFINE_IDTENTRY_SYSVEC(sysvec_hyperv_stimer0)
 	set_irq_regs(old_regs);
 }
 
-/* For x86/x64, override weak placeholders in hyperv_timer.c */
+ 
 void hv_setup_stimer0_handler(void (*handler)(void))
 {
 	hv_stimer0_handler = handler;
@@ -165,7 +157,7 @@ void hv_setup_stimer0_handler(void (*handler)(void))
 
 void hv_remove_stimer0_handler(void)
 {
-	/* We have no way to deallocate the interrupt gate */
+	 
 	hv_stimer0_handler = NULL;
 }
 
@@ -195,17 +187,14 @@ static void hv_machine_shutdown(void)
 	if (kexec_in_progress && hv_kexec_handler)
 		hv_kexec_handler();
 
-	/*
-	 * Call hv_cpu_die() on all the CPUs, otherwise later the hypervisor
-	 * corrupts the old VP Assist Pages and can crash the kexec kernel.
-	 */
+	 
 	if (kexec_in_progress && hyperv_init_cpuhp > 0)
 		cpuhp_remove_state(hyperv_init_cpuhp);
 
-	/* The function calls stop_other_cpus(). */
+	 
 	native_machine_shutdown();
 
-	/* Disable the hypercall page when there is only 1 active CPU. */
+	 
 	if (kexec_in_progress)
 		hyperv_cleanup();
 }
@@ -215,14 +204,14 @@ static void hv_machine_crash_shutdown(struct pt_regs *regs)
 	if (hv_crash_handler)
 		hv_crash_handler(regs);
 
-	/* The function calls crash_smp_send_stop(). */
+	 
 	native_machine_crash_shutdown(regs);
 
-	/* Disable the hypercall page when there is only 1 active CPU. */
+	 
 	hyperv_cleanup();
 }
-#endif /* CONFIG_KEXEC_CORE */
-#endif /* CONFIG_HYPERV */
+#endif  
+#endif  
 
 static uint32_t  __init ms_hyperv_platform(void)
 {
@@ -239,7 +228,7 @@ static uint32_t  __init ms_hyperv_platform(void)
 	    memcmp("Microsoft Hv", hyp_signature, 12))
 		return 0;
 
-	/* HYPERCALL and VP_INDEX MSRs are mandatory for all features. */
+	 
 	eax = cpuid_eax(HYPERV_CPUID_FEATURES);
 	if (!(eax & HV_MSR_HYPERCALL_AVAILABLE)) {
 		pr_warn("x86/hyperv: HYPERCALL MSR not available.\n");
@@ -254,11 +243,7 @@ static uint32_t  __init ms_hyperv_platform(void)
 }
 
 #ifdef CONFIG_X86_LOCAL_APIC
-/*
- * Prior to WS2016 Debug-VM sends NMIs to all CPUs which makes
- * it difficult to process CHANNELMSG_UNLOAD in case of crash. Handle
- * unknown NMI on the first CPU which gets it.
- */
+ 
 static int hv_nmi_unknown(unsigned int val, struct pt_regs *regs)
 {
 	static atomic_t nmi_cpu = ATOMIC_INIT(-1);
@@ -300,10 +285,7 @@ static void __init hv_smp_prepare_cpus(unsigned int max_cpus)
 
 	native_smp_prepare_cpus(max_cpus);
 
-	/*
-	 *  Override wakeup_secondary_cpu_64 callback for SEV-SNP
-	 *  enlightened guest.
-	 */
+	 
 	if (!ms_hyperv.paravisor_present && hv_isolation_type_snp()) {
 		apic->wakeup_secondary_cpu_64 = hv_snp_boot_ap;
 		return;
@@ -327,20 +309,7 @@ static void __init hv_smp_prepare_cpus(unsigned int max_cpus)
 }
 #endif
 
-/*
- * When a fully enlightened TDX VM runs on Hyper-V, the firmware sets the
- * HW_REDUCED flag: refer to acpi_tb_create_local_fadt(). Consequently ttyS0
- * interrupts can't work because request_irq() -> ... -> irq_to_desc() returns
- * NULL for ttyS0. This happens because mp_config_acpi_legacy_irqs() sees a
- * nr_legacy_irqs() of 0, so it doesn't initialize the array 'mp_irqs[]', and
- * later setup_IO_APIC_irqs() -> find_irq_entry() fails to find the legacy irqs
- * from the array and hence doesn't create the necessary irq description info.
- *
- * Clone arch/x86/kernel/acpi/boot.c: acpi_generic_reduced_hw_init() here,
- * except don't change 'legacy_pic', which keeps its default value
- * 'default_legacy_pic'. This way, mp_config_acpi_legacy_irqs() sees a non-zero
- * nr_legacy_irqs() and eventually serial console interrupts works properly.
- */
+ 
 static void __init reduced_hw_init(void)
 {
 	x86_init.timers.timer_init	= x86_init_noop;
@@ -359,9 +328,7 @@ static void __init ms_hyperv_init_platform(void)
 	pv_info.name = "Hyper-V";
 #endif
 
-	/*
-	 * Extract the features and hints
-	 */
+	 
 	ms_hyperv.features = cpuid_eax(HYPERV_CPUID_FEATURES);
 	ms_hyperv.priv_high = cpuid_ebx(HYPERV_CPUID_FEATURES);
 	ms_hyperv.misc_features = cpuid_edx(HYPERV_CPUID_FEATURES);
@@ -379,20 +346,7 @@ static void __init ms_hyperv_init_platform(void)
 	pr_debug("Hyper-V: max %u virtual processors, %u logical processors\n",
 		 ms_hyperv.max_vp_index, ms_hyperv.max_lp_index);
 
-	/*
-	 * Check CPU management privilege.
-	 *
-	 * To mirror what Windows does we should extract CPU management
-	 * features and use the ReservedIdentityBit to detect if Linux is the
-	 * root partition. But that requires negotiating CPU management
-	 * interface (a process to be finalized). For now, use the privilege
-	 * flag as the indicator for running as root.
-	 *
-	 * Hyper-V should never specify running as root and as a Confidential
-	 * VM. But to protect against a compromised/malicious Hyper-V trying
-	 * to exploit root behavior to expose Confidential VM memory, ignore
-	 * the root partition setting if also a Confidential VM.
-	 */
+	 
 	if ((ms_hyperv.priv_high & HV_CPU_MANAGEMENT) &&
 	    !(ms_hyperv.priv_high & HV_ISOLATION)) {
 		hv_root_partition = true;
@@ -404,9 +358,7 @@ static void __init ms_hyperv_init_platform(void)
 		pr_info("Hyper-V: running on a nested hypervisor\n");
 	}
 
-	/*
-	 * Extract host information.
-	 */
+	 
 	if (hv_max_functions_eax >= HYPERV_CPUID_VERSION) {
 		hv_host_info_eax = cpuid_eax(HYPERV_CPUID_VERSION);
 		hv_host_info_ebx = cpuid_ebx(HYPERV_CPUID_VERSION);
@@ -444,17 +396,17 @@ static void __init ms_hyperv_init_platform(void)
 		} else if (hv_get_isolation_type() == HV_ISOLATION_TYPE_TDX) {
 			static_branch_enable(&isolation_type_tdx);
 
-			/* A TDX VM must use x2APIC and doesn't use lazy EOI. */
+			 
 			ms_hyperv.hints &= ~HV_X64_APIC_ACCESS_RECOMMENDED;
 
 			if (!ms_hyperv.paravisor_present) {
-				/* To be supported: more work is required.  */
+				 
 				ms_hyperv.features &= ~HV_MSR_REFERENCE_TSC_AVAILABLE;
 
-				/* HV_REGISTER_CRASH_CTL is unsupported. */
+				 
 				ms_hyperv.misc_features &= ~HV_FEATURE_GUEST_CRASH_MSR_AVAILABLE;
 
-				/* Don't trust Hyper-V's TLB-flushing hypercalls. */
+				 
 				ms_hyperv.hints &= ~HV_X64_REMOTE_TLB_FLUSH_RECOMMENDED;
 
 				x86_init.acpi.reduced_hw_early_init = reduced_hw_init;
@@ -472,9 +424,7 @@ static void __init ms_hyperv_init_platform(void)
 #ifdef CONFIG_X86_LOCAL_APIC
 	if (ms_hyperv.features & HV_ACCESS_FREQUENCY_MSRS &&
 	    ms_hyperv.misc_features & HV_FEATURE_FREQUENCY_MSRS_AVAILABLE) {
-		/*
-		 * Get the APIC frequency.
-		 */
+		 
 		u64	hv_lapic_frequency;
 
 		rdmsrl(HV_X64_MSR_APIC_FREQUENCY, hv_lapic_frequency);
@@ -497,55 +447,35 @@ static void __init ms_hyperv_init_platform(void)
 	machine_ops.crash_shutdown = hv_machine_crash_shutdown;
 #endif
 	if (ms_hyperv.features & HV_ACCESS_TSC_INVARIANT) {
-		/*
-		 * Writing to synthetic MSR 0x40000118 updates/changes the
-		 * guest visible CPUIDs. Setting bit 0 of this MSR  enables
-		 * guests to report invariant TSC feature through CPUID
-		 * instruction, CPUID 0x800000007/EDX, bit 8. See code in
-		 * early_init_intel() where this bit is examined. The
-		 * setting of this MSR bit should happen before init_intel()
-		 * is called.
-		 */
+		 
 		wrmsrl(HV_X64_MSR_TSC_INVARIANT_CONTROL, HV_EXPOSE_INVARIANT_TSC);
 		setup_force_cpu_cap(X86_FEATURE_TSC_RELIABLE);
 	}
 
-	/*
-	 * Generation 2 instances don't support reading the NMI status from
-	 * 0x61 port.
-	 */
+	 
 	if (efi_enabled(EFI_BOOT))
 		x86_platform.get_nmi_reason = hv_get_nmi_reason;
 
-	/*
-	 * Hyper-V VMs have a PIT emulation quirk such that zeroing the
-	 * counter register during PIT shutdown restarts the PIT. So it
-	 * continues to interrupt @18.2 HZ. Setting i8253_clear_counter
-	 * to false tells pit_shutdown() not to zero the counter so that
-	 * the PIT really is shutdown. Generation 2 VMs don't have a PIT,
-	 * and setting this value has no effect.
-	 */
+	 
 	i8253_clear_counter_on_shutdown = false;
 
 #if IS_ENABLED(CONFIG_HYPERV)
 	if ((hv_get_isolation_type() == HV_ISOLATION_TYPE_VBS) ||
 	    ms_hyperv.paravisor_present)
 		hv_vtom_init();
-	/*
-	 * Setup the hook to get control post apic initialization.
-	 */
+	 
 	x86_platform.apic_post_init = hyperv_init;
 	hyperv_setup_mmu_ops();
-	/* Setup the IDT for hypervisor callback */
+	 
 	alloc_intr_gate(HYPERVISOR_CALLBACK_VECTOR, asm_sysvec_hyperv_callback);
 
-	/* Setup the IDT for reenlightenment notifications */
+	 
 	if (ms_hyperv.features & HV_ACCESS_REENLIGHTENMENT) {
 		alloc_intr_gate(HYPERV_REENLIGHTENMENT_VECTOR,
 				asm_sysvec_hyperv_reenlightenment);
 	}
 
-	/* Setup the IDT for stimer0 */
+	 
 	if (ms_hyperv.misc_features & HV_STIMER_DIRECT_MODE_AVAILABLE) {
 		alloc_intr_gate(HYPERV_STIMER0_VECTOR,
 				asm_sysvec_hyperv_stimer0);
@@ -558,26 +488,17 @@ static void __init ms_hyperv_init_platform(void)
 		smp_ops.smp_prepare_cpus = hv_smp_prepare_cpus;
 # endif
 
-	/*
-	 * Hyper-V doesn't provide irq remapping for IO-APIC. To enable x2apic,
-	 * set x2apic destination mode to physical mode when x2apic is available
-	 * and Hyper-V IOMMU driver makes sure cpus assigned with IO-APIC irqs
-	 * have 8-bit APIC id.
-	 */
+	 
 # ifdef CONFIG_X86_X2APIC
 	if (x2apic_supported())
 		x2apic_phys = 1;
 # endif
 
-	/* Register Hyper-V specific clocksource */
+	 
 	hv_init_clocksource();
 	hv_vtl_init_platform();
 #endif
-	/*
-	 * TSC should be marked as unstable only after Hyper-V
-	 * clocksource has been initialized. This ensures that the
-	 * stability of the sched_clock is not altered.
-	 */
+	 
 	if (!(ms_hyperv.features & HV_ACCESS_TSC_INVARIANT))
 		mark_tsc_unstable("running on Hyper-V");
 
@@ -589,22 +510,7 @@ static bool __init ms_hyperv_x2apic_available(void)
 	return x2apic_supported();
 }
 
-/*
- * If ms_hyperv_msi_ext_dest_id() returns true, hyperv_prepare_irq_remapping()
- * returns -ENODEV and the Hyper-V IOMMU driver is not used; instead, the
- * generic support of the 15-bit APIC ID is used: see __irq_msi_compose_msg().
- *
- * Note: for a VM on Hyper-V, the I/O-APIC is the only device which
- * (logically) generates MSIs directly to the system APIC irq domain.
- * There is no HPET, and PCI MSI/MSI-X interrupts are remapped by the
- * pci-hyperv host bridge.
- *
- * Note: for a Hyper-V root partition, this will always return false.
- * The hypervisor doesn't expose these HYPERV_CPUID_VIRT_STACK_* cpuids by
- * default, they are implemented as intercepts by the Windows Hyper-V stack.
- * Even a nested root partition (L2 root) will not get them because the
- * nested (L1) hypervisor filters them out.
- */
+ 
 static bool __init ms_hyperv_msi_ext_dest_id(void)
 {
 	u32 eax;
@@ -620,7 +526,7 @@ static bool __init ms_hyperv_msi_ext_dest_id(void)
 #ifdef CONFIG_AMD_MEM_ENCRYPT
 static void hv_sev_es_hcall_prepare(struct ghcb *ghcb, struct pt_regs *regs)
 {
-	/* RAX and CPL are already in the GHCB */
+	 
 	ghcb_set_rcx(ghcb, regs->cx);
 	ghcb_set_rdx(ghcb, regs->dx);
 	ghcb_set_r8(ghcb, regs->r8);
@@ -628,7 +534,7 @@ static void hv_sev_es_hcall_prepare(struct ghcb *ghcb, struct pt_regs *regs)
 
 static bool hv_sev_es_hcall_finish(struct ghcb *ghcb, struct pt_regs *regs)
 {
-	/* No checking of the return state needed */
+	 
 	return true;
 }
 #endif

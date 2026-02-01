@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 Tom Haynes <loghyr@primarydata.com>
- *
- * The following implements a super-simple flex-file server
- * where the NFSv4.1 mds is also the ds. And the storage is
- * the same. I.e., writing to the mds via a NFSv4.1 WRITE
- * goes to the same location as the NFSv3 WRITE.
- */
+
+ 
 #include <linux/slab.h>
 
 #include <linux/nfsd/debug.h>
@@ -30,26 +23,18 @@ nfsd4_ff_proc_layoutget(struct inode *inode, const struct svc_fh *fhp,
 
 	struct pnfs_ff_layout *fl;
 
-	/*
-	 * The super simple flex file server has 1 mirror, 1 data server,
-	 * and 1 file handle. So instead of 4 allocs, do 1 for now.
-	 * Zero it out for the stateid - don't want junk in there!
-	 */
+	 
 	error = -ENOMEM;
 	fl = kzalloc(sizeof(*fl), GFP_KERNEL);
 	if (!fl)
 		goto out_error;
 	args->lg_content = fl;
 
-	/*
-	 * Avoid layout commit, try to force the I/O to the DS,
-	 * and for fun, cause all IOMODE_RW layout segments to
-	 * effectively be WRITE only.
-	 */
+	 
 	fl->flags = FF_FLAGS_NO_LAYOUTCOMMIT | FF_FLAGS_NO_IO_THRU_MDS |
 		    FF_FLAGS_NO_READ_IO;
 
-	/* Do not allow a IOMODE_READ segment to have write pemissions */
+	 
 	if (seg->iomode == IOMODE_READ) {
 		u = from_kuid(&init_user_ns, inode->i_uid) + 1;
 		fl->uid = make_kuid(&init_user_ns, u);
@@ -64,7 +49,7 @@ nfsd4_ff_proc_layoutget(struct inode *inode, const struct svc_fh *fhp,
 	fl->fh.size = fhp->fh_handle.fh_size;
 	memcpy(fl->fh.data, &fhp->fh_handle.fh_raw, fl->fh.size);
 
-	/* Give whole file layout segments */
+	 
 	seg->offset = 0;
 	seg->length = NFS4_MAX_UINT64;
 

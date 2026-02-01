@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <errno.h>
 #include <setjmp.h>
@@ -26,14 +26,7 @@ bool dexcr_exists(void)
 	if (setjmp(generic_signal_jump_buf))
 		goto out;
 
-	/*
-	 * If the SPR is not recognised by the hardware it triggers
-	 * a hypervisor emulation interrupt. If the kernel does not
-	 * recognise/try to emulate it, we receive a SIGILL signal.
-	 *
-	 * If we do not receive a signal, assume we have the SPR or the
-	 * kernel is trying to emulate it correctly.
-	 */
+	 
 	exists = false;
 	mfspr(SPRN_DEXCR_RO);
 	exists = true;
@@ -43,10 +36,7 @@ out:
 	return exists;
 }
 
-/*
- * Just test if a bad hashchk triggers a signal, without checking
- * for support or if the NPHIE aspect is enabled.
- */
+ 
 bool hashchk_triggers(void)
 {
 	struct sigaction old;
@@ -89,36 +79,21 @@ void await_child_success(pid_t pid)
 	FAIL_IF_EXIT_MSG(WEXITSTATUS(wstatus) != 0, "child exit error");
 }
 
-/*
- * Perform a hashst instruction. The following components determine the result
- *
- * 1. The LR value (any register technically)
- * 2. The SP value (also any register, but it must be a valid address)
- * 3. A secret key managed by the kernel
- *
- * The result is stored to the address held in SP.
- */
+ 
 void hashst(unsigned long lr, void *sp)
 {
-	asm volatile ("addi 31, %0, 0;"		/* set r31 (pretend LR) to lr */
-		      "addi 30, %1, 8;"		/* set r30 (pretend SP) to sp + 8 */
-		      PPC_RAW_HASHST(31, -8, 30)	/* compute hash into stack location */
+	asm volatile ("addi 31, %0, 0;"		 
+		      "addi 30, %1, 8;"		 
+		      PPC_RAW_HASHST(31, -8, 30)	 
 		      : : "r" (lr), "r" (sp) : "r31", "r30", "memory");
 }
 
-/*
- * Perform a hashchk instruction. A hash is computed as per hashst(),
- * however the result is not stored to memory. Instead the existing
- * value is read and compared against the computed hash.
- *
- * If they match, execution continues.
- * If they differ, an interrupt triggers.
- */
+ 
 void hashchk(unsigned long lr, void *sp)
 {
-	asm volatile ("addi 31, %0, 0;"		/* set r31 (pretend LR) to lr */
-		      "addi 30, %1, 8;"		/* set r30 (pretend SP) to sp + 8 */
-		      PPC_RAW_HASHCHK(31, -8, 30)	/* check hash at stack location */
+	asm volatile ("addi 31, %0, 0;"		 
+		      "addi 30, %1, 8;"		 
+		      PPC_RAW_HASHCHK(31, -8, 30)	 
 		      : : "r" (lr), "r" (sp) : "r31", "r30", "memory");
 }
 

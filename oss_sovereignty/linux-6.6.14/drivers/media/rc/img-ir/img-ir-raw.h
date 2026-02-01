@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * ImgTec IR Raw Decoder found in PowerDown Controller.
- *
- * Copyright 2010-2014 Imagination Technologies Ltd.
- */
+ 
+ 
 
 #ifndef _IMG_IR_RAW_H_
 #define _IMG_IR_RAW_H_
@@ -12,12 +8,7 @@ struct img_ir_priv;
 
 #ifdef CONFIG_IR_IMG_RAW
 
-/**
- * struct img_ir_priv_raw - Private driver data for raw decoder.
- * @rdev:		Raw remote control device
- * @timer:		Timer to echo samples to keep soft decoders happy.
- * @last_status:	Last raw status bits.
- */
+ 
 struct img_ir_priv_raw {
 	struct rc_dev		*rdev;
 	struct timer_list	timer;
@@ -56,6 +47,6 @@ static inline void img_ir_remove_raw(struct img_ir_priv *priv)
 {
 }
 
-#endif /* CONFIG_IR_IMG_RAW */
+#endif  
 
-#endif /* _IMG_IR_RAW_H_ */
+#endif  

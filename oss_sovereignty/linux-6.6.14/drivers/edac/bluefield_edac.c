@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Bluefield-specific EDAC driver.
- *
- * Copyright (c) 2019 Mellanox Technologies.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/arm-smccc.h>
@@ -17,9 +13,7 @@
 
 #define DRIVER_NAME		"bluefield-edac"
 
-/*
- * Mellanox BlueField EMI (External Memory Interface) register definitions.
- */
+ 
 
 #define MLXBF_ECC_CNT 0x340
 #define MLXBF_ECC_CNT__SERR_CNT GENMASK(15, 0)
@@ -47,23 +41,10 @@
 #define MLXBF_EDAC_MAX_DIMM_PER_MC	2
 #define MLXBF_EDAC_ERROR_GRAIN		8
 
-/*
- * Request MLNX_SIP_GET_DIMM_INFO
- *
- * Retrieve information about DIMM on a certain slot.
- *
- * Call register usage:
- * a0: MLNX_SIP_GET_DIMM_INFO
- * a1: (Memory controller index) << 16 | (Dimm index in memory controller)
- * a2-7: not used.
- *
- * Return status:
- * a0: MLXBF_DIMM_INFO defined below describing the DIMM.
- * a1-3: not used.
- */
+ 
 #define MLNX_SIP_GET_DIMM_INFO		0x82000008
 
-/* Format for the SMC response about the memory information */
+ 
 #define MLXBF_DIMM_INFO__SIZE_GB GENMASK_ULL(15, 0)
 #define MLXBF_DIMM_INFO__IS_RDIMM BIT(16)
 #define MLXBF_DIMM_INFO__IS_LRDIMM BIT(17)
@@ -86,10 +67,7 @@ static u64 smc_call1(u64 smc_op, u64 smc_arg)
 	return res.a0;
 }
 
-/*
- * Gather the ECC information from the External Memory Interface registers
- * and report it to the edac handler.
- */
+ 
 static void bluefield_gather_report_ecc(struct mem_ctl_info *mci,
 					int error_cnt,
 					int is_single_ecc)
@@ -104,18 +82,11 @@ static void bluefield_gather_report_ecc(struct mem_ctl_info *mci,
 	ecc_type = is_single_ecc ? HW_EVENT_ERR_CORRECTED :
 				   HW_EVENT_ERR_UNCORRECTED;
 
-	/*
-	 * Tell the External Memory Interface to populate the relevant
-	 * registers with information about the last ECC error occurrence.
-	 */
+	 
 	ecc_latch_select = MLXBF_ECC_LATCH_SEL__START;
 	writel(ecc_latch_select, priv->emi_base + MLXBF_ECC_LATCH_SEL);
 
-	/*
-	 * Verify that the ECC reported info in the registers is of the
-	 * same type as the one asked to report. If not, just report the
-	 * error without the detailed information.
-	 */
+	 
 	dram_syndrom = readl(priv->emi_base + MLXBF_SYNDROM);
 	serr = FIELD_GET(MLXBF_SYNDROM__SERR, dram_syndrom);
 	derr = FIELD_GET(MLXBF_SYNDROM__DERR, dram_syndrom);
@@ -148,10 +119,7 @@ static void bluefield_edac_check(struct mem_ctl_info *mci)
 	struct bluefield_edac_priv *priv = mci->pvt_info;
 	u32 ecc_count, single_error_count, double_error_count, ecc_error = 0;
 
-	/*
-	 * The memory controller might not be initialized by the firmware
-	 * when there isn't memory, which may lead to bad register readings.
-	 */
+	 
 	if (mci->edac_cap == EDAC_FLAG_NONE)
 		return;
 
@@ -171,12 +139,12 @@ static void bluefield_edac_check(struct mem_ctl_info *mci)
 		bluefield_gather_report_ecc(mci, double_error_count, 0);
 	}
 
-	/* Write to clear reported errors. */
+	 
 	if (ecc_count)
 		writel(ecc_error, priv->emi_base + MLXBF_ECC_ERR);
 }
 
-/* Initialize the DIMMs information for the given memory controller. */
+ 
 static void bluefield_edac_init_dimms(struct mem_ctl_info *mci)
 {
 	struct bluefield_edac_priv *priv = mci->pvt_info;
@@ -214,7 +182,7 @@ static void bluefield_edac_init_dimms(struct mem_ctl_info *mci)
 			(SZ_1G / PAGE_SIZE);
 		dimm->grain = MLXBF_EDAC_ERROR_GRAIN;
 
-		/* Mem controller for BlueField only supports x4, x8 and x16 */
+		 
 		switch (FIELD_GET(MLXBF_DIMM_INFO__PACKAGE_X, smc_info)) {
 		case 4:
 			dimm->dtype = DEV_X4;
@@ -249,13 +217,13 @@ static int bluefield_edac_mc_probe(struct platform_device *pdev)
 	unsigned int mc_idx, dimm_count;
 	int rc, ret;
 
-	/* Read the MSS (Memory SubSystem) index from ACPI table. */
+	 
 	if (device_property_read_u32(dev, "mss_number", &mc_idx)) {
 		dev_warn(dev, "bf_edac: MSS number unknown\n");
 		return -EINVAL;
 	}
 
-	/* Read the DIMMs per MC from ACPI table. */
+	 
 	if (device_property_read_u32(dev, "dimm_per_mc", &dimm_count)) {
 		dev_warn(dev, "bf_edac: DIMMs per MC unknown\n");
 		return -EINVAL;
@@ -298,12 +266,12 @@ static int bluefield_edac_mc_probe(struct platform_device *pdev)
 	mci->dev_name = dev_name(dev);
 	mci->edac_check = bluefield_edac_check;
 
-	/* Initialize mci with the actual populated DIMM information. */
+	 
 	bluefield_edac_init_dimms(mci);
 
 	platform_set_drvdata(pdev, mci);
 
-	/* Register with EDAC core */
+	 
 	rc = edac_mc_add_mc(mci);
 	if (rc) {
 		dev_err(dev, "failed to register with EDAC core\n");
@@ -311,7 +279,7 @@ static int bluefield_edac_mc_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Only POLL mode supported so far. */
+	 
 	edac_op_state = EDAC_OPSTATE_POLL;
 
 	return 0;

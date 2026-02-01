@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "dcn30_optc.h"
@@ -83,7 +60,7 @@ void optc3_lock_doublebuffer_enable(struct timing_generator *optc)
 	REG_UPDATE_2(OTG_GLOBAL_CONTROL4,
 		DIG_UPDATE_POSITION_X, h_blank_start - 180 - 1,
 		DIG_UPDATE_POSITION_Y, v_blank_start - 1);
-	// there is a DIG_UPDATE_VCOUNT_MODE and it is 0.
+	
 
 	REG_UPDATE_3(OTG_GLOBAL_CONTROL0,
 		MASTER_UPDATE_LOCK_DB_START_X, h_blank_start - 200 - 1,
@@ -176,11 +153,7 @@ void optc3_set_vtotal_change_limit(struct timing_generator *optc,
 }
 
 
-/* Set DSC-related configuration.
- *   dsc_mode: 0 disables DSC, other values enable DSC in specified format
- *   sc_bytes_per_pixel: Bytes per pixel in u3.28 format
- *   dsc_slice_width: Slice width in pixels
- */
+ 
 void optc3_set_dsc_config(struct timing_generator *optc,
 		enum optc_dsc_mode dsc_mode,
 		uint32_t dsc_bytes_per_pixel,
@@ -223,28 +196,16 @@ void optc3_set_odm_combine(struct timing_generator *optc, int *opp_id, int opp_c
 			/ opp_cnt;
 	uint32_t memory_mask = 0;
 
-	/* TODO: In pseudocode but does not affect maximus, delete comment if we dont need on asic
-	 * REG_SET(OTG_GLOBAL_CONTROL2, 0, GLOBAL_UPDATE_LOCK_EN, 1);
-	 * Program OTG register MASTER_UPDATE_LOCK_DB_X/Y to the position before DP frame start
-	 * REG_SET_2(OTG_GLOBAL_CONTROL1, 0,
-	 *		MASTER_UPDATE_LOCK_DB_X, 160,
-	 *		MASTER_UPDATE_LOCK_DB_Y, 240);
-	 */
+	 
 
 	ASSERT(opp_cnt == 2 || opp_cnt == 4);
 
-	/* 2 pieces of memory required for up to 5120 displays, 4 for up to 8192,
-	 * however, for ODM combine we can simplify by always using 4.
-	 */
+	 
 	if (opp_cnt == 2) {
-		/* To make sure there's no memory overlap, each instance "reserves" 2
-		 * memories and they are uniquely combined here.
-		 */
+		 
 		memory_mask = 0x3 << (opp_id[0] * 2) | 0x3 << (opp_id[1] * 2);
 	} else if (opp_cnt == 4) {
-		/* To make sure there's no memory overlap, each instance "reserves" 1
-		 * memory and they are uniquely combined here.
-		 */
+		 
 		memory_mask = 0x1 << (opp_id[0] * 2) | 0x1 << (opp_id[1] * 2) | 0x1 << (opp_id[2] * 2) | 0x1 << (opp_id[3] * 2);
 	}
 
@@ -273,17 +234,7 @@ void optc3_set_odm_combine(struct timing_generator *optc, int *opp_id, int opp_c
 	optc1->opp_count = opp_cnt;
 }
 
-/**
- * optc3_set_timing_double_buffer() - DRR double buffering control
- *
- * Sets double buffer point for V_TOTAL, H_TOTAL, VTOTAL_MIN,
- * VTOTAL_MAX, VTOTAL_MIN_SEL and VTOTAL_MAX_SEL registers.
- *
- * @optc: timing_generator instance.
- * @enable: Enable DRR double buffering control if true, disable otherwise.
- *
- * Options: any time,  start of frame, dp start of frame (range timing)
- */
+ 
 static void optc3_set_timing_double_buffer(struct timing_generator *optc, bool enable)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
@@ -297,7 +248,7 @@ void optc3_wait_drr_doublebuffer_pending_clear(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	REG_WAIT(OTG_DOUBLE_BUFFER_CONTROL, OTG_DRR_TIMING_DBUF_UPDATE_PENDING, 0, 2, 100000); /* 1 vupdate at 5hz */
+	REG_WAIT(OTG_DOUBLE_BUFFER_CONTROL, OTG_DRR_TIMING_DBUF_UPDATE_PENDING, 0, 2, 100000);  
 
 }
 
@@ -326,14 +277,14 @@ static struct timing_generator_funcs dcn30_tg_funcs = {
 		.program_global_sync = optc1_program_global_sync,
 		.enable_crtc = optc2_enable_crtc,
 		.disable_crtc = optc1_disable_crtc,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.is_counter_moving = optc1_is_counter_moving,
 		.get_position = optc1_get_position,
 		.get_frame_count = optc1_get_vblank_counter,
 		.get_scanoutpos = optc1_get_crtc_scanoutpos,
 		.get_otg_active_size = optc1_get_otg_active_size,
 		.set_early_control = optc1_set_early_control,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.wait_for_state = optc1_wait_for_state,
 		.set_blank_color = optc3_program_blank_color,
 		.did_triggered_reset_occur = optc1_did_triggered_reset_occur,

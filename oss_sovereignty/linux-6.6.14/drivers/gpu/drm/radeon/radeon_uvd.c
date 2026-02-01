@@ -1,32 +1,5 @@
-/*
- * Copyright 2011 Advanced Micro Devices, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- */
-/*
- * Authors:
- *    Christian König <deathsimple@vodafone.de>
- */
+ 
+ 
 
 #include <linux/firmware.h>
 #include <linux/module.h>
@@ -37,10 +10,10 @@
 #include "radeon_ucode.h"
 #include "r600d.h"
 
-/* 1 second timeout */
+ 
 #define UVD_IDLE_TIMEOUT_MS	1000
 
-/* Firmware Names */
+ 
 #define FIRMWARE_R600		"radeon/R600_uvd.bin"
 #define FIRMWARE_RS780		"radeon/RS780_uvd.bin"
 #define FIRMWARE_RV770		"radeon/RV770_uvd.bin"
@@ -137,7 +110,7 @@ int radeon_uvd_init(struct radeon_device *rdev)
 	rdev->uvd.fw_header_present = false;
 	rdev->uvd.max_handles = RADEON_DEFAULT_UVD_HANDLES;
 	if (fw_name) {
-		/* Let's try to load the newer firmware first */
+		 
 		r = request_firmware(&rdev->uvd_fw, fw_name, rdev->dev);
 		if (r) {
 			dev_err(rdev->dev, "radeon_uvd: Can't load firmware \"%s\"\n",
@@ -160,20 +133,13 @@ int radeon_uvd_init(struct radeon_device *rdev)
 			DRM_INFO("Found UVD firmware Version: %u.%u Family ID: %u\n",
 				 version_major, version_minor, family_id);
 
-			/*
-			 * Limit the number of UVD handles depending on
-			 * microcode major and minor versions.
-			 */
+			 
 			if ((version_major >= 0x01) && (version_minor >= 0x37))
 				rdev->uvd.max_handles = RADEON_MAX_UVD_HANDLES;
 		}
 	}
 
-	/*
-	 * In case there is only legacy firmware, or we encounter an error
-	 * while loading the new firmware, we fall back to loading the legacy
-	 * firmware now.
-	 */
+	 
 	if (!fw_name || r) {
 		r = request_firmware(&rdev->uvd_fw, legacy_fw_name, rdev->dev);
 		if (r) {
@@ -311,15 +277,15 @@ void radeon_uvd_force_into_uvd_segment(struct radeon_bo *rbo,
 		rbo->placements[i].lpfn = (256 * 1024 * 1024) >> PAGE_SHIFT;
 	}
 
-	/* If it must be in VRAM it must be in the first segment as well */
+	 
 	if (allowed_domains == RADEON_GEM_DOMAIN_VRAM)
 		return;
 
-	/* abort if we already have more than one placement */
+	 
 	if (rbo->placement.num_placement > 1)
 		return;
 
-	/* add another 256MB segment */
+	 
 	rbo->placements[1] = rbo->placements[0];
 	rbo->placements[1].fpfn += (256 * 1024 * 1024) >> PAGE_SHIFT;
 	rbo->placements[1].lpfn += (256 * 1024 * 1024) >> PAGE_SHIFT;
@@ -371,52 +337,52 @@ static int radeon_uvd_cs_msg_decode(uint32_t *msg, unsigned buf_sizes[])
 	image_size = ALIGN(image_size, 1024);
 
 	switch (stream_type) {
-	case 0: /* H264 */
+	case 0:  
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * 17;
 
-		/* macroblock context buffer */
+		 
 		min_dpb_size += width_in_mb * height_in_mb * 17 * 192;
 
-		/* IT surface buffer */
+		 
 		min_dpb_size += width_in_mb * height_in_mb * 32;
 		break;
 
-	case 1: /* VC1 */
+	case 1:  
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * 3;
 
-		/* CONTEXT_BUFFER */
+		 
 		min_dpb_size += width_in_mb * height_in_mb * 128;
 
-		/* IT surface buffer */
+		 
 		min_dpb_size += width_in_mb * 64;
 
-		/* DB surface buffer */
+		 
 		min_dpb_size += width_in_mb * 128;
 
-		/* BP */
+		 
 		tmp = max(width_in_mb, height_in_mb);
 		min_dpb_size += ALIGN(tmp * 7 * 16, 64);
 		break;
 
-	case 3: /* MPEG2 */
+	case 3:  
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * 3;
 		break;
 
-	case 4: /* MPEG4 */
+	case 4:  
 
-		/* reference picture buffer */
+		 
 		min_dpb_size = image_size * 3;
 
-		/* CM */
+		 
 		min_dpb_size += width_in_mb * height_in_mb * 64;
 
-		/* IT surface buffer */
+		 
 		min_dpb_size += ALIGN(width_in_mb * height_in_mb * 32, 64);
 		break;
 
@@ -445,14 +411,14 @@ static int radeon_uvd_validate_codec(struct radeon_cs_parser *p,
 				     unsigned stream_type)
 {
 	switch (stream_type) {
-	case 0: /* H264 */
-	case 1: /* VC1 */
-		/* always supported */
+	case 0:  
+	case 1:  
+		 
 		return 0;
 
-	case 3: /* MPEG2 */
-	case 4: /* MPEG4 */
-		/* only since UVD 3 */
+	case 3:  
+	case 4:  
+		 
 		if (p->rdev->family >= CHIP_PALM)
 			return 0;
 
@@ -496,7 +462,7 @@ static int radeon_uvd_cs_msg(struct radeon_cs_parser *p, struct radeon_bo *bo,
 
 	switch (msg_type) {
 	case 0:
-		/* it's a create msg, calc image size (width * height) */
+		 
 		img_size = msg[7] * msg[8];
 
 		r = radeon_uvd_validate_codec(p, msg[4]);
@@ -504,7 +470,7 @@ static int radeon_uvd_cs_msg(struct radeon_cs_parser *p, struct radeon_bo *bo,
 		if (r)
 			return r;
 
-		/* try to alloc a new handle */
+		 
 		for (i = 0; i < p->rdev->uvd.max_handles; ++i) {
 			if (atomic_read(&p->rdev->uvd.handles[i]) == handle) {
 				DRM_ERROR("Handle 0x%x already in use!\n", handle);
@@ -522,7 +488,7 @@ static int radeon_uvd_cs_msg(struct radeon_cs_parser *p, struct radeon_bo *bo,
 		return -EINVAL;
 
 	case 1:
-		/* it's a decode msg, validate codec and calc buffer sizes */
+		 
 		r = radeon_uvd_validate_codec(p, msg[4]);
 		if (!r)
 			r = radeon_uvd_cs_msg_decode(msg, buf_sizes);
@@ -530,7 +496,7 @@ static int radeon_uvd_cs_msg(struct radeon_cs_parser *p, struct radeon_bo *bo,
 		if (r)
 			return r;
 
-		/* validate the handle */
+		 
 		for (i = 0; i < p->rdev->uvd.max_handles; ++i) {
 			if (atomic_read(&p->rdev->uvd.handles[i]) == handle) {
 				if (p->rdev->uvd.filp[i] != p->filp) {
@@ -545,7 +511,7 @@ static int radeon_uvd_cs_msg(struct radeon_cs_parser *p, struct radeon_bo *bo,
 		return -ENOENT;
 
 	case 2:
-		/* it's a destroy msg, free the handle */
+		 
 		for (i = 0; i < p->rdev->uvd.max_handles; ++i)
 			atomic_cmpxchg(&p->rdev->uvd.handles[i], handle, 0);
 		radeon_bo_kunmap(bo);
@@ -610,7 +576,7 @@ static int radeon_uvd_cs_reloc(struct radeon_cs_parser *p,
 		return -EINVAL;
 	}
 
-	/* TODO: is this still necessary on NI+ ? */
+	 
 	if ((cmd == 0 || cmd == 0x3) &&
 	    (start >> 28) != (p->rdev->uvd.gpu_addr >> 28)) {
 		DRM_ERROR("msg/fb buffer %LX-%LX out of 256MB segment!\n",
@@ -676,10 +642,10 @@ int radeon_uvd_cs_parse(struct radeon_cs_parser *p)
 	struct radeon_cs_packet pkt;
 	int r, data0 = 0, data1 = 0;
 
-	/* does the IB has a msg command */
+	 
 	bool has_msg_cmd = false;
 
-	/* minimum buffer sizes */
+	 
 	unsigned buf_sizes[] = {
 		[0x00000000]	=	2048,
 		[0x00000001]	=	32 * 1024 * 1024,
@@ -759,15 +725,11 @@ static int radeon_uvd_send_msg(struct radeon_device *rdev,
 	return r;
 }
 
-/*
- * multiple fence commands without any stream commands in between can
- * crash the vcpu so just try to emmit a dummy create/destroy msg to
- * avoid this
- */
+ 
 int radeon_uvd_get_create_msg(struct radeon_device *rdev, int ring,
 			      uint32_t handle, struct radeon_fence **fence)
 {
-	/* we use the last page of the vcpu bo for the UVD message */
+	 
 	uint64_t offs = radeon_bo_size(rdev->uvd.vcpu_bo) -
 		RADEON_GPU_PAGE_SIZE;
 
@@ -780,7 +742,7 @@ int radeon_uvd_get_create_msg(struct radeon_device *rdev, int ring,
 	if (r)
 		return r;
 
-	/* stitch together an UVD create msg */
+	 
 	writel((__force u32)cpu_to_le32(0x00000de4), &msg[0]);
 	writel(0x0, (void __iomem *)&msg[1]);
 	writel((__force u32)cpu_to_le32(handle), &msg[2]);
@@ -803,7 +765,7 @@ int radeon_uvd_get_create_msg(struct radeon_device *rdev, int ring,
 int radeon_uvd_get_destroy_msg(struct radeon_device *rdev, int ring,
 			       uint32_t handle, struct radeon_fence **fence)
 {
-	/* we use the last page of the vcpu bo for the UVD message */
+	 
 	uint64_t offs = radeon_bo_size(rdev->uvd.vcpu_bo) -
 		RADEON_GPU_PAGE_SIZE;
 
@@ -816,7 +778,7 @@ int radeon_uvd_get_destroy_msg(struct radeon_device *rdev, int ring,
 	if (r)
 		return r;
 
-	/* stitch together an UVD destroy msg */
+	 
 	writel((__force u32)cpu_to_le32(0x00000de4), &msg[0]);
 	writel((__force u32)cpu_to_le32(0x00000002), &msg[1]);
 	writel((__force u32)cpu_to_le32(handle), &msg[2]);
@@ -829,15 +791,7 @@ int radeon_uvd_get_destroy_msg(struct radeon_device *rdev, int ring,
 	return r;
 }
 
-/**
- * radeon_uvd_count_handles - count number of open streams
- *
- * @rdev: radeon_device pointer
- * @sd: number of SD streams
- * @hd: number of HD streams
- *
- * Count the number of open SD/HD streams as a hint for power mangement
- */
+ 
 static void radeon_uvd_count_handles(struct radeon_device *rdev,
 				     unsigned *sd, unsigned *hd)
 {
@@ -890,8 +844,8 @@ void radeon_uvd_note_usage(struct radeon_device *rdev)
 		    (rdev->pm.dpm.hd != hd)) {
 			rdev->pm.dpm.sd = sd;
 			rdev->pm.dpm.hd = hd;
-			/* disable this for now */
-			/*streams_changed = true;*/
+			 
+			 
 		}
 	}
 
@@ -911,41 +865,22 @@ static unsigned radeon_uvd_calc_upll_post_div(unsigned vco_freq,
 {
 	unsigned post_div = vco_freq / target_freq;
 
-	/* adjust to post divider minimum value */
+	 
 	if (post_div < pd_min)
 		post_div = pd_min;
 
-	/* we alway need a frequency less than or equal the target */
+	 
 	if ((vco_freq / post_div) > target_freq)
 		post_div += 1;
 
-	/* post dividers above a certain value must be even */
+	 
 	if (post_div > pd_even && post_div % 2)
 		post_div += 1;
 
 	return post_div;
 }
 
-/**
- * radeon_uvd_calc_upll_dividers - calc UPLL clock dividers
- *
- * @rdev: radeon_device pointer
- * @vclk: wanted VCLK
- * @dclk: wanted DCLK
- * @vco_min: minimum VCO frequency
- * @vco_max: maximum VCO frequency
- * @fb_factor: factor to multiply vco freq with
- * @fb_mask: limit and bitmask for feedback divider
- * @pd_min: post divider minimum
- * @pd_max: post divider maximum
- * @pd_even: post divider must be even above this value
- * @optimal_fb_div: resulting feedback divider
- * @optimal_vclk_div: resulting vclk post divider
- * @optimal_dclk_div: resulting dclk post divider
- *
- * Calculate dividers for UVDs UPLL (R6xx-SI, except APUs).
- * Returns zero on success -EINVAL on error.
- */
+ 
 int radeon_uvd_calc_upll_dividers(struct radeon_device *rdev,
 				  unsigned vclk, unsigned dclk,
 				  unsigned vco_min, unsigned vco_max,
@@ -958,10 +893,10 @@ int radeon_uvd_calc_upll_dividers(struct radeon_device *rdev,
 {
 	unsigned vco_freq, ref_freq = rdev->clock.spll.reference_freq;
 
-	/* start off with something large */
+	 
 	unsigned optimal_score = ~0;
 
-	/* loop through vco from low to high */
+	 
 	vco_min = max(max(vco_min, vclk), dclk);
 	for (vco_freq = vco_min; vco_freq <= vco_max; vco_freq += 100) {
 
@@ -970,39 +905,39 @@ int radeon_uvd_calc_upll_dividers(struct radeon_device *rdev,
 
 		do_div(fb_div, ref_freq);
 
-		/* fb div out of range ? */
+		 
 		if (fb_div > fb_mask)
-			break; /* it can oly get worse */
+			break;  
 
 		fb_div &= fb_mask;
 
-		/* calc vclk divider with current vco freq */
+		 
 		vclk_div = radeon_uvd_calc_upll_post_div(vco_freq, vclk,
 							 pd_min, pd_even);
 		if (vclk_div > pd_max)
-			break; /* vco is too big, it has to stop */
+			break;  
 
-		/* calc dclk divider with current vco freq */
+		 
 		dclk_div = radeon_uvd_calc_upll_post_div(vco_freq, dclk,
 							 pd_min, pd_even);
 		if (dclk_div > pd_max)
-			break; /* vco is too big, it has to stop */
+			break;  
 
-		/* calc score with current vco freq */
+		 
 		score = vclk - (vco_freq / vclk_div) + dclk - (vco_freq / dclk_div);
 
-		/* determine if this vco setting is better than current optimal settings */
+		 
 		if (score < optimal_score) {
 			*optimal_fb_div = fb_div;
 			*optimal_vclk_div = vclk_div;
 			*optimal_dclk_div = dclk_div;
 			optimal_score = score;
 			if (optimal_score == 0)
-				break; /* it can't get better than this */
+				break;  
 		}
 	}
 
-	/* did we found a valid setup ? */
+	 
 	if (optimal_score == ~0)
 		return -EINVAL;
 
@@ -1014,15 +949,15 @@ int radeon_uvd_send_upll_ctlreq(struct radeon_device *rdev,
 {
 	unsigned i;
 
-	/* make sure UPLL_CTLREQ is deasserted */
+	 
 	WREG32_P(cg_upll_func_cntl, 0, ~UPLL_CTLREQ_MASK);
 
 	mdelay(10);
 
-	/* assert UPLL_CTLREQ */
+	 
 	WREG32_P(cg_upll_func_cntl, UPLL_CTLREQ_MASK, ~UPLL_CTLREQ_MASK);
 
-	/* wait for CTLACK and CTLACK2 to get asserted */
+	 
 	for (i = 0; i < 100; ++i) {
 		uint32_t mask = UPLL_CTLACK_MASK | UPLL_CTLACK2_MASK;
 		if ((RREG32(cg_upll_func_cntl) & mask) == mask)
@@ -1030,7 +965,7 @@ int radeon_uvd_send_upll_ctlreq(struct radeon_device *rdev,
 		mdelay(10);
 	}
 
-	/* deassert UPLL_CTLREQ */
+	 
 	WREG32_P(cg_upll_func_cntl, 0, ~UPLL_CTLREQ_MASK);
 
 	if (i == 100) {

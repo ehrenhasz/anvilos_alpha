@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Mellanox boot control driver
- *
- * This driver provides a sysfs interface for systems management
- * software to manage reset-time actions.
- *
- * Copyright (C) 2019 Mellanox Technologies
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/arm-smccc.h>
@@ -24,7 +17,7 @@
 
 #define MLXBF_SB_KEY_NUM			4
 
-/* UUID used to probe ATF service. */
+ 
 static const char *mlxbf_bootctl_svc_uuid_str =
 	"89c036b4-e7d7-11e6-8797-001aca00bfc4";
 
@@ -55,19 +48,19 @@ static const char * const mlxbf_bootctl_lifecycle_states[] = {
 	[MLXBF_BOOTCTL_SB_LIFECYCLE_RMA] = "RMA",
 };
 
-/* Log header format. */
+ 
 #define MLXBF_RSH_LOG_TYPE_MASK		GENMASK_ULL(59, 56)
 #define MLXBF_RSH_LOG_LEN_MASK		GENMASK_ULL(54, 48)
 #define MLXBF_RSH_LOG_LEVEL_MASK	GENMASK_ULL(7, 0)
 
-/* Log module ID and type (only MSG type in Linux driver for now). */
+ 
 #define MLXBF_RSH_LOG_TYPE_MSG		0x04ULL
 
-/* Log ctl/data register offset. */
+ 
 #define MLXBF_RSH_SCRATCH_BUF_CTL_OFF	0
 #define MLXBF_RSH_SCRATCH_BUF_DATA_OFF	0x10
 
-/* Log message levels. */
+ 
 enum {
 	MLXBF_RSH_LOG_INFO,
 	MLXBF_RSH_LOG_WARN,
@@ -75,16 +68,16 @@ enum {
 	MLXBF_RSH_LOG_ASSERT
 };
 
-/* Mapped pointer for RSH_BOOT_FIFO_DATA and RSH_BOOT_FIFO_COUNT register. */
+ 
 static void __iomem *mlxbf_rsh_boot_data;
 static void __iomem *mlxbf_rsh_boot_cnt;
 
-/* Mapped pointer for rsh log semaphore/ctrl/data register. */
+ 
 static void __iomem *mlxbf_rsh_semaphore;
 static void __iomem *mlxbf_rsh_scratch_buf_ctl;
 static void __iomem *mlxbf_rsh_scratch_buf_data;
 
-/* Rsh log levels. */
+ 
 static const char * const mlxbf_rsh_log_level[] = {
 	"INFO", "WARN", "ERR", "ASSERT"};
 
@@ -92,10 +85,7 @@ static DEFINE_MUTEX(icm_ops_lock);
 static DEFINE_MUTEX(os_up_lock);
 static DEFINE_MUTEX(mfg_ops_lock);
 
-/*
- * Objects are stored within the MFG partition per type.
- * Type 0 is not supported.
- */
+ 
 enum {
 	MLNX_MFG_TYPE_OOB_MAC = 1,
 	MLNX_MFG_TYPE_OPN_0,
@@ -127,14 +117,11 @@ enum {
 #define MLNX_MFG_VAL_QWORD_CNT(type) \
 	(MLNX_MFG_##type##_VAL_LEN / sizeof(u64))
 
-/*
- * The MAC address consists of 6 bytes (2 digits each) separated by ':'.
- * The expected format is: "XX:XX:XX:XX:XX:XX"
- */
+ 
 #define MLNX_MFG_OOB_MAC_FORMAT_LEN \
 	((ETH_ALEN * 2) + (ETH_ALEN - 1))
 
-/* ARM SMC call which is atomic and no need for lock. */
+ 
 static int mlxbf_bootctl_smc(unsigned int smc_op, int smc_arg)
 {
 	struct arm_smccc_res res;
@@ -144,7 +131,7 @@ static int mlxbf_bootctl_smc(unsigned int smc_op, int smc_arg)
 	return res.a0;
 }
 
-/* Return the action in integer or an error code. */
+ 
 static int mlxbf_bootctl_reset_action_to_val(const char *action)
 {
 	int i;
@@ -156,7 +143,7 @@ static int mlxbf_bootctl_reset_action_to_val(const char *action)
 	return -EINVAL;
 }
 
-/* Return the action in string. */
+ 
 static const char *mlxbf_bootctl_action_to_string(int action)
 {
 	int i;
@@ -269,10 +256,7 @@ static ssize_t lifecycle_state_show(struct device *dev,
 	test_state = status_bits & MLXBF_BOOTCTL_SB_TEST_MASK;
 	lc_state = status_bits & MLXBF_BOOTCTL_SB_SECURE_MASK;
 
-	/*
-	 * If the test bits are set, we specify that the current state may be
-	 * due to using the test bits.
-	 */
+	 
 	if (test_state) {
 		return sprintf(buf, "%s(test)\n",
 			       mlxbf_bootctl_lifecycle_states[lc_state]);
@@ -296,24 +280,7 @@ static ssize_t secure_boot_fuse_state_show(struct device *dev,
 	if (key_state < 0)
 		return key_state;
 
-	/*
-	 * key_state contains the bits for 4 Key versions, loaded from eFuses
-	 * after a hard reset. Lower 4 bits are a thermometer code indicating
-	 * key programming has started for key n (0000 = none, 0001 = version 0,
-	 * 0011 = version 1, 0111 = version 2, 1111 = version 3). Upper 4 bits
-	 * are a thermometer code indicating key programming has completed for
-	 * key n (same encodings as the start bits). This allows for detection
-	 * of an interruption in the programming process which has left the key
-	 * partially programmed (and thus invalid). The process is to burn the
-	 * eFuse for the new key start bit, burn the key eFuses, then burn the
-	 * eFuse for the new key complete bit.
-	 *
-	 * For example 0000_0000: no key valid, 0001_0001: key version 0 valid,
-	 * 0011_0011: key 1 version valid, 0011_0111: key version 2 started
-	 * programming but did not complete, etc. The most recent key for which
-	 * both start and complete bit is set is loaded. On soft reset, this
-	 * register is not modified.
-	 */
+	 
 	for (key = MLXBF_SB_KEY_NUM - 1; key >= 0; key--) {
 		burnt = key_state & BIT(key);
 		valid = key_state & BIT(key + MLXBF_SB_KEY_NUM);
@@ -356,10 +323,10 @@ static ssize_t fw_reset_store(struct device *dev,
 	return count;
 }
 
-/* Size(8-byte words) of the log buffer. */
+ 
 #define RSH_SCRATCH_BUF_CTL_IDX_MASK	0x7f
 
-/* 100ms timeout */
+ 
 #define RSH_SCRATCH_BUF_POLL_TIMEOUT	100000
 
 static int mlxbf_rsh_log_sem_lock(void)
@@ -389,11 +356,11 @@ static ssize_t rsh_log_store(struct device *dev,
 	if (!mlxbf_rsh_semaphore || !mlxbf_rsh_scratch_buf_ctl)
 		return -EOPNOTSUPP;
 
-	/* Ignore line break at the end. */
+	 
 	if (buf[size - 1] == '\n')
 		size--;
 
-	/* Check the message prefix. */
+	 
 	for (idx = 0; idx < ARRAY_SIZE(mlxbf_rsh_log_level); idx++) {
 		len = strlen(mlxbf_rsh_log_level[idx]);
 		if (len + 1 < size &&
@@ -405,31 +372,31 @@ static ssize_t rsh_log_store(struct device *dev,
 		}
 	}
 
-	/* Ignore leading spaces. */
+	 
 	while (size > 0 && buf[0] == ' ') {
 		size--;
 		buf++;
 	}
 
-	/* Take the semaphore. */
+	 
 	rc = mlxbf_rsh_log_sem_lock();
 	if (rc)
 		return rc;
 
-	/* Calculate how many words are available. */
+	 
 	idx = readq(mlxbf_rsh_scratch_buf_ctl);
 	num = min((int)DIV_ROUND_UP(size, sizeof(u64)),
 		  RSH_SCRATCH_BUF_CTL_IDX_MASK - idx - 1);
 	if (num <= 0)
 		goto done;
 
-	/* Write Header. */
+	 
 	data = FIELD_PREP(MLXBF_RSH_LOG_TYPE_MASK, MLXBF_RSH_LOG_TYPE_MSG);
 	data |= FIELD_PREP(MLXBF_RSH_LOG_LEN_MASK, num);
 	data |= FIELD_PREP(MLXBF_RSH_LOG_LEVEL_MASK, level);
 	writeq(data, mlxbf_rsh_scratch_buf_data);
 
-	/* Write message. */
+	 
 	for (idx = 0; idx < num && size > 0; idx++) {
 		if (size < sizeof(u64)) {
 			data = 0;
@@ -444,10 +411,10 @@ static ssize_t rsh_log_store(struct device *dev,
 	}
 
 done:
-	/* Release the semaphore. */
+	 
 	mlxbf_rsh_log_sem_unlock();
 
-	/* Ignore the rest if no more space. */
+	 
 	return count;
 }
 
@@ -949,7 +916,7 @@ static ssize_t mlxbf_bootctl_bootfifo_read(struct file *filp,
 	char *p = buf;
 
 	while (count >= sizeof(data)) {
-		/* Give up reading if no more data within 500ms. */
+		 
 		if (!cnt) {
 			cnt = readq(mlxbf_rsh_boot_cnt);
 			if (!cnt) {
@@ -994,40 +961,35 @@ static int mlxbf_bootctl_probe(struct platform_device *pdev)
 	guid_t guid;
 	int ret;
 
-	/* Map the resource of the bootfifo data register. */
+	 
 	mlxbf_rsh_boot_data = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(mlxbf_rsh_boot_data))
 		return PTR_ERR(mlxbf_rsh_boot_data);
 
-	/* Map the resource of the bootfifo counter register. */
+	 
 	mlxbf_rsh_boot_cnt = devm_platform_ioremap_resource(pdev, 1);
 	if (IS_ERR(mlxbf_rsh_boot_cnt))
 		return PTR_ERR(mlxbf_rsh_boot_cnt);
 
-	/* Map the resource of the rshim semaphore register. */
+	 
 	mlxbf_rsh_semaphore = devm_platform_ioremap_resource(pdev, 2);
 	if (IS_ERR(mlxbf_rsh_semaphore))
 		return PTR_ERR(mlxbf_rsh_semaphore);
 
-	/* Map the resource of the scratch buffer (log) registers. */
+	 
 	reg = devm_platform_ioremap_resource(pdev, 3);
 	if (IS_ERR(reg))
 		return PTR_ERR(reg);
 	mlxbf_rsh_scratch_buf_ctl = reg + MLXBF_RSH_SCRATCH_BUF_CTL_OFF;
 	mlxbf_rsh_scratch_buf_data = reg + MLXBF_RSH_SCRATCH_BUF_DATA_OFF;
 
-	/* Ensure we have the UUID we expect for this service. */
+	 
 	arm_smccc_smc(MLXBF_BOOTCTL_SIP_SVC_UID, 0, 0, 0, 0, 0, 0, 0, &res);
 	guid_parse(mlxbf_bootctl_svc_uuid_str, &guid);
 	if (!mlxbf_bootctl_guid_match(&guid, &res))
 		return -ENODEV;
 
-	/*
-	 * When watchdog is used, it sets boot mode to MLXBF_BOOTCTL_SWAP_EMMC
-	 * in case of boot failures. However it doesn't clear the state if there
-	 * is no failure. Restore the default boot mode here to avoid any
-	 * unnecessary boot partition swapping.
-	 */
+	 
 	ret = mlxbf_bootctl_smc(MLXBF_BOOTCTL_SET_RESET_ACTION,
 				MLXBF_BOOTCTL_EMMC);
 	if (ret < 0)

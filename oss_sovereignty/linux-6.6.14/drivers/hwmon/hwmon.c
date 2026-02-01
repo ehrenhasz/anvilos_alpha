@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * hwmon.c - part of lm_sensors, Linux kernel modules for hardware monitoring
- *
- * This file defines the sysfs class "hwmon", for use by sensors drivers.
- *
- * Copyright (C) 2005 Mark M. Hoffman <mhoffman@lightlink.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -57,14 +51,12 @@ struct hwmon_device_attribute {
 	container_of(d, struct hwmon_device_attribute, dev_attr)
 #define to_dev_attr(a) container_of(a, struct device_attribute, attr)
 
-/*
- * Thermal zone information
- */
+ 
 struct hwmon_thermal_data {
-	struct list_head node;		/* hwmon tzdata list entry */
-	struct device *dev;		/* Reference to hwmon device */
-	int index;			/* sensor index */
-	struct thermal_zone_device *tzd;/* thermal zone device */
+	struct list_head node;		 
+	struct device *dev;		 
+	int index;			 
+	struct thermal_zone_device *tzd; 
 };
 
 static ssize_t
@@ -144,12 +136,9 @@ static struct class hwmon_class = {
 
 static DEFINE_IDA(hwmon_ida);
 
-/* Thermal zone handling */
+ 
 
-/*
- * The complex conditional is necessary to avoid a cyclic dependency
- * between hwmon and thermal_sys modules.
- */
+ 
 #ifdef CONFIG_THERMAL_OF
 static int hwmon_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
 {
@@ -300,7 +289,7 @@ static int hwmon_thermal_register_sensors(struct device *dev)
 
 static void hwmon_thermal_notify(struct device *dev, int index) { }
 
-#endif /* IS_REACHABLE(CONFIG_THERMAL) && ... */
+#endif  
 
 static int hwmon_attr_base(enum hwmon_sensor_types type)
 {
@@ -309,7 +298,7 @@ static int hwmon_attr_base(enum hwmon_sensor_types type)
 	return 1;
 }
 
-/* sysfs attribute management */
+ 
 
 static ssize_t hwmon_attr_show(struct device *dev,
 			       struct device_attribute *devattr, char *buf)
@@ -397,7 +386,7 @@ static struct attribute *hwmon_genattr(const void *drvdata,
 	const char *name;
 	bool is_string = is_string_attr(type, attr);
 
-	/* The attribute is invisible if there is no template string */
+	 
 	if (!template)
 		return ERR_PTR(-ENOENT);
 
@@ -440,10 +429,7 @@ static struct attribute *hwmon_genattr(const void *drvdata,
 	return a;
 }
 
-/*
- * Chip attributes are not attribute templates but actual sysfs attributes.
- * See hwmon_genattr() for special handling.
- */
+ 
 static const char * const hwmon_chip_attrs[] = {
 	[hwmon_chip_temp_reset_history] = "temp_reset_history",
 	[hwmon_chip_in_reset_history] = "in_reset_history",
@@ -764,7 +750,7 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
 	struct device *tdev = dev;
 	int i, err, id;
 
-	/* Complain about invalid characters in hwmon name attribute */
+	 
 	if (name && (!strlen(name) || strpbrk(name, "-* \t\n")))
 		dev_warn(dev,
 			 "hwmon: '%s' is not a valid name attribute, please fix\n",
@@ -784,7 +770,7 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
 
 	if (chip) {
 		struct attribute **attrs;
-		int ngroups = 2; /* terminating NULL plus &hwdev->groups */
+		int ngroups = 2;  
 
 		if (groups)
 			for (i = 0; groups[i]; i++)
@@ -851,10 +837,7 @@ __hwmon_device_register(struct device *dev, const char *name, void *drvdata,
 		err = hwmon_thermal_register_sensors(hdev);
 		if (err) {
 			device_unregister(hdev);
-			/*
-			 * Don't worry about hwdev; hwmon_dev_release(), called
-			 * from device_unregister(), will free it.
-			 */
+			 
 			goto ida_remove;
 		}
 	}
@@ -868,18 +851,7 @@ ida_remove:
 	return ERR_PTR(err);
 }
 
-/**
- * hwmon_device_register_with_groups - register w/ hwmon
- * @dev: the parent device
- * @name: hwmon name attribute
- * @drvdata: driver data to attach to created device
- * @groups: List of attribute groups to create
- *
- * hwmon_device_unregister() must be called when the device is no
- * longer needed.
- *
- * Returns the pointer to the new device.
- */
+ 
 struct device *
 hwmon_device_register_with_groups(struct device *dev, const char *name,
 				  void *drvdata,
@@ -892,20 +864,7 @@ hwmon_device_register_with_groups(struct device *dev, const char *name,
 }
 EXPORT_SYMBOL_GPL(hwmon_device_register_with_groups);
 
-/**
- * hwmon_device_register_with_info - register w/ hwmon
- * @dev: the parent device (mandatory)
- * @name: hwmon name attribute (mandatory)
- * @drvdata: driver data to attach to created device (optional)
- * @chip: pointer to hwmon chip information (mandatory)
- * @extra_groups: pointer to list of additional non-standard attribute groups
- *	(optional)
- *
- * hwmon_device_unregister() must be called when the device is no
- * longer needed.
- *
- * Returns the pointer to the new device.
- */
+ 
 struct device *
 hwmon_device_register_with_info(struct device *dev, const char *name,
 				void *drvdata,
@@ -922,20 +881,7 @@ hwmon_device_register_with_info(struct device *dev, const char *name,
 }
 EXPORT_SYMBOL_GPL(hwmon_device_register_with_info);
 
-/**
- * hwmon_device_register_for_thermal - register hwmon device for thermal subsystem
- * @dev: the parent device
- * @name: hwmon name attribute
- * @drvdata: driver data to attach to created device
- *
- * The use of this function is restricted. It is provided for legacy reasons
- * and must only be called from the thermal subsystem.
- *
- * hwmon_device_unregister() must be called when the device is no
- * longer needed.
- *
- * Returns the pointer to the new device.
- */
+ 
 struct device *
 hwmon_device_register_for_thermal(struct device *dev, const char *name,
 				  void *drvdata)
@@ -947,15 +893,7 @@ hwmon_device_register_for_thermal(struct device *dev, const char *name,
 }
 EXPORT_SYMBOL_NS_GPL(hwmon_device_register_for_thermal, HWMON_THERMAL);
 
-/**
- * hwmon_device_register - register w/ hwmon
- * @dev: the device to register
- *
- * hwmon_device_unregister() must be called when the device is no
- * longer needed.
- *
- * Returns the pointer to the new device.
- */
+ 
 struct device *hwmon_device_register(struct device *dev)
 {
 	dev_warn(dev,
@@ -965,11 +903,7 @@ struct device *hwmon_device_register(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(hwmon_device_register);
 
-/**
- * hwmon_device_unregister - removes the previously registered class device
- *
- * @dev: the class device to destroy
- */
+ 
 void hwmon_device_unregister(struct device *dev)
 {
 	int id;
@@ -990,16 +924,7 @@ static void devm_hwmon_release(struct device *dev, void *res)
 	hwmon_device_unregister(hwdev);
 }
 
-/**
- * devm_hwmon_device_register_with_groups - register w/ hwmon
- * @dev: the parent device
- * @name: hwmon name attribute
- * @drvdata: driver data to attach to created device
- * @groups: List of attribute groups to create
- *
- * Returns the pointer to the new device. The new device is automatically
- * unregistered with the parent device.
- */
+ 
 struct device *
 devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
 				       void *drvdata,
@@ -1028,17 +953,7 @@ error:
 }
 EXPORT_SYMBOL_GPL(devm_hwmon_device_register_with_groups);
 
-/**
- * devm_hwmon_device_register_with_info - register w/ hwmon
- * @dev:	the parent device
- * @name:	hwmon name attribute
- * @drvdata:	driver data to attach to created device
- * @chip:	pointer to hwmon chip information
- * @extra_groups: pointer to list of driver specific attribute groups
- *
- * Returns the pointer to the new device. The new device is automatically
- * unregistered with the parent device.
- */
+ 
 struct device *
 devm_hwmon_device_register_with_info(struct device *dev, const char *name,
 				     void *drvdata,
@@ -1077,11 +992,7 @@ static int devm_hwmon_match(struct device *dev, void *res, void *data)
 	return *hwdev == data;
 }
 
-/**
- * devm_hwmon_device_unregister - removes a previously registered hwmon device
- *
- * @dev: the parent device of the device to unregister
- */
+ 
 void devm_hwmon_device_unregister(struct device *dev)
 {
 	WARN_ON(devres_release(dev, devm_hwmon_release, devm_hwmon_match, dev));
@@ -1106,32 +1017,14 @@ static char *__hwmon_sanitize_name(struct device *dev, const char *old_name)
 	return name;
 }
 
-/**
- * hwmon_sanitize_name - Replaces invalid characters in a hwmon name
- * @name: NUL-terminated name
- *
- * Allocates a new string where any invalid characters will be replaced
- * by an underscore. It is the responsibility of the caller to release
- * the memory.
- *
- * Returns newly allocated name, or ERR_PTR on error.
- */
+ 
 char *hwmon_sanitize_name(const char *name)
 {
 	return __hwmon_sanitize_name(NULL, name);
 }
 EXPORT_SYMBOL_GPL(hwmon_sanitize_name);
 
-/**
- * devm_hwmon_sanitize_name - resource managed hwmon_sanitize_name()
- * @dev: device to allocate memory for
- * @name: NUL-terminated name
- *
- * Allocates a new string where any invalid characters will be replaced
- * by an underscore.
- *
- * Returns newly allocated name, or ERR_PTR on error.
- */
+ 
 char *devm_hwmon_sanitize_name(struct device *dev, const char *name)
 {
 	if (!dev)
@@ -1148,11 +1041,11 @@ static void __init hwmon_pci_quirks(void)
 	u16 base;
 	u8 enable;
 
-	/* Open access to 0x295-0x296 on MSI MS-7031 */
+	 
 	sb = pci_get_device(PCI_VENDOR_ID_ATI, 0x436c, NULL);
 	if (sb) {
-		if (sb->subsystem_vendor == 0x1462 &&	/* MSI */
-		    sb->subsystem_device == 0x0031) {	/* MS-7031 */
+		if (sb->subsystem_vendor == 0x1462 &&	 
+		    sb->subsystem_device == 0x0031) {	 
 			pci_read_config_byte(sb, 0x48, &enable);
 			pci_read_config_word(sb, 0x64, &base);
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-// Copyright (c) 2021-2021 Hisilicon Limited.
+
+
 #include <linux/skbuff.h>
 
 #include "hnae3.h"
@@ -125,13 +125,13 @@ int hclge_comm_set_rss_hash_key(struct hclge_comm_rss_cfg *rss_cfg,
 	if (ret)
 		return ret;
 
-	/* Set the RSS Hash Key if specififed by the user */
+	 
 	if (key) {
 		ret = hclge_comm_set_rss_algo_key(hw, hash_algo, key);
 		if (ret)
 			return ret;
 
-		/* Update the shadow RSS key with user specified qids */
+		 
 		memcpy(rss_cfg->rss_hash_key, key, HCLGE_COMM_RSS_KEY_SIZE);
 	} else {
 		ret = hclge_comm_set_rss_algo_key(hw, hash_algo,
@@ -213,7 +213,7 @@ void hclge_comm_rss_indir_init_cfg(struct hnae3_ae_dev *ae_dev,
 				   struct hclge_comm_rss_cfg *rss_cfg)
 {
 	u16 i;
-	/* Initialize RSS indirect table */
+	 
 	for (i = 0; i < ae_dev->dev_specs.rss_ind_tbl_size; i++)
 		rss_cfg->rss_indirection_tbl[i] = i % rss_cfg->rss_size;
 }
@@ -336,7 +336,7 @@ int hclge_comm_set_rss_input_tuple(struct hclge_comm_hw *hw,
 void hclge_comm_get_rss_hash_info(struct hclge_comm_rss_cfg *rss_cfg, u8 *key,
 				  u8 *hfunc)
 {
-	/* Get hash algorithm */
+	 
 	if (hfunc) {
 		switch (rss_cfg->rss_algo) {
 		case HCLGE_COMM_RSS_HASH_ALGO_TOEPLITZ:
@@ -351,7 +351,7 @@ void hclge_comm_get_rss_hash_info(struct hclge_comm_rss_cfg *rss_cfg, u8 *key,
 		}
 	}
 
-	/* Get the RSS Key required by the user */
+	 
 	if (key)
 		memcpy(key, rss_cfg->rss_hash_key, HCLGE_COMM_RSS_KEY_SIZE);
 }

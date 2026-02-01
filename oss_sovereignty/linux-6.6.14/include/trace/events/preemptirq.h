@@ -62,11 +62,11 @@ DEFINE_EVENT(preemptirq_template, preempt_enable,
 #define trace_preempt_disable_rcuidle(...)
 #endif
 
-#endif /* _TRACE_PREEMPTIRQ_H */
+#endif  
 
 #include <trace/define_trace.h>
 
-#else /* !CONFIG_PREEMPTIRQ_TRACEPOINTS */
+#else  
 #define trace_irq_enable(...)
 #define trace_irq_disable(...)
 #define trace_irq_enable_rcuidle(...)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MAX1241 low-power, 12-bit serial ADC
- *
- * Datasheet: https://datasheets.maximintegrated.com/en/ds/MAX1240-MAX1241.pdf
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -41,18 +37,13 @@ static const struct iio_chan_spec max1241_channels[] = {
 static int max1241_read(struct max1241 *adc)
 {
 	struct spi_transfer xfers[] = {
-		/*
-		 * Begin conversion by bringing /CS low for at least
-		 * tconv us.
-		 */
+		 
 		{
 			.len = 0,
 			.delay.value = 8,
 			.delay.unit = SPI_DELAY_UNIT_USECS,
 		},
-		/*
-		 * Then read two bytes of data in our RX buffer.
-		 */
+		 
 		{
 			.rx_buf = &adc->data,
 			.len = 2,

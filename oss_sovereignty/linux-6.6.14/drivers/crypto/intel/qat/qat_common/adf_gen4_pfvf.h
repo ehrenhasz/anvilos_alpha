@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only) */
-/* Copyright(c) 2021 Intel Corporation */
+ 
+ 
 #ifndef ADF_GEN4_PFVF_H
 #define ADF_GEN4_PFVF_H
 
@@ -14,4 +14,4 @@ static inline void adf_gen4_init_pf_pfvf_ops(struct adf_pfvf_ops *pfvf_ops)
 }
 #endif
 
-#endif /* ADF_GEN4_PFVF_H */
+#endif  

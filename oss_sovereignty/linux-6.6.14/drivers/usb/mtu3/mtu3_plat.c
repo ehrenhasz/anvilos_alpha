@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2016 MediaTek Inc.
- *
- * Author: Chunfeng Yun <chunfeng.yun@mediatek.com>
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/iopoll.h>
@@ -19,7 +15,7 @@
 #include "mtu3_dr.h"
 #include "mtu3_debug.h"
 
-/* u2-port0 should be powered on and enabled; */
+ 
 int ssusb_check_clocks(struct ssusb_mtk *ssusb, u32 ex_clks)
 {
 	void __iomem *ibase = ssusb->ippc_base;
@@ -58,14 +54,14 @@ static int wait_for_ip_sleep(struct ssusb_mtk *ssusb)
 	if (!sleep_check)
 		return 0;
 
-	/* wait for ip enter sleep mode */
+	 
 	ret = readl_poll_timeout(ssusb->ippc_base + U3D_SSUSB_IP_PW_STS1, value,
 				 (value & SSUSB_IP_SLEEP_STS), 100, 100000);
 	if (ret) {
 		dev_err(ssusb->dev, "ip sleep failed!!!\n");
 		ret = -EBUSY;
 	} else {
-		/* workaround: avoid wrong wakeup signal latch for some soc */
+		 
 		usleep_range(100, 200);
 	}
 
@@ -176,17 +172,12 @@ static void ssusb_rscs_exit(struct ssusb_mtk *ssusb)
 
 static void ssusb_ip_sw_reset(struct ssusb_mtk *ssusb)
 {
-	/* reset whole ip (xhci & u3d) */
+	 
 	mtu3_setbits(ssusb->ippc_base, U3D_SSUSB_IP_PW_CTRL0, SSUSB_IP_SW_RST);
 	udelay(1);
 	mtu3_clrbits(ssusb->ippc_base, U3D_SSUSB_IP_PW_CTRL0, SSUSB_IP_SW_RST);
 
-	/*
-	 * device ip may be powered on in firmware/BROM stage before entering
-	 * kernel stage;
-	 * power down device ip, otherwise ip-sleep will fail when working as
-	 * host only mode
-	 */
+	 
 	mtu3_setbits(ssusb->ippc_base, U3D_SSUSB_IP_PW_CTRL2, SSUSB_IP_DEV_PDN);
 }
 
@@ -197,7 +188,7 @@ static void ssusb_u3_drd_check(struct ssusb_mtk *ssusb)
 	u32 host_u3p_num;
 	u32 value;
 
-	/* u3 port0 is disabled */
+	 
 	if (ssusb->u3p_dis_msk & BIT(0)) {
 		otg_sx->is_u3_drd = false;
 		goto out;
@@ -276,14 +267,14 @@ static int get_ssusb_rscs(struct platform_device *pdev, struct ssusb_mtk *ssusb)
 	if (ssusb->dr_mode == USB_DR_MODE_PERIPHERAL)
 		goto out;
 
-	/* if host role is supported */
+	 
 	ret = ssusb_wakeup_of_property_parse(ssusb, node);
 	if (ret) {
 		dev_err(dev, "failed to parse uwk property\n");
 		return ret;
 	}
 
-	/* optional property, ignore the error if it does not exist */
+	 
 	of_property_read_u32(node, "mediatek,u2p-dis-msk",
 			     &ssusb->u2p_dis_msk);
 
@@ -296,12 +287,12 @@ static int get_ssusb_rscs(struct platform_device *pdev, struct ssusb_mtk *ssusb)
 	if (ssusb->dr_mode == USB_DR_MODE_HOST)
 		goto out;
 
-	/* if dual-role mode is supported */
+	 
 	otg_sx->manual_drd_enabled =
 		of_property_read_bool(node, "enable-manual-drd");
 	otg_sx->role_sw_used = of_property_read_bool(node, "usb-role-switch");
 
-	/* can't disable port0 when use dual-role mode */
+	 
 	ssusb->u2p_dis_msk &= ~0x1;
 
 	if (otg_sx->role_sw_used || otg_sx->manual_drd_enabled)
@@ -331,7 +322,7 @@ static int mtu3_probe(struct platform_device *pdev)
 	struct ssusb_mtk *ssusb;
 	int ret = -ENOMEM;
 
-	/* all elements are set to ZERO as default value */
+	 
 	ssusb = devm_kzalloc(dev, sizeof(*ssusb), GFP_KERNEL);
 	if (!ssusb)
 		return -ENOMEM;
@@ -351,7 +342,7 @@ static int mtu3_probe(struct platform_device *pdev)
 
 	ssusb_debugfs_create_root(ssusb);
 
-	/* enable power domain */
+	 
 	pm_runtime_set_active(dev);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_set_autosuspend_delay(dev, 4000);
@@ -387,7 +378,7 @@ static int mtu3_probe(struct platform_device *pdev)
 	else if (IS_ENABLED(CONFIG_USB_MTU3_GADGET))
 		ssusb->dr_mode = USB_DR_MODE_PERIPHERAL;
 
-	/* default as host */
+	 
 	ssusb->is_host = !(ssusb->dr_mode == USB_DR_MODE_PERIPHERAL);
 
 	switch (ssusb->dr_mode) {

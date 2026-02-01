@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __I915_DEBUGFS_PARAMS__
 #define __I915_DEBUGFS_PARAMS__
@@ -11,4 +9,4 @@ struct drm_i915_private;
 
 struct dentry *i915_debugfs_params(struct drm_i915_private *i915);
 
-#endif /* __I915_DEBUGFS_PARAMS__ */
+#endif  

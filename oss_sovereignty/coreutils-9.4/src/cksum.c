@@ -1,36 +1,4 @@
-/* cksum -- calculate and print POSIX checksums and sizes of files
-   Copyright (C) 1992-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Q. Frank Xia, qx@math.columbia.edu.
-   Cosmetic changes and reorganization by David MacKenzie, djm@gnu.ai.mit.edu.
-
-  Usage: cksum [file...]
-
-  The code segment between "#ifdef CRCTAB" and "#else" is the code
-  which calculates the "crctab". It is included for those who want
-  verify the correctness of the "crctab". To recreate the "crctab",
-  do something like the following:
-
-      cc -I../lib -DCRCTAB -o crctab cksum.c
-      crctab > crctab.c
-
-  This software is compatible with neither the System V nor the BSD
-  'sum' program.  It is supposed to conform to POSIX, except perhaps
-  for foreign language support.  Any inconsistency with the standard
-  (other than foreign language support) is a bug.  */
+ 
 
 #include <config.h>
 
@@ -51,12 +19,7 @@
 # define BIT(x)	((uint_fast32_t) 1 << (x))
 # define SBIT	BIT (31)
 
-/* The generating polynomial is
-
-          32   26   23   22   16   12   11   10   8   7   5   4   2   1
-    G(X)=X  + X  + X  + X  + X  + X  + X  + X  + X + X + X + X + X + X + 1
-
-  The i bit in GEN is set if X^i is a summand of G(X) except X^32.  */
+ 
 
 # define GEN	(BIT (26) | BIT (23) | BIT (22) | BIT (16) | BIT (12) \
                  | BIT (11) | BIT (10) | BIT (8) | BIT (7) | BIT (5) \
@@ -81,7 +44,7 @@ crc_remainder (int m)
     if (BIT (i) & m)
       rem ^= r[i];
 
-  return rem & 0xFFFFFFFF;	/* Make it run on 64-bit machine.  */
+  return rem & 0xFFFFFFFF;	 
 }
 
 int
@@ -97,13 +60,7 @@ main (void)
       crctab[0][i] = crc_remainder (i);
     }
 
-  /* CRC(0x11 0x22 0x33 0x44)
-     is equal to
-     CRC(0x11 0x00 0x00 0x00) XOR CRC(0x22 0x00 0x00) XOR
-     CRC(0x33 0x00) XOR CRC(0x44)
-     We precompute the CRC values for the offset values into
-     separate CRC tables. We can then use them to speed up
-     CRC calculation by processing multiple bytes at the time. */
+   
   for (i = 0; i < 256; i++)
     {
       uint32_t crc = 0;
@@ -135,11 +92,11 @@ main (void)
   return EXIT_SUCCESS;
 }
 
-#else /* !CRCTAB */
+#else  
 
 # include "cksum.h"
 
-/* Number of bytes to read at once.  */
+ 
 # define BUFLEN (1 << 16)
 
 # if USE_PCLMUL_CRC32
@@ -157,7 +114,7 @@ pclmul_supported (void)
 
   return pclmul_enabled;
 }
-# endif /* USE_PCLMUL_CRC32 */
+# endif  
 
 static bool
 cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
@@ -181,7 +138,7 @@ cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
         }
       length += bytes_read;
 
-      /* Process multiples of 8 bytes */
+       
       datap = (uint32_t *)buf;
       while (bytes_read >= 8)
         {
@@ -199,7 +156,7 @@ cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
           bytes_read -= 8;
         }
 
-      /* And finish up last 0-7 bytes in a byte by byte fashion */
+       
       unsigned char *cp = (unsigned char *)datap;
       while (bytes_read--)
         crc = (crc << 8) ^ crctab[0][((crc >> 24) ^ *cp++) & 0xFF];
@@ -213,8 +170,7 @@ cksum_slice8 (FILE *fp, uint_fast32_t *crc_out, uintmax_t *length_out)
   return !ferror (fp);
 }
 
-/* Calculate the checksum and length in bytes of stream STREAM.
-   Return -1 on error, 0 on success.  */
+ 
 
 int
 crc_sum_stream (FILE *stream, void *resstream, uintmax_t *length)
@@ -245,8 +201,7 @@ crc_sum_stream (FILE *stream, void *resstream, uintmax_t *length)
   return 0;
 }
 
-/* Print the checksum and size to stdout.
-   If ARGS is true, also print the FILE name.  */
+ 
 
 void
 output_crc (char const *file, int binary_file, void const *digest, bool raw,
@@ -254,7 +209,7 @@ output_crc (char const *file, int binary_file, void const *digest, bool raw,
 {
   if (raw)
     {
-      /* Output in network byte order (big endian).  */
+       
       uint32_t out_int = SWAP (*(uint32_t *)digest);
       fwrite (&out_int, 1, 32/8, stdout);
       return;
@@ -267,4 +222,4 @@ output_crc (char const *file, int binary_file, void const *digest, bool raw,
   putchar (delim);
 }
 
-#endif /* !CRCTAB */
+#endif  

@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2014, Samsung Electronics Co. Ltd. All Rights Reserved.
- */
+
+ 
 
 #include "ssp.h"
 
 #define SSP_DEV (&data->spi->dev)
 #define SSP_GET_MESSAGE_TYPE(data) (data & (3 << SSP_RW))
 
-/*
- * SSP -> AP Instruction
- * They tell what packet type can be expected. In the future there will
- * be less of them. BYPASS means common sensor packets with accel, gyro,
- * hrm etc. data. LIBRARY and META are mock-up's for now.
- */
+ 
 #define SSP_MSG2AP_INST_BYPASS_DATA		0x37
 #define SSP_MSG2AP_INST_LIBRARY_DATA		0x01
 #define SSP_MSG2AP_INST_DEBUG_DATA		0x03
@@ -101,11 +94,7 @@ static struct ssp_msg *ssp_create_msg(u8 cmd, u16 len, u16 opt, u32 data)
 	return msg;
 }
 
-/*
- * It is a bit heavy to do it this way but often the function is used to compose
- * the message from smaller chunks which are placed on the stack.  Often the
- * chunks are small so memcpy should be optimalized.
- */
+ 
 static inline void ssp_fill_buffer(struct ssp_msg *m, unsigned int offset,
 				   const void *src, unsigned int len)
 {
@@ -147,10 +136,7 @@ static int ssp_print_mcu_debug(char *data_frame, int *data_index,
 	return 0;
 }
 
-/*
- * It was designed that way - additional lines to some kind of handshake,
- * please do not ask why - only the firmware guy can know it.
- */
+ 
 static int ssp_check_lines(struct ssp_data *data, bool state)
 {
 	int delay_cnt = 0;
@@ -178,10 +164,7 @@ static int ssp_do_transfer(struct ssp_data *data, struct ssp_msg *msg,
 			   struct completion *done, int timeout)
 {
 	int status;
-	/*
-	 * check if this is a short one way message or the whole transfer has
-	 * second part after an interrupt
-	 */
+	 
 	const bool use_no_irq = msg->length == 0;
 
 	if (data->shut_down)
@@ -259,7 +242,7 @@ static int ssp_spi_sync(struct ssp_data *data, struct ssp_msg *msg,
 
 static int ssp_handle_big_data(struct ssp_data *data, char *dataframe, int *idx)
 {
-	/* mock-up, it will be changed with adding another sensor types */
+	 
 	*idx += 8;
 	return 0;
 }
@@ -328,7 +311,7 @@ static int ssp_parse_dataframe(struct ssp_data *data, char *dataframe, int len)
 	return 0;
 }
 
-/* threaded irq */
+ 
 int ssp_irq_msg(struct ssp_data *data)
 {
 	char *buffer;
@@ -356,10 +339,7 @@ int ssp_irq_msg(struct ssp_data *data)
 	switch (msg_type) {
 	case SSP_AP2HUB_READ:
 	case SSP_AP2HUB_WRITE:
-		/*
-		 * this is a small list, a few elements - the packets can be
-		 * received with no order
-		 */
+		 
 		mutex_lock(&data->pending_lock);
 		list_for_each_entry_safe(iter, n, &data->pending_list, list) {
 			if (iter->options == msg_options) {
@@ -370,18 +350,14 @@ int ssp_irq_msg(struct ssp_data *data)
 		}
 
 		if (!msg) {
-			/*
-			 * here can be implemented dead messages handling
-			 * but the slave should not send such ones - it is to
-			 * check but let's handle this
-			 */
+			 
 			buffer = kmalloc(length, GFP_KERNEL | GFP_DMA);
 			if (!buffer) {
 				ret = -ENOMEM;
 				goto _unlock;
 			}
 
-			/* got dead packet so it is always an error */
+			 
 			ret = spi_read(data->spi, buffer, length);
 			if (ret >= 0)
 				ret = -EPROTO;
@@ -490,7 +466,7 @@ int ssp_send_instruction(struct ssp_data *data, u8 inst, u8 sensor_type,
 		   (inst <= SSP_MSG2SSP_INST_CHANGE_DELAY)) {
 		dev_err(SSP_DEV, "%s - Bypass Inst Skip! - %u\n",
 			__func__, sensor_type);
-		return -EIO; /* just fail */
+		return -EIO;  
 	}
 
 	msg = ssp_create_msg(inst, length + 2, SSP_AP2HUB_WRITE, 0);

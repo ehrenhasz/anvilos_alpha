@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * linux/fs/ext2/acl.c
- *
- * Copyright (C) 2001-2003 Andreas Gruenbacher, <agruen@suse.de>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/sched.h>
@@ -13,9 +9,7 @@
 #include "xattr.h"
 #include "acl.h"
 
-/*
- * Convert from filesystem to in-memory representation.
- */
+ 
 static struct posix_acl *
 ext2_acl_from_disk(const void *value, size_t size)
 {
@@ -85,9 +79,7 @@ fail:
 	return ERR_PTR(-EINVAL);
 }
 
-/*
- * Convert from in-memory to filesystem representation.
- */
+ 
 static void *
 ext2_acl_to_disk(const struct posix_acl *acl, size_t *size)
 {
@@ -137,9 +129,7 @@ fail:
 	return ERR_PTR(-EINVAL);
 }
 
-/*
- * inode->i_mutex: don't care
- */
+ 
 struct posix_acl *
 ext2_get_acl(struct inode *inode, int type, bool rcu)
 {
@@ -215,9 +205,7 @@ __ext2_set_acl(struct inode *inode, struct posix_acl *acl, int type)
 	return error;
 }
 
-/*
- * inode->i_mutex: down
- */
+ 
 int
 ext2_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 	     struct posix_acl *acl, int type)
@@ -243,12 +231,7 @@ ext2_set_acl(struct mnt_idmap *idmap, struct dentry *dentry,
 	return error;
 }
 
-/*
- * Initialize the ACLs of a new inode. Called from ext2_new_inode.
- *
- * dir->i_mutex: down
- * inode->i_mutex: up (access to inode is still exclusive)
- */
+ 
 int
 ext2_init_acl(struct inode *inode, struct inode *dir)
 {

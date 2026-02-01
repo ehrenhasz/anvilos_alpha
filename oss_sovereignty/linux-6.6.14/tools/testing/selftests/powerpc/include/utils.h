@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2013, Michael Ellerman, IBM Corp.
- */
+ 
+ 
 
 #ifndef _SELFTESTS_POWERPC_UTILS_H
 #define _SELFTESTS_POWERPC_UTILS_H
@@ -22,11 +20,11 @@
 # define ARRAY_SIZE(x) (sizeof(x) / sizeof((x)[0]))
 #endif
 
-/* Avoid headaches with PRI?64 - just use %ll? always */
+ 
 typedef unsigned long long u64;
 typedef   signed long long s64;
 
-/* Just for familiarity */
+ 
 typedef uint32_t u32;
 typedef uint16_t u16;
 typedef uint8_t u8;
@@ -115,7 +113,7 @@ int using_hash_mmu(bool *using_hash);
 struct sigaction push_signal_handler(int sig, void (*fn)(int, siginfo_t *, void *));
 struct sigaction pop_signal_handler(int sig, struct sigaction old_handler);
 
-/* Yes, this is evil */
+ 
 #define FAIL_IF(x)						\
 do {								\
 	if ((x)) {						\
@@ -154,7 +152,7 @@ do {								\
 	}							\
 } while (0)
 
-/* The test harness uses this, yes it's gross */
+ 
 #define MAGIC_SKIP_RETURN_VALUE	99
 
 #define SKIP_IF(x)						\
@@ -183,17 +181,17 @@ do {								\
 		ssize_t nbytes __attribute__((unused)); \
 		nbytes = write(STDERR_FILENO, msg, strlen(msg)); })
 
-/* POWER9 feature */
+ 
 #ifndef PPC_FEATURE2_ARCH_3_00
 #define PPC_FEATURE2_ARCH_3_00 0x00800000
 #endif
 
-/* POWER10 feature */
+ 
 #ifndef PPC_FEATURE2_ARCH_3_1
 #define PPC_FEATURE2_ARCH_3_1 0x00040000
 #endif
 
-/* POWER10 features */
+ 
 #ifndef PPC_FEATURE2_MMA
 #define PPC_FEATURE2_MMA 0x00020000
 #endif
@@ -208,4 +206,4 @@ do {								\
 #error implement UCONTEXT_NIA
 #endif
 
-#endif /* _SELFTESTS_POWERPC_UTILS_H */
+#endif  

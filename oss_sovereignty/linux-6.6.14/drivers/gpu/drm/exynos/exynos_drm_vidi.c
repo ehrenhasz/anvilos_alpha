@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* exynos_drm_vidi.c
- *
- * Copyright (C) 2012 Samsung Electronics Co.Ltd
- * Authors:
- *	Inki Dae <inki.dae@samsung.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/kernel.h>
@@ -25,10 +20,10 @@
 #include "exynos_drm_plane.h"
 #include "exynos_drm_vidi.h"
 
-/* VIDI uses fixed refresh rate of 50Hz */
+ 
 #define VIDI_REFRESH_TIME (1000 / 50)
 
-/* vidi has totally three virtual windows. */
+ 
 #define WINDOWS_NR		3
 
 #define ctx_from_connector(c)	container_of(c, struct vidi_context, \
@@ -195,11 +190,11 @@ static ssize_t vidi_store_connection(struct device *dev,
 	if (ctx->connected > 1)
 		return -EINVAL;
 
-	/* use fake edid data for test. */
+	 
 	if (!ctx->raw_edid)
 		ctx->raw_edid = (struct edid *)fake_edid_info;
 
-	/* if raw_edid isn't same as fake data then it can't be tested. */
+	 
 	if (ctx->raw_edid != (struct edid *)fake_edid_info) {
 		DRM_DEV_DEBUG_KMS(dev, "edid data is not fake data.\n");
 		return -EINVAL;
@@ -261,10 +256,7 @@ int vidi_connection_ioctl(struct drm_device *drm_dev, void *data,
 			return -ENOMEM;
 		}
 	} else {
-		/*
-		 * with connection = 0, free raw_edid
-		 * only if raw edid data isn't same as fake data.
-		 */
+		 
 		if (ctx->raw_edid && ctx->raw_edid !=
 				(struct edid *)fake_edid_info) {
 			kfree(ctx->raw_edid);
@@ -283,10 +275,7 @@ static enum drm_connector_status vidi_detect(struct drm_connector *connector,
 {
 	struct vidi_context *ctx = ctx_from_connector(connector);
 
-	/*
-	 * connection request would come from user side
-	 * to do hotplug through specific ioctl.
-	 */
+	 
 	return ctx->connected ? connector_status_connected :
 			connector_status_disconnected;
 }
@@ -310,10 +299,7 @@ static int vidi_get_modes(struct drm_connector *connector)
 	struct edid *edid;
 	int edid_len;
 
-	/*
-	 * the edid data comes from user side and it would be set
-	 * to ctx->raw_edid through specific ioctl.
-	 */
+	 
 	if (!ctx->raw_edid) {
 		DRM_DEV_DEBUG_KMS(ctx->dev, "raw_edid is null.\n");
 		return -EFAULT;

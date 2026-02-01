@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * HD audio interface patch for Creative CA0132 chip.
- * CA0132 registers defines.
- *
- * Copyright (c) 2011, Creative Technology Ltd.
- */
+ 
+ 
 
 #ifndef __CA0132_REGS_H
 #define __CA0132_REGS_H

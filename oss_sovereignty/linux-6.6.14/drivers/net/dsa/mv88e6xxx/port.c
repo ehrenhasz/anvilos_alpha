@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx Switch Port Registers support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2016-2017 Savoir-faire Linux Inc.
- *	Vivien Didelot <vivien.didelot@savoirfairelinux.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/if_bridge.h>
@@ -42,11 +35,7 @@ int mv88e6xxx_port_write(struct mv88e6xxx_chip *chip, int port, int reg,
 	return mv88e6xxx_write(chip, addr, reg, val);
 }
 
-/* Offset 0x00: MAC (or PCS or Physical) Status Register
- *
- * For most devices, this is read only. However the 6185 has the MyPause
- * bit read/write.
- */
+ 
 int mv88e6185_port_set_pause(struct mv88e6xxx_chip *chip, int port,
 			     int pause)
 {
@@ -65,14 +54,7 @@ int mv88e6185_port_set_pause(struct mv88e6xxx_chip *chip, int port,
 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_STS, reg);
 }
 
-/* Offset 0x01: MAC (or PCS or Physical) Control Register
- *
- * Link, Duplex and Flow Control have one force bit, one value bit.
- *
- * For port's MAC speed, ForceSpd (or SpdValue) bits 1:0 program the value.
- * Alternative values require the 200BASE (or AltSpeed) bit 12 set.
- * Newer chips need a ForcedSpd bit 13 set to consider the value.
- */
+ 
 
 static int mv88e6xxx_port_set_rgmii_delay(struct mv88e6xxx_chip *chip, int port,
 					  phy_interface_t mode)
@@ -163,7 +145,7 @@ int mv88e6xxx_port_set_link(struct mv88e6xxx_chip *chip, int port, int link)
 			MV88E6XXX_PORT_MAC_CTL_LINK_UP;
 		break;
 	case LINK_UNFORCED:
-		/* normal link detection */
+		 
 		break;
 	default:
 		return -EINVAL;
@@ -248,7 +230,7 @@ static int mv88e6xxx_port_set_speed_duplex(struct mv88e6xxx_chip *chip,
 			ctrl = MV88E6390_PORT_MAC_CTL_SPEED_10000;
 		break;
 	case 10000:
-		/* all bits set, fall through... */
+		 
 	case SPEED_UNFORCED:
 		ctrl = MV88E6XXX_PORT_MAC_CTL_SPEED_UNFORCED;
 		break;
@@ -265,7 +247,7 @@ static int mv88e6xxx_port_set_speed_duplex(struct mv88e6xxx_chip *chip,
 			MV88E6XXX_PORT_MAC_CTL_DUPLEX_FULL;
 		break;
 	case DUPLEX_UNFORCED:
-		/* normal duplex detection */
+		 
 		break;
 	default:
 		return -EOPNOTSUPP;
@@ -303,7 +285,7 @@ static int mv88e6xxx_port_set_speed_duplex(struct mv88e6xxx_chip *chip,
 	return 0;
 }
 
-/* Support 10, 100, 1000 Mbps (e.g. 88E6185 family) */
+ 
 int mv88e6185_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 				    int speed, int duplex)
 {
@@ -314,7 +296,7 @@ int mv88e6185_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 					       duplex);
 }
 
-/* Support 10, 100 Mbps (e.g. 88E6250 family) */
+ 
 int mv88e6250_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 				    int speed, int duplex)
 {
@@ -325,7 +307,7 @@ int mv88e6250_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 					       duplex);
 }
 
-/* Support 10, 100, 200, 1000, 2500 Mbps (e.g. 88E6341) */
+ 
 int mv88e6341_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 				    int speed, int duplex)
 {
@@ -351,7 +333,7 @@ phy_interface_t mv88e6341_port_max_speed_mode(struct mv88e6xxx_chip *chip,
 	return PHY_INTERFACE_MODE_NA;
 }
 
-/* Support 10, 100, 200, 1000 Mbps (e.g. 88E6352 family) */
+ 
 int mv88e6352_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 				    int speed, int duplex)
 {
@@ -365,7 +347,7 @@ int mv88e6352_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 					       duplex);
 }
 
-/* Support 10, 100, 200, 1000, 2500 Mbps (e.g. 88E6390) */
+ 
 int mv88e6390_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 				    int speed, int duplex)
 {
@@ -391,7 +373,7 @@ phy_interface_t mv88e6390_port_max_speed_mode(struct mv88e6xxx_chip *chip,
 	return PHY_INTERFACE_MODE_NA;
 }
 
-/* Support 10, 100, 200, 1000, 2500, 10000 Mbps (e.g. 88E6190X) */
+ 
 int mv88e6390x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 				     int speed, int duplex)
 {
@@ -414,10 +396,7 @@ phy_interface_t mv88e6390x_port_max_speed_mode(struct mv88e6xxx_chip *chip,
 	return PHY_INTERFACE_MODE_NA;
 }
 
-/* Support 10, 100, 200, 1000, 2500, 5000, 10000 Mbps (e.g. 88E6393X)
- * Function mv88e6xxx_port_set_speed_duplex() can't be used as the register
- * values for speeds 2500 & 5000 conflict.
- */
+ 
 int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 				     int speed, int duplex)
 {
@@ -473,7 +452,7 @@ int mv88e6393x_port_set_speed_duplex(struct mv88e6xxx_chip *chip, int port,
 			MV88E6XXX_PORT_MAC_CTL_DUPLEX_FULL;
 		break;
 	case DUPLEX_UNFORCED:
-		/* normal duplex detection */
+		 
 		break;
 	default:
 		return -EOPNOTSUPP;
@@ -527,9 +506,7 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
 	u16 reg;
 	int err;
 
-	/* Default to a slow mode, so freeing up SERDES interfaces for
-	 * other ports which might use them for SFPs.
-	 */
+	 
 	if (mode == PHY_INTERFACE_MODE_NA)
 		mode = PHY_INTERFACE_MODE_1000BASEX;
 
@@ -572,7 +549,7 @@ static int mv88e6xxx_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
 		cmode = 0;
 	}
 
-	/* cmode doesn't change, nothing to do for us unless forced */
+	 
 	if (cmode == chip->ports[port].cmode && !force)
 		return 0;
 
@@ -647,7 +624,7 @@ int mv88e6393x_port_set_cmode(struct mv88e6xxx_chip *chip, int port,
 		}
 	}
 
-	/* mv88e6393x errata 4.5: EEE should be disabled on SERDES ports */
+	 
 	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_MAC_CTL, &reg);
 	if (err)
 		return err;
@@ -740,12 +717,7 @@ int mv88e6352_port_get_cmode(struct mv88e6xxx_chip *chip, int port, u8 *cmode)
 	return 0;
 }
 
-/* Offset 0x02: Jamming Control
- *
- * Do not limit the period of time that this port can be paused for by
- * the remote end or the period of time that this port can pause the
- * remote end.
- */
+ 
 int mv88e6097_port_pause_limit(struct mv88e6xxx_chip *chip, int port, u8 in,
 			       u8 out)
 {
@@ -769,7 +741,7 @@ int mv88e6390_port_pause_limit(struct mv88e6xxx_chip *chip, int port, u8 in,
 				    MV88E6390_PORT_FLOW_CTL_LIMIT_OUT | out);
 }
 
-/* Offset 0x04: Port Control Register */
+ 
 
 static const char * const mv88e6xxx_port_state_names[] = {
 	[MV88E6XXX_PORT_CTL0_STATE_DISABLED] = "Disabled",
@@ -963,7 +935,7 @@ int mv88e6352_port_set_mcast_flood(struct mv88e6xxx_chip *chip, int port,
 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL0, reg);
 }
 
-/* Offset 0x05: Port Control 1 */
+ 
 
 int mv88e6xxx_port_set_message_port(struct mv88e6xxx_chip *chip, int port,
 				    bool message_port)
@@ -1004,7 +976,7 @@ int mv88e6xxx_port_set_trunk(struct mv88e6xxx_chip *chip, int port,
 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL1, val);
 }
 
-/* Offset 0x06: Port Based VLAN Map */
+ 
 
 int mv88e6xxx_port_set_vlan_map(struct mv88e6xxx_chip *chip, int port, u16 map)
 {
@@ -1034,14 +1006,14 @@ int mv88e6xxx_port_get_fid(struct mv88e6xxx_chip *chip, int port, u16 *fid)
 	u16 reg;
 	int err;
 
-	/* Port's default FID lower 4 bits are located in reg 0x06, offset 12 */
+	 
 	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_BASE_VLAN, &reg);
 	if (err)
 		return err;
 
 	*fid = (reg & 0xf000) >> 12;
 
-	/* Port's default FID upper bits are located in reg 0x05, offset 0 */
+	 
 	if (upper_mask) {
 		err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL1,
 					  &reg);
@@ -1063,7 +1035,7 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid)
 	if (fid >= mv88e6xxx_num_databases(chip))
 		return -EINVAL;
 
-	/* Port's default FID lower 4 bits are located in reg 0x06, offset 12 */
+	 
 	err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_BASE_VLAN, &reg);
 	if (err)
 		return err;
@@ -1075,7 +1047,7 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid)
 	if (err)
 		return err;
 
-	/* Port's default FID upper bits are located in reg 0x05, offset 0 */
+	 
 	if (upper_mask) {
 		err = mv88e6xxx_port_read(chip, port, MV88E6XXX_PORT_CTL1,
 					  &reg);
@@ -1096,7 +1068,7 @@ int mv88e6xxx_port_set_fid(struct mv88e6xxx_chip *chip, int port, u16 fid)
 	return 0;
 }
 
-/* Offset 0x07: Default Port VLAN ID & Priority */
+ 
 
 int mv88e6xxx_port_get_pvid(struct mv88e6xxx_chip *chip, int port, u16 *pvid)
 {
@@ -1136,7 +1108,7 @@ int mv88e6xxx_port_set_pvid(struct mv88e6xxx_chip *chip, int port, u16 pvid)
 	return 0;
 }
 
-/* Offset 0x08: Port Control 2 Register */
+ 
 
 static const char * const mv88e6xxx_port_8021q_mode_names[] = {
 	[MV88E6XXX_PORT_CTL2_8021Q_MODE_DISABLED] = "Disabled",
@@ -1332,7 +1304,7 @@ int mv88e6165_port_set_jumbo_size(struct mv88e6xxx_chip *chip, int port,
 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_CTL2, reg);
 }
 
-/* Offset 0x09: Port Rate Control */
+ 
 
 int mv88e6095_port_egress_rate_limiting(struct mv88e6xxx_chip *chip, int port)
 {
@@ -1346,7 +1318,7 @@ int mv88e6097_port_egress_rate_limiting(struct mv88e6xxx_chip *chip, int port)
 				    0x0001);
 }
 
-/* Offset 0x0B: Port Association Vector */
+ 
 
 int mv88e6xxx_port_set_assoc_vector(struct mv88e6xxx_chip *chip, int port,
 				    u16 pav)
@@ -1367,21 +1339,21 @@ int mv88e6xxx_port_set_assoc_vector(struct mv88e6xxx_chip *chip, int port,
 				    reg);
 }
 
-/* Offset 0x0C: Port ATU Control */
+ 
 
 int mv88e6xxx_port_disable_learn_limit(struct mv88e6xxx_chip *chip, int port)
 {
 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ATU_CTL, 0);
 }
 
-/* Offset 0x0D: (Priority) Override Register */
+ 
 
 int mv88e6xxx_port_disable_pri_override(struct mv88e6xxx_chip *chip, int port)
 {
 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_PRI_OVERRIDE, 0);
 }
 
-/* Offset 0x0E: Policy & MGMT Control Register for FAMILY 6191X 6193X 6393X */
+ 
 
 static int mv88e6393x_port_policy_read(struct mv88e6xxx_chip *chip, int port,
 				       u16 pointer, u8 *data)
@@ -1472,10 +1444,7 @@ int mv88e6393x_port_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip)
 	u16 ptr;
 	int err;
 
-	/* Consider the frames with reserved multicast destination
-	 * addresses matching 01:80:c2:00:00:00 and
-	 * 01:80:c2:00:00:02 as MGMT.
-	 */
+	 
 	ptr = MV88E6393X_PORT_POLICY_MGMT_CTL_PTR_01C280000000XLO;
 	err = mv88e6393x_port_policy_write_all(chip, ptr, 0xff);
 	if (err)
@@ -1499,7 +1468,7 @@ int mv88e6393x_port_mgmt_rsvd2cpu(struct mv88e6xxx_chip *chip)
 	return 0;
 }
 
-/* Offset 0x10 & 0x11: EPC */
+ 
 
 static int mv88e6393x_port_epc_wait_ready(struct mv88e6xxx_chip *chip, int port)
 {
@@ -1508,7 +1477,7 @@ static int mv88e6393x_port_epc_wait_ready(struct mv88e6xxx_chip *chip, int port)
 	return mv88e6xxx_port_wait_bit(chip, port, MV88E6393X_PORT_EPC_CMD, bit, 0);
 }
 
-/* Port Ether type for 6393X family */
+ 
 
 int mv88e6393x_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
 				   u16 etype)
@@ -1531,7 +1500,7 @@ int mv88e6393x_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
 	return mv88e6xxx_port_write(chip, port, MV88E6393X_PORT_EPC_CMD, val);
 }
 
-/* Offset 0x0f: Port Ether type */
+ 
 
 int mv88e6351_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
 				  u16 etype)
@@ -1539,15 +1508,13 @@ int mv88e6351_port_set_ether_type(struct mv88e6xxx_chip *chip, int port,
 	return mv88e6xxx_port_write(chip, port, MV88E6XXX_PORT_ETH_TYPE, etype);
 }
 
-/* Offset 0x18: Port IEEE Priority Remapping Registers [0-3]
- * Offset 0x19: Port IEEE Priority Remapping Registers [4-7]
- */
+ 
 
 int mv88e6095_port_tag_remap(struct mv88e6xxx_chip *chip, int port)
 {
 	int err;
 
-	/* Use a direct priority mapping for all IEEE tagged frames */
+	 
 	err = mv88e6xxx_port_write(chip, port,
 				   MV88E6095_PORT_IEEE_PRIO_REMAP_0123,
 				   0x3210);
@@ -1603,7 +1570,7 @@ int mv88e6390_port_tag_remap(struct mv88e6xxx_chip *chip, int port)
 	return 0;
 }
 
-/* Offset 0x0E: Policy Control Register */
+ 
 
 static int
 mv88e6xxx_port_policy_mapping_get_pos(enum mv88e6xxx_policy_mapping mapping,
@@ -1705,11 +1672,7 @@ int mv88e6393x_port_set_policy(struct mv88e6xxx_chip *chip, int port,
 	if (err)
 		return err;
 
-	/* The 16-bit Port Policy CTL register from older chips is on 6393x
-	 * changed to Port Policy MGMT CTL, which can access more data, but
-	 * indirectly. The original 16-bit value is divided into two 8-bit
-	 * registers.
-	 */
+	 
 	ptr = shift / 8;
 	shift %= 8;
 	mask >>= ptr * 8;

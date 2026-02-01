@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2023 Red Hat Inc, Daniel Bristot de Oliveira <bristot@kernel.org>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <sched.h>
@@ -19,16 +17,7 @@
 #include "utils.h"
 #include "timerlat_u.h"
 
-/*
- * This is the user-space main for the tool timerlatu/ threads.
- *
- * It is as simple as this:
- *  - set affinity
- *  - set priority
- *  - open tracer fd
- *  - spin
- *  - close
- */
+ 
 static int timerlat_u_main(int cpu, struct timerlat_u_params *params)
 {
 	struct sched_param sp = { .sched_priority = 95 };
@@ -37,9 +26,7 @@ static int timerlat_u_main(int cpu, struct timerlat_u_params *params)
 	cpu_set_t set;
 	int retval;
 
-	/*
-	 * This all is only setting up the tool.
-	 */
+	 
 	CPU_ZERO(&set);
 	CPU_SET(cpu, &set);
 
@@ -58,7 +45,7 @@ static int timerlat_u_main(int cpu, struct timerlat_u_params *params)
 	} else {
 		retval = __set_sched_attr(getpid(), params->sched_param);
 		if (retval) {
-			/* __set_sched_attr prints an error message, so */
+			 
 			exit(0);
 		}
 	}
@@ -71,10 +58,7 @@ static int timerlat_u_main(int cpu, struct timerlat_u_params *params)
 		}
 	}
 
-	/*
-	 * This is the tool's loop. If you want to use as base for your own tool...
-	 * go ahead.
-	 */
+	 
 	snprintf(buffer, sizeof(buffer), "osnoise/per_cpu/cpu%d/timerlat_fd", cpu);
 
 	timerlat_fd = tracefs_instance_file_open(NULL, buffer, O_RDONLY);
@@ -85,7 +69,7 @@ static int timerlat_u_main(int cpu, struct timerlat_u_params *params)
 
 	debug_msg("User-space timerlat pid %d on cpu %d\n", gettid(), cpu);
 
-	/* add should continue with a signal handler */
+	 
 	while (true) {
 		retval = read(timerlat_fd, buffer, 1024);
 		if (retval < 0)
@@ -98,11 +82,7 @@ static int timerlat_u_main(int cpu, struct timerlat_u_params *params)
 	exit(0);
 }
 
-/*
- * timerlat_u_send_kill - send a kill signal for all processes
- *
- * Return the number of processes that received the kill.
- */
+ 
 static int timerlat_u_send_kill(pid_t *procs, int nr_cpus)
 {
 	int killed = 0;
@@ -121,18 +101,7 @@ static int timerlat_u_send_kill(pid_t *procs, int nr_cpus)
 	return killed;
 }
 
-/**
- * timerlat_u_dispatcher - dispatch one timerlatu/ process per monitored CPU
- *
- * This is a thread main that will fork one new process for each monitored
- * CPU. It will wait for:
- *
- *  - rtla to tell to kill the child processes
- *  - some child process to die, and the cleanup all the processes
- *
- * whichever comes first.
- *
- */
+ 
 void *timerlat_u_dispatcher(void *data)
 {
 	int nr_cpus = sysconf(_SC_NPROCESSORS_CONF);
@@ -157,22 +126,20 @@ void *timerlat_u_dispatcher(void *data)
 
 		pid = fork();
 
-		/* child */
+		 
 		if (!pid) {
 
-			/*
-			 * rename the process
-			 */
+			 
 			snprintf(proc_name, sizeof(proc_name), "timerlatu/%d", i);
 			pthread_setname_np(pthread_self(), proc_name);
 			prctl(PR_SET_NAME, (unsigned long)proc_name, 0, 0, 0);
 
 			timerlat_u_main(i, params);
-			/* timerlat_u_main should exit()! Anyways... */
+			 
 			pthread_exit(&retval);
 		}
 
-		/* parent */
+		 
 		if (pid == -1) {
 			timerlat_u_send_kill(procs, nr_cpus);
 			debug_msg("Failed to create child processes");
@@ -184,7 +151,7 @@ void *timerlat_u_dispatcher(void *data)
 	}
 
 	while (params->should_run) {
-		/* check if processes died */
+		 
 		pid = waitpid(-1, &wstatus, WNOHANG);
 		if (pid != 0) {
 			for (i = 0; i < nr_cpus; i++) {

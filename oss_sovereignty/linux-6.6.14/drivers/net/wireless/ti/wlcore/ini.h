@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * This file is part of wl1271
- *
- * Copyright (C) 2010 Nokia Corporation
- *
- * Contact: Luciano Coelho <luciano.coelho@nokia.com>
- */
+ 
+ 
 
 #ifndef __INI_H__
 #define __INI_H__
@@ -87,7 +81,7 @@ struct wl1271_ini_fem_params_2 {
 } __packed;
 
 #define WL128X_INI_RATE_GROUP_COUNT 7
-/* low and high temperatures */
+ 
 #define WL128X_INI_PD_VS_TEMPERATURE_RANGES 2
 
 struct wl128x_ini_fem_params_2 {
@@ -156,17 +150,13 @@ struct wl128x_ini_fem_params_5 {
 	u8 normal_to_degraded_high_thr;
 } __packed;
 
-/* NVS data structure */
+ 
 #define WL1271_INI_NVS_SECTION_SIZE		     468
 
-/* We have four FEM module types: 0-RFMD, 1-TQS, 2-SKW, 3-TQS_HP */
+ 
 #define WL1271_INI_FEM_MODULE_COUNT                  4
 
-/*
- * In NVS we only store two FEM module entries -
- *	  FEM modules 0,2,3 are stored in entry 0
- *	  FEM module 1 is stored in entry 1
- */
+ 
 #define WL12XX_NVS_FEM_MODULE_COUNT                  2
 
 #define WL12XX_FEM_TO_NVS_ENTRY(ini_fem_module)      \
@@ -175,10 +165,10 @@ struct wl128x_ini_fem_params_5 {
 #define WL1271_INI_LEGACY_NVS_FILE_SIZE              800
 
 struct wl1271_nvs_file {
-	/* NVS section - must be first! */
+	 
 	u8 nvs[WL1271_INI_NVS_SECTION_SIZE];
 
-	/* INI section */
+	 
 	struct wl1271_ini_general_params general_params;
 	u8 padding1;
 	struct wl1271_ini_band_params_2 stat_radio_params_2;
@@ -196,10 +186,10 @@ struct wl1271_nvs_file {
 } __packed;
 
 struct wl128x_nvs_file {
-	/* NVS section - must be first! */
+	 
 	u8 nvs[WL1271_INI_NVS_SECTION_SIZE];
 
-	/* INI section */
+	 
 	struct wl128x_ini_general_params general_params;
 	u8 fem_vendor_and_options;
 	struct wl128x_ini_band_params_2 stat_radio_params_2;

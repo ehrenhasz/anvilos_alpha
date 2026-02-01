@@ -1,23 +1,4 @@
-/*
- *  PCM I/O Plug-In Interface
- *  Copyright (c) 1999 by Jaroslav Kysela <perex@perex.cz>
- *
- *
- *   This library is free software; you can redistribute it and/or modify
- *   it under the terms of the GNU Library General Public License as
- *   published by the Free Software Foundation; either version 2 of
- *   the License, or (at your option) any later version.
- *
- *   This program is distributed in the hope that it will be useful,
- *   but WITHOUT ANY WARRANTY; without even the implied warranty of
- *   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *   GNU Library General Public License for more details.
- *
- *   You should have received a copy of the GNU Library General Public
- *   License along with this library; if not, write to the Free Software
- *   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 USA
- *
- */
+ 
   
 #include <linux/time.h>
 #include <sound/core.h>
@@ -30,9 +11,7 @@
 #define pcm_read(plug,buf,count) snd_pcm_oss_read3(plug,buf,count,1)
 #define pcm_readv(plug,vec,count) snd_pcm_oss_readv3(plug,vec,count)
 
-/*
- *  Basic io plugin
- */
+ 
  
 static snd_pcm_sframes_t io_playback_transfer(struct snd_pcm_plugin *plugin,
 				    const struct snd_pcm_plugin_channel *src_channels,

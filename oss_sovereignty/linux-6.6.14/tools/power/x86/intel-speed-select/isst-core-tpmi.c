@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select -- Enumerate and control features for TPMI Interface
- * Copyright (c) 2022 Intel Corporation.
- */
+
+ 
 
 #include <linux/isst_if.h>
 #include "isst.h"
@@ -109,7 +106,7 @@ static char *tpmi_get_trl_level_name(int level)
 
 static void tpmi_update_platform_param(enum isst_platform_param param, int value)
 {
-	/* No params need to be updated for now */
+	 
 }
 
 static int tpmi_is_punit_valid(struct isst_id *id)
@@ -258,7 +255,7 @@ static int tpmi_get_tdp_info(struct isst_id *id, int config_index,
 static int tpmi_get_pwr_info(struct isst_id *id, int config_index,
 			     struct isst_pkg_ctdp_level_info *ctdp_level)
 {
-	/* TBD */
+	 
 	ctdp_level->pkg_max_power = 0;
 	ctdp_level->pkg_min_power = 0;
 
@@ -333,7 +330,7 @@ static int tpmi_get_get_trl(struct isst_id *id, int level, int config_index,
 	if (ret)
 		return ret;
 
-	/* FIX ME: Just return for level 0 */
+	 
 	for (i = 0; i < 8; ++i)
 		trl[i] = ctdp_level.trl_ratios[0][i];
 
@@ -538,7 +535,7 @@ static void _set_uncore_min_max(struct isst_id *id, int max, int freq)
 		return;
 
 	while ((entry = readdir(dir)) != NULL ) {
-		/* Check domain_id */
+		 
 		snprintf(buffer, sizeof(buffer),
 			 "/sys/devices/system/cpu/intel_uncore_frequency/%s/domain_id", entry->d_name);
 
@@ -554,7 +551,7 @@ static void _set_uncore_min_max(struct isst_id *id, int max, int freq)
 		if (tmp_id != id->punit)
 			continue;
 
-		/* Check package_id */
+		 
 		snprintf(buffer, sizeof(buffer),
 			 "/sys/devices/system/cpu/intel_uncore_frequency/%s/package_id", entry->d_name);
 
@@ -571,7 +568,7 @@ static void _set_uncore_min_max(struct isst_id *id, int max, int freq)
 		if (tmp_id != id->pkg)
 			continue;
 
-		/* Found the right sysfs path, adjust and quit */
+		 
 		if (max)
 			snprintf(buffer, sizeof(buffer),
 				 "/sys/devices/system/cpu/intel_uncore_frequency/%s/max_freq_khz", entry->d_name);
@@ -651,7 +648,7 @@ static int tpmi_pm_qos_config(struct isst_id *id, int enable_clos,
 
 	saved_punit = id->punit;
 
-	/* Set for all other dies also. This is per package setting */
+	 
 	for (i = 0; i < MAX_PUNIT_PER_DIE; i++) {
 		id->punit = i;
 		if (isst_is_punit_valid(id)) {
@@ -718,7 +715,7 @@ int tpmi_set_clos(struct isst_id *id, int clos,
 
 	saved_punit = id->punit;
 
-	/* Set for all other dies also. This is per package setting */
+	 
 	for (i = 0; i < MAX_PUNIT_PER_DIE; i++) {
 		id->punit = i;
 		if (isst_is_punit_valid(id)) {

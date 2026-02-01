@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) International Business Machines Corp., 2000-2004
- *   Portions Copyright (C) Christoph Hellwig, 2001-2002
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/ctype.h>
@@ -14,7 +11,7 @@
 #include "jfs_filsys.h"
 #include "jfs_debug.h"
 
-#ifdef PROC_FS_JFS /* see jfs_debug.h */
+#ifdef PROC_FS_JFS  
 
 #ifdef CONFIG_JFS_DEBUG
 static int jfs_loglevel_proc_show(struct seq_file *m, void *v)
@@ -36,7 +33,7 @@ static ssize_t jfs_loglevel_proc_write(struct file *file,
 	if (get_user(c, buffer))
 		return -EFAULT;
 
-	/* yes, I know this is an ASCIIism.  --hch */
+	 
 	if (c < '0' || c > '9')
 		return -EINVAL;
 	jfsloglevel = c - '0';
@@ -77,4 +74,4 @@ void jfs_proc_clean(void)
 	remove_proc_subtree("fs/jfs", NULL);
 }
 
-#endif /* PROC_FS_JFS */
+#endif  

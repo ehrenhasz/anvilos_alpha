@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Power Interface (SCMI) based CPUFreq Interface driver
- *
- * Copyright (C) 2018-2021 ARM Ltd.
- * Sudeep Holla <sudeep.holla@arm.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -44,11 +39,7 @@ static unsigned int scmi_cpufreq_get_rate(unsigned int cpu)
 	return rate / 1000;
 }
 
-/*
- * perf_ops->freq_set is not a synchronous, the actual OPP change will
- * happen asynchronously and can get notified if the events are
- * subscribed for by the SCMI firmware
- */
+ 
 static int
 scmi_cpufreq_set_target(struct cpufreq_policy *policy, unsigned int index)
 {
@@ -108,17 +99,17 @@ scmi_get_cpu_power(struct device *cpu_dev, unsigned long *power,
 	if (domain < 0)
 		return domain;
 
-	/* Get the power cost of the performance domain. */
+	 
 	Hz = *KHz * 1000;
 	ret = perf_ops->est_power_get(ph, domain, &Hz, power);
 	if (ret)
 		return ret;
 
-	/* Convert the power to uW if it is mW (ignore bogoW) */
+	 
 	if (power_scale == SCMI_POWER_MILLIWATTS)
 		*power *= MICROWATT_PER_MILLIWATT;
 
-	/* The EM framework specifies the frequency in KHz. */
+	 
 	*KHz = Hz / 1000;
 
 	return 0;
@@ -147,33 +138,21 @@ static int scmi_cpufreq_init(struct cpufreq_policy *policy)
 		goto out_free_priv;
 	}
 
-	/* Obtain CPUs that share SCMI performance controls */
+	 
 	ret = scmi_get_sharing_cpus(cpu_dev, policy->cpus);
 	if (ret) {
 		dev_warn(cpu_dev, "failed to get sharing cpumask\n");
 		goto out_free_cpumask;
 	}
 
-	/*
-	 * Obtain CPUs that share performance levels.
-	 * The OPP 'sharing cpus' info may come from DT through an empty opp
-	 * table and opp-shared.
-	 */
+	 
 	ret = dev_pm_opp_of_get_sharing_cpus(cpu_dev, priv->opp_shared_cpus);
 	if (ret || cpumask_empty(priv->opp_shared_cpus)) {
-		/*
-		 * Either opp-table is not set or no opp-shared was found.
-		 * Use the CPU mask from SCMI to designate CPUs sharing an OPP
-		 * table.
-		 */
+		 
 		cpumask_copy(priv->opp_shared_cpus, policy->cpus);
 	}
 
-	 /*
-	  * A previous CPU may have marked OPPs as shared for a few CPUs, based on
-	  * what OPP core provided. If the current CPU is part of those few, then
-	  * there is no need to add OPPs again.
-	  */
+	  
 	nr_opp = dev_pm_opp_get_opp_count(cpu_dev);
 	if (nr_opp <= 0) {
 		ret = perf_ops->device_opps_add(ph, cpu_dev);
@@ -214,7 +193,7 @@ static int scmi_cpufreq_init(struct cpufreq_policy *policy)
 	policy->driver_data = priv;
 	policy->freq_table = freq_table;
 
-	/* SCMI allows DVFS request for any domain from any CPU */
+	 
 	policy->dvfs_possible_from_any_cpu = true;
 
 	latency = perf_ops->transition_latency_get(ph, cpu_dev);
@@ -259,13 +238,7 @@ static void scmi_cpufreq_register_em(struct cpufreq_policy *policy)
 	struct scmi_data *priv = policy->driver_data;
 	bool em_power_scale = false;
 
-	/*
-	 * This callback will be called for each policy, but we don't need to
-	 * register with EM every time. Despite not being part of the same
-	 * policy, some CPUs may still share their perf-domains, and a CPU from
-	 * another policy may already have registered with EM on behalf of CPUs
-	 * of this policy.
-	 */
+	 
 	if (!priv->nr_opp)
 		return;
 
@@ -309,7 +282,7 @@ static int scmi_cpufreq_probe(struct scmi_device *sdev)
 		return PTR_ERR(perf_ops);
 
 #ifdef CONFIG_COMMON_CLK
-	/* dummy clock provider as needed by OPP if clocks property is used */
+	 
 	if (of_property_present(dev->of_node, "#clock-cells")) {
 		ret = devm_of_clk_add_hw_provider(dev, of_clk_hw_simple_get, NULL);
 		if (ret)

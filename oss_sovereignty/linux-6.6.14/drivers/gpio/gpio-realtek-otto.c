@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/gpio/driver.h>
 #include <linux/cpumask.h>
@@ -9,24 +9,16 @@
 #include <linux/platform_device.h>
 #include <linux/property.h>
 
-/*
- * Total register block size is 0x1C for one bank of four ports (A, B, C, D).
- * An optional second bank, with ports E, F, G, and H, may be present, starting
- * at register offset 0x1C.
- */
+ 
 
-/*
- * Pin select: (0) "normal", (1) "dedicate peripheral"
- * Not used on RTL8380/RTL8390, peripheral selection is managed by control bits
- * in the peripheral registers.
- */
+ 
 #define REALTEK_GPIO_REG_CNR		0x00
-/* Clear bit (0) for input, set bit (1) for output */
+ 
 #define REALTEK_GPIO_REG_DIR		0x08
 #define REALTEK_GPIO_REG_DATA		0x0C
-/* Read bit for IRQ status, write 1 to clear IRQ */
+ 
 #define REALTEK_GPIO_REG_ISR		0x10
-/* Two bits per GPIO in IMR registers */
+ 
 #define REALTEK_GPIO_REG_IMR		0x14
 #define REALTEK_GPIO_REG_IMR_AB		0x14
 #define REALTEK_GPIO_REG_IMR_CD		0x18
@@ -38,31 +30,7 @@
 #define REALTEK_GPIO_MAX		32
 #define REALTEK_GPIO_PORTS_PER_BANK	4
 
-/**
- * realtek_gpio_ctrl - Realtek Otto GPIO driver data
- *
- * @gc: Associated gpio_chip instance
- * @base: Base address of the register block for a GPIO bank
- * @lock: Lock for accessing the IRQ registers and values
- * @intr_mask: Mask for interrupts lines
- * @intr_type: Interrupt type selection
- * @bank_read: Read a bank setting as a single 32-bit value
- * @bank_write: Write a bank setting as a single 32-bit value
- * @imr_line_pos: Bit shift of an IRQ line's IMR value.
- *
- * The DIR, DATA, and ISR registers consist of four 8-bit port values, packed
- * into a single 32-bit register. Use @bank_read (@bank_write) to get (assign)
- * a value from (to) these registers. The IMR register consists of four 16-bit
- * port values, packed into two 32-bit registers. Use @imr_line_pos to get the
- * bit shift of the 2-bit field for a line's IMR settings. Shifts larger than
- * 32 overflow into the second register.
- *
- * Because the interrupt mask register (IMR) combines the function of IRQ type
- * selection and masking, two extra values are stored. @intr_mask is used to
- * mask/unmask the interrupts for a GPIO line, and @intr_type is used to store
- * the selected interrupt types. The logical AND of these values is written to
- * IMR on changes.
- */
+ 
 struct realtek_gpio_ctrl {
 	struct gpio_chip gc;
 	void __iomem *base;
@@ -76,24 +44,13 @@ struct realtek_gpio_ctrl {
 	unsigned int (*line_imr_pos)(unsigned int line);
 };
 
-/* Expand with more flags as devices with other quirks are added */
+ 
 enum realtek_gpio_flags {
-	/*
-	 * Allow disabling interrupts, for cases where the port order is
-	 * unknown. This may result in a port mismatch between ISR and IMR.
-	 * An interrupt would appear to come from a different line than the
-	 * line the IRQ handler was assigned to, causing uncaught interrupts.
-	 */
+	 
 	GPIO_INTERRUPTS_DISABLED = BIT(0),
-	/*
-	 * Port order is reversed, meaning DCBA register layout for 1-bit
-	 * fields, and [BA, DC] for 2-bit fields.
-	 */
+	 
 	GPIO_PORTS_REVERSED = BIT(1),
-	/*
-	 * Interrupts can be enabled per cpu. This requires a secondary IO
-	 * range, where the per-cpu enable masks are located.
-	 */
+	 
 	GPIO_INTERRUPTS_PER_CPU = BIT(2),
 };
 
@@ -104,14 +61,7 @@ static struct realtek_gpio_ctrl *irq_data_to_ctrl(struct irq_data *data)
 	return container_of(gc, struct realtek_gpio_ctrl, gc);
 }
 
-/*
- * Normal port order register access
- *
- * Port information is stored with the first port at offset 0, followed by the
- * second, etc. Most registers store one bit per GPIO and use a u8 value per
- * port. The two interrupt mask registers store two bits per GPIO, so use u16
- * values.
- */
+ 
 static u32 realtek_gpio_bank_read_swapped(void __iomem *reg)
 {
 	return ioread32be(reg);
@@ -130,14 +80,7 @@ static unsigned int realtek_gpio_line_imr_pos_swapped(unsigned int line)
 	return 2 * (8 * (port ^ 1) + port_pin);
 }
 
-/*
- * Reversed port order register access
- *
- * For registers with one bit per GPIO, all ports are stored as u8-s in one
- * register in reversed order. The two interrupt mask registers store two bits
- * per GPIO, so use u16 values. The first register contains ports 1 and 0, the
- * second ports 3 and 2.
- */
+ 
 static u32 realtek_gpio_bank_read(void __iomem *reg)
 {
 	return ioread32(reg);
@@ -163,7 +106,7 @@ static u32 realtek_gpio_read_isr(struct realtek_gpio_ctrl *ctrl)
 	return ctrl->bank_read(ctrl->base + REALTEK_GPIO_REG_ISR);
 }
 
-/* Set the rising and falling edge mask bits for a GPIO pin */
+ 
 static void realtek_gpio_update_line_imr(struct realtek_gpio_ctrl *ctrl, unsigned int line)
 {
 	void __iomem *reg = ctrl->base + REALTEK_GPIO_REG_IMR;

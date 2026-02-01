@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Freescale QUICC Engine USB Host Controller Driver
- *
- * Copyright (c) Freescale Semicondutor, Inc. 2006.
- *               Shlomi Gridish <gridish@freescale.com>
- *               Jerry Huang <Chang-Ming.Huang@freescale.com>
- * Copyright (c) Logic Product Development, Inc. 2007
- *               Peter Barada <peterb@logicpd.com>
- * Copyright (c) MontaVista Software, Inc. 2008.
- *               Anton Vorontsov <avorontsov@ru.mvista.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>

@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- *  linux/drivers/cpufreq/cpufreq_userspace.c
- *
- *  Copyright (C)  2001 Russell King
- *            (C)  2002 - 2004 Dominik Brodowski <linux@brodo.de>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -18,13 +13,7 @@
 static DEFINE_PER_CPU(unsigned int, cpu_is_managed);
 static DEFINE_MUTEX(userspace_mutex);
 
-/**
- * cpufreq_set - set the CPU frequency
- * @policy: pointer to policy struct where freq is being set
- * @freq: target frequency in kHz
- *
- * Sets the CPU frequency to freq.
- */
+ 
 static int cpufreq_set(struct cpufreq_policy *policy, unsigned int freq)
 {
 	int ret = -EINVAL;

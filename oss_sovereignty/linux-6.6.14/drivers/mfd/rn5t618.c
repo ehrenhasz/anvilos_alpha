@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MFD core driver for Ricoh RN5T618 PMIC
- *
- * Copyright (C) 2014 Beniamino Galvani <b.galvani@gmail.com>
- * Copyright (C) 2016 Toradex AG
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -118,7 +113,7 @@ static void rn5t618_trigger_poweroff_sequence(bool repower)
 {
 	int ret;
 
-	/* disable automatic repower-on */
+	 
 	ret = i2c_smbus_read_byte_data(rn5t618_pm_power_off, RN5T618_REPCNT);
 	if (ret < 0)
 		goto err;
@@ -132,7 +127,7 @@ static void rn5t618_trigger_poweroff_sequence(bool repower)
 	if (ret < 0)
 		goto err;
 
-	/* start power-off sequence */
+	 
 	ret = i2c_smbus_read_byte_data(rn5t618_pm_power_off, RN5T618_SLPCNT);
 	if (ret < 0)
 		goto err;
@@ -160,10 +155,7 @@ static int rn5t618_restart(struct notifier_block *this,
 {
 	rn5t618_trigger_poweroff_sequence(true);
 
-	/*
-	 * Re-power factor detection on PMIC side is not instant. 1ms
-	 * proved to be enough time until reset takes effect.
-	 */
+	 
 	mdelay(1);
 
 	return NOTIFY_DONE;

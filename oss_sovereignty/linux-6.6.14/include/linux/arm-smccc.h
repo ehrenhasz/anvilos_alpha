@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2015, Linaro Limited
- */
+ 
+ 
 #ifndef __LINUX_ARM_SMCCC_H
 #define __LINUX_ARM_SMCCC_H
 
@@ -9,13 +7,7 @@
 #include <linux/init.h>
 #include <uapi/linux/const.h>
 
-/*
- * This file provides common defines for ARM SMC Calling Convention as
- * specified in
- * https://developer.arm.com/docs/den0028/latest
- *
- * This code is up-to-date with version DEN 0028 C
- */
+ 
 
 #define ARM_SMCCC_STD_CALL	        _AC(0,U)
 #define ARM_SMCCC_FAST_CALL	        _AC(1,U)
@@ -59,7 +51,7 @@
 #define ARM_SMCCC_FUNC_QUERY_CALL_UID  0xff01
 
 #define ARM_SMCCC_QUIRK_NONE		0
-#define ARM_SMCCC_QUIRK_QCOM_A6		1 /* Save/restore register a6 */
+#define ARM_SMCCC_QUIRK_QCOM_A6		1  
 
 #define ARM_SMCCC_VERSION_1_0		0x10000
 #define ARM_SMCCC_VERSION_1_1		0x10001
@@ -106,13 +98,13 @@
 			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
 			   ARM_SMCCC_FUNC_QUERY_CALL_UID)
 
-/* KVM UID value: 28b46fb6-2ec5-11e9-a9ca-4b564d003a74 */
+ 
 #define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_0	0xb66fb428U
 #define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_1	0xe911c52eU
 #define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_2	0x564bcaa9U
 #define ARM_SMCCC_VENDOR_HYP_UID_KVM_REG_3	0x743a004dU
 
-/* KVM "vendor specific" services */
+ 
 #define ARM_SMCCC_KVM_FUNC_FEATURES		0
 #define ARM_SMCCC_KVM_FUNC_PTP			1
 #define ARM_SMCCC_KVM_FUNC_FEATURES_2		127
@@ -126,22 +118,18 @@
 
 #define SMCCC_ARCH_WORKAROUND_RET_UNAFFECTED	1
 
-/*
- * ptp_kvm is a feature used for time sync between vm and host.
- * ptp_kvm module in guest kernel will get service from host using
- * this hypercall ID.
- */
+ 
 #define ARM_SMCCC_VENDOR_HYP_KVM_PTP_FUNC_ID				\
 	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,				\
 			   ARM_SMCCC_SMC_32,				\
 			   ARM_SMCCC_OWNER_VENDOR_HYP,			\
 			   ARM_SMCCC_KVM_FUNC_PTP)
 
-/* ptp_kvm counter type ID */
+ 
 #define KVM_PTP_VIRT_COUNTER			0
 #define KVM_PTP_PHYS_COUNTER			1
 
-/* Paravirtualised time calls (defined by ARM DEN0057A) */
+ 
 #define ARM_SMCCC_HV_PV_TIME_FEATURES				\
 	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
 			   ARM_SMCCC_SMC_64,			\
@@ -154,7 +142,7 @@
 			   ARM_SMCCC_OWNER_STANDARD_HYP,	\
 			   0x21)
 
-/* TRNG entropy source calls (defined by ARM DEN0098) */
+ 
 #define ARM_SMCCC_TRNG_VERSION					\
 	ARM_SMCCC_CALL_VAL(ARM_SMCCC_FAST_CALL,			\
 			   ARM_SMCCC_SMC_32,			\
@@ -185,10 +173,7 @@
 			   ARM_SMCCC_OWNER_STANDARD,		\
 			   0x53)
 
-/*
- * Return codes defined in ARM DEN 0070A
- * ARM DEN 0070A is now merged/consolidated into ARM DEN 0028 C
- */
+ 
 #define SMCCC_RET_SUCCESS			0
 #define SMCCC_RET_NOT_SUPPORTED			-1
 #define SMCCC_RET_NOT_REQUIRED			-2
@@ -205,52 +190,23 @@ enum arm_smccc_conduit {
 	SMCCC_CONDUIT_HVC,
 };
 
-/**
- * arm_smccc_1_1_get_conduit()
- *
- * Returns the conduit to be used for SMCCCv1.1 or later.
- *
- * When SMCCCv1.1 is not present, returns SMCCC_CONDUIT_NONE.
- */
+ 
 enum arm_smccc_conduit arm_smccc_1_1_get_conduit(void);
 
-/**
- * arm_smccc_get_version()
- *
- * Returns the version to be used for SMCCCv1.1 or later.
- *
- * When SMCCCv1.1 or above is not present, returns SMCCCv1.0, but this
- * does not imply the presence of firmware or a valid conduit. Caller
- * handling SMCCCv1.0 must determine the conduit by other means.
- */
+ 
 u32 arm_smccc_get_version(void);
 
 void __init arm_smccc_version_init(u32 version, enum arm_smccc_conduit conduit);
 
 extern u64 smccc_has_sve_hint;
 
-/**
- * arm_smccc_get_soc_id_version()
- *
- * Returns the SOC ID version.
- *
- * When ARM_SMCCC_ARCH_SOC_ID is not present, returns SMCCC_RET_NOT_SUPPORTED.
- */
+ 
 s32 arm_smccc_get_soc_id_version(void);
 
-/**
- * arm_smccc_get_soc_id_revision()
- *
- * Returns the SOC ID revision.
- *
- * When ARM_SMCCC_ARCH_SOC_ID is not present, returns SMCCC_RET_NOT_SUPPORTED.
- */
+ 
 s32 arm_smccc_get_soc_id_revision(void);
 
-/**
- * struct arm_smccc_res - Result from SMC/HVC call
- * @a0-a3 result values from registers 0 to 3
- */
+ 
 struct arm_smccc_res {
 	unsigned long a0;
 	unsigned long a1;
@@ -259,10 +215,7 @@ struct arm_smccc_res {
 };
 
 #ifdef CONFIG_ARM64
-/**
- * struct arm_smccc_1_2_regs - Arguments for or Results from SMC/HVC call
- * @a0-a17 argument values from registers 0 to 17
- */
+ 
 struct arm_smccc_1_2_regs {
 	unsigned long a0;
 	unsigned long a1;
@@ -284,41 +237,16 @@ struct arm_smccc_1_2_regs {
 	unsigned long a17;
 };
 
-/**
- * arm_smccc_1_2_hvc() - make HVC calls
- * @args: arguments passed via struct arm_smccc_1_2_regs
- * @res: result values via struct arm_smccc_1_2_regs
- *
- * This function is used to make HVC calls following SMC Calling Convention
- * v1.2 or above. The content of the supplied param are copied from the
- * structure to registers prior to the HVC instruction. The return values
- * are updated with the content from registers on return from the HVC
- * instruction.
- */
+ 
 asmlinkage void arm_smccc_1_2_hvc(const struct arm_smccc_1_2_regs *args,
 				  struct arm_smccc_1_2_regs *res);
 
-/**
- * arm_smccc_1_2_smc() - make SMC calls
- * @args: arguments passed via struct arm_smccc_1_2_regs
- * @res: result values via struct arm_smccc_1_2_regs
- *
- * This function is used to make SMC calls following SMC Calling Convention
- * v1.2 or above. The content of the supplied param are copied from the
- * structure to registers prior to the SMC instruction. The return values
- * are updated with the content from registers on return from the SMC
- * instruction.
- */
+ 
 asmlinkage void arm_smccc_1_2_smc(const struct arm_smccc_1_2_regs *args,
 				  struct arm_smccc_1_2_regs *res);
 #endif
 
-/**
- * struct arm_smccc_quirk - Contains quirk information
- * @id: quirk identification
- * @state: quirk specific information
- * @a6: Qualcomm quirk entry for returning post-smc call contents of a6
- */
+ 
 struct arm_smccc_quirk {
 	int	id;
 	union {
@@ -326,27 +254,10 @@ struct arm_smccc_quirk {
 	} state;
 };
 
-/**
- * __arm_smccc_sve_check() - Set the SVE hint bit when doing SMC calls
- *
- * Sets the SMCCC hint bit to indicate if there is live state in the SVE
- * registers, this modifies x0 in place and should never be called from C
- * code.
- */
+ 
 asmlinkage unsigned long __arm_smccc_sve_check(unsigned long x0);
 
-/**
- * __arm_smccc_smc() - make SMC calls
- * @a0-a7: arguments passed in registers 0 to 7
- * @res: result values from registers 0 to 3
- * @quirk: points to an arm_smccc_quirk, or NULL when no quirks are required.
- *
- * This function is used to make SMC calls following SMC Calling Convention.
- * The content of the supplied param are copied to registers 0 to 7 prior
- * to the SMC instruction. The return values are updated with the content
- * from register 0 to 3 on return from the SMC instruction.  An optional
- * quirk structure provides vendor specific behavior.
- */
+ 
 #ifdef CONFIG_HAVE_ARM_SMCCC
 asmlinkage void __arm_smccc_smc(unsigned long a0, unsigned long a1,
 			unsigned long a2, unsigned long a3, unsigned long a4,
@@ -362,18 +273,7 @@ static inline void __arm_smccc_smc(unsigned long a0, unsigned long a1,
 }
 #endif
 
-/**
- * __arm_smccc_hvc() - make HVC calls
- * @a0-a7: arguments passed in registers 0 to 7
- * @res: result values from registers 0 to 3
- * @quirk: points to an arm_smccc_quirk, or NULL when no quirks are required.
- *
- * This function is used to make HVC calls following SMC Calling
- * Convention.  The content of the supplied param are copied to registers 0
- * to 7 prior to the HVC instruction. The return values are updated with
- * the content from register 0 to 3 on return from the HVC instruction.  An
- * optional quirk structure provides vendor specific behavior.
- */
+ 
 asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
 			unsigned long a2, unsigned long a3, unsigned long a4,
 			unsigned long a5, unsigned long a6, unsigned long a7,
@@ -387,7 +287,7 @@ asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
 
 #define arm_smccc_hvc_quirk(...) __arm_smccc_hvc(__VA_ARGS__)
 
-/* SMCCC v1.1 implementation madness follows */
+ 
 #ifdef CONFIG_ARM64
 
 #define SMCCC_SMC_INST	"smc	#0"
@@ -402,7 +302,7 @@ asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
 
 #endif
 
-/* nVHE hypervisor doesn't have a current thread so needs separate checks */
+ 
 #if defined(CONFIG_ARM64_SVE) && !defined(__KVM_NVHE_HYPERVISOR__)
 
 #define SMCCC_SVE_CHECK ALTERNATIVE("nop \n",  "bl __arm_smccc_sve_check \n", \
@@ -473,11 +373,7 @@ asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
 	__declare_arg_8(a0, a1, a2, a3, a4, a5, a6, res);		\
 	register typeof(a7) arg7 asm("r7") = __a7
 
-/*
- * We have an output list that is not necessarily used, and GCC feels
- * entitled to optimise the whole sequence away. "volatile" is what
- * makes it stick.
- */
+ 
 #define __arm_smccc_1_1(inst, ...)					\
 	do {								\
 		register unsigned long r0 asm("r0");			\
@@ -496,43 +392,13 @@ asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
 			*___res = (typeof(*___res)){r0, r1, r2, r3};	\
 	} while (0)
 
-/*
- * arm_smccc_1_1_smc() - make an SMCCC v1.1 compliant SMC call
- *
- * This is a variadic macro taking one to eight source arguments, and
- * an optional return structure.
- *
- * @a0-a7: arguments passed in registers 0 to 7
- * @res: result values from registers 0 to 3
- *
- * This macro is used to make SMC calls following SMC Calling Convention v1.1.
- * The content of the supplied param are copied to registers 0 to 7 prior
- * to the SMC instruction. The return values are updated with the content
- * from register 0 to 3 on return from the SMC instruction if not NULL.
- */
+ 
 #define arm_smccc_1_1_smc(...)	__arm_smccc_1_1(SMCCC_SMC_INST, __VA_ARGS__)
 
-/*
- * arm_smccc_1_1_hvc() - make an SMCCC v1.1 compliant HVC call
- *
- * This is a variadic macro taking one to eight source arguments, and
- * an optional return structure.
- *
- * @a0-a7: arguments passed in registers 0 to 7
- * @res: result values from registers 0 to 3
- *
- * This macro is used to make HVC calls following SMC Calling Convention v1.1.
- * The content of the supplied param are copied to registers 0 to 7 prior
- * to the HVC instruction. The return values are updated with the content
- * from register 0 to 3 on return from the HVC instruction if not NULL.
- */
+ 
 #define arm_smccc_1_1_hvc(...)	__arm_smccc_1_1(SMCCC_HVC_INST, __VA_ARGS__)
 
-/*
- * Like arm_smccc_1_1* but always returns SMCCC_RET_NOT_SUPPORTED.
- * Used when the SMCCC conduit is not defined. The empty asm statement
- * avoids compiler warnings about unused variables.
- */
+ 
 #define __fail_smccc_1_1(...)						\
 	do {								\
 		CONCATENATE(__declare_arg_,				\
@@ -545,21 +411,7 @@ asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
 			___res->a0 = SMCCC_RET_NOT_SUPPORTED;		\
 	} while (0)
 
-/*
- * arm_smccc_1_1_invoke() - make an SMCCC v1.1 compliant call
- *
- * This is a variadic macro taking one to eight source arguments, and
- * an optional return structure.
- *
- * @a0-a7: arguments passed in registers 0 to 7
- * @res: result values from registers 0 to 3
- *
- * This macro will make either an HVC call or an SMC call depending on the
- * current SMCCC conduit. If no valid conduit is available then -1
- * (SMCCC_RET_NOT_SUPPORTED) is returned in @res.a0 (if supplied).
- *
- * The return value also provides the conduit that was used.
- */
+ 
 #define arm_smccc_1_1_invoke(...) ({					\
 		int method = arm_smccc_1_1_get_conduit();		\
 		switch (method) {					\
@@ -577,5 +429,5 @@ asmlinkage void __arm_smccc_hvc(unsigned long a0, unsigned long a1,
 		method;							\
 	})
 
-#endif /*__ASSEMBLY__*/
-#endif /*__LINUX_ARM_SMCCC_H*/
+#endif  
+#endif  

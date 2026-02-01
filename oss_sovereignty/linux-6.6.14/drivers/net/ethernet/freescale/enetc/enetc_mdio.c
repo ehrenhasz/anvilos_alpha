@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
-/* Copyright 2019 NXP */
+
+ 
 
 #include <linux/fsl/enetc_mdio.h>
 #include <linux/mdio.h>
@@ -9,17 +9,17 @@
 
 #include "enetc_pf.h"
 
-#define	ENETC_MDIO_CFG	0x0	/* MDIO configuration and status */
-#define	ENETC_MDIO_CTL	0x4	/* MDIO control */
-#define	ENETC_MDIO_DATA	0x8	/* MDIO data */
-#define	ENETC_MDIO_ADDR	0xc	/* MDIO address */
+#define	ENETC_MDIO_CFG	0x0	 
+#define	ENETC_MDIO_CTL	0x4	 
+#define	ENETC_MDIO_DATA	0x8	 
+#define	ENETC_MDIO_ADDR	0xc	 
 
 #define MDIO_CFG_CLKDIV(x)	((((x) >> 1) & 0xff) << 8)
 #define MDIO_CFG_BSY		BIT(0)
 #define MDIO_CFG_RD_ER		BIT(1)
 #define MDIO_CFG_HOLD(x)	(((x) << 2) & GENMASK(4, 2))
 #define MDIO_CFG_ENC45		BIT(6)
- /* external MDIO only - driven on neg MDC edge */
+  
 #define MDIO_CFG_NEG		BIT(23)
 
 #define ENETC_EMDIO_CFG \
@@ -73,11 +73,11 @@ int enetc_mdio_write_c22(struct mii_bus *bus, int phy_id, int regnum,
 	if (ret)
 		return ret;
 
-	/* set port and dev addr */
+	 
 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
 
-	/* write the value */
+	 
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_DATA, value);
 
 	ret = enetc_mdio_wait_complete(mdio_priv);
@@ -104,18 +104,18 @@ int enetc_mdio_write_c45(struct mii_bus *bus, int phy_id, int dev_addr,
 	if (ret)
 		return ret;
 
-	/* set port and dev addr */
+	 
 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
 
-	/* set the register address */
+	 
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
 
 	ret = enetc_mdio_wait_complete(mdio_priv);
 	if (ret)
 		return ret;
 
-	/* write the value */
+	 
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_DATA, value);
 
 	ret = enetc_mdio_wait_complete(mdio_priv);
@@ -143,18 +143,18 @@ int enetc_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
 	if (ret)
 		return ret;
 
-	/* set port and device addr */
+	 
 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
 
-	/* initiate the read */
+	 
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl | MDIO_CTL_READ);
 
 	ret = enetc_mdio_wait_complete(mdio_priv);
 	if (ret)
 		return ret;
 
-	/* return all Fs if nothing was there */
+	 
 	if (enetc_mdio_rd(mdio_priv, ENETC_MDIO_CFG) & MDIO_CFG_RD_ER) {
 		dev_dbg(&bus->dev,
 			"Error while reading PHY%d reg at %d.%d\n",
@@ -185,25 +185,25 @@ int enetc_mdio_read_c45(struct mii_bus *bus, int phy_id, int dev_addr,
 	if (ret)
 		return ret;
 
-	/* set port and device addr */
+	 
 	mdio_ctl = MDIO_CTL_PORT_ADDR(phy_id) | MDIO_CTL_DEV_ADDR(dev_addr);
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl);
 
-	/* set the register address */
+	 
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_ADDR, regnum & 0xffff);
 
 	ret = enetc_mdio_wait_complete(mdio_priv);
 	if (ret)
 		return ret;
 
-	/* initiate the read */
+	 
 	enetc_mdio_wr(mdio_priv, ENETC_MDIO_CTL, mdio_ctl | MDIO_CTL_READ);
 
 	ret = enetc_mdio_wait_complete(mdio_priv);
 	if (ret)
 		return ret;
 
-	/* return all Fs if nothing was there */
+	 
 	if (enetc_mdio_rd(mdio_priv, ENETC_MDIO_CFG) & MDIO_CFG_RD_ER) {
 		dev_dbg(&bus->dev,
 			"Error while reading PHY%d reg at %d.%d\n",
@@ -231,6 +231,6 @@ struct enetc_hw *enetc_hw_alloc(struct device *dev, void __iomem *port_regs)
 }
 EXPORT_SYMBOL_GPL(enetc_hw_alloc);
 
-/* Lock for MDIO access errata on LS1028A */
+ 
 DEFINE_RWLOCK(enetc_mdio_lock);
 EXPORT_SYMBOL_GPL(enetc_mdio_lock);

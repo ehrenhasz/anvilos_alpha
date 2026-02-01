@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW89_8852A_RFK_TABLE_H__
 #define __RTW89_8852A_RFK_TABLE_H__

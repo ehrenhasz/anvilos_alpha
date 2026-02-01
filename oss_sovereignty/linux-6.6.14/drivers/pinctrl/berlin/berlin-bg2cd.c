@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Berlin BG2CD pinctrl driver.
- *
- * Copyright (C) 2014 Marvell Technology Group Ltd.
- *
- * Antoine Ténart <antoine.tenart@free-electrons.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/of_device.h>
@@ -15,7 +9,7 @@
 #include "berlin.h"
 
 static const struct berlin_desc_group berlin2cd_soc_pinctrl_groups[] = {
-	/* G */
+	 
 	BERLIN_PINCTRL_GROUP("G0", 0x00, 0x3, 0x00,
 		BERLIN_PINCTRL_FUNCTION(0x0, "jtag"),
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio"),
@@ -58,24 +52,24 @@ static const struct berlin_desc_group berlin2cd_soc_pinctrl_groups[] = {
 		BERLIN_PINCTRL_FUNCTION(0x6, "usb0_dbg"),
 		BERLIN_PINCTRL_FUNCTION(0x7, "usb1_dbg")),
 	BERLIN_PINCTRL_GROUP("G6", 0x00, 0x3, 0x12,
-		BERLIN_PINCTRL_FUNCTION(0x0, "uart0"),	/* RX/TX */
+		BERLIN_PINCTRL_FUNCTION(0x0, "uart0"),	 
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio")),
 	BERLIN_PINCTRL_GROUP("G7", 0x00, 0x3, 0x15,
 		BERLIN_PINCTRL_FUNCTION(0x0, "eddc"),
 		BERLIN_PINCTRL_FUNCTION(0x1, "twsi1"),
 		BERLIN_PINCTRL_FUNCTION(0x2, "gpio")),
 	BERLIN_PINCTRL_GROUP("G8", 0x00, 0x3, 0x18,
-		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* SS0n */
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio")),
 	BERLIN_PINCTRL_GROUP("G9", 0x00, 0x3, 0x1b,
 		BERLIN_PINCTRL_FUNCTION(0x0, "gpio"),
-		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"), /* SS1n/SS2n */
+		BERLIN_PINCTRL_FUNCTION(0x1, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x3, "twsi0")),
 	BERLIN_PINCTRL_GROUP("G10", 0x00, 0x2, 0x1e,
-		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* CLK */
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio")),
 	BERLIN_PINCTRL_GROUP("G11", 0x04, 0x2, 0x00,
-		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"), /* SDI/SDO */
+		BERLIN_PINCTRL_FUNCTION(0x0, "spi1"),  
 		BERLIN_PINCTRL_FUNCTION(0x1, "gpio")),
 	BERLIN_PINCTRL_GROUP("G12", 0x04, 0x3, 0x02,
 		BERLIN_PINCTRL_FUNCTION(0x0, "usb1"),
@@ -121,7 +115,7 @@ static const struct berlin_desc_group berlin2cd_soc_pinctrl_groups[] = {
 };
 
 static const struct berlin_desc_group berlin2cd_sysmgr_pinctrl_groups[] = {
-	/* GSM */
+	 
 	BERLIN_PINCTRL_GROUP("GSM0", 0x40, 0x2, 0x00,
 		BERLIN_PINCTRL_FUNCTION_UNKNOWN),
 	BERLIN_PINCTRL_GROUP("GSM1", 0x40, 0x2, 0x02,

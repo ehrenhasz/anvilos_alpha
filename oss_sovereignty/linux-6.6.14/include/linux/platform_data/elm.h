@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * BCH Error Location Module
- *
- * Copyright (C) 2012 Texas Instruments Incorporated - https://www.ti.com/
- */
+ 
+ 
 
 #ifndef __ELM_H
 #define __ELM_H
@@ -14,17 +10,10 @@ enum bch_ecc {
 	BCH16_ECC,
 };
 
-/* ELM support 8 error syndrome process */
+ 
 #define ERROR_VECTOR_MAX		8
 
-/**
- * struct elm_errorvec - error vector for elm
- * @error_reported:		set true for vectors error is reported
- * @error_uncorrectable:	number of uncorrectable errors
- * @error_count:		number of correctable errors in the sector
- * @error_loc:			buffer for error location
- *
- */
+ 
 struct elm_errorvec {
 	bool error_reported;
 	bool error_uncorrectable;
@@ -50,6 +39,6 @@ static inline int elm_config(struct device *dev, enum bch_ecc bch_type,
 {
 	return -ENOSYS;
 }
-#endif /* CONFIG_MTD_NAND_OMAP_BCH */
+#endif  
 
-#endif /* __ELM_H */
+#endif  

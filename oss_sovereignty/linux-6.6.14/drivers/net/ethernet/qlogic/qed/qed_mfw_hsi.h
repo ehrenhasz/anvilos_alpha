@@ -1,37 +1,26 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2019-2021 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef _QED_MFW_HSI_H
 #define _QED_MFW_HSI_H
 
 #define MFW_TRACE_SIGNATURE     0x25071946
 
-/* The trace in the buffer */
+ 
 #define MFW_TRACE_EVENTID_MASK          0x00ffff
 #define MFW_TRACE_PRM_SIZE_MASK         0x0f0000
 #define MFW_TRACE_PRM_SIZE_OFFSET	16
 #define MFW_TRACE_ENTRY_SIZE            3
 
 struct mcp_trace {
-	u32 signature;		/* Help to identify that the trace is valid */
-	u32 size;		/* the size of the trace buffer in bytes */
-	u32 curr_level;		/* 2 - all will be written to the buffer
-				 * 1 - debug trace will not be written
-				 * 0 - just errors will be written to the buffer
-				 */
-	u32 modules_mask[2];	/* a bit per module, 1 means write it, 0 means
-				 * mask it.
-				 */
+	u32 signature;		 
+	u32 size;		 
+	u32 curr_level;		 
+	u32 modules_mask[2];	 
 
-	/* Warning: the following pointers are assumed to be 32bits as they are
-	 * used only in the MFW.
-	 */
-	u32 trace_prod; /* The next trace will be written to this offset */
-	u32 trace_oldest; /* The oldest valid trace starts at this offset
-			   * (usually very close after the current producer).
-			   */
+	 
+	u32 trace_prod;  
+	u32 trace_oldest;  
 };
 
 #define VF_MAX_STATIC 192
@@ -48,11 +37,11 @@ struct mcp_trace {
 #define MCP_GLOB_PORT_MAX	4
 #define MCP_GLOB_FUNC_MAX	16
 
-typedef u32 offsize_t;		/* In DWORDS !!! */
-/* Offset from the beginning of the MCP scratchpad */
+typedef u32 offsize_t;		 
+ 
 #define OFFSIZE_OFFSET_SHIFT	0
 #define OFFSIZE_OFFSET_MASK	0x0000ffff
-/* Size of specific element (not the whole array if any) */
+ 
 #define OFFSIZE_SIZE_SHIFT	16
 #define OFFSIZE_SIZE_MASK	0xffff0000
 
@@ -71,7 +60,7 @@ typedef u32 offsize_t;		/* In DWORDS !!! */
 #define SECTION_OFFSIZE_ADDR(_pub_base, _section)	\
 	((_pub_base) + offsetof(struct mcp_public_data, sections[_section]))
 
-/* PHY configuration */
+ 
 struct eth_phy_cfg {
 	u32					speed;
 #define ETH_SPEED_AUTONEG			0x0
@@ -556,7 +545,7 @@ struct dci_npiv_settings {
 };
 
 struct dci_fc_npiv_cfg {
-	/* hdr used internally by the MFW */
+	 
 	u32 hdr;
 	u32 num_of_npiv;
 };
@@ -649,7 +638,7 @@ struct public_port {
 	struct lldp_status_params_s lldp_status_params[LLDP_MAX_LLDP_AGENTS];
 	struct lldp_system_tlvs_buffer_s system_lldp_tlvs_buf;
 
-	/* DCBX related MIB */
+	 
 	struct dcbx_local_params local_admin_dcbx_mib;
 	struct dcbx_mib remote_dcbx_mib;
 	struct dcbx_mib operational_dcbx_mib;
@@ -939,7 +928,7 @@ struct temperature_status_stc {
 	u32 sensor[MAX_NUM_OF_SENSORS];
 };
 
-/* crash dump configuration header */
+ 
 struct mdump_config_stc {
 	u32 version;
 	u32 config;
@@ -976,13 +965,11 @@ enum resource_id_enum {
 	RESOURCE_NUM_INVALID = 0xFFFFFFFF
 };
 
-/* Resource ID is to be filled by the driver in the MB request
- * Size, offset & flags to be filled by the MFW in the MB response
- */
+ 
 struct resource_info {
 	enum resource_id_enum res_id;
-	u32 size;		/* number of allocated resources */
-	u32 offset;		/* Offset of the 1st resource */
+	u32 size;		 
+	u32 offset;		 
 	u32 vf_size;
 	u32 vf_offset;
 	u32 flags;
@@ -1200,7 +1187,7 @@ enum drv_msg_code_enum {
 #define DRV_MSG_CODE_VMAC_TYPE_WWNN             2
 #define DRV_MSG_CODE_VMAC_TYPE_WWPN             3
 
-/* DRV_MSG_CODE_RETAIN_VMAC parameters */
+ 
 #define DRV_MSG_CODE_RETAIN_VMAC_FUNC_SHIFT 0
 #define DRV_MSG_CODE_RETAIN_VMAC_FUNC_MASK 0xf
 
@@ -1252,7 +1239,7 @@ enum drv_msg_code_enum {
 
 #define RESOURCE_DUMP				0
 
-/* DRV_MSG_CODE_MDUMP_CMD parameters */
+ 
 #define MDUMP_DRV_PARAM_OPCODE_MASK             0x000000ff
 #define DRV_MSG_CODE_MDUMP_ACK                  0x01
 #define DRV_MSG_CODE_MDUMP_SET_VALUES           0x02
@@ -1269,12 +1256,12 @@ enum drv_msg_code_enum {
 #define DRV_MSG_CODE_MDUMP_GEN_LINK_DUMP 0x0c
 #define DRV_MSG_CODE_MDUMP_GEN_IDLE_CHK 0x0d
 
-/* DRV_MSG_CODE_MDUMP_CMD options */
+ 
 #define MDUMP_DRV_PARAM_OPTION_MASK 0x00000f00
 #define DRV_MSG_CODE_MDUMP_USE_DRIVER_BUF_OFFSET 8
 #define DRV_MSG_CODE_MDUMP_USE_DRIVER_BUF_MASK 0x100
 
-/* DRV_MSG_CODE_EXT_PHY_READ/DRV_MSG_CODE_EXT_PHY_WRITE parameters */
+ 
 #define DRV_MB_PARAM_ADDR_SHIFT 0
 #define DRV_MB_PARAM_ADDR_MASK 0x0000FFFF
 #define DRV_MB_PARAM_DEVAD_SHIFT 16
@@ -1282,7 +1269,7 @@ enum drv_msg_code_enum {
 #define DRV_MB_PARAM_PORT_SHIFT 21
 #define DRV_MB_PARAM_PORT_MASK 0x00600000
 
-/* DRV_MSG_CODE_PMBUS_READ/DRV_MSG_CODE_PMBUS_WRITE parameters */
+ 
 #define DRV_MB_PARAM_PMBUS_CMD_SHIFT 0
 #define DRV_MB_PARAM_PMBUS_CMD_MASK 0xFF
 #define DRV_MB_PARAM_PMBUS_LEN_SHIFT 8
@@ -1290,20 +1277,20 @@ enum drv_msg_code_enum {
 #define DRV_MB_PARAM_PMBUS_DATA_SHIFT 16
 #define DRV_MB_PARAM_PMBUS_DATA_MASK 0xFFFF0000
 
-/* UNLOAD_REQ params */
+ 
 #define DRV_MB_PARAM_UNLOAD_WOL_UNKNOWN 0x00000000
 #define DRV_MB_PARAM_UNLOAD_WOL_MCP 0x00000001
 #define DRV_MB_PARAM_UNLOAD_WOL_DISABLED 0x00000002
 #define DRV_MB_PARAM_UNLOAD_WOL_ENABLED 0x00000003
 
-/* UNLOAD_DONE_params */
+ 
 #define DRV_MB_PARAM_UNLOAD_NON_D3_POWER 0x00000001
 
-/* INIT_PHY params */
+ 
 #define DRV_MB_PARAM_INIT_PHY_FORCE 0x00000001
 #define DRV_MB_PARAM_INIT_PHY_DONT_CARE 0x00000002
 
-/* LLDP / DCBX params*/
+ 
 #define DRV_MB_PARAM_LLDP_SEND_MASK 0x00000001
 #define DRV_MB_PARAM_LLDP_SEND_SHIFT 0
 #define DRV_MB_PARAM_LLDP_AGENT_MASK 0x00000006
@@ -1391,7 +1378,7 @@ enum drv_msg_code_enum {
 #define DRV_MB_PARAM_TRANSCEIVER_OFFSET_OFFSET			16
 #define DRV_MB_PARAM_TRANSCEIVER_OFFSET_MASK			0xffff0000
 
-	/* Resource Allocation params - Driver version support */
+	 
 #define DRV_MB_PARAM_RESOURCE_ALLOC_VERSION_MAJOR_MASK		0xffff0000
 #define DRV_MB_PARAM_RESOURCE_ALLOC_VERSION_MAJOR_SHIFT		16
 #define DRV_MB_PARAM_RESOURCE_ALLOC_VERSION_MINOR_MASK		0x0000ffff
@@ -1421,11 +1408,11 @@ enum drv_msg_code_enum {
 #define DRV_MB_PARAM_FEATURE_SUPPORT_PORT_EXT_SPEED_FEC_CONTROL	0x00000008
 #define DRV_MB_PARAM_FEATURE_SUPPORT_FUNC_VLINK			0x00010000
 
-/* DRV_MSG_CODE_DEBUG_DATA_SEND parameters */
+ 
 #define DRV_MSG_CODE_DEBUG_DATA_SEND_SIZE_OFFSET		0
 #define DRV_MSG_CODE_DEBUG_DATA_SEND_SIZE_MASK			0xff
 
-/* Driver attributes params */
+ 
 #define DRV_MB_PARAM_ATTRIBUTE_KEY_OFFSET			0
 #define DRV_MB_PARAM_ATTRIBUTE_KEY_MASK				0x00ffffff
 #define DRV_MB_PARAM_ATTRIBUTE_CMD_OFFSET			24
@@ -1450,7 +1437,7 @@ enum drv_msg_code_enum {
 #define DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_ID_SHIFT		24
 #define DRV_MB_PARAM_NVM_CFG_OPTION_ENTITY_ID_MASK		0x0f000000
 
-/*DRV_MSG_CODE_GET_PERM_MAC parametres*/
+ 
 #define DRV_MSG_CODE_GET_PERM_MAC_TYPE_SHIFT		0
 #define DRV_MSG_CODE_GET_PERM_MAC_TYPE_MASK		0xF
 #define DRV_MSG_CODE_GET_PERM_MAC_TYPE_PF		0
@@ -1501,13 +1488,13 @@ enum fw_msg_code_enum {
 #define FW_MB_PARAM_RESOURCE_ALLOC_VERSION_MINOR_MASK		0x0000ffff
 #define FW_MB_PARAM_RESOURCE_ALLOC_VERSION_MINOR_SHIFT		0
 
-/* Get PF RDMA protocol command response */
+ 
 #define FW_MB_PARAM_GET_PF_RDMA_NONE				0x0
 #define FW_MB_PARAM_GET_PF_RDMA_ROCE				0x1
 #define FW_MB_PARAM_GET_PF_RDMA_IWARP				0x2
 #define FW_MB_PARAM_GET_PF_RDMA_BOTH				0x3
 
-/* Get MFW feature support response */
+ 
 #define FW_MB_PARAM_FEATURE_SUPPORT_SMARTLINQ			BIT(0)
 #define FW_MB_PARAM_FEATURE_SUPPORT_EEE				BIT(1)
 #define FW_MB_PARAM_FEATURE_SUPPORT_DRV_LOAD_TO			BIT(2)
@@ -1601,9 +1588,7 @@ struct drv_ver_info_stc {
 	u8 name[32];
 };
 
-/* Runtime data needs about 1/2K. We use 2K to be on the safe side.
- * Please make sure data does not exceed this size.
- */
+ 
 #define NUM_RUNTIME_DWORDS    16
 struct drv_init_hw_stc {
 	u32 init_hw_bitmask[NUM_RUNTIME_DWORDS];
@@ -1625,21 +1610,21 @@ struct mcp_public_data {
 #define MAX_I2C_TRANSACTION_SIZE	16
 #define MAX_I2C_TRANSCEIVER_PAGE_SIZE	256
 
-/* OCBB definitions */
+ 
 enum tlvs {
-	/* Category 1: Device Properties */
+	 
 	DRV_TLV_CLP_STR,
 	DRV_TLV_CLP_STR_CTD,
-	/* Category 6: Device Configuration */
+	 
 	DRV_TLV_SCSI_TO,
 	DRV_TLV_R_T_TOV,
 	DRV_TLV_R_A_TOV,
 	DRV_TLV_E_D_TOV,
 	DRV_TLV_CR_TOV,
 	DRV_TLV_BOOT_TYPE,
-	/* Category 8: Port Configuration */
+	 
 	DRV_TLV_NPIV_ENABLED,
-	/* Category 10: Function Configuration */
+	 
 	DRV_TLV_FEATURE_FLAGS,
 	DRV_TLV_LOCAL_ADMIN_ADDR,
 	DRV_TLV_ADDITIONAL_MAC_ADDR_1,
@@ -1653,7 +1638,7 @@ enum tlvs {
 	DRV_TLV_FLEX_NIC_OUTER_VLAN_ID,
 	DRV_TLV_OS_DRIVER_STATES,
 	DRV_TLV_PXE_BOOT_PROGRESS,
-	/* Category 12: FC/FCoE Configuration */
+	 
 	DRV_TLV_NPIV_STATE,
 	DRV_TLV_NUM_OF_NPIV_IDS,
 	DRV_TLV_SWITCH_NAME,
@@ -1669,7 +1654,7 @@ enum tlvs {
 	DRV_TLV_FCOE_RX_DESCRIPTORS_QUEUE_SIZE,
 	DRV_TLV_LINK_FAILURE_COUNT,
 	DRV_TLV_FCOE_BOOT_PROGRESS,
-	/* Category 13: iSCSI Configuration */
+	 
 	DRV_TLV_TARGET_LLMNR_ENABLED,
 	DRV_TLV_HEADER_DIGEST_FLAG_ENABLED,
 	DRV_TLV_DATA_DIGEST_FLAG_ENABLED,
@@ -1679,24 +1664,24 @@ enum tlvs {
 	DRV_TLV_PDU_TX_DESCRIPTORS_QUEUE_SIZE,
 	DRV_TLV_PDU_RX_DESCRIPTORS_QUEUE_SIZE,
 	DRV_TLV_ISCSI_BOOT_PROGRESS,
-	/* Category 20: Device Data */
+	 
 	DRV_TLV_PCIE_BUS_RX_UTILIZATION,
 	DRV_TLV_PCIE_BUS_TX_UTILIZATION,
 	DRV_TLV_DEVICE_CPU_CORES_UTILIZATION,
 	DRV_TLV_LAST_VALID_DCC_TLV_RECEIVED,
 	DRV_TLV_NCSI_RX_BYTES_RECEIVED,
 	DRV_TLV_NCSI_TX_BYTES_SENT,
-	/* Category 22: Base Port Data */
+	 
 	DRV_TLV_RX_DISCARDS,
 	DRV_TLV_RX_ERRORS,
 	DRV_TLV_TX_ERRORS,
 	DRV_TLV_TX_DISCARDS,
 	DRV_TLV_RX_FRAMES_RECEIVED,
 	DRV_TLV_TX_FRAMES_SENT,
-	/* Category 23: FC/FCoE Port Data */
+	 
 	DRV_TLV_RX_BROADCAST_PACKETS,
 	DRV_TLV_TX_BROADCAST_PACKETS,
-	/* Category 28: Base Function Data */
+	 
 	DRV_TLV_NUM_OFFLOADED_CONNECTIONS_TCP_IPV4,
 	DRV_TLV_NUM_OFFLOADED_CONNECTIONS_TCP_IPV6,
 	DRV_TLV_TX_DESCRIPTOR_QUEUE_AVG_DEPTH,
@@ -1716,7 +1701,7 @@ enum tlvs {
 	DRV_TLV_RX_QUEUES_EMPTY,
 	DRV_TLV_TX_QUEUES_FULL,
 	DRV_TLV_RX_QUEUES_FULL,
-	/* Category 29: FC/FCoE Function Data */
+	 
 	DRV_TLV_FCOE_TX_DESCRIPTOR_QUEUE_AVG_DEPTH,
 	DRV_TLV_FCOE_RX_DESCRIPTORS_QUEUE_AVG_DEPTH,
 	DRV_TLV_FCOE_RX_FRAMES_RECEIVED,
@@ -1843,7 +1828,7 @@ enum tlvs {
 	DRV_TLV_SCSI_CHECK_4_TIMESTAMP,
 	DRV_TLV_SCSI_CHECK_CONDITION_5_RECEIVED_SK_ASC_ASCQ,
 	DRV_TLV_SCSI_CHECK_5_TIMESTAMP,
-	/* Category 30: iSCSI Function Data */
+	 
 	DRV_TLV_PDU_TX_DESCRIPTOR_QUEUE_AVG_DEPTH,
 	DRV_TLV_PDU_RX_DESCRIPTORS_QUEUE_AVG_DEPTH,
 	DRV_TLV_ISCSI_PDU_RX_FRAMES_RECEIVED,
@@ -2070,7 +2055,7 @@ struct nvm_cfg1_port {
 	u32 mgmt_traffic;
 
 	u32 ext_phy;
-	/* EEE power saving mode */
+	 
 #define NVM_CFG1_PORT_EEE_POWER_SAVING_MODE_MASK 0x00ff0000
 #define NVM_CFG1_PORT_EEE_POWER_SAVING_MODE_OFFSET 16
 #define NVM_CFG1_PORT_EEE_POWER_SAVING_MODE_DISABLED 0x0
@@ -2208,7 +2193,7 @@ struct spad_layout {
 	struct mcp_public_data public_data;
 };
 
-#define MCP_SPAD_SIZE    0x00028000	/* 160 KB */
+#define MCP_SPAD_SIZE    0x00028000	 
 
 #define SPAD_OFFSET(addr)    (((u32)(addr) - (u32)CPU_SPAD_BASE))
 
@@ -2227,13 +2212,7 @@ enum spad_sections {
 #define STRUCT_OFFSET(f)    (STATIC_INIT_BASE + \
 			     __builtin_offsetof(struct static_init, f))
 
-/* This section is located at a fixed location in the beginning of the
- * scratchpad, to ensure that the MCP trace is not run over during MFW upgrade.
- * All the rest of data has a floating location which differs from version to
- * version, and is pointed by the mcp_meta_data below.
- * Moreover, the spad_layout section is part of the MFW firmware, and is loaded
- * with it from nvram in order to clear this portion.
- */
+ 
 struct static_init {
 	u32 num_sections;
 	offsize_t sections[SPAD_SECTION_MAX];
@@ -2357,7 +2336,7 @@ struct nvm_dir {
 
 	u32 num_images;
 	u32 rsrv;
-	struct nvm_code_entry code[1];	/* Up to MAX_NVM_DIR_ENTRIES */
+	struct nvm_code_entry code[1];	 
 };
 
 #define NVM_DIR_SIZE(_num_images) (sizeof(struct nvm_dir) + \

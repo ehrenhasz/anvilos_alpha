@@ -1,21 +1,6 @@
-/* GNU's read utmp module.
+ 
 
-   Copyright (C) 1992-2001, 2003-2006, 2009-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by jla; revised by djm */
+ 
 
 #include <config.h>
 
@@ -54,14 +39,13 @@
 #include "stat-time.h"
 #include "xalloc.h"
 
-/* Each of the FILE streams in this file is only used in a single thread.  */
+ 
 #include "unlocked-io.h"
 
-/* Some helper functions.  */
+ 
 #include "boot-time-aux.h"
 
-/* The following macros describe the 'struct UTMP_STRUCT_NAME',
-   *not* 'struct gl_utmp'.  */
+ 
 #undef UT_USER
 #undef UT_TIME_MEMBER
 #undef UT_PID
@@ -70,7 +54,7 @@
 #undef UT_EXIT_E_TERMINATION
 #undef UT_EXIT_E_EXIT
 
-/* Accessor macro for the member named ut_user or ut_name.  */
+ 
 #if (HAVE_UTMPX_H ? HAVE_STRUCT_UTMPX_UT_NAME \
      : HAVE_UTMP_H && HAVE_STRUCT_UTMP_UT_NAME)
 # define UT_USER(UT) ((UT)->ut_name)
@@ -78,21 +62,21 @@
 # define UT_USER(UT) ((UT)->ut_user)
 #endif
 
-/* Accessor macro for the member of type time_t (or 'unsigned int').  */
+ 
 #if HAVE_UTMPX_H || (HAVE_UTMP_H && HAVE_STRUCT_UTMP_UT_TV)
 # define UT_TIME_MEMBER(UT) ((UT)->ut_tv.tv_sec)
 #else
 # define UT_TIME_MEMBER(UT) ((UT)->ut_time)
 #endif
 
-/* Accessor macro for the member named ut_pid.  */
+ 
 #if (HAVE_UTMPX_H ? HAVE_STRUCT_UTMPX_UT_PID : HAVE_STRUCT_UTMP_UT_PID)
 # define UT_PID(UT) ((UT)->ut_pid)
 #else
 # define UT_PID(UT) 0
 #endif
 
-/* Accessor macros for the member named ut_type.  */
+ 
 #if (HAVE_UTMPX_H ? HAVE_STRUCT_UTMPX_UT_TYPE : HAVE_STRUCT_UTMP_UT_TYPE)
 # define UT_TYPE_EQ(UT, V) ((UT)->ut_type == (V))
 # define UT_TYPE_NOT_DEFINED 0
@@ -104,7 +88,7 @@
 #if HAVE_UTMPX_H
 # if HAVE_STRUCT_UTMPX_UT_EXIT_E_TERMINATION
 #  define UT_EXIT_E_TERMINATION(UT) ((UT)->ut_exit.e_termination)
-# elif HAVE_STRUCT_UTMPX_UT_EXIT_UT_TERMINATION /* OSF/1 */
+# elif HAVE_STRUCT_UTMPX_UT_EXIT_UT_TERMINATION  
 #  define UT_EXIT_E_TERMINATION(UT) ((UT)->ut_exit.ut_termination)
 # else
 #  define UT_EXIT_E_TERMINATION(UT) 0
@@ -120,7 +104,7 @@
 #if HAVE_UTMPX_H
 # if HAVE_STRUCT_UTMPX_UT_EXIT_E_EXIT
 #  define UT_EXIT_E_EXIT(UT) ((UT)->ut_exit.e_exit)
-# elif HAVE_STRUCT_UTMPX_UT_EXIT_UT_EXIT /* OSF/1 */
+# elif HAVE_STRUCT_UTMPX_UT_EXIT_UT_EXIT  
 #  define UT_EXIT_E_EXIT(UT) ((UT)->ut_exit.ut_exit)
 # else
 #  define UT_EXIT_E_EXIT(UT) 0
@@ -133,21 +117,20 @@
 # endif
 #endif
 
-/* Size of the UT_USER (ut) member.  */
+ 
 #define UT_USER_SIZE  sizeof UT_USER ((struct UTMP_STRUCT_NAME *) 0)
-/* Size of the ut->ut_id member.  */
+ 
 #define UT_ID_SIZE    sizeof (((struct UTMP_STRUCT_NAME *) 0)->ut_id)
-/* Size of the ut->ut_line member.  */
+ 
 #define UT_LINE_SIZE  sizeof (((struct UTMP_STRUCT_NAME *) 0)->ut_line)
-/* Size of the ut->ut_host member.  */
+ 
 #define UT_HOST_SIZE  sizeof (((struct UTMP_STRUCT_NAME *) 0)->ut_host)
 
 #if 8 <= __GNUC__
 # pragma GCC diagnostic ignored "-Wsizeof-pointer-memaccess"
 #endif
 
-/* Copy UT->ut_user into storage obtained from malloc.  Then remove any
-   trailing spaces from the copy, NUL terminate it, and return the copy.  */
+ 
 
 char *
 extract_trimmed_name (const STRUCT_UTMP *ut)
@@ -162,13 +145,13 @@ extract_trimmed_name (const STRUCT_UTMP *ut)
 
 #if READ_UTMP_SUPPORTED
 
-/* Is the utmp entry UT desired by the user who asked for OPTIONS?  */
+ 
 
 static bool
 desirable_utmp_entry (STRUCT_UTMP const *ut, int options)
 {
 # if defined __OpenBSD__ && !HAVE_UTMPX_H
-  /* Eliminate entirely empty entries.  */
+   
   if (ut->ut_ts.tv_sec == 0 && ut->ut_user[0] == '\0'
       && ut->ut_line[0] == '\0' && ut->ut_host[0] == '\0')
     return false;
@@ -194,31 +177,24 @@ desirable_utmp_entry (STRUCT_UTMP const *ut, int options)
   return true;
 }
 
-/* A memory allocation for an in-progress read_utmp.  */
+ 
 
 struct utmp_alloc
 {
-  /* A pointer to a possibly-empty array of utmp entries,
-     followed by a possibly-empty sequence of unused bytes,
-     followed by a possibly-empty sequence of string bytes.
-     UTMP is either null or allocated by malloc.  */
+   
   struct gl_utmp *utmp;
 
-  /* The number of utmp entries.  */
+   
   idx_t filled;
 
-  /* The string byte sequence length.  Strings are null-terminated.  */
+   
   idx_t string_bytes;
 
-  /* The total number of bytes allocated.  This equals
-     FILLED * sizeof *UTMP + [size of free area] + STRING_BYTES.  */
+   
   idx_t alloc_bytes;
 };
 
-/* Use the memory allocation A, and if the read_utmp options OPTIONS
-   permit it, add a new entry with the given USER, etc.  Grow A as
-   needed, reporting an error and exit on memory allocation failure.
-   Return the resulting memory allocation.  */
+ 
 
 static struct utmp_alloc
 add_utmp (struct utmp_alloc a, int options,
@@ -246,13 +222,13 @@ add_utmp (struct utmp_alloc a, int options,
   struct gl_utmp *ut = &a.utmp[a.filled];
   char *stringlim = (char *) a.utmp + a.alloc_bytes;
   char *p = stringlim - a.string_bytes;
-  *--p = '\0'; /* NUL-terminate ut->ut_user */
+  *--p = '\0';  
   ut->ut_user = p = memcpy (p - user_len, user, user_len);
-  *--p = '\0'; /* NUL-terminate ut->ut_id */
+  *--p = '\0';  
   ut->ut_id   = p = memcpy (p -   id_len,   id,   id_len);
-  *--p = '\0'; /* NUL-terminate ut->ut_line */
+  *--p = '\0';  
   ut->ut_line = p = memcpy (p - line_len, line, line_len);
-  *--p = '\0'; /* NUL-terminate ut->ut_host */
+  *--p = '\0';  
   ut->ut_host =     memcpy (p - host_len, host, host_len);
   ut->ut_ts = ts;
   ut->ut_pid = pid;
@@ -262,10 +238,7 @@ add_utmp (struct utmp_alloc a, int options,
   ut->ut_exit.e_exit = exit;
   if (desirable_utmp_entry (ut, options))
     {
-      /* Now that UT has been checked, relocate its string slots to be
-         relative to the end of the allocated storage, so that these
-         slots survive realloc.  The slots will be relocated back just
-         before read_utmp returns.  */
+       
       ut->ut_user = (char *) (intptr_t) (ut->ut_user - stringlim);
       ut->ut_id   = (char *) (intptr_t) (ut->ut_id   - stringlim);
       ut->ut_line = (char *) (intptr_t) (ut->ut_line - stringlim);
@@ -276,7 +249,7 @@ add_utmp (struct utmp_alloc a, int options,
   return a;
 }
 
-/* Relocate the string pointers in A back to their natural position.  */
+ 
 static struct utmp_alloc
 finish_utmp (struct utmp_alloc a)
 {
@@ -293,7 +266,7 @@ finish_utmp (struct utmp_alloc a)
   return a;
 }
 
-/* Determine whether A already contains an entry of type BOOT_TIME.  */
+ 
 _GL_ATTRIBUTE_MAYBE_UNUSED
 static bool
 have_boot_time (struct utmp_alloc a)
@@ -308,7 +281,7 @@ have_boot_time (struct utmp_alloc a)
 }
 
 #if !HAVE_UTMPX_H && HAVE_UTMP_H && defined UTMP_NAME_FUNCTION
-# if !HAVE_DECL_ENDUTENT /* Android */
+# if !HAVE_DECL_ENDUTENT  
 void endutent (void);
 # endif
 #endif
@@ -320,7 +293,7 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
   if ((options & READ_UTMP_BOOT_TIME) != 0
       && (options & (READ_UTMP_USER_PROCESS | READ_UTMP_NO_BOOT_TIME)) != 0)
     {
-      /* No entries can match the given options.  */
+       
       *n_entries = 0;
       *utmp_buf = NULL;
       return 0;
@@ -330,19 +303,16 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
 
 # if READUTMP_USE_SYSTEMD || HAVE_UTMPX_H || HAVE_UTMP_H
 
-#  if defined UTMP_NAME_FUNCTION /* glibc, musl, macOS, FreeBSD, NetBSD, Minix, AIX, IRIX, Solaris, Cygwin, Android */
+#  if defined UTMP_NAME_FUNCTION  
 
-  /* Ignore the return value for now.
-     Solaris' utmpname returns 1 upon success -- which is contrary
-     to what the GNU libc version does.  In addition, older GNU libc
-     versions are actually void.   */
+   
   UTMP_NAME_FUNCTION ((char *) file);
 
   SET_UTMP_ENT ();
 
 #   if (defined __linux__ && !defined __ANDROID__) || defined __minix
   bool file_is_utmp = (strcmp (file, UTMP_FILE) == 0);
-  /* Timestamp of the "runlevel" entry, if any.  */
+   
   struct timespec runlevel_ts = {0};
 #   endif
 
@@ -407,19 +377,7 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
   END_UTMP_ENT ();
 
 #   if defined __linux__ && !defined __ANDROID__
-  /* On Alpine Linux, UTMP_FILE is not filled.  It is always empty.
-     So, fake a BOOT_TIME entry, by getting the time stamp of a file that
-     gets touched only during the boot process.
-
-     On Raspbian, which runs on hardware without a real-time clock, during boot,
-       1. the clock gets set to 1970-01-01 00:00:00,
-       2. an entry gets written into /var/run/utmp, with ut_type = BOOT_TIME,
-          ut_user = "reboot", ut_line = "~", time = 1970-01-01 00:00:05 or so,
-       3. the clock gets set to a correct value through NTP,
-       4. an entry gets written into /var/run/utmp, with
-          ut_user = "runlevel", ut_line = "~", time = correct value.
-     In this case, copy the time from the "runlevel" entry to the "reboot"
-     entry.  */
+   
   if ((options & (READ_UTMP_USER_PROCESS | READ_UTMP_NO_BOOT_TIME)) == 0
       && file_is_utmp)
     {
@@ -428,7 +386,7 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
           struct gl_utmp *ut = &a.utmp[i];
           if (UT_TYPE_BOOT_TIME (ut))
             {
-              /* Workaround for Raspbian:  */
+               
               if (ut->ut_ts.tv_sec <= 60 && runlevel_ts.tv_sec != 0)
                 ut->ut_ts = runlevel_ts;
               break;
@@ -436,7 +394,7 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
         }
       if (!have_boot_time (a))
         {
-          /* Workaround for Alpine Linux:  */
+           
           struct timespec boot_time;
           if (get_linux_boot_time_fallback (&boot_time) >= 0)
             a = add_utmp (a, options,
@@ -450,10 +408,7 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
 #   endif
 
 #   if defined __ANDROID__
-  /* On Android, there is no /var, and normal processes don't have access
-     to system files.  Therefore use the kernel's uptime counter, although
-     it produces wrong values after the date has been bumped in the running
-     system.  */
+   
   if ((options & (READ_UTMP_USER_PROCESS | READ_UTMP_NO_BOOT_TIME)) == 0
       && strcmp (file, UTMP_FILE) == 0
       && !have_boot_time (a))
@@ -470,13 +425,7 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
 #   endif
 
 #   if defined __minix
-  /* On Minix, during boot,
-       1. an entry gets written into /var/run/utmp, with ut_type = BOOT_TIME,
-          ut_user = "", ut_line = "system boot", time = 1970-01-01 00:00:00,
-       2. an entry gets written into /var/run/utmp, with
-          ut_user = "", ut_line = "run-level m", time = correct value.
-     In this case, copy the time from the "run-level m" entry to the
-     "system boot" entry.  */
+   
   if ((options & (READ_UTMP_USER_PROCESS | READ_UTMP_NO_BOOT_TIME)) == 0
       && file_is_utmp)
     {
@@ -493,7 +442,7 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
     }
 #   endif
 
-#  else /* old FreeBSD, OpenBSD, HP-UX, Haiku */
+#  else  
 
   FILE *f = fopen (file, "re");
 
@@ -632,7 +581,7 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
     }
 #  endif
 
-#  if HAVE_OS_H /* BeOS, Haiku */
+#  if HAVE_OS_H  
   if ((options & (READ_UTMP_USER_PROCESS | READ_UTMP_NO_BOOT_TIME)) == 0
       && strcmp (file, UTMP_FILE) == 0
       && !have_boot_time (a))
@@ -675,12 +624,12 @@ read_utmp_from_file (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
 }
 
 # if READUTMP_USE_SYSTEMD
-/* Use systemd and Linux /proc and kernel APIs.  */
+ 
 
 static struct timespec
 get_boot_time_uncached (void)
 {
-  /* Try to find the boot time in the /var/run/utmp file.  */
+   
   {
     idx_t n_entries = 0;
     STRUCT_UTMP *utmp = NULL;
@@ -694,7 +643,7 @@ get_boot_time_uncached (void)
     free (utmp);
   }
 
-  /* We shouldn't get here.  */
+   
   return (struct timespec) {0};
 }
 
@@ -712,17 +661,15 @@ get_boot_time (void)
   return boot_time;
 }
 
-/* Guess the pty name that was opened for the given user right after
-   the given time AT.  */
+ 
 static char *
 guess_pty_name (uid_t uid, const struct timespec at)
 {
-  /* Traverse the entries of the /dev/pts/ directory, looking for devices
-     which are owned by UID and whose ctime is shortly after AT.  */
+   
   DIR *dirp = opendir ("/dev/pts");
   if (dirp != NULL)
     {
-      /* Buffer containing /dev/pts/N.  */
+       
       char name_buf[9 + 10 + 1];
       memcpy (name_buf, "/dev/pts/", 9);
 
@@ -736,10 +683,10 @@ guess_pty_name (uid_t uid, const struct timespec at)
             break;
           if (dp->d_name[0] != '.' && strlen (dp->d_name) <= 10)
             {
-              /* Compose the absolute file name /dev/pts/N.  */
+               
               strcpy (name_buf + 9, dp->d_name);
 
-              /* Find its owner and ctime.  */
+               
               struct stat st;
               if (stat (name_buf, &st) >= 0
                   && st.st_uid == uid
@@ -747,8 +694,8 @@ guess_pty_name (uid_t uid, const struct timespec at)
                       || (st.st_ctim.tv_sec == at.tv_sec
                           && st.st_ctim.tv_nsec >= at.tv_nsec)))
                 {
-                  /* This entry has the owner UID and a ctime >= AT.  */
-                  /* Is this entry the best one so far?  */
+                   
+                   
                   if ((best_time.tv_sec == 0 && best_time.tv_nsec == 0)
                       || (st.st_ctim.tv_sec < best_time.tv_sec
                           || (st.st_ctim.tv_sec == best_time.tv_sec
@@ -763,8 +710,7 @@ guess_pty_name (uid_t uid, const struct timespec at)
 
       closedir (dirp);
 
-      /* Did we find an entry owned by ID, and is it at most 5 seconds
-         after AT?  */
+       
       if (!(best_time.tv_sec == 0 && best_time.tv_nsec == 0)
           && (best_time.tv_sec < at.tv_sec + 5
               || (best_time.tv_sec == at.tv_sec + 5
@@ -778,10 +724,10 @@ guess_pty_name (uid_t uid, const struct timespec at)
 static int
 read_utmp_from_systemd (idx_t *n_entries, STRUCT_UTMP **utmp_buf, int options)
 {
-  /* Fill entries, simulating what a utmp file would contain.  */
+   
   struct utmp_alloc a = {0};
 
-  /* Synthesize a BOOT_TIME entry.  */
+   
   if (!(options & (READ_UTMP_USER_PROCESS | READ_UTMP_NO_BOOT_TIME)))
     a = add_utmp (a, options,
                   "reboot", strlen ("reboot"),
@@ -790,7 +736,7 @@ read_utmp_from_systemd (idx_t *n_entries, STRUCT_UTMP **utmp_buf, int options)
                   "", 0,
                   0, BOOT_TIME, get_boot_time (), 0, 0, 0);
 
-  /* Synthesize USER_PROCESS entries.  */
+   
   if (!(options & READ_UTMP_BOOT_TIME))
     {
       char **sessions;
@@ -820,7 +766,7 @@ read_utmp_from_systemd (idx_t *n_entries, STRUCT_UTMP **utmp_buf, int options)
               if (sd_session_get_tty (session, &tty) < 0)
                 {
                   tty = NULL;
-                  /* Try harder to get a sensible value for the tty.  */
+                   
                   if (sd_session_get_type (session, &type) < 0)
                     type = missing;
                   if (strcmp (type, "tty") == 0)
@@ -847,8 +793,7 @@ read_utmp_from_systemd (idx_t *n_entries, STRUCT_UTMP **utmp_buf, int options)
                     }
                 }
 
-              /* Create up to two USER_PROCESS entries: one for the seat,
-                 one for the tty.  */
+               
               if (seat != NULL || tty != NULL)
                 {
                   char *user;
@@ -864,8 +809,7 @@ read_utmp_from_systemd (idx_t *n_entries, STRUCT_UTMP **utmp_buf, int options)
                   if (sd_session_get_remote_host (session, &remote_host) < 0)
                     {
                       host = missing;
-                      /* For backward compatibility, put the X11 display into the
-                         host field.  */
+                       
                       if (!type && sd_session_get_type (session, &type) < 0)
                         type = missing;
                       if (strcmp (type, "x11") == 0)
@@ -898,7 +842,7 @@ read_utmp_from_systemd (idx_t *n_entries, STRUCT_UTMP **utmp_buf, int options)
                                   session, strlen (session),
                                   seat, strlen (seat),
                                   host, strlen (host),
-                                  leader_pid /* the best we have */,
+                                  leader_pid  ,
                                   USER_PROCESS, start_ts, leader_pid, 0, 0);
                   if (tty != NULL)
                     a = add_utmp (a, options,
@@ -906,7 +850,7 @@ read_utmp_from_systemd (idx_t *n_entries, STRUCT_UTMP **utmp_buf, int options)
                                   session, strlen (session),
                                   tty, strlen (tty),
                                   host, strlen (host),
-                                  leader_pid /* the best we have */,
+                                  leader_pid  ,
                                   USER_PROCESS, start_ts, leader_pid, 0, 0);
 
                   if (host != missing)
@@ -941,14 +885,14 @@ read_utmp (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,
 {
 # if READUTMP_USE_SYSTEMD
   if (strcmp (file, UTMP_FILE) == 0)
-    /* Imitate reading UTMP_FILE, using systemd and Linux APIs.  */
+     
     return read_utmp_from_systemd (n_entries, utmp_buf, options);
 # endif
 
   return read_utmp_from_file (file, n_entries, utmp_buf, options);
 }
 
-#else /* dummy fallback */
+#else  
 
 int
 read_utmp (char const *file, idx_t *n_entries, STRUCT_UTMP **utmp_buf,

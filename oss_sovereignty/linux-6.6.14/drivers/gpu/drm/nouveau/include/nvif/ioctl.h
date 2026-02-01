@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_IOCTL_H__
 #define __NVIF_IOCTL_H__
 
@@ -25,7 +25,7 @@ struct nvif_ioctl_v0 {
 	__u8  route;
 	__u64 token;
 	__u64 object;
-	__u8  data[];		/* ioctl data (below) */
+	__u8  data[];		 
 };
 
 struct nvif_ioctl_nop_v0 {
@@ -33,7 +33,7 @@ struct nvif_ioctl_nop_v0 {
 };
 
 struct nvif_ioctl_sclass_v0 {
-	/* nvif_ioctl ... */
+	 
 	__u8  version;
 	__u8  count;
 	__u8  pad02[6];
@@ -45,7 +45,7 @@ struct nvif_ioctl_sclass_v0 {
 };
 
 struct nvif_ioctl_new_v0 {
-	/* nvif_ioctl ... */
+	 
 	__u8  version;
 	__u8  pad01[6];
 	__u8  route;
@@ -53,22 +53,22 @@ struct nvif_ioctl_new_v0 {
 	__u64 object;
 	__u32 handle;
 	__s32 oclass;
-	__u8  data[];		/* class data (class.h) */
+	__u8  data[];		 
 };
 
 struct nvif_ioctl_del {
 };
 
 struct nvif_ioctl_mthd_v0 {
-	/* nvif_ioctl ... */
+	 
 	__u8  version;
 	__u8  method;
 	__u8  pad02[6];
-	__u8  data[];		/* method data (class.h) */
+	__u8  data[];		 
 };
 
 struct nvif_ioctl_rd_v0 {
-	/* nvif_ioctl ... */
+	 
 	__u8  version;
 	__u8  size;
 	__u8  pad02[2];
@@ -77,7 +77,7 @@ struct nvif_ioctl_rd_v0 {
 };
 
 struct nvif_ioctl_wr_v0 {
-	/* nvif_ioctl ... */
+	 
 	__u8  version;
 	__u8  size;
 	__u8  pad02[2];
@@ -86,7 +86,7 @@ struct nvif_ioctl_wr_v0 {
 };
 
 struct nvif_ioctl_map_v0 {
-	/* nvif_ioctl ... */
+	 
 	__u8  version;
 #define NVIF_IOCTL_MAP_V0_IO                                               0x00
 #define NVIF_IOCTL_MAP_V0_VA                                               0x01

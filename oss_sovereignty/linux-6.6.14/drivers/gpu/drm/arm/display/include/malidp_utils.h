@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+ 
+ 
 #ifndef _MALIDP_UTILS_
 #define _MALIDP_UTILS_
 
@@ -23,7 +19,7 @@
 	(__cond) ? 0 : -ETIMEDOUT;			\
 })
 
-/* the restriction of range is [start, end] */
+ 
 struct malidp_range {
 	u32 start;
 	u32 end;
@@ -40,4 +36,4 @@ static inline bool malidp_in_range(struct malidp_range *rg, u32 v)
 	return (v >= rg->start) && (v <= rg->end);
 }
 
-#endif /* _MALIDP_UTILS_ */
+#endif  

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PWM Greybus driver.
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -16,7 +11,7 @@
 
 struct gb_pwm_chip {
 	struct gb_connection	*connection;
-	u8			pwm_max;	/* max pwm number */
+	u8			pwm_max;	 
 
 	struct pwm_chip		chip;
 };
@@ -214,7 +209,7 @@ static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	u64 duty_cycle = state->duty_cycle;
 	struct gb_pwm_chip *pwmc = pwm_chip_to_gb_pwm_chip(chip);
 
-	/* Set polarity */
+	 
 	if (state->polarity != pwm->state.polarity) {
 		if (enabled) {
 			gb_pwm_disable_operation(pwmc, pwm->hwpwm);
@@ -231,12 +226,7 @@ static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return 0;
 	}
 
-	/*
-	 * Set period and duty cycle
-	 *
-	 * PWM privodes 64-bit period and duty_cycle, but greybus only accepts
-	 * 32-bit, so their values have to be limited to U32_MAX.
-	 */
+	 
 	if (period > U32_MAX)
 		period = U32_MAX;
 
@@ -247,7 +237,7 @@ static int gb_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (err)
 		return err;
 
-	/* enable/disable */
+	 
 	if (!enabled)
 		return gb_pwm_enable_operation(pwmc, pwm->hwpwm);
 
@@ -289,7 +279,7 @@ static int gb_pwm_probe(struct gbphy_device *gbphy_dev,
 	if (ret)
 		goto exit_connection_destroy;
 
-	/* Query number of pwms present */
+	 
 	ret = gb_pwm_count_operation(pwmc);
 	if (ret)
 		goto exit_connection_disable;

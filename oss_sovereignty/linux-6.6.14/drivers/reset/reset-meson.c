@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Amlogic Meson Reset Controller driver
- *
- * Copyright (c) 2016 BayLibre, SAS.
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 #include <linux/err.h>
 #include <linux/init.h>
 #include <linux/io.h>
@@ -108,7 +103,7 @@ static const struct of_device_id meson_reset_dt_ids[] = {
 	 { .compatible = "amlogic,meson-axg-reset",  .data = &meson8b_param},
 	 { .compatible = "amlogic,meson-a1-reset",   .data = &meson_a1_param},
 	 { .compatible = "amlogic,meson-s4-reset",   .data = &meson_s4_param},
-	 { /* sentinel */ },
+	 {   },
 };
 MODULE_DEVICE_TABLE(of, meson_reset_dt_ids);
 

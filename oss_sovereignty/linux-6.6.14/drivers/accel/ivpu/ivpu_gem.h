@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2020-2023 Intel Corporation
- */
+ 
+ 
 #ifndef __IVPU_GEM_H__
 #define __IVPU_GEM_H__
 
@@ -20,7 +18,7 @@ struct ivpu_bo {
 	struct list_head ctx_node;
 	struct drm_mm_node mm_node;
 
-	struct mutex lock; /* Protects: pages, sgt, mmu_mapped */
+	struct mutex lock;  
 	struct sg_table *sgt;
 	struct page **pages;
 	bool mmu_mapped;
@@ -124,4 +122,4 @@ static inline u32 cpu_to_vpu_addr(struct ivpu_bo *bo, void *cpu_addr)
 	return bo->vpu_addr + (cpu_addr - bo->kvaddr);
 }
 
-#endif /* __IVPU_GEM_H__ */
+#endif  

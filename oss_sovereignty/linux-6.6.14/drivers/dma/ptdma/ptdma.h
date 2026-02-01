@@ -1,14 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AMD Passthru DMA device driver
- * -- Based on the CCP driver
- *
- * Copyright (C) 2016,2021 Advanced Micro Devices, Inc.
- *
- * Author: Sanjay R Mehta <sanju.mehta@amd.com>
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- * Author: Gary R Hook <gary.hook@amd.com>
- */
+ 
+ 
 
 #ifndef __PT_DEV_H__
 #define __PT_DEV_H__
@@ -32,7 +23,7 @@
 
 #define PT_ENGINE_PASSTHRU		5
 
-/* Register Mappings */
+ 
 #define IRQ_MASK_REG			0x040
 #define IRQ_STATUS_REG			0x200
 
@@ -62,10 +53,10 @@
 
 #define CMD_DESC_DW0_VAL		0x500012
 
-/* Address offset for virtual queue registers */
+ 
 #define CMD_Q_STATUS_INCR		0x1000
 
-/* Bit masks */
+ 
 #define CMD_CONFIG_REQID		0
 #define CMD_TIMEOUT_DISABLE		0
 #define CMD_CLK_DYN_GATING_DIS		0
@@ -103,7 +94,7 @@
 #define INT_EMPTY_QUEUE			BIT(3)
 #define SUPPORTED_INTERRUPTS		(INT_COMPLETION | INT_ERROR)
 
-/****** Local Storage Block ******/
+ 
 #define LSB_START			0
 #define LSB_END				127
 #define LSB_COUNT			(LSB_END - LSB_START + 1)
@@ -120,45 +111,16 @@ struct pt_tasklet_data {
 	struct pt_cmd *cmd;
 };
 
-/*
- * struct pt_passthru_engine - pass-through operation
- *   without performing DMA mapping
- * @mask: mask to be applied to data
- * @mask_len: length in bytes of mask
- * @src_dma: data to be used for this operation
- * @dst_dma: data produced by this operation
- * @src_len: length in bytes of data used for this operation
- *
- * Variables required to be set when calling pt_enqueue_cmd():
- *   - bit_mod, byte_swap, src, dst, src_len
- *   - mask, mask_len if bit_mod is not PT_PASSTHRU_BITWISE_NOOP
- */
+ 
 struct pt_passthru_engine {
 	dma_addr_t mask;
-	u32 mask_len;		/* In bytes */
+	u32 mask_len;		 
 
 	dma_addr_t src_dma, dst_dma;
-	u64 src_len;		/* In bytes */
+	u64 src_len;		 
 };
 
-/*
- * struct pt_cmd - PTDMA operation request
- * @entry: list element
- * @work: work element used for callbacks
- * @pt: PT device to be run on
- * @ret: operation return code
- * @flags: cmd processing flags
- * @engine: PTDMA operation to perform (passthru)
- * @engine_error: PT engine return code
- * @passthru: engine specific structures, refer to specific engine struct below
- * @callback: operation completion callback function
- * @data: parameter value to be supplied to the callback function
- *
- * Variables required to be set when calling pt_enqueue_cmd():
- *   - engine, callback
- *   - See the operation structures below for what is required for each
- *     operation.
- */
+ 
 struct pt_cmd {
 	struct list_head entry;
 	struct work_struct work;
@@ -167,7 +129,7 @@ struct pt_cmd {
 	u32 engine;
 	u32 engine_error;
 	struct pt_passthru_engine passthru;
-	/* Completion callback support */
+	 
 	void (*pt_cmd_callback)(void *data, int err);
 	void *data;
 };
@@ -189,13 +151,13 @@ struct pt_dma_chan {
 struct pt_cmd_queue {
 	struct pt_device *pt;
 
-	/* Queue dma pool */
+	 
 	struct dma_pool *dma_pool;
 
-	/* Queue base address (not neccessarily aligned)*/
+	 
 	struct ptdma_desc *qbase;
 
-	/* Aligned queue start address (per requirement) */
+	 
 	spinlock_t q_lock ____cacheline_aligned;
 	unsigned int qidx;
 
@@ -206,19 +168,19 @@ struct pt_cmd_queue {
 	unsigned int active;
 	unsigned int suspended;
 
-	/* Interrupt flag */
+	 
 	bool int_en;
 
-	/* Register addresses for queue */
+	 
 	void __iomem *reg_control;
-	u32 qcontrol; /* Cached control register */
+	u32 qcontrol;  
 
-	/* Status values from job */
+	 
 	u32 int_status;
 	u32 q_status;
 	u32 q_int_status;
 	u32 cmd_error;
-	/* Queue Statistics */
+	 
 	unsigned long total_pt_ops;
 } ____cacheline_aligned;
 
@@ -230,27 +192,24 @@ struct pt_device {
 
 	struct device *dev;
 
-	/* Bus specific device information */
+	 
 	struct pt_msix *pt_msix;
 
 	struct pt_dev_vdata *dev_vdata;
 
 	unsigned int pt_irq;
 
-	/* I/O area used for device communication */
+	 
 	void __iomem *io_regs;
 
 	spinlock_t cmd_lock ____cacheline_aligned;
 	unsigned int cmd_count;
 	struct list_head cmd;
 
-	/*
-	 * The command queue. This represent the queue available on the
-	 * PTDMA that are available for processing cmds
-	 */
+	 
 	struct pt_cmd_queue cmd_q;
 
-	/* Support for the DMA Engine capabilities */
+	 
 	struct dma_device dma_dev;
 	struct pt_dma_chan *pt_dma_chan;
 	struct kmem_cache *dma_cmd_cache;
@@ -258,24 +217,13 @@ struct pt_device {
 
 	wait_queue_head_t lsb_queue;
 
-	/* Device Statistics */
+	 
 	unsigned long total_interrupts;
 
 	struct pt_tasklet_data tdata;
 };
 
-/*
- * descriptor for PTDMA commands
- * 8 32-bit words:
- * word 0: function; engine; control bits
- * word 1: length of source data
- * word 2: low 32 bits of source pointer
- * word 3: upper 16 bits of source pointer; source memory type
- * word 4: low 32 bits of destination pointer
- * word 5: upper 16 bits of destination pointer; destination memory type
- * word 6: reserved 32 bits
- * word 7: reserved 32 bits
- */
+ 
 
 #define DWORD0_SOC	BIT(0)
 #define DWORD0_IOC	BIT(1)
@@ -306,7 +254,7 @@ struct ptdma_desc {
 	__le32 rsvd2;
 };
 
-/* Structure to hold PT device data */
+ 
 struct pt_dev_vdata {
 	const unsigned int bar;
 };

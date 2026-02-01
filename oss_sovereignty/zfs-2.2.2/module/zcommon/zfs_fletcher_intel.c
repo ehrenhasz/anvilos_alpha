@@ -1,44 +1,4 @@
-/*
- * Implement fast Fletcher4 with AVX2 instructions. (x86_64)
- *
- * Use the 256-bit AVX2 SIMD instructions and registers to compute
- * Fletcher4 in four incremental 64-bit parallel accumulator streams,
- * and then combine the streams to form the final four checksum words.
- *
- * Copyright (C) 2015 Intel Corporation.
- *
- * Authors:
- *      James Guilford <james.guilford@intel.com>
- *      Jinshan Xiong <jinshan.xiong@intel.com>
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #if defined(HAVE_AVX) && defined(HAVE_AVX2)
 
@@ -163,4 +123,4 @@ const fletcher_4_ops_t fletcher_4_avx2_ops = {
 	.name = "avx2"
 };
 
-#endif /* defined(HAVE_AVX) && defined(HAVE_AVX2) */
+#endif  

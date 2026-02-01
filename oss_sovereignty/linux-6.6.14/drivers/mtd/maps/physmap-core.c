@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Normal mappings of chips in physical memory
- *
- * Copyright (C) 2003 MontaVista Software Inc.
- * Author: Jun Sun, jsun@mvista.com or jsun@junsun.net
- *
- * 031022 - [jsun] add run-time configure and partition setup
- *
- * Device tree support:
- *    Copyright (C) 2006 MontaVista Software Inc.
- *    Author: Vitaly Wool <vwool@ru.mvista.com>
- *
- *    Revised to handle newer style flash binding by:
- *    Copyright (C) 2007 David Gibson, IBM Corporation.
- *
- * GPIO address extension:
- *    Handle the case where a flash device is mostly addressed using physical
- *    line and supplemented by GPIOs.  This way you can hook up say a 8MiB flash
- *    to a 2MiB memory range and use the GPIOs to select a particular range.
- *
- *    Copyright © 2000 Nicolas Pitre <nico@cam.org>
- *    Copyright © 2005-2009 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -108,10 +86,10 @@ static void physmap_set_vpp(struct map_info *map, int state)
 
 	spin_lock_irqsave(&info->vpp_lock, flags);
 	if (state) {
-		if (++info->vpp_refcnt == 1)    /* first nested 'on' */
+		if (++info->vpp_refcnt == 1)     
 			physmap_data->set_vpp(pdev, 1);
 	} else {
-		if (--info->vpp_refcnt == 0)    /* last nested 'off' */
+		if (--info->vpp_refcnt == 0)     
 			physmap_data->set_vpp(pdev, 0);
 	}
 	spin_unlock_irqrestore(&info->vpp_lock, flags);
@@ -239,15 +217,7 @@ static const struct of_device_id of_flash_match[] = {
 		.data = "cfi_probe",
 	},
 	{
-		/*
-		 * FIXME: JEDEC chips can't be safely and reliably
-		 * probed, although the mtd code gets it right in
-		 * practice most of the time.  We should use the
-		 * vendor and device ids specified by the binding to
-		 * bypass the heuristic probe code, but the mtd layer
-		 * provides, at present, no interface for doing so
-		 * :(.
-		 */
+		 
 		.compatible = "jedec-flash",
 		.data = "jedec_probe",
 	},
@@ -263,7 +233,7 @@ static const struct of_device_id of_flash_match[] = {
 		.type = "rom",
 		.compatible = "direct-mapped"
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, of_flash_match);
 
@@ -386,28 +356,21 @@ static int physmap_flash_of_init(struct platform_device *dev)
 		if (err)
 			return err;
 
-		/*
-		 * On some platforms (e.g. MPC5200) a direct 1:1 mapping
-		 * may cause problems with JFFS2 usage, as the local bus (LPB)
-		 * doesn't support unaligned accesses as implemented in the
-		 * JFFS2 code via memcpy(). By setting NO_XIP, the
-		 * flash will not be exposed directly to the MTD users
-		 * (e.g. JFFS2) any more.
-		 */
+		 
 		if (map_indirect)
 			info->maps[i].phys = NO_XIP;
 	}
 
 	return 0;
 }
-#else /* IS_ENABLED(CONFIG_MTD_PHYSMAP_OF) */
+#else  
 #define of_flash_match NULL
 
 static int physmap_flash_of_init(struct platform_device *dev)
 {
 	return -ENOTSUPP;
 }
-#endif /* IS_ENABLED(CONFIG_MTD_PHYSMAP_OF) */
+#endif  
 
 static const char * const rom_probe_types[] = {
 	"cfi_probe", "jedec_probe", "qinfo_probe", "map_rom",
@@ -537,11 +500,7 @@ static int physmap_flash_probe(struct platform_device *dev)
 		}
 
 #ifdef CONFIG_MTD_COMPLEX_MAPPINGS
-		/*
-		 * Only use the simple_map implementation if map hooks are not
-		 * implemented. Since map->read() is mandatory checking for its
-		 * presence is enough.
-		 */
+		 
 		if (!info->maps[i].read)
 			simple_map_init(&info->maps[i]);
 #else
@@ -552,7 +511,7 @@ static int physmap_flash_probe(struct platform_device *dev)
 			info->mtds[i] = do_map_probe(info->probe_type,
 						     &info->maps[i]);
 
-			/* Fall back to mapping region as ROM */
+			 
 			if (!info->mtds[i] && IS_ENABLED(CONFIG_MTD_ROM) &&
 			    strcmp(info->probe_type, "map_rom")) {
 				dev_warn(&dev->dev,
@@ -584,9 +543,7 @@ static int physmap_flash_probe(struct platform_device *dev)
 	if (info->nmaps == 1) {
 		info->cmtd = info->mtds[0];
 	} else {
-		/*
-		 * We detected multiple devices. Concatenate them together.
-		 */
+		 
 		info->cmtd = mtd_concat_create(info->mtds, info->nmaps,
 					       dev_name(&dev->dev));
 		if (!info->cmtd)
@@ -689,8 +646,8 @@ MODULE_AUTHOR("Vitaly Wool <vwool@ru.mvista.com>");
 MODULE_AUTHOR("Mike Frysinger <vapier@gentoo.org>");
 MODULE_DESCRIPTION("Generic configurable MTD map driver");
 
-/* legacy platform drivers can't hotplug or coldplg */
+ 
 #ifndef CONFIG_MTD_PHYSMAP_COMPAT
-/* work with hotplug and coldplug */
+ 
 MODULE_ALIAS("platform:physmap-flash");
 #endif

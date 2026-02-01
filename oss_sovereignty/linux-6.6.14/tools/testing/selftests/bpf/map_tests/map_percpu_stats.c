@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Isovalent */
+
+ 
 
 #include <errno.h>
 #include <unistd.h>
@@ -71,11 +71,7 @@ static void delete_and_lookup_batch(int map_fd, void *keys, __u32 count)
 					      keys, values, &count,
 					      NULL);
 
-	/*
-	 * Despite what uapi header says, lookup_and_delete_batch will return
-	 * -ENOENT in case we successfully have deleted all elements, so check
-	 * this separately
-	 */
+	 
 	CHECK(ret < 0 && (errno != ENOENT || !count), "bpf_map_lookup_and_delete_batch",
 		       "error: %s\n", strerror(errno));
 
@@ -87,7 +83,7 @@ static void delete_and_lookup_batch(int map_fd, void *keys, __u32 count)
 
 static void delete_all_elements(__u32 type, int map_fd, bool batch)
 {
-	static __u8 val[8 << 10]; /* enough for 1024 CPUs */
+	static __u8 val[8 << 10];  
 	__u32 key = -1;
 	void *keys;
 	__u32 i, n;
@@ -100,13 +96,10 @@ static void delete_all_elements(__u32 type, int map_fd, bool batch)
 		memcpy(keys + n*MAX_MAP_KEY_SIZE, &key, MAX_MAP_KEY_SIZE);
 
 	if (batch) {
-		/* Can't mix delete_batch and delete_and_lookup_batch because
-		 * they have different semantics in relation to the keys
-		 * argument. However, delete_batch utilize map_delete_elem,
-		 * so we actually test it in non-batch scenario */
+		 
 		delete_and_lookup_batch(map_fd, keys, n);
 	} else {
-		/* Intentionally mix delete and lookup_and_delete so we can test both */
+		 
 		for (i = 0; i < n; i++) {
 			void *keyp = keys + i*MAX_MAP_KEY_SIZE;
 
@@ -240,23 +233,18 @@ static void check_expected_number_elements(__u32 n_inserted, int map_fd,
 	__u32 n_real;
 	__u32 n_iter;
 
-	/* Count the current number of elements in the map by iterating through
-	 * all the map keys via bpf_get_next_key
-	 */
+	 
 	n_real = map_count_elements(info->type, map_fd);
 
-	/* The "real" number of elements should be the same as the inserted
-	 * number of elements in all cases except LRU maps, where some elements
-	 * may have been evicted
-	 */
+	 
 	if (n_inserted == 0 || !is_lru(info->type))
 		CHECK(n_inserted != n_real, "map_count_elements",
 		      "n_real(%u) != n_inserted(%u)\n", n_real, n_inserted);
 
-	/* Count the current number of elements in the map using an iterator */
+	 
 	n_iter = get_cur_elements(info->id);
 
-	/* Both counts should be the same, as all updates are over */
+	 
 	CHECK(n_iter != n_real, "get_cur_elements",
 	      "n_iter=%u, expected %u (map_type=%s,map_flags=%08x)\n",
 	      n_iter, n_real, map_type_to_s(info->type), info->map_flags);
@@ -273,25 +261,19 @@ static void __test(int map_fd)
 	opts.map_type = info.type;
 	opts.n = info.max_entries;
 
-	/* Reduce the number of elements we are updating such that we don't
-	 * bump into -E2BIG from non-preallocated hash maps, but still will
-	 * have some evictions for LRU maps  */
+	 
 	if (opts.map_type != BPF_MAP_TYPE_HASH_OF_MAPS)
 		opts.n -= 512;
 	else
 		opts.n /= 2;
 
-	/*
-	 * Upsert keys [0, n) under some competition: with random values from
-	 * N_THREADS threads. Check values, then delete all elements and check
-	 * values again.
-	 */
+	 
 	upsert_elements(&opts);
 	check_expected_number_elements(opts.n, map_fd, &info);
 	delete_all_elements(info.type, map_fd, !BATCH);
 	check_expected_number_elements(0, map_fd, &info);
 
-	/* Now do the same, but using batch delete operations */
+	 
 	upsert_elements(&opts);
 	check_expected_number_elements(opts.n, map_fd, &info);
 	delete_all_elements(info.type, map_fd, BATCH);

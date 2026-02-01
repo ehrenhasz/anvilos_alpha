@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * c67x00-hcd.c: Cypress C67X00 USB Host Controller Driver
- *
- * Copyright (C) 2006-2008 Barco N.V.
- *    Derived from the Cypress cy7c67200/300 ezusb linux driver and
- *    based on multiple host controller drivers inside the linux kernel.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/platform_device.h>
@@ -14,20 +8,18 @@
 #include "c67x00.h"
 #include "c67x00-hcd.h"
 
-/* --------------------------------------------------------------------------
- * Root Hub Support
- */
+ 
 
 static __u8 c67x00_hub_des[] = {
-	0x09,			/*  __u8  bLength; */
-	USB_DT_HUB,		/*  __u8  bDescriptorType; Hub-descriptor */
-	0x02,			/*  __u8  bNbrPorts; */
-	0x00,			/* __u16  wHubCharacteristics; */
-	0x00,			/*   (per-port OC, no power switching) */
-	0x32,			/*  __u8  bPwrOn2pwrGood; 2ms */
-	0x00,			/*  __u8  bHubContrCurrent; 0 mA */
-	0x00,			/*  __u8  DeviceRemovable; ** 7 Ports max ** */
-	0xff,			/*  __u8  PortPwrCtrlMask; ** 7 ports max ** */
+	0x09,			 
+	USB_DT_HUB,		 
+	0x02,			 
+	0x00,			 
+	0x00,			 
+	0x32,			 
+	0x00,			 
+	0x00,			 
+	0xff,			 
 };
 
 static void c67x00_hub_reset_host_port(struct c67x00_sie *sie, int port)
@@ -57,7 +49,7 @@ static int c67x00_hub_status_data(struct usb_hcd *hcd, char *buf)
 		if (status & PORT_CONNECT_CHANGE(i))
 			*buf |= (1 << i);
 
-	/* bit 0 denotes hub change, b1..n port change */
+	 
 	*buf <<= 1;
 
 	return !!*buf;
@@ -77,7 +69,7 @@ static int c67x00_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 	case GetHubStatus:
 		*(__le32 *) buf = cpu_to_le32(0);
-		len = 4;		/* hub power */
+		len = 4;		 
 		break;
 
 	case GetPortStatus:
@@ -108,7 +100,7 @@ static int c67x00_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 		len = 4;
 		break;
 
-	case SetHubFeature:	/* We don't implement these */
+	case SetHubFeature:	 
 	case ClearHubFeature:
 		switch (wValue) {
 		case C_HUB_OVER_CURRENT:
@@ -138,7 +130,7 @@ static int c67x00_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 			break;
 
 		case USB_PORT_FEAT_POWER:
-			/* Power always enabled */
+			 
 			len = 0;
 			break;
 
@@ -156,8 +148,7 @@ static int c67x00_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 
 		switch (wValue) {
 		case USB_PORT_FEAT_ENABLE:
-			/* Reset the port so that the c67x00 also notices the
-			 * disconnect */
+			 
 			c67x00_hub_reset_host_port(sie, port);
 			len = 0;
 			break;
@@ -224,21 +215,15 @@ static int c67x00_hub_control(struct usb_hcd *hcd, u16 typeReq, u16 wValue,
 	return 0;
 }
 
-/* ---------------------------------------------------------------------
- * Main part of host controller driver
- */
+ 
 
-/*
- * c67x00_hcd_irq
- *
- * This function is called from the interrupt handler in c67x00-drv.c
- */
+ 
 static void c67x00_hcd_irq(struct c67x00_sie *sie, u16 int_status, u16 msg)
 {
 	struct c67x00_hcd *c67x00 = sie->private_data;
 	struct usb_hcd *hcd = c67x00_hcd_to_hcd(c67x00);
 
-	/* Handle sie message flags */
+	 
 	if (msg) {
 		if (msg & HUSB_TDListDone)
 			c67x00_sched_kick(c67x00);
@@ -253,16 +238,14 @@ static void c67x00_hcd_irq(struct c67x00_sie *sie, u16 int_status, u16 msg)
 	if (!HCD_HW_ACCESSIBLE(hcd))
 		return;
 
-	/* Handle Start of frame events */
+	 
 	if (int_status & SOFEOP_FLG(sie->sie_num)) {
 		c67x00_ll_usb_clear_status(sie, SOF_EOP_IRQ_FLG);
 		c67x00_sched_kick(c67x00);
 	}
 }
 
-/*
- * c67x00_hcd_start: Host controller start hook
- */
+ 
 static int c67x00_hcd_start(struct usb_hcd *hcd)
 {
 	hcd->uses_new_polling = 1;
@@ -272,12 +255,10 @@ static int c67x00_hcd_start(struct usb_hcd *hcd)
 	return 0;
 }
 
-/*
- * c67x00_hcd_stop: Host controller stop hook
- */
+ 
 static void c67x00_hcd_stop(struct usb_hcd *hcd)
 {
-	/* Nothing to do */
+	 
 }
 
 static int c67x00_hcd_get_frame(struct usb_hcd *hcd)
@@ -297,34 +278,24 @@ static const struct hc_driver c67x00_hc_driver = {
 	.hcd_priv_size	= sizeof(struct c67x00_hcd),
 	.flags		= HCD_USB11 | HCD_MEMORY,
 
-	/*
-	 * basic lifecycle operations
-	 */
+	 
 	.start		= c67x00_hcd_start,
 	.stop		= c67x00_hcd_stop,
 
-	/*
-	 * managing i/o requests and associated device resources
-	 */
+	 
 	.urb_enqueue	= c67x00_urb_enqueue,
 	.urb_dequeue	= c67x00_urb_dequeue,
 	.endpoint_disable = c67x00_endpoint_disable,
 
-	/*
-	 * scheduling support
-	 */
+	 
 	.get_frame_number = c67x00_hcd_get_frame,
 
-	/*
-	 * root hub support
-	 */
+	 
 	.hub_status_data = c67x00_hub_status_data,
 	.hub_control	= c67x00_hub_control,
 };
 
-/* ---------------------------------------------------------------------
- * Setup/Teardown routines
- */
+ 
 
 int c67x00_hcd_probe(struct c67x00_sie *sie)
 {
@@ -387,7 +358,7 @@ int c67x00_hcd_probe(struct c67x00_sie *sie)
 	return retval;
 }
 
-/* may be called with controller, bus, and devices active */
+ 
 void c67x00_hcd_remove(struct c67x00_sie *sie)
 {
 	struct c67x00_hcd *c67x00 = sie->private_data;

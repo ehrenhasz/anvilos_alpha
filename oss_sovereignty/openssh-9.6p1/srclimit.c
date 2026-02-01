@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2020 Darren Tucker <dtucker@openbsd.org>
- *
- * Permission to use, copy, modify, and distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "includes.h"
 
@@ -33,7 +19,7 @@
 
 static int max_children, max_persource, ipv4_masklen, ipv6_masklen;
 
-/* Per connection state, used to enforce unauthenticated connection limit. */
+ 
 static struct child_info {
 	int id;
 	struct xaddr addr;
@@ -48,7 +34,7 @@ srclimit_init(int max, int persource, int ipv4len, int ipv6len)
 	ipv4_masklen = ipv4len;
 	ipv6_masklen = ipv6len;
 	max_persource = persource;
-	if (max_persource == INT_MAX)	/* no limit */
+	if (max_persource == INT_MAX)	 
 		return;
 	debug("%s: max connections %d, per source %d, masks %d,%d", __func__,
 	    max, persource, ipv4len, ipv6len);
@@ -59,7 +45,7 @@ srclimit_init(int max, int persource, int ipv4len, int ipv6len)
 		child[i].id = -1;
 }
 
-/* returns 1 if connection allowed, 0 if not allowed. */
+ 
 int
 srclimit_check_allow(int sock, int id)
 {
@@ -70,16 +56,16 @@ srclimit_check_allow(int sock, int id)
 	int i, bits, first_unused, count = 0;
 	char xas[NI_MAXHOST];
 
-	if (max_persource == INT_MAX)	/* no limit */
+	if (max_persource == INT_MAX)	 
 		return 1;
 
 	debug("%s: sock %d id %d limit %d", __func__, sock, id, max_persource);
 	if (getpeername(sock, sa, &addrlen) != 0)
-		return 1;	/* not remote socket? */
+		return 1;	 
 	if (addr_sa_to_xaddr(sa, addrlen, &xa) != 0)
-		return 1;	/* unknown address family? */
+		return 1;	 
 
-	/* Mask address off address to desired size. */
+	 
 	bits = xa.af == AF_INET ? ipv4_masklen : ipv6_masklen;
 	if (addr_netmask(xa.af, bits, &xmask) != 0 ||
 	    addr_and(&xb, &xa, &xmask) != 0) {
@@ -88,7 +74,7 @@ srclimit_check_allow(int sock, int id)
 	}
 
 	first_unused = max_children;
-	/* Count matching entries and find first unused one. */
+	 
 	for (i = 0; i < max_children; i++) {
 		if (child[i].id == -1) {
 			if (i < first_unused)
@@ -104,7 +90,7 @@ srclimit_check_allow(int sock, int id)
 	debug3("%s: new unauthenticated connection from %s/%d, at %d of %d",
 	    __func__, xas, bits, count, max_persource);
 
-	if (first_unused == max_children) { /* no free slot found */
+	if (first_unused == max_children) {  
 		debug3("%s: no free slot", __func__);
 		return 0;
 	}
@@ -115,7 +101,7 @@ srclimit_check_allow(int sock, int id)
 	if (count >= max_persource)
 		return 0;
 
-	/* Connection allowed, store masked address. */
+	 
 	child[first_unused].id = id;
 	memcpy(&child[first_unused].addr, &xb, sizeof(xb));
 	return 1;
@@ -126,11 +112,11 @@ srclimit_done(int id)
 {
 	int i;
 
-	if (max_persource == INT_MAX)	/* no limit */
+	if (max_persource == INT_MAX)	 
 		return;
 
 	debug("%s: id %d", __func__, id);
-	/* Clear corresponding state entry. */
+	 
 	for (i = 0; i < max_children; i++) {
 		if (child[i].id == id) {
 			child[i].id = -1;

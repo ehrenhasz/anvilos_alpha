@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVIF_PRINTF_H__
 #define __NVIF_PRINTF_H__
 #include <nvif/client.h>

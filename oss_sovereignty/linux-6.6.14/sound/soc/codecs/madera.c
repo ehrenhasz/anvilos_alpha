@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Cirrus Logic Madera class codecs common support
-//
-// Copyright (C) 2015-2019 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
-//
+
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/gcd.h>
@@ -211,14 +211,11 @@ static void madera_spin_sysclk(struct madera_priv *priv)
 	unsigned int val;
 	int ret, i;
 
-	/* Skip this if the chip is down */
+	 
 	if (pm_runtime_suspended(madera->dev))
 		return;
 
-	/*
-	 * Just read a register a few times to ensure the internal
-	 * oscillator sends out a few clocks.
-	 */
+	 
 	for (i = 0; i < 4; i++) {
 		ret = regmap_read(madera->regmap, MADERA_SOFTWARE_RESET, &val);
 		if (ret)
@@ -310,7 +307,7 @@ static irqreturn_t madera_thermal_warn(int irq, void *data)
 	int ret;
 
 	ret = madera_check_speaker_overheat(madera, &warn, &shutdown);
-	if (ret || shutdown) { /* for safety attempt to shutdown on error */
+	if (ret || shutdown) {  
 		dev_crit(madera->dev, "Thermal shutdown\n");
 		ret = regmap_update_bits(madera->regmap,
 					 MADERA_OUTPUT_ENABLES_1,
@@ -373,7 +370,7 @@ static int madera_get_variable_u32_array(struct device *dev,
 	n = device_property_count_u32(dev, propname);
 	if (n < 0) {
 		if (n == -EINVAL)
-			return 0;	/* missing, ignore */
+			return 0;	 
 
 		dev_warn(dev, "%s malformed (%d)\n", propname, n);
 
@@ -461,7 +458,7 @@ int madera_core_init(struct madera_priv *priv)
 {
 	int i;
 
-	/* trap undersized array initializers */
+	 
 	BUILD_BUG_ON(!madera_mixer_texts[MADERA_NUM_MIXER_INPUTS - 1]);
 	BUILD_BUG_ON(!madera_mixer_values[MADERA_NUM_MIXER_INPUTS - 1]);
 
@@ -508,10 +505,7 @@ int madera_domain_clk_ev(struct snd_soc_dapm_widget *w,
 		return -EINVAL;
 	}
 
-	/*
-	 * We can't rely on the DAPM mutex for locking because we need a lock
-	 * that can safely be called in hw_params
-	 */
+	 
 	mutex_lock(&priv->rate_lock);
 
 	switch (event) {
@@ -566,15 +560,15 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
 	if (!change)
 		goto end;
 
-	/* EP_SEL should not be modified while HP or EP driver is enabled */
+	 
 	ret = regmap_update_bits(madera->regmap, MADERA_OUTPUT_ENABLES_1,
 				 MADERA_OUT1L_ENA | MADERA_OUT1R_ENA, 0);
 	if (ret)
 		dev_warn(madera->dev, "Failed to disable outputs: %d\n", ret);
 
-	usleep_range(2000, 3000); /* wait for wseq to complete */
+	usleep_range(2000, 3000);  
 
-	/* change demux setting */
+	 
 	ret = 0;
 	if (madera->out_clamp[0])
 		ret = regmap_update_bits(madera->regmap,
@@ -583,11 +577,11 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
 	if (ret) {
 		dev_err(madera->dev, "Failed to set OUT1 demux: %d\n", ret);
 	} else {
-		/* apply correct setting for mono mode */
+		 
 		if (!ep_sel && !madera->pdata.codec.out_mono[0])
-			out_mono = false; /* stereo HP */
+			out_mono = false;  
 		else
-			out_mono = true; /* EP or mono HP */
+			out_mono = true;  
 
 		ret = madera_set_output_mode(component, 1, out_mono);
 		if (ret)
@@ -595,10 +589,7 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
 				 "Failed to set output mode: %d\n", ret);
 	}
 
-	/*
-	 * if HPDET has disabled the clamp while switching to HPOUT
-	 * OUT1 should remain disabled
-	 */
+	 
 	if (ep_sel ||
 	    (madera->out_clamp[0] && !madera->out_shorted[0])) {
 		ret = regmap_update_bits(madera->regmap,
@@ -610,9 +601,9 @@ int madera_out1_demux_put(struct snd_kcontrol *kcontrol,
 				 "Failed to restore earpiece outputs: %d\n",
 				 ret);
 		else if (madera->hp_ena)
-			msleep(34); /* wait for enable wseq */
+			msleep(34);  
 		else
-			usleep_range(2000, 3000); /* wait for disable wseq */
+			usleep_range(2000, 3000);  
 	}
 
 end:
@@ -904,11 +895,7 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
 	if (item >= e->items)
 		return -EINVAL;
 
-	/*
-	 * We don't directly write the rate register here but we want to
-	 * maintain consistent behaviour that rate domains cannot be changed
-	 * while in use since this is a hardware requirement
-	 */
+	 
 	mutex_lock(&priv->rate_lock);
 
 	if (!madera_can_change_grp_rate(priv, priv->adsp[adsp_num].cs_dsp.base)) {
@@ -917,7 +904,7 @@ static int madera_adsp_rate_put(struct snd_kcontrol *kcontrol,
 			 kcontrol->id.name);
 		ret = -EBUSY;
 	} else if (priv->adsp_rate_cache[adsp_num] != e->values[item]) {
-		/* Volatile register so defer until the codec is powered up */
+		 
 		priv->adsp_rate_cache[adsp_num] = e->values[item];
 		ret = 1;
 	}
@@ -976,12 +963,12 @@ static int madera_write_adsp_clk_setting(struct madera_priv *priv,
 	case CS47L35:
 	case CS47L85:
 	case WM1840:
-		/* use legacy frequency registers */
+		 
 		mask |= MADERA_DSP_CLK_SEL_MASK;
 		val |= (freq << MADERA_DSP_CLK_SEL_SHIFT);
 		break;
 	default:
-		/* Configure exact dsp frequency */
+		 
 		dev_dbg(priv->madera->dev, "Set DSP frequency to 0x%x\n", freq);
 
 		ret = regmap_write(dsp->cs_dsp.regmap,
@@ -1015,14 +1002,7 @@ int madera_set_adsp_clk(struct madera_priv *priv, int dsp_num,
 	unsigned int cur, new;
 	int ret;
 
-	/*
-	 * This is called at a higher DAPM priority than the mux widgets so
-	 * the muxes are still off at this point and it's safe to change
-	 * the rate domain control.
-	 * Also called at a lower DAPM priority than the domain group widgets
-	 * so locking the reads of adsp_rate_cache is not necessary as we know
-	 * changes are locked out by the domain_group_ref reference count.
-	 */
+	 
 
 	ret = regmap_read(dsp->cs_dsp.regmap,  dsp->cs_dsp.base, &cur);
 	if (ret) {
@@ -1041,7 +1021,7 @@ int madera_set_adsp_clk(struct madera_priv *priv, int dsp_num,
 	} else {
 		dev_dbg(madera->dev, "DSP rate changed\n");
 
-		/* The write must be guarded by a number of SYSCLK cycles */
+		 
 		madera_spin_sysclk(priv);
 		ret = madera_write_adsp_clk_setting(priv, dsp, freq);
 		madera_spin_sysclk(priv);
@@ -1064,10 +1044,7 @@ int madera_rate_put(struct snd_kcontrol *kcontrol,
 	if (item >= e->items)
 		return -EINVAL;
 
-	/*
-	 * Prevent the domain powering up while we're checking whether it's
-	 * safe to change rate domain
-	 */
+	 
 	mutex_lock(&priv->rate_lock);
 
 	val = snd_soc_component_read(component, e->reg);
@@ -1084,7 +1061,7 @@ int madera_rate_put(struct snd_kcontrol *kcontrol,
 			 kcontrol->id.name);
 		ret = -EBUSY;
 	} else {
-		/* The write must be guarded by a number of SYSCLK cycles */
+		 
 		madera_spin_sysclk(priv);
 		ret = snd_soc_put_enum_double(kcontrol, ucontrol);
 		madera_spin_sysclk(priv);
@@ -1126,10 +1103,7 @@ static void madera_configure_input_mode(struct madera *madera)
 		break;
 	}
 
-	/*
-	 * Initialize input modes from the A settings. For muxed inputs the
-	 * B settings will be applied if the mux is changed
-	 */
+	 
 	for (i = 0; i < max_dmic_sup; i++) {
 		dev_dbg(madera->dev, "IN%d mode %u:%u:%u:%u\n", i + 1,
 			madera->pdata.codec.inmode[i][0],
@@ -1232,7 +1206,7 @@ int madera_init_outputs(struct snd_soc_component *component,
 		routes = madera_mono_routes;
 
 	for (i = 0; i < n_mono_routes; i++) {
-		/* Default is 0 so noop with defaults */
+		 
 		if (pdata->out_mono[i]) {
 			val = MADERA_OUT1_MONO;
 			snd_soc_dapm_add_routes(dapm, &routes[i], 1);
@@ -1454,15 +1428,15 @@ const char * const madera_mixer_texts[] = {
 EXPORT_SYMBOL_GPL(madera_mixer_texts);
 
 const unsigned int madera_mixer_values[] = {
-	0x00,	/* None */
-	0x04,	/* Tone Generator 1 */
-	0x05,	/* Tone Generator 2 */
-	0x06,	/* Haptics */
-	0x08,	/* AEC */
-	0x09,	/* AEC2 */
-	0x0c,	/* Noise mixer */
-	0x0d,	/* Comfort noise */
-	0x10,	/* IN1L */
+	0x00,	 
+	0x04,	 
+	0x05,	 
+	0x06,	 
+	0x08,	 
+	0x09,	 
+	0x0c,	 
+	0x0d,	 
+	0x10,	 
 	0x11,
 	0x12,
 	0x13,
@@ -1474,7 +1448,7 @@ const unsigned int madera_mixer_values[] = {
 	0x19,
 	0x1A,
 	0x1B,
-	0x20,	/* AIF1RX1 */
+	0x20,	 
 	0x21,
 	0x22,
 	0x23,
@@ -1482,7 +1456,7 @@ const unsigned int madera_mixer_values[] = {
 	0x25,
 	0x26,
 	0x27,
-	0x28,	/* AIF2RX1 */
+	0x28,	 
 	0x29,
 	0x2a,
 	0x2b,
@@ -1490,13 +1464,13 @@ const unsigned int madera_mixer_values[] = {
 	0x2d,
 	0x2e,
 	0x2f,
-	0x30,	/* AIF3RX1 */
+	0x30,	 
 	0x31,
 	0x32,
 	0x33,
-	0x34,	/* AIF4RX1 */
+	0x34,	 
 	0x35,
-	0x38,	/* SLIMRX1 */
+	0x38,	 
 	0x39,
 	0x3a,
 	0x3b,
@@ -1504,104 +1478,104 @@ const unsigned int madera_mixer_values[] = {
 	0x3d,
 	0x3e,
 	0x3f,
-	0x50,	/* EQ1 */
+	0x50,	 
 	0x51,
 	0x52,
 	0x53,
-	0x58,	/* DRC1L */
+	0x58,	 
 	0x59,
 	0x5a,
 	0x5b,
-	0x60,	/* LHPF1 */
+	0x60,	 
 	0x61,
 	0x62,
 	0x63,
-	0x68,	/* DSP1.1 */
+	0x68,	 
 	0x69,
 	0x6a,
 	0x6b,
 	0x6c,
 	0x6d,
-	0x70,	/* DSP2.1 */
+	0x70,	 
 	0x71,
 	0x72,
 	0x73,
 	0x74,
 	0x75,
-	0x78,	/* DSP3.1 */
+	0x78,	 
 	0x79,
 	0x7a,
 	0x7b,
 	0x7c,
 	0x7d,
-	0x80,	/* DSP4.1 */
+	0x80,	 
 	0x81,
 	0x82,
 	0x83,
 	0x84,
 	0x85,
-	0x88,	/* DSP5.1 */
+	0x88,	 
 	0x89,
 	0x8a,
 	0x8b,
 	0x8c,
 	0x8d,
-	0xc0,	/* DSP6.1 */
+	0xc0,	 
 	0xc1,
 	0xc2,
 	0xc3,
 	0xc4,
 	0xc5,
-	0xc8,	/* DSP7.1 */
+	0xc8,	 
 	0xc9,
 	0xca,
 	0xcb,
 	0xcc,
 	0xcd,
-	0x90,	/* ASRC1IN1L */
+	0x90,	 
 	0x91,
 	0x92,
 	0x93,
-	0x94,	/* ASRC2IN1L */
+	0x94,	 
 	0x95,
 	0x96,
 	0x97,
-	0xa0,	/* ISRC1INT1 */
+	0xa0,	 
 	0xa1,
 	0xa2,
 	0xa3,
-	0xa4,	/* ISRC1DEC1 */
+	0xa4,	 
 	0xa5,
 	0xa6,
 	0xa7,
-	0xa8,	/* ISRC2DEC1 */
+	0xa8,	 
 	0xa9,
 	0xaa,
 	0xab,
-	0xac,	/* ISRC2INT1 */
+	0xac,	 
 	0xad,
 	0xae,
 	0xaf,
-	0xb0,	/* ISRC3DEC1 */
+	0xb0,	 
 	0xb1,
 	0xb2,
 	0xb3,
-	0xb4,	/* ISRC3INT1 */
+	0xb4,	 
 	0xb5,
 	0xb6,
 	0xb7,
-	0xb8,	/* ISRC4INT1 */
+	0xb8,	 
 	0xb9,
-	0xbc,	/* ISRC4DEC1 */
+	0xbc,	 
 	0xbd,
-	0xf8,	/* DFC1 */
+	0xf8,	 
 	0xf9,
 	0xfa,
 	0xfb,
 	0xfc,
 	0xfd,
 	0xfe,
-	0xff,	/* DFC8 */
+	0xff,	 
 };
 EXPORT_SYMBOL_GPL(madera_mixer_values);
 
@@ -2204,10 +2178,10 @@ int madera_lp_mode_put(struct snd_kcontrol *kcontrol,
 
 	snd_soc_dapm_mutex_lock(dapm);
 
-	/* Cannot change lp mode on an active input */
+	 
 	val = snd_soc_component_read(component, MADERA_INPUT_ENABLES);
 	mask = (mc->reg - MADERA_ADC_DIGITAL_VOLUME_1L) / 4;
-	mask ^= 0x1; /* Flip bottom bit for channel order */
+	mask ^= 0x1;  
 
 	if (val & (1 << mask)) {
 		ret = -EBUSY;
@@ -2283,7 +2257,7 @@ int madera_in_ev(struct snd_soc_dapm_widget *w, struct snd_kcontrol *kcontrol,
 		snd_soc_component_update_bits(component, reg,
 					      MADERA_IN1L_MUTE, 0);
 
-		/* If this is the last input pending then allow VU */
+		 
 		if (priv->in_pending == 0) {
 			usleep_range(1000, 3000);
 			madera_in_set_vu(priv, true);
@@ -2295,7 +2269,7 @@ int madera_in_ev(struct snd_soc_dapm_widget *w, struct snd_kcontrol *kcontrol,
 					      MADERA_IN1L_MUTE | MADERA_IN_VU);
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* Disable volume updates if no inputs are enabled */
+		 
 		val = snd_soc_component_read(component, MADERA_INPUT_ENABLES);
 		if (!val)
 			madera_in_set_vu(priv, false);
@@ -2433,7 +2407,7 @@ int madera_hp_ev(struct snd_soc_dapm_widget *w,
 		return 0;
 	}
 
-	/* Store the desired state for the HP outputs */
+	 
 	madera->hp_ena &= ~mask;
 	madera->hp_ena |= val;
 
@@ -2443,13 +2417,13 @@ int madera_hp_ev(struct snd_soc_dapm_widget *w,
 	case CS47L93:
 		break;
 	default:
-		/* if OUT1 is routed to EPOUT, ignore HP clamp and impedance */
+		 
 		regmap_read(madera->regmap, MADERA_OUTPUT_ENABLES_1, &ep_sel);
 		ep_sel &= MADERA_EP_SEL_MASK;
 		break;
 	}
 
-	/* Force off if HPDET has disabled the clamp for this output */
+	 
 	if (!ep_sel &&
 	    (!madera->out_clamp[out_num] || madera->out_shorted[out_num]))
 		val = 0;
@@ -2611,14 +2585,14 @@ static int madera_get_dspclk_setting(struct madera *madera,
 	case CS47L35:
 	case CS47L85:
 	case WM1840:
-		*clock_2_val = 0; /* don't use MADERA_DSP_CLOCK_2 */
+		*clock_2_val = 0;  
 		return madera_get_legacy_dspclk_setting(madera, freq);
 	default:
 		if (freq > 150000000)
 			return -EINVAL;
 
-		/* Use new exact frequency control */
-		*clock_2_val = freq / 15625; /* freq * (2^6) / (10^6) */
+		 
+		*clock_2_val = freq / 15625;  
 		return 0;
 	}
 }
@@ -2741,10 +2715,7 @@ int madera_set_sysclk(struct snd_soc_component *component, int clk_id,
 			return ret;
 		}
 
-		/*
-		 * We're using the frequency setting in MADERA_DSP_CLOCK_2 so
-		 * don't change the frequency select bits in MADERA_DSP_CLOCK_1
-		 */
+		 
 		mask = MADERA_SYSCLK_SRC_MASK;
 	}
 
@@ -3061,7 +3032,7 @@ static int madera_hw_params_rate(struct snd_pcm_substream *substream,
 		goto out;
 	}
 
-	/* Guard the rate change with SYSCLK cycles */
+	 
 	madera_spin_sysclk(priv);
 	snd_soc_component_update_bits(component, base + MADERA_AIF_RATE_CTRL,
 				      MADERA_AIF1_RATE_MASK, tar);
@@ -3141,7 +3112,7 @@ static int madera_hw_params(struct snd_pcm_substream *substream,
 		bclk_target *= chan_limit;
 	}
 
-	/* Force multiple of 2 channels for I2S mode */
+	 
 	val = snd_soc_component_read(component, base + MADERA_AIF_FORMAT);
 	val &= MADERA_AIF1_FMT_MASK;
 	if ((channels & 1) && val == MADERA_FMT_I2S_MODE) {
@@ -3174,12 +3145,12 @@ static int madera_hw_params(struct snd_pcm_substream *substream,
 		return reconfig;
 
 	if (reconfig) {
-		/* Save AIF TX/RX state */
+		 
 		regmap_read(madera->regmap, base + MADERA_AIF_TX_ENABLES,
 			    &aif_tx_state);
 		regmap_read(madera->regmap, base + MADERA_AIF_RX_ENABLES,
 			    &aif_rx_state);
-		/* Disable AIF TX/RX before reconfiguring it */
+		 
 		regmap_update_bits(madera->regmap,
 				   base + MADERA_AIF_TX_ENABLES, 0xff, 0x0);
 		regmap_update_bits(madera->regmap,
@@ -3209,7 +3180,7 @@ static int madera_hw_params(struct snd_pcm_substream *substream,
 
 restore_aif:
 	if (reconfig) {
-		/* Restore AIF TX/RX state */
+		 
 		regmap_update_bits(madera->regmap,
 				   base + MADERA_AIF_TX_ENABLES,
 				   0xff, aif_tx_state);
@@ -3265,10 +3236,7 @@ static int madera_dai_set_sysclk(struct snd_soc_dai *dai,
 	dev_dbg(component->dev, "Setting AIF%d to %s\n", dai->id,
 		is_sync ? "SYSCLK" : "ASYNCCLK");
 
-	/*
-	 * A connection to SYSCLK is always required, we only add and remove
-	 * a connection to ASYNCCLK
-	 */
+	 
 	memset(&routes, 0, sizeof(routes));
 	routes[0].sink = dai->driver->capture.stream_name;
 	routes[1].sink = dai->driver->playback.stream_name;
@@ -3338,7 +3306,7 @@ static int madera_set_tdm_slot(struct snd_soc_dai *dai, unsigned int tx_mask,
 	int rx_max_chan = dai->driver->playback.channels_max;
 	int tx_max_chan = dai->driver->capture.channels_max;
 
-	/* Only support TDM for the physical AIFs */
+	 
 	if (dai->id > MADERA_MAX_AIF)
 		return -ENOTSUPP;
 
@@ -3421,8 +3389,8 @@ static const unsigned int pseudo_fref_max[MADERA_FLL_MAX_FRATIO] = {
 struct madera_fll_gains {
 	unsigned int min;
 	unsigned int max;
-	int gain;		/* main gain */
-	int alt_gain;		/* alternate integer gain */
+	int gain;		 
+	int alt_gain;		 
 };
 
 static const struct madera_fll_gains madera_fll_sync_gains[] = {
@@ -3478,7 +3446,7 @@ static int madera_find_fratio(struct madera_fll *fll, unsigned int fref,
 	case CS47L35:
 		switch (fll->madera->rev) {
 		case 0:
-			/* rev A0 uses sync calculation for both loops */
+			 
 			return madera_find_sync_fratio(fref, fratio);
 		default:
 			if (sync)
@@ -3491,7 +3459,7 @@ static int madera_find_fratio(struct madera_fll *fll, unsigned int fref,
 		break;
 	case CS47L85:
 	case WM1840:
-		/* these use the same calculation for main and sync loops */
+		 
 		return madera_find_sync_fratio(fref, fratio);
 	default:
 		if (sync)
@@ -3508,7 +3476,7 @@ static int madera_calc_fratio(struct madera_fll *fll,
 	int init_ratio, ratio;
 	int refdiv, div;
 
-	/* fref must be <=13.5MHz, find initial refdiv */
+	 
 	div = 1;
 	cfg->refdiv = 0;
 	while (fref > MADERA_FLL_MAX_FREF) {
@@ -3520,7 +3488,7 @@ static int madera_calc_fratio(struct madera_fll *fll,
 			return -EINVAL;
 	}
 
-	/* Find an appropriate FLL_FRATIO */
+	 
 	init_ratio = madera_find_fratio(fll, fref, sync, &cfg->fratio);
 	if (init_ratio < 0) {
 		madera_fll_err(fll, "Unable to find FRATIO for fref=%uHz\n",
@@ -3551,17 +3519,11 @@ static int madera_calc_fratio(struct madera_fll *fll,
 		return init_ratio;
 	}
 
-	/*
-	 * For CS47L35 rev A0, CS47L85 and WM1840 adjust FRATIO/refdiv to avoid
-	 * integer mode if possible
-	 */
+	 
 	refdiv = cfg->refdiv;
 
 	while (div <= MADERA_FLL_MAX_REFDIV) {
-		/*
-		 * start from init_ratio because this may already give a
-		 * fractional N.K
-		 */
+		 
 		for (ratio = init_ratio; ratio > 0; ratio--) {
 			if (fll->fout % (ratio * fref)) {
 				cfg->refdiv = refdiv;
@@ -3630,12 +3592,12 @@ static int madera_calc_fll(struct madera_fll *fll,
 	madera_fll_dbg(fll, "fref=%u Fout=%u fvco=%u\n",
 		       fref, fll->fout, fll->fout * MADERA_FLL_VCO_MULT);
 
-	/* Find an appropriate FLL_FRATIO and refdiv */
+	 
 	ratio = madera_calc_fratio(fll, cfg, fref, sync);
 	if (ratio < 0)
 		return ratio;
 
-	/* Apply the division for our remaining calculations */
+	 
 	fref = fref / (1 << cfg->refdiv);
 
 	cfg->n = fll->fout / (ratio * fref);
@@ -3652,11 +3614,7 @@ static int madera_calc_fll(struct madera_fll *fll,
 		cfg->lambda = 0;
 	}
 
-	/*
-	 * Round down to 16bit range with cost of accuracy lost.
-	 * Denominator must be bigger than numerator so we only
-	 * take care of it.
-	 */
+	 
 	while (cfg->lambda >= (1 << 16)) {
 		cfg->theta >>= 1;
 		cfg->lambda >>= 1;
@@ -3666,7 +3624,7 @@ static int madera_calc_fll(struct madera_fll *fll,
 	case CS47L35:
 		switch (fll->madera->rev) {
 		case 0:
-			/* Rev A0 uses the sync gains for both loops */
+			 
 			gains = madera_fll_sync_gains;
 			n_gains = ARRAY_SIZE(madera_fll_sync_gains);
 			break;
@@ -3683,7 +3641,7 @@ static int madera_calc_fll(struct madera_fll *fll,
 		break;
 	case CS47L85:
 	case WM1840:
-		/* These use the sync gains for both loops */
+		 
 		gains = madera_fll_sync_gains;
 		n_gains = ARRAY_SIZE(madera_fll_sync_gains);
 		break;
@@ -3956,7 +3914,7 @@ static int madera_enable_fll(struct madera_fll *fll)
 	bool fll_change = false;
 
 	if (already_enabled < 0)
-		return already_enabled;	/* error getting current state */
+		return already_enabled;	 
 
 	if (fll->ref_src < 0 || fll->ref_freq == 0) {
 		madera_fll_err(fll, "No REFCLK\n");
@@ -3988,7 +3946,7 @@ static int madera_enable_fll(struct madera_fll *fll)
 		return sync_enabled;
 
 	if (already_enabled) {
-		/* Facilitate smooth refclk across the transition */
+		 
 		regmap_update_bits(fll->madera->regmap,
 				   fll->base + MADERA_FLL_CONTROL_1_OFFS,
 				   MADERA_FLL1_FREERUN,
@@ -4003,7 +3961,7 @@ static int madera_enable_fll(struct madera_fll *fll)
 		madera_set_fll_clks(fll, fll->base, false);
 	}
 
-	/* Apply SYNCCLK setting */
+	 
 	if (fll->sync_src >= 0) {
 		ret = madera_calc_fll(fll, &cfg, fll->sync_freq, true);
 		if (ret < 0)
@@ -4018,12 +3976,12 @@ static int madera_enable_fll(struct madera_fll *fll)
 	if (already_enabled && !!sync_enabled != have_sync)
 		madera_fll_warn(fll, "Synchroniser changed on active FLL\n");
 
-	/* Apply REFCLK setting */
+	 
 	ret = madera_calc_fll(fll, &cfg, fll->ref_freq, false);
 	if (ret < 0)
 		goto err;
 
-	/* Ref path hardcodes lambda to 65536 when sync is on */
+	 
 	if (have_sync && cfg.lambda)
 		cfg.theta = (cfg.theta * (1 << 16)) / cfg.lambda;
 
@@ -4062,10 +4020,7 @@ static int madera_enable_fll(struct madera_fll *fll)
 				       &cfg, fll->ref_src,
 				       false, gain);
 
-	/*
-	 * Increase the bandwidth if we're not using a low frequency
-	 * sync source.
-	 */
+	 
 	if (have_sync && fll->sync_freq > 100000)
 		regmap_update_bits(madera->regmap,
 				   sync_base + MADERA_FLL_SYNCHRONISER_7_OFFS,
@@ -4103,7 +4058,7 @@ static int madera_enable_fll(struct madera_fll *fll)
 	return 0;
 
 err:
-	 /* In case of error don't leave the FLL running with an old config */
+	  
 	madera_disable_fll(fll);
 
 	return ret;
@@ -4122,11 +4077,7 @@ static int madera_apply_fll(struct madera_fll *fll)
 int madera_set_fll_syncclk(struct madera_fll *fll, int source,
 			   unsigned int fref, unsigned int fout)
 {
-	/*
-	 * fout is ignored, since the synchronizer is an optional extra
-	 * constraint on the Fout generated from REFCLK, so the Fout is
-	 * set when configuring REFCLK
-	 */
+	 
 
 	if (fll->sync_src == source && fll->sync_freq == fref)
 		return 0;
@@ -4147,10 +4098,7 @@ int madera_set_fll_refclk(struct madera_fll *fll, int source,
 	    fll->ref_freq == fref && fll->fout == fout)
 		return 0;
 
-	/*
-	 * Changes of fout on an enabled FLL aren't allowed except when
-	 * setting fout==0 to disable the FLL
-	 */
+	 
 	if (fout && fout != fll->fout) {
 		ret = madera_is_enabled_fll(fll, fll->base);
 		if (ret < 0)
@@ -4254,7 +4202,7 @@ static int madera_enable_fll_ao(struct madera_fll *fll,
 	madera_fll_dbg(fll, "Enabling FLL_AO, initially %s\n",
 		       already_enabled ? "enabled" : "disabled");
 
-	/* FLL_AO_HOLD must be set before configuring any registers */
+	 
 	regmap_update_bits(fll->madera->regmap,
 			   fll->base + MADERA_FLLAO_CONTROL_1_OFFS,
 			   MADERA_FLL_AO_HOLD, MADERA_FLL_AO_HOLD);
@@ -4265,7 +4213,7 @@ static int madera_enable_fll_ao(struct madera_fll *fll,
 	for (i = 0; i < patch_size; i++) {
 		val = patch[i].def;
 
-		/* modify the patch to apply fll->ref_src as input clock */
+		 
 		if (patch[i].reg == MADERA_FLLAO_CONTROL_6) {
 			val &= ~MADERA_FLL_AO_REFCLK_SRC_MASK;
 			val |= (fll->ref_src << MADERA_FLL_AO_REFCLK_SRC_SHIFT)
@@ -4281,7 +4229,7 @@ static int madera_enable_fll_ao(struct madera_fll *fll,
 			   fll->base + MADERA_FLLAO_CONTROL_1_OFFS,
 			   MADERA_FLL_AO_ENA, MADERA_FLL_AO_ENA);
 
-	/* Release the hold so that fll_ao locks to external frequency */
+	 
 	regmap_update_bits(madera->regmap,
 			   fll->base + MADERA_FLLAO_CONTROL_1_OFFS,
 			   MADERA_FLL_AO_HOLD, 0);
@@ -4308,14 +4256,7 @@ static int madera_disable_fll_ao(struct madera_fll *fll)
 
 	madera_wait_for_fll(fll, false);
 
-	/*
-	 * ctrl_up gates the writes to all fll_ao register, setting it to 0
-	 * here ensures that after a runtime suspend/resume cycle when one
-	 * enables the fllao then ctrl_up is the last bit that is configured
-	 * by the fllao enable code rather than the cache sync operation which
-	 * would have updated it much earlier before writing out all fllao
-	 * registers
-	 */
+	 
 	regmap_update_bits(madera->regmap,
 			   fll->base + MADERA_FLLAO_CONTROL_2_OFFS,
 			   MADERA_FLL_AO_CTRL_UPD_MASK, 0);
@@ -4380,12 +4321,7 @@ static int madera_fllhj_disable(struct madera_fll *fll)
 
 	madera_fll_dbg(fll, "Disabling FLL\n");
 
-	/* Disable lockdet, but don't set ctrl_upd update but.  This allows the
-	 * lock status bit to clear as normal, but should the FLL be enabled
-	 * again due to a control clock being required, the lock won't re-assert
-	 * as the FLL config registers are automatically applied when the FLL
-	 * enables.
-	 */
+	 
 	regmap_update_bits(madera->regmap,
 			   fll->base + MADERA_FLL_CONTROL_11_OFFS,
 			   MADERA_FLL1_LOCKDET_MASK, 0);
@@ -4398,13 +4334,7 @@ static int madera_fllhj_disable(struct madera_fll *fll)
 
 	madera_wait_for_fll(fll, false);
 
-	/* ctrl_up gates the writes to all the fll's registers, setting it to 0
-	 * here ensures that after a runtime suspend/resume cycle when one
-	 * enables the fll then ctrl_up is the last bit that is configured
-	 * by the fll enable code rather than the cache sync operation which
-	 * would have updated it much earlier before writing out all fll
-	 * registers
-	 */
+	 
 	regmap_update_bits(madera->regmap,
 			   fll->base + MADERA_FLL_CONTROL_2_OFFS,
 			   MADERA_FLL1_CTRL_UPD_MASK, 0);
@@ -4433,9 +4363,7 @@ static int madera_fllhj_apply(struct madera_fll *fll, int fin)
 
 	fref = fin / (1 << refdiv);
 
-	/* Use simple heuristic approach to find a configuration that
-	 * should work for most input clocks.
-	 */
+	 
 	fast_clk = 0;
 	fout = fll->fout;
 	frac = fout % fref;
@@ -4455,15 +4383,13 @@ static int madera_fllhj_apply(struct madera_fll *fll, int fin)
 		lockdet_thr = 8;
 		gains = MADERA_FLLHJ_HIGH_GAINS;
 		fbdiv = 1;
-		/* For high speed input clocks, enable 300MHz fast oscillator
-		 * when we're in fractional divider mode.
-		 */
+		 
 		if (frac) {
 			fast_clk = 0x3;
 			fout = fll->fout * 6;
 		}
 	}
-	/* Use high performance mode for fractional configurations. */
+	 
 	if (frac) {
 		hp = 0x3;
 		min_n = MADERA_FLLHJ_FRAC_MIN_N;
@@ -4497,7 +4423,7 @@ static int madera_fllhj_apply(struct madera_fll *fll, int fin)
 	madera_fll_dbg(fll, "lockdet=%d, hp=0x%x, fbdiv:%d\n",
 		       lockdet_thr, hp, fbdiv);
 
-	/* Calculate N.K values */
+	 
 	fllgcd = gcd(fout, fbdiv * fref);
 	num = fout / fllgcd;
 	lambda = (fref * fbdiv) / fllgcd;
@@ -4507,7 +4433,7 @@ static int madera_fllhj_apply(struct madera_fll *fll, int fin)
 	madera_fll_dbg(fll, "fll_n=%d, gcd=%d, theta=%d, lambda=%d\n",
 		       fll_n, fllgcd, theta, lambda);
 
-	/* Some sanity checks before any registers are written. */
+	 
 	if (fll_n < min_n || fll_n > max_n) {
 		madera_fll_err(fll, "N not in valid %s mode range %d-%d: %d\n",
 			       frac ? "fractional" : "integer", min_n, max_n,
@@ -4520,7 +4446,7 @@ static int madera_fllhj_apply(struct madera_fll *fll, int fin)
 		return -EINVAL;
 	}
 
-	/* clear the ctrl_upd bit to guarantee we write to it later. */
+	 
 	regmap_write(madera->regmap,
 		     fll->base + MADERA_FLL_CONTROL_2_OFFS,
 		     fll_n << MADERA_FLL1_N_SHIFT);
@@ -4578,7 +4504,7 @@ static int madera_fllhj_enable(struct madera_fll *fll)
 	madera_fll_dbg(fll, "Enabling FLL, initially %s\n",
 		       already_enabled ? "enabled" : "disabled");
 
-	/* FLLn_HOLD must be set before configuring any registers */
+	 
 	regmap_update_bits(fll->madera->regmap,
 			   fll->base + MADERA_FLL_CONTROL_1_OFFS,
 			   MADERA_FLL1_HOLD_MASK,
@@ -4587,7 +4513,7 @@ static int madera_fllhj_enable(struct madera_fll *fll)
 	if (already_enabled)
 		madera_set_fllhj_clks(fll, fll->base, false);
 
-	/* Apply refclk */
+	 
 	ret = madera_fllhj_apply(fll, fll->ref_freq);
 	if (ret) {
 		madera_fll_err(fll, "Failed to set FLL: %d\n", ret);
@@ -4616,7 +4542,7 @@ out:
 			   MADERA_FLL1_CTRL_UPD_MASK,
 			   MADERA_FLL1_CTRL_UPD_MASK);
 
-	/* Release the hold so that flln locks to external frequency */
+	 
 	regmap_update_bits(madera->regmap,
 			   fll->base + MADERA_FLL_CONTROL_1_OFFS,
 			   MADERA_FLL1_HOLD_MASK,
@@ -4655,10 +4581,7 @@ int madera_fllhj_set_refclk(struct madera_fll *fll, int source,
 {
 	int ret = 0;
 
-	/* To remain consistent with previous FLLs, we expect fout to be
-	 * provided in the form of the required sysclk rate, which is
-	 * 2x the calculated fll out.
-	 */
+	 
 	if (fout)
 		fout /= 2;
 
@@ -4682,22 +4605,7 @@ int madera_fllhj_set_refclk(struct madera_fll *fll, int source,
 }
 EXPORT_SYMBOL_GPL(madera_fllhj_set_refclk);
 
-/**
- * madera_set_output_mode - Set the mode of the specified output
- *
- * @component: Device to configure
- * @output: Output number
- * @differential: True to set the output to differential mode
- *
- * Some systems use external analogue switches to connect more
- * analogue devices to the CODEC than are supported by the device.  In
- * some systems this requires changing the switched output from single
- * ended to differential mode dynamically at runtime, an operation
- * supported using this function.
- *
- * Most systems have a single static configuration and should use
- * platform data instead.
- */
+ 
 int madera_set_output_mode(struct snd_soc_component *component, int output,
 			   bool differential)
 {

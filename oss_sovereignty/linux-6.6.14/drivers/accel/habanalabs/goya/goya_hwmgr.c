@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include "goyaP.h"
 
@@ -269,7 +266,7 @@ static ssize_t pm_mng_profile_store(struct device *dev,
 	}
 
 	if (strncmp("auto", buf, strlen("auto")) == 0) {
-		/* Make sure we are in LOW PLL when changing modes */
+		 
 		if (goya->pm_mng_profile == PM_MANUAL) {
 			goya->curr_pll_profile = PLL_HIGH;
 			goya->pm_mng_profile = PM_AUTO;
@@ -277,18 +274,12 @@ static ssize_t pm_mng_profile_store(struct device *dev,
 		}
 	} else if (strncmp("manual", buf, strlen("manual")) == 0) {
 		if (goya->pm_mng_profile == PM_AUTO) {
-			/* Must release the lock because the work thread also
-			 * takes this lock. But before we release it, set
-			 * the mode to manual so nothing will change if a user
-			 * suddenly opens the device
-			 */
+			 
 			goya->pm_mng_profile = PM_MANUAL;
 
 			mutex_unlock(&hdev->fpriv_list_lock);
 
-			/* Flush the current work so we can return to the user
-			 * knowing that he is the only one changing frequencies
-			 */
+			 
 			if (goya->goya_work)
 				flush_delayed_work(&goya->goya_work->work_freq);
 

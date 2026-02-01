@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -74,7 +72,7 @@ static inline struct truly_nt35597 *panel_to_ctx(struct drm_panel *panel)
 }
 
 static const struct cmd_set qcom_2k_panel_magic_cmds[] = {
-	/* CMD2_P0 */
+	 
 	{ { 0xff, 0x20 }, 2 },
 	{ { 0xfb, 0x01 }, 2 },
 	{ { 0x00, 0x01 }, 2 },
@@ -99,7 +97,7 @@ static const struct cmd_set qcom_2k_panel_magic_cmds[] = {
 	{ { 0x5f, 0x01 }, 2 },
 	{ { 0x72, 0x11 }, 2 },
 	{ { 0x68, 0x03 }, 2 },
-	/* CMD2_P4 */
+	 
 	{ { 0xFF, 0x24 }, 2 },
 	{ { 0xFB, 0x01 }, 2 },
 	{ { 0x00, 0x1C }, 2 },
@@ -134,7 +132,7 @@ static const struct cmd_set qcom_2k_panel_magic_cmds[] = {
 	{ { 0x1D, 0x15 }, 2 },
 	{ { 0x1E, 0x17 }, 2 },
 	{ { 0x1F, 0x17 }, 2 },
-	/* STV */
+	 
 	{ { 0x20, 0x40 }, 2 },
 	{ { 0x21, 0x01 }, 2 },
 	{ { 0x22, 0x00 }, 2 },
@@ -143,7 +141,7 @@ static const struct cmd_set qcom_2k_panel_magic_cmds[] = {
 	{ { 0x25, 0x6D }, 2 },
 	{ { 0x26, 0x40 }, 2 },
 	{ { 0x27, 0x40 }, 2 },
-	/* Vend */
+	 
 	{ { 0xE0, 0x00 }, 2 },
 	{ { 0xDC, 0x21 }, 2 },
 	{ { 0xDD, 0x22 }, 2 },
@@ -152,10 +150,10 @@ static const struct cmd_set qcom_2k_panel_magic_cmds[] = {
 	{ { 0xE3, 0x6D }, 2 },
 	{ { 0xE1, 0x07 }, 2 },
 	{ { 0xE2, 0x07 }, 2 },
-	/* UD */
+	 
 	{ { 0x29, 0xD8 }, 2 },
 	{ { 0x2A, 0x2A }, 2 },
-	/* CLK */
+	 
 	{ { 0x4B, 0x03 }, 2 },
 	{ { 0x4C, 0x11 }, 2 },
 	{ { 0x4D, 0x10 }, 2 },
@@ -169,7 +167,7 @@ static const struct cmd_set qcom_2k_panel_magic_cmds[] = {
 	{ { 0x54, 0x07 }, 2 },
 	{ { 0x58, 0x07 }, 2 },
 	{ { 0x55, 0x25 }, 2 },
-	/* Reset XDONB */
+	 
 	{ { 0x5B, 0x43 }, 2 },
 	{ { 0x5C, 0x00 }, 2 },
 	{ { 0x5F, 0x73 }, 2 },
@@ -178,47 +176,47 @@ static const struct cmd_set qcom_2k_panel_magic_cmds[] = {
 	{ { 0x64, 0x00 }, 2 },
 	{ { 0x67, 0x08 }, 2 },
 	{ { 0x68, 0x04 }, 2 },
-	/* Resolution:1440x2560 */
+	 
 	{ { 0x72, 0x02 }, 2 },
-	/* mux */
+	 
 	{ { 0x7A, 0x80 }, 2 },
 	{ { 0x7B, 0x91 }, 2 },
 	{ { 0x7C, 0xD8 }, 2 },
 	{ { 0x7D, 0x60 }, 2 },
 	{ { 0x7F, 0x15 }, 2 },
 	{ { 0x75, 0x15 }, 2 },
-	/* ABOFF */
+	 
 	{ { 0xB3, 0xC0 }, 2 },
 	{ { 0xB4, 0x00 }, 2 },
 	{ { 0xB5, 0x00 }, 2 },
-	/* Source EQ */
+	 
 	{ { 0x78, 0x00 }, 2 },
 	{ { 0x79, 0x00 }, 2 },
 	{ { 0x80, 0x00 }, 2 },
 	{ { 0x83, 0x00 }, 2 },
-	/* FP BP */
+	 
 	{ { 0x93, 0x0A }, 2 },
 	{ { 0x94, 0x0A }, 2 },
-	/* Inversion Type */
+	 
 	{ { 0x8A, 0x00 }, 2 },
 	{ { 0x9B, 0xFF }, 2 },
-	/* IMGSWAP =1 @PortSwap=1 */
+	 
 	{ { 0x9D, 0xB0 }, 2 },
 	{ { 0x9F, 0x63 }, 2 },
 	{ { 0x98, 0x10 }, 2 },
-	/* FRM */
+	 
 	{ { 0xEC, 0x00 }, 2 },
-	/* CMD1 */
+	 
 	{ { 0xFF, 0x10 }, 2 },
-	/* VBP+VSA=,VFP = 10H */
+	 
 	{ { 0x3B, 0x03, 0x0A, 0x0A }, 4 },
-	/* FTE on */
+	 
 	{ { 0x35, 0x00 }, 2 },
-	/* EN_BK =1(auto black) */
+	 
 	{ { 0xE5, 0x01 }, 2 },
-	/* CMD mode(10) VDO mode(03) */
+	 
 	{ { 0xBB, 0x03 }, 2 },
-	/* Non Reload MTP */
+	 
 	{ { 0xFB, 0x01 }, 2 },
 };
 
@@ -270,11 +268,7 @@ static int truly_35597_power_on(struct truly_nt35597 *ctx)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * Reset sequence of truly panel requires the panel to be
-	 * out of reset for 10ms, followed by being held in reset
-	 * for 10ms and then out again
-	 */
+	 
 	gpiod_set_value(ctx->reset_gpio, 0);
 	usleep_range(10000, 20000);
 	gpiod_set_value(ctx->reset_gpio, 1);
@@ -342,7 +336,7 @@ static int truly_nt35597_unprepare(struct drm_panel *panel)
 		dev_err(ctx->dev, "set_display_off cmd failed ret = %d\n", ret);
 	}
 
-	/* 120ms delay required here as per DCS spec */
+	 
 	msleep(120);
 
 	ret = truly_dcs_write(panel, MIPI_DCS_ENTER_SLEEP_MODE);
@@ -397,7 +391,7 @@ static int truly_nt35597_prepare(struct drm_panel *panel)
 		goto power_off;
 	}
 
-	/* Per DSI spec wait 120ms after sending exit sleep DCS command */
+	 
 	msleep(120);
 
 	ret = truly_dcs_write(panel, MIPI_DCS_SET_DISPLAY_ON);
@@ -406,7 +400,7 @@ static int truly_nt35597_prepare(struct drm_panel *panel)
 		goto power_off;
 	}
 
-	/* Per DSI spec wait 120ms after sending set_display_on DCS command */
+	 
 	msleep(120);
 
 	ctx->prepared = true;
@@ -493,7 +487,7 @@ static int truly_nt35597_panel_add(struct truly_nt35597 *ctx)
 		return PTR_ERR(ctx->mode_gpio);
 	}
 
-	/* dual port */
+	 
 	gpiod_set_value(ctx->mode_gpio, 0);
 
 	drm_panel_init(&ctx->panel, dev, &truly_nt35597_drm_funcs,
@@ -548,12 +542,7 @@ static int truly_nt35597_probe(struct mipi_dsi_device *dsi)
 	if (!ctx)
 		return -ENOMEM;
 
-	/*
-	 * This device represents itself as one with two input ports which are
-	 * fed by the output ports of the two DSI controllers . The DSI0 is
-	 * the master controller and has most of the panel related info in its
-	 * child node.
-	 */
+	 
 
 	ctx->config = of_device_get_match_data(dev);
 
@@ -575,7 +564,7 @@ static int truly_nt35597_probe(struct mipi_dsi_device *dsi)
 		return -EPROBE_DEFER;
 	}
 
-	/* register the second DSI device */
+	 
 	dsi1_device = mipi_dsi_device_register_full(dsi1_host, &info);
 	if (IS_ERR(dsi1_device)) {
 		dev_err(dev, "failed to create dsi device\n");

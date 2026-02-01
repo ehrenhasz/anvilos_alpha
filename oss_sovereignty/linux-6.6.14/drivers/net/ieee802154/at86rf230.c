@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AT86RF230/RF231 driver
- *
- * Copyright (C) 2009-2012 Siemens AG
- *
- * Written by:
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- * Alexander Aring <aar@pengutronix.de>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/hrtimer.h>
@@ -30,9 +21,7 @@
 #include "at86rf230.h"
 
 struct at86rf230_local;
-/* at86rf2xx chip depend data.
- * All timings are in us.
- */
+ 
 struct at86rf2xx_chip_data {
 	u16 t_sleep_cycle;
 	u16 t_channel_switch;
@@ -50,13 +39,9 @@ struct at86rf2xx_chip_data {
 };
 
 #define AT86RF2XX_MAX_BUF		(127 + 3)
-/* tx retries to access the TX_ON state
- * if it's above then force change will be started.
- *
- * We assume the max_frame_retries (7) value of 802.15.4 here.
- */
+ 
 #define AT86RF2XX_MAX_TX_RETRIES	7
-/* We use the recommended 5 minutes timeout to recalibrate */
+ 
 #define AT86RF2XX_CAL_LOOP_TIMEOUT	(5 * 60 * HZ)
 
 struct at86rf230_state_change {
@@ -133,13 +118,13 @@ __at86rf230_write(struct at86rf230_local *lp,
 	bool sleep = lp->sleep;
 	int ret;
 
-	/* awake for register setting if sleep */
+	 
 	if (sleep)
 		at86rf230_awake(lp);
 
 	ret = regmap_write(lp->regmap, addr, data);
 
-	/* sleep again if was sleeping */
+	 
 	if (sleep)
 		at86rf230_sleep(lp);
 
@@ -153,13 +138,13 @@ __at86rf230_read(struct at86rf230_local *lp,
 	bool sleep = lp->sleep;
 	int ret;
 
-	/* awake for register setting if sleep */
+	 
 	if (sleep)
 		at86rf230_awake(lp);
 
 	ret = regmap_read(lp->regmap, addr, data);
 
-	/* sleep again if was sleeping */
+	 
 	if (sleep)
 		at86rf230_sleep(lp);
 
@@ -188,13 +173,13 @@ at86rf230_write_subreg(struct at86rf230_local *lp,
 	bool sleep = lp->sleep;
 	int ret;
 
-	/* awake for register setting if sleep */
+	 
 	if (sleep)
 		at86rf230_awake(lp);
 
 	ret = regmap_update_bits(lp->regmap, addr, mask, data << shift);
 
-	/* sleep again if was sleeping */
+	 
 	if (sleep)
 		at86rf230_sleep(lp);
 
@@ -260,12 +245,12 @@ at86rf230_reg_readable(struct device *dev, unsigned int reg)
 {
 	bool rc;
 
-	/* all writeable are also readable */
+	 
 	rc = at86rf230_reg_writeable(dev, reg);
 	if (rc)
 		return rc;
 
-	/* readonly regs */
+	 
 	switch (reg) {
 	case RG_TRX_STATUS:
 	case RG_PHY_RSSI:
@@ -283,7 +268,7 @@ at86rf230_reg_readable(struct device *dev, unsigned int reg)
 static bool
 at86rf230_reg_volatile(struct device *dev, unsigned int reg)
 {
-	/* can be changed during runtime */
+	 
 	switch (reg) {
 	case RG_TRX_STATUS:
 	case RG_TRX_STATE:
@@ -302,7 +287,7 @@ at86rf230_reg_volatile(struct device *dev, unsigned int reg)
 static bool
 at86rf230_reg_precious(struct device *dev, unsigned int reg)
 {
-	/* don't clear irq line on read */
+	 
 	switch (reg) {
 	case RG_IRQ_STATUS:
 		return true;
@@ -364,7 +349,7 @@ at86rf230_async_error(struct at86rf230_local *lp,
 				     at86rf230_async_error_recover);
 }
 
-/* Generic function to get some register value in async mode */
+ 
 static void
 at86rf230_async_read_reg(struct at86rf230_local *lp, u8 reg,
 			 struct at86rf230_state_change *ctx,
@@ -404,34 +389,15 @@ at86rf230_async_state_assert(void *context)
 	const u8 *buf = ctx->buf;
 	const u8 trx_state = buf[1] & TRX_STATE_MASK;
 
-	/* Assert state change */
+	 
 	if (trx_state != ctx->to_state) {
-		/* Special handling if transceiver state is in
-		 * STATE_BUSY_RX_AACK and a SHR was detected.
-		 */
+		 
 		if  (trx_state == STATE_BUSY_RX_AACK) {
-			/* Undocumented race condition. If we send a state
-			 * change to STATE_RX_AACK_ON the transceiver could
-			 * change his state automatically to STATE_BUSY_RX_AACK
-			 * if a SHR was detected. This is not an error, but we
-			 * can't assert this.
-			 */
+			 
 			if (ctx->to_state == STATE_RX_AACK_ON)
 				goto done;
 
-			/* If we change to STATE_TX_ON without forcing and
-			 * transceiver state is STATE_BUSY_RX_AACK, we wait
-			 * 'tFrame + tPAck' receiving time. In this time the
-			 * PDU should be received. If the transceiver is still
-			 * in STATE_BUSY_RX_AACK, we run a force state change
-			 * to STATE_TX_ON. This is a timeout handling, if the
-			 * transceiver stucks in STATE_BUSY_RX_AACK.
-			 *
-			 * Additional we do several retries to try to get into
-			 * TX_ON state without forcing. If the retries are
-			 * higher or equal than AT86RF2XX_MAX_TX_RETRIES we
-			 * will do a force change.
-			 */
+			 
 			if (ctx->to_state == STATE_TX_ON ||
 			    ctx->to_state == STATE_TRX_OFF) {
 				u8 state = ctx->to_state;
@@ -467,7 +433,7 @@ static enum hrtimer_restart at86rf230_async_state_timer(struct hrtimer *timer)
 	return HRTIMER_NORESTART;
 }
 
-/* Do state change timing delay. */
+ 
 static void
 at86rf230_async_state_delay(void *context)
 {
@@ -477,11 +443,7 @@ at86rf230_async_state_delay(void *context)
 	bool force = false;
 	ktime_t tim;
 
-	/* The force state changes are will show as normal states in the
-	 * state status subregister. We change the to_state to the
-	 * corresponding one and remember if it was a force change, this
-	 * differs if we do a state change from STATE_BUSY_RX_AACK.
-	 */
+	 
 	switch (ctx->to_state) {
 	case STATE_FORCE_TX_ON:
 		ctx->to_state = STATE_TX_ON;
@@ -500,19 +462,13 @@ at86rf230_async_state_delay(void *context)
 		switch (ctx->to_state) {
 		case STATE_RX_AACK_ON:
 			tim = c->t_off_to_aack * NSEC_PER_USEC;
-			/* state change from TRX_OFF to RX_AACK_ON to do a
-			 * calibration, we need to reset the timeout for the
-			 * next one.
-			 */
+			 
 			lp->cal_timeout = jiffies + AT86RF2XX_CAL_LOOP_TIMEOUT;
 			goto change;
 		case STATE_TX_ARET_ON:
 		case STATE_TX_ON:
 			tim = c->t_off_to_tx_on * NSEC_PER_USEC;
-			/* state change from TRX_OFF to TX_ON or ARET_ON to do
-			 * a calibration, we need to reset the timeout for the
-			 * next one.
-			 */
+			 
 			lp->cal_timeout = jiffies + AT86RF2XX_CAL_LOOP_TIMEOUT;
 			goto change;
 		default:
@@ -523,10 +479,7 @@ at86rf230_async_state_delay(void *context)
 		switch (ctx->to_state) {
 		case STATE_TRX_OFF:
 		case STATE_TX_ON:
-			/* Wait for worst case receiving time if we
-			 * didn't make a force change from BUSY_RX_AACK
-			 * to TX_ON or TRX_OFF.
-			 */
+			 
 			if (!force) {
 				tim = (c->t_frame + c->t_p_ack) * NSEC_PER_USEC;
 				goto change;
@@ -536,7 +489,7 @@ at86rf230_async_state_delay(void *context)
 			break;
 		}
 		break;
-	/* Default value, means RESET state */
+	 
 	case STATE_P_ON:
 		switch (ctx->to_state) {
 		case STATE_TRX_OFF:
@@ -550,7 +503,7 @@ at86rf230_async_state_delay(void *context)
 		break;
 	}
 
-	/* Default delay is 1us in the most cases */
+	 
 	udelay(1);
 	at86rf230_async_state_timer(&ctx->timer);
 	return;
@@ -567,7 +520,7 @@ at86rf230_async_state_change_start(void *context)
 	u8 *buf = ctx->buf;
 	const u8 trx_state = buf[1] & TRX_STATE_MASK;
 
-	/* Check for "possible" STATE_TRANSITION_IN_PROGRESS */
+	 
 	if (trx_state == STATE_TRANSITION_IN_PROGRESS) {
 		udelay(1);
 		at86rf230_async_read_reg(lp, RG_TRX_STATUS, ctx,
@@ -575,19 +528,17 @@ at86rf230_async_state_change_start(void *context)
 		return;
 	}
 
-	/* Check if we already are in the state which we change in */
+	 
 	if (trx_state == ctx->to_state) {
 		if (ctx->complete)
 			ctx->complete(context);
 		return;
 	}
 
-	/* Set current state to the context of state change */
+	 
 	ctx->from_state = trx_state;
 
-	/* Going into the next step for a state change which do a timing
-	 * relevant delay.
-	 */
+	 
 	at86rf230_async_write_reg(lp, RG_TRX_STATE, ctx->to_state, ctx,
 				  at86rf230_async_state_delay);
 }
@@ -597,7 +548,7 @@ at86rf230_async_state_change(struct at86rf230_local *lp,
 			     struct at86rf230_state_change *ctx,
 			     const u8 state, void (*complete)(void *context))
 {
-	/* Initialization for the state change context */
+	 
 	ctx->to_state = state;
 	ctx->complete = complete;
 	at86rf230_async_read_reg(lp, RG_TRX_STATUS, ctx,
@@ -613,10 +564,7 @@ at86rf230_sync_state_change_complete(void *context)
 	complete(&lp->state_complete);
 }
 
-/* This function do a sync framework above the async state change.
- * Some callbacks of the IEEE 802.15.4 driver interface need to be
- * handled synchronously.
- */
+ 
 static int
 at86rf230_sync_state_change(struct at86rf230_local *lp, unsigned int state)
 {
@@ -796,7 +744,7 @@ static irqreturn_t at86rf230_isr(int irq, void *data)
 	}
 
 	at86rf230_setup_spi_messages(lp, ctx);
-	/* tell on error handling to free ctx */
+	 
 	ctx->free = true;
 
 	ctx->buf[0] = (RG_IRQ_STATUS & CMD_REG_MASK) | CMD_REG;
@@ -865,7 +813,7 @@ at86rf230_xmit_start(void *context)
 	struct at86rf230_state_change *ctx = context;
 	struct at86rf230_local *lp = ctx->lp;
 
-	/* check if we change from off state */
+	 
 	if (lp->is_tx_from_off)
 		at86rf230_async_state_change(lp, ctx, STATE_TX_ARET_ON,
 					     at86rf230_write_frame);
@@ -883,13 +831,7 @@ at86rf230_xmit(struct ieee802154_hw *hw, struct sk_buff *skb)
 	lp->tx_skb = skb;
 	lp->tx_retry = 0;
 
-	/* After 5 minutes in PLL and the same frequency we run again the
-	 * calibration loops which is recommended by at86rf2xx datasheets.
-	 *
-	 * The calibration is initiate by a state change from TRX_OFF
-	 * to TX_ON, the lp->cal_timeout should be reinit by state_delay
-	 * function then to start in the next 5 minutes.
-	 */
+	 
 	if (time_is_before_jiffies(lp->cal_timeout)) {
 		lp->is_tx_from_off = true;
 		at86rf230_async_state_change(lp, ctx, STATE_TRX_OFF,
@@ -931,11 +873,7 @@ at86rf230_stop(struct ieee802154_hw *hw)
 
 	disable_irq(lp->spi->irq);
 
-	/* It's recommended to set random new csma_seeds before sleep state.
-	 * Makes only sense in the stop callback, not doing this inside of
-	 * at86rf230_sleep, this is also used when we don't transmit afterwards
-	 * when calling start callback again.
-	 */
+	 
 	get_random_bytes(csma_seed, ARRAY_SIZE(csma_seed));
 	at86rf230_write_subreg(lp, SR_CSMA_SEED_0, csma_seed[0]);
 	at86rf230_write_subreg(lp, SR_CSMA_SEED_1, csma_seed[1]);
@@ -1034,7 +972,7 @@ at86rf230_channel(struct ieee802154_hw *hw, u8 page, u8 channel)
 	int rc;
 
 	rc = lp->data->set_channel(lp, page, channel);
-	/* Wait for PLL */
+	 
 	usleep_range(lp->data->t_channel_switch,
 		     lp->data->t_channel_switch + 10);
 
@@ -1152,7 +1090,7 @@ at86rf230_set_cca_mode(struct ieee802154_hw *hw,
 	struct at86rf230_local *lp = hw->priv;
 	u8 val;
 
-	/* mapping 802.15.4 to driver spec */
+	 
 	switch (cca->mode) {
 	case NL802154_CCA_ENERGY:
 		val = 1;
@@ -1335,7 +1273,7 @@ static int at86rf230_hw_init(struct at86rf230_local *lp, u8 xtal_trim)
 	if (rc)
 		return rc;
 
-	/* reset values differs in at86rf231 and at86rf233 */
+	 
 	rc = at86rf230_write_subreg(lp, SR_IRQ_MASK_MODE, 0);
 	if (rc)
 		return rc;
@@ -1348,54 +1286,20 @@ static int at86rf230_hw_init(struct at86rf230_local *lp, u8 xtal_trim)
 	if (rc)
 		return rc;
 
-	/* CLKM changes are applied immediately */
+	 
 	rc = at86rf230_write_subreg(lp, SR_CLKM_SHA_SEL, 0x00);
 	if (rc)
 		return rc;
 
-	/* Turn CLKM Off */
+	 
 	rc = at86rf230_write_subreg(lp, SR_CLKM_CTRL, 0x00);
 	if (rc)
 		return rc;
-	/* Wait the next SLEEP cycle */
+	 
 	usleep_range(lp->data->t_sleep_cycle,
 		     lp->data->t_sleep_cycle + 100);
 
-	/* xtal_trim value is calculated by:
-	 * CL = 0.5 * (CX + CTRIM + CPAR)
-	 *
-	 * whereas:
-	 * CL = capacitor of used crystal
-	 * CX = connected capacitors at xtal pins
-	 * CPAR = in all at86rf2xx datasheets this is a constant value 3 pF,
-	 *	  but this is different on each board setup. You need to fine
-	 *	  tuning this value via CTRIM.
-	 * CTRIM = variable capacitor setting. Resolution is 0.3 pF range is
-	 *	   0 pF upto 4.5 pF.
-	 *
-	 * Examples:
-	 * atben transceiver:
-	 *
-	 * CL = 8 pF
-	 * CX = 12 pF
-	 * CPAR = 3 pF (We assume the magic constant from datasheet)
-	 * CTRIM = 0.9 pF
-	 *
-	 * (12+0.9+3)/2 = 7.95 which is nearly at 8 pF
-	 *
-	 * xtal_trim = 0x3
-	 *
-	 * openlabs transceiver:
-	 *
-	 * CL = 16 pF
-	 * CX = 22 pF
-	 * CPAR = 3 pF (We assume the magic constant from datasheet)
-	 * CTRIM = 4.5 pF
-	 *
-	 * (22+4.5+3)/2 = 14.75 which is the nearest value to 16 pF
-	 *
-	 * xtal_trim = 0xf
-	 */
+	 
 	rc = at86rf230_write_subreg(lp, SR_XTAL_TRIM, xtal_trim);
 	if (rc)
 		return rc;
@@ -1408,10 +1312,7 @@ static int at86rf230_hw_init(struct at86rf230_local *lp, u8 xtal_trim)
 		return -EINVAL;
 	}
 
-	/* Force setting slotted operation bit to 0. Sometimes the atben
-	 * sets this bit and I don't know why. We set this always force
-	 * to zero while probing.
-	 */
+	 
 	return at86rf230_write_subreg(lp, SR_SLOTTED_OPERATION, 0);
 }
 
@@ -1555,7 +1456,7 @@ static int at86rf230_probe(struct spi_device *spi)
 
 	gpiod_set_consumer_name(slp_tr, "slp_tr");
 
-	/* Reset */
+	 
 	if (rstn) {
 		udelay(1);
 		gpiod_set_value_cansleep(rstn, 1);
@@ -1598,7 +1499,7 @@ static int at86rf230_probe(struct spi_device *spi)
 	if (rc)
 		goto free_dev;
 
-	/* Read irq status register to reset irq line */
+	 
 	rc = at86rf230_read_subreg(lp, RG_IRQ_STATUS, 0xff, 0, &status);
 	if (rc)
 		goto free_dev;
@@ -1612,10 +1513,10 @@ static int at86rf230_probe(struct spi_device *spi)
 	if (rc)
 		goto free_dev;
 
-	/* disable_irq by default and wait for starting hardware */
+	 
 	disable_irq(spi->irq);
 
-	/* going into sleep by default */
+	 
 	at86rf230_sleep(lp);
 
 	rc = ieee802154_register_hw(lp->hw);
@@ -1634,7 +1535,7 @@ static void at86rf230_remove(struct spi_device *spi)
 {
 	struct at86rf230_local *lp = spi_get_drvdata(spi);
 
-	/* mask all at86rf230 irq's */
+	 
 	at86rf230_write_subreg(lp, SR_IRQ_MASK, 0);
 	ieee802154_unregister_hw(lp->hw);
 	ieee802154_free_hw(lp->hw);

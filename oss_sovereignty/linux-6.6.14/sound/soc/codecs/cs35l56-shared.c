@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Components shared between ASoC and HDA CS35L56 drivers
-//
-// Copyright (C) 2023 Cirrus Logic, Inc. and
-//                    Cirrus Logic International Semiconductor Ltd.
+
+
+
+
+
+
 
 #include <linux/regmap.h>
 #include <linux/regulator/consumer.h>
@@ -12,7 +12,7 @@
 #include "cs35l56.h"
 
 static const struct reg_sequence cs35l56_patch[] = {
-	/* These are not reset by a soft-reset, so patch to defaults. */
+	 
 	{ CS35L56_MAIN_RENDER_USER_MUTE,	0x00000000 },
 	{ CS35L56_MAIN_RENDER_USER_VOLUME,	0x00000000 },
 	{ CS35L56_MAIN_POSTURE_NUMBER,		0x00000000 },
@@ -156,15 +156,15 @@ static bool cs35l56_volatile_reg(struct device *dev, unsigned int reg)
 	case CS35L56_RELID:
 	case CS35L56_OTPID:
 	case CS35L56_SFT_RESET:
-	case CS35L56_GLOBAL_ENABLES:		   /* owned by firmware */
-	case CS35L56_BLOCK_ENABLES:		   /* owned by firmware */
-	case CS35L56_BLOCK_ENABLES2:		   /* owned by firmware */
-	case CS35L56_REFCLK_INPUT:		   /* owned by firmware */
-	case CS35L56_GLOBAL_SAMPLE_RATE:	   /* owned by firmware */
-	case CS35L56_DACPCM1_INPUT:		   /* owned by firmware */
-	case CS35L56_DACPCM2_INPUT:		   /* owned by firmware */
-	case CS35L56_DSP1RX1_INPUT:		   /* owned by firmware */
-	case CS35L56_DSP1RX2_INPUT:		   /* owned by firmware */
+	case CS35L56_GLOBAL_ENABLES:		    
+	case CS35L56_BLOCK_ENABLES:		    
+	case CS35L56_BLOCK_ENABLES2:		    
+	case CS35L56_REFCLK_INPUT:		    
+	case CS35L56_GLOBAL_SAMPLE_RATE:	    
+	case CS35L56_DACPCM1_INPUT:		    
+	case CS35L56_DACPCM2_INPUT:		    
+	case CS35L56_DSP1RX1_INPUT:		    
+	case CS35L56_DSP1RX2_INPUT:		    
 	case CS35L56_IRQ1_STATUS:
 	case CS35L56_IRQ1_EINT_1 ... CS35L56_IRQ1_EINT_8:
 	case CS35L56_IRQ1_EINT_18:
@@ -250,10 +250,7 @@ int cs35l56_wait_for_firmware_boot(struct cs35l56_base *cs35l56_base)
 	else
 		reg = CS35L56_DSP1_HALO_STATE;
 
-	/*
-	 * This can't be a regmap_read_poll_timeout() because cs35l56 will NAK
-	 * I2C until it has booted which would terminate the poll
-	 */
+	 
 	poll_ret = read_poll_timeout(regmap_read, read_ret,
 				     (val < 0xFFFF) && (val >= CS35L56_HALO_STATE_BOOT_DONE),
 				     CS35L56_HALO_STATE_POLL_US,
@@ -273,14 +270,14 @@ EXPORT_SYMBOL_NS_GPL(cs35l56_wait_for_firmware_boot, SND_SOC_CS35L56_SHARED);
 
 void cs35l56_wait_control_port_ready(void)
 {
-	/* Wait for control port to be ready (datasheet tIRS). */
+	 
 	usleep_range(CS35L56_CONTROL_PORT_READY_US, 2 * CS35L56_CONTROL_PORT_READY_US);
 }
 EXPORT_SYMBOL_NS_GPL(cs35l56_wait_control_port_ready, SND_SOC_CS35L56_SHARED);
 
 void cs35l56_wait_min_reset_pulse(void)
 {
-	/* Satisfy minimum reset pulse width spec */
+	 
 	usleep_range(CS35L56_RESET_PULSE_MIN_US, 2 * CS35L56_RESET_PULSE_MIN_US);
 }
 EXPORT_SYMBOL_NS_GPL(cs35l56_wait_min_reset_pulse, SND_SOC_CS35L56_SHARED);
@@ -291,16 +288,13 @@ static const struct reg_sequence cs35l56_system_reset_seq[] = {
 
 void cs35l56_system_reset(struct cs35l56_base *cs35l56_base, bool is_soundwire)
 {
-	/*
-	 * Must enter cache-only first so there can't be any more register
-	 * accesses other than the controlled system reset sequence below.
-	 */
+	 
 	regcache_cache_only(cs35l56_base->regmap, true);
 	regmap_multi_reg_write_bypassed(cs35l56_base->regmap,
 					cs35l56_system_reset_seq,
 					ARRAY_SIZE(cs35l56_system_reset_seq));
 
-	/* On SoundWire the registers won't be accessible until it re-enumerates. */
+	 
 	if (is_soundwire)
 		return;
 
@@ -355,7 +349,7 @@ irqreturn_t cs35l56_irq(int irq, void *data)
 		goto err;
 	}
 
-	/* Ack interrupts */
+	 
 	regmap_read(cs35l56_base->regmap, CS35L56_IRQ1_EINT_1, &status1);
 	regmap_read(cs35l56_base->regmap, CS35L56_IRQ1_MASK_1, &mask1);
 	status1 &= ~mask1;
@@ -369,12 +363,12 @@ irqreturn_t cs35l56_irq(int irq, void *data)
 	regmap_read(cs35l56_base->regmap, CS35L56_IRQ1_EINT_20, &status20);
 	regmap_read(cs35l56_base->regmap, CS35L56_IRQ1_MASK_20, &mask20);
 	status20 &= ~mask20;
-	/* We don't want EINT20 but they default to unmasked: force mask */
+	 
 	regmap_write(cs35l56_base->regmap, CS35L56_IRQ1_MASK_20, 0xffffffff);
 
 	dev_dbg(cs35l56_base->dev, "%s: %#x %#x\n", __func__, status1, status8);
 
-	/* Check to see if unmasked bits are active */
+	 
 	if (!status1 && !status8 && !status20)
 		goto err;
 
@@ -400,22 +394,15 @@ int cs35l56_is_fw_reload_needed(struct cs35l56_base *cs35l56_base)
 	unsigned int val;
 	int ret;
 
-	/* Nothing to re-patch if we haven't done any patching yet. */
+	 
 	if (!cs35l56_base->fw_patched)
 		return false;
 
-	/*
-	 * If we have control of RESET we will have asserted it so the firmware
-	 * will need re-patching.
-	 */
+	 
 	if (cs35l56_base->reset_gpio)
 		return true;
 
-	/*
-	 * In secure mode FIRMWARE_MISSING is cleared by the BIOS loader so
-	 * can't be used here to test for memory retention.
-	 * Assume that tuning must be re-loaded.
-	 */
+	 
 	if (cs35l56_base->secured)
 		return true;
 
@@ -438,7 +425,7 @@ int cs35l56_is_fw_reload_needed(struct cs35l56_base *cs35l56_base)
 EXPORT_SYMBOL_NS_GPL(cs35l56_is_fw_reload_needed, SND_SOC_CS35L56_SHARED);
 
 static const struct reg_sequence cs35l56_hibernate_seq[] = {
-	/* This must be the last register access */
+	 
 	REG_SEQ0(CS35L56_DSP_VIRTUAL1_MBOX_1, CS35L56_MBOX_CMD_HIBERNATE_NOW),
 };
 
@@ -454,7 +441,7 @@ int cs35l56_runtime_suspend_common(struct cs35l56_base *cs35l56_base)
 	if (!cs35l56_base->init_done)
 		return 0;
 
-	/* Firmware must have entered a power-save state */
+	 
 	ret = regmap_read_poll_timeout(cs35l56_base->regmap,
 				       CS35L56_TRANSDUCER_ACTUAL_PS,
 				       val, (val >= CS35L56_PS3),
@@ -463,7 +450,7 @@ int cs35l56_runtime_suspend_common(struct cs35l56_base *cs35l56_base)
 	if (ret)
 		dev_warn(cs35l56_base->dev, "PS3 wait failed: %d\n", ret);
 
-	/* Clear BOOT_DONE so it can be used to detect a reboot */
+	 
 	regmap_write(cs35l56_base->regmap, CS35L56_IRQ1_EINT_4, CS35L56_OTP_BOOT_DONE_MASK);
 
 	if (!cs35l56_base->can_hibernate) {
@@ -473,16 +460,10 @@ int cs35l56_runtime_suspend_common(struct cs35l56_base *cs35l56_base)
 		return 0;
 	}
 
-	/*
-	 * Enable auto-hibernate. If it is woken by some other wake source
-	 * it will automatically return to hibernate.
-	 */
+	 
 	cs35l56_mbox_send(cs35l56_base, CS35L56_MBOX_CMD_ALLOW_AUTO_HIBERNATE);
 
-	/*
-	 * Must enter cache-only first so there can't be any more register
-	 * accesses other than the controlled hibernate sequence below.
-	 */
+	 
 	regcache_cache_only(cs35l56_base->regmap, true);
 
 	regmap_multi_reg_write_bypassed(cs35l56_base->regmap,
@@ -507,10 +488,7 @@ int cs35l56_runtime_resume_common(struct cs35l56_base *cs35l56_base, bool is_sou
 		goto out_sync;
 
 	if (!is_soundwire) {
-		/*
-		 * Dummy transaction to trigger I2C/SPI auto-wake. This will NAK on I2C.
-		 * Must be done before releasing cache-only.
-		 */
+		 
 		regmap_multi_reg_write_bypassed(cs35l56_base->regmap,
 						cs35l56_hibernate_wake_seq,
 						ARRAY_SIZE(cs35l56_hibernate_wake_seq));
@@ -531,7 +509,7 @@ out_sync:
 	if (ret)
 		goto err;
 
-	/* BOOT_DONE will be 1 if the amp reset */
+	 
 	regmap_read(cs35l56_base->regmap, CS35L56_IRQ1_EINT_4, &val);
 	if (val & CS35L56_OTP_BOOT_DONE_MASK) {
 		dev_dbg(cs35l56_base->dev, "Registers reset in suspend\n");
@@ -582,20 +560,13 @@ int cs35l56_hw_init(struct cs35l56_base *cs35l56_base)
 	int ret;
 	unsigned int devid, revid, otpid, secured;
 
-	/*
-	 * If the system is not using a reset_gpio then issue a
-	 * dummy read to force a wakeup.
-	 */
+	 
 	if (!cs35l56_base->reset_gpio)
 		regmap_read(cs35l56_base->regmap, CS35L56_DSP_VIRTUAL1_MBOX_1, &devid);
 
 	cs35l56_wait_control_port_ready();
 
-	/*
-	 * The HALO_STATE register is in different locations on Ax and B0
-	 * devices so the REVID needs to be determined before waiting for the
-	 * firmware to boot.
-	 */
+	 
 	ret = regmap_read(cs35l56_base->regmap, CS35L56_REVID, &revid);
 	if (ret < 0) {
 		dev_err(cs35l56_base->dev, "Get Revision ID failed\n");
@@ -628,7 +599,7 @@ int cs35l56_hw_init(struct cs35l56_base *cs35l56_base)
 		return ret;
 	}
 
-	/* When any bus is restricted treat the device as secured */
+	 
 	if (secured & CS35L56_RESTRICTED_MASK)
 		cs35l56_base->secured = true;
 
@@ -641,7 +612,7 @@ int cs35l56_hw_init(struct cs35l56_base *cs35l56_base)
 	dev_info(cs35l56_base->dev, "Cirrus Logic CS35L56%s Rev %02X OTP%d\n",
 		 cs35l56_base->secured ? "s" : "", cs35l56_base->rev, otpid);
 
-	/* Wake source and *_BLOCKED interrupts default to unmasked, so mask them */
+	 
 	regmap_write(cs35l56_base->regmap, CS35L56_IRQ1_MASK_20, 0xffffffff);
 	regmap_update_bits(cs35l56_base->regmap, CS35L56_IRQ1_MASK_1,
 			   CS35L56_AMP_SHORT_ERR_EINT1_MASK,
@@ -693,7 +664,7 @@ int cs35l56_get_bclk_freq_id(unsigned int freq)
 	if (freq == 0)
 		return -EINVAL;
 
-	/* The BCLK frequency must be a valid PLL REFCLK */
+	 
 	for (i = 0; i < ARRAY_SIZE(cs35l56_bclk_valid_for_pll_freq_table); ++i) {
 		if (cs35l56_bclk_valid_for_pll_freq_table[i] == freq)
 			return i;
@@ -703,7 +674,7 @@ int cs35l56_get_bclk_freq_id(unsigned int freq)
 }
 EXPORT_SYMBOL_NS_GPL(cs35l56_get_bclk_freq_id, SND_SOC_CS35L56_SHARED);
 
-static const char * const cs35l56_supplies[/* auto-sized */] = {
+static const char * const cs35l56_supplies[ ] = {
 	"VDD_P",
 	"VDD_IO",
 	"VDD_A",

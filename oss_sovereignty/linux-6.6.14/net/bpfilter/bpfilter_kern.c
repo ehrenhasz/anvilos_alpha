@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/init.h>
 #include <linux/module.h>
@@ -82,13 +82,13 @@ static int start_umh(void)
 	struct mbox_request req = { .pid = current->pid };
 	int err;
 
-	/* fork usermode process */
+	 
 	err = fork_usermode_driver(&bpfilter_ops.info);
 	if (err)
 		return err;
 	pr_info("Loaded bpfilter_umh pid %d\n", pid_nr(bpfilter_ops.info.tgid));
 
-	/* health check that usermode process started correctly */
+	 
 	if (bpfilter_send_req(&req) != 0) {
 		shutdown_umh();
 		return -EFAULT;

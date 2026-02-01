@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Digital Audio (PCM) abstract layer
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/time.h>
 #include <linux/gcd.h>
@@ -12,9 +9,7 @@
 
 #include "pcm_local.h"
 
-/*
- *  Timer functions
- */
+ 
 
 void snd_pcm_timer_resolution_change(struct snd_pcm_substream *substream)
 {
@@ -85,9 +80,7 @@ static const struct snd_timer_hardware snd_pcm_timer =
 	.stop =		snd_pcm_timer_stop,
 };
 
-/*
- *  Init functions
- */
+ 
 
 static void snd_pcm_timer_free(struct snd_timer *timer)
 {

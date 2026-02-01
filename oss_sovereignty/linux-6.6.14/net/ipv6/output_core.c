@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IPv6 library code, needed by static components when full IPv6 support is
- * not configured or static.  These functions are needed by GSO/GRO implementation.
- */
+
+ 
 #include <linux/export.h>
 #include <net/ip.h>
 #include <net/ipv6.h>
@@ -18,14 +15,7 @@ static u32 __ipv6_select_ident(struct net *net,
 	return get_random_u32_above(0);
 }
 
-/* This function exists only for tap drivers that must support broken
- * clients requesting UFO without specifying an IPv6 fragment ID.
- *
- * This is similar to ipv6_select_ident() but we use an independent hash
- * seed to limit information leakage.
- *
- * The network header must be set before calling this.
- */
+ 
 __be32 ipv6_proxy_select_ident(struct net *net, struct sk_buff *skb)
 {
 	struct in6_addr buf[2];
@@ -131,9 +121,7 @@ int __ip6_local_out(struct net *net, struct sock *sk, struct sk_buff *skb)
 	ipv6_hdr(skb)->payload_len = htons(len);
 	IP6CB(skb)->nhoff = offsetof(struct ipv6hdr, nexthdr);
 
-	/* if egress device is enslaved to an L3 master device pass the
-	 * skb to its handler for processing
-	 */
+	 
 	skb = l3mdev_ip6_out(sk, skb);
 	if (unlikely(!skb))
 		return 0;

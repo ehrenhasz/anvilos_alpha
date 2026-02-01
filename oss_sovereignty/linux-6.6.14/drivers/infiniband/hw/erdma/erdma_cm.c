@@ -1,14 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
 
-/* Authors: Cheng Xu <chengyou@linux.alibaba.com> */
-/*          Kai Shen <kaishen@linux.alibaba.com> */
-/* Copyright (c) 2020-2022, Alibaba Group. */
 
-/* Authors: Bernard Metzler <bmt@zurich.ibm.com> */
-/*          Fredy Neeser */
-/*          Greg Joyce <greg@opengridcomputing.com> */
-/* Copyright (c) 2008-2019, IBM Corporation */
-/* Copyright (c) 2017, Open Grid Computing, Inc. */
+ 
+ 
+ 
+
+ 
+ 
+ 
+ 
+ 
 
 #include <linux/workqueue.h>
 #include <trace/events/sock.h>
@@ -276,7 +276,7 @@ void erdma_qp_cm_drop(struct erdma_qp *qp)
 
 	erdma_cep_set_inuse(cep);
 
-	/* already closed. */
+	 
 	if (cep->state == ERDMA_EPSTATE_CLOSED)
 		goto out;
 
@@ -427,15 +427,7 @@ static u8 __mpa_ext_cc(__be32 mpa_ext_bits)
 	return (u8)be32_to_cpu(cc);
 }
 
-/*
- * Receive MPA Request/Reply header.
- *
- * Returns 0 if complete MPA Request/Reply haeder including
- * eventual private data was received. Returns -EAGAIN if
- * header was partially received or negative error code otherwise.
- *
- * Context: May be called in process context only
- */
+ 
 static int erdma_recv_mpa_rr(struct erdma_cep *cep)
 {
 	struct mpa_rr *hdr = &cep->mpa.hdr;
@@ -473,10 +465,7 @@ static int erdma_recv_mpa_rr(struct erdma_cep *cep)
 	to_rcv = pd_len - pd_rcvd;
 
 	if (!to_rcv) {
-		/*
-		 * We have received the whole MPA Request/Reply message.
-		 * Check against peer protocol violation.
-		 */
+		 
 		u32 word;
 
 		ret = __recv_mpa_hdr(cep, 0, (char *)&word, sizeof(word),
@@ -490,10 +479,7 @@ static int erdma_recv_mpa_rr(struct erdma_cep *cep)
 		return -EPROTO;
 	}
 
-	/*
-	 * At this point, MPA header has been fully received, and pd_len != 0.
-	 * So, begin to receive private data.
-	 */
+	 
 	if (!cep->mpa.pdata) {
 		cep->mpa.pdata = kmalloc(pd_len + 4, GFP_KERNEL);
 		if (!cep->mpa.pdata)
@@ -516,12 +502,7 @@ static int erdma_recv_mpa_rr(struct erdma_cep *cep)
 	return -EAGAIN;
 }
 
-/*
- * erdma_proc_mpareq()
- *
- * Read MPA Request from socket and signal new connection to IWCM
- * if success. Caller must hold lock on corresponding listening CEP.
- */
+ 
 static int erdma_proc_mpareq(struct erdma_cep *cep)
 {
 	struct mpa_rr *req;
@@ -538,14 +519,14 @@ static int erdma_proc_mpareq(struct erdma_cep *cep)
 
 	memcpy(req->key, MPA_KEY_REP, MPA_KEY_SIZE);
 
-	/* Currently does not support marker and crc. */
+	 
 	if (req->params.bits & MPA_RR_FLAG_MARKERS ||
 	    req->params.bits & MPA_RR_FLAG_CRC)
 		goto reject_conn;
 
 	cep->state = ERDMA_EPSTATE_RECVD_MPAREQ;
 
-	/* Keep reference until IWCM accepts/rejects */
+	 
 	erdma_cep_get(cep);
 	ret = erdma_cm_upcall(cep, IW_CM_EVENT_CONNECT_REQUEST, 0);
 	if (ret)
@@ -590,7 +571,7 @@ static int erdma_proc_mpareply(struct erdma_cep *cep)
 		return -ECONNRESET;
 	}
 
-	/* Currently does not support marker and crc. */
+	 
 	if ((rep->params.bits & MPA_RR_FLAG_MARKERS) ||
 	    (rep->params.bits & MPA_RR_FLAG_CRC)) {
 		erdma_cm_upcall(cep, IW_CM_EVENT_CONNECT_REPLY, -ECONNREFUSED);
@@ -649,18 +630,11 @@ static void erdma_accept_newconn(struct erdma_cep *cep)
 	if (!new_cep)
 		goto error;
 
-	/*
-	 * 4: Allocate a sufficient number of work elements
-	 * to allow concurrent handling of local + peer close
-	 * events, MPA header processing + MPA timeout.
-	 */
+	 
 	if (erdma_cm_alloc_work(new_cep, 4) != 0)
 		goto error;
 
-	/*
-	 * Copy saved socket callbacks from listening CEP
-	 * and assign new socket with new CEP
-	 */
+	 
 	new_cep->sk_state_change = cep->sk_state_change;
 	new_cep->sk_data_ready = cep->sk_data_ready;
 	new_cep->sk_error_report = cep->sk_error_report;
@@ -684,7 +658,7 @@ static void erdma_accept_newconn(struct erdma_cep *cep)
 	erdma_cep_get(cep);
 
 	if (atomic_read(&new_s->sk->sk_rmem_alloc)) {
-		/* MPA REQ already queued */
+		 
 		erdma_cep_set_inuse(new_cep);
 		ret = erdma_proc_mpareq(new_cep);
 		if (ret != -EAGAIN) {
@@ -805,21 +779,16 @@ static void erdma_cm_work_handler(struct work_struct *w)
 		if (cep->cm_id) {
 			if (cep->state == ERDMA_EPSTATE_CONNECTING ||
 			    cep->state == ERDMA_EPSTATE_AWAIT_MPAREP) {
-				/*
-				 * MPA reply not received, but connection drop
-				 */
+				 
 				erdma_cm_upcall(cep, IW_CM_EVENT_CONNECT_REPLY,
 						-ECONNRESET);
 			} else if (cep->state == ERDMA_EPSTATE_RDMA_MODE) {
-				/*
-				 * NOTE: IW_CM_EVENT_DISCONNECT is given just
-				 *       to transition IWCM into CLOSING.
-				 */
+				 
 				erdma_cm_upcall(cep, IW_CM_EVENT_DISCONNECT, 0);
 				erdma_cm_upcall(cep, IW_CM_EVENT_CLOSE, 0);
 			}
 		} else if (cep->state == ERDMA_EPSTATE_AWAIT_MPAREQ) {
-			/* Socket close before MPA request received. */
+			 
 			erdma_disassoc_listen_cep(cep);
 			erdma_cep_put(cep);
 		}
@@ -828,11 +797,7 @@ static void erdma_cm_work_handler(struct work_struct *w)
 	case ERDMA_CM_WORK_MPATIMEOUT:
 		cep->mpa_timer = NULL;
 		if (cep->state == ERDMA_EPSTATE_AWAIT_MPAREP) {
-			/*
-			 * MPA request timed out:
-			 * Hide any partially received private data and signal
-			 * timeout
-			 */
+			 
 			cep->mpa.hdr.params.pd_len = 0;
 
 			if (cep->cm_id)
@@ -840,7 +805,7 @@ static void erdma_cm_work_handler(struct work_struct *w)
 						-ETIMEDOUT);
 			release_cep = 1;
 		} else if (cep->state == ERDMA_EPSTATE_AWAIT_MPAREQ) {
-			/* No MPA req received after peer TCP stream setup. */
+			 
 			erdma_disassoc_listen_cep(cep);
 
 			erdma_cep_put(cep);
@@ -856,10 +821,7 @@ static void erdma_cm_work_handler(struct work_struct *w)
 		cep->state = ERDMA_EPSTATE_CLOSED;
 		if (cep->qp) {
 			struct erdma_qp *qp = cep->qp;
-			/*
-			 * Serialize a potential race with application
-			 * closing the QP and calling erdma_qp_cm_drop()
-			 */
+			 
 			erdma_qp_get(qp);
 			erdma_cep_set_free(cep);
 
@@ -1035,21 +997,16 @@ int erdma_connect(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 
 	erdma_cep_set_inuse(cep);
 
-	/* Associate QP with CEP */
+	 
 	erdma_cep_get(cep);
 	qp->cep = cep;
 	cep->qp = qp;
 
-	/* Associate cm_id with CEP */
+	 
 	id->add_ref(id);
 	cep->cm_id = id;
 
-	/*
-	 * 6: Allocate a sufficient number of work elements
-	 * to allow concurrent handling of local + peer close
-	 * events, MPA header processing + MPA timeout, connected event
-	 * and connect timeout.
-	 */
+	 
 	ret = erdma_cm_alloc_work(cep, 6);
 	if (ret != 0) {
 		ret = -ENOMEM;
@@ -1099,11 +1056,11 @@ error_disassoc:
 	erdma_socket_disassoc(s);
 
 error_release_cep:
-	/* disassoc with cm_id */
+	 
 	cep->cm_id = NULL;
 	id->rem_ref(id);
 
-	/* disassoc with qp */
+	 
 	qp->cep = NULL;
 	erdma_cep_put(cep);
 	cep->qp = NULL;
@@ -1112,7 +1069,7 @@ error_release_cep:
 
 	erdma_cep_set_free(cep);
 
-	/* release the cep. */
+	 
 	erdma_cep_put(cep);
 
 error_release_sock:
@@ -1135,7 +1092,7 @@ int erdma_accept(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 	erdma_cep_set_inuse(cep);
 	erdma_cep_put(cep);
 
-	/* Free lingering inbound private data */
+	 
 	if (cep->mpa.hdr.params.pd_len) {
 		cep->mpa.hdr.params.pd_len = 0;
 		kfree(cep->mpa.pdata);
@@ -1187,7 +1144,7 @@ int erdma_accept(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 
 	qp_attrs.state = ERDMA_QP_STATE_RTS;
 
-	/* Associate QP with CEP */
+	 
 	erdma_cep_get(cep);
 	qp->cep = cep;
 	cep->qp = qp;
@@ -1200,7 +1157,7 @@ int erdma_accept(struct iw_cm_id *id, struct iw_cm_conn_param *params)
 	if (qp->attrs.cc != __mpa_ext_cc(cep->mpa.ext_data.bits))
 		qp->attrs.cc = COMPROMISE_CC;
 
-	/* move to rts */
+	 
 	ret = erdma_modify_qp_internal(qp, &qp_attrs,
 				       ERDMA_QP_ATTR_STATE |
 				       ERDMA_QP_ATTR_ORD |
@@ -1271,7 +1228,7 @@ int erdma_reject(struct iw_cm_id *id, const void *pdata, u8 plen)
 	}
 
 	if (__mpa_rr_revision(cep->mpa.hdr.params.bits) == MPA_REVISION_EXT_1) {
-		cep->mpa.hdr.params.bits |= MPA_RR_FLAG_REJECT; /* reject */
+		cep->mpa.hdr.params.bits |= MPA_RR_FLAG_REJECT;  
 		erdma_send_mpareqrep(cep, pdata, plen);
 	}
 
@@ -1305,7 +1262,7 @@ int erdma_create_listen(struct iw_cm_id *id, int backlog)
 
 	sock_set_reuseaddr(s->sk);
 
-	/* For wildcard addr, limit binding to current device only */
+	 
 	if (ipv4_is_zeronet(laddr->sin_addr.s_addr))
 		s->sk->sk_bound_dev_if = dev->netdev->ifindex;
 
@@ -1370,10 +1327,7 @@ error:
 static void erdma_drop_listeners(struct iw_cm_id *id)
 {
 	struct list_head *p, *tmp;
-	/*
-	 * In case of a wildcard rdma_listen on a multi-homed device,
-	 * a listener's IWCM id is associated with more than one listening CEP.
-	 */
+	 
 	list_for_each_safe(p, tmp, (struct list_head *)id->provider_data) {
 		struct erdma_cep *cep =
 			list_entry(p, struct erdma_cep, listenq);

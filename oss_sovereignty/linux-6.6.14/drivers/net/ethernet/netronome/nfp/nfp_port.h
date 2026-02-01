@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef _NFP_PORT_H_
 #define _NFP_PORT_H_
@@ -12,15 +12,7 @@ struct nfp_app;
 struct nfp_pf;
 struct nfp_port;
 
-/**
- * enum nfp_port_type - type of port NFP can switch traffic to
- * @NFP_PORT_INVALID:	port is invalid, %NFP_PORT_PHYS_PORT transitions to this
- *			state when port disappears because of FW fault or config
- *			change
- * @NFP_PORT_PHYS_PORT:	external NIC port
- * @NFP_PORT_PF_PORT:	logical port of PCI PF
- * @NFP_PORT_VF_PORT:	logical port of PCI VF
- */
+ 
 enum nfp_port_type {
 	NFP_PORT_INVALID,
 	NFP_PORT_PHYS_PORT,
@@ -28,12 +20,7 @@ enum nfp_port_type {
 	NFP_PORT_VF_PORT,
 };
 
-/**
- * enum nfp_port_flags - port flags (can be type-specific)
- * @NFP_PORT_CHANGED:	port state has changed since last eth table refresh;
- *			for NFP_PORT_PHYS_PORT, never set otherwise; must hold
- *			rtnl_lock to clear
- */
+ 
 enum nfp_port_flags {
 	NFP_PORT_CHANGED = 0,
 };
@@ -48,28 +35,7 @@ enum {
 	NFP_SUP_SPEED_NUMBER
 };
 
-/**
- * struct nfp_port - structure representing NFP port
- * @netdev:	backpointer to associated netdev
- * @type:	what port type does the entity represent
- * @flags:	port flags
- * @tc_offload_cnt:	number of active TC offloads, how offloads are counted
- *			is not defined, use as a boolean
- * @app:	backpointer to the app structure
- * @link_cb:	callback when link status changed
- * @dl_port:	devlink port structure
- * @eth_id:	for %NFP_PORT_PHYS_PORT port ID in NFP enumeration scheme
- * @eth_forced:	for %NFP_PORT_PHYS_PORT port is forced UP or DOWN, don't change
- * @eth_port:	for %NFP_PORT_PHYS_PORT translated ETH Table port entry
- * @eth_stats:	for %NFP_PORT_PHYS_PORT MAC stats if available
- * @speed_bitmap:	for %NFP_PORT_PHYS_PORT supported speed bitmap
- * @pf_id:	for %NFP_PORT_PF_PORT, %NFP_PORT_VF_PORT ID of the PCI PF (0-3)
- * @vf_id:	for %NFP_PORT_VF_PORT ID of the PCI VF within @pf_id
- * @pf_split:	for %NFP_PORT_PF_PORT %true if PCI PF has more than one vNIC
- * @pf_split_id:for %NFP_PORT_PF_PORT ID of PCI PF vNIC (valid if @pf_split)
- * @vnic:	for %NFP_PORT_PF_PORT, %NFP_PORT_VF_PORT vNIC ctrl memory
- * @port_list:	entry on pf's list of ports
- */
+ 
 struct nfp_port {
 	struct net_device *netdev;
 	enum nfp_port_type type;
@@ -83,7 +49,7 @@ struct nfp_port {
 	struct devlink_port dl_port;
 
 	union {
-		/* NFP_PORT_PHYS_PORT */
+		 
 		struct {
 			unsigned int eth_id;
 			bool eth_forced;
@@ -91,7 +57,7 @@ struct nfp_port {
 			u8 __iomem *eth_stats;
 			DECLARE_BITMAP(speed_bitmap, NFP_SUP_SPEED_NUMBER);
 		};
-		/* NFP_PORT_PF_PORT, NFP_PORT_VF_PORT */
+		 
 		struct {
 			unsigned int pf_id;
 			unsigned int vf_id;
@@ -142,14 +108,12 @@ int nfp_net_refresh_port_table_sync(struct nfp_pf *pf);
 int nfp_devlink_port_register(struct nfp_app *app, struct nfp_port *port);
 void nfp_devlink_port_unregister(struct nfp_port *port);
 
-/* Mac stats (0x0000 - 0x0200)
- * all counters are 64bit.
- */
+ 
 #define NFP_MAC_STATS_BASE                0x0000
 #define NFP_MAC_STATS_SIZE                0x0200
 
 #define NFP_MAC_STATS_RX_IN_OCTETS			(NFP_MAC_STATS_BASE + 0x000)
-							/* unused 0x008 */
+							 
 #define NFP_MAC_STATS_RX_FRAME_TOO_LONG_ERRORS		(NFP_MAC_STATS_BASE + 0x010)
 #define NFP_MAC_STATS_RX_RANGE_LENGTH_ERRORS		(NFP_MAC_STATS_BASE + 0x018)
 #define NFP_MAC_STATS_RX_VLAN_RECEIVED_OK		(NFP_MAC_STATS_BASE + 0x020)
@@ -184,12 +148,12 @@ void nfp_devlink_port_unregister(struct nfp_port *port);
 #define NFP_MAC_STATS_RX_PAUSE_FRAMES_CLASS7		(NFP_MAC_STATS_BASE + 0x108)
 #define NFP_MAC_STATS_RX_MAC_CTRL_FRAMES_RECEIVED	(NFP_MAC_STATS_BASE + 0x110)
 #define NFP_MAC_STATS_RX_MAC_HEAD_DROP			(NFP_MAC_STATS_BASE + 0x118)
-							/* unused 0x120 */
-							/* unused 0x128 */
-							/* unused 0x130 */
+							 
+							 
+							 
 #define NFP_MAC_STATS_TX_QUEUE_DROP			(NFP_MAC_STATS_BASE + 0x138)
 #define NFP_MAC_STATS_TX_OUT_OCTETS			(NFP_MAC_STATS_BASE + 0x140)
-							/* unused 0x148 */
+							 
 #define NFP_MAC_STATS_TX_VLAN_TRANSMITTED_OK		(NFP_MAC_STATS_BASE + 0x150)
 #define NFP_MAC_STATS_TX_OUT_ERRORS			(NFP_MAC_STATS_BASE + 0x158)
 #define NFP_MAC_STATS_TX_BROADCAST_PKTS			(NFP_MAC_STATS_BASE + 0x160)

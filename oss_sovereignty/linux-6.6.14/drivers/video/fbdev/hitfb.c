@@ -1,15 +1,4 @@
-/*
- * linux/drivers/video/hitfb.c -- Hitachi LCD frame buffer device
- *
- * (C) 1999 Mihai Spatar
- * (C) 2000 YAEGASHI Takeshi
- * (C) 2003, 2004 Paul Mundt
- * (C) 2003, 2004, 2006 Andriy Skulysh
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License. See the file COPYING in the main directory of this archive for
- *  more details.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -286,7 +275,7 @@ static int hitfb_check_var(struct fb_var_screeninfo *var, struct fb_info *info)
 		var->transp.offset = 0;
 		var->transp.length = 0;
 		break;
-	case 16:		/* RGB 565 */
+	case 16:		 
 		var->red.offset = 11;
 		var->red.length = 5;
 		var->green.offset = 5;
@@ -385,7 +374,7 @@ static int hitfb_probe(struct platform_device *dev)
 		hitfb_var.transp.offset = 0;
 		hitfb_var.transp.length = 0;
 		break;
-	case 16:		/* RGB 565 */
+	case 16:		 
 		hitfb_var.red.offset = 11;
 		hitfb_var.red.length = 5;
 		hitfb_var.green.offset = 5;

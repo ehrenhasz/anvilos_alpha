@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Persistent Memory Driver
- *
- * Copyright (c) 2014-2015, Intel Corporation.
- * Copyright (c) 2015, Christoph Hellwig <hch@lst.de>.
- * Copyright (c) 2015, Boaz Harrosh <boaz@plexistor.com>.
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/pagemap.h>
@@ -34,10 +28,7 @@
 
 static struct device *to_dev(struct pmem_device *pmem)
 {
-	/*
-	 * nvdimm bus services need a 'dev' parameter, and we record the device
-	 * at init in bb.dev.
-	 */
+	 
 	return pmem->bb.dev;
 }
 
@@ -67,7 +58,7 @@ static void pmem_mkpage_present(struct pmem_device *pmem, phys_addr_t offset,
 	phys_addr_t phys = pmem_to_phys(pmem, offset);
 	unsigned long pfn_start, pfn_end, pfn;
 
-	/* only pmem in the linear map supports HWPoison */
+	 
 	if (is_vmalloc_addr(pmem->virt_addr))
 		return;
 
@@ -76,11 +67,7 @@ static void pmem_mkpage_present(struct pmem_device *pmem, phys_addr_t offset,
 	for (pfn = pfn_start; pfn < pfn_end; pfn++) {
 		struct page *page = pfn_to_page(pfn);
 
-		/*
-		 * Note, no need to hold a get_dev_pagemap() reference
-		 * here since we're in the driver I/O path and
-		 * outstanding I/O requests pin the dev_pagemap.
-		 */
+		 
 		if (test_and_clear_pmem_poison(page))
 			clear_mce_nospec(pfn);
 	}
@@ -239,7 +226,7 @@ static void pmem_submit_bio(struct bio *bio)
 	bio_endio(bio);
 }
 
-/* see "strong" declaration in tools/testing/nvdimm/pmem-dax.c */
+ 
 __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
 		long nr_pages, enum dax_access_mode mode, void **kaddr,
 		pfn_t *pfn)
@@ -263,11 +250,7 @@ __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
 		if (mode != DAX_RECOVERY_WRITE)
 			return -EHWPOISON;
 
-		/*
-		 * Set the recovery stride is set to kernel page size because
-		 * the underlying driver and firmware clear poison functions
-		 * don't appear to handle large chunk(such as 2MiB) reliably.
-		 */
+		 
 		actual_nr = PHYS_PFN(
 			PAGE_ALIGN((first_bad - sector) << SECTOR_SHIFT));
 		dev_dbg(pmem->bb.dev, "start sector(%llu), nr_pages(%ld), first_bad(%llu), actual_nr(%ld)\n",
@@ -277,10 +260,7 @@ __weak long __pmem_direct_access(struct pmem_device *pmem, pgoff_t pgoff,
 		return 1;
 	}
 
-	/*
-	 * If badblocks are present but not in the range, limit known good range
-	 * to the requested range.
-	 */
+	 
 	if (bb->count)
 		return nr_pages;
 	return PHYS_PFN(pmem->size - pmem->pfn_pad - offset);
@@ -310,19 +290,7 @@ static long pmem_dax_direct_access(struct dax_device *dax_dev,
 	return __pmem_direct_access(pmem, pgoff, nr_pages, mode, kaddr, pfn);
 }
 
-/*
- * The recovery write thread started out as a normal pwrite thread and
- * when the filesystem was told about potential media error in the
- * range, filesystem turns the normal pwrite to a dax_recovery_write.
- *
- * The recovery write consists of clearing media poison, clearing page
- * HWPoison bit, reenable page-wide read-write permission, flush the
- * caches and finally write.  A competing pread thread will be held
- * off during the recovery process since data read back might not be
- * valid, and this is achieved by clearing the badblock records after
- * the recovery write is complete. Competing recovery write threads
- * are already serialized by writer lock held by dax_iomap_rw().
- */
+ 
 static size_t pmem_recovery_write(struct dax_device *dax_dev, pgoff_t pgoff,
 		void *addr, size_t bytes, struct iov_iter *i)
 {
@@ -337,10 +305,7 @@ static size_t pmem_recovery_write(struct dax_device *dax_dev, pgoff_t pgoff,
 	if (!is_bad_pmem(&pmem->bb, PFN_PHYS(pgoff) >> SECTOR_SHIFT, len))
 		return _copy_from_iter_flushcache(addr, bytes, i);
 
-	/*
-	 * Not page-aligned range cannot be recovered. This should not
-	 * happen unless something else went wrong.
-	 */
+	 
 	if (off || !PAGE_ALIGNED(bytes)) {
 		dev_dbg(dev, "Found poison, but addr(%p) or bytes(%#zx) not page aligned\n",
 			addr, bytes);
@@ -471,7 +436,7 @@ static int pmem_attach_disk(struct device *dev,
 	if (rc)
 		return rc;
 
-	/* while nsio_rw_bytes is active, parse a pfn info block if present */
+	 
 	if (is_nd_pfn(dev)) {
 		nd_pfn = to_nd_pfn(dev);
 		rc = nvdimm_setup_pfn(nd_pfn, &pmem->pgmap);
@@ -479,7 +444,7 @@ static int pmem_attach_disk(struct device *dev,
 			return rc;
 	}
 
-	/* we're attaching a block device, disable raw namespace access */
+	 
 	devm_namespace_disable(dev, ndns);
 
 	dev_set_drvdata(dev, pmem);
@@ -619,17 +584,7 @@ static int nd_pmem_probe(struct device *dev)
 	if (ret == 0)
 		return -ENXIO;
 
-	/*
-	 * We have two failure conditions here, there is no
-	 * info reserver block or we found a valid info reserve block
-	 * but failed to initialize the pfn superblock.
-	 *
-	 * For the first case consider namespace as a raw pmem namespace
-	 * and attach a disk.
-	 *
-	 * For the latter, consider this a success and advance the namespace
-	 * seed.
-	 */
+	 
 	ret = nd_pfn_probe(dev, ndns);
 	if (ret == 0)
 		return -ENXIO;
@@ -642,7 +597,7 @@ static int nd_pmem_probe(struct device *dev)
 	else if (ret == -EOPNOTSUPP)
 		return ret;
 
-	/* probe complete, attach handles namespace enabling */
+	 
 	devm_namespace_disable(dev, ndns);
 
 	return pmem_attach_disk(dev, ndns);
@@ -655,10 +610,7 @@ static void nd_pmem_remove(struct device *dev)
 	if (is_nd_btt(dev))
 		nvdimm_namespace_detach_btt(to_nd_btt(dev));
 	else {
-		/*
-		 * Note, this assumes device_lock() context to not
-		 * race nd_pmem_notify()
-		 */
+		 
 		sysfs_put(pmem->bb_state);
 		pmem->bb_state = NULL;
 	}

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DSA tagging protocol handling
- *
- * Copyright (c) 2008-2009 Marvell Semiconductor
- * Copyright (c) 2013 Florian Fainelli <florian@openwrt.org>
- * Copyright (c) 2016 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/ptp_classify.h>
@@ -19,14 +13,7 @@
 static LIST_HEAD(dsa_tag_drivers_list);
 static DEFINE_MUTEX(dsa_tag_drivers_lock);
 
-/* Determine if we should defer delivery of skb until we have a rx timestamp.
- *
- * Called from dsa_switch_rcv. For now, this will only work if tagging is
- * enabled on the switch. Normally the MAC driver would retrieve the hardware
- * timestamp when it reads the packet out of the hardware. However in a DSA
- * switch, the DSA driver owning the interface to which the packet is
- * delivered is never notified unless we do so here.
- */
+ 
 static bool dsa_skb_defer_rx_timestamp(struct dsa_slave_priv *p,
 				       struct sk_buff *skb)
 {
@@ -95,10 +82,7 @@ static int dsa_switch_rcv(struct sk_buff *skb, struct net_device *dev,
 	skb->protocol = eth_type_trans(skb, skb->dev);
 
 	if (unlikely(!dsa_slave_dev_check(skb->dev))) {
-		/* Packet is to be injected directly on an upper
-		 * device, e.g. a team/bond, so skip all DSA-port
-		 * specific actions.
-		 */
+		 
 		netif_rx(skb);
 		return 0;
 	}
@@ -171,9 +155,7 @@ const char *dsa_tag_protocol_to_str(const struct dsa_device_ops *ops)
 	return ops->name;
 };
 
-/* Function takes a reference on the module owning the tagger,
- * so dsa_tag_driver_put must be called afterwards.
- */
+ 
 const struct dsa_device_ops *dsa_tag_driver_get_by_name(const char *name)
 {
 	const struct dsa_device_ops *ops = ERR_PTR(-ENOPROTOOPT);

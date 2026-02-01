@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <rdma/ib_umem_odp.h>
 #include <linux/kernel.h>
@@ -42,34 +12,26 @@
 
 #include <linux/mlx5/eq.h>
 
-/* Contains the details of a pagefault. */
+ 
 struct mlx5_pagefault {
 	u32			bytes_committed;
 	u32			token;
 	u8			event_subtype;
 	u8			type;
 	union {
-		/* Initiator or send message responder pagefault details. */
+		 
 		struct {
-			/* Received packet size, only valid for responders. */
+			 
 			u32	packet_size;
-			/*
-			 * Number of resource holding WQE, depends on type.
-			 */
+			 
 			u32	wq_num;
-			/*
-			 * WQE index. Refers to either the send queue or
-			 * receive queue, according to event_subtype.
-			 */
+			 
 			u16	wqe_index;
 		} wqe;
-		/* RDMA responder pagefault details */
+		 
 		struct {
 			u32	r_key;
-			/*
-			 * Received packet size, minimal size page fault
-			 * resolution required for forward progress.
-			 */
+			 
 			u32	packet_size;
 			u32	rdma_op_len;
 			u64	rdma_va;
@@ -82,8 +44,7 @@ struct mlx5_pagefault {
 
 #define MAX_PREFETCH_LEN (4*1024*1024U)
 
-/* Timeout in ms to wait for an active mmu notifier to complete when handling
- * a pagefault. */
+ 
 #define MMU_NOTIFIER_TIMEOUT 1000
 
 #define MLX5_IMR_MTT_BITS (30 - PAGE_SHIFT)
@@ -110,23 +71,7 @@ static void populate_klm(struct mlx5_klm *pklm, size_t idx, size_t nentries,
 		return;
 	}
 
-	/*
-	 * The locking here is pretty subtle. Ideally the implicit_children
-	 * xarray would be protected by the umem_mutex, however that is not
-	 * possible. Instead this uses a weaker update-then-lock pattern:
-	 *
-	 *    xa_store()
-	 *    mutex_lock(umem_mutex)
-	 *     mlx5r_umr_update_xlt()
-	 *    mutex_unlock(umem_mutex)
-	 *    destroy lkey
-	 *
-	 * ie any change the xarray must be followed by the locked update_xlt
-	 * before destroying.
-	 *
-	 * The umem_mutex provides the acquire/release semantic needed to make
-	 * the xa_store() visible to a racing thread.
-	 */
+	 
 	lockdep_assert_held(&to_ib_umem_odp(imr->umem)->umem_mutex);
 
 	for (; pklm != end; pklm++, idx++) {
@@ -181,12 +126,7 @@ void mlx5_odp_populate_xlt(void *xlt, size_t idx, size_t nentries,
 	}
 }
 
-/*
- * This must be called after the mr has been removed from implicit_children.
- * NOTE: The MR does not necessarily have to be
- * empty here, parallel page faults could have raced with the free process and
- * added pages to it.
- */
+ 
 static void free_implicit_child_mr_work(struct work_struct *work)
 {
 	struct mlx5_ib_mr *mr =
@@ -218,7 +158,7 @@ static void destroy_unused_implicit_child_mr(struct mlx5_ib_mr *mr)
 
 	xa_erase(&imr->implicit_children, idx);
 
-	/* Freeing a MR is a sleeping operation, so bounce to a work queue */
+	 
 	INIT_WORK(&mr->odp_destroy.work, free_implicit_child_mr_work);
 	queue_work(system_unbound_wq, &mr->odp_destroy.work);
 }
@@ -243,10 +183,7 @@ static bool mlx5_ib_invalidate_range(struct mmu_interval_notifier *mni,
 
 	mutex_lock(&umem_odp->umem_mutex);
 	mmu_interval_set_seq(mni, cur_seq);
-	/*
-	 * If npages is zero then umem_odp->private may not be setup yet. This
-	 * does not complete until after the first page is mapped for DMA.
-	 */
+	 
 	if (!umem_odp->npages)
 		goto out;
 	mr = umem_odp->private;
@@ -254,20 +191,10 @@ static bool mlx5_ib_invalidate_range(struct mmu_interval_notifier *mni,
 	start = max_t(u64, ib_umem_start(umem_odp), range->start);
 	end = min_t(u64, ib_umem_end(umem_odp), range->end);
 
-	/*
-	 * Iteration one - zap the HW's MTTs. The notifiers_count ensures that
-	 * while we are doing the invalidation, no page fault will attempt to
-	 * overwrite the same MTTs.  Concurent invalidations might race us,
-	 * but they will write 0s as well, so no difference in the end result.
-	 */
+	 
 	for (addr = start; addr < end; addr += BIT(umem_odp->page_shift)) {
 		idx = (addr - ib_umem_start(umem_odp)) >> umem_odp->page_shift;
-		/*
-		 * Strive to write the MTTs in chunks, but avoid overwriting
-		 * non-existing MTTs. The huristic here can be improved to
-		 * estimate the cost of another UMR vs. the cost of bigger
-		 * UMR.
-		 */
+		 
 		if (umem_odp->dma_list[idx] &
 		    (ODP_READ_ALLOWED_BIT | ODP_WRITE_ALLOWED_BIT)) {
 			if (!in_block) {
@@ -275,7 +202,7 @@ static bool mlx5_ib_invalidate_range(struct mmu_interval_notifier *mni,
 				in_block = 1;
 			}
 
-			/* Count page invalidations */
+			 
 			invalidations += idx - blk_start_idx + 1;
 		} else {
 			u64 umr_offset = idx & umr_block_mask;
@@ -297,11 +224,7 @@ static bool mlx5_ib_invalidate_range(struct mmu_interval_notifier *mni,
 
 	mlx5_update_odp_stats(mr, invalidations, invalidations);
 
-	/*
-	 * We are now sure that the device will not access the
-	 * memory. We can safely unmap it, and mark it as dirty if
-	 * needed.
-	 */
+	 
 
 	ib_umem_odp_unmap_dma_pages(umem_odp, start, end);
 
@@ -435,10 +358,7 @@ static struct mlx5_ib_mr *implicit_get_child_mr(struct mlx5_ib_mr *imr,
 	mr->parent = imr;
 	odp->private = mr;
 
-	/*
-	 * First refcount is owned by the xarray and second refconut
-	 * is returned to the caller.
-	 */
+	 
 	refcount_set(&mr->mmkey.usecount, 2);
 
 	err = mlx5r_umr_update_xlt(mr, 0,
@@ -459,10 +379,7 @@ static struct mlx5_ib_mr *implicit_get_child_mr(struct mlx5_ib_mr *imr,
 			ret = ERR_PTR(xa_err(ret));
 			goto out_lock;
 		}
-		/*
-		 * Another thread beat us to creating the child mr, use
-		 * theirs.
-		 */
+		 
 		refcount_inc(&ret->mmkey.usecount);
 		goto out_lock;
 	}
@@ -536,10 +453,7 @@ void mlx5_ib_free_odp_mr(struct mlx5_ib_mr *mr)
 	struct mlx5_ib_mr *mtt;
 	unsigned long idx;
 
-	/*
-	 * If this is an implicit MR it is already invalidated so we can just
-	 * delete the children mkeys.
-	 */
+	 
 	xa_for_each(&mr->implicit_children, idx, mtt) {
 		xa_erase(&mr->implicit_children, idx);
 		mlx5_ib_dereg_mr(&mtt->ibmr, NULL);
@@ -574,10 +488,7 @@ static int pagefault_real_mr(struct mlx5_ib_mr *mr, struct ib_umem_odp *odp,
 	if (np < 0)
 		return np;
 
-	/*
-	 * No need to check whether the MTTs really belong to this MR, since
-	 * ib_umem_odp_map_dma_and_lock already checks this.
-	 */
+	 
 	ret = mlx5r_umr_update_xlt(mr, start_idx, np, page_shift, xlt_flags);
 	mutex_unlock(&odp->umem_mutex);
 
@@ -616,7 +527,7 @@ static int pagefault_implicit_mr(struct mlx5_ib_mr *imr,
 		     mlx5_imr_ksm_entries * MLX5_IMR_MTT_SIZE - user_va < bcnt))
 		return -EFAULT;
 
-	/* Fault each child mr that intersects with our interval. */
+	 
 	while (bcnt) {
 		unsigned long idx = user_va >> MLX5_IMR_MTT_SHIFT;
 		struct ib_umem_odp *umem_odp;
@@ -657,24 +568,12 @@ static int pagefault_implicit_mr(struct mlx5_ib_mr *imr,
 
 	ret = npages;
 
-	/*
-	 * Any time the implicit_children are changed we must perform an
-	 * update of the xlt before exiting to ensure the HW and the
-	 * implicit_children remains synchronized.
-	 */
+	 
 out:
 	if (likely(!upd_len))
 		return ret;
 
-	/*
-	 * Notice this is not strictly ordered right, the KSM is updated after
-	 * the implicit_children is updated, so a parallel page fault could
-	 * see a MR that is not yet visible in the KSM.  This is similar to a
-	 * parallel page fault seeing a MR that is being concurrently removed
-	 * from the KSM. Both of these improbable situations are resolved
-	 * safely by resuming the HW and then taking another page fault. The
-	 * next pagefault handler will see the new information.
-	 */
+	 
 	mutex_lock(&odp_imr->umem_mutex);
 	err = mlx5r_umr_update_xlt(imr, upd_start_idx, upd_len, 0,
 				   MLX5_IB_UPD_XLT_INDIRECT |
@@ -725,15 +624,7 @@ static int pagefault_dmabuf_mr(struct mlx5_ib_mr *mr, size_t bcnt,
 	return ib_umem_num_pages(mr->umem);
 }
 
-/*
- * Returns:
- *  -EFAULT: The io_virt->bcnt is not within the MR, it covers pages that are
- *           not accessible, or the MR is no longer valid.
- *  -EAGAIN/-ENOMEM: The operation should be retried
- *
- *  -EINVAL/others: General internal malfunction
- *  >0: Number of pages mapped
- */
+ 
 static int pagefault_mr(struct mlx5_ib_mr *mr, u64 io_virt, size_t bcnt,
 			u32 *bytes_mapped, u32 flags)
 {
@@ -799,17 +690,7 @@ static bool mkey_is_eq(struct mlx5_ib_mkey *mmkey, u32 key)
 	return mmkey->key == key;
 }
 
-/*
- * Handle a single data segment in a page-fault WQE or RDMA region.
- *
- * Returns number of OS pages retrieved on success. The caller may continue to
- * the next data segment.
- * Can return the following error codes:
- * -EAGAIN to designate a temporary error. The caller will abort handling the
- *  page fault and resolve it.
- * -EFAULT when there's an error mapping the requested pages. The caller will
- *  abort the page fault handling.
- */
+ 
 static int pagefault_single_data_segment(struct mlx5_ib_dev *dev,
 					 struct ib_pd *pd, u32 key,
 					 u64 io_virt, size_t bcnt,
@@ -838,11 +719,7 @@ next_mr:
 			key);
 		if (bytes_mapped)
 			*bytes_mapped += bcnt;
-		/*
-		 * The user could specify a SGL with multiple lkeys and only
-		 * some of them are ODP. Treat the non-ODP ones as fully
-		 * faulted.
-		 */
+		 
 		ret = 0;
 		goto end;
 	}
@@ -959,25 +836,7 @@ end:
 	return ret ? ret : npages;
 }
 
-/*
- * Parse a series of data segments for page fault handling.
- *
- * @dev:  Pointer to mlx5 IB device
- * @pfault: contains page fault information.
- * @wqe: points at the first data segment in the WQE.
- * @wqe_end: points after the end of the WQE.
- * @bytes_mapped: receives the number of bytes that the function was able to
- *                map. This allows the caller to decide intelligently whether
- *                enough memory was mapped to resolve the page fault
- *                successfully (e.g. enough for the next MTU, or the entire
- *                WQE).
- * @total_wqe_bytes: receives the total data size of this WQE in bytes (minus
- *                   the committed bytes).
- * @receive_queue: receive WQE end of sg list
- *
- * Returns the number of pages loaded if positive, zero for an empty WQE, or a
- * negative error code.
- */
+ 
 static int pagefault_data_segments(struct mlx5_ib_dev *dev,
 				   struct mlx5_pagefault *pfault,
 				   void *wqe,
@@ -1013,7 +872,7 @@ static int pagefault_data_segments(struct mlx5_ib_dev *dev,
 			wqe += sizeof(*dseg);
 		}
 
-		/* receive WQE end of sg list. */
+		 
 		if (receive_queue && bcnt == 0 &&
 		    key == dev->mkeys.terminate_scatter_list_mkey &&
 		    io_virt == 0)
@@ -1024,7 +883,7 @@ static int pagefault_data_segments(struct mlx5_ib_dev *dev,
 					pfault->bytes_committed);
 		}
 
-		/* A zero length data segment designates a length of 2GB. */
+		 
 		if (bcnt == 0)
 			bcnt = 1U << 31;
 
@@ -1047,10 +906,7 @@ static int pagefault_data_segments(struct mlx5_ib_dev *dev,
 	return ret < 0 ? ret : npages;
 }
 
-/*
- * Parse initiator WQE. Advances the wqe pointer to point at the
- * scatter-gather list, and set wqe_end to the end of the WQE.
- */
+ 
 static int mlx5_ib_mr_initiator_pfault_handler(
 	struct mlx5_ib_dev *dev, struct mlx5_pagefault *pfault,
 	struct mlx5_ib_qp *qp, void **wqe, void **wqe_end, int wqe_length)
@@ -1107,9 +963,7 @@ static int mlx5_ib_mr_initiator_pfault_handler(
 	return 0;
 }
 
-/*
- * Parse responder WQE and set wqe_end to the end of the WQE.
- */
+ 
 static int mlx5_ib_mr_responder_pfault_handler_srq(struct mlx5_ib_dev *dev,
 						   struct mlx5_ib_srq *srq,
 						   void **wqe, void **wqe_end,
@@ -1296,12 +1150,7 @@ static void mlx5_ib_mr_rdma_pfault_handler(struct mlx5_ib_dev *dev,
 	u32 rkey = pfault->rdma.r_key;
 	int ret;
 
-	/* The RDMA responder handler handles the page fault in two parts.
-	 * First it brings the necessary pages for the current packet
-	 * (and uses the pfault context), and then (after resuming the QP)
-	 * prefetches more pages. The second operation cannot use the pfault
-	 * context and therefore uses the dummy_pfault context allocated on
-	 * the stack */
+	 
 	pfault->rdma.rdma_va += pfault->bytes_committed;
 	pfault->rdma.rdma_op_len -= min(pfault->bytes_committed,
 					 pfault->rdma.rdma_op_len);
@@ -1310,9 +1159,7 @@ static void mlx5_ib_mr_rdma_pfault_handler(struct mlx5_ib_dev *dev,
 	address = pfault->rdma.rdma_va;
 	length  = pfault->rdma.rdma_op_len;
 
-	/* For some operations, the hardware cannot tell the exact message
-	 * length, and in those cases it reports zero. Use prefetch
-	 * logic. */
+	 
 	if (length == 0) {
 		prefetch_activated = 1;
 		length = pfault->rdma.packet_size;
@@ -1322,7 +1169,7 @@ static void mlx5_ib_mr_rdma_pfault_handler(struct mlx5_ib_dev *dev,
 	ret = pagefault_single_data_segment(dev, NULL, rkey, address, length,
 					    &pfault->bytes_committed, NULL);
 	if (ret == -EAGAIN) {
-		/* We're racing with an invalidation, don't prefetch */
+		 
 		prefetch_activated = 0;
 	} else if (ret < 0 || pages_in_range(address, length) > ret) {
 		mlx5_ib_page_fault_resume(dev, pfault, 1);
@@ -1337,10 +1184,7 @@ static void mlx5_ib_mr_rdma_pfault_handler(struct mlx5_ib_dev *dev,
 		    pfault->token, pfault->type,
 		    prefetch_activated);
 
-	/* At this point, there might be a new pagefault already arriving in
-	 * the eq, switch to the dummy pagefault for the rest of the
-	 * processing. We're still OK with the objects being alive as the
-	 * work-queue is being fenced. */
+	 
 
 	if (prefetch_activated) {
 		u32 bytes_committed = 0;
@@ -1408,7 +1252,7 @@ static void mlx5_ib_eq_pf_process(struct mlx5_ib_pf_eq *eq)
 
 		switch (eqe->sub_type) {
 		case MLX5_PFAULT_SUBTYPE_RDMA:
-			/* RDMA based event */
+			 
 			pfault->type =
 				be32_to_cpu(pf_eqe->rdma.pftype_token) >> 24;
 			pfault->token =
@@ -1433,7 +1277,7 @@ static void mlx5_ib_eq_pf_process(struct mlx5_ib_pf_eq *eq)
 			break;
 
 		case MLX5_PFAULT_SUBTYPE_WQE:
-			/* WQE based event */
+			 
 			pfault->type =
 				(be32_to_cpu(pf_eqe->wqe.pftype_wq) >> 24) & 0x7;
 			pfault->token =
@@ -1456,9 +1300,7 @@ static void mlx5_ib_eq_pf_process(struct mlx5_ib_pf_eq *eq)
 			mlx5_ib_warn(eq->dev,
 				     "Unsupported page fault event sub-type: 0x%02hhx\n",
 				     eqe->sub_type);
-			/* Unsupported page faults should still be
-			 * resolved by the page fault handler
-			 */
+			 
 		}
 
 		pfault->eq = eq;
@@ -1488,10 +1330,7 @@ static int mlx5_ib_eq_pf_int(struct notifier_block *nb, unsigned long type,
 	return IRQ_HANDLED;
 }
 
-/* mempool_refill() was proposed but unfortunately wasn't accepted
- * http://lkml.iu.edu/hypermail/linux/kernel/1512.1/05073.html
- * Cheap workaround.
- */
+ 
 static void mempool_refill(mempool_t *pool)
 {
 	while (pool->curr_nr < pool->min_nr)
@@ -1686,7 +1525,7 @@ get_prefetchable_mr(struct ib_pd *pd, enum ib_uverbs_advise_mr_advice advice,
 		goto end;
 	}
 
-	/* prefetch with write-access must be supported by the MR */
+	 
 	if (advice == IB_UVERBS_ADVISE_MR_ADVICE_PREFETCH_WRITE &&
 	    !mr->umem->writable) {
 		mr = ERR_PTR(-EPERM);
@@ -1707,7 +1546,7 @@ static void mlx5_ib_prefetch_mr_work(struct work_struct *w)
 	int ret;
 	u32 i;
 
-	/* We rely on IB/core that work is executed if we have num_sge != 0 only. */
+	 
 	WARN_ON(!work->num_sge);
 	for (i = 0; i < work->num_sge; ++i) {
 		ret = pagefault_mr(work->frags[i].mr, work->frags[i].io_virt,

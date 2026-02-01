@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2020 Mellanox Technologies
+
+
 
 #include "en/ptp.h"
 #include "en/health.h"
@@ -31,7 +31,7 @@ struct mlx5e_ptp_port_ts_cqe_tracker {
 struct mlx5e_ptp_port_ts_cqe_list {
 	struct mlx5e_ptp_port_ts_cqe_tracker *nodes;
 	struct list_head tracker_list_head;
-	/* Sync list operations in xmit and napi_poll contexts */
+	 
 	spinlock_t tracker_list_lock;
 };
 
@@ -89,7 +89,7 @@ static void mlx5e_skb_cb_hwtstamp_tx(struct sk_buff *skb,
 	diff = abs(mlx5e_skb_cb_get_hwts(skb)->port_hwtstamp -
 		   mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp);
 
-	/* Maximal allowed diff is 1 / 128 second */
+	 
 	if (diff > (NSEC_PER_SEC >> 7)) {
 		cq_stats->abort++;
 		cq_stats->abort_abs_diff_ns += diff;
@@ -113,9 +113,7 @@ void mlx5e_skb_cb_hwtstamp_handler(struct sk_buff *skb, int hwtstamp_type,
 		break;
 	}
 
-	/* If both CQEs arrive, check and report the port tstamp, and clear skb cb as
-	 * skb soon to be released.
-	 */
+	 
 	if (!mlx5e_skb_cb_get_hwts(skb)->cqe_hwtstamp ||
 	    !mlx5e_skb_cb_get_hwts(skb)->port_hwtstamp)
 		return;
@@ -143,7 +141,7 @@ mlx5e_ptp_metadata_map_remove(struct mlx5e_ptp_metadata_map *map, u16 metadata)
 
 static bool mlx5e_ptp_metadata_map_unhealthy(struct mlx5e_ptp_metadata_map *map)
 {
-	/* Considered beginning unhealthy state if size * 15 / 2^4 cannot be reclaimed. */
+	 
 	return map->undelivered_counter > (map->capacity >> 4) * 15;
 }
 
@@ -191,9 +189,7 @@ static void mlx5e_ptp_handle_ts_cqe(struct mlx5e_ptpsq *ptpsq,
 	if (likely(pending_cqe_list->nodes[metadata_id].inuse)) {
 		mlx5e_ptp_port_ts_cqe_list_remove(pending_cqe_list, metadata_id);
 	} else {
-		/* Reclaim space in the unlikely event CQE was delivered after
-		 * marking it late.
-		 */
+		 
 		ptpsq->metadata_map.undelivered_counter--;
 		ptpsq->cq_stats->late_cqe++;
 	}
@@ -247,7 +243,7 @@ static bool mlx5e_ptp_poll_ts_cq(struct mlx5e_cq *cq, int napi_budget)
 
 	mlx5_cqwq_update_db_record(cqwq);
 
-	/* ensure cq space is freed before enabling more cqes */
+	 
 	wmb();
 
 	while (metadata_buff_sz > 0)
@@ -664,7 +660,7 @@ static void mlx5e_ptp_build_params(struct mlx5e_ptp *c,
 	params->sw_mtu = orig->sw_mtu;
 	params->mqprio = orig->mqprio;
 
-	/* SQ */
+	 
 	if (test_bit(MLX5E_PTP_STATE_TX, c->state)) {
 		params->log_sq_size =
 			min(MLX5_CAP_GEN_2(c->mdev, ts_cqe_metadata_size2wqe_counter),
@@ -672,7 +668,7 @@ static void mlx5e_ptp_build_params(struct mlx5e_ptp *c,
 		params->log_sq_size = min(params->log_sq_size, orig->log_sq_size);
 		mlx5e_ptp_build_sq_param(c->mdev, params, &cparams->txq_sq_param);
 	}
-	/* RQ */
+	 
 	if (test_bit(MLX5E_PTP_STATE_RX, c->state)) {
 		params->vlan_strip_disable = orig->vlan_strip_disable;
 		mlx5e_ptp_build_rq_param(c->mdev, c->netdev, c->priv->q_counter, cparams);
@@ -1002,7 +998,7 @@ int mlx5e_ptp_rx_manage_fs(struct mlx5e_priv *priv, bool set)
 		}
 		return mlx5e_ptp_rx_set_fs(priv);
 	}
-	/* set == false */
+	 
 	if (c && test_bit(MLX5E_PTP_STATE_RX, c->state)) {
 		netdev_WARN_ONCE(priv->netdev, "Don't try to remove PTP RX-FS rules");
 		return -EINVAL;

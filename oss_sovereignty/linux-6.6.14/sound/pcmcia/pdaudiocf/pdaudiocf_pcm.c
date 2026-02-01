@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for Sound Core PDAudioCF soundcards
- *
- * PCM part
- *
- * Copyright (c) 2003 by Jaroslav Kysela <perex@perex.cz>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <sound/core.h>
@@ -13,9 +7,7 @@
 #include "pdaudiocf.h"
 
 
-/*
- * clear the SRAM contents
- */
+ 
 static int pdacf_pcm_clear_sram(struct snd_pdacf *chip)
 {
 	int max_loop = 64 * 1024;
@@ -28,9 +20,7 @@ static int pdacf_pcm_clear_sram(struct snd_pdacf *chip)
 	return 0;
 }
 
-/*
- * pdacf_pcm_trigger - trigger callback for capture
- */
+ 
 static int pdacf_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 {
 	struct snd_pdacf *chip = snd_pcm_substream_chip(subs);
@@ -83,9 +73,7 @@ static int pdacf_pcm_trigger(struct snd_pcm_substream *subs, int cmd)
 	return ret;
 }
 
-/*
- * pdacf_pcm_prepare - prepare callback for playback and capture
- */
+ 
 static int pdacf_pcm_prepare(struct snd_pcm_substream *subs)
 {
 	struct snd_pdacf *chip = snd_pcm_substream_chip(subs);
@@ -116,7 +104,7 @@ static int pdacf_pcm_prepare(struct snd_pcm_substream *subs)
 	case SNDRV_PCM_FORMAT_S16_LE:
 	case SNDRV_PCM_FORMAT_S16_BE:
 		break;
-	default: /* 24-bit */
+	default:  
 		nval |= PDAUDIOCF_DATAFMT0 | PDAUDIOCF_DATAFMT1;
 		break;
 	}
@@ -133,7 +121,7 @@ static int pdacf_pcm_prepare(struct snd_pcm_substream *subs)
 	case SNDRV_PCM_FORMAT_S24_3BE:
 		chip->pcm_sample = 3;
 		fallthrough;
-	default: /* 24-bit */
+	default:  
 		aval = AK4117_DIF_24R;
 		chip->pcm_frame = 3;
 		chip->pcm_xor &= 0xffff0000;
@@ -158,9 +146,7 @@ static int pdacf_pcm_prepare(struct snd_pcm_substream *subs)
 }
 
 
-/*
- * capture hw information
- */
+ 
 
 static const struct snd_pcm_hardware pdacf_pcm_capture_hw = {
 	.info =			(SNDRV_PCM_INFO_MMAP | SNDRV_PCM_INFO_INTERLEAVED |
@@ -190,9 +176,7 @@ static const struct snd_pcm_hardware pdacf_pcm_capture_hw = {
 };
 
 
-/*
- * pdacf_pcm_capture_open - open callback for capture
- */
+ 
 static int pdacf_pcm_capture_open(struct snd_pcm_substream *subs)
 {
 	struct snd_pcm_runtime *runtime = subs->runtime;
@@ -208,9 +192,7 @@ static int pdacf_pcm_capture_open(struct snd_pcm_substream *subs)
 	return 0;
 }
 
-/*
- * pdacf_pcm_capture_close - close callback for capture
- */
+ 
 static int pdacf_pcm_capture_close(struct snd_pcm_substream *subs)
 {
 	struct snd_pdacf *chip = snd_pcm_substream_chip(subs);
@@ -223,18 +205,14 @@ static int pdacf_pcm_capture_close(struct snd_pcm_substream *subs)
 }
 
 
-/*
- * pdacf_pcm_capture_pointer - pointer callback for capture
- */
+ 
 static snd_pcm_uframes_t pdacf_pcm_capture_pointer(struct snd_pcm_substream *subs)
 {
 	struct snd_pdacf *chip = snd_pcm_substream_chip(subs);
 	return chip->pcm_hwptr;
 }
 
-/*
- * operators for PCM capture
- */
+ 
 static const struct snd_pcm_ops pdacf_pcm_capture_ops = {
 	.open =		pdacf_pcm_capture_open,
 	.close =	pdacf_pcm_capture_close,
@@ -244,9 +222,7 @@ static const struct snd_pcm_ops pdacf_pcm_capture_ops = {
 };
 
 
-/*
- * snd_pdacf_pcm_new - create and initialize a pcm
- */
+ 
 int snd_pdacf_pcm_new(struct snd_pdacf *chip)
 {
 	struct snd_pcm *pcm;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved.
+
+
 
 #include <net/bareudp.h>
 #include "act.h"
@@ -56,12 +56,7 @@ tc_act_can_offload_mpls_pop(struct mlx5e_tc_act_parse_state *parse_state,
 
 	filter_dev = attr->parse_attr->filter_dev;
 
-	/* we only support mpls pop if it is the first action
-	 * or it is second action after tunnel key unset
-	 * and the filter net device is bareudp. Subsequent
-	 * actions can be pedit and the last can be mirred
-	 * egress redirect.
-	 */
+	 
 	if ((act_index == 1 && !parse_state->decap) || act_index > 1) {
 		NL_SET_ERR_MSG_MOD(extack, "mpls pop supported only as first action or with decap");
 		return false;

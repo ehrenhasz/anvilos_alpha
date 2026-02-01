@@ -1,20 +1,4 @@
-/**********************************************************************
- * Author: Cavium, Inc.
- *
- * Contact: support@cavium.com
- *          Please include "LiquidIO" in the subject.
- *
- * Copyright (c) 2003-2016 Cavium, Inc.
- *
- * This file is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License, Version 2, as
- * published by the Free Software Foundation.
- *
- * This file is distributed in the hope that it will be useful, but
- * AS-IS and WITHOUT ANY WARRANTY; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE, TITLE, or
- * NONINFRINGEMENT.  See the GNU General Public License for more details.
- ***********************************************************************/
+ 
 #include <linux/pci.h>
 #include <linux/vmalloc.h>
 #include <linux/etherdevice.h>
@@ -30,10 +14,7 @@
 #define RESET_NOTDONE 0
 #define RESET_DONE 1
 
-/* Change the value of SLI Packet Input Jabber Register to allow
- * VXLAN TSO packets which can be 64424 bytes, exceeding the
- * MAX_GSO_SIZE we supplied to the kernel
- */
+ 
 #define CN23XX_INPUT_JABBER 64600
 
 void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
@@ -42,7 +23,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 	u32 regval = 0;
 	struct octeon_cn23xx_pf *cn23xx = (struct octeon_cn23xx_pf *)oct->chip;
 
-	/*In cn23xx_soft_reset*/
+	 
 	dev_dbg(&oct->pci_dev->dev, "%s[%llx] : 0x%llx\n",
 		"CN23XX_WIN_WR_MASK_REG", CVM_CAST64(CN23XX_WIN_WR_MASK_REG),
 		CVM_CAST64(octeon_read_csr64(oct, CN23XX_WIN_WR_MASK_REG)));
@@ -53,7 +34,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 		"CN23XX_RST_SOFT_RST", CN23XX_RST_SOFT_RST,
 		lio_pci_readq(oct, CN23XX_RST_SOFT_RST));
 
-	/*In cn23xx_set_dpi_regs*/
+	 
 	dev_dbg(&oct->pci_dev->dev, "%s[%llx] : 0x%016llx\n",
 		"CN23XX_DPI_DMA_CONTROL", CN23XX_DPI_DMA_CONTROL,
 		lio_pci_readq(oct, CN23XX_DPI_DMA_CONTROL));
@@ -72,7 +53,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 	dev_dbg(&oct->pci_dev->dev, "%s[%llx] : 0x%016llx\n", "CN23XX_DPI_CTL",
 		CN23XX_DPI_CTL, lio_pci_readq(oct, CN23XX_DPI_CTL));
 
-	/*In cn23xx_setup_pcie_mps and cn23xx_setup_pcie_mrrs */
+	 
 	pci_read_config_dword(oct->pci_dev, CN23XX_CONFIG_PCIE_DEVCTL, &regval);
 	dev_dbg(&oct->pci_dev->dev, "%s[%llx] : 0x%016llx\n",
 		"CN23XX_CONFIG_PCIE_DEVCTL",
@@ -83,7 +64,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 		CN23XX_DPI_SLI_PRTX_CFG(oct->pcie_port),
 		lio_pci_readq(oct, CN23XX_DPI_SLI_PRTX_CFG(oct->pcie_port)));
 
-	/*In cn23xx_specific_regs_setup */
+	 
 	dev_dbg(&oct->pci_dev->dev, "%s(%d)[%llx] : 0x%016llx\n",
 		"CN23XX_SLI_S2M_PORTX_CTL", oct->pcie_port,
 		CVM_CAST64(CN23XX_SLI_S2M_PORTX_CTL(oct->pcie_port)),
@@ -94,7 +75,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 		"CN23XX_SLI_RING_RST", CVM_CAST64(CN23XX_SLI_PKT_IOQ_RING_RST),
 		(u64)octeon_read_csr64(oct, CN23XX_SLI_PKT_IOQ_RING_RST));
 
-	/*In cn23xx_setup_global_mac_regs*/
+	 
 	for (i = 0; i < CN23XX_MAX_MACS; i++) {
 		dev_dbg(&oct->pci_dev->dev, "%s(%d)[%llx] : 0x%016llx\n",
 			"CN23XX_SLI_PKT_MAC_RINFO64", i,
@@ -104,7 +85,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 					(i, oct->pf_num))));
 	}
 
-	/*In cn23xx_setup_global_input_regs*/
+	 
 	for (i = 0; i < CN23XX_MAX_INPUT_QUEUES; i++) {
 		dev_dbg(&oct->pci_dev->dev, "%s(%d)[%llx] : 0x%016llx\n",
 			"CN23XX_SLI_IQ_PKT_CONTROL64", i,
@@ -113,7 +94,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 				(oct, CN23XX_SLI_IQ_PKT_CONTROL64(i))));
 	}
 
-	/*In cn23xx_setup_global_output_regs*/
+	 
 	dev_dbg(&oct->pci_dev->dev, "%s[%llx] : 0x%016llx\n",
 		"CN23XX_SLI_OQ_WMARK", CVM_CAST64(CN23XX_SLI_OQ_WMARK),
 		CVM_CAST64(octeon_read_csr64(oct, CN23XX_SLI_OQ_WMARK)));
@@ -131,7 +112,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 				oct, CN23XX_SLI_OQ_PKT_INT_LEVELS(i))));
 	}
 
-	/*In cn23xx_enable_interrupt and cn23xx_disable_interrupt*/
+	 
 	dev_dbg(&oct->pci_dev->dev, "%s[%llx] : 0x%016llx\n",
 		"cn23xx->intr_enb_reg64",
 		CVM_CAST64((long)(cn23xx->intr_enb_reg64)),
@@ -142,7 +123,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 		CVM_CAST64((long)(cn23xx->intr_sum_reg64)),
 		CVM_CAST64(readq(cn23xx->intr_sum_reg64)));
 
-	/*In cn23xx_setup_iq_regs*/
+	 
 	for (i = 0; i < CN23XX_MAX_INPUT_QUEUES; i++) {
 		dev_dbg(&oct->pci_dev->dev, "%s(%d)[%llx] : 0x%016llx\n",
 			"CN23XX_SLI_IQ_BASE_ADDR64", i,
@@ -166,7 +147,7 @@ void cn23xx_dump_pf_initialized_regs(struct octeon_device *oct)
 				oct, CN23XX_SLI_IQ_INSTR_COUNT64(i))));
 	}
 
-	/*In cn23xx_setup_oq_regs*/
+	 
 	for (i = 0; i < CN23XX_MAX_OUTPUT_QUEUES; i++) {
 		dev_dbg(&oct->pci_dev->dev, "%s(%d)[%llx] : 0x%016llx\n",
 			"CN23XX_SLI_OQ_BASE_ADDR64", i,
@@ -214,11 +195,11 @@ static int cn23xx_pf_soft_reset(struct octeon_device *oct)
 
 	octeon_write_csr64(oct, CN23XX_SLI_SCRATCH1, 0x1234ULL);
 
-	/* Initiate chip-wide soft reset */
+	 
 	lio_pci_readq(oct, CN23XX_RST_SOFT_RST);
 	lio_pci_writeq(oct, 1, CN23XX_RST_SOFT_RST);
 
-	/* Wait for 100ms as Octeon resets. */
+	 
 	mdelay(100);
 
 	if (octeon_read_csr64(oct, CN23XX_SLI_SCRATCH1)) {
@@ -230,7 +211,7 @@ static int cn23xx_pf_soft_reset(struct octeon_device *oct)
 	dev_dbg(&oct->pci_dev->dev, "OCTEON[%d]: Reset completed\n",
 		oct->octeon_id);
 
-	/* restore the  reset value*/
+	 
 	octeon_write_csr64(oct, CN23XX_WIN_WR_MASK_REG, 0xFF);
 
 	return 0;
@@ -259,7 +240,7 @@ static void cn23xx_enable_error_reporting(struct octeon_device *oct)
 			    corrtable_err_status);
 	}
 
-	regval |= 0xf; /* Enable Link error reporting */
+	regval |= 0xf;  
 
 	dev_dbg(&oct->pci_dev->dev, "OCTEON[%d]: Enabling PCI-E error reporting..\n",
 		oct->octeon_id);
@@ -268,30 +249,26 @@ static void cn23xx_enable_error_reporting(struct octeon_device *oct)
 
 static u32 cn23xx_coprocessor_clock(struct octeon_device *oct)
 {
-	/* Bits 29:24 of RST_BOOT[PNR_MUL] holds the ref.clock MULTIPLIER
-	 * for SLI.
-	 */
+	 
 
-	/* TBD: get the info in Hand-shake */
+	 
 	return (((lio_pci_readq(oct, CN23XX_RST_BOOT) >> 24) & 0x3f) * 50);
 }
 
 u32 cn23xx_pf_get_oq_ticks(struct octeon_device *oct, u32 time_intr_in_us)
 {
-	/* This gives the SLI clock per microsec */
+	 
 	u32 oqticks_per_us = cn23xx_coprocessor_clock(oct);
 
 	oct->pfvf_hsword.coproc_tics_per_us = oqticks_per_us;
 
-	/* This gives the clock cycles per millisecond */
+	 
 	oqticks_per_us *= 1000;
 
-	/* This gives the oq ticks (1024 core clock cycles) per millisecond */
+	 
 	oqticks_per_us /= 1024;
 
-	/* time_intr is in microseconds. The next 2 steps gives the oq ticks
-	 *  corressponding to time_intr.
-	 */
+	 
 	oqticks_per_us *= time_intr_in_us;
 	oqticks_per_us /= 1000;
 
@@ -305,35 +282,35 @@ static void cn23xx_setup_global_mac_regs(struct octeon_device *oct)
 	u64 reg_val;
 	u64 temp;
 
-	/* programming SRN and TRS for each MAC(0..3)  */
+	 
 
 	dev_dbg(&oct->pci_dev->dev, "%s:Using pcie port %d\n",
 		__func__, mac_no);
-	/* By default, mapping all 64 IOQs to  a single MACs */
+	 
 
 	reg_val =
 	    octeon_read_csr64(oct, CN23XX_SLI_PKT_MAC_RINFO64(mac_no, pf_num));
 
 	if (oct->rev_id == OCTEON_CN23XX_REV_1_1) {
-		/* setting SRN <6:0>  */
+		 
 		reg_val = pf_num * CN23XX_MAX_RINGS_PER_PF_PASS_1_1;
 	} else {
-		/* setting SRN <6:0>  */
+		 
 		reg_val = pf_num * CN23XX_MAX_RINGS_PER_PF;
 	}
 
-	/* setting TRS <23:16> */
+	 
 	reg_val = reg_val |
 		  (oct->sriov_info.trs << CN23XX_PKT_MAC_CTL_RINFO_TRS_BIT_POS);
-	/* setting RPVF <39:32> */
+	 
 	temp = oct->sriov_info.rings_per_vf & 0xff;
 	reg_val |= (temp << CN23XX_PKT_MAC_CTL_RINFO_RPVF_BIT_POS);
 
-	/* setting NVFS <55:48> */
+	 
 	temp = oct->sriov_info.max_vfs & 0xff;
 	reg_val |= (temp << CN23XX_PKT_MAC_CTL_RINFO_NVFS_BIT_POS);
 
-	/* write these settings to MAC register */
+	 
 	octeon_write_csr64(oct, CN23XX_SLI_PKT_MAC_RINFO64(mac_no, pf_num),
 			   reg_val);
 
@@ -352,18 +329,18 @@ static int cn23xx_reset_io_queues(struct octeon_device *oct)
 	srn = oct->sriov_info.pf_srn;
 	ern = srn + oct->sriov_info.num_pf_rings;
 
-	/*As per HRM reg description, s/w cant write 0 to ENB. */
-	/*to make the queue off, need to set the RST bit. */
+	 
+	 
 
-	/* Reset the Enable bit for all the 64 IQs.  */
+	 
 	for (q_no = srn; q_no < ern; q_no++) {
-		/* set RST bit to 1. This bit applies to both IQ and OQ */
+		 
 		d64 = octeon_read_csr64(oct, CN23XX_SLI_IQ_PKT_CONTROL64(q_no));
 		d64 = d64 | CN23XX_PKT_INPUT_CTL_RST;
 		octeon_write_csr64(oct, CN23XX_SLI_IQ_PKT_CONTROL64(q_no), d64);
 	}
 
-	/*wait until the RST bit is clear or the RST and quite bits are set*/
+	 
 	for (q_no = srn; q_no < ern; q_no++) {
 		u64 reg_val = octeon_read_csr64(oct,
 					CN23XX_SLI_IQ_PKT_CONTROL64(q_no));
@@ -414,18 +391,14 @@ static int cn23xx_pf_setup_global_input_regs(struct octeon_device *oct)
 	if (cn23xx_reset_io_queues(oct))
 		return -1;
 
-	/** Set the MAC_NUM and PVF_NUM in IQ_PKT_CONTROL reg
-	 * for all queues.Only PF can set these bits.
-	 * bits 29:30 indicate the MAC num.
-	 * bits 32:47 indicate the PVF num.
-	 */
+	 
 	for (q_no = 0; q_no < ern; q_no++) {
 		reg_val = (u64)oct->pcie_port << CN23XX_PKT_INPUT_CTL_MAC_NUM_POS;
 
-		/* for VF assigned queues. */
+		 
 		if (q_no < oct->sriov_info.pf_srn) {
 			vf_num = q_no / oct->sriov_info.rings_per_vf;
-			vf_num += 1; /* VF1, VF2,........ */
+			vf_num += 1;  
 		} else {
 			vf_num = 0;
 		}
@@ -437,9 +410,7 @@ static int cn23xx_pf_setup_global_input_regs(struct octeon_device *oct)
 				   reg_val);
 	}
 
-	/* Select ES, RO, NS, RDSIZE,DPTR Fomat#0 for
-	 * pf queues
-	 */
+	 
 	for (q_no = srn; q_no < ern; q_no++) {
 		void __iomem *inst_cnt_reg;
 
@@ -458,8 +429,8 @@ static int cn23xx_pf_setup_global_input_regs(struct octeon_device *oct)
 		octeon_write_csr64(oct, CN23XX_SLI_IQ_PKT_CONTROL64(q_no),
 				   reg_val);
 
-		/* Set WMARK level for triggering PI_INT */
-		/* intr_threshold = CN23XX_DEF_IQ_INTR_THRESHOLD & */
+		 
+		 
 		intr_threshold = CFG_GET_IQ_INTR_PKT(cn23xx->conf) &
 				 CN23XX_PKT_IN_DONE_WMARK_MASK;
 
@@ -486,26 +457,23 @@ static void cn23xx_pf_setup_global_output_regs(struct octeon_device *oct)
 	if (CFG_GET_IS_SLI_BP_ON(cn23xx->conf)) {
 		octeon_write_csr64(oct, CN23XX_SLI_OQ_WMARK, 32);
 	} else {
-		/** Set Output queue watermark to 0 to disable backpressure */
+		 
 		octeon_write_csr64(oct, CN23XX_SLI_OQ_WMARK, 0);
 	}
 
 	for (q_no = srn; q_no < ern; q_no++) {
 		reg_val = octeon_read_csr(oct, CN23XX_SLI_OQ_PKT_CONTROL(q_no));
 
-		/* clear IPTR */
+		 
 		reg_val &= ~CN23XX_PKT_OUTPUT_CTL_IPTR;
 
-		/* set DPTR */
+		 
 		reg_val |= CN23XX_PKT_OUTPUT_CTL_DPTR;
 
-		/* reset BMODE */
+		 
 		reg_val &= ~(CN23XX_PKT_OUTPUT_CTL_BMODE);
 
-		/* No Relaxed Ordering, No Snoop, 64-bit Byte swap
-		 * for Output Queue ScatterList
-		 * reset ROR_P, NSR_P
-		 */
+		 
 		reg_val &= ~(CN23XX_PKT_OUTPUT_CTL_ROR_P);
 		reg_val &= ~(CN23XX_PKT_OUTPUT_CTL_NSR_P);
 
@@ -514,23 +482,16 @@ static void cn23xx_pf_setup_global_output_regs(struct octeon_device *oct)
 #else
 		reg_val |= (CN23XX_PKT_OUTPUT_CTL_ES_P);
 #endif
-		/* No Relaxed Ordering, No Snoop, 64-bit Byte swap
-		 * for Output Queue Data
-		 * reset ROR, NSR
-		 */
+		 
 		reg_val &= ~(CN23XX_PKT_OUTPUT_CTL_ROR);
 		reg_val &= ~(CN23XX_PKT_OUTPUT_CTL_NSR);
-		/* set the ES bit */
+		 
 		reg_val |= (CN23XX_PKT_OUTPUT_CTL_ES);
 
-		/* write all the selected settings */
+		 
 		octeon_write_csr(oct, CN23XX_SLI_OQ_PKT_CONTROL(q_no), reg_val);
 
-		/* Enabling these interrupt in oct->fn_list.enable_interrupt()
-		 * routine which called after IOQ init.
-		 * Set up interrupt packet and time thresholds
-		 * for all the OQs
-		 */
+		 
 		time_threshold = cn23xx_pf_get_oq_ticks(
 		    oct, (u32)CFG_GET_OQ_INTR_TIME(cn23xx->conf));
 
@@ -539,20 +500,18 @@ static void cn23xx_pf_setup_global_output_regs(struct octeon_device *oct)
 				    (time_threshold << 32)));
 	}
 
-	/** Setting the water mark level for pko back pressure **/
+	 
 	writeq(0x40, (u8 *)oct->mmio[0].hw_addr + CN23XX_SLI_OQ_WMARK);
 
-	/** Disabling setting OQs in reset when ring has no dorebells
-	 * enabling this will cause of head of line blocking
-	 */
-	/* Do it only for pass1.1. and pass1.2 */
+	 
+	 
 	if ((oct->rev_id == OCTEON_CN23XX_REV_1_0) ||
 	    (oct->rev_id == OCTEON_CN23XX_REV_1_1))
 		writeq(readq((u8 *)oct->mmio[0].hw_addr +
 				     CN23XX_SLI_GBL_CONTROL) | 0x2,
 		       (u8 *)oct->mmio[0].hw_addr + CN23XX_SLI_GBL_CONTROL);
 
-	/** Enable channel-level backpressure */
+	 
 	if (oct->pf_num)
 		writeq(0xffffffffffffffffULL,
 		       (u8 *)oct->mmio[0].hw_addr + CN23XX_SLI_OUT_BP_EN2_W1S);
@@ -565,7 +524,7 @@ static int cn23xx_setup_pf_device_regs(struct octeon_device *oct)
 {
 	cn23xx_enable_error_reporting(oct);
 
-	/* program the MAC(0..3)_RINFO before setting up input/output regs */
+	 
 	cn23xx_setup_global_mac_regs(oct);
 
 	if (cn23xx_pf_setup_global_input_regs(oct))
@@ -573,13 +532,11 @@ static int cn23xx_setup_pf_device_regs(struct octeon_device *oct)
 
 	cn23xx_pf_setup_global_output_regs(oct);
 
-	/* Default error timeout value should be 0x200000 to avoid host hang
-	 * when reads invalid register
-	 */
+	 
 	octeon_write_csr64(oct, CN23XX_SLI_WINDOW_CTL,
 			   CN23XX_SLI_WINDOW_CTL_DEFAULT);
 
-	/* set SLI_PKT_IN_JABBER to handle large VXLAN packets */
+	 
 	octeon_write_csr64(oct, CN23XX_SLI_PKT_IN_JABBER, CN23XX_INPUT_JABBER);
 	return 0;
 }
@@ -591,14 +548,12 @@ static void cn23xx_setup_iq_regs(struct octeon_device *oct, u32 iq_no)
 
 	iq_no += oct->sriov_info.pf_srn;
 
-	/* Write the start of the input queue's ring and its size  */
+	 
 	octeon_write_csr64(oct, CN23XX_SLI_IQ_BASE_ADDR64(iq_no),
 			   iq->base_addr_dma);
 	octeon_write_csr(oct, CN23XX_SLI_IQ_SIZE(iq_no), iq->max_count);
 
-	/* Remember the doorbell & instruction count register addr
-	 * for this queue
-	 */
+	 
 	iq->doorbell_reg =
 	    (u8 *)oct->mmio[0].hw_addr + CN23XX_SLI_IQ_DOORBELL(iq_no);
 	iq->inst_cnt_reg =
@@ -606,19 +561,15 @@ static void cn23xx_setup_iq_regs(struct octeon_device *oct, u32 iq_no)
 	dev_dbg(&oct->pci_dev->dev, "InstQ[%d]:dbell reg @ 0x%p instcnt_reg @ 0x%p\n",
 		iq_no, iq->doorbell_reg, iq->inst_cnt_reg);
 
-	/* Store the current instruction counter (used in flush_iq
-	 * calculation)
-	 */
+	 
 	pkt_in_done = readq(iq->inst_cnt_reg);
 
 	if (oct->msix_on) {
-		/* Set CINT_ENB to enable IQ interrupt   */
+		 
 		writeq((pkt_in_done | CN23XX_INTR_CINT_ENB),
 		       iq->inst_cnt_reg);
 	} else {
-		/* Clear the count by writing back what we read, but don't
-		 * enable interrupts
-		 */
+		 
 		writeq(pkt_in_done, iq->inst_cnt_reg);
 	}
 
@@ -642,23 +593,21 @@ static void cn23xx_setup_oq_regs(struct octeon_device *oct, u32 oq_no)
 	octeon_write_csr(oct, CN23XX_SLI_OQ_BUFF_INFO_SIZE(oq_no),
 			 droq->buffer_size);
 
-	/* Get the mapped address of the pkt_sent and pkts_credit regs */
+	 
 	droq->pkts_sent_reg =
 	    (u8 *)oct->mmio[0].hw_addr + CN23XX_SLI_OQ_PKTS_SENT(oq_no);
 	droq->pkts_credit_reg =
 	    (u8 *)oct->mmio[0].hw_addr + CN23XX_SLI_OQ_PKTS_CREDIT(oq_no);
 
 	if (!oct->msix_on) {
-		/* Enable this output queue to generate Packet Timer Interrupt
-		 */
+		 
 		reg_val =
 		    octeon_read_csr(oct, CN23XX_SLI_OQ_PKT_CONTROL(oq_no));
 		reg_val |= CN23XX_PKT_OUTPUT_CTL_TENB;
 		octeon_write_csr(oct, CN23XX_SLI_OQ_PKT_CONTROL(oq_no),
 				 reg_val);
 
-		/* Enable this output queue to generate Packet Count Interrupt
-		 */
+		 
 		reg_val =
 		    octeon_read_csr(oct, CN23XX_SLI_OQ_PKT_CONTROL(oq_no));
 		reg_val |= CN23XX_PKT_OUTPUT_CTL_CENB;
@@ -684,7 +633,7 @@ static void cn23xx_pf_mbox_thread(struct work_struct *work)
 	u32 q_no, i;
 
 	if (oct->rev_id < OCTEON_CN23XX_REV_1_1) {
-		/*read and clear by writing 1*/
+		 
 		mbox_int_val = readq(mbox->mbox_int_reg);
 		writeq(mbox_int_val, mbox->mbox_int_reg);
 
@@ -731,19 +680,19 @@ static int cn23xx_setup_pf_mbox(struct octeon_device *oct)
 
 		mbox->state = OCTEON_MBOX_STATE_IDLE;
 
-		/* PF mbox interrupt reg */
+		 
 		mbox->mbox_int_reg = (u8 *)oct->mmio[0].hw_addr +
 				     CN23XX_SLI_MAC_PF_MBOX_INT(mac_no, pf_num);
 
-		/* PF writes into SIG0 reg */
+		 
 		mbox->mbox_write_reg = (u8 *)oct->mmio[0].hw_addr +
 				       CN23XX_SLI_PKT_PF_VF_MBOX_SIG(q_no, 0);
 
-		/* PF reads from SIG1 reg */
+		 
 		mbox->mbox_read_reg = (u8 *)oct->mmio[0].hw_addr +
 				      CN23XX_SLI_PKT_PF_VF_MBOX_SIG(q_no, 1);
 
-		/*Mail Box Thread creation*/
+		 
 		INIT_DELAYED_WORK(&mbox->mbox_poll_wk.work,
 				  cn23xx_pf_mbox_thread);
 		mbox->mbox_poll_wk.ctxptr = (void *)mbox;
@@ -795,7 +744,7 @@ static int cn23xx_enable_io_queues(struct octeon_device *oct)
 	ern = srn + oct->num_iqs;
 
 	for (q_no = srn; q_no < ern; q_no++) {
-		/* set the corresponding IQ IS_64B bit */
+		 
 		if (oct->io_qmask.iq64B & BIT_ULL(q_no - srn)) {
 			reg_val = octeon_read_csr64(
 			    oct, CN23XX_SLI_IQ_PKT_CONTROL64(q_no));
@@ -804,11 +753,9 @@ static int cn23xx_enable_io_queues(struct octeon_device *oct)
 			    oct, CN23XX_SLI_IQ_PKT_CONTROL64(q_no), reg_val);
 		}
 
-		/* set the corresponding IQ ENB bit */
+		 
 		if (oct->io_qmask.iq & BIT_ULL(q_no - srn)) {
-			/* IOQs are in reset by default in PEM2 mode,
-			 * clearing reset bit
-			 */
+			 
 			reg_val = octeon_read_csr64(
 			    oct, CN23XX_SLI_IQ_PKT_CONTROL64(q_no));
 
@@ -850,7 +797,7 @@ static int cn23xx_enable_io_queues(struct octeon_device *oct)
 	}
 	for (q_no = srn; q_no < ern; q_no++) {
 		u32 reg_val;
-		/* set the corresponding OQ ENB bit */
+		 
 		if (oct->io_qmask.oq & BIT_ULL(q_no - srn)) {
 			reg_val = octeon_read_csr(
 			    oct, CN23XX_SLI_OQ_PKT_CONTROL(q_no));
@@ -872,11 +819,11 @@ static void cn23xx_disable_io_queues(struct octeon_device *oct)
 	srn = oct->sriov_info.pf_srn;
 	ern = srn + oct->num_iqs;
 
-	/*** Disable Input Queues. ***/
+	 
 	for (q_no = srn; q_no < ern; q_no++) {
 		loop = HZ;
 
-		/* start the Reset for a particular ring */
+		 
 		WRITE_ONCE(d64, octeon_read_csr64(
 			   oct, CN23XX_SLI_IQ_PKT_CONTROL64(q_no)));
 		WRITE_ONCE(d64, READ_ONCE(d64) &
@@ -885,9 +832,7 @@ static void cn23xx_disable_io_queues(struct octeon_device *oct)
 		octeon_write_csr64(oct, CN23XX_SLI_IQ_PKT_CONTROL64(q_no),
 				   READ_ONCE(d64));
 
-		/* Wait until hardware indicates that the particular IQ
-		 * is out of reset.
-		 */
+		 
 		WRITE_ONCE(d64, octeon_read_csr64(
 					oct, CN23XX_SLI_PKT_IOQ_RING_RST));
 		while (!(READ_ONCE(d64) & BIT_ULL(q_no)) && loop--) {
@@ -896,7 +841,7 @@ static void cn23xx_disable_io_queues(struct octeon_device *oct)
 			schedule_timeout_uninterruptible(1);
 		}
 
-		/* Reset the doorbell register for this Input Queue. */
+		 
 		octeon_write_csr(oct, CN23XX_SLI_IQ_DOORBELL(q_no), 0xFFFFFFFF);
 		while (octeon_read_csr64(oct, CN23XX_SLI_IQ_DOORBELL(q_no)) &&
 		       loop--) {
@@ -904,14 +849,11 @@ static void cn23xx_disable_io_queues(struct octeon_device *oct)
 		}
 	}
 
-	/*** Disable Output Queues. ***/
+	 
 	for (q_no = srn; q_no < ern; q_no++) {
 		loop = HZ;
 
-		/* Wait until hardware indicates that the particular IQ
-		 * is out of reset.It given that SLI_PKT_RING_RST is
-		 * common for both IQs and OQs
-		 */
+		 
 		WRITE_ONCE(d64, octeon_read_csr64(
 					oct, CN23XX_SLI_PKT_IOQ_RING_RST));
 		while (!(READ_ONCE(d64) & BIT_ULL(q_no)) && loop--) {
@@ -920,7 +862,7 @@ static void cn23xx_disable_io_queues(struct octeon_device *oct)
 			schedule_timeout_uninterruptible(1);
 		}
 
-		/* Reset the doorbell register for this Output Queue. */
+		 
 		octeon_write_csr(oct, CN23XX_SLI_OQ_PKTS_CREDIT(q_no),
 				 0xFFFFFFFF);
 		while (octeon_read_csr64(oct,
@@ -929,7 +871,7 @@ static void cn23xx_disable_io_queues(struct octeon_device *oct)
 			schedule_timeout_uninterruptible(1);
 		}
 
-		/* clear the SLI_PKT(0..63)_CNTS[CNT] reg value */
+		 
 		WRITE_ONCE(d32, octeon_read_csr(
 					oct, CN23XX_SLI_OQ_PKTS_SENT(q_no)));
 		octeon_write_csr(oct, CN23XX_SLI_OQ_PKTS_SENT(q_no),
@@ -955,14 +897,11 @@ static u64 cn23xx_pf_msix_interrupt_handler(void *dev)
 
 	pkts_sent = readq(droq->pkts_sent_reg);
 
-	/* If our device has interrupted, then proceed. Also check
-	 * for all f's if interrupt was triggered on an error
-	 * and the PCI read fails.
-	 */
+	 
 	if (!pkts_sent || (pkts_sent == 0xFFFFFFFFFFFFFFFFULL))
 		return ret;
 
-	/* Write count reg in sli_pkt_cnts to clear these int.*/
+	 
 	if ((pkts_sent & CN23XX_INTR_PO_INT) ||
 	    (pkts_sent & CN23XX_INTR_PI_INT)) {
 		if (pkts_sent & CN23XX_INTR_PO_INT)
@@ -970,12 +909,10 @@ static u64 cn23xx_pf_msix_interrupt_handler(void *dev)
 	}
 
 	if (pkts_sent & CN23XX_INTR_PI_INT)
-		/* We will clear the count when we update the read_index. */
+		 
 		ret |= MSIX_PI_INT;
 
-	/* Never need to handle msix mbox intr for pf. They arrive on the last
-	 * msix
-	 */
+	 
 	return ret;
 }
 
@@ -1017,7 +954,7 @@ static irqreturn_t cn23xx_interrupt_handler(void *dev)
 		dev_err(&oct->pci_dev->dev, "OCTEON[%d]: Error Intr: 0x%016llx\n",
 			oct->octeon_id, CVM_CAST64(intr64));
 
-	/* When VFs write into MBOX_SIG2 reg,these intr is set in PF */
+	 
 	if (intr64 & CN23XX_INTR_VF_MBOX)
 		cn23xx_handle_pf_mbox_intr(oct);
 
@@ -1031,7 +968,7 @@ static irqreturn_t cn23xx_interrupt_handler(void *dev)
 	if (intr64 & (CN23XX_INTR_DMA1_FORCE))
 		oct->int_status |= OCT_DEV_INTR_DMA1_FORCE;
 
-	/* Clear the current interrupts */
+	 
 	writeq(intr64, cn23xx->intr_sum_reg64);
 
 	return IRQ_HANDLED;
@@ -1055,9 +992,7 @@ static void cn23xx_bar1_idx_setup(struct octeon_device *oct, u64 core_addr,
 		return;
 	}
 
-	/*  The PEM(0..3)_BAR1_INDEX(0..15)[ADDR_IDX]<23:4> stores
-	 *  bits <41:22> of the Core Addr
-	 */
+	 
 	lio_pci_writeq(oct, (((core_addr >> 22) << 4) | PCI_BAR1_MASK),
 		       CN23XX_PEM_BAR1_INDEX_REG(oct->pcie_port, idx));
 
@@ -1077,7 +1012,7 @@ static u32 cn23xx_bar1_idx_read(struct octeon_device *oct, u32 idx)
 	    oct, CN23XX_PEM_BAR1_INDEX_REG(oct->pcie_port, idx));
 }
 
-/* always call with lock held */
+ 
 static u32 cn23xx_update_read_index(struct octeon_instr_queue *iq)
 {
 	u32 new_idx;
@@ -1087,10 +1022,7 @@ static u32 cn23xx_update_read_index(struct octeon_instr_queue *iq)
 	last_done = pkt_in_done - iq->pkt_in_done;
 	iq->pkt_in_done = pkt_in_done;
 
-	/* Modulo of the new index with the IQ size will give us
-	 * the new index.  The iq->reset_instr_cnt is always zero for
-	 * cn23xx, so no extra adjustments are needed.
-	 */
+	 
 	new_idx = (iq->octeon_read_index +
 		   (u32)(last_done & CN23XX_PKT_IN_DONE_CNT_MASK)) %
 		  iq->max_count;
@@ -1103,8 +1035,8 @@ static void cn23xx_enable_pf_interrupt(struct octeon_device *oct, u8 intr_flag)
 	struct octeon_cn23xx_pf *cn23xx = (struct octeon_cn23xx_pf *)oct->chip;
 	u64 intr_val = 0;
 
-	/*  Divide the single write to multiple writes based on the flag. */
-	/* Enable Interrupt */
+	 
+	 
 	if (intr_flag == OCTEON_ALL_INTR) {
 		writeq(cn23xx->intr_mask64, cn23xx->intr_enb_reg64);
 	} else if (intr_flag & OCTEON_OUTPUT_INTR) {
@@ -1126,7 +1058,7 @@ static void cn23xx_disable_pf_interrupt(struct octeon_device *oct, u8 intr_flag)
 	struct octeon_cn23xx_pf *cn23xx = (struct octeon_cn23xx_pf *)oct->chip;
 	u64 intr_val = 0;
 
-	/* Disable Interrupts */
+	 
 	if (intr_flag == OCTEON_ALL_INTR) {
 		writeq(0, cn23xx->intr_enb_reg64);
 	} else if (intr_flag & OCTEON_OUTPUT_INTR) {
@@ -1159,7 +1091,7 @@ static int cn23xx_get_pf_num(struct octeon_device *oct)
 
 	ret = 0;
 
-	/** Read Function Dependency Link reg to get the function number */
+	 
 	if (pci_read_config_dword(oct->pci_dev, CN23XX_PCIE_SRIOV_FDL,
 				  &fdl_bit) == 0) {
 		oct->pf_num = ((fdl_bit >> CN23XX_PCIE_SRIOV_FDL_BIT_POS) &
@@ -1167,18 +1099,14 @@ static int cn23xx_get_pf_num(struct octeon_device *oct)
 	} else {
 		ret = -EINVAL;
 
-		/* Under some virtual environments, extended PCI regs are
-		 * inaccessible, in which case the above read will have failed.
-		 * In this case, read the PF number from the
-		 * SLI_PKT0_INPUT_CONTROL reg (written by f/w)
-		 */
+		 
 		pkt0_in_ctl = octeon_read_csr64(oct,
 						CN23XX_SLI_IQ_PKT_CONTROL64(0));
 		pfnum = (pkt0_in_ctl >> CN23XX_PKT_INPUT_CTL_PF_NUM_POS) &
 			CN23XX_PKT_INPUT_CTL_PF_NUM_MASK;
 		mac = (octeon_read_csr(oct, CN23XX_SLI_MAC_NUMBER)) & 0xff;
 
-		/* validate PF num by reading RINFO; f/w writes RINFO.trs == 1*/
+		 
 		d64 = octeon_read_csr64(oct,
 					CN23XX_SLI_PKT_MAC_RINFO64(mac, pfnum));
 		trs = (int)(d64 >> CN23XX_PKT_MAC_CTL_RINFO_TRS_BIT_POS) & 0xff;
@@ -1286,7 +1214,7 @@ int cn23xx_sriov_config(struct octeon_device *oct)
 
 	total_rings = num_pf_rings + max_vfs;
 
-	/* the first ring of the pf */
+	 
 	pf_srn = total_rings - num_pf_rings;
 
 	oct->sriov_info.trs = total_rings;
@@ -1420,14 +1348,7 @@ int cn23xx_fw_loaded(struct octeon_device *oct)
 {
 	u64 val;
 
-	/* If there's more than one active PF on this NIC, then that
-	 * implies that the NIC firmware is loaded and running.  This check
-	 * prevents a rare false negative that might occur if we only relied
-	 * on checking the SCR2_BIT_FW_LOADED flag.  The false negative would
-	 * happen if the PF driver sees SCR2_BIT_FW_LOADED as cleared even
-	 * though the firmware was already loaded but still booting and has yet
-	 * to set SCR2_BIT_FW_LOADED.
-	 */
+	 
 	if (atomic_read(oct->adapter_refcount) > 1)
 		return 1;
 
@@ -1471,7 +1392,7 @@ cn23xx_get_vf_stats_callback(struct octeon_device *oct,
 int cn23xx_get_vf_stats(struct octeon_device *oct, int vfidx,
 			struct oct_vf_stats *stats)
 {
-	u32 timeout = HZ; // 1sec
+	u32 timeout = HZ; 
 	struct octeon_mbox_cmd mbox_cmd;
 	struct oct_vf_stats_ctx ctx;
 	u32 count = 0, ret;

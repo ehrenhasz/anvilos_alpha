@@ -1,21 +1,11 @@
-/*
- *  File Attributes for DIO Devices
- *
- *  Copyright (C) 2004 Jochen Friedrich
- *
- *  Loosely based on drivers/pci/pci-sysfs.c and drivers/zorro/zorro-sysfs.c
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License.  See the file COPYING in the main directory of this archive
- *  for more details.
- */
+ 
 
 
 #include <linux/kernel.h>
 #include <linux/dio.h>
 #include <linux/stat.h>
 
-/* show configuration fields */
+ 
 
 static ssize_t dio_show_id(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -69,7 +59,7 @@ int dio_create_sysfs_dev_files(struct dio_dev *d)
 	struct device *dev = &d->dev;
 	int error;
 
-	/* current configuration's attributes */
+	 
 	if ((error = device_create_file(dev, &dev_attr_id)) ||
 	    (error = device_create_file(dev, &dev_attr_ipl)) ||
 	    (error = device_create_file(dev, &dev_attr_secid)) ||

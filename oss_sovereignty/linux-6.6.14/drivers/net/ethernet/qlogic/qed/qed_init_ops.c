@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/io.h>
@@ -25,26 +22,26 @@
 static u32 pxp_global_win[] = {
 	0,
 	0,
-	0x1c02, /* win 2: addr=0x1c02000, size=4096 bytes */
-	0x1c80, /* win 3: addr=0x1c80000, size=4096 bytes */
-	0x1d00, /* win 4: addr=0x1d00000, size=4096 bytes */
-	0x1d01, /* win 5: addr=0x1d01000, size=4096 bytes */
-	0x1d02, /* win 6: addr=0x1d02000, size=4096 bytes */
-	0x1d80, /* win 7: addr=0x1d80000, size=4096 bytes */
-	0x1d81, /* win 8: addr=0x1d81000, size=4096 bytes */
-	0x1d82, /* win 9: addr=0x1d82000, size=4096 bytes */
-	0x1e00, /* win 10: addr=0x1e00000, size=4096 bytes */
-	0x1e01, /* win 11: addr=0x1e01000, size=4096 bytes */
-	0x1e80, /* win 12: addr=0x1e80000, size=4096 bytes */
-	0x1f00, /* win 13: addr=0x1f00000, size=4096 bytes */
-	0x1c08, /* win 14: addr=0x1c08000, size=4096 bytes */
+	0x1c02,  
+	0x1c80,  
+	0x1d00,  
+	0x1d01,  
+	0x1d02,  
+	0x1d80,  
+	0x1d81,  
+	0x1d82,  
+	0x1e00,  
+	0x1e01,  
+	0x1e80,  
+	0x1f00,  
+	0x1c08,  
 	0,
 	0,
 	0,
 	0,
 };
 
-/* IRO Array */
+ 
 static const u32 iro_arr[] = {
 	0x00000000, 0x00000000, 0x00080000,
 	0x00004478, 0x00000008, 0x00080000,
@@ -165,23 +162,19 @@ static int qed_init_rt(struct qed_hwfn	*p_hwfn,
 	u16 i, j, segment;
 	int rc = 0;
 
-	/* Since not all RT entries are initialized, go over the RT and
-	 * for each segment of initialized values use DMA.
-	 */
+	 
 	for (i = 0; i < size; i++) {
 		if (!p_valid[i])
 			continue;
 
-		/* In case there isn't any wide-bus configuration here,
-		 * simply write the data instead of using dmae.
-		 */
+		 
 		if (!b_must_dmae) {
 			qed_wr(p_hwfn, p_ptt, addr + (i << 2), p_init_val[i]);
 			p_valid[i] = false;
 			continue;
 		}
 
-		/* Start of a new segment */
+		 
 		for (segment = 1; i + segment < size; segment++)
 			if (!p_valid[i + segment])
 				break;
@@ -192,11 +185,11 @@ static int qed_init_rt(struct qed_hwfn	*p_hwfn,
 		if (rc)
 			return rc;
 
-		/* invalidate after writing */
+		 
 		for (j = i; j < (u32)(i + segment); j++)
 			p_valid[j] = false;
 
-		/* Jump over the entire segment, including invalid entry */
+		 
 		i += segment;
 	}
 
@@ -245,7 +238,7 @@ static int qed_init_array_dmae(struct qed_hwfn *p_hwfn,
 {
 	int rc = 0;
 
-	/* Perform DMAE only for lengthy enough sections or for wide-bus */
+	 
 	if (!b_can_dmae || (!b_must_dmae && (size < 16))) {
 		const u32 *data = buf + dmae_data_offset;
 		u32 i;
@@ -270,12 +263,7 @@ static int qed_init_fill_dmae(struct qed_hwfn *p_hwfn,
 
 	memset(zero_buffer, 0, sizeof(u32) * DMAE_MAX_RW_SIZE);
 
-	/* invoke the DMAE virtual/physical buffer API with
-	 * 1. DMAE init channel
-	 * 2. addr,
-	 * 3. p_hwfb->temp_data,
-	 * 4. fill_count
-	 */
+	 
 	SET_FIELD(params.flags, QED_DMAE_PARAMS_RW_REPL_SRC, 0x1);
 	return qed_dmae_host2grc(p_hwfn, p_ptt,
 				 (uintptr_t)(&zero_buffer[0]),
@@ -363,7 +351,7 @@ static int qed_init_cmd_array(struct qed_hwfn *p_hwfn,
 	return rc;
 }
 
-/* init_ops write command */
+ 
 static int qed_init_cmd_wr(struct qed_hwfn *p_hwfn,
 			   struct qed_ptt *p_ptt,
 			   struct init_write_op *p_cmd, bool b_can_dmae)
@@ -374,7 +362,7 @@ static int qed_init_cmd_wr(struct qed_hwfn *p_hwfn,
 	union init_write_args *arg = &p_cmd->args;
 	int rc = 0;
 
-	/* Sanitize */
+	 
 	if (b_must_dmae && !b_can_dmae) {
 		DP_NOTICE(p_hwfn,
 			  "Need to write to %08x for Wide-bus but DMAE isn't allowed\n",
@@ -424,7 +412,7 @@ static inline bool comp_or(u32 val, u32 expected_val)
 	return (val | expected_val) > 0;
 }
 
-/* init_ops read/poll commands */
+ 
 static void qed_init_cmd_rd(struct qed_hwfn *p_hwfn,
 			    struct qed_ptt *p_ptt, struct init_read_op *cmd)
 {
@@ -474,7 +462,7 @@ static void qed_init_cmd_rd(struct qed_hwfn *p_hwfn,
 	}
 }
 
-/* init_ops callbacks entry point */
+ 
 static int qed_init_cmd_cb(struct qed_hwfn *p_hwfn,
 			   struct qed_ptt *p_ptt,
 			   struct init_callback_op *p_cmd)
@@ -583,9 +571,7 @@ int qed_init_run(struct qed_hwfn *p_hwfn,
 						      phase, phase_id);
 			break;
 		case INIT_OP_DELAY:
-			/* qed_init_run is always invoked from
-			 * sleep-able context
-			 */
+			 
 			udelay(le32_to_cpu(cmd->delay.delay));
 			break;
 
@@ -611,7 +597,7 @@ void qed_gtt_init(struct qed_hwfn *p_hwfn)
 	u32 gtt_base;
 	u32 i;
 
-	/* Set the global windows */
+	 
 	gtt_base = PXP_PF_WINDOW_ADMIN_START + PXP_PF_WINDOW_ADMIN_GLOBAL_START;
 
 	for (i = 0; i < ARRAY_SIZE(pxp_global_win); i++)
@@ -631,7 +617,7 @@ int qed_init_fw_data(struct qed_dev *cdev, const u8 *data)
 		return -EINVAL;
 	}
 
-	/* First Dword contains metadata and should be skipped */
+	 
 	buf_hdr = (struct bin_buffer_hdr *)data;
 
 	offset = buf_hdr[BIN_BUF_INIT_FW_VER_INFO].offset;

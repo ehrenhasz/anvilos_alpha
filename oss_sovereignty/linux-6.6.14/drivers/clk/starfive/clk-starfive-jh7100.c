@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * StarFive JH7100 Clock Generator Driver
- *
- * Copyright 2021 Ahmad Fatoum, Pengutronix
- * Copyright (C) 2021 Glider bv
- * Copyright (C) 2021 Emil Renner Berthing <kernel@esmil.dk>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -17,7 +11,7 @@
 
 #include "clk-starfive-jh71x0.h"
 
-/* external clocks */
+ 
 #define JH7100_CLK_OSC_SYS		(JH7100_CLK_END + 0)
 #define JH7100_CLK_OSC_AUD		(JH7100_CLK_END + 1)
 #define JH7100_CLK_GMAC_RMII_REF	(JH7100_CLK_END + 2)
@@ -356,7 +350,7 @@ static int __init clk_starfive_jh7100_probe(struct platform_device *pdev)
 
 static const struct of_device_id clk_starfive_jh7100_match[] = {
 	{ .compatible = "starfive,jh7100-clkgen" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static struct platform_driver clk_starfive_jh7100_driver = {

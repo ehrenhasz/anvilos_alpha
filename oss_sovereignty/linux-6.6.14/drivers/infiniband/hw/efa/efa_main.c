@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-2-Clause
-/*
- * Copyright 2018-2022 Amazon.com, Inc. or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -36,7 +34,7 @@ MODULE_DEVICE_TABLE(pci, efa_pci_tbl);
 	(BIT(EFA_ADMIN_FATAL_ERROR) | BIT(EFA_ADMIN_WARNING) | \
 	 BIT(EFA_ADMIN_NOTIFICATION) | BIT(EFA_ADMIN_KEEP_ALIVE))
 
-/* This handler will called for unknown event group or unimplemented handlers */
+ 
 static void unimplemented_aenq_handler(void *data,
 				       struct efa_admin_aenq_entry *aenq_e)
 {
@@ -74,7 +72,7 @@ static void efa_process_comp_eqe(struct efa_dev *dev, struct efa_admin_eqe *eqe)
 	u16 cqn = eqe->u.comp_event.cqn;
 	struct efa_cq *cq;
 
-	/* Safe to load as we're in irq and removal calls synchronize_irq() */
+	 
 	cq = xa_load(&dev->cqs_xa, cqn);
 	if (unlikely(!cq)) {
 		ibdev_err_ratelimited(&dev->ibdev,
@@ -252,7 +250,7 @@ static void efa_set_host_info(struct efa_dev *dev)
 						EFA_ADMIN_HOST_INFO))
 		return;
 
-	/* Failures in host info set shall not disturb probe */
+	 
 	hinf = dma_alloc_coherent(&dev->pdev->dev, bufsz, &hinf_dma,
 				  GFP_KERNEL);
 	if (!hinf)
@@ -414,7 +412,7 @@ static int efa_ib_device_add(struct efa_dev *dev)
 
 	efa_update_hw_hints(dev, &hw_hints);
 
-	/* Try to enable all the available aenq groups */
+	 
 	err = efa_com_set_aenq_config(&dev->edev, EFA_AENQ_ENABLED_GROUPS);
 	if (err)
 		goto err_release_doorbell_bar;
@@ -465,10 +463,7 @@ static int efa_enable_msix(struct efa_dev *dev)
 {
 	int msix_vecs, irq_num;
 
-	/*
-	 * Reserve the max msix vectors we might need, one vector is reserved
-	 * for admin.
-	 */
+	 
 	msix_vecs = min_t(int, pci_msix_vec_count(dev->pdev),
 			  num_online_cpus() + 1);
 	dev_dbg(&dev->pdev->dev, "Trying to enable MSI-X, vectors %d\n",

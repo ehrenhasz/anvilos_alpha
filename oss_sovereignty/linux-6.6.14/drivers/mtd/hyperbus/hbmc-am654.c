@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2019 Texas Instruments Incorporated - https://www.ti.com/
-// Author: Vignesh Raghavendra <vigneshr@ti.com>
+
+
+
+
 
 #include <linux/completion.h>
 #include <linux/dma-direction.h>
@@ -249,7 +249,7 @@ static const struct of_device_id am654_hbmc_dt_ids[] = {
 	{
 		.compatible = "ti,am654-hbmc",
 	},
-	{ /* end of table */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, am654_hbmc_dt_ids);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM nmi
 
@@ -32,7 +32,7 @@ TRACE_EVENT(nmi_handler,
 		__entry->handled)
 );
 
-#endif /* _TRACE_NMI_H */
+#endif  
 
-/* This part ust be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,59 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ROHM BD99954 charger driver
- *
- * Copyright (C) 2020 Rohm Semiconductors
- *	Originally written by:
- *		Mikko Mutanen <mikko.mutanen@fi.rohmeurope.com>
- *		Markus Laine <markus.laine@fi.rohmeurope.com>
- *	Bugs added by:
- *		Matti Vaittinen <matti.vaittinen@fi.rohmeurope.com>
- */
 
-/*
- *   The battery charging profile of BD99954.
- *
- *   Curve (1) represents charging current.
- *   Curve (2) represents battery voltage.
- *
- *   The BD99954 data sheet divides charging to three phases.
- *   a) Trickle-charge with constant current (8).
- *   b) pre-charge with constant current (6)
- *   c) fast-charge, first with constant current (5) phase. After
- *      the battery voltage has reached target level (4) we have constant
- *      voltage phase until charging current has dropped to termination
- *      level (7)
- *
- *    V ^                                                        ^ I
- *      .                                                        .
- *      .                                                        .
- *(4)` `.` ` ` ` ` ` ` ` ` ` ` ` ` ` ----------------------------.
- *      .                           :/                           .
- *      .                     o----+/:/ ` ` ` ` ` ` ` ` ` ` ` ` `.` ` (5)
- *      .                     +   ::  +                          .
- *      .                     +  /-   --                         .
- *      .                     +`/-     +                         .
- *      .                     o/-      -:                        .
- *      .                    .s.        +`                       .
- *      .                  .--+         `/                       .
- *      .               ..``  +          .:                      .
- *      .             -`      +           --                     .
- *      .    (2)  ...``       +            :-                    .
- *      .    ...``            +             -:                   .
- *(3)` `.`.""  ` ` ` `+-------- ` ` ` ` ` ` `.:` ` ` ` ` ` ` ` ` .` ` (6)
- *      .             +                       `:.                .
- *      .             +                         -:               .
- *      .             +                           -:.            .
- *      .             +                             .--.         .
- *      .   (1)       +                                `.+` ` ` `.` ` (7)
- *      -..............` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` ` + ` ` ` .` ` (8)
- *      .                                                +       -
- *      -------------------------------------------------+++++++++-->
- *      |   trickle   |  pre  |          fast            |
- *
- * Details of DT properties for different limits can be found from BD99954
- * device tree binding documentation.
- */
+ 
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -71,25 +19,25 @@
 #include "bd99954-charger.h"
 
 struct battery_data {
-	u16 precharge_current;	/* Trickle-charge Current */
-	u16 fc_reg_voltage;	/* Fast Charging Regulation Voltage */
+	u16 precharge_current;	 
+	u16 fc_reg_voltage;	 
 	u16 voltage_min;
 	u16 voltage_max;
 };
 
-/* Initial field values, converted to initial register values */
+ 
 struct bd9995x_init_data {
-	u16 vsysreg_set;	/* VSYS Regulation Setting */
-	u16 ibus_lim_set;	/* VBUS input current limitation */
-	u16 icc_lim_set;	/* VCC/VACP Input Current Limit Setting */
-	u16 itrich_set;		/* Trickle-charge Current Setting */
-	u16 iprech_set;		/* Pre-Charge Current Setting */
-	u16 ichg_set;		/* Fast-Charge constant current */
-	u16 vfastchg_reg_set1;	/* Fast Charging Regulation Voltage */
-	u16 vprechg_th_set;	/* Pre-charge Voltage Threshold Setting */
-	u16 vrechg_set;		/* Re-charge Battery Voltage Setting */
-	u16 vbatovp_set;	/* Battery Over Voltage Threshold Setting */
-	u16 iterm_set;		/* Charging termination current */
+	u16 vsysreg_set;	 
+	u16 ibus_lim_set;	 
+	u16 icc_lim_set;	 
+	u16 itrich_set;		 
+	u16 iprech_set;		 
+	u16 ichg_set;		 
+	u16 vfastchg_reg_set1;	 
+	u16 vprechg_th_set;	 
+	u16 vrechg_set;		 
+	u16 vbatovp_set;	 
+	u16 iterm_set;		 
 };
 
 struct bd9995x_state {
@@ -112,7 +60,7 @@ struct bd9995x_device {
 	struct bd9995x_init_data init_data;
 	struct bd9995x_state state;
 
-	struct mutex lock; /* Protect state data */
+	struct mutex lock;  
 };
 
 static const struct regmap_range bd9995x_readonly_reg_ranges[] = {
@@ -137,7 +85,7 @@ static const struct regmap_range bd9995x_volatile_reg_ranges[] = {
 	regmap_reg_range(VBUS_UCD_STATUS, VBUS_IDD_STATUS),
 	regmap_reg_range(INT0_STATUS, INT7_STATUS),
 	regmap_reg_range(SYSTEM_STATUS, SYSTEM_CTRL_SET),
-	regmap_reg_range(IBATP_VAL, EXTIADP_AVE_VAL), /* Measurement regs */
+	regmap_reg_range(IBATP_VAL, EXTIADP_AVE_VAL),  
 };
 
 static const struct regmap_access_table bd9995x_volatile_regs = {
@@ -187,7 +135,7 @@ static int bd9995x_get_prop_batt_health(struct bd9995x_device *bd)
 	if (ret)
 		return POWER_SUPPLY_HEALTH_UNKNOWN;
 
-	/* TODO: Check these against datasheet page 34 */
+	 
 
 	switch (tmp) {
 	case ROOM:
@@ -224,7 +172,7 @@ static int bd9995x_get_prop_charge_type(struct bd9995x_device *bd)
 	case CHGSTM_DONE:
 	case CHGSTM_SUSPEND:
 		return POWER_SUPPLY_CHARGE_TYPE_NONE;
-	default: /* Rest of the states are error related, no charging */
+	default:  
 		return POWER_SUPPLY_CHARGE_TYPE_NONE;
 	}
 }
@@ -351,18 +299,7 @@ static int bd9995x_power_supply_get_property(struct power_supply *psy,
 		break;
 
 	case POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX:
-		/*
-		 * Currently the DT uses this property to give the
-		 * target current for fast-charging constant current phase.
-		 * I think it is correct in a sense.
-		 *
-		 * Yet, this prop we read and return here is the programmed
-		 * safety limit for combined input currents. This feels
-		 * also correct in a sense.
-		 *
-		 * However, this results a mismatch to DT value and value
-		 * read from sysfs.
-		 */
+		 
 		ret = regmap_field_read(bd->rmap_fields[F_SEL_ILIM_VAL], &tmp);
 		if (ret)
 			return ret;
@@ -380,10 +317,7 @@ static int bd9995x_power_supply_get_property(struct power_supply *psy,
 		if (ret)
 			return ret;
 
-		/*
-		 * The actual range : 2560 to 19200 mV. No matter what the
-		 * register says
-		 */
+		 
 		val->intval = clamp_val(tmp << 4, 2560, 19200);
 		val->intval *= 1000;
 		break;
@@ -392,14 +326,14 @@ static int bd9995x_power_supply_get_property(struct power_supply *psy,
 		ret = regmap_field_read(bd->rmap_fields[F_ITERM_SET], &tmp);
 		if (ret)
 			return ret;
-		/* Start step is 64 mA */
+		 
 		val->intval = tmp << 6;
-		/* Maximum is 1024 mA - no matter what register says */
+		 
 		val->intval = min(val->intval, 1024);
 		val->intval *= 1000;
 		break;
 
-	/* Battery properties which we access through charger */
+	 
 	case POWER_SUPPLY_PROP_PRESENT:
 		val->intval = bd9995x_get_prop_batt_present(bd);
 		break;
@@ -484,21 +418,7 @@ static irqreturn_t bd9995x_irq_handler_thread(int irq, void *private)
 	unsigned long tmp;
 	struct bd9995x_state state;
 
-	/*
-	 * The bd9995x does not seem to generate big amount of interrupts.
-	 * The logic regarding which interrupts can cause relevant
-	 * status changes seem to be pretty complex.
-	 *
-	 * So lets implement really simple and hopefully bullet-proof handler:
-	 * It does not really matter which IRQ we handle, we just go and
-	 * re-read all interesting statuses + give the framework a nudge.
-	 *
-	 * Other option would be building a _complex_ and error prone logic
-	 * trying to decide what could have been changed (resulting this IRQ
-	 * we are now handling). During the normal operation the BD99954 does
-	 * not seem to be generating much of interrupts so benefit from such
-	 * logic would probably be minimal.
-	 */
+	 
 
 	ret = regmap_read(bd->rmap, INT0_STATUS, &status);
 	if (ret) {
@@ -512,16 +432,14 @@ static irqreturn_t bd9995x_irq_handler_thread(int irq, void *private)
 		return IRQ_NONE;
 	}
 
-	/* Handle only IRQs that are not masked */
+	 
 	status &= mask;
 	tmp = status;
 
-	/* Lowest bit does not represent any sub-registers */
+	 
 	tmp >>= 1;
 
-	/*
-	 * Mask and ack IRQs we will handle (+ the idiot bit)
-	 */
+	 
 	ret = regmap_field_write(bd->rmap_fields[F_INT0_SET], 0);
 	if (ret) {
 		dev_err(bd->dev, "Failed to mask F_INT0\n");
@@ -550,7 +468,7 @@ static irqreturn_t bd9995x_irq_handler_thread(int irq, void *private)
 			bd->rmap_fields[F_INT7_SET],
 		};
 
-		/* Clear sub IRQs */
+		 
 		ret = regmap_read(bd->rmap, sub_status_reg[i], &sub_status);
 		if (ret) {
 			dev_err(bd->dev, "Failed to read IRQ sub-status\n");
@@ -563,7 +481,7 @@ static irqreturn_t bd9995x_irq_handler_thread(int irq, void *private)
 			goto err_umask;
 		}
 
-		/* Ack active sub-statuses */
+		 
 		sub_status &= sub_mask;
 
 		ret = regmap_write(bd->rmap, sub_status_reg[i], sub_status);
@@ -575,10 +493,10 @@ static irqreturn_t bd9995x_irq_handler_thread(int irq, void *private)
 
 	ret = regmap_field_write(bd->rmap_fields[F_INT0_SET], mask);
 	if (ret)
-		/* May as well retry once */
+		 
 		goto err_umask;
 
-	/* Read whole chip state */
+	 
 	ret = bd9995x_get_chip_state(bd, &state);
 	if (ret < 0) {
 		dev_err(bd->dev, "Failed to read chip state\n");
@@ -641,54 +559,54 @@ static int bd9995x_hw_init(struct bd9995x_device *bd)
 		enum bd9995x_fields id;
 		u16 value;
 	} init_data[] = {
-		/* Enable the charging trigger after SDP charger attached */
+		 
 		{F_SDP_CHG_TRIG_EN,	1},
-		/* Enable charging trigger after SDP charger attached */
+		 
 		{F_SDP_CHG_TRIG,	1},
-		/* Disable charging trigger by BC1.2 detection */
+		 
 		{F_VBUS_BC_DISEN,	1},
-		/* Disable charging trigger by BC1.2 detection */
+		 
 		{F_VCC_BC_DISEN,	1},
-		/* Disable automatic limitation of the input current */
+		 
 		{F_ILIM_AUTO_DISEN,	1},
-		/* Select current limitation when SDP charger attached*/
+		 
 		{F_SDP_500_SEL,		1},
-		/* Select current limitation when DCP charger attached */
+		 
 		{F_DCP_2500_SEL,	1},
 		{F_VSYSREG_SET,		id->vsysreg_set},
-		/* Activate USB charging and DC/DC converter */
+		 
 		{F_USB_SUS,		0},
-		/* DCDC clock: 1200 kHz*/
+		 
 		{F_DCDC_CLK_SEL,	3},
-		/* Enable charging */
+		 
 		{F_CHG_EN,		1},
-		/* Disable Input current Limit setting voltage measurement */
+		 
 		{F_EXTIADPEN,		0},
-		/* Disable input current limiting */
+		 
 		{F_VSYS_PRIORITY,	1},
 		{F_IBUS_LIM_SET,	id->ibus_lim_set},
 		{F_ICC_LIM_SET,		id->icc_lim_set},
-		/* Charge Termination Current Setting to 0*/
+		 
 		{F_ITERM_SET,		id->iterm_set},
-		/* Trickle-charge Current Setting */
+		 
 		{F_ITRICH_SET,		id->itrich_set},
-		/* Pre-charge Current setting */
+		 
 		{F_IPRECH_SET,		id->iprech_set},
-		/* Fast Charge Current for constant current phase */
+		 
 		{F_ICHG_SET,		id->ichg_set},
-		/* Fast Charge Voltage Regulation Setting */
+		 
 		{F_VFASTCHG_REG_SET1,	id->vfastchg_reg_set1},
-		/* Set Pre-charge Voltage Threshold for trickle charging. */
+		 
 		{F_VPRECHG_TH_SET,	id->vprechg_th_set},
 		{F_VRECHG_SET,		id->vrechg_set},
 		{F_VBATOVP_SET,		id->vbatovp_set},
-		/* Reverse buck boost voltage Setting */
+		 
 		{F_VRBOOST_SET,		0},
-		/* Disable fast-charging watchdog */
+		 
 		{F_WDT_FST,		0},
-		/* Disable pre-charging watchdog */
+		 
 		{F_WDT_PRE,		0},
-		/* Power save off */
+		 
 		{F_POWER_SAVE_MODE,	0},
 		{F_INT1_SET,		INT1_ALL},
 		{F_INT2_SET,		INT2_ALL},
@@ -699,16 +617,12 @@ static int bd9995x_hw_init(struct bd9995x_device *bd)
 		{F_INT7_SET,		INT7_ALL},
 	};
 
-	/*
-	 * Currently we initialize charger to a known state at startup.
-	 * If we want to allow for example the boot code to initialize
-	 * charger we should get rid of this.
-	 */
+	 
 	ret = __bd9995x_chip_reset(bd);
 	if (ret < 0)
 		return ret;
 
-	/* Initialize currents/voltages and other parameters */
+	 
 	for (i = 0; i < ARRAY_SIZE(init_data); i++) {
 		ret = regmap_field_write(bd->rmap_fields[init_data[i].id],
 					 init_data[i].value);
@@ -739,7 +653,7 @@ static enum power_supply_property bd9995x_power_supply_props[] = {
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_CURRENT_MAX,
 	POWER_SUPPLY_PROP_CONSTANT_CHARGE_VOLTAGE,
 	POWER_SUPPLY_PROP_CHARGE_TERM_CURRENT,
-	/* Battery props we access through charger */
+	 
 	POWER_SUPPLY_PROP_PRESENT,
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 	POWER_SUPPLY_PROP_CURRENT_NOW,
@@ -758,50 +672,39 @@ static const struct power_supply_desc bd9995x_power_supply_desc = {
 	.get_property = bd9995x_power_supply_get_property,
 };
 
-/*
- * Limit configurations for vbus-input-current and vcc-vacp-input-current
- * Minimum limit is 0 uA. Max is 511 * 32000 uA = 16352000 uA. This is
- * configured by writing a register so that each increment in register
- * value equals to 32000 uA limit increment.
- *
- * Eg, value 0x0 is limit 0, value 0x1 is limit 32000, ...
- * Describe the setting in linear_range table.
- */
+ 
 static const struct linear_range input_current_limit_ranges[] = {
 	LINEAR_RANGE(0, 0x0, 0x1ff, 32000),
 };
 
-/* Possible trickle, pre-charging and termination current values */
+ 
 static const struct linear_range charging_current_ranges[] = {
 	LINEAR_RANGE(0, 0x0, 0x10, 64000),
 	LINEAR_RANGE(1024000, 0x11, 0x1f, 0),
 };
 
-/*
- * Fast charging voltage regulation, starting re-charging limit
- * and battery over voltage protection have same possible values
- */
+ 
 static const struct linear_range charge_voltage_regulation_ranges[] = {
 	LINEAR_RANGE(2560000, 0, 0xA0, 0),
 	LINEAR_RANGE(2560000, 0xA0, 0x4B0, 16000),
 	LINEAR_RANGE(19200000, 0x4B0, 0x7FF, 0),
 };
 
-/* Possible VSYS voltage regulation values */
+ 
 static const struct linear_range vsys_voltage_regulation_ranges[] = {
 	LINEAR_RANGE(2560000, 0, 0x28, 0),
 	LINEAR_RANGE(2560000, 0x28, 0x12C, 64000),
 	LINEAR_RANGE(19200000, 0x12C, 0x1FF, 0),
 };
 
-/* Possible settings for switching from trickle to pre-charging limits */
+ 
 static const struct linear_range trickle_to_pre_threshold_ranges[] = {
 	LINEAR_RANGE(2048000, 0, 0x20, 0),
 	LINEAR_RANGE(2048000, 0x20, 0x12C, 64000),
 	LINEAR_RANGE(19200000, 0x12C, 0x1FF, 0),
 };
 
-/* Possible current values for fast-charging constant current phase */
+ 
 static const struct linear_range fast_charge_current_ranges[] = {
 	LINEAR_RANGE(0, 0, 0xFF, 64000),
 };
@@ -892,15 +795,12 @@ static int bd9995x_fw_probe(struct bd9995x_device *bd)
 		},
 	};
 
-	/*
-	 * The power_supply_get_battery_info() does not support getting values
-	 * from ACPI. Let's fix it if ACPI is required here.
-	 */
+	 
 	ret = power_supply_get_battery_info(bd->charger, &info);
 	if (ret < 0)
 		return ret;
 
-	/* Put pointers to the generic battery info */
+	 
 	battery_inits[0].info_data = &info->tricklecharge_current_ua;
 	battery_inits[1].info_data = &info->precharge_current_ua;
 	battery_inits[2].info_data = &info->precharge_voltage_max_uv;
@@ -1032,10 +932,7 @@ static int bd9995x_probe(struct i2c_client *client)
 
 	dev_info(bd->dev, "Found BD99954 chip rev %d\n", bd->chip_rev);
 
-	/*
-	 * We need to init the psy before we can call
-	 * power_supply_get_battery_info() for it
-	 */
+	 
 	bd->charger = devm_power_supply_register(bd->dev,
 						 &bd9995x_power_supply_desc,
 						&psy_cfg);

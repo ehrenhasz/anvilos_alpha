@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * wm8350-core.c  --  Device access for Wolfson WM8350
- *
- * Copyright 2007, 2008 Wolfson Microelectronics PLC.
- *
- * Author: Liam Girdwood, Mark Brown
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -30,7 +24,7 @@
 #define WM8350_CLOCK_CONTROL_1		0x28
 #define WM8350_AIF_TEST			0x74
 
-/* debug */
+ 
 #define WM8350_BUS_DEBUG 0
 #if WM8350_BUS_DEBUG
 #define dump(regs, src) do { \
@@ -52,14 +46,10 @@
 #define ldbg(format, arg...)
 #endif
 
-/*
- * WM8350 Device IO
- */
+ 
 static DEFINE_MUTEX(reg_lock_mutex);
 
-/*
- * Safe read, modify, write methods
- */
+ 
 int wm8350_clear_bits(struct wm8350 *wm8350, u16 reg, u16 mask)
 {
 	return regmap_update_bits(wm8350->regmap, reg, mask, 0);
@@ -125,15 +115,7 @@ int wm8350_block_write(struct wm8350 *wm8350, int start_reg, int regs,
 }
 EXPORT_SYMBOL_GPL(wm8350_block_write);
 
-/**
- * wm8350_reg_lock()
- *
- * The WM8350 has a hardware lock which can be used to prevent writes to
- * some registers (generally those which can cause particularly serious
- * problems if misused).  This function enables that lock.
- *
- * @wm8350: pointer to local driver data structure
- */
+ 
 int wm8350_reg_lock(struct wm8350 *wm8350)
 {
 	int ret;
@@ -154,17 +136,7 @@ int wm8350_reg_lock(struct wm8350 *wm8350)
 }
 EXPORT_SYMBOL_GPL(wm8350_reg_lock);
 
-/**
- * wm8350_reg_unlock()
- *
- * The WM8350 has a hardware lock which can be used to prevent writes to
- * some registers (generally those which can cause particularly serious
- * problems if misused).  This function disables that lock so updates
- * can be performed.  For maximum safety this should be done only when
- * required.
- *
- * @wm8350: pointer to local driver data structure
- */
+ 
 int wm8350_reg_unlock(struct wm8350 *wm8350)
 {
 	int ret;
@@ -197,7 +169,7 @@ int wm8350_read_auxadc(struct wm8350 *wm8350, int channel, int scale, int vref)
 
 	mutex_lock(&wm8350->auxadc_mutex);
 
-	/* Turn on the ADC */
+	 
 	reg = wm8350_reg_read(wm8350, WM8350_POWER_MGMT_5);
 	wm8350_reg_write(wm8350, WM8350_POWER_MGMT_5, reg | WM8350_AUXADC_ENA);
 
@@ -211,13 +183,10 @@ int wm8350_read_auxadc(struct wm8350 *wm8350, int channel, int scale, int vref)
 	reg |= 1 << channel | WM8350_AUXADC_POLL;
 	wm8350_reg_write(wm8350, WM8350_DIGITISER_CONTROL_1, reg);
 
-	/* If a late IRQ left the completion signalled then consume
-	 * the completion. */
+	 
 	try_wait_for_completion(&wm8350->auxadc_done);
 
-	/* We ignore the result of the completion and just check for a
-	 * conversion result, allowing us to soldier on if the IRQ
-	 * infrastructure is not set up for the chip. */
+	 
 	wait_for_completion_timeout(&wm8350->auxadc_done, msecs_to_jiffies(5));
 
 	reg = wm8350_reg_read(wm8350, WM8350_DIGITISER_CONTROL_1);
@@ -227,7 +196,7 @@ int wm8350_read_auxadc(struct wm8350 *wm8350, int channel, int scale, int vref)
 		result = wm8350_reg_read(wm8350,
 					 WM8350_AUX1_READBACK + channel);
 
-	/* Turn off the ADC */
+	 
 	reg = wm8350_reg_read(wm8350, WM8350_POWER_MGMT_5);
 	wm8350_reg_write(wm8350, WM8350_POWER_MGMT_5,
 			 reg & ~WM8350_AUXADC_ENA);
@@ -247,10 +216,7 @@ static irqreturn_t wm8350_auxadc_irq(int irq, void *irq_data)
 	return IRQ_HANDLED;
 }
 
-/*
- * Register a client device.  This is non-fatal since there is no need to
- * fail the entire device init due to a single platform device failing.
- */
+ 
 static void wm8350_client_dev_register(struct wm8350 *wm8350,
 				       const char *name,
 				       struct platform_device **pdev)
@@ -282,7 +248,7 @@ int wm8350_device_init(struct wm8350 *wm8350, int irq,
 
 	dev_set_drvdata(wm8350->dev, wm8350);
 
-	/* get WM8350 revision and config mode */
+	 
 	ret = regmap_read(wm8350->regmap, WM8350_RESET_ID, &id1);
 	if (ret != 0) {
 		dev_err(wm8350->dev, "Failed to read ID: %d\n", ret);
@@ -342,7 +308,7 @@ int wm8350_device_init(struct wm8350 *wm8350, int irq,
 			wm8350->power.rev_g_coeff = 1;
 			break;
 		default:
-			/* For safety we refuse to run on unknown hardware */
+			 
 			dev_err(wm8350->dev, "Unknown WM8350 CHIP_REV\n");
 			ret = -ENODEV;
 			goto err;

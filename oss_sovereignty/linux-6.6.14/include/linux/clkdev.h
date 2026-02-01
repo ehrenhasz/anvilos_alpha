@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  include/linux/clkdev.h
- *
- *  Copyright (C) 2008 Russell King.
- *
- * Helper for the clk API to assist looking up a struct clk.
- */
+ 
+ 
 #ifndef __CLKDEV_H
 #define __CLKDEV_H
 

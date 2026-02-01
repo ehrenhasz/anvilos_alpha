@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017 John Crispin <john@phrozen.org>
- *
- * Based on code from
- * Allwinner Technology Co., Ltd. <www.allwinnertech.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -93,29 +88,26 @@ static int ralink_usb_phy_power_on(struct phy *_phy)
 	struct ralink_usb_phy *phy = phy_get_drvdata(_phy);
 	u32 t;
 
-	/* enable the phy */
+	 
 	regmap_update_bits(phy->sysctl, RT_SYSC_REG_CLKCFG1,
 			   phy->clk, phy->clk);
 
-	/* setup host mode */
+	 
 	regmap_update_bits(phy->sysctl, RT_SYSC_REG_SYSCFG1,
 			   RT_SYSCFG1_USB0_HOST_MODE,
 			   RT_SYSCFG1_USB0_HOST_MODE);
 
-	/* deassert the reset lines */
+	 
 	reset_control_deassert(phy->rsthost);
 	reset_control_deassert(phy->rstdev);
 
-	/*
-	 * The SDK kernel had a delay of 100ms. however on device
-	 * testing showed that 10ms is enough
-	 */
+	 
 	mdelay(10);
 
 	if (phy->base)
 		ralink_usb_phy_init(phy);
 
-	/* print some status info */
+	 
 	regmap_read(phy->sysctl, RT_SYSC_REG_USB_PHY_CFG, &t);
 	dev_info(&phy->phy->dev, "remote usb device wakeup %s\n",
 		(t & UDEV_WAKEUP) ? ("enabled") : ("disabled"));
@@ -131,11 +123,11 @@ static int ralink_usb_phy_power_off(struct phy *_phy)
 {
 	struct ralink_usb_phy *phy = phy_get_drvdata(_phy);
 
-	/* disable the phy */
+	 
 	regmap_update_bits(phy->sysctl, RT_SYSC_REG_CLKCFG1,
 			   phy->clk, 0);
 
-	/* assert the reset lines */
+	 
 	reset_control_assert(phy->rstdev);
 	reset_control_assert(phy->rsthost);
 
@@ -191,7 +183,7 @@ static int ralink_usb_phy_probe(struct platform_device *pdev)
 		return PTR_ERR(phy->sysctl);
 	}
 
-	/* The MT7628 and MT7688 require extra setup of PHY registers. */
+	 
 	if (of_device_is_compatible(dev->of_node, "mediatek,mt7628-usbphy")) {
 		phy->base = devm_platform_ioremap_resource(pdev, 0);
 		if (IS_ERR(phy->base)) {

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2006 Netfilter Core Team <coreteam@netfilter.org>
- * Copyright (c) 2011 Patrick McHardy <kaber@trash.net>
- *
- * Based on Rusty Russell's IPv4 REDIRECT target. Development of IPv6
- * NAT funded by Astaro.
- */
+
+ 
 
 #include <linux/if.h>
 #include <linux/inetdevice.h>

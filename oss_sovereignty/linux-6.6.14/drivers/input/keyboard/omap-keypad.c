@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/input/keyboard/omap-keypad.c
- *
- * OMAP Keypad Driver
- *
- * Copyright (C) 2003 Nokia Corporation
- * Written by Timo Teräs <ext-timo.teras@nokia.com>
- *
- * Added support for H2 & H3 Keypad
- * Copyright (C) 2004 Texas Instruments
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -54,7 +44,7 @@ static unsigned int *col_gpios;
 
 static irqreturn_t omap_kp_interrupt(int irq, void *dev_id)
 {
-	/* disable keyboard interrupt and schedule for handling */
+	 
 	omap_writew(1, OMAP1_MPUIO_BASE + OMAP_MPUIO_KBD_MASKIT);
 
 	tasklet_schedule(&kp_tasklet);
@@ -71,10 +61,10 @@ static void omap_kp_scan_keypad(struct omap_kp *omap_kp, unsigned char *state)
 {
 	int col = 0;
 
-	/* disable keyboard interrupt and schedule for handling */
+	 
 	omap_writew(1, OMAP1_MPUIO_BASE + OMAP_MPUIO_KBD_MASKIT);
 
-	/* read the keypad status */
+	 
 	omap_writew(0xff, OMAP1_MPUIO_BASE + OMAP_MPUIO_KBC);
 	for (col = 0; col < omap_kp->cols; col++) {
 		omap_writew(~(1 << col) & 0xff,
@@ -97,10 +87,10 @@ static void omap_kp_tasklet(unsigned long data)
 	unsigned char new_state[8], changed, key_down = 0;
 	int col, row;
 
-	/* check for any changes */
+	 
 	omap_kp_scan_keypad(omap_kp_data, new_state);
 
-	/* check for changes and print those */
+	 
 	for (col = 0; col < omap_kp_data->cols; col++) {
 		changed = new_state[col] ^ keypad_state[col];
 		key_down |= new_state[col];
@@ -132,11 +122,10 @@ static void omap_kp_tasklet(unsigned long data)
 	memcpy(keypad_state, new_state, sizeof(keypad_state));
 
 	if (key_down) {
-		/* some key is pressed - keep irq disabled and use timer
-		 * to poll the keypad */
+		 
 		mod_timer(&omap_kp_data->timer, jiffies + HZ / 20);
 	} else {
-		/* enable interrupts */
+		 
 		omap_writew(0, OMAP1_MPUIO_BASE + OMAP_MPUIO_KBD_MASKIT);
 		kp_cur_group = -1;
 	}
@@ -203,7 +192,7 @@ static int omap_kp_probe(struct platform_device *pdev)
 
 	omap_kp->input = input_dev;
 
-	/* Disable the interrupt for the MPUIO keyboard */
+	 
 	omap_writew(1, OMAP1_MPUIO_BASE + OMAP_MPUIO_KBD_MASKIT);
 
 	if (pdata->delay)
@@ -222,7 +211,7 @@ static int omap_kp_probe(struct platform_device *pdev)
 
 	timer_setup(&omap_kp->timer, omap_kp_timer, 0);
 
-	/* get the irq and init timer*/
+	 
 	kp_tasklet.data = (unsigned long) omap_kp;
 	tasklet_enable(&kp_tasklet);
 
@@ -230,7 +219,7 @@ static int omap_kp_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err2;
 
-	/* setup input device */
+	 
 	input_dev->name = "omap-keypad";
 	input_dev->phys = "omap-keypad/input0";
 	input_dev->dev.parent = &pdev->dev;
@@ -258,7 +247,7 @@ static int omap_kp_probe(struct platform_device *pdev)
 	if (pdata->dbounce)
 		omap_writew(0xff, OMAP1_MPUIO_BASE + OMAP_MPUIO_GPIO_DEBOUNCING);
 
-	/* scan current status and enable interrupt */
+	 
 	omap_kp_scan_keypad(omap_kp, keypad_state);
 	omap_kp->irq = platform_get_irq(pdev, 0);
 	if (omap_kp->irq >= 0) {
@@ -291,7 +280,7 @@ static int omap_kp_remove(struct platform_device *pdev)
 {
 	struct omap_kp *omap_kp = platform_get_drvdata(pdev);
 
-	/* disable keypad interrupt handling */
+	 
 	tasklet_disable(&kp_tasklet);
 	omap_writew(1, OMAP1_MPUIO_BASE + OMAP_MPUIO_KBD_MASKIT);
 	free_irq(omap_kp->irq, omap_kp);
@@ -299,7 +288,7 @@ static int omap_kp_remove(struct platform_device *pdev)
 	timer_shutdown_sync(&omap_kp->timer);
 	tasklet_kill(&kp_tasklet);
 
-	/* unregister everything */
+	 
 	input_unregister_device(omap_kp->input);
 
 	kfree(omap_kp);

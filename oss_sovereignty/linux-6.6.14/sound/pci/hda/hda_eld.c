@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Generic routines and proc interface for ELD(EDID Like Data) information
- *
- * Copyright(c) 2008 Intel Corporation.
- * Copyright (c) 2013 Anssi Hannula <anssi.hannula@iki.fi>
- *
- * Authors:
- * 		Wu Fengguang <wfg@linux.intel.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/slab.h>
@@ -54,7 +46,7 @@ enum cea_audio_coding_types {
 	AUDIO_CODING_TYPE_DST			= 13,
 	AUDIO_CODING_TYPE_WMAPRO		= 14,
 	AUDIO_CODING_TYPE_REF_CXT		= 15,
-	/* also include valid xtypes below */
+	 
 	AUDIO_CODING_TYPE_HE_AAC		= 15,
 	AUDIO_CODING_TYPE_HE_AAC2		= 16,
 	AUDIO_CODING_TYPE_MPEG_SURROUND		= 17,
@@ -69,54 +61,46 @@ enum cea_audio_coding_xtypes {
 };
 
 static const char * const cea_audio_coding_type_names[] = {
-	/*  0 */ "undefined",
-	/*  1 */ "LPCM",
-	/*  2 */ "AC-3",
-	/*  3 */ "MPEG1",
-	/*  4 */ "MP3",
-	/*  5 */ "MPEG2",
-	/*  6 */ "AAC-LC",
-	/*  7 */ "DTS",
-	/*  8 */ "ATRAC",
-	/*  9 */ "DSD (One Bit Audio)",
-	/* 10 */ "E-AC-3/DD+ (Dolby Digital Plus)",
-	/* 11 */ "DTS-HD",
-	/* 12 */ "MLP (Dolby TrueHD)",
-	/* 13 */ "DST",
-	/* 14 */ "WMAPro",
-	/* 15 */ "HE-AAC",
-	/* 16 */ "HE-AACv2",
-	/* 17 */ "MPEG Surround",
+	  "undefined",
+	  "LPCM",
+	  "AC-3",
+	  "MPEG1",
+	  "MP3",
+	  "MPEG2",
+	  "AAC-LC",
+	  "DTS",
+	  "ATRAC",
+	  "DSD (One Bit Audio)",
+	  "E-AC-3/DD+ (Dolby Digital Plus)",
+	  "DTS-HD",
+	  "MLP (Dolby TrueHD)",
+	  "DST",
+	  "WMAPro",
+	  "HE-AAC",
+	  "HE-AACv2",
+	  "MPEG Surround",
 };
 
-/*
- * The following two lists are shared between
- * 	- HDMI audio InfoFrame (source to sink)
- * 	- CEA E-EDID Extension (sink to source)
- */
+ 
 
-/*
- * SS1:SS0 index => sample size
- */
+ 
 static const int cea_sample_sizes[4] = {
-	0,	 		/* 0: Refer to Stream Header */
-	AC_SUPPCM_BITS_16,	/* 1: 16 bits */
-	AC_SUPPCM_BITS_20,	/* 2: 20 bits */
-	AC_SUPPCM_BITS_24,	/* 3: 24 bits */
+	0,	 		 
+	AC_SUPPCM_BITS_16,	 
+	AC_SUPPCM_BITS_20,	 
+	AC_SUPPCM_BITS_24,	 
 };
 
-/*
- * SF2:SF1:SF0 index => sampling frequency
- */
+ 
 static const int cea_sampling_frequencies[8] = {
-	0,			/* 0: Refer to Stream Header */
-	SNDRV_PCM_RATE_32000,	/* 1:  32000Hz */
-	SNDRV_PCM_RATE_44100,	/* 2:  44100Hz */
-	SNDRV_PCM_RATE_48000,	/* 3:  48000Hz */
-	SNDRV_PCM_RATE_88200,	/* 4:  88200Hz */
-	SNDRV_PCM_RATE_96000,	/* 5:  96000Hz */
-	SNDRV_PCM_RATE_176400,	/* 6: 176400Hz */
-	SNDRV_PCM_RATE_192000,	/* 7: 192000Hz */
+	0,			 
+	SNDRV_PCM_RATE_32000,	 
+	SNDRV_PCM_RATE_44100,	 
+	SNDRV_PCM_RATE_48000,	 
+	SNDRV_PCM_RATE_88200,	 
+	SNDRV_PCM_RATE_96000,	 
+	SNDRV_PCM_RATE_176400,	 
+	SNDRV_PCM_RATE_192000,	 
 };
 
 static unsigned int hdmi_get_eld_data(struct hda_codec *codec, hda_nid_t nid,
@@ -218,9 +202,7 @@ static void hdmi_update_short_audio_desc(struct hda_codec *codec,
 	}
 }
 
-/*
- * Be careful, ELD buf could be totally rubbish!
- */
+ 
 int snd_hdmi_parse_eld(struct hda_codec *codec, struct parsed_hdmi_eld *e,
 			  const unsigned char *buf, int size)
 {
@@ -249,7 +231,7 @@ int snd_hdmi_parse_eld(struct hda_codec *codec, struct parsed_hdmi_eld *e,
 
 	e->port_id	  = get_unaligned_le64(buf + 8);
 
-	/* not specified, but the spec's tendency is little endian */
+	 
 	e->manufacture_id = get_unaligned_le16(buf + 16);
 	e->product_id	  = get_unaligned_le16(buf + 18);
 
@@ -271,11 +253,7 @@ int snd_hdmi_parse_eld(struct hda_codec *codec, struct parsed_hdmi_eld *e,
 					buf + ELD_FIXED_BYTES + mnl + 3 * i);
 	}
 
-	/*
-	 * HDMI sink's ELD info cannot always be retrieved for now, e.g.
-	 * in console or for audio devices. Assume the highest speakers
-	 * configuration, to _not_ prohibit multi-channel audio playback.
-	 */
+	 
 	if (!e->spk_alloc)
 		e->spk_alloc = 0xffff;
 
@@ -298,14 +276,11 @@ int snd_hdmi_get_eld(struct hda_codec *codec, hda_nid_t nid,
 	int ret = 0;
 	int size;
 
-	/*
-	 * ELD size is initialized to zero in caller function. If no errors and
-	 * ELD is valid, actual eld_size is assigned.
-	 */
+	 
 
 	size = snd_hdmi_get_eld_size(codec, nid);
 	if (size == 0) {
-		/* wfg: workaround for ASUS P5E-VM HDMI board */
+		 
 		codec_info(codec, "HDMI: ELD buf size is 0, force 128\n");
 		size = 128;
 	}
@@ -314,25 +289,17 @@ int snd_hdmi_get_eld(struct hda_codec *codec, hda_nid_t nid,
 		return -ERANGE;
 	}
 
-	/* set ELD buffer */
+	 
 	for (i = 0; i < size; i++) {
 		unsigned int val = hdmi_get_eld_data(codec, nid, i);
-		/*
-		 * Graphics driver might be writing to ELD buffer right now.
-		 * Just abort. The caller will repoll after a while.
-		 */
+		 
 		if (!(val & AC_ELDD_ELD_VALID)) {
 			codec_info(codec, "HDMI: invalid ELD data byte %d\n", i);
 			ret = -EINVAL;
 			goto error;
 		}
 		val &= AC_ELDD_ELD_DATA;
-		/*
-		 * The first byte cannot be zero. This can happen on some DVI
-		 * connections. Some Intel chips may also need some 250ms delay
-		 * to return non-zero ELD data, even when the graphics driver
-		 * correctly writes ELD content before setting ELD_valid bit.
-		 */
+		 
 		if (!val && !i) {
 			codec_dbg(codec, "HDMI: 0 ELD data\n");
 			ret = -EINVAL;
@@ -346,10 +313,7 @@ error:
 	return ret;
 }
 
-/*
- * SNDRV_PCM_RATE_* and AC_PAR_PCM values don't match, print correct rates with
- * hdmi-specific routine.
- */
+ 
 static void hdmi_print_pcm_rates(int pcm, char *buf, int buflen)
 {
 	static const unsigned int alsa_rates[] = {
@@ -363,7 +327,7 @@ static void hdmi_print_pcm_rates(int pcm, char *buf, int buflen)
 			j += scnprintf(buf + j, buflen - j,  " %d",
 				alsa_rates[i]);
 
-	buf[j] = '\0'; /* necessary when j == 0 */
+	buf[j] = '\0';  
 }
 
 #define SND_PRINT_RATES_ADVISED_BUFSIZE	80
@@ -504,11 +468,7 @@ void snd_hdmi_write_eld_info(struct hdmi_eld *eld,
 	while (!snd_info_get_line(buffer, line, sizeof(line))) {
 		if (sscanf(line, "%s %llx", name, &val) != 2)
 			continue;
-		/*
-		 * We don't allow modification to these fields:
-		 * 	monitor_name manufacture_id product_id
-		 * 	eld_version edid_version
-		 */
+		 
 		if (!strcmp(name, "monitor_present"))
 			eld->monitor_present = val;
 		else if (!strcmp(name, "eld_valid"))
@@ -553,9 +513,9 @@ void snd_hdmi_write_eld_info(struct hdmi_eld *eld,
 		}
 	}
 }
-#endif /* CONFIG_SND_PROC_FS */
+#endif  
 
-/* update PCM info based on ELD */
+ 
 void snd_hdmi_eld_update_pcm_info(struct parsed_hdmi_eld *e,
 			      struct hda_pcm_stream *hinfo)
 {
@@ -565,9 +525,7 @@ void snd_hdmi_eld_update_pcm_info(struct parsed_hdmi_eld *e,
 	unsigned int channels_max;
 	int i;
 
-	/* assume basic audio support (the basic audio flag is not in ELD;
-	 * however, all audio capable sinks are required to support basic
-	 * audio) */
+	 
 	rates = SNDRV_PCM_RATE_32000 | SNDRV_PCM_RATE_44100 |
 		SNDRV_PCM_RATE_48000;
 	formats = SNDRV_PCM_FMTBIT_S16_LE;
@@ -592,7 +550,7 @@ void snd_hdmi_eld_update_pcm_info(struct parsed_hdmi_eld *e,
 		}
 	}
 
-	/* restrict the parameters by the values the codec provides */
+	 
 	hinfo->rates &= rates;
 	hinfo->formats &= formats;
 	hinfo->maxbps = min(hinfo->maxbps, maxbps);
@@ -600,7 +558,7 @@ void snd_hdmi_eld_update_pcm_info(struct parsed_hdmi_eld *e,
 }
 
 
-/* ATI/AMD specific stuff (ELD emulation) */
+ 
 
 #define ATI_VERB_SET_AUDIO_DESCRIPTOR	0x776
 #define ATI_VERB_SET_SINK_INFO_INDEX	0x780
@@ -614,12 +572,12 @@ void snd_hdmi_eld_update_pcm_info(struct parsed_hdmi_eld *e,
 #define ATI_SPKALLOC_TYPE_HDMI		0x0100
 #define ATI_SPKALLOC_TYPE_DISPLAYPORT	0x0200
 
-/* first three bytes are just standard SAD */
+ 
 #define ATI_AUDIODESC_CHANNELS		0x00000007
 #define ATI_AUDIODESC_RATES		0x0000ff00
 #define ATI_AUDIODESC_LPCM_STEREO_RATES	0xff000000
 
-/* in standard HDMI VSDB format */
+ 
 #define ATI_DELAY_VIDEO_LATENCY		0x000000ff
 #define ATI_DELAY_AUDIO_LATENCY		0x0000ff00
 
@@ -630,7 +588,7 @@ enum ati_sink_info_idx {
 	ATI_INFO_IDX_PORT_ID_LOW	= 3,
 	ATI_INFO_IDX_PORT_ID_HIGH	= 4,
 	ATI_INFO_IDX_SINK_DESC_FIRST	= 5,
-	ATI_INFO_IDX_SINK_DESC_LAST	= 22, /* max len 18 bytes */
+	ATI_INFO_IDX_SINK_DESC_LAST	= 22,  
 };
 
 int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
@@ -640,7 +598,7 @@ int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
 	int sink_desc_len = 0;
 	int pos, i;
 
-	/* ATI/AMD does not have ELD, emulate it */
+	 
 
 	spkalloc = snd_hda_codec_read(codec, nid, 0, ATI_VERB_GET_SPEAKER_ALLOCATION, 0);
 
@@ -651,13 +609,13 @@ int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
 
 	memset(buf, 0, ELD_FIXED_BYTES + ELD_MAX_MNL + ELD_MAX_SAD * 3);
 
-	/* version */
+	 
 	buf[0] = ELD_VER_CEA_861D << 3;
 
-	/* speaker allocation from EDID */
+	 
 	buf[7] = spkalloc & ATI_SPKALLOC_SPKALLOC;
 
-	/* is DisplayPort? */
+	 
 	if (spkalloc & ATI_SPKALLOC_TYPE_DISPLAYPORT)
 		buf[5] |= 0x04;
 
@@ -701,7 +659,7 @@ int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
 
 	for (i = AUDIO_CODING_TYPE_LPCM; i <= AUDIO_CODING_TYPE_WMAPRO; i++) {
 		if (i == AUDIO_CODING_TYPE_SACD || i == AUDIO_CODING_TYPE_DST)
-			continue; /* not handled by ATI/AMD */
+			continue;  
 
 		snd_hda_codec_write(codec, nid, 0, ATI_VERB_SET_AUDIO_DESCRIPTOR, i << 3);
 		ati_sad = snd_hda_codec_read(codec, nid, 0, ATI_VERB_GET_AUDIO_DESCRIPTOR, 0);
@@ -710,7 +668,7 @@ int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
 			continue;
 
 		if (ati_sad & ATI_AUDIODESC_RATES) {
-			/* format is supported, copy SAD as-is */
+			 
 			buf[pos++] = (ati_sad & 0x0000ff) >> 0;
 			buf[pos++] = (ati_sad & 0x00ff00) >> 8;
 			buf[pos++] = (ati_sad & 0xff0000) >> 16;
@@ -719,9 +677,9 @@ int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
 		if (i == AUDIO_CODING_TYPE_LPCM
 		    && (ati_sad & ATI_AUDIODESC_LPCM_STEREO_RATES)
 		    && (ati_sad & ATI_AUDIODESC_LPCM_STEREO_RATES) >> 16 != (ati_sad & ATI_AUDIODESC_RATES)) {
-			/* for PCM there is a separate stereo rate mask */
+			 
 			buf[pos++] = ((ati_sad & 0x000000ff) & ~ATI_AUDIODESC_CHANNELS) | 0x1;
-			/* rates from the extra byte */
+			 
 			buf[pos++] = (ati_sad & 0xff000000) >> 24;
 			buf[pos++] = (ati_sad & 0x00ff0000) >> 16;
 		}
@@ -732,19 +690,7 @@ int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
 		return -EINVAL;
 	}
 
-	/*
-	 * HDMI VSDB latency format:
-	 * separately for both audio and video:
-	 *  0          field not valid or unknown latency
-	 *  [1..251]   msecs = (x-1)*2  (max 500ms with x = 251 = 0xfb)
-	 *  255        audio/video not supported
-	 *
-	 * HDA latency format:
-	 * single value indicating video latency relative to audio:
-	 *  0          unknown or 0ms
-	 *  [1..250]   msecs = x*2  (max 500ms with x = 250 = 0xfa)
-	 *  [251..255] reserved
-	 */
+	 
 	aud_synch = snd_hda_codec_read(codec, nid, 0, ATI_VERB_GET_AUDIO_VIDEO_DELAY, 0);
 	if ((aud_synch & ATI_DELAY_VIDEO_LATENCY) && (aud_synch & ATI_DELAY_AUDIO_LATENCY)) {
 		int video_latency_hdmi = (aud_synch & ATI_DELAY_VIDEO_LATENCY);
@@ -753,16 +699,16 @@ int snd_hdmi_get_eld_ati(struct hda_codec *codec, hda_nid_t nid,
 		if (video_latency_hdmi <= 0xfb && audio_latency_hdmi <= 0xfb &&
 		    video_latency_hdmi > audio_latency_hdmi)
 			buf[6] = video_latency_hdmi - audio_latency_hdmi;
-		/* else unknown/invalid or 0ms or video ahead of audio, so use zero */
+		 
 	}
 
-	/* SAD count */
+	 
 	buf[5] |= ((pos - ELD_FIXED_BYTES - sink_desc_len) / 3) << 4;
 
-	/* Baseline ELD block length is 4-byte aligned */
+	 
 	pos = round_up(pos, 4);
 
-	/* Baseline ELD length (4-byte header is not counted in) */
+	 
 	buf[2] = (pos - 4) / 4;
 
 	*eld_size = pos;

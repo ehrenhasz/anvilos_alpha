@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 #include "sdt.h"
 
 void urandlib_read_without_sema(int iter_num, int iter_cnt, int read_sz)

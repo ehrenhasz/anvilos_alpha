@@ -1,26 +1,4 @@
-/*
- * Copyright © 2014 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #include <linux/firmware.h>
 
@@ -30,13 +8,7 @@
 #include "intel_dmc.h"
 #include "intel_dmc_regs.h"
 
-/**
- * DOC: DMC Firmware Support
- *
- * From gen9 onwards we have newly added DMC (Display microcontroller) in display
- * engine to save and restore the state of display engine when it enter into
- * low-power state and comes back to normal.
- */
+ 
 
 enum intel_dmc_id {
 	DMC_FW_MAIN = 0,
@@ -51,7 +23,7 @@ struct intel_dmc {
 	struct drm_i915_private *i915;
 	struct work_struct work;
 	const char *fw_path;
-	u32 max_fw_size; /* bytes */
+	u32 max_fw_size;  
 	u32 version;
 	struct dmc_fw_info {
 		u32 mmio_count;
@@ -59,13 +31,13 @@ struct intel_dmc {
 		u32 mmiodata[20];
 		u32 dmc_offset;
 		u32 start_mmioaddr;
-		u32 dmc_fw_size; /*dwords */
+		u32 dmc_fw_size;  
 		u32 *payload;
 		bool present;
 	} dmc_info[DMC_FW_MAX];
 };
 
-/* Note: This may be NULL. */
+ 
 static struct intel_dmc *i915_to_dmc(struct drm_i915_private *i915)
 {
 	return i915->display.dmc.dmc;
@@ -78,11 +50,7 @@ static struct intel_dmc *i915_to_dmc(struct drm_i915_private *i915)
 #define DMC_PATH(platform) \
 	"i915/" __stringify(platform) "_dmc.bin"
 
-/*
- * New DMC additions should not use this. This is used solely to remain
- * compatible with systems that have not yet updated DMC blobs to use
- * unversioned file names.
- */
+ 
 #define DMC_LEGACY_PATH(platform, major, minor) \
 	"i915/"					\
 	__stringify(platform) "_dmc_ver"	\
@@ -146,59 +114,59 @@ MODULE_FIRMWARE(BXT_DMC_PATH);
 #define PIPE_TO_DMC_ID(pipe)		 (DMC_FW_PIPEA + ((pipe) - PIPE_A))
 
 struct intel_css_header {
-	/* 0x09 for DMC */
+	 
 	u32 module_type;
 
-	/* Includes the DMC specific header in dwords */
+	 
 	u32 header_len;
 
-	/* always value would be 0x10000 */
+	 
 	u32 header_ver;
 
-	/* Not used */
+	 
 	u32 module_id;
 
-	/* Not used */
+	 
 	u32 module_vendor;
 
-	/* in YYYYMMDD format */
+	 
 	u32 date;
 
-	/* Size in dwords (CSS_Headerlen + PackageHeaderLen + dmc FWsLen)/4 */
+	 
 	u32 size;
 
-	/* Not used */
+	 
 	u32 key_size;
 
-	/* Not used */
+	 
 	u32 modulus_size;
 
-	/* Not used */
+	 
 	u32 exponent_size;
 
-	/* Not used */
+	 
 	u32 reserved1[12];
 
-	/* Major Minor */
+	 
 	u32 version;
 
-	/* Not used */
+	 
 	u32 reserved2[8];
 
-	/* Not used */
+	 
 	u32 kernel_header_info;
 } __packed;
 
 struct intel_fw_info {
 	u8 reserved1;
 
-	/* reserved on package_header version 1, must be 0 on version 2 */
+	 
 	u8 dmc_id;
 
-	/* Stepping (A, B, C, ..., *). * is a wildcard */
+	 
 	char stepping;
 
-	/* Sub-stepping (0, 1, ..., *). * is a wildcard */
+	 
 	char substepping;
 
 	u32 offset;
@@ -206,54 +174,54 @@ struct intel_fw_info {
 } __packed;
 
 struct intel_package_header {
-	/* DMC container header length in dwords */
+	 
 	u8 header_len;
 
-	/* 0x01, 0x02 */
+	 
 	u8 header_ver;
 
 	u8 reserved[10];
 
-	/* Number of valid entries in the FWInfo array below */
+	 
 	u32 num_entries;
 } __packed;
 
 struct intel_dmc_header_base {
-	/* always value would be 0x40403E3E */
+	 
 	u32 signature;
 
-	/* DMC binary header length */
+	 
 	u8 header_len;
 
-	/* 0x01 */
+	 
 	u8 header_ver;
 
-	/* Reserved */
+	 
 	u16 dmcc_ver;
 
-	/* Major, Minor */
+	 
 	u32 project;
 
-	/* Firmware program size (excluding header) in dwords */
+	 
 	u32 fw_size;
 
-	/* Major Minor version */
+	 
 	u32 fw_version;
 } __packed;
 
 struct intel_dmc_header_v1 {
 	struct intel_dmc_header_base base;
 
-	/* Number of valid MMIO cycles present. */
+	 
 	u32 mmio_count;
 
-	/* MMIO address */
+	 
 	u32 mmioaddr[DMC_V1_MAX_MMIO_COUNT];
 
-	/* MMIO data */
+	 
 	u32 mmiodata[DMC_V1_MAX_MMIO_COUNT];
 
-	/* FW filename  */
+	 
 	char dfile[32];
 
 	u32 reserved1[2];
@@ -262,21 +230,21 @@ struct intel_dmc_header_v1 {
 struct intel_dmc_header_v3 {
 	struct intel_dmc_header_base base;
 
-	/* DMC RAM start MMIO address */
+	 
 	u32 start_mmioaddr;
 
 	u32 reserved[9];
 
-	/* FW filename */
+	 
 	char dfile[32];
 
-	/* Number of valid MMIO cycles present. */
+	 
 	u32 mmio_count;
 
-	/* MMIO address */
+	 
 	u32 mmioaddr[DMC_V3_MAX_MMIO_COUNT];
 
-	/* MMIO data */
+	 
 	u32 mmiodata[DMC_V3_MAX_MMIO_COUNT];
 } __packed;
 
@@ -318,7 +286,7 @@ intel_get_stepping_info(struct drm_i915_private *i915,
 
 static void gen9_set_dc_state_debugmask(struct drm_i915_private *i915)
 {
-	/* The below bit doesn't need to be cleared ever afterwards */
+	 
 	intel_de_rmw(i915, DC_STATE_DEBUG, 0,
 		     DC_STATE_DEBUG_MASK_CORES | DC_STATE_DEBUG_MASK_MEMORY_UP);
 	intel_de_posting_read(i915, DC_STATE_DEBUG);
@@ -388,7 +356,7 @@ disable_all_flip_queue_events(struct drm_i915_private *i915)
 {
 	enum intel_dmc_id dmc_id;
 
-	/* TODO: check if the following applies to all D13+ platforms. */
+	 
 	if (!IS_TIGERLAKE(i915))
 		return;
 
@@ -410,7 +378,7 @@ static void disable_all_event_handlers(struct drm_i915_private *i915)
 {
 	enum intel_dmc_id dmc_id;
 
-	/* TODO: disable the event handlers on pre-GEN12 platforms as well */
+	 
 	if (DISPLAY_VER(i915) < 12)
 		return;
 
@@ -431,13 +399,7 @@ static void adlp_pipedmc_clock_gating_wa(struct drm_i915_private *i915, bool ena
 {
 	enum pipe pipe;
 
-	/*
-	 * Wa_16015201720:adl-p,dg2
-	 * The WA requires clock gating to be disabled all the time
-	 * for pipe A and B.
-	 * For pipe C and D clock gating needs to be disabled only
-	 * during initializing the firmware.
-	 */
+	 
 	if (enable)
 		for (pipe = PIPE_A; pipe <= PIPE_D; pipe++)
 			intel_de_rmw(i915, CLKGATE_DIS_PSL_EXT(pipe),
@@ -450,11 +412,7 @@ static void adlp_pipedmc_clock_gating_wa(struct drm_i915_private *i915, bool ena
 
 static void mtl_pipedmc_clock_gating_wa(struct drm_i915_private *i915)
 {
-	/*
-	 * Wa_16015201720
-	 * The WA requires clock gating to be disabled all the time
-	 * for pipe A and B.
-	 */
+	 
 	intel_de_rmw(i915, GEN9_CLKGATE_DIS_0, 0,
 		     MTL_PIPEDMC_GATING_DIS_A | MTL_PIPEDMC_GATING_DIS_B);
 }
@@ -510,7 +468,7 @@ static bool disable_dmc_evt(struct drm_i915_private *i915,
 	if (!is_dmc_evt_ctl_reg(i915, dmc_id, reg))
 		return false;
 
-	/* keep all pipe DMC events disabled by default */
+	 
 	if (dmc_id != DMC_FW_MAIN)
 		return true;
 
@@ -532,14 +490,7 @@ static u32 dmc_mmiodata(struct drm_i915_private *i915,
 		return dmc->dmc_info[dmc_id].mmiodata[i];
 }
 
-/**
- * intel_dmc_load_program() - write the firmware from memory to register.
- * @i915: i915 drm device.
- *
- * DMC firmware is read from a .bin file and kept in internal memory one time.
- * Everytime display comes back from low power state this function is called to
- * copy the firmware from internal memory to registers.
- */
+ 
 void intel_dmc_load_program(struct drm_i915_private *i915)
 {
 	struct i915_power_domains *power_domains = &i915->display.power.domains;
@@ -579,23 +530,13 @@ void intel_dmc_load_program(struct drm_i915_private *i915)
 
 	gen9_set_dc_state_debugmask(i915);
 
-	/*
-	 * Flip queue events need to be disabled before enabling DC5/6.
-	 * i915 doesn't use the flip queue feature, so disable it already
-	 * here.
-	 */
+	 
 	disable_all_flip_queue_events(i915);
 
 	pipedmc_clock_gating_wa(i915, false);
 }
 
-/**
- * intel_dmc_disable_program() - disable the firmware
- * @i915: i915 drm device
- *
- * Disable all event handlers in the firmware, making sure the firmware is
- * inactive after the display is uninitialized.
- */
+ 
 void intel_dmc_disable_program(struct drm_i915_private *i915)
 {
 	if (!intel_dmc_has_payload(i915))
@@ -625,11 +566,7 @@ static bool fw_info_matches_stepping(const struct intel_fw_info *fw_info,
 {
 	if ((fw_info->substepping == '*' && si->stepping == fw_info->stepping) ||
 	    (si->stepping == fw_info->stepping && si->substepping == fw_info->substepping) ||
-	    /*
-	     * If we don't find a more specific one from above two checks, we
-	     * then check for the generic one to be sure to work even with
-	     * "broken firmware"
-	     */
+	     
 	    (si->stepping == '*' && si->substepping == fw_info->substepping) ||
 	    (fw_info->stepping == '*' && fw_info->substepping == '*'))
 		return true;
@@ -637,10 +574,7 @@ static bool fw_info_matches_stepping(const struct intel_fw_info *fw_info,
 	return false;
 }
 
-/*
- * Search fw_info table for dmc_offset to find firmware binary: num_entries is
- * already sanitized.
- */
+ 
 static void dmc_set_fw_offset(struct intel_dmc *dmc,
 			      const struct intel_fw_info *fw_info,
 			      unsigned int num_entries,
@@ -659,10 +593,7 @@ static void dmc_set_fw_offset(struct intel_dmc *dmc,
 			continue;
 		}
 
-		/* More specific versions come first, so we don't even have to
-		 * check for the stepping since we already found a previous FW
-		 * for this id.
-		 */
+		 
 		if (dmc->dmc_info[dmc_id].present)
 			continue;
 
@@ -720,14 +651,11 @@ static u32 parse_dmc_fw_header(struct intel_dmc *dmc,
 	BUILD_BUG_ON(ARRAY_SIZE(dmc_info->mmioaddr) < DMC_V3_MAX_MMIO_COUNT ||
 		     ARRAY_SIZE(dmc_info->mmioaddr) < DMC_V1_MAX_MMIO_COUNT);
 
-	/*
-	 * Check if we can access common fields, we will checkc again below
-	 * after we have read the version
-	 */
+	 
 	if (rem_size < sizeof(struct intel_dmc_header_base))
 		goto error_truncated;
 
-	/* Cope with small differences between v1 and v3 */
+	 
 	if (dmc_header->header_ver == 3) {
 		const struct intel_dmc_header_v3 *v3 =
 			(const struct intel_dmc_header_v3 *)dmc_header;
@@ -739,7 +667,7 @@ static u32 parse_dmc_fw_header(struct intel_dmc *dmc,
 		mmiodata = v3->mmiodata;
 		mmio_count = v3->mmio_count;
 		mmio_count_max = DMC_V3_MAX_MMIO_COUNT;
-		/* header_len is in dwords */
+		 
 		header_len_bytes = dmc_header->header_len * 4;
 		start_mmioaddr = v3->start_mmioaddr;
 		dmc_header_size = sizeof(*v3);
@@ -769,7 +697,7 @@ static u32 parse_dmc_fw_header(struct intel_dmc *dmc,
 		return 0;
 	}
 
-	/* Cache the dmc header info. */
+	 
 	if (mmio_count > mmio_count_max) {
 		drm_err(&i915->drm, "DMC firmware has wrong mmio count %u\n", mmio_count);
 		return 0;
@@ -790,7 +718,7 @@ static u32 parse_dmc_fw_header(struct intel_dmc *dmc,
 
 	rem_size -= header_len_bytes;
 
-	/* fw_size is in dwords, so multiplied by 4 to convert into bytes. */
+	 
 	payload_size = dmc_header->fw_size * 4;
 	if (rem_size < payload_size)
 		goto error_truncated;
@@ -839,10 +767,7 @@ parse_dmc_fw_package(struct intel_dmc *dmc,
 		return 0;
 	}
 
-	/*
-	 * We should always have space for max_entries,
-	 * even if not all are used
-	 */
+	 
 	package_size += max_entries * sizeof(struct intel_fw_info);
 	if (rem_size < package_size)
 		goto error_truncated;
@@ -862,7 +787,7 @@ parse_dmc_fw_package(struct intel_dmc *dmc,
 	dmc_set_fw_offset(dmc, fw_info, num_entries, si,
 			  package_header->header_ver);
 
-	/* dmc_offset is in dwords */
+	 
 	return package_size;
 
 error_truncated:
@@ -870,7 +795,7 @@ error_truncated:
 	return 0;
 }
 
-/* Return number of bytes parsed or 0 on error */
+ 
 static u32 parse_dmc_fw_css(struct intel_dmc *dmc,
 			    struct intel_css_header *css_header,
 			    size_t rem_size)
@@ -910,7 +835,7 @@ static void parse_dmc_fw(struct intel_dmc *dmc, const struct firmware *fw)
 	if (!fw)
 		return;
 
-	/* Extract CSS Header information */
+	 
 	css_header = (struct intel_css_header *)fw->data;
 	r = parse_dmc_fw_css(dmc, css_header, fw->size);
 	if (!r)
@@ -918,7 +843,7 @@ static void parse_dmc_fw(struct intel_dmc *dmc, const struct firmware *fw)
 
 	readcount += r;
 
-	/* Extract Package Header information */
+	 
 	package_header = (struct intel_package_header *)&fw->data[readcount];
 	r = parse_dmc_fw_package(dmc, package_header, si, fw->size - readcount);
 	if (!r)
@@ -1005,13 +930,7 @@ static void dmc_load_work_fn(struct work_struct *work)
 	release_firmware(fw);
 }
 
-/**
- * intel_dmc_init() - initialize the firmware loading.
- * @i915: i915 drm device.
- *
- * This function is called at the time of loading the display driver to read
- * firmware from a .bin file and copied into a internal memory.
- */
+ 
 void intel_dmc_init(struct drm_i915_private *i915)
 {
 	struct intel_dmc *dmc;
@@ -1019,14 +938,7 @@ void intel_dmc_init(struct drm_i915_private *i915)
 	if (!HAS_DMC(i915))
 		return;
 
-	/*
-	 * Obtain a runtime pm reference, until DMC is loaded, to avoid entering
-	 * runtime-suspend.
-	 *
-	 * On error, we return with the rpm wakeref held to prevent runtime
-	 * suspend as runtime suspend *requires* a working DMC for whatever
-	 * reason.
-	 */
+	 
 	intel_dmc_runtime_pm_get(i915);
 
 	dmc = kzalloc(sizeof(*dmc), GFP_KERNEL);
@@ -1104,14 +1016,7 @@ out:
 	kfree(dmc);
 }
 
-/**
- * intel_dmc_suspend() - prepare DMC firmware before system suspend
- * @i915: i915 drm device
- *
- * Prepare the DMC firmware before entering system suspend. This includes
- * flushing pending work items and releasing any resources acquired during
- * init.
- */
+ 
 void intel_dmc_suspend(struct drm_i915_private *i915)
 {
 	struct intel_dmc *dmc = i915_to_dmc(i915);
@@ -1122,38 +1027,23 @@ void intel_dmc_suspend(struct drm_i915_private *i915)
 	if (dmc)
 		flush_work(&dmc->work);
 
-	/* Drop the reference held in case DMC isn't loaded. */
+	 
 	if (!intel_dmc_has_payload(i915))
 		intel_dmc_runtime_pm_put(i915);
 }
 
-/**
- * intel_dmc_resume() - init DMC firmware during system resume
- * @i915: i915 drm device
- *
- * Reinitialize the DMC firmware during system resume, reacquiring any
- * resources released in intel_dmc_suspend().
- */
+ 
 void intel_dmc_resume(struct drm_i915_private *i915)
 {
 	if (!HAS_DMC(i915))
 		return;
 
-	/*
-	 * Reacquire the reference to keep RPM disabled in case DMC isn't
-	 * loaded.
-	 */
+	 
 	if (!intel_dmc_has_payload(i915))
 		intel_dmc_runtime_pm_get(i915);
 }
 
-/**
- * intel_dmc_fini() - unload the DMC firmware.
- * @i915: i915 drm device.
- *
- * Firmmware unloading includes freeing the internal memory and reset the
- * firmware loading status.
- */
+ 
 void intel_dmc_fini(struct drm_i915_private *i915)
 {
 	struct intel_dmc *dmc = i915_to_dmc(i915);

@@ -1,26 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2010, Oracle and/or its affiliates. All rights reserved.
- */
+ 
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/vnode.h>
@@ -31,18 +10,7 @@
 #include <sys/sa_impl.h>
 #include <sys/zfeature.h>
 
-/*
- * ZPL attribute registration table.
- * Order of attributes doesn't matter
- * a unique value will be assigned for each
- * attribute that is file system specific
- *
- * This is just the set of ZPL attributes that this
- * version of ZFS deals with natively.  The file system
- * could have other attributes stored in files, but they will be
- * ignored.  The SA framework will preserve them, just that
- * this version of ZFS won't change or delete them.
- */
+ 
 
 const sa_attr_reg_t zfs_attr_table[ZPL_END+1] = {
 	{"ZPL_ATIME", sizeof (uint64_t) * 2, SA_UINT64_ARRAY, 0},
@@ -251,11 +219,7 @@ zfs_sa_set_xattr(znode_t *zp, const char *name, const void *value, size_t vsize)
 
 	zilog = zfsvfs->z_log;
 
-	/*
-	 * Users enable ZIL logging of xattr=sa operations by enabling the
-	 * SPA_FEATURE_ZILSAXATTR feature on the pool. Feature is activated
-	 * during zil_process_commit_list/zil_create, if enabled.
-	 */
+	 
 	if (spa_feature_is_enabled(zfsvfs->z_os->os_spa,
 	    SPA_FEATURE_ZILSAXATTR) && zfs_zil_saxattr)
 		logsaxattr = 1;
@@ -293,13 +257,7 @@ out:
 	return (error);
 }
 
-/*
- * I'm not convinced we should do any of this upgrade.
- * since the SA code can read both old/new znode formats
- * with probably little to no performance difference.
- *
- * All new files will be created with the new format.
- */
+ 
 
 void
 zfs_sa_upgrade(sa_handle_t *hdl, dmu_tx_t *tx)
@@ -317,24 +275,11 @@ zfs_sa_upgrade(sa_handle_t *hdl, dmu_tx_t *tx)
 	char scanstamp[AV_SCANSTAMP_SZ];
 	boolean_t drop_lock = B_FALSE;
 
-	/*
-	 * No upgrade if ACL isn't cached
-	 * since we won't know which locks are held
-	 * and ready the ACL would require special "locked"
-	 * interfaces that would be messy
-	 */
+	 
 	if (zp->z_acl_cached == NULL || Z_ISLNK(ZTOTYPE(zp)))
 		return;
 
-	/*
-	 * If the z_lock is held and we aren't the owner
-	 * the just return since we don't want to deadlock
-	 * trying to update the status of z_is_sa.  This
-	 * file can then be upgraded at a later time.
-	 *
-	 * Otherwise, we know we are doing the
-	 * sa_update() that caused us to enter this function.
-	 */
+	 
 	if (MUTEX_NOT_HELD(&zp->z_lock)) {
 		if (mutex_tryenter(&zp->z_lock) == 0)
 			return;
@@ -342,7 +287,7 @@ zfs_sa_upgrade(sa_handle_t *hdl, dmu_tx_t *tx)
 			drop_lock = B_TRUE;
 	}
 
-	/* First do a bulk query of the attributes that aren't cached */
+	 
 	bulk = kmem_alloc(sizeof (sa_bulk_attr_t) * ZPL_END, KM_SLEEP);
 	SA_ADD_BULK_ATTR(bulk, count, SA_ZPL_ATIME(zfsvfs), NULL, &atime, 16);
 	SA_ADD_BULK_ATTR(bulk, count, SA_ZPL_MTIME(zfsvfs), NULL, &mtime, 16);
@@ -367,10 +312,7 @@ zfs_sa_upgrade(sa_handle_t *hdl, dmu_tx_t *tx)
 		zp->z_projid = ZFS_DEFAULT_PROJID;
 	}
 
-	/*
-	 * While the order here doesn't matter its best to try and organize
-	 * it is such a way to pick up an already existing layout number
-	 */
+	 
 	count = 0;
 	sa_attrs = kmem_zalloc(sizeof (sa_bulk_attr_t) * ZPL_END, KM_SLEEP);
 	SA_ADD_BULK_ATTR(sa_attrs, count, SA_ZPL_MODE(zfsvfs), NULL, &mode, 8);
@@ -415,7 +357,7 @@ zfs_sa_upgrade(sa_handle_t *hdl, dmu_tx_t *tx)
 		SA_ADD_BULK_ATTR(sa_attrs, count, SA_ZPL_XATTR(zfsvfs),
 		    NULL, &xattr, 8);
 
-	/* if scanstamp then add scanstamp */
+	 
 
 	if (zp->z_pflags & ZFS_BONUS_SCANSTAMP) {
 		memcpy(scanstamp,

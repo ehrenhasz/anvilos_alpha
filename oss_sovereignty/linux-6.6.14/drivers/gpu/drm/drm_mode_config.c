@@ -1,24 +1,4 @@
-/*
- * Copyright (c) 2016 Intel Corporation
- *
- * Permission to use, copy, modify, distribute, and sell this software and its
- * documentation for any purpose is hereby granted without fee, provided that
- * the above copyright notice appear in all copies and that both that copyright
- * notice and this permission notice appear in supporting documentation, and
- * that the name of the copyright holders not be used in advertising or
- * publicity pertaining to distribution of the software without specific,
- * written prior permission.  The copyright holders make no representations
- * about the suitability of this software for any purpose.  It is provided "as
- * is" without express or implied warranty.
- *
- * THE COPYRIGHT HOLDERS DISCLAIM ALL WARRANTIES WITH REGARD TO THIS SOFTWARE,
- * INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS, IN NO
- * EVENT SHALL THE COPYRIGHT HOLDERS BE LIABLE FOR ANY SPECIAL, INDIRECT OR
- * CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM LOSS OF USE,
- * DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR OTHER
- * TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR PERFORMANCE
- * OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/uaccess.h>
 
@@ -76,20 +56,7 @@ void drm_modeset_unregister_all(struct drm_device *dev)
 	drm_plane_unregister_all(dev);
 }
 
-/**
- * drm_mode_getresources - get graphics configuration
- * @dev: drm device for the ioctl
- * @data: data pointer for the ioctl
- * @file_priv: drm file for the ioctl call
- *
- * Construct a set of configuration description structures and return
- * them to the user, including CRTC, connector and framebuffer configuration.
- *
- * Called by the user via ioctl.
- *
- * Returns:
- * Zero on success, negative errno on failure.
- */
+ 
 int drm_mode_getresources(struct drm_device *dev, void *data,
 			  struct drm_file *file_priv)
 {
@@ -153,7 +120,7 @@ int drm_mode_getresources(struct drm_device *dev, void *data,
 	count = 0;
 	connector_id = u64_to_user_ptr(card_res->connector_id_ptr);
 	drm_for_each_connector_iter(connector, &conn_iter) {
-		/* only expose writeback connectors if userspace understands them */
+		 
 		if (!file_priv->writeback_connectors &&
 		    (connector->connector_type == DRM_MODE_CONNECTOR_WRITEBACK))
 			continue;
@@ -173,14 +140,7 @@ int drm_mode_getresources(struct drm_device *dev, void *data,
 	return ret;
 }
 
-/**
- * drm_mode_config_reset - call ->reset callbacks
- * @dev: drm device
- *
- * This functions calls all the crtc's, encoder's and connector's ->reset
- * callback. Drivers can use this in e.g. their driver load or resume code to
- * reset hardware and software state.
- */
+ 
 void drm_mode_config_reset(struct drm_device *dev)
 {
 	struct drm_crtc *crtc;
@@ -209,9 +169,7 @@ void drm_mode_config_reset(struct drm_device *dev)
 }
 EXPORT_SYMBOL(drm_mode_config_reset);
 
-/*
- * Global properties
- */
+ 
 static const struct drm_prop_enum_list drm_plane_type_enum_list[] = {
 	{ DRM_PLANE_TYPE_OVERLAY, "Overlay" },
 	{ DRM_PLANE_TYPE_PRIMARY, "Primary" },
@@ -382,23 +340,7 @@ static void drm_mode_config_init_release(struct drm_device *dev, void *ptr)
 	drm_mode_config_cleanup(dev);
 }
 
-/**
- * drmm_mode_config_init - managed DRM mode_configuration structure
- * 	initialization
- * @dev: DRM device
- *
- * Initialize @dev's mode_config structure, used for tracking the graphics
- * configuration of @dev.
- *
- * Since this initializes the modeset locks, no locking is possible. Which is no
- * problem, since this should happen single threaded at init time. It is the
- * driver's problem to ensure this guarantee.
- *
- * Cleanup is automatically handled through registering drm_mode_config_cleanup
- * with drmm_add_action().
- *
- * Returns: 0 on success, negative error value on failure.
- */
+ 
 int drmm_mode_config_init(struct drm_device *dev)
 {
 	int ret;
@@ -430,7 +372,7 @@ int drmm_mode_config_init(struct drm_device *dev)
 		return ret;
 	}
 
-	/* Just to be sure */
+	 
 	dev->mode_config.num_fb = 0;
 	dev->mode_config.num_connector = 0;
 	dev->mode_config.num_crtc = 0;
@@ -469,20 +411,7 @@ int drmm_mode_config_init(struct drm_device *dev)
 }
 EXPORT_SYMBOL(drmm_mode_config_init);
 
-/**
- * drm_mode_config_cleanup - free up DRM mode_config info
- * @dev: DRM device
- *
- * Free up all the connectors and CRTCs associated with this DRM device, then
- * free up the framebuffers and associated buffer objects.
- *
- * Note that since this /should/ happen single-threaded at driver/device
- * teardown time, no locking is required. It's the driver's job to ensure that
- * this guarantee actually holds true.
- *
- * FIXME: With the managed drmm_mode_config_init() it is no longer necessary for
- * drivers to explicitly call this function.
- */
+ 
 void drm_mode_config_cleanup(struct drm_device *dev)
 {
 	struct drm_connector *connector;
@@ -501,14 +430,11 @@ void drm_mode_config_cleanup(struct drm_device *dev)
 
 	drm_connector_list_iter_begin(dev, &conn_iter);
 	drm_for_each_connector_iter(connector, &conn_iter) {
-		/* drm_connector_list_iter holds an full reference to the
-		 * current connector itself, which means it is inherently safe
-		 * against unreferencing the current connector - but not against
-		 * deleting it right away. */
+		 
 		drm_connector_put(connector);
 	}
 	drm_connector_list_iter_end(&conn_iter);
-	/* connector_iter drops references in a work item. */
+	 
 	flush_work(&dev->mode_config.connector_free_work);
 	if (WARN_ON(!list_empty(&dev->mode_config.connector_list))) {
 		drm_connector_list_iter_begin(dev, &conn_iter);
@@ -536,14 +462,7 @@ void drm_mode_config_cleanup(struct drm_device *dev)
 		drm_property_blob_put(blob);
 	}
 
-	/*
-	 * Single-threaded teardown context, so it's not required to grab the
-	 * fb_lock to protect against concurrent fb_list access. Contrary, it
-	 * would actually deadlock with the drm_framebuffer_cleanup function.
-	 *
-	 * Also, if there are any framebuffers left, that's a driver leak now,
-	 * so politely WARN about this.
-	 */
+	 
 	WARN_ON(!list_empty(&dev->mode_config.fb_list));
 	list_for_each_entry_safe(fb, fbt, &dev->mode_config.fb_list, head) {
 		struct drm_printer p = drm_debug_printer("[leaked fb]");
@@ -571,11 +490,7 @@ static u32 full_encoder_mask(struct drm_device *dev)
 	return encoder_mask;
 }
 
-/*
- * For some reason we want the encoder itself included in
- * possible_clones. Make life easy for drivers by allowing them
- * to leave possible_clones unset if no cloning is possible.
- */
+ 
 static void fixup_encoder_possible_clones(struct drm_encoder *encoder)
 {
 	if (encoder->possible_clones == 0)

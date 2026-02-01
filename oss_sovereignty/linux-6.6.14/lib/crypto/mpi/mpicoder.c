@@ -1,22 +1,4 @@
-/* mpicoder.c  -  Coder for the external representation of MPIs
- * Copyright (C) 1998, 1999 Free Software Foundation, Inc.
- *
- * This file is part of GnuPG.
- *
- * GnuPG is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * GnuPG is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA 02111-1307, USA
- */
+ 
 
 #include <linux/bitops.h>
 #include <linux/count_zeros.h>
@@ -28,11 +10,7 @@
 #define MAX_EXTERN_SCAN_BYTES (16*1024*1024)
 #define MAX_EXTERN_MPI_BITS 16384
 
-/**
- * mpi_read_raw_data - Read a raw byte stream as a positive integer
- * @xbuffer: The data to read
- * @nbytes: The amount of data to read
- */
+ 
 MPI mpi_read_raw_data(const void *xbuffer, size_t nbytes)
 {
 	const uint8_t *buffer = xbuffer;
@@ -110,9 +88,7 @@ MPI mpi_read_from_buffer(const void *xbuffer, unsigned *ret_nread)
 }
 EXPORT_SYMBOL_GPL(mpi_read_from_buffer);
 
-/****************
- * Fill the mpi VAL from the hex string in STR.
- */
+ 
 int mpi_fromstr(MPI val, const char *str)
 {
 	int sign = 0;
@@ -126,7 +102,7 @@ int mpi_fromstr(MPI val, const char *str)
 		str++;
 	}
 
-	/* Skip optional hex prefix.  */
+	 
 	if (*str == '0' && str[1] == 'x')
 		str += 2;
 
@@ -233,20 +209,7 @@ static int count_lzeros(MPI a)
 	return lzeros;
 }
 
-/**
- * mpi_read_buffer() - read MPI to a buffer provided by user (msb first)
- *
- * @a:		a multi precision integer
- * @buf:	buffer to which the output will be written to. Needs to be at
- *		least mpi_get_size(a) long.
- * @buf_len:	size of the buf.
- * @nbytes:	receives the actual length of the data written on success and
- *		the data to-be-written on -EOVERFLOW in case buf_len was too
- *		small.
- * @sign:	if not NULL, it will be set to the sign of a.
- *
- * Return:	0 on success or error code in case of error
- */
+ 
 int mpi_read_buffer(MPI a, uint8_t *buf, unsigned buf_len, unsigned *nbytes,
 		    int *sign)
 {
@@ -295,18 +258,7 @@ int mpi_read_buffer(MPI a, uint8_t *buf, unsigned buf_len, unsigned *nbytes,
 }
 EXPORT_SYMBOL_GPL(mpi_read_buffer);
 
-/*
- * mpi_get_buffer() - Returns an allocated buffer with the MPI (msb first).
- * Caller must free the return string.
- * This function does return a 0 byte buffer with nbytes set to zero if the
- * value of A is zero.
- *
- * @a:		a multi precision integer.
- * @nbytes:	receives the length of this buffer.
- * @sign:	if not NULL, it will be set to the sign of the a.
- *
- * Return:	Pointer to MPI buffer or NULL on error
- */
+ 
 void *mpi_get_buffer(MPI a, unsigned *nbytes, int *sign)
 {
 	uint8_t *buf;
@@ -336,21 +288,7 @@ void *mpi_get_buffer(MPI a, unsigned *nbytes, int *sign)
 }
 EXPORT_SYMBOL_GPL(mpi_get_buffer);
 
-/**
- * mpi_write_to_sgl() - Funnction exports MPI to an sgl (msb first)
- *
- * This function works in the same way as the mpi_read_buffer, but it
- * takes an sgl instead of u8 * buf.
- *
- * @a:		a multi precision integer
- * @sgl:	scatterlist to write to. Needs to be at least
- *		mpi_get_size(a) long.
- * @nbytes:	the number of bytes to write.  Leading bytes will be
- *		filled with zero.
- * @sign:	if not NULL, it will be set to the sign of a.
- *
- * Return:	0 on success or error code in case of error
- */
+ 
 int mpi_write_to_sgl(MPI a, struct scatterlist *sgl, unsigned nbytes,
 		     int *sign)
 {
@@ -421,19 +359,7 @@ int mpi_write_to_sgl(MPI a, struct scatterlist *sgl, unsigned nbytes,
 }
 EXPORT_SYMBOL_GPL(mpi_write_to_sgl);
 
-/*
- * mpi_read_raw_from_sgl() - Function allocates an MPI and populates it with
- *			     data from the sgl
- *
- * This function works in the same way as the mpi_read_raw_data, but it
- * takes an sgl instead of void * buffer. i.e. it allocates
- * a new MPI and reads the content of the sgl to the MPI.
- *
- * @sgl:	scatterlist to read from
- * @nbytes:	number of bytes to read
- *
- * Return:	Pointer to a new MPI or NULL on error
- */
+ 
 MPI mpi_read_raw_from_sgl(struct scatterlist *sgl, unsigned int nbytes)
 {
 	struct sg_mapping_iter miter;
@@ -522,7 +448,7 @@ MPI mpi_read_raw_from_sgl(struct scatterlist *sgl, unsigned int nbytes)
 }
 EXPORT_SYMBOL_GPL(mpi_read_raw_from_sgl);
 
-/* Perform a two's complement operation on buffer P of size N bytes.  */
+ 
 static void twocompl(unsigned char *p, unsigned int n)
 {
 	int i;
@@ -563,12 +489,7 @@ int mpi_print(enum gcry_mpi_format format, unsigned char *buffer,
 	if (!nwritten)
 		nwritten = &dummy_nwritten;
 
-	/* Libgcrypt does no always care to set clear the sign if the value
-	 * is 0.  For printing this is a bit of a surprise, in particular
-	 * because if some of the formats don't support negative numbers but
-	 * should be able to print a zero.  Thus we need this extra test
-	 * for a negative number.
-	 */
+	 
 	if (a->sign && mpi_cmp_ui(a, 0))
 		negative = 1;
 	else
@@ -588,21 +509,18 @@ int mpi_print(enum gcry_mpi_format format, unsigned char *buffer,
 		if (negative) {
 			twocompl(tmp, n);
 			if (!(*tmp & 0x80)) {
-				/* Need to extend the sign.  */
+				 
 				n++;
 				extra = 2;
 			}
 		} else if (n && (*tmp & 0x80)) {
-			/* Positive but the high bit of the returned buffer is set.
-			 * Thus we need to print an extra leading 0x00 so that the
-			 * output is interpreted as a positive number.
-			 */
+			 
 			n++;
 			extra = 1;
 		}
 
 		if (buffer && n > len) {
-			/* The provided buffer is too short. */
+			 
 			kfree(tmp);
 			return -E2BIG;
 		}
@@ -621,10 +539,8 @@ int mpi_print(enum gcry_mpi_format format, unsigned char *buffer,
 	} else if (format == GCRYMPI_FMT_USG) {
 		unsigned int n = (nbits + 7)/8;
 
-		/* Note:  We ignore the sign for this format.  */
-		/* FIXME: for performance reasons we should put this into
-		 * mpi_aprint because we can then use the buffer directly.
-		 */
+		 
+		 
 
 		if (buffer && n > len)
 			return -E2BIG;
@@ -642,7 +558,7 @@ int mpi_print(enum gcry_mpi_format format, unsigned char *buffer,
 	} else if (format == GCRYMPI_FMT_PGP) {
 		unsigned int n = (nbits + 7)/8;
 
-		/* The PGP format can only handle unsigned integers.  */
+		 
 		if (negative)
 			return -EINVAL;
 
@@ -676,7 +592,7 @@ int mpi_print(enum gcry_mpi_format format, unsigned char *buffer,
 		if (negative) {
 			twocompl(tmp, n);
 			if (!(*tmp & 0x80)) {
-				/* Need to extend the sign.  */
+				 
 				n++;
 				extra = 2;
 			}

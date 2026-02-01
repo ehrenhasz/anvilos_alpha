@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Hangzhou C-SKY Microsystems co.,ltd.
+
+
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -36,13 +36,7 @@ static struct irq_domain *root_domain;
 
 static int nr_irq = INTC_IRQS;
 
-/*
- * When controller support pulse signal, the PEN_reg will hold on signal
- * without software trigger.
- *
- * So, to support pulse signal we need to clear IFR_reg and the address of
- * IFR_offset is NEN_offset - 8.
- */
+ 
 static void irq_ck_mask_set_bit(struct irq_data *d)
 {
 	struct irq_chip_generic *gc = irq_data_get_irq_chip_data(d);
@@ -76,16 +70,10 @@ static inline u32 build_channel_val(u32 idx, u32 magic)
 {
 	u32 res;
 
-	/*
-	 * Set the same index for each channel
-	 */
+	 
 	res = idx | (idx << 8) | (idx << 16) | (idx << 24);
 
-	/*
-	 * Set the channel magic number in descending order.
-	 * The magic is 0x00010203 for ck-intc
-	 * The magic is 0x03020100 for gx6605s-intc
-	 */
+	 
 	return res | magic;
 }
 
@@ -93,7 +81,7 @@ static inline void setup_irq_channel(u32 magic, void __iomem *reg_addr)
 {
 	u32 i;
 
-	/* Setup 64 channel slots */
+	 
 	for (i = 0; i < INTC_IRQS; i += 4)
 		writel(build_channel_val(i, magic), reg_addr + i);
 }
@@ -143,7 +131,7 @@ static inline bool handle_irq_perbit(struct pt_regs *regs, u32 hwirq,
 	return true;
 }
 
-/* gx6605s 64 irqs interrupt controller */
+ 
 static void gx_irq_handler(struct pt_regs *regs)
 {
 	bool ret;
@@ -169,15 +157,11 @@ gx_intc_init(struct device_node *node, struct device_node *parent)
 	if (ret)
 		return ret;
 
-	/*
-	 * Initial enable reg to disable all interrupts
-	 */
+	 
 	writel(0x0, reg_base + GX_INTC_NEN31_00);
 	writel(0x0, reg_base + GX_INTC_NEN63_32);
 
-	/*
-	 * Initial mask reg with all unmasked, because we only use enable reg
-	 */
+	 
 	writel(0x0, reg_base + GX_INTC_NMASK31_00);
 	writel(0x0, reg_base + GX_INTC_NMASK63_32);
 
@@ -192,10 +176,7 @@ gx_intc_init(struct device_node *node, struct device_node *parent)
 }
 IRQCHIP_DECLARE(csky_gx6605s_intc, "csky,gx6605s-intc", gx_intc_init);
 
-/*
- * C-SKY simple 64 irqs interrupt controller, dual-together could support 128
- * irqs.
- */
+ 
 static void ck_irq_handler(struct pt_regs *regs)
 {
 	bool ret;
@@ -203,7 +184,7 @@ static void ck_irq_handler(struct pt_regs *regs)
 	void __iomem *reg_pen_hi = reg_base + CK_INTC_PEN63_32;
 
 retry:
-	/* handle 0 - 63 irqs */
+	 
 	ret = handle_irq_perbit(regs, readl(reg_pen_hi), 32);
 	if (ret)
 		goto retry;
@@ -215,7 +196,7 @@ retry:
 	if (nr_irq == INTC_IRQS)
 		return;
 
-	/* handle 64 - 127 irqs */
+	 
 	ret = handle_irq_perbit(regs,
 			readl(reg_pen_hi + CK_INTC_DUAL_BASE), 96);
 	if (ret)
@@ -236,11 +217,11 @@ ck_intc_init(struct device_node *node, struct device_node *parent)
 	if (ret)
 		return ret;
 
-	/* Initial enable reg to disable all interrupts */
+	 
 	writel(0, reg_base + CK_INTC_NEN31_00);
 	writel(0, reg_base + CK_INTC_NEN63_32);
 
-	/* Enable irq intc */
+	 
 	writel(BIT(31), reg_base + CK_INTC_ICR);
 
 	ck_set_gc(node, reg_base, CK_INTC_NEN31_00, 0);
@@ -259,14 +240,14 @@ ck_dual_intc_init(struct device_node *node, struct device_node *parent)
 {
 	int ret;
 
-	/* dual-apb-intc up to 128 irq sources*/
+	 
 	nr_irq = INTC_IRQS * 2;
 
 	ret = ck_intc_init(node, parent);
 	if (ret)
 		return ret;
 
-	/* Initial enable reg to disable all interrupts */
+	 
 	writel(0, reg_base + CK_INTC_NEN31_00 + CK_INTC_DUAL_BASE);
 	writel(0, reg_base + CK_INTC_NEN63_32 + CK_INTC_DUAL_BASE);
 

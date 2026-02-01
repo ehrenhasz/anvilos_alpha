@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2016-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)			"habanalabs: " fmt
 
@@ -16,7 +13,7 @@
 
 #include <trace/events/habanalabs.h>
 
-#define HL_RESET_DELAY_USEC			10000	/* 10ms */
+#define HL_RESET_DELAY_USEC			10000	 
 
 #define HL_DEVICE_RELEASE_WATCHDOG_TIMEOUT_SEC	5
 
@@ -27,22 +24,7 @@ enum dma_alloc_type {
 
 #define MEM_SCRUB_DEFAULT_VAL 0x1122334455667788
 
-/*
- * hl_set_dram_bar- sets the bar to allow later access to address
- *
- * @hdev: pointer to habanalabs device structure.
- * @addr: the address the caller wants to access.
- * @region: the PCI region.
- * @new_bar_region_base: the new BAR region base address.
- *
- * @return: the old BAR base address on success, U64_MAX for failure.
- *	    The caller should set it back to the old address after use.
- *
- * In case the bar space does not cover the whole address space,
- * the bar base address should be set to allow access to a given address.
- * This function can be called also if the bar doesn't need to be set,
- * in that case it just won't change the base.
- */
+ 
 static u64 hl_set_dram_bar(struct hl_device *hdev, u64 addr, struct pci_mem_region *region,
 				u64 *new_bar_region_base)
 {
@@ -57,7 +39,7 @@ static u64 hl_set_dram_bar(struct hl_device *hdev, u64 addr, struct pci_mem_regi
 
 	old_base = hdev->asic_funcs->set_dram_bar_base(hdev, bar_base_addr);
 
-	/* in case of success we need to update the new BAR base */
+	 
 	if ((old_base != U64_MAX) && new_bar_region_base)
 		*new_bar_region_base = bar_base_addr;
 
@@ -136,7 +118,7 @@ static void hl_asic_dma_free_common(struct hl_device *hdev, size_t size, void *c
 					dma_addr_t dma_handle, enum dma_alloc_type alloc_type,
 					const char *caller)
 {
-	/* this is needed to avoid warning on using freed pointer */
+	 
 	u64 store_cpu_addr = (u64) (uintptr_t) cpu_addr;
 
 	switch (alloc_type) {
@@ -195,7 +177,7 @@ int hl_dma_map_sgtable(struct hl_device *hdev, struct sg_table *sgt, enum dma_da
 	if (rc)
 		return rc;
 
-	/* Shift to the device's base physical address of host memory if necessary */
+	 
 	if (prop->device_dma_offset_for_host_access)
 		for_each_sgtable_dma_sg(sgt, sg, i)
 			sg->dma_address += prop->device_dma_offset_for_host_access;
@@ -209,7 +191,7 @@ void hl_dma_unmap_sgtable(struct hl_device *hdev, struct sg_table *sgt, enum dma
 	struct scatterlist *sg;
 	int i;
 
-	/* Cancel the device's base physical address of host memory if necessary */
+	 
 	if (prop->device_dma_offset_for_host_access)
 		for_each_sgtable_dma_sg(sgt, sg, i)
 			sg->dma_address -= prop->device_dma_offset_for_host_access;
@@ -217,14 +199,7 @@ void hl_dma_unmap_sgtable(struct hl_device *hdev, struct sg_table *sgt, enum dma
 	dma_unmap_sgtable(&hdev->pdev->dev, sgt, dir, 0);
 }
 
-/*
- * hl_access_cfg_region - access the config region
- *
- * @hdev: pointer to habanalabs device structure
- * @addr: the address to access
- * @val: the value to write from or read to
- * @acc_type: the type of access (read/write 64/32)
- */
+ 
 int hl_access_cfg_region(struct hl_device *hdev, u64 addr, u64 *val,
 	enum debugfs_access_type acc_type)
 {
@@ -261,15 +236,7 @@ int hl_access_cfg_region(struct hl_device *hdev, u64 addr, u64 *val,
 	return 0;
 }
 
-/*
- * hl_access_dev_mem - access device memory
- *
- * @hdev: pointer to habanalabs device structure
- * @region_type: the type of the region the address belongs to
- * @addr: the address to access
- * @val: the value to write from or read to
- * @acc_type: the type of access (r/w, 32/64)
- */
+ 
 int hl_access_dev_mem(struct hl_device *hdev, enum pci_region region_type,
 			u64 addr, u64 *val, enum debugfs_access_type acc_type)
 {
@@ -293,9 +260,7 @@ void hl_engine_data_sprintf(struct engines_data *e, const char *fmt, ...)
 	int str_size;
 
 	va_start(args, fmt);
-	/* Calculate formatted string length. Assuming each string is null terminated, hence
-	 * increment result by 1
-	 */
+	 
 	str_size = vsnprintf(NULL, 0, fmt, args) + 1;
 	va_end(args);
 
@@ -305,9 +270,7 @@ void hl_engine_data_sprintf(struct engines_data *e, const char *fmt, ...)
 		va_end(args);
 	}
 
-	/* Need to update the size even when not updating destination buffer to get the exact size
-	 * of all input strings
-	 */
+	 
 	e->actual_size += str_size;
 }
 
@@ -413,17 +376,13 @@ static void hpriv_release(struct kref *ref)
 	mutex_destroy(&hpriv->ctx_lock);
 	mutex_destroy(&hpriv->restore_phase_mutex);
 
-	/* There should be no memory buffers at this point and handles IDR can be destroyed */
+	 
 	hl_mem_mgr_idr_destroy(&hpriv->mem_mgr);
 
-	/* Device should be reset if reset-upon-device-release is enabled, or if there is a pending
-	 * reset that waits for device release.
-	 */
+	 
 	reset_device = hdev->reset_upon_device_release || hdev->reset_info.watchdog_active;
 
-	/* Check the device idle status and reset if not idle.
-	 * Skip it if already in reset, or if device is going to be reset in any case.
-	 */
+	 
 	if (!hdev->reset_info.in_reset && !reset_device && hdev->pdev && !hdev->pldm)
 		device_is_idle = hdev->asic_funcs->is_device_idle(hdev, idle_mask,
 							HL_BUSY_ENGINES_MASK_EXT_SIZE, NULL);
@@ -433,15 +392,7 @@ static void hpriv_release(struct kref *ref)
 		reset_device = true;
 	}
 
-	/* We need to remove the user from the list to make sure the reset process won't
-	 * try to kill the user process. Because, if we got here, it means there are no
-	 * more driver/device resources that the user process is occupying so there is
-	 * no need to kill it
-	 *
-	 * However, we can't set the compute_ctx to NULL at this stage. This is to prevent
-	 * a race between the release and opening the device again. We don't want to let
-	 * a user open the device while there a reset is about to happen.
-	 */
+	 
 	mutex_lock(&hdev->fpriv_list_lock);
 	list_del(&hpriv->dev_node);
 	mutex_unlock(&hdev->fpriv_list_lock);
@@ -449,24 +400,21 @@ static void hpriv_release(struct kref *ref)
 	if (reset_device) {
 		hl_device_reset(hdev, HL_DRV_RESET_DEV_RELEASE);
 	} else {
-		/* Scrubbing is handled within hl_device_reset(), so here need to do it directly */
+		 
 		int rc = hdev->asic_funcs->scrub_device_mem(hdev);
 
 		if (rc)
 			dev_err(hdev->dev, "failed to scrub memory from hpriv release (%d)\n", rc);
 	}
 
-	/* Now we can mark the compute_ctx as not active. Even if a reset is running in a different
-	 * thread, we don't care because the in_reset is marked so if a user will try to open
-	 * the device it will fail on that, even if compute_ctx is false.
-	 */
+	 
 	mutex_lock(&hdev->fpriv_list_lock);
 	hdev->is_compute_ctx_active = false;
 	mutex_unlock(&hdev->fpriv_list_lock);
 
 	hdev->compute_ctx_in_release = 0;
 
-	/* release the eventfd */
+	 
 	if (hpriv->notifier_event.eventfd)
 		eventfd_ctx_put(hpriv->notifier_event.eventfd);
 
@@ -515,14 +463,7 @@ static void print_device_in_use_info(struct hl_device *hdev, const char *message
 	dev_notice(hdev->dev, "%s%s\n", message, buf);
 }
 
-/*
- * hl_device_release - release function for habanalabs device
- *
- * @inode: pointer to inode structure
- * @filp: pointer to file structure
- *
- * Called when process closes an habanalabs device
- */
+ 
 static int hl_device_release(struct inode *inode, struct file *filp)
 {
 	struct hl_fpriv *hpriv = filp->private_data;
@@ -538,9 +479,7 @@ static int hl_device_release(struct inode *inode, struct file *filp)
 
 	hl_ctx_mgr_fini(hdev, &hpriv->ctx_mgr);
 
-	/* Memory buffers might be still in use at this point and thus the handles IDR destruction
-	 * is postponed to hpriv_release().
-	 */
+	 
 	hl_mem_mgr_fini(&hpriv->mem_mgr);
 
 	hdev->compute_ctx_in_release = 1;
@@ -571,7 +510,7 @@ static int hl_device_release_ctrl(struct inode *inode, struct file *filp)
 	list_del(&hpriv->dev_node);
 	mutex_unlock(&hdev->fpriv_ctrl_list_lock);
 out:
-	/* release the eventfd */
+	 
 	if (hpriv->notifier_event.eventfd)
 		eventfd_ctx_put(hpriv->notifier_event.eventfd);
 
@@ -583,15 +522,7 @@ out:
 	return 0;
 }
 
-/*
- * hl_mmap - mmap function for habanalabs device
- *
- * @*filp: pointer to file structure
- * @*vma: pointer to vm_area_struct of the process
- *
- * Called when process does an mmap on habanalabs device. Call the relevant mmap
- * function at the end of the common code.
- */
+ 
 static int hl_mmap(struct file *filp, struct vm_area_struct *vma)
 {
 	struct hl_fpriv *hpriv = filp->private_data;
@@ -639,19 +570,7 @@ static void device_release_func(struct device *dev)
 	kfree(dev);
 }
 
-/*
- * device_init_cdev - Initialize cdev and device for habanalabs device
- *
- * @hdev: pointer to habanalabs device structure
- * @class: pointer to the class object of the device
- * @minor: minor number of the specific device
- * @fpos: file operations to install for this device
- * @name: name of the device as it will appear in the filesystem
- * @cdev: pointer to the char device object that will be initialized
- * @dev: pointer to the device object that will be initialized
- *
- * Initialize a cdev and a Linux device for habanalabs's device.
- */
+ 
 static int device_init_cdev(struct hl_device *hdev, struct class *class,
 				int minor, const struct file_operations *fops,
 				char *name, struct cdev *cdev,
@@ -692,7 +611,7 @@ static int cdev_sysfs_debugfs_add(struct hl_device *hdev)
 		goto delete_cdev_device;
 	}
 
-	/* hl_sysfs_init() must be done after adding the device to the system */
+	 
 	rc = hl_sysfs_init(hdev);
 	if (rc) {
 		dev_err(hdev->dev, "failed to initialize sysfs\n");
@@ -743,9 +662,7 @@ static void device_hard_reset_pending(struct work_struct *work)
 		struct hl_ctx *ctx = hl_get_compute_ctx(hdev);
 
 		if (ctx) {
-			/* The read refcount value should subtracted by one, because the read is
-			 * protected with hl_get_compute_ctx().
-			 */
+			 
 			dev_info(hdev->dev,
 				"Could not reset device (compute_ctx refcount %u). will try again in %u seconds",
 				kref_read(&ctx->refcount) - 1, HL_PENDING_RESET_PER_SEC);
@@ -774,14 +691,7 @@ static void device_release_watchdog_func(struct work_struct *work)
 	hl_device_reset(hdev, flags);
 }
 
-/*
- * device_early_init - do some early initialization for the habanalabs device
- *
- * @hdev: pointer to habanalabs device structure
- *
- * Install the relevant function pointers and call the early_init function,
- * if such a function exists
- */
+ 
 static int device_early_init(struct hl_device *hdev)
 {
 	int i, rc;
@@ -945,12 +855,7 @@ early_fini:
 	return rc;
 }
 
-/*
- * device_early_fini - finalize all that was done in device_early_init
- *
- * @hdev: pointer to habanalabs device structure
- *
- */
+ 
 static void device_early_fini(struct hl_device *hdev)
 {
 	int i;
@@ -1021,16 +926,7 @@ static void hl_device_heartbeat(struct work_struct *work)
 	return;
 
 reschedule:
-	/*
-	 * prev_reset_trigger tracks consecutive fatal h/w errors until first
-	 * heartbeat immediately post reset.
-	 * If control reached here, then at least one heartbeat work has been
-	 * scheduled since last reset/init cycle.
-	 * So if the device is not already in reset cycle, reset the flag
-	 * prev_reset_trigger as no reset occurred with HL_DRV_RESET_FW_FATAL_ERR
-	 * status for at least one heartbeat. From this point driver restarts
-	 * tracking future consecutive fatal errors.
-	 */
+	 
 	if (!hdev->reset_info.in_reset)
 		hdev->reset_info.prev_reset_trigger = HL_RESET_TRIGGER_DEFAULT;
 
@@ -1038,14 +934,7 @@ reschedule:
 			usecs_to_jiffies(HL_HEARTBEAT_PER_USEC));
 }
 
-/*
- * device_late_init - do late stuff initialization for the habanalabs device
- *
- * @hdev: pointer to habanalabs device structure
- *
- * Do stuff that either needs the device H/W queues to be active or needs
- * to happen after all the rest of the initialization is finished
- */
+ 
 static int device_late_init(struct hl_device *hdev)
 {
 	int rc;
@@ -1072,12 +961,7 @@ static int device_late_init(struct hl_device *hdev)
 	return 0;
 }
 
-/*
- * device_late_fini - finalize all that was done in device_late_init
- *
- * @hdev: pointer to habanalabs device structure
- *
- */
+ 
 static void device_late_fini(struct hl_device *hdev)
 {
 	if (!hdev->late_init_done)
@@ -1156,17 +1040,15 @@ out:
 
 static void take_release_locks(struct hl_device *hdev)
 {
-	/* Flush anyone that is inside the critical section of enqueue
-	 * jobs to the H/W
-	 */
+	 
 	hdev->asic_funcs->hw_queues_lock(hdev);
 	hdev->asic_funcs->hw_queues_unlock(hdev);
 
-	/* Flush processes that are sending message to CPU */
+	 
 	mutex_lock(&hdev->send_cpu_message_lock);
 	mutex_unlock(&hdev->send_cpu_message_lock);
 
-	/* Flush anyone that is inside device open */
+	 
 	mutex_lock(&hdev->fpriv_list_lock);
 	mutex_unlock(&hdev->fpriv_list_lock);
 	mutex_lock(&hdev->fpriv_ctrl_list_lock);
@@ -1177,9 +1059,7 @@ static void hl_abort_waiting_for_completions(struct hl_device *hdev)
 {
 	hl_abort_waiting_for_cs_completions(hdev);
 
-	/* Release all pending user interrupts, each pending user interrupt
-	 * holds a reference to a user context.
-	 */
+	 
 	hl_release_pending_user_interrupts(hdev);
 }
 
@@ -1189,38 +1069,26 @@ static void cleanup_resources(struct hl_device *hdev, bool hard_reset, bool fw_r
 	if (hard_reset)
 		device_late_fini(hdev);
 
-	/*
-	 * Halt the engines and disable interrupts so we won't get any more
-	 * completions from H/W and we won't have any accesses from the
-	 * H/W to the host machine
-	 */
+	 
 	hdev->asic_funcs->halt_engines(hdev, hard_reset, fw_reset);
 
-	/* Go over all the queues, release all CS and their jobs */
+	 
 	hl_cs_rollback_all(hdev, skip_wq_flush);
 
-	/* flush the MMU prefetch workqueue */
+	 
 	flush_workqueue(hdev->prefetch_wq);
 
 	hl_abort_waiting_for_completions(hdev);
 }
 
-/*
- * hl_device_suspend - initiate device suspend
- *
- * @hdev: pointer to habanalabs device structure
- *
- * Puts the hw in the suspend state (all asics).
- * Returns 0 for success or an error on failure.
- * Called at driver suspend.
- */
+ 
 int hl_device_suspend(struct hl_device *hdev)
 {
 	int rc;
 
 	pci_save_state(hdev->pdev);
 
-	/* Block future CS/VM/JOB completion operations */
+	 
 	spin_lock(&hdev->reset_info.lock);
 	if (hdev->reset_info.in_reset) {
 		spin_unlock(&hdev->reset_info.lock);
@@ -1230,7 +1098,7 @@ int hl_device_suspend(struct hl_device *hdev)
 	hdev->reset_info.in_reset = 1;
 	spin_unlock(&hdev->reset_info.lock);
 
-	/* This blocks all other stuff that is not blocked by in_reset */
+	 
 	hdev->disabled = true;
 
 	take_release_locks(hdev);
@@ -1240,22 +1108,14 @@ int hl_device_suspend(struct hl_device *hdev)
 		dev_err(hdev->dev,
 			"Failed to disable PCI access of device CPU\n");
 
-	/* Shut down the device */
+	 
 	pci_disable_device(hdev->pdev);
 	pci_set_power_state(hdev->pdev, PCI_D3hot);
 
 	return 0;
 }
 
-/*
- * hl_device_resume - initiate device resume
- *
- * @hdev: pointer to habanalabs device structure
- *
- * Bring the hw back to operating state (all asics).
- * Returns 0 for success or an error on failure.
- * Called at driver resume.
- */
+ 
 int hl_device_resume(struct hl_device *hdev)
 {
 	int rc;
@@ -1278,9 +1138,7 @@ int hl_device_resume(struct hl_device *hdev)
 	}
 
 
-	/* 'in_reset' was set to true during suspend, now we must clear it in order
-	 * for hard reset to be performed
-	 */
+	 
 	spin_lock(&hdev->reset_info.lock);
 	hdev->reset_info.in_reset = 0;
 	spin_unlock(&hdev->reset_info.lock);
@@ -1310,9 +1168,7 @@ static int device_kill_open_processes(struct hl_device *hdev, u32 timeout, bool 
 	fd_lock = control_dev ? &hdev->fpriv_ctrl_list_lock : &hdev->fpriv_list_lock;
 	fd_list = control_dev ? &hdev->fpriv_ctrl_list : &hdev->fpriv_list;
 
-	/* Giving time for user to close FD, and for processes that are inside
-	 * hl_device_open to finish
-	 */
+	 
 	if (!list_empty(fd_list))
 		ssleep(1);
 
@@ -1320,20 +1176,18 @@ static int device_kill_open_processes(struct hl_device *hdev, u32 timeout, bool 
 		pending_cnt = timeout;
 	} else {
 		if (hdev->process_kill_trial_cnt) {
-			/* Processes have been already killed */
+			 
 			pending_cnt = 1;
 			goto wait_for_processes;
 		} else {
-			/* Wait a small period after process kill */
+			 
 			pending_cnt = HL_PENDING_RESET_PER_SEC;
 		}
 	}
 
 	mutex_lock(fd_lock);
 
-	/* This section must be protected because we are dereferencing
-	 * pointers that are freed if the process exits
-	 */
+	 
 	list_for_each_entry(hpriv, fd_list, dev_node) {
 		task = get_pid_task(hpriv->taskpid, PIDTYPE_PID);
 		if (task) {
@@ -1344,11 +1198,7 @@ static int device_kill_open_processes(struct hl_device *hdev, u32 timeout, bool 
 
 			put_task_struct(task);
 		} else {
-			/*
-			 * If we got here, it means that process was killed from outside the driver
-			 * right after it started looping on fd_list and before get_pid_task, thus
-			 * we don't need to kill it.
-			 */
+			 
 			dev_dbg(hdev->dev,
 				"Can't get task struct for user process, assuming process was killed from outside the driver\n");
 		}
@@ -1356,14 +1206,7 @@ static int device_kill_open_processes(struct hl_device *hdev, u32 timeout, bool 
 
 	mutex_unlock(fd_lock);
 
-	/*
-	 * We killed the open users, but that doesn't mean they are closed.
-	 * It could be that they are running a long cleanup phase in the driver
-	 * e.g. MMU unmappings, or running other long teardown flow even before
-	 * our cleanup.
-	 * Therefore we need to wait again to make sure they are closed before
-	 * continuing with the reset.
-	 */
+	 
 
 wait_for_processes:
 	while ((!list_empty(fd_list)) && (pending_cnt)) {
@@ -1375,11 +1218,11 @@ wait_for_processes:
 		ssleep(1);
 	}
 
-	/* All processes exited successfully */
+	 
 	if (list_empty(fd_list))
 		return 0;
 
-	/* Give up waiting for processes to exit */
+	 
 	if (hdev->process_kill_trial_cnt == HL_PENDING_RESET_MAX_TRIALS)
 		return -ETIME;
 
@@ -1405,26 +1248,16 @@ static void device_disable_open_processes(struct hl_device *hdev, bool control_d
 
 static void send_disable_pci_access(struct hl_device *hdev, u32 flags)
 {
-	/* If reset is due to heartbeat, device CPU is no responsive in
-	 * which case no point sending PCI disable message to it.
-	 */
+	 
 	if ((flags & HL_DRV_RESET_HARD) &&
 			!(flags & (HL_DRV_RESET_HEARTBEAT | HL_DRV_RESET_BYPASS_REQ_TO_FW))) {
-		/* Disable PCI access from device F/W so he won't send
-		 * us additional interrupts. We disable MSI/MSI-X at
-		 * the halt_engines function and we can't have the F/W
-		 * sending us interrupts after that. We need to disable
-		 * the access here because if the device is marked
-		 * disable, the message won't be send. Also, in case
-		 * of heartbeat, the device CPU is marked as disable
-		 * so this message won't be sent
-		 */
+		 
 		if (hl_fw_send_pci_access_msg(hdev, CPUCP_PACKET_DISABLE_PCI_ACCESS, 0x0)) {
 			dev_warn(hdev->dev, "Failed to disable FW's PCI access\n");
 			return;
 		}
 
-		/* verify that last EQs are handled before disabled is set */
+		 
 		if (hdev->cpu_queues_enable)
 			synchronize_irq(pci_irq_vector(hdev->pdev,
 					hdev->asic_prop.eq_interrupt_id));
@@ -1435,16 +1268,11 @@ static void handle_reset_trigger(struct hl_device *hdev, u32 flags)
 {
 	u32 cur_reset_trigger = HL_RESET_TRIGGER_DEFAULT;
 
-	/* No consecutive mechanism when user context exists */
+	 
 	if (hdev->is_compute_ctx_active)
 		return;
 
-	/*
-	 * 'reset cause' is being updated here, because getting here
-	 * means that it's the 1st time and the last time we're here
-	 * ('in_reset' makes sure of it). This makes sure that
-	 * 'reset_cause' will continue holding its 1st recorded reason!
-	 */
+	 
 	if (flags & HL_DRV_RESET_HEARTBEAT) {
 		hdev->reset_info.curr_reset_cause = HL_RESET_CAUSE_HEARTBEAT;
 		cur_reset_trigger = HL_DRV_RESET_HEARTBEAT;
@@ -1458,11 +1286,7 @@ static void handle_reset_trigger(struct hl_device *hdev, u32 flags)
 		hdev->reset_info.curr_reset_cause = HL_RESET_CAUSE_UNKNOWN;
 	}
 
-	/*
-	 * If reset cause is same twice, then reset_trigger_repeated
-	 * is set and if this reset is due to a fatal FW error
-	 * device is set to an unstable state.
-	 */
+	 
 	if (hdev->reset_info.prev_reset_trigger != cur_reset_trigger) {
 		hdev->reset_info.prev_reset_trigger = cur_reset_trigger;
 		hdev->reset_info.reset_trigger_repeated = 0;
@@ -1471,22 +1295,7 @@ static void handle_reset_trigger(struct hl_device *hdev, u32 flags)
 	}
 }
 
-/*
- * hl_device_reset - reset the device
- *
- * @hdev: pointer to habanalabs device structure
- * @flags: reset flags.
- *
- * Block future CS and wait for pending CS to be enqueued
- * Call ASIC H/W fini
- * Flush all completions
- * Re-initialize all internal data structures
- * Call ASIC H/W init, late_init
- * Test queues
- * Enable device
- *
- * Returns 0 for success or an error on failure.
- */
+ 
 int hl_device_reset(struct hl_device *hdev, u32 flags)
 {
 	bool hard_reset, from_hard_reset_thread, fw_reset, reset_upon_device_release,
@@ -1535,39 +1344,30 @@ int hl_device_reset(struct hl_device *hdev, u32 flags)
 	}
 
 do_reset:
-	/* Re-entry of reset thread */
+	 
 	if (from_hard_reset_thread && hdev->process_kill_trial_cnt)
 		goto kill_processes;
 
-	/*
-	 * Prevent concurrency in this function - only one reset should be
-	 * done at any given time. We need to perform this only if we didn't
-	 * get here from a dedicated hard reset thread.
-	 */
+	 
 	if (!from_hard_reset_thread) {
-		/* Block future CS/VM/JOB completion operations */
+		 
 		spin_lock(&hdev->reset_info.lock);
 		if (hdev->reset_info.in_reset) {
-			/* We allow scheduling of a hard reset only during a compute reset */
+			 
 			if (hard_reset && hdev->reset_info.in_compute_reset)
 				hdev->reset_info.hard_reset_schedule_flags = flags;
 			spin_unlock(&hdev->reset_info.lock);
 			return 0;
 		}
 
-		/* This still allows the completion of some KDMA ops
-		 * Update this before in_reset because in_compute_reset implies we are in reset
-		 */
+		 
 		hdev->reset_info.in_compute_reset = !hard_reset;
 
 		hdev->reset_info.in_reset = 1;
 
 		spin_unlock(&hdev->reset_info.lock);
 
-		/* Cancel the device release watchdog work if required.
-		 * In case of reset-upon-device-release while the release watchdog work is
-		 * scheduled due to a hard-reset, do hard-reset instead of compute-reset.
-		 */
+		 
 		if ((hard_reset || from_dev_release) && hdev->reset_info.watchdog_active) {
 			struct hl_device_reset_work *watchdog_work =
 					&hdev->device_release_watchdog_work;
@@ -1591,7 +1391,7 @@ escalate_reset_flow:
 		handle_reset_trigger(hdev, flags);
 		send_disable_pci_access(hdev, flags);
 
-		/* This also blocks future CS/VM/JOB completion operations */
+		 
 		hdev->disabled = true;
 
 		take_release_locks(hdev);
@@ -1611,10 +1411,7 @@ escalate_reset_flow:
 
 		hdev->device_reset_work.flags = flags;
 
-		/*
-		 * Because the reset function can't run from heartbeat work,
-		 * we need to call the reset function from a dedicated work.
-		 */
+		 
 		queue_delayed_work(hdev->reset_wq, &hdev->device_reset_work.reset_work, 0);
 
 		return 0;
@@ -1624,10 +1421,7 @@ escalate_reset_flow:
 
 kill_processes:
 	if (hard_reset) {
-		/* Kill processes here after CS rollback. This is because the
-		 * process can't really exit until all its CSs are done, which
-		 * is what we do in cs rollback
-		 */
+		 
 		rc = device_kill_open_processes(hdev, 0, false);
 
 		if (rc == -EBUSY) {
@@ -1638,7 +1432,7 @@ kill_processes:
 				goto out_err;
 			}
 
-			/* signal reset thread to reschedule */
+			 
 			return rc;
 		}
 
@@ -1649,19 +1443,17 @@ kill_processes:
 			goto out_err;
 		}
 
-		/* Flush the Event queue workers to make sure no other thread is
-		 * reading or writing to registers during the reset
-		 */
+		 
 		flush_workqueue(hdev->eq_wq);
 	}
 
-	/* Reset the H/W. It will be in idle state after this returns */
+	 
 	hw_fini_rc = hdev->asic_funcs->hw_fini(hdev, hard_reset, fw_reset);
 
 	if (hard_reset) {
 		hdev->fw_loader.fw_comp_loaded = FW_TYPE_NONE;
 
-		/* Release kernel context */
+		 
 		if (hdev->kernel_ctx && hl_ctx_put(hdev->kernel_ctx) == 1)
 			hdev->kernel_ctx = NULL;
 
@@ -1670,12 +1462,12 @@ kill_processes:
 		hl_eq_reset(hdev, &hdev->event_queue);
 	}
 
-	/* Re-initialize PI,CI to 0 in all queues (hw queue, cq) */
+	 
 	hl_hw_queue_reset(hdev, hard_reset);
 	for (i = 0 ; i < hdev->asic_prop.completion_queues_count ; i++)
 		hl_cq_reset(hdev, &hdev->completion_queue[i]);
 
-	/* Make sure the context switch phase will run again */
+	 
 	ctx = hl_get_compute_ctx(hdev);
 	if (ctx) {
 		atomic_set(&ctx->thread_ctx_switch_token, 1);
@@ -1687,7 +1479,7 @@ kill_processes:
 		rc = hw_fini_rc;
 		goto out_err;
 	}
-	/* Finished tear-down, starting to re-initialize */
+	 
 
 	if (hard_reset) {
 		hdev->device_cpu_disabled = false;
@@ -1696,9 +1488,7 @@ kill_processes:
 		if (hdev->reset_info.reset_trigger_repeated &&
 				(hdev->reset_info.prev_reset_trigger ==
 						HL_DRV_RESET_FW_FATAL_ERR)) {
-			/* if there 2 back to back resets from FW,
-			 * ensure driver puts the driver in a unusable state
-			 */
+			 
 			dev_crit(hdev->dev,
 				"%s Consecutive FW fatal errors received, stopping hard reset\n",
 				dev_name(&(hdev)->pdev->dev));
@@ -1721,7 +1511,7 @@ kill_processes:
 			goto out_err;
 		}
 
-		/* Allocate the kernel context */
+		 
 		hdev->kernel_ctx = kzalloc(sizeof(*hdev->kernel_ctx),
 						GFP_KERNEL);
 		if (!hdev->kernel_ctx) {
@@ -1743,13 +1533,10 @@ kill_processes:
 		}
 	}
 
-	/* Device is now enabled as part of the initialization requires
-	 * communication with the device firmware to get information that
-	 * is required for the initialization itself
-	 */
+	 
 	hdev->disabled = false;
 
-	/* F/W security enabled indication might be updated after hard-reset */
+	 
 	if (hard_reset) {
 		rc = hl_fw_read_preboot_status(hdev);
 		if (rc)
@@ -1762,7 +1549,7 @@ kill_processes:
 		goto out_err;
 	}
 
-	/* If device is not idle fail the reset process */
+	 
 	if (!hdev->asic_funcs->is_device_idle(hdev, idle_mask,
 						HL_BUSY_ENGINES_MASK_EXT_SIZE, NULL)) {
 		print_idle_status_mask(hdev, "device is not idle after reset", idle_mask);
@@ -1770,7 +1557,7 @@ kill_processes:
 		goto out_err;
 	}
 
-	/* Check that the communication with the device is working */
+	 
 	rc = hdev->asic_funcs->test_queues(hdev);
 	if (rc) {
 		dev_err(hdev->dev, "Failed to detect if device is alive after reset\n");
@@ -1813,10 +1600,7 @@ kill_processes:
 	spin_lock(&hdev->reset_info.lock);
 	hdev->reset_info.in_compute_reset = 0;
 
-	/* Schedule hard reset only if requested and if not already in hard reset.
-	 * We keep 'in_reset' enabled, so no other reset can go in during the hard
-	 * reset schedule
-	 */
+	 
 	if (!hard_reset && hdev->reset_info.hard_reset_schedule_flags)
 		schedule_hard_reset = true;
 	else
@@ -1838,11 +1622,7 @@ kill_processes:
 	if (hard_reset) {
 		hdev->reset_info.hard_reset_cnt++;
 
-		/* After reset is done, we are ready to receive events from
-		 * the F/W. We can't do it before because we will ignore events
-		 * and if those events are fatal, we won't know about it and
-		 * the device will be operational although it shouldn't be
-		 */
+		 
 		hdev->asic_funcs->enable_events_from_fw(hdev);
 	} else {
 		if (!reset_upon_device_release)
@@ -1892,24 +1672,16 @@ out_err:
 	return rc;
 }
 
-/*
- * hl_device_cond_reset() - conditionally reset the device.
- * @hdev: pointer to habanalabs device structure.
- * @reset_flags: reset flags.
- * @event_mask: events to notify user about.
- *
- * Conditionally reset the device, or alternatively schedule a watchdog work to reset the device
- * unless another reset precedes it.
- */
+ 
 int hl_device_cond_reset(struct hl_device *hdev, u32 flags, u64 event_mask)
 {
 	struct hl_ctx *ctx = NULL;
 
-	/* F/W reset cannot be postponed */
+	 
 	if (flags & HL_DRV_RESET_BYPASS_REQ_TO_FW)
 		goto device_reset;
 
-	/* Device release watchdog is relevant only if user exists and gets a reset notification */
+	 
 	if (!(event_mask & HL_NOTIFIER_EVENT_DEVICE_RESET)) {
 		dev_err(hdev->dev, "Resetting device without a reset indication to user\n");
 		goto device_reset;
@@ -1919,9 +1691,7 @@ int hl_device_cond_reset(struct hl_device *hdev, u32 flags, u64 event_mask)
 	if (!ctx || !ctx->hpriv->notifier_event.eventfd)
 		goto device_reset;
 
-	/* Schedule the device release watchdog work unless reset is already in progress or if the
-	 * work is already scheduled.
-	 */
+	 
 	spin_lock(&hdev->reset_info.lock);
 	if (hdev->reset_info.in_reset) {
 		spin_unlock(&hdev->reset_info.lock);
@@ -1968,13 +1738,7 @@ static void hl_notifier_event_send(struct hl_notifier_event *notifier_event, u64
 	mutex_unlock(&notifier_event->lock);
 }
 
-/*
- * hl_notifier_event_send_all - notify all user processes via eventfd
- *
- * @hdev: pointer to habanalabs device structure
- * @event_mask: the occurred event/s
- * Returns 0 for success or an error on failure.
- */
+ 
 void hl_notifier_event_send_all(struct hl_device *hdev, u64 event_mask)
 {
 	struct hl_fpriv	*hpriv;
@@ -1991,7 +1755,7 @@ void hl_notifier_event_send_all(struct hl_device *hdev, u64 event_mask)
 
 	mutex_unlock(&hdev->fpriv_list_lock);
 
-	/* control device */
+	 
 	mutex_lock(&hdev->fpriv_ctrl_list_lock);
 
 	list_for_each_entry(hpriv, &hdev->fpriv_ctrl_list, dev_node)
@@ -2013,7 +1777,7 @@ static int create_cdev(struct hl_device *hdev)
 		goto out_err;
 	}
 
-	/* Initialize cdev and device structures */
+	 
 	rc = device_init_cdev(hdev, hdev->hclass, hdev->id, &hl_ops, name,
 				&hdev->cdev, &hdev->dev);
 
@@ -2028,7 +1792,7 @@ static int create_cdev(struct hl_device *hdev)
 		goto free_dev;
 	}
 
-	/* Initialize cdev and device structures for control device */
+	 
 	rc = device_init_cdev(hdev, hdev->hclass, hdev->id_control, &hl_ctrl_ops,
 				name, &hdev->cdev_ctrl, &hdev->dev_ctrl);
 
@@ -2045,15 +1809,7 @@ out_err:
 	return rc;
 }
 
-/*
- * hl_device_init - main initialization function for habanalabs device
- *
- * @hdev: pointer to habanalabs device structure
- *
- * Allocate an id for the device, do early initialization and then call the
- * ASIC specific initialization functions. Finally, create the cdev and the
- * Linux device to expose it to the user
- */
+ 
 int hl_device_init(struct hl_device *hdev)
 {
 	int i, rc, cq_cnt, user_interrupt_cnt, cq_ready_cnt;
@@ -2063,7 +1819,7 @@ int hl_device_init(struct hl_device *hdev)
 	if (rc)
 		goto out_disabled;
 
-	/* Initialize ASIC function pointers and perform early init */
+	 
 	rc = device_early_init(hdev);
 	if (rc)
 		goto free_dev;
@@ -2080,23 +1836,16 @@ int hl_device_init(struct hl_device *hdev)
 		}
 	}
 
-	/*
-	 * Start calling ASIC initialization. First S/W then H/W and finally
-	 * late init
-	 */
+	 
 	rc = hdev->asic_funcs->sw_init(hdev);
 	if (rc)
 		goto free_usr_intr_mem;
 
 
-	/* initialize completion structure for multi CS wait */
+	 
 	hl_multi_cs_completion_init(hdev);
 
-	/*
-	 * Initialize the H/W queues. Must be done before hw_init, because
-	 * there the addresses of the kernel queue are being written to the
-	 * registers of the device
-	 */
+	 
 	rc = hl_hw_queues_create(hdev);
 	if (rc) {
 		dev_err(hdev->dev, "failed to initialize kernel queues\n");
@@ -2105,11 +1854,7 @@ int hl_device_init(struct hl_device *hdev)
 
 	cq_cnt = hdev->asic_prop.completion_queues_count;
 
-	/*
-	 * Initialize the completion queues. Must be done before hw_init,
-	 * because there the addresses of the completion queues are being
-	 * passed as arguments to request_irq
-	 */
+	 
 	if (cq_cnt) {
 		hdev->completion_queue = kcalloc(cq_cnt,
 				sizeof(*hdev->completion_queue),
@@ -2141,25 +1886,21 @@ int hl_device_init(struct hl_device *hdev)
 		goto cq_fini;
 	}
 
-	/*
-	 * Initialize the event queue. Must be done before hw_init,
-	 * because there the address of the event queue is being
-	 * passed as argument to request_irq
-	 */
+	 
 	rc = hl_eq_init(hdev, &hdev->event_queue);
 	if (rc) {
 		dev_err(hdev->dev, "failed to initialize event queue\n");
 		goto free_shadow_cs_queue;
 	}
 
-	/* MMU S/W must be initialized before kernel context is created */
+	 
 	rc = hl_mmu_init(hdev);
 	if (rc) {
 		dev_err(hdev->dev, "Failed to initialize MMU S/W structures\n");
 		goto eq_fini;
 	}
 
-	/* Allocate the kernel context */
+	 
 	hdev->kernel_ctx = kzalloc(sizeof(*hdev->kernel_ctx), GFP_KERNEL);
 	if (!hdev->kernel_ctx) {
 		rc = -ENOMEM;
@@ -2181,9 +1922,7 @@ int hl_device_init(struct hl_device *hdev)
 		goto mmu_fini;
 	}
 
-	/* The debugfs entry structure is accessed in hl_ctx_init(), so it must be called after
-	 * hl_debugfs_device_init().
-	 */
+	 
 	rc = hl_ctx_init(hdev, hdev->kernel_ctx, true);
 	if (rc) {
 		dev_err(hdev->dev, "failed to initialize kernel context\n");
@@ -2203,16 +1942,10 @@ int hl_device_init(struct hl_device *hdev)
 		goto cb_pool_fini;
 	}
 
-	/*
-	 * From this point, override rc (=0) in case of an error to allow debugging
-	 * (by adding char devices and creating sysfs/debugfs files as part of the error flow).
-	 */
+	 
 	expose_interfaces_on_err = true;
 
-	/* Device is now enabled as part of the initialization requires
-	 * communication with the device firmware to get information that
-	 * is required for the initialization itself
-	 */
+	 
 	hdev->disabled = false;
 
 	rc = hdev->asic_funcs->hw_init(hdev);
@@ -2222,7 +1955,7 @@ int hl_device_init(struct hl_device *hdev)
 		goto out_disabled;
 	}
 
-	/* Check that the communication with the device is working */
+	 
 	rc = hdev->asic_funcs->test_queues(hdev);
 	if (rc) {
 		dev_err(hdev->dev, "Failed to detect if device is alive\n");
@@ -2248,10 +1981,7 @@ int hl_device_init(struct hl_device *hdev)
 		goto out_disabled;
 	}
 
-	/*
-	 * Expose devices and sysfs/debugfs files to user.
-	 * From here there is no need to expose them in case of an error.
-	 */
+	 
 	expose_interfaces_on_err = false;
 	rc = cdev_sysfs_debugfs_add(hdev);
 	if (rc) {
@@ -2260,19 +1990,12 @@ int hl_device_init(struct hl_device *hdev)
 		goto out_disabled;
 	}
 
-	/* Need to call this again because the max power might change,
-	 * depending on card type for certain ASICs
-	 */
+	 
 	if (hdev->asic_prop.set_max_power_on_device_init &&
 			!hdev->asic_prop.fw_security_enabled)
 		hl_fw_set_max_power(hdev);
 
-	/*
-	 * hl_hwmon_init() must be called after device_late_init(), because only
-	 * there we get the information from the device about which
-	 * hwmon-related sensors the device supports.
-	 * Furthermore, it must be done after adding the device to the system.
-	 */
+	 
 	rc = hl_hwmon_init(hdev);
 	if (rc) {
 		dev_err(hdev->dev, "Failed to initialize hwmon\n");
@@ -2286,11 +2009,7 @@ int hl_device_init(struct hl_device *hdev)
 
 	hdev->init_done = true;
 
-	/* After initialization is done, we are ready to receive events from
-	 * the F/W. We can't do it before because we will ignore events and if
-	 * those events are fatal, we won't know about it and the device will
-	 * be operational although it shouldn't be
-	 */
+	 
 	hdev->asic_funcs->enable_events_from_fw(hdev);
 
 	return 0;
@@ -2335,13 +2054,7 @@ out_disabled:
 	return rc;
 }
 
-/*
- * hl_device_fini - main tear-down function for habanalabs device
- *
- * @hdev: pointer to habanalabs device structure
- *
- * Destroy the device, call ASIC fini functions and release the id
- */
+ 
 void hl_device_fini(struct hl_device *hdev)
 {
 	bool device_in_reset;
@@ -2359,13 +2072,7 @@ void hl_device_fini(struct hl_device *hdev)
 	else
 		reset_sec = HL_HARD_RESET_MAX_TIMEOUT;
 
-	/*
-	 * This function is competing with the reset function, so try to
-	 * take the reset atomic and if we are already in middle of reset,
-	 * wait until reset function is finished. Reset function is designed
-	 * to always finish. However, in Gaudi, because of all the network
-	 * ports, the hard reset could take between 10-30 seconds
-	 */
+	 
 
 	timeout = ktime_add_us(ktime_get(), reset_sec * 1000 * 1000);
 
@@ -2394,16 +2101,10 @@ void hl_device_fini(struct hl_device *hdev)
 
 	cancel_delayed_work_sync(&hdev->device_release_watchdog_work.reset_work);
 
-	/* Disable PCI access from device F/W so it won't send us additional
-	 * interrupts. We disable MSI/MSI-X at the halt_engines function and we
-	 * can't have the F/W sending us interrupts after that. We need to
-	 * disable the access here because if the device is marked disable, the
-	 * message won't be send. Also, in case of heartbeat, the device CPU is
-	 * marked as disable so this message won't be sent
-	 */
+	 
 	hl_fw_send_pci_access_msg(hdev,	CPUCP_PACKET_DISABLE_PCI_ACCESS, 0x0);
 
-	/* Mark device as disabled */
+	 
 	hdev->disabled = true;
 
 	take_release_locks(hdev);
@@ -2414,10 +2115,7 @@ void hl_device_fini(struct hl_device *hdev)
 
 	cleanup_resources(hdev, true, false, false);
 
-	/* Kill processes here after CS rollback. This is because the process
-	 * can't really exit until all its CSs are done, which is what we
-	 * do in cs rollback
-	 */
+	 
 	dev_info(hdev->dev,
 		"Waiting for all processes to exit (timeout of %u seconds)",
 		HL_WAIT_PROCESS_KILL_ON_DEVICE_FINI);
@@ -2438,14 +2136,14 @@ void hl_device_fini(struct hl_device *hdev)
 
 	hl_cb_pool_fini(hdev);
 
-	/* Reset the H/W. It will be in idle state after this returns */
+	 
 	rc = hdev->asic_funcs->hw_fini(hdev, true, false);
 	if (rc)
 		dev_err(hdev->dev, "hw_fini failed in device fini while removing device %d\n", rc);
 
 	hdev->fw_loader.fw_comp_loaded = FW_TYPE_NONE;
 
-	/* Release kernel context */
+	 
 	if ((hdev->kernel_ctx) && (hl_ctx_put(hdev->kernel_ctx) != 1))
 		dev_err(hdev->dev, "kernel ctx is still alive\n");
 
@@ -2468,12 +2166,12 @@ void hl_device_fini(struct hl_device *hdev)
 
 	hl_hw_queues_destroy(hdev);
 
-	/* Call ASIC S/W finalize function */
+	 
 	hdev->asic_funcs->sw_fini(hdev);
 
 	device_early_fini(hdev);
 
-	/* Hide devices and sysfs/debugfs files from user */
+	 
 	cdev_sysfs_debugfs_remove(hdev);
 
 	hl_debugfs_device_fini(hdev);
@@ -2481,19 +2179,9 @@ void hl_device_fini(struct hl_device *hdev)
 	pr_info("removed device successfully\n");
 }
 
-/*
- * MMIO register access helper functions.
- */
+ 
 
-/*
- * hl_rreg - Read an MMIO register
- *
- * @hdev: pointer to habanalabs device structure
- * @reg: MMIO register offset (in bytes)
- *
- * Returns the value of the MMIO register we are asked to read
- *
- */
+ 
 inline u32 hl_rreg(struct hl_device *hdev, u32 reg)
 {
 	u32 val = readl(hdev->rmmio + reg);
@@ -2504,16 +2192,7 @@ inline u32 hl_rreg(struct hl_device *hdev, u32 reg)
 	return val;
 }
 
-/*
- * hl_wreg - Write to an MMIO register
- *
- * @hdev: pointer to habanalabs device structure
- * @reg: MMIO register offset (in bytes)
- * @val: 32-bit value
- *
- * Writes the 32-bit value into the MMIO register
- *
- */
+ 
 inline void hl_wreg(struct hl_device *hdev, u32 reg, u32 val)
 {
 	if (unlikely(trace_habanalabs_wreg32_enabled()))
@@ -2534,7 +2213,7 @@ void hl_capture_razwi(struct hl_device *hdev, u64 addr, u16 *engine_id, u16 num_
 		return;
 	}
 
-	/* In case it's the first razwi since the device was opened, capture its parameters */
+	 
 	if (atomic_cmpxchg(&hdev->captured_err_info.razwi_info.razwi_detected, 0, 1))
 		return;
 
@@ -2568,7 +2247,7 @@ static void hl_capture_user_mappings(struct hl_device *hdev, bool is_pmmu)
 	u32 map_idx = 0;
 	int i;
 
-	/* Reset previous session count*/
+	 
 	pgf_info->num_of_user_mappings = 0;
 
 	ctx = hl_get_compute_ctx(hdev);
@@ -2589,9 +2268,7 @@ static void hl_capture_user_mappings(struct hl_device *hdev, bool is_pmmu)
 	if (!pgf_info->num_of_user_mappings)
 		goto finish;
 
-	/* In case we already allocated in previous session, need to release it before
-	 * allocating new buffer.
-	 */
+	 
 	vfree(pgf_info->user_mappings);
 	pgf_info->user_mappings =
 			vzalloc(pgf_info->num_of_user_mappings * sizeof(struct hl_user_mapping));
@@ -2623,7 +2300,7 @@ void hl_capture_page_fault(struct hl_device *hdev, u64 addr, u16 eng_id, bool is
 {
 	struct page_fault_info *pgf_info = &hdev->captured_err_info.page_fault_info;
 
-	/* Capture only the first page fault */
+	 
 	if (atomic_cmpxchg(&pgf_info->page_fault_detected, 0, 1))
 		return;
 
@@ -2648,7 +2325,7 @@ static void hl_capture_hw_err(struct hl_device *hdev, u16 event_id)
 {
 	struct hw_err_info *info = &hdev->captured_err_info.hw_err;
 
-	/* Capture only the first HW err */
+	 
 	if (atomic_cmpxchg(&info->event_detected, 0, 1))
 		return;
 
@@ -2670,7 +2347,7 @@ static void hl_capture_fw_err(struct hl_device *hdev, struct hl_info_fw_err_info
 {
 	struct fw_err_info *info = &hdev->captured_err_info.fw_err;
 
-	/* Capture only the first FW error */
+	 
 	if (atomic_cmpxchg(&info->event_detected, 0, 1))
 		return;
 

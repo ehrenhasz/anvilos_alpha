@@ -1,30 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2005, 2010, Oracle and/or its affiliates. All rights reserved.
- * Copyright (c) 2011, 2020 by Delphix. All rights reserved.
- * Copyright (c) 2018 Datto Inc.
- * Copyright 2020 Joyent, Inc.
- */
+ 
 
 #ifndef	_LIBZFS_IMPL_H
 #define	_LIBZFS_IMPL_H
@@ -58,12 +34,7 @@ struct libzfs_handle {
 	char libzfs_desc[1024];
 	int libzfs_printerr;
 	boolean_t libzfs_mnttab_enable;
-	/*
-	 * We need a lock to handle the case where parallel mount
-	 * threads are populating the mnttab cache simultaneously. The
-	 * lock only protects the integrity of the avl tree, and does
-	 * not protect the contents of the mnttab entries themselves.
-	 */
+	 
 	pthread_mutex_t libzfs_mnttab_cache_lock;
 	avl_tree_t libzfs_mnttab_cache;
 	int libzfs_pool_iter;
@@ -78,8 +49,8 @@ struct zfs_handle {
 	libzfs_handle_t *zfs_hdl;
 	zpool_handle_t *zpool_hdl;
 	char zfs_name[ZFS_MAX_DATASET_NAME_LEN];
-	zfs_type_t zfs_type; /* type including snapshot */
-	zfs_type_t zfs_head_type; /* type excluding snapshot */
+	zfs_type_t zfs_type;  
+	zfs_type_t zfs_head_type;  
 	dmu_objset_stats_t zfs_dmustats;
 	nvlist_t *zfs_props;
 	nvlist_t *zfs_user_props;
@@ -89,10 +60,7 @@ struct zfs_handle {
 	uint8_t *zfs_props_table;
 };
 
-/*
- * This is different from checking zfs_type, because it will also catch
- * snapshots of volumes.
- */
+ 
 #define	ZFS_IS_VOLUME(zhp) ((zhp)->zfs_head_type == ZFS_TYPE_VOLUME)
 
 struct zpool_handle {
@@ -144,19 +112,11 @@ extern int zprop_parse_value(libzfs_handle_t *, nvpair_t *, int, zfs_type_t,
 extern int zprop_expand_list(libzfs_handle_t *hdl, zprop_list_t **plp,
     zfs_type_t type);
 
-/*
- * Use this changelist_gather() flag to force attempting mounts
- * on each change node regardless of whether or not it is currently
- * mounted.
- */
+ 
 #define	CL_GATHER_MOUNT_ALWAYS	1
-/*
- * changelist_gather() flag to force it to iterate on mounted datasets only
- */
+ 
 #define	CL_GATHER_ITER_MOUNTED	2
-/*
- * Use this changelist_gather() flag to prevent unmounting of file systems.
- */
+ 
 #define	CL_GATHER_DONT_UNMOUNT	4
 
 typedef struct prop_changelist prop_changelist_t;
@@ -235,4 +195,4 @@ extern int find_shares_object(differ_info_t *di);
 }
 #endif
 
-#endif	/* _LIBZFS_IMPL_H */
+#endif	 

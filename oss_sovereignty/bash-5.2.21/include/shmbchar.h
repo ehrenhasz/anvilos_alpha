@@ -1,20 +1,4 @@
-/* Multibyte character data type.
-   Copyright (C) 2001, 2005-2007, 2009-2010, 2021 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation; either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <http://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>.  */
+ 
 
 #ifndef _SHMBCHAR_H
 #define _SHMBCHAR_H 1
@@ -23,18 +7,14 @@
 
 #include <string.h>
 
-/* Tru64 with Desktop Toolkit C has a bug: <stdio.h> must be included before
-   <wchar.h>.
-   BSD/OS 4.1 has a bug: <stdio.h> and <time.h> must be included before
-   <wchar.h>.  */
+ 
 #include <stdio.h>
 #include <time.h>
 #include <wchar.h>
 #include <wctype.h>
 
 
-/* is_basic(c) tests whether the single-byte character c is in the
-   ISO C "basic character set". */
+ 
 
 #if (' ' == 32) && ('!' == 33) && ('"' == 34) && ('#' == 35) \
     && ('%' == 37) && ('&' == 38) && ('\'' == 39) && ('(' == 40) \
@@ -59,7 +39,7 @@
     && ('s' == 115) && ('t' == 116) && ('u' == 117) && ('v' == 118) \
     && ('w' == 119) && ('x' == 120) && ('y' == 121) && ('z' == 122) \
     && ('{' == 123) && ('|' == 124) && ('}' == 125) && ('~' == 126)
-/* The character set is ISO-646, not EBCDIC. */
+ 
 # define IS_BASIC_ASCII 1
 
 extern const unsigned int is_basic_table[];
@@ -108,5 +88,5 @@ is_basic (char c)
 
 #endif
 
-#endif /* HANDLE_MULTIBYTE */
-#endif /* _SHMBCHAR_H */
+#endif  
+#endif  

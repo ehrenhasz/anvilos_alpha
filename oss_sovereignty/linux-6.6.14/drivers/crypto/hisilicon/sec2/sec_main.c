@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 HiSilicon Limited. */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -50,7 +50,7 @@
 #define SEC_MEM_START_INIT_REG	0x301100
 #define SEC_MEM_INIT_DONE_REG		0x301104
 
-/* clock gating */
+ 
 #define SEC_CONTROL_REG		0x301200
 #define SEC_DYNAMIC_GATE_REG		0x30121c
 #define SEC_CORE_AUTO_GATE		0x30212c
@@ -284,7 +284,7 @@ static const struct debugfs_reg32 sec_dfx_regs[] = {
 	{"SEC_BD_SAA8                   ",  0x301C40},
 };
 
-/* define the SEC's dfx regs region and region length */
+ 
 static struct dfx_diff_registers sec_diff_regs[] = {
 	{
 		.reg_offset = SEC_DFX_BASE,
@@ -406,10 +406,7 @@ static const struct kernel_param_ops sec_uacce_mode_ops = {
 	.get = param_get_int,
 };
 
-/*
- * uacce_mode = 0 means sec only register to crypto,
- * uacce_mode = 1 means sec both register to crypto and uacce.
- */
+ 
 static u32 uacce_mode = UACCE_MODE_NOUACCE;
 module_param_cb(uacce_mode, &sec_uacce_mode_ops, &uacce_mode, 0444);
 MODULE_PARM_DESC(uacce_mode, UACCE_MODE_DESC);
@@ -479,7 +476,7 @@ static void sec_open_sva_prefetch(struct hisi_qm *qm)
 	if (!test_bit(QM_SUPPORT_SVA_PREFETCH, &qm->caps))
 		return;
 
-	/* Enable prefetch */
+	 
 	val = readl_relaxed(qm->io_base + SEC_PREFETCH_CFG);
 	val &= SEC_PREFETCH_ENABLE;
 	writel(val, qm->io_base + SEC_PREFETCH_CFG);
@@ -534,7 +531,7 @@ static void sec_disable_clock_gate(struct hisi_qm *qm)
 {
 	u32 val;
 
-	/* Kunpeng920 needs to close clock gating */
+	 
 	val = readl_relaxed(qm->io_base + SEC_CONTROL_REG);
 	val &= SEC_CLK_GATE_DISABLE;
 	writel_relaxed(val, qm->io_base + SEC_CONTROL_REG);
@@ -545,7 +542,7 @@ static int sec_engine_init(struct hisi_qm *qm)
 	int ret;
 	u32 reg;
 
-	/* disable clock gate control before mem init */
+	 
 	sec_disable_clock_gate(qm);
 
 	writel_relaxed(0x1, qm->io_base + SEC_MEM_START_INIT_REG);
@@ -571,18 +568,18 @@ static int sec_engine_init(struct hisi_qm *qm)
 	writel(reg, qm->io_base + SEC_SAA_EN_REG);
 
 	if (qm->ver < QM_HW_V3) {
-		/* HW V2 enable sm4 extra mode, as ctr/ecb */
+		 
 		writel_relaxed(SEC_BD_ERR_CHK_EN0,
 			       qm->io_base + SEC_BD_ERR_CHK_EN_REG0);
 
-		/* HW V2 enable sm4 xts mode multiple iv */
+		 
 		writel_relaxed(SEC_BD_ERR_CHK_EN1,
 			       qm->io_base + SEC_BD_ERR_CHK_EN_REG1);
 		writel_relaxed(SEC_BD_ERR_CHK_EN3,
 			       qm->io_base + SEC_BD_ERR_CHK_EN_REG3);
 	}
 
-	/* config endian */
+	 
 	sec_set_endian(qm);
 
 	sec_enable_clock_gate(qm);
@@ -592,22 +589,22 @@ static int sec_engine_init(struct hisi_qm *qm)
 
 static int sec_set_user_domain_and_cache(struct hisi_qm *qm)
 {
-	/* qm user domain */
+	 
 	writel(AXUSER_BASE, qm->io_base + QM_ARUSER_M_CFG_1);
 	writel(ARUSER_M_CFG_ENABLE, qm->io_base + QM_ARUSER_M_CFG_ENABLE);
 	writel(AXUSER_BASE, qm->io_base + QM_AWUSER_M_CFG_1);
 	writel(AWUSER_M_CFG_ENABLE, qm->io_base + QM_AWUSER_M_CFG_ENABLE);
 	writel(WUSER_M_CFG_ENABLE, qm->io_base + QM_WUSER_M_CFG_ENABLE);
 
-	/* qm cache */
+	 
 	writel(AXI_M_CFG, qm->io_base + QM_AXI_M_CFG);
 	writel(AXI_M_CFG_ENABLE, qm->io_base + QM_AXI_M_CFG_ENABLE);
 
-	/* disable FLR triggered by BME(bus master enable) */
+	 
 	writel(PEH_AXUSER_CFG, qm->io_base + QM_PEH_AXUSER_CFG);
 	writel(PEH_AXUSER_CFG_ENABLE, qm->io_base + QM_PEH_AXUSER_CFG_ENABLE);
 
-	/* enable sqc,cqc writeback */
+	 
 	writel(SQC_CACHE_ENABLE | CQC_CACHE_ENABLE | SQC_CACHE_WB_ENABLE |
 	       CQC_CACHE_WB_ENABLE | FIELD_PREP(SQC_CACHE_WB_THRD, 1) |
 	       FIELD_PREP(CQC_CACHE_WB_THRD, 1), qm->io_base + QM_CACHE_CTL);
@@ -615,17 +612,17 @@ static int sec_set_user_domain_and_cache(struct hisi_qm *qm)
 	return sec_engine_init(qm);
 }
 
-/* sec_debug_regs_clear() - clear the sec debug regs */
+ 
 static void sec_debug_regs_clear(struct hisi_qm *qm)
 {
 	int i;
 
-	/* clear sec dfx regs */
+	 
 	writel(0x1, qm->io_base + SEC_CTRL_CNT_CLR_CE);
 	for (i = 0; i < ARRAY_SIZE(sec_dfx_regs); i++)
 		readl(qm->io_base + sec_dfx_regs[i].offset);
 
-	/* clear rdclr_en */
+	 
 	writel(0x0, qm->io_base + SEC_CTRL_CNT_CLR_CE);
 
 	hisi_qm_debug_regs_clear(qm);
@@ -664,30 +661,30 @@ static void sec_hw_error_enable(struct hisi_qm *qm)
 	ce = hisi_qm_get_hw_info(qm, sec_basic_info, SEC_CE_MASK_CAP, qm->cap_ver);
 	nfe = hisi_qm_get_hw_info(qm, sec_basic_info, SEC_NFE_MASK_CAP, qm->cap_ver);
 
-	/* clear SEC hw error source if having */
+	 
 	writel(ce | nfe | SEC_RAS_FE_ENB_MSK, qm->io_base + SEC_CORE_INT_SOURCE);
 
-	/* enable RAS int */
+	 
 	writel(ce, qm->io_base + SEC_RAS_CE_REG);
 	writel(SEC_RAS_FE_ENB_MSK, qm->io_base + SEC_RAS_FE_REG);
 	writel(nfe, qm->io_base + SEC_RAS_NFE_REG);
 
-	/* enable SEC block master OOO when nfe occurs on Kunpeng930 */
+	 
 	sec_master_ooo_ctrl(qm, true);
 
-	/* enable SEC hw error interrupts */
+	 
 	writel(ce | nfe | SEC_RAS_FE_ENB_MSK, qm->io_base + SEC_CORE_INT_MASK);
 }
 
 static void sec_hw_error_disable(struct hisi_qm *qm)
 {
-	/* disable SEC hw error interrupts */
+	 
 	writel(SEC_CORE_INT_DISABLE, qm->io_base + SEC_CORE_INT_MASK);
 
-	/* disable SEC block master OOO when nfe occurs on Kunpeng930 */
+	 
 	sec_master_ooo_ctrl(qm, false);
 
-	/* disable RAS int */
+	 
 	writel(SEC_RAS_DISABLE, qm->io_base + SEC_RAS_CE_REG);
 	writel(SEC_RAS_DISABLE, qm->io_base + SEC_RAS_FE_REG);
 	writel(SEC_RAS_DISABLE, qm->io_base + SEC_RAS_NFE_REG);
@@ -967,7 +964,7 @@ static void sec_show_last_dfx_regs(struct hisi_qm *qm)
 	if (qm->fun_type == QM_HW_VF || !debug->last_words)
 		return;
 
-	/* dumps last word of the debugging registers during controller reset */
+	 
 	for (i = 0; i < ARRAY_SIZE(sec_dfx_regs); i++) {
 		val = readl_relaxed(qm->io_base + sec_dfx_regs[i].offset);
 		if (val != debug->last_words[i])
@@ -1121,12 +1118,7 @@ static int sec_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
 		if (pf_q_num_flag)
 			set_bit(QM_MODULE_PARAM, &qm->misc_ctl);
 	} else if (qm->fun_type == QM_HW_VF && qm->ver == QM_HW_V1) {
-		/*
-		 * have no way to get qm configure in VM in v1 hardware,
-		 * so currently force PF to uses SEC_PF_DEF_Q_NUM, and force
-		 * to trigger only one VF in v1 hardware.
-		 * v2 hardware has no such problem.
-		 */
+		 
 		qm->qp_base = SEC_PF_DEF_Q_NUM;
 		qm->qp_num = SEC_QUEUE_NUM_V1 - SEC_PF_DEF_Q_NUM;
 	}
@@ -1137,7 +1129,7 @@ static int sec_qm_init(struct hisi_qm *qm, struct pci_dev *pdev)
 		return ret;
 	}
 
-	/* Fetch and save the value of capability registers */
+	 
 	ret = sec_pre_store_cap_reg(qm);
 	if (ret) {
 		pci_err(qm->pdev, "Failed to pre-store capability registers!\n");
@@ -1170,7 +1162,7 @@ static int sec_probe_init(struct sec_dev *sec)
 		ret = sec_pf_probe_init(sec);
 		if (ret)
 			return ret;
-		/* enable shaper type 0 */
+		 
 		if (qm->ver >= QM_HW_V3) {
 			type_rate |= QM_SHAPER_ENABLE;
 			qm->type_rate = type_rate;
@@ -1192,7 +1184,7 @@ static void sec_iommu_used_check(struct sec_dev *sec)
 
 	domain = iommu_get_domain_for_dev(dev);
 
-	/* Check if iommu is used */
+	 
 	sec->iommu_used = false;
 	if (domain) {
 		if (domain->type & __IOMMU_DOMAIN_PAGING)

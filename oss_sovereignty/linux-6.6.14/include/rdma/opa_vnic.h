@@ -1,19 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright(c) 2017 - 2020 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _OPA_VNIC_H
 #define _OPA_VNIC_H
 
-/*
- * This file contains Intel Omni-Path (OPA) Virtual Network Interface
- * Controller (VNIC) specific declarations.
- */
+ 
 
 #include <rdma/ib_verbs.h>
 
-/* 16 header bytes + 2 reserved bytes */
+ 
 #define OPA_VNIC_L2_HDR_LEN   (16 + 2)
 
 #define OPA_VNIC_L4_HDR_LEN   2
@@ -30,10 +25,10 @@
 #define OPA_VNIC_SKB_MDATA_LEN         4
 #define OPA_VNIC_SKB_MDATA_ENCAP_ERR   0x1
 
-/* opa vnic rdma netdev's private data structure */
+ 
 struct opa_vnic_rdma_netdev {
-	struct rdma_netdev rn;  /* keep this first */
-	/* followed by device private data */
+	struct rdma_netdev rn;   
+	 
 	char *dev_priv[];
 };
 
@@ -51,7 +46,7 @@ static inline void *opa_vnic_dev_priv(const struct net_device *dev)
 	return oparn->dev_priv;
 }
 
-/* opa_vnic skb meta data structure */
+ 
 struct opa_vnic_skb_mdata {
 	u8 vl;
 	u8 entropy;
@@ -59,7 +54,7 @@ struct opa_vnic_skb_mdata {
 	u8 rsvd;
 } __packed;
 
-/* OPA VNIC group statistics */
+ 
 struct opa_vnic_grp_stats {
 	u64 unicast;
 	u64 mcastbcast;
@@ -75,10 +70,10 @@ struct opa_vnic_grp_stats {
 };
 
 struct opa_vnic_stats {
-	/* standard netdev statistics */
+	 
 	struct rtnl_link_stats64 netstats;
 
-	/* OPA VNIC statistics */
+	 
 	struct opa_vnic_grp_stats tx_grp;
 	struct opa_vnic_grp_stats rx_grp;
 	u64 tx_dlid_zero;
@@ -93,4 +88,4 @@ static inline bool rdma_cap_opa_vnic(struct ib_device *device)
 	return !!(device->attrs.kernel_cap_flags & IBK_RDMA_NETDEV_OPA);
 }
 
-#endif /* _OPA_VNIC_H */
+#endif  

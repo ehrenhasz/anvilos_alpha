@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * copy offload engine support
- *
- * Copyright © 2006, Intel Corporation.
- *
- *      Dan Williams <dan.j.williams@intel.com>
- *
- *      with architecture considerations by:
- *      Neil Brown <neilb@suse.de>
- *      Jeff Garzik <jeff@garzik.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/highmem.h>
 #include <linux/module.h>
@@ -17,17 +7,7 @@
 #include <linux/dma-mapping.h>
 #include <linux/async_tx.h>
 
-/**
- * async_memcpy - attempt to copy memory with a dma engine.
- * @dest: destination page
- * @src: src page
- * @dest_offset: offset into 'dest' to start transaction
- * @src_offset: offset into 'src' to start transaction
- * @len: length in bytes
- * @submit: submission / completion modifiers
- *
- * honored flags: ASYNC_TX_ACK
- */
+ 
 struct dma_async_tx_descriptor *
 async_memcpy(struct page *dest, struct page *src, unsigned int dest_offset,
 	     unsigned int src_offset, size_t len,
@@ -72,7 +52,7 @@ async_memcpy(struct page *dest, struct page *src, unsigned int dest_offset,
 		void *dest_buf, *src_buf;
 		pr_debug("%s: (sync) len: %zu\n", __func__, len);
 
-		/* wait for any prerequisite operations */
+		 
 		async_tx_quiesce(&submit->depend_tx);
 
 		dest_buf = kmap_atomic(dest) + dest_offset;

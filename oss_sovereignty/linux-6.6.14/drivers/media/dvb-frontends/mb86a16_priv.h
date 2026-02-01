@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	Fujitsu MB86A16 DVB-S/DSS DC Receiver driver
-
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 #ifndef __MB86A16_PRIV_H
 #define __MB86A16_PRIV_H
@@ -136,4 +131,4 @@
 #define MB86A16_DISTMON		0x52
 #define MB86A16_VERSION		0x7f
 
-#endif /* __MB86A16_PRIV_H */
+#endif  

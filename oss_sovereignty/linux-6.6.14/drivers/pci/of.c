@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCI <-> OF mapping helpers
- *
- * Copyright 2011 IBM Corp.
- */
+
+ 
 #define pr_fmt(fmt)	"PCI: OF: " fmt
 
 #include <linux/irqdomain.h>
@@ -16,13 +12,7 @@
 #include "pci.h"
 
 #ifdef CONFIG_PCI
-/**
- * pci_set_of_node - Find and set device's DT device_node
- * @dev: the PCI device structure to fill
- *
- * Returns 0 on success with of_node set or when no device is described in the
- * DT. Returns -ENODEV if the device is present, but disabled in the DT.
- */
+ 
 int pci_set_of_node(struct pci_dev *dev)
 {
 	struct device_node *node;
@@ -67,15 +57,11 @@ void pci_release_bus_of_node(struct pci_bus *bus)
 
 struct device_node * __weak pcibios_get_phb_of_node(struct pci_bus *bus)
 {
-	/* This should only be called for PHBs */
+	 
 	if (WARN_ON(bus->self || bus->parent))
 		return NULL;
 
-	/*
-	 * Look for a node pointer in either the intermediary device we
-	 * create above the root bus or its own parent. Normally only
-	 * the later is populated.
-	 */
+	 
 	if (bus->bridge->of_node)
 		return of_node_get(bus->bridge->of_node);
 	if (bus->bridge->parent && bus->bridge->parent->of_node)
@@ -91,15 +77,12 @@ struct irq_domain *pci_host_bridge_of_msi_domain(struct pci_bus *bus)
 	if (!bus->dev.of_node)
 		return NULL;
 
-	/* Start looking for a phandle to an MSI controller. */
+	 
 	d = of_msi_get_domain(&bus->dev, bus->dev.of_node, DOMAIN_BUS_PCI_MSI);
 	if (d)
 		return d;
 
-	/*
-	 * If we don't have an msi-parent property, look for a domain
-	 * directly attached to the host bridge.
-	 */
+	 
 	d = irq_find_matching_host(bus->dev.of_node, DOMAIN_BUS_PCI_MSI);
 	if (d)
 		return d;
@@ -137,11 +120,7 @@ struct device_node *of_pci_find_child_device(struct device_node *parent,
 	for_each_child_of_node(parent, node) {
 		if (__of_pci_pci_compare(node, devfn))
 			return node;
-		/*
-		 * Some OFs create a parent node "multifunc-device" as
-		 * a fake root for all functions of a multi-function
-		 * device we go down them as well.
-		 */
+		 
 		if (of_node_name_eq(node, "multifunc-device")) {
 			for_each_child_of_node(node, node2) {
 				if (__of_pci_pci_compare(node2, devfn)) {
@@ -155,15 +134,7 @@ struct device_node *of_pci_find_child_device(struct device_node *parent,
 }
 EXPORT_SYMBOL_GPL(of_pci_find_child_device);
 
-/**
- * of_pci_get_devfn() - Get device and function numbers for a device node
- * @np: device node
- *
- * Parses a standard 5-cell PCI resource and returns an 8-bit value that can
- * be passed to the PCI_SLOT() and PCI_FUNC() macros to extract the device
- * and function numbers respectively. On error a negative error code is
- * returned.
- */
+ 
 int of_pci_get_devfn(struct device_node *np)
 {
 	u32 reg[5];
@@ -177,13 +148,7 @@ int of_pci_get_devfn(struct device_node *np)
 }
 EXPORT_SYMBOL_GPL(of_pci_get_devfn);
 
-/**
- * of_pci_parse_bus_range() - parse the bus-range property of a PCI device
- * @node: device node
- * @res: address to a struct resource to return the bus-range
- *
- * Returns 0 on success or a negative error-code on failure.
- */
+ 
 int of_pci_parse_bus_range(struct device_node *node, struct resource *res)
 {
 	u32 bus_range[2];
@@ -203,23 +168,7 @@ int of_pci_parse_bus_range(struct device_node *node, struct resource *res)
 }
 EXPORT_SYMBOL_GPL(of_pci_parse_bus_range);
 
-/**
- * of_get_pci_domain_nr - Find the host bridge domain number
- *			  of the given device node.
- * @node: Device tree node with the domain information.
- *
- * This function will try to obtain the host bridge domain number by finding
- * a property called "linux,pci-domain" of the given device node.
- *
- * Return:
- * * > 0	- On success, an associated domain number.
- * * -EINVAL	- The property "linux,pci-domain" does not exist.
- * * -ENODATA	- The linux,pci-domain" property does not have value.
- * * -EOVERFLOW	- Invalid "linux,pci-domain" property value.
- *
- * Returns the associated domain number from DT in the range [0-0xffff], or
- * a negative value if the required property is not found.
- */
+ 
 int of_get_pci_domain_nr(struct device_node *node)
 {
 	u32 domain;
@@ -233,10 +182,7 @@ int of_get_pci_domain_nr(struct device_node *node)
 }
 EXPORT_SYMBOL_GPL(of_get_pci_domain_nr);
 
-/**
- * of_pci_check_probe_only - Setup probe only mode if linux,pci-probe-only
- *                           is present and valid
- */
+ 
 void of_pci_check_probe_only(void)
 {
 	u32 val;
@@ -258,26 +204,7 @@ void of_pci_check_probe_only(void)
 }
 EXPORT_SYMBOL_GPL(of_pci_check_probe_only);
 
-/**
- * devm_of_pci_get_host_bridge_resources() - Resource-managed parsing of PCI
- *                                           host bridge resources from DT
- * @dev: host bridge device
- * @busno: bus number associated with the bridge root bus
- * @bus_max: maximum number of buses for this bridge
- * @resources: list where the range of resources will be added after DT parsing
- * @ib_resources: list where the range of inbound resources (with addresses
- *                from 'dma-ranges') will be added after DT parsing
- * @io_base: pointer to a variable that will contain on return the physical
- * address for the start of the I/O range. Can be NULL if the caller doesn't
- * expect I/O ranges to be present in the device tree.
- *
- * This function will parse the "ranges" property of a PCI host bridge device
- * node and setup the resource mapping based on its content. It is expected
- * that the property conforms with the Power ePAPR document.
- *
- * It returns zero if the range parsing has been successful or a standard error
- * value if it failed.
- */
+ 
 static int devm_of_pci_get_host_bridge_resources(struct device *dev,
 			unsigned char busno, unsigned char bus_max,
 			struct list_head *resources,
@@ -314,14 +241,14 @@ static int devm_of_pci_get_host_bridge_resources(struct device *dev,
 	}
 	pci_add_resource(resources, bus_range);
 
-	/* Check for ranges property */
+	 
 	err = of_pci_range_parser_init(&parser, dev_node);
 	if (err)
 		return 0;
 
 	dev_dbg(dev, "Parsing ranges property...\n");
 	for_each_of_pci_range(&parser, &range) {
-		/* Read next ranges element */
+		 
 		if ((range.flags & IORESOURCE_TYPE_BITS) == IORESOURCE_IO)
 			range_type = "IO";
 		else if ((range.flags & IORESOURCE_TYPE_BITS) == IORESOURCE_MEM)
@@ -332,10 +259,7 @@ static int devm_of_pci_get_host_bridge_resources(struct device *dev,
 			 range_type, range.cpu_addr,
 			 range.cpu_addr + range.size - 1, range.pci_addr);
 
-		/*
-		 * If we failed translation or got a zero-sized region
-		 * then skip this range
-		 */
+		 
 		if (range.cpu_addr == OF_BAD_ADDR || range.size == 0)
 			continue;
 
@@ -367,7 +291,7 @@ static int devm_of_pci_get_host_bridge_resources(struct device *dev,
 		pci_add_resource_offset(resources, res,	res->start - range.pci_addr);
 	}
 
-	/* Check for dma-ranges property */
+	 
 	if (!ib_resources)
 		return 0;
 	err = of_pci_dma_range_parser_init(&parser, dev_node);
@@ -376,10 +300,7 @@ static int devm_of_pci_get_host_bridge_resources(struct device *dev,
 
 	dev_dbg(dev, "Parsing dma-ranges property...\n");
 	for_each_of_pci_range(&parser, &range) {
-		/*
-		 * If we failed translation or got a zero-sized region
-		 * then skip this range
-		 */
+		 
 		if (((range.flags & IORESOURCE_TYPE_BITS) != IORESOURCE_MEM) ||
 		    range.cpu_addr == OF_BAD_ADDR || range.size == 0)
 			continue;
@@ -411,17 +332,7 @@ failed:
 }
 
 #if IS_ENABLED(CONFIG_OF_IRQ)
-/**
- * of_irq_parse_pci - Resolve the interrupt for a PCI device
- * @pdev:       the device whose interrupt is to be resolved
- * @out_irq:    structure of_phandle_args filled by this function
- *
- * This function resolves the PCI interrupt for a given PCI device. If a
- * device-node exists for a given pci_dev, it will use normal OF tree
- * walking. If not, it will implement standard swizzling and walk up the
- * PCI tree until an device-node is found, at which point it will finish
- * resolving using the OF tree walking.
- */
+ 
 static int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *out_irq)
 {
 	struct device_node *dn, *ppnode = NULL;
@@ -430,10 +341,7 @@ static int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *
 	u8 pin;
 	int rc;
 
-	/*
-	 * Check if we have a device node, if yes, fallback to standard
-	 * device tree parsing
-	 */
+	 
 	dn = pci_device_to_OF_node(pdev);
 	if (dn) {
 		rc = of_irq_parse_one(dn, 0, out_irq);
@@ -441,62 +349,44 @@ static int of_irq_parse_pci(const struct pci_dev *pdev, struct of_phandle_args *
 			return rc;
 	}
 
-	/*
-	 * Ok, we don't, time to have fun. Let's start by building up an
-	 * interrupt spec.  we assume #interrupt-cells is 1, which is standard
-	 * for PCI. If you do different, then don't use that routine.
-	 */
+	 
 	rc = pci_read_config_byte(pdev, PCI_INTERRUPT_PIN, &pin);
 	if (rc != 0)
 		goto err;
-	/* No pin, exit with no error message. */
+	 
 	if (pin == 0)
 		return -ENODEV;
 
-	/* Local interrupt-map in the device node? Use it! */
+	 
 	if (of_property_present(dn, "interrupt-map")) {
 		pin = pci_swizzle_interrupt_pin(pdev, pin);
 		ppnode = dn;
 	}
 
-	/* Now we walk up the PCI tree */
+	 
 	while (!ppnode) {
-		/* Get the pci_dev of our parent */
+		 
 		ppdev = pdev->bus->self;
 
-		/* Ouch, it's a host bridge... */
+		 
 		if (ppdev == NULL) {
 			ppnode = pci_bus_to_OF_node(pdev->bus);
 
-			/* No node for host bridge ? give up */
+			 
 			if (ppnode == NULL) {
 				rc = -EINVAL;
 				goto err;
 			}
 		} else {
-			/* We found a P2P bridge, check if it has a node */
+			 
 			ppnode = pci_device_to_OF_node(ppdev);
 		}
 
-		/*
-		 * Ok, we have found a parent with a device-node, hand over to
-		 * the OF parsing code.
-		 * We build a unit address from the linux device to be used for
-		 * resolution. Note that we use the linux bus number which may
-		 * not match your firmware bus numbering.
-		 * Fortunately, in most cases, interrupt-map-mask doesn't
-		 * include the bus number as part of the matching.
-		 * You should still be careful about that though if you intend
-		 * to rely on this function (you ship a firmware that doesn't
-		 * create device nodes for all PCI devices).
-		 */
+		 
 		if (ppnode)
 			break;
 
-		/*
-		 * We can only get here if we hit a P2P bridge with no node;
-		 * let's do standard swizzling and try again
-		 */
+		 
 		pin = pci_swizzle_interrupt_pin(pdev, pin);
 		pdev = ppdev;
 	}
@@ -523,16 +413,7 @@ err:
 	return rc;
 }
 
-/**
- * of_irq_parse_and_map_pci() - Decode a PCI IRQ from the device tree and map to a VIRQ
- * @dev: The PCI device needing an IRQ
- * @slot: PCI slot number; passed when used as map_irq callback. Unused
- * @pin: PCI IRQ pin number; passed when used as map_irq callback. Unused
- *
- * @slot and @pin are unused, but included in the function so that this
- * function can be used directly as the map_irq callback to
- * pci_assign_irq() and struct pci_host_bridge.map_irq pointer
- */
+ 
 int of_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin)
 {
 	struct of_phandle_args oirq;
@@ -540,12 +421,12 @@ int of_irq_parse_and_map_pci(const struct pci_dev *dev, u8 slot, u8 pin)
 
 	ret = of_irq_parse_pci(dev, &oirq);
 	if (ret)
-		return 0; /* Proper return code 0 == NO_IRQ */
+		return 0;  
 
 	return irq_create_of_mapping(&oirq);
 }
 EXPORT_SYMBOL_GPL(of_irq_parse_and_map_pci);
-#endif	/* CONFIG_OF_IRQ */
+#endif	 
 
 static int pci_parse_request_of_pci_ranges(struct device *dev,
 					   struct pci_host_bridge *bridge)
@@ -630,14 +511,11 @@ void of_pci_make_dev_node(struct pci_dev *pdev)
 	const char *name;
 	int ret;
 
-	/*
-	 * If there is already a device tree node linked to this device,
-	 * return immediately.
-	 */
+	 
 	if (pci_device_to_OF_node(pdev))
 		return;
 
-	/* Check if there is device tree node for parent device */
+	 
 	if (!pdev->bus->self)
 		ppnode = pdev->bus->dev.of_node;
 	else
@@ -688,23 +566,9 @@ out_free_name:
 }
 #endif
 
-#endif /* CONFIG_PCI */
+#endif  
 
-/**
- * of_pci_get_max_link_speed - Find the maximum link speed of the given device node.
- * @node: Device tree node with the maximum link speed information.
- *
- * This function will try to find the limitation of link speed by finding
- * a property called "max-link-speed" of the given device node.
- *
- * Return:
- * * > 0	- On success, a maximum link speed.
- * * -EINVAL	- Invalid "max-link-speed" property value, or failure to access
- *		  the property of the device tree node.
- *
- * Returns the associated max link speed from DT, or a negative value if the
- * required property is not found or is invalid.
- */
+ 
 int of_pci_get_max_link_speed(struct device_node *node)
 {
 	u32 max_link_speed;
@@ -717,22 +581,7 @@ int of_pci_get_max_link_speed(struct device_node *node)
 }
 EXPORT_SYMBOL_GPL(of_pci_get_max_link_speed);
 
-/**
- * of_pci_get_slot_power_limit - Parses the "slot-power-limit-milliwatt"
- *				 property.
- *
- * @node: device tree node with the slot power limit information
- * @slot_power_limit_value: pointer where the value should be stored in PCIe
- *			    Slot Capabilities Register format
- * @slot_power_limit_scale: pointer where the scale should be stored in PCIe
- *			    Slot Capabilities Register format
- *
- * Returns the slot power limit in milliwatts and if @slot_power_limit_value
- * and @slot_power_limit_scale pointers are non-NULL, fills in the value and
- * scale in format used by PCIe Slot Capabilities Register.
- *
- * If the property is not found or is invalid, returns 0.
- */
+ 
 u32 of_pci_get_slot_power_limit(struct device_node *node,
 				u8 *slot_power_limit_value,
 				u8 *slot_power_limit_scale)
@@ -744,7 +593,7 @@ u32 of_pci_get_slot_power_limit(struct device_node *node,
 				 &slot_power_limit_mw))
 		slot_power_limit_mw = 0;
 
-	/* Calculate Slot Power Limit Value and Slot Power Limit Scale */
+	 
 	if (slot_power_limit_mw == 0) {
 		value = 0x00;
 		scale = 0;

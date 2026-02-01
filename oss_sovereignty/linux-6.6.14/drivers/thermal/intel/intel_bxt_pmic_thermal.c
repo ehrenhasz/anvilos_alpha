@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Broxton PMIC thermal driver
- *
- * Copyright (C) 2016 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -166,15 +162,12 @@ static irqreturn_t pmic_thermal_irq_handler(int irq, void *data)
 	td = (struct pmic_thermal_data *)
 		platform_get_device_id(pdev)->driver_data;
 
-	/* Resolve thermal irqs */
+	 
 	for (i = 0; i < td->num_maps; i++) {
 		for (j = 0; j < td->maps[i].num_trips; j++) {
 			reg = td->maps[i].trip_config[j].irq_reg;
 			mask = td->maps[i].trip_config[j].irq_mask;
-			/*
-			 * Read the irq register to resolve whether the
-			 * interrupt was triggered for this sensor
-			 */
+			 
 			if (regmap_read(regmap, reg, &ret))
 				return IRQ_HANDLED;
 
@@ -184,10 +177,7 @@ static irqreturn_t pmic_thermal_irq_handler(int irq, void *data)
 			if (!irq_stat)
 				continue;
 
-			/*
-			 * Read the status register to find out what
-			 * event occurred i.e a high or a low
-			 */
+			 
 			evt_stat_reg = td->maps[i].trip_config[j].evt_stat;
 			if (regmap_read(regmap, evt_stat_reg, &ret))
 				return IRQ_HANDLED;
@@ -197,7 +187,7 @@ static irqreturn_t pmic_thermal_irq_handler(int irq, void *data)
 				thermal_zone_device_update(tzd,
 						THERMAL_EVENT_UNSPECIFIED);
 
-			/* Clear the appropriate irq */
+			 
 			regmap_write(regmap, reg, reg_val & mask);
 		}
 	}
@@ -252,7 +242,7 @@ static int pmic_thermal_probe(struct platform_device *pdev)
 		pmic_irq_count++;
 	}
 
-	/* Enable thermal interrupts */
+	 
 	for (i = 0; i < thermal_data->num_maps; i++) {
 		for (j = 0; j < thermal_data->maps[i].num_trips; j++) {
 			reg = thermal_data->maps[i].trip_config[j].irq_en;

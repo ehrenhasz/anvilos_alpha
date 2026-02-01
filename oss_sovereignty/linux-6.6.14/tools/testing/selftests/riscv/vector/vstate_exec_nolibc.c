@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #define THIS_PROGRAM "./vstate_exec_nolibc"
 
 int main(int argc, char **argv)
@@ -23,13 +23,13 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 
-		/* child  */
+		 
 		if (!pid) {
 			exec_argv[0] = THIS_PROGRAM;
 			exec_argv[1] = NULL;
 			exec_envp[0] = NULL;
 			exec_envp[1] = NULL;
-			/* launch the program again to check inherit */
+			 
 			rc = execve(THIS_PROGRAM, exec_argv, exec_envp);
 			if (rc) {
 				puts("child execve failed\n");
@@ -77,7 +77,7 @@ int main(int argc, char **argv)
 			exit(-1);
 		}
 
-		/* child terminated, and its vstate_ctrl is off */
+		 
 		exit(ctrl);
 	}
 

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright 2019 Collabora ltd. */
+ 
+ 
 
 #ifndef __PANFROST_JOB_H__
 #define __PANFROST_JOB_H__
@@ -19,7 +19,7 @@ struct panfrost_job {
 	struct panfrost_device *pfdev;
 	struct panfrost_mmu *mmu;
 
-	/* Fence to be signaled by IRQ handler when the job is complete. */
+	 
 	struct dma_fence *done_fence;
 
 	__u64 jc;
@@ -30,7 +30,7 @@ struct panfrost_job {
 	struct drm_gem_object **bos;
 	u32 bo_count;
 
-	/* Fence to be signaled by drm-sched once its done with the job */
+	 
 	struct dma_fence *render_done_fence;
 };
 

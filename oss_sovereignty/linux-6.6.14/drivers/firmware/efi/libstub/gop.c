@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* -----------------------------------------------------------------------
- *
- *   Copyright 2011 Intel Corporation; author Matt Fleming
- *
- * ----------------------------------------------------------------------- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/ctype.h>
@@ -421,7 +417,7 @@ static void find_bits(u32 mask, u8 *pos, u8 *size)
 		return;
 	}
 
-	/* UEFI spec guarantees that the set bits are contiguous */
+	 
 	*pos  = __ffs(mask);
 	*size = __fls(mask) - *pos + 1;
 }
@@ -446,7 +442,7 @@ setup_pixel_info(struct screen_info *si, u32 pixels_per_scan_line,
 		if (pixel_format == PIXEL_RGB_RESERVED_8BIT_PER_COLOR) {
 			si->red_pos   = 0;
 			si->blue_pos  = 16;
-		} else /* PIXEL_BGR_RESERVED_8BIT_PER_COLOR */ {
+		} else   {
 			si->blue_pos  = 0;
 			si->red_pos   = 16;
 		}
@@ -490,16 +486,7 @@ find_gop(efi_guid_t *proto, unsigned long size, void **handles)
 		    info->pixel_format >= PIXEL_FORMAT_MAX)
 			continue;
 
-		/*
-		 * Systems that use the UEFI Console Splitter may
-		 * provide multiple GOP devices, not all of which are
-		 * backed by real hardware. The workaround is to search
-		 * for a GOP implementing the ConOut protocol, and if
-		 * one isn't found, to just fall back to the first GOP.
-		 *
-		 * Once we've found a GOP supporting ConOut,
-		 * don't bother looking any further.
-		 */
+		 
 		status = efi_bs_call(handle_protocol, h, &conout_proto, &dummy);
 		if (status == EFI_SUCCESS)
 			return gop;
@@ -520,14 +507,14 @@ static efi_status_t setup_gop(struct screen_info *si, efi_guid_t *proto,
 
 	gop = find_gop(proto, size, handles);
 
-	/* Did we find any GOPs? */
+	 
 	if (!gop)
 		return EFI_NOT_FOUND;
 
-	/* Change mode if requested */
+	 
 	set_mode(gop);
 
-	/* EFI framebuffer */
+	 
 	mode = efi_table_attr(gop, mode);
 	info = efi_table_attr(mode, info);
 
@@ -553,9 +540,7 @@ static efi_status_t setup_gop(struct screen_info *si, efi_guid_t *proto,
 	return EFI_SUCCESS;
 }
 
-/*
- * See if we have Graphics Output Protocol
- */
+ 
 efi_status_t efi_setup_gop(struct screen_info *si, efi_guid_t *proto,
 			   unsigned long size)
 {

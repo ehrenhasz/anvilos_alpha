@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2020 Unisoc Inc.
- */
+ 
+ 
 
 #ifndef __SPRD_DSI_H__
 #define __SPRD_DSI_H__
@@ -65,21 +63,21 @@ enum pll_timing {
 };
 
 struct dphy_pll {
-	u8 refin; /* Pre-divider control signal */
-	u8 cp_s; /* 00: SDM_EN=1, 10: SDM_EN=0 */
-	u8 fdk_s; /* PLL mode control: integer or fraction */
+	u8 refin;  
+	u8 cp_s;  
+	u8 fdk_s;  
 	u8 sdm_en;
 	u8 div;
-	u8 int_n; /* integer N PLL */
-	u32 ref_clk; /* dphy reference clock, unit: MHz */
-	u32 freq; /* panel config, unit: KHz */
+	u8 int_n;  
+	u32 ref_clk;  
+	u32 freq;  
 	u32 fvco;
 	u32 potential_fvco;
-	u32 nint; /* sigma delta modulator NINT control */
-	u32 kint; /* sigma delta modulator KINT control */
-	u8 lpf_sel; /* low pass filter control */
-	u8 out_sel; /* post divider control */
-	u8 vco_band; /* vco range */
+	u32 nint;  
+	u32 kint;  
+	u8 lpf_sel;  
+	u8 out_sel;  
+	u8 vco_band;  
 	u8 det_delay;
 };
 
@@ -95,19 +93,19 @@ struct dsi_context {
 	u32 int0_mask;
 	u32 int1_mask;
 
-	/* maximum time (ns) for data lanes from HS to LP */
+	 
 	u16 data_hs2lp;
-	/* maximum time (ns) for data lanes from LP to HS */
+	 
 	u16 data_lp2hs;
-	/* maximum time (ns) for clk lanes from HS to LP */
+	 
 	u16 clk_hs2lp;
-	/* maximum time (ns) for clk lanes from LP to HS */
+	 
 	u16 clk_lp2hs;
-	/* maximum time (ns) for BTA operation - REQUIRED */
+	 
 	u16 max_rd_time;
-	/* enable receiving frame ack packets - for video mode */
+	 
 	bool frame_ack_en;
-	/* enable receiving tear effect ack packets - for cmd mode */
+	 
 	bool te_ack_en;
 };
 
@@ -123,4 +121,4 @@ struct sprd_dsi {
 int dphy_pll_config(struct dsi_context *ctx);
 void dphy_timing_config(struct dsi_context *ctx);
 
-#endif /* __SPRD_DSI_H__ */
+#endif  

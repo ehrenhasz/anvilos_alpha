@@ -1,20 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ampere Computing SoC's SMpro Error Monitoring Driver
- *
- * Copyright (c) 2022, Ampere Computing LLC
- *
- */
+
+ 
 
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
 #include <linux/regmap.h>
 
-/* GPI RAS Error Registers */
+ 
 #define GPI_RAS_ERR		0x7E
 
-/* Core and L2C Error Registers */
+ 
 #define CORE_CE_ERR_CNT		0x80
 #define CORE_CE_ERR_LEN		0x81
 #define CORE_CE_ERR_DATA	0x82
@@ -22,7 +17,7 @@
 #define CORE_UE_ERR_LEN		0x84
 #define CORE_UE_ERR_DATA	0x85
 
-/* Memory Error Registers */
+ 
 #define MEM_CE_ERR_CNT		0x90
 #define MEM_CE_ERR_LEN		0x91
 #define MEM_CE_ERR_DATA		0x92
@@ -30,7 +25,7 @@
 #define MEM_UE_ERR_LEN		0x94
 #define MEM_UE_ERR_DATA		0x95
 
-/* RAS Error/Warning Registers */
+ 
 #define ERR_SMPRO_TYPE		0xA0
 #define ERR_PMPRO_TYPE		0xA1
 #define ERR_SMPRO_INFO_LO	0xA2
@@ -46,13 +41,13 @@
 #define WARN_PMPRO_INFO_LO	0xAC
 #define WARN_PMPRO_INFO_HI	0xAD
 
-/* Boot Stage Register */
+ 
 #define BOOTSTAGE		0xB0
 #define DIMM_SYNDROME_SEL	0xB4
 #define DIMM_SYNDROME_ERR	0xB5
 #define DIMM_SYNDROME_STAGE	4
 
-/* PCIE Error Registers */
+ 
 #define PCIE_CE_ERR_CNT		0xC0
 #define PCIE_CE_ERR_LEN		0xC1
 #define PCIE_CE_ERR_DATA	0xC2
@@ -60,7 +55,7 @@
 #define PCIE_UE_ERR_LEN		0xC4
 #define PCIE_UE_ERR_DATA	0xC5
 
-/* Other Error Registers */
+ 
 #define OTHER_CE_ERR_CNT	0xD0
 #define OTHER_CE_ERR_LEN	0xD1
 #define OTHER_CE_ERR_DATA	0xD2
@@ -68,7 +63,7 @@
 #define OTHER_UE_ERR_LEN	0xD9
 #define OTHER_UE_ERR_DATA	0xDA
 
-/* Event Data Registers */
+ 
 #define VRD_WARN_FAULT_EVENT_DATA	0x78
 #define VRD_HOT_EVENT_DATA		0x79
 #define DIMM_HOT_EVENT_DATA		0x7A
@@ -92,16 +87,13 @@ enum RAS_48BYTES_ERR_TYPES {
 };
 
 struct smpro_error_hdr {
-	u8 count;	/* Number of the RAS errors */
-	u8 len;		/* Number of data bytes */
-	u8 data;	/* Start of 48-byte data */
-	u8 max_cnt;	/* Max num of errors */
+	u8 count;	 
+	u8 len;		 
+	u8 data;	 
+	u8 max_cnt;	 
 };
 
-/*
- * Included Address of registers to get Count, Length of data and Data
- * of the 48 bytes error data
- */
+ 
 static struct smpro_error_hdr smpro_error_table[] = {
 	[CORE_CE_ERR] = {
 		.count = CORE_CE_ERR_CNT,
@@ -153,10 +145,7 @@ static struct smpro_error_hdr smpro_error_table[] = {
 	},
 };
 
-/*
- * List of SCP registers which are used to get
- * one type of RAS Internal errors.
- */
+ 
 struct smpro_int_error_hdr {
 	u8 type;
 	u8 info_l;
@@ -200,7 +189,7 @@ enum EVENT_TYPES {
 	NUM_EVENTS_TYPE,
 };
 
-/* Included Address of event source and data registers */
+ 
 static u8 smpro_event_table[NUM_EVENTS_TYPE] = {
 	VRD_WARN_FAULT_EVENT_DATA,
 	VRD_HOT_EVENT_DATA,
@@ -219,7 +208,7 @@ static ssize_t smpro_event_data_read(struct device *dev,
 	ret = regmap_read(errmon->regmap, smpro_event_table[channel], &event_data);
 	if (ret)
 		return ret;
-	/* Clear event after read */
+	 
 	if (event_data != 0)
 		regmap_write(errmon->regmap, smpro_event_table[channel], event_data);
 
@@ -240,7 +229,7 @@ static ssize_t smpro_overflow_data_read(struct device *dev, struct device_attrib
 	if (ret)
 		return ret;
 
-	/* Bit 8 indicates the overflow status */
+	 
 	return sysfs_emit(buf, "%d\n", (err_count & BIT(8)) ? 1 : 0);
 }
 
@@ -256,7 +245,7 @@ static ssize_t smpro_error_data_read(struct device *dev, struct device_attribute
 	err_info = &smpro_error_table[channel];
 
 	ret = regmap_read(errmon->regmap, err_info->count, &err_count);
-	/* Error count is the low byte */
+	 
 	err_count &= 0xff;
 	if (ret || !err_count || err_count > err_info->max_cnt)
 		return ret;
@@ -273,27 +262,15 @@ static ssize_t smpro_error_data_read(struct device *dev, struct device_attribute
 	if (ret < 0)
 		return ret;
 
-	/* clear the error */
+	 
 	ret = regmap_write(errmon->regmap, err_info->count, 0x100);
 	if (ret)
 		return ret;
-	/*
-	 * The output of Core/Memory/PCIe/Others UE/CE errors follows the format
-	 * specified in section 5.8.1 CE/UE Error Data record in
-	 * Altra SOC BMC Interface specification.
-	 */
+	 
 	return sysfs_emit(buf, "%*phN\n", MAX_READ_BLOCK_LENGTH, err_data);
 }
 
-/*
- * Output format:
- * <4-byte hex value of error info><4-byte hex value of error extensive data>
- * Where:
- *   + error info : The error information
- *   + error data : Extensive data (32 bits)
- * Reference to section 5.10 RAS Internal Error Register Definition in
- * Altra SOC BMC Interface specification
- */
+ 
 static ssize_t smpro_internal_err_read(struct device *dev, struct device_attribute *da,
 				       char *buf, int channel)
 {
@@ -304,7 +281,7 @@ static ssize_t smpro_internal_err_read(struct device *dev, struct device_attribu
 	unsigned int val;
 	int ret;
 
-	/* read error status */
+	 
 	ret = regmap_read(errmon->regmap, GPI_RAS_ERR, &val);
 	if (ret)
 		return ret;
@@ -333,7 +310,7 @@ static ssize_t smpro_internal_err_read(struct device *dev, struct device_attribu
 		return ret;
 
 	if (err_type & BIT(2)) {
-		/* Error with data type */
+		 
 		ret = regmap_read(errmon->regmap, err_info->data_l, err + 3);
 		if (ret)
 			return ret;
@@ -343,7 +320,7 @@ static ssize_t smpro_internal_err_read(struct device *dev, struct device_attribu
 			return ret;
 	}
 
-	/* clear the read errors */
+	 
 	ret = regmap_write(errmon->regmap, err_info->type, err_type);
 	if (ret)
 		return ret;
@@ -351,12 +328,7 @@ static ssize_t smpro_internal_err_read(struct device *dev, struct device_attribu
 	return sysfs_emit(buf, "%*phN\n", (int)sizeof(err), err);
 }
 
-/*
- * Output format:
- * <4-byte hex value of warining info>
- * Reference to section 5.10 RAS Internal Error Register Definition in
- * Altra SOC BMC Interface specification
- */
+ 
 static ssize_t smpro_internal_warn_read(struct device *dev, struct device_attribute *da,
 					char *buf, int channel)
 {
@@ -366,7 +338,7 @@ static ssize_t smpro_internal_warn_read(struct device *dev, struct device_attrib
 	unsigned int val;
 	int ret;
 
-	/* read error status */
+	 
 	ret = regmap_read(errmon->regmap, GPI_RAS_ERR, &val);
 	if (ret)
 		return ret;
@@ -391,7 +363,7 @@ static ssize_t smpro_internal_warn_read(struct device *dev, struct device_attrib
 	if (ret)
 		return ret;
 
-	/* clear the warning */
+	 
 	ret = regmap_write(errmon->regmap, err_info->type, BIT(0));
 	if (ret)
 		return ret;
@@ -484,17 +456,17 @@ static ssize_t smpro_dimm_syndrome_read(struct device *dev, struct device_attrib
 	if (ret)
 		return ret;
 
-	/* check for valid stage */
+	 
 	data = (data >> 8) & 0xff;
 	if (data != DIMM_SYNDROME_STAGE)
 		return ret;
 
-	/* Write the slot ID to retrieve Error Syndrome */
+	 
 	ret = regmap_write(errmon->regmap, DIMM_SYNDROME_SEL, slot);
 	if (ret)
 		return ret;
 
-	/* Read the Syndrome error */
+	 
 	ret = regmap_read(errmon->regmap, DIMM_SYNDROME_ERR, &data);
 	if (ret || !data)
 		return ret;

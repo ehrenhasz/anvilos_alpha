@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UFS Host Controller driver for Exynos specific extensions
- *
- * Copyright (C) 2014-2015 Samsung Electronics Co., Ltd.
- * Author: Seungwon Jeon  <essuuj@gmail.com>
- * Author: Alim Akhtar <alim.akhtar@samsung.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -25,9 +18,7 @@
 
 #include "ufs-exynos.h"
 
-/*
- * Exynos's Vendor specific registers for UFSHCI
- */
+ 
 #define HCI_TXPRDT_ENTRY_SIZE	0x00
 #define PRDT_PREFECT_EN		BIT(31)
 #define PRDT_SET_SIZE(x)	((x) & 0x1F)
@@ -67,7 +58,7 @@
 #define CLK_CTRL_EN_MASK	(REFCLK_CTRL_EN |\
 				 UNIPRO_PCLK_CTRL_EN |\
 				 UNIPRO_MCLK_CTRL_EN)
-/* Device fatal error */
+ 
 #define DFES_ERR_EN		BIT(31)
 #define DFES_DEF_L2_ERRS	(UIC_DATA_LINK_LAYER_ERROR_RX_BUF_OF |\
 				 UIC_DATA_LINK_LAYER_ERROR_PA_INIT)
@@ -79,13 +70,13 @@
 				 UIC_TRANSPORT_NO_CONNECTION_RX |\
 				 UIC_TRANSPORT_BAD_TC)
 
-/* FSYS UFS Shareability */
+ 
 #define UFS_WR_SHARABLE		BIT(2)
 #define UFS_RD_SHARABLE		BIT(1)
 #define UFS_SHARABLE		(UFS_WR_SHARABLE | UFS_RD_SHARABLE)
 #define UFS_SHAREABILITY_OFFSET	0x710
 
-/* Multi-host registers */
+ 
 #define MHCTRL			0xC4
 #define MHCTRL_EN_VH_MASK	(0xE)
 #define MHCTRL_EN_VH(vh)	(vh << 1)
@@ -101,7 +92,7 @@
 #define ALLOW_MODE_SELECT	BIT(24)
 #define ALLOW_MODE_SENSE	BIT(23)
 #define ALLOW_PRE_FETCH		GENMASK(22, 21)
-#define ALLOW_READ_CMD_ALL	GENMASK(20, 18)	/* read_6/10/16 */
+#define ALLOW_READ_CMD_ALL	GENMASK(20, 18)	 
 #define ALLOW_READ_BUFFER	BIT(17)
 #define ALLOW_READ_CAPACITY	GENMASK(16, 15)
 #define ALLOW_REPORT_LUNS	BIT(14)
@@ -110,7 +101,7 @@
 #define ALLOW_TEST_UNIT_READY	BIT(6)
 #define ALLOW_UNMAP		BIT(5)
 #define ALLOW_VERIFY		BIT(4)
-#define ALLOW_WRITE_CMD_ALL	GENMASK(3, 1)	/* write_6/10/16 */
+#define ALLOW_WRITE_CMD_ALL	GENMASK(3, 1)	 
 
 #define ALLOW_TRANS_VH_DEFAULT	(ALLOW_INQUIRY | ALLOW_MODE_SELECT | \
 				 ALLOW_MODE_SENSE | ALLOW_PRE_FETCH | \
@@ -126,23 +117,19 @@
 #define PH_READY_TIMEOUT_MS			(5 * MSEC_PER_SEC)
 
 enum {
-	UNIPRO_L1_5 = 0,/* PHY Adapter */
-	UNIPRO_L2,	/* Data Link */
-	UNIPRO_L3,	/* Network */
-	UNIPRO_L4,	/* Transport */
-	UNIPRO_DME,	/* DME */
+	UNIPRO_L1_5 = 0, 
+	UNIPRO_L2,	 
+	UNIPRO_L3,	 
+	UNIPRO_L4,	 
+	UNIPRO_DME,	 
 };
 
-/*
- * UNIPRO registers
- */
+ 
 #define UNIPRO_DME_POWERMODE_REQ_REMOTEL2TIMER0	0x78B8
 #define UNIPRO_DME_POWERMODE_REQ_REMOTEL2TIMER1	0x78BC
 #define UNIPRO_DME_POWERMODE_REQ_REMOTEL2TIMER2	0x78C0
 
-/*
- * UFS Protector registers
- */
+ 
 #define UFSPRSECURITY	0x010
 #define NSSMU		BIT(14)
 #define UFSPSBEGIN0	0x200
@@ -197,7 +184,7 @@ static int exynosauto_ufs_drv_init(struct device *dev, struct exynos_ufs *ufs)
 {
 	struct exynos_ufs_uic_attr *attr = ufs->drv_data->uic_attr;
 
-	/* IO Coherency setting */
+	 
 	if (ufs->sysreg) {
 		return regmap_update_bits(ufs->sysreg,
 					  ufs->shareability_reg_offset,
@@ -213,11 +200,11 @@ static int exynosauto_ufs_post_hce_enable(struct exynos_ufs *ufs)
 {
 	struct ufs_hba *hba = ufs->hba;
 
-	/* Enable Virtual Host #1 */
+	 
 	ufshcd_rmwl(hba, MHCTRL_EN_VH_MASK, MHCTRL_EN_VH(1), MHCTRL);
-	/* Default VH Transfer permissions */
+	 
 	hci_writel(ufs, ALLOW_TRANS_VH_DEFAULT, HCI_MH_ALLOWABLE_TRAN_OF_VH);
-	/* IID information is replaced in TASKTAG[7:5] instead of IID in UCD */
+	 
 	hci_writel(ufs, 0x1, HCI_MH_IID_IN_TASK_TAG);
 
 	return 0;
@@ -253,7 +240,7 @@ static int exynosauto_ufs_pre_link(struct exynos_ufs *ufs)
 	for_each_ufs_tx_lane(ufs, i) {
 		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(VND_TX_CLK_PRD, i),
 			       DIV_ROUND_UP(NSEC_PER_SEC, ufs->mclk_rate));
-		/* Not to affect VND_TX_LINERESET_PVALUE to VND_TX_CLK_PRD */
+		 
 		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(VND_TX_CLK_PRD_EN, i),
 			       0x02);
 
@@ -264,7 +251,7 @@ static int exynosauto_ufs_pre_link(struct exynos_ufs *ufs)
 		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(VND_TX_LINERESET_PVALUE0, i),
 			       (tx_line_reset_period) & 0xFF);
 
-		/* TX PWM Gear Capability / PWM_G1_ONLY */
+		 
 		ufshcd_dme_set(hba, UIC_ARG_MIB_SEL(0x04, i), 0x1);
 	}
 
@@ -282,7 +269,7 @@ static int exynosauto_ufs_pre_pwr_change(struct exynos_ufs *ufs,
 {
 	struct ufs_hba *hba = ufs->hba;
 
-	/* PACP_PWR_req and delivered to the remote DME */
+	 
 	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_PWRMODEUSERDATA0), 12000);
 	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_PWRMODEUSERDATA1), 32000);
 	ufshcd_dme_set(hba, UIC_ARG_MIB(PA_PWRMODEUSERDATA2), 16000);
@@ -298,7 +285,7 @@ static int exynosauto_ufs_post_pwr_change(struct exynos_ufs *ufs,
 
 	enabled_vh = ufshcd_readl(hba, MHCTRL) & MHCTRL_EN_VH_MASK;
 
-	/* Send physical host ready message to virtual hosts */
+	 
 	ufshcd_writel(hba, MH_MSG(enabled_vh, MH_MSG_PH_READY), PH2VH_MBOX);
 
 	return 0;
@@ -380,12 +367,7 @@ static int exynos7_ufs_post_pwr_change(struct exynos_ufs *ufs,
 	return 0;
 }
 
-/*
- * exynos_ufs_auto_ctrl_hcc - HCI core clock control by h/w
- * Control should be disabled in the below cases
- * - Before host controller S/W reset
- * - Access to UFS protector's register
- */
+ 
 static void exynos_ufs_auto_ctrl_hcc(struct exynos_ufs *ufs, bool en)
 {
 	u32 misc = hci_readl(ufs, HCI_MISC);
@@ -695,10 +677,10 @@ static void exynos_ufs_establish_connt(struct exynos_ufs *ufs)
 		TRAFFIC_CLASS	= 0x00,
 	};
 
-	/* allow cport attributes to be set */
+	 
 	ufshcd_dme_set(hba, UIC_ARG_MIB(T_CONNECTIONSTATE), CPORT_IDLE);
 
-	/* local unipro attributes */
+	 
 	ufshcd_dme_set(hba, UIC_ARG_MIB(N_DEVICEID), DEV_ID);
 	ufshcd_dme_set(hba, UIC_ARG_MIB(N_DEVICEID_VALID), true);
 	ufshcd_dme_set(hba, UIC_ARG_MIB(T_PEERDEVICEID), PEER_DEV_ID);
@@ -714,7 +696,7 @@ static void exynos_ufs_config_smu(struct exynos_ufs *ufs)
 
 	exynos_ufs_disable_auto_ctrl_hcc_save(ufs, &val);
 
-	/* make encryption disabled by default */
+	 
 	reg = ufsp_readl(ufs, UFSPRSECURITY);
 	ufsp_writel(ufs, reg | NSSMU, UFSPRSECURITY);
 	ufsp_writel(ufs, 0x0, UFSPSBEGIN0);
@@ -732,9 +714,9 @@ static void exynos_ufs_config_sync_pattern_mask(struct exynos_ufs *ufs,
 	u8 g = max_t(u32, pwr->gear_rx, pwr->gear_tx);
 	u32 mask, sync_len;
 	enum {
-		SYNC_LEN_G1 = 80 * 1000, /* 80us */
-		SYNC_LEN_G2 = 40 * 1000, /* 44us */
-		SYNC_LEN_G3 = 20 * 1000, /* 20us */
+		SYNC_LEN_G1 = 80 * 1000,  
+		SYNC_LEN_G2 = 40 * 1000,  
+		SYNC_LEN_G3 = 20 * 1000,  
 	};
 	int i;
 
@@ -797,7 +779,7 @@ static int exynos_ufs_pre_pwr_mode(struct ufs_hba *hba,
 		}
 	}
 
-	/* setting for three timeout values for traffic class #0 */
+	 
 	ufshcd_dme_set(hba, UIC_ARG_MIB(DL_FC0PROTTIMEOUTVAL), 8064);
 	ufshcd_dme_set(hba, UIC_ARG_MIB(DL_TC0REPLAYTIMEOUTVAL), 28224);
 	ufshcd_dme_set(hba, UIC_ARG_MIB(DL_AFC0REQTIMEOUTVAL), 20160);
@@ -817,7 +799,7 @@ static int exynos_ufs_post_pwr_mode(struct ufs_hba *hba,
 	int lanes = max_t(u32, pwr_req->lane_rx, pwr_req->lane_tx);
 	char pwr_str[PWR_MODE_STR_LEN] = "";
 
-	/* let default be PWM Gear 1, Lane 1 */
+	 
 	if (!gear)
 		gear = 1;
 
@@ -978,16 +960,16 @@ static int exynos_ufs_pre_link(struct ufs_hba *hba)
 {
 	struct exynos_ufs *ufs = ufshcd_get_variant(hba);
 
-	/* hci */
+	 
 	exynos_ufs_config_intr(ufs, DFES_DEF_L2_ERRS, UNIPRO_L2);
 	exynos_ufs_config_intr(ufs, DFES_DEF_L3_ERRS, UNIPRO_L3);
 	exynos_ufs_config_intr(ufs, DFES_DEF_L4_ERRS, UNIPRO_L4);
 	exynos_ufs_set_unipro_pclk_div(ufs);
 
-	/* unipro */
+	 
 	exynos_ufs_config_unipro(ufs);
 
-	/* m-phy */
+	 
 	exynos_ufs_phy_init(ufs);
 	if (!(ufs->opts & EXYNOS_UFS_OPT_SKIP_CONFIG_PHY_ATTR)) {
 		exynos_ufs_config_phy_time_attr(ufs);
@@ -1052,13 +1034,11 @@ static int exynos_ufs_post_link(struct ufs_hba *hba)
 		if (!attr->pa_hibern8time)
 			ufshcd_dme_get(hba, UIC_ARG_MIB(PA_HIBERN8TIME),
 					&attr->pa_hibern8time);
-		/*
-		 * not wait for HIBERN8 time to exit hibernation
-		 */
+		 
 		ufshcd_dme_set(hba, UIC_ARG_MIB(PA_HIBERN8TIME), 0);
 
 		if (attr->pa_granularity < 1 || attr->pa_granularity > 6) {
-			/* Valid range for granularity: 1 ~ 6 */
+			 
 			dev_warn(hba->dev,
 				"%s: pa_granularity %d is invalid, assuming backwards compatibility\n",
 				__func__,
@@ -1139,21 +1119,21 @@ static int exynos_ufs_init(struct ufs_hba *hba)
 	if (!ufs)
 		return -ENOMEM;
 
-	/* exynos-specific hci */
+	 
 	ufs->reg_hci = devm_platform_ioremap_resource_byname(pdev, "vs_hci");
 	if (IS_ERR(ufs->reg_hci)) {
 		dev_err(dev, "cannot ioremap for hci vendor register\n");
 		return PTR_ERR(ufs->reg_hci);
 	}
 
-	/* unipro */
+	 
 	ufs->reg_unipro = devm_platform_ioremap_resource_byname(pdev, "unipro");
 	if (IS_ERR(ufs->reg_unipro)) {
 		dev_err(dev, "cannot ioremap for unipro register\n");
 		return PTR_ERR(ufs->reg_unipro);
 	}
 
-	/* ufs protector */
+	 
 	ufs->reg_ufsp = devm_platform_ioremap_resource_byname(pdev, "ufsp");
 	if (IS_ERR(ufs->reg_ufsp)) {
 		dev_err(dev, "cannot ioremap for ufs protector register\n");
@@ -1300,12 +1280,7 @@ static int exynos_ufs_hce_enable_notify(struct ufs_hba *hba,
 
 	switch (status) {
 	case PRE_CHANGE:
-		/*
-		 * The maximum segment size must be set after scsi_host_alloc()
-		 * has been called and before LUN scanning starts
-		 * (ufshcd_async_scan()). Note: this callback may also be called
-		 * from other functions than ufshcd_init().
-		 */
+		 
 		hba->host->max_segment_size = SZ_4K;
 
 		if (ufs->drv_data->pre_hce_enable) {
@@ -1431,9 +1406,7 @@ static int exynosauto_ufs_vh_wait_ph_ready(struct ufs_hba *hba)
 
 	do {
 		mbox = ufshcd_readl(hba, PH2VH_MBOX);
-		/* TODO: Mailbox message protocols between the PH and VHs are
-		 * not implemented yet. This will be supported later
-		 */
+		 
 		if ((mbox & MH_MSG_MASK) == MH_MSG_PH_READY)
 			return 0;
 
@@ -1454,7 +1427,7 @@ static int exynosauto_ufs_vh_init(struct ufs_hba *hba)
 	if (!ufs)
 		return -ENOMEM;
 
-	/* exynos-specific hci */
+	 
 	ufs->reg_hci = devm_platform_ioremap_resource_byname(pdev, "vs_hci");
 	if (IS_ERR(ufs->reg_hci)) {
 		dev_err(dev, "cannot ioremap for hci vendor register\n");
@@ -1520,11 +1493,11 @@ static int fsd_ufs_post_link(struct exynos_ufs *ufs)
 	u32 max_rx_hibern8_time_cap;
 
 	ufshcd_dme_get(hba, UIC_ARG_MIB_SEL(0x8F, 4),
-			&hw_cap_min_tactivate); /* HW Capability of MIN_TACTIVATE */
+			&hw_cap_min_tactivate);  
 	ufshcd_dme_get(hba, UIC_ARG_MIB(PA_TACTIVATE),
-			&peer_rx_min_actv_time_cap);    /* PA_TActivate */
+			&peer_rx_min_actv_time_cap);     
 	ufshcd_dme_get(hba, UIC_ARG_MIB(PA_HIBERN8TIME),
-			&max_rx_hibern8_time_cap);      /* PA_Hibern8Time */
+			&max_rx_hibern8_time_cap);       
 
 	if (peer_rx_min_actv_time_cap >= hw_cap_min_tactivate)
 		ufshcd_dme_peer_set(hba, UIC_ARG_MIB(PA_TACTIVATE),
@@ -1621,20 +1594,20 @@ static int exynos_ufs_remove(struct platform_device *pdev)
 
 static struct exynos_ufs_uic_attr exynos7_uic_attr = {
 	.tx_trailingclks		= 0x10,
-	.tx_dif_p_nsec			= 3000000,	/* unit: ns */
-	.tx_dif_n_nsec			= 1000000,	/* unit: ns */
-	.tx_high_z_cnt_nsec		= 20000,	/* unit: ns */
-	.tx_base_unit_nsec		= 100000,	/* unit: ns */
-	.tx_gran_unit_nsec		= 4000,		/* unit: ns */
-	.tx_sleep_cnt			= 1000,		/* unit: ns */
+	.tx_dif_p_nsec			= 3000000,	 
+	.tx_dif_n_nsec			= 1000000,	 
+	.tx_high_z_cnt_nsec		= 20000,	 
+	.tx_base_unit_nsec		= 100000,	 
+	.tx_gran_unit_nsec		= 4000,		 
+	.tx_sleep_cnt			= 1000,		 
 	.tx_min_activatetime		= 0xa,
 	.rx_filler_enable		= 0x2,
-	.rx_dif_p_nsec			= 1000000,	/* unit: ns */
-	.rx_hibern8_wait_nsec		= 4000000,	/* unit: ns */
-	.rx_base_unit_nsec		= 100000,	/* unit: ns */
-	.rx_gran_unit_nsec		= 4000,		/* unit: ns */
-	.rx_sleep_cnt			= 1280,		/* unit: ns */
-	.rx_stall_cnt			= 320,		/* unit: ns */
+	.rx_dif_p_nsec			= 1000000,	 
+	.rx_hibern8_wait_nsec		= 4000000,	 
+	.rx_base_unit_nsec		= 100000,	 
+	.rx_gran_unit_nsec		= 4000,		 
+	.rx_sleep_cnt			= 1280,		 
+	.rx_stall_cnt			= 320,		 
 	.rx_hs_g1_sync_len_cap		= SYNC_LEN_COARSE(0xf),
 	.rx_hs_g2_sync_len_cap		= SYNC_LEN_COARSE(0xf),
 	.rx_hs_g3_sync_len_cap		= SYNC_LEN_COARSE(0xf),
@@ -1696,20 +1669,20 @@ static const struct exynos_ufs_drv_data exynos_ufs_drvs = {
 
 static struct exynos_ufs_uic_attr fsd_uic_attr = {
 	.tx_trailingclks		= 0x10,
-	.tx_dif_p_nsec			= 3000000,	/* unit: ns */
-	.tx_dif_n_nsec			= 1000000,	/* unit: ns */
-	.tx_high_z_cnt_nsec		= 20000,	/* unit: ns */
-	.tx_base_unit_nsec		= 100000,	/* unit: ns */
-	.tx_gran_unit_nsec		= 4000,		/* unit: ns */
-	.tx_sleep_cnt			= 1000,		/* unit: ns */
+	.tx_dif_p_nsec			= 3000000,	 
+	.tx_dif_n_nsec			= 1000000,	 
+	.tx_high_z_cnt_nsec		= 20000,	 
+	.tx_base_unit_nsec		= 100000,	 
+	.tx_gran_unit_nsec		= 4000,		 
+	.tx_sleep_cnt			= 1000,		 
 	.tx_min_activatetime		= 0xa,
 	.rx_filler_enable		= 0x2,
-	.rx_dif_p_nsec			= 1000000,	/* unit: ns */
-	.rx_hibern8_wait_nsec		= 4000000,	/* unit: ns */
-	.rx_base_unit_nsec		= 100000,	/* unit: ns */
-	.rx_gran_unit_nsec		= 4000,		/* unit: ns */
-	.rx_sleep_cnt			= 1280,		/* unit: ns */
-	.rx_stall_cnt			= 320,		/* unit: ns */
+	.rx_dif_p_nsec			= 1000000,	 
+	.rx_hibern8_wait_nsec		= 4000000,	 
+	.rx_base_unit_nsec		= 100000,	 
+	.rx_gran_unit_nsec		= 4000,		 
+	.rx_sleep_cnt			= 1280,		 
+	.rx_stall_cnt			= 320,		 
 	.rx_hs_g1_sync_len_cap		= SYNC_LEN_COARSE(0xf),
 	.rx_hs_g2_sync_len_cap		= SYNC_LEN_COARSE(0xf),
 	.rx_hs_g3_sync_len_cap		= SYNC_LEN_COARSE(0xf),

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/****************************************************************
 
-Siano Mobile Silicon, Inc.
-MDTV receiver kernel modules.
-Copyright (C) 2005-2009, Uri Shkolnik, Anatoly Greenblat
-
-
-****************************************************************/
+ 
 
 #include "smscoreapi.h"
 
@@ -42,7 +35,7 @@ struct smsusb_urb_t {
 
 	struct urb urb;
 
-	/* For the bottom half */
+	 
 	struct work_struct wq;
 };
 
@@ -63,10 +56,7 @@ struct smsusb_device_t {
 static int smsusb_submit_urb(struct smsusb_device_t *dev,
 			     struct smsusb_urb_t *surb);
 
-/*
- * Completing URB's callback handler - bottom half (process context)
- * submits the URB prepared on smsusb_onresponse()
- */
+ 
 static void do_submit_urb(struct work_struct *work)
 {
 	struct smsusb_urb_t *surb = container_of(work, struct smsusb_urb_t, wq);
@@ -75,14 +65,7 @@ static void do_submit_urb(struct work_struct *work)
 	smsusb_submit_urb(dev, surb);
 }
 
-/*
- * Completing URB's callback handler - top half (interrupt context)
- * adds completing sms urb to the global surbs list and activtes the worker
- * thread the surb
- * IMPORTANT - blocking functions must not be called from here !!!
-
- * @param urb pointer to a completing urb object
- */
+ 
 static void smsusb_onresponse(struct urb *urb)
 {
 	struct smsusb_urb_t *surb = (struct smsusb_urb_t *) urb->context;
@@ -108,7 +91,7 @@ static void smsusb_onresponse(struct urb *urb)
 					dev->response_alignment +
 					((phdr->msg_flags >> 8) & 3);
 
-				/* sanity check */
+				 
 				if (((int) phdr->msg_length +
 				     surb->cb->offset) > urb->actual_length) {
 					pr_err("invalid response msglen %d offset %d size %d\n",
@@ -118,8 +101,7 @@ static void smsusb_onresponse(struct urb *urb)
 					goto exit_and_resubmit;
 				}
 
-				/* move buffer pointer and
-				 * copy header to its new location */
+				 
 				memcpy((char *) phdr + surb->cb->offset,
 				       phdr, sizeof(struct sms_msg_hdr));
 			} else
@@ -151,7 +133,7 @@ static int smsusb_submit_urb(struct smsusb_device_t *dev,
 			     struct smsusb_urb_t *surb)
 {
 	if (!surb->cb) {
-		/* This function can sleep */
+		 
 		surb->cb = smscore_getbuffer(dev->coredev);
 		if (!surb->cb) {
 			pr_err("smscore_getbuffer(...) returned NULL\n");
@@ -344,7 +326,7 @@ static void smsusb_term_device(struct usb_interface *intf)
 
 		smsusb_stop_streaming(dev);
 
-		/* unregister from smscore */
+		 
 		if (dev->coredev)
 			smscore_unregister_device(dev->coredev);
 
@@ -393,7 +375,7 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 	int i, rc;
 	int align = 0;
 
-	/* create device object */
+	 
 	dev = kzalloc(sizeof(struct smsusb_device_t), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
@@ -416,7 +398,7 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 	}
 
 	pr_debug("in_ep = %02x, out_ep = %02x\n", dev->in_ep, dev->out_ep);
-	if (!dev->in_ep || !dev->out_ep || align < 0) {  /* Missing endpoints? */
+	if (!dev->in_ep || !dev->out_ep || align < 0) {   
 		smsusb_term_device(intf);
 		return -ENODEV;
 	}
@@ -451,7 +433,7 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 
 	mdev = siano_media_device_register(dev, board_id);
 
-	/* register in smscore */
+	 
 	rc = smscore_register_device(&params, &dev->coredev, 0, mdev);
 	if (rc < 0) {
 		pr_err("smscore_register_device(...) failed, rc %d\n", rc);
@@ -462,7 +444,7 @@ static int smsusb_init_device(struct usb_interface *intf, int board_id)
 
 	dev->coredev->is_usb_device = true;
 
-	/* initialize urbs */
+	 
 	for (i = 0; i < MAX_URBS; i++) {
 		dev->surbs[i].dev = dev;
 		usb_init_urb(&dev->surbs[i].urb);
@@ -547,7 +529,7 @@ static int smsusb_probe(struct usb_interface *intf,
 	}
 
 	if (id->driver_info == SMS1XXX_BOARD_SIANO_STELLAR_ROM) {
-		/* Detected a Siano Stellar uninitialized */
+		 
 
 		snprintf(devpath, sizeof(devpath), "usb\\%d-%s",
 			 udev->bus->busnum, udev->devpath);
@@ -557,7 +539,7 @@ static int smsusb_probe(struct usb_interface *intf,
 				udev, smscore_registry_getmode(devpath),
 				id->driver_info);
 
-		/* This device will reset and gain another USB ID */
+		 
 		if (!rc)
 			pr_info("stellar device now in warm state\n");
 		else
@@ -584,7 +566,7 @@ static int smsusb_suspend(struct usb_interface *intf, pm_message_t msg)
 	struct smsusb_device_t *dev = usb_get_intfdata(intf);
 	printk(KERN_INFO "%s  Entering status %d.\n", __func__, msg.event);
 	dev->state = SMSUSB_SUSPENDED;
-	/*smscore_set_power_mode(dev, SMS_POWER_MODE_SUSPENDED);*/
+	 
 	smsusb_stop_streaming(dev);
 	return 0;
 }
@@ -621,10 +603,10 @@ static int smsusb_resume(struct usb_interface *intf)
 }
 
 static const struct usb_device_id smsusb_id_table[] = {
-	/* This device is only present before firmware load */
+	 
 	{ USB_DEVICE(0x187f, 0x0010),
 		.driver_info = SMS1XXX_BOARD_SIANO_STELLAR_ROM },
-	/* This device pops up after firmware load */
+	 
 	{ USB_DEVICE(0x187f, 0x0100),
 		.driver_info = SMS1XXX_BOARD_SIANO_STELLAR },
 
@@ -708,7 +690,7 @@ static const struct usb_device_id smsusb_id_table[] = {
 		.driver_info = SMS1XXX_BOARD_SIANO_RIO },
 	{ USB_DEVICE(0x2013, 0x0257),
 		.driver_info = SMS1XXX_BOARD_PCTV_77E },
-	{ } /* Terminating entry */
+	{ }  
 	};
 
 MODULE_DEVICE_TABLE(usb, smsusb_id_table);

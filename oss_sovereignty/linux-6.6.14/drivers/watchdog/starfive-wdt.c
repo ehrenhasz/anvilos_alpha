@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Starfive Watchdog driver
- *
- * Copyright (C) 2022 StarFive Technology Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/iopoll.h>
@@ -14,53 +10,45 @@
 #include <linux/reset.h>
 #include <linux/watchdog.h>
 
-/* JH7100 Watchdog register define */
+ 
 #define STARFIVE_WDT_JH7100_INTSTAUS	0x000
 #define STARFIVE_WDT_JH7100_CONTROL	0x104
 #define STARFIVE_WDT_JH7100_LOAD	0x108
 #define STARFIVE_WDT_JH7100_EN		0x110
-#define STARFIVE_WDT_JH7100_RELOAD	0x114	/* Write 0 or 1 to reload preset value */
+#define STARFIVE_WDT_JH7100_RELOAD	0x114	 
 #define STARFIVE_WDT_JH7100_VALUE	0x118
-#define STARFIVE_WDT_JH7100_INTCLR	0x120	/*
-						 * [0]: Write 1 to clear interrupt
-						 * [1]: 1 mean clearing and 0 mean complete
-						 * [31:2]: reserved.
-						 */
-#define STARFIVE_WDT_JH7100_LOCK	0x13c	/* write 0x378f0765 to unlock */
+#define STARFIVE_WDT_JH7100_INTCLR	0x120	 
+#define STARFIVE_WDT_JH7100_LOCK	0x13c	 
 
-/* JH7110 Watchdog register define */
+ 
 #define STARFIVE_WDT_JH7110_LOAD	0x000
 #define STARFIVE_WDT_JH7110_VALUE	0x004
-#define STARFIVE_WDT_JH7110_CONTROL	0x008	/*
-						 * [0]: reset enable;
-						 * [1]: interrupt enable && watchdog enable
-						 * [31:2]: reserved.
-						 */
-#define STARFIVE_WDT_JH7110_INTCLR	0x00c	/* clear intterupt and reload the counter */
+#define STARFIVE_WDT_JH7110_CONTROL	0x008	 
+#define STARFIVE_WDT_JH7110_INTCLR	0x00c	 
 #define STARFIVE_WDT_JH7110_IMS		0x014
-#define STARFIVE_WDT_JH7110_LOCK	0xc00	/* write 0x1ACCE551 to unlock */
+#define STARFIVE_WDT_JH7110_LOCK	0xc00	 
 
-/* WDOGCONTROL */
+ 
 #define STARFIVE_WDT_ENABLE			0x1
 #define STARFIVE_WDT_EN_SHIFT			0
 #define STARFIVE_WDT_RESET_EN			0x1
 #define STARFIVE_WDT_JH7100_RST_EN_SHIFT	0
 #define STARFIVE_WDT_JH7110_RST_EN_SHIFT	1
 
-/* WDOGLOCK */
+ 
 #define STARFIVE_WDT_JH7100_UNLOCK_KEY		0x378f0765
 #define STARFIVE_WDT_JH7110_UNLOCK_KEY		0x1acce551
 
-/* WDOGINTCLR */
+ 
 #define STARFIVE_WDT_INTCLR			0x1
-#define STARFIVE_WDT_JH7100_INTCLR_AVA_SHIFT	1	/* Watchdog can clear interrupt when 0 */
+#define STARFIVE_WDT_JH7100_INTCLR_AVA_SHIFT	1	 
 
 #define STARFIVE_WDT_MAXCNT			0xffffffff
 #define STARFIVE_WDT_DEFAULT_TIME		(15)
 #define STARFIVE_WDT_DELAY_US			0
 #define STARFIVE_WDT_TIMEOUT_US			10000
 
-/* module parameter */
+ 
 #define STARFIVE_WDT_EARLY_ENA			0
 
 static bool nowayout = WATCHDOG_NOWAYOUT;
@@ -80,36 +68,36 @@ MODULE_PARM_DESC(nowayout, "Watchdog cannot be stopped once started (default="
 		 __MODULE_STRING(WATCHDOG_NOWAYOUT) ")");
 
 struct starfive_wdt_variant {
-	unsigned int control;		/* Watchdog Control Resgister for reset enable */
-	unsigned int load;		/* Watchdog Load register */
-	unsigned int reload;		/* Watchdog Reload Control register */
-	unsigned int enable;		/* Watchdog Enable Register */
-	unsigned int value;		/* Watchdog Counter Value Register */
-	unsigned int int_clr;		/* Watchdog Interrupt Clear Register */
-	unsigned int unlock;		/* Watchdog Lock Register */
-	unsigned int int_status;	/* Watchdog Interrupt Status Register */
+	unsigned int control;		 
+	unsigned int load;		 
+	unsigned int reload;		 
+	unsigned int enable;		 
+	unsigned int value;		 
+	unsigned int int_clr;		 
+	unsigned int unlock;		 
+	unsigned int int_status;	 
 
 	u32 unlock_key;
 	char enrst_shift;
 	char en_shift;
-	bool intclr_check;		/*  whether need to check it before clearing interrupt */
+	bool intclr_check;		 
 	char intclr_ava_shift;
-	bool double_timeout;		/* The watchdog need twice timeout to reboot */
+	bool double_timeout;		 
 };
 
 struct starfive_wdt {
 	struct watchdog_device wdd;
-	spinlock_t lock;		/* spinlock for register handling */
+	spinlock_t lock;		 
 	void __iomem *base;
 	struct clk *core_clk;
 	struct clk *apb_clk;
 	const struct starfive_wdt_variant *variant;
 	unsigned long freq;
-	u32 count;			/* count of timeout */
-	u32 reload;			/* restore the count */
+	u32 count;			 
+	u32 reload;			 
 };
 
-/* Register layout and configuration for the JH7100 */
+ 
 static const struct starfive_wdt_variant starfive_wdt_jh7100_variant = {
 	.control = STARFIVE_WDT_JH7100_CONTROL,
 	.load = STARFIVE_WDT_JH7100_LOAD,
@@ -127,7 +115,7 @@ static const struct starfive_wdt_variant starfive_wdt_jh7100_variant = {
 	.double_timeout = false,
 };
 
-/* Register layout and configuration for the JH7110 */
+ 
 static const struct starfive_wdt_variant starfive_wdt_jh7110_variant = {
 	.control = STARFIVE_WDT_JH7110_CONTROL,
 	.load = STARFIVE_WDT_JH7110_LOAD,
@@ -200,7 +188,7 @@ static u32 starfive_wdt_ticks_to_sec(struct starfive_wdt *wdt, u32 ticks)
 	return DIV_ROUND_CLOSEST(ticks, wdt->freq);
 }
 
-/* Write unlock-key to unlock. Write other value to lock. */
+ 
 static void starfive_wdt_unlock(struct starfive_wdt *wdt)
 {
 	spin_lock(&wdt->lock);
@@ -213,7 +201,7 @@ static void starfive_wdt_lock(struct starfive_wdt *wdt)
 	spin_unlock(&wdt->lock);
 }
 
-/* enable watchdog interrupt to reset/reboot */
+ 
 static void starfive_wdt_enable_reset(struct starfive_wdt *wdt)
 {
 	u32 val;
@@ -223,13 +211,13 @@ static void starfive_wdt_enable_reset(struct starfive_wdt *wdt)
 	writel(val, wdt->base + wdt->variant->control);
 }
 
-/* interrupt status whether has been raised from the counter */
+ 
 static bool starfive_wdt_raise_irq_status(struct starfive_wdt *wdt)
 {
 	return !!readl(wdt->base + wdt->variant->int_status);
 }
 
-/* waiting interrupt can be free to clear */
+ 
 static int starfive_wdt_wait_int_free(struct starfive_wdt *wdt)
 {
 	u32 value;
@@ -239,7 +227,7 @@ static int starfive_wdt_wait_int_free(struct starfive_wdt *wdt)
 					 STARFIVE_WDT_DELAY_US, STARFIVE_WDT_TIMEOUT_US);
 }
 
-/* clear interrupt signal before initialization or reload */
+ 
 static int starfive_wdt_int_clr(struct starfive_wdt *wdt)
 {
 	int ret;
@@ -265,7 +253,7 @@ static inline u32 starfive_wdt_get_count(struct starfive_wdt *wdt)
 	return readl(wdt->base + wdt->variant->value);
 }
 
-/* enable watchdog */
+ 
 static inline void starfive_wdt_enable(struct starfive_wdt *wdt)
 {
 	u32 val;
@@ -275,7 +263,7 @@ static inline void starfive_wdt_enable(struct starfive_wdt *wdt)
 	writel(val, wdt->base + wdt->variant->enable);
 }
 
-/* disable watchdog */
+ 
 static inline void starfive_wdt_disable(struct starfive_wdt *wdt)
 {
 	u32 val;
@@ -289,7 +277,7 @@ static inline void starfive_wdt_set_reload_count(struct starfive_wdt *wdt, u32 c
 {
 	starfive_wdt_set_count(wdt, count);
 
-	/* 7100 need set any value to reload register and could reload value to counter */
+	 
 	if (wdt->variant->reload)
 		writel(0x1, wdt->base + wdt->variant->reload);
 }
@@ -307,10 +295,7 @@ static unsigned int starfive_wdt_get_timeleft(struct watchdog_device *wdd)
 	struct starfive_wdt *wdt = watchdog_get_drvdata(wdd);
 	u32 count;
 
-	/*
-	 * If the watchdog takes twice timeout and set half count value,
-	 * timeleft value should add the count value before first timeout.
-	 */
+	 
 	count = starfive_wdt_get_count(wdt);
 	if (wdt->variant->double_timeout && !starfive_wdt_raise_irq_status(wdt))
 		count += wdt->count;
@@ -331,7 +316,7 @@ static int starfive_wdt_keepalive(struct watchdog_device *wdd)
 	starfive_wdt_set_reload_count(wdt, wdt->count);
 
 exit:
-	/* exit with releasing spinlock and locking registers */
+	 
 	starfive_wdt_lock(wdt);
 	return ret;
 }
@@ -341,7 +326,7 @@ static int starfive_wdt_start(struct starfive_wdt *wdt)
 	int ret;
 
 	starfive_wdt_unlock(wdt);
-	/* disable watchdog, to be safe */
+	 
 	starfive_wdt_disable(wdt);
 
 	starfive_wdt_enable_reset(wdt);
@@ -389,7 +374,7 @@ static int starfive_wdt_set_timeout(struct watchdog_device *wdd,
 	struct starfive_wdt *wdt = watchdog_get_drvdata(wdd);
 	unsigned long count = timeout * wdt->freq;
 
-	/* some watchdogs take two timeouts to reset */
+	 
 	if (wdt->variant->double_timeout)
 		count /= 2;
 
@@ -446,7 +431,7 @@ static int starfive_wdt_probe(struct platform_device *pdev)
 		if (ret < 0)
 			return ret;
 	} else {
-		/* runtime PM is disabled but clocks need to be enabled */
+		 
 		ret = starfive_wdt_enable_clock(wdt);
 		if (ret)
 			return ret;
@@ -514,7 +499,7 @@ static int starfive_wdt_remove(struct platform_device *pdev)
 	if (pm_runtime_enabled(&pdev->dev))
 		pm_runtime_disable(&pdev->dev);
 	else
-		/* disable clock without PM */
+		 
 		starfive_wdt_disable_clock(wdt);
 
 	return 0;
@@ -531,10 +516,10 @@ static int starfive_wdt_suspend(struct device *dev)
 {
 	struct starfive_wdt *wdt = dev_get_drvdata(dev);
 
-	/* Save watchdog state, and turn it off. */
+	 
 	wdt->reload = starfive_wdt_get_count(wdt);
 
-	/* Note that WTCNT doesn't need to be saved. */
+	 
 	starfive_wdt_stop(wdt);
 
 	return pm_runtime_force_suspend(dev);
@@ -550,7 +535,7 @@ static int starfive_wdt_resume(struct device *dev)
 		return ret;
 
 	starfive_wdt_unlock(wdt);
-	/* Restore watchdog state. */
+	 
 	starfive_wdt_set_reload_count(wdt, wdt->reload);
 	starfive_wdt_lock(wdt);
 
@@ -581,7 +566,7 @@ static const struct dev_pm_ops starfive_wdt_pm_ops = {
 static const struct of_device_id starfive_wdt_match[] = {
 	{ .compatible = "starfive,jh7100-wdt", .data = &starfive_wdt_jh7100_variant },
 	{ .compatible = "starfive,jh7110-wdt", .data = &starfive_wdt_jh7110_variant },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, starfive_wdt_match);
 

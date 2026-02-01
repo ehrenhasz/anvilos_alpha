@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MCE grading rules.
- * Copyright 2008, 2009 Intel Corporation.
- *
- * Author: Andi Kleen
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/seq_file.h>
 #include <linux/init.h>
@@ -19,17 +14,7 @@
 
 #include "internal.h"
 
-/*
- * Grade an mce by severity. In general the most severe ones are processed
- * first. Since there are quite a lot of combinations test the bits in a
- * table-driven way. The rules are simply processed in order, first
- * match wins.
- *
- * Note this is only used for machine check exceptions, the corrected
- * errors use much simpler rules. The exceptions still check for the corrected
- * errors, but only to leave them alone for the CMCI handler (except for
- * panic situations)
- */
+ 
 
 enum context { IN_KERNEL = 1, IN_USER = 2, IN_KERNEL_RECOV = 3 };
 enum ser { SER_REQUIRED = 1, NO_SER = 2 };
@@ -81,12 +66,12 @@ static struct severity {
 		PANIC, "Processor context corrupt",
 		BITSET(MCI_STATUS_PCC)
 		),
-	/* When MCIP is not set something is very confused */
+	 
 	MCESEV(
 		PANIC, "MCIP not set in MCA handler",
 		EXCP, MCGMASK(MCG_STATUS_MCIP, 0)
 		),
-	/* Neither return not error IP -- no chance to recover -> PANIC */
+	 
 	MCESEV(
 		PANIC, "Neither restart nor error IP",
 		EXCP, MCGMASK(MCG_STATUS_RIPV|MCG_STATUS_EIPV, 0)
@@ -103,13 +88,7 @@ static struct severity {
 		KEEP, "Corrected error",
 		NOSER, BITCLR(MCI_STATUS_UC)
 		),
-	/*
-	 * known AO MCACODs reported via MCE or CMC:
-	 *
-	 * SRAO could be signaled either via a machine check exception or
-	 * CMCI with the corresponding bit S 1 or 0. So we don't need to
-	 * check bit S for SRAO.
-	 */
+	 
 	MCESEV(
 		AO, "Action optional: memory scrubbing error",
 		SER, MASK(MCI_UC_AR|MCACOD_SCRUBMSK, MCI_STATUS_UC|MCACOD_SCRUB)
@@ -118,20 +97,14 @@ static struct severity {
 		AO, "Action optional: last level cache writeback error",
 		SER, MASK(MCI_UC_AR|MCACOD, MCI_STATUS_UC|MCACOD_L3WB)
 		),
-	/*
-	 * Quirk for Skylake/Cascade Lake. Patrol scrubber may be configured
-	 * to report uncorrected errors using CMCI with a special signature.
-	 * UC=0, MSCOD=0x0010, MCACOD=binary(000X 0000 1100 XXXX) reported
-	 * in one of the memory controller banks.
-	 * Set severity to "AO" for same action as normal patrol scrub error.
-	 */
+	 
 	MCESEV(
 		AO, "Uncorrected Patrol Scrub Error",
 		SER, MASK(MCI_STATUS_UC|MCI_ADDR|0xffffeff0, MCI_ADDR|0x001000c0),
 		MODEL_STEPPING(INTEL_FAM6_SKYLAKE_X, 4), BANK_RANGE(13, 18)
 	),
 
-	/* ignore OVER for UCNA */
+	 
 	MCESEV(
 		UCNA, "Uncorrected no action required",
 		SER, MASK(MCI_UC_SAR, MCI_STATUS_UC)
@@ -151,7 +124,7 @@ static struct severity {
 		SER, BITSET(MCI_STATUS_OVER|MCI_UC_SAR)
 		),
 
-	/* known AR MCACODs: */
+	 
 #ifdef	CONFIG_MEMORY_FAILURE
 	MCESEV(
 		KEEP, "Action required but unaffected thread is continuable",
@@ -214,7 +187,7 @@ static struct severity {
 	MCESEV(
 		SOME, "No match",
 		BITSET(0)
-		)	/* always matches. keep at end */
+		)	 
 };
 
 #define mc_recoverable(mcg) (((mcg) & (MCG_STATUS_RIPV|MCG_STATUS_EIPV)) == \
@@ -238,13 +211,13 @@ static bool is_copy_from_user(struct pt_regs *regs)
 		return false;
 
 	switch (insn.opcode.value) {
-	/* MOV mem,reg */
+	 
 	case 0x8A: case 0x8B:
-	/* MOVZ mem,reg */
+	 
 	case 0xB60F: case 0xB70F:
 		addr = (unsigned long)insn_get_addr_ref(&insn, regs);
 		break;
-	/* REP MOVS */
+	 
 	case 0xA4: case 0xA5:
 		addr = regs->si;
 		break;
@@ -260,17 +233,7 @@ static bool is_copy_from_user(struct pt_regs *regs)
 	return true;
 }
 
-/*
- * If mcgstatus indicated that ip/cs on the stack were
- * no good, then "m->cs" will be zero and we will have
- * to assume the worst case (IN_KERNEL) as we actually
- * have no idea what we were executing when the machine
- * check hit.
- * If we do have a good "m->cs" (or a faked one in the
- * case we were executing in VM86 mode) we can use it to
- * distinguish an exception taken in user from from one
- * taken in the kernel.
- */
+ 
 static noinstr int error_context(struct mce *m, struct pt_regs *regs)
 {
 	int fixup_type;
@@ -282,7 +245,7 @@ static noinstr int error_context(struct mce *m, struct pt_regs *regs)
 	if (!mc_recoverable(m->mcgstatus))
 		return IN_KERNEL;
 
-	/* Allow instrumentation around external facilities usage. */
+	 
 	instrumentation_begin();
 	fixup_type = ex_get_fixup_type(m->ip);
 	copy_user  = is_copy_from_user(regs);
@@ -306,19 +269,16 @@ static noinstr int error_context(struct mce *m, struct pt_regs *regs)
 	}
 }
 
-/* See AMD PPR(s) section Machine Check Error Handling. */
+ 
 static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **msg, bool is_excp)
 {
 	char *panic_msg = NULL;
 	int ret;
 
-	/*
-	 * Default return value: Action required, the error must be handled
-	 * immediately.
-	 */
+	 
 	ret = MCE_AR_SEVERITY;
 
-	/* Processor Context Corrupt, no need to fumble too much, die! */
+	 
 	if (m->status & MCI_STATUS_PCC) {
 		panic_msg = "Processor Context Corrupt";
 		ret = MCE_PANIC_SEVERITY;
@@ -330,19 +290,13 @@ static noinstr int mce_severity_amd(struct mce *m, struct pt_regs *regs, char **
 		goto out;
 	}
 
-	/*
-	 * If the UC bit is not set, the system either corrected or deferred
-	 * the error. No action will be required after logging the error.
-	 */
+	 
 	if (!(m->status & MCI_STATUS_UC)) {
 		ret = MCE_KEEP_SEVERITY;
 		goto out;
 	}
 
-	/*
-	 * On MCA overflow, without the MCA overflow recovery feature the
-	 * system will not be able to recover, panic.
-	 */
+	 
 	if ((m->status & MCI_STATUS_OVER) && !mce_flags.overflow_recov) {
 		panic_msg = "Overflowed uncorrected error without MCA Overflow Recovery";
 		ret = MCE_PANIC_SEVERITY;
@@ -476,4 +430,4 @@ static int __init severities_debugfs_init(void)
 	return 0;
 }
 late_initcall(severities_debugfs_init);
-#endif /* CONFIG_DEBUG_FS */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Test cases for printf facility.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -118,15 +116,10 @@ __test(const char *expect, int elen, const char *fmt, ...)
 
 	va_start(ap, fmt);
 
-	/*
-	 * Every fmt+args is subjected to four tests: Three where we
-	 * tell vsnprintf varying buffer sizes (plenty, not quite
-	 * enough and 0), and then we also test that kvasprintf would
-	 * be able to print it as expected.
-	 */
+	 
 	failed_tests += do_test(BUF_SIZE, expect, elen, fmt, ap);
 	rand = get_random_u32_inclusive(1, elen + 1);
-	/* Since elen < BUF_SIZE, we have 1 <= rand <= BUF_SIZE. */
+	 
 	failed_tests += do_test(rand, expect, elen, fmt, ap);
 	failed_tests += do_test(0, expect, elen, fmt, ap);
 
@@ -149,7 +142,7 @@ __test(const char *expect, int elen, const char *fmt, ...)
 static void __init
 test_basic(void)
 {
-	/* Work around annoying "warning: zero-length gnu_printf format string". */
+	 
 	char nul = '\0';
 
 	test("", &nul);
@@ -169,14 +162,7 @@ test_number(void)
 		test("0|1|1|-128|-1", "%hhd|%hhd|%hhd|%hhd|%hhd", 0, 1, 257, 128, -1);
 		test("2015122420151225", "%ho%ho%#ho", 1037, 5282, -11627);
 	})
-	/*
-	 * POSIX/C99: »The result of converting zero with an explicit
-	 * precision of zero shall be no characters.« Hence the output
-	 * from the below test should really be "00|0||| ". However,
-	 * the kernel's printf also produces a single 0 in that
-	 * case. This test case simply documents the current
-	 * behaviour.
-	 */
+	 
 	test("00|0|0|0|0", "%.2d|%.1d|%.0d|%.*d|%1.0d", 0, 0, 0, 0, 0, 0);
 }
 
@@ -188,26 +174,14 @@ test_string(void)
 	test("1  |  2|3  |  4|5  ", "%-3s|%3s|%-*s|%*s|%*s", "1", "2", 3, "3", 3, "4", -3, "5");
 	test("1234      ", "%-10.4s", "123456");
 	test("      1234", "%10.4s", "123456");
-	/*
-	 * POSIX and C99 say that a negative precision (which is only
-	 * possible to pass via a * argument) should be treated as if
-	 * the precision wasn't present, and that if the precision is
-	 * omitted (as in %.s), the precision should be taken to be
-	 * 0. However, the kernel's printf behave exactly opposite,
-	 * treating a negative precision as 0 and treating an omitted
-	 * precision specifier as if no precision was given.
-	 *
-	 * These test cases document the current behaviour; should
-	 * anyone ever feel the need to follow the standards more
-	 * closely, this can be revisited.
-	 */
+	 
 	test("    ", "%4.*s", -5, "123456");
 	test("123456", "%.s", "123456");
 	test("a||", "%.s|%.0s|%.*s", "a", "b", 0, "c");
 	test("a  |   |   ", "%-3.s|%-3.0s|%-3.*s", "a", "b", 0, "c");
 }
 
-#define PLAIN_BUF_SIZE 64	/* leave some space so we don't oops */
+#define PLAIN_BUF_SIZE 64	 
 
 #if BITS_PER_LONG == 64
 
@@ -215,8 +189,8 @@ test_string(void)
 #define PTR ((void *)0xffff0123456789abUL)
 #define PTR_STR "ffff0123456789ab"
 #define PTR_VAL_NO_CRNG "(____ptrval____)"
-#define ZEROS "00000000"	/* hex 32 zero bits */
-#define ONES "ffffffff"		/* hex 32 one bits */
+#define ZEROS "00000000"	 
+#define ONES "ffffffff"		 
 
 static int __init
 plain_format(void)
@@ -253,11 +227,11 @@ plain_format(void)
 static int __init
 plain_format(void)
 {
-	/* Format is implicitly tested for 32 bit machines by plain_hash() */
+	 
 	return 0;
 }
 
-#endif	/* BITS_PER_LONG == 64 */
+#endif	 
 
 static int __init
 plain_hash_to_buffer(const void *p, char *buf, size_t len)
@@ -294,10 +268,7 @@ plain_hash(void)
 	return 0;
 }
 
-/*
- * We can't use test() to test %p because we don't know what output to expect
- * after an address is hashed.
- */
+ 
 static void __init
 plain(void)
 {
@@ -329,10 +300,7 @@ test_hashed(const char *fmt, const void *p)
 	char buf[PLAIN_BUF_SIZE];
 	int ret;
 
-	/*
-	 * No need to increase failed test counter since this is assumed
-	 * to be called after plain().
-	 */
+	 
 	ret = plain_hash_to_buffer(p, buf, PLAIN_BUF_SIZE);
 	if (ret)
 		return;
@@ -340,9 +308,7 @@ test_hashed(const char *fmt, const void *p)
 	test(buf, fmt, p);
 }
 
-/*
- * NULL pointers aren't hashed.
- */
+ 
 static void __init
 null_pointer(void)
 {
@@ -351,9 +317,7 @@ null_pointer(void)
 	test("(null)", "%pE", NULL);
 }
 
-/*
- * Error pointers aren't hashed.
- */
+ 
 static void __init
 error_pointer(void)
 {
@@ -380,7 +344,7 @@ symbol_ptr(void)
 static void __init
 kernel_ptr(void)
 {
-	/* We can't test this without access to kptr_restrict. */
+	 
 }
 
 static void __init
@@ -504,7 +468,7 @@ struct_va_format(void)
 static void __init
 time_and_date(void)
 {
-	/* 1543210543 */
+	 
 	const struct rtc_time tm = {
 		.tm_sec = 43,
 		.tm_min = 35,
@@ -513,7 +477,7 @@ time_and_date(void)
 		.tm_mon = 10,
 		.tm_year = 118,
 	};
-	/* 2019-01-04T15:32:23 */
+	 
 	time64_t t = 1546615943;
 
 	test("(%pt?)", "%pt", &tm);
@@ -690,7 +654,7 @@ flags(void)
 	gfp = __GFP_HIGH;
 	test("__GFP_HIGH", "%pGg", &gfp);
 
-	/* Any flags not translated by the table should remain numeric */
+	 
 	gfp = ~__GFP_BITS_MASK;
 	snprintf(cmp_buffer, BUF_SIZE, "%#lx", (unsigned long) gfp);
 	test(cmp_buffer, "%pGg", &gfp);
@@ -764,7 +728,7 @@ errptr(void)
 {
 	test("-1234", "%pe", ERR_PTR(-1234));
 
-	/* Check that %pe with a non-ERR_PTR gets treated as ordinary %p. */
+	 
 	BUILD_BUG_ON(IS_ERR(PTR));
 	test_hashed("%pe", PTR);
 

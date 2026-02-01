@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2017-2023 Oracle.  All Rights Reserved.
- * Author: Darrick J. Wong <djwong@kernel.org>
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -23,11 +20,7 @@
 #include "scrub/trace.h"
 #include "xfs_ag.h"
 
-/*
- * Set us up to scrub inode btrees.
- * If we detect a discrepancy between the inobt and the inode,
- * try again after forcing logged inode cores out to disk.
- */
+ 
 int
 xchk_setup_ag_iallocbt(
 	struct xfs_scrub	*sc)
@@ -37,30 +30,20 @@ xchk_setup_ag_iallocbt(
 	return xchk_setup_ag_btree(sc, sc->flags & XCHK_TRY_HARDER);
 }
 
-/* Inode btree scrubber. */
+ 
 
 struct xchk_iallocbt {
-	/* Number of inodes we see while scanning inobt. */
+	 
 	unsigned long long	inodes;
 
-	/* Expected next startino, for big block filesystems. */
+	 
 	xfs_agino_t		next_startino;
 
-	/* Expected end of the current inode cluster. */
+	 
 	xfs_agino_t		next_cluster_ino;
 };
 
-/*
- * Does the finobt have a record for this inode with the same hole/free state?
- * This is a bit complicated because of the following:
- *
- * - The finobt need not have a record if all inodes in the inobt record are
- *   allocated.
- * - The finobt need not have a record if all inodes in the inobt record are
- *   free.
- * - The finobt need not have a record if the inobt record says this is a hole.
- *   This likely doesn't happen in practice.
- */
+ 
 STATIC int
 xchk_inobt_xref_finobt(
 	struct xfs_scrub	*sc,
@@ -91,7 +74,7 @@ xchk_inobt_xref_finobt(
 	if (frec.ir_startino + XFS_INODES_PER_CHUNK <= agino)
 		goto no_record;
 
-	/* There's a finobt record; free and hole status must match. */
+	 
 	frec_idx = agino - frec.ir_startino;
 	ffree = frec.ir_free & (1ULL << frec_idx);
 	fhole_idx = frec_idx / XFS_INODES_PER_HOLEMASK_BIT;
@@ -104,19 +87,19 @@ xchk_inobt_xref_finobt(
 	return 0;
 
 no_record:
-	/* inobt record is fully allocated */
+	 
 	if (irec->ir_free == 0)
 		return 0;
 
-	/* inobt record is totally unallocated */
+	 
 	if (irec->ir_free == XFS_INOBT_ALL_FREE)
 		return 0;
 
-	/* inobt record says this is a hole */
+	 
 	if (hole)
 		return 0;
 
-	/* finobt doesn't care about allocated inodes */
+	 
 	if (!free)
 		return 0;
 
@@ -124,10 +107,7 @@ no_record:
 	return 0;
 }
 
-/*
- * Make sure that each inode of this part of an inobt record has the same
- * sparse and free status as the finobt.
- */
+ 
 STATIC void
 xchk_inobt_chunk_xref_finobt(
 	struct xfs_scrub		*sc,
@@ -160,10 +140,7 @@ xchk_inobt_chunk_xref_finobt(
 	}
 }
 
-/*
- * Does the inobt have a record for this inode with the same hole/free state?
- * The inobt must always have a record if there's a finobt record.
- */
+ 
 STATIC int
 xchk_finobt_xref_inobt(
 	struct xfs_scrub	*sc,
@@ -194,7 +171,7 @@ xchk_finobt_xref_inobt(
 	if (irec.ir_startino + XFS_INODES_PER_CHUNK <= agino)
 		goto no_record;
 
-	/* There's an inobt record; free and hole status must match. */
+	 
 	rec_idx = agino - irec.ir_startino;
 	free = irec.ir_free & (1ULL << rec_idx);
 	hole_idx = rec_idx / XFS_INODES_PER_HOLEMASK_BIT;
@@ -207,15 +184,12 @@ xchk_finobt_xref_inobt(
 	return 0;
 
 no_record:
-	/* finobt should never have a record for which the inobt does not */
+	 
 	xchk_btree_xref_set_corrupt(sc, cur, 0);
 	return 0;
 }
 
-/*
- * Make sure that each inode of this part of an finobt record has the same
- * sparse and free status as the inobt.
- */
+ 
 STATIC void
 xchk_finobt_chunk_xref_inobt(
 	struct xfs_scrub		*sc,
@@ -248,7 +222,7 @@ xchk_finobt_chunk_xref_inobt(
 	}
 }
 
-/* Is this chunk worth checking and cross-referencing? */
+ 
 STATIC bool
 xchk_iallocbt_chunk(
 	struct xchk_btree		*bs,
@@ -282,20 +256,7 @@ xchk_iallocbt_chunk(
 	return true;
 }
 
-/*
- * Check that an inode's allocation status matches ir_free in the inobt
- * record.  First we try querying the in-core inode state, and if the inode
- * isn't loaded we examine the on-disk inode directly.
- *
- * Since there can be 1:M and M:1 mappings between inobt records and inode
- * clusters, we pass in the inode location information as an inobt record;
- * the index of an inode cluster within the inobt record (as well as the
- * cluster buffer itself); and the index of the inode within the cluster.
- *
- * @irec is the inobt record.
- * @irec_ino is the inode offset from the start of the record.
- * @dip is the on-disk inode.
- */
+ 
 STATIC int
 xchk_iallocbt_check_cluster_ifree(
 	struct xchk_btree		*bs,
@@ -314,10 +275,7 @@ xchk_iallocbt_check_cluster_ifree(
 	if (xchk_should_terminate(bs->sc, &error))
 		return error;
 
-	/*
-	 * Given an inobt record and the offset of an inode from the start of
-	 * the record, compute which fs inode we're talking about.
-	 */
+	 
 	agino = irec->ir_startino + irec_ino;
 	fsino = XFS_AGINO_TO_INO(mp, bs->cur->bc_ag.pag->pag_agno, agino);
 	irec_free = (irec->ir_free & XFS_INOBT_MASK(irec_ino));
@@ -330,19 +288,15 @@ xchk_iallocbt_check_cluster_ifree(
 
 	error = xchk_inode_is_allocated(bs->sc, agino, &ino_inuse);
 	if (error == -ENODATA) {
-		/* Not cached, just read the disk buffer */
+		 
 		freemask_ok = irec_free ^ !!(dip->di_mode);
 		if (!(bs->sc->flags & XCHK_TRY_HARDER) && !freemask_ok)
 			return -EDEADLOCK;
 	} else if (error < 0) {
-		/*
-		 * Inode is only half assembled, or there was an IO error,
-		 * or the verifier failed, so don't bother trying to check.
-		 * The inode scrubber can deal with this.
-		 */
+		 
 		goto out;
 	} else {
-		/* Inode is all there. */
+		 
 		freemask_ok = irec_free ^ ino_inuse;
 	}
 	if (!freemask_ok)
@@ -351,13 +305,7 @@ out:
 	return 0;
 }
 
-/*
- * Check that the holemask and freemask of a hypothetical inode cluster match
- * what's actually on disk.  If sparse inodes are enabled, the cluster does
- * not actually have to map to inodes if the corresponding holemask bit is set.
- *
- * @cluster_base is the first inode in the cluster within the @irec.
- */
+ 
 STATIC int
 xchk_iallocbt_check_cluster(
 	struct xchk_btree		*bs,
@@ -378,23 +326,17 @@ xchk_iallocbt_check_cluster(
 	nr_inodes = min_t(unsigned int, XFS_INODES_PER_CHUNK,
 			M_IGEO(mp)->inodes_per_cluster);
 
-	/* Map this inode cluster */
+	 
 	agbno = XFS_AGINO_TO_AGBNO(mp, irec->ir_startino + cluster_base);
 
-	/* Compute a bitmask for this cluster that can be used for holemask. */
+	 
 	for (cluster_index = 0;
 	     cluster_index < nr_inodes;
 	     cluster_index += XFS_INODES_PER_HOLEMASK_BIT)
 		cluster_mask |= XFS_INOBT_MASK((cluster_base + cluster_index) /
 				XFS_INODES_PER_HOLEMASK_BIT);
 
-	/*
-	 * Map the first inode of this cluster to a buffer and offset.
-	 * Be careful about inobt records that don't align with the start of
-	 * the inode buffer when block sizes are large enough to hold multiple
-	 * inode chunks.  When this happens, cluster_base will be zero but
-	 * ir_startino can be large enough to make im_boffset nonzero.
-	 */
+	 
 	ir_holemask = (irec->ir_holemask & cluster_mask);
 	imap.im_blkno = XFS_AGB_TO_DADDR(mp, agno, agbno);
 	imap.im_len = XFS_FSB_TO_BB(mp, M_IGEO(mp)->blocks_per_cluster);
@@ -413,13 +355,13 @@ xchk_iallocbt_check_cluster(
 			XFS_INO_TO_OFFSET(mp, irec->ir_startino +
 					  cluster_base));
 
-	/* The whole cluster must be a hole or not a hole. */
+	 
 	if (ir_holemask != cluster_mask && ir_holemask != 0) {
 		xchk_btree_set_corrupt(bs->sc, bs->cur, 0);
 		return 0;
 	}
 
-	/* If any part of this is a hole, skip it. */
+	 
 	if (ir_holemask) {
 		xchk_xref_is_not_owned_by(bs->sc, agbno,
 				M_IGEO(mp)->blocks_per_cluster,
@@ -430,12 +372,12 @@ xchk_iallocbt_check_cluster(
 	xchk_xref_is_only_owned_by(bs->sc, agbno, M_IGEO(mp)->blocks_per_cluster,
 			&XFS_RMAP_OINFO_INODES);
 
-	/* Grab the inode cluster buffer. */
+	 
 	error = xfs_imap_to_bp(mp, bs->cur->bc_tp, &imap, &cluster_bp);
 	if (!xchk_btree_xref_process_error(bs->sc, bs->cur, 0, &error))
 		return error;
 
-	/* Check free status of each inode within this cluster. */
+	 
 	for (cluster_index = 0; cluster_index < nr_inodes; cluster_index++) {
 		struct xfs_dinode	*dip;
 
@@ -456,11 +398,7 @@ xchk_iallocbt_check_cluster(
 	return error;
 }
 
-/*
- * For all the inode clusters that could map to this inobt record, make sure
- * that the holemask makes sense and that the allocation status of each inode
- * matches the freemask.
- */
+ 
 STATIC int
 xchk_iallocbt_check_clusters(
 	struct xchk_btree		*bs,
@@ -469,13 +407,7 @@ xchk_iallocbt_check_clusters(
 	unsigned int			cluster_base;
 	int				error = 0;
 
-	/*
-	 * For the common case where this inobt record maps to multiple inode
-	 * clusters this will call _check_cluster for each cluster.
-	 *
-	 * For the case that multiple inobt records map to a single cluster,
-	 * this will call _check_cluster once.
-	 */
+	 
 	for (cluster_base = 0;
 	     cluster_base < XFS_INODES_PER_CHUNK;
 	     cluster_base += M_IGEO(bs->sc->mp)->inodes_per_cluster) {
@@ -487,12 +419,7 @@ xchk_iallocbt_check_clusters(
 	return error;
 }
 
-/*
- * Make sure this inode btree record is aligned properly.  Because a fs block
- * contains multiple inodes, we check that the inobt record is aligned to the
- * correct inode, not just the correct block on disk.  This results in a finer
- * grained corruption check.
- */
+ 
 STATIC void
 xchk_iallocbt_rec_alignment(
 	struct xchk_btree		*bs,
@@ -502,18 +429,7 @@ xchk_iallocbt_rec_alignment(
 	struct xchk_iallocbt		*iabt = bs->private;
 	struct xfs_ino_geometry		*igeo = M_IGEO(mp);
 
-	/*
-	 * finobt records have different positioning requirements than inobt
-	 * records: each finobt record must have a corresponding inobt record.
-	 * That is checked in the xref function, so for now we only catch the
-	 * obvious case where the record isn't at all aligned properly.
-	 *
-	 * Note that if a fs block contains more than a single chunk of inodes,
-	 * we will have finobt records only for those chunks containing free
-	 * inodes, and therefore expect chunk alignment of finobt records.
-	 * Otherwise, we expect that the finobt record is aligned to the
-	 * cluster alignment as told by the superblock.
-	 */
+	 
 	if (bs->cur->bc_btnum == XFS_BTNUM_FINO) {
 		unsigned int	imask;
 
@@ -525,11 +441,7 @@ xchk_iallocbt_rec_alignment(
 	}
 
 	if (iabt->next_startino != NULLAGINO) {
-		/*
-		 * We're midway through a cluster of inodes that is mapped by
-		 * multiple inobt records.  Did we get the record for the next
-		 * irec in the sequence?
-		 */
+		 
 		if (irec->ir_startino != iabt->next_startino) {
 			xchk_btree_set_corrupt(bs->sc, bs->cur, 0);
 			return;
@@ -537,7 +449,7 @@ xchk_iallocbt_rec_alignment(
 
 		iabt->next_startino += XFS_INODES_PER_CHUNK;
 
-		/* Are we done with the cluster? */
+		 
 		if (iabt->next_startino >= iabt->next_cluster_ino) {
 			iabt->next_startino = NULLAGINO;
 			iabt->next_cluster_ino = NULLAGINO;
@@ -545,7 +457,7 @@ xchk_iallocbt_rec_alignment(
 		return;
 	}
 
-	/* inobt records must be aligned to cluster and inoalignmnt size. */
+	 
 	if (irec->ir_startino & (igeo->cluster_align_inodes - 1)) {
 		xchk_btree_set_corrupt(bs->sc, bs->cur, 0);
 		return;
@@ -559,16 +471,12 @@ xchk_iallocbt_rec_alignment(
 	if (igeo->inodes_per_cluster <= XFS_INODES_PER_CHUNK)
 		return;
 
-	/*
-	 * If this is the start of an inode cluster that can be mapped by
-	 * multiple inobt records, the next inobt record must follow exactly
-	 * after this one.
-	 */
+	 
 	iabt->next_startino = irec->ir_startino + XFS_INODES_PER_CHUNK;
 	iabt->next_cluster_ino = irec->ir_startino + igeo->inodes_per_cluster;
 }
 
-/* Scrub an inobt/finobt record. */
+ 
 STATIC int
 xchk_iallocbt_rec(
 	struct xchk_btree		*bs,
@@ -598,7 +506,7 @@ xchk_iallocbt_rec(
 
 	iabt->inodes += irec.ir_count;
 
-	/* Handle non-sparse inodes */
+	 
 	if (!xfs_inobt_issparse(irec.ir_holemask)) {
 		if (irec.ir_count != XFS_INODES_PER_CHUNK)
 			xchk_btree_set_corrupt(bs->sc, bs->cur, 0);
@@ -609,7 +517,7 @@ xchk_iallocbt_rec(
 		goto check_clusters;
 	}
 
-	/* Check each chunk of a sparse inode cluster. */
+	 
 	holemask = irec.ir_holemask;
 	holecount = 0;
 	holes = ~xfs_inobt_irec_to_allocmask(&irec);
@@ -643,10 +551,7 @@ out:
 	return error;
 }
 
-/*
- * Make sure the inode btrees are as large as the rmap thinks they are.
- * Don't bother if we're missing btree cursors, as we're already corrupt.
- */
+ 
 STATIC void
 xchk_iallocbt_xref_rmap_btreeblks(
 	struct xfs_scrub	*sc,
@@ -662,7 +567,7 @@ xchk_iallocbt_xref_rmap_btreeblks(
 	    xchk_skip_xref(sc->sm))
 		return;
 
-	/* Check that we saw as many inobt blocks as the rmap says. */
+	 
 	error = xfs_btree_count_blocks(sc->sa.ino_cur, &inobt_blocks);
 	if (!xchk_process_error(sc, 0, 0, &error))
 		return;
@@ -681,10 +586,7 @@ xchk_iallocbt_xref_rmap_btreeblks(
 		xchk_btree_set_corrupt(sc, sc->sa.ino_cur, 0);
 }
 
-/*
- * Make sure that the inobt records point to the same number of blocks as
- * the rmap says are owned by inodes.
- */
+ 
 STATIC void
 xchk_iallocbt_xref_rmap_inodes(
 	struct xfs_scrub	*sc,
@@ -698,7 +600,7 @@ xchk_iallocbt_xref_rmap_inodes(
 	if (!sc->sa.rmap_cur || xchk_skip_xref(sc->sm))
 		return;
 
-	/* Check that we saw as many inode blocks as the rmap knows about. */
+	 
 	error = xchk_count_rmap_ownedby_ag(sc, sc->sa.rmap_cur,
 			&XFS_RMAP_OINFO_INODES, &blocks);
 	if (!xchk_should_check_xref(sc, &error, &sc->sa.rmap_cur))
@@ -708,7 +610,7 @@ xchk_iallocbt_xref_rmap_inodes(
 		xchk_btree_xref_set_corrupt(sc, sc->sa.rmap_cur, 0);
 }
 
-/* Scrub the inode btrees for some AG. */
+ 
 STATIC int
 xchk_iallocbt(
 	struct xfs_scrub	*sc,
@@ -730,13 +632,7 @@ xchk_iallocbt(
 
 	xchk_iallocbt_xref_rmap_btreeblks(sc, which);
 
-	/*
-	 * If we're scrubbing the inode btree, inode_blocks is the number of
-	 * blocks pointed to by all the inode chunk records.  Therefore, we
-	 * should compare to the number of inode chunk blocks that the rmap
-	 * knows about.  We can't do this for the finobt since it only points
-	 * to inode chunks with free inodes.
-	 */
+	 
 	if (which == XFS_BTNUM_INO)
 		xchk_iallocbt_xref_rmap_inodes(sc, which, iabt.inodes);
 
@@ -757,7 +653,7 @@ xchk_finobt(
 	return xchk_iallocbt(sc, XFS_BTNUM_FINO);
 }
 
-/* See if an inode btree has (or doesn't have) an inode chunk record. */
+ 
 static inline void
 xchk_xref_inode_check(
 	struct xfs_scrub	*sc,
@@ -779,7 +675,7 @@ xchk_xref_inode_check(
 		xchk_btree_xref_set_corrupt(sc, *icur, 0);
 }
 
-/* xref check that the extent is not covered by inodes */
+ 
 void
 xchk_xref_is_not_inode_chunk(
 	struct xfs_scrub	*sc,
@@ -792,7 +688,7 @@ xchk_xref_is_not_inode_chunk(
 			XBTREE_RECPACKING_EMPTY);
 }
 
-/* xref check that the extent is covered by inodes */
+ 
 void
 xchk_xref_is_inode_chunk(
 	struct xfs_scrub	*sc,

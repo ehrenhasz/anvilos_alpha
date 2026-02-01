@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Marvell Armada AP CPU Clock Controller
- *
- * Copyright (C) 2018 Marvell
- *
- * Omri Itach <omrii@marvell.com>
- * Gregory Clement <gregory.clement@bootlin.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "ap-cpu-clk: " fmt
 
@@ -29,12 +22,7 @@
 
 #define APN806_MAX_DIVIDER		32
 
-/*
- * struct cpu_dfs_regs: CPU DFS register mapping
- * @divider_reg: full integer ratio from PLL frequency to CPU clock frequency
- * @force_reg: request to force new ratio regardless of relation to other clocks
- * @ratio_reg: central request to switch ratios
- */
+ 
 struct cpu_dfs_regs {
 	unsigned int divider_reg;
 	unsigned int force_reg;
@@ -50,7 +38,7 @@ struct cpu_dfs_regs {
 	int ratio_state_cluster_offset;
 };
 
-/* AP806 CPU DFS register mapping*/
+ 
 #define AP806_CA72MP2_0_PLL_CR_0_REG_OFFSET		0x278
 #define AP806_CA72MP2_0_PLL_CR_1_REG_OFFSET		0x280
 #define AP806_CA72MP2_0_PLL_CR_2_REG_OFFSET		0x284
@@ -88,7 +76,7 @@ static const struct cpu_dfs_regs ap806_dfs_regs = {
 	.ratio_state_cluster_offset = AP806_CA72MP2_0_PLL_RATIO_STABLE_OFFSET,
 };
 
-/* AP807 CPU DFS register mapping */
+ 
 #define AP807_DEVICE_GENERAL_CONTROL_10_REG_OFFSET		0x278
 #define AP807_DEVICE_GENERAL_CONTROL_11_REG_OFFSET		0x27c
 #define AP807_DEVICE_GENERAL_STATUS_6_REG_OFFSET		0xc98
@@ -123,14 +111,7 @@ static const struct cpu_dfs_regs ap807_dfs_regs = {
 		AP807_CA72MP2_0_PLL_CLKDIV_RATIO_STABLE_CLUSTER_OFFSET
 };
 
-/*
- * struct ap806_clk: CPU cluster clock controller instance
- * @cluster: Cluster clock controller index
- * @clk_name: Cluster clock controller name
- * @dev : Cluster clock device
- * @hw: HW specific structure of Cluster clock controller
- * @pll_cr_base: CA72MP2 Register base (Device Sample at Reset register)
- */
+ 
 struct ap_cpu_clk {
 	unsigned int cluster;
 	const char *clk_name;
@@ -174,10 +155,7 @@ static int ap_cpu_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 	reg &= ~(clk->pll_regs->divider_mask);
 	reg |= (divider << clk->pll_regs->divider_offset);
 
-	/*
-	 * AP807 CPU divider has two channels with ratio 1:3 and divider_ratio
-	 * is 1. Otherwise, in the case of the AP806, divider_ratio is 0.
-	 */
+	 
 	if (clk->pll_regs->divider_ratio) {
 		reg &= ~(AP807_PLL_CR_1_CPU_CLK_DIV_RATIO_MASK);
 		reg |= ((divider * clk->pll_regs->divider_ratio) <<
@@ -241,15 +219,7 @@ static int ap_cpu_clock_probe(struct platform_device *pdev)
 		return PTR_ERR(regmap);
 	}
 
-	/*
-	 * AP806 has 4 cpus and DFS for AP806 is controlled per
-	 * cluster (2 CPUs per cluster), cpu0 and cpu1 are fixed to
-	 * cluster0 while cpu2 and cpu3 are fixed to cluster1 whether
-	 * they are enabled or not.  Since cpu0 is the boot cpu, then
-	 * cluster0 must exist.  If cpu2 or cpu3 is enabled, cluster1
-	 * will exist and the cluster number is 2; otherwise the
-	 * cluster number is 1.
-	 */
+	 
 	nclusters = 1;
 	for_each_of_cpu_node(dn) {
 		u64 cpu;
@@ -260,17 +230,14 @@ static int ap_cpu_clock_probe(struct platform_device *pdev)
 			return -EINVAL;
 		}
 
-		/* If cpu2 or cpu3 is enabled */
+		 
 		if (cpu & APN806_CLUSTER_NUM_MASK) {
 			nclusters = 2;
 			of_node_put(dn);
 			break;
 		}
 	}
-	/*
-	 * DFS for AP806 is controlled per cluster (2 CPUs per cluster),
-	 * so allocate structs per cluster
-	 */
+	 
 	ap_cpu_clk = devm_kcalloc(dev, nclusters, sizeof(*ap_cpu_clk),
 				  GFP_KERNEL);
 	if (!ap_cpu_clk)
@@ -298,7 +265,7 @@ static int ap_cpu_clock_probe(struct platform_device *pdev)
 		cluster_index = cpu & APN806_CLUSTER_NUM_MASK;
 		cluster_index >>= APN806_CLUSTER_NUM_OFFSET;
 
-		/* Initialize once for one cluster */
+		 
 		if (ap_cpu_data->hws[cluster_index])
 			continue;
 

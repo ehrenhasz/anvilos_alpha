@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*  Paravirtualization interfaces
-    Copyright (C) 2006 Rusty Russell IBM Corporation
 
-
-    2007 - x86_64 support added by Glauber de Oliveira Costa, Red Hat Inc
-*/
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -34,13 +29,10 @@
 #include <asm/io_bitmap.h>
 #include <asm/gsseg.h>
 
-/*
- * nop stub, which must not clobber anything *including the stack* to
- * avoid confusing the entry prologues.
- */
+ 
 DEFINE_PARAVIRT_ASM(_paravirt_nop, "", .entry.text);
 
-/* stub always returning 0. */
+ 
 DEFINE_PARAVIRT_ASM(paravirt_ret0, "xor %eax,%eax", .entry.text);
 
 void __init default_banner(void)
@@ -49,7 +41,7 @@ void __init default_banner(void)
 	       pv_info.name);
 }
 
-/* Undefined instruction for dealing with missing ops pointers. */
+ 
 noinstr void paravirt_BUG(void)
 {
 	BUG();
@@ -88,20 +80,17 @@ static void native_tlb_remove_table(struct mmu_gather *tlb, void *table)
 unsigned int paravirt_patch(u8 type, void *insn_buff, unsigned long addr,
 			    unsigned int len)
 {
-	/*
-	 * Neat trick to map patch type back to the call within the
-	 * corresponding structure.
-	 */
+	 
 	void *opfunc = *((void **)&pv_ops + type);
 	unsigned ret;
 
 	if (opfunc == NULL)
-		/* If there's no function, patch it with paravirt_BUG() */
+		 
 		ret = paravirt_patch_call(insn_buff, paravirt_BUG, addr, len);
 	else if (opfunc == _paravirt_nop)
 		ret = 0;
 	else
-		/* Otherwise call the function. */
+		 
 		ret = paravirt_patch_call(insn_buff, opfunc, addr, len);
 
 	return ret;
@@ -123,7 +112,7 @@ void paravirt_set_sched_clock(u64 (*func)(void))
 	static_call_update(pv_sched_clock, func);
 }
 
-/* These are in entry.S */
+ 
 static struct resource reserve_ioports = {
 	.start = 0,
 	.end = IO_SPACE_LIMIT,
@@ -131,13 +120,7 @@ static struct resource reserve_ioports = {
 	.flags = IORESOURCE_IO | IORESOURCE_BUSY,
 };
 
-/*
- * Reserve the whole legacy IO space to prevent any legacy drivers
- * from wasting time probing for their hardware.  This is a fairly
- * brute-force approach to disabling all non-virtual drivers.
- *
- * Note that this must be called very early to have any effect.
- */
+ 
 int paravirt_disable_iospace(void)
 {
 	return request_resource(&ioport_resource, &reserve_ioports);
@@ -177,11 +160,11 @@ struct pv_info pv_info = {
 #endif
 };
 
-/* 64-bit pagetable entries */
+ 
 #define PTE_IDENT	__PV_IS_CALLEE_SAVE(_paravirt_ident_64)
 
 struct paravirt_patch_template pv_ops = {
-	/* Cpu ops. */
+	 
 	.cpu.io_delay		= native_io_delay,
 
 #ifdef CONFIG_PARAVIRT_XXL
@@ -221,15 +204,15 @@ struct paravirt_patch_template pv_ops = {
 	.cpu.start_context_switch	= paravirt_nop,
 	.cpu.end_context_switch		= paravirt_nop,
 
-	/* Irq ops. */
+	 
 	.irq.save_fl		= __PV_IS_CALLEE_SAVE(pv_native_save_fl),
 	.irq.irq_disable	= __PV_IS_CALLEE_SAVE(pv_native_irq_disable),
 	.irq.irq_enable		= __PV_IS_CALLEE_SAVE(pv_native_irq_enable),
 	.irq.safe_halt		= pv_native_safe_halt,
 	.irq.halt		= native_halt,
-#endif /* CONFIG_PARAVIRT_XXL */
+#endif  
 
-	/* Mmu ops. */
+	 
 	.mmu.flush_tlb_user	= native_flush_tlb_local,
 	.mmu.flush_tlb_kernel	= native_flush_tlb_global,
 	.mmu.flush_tlb_one_user	= native_flush_tlb_one_user,
@@ -278,7 +261,7 @@ struct paravirt_patch_template pv_ops = {
 	.mmu.make_p4d		= PTE_IDENT,
 
 	.mmu.set_pgd		= native_set_pgd,
-#endif /* CONFIG_PGTABLE_LEVELS >= 5 */
+#endif  
 
 	.mmu.pte_val		= PTE_IDENT,
 	.mmu.pgd_val		= PTE_IDENT,
@@ -295,10 +278,10 @@ struct paravirt_patch_template pv_ops = {
 	},
 
 	.mmu.set_fixmap		= native_set_fixmap,
-#endif /* CONFIG_PARAVIRT_XXL */
+#endif  
 
 #if defined(CONFIG_PARAVIRT_SPINLOCKS)
-	/* Lock ops. */
+	 
 #ifdef CONFIG_SMP
 	.lock.queued_spin_lock_slowpath	= native_queued_spin_lock_slowpath,
 	.lock.queued_spin_unlock	=
@@ -307,7 +290,7 @@ struct paravirt_patch_template pv_ops = {
 	.lock.kick			= paravirt_nop,
 	.lock.vcpu_is_preempted		=
 				PV_CALLEE_SAVE(__native_vcpu_is_preempted),
-#endif /* SMP */
+#endif  
 #endif
 };
 

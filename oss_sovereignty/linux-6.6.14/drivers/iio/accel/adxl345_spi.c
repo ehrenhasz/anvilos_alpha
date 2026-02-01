@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ADXL345 3-Axis Digital Accelerometer SPI driver
- *
- * Copyright (c) 2017 Eva Rachel Retuya <eraretuya@gmail.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/regmap.h>
@@ -16,7 +12,7 @@
 static const struct regmap_config adxl345_spi_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
-	 /* Setting bits 7 and 6 enables multiple-byte read */
+	  
 	.read_flag_mask = BIT(7) | BIT(6),
 };
 
@@ -24,7 +20,7 @@ static int adxl345_spi_probe(struct spi_device *spi)
 {
 	struct regmap *regmap;
 
-	/* Bail out if max_speed_hz exceeds 5 MHz */
+	 
 	if (spi->max_speed_hz > ADXL345_MAX_SPI_FREQ_HZ)
 		return dev_err_probe(&spi->dev, -EINVAL, "SPI CLK, %d Hz exceeds 5 MHz\n",
 				     spi->max_speed_hz);

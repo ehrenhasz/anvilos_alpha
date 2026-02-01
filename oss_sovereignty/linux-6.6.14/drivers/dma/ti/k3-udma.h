@@ -1,14 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com
- */
+ 
+ 
 
 #ifndef K3_UDMA_H_
 #define K3_UDMA_H_
 
 #include <linux/soc/ti/ti_sci_protocol.h>
 
-/* Global registers */
+ 
 #define UDMA_REV_REG			0x0
 #define UDMA_PERF_CTL_REG		0x4
 #define UDMA_EMU_CTL_REG		0x8
@@ -18,26 +16,26 @@
 #define UDMA_RX_FLOW_ID_FW_OES_REG	0x80
 #define UDMA_RX_FLOW_ID_FW_STATUS_REG	0x88
 
-/* BCHANRT/TCHANRT/RCHANRT registers */
+ 
 #define UDMA_CHAN_RT_CTL_REG		0x0
 #define UDMA_CHAN_RT_SWTRIG_REG		0x8
 #define UDMA_CHAN_RT_STDATA_REG		0x80
 
 #define UDMA_CHAN_RT_PEER_REG(i)	(0x200 + ((i) * 0x4))
 #define UDMA_CHAN_RT_PEER_STATIC_TR_XY_REG	\
-	UDMA_CHAN_RT_PEER_REG(0)	/* PSI-L: 0x400 */
+	UDMA_CHAN_RT_PEER_REG(0)	 
 #define UDMA_CHAN_RT_PEER_STATIC_TR_Z_REG	\
-	UDMA_CHAN_RT_PEER_REG(1)	/* PSI-L: 0x401 */
+	UDMA_CHAN_RT_PEER_REG(1)	 
 #define UDMA_CHAN_RT_PEER_BCNT_REG		\
-	UDMA_CHAN_RT_PEER_REG(4)	/* PSI-L: 0x404 */
+	UDMA_CHAN_RT_PEER_REG(4)	 
 #define UDMA_CHAN_RT_PEER_RT_EN_REG		\
-	UDMA_CHAN_RT_PEER_REG(8)	/* PSI-L: 0x408 */
+	UDMA_CHAN_RT_PEER_REG(8)	 
 
 #define UDMA_CHAN_RT_PCNT_REG		0x400
 #define UDMA_CHAN_RT_BCNT_REG		0x408
 #define UDMA_CHAN_RT_SBCNT_REG		0x410
 
-/* UDMA_CAP Registers */
+ 
 #define UDMA_CAP2_TCHAN_CNT(val)	((val) & 0x1ff)
 #define UDMA_CAP2_ECHAN_CNT(val)	(((val) >> 9) & 0x1ff)
 #define UDMA_CAP2_RCHAN_CNT(val)	(((val) >> 18) & 0x1ff)
@@ -57,24 +55,21 @@
 
 #define PKTDMA_CAP4_TFLOW_CNT(val)	((val) & 0x3fff)
 
-/* UDMA_CHAN_RT_CTL_REG */
+ 
 #define UDMA_CHAN_RT_CTL_EN		BIT(31)
 #define UDMA_CHAN_RT_CTL_TDOWN		BIT(30)
 #define UDMA_CHAN_RT_CTL_PAUSE		BIT(29)
 #define UDMA_CHAN_RT_CTL_FTDOWN		BIT(28)
 #define UDMA_CHAN_RT_CTL_ERROR		BIT(0)
 
-/* UDMA_CHAN_RT_PEER_RT_EN_REG */
+ 
 #define UDMA_PEER_RT_EN_ENABLE		BIT(31)
 #define UDMA_PEER_RT_EN_TEARDOWN	BIT(30)
 #define UDMA_PEER_RT_EN_PAUSE		BIT(29)
 #define UDMA_PEER_RT_EN_FLUSH		BIT(28)
 #define UDMA_PEER_RT_EN_IDLE		BIT(1)
 
-/*
- * UDMA_TCHAN_RT_PEER_STATIC_TR_XY_REG /
- * UDMA_RCHAN_RT_PEER_STATIC_TR_XY_REG
- */
+ 
 #define PDMA_STATIC_TR_X_MASK		GENMASK(26, 24)
 #define PDMA_STATIC_TR_X_SHIFT		(24)
 #define PDMA_STATIC_TR_Y_MASK		GENMASK(11, 0)
@@ -88,13 +83,10 @@
 #define PDMA_STATIC_TR_XY_ACC32		BIT(30)
 #define PDMA_STATIC_TR_XY_BURST		BIT(31)
 
-/*
- * UDMA_TCHAN_RT_PEER_STATIC_TR_Z_REG /
- * UDMA_RCHAN_RT_PEER_STATIC_TR_Z_REG
- */
+ 
 #define PDMA_STATIC_TR_Z(x, mask)	((x) & (mask))
 
-/* Address Space Select */
+ 
 #define K3_ADDRESS_ASEL_SHIFT		48
 
 struct udma_dev;
@@ -116,14 +108,14 @@ struct udma_tisci_rm {
 	const struct ti_sci_rm_udmap_ops *tisci_udmap_ops;
 	u32  tisci_dev_id;
 
-	/* tisci information for PSI-L thread pairing/unpairing */
+	 
 	const struct ti_sci_rm_psil_ops *tisci_psil_ops;
 	u32  tisci_navss_dev_id;
 
 	struct ti_sci_resource *rm_ranges[RM_RANGE_LAST];
 };
 
-/* Direct access to UDMA low lever resources for the glue layer */
+ 
 int xudma_navss_psil_pair(struct udma_dev *ud, u32 src_thread, u32 dst_thread);
 int xudma_navss_psil_unpair(struct udma_dev *ud, u32 src_thread,
 			    u32 dst_thread);
@@ -161,4 +153,4 @@ int xudma_is_pktdma(struct udma_dev *ud);
 
 int xudma_pktdma_tflow_get_irq(struct udma_dev *ud, int udma_tflow_id);
 int xudma_pktdma_rflow_get_irq(struct udma_dev *ud, int udma_rflow_id);
-#endif /* K3_UDMA_H_ */
+#endif  

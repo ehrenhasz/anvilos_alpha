@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM btrfs
 
@@ -104,10 +104,7 @@ struct find_free_extent_ctl;
 	EM( RUN_DELAYED_IPUTS,		"RUN_DELAYED_IPUTS")		\
 	EMe(COMMIT_TRANS,		"COMMIT_TRANS")
 
-/*
- * First define the enums in the above macros to be exported to userspace via
- * TRACE_DEFINE_ENUM().
- */
+ 
 
 #undef EM
 #undef EMe
@@ -120,10 +117,7 @@ QGROUP_RSV_TYPES
 IO_TREE_OWNER
 FLUSH_STATES
 
-/*
- * Now redefine the EM and EMe macros to map the enums to the strings that will
- * be printed in the output
- */
+ 
 
 #undef EM
 #undef EMe
@@ -367,7 +361,7 @@ TRACE_EVENT(btrfs_handle_em_exist,
 		  __entry->map_len)
 );
 
-/* file extent item */
+ 
 DECLARE_EVENT_CLASS(btrfs__file_extent_item_regular,
 
 	TP_PROTO(const struct btrfs_inode *bi, const struct extent_buffer *l,
@@ -1580,11 +1574,7 @@ DECLARE_EVENT_CLASS(btrfs__work,
 		   __entry->func, __entry->ordered_func, __entry->ordered_free)
 );
 
-/*
- * For situations when the work is freed, we pass fs_info and a tag that matches
- * the address of the work structure so it can be paired with the scheduling
- * event. DO NOT add anything here that dereferences wtag.
- */
+ 
 DECLARE_EVENT_CLASS(btrfs__work__done,
 
 	TP_PROTO(const struct btrfs_fs_info *fs_info, const void *wtag),
@@ -2463,11 +2453,7 @@ DECLARE_EVENT_CLASS(btrfs_raid56_bio,
 		__entry->real_stripes	= rbio->real_stripes;
 		__entry->nr_data	= rbio->nr_data;
 	),
-	/*
-	 * For type output, we need to output things like "DATA1"
-	 * (the first data stripe), "DATA2" (the second data stripe),
-	 * "PQ1" (P stripe),"PQ2" (Q stripe), "REPLACE0" (replace target device).
-	 */
+	 
 	TP_printk_btrfs(
 "full_stripe=%llu devid=%lld type=%s%d offset=%d opf=0x%x physical=%llu len=%u",
 		__entry->full_stripe, __entry->devid,
@@ -2497,7 +2483,7 @@ DEFINE_EVENT(btrfs_raid56_bio, raid56_write,
 	TP_ARGS(rbio, bio, trace_info)
 );
 
-#endif /* _TRACE_BTRFS_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

@@ -1,27 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (c) 2011, Lawrence Livermore National Security, LLC.
- * Copyright (c) 2023, Datto Inc. All rights reserved.
- */
+ 
+ 
 
 
 #include <sys/zfs_znode.h>
@@ -49,11 +27,7 @@ zpl_inode_destroy(struct inode *ip)
 	zfs_inode_destroy(ip);
 }
 
-/*
- * Called from __mark_inode_dirty() to reflect that something in the
- * inode has changed.  We use it to ensure the znode system attributes
- * are always strictly update to date with respect to the inode.
- */
+ 
 #ifdef HAVE_DIRTY_INODE_WITH_FLAGS
 static void
 zpl_dirty_inode(struct inode *ip, int flags)
@@ -74,23 +48,9 @@ zpl_dirty_inode(struct inode *ip)
 	zfs_dirty_inode(ip, 0);
 	spl_fstrans_unmark(cookie);
 }
-#endif /* HAVE_DIRTY_INODE_WITH_FLAGS */
+#endif  
 
-/*
- * When ->drop_inode() is called its return value indicates if the
- * inode should be evicted from the inode cache.  If the inode is
- * unhashed and has no links the default policy is to evict it
- * immediately.
- *
- * The ->evict_inode() callback must minimally truncate the inode pages,
- * and call clear_inode().  For 2.6.35 and later kernels this will
- * simply update the inode state, with the sync occurring before the
- * truncate in evict().  For earlier kernels clear_inode() maps to
- * end_writeback() which is responsible for completing all outstanding
- * write back.  In either case, once this is done it is safe to cleanup
- * any remaining inode specific data via zfs_inactive().
- * remaining filesystem specific data.
- */
+ 
 static void
 zpl_evict_inode(struct inode *ip)
 {
@@ -143,12 +103,7 @@ zpl_statfs(struct dentry *dentry, struct kstatfs *statp)
 	spl_fstrans_unmark(cookie);
 	ASSERT3S(error, <=, 0);
 
-	/*
-	 * If required by a 32-bit system call, dynamically scale the
-	 * block size up to 16MiB and decrease the block counts.  This
-	 * allows for a maximum size of 64EiB to be reported.  The file
-	 * counts must be artificially capped at 2^32-1.
-	 */
+	 
 	if (unlikely(zpl_is_32bit_api())) {
 		while (statp->f_blocks > UINT32_MAX &&
 		    statp->f_bsize < SPA_MAXBLOCKSIZE) {
@@ -194,11 +149,7 @@ __zpl_show_devname(struct seq_file *seq, zfsvfs_t *zfsvfs)
 	dmu_objset_name(zfsvfs->z_os, fsname);
 
 	for (int i = 0; fsname[i] != 0; i++) {
-		/*
-		 * Spaces in the dataset name must be converted to their
-		 * octal escape sequence for getmntent(3) to correctly
-		 * parse then fsname portion of /proc/self/mounts.
-		 */
+		 
 		if (fsname[i] == ' ') {
 			seq_puts(seq, "\\040");
 		} else {
@@ -234,7 +185,7 @@ __zpl_show_options(struct seq_file *seq, zfsvfs_t *zfsvfs)
 		seq_puts(seq, ",noacl");
 		break;
 	}
-#endif /* CONFIG_FS_POSIX_ACL */
+#endif  
 
 	switch (zfsvfs->z_case) {
 	case ZFS_CASE_SENSITIVE:
@@ -277,13 +228,7 @@ zpl_test_super(struct super_block *s, void *data)
 {
 	zfsvfs_t *zfsvfs = s->s_fs_info;
 	objset_t *os = data;
-	/*
-	 * If the os doesn't match the z_os in the super_block, assume it is
-	 * not a match. Matching would imply a multimount of a dataset. It is
-	 * possible that during a multimount, there is a simultaneous operation
-	 * that changes the z_os, e.g., rollback, where the match will be
-	 * missed, but in that case the user will get an EBUSY.
-	 */
+	 
 	return (zfsvfs != NULL && os == zfsvfs->z_os);
 }
 
@@ -298,26 +243,13 @@ zpl_mount_impl(struct file_system_type *fs_type, int flags, zfs_mnt_t *zm)
 	if (err)
 		return (ERR_PTR(-err));
 
-	/*
-	 * The dsl pool lock must be released prior to calling sget().
-	 * It is possible sget() may block on the lock in grab_super()
-	 * while deactivate_super() holds that same lock and waits for
-	 * a txg sync.  If the dsl_pool lock is held over sget()
-	 * this can prevent the pool sync and cause a deadlock.
-	 */
+	 
 	dsl_dataset_long_hold(dmu_objset_ds(os), FTAG);
 	dsl_pool_rele(dmu_objset_pool(os), FTAG);
 
 	s = sget(fs_type, zpl_test_super, set_anon_super, flags, os);
 
-	/*
-	 * Recheck with the lock held to prevent mounting the wrong dataset
-	 * since z_os can be stale when the teardown lock is held.
-	 *
-	 * We can't do this in zpl_test_super in since it's under spinlock and
-	 * also s_umount lock is not held there so it would race with
-	 * zfs_umount and zfsvfs can be freed.
-	 */
+	 
 	if (!IS_ERR(s) && s->s_fs_info != NULL) {
 		zfsvfs_t *zfsvfs = s->s_fs_info;
 		if (zpl_enter(zfsvfs, FTAG) == 0) {

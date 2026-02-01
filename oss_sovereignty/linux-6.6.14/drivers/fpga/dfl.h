@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Driver Header File for FPGA Device Feature List (DFL) Support
- *
- * Copyright (C) 2017-2018 Intel Corporation, Inc.
- *
- * Authors:
- *   Kang Luwei <luwei.kang@intel.com>
- *   Zhang Yi <yi.z.zhang@intel.com>
- *   Wu Hao <hao.wu@intel.com>
- *   Xiao Guangrong <guangrong.xiao@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __FPGA_DFL_H
 #define __FPGA_DFL_H
@@ -28,12 +18,12 @@
 #include <linux/uuid.h>
 #include <linux/fpga/fpga-region.h>
 
-/* maximum supported number of ports */
+ 
 #define MAX_DFL_FPGA_PORT_NUM 4
-/* plus one for fme device */
+ 
 #define MAX_DFL_FEATURE_DEV_NUM    (MAX_DFL_FPGA_PORT_NUM + 1)
 
-/* Reserved 0xfe for Header Group Register and 0xff for AFU */
+ 
 #define FEATURE_ID_FIU_HEADER		0xfe
 #define FEATURE_ID_AFU			0xff
 
@@ -53,13 +43,7 @@
 #define PORT_FEATURE_ID_UINT		0x12
 #define PORT_FEATURE_ID_STP		0x13
 
-/*
- * Device Feature Header Register Set
- *
- * For FIUs, they all have DFH + GUID + NEXT_AFU as common header registers.
- * For AFUs, they have DFH + GUID as common header registers.
- * For private features, they only have DFH register as common header.
- */
+ 
 #define DFH			0x0
 #define GUID_L			0x8
 #define GUID_H			0x10
@@ -67,58 +51,51 @@
 
 #define DFH_SIZE		0x8
 
-/* Device Feature Header Register Bitfield */
-#define DFH_ID			GENMASK_ULL(11, 0)	/* Feature ID */
+ 
+#define DFH_ID			GENMASK_ULL(11, 0)	 
 #define DFH_ID_FIU_FME		0
 #define DFH_ID_FIU_PORT		1
-#define DFH_REVISION		GENMASK_ULL(15, 12)	/* Feature revision */
-#define DFH_NEXT_HDR_OFST	GENMASK_ULL(39, 16)	/* Offset to next DFH */
-#define DFH_EOL			BIT_ULL(40)		/* End of list */
-#define DFH_VERSION		GENMASK_ULL(59, 52)	/* DFH version */
-#define DFH_TYPE		GENMASK_ULL(63, 60)	/* Feature type */
+#define DFH_REVISION		GENMASK_ULL(15, 12)	 
+#define DFH_NEXT_HDR_OFST	GENMASK_ULL(39, 16)	 
+#define DFH_EOL			BIT_ULL(40)		 
+#define DFH_VERSION		GENMASK_ULL(59, 52)	 
+#define DFH_TYPE		GENMASK_ULL(63, 60)	 
 #define DFH_TYPE_AFU		1
 #define DFH_TYPE_PRIVATE	3
 #define DFH_TYPE_FIU		4
 
-/*
- * DFHv1 Register Offset definitons
- * In DHFv1, DFH + GUID + CSR_START + CSR_SIZE_GROUP + PARAM_HDR + PARAM_DATA
- * as common header registers
- */
-#define DFHv1_CSR_ADDR		0x18  /* CSR Register start address */
-#define DFHv1_CSR_SIZE_GRP	0x20  /* Size of Reg Block and Group/tag */
-#define DFHv1_PARAM_HDR		0x28  /* Optional First Param header */
+ 
+#define DFHv1_CSR_ADDR		0x18   
+#define DFHv1_CSR_SIZE_GRP	0x20   
+#define DFHv1_PARAM_HDR		0x28   
 
-/*
- * CSR Rel Bit, 1'b0 = relative (offset from feature DFH start),
- * 1'b1 = absolute (ARM or other non-PCIe use)
- */
+ 
 #define DFHv1_CSR_ADDR_REL	BIT_ULL(0)
 
-/* CSR Header Register Bit Definitions */
-#define DFHv1_CSR_ADDR_MASK       GENMASK_ULL(63, 1)  /* 63:1 of CSR address */
+ 
+#define DFHv1_CSR_ADDR_MASK       GENMASK_ULL(63, 1)   
 
-/* CSR SIZE Goup Register Bit Definitions */
-#define DFHv1_CSR_SIZE_GRP_INSTANCE_ID	GENMASK_ULL(15, 0)	/* Enumeration instantiated IP */
-#define DFHv1_CSR_SIZE_GRP_GROUPING_ID	GENMASK_ULL(30, 16)	/* Group Features/interfaces */
-#define DFHv1_CSR_SIZE_GRP_HAS_PARAMS	BIT_ULL(31)		/* Presence of Parameters */
-#define DFHv1_CSR_SIZE_GRP_SIZE		GENMASK_ULL(63, 32)	/* Size of CSR Block in bytes */
+ 
+#define DFHv1_CSR_SIZE_GRP_INSTANCE_ID	GENMASK_ULL(15, 0)	 
+#define DFHv1_CSR_SIZE_GRP_GROUPING_ID	GENMASK_ULL(30, 16)	 
+#define DFHv1_CSR_SIZE_GRP_HAS_PARAMS	BIT_ULL(31)		 
+#define DFHv1_CSR_SIZE_GRP_SIZE		GENMASK_ULL(63, 32)	 
 
-/* PARAM Header Register Bit Definitions */
-#define DFHv1_PARAM_HDR_ID		GENMASK_ULL(15, 0) /* Id of this Param  */
-#define DFHv1_PARAM_HDR_VER		GENMASK_ULL(31, 16) /* Version Param */
-#define DFHv1_PARAM_HDR_NEXT_OFFSET	GENMASK_ULL(63, 35) /* Offset of next Param */
+ 
+#define DFHv1_PARAM_HDR_ID		GENMASK_ULL(15, 0)  
+#define DFHv1_PARAM_HDR_VER		GENMASK_ULL(31, 16)  
+#define DFHv1_PARAM_HDR_NEXT_OFFSET	GENMASK_ULL(63, 35)  
 #define DFHv1_PARAM_HDR_NEXT_EOP	BIT_ULL(32)
-#define DFHv1_PARAM_DATA		0x08  /* Offset of Param data from Param header */
+#define DFHv1_PARAM_DATA		0x08   
 
 #define DFHv1_PARAM_ID_MSI_X		0x1
 #define DFHv1_PARAM_MSI_X_NUMV		GENMASK_ULL(63, 32)
 #define DFHv1_PARAM_MSI_X_STARTV	GENMASK_ULL(31, 0)
 
-/* Next AFU Register Bitfield */
-#define NEXT_AFU_NEXT_DFH_OFST	GENMASK_ULL(23, 0)	/* Offset to next AFU */
+ 
+#define NEXT_AFU_NEXT_DFH_OFST	GENMASK_ULL(23, 0)	 
 
-/* FME Header Register Set */
+ 
 #define FME_HDR_DFH		DFH
 #define FME_HDR_GUID_L		GUID_L
 #define FME_HDR_GUID_H		GUID_H
@@ -129,37 +106,37 @@
 #define FME_HDR_BITSTREAM_ID	0x60
 #define FME_HDR_BITSTREAM_MD	0x68
 
-/* FME Fab Capability Register Bitfield */
-#define FME_CAP_FABRIC_VERID	GENMASK_ULL(7, 0)	/* Fabric version ID */
-#define FME_CAP_SOCKET_ID	BIT_ULL(8)		/* Socket ID */
-#define FME_CAP_PCIE0_LINK_AVL	BIT_ULL(12)		/* PCIE0 Link */
-#define FME_CAP_PCIE1_LINK_AVL	BIT_ULL(13)		/* PCIE1 Link */
-#define FME_CAP_COHR_LINK_AVL	BIT_ULL(14)		/* Coherent Link */
-#define FME_CAP_IOMMU_AVL	BIT_ULL(16)		/* IOMMU available */
-#define FME_CAP_NUM_PORTS	GENMASK_ULL(19, 17)	/* Number of ports */
-#define FME_CAP_ADDR_WIDTH	GENMASK_ULL(29, 24)	/* Address bus width */
-#define FME_CAP_CACHE_SIZE	GENMASK_ULL(43, 32)	/* cache size in KB */
-#define FME_CAP_CACHE_ASSOC	GENMASK_ULL(47, 44)	/* Associativity */
+ 
+#define FME_CAP_FABRIC_VERID	GENMASK_ULL(7, 0)	 
+#define FME_CAP_SOCKET_ID	BIT_ULL(8)		 
+#define FME_CAP_PCIE0_LINK_AVL	BIT_ULL(12)		 
+#define FME_CAP_PCIE1_LINK_AVL	BIT_ULL(13)		 
+#define FME_CAP_COHR_LINK_AVL	BIT_ULL(14)		 
+#define FME_CAP_IOMMU_AVL	BIT_ULL(16)		 
+#define FME_CAP_NUM_PORTS	GENMASK_ULL(19, 17)	 
+#define FME_CAP_ADDR_WIDTH	GENMASK_ULL(29, 24)	 
+#define FME_CAP_CACHE_SIZE	GENMASK_ULL(43, 32)	 
+#define FME_CAP_CACHE_ASSOC	GENMASK_ULL(47, 44)	 
 
-/* FME Port Offset Register Bitfield */
-/* Offset to port device feature header */
+ 
+ 
 #define FME_PORT_OFST_DFH_OFST	GENMASK_ULL(23, 0)
-/* PCI Bar ID for this port */
+ 
 #define FME_PORT_OFST_BAR_ID	GENMASK_ULL(34, 32)
-/* AFU MMIO access permission. 1 - VF, 0 - PF. */
+ 
 #define FME_PORT_OFST_ACC_CTRL	BIT_ULL(55)
 #define FME_PORT_OFST_ACC_PF	0
 #define FME_PORT_OFST_ACC_VF	1
 #define FME_PORT_OFST_IMP	BIT_ULL(60)
 
-/* FME Error Capability Register */
+ 
 #define FME_ERROR_CAP		0x70
 
-/* FME Error Capability Register Bitfield */
-#define FME_ERROR_CAP_SUPP_INT	BIT_ULL(0)		/* Interrupt Support */
-#define FME_ERROR_CAP_INT_VECT	GENMASK_ULL(12, 1)	/* Interrupt vector */
+ 
+#define FME_ERROR_CAP_SUPP_INT	BIT_ULL(0)		 
+#define FME_ERROR_CAP_INT_VECT	GENMASK_ULL(12, 1)	 
 
-/* PORT Header Register Set */
+ 
 #define PORT_HDR_DFH		DFH
 #define PORT_HDR_GUID_L		GUID_L
 #define PORT_HDR_GUID_H		GUID_H
@@ -172,49 +149,41 @@
 #define PORT_HDR_USRCLK_STS0	0x60
 #define PORT_HDR_USRCLK_STS1	0x68
 
-/* Port Capability Register Bitfield */
-#define PORT_CAP_PORT_NUM	GENMASK_ULL(1, 0)	/* ID of this port */
-#define PORT_CAP_MMIO_SIZE	GENMASK_ULL(23, 8)	/* MMIO size in KB */
-#define PORT_CAP_SUPP_INT_NUM	GENMASK_ULL(35, 32)	/* Interrupts num */
+ 
+#define PORT_CAP_PORT_NUM	GENMASK_ULL(1, 0)	 
+#define PORT_CAP_MMIO_SIZE	GENMASK_ULL(23, 8)	 
+#define PORT_CAP_SUPP_INT_NUM	GENMASK_ULL(35, 32)	 
 
-/* Port Control Register Bitfield */
-#define PORT_CTRL_SFTRST	BIT_ULL(0)		/* Port soft reset */
-/* Latency tolerance reporting. '1' >= 40us, '0' < 40us.*/
+ 
+#define PORT_CTRL_SFTRST	BIT_ULL(0)		 
+ 
 #define PORT_CTRL_LATENCY	BIT_ULL(2)
-#define PORT_CTRL_SFTRST_ACK	BIT_ULL(4)		/* HW ack for reset */
+#define PORT_CTRL_SFTRST_ACK	BIT_ULL(4)		 
 
-/* Port Status Register Bitfield */
-#define PORT_STS_AP2_EVT	BIT_ULL(13)		/* AP2 event detected */
-#define PORT_STS_AP1_EVT	BIT_ULL(12)		/* AP1 event detected */
-#define PORT_STS_PWR_STATE	GENMASK_ULL(11, 8)	/* AFU power states */
+ 
+#define PORT_STS_AP2_EVT	BIT_ULL(13)		 
+#define PORT_STS_AP1_EVT	BIT_ULL(12)		 
+#define PORT_STS_PWR_STATE	GENMASK_ULL(11, 8)	 
 #define PORT_STS_PWR_STATE_NORM 0
-#define PORT_STS_PWR_STATE_AP1	1			/* 50% throttling */
-#define PORT_STS_PWR_STATE_AP2	2			/* 90% throttling */
-#define PORT_STS_PWR_STATE_AP6	6			/* 100% throttling */
+#define PORT_STS_PWR_STATE_AP1	1			 
+#define PORT_STS_PWR_STATE_AP2	2			 
+#define PORT_STS_PWR_STATE_AP6	6			 
 
-/* Port Error Capability Register */
+ 
 #define PORT_ERROR_CAP		0x38
 
-/* Port Error Capability Register Bitfield */
-#define PORT_ERROR_CAP_SUPP_INT	BIT_ULL(0)		/* Interrupt Support */
-#define PORT_ERROR_CAP_INT_VECT	GENMASK_ULL(12, 1)	/* Interrupt vector */
+ 
+#define PORT_ERROR_CAP_SUPP_INT	BIT_ULL(0)		 
+#define PORT_ERROR_CAP_INT_VECT	GENMASK_ULL(12, 1)	 
 
-/* Port Uint Capability Register */
+ 
 #define PORT_UINT_CAP		0x8
 
-/* Port Uint Capability Register Bitfield */
-#define PORT_UINT_CAP_INT_NUM	GENMASK_ULL(11, 0)	/* Interrupts num */
-#define PORT_UINT_CAP_FST_VECT	GENMASK_ULL(23, 12)	/* First Vector */
+ 
+#define PORT_UINT_CAP_INT_NUM	GENMASK_ULL(11, 0)	 
+#define PORT_UINT_CAP_FST_VECT	GENMASK_ULL(23, 12)	 
 
-/**
- * struct dfl_fpga_port_ops - port ops
- *
- * @name: name of this port ops, to match with port platform device.
- * @owner: pointer to the module which owns this port ops.
- * @node: node to link port ops to global list.
- * @get_id: get port id from hardware.
- * @enable_set: enable/disable the port.
- */
+ 
 struct dfl_fpga_port_ops {
 	const char *name;
 	struct module *owner;
@@ -229,58 +198,25 @@ struct dfl_fpga_port_ops *dfl_fpga_port_ops_get(struct platform_device *pdev);
 void dfl_fpga_port_ops_put(struct dfl_fpga_port_ops *ops);
 int dfl_fpga_check_port_id(struct platform_device *pdev, void *pport_id);
 
-/**
- * struct dfl_feature_id - dfl private feature id
- *
- * @id: unique dfl private feature id.
- */
+ 
 struct dfl_feature_id {
 	u16 id;
 };
 
-/**
- * struct dfl_feature_driver - dfl private feature driver
- *
- * @id_table: id_table for dfl private features supported by this driver.
- * @ops: ops of this dfl private feature driver.
- */
+ 
 struct dfl_feature_driver {
 	const struct dfl_feature_id *id_table;
 	const struct dfl_feature_ops *ops;
 };
 
-/**
- * struct dfl_feature_irq_ctx - dfl private feature interrupt context
- *
- * @irq: Linux IRQ number of this interrupt.
- * @trigger: eventfd context to signal when interrupt happens.
- * @name: irq name needed when requesting irq.
- */
+ 
 struct dfl_feature_irq_ctx {
 	int irq;
 	struct eventfd_ctx *trigger;
 	char *name;
 };
 
-/**
- * struct dfl_feature - sub feature of the feature devices
- *
- * @dev: ptr to pdev of the feature device which has the sub feature.
- * @id: sub feature id.
- * @revision: revision of this sub feature.
- * @resource_index: each sub feature has one mmio resource for its registers.
- *		    this index is used to find its mmio resource from the
- *		    feature dev (platform device)'s resources.
- * @ioaddr: mapped mmio resource address.
- * @irq_ctx: interrupt context list.
- * @nr_irqs: number of interrupt contexts.
- * @ops: ops of this sub feature.
- * @ddev: ptr to the dfl device of this sub feature.
- * @priv: priv data of this feature.
- * @dfh_version: version of the DFH
- * @param_size: size of dfh parameters
- * @params: point to memory copy of dfh parameters
- */
+ 
 struct dfl_feature {
 	struct platform_device *dev;
 	u16 id;
@@ -299,22 +235,7 @@ struct dfl_feature {
 
 #define FEATURE_DEV_ID_UNUSED	(-1)
 
-/**
- * struct dfl_feature_platform_data - platform data for feature devices
- *
- * @node: node to link feature devs to container device's port_dev_list.
- * @lock: mutex to protect platform data.
- * @cdev: cdev of feature dev.
- * @dev: ptr to platform device linked with this platform data.
- * @dfl_cdev: ptr to container device.
- * @id: id used for this feature device.
- * @disable_count: count for port disable.
- * @excl_open: set on feature device exclusive open.
- * @open_count: count for feature device open.
- * @num: number for sub features.
- * @private: ptr to feature dev private data.
- * @features: sub features of this feature dev.
- */
+ 
 struct dfl_feature_platform_data {
 	struct list_head node;
 	struct mutex lock;
@@ -469,14 +390,7 @@ static inline u8 dfl_feature_revision(void __iomem *base)
 	return (u8)FIELD_GET(DFH_REVISION, readq(base + DFH));
 }
 
-/**
- * struct dfl_fpga_enum_info - DFL FPGA enumeration information
- *
- * @dev: parent device.
- * @dfls: list of device feature lists.
- * @nr_irqs: number of irqs for all feature devices.
- * @irq_table: Linux IRQ numbers for all irqs, indexed by hw irq numbers.
- */
+ 
 struct dfl_fpga_enum_info {
 	struct device *dev;
 	struct list_head dfls;
@@ -484,13 +398,7 @@ struct dfl_fpga_enum_info {
 	int *irq_table;
 };
 
-/**
- * struct dfl_fpga_enum_dfl - DFL FPGA enumeration device feature list info
- *
- * @start: base address of this device feature list.
- * @len: size of this device feature list.
- * @node: node in list of device feature lists.
- */
+ 
 struct dfl_fpga_enum_dfl {
 	resource_size_t start;
 	resource_size_t len;
@@ -504,16 +412,7 @@ int dfl_fpga_enum_info_add_irq(struct dfl_fpga_enum_info *info,
 			       unsigned int nr_irqs, int *irq_table);
 void dfl_fpga_enum_info_free(struct dfl_fpga_enum_info *info);
 
-/**
- * struct dfl_fpga_cdev - container device of DFL based FPGA
- *
- * @parent: parent device of this container device.
- * @region: base fpga region.
- * @fme_dev: FME feature device under this container device.
- * @lock: mutex lock to protect the port device list.
- * @port_dev_list: list of all port feature devices under this container device.
- * @released_port_num: released port number under this container device.
- */
+ 
 struct dfl_fpga_cdev {
 	struct device *parent;
 	struct fpga_region *region;
@@ -527,11 +426,7 @@ struct dfl_fpga_cdev *
 dfl_fpga_feature_devs_enumerate(struct dfl_fpga_enum_info *info);
 void dfl_fpga_feature_devs_remove(struct dfl_fpga_cdev *cdev);
 
-/*
- * need to drop the device reference with put_device() after use port platform
- * device returned by __dfl_fpga_cdev_find_port and dfl_fpga_cdev_find_port
- * functions.
- */
+ 
 struct platform_device *
 __dfl_fpga_cdev_find_port(struct dfl_fpga_cdev *cdev, void *data,
 			  int (*match)(struct platform_device *, void *));
@@ -562,4 +457,4 @@ long dfl_feature_ioctl_set_irq(struct platform_device *pdev,
 			       struct dfl_feature *feature,
 			       unsigned long arg);
 
-#endif /* __FPGA_DFL_H */
+#endif  

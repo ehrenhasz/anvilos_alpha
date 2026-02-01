@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for LNB supply and control IC STMicroelectronics LNBH29
-//
-// Copyright (c) 2018 Socionext Inc.
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -11,14 +11,7 @@
 #include <media/dvb_frontend.h>
 #include "lnbh29.h"
 
-/**
- * struct lnbh29_priv - LNBH29 driver private data
- * @i2c:         Pointer to the I2C adapter structure
- * @i2c_address: I2C address of LNBH29 chip
- * @config:      Registers configuration
- *               offset 0: 1st register address, always 0x01 (DATA)
- *               offset 1: DATA register value
- */
+ 
 struct lnbh29_priv {
 	struct i2c_adapter *i2c;
 	u8 i2c_address;
@@ -32,9 +25,9 @@ struct lnbh29_priv {
 #define LNBH29_STATUS_PDO     BIT(4)
 #define LNBH29_VSEL_MASK      GENMASK(2, 0)
 #define LNBH29_VSEL_0         0x00
-/* Min: 13.188V, Typ: 13.667V, Max:14V */
+ 
 #define LNBH29_VSEL_13        0x03
-/* Min: 18.158V, Typ: 18.817V, Max:19.475V */
+ 
 #define LNBH29_VSEL_18        0x07
 
 static int lnbh29_read_vmon(struct lnbh29_priv *priv)
@@ -113,7 +106,7 @@ static int lnbh29_set_voltage(struct dvb_frontend *fe,
 		return ret;
 	}
 
-	/* Soft-start time (Vout 0V to 18V) is Typ. 6ms. */
+	 
 	usleep_range(6000, 20000);
 
 	if (voltage == SEC_VOLTAGE_OFF)

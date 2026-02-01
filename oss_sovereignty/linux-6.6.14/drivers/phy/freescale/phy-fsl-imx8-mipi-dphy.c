@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2017,2018 NXP
- * Copyright 2019 Purism SPC
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -21,7 +18,7 @@
 #include <linux/regmap.h>
 #include <dt-bindings/firmware/imx/rsrc.h>
 
-/* Control and Status Registers(CSR) */
+ 
 #define PHY_CTRL			0x00
 #define  CCM_MASK			GENMASK(7, 5)
 #define  CCM(n)				FIELD_PREP(CCM_MASK, (n))
@@ -32,7 +29,7 @@
 #define  RFB				BIT(1)
 #define  LVDS_EN			BIT(0)
 
-/* DPHY registers */
+ 
 #define DPHY_PD_DPHY			0x00
 #define DPHY_M_PRG_HS_PREPARE		0x04
 #define DPHY_MC_PRG_HS_PREPARE		0x08
@@ -67,7 +64,7 @@
 #define CN(x)	(((x) == 1) ? 0x1f : (((CN_BUF) >> ((x) - 1)) & 0x1f))
 #define CO(x)	((CO_BUF) >> (8 - (x)) & 0x03)
 
-/* PHY power on is active low */
+ 
 #define PWR_ON	0
 #define PWR_OFF	1
 
@@ -88,7 +85,7 @@ struct mixel_dphy_devdata {
 	u8 reg_rxlprp;
 	u8 reg_rxcdrp;
 	u8 reg_rxhs_settle;
-	bool is_combo;	/* MIPI DPHY and LVDS PHY combo */
+	bool is_combo;	 
 };
 
 static const struct mixel_dphy_devdata mixel_dphy_devdata[] = {
@@ -106,11 +103,11 @@ static const struct mixel_dphy_devdata mixel_dphy_devdata[] = {
 };
 
 struct mixel_dphy_cfg {
-	/* DPHY PLL parameters */
+	 
 	u32 cm;
 	u32 cn;
 	u32 co;
-	/* DPHY register values */
+	 
 	u8 mc_prg_hs_prepare;
 	u8 m_prg_hs_prepare;
 	u8 mc_prg_hs_zero;
@@ -151,11 +148,7 @@ static int phy_write(struct phy *phy, u32 value, unsigned int reg)
 	return ret;
 }
 
-/*
- * Find a ratio close to the desired one using continued fraction
- * approximation ending either at exact match or maximum allowed
- * nominator, denominator.
- */
+ 
 static void get_best_ratio(u32 *pnum, u32 *pdenom, u32 max_n, u32 max_d)
 {
 	u32 a = *pnum;
@@ -212,11 +205,7 @@ static int mixel_dphy_config_from_opts(struct phy *phy,
 		numerator <<= 1;
 		denominator <<= 1;
 	}
-	/*
-	 * CM ranges between 16 and 255
-	 * CN ranges between 1 and 32
-	 * CO is power of 2: 1, 2, 4, 8
-	 */
+	 
 	i = __ffs(denominator);
 	if (i > 3)
 		i = 3;
@@ -238,9 +227,9 @@ static int mixel_dphy_config_from_opts(struct phy *phy,
 	dev_dbg(&phy->dev, "hs_clk/ref_clk=%ld/%ld ~ %d/%d\n",
 		dphy_opts->hs_clk_rate, ref_clk, numerator, denominator);
 
-	/* LP clock period */
+	 
 	tmp = 1000000000000LL;
-	do_div(tmp, dphy_opts->lp_clk_rate); /* ps */
+	do_div(tmp, dphy_opts->lp_clk_rate);  
 	if (tmp > ULONG_MAX)
 		return -EINVAL;
 
@@ -248,14 +237,14 @@ static int mixel_dphy_config_from_opts(struct phy *phy,
 	dev_dbg(&phy->dev, "LP clock %lu, period: %u ps\n",
 		dphy_opts->lp_clk_rate, lp_t);
 
-	/* hs_prepare: in lp clock periods */
+	 
 	if (2 * dphy_opts->hs_prepare > 5 * lp_t) {
 		dev_err(&phy->dev,
 			"hs_prepare (%u) > 2.5 * lp clock period (%u)\n",
 			dphy_opts->hs_prepare, lp_t);
 		return -EINVAL;
 	}
-	/* 00: lp_t, 01: 1.5 * lp_t, 10: 2 * lp_t, 11: 2.5 * lp_t */
+	 
 	if (dphy_opts->hs_prepare < lp_t) {
 		n = 0;
 	} else {
@@ -265,25 +254,25 @@ static int mixel_dphy_config_from_opts(struct phy *phy,
 	}
 	cfg->m_prg_hs_prepare = n;
 
-	/* clk_prepare: in lp clock periods */
+	 
 	if (2 * dphy_opts->clk_prepare > 3 * lp_t) {
 		dev_err(&phy->dev,
 			"clk_prepare (%u) > 1.5 * lp clock period (%u)\n",
 			dphy_opts->clk_prepare, lp_t);
 		return -EINVAL;
 	}
-	/* 00: lp_t, 01: 1.5 * lp_t */
+	 
 	cfg->mc_prg_hs_prepare = dphy_opts->clk_prepare > lp_t ? 1 : 0;
 
-	/* hs_zero: formula from NXP BSP */
+	 
 	n = (144 * (dphy_opts->hs_clk_rate / 1000000) - 47500) / 10000;
 	cfg->m_prg_hs_zero = n < 1 ? 1 : n;
 
-	/* clk_zero: formula from NXP BSP */
+	 
 	n = (34 * (dphy_opts->hs_clk_rate / 1000000) - 2500) / 1000;
 	cfg->mc_prg_hs_zero = n < 1 ? 1 : n;
 
-	/* clk_trail, hs_trail: formula from NXP BSP */
+	 
 	n = (103 * (dphy_opts->hs_clk_rate / 1000000) + 10000) / 10000;
 	if (n > 15)
 		n = 15;
@@ -292,7 +281,7 @@ static int mixel_dphy_config_from_opts(struct phy *phy,
 	cfg->m_prg_hs_trail = n;
 	cfg->mc_prg_hs_trail = n;
 
-	/* rxhs_settle: formula from NXP BSP */
+	 
 	if (dphy_opts->hs_clk_rate < MBPS(80))
 		cfg->rxhs_settle = 0x0d;
 	else if (dphy_opts->hs_clk_rate < MBPS(90))
@@ -360,7 +349,7 @@ mixel_dphy_configure_mipi_dphy(struct phy *phy, union phy_configure_opts *opts)
 	if (ret)
 		return ret;
 
-	/* Update the configuration */
+	 
 	memcpy(&priv->cfg, &cfg, sizeof(struct mixel_dphy_cfg));
 
 	phy_write(phy, 0x00, DPHY_LOCK_BYP);
@@ -391,11 +380,11 @@ mixel_dphy_configure_lvds_phy(struct phy *phy, union phy_configure_opts *opts)
 
 	priv->is_slave = lvds_opts->is_slave;
 
-	/* LVDS interface pins */
+	 
 	regmap_write(priv->lvds_regmap, PHY_CTRL,
 		     CCM(CCM_1_2V) | CA(CA_3_51MA) | RFB);
 
-	/* enable MODE8 only for slave LVDS PHY */
+	 
 	rsc = priv->id ? IMX_SC_R_MIPI_1 : IMX_SC_R_MIPI_0;
 	ret = imx_sc_misc_set_control(priv->ipc_handle, rsc, IMX_SC_C_DUAL_MODE,
 				      lvds_opts->is_slave);
@@ -404,15 +393,7 @@ mixel_dphy_configure_lvds_phy(struct phy *phy, union phy_configure_opts *opts)
 		return ret;
 	}
 
-	/*
-	 * Choose an appropriate divider ratio to meet the requirement of
-	 * PLL VCO frequency range.
-	 *
-	 *  -----  640MHz ~ 1500MHz   ------------      ---------------
-	 * | VCO | ----------------> | CO divider | -> | LVDS data rate|
-	 *  -----       FVCO          ------------      ---------------
-	 *                            1/2/4/8 div     7 * differential_clk_rate
-	 */
+	 
 	data_rate = 7 * lvds_opts->differential_clk_rate;
 	for (co = 1; co <= 8; co *= 2) {
 		fvco = data_rate * co;
@@ -426,13 +407,10 @@ mixel_dphy_configure_lvds_phy(struct phy *phy, union phy_configure_opts *opts)
 		return -ERANGE;
 	}
 
-	/*
-	 * CO is configurable, while CN and CM are not,
-	 * as fixed ratios 1 and 7 are applied respectively.
-	 */
+	 
 	phy_write(phy, __ffs(co), DPHY_CO);
 
-	/* set reference clock rate */
+	 
 	clk_set_rate(priv->phy_ref_clk, lvds_opts->differential_clk_rate);
 
 	return ret;
@@ -547,7 +525,7 @@ static int mixel_dphy_power_on_lvds_phy(struct phy *phy)
 	phy_write(phy, PWR_ON, DPHY_PD_DPHY);
 	phy_write(phy, PWR_ON, DPHY_PD_PLL);
 
-	/* do not wait for slave LVDS PHY being locked */
+	 
 	if (priv->is_slave)
 		return 0;
 
@@ -653,7 +631,7 @@ static const struct of_device_id mixel_dphy_of_match[] = {
 	  .data = &mixel_dphy_devdata[MIXEL_IMX8MQ] },
 	{ .compatible = "fsl,imx8qxp-mipi-dphy",
 	  .data = &mixel_dphy_devdata[MIXEL_IMX8QXP] },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mixel_dphy_of_match);
 

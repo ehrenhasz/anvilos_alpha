@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel Low Power Subsystem PWM controller driver
- *
- * Copyright (C) 2014, Intel Corporation
- * Author: Mika Westerberg <mika.westerberg@linux.intel.com>
- * Author: Chew Kean Ho <kean.ho.chew@intel.com>
- * Author: Chang Rebecca Swee Fun <rebecca.swee.fun.chang@intel.com>
- * Author: Chew Chiau Ee <chiau.ee.chew@intel.com>
- * Author: Alan Cox <alan@linux.intel.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -29,10 +20,10 @@
 #define PWM_BASE_UNIT_SHIFT		8
 #define PWM_ON_TIME_DIV_MASK		GENMASK(7, 0)
 
-/* Size of each PWM register space if multiple */
+ 
 #define PWM_SIZE			0x400
 
-/* BayTrail */
+ 
 const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
 	.clk_rate = 25000000,
 	.npwm = 1,
@@ -40,7 +31,7 @@ const struct pwm_lpss_boardinfo pwm_lpss_byt_info = {
 };
 EXPORT_SYMBOL_GPL(pwm_lpss_byt_info);
 
-/* Braswell */
+ 
 const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
 	.clk_rate = 19200000,
 	.npwm = 1,
@@ -49,7 +40,7 @@ const struct pwm_lpss_boardinfo pwm_lpss_bsw_info = {
 };
 EXPORT_SYMBOL_GPL(pwm_lpss_bsw_info);
 
-/* Broxton */
+ 
 const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
 	.clk_rate = 19200000,
 	.npwm = 4,
@@ -58,7 +49,7 @@ const struct pwm_lpss_boardinfo pwm_lpss_bxt_info = {
 };
 EXPORT_SYMBOL_GPL(pwm_lpss_bxt_info);
 
-/* Tangier */
+ 
 const struct pwm_lpss_boardinfo pwm_lpss_tng_info = {
 	.clk_rate = 19200000,
 	.npwm = 4,
@@ -93,17 +84,7 @@ static int pwm_lpss_wait_for_update(struct pwm_device *pwm)
 	u32 val;
 	int err;
 
-	/*
-	 * PWM Configuration register has SW_UPDATE bit that is set when a new
-	 * configuration is written to the register. The bit is automatically
-	 * cleared at the start of the next output cycle by the IP block.
-	 *
-	 * If one writes a new configuration to the register while it still has
-	 * the bit enabled, PWM may freeze. That is, while one can still write
-	 * to the register, it won't have an effect. Thus, we try to sleep long
-	 * enough that the bit gets cleared and make sure the bit is not
-	 * enabled while we update the configuration.
-	 */
+	 
 	err = readl_poll_timeout(addr, val, !(val & PWM_SW_UPDATE), 40, ms);
 	if (err)
 		dev_err(pwm->chip->dev, "PWM_SW_UPDATE was not cleared\n");
@@ -131,15 +112,12 @@ static void pwm_lpss_prepare(struct pwm_lpss_chip *lpwm, struct pwm_device *pwm,
 
 	do_div(freq, period_ns);
 
-	/*
-	 * The equation is:
-	 * base_unit = round(base_unit_range * freq / c)
-	 */
+	 
 	base_unit_range = BIT(lpwm->info->base_unit_bits);
 	freq *= base_unit_range;
 
 	base_unit = DIV_ROUND_CLOSEST_ULL(freq, c);
-	/* base_unit must not be 0 and we also want to avoid overflowing it */
+	 
 	base_unit = clamp_val(base_unit, 1, base_unit_range - 1);
 
 	on_time_div = 255ULL * duty_ns;

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Virtio PCI driver - common functionality for all device versions
- *
- * This module allows virtio devices to be used over a virtual PCI device.
- * This can be used with QEMU based VMMs like KVM or Xen.
- *
- * Copyright IBM Corp. 2007
- * Copyright Red Hat, Inc. 2014
- *
- * Authors:
- *  Anthony Liguori  <aliguori@us.ibm.com>
- *  Rusty Russell <rusty@rustcorp.com.au>
- *  Michael S. Tsirkin <mst@redhat.com>
- */
+
+ 
 
 #include "virtio_pci_common.h"
 
@@ -24,7 +11,7 @@ MODULE_PARM_DESC(force_legacy,
 		 "Force legacy mode for transitional virtio 1 devices");
 #endif
 
-/* wait for pending irq handlers */
+ 
 void vp_synchronize_vectors(struct virtio_device *vdev)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
@@ -37,16 +24,15 @@ void vp_synchronize_vectors(struct virtio_device *vdev)
 		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, i));
 }
 
-/* the notify function used when creating a virt queue */
+ 
 bool vp_notify(struct virtqueue *vq)
 {
-	/* we write the queue's selector into the notification register to
-	 * signal the other end */
+	 
 	iowrite16(vq->index, (void __iomem *)vq->priv);
 	return true;
 }
 
-/* Handle a configuration change: Tell driver if it wants to know. */
+ 
 static irqreturn_t vp_config_changed(int irq, void *opaque)
 {
 	struct virtio_pci_device *vp_dev = opaque;
@@ -55,7 +41,7 @@ static irqreturn_t vp_config_changed(int irq, void *opaque)
 	return IRQ_HANDLED;
 }
 
-/* Notify all virtqueues on an interrupt. */
+ 
 static irqreturn_t vp_vring_interrupt(int irq, void *opaque)
 {
 	struct virtio_pci_device *vp_dev = opaque;
@@ -73,26 +59,20 @@ static irqreturn_t vp_vring_interrupt(int irq, void *opaque)
 	return ret;
 }
 
-/* A small wrapper to also acknowledge the interrupt when it's handled.
- * I really need an EIO hook for the vring so I can ack the interrupt once we
- * know that we'll be handling the IRQ but before we invoke the callback since
- * the callback may notify the host which results in the host attempting to
- * raise an interrupt that we would then mask once we acknowledged the
- * interrupt. */
+ 
 static irqreturn_t vp_interrupt(int irq, void *opaque)
 {
 	struct virtio_pci_device *vp_dev = opaque;
 	u8 isr;
 
-	/* reading the ISR has the effect of also clearing it so it's very
-	 * important to save off the value. */
+	 
 	isr = ioread8(vp_dev->isr);
 
-	/* It's definitely not us if the ISR was not high */
+	 
 	if (!isr)
 		return IRQ_NONE;
 
-	/* Configuration change?  Tell driver if it wants to know. */
+	 
 	if (isr & VIRTIO_PCI_ISR_CONFIG)
 		vp_config_changed(irq, opaque);
 
@@ -127,7 +107,7 @@ static int vp_request_msix_vectors(struct virtio_device *vdev, int nvectors,
 
 	if (desc) {
 		flags |= PCI_IRQ_AFFINITY;
-		desc->pre_vectors++; /* virtio config vector */
+		desc->pre_vectors++;  
 	}
 
 	err = pci_alloc_irq_vectors_affinity(vp_dev->pci_dev, nvectors,
@@ -136,7 +116,7 @@ static int vp_request_msix_vectors(struct virtio_device *vdev, int nvectors,
 		goto error;
 	vp_dev->msix_enabled = 1;
 
-	/* Set the vector used for configuration */
+	 
 	v = vp_dev->msix_used_vectors;
 	snprintf(vp_dev->msix_names[v], sizeof *vp_dev->msix_names,
 		 "%s-config", name);
@@ -148,14 +128,14 @@ static int vp_request_msix_vectors(struct virtio_device *vdev, int nvectors,
 	++vp_dev->msix_used_vectors;
 
 	v = vp_dev->config_vector(vp_dev, v);
-	/* Verify we had enough resources to assign the vector */
+	 
 	if (v == VIRTIO_MSI_NO_VECTOR) {
 		err = -EBUSY;
 		goto error;
 	}
 
 	if (!per_vq_vectors) {
-		/* Shared vector for all VQs */
+		 
 		v = vp_dev->msix_used_vectors;
 		snprintf(vp_dev->msix_names[v], sizeof *vp_dev->msix_names,
 			 "%s-virtqueues", name);
@@ -182,7 +162,7 @@ static struct virtqueue *vp_setup_vq(struct virtio_device *vdev, unsigned int in
 	struct virtqueue *vq;
 	unsigned long flags;
 
-	/* fill out our structure that represents an active queue */
+	 
 	if (!info)
 		return ERR_PTR(-ENOMEM);
 
@@ -214,10 +194,7 @@ static void vp_del_vq(struct virtqueue *vq)
 	struct virtio_pci_vq_info *info = vp_dev->vqs[vq->index];
 	unsigned long flags;
 
-	/*
-	 * If it fails during re-enable reset vq. This way we won't rejoin
-	 * info->node to the queue. Prevent unexpected irqs.
-	 */
+	 
 	if (!vq->reset) {
 		spin_lock_irqsave(&vp_dev->lock, flags);
 		list_del(&info->node);
@@ -228,7 +205,7 @@ static void vp_del_vq(struct virtqueue *vq)
 	kfree(info);
 }
 
-/* the config->del_vqs() implementation */
+ 
 void vp_del_vqs(struct virtio_device *vdev)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
@@ -264,7 +241,7 @@ void vp_del_vqs(struct virtio_device *vdev)
 	}
 
 	if (vp_dev->msix_enabled) {
-		/* Disable the vector used for configuration */
+		 
 		vp_dev->config_vector(vp_dev, VIRTIO_MSI_NO_VECTOR);
 
 		pci_free_irq_vectors(vp_dev->pci_dev);
@@ -296,13 +273,13 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned int nvqs,
 		return -ENOMEM;
 
 	if (per_vq_vectors) {
-		/* Best option: one for change interrupt, one per vq. */
+		 
 		nvectors = 1;
 		for (i = 0; i < nvqs; ++i)
 			if (names[i] && callbacks[i])
 				++nvectors;
 	} else {
-		/* Second best: one for change, shared for all vqs. */
+		 
 		nvectors = 2;
 	}
 
@@ -336,7 +313,7 @@ static int vp_find_vqs_msix(struct virtio_device *vdev, unsigned int nvqs,
 		if (!vp_dev->per_vq_vectors || msix_vec == VIRTIO_MSI_NO_VECTOR)
 			continue;
 
-		/* allocate per-vq irq if available and necessary */
+		 
 		snprintf(vp_dev->msix_names[msix_vec],
 			 sizeof *vp_dev->msix_names,
 			 "%s-%s",
@@ -393,7 +370,7 @@ out_del_vqs:
 	return err;
 }
 
-/* the config->find_vqs() implementation */
+ 
 int vp_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
 		struct virtqueue *vqs[], vq_callback_t *callbacks[],
 		const char * const names[], const bool *ctx,
@@ -401,18 +378,18 @@ int vp_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
 {
 	int err;
 
-	/* Try MSI-X with one vector per queue. */
+	 
 	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, true, ctx, desc);
 	if (!err)
 		return 0;
-	/* Fallback: MSI-X with one vector for config, one shared for queues. */
+	 
 	err = vp_find_vqs_msix(vdev, nvqs, vqs, callbacks, names, false, ctx, desc);
 	if (!err)
 		return 0;
-	/* Is there an interrupt? If not give up. */
+	 
 	if (!(to_vp_device(vdev)->pci_dev->irq))
 		return err;
-	/* Finally fall back to regular interrupts. */
+	 
 	return vp_find_vqs_intx(vdev, nvqs, vqs, callbacks, names, ctx);
 }
 
@@ -423,11 +400,7 @@ const char *vp_bus_name(struct virtio_device *vdev)
 	return pci_name(vp_dev->pci_dev);
 }
 
-/* Setup the affinity for a virtqueue:
- * - force the affinity for per vq vector
- * - OR over all affinities for shared MSI
- * - ignore the affinity request if we're using INTX
- */
+ 
 int vp_set_vq_affinity(struct virtqueue *vq, const struct cpumask *cpu_mask)
 {
 	struct virtio_device *vdev = vq->vdev;
@@ -498,7 +471,7 @@ static const struct dev_pm_ops virtio_pci_pm_ops = {
 #endif
 
 
-/* Qumranet donated their vendor ID for devices 0x1000 thru 0x10FF. */
+ 
 static const struct pci_device_id virtio_pci_id_table[] = {
 	{ PCI_DEVICE(PCI_VENDOR_ID_REDHAT_QUMRANET, PCI_ANY_ID) },
 	{ 0 }
@@ -511,9 +484,7 @@ static void virtio_pci_release_dev(struct device *_d)
 	struct virtio_device *vdev = dev_to_virtio(_d);
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
 
-	/* As struct device is a kobject, it's not safe to
-	 * free the memory (including the reference counter itself)
-	 * until it's release callback. */
+	 
 	kfree(vp_dev);
 }
 
@@ -523,7 +494,7 @@ static int virtio_pci_probe(struct pci_dev *pci_dev,
 	struct virtio_pci_device *vp_dev, *reg_dev = NULL;
 	int rc;
 
-	/* allocate our structure and fill it out */
+	 
 	vp_dev = kzalloc(sizeof(struct virtio_pci_device), GFP_KERNEL);
 	if (!vp_dev)
 		return -ENOMEM;
@@ -535,14 +506,14 @@ static int virtio_pci_probe(struct pci_dev *pci_dev,
 	INIT_LIST_HEAD(&vp_dev->virtqueues);
 	spin_lock_init(&vp_dev->lock);
 
-	/* enable the device */
+	 
 	rc = pci_enable_device(pci_dev);
 	if (rc)
 		goto err_enable_device;
 
 	if (force_legacy) {
 		rc = virtio_pci_legacy_probe(vp_dev);
-		/* Also try modern mode if we can't map BAR0 (no IO space). */
+		 
 		if (rc == -ENODEV || rc == -ENOMEM)
 			rc = virtio_pci_modern_probe(vp_dev);
 		if (rc)
@@ -584,10 +555,7 @@ static void virtio_pci_remove(struct pci_dev *pci_dev)
 	struct virtio_pci_device *vp_dev = pci_get_drvdata(pci_dev);
 	struct device *dev = get_device(&vp_dev->vdev.dev);
 
-	/*
-	 * Device is marked broken on surprise removal so that virtio upper
-	 * layers can abort any ongoing operation.
-	 */
+	 
 	if (!pci_device_is_present(pci_dev))
 		virtio_break_device(&vp_dev->vdev);
 

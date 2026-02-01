@@ -1,21 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2016 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/lua/lua.h>
 #include <sys/lua/lualib.h>
@@ -69,10 +54,7 @@ get_objset_type(dsl_dataset_t *ds, zfs_type_t *type)
 	return (0);
 }
 
-/*
- * Returns the string name of ds's type in str (a buffer which should be
- * at least 12 bytes long).
- */
+ 
 static int
 get_objset_type_name(dsl_dataset_t *ds, char *str)
 {
@@ -96,10 +78,7 @@ get_objset_type_name(dsl_dataset_t *ds, char *str)
 	return (0);
 }
 
-/*
- * Determines the source of a property given its setpoint and
- * property type. It pushes the source to the lua stack.
- */
+ 
 static void
 get_prop_src(lua_State *state, const char *setpoint, zfs_prop_t prop)
 {
@@ -116,10 +95,7 @@ get_prop_src(lua_State *state, const char *setpoint, zfs_prop_t prop)
 	}
 }
 
-/*
- * Given an error encountered while getting properties, either longjmp's for
- * a fatal error or pushes nothing to the stack for a non fatal one.
- */
+ 
 static int
 zcp_handle_error(lua_State *state, const char *dataset_name,
     const char *property_name, int error)
@@ -142,10 +118,7 @@ zcp_handle_error(lua_State *state, const char *dataset_name,
 	}
 }
 
-/*
- * Look up a user defined property in the zap object. If it exists, push it
- * and the setpoint onto the stack, otherwise don't push anything.
- */
+ 
 static int
 zcp_get_user_prop(lua_State *state, dsl_pool_t *dp, const char *dataset_name,
     const char *property_name)
@@ -153,14 +126,10 @@ zcp_get_user_prop(lua_State *state, dsl_pool_t *dp, const char *dataset_name,
 	int error;
 	char *buf;
 	char setpoint[ZFS_MAX_DATASET_NAME_LEN];
-	/*
-	 * zcp_dataset_hold will either successfully return the requested
-	 * dataset or throw a lua error and longjmp out of the zfs.get_prop call
-	 * without returning.
-	 */
+	 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, dataset_name, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 
 	buf = kmem_alloc(ZAP_MAXVALUELEN, KM_SLEEP);
 	error = dsl_prop_get_ds(ds, property_name, 1, ZAP_MAXVALUELEN,
@@ -178,11 +147,7 @@ zcp_get_user_prop(lua_State *state, dsl_pool_t *dp, const char *dataset_name,
 	return (2);
 }
 
-/*
- * Check if the property we're looking for is stored in the ds_dir. If so,
- * return it in the 'val' argument. Return 0 on success and ENOENT and if
- * the property is not present.
- */
+ 
 static int
 get_dsl_dir_prop(dsl_dataset_t *ds, zfs_prop_t zfs_prop,
     uint64_t *val)
@@ -213,12 +178,7 @@ get_dsl_dir_prop(dsl_dataset_t *ds, zfs_prop_t zfs_prop,
 	return (0);
 }
 
-/*
- * Check if the property we're looking for is stored at the dsl_dataset or
- * dsl_dir level. If so, push the property value and source onto the lua stack
- * and return 0. If it is not present or a failure occurs in lookup, return a
- * non-zero error value.
- */
+ 
 static int
 get_special_prop(lua_State *state, dsl_dataset_t *ds, const char *dsname,
     zfs_prop_t zfs_prop)
@@ -244,9 +204,9 @@ get_special_prop(lua_State *state, dsl_dataset_t *ds, const char *dsname,
 		nvlist_t *clones = fnvlist_alloc();
 		error = get_clones_stat_impl(ds, clones);
 		if (error == 0) {
-			/* push list to lua stack */
+			 
 			VERIFY0(zcp_nvlist_to_lua(state, clones, NULL, 0ULL));
-			/* source */
+			 
 			(void) lua_pushnil(state);
 		}
 		nvlist_free(clones);
@@ -304,10 +264,10 @@ get_special_prop(lua_State *state, dsl_dataset_t *ds, const char *dsname,
 		error = dsl_get_mountpoint(ds, dsname, strval, setpoint);
 		break;
 	case ZFS_PROP_VERSION:
-		/* should be a snapshot or filesystem */
+		 
 		ASSERT(ds_type != ZFS_TYPE_VOLUME);
 		error = dmu_objset_from_ds(ds, &os);
-		/* look in the master node for the version */
+		 
 		if (error == 0) {
 			error = zap_lookup(os, MASTER_NODE_OBJ, ZPL_VERSION_STR,
 			    sizeof (numval), 1, &numval);
@@ -379,7 +339,7 @@ get_special_prop(lua_State *state, dsl_dataset_t *ds, const char *dsname,
 
 	case ZFS_PROP_KEYSTATUS:
 	case ZFS_PROP_KEYFORMAT: {
-		/* provide defaults in case no crypto obj exists */
+		 
 		setpoint[0] = '\0';
 		if (zfs_prop == ZFS_PROP_KEYSTATUS)
 			numval = ZFS_KEYSTATUS_NONE;
@@ -408,7 +368,7 @@ get_special_prop(lua_State *state, dsl_dataset_t *ds, const char *dsname,
 		break;
 
 	default:
-		/* Did not match these props, check in the dsl_dir */
+		 
 		error = get_dsl_dir_prop(ds, zfs_prop, &numval);
 	}
 	if (error != 0) {
@@ -438,16 +398,12 @@ get_special_prop(lua_State *state, dsl_dataset_t *ds, const char *dsname,
 	}
 	kmem_free(strval, ZAP_MAXVALUELEN);
 
-	/* Push the source to the stack */
+	 
 	get_prop_src(state, setpoint, zfs_prop);
 	return (0);
 }
 
-/*
- * Look up a property and its source in the zap object. If the value is
- * present and successfully retrieved, push the value and source on the
- * lua stack and return 0. On failure, return a non-zero error value.
- */
+ 
 static int
 get_zap_prop(lua_State *state, dsl_dataset_t *ds, zfs_prop_t zfs_prop)
 {
@@ -459,7 +415,7 @@ get_zap_prop(lua_State *state, dsl_dataset_t *ds, zfs_prop_t zfs_prop)
 	zprop_type_t prop_type = zfs_prop_get_type(zfs_prop);
 
 	if (prop_type == PROP_TYPE_STRING) {
-		/* Push value to lua stack */
+		 
 		error = dsl_prop_get_ds(ds, prop_name, 1,
 		    ZAP_MAXVALUELEN, strval, setpoint);
 		if (error == 0)
@@ -470,7 +426,7 @@ get_zap_prop(lua_State *state, dsl_dataset_t *ds, zfs_prop_t zfs_prop)
 		if (error != 0)
 			goto out;
 #ifdef _KERNEL
-		/* Fill in temporary value for prop, if applicable */
+		 
 		(void) zfs_get_temporary_prop(ds, zfs_prop, &numval, setpoint);
 #else
 		kmem_free(strval, ZAP_MAXVALUELEN);
@@ -478,7 +434,7 @@ get_zap_prop(lua_State *state, dsl_dataset_t *ds, zfs_prop_t zfs_prop)
 		    "temporary properties only supported in kernel mode",
 		    prop_name));
 #endif
-		/* Push value to lua stack */
+		 
 		if (prop_type == PROP_TYPE_INDEX) {
 			const char *propval;
 			error = zfs_prop_index_to_string(zfs_prop, numval,
@@ -497,20 +453,18 @@ out:
 	return (error);
 }
 
-/*
- * Determine whether property is valid for a given dataset
- */
+ 
 boolean_t
 prop_valid_for_ds(dsl_dataset_t *ds, zfs_prop_t zfs_prop)
 {
 	zfs_type_t zfs_type = ZFS_TYPE_INVALID;
 
-	/* properties not supported */
+	 
 	if ((zfs_prop == ZFS_PROP_ISCSIOPTIONS) ||
 	    (zfs_prop == ZFS_PROP_MOUNTED))
 		return (B_FALSE);
 
-	/* if we want the origin prop, ds must be a clone */
+	 
 	if ((zfs_prop == ZFS_PROP_ORIGIN) && (!dsl_dir_is_clone(ds->ds_dir)))
 		return (B_FALSE);
 
@@ -520,37 +474,29 @@ prop_valid_for_ds(dsl_dataset_t *ds, zfs_prop_t zfs_prop)
 	return (zfs_prop_valid_for_type(zfs_prop, zfs_type, B_FALSE));
 }
 
-/*
- * Look up a given dataset property. On success return 2, the number of
- * values pushed to the lua stack (property value and source). On a fatal
- * error, longjmp. On a non fatal error push nothing.
- */
+ 
 static int
 zcp_get_system_prop(lua_State *state, dsl_pool_t *dp, const char *dataset_name,
     zfs_prop_t zfs_prop)
 {
 	int error;
-	/*
-	 * zcp_dataset_hold will either successfully return the requested
-	 * dataset or throw a lua error and longjmp out of the zfs.get_prop call
-	 * without returning.
-	 */
+	 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, dataset_name, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 
-	/* Check that the property is valid for the given dataset */
+	 
 	const char *prop_name = zfs_prop_to_name(zfs_prop);
 	if (!prop_valid_for_ds(ds, zfs_prop)) {
 		dsl_dataset_rele(ds, FTAG);
 		return (0);
 	}
 
-	/* Check if the property can be accessed directly */
+	 
 	error = get_special_prop(state, ds, dataset_name, zfs_prop);
 	if (error == 0) {
 		dsl_dataset_rele(ds, FTAG);
-		/* The value and source have been pushed by get_special_prop */
+		 
 		return (2);
 	}
 	if (error != ENOENT) {
@@ -559,14 +505,14 @@ zcp_get_system_prop(lua_State *state, dsl_pool_t *dp, const char *dataset_name,
 		    prop_name, error));
 	}
 
-	/* If we were unable to find it, look in the zap object */
+	 
 	error = get_zap_prop(state, ds, zfs_prop);
 	dsl_dataset_rele(ds, FTAG);
 	if (error != 0) {
 		return (zcp_handle_error(state, dataset_name,
 		    prop_name, error));
 	}
-	/* The value and source have been pushed by get_zap_prop */
+	 
 	return (2);
 }
 
@@ -575,7 +521,7 @@ static zfs_userquota_prop_t
 get_userquota_prop(const char *prop_name)
 {
 	zfs_userquota_prop_t type;
-	/* Figure out the property type ({user|group}{quota|used}) */
+	 
 	for (type = 0; type < ZFS_NUM_USERQUOTA_PROPS; type++) {
 		if (strncmp(prop_name, zfs_userquota_prop_prefixes[type],
 		    strlen(zfs_userquota_prop_prefixes[type])) == 0)
@@ -584,13 +530,7 @@ get_userquota_prop(const char *prop_name)
 	return (type);
 }
 
-/*
- * Given the name of a zfs_userquota_prop, this function determines the
- * prop type as well as the numeric group/user ids based on the string
- * following the '@' in the property name. On success, returns 0. On failure,
- * returns a non-zero error.
- * 'domain' must be free'd by caller using kmem_strfree()
- */
+ 
 static int
 parse_userquota_prop(const char *prop_name, zfs_userquota_prop_t *type,
     char **domain, uint64_t *rid)
@@ -604,10 +544,7 @@ parse_userquota_prop(const char *prop_name, zfs_userquota_prop_t *type,
 	*rid = 0;
 	cp = strchr(prop_name, '@') + 1;
 	if (strncmp(cp, "S-1-", 4) == 0) {
-		/*
-		 * It's a numeric SID (eg "S-1-234-567-89") and we want to
-		 * separate the domain id and the rid
-		 */
+		 
 		int domain_len = strrchr(cp, '-') - cp;
 		domain_val = kmem_alloc(domain_len + 1, KM_SLEEP);
 		(void) strlcpy(domain_val, cp, domain_len + 1);
@@ -619,7 +556,7 @@ parse_userquota_prop(const char *prop_name, zfs_userquota_prop_t *type,
 			return (EINVAL);
 		}
 	} else {
-		/* It's only a user/group ID (eg "12345"), just get the rid */
+		 
 		domain_val = NULL;
 		(void) ddi_strtoll(cp, &end, 10, (longlong_t *)rid);
 		if (*end != '\0')
@@ -629,11 +566,7 @@ parse_userquota_prop(const char *prop_name, zfs_userquota_prop_t *type,
 	return (0);
 }
 
-/*
- * Look up {user|group}{quota|used} property for given dataset. On success
- * push the value (quota or used amount) and the setpoint. On failure, push
- * a lua error.
- */
+ 
 static int
 zcp_get_userquota_prop(lua_State *state, dsl_pool_t *dp,
     const char *dataset_name, const char *prop_name)
@@ -648,7 +581,7 @@ zcp_get_userquota_prop(lua_State *state, dsl_pool_t *dp,
 
 	dsl_dataset_t *ds = zcp_dataset_hold(state, dp, dataset_name, FTAG);
 	if (ds == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 
 	error = parse_userquota_prop(prop_name, &type, &domain, &rid);
 	if (error == 0) {
@@ -681,11 +614,7 @@ zcp_get_userquota_prop(lua_State *state, dsl_pool_t *dp,
 }
 #endif
 
-/*
- * Determines the name of the snapshot referenced in the written property
- * name. Returns snapshot name in snap_name, a buffer that must be at least
- * as large as ZFS_MAX_DATASET_NAME_LEN
- */
+ 
 static void
 parse_written_prop(const char *dataset_name, const char *prop_name,
     char *snap_name)
@@ -700,11 +629,7 @@ parse_written_prop(const char *dataset_name, const char *prop_name,
 	}
 }
 
-/*
- * Look up written@ property for given dataset. On success
- * push the value and the setpoint. If error is fatal, we will
- * longjmp, otherwise push nothing.
- */
+ 
 static int
 zcp_get_written_prop(lua_State *state, dsl_pool_t *dp,
     const char *dataset_name, const char *prop_name)
@@ -717,7 +642,7 @@ zcp_get_written_prop(lua_State *state, dsl_pool_t *dp,
 	parse_written_prop(dataset_name, prop_name, snap_name);
 	dsl_dataset_t *new = zcp_dataset_hold(state, dp, dataset_name, FTAG);
 	if (new == NULL)
-		return (1); /* not reached; zcp_dataset_hold() longjmp'd */
+		return (1);  
 
 	error = dsl_dataset_hold(dp, snap_name, FTAG, &old);
 	if (error != 0) {
@@ -767,12 +692,12 @@ zcp_get_prop(lua_State *state)
 	dataset_name = lua_tostring(state, 1);
 	property_name = lua_tostring(state, 2);
 
-	/* User defined property */
+	 
 	if (zfs_prop_user(property_name)) {
 		return (zcp_get_user_prop(state, dp,
 		    dataset_name, property_name));
 	}
-	/* userspace property */
+	 
 	if (zfs_prop_userquota(property_name)) {
 #ifdef _KERNEL
 		return (zcp_get_userquota_prop(state, dp,
@@ -783,20 +708,20 @@ zcp_get_prop(lua_State *state)
 		    property_name));
 #endif
 	}
-	/* written@ property */
+	 
 	if (zfs_prop_written(property_name)) {
 		return (zcp_get_written_prop(state, dp,
 		    dataset_name, property_name));
 	}
 
 	zfs_prop_t zfs_prop = zfs_name_to_prop(property_name);
-	/* Valid system property */
+	 
 	if (zfs_prop != ZPROP_INVAL) {
 		return (zcp_get_system_prop(state, dp, dataset_name,
 		    zfs_prop));
 	}
 
-	/* Invalid property name */
+	 
 	return (luaL_error(state,
 	    "'%s' is not a valid property", property_name));
 }

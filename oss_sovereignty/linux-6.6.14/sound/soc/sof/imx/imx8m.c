@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// Copyright 2020 NXP
-//
-// Author: Daniel Baluta <daniel.baluta@nxp.com>
-//
-// Hardware interface for audio DSP on i.MX8M
+
+
+
+
+
+
+
 
 #include <linux/bits.h>
 #include <linux/firmware.h>
@@ -32,13 +32,13 @@ static struct clk_bulk_data imx8m_dsp_clks[] = {
 	{ .id = "core" },
 };
 
-/* DAP registers */
+ 
 #define IMX8M_DAP_DEBUG                0x28800000
 #define IMX8M_DAP_DEBUG_SIZE   (64 * 1024)
 #define IMX8M_DAP_PWRCTL       (0x4000 + 0x3020)
 #define IMX8M_PWRCTL_CORERESET         BIT(16)
 
-/* DSP audio mix registers */
+ 
 #define AudioDSP_REG0	0x100
 #define AudioDSP_REG1	0x104
 #define AudioDSP_REG2	0x108
@@ -50,7 +50,7 @@ struct imx8m_priv {
 	struct device *dev;
 	struct snd_sof_dev *sdev;
 
-	/* DSP IPC handler */
+	 
 	struct imx_dsp_ipc *dsp_ipc;
 	struct platform_device *ipc_dev;
 
@@ -83,12 +83,12 @@ static void imx8m_dsp_handle_reply(struct imx_dsp_ipc *ipc)
 static void imx8m_dsp_handle_request(struct imx_dsp_ipc *ipc)
 {
 	struct imx8m_priv *priv = imx_dsp_get_data(ipc);
-	u32 p; /* Panic code */
+	u32 p;  
 
-	/* Read the message from the debug box. */
+	 
 	sof_mailbox_read(priv->sdev, priv->sdev->debug_box.offset + 4, &p, sizeof(p));
 
-	/* Check to see if the message is a panic code (0x0dead***) */
+	 
 	if ((p & SOF_IPC_PANIC_MAGIC_MASK) == SOF_IPC_PANIC_MAGIC)
 		snd_sof_dsp_panic(priv->sdev, p, true);
 	else
@@ -111,9 +111,7 @@ static int imx8m_send_msg(struct snd_sof_dev *sdev, struct snd_sof_ipc_msg *msg)
 	return 0;
 }
 
-/*
- * DSP control.
- */
+ 
 static int imx8m_run(struct snd_sof_dev *sdev)
 {
 	struct imx8m_priv *priv = (struct imx8m_priv *)sdev->pdata->hw_pdata;
@@ -128,18 +126,18 @@ static int imx8m_reset(struct snd_sof_dev *sdev)
 	struct imx8m_priv *priv = (struct imx8m_priv *)sdev->pdata->hw_pdata;
 	u32 pwrctl;
 
-	/* put DSP into reset and stall */
+	 
 	pwrctl = readl(priv->dap + IMX8M_DAP_PWRCTL);
 	pwrctl |= IMX8M_PWRCTL_CORERESET;
 	writel(pwrctl, priv->dap + IMX8M_DAP_PWRCTL);
 
-	/* keep reset asserted for 10 cycles */
+	 
 	usleep_range(1, 2);
 
 	regmap_update_bits(priv->regmap, AudioDSP_REG2,
 			   AudioDSP_REG2_RUNSTALL, AudioDSP_REG2_RUNSTALL);
 
-	/* take the DSP out of reset and keep stalled for FW loading */
+	 
 	pwrctl = readl(priv->dap + IMX8M_DAP_PWRCTL);
 	pwrctl &= ~IMX8M_PWRCTL_CORERESET;
 	writel(pwrctl, priv->dap + IMX8M_DAP_PWRCTL);
@@ -180,7 +178,7 @@ static int imx8m_probe(struct snd_sof_dev *sdev)
 
 	priv->dsp_ipc = dev_get_drvdata(&priv->ipc_dev->dev);
 	if (!priv->dsp_ipc) {
-		/* DSP IPC driver not probed yet, try later */
+		 
 		ret = -EPROBE_DEFER;
 		dev_err(sdev->dev, "Failed to get drvdata\n");
 		goto exit_pdev_unregister;
@@ -189,7 +187,7 @@ static int imx8m_probe(struct snd_sof_dev *sdev)
 	imx_dsp_set_data(priv->dsp_ipc, priv);
 	priv->dsp_ipc->ops = &imx8m_dsp_ops;
 
-	/* DSP base */
+	 
 	mmio = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (mmio) {
 		base = mmio->start;
@@ -240,7 +238,7 @@ static int imx8m_probe(struct snd_sof_dev *sdev)
 	}
 	sdev->mailbox_bar = SOF_FW_BLK_TYPE_SRAM;
 
-	/* set default mailbox offset for FW ready message */
+	 
 	sdev->dsp_box.offset = MBOX_OFFSET;
 
 	priv->regmap = syscon_regmap_lookup_by_compatible("fsl,dsp-ctrl");
@@ -250,7 +248,7 @@ static int imx8m_probe(struct snd_sof_dev *sdev)
 		goto exit_pdev_unregister;
 	}
 
-	/* init clocks info */
+	 
 	priv->clks->dsp_clks = imx8m_dsp_clks;
 	priv->clks->num_dsp_clks = ARRAY_SIZE(imx8m_dsp_clks);
 
@@ -279,10 +277,10 @@ static int imx8m_remove(struct snd_sof_dev *sdev)
 	return 0;
 }
 
-/* on i.MX8 there is 1 to 1 match between type and BAR idx */
+ 
 static int imx8m_get_bar_index(struct snd_sof_dev *sdev, u32 type)
 {
-	/* Only IRAM and SRAM bars are valid */
+	 
 	switch (type) {
 	case SOF_FW_BLK_TYPE_IRAM:
 	case SOF_FW_BLK_TYPE_SRAM:
@@ -411,24 +409,24 @@ static int imx8m_dsp_suspend(struct snd_sof_dev *sdev, unsigned int target_state
 	return snd_sof_dsp_set_power_state(sdev, &target_dsp_state);
 }
 
-/* i.MX8 ops */
+ 
 static struct snd_sof_dsp_ops sof_imx8m_ops = {
-	/* probe and remove */
+	 
 	.probe		= imx8m_probe,
 	.remove		= imx8m_remove,
-	/* DSP core boot */
+	 
 	.run		= imx8m_run,
 	.reset		= imx8m_reset,
 
-	/* Block IO */
+	 
 	.block_read	= sof_block_read,
 	.block_write	= sof_block_write,
 
-	/* Mailbox IO */
+	 
 	.mailbox_read	= sof_mailbox_read,
 	.mailbox_write	= sof_mailbox_write,
 
-	/* ipc */
+	 
 	.send_msg	= imx8m_send_msg,
 	.get_mailbox_offset	= imx8m_get_mailbox_offset,
 	.get_window_offset	= imx8m_get_window_offset,
@@ -438,20 +436,20 @@ static struct snd_sof_dsp_ops sof_imx8m_ops = {
 
 	.get_bar_index	= imx8m_get_bar_index,
 
-	/* firmware loading */
+	 
 	.load_firmware	= snd_sof_load_firmware_memcpy,
 
-	/* Debug information */
+	 
 	.dbg_dump = imx8_dump,
 	.debugfs_add_region_item = snd_sof_debugfs_add_region_item_iomem,
 
-	/* stream callbacks */
+	 
 	.pcm_open	= sof_stream_pcm_open,
 	.pcm_close	= sof_stream_pcm_close,
-	/* Firmware ops */
+	 
 	.dsp_arch_ops = &sof_xtensa_arch_ops,
 
-	/* DAI drivers */
+	 
 	.drv = imx8m_dai,
 	.num_drv = ARRAY_SIZE(imx8m_dai),
 
@@ -492,7 +490,7 @@ static const struct of_device_id sof_of_imx8m_ids[] = {
 };
 MODULE_DEVICE_TABLE(of, sof_of_imx8m_ids);
 
-/* DT driver definition */
+ 
 static struct platform_driver snd_sof_of_imx8m_driver = {
 	.probe = sof_of_probe,
 	.remove = sof_of_remove,

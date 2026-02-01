@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2023 Advanced Micro Devices, Inc. */
+
+ 
 
 #include <linux/io.h>
 #include <linux/types.h>
@@ -25,7 +25,7 @@ static int pds_vfio_client_adminq_cmd(struct pds_vfio_pci_device *pds_vfio,
 	struct pdsc *pdsc;
 	int err;
 
-	/* Wrap the client request */
+	 
 	cmd.client_request.opcode = PDS_AQ_CMD_CLIENT_CMD;
 	cmd.client_request.client_id = cpu_to_le16(pds_vfio->client_id);
 	memcpy(cmd.client_request.client_cmd, req,
@@ -116,7 +116,7 @@ pds_vfio_suspend_wait_device_cmd(struct pds_vfio_pci_device *pds_vfio, u8 type)
 	dev_dbg(dev, "%s: vf%u: Suspend comp received in %d msecs\n", __func__,
 		pds_vfio->vf_id, jiffies_to_msecs(time_done - time_start));
 
-	/* Check the results */
+	 
 	if (time_after_eq(time_done, time_limit)) {
 		dev_err(dev, "%s: vf%u: Suspend comp timeout\n", __func__,
 			pds_vfio->vf_id);
@@ -141,11 +141,7 @@ int pds_vfio_suspend_device_cmd(struct pds_vfio_pci_device *pds_vfio, u8 type)
 
 	dev_dbg(dev, "vf%u: Suspend device\n", pds_vfio->vf_id);
 
-	/*
-	 * The initial suspend request to the firmware starts the device suspend
-	 * operation and the firmware returns success if it's started
-	 * successfully.
-	 */
+	 
 	err = pds_vfio_client_adminq_cmd(pds_vfio, &cmd, &comp, true);
 	if (err) {
 		dev_err(dev, "vf%u: Suspend failed: %pe\n", pds_vfio->vf_id,
@@ -153,10 +149,7 @@ int pds_vfio_suspend_device_cmd(struct pds_vfio_pci_device *pds_vfio, u8 type)
 		return err;
 	}
 
-	/*
-	 * The subsequent suspend status request(s) check if the firmware has
-	 * completed the device suspend process.
-	 */
+	 
 	return pds_vfio_suspend_wait_device_cmd(pds_vfio, type);
 }
 
@@ -213,14 +206,14 @@ static int pds_vfio_dma_map_lm_file(struct device *dev,
 	if (!lm_file)
 		return -EINVAL;
 
-	/* dma map file pages */
+	 
 	err = dma_map_sgtable(dev, &lm_file->sg_table, dir, 0);
 	if (err)
 		return err;
 
 	lm_file->num_sge = lm_file->sg_table.nents;
 
-	/* alloc sgl */
+	 
 	sgl_size = lm_file->num_sge * sizeof(struct pds_lm_sg_elem);
 	sgl = kzalloc(sgl_size, GFP_KERNEL);
 	if (!sgl) {
@@ -228,7 +221,7 @@ static int pds_vfio_dma_map_lm_file(struct device *dev,
 		goto out_unmap_sgtable;
 	}
 
-	/* fill sgl */
+	 
 	sge = sgl;
 	for_each_sgtable_dma_sg(&lm_file->sg_table, sg, i) {
 		sge->addr = cpu_to_le64(sg_dma_address(sg));
@@ -263,7 +256,7 @@ static void pds_vfio_dma_unmap_lm_file(struct device *dev,
 	if (!lm_file)
 		return;
 
-	/* free sgl */
+	 
 	if (lm_file->sgl) {
 		dma_unmap_single(dev, lm_file->sgl_addr,
 				 lm_file->num_sge * sizeof(*lm_file->sgl),
@@ -274,7 +267,7 @@ static void pds_vfio_dma_unmap_lm_file(struct device *dev,
 		lm_file->num_sge = 0;
 	}
 
-	/* dma unmap file pages */
+	 
 	dma_unmap_sgtable(dev, &lm_file->sg_table, dir, 0);
 }
 
@@ -408,7 +401,7 @@ int pds_vfio_dirty_status_cmd(struct pds_vfio_pci_device *pds_vfio,
 		return err;
 	}
 
-	/* only support seq_ack approach for now */
+	 
 	if (!(le32_to_cpu(comp.lm_dirty_status.bmp_type_mask) &
 	      BIT(PDS_LM_DIRTY_BMP_TYPE_SEQ_ACK))) {
 		dev_err(dev, "Dirty bitmap tracking SEQ_ACK not supported\n");
@@ -465,7 +458,7 @@ int pds_vfio_dirty_disable_cmd(struct pds_vfio_pci_device *pds_vfio)
 
 	err = pds_vfio_client_adminq_cmd(pds_vfio, &cmd, &comp, false);
 	if (err || comp.lm_dirty_status.num_regions != 0) {
-		/* in case num_regions is still non-zero after disable */
+		 
 		err = err ? err : -EIO;
 		dev_err(dev,
 			"failed dirty tracking disable: %pe, num_regions %d\n",

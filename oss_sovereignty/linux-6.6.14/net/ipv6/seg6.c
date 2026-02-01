@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  SR-IPv6 implementation
- *
- *  Author:
- *  David Lebrun <david.lebrun@uclouvain.be>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/types.h>
@@ -93,9 +88,7 @@ struct ipv6_sr_hdr *seg6_get_srh(struct sk_buff *skb, int flags)
 	if (!pskb_may_pull(skb, srhoff + len))
 		return NULL;
 
-	/* note that pskb_may_pull may change pointers in header;
-	 * for this reason it is necessary to reload them when needed.
-	 */
+	 
 	srh = (struct ipv6_sr_hdr *)(skb->data + srhoff);
 
 	if (!seg6_validate_srh(srh, len, true))
@@ -104,19 +97,13 @@ struct ipv6_sr_hdr *seg6_get_srh(struct sk_buff *skb, int flags)
 	return srh;
 }
 
-/* Determine if an ICMP invoking packet contains a segment routing
- * header.  If it does, extract the offset to the true destination
- * address, which is in the first segment address.
- */
+ 
 void seg6_icmp_srh(struct sk_buff *skb, struct inet6_skb_parm *opt)
 {
 	__u16 network_header = skb->network_header;
 	struct ipv6_sr_hdr *srh;
 
-	/* Update network header to point to the invoking packet
-	 * inside the ICMP packet, so we can use the seg6_get_srh()
-	 * helper.
-	 */
+	 
 	skb_reset_network_header(skb);
 
 	srh = seg6_get_srh(skb, 0);
@@ -130,7 +117,7 @@ void seg6_icmp_srh(struct sk_buff *skb, struct inet6_skb_parm *opt)
 	opt->srhoff = (unsigned char *)srh - skb->data;
 
 out:
-	/* Restore the network header back to the ICMP packet */
+	 
 	skb->network_header = network_header;
 }
 

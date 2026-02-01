@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Test the SO_TXTIME API
- *
- * Takes a stream of { payload, delivery time }[], to be sent across two
- * processes. Start this program on two separate network namespaces or
- * connected hosts, one instance in transmit mode and the other in receive
- * mode using the '-r' option. Receiver will compare arrival timestamps to
- * the expected stream. Sender will read transmit timestamps from the error
- * queue. The streams can differ due to out-of-order delivery and drops.
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -43,7 +34,7 @@ static bool	cfg_rx;
 static uint64_t glob_tstart;
 static uint64_t tdeliver_max;
 
-/* encode one timed transmission (of a 1B payload) */
+ 
 struct timed_send {
 	char	data;
 	int64_t	delay_us;
@@ -395,15 +386,15 @@ static int parse_io(const char *optarg, struct timed_send *array)
 		error(1, errno, "strdup");
 
 	while ((tok = strtok(arg, ","))) {
-		arg = NULL;	/* only pass non-zero on first call */
+		arg = NULL;	 
 
 		if (aoff / 2 == MAX_NUM_PKT)
 			error(1, 0, "exceeds max pkt count (%d)", MAX_NUM_PKT);
 
-		if (aoff & 1) {	/* parse delay */
+		if (aoff & 1) {	 
 			array->delay_us = strtol(tok, NULL, 0) * 1000;
 			array++;
-		} else {	/* parse character */
+		} else {	 
 			array->data = tok[0];
 		}
 

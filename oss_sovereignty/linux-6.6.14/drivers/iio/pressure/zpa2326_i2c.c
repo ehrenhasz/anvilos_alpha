@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Murata ZPA2326 I2C pressure and temperature sensor driver
- *
- * Copyright (c) 2016 Parrot S.A.
- *
- * Author: Gregor Boirie <gregor.boirie@parrot.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/regmap.h>
@@ -13,10 +7,7 @@
 #include <linux/mod_devicetable.h>
 #include "zpa2326.h"
 
-/*
- * read_flag_mask:
- *   - address bit 7 must be set to request a register read operation
- */
+ 
 static const struct regmap_config zpa2326_regmap_i2c_config = {
 	.reg_bits       = 8,
 	.val_bits       = 8,
@@ -33,7 +24,7 @@ static unsigned int zpa2326_i2c_hwid(const struct i2c_client *client)
 #define ZPA2326_SA0(_addr)          (_addr & BIT(0))
 #define ZPA2326_DEVICE_ID_SA0_SHIFT (1)
 
-	/* Identification register bit 1 mirrors device address bit 0. */
+	 
 	return (ZPA2326_DEVICE_ID |
 		(ZPA2326_SA0(client->addr) << ZPA2326_DEVICE_ID_SA0_SHIFT));
 }

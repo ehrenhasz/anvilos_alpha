@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Generic serial GNSS receiver driver
- *
- * Copyright (C) 2018 Johan Hovold <johan@kernel.org>
- */
+ 
+ 
 
 #ifndef _LINUX_GNSS_SERIAL_H
 #define _LINUX_GNSS_SERIAL_H
@@ -44,4 +40,4 @@ static inline void *gnss_serial_get_drvdata(struct gnss_serial *gserial)
 	return gserial->drvdata;
 }
 
-#endif /* _LINUX_GNSS_SERIAL_H */
+#endif  

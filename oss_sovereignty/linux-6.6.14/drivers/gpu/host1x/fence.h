@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2020, NVIDIA Corporation.
- */
+ 
+ 
 
 #ifndef HOST1X_FENCE_H
 #define HOST1X_FENCE_H

@@ -1,45 +1,15 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* radio-cadet.c - A video4linux driver for the ADS Cadet AM/FM Radio Card
- *
- * by Fred Gleason <fredg@wava.com>
- * Version 0.3.3
- *
- * (Loosely) based on code for the Aztech radio card by
- *
- * Russell Kroll    (rkroll@exploits.org)
- * Quay Ly
- * Donald Song
- * Jason Lewis      (jlewis@twilight.vtc.vsc.edu)
- * Scott McGrath    (smcgrath@twilight.vtc.vsc.edu)
- * William McGrath  (wmcgrath@twilight.vtc.vsc.edu)
- *
- * History:
- * 2000-04-29	Russell Kroll <rkroll@exploits.org>
- *		Added ISAPnP detection for Linux 2.3/2.4
- *
- * 2001-01-10	Russell Kroll <rkroll@exploits.org>
- *		Removed dead CONFIG_RADIO_CADET_PORT code
- *		PnP detection on load is now default (no args necessary)
- *
- * 2002-01-17	Adam Belay <ambx1@neo.rr.com>
- *		Updated to latest pnp code
- *
- * 2003-01-31	Alan Cox <alan@lxorguk.ukuu.org.uk>
- *		Cleaned up locking, delay code, general odds and ends
- *
- * 2006-07-30	Hans J. Koch <koch@hjk-az.de>
- *		Changed API to V4L2
- */
 
-#include <linux/module.h>	/* Modules			*/
-#include <linux/init.h>		/* Initdata			*/
-#include <linux/ioport.h>	/* request_region		*/
-#include <linux/delay.h>	/* udelay			*/
-#include <linux/videodev2.h>	/* V4L2 API defs		*/
+ 
+
+#include <linux/module.h>	 
+#include <linux/init.h>		 
+#include <linux/ioport.h>	 
+#include <linux/delay.h>	 
+#include <linux/videodev2.h>	 
 #include <linux/param.h>
 #include <linux/pnp.h>
 #include <linux/sched.h>
-#include <linux/io.h>		/* outb, outb_p			*/
+#include <linux/io.h>		 
 #include <media/v4l2-device.h>
 #include <media/v4l2-ioctl.h>
 #include <media/v4l2-ctrls.h>
@@ -51,7 +21,7 @@ MODULE_DESCRIPTION("A driver for the ADS Cadet AM/FM/RDS radio card.");
 MODULE_LICENSE("GPL");
 MODULE_VERSION("0.3.4");
 
-static int io = -1;		/* default to isapnp activation */
+static int io = -1;		 
 static int radio_nr = -1;
 
 module_param(io, int, 0);
@@ -81,11 +51,7 @@ struct cadet {
 
 static struct cadet cadet_card;
 
-/*
- * Signal Strength Threshold Values
- * The V4L API spec does not define any particular unit for the signal
- * strength value.  These values are in microvolts of RF at the tuner's input.
- */
+ 
 static u16 sigtable[2][4] = {
 	{ 1835, 2621,  4128, 65535 },
 	{ 2185, 4369, 13107, 65535 },
@@ -96,8 +62,8 @@ static const struct v4l2_frequency_band bands[] = {
 		.index = 0,
 		.type = V4L2_TUNER_RADIO,
 		.capability = V4L2_TUNER_CAP_LOW | V4L2_TUNER_CAP_FREQ_BANDS,
-		.rangelow = 8320,      /* 520 kHz */
-		.rangehigh = 26400,    /* 1650 kHz */
+		.rangelow = 8320,       
+		.rangehigh = 26400,     
 		.modulation = V4L2_BAND_MODULATION_AM,
 	}, {
 		.index = 1,
@@ -105,8 +71,8 @@ static const struct v4l2_frequency_band bands[] = {
 		.capability = V4L2_TUNER_CAP_STEREO | V4L2_TUNER_CAP_RDS |
 			V4L2_TUNER_CAP_RDS_BLOCK_IO | V4L2_TUNER_CAP_LOW |
 			V4L2_TUNER_CAP_FREQ_BANDS,
-		.rangelow = 1400000,   /* 87.5 MHz */
-		.rangehigh = 1728000,  /* 108.0 MHz */
+		.rangelow = 1400000,    
+		.rangehigh = 1728000,   
 		.modulation = V4L2_BAND_MODULATION_FM,
 	},
 };
@@ -116,10 +82,10 @@ static int cadet_getstereo(struct cadet *dev)
 {
 	int ret = V4L2_TUNER_SUB_MONO;
 
-	if (!dev->is_fm_band)	/* Only FM has stereo capability! */
+	if (!dev->is_fm_band)	 
 		return V4L2_TUNER_SUB_MONO;
 
-	outb(7, dev->io);          /* Select tuner control */
+	outb(7, dev->io);           
 	if ((inb(dev->io + 1) & 0x40) == 0)
 		ret = V4L2_TUNER_SUB_STEREO;
 	return ret;
@@ -130,18 +96,14 @@ static unsigned cadet_gettune(struct cadet *dev)
 	int curvol, i;
 	unsigned fifo = 0;
 
-	/*
-	 * Prepare for read
-	 */
+	 
 
-	outb(7, dev->io);       /* Select tuner control */
-	curvol = inb(dev->io + 1); /* Save current volume/mute setting */
-	outb(0x00, dev->io + 1);  /* Ensure WRITE-ENABLE is LOW */
+	outb(7, dev->io);        
+	curvol = inb(dev->io + 1);  
+	outb(0x00, dev->io + 1);   
 	dev->tunestat = 0xffff;
 
-	/*
-	 * Read the shift register
-	 */
+	 
 	for (i = 0; i < 25; i++) {
 		fifo = (fifo << 1) | ((inb(dev->io + 1) >> 7) & 0x01);
 		if (i < 24) {
@@ -151,9 +113,7 @@ static unsigned cadet_gettune(struct cadet *dev)
 		}
 	}
 
-	/*
-	 * Restore volume/mute setting
-	 */
+	 
 	outb(curvol, dev->io + 1);
 	return fifo;
 }
@@ -163,15 +123,11 @@ static unsigned cadet_getfreq(struct cadet *dev)
 	int i;
 	unsigned freq = 0, test, fifo = 0;
 
-	/*
-	 * Read current tuning
-	 */
+	 
 	fifo = cadet_gettune(dev);
 
-	/*
-	 * Convert to actual frequency
-	 */
-	if (!dev->is_fm_band)    /* AM */
+	 
+	if (!dev->is_fm_band)     
 		return ((fifo & 0x7fff) - 450) * 16;
 
 	test = 12500;
@@ -181,8 +137,8 @@ static unsigned cadet_getfreq(struct cadet *dev)
 		test = test << 1;
 		fifo = fifo >> 1;
 	}
-	freq -= 10700000;           /* IF frequency is 10.7 MHz */
-	freq = (freq * 16) / 1000;   /* Make it 1/16 kHz */
+	freq -= 10700000;            
+	freq = (freq * 16) / 1000;    
 	return freq;
 }
 
@@ -191,21 +147,19 @@ static void cadet_settune(struct cadet *dev, unsigned fifo)
 	int i;
 	unsigned test;
 
-	outb(7, dev->io);                /* Select tuner control */
-	/*
-	 * Write the shift register
-	 */
+	outb(7, dev->io);                 
+	 
 	test = 0;
-	test = (fifo >> 23) & 0x02;      /* Align data for SDO */
-	test |= 0x1c;                /* SDM=1, SWE=1, SEN=1, SCK=0 */
-	outb(7, dev->io);                /* Select tuner control */
-	outb(test, dev->io + 1);           /* Initialize for write */
+	test = (fifo >> 23) & 0x02;       
+	test |= 0x1c;                 
+	outb(7, dev->io);                 
+	outb(test, dev->io + 1);            
 	for (i = 0; i < 25; i++) {
-		test |= 0x01;              /* Toggle SCK High */
+		test |= 0x01;               
 		outb(test, dev->io + 1);
-		test &= 0xfe;              /* Toggle SCK Low */
+		test &= 0xfe;               
 		outb(test, dev->io + 1);
-		fifo = fifo << 1;            /* Prepare the next bit */
+		fifo = fifo << 1;             
 		test = 0x1c | ((fifo >> 23) & 0x02);
 		outb(test, dev->io + 1);
 	}
@@ -220,14 +174,12 @@ static void cadet_setfreq(struct cadet *dev, unsigned freq)
 	freq = clamp(freq, bands[dev->is_fm_band].rangelow,
 			   bands[dev->is_fm_band].rangehigh);
 	dev->curfreq = freq;
-	/*
-	 * Formulate a fifo command
-	 */
+	 
 	fifo = 0;
-	if (dev->is_fm_band) {    /* FM */
+	if (dev->is_fm_band) {     
 		test = 102400;
-		freq = freq / 16;       /* Make it kHz */
-		freq += 10700;               /* IF is 10700 kHz */
+		freq = freq / 16;        
+		freq += 10700;                
 		for (i = 0; i < 14; i++) {
 			fifo = fifo << 1;
 			if (freq >= test) {
@@ -236,31 +188,27 @@ static void cadet_setfreq(struct cadet *dev, unsigned freq)
 			}
 			test = test >> 1;
 		}
-	} else {	/* AM */
-		fifo = (freq / 16) + 450;	/* Make it kHz */
-		fifo |= 0x100000;		/* Select AM Band */
+	} else {	 
+		fifo = (freq / 16) + 450;	 
+		fifo |= 0x100000;		 
 	}
 
-	/*
-	 * Save current volume/mute setting
-	 */
+	 
 
-	outb(7, dev->io);                /* Select tuner control */
+	outb(7, dev->io);                 
 	curvol = inb(dev->io + 1);
 
-	/*
-	 * Tune the card
-	 */
+	 
 	for (j = 3; j > -1; j--) {
 		cadet_settune(dev, fifo | (j << 16));
 
-		outb(7, dev->io);         /* Select tuner control */
+		outb(7, dev->io);          
 		outb(curvol, dev->io + 1);
 
 		msleep(100);
 
 		cadet_gettune(dev);
-		if ((dev->tunestat & 0x40) == 0) {   /* Tuned */
+		if ((dev->tunestat & 0x40) == 0) {    
 			dev->sigstrength = sigtable[dev->is_fm_band][j];
 			goto reset_rds;
 		}
@@ -286,12 +234,12 @@ static void cadet_handler(struct timer_list *t)
 {
 	struct cadet *dev = from_timer(dev, t, readtimer);
 
-	/* Service the RDS fifo */
+	 
 	if (mutex_trylock(&dev->lock)) {
-		outb(0x3, dev->io);       /* Select RDS Decoder Control */
+		outb(0x3, dev->io);        
 		if ((inb(dev->io + 1) & 0x20) != 0)
 			pr_err("cadet: RDS fifo overflow\n");
-		outb(0x80, dev->io);      /* Select RDS fifo */
+		outb(0x80, dev->io);       
 
 		while ((inb(dev->io) & 0x80) != 0) {
 			dev->rdsbuf[dev->rdsin] = inb(dev->io + 1);
@@ -301,15 +249,11 @@ static void cadet_handler(struct timer_list *t)
 		mutex_unlock(&dev->lock);
 	}
 
-	/*
-	 * Service pending read
-	 */
+	 
 	if (cadet_has_rds_data(dev))
 		wake_up_interruptible(&dev->read_queue);
 
-	/*
-	 * Clean up and exit
-	 */
+	 
 	dev->readtimer.expires = jiffies + msecs_to_jiffies(50);
 	add_timer(&dev->readtimer);
 }
@@ -317,7 +261,7 @@ static void cadet_handler(struct timer_list *t)
 static void cadet_start_rds(struct cadet *dev)
 {
 	dev->rdsstat = 1;
-	outb(0x80, dev->io);        /* Select RDS fifo */
+	outb(0x80, dev->io);         
 	timer_setup(&dev->readtimer, cadet_handler, 0);
 	dev->readtimer.expires = jiffies + msecs_to_jiffies(50);
 	add_timer(&dev->readtimer);
@@ -370,8 +314,8 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 	v->type = V4L2_TUNER_RADIO;
 	strscpy(v->name, "Radio", sizeof(v->name));
 	v->capability = bands[0].capability | bands[1].capability;
-	v->rangelow = bands[0].rangelow;	   /* 520 kHz (start of AM band) */
-	v->rangehigh = bands[1].rangehigh;    /* 108.0 MHz (end of FM band) */
+	v->rangelow = bands[0].rangelow;	    
+	v->rangehigh = bands[1].rangehigh;     
 	if (dev->is_fm_band) {
 		v->rxsubchans = cadet_getstereo(dev);
 		outb(3, dev->io);
@@ -381,12 +325,12 @@ static int vidioc_g_tuner(struct file *file, void *priv,
 		if (inb(dev->io + 1) & 0x80)
 			v->rxsubchans |= V4L2_TUNER_SUB_RDS;
 	} else {
-		v->rangelow = 8320;      /* 520 kHz */
-		v->rangehigh = 26400;    /* 1650 kHz */
+		v->rangelow = 8320;       
+		v->rangehigh = 26400;     
 		v->rxsubchans = V4L2_TUNER_SUB_MONO;
 	}
 	v->audmode = V4L2_TUNER_MODE_STEREO;
-	v->signal = dev->sigstrength; /* We might need to modify scaling of this */
+	v->signal = dev->sigstrength;  
 	return 0;
 }
 
@@ -439,7 +383,7 @@ static int cadet_s_ctrl(struct v4l2_ctrl *ctrl)
 
 	switch (ctrl->id) {
 	case V4L2_CID_AUDIO_MUTE:
-		outb(7, dev->io);                /* Select tuner control */
+		outb(7, dev->io);                 
 		if (ctrl->val)
 			outb(0x00, dev->io + 1);
 		else
@@ -526,7 +470,7 @@ static const struct v4l2_ctrl_ops cadet_ctrl_ops = {
 #ifdef CONFIG_PNP
 
 static const struct pnp_device_id cadet_pnp_devices[] = {
-	/* ADS Cadet AM/FM Radio Card */
+	 
 	{.id = "MSM0c24", .driver_data = 0},
 	{.id = ""}
 };
@@ -537,7 +481,7 @@ static int cadet_pnp_probe(struct pnp_dev *dev, const struct pnp_device_id *dev_
 {
 	if (!dev)
 		return -ENODEV;
-	/* only support one device */
+	 
 	if (io > 0)
 		return -EBUSY;
 
@@ -581,10 +525,7 @@ static void cadet_probe(struct cadet *dev)
 	dev->io = -1;
 }
 
-/*
- * io should only be set if the user has used something like
- * isapnp (the userspace program) to initialize this card for us
- */
+ 
 
 static int __init cadet_init(void)
 {
@@ -596,16 +537,16 @@ static int __init cadet_init(void)
 	strscpy(v4l2_dev->name, "cadet", sizeof(v4l2_dev->name));
 	mutex_init(&dev->lock);
 
-	/* If a probe was requested then probe ISAPnP first (safest) */
+	 
 	if (io < 0)
 		pnp_register_driver(&cadet_pnp_driver);
 	dev->io = io;
 
-	/* If that fails then probe unsafely if probe is requested */
+	 
 	if (dev->io < 0)
 		cadet_probe(dev);
 
-	/* Else we bail out */
+	 
 	if (dev->io < 0) {
 #ifdef MODULE
 		v4l2_err(v4l2_dev, "you must set an I/O address with io=0x330, 0x332, 0x334,\n");
@@ -668,7 +609,7 @@ static void __exit cadet_exit(void)
 	video_unregister_device(&dev->vdev);
 	v4l2_ctrl_handler_free(&dev->ctrl_handler);
 	v4l2_device_unregister(&dev->v4l2_dev);
-	outb(7, dev->io);	/* Mute */
+	outb(7, dev->io);	 
 	outb(0x00, dev->io + 1);
 	release_region(dev->io, 2);
 	pnp_unregister_driver(&cadet_pnp_driver);

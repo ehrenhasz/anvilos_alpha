@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 #include <sched.h>
 #include <stdio.h>
@@ -90,13 +90,13 @@
 	#if defined __alpha__
 		#define __NR_mount_setattr 552
 	#elif defined _MIPS_SIM
-		#if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
+		#if _MIPS_SIM == _MIPS_SIM_ABI32	 
 			#define __NR_mount_setattr (442 + 4000)
 		#endif
-		#if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
+		#if _MIPS_SIM == _MIPS_SIM_NABI32	 
 			#define __NR_mount_setattr (442 + 6000)
 		#endif
-		#if _MIPS_SIM == _MIPS_SIM_ABI64	/* n64 */
+		#if _MIPS_SIM == _MIPS_SIM_ABI64	 
 			#define __NR_mount_setattr (442 + 5000)
 		#endif
 	#elif defined __ia64__
@@ -110,13 +110,13 @@
 	#if defined __alpha__
 		#define __NR_open_tree 538
 	#elif defined _MIPS_SIM
-		#if _MIPS_SIM == _MIPS_SIM_ABI32	/* o32 */
+		#if _MIPS_SIM == _MIPS_SIM_ABI32	 
 			#define __NR_open_tree 4428
 		#endif
-		#if _MIPS_SIM == _MIPS_SIM_NABI32	/* n32 */
+		#if _MIPS_SIM == _MIPS_SIM_NABI32	 
 			#define __NR_open_tree 6428
 		#endif
-		#if _MIPS_SIM == _MIPS_SIM_ABI64	/* n64 */
+		#if _MIPS_SIM == _MIPS_SIM_ABI64	 
 			#define __NR_open_tree 5428
 		#endif
 	#elif defined __ia64__
@@ -149,7 +149,7 @@ static inline int sys_mount_setattr(int dfd, const char *path, unsigned int flag
 #endif
 
 #ifndef AT_RECURSIVE
-#define AT_RECURSIVE 0x8000 /* Apply to the entire subtree */
+#define AT_RECURSIVE 0x8000  
 #endif
 
 static inline int sys_open_tree(int dfd, const char *filename, unsigned int flags)
@@ -234,7 +234,7 @@ static int prepare_unpriv_mountns(void)
 }
 
 #ifndef ST_NOSYMFOLLOW
-#define ST_NOSYMFOLLOW 0x2000 /* do not follow symlinks */
+#define ST_NOSYMFOLLOW 0x2000  
 #endif
 
 static int read_mnt_flags(const char *path)
@@ -353,7 +353,7 @@ static void *mount_setattr_thread(void *data)
 	pthread_exit(int_to_ptr(0));
 }
 
-/* Attempt to de-conflict with the selftests tree. */
+ 
 #ifndef SKIP
 #define SKIP(s, ...)	XFAIL(s, ##__VA_ARGS__)
 #endif
@@ -632,10 +632,7 @@ TEST_F(mount_setattr, basic_recursive)
 	fd = open("/mnt/A/AA/B/b", O_RDWR | O_CLOEXEC | O_CREAT | O_EXCL, 0777);
 	ASSERT_GE(fd, 0);
 
-	/*
-	 * We're holding a fd open for writing so this needs to fail somewhere
-	 * in the middle and the mount options need to be unchanged.
-	 */
+	 
 	attr.attr_set = MOUNT_ATTR_RDONLY;
 	ASSERT_LT(sys_mount_setattr(-1, "/mnt/A", AT_RECURSIVE, &attr, sizeof(attr)), 0);
 
@@ -681,11 +678,7 @@ TEST_F(mount_setattr, mount_has_writers)
 	fd = open("/mnt/A/AA/B/b", O_RDWR | O_CLOEXEC | O_CREAT | O_EXCL, 0777);
 	ASSERT_GE(fd, 0);
 
-	/*
-	 * We're holding a fd open to a mount somwhere in the middle so this
-	 * needs to fail somewhere in the middle. After this the mount options
-	 * need to be unchanged.
-	 */
+	 
 	ASSERT_LT(sys_mount_setattr(-1, "/mnt/A", AT_RECURSIVE, &attr, sizeof(attr)), 0);
 
 	new_flags = read_mnt_flags("/mnt/A");
@@ -716,7 +709,7 @@ TEST_F(mount_setattr, mount_has_writers)
 	EXPECT_EQ(fsync(fd), 0);
 	EXPECT_EQ(close(fd), 0);
 
-	/* All writers are gone so this should succeed. */
+	 
 	ASSERT_EQ(sys_mount_setattr(-1, "/mnt/A", AT_RECURSIVE, &attr, sizeof(attr)), 0);
 }
 
@@ -913,7 +906,7 @@ TEST_F(mount_setattr, multi_threaded)
 	old_flags = read_mnt_flags("/mnt/A");
 	ASSERT_GT(old_flags, 0);
 
-	/* Try to change mount options from multiple threads. */
+	 
 	nthreads = get_nprocs_conf();
 	if (nthreads > DEFAULT_THREADS)
 		nthreads = DEFAULT_THREADS;
@@ -1063,9 +1056,7 @@ FIXTURE_TEARDOWN(mount_setattr_idmapped)
 	(void)umount2("/tmp", MNT_DETACH);
 }
 
-/**
- * Validate that negative fd values are rejected.
- */
+ 
 TEST_F(mount_setattr_idmapped, invalid_fd_negative)
 {
 	struct mount_attr attr = {
@@ -1081,9 +1072,7 @@ TEST_F(mount_setattr_idmapped, invalid_fd_negative)
 	}
 }
 
-/**
- * Validate that excessively large fd values are rejected.
- */
+ 
 TEST_F(mount_setattr_idmapped, invalid_fd_large)
 {
 	struct mount_attr attr = {
@@ -1099,9 +1088,7 @@ TEST_F(mount_setattr_idmapped, invalid_fd_large)
 	}
 }
 
-/**
- * Validate that closed fd values are rejected.
- */
+ 
 TEST_F(mount_setattr_idmapped, invalid_fd_closed)
 {
 	int fd;
@@ -1122,9 +1109,7 @@ TEST_F(mount_setattr_idmapped, invalid_fd_closed)
 	}
 }
 
-/**
- * Validate that the initial user namespace is rejected.
- */
+ 
 TEST_F(mount_setattr_idmapped, invalid_fd_initial_userns)
 {
 	int open_tree_fd = -EBADF;
@@ -1229,11 +1214,7 @@ static int get_userns_fd(unsigned long nsid, unsigned long hostid, unsigned long
 	return ret;
 }
 
-/**
- * Validate that an attached mount in our mount namespace cannot be idmapped.
- * (The kernel enforces that the mount's mount namespace and the caller's mount
- *  namespace match.)
- */
+ 
 TEST_F(mount_setattr_idmapped, attached_mount_inside_current_mount_namespace)
 {
 	int open_tree_fd = -EBADF;
@@ -1258,12 +1239,7 @@ TEST_F(mount_setattr_idmapped, attached_mount_inside_current_mount_namespace)
 	ASSERT_EQ(close(open_tree_fd), 0);
 }
 
-/**
- * Validate that idmapping a mount is rejected if the mount's mount namespace
- * and our mount namespace don't match.
- * (The kernel enforces that the mount's mount namespace and the caller's mount
- *  namespace match.)
- */
+ 
 TEST_F(mount_setattr_idmapped, attached_mount_outside_current_mount_namespace)
 {
 	int open_tree_fd = -EBADF;
@@ -1291,9 +1267,7 @@ TEST_F(mount_setattr_idmapped, attached_mount_outside_current_mount_namespace)
 	ASSERT_EQ(close(open_tree_fd), 0);
 }
 
-/**
- * Validate that an attached mount in our mount namespace can be idmapped.
- */
+ 
 TEST_F(mount_setattr_idmapped, detached_mount_inside_current_mount_namespace)
 {
 	int open_tree_fd = -EBADF;
@@ -1312,7 +1286,7 @@ TEST_F(mount_setattr_idmapped, detached_mount_inside_current_mount_namespace)
 				     OPEN_TREE_CLONE);
 	ASSERT_GE(open_tree_fd, 0);
 
-	/* Changing mount properties on a detached mount. */
+	 
 	attr.userns_fd	= get_userns_fd(0, 10000, 10000);
 	ASSERT_GE(attr.userns_fd, 0);
 	ASSERT_EQ(sys_mount_setattr(open_tree_fd, "",
@@ -1321,9 +1295,7 @@ TEST_F(mount_setattr_idmapped, detached_mount_inside_current_mount_namespace)
 	ASSERT_EQ(close(open_tree_fd), 0);
 }
 
-/**
- * Validate that a detached mount not in our mount namespace can be idmapped.
- */
+ 
 TEST_F(mount_setattr_idmapped, detached_mount_outside_current_mount_namespace)
 {
 	int open_tree_fd = -EBADF;
@@ -1344,7 +1316,7 @@ TEST_F(mount_setattr_idmapped, detached_mount_outside_current_mount_namespace)
 
 	ASSERT_EQ(unshare(CLONE_NEWNS), 0);
 
-	/* Changing mount properties on a detached mount. */
+	 
 	attr.userns_fd	= get_userns_fd(0, 10000, 10000);
 	ASSERT_GE(attr.userns_fd, 0);
 	ASSERT_EQ(sys_mount_setattr(open_tree_fd, "",
@@ -1353,9 +1325,7 @@ TEST_F(mount_setattr_idmapped, detached_mount_outside_current_mount_namespace)
 	ASSERT_EQ(close(open_tree_fd), 0);
 }
 
-/**
- * Validate that currently changing the idmapping of an idmapped mount fails.
- */
+ 
 TEST_F(mount_setattr_idmapped, change_idmapping)
 {
 	int open_tree_fd = -EBADF;
@@ -1380,7 +1350,7 @@ TEST_F(mount_setattr_idmapped, change_idmapping)
 				    AT_EMPTY_PATH, &attr, sizeof(attr)), 0);
 	ASSERT_EQ(close(attr.userns_fd), 0);
 
-	/* Change idmapping on a detached mount that is already idmapped. */
+	 
 	attr.userns_fd	= get_userns_fd(0, 20000, 10000);
 	ASSERT_GE(attr.userns_fd, 0);
 	ASSERT_NE(sys_mount_setattr(open_tree_fd, "", AT_EMPTY_PATH, &attr, sizeof(attr)), 0);

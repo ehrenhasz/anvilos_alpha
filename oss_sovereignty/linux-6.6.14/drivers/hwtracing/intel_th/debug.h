@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Intel(R) Trace Hub driver debugging
- *
- * Copyright (C) 2014-2015 Intel Corporation.
- */
+ 
+ 
 
 #ifndef __INTEL_TH_DEBUG_H__
 #define __INTEL_TH_DEBUG_H__
@@ -23,4 +19,4 @@ static inline void intel_th_debug_done(void)
 }
 #endif
 
-#endif /* __INTEL_TH_DEBUG_H__ */
+#endif  

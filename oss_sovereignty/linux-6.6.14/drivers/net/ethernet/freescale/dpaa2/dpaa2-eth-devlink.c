@@ -1,7 +1,6 @@
-// SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause)
+
 #include "dpaa2-eth.h"
-/* Copyright 2020 NXP
- */
+ 
 
 #define DPAA2_ETH_TRAP_DROP(_id, _group_id)					\
 	DEVLINK_TRAP_GENERIC(DROP, DROP, _id,					\
@@ -86,15 +85,11 @@ struct dpaa2_eth_trap_item *dpaa2_eth_dl_get_trap(struct dpaa2_eth_priv *priv,
 
 	for (i = 0; i < ARRAY_SIZE(faf_bits); i++) {
 		if (faf_bits[i].position < 32) {
-			/* Low part of FAF.
-			 * position ranges from 31 to 0, mask from 0 to 31.
-			 */
+			 
 			mask = 1ull << (31 - faf_bits[i].position);
 			faf_word = __le32_to_cpu(fapr->faf_lo);
 		} else {
-			/* High part of FAF.
-			 * position ranges from 95 to 32, mask from 0 to 63.
-			 */
+			 
 			mask = 1ull << (63 - (faf_bits[i].position - 32));
 			faf_word = __le64_to_cpu(fapr->faf_hi);
 		}
@@ -126,9 +121,7 @@ static int dpaa2_eth_dl_trap_action_set(struct devlink *devlink,
 					enum devlink_trap_action action,
 					struct netlink_ext_ack *extack)
 {
-	/* No support for changing the action of an independent packet trap,
-	 * only per trap group - parser error drops
-	 */
+	 
 	NL_SET_ERR_MSG_MOD(extack,
 			   "Cannot change trap action independently of group");
 	return -EOPNOTSUPP;
@@ -149,7 +142,7 @@ static int dpaa2_eth_dl_trap_group_action_set(struct devlink *devlink,
 	if (group->id != DEVLINK_TRAP_GROUP_GENERIC_ID_PARSER_ERROR_DROPS)
 		return -EOPNOTSUPP;
 
-	/* Configure handling of frames marked as errors from the parser */
+	 
 	err_cfg.errors = DPAA2_FAS_RX_ERR_MASK;
 	err_cfg.set_frame_annotation = 1;
 

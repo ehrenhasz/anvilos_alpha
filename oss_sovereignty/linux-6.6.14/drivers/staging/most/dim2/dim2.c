@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dim2.c - MediaLB DIM2 Hardware Dependent Module
- *
- * Copyright (C) 2015-2016, Microchip Technology Germany II GmbH & Co. KG
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,61 +21,33 @@
 #include "errors.h"
 #include "sysfs.h"
 
-#define DMA_CHANNELS (32 - 1)  /* channel 0 is a system channel */
+#define DMA_CHANNELS (32 - 1)   
 
 #define MAX_BUFFERS_PACKET      32
 #define MAX_BUFFERS_STREAMING   32
 #define MAX_BUF_SIZE_PACKET     2048
 #define MAX_BUF_SIZE_STREAMING  (8 * 1024)
 
-/*
- * The parameter representing the number of frames per sub-buffer for
- * synchronous channels.  Valid values: [0 .. 6].
- *
- * The values 0, 1, 2, 3, 4, 5, 6 represent corresponding number of frames per
- * sub-buffer 1, 2, 4, 8, 16, 32, 64.
- */
-static u8 fcnt = 4;  /* (1 << fcnt) frames per subbuffer */
+ 
+static u8 fcnt = 4;   
 module_param(fcnt, byte, 0000);
 MODULE_PARM_DESC(fcnt, "Num of frames per sub-buffer for sync channels as a power of 2");
 
 static DEFINE_SPINLOCK(dim_lock);
 
-/**
- * struct hdm_channel - private structure to keep channel specific data
- * @name: channel name
- * @is_initialized: identifier to know whether the channel is initialized
- * @ch: HAL specific channel data
- * @reset_dbr_size: reset DBR data buffer size
- * @pending_list: list to keep MBO's before starting transfer
- * @started_list: list to keep MBO's after starting transfer
- * @direction: channel direction (TX or RX)
- * @data_type: channel data type
- */
+ 
 struct hdm_channel {
 	char name[sizeof "caNNN"];
 	bool is_initialized;
 	struct dim_channel ch;
 	u16 *reset_dbr_size;
-	struct list_head pending_list;	/* before dim_enqueue_buffer() */
-	struct list_head started_list;	/* after dim_enqueue_buffer() */
+	struct list_head pending_list;	 
+	struct list_head started_list;	 
 	enum most_channel_direction direction;
 	enum most_channel_data_type data_type;
 };
 
-/*
- * struct dim2_hdm - private structure to keep interface specific data
- * @hch: an array of channel specific data
- * @most_iface: most interface structure
- * @capabilities: an array of channel capability data
- * @io_base: I/O register base address
- * @netinfo_task: thread to deliver network status
- * @netinfo_waitq: waitq for the thread to sleep
- * @deliver_netinfo: to identify whether network status received
- * @mac_addrs: INIC mac address
- * @link_state: network link state
- * @atx_idx: index of async tx channel
- */
+ 
 struct dim2_hdm {
 	struct device dev;
 	struct hdm_channel hch[DMA_CHANNELS];
@@ -113,7 +81,7 @@ static inline struct dim2_hdm *iface_to_hdm(struct most_interface *iface)
 	return container_of(iface, struct dim2_hdm, most_iface);
 }
 
-/* Macro to identify a network status message */
+ 
 #define PACKET_IS_NET_INFO(p)  \
 	(((p)[1] == 0x18) && ((p)[2] == 0x05) && ((p)[3] == 0x0C) && \
 	 ((p)[13] == 0x3C) && ((p)[14] == 0x00) && ((p)[15] == 0x0A))
@@ -140,24 +108,14 @@ static struct attribute *dim2_attrs[] = {
 
 ATTRIBUTE_GROUPS(dim2);
 
-/**
- * dimcb_on_error - callback from HAL to report miscommunication between
- * HDM and HAL
- * @error_id: Error ID
- * @error_message: Error message. Some text in a free format
- */
+ 
 void dimcb_on_error(u8 error_id, const char *error_message)
 {
 	pr_err("%s: error_id - %d, error_message - %s\n", __func__, error_id,
 	       error_message);
 }
 
-/**
- * try_start_dim_transfer - try to transfer a buffer on a channel
- * @hdm_ch: channel specific data
- *
- * Transfer a buffer from pending_list if the channel is ready
- */
+ 
 static int try_start_dim_transfer(struct hdm_channel *hdm_ch)
 {
 	u16 buf_size;
@@ -204,12 +162,7 @@ static int try_start_dim_transfer(struct hdm_channel *hdm_ch)
 	return 0;
 }
 
-/**
- * deliver_netinfo_thread - thread to deliver network status to mostcore
- * @data: private data
- *
- * Wait for network status and deliver it to mostcore once it is received
- */
+ 
 static int deliver_netinfo_thread(void *data)
 {
 	struct dim2_hdm *dev = data;
@@ -232,14 +185,7 @@ static int deliver_netinfo_thread(void *data)
 	return 0;
 }
 
-/**
- * retrieve_netinfo - retrieve network status from received buffer
- * @dev: private data
- * @mbo: received MBO
- *
- * Parse the message in buffer and get node address, link state, MAC address.
- * Wake up a thread to deliver this status to mostcore
- */
+ 
 static void retrieve_netinfo(struct dim2_hdm *dev, struct mbo *mbo)
 {
 	u8 *data = mbo->virt_address;
@@ -252,13 +198,7 @@ static void retrieve_netinfo(struct dim2_hdm *dev, struct mbo *mbo)
 	wake_up_interruptible(&dev->netinfo_waitq);
 }
 
-/**
- * service_done_flag - handle completed buffers
- * @dev: private data
- * @ch_idx: channel index
- *
- * Return back the completed buffers to mostcore, using completion callback
- */
+ 
 static void service_done_flag(struct dim2_hdm *dev, int ch_idx)
 {
 	struct hdm_channel *hdm_ch = dev->hch + ch_idx;
@@ -383,14 +323,7 @@ static irqreturn_t dim2_task_irq(int irq, void *_dev)
 	return IRQ_HANDLED;
 }
 
-/**
- * dim2_ahb_isr - interrupt service routine
- * @irq: irq number
- * @_dev: private data
- *
- * Acknowledge the interrupt and service each initialized channel,
- * if needed, in task context.
- */
+ 
 static irqreturn_t dim2_ahb_isr(int irq, void *_dev)
 {
 	struct dim2_hdm *dev = _dev;
@@ -404,13 +337,7 @@ static irqreturn_t dim2_ahb_isr(int irq, void *_dev)
 	return IRQ_WAKE_THREAD;
 }
 
-/**
- * complete_all_mbos - complete MBO's in a list
- * @head: list head
- *
- * Delete all the entries in list and return back MBO's to mostcore using
- * completion call back.
- */
+ 
 static void complete_all_mbos(struct list_head *head)
 {
 	unsigned long flags;
@@ -433,15 +360,7 @@ static void complete_all_mbos(struct list_head *head)
 	}
 }
 
-/**
- * configure_channel - initialize a channel
- * @most_iface: interface the channel belongs to
- * @ch_idx: channel index to be configured
- * @ccfg: structure that holds the configuration information
- *
- * Receives configuration information from mostcore and initialize
- * the corresponding channel. Return 0 on success, negative on failure.
- */
+ 
 static int configure_channel(struct most_interface *most_iface, int ch_idx,
 			     struct most_channel_config *ccfg)
 {
@@ -460,10 +379,10 @@ static int configure_channel(struct most_interface *most_iface, int ch_idx,
 	if (hdm_ch->is_initialized)
 		return -EPERM;
 
-	/* do not reset if the property was set by user, see poison_channel */
+	 
 	hdm_ch->reset_dbr_size = ccfg->dbr_size ? NULL : &ccfg->dbr_size;
 
-	/* zero value is default dbr_size, see dim2 hal */
+	 
 	hdm_ch->ch.dbr_size = ccfg->dbr_size;
 
 	switch (ccfg->data_type) {
@@ -551,15 +470,7 @@ static int configure_channel(struct most_interface *most_iface, int ch_idx,
 	return 0;
 }
 
-/**
- * enqueue - enqueue a buffer for data transfer
- * @most_iface: intended interface
- * @ch_idx: ID of the channel the buffer is intended for
- * @mbo: pointer to the buffer object
- *
- * Push the buffer into pending_list and try to transfer one buffer from
- * pending_list. Return 0 on success, negative on failure.
- */
+ 
 static int enqueue(struct most_interface *most_iface, int ch_idx,
 		   struct mbo *mbo)
 {
@@ -584,15 +495,7 @@ static int enqueue(struct most_interface *most_iface, int ch_idx,
 	return 0;
 }
 
-/**
- * request_netinfo - triggers retrieving of network info
- * @most_iface: pointer to the interface
- * @ch_idx: corresponding channel ID
- * @on_netinfo: call-back used to deliver network status to mostcore
- *
- * Send a command to INIC which triggers retrieving of network info by means of
- * "Message exchange over MDP/MEP". Return 0 on success, negative on failure.
- */
+ 
 static void request_netinfo(struct most_interface *most_iface, int ch_idx,
 			    void (*on_netinfo)(struct most_interface *,
 					       unsigned char, unsigned char *))
@@ -618,23 +521,16 @@ static void request_netinfo(struct most_interface *most_iface, int ch_idx,
 
 	data = mbo->virt_address;
 
-	data[0] = 0x00; /* PML High byte */
-	data[1] = 0x03; /* PML Low byte */
-	data[2] = 0x02; /* PMHL */
-	data[3] = 0x08; /* FPH */
-	data[4] = 0x40; /* FMF (FIFO cmd msg - Triggers NAOverMDP) */
+	data[0] = 0x00;  
+	data[1] = 0x03;  
+	data[2] = 0x02;  
+	data[3] = 0x08;  
+	data[4] = 0x40;  
 
 	most_submit_mbo(mbo);
 }
 
-/**
- * poison_channel - poison buffers of a channel
- * @most_iface: pointer to the interface the channel to be poisoned belongs to
- * @ch_idx: corresponding channel ID
- *
- * Destroy a channel and complete all the buffers in both started_list &
- * pending_list. Return 0 on success, negative on failure.
- */
+ 
 static int poison_channel(struct most_interface *most_iface, int ch_idx)
 {
 	struct dim2_hdm *dev = iface_to_hdm(most_iface);
@@ -697,15 +593,7 @@ static struct {
 	{ "8192fs", CLK_8192FS },
 };
 
-/**
- * get_dim2_clk_speed - converts string to DIM2 clock speed value
- *
- * @clock_speed: string in the format "{NUMBER}fs"
- * @val: pointer to get one of the CLK_{NUMBER}FS values
- *
- * By success stores one of the CLK_{NUMBER}FS in the *val and returns 0,
- * otherwise returns -EINVAL.
- */
+ 
 static int get_dim2_clk_speed(const char *clock_speed, u8 *val)
 {
 	int i;
@@ -736,13 +624,7 @@ static void dim2_release(struct device *d)
 	kfree(dev);
 }
 
-/*
- * dim2_probe - dim2 probe handler
- * @pdev: platform device structure
- *
- * Register the dim2 interface with mostcore and initialize it.
- * Return 0 on success, negative on failure.
- */
+ 
 static int dim2_probe(struct platform_device *pdev)
 {
 	const struct dim2_platform_data *pdata;
@@ -902,12 +784,7 @@ err_free_dev:
 	return ret;
 }
 
-/**
- * dim2_remove - dim2 remove handler
- * @pdev: platform device structure
- *
- * Unregister the interface from mostcore
- */
+ 
 static void dim2_remove(struct platform_device *pdev)
 {
 	struct dim2_hdm *dev = platform_get_drvdata(pdev);
@@ -915,7 +792,7 @@ static void dim2_remove(struct platform_device *pdev)
 	most_deregister_interface(&dev->most_iface);
 }
 
-/* platform specific functions [[ */
+ 
 
 static int fsl_mx6_enable(struct platform_device *pdev)
 {
@@ -935,7 +812,7 @@ static int fsl_mx6_enable(struct platform_device *pdev)
 	}
 
 	if (dev->clk_speed >= CLK_2048FS) {
-		/* enable pll */
+		 
 		dev->clk_pll = devm_clk_get(&pdev->dev, "pll8_mlb");
 		if (IS_ERR_OR_NULL(dev->clk_pll)) {
 			dev_err(&pdev->dev, "unable to get mlb pll clock\n");
@@ -978,16 +855,16 @@ static int rcar_gen2_enable(struct platform_device *pdev)
 	}
 
 	if (dev->clk_speed >= CLK_2048FS) {
-		/* enable MLP pll and LVDS drivers */
+		 
 		writel(0x03, dev->io_base + 0x600);
-		/* set bias */
+		 
 		writel(0x888, dev->io_base + 0x38);
 	} else {
-		/* PLL */
+		 
 		writel(0x04, dev->io_base + 0x600);
 	}
 
-	/* BBCR = 0b11 */
+	 
 	writel(0x03, dev->io_base + 0x500);
 	writel(0x0002FF02, dev->io_base + 0x508);
 
@@ -1000,7 +877,7 @@ static void rcar_gen2_disable(struct platform_device *pdev)
 
 	clk_disable_unprepare(dev->clk);
 
-	/* disable PLLs and LVDS drivers */
+	 
 	writel(0x0, dev->io_base + 0x600);
 }
 
@@ -1022,12 +899,12 @@ static int rcar_gen3_enable(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* PLL */
+	 
 	writel(0x04, dev->io_base + 0x600);
 
 	writel(enable_512fs, dev->io_base + 0x604);
 
-	/* BBCR = 0b11 */
+	 
 	writel(0x03, dev->io_base + 0x500);
 	writel(0x0002FF02, dev->io_base + 0x508);
 
@@ -1040,11 +917,11 @@ static void rcar_gen3_disable(struct platform_device *pdev)
 
 	clk_disable_unprepare(dev->clk);
 
-	/* disable PLLs and LVDS drivers */
+	 
 	writel(0x0, dev->io_base + 0x600);
 }
 
-/* ]] platform specific functions */
+ 
 
 enum dim2_platforms { FSL_MX6, RCAR_GEN2, RCAR_GEN3 };
 

@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * /proc/bus/pnp interface for Plug and Play devices
- *
- * Written by David Hinds, dahinds@users.sourceforge.net
- * Modified by Thomas Hood
- *
- * The .../devices and .../<node> and .../boot/<node> files are
- * utilized by the lspnp and setpnp utilities, supplied with the
- * pcmcia-cs package.
- *     http://pcmcia-cs.sourceforge.net
- *
- * The .../escd file is utilized by the lsescd utility written by
- * Gunther Mayer.
- *
- * The .../legacy_device_resources file is not used yet.
- *
- * The other files are human-readable.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -71,7 +54,7 @@ static int escd_proc_show(struct seq_file *m, void *v)
 	if (pnp_bios_escd_info(&escd))
 		return -EIO;
 
-	/* sanity check */
+	 
 	if (escd.escd_size > MAX_SANE_ESCD_SIZE) {
 		printk(KERN_ERR
 		       "PnPBIOS: %s: ESCD size reported by BIOS escd_info call is too great\n", __func__);
@@ -90,7 +73,7 @@ static int escd_proc_show(struct seq_file *m, void *v)
 	escd_size =
 	    (unsigned char)(tmpbuf[0]) + (unsigned char)(tmpbuf[1]) * 256;
 
-	/* sanity check */
+	 
 	if (escd_size > MAX_SANE_ESCD_SIZE) {
 		printk(KERN_ERR "PnPBIOS: %s: ESCD size reported by"
 				" BIOS read_escd call is too great\n", __func__);
@@ -239,11 +222,7 @@ int pnpbios_interface_attach_device(struct pnp_bios_node *node)
 	return -EIO;
 }
 
-/*
- * When this is called, pnpbios functions are assumed to
- * work and the pnpbios_dont_use_current_config flag
- * should already have been set to the appropriate value
- */
+ 
 int __init pnpbios_proc_init(void)
 {
 	proc_pnp = proc_mkdir("bus/pnp", NULL);

@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright 2020 Google LLC.
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -101,10 +101,7 @@ static int cros_ec_regulator_set_voltage(struct regulator_dev *dev, int min_uV,
 		.max_mv = max_mV,
 	};
 
-	/*
-	 * This can happen when the given range [min_uV, max_uV] doesn't
-	 * contain any voltage that can be represented exactly in mV.
-	 */
+	 
 	if (min_mV > max_mV)
 		return -EINVAL;
 
@@ -145,7 +142,7 @@ static int cros_ec_regulator_init_info(struct device *dev,
 
 	data->desc.n_voltages = data->num_voltages;
 
-	/* Make sure the returned name is always a valid string */
+	 
 	resp.name[ARRAY_SIZE(resp.name) - 1] = '\0';
 	data->desc.name = devm_kstrdup(dev, resp.name, GFP_KERNEL);
 	if (!data->desc.name)

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2021 Rafał Miłecki <rafal@milecki.pl>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/io.h>
 #include <linux/leds.h>
@@ -14,9 +12,9 @@
 #define BCM63138_MAX_LEDS				32
 #define BCM63138_MAX_BRIGHTNESS				9
 
-#define BCM63138_LED_BITS				4				/* how many bits control a single LED */
-#define BCM63138_LED_MASK				((1 << BCM63138_LED_BITS) - 1)	/* 0xf */
-#define BCM63138_LEDS_PER_REG				(32 / BCM63138_LED_BITS)	/* 8 */
+#define BCM63138_LED_BITS				4				 
+#define BCM63138_LED_MASK				((1 << BCM63138_LED_BITS) - 1)	 
+#define BCM63138_LEDS_PER_REG				(32 / BCM63138_LED_BITS)	 
 
 #define BCM63138_GLB_CTRL				0x00
 #define  BCM63138_GLB_CTRL_SERIAL_LED_DATA_PPOL		0x00000002
@@ -57,9 +55,7 @@ struct bcm63138_led {
 	bool active_low;
 };
 
-/*
- * I/O access
- */
+ 
 
 static void bcm63138_leds_write(struct bcm63138_leds *leds, unsigned int reg,
 				u32 data)
@@ -81,9 +77,7 @@ static void bcm63138_leds_update_bits(struct bcm63138_leds *leds,
 	bcm63138_leds_write(leds, reg, (bcm63138_leds_read(leds, reg) & ~mask) | (val & mask));
 }
 
-/*
- * Helpers
- */
+ 
 
 static void bcm63138_leds_set_flash_rate(struct bcm63138_leds *leds,
 					 struct bcm63138_led *led,
@@ -116,9 +110,7 @@ static void bcm63138_leds_enable_led(struct bcm63138_leds *leds,
 	bcm63138_leds_update_bits(leds, BCM63138_SW_DATA, bit, value ? bit : 0);
 }
 
-/*
- * API callbacks
- */
+ 
 
 static void bcm63138_leds_brightness_set(struct led_classdev *led_cdev,
 					 enum led_brightness value)
@@ -158,19 +150,19 @@ static int bcm63138_leds_blink_set(struct led_classdev *led_cdev,
 	}
 
 	switch (*delay_on) {
-	case 1152 ... 1408: /* 1280 ms ± 10% */
+	case 1152 ... 1408:  
 		value = 0x7;
 		break;
-	case 576 ... 704: /* 640 ms ± 10% */
+	case 576 ... 704:  
 		value = 0x6;
 		break;
-	case 288 ... 352: /* 320 ms ± 10% */
+	case 288 ... 352:  
 		value = 0x5;
 		break;
-	case 126 ... 154: /* 140 ms ± 10% */
+	case 126 ... 154:  
 		value = 0x4;
 		break;
-	case 59 ... 72: /* 65 ms ± 10% */
+	case 59 ... 72:  
 		value = 0x3;
 		break;
 	default:
@@ -189,9 +181,7 @@ static int bcm63138_leds_blink_set(struct led_classdev *led_cdev,
 	return 0;
 }
 
-/*
- * LED driver
- */
+ 
 
 static void bcm63138_leds_create_led(struct bcm63138_leds *leds,
 				     struct device_node *np)

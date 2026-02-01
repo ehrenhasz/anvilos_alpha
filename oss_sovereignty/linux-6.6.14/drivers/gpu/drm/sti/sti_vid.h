@@ -1,19 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Author: Fabien Dessenne <fabien.dessenne@st.com> for STMicroelectronics.
- */
+ 
+ 
 
 #ifndef _STI_VID_H_
 #define _STI_VID_H_
 
-/**
- * STI VID structure
- *
- * @dev:   driver device
- * @regs:  vid registers
- * @id:    id of the vid
- */
+ 
 struct sti_vid {
 	struct device *dev;
 	void __iomem *regs;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AR71xx Reset Controller Driver
- * Author: Alban Bedel
- *
- * Copyright (C) 2015 Alban Bedel <albeu@free.fr>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/init.h>

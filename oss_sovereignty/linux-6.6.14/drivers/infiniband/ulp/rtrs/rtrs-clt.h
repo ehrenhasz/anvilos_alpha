@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * RDMA Transport Layer
- *
- * Copyright (c) 2014 - 2018 ProfitBricks GmbH. All rights reserved.
- * Copyright (c) 2018 - 2019 1&1 IONOS Cloud GmbH. All rights reserved.
- * Copyright (c) 2019 - 2020 1&1 IONOS SE. All rights reserved.
- */
+ 
+ 
 
 #ifndef RTRS_CLT_H
 #define RTRS_CLT_H
@@ -13,9 +7,7 @@
 #include <linux/device.h>
 #include "rtrs-pri.h"
 
-/**
- * enum rtrs_clt_state - Client states.
- */
+ 
 enum rtrs_clt_state {
 	RTRS_CLT_CONNECTING,
 	RTRS_CLT_CONNECTING_ERR,
@@ -32,21 +24,19 @@ enum rtrs_mp_policy {
 	MP_POLICY_MIN_LATENCY,
 };
 
-/* see Documentation/ABI/testing/sysfs-class-rtrs-client for details */
+ 
 struct rtrs_clt_stats_reconnects {
 	int successful_cnt;
 	int fail_cnt;
 };
 
-/* see Documentation/ABI/testing/sysfs-class-rtrs-client for details */
+ 
 struct rtrs_clt_stats_cpu_migr {
 	atomic_t from;
 	int to;
 };
 
-/* stats for Read and write operation.
- * see Documentation/ABI/testing/sysfs-class-rtrs-client for details
- */
+ 
 struct rtrs_clt_stats_rdma {
 	struct {
 		u64 cnt;
@@ -77,10 +67,7 @@ struct rtrs_clt_con {
 	int			cm_err;
 };
 
-/**
- * rtrs_permit - permits the memory allocation for future RDMA operation.
- *		 Combine with irq pinning to keep IO on same CPU.
- */
+ 
 struct rtrs_permit {
 	enum rtrs_clt_con_type con_type;
 	unsigned int cpu_id;
@@ -88,13 +75,11 @@ struct rtrs_permit {
 	unsigned int mem_off;
 };
 
-/**
- * rtrs_clt_io_req - describes one inflight IO request
- */
+ 
 struct rtrs_clt_io_req {
 	struct list_head        list;
 	struct rtrs_iu		*iu;
-	struct scatterlist	*sglist; /* list holding user data */
+	struct scatterlist	*sglist;  
 	unsigned int		sg_cnt;
 	unsigned int		sg_size;
 	unsigned int		data_len;
@@ -147,7 +132,7 @@ struct rtrs_clt_path {
 	struct kobject		kobj;
 	u8			for_new_clt;
 	struct rtrs_clt_stats	*stats;
-	/* cache hca_port and hca_name to display in sysfs */
+	 
 	u8			hca_port;
 	char                    hca_name[IB_DEVICE_NAME_MAX];
 	struct list_head __percpu
@@ -155,7 +140,7 @@ struct rtrs_clt_path {
 };
 
 struct rtrs_clt_sess {
-	struct list_head	paths_list; /* rcu protected list */
+	struct list_head	paths_list;  
 	size_t			paths_num;
 	struct rtrs_clt_path
 	__rcu * __percpu	*pcpu_path;
@@ -214,7 +199,7 @@ void rtrs_clt_set_max_reconnect_attempts(struct rtrs_clt_sess *clt, int value);
 int rtrs_clt_get_max_reconnect_attempts(const struct rtrs_clt_sess *clt);
 void free_path(struct rtrs_clt_path *clt_path);
 
-/* rtrs-clt-stats.c */
+ 
 
 int rtrs_clt_init_stats(struct rtrs_clt_stats *stats);
 
@@ -239,7 +224,7 @@ int rtrs_clt_reset_all_stats(struct rtrs_clt_stats *stats, bool enable);
 ssize_t rtrs_clt_reset_all_help(struct rtrs_clt_stats *stats,
 				 char *page);
 
-/* rtrs-clt-sysfs.c */
+ 
 
 int rtrs_clt_create_sysfs_root_files(struct rtrs_clt_sess *clt);
 void rtrs_clt_destroy_sysfs_root(struct rtrs_clt_sess *clt);
@@ -248,4 +233,4 @@ int rtrs_clt_create_path_files(struct rtrs_clt_path *clt_path);
 void rtrs_clt_destroy_path_files(struct rtrs_clt_path *clt_path,
 				  const struct attribute *sysfs_self);
 
-#endif /* RTRS_CLT_H */
+#endif  

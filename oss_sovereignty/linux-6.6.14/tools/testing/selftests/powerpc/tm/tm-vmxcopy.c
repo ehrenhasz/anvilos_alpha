@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2015, Michael Neuling, IBM Corp.
- *
- * Original: Michael Neuling 4/12/2013
- * Edited: Rashmica Gupta 4/12/2015
- *
- * See if the altivec state is leaked out of an aborted transaction due to
- * kernel vmx copy loops.
- *
- * When the transaction aborts, VSR values should rollback to the values
- * they held before the transaction commenced. Using VSRs while transaction
- * is suspended should not affect the checkpointed values.
- *
- * (1) write A to a VSR
- * (2) start transaction
- * (3) suspend transaction
- * (4) change the VSR to B
- * (5) trigger kernel vmx copy loop
- * (6) abort transaction
- * (7) check that the VSR value is A
- */
+
+ 
 
 #include <inttypes.h>
 #include <stdio.h>
@@ -62,19 +42,19 @@ int test_vmxcopy()
 	assert(a != MAP_FAILED);
 
 	asm __volatile__(
-		"lxvd2x 40,0,%[vecinptr];"	/* set 40 to initial value*/
+		"lxvd2x 40,0,%[vecinptr];"	 
 		"tbegin.;"
 		"beq	3f;"
 		"tsuspend.;"
-		"xxlxor 40,40,40;"		/* set 40 to 0 */
-		"std	5, 0(%[map]);"		/* cause kernel vmx copy page */
+		"xxlxor 40,40,40;"		 
+		"std	5, 0(%[map]);"		 
 		"tabort. 0;"
 		"tresume.;"
 		"tend.;"
 		"li	%[res], 0;"
 		"b	5f;"
 
-		/* Abort handler */
+		 
 		"3:;"
 		"li	%[res], 1;"
 

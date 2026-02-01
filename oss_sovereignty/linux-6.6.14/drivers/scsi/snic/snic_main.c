@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2014 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/module.h>
 #include <linux/mempool.h>
@@ -20,10 +20,10 @@
 
 #define PCI_DEVICE_ID_CISCO_SNIC	0x0046
 
-/* Supported devices by snic module */
+ 
 static struct pci_device_id snic_id_table[] = {
 	{PCI_DEVICE(0x1137, PCI_DEVICE_ID_CISCO_SNIC) },
-	{ 0, }	/* end of table */
+	{ 0, }	 
 };
 
 unsigned int snic_log_level = 0x0;
@@ -41,10 +41,7 @@ unsigned int snic_max_qdepth = SNIC_DFLT_QUEUE_DEPTH;
 module_param(snic_max_qdepth, uint, S_IRUGO | S_IWUSR);
 MODULE_PARM_DESC(snic_max_qdepth, "Queue depth to report for each LUN");
 
-/*
- * snic_slave_alloc : callback function to SCSI Mid Layer, called on
- * scsi device initialization.
- */
+ 
 static int
 snic_slave_alloc(struct scsi_device *sdev)
 {
@@ -56,10 +53,7 @@ snic_slave_alloc(struct scsi_device *sdev)
 	return 0;
 }
 
-/*
- * snic_slave_configure : callback function to SCSI Mid Layer, called on
- * scsi device initialization.
- */
+ 
 static int
 snic_slave_configure(struct scsi_device *sdev)
 {
@@ -67,7 +61,7 @@ snic_slave_configure(struct scsi_device *sdev)
 	u32 qdepth = 0, max_ios = 0;
 	int tmo = SNIC_DFLT_CMD_TIMEOUT * HZ;
 
-	/* Set Queue Depth */
+	 
 	max_ios = snic_max_qdepth;
 	qdepth = min_t(u32, max_ios, SNIC_MAX_QUEUE_DEPTH);
 	scsi_change_queue_depth(sdev, qdepth);
@@ -75,7 +69,7 @@ snic_slave_configure(struct scsi_device *sdev)
 	if (snic->fwinfo.io_tmo > 1)
 		tmo = snic->fwinfo.io_tmo * HZ;
 
-	/* FW requires extended timeouts */
+	 
 	blk_queue_rq_timeout(sdev->request_queue, tmo);
 
 	return 0;
@@ -121,9 +115,7 @@ static const struct scsi_host_template snic_host_template = {
 	.proc_name = "snic_scsi",
 };
 
-/*
- * snic_handle_link_event : Handles link events such as link up/down/error
- */
+ 
 void
 snic_handle_link_event(struct snic *snic)
 {
@@ -138,14 +130,9 @@ snic_handle_link_event(struct snic *snic)
 	spin_unlock_irqrestore(&snic->snic_lock, flags);
 
 	queue_work(snic_glob->event_q, &snic->link_work);
-} /* end of snic_handle_link_event */
+}  
 
-/*
- * snic_notify_set : sets notification area
- * This notification area is to receive events from fw
- * Note: snic supports only MSIX interrupts, in which we can just call
- *  svnic_dev_notify_set directly
- */
+ 
 static int
 snic_notify_set(struct snic *snic)
 {
@@ -164,11 +151,9 @@ snic_notify_set(struct snic *snic)
 	}
 
 	return ret;
-} /* end of snic_notify_set */
+}  
 
-/*
- * snic_dev_wait : polls vnic open status.
- */
+ 
 static int
 snic_dev_wait(struct vnic_dev *vdev,
 		int (*start)(struct vnic_dev *, int),
@@ -183,13 +168,7 @@ snic_dev_wait(struct vnic_dev *vdev,
 	if (ret)
 		return ret;
 
-	/*
-	 * Wait for func to complete...2 seconds max.
-	 *
-	 * Sometimes schedule_timeout_uninterruptible take long	time
-	 * to wakeup, which results skipping retry. The retry counter
-	 * ensures to retry at least two times.
-	 */
+	 
 	time = jiffies + (HZ * 2);
 	do {
 		ret = finished(vdev, &done);
@@ -203,13 +182,9 @@ snic_dev_wait(struct vnic_dev *vdev,
 	} while (time_after(time, jiffies) || (retry_cnt < 3));
 
 	return -ETIMEDOUT;
-} /* end of snic_dev_wait */
+}  
 
-/*
- * snic_cleanup: called by snic_remove
- * Stops the snic device, masks all interrupts, Completed CQ entries are
- * drained. Posted WQ/RQ/Copy-WQ entries are cleanup
- */
+ 
 static int
 snic_cleanup(struct snic *snic)
 {
@@ -226,12 +201,12 @@ snic_cleanup(struct snic *snic)
 			return ret;
 	}
 
-	/* Clean up completed IOs */
+	 
 	snic_fwcq_cmpl_handler(snic, -1);
 
 	snic_wq_cmpl_handler(snic, -1);
 
-	/* Clean up the IOs that have not completed */
+	 
 	for (i = 0; i < snic->wq_count; i++)
 		svnic_wq_clean(&snic->wq[i], snic_free_wq_buf);
 
@@ -241,17 +216,17 @@ snic_cleanup(struct snic *snic)
 	for (i = 0; i < snic->intr_count; i++)
 		svnic_intr_clean(&snic->intr[i]);
 
-	/* Cleanup snic specific requests */
+	 
 	snic_free_all_untagged_reqs(snic);
 
-	/* Cleanup Pending SCSI commands */
+	 
 	snic_shutdown_scsi_cleanup(snic);
 
 	for (i = 0; i < SNIC_REQ_MAX_CACHES; i++)
 		mempool_destroy(snic->req_pool[i]);
 
 	return 0;
-} /* end of snic_cleanup */
+}  
 
 
 static void
@@ -261,9 +236,7 @@ snic_iounmap(struct snic *snic)
 		iounmap(snic->bar0.vaddr);
 }
 
-/*
- * snic_vdev_open_done : polls for svnic_dev_open cmd completion.
- */
+ 
 static int
 snic_vdev_open_done(struct vnic_dev *vdev, int *done)
 {
@@ -280,11 +253,9 @@ snic_vdev_open_done(struct vnic_dev *vdev, int *done)
 	} while (nretries--);
 
 	return ret;
-} /* end of snic_vdev_open_done */
+}  
 
-/*
- * snic_add_host : registers scsi host with ML
- */
+ 
 static int
 snic_add_host(struct Scsi_Host *shost, struct pci_dev *pdev)
 {
@@ -310,7 +281,7 @@ snic_add_host(struct Scsi_Host *shost, struct pci_dev *pdev)
 	}
 
 	return ret;
-} /* end of snic_add_host */
+}  
 
 static void
 snic_del_host(struct Scsi_Host *shost)
@@ -339,9 +310,7 @@ snic_set_state(struct snic *snic, enum snic_state state)
 	atomic_set(&snic->state, state);
 }
 
-/*
- * snic_probe : Initialize the snic interface.
- */
+ 
 static int
 snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 {
@@ -352,7 +321,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	u32 max_ios = 0;
 	int ret, i;
 
-	/* Device Information */
+	 
 	SNIC_INFO("snic device %4x:%4x:%4x:%4x: ",
 		  pdev->vendor, pdev->device, pdev->subsystem_vendor,
 		  pdev->subsystem_device);
@@ -361,9 +330,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		  pdev->bus->number, PCI_SLOT(pdev->devfn),
 		  PCI_FUNC(pdev->devfn));
 
-	/*
-	 * Allocate SCSI Host and setup association between host, and snic
-	 */
+	 
 	shost = scsi_host_alloc(&snic_host_template, sizeof(struct snic));
 	if (!shost) {
 		SNIC_ERR("Unable to alloc scsi_host\n");
@@ -382,11 +349,11 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		       shost->host_no, snic, shost, pdev->bus->number,
 		       PCI_SLOT(pdev->devfn), PCI_FUNC(pdev->devfn));
 #ifdef CONFIG_SCSI_SNIC_DEBUG_FS
-	/* Per snic debugfs init */
+	 
 	snic_stats_debugfs_init(snic);
 #endif
 
-	/* Setup PCI Resources */
+	 
 	pci_set_drvdata(pdev, snic);
 	snic->pdev = pdev;
 
@@ -410,11 +377,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	pci_set_master(pdev);
 
-	/*
-	 * Query PCI Controller on system for DMA addressing
-	 * limitation for the device. Try 43-bit first, and
-	 * fail to 32-bit.
-	 */
+	 
 	ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(43));
 	if (ret) {
 		ret = dma_set_mask_and_coherent(&pdev->dev, DMA_BIT_MASK(32));
@@ -426,7 +389,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		}
 	}
 
-	/* Map vNIC resources from BAR0 */
+	 
 	if (!(pci_resource_flags(pdev, 0) & IORESOURCE_MEM)) {
 		SNIC_HOST_ERR(shost, "BAR0 not memory mappable aborting.\n");
 
@@ -447,7 +410,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	snic->bar0.len = pci_resource_len(pdev, 0);
 	SNIC_BUG_ON(snic->bar0.bus_addr == 0);
 
-	/* Devcmd2 Resource Allocation and Initialization */
+	 
 	snic->vdev = svnic_dev_alloc_discover(NULL, snic, pdev, &snic->bar0, 1);
 	if (!snic->vdev) {
 		SNIC_HOST_ERR(shost, "vNIC Resource Discovery Failed.\n");
@@ -481,7 +444,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_dev_close;
 	}
 
-	/* Get vNIC information */
+	 
 	ret = snic_get_vnic_config(snic);
 	if (ret) {
 		SNIC_HOST_ERR(shost,
@@ -491,7 +454,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_dev_close;
 	}
 
-	/* Configure Maximum Outstanding IO reqs */
+	 
 	max_ios = snic->config.io_throttle_count;
 	if (max_ios != SNIC_UCSM_DFLT_THROTTLE_CNT_BLD)
 		shost->can_queue = min_t(u32, SNIC_MAX_IO_REQ,
@@ -502,13 +465,11 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	shost->max_lun = snic->config.luns_per_tgt;
 	shost->max_id = SNIC_MAX_TARGET;
 
-	shost->max_cmd_len = MAX_COMMAND_SIZE; /*defined in scsi_cmnd.h*/
+	shost->max_cmd_len = MAX_COMMAND_SIZE;  
 
 	snic_get_res_counts(snic);
 
-	/*
-	 * Assumption: Only MSIx is supported
-	 */
+	 
 	ret = snic_set_intr_mode(snic);
 	if (ret) {
 		SNIC_HOST_ERR(shost,
@@ -527,17 +488,14 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_clear_intr;
 	}
 
-	/* Initialize specific lists */
+	 
 	INIT_LIST_HEAD(&snic->list);
 
-	/*
-	 * spl_cmd_list for maintaining snic specific cmds
-	 * such as EXCH_VER_REQ, REPORT_TARGETS etc
-	 */
+	 
 	INIT_LIST_HEAD(&snic->spl_cmd_list);
 	spin_lock_init(&snic->spl_cmd_lock);
 
-	/* initialize all snic locks */
+	 
 	spin_lock_init(&snic->snic_lock);
 
 	for (i = 0; i < SNIC_WQ_MAX; i++)
@@ -579,12 +537,12 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	snic->req_pool[SNIC_REQ_TM_CACHE] = pool;
 
-	/* Initialize snic state */
+	 
 	atomic_set(&snic->state, SNIC_INIT);
 
 	atomic_set(&snic->ios_inflight, 0);
 
-	/* Setup notification buffer area */
+	 
 	ret = snic_notify_set(snic);
 	if (ret) {
 		SNIC_HOST_ERR(shost,
@@ -603,7 +561,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	INIT_WORK(&snic->disc_work, snic_handle_disc);
 	INIT_WORK(&snic->link_work, snic_handle_link);
 
-	/* Enable all queues */
+	 
 	for (i = 0; i < snic->wq_count; i++)
 		svnic_wq_enable(&snic->wq[i]);
 
@@ -626,7 +584,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	for (i = 0; i < snic->intr_count; i++)
 		svnic_intr_unmask(&snic->intr[i]);
 
-	/* Get snic params */
+	 
 	ret = snic_get_conf(snic);
 	if (ret) {
 		SNIC_HOST_ERR(shost,
@@ -636,10 +594,7 @@ snic_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 		goto err_get_conf;
 	}
 
-	/*
-	 * Initialization done with PCI system, hardware, firmware.
-	 * Add shost to SCSI
-	 */
+	 
 	ret = snic_add_host(shost, pdev);
 	if (ret) {
 		SNIC_HOST_ERR(shost,
@@ -733,13 +688,10 @@ prob_end:
 		  PCI_FUNC(pdev->devfn));
 
 	return ret;
-} /* end of snic_probe */
+}  
 
 
-/*
- * snic_remove : invoked on unbinding the interface to cleanup the
- * resources allocated in snic_probe on initialization.
- */
+ 
 static void
 snic_remove(struct pci_dev *pdev)
 {
@@ -754,12 +706,7 @@ snic_remove(struct pci_dev *pdev)
 		return;
 	}
 
-	/*
-	 * Mark state so that the workqueue thread stops forwarding
-	 * received frames and link events. ISR and other threads
-	 * that can queue work items will also stop creating work
-	 * items on the snic workqueue
-	 */
+	 
 	snic_set_state(snic, SNIC_OFFLINE);
 	spin_lock_irqsave(&snic->snic_lock, flags);
 	snic->stop_link_events = 1;
@@ -772,11 +719,7 @@ snic_remove(struct pci_dev *pdev)
 	snic->in_remove = 1;
 	spin_unlock_irqrestore(&snic->snic_lock, flags);
 
-	/*
-	 * This stops the snic device, masks all interrupts, Completed
-	 * CQ entries are drained. Posted WQ/RQ/Copy-WQ entries are
-	 * cleanup
-	 */
+	 
 	snic_cleanup(snic);
 
 	spin_lock_irqsave(&snic_glob->snic_list_lock, flags);
@@ -800,18 +743,14 @@ snic_remove(struct pci_dev *pdev)
 	pci_disable_device(pdev);
 	pci_set_drvdata(pdev, NULL);
 
-	/* this frees Scsi_Host and snic memory (continuous chunk) */
+	 
 	scsi_host_put(snic->shost);
-} /* end of snic_remove */
+}  
 
 
 struct snic_global *snic_glob;
 
-/*
- * snic_global_data_init: Initialize SNIC Global Data
- * Notes: All the global lists, variables should be part of global data
- * this helps in debugging.
- */
+ 
 static int
 snic_global_data_init(void)
 {
@@ -829,24 +768,24 @@ snic_global_data_init(void)
 	}
 
 #ifdef CONFIG_SCSI_SNIC_DEBUG_FS
-	/* Debugfs related Initialization */
-	/* Create debugfs entries for snic */
+	 
+	 
 	snic_debugfs_init();
 
-	/* Trace related Initialization */
-	/* Allocate memory for trace buffer */
+	 
+	 
 	ret = snic_trc_init();
 	if (ret < 0) {
 		SNIC_ERR("Trace buffer init failed, SNIC tracing disabled\n");
 		snic_trc_free();
-		/* continue even if it fails */
+		 
 	}
 
 #endif
 	INIT_LIST_HEAD(&snic_glob->snic_list);
 	spin_lock_init(&snic_glob->snic_list_lock);
 
-	/* Create a cache for allocation of snic_host_req+default size ESGLs */
+	 
 	len = sizeof(struct snic_req_info);
 	len += sizeof(struct snic_host_req) + sizeof(struct snic_dflt_sgl);
 	cachep = kmem_cache_create("snic_req_dfltsgl", len, SNIC_SG_DESC_ALIGN,
@@ -859,7 +798,7 @@ snic_global_data_init(void)
 	}
 	snic_glob->req_cache[SNIC_REQ_CACHE_DFLT_SGL] = cachep;
 
-	/* Create a cache for allocation of max size Extended SGLs */
+	 
 	len = sizeof(struct snic_req_info);
 	len += sizeof(struct snic_host_req) + sizeof(struct snic_max_sgl);
 	cachep = kmem_cache_create("snic_req_maxsgl", len, SNIC_SG_DESC_ALIGN,
@@ -883,7 +822,7 @@ snic_global_data_init(void)
 	}
 	snic_glob->req_cache[SNIC_REQ_TM_CACHE] = cachep;
 
-	/* snic_event queue */
+	 
 	snic_glob->event_q = create_singlethread_workqueue("snic_event_wq");
 	if (!snic_glob->event_q) {
 		SNIC_ERR("snic event queue create failed\n");
@@ -913,11 +852,9 @@ err_dflt_req_slab:
 
 gdi_end:
 	return ret;
-} /* end of snic_glob_init */
+}  
 
-/*
- * snic_global_data_cleanup : Frees SNIC Global Data
- */
+ 
 static void
 snic_global_data_cleanup(void)
 {
@@ -929,15 +866,15 @@ snic_global_data_cleanup(void)
 	kmem_cache_destroy(snic_glob->req_cache[SNIC_REQ_CACHE_DFLT_SGL]);
 
 #ifdef CONFIG_SCSI_SNIC_DEBUG_FS
-	/* Freeing Trace Resources */
+	 
 	snic_trc_free();
 
-	/* Freeing Debugfs Resources */
+	 
 	snic_debugfs_term();
 #endif
 	kfree(snic_glob);
 	snic_glob = NULL;
-} /* end of snic_glob_cleanup */
+}  
 
 static struct pci_driver snic_driver = {
 	.name = SNIC_DRV_NAME,

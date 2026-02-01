@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) Jonathan Naylor G4KLX (g4klx@g4klx.demon.co.uk)
- * Copyright (C) 2002 Ralf Baechle DO1GRB (ralf@gnu.org)
- */
+
+ 
 #include <linux/errno.h>
 #include <linux/types.h>
 #include <linux/socket.h>
@@ -124,8 +120,7 @@ static void rose_heartbeat_expiry(struct timer_list *t)
 	bh_lock_sock(sk);
 	switch (rose->state) {
 	case ROSE_STATE_0:
-		/* Magic here: If we listen() and a new link dies before it
-		   is accepted() it isn't 'dead' so doesn't get removed. */
+		 
 		if (sock_flag(sk, SOCK_DESTROY) ||
 		    (sk->sk_state == TCP_LISTEN && sock_flag(sk, SOCK_DEAD))) {
 			bh_unlock_sock(sk);
@@ -136,16 +131,14 @@ static void rose_heartbeat_expiry(struct timer_list *t)
 		break;
 
 	case ROSE_STATE_3:
-		/*
-		 * Check for the state of the receive buffer.
-		 */
+		 
 		if (atomic_read(&sk->sk_rmem_alloc) < (sk->sk_rcvbuf / 2) &&
 		    (rose->condition & ROSE_COND_OWN_RX_BUSY)) {
 			rose->condition &= ~ROSE_COND_OWN_RX_BUSY;
 			rose->condition &= ~ROSE_COND_ACK_PENDING;
 			rose->vl         = rose->vr;
 			rose_write_internal(sk, ROSE_RR);
-			rose_stop_timer(sk);	/* HB */
+			rose_stop_timer(sk);	 
 			break;
 		}
 		break;
@@ -163,19 +156,19 @@ static void rose_timer_expiry(struct timer_list *t)
 
 	bh_lock_sock(sk);
 	switch (rose->state) {
-	case ROSE_STATE_1:	/* T1 */
-	case ROSE_STATE_4:	/* T2 */
+	case ROSE_STATE_1:	 
+	case ROSE_STATE_4:	 
 		rose_write_internal(sk, ROSE_CLEAR_REQUEST);
 		rose->state = ROSE_STATE_2;
 		rose_start_t3timer(sk);
 		break;
 
-	case ROSE_STATE_2:	/* T3 */
+	case ROSE_STATE_2:	 
 		rose->neighbour->use--;
 		rose_disconnect(sk, ETIMEDOUT, -1, -1);
 		break;
 
-	case ROSE_STATE_3:	/* HB */
+	case ROSE_STATE_3:	 
 		if (rose->condition & ROSE_COND_ACK_PENDING) {
 			rose->condition &= ~ROSE_COND_ACK_PENDING;
 			rose_enquiry_response(sk);

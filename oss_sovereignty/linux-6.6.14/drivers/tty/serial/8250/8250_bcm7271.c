@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2020, Broadcom */
-/*
- * 8250-core based driver for Broadcom ns16550a UARTs
- *
- * This driver uses the standard 8250 driver core but adds additional
- * optional features including the ability to use a baud rate clock
- * mux for more accurate high speed baud rate selection and also
- * an optional DMA engine.
- *
- */
+
+ 
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -25,7 +17,7 @@
 
 #include "8250.h"
 
-/* Register definitions for UART DMA block. Version 1.1 or later. */
+ 
 #define UDMA_ARB_RX		0x00
 #define UDMA_ARB_TX		0x04
 #define		UDMA_ARB_REQ				0x00000001
@@ -152,7 +144,7 @@
 #define UDMA_IS_TX_INTERRUPT(status) ((status) & UDMA_TX_INTERRUPTS)
 
 
-/* Current devices have 8 sets of RX buffer registers */
+ 
 #define UDMA_RX_BUFS_COUNT	8
 #define UDMA_RX_BUFS_REG_OFFSET (UDMA_RX_BUF1_PTR_LO - UDMA_RX_BUF0_PTR_LO)
 #define UDMA_RX_BUFx_PTR_LO(x)	(UDMA_RX_BUF0_PTR_LO + \
@@ -164,7 +156,7 @@
 #define UDMA_RX_BUFx_DATA_LEN(x) (UDMA_RX_BUF0_DATA_LEN + \
 				  ((x) * UDMA_RX_BUFS_REG_OFFSET))
 
-/* Current devices have 2 sets of TX buffer registers */
+ 
 #define UDMA_TX_BUFS_COUNT	2
 #define UDMA_TX_BUFS_REG_OFFSET (UDMA_TX_BUF1_PTR_LO - UDMA_TX_BUF0_PTR_LO)
 #define UDMA_TX_BUFx_PTR_LO(x)	(UDMA_TX_BUF0_PTR_LO + \
@@ -193,7 +185,7 @@
 static const u32 brcmstb_rate_table[] = {
 	MHZ(81),
 	MHZ(108),
-	MHZ(64),		/* Actually 64285715 for some chips */
+	MHZ(64),		 
 	MHZ(48),
 };
 
@@ -228,7 +220,7 @@ struct brcmuart_priv {
 	bool		rx_running;
 	struct dentry	*debugfs_dir;
 
-	/* stats exposed through debugfs */
+	 
 	u64		dma_rx_partial_buf;
 	u64		dma_rx_full_buf;
 	u32		rx_bad_timeout_late_char;
@@ -242,9 +234,7 @@ struct brcmuart_priv {
 
 static struct dentry *brcmuart_debugfs_root;
 
-/*
- * Register access routines
- */
+ 
 static u32 udma_readl(struct brcmuart_priv *priv,
 		int reg_type, int offset)
 {
@@ -279,12 +269,7 @@ static void udma_unset(struct brcmuart_priv *priv,
 	writel(value, reg);
 }
 
-/*
- * The UART DMA engine hardware can be used by multiple UARTS, but
- * only one at a time. Sharing is not currently supported so
- * the first UART to request the DMA engine will get it and any
- * subsequent requests by other UARTS will fail.
- */
+ 
 static int brcmuart_arbitration(struct brcmuart_priv *priv, bool acquire)
 {
 	u32 rx_grant;
@@ -320,15 +305,12 @@ static void brcmuart_init_dma_hardware(struct brcmuart_priv *priv)
 	u32 value;
 	int x;
 
-	/* Start with all interrupts disabled */
+	 
 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_MASK_SET, 0xffffffff);
 
 	udma_writel(priv, REGS_DMA_RX, UDMA_RX_BUFFER_SIZE, RX_BUF_SIZE);
 
-	/*
-	 * Setup buffer close to happen when 32 character times have
-	 * elapsed since the last character was received.
-	 */
+	 
 	udma_writel(priv, REGS_DMA_RX, UDMA_RX_BUFFER_CLOSE, 16*10*32);
 	value = (RX_BUFS_COUNT << UDMA_RX_CTRL_NUM_BUF_USED_SHIFT)
 		| UDMA_RX_CTRL_BUF_CLOSE_MODE
@@ -339,7 +321,7 @@ static void brcmuart_init_dma_hardware(struct brcmuart_priv *priv)
 	daddr = priv->rx_addr;
 	for (x = 0; x < RX_BUFS_COUNT; x++) {
 
-		/* Set RX transfer length to 0 for unknown */
+		 
 		udma_writel(priv, REGS_DMA_RX, UDMA_RX_TRANSFER_LEN, 0);
 
 		udma_writel(priv, REGS_DMA_RX, UDMA_RX_BUFx_PTR_LO(x),
@@ -357,7 +339,7 @@ static void brcmuart_init_dma_hardware(struct brcmuart_priv *priv)
 	udma_writel(priv, REGS_DMA_TX, UDMA_TX_CTRL,
 		    UDMA_TX_CTRL_NUM_BUF_USED_1);
 
-	/* clear all interrupts then enable them */
+	 
 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_CLEAR, 0xffffffff);
 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_MASK_CLEAR,
 		UDMA_RX_INTERRUPTS | UDMA_TX_INTERRUPTS);
@@ -371,12 +353,12 @@ static void start_rx_dma(struct uart_8250_port *p)
 
 	udma_unset(priv, REGS_DMA_RX, UDMA_RX_CTRL, UDMA_RX_CTRL_ENA);
 
-	/* Clear the RX ready bit for all buffers */
+	 
 	for (x = 0; x < RX_BUFS_COUNT; x++)
 		udma_unset(priv, REGS_DMA_RX, UDMA_RX_BUFx_STATUS(x),
 			UDMA_RX_BUFX_STATUS_DATA_RDY);
 
-	/* always start with buffer 0 */
+	 
 	udma_unset(priv, REGS_DMA_RX, UDMA_RX_STATUS,
 		   UDMA_RX_STATUS_ACTIVE_BUF_MASK);
 	priv->rx_next_buf = 0;
@@ -389,7 +371,7 @@ static void stop_rx_dma(struct uart_8250_port *p)
 {
 	struct brcmuart_priv *priv = p->port.private_data;
 
-	/* If RX is running, set the RX ABORT */
+	 
 	if (priv->rx_running)
 		udma_set(priv, REGS_DMA_RX, UDMA_RX_CTRL, UDMA_RX_CTRL_ABORT);
 }
@@ -399,7 +381,7 @@ static int stop_tx_dma(struct uart_8250_port *p)
 	struct brcmuart_priv *priv = p->port.private_data;
 	u32 value;
 
-	/* If TX is running, set the TX ABORT */
+	 
 	value = udma_readl(priv, REGS_DMA_TX, UDMA_TX_CTRL);
 	if (value & UDMA_TX_CTRL_ENA)
 		udma_set(priv, REGS_DMA_TX, UDMA_TX_CTRL, UDMA_TX_CTRL_ABORT);
@@ -407,10 +389,7 @@ static int stop_tx_dma(struct uart_8250_port *p)
 	return 0;
 }
 
-/*
- * NOTE: printk's in this routine will hang the system if this is
- * the console tty
- */
+ 
 static int brcmuart_tx_dma(struct uart_8250_port *p)
 {
 	struct brcmuart_priv *priv = p->port.private_data;
@@ -447,7 +426,7 @@ static void brcmuart_rx_buf_done_isr(struct uart_port *up, int index)
 	u32 length;
 	u32 copied;
 
-	/* Make sure we're still in sync with the hardware */
+	 
 	status = udma_readl(priv, REGS_DMA_RX, UDMA_RX_BUFx_STATUS(index));
 	length = udma_readl(priv, REGS_DMA_RX, UDMA_RX_BUFx_DATA_LEN(index));
 
@@ -484,10 +463,7 @@ static void brcmuart_rx_buf_done_isr(struct uart_port *up, int index)
 	if (status & UDMA_RX_BUFX_STATUS_CLOSE_EXPIRED)
 		priv->dma_rx_partial_buf++;
 	else if (length != RX_BUF_SIZE)
-		/*
-		 * This is a bug in the controller that doesn't cause
-		 * any problems but will be fixed in the future.
-		 */
+		 
 		priv->rx_missing_close_timeout++;
 	else
 		priv->dma_rx_full_buf++;
@@ -524,7 +500,7 @@ static void brcmuart_rx_isr(struct uart_port *up, u32 rx_isr)
 				priv->rx_abort++;
 			priv->rx_running = false;
 		}
-		/* If not ABORT, re-enable RX buffer */
+		 
 		if (!(rx_isr & UDMA_INTR_RX_ABORT))
 			udma_unset(priv, REGS_DMA_RX,
 				   UDMA_RX_BUFx_STATUS(priv->rx_next_buf),
@@ -569,7 +545,7 @@ static irqreturn_t brcmuart_isr(int irq, void *dev_id)
 
 	spin_lock_irqsave(&up->lock, flags);
 
-	/* Clear all interrupts */
+	 
 	udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_CLEAR, interrupts);
 
 	rval = UDMA_IS_RX_INTERRUPT(interrupts);
@@ -593,21 +569,13 @@ static int brcmuart_startup(struct uart_port *port)
 
 	priv->shutdown = false;
 
-	/*
-	 * prevent serial8250_do_startup() from allocating non-existent
-	 * DMA resources
-	 */
+	 
 	up->dma = NULL;
 
 	res = serial8250_do_startup(port);
 	if (!priv->dma_enabled)
 		return res;
-	/*
-	 * Disable the Receive Data Interrupt because the DMA engine
-	 * will handle this.
-	 *
-	 * Synchronize UART_IER access against the console.
-	 */
+	 
 	spin_lock_irq(&port->lock);
 	up->ier &= ~UART_IER_RDI;
 	serial_port_out(port, UART_IER, up->ier);
@@ -634,25 +602,19 @@ static void brcmuart_shutdown(struct uart_port *port)
 	if (priv->dma_enabled) {
 		stop_rx_dma(up);
 		stop_tx_dma(up);
-		/* disable all interrupts */
+		 
 		udma_writel(priv, REGS_DMA_ISR, UDMA_INTR_MASK_SET,
 			UDMA_RX_INTERRUPTS | UDMA_TX_INTERRUPTS);
 	}
 
-	/*
-	 * prevent serial8250_do_shutdown() from trying to free
-	 * DMA resources that we never alloc'd for this driver.
-	 */
+	 
 	up->dma = NULL;
 
 	spin_unlock_irqrestore(&port->lock, flags);
 	serial8250_do_shutdown(port);
 }
 
-/*
- * Not all clocks run at the exact specified rate, so set each requested
- * rate and then get the actual rate.
- */
+ 
 static void init_real_clk_rates(struct device *dev, struct brcmuart_priv *priv)
 {
 	int x;
@@ -692,11 +654,11 @@ static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
 	int i;
 	int real_baud;
 
-	/* If the Baud Mux Clock was not specified, just return */
+	 
 	if (priv->baud_mux_clk == NULL)
 		return;
 
-	/* Find the closest match for specified baud */
+	 
 	for (i = 0; i < ARRAY_SIZE(priv->real_rates); i++) {
 		if (priv->real_rates[i] == 0)
 			continue;
@@ -705,13 +667,13 @@ static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
 		if (!quot)
 			continue;
 
-		/* increase resolution to get xx.xx percent */
+		 
 		hires_rate = (u64)rate * 10000;
 		hires_baud = (u64)baud * 10000;
 
 		hires_err = div_u64(hires_rate, (u64)quot);
 
-		/* get the delta */
+		 
 		if (hires_err > hires_baud)
 			hires_err = (hires_err - hires_baud);
 		else
@@ -737,7 +699,7 @@ static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
 	if (rc)
 		dev_err(up->dev, "Error selecting BAUD MUX clock\n");
 
-	/* Error over 3 percent will cause data errors */
+	 
 	if (best_percent > 300)
 		dev_err(up->dev, "Error, baud: %d has %u.%u%% error\n",
 			baud, percent / 100, percent % 100);
@@ -747,7 +709,7 @@ static void set_clock_mux(struct uart_port *up, struct brcmuart_priv *priv,
 	dev_dbg(up->dev, "Requested baud: %u, Actual baud: %u\n",
 		baud, real_baud);
 
-	/* calc nanoseconds for 1.5 characters time at the given baud rate */
+	 
 	i = NSEC_PER_SEC / real_baud / 10;
 	i += (i / 2);
 	priv->char_wait = ns_to_ktime(i);
@@ -783,22 +745,14 @@ static int brcmuart_handle_irq(struct uart_port *p)
 	unsigned int mcr;
 	int handled = 0;
 
-	/*
-	 * There's a bug in some 8250 cores where we get a timeout
-	 * interrupt but there is no data ready.
-	 */
+	 
 	if (((iir & UART_IIR_ID) == UART_IIR_RX_TIMEOUT) && !(priv->shutdown)) {
 		spin_lock_irqsave(&p->lock, flags);
 		status = serial_port_in(p, UART_LSR);
 		if ((status & UART_LSR_DR) == 0) {
 
 			ier = serial_port_in(p, UART_IER);
-			/*
-			 * if Receive Data Interrupt is enabled and
-			 * we're uing hardware flow control, deassert
-			 * RTS and wait for any chars in the pipline to
-			 * arrive and then check for DR again.
-			 */
+			 
 			if ((ier & UART_IER_RDI) && (up->mcr & UART_MCR_AFE)) {
 				ier &= ~(UART_IER_RLSI | UART_IER_RDI);
 				serial_port_out(p, UART_IER, ier);
@@ -834,10 +788,7 @@ static enum hrtimer_restart brcmuart_hrtimer_func(struct hrtimer *t)
 	spin_lock_irqsave(&p->lock, flags);
 	status = serial_port_in(p, UART_LSR);
 
-	/*
-	 * If a character did not arrive after the timeout, clear the false
-	 * receive timeout.
-	 */
+	 
 	if ((status & UART_LSR_DR) == 0) {
 		serial_port_in(p, UART_RX);
 		priv->rx_bad_timeout_no_char++;
@@ -845,7 +796,7 @@ static enum hrtimer_restart brcmuart_hrtimer_func(struct hrtimer *t)
 		priv->rx_bad_timeout_late_char++;
 	}
 
-	/* re-enable receive unless upper layer has disabled it */
+	 
 	if ((up->ier & (UART_IER_RLSI | UART_IER_RDI)) ==
 	    (UART_IER_RLSI | UART_IER_RDI)) {
 		status = serial_port_in(p, UART_IER);
@@ -983,13 +934,13 @@ static int brcmuart_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* We should have just the uart base registers or all the registers */
+	 
 	if (x != 1 && x != REGS_MAX) {
 		dev_warn(dev, "%s registers not specified\n", reg_names[x]);
 		return -EINVAL;
 	}
 
-	/* if the DMA registers were specified, try to enable DMA */
+	 
 	if (x > REGS_DMA_RX) {
 		if (brcmuart_arbitration(priv, 1) == 0) {
 			u32 txrev = 0;
@@ -1000,7 +951,7 @@ static int brcmuart_probe(struct platform_device *pdev)
 			if ((txrev >= UDMA_TX_REVISION_REQUIRED) &&
 				(rxrev >= UDMA_RX_REVISION_REQUIRED)) {
 
-				/* Enable the use of the DMA hardware */
+				 
 				priv->dma_enabled = true;
 			} else {
 				brcmuart_arbitration(priv, 0);
@@ -1015,7 +966,7 @@ static int brcmuart_probe(struct platform_device *pdev)
 
 	of_property_read_u32(np, "clock-frequency", &clk_rate);
 
-	/* See if a Baud clock has been specified */
+	 
 	baud_mux_clk = devm_clk_get(dev, "sw_baud");
 	if (IS_ERR(baud_mux_clk)) {
 		if (PTR_ERR(baud_mux_clk) == -EPROBE_DEFER) {
@@ -1057,12 +1008,12 @@ static int brcmuart_probe(struct platform_device *pdev)
 	up.port.dev = dev;
 	up.port.private_data = priv;
 
-	/* Check for a fixed line number */
+	 
 	ret = of_alias_get_id(np, "serial");
 	if (ret >= 0)
 		up.port.line = ret;
 
-	/* setup HR timer */
+	 
 	hrtimer_init(&priv->hrt, CLOCK_MONOTONIC, HRTIMER_MODE_ABS);
 	priv->hrt.function = brcmuart_hrtimer_func;
 
@@ -1150,10 +1101,7 @@ static int __maybe_unused brcmuart_suspend(struct device *dev)
 	struct uart_port *port = &up->port;
 	unsigned long flags;
 
-	/*
-	 * This will prevent resume from enabling RTS before the
-	 *  baud rate has been restored.
-	 */
+	 
 	spin_lock_irqsave(&port->lock, flags);
 	priv->saved_mctrl = port->mctrl;
 	port->mctrl &= ~TIOCM_RTS;
@@ -1177,10 +1125,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
 	if (ret)
 		dev_err(dev, "Error enabling BAUD MUX clock\n");
 
-	/*
-	 * The hardware goes back to it's default after suspend
-	 * so get the "clk" back in sync.
-	 */
+	 
 	ret = clk_set_rate(priv->baud_mux_clk, priv->default_mux_rate);
 	if (ret)
 		dev_err(dev, "Error restoring default BAUD MUX clock\n");
@@ -1195,7 +1140,7 @@ static int __maybe_unused brcmuart_resume(struct device *dev)
 	serial8250_resume_port(priv->line);
 
 	if (priv->saved_mctrl & TIOCM_RTS) {
-		/* Restore RTS */
+		 
 		spin_lock_irqsave(&port->lock, flags);
 		port->mctrl |= TIOCM_RTS;
 		port->ops->set_mctrl(port, port->mctrl);

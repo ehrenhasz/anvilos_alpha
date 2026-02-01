@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 #include <linux/dma-mapping.h>
 #include "hal_tx.h"
 #include "debug.h"
@@ -10,8 +7,8 @@
 #include "hif.h"
 
 static const struct hal_srng_config hw_srng_config_template[] = {
-	/* TODO: max_rings can populated by querying HW capabilities */
-	{ /* REO_DST */
+	 
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_REO2SW1,
 		.max_rings = 4,
 		.entry_size = sizeof(struct hal_reo_dest_ring) >> 2,
@@ -19,11 +16,8 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_DST,
 		.max_size = HAL_REO_REO2SW1_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* REO_EXCEPTION */
-		/* Designating REO2TCL ring as exception ring. This ring is
-		 * similar to other REO2SW rings though it is named as REO2TCL.
-		 * Any of theREO2SW rings can be used as exception ring.
-		 */
+	{  
+		 
 		.start_ring_id = HAL_SRNG_RING_ID_REO2TCL,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_reo_dest_ring) >> 2,
@@ -31,7 +25,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_DST,
 		.max_size = HAL_REO_REO2TCL_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* REO_REINJECT */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_SW2REO,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_reo_entrance_ring) >> 2,
@@ -39,7 +33,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_REO_SW2REO_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* REO_CMD */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_REO_CMD,
 		.max_rings = 1,
 		.entry_size = (sizeof(struct hal_tlv_hdr) +
@@ -48,7 +42,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_REO_CMD_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* REO_STATUS */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_REO_STATUS,
 		.max_rings = 1,
 		.entry_size = (sizeof(struct hal_tlv_hdr) +
@@ -57,7 +51,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_DST,
 		.max_size = HAL_REO_STATUS_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* TCL_DATA */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_SW2TCL1,
 		.max_rings = 3,
 		.entry_size = (sizeof(struct hal_tlv_hdr) +
@@ -66,7 +60,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_SW2TCL1_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* TCL_CMD */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_SW2TCL_CMD,
 		.max_rings = 1,
 		.entry_size = (sizeof(struct hal_tlv_hdr) +
@@ -75,7 +69,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_SW2TCL1_CMD_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* TCL_STATUS */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_TCL_STATUS,
 		.max_rings = 1,
 		.entry_size = (sizeof(struct hal_tlv_hdr) +
@@ -84,7 +78,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_DST,
 		.max_size = HAL_TCL_STATUS_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* CE_SRC */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_CE0_SRC,
 		.max_rings = 12,
 		.entry_size = sizeof(struct hal_ce_srng_src_desc) >> 2,
@@ -92,7 +86,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_CE_SRC_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* CE_DST */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_CE0_DST,
 		.max_rings = 12,
 		.entry_size = sizeof(struct hal_ce_srng_dest_desc) >> 2,
@@ -100,7 +94,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_CE_DST_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* CE_DST_STATUS */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_CE0_DST_STATUS,
 		.max_rings = 12,
 		.entry_size = sizeof(struct hal_ce_srng_dst_status_desc) >> 2,
@@ -108,7 +102,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_DST,
 		.max_size = HAL_CE_DST_STATUS_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* WBM_IDLE_LINK */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WBM_IDLE_LINK,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_wbm_link_desc) >> 2,
@@ -116,7 +110,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_WBM_IDLE_LINK_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* SW2WBM_RELEASE */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WBM_SW_RELEASE,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_wbm_release_ring) >> 2,
@@ -124,7 +118,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_SW2WBM_RELEASE_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* WBM2SW_RELEASE */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WBM2SW0_RELEASE,
 		.max_rings = 5,
 		.entry_size = sizeof(struct hal_wbm_release_ring) >> 2,
@@ -132,7 +126,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_DST,
 		.max_size = HAL_WBM2SW_RELEASE_RING_BASE_MSB_RING_SIZE,
 	},
-	{ /* RXDMA_BUF */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WMAC1_SW2RXDMA0_BUF,
 		.max_rings = 2,
 		.entry_size = sizeof(struct hal_wbm_buffer_ring) >> 2,
@@ -140,7 +134,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_RXDMA_RING_MAX_SIZE,
 	},
-	{ /* RXDMA_DST */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WMAC1_RXDMA2SW0,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_reo_entrance_ring) >> 2,
@@ -148,7 +142,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_DST,
 		.max_size = HAL_RXDMA_RING_MAX_SIZE,
 	},
-	{ /* RXDMA_MONITOR_BUF */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WMAC1_SW2RXDMA2_BUF,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_wbm_buffer_ring) >> 2,
@@ -156,7 +150,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_RXDMA_RING_MAX_SIZE,
 	},
-	{ /* RXDMA_MONITOR_STATUS */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WMAC1_SW2RXDMA1_STATBUF,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_wbm_buffer_ring) >> 2,
@@ -164,7 +158,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_RXDMA_RING_MAX_SIZE,
 	},
-	{ /* RXDMA_MONITOR_DST */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WMAC1_RXDMA2SW1,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_reo_entrance_ring) >> 2,
@@ -172,7 +166,7 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_DST,
 		.max_size = HAL_RXDMA_RING_MAX_SIZE,
 	},
-	{ /* RXDMA_MONITOR_DESC */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_WMAC1_SW2RXDMA1_DESC,
 		.max_rings = 1,
 		.entry_size = sizeof(struct hal_wbm_buffer_ring) >> 2,
@@ -180,10 +174,10 @@ static const struct hal_srng_config hw_srng_config_template[] = {
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_RXDMA_RING_MAX_SIZE,
 	},
-	{ /* RXDMA DIR BUF */
+	{  
 		.start_ring_id = HAL_SRNG_RING_ID_RXDMA_DIR_BUF,
 		.max_rings = 1,
-		.entry_size = 8 >> 2, /* TODO: Define the struct */
+		.entry_size = 8 >> 2,  
 		.lmac_ring = true,
 		.ring_dir = HAL_SRNG_DIR_SRC,
 		.max_size = HAL_RXDMA_RING_MAX_SIZE,
@@ -304,7 +298,7 @@ static void ath11k_hal_srng_dst_hw_init(struct ath11k_base *ab,
 	      FIELD_PREP(HAL_REO1_RING_ID_ENTRY_SIZE, srng->entry_size);
 	ath11k_hif_write32(ab, reg_base + HAL_REO1_RING_ID_OFFSET(ab), val);
 
-	/* interrupt setup */
+	 
 	val = FIELD_PREP(HAL_REO1_RING_PRDR_INT_SETUP_INTR_TMR_THOLD,
 			 (srng->intr_timer_thres_us >> 3));
 
@@ -324,7 +318,7 @@ static void ath11k_hal_srng_dst_hw_init(struct ath11k_base *ab,
 	ath11k_hif_write32(ab, reg_base + HAL_REO1_RING_HP_ADDR_MSB_OFFSET(ab),
 			   hp_addr >> HAL_ADDR_MSB_REG_SHIFT);
 
-	/* Initialize head and tail pointers to indicate ring is empty */
+	 
 	reg_base = srng->hwreg_base[HAL_SRNG_REG_GRP_R2];
 	ath11k_hif_write32(ab, reg_base, 0);
 	ath11k_hif_write32(ab, reg_base + HAL_REO1_RING_TP_OFFSET(ab), 0);
@@ -393,10 +387,8 @@ static void ath11k_hal_srng_src_hw_init(struct ath11k_base *ab,
 		ath11k_hif_write32(ab, reg_base + HAL_TCL1_RING_BASE_MSB_OFFSET(ab), val);
 	}
 
-	/* interrupt setup */
-	/* NOTE: IPQ8074 v2 requires the interrupt timer threshold in the
-	 * unit of 8 usecs instead of 1 usec (as required by v1).
-	 */
+	 
+	 
 	val = FIELD_PREP(HAL_TCL1_RING_CONSR_INT_SETUP_IX0_INTR_TMR_THOLD,
 			 srng->intr_timer_thres_us);
 
@@ -429,7 +421,7 @@ static void ath11k_hal_srng_src_hw_init(struct ath11k_base *ab,
 				   tp_addr >> HAL_ADDR_MSB_REG_SHIFT);
 	}
 
-	/* Initialize head and tail pointers to indicate ring is empty */
+	 
 	reg_base = srng->hwreg_base[HAL_SRNG_REG_GRP_R2];
 	ath11k_hif_write32(ab, reg_base, 0);
 	ath11k_hif_write32(ab, reg_base + HAL_TCL1_RING_TP_OFFSET, 0);
@@ -444,7 +436,7 @@ static void ath11k_hal_srng_src_hw_init(struct ath11k_base *ab,
 	if (srng->flags & HAL_SRNG_FLAGS_MSI_SWAP)
 		val |= HAL_TCL1_RING_MISC_MSI_SWAP;
 
-	/* Loop count is not used for SRC rings */
+	 
 	val |= HAL_TCL1_RING_MISC_MSI_LOOPCNT_DISABLE;
 
 	val |= HAL_TCL1_RING_MISC_SRNG_ENABLE;
@@ -633,7 +625,7 @@ static void ath11k_hal_srng_prefetch_desc(struct ath11k_base *ab,
 {
 	u32 *desc;
 
-	/* prefetch only if desc is available */
+	 
 	desc = ath11k_hal_srng_dst_peek(ab, srng);
 	if (likely(desc)) {
 		dma_sync_single_for_cpu(ab->dev, virt_to_phys(desc),
@@ -657,11 +649,11 @@ u32 *ath11k_hal_srng_dst_get_next_entry(struct ath11k_base *ab,
 
 	srng->u.dst_ring.tp += srng->entry_size;
 
-	/* wrap around to start of ring*/
+	 
 	if (srng->u.dst_ring.tp == srng->ring_size)
 		srng->u.dst_ring.tp = 0;
 
-	/* Try to prefetch the next descriptor in the ring */
+	 
 	if (srng->flags & HAL_SRNG_FLAGS_CACHED)
 		ath11k_hal_srng_prefetch_desc(ab, srng);
 
@@ -690,7 +682,7 @@ int ath11k_hal_srng_dst_num_free(struct ath11k_base *ab, struct hal_srng *srng,
 		return (srng->ring_size - tp + hp) / srng->entry_size;
 }
 
-/* Returns number of available entries in src ring */
+ 
 int ath11k_hal_srng_src_num_free(struct ath11k_base *ab, struct hal_srng *srng,
 				 bool sync_hw_ptr)
 {
@@ -721,12 +713,7 @@ u32 *ath11k_hal_srng_src_get_next_entry(struct ath11k_base *ab,
 
 	lockdep_assert_held(&srng->lock);
 
-	/* TODO: Using % is expensive, but we have to do this since size of some
-	 * SRNG rings is not power of 2 (due to descriptor sizes). Need to see
-	 * if separate function is defined for rings having power of 2 ring size
-	 * (TCL2SW, REO2SW, SW2RXDMA and CE rings) so that we can avoid the
-	 * overhead of % by using mask (with &).
-	 */
+	 
 	next_hp = (srng->u.src_ring.hp + srng->entry_size) % srng->ring_size;
 
 	if (next_hp == srng->u.src_ring.cached_tp)
@@ -735,12 +722,7 @@ u32 *ath11k_hal_srng_src_get_next_entry(struct ath11k_base *ab,
 	desc = srng->ring_base_vaddr + srng->u.src_ring.hp;
 	srng->u.src_ring.hp = next_hp;
 
-	/* TODO: Reap functionality is not used by all rings. If particular
-	 * ring does not use reap functionality, we need not update reap_hp
-	 * with next_hp pointer. Need to make sure a separate function is used
-	 * before doing any optimization by removing below code updating
-	 * reap_hp.
-	 */
+	 
 	srng->u.src_ring.reap_hp = next_hp;
 
 	return desc;
@@ -804,24 +786,20 @@ void ath11k_hal_srng_access_begin(struct ath11k_base *ab, struct hal_srng *srng)
 	} else {
 		srng->u.dst_ring.cached_hp = *srng->u.dst_ring.hp_addr;
 
-		/* Try to prefetch the next descriptor in the ring */
+		 
 		if (srng->flags & HAL_SRNG_FLAGS_CACHED)
 			ath11k_hal_srng_prefetch_desc(ab, srng);
 	}
 }
 
-/* Update cached ring head/tail pointers to HW. ath11k_hal_srng_access_begin()
- * should have been called before this.
- */
+ 
 void ath11k_hal_srng_access_end(struct ath11k_base *ab, struct hal_srng *srng)
 {
 	lockdep_assert_held(&srng->lock);
 
-	/* TODO: See if we need a write memory barrier here */
+	 
 	if (srng->flags & HAL_SRNG_FLAGS_LMAC_RING) {
-		/* For LMAC rings, ring pointer updates are done through FW and
-		 * hence written to a shared memory location that is read by FW
-		 */
+		 
 		if (srng->ring_dir == HAL_SRNG_DIR_SRC) {
 			srng->u.src_ring.last_tp =
 				*(volatile u32 *)srng->u.src_ring.tp_addr;
@@ -897,7 +875,7 @@ void ath11k_hal_setup_link_idle_list(struct ath11k_base *ab,
 				HAL_WBM_SCATTERED_DESC_MSB_BASE_ADDR_MATCH_TAG,
 				BASE_ADDR_MATCH_TAG_VAL));
 
-	/* Setup head and tail pointers for the idle list */
+	 
 	ath11k_hif_write32(ab,
 			   HAL_SEQ_WCSS_UMAC_WBM_REG +
 			   HAL_WBM_SCATTERED_DESC_PTR_HEAD_INFO_IX0,
@@ -936,7 +914,7 @@ void ath11k_hal_setup_link_idle_list(struct ath11k_base *ab,
 			   HAL_WBM_SCATTERED_DESC_PTR_HP_ADDR,
 			   2 * tot_link_desc);
 
-	/* Enable the SRNG */
+	 
 	ath11k_hif_write32(ab,
 			   HAL_SEQ_WCSS_UMAC_WBM_REG +
 			   HAL_WBM_IDLE_LINK_RING_MISC_ADDR(ab), 0x40);
@@ -985,7 +963,7 @@ int ath11k_hal_srng_setup(struct ath11k_base *ab, enum hal_ring_type type,
 	memset(srng->ring_base_vaddr, 0,
 	       (srng->entry_size * srng->num_entries) << 2);
 
-	/* TODO: Add comments on these swap configurations */
+	 
 	if (IS_ENABLED(CONFIG_CPU_BIG_ENDIAN))
 		srng->flags |= HAL_SRNG_FLAGS_MSI_SWAP | HAL_SRNG_FLAGS_DATA_TLV_SWAP |
 			       HAL_SRNG_FLAGS_RING_PTR_SWAP;
@@ -1017,22 +995,13 @@ int ath11k_hal_srng_setup(struct ath11k_base *ab, enum hal_ring_type type,
 					   (unsigned long)ab->mem);
 		}
 	} else {
-		/* During initialization loop count in all the descriptors
-		 * will be set to zero, and HW will set it to 1 on completing
-		 * descriptor update in first loop, and increments it by 1 on
-		 * subsequent loops (loop count wraps around after reaching
-		 * 0xffff). The 'loop_cnt' in SW ring state is the expected
-		 * loop count in descriptors updated by HW (to be processed
-		 * by SW).
-		 */
+		 
 		srng->u.dst_ring.loop_cnt = 1;
 		srng->u.dst_ring.tp = 0;
 		srng->u.dst_ring.cached_hp = 0;
 		srng->u.dst_ring.hp_addr = (void *)(hal->rdp.vaddr + ring_id);
 		if (srng_config->lmac_ring) {
-			/* For LMAC rings, tail pointer updates will be done
-			 * through FW by writing to a shared memory location
-			 */
+			 
 			lmac_idx = ring_id - HAL_SRNG_RING_ID_LMAC1_ID_START;
 			srng->u.dst_ring.tp_addr = (void *)(hal->wrp.vaddr +
 						   lmac_idx);
@@ -1108,13 +1077,13 @@ int ath11k_hal_srng_update_shadow_config(struct ath11k_base *ab,
 	target_reg += srng_config->reg_size[HAL_HP_OFFSET_IN_REG_START] *
 		ring_num;
 
-	/* For destination ring, shadow the TP */
+	 
 	if (srng_config->ring_dir == HAL_SRNG_DIR_DST)
 		target_reg += HAL_OFFSET_FROM_HP_TO_TP;
 
 	hal->shadow_reg_addr[shadow_cfg_idx] = target_reg;
 
-	/* update hp/tp addr to hal structure*/
+	 
 	ath11k_hal_srng_update_hp_tp_addr(ab, shadow_cfg_idx, ring_type,
 					  ring_num);
 
@@ -1133,7 +1102,7 @@ void ath11k_hal_srng_shadow_config(struct ath11k_base *ab)
 	struct ath11k_hal *hal = &ab->hal;
 	int ring_type, ring_num;
 
-	/* update all the non-CE srngs. */
+	 
 	for (ring_type = 0; ring_type < HAL_MAX_RING_TYPES; ring_type++) {
 		struct hal_srng_config *srng_config = &hal->srng_config[ring_type];
 
@@ -1164,9 +1133,7 @@ void ath11k_hal_srng_shadow_update_hp_tp(struct ath11k_base *ab,
 {
 	lockdep_assert_held(&srng->lock);
 
-	/* check whether the ring is empty. Update the shadow
-	 * HP only when then ring isn't empty.
-	 */
+	 
 	if (srng->ring_dir == HAL_SRNG_DIR_SRC &&
 	    *srng->u.src_ring.tp_addr != srng->u.src_ring.hp)
 		ath11k_hal_srng_access_end(ab, srng);

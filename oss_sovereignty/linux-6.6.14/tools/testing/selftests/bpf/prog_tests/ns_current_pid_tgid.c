@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Carlos Neira cneirabustos@gmail.com */
+
+ 
 
 #define _GNU_SOURCE
 #include <test_progs.h>
@@ -45,7 +45,7 @@ static int test_current_pid_tgid(void *args)
 	if (CHECK(err, "skel_attach", "skeleton attach failed: %d\n", err))
 		goto cleanup;
 
-	/* trigger tracepoint */
+	 
 	usleep(1);
 	ASSERT_EQ(bss->user_pid, pid, "pid");
 	ASSERT_EQ(bss->user_tgid, tgid, "tgid");
@@ -62,9 +62,7 @@ static void test_ns_current_pid_tgid_new_ns(void)
 	int wstatus, duration = 0;
 	pid_t cpid;
 
-	/* Create a process in a new namespace, this process
-	 * will be the init process of this new namespace hence will be pid 1.
-	 */
+	 
 	cpid = clone(test_current_pid_tgid, child_stack + STACK_SIZE,
 		     CLONE_NEWPID | SIGCHLD, NULL);
 
@@ -78,7 +76,7 @@ static void test_ns_current_pid_tgid_new_ns(void)
 		return;
 }
 
-/* TODO: use a different tracepoint */
+ 
 void serial_test_ns_current_pid_tgid(void)
 {
 	if (test__start_subtest("ns_current_pid_tgid_root_ns"))

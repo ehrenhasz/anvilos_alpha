@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qedr NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef QEDE_ROCE_H
 #define QEDE_ROCE_H
@@ -41,9 +38,7 @@ struct qedr_driver {
 	void (*notify)(struct qedr_dev *, enum qede_rdma_event);
 };
 
-/* APIs for RDMA driver to register callback handlers,
- * which will be invoked when device is added, removed, ifup, ifdown
- */
+ 
 int qede_rdma_register_driver(struct qedr_driver *drv);
 void qede_rdma_unregister_driver(struct qedr_driver *drv);
 

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_TTY_H
 #define _LINUX_TTY_H
 
@@ -17,19 +17,12 @@
 #include <linux/llist.h>
 
 
-/*
- * (Note: the *_driver.minor_start values 1, 64, 128, 192 are
- * hardcoded at present.)
- */
-#define NR_UNIX98_PTY_DEFAULT	4096      /* Default maximum for Unix98 ptys */
-#define NR_UNIX98_PTY_RESERVE	1024	  /* Default reserve for main devpts */
-#define NR_UNIX98_PTY_MAX	(1 << MINORBITS) /* Absolute limit */
+ 
+#define NR_UNIX98_PTY_DEFAULT	4096       
+#define NR_UNIX98_PTY_RESERVE	1024	   
+#define NR_UNIX98_PTY_MAX	(1 << MINORBITS)  
 
-/*
- * This character is the same as _POSIX_VDISABLE: it cannot be used as
- * a c_cc[] character, but indicates that a particular special character
- * isn't in use (eg VINTR has no character etc)
- */
+ 
 #define __DISABLED_CHAR '\0'
 
 #define INTR_CHAR(tty) ((tty)->termios.c_cc[VINTR])
@@ -119,77 +112,7 @@ struct device;
 struct signal_struct;
 struct tty_operations;
 
-/**
- * struct tty_struct - state associated with a tty while open
- *
- * @kref: reference counting by tty_kref_get() and tty_kref_put(), reaching zero
- *	  frees the structure
- * @dev: class device or %NULL (e.g. ptys, serdev)
- * @driver: &struct tty_driver operating this tty
- * @ops: &struct tty_operations of @driver for this tty (open, close, etc.)
- * @index: index of this tty (e.g. to construct @name like tty12)
- * @ldisc_sem: protects line discipline changes (@ldisc) -- lock tty not pty
- * @ldisc: the current line discipline for this tty (n_tty by default)
- * @atomic_write_lock: protects against concurrent writers, i.e. locks
- *		       @write_cnt, @write_buf and similar
- * @legacy_mutex: leftover from history (BKL -> BTM -> @legacy_mutex),
- *		  protecting several operations on this tty
- * @throttle_mutex: protects against concurrent tty_throttle_safe() and
- *		    tty_unthrottle_safe() (but not tty_unthrottle())
- * @termios_rwsem: protects @termios and @termios_locked
- * @winsize_mutex: protects @winsize
- * @termios: termios for the current tty, copied from/to @driver.termios
- * @termios_locked: locked termios (by %TIOCGLCKTRMIOS and %TIOCSLCKTRMIOS
- *		    ioctls)
- * @name: name of the tty constructed by tty_line_name() (e.g. ttyS3)
- * @flags: bitwise OR of %TTY_THROTTLED, %TTY_IO_ERROR, ...
- * @count: count of open processes, reaching zero cancels all the work for
- *	   this tty and drops a @kref too (but does not free this tty)
- * @winsize: size of the terminal "window" (cf. @winsize_mutex)
- * @flow: flow settings grouped together, see also @flow.unused
- * @flow.lock: lock for @flow members
- * @flow.stopped: tty stopped/started by stop_tty()/start_tty()
- * @flow.tco_stopped: tty stopped/started by %TCOOFF/%TCOON ioctls (it has
- *		      precedence over @flow.stopped)
- * @flow.unused: alignment for Alpha, so that no members other than @flow.* are
- *		 modified by the same 64b word store. The @flow's __aligned is
- *		 there for the very same reason.
- * @ctrl: control settings grouped together, see also @ctrl.unused
- * @ctrl.lock: lock for @ctrl members
- * @ctrl.pgrp: process group of this tty (setpgrp(2))
- * @ctrl.session: session of this tty (setsid(2)). Writes are protected by both
- *		  @ctrl.lock and @legacy_mutex, readers must use at least one of
- *		  them.
- * @ctrl.pktstatus: packet mode status (bitwise OR of %TIOCPKT_ constants)
- * @ctrl.packet: packet mode enabled
- * @ctrl.unused: alignment for Alpha, see @flow.unused for explanation
- * @hw_stopped: not controlled by the tty layer, under @driver's control for CTS
- *		handling
- * @receive_room: bytes permitted to feed to @ldisc without any being lost
- * @flow_change: controls behavior of throttling, see tty_throttle_safe() and
- *		 tty_unthrottle_safe()
- * @link: link to another pty (master -> slave and vice versa)
- * @fasync: state for %O_ASYNC (for %SIGIO); managed by fasync_helper()
- * @write_wait: concurrent writers are waiting in this queue until they are
- *		allowed to write
- * @read_wait: readers wait for data in this queue
- * @hangup_work: normally a work to perform a hangup (do_tty_hangup()); while
- *		 freeing the tty, (re)used to release_one_tty()
- * @disc_data: pointer to @ldisc's private data (e.g. to &struct n_tty_data)
- * @driver_data: pointer to @driver's private data (e.g. &struct uart_state)
- * @files_lock:	protects @tty_files list
- * @tty_files: list of (re)openers of this tty (i.e. linked &struct
- *	       tty_file_private)
- * @closing: when set during close, n_tty processes only START & STOP chars
- * @write_buf: temporary buffer used during tty_write() to copy user data to
- * @write_cnt: count of bytes written in tty_write() to @write_buf
- * @SAK_work: if the tty has a pending do_SAK, it is queued here
- * @port: persistent storage for this device (i.e. &struct tty_port)
- *
- * All of the state associated with a tty while the tty is open. Persistent
- * storage for tty devices is referenced here as @port and is documented in
- * &struct tty_port.
- */
+ 
 struct tty_struct {
 	struct kref kref;
 	int index;
@@ -250,67 +173,14 @@ struct tty_struct {
 	struct work_struct SAK_work;
 } __randomize_layout;
 
-/* Each of a tty's open files has private_data pointing to tty_file_private */
+ 
 struct tty_file_private {
 	struct tty_struct *tty;
 	struct file *file;
 	struct list_head list;
 };
 
-/**
- * DOC: TTY Struct Flags
- *
- * These bits are used in the :c:member:`tty_struct.flags` field.
- *
- * So that interrupts won't be able to mess up the queues,
- * copy_to_cooked must be atomic with respect to itself, as must
- * tty->write.  Thus, you must use the inline functions set_bit() and
- * clear_bit() to make things atomic.
- *
- * TTY_THROTTLED
- *	Driver input is throttled. The ldisc should call
- *	:c:member:`tty_driver.unthrottle()` in order to resume reception when
- *	it is ready to process more data (at threshold min).
- *
- * TTY_IO_ERROR
- *	If set, causes all subsequent userspace read/write calls on the tty to
- *	fail, returning -%EIO. (May be no ldisc too.)
- *
- * TTY_OTHER_CLOSED
- *	Device is a pty and the other side has closed.
- *
- * TTY_EXCLUSIVE
- *	Exclusive open mode (a single opener).
- *
- * TTY_DO_WRITE_WAKEUP
- *	If set, causes the driver to call the
- *	:c:member:`tty_ldisc_ops.write_wakeup()` method in order to resume
- *	transmission when it can accept more data to transmit.
- *
- * TTY_LDISC_OPEN
- *	Indicates that a line discipline is open. For debugging purposes only.
- *
- * TTY_PTY_LOCK
- *	A flag private to pty code to implement %TIOCSPTLCK/%TIOCGPTLCK logic.
- *
- * TTY_NO_WRITE_SPLIT
- *	Prevent driver from splitting up writes into smaller chunks (preserve
- *	write boundaries to driver).
- *
- * TTY_HUPPED
- *	The TTY was hung up. This is set post :c:member:`tty_driver.hangup()`.
- *
- * TTY_HUPPING
- *	The TTY is in the process of hanging up to abort potential readers.
- *
- * TTY_LDISC_CHANGING
- *	Line discipline for this TTY is being changed. I/O should not block
- *	when this is set. Use tty_io_nonblock() to check.
- *
- * TTY_LDISC_HALTED
- *	Line discipline for this TTY was stopped. No work should be queued to
- *	this ldisc.
- */
+ 
 #define TTY_THROTTLED		0
 #define TTY_IO_ERROR		1
 #define TTY_OTHER_CLOSED	2
@@ -348,7 +218,7 @@ void disassociate_ctty(int priv);
 dev_t tty_devnum(struct tty_struct *tty);
 void proc_clear_tty(struct task_struct *p);
 struct tty_struct *get_current_tty(void);
-/* tty_io.c */
+ 
 int __init tty_init(void);
 const char *tty_name(const struct tty_struct *tty);
 struct tty_struct *tty_kopen_exclusive(dev_t device);
@@ -370,7 +240,7 @@ static inline void proc_clear_tty(struct task_struct *p)
 { }
 static inline struct tty_struct *get_current_tty(void)
 { return NULL; }
-/* tty_io.c */
+ 
 static inline int __init tty_init(void)
 { return 0; }
 static inline const char *tty_name(const struct tty_struct *tty)
@@ -389,14 +259,7 @@ int vcs_init(void);
 
 extern const struct class tty_class;
 
-/**
- *	tty_kref_get		-	get a tty reference
- *	@tty: tty device
- *
- *	Return a new reference to a tty object. The caller must hold
- *	sufficient locks/counts to ensure that their existing reference cannot
- *	go away
- */
+ 
 
 static inline struct tty_struct *tty_kref_get(struct tty_struct *tty)
 {
@@ -434,16 +297,7 @@ void tty_termios_encode_baud_rate(struct ktermios *termios, speed_t ibaud,
 void tty_encode_baud_rate(struct tty_struct *tty, speed_t ibaud,
 		speed_t obaud);
 
-/**
- *	tty_get_baud_rate	-	get tty bit rates
- *	@tty: tty to query
- *
- *	Returns the baud rate as an integer for this terminal. The
- *	termios lock must be held by the caller and the terminal bit
- *	flags may be updated.
- *
- *	Locking: none
- */
+ 
 static inline speed_t tty_get_baud_rate(struct tty_struct *tty)
 {
 	return tty_termios_baud_rate(&tty->termios);
@@ -469,7 +323,7 @@ int tty_standard_install(struct tty_driver *driver,
 
 extern struct mutex tty_mutex;
 
-/* n_tty.c */
+ 
 void n_tty_inherit_ops(struct tty_ldisc_ops *ops);
 #ifdef CONFIG_TTY
 void __init n_tty_init(void);
@@ -477,7 +331,7 @@ void __init n_tty_init(void);
 static inline void n_tty_init(void) { }
 #endif
 
-/* tty_audit.c */
+ 
 #ifdef CONFIG_AUDIT
 void tty_audit_exit(void);
 void tty_audit_fork(struct signal_struct *sig);
@@ -495,19 +349,19 @@ static inline int tty_audit_push(void)
 }
 #endif
 
-/* tty_ioctl.c */
+ 
 int n_tty_ioctl_helper(struct tty_struct *tty, unsigned int cmd,
 		unsigned long arg);
 
-/* vt.c */
+ 
 
 int vt_ioctl(struct tty_struct *tty, unsigned int cmd, unsigned long arg);
 
 long vt_compat_ioctl(struct tty_struct *tty, unsigned int cmd,
 		unsigned long arg);
 
-/* tty_mutex.c */
-/* functions for preparation of BKL removal */
+ 
+ 
 void tty_lock(struct tty_struct *tty);
 int  tty_lock_interruptible(struct tty_struct *tty);
 void tty_unlock(struct tty_struct *tty);

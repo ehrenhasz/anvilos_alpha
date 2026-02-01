@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2016 Chen Zhong <chen.zhong@mediatek.com>
- */
+ 
+ 
 
 #ifndef __MFD_MT6323_REGISTERS_H__
 #define __MFD_MT6323_REGISTERS_H__
 
-/* PMIC Registers */
+ 
 #define MT6323_CHR_CON0           0x0000
 #define MT6323_CHR_CON1           0x0002
 #define MT6323_CHR_CON2           0x0004
@@ -402,4 +400,4 @@
 #define MT6323_ACCDET_CON15       0x0798
 #define MT6323_ACCDET_CON16       0x079A
 
-#endif /* __MFD_MT6323_REGISTERS_H__ */
+#endif  

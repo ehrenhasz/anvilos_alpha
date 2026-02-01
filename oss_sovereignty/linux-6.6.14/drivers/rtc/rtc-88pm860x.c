@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Real Time Clock driver for Marvell 88PM860x PMIC
- *
- * Copyright (c) 2010 Marvell International Ltd.
- * Author:	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -42,16 +37,16 @@ struct pm860x_rtc_info {
 #define REG2_DATA		0xB5
 #define REG3_DATA		0xB7
 
-/* bit definitions of Measurement Enable Register 2 (0x51) */
+ 
 #define MEAS2_VRTC		(1 << 0)
 
-/* bit definitions of RTC Register 1 (0xA0) */
+ 
 #define ALARM_EN		(1 << 3)
 #define ALARM_WAKEUP		(1 << 4)
 #define ALARM			(1 << 5)
 #define RTC1_USE_XO		(1 << 7)
 
-#define VRTC_CALIB_INTERVAL	(HZ * 60 * 10)		/* 10 minutes */
+#define VRTC_CALIB_INTERVAL	(HZ * 60 * 10)		 
 
 static irqreturn_t rtc_update_handler(int irq, void *data)
 {
@@ -87,7 +82,7 @@ static int pm860x_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	base = ((unsigned long)buf[1] << 24) | (buf[3] << 16) |
 		(buf[5] << 8) | buf[7];
 
-	/* load 32-bit read-only counter */
+	 
 	pm860x_bulk_read(info->i2c, PM8607_RTC_COUNTER1, 4, buf);
 	data = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
 		(buf[1] << 8) | buf[0];
@@ -108,7 +103,7 @@ static int pm860x_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	ticks = rtc_tm_to_time64(tm);
 
-	/* load 32-bit read-only counter */
+	 
 	pm860x_bulk_read(info->i2c, PM8607_RTC_COUNTER1, 4, buf);
 	data = ((unsigned long)buf[3] << 24) | (buf[2] << 16) |
 		(buf[1] << 8) | buf[0];
@@ -206,7 +201,7 @@ static void calibrate_vrtc_work(struct work_struct *work)
 		msleep(100);
 		pm860x_bulk_read(info->i2c, REG_VRTC_MEAS1, 2, buf);
 		data = (buf[0] << 4) | buf[1];
-		data = (data * 5400) >> 12;	/* convert to mv */
+		data = (data * 5400) >> 12;	 
 		sum += data;
 	}
 	mean = sum >> 4;
@@ -216,13 +211,13 @@ static void calibrate_vrtc_work(struct work_struct *work)
 	sum = pm860x_reg_read(info->i2c, PM8607_RTC_MISC1);
 	data = sum & 0x3;
 	if ((mean + 200) < vrtc_set) {
-		/* try higher voltage */
+		 
 		if (++data == 4)
 			goto out;
 		data = (sum & 0xf8) | (data & 0x3);
 		pm860x_reg_write(info->i2c, PM8607_RTC_MISC1, data);
 	} else if ((mean - 200) > vrtc_set) {
-		/* try lower voltage */
+		 
 		if (data-- == 0)
 			goto out;
 		data = (sum & 0xf8) | (data & 0x3);
@@ -230,11 +225,11 @@ static void calibrate_vrtc_work(struct work_struct *work)
 	} else
 		goto out;
 	dev_dbg(info->dev, "set 0x%x to RTC_MISC1\n", data);
-	/* trigger next calibration since VRTC is updated */
+	 
 	schedule_delayed_work(&info->calib_work, VRTC_CALIB_INTERVAL);
 	return;
 out:
-	/* disable measurement */
+	 
 	pm860x_set_bits(info->i2c, PM8607_MEAS_EN2, MEAS2_VRTC, 0);
 	dev_dbg(info->dev, "finish VRTC calibration\n");
 	return;
@@ -296,7 +291,7 @@ static int pm860x_rtc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* set addresses of 32-bit base value for RTC time */
+	 
 	pm860x_page_reg_write(info->i2c, REG0_ADDR, REG0_DATA);
 	pm860x_page_reg_write(info->i2c, REG1_ADDR, REG1_DATA);
 	pm860x_page_reg_write(info->i2c, REG2_ADDR, REG2_DATA);
@@ -311,20 +306,17 @@ static int pm860x_rtc_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * enable internal XO instead of internal 3.25MHz clock since it can
-	 * free running in PMIC power-down state.
-	 */
+	 
 	pm860x_set_bits(info->i2c, PM8607_RTC1, RTC1_USE_XO, RTC1_USE_XO);
 
 #ifdef VRTC_CALIBRATION
-	/* <00> -- 2.7V, <01> -- 2.9V, <10> -- 3.1V, <11> -- 3.3V */
+	 
 	pm860x_set_bits(info->i2c, PM8607_MEAS_EN2, MEAS2_VRTC, MEAS2_VRTC);
 
-	/* calibrate VRTC */
+	 
 	INIT_DELAYED_WORK(&info->calib_work, calibrate_vrtc_work);
 	schedule_delayed_work(&info->calib_work, VRTC_CALIB_INTERVAL);
-#endif	/* VRTC_CALIBRATION */
+#endif	 
 
 	device_init_wakeup(&pdev->dev, 1);
 
@@ -337,9 +329,9 @@ static void pm860x_rtc_remove(struct platform_device *pdev)
 
 #ifdef VRTC_CALIBRATION
 	cancel_delayed_work_sync(&info->calib_work);
-	/* disable measurement */
+	 
 	pm860x_set_bits(info->i2c, PM8607_MEAS_EN2, MEAS2_VRTC, 0);
-#endif	/* VRTC_CALIBRATION */
+#endif	 
 }
 
 #ifdef CONFIG_PM_SLEEP

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* AFS Volume Location Service client
- *
- * Copyright (C) 2002 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/gfp.h>
 #include <linux/init.h>
@@ -11,9 +7,7 @@
 #include "afs_fs.h"
 #include "internal.h"
 
-/*
- * Deliver reply data to a VL.GetEntryByNameU call.
- */
+ 
 static int afs_deliver_vl_get_entry_by_name_u(struct afs_call *call)
 {
 	struct afs_uvldbentry__xdr *uvldb;
@@ -28,7 +22,7 @@ static int afs_deliver_vl_get_entry_by_name_u(struct afs_call *call)
 	if (ret < 0)
 		return ret;
 
-	/* unmarshall the reply once we've received all of it */
+	 
 	uvldb = call->buffer;
 	entry = call->ret_vldb;
 
@@ -41,9 +35,7 @@ static int afs_deliver_vl_get_entry_by_name_u(struct afs_call *call)
 	entry->name[i] = 0;
 	entry->name_len = strlen(entry->name);
 
-	/* If there is a new replication site that we can use, ignore all the
-	 * sites that aren't marked as new.
-	 */
+	 
 	for (i = 0; i < nr_servers; i++) {
 		tmp = ntohl(uvldb->serverFlags[i]);
 		if (!(tmp & AFS_VLSF_DONTUSE) &&
@@ -112,9 +104,7 @@ static void afs_destroy_vl_get_entry_by_name_u(struct afs_call *call)
 	afs_flat_call_destructor(call);
 }
 
-/*
- * VL.GetEntryByNameU operation type.
- */
+ 
 static const struct afs_call_type afs_RXVLGetEntryByNameU = {
 	.name		= "VL.GetEntryByNameU",
 	.op		= afs_VL_GetEntryByNameU,
@@ -122,10 +112,7 @@ static const struct afs_call_type afs_RXVLGetEntryByNameU = {
 	.destructor	= afs_destroy_vl_get_entry_by_name_u,
 };
 
-/*
- * Dispatch a get volume entry by name or ID operation (uuid variant).  If the
- * volname is a decimal number then it's a volume ID not a volume name.
- */
+ 
 struct afs_vldb_entry *afs_vl_get_entry_by_name_u(struct afs_vl_cursor *vc,
 						  const char *volname,
 						  int volnamesz)
@@ -156,7 +143,7 @@ struct afs_vldb_entry *afs_vl_get_entry_by_name_u(struct afs_vl_cursor *vc,
 	call->ret_vldb = entry;
 	call->max_lifespan = AFS_VL_MAX_LIFESPAN;
 
-	/* Marshall the parameters */
+	 
 	bp = call->request;
 	*bp++ = htonl(VLGETENTRYBYNAMEU);
 	*bp++ = htonl(volnamesz);
@@ -169,15 +156,7 @@ struct afs_vldb_entry *afs_vl_get_entry_by_name_u(struct afs_vl_cursor *vc,
 	return (struct afs_vldb_entry *)afs_wait_for_call_to_complete(call, &vc->ac);
 }
 
-/*
- * Deliver reply data to a VL.GetAddrsU call.
- *
- *	GetAddrsU(IN ListAddrByAttributes *inaddr,
- *		  OUT afsUUID *uuidp1,
- *		  OUT uint32_t *uniquifier,
- *		  OUT uint32_t *nentries,
- *		  OUT bulkaddrs *blkaddrs);
- */
+ 
 static int afs_deliver_vl_get_addrs_u(struct afs_call *call)
 {
 	struct afs_addr_list *alist;
@@ -194,8 +173,7 @@ static int afs_deliver_vl_get_addrs_u(struct afs_call *call)
 				   sizeof(struct afs_uuid__xdr) + 3 * sizeof(__be32));
 		call->unmarshall++;
 
-		/* Extract the returned uuid, uniquifier, nentries and
-		 * blkaddrs size */
+		 
 		fallthrough;
 	case 1:
 		ret = afs_extract_data(call, true);
@@ -221,7 +199,7 @@ static int afs_deliver_vl_get_addrs_u(struct afs_call *call)
 		count = min(call->count, 4U);
 		afs_extract_to_buf(call, count * sizeof(__be32));
 
-		fallthrough;	/* and extract entries */
+		fallthrough;	 
 	case 2:
 		ret = afs_extract_data(call, call->count > 4);
 		if (ret < 0)
@@ -251,9 +229,7 @@ static void afs_vl_get_addrs_u_destructor(struct afs_call *call)
 	return afs_flat_call_destructor(call);
 }
 
-/*
- * VL.GetAddrsU operation type.
- */
+ 
 static const struct afs_call_type afs_RXVLGetAddrsU = {
 	.name		= "VL.GetAddrsU",
 	.op		= afs_VL_GetAddrsU,
@@ -261,10 +237,7 @@ static const struct afs_call_type afs_RXVLGetAddrsU = {
 	.destructor	= afs_vl_get_addrs_u_destructor,
 };
 
-/*
- * Dispatch an operation to get the addresses for a server, where the server is
- * nominated by UUID.
- */
+ 
 struct afs_addr_list *afs_vl_get_addrs_u(struct afs_vl_cursor *vc,
 					 const uuid_t *uuid)
 {
@@ -287,7 +260,7 @@ struct afs_addr_list *afs_vl_get_addrs_u(struct afs_vl_cursor *vc,
 	call->ret_alist = NULL;
 	call->max_lifespan = AFS_VL_MAX_LIFESPAN;
 
-	/* Marshall the parameters */
+	 
 	bp = call->request;
 	*bp++ = htonl(VLGETADDRSU);
 	r = (struct afs_ListAddrByAttributes__xdr *)bp;
@@ -308,9 +281,7 @@ struct afs_addr_list *afs_vl_get_addrs_u(struct afs_vl_cursor *vc,
 	return (struct afs_addr_list *)afs_wait_for_call_to_complete(call, &vc->ac);
 }
 
-/*
- * Deliver reply data to an VL.GetCapabilities operation.
- */
+ 
 static int afs_deliver_vl_get_capabilities(struct afs_call *call)
 {
 	u32 count;
@@ -324,7 +295,7 @@ static int afs_deliver_vl_get_capabilities(struct afs_call *call)
 		afs_extract_to_tmp(call);
 		call->unmarshall++;
 
-		fallthrough;	/* and extract the capabilities word count */
+		fallthrough;	 
 	case 1:
 		ret = afs_extract_data(call, true);
 		if (ret < 0)
@@ -337,13 +308,13 @@ static int afs_deliver_vl_get_capabilities(struct afs_call *call)
 		call->unmarshall++;
 		afs_extract_discard(call, count * sizeof(__be32));
 
-		fallthrough;	/* and extract capabilities words */
+		fallthrough;	 
 	case 2:
 		ret = afs_extract_data(call, false);
 		if (ret < 0)
 			return ret;
 
-		/* TODO: Examine capabilities */
+		 
 
 		call->unmarshall++;
 		break;
@@ -359,9 +330,7 @@ static void afs_destroy_vl_get_capabilities(struct afs_call *call)
 	afs_flat_call_destructor(call);
 }
 
-/*
- * VL.GetCapabilities operation type
- */
+ 
 static const struct afs_call_type afs_RXVLGetCapabilities = {
 	.name		= "VL.GetCapabilities",
 	.op		= afs_VL_GetCapabilities,
@@ -370,13 +339,7 @@ static const struct afs_call_type afs_RXVLGetCapabilities = {
 	.destructor	= afs_destroy_vl_get_capabilities,
 };
 
-/*
- * Probe a volume server for the capabilities that it supports.  This can
- * return up to 196 words.
- *
- * We use this to probe for service upgrade to determine what the server at the
- * other end supports.
- */
+ 
 struct afs_call *afs_vl_get_capabilities(struct afs_net *net,
 					 struct afs_addr_cursor *ac,
 					 struct key *key,
@@ -399,25 +362,17 @@ struct afs_call *afs_vl_get_capabilities(struct afs_net *net,
 	call->async = true;
 	call->max_lifespan = AFS_PROBE_MAX_LIFESPAN;
 
-	/* marshall the parameters */
+	 
 	bp = call->request;
 	*bp++ = htonl(VLGETCAPABILITIES);
 
-	/* Can't take a ref on server */
+	 
 	trace_afs_make_vl_call(call);
 	afs_make_call(ac, call, GFP_KERNEL);
 	return call;
 }
 
-/*
- * Deliver reply data to a YFSVL.GetEndpoints call.
- *
- *	GetEndpoints(IN yfsServerAttributes *attr,
- *		     OUT opr_uuid *uuid,
- *		     OUT afs_int32 *uniquifier,
- *		     OUT endpoints *fsEndpoints,
- *		     OUT endpoints *volEndpoints)
- */
+ 
 static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 {
 	struct afs_addr_list *alist;
@@ -433,9 +388,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 		afs_extract_to_buf(call, sizeof(uuid_t) + 3 * sizeof(__be32));
 		call->unmarshall = 1;
 
-		/* Extract the returned uuid, uniquifier, fsEndpoints count and
-		 * either the first fsEndpoint type or the volEndpoints
-		 * count if there are no fsEndpoints. */
+		 
 		fallthrough;
 	case 1:
 		ret = afs_extract_data(call, true);
@@ -445,7 +398,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 		bp = call->buffer + sizeof(uuid_t);
 		uniquifier	= ntohl(*bp++);
 		call->count	= ntohl(*bp++);
-		call->count2	= ntohl(*bp); /* Type or next count */
+		call->count2	= ntohl(*bp);  
 
 		if (call->count > YFS_MAXENDPOINTS)
 			return afs_protocol_error(call, afs_eproto_yvl_fsendpt_num);
@@ -475,7 +428,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 		afs_extract_to_buf(call, size);
 		call->unmarshall = 2;
 
-		fallthrough;	/* and extract fsEndpoints[] entries */
+		fallthrough;	 
 	case 2:
 		ret = afs_extract_data(call, true);
 		if (ret < 0)
@@ -502,9 +455,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 			return afs_protocol_error(call, afs_eproto_yvl_fsendpt_type);
 		}
 
-		/* Got either the type of the next entry or the count of
-		 * volEndpoints if no more fsEndpoints.
-		 */
+		 
 		call->count2 = ntohl(*bp++);
 
 		call->count--;
@@ -512,7 +463,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 			goto next_fsendpoint;
 
 	extract_volendpoints:
-		/* Extract the list of volEndpoints. */
+		 
 		call->count = call->count2;
 		if (!call->count)
 			goto end;
@@ -522,10 +473,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 		afs_extract_to_buf(call, 1 * sizeof(__be32));
 		call->unmarshall = 3;
 
-		/* Extract the type of volEndpoints[0].  Normally we would
-		 * extract the type of the next endpoint when we extract the
-		 * data of the current one, but this is the first...
-		 */
+		 
 		fallthrough;
 	case 3:
 		ret = afs_extract_data(call, true);
@@ -548,11 +496,11 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 		}
 
 		if (call->count > 1)
-			size += sizeof(__be32); /* Get next type too */
+			size += sizeof(__be32);  
 		afs_extract_to_buf(call, size);
 		call->unmarshall = 4;
 
-		fallthrough;	/* and extract volEndpoints[] entries */
+		fallthrough;	 
 	case 4:
 		ret = afs_extract_data(call, true);
 		if (ret < 0)
@@ -576,9 +524,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 			return afs_protocol_error(call, afs_eproto_yvl_vlendpt_type);
 		}
 
-		/* Got either the type of the next entry or the count of
-		 * volEndpoints if no more fsEndpoints.
-		 */
+		 
 		call->count--;
 		if (call->count > 0)
 			goto next_volendpoint;
@@ -587,7 +533,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 		afs_extract_discard(call, 0);
 		call->unmarshall = 5;
 
-		fallthrough;	/* Done */
+		fallthrough;	 
 	case 5:
 		ret = afs_extract_data(call, false);
 		if (ret < 0)
@@ -603,9 +549,7 @@ static int afs_deliver_yfsvl_get_endpoints(struct afs_call *call)
 	return 0;
 }
 
-/*
- * YFSVL.GetEndpoints operation type.
- */
+ 
 static const struct afs_call_type afs_YFSVLGetEndpoints = {
 	.name		= "YFSVL.GetEndpoints",
 	.op		= afs_YFSVL_GetEndpoints,
@@ -613,10 +557,7 @@ static const struct afs_call_type afs_YFSVLGetEndpoints = {
 	.destructor	= afs_vl_get_addrs_u_destructor,
 };
 
-/*
- * Dispatch an operation to get the addresses for a server, where the server is
- * nominated by UUID.
- */
+ 
 struct afs_addr_list *afs_yfsvl_get_endpoints(struct afs_vl_cursor *vc,
 					      const uuid_t *uuid)
 {
@@ -636,20 +577,18 @@ struct afs_addr_list *afs_yfsvl_get_endpoints(struct afs_vl_cursor *vc,
 	call->ret_alist = NULL;
 	call->max_lifespan = AFS_VL_MAX_LIFESPAN;
 
-	/* Marshall the parameters */
+	 
 	bp = call->request;
 	*bp++ = htonl(YVLGETENDPOINTS);
 	*bp++ = htonl(YFS_SERVER_UUID);
-	memcpy(bp, uuid, sizeof(*uuid)); /* Type opr_uuid */
+	memcpy(bp, uuid, sizeof(*uuid));  
 
 	trace_afs_make_vl_call(call);
 	afs_make_call(&vc->ac, call, GFP_KERNEL);
 	return (struct afs_addr_list *)afs_wait_for_call_to_complete(call, &vc->ac);
 }
 
-/*
- * Deliver reply data to a YFSVL.GetCellName operation.
- */
+ 
 static int afs_deliver_yfsvl_get_cell_name(struct afs_call *call)
 {
 	char *cell_name;
@@ -664,7 +603,7 @@ static int afs_deliver_yfsvl_get_cell_name(struct afs_call *call)
 		afs_extract_to_tmp(call);
 		call->unmarshall++;
 
-		fallthrough;	/* and extract the cell name length */
+		fallthrough;	 
 	case 1:
 		ret = afs_extract_data(call, true);
 		if (ret < 0)
@@ -686,7 +625,7 @@ static int afs_deliver_yfsvl_get_cell_name(struct afs_call *call)
 		afs_extract_begin(call, cell_name, namesz);
 		call->unmarshall++;
 
-		fallthrough;	/* and extract cell name */
+		fallthrough;	 
 	case 2:
 		ret = afs_extract_data(call, true);
 		if (ret < 0)
@@ -695,7 +634,7 @@ static int afs_deliver_yfsvl_get_cell_name(struct afs_call *call)
 		afs_extract_discard(call, call->count2);
 		call->unmarshall++;
 
-		fallthrough;	/* and extract padding */
+		fallthrough;	 
 	case 3:
 		ret = afs_extract_data(call, false);
 		if (ret < 0)
@@ -715,9 +654,7 @@ static void afs_destroy_yfsvl_get_cell_name(struct afs_call *call)
 	afs_flat_call_destructor(call);
 }
 
-/*
- * VL.GetCapabilities operation type
- */
+ 
 static const struct afs_call_type afs_YFSVLGetCellName = {
 	.name		= "YFSVL.GetCellName",
 	.op		= afs_YFSVL_GetCellName,
@@ -725,13 +662,7 @@ static const struct afs_call_type afs_YFSVLGetCellName = {
 	.destructor	= afs_destroy_yfsvl_get_cell_name,
 };
 
-/*
- * Probe a volume server for the capabilities that it supports.  This can
- * return up to 196 words.
- *
- * We use this to probe for service upgrade to determine what the server at the
- * other end supports.
- */
+ 
 char *afs_yfsvl_get_cell_name(struct afs_vl_cursor *vc)
 {
 	struct afs_call *call;
@@ -748,11 +679,11 @@ char *afs_yfsvl_get_cell_name(struct afs_vl_cursor *vc)
 	call->ret_str = NULL;
 	call->max_lifespan = AFS_VL_MAX_LIFESPAN;
 
-	/* marshall the parameters */
+	 
 	bp = call->request;
 	*bp++ = htonl(YVLGETCELLNAME);
 
-	/* Can't take a ref on server */
+	 
 	trace_afs_make_vl_call(call);
 	afs_make_call(&vc->ac, call, GFP_KERNEL);
 	return (char *)afs_wait_for_call_to_complete(call, &vc->ac);

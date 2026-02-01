@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014-2020, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>
@@ -14,9 +12,7 @@
 #include "tegra210-emc.h"
 #include "tegra210-mc.h"
 
-/*
- * Enable flags for specifying verbosity.
- */
+ 
 #define INFO            (1 << 0)
 #define STEPS           (1 << 1)
 #define SUB_STEPS       (1 << 2)
@@ -49,9 +45,7 @@ enum {
 	PERIODIC_TRAINING_UPDATE = 14
 };
 
-/*
- * PTFV defines - basically just indexes into the per table PTFV array.
- */
+ 
 #define PTFV_DQSOSC_MOVAVG_C0D0U0_INDEX		0
 #define PTFV_DQSOSC_MOVAVG_C0D0U1_INDEX		1
 #define PTFV_DQSOSC_MOVAVG_C0D1U0_INDEX		2
@@ -66,34 +60,26 @@ enum {
 
 #define PTFV_CONFIG_CTRL_USE_PREVIOUS_EMA	(1 << 0)
 
-/*
- * Do arithmetic in fixed point.
- */
+ 
 #define MOVAVG_PRECISION_FACTOR		100
 
-/*
- * The division portion of the average operation.
- */
+ 
 #define __AVERAGE_PTFV(dev)						\
 	({ next->ptfv_list[PTFV_DQSOSC_MOVAVG_ ## dev ## _INDEX] =	\
 	   next->ptfv_list[PTFV_DQSOSC_MOVAVG_ ## dev ## _INDEX] /	\
 	   next->ptfv_list[PTFV_DVFS_SAMPLES_INDEX]; })
 
-/*
- * Convert val to fixed point and add it to the temporary average.
- */
+ 
 #define __INCREMENT_PTFV(dev, val)					\
 	({ next->ptfv_list[PTFV_DQSOSC_MOVAVG_ ## dev ## _INDEX] +=	\
 	   ((val) * MOVAVG_PRECISION_FACTOR); })
 
-/*
- * Convert a moving average back to integral form and return the value.
- */
+ 
 #define __MOVAVG_AC(timing, dev)					\
 	((timing)->ptfv_list[PTFV_DQSOSC_MOVAVG_ ## dev ## _INDEX] /	\
 	 MOVAVG_PRECISION_FACTOR)
 
-/* Weighted update. */
+ 
 #define __WEIGHTED_UPDATE_PTFV(dev, nval)				\
 	do {								\
 		int w = PTFV_MOVAVG_WEIGHT_INDEX;			\
@@ -109,7 +95,7 @@ enum {
 			__stringify(dev), nval, next->ptfv_list[dqs]);	\
 	} while (0)
 
-/* Access a particular average. */
+ 
 #define __MOVAVG(timing, dev)                      \
 	((timing)->ptfv_list[PTFV_DQSOSC_MOVAVG_ ## dev ## _INDEX])
 
@@ -127,9 +113,7 @@ static u32 update_clock_tree_delay(struct tegra210_emc *emc, int type)
 	u32 temp[2][2], value;
 	unsigned int i;
 
-	/*
-	 * Dev0 MSB.
-	 */
+	 
 	if (dvfs_pt1 || periodic_training_update) {
 		value = tegra210_emc_mrr_read(emc, 2, 19);
 
@@ -139,9 +123,7 @@ static u32 update_clock_tree_delay(struct tegra210_emc *emc, int type)
 			value >>= 16;
 		}
 
-		/*
-		 * Dev0 LSB.
-		 */
+		 
 		value = tegra210_emc_mrr_read(emc, 2, 18);
 
 		for (i = 0; i < emc->num_channels; i++) {
@@ -262,9 +244,7 @@ static u32 update_clock_tree_delay(struct tegra210_emc *emc, int type)
 	if (emc->num_devices < 2)
 		goto done;
 
-	/*
-	 * Dev1 MSB.
-	 */
+	 
 	if (dvfs_pt1 || periodic_training_update) {
 		value = tegra210_emc_mrr_read(emc, 1, 19);
 
@@ -274,9 +254,7 @@ static u32 update_clock_tree_delay(struct tegra210_emc *emc, int type)
 			value >>= 16;
 		}
 
-		/*
-		 * Dev1 LSB.
-		 */
+		 
 		value = tegra210_emc_mrr_read(emc, 1, 18);
 
 		for (i = 0; i < emc->num_channels; i++) {
@@ -422,11 +400,7 @@ static u32 periodic_compensation_handler(struct tegra210_emc *emc, u32 type,
 		if (last->periodic_training &&
 		    (next->ptfv_list[PTFV_CONFIG_CTRL_INDEX] &
 		     PTFV_CONFIG_CTRL_USE_PREVIOUS_EMA)) {
-			/*
-			 * If the previous frequency was using periodic
-			 * calibration then we can reuse the previous
-			 * frequencies EMA data.
-			 */
+			 
 			__COPY_EMA(next, last, C0D0U0);
 			__COPY_EMA(next, last, C0D0U1);
 			__COPY_EMA(next, last, C1D0U0);
@@ -436,7 +410,7 @@ static u32 periodic_compensation_handler(struct tegra210_emc *emc, u32 type,
 			__COPY_EMA(next, last, C1D1U0);
 			__COPY_EMA(next, last, C1D1U1);
 		} else {
-			/* Reset the EMA.*/
+			 
 			__MOVAVG(next, C0D0U0) = 0;
 			__MOVAVG(next, C0D0U1) = 0;
 			__MOVAVG(next, C1D0U0) = 0;
@@ -450,18 +424,12 @@ static u32 periodic_compensation_handler(struct tegra210_emc *emc, u32 type,
 				tegra210_emc_start_periodic_compensation(emc);
 				udelay(delay);
 
-				/*
-				 * Generate next sample of data.
-				 */
+				 
 				adel = update_clock_tree_delay(emc, DVFS_PT1);
 			}
 		}
 
-		/*
-		 * Seems like it should be part of the
-		 * 'if (last_timing->periodic_training)' conditional
-		 * since is already done for the else clause.
-		 */
+		 
 		adel = update_clock_tree_delay(emc, DVFS_UPDATE);
 	}
 
@@ -504,12 +472,10 @@ static u32 tegra210_emc_r21021_periodic_compensation(struct tegra210_emc *emc)
 					EMC_CFG_DRAM_CLKSTOP_PD);
 
 
-		/*
-		 * 1. Power optimizations should be off.
-		 */
+		 
 		emc_writel(emc, emc_cfg, EMC_CFG);
 
-		/* Does emc_timing_update() for above changes. */
+		 
 		tegra210_emc_dll_disable(emc);
 
 		for (i = 0; i < emc->num_channels; i++)
@@ -527,32 +493,21 @@ static u32 tegra210_emc_r21021_periodic_compensation(struct tegra210_emc *emc)
 		value |= (2 << EMC_CFG_UPDATE_UPDATE_DLL_IN_UPDATE_SHIFT);
 		emc_writel(emc, value, EMC_CFG_UPDATE);
 
-		/*
-		 * 2. osc kick off - this assumes training and dvfs have set
-		 *    correct MR23.
-		 */
+		 
 		tegra210_emc_start_periodic_compensation(emc);
 
-		/*
-		 * 3. Let dram capture its clock tree delays.
-		 */
+		 
 		delay = tegra210_emc_actual_osc_clocks(last->run_clocks);
 		delay *= 1000;
 		delay /= last->rate + 1;
 		udelay(delay);
 
-		/*
-		 * 4. Check delta wrt previous values (save value if margin
-		 *    exceeds what is set in table).
-		 */
+		 
 		del = periodic_compensation_handler(emc,
 						    PERIODIC_TRAINING_SEQUENCE,
 						    last, last);
 
-		/*
-		 * 5. Apply compensation w.r.t. trained values (if clock tree
-		 *    has drifted more than the set margin).
-		 */
+		 
 		if (last->tree_margin < ((del * 128 * (last->rate / 1000)) / 1000000)) {
 			for (i = 0; i < items; i++) {
 				value = tegra210_emc_compensate(last, list[i]);
@@ -564,29 +519,25 @@ static u32 tegra210_emc_r21021_periodic_compensation(struct tegra210_emc *emc)
 
 		emc_writel(emc, emc_cfg_o, EMC_CFG);
 
-		/*
-		 * 6. Timing update actally applies the new trimmers.
-		 */
+		 
 		tegra210_emc_timing_update(emc);
 
-		/* 6.1. Restore the UPDATE_DLL_IN_UPDATE field. */
+		 
 		emc_writel(emc, emc_cfg_update, EMC_CFG_UPDATE);
 
-		/* 6.2. Restore the DLL. */
+		 
 		tegra210_emc_dll_enable(emc);
 	}
 
 	return 0;
 }
 
-/*
- * Do the clock change sequence.
- */
+ 
 static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 {
-	/* state variables */
+	 
 	static bool fsp_for_next_freq;
-	/* constant configuration parameters */
+	 
 	const bool save_restore_clkstop_pd = true;
 	const u32 zqcal_before_cc_cutoff = 2400;
 	const bool cya_allow_ref_cc = false;
@@ -597,13 +548,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 	const bool opt_short_zcal = true;
 	const bool opt_do_sw_qrst = true;
 	const u32 opt_dvfs_mode = MAN_SR;
-	/*
-	 * This is the timing table for the source frequency. It does _not_
-	 * necessarily correspond to the actual timing values in the EMC at the
-	 * moment. If the boot BCT differs from the table then this can happen.
-	 * However, we need it for accessing the dram_timings (which are not
-	 * really registers) array for the current frequency.
-	 */
+	 
 	struct tegra210_emc_timing *fake, *last = emc->last, *next = emc->next;
 	u32 tRTM, RP_war, R2P_war, TRPab_war, deltaTWATM, W2P_war, tRPST;
 	u32 mr13_flip_fspwr, mr13_flip_fspop, ramp_up_wait, ramp_down_wait;
@@ -614,7 +559,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 	bool opt_zcal_en_cc = false, is_lpddr3 = false;
 	bool compensate_trimmer_applicable = false;
 	u32 emc_dbg, emc_cfg_pipe_clk, emc_pin;
-	u32 src_clk_period, dst_clk_period; /* in picoseconds */
+	u32 src_clk_period, dst_clk_period;  
 	bool shared_zq_resistor = false;
 	u32 value, dram_type;
 	u32 opt_dll_mode = 0;
@@ -623,7 +568,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 
 	emc_dbg(emc, INFO, "Running clock change.\n");
 
-	/* XXX fake == last */
+	 
 	fake = tegra210_emc_find_timing(emc, last->rate * 1000UL);
 	fsp_for_next_freq = !fsp_for_next_freq;
 
@@ -686,10 +631,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 	emc_dbg(emc, INFO, "  num_channels: %u\n", emc->num_channels);
 	emc_dbg(emc, INFO, "  opt_dll_mode: %d\n", opt_dll_mode);
 
-	/*
-	 * Step 1:
-	 *   Pre DVFS SW sequence.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 1\n");
 	emc_dbg(emc, STEPS, "Step 1.1: Disable DLL temporarily.\n");
 
@@ -712,7 +654,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 	emc_auto_cal_config |= EMC_AUTO_CAL_CONFIG_AUTO_CAL_UPDATE_STALL;
 	emc_auto_cal_config |= auto_cal_en;
 	emc_writel(emc, emc_auto_cal_config, EMC_AUTO_CAL_CONFIG);
-	emc_readl(emc, EMC_AUTO_CAL_CONFIG); /* Flush write. */
+	emc_readl(emc, EMC_AUTO_CAL_CONFIG);  
 
 	emc_dbg(emc, STEPS, "Step 1.3: Disable other power features.\n");
 
@@ -787,7 +729,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 				   EMC_PMACRO_BG_BIAS_CTRL_0);
 	}
 
-	/* Check if we need to turn on VREF generator. */
+	 
 	if ((((last->burst_regs[EMC_PMACRO_DATA_PAD_TX_CTRL_INDEX] &
 	       EMC_PMACRO_DATA_PAD_TX_CTRL_DATA_DQ_E_IVREF) == 0) &&
 	     ((next->burst_regs[EMC_PMACRO_DATA_PAD_TX_CTRL_INDEX] &
@@ -818,10 +760,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 
 	tegra210_emc_set_shadow_bypass(emc, ASSEMBLY);
 
-	/*
-	 * Step 2:
-	 *   Prelock the DLL.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 2\n");
 
 	if (next->burst_regs[EMC_CFG_DIG_DLL_INDEX] &
@@ -834,10 +773,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		tegra210_emc_dll_disable(emc);
 	}
 
-	/*
-	 * Step 3:
-	 *   Prepare autocal for the clock change.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 3\n");
 
 	tegra210_emc_set_shadow_bypass(emc, ACTIVE);
@@ -854,10 +790,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 				auto_cal_en);
 	emc_writel(emc, emc_auto_cal_config, EMC_AUTO_CAL_CONFIG);
 
-	/*
-	 * Step 4:
-	 *   Update EMC_CFG. (??)
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 4\n");
 
 	if (src_clk_period > 50000 && dram_type == DRAM_TYPE_LPDDR4)
@@ -865,10 +798,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 	else
 		emc_writel(emc, next->emc_cfg_2, EMC_CFG_2);
 
-	/*
-	 * Step 5:
-	 *   Prepare reference variables for ZQCAL regs.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 5\n");
 
 	if (dram_type == DRAM_TYPE_LPDDR4)
@@ -882,45 +812,32 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 	else
 		zq_wait_long = 0;
 
-	/*
-	 * Step 6:
-	 *   Training code - removed.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 6\n");
 
-	/*
-	 * Step 7:
-	 *   Program FSP reference registers and send MRWs to new FSPWR.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 7\n");
 	emc_dbg(emc, SUB_STEPS, "Step 7.1: Bug 200024907 - Patch RP R2P");
 
-	/* WAR 200024907 */
+	 
 	if (dram_type == DRAM_TYPE_LPDDR4) {
 		u32 nRTP = 16;
 
-		if (src_clk_period >= 1000000 / 1866) /* 535.91 ps */
+		if (src_clk_period >= 1000000 / 1866)  
 			nRTP = 14;
 
-		if (src_clk_period >= 1000000 / 1600) /* 625.00 ps */
+		if (src_clk_period >= 1000000 / 1600)  
 			nRTP = 12;
 
-		if (src_clk_period >= 1000000 / 1333) /* 750.19 ps */
+		if (src_clk_period >= 1000000 / 1333)  
 			nRTP = 10;
 
-		if (src_clk_period >= 1000000 / 1066) /* 938.09 ps */
+		if (src_clk_period >= 1000000 / 1066)  
 			nRTP = 8;
 
 		deltaTWATM = max_t(u32, div_o3(7500, src_clk_period), 8);
 
-		/*
-		 * Originally there was a + .5 in the tRPST calculation.
-		 * However since we can't do FP in the kernel and the tRTM
-		 * computation was in a floating point ceiling function, adding
-		 * one to tRTP should be ok. There is no other source of non
-		 * integer values, so the result was always going to be
-		 * something for the form: f_ceil(N + .5) = N + 1;
-		 */
+		 
 		tRPST = (last->emc_mrw & 0x80) >> 7;
 		tRTM = fake->dram_timings[RL] + div_o3(3600, src_clk_period) +
 			max_t(u32, div_o3(7500, src_clk_period), 8) + tRPST +
@@ -995,10 +912,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		emc_writel(emc, next->emc_mrw2, EMC_MRW2);
 	}
 
-	/*
-	 * Step 8:
-	 *   Program the shadow registers.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 8\n");
 	emc_dbg(emc, SUB_STEPS, "Writing burst_regs\n");
 
@@ -1021,7 +935,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		     offset == EMC_TRAINING_CTRL))
 			continue;
 
-		/* Pain... And suffering. */
+		 
 		if (offset == EMC_CFG) {
 			value &= ~EMC_CFG_DRAM_ACPD;
 			value &= ~EMC_CFG_DYN_SELF_REF;
@@ -1046,7 +960,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 				((zq_wait_long & EMC_ZCAL_WAIT_CNT_ZCAL_WAIT_CNT_MASK) <<
 						 EMC_MRS_WAIT_CNT_SHORT_WAIT_SHIFT);
 		} else if (offset == EMC_ZCAL_INTERVAL && opt_zcal_en_cc) {
-			value = 0; /* EMC_ZCAL_INTERVAL reset value. */
+			value = 0;  
 		} else if (offset == EMC_PMACRO_AUTOCAL_CFG_COMMON) {
 			value |= EMC_PMACRO_AUTOCAL_CFG_COMMON_E_CAL_BYPASS_DVFS;
 		} else if (offset == EMC_PMACRO_DATA_PAD_TX_CTRL) {
@@ -1069,7 +983,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		emc_writel(emc, value, offset);
 	}
 
-	/* SW addition: do EMC refresh adjustment here. */
+	 
 	tegra210_emc_adjust_timing(emc, next);
 
 	if (dram_type == DRAM_TYPE_LPDDR4) {
@@ -1078,7 +992,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		emc_writel(emc, value, EMC_MRW);
 	}
 
-	/* Per channel burst registers. */
+	 
 	emc_dbg(emc, SUB_STEPS, "Writing burst_regs_per_ch\n");
 
 	for (i = 0; i < next->num_burst_per_ch; i++) {
@@ -1101,7 +1015,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		     burst[i].offset == EMC_MRW15))
 			continue;
 
-		/* Filter out second channel if not in DUAL_CHANNEL mode. */
+		 
 		if (emc->num_channels < 2 && burst[i].bank >= 1)
 			continue;
 
@@ -1112,7 +1026,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 				   burst[i].offset);
 	}
 
-	/* Vref regs. */
+	 
 	emc_dbg(emc, SUB_STEPS, "Writing vref_regs\n");
 
 	for (i = 0; i < next->vref_num; i++) {
@@ -1131,7 +1045,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 				   vref[i].offset);
 	}
 
-	/* Trimmers. */
+	 
 	emc_dbg(emc, SUB_STEPS, "Writing trim_regs\n");
 
 	for (i = 0; i < next->num_trim; i++) {
@@ -1164,7 +1078,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		}
 	}
 
-	/* Per channel trimmers. */
+	 
 	emc_dbg(emc, SUB_STEPS, "Writing trim_regs_per_ch\n");
 
 	for (i = 0; i < next->num_trim_per_ch; i++) {
@@ -1216,7 +1130,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		mc_writel(emc->mc, values[i], offsets[i]);
 	}
 
-	/* Registers to be programmed on the faster clock. */
+	 
 	if (next->rate < last->rate) {
 		const u16 *la = emc->offsets->la_scale;
 
@@ -1229,13 +1143,10 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		}
 	}
 
-	/* Flush all the burst register writes. */
+	 
 	mc_readl(emc->mc, MC_EMEM_ADR_CFG);
 
-	/*
-	 * Step 9:
-	 *   LPDDR4 section A.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 9\n");
 
 	value = next->burst_regs[EMC_ZCAL_WAIT_CNT_INDEX];
@@ -1253,10 +1164,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		emc_writel(emc, emc_dbg, EMC_DBG);
 	}
 
-	/*
-	 * Step 10:
-	 *   LPDDR4 and DDR3 common section.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 10\n");
 
 	if (opt_dvfs_mode == MAN_SR || dram_type == DRAM_TYPE_LPDDR4) {
@@ -1330,7 +1238,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 			      EMC_PIN, delay);
 	}
 
-	/* calculate reference delay multiplier */
+	 
 	value = 1;
 
 	if (ref_b4_sref_en)
@@ -1350,10 +1258,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		delay = 0;
 	}
 
-	/*
-	 * Step 11:
-	 *   Ramp down.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 11\n");
 
 	ccfifo_writel(emc, 0x0, EMC_CFG_SYNC, delay);
@@ -1364,29 +1269,20 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 	ramp_down_wait = tegra210_emc_dvfs_power_ramp_down(emc, src_clk_period,
 							   0);
 
-	/*
-	 * Step 12:
-	 *   And finally - trigger the clock change.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 12\n");
 
 	ccfifo_writel(emc, 1, EMC_STALL_THEN_EXE_AFTER_CLKCHANGE, 0);
 	value &= ~EMC_DBG_WRITE_ACTIVE_ONLY;
 	ccfifo_writel(emc, value, EMC_DBG, 0);
 
-	/*
-	 * Step 13:
-	 *   Ramp up.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 13\n");
 
 	ramp_up_wait = tegra210_emc_dvfs_power_ramp_up(emc, dst_clk_period, 0);
 	ccfifo_writel(emc, emc_dbg, EMC_DBG, 0);
 
-	/*
-	 * Step 14:
-	 *   Bringup CKE pins.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 14\n");
 
 	if (dram_type == DRAM_TYPE_LPDDR4) {
@@ -1400,10 +1296,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		ccfifo_writel(emc, value, EMC_PIN, 0);
 	}
 
-	/*
-	 * Step 15: (two step 15s ??)
-	 *   Calculate zqlatch wait time; has dependency on ramping times.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 15\n");
 
 	if (dst_clk_period <= zqcal_before_cc_cutoff) {
@@ -1481,27 +1374,18 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		}
 	}
 
-	/* WAR: delay for zqlatch */
+	 
 	ccfifo_writel(emc, 0, 0, 10);
 
-	/*
-	 * Step 16:
-	 *   LPDDR4 Conditional Training Kickoff. Removed.
-	 */
+	 
 
-	/*
-	 * Step 17:
-	 *   MANSR exit self refresh.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 17\n");
 
 	if (opt_dvfs_mode == MAN_SR && dram_type != DRAM_TYPE_LPDDR4)
 		ccfifo_writel(emc, 0, EMC_SELF_REF, 0);
 
-	/*
-	 * Step 18:
-	 *   Send MRWs to LPDDR3/DDR3.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 18\n");
 
 	if (dram_type == DRAM_TYPE_LPDDR2) {
@@ -1519,10 +1403,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 			      EMC_EMRS_USE_EMRS_LONG_CNT, EMC_MRS, 0);
 	}
 
-	/*
-	 * Step 19:
-	 *   ZQCAL for LPDDR3/DDR3
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 19\n");
 
 	if (opt_zcal_en_cc) {
@@ -1579,10 +1460,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		tegra210_emc_set_shadow_bypass(emc, ASSEMBLY);
 	}
 
-	/*
-	 * Step 20:
-	 *   Issue ref and optional QRST.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 20\n");
 
 	if (dram_type != DRAM_TYPE_LPDDR4)
@@ -1593,10 +1471,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		ccfifo_writel(emc, 0, EMC_ISSUE_QRST, 2);
 	}
 
-	/*
-	 * Step 21:
-	 *   Restore ZCAL and ZCAL interval.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 21\n");
 
 	if (save_restore_clkstop_pd || opt_zcal_en_cc) {
@@ -1613,10 +1488,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		ccfifo_writel(emc, emc_dbg, EMC_DBG, 0);
 	}
 
-	/*
-	 * Step 22:
-	 *   Restore EMC_CFG_PIPE_CLK.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 22\n");
 
 	ccfifo_writel(emc, emc_cfg_pipe_clk, EMC_CFG_PIPE_CLK, 0);
@@ -1634,9 +1506,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 				   EMC_PMACRO_BG_BIAS_CTRL_0);
 	}
 
-	/*
-	 * Step 23:
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 23\n");
 
 	value = emc_readl(emc, EMC_CFG_DIG_DLL);
@@ -1650,15 +1520,9 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 
 	tegra210_emc_do_clock_change(emc, clksrc);
 
-	/*
-	 * Step 24:
-	 *   Save training results. Removed.
-	 */
+	 
 
-	/*
-	 * Step 25:
-	 *   Program MC updown registers.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 25\n");
 
 	if (next->rate > last->rate) {
@@ -1669,10 +1533,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		tegra210_emc_timing_update(emc);
 	}
 
-	/*
-	 * Step 26:
-	 *   Restore ZCAL registers.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 26\n");
 
 	if (dram_type == DRAM_TYPE_LPDDR4) {
@@ -1698,10 +1559,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		tegra210_emc_set_shadow_bypass(emc, ASSEMBLY);
 	}
 
-	/*
-	 * Step 27:
-	 *   Restore EMC_CFG, FDPD registers.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 27\n");
 
 	tegra210_emc_set_shadow_bypass(emc, ACTIVE);
@@ -1711,10 +1569,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		   EMC_FDPD_CTRL_CMD_NO_RAMP);
 	emc_writel(emc, next->emc_sel_dpd_ctrl, EMC_SEL_DPD_CTRL);
 
-	/*
-	 * Step 28:
-	 *   Training recover. Removed.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 28\n");
 
 	tegra210_emc_set_shadow_bypass(emc, ACTIVE);
@@ -1723,10 +1578,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		   EMC_PMACRO_AUTOCAL_CFG_COMMON);
 	tegra210_emc_set_shadow_bypass(emc, ASSEMBLY);
 
-	/*
-	 * Step 29:
-	 *   Power fix WAR.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 29\n");
 
 	emc_writel(emc, EMC_PMACRO_CFG_PM_GLOBAL_0_DISABLE_CFG_BYTE0 |
@@ -1744,10 +1596,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 		   EMC_PMACRO_TRAINING_CTRL_1);
 	emc_writel(emc, 0, EMC_PMACRO_CFG_PM_GLOBAL_0);
 
-	/*
-	 * Step 30:
-	 *   Re-enable autocal.
-	 */
+	 
 	emc_dbg(emc, STEPS, "Step 30: Re-enable DLL and AUTOCAL\n");
 
 	if (next->burst_regs[EMC_CFG_DIG_DLL_INDEX] & EMC_CFG_DIG_DLL_CFG_DLL_EN) {
@@ -1764,7 +1613,7 @@ static void tegra210_emc_r21021_set_clock(struct tegra210_emc *emc, u32 clksrc)
 
 	emc_writel(emc, next->emc_auto_cal_config, EMC_AUTO_CAL_CONFIG);
 
-	/* Done! Yay. */
+	 
 }
 
 const struct tegra210_emc_sequence tegra210_emc_r21021 = {

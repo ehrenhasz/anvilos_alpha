@@ -1,20 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2013 Texas Instruments Inc.
- *
- * David Griego, <dagriego@biglakesoftware.com>
- * Dale Farnsworth, <dale@farnsworth.org>
- * Archit Taneja, <archit@ti.com>
- */
+ 
+ 
 
 #ifndef _TI_VPDMA_PRIV_H_
 #define _TI_VPDMA_PRIV_H_
 
-/*
- * VPDMA Register offsets
- */
+ 
 
-/* Top level */
+ 
 #define VPDMA_PID		0x00
 #define VPDMA_LIST_ADDR		0x04
 #define VPDMA_LIST_ATTR		0x08
@@ -30,7 +22,7 @@
 #define VPDMA_MAX_SIZE_HEIGHT_MASK	0xffff
 #define VPDMA_MAX_SIZE_HEIGHT_SHFT	0
 
-/* Interrupts */
+ 
 #define VPDMA_INT_CHAN_STAT(grp)	(0x40 + grp * 8)
 #define VPDMA_INT_CHAN_MASK(grp)	(VPDMA_INT_CHAN_STAT(grp) + 4)
 #define VPDMA_INT_CLIENT0_STAT		0x78
@@ -44,7 +36,7 @@
 
 #define VPDMA_PERFMON(i)		(0x200 + i * 4)
 
-/* VIP/VPE client registers */
+ 
 #define VPDMA_DEI_CHROMA1_CSTAT		0x0300
 #define VPDMA_DEI_LUMA1_CSTAT		0x0304
 #define VPDMA_DEI_LUMA2_CSTAT		0x0308
@@ -59,7 +51,7 @@
 #define VPDMA_VIP_UP_UV_CSTAT		0x0394
 #define VPDMA_VPI_CTL_CSTAT		0x03d0
 
-/* Reg field info for VPDMA_CLIENT_CSTAT registers */
+ 
 #define VPDMA_CSTAT_LINE_MODE_MASK	0x03
 #define VPDMA_CSTAT_LINE_MODE_SHIFT	8
 #define VPDMA_CSTAT_FRAME_START_MASK	0xf
@@ -74,18 +66,7 @@
 #define VPDMA_LIST_TYPE_SHFT		16
 #define VPDMA_LIST_SIZE_MASK		0xffff
 
-/*
- * The YUV data type definition below are taken from
- * both the TRM and i839 Errata information.
- * Use the correct data type considering byte
- * reordering of components.
- *
- * Also since the single use of "C" in the 422 case
- * to mean "Cr" (i.e. V component). It was decided
- * to explicitly label them CR to remove any confusion.
- * Bear in mind that the type label refer to the memory
- * packed order (LSB - MSB).
- */
+ 
 #define DATA_TYPE_Y444				0x0
 #define DATA_TYPE_Y422				0x1
 #define DATA_TYPE_Y420				0x2
@@ -99,15 +80,7 @@
 #define DATA_TYPE_CBY422			0x27
 #define DATA_TYPE_CRY422			0x37
 
-/*
- * The RGB data type definition below are defined
- * to follow Errata i819.
- * The initial values were taken from:
- * VPDMA_data_type_mapping_v0.2vayu_c.pdf
- * But some of the ARGB definition appeared to be wrong
- * in the document also. As they would yield RGBA instead.
- * They have been corrected based on experimentation.
- */
+ 
 #define DATA_TYPE_RGB16_565			0x10
 #define DATA_TYPE_ARGB_1555			0x13
 #define DATA_TYPE_ARGB_4444			0x14
@@ -131,7 +104,7 @@
 
 #define DATA_TYPE_MV				0x3
 
-/* VPDMA channel numbers, some are common between VIP/VPE and appear twice */
+ 
 #define	VPE_CHAN_NUM_LUMA1_IN		0
 #define	VPE_CHAN_NUM_CHROMA1_IN		1
 #define	VPE_CHAN_NUM_LUMA2_IN		2
@@ -149,17 +122,10 @@
 #define	VPE_CHAN_NUM_RGB_OUT		106
 #define VIP1_CHAN_NUM_PORT_A_RGB	106
 #define VIP1_CHAN_NUM_PORT_B_RGB	107
-/*
- * a VPDMA address data block payload for a configuration descriptor needs to
- * have each sub block length as a multiple of 16 bytes. Therefore, the overall
- * size of the payload also needs to be a multiple of 16 bytes. The sub block
- * lengths should be ensured to be aligned by the VPDMA user.
- */
+ 
 #define VPDMA_ADB_SIZE_ALIGN		0x0f
 
-/*
- * data transfer descriptor
- */
+ 
 struct vpdma_dtd {
 	u32			type_ctl_stride;
 	union {
@@ -169,18 +135,18 @@ struct vpdma_dtd {
 	u32			start_addr;
 	u32			pkt_ctl;
 	union {
-		u32		frame_width_height;	/* inbound */
-		u32		desc_write_addr;	/* outbound */
+		u32		frame_width_height;	 
+		u32		desc_write_addr;	 
 	};
 	union {
-		u32		start_h_v;		/* inbound */
-		u32		max_width_height;	/* outbound */
+		u32		start_h_v;		 
+		u32		max_width_height;	 
 	};
 	u32			client_attr0;
 	u32			client_attr1;
 };
 
-/* Data Transfer Descriptor specifics */
+ 
 #define DTD_NO_NOTIFY		0
 #define DTD_NOTIFY		1
 
@@ -188,7 +154,7 @@ struct vpdma_dtd {
 #define DTD_DIR_IN		0
 #define DTD_DIR_OUT		1
 
-/* type_ctl_stride */
+ 
 #define DTD_DATA_TYPE_MASK	0x3f
 #define DTD_DATA_TYPE_SHFT	26
 #define DTD_NOTIFY_MASK		0x01
@@ -204,13 +170,13 @@ struct vpdma_dtd {
 #define DTD_LINE_STRIDE_MASK	0xffff
 #define DTD_LINE_STRIDE_SHFT	0
 
-/* xfer_length_height */
+ 
 #define DTD_LINE_LENGTH_MASK	0xffff
 #define DTD_LINE_LENGTH_SHFT	16
 #define DTD_XFER_HEIGHT_MASK	0xffff
 #define DTD_XFER_HEIGHT_SHFT	0
 
-/* pkt_ctl */
+ 
 #define DTD_PKT_TYPE_MASK	0x1f
 #define DTD_PKT_TYPE_SHFT	27
 #define DTD_MODE_MASK		0x01
@@ -224,13 +190,13 @@ struct vpdma_dtd {
 #define DTD_NEXT_CHAN_MASK	0x01ff
 #define DTD_NEXT_CHAN_SHFT	0
 
-/* frame_width_height */
+ 
 #define DTD_FRAME_WIDTH_MASK	0xffff
 #define DTD_FRAME_WIDTH_SHFT	16
 #define DTD_FRAME_HEIGHT_MASK	0xffff
 #define DTD_FRAME_HEIGHT_SHFT	0
 
-/* start_h_v */
+ 
 #define DTD_H_START_MASK	0xffff
 #define DTD_H_START_SHFT	16
 #define DTD_V_START_MASK	0xffff
@@ -245,7 +211,7 @@ struct vpdma_dtd {
 #define DTD_USE_DESC_MASK	0x01
 #define DTD_USE_DESC_SHIFT	0
 
-/* max_width_height */
+ 
 #define DTD_MAX_WIDTH_MASK	0x07
 #define DTD_MAX_WIDTH_SHFT	4
 #define DTD_MAX_HEIGHT_MASK	0x07
@@ -430,23 +396,21 @@ static inline int dtd_get_max_height(struct vpdma_dtd *dtd)
 							DTD_MAX_HEIGHT_MASK;
 }
 
-/*
- * configuration descriptor
- */
+ 
 struct vpdma_cfd {
 	union {
 		u32	dest_addr_offset;
 		u32	w0;
 	};
 	union {
-		u32	block_len;		/* in words */
+		u32	block_len;		 
 		u32	w1;
 	};
 	u32		payload_addr;
-	u32		ctl_payload_len;	/* in words */
+	u32		ctl_payload_len;	 
 };
 
-/* Configuration descriptor specifics */
+ 
 
 #define CFD_PKT_TYPE		0xb
 
@@ -455,11 +419,11 @@ struct vpdma_cfd {
 #define CFD_CLS_ADB		0
 #define CFD_CLS_BLOCK		1
 
-/* block_len */
+ 
 #define CFD__BLOCK_LEN_MASK	0xffff
 #define CFD__BLOCK_LEN_SHFT	0
 
-/* ctl_payload_len */
+ 
 #define CFD_PKT_TYPE_MASK	0x1f
 #define CFD_PKT_TYPE_SHFT	27
 #define CFD_DIRECT_MASK		0x01
@@ -506,9 +470,7 @@ static inline int cfd_get_payload_len(struct vpdma_cfd *cfd)
 	return cfd->ctl_payload_len & CFD_PAYLOAD_LEN_MASK;
 }
 
-/*
- * control descriptor
- */
+ 
 struct vpdma_ctd {
 	union {
 		u32	timer_value;
@@ -528,7 +490,7 @@ struct vpdma_ctd {
 	u32		type_source_ctl;
 };
 
-/* control descriptor types */
+ 
 #define CTD_TYPE_SYNC_ON_CLIENT		0
 #define CTD_TYPE_SYNC_ON_LIST		1
 #define CTD_TYPE_SYNC_ON_EXT		2
@@ -541,25 +503,25 @@ struct vpdma_ctd {
 
 #define CTD_PKT_TYPE		0xc
 
-/* timer_value */
+ 
 #define CTD_TIMER_VALUE_MASK	0xffff
 #define CTD_TIMER_VALUE_SHFT	0
 
-/* pixel_line_count */
+ 
 #define CTD_PIXEL_COUNT_MASK	0xffff
 #define CTD_PIXEL_COUNT_SHFT	16
 #define CTD_LINE_COUNT_MASK	0xffff
 #define CTD_LINE_COUNT_SHFT	0
 
-/* list_size */
+ 
 #define CTD_LIST_SIZE_MASK	0xffff
 #define CTD_LIST_SIZE_SHFT	0
 
-/* event */
+ 
 #define CTD_EVENT_MASK		0x0f
 #define CTD_EVENT_SHFT		0
 
-/* fid_ctl */
+ 
 #define CTD_FID2_MASK		0x03
 #define CTD_FID2_SHFT		4
 #define CTD_FID1_MASK		0x03
@@ -567,7 +529,7 @@ struct vpdma_ctd {
 #define CTD_FID0_MASK		0x03
 #define CTD_FID0_SHFT		0
 
-/* type_source_ctl */
+ 
 #define CTD_PKT_TYPE_MASK	0x1f
 #define CTD_PKT_TYPE_SHFT	27
 #define CTD_SOURCE_MASK		0xff

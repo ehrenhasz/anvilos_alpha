@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale MXS On-Chip OTP driver
- *
- * Copyright (C) 2015 Stefan Wahren <stefan.wahren@i2se.com>
- *
- * Based on the driver from Huang Shijie and Christoph G. Baumann
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -18,7 +12,7 @@
 #include <linux/slab.h>
 #include <linux/stmp_device.h>
 
-/* OCOTP registers and bits */
+ 
 
 #define BM_OCOTP_CTRL_RD_BANK_OPEN	BIT(12)
 #define BM_OCOTP_CTRL_ERROR		BIT(9)
@@ -72,10 +66,10 @@ static int mxs_ocotp_read(void *context, unsigned int offset,
 	if (ret)
 		goto disable_clk;
 
-	/* open OCOTP banks for read */
+	 
 	writel(BM_OCOTP_CTRL_RD_BANK_OPEN, otp->base + STMP_OFFSET_REG_SET);
 
-	/* approximately wait 33 hclk cycles */
+	 
 	udelay(1);
 
 	ret = mxs_ocotp_wait(otp);
@@ -84,7 +78,7 @@ static int mxs_ocotp_read(void *context, unsigned int offset,
 
 	while (bytes) {
 		if ((offset < OCOTP_DATA_OFFSET) || (offset % 16)) {
-			/* fill up non-data register */
+			 
 			*buf++ = 0;
 		} else {
 			*buf++ = readl(otp->base + offset);
@@ -95,7 +89,7 @@ static int mxs_ocotp_read(void *context, unsigned int offset,
 	}
 
 close_banks:
-	/* close banks for power saving */
+	 
 	writel(BM_OCOTP_CTRL_RD_BANK_OPEN, otp->base + STMP_OFFSET_REG_CLR);
 
 disable_clk:
@@ -126,7 +120,7 @@ static const struct mxs_data imx28_data = {
 static const struct of_device_id mxs_ocotp_match[] = {
 	{ .compatible = "fsl,imx23-ocotp", .data = &imx23_data },
 	{ .compatible = "fsl,imx28-ocotp", .data = &imx28_data },
-	{ /* sentinel */},
+	{  },
 };
 MODULE_DEVICE_TABLE(of, mxs_ocotp_match);
 

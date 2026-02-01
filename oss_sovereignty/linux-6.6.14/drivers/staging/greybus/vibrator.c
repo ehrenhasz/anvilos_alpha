@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Vibrator protocol driver.
- *
- * Copyright 2014 Google Inc.
- * Copyright 2014 Linaro Ltd.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -18,11 +13,11 @@
 struct gb_vibrator_device {
 	struct gb_connection	*connection;
 	struct device		*dev;
-	int			minor;		/* vibrator minor number */
+	int			minor;		 
 	struct delayed_work     delayed_work;
 };
 
-/* Greybus Vibrator operation types */
+ 
 #define	GB_VIBRATOR_TYPE_ON			0x02
 #define	GB_VIBRATOR_TYPE_OFF			0x03
 
@@ -48,7 +43,7 @@ static int turn_on(struct gb_vibrator_device *vib, u16 timeout_ms)
 	if (ret)
 		return ret;
 
-	/* Vibrator was switched ON earlier */
+	 
 	if (cancel_delayed_work_sync(&vib->delayed_work))
 		turn_off(vib);
 
@@ -148,11 +143,7 @@ static int gb_vibrator_probe(struct gb_bundle *bundle,
 	if (retval)
 		goto err_connection_destroy;
 
-	/*
-	 * For now we create a device in sysfs for the vibrator, but odds are
-	 * there is a "real" device somewhere in the kernel for this, but I
-	 * can't find it at the moment...
-	 */
+	 
 	vib->minor = ida_simple_get(&minors, 0, 0, GFP_KERNEL);
 	if (vib->minor < 0) {
 		retval = vib->minor;

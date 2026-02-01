@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "../util.h"
 #include "gtk.h"
 
@@ -90,7 +90,7 @@ static int perf_gtk__warning_statusbar(const char *format, va_list args)
 	gtk_statusbar_pop(GTK_STATUSBAR(pgctx->statbar),
 			  pgctx->statbar_ctx_id);
 
-	/* Only first line can be displayed */
+	 
 	p = strchr(msg, '\n');
 	if (p)
 		*p = '\0';

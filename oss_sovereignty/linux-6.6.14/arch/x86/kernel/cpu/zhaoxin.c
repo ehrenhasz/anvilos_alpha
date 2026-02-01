@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/sched.h>
 #include <linux/sched/clock.h>
 
@@ -11,42 +11,39 @@
 
 #define ACE_PRESENT	(1 << 6)
 #define ACE_ENABLED	(1 << 7)
-#define ACE_FCR		(1 << 7)	/* MSR_ZHAOXIN_FCR */
+#define ACE_FCR		(1 << 7)	 
 
 #define RNG_PRESENT	(1 << 2)
 #define RNG_ENABLED	(1 << 3)
-#define RNG_ENABLE	(1 << 8)	/* MSR_ZHAOXIN_RNG */
+#define RNG_ENABLE	(1 << 8)	 
 
 static void init_zhaoxin_cap(struct cpuinfo_x86 *c)
 {
 	u32  lo, hi;
 
-	/* Test for Extended Feature Flags presence */
+	 
 	if (cpuid_eax(0xC0000000) >= 0xC0000001) {
 		u32 tmp = cpuid_edx(0xC0000001);
 
-		/* Enable ACE unit, if present and disabled */
+		 
 		if ((tmp & (ACE_PRESENT | ACE_ENABLED)) == ACE_PRESENT) {
 			rdmsr(MSR_ZHAOXIN_FCR57, lo, hi);
-			/* Enable ACE unit */
+			 
 			lo |= ACE_FCR;
 			wrmsr(MSR_ZHAOXIN_FCR57, lo, hi);
 			pr_info("CPU: Enabled ACE h/w crypto\n");
 		}
 
-		/* Enable RNG unit, if present and disabled */
+		 
 		if ((tmp & (RNG_PRESENT | RNG_ENABLED)) == RNG_PRESENT) {
 			rdmsr(MSR_ZHAOXIN_FCR57, lo, hi);
-			/* Enable RNG unit */
+			 
 			lo |= RNG_ENABLE;
 			wrmsr(MSR_ZHAOXIN_FCR57, lo, hi);
 			pr_info("CPU: Enabled h/w RNG\n");
 		}
 
-		/*
-		 * Store Extended Feature Flags as word 5 of the CPU
-		 * capability bit array
-		 */
+		 
 		c->x86_capability[CPUID_C000_0001_EDX] = cpuid_edx(0xC0000001);
 	}
 
@@ -70,11 +67,7 @@ static void early_init_zhaoxin(struct cpuinfo_x86 *c)
 		u32 eax, ebx, ecx, edx;
 
 		cpuid(0x00000001, &eax, &ebx, &ecx, &edx);
-		/*
-		 * If HTT (EDX[28]) is set EBX[16:23] contain the number of
-		 * apicids which are reserved per package. Store the resulting
-		 * shift value for the package management code.
-		 */
+		 
 		if (edx & (1U << 28))
 			c->x86_coreid_bits = get_count_order((ebx >> 16) & 0xff);
 	}
@@ -93,11 +86,7 @@ static void init_zhaoxin(struct cpuinfo_x86 *c)
 	if (c->cpuid_level > 9) {
 		unsigned int eax = cpuid_eax(10);
 
-		/*
-		 * Check for version and the number of counters
-		 * Version(eax[7:0]) can't be 0;
-		 * Counters(eax[15:8]) should be greater than 1;
-		 */
+		 
 		if ((eax & 0xff) && (((eax >> 8) & 0xff) > 1))
 			set_cpu_cap(c, X86_FEATURE_ARCH_PERFMON);
 	}

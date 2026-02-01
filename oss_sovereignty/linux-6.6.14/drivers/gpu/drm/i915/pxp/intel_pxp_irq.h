@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright(c) 2020, Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __INTEL_PXP_IRQ_H__
 #define __INTEL_PXP_IRQ_H__
@@ -37,4 +35,4 @@ static inline void intel_pxp_irq_disable(struct intel_pxp *pxp)
 }
 #endif
 
-#endif /* __INTEL_PXP_IRQ_H__ */
+#endif  

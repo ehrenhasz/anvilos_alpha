@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * file.c - operations for regular (text) files.
- *
- * Based on sysfs:
- * 	sysfs is Copyright (C) 2001, 2002, 2003 Patrick Mochel
- *
- * configfs Copyright (C) 2005 Oracle.  All rights reserved.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/module.h>
@@ -18,12 +11,7 @@
 #include <linux/configfs.h>
 #include "configfs_internal.h"
 
-/*
- * A simple attribute can only be 4096 characters.  Why 4k?  Because the
- * original code limited it to PAGE_SIZE.  That's a bad idea, though,
- * because an attribute of 16k on ia64 won't work on x86.  So we limit to
- * 4k, our minimum common page size.
- */
+ 
 #define SIMPLE_ATTR_SIZE 4096
 
 struct configfs_buffer {
@@ -113,7 +101,7 @@ static ssize_t configfs_bin_read_iter(struct kiocb *iocb, struct iov_iter *to)
 
 	mutex_lock(&buffer->mutex);
 
-	/* we don't support switching read/write modes */
+	 
 	if (buffer->write_in_progress) {
 		retval = -ETXTBSY;
 		goto out;
@@ -121,7 +109,7 @@ static ssize_t configfs_bin_read_iter(struct kiocb *iocb, struct iov_iter *to)
 	buffer->read_in_progress = true;
 
 	if (buffer->needs_read_fill) {
-		/* perform first read with buf == NULL to get extent */
+		 
 		down_read(&frag->frag_sem);
 		if (!frag->frag_dead)
 			len = buffer->bin_attr->read(buffer->item, NULL, 0);
@@ -133,7 +121,7 @@ static ssize_t configfs_bin_read_iter(struct kiocb *iocb, struct iov_iter *to)
 			goto out;
 		}
 
-		/* do not exceed the maximum value */
+		 
 		if (buffer->cb_max_size && len > buffer->cb_max_size) {
 			retval = -EFBIG;
 			goto out;
@@ -146,7 +134,7 @@ static ssize_t configfs_bin_read_iter(struct kiocb *iocb, struct iov_iter *to)
 		}
 		buffer->bin_buffer_size = len;
 
-		/* perform second read to fill buffer */
+		 
 		down_read(&frag->frag_sem);
 		if (!frag->frag_dead)
 			len = buffer->bin_attr->read(buffer->item,
@@ -177,7 +165,7 @@ out:
 	return retval;
 }
 
-/* Fill @buffer with data coming from @from. */
+ 
 static int fill_write_buffer(struct configfs_buffer *buffer,
 			     struct iov_iter *from)
 {
@@ -190,8 +178,7 @@ static int fill_write_buffer(struct configfs_buffer *buffer,
 
 	copied = copy_from_iter(buffer->page, SIMPLE_ATTR_SIZE - 1, from);
 	buffer->needs_read_fill = 1;
-	/* if buf is assumed to contain a string, terminate it by \0,
-	 * so e.g. sscanf() can scan the string easily */
+	 
 	buffer->page[copied] = 0;
 	return copied ? : -EFAULT;
 }
@@ -210,13 +197,7 @@ flush_write_buffer(struct file *file, struct configfs_buffer *buffer, size_t cou
 }
 
 
-/*
- * There is no easy way for us to know if userspace is only doing a partial
- * write, so we don't support them. We expect the entire buffer to come on the
- * first write.
- * Hint: if you're writing a value, first read the file, modify only the value
- * you're changing, then write entire buffer back.
- */
+ 
 static ssize_t configfs_write_iter(struct kiocb *iocb, struct iov_iter *from)
 {
 	struct file *file = iocb->ki_filp;
@@ -244,14 +225,14 @@ static ssize_t configfs_bin_write_iter(struct kiocb *iocb,
 
 	mutex_lock(&buffer->mutex);
 
-	/* we don't support switching read/write modes */
+	 
 	if (buffer->read_in_progress) {
 		len = -ETXTBSY;
 		goto out;
 	}
 	buffer->write_in_progress = true;
 
-	/* buffer grows? */
+	 
 	end_offset = iocb->ki_pos + iov_iter_count(from);
 	if (end_offset > buffer->bin_buffer_size) {
 		if (buffer->cb_max_size && end_offset > buffer->cb_max_size) {
@@ -265,14 +246,14 @@ static ssize_t configfs_bin_write_iter(struct kiocb *iocb,
 			goto out;
 		}
 
-		/* copy old contents */
+		 
 		if (buffer->bin_buffer) {
 			memcpy(tbuf, buffer->bin_buffer,
 				buffer->bin_buffer_size);
 			vfree(buffer->bin_buffer);
 		}
 
-		/* clear the new area */
+		 
 		memset(tbuf + buffer->bin_buffer_size, 0,
 			end_offset - buffer->bin_buffer_size);
 		buffer->bin_buffer = tbuf;
@@ -322,7 +303,7 @@ static int __configfs_open_file(struct inode *inode, struct file *file, int type
 	}
 
 	buffer->owner = attr->ca_owner;
-	/* Grab the module reference for this attribute if we have one */
+	 
 	error = -ENODEV;
 	if (!try_module_get(buffer->owner))
 		goto out_free_buffer;
@@ -333,10 +314,7 @@ static int __configfs_open_file(struct inode *inode, struct file *file, int type
 
 	buffer->ops = buffer->item->ci_type->ct_item_ops;
 
-	/* File needs write support.
-	 * The inode's perms must say it's ok,
-	 * and we must have a store method.
-	 */
+	 
 	if (file->f_mode & FMODE_WRITE) {
 		if (!(inode->i_mode & S_IWUGO))
 			goto out_put_module;
@@ -346,10 +324,7 @@ static int __configfs_open_file(struct inode *inode, struct file *file, int type
 			goto out_put_module;
 	}
 
-	/* File needs read support.
-	 * The inode's perms must say it's ok, and we there
-	 * must be a show method for it.
-	 */
+	 
 	if (file->f_mode & FMODE_READ) {
 		if (!(inode->i_mode & S_IRUGO))
 			goto out_put_module;
@@ -407,7 +382,7 @@ static int configfs_release_bin_file(struct inode *inode, struct file *file)
 
 		down_read(&frag->frag_sem);
 		if (!frag->frag_dead) {
-			/* result of ->release() is ignored */
+			 
 			buffer->bin_attr->write(buffer->item,
 					buffer->bin_buffer,
 					buffer->bin_buffer_size);
@@ -433,16 +408,12 @@ const struct file_operations configfs_file_operations = {
 const struct file_operations configfs_bin_file_operations = {
 	.read_iter	= configfs_bin_read_iter,
 	.write_iter	= configfs_bin_write_iter,
-	.llseek		= NULL,		/* bin file is not seekable */
+	.llseek		= NULL,		 
 	.open		= configfs_open_bin_file,
 	.release	= configfs_release_bin_file,
 };
 
-/**
- *	configfs_create_file - create an attribute file for an item.
- *	@item:	item we're creating for.
- *	@attr:	atrribute descriptor.
- */
+ 
 
 int configfs_create_file(struct config_item * item, const struct configfs_attribute * attr)
 {
@@ -459,11 +430,7 @@ int configfs_create_file(struct config_item * item, const struct configfs_attrib
 	return error;
 }
 
-/**
- *	configfs_create_bin_file - create a binary attribute file for an item.
- *	@item:	item we're creating for.
- *	@bin_attr: atrribute descriptor.
- */
+ 
 
 int configfs_create_bin_file(struct config_item *item,
 		const struct configfs_bin_attribute *bin_attr)

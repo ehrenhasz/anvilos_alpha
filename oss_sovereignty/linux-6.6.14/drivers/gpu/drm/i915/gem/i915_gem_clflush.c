@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #include <drm/drm_cache.h>
 
@@ -64,7 +60,7 @@ static struct clflush *clflush_work_create(struct drm_i915_gem_object *obj)
 	}
 
 	dma_fence_work_init(&clflush->base, &clflush_ops);
-	clflush->obj = i915_gem_object_get(obj); /* obj <-> clflush cycle */
+	clflush->obj = i915_gem_object_get(obj);  
 
 	return clflush;
 }
@@ -82,26 +78,13 @@ bool i915_gem_clflush_object(struct drm_i915_gem_object *obj,
 		return false;
 	}
 
-	/*
-	 * Stolen memory is always coherent with the GPU as it is explicitly
-	 * marked as wc by the system, or the system is cache-coherent.
-	 * Similarly, we only access struct pages through the CPU cache, so
-	 * anything not backed by physical memory we consider to be always
-	 * coherent and not need clflushing.
-	 */
+	 
 	if (!i915_gem_object_has_struct_page(obj)) {
 		obj->cache_dirty = false;
 		return false;
 	}
 
-	/* If the GPU is snooping the contents of the CPU cache,
-	 * we do not need to manually clear the CPU cache lines.  However,
-	 * the caches are only snooped when the render cache is
-	 * flushed/invalidated.  As we always have to emit invalidations
-	 * and flushes when moving into and out of the RENDER domain, correct
-	 * snooping behaviour occurs naturally as the result of our domain
-	 * tracking.
-	 */
+	 
 	if (!(flags & I915_CLFLUSH_FORCE) &&
 	    obj->cache_coherent & I915_BO_CACHE_COHERENT_FOR_READ)
 		return false;
@@ -120,13 +103,7 @@ bool i915_gem_clflush_object(struct drm_i915_gem_object *obj,
 		dma_resv_add_fence(obj->base.resv, &clflush->base.dma,
 				   DMA_RESV_USAGE_KERNEL);
 		dma_fence_work_commit(&clflush->base);
-		/*
-		 * We must have successfully populated the pages(since we are
-		 * holding a pin on the pages as per the flush worker) to reach
-		 * this point, which must mean we have already done the required
-		 * flush-on-acquire, hence resetting cache_dirty here should be
-		 * safe.
-		 */
+		 
 		obj->cache_dirty = false;
 	} else if (obj->mm.pages) {
 		__do_clflush(obj);

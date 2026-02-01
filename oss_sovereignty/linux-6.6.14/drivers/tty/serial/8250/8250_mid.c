@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * 8250_mid.c - Driver for UART on Intel Penwell and various other Intel SOCs
- *
- * Copyright (C) 2015 Intel Corporation
- * Author: Heikki Krogerus <heikki.krogerus@linux.intel.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/module.h>
@@ -23,7 +18,7 @@
 #define PCI_DEVICE_ID_INTEL_CDF_UART	0x18d8
 #define PCI_DEVICE_ID_INTEL_DNV_UART	0x19d8
 
-/* Intel MID Specific registers */
+ 
 #define INTEL_MID_UART_FISR		0x08
 #define INTEL_MID_UART_PS		0x30
 #define INTEL_MID_UART_MUL		0x34
@@ -48,7 +43,7 @@ struct mid8250 {
 	struct hsu_dma_chip dma_chip;
 };
 
-/*****************************************************************************/
+ 
 
 static int pnw_setup(struct mid8250 *mid, struct uart_port *p)
 {
@@ -89,7 +84,7 @@ static int tng_handle_irq(struct uart_port *p)
 
 	chip = pci_get_drvdata(mid->dma_dev);
 
-	/* Rx DMA */
+	 
 	err = hsu_dma_get_status(chip, mid->dma_index * 2 + 1, &status);
 	if (err > 0) {
 		serial8250_rx_dma_flush(up);
@@ -97,14 +92,14 @@ static int tng_handle_irq(struct uart_port *p)
 	} else if (err == 0)
 		ret |= hsu_dma_do_irq(chip, mid->dma_index * 2 + 1, status);
 
-	/* Tx DMA */
+	 
 	err = hsu_dma_get_status(chip, mid->dma_index * 2, &status);
 	if (err > 0)
 		ret |= 1;
 	else if (err == 0)
 		ret |= hsu_dma_do_irq(chip, mid->dma_index * 2, status);
 
-	/* UART */
+	 
 	ret |= serial8250_handle_irq(p, serial_port_in(p, UART_IIR));
 	return IRQ_RETVAL(ret);
 }
@@ -114,11 +109,7 @@ static int tng_setup(struct mid8250 *mid, struct uart_port *p)
 	struct pci_dev *pdev = to_pci_dev(p->dev);
 	int index = PCI_FUNC(pdev->devfn);
 
-	/*
-	 * Device 0000:00:04.0 is not a real HSU port. It provides a global
-	 * register set for all HSU ports, although it has the same PCI ID.
-	 * Skip it here.
-	 */
+	 
 	if (index-- == 0)
 		return -ENODEV;
 
@@ -186,7 +177,7 @@ static int dnv_setup(struct mid8250 *mid, struct uart_port *p)
 	chip->length = pci_resource_len(pdev, bar);
 	chip->offset = DNV_DMA_CHAN_OFFSET;
 
-	/* Falling back to PIO mode if DMA probing fails */
+	 
 	ret = hsu_dma_probe(chip);
 	if (ret)
 		return 0;
@@ -204,7 +195,7 @@ static void dnv_exit(struct mid8250 *mid)
 	hsu_dma_remove(&mid->dma_chip);
 }
 
-/*****************************************************************************/
+ 
 
 static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
 				const struct ktermios *old)
@@ -216,26 +207,26 @@ static void mid8250_set_termios(struct uart_port *p, struct ktermios *termios,
 	unsigned long w = BIT(24) - 1;
 	unsigned long mul, div;
 
-	/* Gracefully handle the B0 case: fall back to B9600 */
+	 
 	fuart = fuart ? fuart : 9600 * 16;
 
 	if (mid->board->freq < fuart) {
-		/* Find prescaler value that satisfies Fuart < Fref */
+		 
 		if (mid->board->freq > baud)
-			ps = mid->board->freq / baud;	/* baud rate too high */
+			ps = mid->board->freq / baud;	 
 		else
-			ps = 1;				/* PLL case */
+			ps = 1;				 
 		fuart = baud * ps;
 	} else {
-		/* Get Fuart closer to Fref */
+		 
 		fuart *= rounddown_pow_of_two(mid->board->freq / fuart);
 	}
 
 	rational_best_approximation(fuart, mid->board->freq, w, w, &mul, &div);
-	p->uartclk = fuart * 16 / ps;		/* core uses ps = 16 always */
+	p->uartclk = fuart * 16 / ps;		 
 
-	writel(ps, p->membase + INTEL_MID_UART_PS);		/* set PS */
-	writel(mul, p->membase + INTEL_MID_UART_MUL);		/* set MUL */
+	writel(ps, p->membase + INTEL_MID_UART_PS);		 
+	writel(mul, p->membase + INTEL_MID_UART_MUL);		 
 	writel(div, p->membase + INTEL_MID_UART_DIV);
 
 	serial8250_do_set_termios(p, termios, old);

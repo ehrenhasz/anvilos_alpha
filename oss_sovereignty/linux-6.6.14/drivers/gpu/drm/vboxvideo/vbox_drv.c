@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2013-2017 Oracle Corporation
- * This file is based on ast_drv.c
- * Copyright 2012 Red Hat Inc.
- * Authors: Dave Airlie <airlied@redhat.com>
- *          Michael Thayer <michael.thayer@oracle.com,
- *          Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/vt_kern.h>

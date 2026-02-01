@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #include <linux/device.h>
 #include <linux/videodev2.h>

@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Buddha, Catweasel and X-Surf PATA controller driver
- *
- * Copyright (c) 2018 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com
- *
- * Based on buddha.c:
- *
- *	Copyright (C) 1997, 2001 by Geert Uytterhoeven and others
- */
+
+ 
 
 #include <linux/ata.h>
 #include <linux/blkdev.h>
@@ -35,12 +26,12 @@
 #define BUDDHA_BASE1	0x800
 #define BUDDHA_BASE2	0xa00
 #define BUDDHA_BASE3	0xc00
-#define XSURF_BASE1	0xb000 /* 2.5" interface */
-#define XSURF_BASE2	0xd000 /* 3.5" interface */
+#define XSURF_BASE1	0xb000  
+#define XSURF_BASE2	0xd000  
 #define BUDDHA_CONTROL	0x11a
 #define BUDDHA_IRQ	0xf00
 #define XSURF_IRQ	0x7e
-#define BUDDHA_IRQ_MR	0xfc0	/* master interrupt enable */
+#define BUDDHA_IRQ_MR	0xfc0	 
 
 enum {
 	BOARD_BUDDHA = 0,
@@ -60,7 +51,7 @@ static const struct scsi_host_template pata_buddha_sht = {
 	ATA_PIO_SHT(DRV_NAME),
 };
 
-/* FIXME: is this needed? */
+ 
 static unsigned int pata_buddha_data_xfer(struct ata_queued_cmd *qc,
 					 unsigned char *buf,
 					 unsigned int buflen, int rw)
@@ -70,17 +61,17 @@ static unsigned int pata_buddha_data_xfer(struct ata_queued_cmd *qc,
 	void __iomem *data_addr = ap->ioaddr.data_addr;
 	unsigned int words = buflen >> 1;
 
-	/* Transfer multiple of 2 bytes */
+	 
 	if (rw == READ)
 		raw_insw((u16 *)data_addr, (u16 *)buf, words);
 	else
 		raw_outsw((u16 *)data_addr, (u16 *)buf, words);
 
-	/* Transfer trailing byte, if any. */
+	 
 	if (unlikely(buflen & 0x01)) {
 		unsigned char pad[2] = { };
 
-		/* Point buf to the tail of buffer */
+		 
 		buf += buflen - 1;
 
 		if (rw == READ) {
@@ -96,17 +87,14 @@ static unsigned int pata_buddha_data_xfer(struct ata_queued_cmd *qc,
 	return words << 1;
 }
 
-/*
- * Provide our own set_mode() as we don't want to change anything that has
- * already been configured..
- */
+ 
 static int pata_buddha_set_mode(struct ata_link *link,
 				struct ata_device **unused)
 {
 	struct ata_device *dev;
 
 	ata_for_each_dev(dev, link, ENABLED) {
-		/* We don't really care */
+		 
 		dev->pio_mode = dev->xfer_mode = XFER_PIO_0;
 		dev->xfer_shift = ATA_SHIFT_PIO;
 		dev->flags |= ATA_DFLAG_PIO;
@@ -180,11 +168,11 @@ static int pata_buddha_probe(struct zorro_dev *z,
 		}
 	}
 
-	/* Workaround for X-Surf: Save drvdata in case zorro8390 has set it */
+	 
 	if (type == BOARD_XSURF)
 		old_drvdata = dev_get_drvdata(&z->dev);
 
-	/* allocate host */
+	 
 	host = ata_host_alloc(&z->dev, nr_ports);
 	if (type == BOARD_XSURF)
 		dev_set_drvdata(&z->dev, old_drvdata);
@@ -193,7 +181,7 @@ static int pata_buddha_probe(struct zorro_dev *z,
 
 	buddha_board = ZTWO_VADDR(board);
 
-	/* enable the board IRQ on Buddha/Catweasel */
+	 
 	if (type != BOARD_XSURF)
 		z_writeb(0, buddha_board + BUDDHA_IRQ_MR);
 
@@ -210,7 +198,7 @@ static int pata_buddha_probe(struct zorro_dev *z,
 		} else {
 			ap->ops = &pata_xsurf_ops;
 			base = buddha_board + xsurf_bases[i];
-			/* X-Surf has no CS1* (Control/AltStat) */
+			 
 			irqport = buddha_board + XSURF_IRQ;
 		}
 
@@ -266,20 +254,15 @@ static struct zorro_driver pata_buddha_driver = {
 	.remove         = pata_buddha_remove,
 };
 
-/*
- * We cannot have a modalias for X-Surf boards, as it competes with the
- * zorro8390 network driver. As a stopgap measure until we have proper
- * MFD support for this board, we manually attach to it late after Zorro
- * has enumerated its boards.
- */
+ 
 static int __init pata_buddha_late_init(void)
 {
 	struct zorro_dev *z = NULL;
 
-	/* Auto-bind to regular boards */
+	 
 	zorro_register_driver(&pata_buddha_driver);
 
-	/* Manually bind to all X-Surf boards */
+	 
 	while ((z = zorro_find_device(ZORRO_PROD_INDIVIDUAL_COMPUTERS_X_SURF, z))) {
 		static struct zorro_device_id xsurf_ent = {
 			ZORRO_PROD_INDIVIDUAL_COMPUTERS_X_SURF, BOARD_XSURF

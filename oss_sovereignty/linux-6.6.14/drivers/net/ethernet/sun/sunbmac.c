@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* sunbmac.c: Driver for Sparc BigMAC 100baseT ethernet adapters.
- *
- * Copyright (C) 1997, 1998, 1999, 2003, 2008 David S. Miller (davem@davemloft.net)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pgtable.h>
@@ -73,7 +70,7 @@ MODULE_LICENSE("GPL");
 #define DIRQ(x)
 #endif
 
-#define DEFAULT_JAMSIZE    4 /* Toe jam */
+#define DEFAULT_JAMSIZE    4  
 
 #define QEC_RESET_TRIES 200
 
@@ -102,9 +99,7 @@ static void qec_init(struct bigmac *bp)
 	u8 bsizes = bp->bigmac_bursts;
 	u32 regval;
 
-	/* 64byte bursts do not work at the moment, do
-	 * not even try to enable them.  -DaveM
-	 */
+	 
 	if (bsizes & DMA_BURST32)
 		regval = GLOB_CTRL_B32;
 	else
@@ -112,11 +107,11 @@ static void qec_init(struct bigmac *bp)
 	sbus_writel(regval | GLOB_CTRL_BMODE, gregs + GLOB_CTRL);
 	sbus_writel(GLOB_PSIZE_2048, gregs + GLOB_PSIZE);
 
-	/* All of memsize is given to bigmac. */
+	 
 	sbus_writel(resource_size(&qec_op->resource[1]),
 		    gregs + GLOB_MSIZE);
 
-	/* Half to the transmitter, half to the receiver. */
+	 
 	sbus_writel(resource_size(&qec_op->resource[1]) >> 1,
 		    gregs + GLOB_TSIZE);
 	sbus_writel(resource_size(&qec_op->resource[1]) >> 1,
@@ -132,9 +127,7 @@ static void bigmac_tx_reset(void __iomem *bregs)
 
 	sbus_writel(0, bregs + BMAC_TXCFG);
 
-	/* The fifo threshold bit is read-only and does
-	 * not clear.  -DaveM
-	 */
+	 
 	while ((sbus_readl(bregs + BMAC_TXCFG) & ~(BIGMAC_TXCFG_FIFO)) != 0 &&
 	       --tries != 0)
 		udelay(20);
@@ -161,7 +154,7 @@ static void bigmac_rx_reset(void __iomem *bregs)
 	}
 }
 
-/* Reset the transmitter and receiver. */
+ 
 static void bigmac_stop(struct bigmac *bp)
 {
 	bigmac_tx_reset(bp->bregs);
@@ -220,10 +213,10 @@ static void bigmac_init_rings(struct bigmac *bp, bool non_blocking)
 
 	bp->rx_new = bp->rx_old = bp->tx_new = bp->tx_old = 0;
 
-	/* Free any skippy bufs left around in the rings. */
+	 
 	bigmac_clean_rings(bp);
 
-	/* Now get new skbufs for the receive ring. */
+	 
 	for (i = 0; i < RX_RING_SIZE; i++) {
 		struct sk_buff *skb;
 
@@ -233,7 +226,7 @@ static void bigmac_init_rings(struct bigmac *bp, bool non_blocking)
 
 		bp->rx_skbs[i] = skb;
 
-		/* Because we reserve afterwards. */
+		 
 		skb_put(skb, ETH_FRAME_LEN);
 		skb_reserve(skb, 34);
 
@@ -461,9 +454,7 @@ static void bigmac_tcvr_init(struct bigmac *bp)
 		    tregs + TCVR_MPAL);
 	sbus_readl(tregs + TCVR_MPAL);
 
-	/* Only the bit for the present transceiver (internal or
-	 * external) will stick, set them both and see what stays.
-	 */
+	 
 	sbus_writel(MGMT_PAL_INT_MDIO | MGMT_PAL_EXT_MDIO, tregs + TCVR_MPAL);
 	sbus_readl(tregs + TCVR_MPAL);
 	udelay(20);
@@ -496,7 +487,7 @@ static int try_next_permutation(struct bigmac *bp, void __iomem *tregs)
 	if (bp->sw_bmcr & BMCR_SPEED100) {
 		int timeout;
 
-		/* Reset the PHY. */
+		 
 		bp->sw_bmcr	= (BMCR_ISOLATE | BMCR_PDOWN | BMCR_LOOPBACK);
 		bigmac_tcvr_write(bp, tregs, MII_BMCR, bp->sw_bmcr);
 		bp->sw_bmcr	= (BMCR_RESET);
@@ -514,13 +505,13 @@ static int try_next_permutation(struct bigmac *bp, void __iomem *tregs)
 
 		bp->sw_bmcr = bigmac_tcvr_read(bp, tregs, MII_BMCR);
 
-		/* Now we try 10baseT. */
+		 
 		bp->sw_bmcr &= ~(BMCR_SPEED100);
 		bigmac_tcvr_write(bp, tregs, MII_BMCR, bp->sw_bmcr);
 		return 0;
 	}
 
-	/* We've tried them all. */
+	 
 	return -1;
 }
 
@@ -563,33 +554,31 @@ static void bigmac_timer(struct timer_list *t)
 			}
 		}
 	} else {
-		/* Can't happens.... */
+		 
 		printk(KERN_ERR "%s: Aieee, link timer is asleep but we got one anyways!\n",
 		       bp->dev->name);
 		restart_timer = 0;
 		bp->timer_ticks = 0;
-		bp->timer_state = asleep; /* foo on you */
+		bp->timer_state = asleep;  
 	}
 
 	if (restart_timer != 0) {
-		bp->bigmac_timer.expires = jiffies + ((12 * HZ)/10); /* 1.2 sec. */
+		bp->bigmac_timer.expires = jiffies + ((12 * HZ)/10);  
 		add_timer(&bp->bigmac_timer);
 	}
 }
 
-/* Well, really we just force the chip into 100baseT then
- * 10baseT, each time checking for a link status.
- */
+ 
 static void bigmac_begin_auto_negotiation(struct bigmac *bp)
 {
 	void __iomem *tregs = bp->tregs;
 	int timeout;
 
-	/* Grab new software copies of PHY registers. */
+	 
 	bp->sw_bmsr	= bigmac_tcvr_read(bp, tregs, MII_BMSR);
 	bp->sw_bmcr	= bigmac_tcvr_read(bp, tregs, MII_BMCR);
 
-	/* Reset the PHY. */
+	 
 	bp->sw_bmcr	= (BMCR_ISOLATE | BMCR_PDOWN | BMCR_LOOPBACK);
 	bigmac_tcvr_write(bp, tregs, MII_BMCR, bp->sw_bmcr);
 	bp->sw_bmcr	= (BMCR_RESET);
@@ -607,7 +596,7 @@ static void bigmac_begin_auto_negotiation(struct bigmac *bp)
 
 	bp->sw_bmcr = bigmac_tcvr_read(bp, tregs, MII_BMCR);
 
-	/* First we try 100baseT. */
+	 
 	bp->sw_bmcr |= BMCR_SPEED100;
 	bigmac_tcvr_write(bp, tregs, MII_BMCR, bp->sw_bmcr);
 
@@ -625,58 +614,58 @@ static int bigmac_init_hw(struct bigmac *bp, bool non_blocking)
 	__u32 bblk_dvma = (__u32)bp->bblock_dvma;
 	const unsigned char *e = &bp->dev->dev_addr[0];
 
-	/* Latch current counters into statistics. */
+	 
 	bigmac_get_counters(bp, bregs);
 
-	/* Reset QEC. */
+	 
 	qec_global_reset(gregs);
 
-	/* Init QEC. */
+	 
 	qec_init(bp);
 
-	/* Alloc and reset the tx/rx descriptor chains. */
+	 
 	bigmac_init_rings(bp, non_blocking);
 
-	/* Initialize the PHY. */
+	 
 	bigmac_tcvr_init(bp);
 
-	/* Stop transmitter and receiver. */
+	 
 	bigmac_stop(bp);
 
-	/* Set hardware ethernet address. */
+	 
 	sbus_writel(((e[4] << 8) | e[5]), bregs + BMAC_MACADDR2);
 	sbus_writel(((e[2] << 8) | e[3]), bregs + BMAC_MACADDR1);
 	sbus_writel(((e[0] << 8) | e[1]), bregs + BMAC_MACADDR0);
 
-	/* Clear the hash table until mc upload occurs. */
+	 
 	sbus_writel(0, bregs + BMAC_HTABLE3);
 	sbus_writel(0, bregs + BMAC_HTABLE2);
 	sbus_writel(0, bregs + BMAC_HTABLE1);
 	sbus_writel(0, bregs + BMAC_HTABLE0);
 
-	/* Enable Big Mac hash table filter. */
+	 
 	sbus_writel(BIGMAC_RXCFG_HENABLE | BIGMAC_RXCFG_FIFO,
 		    bregs + BMAC_RXCFG);
 	udelay(20);
 
-	/* Ok, configure the Big Mac transmitter. */
+	 
 	sbus_writel(BIGMAC_TXCFG_FIFO, bregs + BMAC_TXCFG);
 
-	/* The HME docs recommend to use the 10LSB of our MAC here. */
+	 
 	sbus_writel(((e[5] | e[4] << 8) & 0x3ff),
 		    bregs + BMAC_RSEED);
 
-	/* Enable the output drivers no matter what. */
+	 
 	sbus_writel(BIGMAC_XCFG_ODENABLE | BIGMAC_XCFG_RESV,
 		    bregs + BMAC_XIFCFG);
 
-	/* Tell the QEC where the ring descriptors are. */
+	 
 	sbus_writel(bblk_dvma + bib_offset(be_rxd, 0),
 		    cregs + CREG_RXDS);
 	sbus_writel(bblk_dvma + bib_offset(be_txd, 0),
 		    cregs + CREG_TXDS);
 
-	/* Setup the FIFO pointers into QEC local memory. */
+	 
 	sbus_writel(0, cregs + CREG_RXRBUFPTR);
 	sbus_writel(0, cregs + CREG_RXWBUFPTR);
 	sbus_writel(sbus_readl(gregs + GLOB_RSIZE),
@@ -684,36 +673,36 @@ static int bigmac_init_hw(struct bigmac *bp, bool non_blocking)
 	sbus_writel(sbus_readl(gregs + GLOB_RSIZE),
 		    cregs + CREG_TXWBUFPTR);
 
-	/* Tell bigmac what interrupts we don't want to hear about. */
+	 
 	sbus_writel(BIGMAC_IMASK_GOTFRAME | BIGMAC_IMASK_SENTFRAME,
 		    bregs + BMAC_IMASK);
 
-	/* Enable the various other irq's. */
+	 
 	sbus_writel(0, cregs + CREG_RIMASK);
 	sbus_writel(0, cregs + CREG_TIMASK);
 	sbus_writel(0, cregs + CREG_QMASK);
 	sbus_writel(0, cregs + CREG_BMASK);
 
-	/* Set jam size to a reasonable default. */
+	 
 	sbus_writel(DEFAULT_JAMSIZE, bregs + BMAC_JSIZE);
 
-	/* Clear collision counter. */
+	 
 	sbus_writel(0, cregs + CREG_CCNT);
 
-	/* Enable transmitter and receiver. */
+	 
 	sbus_writel(sbus_readl(bregs + BMAC_TXCFG) | BIGMAC_TXCFG_ENABLE,
 		    bregs + BMAC_TXCFG);
 	sbus_writel(sbus_readl(bregs + BMAC_RXCFG) | BIGMAC_RXCFG_ENABLE,
 		    bregs + BMAC_RXCFG);
 
-	/* Ok, start detecting link speed/duplex. */
+	 
 	bigmac_begin_auto_negotiation(bp);
 
-	/* Success. */
+	 
 	return 0;
 }
 
-/* Error interrupts get sent here. */
+ 
 static void bigmac_is_medium_rare(struct bigmac *bp, u32 qec_status, u32 bmac_status)
 {
 	printk(KERN_ERR "bigmac_is_medium_rare: ");
@@ -752,7 +741,7 @@ static void bigmac_is_medium_rare(struct bigmac *bp, u32 qec_status, u32 bmac_st
 	bigmac_init_hw(bp, true);
 }
 
-/* BigMAC transmit complete service routines. */
+ 
 static void bigmac_tx(struct bigmac *bp)
 {
 	struct be_txd *txbase = &bp->bmac_block->be_txd[0];
@@ -795,7 +784,7 @@ static void bigmac_tx(struct bigmac *bp)
 	spin_unlock(&bp->lock);
 }
 
-/* BigMAC receive complete service routines. */
+ 
 static void bigmac_rx(struct bigmac *bp)
 {
 	struct be_rxd *rxbase = &bp->bmac_block->be_rxd[0];
@@ -806,15 +795,15 @@ static void bigmac_rx(struct bigmac *bp)
 	this = &rxbase[elem];
 	while (!((flags = this->rx_flags) & RXD_OWN)) {
 		struct sk_buff *skb;
-		int len = (flags & RXD_LENGTH); /* FCS not included */
+		int len = (flags & RXD_LENGTH);  
 
-		/* Check for errors. */
+		 
 		if (len < ETH_ZLEN) {
 			bp->dev->stats.rx_errors++;
 			bp->dev->stats.rx_length_errors++;
 
 	drop_it:
-			/* Return it to the BigMAC. */
+			 
 			bp->dev->stats.rx_dropped++;
 			this->rx_flags =
 				(RXD_OWN | ((RX_BUF_ALLOC_SIZE - 34) & RXD_LENGTH));
@@ -824,7 +813,7 @@ static void bigmac_rx(struct bigmac *bp)
 		if (len > RX_COPY_THRESHOLD) {
 			struct sk_buff *new_skb;
 
-			/* Now refill the entry, if we can. */
+			 
 			new_skb = big_mac_alloc_skb(RX_BUF_ALLOC_SIZE, GFP_ATOMIC);
 			if (new_skb == NULL) {
 				drops++;
@@ -845,7 +834,7 @@ static void bigmac_rx(struct bigmac *bp)
 			this->rx_flags =
 				(RXD_OWN | ((RX_BUF_ALLOC_SIZE - 34) & RXD_LENGTH));
 
-			/* Trim the original skb for the netif. */
+			 
 			skb_trim(skb, len);
 		} else {
 			struct sk_buff *copy_skb = netdev_alloc_skb(bp->dev, len + 2);
@@ -864,14 +853,14 @@ static void bigmac_rx(struct bigmac *bp)
 						   this->rx_addr, len,
 						   DMA_FROM_DEVICE);
 
-			/* Reuse original ring buffer. */
+			 
 			this->rx_flags =
 				(RXD_OWN | ((RX_BUF_ALLOC_SIZE - 34) & RXD_LENGTH));
 
 			skb = copy_skb;
 		}
 
-		/* No checksums done by the BigMAC ;-( */
+		 
 		skb->protocol = eth_type_trans(skb, bp->dev);
 		netif_rx(skb);
 		bp->dev->stats.rx_packets++;
@@ -892,7 +881,7 @@ static irqreturn_t bigmac_interrupt(int irq, void *dev_id)
 
 	DIRQ(("bigmac_interrupt: "));
 
-	/* Latch status registers now. */
+	 
 	bmac_status = sbus_readl(bp->creg + CREG_STAT);
 	qec_status = sbus_readl(bp->gregs + GLOB_STAT);
 
@@ -949,7 +938,7 @@ static void bigmac_tx_timeout(struct net_device *dev, unsigned int txqueue)
 	netif_wake_queue(dev);
 }
 
-/* Put a packet on the wire. */
+ 
 static netdev_tx_t
 bigmac_start_xmit(struct sk_buff *skb, struct net_device *dev)
 {
@@ -961,7 +950,7 @@ bigmac_start_xmit(struct sk_buff *skb, struct net_device *dev)
 	mapping = dma_map_single(&bp->bigmac_op->dev, skb->data,
 				 len, DMA_TO_DEVICE);
 
-	/* Avoid a race... */
+	 
 	spin_lock_irq(&bp->lock);
 	entry = bp->tx_new;
 	DTX(("bigmac_start_xmit: len(%d) entry(%d)\n", len, entry));
@@ -975,7 +964,7 @@ bigmac_start_xmit(struct sk_buff *skb, struct net_device *dev)
 		netif_stop_queue(dev);
 	spin_unlock_irq(&bp->lock);
 
-	/* Get it going. */
+	 
 	sbus_writel(CREG_CTRL_TWAKEUP, bp->creg + CREG_CTRL);
 
 
@@ -997,9 +986,7 @@ static void bigmac_set_multicast(struct net_device *dev)
 	struct netdev_hw_addr *ha;
 	u32 tmp, crc;
 
-	/* Disable the receiver.  The bit self-clears when
-	 * the operation is complete.
-	 */
+	 
 	tmp = sbus_readl(bregs + BMAC_RXCFG);
 	tmp &= ~(BIGMAC_RXCFG_ENABLE);
 	sbus_writel(tmp, bregs + BMAC_RXCFG);
@@ -1029,13 +1016,13 @@ static void bigmac_set_multicast(struct net_device *dev)
 		sbus_writel(hash_table[3], bregs + BMAC_HTABLE3);
 	}
 
-	/* Re-enable the receiver. */
+	 
 	tmp = sbus_readl(bregs + BMAC_RXCFG);
 	tmp |= BIGMAC_RXCFG_ENABLE;
 	sbus_writel(tmp, bregs + BMAC_RXCFG);
 }
 
-/* Ethtool support... */
+ 
 static void bigmac_get_drvinfo(struct net_device *dev, struct ethtool_drvinfo *info)
 {
 	strscpy(info->driver, "sunbmac", sizeof(info->driver));
@@ -1077,7 +1064,7 @@ static int bigmac_ether_init(struct platform_device *op,
 	u8 bsizes, bsizes_more;
 	struct bigmac *bp;
 
-	/* Get a new device struct for this interface. */
+	 
 	dev = alloc_etherdev(sizeof(struct bigmac));
 	if (!dev)
 		return -ENOMEM;
@@ -1087,7 +1074,7 @@ static int bigmac_ether_init(struct platform_device *op,
 
 	eth_hw_addr_set(dev, idprom->id_ethaddr);
 
-	/* Setup softc, with backpointers to QEC and BigMAC SBUS device structs. */
+	 
 	bp = netdev_priv(dev);
 	bp->qec_op = qec_op;
 	bp->bigmac_op = op;
@@ -1096,7 +1083,7 @@ static int bigmac_ether_init(struct platform_device *op,
 
 	spin_lock_init(&bp->lock);
 
-	/* Map in QEC global control registers. */
+	 
 	bp->gregs = of_ioremap(&qec_op->resource[0], 0,
 			       GLOB_REG_SIZE, "BigMAC QEC GLobal Regs");
 	if (!bp->gregs) {
@@ -1104,17 +1091,17 @@ static int bigmac_ether_init(struct platform_device *op,
 		goto fail_and_cleanup;
 	}
 
-	/* Make sure QEC is in BigMAC mode. */
+	 
 	if ((sbus_readl(bp->gregs + GLOB_CTRL) & 0xf0000000) != GLOB_CTRL_BMODE) {
 		printk(KERN_ERR "BigMAC: AIEEE, QEC is not in BigMAC mode!\n");
 		goto fail_and_cleanup;
 	}
 
-	/* Reset the QEC. */
+	 
 	if (qec_global_reset(bp->gregs))
 		goto fail_and_cleanup;
 
-	/* Get supported SBUS burst sizes. */
+	 
 	bsizes = of_getintprop_default(qec_op->dev.of_node, "burst-sizes", 0xff);
 	bsizes_more = of_getintprop_default(qec_op->dev.of_node, "burst-sizes", 0xff);
 
@@ -1126,10 +1113,10 @@ static int bigmac_ether_init(struct platform_device *op,
 		bsizes = (DMA_BURST32 - 1);
 	bp->bigmac_bursts = bsizes;
 
-	/* Perform QEC initialization. */
+	 
 	qec_init(bp);
 
-	/* Map in the BigMAC channel registers. */
+	 
 	bp->creg = of_ioremap(&op->resource[0], 0,
 			      CREG_REG_SIZE, "BigMAC QEC Channel Regs");
 	if (!bp->creg) {
@@ -1137,7 +1124,7 @@ static int bigmac_ether_init(struct platform_device *op,
 		goto fail_and_cleanup;
 	}
 
-	/* Map in the BigMAC control registers. */
+	 
 	bp->bregs = of_ioremap(&op->resource[1], 0,
 			       BMAC_REG_SIZE, "BigMAC Primary Regs");
 	if (!bp->bregs) {
@@ -1145,9 +1132,7 @@ static int bigmac_ether_init(struct platform_device *op,
 		goto fail_and_cleanup;
 	}
 
-	/* Map in the BigMAC transceiver registers, this is how you poke at
-	 * the BigMAC's PHY.
-	 */
+	 
 	bp->tregs = of_ioremap(&op->resource[2], 0,
 			       TCVR_REG_SIZE, "BigMAC Transceiver Regs");
 	if (!bp->tregs) {
@@ -1155,34 +1140,34 @@ static int bigmac_ether_init(struct platform_device *op,
 		goto fail_and_cleanup;
 	}
 
-	/* Stop the BigMAC. */
+	 
 	bigmac_stop(bp);
 
-	/* Allocate transmit/receive descriptor DVMA block. */
+	 
 	bp->bmac_block = dma_alloc_coherent(&bp->bigmac_op->dev,
 					    PAGE_SIZE,
 					    &bp->bblock_dvma, GFP_ATOMIC);
 	if (bp->bmac_block == NULL || bp->bblock_dvma == 0)
 		goto fail_and_cleanup;
 
-	/* Get the board revision of this BigMAC. */
+	 
 	bp->board_rev = of_getintprop_default(bp->bigmac_op->dev.of_node,
 					      "board-version", 1);
 
-	/* Init auto-negotiation timer state. */
+	 
 	timer_setup(&bp->bigmac_timer, bigmac_timer, 0);
 	bp->timer_state = asleep;
 	bp->timer_ticks = 0;
 
-	/* Backlink to generic net device struct. */
+	 
 	bp->dev = dev;
 
-	/* Set links to our BigMAC open and close routines. */
+	 
 	dev->ethtool_ops = &bigmac_ethtool_ops;
 	dev->netdev_ops = &bigmac_ops;
 	dev->watchdog_timeo = 5*HZ;
 
-	/* Finish net device registration. */
+	 
 	dev->irq = bp->bigmac_op->archdata.irqs[0];
 	dev->dma = 0;
 
@@ -1199,8 +1184,8 @@ static int bigmac_ether_init(struct platform_device *op,
 	return 0;
 
 fail_and_cleanup:
-	/* Something went wrong, undo whatever we did so far. */
-	/* Free register mappings if any. */
+	 
+	 
 	if (bp->gregs)
 		of_iounmap(&qec_op->resource[0], bp->gregs, GLOB_REG_SIZE);
 	if (bp->creg)
@@ -1216,14 +1201,12 @@ fail_and_cleanup:
 				  bp->bmac_block,
 				  bp->bblock_dvma);
 
-	/* This also frees the co-located private data */
+	 
 	free_netdev(dev);
 	return -ENODEV;
 }
 
-/* QEC can be the parent of either QuadEthernet or a BigMAC.  We want
- * the latter.
- */
+ 
 static int bigmac_sbus_probe(struct platform_device *op)
 {
 	struct device *parent = op->dev.parent;

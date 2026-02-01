@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * I2C driver for Marvell 88PM860x
- *
- * Copyright (C) 2009 Marvell International Ltd.
- *
- * Author: Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/i2c.h>
@@ -103,10 +97,10 @@ static int read_device(struct i2c_client *i2c, int reg,
 
 	if (dest == NULL)
 		return -EINVAL;
-	msgbuf0[0] = (unsigned char)reg;	/* command */
+	msgbuf0[0] = (unsigned char)reg;	 
 	msg[1].len = bytes;
 
-	/* if data needs to read back, num should be 2 */
+	 
 	if (bytes > 0)
 		num = 2;
 	ret = adap->algo->master_xfer(adap, msg, num);

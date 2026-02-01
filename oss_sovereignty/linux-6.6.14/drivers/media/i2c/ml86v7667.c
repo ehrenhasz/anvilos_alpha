@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * OKI Semiconductor ML86V7667 video decoder driver
- *
- * Author: Vladimir Barinov <source@cogentembedded.com>
- * Copyright (C) 2013 Cogent Embedded, Inc.
- * Copyright (C) 2013 Renesas Solutions Corp.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -19,21 +13,21 @@
 
 #define DRV_NAME "ml86v7667"
 
-/* Subaddresses */
-#define MRA_REG			0x00 /* Mode Register A */
-#define MRC_REG			0x02 /* Mode Register C */
-#define LUMC_REG		0x0C /* Luminance Control */
-#define CLC_REG			0x10 /* Contrast level control */
-#define SSEPL_REG		0x11 /* Sync separation level */
-#define CHRCA_REG		0x12 /* Chrominance Control A */
-#define ACCC_REG		0x14 /* ACC Loop filter & Chrominance control */
-#define ACCRC_REG		0x15 /* ACC Reference level control */
-#define HUE_REG			0x16 /* Hue control */
-#define ADC2_REG		0x1F /* ADC Register 2 */
-#define PLLR1_REG		0x20 /* PLL Register 1 */
-#define STATUS_REG		0x2C /* STATUS Register */
+ 
+#define MRA_REG			0x00  
+#define MRC_REG			0x02  
+#define LUMC_REG		0x0C  
+#define CLC_REG			0x10  
+#define SSEPL_REG		0x11  
+#define CHRCA_REG		0x12  
+#define ACCC_REG		0x14  
+#define ACCRC_REG		0x15  
+#define HUE_REG			0x16  
+#define ADC2_REG		0x1F  
+#define PLLR1_REG		0x20  
+#define STATUS_REG		0x2C  
 
-/* Mode Register A register bits */
+ 
 #define MRA_OUTPUT_MODE_MASK	(3 << 6)
 #define MRA_ITUR_BT601		(1 << 6)
 #define MRA_ITUR_BT656		(0 << 6)
@@ -42,43 +36,43 @@
 #define MRA_NTSC_BT601		(0 << 3)
 #define MRA_REGISTER_MODE	(1 << 0)
 
-/* Mode Register C register bits */
+ 
 #define MRC_AUTOSELECT		(1 << 7)
 
-/* Luminance Control register bits */
+ 
 #define LUMC_ONOFF_SHIFT	7
 #define LUMC_ONOFF_MASK		(1 << 7)
 
-/* Contrast level control register bits */
+ 
 #define CLC_CONTRAST_ONOFF	(1 << 7)
 #define CLC_CONTRAST_MASK	0x0F
 
-/* Sync separation level register bits */
+ 
 #define SSEPL_LUMINANCE_ONOFF	(1 << 7)
 #define SSEPL_LUMINANCE_MASK	0x7F
 
-/* Chrominance Control A register bits */
+ 
 #define CHRCA_MODE_SHIFT	6
 #define CHRCA_MODE_MASK		(1 << 6)
 
-/* ACC Loop filter & Chrominance control register bits */
+ 
 #define ACCC_CHROMA_CR_SHIFT	3
 #define ACCC_CHROMA_CR_MASK	(7 << 3)
 #define ACCC_CHROMA_CB_SHIFT	0
 #define ACCC_CHROMA_CB_MASK	(7 << 0)
 
-/* ACC Reference level control register bits */
+ 
 #define ACCRC_CHROMA_MASK	0xfc
 #define ACCRC_CHROMA_SHIFT	2
 
-/* ADC Register 2 register bits */
+ 
 #define ADC2_CLAMP_VOLTAGE_MASK	(7 << 1)
 #define ADC2_CLAMP_VOLTAGE(n)	((n & 7) << 1)
 
-/* PLL Register 1 register bits */
+ 
 #define PLLR1_FIXED_CLOCK	(1 << 7)
 
-/* STATUS Register register bits */
+ 
 #define STATUS_HLOCK_DETECT	(1 << 3)
 #define STATUS_NTSCPAL		(1 << 2)
 
@@ -211,7 +205,7 @@ static int ml86v7667_fill_fmt(struct v4l2_subdev *sd,
 
 	fmt->code = MEDIA_BUS_FMT_YUYV8_2X8;
 	fmt->colorspace = V4L2_COLORSPACE_SMPTE170M;
-	/* The top field is always transferred first by the chip */
+	 
 	fmt->field = V4L2_FIELD_INTERLACED_TB;
 	fmt->width = 720;
 	fmt->height = priv->std & V4L2_STD_525_60 ? 480 : 576;
@@ -247,7 +241,7 @@ static int ml86v7667_s_std(struct v4l2_subdev *sd, v4l2_std_id std)
 	int ret;
 	u8 mode;
 
-	/* PAL/NTSC ITU-R BT.601 input mode */
+	 
 	mode = std & V4L2_STD_525_60 ? MRA_NTSC_BT601 : MRA_PAL_BT601;
 	ret = ml86v7667_mask_set(client, MRA_REG, MRA_INPUT_MODE_MASK, mode);
 	if (ret < 0)
@@ -321,31 +315,27 @@ static int ml86v7667_init(struct ml86v7667_priv *priv)
 	int val;
 	int ret;
 
-	/* BT.656-4 output mode, register mode */
+	 
 	ret = ml86v7667_mask_set(client, MRA_REG,
 				 MRA_OUTPUT_MODE_MASK | MRA_REGISTER_MODE,
 				 MRA_ITUR_BT656 | MRA_REGISTER_MODE);
 
-	/* PLL circuit fixed clock, 32MHz */
+	 
 	ret |= ml86v7667_mask_set(client, PLLR1_REG, PLLR1_FIXED_CLOCK,
 				  PLLR1_FIXED_CLOCK);
 
-	/* ADC2 clamping voltage maximum  */
+	 
 	ret |= ml86v7667_mask_set(client, ADC2_REG, ADC2_CLAMP_VOLTAGE_MASK,
 				  ADC2_CLAMP_VOLTAGE(7));
 
-	/* enable luminance function */
+	 
 	ret |= ml86v7667_mask_set(client, SSEPL_REG, SSEPL_LUMINANCE_ONOFF,
 				  SSEPL_LUMINANCE_ONOFF);
 
-	/* enable contrast function */
+	 
 	ret |= ml86v7667_mask_set(client, CLC_REG, CLC_CONTRAST_ONOFF, 0);
 
-	/*
-	 * PAL/NTSC autodetection is enabled after reset,
-	 * set the autodetected std in manual std mode and
-	 * disable autodetection
-	 */
+	 
 	val = i2c_smbus_read_byte_data(client, STATUS_REG);
 	if (val < 0)
 		return val;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *
- * VFIO container (/dev/vfio/vfio)
- */
+
+ 
 #include <linux/file.h>
 #include <linux/slab.h>
 #include <linux/fs.h>
@@ -73,10 +69,7 @@ static const struct vfio_iommu_driver_ops vfio_noiommu_ops = {
 	.detach_group = vfio_noiommu_detach_group,
 };
 
-/*
- * Only noiommu containers can use vfio-noiommu and noiommu containers can only
- * use vfio-noiommu.
- */
+ 
 static bool vfio_iommu_driver_allowed(struct vfio_container *container,
 				      const struct vfio_iommu_driver *driver)
 {
@@ -85,9 +78,7 @@ static bool vfio_iommu_driver_allowed(struct vfio_container *container,
 	return container->noiommu == (driver->ops == &vfio_noiommu_ops);
 }
 
-/*
- * IOMMU driver registration
- */
+ 
 int vfio_register_iommu_driver(const struct vfio_iommu_driver_ops *ops)
 {
 	struct vfio_iommu_driver *driver, *tmp;
@@ -103,7 +94,7 @@ int vfio_register_iommu_driver(const struct vfio_iommu_driver_ops *ops)
 
 	mutex_lock(&vfio.iommu_drivers_lock);
 
-	/* Check for duplicates */
+	 
 	list_for_each_entry(tmp, &vfio.iommu_drivers_list, vfio_next) {
 		if (tmp->ops == ops) {
 			mutex_unlock(&vfio.iommu_drivers_lock);
@@ -137,12 +128,7 @@ void vfio_unregister_iommu_driver(const struct vfio_iommu_driver_ops *ops)
 }
 EXPORT_SYMBOL_GPL(vfio_unregister_iommu_driver);
 
-/*
- * Container objects - containers are created when /dev/vfio/vfio is
- * opened, but their lifecycle extends until the last user is done, so
- * it's freed via kref.  Must support container/group/device being
- * closed in any order.
- */
+ 
 static void vfio_container_release(struct kref *kref)
 {
 	struct vfio_container *container;
@@ -193,14 +179,9 @@ vfio_container_ioctl_check_extension(struct vfio_container *container,
 	driver = container->iommu_driver;
 
 	switch (arg) {
-		/* No base extensions yet */
+		 
 	default:
-		/*
-		 * If no driver is set, poll all registered drivers for
-		 * extensions and return the first positive result.  If
-		 * a driver is already set, further queries will be passed
-		 * only to that driver.
-		 */
+		 
 		if (!driver) {
 			mutex_lock(&vfio.iommu_drivers_lock);
 			list_for_each_entry(driver, &vfio.iommu_drivers_list,
@@ -231,7 +212,7 @@ vfio_container_ioctl_check_extension(struct vfio_container *container,
 	return ret;
 }
 
-/* hold write lock on container->group_lock */
+ 
 static int __vfio_container_attach_groups(struct vfio_container *container,
 					  struct vfio_iommu_driver *driver,
 					  void *data)
@@ -265,14 +246,7 @@ static long vfio_ioctl_set_iommu(struct vfio_container *container,
 
 	down_write(&container->group_lock);
 
-	/*
-	 * The container is designed to be an unprivileged interface while
-	 * the group can be assigned to specific users.  Therefore, only by
-	 * adding a group to a container does the user get the privilege of
-	 * enabling the iommu, which may allocate finite resources.  There
-	 * is no unset_iommu, but by removing all the groups from a container,
-	 * the container is deprivileged and returns to an unset state.
-	 */
+	 
 	if (list_empty(&container->group_list) || container->iommu_driver) {
 		up_write(&container->group_lock);
 		return -EINVAL;
@@ -287,13 +261,7 @@ static long vfio_ioctl_set_iommu(struct vfio_container *container,
 		if (!try_module_get(driver->ops->owner))
 			continue;
 
-		/*
-		 * The arg magic for SET_IOMMU is the same as CHECK_EXTENSION,
-		 * so test which iommu driver reported support for this
-		 * extension and call open on them.  We also pass them the
-		 * magic, allowing a single driver to support multiple
-		 * interfaces if they'd like.
-		 */
+		 
 		if (driver->ops->ioctl(NULL, VFIO_CHECK_EXTENSION, arg) <= 0) {
 			module_put(driver->ops->owner);
 			continue;
@@ -349,7 +317,7 @@ static long vfio_fops_unl_ioctl(struct file *filep,
 		driver = container->iommu_driver;
 		data = container->iommu_data;
 
-		if (driver) /* passthrough all unrecognized ioctls */
+		if (driver)  
 			ret = driver->ops->ioctl(data, cmd, arg);
 	}
 
@@ -396,12 +364,12 @@ struct vfio_container *vfio_container_from_file(struct file *file)
 {
 	struct vfio_container *container;
 
-	/* Sanity check, is this really our fd? */
+	 
 	if (file->f_op != &vfio_fops)
 		return NULL;
 
 	container = file->private_data;
-	WARN_ON(!container); /* fget ensures we don't race vfio_release */
+	WARN_ON(!container);  
 	return container;
 }
 
@@ -426,7 +394,7 @@ int vfio_container_attach_group(struct vfio_container *container,
 
 	down_write(&container->group_lock);
 
-	/* Real groups and fake groups cannot mix */
+	 
 	if (!list_empty(&container->group_list) &&
 	    container->noiommu != (group->type == VFIO_NO_IOMMU)) {
 		ret = -EPERM;
@@ -457,7 +425,7 @@ int vfio_container_attach_group(struct vfio_container *container,
 	container->noiommu = (group->type == VFIO_NO_IOMMU);
 	list_add(&group->container_next, &container->group_list);
 
-	/* Get a reference on the container and mark a user within the group */
+	 
 	vfio_container_get(container);
 
 out_unlock_container:
@@ -487,7 +455,7 @@ void vfio_group_detach_container(struct vfio_group *group)
 	group->container_users = 0;
 	list_del(&group->container_next);
 
-	/* Detaching the last group deprivileges a container, remove iommu */
+	 
 	if (driver && list_empty(&container->group_list)) {
 		driver->ops->release(container->iommu_data);
 		module_put(driver->ops->owner);
@@ -504,10 +472,7 @@ int vfio_group_use_container(struct vfio_group *group)
 {
 	lockdep_assert_held(&group->group_lock);
 
-	/*
-	 * The container fd has been assigned with VFIO_GROUP_SET_CONTAINER but
-	 * VFIO_SET_IOMMU hasn't been done yet.
-	 */
+	 
 	if (!group->container->iommu_driver)
 		return -EINVAL;
 

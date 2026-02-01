@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -45,7 +31,7 @@
 
 #define RT_ID_MD_PORT_ENUM	0
 #define RT_ID_AP_PORT_ENUM	1
-/* Modem feature query identification code - "ICCC" */
+ 
 #define MD_FEATURE_QUERY_ID	0x49434343
 
 #define FEATURE_VER		GENMASK(7, 4)
@@ -67,16 +53,7 @@ static unsigned int t7xx_get_interrupt_status(struct t7xx_pci_dev *t7xx_dev)
 	return t7xx_mhccif_read_sw_int_sts(t7xx_dev) & D2H_SW_INT_MASK;
 }
 
-/**
- * t7xx_pci_mhccif_isr() - Process MHCCIF interrupts.
- * @t7xx_dev: MTK device.
- *
- * Check the interrupt status and queue commands accordingly.
- *
- * Returns:
- ** 0		- Success.
- ** -EINVAL	- Failure to get FSM control.
- */
+ 
 int t7xx_pci_mhccif_isr(struct t7xx_pci_dev *t7xx_dev)
 {
 	struct t7xx_modem *md = t7xx_dev->md;
@@ -135,9 +112,9 @@ static void t7xx_clr_device_irq_via_pcie(struct t7xx_pci_dev *t7xx_dev)
 
 void t7xx_clear_rgu_irq(struct t7xx_pci_dev *t7xx_dev)
 {
-	/* Clear L2 */
+	 
 	t7xx_clr_device_irq_via_pcie(t7xx_dev);
-	/* Clear L1 */
+	 
 	t7xx_pcie_mac_clear_int_status(t7xx_dev, SAP_RGU_INT);
 }
 
@@ -214,7 +191,7 @@ static irqreturn_t t7xx_rgu_isr_handler(int irq, void *data)
 
 static void t7xx_pcie_register_rgu_isr(struct t7xx_pci_dev *t7xx_dev)
 {
-	/* Registers RGU callback ISR with PCIe driver */
+	 
 	t7xx_pcie_mac_clear_int(t7xx_dev, SAP_RGU_INT);
 	t7xx_pcie_mac_clear_int_status(t7xx_dev, SAP_RGU_INT);
 
@@ -224,39 +201,9 @@ static void t7xx_pcie_register_rgu_isr(struct t7xx_pci_dev *t7xx_dev)
 	t7xx_pcie_mac_set_int(t7xx_dev, SAP_RGU_INT);
 }
 
-/**
- * t7xx_cldma_exception() - CLDMA exception handler.
- * @md_ctrl: modem control struct.
- * @stage: exception stage.
- *
- * Part of the modem exception recovery.
- * Stages are one after the other as describe below:
- * HIF_EX_INIT:		Disable and clear TXQ.
- * HIF_EX_CLEARQ_DONE:	Disable RX, flush TX/RX workqueues and clear RX.
- * HIF_EX_ALLQ_RESET:	HW is back in safe mode for re-initialization and restart.
- */
+ 
 
-/* Modem Exception Handshake Flow
- *
- * Modem HW Exception interrupt received
- *           (MD_IRQ_CCIF_EX)
- *                   |
- *         +---------v--------+
- *         |   HIF_EX_INIT    | : Disable and clear TXQ
- *         +------------------+
- *                   |
- *         +---------v--------+
- *         | HIF_EX_INIT_DONE | : Wait for the init to be done
- *         +------------------+
- *                   |
- *         +---------v--------+
- *         |HIF_EX_CLEARQ_DONE| : Disable and clear RXQ
- *         +------------------+ : Flush TX/RX workqueues
- *                   |
- *         +---------v--------+
- *         |HIF_EX_ALLQ_RESET | : Restart HW and CLDMA
- *         +------------------+
- */
+ 
 static void t7xx_cldma_exception(struct cldma_ctrl *md_ctrl, enum hif_ex_stage stage)
 {
 	switch (stage) {
@@ -266,9 +213,7 @@ static void t7xx_cldma_exception(struct cldma_ctrl *md_ctrl, enum hif_ex_stage s
 		break;
 
 	case HIF_EX_CLEARQ_DONE:
-		/* We do not want to get CLDMA IRQ when MD is
-		 * resetting CLDMA after it got clearq_ack.
-		 */
+		 
 		t7xx_cldma_stop_all_qs(md_ctrl, MTK_RX);
 		t7xx_cldma_stop(md_ctrl);
 
@@ -293,7 +238,7 @@ static void t7xx_md_exception(struct t7xx_modem *md, enum hif_ex_stage stage)
 	struct t7xx_pci_dev *t7xx_dev = md->t7xx_dev;
 
 	if (stage == HIF_EX_CLEARQ_DONE) {
-		/* Give DHL time to flush data */
+		 
 		msleep(PORT_RESET_DELAY_MS);
 		t7xx_port_proxy_reset(md->port_prox);
 	}
@@ -324,13 +269,11 @@ static int t7xx_wait_hif_ex_hk_event(struct t7xx_modem *md, int event_id)
 
 static void t7xx_md_sys_sw_init(struct t7xx_pci_dev *t7xx_dev)
 {
-	/* Register the MHCCIF ISR for MD exception, port enum and
-	 * async handshake notifications.
-	 */
+	 
 	t7xx_mhccif_mask_set(t7xx_dev, D2H_SW_INT_MASK);
 	t7xx_mhccif_mask_clr(t7xx_dev, D2H_INT_PORT_ENUM);
 
-	/* Register RGU IRQ handler for sAP exception notification */
+	 
 	t7xx_dev->rgu_pci_irq_en = true;
 	t7xx_pcie_register_rgu_isr(t7xx_dev);
 }
@@ -355,7 +298,7 @@ static void t7xx_prepare_host_rt_data_query(struct t7xx_sys_info *core)
 	memcpy(ft_query->feature_set, core->feature_set, FEATURE_COUNT);
 	ft_query->tail_pattern = cpu_to_le32(MD_FEATURE_QUERY_ID);
 
-	/* Send HS1 message to device */
+	 
 	t7xx_port_send_ctl_skb(core->ctl_port, skb, CTL_ID_HS1_MSG, 0);
 }
 
@@ -367,7 +310,7 @@ static int t7xx_prepare_device_rt_data(struct t7xx_sys_info *core, struct device
 	unsigned int i, rt_data_len = 0;
 	struct sk_buff *skb;
 
-	/* Parse MD runtime data query */
+	 
 	if (le32_to_cpu(md_feature->head_pattern) != MD_FEATURE_QUERY_ID ||
 	    le32_to_cpu(md_feature->tail_pattern) != MD_FEATURE_QUERY_ID) {
 		dev_err(dev, "Invalid feature pattern: head 0x%x, tail 0x%x\n",
@@ -389,7 +332,7 @@ static int t7xx_prepare_device_rt_data(struct t7xx_sys_info *core, struct device
 	rt_feature = skb_put(skb, rt_data_len);
 	memset(rt_feature, 0, rt_data_len);
 
-	/* Fill runtime feature */
+	 
 	for (i = 0; i < FEATURE_COUNT; i++) {
 		u8 md_feature_mask = FIELD_GET(FEATURE_MSK, md_feature->feature_set[i]);
 
@@ -403,7 +346,7 @@ static int t7xx_prepare_device_rt_data(struct t7xx_sys_info *core, struct device
 		rt_feature++;
 	}
 
-	/* Send HS3 message to device */
+	 
 	t7xx_port_send_ctl_skb(core->ctl_port, skb, CTL_ID_HS3_MSG, 0);
 	return 0;
 }
@@ -527,7 +470,7 @@ static void t7xx_md_hk_wq(struct work_struct *work)
 	struct t7xx_modem *md = container_of(work, struct t7xx_modem, handshake_work);
 	struct t7xx_fsm_ctl *ctl = md->fsm_ctl;
 
-	/* Clear the HS2 EXIT event appended in core_reset() */
+	 
 	t7xx_fsm_clr_event(ctl, FSM_EVENT_MD_HS2_EXIT);
 	t7xx_cldma_switch_cfg(md->md_ctrl[CLDMA_ID_MD]);
 	t7xx_cldma_start(md->md_ctrl[CLDMA_ID_MD]);
@@ -541,7 +484,7 @@ static void t7xx_ap_hk_wq(struct work_struct *work)
 	struct t7xx_modem *md = container_of(work, struct t7xx_modem, ap_handshake_work);
 	struct t7xx_fsm_ctl *ctl = md->fsm_ctl;
 
-	 /* Clear the HS2 EXIT event appended in t7xx_core_reset(). */
+	  
 	t7xx_fsm_clr_event(ctl, FSM_EVENT_AP_HS2_EXIT);
 	t7xx_cldma_stop(md->md_ctrl[CLDMA_ID_AP]);
 	t7xx_cldma_switch_cfg(md->md_ctrl[CLDMA_ID_AP]);
@@ -679,17 +622,7 @@ int t7xx_md_reset(struct t7xx_pci_dev *t7xx_dev)
 	return t7xx_core_reset(md);
 }
 
-/**
- * t7xx_md_init() - Initialize modem.
- * @t7xx_dev: MTK device.
- *
- * Allocate and initialize MD control block, and initialize data path.
- * Register MHCCIF ISR and RGU ISR, and start the state machine.
- *
- * Return:
- ** 0		- Success.
- ** -ENOMEM	- Allocation failure.
- */
+ 
 int t7xx_md_init(struct t7xx_pci_dev *t7xx_dev)
 {
 	struct t7xx_modem *md;
@@ -728,7 +661,7 @@ int t7xx_md_init(struct t7xx_pci_dev *t7xx_dev)
 		goto err_uninit_ap_cldma;
 
 	ret = t7xx_fsm_append_cmd(md->fsm_ctl, FSM_CMD_START, 0);
-	if (ret) /* t7xx_fsm_uninit() flushes cmd queue */
+	if (ret)  
 		goto err_uninit_proxy;
 
 	t7xx_md_sys_sw_init(t7xx_dev);

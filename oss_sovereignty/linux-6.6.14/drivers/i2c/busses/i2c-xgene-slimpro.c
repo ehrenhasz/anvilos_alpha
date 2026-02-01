@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * X-Gene SLIMpro I2C Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Author: Feng Kan <fkan@apm.com>
- * Author: Hieu Le <hnle@apm.com>
- *
- * This driver provides support for X-Gene SLIMpro I2C device access
- * using the APM X-Gene SLIMpro mailbox driver.
- */
+
+ 
 #include <acpi/pcc.h>
 #include <linux/acpi.h>
 #include <linux/dma-mapping.h>
@@ -20,9 +11,9 @@
 #include <linux/of.h>
 #include <linux/platform_device.h>
 
-#define MAILBOX_OP_TIMEOUT		1000	/* Operation time out in ms */
+#define MAILBOX_OP_TIMEOUT		1000	 
 #define MAILBOX_I2C_INDEX		0
-#define SLIMPRO_IIC_BUS			1	/* Use I2C bus 1 only */
+#define SLIMPRO_IIC_BUS			1	 
 
 #define SMBUS_CMD_LEN			1
 #define BYTE_DATA			1
@@ -56,16 +47,7 @@
 #define SLIMPRO_IIC_DATALEN_SHIFT	0
 #define SLIMPRO_IIC_DATALEN_MASK	0x000000FFU
 
-/*
- * SLIMpro I2C message encode
- *
- * dev		- Controller number (0-based)
- * chip		- I2C chip address
- * op		- SLIMPRO_IIC_READ or SLIMPRO_IIC_WRITE
- * proto	- SLIMPRO_IIC_SMB_PROTOCOL or SLIMPRO_IIC_I2C_PROTOCOL
- * addrlen	- Length of the address field
- * datalen	- Length of the data field
- */
+ 
 #define SLIMPRO_IIC_ENCODE_MSG(dev, chip, op, proto, addrlen, datalen) \
 	((SLIMPRO_DEBUG_MSG << SLIMPRO_MSG_TYPE_SHIFT) | \
 	((SLIMPRO_DBG_SUBTYPE_I2C1READ << SLIMPRO_DBGMSG_TYPE_SHIFT) & \
@@ -79,9 +61,7 @@
 
 #define SLIMPRO_MSG_TYPE(v)             (((v) & 0xF0000000) >> 28)
 
-/*
- * Encode for upper address for block data
- */
+ 
 #define SLIMPRO_IIC_ENCODE_FLAG_BUFADDR			0x80000000
 #define SLIMPRO_IIC_ENCODE_FLAG_WITH_DATA_LEN(a)	((u32) (((a) << 30) \
 								& 0x40000000))
@@ -91,7 +71,7 @@
 
 #define SLIMPRO_IIC_MSG_DWORD_COUNT			3
 
-/* PCC related defines */
+ 
 #define PCC_SIGNATURE			0x50424300
 #define PCC_STS_CMD_COMPLETE		BIT(0)
 #define PCC_STS_SCI_DOORBELL		BIT(1)
@@ -107,7 +87,7 @@ struct slimpro_i2c_dev {
 	struct mbox_client mbox_client;
 	int mbox_idx;
 	struct completion rd_complete;
-	u8 dma_buffer[I2C_SMBUS_BLOCK_MAX + 1]; /* dma_buffer[0] is used for length */
+	u8 dma_buffer[I2C_SMBUS_BLOCK_MAX + 1];  
 	u32 *resp_msg;
 	phys_addr_t comm_base_addr;
 	void *pcc_comm_addr;
@@ -121,9 +101,7 @@ enum slimpro_i2c_version {
 	XGENE_SLIMPRO_I2C_V2 = 1,
 };
 
-/*
- * This function tests and clears a bitmask then returns its old value
- */
+ 
 static u16 xgene_word_tst_and_clr(u16 *addr, u16 mask)
 {
 	u16 ret, val;
@@ -140,12 +118,7 @@ static void slimpro_i2c_rx_cb(struct mbox_client *cl, void *mssg)
 {
 	struct slimpro_i2c_dev *ctx = to_slimpro_i2c_dev(cl);
 
-	/*
-	 * Response message format:
-	 * mssg[0] is the return code of the operation
-	 * mssg[1] is the first data word
-	 * mssg[2] is NOT used
-	 */
+	 
 	if (ctx->resp_msg)
 		*ctx->resp_msg = ((u32 *)mssg)[1];
 
@@ -158,7 +131,7 @@ static void slimpro_i2c_pcc_rx_cb(struct mbox_client *cl, void *msg)
 	struct slimpro_i2c_dev *ctx = to_slimpro_i2c_dev(cl);
 	struct acpi_pcct_shared_memory *generic_comm_base = ctx->pcc_comm_addr;
 
-	/* Check if platform sends interrupt */
+	 
 	if (!xgene_word_tst_and_clr(&generic_comm_base->status,
 				    PCC_STS_SCI_DOORBELL))
 		return;
@@ -167,7 +140,7 @@ static void slimpro_i2c_pcc_rx_cb(struct mbox_client *cl, void *msg)
 				   PCC_STS_CMD_COMPLETE)) {
 		msg = generic_comm_base + 1;
 
-		/* Response message msg[1] contains the return value. */
+		 
 		if (ctx->resp_msg)
 			*ctx->resp_msg = ((u32 *)msg)[1];
 
@@ -192,7 +165,7 @@ static void slimpro_i2c_pcc_tx_prepare(struct slimpro_i2c_dev *ctx, u32 *msg)
 	status &= ~PCC_STS_CMD_COMPLETE;
 	WRITE_ONCE(generic_comm_base->status, cpu_to_le16(status));
 
-	/* Copy the message to the PCC comm space */
+	 
 	for (i = 0; i < SLIMPRO_IIC_MSG_DWORD_COUNT; i++)
 		WRITE_ONCE(ptr[i], cpu_to_le32(msg[i]));
 }
@@ -205,7 +178,7 @@ static int start_i2c_msg_xfer(struct slimpro_i2c_dev *ctx)
 			return -ETIMEDOUT;
 	}
 
-	/* Check of invalid data or no device */
+	 
 	if (*ctx->resp_msg == 0xffffffff)
 		return -ENODEV;
 
@@ -293,7 +266,7 @@ static int slimpro_i2c_blkrd(struct slimpro_i2c_dev *ctx, u32 chip, u32 addr,
 
 	rc = slimpro_i2c_send_msg(ctx, msg, msg);
 
-	/* Copy to destination */
+	 
 	memcpy(data, ctx->dma_buffer, readlen);
 
 	dma_unmap_single(ctx->dev, paddr, readlen, DMA_FROM_DEVICE);
@@ -424,9 +397,7 @@ static int xgene_slimpro_i2c_xfer(struct i2c_adapter *adap, u16 addr,
 	return ret;
 }
 
-/*
-* Return list of supported functionality.
-*/
+ 
 static u32 xgene_slimpro_i2c_func(struct i2c_adapter *adapter)
 {
 	return I2C_FUNC_SMBUS_BYTE |
@@ -456,7 +427,7 @@ static int xgene_slimpro_i2c_probe(struct platform_device *pdev)
 	platform_set_drvdata(pdev, ctx);
 	cl = &ctx->mbox_client;
 
-	/* Request mailbox channel */
+	 
 	cl->dev = &pdev->dev;
 	init_completion(&ctx->rd_complete);
 	cl->tx_tout = MAILBOX_OP_TIMEOUT;
@@ -502,10 +473,7 @@ static int xgene_slimpro_i2c_probe(struct platform_device *pdev)
 			goto mbox_err;
 		}
 
-		/*
-		 * This is the shared communication region
-		 * for the OS and Platform to communicate over.
-		 */
+		 
 		ctx->comm_base_addr = pcc_chan->shmem_base_addr;
 		if (ctx->comm_base_addr) {
 			if (version == XGENE_SLIMPRO_I2C_V2)
@@ -535,7 +503,7 @@ static int xgene_slimpro_i2c_probe(struct platform_device *pdev)
 	if (rc)
 		dev_warn(&pdev->dev, "Unable to set dma mask\n");
 
-	/* Setup I2C adapter */
+	 
 	adapter = &ctx->adapter;
 	snprintf(adapter->name, sizeof(adapter->name), "MAILBOX I2C");
 	adapter->algo = &xgene_slimpro_i2c_algorithm;

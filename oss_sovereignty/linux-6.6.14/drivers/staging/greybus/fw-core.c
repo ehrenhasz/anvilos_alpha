@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Greybus Firmware Core Bundle Driver.
- *
- * Copyright 2016 Google Inc.
- * Copyright 2016 Linaro Ltd.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/firmware.h>
@@ -72,7 +67,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 	if (!fw_core)
 		return -ENOMEM;
 
-	/* Parse CPorts and create connections */
+	 
 	for (i = 0; i < bundle->num_cports; i++) {
 		cport_desc = &bundle->cport_desc[i];
 		cport_id = le16_to_cpu(cport_desc->id);
@@ -80,7 +75,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 
 		switch (protocol_id) {
 		case GREYBUS_PROTOCOL_FW_MANAGEMENT:
-			/* Disallow multiple Firmware Management CPorts */
+			 
 			if (fw_core->mgmt_connection) {
 				dev_err(&bundle->dev,
 					"multiple management CPorts found\n");
@@ -101,7 +96,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 			fw_core->mgmt_connection = connection;
 			break;
 		case GREYBUS_PROTOCOL_FW_DOWNLOAD:
-			/* Disallow multiple Firmware Download CPorts */
+			 
 			if (fw_core->download_connection) {
 				dev_err(&bundle->dev,
 					"multiple download CPorts found\n");
@@ -120,7 +115,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 
 			break;
 		case GREYBUS_PROTOCOL_SPI:
-			/* Disallow multiple SPI CPorts */
+			 
 			if (fw_core->spi_connection) {
 				dev_err(&bundle->dev,
 					"multiple SPI CPorts found\n");
@@ -139,7 +134,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 
 			break;
 		case GREYBUS_PROTOCOL_AUTHENTICATION:
-			/* Disallow multiple CAP CPorts */
+			 
 			if (fw_core->cap_connection) {
 				dev_err(&bundle->dev, "multiple Authentication CPorts found\n");
 				ret = -EINVAL;
@@ -164,7 +159,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 		}
 	}
 
-	/* Firmware Management connection is mandatory */
+	 
 	if (!fw_core->mgmt_connection) {
 		dev_err(&bundle->dev, "missing management connection\n");
 		ret = -ENODEV;
@@ -173,7 +168,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 
 	ret = gb_fw_download_connection_init(fw_core->download_connection);
 	if (ret) {
-		/* We may still be able to work with the Interface */
+		 
 		dev_err(&bundle->dev, "failed to initialize firmware download connection, disable it (%d)\n",
 			ret);
 		gb_connection_destroy(fw_core->download_connection);
@@ -182,7 +177,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 
 	ret = gb_fw_spi_connection_init(fw_core->spi_connection);
 	if (ret) {
-		/* We may still be able to work with the Interface */
+		 
 		dev_err(&bundle->dev, "failed to initialize SPI connection, disable it (%d)\n",
 			ret);
 		gb_connection_destroy(fw_core->spi_connection);
@@ -191,7 +186,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 
 	ret = gb_cap_connection_init(fw_core->cap_connection);
 	if (ret) {
-		/* We may still be able to work with the Interface */
+		 
 		dev_err(&bundle->dev, "failed to initialize CAP connection, disable it (%d)\n",
 			ret);
 		gb_connection_destroy(fw_core->cap_connection);
@@ -200,7 +195,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 
 	ret = gb_fw_mgmt_connection_init(fw_core->mgmt_connection);
 	if (ret) {
-		/* We may still be able to work with the Interface */
+		 
 		dev_err(&bundle->dev, "failed to initialize firmware management connection, disable it (%d)\n",
 			ret);
 		goto err_exit_connections;
@@ -208,7 +203,7 @@ static int gb_fw_core_probe(struct gb_bundle *bundle,
 
 	greybus_set_drvdata(bundle, fw_core);
 
-	/* FIXME: Remove this after S2 Loader gets runtime PM support */
+	 
 	if (!(bundle->intf->quirks & GB_INTERFACE_QUIRK_NO_PM))
 		gb_pm_runtime_put_autosuspend(bundle);
 
@@ -233,7 +228,7 @@ static void gb_fw_core_disconnect(struct gb_bundle *bundle)
 	struct gb_fw_core *fw_core = greybus_get_drvdata(bundle);
 	int ret;
 
-	/* FIXME: Remove this after S2 Loader gets runtime PM support */
+	 
 	if (!(bundle->intf->quirks & GB_INTERFACE_QUIRK_NO_PM)) {
 		ret = gb_pm_runtime_get_sync(bundle);
 		if (ret)

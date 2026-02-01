@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  skl.c - Implementation of ASoC Intel SKL HD Audio driver
- *
- *  Copyright (C) 2014-2015 Intel Corp
- *  Author: Jeeja KP <jeeja.kp@intel.com>
- *
- *  Derived mostly from Intel HDA driver with following copyrights:
- *  Copyright (c) 2004 Takashi Iwai <tiwai@suse.de>
- *                     PeiSen Hou <pshou@realtek.com.tw>
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -39,9 +27,7 @@ static int skl_pci_binding;
 module_param_named(pci_binding, skl_pci_binding, int, 0444);
 MODULE_PARM_DESC(pci_binding, "PCI binding (0=auto, 1=only legacy, 2=only asoc");
 
-/*
- * initialize the PCI registers
- */
+ 
 static void skl_update_pci_byte(struct pci_dev *pci, unsigned int reg,
 			    unsigned char mask, unsigned char val)
 {
@@ -57,13 +43,7 @@ static void skl_init_pci(struct skl_dev *skl)
 {
 	struct hdac_bus *bus = skl_to_bus(skl);
 
-	/*
-	 * Clear bits 0-2 of PCI register TCSEL (at offset 0x44)
-	 * TCSEL == Traffic Class Select Register, which sets PCI express QOS
-	 * Ensuring these bits are 0 clears playback static on some HD Audio
-	 * codecs.
-	 * The PCI register TCSEL is defined in the Intel manuals.
-	 */
+	 
 	dev_dbg(bus->dev, "Clearing TCSEL\n");
 	skl_update_pci_byte(skl->pci, AZX_PCIREG_TCSEL, 0x07, 0);
 }
@@ -79,12 +59,7 @@ static void update_pci_dword(struct pci_dev *pci,
 	pci_write_config_dword(pci, reg, data);
 }
 
-/*
- * skl_enable_miscbdcge - enable/dsiable CGCTL.MISCBDCGE bits
- *
- * @dev: device pointer
- * @enable: enable/disable flag
- */
+ 
 static void skl_enable_miscbdcge(struct device *dev, bool enable)
 {
 	struct pci_dev *pci = to_pci_dev(dev);
@@ -95,36 +70,27 @@ static void skl_enable_miscbdcge(struct device *dev, bool enable)
 	update_pci_dword(pci, AZX_PCIREG_CGCTL, AZX_CGCTL_MISCBDCGE_MASK, val);
 }
 
-/**
- * skl_clock_power_gating: Enable/Disable clock and power gating
- *
- * @dev: Device pointer
- * @enable: Enable/Disable flag
- */
+ 
 static void skl_clock_power_gating(struct device *dev, bool enable)
 {
 	struct pci_dev *pci = to_pci_dev(dev);
 	struct hdac_bus *bus = pci_get_drvdata(pci);
 	u32 val;
 
-	/* Update PDCGE bit of CGCTL register */
+	 
 	val = enable ? AZX_CGCTL_ADSPDCGE : 0;
 	update_pci_dword(pci, AZX_PCIREG_CGCTL, AZX_CGCTL_ADSPDCGE, val);
 
-	/* Update L1SEN bit of EM2 register */
+	 
 	val = enable ? AZX_REG_VS_EM2_L1SEN : 0;
 	snd_hdac_chip_updatel(bus, VS_EM2, AZX_REG_VS_EM2_L1SEN, val);
 
-	/* Update ADSPPGD bit of PGCTL register */
+	 
 	val = enable ? 0 : AZX_PGCTL_ADSPPGD;
 	update_pci_dword(pci, AZX_PCIREG_PGCTL, AZX_PGCTL_ADSPPGD, val);
 }
 
-/*
- * While performing reset, controller may not come back properly causing
- * issues, so recommendation is to set CGCTL.MISCBDCGE to 0 then do reset
- * (init chip) and then again set CGCTL.MISCBDCGE to 1
- */
+ 
 static int skl_init_chip(struct hdac_bus *bus, bool full_reset)
 {
 	struct hdac_ext_link *hlink;
@@ -134,7 +100,7 @@ static int skl_init_chip(struct hdac_bus *bus, bool full_reset)
 	skl_enable_miscbdcge(bus->dev, false);
 	ret = snd_hdac_bus_init_chip(bus, full_reset);
 
-	/* Reset stream-to-link mapping */
+	 
 	list_for_each_entry(hlink, &bus->hlink_list, list)
 		writel(0, hlink->ml_addr + AZX_REG_ML_LOSIDV);
 
@@ -152,13 +118,13 @@ void skl_update_d0i3c(struct device *dev, bool enable)
 	int timeout = 50;
 
 	reg = snd_hdac_chip_readb(bus, VS_D0I3C);
-	/* Do not write to D0I3C until command in progress bit is cleared */
+	 
 	while ((reg & AZX_REG_VS_D0I3C_CIP) && --timeout) {
 		udelay(10);
 		reg = snd_hdac_chip_readb(bus, VS_D0I3C);
 	}
 
-	/* Highly unlikely. But if it happens, flag error explicitly */
+	 
 	if (!timeout) {
 		dev_err(bus->dev, "Before D0I3C update: D0I3C CIP timeout\n");
 		return;
@@ -172,14 +138,14 @@ void skl_update_d0i3c(struct device *dev, bool enable)
 	snd_hdac_chip_writeb(bus, VS_D0I3C, reg);
 
 	timeout = 50;
-	/* Wait for cmd in progress to be cleared before exiting the function */
+	 
 	reg = snd_hdac_chip_readb(bus, VS_D0I3C);
 	while ((reg & AZX_REG_VS_D0I3C_CIP) && --timeout) {
 		udelay(10);
 		reg = snd_hdac_chip_readb(bus, VS_D0I3C);
 	}
 
-	/* Highly unlikely. But if it happens, flag error explicitly */
+	 
 	if (!timeout) {
 		dev_err(bus->dev, "After D0I3C update: D0I3C CIP timeout\n");
 		return;
@@ -189,16 +155,10 @@ void skl_update_d0i3c(struct device *dev, bool enable)
 			snd_hdac_chip_readb(bus, VS_D0I3C));
 }
 
-/**
- * skl_dum_set - set DUM bit in EM2 register
- * @bus: HD-audio core bus
- *
- * Addresses incorrect position reporting for capture streams.
- * Used on device power up.
- */
+ 
 static void skl_dum_set(struct hdac_bus *bus)
 {
-	/* For the DUM bit to be set, CRST needs to be out of reset state */
+	 
 	if (!(snd_hdac_chip_readb(bus, GCTL) & AZX_GCTL_RESET)) {
 		skl_enable_miscbdcge(bus->dev, false);
 		snd_hdac_bus_exit_link_reset(bus);
@@ -208,7 +168,7 @@ static void skl_dum_set(struct hdac_bus *bus)
 	snd_hdac_chip_updatel(bus, VS_EM2, AZX_VS_EM2_DUM, AZX_VS_EM2_DUM);
 }
 
-/* called from IRQ */
+ 
 static void skl_stream_update(struct hdac_bus *bus, struct hdac_stream *hstr)
 {
 	snd_pcm_period_elapsed(hstr->substream);
@@ -230,7 +190,7 @@ static irqreturn_t skl_interrupt(int irq, void *dev_id)
 		return IRQ_NONE;
 	}
 
-	/* clear rirb int */
+	 
 	status = snd_hdac_chip_readb(bus, RIRBSTS);
 	if (status & RIRB_INT_MASK) {
 		if (status & RIRB_INT_RESPONSE)
@@ -323,9 +283,7 @@ static int _skl_resume(struct hdac_bus *bus)
 #endif
 
 #ifdef CONFIG_PM_SLEEP
-/*
- * power management
- */
+ 
 static int skl_suspend(struct device *dev)
 {
 	struct pci_dev *pci = to_pci_dev(dev);
@@ -333,12 +291,9 @@ static int skl_suspend(struct device *dev)
 	struct skl_dev *skl  = bus_to_skl(bus);
 	int ret;
 
-	/*
-	 * Do not suspend if streams which are marked ignore suspend are
-	 * running, we need to save the state for these and continue
-	 */
+	 
 	if (skl->supend_active) {
-		/* turn off the links and stop the CORB/RIRB DMA if it is On */
+		 
 		snd_hdac_ext_bus_link_power_down_all(bus);
 
 		if (bus->cmd_dma_state)
@@ -364,19 +319,12 @@ static int skl_resume(struct device *dev)
 	struct hdac_ext_link *hlink;
 	int ret;
 
-	/*
-	 * resume only when we are not in suspend active, otherwise need to
-	 * restore the device
-	 */
+	 
 	if (skl->supend_active) {
 		pci_restore_state(pci);
 		snd_hdac_ext_bus_link_power_up_all(bus);
 		disable_irq_wake(bus->irq);
-		/*
-		 * turn On the links which are On before active suspend
-		 * and start the CORB/RIRB DMA if On before
-		 * active suspend.
-		 */
+		 
 		list_for_each_entry(hlink, &bus->hlink_list, list) {
 			if (hlink->ref_count)
 				snd_hdac_ext_bus_link_power_up(hlink);
@@ -391,7 +339,7 @@ static int skl_resume(struct device *dev)
 
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 #ifdef CONFIG_PM
 static int skl_runtime_suspend(struct device *dev)
@@ -413,7 +361,7 @@ static int skl_runtime_resume(struct device *dev)
 
 	return _skl_resume(bus);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops skl_pm = {
 	SET_SYSTEM_SLEEP_PM_OPS(skl_suspend, skl_resume)
@@ -421,14 +369,12 @@ static const struct dev_pm_ops skl_pm = {
 	.suspend_late = skl_suspend_late,
 };
 
-/*
- * destructor
- */
+ 
 static int skl_free(struct hdac_bus *bus)
 {
 	struct skl_dev *skl  = bus_to_skl(bus);
 
-	skl->init_done = 0; /* to be sure */
+	skl->init_done = 0;  
 
 	snd_hdac_stop_streams_and_chip(bus);
 
@@ -454,12 +400,7 @@ static int skl_free(struct hdac_bus *bus)
 	return 0;
 }
 
-/*
- * For each ssp there are 3 clocks (mclk/sclk/sclkfs).
- * e.g. for ssp0, clocks will be named as
- *      "ssp0_mclk", "ssp0_sclk", "ssp0_sclkfs"
- * So for skl+, there are 6 ssps, so 18 clocks will be created.
- */
+ 
 static struct skl_ssp_clk skl_ssp_clks[] = {
 	{.name = "ssp0_mclk"}, {.name = "ssp1_mclk"}, {.name = "ssp2_mclk"},
 	{.name = "ssp3_mclk"}, {.name = "ssp4_mclk"}, {.name = "ssp5_mclk"},
@@ -476,10 +417,10 @@ static struct snd_soc_acpi_mach *skl_find_hda_machine(struct skl_dev *skl,
 {
 	struct snd_soc_acpi_mach *mach;
 
-	/* point to common table */
+	 
 	mach = snd_soc_acpi_intel_hda_machines;
 
-	/* all entries in the machine table use the same firmware */
+	 
 	mach->fw_filename = machines->fw_filename;
 
 	return mach;
@@ -563,7 +504,7 @@ static int skl_dmic_device_register(struct skl_dev *skl)
 	struct platform_device *pdev;
 	int ret;
 
-	/* SKL has one dmic port, so allocate dmic device for this */
+	 
 	pdev = platform_device_alloc("dmic-codec", -1);
 	if (!pdev) {
 		dev_err(bus->dev, "failed to allocate dmic device\n");
@@ -638,11 +579,11 @@ static int skl_clock_device_register(struct skl_dev *skl)
 	clk_pdata->ssp_clks = skl_ssp_clks;
 	clk_pdata->num_clks = ARRAY_SIZE(skl_ssp_clks);
 
-	/* Query NHLT to fill the rates and parent */
+	 
 	skl_get_clks(skl, clk_pdata->ssp_clks);
 	clk_pdata->pvt_data = skl;
 
-	/* Register Platform device */
+	 
 	pdevinfo.parent = &skl->pci->dev;
 	pdevinfo.id = -1;
 	pdevinfo.name = "skl-ssp-clk";
@@ -662,9 +603,7 @@ static void skl_clock_device_unregister(struct skl_dev *skl)
 
 #define IDISP_INTEL_VENDOR_ID	0x80860000
 
-/*
- * load the legacy codec driver
- */
+ 
 static void load_codec_module(struct hda_codec *codec)
 {
 #ifdef MODULE
@@ -678,7 +617,7 @@ static void load_codec_module(struct hda_codec *codec)
 #endif
 }
 
-#endif /* CONFIG_SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC */
+#endif  
 
 static struct hda_codec *skl_codec_device_init(struct hdac_bus *bus, int addr)
 {
@@ -703,9 +642,7 @@ static struct hda_codec *skl_codec_device_init(struct hdac_bus *bus, int addr)
 	return codec;
 }
 
-/*
- * Probe the given codec address
- */
+ 
 static int probe_codec(struct hdac_bus *bus, int addr)
 {
 	unsigned int cmd = (addr << 28) | (AC_NODE_ROOT << 20) |
@@ -738,7 +675,7 @@ static int probe_codec(struct hdac_bus *bus, int addr)
 	hda_codec->codec = codec;
 	dev_set_drvdata(&codec->core.dev, hda_codec);
 
-	/* use legacy bus only for HDA codecs, idisp uses ext bus */
+	 
 	if ((res & 0xFFFF0000) != IDISP_INTEL_VENDOR_ID) {
 		codec->core.type = HDA_DEV_LEGACY;
 		load_codec_module(hda_codec->codec);
@@ -747,35 +684,25 @@ static int probe_codec(struct hdac_bus *bus, int addr)
 #else
 	codec = skl_codec_device_init(bus, addr);
 	return PTR_ERR_OR_ZERO(codec);
-#endif /* CONFIG_SND_SOC_INTEL_SKYLAKE_HDAUDIO_CODEC */
+#endif  
 }
 
-/* Codec initialization */
+ 
 static void skl_codec_create(struct hdac_bus *bus)
 {
 	int c, max_slots;
 
 	max_slots = HDA_MAX_CODECS;
 
-	/* First try to probe all given codec slots */
+	 
 	for (c = 0; c < max_slots; c++) {
 		if ((bus->codec_mask & (1 << c))) {
 			if (probe_codec(bus, c) < 0) {
-				/*
-				 * Some BIOSen give you wrong codec addresses
-				 * that don't exist
-				 */
+				 
 				dev_warn(bus->dev,
 					 "Codec #%d probe error; disabling it...\n", c);
 				bus->codec_mask &= ~(1 << c);
-				/*
-				 * More badly, accessing to a non-existing
-				 * codec often screws up the controller bus,
-				 * and disturbs the further communications.
-				 * Thus if an error occurs during probing,
-				 * better to reset the controller bus to get
-				 * back to the sanity state.
-				 */
+				 
 				snd_hdac_bus_stop_chip(bus);
 				skl_init_chip(bus, true);
 			}
@@ -787,10 +714,7 @@ static int skl_i915_init(struct hdac_bus *bus)
 {
 	int err;
 
-	/*
-	 * The HDMI codec is in GPU so we need to ensure that it is powered
-	 * up and ready for probe
-	 */
+	 
 	err = snd_hdac_i915_init(bus);
 	if (err < 0)
 		return err;
@@ -822,14 +746,14 @@ static void skl_probe_work(struct work_struct *work)
 		goto out_err;
 	}
 
-	/* codec detection */
+	 
 	if (!bus->codec_mask)
 		dev_info(bus->dev, "no hda codecs found!\n");
 
-	/* create codec instances */
+	 
 	skl_codec_create(bus);
 
-	/* register platform dai and controls */
+	 
 	err = skl_platform_register(bus->dev);
 	if (err < 0) {
 		dev_err(bus->dev, "platform register failed: %d\n", err);
@@ -842,16 +766,14 @@ static void skl_probe_work(struct work_struct *work)
 		goto out_err;
 	}
 
-	/*
-	 * we are done probing so decrement link counts
-	 */
+	 
 	list_for_each_entry(hlink, &bus->hlink_list, list)
 		snd_hdac_ext_bus_link_put(bus, hlink);
 
 	if (IS_ENABLED(CONFIG_SND_SOC_HDAC_HDMI))
 		snd_hdac_display_power(bus, HDA_CODEC_IDX_CONTROLLER, false);
 
-	/* configure PM */
+	 
 	pm_runtime_put_noidle(bus->dev);
 	pm_runtime_allow(bus->dev);
 	skl->init_done = 1;
@@ -863,9 +785,7 @@ out_err:
 		snd_hdac_display_power(bus, HDA_CODEC_IDX_CONTROLLER, false);
 }
 
-/*
- * constructor
- */
+ 
 static int skl_create(struct pci_dev *pci,
 		      struct skl_dev **rskl)
 {
@@ -933,7 +853,7 @@ static int skl_first_init(struct hdac_bus *bus)
 
 	snd_hdac_bus_parse_capabilities(bus);
 
-	/* check if PPCAP exists */
+	 
 	if (!bus->ppcap) {
 		dev_err(bus->dev, "bus ppcap not set, HDAudio or DSP not present?\n");
 		return -ENODEV;
@@ -948,7 +868,7 @@ static int skl_first_init(struct hdac_bus *bus)
 	gcap = snd_hdac_chip_readw(bus, GCAP);
 	dev_dbg(bus->dev, "chipset global capabilities = 0x%x\n", gcap);
 
-	/* read number of streams from GCAP register */
+	 
 	cp_streams = (gcap >> 8) & 0x0f;
 	pb_streams = (gcap >> 12) & 0x0f;
 
@@ -959,12 +879,12 @@ static int skl_first_init(struct hdac_bus *bus)
 
 	bus->num_streams = cp_streams + pb_streams;
 
-	/* allow 64bit DMA address if supported by H/W */
+	 
 	if (dma_set_mask_and_coherent(bus->dev, DMA_BIT_MASK(64)))
 		dma_set_mask_and_coherent(bus->dev, DMA_BIT_MASK(32));
 	dma_set_max_seg_size(bus->dev, UINT_MAX);
 
-	/* initialize streams */
+	 
 	snd_hdac_ext_stream_init_all
 		(bus, 0, cp_streams, SNDRV_PCM_STREAM_CAPTURE);
 	start_idx = cp_streams;
@@ -1003,7 +923,7 @@ static int skl_probe(struct pci_dev *pci,
 		break;
 	}
 
-	/* we use ext core ops, so provide NULL for ops here */
+	 
 	err = skl_create(pci, &skl);
 	if (err < 0)
 		return err;
@@ -1040,7 +960,7 @@ static int skl_probe(struct pci_dev *pci,
 
 		skl_nhlt_update_topology_bin(skl);
 
-		/* create device for dsp clk */
+		 
 		err = skl_clock_device_register(skl);
 		if (err < 0) {
 			dev_err(bus->dev, "skl_clock_device_register failed with err: %d\n", err);
@@ -1068,7 +988,7 @@ static int skl_probe(struct pci_dev *pci,
 	if (bus->mlcap)
 		snd_hdac_ext_bus_get_ml_capabilities(bus);
 
-	/* create device for soc dmic */
+	 
 	err = skl_dmic_device_register(skl);
 	if (err < 0) {
 		dev_err(bus->dev, "skl_dmic_device_register failed with err: %d\n", err);
@@ -1128,7 +1048,7 @@ static void skl_remove(struct pci_dev *pci)
 
 	pm_runtime_get_noresume(&pci->dev);
 
-	/* codec removal, invoke bus_device_remove */
+	 
 	snd_hdac_ext_bus_device_remove(bus);
 
 	skl_platform_unregister(&pci->dev);
@@ -1142,7 +1062,7 @@ static void skl_remove(struct pci_dev *pci)
 	skl_free(bus);
 }
 
-/* PCI IDs */
+ 
 static const struct pci_device_id skl_ids[] = {
 #if IS_ENABLED(CONFIG_SND_SOC_INTEL_SKL)
 	{ PCI_DEVICE_DATA(INTEL, HDA_SKL_LP, &snd_soc_acpi_intel_skl_machines) },
@@ -1172,7 +1092,7 @@ static const struct pci_device_id skl_ids[] = {
 };
 MODULE_DEVICE_TABLE(pci, skl_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver skl_driver = {
 	.name = KBUILD_MODNAME,
 	.id_table = skl_ids,

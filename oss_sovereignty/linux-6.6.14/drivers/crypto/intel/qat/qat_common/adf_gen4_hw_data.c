@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2020 Intel Corporation */
+
+ 
 #include <linux/iopoll.h>
 #include "adf_accel_devices.h"
 #include "adf_common_drv.h"
@@ -119,17 +119,15 @@ void adf_gen4_set_ssm_wdtimer(struct adf_accel_dev *accel_dev)
 	u32 ssm_wdt_high = 0;
 	u32 ssm_wdt_low = 0;
 
-	/* Convert 64bit WDT timer value into 32bit values for
-	 * mmio write to 32bit CSRs.
-	 */
+	 
 	adf_gen4_unpack_ssm_wdtimer(timer_val, &ssm_wdt_high, &ssm_wdt_low);
 	adf_gen4_unpack_ssm_wdtimer(timer_val_pke, &ssm_wdt_pke_high,
 				    &ssm_wdt_pke_low);
 
-	/* Enable WDT for sym and dc */
+	 
 	ADF_CSR_WR(pmisc_addr, ADF_SSMWDTL_OFFSET, ssm_wdt_low);
 	ADF_CSR_WR(pmisc_addr, ADF_SSMWDTH_OFFSET, ssm_wdt_high);
-	/* Enable WDT for pke */
+	 
 	ADF_CSR_WR(pmisc_addr, ADF_SSMWDTPKEL_OFFSET, ssm_wdt_pke_low);
 	ADF_CSR_WR(pmisc_addr, ADF_SSMWDTPKEH_OFFSET, ssm_wdt_pke_high);
 }
@@ -146,21 +144,18 @@ static int reset_ring_pair(void __iomem *csr, u32 bank_number)
 	u32 status;
 	int ret;
 
-	/* Write rpresetctl register BIT(0) as 1
-	 * Since rpresetctl registers have no RW fields, no need to preserve
-	 * values for other bits. Just write directly.
-	 */
+	 
 	ADF_CSR_WR(csr, ADF_WQM_CSR_RPRESETCTL(bank_number),
 		   ADF_WQM_CSR_RPRESETCTL_RESET);
 
-	/* Read rpresetsts register and wait for rp reset to complete */
+	 
 	ret = read_poll_timeout(ADF_CSR_RD, status,
 				status & ADF_WQM_CSR_RPRESETSTS_STATUS,
 				ADF_RPRESET_POLL_DELAY_US,
 				ADF_RPRESET_POLL_TIMEOUT_US, true,
 				csr, ADF_WQM_CSR_RPRESETSTS(bank_number));
 	if (!ret) {
-		/* When rp reset is done, clear rpresetsts */
+		 
 		ADF_CSR_WR(csr, ADF_WQM_CSR_RPRESETSTS(bank_number),
 			   ADF_WQM_CSR_RPRESETSTS_STATUS);
 	}

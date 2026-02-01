@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ST Microelectronics MFD: stmpe's i2c client specific driver
- *
- * Copyright (C) ST-Ericsson SA 2010
- * Copyright (C) ST Microelectronics SA 2011
- *
- * Author: Rabin Vincent <rabin.vincent@stericsson.com> for ST-Ericsson
- * Author: Viresh Kumar <vireshk@kernel.org> for ST Microelectronics
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -80,10 +72,7 @@ stmpe_i2c_probe(struct i2c_client *i2c)
 
 	of_id = of_match_device(stmpe_of_match, &i2c->dev);
 	if (!of_id) {
-		/*
-		 * This happens when the I2C ID matches the node name
-		 * but no real compatible string has been given.
-		 */
+		 
 		dev_info(&i2c->dev, "matching on node name, compatible is preferred\n");
 		partnum = id->driver_data;
 	} else

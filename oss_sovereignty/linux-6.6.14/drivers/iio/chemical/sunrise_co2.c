@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Senseair Sunrise 006-0-0007 CO2 sensor driver.
- *
- * Copyright (C) 2021 Jacopo Mondi
- *
- * List of features not yet supported by the driver:
- * - controllable EN pin
- * - single-shot operations using the nDRY pin.
- * - ABC/target calibration
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/i2c.h>
@@ -30,21 +21,18 @@
 #define SUNRISE_CALIBRATION_COMMAND_REG		0x82
 #define SUNRISE_CALIBRATION_FACTORY_CMD		0x7c02
 #define SUNRISE_CALIBRATION_BACKGROUND_CMD	0x7c06
-/*
- * The calibration timeout is not characterized in the datasheet.
- * Use 30 seconds as a reasonable upper limit.
- */
+ 
 #define SUNRISE_CALIBRATION_TIMEOUT_US		(30 * USEC_PER_SEC)
 
 struct sunrise_dev {
 	struct i2c_client *client;
 	struct regmap *regmap;
-	/* Protects access to IIO attributes. */
+	 
 	struct mutex lock;
 	bool ignore_nak;
 };
 
-/* Custom regmap read/write operations: perform unlocked access to the i2c bus. */
+ 
 
 static int sunrise_regmap_read(void *context, const void *reg_buf,
 			       size_t reg_size, void *val_buf, size_t val_size)
@@ -60,13 +48,7 @@ static int sunrise_regmap_read(void *context, const void *reg_buf,
 	memset(&data, 0, sizeof(data));
 	data.block[0] = val_size;
 
-	/*
-	 * Wake up sensor by sending sensor address: START, sensor address,
-	 * STOP. Sensor will not ACK this byte.
-	 *
-	 * The chip enters a low power state after 15ms without
-	 * communications or after a complete read/write sequence.
-	 */
+	 
 	__i2c_smbus_xfer(client->adapter, client->addr,
 			 sunrise->ignore_nak ? I2C_M_IGNORE_NAK : 0,
 			 I2C_SMBUS_WRITE, 0, I2C_SMBUS_BYTE_DATA, &data);
@@ -90,7 +72,7 @@ static int sunrise_regmap_write(void *context, const void *val_buf, size_t count
 	struct sunrise_dev *sunrise = i2c_get_clientdata(client);
 	union i2c_smbus_data data;
 
-	/* Discard reg address from values count. */
+	 
 	if (!count)
 		return -EINVAL;
 	count--;
@@ -110,11 +92,7 @@ static int sunrise_regmap_write(void *context, const void *val_buf, size_t count
 				I2C_SMBUS_I2C_BLOCK_DATA, &data);
 }
 
-/*
- * Sunrise i2c read/write operations: lock the i2c segment to avoid losing the
- * wake up session. Use custom regmap operations that perform unlocked access to
- * the i2c bus.
- */
+ 
 static int sunrise_read_byte(struct sunrise_dev *sunrise, u8 reg)
 {
 	const struct i2c_client *client = sunrise->client;
@@ -184,7 +162,7 @@ static int sunrise_write_word(struct sunrise_dev *sunrise, u8 reg, u16 data)
 	return ret;
 }
 
-/* Trigger a calibration cycle. */
+ 
 
 enum {
 	SUNRISE_CALIBRATION_FACTORY,
@@ -214,22 +192,19 @@ static int sunrise_calibrate(struct sunrise_dev *sunrise,
 	unsigned int status;
 	int ret;
 
-	/* Reset the calibration status reg. */
+	 
 	ret = sunrise_write_byte(sunrise, SUNRISE_CALIBRATION_STATUS_REG, 0x00);
 	if (ret)
 		return ret;
 
-	/* Write a calibration command and poll the calibration status bit. */
+	 
 	ret = sunrise_write_word(sunrise, SUNRISE_CALIBRATION_COMMAND_REG, data->cmd);
 	if (ret)
 		return ret;
 
 	dev_dbg(&sunrise->client->dev, "%s in progress\n", data->name);
 
-	/*
-	 * Calibration takes several seconds, so the sleep time between reads
-	 * can be pretty relaxed.
-	 */
+	 
 	return read_poll_timeout(sunrise_read_byte, status, status & data->bit,
 				 200000, SUNRISE_CALIBRATION_TIMEOUT_US, false,
 				 sunrise, SUNRISE_CALIBRATION_STATUS_REG);
@@ -285,7 +260,7 @@ static ssize_t sunrise_cal_background_write(struct iio_dev *iiodev,
 	return len;
 }
 
- /* Enumerate and retrieve the chip error status. */
+  
 enum {
 	SUNRISE_ERROR_FATAL,
 	SUNRISE_ERROR_I2C,
@@ -349,7 +324,7 @@ static ssize_t sunrise_error_status_read(struct iio_dev *iiodev,
 }
 
 static const struct iio_chan_spec_ext_info sunrise_concentration_ext_info[] = {
-	/* Calibration triggers. */
+	 
 	{
 		.name = "calibration_factory",
 		.write = sunrise_cal_factory_write,
@@ -361,7 +336,7 @@ static const struct iio_chan_spec_ext_info sunrise_concentration_ext_info[] = {
 		.shared = IIO_SEPARATE,
 	},
 
-	/* Error statuses. */
+	 
 	{
 		.name = "error_status",
 		.read = sunrise_error_status_read,
@@ -434,17 +409,13 @@ static int sunrise_read_raw(struct iio_dev *iio_dev,
 	case IIO_CHAN_INFO_SCALE:
 		switch (chan->type) {
 		case IIO_CONCENTRATION:
-			/*
-			 * 1 / 10^4 to comply with IIO scale for CO2
-			 * (percentage). The chip CO2 reading range is [400 -
-			 * 5000] ppm which corresponds to [0,004 - 0,5] %.
-			 */
+			 
 			*val = 1;
 			*val2 = 10000;
 			return IIO_VAL_FRACTIONAL;
 
 		case IIO_TEMP:
-			/* x10 to comply with IIO scale (millidegrees celsius). */
+			 
 			*val = 10;
 			return IIO_VAL_INT;
 
@@ -500,11 +471,7 @@ static int sunrise_probe(struct i2c_client *client)
 		return PTR_ERR(sunrise->regmap);
 	}
 
-	/*
-	 * The chip nacks the wake up message. If the adapter does not support
-	 * protocol mangling do not set the I2C_M_IGNORE_NAK flag at the expense
-	 * of possible cruft in the logs.
-	 */
+	 
 	if (i2c_check_functionality(client->adapter, I2C_FUNC_PROTOCOL_MANGLING))
 		sunrise->ignore_nak = true;
 

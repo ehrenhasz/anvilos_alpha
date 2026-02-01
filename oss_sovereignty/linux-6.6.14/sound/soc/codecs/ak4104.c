@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AK4104 ALSA SoC (ASoC) driver
- *
- * Copyright (c) 2009 Daniel Mack <daniel@caiaq.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -16,7 +12,7 @@
 #include <sound/soc.h>
 #include <sound/initval.h>
 
-/* AK4104 registers addresses */
+ 
 #define AK4104_REG_CONTROL1		0x00
 #define AK4104_REG_RESERVED		0x01
 #define AK4104_REG_CONTROL2		0x02
@@ -29,7 +25,7 @@
 #define AK4104_WRITE			0xe0
 #define AK4104_RESERVED_VAL		0x5b
 
-/* Bit masks for AK4104 registers */
+ 
 #define AK4104_CONTROL1_RSTN		(1 << 0)
 #define AK4104_CONTROL1_PW		(1 << 1)
 #define AK4104_CONTROL1_DIF0		(1 << 2)
@@ -66,7 +62,7 @@ static int ak4104_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	int val = 0;
 	int ret;
 
-	/* set DAI format */
+	 
 	switch (format & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_RIGHT_J:
 		break;
@@ -81,7 +77,7 @@ static int ak4104_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* This device can only be consumer */
+	 
 	if ((format & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) != SND_SOC_DAIFMT_CBC_CFC)
 		return -EINVAL;
 
@@ -102,7 +98,7 @@ static int ak4104_hw_params(struct snd_pcm_substream *substream,
 	struct ak4104_private *ak4104 = snd_soc_component_get_drvdata(component);
 	int ret, val = 0;
 
-	/* set the IEC958 bits: consumer mode, no copyright bit */
+	 
 	val |= IEC958_AES0_CON_NOT_COPYRIGHT;
 	regmap_write(ak4104->regmap, AK4104_REG_CHN_STATUS(0), val);
 
@@ -181,14 +177,14 @@ static int ak4104_probe(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/* set power-up and non-reset bits */
+	 
 	ret = regmap_update_bits(ak4104->regmap, AK4104_REG_CONTROL1,
 				 AK4104_CONTROL1_PW | AK4104_CONTROL1_RSTN,
 				 AK4104_CONTROL1_PW | AK4104_CONTROL1_RSTN);
 	if (ret < 0)
 		goto exit_disable_regulator;
 
-	/* enable transmitter */
+	 
 	ret = regmap_update_bits(ak4104->regmap, AK4104_REG_TX,
 				 AK4104_TX_TXE, AK4104_TX_TXE);
 	if (ret < 0)
@@ -234,7 +230,7 @@ static int ak4104_soc_resume(struct snd_soc_component *component)
 #else
 #define ak4104_soc_suspend	NULL
 #define ak4104_soc_resume	NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct snd_soc_component_driver soc_component_device_ak4104 = {
 	.probe			= ak4104_probe,
@@ -297,9 +293,7 @@ static int ak4104_spi_probe(struct spi_device *spi)
 	if (PTR_ERR(reset_gpiod) == -EPROBE_DEFER)
 		return -EPROBE_DEFER;
 
-	/* read the 'reserved' register - according to the datasheet, it
-	 * should contain 0x5b. Not a good way to verify the presence of
-	 * the device, but there is no hardware ID register. */
+	 
 	ret = regmap_read(ak4104->regmap, AK4104_REG_RESERVED, &val);
 	if (ret != 0)
 		return ret;

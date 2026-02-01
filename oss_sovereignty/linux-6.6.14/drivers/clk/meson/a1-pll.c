@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2019 Amlogic, Inc. All rights reserved.
- * Author: Jian Hu <jian.hu@amlogic.com>
- *
- * Copyright (c) 2023, SberDevices. All Rights Reserved.
- * Author: Dmitry Rokosov <ddrokosov@sberdevices.ru>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mod_devicetable.h>
@@ -163,15 +157,7 @@ static struct clk_regmap fclk_div2 = {
 			&fclk_div2_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is used by DDR clock in BL2 firmware
-		 * and is required by the platform to operate correctly.
-		 * Until the following condition are met, we need this clock to
-		 * be marked as critical:
-		 * a) Mark the clock used by a firmware resource, if possible
-		 * b) CCF has a clock hand-off mechanism to make the sure the
-		 *    clock stays on until the proper driver comes along
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -201,10 +187,7 @@ static struct clk_regmap fclk_div3 = {
 			&fclk_div3_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is used by APB bus which is set in boot ROM code
-		 * and is required by the platform to operate correctly.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -234,10 +217,7 @@ static struct clk_regmap fclk_div5 = {
 			&fclk_div5_div.hw
 		},
 		.num_parents = 1,
-		/*
-		 * This clock is used by AXI bus which setted in Romcode
-		 * and is required by the platform to operate correctly.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -270,7 +250,7 @@ static struct clk_regmap fclk_div7 = {
 	},
 };
 
-/* Array of all clocks registered by this provider */
+ 
 static struct clk_hw *a1_pll_hw_clks[] = {
 	[CLKID_FIXED_PLL_DCO]	= &fixed_pll_dco.hw,
 	[CLKID_FIXED_PLL]	= &fixed_pll.hw,
@@ -323,11 +303,11 @@ static int meson_a1_pll_probe(struct platform_device *pdev)
 		return dev_err_probe(dev, PTR_ERR(map),
 				     "can't init regmap mmio region\n");
 
-	/* Populate regmap for the regmap backed clocks */
+	 
 	for (i = 0; i < ARRAY_SIZE(a1_pll_regmaps); i++)
 		a1_pll_regmaps[i]->map = map;
 
-	/* Register clocks */
+	 
 	for (clkid = 0; clkid < a1_pll_clks.num; clkid++) {
 		err = devm_clk_hw_register(dev, a1_pll_clks.hws[clkid]);
 		if (err)

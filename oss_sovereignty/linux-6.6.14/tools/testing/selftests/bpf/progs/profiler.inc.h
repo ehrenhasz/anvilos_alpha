@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <vmlinux.h>
 #include <bpf/bpf_core_read.h>
 #include <bpf/bpf_helpers.h>
@@ -67,7 +67,7 @@ struct kernfs_iattrs___52 {
 };
 
 struct kernfs_node___52 {
-	union /* kernfs_node_id */ {
+	union   {
 		struct {
 			u32 ino;
 			u32 generation;
@@ -245,7 +245,7 @@ static ino_t get_inode_from_kernfs(struct kernfs_node* node)
 
 extern bool CONFIG_CGROUP_PIDS __kconfig __weak;
 enum cgroup_subsys_id___local {
-	pids_cgrp_id___local = 123, /* value doesn't matter */
+	pids_cgrp_id___local = 123,  
 };
 
 static INLINE void* populate_cgroup_info(struct cgroup_data_t* cgroup_data,

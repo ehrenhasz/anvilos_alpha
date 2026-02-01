@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Spanning tree protocol; generic parts
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/rculist.h>
 #include <net/switchdev.h>
@@ -13,9 +7,7 @@
 #include "br_private.h"
 #include "br_private_stp.h"
 
-/* since time values in bpdu are in jiffies and then scaled (1/256)
- * before sending, make sure that is at least one STP tick.
- */
+ 
 #define MESSAGE_AGE_INCR	((HZ / 256) + 1)
 
 static const char *const br_port_state_names[] = {
@@ -36,9 +28,7 @@ void br_set_state(struct net_bridge_port *p, unsigned int state)
 	};
 	int err;
 
-	/* Don't change the state of the ports if they are driven by a different
-	 * protocol.
-	 */
+	 
 	if (p->flags & BR_MRP_AWARE)
 		return;
 
@@ -84,7 +74,7 @@ u8 br_port_get_stp_state(const struct net_device *dev)
 }
 EXPORT_SYMBOL_GPL(br_port_get_stp_state);
 
-/* called under bridge lock */
+ 
 struct net_bridge_port *br_get_port(struct net_bridge *br, u16 port_no)
 {
 	struct net_bridge_port *p;
@@ -98,7 +88,7 @@ struct net_bridge_port *br_get_port(struct net_bridge *br, u16 port_no)
 	return NULL;
 }
 
-/* called under bridge lock */
+ 
 static int br_should_become_root_port(const struct net_bridge_port *p,
 				      u16 root_port)
 {
@@ -163,7 +153,7 @@ static void br_root_port_block(const struct net_bridge *br,
 		mod_timer(&p->forward_delay_timer, jiffies + br->forward_delay);
 }
 
-/* called under bridge lock */
+ 
 static void br_root_selection(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -191,7 +181,7 @@ static void br_root_selection(struct net_bridge *br)
 	}
 }
 
-/* called under bridge lock */
+ 
 void br_become_root_bridge(struct net_bridge *br)
 {
 	br->max_age = br->bridge_max_age;
@@ -206,7 +196,7 @@ void br_become_root_bridge(struct net_bridge *br)
 	}
 }
 
-/* called under bridge lock */
+ 
 void br_transmit_config(struct net_bridge_port *p)
 {
 	struct br_config_bpdu bpdu;
@@ -247,7 +237,7 @@ void br_transmit_config(struct net_bridge_port *p)
 	}
 }
 
-/* called under bridge lock */
+ 
 static void br_record_config_information(struct net_bridge_port *p,
 					 const struct br_config_bpdu *bpdu)
 {
@@ -261,7 +251,7 @@ static void br_record_config_information(struct net_bridge_port *p,
 		  + (bpdu->max_age - bpdu->message_age));
 }
 
-/* called under bridge lock */
+ 
 static void br_record_config_timeout_values(struct net_bridge *br,
 					    const struct br_config_bpdu *bpdu)
 {
@@ -271,7 +261,7 @@ static void br_record_config_timeout_values(struct net_bridge *br,
 	__br_set_topology_change(br, bpdu->topology_change);
 }
 
-/* called under bridge lock */
+ 
 void br_transmit_tcn(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -284,7 +274,7 @@ void br_transmit_tcn(struct net_bridge *br)
 			  br->root_port);
 }
 
-/* called under bridge lock */
+ 
 static int br_should_become_designated_port(const struct net_bridge_port *p)
 {
 	struct net_bridge *br;
@@ -314,7 +304,7 @@ static int br_should_become_designated_port(const struct net_bridge_port *p)
 	return 0;
 }
 
-/* called under bridge lock */
+ 
 static void br_designated_port_selection(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -327,7 +317,7 @@ static void br_designated_port_selection(struct net_bridge *br)
 	}
 }
 
-/* called under bridge lock */
+ 
 static int br_supersedes_port_info(const struct net_bridge_port *p,
 				   const struct br_config_bpdu *bpdu)
 {
@@ -359,14 +349,14 @@ static int br_supersedes_port_info(const struct net_bridge_port *p,
 	return 0;
 }
 
-/* called under bridge lock */
+ 
 static void br_topology_change_acknowledged(struct net_bridge *br)
 {
 	br->topology_change_detected = 0;
 	del_timer(&br->tcn_timer);
 }
 
-/* called under bridge lock */
+ 
 void br_topology_change_detection(struct net_bridge *br)
 {
 	int isroot = br_is_root_bridge(br);
@@ -389,7 +379,7 @@ void br_topology_change_detection(struct net_bridge *br)
 	br->topology_change_detected = 1;
 }
 
-/* called under bridge lock */
+ 
 void br_config_bpdu_generation(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -401,20 +391,20 @@ void br_config_bpdu_generation(struct net_bridge *br)
 	}
 }
 
-/* called under bridge lock */
+ 
 static void br_reply(struct net_bridge_port *p)
 {
 	br_transmit_config(p);
 }
 
-/* called under bridge lock */
+ 
 void br_configuration_update(struct net_bridge *br)
 {
 	br_root_selection(br);
 	br_designated_port_selection(br);
 }
 
-/* called under bridge lock */
+ 
 void br_become_designated_port(struct net_bridge_port *p)
 {
 	struct net_bridge *br;
@@ -427,7 +417,7 @@ void br_become_designated_port(struct net_bridge_port *p)
 }
 
 
-/* called under bridge lock */
+ 
 static void br_make_blocking(struct net_bridge_port *p)
 {
 	if (p->state != BR_STATE_DISABLED &&
@@ -443,7 +433,7 @@ static void br_make_blocking(struct net_bridge_port *p)
 	}
 }
 
-/* called under bridge lock */
+ 
 static void br_make_forwarding(struct net_bridge_port *p)
 {
 	struct net_bridge *br = p->br;
@@ -466,7 +456,7 @@ static void br_make_forwarding(struct net_bridge_port *p)
 		mod_timer(&p->forward_delay_timer, jiffies + br->forward_delay);
 }
 
-/* called under bridge lock */
+ 
 void br_port_state_selection(struct net_bridge *br)
 {
 	struct net_bridge_port *p;
@@ -476,7 +466,7 @@ void br_port_state_selection(struct net_bridge *br)
 		if (p->state == BR_STATE_DISABLED)
 			continue;
 
-		/* Don't change port states if userspace is handling STP */
+		 
 		if (br->stp_enabled != BR_USER_STP) {
 			if (p->port_no == br->root_port) {
 				p->config_pending = 0;
@@ -494,10 +484,7 @@ void br_port_state_selection(struct net_bridge *br)
 
 		if (p->state != BR_STATE_BLOCKING)
 			br_multicast_enable_port(p);
-		/* Multicast is not disabled for the port when it goes in
-		 * blocking state because the timers will expire and stop by
-		 * themselves without sending more queries.
-		 */
+		 
 		if (p->state == BR_STATE_FORWARDING)
 			++liveports;
 	}
@@ -508,14 +495,14 @@ void br_port_state_selection(struct net_bridge *br)
 		netif_carrier_on(br->dev);
 }
 
-/* called under bridge lock */
+ 
 static void br_topology_change_acknowledge(struct net_bridge_port *p)
 {
 	p->topology_change_ack = 1;
 	br_transmit_config(p);
 }
 
-/* called under bridge lock */
+ 
 void br_received_config_bpdu(struct net_bridge_port *p,
 			     const struct br_config_bpdu *bpdu)
 {
@@ -554,7 +541,7 @@ void br_received_config_bpdu(struct net_bridge_port *p,
 	}
 }
 
-/* called under bridge lock */
+ 
 void br_received_tcn_bpdu(struct net_bridge_port *p)
 {
 	p->stp_xstats.rx_tcn++;
@@ -568,7 +555,7 @@ void br_received_tcn_bpdu(struct net_bridge_port *p)
 	}
 }
 
-/* Change bridge STP parameter */
+ 
 int br_set_hello_time(struct net_bridge *br, unsigned long val)
 {
 	unsigned long t = clock_t_to_jiffies(val);
@@ -600,7 +587,7 @@ int br_set_max_age(struct net_bridge *br, unsigned long val)
 
 }
 
-/* called under bridge lock */
+ 
 int __set_ageing_time(struct net_device *dev, unsigned long t)
 {
 	struct switchdev_attr attr = {
@@ -618,14 +605,7 @@ int __set_ageing_time(struct net_device *dev, unsigned long t)
 	return 0;
 }
 
-/* Set time interval that dynamic forwarding entries live
- * For pure software bridge, allow values outside the 802.1
- * standard specification for special cases:
- *  0 - entry never ages (all permanent)
- *  1 - entry disappears (no persistence)
- *
- * Offloaded switch entries maybe more restrictive
- */
+ 
 int br_set_ageing_time(struct net_bridge *br, clock_t ageing_time)
 {
 	unsigned long t = clock_t_to_jiffies(ageing_time);
@@ -658,16 +638,14 @@ clock_t br_get_ageing_time(const struct net_device *br_dev)
 }
 EXPORT_SYMBOL_GPL(br_get_ageing_time);
 
-/* called under bridge lock */
+ 
 void __br_set_topology_change(struct net_bridge *br, unsigned char val)
 {
 	unsigned long t;
 	int err;
 
 	if (br->stp_enabled == BR_KERNEL_STP && br->topology_change != val) {
-		/* On topology change, set the bridge ageing time to twice the
-		 * forward delay. Otherwise, restore its default ageing time.
-		 */
+		 
 
 		if (val) {
 			t = 2 * br->forward_delay;

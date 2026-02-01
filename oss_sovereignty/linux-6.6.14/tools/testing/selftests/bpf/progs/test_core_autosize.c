@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <linux/bpf.h>
 #include <stdint.h>
@@ -8,7 +8,7 @@
 
 char _license[] SEC("license") = "GPL";
 
-/* fields of exactly the same size */
+ 
 struct test_struct___samesize {
 	void *ptr;
 	unsigned long long val1;
@@ -17,17 +17,17 @@ struct test_struct___samesize {
 	unsigned char val4;
 } __attribute((preserve_access_index));
 
-/* unsigned fields that have to be downsized by libbpf */
+ 
 struct test_struct___downsize {
 	void *ptr;
 	unsigned long val1;
 	unsigned long val2;
 	unsigned long val3;
 	unsigned long val4;
-	/* total sz: 40 */
+	 
 } __attribute__((preserve_access_index));
 
-/* fields with signed integers of wrong size, should be rejected */
+ 
 struct test_struct___signed {
 	void *ptr;
 	long val1;
@@ -36,15 +36,15 @@ struct test_struct___signed {
 	long val4;
 } __attribute((preserve_access_index));
 
-/* real layout and sizes according to test's (32-bit) BTF */
+ 
 struct test_struct___real {
-	unsigned int ptr; /* can't use `void *`, it is always 8 byte in BPF target */
+	unsigned int ptr;  
 	unsigned int val2;
 	unsigned long long val1;
 	unsigned short val3;
 	unsigned char val4;
 	unsigned char _pad;
-	/* total sz: 20 */
+	 
 };
 
 struct test_struct___real input = {
@@ -53,7 +53,7 @@ struct test_struct___real input = {
 	.val2 = 0x0a0b0c0d,
 	.val3 = 0xfeed,
 	.val4 = 0xb9,
-	._pad = 0xff, /* make sure no accidental zeros are present */
+	._pad = 0xff,  
 };
 
 unsigned long long ptr_samesized = 0;
@@ -129,7 +129,7 @@ int handle_downsize(void *ctx)
 #define bpf_core_read_int bpf_core_read
 #else
 #define bpf_core_read_int(dst, sz, src) ({ \
-	/* Prevent "subtraction from stack pointer prohibited" */ \
+	  \
 	volatile long __off = sizeof(*dst) - (sz); \
 	bpf_core_read((char *)(dst) + __off, sz, src); \
 })

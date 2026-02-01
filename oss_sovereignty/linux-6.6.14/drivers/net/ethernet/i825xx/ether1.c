@@ -1,32 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/drivers/acorn/net/ether1.c
- *
- *  Copyright (C) 1996-2000 Russell King
- *
- *  Acorn ether1 driver (82586 chip) for Acorn machines
- *
- * We basically keep two queues in the cards memory - one for transmit
- * and one for receive.  Each has a head and a tail.  The head is where
- * we/the chip adds packets to be transmitted/received, and the tail
- * is where the transmitter has got to/where the receiver will stop.
- * Both of these queues are circular, and since the chip is running
- * all the time, we have to be careful when we modify the pointers etc
- * so that the buffer memory contents is valid all the time.
- *
- * Change log:
- * 1.00	RMK			Released
- * 1.01	RMK	19/03/1996	Transfers the last odd byte onto/off of the card now.
- * 1.02	RMK	25/05/1997	Added code to restart RU if it goes not ready
- * 1.03	RMK	14/09/1997	Cleaned up the handling of a reset during the TX interrupt.
- *				Should prevent lockup.
- * 1.04 RMK	17/09/1997	Added more info when initialisation of chip goes wrong.
- *				TDR now only reports failure when chip reports non-zero
- *				TDR time-distance.
- * 1.05	RMK	31/12/1997	Removed calls to dev_tint for 2.1
- * 1.06	RMK	10/02/2000	Updated for 2.3.43
- * 1.07	RMK	13/05/2000	Updated for 2.3.99-pre8
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -68,14 +41,14 @@ static int ether1_close(struct net_device *dev);
 static void ether1_setmulticastlist(struct net_device *dev);
 static void ether1_timeout(struct net_device *dev, unsigned int txqueue);
 
-/* ------------------------------------------------------------------------- */
+ 
 
 static char version[] = "ether1 ethernet driver (c) 2000 Russell King v1.07\n";
 
 #define BUS_16 16
 #define BUS_8  8
 
-/* ------------------------------------------------------------------------- */
+ 
 
 #define DISABLEIRQS 1
 #define NORMALIRQS  0
@@ -113,15 +86,7 @@ ether1_outw_p (struct net_device *dev, unsigned short val, int addr, int svflgs)
 		local_irq_restore (flags);
 }
 
-/*
- * Some inline assembler to allow fast transfers on to/off of the card.
- * Since this driver depends on some features presented by the ARM
- * specific architecture, and that you can't configure this driver
- * without specifying ARM mode, this is not a problem.
- *
- * This routine is essentially an optimised memcpy from the card's
- * onboard RAM to kernel memory.
- */
+ 
 static void
 ether1_writebuffer (struct net_device *dev, void *data, unsigned int start, unsigned int length)
 {

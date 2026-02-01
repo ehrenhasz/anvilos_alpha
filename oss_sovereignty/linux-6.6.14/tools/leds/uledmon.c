@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * uledmon.c
- *
- * This program creates a new userspace LED class device and monitors it. A
- * timestamp and brightness value is printed each time the brightness changes.
- *
- * Usage: uledmon <device-name>
- *
- * <device-name> is the name of the LED class device to be created. Pressing
- * CTRL+C will exit.
- */
+
+ 
 
 #include <fcntl.h>
 #include <stdio.h>

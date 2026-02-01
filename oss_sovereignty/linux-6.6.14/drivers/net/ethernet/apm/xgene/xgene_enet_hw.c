@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Applied Micro X-Gene SoC Ethernet Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Authors: Iyappan Subramanian <isubramanian@apm.com>
- *	    Ravi Patel <rapatel@apm.com>
- *	    Keyur Chudgar <kchudgar@apm.com>
- */
+
+ 
 
 #include "xgene_enet_main.h"
 #include "xgene_enet_hw.h"
@@ -567,20 +561,20 @@ static void xgene_gmac_init(struct xgene_enet_pdata *pdata)
 	xgene_gmac_set_speed(pdata);
 	xgene_gmac_set_mac_addr(pdata);
 
-	/* Adjust MDC clock frequency */
+	 
 	value = xgene_enet_rd_mac(pdata, MII_MGMT_CONFIG_ADDR);
 	MGMT_CLOCK_SEL_SET(&value, 7);
 	xgene_enet_wr_mac(pdata, MII_MGMT_CONFIG_ADDR, value);
 
-	/* Enable drop if bufpool not available */
+	 
 	xgene_enet_rd_csr(pdata, RSIF_CONFIG_REG_ADDR, &value);
 	value |= CFG_RSIF_FPBUFF_TIMEOUT_EN;
 	xgene_enet_wr_csr(pdata, RSIF_CONFIG_REG_ADDR, value);
 
-	/* Rtype should be copied from FP */
+	 
 	xgene_enet_wr_csr(pdata, RSIF_RAM_DBG_REG0_ADDR, 0);
 
-	/* Configure HW pause frame generation */
+	 
 	xgene_enet_rd_mcx_csr(pdata, CSR_MULTI_DPF0_ADDR, &value);
 	value = (DEF_QUANTA << 16) | (value & 0xFFFF);
 	xgene_enet_wr_mcx_csr(pdata, CSR_MULTI_DPF0_ADDR, value);
@@ -591,7 +585,7 @@ static void xgene_gmac_init(struct xgene_enet_pdata *pdata)
 	xgene_gmac_flowctl_tx(pdata, pdata->tx_pause);
 	xgene_gmac_flowctl_rx(pdata, pdata->rx_pause);
 
-	/* Rx-Tx traffic resume */
+	 
 	xgene_enet_wr_csr(pdata, CFG_LINK_AGGR_RESUME_0_ADDR, TX_PORT0);
 
 	xgene_enet_rd_mcx_csr(pdata, RX_DV_GATE_REG_0_ADDR, &value);
@@ -611,7 +605,7 @@ static void xgene_gmac_get_drop_cnt(struct xgene_enet_pdata *pdata,
 	xgene_enet_rd_mcx_csr(pdata, ICM_ECM_DROP_COUNT_REG0_ADDR, &count);
 	*rx = ICM_DROP_COUNT(count);
 	*tx = ECM_DROP_COUNT(count);
-	/* Errata: 10GE_4 - Fix ICM_ECM_DROP_COUNT not clear-on-read */
+	 
 	xgene_enet_rd_mcx_csr(pdata, ECM_CONFIG0_REG_0_ADDR, &count);
 }
 
@@ -919,10 +913,10 @@ static int xgene_mdiobus_register(struct xgene_enet_pdata *pdata,
 		return of_mdiobus_register(mdio, mdio_np);
 	}
 
-	/* Mask out all PHYs from auto probing. */
+	 
 	mdio->phy_mask = ~0;
 
-	/* Register the MDIO bus */
+	 
 	ret = mdiobus_register(mdio);
 	if (ret)
 		return ret;

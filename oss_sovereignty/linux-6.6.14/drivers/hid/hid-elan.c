@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * HID Driver for ELAN Touchpad
- *
- * Currently only supports touchpad found on HP Pavilion X2 10
- *
- * Copyright (c) 2016 Alexandrov Stanislav <neko@nya.ai>
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/input/mt.h>
@@ -108,10 +102,7 @@ static int elan_get_device_param(struct hid_device *hdev,
 
 static unsigned int elan_convert_res(char val)
 {
-	/*
-	 * (value from firmware) * 10 + 790 = dpi
-	 * dpi * 10 / 254 = dots/mm
-	 */
+	 
 	return (val * 10 + 790) * 10 / 254;
 }
 
@@ -234,40 +225,7 @@ static void elan_usb_report_input(struct elan_drvdata *drvdata, u8 *data)
 	int i;
 	struct input_dev *input = drvdata->input;
 
-	/*
-	 * There is 3 types of reports: for single touch,
-	 * for multitouch - first finger and for multitouch - second finger
-	 *
-	 * packet structure for ELAN_SINGLE_FINGER and ELAN_MT_FIRST_FINGER:
-	 *
-	 * byte 1: 1   0   0   0   0   0   0   1  // 0x81 or 0x82
-	 * byte 2: 0   0   0   0   0   0   0   0  // looks like unused
-	 * byte 3: f5  f4  f3  f2  f1  0   0   L
-	 * byte 4: x12 x11 x10 x9  0?  y11 y10 y9
-	 * byte 5: x8  x7  x6  x5  x4  x3  x2  x1
-	 * byte 6: y8  y7  y6  y5  y4  y3  y2  y1
-	 * byte 7: sy4 sy3 sy2 sy1 sx4 sx3 sx2 sx1
-	 * byte 8: p8  p7  p6  p5  p4  p3  p2  p1
-	 *
-	 * packet structure for ELAN_MT_SECOND_FINGER:
-	 *
-	 * byte 1: 1   0   0   0   0   0   1   1  // 0x83
-	 * byte 2: x12 x11 x10 x9  0   y11 y10 y9
-	 * byte 3: x8  x7  x6  x5  x4  x3  x2  x1
-	 * byte 4: y8  y7  y6  y5  y4  y3  y2  y1
-	 * byte 5: sy4 sy3 sy2 sy1 sx4 sx3 sx2 sx1
-	 * byte 6: p8  p7  p6  p5  p4  p3  p2  p1
-	 * byte 7: 0   0   0   0   0   0   0   0
-	 * byte 8: 0   0   0   0   0   0   0   0
-	 *
-	 * f5-f1: finger touch bits
-	 * L: clickpad button
-	 * sy / sx: finger width / height expressed in traces, the total number
-	 *          of traces can be queried by doing a HID_REQ_SET_REPORT
-	 *          { 0x0d, 0x05, 0x03, 0x05, 0x01 } followed by a GET, in the
-	 *          returned buf, buf[3]=no-x-traces, buf[4]=no-y-traces.
-	 * p: pressure
-	 */
+	 
 
 	if (data[0] == ELAN_SINGLE_FINGER) {
 		for (i = 0; i < ELAN_MAX_FINGERS; i++) {
@@ -278,12 +236,7 @@ static void elan_usb_report_input(struct elan_drvdata *drvdata, u8 *data)
 		}
 		input_report_key(input, BTN_LEFT, data[2] & 0x01);
 	}
-	/*
-	 * When touched with two fingers Elan touchpad will emit two HID reports
-	 * first is ELAN_MT_FIRST_FINGER and second is ELAN_MT_SECOND_FINGER
-	 * we will save ELAN_MT_FIRST_FINGER report and wait for
-	 * ELAN_MT_SECOND_FINGER to finish multitouch
-	 */
+	 
 	if (data[0] == ELAN_MT_FIRST_FINGER) {
 		memcpy(drvdata->prev_report, data,
 		       sizeof(drvdata->prev_report));
@@ -322,24 +275,7 @@ static void elan_i2c_report_input(struct elan_drvdata *drvdata, u8 *data)
 	u8 *finger_data;
 	int i;
 
-	/*
-	 * Elan MT touchpads in i2c mode send finger data in the same format
-	 * as in USB mode, but then with all fingers in a single packet.
-	 *
-	 * packet structure for ELAN_MT_I2C:
-	 *
-	 * byte     1: 1   0   0   1   1   1   0   1   // 0x5d
-	 * byte     2: f5  f4  f3  f2  f1  0   0   L
-	 * byte     3: x12 x11 x10 x9  0?  y11 y10 y9
-	 * byte     4: x8  x7  x6  x5  x4  x3  x2  x1
-	 * byte     5: y8  y7  y6  y5  y4  y3  y2  y1
-	 * byte     6: sy4 sy3 sy2 sy1 sx4 sx3 sx2 sx1
-	 * byte     7: p8  p7  p6  p5  p4  p3  p2  p1
-	 * byte  8-12: Same as byte 3-7 for second finger down
-	 * byte 13-17: Same as byte 3-7 for third finger down
-	 * byte 18-22: Same as byte 3-7 for fourth finger down
-	 * byte 23-27: Same as byte 3-7 for fifth finger down
-	 */
+	 
 
 	finger_data = data + 2;
 	for (i = 0; i < ELAN_MAX_FINGERS; i++) {
@@ -385,10 +321,7 @@ static int elan_start_multitouch(struct hid_device *hdev)
 {
 	int ret;
 
-	/*
-	 * This byte sequence will enable multitouch mode and disable
-	 * mouse emulation
-	 */
+	 
 	static const unsigned char buf[] = { 0x0D, 0x00, 0x03, 0x21, 0x00 };
 	unsigned char *dmabuf = kmemdup(buf, sizeof(buf), GFP_KERNEL);
 

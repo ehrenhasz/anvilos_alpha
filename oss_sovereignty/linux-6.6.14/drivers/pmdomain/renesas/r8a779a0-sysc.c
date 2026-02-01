@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car V3U System Controller
- *
- * Copyright (C) 2020 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk/renesas.h>

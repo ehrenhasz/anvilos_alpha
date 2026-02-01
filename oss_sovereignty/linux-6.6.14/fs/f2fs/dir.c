@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fs/f2fs/dir.c
- *
- * Copyright (c) 2012 Samsung Electronics Co., Ltd.
- *             http://www.samsung.com/
- */
+
+ 
 #include <asm/unaligned.h>
 #include <linux/fs.h>
 #include <linux/f2fs_fs.h>
@@ -42,7 +37,7 @@ static unsigned int bucket_blocks(unsigned int level)
 		return 4;
 }
 
-/* If @dir is casefolded, initialize @fname->cf_name from @fname->usr_fname. */
+ 
 int f2fs_init_casefolded_name(const struct inode *dir,
 			      struct f2fs_filename *fname)
 {
@@ -64,7 +59,7 @@ int f2fs_init_casefolded_name(const struct inode *dir,
 			fname->cf_name.name = NULL;
 			if (sb_has_strict_encoding(sb))
 				return -EINVAL;
-			/* fall back to treating name as opaque byte sequence */
+			 
 		}
 	}
 #endif
@@ -85,7 +80,7 @@ static int __f2fs_setup_filename(const struct inode *dir,
 	fname->crypto_buf = crypt_name->crypto_buf;
 #endif
 	if (crypt_name->is_nokey_name) {
-		/* hash was decoded from the no-key name */
+		 
 		fname->hash = cpu_to_le32(crypt_name->hash);
 	} else {
 		err = f2fs_init_casefolded_name(dir, fname);
@@ -98,12 +93,7 @@ static int __f2fs_setup_filename(const struct inode *dir,
 	return 0;
 }
 
-/*
- * Prepare to search for @iname in @dir.  This is similar to
- * fscrypt_setup_filename(), but this also handles computing the casefolded name
- * and the f2fs dirhash if needed, then packing all the information about this
- * filename up into a 'struct f2fs_filename'.
- */
+ 
 int f2fs_setup_filename(struct inode *dir, const struct qstr *iname,
 			int lookup, struct f2fs_filename *fname)
 {
@@ -117,12 +107,7 @@ int f2fs_setup_filename(struct inode *dir, const struct qstr *iname,
 	return __f2fs_setup_filename(dir, &crypt_name, fname);
 }
 
-/*
- * Prepare to look up @dentry in @dir.  This is similar to
- * fscrypt_prepare_lookup(), but this also handles computing the casefolded name
- * and the f2fs dirhash if needed, then packing all the information about this
- * filename up into a 'struct f2fs_filename'.
- */
+ 
 int f2fs_prepare_lookup(struct inode *dir, struct dentry *dentry,
 			struct f2fs_filename *fname)
 {
@@ -177,12 +162,7 @@ static struct f2fs_dir_entry *find_in_block(struct inode *dir,
 }
 
 #if IS_ENABLED(CONFIG_UNICODE)
-/*
- * Test whether a case-insensitive directory entry matches the filename
- * being searched for.
- *
- * Returns 1 for a match, 0 for no match, and -errno on an error.
- */
+ 
 static int f2fs_match_ci_name(const struct inode *dir, const struct qstr *name,
 			       const u8 *de_name, u32 de_name_len)
 {
@@ -211,22 +191,19 @@ static int f2fs_match_ci_name(const struct inode *dir, const struct qstr *name,
 	}
 
 	res = utf8_strncasecmp_folded(um, name, &entry);
-	/*
-	 * In strict mode, ignore invalid names.  In non-strict mode,
-	 * fall back to treating them as opaque byte sequences.
-	 */
+	 
 	if (res < 0 && !sb_has_strict_encoding(sb)) {
 		res = name->len == entry.len &&
 				memcmp(name->name, entry.name, name->len) == 0;
 	} else {
-		/* utf8_strncasecmp_folded returns 0 on match */
+		 
 		res = (res == 0);
 	}
 out:
 	kfree(decrypted_name.name);
 	return res;
 }
-#endif /* CONFIG_UNICODE */
+#endif  
 
 static inline int f2fs_match_name(const struct inode *dir,
 				   const struct f2fs_filename *fname,
@@ -319,7 +296,7 @@ static struct f2fs_dir_entry *find_in_level(struct inode *dir,
 	end_block = bidx + nblock;
 
 	while (bidx < end_block) {
-		/* no need to allocate new dentry pages to all the indices */
+		 
 		dentry_page = f2fs_find_data_page(dir, bidx, &next_pgofs);
 		if (IS_ERR(dentry_page)) {
 			if (PTR_ERR(dentry_page) == -ENOENT) {
@@ -390,18 +367,13 @@ struct f2fs_dir_entry *__f2fs_find_entry(struct inode *dir,
 			break;
 	}
 out:
-	/* This is to increase the speed of f2fs_create */
+	 
 	if (!de)
 		F2FS_I(dir)->task = current;
 	return de;
 }
 
-/*
- * Find an entry in the specified directory with the wanted name.
- * It returns the page where the entry was found (as a parameter - res_page),
- * and the entry itself. Page is returned mapped and unlocked.
- * Entry is guaranteed to be valid.
- */
+ 
 struct f2fs_dir_entry *f2fs_find_entry(struct inode *dir,
 			const struct qstr *child, struct page **res_page)
 {
@@ -466,24 +438,18 @@ static void init_dent_inode(struct inode *dir, struct inode *inode,
 {
 	struct f2fs_inode *ri;
 
-	if (!fname) /* tmpfile case? */
+	if (!fname)  
 		return;
 
 	f2fs_wait_on_page_writeback(ipage, NODE, true, true);
 
-	/* copy name info. to this inode page */
+	 
 	ri = F2FS_INODE(ipage);
 	ri->i_namelen = cpu_to_le32(fname->disk_name.len);
 	memcpy(ri->i_name, fname->disk_name.name, fname->disk_name.len);
 	if (IS_ENCRYPTED(dir)) {
 		file_set_enc_name(inode);
-		/*
-		 * Roll-forward recovery doesn't have encryption keys available,
-		 * so it can't compute the dirhash for encrypted+casefolded
-		 * filenames.  Append it to i_name if possible.  Else, disable
-		 * roll-forward recovery of the dentry (i.e., make fsync'ing the
-		 * file force a checkpoint) by setting LOST_PINO.
-		 */
+		 
 		if (IS_CASEFOLDED(dir)) {
 			if (fname->disk_name.len + sizeof(f2fs_hash_t) <=
 			    F2FS_NAME_LEN)
@@ -502,10 +468,10 @@ void f2fs_do_make_empty_dir(struct inode *inode, struct inode *parent,
 	struct fscrypt_str dot = FSTR_INIT(".", 1);
 	struct fscrypt_str dotdot = FSTR_INIT("..", 2);
 
-	/* update dirent of "." */
+	 
 	f2fs_update_dentry(inode->i_ino, inode->i_mode, d, &dot, 0, 0);
 
-	/* update dirent of ".." */
+	 
 	f2fs_update_dentry(parent->i_ino, parent->i_mode, d, &dotdot, 0, 1);
 }
 
@@ -545,7 +511,7 @@ struct page *f2fs_init_inode_metadata(struct inode *inode, struct inode *dir,
 			return page;
 
 		if (S_ISDIR(inode->i_mode)) {
-			/* in order to handle error case */
+			 
 			get_page(page);
 			err = make_empty_dir(inode, dir, page);
 			if (err) {
@@ -577,17 +543,11 @@ struct page *f2fs_init_inode_metadata(struct inode *inode, struct inode *dir,
 
 	init_dent_inode(dir, inode, fname, page);
 
-	/*
-	 * This file should be checkpointed during fsync.
-	 * We lost i_pino from now on.
-	 */
+	 
 	if (is_inode_flag_set(inode, FI_INC_LINK)) {
 		if (!S_ISDIR(inode->i_mode))
 			file_lost_pino(inode);
-		/*
-		 * If link the tmpfile to alias through linkat path,
-		 * we should remove this inode from orphan list.
-		 */
+		 
 		if (inode->i_nlink == 0)
 			f2fs_remove_orphan_inode(F2FS_I_SB(dir), inode->i_ino);
 		f2fs_i_links_write(inode, true);
@@ -669,7 +629,7 @@ void f2fs_update_dentry(nid_t ino, umode_t mode, struct f2fs_dentry_ptr *d,
 	de->file_type = fs_umode_to_ftype(mode);
 	for (i = 0; i < slots; i++) {
 		__set_bit_le(bit_pos + i, (void *)d->bitmap);
-		/* avoid wrong garbage data for readdir */
+		 
 		if (i)
 			(de + i)->name_len = 0;
 	}
@@ -705,7 +665,7 @@ start:
 	if (unlikely(current_depth == MAX_DIR_HASH_DEPTH))
 		return -ENOSPC;
 
-	/* Increase the depth, if required */
+	 
 	if (level == current_depth)
 		++current_depth;
 
@@ -729,7 +689,7 @@ start:
 		f2fs_put_page(dentry_page, 1);
 	}
 
-	/* Move to next level to find the empty slot for new dentry */
+	 
 	++level;
 	goto start;
 add_dentry:
@@ -753,7 +713,7 @@ add_dentry:
 	if (inode) {
 		f2fs_i_pino_write(inode, dir->i_ino);
 
-		/* synchronize inode page's data from inode cache */
+		 
 		if (is_inode_flag_set(inode, FI_NEW_INODE))
 			f2fs_update_inode(inode, page);
 
@@ -776,10 +736,7 @@ int f2fs_add_dentry(struct inode *dir, const struct f2fs_filename *fname,
 	int err = -EAGAIN;
 
 	if (f2fs_has_inline_dentry(dir)) {
-		/*
-		 * Should get i_xattr_sem to keep the lock order:
-		 * i_xattr_sem -> inode_page lock used by f2fs_setxattr.
-		 */
+		 
 		f2fs_down_read(&F2FS_I(dir)->i_xattr_sem);
 		err = f2fs_add_inline_entry(dir, fname, inode, ino, mode);
 		f2fs_up_read(&F2FS_I(dir)->i_xattr_sem);
@@ -791,10 +748,7 @@ int f2fs_add_dentry(struct inode *dir, const struct f2fs_filename *fname,
 	return err;
 }
 
-/*
- * Caller should grab and release a rwsem by calling f2fs_lock_op() and
- * f2fs_unlock_op().
- */
+ 
 int f2fs_do_add_link(struct inode *dir, const struct qstr *name,
 				struct inode *inode, nid_t ino, umode_t mode)
 {
@@ -807,13 +761,7 @@ int f2fs_do_add_link(struct inode *dir, const struct qstr *name,
 	if (err)
 		return err;
 
-	/*
-	 * An immature stackable filesystem shows a race condition between lookup
-	 * and create. If we have same task when doing lookup and create, it's
-	 * definitely fine as expected by VFS normally. Otherwise, let's just
-	 * verify on-disk dentry one more time, which guarantees filesystem
-	 * consistency more.
-	 */
+	 
 	if (current != F2FS_I(dir)->task) {
 		de = __f2fs_find_entry(dir, &fname, &page);
 		F2FS_I(dir)->task = NULL;
@@ -873,10 +821,7 @@ void f2fs_drop_nlink(struct inode *dir, struct inode *inode)
 		f2fs_release_orphan_inode(sbi);
 }
 
-/*
- * It only removes the dentry from the dentry page, corresponding name
- * entry in name page does not need to be touched during deletion.
- */
+ 
 void f2fs_delete_entry(struct f2fs_dir_entry *dentry, struct page *page,
 					struct inode *dir, struct inode *inode)
 {
@@ -901,7 +846,7 @@ void f2fs_delete_entry(struct f2fs_dir_entry *dentry, struct page *page,
 	for (i = 0; i < slots; i++)
 		__clear_bit_le(bit_pos + i, &dentry_blk->dentry_bitmap);
 
-	/* Let's check and deallocate this dentry page */
+	 
 	bit_pos = find_next_bit_le(&dentry_blk->dentry_bitmap,
 			NR_DENTRY_IN_BLOCK,
 			0);
@@ -1011,7 +956,7 @@ int f2fs_fill_dentries(struct dir_context *ctx, struct f2fs_dentry_ptr *d,
 		de_name.name = d->filename[bit_pos];
 		de_name.len = le16_to_cpu(de->name_len);
 
-		/* check memory boundary before moving forward */
+		 
 		bit_pos += GET_DENTRY_SLOTS(le16_to_cpu(de->name_len));
 		if (unlikely(bit_pos > d->max ||
 				le16_to_cpu(de->name_len) > F2FS_NAME_LEN)) {
@@ -1085,14 +1030,14 @@ static int f2fs_readdir(struct file *file, struct dir_context *ctx)
 	for (; n < npages; ctx->pos = n * NR_DENTRY_IN_BLOCK) {
 		pgoff_t next_pgofs;
 
-		/* allow readdir() to be interrupted */
+		 
 		if (fatal_signal_pending(current)) {
 			err = -ERESTARTSYS;
 			goto out_free;
 		}
 		cond_resched();
 
-		/* readahead for multi pages of dir */
+		 
 		if (npages - n > 1 && !ra_has_index(ra, n))
 			page_cache_sync_readahead(inode->i_mapping, ra, file, n,
 				min(npages - n, (pgoff_t)MAX_DIR_RA_PAGES));

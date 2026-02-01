@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2009 Texas Instruments Inc
- * Copyright (C) 2014 Lad, Prabhakar <prabhakar.csengg@gmail.com>
- *
- * TODO : add support for VBI & HBI data service
- *	  add static buffer allocation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -40,7 +34,7 @@ MODULE_PARM_DESC(debug, "Debug level 0-1");
 #define VPIF_DRIVER_NAME	"vpif_capture"
 MODULE_ALIAS("platform:" VPIF_DRIVER_NAME);
 
-/* global variables */
+ 
 static struct vpif_device vpif_obj = { {NULL} };
 static struct device *vpif_dev;
 static void vpif_calculate_offsets(struct channel_obj *ch);
@@ -48,7 +42,7 @@ static void vpif_config_addr(struct channel_obj *ch, int muxmode);
 
 static u8 channel_first_int[VPIF_NUMBER_OF_OBJECTS][2] = { {1, 1} };
 
-/* Is set to 1 in case of SDTV formats, 2 in case of HDTV formats. */
+ 
 static int ycmux_mode;
 
 static inline
@@ -57,14 +51,7 @@ struct vpif_cap_buffer *to_vpif_buffer(struct vb2_v4l2_buffer *vb)
 	return container_of(vb, struct vpif_cap_buffer, vb);
 }
 
-/**
- * vpif_buffer_prepare :  callback function for buffer prepare
- * @vb: ptr to vb2_buffer
- *
- * This is the callback function for buffer prepare when vb2_qbuf()
- * function is called. The buffer is prepared and user space virtual address
- * or user address is converted into  physical address
- */
+ 
 static int vpif_buffer_prepare(struct vb2_buffer *vb)
 {
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
@@ -95,17 +82,7 @@ static int vpif_buffer_prepare(struct vb2_buffer *vb)
 	return 0;
 }
 
-/**
- * vpif_buffer_queue_setup : Callback function for buffer setup.
- * @vq: vb2_queue ptr
- * @nbuffers: ptr to number of buffers requested by application
- * @nplanes: contains number of distinct video planes needed to hold a frame
- * @sizes: contains the size (in bytes) of each plane.
- * @alloc_devs: ptr to allocation context
- *
- * This callback function is called when reqbuf() is called to adjust
- * the buffer count and buffer size
- */
+ 
 static int vpif_buffer_queue_setup(struct vb2_queue *vq,
 				unsigned int *nbuffers, unsigned int *nplanes,
 				unsigned int sizes[], struct device *alloc_devs[])
@@ -128,16 +105,13 @@ static int vpif_buffer_queue_setup(struct vb2_queue *vq,
 	*nplanes = 1;
 	sizes[0] = size;
 
-	/* Calculate the offset for Y and C data in the buffer */
+	 
 	vpif_calculate_offsets(ch);
 
 	return 0;
 }
 
-/**
- * vpif_buffer_queue : Callback function to add buffer to DMA queue
- * @vb: ptr to vb2_buffer
- */
+ 
 static void vpif_buffer_queue(struct vb2_buffer *vb)
 {
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
@@ -151,16 +125,12 @@ static void vpif_buffer_queue(struct vb2_buffer *vb)
 	vpif_dbg(2, debug, "vpif_buffer_queue\n");
 
 	spin_lock_irqsave(&common->irqlock, flags);
-	/* add the buffer to the DMA queue */
+	 
 	list_add_tail(&buf->list, &common->dma_queue);
 	spin_unlock_irqrestore(&common->irqlock, flags);
 }
 
-/**
- * vpif_start_streaming : Starts the DMA engine for streaming
- * @vq: ptr to vb2_buffer
- * @count: number of buffers
- */
+ 
 static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 {
 	struct vpif_capture_config *vpif_config_data =
@@ -172,10 +142,10 @@ static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 	unsigned long addr, flags;
 	int ret;
 
-	/* Initialize field_id */
+	 
 	ch->field_id = 0;
 
-	/* configure 1 or 2 channel mode */
+	 
 	if (vpif_config_data->setup_input_channel_mode) {
 		ret = vpif_config_data->
 			setup_input_channel_mode(vpif->std_info.ycmux_mode);
@@ -191,7 +161,7 @@ static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 		goto err;
 	}
 
-	/* Call vpif_set_params function to set the parameters and addresses */
+	 
 	ret = vpif_set_video_params(vpif, ch->channel_id);
 	if (ret < 0) {
 		vpif_dbg(1, debug, "can't set video params\n");
@@ -201,11 +171,11 @@ static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 	ycmux_mode = ret;
 	vpif_config_addr(ch, ret);
 
-	/* Get the next frame from the buffer queue */
+	 
 	spin_lock_irqsave(&common->irqlock, flags);
 	common->cur_frm = common->next_frm = list_entry(common->dma_queue.next,
 				    struct vpif_cap_buffer, list);
-	/* Remove buffer from the buffer queue */
+	 
 	list_del(&common->cur_frm->list);
 	spin_unlock_irqrestore(&common->irqlock, flags);
 
@@ -216,10 +186,7 @@ static int vpif_start_streaming(struct vb2_queue *vq, unsigned int count)
 			 addr + common->ctop_off,
 			 addr + common->cbtm_off);
 
-	/**
-	 * Set interrupt for both the fields in VPIF Register enable channel in
-	 * VPIF register
-	 */
+	 
 	channel_first_int[VPIF_VIDEO_INDEX][ch->channel_id] = 1;
 	if (VPIF_CHANNEL0_VIDEO == ch->channel_id) {
 		channel0_intr_assert();
@@ -246,13 +213,7 @@ err:
 	return ret;
 }
 
-/**
- * vpif_stop_streaming : Stop the DMA engine
- * @vq: ptr to vb2_queue
- *
- * This callback stops the DMA engine and any remaining buffers
- * in the DMA queue are released.
- */
+ 
 static void vpif_stop_streaming(struct vb2_queue *vq)
 {
 	struct channel_obj *ch = vb2_get_drv_priv(vq);
@@ -262,7 +223,7 @@ static void vpif_stop_streaming(struct vb2_queue *vq)
 
 	common = &ch->common[VPIF_VIDEO_INDEX];
 
-	/* Disable channel as per its device type and channel id */
+	 
 	if (VPIF_CHANNEL0_VIDEO == ch->channel_id) {
 		enable_channel0(0);
 		channel0_intr_enable(0);
@@ -279,7 +240,7 @@ static void vpif_stop_streaming(struct vb2_queue *vq)
 	if (ret && ret != -ENOIOCTLCMD && ret != -ENODEV)
 		vpif_dbg(1, debug, "stream off failed in subdev\n");
 
-	/* release all active buffers */
+	 
 	if (common->cur_frm == common->next_frm) {
 		vb2_buffer_done(&common->cur_frm->vb.vb2_buf,
 				VB2_BUF_STATE_ERROR);
@@ -313,30 +274,16 @@ static const struct vb2_ops video_qops = {
 	.wait_finish		= vb2_ops_wait_finish,
 };
 
-/**
- * vpif_process_buffer_complete: process a completed buffer
- * @common: ptr to common channel object
- *
- * This function time stamp the buffer and mark it as DONE. It also
- * wake up any process waiting on the QUEUE and set the next buffer
- * as current
- */
+ 
 static void vpif_process_buffer_complete(struct common_obj *common)
 {
 	common->cur_frm->vb.vb2_buf.timestamp = ktime_get_ns();
 	vb2_buffer_done(&common->cur_frm->vb.vb2_buf, VB2_BUF_STATE_DONE);
-	/* Make curFrm pointing to nextFrm */
+	 
 	common->cur_frm = common->next_frm;
 }
 
-/**
- * vpif_schedule_next_buffer: set next buffer address for capture
- * @common : ptr to common channel object
- *
- * This function will get next buffer from the dma queue and
- * set the buffer address in the vpif register for capture.
- * the buffer is marked active
- */
+ 
 static void vpif_schedule_next_buffer(struct common_obj *common)
 {
 	unsigned long addr = 0;
@@ -344,26 +291,19 @@ static void vpif_schedule_next_buffer(struct common_obj *common)
 	spin_lock(&common->irqlock);
 	common->next_frm = list_entry(common->dma_queue.next,
 				     struct vpif_cap_buffer, list);
-	/* Remove that buffer from the buffer queue */
+	 
 	list_del(&common->next_frm->list);
 	spin_unlock(&common->irqlock);
 	addr = vb2_dma_contig_plane_dma_addr(&common->next_frm->vb.vb2_buf, 0);
 
-	/* Set top and bottom field addresses in VPIF registers */
+	 
 	common->set_addr(addr + common->ytop_off,
 			 addr + common->ybtm_off,
 			 addr + common->ctop_off,
 			 addr + common->cbtm_off);
 }
 
-/**
- * vpif_channel_isr : ISR handler for vpif capture
- * @irq: irq number
- * @dev_id: dev_id ptr
- *
- * It changes status of the captured buffer, takes next buffer from the queue
- * and sets its address in VPIF registers
- */
+ 
 static irqreturn_t vpif_channel_isr(int irq, void *dev_id)
 {
 	struct vpif_device *dev = &vpif_obj;
@@ -380,11 +320,11 @@ static irqreturn_t vpif_channel_isr(int irq, void *dev_id)
 
 	for (i = 0; i < VPIF_NUMBER_OF_OBJECTS; i++) {
 		common = &ch->common[i];
-		/* skip If streaming is not started in this channel */
-		/* Check the field format */
+		 
+		 
 		if (1 == ch->vpifparams.std_info.frm_fmt ||
 		    common->fmt.fmt.pix.field == V4L2_FIELD_NONE) {
-			/* Progressive mode */
+			 
 			spin_lock(&common->irqlock);
 			if (list_empty(&common->dma_queue)) {
 				spin_unlock(&common->irqlock);
@@ -402,38 +342,32 @@ static irqreturn_t vpif_channel_isr(int irq, void *dev_id)
 
 			channel_first_int[i][channel_id] = 0;
 		} else {
-			/**
-			 * Interlaced mode. If it is first interrupt, ignore
-			 * it
-			 */
+			 
 			if (channel_first_int[i][channel_id]) {
 				channel_first_int[i][channel_id] = 0;
 				continue;
 			}
 			if (0 == i) {
 				ch->field_id ^= 1;
-				/* Get field id from VPIF registers */
+				 
 				fid = vpif_channel_getfid(ch->channel_id);
 				if (fid != ch->field_id) {
-					/**
-					 * If field id does not match stored
-					 * field id, make them in sync
-					 */
+					 
 					if (0 == fid)
 						ch->field_id = fid;
 					return IRQ_HANDLED;
 				}
 			}
-			/* device field id and local field id are in sync */
+			 
 			if (0 == fid) {
-				/* this is even field */
+				 
 				if (common->cur_frm == common->next_frm)
 					continue;
 
-				/* mark the current buffer as done */
+				 
 				vpif_process_buffer_complete(common);
 			} else if (1 == fid) {
-				/* odd field */
+				 
 				spin_lock(&common->irqlock);
 				if (list_empty(&common->dma_queue) ||
 				    (common->cur_frm != common->next_frm)) {
@@ -449,13 +383,7 @@ static irqreturn_t vpif_channel_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * vpif_update_std_info() - update standard related info
- * @ch: ptr to channel object
- *
- * For a given standard selected by application, update values
- * in the device data structures
- */
+ 
 static int vpif_update_std_info(struct channel_obj *ch)
 {
 	struct common_obj *common = &ch->common[VPIF_VIDEO_INDEX];
@@ -468,10 +396,7 @@ static int vpif_update_std_info(struct channel_obj *ch)
 
 	vpif_dbg(2, debug, "vpif_update_std_info\n");
 
-	/*
-	 * if called after try_fmt or g_fmt, there will already be a size
-	 * so use that by default.
-	 */
+	 
 	if (pixfmt->width && pixfmt->height) {
 		if (pixfmt->field == V4L2_FIELD_ANY ||
 		    pixfmt->field == V4L2_FIELD_NONE)
@@ -483,15 +408,12 @@ static int vpif_update_std_info(struct channel_obj *ch)
 			vpifparams->iface.if_type = VPIF_IF_RAW_BAYER;
 
 		if (pixfmt->pixelformat == V4L2_PIX_FMT_SGRBG10)
-			vpifparams->params.data_sz = 1; /* 10 bits/pixel.  */
+			vpifparams->params.data_sz = 1;  
 
-		/*
-		 * For raw formats from camera sensors, we don't need
-		 * the std_info from table lookup, so nothing else to do here.
-		 */
+		 
 		if (vpifparams->iface.if_type == VPIF_IF_RAW_BAYER) {
 			memset(std_info, 0, sizeof(struct vpif_channel_config_params));
-			vpifparams->std_info.capture_format = 1; /* CCD/raw mode */
+			vpifparams->std_info.capture_format = 1;  
 			return 0;
 		}
 	}
@@ -514,7 +436,7 @@ static int vpif_update_std_info(struct channel_obj *ch)
 		}
 	}
 
-	/* standard not found */
+	 
 	if (index == vpif_ch_params_count)
 		return -EINVAL;
 
@@ -547,13 +469,7 @@ static int vpif_update_std_info(struct channel_obj *ch)
 	return 0;
 }
 
-/**
- * vpif_calculate_offsets : This function calculates buffers offsets
- * @ch : ptr to channel object
- *
- * This function calculates buffer offsets for Y and C in the top and
- * bottom field
- */
+ 
 static void vpif_calculate_offsets(struct channel_obj *ch)
 {
 	unsigned int hpitch, sizeimage;
@@ -578,19 +494,19 @@ static void vpif_calculate_offsets(struct channel_obj *ch)
 
 	if ((V4L2_FIELD_NONE == vid_ch->buf_field) ||
 	    (V4L2_FIELD_INTERLACED == vid_ch->buf_field)) {
-		/* Calculate offsets for Y top, Y Bottom, C top and C Bottom */
+		 
 		common->ytop_off = 0;
 		common->ybtm_off = hpitch;
 		common->ctop_off = sizeimage / 2;
 		common->cbtm_off = sizeimage / 2 + hpitch;
 	} else if (V4L2_FIELD_SEQ_TB == vid_ch->buf_field) {
-		/* Calculate offsets for Y top, Y Bottom, C top and C Bottom */
+		 
 		common->ytop_off = 0;
 		common->ybtm_off = sizeimage / 4;
 		common->ctop_off = sizeimage / 2;
 		common->cbtm_off = common->ctop_off + sizeimage / 4;
 	} else if (V4L2_FIELD_SEQ_BT == vid_ch->buf_field) {
-		/* Calculate offsets for Y top, Y Bottom, C top and C Bottom */
+		 
 		common->ybtm_off = 0;
 		common->ytop_off = sizeimage / 4;
 		common->cbtm_off = sizeimage / 2;
@@ -618,11 +534,7 @@ static void vpif_calculate_offsets(struct channel_obj *ch)
 	ch->vpifparams.video_params.stdid = vpifparams->std_info.stdid;
 }
 
-/**
- * vpif_config_addr() - function to configure buffer address in vpif
- * @ch: channel ptr
- * @muxmode: channel mux mode
- */
+ 
 static void vpif_config_addr(struct channel_obj *ch, int muxmode)
 {
 	struct common_obj *common;
@@ -639,16 +551,7 @@ static void vpif_config_addr(struct channel_obj *ch, int muxmode)
 		common->set_addr = ch0_set_video_buf_addr;
 }
 
-/**
- * vpif_input_to_subdev() - Maps input to sub device
- * @vpif_cfg: global config ptr
- * @chan_cfg: channel config ptr
- * @input_index: Given input index from application
- *
- * lookup the sub device information for a given input index.
- * we report all the inputs to application. inputs table also
- * has sub device name for the each input
- */
+ 
 static int vpif_input_to_subdev(
 		struct vpif_capture_config *vpif_cfg,
 		struct vpif_capture_chan_config *chan_cfg,
@@ -668,7 +571,7 @@ static int vpif_input_to_subdev(
 	if (!subdev_name)
 		return -1;
 
-	/* loop through the sub device list to get the sub device info */
+	 
 	for (i = 0; i < vpif_cfg->subdev_count; i++) {
 		subdev_info = &vpif_cfg->subdev_info[i];
 		if (subdev_info && !strcmp(subdev_info->name, subdev_name))
@@ -677,14 +580,7 @@ static int vpif_input_to_subdev(
 	return -1;
 }
 
-/**
- * vpif_set_input() - Select an input
- * @vpif_cfg: global config ptr
- * @ch: channel
- * @index: Given input index from application
- *
- * Select the given input.
- */
+ 
 static int vpif_set_input(
 		struct vpif_capture_config *vpif_cfg,
 		struct channel_obj *ch,
@@ -703,11 +599,11 @@ static int vpif_set_input(
 		sd = vpif_obj.sd[sd_index];
 		subdev_info = &vpif_cfg->subdev_info[sd_index];
 	} else {
-		/* no subdevice, no input to setup */
+		 
 		return 0;
 	}
 
-	/* first setup input path from sub device to vpif */
+	 
 	if (sd && vpif_cfg->setup_input_path) {
 		ret = vpif_cfg->setup_input_path(ch->channel_id,
 				       subdev_info->name);
@@ -731,22 +627,15 @@ static int vpif_set_input(
 	}
 	ch->input_idx = index;
 	ch->sd = sd;
-	/* copy interface parameters to vpif */
+	 
 	ch->vpifparams.iface = chan_cfg->vpif_if;
 
-	/* update tvnorms from the sub device input info */
+	 
 	ch->video_dev.tvnorms = chan_cfg->inputs[index].input.std;
 	return 0;
 }
 
-/**
- * vpif_querystd() - querystd handler
- * @file: file ptr
- * @priv: file handle
- * @std_id: ptr to std id
- *
- * This function is called to detect standard at the selected input
- */
+ 
 static int vpif_querystd(struct file *file, void *priv, v4l2_std_id *std_id)
 {
 	struct video_device *vdev = video_devdata(file);
@@ -755,7 +644,7 @@ static int vpif_querystd(struct file *file, void *priv, v4l2_std_id *std_id)
 
 	vpif_dbg(2, debug, "vpif_querystd\n");
 
-	/* Call querystd function of decoder device */
+	 
 	ret = v4l2_subdev_call(ch->sd, video, querystd, std_id);
 
 	if (ret == -ENOIOCTLCMD || ret == -ENODEV)
@@ -768,12 +657,7 @@ static int vpif_querystd(struct file *file, void *priv, v4l2_std_id *std_id)
 	return 0;
 }
 
-/**
- * vpif_g_std() - get STD handler
- * @file: file ptr
- * @priv: file handle
- * @std: ptr to std id
- */
+ 
 static int vpif_g_std(struct file *file, void *priv, v4l2_std_id *std)
 {
 	struct vpif_capture_config *config = vpif_dev->platform_data;
@@ -796,12 +680,7 @@ static int vpif_g_std(struct file *file, void *priv, v4l2_std_id *std)
 	return 0;
 }
 
-/**
- * vpif_s_std() - set STD handler
- * @file: file ptr
- * @priv: file handle
- * @std_id: ptr to std id
- */
+ 
 static int vpif_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 {
 	struct vpif_capture_config *config = vpif_dev->platform_data;
@@ -825,17 +704,17 @@ static int vpif_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 	if (vb2_is_busy(&common->buffer_queue))
 		return -EBUSY;
 
-	/* Call encoder subdevice function to set the standard */
+	 
 	ch->video.stdid = std_id;
 	memset(&ch->video.dv_timings, 0, sizeof(ch->video.dv_timings));
 
-	/* Get the information about the standard */
+	 
 	if (vpif_update_std_info(ch)) {
 		vpif_err("Error getting the standard info\n");
 		return -EINVAL;
 	}
 
-	/* set standard in the sub device */
+	 
 	ret = v4l2_subdev_call(ch->sd, video, s_std, std_id);
 	if (ret && ret != -ENOIOCTLCMD && ret != -ENODEV) {
 		vpif_dbg(1, debug, "Failed to set standard for sub devices\n");
@@ -844,12 +723,7 @@ static int vpif_s_std(struct file *file, void *priv, v4l2_std_id std_id)
 	return 0;
 }
 
-/**
- * vpif_enum_input() - ENUMINPUT handler
- * @file: file ptr
- * @priv: file handle
- * @input: ptr to input structure
- */
+ 
 static int vpif_enum_input(struct file *file, void *priv,
 				struct v4l2_input *input)
 {
@@ -869,12 +743,7 @@ static int vpif_enum_input(struct file *file, void *priv,
 	return 0;
 }
 
-/**
- * vpif_g_input() - Get INPUT handler
- * @file: file ptr
- * @priv: file handle
- * @index: ptr to input index
- */
+ 
 static int vpif_g_input(struct file *file, void *priv, unsigned int *index)
 {
 	struct video_device *vdev = video_devdata(file);
@@ -884,12 +753,7 @@ static int vpif_g_input(struct file *file, void *priv, unsigned int *index)
 	return 0;
 }
 
-/**
- * vpif_s_input() - Set INPUT handler
- * @file: file ptr
- * @priv: file handle
- * @index: input index
- */
+ 
 static int vpif_s_input(struct file *file, void *priv, unsigned int index)
 {
 	struct vpif_capture_config *config = vpif_dev->platform_data;
@@ -909,12 +773,7 @@ static int vpif_s_input(struct file *file, void *priv, unsigned int index)
 	return vpif_set_input(config, ch, index);
 }
 
-/**
- * vpif_enum_fmt_vid_cap() - ENUM_FMT handler
- * @file: file ptr
- * @priv: file handle
- * @fmt: ptr to V4L2 format descriptor
- */
+ 
 static int vpif_enum_fmt_vid_cap(struct file *file, void  *priv,
 					struct v4l2_fmtdesc *fmt)
 {
@@ -926,7 +785,7 @@ static int vpif_enum_fmt_vid_cap(struct file *file, void  *priv,
 		return -EINVAL;
 	}
 
-	/* Fill in the information about format */
+	 
 	if (ch->vpifparams.iface.if_type == VPIF_IF_RAW_BAYER)
 		fmt->pixelformat = V4L2_PIX_FMT_SBGGR8;
 	else
@@ -934,12 +793,7 @@ static int vpif_enum_fmt_vid_cap(struct file *file, void  *priv,
 	return 0;
 }
 
-/**
- * vpif_try_fmt_vid_cap() - TRY_FMT handler
- * @file: file ptr
- * @priv: file handle
- * @fmt: ptr to v4l2 format structure
- */
+ 
 static int vpif_try_fmt_vid_cap(struct file *file, void *priv,
 				struct v4l2_format *fmt)
 {
@@ -971,12 +825,7 @@ static int vpif_try_fmt_vid_cap(struct file *file, void *priv,
 }
 
 
-/**
- * vpif_g_fmt_vid_cap() - Set INPUT handler
- * @file: file ptr
- * @priv: file handle
- * @fmt: ptr to v4l2 format structure
- */
+ 
 static int vpif_g_fmt_vid_cap(struct file *file, void *priv,
 				struct v4l2_format *fmt)
 {
@@ -990,24 +839,24 @@ static int vpif_g_fmt_vid_cap(struct file *file, void *priv,
 	struct v4l2_mbus_framefmt *mbus_fmt = &format.format;
 	int ret;
 
-	/* Check the validity of the buffer type */
+	 
 	if (common->fmt.type != fmt->type)
 		return -EINVAL;
 
-	/* By default, use currently set fmt */
+	 
 	*fmt = common->fmt;
 
-	/* If subdev has get_fmt, use that to override */
+	 
 	ret = v4l2_subdev_call(ch->sd, pad, get_fmt, NULL, &format);
 	if (!ret && mbus_fmt->code) {
 		v4l2_fill_pix_format(pix_fmt, mbus_fmt);
 		pix_fmt->bytesperline = pix_fmt->width;
 		if (mbus_fmt->code == MEDIA_BUS_FMT_SGRBG10_1X10) {
-			/* e.g. mt9v032 */
+			 
 			pix_fmt->pixelformat = V4L2_PIX_FMT_SGRBG10;
 			pix_fmt->bytesperline = pix_fmt->width * 2;
 		} else if (mbus_fmt->code == MEDIA_BUS_FMT_UYVY8_2X8) {
-			/* e.g. tvp514x */
+			 
 			pix_fmt->pixelformat = V4L2_PIX_FMT_NV16;
 			pix_fmt->bytesperline = pix_fmt->width * 2;
 		} else {
@@ -1027,12 +876,7 @@ static int vpif_g_fmt_vid_cap(struct file *file, void *priv,
 	return 0;
 }
 
-/**
- * vpif_s_fmt_vid_cap() - Set FMT handler
- * @file: file ptr
- * @priv: file handle
- * @fmt: ptr to v4l2 format structure
- */
+ 
 static int vpif_s_fmt_vid_cap(struct file *file, void *priv,
 				struct v4l2_format *fmt)
 {
@@ -1050,17 +894,12 @@ static int vpif_s_fmt_vid_cap(struct file *file, void *priv,
 	if (ret)
 		return ret;
 
-	/* store the format in the channel object */
+	 
 	common->fmt = *fmt;
 	return 0;
 }
 
-/**
- * vpif_querycap() - QUERYCAP handler
- * @file: file ptr
- * @priv: file handle
- * @cap: ptr to v4l2_capability structure
- */
+ 
 static int vpif_querycap(struct file *file, void  *priv,
 				struct v4l2_capability *cap)
 {
@@ -1072,12 +911,7 @@ static int vpif_querycap(struct file *file, void  *priv,
 	return 0;
 }
 
-/**
- * vpif_enum_dv_timings() - ENUM_DV_TIMINGS handler
- * @file: file ptr
- * @priv: file handle
- * @timings: input timings
- */
+ 
 static int
 vpif_enum_dv_timings(struct file *file, void *priv,
 		     struct v4l2_enum_dv_timings *timings)
@@ -1106,12 +940,7 @@ vpif_enum_dv_timings(struct file *file, void *priv,
 	return ret;
 }
 
-/**
- * vpif_query_dv_timings() - QUERY_DV_TIMINGS handler
- * @file: file ptr
- * @priv: file handle
- * @timings: input timings
- */
+ 
 static int
 vpif_query_dv_timings(struct file *file, void *priv,
 		      struct v4l2_dv_timings *timings)
@@ -1138,12 +967,7 @@ vpif_query_dv_timings(struct file *file, void *priv,
 	return ret;
 }
 
-/**
- * vpif_s_dv_timings() - S_DV_TIMINGS handler
- * @file: file ptr
- * @priv: file handle
- * @timings: digital video timings
- */
+ 
 static int vpif_s_dv_timings(struct file *file, void *priv,
 		struct v4l2_dv_timings *timings)
 {
@@ -1175,7 +999,7 @@ static int vpif_s_dv_timings(struct file *file, void *priv,
 	if (vb2_is_busy(&common->buffer_queue))
 		return -EBUSY;
 
-	/* Configure subdevice timings, if any */
+	 
 	ret = v4l2_subdev_call(ch->sd, video, s_dv_timings, timings);
 	if (ret == -ENOIOCTLCMD || ret == -ENODEV)
 		ret = 0;
@@ -1197,7 +1021,7 @@ static int vpif_s_dv_timings(struct file *file, void *priv,
 
 	vid_ch->dv_timings = *timings;
 
-	/* Configure video port timings */
+	 
 
 	std_info->eav2sav = V4L2_DV_BT_BLANKING_WIDTH(bt) - 8;
 	std_info->sav2eav = bt->width;
@@ -1237,12 +1061,7 @@ static int vpif_s_dv_timings(struct file *file, void *priv,
 	return 0;
 }
 
-/**
- * vpif_g_dv_timings() - G_DV_TIMINGS handler
- * @file: file ptr
- * @priv: file handle
- * @timings: digital video timings
- */
+ 
 static int vpif_g_dv_timings(struct file *file, void *priv,
 		struct v4l2_dv_timings *timings)
 {
@@ -1266,22 +1085,16 @@ static int vpif_g_dv_timings(struct file *file, void *priv,
 	return 0;
 }
 
-/*
- * vpif_log_status() - Status information
- * @file: file ptr
- * @priv: file handle
- *
- * Returns zero.
- */
+ 
 static int vpif_log_status(struct file *filep, void *priv)
 {
-	/* status for sub devices */
+	 
 	v4l2_device_call_all(&vpif_obj.v4l2_dev, 0, core, log_status);
 
 	return 0;
 }
 
-/* vpif capture ioctl operations */
+ 
 static const struct v4l2_ioctl_ops vpif_ioctl_ops = {
 	.vidioc_querycap		= vpif_querycap,
 	.vidioc_enum_fmt_vid_cap	= vpif_enum_fmt_vid_cap,
@@ -1314,7 +1127,7 @@ static const struct v4l2_ioctl_ops vpif_ioctl_ops = {
 	.vidioc_log_status		= vpif_log_status,
 };
 
-/* vpif file operations */
+ 
 static const struct v4l2_file_operations vpif_fops = {
 	.owner = THIS_MODULE,
 	.open = v4l2_fh_open,
@@ -1324,21 +1137,17 @@ static const struct v4l2_file_operations vpif_fops = {
 	.poll = vb2_fop_poll
 };
 
-/**
- * initialize_vpif() - Initialize vpif data structures
- *
- * Allocate memory for data structures and initialize them
- */
+ 
 static int initialize_vpif(void)
 {
 	int err, i, j;
 	int free_channel_objects_index;
 
-	/* Allocate memory for six channel objects */
+	 
 	for (i = 0; i < VPIF_CAPTURE_MAX_DEVICES; i++) {
 		vpif_obj.dev[i] =
 		    kzalloc(sizeof(*vpif_obj.dev[i]), GFP_KERNEL);
-		/* If memory allocation fails, return error */
+		 
 		if (!vpif_obj.dev[i]) {
 			free_channel_objects_index = i;
 			err = -ENOMEM;
@@ -1408,18 +1217,18 @@ static int vpif_probe_complete(void)
 		spin_lock_init(&common->irqlock);
 		mutex_init(&common->lock);
 
-		/* select input 0 */
+		 
 		err = vpif_set_input(vpif_obj.config, ch, 0);
 		if (err)
 			goto probe_out;
 
-		/* set initial format */
+		 
 		ch->video.stdid = V4L2_STD_525_60;
 		memset(&ch->video.dv_timings, 0, sizeof(ch->video.dv_timings));
 		common->fmt.type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		vpif_update_std_info(ch);
 
-		/* Initialize vb2 queue */
+		 
 		q = &common->buffer_queue;
 		q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 		q->io_modes = VB2_MMAP | VB2_USERPTR | VB2_DMABUF;
@@ -1440,7 +1249,7 @@ static int vpif_probe_complete(void)
 
 		INIT_LIST_HEAD(&common->dma_queue);
 
-		/* Initialize the video_device structure */
+		 
 		vdev = &ch->video_dev;
 		strscpy(vdev->name, VPIF_DRIVER_NAME, sizeof(vdev->name));
 		vdev->release = video_device_release_empty;
@@ -1463,9 +1272,9 @@ static int vpif_probe_complete(void)
 
 probe_out:
 	for (k = 0; k < j; k++) {
-		/* Get the pointer to the channel object */
+		 
 		ch = vpif_obj.dev[k];
-		/* Unregister video device */
+		 
 		video_unregister_device(&ch->video_dev);
 	}
 
@@ -1495,10 +1304,7 @@ vpif_capture_get_pdata(struct platform_device *pdev,
 
 	v4l2_async_nf_init(&vpif_obj.notifier, v4l2_dev);
 
-	/*
-	 * DT boot: OF node from parent device contains
-	 * video ports & endpoints data.
-	 */
+	 
 	if (pdev->dev.parent && pdev->dev.parent->of_node)
 		pdev->dev.of_node = pdev->dev.parent->of_node;
 	if (!IS_ENABLED(CONFIG_OF) || !pdev->dev.of_node)
@@ -1594,13 +1400,7 @@ err_cleanup:
 	return NULL;
 }
 
-/**
- * vpif_probe : This function probes the vpif capture driver
- * @pdev: platform device pointer
- *
- * This creates device entries by register itself to the V4L2 driver and
- * initializes fields of each channel objects
- */
+ 
 static __init int vpif_probe(struct platform_device *pdev)
 {
 	struct vpif_subdev_info *subdevdata;
@@ -1698,7 +1498,7 @@ static __init int vpif_probe(struct platform_device *pdev)
 
 probe_subdev_out:
 	v4l2_async_nf_cleanup(&vpif_obj.notifier);
-	/* free sub devices memory */
+	 
 	kfree(vpif_obj.sd);
 vpif_unregister:
 	v4l2_device_unregister(&vpif_obj.v4l2_dev);
@@ -1708,12 +1508,7 @@ vpif_free:
 	return err;
 }
 
-/**
- * vpif_remove() - driver remove handler
- * @device: ptr to platform device structure
- *
- * The vidoe device is unregistered
- */
+ 
 static void vpif_remove(struct platform_device *device)
 {
 	struct channel_obj *ch;
@@ -1724,21 +1519,18 @@ static void vpif_remove(struct platform_device *device)
 	v4l2_device_unregister(&vpif_obj.v4l2_dev);
 
 	kfree(vpif_obj.sd);
-	/* un-register device */
+	 
 	for (i = 0; i < VPIF_CAPTURE_MAX_DEVICES; i++) {
-		/* Get the pointer to the channel object */
+		 
 		ch = vpif_obj.dev[i];
-		/* Unregister video device */
+		 
 		video_unregister_device(&ch->video_dev);
 		kfree(vpif_obj.dev[i]);
 	}
 }
 
 #ifdef CONFIG_PM_SLEEP
-/**
- * vpif_suspend: vpif device suspend
- * @dev: pointer to &struct device
- */
+ 
 static int vpif_suspend(struct device *dev)
 {
 
@@ -1747,7 +1539,7 @@ static int vpif_suspend(struct device *dev)
 	int i;
 
 	for (i = 0; i < VPIF_CAPTURE_MAX_DEVICES; i++) {
-		/* Get the pointer to the channel object */
+		 
 		ch = vpif_obj.dev[i];
 		common = &ch->common[VPIF_VIDEO_INDEX];
 
@@ -1755,7 +1547,7 @@ static int vpif_suspend(struct device *dev)
 			continue;
 
 		mutex_lock(&common->lock);
-		/* Disable channel */
+		 
 		if (ch->channel_id == VPIF_CHANNEL0_VIDEO) {
 			enable_channel0(0);
 			channel0_intr_enable(0);
@@ -1771,9 +1563,7 @@ static int vpif_suspend(struct device *dev)
 	return 0;
 }
 
-/*
- * vpif_resume: vpif device suspend
- */
+ 
 static int vpif_resume(struct device *dev)
 {
 	struct common_obj *common;
@@ -1781,7 +1571,7 @@ static int vpif_resume(struct device *dev)
 	int i;
 
 	for (i = 0; i < VPIF_CAPTURE_MAX_DEVICES; i++) {
-		/* Get the pointer to the channel object */
+		 
 		ch = vpif_obj.dev[i];
 		common = &ch->common[VPIF_VIDEO_INDEX];
 
@@ -1789,7 +1579,7 @@ static int vpif_resume(struct device *dev)
 			continue;
 
 		mutex_lock(&common->lock);
-		/* Enable channel */
+		 
 		if (ch->channel_id == VPIF_CHANNEL0_VIDEO) {
 			enable_channel0(1);
 			channel0_intr_enable(1);

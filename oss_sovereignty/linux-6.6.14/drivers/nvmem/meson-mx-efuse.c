@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Amlogic Meson6, Meson8 and Meson8b eFuse Driver
- *
- * Copyright (c) 2017 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -67,7 +63,7 @@ static int meson_mx_efuse_hw_enable(struct meson_mx_efuse *efuse)
 	if (err)
 		return err;
 
-	/* power up the efuse */
+	 
 	meson_mx_efuse_mask_bits(efuse, MESON_MX_EFUSE_CNTL1,
 				 MESON_MX_EFUSE_CNTL1_PD_ENABLE, 0);
 
@@ -92,29 +88,26 @@ static int meson_mx_efuse_read_addr(struct meson_mx_efuse *efuse,
 	int err;
 	u32 regval;
 
-	/* write the address to read */
+	 
 	regval = FIELD_PREP(MESON_MX_EFUSE_CNTL1_BYTE_ADDR_MASK, addr);
 	meson_mx_efuse_mask_bits(efuse, MESON_MX_EFUSE_CNTL1,
 				 MESON_MX_EFUSE_CNTL1_BYTE_ADDR_MASK, regval);
 
-	/* inform the hardware that we changed the address */
+	 
 	meson_mx_efuse_mask_bits(efuse, MESON_MX_EFUSE_CNTL1,
 				 MESON_MX_EFUSE_CNTL1_BYTE_ADDR_SET,
 				 MESON_MX_EFUSE_CNTL1_BYTE_ADDR_SET);
 	meson_mx_efuse_mask_bits(efuse, MESON_MX_EFUSE_CNTL1,
 				 MESON_MX_EFUSE_CNTL1_BYTE_ADDR_SET, 0);
 
-	/* start the read process */
+	 
 	meson_mx_efuse_mask_bits(efuse, MESON_MX_EFUSE_CNTL1,
 				 MESON_MX_EFUSE_CNTL1_AUTO_RD_START,
 				 MESON_MX_EFUSE_CNTL1_AUTO_RD_START);
 	meson_mx_efuse_mask_bits(efuse, MESON_MX_EFUSE_CNTL1,
 				 MESON_MX_EFUSE_CNTL1_AUTO_RD_START, 0);
 
-	/*
-	 * perform a dummy read to ensure that the HW has the RD_BUSY bit set
-	 * when polling for the status below.
-	 */
+	 
 	readl(efuse->base + MESON_MX_EFUSE_CNTL1);
 
 	err = readl_poll_timeout_atomic(efuse->base + MESON_MX_EFUSE_CNTL1,
@@ -185,7 +178,7 @@ static const struct of_device_id meson_mx_efuse_match[] = {
 	{ .compatible = "amlogic,meson6-efuse", .data = &meson6_efuse_data },
 	{ .compatible = "amlogic,meson8-efuse", .data = &meson8_efuse_data },
 	{ .compatible = "amlogic,meson8b-efuse", .data = &meson8b_efuse_data },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, meson_mx_efuse_match);
 

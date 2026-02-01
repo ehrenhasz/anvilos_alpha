@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Null security operations.
- *
- * Copyright (C) 2016 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <net/af_rxrpc.h>
 #include "ar-internal.h"
@@ -14,9 +10,7 @@ static int none_init_connection_security(struct rxrpc_connection *conn,
 	return 0;
 }
 
-/*
- * Work out how much data we can put in an unsecured packet.
- */
+ 
 static int none_how_much_data(struct rxrpc_call *call, size_t remain,
 			       size_t *_buf_size, size_t *_data_size, size_t *_offset)
 {
@@ -69,9 +63,7 @@ static void none_exit(void)
 {
 }
 
-/*
- * RxRPC Kerberos-based security
- */
+ 
 const struct rxrpc_security rxrpc_no_security = {
 	.name				= "none",
 	.security_index			= RXRPC_SECURITY_NONE,

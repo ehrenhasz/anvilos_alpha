@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell RVU Admin Function driver
- *
- * Copyright (C) 2019 Marvell.
- *
- */
+
+ 
 
 #ifdef CONFIG_DEBUG_FS
 
@@ -45,7 +41,7 @@ enum {
 	CGX_STAT18,
 };
 
-/* NIX TX stats */
+ 
 enum nix_stat_lf_tx {
 	TX_UCAST	= 0x0,
 	TX_BCAST	= 0x1,
@@ -55,7 +51,7 @@ enum nix_stat_lf_tx {
 	TX_STATS_ENUM_LAST,
 };
 
-/* NIX RX stats */
+ 
 enum nix_stat_lf_rx {
 	RX_OCTS		= 0x0,
 	RX_UCAST	= 0x1,
@@ -286,7 +282,7 @@ static int rvu_dbg_mcs_sa_stats_display(struct seq_file *filp, void *unused, int
 		return 0;
 	}
 
-	/* RX stats */
+	 
 	map = &mcs->rx.sa;
 	mutex_lock(&mcs->stats_lock);
 	for_each_set_bit(sa_id, map->bmap, mcs->hw->sa_entries) {
@@ -571,7 +567,7 @@ static void rvu_dbg_mcs_init(struct rvu *rvu)
 }
 
 #define LMT_MAPTBL_ENTRY_SIZE 16
-/* Dump LMTST map table */
+ 
 static ssize_t rvu_dbg_lmtst_map_table_display(struct file *filp,
 					       char __user *buffer,
 					       size_t count, loff_t *ppos)
@@ -586,7 +582,7 @@ static ssize_t rvu_dbg_lmtst_map_table_display(struct file *filp,
 	char *buf;
 	int ret;
 
-	/* don't allow partial reads */
+	 
 	if (*ppos != 0)
 		return 0;
 
@@ -628,7 +624,7 @@ static ssize_t rvu_dbg_lmtst_map_table_display(struct file *filp,
 		val = readq(lmt_map_base + index);
 		off += scnprintf(&buf[off], buf_size - 1 - off, " 0x%016llx\n",
 				 val);
-		/* Reading num of VFs per PF */
+		 
 		rvu_get_pf_numvfs(rvu, pf, &num_vfs, &hw_vfs);
 		for (vf = 0; vf < num_vfs; vf++) {
 			index = (pf * rvu->hw->total_vfs * 16) +
@@ -730,7 +726,7 @@ static int get_max_column_width(struct rvu *rvu)
 	return lf_str_size;
 }
 
-/* Dumps current provisioning status of all RVU block LFs */
+ 
 static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
 					  char __user *buffer,
 					  size_t count, loff_t *ppos)
@@ -745,7 +741,7 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
 	char *lfs;
 	char *buf;
 
-	/* don't allow partial reads */
+	 
 	if (*ppos != 0)
 		return 0;
 
@@ -753,7 +749,7 @@ static ssize_t rvu_dbg_rsrc_attach_status(struct file *filp,
 	if (!buf)
 		return -ENOMEM;
 
-	/* Get the maximum width of a column */
+	 
 	lf_str_size = get_max_column_width(rvu);
 
 	lfs = kzalloc(lf_str_size, GFP_KERNEL);
@@ -849,7 +845,7 @@ static int rvu_dbg_rvu_pf_cgx_map_display(struct seq_file *filp, void *unused)
 
 	domain = 2;
 	mac_ops = get_mac_ops(rvu_first_cgx_pdata(rvu));
-	/* There can be no CGX devices at all */
+	 
 	if (!mac_ops)
 		return 0;
 	seq_printf(filp, "PCI dev\t\tRVU PF Func\tNIX block\t%s\tLMAC\n",
@@ -938,9 +934,7 @@ static void print_npa_qsize(struct seq_file *m, struct rvu_pfvf *pfvf)
 	kfree(buf);
 }
 
-/* The 'qsize' entry dumps current Aura/Pool context Qsize
- * and each context's current enable/disable status in a bitmap.
- */
+ 
 static int rvu_dbg_qsize_display(struct seq_file *filp, void *unsused,
 				 int blktype)
 {
@@ -1059,7 +1053,7 @@ static int rvu_dbg_npa_qsize_display(struct seq_file *filp, void *unused)
 
 RVU_DEBUG_SEQ_FOPS(npa_qsize, npa_qsize_display, npa_qsize_write);
 
-/* Dumps given NPA Aura's context */
+ 
 static void print_npa_aura_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
 {
 	struct npa_aura_s *aura = &rsp->aura;
@@ -1107,7 +1101,7 @@ static void print_npa_aura_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
 		seq_printf(m, "W6: fc_msh_dst\t\t%d\n", aura->fc_msh_dst);
 }
 
-/* Dumps given NPA Pool's context */
+ 
 static void print_npa_pool_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
 {
 	struct npa_pool_s *pool = &rsp->pool;
@@ -1154,7 +1148,7 @@ static void print_npa_pool_ctx(struct seq_file *m, struct npa_aq_enq_rsp *rsp)
 		seq_printf(m, "W8: fc_msh_dst\t\t%d\n", pool->fc_msh_dst);
 }
 
-/* Reads aura/pool's ctx from admin queue */
+ 
 static int rvu_dbg_npa_ctx_display(struct seq_file *m, void *unused, int ctype)
 {
 	void (*print_npa_ctx)(struct seq_file *m, struct npa_aq_enq_rsp *rsp);
@@ -1223,7 +1217,7 @@ static int rvu_dbg_npa_ctx_display(struct seq_file *m, void *unused, int ctype)
 	for (aura = id; aura < max_id; aura++) {
 		aq_req.aura_id = aura;
 
-		/* Skip if queue is uninitialized */
+		 
 		if (ctype == NPA_AQ_CTYPE_POOL && !test_bit(aura, pfvf->pool_bmap))
 			continue;
 
@@ -1605,7 +1599,7 @@ static void print_nix_cn10k_sq_ctx(struct seq_file *m,
 		   (u64)sq_ctx->dropped_pkts);
 }
 
-/* Dumps given nix_sq's context */
+ 
 static void print_nix_sq_ctx(struct seq_file *m, struct nix_aq_enq_rsp *rsp)
 {
 	struct nix_sq_ctx_s *sq_ctx = &rsp->sq;
@@ -1752,7 +1746,7 @@ static void print_nix_cn10k_rq_ctx(struct seq_file *m,
 	seq_printf(m, "W10: re_pkts \t\t\t%llu\n", (u64)rq_ctx->re_pkts);
 }
 
-/* Dumps given nix_rq's context */
+ 
 static void print_nix_rq_ctx(struct seq_file *m, struct nix_aq_enq_rsp *rsp)
 {
 	struct nix_rq_ctx_s *rq_ctx = &rsp->rq;
@@ -1821,7 +1815,7 @@ static void print_nix_rq_ctx(struct seq_file *m, struct nix_aq_enq_rsp *rsp)
 	seq_printf(m, "W10: re_pkts \t\t\t%llu\n", (u64)rq_ctx->re_pkts);
 }
 
-/* Dumps given nix_cq's context */
+ 
 static void print_nix_cq_ctx(struct seq_file *m, struct nix_aq_enq_rsp *rsp)
 {
 	struct nix_cq_ctx_s *cq_ctx = &rsp->cq;
@@ -2241,7 +2235,7 @@ static int rvu_dbg_nix_band_prof_ctx_display(struct seq_file *m, void *unused)
 	u16 pcifunc;
 	char *str;
 
-	/* Ingress policers do not exist on all platforms */
+	 
 	if (!nix_hw->ipolicer)
 		return 0;
 
@@ -2294,7 +2288,7 @@ static int rvu_dbg_nix_band_prof_rsrc_display(struct seq_file *m, void *unused)
 	int layer;
 	char *str;
 
-	/* Ingress policers do not exist on all platforms */
+	 
 	if (!nix_hw->ipolicer)
 		return 0;
 
@@ -2408,11 +2402,11 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
 		return -ENODEV;
 
 	mac_ops = get_mac_ops(cgxd);
-	/* There can be no CGX devices at all */
+	 
 	if (!mac_ops)
 		return 0;
 
-	/* Link status */
+	 
 	seq_puts(s, "\n=======Link Status======\n\n");
 	err = cgx_get_link_info(cgxd, lmac_id, &linfo);
 	if (err)
@@ -2420,7 +2414,7 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
 	seq_printf(s, "\nLink is %s %d Mbps\n\n",
 		   linfo.link_up ? "UP" : "DOWN", linfo.speed);
 
-	/* Rx stats */
+	 
 	seq_printf(s, "\n=======NIX RX_STATS(%s port level)======\n\n",
 		   mac_ops->name);
 	ucast = PRINT_CGX_CUML_NIXRX_STATUS(RX_UCAST, "rx_ucast_frames");
@@ -2443,7 +2437,7 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
 	if (err)
 		return err;
 
-	/* Tx stats */
+	 
 	seq_printf(s, "\n=======NIX TX_STATS(%s port level)======\n\n",
 		   mac_ops->name);
 	ucast = PRINT_CGX_CUML_NIXTX_STATUS(TX_UCAST, "tx_ucast_frames");
@@ -2463,7 +2457,7 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
 	if (err)
 		return err;
 
-	/* Rx stats */
+	 
 	seq_printf(s, "\n=======%s RX_STATS======\n\n", mac_ops->name);
 	while (stat < mac_ops->rx_stats_cnt) {
 		err = mac_ops->mac_get_rx_stats(cgxd, lmac_id, stat, &rx_stat);
@@ -2478,7 +2472,7 @@ static int cgx_print_stats(struct seq_file *s, int lmac_id)
 		stat++;
 	}
 
-	/* Tx stats */
+	 
 	stat = 0;
 	seq_printf(s, "\n=======%s TX_STATS======\n\n", mac_ops->name);
 	while (stat < mac_ops->tx_stats_cnt) {
@@ -2564,7 +2558,7 @@ static int cgx_print_dmac_flt(struct seq_file *s, int lmac_id)
 
 	for (index = 0 ; index < 32 ; index++) {
 		cfg = cgx_read_dmac_entry(cgxd, index);
-		/* Display enabled dmac entries associated with current lmac */
+		 
 		if (lmac_id == FIELD_GET(CGX_DMAC_CAM_ENTRY_LMACID, cfg) &&
 		    FIELD_GET(CGX_DMAC_CAM_ADDR_ENABLE, cfg)) {
 			mac = FIELD_GET(CGX_RX_DMAC_ADR_MASK, cfg);
@@ -2613,13 +2607,13 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
 		if (!cgx)
 			continue;
 		lmac_bmap = cgx_get_lmac_bmap(cgx);
-		/* cgx debugfs dir */
+		 
 		sprintf(dname, "%s%d", mac_ops->name, i);
 		rvu->rvu_dbg.cgx = debugfs_create_dir(dname,
 						      rvu->rvu_dbg.cgx_root);
 
 		for_each_set_bit(lmac_id, &lmac_bmap, rvu->hw->lmac_per_cgx) {
-			/* lmac debugfs dir */
+			 
 			sprintf(dname, "lmac%d", lmac_id);
 			rvu->rvu_dbg.lmac =
 				debugfs_create_dir(dname, rvu->rvu_dbg.cgx);
@@ -2633,7 +2627,7 @@ static void rvu_dbg_cgx_init(struct rvu *rvu)
 	}
 }
 
-/* NPC debugfs APIs */
+ 
 static void rvu_print_npc_mcam_info(struct seq_file *s,
 				    u16 pcifunc, int blkaddr)
 {
@@ -2682,7 +2676,7 @@ static int rvu_dbg_npc_mcam_info_display(struct seq_file *filp, void *unsued)
 	counters = rvu->hw->npc_counters;
 
 	seq_puts(filp, "\nNPC MCAM info:\n");
-	/* MCAM keywidth on receive and transmit sides */
+	 
 	cfg = rvu_read64(rvu, blkaddr, NPC_AF_INTFX_KEX_CFG(NIX_INTF_RX));
 	cfg = (cfg >> 32) & 0x07;
 	seq_printf(filp, "\t\t RX keywidth \t: %s\n", (cfg == NPC_MCAM_KEY_X1) ?
@@ -2695,13 +2689,13 @@ static int rvu_dbg_npc_mcam_info_display(struct seq_file *filp, void *unsued)
 		   "224bits" : "448bits"));
 
 	mutex_lock(&mcam->lock);
-	/* MCAM entries */
+	 
 	seq_printf(filp, "\n\t\t MCAM entries \t: %d\n", mcam->total_entries);
 	seq_printf(filp, "\t\t Reserved \t: %d\n",
 		   mcam->total_entries - mcam->bmap_entries);
 	seq_printf(filp, "\t\t Available \t: %d\n", mcam->bmap_fcnt);
 
-	/* MCAM counters */
+	 
 	seq_printf(filp, "\n\t\t MCAM counters \t: %d\n", counters);
 	seq_printf(filp, "\t\t Reserved \t: %d\n",
 		   counters - mcam->counters.max);
@@ -2991,11 +2985,11 @@ static int rvu_dbg_npc_exact_show_entries(struct seq_file *s, void *unused)
 
 	mutex_lock(&table->lock);
 
-	/* Check if there is at least one entry in mem table */
+	 
 	if (!table->mem_tbl_entry_cnt)
 		goto dump_cam_table;
 
-	/* Print table headers */
+	 
 	seq_puts(s, "\n\tExact Match MEM Table\n");
 	seq_puts(s, "Index\t");
 
@@ -3012,7 +3006,7 @@ static int rvu_dbg_npc_exact_show_entries(struct seq_file *s, void *unused)
 
 	seq_puts(s, "\n\n");
 
-	/* Print mem table entries */
+	 
 	for (i = 0; i < table->mem_table.depth; i++) {
 		bitmap = 0;
 		for (j = 0; j < table->mem_table.ways; j++) {
@@ -3025,7 +3019,7 @@ static int rvu_dbg_npc_exact_show_entries(struct seq_file *s, void *unused)
 			bitmap |= BIT(j);
 		}
 
-		/* No valid entries */
+		 
 		if (!bitmap)
 			continue;
 
@@ -3051,7 +3045,7 @@ dump_cam_table:
 	seq_puts(s, "\n\tExact Match CAM Table\n");
 	seq_puts(s, "index\tchan\tMAC\n");
 
-	/* Traverse cam table entries */
+	 
 	list_for_each_entry(cam_entry, &table->lhead_cam_tbl_entry, list) {
 		seq_printf(s, "%d\t0x%x\t%pM\n", cam_entry->index, cam_entry->chan,
 			   cam_entry->mac);
@@ -3123,7 +3117,7 @@ static int rvu_dbg_npc_exact_drop_cnt(struct seq_file *s, void *unused)
 		pcifunc = rvu_npc_exact_drop_rule_to_pcifunc(rvu, i);
 		cfg = rvu_read64(rvu, blkaddr, NPC_AF_MCAMEX_BANKX_CFG(i, 0));
 
-		/* channel will be always in keyword 0 */
+		 
 		cam1 = rvu_read64(rvu, blkaddr,
 				  NPC_AF_MCAMEX_BANKX_CAMX_W0(i, 0, 1));
 		chan = field->kw_mask[0] & cam1;
@@ -3437,4 +3431,4 @@ void rvu_dbg_exit(struct rvu *rvu)
 	debugfs_remove_recursive(rvu->rvu_dbg.root);
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  

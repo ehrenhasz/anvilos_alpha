@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2014, Mellanox Technologies inc.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/pci.h>
 #include <linux/mlx5/driver.h>
@@ -43,7 +13,7 @@ static int sriov_restore_guids(struct mlx5_core_dev *dev, int vf, u16 func_id)
 	struct mlx5_hca_vport_context *in;
 	int err = 0;
 
-	/* Restore sriov guid and policy settings */
+	 
 	if (sriov->vfs_ctx[vf].node_guid ||
 	    sriov->vfs_ctx[vf].port_guid ||
 	    sriov->vfs_ctx[vf].policy != MLX5_POLICY_INVALID) {
@@ -84,9 +54,7 @@ static int mlx5_device_enable_sriov(struct mlx5_core_dev *dev, int num_vfs)
 
 	num_msix_count = mlx5_get_default_msix_vec_count(dev, num_vfs);
 	for (vf = 0; vf < num_vfs; vf++) {
-		/* Notify the VF before its enablement to let it set
-		 * some stuff.
-		 */
+		 
 		blocking_notifier_call_chain(&sriov->vfs_ctx[vf].notifier,
 					     MLX5_PF_NOTIFY_ENABLE_VF, dev);
 		err = mlx5_core_enable_hca(dev, vf + 1);
@@ -134,9 +102,7 @@ mlx5_device_disable_sriov(struct mlx5_core_dev *dev, int num_vfs, bool clear_vf,
 	for (vf = num_vfs - 1; vf >= 0; vf--) {
 		if (!sriov->vfs_ctx[vf].enabled)
 			continue;
-		/* Notify the VF before its disablement to let it clean
-		 * some resources.
-		 */
+		 
 		blocking_notifier_call_chain(&sriov->vfs_ctx[vf].notifier,
 					     MLX5_PF_NOTIFY_DISABLE_VF, dev);
 		err = mlx5_core_disable_hca(dev, vf + 1);
@@ -149,15 +115,7 @@ mlx5_device_disable_sriov(struct mlx5_core_dev *dev, int num_vfs, bool clear_vf,
 
 	mlx5_eswitch_disable_sriov(dev->priv.eswitch, clear_vf);
 
-	/* There are a number of scenarios when SRIOV is being disabled:
-	 *     1. VFs or ECVFs had been created, and now set back to 0 (num_vf_change == true).
-	 *		- If EC SRIOV is enabled then this flow is happening on the
-	 *		  embedded platform, wait for only EC VF pages.
-	 *		- If EC SRIOV is not enabled this flow is happening on non-embedded
-	 *		  platform, wait for the VF pages.
-	 *
-	 *     2. The driver is being unloaded. In this case wait for all pages.
-	 */
+	 
 	if (num_vf_change) {
 		if (mlx5_core_ec_sriov_enabled(dev))
 			wait_for_vf_pages = false;
@@ -168,7 +126,7 @@ mlx5_device_disable_sriov(struct mlx5_core_dev *dev, int num_vfs, bool clear_vf,
 	if (wait_for_ec_vf_pages && mlx5_wait_for_pages(dev, &dev->priv.page_counters[MLX5_EC_VF]))
 		mlx5_core_warn(dev, "timeout reclaiming EC VFs pages\n");
 
-	/* For ECPFs, skip waiting for host VF pages until ECPF is destroyed */
+	 
 	if (mlx5_core_is_ecpf(dev))
 		return;
 
@@ -257,7 +215,7 @@ int mlx5_sriov_attach(struct mlx5_core_dev *dev)
 	if (!mlx5_core_is_pf(dev) || !pci_num_vf(dev->pdev))
 		return 0;
 
-	/* If sriov VFs exist in PCI level, enable them in device level */
+	 
 	return mlx5_device_enable_sriov(dev, pci_num_vf(dev->pdev));
 }
 
@@ -277,9 +235,7 @@ static u16 mlx5_get_max_vfs(struct mlx5_core_dev *dev)
 	if (mlx5_core_is_ecpf_esw_manager(dev)) {
 		out = mlx5_esw_query_functions(dev);
 
-		/* Old FW doesn't support getting total_vfs from esw func
-		 * but supports getting it from pci_sriov.
-		 */
+		 
 		if (IS_ERR(out))
 			goto done;
 		host_total_vfs = MLX5_GET(query_esw_functions_out, out,
@@ -325,14 +281,7 @@ void mlx5_sriov_cleanup(struct mlx5_core_dev *dev)
 	kfree(sriov->vfs_ctx);
 }
 
-/**
- * mlx5_sriov_blocking_notifier_unregister - Unregister a VF from
- * a notification block chain.
- *
- * @mdev: The mlx5 core device.
- * @vf_id: The VF id.
- * @nb: The notifier block to be unregistered.
- */
+ 
 void mlx5_sriov_blocking_notifier_unregister(struct mlx5_core_dev *mdev,
 					     int vf_id,
 					     struct notifier_block *nb)
@@ -349,16 +298,7 @@ void mlx5_sriov_blocking_notifier_unregister(struct mlx5_core_dev *mdev,
 }
 EXPORT_SYMBOL(mlx5_sriov_blocking_notifier_unregister);
 
-/**
- * mlx5_sriov_blocking_notifier_register - Register a VF notification
- * block chain.
- *
- * @mdev: The mlx5 core device.
- * @vf_id: The VF id.
- * @nb: The notifier block to be called upon the VF events.
- *
- * Returns 0 on success or an error code.
- */
+ 
 int mlx5_sriov_blocking_notifier_register(struct mlx5_core_dev *mdev,
 					  int vf_id,
 					  struct notifier_block *nb)

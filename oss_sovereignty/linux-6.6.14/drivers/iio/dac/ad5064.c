@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AD5024, AD5025, AD5044, AD5045, AD5064, AD5064-1, AD5065, AD5625, AD5625R,
- * AD5627, AD5627R, AD5628, AD5629R, AD5645R, AD5647R, AD5648, AD5665, AD5665R,
- * AD5666, AD5667, AD5667R, AD5668, AD5669R, LTC2606, LTC2607, LTC2609, LTC2616,
- * LTC2617, LTC2619, LTC2626, LTC2627, LTC2629, LTC2631, LTC2633, LTC2635
- * Digital to analog converters driver
- *
- * Copyright 2011 Analog Devices Inc.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/err.h>
@@ -52,27 +44,14 @@
 #define AD5064_LDAC_PWRDN_100K			0x2
 #define AD5064_LDAC_PWRDN_3STATE		0x3
 
-/**
- * enum ad5064_regmap_type - Register layout variant
- * @AD5064_REGMAP_ADI: Old Analog Devices register map layout
- * @AD5064_REGMAP_ADI2: New Analog Devices register map layout
- * @AD5064_REGMAP_LTC: LTC register map layout
- */
+ 
 enum ad5064_regmap_type {
 	AD5064_REGMAP_ADI,
 	AD5064_REGMAP_ADI2,
 	AD5064_REGMAP_LTC,
 };
 
-/**
- * struct ad5064_chip_info - chip specific information
- * @shared_vref:	whether the vref supply is shared between channels
- * @internal_vref:	internal reference voltage. 0 if the chip has no
- *			internal vref.
- * @channels:		channel specification
- * @num_channels:	number of channels
- * @regmap_type:	register map layout variant
- */
+ 
 
 struct ad5064_chip_info {
 	bool shared_vref;
@@ -87,20 +66,7 @@ struct ad5064_state;
 typedef int (*ad5064_write_func)(struct ad5064_state *st, unsigned int cmd,
 		unsigned int addr, unsigned int val);
 
-/**
- * struct ad5064_state - driver instance specific data
- * @dev:		the device for this driver instance
- * @chip_info:		chip model specific constants, available modes etc
- * @vref_reg:		vref supply regulators
- * @pwr_down:		whether channel is powered down
- * @pwr_down_mode:	channel's current power down mode
- * @dac_cache:		current DAC raw value (chip does not support readback)
- * @use_internal_vref:	set to true if the internal reference voltage should be
- *			used.
- * @write:		register write callback
- * @lock:		maintain consistency between cached and dev state
- * @data:		i2c/spi transfer buffers
- */
+ 
 
 struct ad5064_state {
 	struct device			*dev;
@@ -114,10 +80,7 @@ struct ad5064_state {
 	ad5064_write_func		write;
 	struct mutex lock;
 
-	/*
-	 * DMA (thus cache coherency maintenance) may require the
-	 * transfer buffers to live in their own cache lines.
-	 */
+	 
 	union {
 		u8 i2c[3];
 		__be32 spi;
@@ -821,11 +784,7 @@ static int ad5064_request_vref(struct ad5064_state *st, struct device *dev)
 		return devm_regulator_bulk_get(dev, ad5064_num_vref(st),
 					       st->vref_reg);
 
-	/*
-	 * This assumes that when the regulator has an internal VREF
-	 * there is only one external VREF connection, which is
-	 * currently the case for all supported devices.
-	 */
+	 
 	st->vref_reg[0].consumer = devm_regulator_get_optional(dev, "vref");
 	if (!IS_ERR(st->vref_reg[0].consumer))
 		return 0;
@@ -834,7 +793,7 @@ static int ad5064_request_vref(struct ad5064_state *st, struct device *dev)
 	if (ret != -ENODEV)
 		return ret;
 
-	/* If no external regulator was supplied use the internal VREF */
+	 
 	st->use_internal_vref = true;
 	ret = ad5064_set_config(st, AD5064_CONFIG_INT_VREF_ENABLE);
 	if (ret)
@@ -935,7 +894,7 @@ static const struct spi_device_id ad5064_spi_ids[] = {
 	{"ad5666-2", ID_AD5666_2},
 	{"ad5668-1", ID_AD5668_1},
 	{"ad5668-2", ID_AD5668_2},
-	{"ad5668-3", ID_AD5668_2}, /* similar enough to ad5668-2 */
+	{"ad5668-3", ID_AD5668_2},  
 	{}
 };
 MODULE_DEVICE_TABLE(spi, ad5064_spi_ids);
@@ -1009,7 +968,7 @@ static const struct i2c_device_id ad5064_i2c_ids[] = {
 	{"ad5627r-2v5", ID_AD5627R_2V5 },
 	{"ad5629-1", ID_AD5629_1},
 	{"ad5629-2", ID_AD5629_2},
-	{"ad5629-3", ID_AD5629_2}, /* similar enough to ad5629-2 */
+	{"ad5629-3", ID_AD5629_2},  
 	{"ad5645r-1v25", ID_AD5645R_1V25 },
 	{"ad5645r-2v5", ID_AD5645R_2V5 },
 	{"ad5665", ID_AD5665 },
@@ -1020,7 +979,7 @@ static const struct i2c_device_id ad5064_i2c_ids[] = {
 	{"ad5667r-2v5", ID_AD5667R_2V5 },
 	{"ad5669-1", ID_AD5669_1},
 	{"ad5669-2", ID_AD5669_2},
-	{"ad5669-3", ID_AD5669_2}, /* similar enough to ad5669-2 */
+	{"ad5669-3", ID_AD5669_2},  
 	{"ltc2606", ID_LTC2606},
 	{"ltc2607", ID_LTC2607},
 	{"ltc2609", ID_LTC2609},

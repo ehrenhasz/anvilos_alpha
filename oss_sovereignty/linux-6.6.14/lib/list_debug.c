@@ -1,10 +1,4 @@
-/*
- * Copyright 2006, Red Hat, Inc., Dave Jones
- * Released under the General Public License (GPL).
- *
- * This file contains the linked list validation and error reporting for
- * LIST_HARDENED and DEBUG_LIST.
- */
+ 
 
 #include <linux/export.h>
 #include <linux/list.h>
@@ -12,11 +6,7 @@
 #include <linux/kernel.h>
 #include <linux/rculist.h>
 
-/*
- * Check that the data structures for the list manipulations are reasonably
- * valid. Failures here indicate memory corruption (and possibly an exploit
- * attempt).
- */
+ 
 
 __list_valid_slowpath
 bool __list_add_valid_or_report(struct list_head *new, struct list_head *prev,

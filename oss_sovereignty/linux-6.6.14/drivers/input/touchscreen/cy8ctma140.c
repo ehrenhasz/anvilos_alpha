@@ -1,20 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Cypress CY8CTMA140 (TMA140) touchscreen
- * (C) 2020 Linus Walleij <linus.walleij@linaro.org>
- * (C) 2007 Cypress
- * (C) 2007 Google, Inc.
- *
- * Inspired by the tma140_skomer.c driver in the Samsung GT-S7710 code
- * drop. The GT-S7710 is codenamed "Skomer", the code also indicates
- * that the same touchscreen was used in a product called "Lucas".
- *
- * The code drop for GT-S7710 also contains a firmware downloader and
- * 15 (!) versions of the firmware drop from Cypress. But here we assume
- * the firmware got downloaded to the touchscreen flash successfully and
- * just use it to read the fingers. The shipped vendor driver does the
- * same.
- */
+
+ 
 
 #include <asm/unaligned.h>
 #include <linux/module.h>
@@ -36,7 +21,7 @@
 #define CY8CTMA140_GET_FINGERS		0x00
 #define CY8CTMA140_GET_FW_INFO		0x19
 
-/* This message also fits some bytes for touchkeys, if used */
+ 
 #define CY8CTMA140_PACKET_SIZE		31
 
 #define CY8CTMA140_INVALID_BUFFER_BIT	5
@@ -65,11 +50,7 @@ static void cy8ctma140_report(struct cy8ctma140 *ts, u8 *data, int n_fingers)
 	for (i = 0; i < n_fingers; i++) {
 		buf = &data[contact_offsets[i]];
 
-		/*
-		 * Odd contacts have contact ID in the lower nibble of
-		 * the preceding byte, whereas even contacts have it in
-		 * the upper nibble of the following byte.
-		 */
+		 
 		id = i % 2 ? buf[-1] & 0x0f : buf[5] >> 4;
 		slot = input_mt_get_slot_by_key(ts->input, id);
 		if (slot < 0)
@@ -190,7 +171,7 @@ static void cy8ctma140_power_down(struct cy8ctma140 *ts)
 			       ts->regulators);
 }
 
-/* Called from the registered devm action */
+ 
 static void cy8ctma140_power_off_action(void *d)
 {
 	struct cy8ctma140 *ts = d;
@@ -219,21 +200,9 @@ static int cy8ctma140_probe(struct i2c_client *client)
 
 	input_set_capability(input, EV_ABS, ABS_MT_POSITION_X);
 	input_set_capability(input, EV_ABS, ABS_MT_POSITION_Y);
-	/* One byte for width 0..255 so this is the limit */
+	 
 	input_set_abs_params(input, ABS_MT_TOUCH_MAJOR, 0, 255, 0, 0);
-	/*
-	 * This sets up event max/min capabilities and fuzz.
-	 * Some DT properties are compulsory so we do not need
-	 * to provide defaults for X/Y max or pressure max.
-	 *
-	 * We just initialize a very simple MT touchscreen here,
-	 * some devices use the capability of this touchscreen to
-	 * provide touchkeys, and in that case this needs to be
-	 * extended to handle touchkey input.
-	 *
-	 * The firmware takes care of finger tracking and dropping
-	 * invalid ranges.
-	 */
+	 
 	touchscreen_parse_properties(input, true, &ts->props);
 	input_abs_set_fuzz(input, ABS_MT_POSITION_X, 0);
 	input_abs_set_fuzz(input, ABS_MT_POSITION_Y, 0);
@@ -247,13 +216,7 @@ static int cy8ctma140_probe(struct i2c_client *client)
 	input->id.bustype = BUS_I2C;
 	input_set_drvdata(input, ts);
 
-	/*
-	 * VCPIN is the analog voltage supply
-	 * VDD is the digital voltage supply
-	 * since the voltage range of VDD overlaps that of VCPIN,
-	 * many designs to just supply both with a single voltage
-	 * source of ~3.3 V.
-	 */
+	 
 	ts->regulators[0].supply = "vcpin";
 	ts->regulators[1].supply = "vdd";
 	error = devm_regulator_bulk_get(dev, ARRAY_SIZE(ts->regulators),
@@ -323,13 +286,13 @@ static DEFINE_SIMPLE_DEV_PM_OPS(cy8ctma140_pm,
 
 static const struct i2c_device_id cy8ctma140_idtable[] = {
 	{ CY8CTMA140_NAME, 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, cy8ctma140_idtable);
 
 static const struct of_device_id cy8ctma140_of_match[] = {
 	{ .compatible = "cypress,cy8ctma140", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cy8ctma140_of_match);
 

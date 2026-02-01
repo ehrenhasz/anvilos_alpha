@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <network_helpers.h>
 
@@ -36,21 +36,21 @@ void test_skb_ctx(void)
 	if (!ASSERT_OK(err, "load"))
 		return;
 
-	/* ctx_in != NULL, ctx_size_in == 0 */
+	 
 
 	tattr.ctx_size_in = 0;
 	err = bpf_prog_test_run_opts(prog_fd, &tattr);
 	ASSERT_NEQ(err, 0, "ctx_size_in");
 	tattr.ctx_size_in = sizeof(skb);
 
-	/* ctx_out != NULL, ctx_size_out == 0 */
+	 
 
 	tattr.ctx_size_out = 0;
 	err = bpf_prog_test_run_opts(prog_fd, &tattr);
 	ASSERT_NEQ(err, 0, "ctx_size_out");
 	tattr.ctx_size_out = sizeof(skb);
 
-	/* non-zero [len, tc_index] fields should be rejected*/
+	 
 
 	skb.len = 1;
 	err = bpf_prog_test_run_opts(prog_fd, &tattr);
@@ -62,7 +62,7 @@ void test_skb_ctx(void)
 	ASSERT_NEQ(err, 0, "tc_index");
 	skb.tc_index = 0;
 
-	/* non-zero [hash, sk] fields should be rejected */
+	 
 
 	skb.hash = 1;
 	err = bpf_prog_test_run_opts(prog_fd, &tattr);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 1993 by Theodore Ts'o.
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/sched.h>
@@ -37,7 +35,7 @@
 #include <linux/spinlock.h>
 #include <uapi/linux/loop.h>
 
-/* Possible states of device */
+ 
 enum {
 	Lo_unbound,
 	Lo_bound,
@@ -80,8 +78,8 @@ struct loop_device {
 
 struct loop_cmd {
 	struct list_head list_entry;
-	bool use_aio; /* use AIO interface to handle I/O */
-	atomic_t ref; /* only for aio */
+	bool use_aio;  
+	atomic_t ref;  
 	long ret;
 	struct kiocb iocb;
 	struct bio_vec *bvec;
@@ -96,18 +94,7 @@ static DEFINE_IDR(loop_index_idr);
 static DEFINE_MUTEX(loop_ctl_mutex);
 static DEFINE_MUTEX(loop_validate_mutex);
 
-/**
- * loop_global_lock_killable() - take locks for safe loop_validate_file() test
- *
- * @lo: struct loop_device
- * @global: true if @lo is about to bind another "struct loop_device", false otherwise
- *
- * Returns 0 on success, -EINTR otherwise.
- *
- * Since loop_validate_file() traverses on other "struct loop_device" if
- * is_loop_device() is true, we need a global lock for serializing concurrent
- * loop_configure()/loop_change_fd()/__loop_clr_fd() calls.
- */
+ 
 static int loop_global_lock_killable(struct loop_device *lo, bool global)
 {
 	int err;
@@ -123,12 +110,7 @@ static int loop_global_lock_killable(struct loop_device *lo, bool global)
 	return err;
 }
 
-/**
- * loop_global_unlock() - release locks taken by loop_global_lock_killable()
- *
- * @lo: struct loop_device
- * @global: true if @lo was about to bind another "struct loop_device", false otherwise
- */
+ 
 static void loop_global_unlock(struct loop_device *lo, bool global)
 {
 	mutex_unlock(&lo->lo_mutex);
@@ -143,20 +125,17 @@ static loff_t get_size(loff_t offset, loff_t sizelimit, struct file *file)
 {
 	loff_t loopsize;
 
-	/* Compute loopsize in bytes */
+	 
 	loopsize = i_size_read(file->f_mapping->host);
 	if (offset > 0)
 		loopsize -= offset;
-	/* offset is beyond i_size, weird but possible */
+	 
 	if (loopsize < 0)
 		return 0;
 
 	if (sizelimit > 0 && sizelimit < loopsize)
 		loopsize = sizelimit;
-	/*
-	 * Unfortunately, if we want to do I/O on the device,
-	 * the number of 512-byte sectors has to fit into a sector_t.
-	 */
+	 
 	return loopsize >> 9;
 }
 
@@ -165,11 +144,7 @@ static loff_t get_loop_size(struct loop_device *lo, struct file *file)
 	return get_size(lo->lo_offset, lo->lo_sizelimit, file);
 }
 
-/*
- * We support direct I/O only if lo_offset is aligned with the logical I/O size
- * of backing device, and the logical block size of loop is bigger than that of
- * the backing device.
- */
+ 
 static bool lo_bdev_can_use_dio(struct loop_device *lo,
 		struct block_device *backing_bdev)
 {
@@ -200,14 +175,10 @@ static void __loop_update_dio(struct loop_device *lo, bool dio)
 	if (lo->use_dio == use_dio)
 		return;
 
-	/* flush dirty pages before changing direct IO */
+	 
 	vfs_fsync(file, 0);
 
-	/*
-	 * The flag of LO_FLAGS_DIRECT_IO is handled similarly with
-	 * LO_FLAGS_READ_ONLY, both are set from kernel, and losetup
-	 * will get updated by ioctl(LOOP_GET_STATUS)
-	 */
+	 
 	if (lo->lo_state == Lo_bound)
 		blk_mq_freeze_queue(lo->lo_queue);
 	lo->use_dio = use_dio;
@@ -222,14 +193,7 @@ static void __loop_update_dio(struct loop_device *lo, bool dio)
 		blk_mq_unfreeze_queue(lo->lo_queue);
 }
 
-/**
- * loop_set_size() - sets device size and notifies userspace
- * @lo: struct loop_device to set the size for
- * @size: new size of the loop device
- *
- * Callers must validate that the size passed into this function fits into
- * a sector_t, eg using loop_validate_size()
- */
+ 
 static void loop_set_size(struct loop_device *lo, loff_t size)
 {
 	if (!set_capacity_and_notify(lo->lo_disk, size))
@@ -307,10 +271,7 @@ static int lo_read_simple(struct loop_device *lo, struct request *rq,
 static int lo_fallocate(struct loop_device *lo, struct request *rq, loff_t pos,
 			int mode)
 {
-	/*
-	 * We use fallocate to manipulate the space mappings used by the image
-	 * a.k.a. discard/zerorange.
-	 */
+	 
 	struct file *file = lo->lo_backing_file;
 	int ret;
 
@@ -346,10 +307,7 @@ static void lo_complete_rq(struct request *rq)
 		goto end_io;
 	}
 
-	/*
-	 * Short READ - if we got some data, advance our request and
-	 * retry it. If we got no data, end the rest with EIO.
-	 */
+	 
 	if (cmd->ret) {
 		blk_update_request(rq, BLK_STS_OK, cmd->ret);
 		cmd->ret = 0;
@@ -414,12 +372,7 @@ static int lo_rw_aio(struct loop_device *lo, struct loop_cmd *cmd,
 			return -EIO;
 		cmd->bvec = bvec;
 
-		/*
-		 * The bios of the request may be started from the middle of
-		 * the 'bvec' because of bio splitting, so we can't directly
-		 * copy bio->bi_iov_vec to new bvec. The rq_for_each_bvec
-		 * API will take care of all details for us.
-		 */
+		 
 		rq_for_each_bvec(tmp, rq, rq_iter) {
 			*bvec = tmp;
 			bvec++;
@@ -427,11 +380,7 @@ static int lo_rw_aio(struct loop_device *lo, struct loop_cmd *cmd,
 		bvec = cmd->bvec;
 		offset = 0;
 	} else {
-		/*
-		 * Same here, this bio may be started from the middle of the
-		 * 'bvec' because of bio splitting, so offset from the bvec
-		 * must be passed to iov iterator
-		 */
+		 
 		offset = bio->bi_iter.bi_bvec_done;
 		bvec = __bvec_iter_bvec(bio->bi_io_vec, bio->bi_iter);
 	}
@@ -463,23 +412,12 @@ static int do_req_filebacked(struct loop_device *lo, struct request *rq)
 	struct loop_cmd *cmd = blk_mq_rq_to_pdu(rq);
 	loff_t pos = ((loff_t) blk_rq_pos(rq) << 9) + lo->lo_offset;
 
-	/*
-	 * lo_write_simple and lo_read_simple should have been covered
-	 * by io submit style function like lo_rw_aio(), one blocker
-	 * is that lo_read_simple() need to call flush_dcache_page after
-	 * the page is written from kernel, and it isn't easy to handle
-	 * this in io submit style function which submits all segments
-	 * of the req at one time. And direct read IO doesn't need to
-	 * run flush_dcache_page().
-	 */
+	 
 	switch (req_op(rq)) {
 	case REQ_OP_FLUSH:
 		return lo_req_flush(lo, rq);
 	case REQ_OP_WRITE_ZEROES:
-		/*
-		 * If the caller doesn't want deallocation, call zeroout to
-		 * write zeroes the range.  Otherwise, punch them out.
-		 */
+		 
 		return lo_fallocate(lo, rq, pos,
 			(rq->cmd_flags & REQ_NOUNMAP) ?
 				FALLOC_FL_ZERO_RANGE :
@@ -532,7 +470,7 @@ static int loop_validate_file(struct file *file, struct block_device *bdev)
 	struct inode	*inode = file->f_mapping->host;
 	struct file	*f = file;
 
-	/* Avoid recursion */
+	 
 	while (is_loop_device(f)) {
 		struct loop_device *l;
 
@@ -543,7 +481,7 @@ static int loop_validate_file(struct file *file, struct block_device *bdev)
 		l = I_BDEV(f->f_mapping->host)->bd_disk->private_data;
 		if (l->lo_state != Lo_bound)
 			return -EINVAL;
-		/* Order wrt setting lo->lo_backing_file in loop_configure(). */
+		 
 		rmb();
 		f = l->lo_backing_file;
 	}
@@ -552,14 +490,7 @@ static int loop_validate_file(struct file *file, struct block_device *bdev)
 	return 0;
 }
 
-/*
- * loop_change_fd switched the backing store of a loopback device to
- * a new file. This is useful for operating system installers to free up
- * the original file and in High Availability environments to switch to
- * an alternative location for the content in case of server meltdown.
- * This can only work if the loop device is used read-only, and if the
- * new backing store is the same size and type as the old backing store.
- */
+ 
 static int loop_change_fd(struct loop_device *lo, struct block_device *bdev,
 			  unsigned int arg)
 {
@@ -572,7 +503,7 @@ static int loop_change_fd(struct loop_device *lo, struct block_device *bdev,
 	if (!file)
 		return -EBADF;
 
-	/* suppress uevents while reconfiguring the device */
+	 
 	dev_set_uevent_suppress(disk_to_dev(lo->lo_disk), 1);
 
 	is_loop = is_loop_device(file);
@@ -583,7 +514,7 @@ static int loop_change_fd(struct loop_device *lo, struct block_device *bdev,
 	if (lo->lo_state != Lo_bound)
 		goto out_err;
 
-	/* the loop device has to be read-only */
+	 
 	error = -EINVAL;
 	if (!(lo->lo_flags & LO_FLAGS_READ_ONLY))
 		goto out_err;
@@ -596,11 +527,11 @@ static int loop_change_fd(struct loop_device *lo, struct block_device *bdev,
 
 	error = -EINVAL;
 
-	/* size of the new backing store needs to be the same */
+	 
 	if (get_loop_size(lo, file) != get_loop_size(lo, old_file))
 		goto out_err;
 
-	/* and ... switch */
+	 
 	disk_force_media_change(lo->lo_disk);
 	blk_mq_freeze_queue(lo->lo_queue);
 	mapping_set_gfp_mask(old_file->f_mapping, lo->old_gfp_mask);
@@ -613,26 +544,19 @@ static int loop_change_fd(struct loop_device *lo, struct block_device *bdev,
 	partscan = lo->lo_flags & LO_FLAGS_PARTSCAN;
 	loop_global_unlock(lo, is_loop);
 
-	/*
-	 * Flush loop_validate_file() before fput(), for l->lo_backing_file
-	 * might be pointing at old_file which might be the last reference.
-	 */
+	 
 	if (!is_loop) {
 		mutex_lock(&loop_validate_mutex);
 		mutex_unlock(&loop_validate_mutex);
 	}
-	/*
-	 * We must drop file reference outside of lo_mutex as dropping
-	 * the file ref can take open_mutex which creates circular locking
-	 * dependency.
-	 */
+	 
 	fput(old_file);
 	if (partscan)
 		loop_reread_partitions(lo);
 
 	error = 0;
 done:
-	/* enable and uncork uevent now that we are done */
+	 
 	dev_set_uevent_suppress(disk_to_dev(lo->lo_disk), 0);
 	return error;
 
@@ -643,7 +567,7 @@ out_putf:
 	goto done;
 }
 
-/* loop sysfs attributes */
+ 
 
 static ssize_t loop_attr_show(struct device *dev, char *page,
 			      ssize_t (*callback)(struct loop_device *, char *))
@@ -759,13 +683,7 @@ static void loop_config_discard(struct loop_device *lo)
 	struct request_queue *q = lo->lo_queue;
 	u32 granularity, max_discard_sectors;
 
-	/*
-	 * If the backing device is a block device, mirror its zeroing
-	 * capability. Set the discard sectors to the block device's zeroing
-	 * capabilities because loop discards result in blkdev_issue_zeroout(),
-	 * not blkdev_issue_discard(). This maintains consistent behavior with
-	 * file-backed loop devices: discarded regions read back as zero.
-	 */
+	 
 	if (S_ISBLK(inode->i_mode)) {
 		struct request_queue *backingq = bdev_get_queue(I_BDEV(inode));
 
@@ -773,10 +691,7 @@ static void loop_config_discard(struct loop_device *lo)
 		granularity = bdev_discard_granularity(I_BDEV(inode)) ?:
 			queue_physical_block_size(backingq);
 
-	/*
-	 * We use punch hole to reclaim the free space used by the
-	 * image a.k.a. discard.
-	 */
+	 
 	} else if (!file->f_op->fallocate) {
 		max_discard_sectors = 0;
 		granularity = 0;
@@ -856,10 +771,7 @@ static void loop_queue_work(struct loop_device *lo, struct loop_cmd *cmd)
 		goto queue_work;
 
 	worker = kzalloc(sizeof(struct loop_worker), GFP_NOWAIT | __GFP_NOWARN);
-	/*
-	 * In the event we cannot allocate a worker, just queue on the
-	 * rootcg worker and issue the I/O as the rootcg
-	 */
+	 
 	if (!worker) {
 		cmd->blkcg_css = NULL;
 		if (cmd->memcg_css)
@@ -878,11 +790,7 @@ static void loop_queue_work(struct loop_device *lo, struct loop_cmd *cmd)
 	rb_insert_color(&worker->rb_node, &lo->worker_tree);
 queue_work:
 	if (worker) {
-		/*
-		 * We need to remove from the idle list here while
-		 * holding the lock so that the idle timer doesn't
-		 * free the worker
-		 */
+		 
 		if (!list_empty(&worker->idle_list))
 			list_del_init(&worker->idle_list);
 		work = &worker->work;
@@ -937,7 +845,7 @@ static void loop_update_rotational(struct loop_device *lo)
 	struct request_queue *q = lo->lo_queue;
 	bool nonrot = true;
 
-	/* not all filesystems (e.g. tmpfs) have a sb->s_bdev */
+	 
 	if (file_bdev)
 		nonrot = bdev_nonrot(file_bdev);
 
@@ -947,14 +855,7 @@ static void loop_update_rotational(struct loop_device *lo)
 		blk_queue_flag_clear(QUEUE_FLAG_NONROT, q);
 }
 
-/**
- * loop_set_status_from_info - configure device from loop_info
- * @lo: struct loop_device to configure
- * @info: struct loop_info64 to configure the device with
- *
- * Configures the loop device parameters according to the passed
- * in loop_info64 configuration.
- */
+ 
 static int
 loop_set_status_from_info(struct loop_device *lo,
 			  const struct loop_info64 *info)
@@ -975,7 +876,7 @@ loop_set_status_from_info(struct loop_device *lo,
 		return -EINVAL;
 	}
 
-	/* Avoid assigning overflow values */
+	 
 	if (info->lo_offset > LLONG_MAX || info->lo_sizelimit > LLONG_MAX)
 		return -EOVERFLOW;
 
@@ -1005,13 +906,10 @@ static int loop_configure(struct loop_device *lo, blk_mode_t mode,
 		return -EBADF;
 	is_loop = is_loop_device(file);
 
-	/* This is safe, since we have a reference from open(). */
+	 
 	__module_get(THIS_MODULE);
 
-	/*
-	 * If we don't hold exclusive handle for the device, upgrade to it
-	 * here to avoid changing device under exclusive owner.
-	 */
+	 
 	if (!(mode & BLK_OPEN_EXCL)) {
 		error = bd_prepare_to_claim(bdev, loop_configure, NULL);
 		if (error)
@@ -1062,7 +960,7 @@ static int loop_configure(struct loop_device *lo, blk_mode_t mode,
 		}
 	}
 
-	/* suppress uevents while reconfiguring the device */
+	 
 	dev_set_uevent_suppress(disk_to_dev(lo->lo_disk), 1);
 
 	disk_force_media_change(lo->lo_disk);
@@ -1080,7 +978,7 @@ static int loop_configure(struct loop_device *lo, blk_mode_t mode,
 	if (config->block_size)
 		bsize = config->block_size;
 	else if ((lo->lo_backing_file->f_flags & O_DIRECT) && inode->i_sb->s_bdev)
-		/* In case of direct I/O, match underlying block size */
+		 
 		bsize = bdev_logical_block_size(inode->i_sb->s_bdev);
 	else
 		bsize = 512;
@@ -1097,7 +995,7 @@ static int loop_configure(struct loop_device *lo, blk_mode_t mode,
 	size = get_loop_size(lo, file);
 	loop_set_size(lo, size);
 
-	/* Order wrt reading lo_state in loop_validate_file(). */
+	 
 	wmb();
 
 	lo->lo_state = Lo_bound;
@@ -1107,7 +1005,7 @@ static int loop_configure(struct loop_device *lo, blk_mode_t mode,
 	if (partscan)
 		clear_bit(GD_SUPPRESS_PART_SCAN, &lo->lo_disk->state);
 
-	/* enable and uncork uevent now that we are done */
+	 
 	dev_set_uevent_suppress(disk_to_dev(lo->lo_disk), 0);
 
 	loop_global_unlock(lo, is_loop);
@@ -1126,7 +1024,7 @@ out_bdev:
 		bd_abort_claiming(bdev, loop_configure);
 out_putf:
 	fput(file);
-	/* This is safe: open() is still holding a reference. */
+	 
 	module_put(THIS_MODULE);
 	return error;
 }
@@ -1139,11 +1037,7 @@ static void __loop_clr_fd(struct loop_device *lo, bool release)
 	if (test_bit(QUEUE_FLAG_WC, &lo->lo_queue->queue_flags))
 		blk_queue_write_cache(lo->lo_queue, false, false);
 
-	/*
-	 * Freeze the request queue when unbinding on a live file descriptor and
-	 * thus an open device.  When called from ->release we are guaranteed
-	 * that there is no I/O in progress already.
-	 */
+	 
 	if (!release)
 		blk_mq_freeze_queue(lo->lo_queue);
 
@@ -1161,10 +1055,10 @@ static void __loop_clr_fd(struct loop_device *lo, bool release)
 	blk_queue_io_min(lo->lo_queue, 512);
 	invalidate_disk(lo->lo_disk);
 	loop_sysfs_exit(lo);
-	/* let user-space know about this change */
+	 
 	kobject_uevent(&disk_to_dev(lo->lo_disk)->kobj, KOBJ_CHANGE);
 	mapping_set_gfp_mask(filp->f_mapping, gfp);
-	/* This is safe: open() is still holding a reference. */
+	 
 	module_put(THIS_MODULE);
 	if (!release)
 		blk_mq_unfreeze_queue(lo->lo_queue);
@@ -1174,14 +1068,7 @@ static void __loop_clr_fd(struct loop_device *lo, bool release)
 	if (lo->lo_flags & LO_FLAGS_PARTSCAN) {
 		int err;
 
-		/*
-		 * open_mutex has been held already in release path, so don't
-		 * acquire it if this function is called in such case.
-		 *
-		 * If the reread partition isn't from release path, lo_refcnt
-		 * must be at least one and it can only become zero when the
-		 * current holder is released.
-		 */
+		 
 		if (!release)
 			mutex_lock(&lo->lo_disk->open_mutex);
 		err = bdev_disk_changed(lo->lo_disk, false);
@@ -1190,15 +1077,10 @@ static void __loop_clr_fd(struct loop_device *lo, bool release)
 		if (err)
 			pr_warn("%s: partition scan of loop%d failed (rc=%d)\n",
 				__func__, lo->lo_number, err);
-		/* Device is gone, no point in returning error */
+		 
 	}
 
-	/*
-	 * lo->lo_state is set to Lo_unbound here after above partscan has
-	 * finished. There cannot be anybody else entering __loop_clr_fd() as
-	 * Lo_rundown state protects us from all the other places trying to
-	 * change the 'lo' device.
-	 */
+	 
 	lo->lo_flags = 0;
 	if (!part_shift)
 		set_bit(GD_SUPPRESS_PART_SCAN, &lo->lo_disk->state);
@@ -1206,11 +1088,7 @@ static void __loop_clr_fd(struct loop_device *lo, bool release)
 	lo->lo_state = Lo_unbound;
 	mutex_unlock(&lo->lo_mutex);
 
-	/*
-	 * Need not hold lo_mutex to fput backing file. Calling fput holding
-	 * lo_mutex triggers a circular lock dependency possibility warning as
-	 * fput can take open_mutex which is usually taken before lo_mutex.
-	 */
+	 
 	fput(filp);
 }
 
@@ -1218,15 +1096,7 @@ static int loop_clr_fd(struct loop_device *lo)
 {
 	int err;
 
-	/*
-	 * Since lo_ioctl() is called without locks held, it is possible that
-	 * loop_configure()/loop_change_fd() and loop_clr_fd() run in parallel.
-	 *
-	 * Therefore, use global lock when setting Lo_rundown state in order to
-	 * make sure that loop_validate_file() will fail if the "struct file"
-	 * which loop_configure()/loop_change_fd() found via fget() was this
-	 * loop device.
-	 */
+	 
 	err = loop_global_lock_killable(lo, true);
 	if (err)
 		return err;
@@ -1234,16 +1104,7 @@ static int loop_clr_fd(struct loop_device *lo)
 		loop_global_unlock(lo, true);
 		return -ENXIO;
 	}
-	/*
-	 * If we've explicitly asked to tear down the loop device,
-	 * and it has an elevated reference count, set it for auto-teardown when
-	 * the last reference goes away. This stops $!~#$@ udev from
-	 * preventing teardown because it decided that it needs to run blkid on
-	 * the loopback device whenever they appear. xfstests is notorious for
-	 * failing tests because blkid via udev races with a losetup
-	 * <dev>/do something like mkfs/losetup -d <dev> causing the losetup -d
-	 * command to fail with EBUSY.
-	 */
+	 
 	if (disk_openers(lo->lo_disk) > 1) {
 		lo->lo_flags |= LO_FLAGS_AUTOCLEAR;
 		loop_global_unlock(lo, true);
@@ -1279,7 +1140,7 @@ loop_set_status(struct loop_device *lo, const struct loop_info64 *info)
 		invalidate_bdev(lo->lo_device);
 	}
 
-	/* I/O need to be drained during transfer transition */
+	 
 	blk_mq_freeze_queue(lo->lo_queue);
 
 	prev_lo_flags = lo->lo_flags;
@@ -1288,11 +1149,11 @@ loop_set_status(struct loop_device *lo, const struct loop_info64 *info)
 	if (err)
 		goto out_unfreeze;
 
-	/* Mask out flags that can't be set using LOOP_SET_STATUS. */
+	 
 	lo->lo_flags &= LOOP_SET_STATUS_SETTABLE_FLAGS;
-	/* For those flags, use the previous values instead */
+	 
 	lo->lo_flags |= prev_lo_flags & ~LOOP_SET_STATUS_SETTABLE_FLAGS;
-	/* For flags that can't be cleared, use previous values too */
+	 
 	lo->lo_flags |= prev_lo_flags & ~LOOP_SET_STATUS_CLEARABLE_FLAGS;
 
 	if (size_changed) {
@@ -1303,7 +1164,7 @@ loop_set_status(struct loop_device *lo, const struct loop_info64 *info)
 
 	loop_config_discard(lo);
 
-	/* update dio if lo_offset or transfer is changed */
+	 
 	__loop_update_dio(lo, lo->use_dio);
 
 out_unfreeze:
@@ -1344,7 +1205,7 @@ loop_get_status(struct loop_device *lo, struct loop_info64 *info)
 	info->lo_flags = lo->lo_flags;
 	memcpy(info->lo_file_name, lo->lo_file_name, LO_NAME_SIZE);
 
-	/* Drop lo_mutex while we call into the filesystem. */
+	 
 	path = lo->lo_backing_file->f_path;
 	path_get(&path);
 	mutex_unlock(&lo->lo_mutex);
@@ -1384,7 +1245,7 @@ loop_info64_to_old(const struct loop_info64 *info64, struct loop_info *info)
 	info->lo_flags = info64->lo_flags;
 	memcpy(info->lo_name, info64->lo_file_name, LO_NAME_SIZE);
 
-	/* error in case values were truncated */
+	 
 	if (info->lo_device != info64->lo_device ||
 	    info->lo_rdevice != info64->lo_rdevice ||
 	    info->lo_inode != info64->lo_inode ||
@@ -1535,11 +1396,7 @@ static int lo_ioctl(struct block_device *bdev, blk_mode_t mode,
 
 	switch (cmd) {
 	case LOOP_SET_FD: {
-		/*
-		 * Legacy case - pass in a zeroed out struct loop_config with
-		 * only the file descriptor set , which corresponds with the
-		 * default parameters we'd have used otherwise.
-		 */
+		 
 		struct loop_config config;
 
 		memset(&config, 0, sizeof(config));
@@ -1589,24 +1446,21 @@ static int lo_ioctl(struct block_device *bdev, blk_mode_t mode,
 
 #ifdef CONFIG_COMPAT
 struct compat_loop_info {
-	compat_int_t	lo_number;      /* ioctl r/o */
-	compat_dev_t	lo_device;      /* ioctl r/o */
-	compat_ulong_t	lo_inode;       /* ioctl r/o */
-	compat_dev_t	lo_rdevice;     /* ioctl r/o */
+	compat_int_t	lo_number;       
+	compat_dev_t	lo_device;       
+	compat_ulong_t	lo_inode;        
+	compat_dev_t	lo_rdevice;      
 	compat_int_t	lo_offset;
-	compat_int_t	lo_encrypt_type;        /* obsolete, ignored */
-	compat_int_t	lo_encrypt_key_size;    /* ioctl w/o */
-	compat_int_t	lo_flags;       /* ioctl r/o */
+	compat_int_t	lo_encrypt_type;         
+	compat_int_t	lo_encrypt_key_size;     
+	compat_int_t	lo_flags;        
 	char		lo_name[LO_NAME_SIZE];
-	unsigned char	lo_encrypt_key[LO_KEY_SIZE]; /* ioctl w/o */
+	unsigned char	lo_encrypt_key[LO_KEY_SIZE];  
 	compat_ulong_t	lo_init[2];
 	char		reserved[4];
 };
 
-/*
- * Transfer 32-bit compatibility structure in userspace to 64-bit loop info
- * - noinlined to reduce stack space usage in main part of driver
- */
+ 
 static noinline int
 loop_info64_from_compat(const struct compat_loop_info __user *arg,
 			struct loop_info64 *info64)
@@ -1628,10 +1482,7 @@ loop_info64_from_compat(const struct compat_loop_info __user *arg,
 	return 0;
 }
 
-/*
- * Transfer 64-bit loop info to 32-bit compatibility structure in userspace
- * - noinlined to reduce stack space usage in main part of driver
- */
+ 
 static noinline int
 loop_info64_to_compat(const struct loop_info64 *info64,
 		      struct compat_loop_info __user *arg)
@@ -1647,7 +1498,7 @@ loop_info64_to_compat(const struct loop_info64 *info64,
 	info.lo_flags = info64->lo_flags;
 	memcpy(info.lo_name, info64->lo_file_name, LO_NAME_SIZE);
 
-	/* error in case values were truncated */
+	 
 	if (info.lo_device != info64->lo_device ||
 	    info.lo_rdevice != info64->lo_rdevice ||
 	    info.lo_inode != info64->lo_inode ||
@@ -1734,10 +1585,7 @@ static void lo_release(struct gendisk *disk)
 	if (lo->lo_state == Lo_bound && (lo->lo_flags & LO_FLAGS_AUTOCLEAR)) {
 		lo->lo_state = Lo_rundown;
 		mutex_unlock(&lo->lo_mutex);
-		/*
-		 * In autoclear mode, stop the loop thread
-		 * and remove configuration after last close.
-		 */
+		 
 		__loop_clr_fd(lo, true);
 		return;
 	}
@@ -1766,20 +1614,9 @@ static const struct block_device_operations lo_fops = {
 	.free_disk =	lo_free_disk,
 };
 
-/*
- * And now the modules code and kernel interface.
- */
+ 
 
-/*
- * If max_loop is specified, create that many devices upfront.
- * This also becomes a hard limit. If max_loop is not specified,
- * the default isn't a hard limit (as before commit 85c50197716c
- * changed the default value from 0 for max_loop=0 reasons), just
- * create CONFIG_BLK_DEV_LOOP_MIN_COUNT loop devices at module
- * init time. Loop devices can be requested on-demand with the
- * /dev/loop-control interface, or be instantiated by accessing
- * a 'dead' device node.
- */
+ 
 static int max_loop = CONFIG_BLK_DEV_LOOP_MIN_COUNT;
 
 #ifdef CONFIG_BLOCK_LEGACY_AUTOLOAD
@@ -1862,7 +1699,7 @@ static blk_status_t loop_queue_rq(struct blk_mq_hw_ctx *hctx,
 		break;
 	}
 
-	/* always use the first bio's css */
+	 
 	cmd->blkcg_css = NULL;
 	cmd->memcg_css = NULL;
 #ifdef CONFIG_BLK_CGROUP
@@ -1904,12 +1741,7 @@ static void loop_handle_cmd(struct loop_cmd *cmd)
 		old_memcg = set_active_memcg(
 			mem_cgroup_from_css(cmd_memcg_css));
 
-	/*
-	 * do_req_filebacked() may call blk_mq_complete_request() synchronously
-	 * or asynchronously if using aio. Hence, do not touch 'cmd' after
-	 * do_req_filebacked() has returned unless we are sure that 'cmd' has
-	 * not yet been completed.
-	 */
+	 
 	ret = do_req_filebacked(lo, rq);
 
 	if (cmd_blkcg_css)
@@ -1920,7 +1752,7 @@ static void loop_handle_cmd(struct loop_cmd *cmd)
 		css_put(cmd_memcg_css);
 	}
  failed:
-	/* complete non-aio request */
+	 
 	if (!use_aio || ret) {
 		if (ret == -EOPNOTSUPP)
 			cmd->ret = ret;
@@ -1951,11 +1783,7 @@ static void loop_process_work(struct loop_worker *worker,
 		spin_lock_irq(&lo->lo_work_lock);
 	}
 
-	/*
-	 * We only add to the idle list if there are no pending cmds
-	 * *and* the worker will not run again which ensures that it
-	 * is safe to free any worker on the idle list
-	 */
+	 
 	if (worker && !work_pending(&worker->work)) {
 		worker->last_ran_at = jiffies;
 		list_add_tail(&worker->idle_list, &lo->idle_worker_list);
@@ -2003,7 +1831,7 @@ static int loop_add(int i)
 	if (err)
 		goto out_free_dev;
 
-	/* allocate id, if @id >= 0, we're requesting that specific id */
+	 
 	if (i >= 0) {
 		err = idr_alloc(&loop_index_idr, lo, i, i + 1, GFP_KERNEL);
 		if (err == -ENOSPC)
@@ -2038,32 +1866,10 @@ static int loop_add(int i)
 
 	blk_queue_max_hw_sectors(lo->lo_queue, BLK_DEF_MAX_SECTORS);
 
-	/*
-	 * By default, we do buffer IO, so it doesn't make sense to enable
-	 * merge because the I/O submitted to backing file is handled page by
-	 * page. For directio mode, merge does help to dispatch bigger request
-	 * to underlayer disk. We will enable merge once directio is enabled.
-	 */
+	 
 	blk_queue_flag_set(QUEUE_FLAG_NOMERGES, lo->lo_queue);
 
-	/*
-	 * Disable partition scanning by default. The in-kernel partition
-	 * scanning can be requested individually per-device during its
-	 * setup. Userspace can always add and remove partitions from all
-	 * devices. The needed partition minors are allocated from the
-	 * extended minor space, the main loop device numbers will continue
-	 * to match the loop minors, regardless of the number of partitions
-	 * used.
-	 *
-	 * If max_part is given, partition scanning is globally enabled for
-	 * all loop devices. The minors for the main loop devices will be
-	 * multiples of max_part.
-	 *
-	 * Note: Global-for-all-devices, set-only-at-init, read-only module
-	 * parameteters like 'max_loop' and 'max_part' make things needlessly
-	 * complicated, are too static, inflexible and may surprise
-	 * userspace tools. Parameters like this in general should be avoided.
-	 */
+	 
 	if (!part_shift)
 		set_bit(GD_SUPPRESS_PART_SCAN, &disk->state);
 	mutex_init(&lo->lo_mutex);
@@ -2081,12 +1887,12 @@ static int loop_add(int i)
 	disk->events		= DISK_EVENT_MEDIA_CHANGE;
 	disk->event_flags	= DISK_EVENT_FLAG_UEVENT;
 	sprintf(disk->disk_name, "loop%d", i);
-	/* Make this loop device reachable from pathname. */
+	 
 	err = add_disk(disk);
 	if (err)
 		goto out_cleanup_disk;
 
-	/* Show this loop device. */
+	 
 	mutex_lock(&loop_ctl_mutex);
 	lo->idr_visible = true;
 	mutex_unlock(&loop_ctl_mutex);
@@ -2109,7 +1915,7 @@ out:
 
 static void loop_remove(struct loop_device *lo)
 {
-	/* Make this loop device unreachable from pathname. */
+	 
 	del_gendisk(lo->lo_disk);
 	blk_mq_free_tag_set(&lo->tag_set);
 
@@ -2131,7 +1937,7 @@ static void loop_probe(dev_t dev)
 }
 #else
 #define loop_probe NULL
-#endif /* !CONFIG_BLOCK_LEGACY_AUTOLOAD */
+#endif  
 
 static int loop_control_remove(int idx)
 {
@@ -2143,7 +1949,7 @@ static int loop_control_remove(int idx)
 		return -EINVAL;
 	}
 		
-	/* Hide this loop device for serialization. */
+	 
 	ret = mutex_lock_killable(&loop_ctl_mutex);
 	if (ret)
 		return ret;
@@ -2156,7 +1962,7 @@ static int loop_control_remove(int idx)
 	if (ret)
 		return ret;
 
-	/* Check whether this loop device can be removed. */
+	 
 	ret = mutex_lock_killable(&lo->lo_mutex);
 	if (ret)
 		goto mark_visible;
@@ -2165,7 +1971,7 @@ static int loop_control_remove(int idx)
 		ret = -EBUSY;
 		goto mark_visible;
 	}
-	/* Mark this loop device as no more bound, but not quite unbound yet */
+	 
 	lo->lo_state = Lo_deleting;
 	mutex_unlock(&lo->lo_mutex);
 
@@ -2173,7 +1979,7 @@ static int loop_control_remove(int idx)
 	return 0;
 
 mark_visible:
-	/* Show this loop device again. */
+	 
 	mutex_lock(&loop_ctl_mutex);
 	lo->idr_visible = true;
 	mutex_unlock(&loop_ctl_mutex);
@@ -2189,7 +1995,7 @@ static int loop_control_get_free(int idx)
 	if (ret)
 		return ret;
 	idr_for_each_entry(&loop_index_idr, lo, id) {
-		/* Hitting a race results in creating a new loop device which is harmless. */
+		 
 		if (lo->idr_visible && data_race(lo->lo_state) == Lo_unbound)
 			goto found;
 	}
@@ -2241,14 +2047,7 @@ static int __init loop_init(void)
 	if (max_part > 0) {
 		part_shift = fls(max_part);
 
-		/*
-		 * Adjust max_part according to part_shift as it is exported
-		 * to user space so that user can decide correct minor number
-		 * if [s]he want to create more devices.
-		 *
-		 * Note that -1 is required because partition 0 is reserved
-		 * for the whole disk.
-		 */
+		 
 		max_part = (1UL << part_shift) - 1;
 	}
 
@@ -2272,7 +2071,7 @@ static int __init loop_init(void)
 		goto misc_out;
 	}
 
-	/* pre-create number of devices given by config or max_loop */
+	 
 	for (i = 0; i < max_loop; i++)
 		loop_add(i);
 
@@ -2293,12 +2092,7 @@ static void __exit loop_exit(void)
 	unregister_blkdev(LOOP_MAJOR, "loop");
 	misc_deregister(&loop_misc);
 
-	/*
-	 * There is no need to use loop_ctl_mutex here, for nobody else can
-	 * access loop_index_idr when this module is unloading (unless forced
-	 * module unloading is requested). If this is not a clean unloading,
-	 * we have no means to avoid kernel crash.
-	 */
+	 
 	idr_for_each_entry(&loop_index_idr, lo, id)
 		loop_remove(lo);
 

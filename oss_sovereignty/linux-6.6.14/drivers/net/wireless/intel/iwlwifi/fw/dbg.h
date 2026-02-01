@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * Copyright (C) 2005-2014, 2018-2019, 2021-2023 Intel Corporation
- * Copyright (C) 2013-2015 Intel Mobile Communications GmbH
- * Copyright (C) 2015-2017 Intel Deutschland GmbH
- */
+ 
+ 
 #ifndef __iwl_fw_dbg_h__
 #define __iwl_fw_dbg_h__
 #include <linux/workqueue.h>
@@ -17,22 +13,14 @@
 #include "api/dbg-tlv.h"
 #include "api/alive.h"
 
-/**
- * struct iwl_fw_dump_desc - describes the dump
- * @len: length of trig_desc->data
- * @trig_desc: the description of the dump
- */
+ 
 struct iwl_fw_dump_desc {
 	size_t len;
-	/* must be last */
+	 
 	struct iwl_fw_error_dump_trigger_desc trig_desc;
 };
 
-/**
- * struct iwl_fw_dbg_params - register values to restore
- * @in_sample: DBGC_IN_SAMPLE value
- * @out_ctrl: DBGC_OUT_CTRL value
- */
+ 
 struct iwl_fw_dbg_params {
 	u32 in_sample;
 	u32 out_ctrl;
@@ -97,7 +85,7 @@ iwl_fw_dbg_no_trig_window(struct iwl_fw_runtime *fwrt, u32 id, u32 dis_usec)
 {
 	unsigned long wind_jiff = usecs_to_jiffies(dis_usec);
 
-	/* If this is the first event checked, jump to update start ts */
+	 
 	if (fwrt->dump.non_collect_ts_start[id] &&
 	    (time_after(fwrt->dump.non_collect_ts_start[id] + wind_jiff,
 			jiffies)))
@@ -263,7 +251,7 @@ static inline void iwl_fw_suspend_timestamp(struct iwl_fw_runtime *fwrt) {}
 
 static inline void iwl_fw_resume_timestamp(struct iwl_fw_runtime *fwrt) {}
 
-#endif /* CONFIG_IWLWIFI_DEBUGFS */
+#endif  
 
 void iwl_fw_dbg_stop_sync(struct iwl_fw_runtime *fwrt);
 
@@ -343,4 +331,4 @@ void iwl_send_dbg_dump_complete_cmd(struct iwl_fw_runtime *fwrt,
 		unlikely(__cond);					\
 	})
 
-#endif  /* __iwl_fw_dbg_h__ */
+#endif   

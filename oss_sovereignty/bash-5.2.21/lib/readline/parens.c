@@ -1,23 +1,6 @@
-/* parens.c -- implementation of matching parentheses feature. */
+ 
 
-/* Copyright (C) 1987, 1989, 1992-2015, 2017, 2021 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -42,39 +25,37 @@
 
 #if defined (HAVE_STRING_H)
 #  include <string.h>
-#else /* !HAVE_STRING_H */
+#else  
 #  include <strings.h>
-#endif /* !HAVE_STRING_H */
+#endif  
 
 #if !defined (strchr) && !defined (__STDC__)
 extern char *strchr (), *strrchr ();
-#endif /* !strchr && !__STDC__ */
+#endif  
 
 #include "readline.h"
 #include "rlprivate.h"
 
 static int find_matching_open (char *, int, int);
 
-/* Non-zero means try to blink the matching open parenthesis when the
-   close parenthesis is inserted. */
+ 
 int rl_blink_matching_paren = 0;
 
 static int _paren_blink_usec = 500000;
 
-/* Change emacs_standard_keymap to have bindings for paren matching when
-   ON_OR_OFF is 1, change them back to self_insert when ON_OR_OFF == 0. */
+ 
 void
 _rl_enable_paren_matching (int on_or_off)
 {
   if (on_or_off)
     {
-      /* ([{ */
+       
       rl_bind_key_in_map (')', rl_insert_close, emacs_standard_keymap);
       rl_bind_key_in_map (']', rl_insert_close, emacs_standard_keymap);
       rl_bind_key_in_map ('}', rl_insert_close, emacs_standard_keymap);
 
 #if defined (VI_MODE)
-      /* ([{ */
+       
       rl_bind_key_in_map (')', rl_insert_close, vi_insertion_keymap);
       rl_bind_key_in_map (']', rl_insert_close, vi_insertion_keymap);
       rl_bind_key_in_map ('}', rl_insert_close, vi_insertion_keymap);
@@ -82,13 +63,13 @@ _rl_enable_paren_matching (int on_or_off)
     }
   else
     {
-      /* ([{ */
+       
       rl_bind_key_in_map (')', rl_insert, emacs_standard_keymap);
       rl_bind_key_in_map (']', rl_insert, emacs_standard_keymap);
       rl_bind_key_in_map ('}', rl_insert, emacs_standard_keymap);
 
 #if defined (VI_MODE)
-      /* ([{ */
+       
       rl_bind_key_in_map (')', rl_insert, vi_insertion_keymap);
       rl_bind_key_in_map (']', rl_insert, vi_insertion_keymap);
       rl_bind_key_in_map ('}', rl_insert, vi_insertion_keymap);
@@ -124,7 +105,7 @@ rl_insert_close (int count, int invoking_key)
       match_point =
 	find_matching_open (rl_line_buffer, rl_point - 2, invoking_key);
 
-      /* Emacs might message or ring the bell here, but I don't. */
+       
       if (match_point < 0)
 	return 1;
 
@@ -141,9 +122,9 @@ rl_insert_close (int count, int invoking_key)
       ready = select (1, &readfds, (fd_set *)NULL, (fd_set *)NULL, &timer);
 #  endif
       rl_point = orig_point;
-#else /* !HAVE_SELECT */
+#else  
       _rl_insert_char (count, invoking_key);
-#endif /* !HAVE_SELECT */
+#endif  
     }
   return 0;
 }
@@ -163,8 +144,8 @@ find_matching_open (char *string, int from, int closer)
       return (-1);
     }
 
-  level = 1;			/* The closer passed in counts as 1. */
-  delimiter = 0;		/* Delimited state unknown. */
+  level = 1;			 
+  delimiter = 0;		 
 
   for (i = from; i > -1; i--)
     {

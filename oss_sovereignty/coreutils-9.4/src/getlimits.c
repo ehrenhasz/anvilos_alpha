@@ -1,22 +1,6 @@
-/* getlimits - print various platform dependent limits.
-   Copyright (C) 2008-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Pádraig Brady  */
-
-#include <config.h>             /* sets _FILE_OFFSET_BITS=64 etc. */
+#include <config.h>              
 #include <stdio.h>
 #include <sys/types.h>
 #include <float.h>
@@ -45,9 +29,7 @@
 # define PID_T_MIN TYPE_MINIMUM (pid_t)
 #endif
 
-/* These are not interesting to print.
- * Instead of these defines it would be nice to be able to do
- * #ifdef (TYPE##_MIN) in function macro below.  */
+ 
 #define SIZE_MIN 0
 #define UCHAR_MIN 0
 #define UINT_MIN 0
@@ -78,10 +60,7 @@ Output platform dependent limits in a format useful for shell scripts.\n\
   exit (status);
 }
 
-/* Add one to the absolute value of the number whose textual
-   representation is BUF + 1.  Do this in-place, in the buffer.
-   Return a pointer to the result, which is normally BUF + 1, but is
-   BUF if the representation grew in size.  */
+ 
 static char const *
 decimal_absval_add_one (char *buf)
 {
@@ -144,7 +123,7 @@ main (int argc, char **argv)
   printf (#TYPE"_MIN="); print_##TYPE (TYPE##_MIN);                      \
   printf (#TYPE"_MAX="); print_##TYPE (TYPE##_MAX);
 
-  /* Variable sized ints */
+   
   print_int (CHAR);
   print_int (SCHAR);
   print_int (UCHAR);
@@ -163,7 +142,7 @@ main (int argc, char **argv)
   print_int (INTMAX);
   print_int (UINTMAX);
 
-  /* Variable sized floats */
+   
   print_float (FLT);
   print_float (DBL);
   print_float (LDBL);

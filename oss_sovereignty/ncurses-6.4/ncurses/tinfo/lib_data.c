@@ -1,54 +1,14 @@
-/****************************************************************************
- * Copyright 2018-2021,2022 Thomas E. Dickey                                *
- * Copyright 1998-2016,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- *     and: Juergen Pfeifer                                                 *
- ****************************************************************************/
+ 
 
-/*
-**	lib_data.c
-**
-**	Common data that may/may not be allocated, but is referenced globally
-**
-*/
+ 
 
 #include <curses.priv.h>
 
 MODULE_ID("$Id: lib_data.c,v 1.87 2022/07/09 22:03:21 tom Exp $")
 
-/*
- * OS/2's native linker complains if we don't initialize public data when
- * constructing a dll (reported by J.J.G.Ripoll).
- */
+ 
 #if USE_REENTRANT
 NCURSES_EXPORT(WINDOW *)
 NCURSES_PUBLIC_VAR(stdscr) (void)
@@ -73,16 +33,7 @@ NCURSES_EXPORT_VAR(WINDOW *) newscr = 0;
 
 NCURSES_EXPORT_VAR(SCREEN *) _nc_screen_chain = 0;
 
-/*
- * The variable 'SP' will be defined as a function on systems that cannot link
- * data-only modules, since it is used in a lot of places within ncurses and we
- * cannot guarantee that any application will use any particular function.  We
- * put the WINDOW variables in this module, because it appears that any
- * application that uses them will also use 'SP'.
- *
- * This module intentionally does not reference other ncurses modules, to avoid
- * module coupling that increases the size of the executable.
- */
+ 
 #if BROKEN_LINKER
 static SCREEN *my_screen;
 
@@ -108,122 +59,122 @@ _nc_set_screen(SCREEN *sp)
 
 #else
 
-NCURSES_EXPORT_VAR(SCREEN *) SP = NULL; /* Some linkers require initialized data... */
+NCURSES_EXPORT_VAR(SCREEN *) SP = NULL;  
 #endif
-/* *INDENT-OFF* */
+ 
 #define CHARS_0s { '\0' }
 
 #define TGETENT_0 { 0L, FALSE, NULL, NULL, NULL }
 #define TGETENT_0s { TGETENT_0, TGETENT_0, TGETENT_0, TGETENT_0 }
 
 NCURSES_EXPORT_VAR(NCURSES_GLOBALS) _nc_globals = {
-    0,				/* have_sigtstp */
-    0,				/* have_sigwinch */
-    0,				/* cleanup_nested */
+    0,				 
+    0,				 
+    0,				 
 
-    FALSE,			/* init_signals */
-    FALSE,			/* init_screen */
+    FALSE,			 
+    FALSE,			 
 
-    NULL,			/* comp_sourcename */
-    NULL,			/* comp_termtype */
+    NULL,			 
+    NULL,			 
 
-    FALSE,			/* have_tic_directory */
-    FALSE,			/* keep_tic_directory */
-    0,				/* tic_directory */
+    FALSE,			 
+    FALSE,			 
+    0,				 
 
-    NULL,			/* dbi_list */
-    0,				/* dbi_size */
+    NULL,			 
+    0,				 
 
-    NULL,			/* first_name */
-    NULL,			/* keyname_table */
-    0,				/* init_keyname */
+    NULL,			 
+    NULL,			 
+    0,				 
 
-    0,				/* slk_format */
+    0,				 
 
-    2048,			/* getstr_limit */
+    2048,			 
 
-    NULL,			/* safeprint_buf */
-    0,				/* safeprint_used */
+    NULL,			 
+    0,				 
 
-    TGETENT_0s,			/* tgetent_cache */
-    0,				/* tgetent_index */
-    0,				/* tgetent_sequence */
-    0,				/* terminal_count */
+    TGETENT_0s,			 
+    0,				 
+    0,				 
+    0,				 
 
-    0,				/* dbd_blob */
-    0,				/* dbd_list */
-    0,				/* dbd_size */
-    0,				/* dbd_time */
-    { { 0, 0 } },		/* dbd_vars */
+    0,				 
+    0,				 
+    0,				 
+    0,				 
+    { { 0, 0 } },		 
 
 #if HAVE_TSEARCH
-    NULL,			/* cached_tparm */
-    0,				/* count_tparm */
-#endif /* HAVE_TSEARCH */
+    NULL,			 
+    0,				 
+#endif  
 
 #ifdef USE_TERM_DRIVER
-    0,				/* term_driver */
+    0,				 
 #endif
 
 #ifndef USE_SP_WINDOWLIST
-    0,				/* _nc_windowlist */
+    0,				 
 #endif
 
 #if USE_HOME_TERMINFO
-    NULL,			/* home_terminfo */
+    NULL,			 
 #endif
 
 #if !USE_SAFE_SPRINTF
-    0,				/* safeprint_cols */
-    0,				/* safeprint_rows */
+    0,				 
+    0,				 
 #endif
 
 #ifdef USE_PTHREADS
-    PTHREAD_MUTEX_INITIALIZER,	/* mutex_curses */
-    PTHREAD_MUTEX_INITIALIZER,	/* mutex_prescreen */
-    PTHREAD_MUTEX_INITIALIZER,	/* mutex_screen */
-    PTHREAD_MUTEX_INITIALIZER,	/* mutex_update */
-    PTHREAD_MUTEX_INITIALIZER,	/* mutex_tst_tracef */
-    PTHREAD_MUTEX_INITIALIZER,	/* mutex_tracef */
-    0,				/* nested_tracef */
-    0,				/* use_pthreads */
+    PTHREAD_MUTEX_INITIALIZER,	 
+    PTHREAD_MUTEX_INITIALIZER,	 
+    PTHREAD_MUTEX_INITIALIZER,	 
+    PTHREAD_MUTEX_INITIALIZER,	 
+    PTHREAD_MUTEX_INITIALIZER,	 
+    PTHREAD_MUTEX_INITIALIZER,	 
+    0,				 
+    0,				 
 #if USE_PTHREADS_EINTR
-    0,				/* read_thread */
+    0,				 
 #endif
 #endif
 #if USE_WIDEC_SUPPORT
-    CHARS_0s,			/* key_name */
+    CHARS_0s,			 
 #endif
 #ifdef TRACE
-    FALSE,			/* trace_opened */
-    CHARS_0s,			/* trace_fname */
-    0,				/* trace_level */
-    NULL,			/* trace_fp */
-    -1,				/* trace_fd */
+    FALSE,			 
+    CHARS_0s,			 
+    0,				 
+    NULL,			 
+    -1,				 
 
-    NULL,			/* tracearg_buf */
-    0,				/* tracearg_used */
+    NULL,			 
+    0,				 
 
-    NULL,			/* tracebuf_ptr */
-    0,				/* tracebuf_used */
+    NULL,			 
+    0,				 
 
-    CHARS_0s,			/* tracechr_buf */
+    CHARS_0s,			 
 
-    NULL,			/* tracedmp_buf */
-    0,				/* tracedmp_used */
+    NULL,			 
+    0,				 
 
-    NULL,			/* tracetry_buf */
-    0,				/* tracetry_used */
+    NULL,			 
+    0,				 
 
-    { CHARS_0s, CHARS_0s },	/* traceatr_color_buf */
-    0,				/* traceatr_color_sel */
-    -1,				/* traceatr_color_last */
+    { CHARS_0s, CHARS_0s },	 
+    0,				 
+    -1,				 
 #if !defined(USE_PTHREADS) && USE_REENTRANT
-    0,				/* nested_tracef */
+    0,				 
 #endif
-#endif /* TRACE */
+#endif  
 #if NO_LEAKS
-    FALSE,			/* leak_checking */
+    FALSE,			 
 #endif
 };
 
@@ -235,60 +186,56 @@ NCURSES_EXPORT_VAR(NCURSES_GLOBALS) _nc_globals = {
 #define RIPOFF_0s	{ RIPOFF_0 }
 
 NCURSES_EXPORT_VAR(NCURSES_PRESCREEN) _nc_prescreen = {
-    NULL,			/* allocated */
-    TRUE,			/* use_env */
-    FALSE,			/* filter_mode */
-    A_NORMAL,			/* previous_attr */
-    {				/* tparm_state */
-	NULL,			/* tparam_base */
+    NULL,			 
+    TRUE,			 
+    FALSE,			 
+    A_NORMAL,			 
+    {				 
+	NULL,			 
 
-	STACK_FRAME_0s,		/* stack */
-	0,			/* stack_ptr */
+	STACK_FRAME_0s,		 
+	0,			 
 
-	NULL,			/* out_buff */
-	0,			/* out_size */
-	0,			/* out_used */
+	NULL,			 
+	0,			 
+	0,			 
 
-	NULL,			/* fmt_buff */
-	0,			/* fmt_size */
+	NULL,			 
+	0,			 
 
-	NUM_VARS_0s,		/* static_vars */
+	NUM_VARS_0s,		 
 #ifdef TRACE
-	NULL,			/* tname */
+	NULL,			 
 #endif
     },
-    NULL,			/* saved_tty */
-    FALSE,			/* use_tioctl */
-    0,				/* _outch */
+    NULL,			 
+    FALSE,			 
+    0,				 
 #ifndef USE_SP_RIPOFF
-    RIPOFF_0s,			/* ripoff */
-    NULL,			/* rsp */
+    RIPOFF_0s,			 
+    NULL,			 
 #endif
 #if NCURSES_NO_PADDING
-    FALSE,			/* flag to set if padding disabled  */
+    FALSE,			 
 #endif
 #if BROKEN_LINKER || USE_REENTRANT
-    NULL,			/* real_acs_map */
-    0,				/* LINES */
-    0,				/* COLS */
-    8,				/* TABSIZE */
-    1000,			/* ESCDELAY */
-    0,				/* cur_term */
+    NULL,			 
+    0,				 
+    0,				 
+    8,				 
+    1000,			 
+    0,				 
 #endif
 #ifdef TRACE
 #if BROKEN_LINKER || USE_REENTRANT
-    0L,				/* _outchars */
-    NULL,			/* _tputs_trace */
+    0L,				 
+    NULL,			 
 #endif
 #endif
 };
-/* *INDENT-ON* */
+ 
 
-/*
- * wgetch() and other functions with a WINDOW* parameter may use a SCREEN*
- * internally, and it is useful to allow those to be invoked without switching
- * SCREEN's, e.g., for multi-threaded applications.
- */
+ 
 NCURSES_EXPORT(SCREEN *)
 _nc_screen_of(WINDOW *win)
 {
@@ -300,7 +247,7 @@ _nc_screen_of(WINDOW *win)
     return (sp);
 }
 
-/******************************************************************************/
+ 
 #ifdef USE_PTHREADS
 static void
 init_global_mutexes(void)
@@ -339,15 +286,7 @@ _nc_init_pthreads(void)
     init_global_mutexes();
 }
 
-/*
- * Use recursive mutexes if we have them - they're part of Unix98.
- * For the cases where we do not, _nc_mutex_trylock() is used to avoid a
- * deadlock, at the expense of memory leaks and unexpected failures that
- * may not be handled by typical clients.
- *
- * FIXME - need configure check for PTHREAD_MUTEX_RECURSIVE, define it to
- * PTHREAD_MUTEX_NORMAL if not supported.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_mutex_init(pthread_mutex_t * obj)
 {
@@ -386,14 +325,11 @@ _nc_mutex_unlock(pthread_mutex_t * obj)
 	rc = pthread_mutex_unlock(obj);
     return rc;
 }
-#endif /* USE_PTHREADS */
+#endif  
 
 #if defined(USE_PTHREADS) || USE_PTHREADS_EINTR
 #if USE_WEAK_SYMBOLS
-/*
- * NB: sigprocmask(2) is global but pthread_sigmask(3p)
- * only for the calling thread.
- */
+ 
 NCURSES_EXPORT(int)
 _nc_sigprocmask(int how, const sigset_t * newmask, sigset_t * oldmask)
 {
@@ -403,4 +339,4 @@ _nc_sigprocmask(int how, const sigset_t * newmask, sigset_t * oldmask)
 	return (sigprocmask) (how, newmask, oldmask);
 }
 #endif
-#endif /* USE_PTHREADS */
+#endif  

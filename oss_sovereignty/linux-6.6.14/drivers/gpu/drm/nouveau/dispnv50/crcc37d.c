@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include <drm/drm_crtc.h>
 
 #include "crc.h"

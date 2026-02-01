@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Power supply driver for testing.
- *
- * Copyright 2010  Anton Vorontsov <cbouatmailru@gmail.com>
- *
- * Dynamic module parameter code from the Virtual Battery Driver
- * Copyright (C) 2008 Pylone, Inc.
- * By: Masashi YOKOTA <yokota@pylone.jp>
- * Originally found here:
- * http://downloads.pylone.jp/src/virtual_battery/virtual_battery-0.0.1.tar.bz2
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -29,7 +19,7 @@ static int ac_online			= 1;
 static int usb_online			= 1;
 static int battery_status		= POWER_SUPPLY_STATUS_DISCHARGING;
 static int battery_health		= POWER_SUPPLY_HEALTH_GOOD;
-static int battery_present		= 1; /* true */
+static int battery_present		= 1;  
 static int battery_technology		= POWER_SUPPLY_TECHNOLOGY_LION;
 static int battery_capacity		= 50;
 static int battery_voltage		= 3300;
@@ -190,13 +180,13 @@ static const struct power_supply_desc test_power_desc[] = {
 
 static const struct power_supply_config test_power_configs[] = {
 	{
-		/* test_ac */
+		 
 		.supplied_to = test_power_ac_supplied_to,
 		.num_supplicants = ARRAY_SIZE(test_power_ac_supplied_to),
 	}, {
-		/* test_battery */
+		 
 	}, {
-		/* test_usb */
+		 
 		.supplied_to = test_power_ac_supplied_to,
 		.num_supplicants = ARRAY_SIZE(test_power_ac_supplied_to),
 	},
@@ -235,7 +225,7 @@ static void __exit test_power_exit(void)
 {
 	int i;
 
-	/* Let's see how we handle changes... */
+	 
 	ac_online = 0;
 	usb_online = 0;
 	battery_status = POWER_SUPPLY_STATUS_DISCHARGING;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018, Intel Corporation. */
+
+ 
 
 #include "ice.h"
 #include "ice_vf_lib_private.h"
@@ -14,13 +14,7 @@
 #include "ice_vf_vsi_vlan_ops.h"
 #include "ice_vlan.h"
 
-/**
- * ice_free_vf_entries - Free all VF entries from the hash table
- * @pf: pointer to the PF structure
- *
- * Iterate over the VF hash table, removing and releasing all VF entries.
- * Called during VF teardown or as cleanup during failed VF initialization.
- */
+ 
 static void ice_free_vf_entries(struct ice_pf *pf)
 {
 	struct ice_vfs *vfs = &pf->vfs;
@@ -28,10 +22,7 @@ static void ice_free_vf_entries(struct ice_pf *pf)
 	struct ice_vf *vf;
 	unsigned int bkt;
 
-	/* Remove all VFs from the hash table and release their main
-	 * reference. Once all references to the VF are dropped, ice_put_vf()
-	 * will call ice_release_vf which will remove the VF memory.
-	 */
+	 
 	lockdep_assert_held(&vfs->table_lock);
 
 	hash_for_each_safe(vfs->table, bkt, tmp, vf, entry) {
@@ -40,25 +31,20 @@ static void ice_free_vf_entries(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_free_vf_res - Free a VF's resources
- * @vf: pointer to the VF info
- */
+ 
 static void ice_free_vf_res(struct ice_vf *vf)
 {
 	struct ice_pf *pf = vf->pf;
 	int i, last_vector_idx;
 
-	/* First, disable VF's configuration API to prevent OS from
-	 * accessing the VF's VSI after it's freed or invalidated.
-	 */
+	 
 	clear_bit(ICE_VF_STATE_INIT, vf->vf_states);
 	ice_vf_fdir_exit(vf);
-	/* free VF control VSI */
+	 
 	if (vf->ctrl_vsi_idx != ICE_NO_VSI)
 		ice_vf_ctrl_vsi_release(vf);
 
-	/* free VSI and disconnect it from the parent uplink */
+	 
 	if (vf->lan_vsi_idx != ICE_NO_VSI) {
 		ice_vf_vsi_release(vf);
 		vf->num_mac = 0;
@@ -66,24 +52,21 @@ static void ice_free_vf_res(struct ice_vf *vf)
 
 	last_vector_idx = vf->first_vector_idx + pf->vfs.num_msix_per - 1;
 
-	/* clear VF MDD event information */
+	 
 	memset(&vf->mdd_tx_events, 0, sizeof(vf->mdd_tx_events));
 	memset(&vf->mdd_rx_events, 0, sizeof(vf->mdd_rx_events));
 
-	/* Disable interrupts so that VF starts in a known state */
+	 
 	for (i = vf->first_vector_idx; i <= last_vector_idx; i++) {
 		wr32(&pf->hw, GLINT_DYN_CTL(i), GLINT_DYN_CTL_CLEARPBA_M);
 		ice_flush(&pf->hw);
 	}
-	/* reset some of the state variables keeping track of the resources */
+	 
 	clear_bit(ICE_VF_STATE_MC_PROMISC, vf->vf_states);
 	clear_bit(ICE_VF_STATE_UC_PROMISC, vf->vf_states);
 }
 
-/**
- * ice_dis_vf_mappings
- * @vf: pointer to the VF structure
- */
+ 
 static void ice_dis_vf_mappings(struct ice_vf *vf)
 {
 	struct ice_pf *pf = vf->pf;
@@ -124,15 +107,7 @@ static void ice_dis_vf_mappings(struct ice_vf *vf)
 		dev_err(dev, "Scattered mode for VF Rx queues is not yet implemented\n");
 }
 
-/**
- * ice_sriov_free_msix_res - Reset/free any used MSIX resources
- * @pf: pointer to the PF structure
- *
- * Since no MSIX entries are taken from the pf->irq_tracker then just clear
- * the pf->sriov_base_vector.
- *
- * Returns 0 on success, and -EINVAL on error.
- */
+ 
 static int ice_sriov_free_msix_res(struct ice_pf *pf)
 {
 	if (!pf)
@@ -143,10 +118,7 @@ static int ice_sriov_free_msix_res(struct ice_pf *pf)
 	return 0;
 }
 
-/**
- * ice_free_vfs - Free all VFs
- * @pf: pointer to the PF structure
- */
+ 
 void ice_free_vfs(struct ice_pf *pf)
 {
 	struct device *dev = ice_pf_to_dev(pf);
@@ -161,10 +133,7 @@ void ice_free_vfs(struct ice_pf *pf)
 	while (test_and_set_bit(ICE_VF_DIS, pf->state))
 		usleep_range(1000, 2000);
 
-	/* Disable IOV before freeing resources. This lets any VF drivers
-	 * running in the host get themselves cleaned up before we yank
-	 * the carpet out from underneath their feet.
-	 */
+	 
 	if (!pci_vfs_assigned(pf->pdev))
 		pci_disable_sriov(pf->pdev);
 	else
@@ -180,7 +149,7 @@ void ice_free_vfs(struct ice_pf *pf)
 		ice_dis_vf_qs(vf);
 
 		if (test_bit(ICE_VF_STATE_INIT, vf->vf_states)) {
-			/* disable VF qp mappings and set VF disable state */
+			 
 			ice_dis_vf_mappings(vf);
 			set_bit(ICE_VF_STATE_DIS, vf->vf_states);
 			ice_free_vf_res(vf);
@@ -194,7 +163,7 @@ void ice_free_vfs(struct ice_pf *pf)
 			wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
 		}
 
-		/* clear malicious info since the VF is getting released */
+		 
 		list_del(&vf->mbx_info.list_entry);
 
 		mutex_unlock(&vf->cfg_lock);
@@ -212,13 +181,7 @@ void ice_free_vfs(struct ice_pf *pf)
 	clear_bit(ICE_FLAG_SRIOV_ENA, pf->flags);
 }
 
-/**
- * ice_vf_vsi_setup - Set up a VF VSI
- * @vf: VF to setup VSI for
- *
- * Returns pointer to the successfully allocated VSI struct on success,
- * otherwise returns NULL on failure.
- */
+ 
 static struct ice_vsi *ice_vf_vsi_setup(struct ice_vf *vf)
 {
 	struct ice_vsi_cfg_params params = {};
@@ -244,31 +207,13 @@ static struct ice_vsi *ice_vf_vsi_setup(struct ice_vf *vf)
 	return vsi;
 }
 
-/**
- * ice_calc_vf_first_vector_idx - Calculate MSIX vector index in the PF space
- * @pf: pointer to PF structure
- * @vf: pointer to VF that the first MSIX vector index is being calculated for
- *
- * This returns the first MSIX vector index in PF space that is used by this VF.
- * This index is used when accessing PF relative registers such as
- * GLINT_VECT2FUNC and GLINT_DYN_CTL.
- * This will always be the OICR index in the AVF driver so any functionality
- * using vf->first_vector_idx for queue configuration will have to increment by
- * 1 to avoid meddling with the OICR index.
- */
+ 
 static int ice_calc_vf_first_vector_idx(struct ice_pf *pf, struct ice_vf *vf)
 {
 	return pf->sriov_base_vector + vf->vf_id * pf->vfs.num_msix_per;
 }
 
-/**
- * ice_ena_vf_msix_mappings - enable VF MSIX mappings in hardware
- * @vf: VF to enable MSIX mappings for
- *
- * Some of the registers need to be indexed/configured using hardware global
- * device values and other registers need 0-based values, which represent PF
- * based values.
- */
+ 
 static void ice_ena_vf_msix_mappings(struct ice_vf *vf)
 {
 	int device_based_first_msix, device_based_last_msix;
@@ -300,7 +245,7 @@ static void ice_ena_vf_msix_mappings(struct ice_vf *vf)
 		VPINT_ALLOC_PCI_LAST_M) | VPINT_ALLOC_PCI_VALID_M);
 	wr32(hw, VPINT_ALLOC_PCI(vf->vf_id), reg);
 
-	/* map the interrupts to its functions */
+	 
 	for (v = pf_based_first_msix; v <= pf_based_last_msix; v++) {
 		reg = (((device_based_vf_id << GLINT_VECT2FUNC_VF_NUM_S) &
 			GLINT_VECT2FUNC_VF_NUM_M) |
@@ -309,16 +254,11 @@ static void ice_ena_vf_msix_mappings(struct ice_vf *vf)
 		wr32(hw, GLINT_VECT2FUNC(v), reg);
 	}
 
-	/* Map mailbox interrupt to VF MSI-X vector 0 */
+	 
 	wr32(hw, VPINT_MBX_CTL(device_based_vf_id), VPINT_MBX_CTL_CAUSE_ENA_M);
 }
 
-/**
- * ice_ena_vf_q_mappings - enable Rx/Tx queue mappings for a VF
- * @vf: VF to enable the mappings for
- * @max_txq: max Tx queues allowed on the VF's VSI
- * @max_rxq: max Rx queues allowed on the VF's VSI
- */
+ 
 static void ice_ena_vf_q_mappings(struct ice_vf *vf, u16 max_txq, u16 max_rxq)
 {
 	struct device *dev = ice_pf_to_dev(vf->pf);
@@ -329,15 +269,12 @@ static void ice_ena_vf_q_mappings(struct ice_vf *vf, u16 max_txq, u16 max_rxq)
 	if (WARN_ON(!vsi))
 		return;
 
-	/* set regardless of mapping mode */
+	 
 	wr32(hw, VPLAN_TXQ_MAPENA(vf->vf_id), VPLAN_TXQ_MAPENA_TX_ENA_M);
 
-	/* VF Tx queues allocation */
+	 
 	if (vsi->tx_mapping_mode == ICE_VSI_MAP_CONTIG) {
-		/* set the VF PF Tx queue range
-		 * VFNUMQ value should be set to (number of queues - 1). A value
-		 * of 0 means 1 queue and a value of 255 means 256 queues
-		 */
+		 
 		reg = (((vsi->txq_map[0] << VPLAN_TX_QBASE_VFFIRSTQ_S) &
 			VPLAN_TX_QBASE_VFFIRSTQ_M) |
 		       (((max_txq - 1) << VPLAN_TX_QBASE_VFNUMQ_S) &
@@ -347,15 +284,12 @@ static void ice_ena_vf_q_mappings(struct ice_vf *vf, u16 max_txq, u16 max_rxq)
 		dev_err(dev, "Scattered mode for VF Tx queues is not yet implemented\n");
 	}
 
-	/* set regardless of mapping mode */
+	 
 	wr32(hw, VPLAN_RXQ_MAPENA(vf->vf_id), VPLAN_RXQ_MAPENA_RX_ENA_M);
 
-	/* VF Rx queues allocation */
+	 
 	if (vsi->rx_mapping_mode == ICE_VSI_MAP_CONTIG) {
-		/* set the VF PF Rx queue range
-		 * VFNUMQ value should be set to (number of queues - 1). A value
-		 * of 0 means 1 queue and a value of 255 means 256 queues
-		 */
+		 
 		reg = (((vsi->rxq_map[0] << VPLAN_RX_QBASE_VFFIRSTQ_S) &
 			VPLAN_RX_QBASE_VFFIRSTQ_M) |
 		       (((max_rxq - 1) << VPLAN_RX_QBASE_VFNUMQ_S) &
@@ -366,10 +300,7 @@ static void ice_ena_vf_q_mappings(struct ice_vf *vf, u16 max_txq, u16 max_rxq)
 	}
 }
 
-/**
- * ice_ena_vf_mappings - enable VF MSIX and queue mapping
- * @vf: pointer to the VF structure
- */
+ 
 static void ice_ena_vf_mappings(struct ice_vf *vf)
 {
 	struct ice_vsi *vsi = ice_get_vf_vsi(vf);
@@ -381,11 +312,7 @@ static void ice_ena_vf_mappings(struct ice_vf *vf)
 	ice_ena_vf_q_mappings(vf, vsi->alloc_txq, vsi->alloc_rxq);
 }
 
-/**
- * ice_calc_vf_reg_idx - Calculate the VF's register index in the PF space
- * @vf: VF to calculate the register index for
- * @q_vector: a q_vector associated to the VF
- */
+ 
 int ice_calc_vf_reg_idx(struct ice_vf *vf, struct ice_q_vector *q_vector)
 {
 	struct ice_pf *pf;
@@ -395,26 +322,12 @@ int ice_calc_vf_reg_idx(struct ice_vf *vf, struct ice_q_vector *q_vector)
 
 	pf = vf->pf;
 
-	/* always add one to account for the OICR being the first MSIX */
+	 
 	return pf->sriov_base_vector + pf->vfs.num_msix_per * vf->vf_id +
 		q_vector->v_idx + 1;
 }
 
-/**
- * ice_sriov_set_msix_res - Set any used MSIX resources
- * @pf: pointer to PF structure
- * @num_msix_needed: number of MSIX vectors needed for all SR-IOV VFs
- *
- * This function allows SR-IOV resources to be taken from the end of the PF's
- * allowed HW MSIX vectors so that the irq_tracker will not be affected. We
- * just set the pf->sriov_base_vector and return success.
- *
- * If there are not enough resources available, return an error. This should
- * always be caught by ice_set_per_vf_res().
- *
- * Return 0 on success, and -EINVAL when there are not enough MSIX vectors
- * in the PF's space available for SR-IOV.
- */
+ 
 static int ice_sriov_set_msix_res(struct ice_pf *pf, u16 num_msix_needed)
 {
 	u16 total_vectors = pf->hw.func_caps.common_cap.num_msix_vectors;
@@ -423,9 +336,7 @@ static int ice_sriov_set_msix_res(struct ice_pf *pf, u16 num_msix_needed)
 
 	sriov_base_vector = total_vectors - num_msix_needed;
 
-	/* make sure we only grab irq_tracker entries from the list end and
-	 * that we have enough available MSIX vectors
-	 */
+	 
 	if (sriov_base_vector < vectors_used)
 		return -EINVAL;
 
@@ -434,28 +345,7 @@ static int ice_sriov_set_msix_res(struct ice_pf *pf, u16 num_msix_needed)
 	return 0;
 }
 
-/**
- * ice_set_per_vf_res - check if vectors and queues are available
- * @pf: pointer to the PF structure
- * @num_vfs: the number of SR-IOV VFs being configured
- *
- * First, determine HW interrupts from common pool. If we allocate fewer VFs, we
- * get more vectors and can enable more queues per VF. Note that this does not
- * grab any vectors from the SW pool already allocated. Also note, that all
- * vector counts include one for each VF's miscellaneous interrupt vector
- * (i.e. OICR).
- *
- * Minimum VFs - 2 vectors, 1 queue pair
- * Small VFs - 5 vectors, 4 queue pairs
- * Medium VFs - 17 vectors, 16 queue pairs
- *
- * Second, determine number of queue pairs per VF by starting with a pre-defined
- * maximum each VF supports. If this is not possible, then we adjust based on
- * queue pairs available on the device.
- *
- * Lastly, set queue and MSI-X VF variables tracked by the PF so it can be used
- * by each VF during VF initialization and reset.
- */
+ 
 static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
 {
 	int vectors_used = ice_get_max_used_msix_vector(pf);
@@ -469,7 +359,7 @@ static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
 	if (!num_vfs)
 		return -EINVAL;
 
-	/* determine MSI-X resources per VF */
+	 
 	msix_avail_for_sriov = pf->hw.func_caps.common_cap.num_msix_vectors -
 		vectors_used;
 	msix_avail_per_vf = msix_avail_for_sriov / num_vfs;
@@ -517,7 +407,7 @@ static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
 		return err;
 	}
 
-	/* only allow equal Tx/Rx queue count (i.e. queue pairs) */
+	 
 	pf->vfs.num_qps_per = min_t(int, num_txq, num_rxq);
 	pf->vfs.num_msix_per = num_msix_per_vf;
 	dev_info(dev, "Enabling %d VFs with %d vectors and %d queues per VF\n",
@@ -526,13 +416,7 @@ static int ice_set_per_vf_res(struct ice_pf *pf, u16 num_vfs)
 	return 0;
 }
 
-/**
- * ice_init_vf_vsi_res - initialize/setup VF VSI resources
- * @vf: VF to initialize/setup the VSI for
- *
- * This function creates a VSI for the VF, adds a VLAN 0 filter, and sets up the
- * VF VSI's broadcast filter and is only used during initial VF creation.
- */
+ 
 static int ice_init_vf_vsi_res(struct ice_vf *vf)
 {
 	struct ice_pf *pf = vf->pf;
@@ -556,10 +440,7 @@ release_vsi:
 	return err;
 }
 
-/**
- * ice_start_vfs - start VFs so they are ready to be used by SR-IOV
- * @pf: PF the VFs are associated with
- */
+ 
 static int ice_start_vfs(struct ice_pf *pf)
 {
 	struct ice_hw *hw = &pf->hw;
@@ -602,13 +483,7 @@ teardown:
 	return retval;
 }
 
-/**
- * ice_sriov_free_vf - Free VF memory after all references are dropped
- * @vf: pointer to VF to free
- *
- * Called by ice_put_vf through ice_release_vf once the last reference to a VF
- * structure has been dropped.
- */
+ 
 static void ice_sriov_free_vf(struct ice_vf *vf)
 {
 	mutex_destroy(&vf->cfg_lock);
@@ -616,25 +491,16 @@ static void ice_sriov_free_vf(struct ice_vf *vf)
 	kfree_rcu(vf, rcu);
 }
 
-/**
- * ice_sriov_clear_reset_state - clears VF Reset status register
- * @vf: the vf to configure
- */
+ 
 static void ice_sriov_clear_reset_state(struct ice_vf *vf)
 {
 	struct ice_hw *hw = &vf->pf->hw;
 
-	/* Clear the reset status register so that VF immediately sees that
-	 * the device is resetting, even if hardware hasn't yet gotten around
-	 * to clearing VFGEN_RSTAT for us.
-	 */
+	 
 	wr32(hw, VFGEN_RSTAT(vf->vf_id), VIRTCHNL_VFR_INPROGRESS);
 }
 
-/**
- * ice_sriov_clear_mbx_register - clears SRIOV VF's mailbox registers
- * @vf: the vf to configure
- */
+ 
 static void ice_sriov_clear_mbx_register(struct ice_vf *vf)
 {
 	struct ice_pf *pf = vf->pf;
@@ -643,13 +509,7 @@ static void ice_sriov_clear_mbx_register(struct ice_vf *vf)
 	wr32(&pf->hw, VF_MBX_ATQLEN(vf->vf_id), 0);
 }
 
-/**
- * ice_sriov_trigger_reset_register - trigger VF reset for SRIOV VF
- * @vf: pointer to VF structure
- * @is_vflr: true if reset occurred due to VFLR
- *
- * Trigger and cleanup after a VF reset for a SR-IOV VF.
- */
+ 
 static void ice_sriov_trigger_reset_register(struct ice_vf *vf, bool is_vflr)
 {
 	struct ice_pf *pf = vf->pf;
@@ -662,17 +522,14 @@ static void ice_sriov_trigger_reset_register(struct ice_vf *vf, bool is_vflr)
 	hw = &pf->hw;
 	vf_abs_id = vf->vf_id + hw->func_caps.vf_base_id;
 
-	/* In the case of a VFLR, HW has already reset the VF and we just need
-	 * to clean up. Otherwise we must first trigger the reset using the
-	 * VFRTRIG register.
-	 */
+	 
 	if (!is_vflr) {
 		reg = rd32(hw, VPGEN_VFRTRIG(vf->vf_id));
 		reg |= VPGEN_VFRTRIG_VFSWR_M;
 		wr32(hw, VPGEN_VFRTRIG(vf->vf_id), reg);
 	}
 
-	/* clear the VFLR bit in GLGEN_VFLRSTAT */
+	 
 	reg_idx = (vf_abs_id) / 32;
 	bit_idx = (vf_abs_id) % 32;
 	wr32(hw, GLGEN_VFLRSTAT(reg_idx), BIT(bit_idx));
@@ -682,7 +539,7 @@ static void ice_sriov_trigger_reset_register(struct ice_vf *vf, bool is_vflr)
 	     VF_DEVICE_STATUS | (vf_abs_id << PF_PCI_CIAA_VF_NUM_S));
 	for (i = 0; i < ICE_PCI_CIAD_WAIT_COUNT; i++) {
 		reg = rd32(hw, PF_PCI_CIAD);
-		/* no transactions pending so stop polling */
+		 
 		if ((reg & VF_TRANS_PENDING_M) == 0)
 			break;
 
@@ -691,12 +548,7 @@ static void ice_sriov_trigger_reset_register(struct ice_vf *vf, bool is_vflr)
 	}
 }
 
-/**
- * ice_sriov_poll_reset_status - poll SRIOV VF reset status
- * @vf: pointer to VF structure
- *
- * Returns true when reset is successful, else returns false
- */
+ 
 static bool ice_sriov_poll_reset_status(struct ice_vf *vf)
 {
 	struct ice_pf *pf = vf->pf;
@@ -704,24 +556,18 @@ static bool ice_sriov_poll_reset_status(struct ice_vf *vf)
 	u32 reg;
 
 	for (i = 0; i < 10; i++) {
-		/* VF reset requires driver to first reset the VF and then
-		 * poll the status register to make sure that the reset
-		 * completed successfully.
-		 */
+		 
 		reg = rd32(&pf->hw, VPGEN_VFRSTAT(vf->vf_id));
 		if (reg & VPGEN_VFRSTAT_VFRD_M)
 			return true;
 
-		/* only sleep if the reset is not done */
+		 
 		usleep_range(10, 20);
 	}
 	return false;
 }
 
-/**
- * ice_sriov_clear_reset_trigger - enable VF to access hardware
- * @vf: VF to enabled hardware access for
- */
+ 
 static void ice_sriov_clear_reset_trigger(struct ice_vf *vf)
 {
 	struct ice_hw *hw = &vf->pf->hw;
@@ -733,13 +579,7 @@ static void ice_sriov_clear_reset_trigger(struct ice_vf *vf)
 	ice_flush(hw);
 }
 
-/**
- * ice_sriov_create_vsi - Create a new VSI for a VF
- * @vf: VF to create the VSI for
- *
- * This is called by ice_vf_recreate_vsi to create the new VSI after the old
- * VSI has been released.
- */
+ 
 static int ice_sriov_create_vsi(struct ice_vf *vf)
 {
 	struct ice_vsi *vsi;
@@ -751,10 +591,7 @@ static int ice_sriov_create_vsi(struct ice_vf *vf)
 	return 0;
 }
 
-/**
- * ice_sriov_post_vsi_rebuild - tasks to do after the VF's VSI have been rebuilt
- * @vf: VF to perform tasks on
- */
+ 
 static void ice_sriov_post_vsi_rebuild(struct ice_vf *vf)
 {
 	ice_ena_vf_mappings(vf);
@@ -774,19 +611,7 @@ static const struct ice_vf_ops ice_sriov_vf_ops = {
 	.post_vsi_rebuild = ice_sriov_post_vsi_rebuild,
 };
 
-/**
- * ice_create_vf_entries - Allocate and insert VF entries
- * @pf: pointer to the PF structure
- * @num_vfs: the number of VFs to allocate
- *
- * Allocate new VF entries and insert them into the hash table. Set some
- * basic default fields for initializing the new VFs.
- *
- * After this function exits, the hash table will have num_vfs entries
- * inserted.
- *
- * Returns 0 on success or an integer error code on failure.
- */
+ 
 static int ice_create_vf_entries(struct ice_pf *pf, u16 num_vfs)
 {
 	struct ice_vfs *vfs = &pf->vfs;
@@ -807,7 +632,7 @@ static int ice_create_vf_entries(struct ice_pf *pf, u16 num_vfs)
 		vf->pf = pf;
 		vf->vf_id = vf_id;
 
-		/* set sriov vf ops for VFs created during SRIOV flow */
+		 
 		vf->vf_ops = &ice_sriov_vf_ops;
 
 		ice_initialize_vf_entry(vf);
@@ -824,18 +649,14 @@ err_free_entries:
 	return err;
 }
 
-/**
- * ice_ena_vfs - enable VFs so they are ready to be used
- * @pf: pointer to the PF structure
- * @num_vfs: number of VFs to enable
- */
+ 
 static int ice_ena_vfs(struct ice_pf *pf, u16 num_vfs)
 {
 	struct device *dev = ice_pf_to_dev(pf);
 	struct ice_hw *hw = &pf->hw;
 	int ret;
 
-	/* Disable global interrupt 0 so we don't try to handle the VFLR. */
+	 
 	wr32(hw, GLINT_DYN_CTL(pf->oicr_irq.index),
 	     ICE_ITR_NONE << GLINT_DYN_CTL_ITR_INDX_S);
 	set_bit(ICE_OICR_INTR_DIS, pf->state);
@@ -876,7 +697,7 @@ static int ice_ena_vfs(struct ice_pf *pf, u16 num_vfs)
 		goto err_unroll_sriov;
 	}
 
-	/* rearm global interrupts */
+	 
 	if (test_and_clear_bit(ICE_OICR_INTR_DIS, pf->state))
 		ice_irq_dynamic_ena(hw, NULL, NULL);
 
@@ -890,19 +711,13 @@ err_unroll_sriov:
 	mutex_unlock(&pf->vfs.table_lock);
 	pci_disable_sriov(pf->pdev);
 err_unroll_intr:
-	/* rearm interrupts here */
+	 
 	ice_irq_dynamic_ena(hw, NULL, NULL);
 	clear_bit(ICE_OICR_INTR_DIS, pf->state);
 	return ret;
 }
 
-/**
- * ice_pci_sriov_ena - Enable or change number of VFs
- * @pf: pointer to the PF structure
- * @num_vfs: number of VFs to allocate
- *
- * Returns 0 on success and negative on failure
- */
+ 
 static int ice_pci_sriov_ena(struct ice_pf *pf, int num_vfs)
 {
 	struct device *dev = ice_pf_to_dev(pf);
@@ -930,10 +745,7 @@ static int ice_pci_sriov_ena(struct ice_pf *pf, int num_vfs)
 	return 0;
 }
 
-/**
- * ice_check_sriov_allowed - check if SR-IOV is allowed based on various checks
- * @pf: PF to enabled SR-IOV on
- */
+ 
 static int ice_check_sriov_allowed(struct ice_pf *pf)
 {
 	struct device *dev = ice_pf_to_dev(pf);
@@ -956,15 +768,7 @@ static int ice_check_sriov_allowed(struct ice_pf *pf)
 	return 0;
 }
 
-/**
- * ice_sriov_configure - Enable or change number of VFs via sysfs
- * @pdev: pointer to a pci_dev structure
- * @num_vfs: number of VFs to allocate or 0 to free VFs
- *
- * This function is called when the user updates the number of VFs in sysfs. On
- * success return whatever num_vfs was set to by the caller. Return negative on
- * failure.
- */
+ 
 int ice_sriov_configure(struct pci_dev *pdev, int num_vfs)
 {
 	struct ice_pf *pf = pci_get_drvdata(pdev);
@@ -992,13 +796,7 @@ int ice_sriov_configure(struct pci_dev *pdev, int num_vfs)
 	return num_vfs;
 }
 
-/**
- * ice_process_vflr_event - Free VF resources via IRQ calls
- * @pf: pointer to the PF structure
- *
- * called from the VFLR IRQ handler to
- * free up VF resources and state variables
- */
+ 
 void ice_process_vflr_event(struct ice_pf *pf)
 {
 	struct ice_hw *hw = &pf->hw;
@@ -1016,27 +814,16 @@ void ice_process_vflr_event(struct ice_pf *pf)
 
 		reg_idx = (hw->func_caps.vf_base_id + vf->vf_id) / 32;
 		bit_idx = (hw->func_caps.vf_base_id + vf->vf_id) % 32;
-		/* read GLGEN_VFLRSTAT register to find out the flr VFs */
+		 
 		reg = rd32(hw, GLGEN_VFLRSTAT(reg_idx));
 		if (reg & BIT(bit_idx))
-			/* GLGEN_VFLRSTAT bit will be cleared in ice_reset_vf */
+			 
 			ice_reset_vf(vf, ICE_VF_RESET_VFLR | ICE_VF_RESET_LOCK);
 	}
 	mutex_unlock(&pf->vfs.table_lock);
 }
 
-/**
- * ice_get_vf_from_pfq - get the VF who owns the PF space queue passed in
- * @pf: PF used to index all VFs
- * @pfq: queue index relative to the PF's function space
- *
- * If no VF is found who owns the pfq then return NULL, otherwise return a
- * pointer to the VF who owns the pfq
- *
- * If this function returns non-NULL, it acquires a reference count of the VF
- * structure. The caller is responsible for calling ice_put_vf() to drop this
- * reference.
- */
+ 
 static struct ice_vf *ice_get_vf_from_pfq(struct ice_pf *pf, u16 pfq)
 {
 	struct ice_vf *vf;
@@ -1068,25 +855,13 @@ static struct ice_vf *ice_get_vf_from_pfq(struct ice_pf *pf, u16 pfq)
 	return NULL;
 }
 
-/**
- * ice_globalq_to_pfq - convert from global queue index to PF space queue index
- * @pf: PF used for conversion
- * @globalq: global queue index used to convert to PF space queue index
- */
+ 
 static u32 ice_globalq_to_pfq(struct ice_pf *pf, u32 globalq)
 {
 	return globalq - pf->hw.func_caps.common_cap.rxq_first_id;
 }
 
-/**
- * ice_vf_lan_overflow_event - handle LAN overflow event for a VF
- * @pf: PF that the LAN overflow event happened on
- * @event: structure holding the event information for the LAN overflow event
- *
- * Determine if the LAN overflow event was caused by a VF queue. If it was not
- * caused by a VF, do nothing. If a VF caused this LAN overflow event trigger a
- * reset on the offending VF.
- */
+ 
 void
 ice_vf_lan_overflow_event(struct ice_pf *pf, struct ice_rq_event_info *event)
 {
@@ -1096,7 +871,7 @@ ice_vf_lan_overflow_event(struct ice_pf *pf, struct ice_rq_event_info *event)
 	gldcb_rtctq = le32_to_cpu(event->desc.params.lan_overflow.prtdcb_ruptq);
 	dev_dbg(ice_pf_to_dev(pf), "GLDCB_RTCTQ: 0x%08x\n", gldcb_rtctq);
 
-	/* event returns device global Rx queue number */
+	 
 	queue = (gldcb_rtctq & GLDCB_RTCTQ_RXQNUM_M) >>
 		GLDCB_RTCTQ_RXQNUM_S;
 
@@ -1108,14 +883,7 @@ ice_vf_lan_overflow_event(struct ice_pf *pf, struct ice_rq_event_info *event)
 	ice_put_vf(vf);
 }
 
-/**
- * ice_set_vf_spoofchk
- * @netdev: network interface device structure
- * @vf_id: VF identifier
- * @ena: flag to enable or disable feature
- *
- * Enable or disable VF spoof checking
- */
+ 
 int ice_set_vf_spoofchk(struct net_device *netdev, int vf_id, bool ena)
 {
 	struct ice_netdev_priv *np = netdev_priv(netdev);
@@ -1168,14 +936,7 @@ out_put_vf:
 	return ret;
 }
 
-/**
- * ice_get_vf_cfg
- * @netdev: network interface device structure
- * @vf_id: VF identifier
- * @ivi: VF configuration structure
- *
- * return VF configuration
- */
+ 
 int
 ice_get_vf_cfg(struct net_device *netdev, int vf_id, struct ifla_vf_info *ivi)
 {
@@ -1194,7 +955,7 @@ ice_get_vf_cfg(struct net_device *netdev, int vf_id, struct ifla_vf_info *ivi)
 	ivi->vf = vf_id;
 	ether_addr_copy(ivi->mac, vf->hw_lan_addr);
 
-	/* VF configuration for VLAN and applicable QoS */
+	 
 	ivi->vlan = ice_vf_get_port_vlan_id(vf);
 	ivi->qos = ice_vf_get_port_vlan_prio(vf);
 	if (ice_vf_is_port_vlan_ena(vf))
@@ -1216,14 +977,7 @@ out_put_vf:
 	return ret;
 }
 
-/**
- * ice_set_vf_mac
- * @netdev: network interface device structure
- * @vf_id: VF identifier
- * @mac: MAC address
- *
- * program VF MAC address
- */
+ 
 int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
 {
 	struct ice_pf *pf = ice_netdev_to_pf(netdev);
@@ -1239,7 +993,7 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
 	if (!vf)
 		return -EINVAL;
 
-	/* nothing left to do, unicast MAC already set */
+	 
 	if (ether_addr_equal(vf->dev_lan_addr, mac) &&
 	    ether_addr_equal(vf->hw_lan_addr, mac)) {
 		ret = 0;
@@ -1252,18 +1006,16 @@ int ice_set_vf_mac(struct net_device *netdev, int vf_id, u8 *mac)
 
 	mutex_lock(&vf->cfg_lock);
 
-	/* VF is notified of its new MAC via the PF's response to the
-	 * VIRTCHNL_OP_GET_VF_RESOURCES message after the VF has been reset
-	 */
+	 
 	ether_addr_copy(vf->dev_lan_addr, mac);
 	ether_addr_copy(vf->hw_lan_addr, mac);
 	if (is_zero_ether_addr(mac)) {
-		/* VF will send VIRTCHNL_OP_ADD_ETH_ADDR message with its MAC */
+		 
 		vf->pf_set_mac = false;
 		netdev_info(netdev, "Removing MAC on VF %d. VF driver will be reinitialized\n",
 			    vf->vf_id);
 	} else {
-		/* PF will add MAC rule for the VF */
+		 
 		vf->pf_set_mac = true;
 		netdev_info(netdev, "Setting MAC %pM on VF %d. VF driver will be reinitialized\n",
 			    mac, vf_id);
@@ -1277,14 +1029,7 @@ out_put_vf:
 	return ret;
 }
 
-/**
- * ice_set_vf_trust
- * @netdev: network interface device structure
- * @vf_id: VF identifier
- * @trusted: Boolean value to enable/disable trusted VF
- *
- * Enable or disable a given VF as trusted
- */
+ 
 int ice_set_vf_trust(struct net_device *netdev, int vf_id, bool trusted)
 {
 	struct ice_pf *pf = ice_netdev_to_pf(netdev);
@@ -1304,7 +1049,7 @@ int ice_set_vf_trust(struct net_device *netdev, int vf_id, bool trusted)
 	if (ret)
 		goto out_put_vf;
 
-	/* Check if already trusted */
+	 
 	if (trusted == vf->trusted) {
 		ret = 0;
 		goto out_put_vf;
@@ -1324,14 +1069,7 @@ out_put_vf:
 	return ret;
 }
 
-/**
- * ice_set_vf_link_state
- * @netdev: network interface device structure
- * @vf_id: VF identifier
- * @link_state: required link state
- *
- * Set VF's link state, irrespective of physical link state status
- */
+ 
 int ice_set_vf_link_state(struct net_device *netdev, int vf_id, int link_state)
 {
 	struct ice_pf *pf = ice_netdev_to_pf(netdev);
@@ -1370,10 +1108,7 @@ out_put_vf:
 	return ret;
 }
 
-/**
- * ice_calc_all_vfs_min_tx_rate - calculate cumulative min Tx rate on all VFs
- * @pf: PF associated with VFs
- */
+ 
 static int ice_calc_all_vfs_min_tx_rate(struct ice_pf *pf)
 {
 	struct ice_vf *vf;
@@ -1388,18 +1123,7 @@ static int ice_calc_all_vfs_min_tx_rate(struct ice_pf *pf)
 	return rate;
 }
 
-/**
- * ice_min_tx_rate_oversubscribed - check if min Tx rate causes oversubscription
- * @vf: VF trying to configure min_tx_rate
- * @min_tx_rate: min Tx rate in Mbps
- *
- * Check if the min_tx_rate being passed in will cause oversubscription of total
- * min_tx_rate based on the current link speed and all other VFs configured
- * min_tx_rate
- *
- * Return true if the passed min_tx_rate would cause oversubscription, else
- * return false
- */
+ 
 static bool
 ice_min_tx_rate_oversubscribed(struct ice_vf *vf, int min_tx_rate)
 {
@@ -1413,7 +1137,7 @@ ice_min_tx_rate_oversubscribed(struct ice_vf *vf, int min_tx_rate)
 	link_speed_mbps = ice_get_link_speed_mbps(vsi);
 	all_vfs_min_tx_rate = ice_calc_all_vfs_min_tx_rate(vf->pf);
 
-	/* this VF's previous rate is being overwritten */
+	 
 	all_vfs_min_tx_rate -= vf->min_tx_rate;
 
 	if (all_vfs_min_tx_rate + min_tx_rate > link_speed_mbps) {
@@ -1427,13 +1151,7 @@ ice_min_tx_rate_oversubscribed(struct ice_vf *vf, int min_tx_rate)
 	return false;
 }
 
-/**
- * ice_set_vf_bw - set min/max VF bandwidth
- * @netdev: network interface device structure
- * @vf_id: VF identifier
- * @min_tx_rate: Minimum Tx rate in Mbps
- * @max_tx_rate: Maximum Tx rate in Mbps
- */
+ 
 int
 ice_set_vf_bw(struct net_device *netdev, int vf_id, int min_tx_rate,
 	      int max_tx_rate)
@@ -1498,12 +1216,7 @@ out_put_vf:
 	return ret;
 }
 
-/**
- * ice_get_vf_stats - populate some stats for the VF
- * @netdev: the netdev of the PF
- * @vf_id: the host OS identifier (0-255)
- * @vf_stats: pointer to the OS memory to be initialized
- */
+ 
 int ice_get_vf_stats(struct net_device *netdev, int vf_id,
 		     struct ifla_vf_stats *vf_stats)
 {
@@ -1548,15 +1261,7 @@ out_put_vf:
 	return ret;
 }
 
-/**
- * ice_is_supported_port_vlan_proto - make sure the vlan_proto is supported
- * @hw: hardware structure used to check the VLAN mode
- * @vlan_proto: VLAN TPID being checked
- *
- * If the device is configured in Double VLAN Mode (DVM), then both ETH_P_8021Q
- * and ETH_P_8021AD are supported. If the device is configured in Single VLAN
- * Mode (SVM), then only ETH_P_8021Q is supported.
- */
+ 
 static bool
 ice_is_supported_port_vlan_proto(struct ice_hw *hw, u16 vlan_proto)
 {
@@ -1575,16 +1280,7 @@ ice_is_supported_port_vlan_proto(struct ice_hw *hw, u16 vlan_proto)
 	return is_supported;
 }
 
-/**
- * ice_set_vf_port_vlan
- * @netdev: network interface device structure
- * @vf_id: VF identifier
- * @vlan_id: VLAN ID being set
- * @qos: priority setting
- * @vlan_proto: VLAN protocol
- *
- * program VF Port VLAN ID and/or QoS
- */
+ 
 int
 ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
 		     __be16 vlan_proto)
@@ -1620,7 +1316,7 @@ ice_set_vf_port_vlan(struct net_device *netdev, int vf_id, u16 vlan_id, u8 qos,
 	if (ice_vf_get_port_vlan_prio(vf) == qos &&
 	    ice_vf_get_port_vlan_tpid(vf) == local_vlan_proto &&
 	    ice_vf_get_port_vlan_id(vf) == vlan_id) {
-		/* duplicate request, so just return success */
+		 
 		dev_dbg(dev, "Duplicate port VLAN %u, QoS %u, TPID 0x%04x request\n",
 			vlan_id, qos, local_vlan_proto);
 		ret = 0;
@@ -1644,10 +1340,7 @@ out_put_vf:
 	return ret;
 }
 
-/**
- * ice_print_vf_rx_mdd_event - print VF Rx malicious driver detect event
- * @vf: pointer to the VF structure
- */
+ 
 void ice_print_vf_rx_mdd_event(struct ice_vf *vf)
 {
 	struct ice_pf *pf = vf->pf;
@@ -1662,12 +1355,7 @@ void ice_print_vf_rx_mdd_event(struct ice_vf *vf)
 			  ? "on" : "off");
 }
 
-/**
- * ice_print_vfs_mdd_events - print VFs malicious driver detect event
- * @pf: pointer to the PF structure
- *
- * Called from ice_handle_mdd_event to rate limit and print VFs MDD events.
- */
+ 
 void ice_print_vfs_mdd_events(struct ice_pf *pf)
 {
 	struct device *dev = ice_pf_to_dev(pf);
@@ -1675,11 +1363,11 @@ void ice_print_vfs_mdd_events(struct ice_pf *pf)
 	struct ice_vf *vf;
 	unsigned int bkt;
 
-	/* check that there are pending MDD events to print */
+	 
 	if (!test_and_clear_bit(ICE_MDD_VF_PRINT_PENDING, pf->state))
 		return;
 
-	/* VF MDD event logs are rate limited to one second intervals */
+	 
 	if (time_is_after_jiffies(pf->vfs.last_printed_mdd_jiffies + HZ * 1))
 		return;
 
@@ -1687,14 +1375,14 @@ void ice_print_vfs_mdd_events(struct ice_pf *pf)
 
 	mutex_lock(&pf->vfs.table_lock);
 	ice_for_each_vf(pf, bkt, vf) {
-		/* only print Rx MDD event message if there are new events */
+		 
 		if (vf->mdd_rx_events.count != vf->mdd_rx_events.last_printed) {
 			vf->mdd_rx_events.last_printed =
 							vf->mdd_rx_events.count;
 			ice_print_vf_rx_mdd_event(vf);
 		}
 
-		/* only print Tx MDD event message if there are new events */
+		 
 		if (vf->mdd_tx_events.count != vf->mdd_tx_events.last_printed) {
 			vf->mdd_tx_events.last_printed =
 							vf->mdd_tx_events.count;
@@ -1707,13 +1395,7 @@ void ice_print_vfs_mdd_events(struct ice_pf *pf)
 	mutex_unlock(&pf->vfs.table_lock);
 }
 
-/**
- * ice_restore_all_vfs_msi_state - restore VF MSI state after PF FLR
- * @pdev: pointer to a pci_dev structure
- *
- * Called when recovering from a PF FLR to restore interrupt capability to
- * the VFs.
- */
+ 
 void ice_restore_all_vfs_msi_state(struct pci_dev *pdev)
 {
 	u16 vf_id;

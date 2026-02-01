@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014-2017 Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/bitops.h>
@@ -84,16 +82,7 @@ const struct ath10k_hw_regs qca99x0_regs = {
 	.ce5_base_address			= 0x0004b400,
 	.ce6_base_address			= 0x0004b800,
 	.ce7_base_address			= 0x0004bc00,
-	/* Note: qca99x0 supports up to 12 Copy Engines. Other than address of
-	 * CE0 and CE1 no other copy engine is directly referred in the code.
-	 * It is not really necessary to assign address for newly supported
-	 * CEs in this address table.
-	 *	Copy Engine		Address
-	 *	CE8			0x0004c000
-	 *	CE9			0x0004c400
-	 *	CE10			0x0004c800
-	 *	CE11			0x0004cc00
-	 */
+	 
 	.soc_reset_control_si0_rst_mask		= 0x00000001,
 	.soc_reset_control_ce_rst_mask		= 0x00000100,
 	.soc_chip_id_address			= 0x000000ec,
@@ -120,15 +109,7 @@ const struct ath10k_hw_regs qca4019_regs = {
 	.ce5_base_address                       = 0x0004b400,
 	.ce6_base_address                       = 0x0004b800,
 	.ce7_base_address                       = 0x0004bc00,
-	/* qca4019 supports up to 12 copy engines. Since base address
-	 * of ce8 to ce11 are not directly referred in the code,
-	 * no need have them in separate members in this table.
-	 *      Copy Engine             Address
-	 *      CE8                     0x0004c000
-	 *      CE9                     0x0004c400
-	 *      CE10                    0x0004c800
-	 *      CE11                    0x0004cc00
-	 */
+	 
 	.soc_reset_control_si0_rst_mask         = 0x00000001,
 	.soc_reset_control_ce_rst_mask          = 0x00000100,
 	.soc_chip_id_address                    = 0x000000ec,
@@ -585,9 +566,7 @@ void ath10k_hw_fill_survey_time(struct ath10k *ar, struct survey_info *survey,
 	survey->time_busy = CCNT_TO_MSEC(ar, rcc);
 }
 
-/* The firmware does not support setting the coverage class. Instead this
- * function monitors and modifies the corresponding MAC registers.
- */
+ 
 static void ath10k_hw_qca988x_set_coverage_class(struct ath10k *ar,
 						 s16 value)
 {
@@ -603,19 +582,17 @@ static void ath10k_hw_qca988x_set_coverage_class(struct ath10k *ar,
 
 	mutex_lock(&ar->conf_mutex);
 
-	/* Only modify registers if the core is started. */
+	 
 	if ((ar->state != ATH10K_STATE_ON) &&
 	    (ar->state != ATH10K_STATE_RESTARTED)) {
 		spin_lock_bh(&ar->data_lock);
-		/* Store config value for when radio boots up */
+		 
 		ar->fw_coverage.coverage_class = value;
 		spin_unlock_bh(&ar->data_lock);
 		goto unlock;
 	}
 
-	/* Retrieve the current values of the two registers that need to be
-	 * adjusted.
-	 */
+	 
 	slottime_reg = ath10k_hif_read32(ar, WLAN_MAC_BASE_ADDRESS +
 					     WAVE1_PCU_GBL_IFS_SLOT);
 	timeout_reg = ath10k_hif_read32(ar, WLAN_MAC_BASE_ADDRESS +
@@ -627,27 +604,25 @@ static void ath10k_hw_qca988x_set_coverage_class(struct ath10k *ar,
 	if (value < 0)
 		value = ar->fw_coverage.coverage_class;
 
-	/* Break out if the coverage class and registers have the expected
-	 * value.
-	 */
+	 
 	if (value == ar->fw_coverage.coverage_class &&
 	    slottime_reg == ar->fw_coverage.reg_slottime_conf &&
 	    timeout_reg == ar->fw_coverage.reg_ack_cts_timeout_conf &&
 	    phyclk_reg == ar->fw_coverage.reg_phyclk)
 		goto unlock;
 
-	/* Store new initial register values from the firmware. */
+	 
 	if (slottime_reg != ar->fw_coverage.reg_slottime_conf)
 		ar->fw_coverage.reg_slottime_orig = slottime_reg;
 	if (timeout_reg != ar->fw_coverage.reg_ack_cts_timeout_conf)
 		ar->fw_coverage.reg_ack_cts_timeout_orig = timeout_reg;
 	ar->fw_coverage.reg_phyclk = phyclk_reg;
 
-	/* Calculate new value based on the (original) firmware calculation. */
+	 
 	slottime_reg = ar->fw_coverage.reg_slottime_orig;
 	timeout_reg = ar->fw_coverage.reg_ack_cts_timeout_orig;
 
-	/* Do some sanity checks on the slottime register. */
+	 
 	if (slottime_reg % phyclk) {
 		ath10k_warn(ar,
 			    "failed to set coverage class: expected integer microsecond value in register\n");
@@ -665,9 +640,7 @@ static void ath10k_hw_qca988x_set_coverage_class(struct ath10k *ar,
 		goto store_regs;
 	}
 
-	/* Recalculate the register values by adding the additional propagation
-	 * delay (3us per coverage class).
-	 */
+	 
 
 	slottime = MS(slottime_reg, WAVE1_PCU_GBL_IFS_SLOT);
 	slottime += value * 3 * phyclk;
@@ -675,13 +648,13 @@ static void ath10k_hw_qca988x_set_coverage_class(struct ath10k *ar,
 	slottime = SM(slottime, WAVE1_PCU_GBL_IFS_SLOT);
 	slottime_reg = (slottime_reg & ~WAVE1_PCU_GBL_IFS_SLOT_MASK) | slottime;
 
-	/* Update ack timeout (lower halfword). */
+	 
 	ack_timeout = MS(timeout_reg, WAVE1_PCU_ACK_CTS_TIMEOUT_ACK);
 	ack_timeout += 3 * value * phyclk;
 	ack_timeout = min_t(u32, ack_timeout, WAVE1_PCU_ACK_CTS_TIMEOUT_MAX);
 	ack_timeout = SM(ack_timeout, WAVE1_PCU_ACK_CTS_TIMEOUT_ACK);
 
-	/* Update cts timeout (upper halfword). */
+	 
 	cts_timeout = MS(timeout_reg, WAVE1_PCU_ACK_CTS_TIMEOUT_CTS);
 	cts_timeout += 3 * value * phyclk;
 	cts_timeout = min_t(u32, cts_timeout, WAVE1_PCU_ACK_CTS_TIMEOUT_MAX);
@@ -696,11 +669,7 @@ static void ath10k_hw_qca988x_set_coverage_class(struct ath10k *ar,
 			   WLAN_MAC_BASE_ADDRESS + WAVE1_PCU_ACK_CTS_TIMEOUT,
 			   timeout_reg);
 
-	/* Ensure we have a debug level of WARN set for the case that the
-	 * coverage class is larger than 0. This is important as we need to
-	 * set the registers again if the firmware does an internal reset and
-	 * this way we will be notified of the event.
-	 */
+	 
 	fw_dbglog_mask = ath10k_debug_get_fw_dbglog_mask(ar);
 	fw_dbglog_level = ath10k_debug_get_fw_dbglog_level(ar);
 
@@ -713,7 +682,7 @@ static void ath10k_hw_qca988x_set_coverage_class(struct ath10k *ar,
 	ath10k_wmi_dbglog_cfg(ar, fw_dbglog_mask, fw_dbglog_level);
 
 store_regs:
-	/* After an error we will not retry setting the coverage class. */
+	 
 	spin_lock_bh(&ar->data_lock);
 	ar->fw_coverage.coverage_class = value;
 	spin_unlock_bh(&ar->data_lock);
@@ -725,18 +694,7 @@ unlock:
 	mutex_unlock(&ar->conf_mutex);
 }
 
-/**
- * ath10k_hw_qca6174_enable_pll_clock() - enable the qca6174 hw pll clock
- * @ar: the ath10k blob
- *
- * This function is very hardware specific, the clock initialization
- * steps is very sensitive and could lead to unknown crash, so they
- * should be done in sequence.
- *
- * *** Be aware if you planned to refactor them. ***
- *
- * Return: 0 if successfully enable the pll, otherwise EINVAL
- */
+ 
 static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 {
 	int ret, wait_limit;
@@ -756,19 +714,19 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	pll_init_addr = ar->regs->cpu_pll_init_address;
 	speed_addr = ar->regs->cpu_speed_address;
 
-	/* Read efuse register to find out the right hw clock configuration */
+	 
 	addr = (RTC_SOC_BASE_ADDRESS | EFUSE_OFFSET);
 	ret = ath10k_bmi_read_soc_reg(ar, addr, &reg_val);
 	if (ret)
 		return -EINVAL;
 
-	/* sanitize if the hw refclk index is out of the boundary */
+	 
 	if (MS(reg_val, EFUSE_XTAL_SEL) > ATH10K_HW_REFCLK_COUNT)
 		return -EINVAL;
 
 	hw_clk = &hw->hw_clk[MS(reg_val, EFUSE_XTAL_SEL)];
 
-	/* Set the rnfrac and outdiv params to bb_pll register */
+	 
 	addr = (RTC_SOC_BASE_ADDRESS | BB_PLL_CONFIG_OFFSET);
 	ret = ath10k_bmi_read_soc_reg(ar, addr, &reg_val);
 	if (ret)
@@ -781,7 +739,7 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (ret)
 		return -EINVAL;
 
-	/* Set the correct settle time value to pll_settle register */
+	 
 	addr = (RTC_WMAC_BASE_ADDRESS | WLAN_PLL_SETTLE_OFFSET);
 	ret = ath10k_bmi_read_soc_reg(ar, addr, &reg_val);
 	if (ret)
@@ -793,7 +751,7 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (ret)
 		return -EINVAL;
 
-	/* Set the clock_ctrl div to core_clk_ctrl register */
+	 
 	addr = (RTC_SOC_BASE_ADDRESS | SOC_CORE_CLK_CTRL_OFFSET);
 	ret = ath10k_bmi_read_soc_reg(ar, addr, &reg_val);
 	if (ret)
@@ -805,14 +763,14 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (ret)
 		return -EINVAL;
 
-	/* Set the clock_div register */
+	 
 	mem_val = 1;
 	ret = ath10k_bmi_write_memory(ar, clk_div_addr, &mem_val,
 				      sizeof(mem_val));
 	if (ret)
 		return -EINVAL;
 
-	/* Configure the pll_control register */
+	 
 	addr = (RTC_WMAC_BASE_ADDRESS | WLAN_PLL_CONTROL_OFFSET);
 	ret = ath10k_bmi_read_soc_reg(ar, addr, &reg_val);
 	if (ret)
@@ -825,7 +783,7 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (ret)
 		return -EINVAL;
 
-	/* busy wait (max 1s) the rtc_sync status register indicate ready */
+	 
 	wait_limit = 100000;
 	addr = (RTC_WMAC_BASE_ADDRESS | RTC_SYNC_STATUS_OFFSET);
 	do {
@@ -844,7 +802,7 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (MS(reg_val, RTC_SYNC_STATUS_PLL_CHANGING))
 		return -EINVAL;
 
-	/* Unset the pll_bypass in pll_control register */
+	 
 	addr = (RTC_WMAC_BASE_ADDRESS | WLAN_PLL_CONTROL_OFFSET);
 	ret = ath10k_bmi_read_soc_reg(ar, addr, &reg_val);
 	if (ret)
@@ -856,7 +814,7 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (ret)
 		return -EINVAL;
 
-	/* busy wait (max 1s) the rtc_sync status register indicate ready */
+	 
 	wait_limit = 100000;
 	addr = (RTC_WMAC_BASE_ADDRESS | RTC_SYNC_STATUS_OFFSET);
 	do {
@@ -875,7 +833,7 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (MS(reg_val, RTC_SYNC_STATUS_PLL_CHANGING))
 		return -EINVAL;
 
-	/* Enable the hardware cpu clock register */
+	 
 	addr = (RTC_SOC_BASE_ADDRESS | SOC_CPU_CLOCK_OFFSET);
 	ret = ath10k_bmi_read_soc_reg(ar, addr, &reg_val);
 	if (ret)
@@ -887,7 +845,7 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (ret)
 		return -EINVAL;
 
-	/* unset the nopwd from pll_control register */
+	 
 	addr = (RTC_WMAC_BASE_ADDRESS | WLAN_PLL_CONTROL_OFFSET);
 	ret = ath10k_bmi_read_soc_reg(ar, addr, &reg_val);
 	if (ret)
@@ -898,14 +856,14 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	if (ret)
 		return -EINVAL;
 
-	/* enable the pll_init register */
+	 
 	mem_val = 1;
 	ret = ath10k_bmi_write_memory(ar, pll_init_addr, &mem_val,
 				      sizeof(mem_val));
 	if (ret)
 		return -EINVAL;
 
-	/* set the target clock frequency to speed register */
+	 
 	ret = ath10k_bmi_write_memory(ar, speed_addr, &hw->target_cpu_freq,
 				      sizeof(hw->target_cpu_freq));
 	if (ret)
@@ -914,9 +872,7 @@ static int ath10k_hw_qca6174_enable_pll_clock(struct ath10k *ar)
 	return 0;
 }
 
-/* Program CPU_ADDR_MSB to allow different memory
- * region access.
- */
+ 
 static void ath10k_hw_map_target_mem(struct ath10k *ar, u32 msb)
 {
 	u32 address = SOC_CORE_BASE_ADDRESS + FW_RAM_CONFIG_ADDRESS;
@@ -924,14 +880,7 @@ static void ath10k_hw_map_target_mem(struct ath10k *ar, u32 msb)
 	ath10k_hif_write32(ar, address, msb);
 }
 
-/* 1. Write to memory region of target, such as IRAM and DRAM.
- * 2. Target address( 0 ~ 00100000 & 0x00400000~0x00500000)
- *    can be written directly. See ath10k_pci_targ_cpu_to_ce_addr() too.
- * 3. In order to access the region other than the above,
- *    we need to set the value of register CPU_ADDR_MSB.
- * 4. Target memory access space is limited to 1M size. If the size is larger
- *    than 1M, need to split it and program CPU_ADDR_MSB accordingly.
- */
+ 
 static int ath10k_hw_diag_segment_msb_download(struct ath10k *ar,
 					       const void *buffer,
 					       u32 address,
@@ -955,7 +904,7 @@ static int ath10k_hw_diag_segment_msb_download(struct ath10k *ar,
 			goto done;
 		}
 
-		/* Change msb to the next memory region*/
+		 
 		ath10k_hw_map_target_mem(ar,
 					 CPU_ADDR_MSB_REGION_VAL(address) + 1);
 		buf = buffer +  size;
@@ -981,7 +930,7 @@ static int ath10k_hw_diag_segment_msb_download(struct ath10k *ar,
 	}
 
 done:
-	/* Change msb to DRAM */
+	 
 	ath10k_hw_map_target_mem(ar,
 				 CPU_ADDR_MSB_REGION_VAL(DRAM_BASE_ADDRESS));
 	return ret;
@@ -993,7 +942,7 @@ static int ath10k_hw_diag_segment_download(struct ath10k *ar,
 					   u32 length)
 {
 	if (address >= DRAM_BASE_ADDRESS + REGION_ACCESS_SIZE_LIMIT)
-		/* Needs to change MSB for memory write */
+		 
 		return ath10k_hw_diag_segment_msb_download(ar, buffer,
 							   address, length);
 	else
@@ -1017,9 +966,7 @@ int ath10k_hw_diag_fast_download(struct ath10k *ar,
 	if (length < sizeof(*hdr))
 		return -EINVAL;
 
-	/* check firmware header. If it has no correct magic number
-	 * or it's compressed, returns error.
-	 */
+	 
 	hdr = (struct bmi_segmented_file_header *)buf;
 	if (__le32_to_cpu(hdr->magic_num) != BMI_SGMTFILE_MAGIC_NUM) {
 		ath10k_dbg(ar, ATH10K_DBG_BOOT,
@@ -1052,12 +999,12 @@ int ath10k_hw_diag_fast_download(struct ath10k *ar,
 
 		switch (base_len) {
 		case BMI_SGMTFILE_BEGINADDR:
-			/* base_addr is the start address to run */
+			 
 			ret = ath10k_bmi_set_start(ar, base_addr);
 			base_len = 0;
 			break;
 		case BMI_SGMTFILE_DONE:
-			/* no more segment */
+			 
 			base_len = 0;
 			sgmt_end = true;
 			ret = 0;
@@ -1071,7 +1018,7 @@ int ath10k_hw_diag_fast_download(struct ath10k *ar,
 			break;
 		default:
 			if (base_len > left) {
-				/* sanity check */
+				 
 				ath10k_warn(ar,
 					    "firmware has invalid segment length, %d > %d\n",
 					    base_len, left);

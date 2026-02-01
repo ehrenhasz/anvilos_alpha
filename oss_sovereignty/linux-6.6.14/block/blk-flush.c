@@ -1,67 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions to sequence PREFLUSH and FUA writes.
- *
- * Copyright (C) 2011		Max Planck Institute for Gravitational Physics
- * Copyright (C) 2011		Tejun Heo <tj@kernel.org>
- *
- * REQ_{PREFLUSH|FUA} requests are decomposed to sequences consisted of three
- * optional steps - PREFLUSH, DATA and POSTFLUSH - according to the request
- * properties and hardware capability.
- *
- * If a request doesn't have data, only REQ_PREFLUSH makes sense, which
- * indicates a simple flush request.  If there is data, REQ_PREFLUSH indicates
- * that the device cache should be flushed before the data is executed, and
- * REQ_FUA means that the data must be on non-volatile media on request
- * completion.
- *
- * If the device doesn't have writeback cache, PREFLUSH and FUA don't make any
- * difference.  The requests are either completed immediately if there's no data
- * or executed as normal requests otherwise.
- *
- * If the device has writeback cache and supports FUA, REQ_PREFLUSH is
- * translated to PREFLUSH but REQ_FUA is passed down directly with DATA.
- *
- * If the device has writeback cache and doesn't support FUA, REQ_PREFLUSH
- * is translated to PREFLUSH and REQ_FUA to POSTFLUSH.
- *
- * The actual execution of flush is double buffered.  Whenever a request
- * needs to execute PRE or POSTFLUSH, it queues at
- * fq->flush_queue[fq->flush_pending_idx].  Once certain criteria are met, a
- * REQ_OP_FLUSH is issued and the pending_idx is toggled.  When the flush
- * completes, all the requests which were pending are proceeded to the next
- * step.  This allows arbitrary merging of different types of PREFLUSH/FUA
- * requests.
- *
- * Currently, the following conditions are used to determine when to issue
- * flush.
- *
- * C1. At any given time, only one flush shall be in progress.  This makes
- *     double buffering sufficient.
- *
- * C2. Flush is deferred if any request is executing DATA of its sequence.
- *     This avoids issuing separate POSTFLUSHes for requests which shared
- *     PREFLUSH.
- *
- * C3. The second condition is ignored if there is a request which has
- *     waited longer than FLUSH_PENDING_TIMEOUT.  This is to avoid
- *     starvation in the unlikely case where there are continuous stream of
- *     FUA (without PREFLUSH) requests.
- *
- * For devices which support FUA, it isn't clear whether C2 (and thus C3)
- * is beneficial.
- *
- * Note that a sequenced PREFLUSH/FUA request with DATA is completed twice.
- * Once while executing DATA and again after the whole sequence is
- * complete.  The first completion updates the contained bio but doesn't
- * finish it so that the bio submitter is notified only after the whole
- * sequence is complete.  This is implemented by testing RQF_FLUSH_SEQ in
- * req_bio_endio().
- *
- * The above peculiarity requires that each PREFLUSH/FUA request has only one
- * bio attached to it, which is guaranteed as they aren't allowed to be
- * merged in the usual way.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -74,20 +12,17 @@
 #include "blk-mq.h"
 #include "blk-mq-sched.h"
 
-/* PREFLUSH/FUA sequences */
+ 
 enum {
-	REQ_FSEQ_PREFLUSH	= (1 << 0), /* pre-flushing in progress */
-	REQ_FSEQ_DATA		= (1 << 1), /* data write in progress */
-	REQ_FSEQ_POSTFLUSH	= (1 << 2), /* post-flushing in progress */
+	REQ_FSEQ_PREFLUSH	= (1 << 0),  
+	REQ_FSEQ_DATA		= (1 << 1),  
+	REQ_FSEQ_POSTFLUSH	= (1 << 2),  
 	REQ_FSEQ_DONE		= (1 << 3),
 
 	REQ_FSEQ_ACTIONS	= REQ_FSEQ_PREFLUSH | REQ_FSEQ_DATA |
 				  REQ_FSEQ_POSTFLUSH,
 
-	/*
-	 * If flush has been pending longer than the following timeout,
-	 * it's issued even if flush_data requests are still in flight.
-	 */
+	 
 	FLUSH_PENDING_TIMEOUT	= 5 * HZ,
 };
 
@@ -124,14 +59,10 @@ static unsigned int blk_flush_cur_seq(struct request *rq)
 
 static void blk_flush_restore_request(struct request *rq)
 {
-	/*
-	 * After flush data completion, @rq->bio is %NULL but we need to
-	 * complete the bio again.  @rq->biotail is guaranteed to equal the
-	 * original @rq->bio.  Restore it.
-	 */
+	 
 	rq->bio = rq->biotail;
 
-	/* make @rq a normal request */
+	 
 	rq->rq_flags &= ~RQF_FLUSH_SEQ;
 	rq->end_io = rq->flush.saved_end_io;
 }
@@ -147,19 +78,7 @@ static void blk_account_io_flush(struct request *rq)
 	part_stat_unlock();
 }
 
-/**
- * blk_flush_complete_seq - complete flush sequence
- * @rq: PREFLUSH/FUA request being sequenced
- * @fq: flush queue
- * @seq: sequences to complete (mask of %REQ_FSEQ_*, can be zero)
- * @error: whether an error occurred
- *
- * @rq just completed @seq part of its flush sequence, record the
- * completion and trigger the next step.
- *
- * CONTEXT:
- * spin_lock_irq(fq->mq_flush_lock)
- */
+ 
 static void blk_flush_complete_seq(struct request *rq,
 				   struct blk_flush_queue *fq,
 				   unsigned int seq, blk_status_t error)
@@ -180,7 +99,7 @@ static void blk_flush_complete_seq(struct request *rq,
 	switch (seq) {
 	case REQ_FSEQ_PREFLUSH:
 	case REQ_FSEQ_POSTFLUSH:
-		/* queue for flush */
+		 
 		if (list_empty(pending))
 			fq->flush_pending_since = jiffies;
 		list_move_tail(&rq->queuelist, pending);
@@ -195,12 +114,7 @@ static void blk_flush_complete_seq(struct request *rq,
 		break;
 
 	case REQ_FSEQ_DONE:
-		/*
-		 * @rq was previously adjusted by blk_insert_flush() for
-		 * flush sequencing and may already have gone through the
-		 * flush data request completion path.  Restore @rq for
-		 * normal completion and end it.
-		 */
+		 
 		list_del_init(&rq->queuelist);
 		blk_flush_restore_request(rq);
 		blk_mq_end_request(rq, error);
@@ -222,7 +136,7 @@ static enum rq_end_io_ret flush_end_io(struct request *flush_rq,
 	unsigned long flags = 0;
 	struct blk_flush_queue *fq = blk_get_flush_queue(q, flush_rq->mq_ctx);
 
-	/* release the tag's ownership to the req cloned from */
+	 
 	spin_lock_irqsave(&fq->mq_flush_lock, flags);
 
 	if (!req_ref_put_and_test(flush_rq)) {
@@ -232,11 +146,7 @@ static enum rq_end_io_ret flush_end_io(struct request *flush_rq,
 	}
 
 	blk_account_io_flush(flush_rq);
-	/*
-	 * Flush request has to be marked as IDLE when it is really ended
-	 * because its .end_io() is called from timeout code path too for
-	 * avoiding use-after-free.
-	 */
+	 
 	WRITE_ONCE(flush_rq->state, MQ_RQ_IDLE);
 	if (fq->rq_status != BLK_STS_OK) {
 		error = fq->rq_status;
@@ -253,10 +163,10 @@ static enum rq_end_io_ret flush_end_io(struct request *flush_rq,
 	running = &fq->flush_queue[fq->flush_running_idx];
 	BUG_ON(fq->flush_pending_idx == fq->flush_running_idx);
 
-	/* account completion of the flush request */
+	 
 	fq->flush_running_idx ^= 1;
 
-	/* and push the waiting requests to the next stage */
+	 
 	list_for_each_entry_safe(rq, n, running, queuelist) {
 		unsigned int seq = blk_flush_cur_seq(rq);
 
@@ -273,19 +183,7 @@ bool is_flush_rq(struct request *rq)
 	return rq->end_io == flush_end_io;
 }
 
-/**
- * blk_kick_flush - consider issuing flush request
- * @q: request_queue being kicked
- * @fq: flush queue
- * @flags: cmd_flags of the original request
- *
- * Flush related states of @q have changed, consider issuing flush request.
- * Please read the comment at the top of this file for more info.
- *
- * CONTEXT:
- * spin_lock_irq(fq->mq_flush_lock)
- *
- */
+ 
 static void blk_kick_flush(struct request_queue *q, struct blk_flush_queue *fq,
 			   blk_opf_t flags)
 {
@@ -294,43 +192,29 @@ static void blk_kick_flush(struct request_queue *q, struct blk_flush_queue *fq,
 		list_first_entry(pending, struct request, queuelist);
 	struct request *flush_rq = fq->flush_rq;
 
-	/* C1 described at the top of this file */
+	 
 	if (fq->flush_pending_idx != fq->flush_running_idx || list_empty(pending))
 		return;
 
-	/* C2 and C3 */
+	 
 	if (fq->flush_data_in_flight &&
 	    time_before(jiffies,
 			fq->flush_pending_since + FLUSH_PENDING_TIMEOUT))
 		return;
 
-	/*
-	 * Issue flush and toggle pending_idx.  This makes pending_idx
-	 * different from running_idx, which means flush is in flight.
-	 */
+	 
 	fq->flush_pending_idx ^= 1;
 
 	blk_rq_init(q, flush_rq);
 
-	/*
-	 * In case of none scheduler, borrow tag from the first request
-	 * since they can't be in flight at the same time. And acquire
-	 * the tag's ownership for flush req.
-	 *
-	 * In case of IO scheduler, flush rq need to borrow scheduler tag
-	 * just for cheating put/get driver tag.
-	 */
+	 
 	flush_rq->mq_ctx = first_rq->mq_ctx;
 	flush_rq->mq_hctx = first_rq->mq_hctx;
 
 	if (!q->elevator) {
 		flush_rq->tag = first_rq->tag;
 
-		/*
-		 * We borrow data request's driver tag, so have to mark
-		 * this flush request as INFLIGHT for avoiding double
-		 * account of this driver tag
-		 */
+		 
 		flush_rq->rq_flags |= RQF_MQ_INFLIGHT;
 	} else
 		flush_rq->internal_tag = first_rq->internal_tag;
@@ -339,12 +223,7 @@ static void blk_kick_flush(struct request_queue *q, struct blk_flush_queue *fq,
 	flush_rq->cmd_flags |= (flags & REQ_DRV) | (flags & REQ_FAILFAST_MASK);
 	flush_rq->rq_flags |= RQF_FLUSH_SEQ;
 	flush_rq->end_io = flush_end_io;
-	/*
-	 * Order WRITE ->end_io and WRITE rq->ref, and its pair is the one
-	 * implied in refcount_inc_not_zero() called from
-	 * blk_mq_find_and_get_req(), which orders WRITE/READ flush_rq->ref
-	 * and READ flush_rq->end_io
-	 */
+	 
 	smp_wmb();
 	req_ref_set(flush_rq, 1);
 
@@ -369,16 +248,10 @@ static enum rq_end_io_ret mq_flush_data_end_io(struct request *rq,
 		blk_mq_put_driver_tag(rq);
 	}
 
-	/*
-	 * After populating an empty queue, kick it to avoid stall.  Read
-	 * the comment in flush_end_io().
-	 */
+	 
 	spin_lock_irqsave(&fq->mq_flush_lock, flags);
 	fq->flush_data_in_flight--;
-	/*
-	 * May have been corrupted by rq->rq_next reuse, we need to
-	 * re-initialize rq->queuelist before reusing it here.
-	 */
+	 
 	INIT_LIST_HEAD(&rq->queuelist);
 	blk_flush_complete_seq(rq, fq, REQ_FSEQ_DATA, error);
 	spin_unlock_irqrestore(&fq->mq_flush_lock, flags);
@@ -391,62 +264,39 @@ static void blk_rq_init_flush(struct request *rq)
 {
 	rq->flush.seq = 0;
 	rq->rq_flags |= RQF_FLUSH_SEQ;
-	rq->flush.saved_end_io = rq->end_io; /* Usually NULL */
+	rq->flush.saved_end_io = rq->end_io;  
 	rq->end_io = mq_flush_data_end_io;
 }
 
-/*
- * Insert a PREFLUSH/FUA request into the flush state machine.
- * Returns true if the request has been consumed by the flush state machine,
- * or false if the caller should continue to process it.
- */
+ 
 bool blk_insert_flush(struct request *rq)
 {
 	struct request_queue *q = rq->q;
-	unsigned long fflags = q->queue_flags;	/* may change, cache */
+	unsigned long fflags = q->queue_flags;	 
 	unsigned int policy = blk_flush_policy(fflags, rq);
 	struct blk_flush_queue *fq = blk_get_flush_queue(q, rq->mq_ctx);
 
-	/* FLUSH/FUA request must never be merged */
+	 
 	WARN_ON_ONCE(rq->bio != rq->biotail);
 
-	/*
-	 * @policy now records what operations need to be done.  Adjust
-	 * REQ_PREFLUSH and FUA for the driver.
-	 */
+	 
 	rq->cmd_flags &= ~REQ_PREFLUSH;
 	if (!(fflags & (1UL << QUEUE_FLAG_FUA)))
 		rq->cmd_flags &= ~REQ_FUA;
 
-	/*
-	 * REQ_PREFLUSH|REQ_FUA implies REQ_SYNC, so if we clear any
-	 * of those flags, we have to set REQ_SYNC to avoid skewing
-	 * the request accounting.
-	 */
+	 
 	rq->cmd_flags |= REQ_SYNC;
 
 	switch (policy) {
 	case 0:
-		/*
-		 * An empty flush handed down from a stacking driver may
-		 * translate into nothing if the underlying device does not
-		 * advertise a write-back cache.  In this case, simply
-		 * complete the request.
-		 */
+		 
 		blk_mq_end_request(rq, 0);
 		return true;
 	case REQ_FSEQ_DATA:
-		/*
-		 * If there's data, but no flush is necessary, the request can
-		 * be processed directly without going through flush machinery.
-		 * Queue for normal execution.
-		 */
+		 
 		return false;
 	case REQ_FSEQ_DATA | REQ_FSEQ_POSTFLUSH:
-		/*
-		 * Initialize the flush fields and completion handler to trigger
-		 * the post flush, and then just pass the command on.
-		 */
+		 
 		blk_rq_init_flush(rq);
 		rq->flush.seq |= REQ_FSEQ_PREFLUSH;
 		spin_lock_irq(&fq->mq_flush_lock);
@@ -454,10 +304,7 @@ bool blk_insert_flush(struct request *rq)
 		spin_unlock_irq(&fq->mq_flush_lock);
 		return false;
 	default:
-		/*
-		 * Mark the request as part of a flush sequence and submit it
-		 * for further processing to the flush state machine.
-		 */
+		 
 		blk_rq_init_flush(rq);
 		spin_lock_irq(&fq->mq_flush_lock);
 		blk_flush_complete_seq(rq, fq, REQ_FSEQ_ACTIONS & ~policy, 0);
@@ -466,13 +313,7 @@ bool blk_insert_flush(struct request *rq)
 	}
 }
 
-/**
- * blkdev_issue_flush - queue a flush
- * @bdev:	blockdev to issue flush for
- *
- * Description:
- *    Issue a flush for the block device in question.
- */
+ 
 int blkdev_issue_flush(struct block_device *bdev)
 {
 	struct bio bio;
@@ -512,7 +353,7 @@ struct blk_flush_queue *blk_alloc_flush_queue(int node, int cmd_size,
 
 void blk_free_flush_queue(struct blk_flush_queue *fq)
 {
-	/* bio based request queue hasn't flush queue */
+	 
 	if (!fq)
 		return;
 
@@ -520,24 +361,7 @@ void blk_free_flush_queue(struct blk_flush_queue *fq)
 	kfree(fq);
 }
 
-/*
- * Allow driver to set its own lock class to fq->mq_flush_lock for
- * avoiding lockdep complaint.
- *
- * flush_end_io() may be called recursively from some driver, such as
- * nvme-loop, so lockdep may complain 'possible recursive locking' because
- * all 'struct blk_flush_queue' instance share same mq_flush_lock lock class
- * key. We need to assign different lock class for these driver's
- * fq->mq_flush_lock for avoiding the lockdep warning.
- *
- * Use dynamically allocated lock class key for each 'blk_flush_queue'
- * instance is over-kill, and more worse it introduces horrible boot delay
- * issue because synchronize_rcu() is implied in lockdep_unregister_key which
- * is called for each hctx release. SCSI probing may synchronously create and
- * destroy lots of MQ request_queues for non-existent devices, and some robot
- * test kernel always enable lockdep option. It is observed that more than half
- * an hour is taken during SCSI MQ probe with per-fq lock class.
- */
+ 
 void blk_mq_hctx_set_fq_lock_class(struct blk_mq_hw_ctx *hctx,
 		struct lock_class_key *key)
 {

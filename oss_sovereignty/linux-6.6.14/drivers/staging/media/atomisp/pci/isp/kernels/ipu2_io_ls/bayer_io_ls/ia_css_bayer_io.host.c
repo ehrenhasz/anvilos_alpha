@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "ia_css_bayer_io.host.h"
 #include "dma.h"
@@ -53,7 +41,7 @@ int ia_css_bayer_io_config(const struct ia_css_binary      *binary,
 		ret = ia_css_dma_configure_from_info(&config, in_frame_info);
 		if (ret)
 			return ret;
-		// The base_address of the input frame will be set in the ISP
+		
 		to->width = in_frame_info->res.width;
 		to->height = in_frame_info->res.height;
 		to->stride = config.stride;

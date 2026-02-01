@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
 
-/*
- *  Xen para-virtual DRM device
- *
- * Copyright (C) 2016-2018 EPAM Systems Inc.
- *
- * Author: Oleksandr Andrushchenko <oleksandr_andrushchenko@epam.com>
- */
+
+ 
 
 #include <linux/device.h>
 
@@ -32,7 +26,7 @@ static int cfg_connector(struct xen_drm_front_info *front_info,
 	if (xenbus_scanf(XBT_NIL, connector_path, XENDISPL_FIELD_RESOLUTION,
 			 "%d" XENDISPL_RESOLUTION_SEPARATOR "%d",
 			 &connector->width, &connector->height) < 0) {
-		/* either no entry configured or wrong resolution set */
+		 
 		connector->width = 0;
 		connector->height = 0;
 		return -EINVAL;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PCI interface driver for DW SPI Core
- *
- * Copyright (c) 2009, 2014 Intel Corporation.
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/pm_runtime.h>
@@ -15,8 +11,8 @@
 
 #define DRIVER_NAME "dw_spi_pci"
 
-/* HW info for MRST Clk Control Unit, 32b reg per controller */
-#define MRST_SPI_CLK_BASE	100000000	/* 100m */
+ 
+#define MRST_SPI_CLK_BASE	100000000	 
 #define MRST_CLK_SPI_REG	0xff11d86c
 #define CLK_SPI_BDIV_OFFSET	0
 #define CLK_SPI_BDIV_MASK	0x00000007
@@ -40,7 +36,7 @@ static int dw_spi_pci_mid_init(struct dw_spi *dws)
 	if (!clk_reg)
 		return -ENOMEM;
 
-	/* Get SPI controller operating freq info */
+	 
 	clk_cdiv = readl(clk_reg + dws->bus_num * sizeof(u32));
 	clk_cdiv &= CLK_SPI_CDIV_MASK;
 	clk_cdiv >>= CLK_SPI_CDIV_OFFSET;
@@ -94,7 +90,7 @@ static int dw_spi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *en
 	if (!dws)
 		return -ENOMEM;
 
-	/* Get basic io resource and map it */
+	 
 	dws->paddr = pci_resource_start(pdev, pci_bar);
 	pci_set_master(pdev);
 
@@ -109,10 +105,7 @@ static int dw_spi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *en
 	dws->regs = pcim_iomap_table(pdev)[pci_bar];
 	dws->irq = pci_irq_vector(pdev, 0);
 
-	/*
-	 * Specific handling for platforms, like dma setup,
-	 * clock rate, FIFO depth.
-	 */
+	 
 	if (desc) {
 		dws->num_cs = desc->num_cs;
 		dws->bus_num = desc->bus_num;
@@ -132,7 +125,7 @@ static int dw_spi_pci_probe(struct pci_dev *pdev, const struct pci_device_id *en
 	if (ret)
 		goto err_free_irq_vectors;
 
-	/* PCI hook and SPI hook use the same drv data */
+	 
 	pci_set_drvdata(pdev, dws);
 
 	dev_info(&pdev->dev, "found PCI SPI controller(ID: %04x:%04x)\n",
@@ -180,16 +173,13 @@ static int dw_spi_pci_resume(struct device *dev)
 static SIMPLE_DEV_PM_OPS(dw_spi_pci_pm_ops, dw_spi_pci_suspend, dw_spi_pci_resume);
 
 static const struct pci_device_id dw_spi_pci_ids[] = {
-	/* Intel MID platform SPI controller 0 */
-	/*
-	 * The access to the device 8086:0801 is disabled by HW, since it's
-	 * exclusively used by SCU to communicate with MSIC.
-	 */
-	/* Intel MID platform SPI controller 1 */
+	 
+	 
+	 
 	{ PCI_VDEVICE(INTEL, 0x0800), (kernel_ulong_t)&dw_spi_pci_mid_desc_1},
-	/* Intel MID platform SPI controller 2 */
+	 
 	{ PCI_VDEVICE(INTEL, 0x0812), (kernel_ulong_t)&dw_spi_pci_mid_desc_2},
-	/* Intel Elkhart Lake PSE SPI controllers */
+	 
 	{ PCI_VDEVICE(INTEL, 0x4b84), (kernel_ulong_t)&dw_spi_pci_ehl_desc},
 	{ PCI_VDEVICE(INTEL, 0x4b85), (kernel_ulong_t)&dw_spi_pci_ehl_desc},
 	{ PCI_VDEVICE(INTEL, 0x4b86), (kernel_ulong_t)&dw_spi_pci_ehl_desc},

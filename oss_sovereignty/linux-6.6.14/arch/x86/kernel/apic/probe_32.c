@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Default generic APIC driver. This handles up to 8 CPUs.
- *
- * Copyright 2003 Andi Kleen, SuSE Labs.
- *
- * Generic x86 APIC driver probe layer.
- */
+
+ 
 #include <linux/export.h>
 #include <linux/errno.h>
 #include <linux/smp.h>
@@ -23,7 +17,7 @@ static int default_phys_pkg_id(int cpuid_apic, int index_msb)
 	return cpuid_apic >> index_msb;
 }
 
-/* should be called last. */
+ 
 static int probe_default(void)
 {
 	return 1;
@@ -88,7 +82,7 @@ static int __init parse_apic(char *arg)
 		}
 	}
 
-	/* Parsed again by __setup for debug/verbose */
+	 
 	return 0;
 }
 early_param("apic", parse_apic);
@@ -103,7 +97,7 @@ void __init x86_32_probe_bigsmp_early(void)
 		case X86_VENDOR_INTEL:
 			if (!APIC_XAPIC(boot_cpu_apic_version))
 				break;
-			/* P4 and above */
+			 
 			fallthrough;
 		case X86_VENDOR_HYGON:
 		case X86_VENDOR_AMD:
@@ -133,7 +127,7 @@ void __init x86_32_probe_apic(void)
 				break;
 			}
 		}
-		/* Not visible without early console */
+		 
 		if (drv == __apicdrivers_end)
 			panic("Didn't find an APIC driver");
 	}

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2003 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -23,9 +20,7 @@ static inline struct xfs_dq_logitem *DQUOT_ITEM(struct xfs_log_item *lip)
 	return container_of(lip, struct xfs_dq_logitem, qli_item);
 }
 
-/*
- * returns the number of iovecs needed to log the given dquot item.
- */
+ 
 STATIC void
 xfs_qm_dquot_logitem_size(
 	struct xfs_log_item	*lip,
@@ -37,9 +32,7 @@ xfs_qm_dquot_logitem_size(
 		   sizeof(struct xfs_disk_dquot);
 }
 
-/*
- * fills in the vector of log iovecs for the given dquot log item.
- */
+ 
 STATIC void
 xfs_qm_dquot_logitem_format(
 	struct xfs_log_item	*lip,
@@ -65,9 +58,7 @@ xfs_qm_dquot_logitem_format(
 			sizeof(struct xfs_disk_dquot));
 }
 
-/*
- * Increment the pin count of the given dquot.
- */
+ 
 STATIC void
 xfs_qm_dquot_logitem_pin(
 	struct xfs_log_item	*lip)
@@ -78,12 +69,7 @@ xfs_qm_dquot_logitem_pin(
 	atomic_inc(&dqp->q_pincount);
 }
 
-/*
- * Decrement the pin count of the given dquot, and wake up
- * anyone in xfs_dqwait_unpin() if the count goes to 0.	 The
- * dquot must have been previously pinned with a call to
- * xfs_qm_dquot_logitem_pin().
- */
+ 
 STATIC void
 xfs_qm_dquot_logitem_unpin(
 	struct xfs_log_item	*lip,
@@ -96,10 +82,7 @@ xfs_qm_dquot_logitem_unpin(
 		wake_up(&dqp->q_pinwait);
 }
 
-/*
- * This is called to wait for the given dquot to be unpinned.
- * Most of these pin/unpin routines are plagiarized from inode code.
- */
+ 
 void
 xfs_qm_dqunpin_wait(
 	struct xfs_dquot	*dqp)
@@ -108,9 +91,7 @@ xfs_qm_dqunpin_wait(
 	if (atomic_read(&dqp->q_pincount) == 0)
 		return;
 
-	/*
-	 * Give the log a push so we don't wait here too long.
-	 */
+	 
 	xfs_log_force(dqp->q_mount, 0);
 	wait_event(dqp->q_pinwait, (atomic_read(&dqp->q_pincount) == 0));
 }
@@ -133,20 +114,13 @@ xfs_qm_dquot_logitem_push(
 	if (!xfs_dqlock_nowait(dqp))
 		return XFS_ITEM_LOCKED;
 
-	/*
-	 * Re-check the pincount now that we stabilized the value by
-	 * taking the quota lock.
-	 */
+	 
 	if (atomic_read(&dqp->q_pincount) > 0) {
 		rval = XFS_ITEM_PINNED;
 		goto out_unlock;
 	}
 
-	/*
-	 * Someone else is already flushing the dquot.  Nothing we can do
-	 * here but wait for the flush to finish and remove the item from
-	 * the AIL.
-	 */
+	 
 	if (!xfs_dqflock_nowait(dqp)) {
 		rval = XFS_ITEM_FLUSHING;
 		goto out_unlock;
@@ -176,12 +150,7 @@ xfs_qm_dquot_logitem_release(
 
 	ASSERT(XFS_DQ_IS_LOCKED(dqp));
 
-	/*
-	 * dquots are never 'held' from getting unlocked at the end of
-	 * a transaction.  Their locking and unlocking is hidden inside the
-	 * transaction layer, within trans_commit. Hence, no LI_HOLD flag
-	 * for the logitem.
-	 */
+	 
 	xfs_dqunlock(dqp);
 }
 
@@ -203,11 +172,7 @@ static const struct xfs_item_ops xfs_dquot_item_ops = {
 	.iop_push	= xfs_qm_dquot_logitem_push,
 };
 
-/*
- * Initialize the dquot log item for a newly allocated dquot.
- * The dquot isn't locked at this point, but it isn't on any of the lists
- * either, so we don't care.
- */
+ 
 void
 xfs_qm_dquot_logitem_init(
 	struct xfs_dquot	*dqp)

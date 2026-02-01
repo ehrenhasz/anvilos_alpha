@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * omap_gem.h -- OMAP DRM GEM Object Management
- *
- * Copyright (C) 2011 Texas Instruments
- * Author: Rob Clark <rob@ti.com>
- */
+ 
+ 
 
 #ifndef __OMAPDRM_GEM_H__
 #define __OMAPDRM_GEM_H__
@@ -28,7 +23,7 @@ struct vm_fault;
 
 union omap_gem_size;
 
-/* Initialization and Cleanup */
+ 
 void omap_gem_init(struct drm_device *dev);
 void omap_gem_deinit(struct drm_device *dev);
 
@@ -41,7 +36,7 @@ void omap_gem_describe(struct drm_gem_object *obj, struct seq_file *m);
 void omap_gem_describe_objects(struct list_head *list, struct seq_file *m);
 #endif
 
-/* GEM Object Creation and Deletion */
+ 
 struct drm_gem_object *omap_gem_new(struct drm_device *dev,
 		union omap_gem_size gsize, u32 flags);
 struct drm_gem_object *omap_gem_new_dmabuf(struct drm_device *dev, size_t size,
@@ -50,17 +45,17 @@ int omap_gem_new_handle(struct drm_device *dev, struct drm_file *file,
 		union omap_gem_size gsize, u32 flags, u32 *handle);
 void *omap_gem_vaddr(struct drm_gem_object *obj);
 
-/* Dumb Buffers Interface */
+ 
 int omap_gem_dumb_map_offset(struct drm_file *file, struct drm_device *dev,
 		u32 handle, u64 *offset);
 int omap_gem_dumb_create(struct drm_file *file, struct drm_device *dev,
 		struct drm_mode_create_dumb *args);
 
-/* mmap() Interface */
+ 
 u64 omap_gem_mmap_offset(struct drm_gem_object *obj);
 size_t omap_gem_mmap_size(struct drm_gem_object *obj);
 
-/* PRIME Interface */
+ 
 struct dma_buf *omap_gem_prime_export(struct drm_gem_object *obj, int flags);
 struct drm_gem_object *omap_gem_prime_import(struct drm_device *dev,
 		struct dma_buf *buffer);
@@ -83,4 +78,4 @@ struct sg_table *omap_gem_get_sg(struct drm_gem_object *obj,
 		enum dma_data_direction dir);
 void omap_gem_put_sg(struct drm_gem_object *obj, struct sg_table *sgt);
 
-#endif /* __OMAPDRM_GEM_H__ */
+#endif  

@@ -1,51 +1,4 @@
-/*
- * Cryptographic API.
- *
- * AES Cipher Algorithm.
- *
- * Based on Brian Gladman's code.
- *
- * Linux developers:
- *  Alexander Kjeldaas <astor@fast.no>
- *  Herbert Valerio Riedel <hvr@hvrlab.org>
- *  Kyle McMartin <kyle@debian.org>
- *  Adam J. Richter <adam@yggdrasil.com> (conversion to 2.5 API).
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * ---------------------------------------------------------------------------
- * Copyright (c) 2002, Dr Brian Gladman <brg@gladman.me.uk>, Worcester, UK.
- * All rights reserved.
- *
- * LICENSE TERMS
- *
- * The free distribution and use of this software in both source and binary
- * form is allowed (with or without changes) provided that:
- *
- *   1. distributions of this source code include the above copyright
- *      notice, this list of conditions and the following disclaimer;
- *
- *   2. distributions in binary form include the above copyright
- *      notice, this list of conditions and the following disclaimer
- *      in the documentation and/or other associated materials;
- *
- *   3. the copyright holder's name is not used to endorse products
- *      built using this software without specific written permission.
- *
- * ALTERNATIVELY, provided that this notice is retained in full, this product
- * may be distributed under the terms of the GNU General Public License (GPL),
- * in which case the provisions of the GPL apply INSTEAD OF those given above.
- *
- * DISCLAIMER
- *
- * This software is provided 'as is' with no explicit or implied warranties
- * in respect of its properties, including, but not limited to, correctness
- * and/or fitness for purpose.
- * ---------------------------------------------------------------------------
- */
+ 
 
 #include <crypto/aes.h>
 #include <crypto/algapi.h>
@@ -61,7 +14,7 @@ static inline u8 byte(const u32 x, const unsigned n)
 	return x >> (n << 3);
 }
 
-/* cacheline-aligned to facilitate prefetching into cache */
+ 
 __visible const u32 crypto_ft_tab[4][256] ____cacheline_aligned = {
 	{
 		0xa56363c6, 0x847c7cf8, 0x997777ee, 0x8d7b7bf6,
@@ -1121,18 +1074,7 @@ static const u32 crypto_il_tab[4][256] ____cacheline_aligned = {
 EXPORT_SYMBOL_GPL(crypto_ft_tab);
 EXPORT_SYMBOL_GPL(crypto_it_tab);
 
-/**
- * crypto_aes_set_key - Set the AES key.
- * @tfm:	The %crypto_tfm that is used in the context.
- * @in_key:	The input key.
- * @key_len:	The size of the key.
- *
- * This function uses aes_expand_key() to expand the key.  &crypto_aes_ctx
- * _must_ be the private data embedded in @tfm which is retrieved with
- * crypto_tfm_ctx().
- *
- * Return: 0 on success; -EINVAL on failure (only happens for bad key lengths)
- */
+ 
 int crypto_aes_set_key(struct crypto_tfm *tfm, const u8 *in_key,
 		unsigned int key_len)
 {
@@ -1142,7 +1084,7 @@ int crypto_aes_set_key(struct crypto_tfm *tfm, const u8 *in_key,
 }
 EXPORT_SYMBOL_GPL(crypto_aes_set_key);
 
-/* encrypt a block of text */
+ 
 
 #define f_rn(bo, bi, n, k)	do {				\
 	bo[n] = crypto_ft_tab[0][byte(bi[n], 0)] ^			\
@@ -1212,7 +1154,7 @@ static void crypto_aes_encrypt(struct crypto_tfm *tfm, u8 *out, const u8 *in)
 	put_unaligned_le32(b0[3], out + 12);
 }
 
-/* decrypt a block of text */
+ 
 
 #define i_rn(bo, bi, n, k)	do {				\
 	bo[n] = crypto_it_tab[0][byte(bi[n], 0)] ^			\

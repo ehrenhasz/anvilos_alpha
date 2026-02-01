@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2021 Hengqi Chen */
+ 
+ 
 
 #include <test_progs.h>
 #include <sys/un.h>
@@ -27,7 +27,7 @@ void test_skc_to_unix_sock(void)
 	if (!ASSERT_OK(err, "could not attach BPF object"))
 		goto cleanup;
 
-	/* trigger unix_listen */
+	 
 	sockfd = socket(AF_UNIX, SOCK_STREAM, 0);
 	if (!ASSERT_GT(sockfd, 0, "socket failed"))
 		goto cleanup;

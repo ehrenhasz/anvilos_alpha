@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * PCI Express Hot Plug Controller Driver
- *
- * Copyright (C) 1995,2001 Compaq Computer Corporation
- * Copyright (C) 2001 Greg Kroah-Hartman (greg@kroah.com)
- * Copyright (C) 2001 IBM Corp.
- * Copyright (C) 2003-2004 Intel Corporation
- *
- * All rights reserved.
- *
- * Send feedback to <greg@kroah.com>, <kristen.c.accardi@intel.com>
- *
- */
+
+ 
 
 #define dev_fmt(fmt) "pciehp: " fmt
 
@@ -21,27 +9,18 @@
 #include <linux/pci.h>
 #include "pciehp.h"
 
-/* The following routines constitute the bulk of the
-   hotplug controller logic
- */
+ 
 
 #define SAFE_REMOVAL	 true
 #define SURPRISE_REMOVAL false
 
 static void set_slot_off(struct controller *ctrl)
 {
-	/*
-	 * Turn off slot, turn on attention indicator, turn off power
-	 * indicator
-	 */
+	 
 	if (POWER_CTRL(ctrl)) {
 		pciehp_power_off_slot(ctrl);
 
-		/*
-		 * After turning power off, we must wait for at least 1 second
-		 * before taking any action that relies on power having been
-		 * removed from the slot/adapter.
-		 */
+		 
 		msleep(1000);
 	}
 
@@ -49,20 +28,14 @@ static void set_slot_off(struct controller *ctrl)
 			      PCI_EXP_SLTCTL_ATTN_IND_ON);
 }
 
-/**
- * board_added - Called after a board has been added to the system.
- * @ctrl: PCIe hotplug controller where board is added
- *
- * Turns power on for the board.
- * Configures board.
- */
+ 
 static int board_added(struct controller *ctrl)
 {
 	int retval = 0;
 	struct pci_bus *parent = ctrl->pcie->port->subordinate;
 
 	if (POWER_CTRL(ctrl)) {
-		/* Power on slot */
+		 
 		retval = pciehp_power_on_slot(ctrl);
 		if (retval)
 			return retval;
@@ -71,12 +44,12 @@ static int board_added(struct controller *ctrl)
 	pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_BLINK,
 			      INDICATOR_NOOP);
 
-	/* Check link training status */
+	 
 	retval = pciehp_check_link_status(ctrl);
 	if (retval)
 		goto err_exit;
 
-	/* Check for a power fault */
+	 
 	if (ctrl->power_fault_detected || pciehp_query_power_fault(ctrl)) {
 		ctrl_err(ctrl, "Slot(%s): Power fault\n", slot_name(ctrl));
 		retval = -EIO;
@@ -101,11 +74,7 @@ err_exit:
 	return retval;
 }
 
-/**
- * remove_board - Turn off slot and Power Indicator
- * @ctrl: PCIe hotplug controller where board is being removed
- * @safe_removal: whether the board is safely removed (versus surprise removed)
- */
+ 
 static void remove_board(struct controller *ctrl, bool safe_removal)
 {
 	pciehp_unconfigure_device(ctrl, safe_removal);
@@ -113,14 +82,10 @@ static void remove_board(struct controller *ctrl, bool safe_removal)
 	if (POWER_CTRL(ctrl)) {
 		pciehp_power_off_slot(ctrl);
 
-		/*
-		 * After turning power off, we must wait for at least 1 second
-		 * before taking any action that relies on power having been
-		 * removed from the slot/adapter.
-		 */
+		 
 		msleep(1000);
 
-		/* Ignore link or presence changes caused by power off */
+		 
 		atomic_and(~(PCI_EXP_SLTSTA_DLLSC | PCI_EXP_SLTSTA_PDC),
 			   &ctrl->pending_events);
 	}
@@ -173,18 +138,14 @@ void pciehp_handle_button_press(struct controller *ctrl)
 			ctrl_info(ctrl, "Slot(%s): Button press: will power on in 5 sec\n",
 				  slot_name(ctrl));
 		}
-		/* blink power indicator and turn off attention */
+		 
 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_BLINK,
 				      PCI_EXP_SLTCTL_ATTN_IND_OFF);
 		schedule_delayed_work(&ctrl->button_work, 5 * HZ);
 		break;
 	case BLINKINGOFF_STATE:
 	case BLINKINGON_STATE:
-		/*
-		 * Cancel if we are still blinking; this means that we
-		 * press the attention again before the 5 sec. limit
-		 * expires to cancel hot-add or hot-remove
-		 */
+		 
 		cancel_delayed_work(&ctrl->button_work);
 		if (ctrl->state == BLINKINGOFF_STATE) {
 			ctrl->state = ON_STATE;
@@ -227,10 +188,7 @@ void pciehp_handle_presence_or_link_change(struct controller *ctrl, u32 events)
 {
 	int present, link_active;
 
-	/*
-	 * If the slot is on and presence or link has changed, turn it off.
-	 * Even if it's occupied again, we cannot assume the card is the same.
-	 */
+	 
 	mutex_lock(&ctrl->state_lock);
 	switch (ctrl->state) {
 	case BLINKINGOFF_STATE:
@@ -252,7 +210,7 @@ void pciehp_handle_presence_or_link_change(struct controller *ctrl, u32 events)
 		break;
 	}
 
-	/* Turn the slot on if it's occupied or link is up */
+	 
 	mutex_lock(&ctrl->state_lock);
 	present = pciehp_card_present(ctrl);
 	link_active = pciehp_check_link_active(ctrl);
@@ -322,7 +280,7 @@ static int pciehp_enable_slot(struct controller *ctrl)
 	pm_runtime_get_sync(&ctrl->pcie->port->dev);
 	ret = __pciehp_enable_slot(ctrl);
 	if (ret && ATTN_BUTTN(ctrl))
-		/* may be blinking */
+		 
 		pciehp_set_indicators(ctrl, PCI_EXP_SLTCTL_PWR_IND_OFF,
 				      INDICATOR_NOOP);
 	pm_runtime_put(&ctrl->pcie->port->dev);
@@ -375,10 +333,7 @@ int pciehp_sysfs_enable_slot(struct hotplug_slot *hotplug_slot)
 	case BLINKINGON_STATE:
 	case OFF_STATE:
 		mutex_unlock(&ctrl->state_lock);
-		/*
-		 * The IRQ thread becomes a no-op if the user pulls out the
-		 * card before the thread wakes up, so initialize to -ENODEV.
-		 */
+		 
 		ctrl->request_result = -ENODEV;
 		pciehp_request(ctrl, PCI_EXP_SLTSTA_PDC);
 		wait_event(ctrl->requester,

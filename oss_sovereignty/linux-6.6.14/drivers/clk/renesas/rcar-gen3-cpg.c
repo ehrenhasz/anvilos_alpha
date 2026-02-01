@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car Gen3 Clock Pulse Generator
- *
- * Copyright (C) 2015-2018 Glider bvba
- * Copyright (C) 2019 Renesas Electronics Corp.
- *
- * Based on clk-rcar-gen3.c
- *
- * Copyright (C) 2015 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/bug.h>
 #include <linux/bitfield.h>
@@ -26,19 +17,19 @@
 #include "rcar-cpg-lib.h"
 #include "rcar-gen3-cpg.h"
 
-#define CPG_PLLECR		0x00d0	/* PLL Enable Control Register */
+#define CPG_PLLECR		0x00d0	 
 
-#define CPG_PLLECR_PLLST(n)	BIT(8 + (n))	/* PLLn Circuit Status */
+#define CPG_PLLECR_PLLST(n)	BIT(8 + (n))	 
 
-#define CPG_PLL0CR		0x00d8	/* PLLn Control Registers */
+#define CPG_PLL0CR		0x00d8	 
 #define CPG_PLL2CR		0x002c
 #define CPG_PLL4CR		0x01f4
 
-#define CPG_PLLnCR_STC_MASK	GENMASK(30, 24)	/* PLL Circuit Mult. Ratio */
+#define CPG_PLLnCR_STC_MASK	GENMASK(30, 24)	 
 
-#define CPG_RCKCR_CKSEL	BIT(15)	/* RCLK Clock Source Select */
+#define CPG_RCKCR_CKSEL	BIT(15)	 
 
-/* PLL Clocks */
+ 
 struct cpg_pll_clk {
 	struct clk_hw hw;
 	void __iomem *pllcr_reg;
@@ -137,7 +128,7 @@ static struct clk * __init cpg_pll_clk_register(const char *name,
 	pll_clk->hw.init = &init;
 	pll_clk->pllcr_reg = base + offset;
 	pll_clk->pllecr_reg = base + CPG_PLLECR;
-	pll_clk->fixed_mult = mult;	/* PLL refclk x (setting + 1) x mult */
+	pll_clk->fixed_mult = mult;	 
 	pll_clk->pllecr_pllst_mask = CPG_PLLECR_PLLST(index);
 
 	clk = clk_register(NULL, &pll_clk->hw);
@@ -147,16 +138,7 @@ static struct clk * __init cpg_pll_clk_register(const char *name,
 	return clk;
 }
 
-/*
- * Z Clock & Z2 Clock
- *
- * Traits of this clock:
- * prepare - clk_prepare only ensures that parents are prepared
- * enable - clk_enable only ensures that parents are enabled
- * rate - rate is adjustable.
- *        clk->rate = (parent->rate * mult / 32 ) / fixed_div
- * parent - fixed parent.  No clk_set_parent support
- */
+ 
 #define CPG_FRQCRB			0x00000004
 #define CPG_FRQCRB_KICK			BIT(31)
 #define CPG_FRQCRC			0x000000e0
@@ -165,7 +147,7 @@ struct cpg_z_clk {
 	struct clk_hw hw;
 	void __iomem *reg;
 	void __iomem *kick_reg;
-	unsigned long max_rate;		/* Maximum rate for normal mode */
+	unsigned long max_rate;		 
 	unsigned int fixed_div;
 	u32 mask;
 };
@@ -195,10 +177,10 @@ static int cpg_z_clk_determine_rate(struct clk_hw *hw,
 
 	rate = min(req->rate, req->max_rate);
 	if (rate <= zclk->max_rate) {
-		/* Set parent rate to initial value for normal modes */
+		 
 		prate = zclk->max_rate;
 	} else {
-		/* Set increased parent rate for boost modes */
+		 
 		prate = rate;
 	}
 	req->best_parent_rate = clk_hw_round_rate(clk_hw_get_parent(hw),
@@ -233,21 +215,10 @@ static int cpg_z_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 
 	cpg_reg_modify(zclk->reg, zclk->mask, (32 - mult) << __ffs(zclk->mask));
 
-	/*
-	 * Set KICK bit in FRQCRB to update hardware setting and wait for
-	 * clock change completion.
-	 */
+	 
 	cpg_reg_modify(zclk->kick_reg, 0, CPG_FRQCRB_KICK);
 
-	/*
-	 * Note: There is no HW information about the worst case latency.
-	 *
-	 * Using experimental measurements, it seems that no more than
-	 * ~10 iterations are needed, independently of the CPU rate.
-	 * Since this value might be dependent on external xtal rate, pll1
-	 * rate or even the other emulation clocks rate, use 1000 as a
-	 * "super" safe value.
-	 */
+	 
 	for (i = 1000; i; i--) {
 		if (!(readl(zclk->kick_reg) & CPG_FRQCRB_KICK))
 			return 0;
@@ -290,7 +261,7 @@ static struct clk * __init __cpg_z_clk_register(const char *name,
 	zclk->kick_reg = reg + CPG_FRQCRB;
 	zclk->hw.init = &init;
 	zclk->mask = GENMASK(offset + 4, offset);
-	zclk->fixed_div = div; /* PLLVCO x 1/div x SYS-CPU divider */
+	zclk->fixed_div = div;  
 
 	clk = clk_register(NULL, &zclk->hw);
 	if (IS_ERR(clk)) {
@@ -333,7 +304,7 @@ static unsigned int cpg_clk_extalr __initdata;
 static u32 cpg_mode __initdata;
 static u32 cpg_quirks __initdata;
 
-#define RCKCR_CKSEL	BIT(1)		/* Manual RCLK parent selection */
+#define RCKCR_CKSEL	BIT(1)		 
 
 
 static const struct soc_device_attribute cpg_quirks_match[] __initconst = {
@@ -341,7 +312,7 @@ static const struct soc_device_attribute cpg_quirks_match[] __initconst = {
 		.soc_id = "r8a7796", .revision = "ES1.0",
 		.data = (void *)(RCKCR_CKSEL),
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
@@ -354,7 +325,7 @@ struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
 	unsigned int div = 1;
 	u32 value;
 
-	parent = clks[core->parent & 0xffff];	/* some types use high bits */
+	parent = clks[core->parent & 0xffff];	 
 	if (IS_ERR(parent))
 		return ERR_CAST(parent);
 
@@ -364,11 +335,7 @@ struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
 		break;
 
 	case CLK_TYPE_GEN3_PLL0:
-		/*
-		 * PLL0 is implemented as a custom clock, to change the
-		 * multiplier when cpufreq changes between normal and boost
-		 * modes.
-		 */
+		 
 		return cpg_pll_clk_register(core->name, __clk_get_name(parent),
 					    base, 2, CPG_PLL0CR, 0);
 
@@ -378,11 +345,7 @@ struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
 		break;
 
 	case CLK_TYPE_GEN3_PLL2:
-		/*
-		 * PLL2 is implemented as a custom clock, to change the
-		 * multiplier when cpufreq changes between normal and boost
-		 * modes.
-		 */
+		 
 		return cpg_pll_clk_register(core->name, __clk_get_name(parent),
 					    base, 2, CPG_PLL2CR, 2);
 
@@ -392,12 +355,7 @@ struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
 		break;
 
 	case CLK_TYPE_GEN3_PLL4:
-		/*
-		 * PLL4 is a configurable multiplier clock. Register it as a
-		 * fixed factor clock for now as there's no generic multiplier
-		 * clock implementation and we currently have no need to change
-		 * the multiplier value.
-		 */
+		 
 		value = readl(base + CPG_PLL4CR);
 		mult = (((value >> 24) & 0x7f) + 1) * 2;
 		break;
@@ -420,10 +378,7 @@ struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
 
 			csn->reg = base + CPG_RCKCR;
 
-			/*
-			 * RINT is default.
-			 * Only if EXTALR is populated, we switch to it.
-			 */
+			 
 			value = readl(csn->reg) & 0x3f;
 
 			if (clk_get_rate(clks[cpg_clk_extalr])) {
@@ -436,16 +391,13 @@ struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
 			break;
 		}
 
-		/* Select parent clock of RCLK by MD28 */
+		 
 		if (cpg_mode & BIT(28))
 			parent = clks[cpg_clk_extalr];
 		break;
 
 	case CLK_TYPE_GEN3_MDSEL:
-		/*
-		 * Clock selectable between two parents and two fixed dividers
-		 * using a mode pin
-		 */
+		 
 		if (cpg_mode & BIT(core->offset)) {
 			div = core->div & 0xffff;
 		} else {
@@ -466,17 +418,12 @@ struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
 					   base, core->div, core->offset);
 
 	case CLK_TYPE_GEN3_OSC:
-		/*
-		 * Clock combining OSC EXTAL predivider and a fixed divider
-		 */
+		 
 		div = cpg_pll_config->osc_prediv * core->div;
 		break;
 
 	case CLK_TYPE_GEN3_RCKSEL:
-		/*
-		 * Clock selectable between two parents and two fixed dividers
-		 * using RCKCR.CKSEL
-		 */
+		 
 		if (readl(base + CPG_RCKCR) & CPG_RCKCR_CKSEL) {
 			div = core->div & 0xffff;
 		} else {
@@ -495,11 +442,7 @@ struct clk * __init rcar_gen3_cpg_clk_register(struct device *dev,
 						  &cpg_lock);
 
 	case CLK_TYPE_GEN3_E3_RPCSRC:
-		/*
-		 * Register RPCSRC as fixed factor clock based on the
-		 * MD[4:1] pins and CPG_RPCCKCR[4:3] register value for
-		 * which has been set prior to booting the kernel.
-		 */
+		 
 		value = (readl(base + CPG_RPCCKCR) & GENMASK(4, 3)) >> 3;
 
 		switch (value) {

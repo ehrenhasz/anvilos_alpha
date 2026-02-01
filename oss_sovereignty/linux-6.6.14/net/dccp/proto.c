@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  net/dccp/proto.c
- *
- *  An implementation of the DCCP protocol
- *  Arnaldo Carvalho de Melo <acme@conectiva.com.br>
- */
+
+ 
 
 #include <linux/dccp.h>
 #include <linux/module.h>
@@ -48,7 +43,7 @@ EXPORT_PER_CPU_SYMBOL_GPL(dccp_orphan_count);
 struct inet_hashinfo dccp_hashinfo;
 EXPORT_SYMBOL_GPL(dccp_hashinfo);
 
-/* the maximum queue length for tx in packets. 0 is no limit */
+ 
 int sysctl_dccp_tx_qlen __read_mostly = 5;
 
 #ifdef CONFIG_IP_DCCP_DEBUG
@@ -87,7 +82,7 @@ void dccp_set_state(struct sock *sk, const int state)
 	case DCCP_OPEN:
 		if (oldstate != DCCP_OPEN)
 			DCCP_INC_STATS(DCCP_MIB_CURRESTAB);
-		/* Client retransmits all Confirm options until entering OPEN */
+		 
 		if (oldstate == DCCP_PARTOPEN)
 			dccp_feat_list_purge(&dccp_sk(sk)->dccps_featneg);
 		break;
@@ -107,9 +102,7 @@ void dccp_set_state(struct sock *sk, const int state)
 			DCCP_DEC_STATS(DCCP_MIB_CURRESTAB);
 	}
 
-	/* Change state AFTER socket is unhashed to avoid closed
-	 * socket sitting in hash tables.
-	 */
+	 
 	inet_sk_set_state(sk, state);
 }
 
@@ -119,15 +112,12 @@ static void dccp_finish_passive_close(struct sock *sk)
 {
 	switch (sk->sk_state) {
 	case DCCP_PASSIVE_CLOSE:
-		/* Node (client or server) has received Close packet. */
+		 
 		dccp_send_reset(sk, DCCP_RESET_CODE_CLOSED);
 		dccp_set_state(sk, DCCP_CLOSED);
 		break;
 	case DCCP_PASSIVE_CLOSEREQ:
-		/*
-		 * Client received CloseReq. We set the `active' flag so that
-		 * dccp_send_close() retransmits the Close as per RFC 4340, 8.3.
-		 */
+		 
 		dccp_send_close(sk, 1);
 		dccp_set_state(sk, DCCP_CLOSING);
 	}
@@ -209,7 +199,7 @@ int dccp_init_sock(struct sock *sk, const __u8 ctl_sock_initialized)
 	dccp_init_xmit_timers(sk);
 
 	INIT_LIST_HEAD(&dp->dccps_featneg);
-	/* control socket doesn't need feat nego */
+	 
 	if (likely(ctl_sock_initialized))
 		return dccp_feat_init(sk);
 	return 0;
@@ -227,7 +217,7 @@ void dccp_destroy_sock(struct sock *sk)
 		sk->sk_send_head = NULL;
 	}
 
-	/* Clean up a referenced DCCP bind bucket. */
+	 
 	if (inet_csk(sk)->icsk_bind_hash != NULL)
 		inet_put_port(sk);
 
@@ -241,7 +231,7 @@ void dccp_destroy_sock(struct sock *sk)
 	ccid_hc_rx_delete(dp->dccps_hc_rx_ccid, sk);
 	dp->dccps_hc_rx_ccid = NULL;
 
-	/* clean up feature negotiation state */
+	 
 	dccp_feat_list_purge(&dp->dccps_featneg);
 }
 
@@ -263,10 +253,7 @@ int dccp_disconnect(struct sock *sk, int flags)
 	if (old_state != DCCP_CLOSED)
 		dccp_set_state(sk, DCCP_CLOSED);
 
-	/*
-	 * This corresponds to the ABORT function of RFC793, sec. 3.8
-	 * TCP uses a RST segment, DCCP a Reset packet with Code 2, "Aborted".
-	 */
+	 
 	if (old_state == DCCP_LISTEN) {
 		inet_csk_listen_stop(sk);
 	} else if (dccp_need_reset(old_state)) {
@@ -305,13 +292,7 @@ int dccp_disconnect(struct sock *sk, int flags)
 
 EXPORT_SYMBOL_GPL(dccp_disconnect);
 
-/*
- *	Wait for a DCCP event.
- *
- *	Note that we don't need to lock the socket, as the upper poll layers
- *	take care of normal races (between the test and the event) and we don't
- *	go look at any of the socket buffers directly.
- */
+ 
 __poll_t dccp_poll(struct file *file, struct socket *sock,
 		       poll_table *wait)
 {
@@ -326,10 +307,7 @@ __poll_t dccp_poll(struct file *file, struct socket *sock,
 	if (state == DCCP_LISTEN)
 		return inet_csk_listen_poll(sk);
 
-	/* Socket is not locked. We are protected from async events
-	   by poll logic and correct handling of state changes
-	   made by another threads is impossible in any case.
-	 */
+	 
 
 	mask = 0;
 	if (READ_ONCE(sk->sk_err))
@@ -341,7 +319,7 @@ __poll_t dccp_poll(struct file *file, struct socket *sock,
 	if (shutdown & RCV_SHUTDOWN)
 		mask |= EPOLLIN | EPOLLRDNORM | EPOLLRDHUP;
 
-	/* Connected? */
+	 
 	if ((1 << state) & ~(DCCPF_REQUESTING | DCCPF_RESPOND)) {
 		if (atomic_read(&sk->sk_rmem_alloc) > 0)
 			mask |= EPOLLIN | EPOLLRDNORM;
@@ -349,14 +327,11 @@ __poll_t dccp_poll(struct file *file, struct socket *sock,
 		if (!(shutdown & SEND_SHUTDOWN)) {
 			if (sk_stream_is_writeable(sk)) {
 				mask |= EPOLLOUT | EPOLLWRNORM;
-			} else {  /* send SIGIO later */
+			} else {   
 				sk_set_bit(SOCKWQ_ASYNC_NOSPACE, sk);
 				set_bit(SOCK_NOSPACE, &sk->sk_socket->flags);
 
-				/* Race breaker. If space is freed after
-				 * wspace test but before the flags are set,
-				 * IO signal will be lost.
-				 */
+				 
 				if (sk_stream_is_writeable(sk))
 					mask |= EPOLLOUT | EPOLLWRNORM;
 			}
@@ -378,9 +353,7 @@ int dccp_ioctl(struct sock *sk, int cmd, int *karg)
 	switch (cmd) {
 	case SIOCOUTQ: {
 		*karg = sk_wmem_alloc_get(sk);
-		/* Using sk_wmem_alloc here because sk_wmem_queued is not used by DCCP and
-		 * always 0, comparably to UDP.
-		 */
+		 
 
 		rc = 0;
 	}
@@ -391,10 +364,7 @@ int dccp_ioctl(struct sock *sk, int cmd, int *karg)
 
 		skb = skb_peek(&sk->sk_receive_queue);
 		if (skb != NULL) {
-			/*
-			 * We will only return the amount of this packet since
-			 * that is all that will be read.
-			 */
+			 
 			*karg = skb->len;
 		}
 		rc = 0;
@@ -452,12 +422,7 @@ static int dccp_setsockopt_cscov(struct sock *sk, int cscov, bool rx)
 
 	if (cscov < 0 || cscov > 15)
 		return -EINVAL;
-	/*
-	 * Populate a list of permissible values, in the range cscov...15. This
-	 * is necessary since feature negotiation of single values only works if
-	 * both sides incidentally choose the same value. Since the list starts
-	 * lowest-value first, negotiation will pick the smallest shared value.
-	 */
+	 
 	if (cscov == 0)
 		return 0;
 	len = 16 - cscov;
@@ -696,16 +661,7 @@ static int dccp_msghdr_parse(struct msghdr *msg, struct sk_buff *skb)
 {
 	struct cmsghdr *cmsg;
 
-	/*
-	 * Assign an (opaque) qpolicy priority value to skb->priority.
-	 *
-	 * We are overloading this skb field for use with the qpolicy subystem.
-	 * The skb->priority is normally used for the SO_PRIORITY option, which
-	 * is initialised from sk_priority. Since the assignment of sk_priority
-	 * to skb->priority happens later (on layer 3), we overload this field
-	 * for use with queueing priorities as long as the skb is on layer 4.
-	 * The default priority value (if nothing is set) is 0.
-	 */
+	 
 	skb->priority = 0;
 
 	for_each_cmsghdr(cmsg, msg) {
@@ -750,11 +706,8 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 
 	timeo = sock_sndtimeo(sk, noblock);
 
-	/*
-	 * We have to use sk_stream_wait_connect here to set sk_write_pending,
-	 * so that the trick in dccp_rcv_request_sent_state_process.
-	 */
-	/* Wait for a connection to finish. */
+	 
+	 
 	if ((1 << sk->sk_state) & ~(DCCPF_OPEN | DCCPF_PARTOPEN))
 		if ((rc = sk_stream_wait_connect(sk, &timeo)) != 0)
 			goto out_release;
@@ -776,7 +729,7 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 		goto out_discard;
 	}
 
-	/* We need to check dccps_mss_cache after socket is locked. */
+	 
 	if (len > dp->dccps_mss_cache) {
 		rc = -EMSGSIZE;
 		goto out_discard;
@@ -792,11 +745,7 @@ int dccp_sendmsg(struct sock *sk, struct msghdr *msg, size_t len)
 		goto out_discard;
 
 	dccp_qpolicy_push(sk, skb);
-	/*
-	 * The xmit_timer is set if the TX CCID is rate-based and will expire
-	 * when congestion control permits to release further packets into the
-	 * network. Window-based CCIDs do not use this timer.
-	 */
+	 
 	if (!timer_pending(&dp->dccps_xmit_timer))
 		dccp_write_xmit(sk);
 out_release:
@@ -870,9 +819,7 @@ verify_sock_status:
 
 		if (sk->sk_state == DCCP_CLOSED) {
 			if (!sock_flag(sk, SOCK_DONE)) {
-				/* This occurs when user tries to read
-				 * from never connected socket.
-				 */
+				 
 				len = -ENOTCONN;
 				break;
 			}
@@ -899,7 +846,7 @@ verify_sock_status:
 			msg->msg_flags |= MSG_TRUNC;
 
 		if (skb_copy_datagram_msg(skb, 0, msg, len)) {
-			/* Exception. Bailout! */
+			 
 			len = -EFAULT;
 			break;
 		}
@@ -934,15 +881,13 @@ int inet_dccp_listen(struct socket *sock, int backlog)
 		goto out;
 
 	WRITE_ONCE(sk->sk_max_ack_backlog, backlog);
-	/* Really, if the socket is already in listen state
-	 * we can only allow the backlog to be adjusted.
-	 */
+	 
 	if (old_state != DCCP_LISTEN) {
 		struct dccp_sock *dp = dccp_sk(sk);
 
 		dp->dccps_role = DCCP_ROLE_LISTEN;
 
-		/* do not start to listen if feature negotiation setup fails */
+		 
 		if (dccp_feat_finalise_settings(dp)) {
 			err = -EPROTO;
 			goto out;
@@ -1002,7 +947,7 @@ void dccp_close(struct sock *sk, long timeout)
 	if (sk->sk_state == DCCP_LISTEN) {
 		dccp_set_state(sk, DCCP_CLOSED);
 
-		/* Special case. */
+		 
 		inet_csk_listen_stop(sk);
 
 		goto adjudge_to_death;
@@ -1010,43 +955,31 @@ void dccp_close(struct sock *sk, long timeout)
 
 	sk_stop_timer(sk, &dp->dccps_xmit_timer);
 
-	/*
-	 * We need to flush the recv. buffs.  We do this only on the
-	 * descriptor close, not protocol-sourced closes, because the
-	  *reader process may not have drained the data yet!
-	 */
+	 
 	while ((skb = __skb_dequeue(&sk->sk_receive_queue)) != NULL) {
 		data_was_unread += skb->len;
 		__kfree_skb(skb);
 	}
 
-	/* If socket has been already reset kill it. */
+	 
 	if (sk->sk_state == DCCP_CLOSED)
 		goto adjudge_to_death;
 
 	if (data_was_unread) {
-		/* Unread data was tossed, send an appropriate Reset Code */
+		 
 		DCCP_WARN("ABORT with %u bytes unread\n", data_was_unread);
 		dccp_send_reset(sk, DCCP_RESET_CODE_ABORTED);
 		dccp_set_state(sk, DCCP_CLOSED);
 	} else if (sock_flag(sk, SOCK_LINGER) && !sk->sk_lingertime) {
-		/* Check zero linger _after_ checking for unread data. */
+		 
 		sk->sk_prot->disconnect(sk, 0);
 	} else if (sk->sk_state != DCCP_CLOSED) {
-		/*
-		 * Normal connection termination. May need to wait if there are
-		 * still packets in the TX queue that are delayed by the CCID.
-		 */
+		 
 		dccp_flush_write_queue(sk, &timeout);
 		dccp_terminate_connection(sk);
 	}
 
-	/*
-	 * Flush write queue. This may be necessary in several cases:
-	 * - we have been closed by the peer but still have application data;
-	 * - abortive termination (unread data or zero linger time),
-	 * - normal termination but queue could not be flushed within time limit
-	 */
+	 
 	__skb_queue_purge(&sk->sk_write_queue);
 
 	sk_stream_wait_close(sk, timeout);
@@ -1056,28 +989,23 @@ adjudge_to_death:
 	sock_hold(sk);
 	sock_orphan(sk);
 
-	/*
-	 * It is the last release_sock in its life. It will remove backlog.
-	 */
+	 
 	release_sock(sk);
-	/*
-	 * Now socket is owned by kernel and we acquire BH lock
-	 * to finish close. No need to check for user refs.
-	 */
+	 
 	local_bh_disable();
 	bh_lock_sock(sk);
 	WARN_ON(sock_owned_by_user(sk));
 
 	this_cpu_inc(dccp_orphan_count);
 
-	/* Have we already been destroyed by a softirq or backlog? */
+	 
 	if (state != DCCP_CLOSED && sk->sk_state == DCCP_CLOSED)
 		goto out;
 
 	if (sk->sk_state == DCCP_CLOSED)
 		inet_csk_destroy_sock(sk);
 
-	/* Otherwise, socket is reprieved until protocol close. */
+	 
 
 out:
 	bh_unlock_sock(sk);
@@ -1145,12 +1073,7 @@ static int __init dccp_init(void)
 	if (!dccp_hashinfo.bind2_bucket_cachep)
 		goto out_free_bind_bucket_cachep;
 
-	/*
-	 * Size and allocate the main established and bind bucket
-	 * hash tables.
-	 *
-	 * The methodology is similar to that of the buffer cache.
-	 */
+	 
 	if (nr_pages >= (128 * 1024))
 		goal = nr_pages >> (21 - PAGE_SHIFT);
 	else

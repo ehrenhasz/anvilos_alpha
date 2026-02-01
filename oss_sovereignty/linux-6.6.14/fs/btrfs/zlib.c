@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2008 Oracle.  All rights reserved.
- *
- * Based on jffs2 zlib code:
- * Copyright © 2001-2007 Red Hat, Inc.
- * Created by David Woodhouse <dwmw2@infradead.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -20,7 +14,7 @@
 #include <linux/refcount.h>
 #include "compression.h"
 
-/* workspace buffer size for s390 zlib hardware support */
+ 
 #define ZLIB_DFLTCC_BUF_SIZE    (4 * PAGE_SIZE)
 
 struct workspace {
@@ -66,10 +60,7 @@ struct list_head *zlib_alloc_workspace(unsigned int level)
 	workspace->strm.workspace = kvzalloc(workspacesize, GFP_KERNEL | __GFP_NOWARN);
 	workspace->level = level;
 	workspace->buf = NULL;
-	/*
-	 * In case of s390 zlib hardware support, allocate lager workspace
-	 * buffer. If allocator fails, fall back to a single page buffer.
-	 */
+	 
 	if (zlib_deflate_dfltcc_enabled()) {
 		workspace->buf = kmalloc(ZLIB_DFLTCC_BUF_SIZE,
 					 __GFP_NOMEMALLOC | __GFP_NORETRY |
@@ -136,10 +127,7 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
 	workspace->strm.avail_out = PAGE_SIZE;
 
 	while (workspace->strm.total_in < len) {
-		/*
-		 * Get next input pages and copy the contents to
-		 * the workspace buffer if required.
-		 */
+		 
 		if (workspace->strm.avail_in == 0) {
 			bytes_left = len - workspace->strm.total_in;
 			in_buf_pages = min(DIV_ROUND_UP(bytes_left, PAGE_SIZE),
@@ -184,17 +172,14 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
 			goto out;
 		}
 
-		/* we're making it bigger, give up */
+		 
 		if (workspace->strm.total_in > 8192 &&
 		    workspace->strm.total_in <
 		    workspace->strm.total_out) {
 			ret = -E2BIG;
 			goto out;
 		}
-		/* we need another page for writing out.  Test this
-		 * before the total_in so we will pull in a new page for
-		 * the stream end if required
-		 */
+		 
 		if (workspace->strm.avail_out == 0) {
 			if (nr_pages == nr_dest_pages) {
 				ret = -E2BIG;
@@ -211,17 +196,14 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
 			workspace->strm.avail_out = PAGE_SIZE;
 			workspace->strm.next_out = cpage_out;
 		}
-		/* we're all done */
+		 
 		if (workspace->strm.total_in >= len)
 			break;
 		if (workspace->strm.total_out > max_out)
 			break;
 	}
 	workspace->strm.avail_in = 0;
-	/*
-	 * Call deflate with Z_FINISH flush parameter providing more output
-	 * space but no more input data, until it returns with Z_STREAM_END.
-	 */
+	 
 	while (ret != Z_STREAM_END) {
 		ret = zlib_deflate(&workspace->strm, Z_FINISH);
 		if (ret == Z_STREAM_END)
@@ -231,7 +213,7 @@ int zlib_compress_pages(struct list_head *ws, struct address_space *mapping,
 			ret = -EIO;
 			goto out;
 		} else if (workspace->strm.avail_out == 0) {
-			/* get another page for the stream end */
+			 
 			if (nr_pages == nr_dest_pages) {
 				ret = -E2BIG;
 				goto out;
@@ -290,8 +272,7 @@ int zlib_decompress_bio(struct list_head *ws, struct compressed_bio *cb)
 	workspace->strm.next_out = workspace->buf;
 	workspace->strm.avail_out = workspace->buf_size;
 
-	/* If it's deflate, and it's got no preset dictionary, then
-	   we can tell zlib to skip the adler32 check. */
+	 
 	if (srclen > 2 && !(data_in[1] & PRESET_DICT) &&
 	    ((data_in[0] & 0x0f) == Z_DEFLATED) &&
 	    !(((data_in[0]<<8) + data_in[1]) % 31)) {
@@ -314,7 +295,7 @@ int zlib_decompress_bio(struct list_head *ws, struct compressed_bio *cb)
 		buf_start = total_out;
 		total_out = workspace->strm.total_out;
 
-		/* we didn't make progress in this inflate call, we're done */
+		 
 		if (buf_start == total_out)
 			break;
 
@@ -374,8 +355,7 @@ int zlib_decompress(struct list_head *ws, const u8 *data_in,
 	workspace->strm.next_out = workspace->buf;
 	workspace->strm.avail_out = workspace->buf_size;
 	workspace->strm.total_out = 0;
-	/* If it's deflate, and it's got no preset dictionary, then
-	   we can tell zlib to skip the adler32 check. */
+	 
 	if (srclen > 2 && !(data_in[1] & PRESET_DICT) &&
 	    ((data_in[0] & 0x0f) == Z_DEFLATED) &&
 	    !(((data_in[0]<<8) + data_in[1]) % 31)) {
@@ -436,11 +416,7 @@ next:
 
 	zlib_inflateEnd(&workspace->strm);
 
-	/*
-	 * this should only happen if zlib returned fewer bytes than we
-	 * expected.  btrfs_get_block is responsible for zeroing from the
-	 * end of the inline extent (destlen) to the end of the page
-	 */
+	 
 	if (pg_offset < destlen) {
 		memzero_page(dest_page, pg_offset, destlen - pg_offset);
 	}

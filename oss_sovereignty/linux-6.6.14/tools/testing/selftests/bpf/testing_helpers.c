@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: (LGPL-2.1 OR BSD-2-Clause)
-/* Copyright (C) 2019 Netronome Systems, Inc. */
-/* Copyright (C) 2020 Facebook, Inc. */
+
+ 
+ 
 #include <ctype.h>
 #include <stdlib.h>
 #include <string.h>
@@ -310,7 +310,7 @@ int bpf_test_load_program(enum bpf_prog_type type, const struct bpf_insn *insns,
 
 __u64 read_perf_max_sample_freq(void)
 {
-	__u64 sample_freq = 5000; /* fallback to 5000 on error */
+	__u64 sample_freq = 5000;  
 	FILE *f;
 
 	f = fopen("/proc/sys/kernel/perf_event_max_sample_rate", "r");
@@ -380,9 +380,7 @@ int load_bpf_testmod(bool verbose)
 	return 0;
 }
 
-/*
- * Trigger synchronize_rcu() in kernel.
- */
+ 
 int kern_sync_rcu(void)
 {
 	return syscall(__NR_membarrier, MEMBARRIER_CMD_SHARED, 0, 0);

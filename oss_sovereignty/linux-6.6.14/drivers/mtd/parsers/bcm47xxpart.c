@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * BCM47XX MTD partitioning
- *
- * Copyright © 2012 Rafał Miłecki <zajec5@gmail.com>
- */
+
+ 
 
 #include <linux/bcm47xx_nvram.h>
 #include <linux/module.h>
@@ -14,31 +10,24 @@
 
 #include <uapi/linux/magic.h>
 
-/*
- * NAND flash on Netgear R6250 was verified to contain 15 partitions.
- * This will result in allocating too big array for some old devices, but the
- * memory will be freed soon anyway (see mtd_device_parse_register).
- */
+ 
 #define BCM47XXPART_MAX_PARTS		20
 
-/*
- * Amount of bytes we read when analyzing each block of flash memory.
- * Set it big enough to allow detecting partition and reading important data.
- */
+ 
 #define BCM47XXPART_BYTES_TO_READ	0x4e8
 
-/* Magics */
-#define BOARD_DATA_MAGIC		0x5246504D	/* MPFR */
+ 
+#define BOARD_DATA_MAGIC		0x5246504D	 
 #define BOARD_DATA_MAGIC2		0xBD0D0BBD
-#define CFE_MAGIC			0x43464531	/* 1EFC */
-#define FACTORY_MAGIC			0x59544346	/* FCTY */
-#define NVRAM_HEADER			0x48534C46	/* FLSH */
-#define POT_MAGIC1			0x54544f50	/* POTT */
-#define POT_MAGIC2			0x504f		/* OP */
+#define CFE_MAGIC			0x43464531	 
+#define FACTORY_MAGIC			0x59544346	 
+#define NVRAM_HEADER			0x48534C46	 
+#define POT_MAGIC1			0x54544f50	 
+#define POT_MAGIC2			0x504f		 
 #define ML_MAGIC1			0x39685a42
 #define ML_MAGIC2			0x26594131
 #define TRX_MAGIC			0x30524448
-#define SHSQ_MAGIC			0x71736873	/* shsq (weird ZTE H218N endianness) */
+#define SHSQ_MAGIC			0x71736873	 
 
 static const char * const trx_types[] = { "trx", NULL };
 
@@ -59,22 +48,13 @@ static void bcm47xxpart_add_part(struct mtd_partition *part, const char *name,
 	part->mask_flags = mask_flags;
 }
 
-/**
- * bcm47xxpart_bootpartition - gets index of TRX partition used by bootloader
- *
- * Some devices may have more than one TRX partition. In such case one of them
- * is the main one and another a failsafe one. Bootloader may fallback to the
- * failsafe firmware if it detects corruption of the main image.
- *
- * This function provides info about currently used TRX partition. It's the one
- * containing kernel started by the bootloader.
- */
+ 
 static int bcm47xxpart_bootpartition(void)
 {
 	char buf[4];
 	int bootpartition;
 
-	/* Check CFE environment variable */
+	 
 	if (bcm47xx_nvram_getenv("bootpartition", buf, sizeof(buf)) > 0) {
 		if (!kstrtoint(buf, 0, &bootpartition))
 			return bootpartition;
@@ -93,19 +73,16 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 	size_t bytes_read;
 	uint32_t offset;
 	uint32_t blocksize = master->erasesize;
-	int trx_parts[2]; /* Array with indexes of TRX partitions */
-	int trx_num = 0; /* Number of found TRX partitions */
+	int trx_parts[2];  
+	int trx_num = 0;  
 	int possible_nvram_sizes[] = { 0x8000, 0xF000, 0x10000, };
 	int err;
 
-	/*
-	 * Some really old flashes (like AT45DB*) had smaller erasesize-s, but
-	 * partitions were aligned to at least 0x1000 anyway.
-	 */
+	 
 	if (blocksize < 0x1000)
 		blocksize = 0x1000;
 
-	/* Alloc */
+	 
 	parts = kcalloc(BCM47XXPART_MAX_PARTS, sizeof(struct mtd_partition),
 			GFP_KERNEL);
 	if (!parts)
@@ -117,10 +94,10 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 		return -ENOMEM;
 	}
 
-	/* Parse block by block looking for magics */
+	 
 	for (offset = 0; offset <= master->size - blocksize;
 	     offset += blocksize) {
-		/* Nothing more in higher memory on BCM47XX (MIPS) */
+		 
 		if (IS_ENABLED(CONFIG_BCM47XX) && offset >= 0x2000000)
 			break;
 
@@ -129,7 +106,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			break;
 		}
 
-		/* Read beginning of the block */
+		 
 		err = mtd_read(master, offset, BCM47XXPART_BYTES_TO_READ,
 			       &bytes_read, (uint8_t *)buf);
 		if (err && !mtd_is_bitflip(err)) {
@@ -138,7 +115,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			continue;
 		}
 
-		/* Magic or small NVRAM at 0x400 */
+		 
 		if ((buf[0x4e0 / 4] == CFE_MAGIC && buf[0x4e4 / 4] == CFE_MAGIC) ||
 		    (buf[0x400 / 4] == NVRAM_HEADER)) {
 			bcm47xxpart_add_part(&parts[curr_part++], "boot",
@@ -146,24 +123,21 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			continue;
 		}
 
-		/*
-		 * board_data starts with board_id which differs across boards,
-		 * but we can use 'MPFR' (hopefully) magic at 0x100
-		 */
+		 
 		if (buf[0x100 / 4] == BOARD_DATA_MAGIC) {
 			bcm47xxpart_add_part(&parts[curr_part++], "board_data",
 					     offset, MTD_WRITEABLE);
 			continue;
 		}
 
-		/* Found on Huawei E970 */
+		 
 		if (buf[0x000 / 4] == FACTORY_MAGIC) {
 			bcm47xxpart_add_part(&parts[curr_part++], "factory",
 					     offset, MTD_WRITEABLE);
 			continue;
 		}
 
-		/* POT(TOP) */
+		 
 		if (buf[0x000 / 4] == POT_MAGIC1 &&
 		    (buf[0x004 / 4] & 0xFFFF) == POT_MAGIC2) {
 			bcm47xxpart_add_part(&parts[curr_part++], "POT", offset,
@@ -171,7 +145,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			continue;
 		}
 
-		/* ML */
+		 
 		if (buf[0x010 / 4] == ML_MAGIC1 &&
 		    buf[0x014 / 4] == ML_MAGIC2) {
 			bcm47xxpart_add_part(&parts[curr_part++], "ML", offset,
@@ -179,7 +153,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			continue;
 		}
 
-		/* TRX */
+		 
 		if (buf[0x000 / 4] == TRX_MAGIC) {
 			struct trx_header *trx;
 			uint32_t last_subpart;
@@ -193,27 +167,18 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			bcm47xxpart_add_part(&parts[curr_part++], "firmware",
 					     offset, 0);
 
-			/*
-			 * Try to find TRX size. The "length" field isn't fully
-			 * reliable as it could be decreased to make CRC32 cover
-			 * only part of TRX data. It's commonly used as checksum
-			 * can't cover e.g. ever-changing rootfs partition.
-			 * Use offsets as helpers for assuming min TRX size.
-			 */
+			 
 			trx = (struct trx_header *)buf;
 			last_subpart = max3(trx->offset[0], trx->offset[1],
 					    trx->offset[2]);
 			trx_size = max(trx->length, last_subpart + blocksize);
 
-			/*
-			 * Skip the TRX data. Decrease offset by block size as
-			 * the next loop iteration will increase it.
-			 */
+			 
 			offset += roundup(trx_size, blocksize) - blocksize;
 			continue;
 		}
 
-		/* Squashfs on devices not using TRX */
+		 
 		if (le32_to_cpu(buf[0x000 / 4]) == SQUASHFS_MAGIC ||
 		    buf[0x000 / 4] == SHSQ_MAGIC) {
 			bcm47xxpart_add_part(&parts[curr_part++], "rootfs",
@@ -221,10 +186,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			continue;
 		}
 
-		/*
-		 * New (ARM?) devices may have NVRAM in some middle block. Last
-		 * block will be checked later, so skip it.
-		 */
+		 
 		if (offset != master->size - blocksize &&
 		    buf[0x000 / 4] == NVRAM_HEADER) {
 			bcm47xxpart_add_part(&parts[curr_part++], "nvram",
@@ -232,7 +194,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			continue;
 		}
 
-		/* Read middle of the block */
+		 
 		err = mtd_read(master, offset + (blocksize / 2), 0x4, &bytes_read,
 			       (uint8_t *)buf);
 		if (err && !mtd_is_bitflip(err)) {
@@ -241,7 +203,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			continue;
 		}
 
-		/* Some devices (ex. WNDR3700v3) don't have a standard 'MPFR' */
+		 
 		if (buf[0x000 / 4] == BOARD_DATA_MAGIC2) {
 			bcm47xxpart_add_part(&parts[curr_part++], "board_data",
 					     offset, MTD_WRITEABLE);
@@ -249,7 +211,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 		}
 	}
 
-	/* Look for NVRAM at the end of the last block. */
+	 
 	for (i = 0; i < ARRAY_SIZE(possible_nvram_sizes); i++) {
 		if (curr_part >= BCM47XXPART_MAX_PARTS) {
 			pr_warn("Reached maximum number of partitions, scanning stopped!\n");
@@ -265,7 +227,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 			continue;
 		}
 
-		/* Standard NVRAM */
+		 
 		if (buf[0] == NVRAM_HEADER) {
 			bcm47xxpart_add_part(&parts[curr_part++], "nvram",
 					     master->size - blocksize, 0);
@@ -275,10 +237,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 
 	kfree(buf);
 
-	/*
-	 * Assume that partitions end at the beginning of the one they are
-	 * followed by.
-	 */
+	 
 	for (i = 0; i < curr_part; i++) {
 		u64 next_part_offset = (i < curr_part - 1) ?
 				       parts[i + 1].offset : master->size;
@@ -286,7 +245,7 @@ static int bcm47xxpart_parse(struct mtd_info *master,
 		parts[i].size = next_part_offset - parts[i].offset;
 	}
 
-	/* If there was TRX parse it now */
+	 
 	for (i = 0; i < trx_num; i++) {
 		struct mtd_partition *trx = &parts[trx_parts[i]];
 

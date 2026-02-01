@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #define __INLINE_INPUT_SYSTEM__
 #include "input_system.h"
@@ -36,38 +24,29 @@ void ia_css_isys_rx_enable_all_interrupts(enum mipi_port_id port)
 		(1U << _HRT_CSS_RECEIVER_IRQ_ERR_CONTROL_BIT) |
 		(1U << _HRT_CSS_RECEIVER_IRQ_ERR_ECC_DOUBLE_BIT) |
 		(1U << _HRT_CSS_RECEIVER_IRQ_ERR_ECC_CORRECTED_BIT) |
-		/*(1U << _HRT_CSS_RECEIVER_IRQ_ERR_ECC_NO_CORRECTION_BIT) | */
+		 
 		(1U << _HRT_CSS_RECEIVER_IRQ_ERR_CRC_BIT) |
 		(1U << _HRT_CSS_RECEIVER_IRQ_ERR_ID_BIT) |
 		(1U << _HRT_CSS_RECEIVER_IRQ_ERR_FRAME_SYNC_BIT) |
 		(1U << _HRT_CSS_RECEIVER_IRQ_ERR_FRAME_DATA_BIT) |
 		(1U << _HRT_CSS_RECEIVER_IRQ_DATA_TIMEOUT_BIT) |
 		(1U << _HRT_CSS_RECEIVER_IRQ_ERR_ESCAPE_BIT);
-	/*(1U << _HRT_CSS_RECEIVER_IRQ_ERR_LINE_SYNC_BIT); */
+	 
 
 	receiver_port_reg_store(RX0_ID,
 				port,
 				_HRT_CSS_RECEIVER_IRQ_ENABLE_REG_IDX, bits);
 
-	/*
-	 * The CSI is nested into the Iunit IRQ's
-	 */
+	 
 	ia_css_irq_enable(IA_CSS_IRQ_INFO_CSS_RECEIVER_ERROR, true);
 
 	return;
 }
 
-/* This function converts between the enum used on the CSS API and the
- * internal DLI enum type.
- * We do not use an array for this since we cannot use named array
- * initializers in Windows. Without that there is no easy way to guarantee
- * that the array values would be in the correct order.
- * */
+ 
 enum mipi_port_id ia_css_isys_port_to_mipi_port(enum mipi_port_id api_port)
 {
-	/* In this module the validity of the inptu variable should
-	 * have been checked already, so we do not check for erroneous
-	 * values. */
+	 
 	enum mipi_port_id port = MIPI_PORT0_ID;
 
 	if (api_port == MIPI_PORT1_ID)
@@ -108,7 +87,7 @@ void ia_css_isys_rx_get_irq_info(enum mipi_port_id port,
 	*irq_infos = ia_css_isys_rx_translate_irq_infos(bits);
 }
 
-/* Translate register bits to CSS API enum mask */
+ 
 unsigned int ia_css_isys_rx_translate_irq_infos(unsigned int bits)
 {
 	unsigned int infos = 0;
@@ -169,7 +148,7 @@ void ia_css_isys_rx_clear_irq_info(enum mipi_port_id port,
 					       port,
 					       _HRT_CSS_RECEIVER_IRQ_ENABLE_REG_IDX);
 
-	/* MW: Why do we remap the receiver bitmap */
+	 
 	if (irq_infos & IA_CSS_RX_IRQ_INFO_BUFFER_OVERRUN)
 		bits |= 1U << _HRT_CSS_RECEIVER_IRQ_OVERRUN_BIT;
 	if (irq_infos & IA_CSS_RX_IRQ_INFO_INIT_TIMEOUT)
@@ -209,7 +188,7 @@ void ia_css_isys_rx_clear_irq_info(enum mipi_port_id port,
 
 	return;
 }
-#endif /* #if !defined(ISP2401) */
+#endif  
 
 int ia_css_isys_convert_stream_format_to_mipi_format(
     enum atomisp_input_format input_format,
@@ -217,14 +196,7 @@ int ia_css_isys_convert_stream_format_to_mipi_format(
     unsigned int *fmt_type)
 {
 	assert(fmt_type);
-	/*
-	 * Custom (user defined) modes. Used for compressed
-	 * MIPI transfers
-	 *
-	 * Checkpatch thinks the indent before "if" is suspect
-	 * I think the only suspect part is the missing "else"
-	 * because of the return.
-	 */
+	 
 	if (compression != MIPI_PREDICTOR_NONE) {
 		switch (input_format) {
 		case ATOMISP_INPUT_FORMAT_RAW_6:
@@ -253,12 +225,7 @@ int ia_css_isys_convert_stream_format_to_mipi_format(
 		}
 		return 0;
 	}
-	/*
-	 * This mapping comes from the Arasan CSS function spec
-	 * (CSS_func_spec1.08_ahb_sep29_08.pdf).
-	 *
-	 * MW: For some reason the mapping is not 1-to-1
-	 */
+	 
 	switch (input_format) {
 	case ATOMISP_INPUT_FORMAT_RGB_888:
 		*fmt_type = MIPI_FORMAT_RGB888;
@@ -313,9 +280,7 @@ int ia_css_isys_convert_stream_format_to_mipi_format(
 		break;
 #ifndef ISP2401
 	case ATOMISP_INPUT_FORMAT_RAW_16:
-		/* This is not specified by Arasan, so we use
-		 * 17 for now.
-		 */
+		 
 		*fmt_type = MIPI_FORMAT_RAW16;
 		break;
 	case ATOMISP_INPUT_FORMAT_BINARY_8:
@@ -385,19 +350,7 @@ int ia_css_isys_convert_compressed_format(
 	assert(cfg);
 
 	if (comp->type != IA_CSS_CSI2_COMPRESSION_TYPE_NONE) {
-		/* compression register bit slicing
-		4 bit for each user defined data type
-			3 bit indicate compression scheme
-				000 No compression
-				001 10-6-10
-				010 10-7-10
-				011 10-8-10
-				100 12-6-12
-				101 12-6-12
-				100 12-7-12
-				110 12-8-12
-			1 bit indicate predictor
-		*/
+		 
 		if (comp->uncompressed_bits_per_pixel == UNCOMPRESSED_BITS_PER_PIXEL_10) {
 			switch (comp->compressed_bits_per_pixel) {
 			case COMPRESSED_BITS_PER_PIXEL_6:
@@ -432,7 +385,7 @@ int ia_css_isys_convert_compressed_format(
 		cfg->csi_port_attr.comp_predictor =
 		    sh_css_csi2_compression_type_2_mipi_predictor(comp->type);
 		cfg->csi_port_attr.comp_enable = true;
-	} else /* No compression */
+	} else  
 		cfg->csi_port_attr.comp_enable = false;
 	return err;
 }
@@ -461,8 +414,7 @@ unsigned int ia_css_csi2_calculate_input_system_alignment(
 	case ATOMISP_INPUT_FORMAT_USER_DEF6:
 	case ATOMISP_INPUT_FORMAT_USER_DEF7:
 	case ATOMISP_INPUT_FORMAT_USER_DEF8:
-		/* Planar YUV formats need to have all planes aligned, this means
-		 * double the alignment for the Y plane if the horizontal decimation is 2. */
+		 
 		memory_alignment_in_bytes = 2 * HIVE_ISP_DDR_WORD_BYTES;
 		break;
 	case ATOMISP_INPUT_FORMAT_EMBEDDED:
@@ -503,15 +455,14 @@ void ia_css_isys_rx_configure(const rx_cfg_t *config,
 		if (is_receiver_port_enabled(RX0_ID, port))
 			any_port_enabled = true;
 	}
-	/* AM: Check whether this is a problem with multiple
-	 * streams. MS: This is the case. */
+	 
 
 	port = config->port;
 	receiver_port_enable(RX0_ID, port, false);
 
 	port = config->port;
 
-	/* AM: Check whether this is a problem with multiple streams. */
+	 
 	if (MIPI_PORT_LANES[config->mode][port] != MIPI_0LANE_CFG) {
 		receiver_port_reg_store(RX0_ID, port,
 					_HRT_CSS_RECEIVER_FUNC_PROG_REG_IDX,
@@ -527,23 +478,19 @@ void ia_css_isys_rx_configure(const rx_cfg_t *config,
 					config->rxcount);
 
 		if (input_mode != IA_CSS_INPUT_MODE_BUFFERED_SENSOR) {
-			/* MW: A bit of a hack, straight wiring of the capture
-			 * units,assuming they are linearly enumerated. */
+			 
 			input_system_sub_system_reg_store(INPUT_SYSTEM0_ID,
 							  GPREGS_UNIT0_ID,
 							  HIVE_ISYS_GPREG_MULTICAST_A_IDX
 							  + (unsigned int)port,
 							  INPUT_SYSTEM_CSI_BACKEND);
-			/* MW: Like the integration test example we overwite,
-			 * the GPREG_MUX register */
+			 
 			input_system_sub_system_reg_store(INPUT_SYSTEM0_ID,
 							  GPREGS_UNIT0_ID,
 							  HIVE_ISYS_GPREG_MUX_IDX,
 							  (input_system_multiplex_t)port);
 		} else {
-			/*
-			 * AM: A bit of a hack, wiring the input system.
-			 */
+			 
 			input_system_sub_system_reg_store(INPUT_SYSTEM0_ID,
 							  GPREGS_UNIT0_ID,
 							  HIVE_ISYS_GPREG_MULTICAST_A_IDX
@@ -555,15 +502,9 @@ void ia_css_isys_rx_configure(const rx_cfg_t *config,
 							  INPUT_SYSTEM_ACQUISITION_UNIT);
 		}
 	}
-	/*
-	 * The 2ppc is shared for all ports, so we cannot
-	 * disable->configure->enable individual ports
-	 */
-	/* AM: Check whether this is a problem with multiple streams. */
-	/* MS: 2ppc should be a property per binary and should be
-	 * enabled/disabled per binary.
-	 * Currently it is implemented as a system wide setting due
-	 * to effort and risks. */
+	 
+	 
+	 
 	if (!any_port_enabled) {
 		receiver_reg_store(RX0_ID,
 				   _HRT_CSS_RECEIVER_TWO_PIXEL_EN_REG_IDX,
@@ -572,15 +513,9 @@ void ia_css_isys_rx_configure(const rx_cfg_t *config,
 				   config->is_two_ppc);
 	}
 	receiver_port_enable(RX0_ID, port, true);
-	/* TODO: JB: need to add the beneath used define to mizuchi */
-	/* sh_css_sw_hive_isp_css_2400_system_20121224_0125\css
-	 *                      \hrt\input_system_defs.h
-	 * #define INPUT_SYSTEM_CSI_RECEIVER_SELECT_BACKENG 0X207
-	 */
-	/* TODO: need better name for define
-	 * input_system_reg_store(INPUT_SYSTEM0_ID,
-	 *                INPUT_SYSTEM_CSI_RECEIVER_SELECT_BACKENG, 1);
-	 */
+	 
+	 
+	 
 	input_system_reg_store(INPUT_SYSTEM0_ID, 0x207, 1);
 
 	return;
@@ -597,4 +532,4 @@ void ia_css_isys_rx_disable(void)
 	}
 	return;
 }
-#endif /* if !defined(ISP2401) */
+#endif  

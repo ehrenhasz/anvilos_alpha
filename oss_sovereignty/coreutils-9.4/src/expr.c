@@ -1,32 +1,4 @@
-/* expr -- evaluate expressions.
-   Copyright (C) 1986-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Author: Mike Parker.
-   Modified for arbitrary-precision calculation by James Youngman.
-
-   This program evaluates expressions.  Each token (operator, operand,
-   parenthesis) of the expression must be a separate argument.  The
-   parser used is a reasonably general one, though any incarnation of
-   it is language-specific.  It is especially nice for expressions.
-
-   No parse tree is needed; a new node is evaluated immediately.
-   One function can handle multiple operators all of equal precedence,
-   provided they all associate ((x op x) op x).
-
-   Define EVAL_TRACE to print an evaluation trace.  */
+ 
 
 #include <config.h>
 #include <stdio.h>
@@ -40,11 +12,10 @@
 #include "strnumcmp.h"
 #include "xstrtol.h"
 
-/* Various parts of this code assume size_t fits into unsigned long
-   int, the widest unsigned type that GMP supports.  */
+ 
 static_assert (SIZE_MAX <= ULONG_MAX);
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "expr"
 
 #define AUTHORS \
@@ -52,20 +23,17 @@ static_assert (SIZE_MAX <= ULONG_MAX);
   proper_name ("James Youngman"), \
   proper_name ("Paul Eggert")
 
-/* Exit statuses.  */
+ 
 enum
   {
-    /* Invalid expression: e.g., its form does not conform to the
-       grammar for expressions.  Our grammar is an extension of the
-       POSIX grammar.  */
+     
     EXPR_INVALID = 2,
 
-    /* An internal error occurred, e.g., arithmetic overflow, storage
-       exhaustion.  */
+     
     EXPR_FAILURE
   };
 
-/* The kinds of value we can have.  */
+ 
 enum valtype
 {
   integer,
@@ -73,19 +41,19 @@ enum valtype
 };
 typedef enum valtype TYPE;
 
-/* A value is.... */
+ 
 struct valinfo
 {
-  TYPE type;			/* Which kind. */
+  TYPE type;			 
   union
-  {				/* The value itself. */
+  {				 
     mpz_t i;
     char *s;
   } u;
 };
 typedef struct valinfo VALUE;
 
-/* The arguments given to the program, minus the program name.  */
+ 
 static char **args;
 
 static VALUE *eval (bool);
@@ -94,23 +62,7 @@ static bool null (VALUE *v);
 static void printv (VALUE *v);
 
 
-/*
-   Find the first occurrence in the character string STRING of any character
-   in the character string ACCEPT.
-
-   Copied from gnulib's mbscspn, with two differences:
-   1. Returns 1-based position of first found character, or zero if not found.
-   2. Returned value is the logical character index, NOT byte offset.
-
-   Examples:
-     mbs_logical_cspn ('hello','a')  => 0
-     mbs_logical_cspn ('hello','h')  => 1
-     mbs_logical_cspn ('hello','oe') => 1
-     mbs_logical_cspn ('hello','lo') => 3
-
-   In UTF-8 \xCE\xB1 is a single character (greek alpha):
-     mbs_logical_cspn ('\xCE\xB1bc','\xCE\xB1') => 1
-     mbs_logical_cspn ('\xCE\xB1bc','c') => 3 */
+ 
 static size_t
 mbs_logical_cspn (char const *s, char const *accept)
 {
@@ -119,7 +71,7 @@ mbs_logical_cspn (char const *s, char const *accept)
   if (accept[0] == '\0')
     return 0;
 
-  /* General case.  */
+   
   if (MB_CUR_MAX > 1)
     {
       mbui_iterator_t iter;
@@ -144,51 +96,43 @@ mbs_logical_cspn (char const *s, char const *accept)
             }
         }
 
-      /* not found */
+       
       return 0;
     }
   else
     {
-      /* single-byte locale,
-         convert returned byte offset to 1-based index or zero if not found. */
+       
       size_t i = strcspn (s, accept);
       return (s[i] ? i + 1 : 0);
     }
 }
 
-/* Extract the substring of S, from logical character
-   position POS and LEN characters.
-   first character position is 1.
-   POS and LEN refer to logical characters, not octets.
-
-   Upon exit, sets v->s to the new string.
-   The new string might be empty if POS/LEN are invalid. */
+ 
 static char *
 mbs_logical_substr (char const *s, size_t pos, size_t len)
 {
   char *v, *vlim;
 
-  size_t blen = strlen (s); /* byte length */
-  size_t llen = (MB_CUR_MAX > 1) ? mbslen (s) : blen; /* logical length */
+  size_t blen = strlen (s);  
+  size_t llen = (MB_CUR_MAX > 1) ? mbslen (s) : blen;  
 
   if (llen < pos || pos == 0 || len == 0 || len == SIZE_MAX)
     return xstrdup ("");
 
-  /* characters to copy */
+   
   size_t vlen = MIN (len, llen - pos + 1);
 
   if (MB_CUR_MAX == 1)
     {
-      /* Single-byte case */
+       
       v = xmalloc (vlen + 1);
       vlim = mempcpy (v, s + pos - 1, vlen);
     }
   else
     {
-      /* Multibyte case */
+       
 
-      /* FIXME: this is wasteful. Some memory can be saved by counting
-         how many bytes the matching characters occupy. */
+       
       vlim = v = xmalloc (blen + 1);
 
       mbui_iterator_t iter;
@@ -197,11 +141,11 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
            mbui_avail (iter) && vlen > 0;
            mbui_advance (iter), ++idx)
         {
-          /* Skip until we reach the starting position */
+           
           if (idx < pos)
             continue;
 
-          /* Copy one character */
+           
           --vlen;
           vlim = mempcpy (vlim, mbui_cur_ptr (iter), mb_len (mbui_cur (iter)));
         }
@@ -210,14 +154,7 @@ mbs_logical_substr (char const *s, size_t pos, size_t len)
   return v;
 }
 
-/* Return the number of logical characters (possibly multibyte)
-   that are in string S in the first OFS octets.
-
-   Example in UTF-8:
-   "\xE2\x9D\xA7" is "U+2767 ROTATED FLORAL HEART BULLET".
-   In the string below, there are only two characters
-   up to the first 4 bytes (The U+2767 which occupies 3 bytes and 'x'):
-      mbs_count_to_offset ("\xE2\x9D\xA7xyz", 4) => 2  */
+ 
 static size_t
 mbs_offset_to_chars (char const *s, size_t ofs)
 {

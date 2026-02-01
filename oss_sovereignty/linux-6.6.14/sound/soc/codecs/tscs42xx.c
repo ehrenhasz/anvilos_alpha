@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-// tscs42xx.c -- TSCS42xx ALSA SoC Audio driver
-// Copyright 2017 Tempo Semiconductor, Inc.
-// Author: Steven Eckhoff <steven.eckhoff.opensource@gmail.com>
+
+
+
+
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -195,11 +195,11 @@ static int power_up_audio_plls(struct snd_soc_component *component)
 
 	freq_out = sample_rate_to_pll_freq_out(tscs42xx->samplerate);
 	switch (freq_out) {
-	case 122880000: /* 48k */
+	case 122880000:  
 		mask = RM_PLLCTL1C_PDB_PLL1;
 		val = RV_PLLCTL1C_PDB_PLL1_ENABLE;
 		break;
-	case 112896000: /* 44.1k */
+	case 112896000:  
 		mask = RM_PLLCTL1C_PDB_PLL2;
 		val = RV_PLLCTL1C_PDB_PLL2_ENABLE;
 		break;
@@ -321,7 +321,7 @@ exit:
 	return ret;
 }
 
-/* Input L Capture Route */
+ 
 static char const * const input_select_text[] = {
 	"Line 1", "Line 2", "Line 3", "D2S"
 };
@@ -333,7 +333,7 @@ SOC_ENUM_SINGLE(R_INSELL, FB_INSELL, ARRAY_SIZE(input_select_text),
 static const struct snd_kcontrol_new left_input_select =
 SOC_DAPM_ENUM("LEFT_INPUT_SELECT_ENUM", left_input_select_enum);
 
-/* Input R Capture Route */
+ 
 static const struct soc_enum right_input_select_enum =
 SOC_ENUM_SINGLE(R_INSELR, FB_INSELR, ARRAY_SIZE(input_select_text),
 		input_select_text);
@@ -341,7 +341,7 @@ SOC_ENUM_SINGLE(R_INSELR, FB_INSELR, ARRAY_SIZE(input_select_text),
 static const struct snd_kcontrol_new right_input_select =
 SOC_DAPM_ENUM("RIGHT_INPUT_SELECT_ENUM", right_input_select_enum);
 
-/* Input Channel Mapping */
+ 
 static char const * const ch_map_select_text[] = {
 	"Normal", "Left to Right", "Right to Left", "Swap"
 };
@@ -405,15 +405,15 @@ exit:
 }
 
 static const struct snd_soc_dapm_widget tscs42xx_dapm_widgets[] = {
-	/* Vref */
+	 
 	SND_SOC_DAPM_SUPPLY_S("Vref", 1, R_PWRM2, FB_PWRM2_VREF, 0,
 		dapm_vref_event, SND_SOC_DAPM_POST_PMU|SND_SOC_DAPM_PRE_PMD),
 
-	/* PLL */
+	 
 	SND_SOC_DAPM_SUPPLY("PLL", SND_SOC_NOPM, 0, 0, pll_event,
 		SND_SOC_DAPM_PRE_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* Headphone */
+	 
 	SND_SOC_DAPM_DAC_E("DAC L", "HiFi Playback", R_PWRM2, FB_PWRM2_HPL, 0,
 			dac_event, SND_SOC_DAPM_POST_PMU),
 	SND_SOC_DAPM_DAC_E("DAC R", "HiFi Playback", R_PWRM2, FB_PWRM2_HPR, 0,
@@ -421,7 +421,7 @@ static const struct snd_soc_dapm_widget tscs42xx_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("Headphone L"),
 	SND_SOC_DAPM_OUTPUT("Headphone R"),
 
-	/* Speaker */
+	 
 	SND_SOC_DAPM_DAC_E("ClassD L", "HiFi Playback",
 		R_PWRM2, FB_PWRM2_SPKL, 0,
 		dac_event, SND_SOC_DAPM_POST_PMU),
@@ -431,7 +431,7 @@ static const struct snd_soc_dapm_widget tscs42xx_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("Speaker L"),
 	SND_SOC_DAPM_OUTPUT("Speaker R"),
 
-	/* Capture */
+	 
 	SND_SOC_DAPM_PGA("Analog In PGA L", R_PWRM1, FB_PWRM1_PGAL, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("Analog In PGA R", R_PWRM1, FB_PWRM1_PGAR, 0, NULL, 0),
 	SND_SOC_DAPM_PGA("Analog Boost L", R_PWRM1, FB_PWRM1_BSTL, 0, NULL, 0),
@@ -440,22 +440,22 @@ static const struct snd_soc_dapm_widget tscs42xx_dapm_widgets[] = {
 	SND_SOC_DAPM_ADC("ADC L", "HiFi Capture", R_PWRM1, FB_PWRM1_ADCL, 0),
 	SND_SOC_DAPM_ADC("ADC R", "HiFi Capture", R_PWRM1, FB_PWRM1_ADCR, 0),
 
-	/* Capture Input */
+	 
 	SND_SOC_DAPM_MUX("Input L Capture Route", R_PWRM2,
 			FB_PWRM2_INSELL, 0, &left_input_select),
 	SND_SOC_DAPM_MUX("Input R Capture Route", R_PWRM2,
 			FB_PWRM2_INSELR, 0, &right_input_select),
 
-	/* Digital Mic */
+	 
 	SND_SOC_DAPM_SUPPLY_S("Digital Mic Enable", 2, R_DMICCTL,
 		FB_DMICCTL_DMICEN, 0, NULL,
 		SND_SOC_DAPM_POST_PMU|SND_SOC_DAPM_PRE_PMD),
 
-	/* Analog Mic */
+	 
 	SND_SOC_DAPM_SUPPLY_S("Mic Bias", 2, R_PWRM1, FB_PWRM1_MICB,
 		0, dapm_micb_event, SND_SOC_DAPM_POST_PMU|SND_SOC_DAPM_PRE_PMD),
 
-	/* Line In */
+	 
 	SND_SOC_DAPM_INPUT("Line In 1 L"),
 	SND_SOC_DAPM_INPUT("Line In 1 R"),
 	SND_SOC_DAPM_INPUT("Line In 2 L"),
@@ -503,9 +503,7 @@ static const struct snd_soc_dapm_route tscs42xx_intercon[] = {
 	{"ADC R", NULL, "ADC Mute"},
 };
 
-/************
- * CONTROLS *
- ************/
+ 
 
 static char const * const eq_band_enable_text[] = {
 	"Prescale only",
@@ -624,7 +622,7 @@ static int bytes_info_ext(struct snd_kcontrol *kcontrol,
 }
 
 static const struct snd_kcontrol_new tscs42xx_snd_controls[] = {
-	/* Volumes */
+	 
 	SOC_DOUBLE_R_TLV("Headphone Volume", R_HPVOLL, R_HPVOLR,
 			FB_HPVOLL, 0x7F, 0, hpvol_scale),
 	SOC_DOUBLE_R_TLV("Speaker Volume", R_SPKVOLL, R_SPKVOLR,
@@ -636,24 +634,24 @@ static const struct snd_kcontrol_new tscs42xx_snd_controls[] = {
 	SOC_DOUBLE_R_TLV("Input Volume", R_INVOLL, R_INVOLR,
 			FB_INVOLL, 0x3F, 0, invol_scale),
 
-	/* INSEL */
+	 
 	SOC_DOUBLE_R_TLV("Mic Boost Volume", R_INSELL, R_INSELR,
 			FB_INSELL_MICBSTL, FV_INSELL_MICBSTL_30DB,
 			0, mic_boost_scale),
 
-	/* Input Channel Map */
+	 
 	SOC_ENUM("Input Channel Map", ch_map_select_enum),
 
-	/* Mic Bias */
+	 
 	SOC_SINGLE("Mic Bias Boost Switch", 0x71, 0x07, 1, 0),
 
-	/* Headphone Auto Switching */
+	 
 	SOC_SINGLE("Headphone Auto Switching Switch",
 			R_CTL, FB_CTL_HPSWEN, 1, 0),
 	SOC_SINGLE("Headphone Detect Polarity Toggle Switch",
 			R_CTL, FB_CTL_HPSWPOL, 1, 0),
 
-	/* Coefficient Ram */
+	 
 	COEFF_RAM_CTL("Cascade1L BiQuad1", BIQUAD_SIZE, 0x00),
 	COEFF_RAM_CTL("Cascade1L BiQuad2", BIQUAD_SIZE, 0x05),
 	COEFF_RAM_CTL("Cascade1L BiQuad3", BIQUAD_SIZE, 0x0a),
@@ -725,13 +723,13 @@ static const struct snd_kcontrol_new tscs42xx_snd_controls[] = {
 	COEFF_RAM_CTL("MBC3 BiQuad1", BIQUAD_SIZE, 0xc4),
 	COEFF_RAM_CTL("MBC3 BiQuad2", BIQUAD_SIZE, 0xc9),
 
-	/* EQ */
+	 
 	SOC_SINGLE("EQ1 Switch", R_CONFIG1, FB_CONFIG1_EQ1_EN, 1, 0),
 	SOC_SINGLE("EQ2 Switch", R_CONFIG1, FB_CONFIG1_EQ2_EN, 1, 0),
 	SOC_ENUM("EQ1 Band Enable", eq1_band_enable_enum),
 	SOC_ENUM("EQ2 Band Enable", eq2_band_enable_enum),
 
-	/* CLE */
+	 
 	SOC_ENUM("CLE Level Detect",
 		cle_level_detection_enum),
 	SOC_ENUM("CLE Level Detect Win",
@@ -749,14 +747,14 @@ static const struct snd_kcontrol_new tscs42xx_snd_controls[] = {
 	SOC_ENUM("Comp Ratio", compressor_ratio_enum),
 	SND_SOC_BYTES("Comp Atk Time", R_CATKTCL, 2),
 
-	/* Effects */
+	 
 	SOC_SINGLE("3D Switch", R_FXCTL, FB_FXCTL_3DEN, 1, 0),
 	SOC_SINGLE("Treble Switch", R_FXCTL, FB_FXCTL_TEEN, 1, 0),
 	SOC_SINGLE("Treble Bypass Switch", R_FXCTL, FB_FXCTL_TNLFBYPASS, 1, 0),
 	SOC_SINGLE("Bass Switch", R_FXCTL, FB_FXCTL_BEEN, 1, 0),
 	SOC_SINGLE("Bass Bypass Switch", R_FXCTL, FB_FXCTL_BNLFBYPASS, 1, 0),
 
-	/* MBC */
+	 
 	SOC_SINGLE("MBC Band1 Switch", R_DACMBCEN, FB_DACMBCEN_MBCEN1, 1, 0),
 	SOC_SINGLE("MBC Band2 Switch", R_DACMBCEN, FB_DACMBCEN_MBCEN2, 1, 0),
 	SOC_SINGLE("MBC Band3 Switch", R_DACMBCEN, FB_DACMBCEN_MBCEN3, 1, 0),
@@ -898,7 +896,7 @@ static int setup_sample_rate(struct snd_soc_component *component,
 		return -EINVAL;
 	}
 
-	/* DAC and ADC share bit and frame clock */
+	 
 	ret = snd_soc_component_update_bits(component,
 			R_DACSR, RM_DACSR_DBR, br);
 	if (ret < 0) {
@@ -1197,7 +1195,7 @@ static int tscs42xx_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	int ret;
 
-	/* Consumer mode not supported since it needs always-on frame clock */
+	 
 	switch (fmt & SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK) {
 	case SND_SOC_DAIFMT_CBP_CFP:
 		ret = snd_soc_component_update_bits(component,

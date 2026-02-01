@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef SOUND_FIREWIRE_AMDTP_AM824_H_INCLUDED
 #define SOUND_FIREWIRE_AMDTP_AM824_H_INCLUDED
 
@@ -11,20 +11,10 @@
 
 #define AM824_OUT_PCM_FORMAT_BITS	SNDRV_PCM_FMTBIT_S32
 
-/*
- * This module supports maximum 64 PCM channels for one PCM stream
- * This is for our convenience.
- */
+ 
 #define AM824_MAX_CHANNELS_FOR_PCM	64
 
-/*
- * AMDTP packet can include channels for MIDI conformant data.
- * Each MIDI conformant data channel includes 8 MPX-MIDI data stream.
- * Each MPX-MIDI data stream includes one data stream from/to MIDI ports.
- *
- * This module supports maximum 1 MIDI conformant data channels.
- * Then this AMDTP packets can transfer maximum 8 MIDI data streams.
- */
+ 
 #define AM824_MAX_CHANNELS_FOR_MIDI	1
 
 int amdtp_am824_set_parameters(struct amdtp_stream *s, unsigned int rate,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-vbi-gen.c - vbi generator support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -22,7 +18,7 @@ static void wss_insert(u8 *wss, u32 val, unsigned size)
 static void vivid_vbi_gen_wss_raw(const struct v4l2_sliced_vbi_data *data,
 		u8 *buf, unsigned sampling_rate)
 {
-	const unsigned rate = 5000000;	/* WSS has a 5 MHz transmission rate */
+	const unsigned rate = 5000000;	 
 	u8 wss[29 + 24 + 24 + 24 + 18 + 18] = { 0 };
 	const unsigned zero = 0x07;
 	const unsigned one = 0x38;
@@ -48,13 +44,13 @@ static void vivid_vbi_gen_wss_raw(const struct v4l2_sliced_vbi_data *data,
 static void vivid_vbi_gen_teletext_raw(const struct v4l2_sliced_vbi_data *data,
 		u8 *buf, unsigned sampling_rate)
 {
-	const unsigned rate = 6937500 / 10;	/* Teletext has a 6.9375 MHz transmission rate */
+	const unsigned rate = 6937500 / 10;	 
 	u8 teletext[45] = { 0x55, 0x55, 0x27 };
 	unsigned bit = 0;
 	int i;
 
 	memcpy(teletext + 3, data->data, sizeof(teletext) - 3);
-	/* prevents 32 bit overflow */
+	 
 	sampling_rate /= 10;
 
 	for (i = 0, bit = 0; bit < sizeof(teletext) * 8; bit++) {
@@ -83,14 +79,14 @@ static void cc_insert(u8 *cc, u8 ch)
 static void vivid_vbi_gen_cc_raw(const struct v4l2_sliced_vbi_data *data,
 		u8 *buf, unsigned sampling_rate)
 {
-	const unsigned rate = 1000000;	/* CC has a 1 MHz transmission rate */
+	const unsigned rate = 1000000;	 
 
 	u8 cc[CC_PREAMBLE_BITS + 2 * 16] = {
-		/* Clock run-in: 7 cycles */
+		 
 		0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1, 0, 1,
-		/* 2 cycles of 0 */
+		 
 		0, 0, 0, 0,
-		/* Start bit of 1 (each bit is two cycles) */
+		 
 		1, 1
 	};
 	unsigned bit, i;
@@ -138,18 +134,18 @@ void vivid_vbi_gen_raw(const struct vivid_vbi_gen_data *vbi,
 }
 
 static const u8 vivid_cc_sequence1[30] = {
-	0x14, 0x20,	/* Resume Caption Loading */
+	0x14, 0x20,	 
 	'H',  'e',
 	'l',  'l',
 	'o',  ' ',
 	'w',  'o',
 	'r',  'l',
 	'd',  '!',
-	0x14, 0x2f,	/* End of Caption */
+	0x14, 0x2f,	 
 };
 
 static const u8 vivid_cc_sequence2[30] = {
-	0x14, 0x20,	/* Resume Caption Loading */
+	0x14, 0x20,	 
 	'C',  'l',
 	'o',  's',
 	'e',  'd',
@@ -160,7 +156,7 @@ static const u8 vivid_cc_sequence2[30] = {
 	's',  ' ',
 	't',  'e',
 	's',  't',
-	0x14, 0x2f,	/* End of Caption */
+	0x14, 0x2f,	 
 };
 
 static u8 calc_parity(u8 val)
@@ -221,7 +217,7 @@ static void vivid_vbi_gen_teletext(u8 *packet, unsigned line, unsigned frame)
 	packet[1] = hamming[line >> 1];
 	memset(packet + 2, 0x20, 40);
 	if (line == 0) {
-		/* subcode */
+		 
 		packet[2] = hamming[frame % 10];
 		packet[3] = hamming[frame / 10];
 		packet[4] = hamming[0];
@@ -262,7 +258,7 @@ void vivid_vbi_gen_sliced(struct vivid_vbi_gen_data *vbi,
 		}
 		data0->id = V4L2_SLICED_WSS_625;
 		data0->line = 23;
-		/* 4x3 video aspect ratio */
+		 
 		data0->data[0] = 0x08;
 		data0++;
 		for (i = 0; i <= 11; i++) {

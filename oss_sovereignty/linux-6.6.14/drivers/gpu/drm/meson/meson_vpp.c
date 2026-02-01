@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- * Copyright (C) 2015 Amlogic, Inc. All rights reserved.
- * Copyright (C) 2014 Endless Mobile
- */
+
+ 
 
 #include <linux/export.h>
 
@@ -12,26 +7,7 @@
 #include "meson_registers.h"
 #include "meson_vpp.h"
 
-/**
- * DOC: Video Post Processing
- *
- * VPP Handles all the Post Processing after the Scanout from the VIU
- * We handle the following post processings :
- *
- * - Postblend, Blends the OSD1 only
- *	We exclude OSD2, VS1, VS1 and Preblend output
- * - Vertical OSD Scaler for OSD1 only, we disable vertical scaler and
- *	use it only for interlace scanout
- * - Intermediate FIFO with default Amlogic values
- *
- * What is missing :
- *
- * - Preblend for video overlay pre-scaling
- * - OSD2 support for cursor framebuffer
- * - Video pre-scaling before postblend
- * - Full Vertical/Horizontal OSD scaling to support TV overscan
- * - HDR conversion
- */
+ 
 
 void meson_vpp_setup_mux(struct meson_drm *priv, unsigned int mux)
 {
@@ -90,7 +66,7 @@ static void meson_vpp_write_vd_scaling_filter_coefs(struct meson_drm *priv,
 
 void meson_vpp_init(struct meson_drm *priv)
 {
-	/* set dummy data default YUV black */
+	 
 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXL))
 		writel_relaxed(0x108080, priv->io_base + _REG(VPP_DUMMY_DATA1));
 	else if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_GXM)) {
@@ -105,7 +81,7 @@ void meson_vpp_init(struct meson_drm *priv)
 	} else if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A))
 		writel_relaxed(0xf, priv->io_base + _REG(DOLBY_PATH_CTRL));
 
-	/* Initialize vpu fifo control registers */
+	 
 	if (meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A))
 		writel_relaxed(VPP_OFIFO_SIZE_DEFAULT,
 			       priv->io_base + _REG(VPP_OFIFO_SIZE));
@@ -116,48 +92,48 @@ void meson_vpp_init(struct meson_drm *priv)
 		       priv->io_base + _REG(VPP_HOLD_LINES));
 
 	if (!meson_vpu_is_compatible(priv, VPU_COMPATIBLE_G12A)) {
-		/* Turn off preblend */
+		 
 		writel_bits_relaxed(VPP_PREBLEND_ENABLE, 0,
 				    priv->io_base + _REG(VPP_MISC));
 
-		/* Turn off POSTBLEND */
+		 
 		writel_bits_relaxed(VPP_POSTBLEND_ENABLE, 0,
 				    priv->io_base + _REG(VPP_MISC));
 
-		/* Force all planes off */
+		 
 		writel_bits_relaxed(VPP_OSD1_POSTBLEND | VPP_OSD2_POSTBLEND |
 				    VPP_VD1_POSTBLEND | VPP_VD2_POSTBLEND |
 				    VPP_VD1_PREBLEND | VPP_VD2_PREBLEND, 0,
 				    priv->io_base + _REG(VPP_MISC));
 
-		/* Setup default VD settings */
+		 
 		writel_relaxed(4096,
 				priv->io_base + _REG(VPP_PREBLEND_VD1_H_START_END));
 		writel_relaxed(4096,
 				priv->io_base + _REG(VPP_BLEND_VD2_H_START_END));
 	}
 
-	/* Disable Scalers */
+	 
 	writel_relaxed(0, priv->io_base + _REG(VPP_OSD_SC_CTRL0));
 	writel_relaxed(0, priv->io_base + _REG(VPP_OSD_VSC_CTRL0));
 	writel_relaxed(0, priv->io_base + _REG(VPP_OSD_HSC_CTRL0));
 
-	/* Set horizontal/vertical bank length and enable video scale out */
+	 
 	writel_relaxed(VPP_VSC_BANK_LENGTH(4) | VPP_HSC_BANK_LENGTH(4) |
 		       VPP_SC_VD_EN_ENABLE,
 		       priv->io_base + _REG(VPP_SC_MISC));
 
-	/* Enable minus black level for vadj1 */
+	 
 	writel_relaxed(VPP_MINUS_BLACK_LVL_VADJ1_ENABLE,
 		       priv->io_base + _REG(VPP_VADJ_CTRL));
 
-	/* Write in the proper filter coefficients. */
+	 
 	meson_vpp_write_scaling_filter_coefs(priv,
 				vpp_filter_coefs_4point_bspline, false);
 	meson_vpp_write_scaling_filter_coefs(priv,
 				vpp_filter_coefs_4point_bspline, true);
 
-	/* Write the VD proper filter coefficients. */
+	 
 	meson_vpp_write_vd_scaling_filter_coefs(priv, vpp_filter_coefs_bicubic,
 						false);
 	meson_vpp_write_vd_scaling_filter_coefs(priv, vpp_filter_coefs_bicubic,

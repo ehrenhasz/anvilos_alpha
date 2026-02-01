@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Parallel video capture module (VIP) for the Tegra VI.
- *
- * This file implements the VIP-specific infrastructure.
- *
- * Copyright (C) 2023 SKIDATA GmbH
- * Author: Luca Ceresoli <luca.ceresoli@bootlin.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/host1x.h>
@@ -36,7 +29,7 @@ static inline struct tegra_vip *vip_channel_to_vip(struct tegra_vip_channel *cha
 	return container_of(chan, struct tegra_vip, chan);
 }
 
-/* Find the previous subdev in the pipeline (i.e. the one connected to our sink pad) */
+ 
 static struct v4l2_subdev *tegra_vip_channel_get_prev_subdev(struct tegra_vip_channel *chan)
 {
 	struct media_pad *remote_pad;
@@ -240,7 +233,7 @@ static int tegra_vip_probe(struct platform_device *pdev)
 	vip->dev = &pdev->dev;
 	platform_set_drvdata(pdev, vip);
 
-	/* initialize host1x interface */
+	 
 	INIT_LIST_HEAD(&vip->client.list);
 	vip->client.ops = &vip_client_ops;
 	vip->client.dev = &pdev->dev;

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2006-2007 PA Semi, Inc
- *
- * Maintained by: Olof Johansson <olof@lixom.net>
- *
- * Driver for the PWRficient onchip rng
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>

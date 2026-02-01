@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss.c
- *
- * Qualcomm MSM Camera Subsystem - Core
- *
- * Copyright (c) 2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/interconnect.h>
 #include <linux/media-bus-format.h>
@@ -32,7 +25,7 @@
 #define CAMSS_CLOCK_MARGIN_DENOMINATOR 100
 
 static const struct resources csiphy_res_8x16[] = {
-	/* CSIPHY0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy0_timer" },
@@ -44,7 +37,7 @@ static const struct resources csiphy_res_8x16[] = {
 		.interrupt = { "csiphy0" }
 	},
 
-	/* CSIPHY1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy1_timer" },
@@ -58,7 +51,7 @@ static const struct resources csiphy_res_8x16[] = {
 };
 
 static const struct resources csid_res_8x16[] = {
-	/* CSID0 */
+	 
 	{
 		.regulators = { "vdda" },
 		.clock = { "top_ahb", "ispif_ahb", "csi0_ahb", "ahb",
@@ -75,7 +68,7 @@ static const struct resources csid_res_8x16[] = {
 		.interrupt = { "csid0" }
 	},
 
-	/* CSID1 */
+	 
 	{
 		.regulators = { "vdda" },
 		.clock = { "top_ahb", "ispif_ahb", "csi1_ahb", "ahb",
@@ -94,7 +87,7 @@ static const struct resources csid_res_8x16[] = {
 };
 
 static const struct resources_ispif ispif_res_8x16 = {
-	/* ISPIF */
+	 
 	.clock = { "top_ahb", "ahb", "ispif_ahb",
 		   "csi0", "csi0_pix", "csi0_rdi",
 		   "csi1", "csi1_pix", "csi1_rdi" },
@@ -105,7 +98,7 @@ static const struct resources_ispif ispif_res_8x16 = {
 };
 
 static const struct resources vfe_res_8x16[] = {
-	/* VFE0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "vfe0", "csi_vfe0",
@@ -127,7 +120,7 @@ static const struct resources vfe_res_8x16[] = {
 };
 
 static const struct resources csiphy_res_8x96[] = {
-	/* CSIPHY0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy0_timer" },
@@ -139,7 +132,7 @@ static const struct resources csiphy_res_8x96[] = {
 		.interrupt = { "csiphy0" }
 	},
 
-	/* CSIPHY1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy1_timer" },
@@ -151,7 +144,7 @@ static const struct resources csiphy_res_8x96[] = {
 		.interrupt = { "csiphy1" }
 	},
 
-	/* CSIPHY2 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy2_timer" },
@@ -165,7 +158,7 @@ static const struct resources csiphy_res_8x96[] = {
 };
 
 static const struct resources csid_res_8x96[] = {
-	/* CSID0 */
+	 
 	{
 		.regulators = { "vdda" },
 		.clock = { "top_ahb", "ispif_ahb", "csi0_ahb", "ahb",
@@ -182,7 +175,7 @@ static const struct resources csid_res_8x96[] = {
 		.interrupt = { "csid0" }
 	},
 
-	/* CSID1 */
+	 
 	{
 		.regulators = { "vdda" },
 		.clock = { "top_ahb", "ispif_ahb", "csi1_ahb", "ahb",
@@ -199,7 +192,7 @@ static const struct resources csid_res_8x96[] = {
 		.interrupt = { "csid1" }
 	},
 
-	/* CSID2 */
+	 
 	{
 		.regulators = { "vdda" },
 		.clock = { "top_ahb", "ispif_ahb", "csi2_ahb", "ahb",
@@ -216,7 +209,7 @@ static const struct resources csid_res_8x96[] = {
 		.interrupt = { "csid2" }
 	},
 
-	/* CSID3 */
+	 
 	{
 		.regulators = { "vdda" },
 		.clock = { "top_ahb", "ispif_ahb", "csi3_ahb", "ahb",
@@ -235,7 +228,7 @@ static const struct resources csid_res_8x96[] = {
 };
 
 static const struct resources_ispif ispif_res_8x96 = {
-	/* ISPIF */
+	 
 	.clock = { "top_ahb", "ahb", "ispif_ahb",
 		   "csi0", "csi0_pix", "csi0_rdi",
 		   "csi1", "csi1_pix", "csi1_rdi",
@@ -247,7 +240,7 @@ static const struct resources_ispif ispif_res_8x96 = {
 };
 
 static const struct resources vfe_res_8x96[] = {
-	/* VFE0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ahb", "vfe0", "csi_vfe0", "vfe_ahb",
@@ -265,7 +258,7 @@ static const struct resources vfe_res_8x96[] = {
 		.interrupt = { "vfe0" }
 	},
 
-	/* VFE1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ahb", "vfe1", "csi_vfe1", "vfe_ahb",
@@ -285,7 +278,7 @@ static const struct resources vfe_res_8x96[] = {
 };
 
 static const struct resources csiphy_res_660[] = {
-	/* CSIPHY0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy0_timer",
@@ -299,7 +292,7 @@ static const struct resources csiphy_res_660[] = {
 		.interrupt = { "csiphy0" }
 	},
 
-	/* CSIPHY1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy1_timer",
@@ -313,7 +306,7 @@ static const struct resources csiphy_res_660[] = {
 		.interrupt = { "csiphy1" }
 	},
 
-	/* CSIPHY2 */
+	 
 	{
 		.regulators = {},
 		.clock = { "top_ahb", "ispif_ahb", "ahb", "csiphy2_timer",
@@ -329,7 +322,7 @@ static const struct resources csiphy_res_660[] = {
 };
 
 static const struct resources csid_res_660[] = {
-	/* CSID0 */
+	 
 	{
 		.regulators = { "vdda", "vdd_sec" },
 		.clock = { "top_ahb", "ispif_ahb", "csi0_ahb", "ahb",
@@ -349,7 +342,7 @@ static const struct resources csid_res_660[] = {
 		.interrupt = { "csid0" }
 	},
 
-	/* CSID1 */
+	 
 	{
 		.regulators = { "vdda", "vdd_sec" },
 		.clock = { "top_ahb", "ispif_ahb", "csi1_ahb", "ahb",
@@ -369,7 +362,7 @@ static const struct resources csid_res_660[] = {
 		.interrupt = { "csid1" }
 	},
 
-	/* CSID2 */
+	 
 	{
 		.regulators = { "vdda", "vdd_sec" },
 		.clock = { "top_ahb", "ispif_ahb", "csi2_ahb", "ahb",
@@ -389,7 +382,7 @@ static const struct resources csid_res_660[] = {
 		.interrupt = { "csid2" }
 	},
 
-	/* CSID3 */
+	 
 	{
 		.regulators = { "vdda", "vdd_sec" },
 		.clock = { "top_ahb", "ispif_ahb", "csi3_ahb", "ahb",
@@ -411,7 +404,7 @@ static const struct resources csid_res_660[] = {
 };
 
 static const struct resources_ispif ispif_res_660 = {
-	/* ISPIF */
+	 
 	.clock = { "top_ahb", "ahb", "ispif_ahb",
 		   "csi0", "csi0_pix", "csi0_rdi",
 		   "csi1", "csi1_pix", "csi1_rdi",
@@ -423,7 +416,7 @@ static const struct resources_ispif ispif_res_660 = {
 };
 
 static const struct resources vfe_res_660[] = {
-	/* VFE0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "throttle_axi", "top_ahb", "ahb", "vfe0",
@@ -444,7 +437,7 @@ static const struct resources vfe_res_660[] = {
 		.interrupt = { "vfe0" }
 	},
 
-	/* VFE1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "throttle_axi", "top_ahb", "ahb", "vfe1",
@@ -467,7 +460,7 @@ static const struct resources vfe_res_660[] = {
 };
 
 static const struct resources csiphy_res_845[] = {
-	/* CSIPHY0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi", "soc_ahb", "slow_ahb_src",
@@ -485,7 +478,7 @@ static const struct resources csiphy_res_845[] = {
 		.interrupt = { "csiphy0" }
 	},
 
-	/* CSIPHY1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi", "soc_ahb", "slow_ahb_src",
@@ -503,7 +496,7 @@ static const struct resources csiphy_res_845[] = {
 		.interrupt = { "csiphy1" }
 	},
 
-	/* CSIPHY2 */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi", "soc_ahb", "slow_ahb_src",
@@ -521,7 +514,7 @@ static const struct resources csiphy_res_845[] = {
 		.interrupt = { "csiphy2" }
 	},
 
-	/* CSIPHY3 */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi", "soc_ahb", "slow_ahb_src",
@@ -541,7 +534,7 @@ static const struct resources csiphy_res_845[] = {
 };
 
 static const struct resources csid_res_845[] = {
-	/* CSID0 */
+	 
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
 		.clock = { "cpas_ahb", "cphy_rx_src", "slow_ahb_src",
@@ -561,7 +554,7 @@ static const struct resources csid_res_845[] = {
 		.interrupt = { "csid0" }
 	},
 
-	/* CSID1 */
+	 
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
 		.clock = { "cpas_ahb", "cphy_rx_src", "slow_ahb_src",
@@ -581,7 +574,7 @@ static const struct resources csid_res_845[] = {
 		.interrupt = { "csid1" }
 	},
 
-	/* CSID2 */
+	 
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
 		.clock = { "cpas_ahb", "cphy_rx_src", "slow_ahb_src",
@@ -603,7 +596,7 @@ static const struct resources csid_res_845[] = {
 };
 
 static const struct resources vfe_res_845[] = {
-	/* VFE0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi", "cpas_ahb", "slow_ahb_src",
@@ -623,7 +616,7 @@ static const struct resources vfe_res_845[] = {
 		.interrupt = { "vfe0" }
 	},
 
-	/* VFE1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi", "cpas_ahb", "slow_ahb_src",
@@ -643,7 +636,7 @@ static const struct resources vfe_res_845[] = {
 		.interrupt = { "vfe1" }
 	},
 
-	/* VFE-lite */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi", "cpas_ahb", "slow_ahb_src",
@@ -664,7 +657,7 @@ static const struct resources vfe_res_845[] = {
 };
 
 static const struct resources csiphy_res_8250[] = {
-	/* CSIPHY0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "csiphy0", "csiphy0_timer" },
@@ -673,7 +666,7 @@ static const struct resources csiphy_res_8250[] = {
 		.reg = { "csiphy0" },
 		.interrupt = { "csiphy0" }
 	},
-	/* CSIPHY1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "csiphy1", "csiphy1_timer" },
@@ -682,7 +675,7 @@ static const struct resources csiphy_res_8250[] = {
 		.reg = { "csiphy1" },
 		.interrupt = { "csiphy1" }
 	},
-	/* CSIPHY2 */
+	 
 	{
 		.regulators = {},
 		.clock = { "csiphy2", "csiphy2_timer" },
@@ -691,7 +684,7 @@ static const struct resources csiphy_res_8250[] = {
 		.reg = { "csiphy2" },
 		.interrupt = { "csiphy2" }
 	},
-	/* CSIPHY3 */
+	 
 	{
 		.regulators = {},
 		.clock = { "csiphy3", "csiphy3_timer" },
@@ -700,7 +693,7 @@ static const struct resources csiphy_res_8250[] = {
 		.reg = { "csiphy3" },
 		.interrupt = { "csiphy3" }
 	},
-	/* CSIPHY4 */
+	 
 	{
 		.regulators = {},
 		.clock = { "csiphy4", "csiphy4_timer" },
@@ -709,7 +702,7 @@ static const struct resources csiphy_res_8250[] = {
 		.reg = { "csiphy4" },
 		.interrupt = { "csiphy4" }
 	},
-	/* CSIPHY5 */
+	 
 	{
 		.regulators = {},
 		.clock = { "csiphy5", "csiphy5_timer" },
@@ -721,7 +714,7 @@ static const struct resources csiphy_res_8250[] = {
 };
 
 static const struct resources csid_res_8250[] = {
-	/* CSID0 */
+	 
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
 		.clock = { "vfe0_csid", "vfe0_cphy_rx", "vfe0", "vfe0_areg", "vfe0_ahb" },
@@ -733,7 +726,7 @@ static const struct resources csid_res_8250[] = {
 		.reg = { "csid0" },
 		.interrupt = { "csid0" }
 	},
-	/* CSID1 */
+	 
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
 		.clock = { "vfe1_csid", "vfe1_cphy_rx", "vfe1", "vfe1_areg", "vfe1_ahb" },
@@ -745,7 +738,7 @@ static const struct resources csid_res_8250[] = {
 		.reg = { "csid1" },
 		.interrupt = { "csid1" }
 	},
-	/* CSID2 */
+	 
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
 		.clock = { "vfe_lite_csid", "vfe_lite_cphy_rx", "vfe_lite",  "vfe_lite_ahb" },
@@ -756,7 +749,7 @@ static const struct resources csid_res_8250[] = {
 		.reg = { "csid2" },
 		.interrupt = { "csid2" }
 	},
-	/* CSID3 */
+	 
 	{
 		.regulators = { "vdda-phy", "vdda-pll" },
 		.clock = { "vfe_lite_csid", "vfe_lite_cphy_rx", "vfe_lite",  "vfe_lite_ahb" },
@@ -770,7 +763,7 @@ static const struct resources csid_res_8250[] = {
 };
 
 static const struct resources vfe_res_8250[] = {
-	/* VFE0 */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi_src", "slow_ahb_src", "cpas_ahb",
@@ -788,7 +781,7 @@ static const struct resources vfe_res_8250[] = {
 		.reg = { "vfe0" },
 		.interrupt = { "vfe0" }
 	},
-	/* VFE1 */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi_src", "slow_ahb_src", "cpas_ahb",
@@ -806,7 +799,7 @@ static const struct resources vfe_res_8250[] = {
 		.reg = { "vfe1" },
 		.interrupt = { "vfe1" }
 	},
-	/* VFE2 (lite) */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi_src", "slow_ahb_src", "cpas_ahb",
@@ -823,7 +816,7 @@ static const struct resources vfe_res_8250[] = {
 		.reg = { "vfe_lite0" },
 		.interrupt = { "vfe_lite0" }
 	},
-	/* VFE3 (lite) */
+	 
 	{
 		.regulators = {},
 		.clock = { "camnoc_axi_src", "slow_ahb_src", "cpas_ahb",
@@ -865,27 +858,14 @@ static const struct resources_icc icc_res_sm8250[] = {
 	},
 };
 
-/*
- * camss_add_clock_margin - Add margin to clock frequency rate
- * @rate: Clock frequency rate
- *
- * When making calculations with physical clock frequency values
- * some safety margin must be added. Add it.
- */
+ 
 inline void camss_add_clock_margin(u64 *rate)
 {
 	*rate *= CAMSS_CLOCK_MARGIN_NUMERATOR;
 	*rate = div_u64(*rate, CAMSS_CLOCK_MARGIN_DENOMINATOR);
 }
 
-/*
- * camss_enable_clocks - Enable multiple clocks
- * @nclocks: Number of clocks in clock array
- * @clock: Clock array
- * @dev: Device
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int camss_enable_clocks(int nclocks, struct camss_clock *clock,
 			struct device *dev)
 {
@@ -909,11 +889,7 @@ error:
 	return ret;
 }
 
-/*
- * camss_disable_clocks - Disable multiple clocks
- * @nclocks: Number of clocks in clock array
- * @clock: Clock array
- */
+ 
 void camss_disable_clocks(int nclocks, struct camss_clock *clock)
 {
 	int i;
@@ -922,12 +898,7 @@ void camss_disable_clocks(int nclocks, struct camss_clock *clock)
 		clk_disable_unprepare(clock[i].clk);
 }
 
-/*
- * camss_find_sensor - Find a linked media entity which represents a sensor
- * @entity: Media entity to start searching from
- *
- * Return a pointer to sensor media entity or NULL if not found
- */
+ 
 struct media_entity *camss_find_sensor(struct media_entity *entity)
 {
 	struct media_pad *pad;
@@ -948,14 +919,7 @@ struct media_entity *camss_find_sensor(struct media_entity *entity)
 	}
 }
 
-/**
- * camss_get_link_freq - Get link frequency from sensor
- * @entity: Media entity in the current pipeline
- * @bpp: Number of bits per pixel for the current format
- * @lanes: Number of lanes in the link to the sensor
- *
- * Return link frequency on success or a negative error code otherwise
- */
+ 
 s64 camss_get_link_freq(struct media_entity *entity, unsigned int bpp,
 			unsigned int lanes)
 {
@@ -971,13 +935,7 @@ s64 camss_get_link_freq(struct media_entity *entity, unsigned int bpp,
 	return v4l2_get_link_freq(subdev->ctrl_handler, bpp, 2 * lanes);
 }
 
-/*
- * camss_get_pixel_clock - Get pixel clock rate from sensor
- * @entity: Media entity in the current pipeline
- * @pixel_clock: Received pixel clock value
- *
- * Return 0 on success or a negative error code otherwise
- */
+ 
 int camss_get_pixel_clock(struct media_entity *entity, u64 *pixel_clock)
 {
 	struct media_entity *sensor;
@@ -1022,14 +980,7 @@ void camss_pm_domain_off(struct camss *camss, int id)
 	}
 }
 
-/*
- * camss_of_parse_endpoint_node - Parse port endpoint node
- * @dev: Device
- * @node: Device node to be parsed
- * @csd: Parsed data from port endpoint node
- *
- * Return 0 on success or a negative error code on failure
- */
+ 
 static int camss_of_parse_endpoint_node(struct device *dev,
 					struct device_node *node,
 					struct camss_async_subdev *csd)
@@ -1062,13 +1013,7 @@ static int camss_of_parse_endpoint_node(struct device *dev,
 	return 0;
 }
 
-/*
- * camss_of_parse_ports - Parse ports node
- * @dev: Device
- * @notifier: v4l2_device notifier data
- *
- * Return number of "port" nodes found in "ports" node
- */
+ 
 static int camss_of_parse_ports(struct camss *camss)
 {
 	struct device *dev = camss->dev;
@@ -1112,12 +1057,7 @@ err_cleanup:
 	return ret;
 }
 
-/*
- * camss_init_subdevices - Initialize subdev structures and resources
- * @camss: CAMSS device
- *
- * Return 0 on success or a negative error code on failure
- */
+ 
 static int camss_init_subdevices(struct camss *camss)
 {
 	const struct resources *csiphy_res;
@@ -1145,13 +1085,13 @@ static int camss_init_subdevices(struct camss *camss)
 	}  else if (camss->version == CAMSS_845) {
 		csiphy_res = csiphy_res_845;
 		csid_res = csid_res_845;
-		/* Titan VFEs don't have an ISPIF  */
+		 
 		ispif_res = NULL;
 		vfe_res = vfe_res_845;
 	} else if (camss->version == CAMSS_8250) {
 		csiphy_res = csiphy_res_8250;
 		csid_res = csid_res_8250;
-		/* Titan VFEs don't have an ISPIF  */
+		 
 		ispif_res = NULL;
 		vfe_res = vfe_res_8250;
 	} else {
@@ -1169,7 +1109,7 @@ static int camss_init_subdevices(struct camss *camss)
 		}
 	}
 
-	/* note: SM8250 requires VFE to be initialized before CSID */
+	 
 	for (i = 0; i < camss->vfe_num + camss->vfe_lite_num; i++) {
 		ret = msm_vfe_subdev_init(camss, &camss->vfe[i],
 					  &vfe_res[i], i);
@@ -1201,12 +1141,7 @@ static int camss_init_subdevices(struct camss *camss)
 	return 0;
 }
 
-/*
- * camss_register_entities - Register subdev nodes and create links
- * @camss: CAMSS device
- *
- * Return 0 on success or a negative error code on failure
- */
+ 
 static int camss_register_entities(struct camss *camss)
 {
 	int i, j, k;
@@ -1359,12 +1294,7 @@ err_reg_csiphy:
 	return ret;
 }
 
-/*
- * camss_unregister_entities - Unregister subdev nodes
- * @camss: CAMSS device
- *
- * Return 0 on success or a negative error code on failure
- */
+ 
 static void camss_unregister_entities(struct camss *camss)
 {
 	unsigned int i;
@@ -1464,11 +1394,7 @@ static int camss_configure_pd(struct camss *camss)
 		return camss->genpd_num;
 	}
 
-	/*
-	 * If a platform device has just one power domain, then it is attached
-	 * at platform_probe() level, thus there shall be no need and even no
-	 * option to attach it again, this is the case for CAMSS on MSM8916.
-	 */
+	 
 	if (camss->genpd_num == 1)
 		return 0;
 
@@ -1483,11 +1409,7 @@ static int camss_configure_pd(struct camss *camss)
 	if (!camss->genpd_link)
 		return -ENOMEM;
 
-	/*
-	 * VFE power domains are in the beginning of the list, and while all
-	 * power domains should be attached, only if TITAN_TOP power domain is
-	 * found in the list, it should be linked over here.
-	 */
+	 
 	for (i = 0; i < camss->genpd_num; i++) {
 		camss->genpd[i] = dev_pm_domain_attach_by_id(camss->dev, i);
 		if (IS_ERR(camss->genpd[i])) {
@@ -1552,12 +1474,7 @@ static void camss_genpd_cleanup(struct camss *camss)
 		dev_pm_domain_detach(camss->genpd[i], true);
 }
 
-/*
- * camss_probe - Probe CAMSS platform device
- * @pdev: Pointer to CAMSS platform device
- *
- * Return 0 on success or a negative error code on failure
- */
+ 
 static int camss_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -1722,12 +1639,7 @@ void camss_delete(struct camss *camss)
 	pm_runtime_disable(camss->dev);
 }
 
-/*
- * camss_remove - Remove CAMSS platform device
- * @pdev: Pointer to CAMSS platform device
- *
- * Always returns 0.
- */
+ 
 static void camss_remove(struct platform_device *pdev)
 {
 	struct camss *camss = platform_get_drvdata(pdev);

@@ -1,22 +1,6 @@
-/* dispose_command.c -- dispose of a COMMAND structure. */
+ 
 
-/* Copyright (C) 1987-2009 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include "config.h"
 
@@ -31,7 +15,7 @@
 
 extern sh_obj_cache_t wdcache, wlcache;
 
-/* Dispose of the command structure passed. */
+ 
 void
 dispose_command (command)
      COMMAND *command;
@@ -76,7 +60,7 @@ dispose_command (command)
 	free (c);
 	break;
       }
-#endif /* ARITH_FOR_COMMAND */
+#endif  
 
     case cm_group:
       {
@@ -176,7 +160,7 @@ dispose_command (command)
 	free (c);
 	break;
       }
-#endif /* DPAREN_ARITHMETIC */
+#endif  
 
 #if defined (COND_COMMAND)
     case cm_cond:
@@ -187,7 +171,7 @@ dispose_command (command)
 	dispose_cond_node (c);
 	break;
       }
-#endif /* COND_COMMAND */
+#endif  
 
     case cm_function_def:
       {
@@ -206,7 +190,7 @@ dispose_command (command)
 }
 
 #if defined (COND_COMMAND)
-/* How to free a node in a conditional command. */
+ 
 void
 dispose_cond_node (cond)
      COND_COM *cond;
@@ -222,7 +206,7 @@ dispose_cond_node (cond)
       free (cond);
     }
 }
-#endif /* COND_COMMAND */
+#endif  
 
 void
 dispose_function_def_contents (c)
@@ -241,7 +225,7 @@ dispose_function_def (c)
   free (c);
 }
 
-/* How to free a WORD_DESC. */
+ 
 void
 dispose_word (w)
      WORD_DESC *w;
@@ -250,7 +234,7 @@ dispose_word (w)
   ocache_free (wdcache, WORD_DESC, w);
 }
 
-/* Free a WORD_DESC, but not the word contained within. */
+ 
 void
 dispose_word_desc (w)
      WORD_DESC *w;
@@ -259,7 +243,7 @@ dispose_word_desc (w)
   ocache_free (wdcache, WORD_DESC, w);
 }
 
-/* How to get rid of a linked list of words.  A WORD_LIST. */
+ 
 void
 dispose_words (list)
      WORD_LIST *list;
@@ -280,8 +264,7 @@ dispose_words (list)
 }
 
 #ifdef INCLUDE_UNUSED
-/* How to dispose of an array of pointers to char.  This is identical to
-   free_array in stringlib.c. */
+ 
 void
 dispose_word_array (array)
      char **array;
@@ -298,7 +281,7 @@ dispose_word_array (array)
 }
 #endif
 
-/* How to dispose of an list of redirections.  A REDIRECT. */
+ 
 void
 dispose_redirects (list)
      REDIRECT *list;
@@ -318,7 +301,7 @@ dispose_redirects (list)
 	case r_reading_until:
 	case r_deblank_reading_until:
 	  free (t->here_doc_eof);
-	/*FALLTHROUGH*/
+	 
 	case r_reading_string:
 	case r_output_direction:
 	case r_input_direction:
@@ -333,7 +316,7 @@ dispose_redirects (list)
 	case r_move_input_word:
 	case r_move_output_word:
 	  dispose_word (t->redirectee.filename);
-	  /* FALLTHROUGH */
+	   
 	default:
 	  break;
 	}

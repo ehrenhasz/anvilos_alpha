@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2020 Intel Corporation
+
+
 
 #include <linux/debugfs.h>
 
@@ -15,7 +15,7 @@ struct ufs_debugfs_attr {
 	const struct file_operations	*fops;
 };
 
-/* @file corresponds to a debugfs attribute in directory hba->debugfs_root. */
+ 
 static inline struct ufs_hba *hba_from_file(const struct file *file)
 {
 	return d_inode(file->f_path.dentry->d_parent)->i_private;
@@ -214,7 +214,7 @@ void ufs_debugfs_hba_init(struct ufs_hba *hba)
 	const struct ufs_debugfs_attr *attr;
 	struct dentry *root;
 
-	/* Set default exception event rate limit period to 20ms */
+	 
 	hba->debugfs_ee_rate_limit_ms = 20;
 	INIT_DELAYED_WORK(&hba->debugfs_ee_work, ufs_debugfs_restart_ee);
 

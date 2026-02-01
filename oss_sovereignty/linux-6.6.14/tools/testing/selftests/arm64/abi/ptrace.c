@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 ARM Limited.
- */
+
+ 
 #include <errno.h>
 #include <stdbool.h>
 #include <stddef.h>
@@ -40,27 +38,27 @@ static void test_tpidr(pid_t child)
 	read_iov.iov_base = read_val;
 	write_iov.iov_base = write_val;
 
-	/* Should be able to read a single TPIDR... */
+	 
 	read_iov.iov_len = sizeof(uint64_t);
 	ret = ptrace(PTRACE_GETREGSET, child, NT_ARM_TLS, &read_iov);
 	ksft_test_result(ret == 0, "read_tpidr_one\n");
 
-	/* ...write a new value.. */
+	 
 	write_iov.iov_len = sizeof(uint64_t);
 	write_val[0] = read_val[0]++;
 	ret = ptrace(PTRACE_SETREGSET, child, NT_ARM_TLS, &write_iov);
 	ksft_test_result(ret == 0, "write_tpidr_one\n");
 
-	/* ...then read it back */
+	 
 	ret = ptrace(PTRACE_GETREGSET, child, NT_ARM_TLS, &read_iov);
 	ksft_test_result(ret == 0 && write_val[0] == read_val[0],
 			 "verify_tpidr_one\n");
 
-	/* If we have TPIDR2 we should be able to read it */
+	 
 	read_iov.iov_len = sizeof(read_val);
 	ret = ptrace(PTRACE_GETREGSET, child, NT_ARM_TLS, &read_iov);
 	if (ret == 0) {
-		/* If we have SME there should be two TPIDRs */
+		 
 		if (read_iov.iov_len >= sizeof(read_val))
 			test_tpidr2 = true;
 
@@ -75,7 +73,7 @@ static void test_tpidr(pid_t child)
 	}
 
 	if (test_tpidr2) {
-		/* Try to write new values to all known TPIDRs... */
+		 
 		write_iov.iov_len = sizeof(write_val);
 		for (i = 0; i < MAX_TPIDRS; i++)
 			write_val[i] = read_val[i] + 1;
@@ -85,19 +83,19 @@ static void test_tpidr(pid_t child)
 				 write_iov.iov_len == sizeof(write_val),
 				 "tpidr2_write\n");
 
-		/* ...then read them back */
+		 
 		read_iov.iov_len = sizeof(read_val);
 		ret = ptrace(PTRACE_GETREGSET, child, NT_ARM_TLS, &read_iov);
 
 		if (have_sme()) {
-			/* Should read back the written value */
+			 
 			ksft_test_result(ret == 0 &&
 					 read_iov.iov_len >= sizeof(read_val) &&
 					 memcmp(read_val, write_val,
 						sizeof(read_val)) == 0,
 					 "tpidr2_read\n");
 		} else {
-			/* TPIDR2 should read as zero */
+			 
 			ksft_test_result(ret == 0 &&
 					 read_iov.iov_len >= sizeof(read_val) &&
 					 read_val[0] == write_val[0] &&
@@ -105,14 +103,14 @@ static void test_tpidr(pid_t child)
 					 "tpidr2_read\n");
 		}
 
-		/* Writing only TPIDR... */
+		 
 		write_iov.iov_len = sizeof(uint64_t);
 		memcpy(write_val, read_val, sizeof(read_val));
 		write_val[0] += 1;
 		ret = ptrace(PTRACE_SETREGSET, child, NT_ARM_TLS, &write_iov);
 
 		if (ret == 0) {
-			/* ...should leave TPIDR2 untouched */
+			 
 			read_iov.iov_len = sizeof(read_val);
 			ret = ptrace(PTRACE_GETREGSET, child, NT_ARM_TLS,
 				     &read_iov);
@@ -141,19 +139,19 @@ static void test_hw_debug(pid_t child, int type, const char *type_name)
 	iov.iov_len = sizeof(state);
 	iov.iov_base = &state;
 
-	/* Should be able to read the values */
+	 
 	ret = ptrace(PTRACE_GETREGSET, child, type, &iov);
 	ksft_test_result(ret == 0, "read_%s\n", type_name);
 
 	if (ret == 0) {
-		/* Low 8 bits is the number of slots, next 4 bits the arch */
+		 
 		slots = state.dbg_info & 0xff;
 		arch = (state.dbg_info >> 8) & 0xf;
 
 		ksft_print_msg("%s version %d with %d slots\n", type_name,
 			       arch, slots);
 
-		/* Zero is not currently architecturally valid */
+		 
 		ksft_test_result(arch, "%s_arch_set\n", type_name);
 	} else {
 		ksft_test_result_skip("%s_arch_set\n");
@@ -178,7 +176,7 @@ static int do_parent(pid_t child)
 	int status;
 	siginfo_t si;
 
-	/* Attach to the child */
+	 
 	while (1) {
 		int sig;
 
@@ -188,10 +186,7 @@ static int do_parent(pid_t child)
 			goto error;
 		}
 
-		/*
-		 * This should never happen but it's hard to flag in
-		 * the framework.
-		 */
+		 
 		if (pid != child)
 			continue;
 
@@ -208,7 +203,7 @@ static int do_parent(pid_t child)
 				goto disappeared;
 
 			if (errno == EINVAL) {
-				sig = 0; /* bust group-stop */
+				sig = 0;  
 				goto cont;
 			}
 

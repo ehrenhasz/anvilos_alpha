@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2017 Chen-Yu Tsai. All rights reserved.
- */
+ 
+ 
 
 #ifndef _LINUX_CLK_SUNXI_NG_H_
 #define _LINUX_CLK_SUNXI_NG_H_

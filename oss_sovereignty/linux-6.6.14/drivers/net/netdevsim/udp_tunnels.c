@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (c) 2020 Facebook Inc.
+
+
 
 #include <linux/debugfs.h>
 #include <linux/netdevice.h>
@@ -163,9 +163,7 @@ int nsim_udp_tunnels_info_create(struct nsim_dev *nsim_dev,
 	debugfs_create_file("udp_ports_reset", 0200, ns->nsim_dev_port->ddir,
 			    dev, &nsim_udp_tunnels_info_reset_fops);
 
-	/* Note: it's not normal to allocate the info struct like this!
-	 * Drivers are expected to use a static const one, here we're testing.
-	 */
+	 
 	info = kmemdup(&nsim_udp_tunnel_info, sizeof(nsim_udp_tunnel_info),
 		       GFP_KERNEL);
 	if (!info)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2020 Mellanox Technologies Inc. All rights reserved. */
+
+ 
 
 #include "mlx5_core.h"
 #include "eswitch.h"
@@ -48,7 +48,7 @@ static int esw_acl_egress_ofld_fwd2vport_create(struct mlx5_eswitch *esw,
 	esw_debug(esw->dev, "vport(%d) configure egress acl rule fwd2vport(%d)\n",
 		  vport->vport, fwd_dest->vport.num);
 
-	/* Delete the old egress forward-to-vport rule if any */
+	 
 	esw_acl_egress_ofld_fwd2vport_destroy(vport);
 
 	flow_act.action = MLX5_FLOW_CONTEXT_ACTION_FWD_DEST;
@@ -75,10 +75,7 @@ static int esw_acl_egress_ofld_rules_create(struct mlx5_eswitch *esw,
 	int action;
 
 	if (MLX5_CAP_GEN(esw->dev, prio_tag_required)) {
-		/* For prio tag mode, there is only 1 FTEs:
-		 * 1) prio tag packets - pop the prio tag VLAN, allow
-		 * Unmatched traffic is allowed by default
-		 */
+		 
 		esw_debug(esw->dev,
 			  "vport[%d] configure prio tag egress rules\n", vport->vport);
 
@@ -86,7 +83,7 @@ static int esw_acl_egress_ofld_rules_create(struct mlx5_eswitch *esw,
 		action |= fwd_dest ? MLX5_FLOW_CONTEXT_ACTION_FWD_DEST :
 			  MLX5_FLOW_CONTEXT_ACTION_ALLOW;
 
-		/* prio tag vlan rule - pop it so vport receives untagged packets */
+		 
 		err = esw_egress_acl_vlan_create(esw, vport, fwd_dest, 0, action);
 		if (err)
 			goto prio_err;
@@ -139,9 +136,7 @@ static int esw_acl_egress_ofld_groups_create(struct mlx5_eswitch *esw,
 		goto fwd_grp_err;
 	}
 
-	/* This group holds 1 FTE to forward all packets to other vport
-	 * when bond vports is supported.
-	 */
+	 
 	MLX5_SET(create_flow_group_in, flow_group_in, start_flow_index, flow_index);
 	MLX5_SET(create_flow_group_in, flow_group_in, end_flow_index, flow_index);
 	fwd_grp = mlx5_create_flow_group(vport->egress.acl, flow_group_in);
@@ -248,11 +243,11 @@ int mlx5_esw_acl_egress_vport_bond(struct mlx5_eswitch *esw, u16 active_vport_nu
 	if (IS_ERR(passive_vport))
 		return PTR_ERR(passive_vport);
 
-	/* Cleanup and recreate rules WITHOUT fwd2vport of active vport */
+	 
 	esw_acl_egress_ofld_rules_destroy(active_vport);
 	esw_acl_egress_ofld_rules_create(esw, active_vport, NULL);
 
-	/* Cleanup and recreate all rules + fwd2vport rule of passive vport to forward */
+	 
 	esw_acl_egress_ofld_rules_destroy(passive_vport);
 	fwd_dest.type = MLX5_FLOW_DESTINATION_TYPE_VPORT;
 	fwd_dest.vport.num = active_vport_num;

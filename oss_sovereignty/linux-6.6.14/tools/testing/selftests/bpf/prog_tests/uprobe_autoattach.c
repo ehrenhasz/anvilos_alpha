@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2022, Oracle and/or its affiliates. */
+
+ 
 
 #include <test_progs.h>
 #include "test_uprobe_autoattach.skel.h"
 
-/* uprobe attach point */
+ 
 static noinline int autoattach_trigger_func(int arg1, int arg2, int arg3,
 					    int arg4, int arg5, int arg6,
 					    int arg7, int arg8)
@@ -29,12 +29,12 @@ void test_uprobe_autoattach(void)
 
 	skel->bss->test_pid = getpid();
 
-	/* trigger & validate uprobe & uretprobe */
+	 
 	trigger_ret = autoattach_trigger_func(1, 2, 3, 4, 5, 6, 7, 8);
 
 	skel->bss->test_pid = getpid();
 
-	/* trigger & validate shared library u[ret]probes attached by name */
+	 
 	devnull = fopen(devnull_str, "r");
 
 	ASSERT_EQ(skel->bss->uprobe_byname_parm1, 1, "check_uprobe_byname_parm1");

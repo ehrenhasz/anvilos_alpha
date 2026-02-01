@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * DRV2667 haptics driver family
- *
- * Author: Dan Murphy <dmurphy@ti.com>
- *
- * Copyright: (C) 2014 Texas Instruments, Inc.
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/input.h>
@@ -16,11 +10,11 @@
 #include <linux/delay.h>
 #include <linux/regulator/consumer.h>
 
-/* Contol registers */
+ 
 #define DRV2667_STATUS	0x00
 #define DRV2667_CTRL_1	0x01
 #define DRV2667_CTRL_2	0x02
-/* Waveform sequencer */
+ 
 #define DRV2667_WV_SEQ_0	0x03
 #define DRV2667_WV_SEQ_1	0x04
 #define DRV2667_WV_SEQ_2	0x05
@@ -43,21 +37,21 @@
 #define DRV2667_PAGE_7		0x07
 #define DRV2667_PAGE_8		0x08
 
-/* RAM fields */
+ 
 #define DRV2667_RAM_HDR_SZ	0x0
-/* RAM Header addresses */
+ 
 #define DRV2667_RAM_START_HI	0x01
 #define DRV2667_RAM_START_LO	0x02
 #define DRV2667_RAM_STOP_HI		0x03
 #define DRV2667_RAM_STOP_LO		0x04
 #define DRV2667_RAM_REPEAT_CT	0x05
-/* RAM data addresses */
+ 
 #define DRV2667_RAM_AMP		0x06
 #define DRV2667_RAM_FREQ	0x07
 #define DRV2667_RAM_DURATION	0x08
 #define DRV2667_RAM_ENVELOPE	0x09
 
-/* Control 1 Register */
+ 
 #define DRV2667_25_VPP_GAIN		0x00
 #define DRV2667_50_VPP_GAIN		0x01
 #define DRV2667_75_VPP_GAIN		0x02
@@ -65,12 +59,12 @@
 #define DRV2667_DIGITAL_IN		0xfc
 #define DRV2667_ANALOG_IN		(1 << 2)
 
-/* Control 2 Register */
+ 
 #define DRV2667_GO			(1 << 0)
 #define DRV2667_STANDBY		(1 << 6)
 #define DRV2667_DEV_RST		(1 << 7)
 
-/* RAM Envelope settings */
+ 
 #define DRV2667_NO_ENV			0x00
 #define DRV2667_32_MS_ENV		0x01
 #define DRV2667_64_MS_ENV		0x02
@@ -88,17 +82,7 @@
 #define DRV2667_1792_MS_ENV		0x0e
 #define DRV2667_2048_MS_ENV		0x0f
 
-/**
- * struct drv2667_data -
- * @input_dev: Pointer to the input device
- * @client: Pointer to the I2C client
- * @regmap: Register map of the device
- * @work: Work item used to off load the enable/disable of the vibration
- * @regulator: Pointer to the regulator for the IC
- * @page: Page number
- * @magnitude: Magnitude of the vibration event
- * @frequency: Frequency of the vibration event
-**/
+ 
 struct drv2667_data {
 	struct input_dev *input_dev;
 	struct i2c_client *client;
@@ -132,9 +116,7 @@ static int drv2667_set_waveform_freq(struct drv2667_data *haptics)
 	int freq;
 	int error;
 
-	/* Per the data sheet:
-	 * Sinusoid Frequency (Hz) = 7.8125 x Frequency
-	 */
+	 
 	freq = (haptics->frequency * 1000) / 78125;
 	if (freq <= 0) {
 		dev_err(&haptics->client->dev,
@@ -165,7 +147,7 @@ static int drv2667_set_waveform_freq(struct drv2667_data *haptics)
 		dev_err(&haptics->client->dev,
 				"Failed to set the frequency: %d\n", error);
 
-	/* Reset back to original page */
+	 
 	if (read_buf == DRV2667_PAGE_0 ||
 		haptics->page != read_buf) {
 		error = regmap_write(haptics->regmap, DRV2667_PAGE, read_buf);
@@ -279,7 +261,7 @@ static int drv2667_init(struct drv2667_data *haptics)
 {
 	int error;
 
-	/* Set default haptic frequency to 195Hz on Page 1*/
+	 
 	haptics->frequency = 195;
 	haptics->page = DRV2667_PAGE_1;
 

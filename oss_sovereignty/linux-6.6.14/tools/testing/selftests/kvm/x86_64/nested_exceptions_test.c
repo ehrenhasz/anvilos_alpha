@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+#define _GNU_SOURCE  
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -9,44 +9,23 @@
 
 #define L2_GUEST_STACK_SIZE 256
 
-/*
- * Arbitrary, never shoved into KVM/hardware, just need to avoid conflict with
- * the "real" exceptions used, #SS/#GP/#DF (12/13/8).
- */
+ 
 #define FAKE_TRIPLE_FAULT_VECTOR	0xaa
 
-/* Arbitrary 32-bit error code injected by this test. */
+ 
 #define SS_ERROR_CODE 0xdeadbeef
 
-/*
- * Bit '0' is set on Intel if the exception occurs while delivering a previous
- * event/exception.  AMD's wording is ambiguous, but presumably the bit is set
- * if the exception occurs while delivering an external event, e.g. NMI or INTR,
- * but not for exceptions that occur when delivering other exceptions or
- * software interrupts.
- *
- * Note, Intel's name for it, "External event", is misleading and much more
- * aligned with AMD's behavior, but the SDM is quite clear on its behavior.
- */
+ 
 #define ERROR_CODE_EXT_FLAG	BIT(0)
 
-/*
- * Bit '1' is set if the fault occurred when looking up a descriptor in the
- * IDT, which is the case here as the IDT is empty/NULL.
- */
+ 
 #define ERROR_CODE_IDT_FLAG	BIT(1)
 
-/*
- * The #GP that occurs when vectoring #SS should show the index into the IDT
- * for #SS, plus have the "IDT flag" set.
- */
+ 
 #define GP_ERROR_CODE_AMD ((SS_VECTOR * 8) | ERROR_CODE_IDT_FLAG)
 #define GP_ERROR_CODE_INTEL ((SS_VECTOR * 8) | ERROR_CODE_IDT_FLAG | ERROR_CODE_EXT_FLAG)
 
-/*
- * Intel and AMD both shove '0' into the error code on #DF, regardless of what
- * led to the double fault.
- */
+ 
 #define DF_ERROR_CODE 0
 
 #define INTERCEPT_SS		(BIT_ULL(SS_VECTOR))
@@ -137,11 +116,7 @@ static void l1_vmx_code(struct vmx_pages *vmx)
 	prepare_vmcs(vmx, NULL, &l2_guest_stack[L2_GUEST_STACK_SIZE]);
 	GUEST_ASSERT_EQ(vmwrite(GUEST_IDTR_LIMIT, 0), 0);
 
-	/*
-	 * VMX disallows injecting an exception with error_code[31:16] != 0,
-	 * and hardware will never generate a VM-Exit with bits 31:16 set.
-	 * KVM should likewise truncate the "bad" userspace value.
-	 */
+	 
 	GUEST_ASSERT_EQ(vmwrite(EXCEPTION_BITMAP, INTERCEPT_SS_GP_DF), 0);
 	vmx_run_l2(l2_ss_pending_test, SS_VECTOR, (u16)SS_ERROR_CODE);
 	vmx_run_l2(l2_ss_injected_gp_test, GP_VECTOR, GP_ERROR_CODE_INTEL);
@@ -207,13 +182,7 @@ static void queue_ss_exception(struct kvm_vcpu *vcpu, bool inject)
 	vcpu_events_set(vcpu, &events);
 }
 
-/*
- * Verify KVM_{G,S}ET_EVENTS play nice with pending vs. injected exceptions
- * when an exception is being queued for L2.  Specifically, verify that KVM
- * honors L1 exception intercept controls when a #SS is pending/injected,
- * triggers a #GP on vectoring the #SS, morphs to #DF if #GP isn't intercepted
- * by L1, and finally causes (nested) SHUTDOWN if #DF isn't intercepted by L1.
- */
+ 
 int main(int argc, char *argv[])
 {
 	vm_vaddr_t nested_test_data_gva;
@@ -234,16 +203,16 @@ int main(int argc, char *argv[])
 
 	vcpu_args_set(vcpu, 1, nested_test_data_gva);
 
-	/* Run L1 => L2.  L2 should sync and request #SS. */
+	 
 	vcpu_run(vcpu);
 	assert_ucall_vector(vcpu, SS_VECTOR);
 
-	/* Pend #SS and request immediate exit.  #SS should still be pending. */
+	 
 	queue_ss_exception(vcpu, false);
 	vcpu->run->immediate_exit = true;
 	vcpu_run_complete_io(vcpu);
 
-	/* Verify the pending events comes back out the same as it went in. */
+	 
 	vcpu_events_get(vcpu, &events);
 	TEST_ASSERT_EQ(events.flags & KVM_VCPUEVENT_VALID_PAYLOAD,
 			KVM_VCPUEVENT_VALID_PAYLOAD);
@@ -252,36 +221,22 @@ int main(int argc, char *argv[])
 	TEST_ASSERT_EQ(events.exception.has_error_code, true);
 	TEST_ASSERT_EQ(events.exception.error_code, SS_ERROR_CODE);
 
-	/*
-	 * Run for real with the pending #SS, L1 should get a VM-Exit due to
-	 * #SS interception and re-enter L2 to request #GP (via injected #SS).
-	 */
+	 
 	vcpu->run->immediate_exit = false;
 	vcpu_run(vcpu);
 	assert_ucall_vector(vcpu, GP_VECTOR);
 
-	/*
-	 * Inject #SS, the #SS should bypass interception and cause #GP, which
-	 * L1 should intercept before KVM morphs it to #DF.  L1 should then
-	 * disable #GP interception and run L2 to request #DF (via #SS => #GP).
-	 */
+	 
 	queue_ss_exception(vcpu, true);
 	vcpu_run(vcpu);
 	assert_ucall_vector(vcpu, DF_VECTOR);
 
-	/*
-	 * Inject #SS, the #SS should bypass interception and cause #GP, which
-	 * L1 is no longer interception, and so should see a #DF VM-Exit.  L1
-	 * should then signal that is done.
-	 */
+	 
 	queue_ss_exception(vcpu, true);
 	vcpu_run(vcpu);
 	assert_ucall_vector(vcpu, FAKE_TRIPLE_FAULT_VECTOR);
 
-	/*
-	 * Inject #SS yet again.  L1 is not intercepting #GP or #DF, and so
-	 * should see nested TRIPLE_FAULT / SHUTDOWN.
-	 */
+	 
 	queue_ss_exception(vcpu, true);
 	vcpu_run(vcpu);
 	assert_ucall_vector(vcpu, -1);

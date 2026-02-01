@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cryptographic API for the 842 software compression algorithm.
- *
- * Copyright (C) IBM Corporation, 2011-2015
- *
- * Original Authors: Robert Jennings <rcj@linux.vnet.ibm.com>
- *                   Seth Jennings <sjenning@linux.vnet.ibm.com>
- *
- * Rewrite: Dan Streetman <ddstreet@ieee.org>
- *
- * This is the software implementation of compression and decompression using
- * the 842 format.  This uses the software 842 library at lib/842/ which is
- * only a reference implementation, and is very, very slow as compared to other
- * software compressors.  You probably do not want to use this software
- * compression.  If you have access to the PowerPC 842 compression hardware, you
- * want to use the 842 hardware compression interface, which is at:
- * drivers/crypto/nx/nx-842-crypto.c
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -25,7 +8,7 @@
 #include <crypto/internal/scompress.h>
 
 struct crypto842_ctx {
-	void *wmem;	/* working memory for compress */
+	void *wmem;	 
 };
 
 static void *crypto842_alloc_ctx(struct crypto_scomp *tfm)

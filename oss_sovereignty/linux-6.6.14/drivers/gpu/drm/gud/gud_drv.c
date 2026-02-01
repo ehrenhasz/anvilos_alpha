@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2020 Noralf Trønnes
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/dma-mapping.h>
@@ -31,7 +29,7 @@
 
 #include "gud_internal.h"
 
-/* Only used internally */
+ 
 static const struct drm_format_info gud_drm_format_r1 = {
 	.format = GUD_DRM_FORMAT_R1,
 	.num_planes = 1,
@@ -188,19 +186,13 @@ static int gud_usb_transfer(struct gud_device *gdrm, bool in, u8 request, u16 in
 	return ret;
 }
 
-/*
- * @buf cannot be allocated on the stack.
- * Returns number of bytes received or negative error code on failure.
- */
+ 
 int gud_usb_get(struct gud_device *gdrm, u8 request, u16 index, void *buf, size_t max_len)
 {
 	return gud_usb_transfer(gdrm, true, request, index, buf, max_len);
 }
 
-/*
- * @buf can be allocated on the stack or NULL.
- * Returns zero on success or negative error code on failure.
- */
+ 
 int gud_usb_set(struct gud_device *gdrm, u8 request, u16 index, void *buf, size_t len)
 {
 	void *trbuf = NULL;
@@ -220,10 +212,7 @@ int gud_usb_set(struct gud_device *gdrm, u8 request, u16 index, void *buf, size_
 	return ret != len ? -EIO : 0;
 }
 
-/*
- * @val can be allocated on the stack.
- * Returns zero on success or negative error code on failure.
- */
+ 
 int gud_usb_get_u8(struct gud_device *gdrm, u8 request, u16 index, u8 *val)
 {
 	u8 *buf;
@@ -242,7 +231,7 @@ int gud_usb_get_u8(struct gud_device *gdrm, u8 request, u16 index, u8 *val)
 	return ret != sizeof(*val) ? -EIO : 0;
 }
 
-/* Returns zero on success or negative error code on failure. */
+ 
 int gud_usb_set_u8(struct gud_device *gdrm, u8 request, u8 val)
 {
 	return gud_usb_set(gdrm, request, 0, &val, sizeof(val));
@@ -283,16 +272,13 @@ static int gud_get_properties(struct gud_device *gdrm)
 
 		switch (prop) {
 		case GUD_PROPERTY_ROTATION:
-			/*
-			 * DRM UAPI matches the protocol so use the value directly,
-			 * but mask out any additions on future devices.
-			 */
+			 
 			val &= GUD_ROTATION_MASK;
 			ret = drm_plane_create_rotation_property(&gdrm->pipe.plane,
 								 DRM_MODE_ROTATE_0, val);
 			break;
 		default:
-			/* New ones might show up in future devices, skip those we don't know. */
+			 
 			drm_dbg(&gdrm->drm, "Ignoring unknown property: %u\n", prop);
 			continue;
 		}
@@ -308,11 +294,7 @@ out:
 	return ret;
 }
 
-/*
- * FIXME: Dma-buf sharing requires DMA support by the importing device.
- *        This function is a workaround to make USB devices work as well.
- *        See todo.rst for how to fix the issue in the dma-buf framework.
- */
+ 
 static struct drm_gem_object *gud_gem_prime_import(struct drm_device *drm, struct dma_buf *dma_buf)
 {
 	struct gud_device *gdrm = to_gud_device(drm);
@@ -483,7 +465,7 @@ static int gud_probe(struct usb_interface *intf, const struct usb_device_id *id)
 	drm->mode_config.max_height = le32_to_cpu(desc.max_height);
 
 	formats_dev = devm_kmalloc(dev, GUD_FORMATS_MAX_NUM, GFP_KERNEL);
-	/* Add room for emulated XRGB8888 */
+	 
 	formats = devm_kmalloc_array(dev, GUD_FORMATS_MAX_NUM + 1, sizeof(*formats), GFP_KERNEL);
 	if (!formats_dev || !formats)
 		return -ENOMEM;
@@ -539,7 +521,7 @@ static int gud_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		max_buffer_size = max(max_buffer_size, fmt_buf_size);
 
 		if (format == GUD_DRM_FORMAT_R1 || format == GUD_DRM_FORMAT_XRGB1111)
-			continue; /* Internal not for userspace */
+			continue;  
 
 		formats[num_formats++] = format;
 	}
@@ -549,7 +531,7 @@ static int gud_probe(struct usb_interface *intf, const struct usb_device_id *id)
 		return -EINVAL;
 	}
 
-	/* Prefer speed over color depth */
+	 
 	if (rgb565_supported)
 		drm->mode_config.preferred_depth = 16;
 
@@ -560,7 +542,7 @@ static int gud_probe(struct usb_interface *intf, const struct usb_device_id *id)
 
 	if (desc.max_buffer_size)
 		max_buffer_size = le32_to_cpu(desc.max_buffer_size);
-	/* Prevent a misbehaving device from allocating loads of RAM. 4096x4096@XRGB8888 = 64 MB */
+	 
 	if (max_buffer_size > SZ_64M)
 		max_buffer_size = SZ_64M;
 

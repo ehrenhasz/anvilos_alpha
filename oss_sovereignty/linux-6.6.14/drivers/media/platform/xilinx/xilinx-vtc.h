@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Xilinx Video Timing Controller
- *
- * Copyright (C) 2013-2015 Ideas on Board
- * Copyright (C) 2013-2015 Xilinx, Inc.
- *
- * Contacts: Hyun Kwon <hyun.kwon@xilinx.com>
- *           Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+ 
+ 
 
 #ifndef __XILINX_VTC_H__
 #define __XILINX_VTC_H__
@@ -36,4 +28,4 @@ int xvtc_generator_start(struct xvtc_device *xvtc,
 			 const struct xvtc_config *config);
 int xvtc_generator_stop(struct xvtc_device *xvtc);
 
-#endif /* __XILINX_VTC_H__ */
+#endif  

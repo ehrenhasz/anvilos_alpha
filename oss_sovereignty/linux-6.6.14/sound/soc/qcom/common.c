@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018, Linaro Limited.
-// Copyright (c) 2018, The Linux Foundation. All rights reserved.
+
+
+
 
 #include <linux/module.h>
 #include <sound/jack.h>
@@ -27,7 +27,7 @@ int qcom_snd_parse_of(struct snd_soc_card *card)
 
 	ret = snd_soc_of_parse_card_name(card, "model");
 	if (ret == 0 && !card->name)
-		/* Deprecated, only for compatibility with old device trees */
+		 
 		ret = snd_soc_of_parse_card_name(card, "qcom,model");
 	if (ret) {
 		dev_err(dev, "Error parsing card name: %d\n", ret);
@@ -40,13 +40,13 @@ int qcom_snd_parse_of(struct snd_soc_card *card)
 			return ret;
 	}
 
-	/* DAPM routes */
+	 
 	if (of_property_read_bool(dev->of_node, "audio-routing")) {
 		ret = snd_soc_of_parse_audio_routing(card, "audio-routing");
 		if (ret)
 			return ret;
 	}
-	/* Deprecated, only for compatibility with old device trees */
+	 
 	if (of_property_read_bool(dev->of_node, "qcom,audio-routing")) {
 		ret = snd_soc_of_parse_audio_routing(card, "qcom,audio-routing");
 		if (ret)
@@ -61,10 +61,10 @@ int qcom_snd_parse_of(struct snd_soc_card *card)
 	if (ret)
 		return ret;
 
-	/* Populate links */
+	 
 	num_links = of_get_available_child_count(dev->of_node);
 
-	/* Allocate the DAI link array */
+	 
 	card->dai_link = devm_kcalloc(dev, num_links, sizeof(*link), GFP_KERNEL);
 	if (!card->dai_link)
 		return -ENOMEM;
@@ -132,19 +132,19 @@ int qcom_snd_parse_of(struct snd_soc_card *card)
 			}
 
 			if (platform) {
-				/* DPCM backend */
+				 
 				link->no_pcm = 1;
 				link->ignore_pmdown_time = 1;
 			}
 		} else {
-			/* DPCM frontend */
+			 
 			link->codecs	 = &asoc_dummy_dlc;
 			link->num_codecs = 1;
 			link->dynamic = 1;
 		}
 
 		if (platform || !codec) {
-			/* DPCM */
+			 
 			snd_soc_dai_link_set_capabilities(link);
 			link->ignore_suspend = 1;
 			link->nonatomic = 1;
@@ -175,7 +175,7 @@ err_put_np:
 EXPORT_SYMBOL_GPL(qcom_snd_parse_of);
 
 static struct snd_soc_jack_pin qcom_headset_jack_pins[] = {
-	/* Headset */
+	 
 	{
 		.pin = "Mic Jack",
 		.mask = SND_JACK_MICROPHONE,

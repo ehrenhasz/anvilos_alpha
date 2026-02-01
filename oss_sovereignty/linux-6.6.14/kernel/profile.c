@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/kernel/profile.c
- *  Simple profiling. Manages a direct-mapped profile hit count buffer,
- *  with configurable resolution, support for restricting the cpus on
- *  which profiling is done, and switching between cpu time and
- *  schedule() calls via kernel command line parameters passed at boot.
- *
- *  Scheduler profiling support, Arjan van de Ven and Ingo Molnar,
- *	Red Hat, July 2004
- *  Consolidation of architecture support code for profiling,
- *	Nadia Yvette Chambers, Oracle, July 2004
- *  Amortized hit count accounting via per-cpu open-addressed hashtables
- *	to resolve timer interrupt livelocks, Nadia Yvette Chambers,
- *	Oracle, 2004
- */
+
+ 
 
 #include <linux/export.h>
 #include <linux/profile.h>
@@ -52,7 +38,7 @@ static cpumask_var_t prof_cpu_mask;
 static DEFINE_PER_CPU(struct profile_hit *[2], cpu_profile_hits);
 static DEFINE_PER_CPU(int, cpu_profile_flip);
 static DEFINE_MUTEX(profile_flip_mutex);
-#endif /* CONFIG_SMP */
+#endif  
 
 int profile_setup(char *str)
 {
@@ -69,7 +55,7 @@ int profile_setup(char *str)
 		select = sleepstr;
 #else
 		pr_warn("kernel sleep profiling requires CONFIG_SCHEDSTATS\n");
-#endif /* CONFIG_SCHEDSTATS */
+#endif  
 	} else if (!strncmp(str, schedstr, strlen(schedstr))) {
 		prof_on = SCHED_PROFILING;
 		select = schedstr;
@@ -103,7 +89,7 @@ int __ref profile_init(void)
 	if (!prof_on)
 		return 0;
 
-	/* only text is profiled */
+	 
 	prof_len = (_etext - _stext) >> prof_shift;
 
 	if (!prof_len) {
@@ -137,37 +123,7 @@ int __ref profile_init(void)
 }
 
 #if defined(CONFIG_SMP) && defined(CONFIG_PROC_FS)
-/*
- * Each cpu has a pair of open-addressed hashtables for pending
- * profile hits. read_profile() IPI's all cpus to request them
- * to flip buffers and flushes their contents to prof_buffer itself.
- * Flip requests are serialized by the profile_flip_mutex. The sole
- * use of having a second hashtable is for avoiding cacheline
- * contention that would otherwise happen during flushes of pending
- * profile hits required for the accuracy of reported profile hits
- * and so resurrect the interrupt livelock issue.
- *
- * The open-addressed hashtables are indexed by profile buffer slot
- * and hold the number of pending hits to that profile buffer slot on
- * a cpu in an entry. When the hashtable overflows, all pending hits
- * are accounted to their corresponding profile buffer slots with
- * atomic_add() and the hashtable emptied. As numerous pending hits
- * may be accounted to a profile buffer slot in a hashtable entry,
- * this amortizes a number of atomic profile buffer increments likely
- * to be far larger than the number of entries in the hashtable,
- * particularly given that the number of distinct profile buffer
- * positions to which hits are accounted during short intervals (e.g.
- * several seconds) is usually very small. Exclusion from buffer
- * flipping is provided by interrupt disablement (note that for
- * SCHED_PROFILING or SLEEP_PROFILING profile_hit() may be called from
- * process context).
- * The hash function is meant to be lightweight as opposed to strong,
- * and was vaguely inspired by ppc64 firmware-supported inverted
- * pagetable hash functions, but uses a full hashtable full of finite
- * collision chains, not just pairs of them.
- *
- * -- nyc
- */
+ 
 static void __profile_flip_buffers(void *unused)
 {
 	int cpu = smp_processor_id();
@@ -228,11 +184,7 @@ static void do_profile_hits(int type, void *__pc, unsigned int nr_hits)
 		put_cpu();
 		return;
 	}
-	/*
-	 * We buffer the global profiler buffer into a per-CPU
-	 * queue and thus reduce the number of global (and possibly
-	 * NUMA-alien) accesses. The write-queue is self-coalescing:
-	 */
+	 
 	local_irq_save(flags);
 	do {
 		for (j = 0; j < PROFILE_GRPSZ; ++j) {
@@ -248,10 +200,7 @@ static void do_profile_hits(int type, void *__pc, unsigned int nr_hits)
 		i = (i + secondary) & (NR_PROFILE_HIT - 1);
 	} while (i != primary);
 
-	/*
-	 * Add the current hit(s) and flush the write-queue out
-	 * to the global buffer:
-	 */
+	 
 	atomic_add(nr_hits, &prof_buffer[pc]);
 	for (i = 0; i < NR_PROFILE_HIT; ++i) {
 		atomic_add(hits[i].hits, &prof_buffer[hits[i].pc]);
@@ -310,7 +259,7 @@ static int profile_online_cpu(unsigned int cpu)
 	return 0;
 }
 
-#else /* !CONFIG_SMP */
+#else  
 #define profile_flip_buffers()		do { } while (0)
 #define profile_discard_flip_buffers()	do { } while (0)
 
@@ -320,7 +269,7 @@ static void do_profile_hits(int type, void *__pc, unsigned int nr_hits)
 	pc = ((unsigned long)__pc - (unsigned long)_stext) >> prof_shift;
 	atomic_add(nr_hits, &prof_buffer[min(pc, prof_len - 1)]);
 }
-#endif /* !CONFIG_SMP */
+#endif  
 
 void profile_hits(int type, void *__pc, unsigned int nr_hits)
 {
@@ -383,16 +332,11 @@ static const struct proc_ops prof_cpu_mask_proc_ops = {
 
 void create_prof_cpu_mask(void)
 {
-	/* create /proc/irq/prof_cpu_mask */
+	 
 	proc_create("irq/prof_cpu_mask", 0600, NULL, &prof_cpu_mask_proc_ops);
 }
 
-/*
- * This function accesses profiling information. The returned data is
- * binary: the sampling step and the actual contents of the profile
- * buffer. Use of the program readprofile is recommended in order to
- * get meaningful info out of these data.
- */
+ 
 static ssize_t
 read_profile(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 {
@@ -421,18 +365,13 @@ read_profile(struct file *file, char __user *buf, size_t count, loff_t *ppos)
 	return read;
 }
 
-/* default is to not implement this call */
+ 
 int __weak setup_profiling_timer(unsigned mult)
 {
 	return -EINVAL;
 }
 
-/*
- * Writing to /proc/profile resets the counters
- *
- * Writing a 'profiling multiplier' value into it also re-sets the profiling
- * interrupt frequency, on architectures that support this.
- */
+ 
 static ssize_t write_profile(struct file *file, const char __user *buf,
 			     size_t count, loff_t *ppos)
 {
@@ -498,4 +437,4 @@ err_state_prep:
 	return err;
 }
 subsys_initcall(create_proc_profile);
-#endif /* CONFIG_PROC_FS */
+#endif  

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2007-2012 Siemens AG
- *
- * Written by:
- * Pavel Smolenskiy <pavel.smolenskiy@gmail.com>
- * Maxim Gorbachyov <maxim.gorbachev@siemens.com>
- * Dmitry Eremin-Solenikov <dbaryshkov@gmail.com>
- * Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -118,7 +110,7 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
 	span = wpan_dev->pan_id;
 	sshort = wpan_dev->short_addr;
 
-	/* Level 3 filtering: Only beacons are accepted during scans */
+	 
 	if (sdata->required_filtering == IEEE802154_FILTERING_3_SCAN &&
 	    sdata->required_filtering > wpan_phy->filtering) {
 		if (mac_cb(skb)->type != IEEE802154_FC_TYPE_BEACON) {
@@ -132,10 +124,10 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
 	switch (mac_cb(skb)->dest.mode) {
 	case IEEE802154_ADDR_NONE:
 		if (hdr->source.mode != IEEE802154_ADDR_NONE)
-			/* FIXME: check if we are PAN coordinator */
+			 
 			skb->pkt_type = PACKET_OTHERHOST;
 		else
-			/* ACK comes with both addresses empty */
+			 
 			skb->pkt_type = PACKET_HOST;
 		break;
 	case IEEE802154_ADDR_LONG:
@@ -166,10 +158,7 @@ ieee802154_subif_frame(struct ieee802154_sub_if_data *sdata,
 
 	skb->dev = sdata->dev;
 
-	/* TODO this should be moved after netif_receive_skb call, otherwise
-	 * wireshark will show a mac header with security fields and the
-	 * payload is already decrypted.
-	 */
+	 
 	rc = mac802154_llsec_decrypt(&sdata->sec, skb);
 	if (rc) {
 		pr_debug("decryption failed: %i\n", rc);
@@ -325,9 +314,7 @@ __ieee802154_rx_handle_packet(struct ieee802154_local *local,
 		if (!ieee802154_sdata_running(sdata))
 			continue;
 
-		/* Do not deliver packets received on interfaces expecting
-		 * AACK=1 if the address filters where disabled.
-		 */
+		 
 		if (local->hw.phy->filtering < IEEE802154_FILTERING_4_FRAME_FIELDS &&
 		    sdata->required_filtering == IEEE802154_FILTERING_4_FRAME_FIELDS)
 			continue;
@@ -378,10 +365,7 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
 	if (local->suspended)
 		goto free_skb;
 
-	/* TODO: When a transceiver omits the checksum here, we
-	 * add an own calculated one. This is currently an ugly
-	 * solution because the monitor needs a crc here.
-	 */
+	 
 	if (local->hw.flags & IEEE802154_HW_RX_OMIT_CKSUM) {
 		crc = crc_ccitt(0, skb->data, skb->len);
 		put_unaligned_le16(crc, skb_put(skb, 2));
@@ -391,13 +375,13 @@ void ieee802154_rx(struct ieee802154_local *local, struct sk_buff *skb)
 
 	ieee802154_monitors_rx(local, skb);
 
-	/* Level 1 filtering: Check the FCS by software when relevant */
+	 
 	if (local->hw.phy->filtering == IEEE802154_FILTERING_NONE) {
 		crc = crc_ccitt(0, skb->data, skb->len);
 		if (crc)
 			goto drop;
 	}
-	/* remove crc */
+	 
 	skb_trim(skb, skb->len - 2);
 
 	__ieee802154_rx_handle_packet(local, skb);

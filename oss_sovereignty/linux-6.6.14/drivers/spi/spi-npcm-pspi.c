@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2018 Nuvoton Technology corporation.
+
+
 
 #include <linux/kernel.h>
 #include <linux/bitfield.h>
@@ -40,7 +40,7 @@ struct npcm_pspi {
 #define NPCM_PSPI_CTL1		0x02
 #define NPCM_PSPI_STAT		0x04
 
-/* definitions for control and status register */
+ 
 #define NPCM_PSPI_CTL1_SPIEN	BIT(0)
 #define NPCM_PSPI_CTL1_MOD	BIT(2)
 #define NPCM_PSPI_CTL1_EIR	BIT(5)
@@ -52,7 +52,7 @@ struct npcm_pspi {
 #define NPCM_PSPI_STAT_BSY	BIT(0)
 #define NPCM_PSPI_STAT_RBF	BIT(1)
 
-/* general definitions */
+ 
 #define NPCM_PSPI_TIMEOUT_MS		2000
 #define NPCM_PSPI_MAX_CLK_DIVIDER	256
 #define NPCM_PSPI_MIN_CLK_DIVIDER	4
@@ -148,7 +148,7 @@ static void npcm_pspi_set_baudrate(struct npcm_pspi *priv, unsigned int speed)
 	u32 ckdiv;
 	u16 regtemp;
 
-	/* the supported rates are numbers from 4 to 256. */
+	 
 	ckdiv = DIV_ROUND_CLOSEST(clk_get_rate(priv->clk), (2 * speed)) - 1;
 
 	regtemp = ioread16(NPCM_PSPI_CTL1 + priv->base);
@@ -171,10 +171,7 @@ static void npcm_pspi_setup_transfer(struct spi_device *spi,
 		priv->mode = spi->mode;
 	}
 
-	/*
-	 * If transfer is even length, and 8 bits per word transfer,
-	 * then implement 16 bits-per-word transfer.
-	 */
+	 
 	if (priv->bits_per_word == 8 && !(t->len & 0x1))
 		t->bits_per_word = 16;
 
@@ -384,7 +381,7 @@ static int npcm_pspi_probe(struct platform_device *pdev)
 		goto out_disable_clk;
 	}
 
-	/* reset SPI-HW block */
+	 
 	npcm_pspi_reset_hw(priv);
 
 	ret = devm_request_irq(&pdev->dev, irq, npcm_pspi_handler, 0,
@@ -411,7 +408,7 @@ static int npcm_pspi_probe(struct platform_device *pdev)
 		npcm_pspi_unprepare_transfer_hardware;
 	master->use_gpio_descriptors = true;
 
-	/* set to default clock rate */
+	 
 	npcm_pspi_set_baudrate(priv, NPCM_PSPI_DEFAULT_CLK);
 
 	ret = devm_spi_register_master(&pdev->dev, master);

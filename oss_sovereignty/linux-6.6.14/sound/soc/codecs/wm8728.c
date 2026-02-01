@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8728.c  --  WM8728 ALSA SoC Audio driver
- *
- * Copyright 2008 Wolfson Microelectronics plc
- *
- * Author: Mark Brown <broonie@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -27,12 +21,7 @@
 
 #include "wm8728.h"
 
-/*
- * We can't read the WM8728 register space so we cache them instead.
- * Note that the defaults here aren't the physical defaults, we latch
- * the volume update bits, mute the output and enable infinite zero
- * detect.
- */
+ 
 static const struct reg_default wm8728_reg_defaults[] = {
 	{ 0, 0x1ff },
 	{ 1, 0x1ff },
@@ -40,7 +29,7 @@ static const struct reg_default wm8728_reg_defaults[] = {
 	{ 3, 0x100 },
 };
 
-/* codec private data */
+ 
 struct wm8728_priv {
 	struct regmap *regmap;
 };
@@ -55,9 +44,7 @@ SOC_DOUBLE_R_TLV("Digital Playback Volume", WM8728_DACLVOL, WM8728_DACRVOL,
 SOC_SINGLE("Deemphasis", WM8728_DACCTL, 1, 1, 0),
 };
 
-/*
- * DAPM controls.
- */
+ 
 static const struct snd_soc_dapm_widget wm8728_dapm_widgets[] = {
 SND_SOC_DAPM_DAC("DAC", "HiFi Playback", SND_SOC_NOPM, 0, 0),
 SND_SOC_DAPM_OUTPUT("VOUTL"),
@@ -115,9 +102,7 @@ static int wm8728_set_dai_fmt(struct snd_soc_dai *codec_dai,
 	struct snd_soc_component *component = codec_dai->component;
 	u16 iface = snd_soc_component_read(component, WM8728_IFCTL);
 
-	/* Currently only I2S is supported by the driver, though the
-	 * hardware is more flexible.
-	 */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		iface |= 1;
@@ -126,7 +111,7 @@ static int wm8728_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* The hardware only support full slave mode */
+	 
 	switch (fmt & SND_SOC_DAIFMT_MASTER_MASK) {
 	case SND_SOC_DAIFMT_CBS_CFS:
 		break;
@@ -168,11 +153,11 @@ static int wm8728_set_bias_level(struct snd_soc_component *component,
 	case SND_SOC_BIAS_PREPARE:
 	case SND_SOC_BIAS_STANDBY:
 		if (snd_soc_component_get_bias_level(component) == SND_SOC_BIAS_OFF) {
-			/* Power everything up... */
+			 
 			reg = snd_soc_component_read(component, WM8728_DACCTL);
 			snd_soc_component_write(component, WM8728_DACCTL, reg & ~0x4);
 
-			/* ..then sync in the register cache. */
+			 
 			regcache_sync(wm8728->regmap);
 		}
 		break;
@@ -269,7 +254,7 @@ static struct spi_driver wm8728_spi_driver = {
 	},
 	.probe		= wm8728_spi_probe,
 };
-#endif /* CONFIG_SPI_MASTER */
+#endif  
 
 #if IS_ENABLED(CONFIG_I2C)
 static int wm8728_i2c_probe(struct i2c_client *i2c)

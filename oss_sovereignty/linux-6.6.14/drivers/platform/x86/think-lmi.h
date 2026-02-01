@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 
 #ifndef _THINK_LMI_H_
 #define _THINK_LMI_H_
@@ -11,7 +11,7 @@
 #define TLMI_LANG_MAXLEN       4
 #define TLMI_INDEX_MAX        32
 
-/* Possible error values */
+ 
 struct tlmi_err_codes {
 	const char *err_str;
 	int err_code;
@@ -27,7 +27,7 @@ enum level_option {
 	TLMI_LEVEL_MASTER,
 };
 
-/* password configuration details */
+ 
 struct tlmi_pwdcfg_core {
 	uint32_t password_mode;
 	uint32_t password_state;
@@ -49,7 +49,7 @@ struct tlmi_pwdcfg {
 	struct tlmi_pwdcfg_ext ext;
 };
 
-/* password setting details */
+ 
 struct tlmi_pwd_setting {
 	struct kobject kobj;
 	bool valid;
@@ -60,14 +60,14 @@ struct tlmi_pwd_setting {
 	int maxlen;
 	enum encoding_option encoding;
 	char kbdlang[TLMI_LANG_MAXLEN];
-	int index; /*Used for HDD and NVME auth */
+	int index;  
 	enum level_option level;
 	bool cert_installed;
 	char *signature;
 	char *save_signature;
 };
 
-/* Attribute setting details */
+ 
 struct tlmi_attr_setting {
 	struct kobject kobj;
 	int index;
@@ -100,4 +100,4 @@ struct think_lmi {
 	struct tlmi_pwd_setting *pwd_nvme;
 };
 
-#endif /* !_THINK_LMI_H_ */
+#endif  

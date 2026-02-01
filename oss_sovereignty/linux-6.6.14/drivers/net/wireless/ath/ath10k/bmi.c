@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2014,2016-2017 Qualcomm Atheros, Inc.
- */
+
+ 
 
 #include "bmi.h"
 #include "hif.h"
@@ -100,10 +97,7 @@ int ath10k_bmi_get_target_info_sdio(struct ath10k *ar,
 
 	cmd.id = __cpu_to_le32(BMI_GET_TARGET_INFO);
 
-	/* Step 1: Read 4 bytes of the target info and check if it is
-	 * the special sentinel version word or the first word in the
-	 * version response.
-	 */
+	 
 	resplen = sizeof(u32);
 	ret = ath10k_hif_exchange_bmi_msg(ar, &cmd, cmdlen, &tmp, &resplen);
 	if (ret) {
@@ -111,11 +105,9 @@ int ath10k_bmi_get_target_info_sdio(struct ath10k *ar,
 		return ret;
 	}
 
-	/* Some SDIO boards have a special sentinel byte before the real
-	 * version response.
-	 */
+	 
 	if (__le32_to_cpu(tmp) == TARGET_VERSION_SENTINAL) {
-		/* Step 1b: Read the version length */
+		 
 		resplen = sizeof(u32);
 		ret = ath10k_hif_exchange_bmi_msg(ar, NULL, 0, &tmp,
 						  &resplen);
@@ -127,14 +119,14 @@ int ath10k_bmi_get_target_info_sdio(struct ath10k *ar,
 
 	ver_len = __le32_to_cpu(tmp);
 
-	/* Step 2: Check the target info length */
+	 
 	if (ver_len != sizeof(resp.get_target_info)) {
 		ath10k_warn(ar, "Unexpected target info len: %u. Expected: %zu\n",
 			    ver_len, sizeof(resp.get_target_info));
 		return -EINVAL;
 	}
 
-	/* Step 3: Read the rest of the version response */
+	 
 	resplen = sizeof(resp.get_target_info) - sizeof(u32);
 	ret = ath10k_hif_exchange_bmi_msg(ar, NULL, 0,
 					  &resp.get_target_info.version,
@@ -274,7 +266,7 @@ int ath10k_bmi_write_memory(struct ath10k *ar,
 	while (length) {
 		txlen = min(length, BMI_MAX_DATA_SIZE - hdrlen);
 
-		/* copy before roundup to avoid reading beyond buffer*/
+		 
 		memcpy(cmd.write_mem.payload, buffer, txlen);
 		txlen = roundup(txlen, 4);
 
@@ -290,7 +282,7 @@ int ath10k_bmi_write_memory(struct ath10k *ar,
 			return ret;
 		}
 
-		/* fixup roundup() so `length` zeroes out for last chunk */
+		 
 		txlen = min(txlen, length);
 
 		address += txlen;
@@ -467,7 +459,7 @@ int ath10k_bmi_fast_download(struct ath10k *ar,
 	if (ret)
 		return ret;
 
-	/* copy the last word into a zero padded buffer */
+	 
 	if (trailer_len > 0)
 		memcpy(trailer, buffer + head_len, trailer_len);
 
@@ -485,10 +477,7 @@ int ath10k_bmi_fast_download(struct ath10k *ar,
 	if (ret != 0)
 		return ret;
 
-	/*
-	 * Close compressed stream and open a new (fake) one.
-	 * This serves mainly to flush Target caches.
-	 */
+	 
 	ret = ath10k_bmi_lz_stream_start(ar, 0x00);
 
 	return ret;

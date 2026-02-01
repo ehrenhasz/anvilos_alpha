@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Error Disconnect Recover support
- * Author: Kuppuswamy Sathyanarayanan <sathyanarayanan.kuppuswamy@linux.intel.com>
- *
- * Copyright (C) 2020 Intel Corp.
- */
+
+ 
 
 #define dev_fmt(fmt) "EDR: " fmt
 
@@ -19,22 +14,14 @@
 #define EDR_OST_SUCCESS			0x80
 #define EDR_OST_FAILED			0x81
 
-/*
- * _DSM wrapper function to enable/disable DPC
- * @pdev   : PCI device structure
- *
- * returns 0 on success or errno on failure.
- */
+ 
 static int acpi_enable_dpc(struct pci_dev *pdev)
 {
 	struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
 	union acpi_object *obj, argv4, req;
 	int status = 0;
 
-	/*
-	 * Behavior when calling unsupported _DSM functions is undefined,
-	 * so check whether EDR_PORT_DPC_ENABLE_DSM is supported.
-	 */
+	 
 	if (!acpi_check_dsm(adev->handle, &pci_acpi_dsm_guid, 5,
 			    1ULL << EDR_PORT_DPC_ENABLE_DSM))
 		return 0;
@@ -46,11 +33,7 @@ static int acpi_enable_dpc(struct pci_dev *pdev)
 	argv4.package.count = 1;
 	argv4.package.elements = &req;
 
-	/*
-	 * Per Downstream Port Containment Related Enhancements ECN to PCI
-	 * Firmware Specification r3.2, sec 4.6.12, EDR_PORT_DPC_ENABLE_DSM is
-	 * optional.  Return success if it's not implemented.
-	 */
+	 
 	obj = acpi_evaluate_dsm(adev->handle, &pci_acpi_dsm_guid, 5,
 				EDR_PORT_DPC_ENABLE_DSM, &argv4);
 	if (!obj)
@@ -71,23 +54,14 @@ static int acpi_enable_dpc(struct pci_dev *pdev)
 	return status;
 }
 
-/*
- * _DSM wrapper function to locate DPC port
- * @pdev   : Device which received EDR event
- *
- * Returns pci_dev or NULL.  Caller is responsible for dropping a reference
- * on the returned pci_dev with pci_dev_put().
- */
+ 
 static struct pci_dev *acpi_dpc_port_get(struct pci_dev *pdev)
 {
 	struct acpi_device *adev = ACPI_COMPANION(&pdev->dev);
 	union acpi_object *obj;
 	u16 port;
 
-	/*
-	 * Behavior when calling unsupported _DSM functions is undefined,
-	 * so check whether EDR_PORT_DPC_ENABLE_DSM is supported.
-	 */
+	 
 	if (!acpi_check_dsm(adev->handle, &pci_acpi_dsm_guid, 5,
 			    1ULL << EDR_PORT_LOCATE_DSM))
 		return pci_dev_get(pdev);
@@ -103,12 +77,7 @@ static struct pci_dev *acpi_dpc_port_get(struct pci_dev *pdev)
 		return NULL;
 	}
 
-	/*
-	 * Firmware returns DPC port BDF details in following format:
-	 *	15:8 = bus
-	 *	 7:3 = device
-	 *	 2:0 = function
-	 */
+	 
 	port = obj->integer.value;
 
 	ACPI_FREE(obj);
@@ -117,12 +86,7 @@ static struct pci_dev *acpi_dpc_port_get(struct pci_dev *pdev)
 					   PCI_BUS_NUM(port), port & 0xff);
 }
 
-/*
- * _OST wrapper function to let firmware know the status of EDR event
- * @pdev   : Device used to send _OST
- * @edev   : Device which experienced EDR event
- * @status : Status of EDR event
- */
+ 
 static int acpi_send_edr_status(struct pci_dev *pdev, struct pci_dev *edev,
 				u16 status)
 {
@@ -151,18 +115,10 @@ static void edr_handle_event(acpi_handle handle, u32 event, void *data)
 	if (event != ACPI_NOTIFY_DISCONNECT_RECOVER)
 		return;
 
-	/*
-	 * pdev is a Root Port or Downstream Port that is still present and
-	 * has triggered a containment event, e.g., DPC, so its child
-	 * devices have been disconnected (ACPI r6.5, sec 5.6.6).
-	 */
+	 
 	pci_info(pdev, "EDR event received\n");
 
-	/*
-	 * Locate the port that experienced the containment event.  pdev
-	 * may be that port or a parent of it (PCI Firmware r3.3, sec
-	 * 4.6.13).
-	 */
+	 
 	edev = acpi_dpc_port_get(pdev);
 	if (!edev) {
 		pci_err(pdev, "Firmware failed to locate DPC port\n");
@@ -171,13 +127,13 @@ static void edr_handle_event(acpi_handle handle, u32 event, void *data)
 
 	pci_dbg(pdev, "Reported EDR dev: %s\n", pci_name(edev));
 
-	/* If port does not support DPC, just send the OST */
+	 
 	if (!edev->dpc_cap) {
 		pci_err(edev, FW_BUG "This device doesn't support DPC\n");
 		goto send_ost;
 	}
 
-	/* Check if there is a valid DPC trigger */
+	 
 	pci_read_config_word(edev, edev->dpc_cap + PCI_EXP_DPC_STATUS, &status);
 	if (!(status & PCI_EXP_DPC_STATUS_TRIGGER)) {
 		pci_err(edev, "Invalid DPC trigger %#010x\n", status);
@@ -187,19 +143,12 @@ static void edr_handle_event(acpi_handle handle, u32 event, void *data)
 	dpc_process_error(edev);
 	pci_aer_raw_clear_status(edev);
 
-	/*
-	 * Irrespective of whether the DPC event is triggered by ERR_FATAL
-	 * or ERR_NONFATAL, since the link is already down, use the FATAL
-	 * error recovery path for both cases.
-	 */
+	 
 	estate = pcie_do_recovery(edev, pci_channel_io_frozen, dpc_reset_link);
 
 send_ost:
 
-	/*
-	 * If recovery is successful, send _OST(0xF, BDF << 16 | 0x80)
-	 * to firmware. If not successful, send _OST(0xF, BDF << 16 | 0x81).
-	 */
+	 
 	if (estate == PCI_ERS_RESULT_RECOVERED) {
 		pci_dbg(edev, "DPC port successfully recovered\n");
 		pcie_clear_device_status(edev);

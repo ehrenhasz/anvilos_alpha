@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 2001-2002 Magnus Boden <mb@ozaba.mine.nu>
- * (C) 2006-2012 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -57,7 +55,7 @@ static int tftp_help(struct sk_buff *skb,
 	switch (ntohs(tfh->opcode)) {
 	case TFTP_OPCODE_READ:
 	case TFTP_OPCODE_WRITE:
-		/* RRQ and WRQ works the same way */
+		 
 		nf_ct_dump_tuple(&ct->tuplehash[IP_CT_DIR_ORIGINAL].tuple);
 		nf_ct_dump_tuple(&ct->tuplehash[IP_CT_DIR_REPLY].tuple);
 

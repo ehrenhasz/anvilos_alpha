@@ -1,34 +1,4 @@
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies, Ltd.  All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/mlx5/driver.h>
 #include "mlx5_core.h"
@@ -392,7 +362,7 @@ static int mlx5_hairpin_pair_queues(struct mlx5_hairpin *hp)
 {
 	int i, j, err;
 
-	/* set peer SQs */
+	 
 	for (i = 0; i < hp->num_channels; i++) {
 		err = mlx5_hairpin_modify_sq(hp->peer_mdev, hp->sqn[i],
 					     MLX5_SQC_STATE_RST, MLX5_SQC_STATE_RDY,
@@ -401,7 +371,7 @@ static int mlx5_hairpin_pair_queues(struct mlx5_hairpin *hp)
 			goto err_modify_sq;
 	}
 
-	/* set func RQs */
+	 
 	for (i = 0; i < hp->num_channels; i++) {
 		err = mlx5_hairpin_modify_rq(hp->func_mdev, hp->rqn[i],
 					     MLX5_RQC_STATE_RST, MLX5_RQC_STATE_RDY,
@@ -437,11 +407,11 @@ static void mlx5_hairpin_unpair_queues(struct mlx5_hairpin *hp)
 {
 	int i;
 
-	/* unset func RQs */
+	 
 	for (i = 0; i < hp->num_channels; i++)
 		mlx5_hairpin_modify_rq(hp->func_mdev, hp->rqn[i], MLX5_RQC_STATE_RDY,
 				       MLX5_RQC_STATE_RST, 0, 0);
-	/* unset peer SQs */
+	 
 	if (!hp->peer_gone)
 		mlx5_hairpin_unpair_peer_sq(hp);
 }
@@ -466,7 +436,7 @@ mlx5_core_hairpin_create(struct mlx5_core_dev *func_mdev,
 	hp->rqn = (void *)hp + sizeof(*hp);
 	hp->sqn = hp->rqn + params->num_channels;
 
-	/* alloc and pair func --> peer hairpin */
+	 
 	err = mlx5_hairpin_create_queues(hp, params);
 	if (err)
 		goto err_create_queues;
@@ -497,7 +467,7 @@ void mlx5_core_hairpin_clear_dead_peer(struct mlx5_hairpin *hp)
 
 	mlx5_hairpin_unpair_peer_sq(hp);
 
-	/* destroy peer SQ */
+	 
 	for (i = 0; i < hp->num_channels; i++)
 		mlx5_core_destroy_sq(hp->peer_mdev, hp->sqn[i]);
 

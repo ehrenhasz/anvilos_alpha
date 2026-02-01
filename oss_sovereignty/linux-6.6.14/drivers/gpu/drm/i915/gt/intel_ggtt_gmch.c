@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2022 Intel Corporation
- */
+
+ 
 
 #include "intel_ggtt_gmch.h"
 
@@ -55,16 +53,10 @@ static void gmch_ggtt_remove(struct i915_address_space *vm)
 	intel_gmch_remove();
 }
 
-/*
- * Certain Gen5 chipsets require idling the GPU before unmapping anything from
- * the GTT when VT-d is enabled.
- */
+ 
 static bool needs_idle_maps(struct drm_i915_private *i915)
 {
-	/*
-	 * Query intel_iommu to see if we need the workaround. Presumably that
-	 * was loaded first.
-	 */
+	 
 	if (!i915_vtd_active(i915))
 		return false;
 

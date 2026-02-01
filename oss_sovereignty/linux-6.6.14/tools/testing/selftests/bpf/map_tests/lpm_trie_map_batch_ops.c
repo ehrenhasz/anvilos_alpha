@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <arpa/inet.h>
 #include <linux/bpf.h>
@@ -97,9 +97,7 @@ void test_lpm_trie_map_batch_ops(void)
 		memset(values, 0, max_entries * sizeof(*values));
 		batch = 0;
 		total = 0;
-		/* iteratively lookup/delete elements with 'step'
-		 * elements each.
-		 */
+		 
 		count = step;
 		while (true) {
 			err = bpf_map_lookup_batch(map_fd,
@@ -135,7 +133,7 @@ void test_lpm_trie_map_batch_ops(void)
 		CHECK(total != max_entries, "delete with steps",
 		      "total = %u, max_entries = %u\n", total, max_entries);
 
-		/* check map is empty, errono == ENOENT */
+		 
 		err = bpf_map_get_next_key(map_fd, NULL, &key);
 		CHECK(!err || errno != ENOENT, "bpf_map_get_next_key()",
 		      "error: %s\n", strerror(errno));

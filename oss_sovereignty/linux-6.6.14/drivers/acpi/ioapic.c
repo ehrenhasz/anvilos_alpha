@@ -1,22 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IOAPIC/IOxAPIC/IOSAPIC driver
- *
- * Copyright (C) 2009 Fujitsu Limited.
- * (c) Copyright 2009 Hewlett-Packard Development Company, L.P.
- *
- * Copyright (C) 2014 Intel Corporation
- *
- * Based on original drivers/pci/ioapic.c
- *	Yinghai Lu <yinghai@kernel.org>
- *	Jiang Liu <jiang.liu@intel.com>
- */
 
-/*
- * This driver manages I/O APICs added by hotplug after boot.
- * We try to claim all I/O APIC devices, but those present at boot were
- * registered when we parsed the ACPI MADT.
- */
+ 
+
+ 
 
 #define pr_fmt(fmt) "ACPI: IOAPIC: " fmt
 
@@ -43,10 +28,7 @@ static acpi_status setup_res(struct acpi_resource *acpi_res, void *data)
 	struct resource *res = data;
 	struct resource_win win;
 
-	/*
-	 * We might assign this to 'res' later, make sure all pointers are
-	 * cleared before the resource is added to the global list
-	 */
+	 
 	memset(&win, 0, sizeof(win));
 
 	res->flags = 0;
@@ -160,7 +142,7 @@ static acpi_status handle_ioapic_add(acpi_handle handle, u32 lvl,
 		goto exit_release;
 	}
 
-	/* try pci resource first, then "_CRS" resource */
+	 
 	res = pci_res;
 	if (!res || !res->flags)
 		res = crs_res;

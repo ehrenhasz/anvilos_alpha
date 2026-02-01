@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Xtables module for matching the value of the IPv4/IPv6 and TCP ECN bits
- *
- * (C) 2002 by Harald Welte <laforge@gnumonks.org>
- * (C) 2011 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/in.h>
 #include <linux/ip.h>
@@ -30,9 +25,7 @@ static bool match_tcp(const struct sk_buff *skb, struct xt_action_param *par)
 	struct tcphdr _tcph;
 	const struct tcphdr *th;
 
-	/* In practice, TCP match does this, so can't fail.  But let's
-	 * be good citizens.
-	 */
+	 
 	th = skb_header_pointer(skb, par->thoff, sizeof(_tcph), &_tcph);
 	if (th == NULL)
 		return false;

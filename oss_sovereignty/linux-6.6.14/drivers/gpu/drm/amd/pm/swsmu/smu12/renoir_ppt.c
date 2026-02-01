@@ -1,25 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #define SWSMU_CODE_LAYER_L2
 
@@ -31,11 +10,7 @@
 #include "renoir_ppt.h"
 #include "smu_cmn.h"
 
-/*
- * DO NOT use these for err/warn/info/debug messages.
- * Use dev_err, dev_warn, dev_info and dev_dbg instead.
- * They are more MGPU friendly.
- */
+ 
 #undef pr_err
 #undef pr_warn
 #undef pr_info
@@ -195,10 +170,7 @@ err0_out:
 	return -ENOMEM;
 }
 
-/*
- * This interface just for getting uclk ultimate freq and should't introduce
- * other likewise function result in overmuch callback.
- */
+ 
 static int renoir_get_dpm_clk_limited(struct smu_context *smu, enum smu_clk_type clk_type,
 						uint32_t dpm_level, uint32_t *freq)
 {
@@ -259,15 +231,15 @@ static int renoir_get_profiling_clk_mask(struct smu_context *smu,
 			*sclk_mask = 0;
 	} else if (level == AMD_DPM_FORCED_LEVEL_PROFILE_MIN_MCLK) {
 		if (mclk_mask)
-			/* mclk levels are in reverse order */
+			 
 			*mclk_mask = NUM_MEMCLK_DPM_LEVELS - 1;
 	} else if (level == AMD_DPM_FORCED_LEVEL_PROFILE_PEAK) {
 		if (sclk_mask)
-			/* The sclk as gfxclk and has three level about max/min/current */
+			 
 			*sclk_mask = 3 - 1;
 
 		if (mclk_mask)
-			/* mclk levels are in reverse order */
+			 
 			*mclk_mask = 0;
 
 		if (soc_mask)
@@ -304,7 +276,7 @@ static int renoir_get_dpm_ultimate_freq(struct smu_context *smu,
 			break;
 		}
 
-		/* clock in Mhz unit */
+		 
 		if (min)
 			*min = clock_limit / 100;
 		if (max)
@@ -535,11 +507,11 @@ static int renoir_print_clk_levels(struct smu_context *smu,
 		break;
 	case SMU_GFXCLK:
 	case SMU_SCLK:
-		/* retirve table returned paramters unit is MHz */
+		 
 		cur_value = metrics.ClockFrequency[CLOCK_GFXCLK];
 		ret = renoir_get_dpm_ultimate_freq(smu, SMU_GFXCLK, &min, &max);
 		if (!ret) {
-			/* driver only know min/max gfx_clk, Add level 1 for all other gfx clks */
+			 
 			if (cur_value  == max)
 				i = 2;
 			else if (cur_value == min)
@@ -652,7 +624,7 @@ static int renoir_dpm_set_vcn_enable(struct smu_context *smu, bool enable)
 	int ret = 0;
 
 	if (enable) {
-		/* vcn dpm on is a prerequisite for vcn power gate messages */
+		 
 		if (smu_cmn_feature_is_enabled(smu, SMU_FEATURE_VCN_PG_BIT)) {
 			ret = smu_cmn_send_smc_msg_with_param(smu, SMU_MSG_PowerUpVcn, 0, NULL);
 			if (ret)
@@ -750,9 +722,7 @@ static int renoir_unforce_dpm_levels(struct smu_context *smu) {
 	return ret;
 }
 
-/*
- * This interface get dpm clock table for dc
- */
+ 
 static int renoir_get_dpm_clock_table(struct smu_context *smu, struct dpm_clocks *clock_table)
 {
 	DpmClocks_t *table = smu->smu_table.clocks_table;
@@ -878,15 +848,12 @@ static int renoir_set_power_profile_mode(struct smu_context *smu, long *input, u
 			profile_mode == PP_SMC_POWER_PROFILE_POWERSAVING)
 		return 0;
 
-	/* conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT */
+	 
 	workload_type = smu_cmn_to_asic_specific_index(smu,
 						       CMN2ASIC_MAPPING_WORKLOAD,
 						       profile_mode);
 	if (workload_type < 0) {
-		/*
-		 * TODO: If some case need switch to powersave/default power mode
-		 * then can consider enter WORKLOAD_COMPUTE/WORKLOAD_CUSTOM for power saving.
-		 */
+		 
 		dev_dbg(smu->adev->dev, "Unsupported power profile mode %d on RENOIR\n", profile_mode);
 		return -EINVAL;
 	}
@@ -1036,9 +1003,7 @@ static int renoir_set_performance_level(struct smu_context *smu,
 	return ret;
 }
 
-/* save watermark settings into pplib smu structure,
- * also pass data to smu controller
- */
+ 
 static int renoir_set_watermarks_table(
 		struct smu_context *smu,
 		struct pp_smu_wm_range_sets *clock_ranges)
@@ -1052,7 +1017,7 @@ static int renoir_set_watermarks_table(
 		    clock_ranges->num_writer_wm_sets > NUM_WM_RANGES)
 			return -EINVAL;
 
-		/* save into smu->smu_table.tables[SMU_TABLE_WATERMARKS]->cpu_addr*/
+		 
 		for (i = 0; i < clock_ranges->num_reader_wm_sets; i++) {
 			table->WatermarkRow[WM_DCFCLK][i].MinClock =
 				clock_ranges->reader_wm_sets[i].min_drain_clk_mhz;
@@ -1088,7 +1053,7 @@ static int renoir_set_watermarks_table(
 		smu->watermarks_bitmap |= WATERMARKS_EXIST;
 	}
 
-	/* pass data to smu controller */
+	 
 	if ((smu->watermarks_bitmap & WATERMARKS_EXIST) &&
 	     !(smu->watermarks_bitmap & WATERMARKS_LOADED)) {
 		ret = smu_cmn_write_watermarks_table(smu);
@@ -1112,10 +1077,7 @@ static int renoir_get_power_profile_mode(struct smu_context *smu,
 		return -EINVAL;
 
 	for (i = 0; i <= PP_SMC_POWER_PROFILE_CUSTOM; i++) {
-		/*
-		 * Conv PP_SMC_POWER_PROFILE* to WORKLOAD_PPLIB_*_BIT
-		 * Not all profile modes are supported on arcturus.
-		 */
+		 
 		workload_type = smu_cmn_to_asic_specific_index(smu,
 							       CMN2ASIC_MAPPING_WORKLOAD,
 							       i);
@@ -1222,16 +1184,12 @@ static int renoir_get_smu_metrics_data(struct smu_context *smu,
 		*value = metrics->Voltage[1];
 		break;
 	case METRICS_SS_APU_SHARE:
-		/* return the percentage of APU power boost
-		 * with respect to APU's power limit.
-		 */
+		 
 		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
 		*value = apu_percent;
 		break;
 	case METRICS_SS_DGPU_SHARE:
-		/* return the percentage of dGPU power boost
-		 * with respect to dGPU's power limit.
-		 */
+		 
 		renoir_get_ss_power_percent(metrics, &apu_percent, &dgpu_percent);
 		*value = dgpu_percent;
 		break;
@@ -1328,11 +1286,7 @@ static bool renoir_is_dpm_running(struct smu_context *smu)
 {
 	struct amdgpu_device *adev = smu->adev;
 
-	/*
-	 * Until now, the pmfw hasn't exported the interface of SMU
-	 * feature mask to APU SKU so just force on all the feature
-	 * at early initial stage.
-	 */
+	 
 	if (adev->in_suspend)
 		return false;
 	else

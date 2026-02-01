@@ -1,12 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- * Driver for watchdog aspect of for Zodiac Inflight Innovations RAVE
- * Supervisory Processor(SP) MCU
- *
- * Copyright (C) 2017 Zodiac Inflight Innovation
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -25,15 +19,7 @@ enum {
 	RAVE_SP_RESET_DELAY_MS = 500,
 };
 
-/**
- * struct rave_sp_wdt_variant - RAVE SP watchdog variant
- *
- * @max_timeout:	Largest possible watchdog timeout setting
- * @min_timeout:	Smallest possible watchdog timeout setting
- *
- * @configure:		Function to send configuration command
- * @restart:		Function to send "restart" command
- */
+ 
 struct rave_sp_wdt_variant {
 	unsigned int max_timeout;
 	unsigned int min_timeout;
@@ -42,14 +28,7 @@ struct rave_sp_wdt_variant {
 	int (*restart)(struct watchdog_device *);
 };
 
-/**
- * struct rave_sp_wdt - RAVE SP watchdog
- *
- * @wdd:		Underlying watchdog device
- * @sp:			Pointer to parent RAVE SP device
- * @variant:		Device specific variant information
- * @reboot_notifier:	Reboot notifier implementing machine reset
- */
+ 
 struct rave_sp_wdt {
 	struct watchdog_device wdd;
 	struct rave_sp *sp;
@@ -95,20 +74,7 @@ static int rave_sp_wdt_rdu_configure(struct watchdog_device *wdd, bool on)
 	return rave_sp_wdt_exec(wdd, cmd, sizeof(cmd));
 }
 
-/**
- * rave_sp_wdt_configure - Configure watchdog device
- *
- * @wdd:	Device to configure
- * @on:		Desired state of the watchdog timer (ON/OFF)
- *
- * This function configures two aspects of the watchdog timer:
- *
- *  - Wheither it is ON or OFF
- *  - Its timeout duration
- *
- * with first aspect specified via function argument and second via
- * the value of 'wdd->timeout'.
- */
+ 
 static int rave_sp_wdt_configure(struct watchdog_device *wdd, bool on)
 {
 	return to_rave_sp_wdt(wdd)->variant->configure(wdd, on);
@@ -140,13 +106,7 @@ static int rave_sp_wdt_rdu_restart(struct watchdog_device *wdd)
 static int rave_sp_wdt_reboot_notifier(struct notifier_block *nb,
 				       unsigned long action, void *data)
 {
-	/*
-	 * Restart handler is called in atomic context which means we
-	 * can't communicate to SP via UART. Luckily for use SP will
-	 * wait 500ms before actually resetting us, so we ask it to do
-	 * so here and let the rest of the system go on wrapping
-	 * things up.
-	 */
+	 
 	if (action == SYS_DOWN || action == SYS_HALT) {
 		struct rave_sp_wdt *sp_wd =
 			container_of(nb, struct rave_sp_wdt, reboot_notifier);
@@ -165,12 +125,7 @@ static int rave_sp_wdt_reboot_notifier(struct notifier_block *nb,
 static int rave_sp_wdt_restart(struct watchdog_device *wdd,
 			       unsigned long action, void *data)
 {
-	/*
-	 * The actual work was done by reboot notifier above. SP
-	 * firmware waits 500 ms before issuing reset, so let's hang
-	 * here for twice that delay and hopefuly we'd never reach
-	 * the return statement.
-	 */
+	 
 	mdelay(2 * RAVE_SP_RESET_DELAY_MS);
 
 	return -EIO;
@@ -247,7 +202,7 @@ static const struct of_device_id rave_sp_wdt_of_match[] = {
 		.compatible = "zii,rave-sp-watchdog",
 		.data = &rave_sp_wdt_rdu,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 
 static int rave_sp_wdt_probe(struct platform_device *pdev)
@@ -297,10 +252,7 @@ static int rave_sp_wdt_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/*
-	 * We don't know if watchdog is running now. To be sure, let's
-	 * start it and depend on watchdog core to ping it
-	 */
+	 
 	wdd->max_hw_heartbeat_ms = wdd->max_timeout * 1000;
 	ret = rave_sp_wdt_start(wdd);
 	if (ret) {

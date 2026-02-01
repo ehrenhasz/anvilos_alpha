@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AppArmor security module
- *
- * This file contains AppArmor resource mediation and attachment
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2010 Canonical Ltd.
- */
+
+ 
 
 #include <linux/audit.h>
 #include <linux/security.h>
@@ -16,9 +9,7 @@
 #include "include/resource.h"
 #include "include/policy.h"
 
-/*
- * Table of rlimit names: we generate it from resource.h.
- */
+ 
 #include "rlim_names.h"
 
 struct aa_sfs_entry aa_sfs_entry_rlimit[] = {
@@ -26,7 +17,7 @@ struct aa_sfs_entry aa_sfs_entry_rlimit[] = {
 	{ }
 };
 
-/* audit callback for resource specific fields */
+ 
 static void audit_cb(struct audit_buffer *ab, void *va)
 {
 	struct common_audit_data *sa = va;
@@ -41,18 +32,7 @@ static void audit_cb(struct audit_buffer *ab, void *va)
 	}
 }
 
-/**
- * audit_resource - audit setting resource limit
- * @subj_cred: cred setting the resource
- * @profile: profile being enforced  (NOT NULL)
- * @resource: rlimit being auditing
- * @value: value being set
- * @peer: aa_albel of the task being set
- * @info: info being auditing
- * @error: error value
- *
- * Returns: 0 or ad->error else other error code on failure
- */
+ 
 static int audit_resource(const struct cred *subj_cred,
 			  struct aa_profile *profile, unsigned int resource,
 			  unsigned long value, struct aa_label *peer,
@@ -71,15 +51,7 @@ static int audit_resource(const struct cred *subj_cred,
 	return aa_audit(AUDIT_APPARMOR_AUTO, profile, &ad, audit_cb);
 }
 
-/**
- * aa_map_resource - map compiled policy resource to internal #
- * @resource: flattened policy resource number
- *
- * Returns: resource # for the current architecture.
- *
- * rlimit resource can vary based on architecture, map the compiled policy
- * resource # to the internal representation for the architecture.
- */
+ 
 int aa_map_resource(int resource)
 {
 	return rlim_map[resource];
@@ -100,18 +72,7 @@ static int profile_setrlimit(const struct cred *subj_cred,
 			      NULL, NULL, e);
 }
 
-/**
- * aa_task_setrlimit - test permission to set an rlimit
- * @subj_cred: cred setting the limit
- * @label: label confining the task  (NOT NULL)
- * @task: task the resource is being set on
- * @resource: the resource being set
- * @new_rlim: the new resource limit  (NOT NULL)
- *
- * Control raising the processes hard limit.
- *
- * Returns: 0 or error code if setting resource failed
- */
+ 
 int aa_task_setrlimit(const struct cred *subj_cred, struct aa_label *label,
 		      struct task_struct *task,
 		      unsigned int resource, struct rlimit *new_rlim)
@@ -124,12 +85,7 @@ int aa_task_setrlimit(const struct cred *subj_cred, struct aa_label *label,
 	peer = aa_get_newest_cred_label(__task_cred(task));
 	rcu_read_unlock();
 
-	/* TODO: extend resource control to handle other (non current)
-	 * profiles.  AppArmor rules currently have the implicit assumption
-	 * that the task is setting the resource of a task confined with
-	 * the same profile or that the task setting the resource of another
-	 * task has CAP_SYS_RESOURCE.
-	 */
+	 
 
 	if (label != peer &&
 	    aa_capable(subj_cred, label, CAP_SYS_RESOURCE, CAP_OPT_NOAUDIT) != 0)
@@ -146,11 +102,7 @@ int aa_task_setrlimit(const struct cred *subj_cred, struct aa_label *label,
 	return error;
 }
 
-/**
- * __aa_transition_rlimits - apply new profile rlimits
- * @old_l: old label on task  (NOT NULL)
- * @new_l: new label with rlimits to apply  (NOT NULL)
- */
+ 
 void __aa_transition_rlimits(struct aa_label *old_l, struct aa_label *new_l)
 {
 	unsigned int mask = 0;
@@ -161,9 +113,7 @@ void __aa_transition_rlimits(struct aa_label *old_l, struct aa_label *new_l)
 	old = labels_profile(old_l);
 	new = labels_profile(new_l);
 
-	/* for any rlimits the profile controlled, reset the soft limit
-	 * to the lesser of the tasks hard limit and the init tasks soft limit
-	 */
+	 
 	label_for_each_confined(i, old_l, old) {
 		struct aa_ruleset *rules = list_first_entry(&old->rules,
 							    typeof(*rules),
@@ -183,7 +133,7 @@ void __aa_transition_rlimits(struct aa_label *old_l, struct aa_label *new_l)
 		}
 	}
 
-	/* set any new hard limits as dictated by the new profile */
+	 
 	label_for_each_confined(i, new_l, new) {
 		struct aa_ruleset *rules = list_first_entry(&new->rules,
 							    typeof(*rules),
@@ -199,7 +149,7 @@ void __aa_transition_rlimits(struct aa_label *old_l, struct aa_label *new_l)
 			rlim = current->signal->rlim + j;
 			rlim->rlim_max = min(rlim->rlim_max,
 					     rules->rlimits.limits[j].rlim_max);
-			/* soft limit should not exceed hard limit */
+			 
 			rlim->rlim_cur = min(rlim->rlim_cur, rlim->rlim_max);
 		}
 	}

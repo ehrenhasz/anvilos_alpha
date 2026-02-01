@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * DVB USB framework
- *
- * Copyright (C) 2004-6 Patrick Boettcher <patrick.boettcher@posteo.de>
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "dvb_usb_common.h"
 #include <media/media-device.h>
@@ -95,10 +90,7 @@ static void dvb_usb_read_remote_control(struct work_struct *work)
 			struct dvb_usb_device, rc_query_work.work);
 	int ret;
 
-	/*
-	 * When the parameter has been set to 1 via sysfs while the
-	 * driver was running, or when bulk mode is enabled after IR init.
-	 */
+	 
 	if (dvb_usbv2_disable_rc_polling || d->rc.bulk_mode) {
 		d->rc_polling_active = false;
 		return;
@@ -109,7 +101,7 @@ static void dvb_usb_read_remote_control(struct work_struct *work)
 		dev_err(&d->udev->dev, "%s: rc.query() failed=%d\n",
 				KBUILD_MODNAME, ret);
 		d->rc_polling_active = false;
-		return; /* stop polling */
+		return;  
 	}
 
 	schedule_delayed_work(&d->rc_query_work,
@@ -130,7 +122,7 @@ static int dvb_usbv2_remote_init(struct dvb_usb_device *d)
 	if (ret < 0)
 		goto err;
 
-	/* disable rc when there is no keymap defined */
+	 
 	if (!d->rc.map_name)
 		return 0;
 
@@ -161,9 +153,9 @@ static int dvb_usbv2_remote_init(struct dvb_usb_device *d)
 
 	d->rc_dev = dev;
 
-	/* start polling if needed */
+	 
 	if (d->rc.query && !d->rc.bulk_mode) {
-		/* initialize a work queue for handling polling */
+		 
 		INIT_DELAYED_WORK(&d->rc_query_work,
 				dvb_usb_read_remote_control);
 		dev_info(&d->udev->dev,
@@ -250,20 +242,20 @@ static int dvb_usb_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 			adap->pid_filtering ? "yes" : "no", dvbdmxfeed->pid,
 			dvbdmxfeed->pid, dvbdmxfeed->index);
 
-	/* wait init is done */
+	 
 	wait_on_bit(&adap->state_bits, ADAP_INIT, TASK_UNINTERRUPTIBLE);
 
 	if (adap->active_fe == -1)
 		return -EINVAL;
 
-	/* skip feed setup if we are already feeding */
+	 
 	if (adap->feed_count++ > 0)
 		goto skip_feed_start;
 
-	/* set 'streaming' status bit */
+	 
 	set_bit(ADAP_STREAMING, &adap->state_bits);
 
-	/* resolve input and output streaming parameters */
+	 
 	if (d->props->get_stream_config) {
 		memcpy(&stream_props, &adap->props->stream,
 				sizeof(struct usb_data_stream_properties));
@@ -290,10 +282,10 @@ static int dvb_usb_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 		break;
 	}
 
-	/* submit USB streaming packets */
+	 
 	usb_urb_submitv2(&adap->stream, &stream_props);
 
-	/* enable HW PID filter */
+	 
 	if (adap->pid_filtering && adap->props->pid_filter_ctrl) {
 		ret = adap->props->pid_filter_ctrl(adap, 1);
 		if (ret)
@@ -302,7 +294,7 @@ static int dvb_usb_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 					KBUILD_MODNAME, ret);
 	}
 
-	/* ask device to start streaming */
+	 
 	if (d->props->streaming_ctrl) {
 		ret = d->props->streaming_ctrl(adap->fe[adap->active_fe], 1);
 		if (ret)
@@ -312,7 +304,7 @@ static int dvb_usb_start_feed(struct dvb_demux_feed *dvbdmxfeed)
 	}
 skip_feed_start:
 
-	/* add PID to device HW PID filter */
+	 
 	if (adap->pid_filtering && adap->props->pid_filter) {
 		ret = adap->props->pid_filter(adap, dvbdmxfeed->index,
 				dvbdmxfeed->pid, 1);
@@ -340,7 +332,7 @@ static int dvb_usb_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 	if (adap->active_fe == -1)
 		return -EINVAL;
 
-	/* remove PID from device HW PID filter */
+	 
 	if (adap->pid_filtering && adap->props->pid_filter) {
 		ret = adap->props->pid_filter(adap, dvbdmxfeed->index,
 				dvbdmxfeed->pid, 0);
@@ -349,11 +341,11 @@ static int dvb_usb_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 					KBUILD_MODNAME, ret);
 	}
 
-	/* we cannot stop streaming until last PID is removed */
+	 
 	if (--adap->feed_count > 0)
 		goto skip_feed_stop;
 
-	/* ask device to stop streaming */
+	 
 	if (d->props->streaming_ctrl) {
 		ret = d->props->streaming_ctrl(adap->fe[adap->active_fe], 0);
 		if (ret)
@@ -362,7 +354,7 @@ static int dvb_usb_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 					KBUILD_MODNAME, ret);
 	}
 
-	/* disable HW PID filter */
+	 
 	if (adap->pid_filtering && adap->props->pid_filter_ctrl) {
 		ret = adap->props->pid_filter_ctrl(adap, 0);
 		if (ret)
@@ -371,10 +363,10 @@ static int dvb_usb_stop_feed(struct dvb_demux_feed *dvbdmxfeed)
 					KBUILD_MODNAME, ret);
 	}
 
-	/* kill USB streaming packets */
+	 
 	usb_urb_killv2(&adap->stream);
 
-	/* clear 'streaming' status bit */
+	 
 	clear_bit(ADAP_STREAMING, &adap->state_bits);
 	smp_mb__after_atomic();
 	wake_up_bit(&adap->state_bits, ADAP_STREAMING);
@@ -535,7 +527,7 @@ static int dvb_usbv2_device_power_ctrl(struct dvb_usb_device *d, int onoff)
 		d->powered--;
 
 	if (d->powered == 0 || (onoff && d->powered == 1)) {
-		/* when switching from 1 to 0 or from 0 to 1 */
+		 
 		dev_dbg(&d->udev->dev, "%s: power=%d\n", __func__, onoff);
 		if (d->props->power_ctrl) {
 			ret = d->props->power_ctrl(d, onoff);
@@ -655,7 +647,7 @@ static int dvb_usbv2_adapter_frontend_init(struct dvb_usb_adapter *adap)
 
 	for (i = 0; i < MAX_NO_OF_FE_PER_ADAP && adap->fe[i]; i++) {
 		adap->fe[i]->id = i;
-		/* re-assign sleep and wakeup functions */
+		 
 		adap->fe_init[i] = adap->fe[i]->ops.init;
 		adap->fe[i]->ops.init = dvb_usb_fe_init;
 		adap->fe_sleep[i] = adap->fe[i]->ops.sleep;
@@ -745,7 +737,7 @@ static int dvb_usbv2_adapter_init(struct dvb_usb_device *d)
 	struct dvb_usb_adapter *adap;
 	int ret, i, adapter_count;
 
-	/* resolve adapter count */
+	 
 	adapter_count = d->props->num_adapters;
 	if (d->props->get_adapter_count) {
 		ret = d->props->get_adapter_count(d);
@@ -760,7 +752,7 @@ static int dvb_usbv2_adapter_init(struct dvb_usb_device *d)
 		adap->id = i;
 		adap->props = &d->props->adapter[i];
 
-		/* speed - when running at FULL speed we need a HW PID filter */
+		 
 		if (d->udev->speed == USB_SPEED_FULL &&
 				!(adap->props->caps & DVB_USB_ADAP_HAS_PID_FILTER)) {
 			dev_err(&d->udev->dev,
@@ -806,7 +798,7 @@ static int dvb_usbv2_adapter_init(struct dvb_usb_device *d)
 		if (ret)
 			goto err;
 
-		/* use exclusive FE lock if there is multiple shared FEs */
+		 
 		if (adap->fe[1])
 			adap->dvb_adap.mfe_shared = 1;
 	}
@@ -834,7 +826,7 @@ static int dvb_usbv2_adapter_exit(struct dvb_usb_device *d)
 	return 0;
 }
 
-/* general initialization functions */
+ 
 static int dvb_usbv2_exit(struct dvb_usb_device *d)
 {
 	dev_dbg(&d->udev->dev, "%s:\n", __func__);
@@ -955,17 +947,10 @@ int dvb_usbv2_probe(struct usb_interface *intf,
 
 			ret = dvb_usbv2_download_firmware(d, name);
 			if (ret == 0) {
-				/* device is warm, continue initialization */
+				 
 				;
 			} else if (ret == RECONNECTS_USB) {
-				/*
-				 * USB core will call disconnect() and then
-				 * probe() as device reconnects itself from the
-				 * USB bus. disconnect() will release all driver
-				 * resources and probe() is called for 'new'
-				 * device. As 'new' device is warm we should
-				 * never go here again.
-				 */
+				 
 				goto exit;
 			} else {
 				goto err_free_all;
@@ -1036,7 +1021,7 @@ int dvb_usbv2_suspend(struct usb_interface *intf, pm_message_t msg)
 	struct dvb_frontend *fe;
 	dev_dbg(&d->udev->dev, "%s:\n", __func__);
 
-	/* stop remote controller poll */
+	 
 	if (d->rc_polling_active)
 		cancel_delayed_work_sync(&d->rc_query_work);
 
@@ -1049,7 +1034,7 @@ int dvb_usbv2_suspend(struct usb_interface *intf, pm_message_t msg)
 			if (d->props->streaming_ctrl)
 				d->props->streaming_ctrl(fe, 0);
 
-			/* stop usb streaming */
+			 
 			usb_urb_killv2(&d->adapter[i].stream);
 
 			ret = dvb_frontend_suspend(fe);
@@ -1073,7 +1058,7 @@ static int dvb_usbv2_resume_common(struct dvb_usb_device *d)
 
 			ret = dvb_frontend_resume(fe);
 
-			/* resume usb streaming */
+			 
 			usb_urb_submitv2(&d->adapter[i].stream, NULL);
 
 			if (d->props->streaming_ctrl)
@@ -1083,7 +1068,7 @@ static int dvb_usbv2_resume_common(struct dvb_usb_device *d)
 		}
 	}
 
-	/* start remote controller poll */
+	 
 	if (d->rc_polling_active)
 		schedule_delayed_work(&d->rc_query_work,
 				msecs_to_jiffies(d->rc.interval));

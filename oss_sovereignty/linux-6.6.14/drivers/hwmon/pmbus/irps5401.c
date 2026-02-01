@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Hardware monitoring driver for the Infineon IRPS5401M PMIC.
- *
- * Copyright (c) 2019 SED Systems, a division of Calian Ltd.
- *
- * The device supports VOUT_PEAK, IOUT_PEAK, and TEMPERATURE_PEAK, however
- * this driver does not currently support them.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/i2c.h>

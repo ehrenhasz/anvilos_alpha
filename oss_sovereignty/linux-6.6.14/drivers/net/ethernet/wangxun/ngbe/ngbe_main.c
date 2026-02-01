@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2019 - 2022 Beijing WangXun Technology Co., Ltd. */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -21,11 +21,7 @@
 
 char ngbe_driver_name[] = "ngbe";
 
-/* ngbe_pci_tbl - PCI Device ID Table
- *
- * { Vendor ID, Device ID, SubVendor ID, SubDevice ID,
- *   Class, Class Mask, private data (not used) }
- */
+ 
 static const struct pci_device_id ngbe_pci_tbl[] = {
 	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860AL_W), 0},
 	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A2), 0},
@@ -39,14 +35,11 @@ static const struct pci_device_id ngbe_pci_tbl[] = {
 	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860LC), 0},
 	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A1), 0},
 	{ PCI_VDEVICE(WANGXUN, NGBE_DEV_ID_EM_WX1860A1L), 0},
-	/* required last entry */
+	 
 	{ .device = 0 }
 };
 
-/**
- *  ngbe_init_type_code - Initialize the shared code
- *  @wx: pointer to hardware structure
- **/
+ 
 static void ngbe_init_type_code(struct wx *wx)
 {
 	int wol_mask = 0, ncsi_mask = 0;
@@ -79,12 +72,7 @@ static void ngbe_init_type_code(struct wx *wx)
 	}
 }
 
-/**
- * ngbe_init_rss_key - Initialize wx RSS key
- * @wx: device handle
- *
- * Allocates and initializes the RSS key if it is not allocated.
- **/
+ 
 static inline int ngbe_init_rss_key(struct wx *wx)
 {
 	u32 *rss_key;
@@ -101,10 +89,7 @@ static inline int ngbe_init_rss_key(struct wx *wx)
 	return 0;
 }
 
-/**
- * ngbe_sw_init - Initialize general software structures
- * @wx: board private structure to initialize
- **/
+ 
 static int ngbe_sw_init(struct wx *wx)
 {
 	struct pci_dev *pdev = wx->pdev;
@@ -119,15 +104,15 @@ static int ngbe_sw_init(struct wx *wx)
 	wx->mac.rx_pb_size = NGBE_RX_PB_SIZE;
 	wx->mac.tx_pb_size = NGBE_TDB_PB_SZ;
 
-	/* PCI config space info */
+	 
 	err = wx_sw_init(wx);
 	if (err < 0)
 		return err;
 
-	/* mac type, phy type , oem type */
+	 
 	ngbe_init_type_code(wx);
 
-	/* Set common capability flags and settings */
+	 
 	wx->max_q_vectors = NGBE_MAX_MSIX_VECTORS;
 	err = wx_get_pcie_msix_counts(wx, &msix_count, NGBE_MAX_MSIX_VECTORS);
 	if (err)
@@ -137,31 +122,27 @@ static int ngbe_sw_init(struct wx *wx)
 	if (ngbe_init_rss_key(wx))
 		return -ENOMEM;
 
-	/* enable itr by default in dynamic mode */
+	 
 	wx->rx_itr_setting = 1;
 	wx->tx_itr_setting = 1;
 
-	/* set default ring sizes */
+	 
 	wx->tx_ring_count = NGBE_DEFAULT_TXD;
 	wx->rx_ring_count = NGBE_DEFAULT_RXD;
 
-	/* set default work limits */
+	 
 	wx->tx_work_limit = NGBE_DEFAULT_TX_WORK;
 	wx->rx_work_limit = NGBE_DEFAULT_RX_WORK;
 
 	return 0;
 }
 
-/**
- * ngbe_irq_enable - Enable default interrupt generation settings
- * @wx: board private structure
- * @queues: enable all queues interrupts
- **/
+ 
 static void ngbe_irq_enable(struct wx *wx, bool queues)
 {
 	u32 mask;
 
-	/* enable misc interrupt */
+	 
 	mask = NGBE_PX_MISC_IEN_MASK;
 
 	wr32(wx, WX_GPIO_DDR, WX_GPIO_DDR_0);
@@ -171,18 +152,14 @@ static void ngbe_irq_enable(struct wx *wx, bool queues)
 
 	wr32(wx, WX_PX_MISC_IEN, mask);
 
-	/* mask interrupt */
+	 
 	if (queues)
 		wx_intr_enable(wx, NGBE_INTR_ALL);
 	else
 		wx_intr_enable(wx, NGBE_INTR_MISC(wx));
 }
 
-/**
- * ngbe_intr - msi/legacy mode Interrupt Handler
- * @irq: interrupt number
- * @data: pointer to a network interface device structure
- **/
+ 
 static irqreturn_t ngbe_intr(int __always_unused irq, void *data)
 {
 	struct wx_q_vector *q_vector;
@@ -195,19 +172,17 @@ static irqreturn_t ngbe_intr(int __always_unused irq, void *data)
 
 	eicr = wx_misc_isb(wx, WX_ISB_VEC0);
 	if (!eicr) {
-		/* shared interrupt alert!
-		 * the interrupt that we masked before the EICR read.
-		 */
+		 
 		if (netif_running(wx->netdev))
 			ngbe_irq_enable(wx, true);
-		return IRQ_NONE;        /* Not our interrupt */
+		return IRQ_NONE;         
 	}
 	wx->isb_mem[WX_ISB_VEC0] = 0;
 	if (!(pdev->msi_enabled))
 		wr32(wx, WX_PX_INTA, 1);
 
 	wx->isb_mem[WX_ISB_MISC] = 0;
-	/* would disable interrupts here but it is auto disabled */
+	 
 	napi_schedule_irqoff(&q_vector->napi);
 
 	if (netif_running(wx->netdev))
@@ -220,20 +195,14 @@ static irqreturn_t ngbe_msix_other(int __always_unused irq, void *data)
 {
 	struct wx *wx = data;
 
-	/* re-enable the original interrupt state, no lsc, no queues */
+	 
 	if (netif_running(wx->netdev))
 		ngbe_irq_enable(wx, false);
 
 	return IRQ_HANDLED;
 }
 
-/**
- * ngbe_request_msix_irqs - Initialize MSI-X interrupts
- * @wx: board private structure
- *
- * ngbe_request_msix_irqs allocates MSI-X vectors and requests
- * interrupts from the kernel.
- **/
+ 
 static int ngbe_request_msix_irqs(struct wx *wx)
 {
 	struct net_device *netdev = wx->netdev;
@@ -247,7 +216,7 @@ static int ngbe_request_msix_irqs(struct wx *wx)
 			snprintf(q_vector->name, sizeof(q_vector->name) - 1,
 				 "%s-TxRx-%d", netdev->name, entry->entry);
 		else
-			/* skip this unused q_vector */
+			 
 			continue;
 
 		err = request_irq(entry->vector, wx_msix_clean_rings, 0,
@@ -279,13 +248,7 @@ free_queue_irqs:
 	return err;
 }
 
-/**
- * ngbe_request_irq - initialize interrupts
- * @wx: board private structure
- *
- * Attempts to configure interrupts using the best available
- * capabilities of the hardware and kernel.
- **/
+ 
 static int ngbe_request_irq(struct wx *wx)
 {
 	struct net_device *netdev = wx->netdev;
@@ -312,11 +275,11 @@ static void ngbe_disable_device(struct wx *wx)
 	struct net_device *netdev = wx->netdev;
 	u32 i;
 
-	/* disable all enabled rx queues */
+	 
 	for (i = 0; i < wx->num_rx_queues; i++)
-		/* this call also flushes the previous write */
+		 
 		wx_disable_rx_queue(wx, wx->rx_ring[i]);
-	/* disable receives */
+	 
 	wx_disable_rx(wx);
 	wx_napi_disable_all(wx);
 	netif_tx_stop_all_queues(netdev);
@@ -324,7 +287,7 @@ static void ngbe_disable_device(struct wx *wx)
 	if (wx->gpio_ctrl)
 		ngbe_sfp_modules_txrx_powerctl(wx, false);
 	wx_irq_disable(wx);
-	/* disable transmits in the hardware now that interrupts are off */
+	 
 	for (i = 0; i < wx->num_tx_queues; i++) {
 		u8 reg_idx = wx->tx_ring[i]->reg_idx;
 
@@ -344,13 +307,13 @@ static void ngbe_up(struct wx *wx)
 {
 	wx_configure_vectors(wx);
 
-	/* make sure to complete pre-operations */
+	 
 	smp_mb__before_atomic();
 	wx_napi_enable_all(wx);
-	/* enable transmits */
+	 
 	netif_tx_start_all_queues(wx->netdev);
 
-	/* clear any pending interrupts, may auto mask */
+	 
 	rd32(wx, WX_PX_IC(0));
 	rd32(wx, WX_PX_MISC_IC);
 	ngbe_irq_enable(wx, true);
@@ -360,15 +323,7 @@ static void ngbe_up(struct wx *wx)
 	phy_start(wx->phydev);
 }
 
-/**
- * ngbe_open - Called when a network interface is made active
- * @netdev: network interface device structure
- *
- * Returns 0 on success, negative value on failure
- *
- * The open entry point is called when a network interface is made
- * active by the system (IFF_UP).
- **/
+ 
 static int ngbe_open(struct net_device *netdev)
 {
 	struct wx *wx = netdev_priv(netdev);
@@ -410,17 +365,7 @@ err_free_resources:
 	return err;
 }
 
-/**
- * ngbe_close - Disables a network interface
- * @netdev: network interface device structure
- *
- * Returns 0, this is not allowed to fail
- *
- * The close entry point is called when an interface is de-activated
- * by the OS.  The hardware is still under the drivers control, but
- * needs to be disabled.  A global MAC reset is issued to stop the
- * hardware, and all transmit and receive resources are freed.
- **/
+ 
 static int ngbe_close(struct net_device *netdev)
 {
 	struct wx *wx = netdev_priv(netdev);
@@ -492,17 +437,7 @@ static const struct net_device_ops ngbe_netdev_ops = {
 	.ndo_vlan_rx_kill_vid   = wx_vlan_rx_kill_vid,
 };
 
-/**
- * ngbe_probe - Device Initialization Routine
- * @pdev: PCI device information struct
- * @ent: entry in ngbe_pci_tbl
- *
- * Returns 0 on success, negative on failure
- *
- * ngbe_probe initializes an wx identified by a pci_dev structure.
- * The OS initialization, configuring of the wx private structure,
- * and a hardware reset occur.
- **/
+ 
 static int ngbe_probe(struct pci_dev *pdev,
 		      const struct pci_device_id __always_unused *ent)
 {
@@ -571,7 +506,7 @@ static int ngbe_probe(struct pci_dev *pdev,
 	netdev->features |= NETIF_F_SCTP_CRC | NETIF_F_TSO_MANGLEID;
 	netdev->vlan_features |= netdev->features;
 	netdev->features |= NETIF_F_IPV6_CSUM | NETIF_F_VLAN_FEATURES;
-	/* copy netdev features into list of user selectable features */
+	 
 	netdev->hw_features |= netdev->features | NETIF_F_RXALL;
 	netdev->hw_features |= NETIF_F_NTUPLE | NETIF_F_HW_TC;
 	netdev->features |= NETIF_F_HIGHDMA;
@@ -586,12 +521,12 @@ static int ngbe_probe(struct pci_dev *pdev,
 			  (ETH_HLEN + ETH_FCS_LEN + VLAN_HLEN);
 
 	wx->bd_number = func_nums;
-	/* setup the private structure */
+	 
 	err = ngbe_sw_init(wx);
 	if (err)
 		goto err_free_mac_table;
 
-	/* check if flash load is done after hw power up */
+	 
 	err = wx_check_flash_load(wx, NGBE_SPI_ILDR_STATUS_PERST);
 	if (err)
 		goto err_free_mac_table;
@@ -621,7 +556,7 @@ static int ngbe_probe(struct pci_dev *pdev,
 
 	wx_init_eeprom_params(wx);
 	if (wx->bus.func == 0 || e2rom_cksum_cap == 0) {
-		/* make sure the EEPROM is ready */
+		 
 		err = ngbe_eeprom_chksum_hostif(wx);
 		if (err) {
 			dev_err(&pdev->dev, "The EEPROM Checksum Is Not Valid\n");
@@ -638,9 +573,7 @@ static int ngbe_probe(struct pci_dev *pdev,
 	wr32(wx, NGBE_PSR_WKUP_CTL, wx->wol);
 	device_set_wakeup_enable(&pdev->dev, wx->wol);
 
-	/* Save off EEPROM version number and Option Rom version which
-	 * together make a unique identify for the eeprom
-	 */
+	 
 	if (saved_ver) {
 		etrack_id = saved_ver;
 	} else {
@@ -664,7 +597,7 @@ static int ngbe_probe(struct pci_dev *pdev,
 	if (err)
 		goto err_free_mac_table;
 
-	/* phy Interface Configuration */
+	 
 	err = ngbe_mdio_init(wx);
 	if (err)
 		goto err_clear_interrupt_scheme;
@@ -696,15 +629,7 @@ err_pci_disable_dev:
 	return err;
 }
 
-/**
- * ngbe_remove - Device Removal Routine
- * @pdev: PCI device information struct
- *
- * ngbe_remove is called by the PCI subsystem to alert the driver
- * that it should release a PCI device.  The could be caused by a
- * Hot-Plug event, or because the driver is going to be removed from
- * memory.
- **/
+ 
 static void ngbe_remove(struct pci_dev *pdev)
 {
 	struct wx *wx = pci_get_drvdata(pdev);

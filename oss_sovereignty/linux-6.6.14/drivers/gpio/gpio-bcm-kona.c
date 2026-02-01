@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Broadcom Kona GPIO Driver
- *
- * Author: Broadcom Corporation <bcm-kernel-feedback-list@broadcom.com>
- * Copyright (C) 2012-2014 Broadcom Corporation
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/err.h>
@@ -24,10 +19,10 @@
 #define GPIO_BANK(gpio)				((gpio) >> 5)
 #define GPIO_BIT(gpio)				((gpio) & (GPIO_PER_BANK - 1))
 
-/* There is a GPIO control register for each GPIO */
+ 
 #define GPIO_CONTROL(gpio)			(0x00000100 + ((gpio) << 2))
 
-/* The remaining registers are per GPIO bank */
+ 
 #define GPIO_OUT_STATUS(bank)			(0x00000000 + ((bank) << 2))
 #define GPIO_IN_STATUS(bank)			(0x00000020 + ((bank) << 2))
 #define GPIO_OUT_SET(bank)			(0x00000040 + ((bank) << 2))
@@ -69,7 +64,7 @@ struct bcm_kona_gpio {
 struct bcm_kona_gpio_bank {
 	int id;
 	int irq;
-	/* Used in the interrupt handler */
+	 
 	struct bcm_kona_gpio *kona_gpio;
 };
 
@@ -135,7 +130,7 @@ static void bcm_kona_gpio_set(struct gpio_chip *chip, unsigned gpio, int value)
 	reg_base = kona_gpio->reg_base;
 	raw_spin_lock_irqsave(&kona_gpio->lock, flags);
 
-	/* this function only applies to output pin */
+	 
 	if (bcm_kona_gpio_get_dir(chip, gpio) == GPIO_LINE_DIRECTION_IN)
 		goto out;
 
@@ -167,12 +162,12 @@ static int bcm_kona_gpio_get(struct gpio_chip *chip, unsigned gpio)
 	else
 		reg_offset = GPIO_OUT_STATUS(bank_id);
 
-	/* read the GPIO bank status */
+	 
 	val = readl(reg_base + reg_offset);
 
 	raw_spin_unlock_irqrestore(&kona_gpio->lock, flags);
 
-	/* return the specified bit status */
+	 
 	return !!(val & BIT(bit));
 }
 
@@ -261,32 +256,32 @@ static int bcm_kona_gpio_set_debounce(struct gpio_chip *chip, unsigned gpio,
 
 	kona_gpio = gpiochip_get_data(chip);
 	reg_base = kona_gpio->reg_base;
-	/* debounce must be 1-128ms (or 0) */
+	 
 	if ((debounce > 0 && debounce < 1000) || debounce > 128000) {
 		dev_err(chip->parent, "Debounce value %u not in range\n",
 			debounce);
 		return -EINVAL;
 	}
 
-	/* calculate debounce bit value */
+	 
 	if (debounce != 0) {
-		/* Convert to ms */
+		 
 		debounce /= 1000;
-		/* find the MSB */
+		 
 		res = fls(debounce) - 1;
-		/* Check if MSB-1 is set (round up or down) */
+		 
 		if (res > 0 && (debounce & BIT(res - 1)))
 			res++;
 	}
 
-	/* spin lock for read-modify-write of the GPIO register */
+	 
 	raw_spin_lock_irqsave(&kona_gpio->lock, flags);
 
 	val = readl(reg_base + GPIO_CONTROL(gpio));
 	val &= ~GPIO_GPCTR0_DBR_MASK;
 
 	if (debounce == 0) {
-		/* disable debounce */
+		 
 		val &= ~GPIO_GPCTR0_DB_ENABLE_MASK;
 	} else {
 		val |= GPIO_GPCTR0_DB_ENABLE_MASK |
@@ -418,7 +413,7 @@ static int bcm_kona_gpio_irq_set_type(struct irq_data *d, unsigned int type)
 
 	case IRQ_TYPE_LEVEL_HIGH:
 	case IRQ_TYPE_LEVEL_LOW:
-		/* BCM GPIO doesn't support level triggering */
+		 
 	default:
 		dev_err(kona_gpio->gpio_chip.parent,
 			"Invalid BCM GPIO irq type 0x%x\n", type);
@@ -447,11 +442,7 @@ static void bcm_kona_gpio_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(chip, desc);
 
-	/*
-	 * For bank interrupts, we can't use chip_data to store the kona_gpio
-	 * pointer, since GIC needs it for its own purposes. Therefore, we get
-	 * our pointer from the bank structure.
-	 */
+	 
 	reg_base = bank->kona_gpio->reg_base;
 	bank_id = bank->id;
 
@@ -459,13 +450,10 @@ static void bcm_kona_gpio_irq_handler(struct irq_desc *desc)
 		    (~(readl(reg_base + GPIO_INT_MASK(bank_id)))))) {
 		for_each_set_bit(bit, &sta, 32) {
 			int hwirq = GPIO_PER_BANK * bank_id + bit;
-			/*
-			 * Clear interrupt before handler is called so we don't
-			 * miss any interrupt occurred during executing them.
-			 */
+			 
 			writel(readl(reg_base + GPIO_INT_STATUS(bank_id)) |
 			       BIT(bit), reg_base + GPIO_INT_STATUS(bank_id));
-			/* Invoke interrupt handler */
+			 
 			generic_handle_domain_irq(bank->kona_gpio->irq_domain,
 						  hwirq);
 		}
@@ -503,10 +491,7 @@ static struct of_device_id const bcm_kona_gpio_of_match[] = {
 	{}
 };
 
-/*
- * This lock class tells lockdep that GPIO irqs are in a different
- * category than their parents, so it won't report false recursion.
- */
+ 
 static struct lock_class_key gpio_lock_class;
 static struct lock_class_key gpio_request_class;
 
@@ -543,13 +528,13 @@ static void bcm_kona_gpio_reset(struct bcm_kona_gpio *kona_gpio)
 	int i;
 
 	reg_base = kona_gpio->reg_base;
-	/* disable interrupts and clear status */
+	 
 	for (i = 0; i < kona_gpio->num_bank; i++) {
-		/* Unlock the entire bank first */
+		 
 		bcm_kona_gpio_write_lock_regs(reg_base, i, UNLOCK_CODE);
 		writel(0xffffffff, reg_base + GPIO_INT_MASK(i));
 		writel(0xffffffff, reg_base + GPIO_INT_STATUS(i));
-		/* Now re-lock the bank */
+		 
 		bcm_kona_gpio_write_lock_regs(reg_base, i, LOCK_CODE);
 	}
 }

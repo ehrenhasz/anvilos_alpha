@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* iptables module for using new netfilter netlink queue
- *
- * (C) 2005 by Harald Welte <laforge@netfilter.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 

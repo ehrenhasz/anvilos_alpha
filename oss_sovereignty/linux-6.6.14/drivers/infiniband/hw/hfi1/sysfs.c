@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015-2017 Intel Corporation.
- */
+
+ 
 
 #include <linux/ctype.h>
 #include <rdma/ib_sysfs.h>
@@ -19,13 +17,9 @@ static struct hfi1_pportdata *hfi1_get_pportdata_kobj(struct kobject *kobj)
 	return &dd->pport[port_num - 1];
 }
 
-/*
- * Start of per-port congestion control structures and support code
- */
+ 
 
-/*
- * Congestion control table size followed by table entries
- */
+ 
 static ssize_t cc_table_bin_read(struct file *filp, struct kobject *kobj,
 				 struct bin_attribute *bin_attr, char *buf,
 				 loff_t pos, size_t count)
@@ -59,11 +53,7 @@ static ssize_t cc_table_bin_read(struct file *filp, struct kobject *kobj,
 }
 static BIN_ATTR_RO(cc_table_bin, PAGE_SIZE);
 
-/*
- * Congestion settings: port control, control map and an array of 16
- * entries for the congestion entries - increase, timer, event log
- * trigger threshold and the minimum injection rate delay.
- */
+ 
 static ssize_t cc_setting_bin_read(struct file *filp, struct kobject *kobj,
 				   struct bin_attribute *bin_attr,
 				   char *buf, loff_t pos, size_t count)
@@ -137,7 +127,7 @@ static const struct attribute_group port_cc_group = {
 	.bin_attrs = port_cc_bin_attributes,
 };
 
-/* Start sc2vl */
+ 
 struct hfi1_sc2vl_attr {
 	struct ib_port_attribute attr;
 	int sc;
@@ -232,9 +222,9 @@ static const struct attribute_group port_sc2vl_group = {
 	.name = "sc2vl",
 	.attrs = port_sc2vl_attributes,
 };
-/* End sc2vl */
+ 
 
-/* Start sl2sc */
+ 
 struct hfi1_sl2sc_attr {
 	struct ib_port_attribute attr;
 	int sl;
@@ -330,9 +320,9 @@ static const struct attribute_group port_sl2sc_group = {
 	.attrs = port_sl2sc_attributes,
 };
 
-/* End sl2sc */
+ 
 
-/* Start vl2mtu */
+ 
 
 struct hfi1_vl2mtu_attr {
 	struct ib_port_attribute attr;
@@ -397,12 +387,9 @@ static const struct attribute_group port_vl2mtu_group = {
 	.attrs = port_vl2mtu_attributes,
 };
 
-/* end of per-port file structures and support code */
+ 
 
-/*
- * Start of per-unit (or driver, in some cases, but replicated
- * per unit) functions (these get a device *)
- */
+ 
 static ssize_t hw_rev_show(struct device *device, struct device_attribute *attr,
 			   char *buf)
 {
@@ -434,7 +421,7 @@ static ssize_t boardversion_show(struct device *device,
 		rdma_device_to_drv_device(device, struct hfi1_ibdev, rdi.ibdev);
 	struct hfi1_devdata *dd = dd_from_dev(dev);
 
-	/* The string printed here is already newline-terminated. */
+	 
 	return sysfs_emit(buf, "%s", dd->boardversion);
 }
 static DEVICE_ATTR_RO(boardversion);
@@ -446,12 +433,7 @@ static ssize_t nctxts_show(struct device *device,
 		rdma_device_to_drv_device(device, struct hfi1_ibdev, rdi.ibdev);
 	struct hfi1_devdata *dd = dd_from_dev(dev);
 
-	/*
-	 * Return the smaller of send and receive contexts.
-	 * Normally, user level applications would require both a send
-	 * and a receive context, so returning the smaller of the two counts
-	 * give a more accurate picture of total contexts available.
-	 */
+	 
 	return sysfs_emit(buf, "%u\n",
 			  min(dd->num_user_contexts,
 			      (u32)dd->sc_sizes[SC_USER].count));
@@ -465,7 +447,7 @@ static ssize_t nfreectxts_show(struct device *device,
 		rdma_device_to_drv_device(device, struct hfi1_ibdev, rdi.ibdev);
 	struct hfi1_devdata *dd = dd_from_dev(dev);
 
-	/* Return the number of free user ports (contexts) available. */
+	 
 	return sysfs_emit(buf, "%u\n", dd->freectxts);
 }
 static DEVICE_ATTR_RO(nfreectxts);
@@ -477,7 +459,7 @@ static ssize_t serial_show(struct device *device,
 		rdma_device_to_drv_device(device, struct hfi1_ibdev, rdi.ibdev);
 	struct hfi1_devdata *dd = dd_from_dev(dev);
 
-	/* dd->serial is already newline terminated in chip.c */
+	 
 	return sysfs_emit(buf, "%s", dd->serial);
 }
 static DEVICE_ATTR_RO(serial);
@@ -502,16 +484,11 @@ bail:
 }
 static DEVICE_ATTR_WO(chip_reset);
 
-/*
- * Convert the reported temperature from an integer (reported in
- * units of 0.25C) to a floating point number.
- */
+ 
 #define temp_d(t) ((t) >> 2)
 #define temp_f(t) (((t)&0x3) * 25u)
 
-/*
- * Dump tempsense values, in decimal, to ease shell-scripts.
- */
+ 
 static ssize_t tempsense_show(struct device *device,
 			      struct device_attribute *attr, char *buf)
 {
@@ -536,12 +513,9 @@ static ssize_t tempsense_show(struct device *device,
 }
 static DEVICE_ATTR_RO(tempsense);
 
-/*
- * end of per-unit (or driver, in some cases, but replicated
- * per unit) functions
- */
+ 
 
-/* start of per-unit file structures and support code */
+ 
 static struct attribute *hfi1_attributes[] = {
 	&dev_attr_hw_rev.attr,
 	&dev_attr_board_id.attr,
@@ -647,9 +621,7 @@ static struct sde_attribute *sde_attribs[] = {
 	&sde_attr_vl
 };
 
-/*
- * Register and create our files in /sys/class/infiniband.
- */
+ 
 int hfi1_verbs_register_sysfs(struct hfi1_devdata *dd)
 {
 	struct ib_device *dev = &dd->verbs_dev.rdi.ibdev;
@@ -673,25 +645,19 @@ int hfi1_verbs_register_sysfs(struct hfi1_devdata *dd)
 
 	return 0;
 bail:
-	/*
-	 * The function kobject_put() will call kobject_del() if the kobject
-	 * has been added successfully. The sysfs files created under the
-	 * kobject directory will also be removed during the process.
-	 */
+	 
 	for (; i >= 0; i--)
 		kobject_put(&dd->per_sdma[i].kobj);
 
 	return ret;
 }
 
-/*
- * Unregister and remove our files in /sys/class/infiniband.
- */
+ 
 void hfi1_verbs_unregister_sysfs(struct hfi1_devdata *dd)
 {
 	int i;
 
-	/* Unwind operations in hfi1_verbs_register_sysfs() */
+	 
 	for (i = 0; i < dd->num_sdma; i++)
 		kobject_put(&dd->per_sdma[i].kobj);
 }

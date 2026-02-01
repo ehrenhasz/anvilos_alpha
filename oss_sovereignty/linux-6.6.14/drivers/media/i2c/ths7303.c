@@ -1,25 +1,4 @@
-/*
- * ths7303/53- THS7303/53 Video Amplifier driver
- *
- * Copyright (C) 2009 Texas Instruments Incorporated - http://www.ti.com/
- * Copyright 2013 Cisco Systems, Inc. and/or its affiliates.
- *
- * Author: Chaithrika U S <chaithrika@ti.com>
- *
- * Contributors:
- *     Hans Verkuil <hans.verkuil@cisco.com>
- *     Lad, Prabhakar <prabhakar.lad@ti.com>
- *     Martin Bugge <marbugge@cisco.com>
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed .as is. WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -78,7 +57,7 @@ static int ths7303_write(struct v4l2_subdev *sd, u8 reg, u8 val)
 	return ret;
 }
 
-/* following function is used to set ths7303 */
+ 
 static int ths7303_setval(struct v4l2_subdev *sd,
 			  enum ths7303_filter_mode mode)
 {
@@ -93,19 +72,19 @@ static int ths7303_setval(struct v4l2_subdev *sd,
 
 	switch (mode) {
 	case THS7303_FILTER_MODE_1080P:
-		sel = 0x3;	/*1080p and SXGA/UXGA */
+		sel = 0x3;	 
 		break;
 	case THS7303_FILTER_MODE_720P_1080I:
-		sel = 0x2;	/*720p, 1080i and SVGA/XGA */
+		sel = 0x2;	 
 		break;
 	case THS7303_FILTER_MODE_480P_576P:
-		sel = 0x1;	/* EDTV 480p/576p and VGA */
+		sel = 0x1;	 
 		break;
 	case THS7303_FILTER_MODE_480I_576I:
-		sel = 0x0;	/* SDTV, S-Video, 480i/576i */
+		sel = 0x0;	 
 		break;
 	default:
-		/* disable all channels */
+		 
 		disable = 1;
 	}
 
@@ -176,7 +155,7 @@ static int ths7303_config(struct v4l2_subdev *sd)
 	else if (state->std_id)
 		res = ths7303_setval(sd, THS7303_FILTER_MODE_480I_576I);
 	else
-		/* disable all channels */
+		 
 		res = ths7303_setval(sd, THS7303_FILTER_MODE_DISABLE);
 
 	return res;
@@ -192,7 +171,7 @@ static int ths7303_s_stream(struct v4l2_subdev *sd, int enable)
 	return ths7303_config(sd);
 }
 
-/* for setting filter for HD output */
+ 
 static int ths7303_s_dv_timings(struct v4l2_subdev *sd,
 			       struct v4l2_dv_timings *dv_timings)
 {
@@ -348,7 +327,7 @@ static int ths7303_probe(struct i2c_client *client)
 	sd = &state->sd;
 	v4l2_i2c_subdev_init(sd, client, &ths7303_ops);
 
-	/* set to default 480I_576I filter mode */
+	 
 	if (ths7303_setval(sd, THS7303_FILTER_MODE_480I_576I) < 0) {
 		v4l_err(client, "Setting to 480I_576I filter mode failed!\n");
 		return -EINVAL;

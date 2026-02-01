@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2020-2021 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 #include <linux/types.h>
 #include <linux/hmm.h>
 #include <linux/dma-direction.h>
@@ -58,7 +38,7 @@ svm_migrate_gart_map(struct amdgpu_ring *ring, uint64_t npages,
 	void *cpu_addr;
 	int r;
 
-	/* use gart window 0 */
+	 
 	*gart_addr = adev->gmc.gart_start;
 
 	num_dw = ALIGN(adev->mman.buffer_funcs->copy_num_dw, 8);
@@ -97,28 +77,7 @@ svm_migrate_gart_map(struct amdgpu_ring *ring, uint64_t npages,
 	return r;
 }
 
-/**
- * svm_migrate_copy_memory_gart - sdma copy data between ram and vram
- *
- * @adev: amdgpu device the sdma ring running
- * @sys: system DMA pointer to be copied
- * @vram: vram destination DMA pointer
- * @npages: number of pages to copy
- * @direction: enum MIGRATION_COPY_DIR
- * @mfence: output, sdma fence to signal after sdma is done
- *
- * ram address uses GART table continuous entries mapping to ram pages,
- * vram address uses direct mapping of vram pages, which must have npages
- * number of continuous pages.
- * GART update and sdma uses same buf copy function ring, sdma is splited to
- * multiple GTT_MAX_PAGES transfer, all sdma operations are serialized, wait for
- * the last sdma finish fence which is returned to check copy memory is done.
- *
- * Context: Process context, takes and releases gtt_window_lock
- *
- * Return:
- * 0 - OK, otherwise error code
- */
+ 
 
 static int
 svm_migrate_copy_memory_gart(struct amdgpu_device *adev, dma_addr_t *sys,
@@ -174,21 +133,7 @@ out_unlock:
 	return r;
 }
 
-/**
- * svm_migrate_copy_done - wait for memory copy sdma is done
- *
- * @adev: amdgpu device the sdma memory copy is executing on
- * @mfence: migrate fence
- *
- * Wait for dma fence is signaled, if the copy ssplit into multiple sdma
- * operations, this is the last sdma operation fence.
- *
- * Context: called after svm_migrate_copy_memory
- *
- * Return:
- * 0		- success
- * otherwise	- error code from dma fence signal
- */
+ 
 static int
 svm_migrate_copy_done(struct amdgpu_device *adev, struct dma_fence *mfence)
 {
@@ -475,18 +420,7 @@ out:
 	return r;
 }
 
-/**
- * svm_migrate_ram_to_vram - migrate svm range from system to device
- * @prange: range structure
- * @best_loc: the device to migrate to
- * @mm: the process mm structure
- * @trigger: reason of migration
- *
- * Context: Process context, caller hold mmap read lock, svms lock, prange lock
- *
- * Return:
- * 0 - OK, otherwise error code
- */
+ 
 static int
 svm_migrate_ram_to_vram(struct svm_range *prange, uint32_t best_loc,
 			struct mm_struct *mm, uint32_t trigger)
@@ -649,24 +583,7 @@ out_oom:
 	return r;
 }
 
-/**
- * svm_migrate_vma_to_ram - migrate range inside one vma from device to system
- *
- * @prange: svm range structure
- * @vma: vm_area_struct that range [start, end] belongs to
- * @start: range start virtual address in pages
- * @end: range end virtual address in pages
- * @node: kfd node device to migrate from
- * @trigger: reason of migration
- * @fault_page: is from vmf->page, svm_migrate_to_ram(), this is CPU page fault callback
- *
- * Context: Process context, caller hold mmap read lock, prange->migrate_mutex
- *
- * Return:
- *   0 - success with all pages migrated
- *   negative values - indicate error
- *   positive values - partial migration, number of pages not migrated
- */
+ 
 static long
 svm_migrate_vma_to_ram(struct kfd_node *node, struct svm_range *prange,
 		       struct vm_area_struct *vma, uint64_t start, uint64_t end,
@@ -758,18 +675,7 @@ out:
 	return r ? r : upages;
 }
 
-/**
- * svm_migrate_vram_to_ram - migrate svm range from device to system
- * @prange: range structure
- * @mm: process mm, use current->mm if NULL
- * @trigger: reason of migration
- * @fault_page: is from vmf->page, svm_migrate_to_ram(), this is CPU page fault callback
- *
- * Context: Process context, caller hold mmap read lock, prange->migrate_mutex
- *
- * Return:
- * 0 - OK, otherwise error code
- */
+ 
 int svm_migrate_vram_to_ram(struct svm_range *prange, struct mm_struct *mm,
 			    uint32_t trigger, struct page *fault_page)
 {
@@ -829,28 +735,14 @@ int svm_migrate_vram_to_ram(struct svm_range *prange, struct mm_struct *mm,
 	return r < 0 ? r : 0;
 }
 
-/**
- * svm_migrate_vram_to_vram - migrate svm range from device to device
- * @prange: range structure
- * @best_loc: the device to migrate to
- * @mm: process mm, use current->mm if NULL
- * @trigger: reason of migration
- *
- * Context: Process context, caller hold mmap read lock, svms lock, prange lock
- *
- * Return:
- * 0 - OK, otherwise error code
- */
+ 
 static int
 svm_migrate_vram_to_vram(struct svm_range *prange, uint32_t best_loc,
 			 struct mm_struct *mm, uint32_t trigger)
 {
 	int r, retries = 3;
 
-	/*
-	 * TODO: for both devices with PCIe large bar or on same xgmi hive, skip
-	 * system memory as migration bridge
-	 */
+	 
 
 	pr_debug("from gpu 0x%x to gpu 0x%x\n", prange->actual_loc, best_loc);
 
@@ -877,16 +769,7 @@ svm_migrate_to_vram(struct svm_range *prange, uint32_t best_loc,
 
 }
 
-/**
- * svm_migrate_to_ram - CPU page fault handler
- * @vmf: CPU vm fault vma, address
- *
- * Context: vm fault handler, caller holds the mmap read lock
- *
- * Return:
- * 0 - OK
- * VM_FAULT_SIGBUS - notice application to have SIGBUS page fault
- */
+ 
 static vm_fault_t svm_migrate_to_ram(struct vm_fault *vmf)
 {
 	unsigned long addr = vmf->address;
@@ -962,7 +845,7 @@ static vm_fault_t svm_migrate_to_ram(struct vm_fault *vmf)
 		pr_debug("failed %d migrate svms 0x%p range 0x%p [0x%lx 0x%lx]\n",
 			 r, prange->svms, prange, prange->start, prange->last);
 
-	/* xnack on, update mapping on GPUs with ACCESS_IN_PLACE */
+	 
 	if (p->xnack_enabled && parent == prange)
 		op = SVM_OP_UPDATE_RANGE_NOTIFIER_AND_MAP;
 	else
@@ -989,7 +872,7 @@ static const struct dev_pagemap_ops svm_migrate_pgmap_ops = {
 	.migrate_to_ram		= svm_migrate_to_ram,
 };
 
-/* Each VRAM page uses sizeof(struct page) on system memory */
+ 
 #define SVM_HMM_PAGE_STRUCT_SIZE(size) ((size)/PAGE_SIZE * sizeof(struct page))
 
 int kgd2kfd_init_zone_device(struct amdgpu_device *adev)
@@ -1000,7 +883,7 @@ int kgd2kfd_init_zone_device(struct amdgpu_device *adev)
 	unsigned long size;
 	void *r;
 
-	/* Page migration works on gfx9 or newer */
+	 
 	if (adev->ip_versions[GC_HWIP][0] < IP_VERSION(9, 0, 1))
 		return -EINVAL;
 
@@ -1010,9 +893,7 @@ int kgd2kfd_init_zone_device(struct amdgpu_device *adev)
 	pgmap = &kfddev->pgmap;
 	memset(pgmap, 0, sizeof(*pgmap));
 
-	/* TODO: register all vram to HMM for now.
-	 * should remove reserved size
-	 */
+	 
 	size = ALIGN(adev->gmc.real_vram_size, 2ULL << 20);
 	if (adev->gmc.xgmi.connected_to_cpu) {
 		pgmap->range.start = adev->gmc.aper_base;
@@ -1031,15 +912,13 @@ int kgd2kfd_init_zone_device(struct amdgpu_device *adev)
 	pgmap->ops = &svm_migrate_pgmap_ops;
 	pgmap->owner = SVM_ADEV_PGMAP_OWNER(adev);
 	pgmap->flags = 0;
-	/* Device manager releases device-specific resources, memory region and
-	 * pgmap when driver disconnects from device.
-	 */
+	 
 	r = devm_memremap_pages(adev->dev, pgmap);
 	if (IS_ERR(r)) {
 		pr_err("failed to register HMM device memory\n");
 		if (pgmap->type == MEMORY_DEVICE_PRIVATE)
 			devm_release_mem_region(adev->dev, res->start, resource_size(res));
-		/* Disable SVM support capability */
+		 
 		pgmap->type = 0;
 		return PTR_ERR(r);
 	}

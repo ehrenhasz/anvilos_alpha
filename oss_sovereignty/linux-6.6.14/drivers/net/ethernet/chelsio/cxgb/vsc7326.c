@@ -1,22 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0
-/* $Date: 2006/04/28 19:20:06 $ $RCSfile: vsc7326.c,v $ $Revision: 1.19 $ */
 
-/* Driver for Vitesse VSC7326 (Schaumburg) MAC */
+ 
+
+ 
 
 #include "gmac.h"
 #include "elmer0.h"
 #include "vsc7326_reg.h"
 
-/* Update fast changing statistics every 15 seconds */
+ 
 #define STATS_TICK_SECS 15
-/* 30 minutes for full statistics update */
+ 
 #define MAJOR_UPDATE_TICKS (1800 / STATS_TICK_SECS)
 
-/* The egress WM value 0x01a01fff should be used only when the
- * interface is down (MAC port disabled). This is a workaround
- * for disabling the T2/MAC flow-control. When the interface is
- * enabled, the WM value should be set to 0x014a03F0.
- */
+ 
 #define WM_DISABLE	0x01a01fff
 #define WM_ENABLE	0x014a03F0
 
@@ -54,9 +50,7 @@ static void vsc_read(adapter_t *adapter, u32 addr, u32 *val)
 
 	*val = (vhi << 16) | vlo;
 
-	/* pr_err("rd: block: 0x%x  sublock: 0x%x  reg: 0x%x  data: 0x%x\n",
-		((addr&0xe000)>>13), ((addr&0x1e00)>>9),
-		((addr&0x01fe)>>1), *val); */
+	 
 	spin_unlock_bh(&adapter->mac_lock);
 }
 
@@ -65,13 +59,11 @@ static void vsc_write(adapter_t *adapter, u32 addr, u32 data)
 	spin_lock_bh(&adapter->mac_lock);
 	t1_tpi_write(adapter, (addr << 2) + 4, data & 0xFFFF);
 	t1_tpi_write(adapter, addr << 2, (data >> 16) & 0xFFFF);
-	/* pr_err("wr: block: 0x%x  sublock: 0x%x  reg: 0x%x  data: 0x%x\n",
-		((addr&0xe000)>>13), ((addr&0x1e00)>>9),
-		((addr&0x01fe)>>1), data); */
+	 
 	spin_unlock_bh(&adapter->mac_lock);
 }
 
-/* Hard reset the MAC.  This wipes out *all* configuration. */
+ 
 static void vsc7326_full_reset(adapter_t* adapter)
 {
 	u32 val;
@@ -81,8 +73,8 @@ static void vsc7326_full_reset(adapter_t* adapter)
 	val &= ~1;
 	t1_tpi_write(adapter, A_ELMER0_GPO, val);
 	udelay(2);
-	val |= 0x1;	/* Enable mac MAC itself */
-	val |= 0x800;	/* Turn off the red LED */
+	val |= 0x1;	 
+	val |= 0x800;	 
 	t1_tpi_write(adapter, A_ELMER0_GPO, val);
 	mdelay(1);
 	vsc_write(adapter, REG_SW_RESET, 0x80000001);
@@ -111,8 +103,8 @@ static struct init_table vsc7326_reset[] = {
 };
 
 static struct init_table vsc7326_portinit[4][22] = {
-	{	/* Port 0 */
-			/* FIFO setup */
+	{	 
+			 
 		{           REG_DBG(0), 0x000004f0 },
 		{           REG_HDX(0), 0x00073101 },
 		{        REG_TEST(0,0), 0x00000022 },
@@ -127,7 +119,7 @@ static struct init_table vsc7326_portinit[4][22] = {
 		{         REG_BUCKI(0), 0x0002ffff },
 		{        REG_TEST(0,0), 0x00000020 },
 		{        REG_TEST(1,0), 0x00000020 },
-			/* Port config */
+			 
 		{       REG_MAX_LEN(0), 0x00002710 },
 		{     REG_PORT_FAIL(0), 0x00000002 },
 		{    REG_NORMALIZER(0), 0x00000a64 },
@@ -137,8 +129,8 @@ static struct init_table vsc7326_portinit[4][22] = {
 		{     REG_DEV_SETUP(0), 0x00000082 },
 		{      REG_MODE_CFG(0), 0x0200259f },
 	},
-	{	/* Port 1 */
-			/* FIFO setup */
+	{	 
+			 
 		{           REG_DBG(1), 0x000004f0 },
 		{           REG_HDX(1), 0x00073101 },
 		{        REG_TEST(0,1), 0x00000022 },
@@ -153,7 +145,7 @@ static struct init_table vsc7326_portinit[4][22] = {
 		{         REG_BUCKI(1), 0x0002ffff },
 		{        REG_TEST(0,1), 0x00000020 },
 		{        REG_TEST(1,1), 0x00000020 },
-			/* Port config */
+			 
 		{       REG_MAX_LEN(1), 0x00002710 },
 		{     REG_PORT_FAIL(1), 0x00000002 },
 		{    REG_NORMALIZER(1), 0x00000a64 },
@@ -163,8 +155,8 @@ static struct init_table vsc7326_portinit[4][22] = {
 		{     REG_DEV_SETUP(1), 0x00000082 },
 		{      REG_MODE_CFG(1), 0x0200259f },
 	},
-	{	/* Port 2 */
-			/* FIFO setup */
+	{	 
+			 
 		{           REG_DBG(2), 0x000004f0 },
 		{           REG_HDX(2), 0x00073101 },
 		{        REG_TEST(0,2), 0x00000022 },
@@ -179,7 +171,7 @@ static struct init_table vsc7326_portinit[4][22] = {
 		{         REG_BUCKI(2), 0x0002ffff },
 		{        REG_TEST(0,2), 0x00000020 },
 		{        REG_TEST(1,2), 0x00000020 },
-			/* Port config */
+			 
 		{       REG_MAX_LEN(2), 0x00002710 },
 		{     REG_PORT_FAIL(2), 0x00000002 },
 		{    REG_NORMALIZER(2), 0x00000a64 },
@@ -189,8 +181,8 @@ static struct init_table vsc7326_portinit[4][22] = {
 		{     REG_DEV_SETUP(2), 0x00000082 },
 		{      REG_MODE_CFG(2), 0x0200259f },
 	},
-	{	/* Port 3 */
-			/* FIFO setup */
+	{	 
+			 
 		{           REG_DBG(3), 0x000004f0 },
 		{           REG_HDX(3), 0x00073101 },
 		{        REG_TEST(0,3), 0x00000022 },
@@ -205,7 +197,7 @@ static struct init_table vsc7326_portinit[4][22] = {
 		{         REG_BUCKI(3), 0x0002ffff },
 		{        REG_TEST(0,3), 0x00000020 },
 		{        REG_TEST(1,3), 0x00000020 },
-			/* Port config */
+			 
 		{       REG_MAX_LEN(3), 0x00002710 },
 		{     REG_PORT_FAIL(3), 0x00000002 },
 		{    REG_NORMALIZER(3), 0x00000a64 },
@@ -289,7 +281,7 @@ static int bist_wr(adapter_t *adapter, int moduleid, int address, int value)
 
 static int run_bist(adapter_t *adapter, int moduleid)
 {
-	/*run bist*/
+	 
 	(void) bist_wr(adapter,moduleid, 0x00, 0x02);
 	(void) bist_wr(adapter,moduleid, 0x01, 0x01);
 
@@ -300,7 +292,7 @@ static int check_bist(adapter_t *adapter, int moduleid)
 {
 	int result=0;
 	int column=0;
-	/*check bist*/
+	 
 	result = bist_rd(adapter,moduleid, 0x02);
 	column = ((bist_rd(adapter,moduleid, 0x0e)<<8) +
 			(bist_rd(adapter,moduleid, 0x0d)));
@@ -312,7 +304,7 @@ static int check_bist(adapter_t *adapter, int moduleid)
 
 static int enable_mem(adapter_t *adapter, int moduleid)
 {
-	/*enable mem*/
+	 
 	(void) bist_wr(adapter,moduleid, 0x00, 0x00);
 	return 0;
 }
@@ -378,7 +370,7 @@ static int mac_intr_clear(struct cmac *mac)
 	return 0;
 }
 
-/* Expect MAC address to be in network byte order. */
+ 
 static int mac_set_address(struct cmac* mac, const u8 addr[6])
 {
 	u32 val;
@@ -419,7 +411,7 @@ static int mac_get_address(struct cmac *mac, u8 addr[6])
 	return 0;
 }
 
-/* This is intended to reset a port, not the whole MAC */
+ 
 static int mac_reset(struct cmac *mac)
 {
 	int index = mac->instance->index;
@@ -451,7 +443,7 @@ static int mac_set_mtu(struct cmac *mac, int mtu)
 {
 	int port = mac->instance->index;
 
-	/* max_len includes header and FCS */
+	 
 	vsc_write(mac->adapter, REG_MAX_LEN(port), mtu + 14 + 4);
 	return 0;
 }
@@ -470,11 +462,11 @@ static int mac_set_speed_duplex_fc(struct cmac *mac, int speed, int duplex,
 
 	if (speed >= 0) {
 		vsc_read(mac->adapter, REG_MODE_CFG(port), &v);
-		enable = v & 3;             /* save tx/rx enables */
+		enable = v & 3;              
 		v &= ~0xf;
-		v |= 4;                     /* full duplex */
+		v |= 4;                      
 		if (speed == SPEED_1000)
-			v |= 8;             /* GigE */
+			v |= 8;              
 		enable |= v;
 		vsc_write(mac->adapter, REG_MODE_CFG(port), v);
 
@@ -482,9 +474,9 @@ static int mac_set_speed_duplex_fc(struct cmac *mac, int speed, int duplex,
 			v = 0x82;
 		else if (speed == SPEED_100)
 			v = 0x84;
-		else	/* SPEED_10 */
+		else	 
 			v = 0x86;
-		vsc_write(mac->adapter, REG_DEV_SETUP(port), v | 1); /* reset */
+		vsc_write(mac->adapter, REG_DEV_SETUP(port), v | 1);  
 		vsc_write(mac->adapter, REG_DEV_SETUP(port), v);
 		vsc_read(mac->adapter, REG_DBG(port), &v);
 		v &= ~0xff00;
@@ -492,29 +484,29 @@ static int mac_set_speed_duplex_fc(struct cmac *mac, int speed, int duplex,
 			v |= 0x400;
 		else if (speed == SPEED_100)
 			v |= 0x2000;
-		else	/* SPEED_10 */
+		else	 
 			v |= 0xff00;
 		vsc_write(mac->adapter, REG_DBG(port), v);
 
 		vsc_write(mac->adapter, REG_TX_IFG(port),
 			  speed == SPEED_1000 ? 5 : 0x11);
 		if (duplex == DUPLEX_HALF)
-			enable = 0x0;	/* 100 or 10 */
+			enable = 0x0;	 
 		else if (speed == SPEED_1000)
 			enable = 0xc;
-		else	/* SPEED_100 or 10 */
+		else	 
 			enable = 0x4;
-		enable |= 0x9 << 10;	/* IFG1 */
-		enable |= 0x6 << 6;	/* IFG2 */
-		enable |= 0x1 << 4;	/* VLAN */
-		enable |= 0x3;		/* RX/TX EN */
+		enable |= 0x9 << 10;	 
+		enable |= 0x6 << 6;	 
+		enable |= 0x1 << 4;	 
+		enable |= 0x3;		 
 		vsc_write(mac->adapter, REG_MODE_CFG(port), enable);
 
 	}
 
 	vsc_read(mac->adapter, REG_PAUSE_CFG(port), &v);
 	v &= 0xfff0ffff;
-	v |= 0x20000;      /* xon/xoff */
+	v |= 0x20000;       
 	if (fc & PAUSE_RX)
 		v |= 0x40000;
 	if (fc & PAUSE_TX)
@@ -530,7 +522,7 @@ static int mac_enable(struct cmac *mac, int which)
 	u32 val;
 	int port = mac->instance->index;
 
-	/* Write the correct WM value when the port is enabled. */
+	 
 	vsc_write(mac->adapter, REG_HIGH_LOW_WM(1,port), WM_ENABLE);
 
 	vsc_read(mac->adapter, REG_MODE_CFG(port), &val);
@@ -547,7 +539,7 @@ static int mac_disable(struct cmac *mac, int which)
 	u32 val;
 	int i, port = mac->instance->index;
 
-	/* Reset the port, this also writes the correct WM value */
+	 
 	mac_reset(mac);
 
 	vsc_read(mac->adapter, REG_MODE_CFG(port), &val);
@@ -558,11 +550,11 @@ static int mac_disable(struct cmac *mac, int which)
 	vsc_write(mac->adapter, REG_MODE_CFG(port), val);
 	vsc_read(mac->adapter, REG_MODE_CFG(port), &val);
 
-	/* Clear stats */
+	 
 	for (i = 0; i <= 0x3a; ++i)
 		vsc_write(mac->adapter, CRA(4, port, i), 0);
 
-	/* Clear software counters */
+	 
 	memset(&mac->stats, 0, sizeof(struct cmac_statistics));
 
 	return 0;
@@ -593,7 +585,7 @@ static void port_stats_update(struct cmac *mac)
 #define HW_STAT(reg, stat_name) \
 	{ reg, offsetof(struct cmac_statistics, stat_name) / sizeof(u64) }
 
-		/* Rx stats */
+		 
 		HW_STAT(RxUnicast, RxUnicastFramesOK),
 		HW_STAT(RxMulticast, RxMulticastFramesOK),
 		HW_STAT(RxBroadcast, RxBroadcastFramesOK),
@@ -607,7 +599,7 @@ static void port_stats_update(struct cmac *mac)
 		HW_STAT(RxSymbolCarrier, RxSymbolErrors),
 		HW_STAT(RxSize1519ToMax, RxJumboFramesOK),
 
-		/* Tx stats (skip collision stats as we are full-duplex only) */
+		 
 		HW_STAT(TxUnicast, TxUnicastFramesOK),
 		HW_STAT(TxMulticast, TxMulticastFramesOK),
 		HW_STAT(TxBroadcast, TxBroadcastFramesOK),
@@ -627,15 +619,7 @@ static void port_stats_update(struct cmac *mac)
 	rmon_update(mac, REG_RX_BAD_BYTES(port), &mac->stats.RxOctetsBad);
 }
 
-/*
- * This function is called periodically to accumulate the current values of the
- * RMON counters into the port statistics.  Since the counters are only 32 bits
- * some of them can overflow in less than a minute at GigE speeds, so this
- * function should be called every 30 seconds or so.
- *
- * To cut down on reading costs we update only the octet counters at each tick
- * and do a full update at major ticks, which can be every 30 minutes or more.
- */
+ 
 static const struct cmac_statistics *mac_update_statistics(struct cmac *mac,
 							   int flag)
 {

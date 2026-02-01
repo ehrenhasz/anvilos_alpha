@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2022 Intel Corporation. All rights reserved.
-//
-// Authors: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//	    Peter Ujfalusi <peter.ujfalusi@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/auxiliary_bus.h>
 #include <linux/completion.h>
@@ -52,10 +52,7 @@ static int sof_ipc_flood_dfs_open(struct inode *inode, struct file *file)
 	return ret;
 }
 
-/*
- * helper function to perform the flood test. Only one of the two params, ipc_duration_ms
- * or ipc_count, will be non-zero and will determine the type of test
- */
+ 
 static int sof_debug_ipc_flood_test(struct sof_client_dev *cdev,
 				    bool flood_duration_test,
 				    unsigned long ipc_duration_ms,
@@ -72,15 +69,15 @@ static int sof_debug_ipc_flood_test(struct sof_client_dev *cdev,
 	int i = 0;
 	int ret;
 
-	/* configure test IPC */
+	 
 	hdr.cmd = SOF_IPC_GLB_TEST_MSG | SOF_IPC_TEST_IPC_FLOOD;
 	hdr.size = sizeof(hdr);
 
-	/* set test end time for duration flood test */
+	 
 	if (flood_duration_test)
 		test_end = ktime_get_ns() + ipc_duration_ms * NSEC_PER_MSEC;
 
-	/* send test IPC's */
+	 
 	while (1) {
 		start = ktime_get();
 		ret = sof_client_ipc_tx_message_no_reply(cdev, &hdr);
@@ -89,16 +86,16 @@ static int sof_debug_ipc_flood_test(struct sof_client_dev *cdev,
 		if (ret < 0)
 			break;
 
-		/* compute min and max response times */
+		 
 		ipc_response_time = ktime_to_ns(ktime_sub(end, start));
 		min_response_time = min(min_response_time, ipc_response_time);
 		max_response_time = max(max_response_time, ipc_response_time);
 
-		/* sum up response times */
+		 
 		avg_response_time += ipc_response_time;
 		i++;
 
-		/* test complete? */
+		 
 		if (flood_duration_test) {
 			if (ktime_to_ns(end) >= test_end)
 				break;
@@ -111,14 +108,14 @@ static int sof_debug_ipc_flood_test(struct sof_client_dev *cdev,
 	if (ret < 0)
 		dev_err(dev, "ipc flood test failed at %d iterations\n", i);
 
-	/* return if the first IPC fails */
+	 
 	if (!i)
 		return ret;
 
-	/* compute average response time */
+	 
 	do_div(avg_response_time, i);
 
-	/* clear previous test output */
+	 
 	memset(priv->buf, 0, IPC_FLOOD_TEST_RESULT_LEN);
 
 	if (!ipc_count) {
@@ -132,7 +129,7 @@ static int sof_debug_ipc_flood_test(struct sof_client_dev *cdev,
 	dev_dbg(dev, "Max response time: %lluns\n", max_response_time);
 	dev_dbg(dev, "Min response time: %lluns\n", min_response_time);
 
-	/* format output string and save test results */
+	 
 	snprintf(priv->buf + strlen(priv->buf),
 		 IPC_FLOOD_TEST_RESULT_LEN - strlen(priv->buf),
 		 "IPC Flood count: %d\nAvg response time: %lluns\n",
@@ -146,10 +143,7 @@ static int sof_debug_ipc_flood_test(struct sof_client_dev *cdev,
 	return ret;
 }
 
-/*
- * Writing to the debugfs entry initiates the IPC flood test based on
- * the IPC count or the duration specified by the user.
- */
+ 
 static ssize_t sof_ipc_flood_dfs_write(struct file *file, const char __user *buffer,
 				       size_t count, loff_t *ppos)
 {
@@ -170,13 +164,7 @@ static ssize_t sof_ipc_flood_dfs_write(struct file *file, const char __user *buf
 
 	size = simple_write_to_buffer(string, count, ppos, buffer, count);
 
-	/*
-	 * write op is only supported for ipc_flood_count or
-	 * ipc_flood_duration_ms debugfs entries atm.
-	 * ipc_flood_count floods the DSP with the number of IPC's specified.
-	 * ipc_duration_ms test floods the DSP for the time specified
-	 * in the debugfs entry.
-	 */
+	 
 	dentry = file->f_path.dentry;
 	if (strcmp(dentry->d_name.name, DEBUGFS_IPC_FLOOD_COUNT) &&
 	    strcmp(dentry->d_name.name, DEBUGFS_IPC_FLOOD_DURATION)) {
@@ -187,7 +175,7 @@ static ssize_t sof_ipc_flood_dfs_write(struct file *file, const char __user *buf
 	if (!strcmp(dentry->d_name.name, DEBUGFS_IPC_FLOOD_DURATION))
 		flood_duration_test = true;
 
-	/* test completion criterion */
+	 
 	if (flood_duration_test)
 		ret = kstrtoul(string, 0, &ipc_duration_ms);
 	else
@@ -195,14 +183,14 @@ static ssize_t sof_ipc_flood_dfs_write(struct file *file, const char __user *buf
 	if (ret < 0)
 		goto out;
 
-	/* limit max duration/ipc count for flood test */
+	 
 	if (flood_duration_test) {
 		if (!ipc_duration_ms) {
 			ret = size;
 			goto out;
 		}
 
-		/* find the minimum. min() is not used to avoid warnings */
+		 
 		if (ipc_duration_ms > MAX_IPC_FLOOD_DURATION_MS)
 			ipc_duration_ms = MAX_IPC_FLOOD_DURATION_MS;
 	} else {
@@ -211,7 +199,7 @@ static ssize_t sof_ipc_flood_dfs_write(struct file *file, const char __user *buf
 			goto out;
 		}
 
-		/* find the minimum. min() is not used to avoid warnings */
+		 
 		if (ipc_count > MAX_IPC_FLOOD_COUNT)
 			ipc_count = MAX_IPC_FLOOD_COUNT;
 	}
@@ -222,7 +210,7 @@ static ssize_t sof_ipc_flood_dfs_write(struct file *file, const char __user *buf
 		goto out;
 	}
 
-	/* flood test */
+	 
 	ret = sof_debug_ipc_flood_test(cdev, flood_duration_test,
 				       ipc_duration_ms, ipc_count);
 
@@ -231,7 +219,7 @@ static ssize_t sof_ipc_flood_dfs_write(struct file *file, const char __user *buf
 	if (err < 0)
 		dev_err_ratelimited(dev, "debugfs write failed to idle %d\n", err);
 
-	/* return size if test is successful */
+	 
 	if (ret >= 0)
 		ret = size;
 out:
@@ -239,7 +227,7 @@ out:
 	return ret;
 }
 
-/* return the result of the last IPC flood test */
+ 
 static ssize_t sof_ipc_flood_dfs_read(struct file *file, char __user *buffer,
 				      size_t count, loff_t *ppos)
 {
@@ -283,15 +271,7 @@ static const struct file_operations sof_ipc_flood_fops = {
 	.owner = THIS_MODULE,
 };
 
-/*
- * The IPC test client creates a couple of debugfs entries that will be used
- * flood tests. Users can write to these entries to execute the IPC flood test
- * by specifying either the number of IPCs to flood the DSP with or the duration
- * (in ms) for which the DSP should be flooded with test IPCs. At the
- * end of each test, the average, min and max response times are reported back.
- * The results of the last flood test can be accessed by reading the debugfs
- * entries.
- */
+ 
 static int sof_ipc_flood_probe(struct auxiliary_device *auxdev,
 			       const struct auxiliary_device_id *id)
 {
@@ -300,7 +280,7 @@ static int sof_ipc_flood_probe(struct auxiliary_device *auxdev,
 	struct device *dev = &auxdev->dev;
 	struct sof_ipc_flood_priv *priv;
 
-	/* allocate memory for client data */
+	 
 	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
 	if (!priv)
 		return -ENOMEM;
@@ -311,22 +291,19 @@ static int sof_ipc_flood_probe(struct auxiliary_device *auxdev,
 
 	cdev->data = priv;
 
-	/* create debugfs root folder with device name under parent SOF dir */
+	 
 	priv->dfs_root = debugfs_create_dir(dev_name(dev), debugfs_root);
 	if (!IS_ERR_OR_NULL(priv->dfs_root)) {
-		/* create read-write ipc_flood_count debugfs entry */
+		 
 		debugfs_create_file(DEBUGFS_IPC_FLOOD_COUNT, 0644, priv->dfs_root,
 				    cdev, &sof_ipc_flood_fops);
 
-		/* create read-write ipc_flood_duration_ms debugfs entry */
+		 
 		debugfs_create_file(DEBUGFS_IPC_FLOOD_DURATION, 0644,
 				    priv->dfs_root, cdev, &sof_ipc_flood_fops);
 
 		if (auxdev->id == 0) {
-			/*
-			 * Create symlinks for backwards compatibility to the
-			 * first IPC flood test instance
-			 */
+			 
 			char target[100];
 
 			snprintf(target, 100, "%s/" DEBUGFS_IPC_FLOOD_COUNT,
@@ -343,7 +320,7 @@ static int sof_ipc_flood_probe(struct auxiliary_device *auxdev,
 		}
 	}
 
-	/* enable runtime PM */
+	 
 	pm_runtime_set_autosuspend_delay(dev, SOF_IPC_CLIENT_SUSPEND_DELAY_MS);
 	pm_runtime_use_autosuspend(dev);
 	pm_runtime_enable(dev);
@@ -374,12 +351,7 @@ static const struct auxiliary_device_id sof_ipc_flood_client_id_table[] = {
 };
 MODULE_DEVICE_TABLE(auxiliary, sof_ipc_flood_client_id_table);
 
-/*
- * No need for driver pm_ops as the generic pm callbacks in the auxiliary bus
- * type are enough to ensure that the parent SOF device resumes to bring the DSP
- * back to D0.
- * Driver name will be set based on KBUILD_MODNAME.
- */
+ 
 static struct auxiliary_driver sof_ipc_flood_client_drv = {
 	.probe = sof_ipc_flood_probe,
 	.remove = sof_ipc_flood_remove,

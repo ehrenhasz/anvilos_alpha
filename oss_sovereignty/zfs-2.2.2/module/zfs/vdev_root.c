@@ -1,31 +1,7 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright 2010 Sun Microsystems, Inc.  All rights reserved.
- * Use is subject to license terms.
- */
+ 
+ 
 
-/*
- * Copyright (c) 2012, 2016 by Delphix. All rights reserved.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/spa.h>
@@ -33,9 +9,7 @@
 #include <sys/zio.h>
 #include <sys/fs/zfs.h>
 
-/*
- * Virtual device vector for the pool's root vdev.
- */
+ 
 
 static uint64_t
 vdev_root_core_tvds(vdev_t *vd)
@@ -54,15 +28,7 @@ vdev_root_core_tvds(vdev_t *vd)
 	return (tvds);
 }
 
-/*
- * We should be able to tolerate one failure with absolutely no damage
- * to our metadata.  Two failures will take out space maps, a bunch of
- * indirect block trees, meta dnodes, dnodes, etc.  Probably not a happy
- * place to live.  When we get smarter, we can liberalize this policy.
- * e.g. If we haven't lost two consecutive top-level vdevs, then we are
- * probably fine.  Adding bean counters during alloc/free can make this
- * future guesswork more accurate.
- */
+ 
 static boolean_t
 too_many_errors(vdev_t *vd, uint64_t numerrors)
 {
@@ -149,8 +115,8 @@ vdev_ops_t vdev_root_ops = {
 	.vdev_op_asize = vdev_default_asize,
 	.vdev_op_min_asize = vdev_default_min_asize,
 	.vdev_op_min_alloc = NULL,
-	.vdev_op_io_start = NULL,	/* not applicable to the root */
-	.vdev_op_io_done = NULL,	/* not applicable to the root */
+	.vdev_op_io_start = NULL,	 
+	.vdev_op_io_done = NULL,	 
 	.vdev_op_state_change = vdev_root_state_change,
 	.vdev_op_need_resilver = NULL,
 	.vdev_op_hold = NULL,
@@ -162,6 +128,6 @@ vdev_ops_t vdev_root_ops = {
 	.vdev_op_config_generate = NULL,
 	.vdev_op_nparity = NULL,
 	.vdev_op_ndisks = NULL,
-	.vdev_op_type = VDEV_TYPE_ROOT,	/* name of this vdev type */
-	.vdev_op_leaf = B_FALSE		/* not a leaf vdev */
+	.vdev_op_type = VDEV_TYPE_ROOT,	 
+	.vdev_op_leaf = B_FALSE		 
 };

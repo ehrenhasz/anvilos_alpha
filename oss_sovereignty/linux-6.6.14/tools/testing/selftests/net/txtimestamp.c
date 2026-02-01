@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2014 Google Inc.
- * Author: willemb@google.com (Willem de Bruijn)
- *
- * Test software tx timestamping, including
- *
- * - SCHED, SND and ACK timestamps
- * - RAW, UDP and TCP
- * - IPv4 and IPv6
- * - various packet sizes (to test GSO and TSO)
- *
- * Consult the command line arguments for help on running
- * the various testcases.
- *
- * This test requires a dummy TCP server.
- * A simple `nc6 [-u] -l -p $DESTPORT` will do
- */
+
+ 
 
 #define _GNU_SOURCE
 
@@ -54,7 +38,7 @@
 #define USEC_PER_SEC	1000000L
 #define NSEC_PER_SEC	1000000000LL
 
-/* command line parameters */
+ 
 static int cfg_proto = SOCK_STREAM;
 static int cfg_ipproto = IPPROTO_TCP;
 static int cfg_num_pkts = 4;
@@ -133,9 +117,7 @@ static void validate_key(int tskey, int tstype)
 {
 	int stepsize;
 
-	/* compare key for each subsequent request
-	 * must only test for one type, the first one requested
-	 */
+	 
 	if (saved_tskey == -1)
 		saved_tskey_type = tstype;
 	else if (saved_tskey_type != tstype)
@@ -255,7 +237,7 @@ static void print_timing_event(char *name, struct timing_event *te)
 	fprintf(stderr, "\n");
 }
 
-/* TODO: convert to check_and_print payload once API is stable */
+ 
 static void print_payload(char *data, int len)
 {
 	int i;
@@ -361,7 +343,7 @@ static void __recv_errmsg_cmsg(struct msghdr *msg, int payload_len)
 
 static int recv_errmsg(int fd)
 {
-	static char ctrl[1024 /* overprovision*/];
+	static char ctrl[1024  ];
 	static struct msghdr msg;
 	struct iovec entry;
 	static char *data;
@@ -420,7 +402,7 @@ static uint16_t get_udp_csum(const struct udphdr *udph, int alen)
 	pseudo_sum = htons(IPPROTO_UDP);
 	pseudo_sum += udph->len;
 
-	/* checksum ip(v6) addresses + udp header + payload */
+	 
 	csum_start -= alen * 2;
 	csum_len = ntohs(udph->len) + alen * 2;
 
@@ -436,11 +418,11 @@ static int fill_header_ipv4(void *p)
 	iph->ihl	= 5;
 	iph->version	= 4;
 	iph->ttl	= 2;
-	iph->saddr	= daddr.sin_addr.s_addr;	/* set for udp csum calc */
+	iph->saddr	= daddr.sin_addr.s_addr;	 
 	iph->daddr	= daddr.sin_addr.s_addr;
 	iph->protocol	= IPPROTO_UDP;
 
-	/* kernel writes saddr, csum, len */
+	 
 
 	return sizeof(*iph);
 }
@@ -459,7 +441,7 @@ static int fill_header_ipv6(void *p)
 	ip6h->saddr             = daddr6.sin6_addr;
 	ip6h->daddr		= daddr6.sin6_addr;
 
-	/* kernel does not write saddr in case of ipv6 */
+	 
 
 	return sizeof(*ip6h);
 }
@@ -468,7 +450,7 @@ static void fill_header_udp(void *p, bool is_ipv4)
 {
 	struct udphdr *udph = p;
 
-	udph->source = ntohs(dest_port + 1);	/* spoof */
+	udph->source = ntohs(dest_port + 1);	 
 	udph->dest   = ntohs(dest_port);
 	udph->len    = ntohs(sizeof(*udph) + cfg_payload_len);
 	udph->check  = 0;
@@ -501,10 +483,7 @@ static void do_test(int family, unsigned int report_opt)
 			else
 				total_len += sizeof(struct ipv6hdr);
 		}
-		/* special case, only rawv6_sendmsg:
-		 * pass proto in sin6_port if not connected
-		 * also see ANK comment in net/ipv4/raw.c
-		 */
+		 
 		daddr6.sin6_port = htons(cfg_ipproto);
 	}
 
@@ -531,7 +510,7 @@ static void do_test(int family, unsigned int report_opt)
 			error(1, errno, "epoll_ctl");
 	}
 
-	/* reset expected key on each new socket */
+	 
 	saved_tskey = -1;
 
 	if (cfg_proto == SOCK_STREAM) {
@@ -637,7 +616,7 @@ static void do_test(int family, unsigned int report_opt)
 		if (val != total_len)
 			error(1, errno, "send");
 
-		/* wait for all errors to be queued, else ACKs arrive OOO */
+		 
 		if (cfg_sleep_usec)
 			usleep(cfg_sleep_usec);
 
@@ -855,9 +834,7 @@ static void do_listen(int family, void *addr, int alen)
 	if (type == SOCK_STREAM && listen(fd, 10))
 		error(1, errno, "listen rx");
 
-	/* leave fd open, will be closed on process exit.
-	 * this enables connect() to succeed and avoids icmp replies
-	 */
+	 
 }
 
 static void do_main(int family)

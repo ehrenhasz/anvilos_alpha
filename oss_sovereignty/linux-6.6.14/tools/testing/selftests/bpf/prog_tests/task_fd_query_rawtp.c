@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 void test_task_fd_query_rawtp(void)
@@ -19,7 +19,7 @@ void test_task_fd_query_rawtp(void)
 	if (CHECK(efd < 0, "raw_tp_open", "err %d errno %d\n", efd, errno))
 		goto close_prog;
 
-	/* query (getpid(), efd) */
+	 
 	len = sizeof(buf);
 	err = bpf_task_fd_query(getpid(), efd, 0, buf, &len, &prog_id,
 				&fd_type, &probe_offset, &probe_addr);
@@ -33,7 +33,7 @@ void test_task_fd_query_rawtp(void)
 		  fd_type, buf))
 		goto close_prog;
 
-	/* test zero len */
+	 
 	len = 0;
 	err = bpf_task_fd_query(getpid(), efd, 0, buf, &len, &prog_id,
 				&fd_type, &probe_offset, &probe_addr);
@@ -45,7 +45,7 @@ void test_task_fd_query_rawtp(void)
 	if (CHECK(!err, "check_results", "fd_type %d len %u\n", fd_type, len))
 		goto close_prog;
 
-	/* test empty buffer */
+	 
 	len = sizeof(buf);
 	err = bpf_task_fd_query(getpid(), efd, 0, 0, &len, &prog_id,
 				&fd_type, &probe_offset, &probe_addr);
@@ -57,7 +57,7 @@ void test_task_fd_query_rawtp(void)
 	if (CHECK(!err, "check_results", "fd_type %d len %u\n", fd_type, len))
 		goto close_prog;
 
-	/* test smaller buffer */
+	 
 	len = 3;
 	err = bpf_task_fd_query(getpid(), efd, 0, buf, &len, &prog_id,
 				&fd_type, &probe_offset, &probe_addr);

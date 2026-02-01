@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 
 #ifndef _LINUX_ASN1_ENCODER_H
 #define _LINUX_ASN1_ENCODER_H

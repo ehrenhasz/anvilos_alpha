@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 NXP
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk-provider.h>
@@ -71,12 +69,7 @@ struct clk_fracn_gppll {
 	u32 flags;
 };
 
-/*
- * Fvco = (Fref / rdiv) * (MFI + MFN / MFD)
- * Fout = Fvco / odiv
- * The (Fref / rdiv) should be in range 20MHz to 40MHz
- * The Fvco should be in range 2.5Ghz to 5Ghz
- */
+ 
 static const struct imx_fracn_gppll_rate_table fracn_tbl[] = {
 	PLL_FRACN_GP(650000000U, 162, 50, 100, 0, 6),
 	PLL_FRACN_GP(594000000U, 198, 0, 1, 0, 8),
@@ -96,12 +89,7 @@ struct imx_fracn_gppll_clk imx_fracn_gppll = {
 };
 EXPORT_SYMBOL_GPL(imx_fracn_gppll);
 
-/*
- * Fvco = (Fref / rdiv) * MFI
- * Fout = Fvco / odiv
- * The (Fref / rdiv) should be in range 20MHz to 40MHz
- * The Fvco should be in range 2.5Ghz to 5Ghz
- */
+ 
 static const struct imx_fracn_gppll_rate_table int_tbl[] = {
 	PLL_FRACN_GP_INTEGER(1700000000U, 141, 1, 2),
 	PLL_FRACN_GP_INTEGER(1400000000U, 175, 1, 3),
@@ -139,12 +127,12 @@ static long clk_fracn_gppll_round_rate(struct clk_hw *hw, unsigned long rate,
 	const struct imx_fracn_gppll_rate_table *rate_table = pll->rate_table;
 	int i;
 
-	/* Assuming rate_table is in descending order */
+	 
 	for (i = 0; i < pll->rate_count; i++)
 		if (rate >= rate_table[i].rate)
 			return rate_table[i].rate;
 
-	/* return minimum supported value */
+	 
 	return rate_table[pll->rate_count - 1].rate;
 }
 
@@ -170,12 +158,7 @@ static unsigned long clk_fracn_gppll_recalc_rate(struct clk_hw *hw, unsigned lon
 	rdiv = FIELD_GET(PLL_RDIV_MASK, pll_div);
 	odiv = FIELD_GET(PLL_ODIV_MASK, pll_div);
 
-	/*
-	 * Sometimes, the recalculated rate has deviation due to
-	 * the frac part. So find the accurate pll rate from the table
-	 * first, if no match rate in the table, use the rate calculated
-	 * from the equation below.
-	 */
+	 
 	for (i = 0; i < pll->rate_count; i++) {
 		if (rate_table[i].mfn == mfn && rate_table[i].mfi == mfi &&
 		    rate_table[i].mfd == mfd && rate_table[i].rdiv == rdiv &&
@@ -201,11 +184,11 @@ static unsigned long clk_fracn_gppll_recalc_rate(struct clk_hw *hw, unsigned lon
 	}
 
 	if (pll->flags & CLK_FRACN_GPPLL_INTEGER) {
-		/* Fvco = (Fref / rdiv) * MFI */
+		 
 		fvco = fvco * mfi;
 		do_div(fvco, rdiv * odiv);
 	} else {
-		/* Fvco = (Fref / rdiv) * (MFI + MFN / MFD) */
+		 
 		fvco = fvco * mfi * mfd + fvco * mfn;
 		do_div(fvco, mfd * rdiv * odiv);
 	}
@@ -231,21 +214,21 @@ static int clk_fracn_gppll_set_rate(struct clk_hw *hw, unsigned long drate,
 
 	rate = imx_get_pll_settings(pll, drate);
 
-	/* Hardware control select disable. PLL is control by register */
+	 
 	tmp = readl_relaxed(pll->base + PLL_CTRL);
 	tmp &= ~HW_CTRL_SEL;
 	writel_relaxed(tmp, pll->base + PLL_CTRL);
 
-	/* Disable output */
+	 
 	tmp = readl_relaxed(pll->base + PLL_CTRL);
 	tmp &= ~CLKMUX_EN;
 	writel_relaxed(tmp, pll->base + PLL_CTRL);
 
-	/* Power Down */
+	 
 	tmp &= ~POWERUP_MASK;
 	writel_relaxed(tmp, pll->base + PLL_CTRL);
 
-	/* Disable BYPASS */
+	 
 	tmp &= ~CLKMUX_BYPASS;
 	writel_relaxed(tmp, pll->base + PLL_CTRL);
 
@@ -257,19 +240,19 @@ static int clk_fracn_gppll_set_rate(struct clk_hw *hw, unsigned long drate,
 		writel_relaxed(FIELD_PREP(PLL_MFN_MASK, rate->mfn), pll->base + PLL_NUMERATOR);
 	}
 
-	/* Wait for 5us according to fracn mode pll doc */
+	 
 	udelay(5);
 
-	/* Enable Powerup */
+	 
 	tmp |= POWERUP_MASK;
 	writel_relaxed(tmp, pll->base + PLL_CTRL);
 
-	/* Wait Lock */
+	 
 	ret = clk_fracn_gppll_wait_lock(pll);
 	if (ret)
 		return ret;
 
-	/* Enable output */
+	 
 	tmp |= CLKMUX_EN;
 	writel_relaxed(tmp, pll->base + PLL_CTRL);
 

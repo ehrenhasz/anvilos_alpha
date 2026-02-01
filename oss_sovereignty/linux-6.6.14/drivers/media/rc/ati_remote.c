@@ -1,76 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  USB ATI Remote support
- *
- *                Copyright (c) 2011, 2012 Anssi Hannula <anssi.hannula@iki.fi>
- *  Version 2.2.0 Copyright (c) 2004 Torrey Hoffman <thoffman@arnor.net>
- *  Version 2.1.1 Copyright (c) 2002 Vladimir Dergachev
- *
- *  This 2.2.0 version is a rewrite / cleanup of the 2.1.1 driver, including
- *  porting to the 2.6 kernel interfaces, along with other modification
- *  to better match the style of the existing usb/input drivers.  However, the
- *  protocol and hardware handling is essentially unchanged from 2.1.1.
- *
- *  The 2.1.1 driver was derived from the usbati_remote and usbkbd drivers by
- *  Vojtech Pavlik.
- *
- *  Changes:
- *
- *  Feb 2004: Torrey Hoffman <thoffman@arnor.net>
- *            Version 2.2.0
- *  Jun 2004: Torrey Hoffman <thoffman@arnor.net>
- *            Version 2.2.1
- *            Added key repeat support contributed by:
- *                Vincent Vanackere <vanackere@lif.univ-mrs.fr>
- *            Added support for the "Lola" remote contributed by:
- *                Seth Cohn <sethcohn@yahoo.com>
- *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * *
- *
- * Hardware & software notes
- *
- * These remote controls are distributed by ATI as part of their
- * "All-In-Wonder" video card packages.  The receiver self-identifies as a
- * "USB Receiver" with manufacturer "X10 Wireless Technology Inc".
- *
- * The "Lola" remote is available from X10.  See:
- *    http://www.x10.com/products/lola_sg1.htm
- * The Lola is similar to the ATI remote but has no mouse support, and slightly
- * different keys.
- *
- * It is possible to use multiple receivers and remotes on multiple computers
- * simultaneously by configuring them to use specific channels.
- *
- * The RF protocol used by the remote supports 16 distinct channels, 1 to 16.
- * Actually, it may even support more, at least in some revisions of the
- * hardware.
- *
- * Each remote can be configured to transmit on one channel as follows:
- *   - Press and hold the "hand icon" button.
- *   - When the red LED starts to blink, let go of the "hand icon" button.
- *   - When it stops blinking, input the channel code as two digits, from 01
- *     to 16, and press the hand icon again.
- *
- * The timing can be a little tricky.  Try loading the module with debug=1
- * to have the kernel print out messages about the remote control number
- * and mask.  Note: debugging prints remote numbers as zero-based hexadecimal.
- *
- * The driver has a "channel_mask" parameter. This bitmask specifies which
- * channels will be ignored by the module.  To mask out channels, just add
- * all the 2^channel_number values together.
- *
- * For instance, set channel_mask = 2^4 = 16 (binary 10000) to make ati_remote
- * ignore signals coming from remote controls transmitting on channel 4, but
- * accept all other channels.
- *
- * Or, set channel_mask = 65533, (0xFFFD), and all channels except 1 will be
- * ignored.
- *
- * The default is 0 (respond to all channels). Bit 0 and bits 17-32 of this
- * parameter are unused.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/errno.h>
@@ -83,9 +12,7 @@
 #include <linux/jiffies.h>
 #include <media/rc-core.h>
 
-/*
- * Module and Version Information, Module Parameters
- */
+ 
 
 #define ATI_REMOTE_VENDOR_ID		0x0bc7
 #define LOLA_REMOTE_PRODUCT_ID		0x0002
@@ -99,19 +26,12 @@
 #define DRIVER_AUTHOR           "Torrey Hoffman <thoffman@arnor.net>"
 #define DRIVER_DESC             "ATI/X10 RF USB Remote Control"
 
-#define NAME_BUFSIZE      80    /* size of product name, path buffers */
-#define DATA_BUFSIZE      63    /* size of URB data buffers */
+#define NAME_BUFSIZE      80     
+#define DATA_BUFSIZE      63     
 
-/*
- * Duplicate event filtering time.
- * Sequential, identical KIND_FILTERED inputs with less than
- * FILTER_TIME milliseconds between them are considered as repeat
- * events. The hardware generates 5 events for the first keypress
- * and we have to take this into account for an accurate repeat
- * behaviour.
- */
-#define FILTER_TIME	60 /* msec */
-#define REPEAT_DELAY	500 /* msec */
+ 
+#define FILTER_TIME	60  
+#define REPEAT_DELAY	500  
 
 static unsigned long channel_mask;
 module_param(channel_mask, ulong, 0644);
@@ -137,7 +57,7 @@ MODULE_PARM_DESC(mouse, "Enable mouse device, default = yes");
 	do { if (debug) dev_info(dev , format , ## arg); } while (0)
 
 struct ati_receiver_type {
-	/* either default_keymap or get_default_keymap should be set */
+	 
 	const char *default_keymap;
 	const char *(*get_default_keymap)(struct usb_interface *interface);
 };
@@ -146,11 +66,7 @@ static const char *get_medion_keymap(struct usb_interface *interface)
 {
 	struct usb_device *udev = interface_to_usbdev(interface);
 
-	/*
-	 * There are many different Medion remotes shipped with a receiver
-	 * with the same usb id, but the receivers have subtle differences
-	 * in the USB descriptors allowing us to detect them.
-	 */
+	 
 
 	if (udev->manufacturer && udev->product) {
 		if (udev->actconfig->desc.bmAttributes & USB_CONFIG_ATT_WAKEUP) {
@@ -211,19 +127,19 @@ static const struct usb_device_id ati_remote_table[] = {
 		USB_DEVICE(ATI_REMOTE_VENDOR_ID, FIREFLY_REMOTE_PRODUCT_ID),
 		.driver_info = (unsigned long)&type_firefly
 	},
-	{}	/* Terminating entry */
+	{}	 
 };
 
 MODULE_DEVICE_TABLE(usb, ati_remote_table);
 
-/* Get hi and low bytes of a 16-bits int */
+ 
 #define HI(a)	((unsigned char)((a) >> 8))
 #define LO(a)	((unsigned char)((a) & 0xff))
 
 #define SEND_FLAG_IN_PROGRESS	1
 #define SEND_FLAG_COMPLETE	2
 
-/* Device initialization strings */
+ 
 static char init1[] = { 0x01, 0x00, 0x20, 0x14 };
 static char init2[] = { 0x01, 0x00, 0x20, 0x14, 0x20, 0x20, 0x20 };
 
@@ -242,9 +158,9 @@ struct ati_remote {
 	dma_addr_t inbuf_dma;
 	dma_addr_t outbuf_dma;
 
-	unsigned char old_data;     /* Detect duplicate events */
+	unsigned char old_data;      
 	unsigned long old_jiffies;
-	unsigned long acc_jiffies;  /* handle acceleration */
+	unsigned long acc_jiffies;   
 	unsigned long first_jiffies;
 
 	unsigned int repeat_count;
@@ -257,53 +173,49 @@ struct ati_remote {
 	wait_queue_head_t wait;
 	int send_flags;
 
-	int users; /* 0-2, users are rc and input */
+	int users;  
 	struct mutex open_mutex;
 };
 
-/* "Kinds" of messages sent from the hardware to the driver. */
+ 
 #define KIND_END        0
-#define KIND_LITERAL    1   /* Simply pass to input system as EV_KEY */
-#define KIND_FILTERED   2   /* Add artificial key-up events, drop keyrepeats */
-#define KIND_ACCEL      3   /* Translate to EV_REL mouse-move events */
+#define KIND_LITERAL    1    
+#define KIND_FILTERED   2    
+#define KIND_ACCEL      3    
 
-/* Translation table from hardware messages to input events. */
+ 
 static const struct {
 	unsigned char kind;
-	unsigned char data;	/* Raw key code from remote */
-	unsigned short code;	/* Input layer translation */
+	unsigned char data;	 
+	unsigned short code;	 
 }  ati_remote_tbl[] = {
-	/* Directional control pad axes.  Code is xxyy */
-	{KIND_ACCEL,    0x70, 0xff00},	/* left */
-	{KIND_ACCEL,    0x71, 0x0100},	/* right */
-	{KIND_ACCEL,    0x72, 0x00ff},	/* up */
-	{KIND_ACCEL,    0x73, 0x0001},	/* down */
+	 
+	{KIND_ACCEL,    0x70, 0xff00},	 
+	{KIND_ACCEL,    0x71, 0x0100},	 
+	{KIND_ACCEL,    0x72, 0x00ff},	 
+	{KIND_ACCEL,    0x73, 0x0001},	 
 
-	/* Directional control pad diagonals */
-	{KIND_ACCEL,    0x74, 0xffff},	/* left up */
-	{KIND_ACCEL,    0x75, 0x01ff},	/* right up */
-	{KIND_ACCEL,    0x77, 0xff01},	/* left down */
-	{KIND_ACCEL,    0x76, 0x0101},	/* right down */
+	 
+	{KIND_ACCEL,    0x74, 0xffff},	 
+	{KIND_ACCEL,    0x75, 0x01ff},	 
+	{KIND_ACCEL,    0x77, 0xff01},	 
+	{KIND_ACCEL,    0x76, 0x0101},	 
 
-	/* "Mouse button" buttons.  The code below uses the fact that the
-	 * lsbit of the raw code is a down/up indicator. */
-	{KIND_LITERAL,  0x78, BTN_LEFT}, /* left btn down */
-	{KIND_LITERAL,  0x79, BTN_LEFT}, /* left btn up */
-	{KIND_LITERAL,  0x7c, BTN_RIGHT},/* right btn down */
-	{KIND_LITERAL,  0x7d, BTN_RIGHT},/* right btn up */
+	 
+	{KIND_LITERAL,  0x78, BTN_LEFT},  
+	{KIND_LITERAL,  0x79, BTN_LEFT},  
+	{KIND_LITERAL,  0x7c, BTN_RIGHT}, 
+	{KIND_LITERAL,  0x7d, BTN_RIGHT}, 
 
-	/* Artificial "double-click" events are generated by the hardware.
-	 * They are mapped to the "side" and "extra" mouse buttons here. */
-	{KIND_FILTERED, 0x7a, BTN_SIDE}, /* left dblclick */
-	{KIND_FILTERED, 0x7e, BTN_EXTRA},/* right dblclick */
+	 
+	{KIND_FILTERED, 0x7a, BTN_SIDE},  
+	{KIND_FILTERED, 0x7e, BTN_EXTRA}, 
 
-	/* Non-mouse events are handled by rc-core */
+	 
 	{KIND_END, 0x00, 0}
 };
 
-/*
- * ati_remote_dump_input
- */
+ 
 static void ati_remote_dump(struct device *dev, unsigned char *data,
 			    unsigned int len)
 {
@@ -316,9 +228,7 @@ static void ati_remote_dump(struct device *dev, unsigned char *data,
 		dev_warn(dev, "Weird data, len=%d %*ph ...\n", len, 6, data);
 }
 
-/*
- * ati_remote_open
- */
+ 
 static int ati_remote_open(struct ati_remote *ati_remote)
 {
 	int err = 0;
@@ -326,9 +236,9 @@ static int ati_remote_open(struct ati_remote *ati_remote)
 	mutex_lock(&ati_remote->open_mutex);
 
 	if (ati_remote->users++ != 0)
-		goto out; /* one was already active */
+		goto out;  
 
-	/* On first open, submit the read urb which was set up previously. */
+	 
 	ati_remote->irq_urb->dev = ati_remote->udev;
 	if (usb_submit_urb(ati_remote->irq_urb, GFP_KERNEL)) {
 		dev_err(&ati_remote->interface->dev,
@@ -340,9 +250,7 @@ out:	mutex_unlock(&ati_remote->open_mutex);
 	return err;
 }
 
-/*
- * ati_remote_close
- */
+ 
 static void ati_remote_close(struct ati_remote *ati_remote)
 {
 	mutex_lock(&ati_remote->open_mutex);
@@ -375,9 +283,7 @@ static void ati_remote_rc_close(struct rc_dev *rdev)
 	ati_remote_close(ati_remote);
 }
 
-/*
- * ati_remote_irq_out
- */
+ 
 static void ati_remote_irq_out(struct urb *urb)
 {
 	struct ati_remote *ati_remote = urb->context;
@@ -393,17 +299,13 @@ static void ati_remote_irq_out(struct urb *urb)
 	wake_up(&ati_remote->wait);
 }
 
-/*
- * ati_remote_sendpacket
- *
- * Used to send device initialization strings
- */
+ 
 static int ati_remote_sendpacket(struct ati_remote *ati_remote, u16 cmd,
 	unsigned char *data)
 {
 	int retval = 0;
 
-	/* Set up out_urb */
+	 
 	memcpy(ati_remote->out_urb->transfer_buffer + 1, data, LO(cmd));
 	((char *) ati_remote->out_urb->transfer_buffer)[0] = HI(cmd);
 
@@ -442,15 +344,7 @@ static const struct accel_times accel[] = {
 	{ 20,    0 },
 };
 
-/*
- * ati_remote_compute_accel
- *
- * Implements acceleration curve for directional control pad
- * If elapsed time since last event is > 1/4 second, user "stopped",
- * so reset acceleration. Otherwise, user is probably holding the control
- * pad down, so we increase acceleration, ramping up over two seconds to
- * a maximum speed.
- */
+ 
 static int ati_remote_compute_accel(struct ati_remote *ati_remote)
 {
 	unsigned long now = jiffies, reset_time;
@@ -471,9 +365,7 @@ static int ati_remote_compute_accel(struct ati_remote *ati_remote)
 	return accel[i].value;
 }
 
-/*
- * ati_remote_report_input
- */
+ 
 static void ati_remote_input_report(struct urb *urb)
 {
 	struct ati_remote *ati_remote = urb->context;
@@ -485,14 +377,9 @@ static void ati_remote_input_report(struct urb *urb)
 	u32 wheel_keycode = KEY_RESERVED;
 	int i;
 
-	/*
-	 * data[0] = 0x14
-	 * data[1] = data[2] + data[3] + 0xd5 (a checksum byte)
-	 * data[2] = the key code (with toggle bit in MSB with some models)
-	 * data[3] = channel << 4 (the low 4 bits must be zero)
-	 */
+	 
 
-	/* Deal with strange looking inputs */
+	 
 	if ( urb->actual_length != 4 || data[0] != 0x14 ||
 	     data[1] != (unsigned char)(data[2] + data[3] + 0xD5) ||
 	     (data[3] & 0x0f) != 0x00) {
@@ -506,8 +393,8 @@ static void ati_remote_input_report(struct urb *urb)
 		return;
 	}
 
-	/* Mask unwanted remote channels.  */
-	/* note: remote_num is 0-based, channel 1 on remote == 0 here */
+	 
+	 
 	remote_num = (data[3] >> 4) & 0x0f;
 	if (channel_mask & (1 << (remote_num + 1))) {
 		dbginfo(&ati_remote->interface->dev,
@@ -516,10 +403,7 @@ static void ati_remote_input_report(struct urb *urb)
 		return;
 	}
 
-	/*
-	 * MSB is a toggle code, though only used by some devices
-	 * (e.g. SnapStream Firefly)
-	 */
+	 
 	scancode = data[2] & 0x7f;
 
 	dbginfo(&ati_remote->interface->dev,
@@ -527,21 +411,14 @@ static void ati_remote_input_report(struct urb *urb)
 		remote_num, data[2], scancode);
 
 	if (scancode >= 0x70) {
-		/*
-		 * This is either a mouse or scrollwheel event, depending on
-		 * the remote/keymap.
-		 * Get the keycode assigned to scancode 0x78/0x70. If it is
-		 * set, assume this is a scrollwheel up/down event.
-		 */
+		 
 		wheel_keycode = rc_g_keycode_from_table(ati_remote->rdev,
 							scancode & 0x78);
 
 		if (wheel_keycode == KEY_RESERVED) {
-			/* scrollwheel was not mapped, assume mouse */
+			 
 
-			/* Look up event code index in the mouse translation
-			 * table.
-			 */
+			 
 			for (i = 0; ati_remote_tbl[i].kind != KIND_END; i++) {
 				if (scancode == ati_remote_tbl[i].data) {
 					index = i;
@@ -552,10 +429,7 @@ static void ati_remote_input_report(struct urb *urb)
 	}
 
 	if (index >= 0 && ati_remote_tbl[index].kind == KIND_LITERAL) {
-		/*
-		 * The lsbit of the raw key code is a down/up flag.
-		 * Invert it to match the input layer's conventions.
-		 */
+		 
 		input_event(dev, EV_KEY, ati_remote_tbl[index].code,
 			!(data[2] & 1));
 
@@ -564,7 +438,7 @@ static void ati_remote_input_report(struct urb *urb)
 	} else if (index < 0 || ati_remote_tbl[index].kind == KIND_FILTERED) {
 		unsigned long now = jiffies;
 
-		/* Filter duplicate events which happen "too close" together. */
+		 
 		if (ati_remote->old_data == data[2] &&
 		    time_before(now, ati_remote->old_jiffies +
 				     msecs_to_jiffies(repeat_filter))) {
@@ -576,10 +450,7 @@ static void ati_remote_input_report(struct urb *urb)
 
 		ati_remote->old_jiffies = now;
 
-		/* Ensure we skip at least the 4 first duplicate events
-		 * (generated by a single keypress), and continue skipping
-		 * until repeat_delay msecs have passed.
-		 */
+		 
 		if (ati_remote->repeat_count > 0 &&
 		    (ati_remote->repeat_count < 5 ||
 		     time_before(now, ati_remote->first_jiffies +
@@ -590,26 +461,17 @@ static void ati_remote_input_report(struct urb *urb)
 			input_event(dev, EV_KEY, ati_remote_tbl[index].code, 1);
 			input_event(dev, EV_KEY, ati_remote_tbl[index].code, 0);
 		} else {
-			/* Not a mouse event, hand it to rc-core. */
+			 
 			int count = 1;
 
 			if (wheel_keycode != KEY_RESERVED) {
-				/*
-				 * This is a scrollwheel event, send the
-				 * scroll up (0x78) / down (0x70) scancode
-				 * repeatedly as many times as indicated by
-				 * rest of the scancode.
-				 */
+				 
 				count = (scancode & 0x07) + 1;
 				scancode &= 0x78;
 			}
 
 			while (count--) {
-				/*
-				* We don't use the rc-core repeat handling yet as
-				* it would cause ghost repeats which would be a
-				* regression for this driver.
-				*/
+				 
 				rc_keydown_notimeout(ati_remote->rdev,
 						     RC_PROTO_OTHER,
 						     scancode, data[2]);
@@ -622,11 +484,7 @@ static void ati_remote_input_report(struct urb *urb)
 		signed char dx = ati_remote_tbl[index].code >> 8;
 		signed char dy = ati_remote_tbl[index].code & 255;
 
-		/*
-		 * Other event kinds are from the directional control pad, and
-		 * have an acceleration factor applied to them.  Without this
-		 * acceleration, the control pad is mostly unusable.
-		 */
+		 
 		int acc = ati_remote_compute_accel(ati_remote);
 		if (dx)
 			input_report_rel(dev, REL_X, dx * acc);
@@ -644,26 +502,24 @@ nosync:
 	ati_remote->old_data = data[2];
 }
 
-/*
- * ati_remote_irq_in
- */
+ 
 static void ati_remote_irq_in(struct urb *urb)
 {
 	struct ati_remote *ati_remote = urb->context;
 	int retval;
 
 	switch (urb->status) {
-	case 0:			/* success */
+	case 0:			 
 		ati_remote_input_report(urb);
 		break;
-	case -ECONNRESET:	/* unlink */
+	case -ECONNRESET:	 
 	case -ENOENT:
 	case -ESHUTDOWN:
 		dev_dbg(&ati_remote->interface->dev,
 			"%s: urb error status, unlink?\n",
 			__func__);
 		return;
-	default:		/* error */
+	default:		 
 		dev_dbg(&ati_remote->interface->dev,
 			"%s: Nonzero urb status %d\n",
 			__func__, urb->status);
@@ -676,9 +532,7 @@ static void ati_remote_irq_in(struct urb *urb)
 			__func__, retval);
 }
 
-/*
- * ati_remote_alloc_buffers
- */
+ 
 static int ati_remote_alloc_buffers(struct usb_device *udev,
 				    struct ati_remote *ati_remote)
 {
@@ -703,9 +557,7 @@ static int ati_remote_alloc_buffers(struct usb_device *udev,
 	return 0;
 }
 
-/*
- * ati_remote_free_buffers
- */
+ 
 static void ati_remote_free_buffers(struct ati_remote *ati_remote)
 {
 	usb_free_urb(ati_remote->irq_urb);
@@ -769,7 +621,7 @@ static int ati_remote_initialize(struct ati_remote *ati_remote)
 
 	init_waitqueue_head(&ati_remote->wait);
 
-	/* Set up irq_urb */
+	 
 	pipe = usb_rcvintpipe(udev, ati_remote->endpoint_in->bEndpointAddress);
 	maxp = usb_maxpacket(udev, pipe);
 	maxp = (maxp > DATA_BUFSIZE) ? DATA_BUFSIZE : maxp;
@@ -780,7 +632,7 @@ static int ati_remote_initialize(struct ati_remote *ati_remote)
 	ati_remote->irq_urb->transfer_dma = ati_remote->inbuf_dma;
 	ati_remote->irq_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
-	/* Set up out_urb */
+	 
 	pipe = usb_sndintpipe(udev, ati_remote->endpoint_out->bEndpointAddress);
 	maxp = usb_maxpacket(udev, pipe);
 	maxp = (maxp > DATA_BUFSIZE) ? DATA_BUFSIZE : maxp;
@@ -791,7 +643,7 @@ static int ati_remote_initialize(struct ati_remote *ati_remote)
 	ati_remote->out_urb->transfer_dma = ati_remote->outbuf_dma;
 	ati_remote->out_urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
 
-	/* send initialization strings */
+	 
 	if ((ati_remote_sendpacket(ati_remote, 0x8004, init1)) ||
 	    (ati_remote_sendpacket(ati_remote, 0x8007, init2))) {
 		dev_err(&ati_remote->interface->dev,
@@ -802,9 +654,7 @@ static int ati_remote_initialize(struct ati_remote *ati_remote)
 	return 0;
 }
 
-/*
- * ati_remote_probe
- */
+ 
 static int ati_remote_probe(struct usb_interface *interface,
 	const struct usb_device_id *id)
 {
@@ -844,7 +694,7 @@ static int ati_remote_probe(struct usb_interface *interface,
 	if (!ati_remote || !rc_dev)
 		goto exit_free_dev_rdev;
 
-	/* Allocate URB buffers, URBs */
+	 
 	if (ati_remote_alloc_buffers(udev, ati_remote))
 		goto exit_free_buffers;
 
@@ -875,9 +725,9 @@ static int ati_remote_probe(struct usb_interface *interface,
 	snprintf(ati_remote->mouse_name, sizeof(ati_remote->mouse_name),
 		 "%s mouse", ati_remote->rc_name);
 
-	rc_dev->map_name = RC_MAP_ATI_X10; /* default map */
+	rc_dev->map_name = RC_MAP_ATI_X10;  
 
-	/* set default keymap according to receiver model */
+	 
 	if (type) {
 		if (type->default_keymap)
 			rc_dev->map_name = type->default_keymap;
@@ -888,17 +738,17 @@ static int ati_remote_probe(struct usb_interface *interface,
 	ati_remote_rc_init(ati_remote);
 	mutex_init(&ati_remote->open_mutex);
 
-	/* Device Hardware Initialization - fills in ati_remote->idev from udev. */
+	 
 	err = ati_remote_initialize(ati_remote);
 	if (err)
 		goto exit_kill_urbs;
 
-	/* Set up and register rc device */
+	 
 	err = rc_register_device(ati_remote->rdev);
 	if (err)
 		goto exit_kill_urbs;
 
-	/* Set up and register mouse input device */
+	 
 	if (mouse) {
 		input_dev = input_allocate_device();
 		if (!input_dev) {
@@ -933,9 +783,7 @@ static int ati_remote_probe(struct usb_interface *interface,
 	return err;
 }
 
-/*
- * ati_remote_disconnect
- */
+ 
 static void ati_remote_disconnect(struct usb_interface *interface)
 {
 	struct ati_remote *ati_remote;
@@ -956,7 +804,7 @@ static void ati_remote_disconnect(struct usb_interface *interface)
 	kfree(ati_remote);
 }
 
-/* usb specific object to register with the usb subsystem */
+ 
 static struct usb_driver ati_remote_driver = {
 	.name         = "ati_remote",
 	.probe        = ati_remote_probe,

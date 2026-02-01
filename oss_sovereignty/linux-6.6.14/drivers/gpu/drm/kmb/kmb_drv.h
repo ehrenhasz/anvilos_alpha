@@ -1,7 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only
- *
- * Copyright © 2018-2020 Intel Corporation
- */
+ 
 
 #ifndef __KMB_DRV_H__
 #define __KMB_DRV_H__
@@ -11,27 +8,27 @@
 #include "kmb_plane.h"
 #include "kmb_regs.h"
 
-#define KMB_MAX_WIDTH			1920 /*Max width in pixels */
-#define KMB_MAX_HEIGHT			1080 /*Max height in pixels */
-#define KMB_MIN_WIDTH                   1920 /*Max width in pixels */
-#define KMB_MIN_HEIGHT                  1080 /*Max height in pixels */
+#define KMB_MAX_WIDTH			1920  
+#define KMB_MAX_HEIGHT			1080  
+#define KMB_MIN_WIDTH                   1920  
+#define KMB_MIN_HEIGHT                  1080  
 
 #define DRIVER_DATE			"20210223"
 #define DRIVER_MAJOR			1
 #define DRIVER_MINOR			1
 
-/* Platform definitions */
+ 
 #define KMB_CRTC_MIN_VFP		4
-#define KMB_CRTC_MAX_WIDTH		1920 /* max width in pixels */
-#define KMB_CRTC_MAX_HEIGHT		1080 /* max height in pixels */
+#define KMB_CRTC_MAX_WIDTH		1920  
+#define KMB_CRTC_MAX_HEIGHT		1080  
 #define KMB_CRTC_MIN_WIDTH		1920
 #define KMB_CRTC_MIN_HEIGHT		1080
 #define KMB_FB_MAX_WIDTH		1920
 #define KMB_FB_MAX_HEIGHT		1080
 #define KMB_FB_MIN_WIDTH		1
 #define KMB_FB_MIN_HEIGHT		1
-#define KMB_MIN_VREFRESH		59    /*vertical refresh in Hz */
-#define KMB_MAX_VREFRESH		60    /*vertical refresh in Hz */
+#define KMB_MIN_VREFRESH		59     
+#define KMB_MAX_VREFRESH		60     
 #define KMB_LCD_DEFAULT_CLK		200000000
 #define KMB_SYS_CLK_MHZ			500
 
@@ -103,4 +100,4 @@ static inline void kmb_clr_bitmask_lcd(struct kmb_drm_private *dev_p,
 
 int kmb_setup_crtc(struct drm_device *dev);
 void kmb_set_scanout(struct kmb_drm_private *lcd);
-#endif /* __KMB_DRV_H__ */
+#endif  

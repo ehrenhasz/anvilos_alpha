@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for the HiSilicon SEC units found on Hip06 Hip07
- *
- * Copyright (c) 2016-2017 HiSilicon Limited.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/atomic.h>
 #include <linux/delay.h>
@@ -31,7 +27,7 @@
 #define SEC_QUEUE_AW_FROCE_NOALLOC			1
 #define SEC_QUEUE_AW_FROCE_DIS				2
 
-/* SEC_ALGSUB registers */
+ 
 #define SEC_ALGSUB_CLK_EN_REG				0x03b8
 #define SEC_ALGSUB_CLK_DIS_REG				0x03bc
 #define SEC_ALGSUB_CLK_ST_REG				0x535c
@@ -47,7 +43,7 @@
 
 #define SEC_SAA_BASE					0x00001000UL
 
-/* SEC_SAA registers */
+ 
 #define SEC_SAA_CTRL_REG(x)	((x) * SEC_SAA_ADDR_SIZE)
 #define   SEC_SAA_CTRL_GET_QM_EN			BIT(0)
 
@@ -71,7 +67,7 @@
 #define SEC_SAA_IDLE_TIME_CNT_REG			0x086c
 #define SEC_SAA_CLK_CNT_REG				0x0870
 
-/* SEC_COMMON registers */
+ 
 #define SEC_CLK_EN_REG					0x0000
 #define SEC_CTRL_REG					0x0004
 
@@ -210,7 +206,7 @@ struct sec_debug_bd_info {
 	u32 icv_mac1st_word;
 #define SEC_DEBUG_BD_INFO_GET_ID_M		GENMASK(19, 0)
 	u32 sec_get_id;
-	/* W4---W15 */
+	 
 	u32 reserv_left[12];
 };
 
@@ -365,9 +361,7 @@ static void sec_bd_endian_little(struct sec_dev_info *info)
 	writel_relaxed(regval, addr);
 }
 
-/*
- * sec_cache_config - configure optimum cache placement
- */
+ 
 static void sec_cache_config(struct sec_dev_info *info)
 {
 	struct iommu_domain *domain;
@@ -375,7 +369,7 @@ static void sec_cache_config(struct sec_dev_info *info)
 
 	domain = iommu_get_domain_for_dev(info->dev);
 
-	/* Check that translation is occurring */
+	 
 	if (domain && (domain->type & __IOMMU_DOMAIN_PAGING))
 		writel_relaxed(0x44cf9e, addr);
 	else
@@ -474,7 +468,7 @@ static void sec_set_dbg_bd_cfg(struct sec_dev_info *info, u32 cfg)
 	u32 regval;
 
 	regval = readl_relaxed(addr);
-	/* Always disable write back of normal bd */
+	 
 	regval &= ~SEC_DEBUG_BD_CFG_WB_NORMAL;
 
 	if (cfg)
@@ -634,7 +628,7 @@ static struct sec_queue *sec_alloc_queue(struct sec_dev_info *info)
 
 	mutex_lock(&info->dev_lock);
 
-	/* Get the first idle queue in SEC device */
+	 
 	for (i = 0; i < SEC_Q_NUM; i++)
 		if (!info->queues[i].in_use) {
 			info->queues[i].in_use = true;
@@ -694,10 +688,7 @@ static irqreturn_t sec_isr_handle(int irq, void *q)
 	msg = msg_ring->vaddr + q_id;
 
 	while ((ooo_write != ooo_read) && msg->w0 & SEC_BD_W0_DONE) {
-		/*
-		 * Must be before callback otherwise blocks adding other chained
-		 * elements
-		 */
+		 
 		set_bit(q_id, queue->unprocessed);
 		if (q_id == queue->expected)
 			while (test_bit(queue->expected, queue->unprocessed)) {
@@ -756,7 +747,7 @@ static struct sec_dev_info *sec_device_get(void)
 	int least_busy_n = SEC_Q_NUM + 1;
 	int i;
 
-	/* Find which one is least busy and use that first */
+	 
 	for (i = 0; i < SEC_MAX_DEVICES; i++) {
 		this_sec_dev = sec_devices[i];
 		if (this_sec_dev &&
@@ -785,14 +776,7 @@ static struct sec_queue *sec_queue_alloc_start(struct sec_dev_info *info)
 	return queue;
 }
 
-/**
- * sec_queue_alloc_start_safe - get a hw queue from appropriate instance
- *
- * This function does extremely simplistic load balancing. It does not take into
- * account NUMA locality of the accelerator, or which cpu has requested the
- * queue.  Future work may focus on optimizing this in order to improve full
- * machine throughput.
- */
+ 
 struct sec_queue *sec_queue_alloc_start_safe(void)
 {
 	struct sec_dev_info *info;
@@ -811,13 +795,7 @@ unlock:
 	return queue;
 }
 
-/**
- * sec_queue_stop_release() - free up a hw queue for reuse
- * @queue: The queue we are done with.
- *
- * This will stop the current queue, terminanting any transactions
- * that are inflight an return it to the pool of available hw queuess
- */
+ 
 int sec_queue_stop_release(struct sec_queue *queue)
 {
 	struct device *dev = queue->dev_info->dev;
@@ -832,14 +810,7 @@ int sec_queue_stop_release(struct sec_queue *queue)
 	return ret;
 }
 
-/**
- * sec_queue_empty() - Is this hardware queue currently empty.
- * @queue: The queue to test
- *
- * We need to know if we have an empty queue for some of the chaining modes
- * as if it is not empty we may need to hold the message in a software queue
- * until the hw queue is drained.
- */
+ 
 bool sec_queue_empty(struct sec_queue *queue)
 {
 	struct sec_queue_ring_cmd *msg_ring = &queue->ring_cmd;
@@ -847,14 +818,7 @@ bool sec_queue_empty(struct sec_queue *queue)
 	return !atomic_read(&msg_ring->used);
 }
 
-/**
- * sec_queue_send() - queue up a single operation in the hw queue
- * @queue: The queue in which to put the message
- * @msg: The message
- * @ctx: Context to be put in the shadow array and passed back to cb on result.
- *
- * This function will return -EAGAIN if the queue is currently full.
- */
+ 
 int sec_queue_send(struct sec_queue *queue, struct sec_bd_info *msg, void *ctx)
 {
 	struct sec_queue_ring_cmd *msg_ring = &queue->ring_cmd;
@@ -872,7 +836,7 @@ int sec_queue_send(struct sec_queue *queue, struct sec_bd_info *msg, void *ctx)
 	queue->shadow[write] = ctx;
 	write = (write + 1) % SEC_QUEUE_LEN;
 
-	/* Ensure content updated before queue advance */
+	 
 	wmb();
 	writel(write, base + SEC_Q_WR_PTR_REG);
 
@@ -896,10 +860,10 @@ static void sec_queue_hw_init(struct sec_queue *queue)
 	sec_queue_ar_pkgattr(queue, 1);
 	sec_queue_aw_pkgattr(queue, 1);
 
-	/* Enable out of order queue */
+	 
 	sec_queue_reorder(queue, true);
 
-	/* Interrupt after a single complete element */
+	 
 	writel_relaxed(1, queue->regs + SEC_Q_PROC_NUM_CFG_REG);
 
 	sec_queue_depth(queue, SEC_QUEUE_LEN - 1);
@@ -926,10 +890,7 @@ static int sec_hw_init(struct sec_dev_info *info)
 
 	domain = iommu_get_domain_for_dev(info->dev);
 
-	/*
-	 * Enable all available processing unit clocks.
-	 * Only the first cluster is usable with translations.
-	 */
+	 
 	if (domain && (domain->type & __IOMMU_DOMAIN_PAGING))
 		info->num_saas = 5;
 
@@ -939,22 +900,22 @@ static int sec_hw_init(struct sec_dev_info *info)
 	writel_relaxed(GENMASK(info->num_saas - 1, 0),
 		       info->regs[SEC_SAA] + SEC_CLK_EN_REG);
 
-	/* 32 bit little endian */
+	 
 	sec_bd_endian_little(info);
 
 	sec_cache_config(info);
 
-	/* Data axi port write and read outstanding config as per datasheet */
+	 
 	sec_data_axiwr_otsd_cfg(info, 0x7);
 	sec_data_axird_otsd_cfg(info, 0x7);
 
-	/* Enable clock gating */
+	 
 	sec_clk_gate_en(info, true);
 
-	/* Set CNT_CYC register not read clear */
+	 
 	sec_comm_cnt_cfg(info, false);
 
-	/* Enable CNT_CYC */
+	 
 	sec_commsnap_en(info, false);
 
 	writel_relaxed((u32)~0, info->regs[SEC_SAA] + SEC_FSM_MAX_CNT_REG);
@@ -967,13 +928,13 @@ static int sec_hw_init(struct sec_dev_info *info)
 
 	sec_ipv6_hashmask(info, sec_ipv6_mask);
 
-	/*  do not use debug bd */
+	 
 	sec_set_dbg_bd_cfg(info, 0);
 
 	if (domain && (domain->type & __IOMMU_DOMAIN_PAGING)) {
 		for (i = 0; i < SEC_Q_NUM; i++) {
 			sec_streamid(info, i);
-			/* Same QoS for all queues */
+			 
 			writel_relaxed(0x3f,
 				       info->regs[SEC_SAA] +
 				       SEC_Q_WEIGHT_CFG_REG(i));
@@ -1276,7 +1237,7 @@ static int sec_remove(struct platform_device *pdev)
 	struct sec_dev_info *info = platform_get_drvdata(pdev);
 	int i;
 
-	/* Unexpose as soon as possible, reuse during remove is fine */
+	 
 	sec_id_free(info);
 
 	sec_algs_unregister();

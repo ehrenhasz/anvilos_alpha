@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include "core.h"
 #include "wmi-ops.h"
@@ -254,7 +251,7 @@ static ssize_t ath10k_dbg_sta_write_addba(struct file *file,
 	if (ret != 2)
 		return -EINVAL;
 
-	/* Valid TID values are 0 through 15 */
+	 
 	if (tid > HTT_DATA_TX_EXT_TID_MGMT - 2)
 		return -EINVAL;
 
@@ -305,7 +302,7 @@ static ssize_t ath10k_dbg_sta_write_addba_resp(struct file *file,
 	if (ret != 2)
 		return -EINVAL;
 
-	/* Valid TID values are 0 through 15 */
+	 
 	if (tid > HTT_DATA_TX_EXT_TID_MGMT - 2)
 		return -EINVAL;
 
@@ -355,7 +352,7 @@ static ssize_t ath10k_dbg_sta_write_delba(struct file *file,
 	if (ret != 3)
 		return -EINVAL;
 
-	/* Valid TID values are 0 through 15 */
+	 
 	if (tid > HTT_DATA_TX_EXT_TID_MGMT - 2)
 		return -EINVAL;
 

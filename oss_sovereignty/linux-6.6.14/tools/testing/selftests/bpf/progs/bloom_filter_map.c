@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -46,7 +46,7 @@ check_elem(struct bpf_map *map, __u32 *key, __u32 *val,
 	err = bpf_map_peek_elem(data->map, val);
 	if (err) {
 		error |= 1;
-		return 1; /* stop the iteration */
+		return 1;  
 	}
 
 	return 0;

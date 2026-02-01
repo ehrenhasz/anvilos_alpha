@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+
+ 
 
 #include "hw_atl2_llh.h"
 #include "hw_atl2_llh_internal.h"
@@ -23,7 +21,7 @@ void hw_atl2_rpf_rss_hash_type_set(struct aq_hw_s *aq_hw, u32 rss_hash_type)
 			    rss_hash_type);
 }
 
-/* rpf */
+ 
 
 void hw_atl2_rpf_new_enable_set(struct aq_hw_s *aq_hw, u32 enable)
 {
@@ -66,7 +64,7 @@ void hw_atl2_rpf_vlan_flr_tag_set(struct aq_hw_s *aq_hw, u32 tag, u32 filter)
 			    tag);
 }
 
-/* TX */
+ 
 
 void hw_atl2_tpb_tx_tc_q_rand_map_en_set(struct aq_hw_s *aq_hw,
 					 const u32 tc_q_rand_map_en)
@@ -141,7 +139,7 @@ void hw_atl2_init_launchtime(struct aq_hw_s *aq_hw)
 			    HW_ATL2_LT_CTRL_CLK_RATIO_QUATER_SPEED);
 }
 
-/* set action resolver record */
+ 
 void hw_atl2_rpf_act_rslvr_record_set(struct aq_hw_s *aq_hw, u8 location,
 				      u32 tag, u32 mask, u32 action)
 {

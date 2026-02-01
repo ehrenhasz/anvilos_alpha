@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Karol Kosik <karo9@interia.eu>
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- *               Krzysztof Opasiak <k.opasiak@samsung.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/list.h>
@@ -19,7 +14,7 @@
 
 #include <net/sock.h>
 
-/* called with udc->lock held */
+ 
 int get_gadget_descs(struct vudc *udc)
 {
 	struct vrequest *usb_req;
@@ -43,7 +38,7 @@ int get_gadget_descs(struct vudc *udc)
 	if (ret < 0)
 		goto out;
 
-	/* assuming request queue is empty; request is now on top */
+	 
 	usb_req = list_last_entry(&ep0->req_queue, struct vrequest, req_entry);
 	list_del(&usb_req->req_entry);
 
@@ -63,9 +58,7 @@ out:
 	return ret;
 }
 
-/*
- * Exposes device descriptor from the gadget driver.
- */
+ 
 static ssize_t dev_desc_read(struct file *file, struct kobject *kobj,
 			     struct bin_attribute *attr, char *out,
 			     loff_t off, size_t count)
@@ -114,7 +107,7 @@ static ssize_t usbip_sockfd_store(struct device *dev,
 	}
 	mutex_lock(&udc->ud.sysfs_lock);
 	spin_lock_irqsave(&udc->lock, flags);
-	/* Don't export what we don't have */
+	 
 	if (!udc->driver || !udc->pullup) {
 		dev_err(dev, "gadget not bound");
 		ret = -ENODEV;
@@ -149,7 +142,7 @@ static ssize_t usbip_sockfd_store(struct device *dev,
 			goto sock_err;
 		}
 
-		/* unlock and create threads and get tasks */
+		 
 		spin_unlock(&udc->ud.lock);
 		spin_unlock_irqrestore(&udc->lock, flags);
 
@@ -167,11 +160,11 @@ static ssize_t usbip_sockfd_store(struct device *dev,
 			return -EINVAL;
 		}
 
-		/* get task structs now */
+		 
 		get_task_struct(tcp_rx);
 		get_task_struct(tcp_tx);
 
-		/* lock and update udc->ud state */
+		 
 		spin_lock_irqsave(&udc->lock, flags);
 		spin_lock(&udc->ud.lock);
 

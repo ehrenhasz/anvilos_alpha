@@ -1,17 +1,4 @@
-/*
- * Copyright (C) 2017-2018 Netronome Systems, Inc.
- *
- * This software is licensed under the GNU General License Version 2,
- * June 1991 as shown in the file COPYING in the top-level directory of this
- * source tree.
- *
- * THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
- * WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
- * OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME
- * THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
- */
+ 
 
 #include <linux/bpf.h>
 #include <linux/bpf_verifier.h>
@@ -27,10 +14,7 @@
 #include <linux/rwsem.h>
 #include <net/xdp.h>
 
-/* Protects offdevs, members of bpf_offload_netdev and offload members
- * of all progs.
- * RTNL lock cannot be taken when holding this lock.
- */
+ 
 static DECLARE_RWSEM(bpf_devs_lock);
 
 struct bpf_offload_dev {
@@ -42,7 +26,7 @@ struct bpf_offload_dev {
 struct bpf_offload_netdev {
 	struct rhash_head l;
 	struct net_device *netdev;
-	struct bpf_offload_dev *offdev; /* NULL when bound-only */
+	struct bpf_offload_dev *offdev;  
 	struct list_head progs;
 	struct list_head maps;
 	struct list_head offdev_netdevs;
@@ -127,7 +111,7 @@ static int bpf_map_offload_ndo(struct bpf_offloaded_map *offmap,
 
 	data.command = cmd;
 	data.offmap = offmap;
-	/* Caller must make sure netdev is valid */
+	 
 	netdev = offmap->netdev;
 
 	return netdev->netdev_ops->ndo_bpf(netdev, &data);
@@ -136,7 +120,7 @@ static int bpf_map_offload_ndo(struct bpf_offloaded_map *offmap,
 static void __bpf_map_offload_destroy(struct bpf_offloaded_map *offmap)
 {
 	WARN_ON(bpf_map_offload_ndo(offmap, BPF_OFFLOAD_MAP_FREE));
-	/* Make sure BPF_MAP_GET_NEXT_ID can't find this dead map */
+	 
 	bpf_map_free_id(&offmap->map);
 	list_del_init(&offmap->offloads);
 	offmap->netdev = NULL;
@@ -157,7 +141,7 @@ static void __bpf_offload_dev_netdev_unregister(struct bpf_offload_dev *offdev,
 
 	WARN_ON(rhashtable_remove_fast(&offdevs, &ondev->l, offdevs_params));
 
-	/* Try to move the objects to another netdev of the device */
+	 
 	if (offdev) {
 		list_del(&ondev->offdev_netdevs);
 		altdev = list_first_entry_or_null(&offdev->netdevs,
@@ -199,17 +183,13 @@ static int __bpf_prog_dev_bound_init(struct bpf_prog *prog, struct net_device *n
 	offload->netdev = netdev;
 
 	ondev = bpf_offload_find_netdev(offload->netdev);
-	/* When program is offloaded require presence of "true"
-	 * bpf_offload_netdev, avoid the one created for !ondev case below.
-	 */
+	 
 	if (bpf_prog_is_offloaded(prog->aux) && (!ondev || !ondev->offdev)) {
 		err = -EINVAL;
 		goto err_free;
 	}
 	if (!ondev) {
-		/* When only binding to the device, explicitly
-		 * create an entry in the hashtable.
-		 */
+		 
 		err = __bpf_offload_dev_netdev_register(NULL, offload->netdev);
 		if (err)
 			goto err_free;
@@ -568,7 +548,7 @@ void bpf_map_offload_map_free(struct bpf_map *map)
 
 u64 bpf_map_offload_map_mem_usage(const struct bpf_map *map)
 {
-	/* The memory dynamically allocated in netdev dev_ops is not counted */
+	 
 	return sizeof(struct bpf_offloaded_map);
 }
 
@@ -834,11 +814,7 @@ void *bpf_dev_bound_resolve_kfunc(struct bpf_prog *prog, u32 func_id)
 	const struct xdp_metadata_ops *ops;
 	void *p = NULL;
 
-	/* We don't hold bpf_devs_lock while resolving several
-	 * kfuncs and can race with the unregister_netdevice().
-	 * We rely on bpf_dev_bound_match() check at attach
-	 * to render this program unusable.
-	 */
+	 
 	down_read(&bpf_devs_lock);
 	if (!prog->aux->offload)
 		goto out;

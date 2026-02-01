@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/*
- * CCS static data binary format definitions
- *
- * Copyright 2019--2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef __CCS_DATA_DEFS_H__
 #define __CCS_DATA_DEFS_H__
@@ -218,4 +214,4 @@ struct __ccs_data_block_end {
 	u8 crc[4];
 } __packed;
 
-#endif /* __CCS_DATA_DEFS_H__ */
+#endif  

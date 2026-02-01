@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2017 HiSilicon Limited, All Rights Reserved.
- * Author: Gabriele Paoloni <gabriele.paoloni@huawei.com>
- * Author: Zhichang Yuan <yuanzhichang@hisilicon.com>
- * Author: John Garry <john.garry@huawei.com>
- */
+
+ 
 
 #define pr_fmt(fmt)	"LOGIC PIO: " fmt
 
@@ -16,20 +11,11 @@
 #include <linux/sizes.h>
 #include <linux/slab.h>
 
-/* The unique hardware address list */
+ 
 static LIST_HEAD(io_range_list);
 static DEFINE_MUTEX(io_range_mutex);
 
-/**
- * logic_pio_register_range - register logical PIO range for a host
- * @new_range: pointer to the IO range to be registered.
- *
- * Returns 0 on success, the error code in case of failure.
- * If the range already exists, -EEXIST will be returned, which should be
- * considered a success.
- *
- * Register a new IO range node in the IO range list.
- */
+ 
 int logic_pio_register_range(struct logic_pio_hwaddr *new_range)
 {
 	struct logic_pio_hwaddr *range;
@@ -49,13 +35,13 @@ int logic_pio_register_range(struct logic_pio_hwaddr *new_range)
 	mutex_lock(&io_range_mutex);
 	list_for_each_entry(range, &io_range_list, list) {
 		if (range->fwnode == new_range->fwnode) {
-			/* range already there */
+			 
 			ret = -EEXIST;
 			goto end_register;
 		}
 		if (range->flags == LOGIC_PIO_CPU_MMIO &&
 		    new_range->flags == LOGIC_PIO_CPU_MMIO) {
-			/* for MMIO ranges we need to check for overlap */
+			 
 			if (start >= range->hw_start + range->size ||
 			    end < range->hw_start) {
 				mmio_end = range->io_start + range->size;
@@ -69,10 +55,10 @@ int logic_pio_register_range(struct logic_pio_hwaddr *new_range)
 		}
 	}
 
-	/* range not registered yet, check for available space */
+	 
 	if (new_range->flags == LOGIC_PIO_CPU_MMIO) {
 		if (mmio_end + new_range->size - 1 > MMIO_UPPER_LIMIT) {
-			/* if it's too big check if 64K space can be reserved */
+			 
 			if (mmio_end + SZ_64K - 1 > MMIO_UPPER_LIMIT) {
 				ret = -E2BIG;
 				goto end_register;
@@ -88,7 +74,7 @@ int logic_pio_register_range(struct logic_pio_hwaddr *new_range)
 		}
 		new_range->io_start = iio_sz;
 	} else {
-		/* invalid flag */
+		 
 		ret = -EINVAL;
 		goto end_register;
 	}
@@ -100,12 +86,7 @@ end_register:
 	return ret;
 }
 
-/**
- * logic_pio_unregister_range - unregister a logical PIO range for a host
- * @range: pointer to the IO range which has been already registered.
- *
- * Unregister a previously-registered IO range node.
- */
+ 
 void logic_pio_unregister_range(struct logic_pio_hwaddr *range)
 {
 	mutex_lock(&io_range_mutex);
@@ -114,14 +95,7 @@ void logic_pio_unregister_range(struct logic_pio_hwaddr *range)
 	synchronize_rcu();
 }
 
-/**
- * find_io_range_by_fwnode - find logical PIO range for given FW node
- * @fwnode: FW node handle associated with logical PIO range
- *
- * Returns pointer to node on success, NULL otherwise.
- *
- * Traverse the io_range_list to find the registered node for @fwnode.
- */
+ 
 struct logic_pio_hwaddr *find_io_range_by_fwnode(struct fwnode_handle *fwnode)
 {
 	struct logic_pio_hwaddr *range, *found_range = NULL;
@@ -138,7 +112,7 @@ struct logic_pio_hwaddr *find_io_range_by_fwnode(struct fwnode_handle *fwnode)
 	return found_range;
 }
 
-/* Return a registered range given an input PIO token */
+ 
 static struct logic_pio_hwaddr *find_io_range(unsigned long pio)
 {
 	struct logic_pio_hwaddr *range, *found_range = NULL;
@@ -158,15 +132,7 @@ static struct logic_pio_hwaddr *find_io_range(unsigned long pio)
 	return found_range;
 }
 
-/**
- * logic_pio_to_hwaddr - translate logical PIO to HW address
- * @pio: logical PIO value
- *
- * Returns HW address if valid, ~0 otherwise.
- *
- * Translate the input logical PIO to the corresponding hardware address.
- * The input PIO should be unique in the whole logical PIO space.
- */
+ 
 resource_size_t logic_pio_to_hwaddr(unsigned long pio)
 {
 	struct logic_pio_hwaddr *range;
@@ -178,14 +144,7 @@ resource_size_t logic_pio_to_hwaddr(unsigned long pio)
 	return (resource_size_t)~0;
 }
 
-/**
- * logic_pio_trans_hwaddr - translate HW address to logical PIO
- * @fwnode: FW node reference for the host
- * @addr: Host-relative HW address
- * @size: size to translate
- *
- * Returns Logical PIO value if successful, ~0UL otherwise
- */
+ 
 unsigned long logic_pio_trans_hwaddr(struct fwnode_handle *fwnode,
 				     resource_size_t addr, resource_size_t size)
 {
@@ -314,4 +273,4 @@ EXPORT_SYMBOL(logic_insl);
 EXPORT_SYMBOL(logic_outl);
 EXPORT_SYMBOL(logic_outsl);
 
-#endif /* CONFIG_INDIRECT_PIO && PCI_IOBASE */
+#endif  

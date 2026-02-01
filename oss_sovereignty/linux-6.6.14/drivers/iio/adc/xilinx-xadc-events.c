@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Xilinx XADC driver
- *
- * Copyright 2013 Analog Devices Inc.
- *  Author: Lars-Peter Clausen <lars@metafoo.de>
- */
+
+ 
 
 #include <linux/iio/events.h>
 #include <linux/iio/iio.h>
@@ -31,27 +26,20 @@ static void xadc_handle_event(struct iio_dev *indio_dev, unsigned int event)
 {
 	const struct iio_chan_spec *chan;
 
-	/* Temperature threshold error, we don't handle this yet */
+	 
 	if (event == 0)
 		return;
 
 	chan = xadc_event_to_channel(indio_dev, event);
 
 	if (chan->type == IIO_TEMP) {
-		/*
-		 * The temperature channel only supports over-temperature
-		 * events.
-		 */
+		 
 		iio_push_event(indio_dev,
 			IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
 				IIO_EV_TYPE_THRESH, IIO_EV_DIR_RISING),
 			iio_get_time_ns(indio_dev));
 	} else {
-		/*
-		 * For other channels we don't know whether it is a upper or
-		 * lower threshold event. Userspace will have to check the
-		 * channel value if it wants to know.
-		 */
+		 
 		iio_push_event(indio_dev,
 			IIO_UNMOD_EVENT_CODE(chan->type, chan->channel,
 				IIO_EV_TYPE_THRESH, IIO_EV_DIR_EITHER),
@@ -105,7 +93,7 @@ static unsigned int xadc_get_alarm_mask(const struct iio_chan_spec *chan)
 	case 5:
 		return XADC_ALARM_VCCODDR_MASK;
 	default:
-		/* We will never get here */
+		 
 		return 0;
 	}
 }
@@ -143,9 +131,9 @@ int xadc_write_event_config(struct iio_dev *indio_dev,
 
 	old_cfg = cfg;
 	cfg |= XADC_CONF1_ALARM_MASK;
-	cfg &= ~((xadc->alarm_mask & 0xf0) << 4); /* bram, pint, paux, ddr */
-	cfg &= ~((xadc->alarm_mask & 0x08) >> 3); /* ot */
-	cfg &= ~((xadc->alarm_mask & 0x07) << 1); /* temp, vccint, vccaux */
+	cfg &= ~((xadc->alarm_mask & 0xf0) << 4);  
+	cfg &= ~((xadc->alarm_mask & 0x08) >> 3);  
+	cfg &= ~((xadc->alarm_mask & 0x07) << 1);  
 	if (old_cfg != cfg)
 		ret = _xadc_write_adc_reg(xadc, XADC_REG_CONF1, cfg);
 
@@ -174,7 +162,7 @@ int xadc_read_event_value(struct iio_dev *indio_dev,
 		return -EINVAL;
 	}
 
-	/* MSB aligned */
+	 
 	*val >>= 16 - chan->scan_type.realbits;
 
 	return IIO_VAL_INT;
@@ -189,7 +177,7 @@ int xadc_write_event_value(struct iio_dev *indio_dev,
 	struct xadc *xadc = iio_priv(indio_dev);
 	int ret = 0;
 
-	/* MSB aligned */
+	 
 	val <<= 16 - chan->scan_type.realbits;
 
 	if (val < 0 || val > 0xffff)
@@ -210,19 +198,10 @@ int xadc_write_event_value(struct iio_dev *indio_dev,
 	}
 
 	if (chan->type == IIO_TEMP) {
-		/*
-		 * According to the datasheet we need to set the lower 4 bits to
-		 * 0x3, otherwise 125 degree celsius will be used as the
-		 * threshold.
-		 */
+		 
 		val |= 0x3;
 
-		/*
-		 * Since we store the hysteresis as relative (to the threshold)
-		 * value, but the hardware expects an absolute value we need to
-		 * recalcualte this value whenever the hysteresis or the
-		 * threshold changes.
-		 */
+		 
 		if (xadc->threshold[offset] < xadc->temp_hysteresis)
 			xadc->threshold[offset + 4] = 0;
 		else

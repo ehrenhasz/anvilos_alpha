@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/crypto.h>
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -20,9 +20,7 @@ struct nitrox_cipher {
 	enum flexi_cipher value;
 };
 
-/*
- * supported cipher list
- */
+ 
 static const struct nitrox_cipher flexi_cipher_table[] = {
 	{ "null",		CIPHER_NULL },
 	{ "cbc(des3_ede)",	CIPHER_3DES_CBC },
@@ -110,12 +108,12 @@ static int nitrox_skcipher_init(struct crypto_skcipher *tfm)
 	struct nitrox_crypto_ctx *nctx = crypto_skcipher_ctx(tfm);
 	struct crypto_ctx_hdr *chdr;
 
-	/* get the first device */
+	 
 	nctx->ndev = nitrox_get_first_device();
 	if (!nctx->ndev)
 		return -ENODEV;
 
-	/* allocate nitrox crypto context */
+	 
 	chdr = crypto_alloc_context(nctx->ndev);
 	if (!chdr) {
 		nitrox_put_device(nctx->ndev);
@@ -148,7 +146,7 @@ static void nitrox_skcipher_exit(struct crypto_skcipher *tfm)
 {
 	struct nitrox_crypto_ctx *nctx = crypto_skcipher_ctx(tfm);
 
-	/* free the nitrox crypto context */
+	 
 	if (nctx->u.ctx_handle) {
 		struct flexi_crypto_context *fctx = nctx->u.fctx;
 
@@ -180,7 +178,7 @@ static inline int nitrox_skcipher_setkey(struct crypto_skcipher *cipher,
 		return -EINVAL;
 	}
 
-	/* fill crypto context */
+	 
 	fctx = nctx->u.fctx;
 	flags = &fctx->flags;
 	flags->f = 0;
@@ -188,7 +186,7 @@ static inline int nitrox_skcipher_setkey(struct crypto_skcipher *cipher,
 	flags->w0.aes_keylen = aes_keylen;
 	flags->w0.iv_source = IV_FROM_DPTR;
 	flags->f = cpu_to_be64(*(u64 *)&flags->w0);
-	/* copy the key to context */
+	 
 	memcpy(fctx->crypto.u.key, key, keylen);
 
 	return 0;
@@ -211,7 +209,7 @@ static int alloc_src_sglist(struct skcipher_request *skreq, int ivsize)
 	int nents = sg_nents(skreq->src) + 1;
 	int ret;
 
-	/* Allocate buffer to hold IV and input scatterlist array */
+	 
 	ret = alloc_src_req_buf(nkreq, nents, ivsize);
 	if (ret)
 		return ret;
@@ -229,9 +227,7 @@ static int alloc_dst_sglist(struct skcipher_request *skreq, int ivsize)
 	int nents = sg_nents(skreq->dst) + 3;
 	int ret;
 
-	/* Allocate buffer to hold ORH, COMPLETION and output scatterlist
-	 * array
-	 */
+	 
 	ret = alloc_dst_req_buf(nkreq, nents);
 	if (ret)
 		return ret;
@@ -258,14 +254,14 @@ static int nitrox_skcipher_crypt(struct skcipher_request *skreq, bool enc)
 	creq->gfp = (skreq->base.flags & CRYPTO_TFM_REQ_MAY_SLEEP) ?
 		     GFP_KERNEL : GFP_ATOMIC;
 
-	/* fill the request */
+	 
 	creq->ctrl.value = 0;
 	creq->opcode = FLEXI_CRYPTO_ENCRYPT_HMAC;
 	creq->ctrl.s.arg = (enc ? ENCRYPT : DECRYPT);
-	/* param0: length of the data to be encrypted */
+	 
 	creq->gph.param0 = cpu_to_be16(skreq->cryptlen);
 	creq->gph.param1 = 0;
-	/* param2: encryption data offset */
+	 
 	creq->gph.param2 = cpu_to_be16(ivsize);
 	creq->gph.param3 = 0;
 
@@ -282,7 +278,7 @@ static int nitrox_skcipher_crypt(struct skcipher_request *skreq, bool enc)
 		return ret;
 	}
 
-	/* send the crypto request */
+	 
 	return nitrox_process_se_request(nctx->ndev, creq, nctx->callback,
 					 skreq);
 }
@@ -352,7 +348,7 @@ static int nitrox_aes_xts_setkey(struct crypto_skcipher *cipher,
 		return -EINVAL;
 
 	fctx = nctx->u.fctx;
-	/* copy KEY2 */
+	 
 	memcpy(fctx->auth.u.key2, (key + keylen), keylen);
 
 	return nitrox_skcipher_setkey(cipher, aes_keylen, key, keylen);

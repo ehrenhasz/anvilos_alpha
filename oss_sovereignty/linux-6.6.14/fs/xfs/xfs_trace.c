@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2009, Christoph Hellwig
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -37,9 +34,6 @@
 #include <linux/iomap.h>
 #include "xfs_iomap.h"
 
-/*
- * We include this last to have the helpers above available for the trace
- * event implementations.
- */
+ 
 #define CREATE_TRACE_POINTS
 #include "xfs_trace.h"

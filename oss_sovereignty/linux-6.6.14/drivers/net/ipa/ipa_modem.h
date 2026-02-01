@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
-/* Copyright (c) 2012-2018, The Linux Foundation. All rights reserved.
- * Copyright (C) 2018-2022 Linaro Ltd.
- */
+ 
 #ifndef _IPA_MODEM_H_
 #define _IPA_MODEM_H_
 
@@ -21,4 +19,4 @@ void ipa_modem_resume(struct net_device *netdev);
 int ipa_modem_config(struct ipa *ipa);
 void ipa_modem_deconfig(struct ipa *ipa);
 
-#endif /* _IPA_MODEM_H_ */
+#endif  

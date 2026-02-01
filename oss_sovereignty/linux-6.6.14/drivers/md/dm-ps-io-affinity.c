@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020 Oracle Corporation
- *
- * Module Author: Mike Christie
- */
+
+ 
 #include "dm-path-selector.h"
 
 #include <linux/device-mapper.h>
@@ -208,10 +204,7 @@ static struct dm_path *ioa_select_path(struct path_selector *ps,
 	if (pi && !pi->failed)
 		goto done;
 
-	/*
-	 * Perf is not optimal, but we at least try the local node then just
-	 * try not to fail.
-	 */
+	 
 	if (!pi)
 		atomic_inc(&s->map_misses);
 

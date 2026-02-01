@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+ 
+ 
 
 #ifndef __MT76x2_EEPROM_H
 #define __MT76x2_EEPROM_H
@@ -34,10 +32,10 @@ struct mt76x2_tx_power_info {
 
 struct mt76x2_temp_comp {
 	u8 temp_25_ref;
-	int lower_bound; /* J */
-	int upper_bound; /* J */
-	unsigned int high_slope; /* J / dB */
-	unsigned int low_slope; /* J / dB */
+	int lower_bound;  
+	int upper_bound;  
+	unsigned int high_slope;  
+	unsigned int low_slope;  
 };
 
 void mt76x2_get_rate_power(struct mt76x02_dev *dev, struct mt76x02_rate_power *t,

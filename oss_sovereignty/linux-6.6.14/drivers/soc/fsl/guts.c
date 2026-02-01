@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Freescale QorIQ Platforms GUTS Driver
- *
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/slab.h>
@@ -25,78 +21,74 @@ struct fsl_soc_data {
 	u32 uid_offset;
 };
 
-/* SoC die attribute definition for QorIQ platform */
+ 
 static const struct fsl_soc_die_attr fsl_soc_die[] = {
-	/*
-	 * Power Architecture-based SoCs T Series
-	 */
+	 
 
-	/* Die: T4240, SoC: T4240/T4160/T4080 */
+	 
 	{ .die		= "T4240",
 	  .svr		= 0x82400000,
 	  .mask		= 0xfff00000,
 	},
-	/* Die: T1040, SoC: T1040/T1020/T1042/T1022 */
+	 
 	{ .die		= "T1040",
 	  .svr		= 0x85200000,
 	  .mask		= 0xfff00000,
 	},
-	/* Die: T2080, SoC: T2080/T2081 */
+	 
 	{ .die		= "T2080",
 	  .svr		= 0x85300000,
 	  .mask		= 0xfff00000,
 	},
-	/* Die: T1024, SoC: T1024/T1014/T1023/T1013 */
+	 
 	{ .die		= "T1024",
 	  .svr		= 0x85400000,
 	  .mask		= 0xfff00000,
 	},
 
-	/*
-	 * ARM-based SoCs LS Series
-	 */
+	 
 
-	/* Die: LS1043A, SoC: LS1043A/LS1023A */
+	 
 	{ .die		= "LS1043A",
 	  .svr		= 0x87920000,
 	  .mask		= 0xffff0000,
 	},
-	/* Die: LS2080A, SoC: LS2080A/LS2040A/LS2085A */
+	 
 	{ .die		= "LS2080A",
 	  .svr		= 0x87010000,
 	  .mask		= 0xff3f0000,
 	},
-	/* Die: LS1088A, SoC: LS1088A/LS1048A/LS1084A/LS1044A */
+	 
 	{ .die		= "LS1088A",
 	  .svr		= 0x87030000,
 	  .mask		= 0xff3f0000,
 	},
-	/* Die: LS1012A, SoC: LS1012A */
+	 
 	{ .die		= "LS1012A",
 	  .svr		= 0x87040000,
 	  .mask		= 0xffff0000,
 	},
-	/* Die: LS1046A, SoC: LS1046A/LS1026A */
+	 
 	{ .die		= "LS1046A",
 	  .svr		= 0x87070000,
 	  .mask		= 0xffff0000,
 	},
-	/* Die: LS2088A, SoC: LS2088A/LS2048A/LS2084A/LS2044A */
+	 
 	{ .die		= "LS2088A",
 	  .svr		= 0x87090000,
 	  .mask		= 0xff3f0000,
 	},
-	/* Die: LS1021A, SoC: LS1021A/LS1020A/LS1022A */
+	 
 	{ .die		= "LS1021A",
 	  .svr		= 0x87000000,
 	  .mask		= 0xfff70000,
 	},
-	/* Die: LX2160A, SoC: LX2160A/LX2120A/LX2080A */
+	 
 	{ .die          = "LX2160A",
 	  .svr          = 0x87360000,
 	  .mask         = 0xff3f0000,
 	},
-	/* Die: LS1028A, SoC: LS1028A */
+	 
 	{ .die          = "LS1028A",
 	  .svr          = 0x870b0000,
 	  .mask         = 0xff3f0000,
@@ -146,10 +138,7 @@ static const struct fsl_soc_data ls1028a_data = {
 	.uid_offset = 0x21c,
 };
 
-/*
- * Table for matching compatible strings, for device tree
- * guts node, for Freescale QorIQ SOCs.
- */
+ 
 static const struct of_device_id fsl_guts_of_match[] = {
 	{ .compatible = "fsl,qoriq-device-config-1.0", },
 	{ .compatible = "fsl,qoriq-device-config-2.0", },
@@ -212,7 +201,7 @@ static int __init fsl_guts_init(void)
 	iounmap(regs);
 	of_node_put(np);
 
-	/* Register soc device */
+	 
 	soc_dev_attr = kzalloc(sizeof(*soc_dev_attr), GFP_KERNEL);
 	if (!soc_dev_attr)
 		return -ENOMEM;

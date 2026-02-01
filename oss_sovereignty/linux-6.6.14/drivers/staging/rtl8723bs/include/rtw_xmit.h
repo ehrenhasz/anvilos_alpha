@@ -1,25 +1,21 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef _RTW_XMIT_H_
 #define _RTW_XMIT_H_
 
 #include <linux/completion.h>
 
-#define MAX_XMITBUF_SZ	(20480)	/*  20k */
+#define MAX_XMITBUF_SZ	(20480)	 
 
 #define NR_XMITBUFF	(16)
 
 #define XMITBUF_ALIGN_SZ 512
 
-/*  xmit extension buff defination */
+ 
 #define MAX_XMIT_EXTBUF_SZ	(1536)
 #define NR_XMIT_EXTBUFF	(32)
 
-#define MAX_CMDBUF_SZ	(5120)	/* 4096) */
+#define MAX_CMDBUF_SZ	(5120)	 
 
 #define MAX_NUMBLKS		(1)
 
@@ -78,7 +74,7 @@ do {\
 
 #define HWXMIT_ENTRY	4
 
-/*  For Buffer Descriptor ring architecture */
+ 
 #define TXDESC_SIZE 40
 
 #define TXDESC_OFFSET TXDESC_SIZE
@@ -98,16 +94,16 @@ struct tx_desc {
 #if defined(TXDESC_40_BYTES) || defined(TXDESC_64_BYTES)
 	__le32 txdw8;
 	__le32 txdw9;
-#endif /*  TXDESC_40_BYTES */
+#endif  
 
 #ifdef TXDESC_64_BYTES
 	__le32 txdw10;
 	__le32 txdw11;
 
-	/*  2008/05/15 MH Because PCIE HW memory R/W 4K limit. And now,  our descriptor */
-	/*  size is 40 bytes. If you use more than 102 descriptor(103*40>4096), HW will execute */
-	/*  memoryR/W CRC error. And then all DMA fetch will fail. We must decrease descriptor */
-	/*  number or enlarge descriptor size as 64 bytes. */
+	 
+	 
+	 
+	 
 	__le32 txdw12;
 	__le32 txdw13;
 	__le32 txdw14;
@@ -121,15 +117,15 @@ union txdesc {
 };
 
 struct	hw_xmit	{
-	/* spinlock_t xmit_lock; */
-	/* struct list_head	pending; */
+	 
+	 
 	struct __queue *sta_queue;
-	/* struct hw_txqueue *phwtxqueue; */
-	/* signed int	txcmdcnt; */
+	 
+	 
 	int	accnt;
 };
 
-/* reduce size */
+ 
 struct pkt_attrib {
 	u8 type;
 	u8 subtype;
@@ -137,12 +133,12 @@ struct pkt_attrib {
 	u8 dhcp_pkt;
 	u16 ether_type;
 	u16 seqnum;
-	u16 pkt_hdrlen;	/* the original 802.3 pkt header len */
-	u16 hdrlen;		/* the WLAN Header Len */
-	u32 pktlen;		/* the original 802.3 pkt raw_data len (not include ether_hdr data) */
+	u16 pkt_hdrlen;	 
+	u16 hdrlen;		 
+	u32 pktlen;		 
 	u32 last_txcmdsz;
 	u8 nr_frags;
-	u8 encrypt;	/* when 0 indicates no encryption; when non-zero, indicates the encryption algorithm */
+	u8 encrypt;	 
 	u8 iv_len;
 	u8 icv_len;
 	u8 iv[18];
@@ -150,7 +146,7 @@ struct pkt_attrib {
 	u8 priority;
 	u8 ack_policy;
 	u8 mac_id;
-	u8 vcs_mode;	/* virtual carrier sense method */
+	u8 vcs_mode;	 
 	u8 dst[ETH_ALEN];
 	u8 src[ETH_ALEN];
 	u8 ta[ETH_ALEN];
@@ -158,17 +154,17 @@ struct pkt_attrib {
 	u8 key_idx;
 	u8 qos_en;
 	u8 ht_en;
-	u8 raid;/* rate adpative id */
+	u8 raid; 
 	u8 bwmode;
-	u8 ch_offset;/* PRIME_CHNL_OFFSET */
-	u8 sgi;/* short GI */
-	u8 ampdu_en;/* tx ampdu enable */
-	u8 ampdu_spacing; /* ampdu_min_spacing for peer sta's rx */
-	u8 mdata;/* more data bit */
-	u8 pctrl;/* per packet txdesc control enable */
-	u8 triggered;/* for ap mode handling Power Saving sta */
+	u8 ch_offset; 
+	u8 sgi; 
+	u8 ampdu_en; 
+	u8 ampdu_spacing;  
+	u8 mdata; 
+	u8 pctrl; 
+	u8 triggered; 
 	u8 qsel;
-	u8 order;/* order bit */
+	u8 order; 
 	u8 eosp;
 	u8 rate;
 	u8 intel_proxim;
@@ -181,7 +177,7 @@ struct pkt_attrib {
 	u8 rtsen;
 	u8 cts2self;
 	union Keytype	dot11tkiptxmickey;
-	/* union Keytype	dot11tkiprxmickey; */
+	 
 	union Keytype	dot118021x_UncstKey;
 
 	u8 icmp_pkt;
@@ -210,9 +206,9 @@ enum {
 };
 
 struct  submit_ctx {
-	unsigned long submit_time; /* */
-	u32 timeout_ms; /* <0: not synchronous, 0: wait forever, >0: up to ms waiting */
-	int status; /* status for operation */
+	unsigned long submit_time;  
+	u32 timeout_ms;  
+	int status;  
 	struct completion done;
 };
 
@@ -249,7 +245,7 @@ struct xmit_buf {
 
 	void *priv_data;
 
-	u16 buf_tag; /*  0: Normal xmitbuf, 1: extension xmitbuf, 2:cmd xmitbuf */
+	u16 buf_tag;  
 	u16 flags;
 	u32 alloc_sz;
 
@@ -292,8 +288,8 @@ struct xmit_frame {
 
 	u8 ack_report;
 
-	u8 *alloc_addr; /* the actual address this xmitframe allocated */
-	u8 ext_tag; /* 0:data, 1:mgmt */
+	u8 *alloc_addr;  
+	u8 ext_tag;  
 
 };
 
@@ -307,22 +303,22 @@ struct tx_servq {
 struct sta_xmit_priv {
 	spinlock_t	lock;
 	signed int	option;
-	signed int	apsd_setting;	/* When bit mask is on, the associated edca queue supports APSD. */
+	signed int	apsd_setting;	 
 
 
-	/* struct tx_servq blk_q[MAX_NUMBLKS]; */
-	struct tx_servq	be_q;			/* priority == 0, 3 */
-	struct tx_servq	bk_q;			/* priority == 1, 2 */
-	struct tx_servq	vi_q;			/* priority == 4, 5 */
-	struct tx_servq	vo_q;			/* priority == 6, 7 */
+	 
+	struct tx_servq	be_q;			 
+	struct tx_servq	bk_q;			 
+	struct tx_servq	vi_q;			 
+	struct tx_servq	vo_q;			 
 	struct list_head	legacy_dz;
 	struct list_head  apsd;
 
 	u16 txseq_tid[16];
 
-	/* uint	sta_tx_bytes; */
-	/* u64	sta_tx_pkts; */
-	/* uint	sta_tx_fail; */
+	 
+	 
+	 
 
 
 };
@@ -331,7 +327,7 @@ struct sta_xmit_priv {
 struct	hw_txqueue	{
 	volatile signed int	head;
 	volatile signed int	tail;
-	volatile signed int	free_sz;	/* in units of 64 bytes */
+	volatile signed int	free_sz;	 
 	volatile signed int      free_cmdsz;
 	volatile signed int	 txsz[8];
 	uint	ff_hwaddr;
@@ -352,34 +348,34 @@ struct	xmit_priv {
 	struct completion xmit_comp;
 	struct completion terminate_xmitthread_comp;
 
-	/* struct __queue	blk_strms[MAX_NUMBLKS]; */
+	 
 	struct __queue	be_pending;
 	struct __queue	bk_pending;
 	struct __queue	vi_pending;
 	struct __queue	vo_pending;
 	struct __queue	bm_pending;
 
-	/* struct __queue	legacy_dz_queue; */
-	/* struct __queue	apsd_queue; */
+	 
+	 
 
 	u8 *pallocated_frame_buf;
 	u8 *pxmit_frame_buf;
 	uint free_xmitframe_cnt;
 	struct __queue	free_xmit_queue;
 
-	/* uint mapping_addr; */
-	/* uint pkt_sz; */
+	 
+	 
 
 	u8 *xframe_ext_alloc_addr;
 	u8 *xframe_ext;
 	uint free_xframe_ext_cnt;
 	struct __queue free_xframe_ext_queue;
 
-	/* struct	hw_txqueue	be_txqueue; */
-	/* struct	hw_txqueue	bk_txqueue; */
-	/* struct	hw_txqueue	vi_txqueue; */
-	/* struct	hw_txqueue	vo_txqueue; */
-	/* struct	hw_txqueue	bmc_txqueue; */
+	 
+	 
+	 
+	 
+	 
 
 	uint	frag_len;
 
@@ -388,7 +384,7 @@ struct	xmit_priv {
 	u8   vcs_setting;
 	u8 vcs;
 	u8 vcs_type;
-	/* u16  rts_thresh; */
+	 
 
 	u64	tx_bytes;
 	u64	tx_pkts;
@@ -398,7 +394,7 @@ struct	xmit_priv {
 	struct hw_xmit *hwxmits;
 	u8 hwxmit_entry;
 
-	u8 wmm_para_seq[4];/* sequence for wmm ac parameter strength from large to small. it's value is 0->vo, 1->vi, 2->be, 3->bk. */
+	u8 wmm_para_seq[4]; 
 
 	void *SdioXmitThread;
 	struct completion SdioXmitStart;
@@ -495,7 +491,7 @@ u32 rtw_get_ff_hwaddr(struct xmit_frame	*pxmitframe);
 int rtw_ack_tx_wait(struct xmit_priv *pxmitpriv, u32 timeout_ms);
 void rtw_ack_tx_done(struct xmit_priv *pxmitpriv, int status);
 
-/* include after declaring struct xmit_buf, in order to avoid warning */
+ 
 #include <xmit_osdep.h>
 
-#endif	/* _RTL871X_XMIT_H_ */
+#endif	 

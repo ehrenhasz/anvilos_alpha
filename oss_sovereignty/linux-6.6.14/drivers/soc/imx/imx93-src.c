@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2022 NXP
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of_platform.h>

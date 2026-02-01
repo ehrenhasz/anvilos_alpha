@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2015 Karol Kosik <karo9@interia.eu>
- * Copyright (C) 2015-2016 Samsung Electronics
- *               Igor Kotrasinski <i.kotrasinsk@samsung.com>
- */
+
+ 
 
 #include <net/sock.h>
 #include <linux/list.h>
@@ -40,10 +36,7 @@ static int alloc_urb_from_cmd(struct urb **urbp,
 	if (!urb->setup_packet)
 		goto free_buffer;
 
-	/*
-	 * FIXME - we only setup pipe enough for usbip functions
-	 * to behave nicely
-	 */
+	 
 	urb->pipe |= pdu->base.direction == USBIP_DIR_IN ?
 			USB_DIR_IN : USB_DIR_OUT;
 
@@ -75,7 +68,7 @@ static int v_recv_cmd_unlink(struct vudc *udc,
 		spin_unlock_irqrestore(&udc->lock, flags);
 		return 0;
 	}
-	/* Not found, completed / not queued */
+	 
 	spin_lock(&udc->lock_tx);
 	v_enqueue_ret_unlink(udc, pdu->base.seqnum, 0);
 	wake_up(&udc->tx_waitq);
@@ -99,7 +92,7 @@ static int v_recv_cmd_submit(struct vudc *udc,
 		return -ENOMEM;
 	}
 
-	/* base.ep is pipeendpoint(pipe) */
+	 
 	address = pdu->base.ep;
 	if (pdu->base.direction == USBIP_DIR_IN)
 		address |= USB_DIR_IN;
@@ -107,7 +100,7 @@ static int v_recv_cmd_submit(struct vudc *udc,
 	spin_lock_irqsave(&udc->lock, flags);
 	urb_p->ep = vudc_find_endpoint(udc, address);
 	if (!urb_p->ep) {
-		/* we don't know the type, there may be isoc data! */
+		 
 		dev_err(&udc->pdev->dev, "request to nonexistent endpoint");
 		spin_unlock_irqrestore(&udc->lock, flags);
 		usbip_event_add(&udc->ud, VUDC_EVENT_ERROR_TCP);
@@ -121,7 +114,7 @@ static int v_recv_cmd_submit(struct vudc *udc,
 	urb_p->seqnum = pdu->base.seqnum;
 
 	if (urb_p->ep->type == USB_ENDPOINT_XFER_ISOC) {
-		/* validate packet size and number of packets */
+		 
 		unsigned int maxp, packets, bytes;
 
 		maxp = usb_endpoint_maxp(urb_p->ep->desc);
@@ -148,7 +141,7 @@ static int v_recv_cmd_submit(struct vudc *udc,
 
 	urb_p->urb->status = -EINPROGRESS;
 
-	/* FIXME: more pipe setup to please usbip_common */
+	 
 	BUILD_BUG_ON_MSG(PIPE_BULK != 3, "PIPE_* doesn't range from 0 to 3");
 
 	urb_p->urb->pipe &= ~(PIPE_BULK << 30);

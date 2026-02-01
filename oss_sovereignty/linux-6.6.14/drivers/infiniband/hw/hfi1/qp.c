@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015 - 2020 Intel Corporation.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/vmalloc.h>
@@ -144,14 +142,10 @@ static void flush_iowait(struct rvt_qp *qp)
 	write_sequnlock_irqrestore(lock, flags);
 }
 
-/*
- * This function is what we would push to the core layer if we wanted to be a
- * "first class citizen".  Instead we hide this here and rely on Verbs ULPs
- * to blindly pass the MTU enum value from the PathRecord to us.
- */
+ 
 static inline int verbs_mtu_enum_to_int(struct ib_device *dev, enum ib_mtu mtu)
 {
-	/* Constraining 10KB packets to 8KB packets */
+	 
 	if (mtu == (enum ib_mtu)OPA_MTU_10240)
 		mtu = (enum ib_mtu)OPA_MTU_8192;
 	return opa_mtu_enum_to_int((enum opa_mtu)mtu);
@@ -194,21 +188,17 @@ int hfi1_check_modify_qp(struct rvt_qp *qp, struct ib_qp_attr *attr,
 	return 0;
 }
 
-/*
- * qp_set_16b - Set the hdr_type based on whether the slid or the
- * dlid in the connection is extended. Only applicable for RC and UC
- * QPs. UD QPs determine this on the fly from the ah in the wqe
- */
+ 
 static inline void qp_set_16b(struct rvt_qp *qp)
 {
 	struct hfi1_pportdata *ppd;
 	struct hfi1_ibport *ibp;
 	struct hfi1_qp_priv *priv = qp->priv;
 
-	/* Update ah_attr to account for extended LIDs */
+	 
 	hfi1_update_ah_attr(qp->ibqp.device, &qp->remote_ah_attr);
 
-	/* Create 32 bit LIDs */
+	 
 	hfi1_make_opa_lid(&qp->remote_ah_attr);
 
 	if (!(rdma_ah_get_ah_flags(&qp->remote_ah_attr) & IB_AH_GRH))
@@ -245,21 +235,7 @@ void hfi1_modify_qp(struct rvt_qp *qp, struct ib_qp_attr *attr,
 	opfn_qp_init(qp, attr, attr_mask);
 }
 
-/**
- * hfi1_setup_wqe - set up the wqe
- * @qp: The qp
- * @wqe: The built wqe
- * @call_send: Determine if the send should be posted or scheduled.
- *
- * Perform setup of the wqe.  This is called
- * prior to inserting the wqe into the ring but after
- * the wqe has been setup by RDMAVT. This function
- * allows the driver the opportunity to perform
- * validation and additional setup of the wqe.
- *
- * Returns 0 on success, -EINVAL on failure
- *
- */
+ 
 int hfi1_setup_wqe(struct rvt_qp *qp, struct rvt_swqe *wqe, bool *call_send)
 {
 	struct hfi1_ibport *ibp = to_iport(qp->ibqp.device, qp->port_num);
@@ -278,13 +254,7 @@ int hfi1_setup_wqe(struct rvt_qp *qp, struct rvt_swqe *wqe, bool *call_send)
 			*call_send = false;
 		break;
 	case IB_QPT_SMI:
-		/*
-		 * SM packets should exclusively use VL15 and their SL is
-		 * ignored (IBTA v1.3, Section 3.5.8.2). Therefore, when ah
-		 * is created, SL is 0 in most cases and as a result some
-		 * fields (vl and pmtu) in ah may not be set correctly,
-		 * depending on the SL2SC and SC2VL tables at the time.
-		 */
+		 
 		ppd = ppd_from_ibp(ibp);
 		dd = dd_from_ppd(ppd);
 		if (wqe->length > dd->vld[15].mtu)
@@ -302,24 +272,13 @@ int hfi1_setup_wqe(struct rvt_qp *qp, struct rvt_swqe *wqe, bool *call_send)
 		break;
 	}
 
-	/*
-	 * System latency between send and schedule is large enough that
-	 * forcing call_send to true for piothreshold packets is necessary.
-	 */
+	 
 	if (wqe->length <= piothreshold)
 		*call_send = true;
 	return 0;
 }
 
-/**
- * _hfi1_schedule_send - schedule progress
- * @qp: the QP
- *
- * This schedules qp progress w/o regard to the s_flags.
- *
- * It is only used in the post send, which doesn't hold
- * the s_lock.
- */
+ 
 bool _hfi1_schedule_send(struct rvt_qp *qp)
 {
 	struct hfi1_qp_priv *priv = qp->priv;
@@ -354,15 +313,7 @@ static void qp_pio_drain(struct rvt_qp *qp)
 	}
 }
 
-/**
- * hfi1_schedule_send - schedule progress
- * @qp: the QP
- *
- * This schedules qp progress and caller should hold
- * the s_lock.
- * @return true if the first leg is scheduled;
- * false if the first leg is not scheduled.
- */
+ 
 bool hfi1_schedule_send(struct rvt_qp *qp)
 {
 	lockdep_assert_held(&qp->s_lock);
@@ -404,7 +355,7 @@ void hfi1_qp_wakeup(struct rvt_qp *qp, u32 flag)
 		hfi1_qp_schedule(qp);
 	}
 	spin_unlock_irqrestore(&qp->s_lock, flags);
-	/* Notify hfi1_destroy_qp() if it is waiting. */
+	 
 	rvt_put_qp(qp);
 }
 
@@ -414,15 +365,7 @@ void hfi1_qp_unbusy(struct rvt_qp *qp, struct iowait_work *wait)
 
 	if (iowait_set_work_flag(wait) == IOWAIT_IB_SE) {
 		qp->s_flags &= ~RVT_S_BUSY;
-		/*
-		 * If we are sending a first-leg packet from the second leg,
-		 * we need to clear the busy flag from priv->s_flags to
-		 * avoid a race condition when the qp wakes up before
-		 * the call to hfi1_verbs_send() returns to the second
-		 * leg. In that case, the second leg will terminate without
-		 * being re-scheduled, resulting in failure to send TID RDMA
-		 * WRITE DATA and TID RDMA ACK packets.
-		 */
+		 
 		if (priv->s_flags & HFI1_S_TID_BUSY_SET) {
 			priv->s_flags &= ~(HFI1_S_TID_BUSY_SET |
 					   RVT_S_BUSY);
@@ -451,12 +394,8 @@ static int iowait_sleep(
 
 	spin_lock_irqsave(&qp->s_lock, flags);
 	if (ib_rvt_state_ops[qp->state] & RVT_PROCESS_RECV_OK) {
-		/*
-		 * If we couldn't queue the DMA request, save the info
-		 * and try again later rather than destroying the
-		 * buffer and undoing the side effects of the copy.
-		 */
-		/* Make a common routine? */
+		 
+		 
 		list_add_tail(&stx->list, &wait->tx_head);
 		write_seqlock(&sde->waitlock);
 		if (sdma_progress(sde, seq, stx))
@@ -503,12 +442,7 @@ static void iowait_sdma_drained(struct iowait *wait)
 	struct rvt_qp *qp = iowait_to_qp(wait);
 	unsigned long flags;
 
-	/*
-	 * This happens when the send engine notes
-	 * a QP in the error state and cannot
-	 * do the flush work until that QP's
-	 * sdma work has finished.
-	 */
+	 
 	spin_lock_irqsave(&qp->s_lock, flags);
 	if (qp->s_flags & RVT_S_WAIT_DMA) {
 		qp->s_flags &= ~RVT_S_WAIT_DMA;
@@ -528,14 +462,7 @@ static void hfi1_init_priority(struct iowait *w)
 		w->priority++;
 }
 
-/**
- * qp_to_sdma_engine - map a qp to a send engine
- * @qp: the QP
- * @sc5: the 5 bit sc
- *
- * Return:
- * A send engine for the qp or NULL for SMI type qp.
- */
+ 
 struct sdma_engine *qp_to_sdma_engine(struct rvt_qp *qp, u8 sc5)
 {
 	struct hfi1_devdata *dd = dd_from_ibdev(qp->ibqp.device);
@@ -553,21 +480,14 @@ struct sdma_engine *qp_to_sdma_engine(struct rvt_qp *qp, u8 sc5)
 	return sde;
 }
 
-/**
- * qp_to_send_context - map a qp to a send context
- * @qp: the QP
- * @sc5: the 5 bit sc
- *
- * Return:
- * A send context for the qp
- */
+ 
 struct send_context *qp_to_send_context(struct rvt_qp *qp, u8 sc5)
 {
 	struct hfi1_devdata *dd = dd_from_ibdev(qp->ibqp.device);
 
 	switch (qp->ibqp.qp_type) {
 	case IB_QPT_SMI:
-		/* SMA packets to VL15 */
+		 
 		return dd->vld[15].sc;
 	default:
 		break;
@@ -590,11 +510,7 @@ static int qp_idle(struct rvt_qp *qp)
 		qp->s_tail == qp->s_head;
 }
 
-/**
- * qp_iter_print - print the qp information to seq_file
- * @s: the seq_file to emit the qp information on
- * @iter: the iterator for the qp hash list
- */
+ 
 void qp_iter_print(struct seq_file *s, struct rvt_qp_iter *iter)
 {
 	struct rvt_swqe *wqe;
@@ -634,10 +550,10 @@ void qp_iter_print(struct seq_file *s, struct rvt_qp_iter *iter)
 		   qp->s_last, qp->s_acked, qp->s_cur,
 		   qp->s_tail, qp->s_head, qp->s_size,
 		   qp->s_avail,
-		   /* ack_queue ring pointers, size */
+		    
 		   qp->s_tail_ack_queue, qp->r_head_ack_queue,
 		   rvt_max_atomic(&to_idev(qp->ibqp.device)->rdi),
-		   /* remote QP info  */
+		    
 		   qp->remote_qpn,
 		   rdma_ah_get_dlid(&qp->remote_ah_attr),
 		   rdma_ah_get_sl(&qp->remote_ah_attr),
@@ -655,7 +571,7 @@ void qp_iter_print(struct seq_file *s, struct rvt_qp_iter *iter)
 		   qp->pid,
 		   qp->s_state,
 		   qp->s_ack_state,
-		   /* ack queue information */
+		    
 		   e ? e->opcode : 0,
 		   e ? e->psn : 0,
 		   e ? e->lpsn : 0,
@@ -690,7 +606,7 @@ void *qp_priv_alloc(struct rvt_dev_info *rdi, struct rvt_qp *qp)
 		iowait_wakeup,
 		iowait_sdma_drained,
 		hfi1_init_priority);
-	/* Init to a value to start the running average correctly */
+	 
 	priv->s_running_pkt_size = piothreshold / 2;
 	return priv;
 }
@@ -762,15 +678,12 @@ void notify_qp_reset(struct rvt_qp *qp)
 	qp->r_adefered = 0;
 	clear_ahg(qp);
 
-	/* Clear any OPFN state */
+	 
 	if (qp->ibqp.qp_type == IB_QPT_RC)
 		opfn_conn_error(qp);
 }
 
-/*
- * Switch to alternate path.
- * The QP s_lock should be held and interrupts disabled.
- */
+ 
 void hfi1_migrate_qp(struct rvt_qp *qp)
 {
 	struct hfi1_qp_priv *priv = qp->priv;
@@ -830,7 +743,7 @@ int get_pmtu_from_attr(struct rvt_dev_info *rdi, struct rvt_qp *qp,
 					       verbs_dev);
 	mtu = verbs_mtu_enum_to_int(qp->ibqp.device, attr->path_mtu);
 	if (mtu == -1)
-		return -1; /* values less than 0 are error */
+		return -1;  
 
 	if (mtu > dd->pport[pidx].ibmtu)
 		return mtu_to_enum(dd->pport[pidx].ibmtu, IB_MTU_2048);
@@ -868,14 +781,7 @@ void notify_error_qp(struct rvt_qp *qp)
 	}
 }
 
-/**
- * hfi1_qp_iter_cb - callback for iterator
- * @qp: the qp
- * @v: the sl in low bits of v
- *
- * This is called from the iterator callback to work
- * on an individual qp.
- */
+ 
 static void hfi1_qp_iter_cb(struct rvt_qp *qp, u64 v)
 {
 	int lastwqe;
@@ -907,15 +813,7 @@ static void hfi1_qp_iter_cb(struct rvt_qp *qp, u64 v)
 	}
 }
 
-/**
- * hfi1_error_port_qps - put a port's RC/UC qps into error state
- * @ibp: the ibport.
- * @sl: the service level.
- *
- * This function places all RC/UC qps with a given service level into error
- * state. It is generally called to force upper lay apps to abandon stale qps
- * after an sl->sc mapping change.
- */
+ 
 void hfi1_error_port_qps(struct hfi1_ibport *ibp, u8 sl)
 {
 	struct hfi1_pportdata *ppd = ppd_from_ibp(ibp);

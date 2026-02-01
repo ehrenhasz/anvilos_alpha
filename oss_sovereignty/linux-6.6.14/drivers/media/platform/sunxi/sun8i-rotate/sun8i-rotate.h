@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Allwinner DE2 rotation driver
- *
- * Copyright (C) 2020 Jernej Skrabec <jernej.skrabec@siol.net>
- */
+ 
+ 
 
 #ifndef _SUN8I_ROTATE_H_
 #define _SUN8I_ROTATE_H_
@@ -121,7 +117,7 @@ struct rotate_dev {
 	struct device		*dev;
 	struct v4l2_m2m_dev	*m2m_dev;
 
-	/* Device file mutex */
+	 
 	struct mutex		dev_mutex;
 
 	void __iomem		*base;

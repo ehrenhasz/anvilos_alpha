@@ -1,9 +1,4 @@
-/*
- *
- * syscall.c
- *
- * syscall: Benchmark for system call performance
- */
+ 
 #include "../perf.h"
 #include "../util/util.h"
 #include <subcmd/parse-options.h>
@@ -94,13 +89,13 @@ static int bench_syscall_common(int argc, const char **argv, int syscall)
 			break;
 		case __NR_fork:
 			test_fork();
-			/* Only loop 10000 times to save time */
+			 
 			if (i == 10000)
 				loops = 10000;
 			break;
 		case __NR_execve:
 			test_execve();
-			/* Only loop 10000 times to save time */
+			 
 			if (i == 10000)
 				loops = 10000;
 			break;
@@ -154,7 +149,7 @@ static int bench_syscall_common(int argc, const char **argv, int syscall)
 		break;
 
 	default:
-		/* reaching here is something disaster */
+		 
 		fprintf(stderr, "Unknown format:%d\n", bench_format);
 		exit(1);
 		break;

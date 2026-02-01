@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies. */
+
+ 
 
 #include <linux/types.h>
 #include <linux/crc32.h>
@@ -33,11 +33,11 @@ u32 mlx5dr_ste_calc_hash_index(u8 *hw_ste_p, struct mlx5dr_ste_htbl *htbl)
 	u16 bit;
 	int i;
 
-	/* Don't calculate CRC if the result is predicted */
+	 
 	if (num_entries == 1 || htbl->byte_mask == 0)
 		return 0;
 
-	/* Mask tag using byte mask, bit per byte */
+	 
 	bit = 1 << (DR_STE_SIZE_TAG - 1);
 	for (i = 0; i < DR_STE_SIZE_TAG; i++) {
 		if (htbl->byte_mask & bit)
@@ -97,7 +97,7 @@ bool mlx5dr_ste_is_miss_addr_set(struct mlx5dr_ste_ctx *ste_ctx,
 	if (!ste_ctx->is_miss_addr_set)
 		return false;
 
-	/* check if miss address is already set for this type of STE */
+	 
 	return ste_ctx->is_miss_addr_set(hw_ste_p);
 }
 
@@ -170,18 +170,7 @@ bool mlx5dr_ste_is_last_in_rule(struct mlx5dr_matcher_rx_tx *nic_matcher,
 	return ste_location == nic_matcher->num_of_builders;
 }
 
-/* Replace relevant fields, except of:
- * htbl - keep the origin htbl
- * miss_list + list - already took the src from the list.
- * icm_addr/mr_addr - depends on the hosting table.
- *
- * Before:
- * | a | -> | b | -> | c | ->
- *
- * After:
- * | a | -> | c | ->
- * While the data that was in b copied to a.
- */
+ 
 static void dr_ste_replace(struct mlx5dr_ste *dst, struct mlx5dr_ste *src)
 {
 	memcpy(mlx5dr_ste_get_hw_ste(dst), mlx5dr_ste_get_hw_ste(src),
@@ -193,7 +182,7 @@ static void dr_ste_replace(struct mlx5dr_ste *dst, struct mlx5dr_ste *src)
 	dst->refcount = src->refcount;
 }
 
-/* Free ste which is the head and the only one in miss_list */
+ 
 static void
 dr_ste_remove_head_ste(struct mlx5dr_ste_ctx *ste_ctx,
 		       struct mlx5dr_ste *ste,
@@ -207,29 +196,24 @@ dr_ste_remove_head_ste(struct mlx5dr_ste_ctx *ste_ctx,
 
 	miss_addr = mlx5dr_icm_pool_get_chunk_icm_addr(nic_matcher->e_anchor->chunk);
 
-	/* Use temp ste because dr_ste_always_miss_addr
-	 * touches bit_mask area which doesn't exist at ste->hw_ste.
-	 * Need to use a full-sized (DR_STE_SIZE) hw_ste.
-	 */
+	 
 	memcpy(tmp_data_ste, mlx5dr_ste_get_hw_ste(ste), DR_STE_SIZE_REDUCED);
 	dr_ste_always_miss_addr(ste_ctx, tmp_data_ste, miss_addr);
 	memcpy(mlx5dr_ste_get_hw_ste(ste), tmp_data_ste, DR_STE_SIZE_REDUCED);
 
 	list_del_init(&ste->miss_list_node);
 
-	/* Write full STE size in order to have "always_miss" */
+	 
 	mlx5dr_send_fill_and_append_ste_send_info(ste, DR_STE_SIZE,
 						  0, tmp_data_ste,
 						  ste_info_head,
 						  send_ste_list,
-						  true /* Copy data */);
+						  true  );
 
 	stats_tbl->ctrl.num_of_valid_entries--;
 }
 
-/* Free ste which is the head but NOT the only one in miss_list:
- * |_ste_| --> |_next_ste_| -->|__| -->|__| -->/0
- */
+ 
 static void
 dr_ste_replace_head_ste(struct mlx5dr_matcher_rx_tx *nic_matcher,
 			struct mlx5dr_ste *ste,
@@ -245,39 +229,35 @@ dr_ste_replace_head_ste(struct mlx5dr_matcher_rx_tx *nic_matcher,
 
 	next_miss_htbl = next_ste->htbl;
 
-	/* Remove from the miss_list the next_ste before copy */
+	 
 	list_del_init(&next_ste->miss_list_node);
 
-	/* Move data from next into ste */
+	 
 	dr_ste_replace(ste, next_ste);
 
-	/* Update the rule on STE change */
+	 
 	mlx5dr_rule_set_last_member(next_ste->rule_rx_tx, ste, false);
 
-	/* Copy all 64 hw_ste bytes */
+	 
 	memcpy(hw_ste, mlx5dr_ste_get_hw_ste(ste), DR_STE_SIZE_REDUCED);
 	sb_idx = ste->ste_chain_location - 1;
 	mlx5dr_ste_set_bit_mask(hw_ste,
 				nic_matcher->ste_builder[sb_idx].bit_mask);
 
-	/* Del the htbl that contains the next_ste.
-	 * The origin htbl stay with the same number of entries.
-	 */
+	 
 	mlx5dr_htbl_put(next_miss_htbl);
 
 	mlx5dr_send_fill_and_append_ste_send_info(ste, DR_STE_SIZE,
 						  0, hw_ste,
 						  ste_info_head,
 						  send_ste_list,
-						  true /* Copy data */);
+						  true  );
 
 	stats_tbl->ctrl.num_of_collisions--;
 	stats_tbl->ctrl.num_of_valid_entries--;
 }
 
-/* Free ste that is located in the middle of the miss list:
- * |__| -->|_prev_ste_|->|_ste_|-->|_next_ste_|
- */
+ 
 static void dr_ste_remove_middle_ste(struct mlx5dr_ste_ctx *ste_ctx,
 				     struct mlx5dr_ste *ste,
 				     struct mlx5dr_ste_send_info *ste_info,
@@ -297,7 +277,7 @@ static void dr_ste_remove_middle_ste(struct mlx5dr_ste_ctx *ste_ctx,
 	mlx5dr_send_fill_and_append_ste_send_info(prev_ste, DR_STE_SIZE_CTRL, 0,
 						  mlx5dr_ste_get_hw_ste(prev_ste),
 						  ste_info, send_ste_list,
-						  true /* Copy data*/);
+						  true  );
 
 	list_del_init(&ste->miss_list_node);
 
@@ -322,13 +302,8 @@ void mlx5dr_ste_free(struct mlx5dr_ste *ste,
 				     struct mlx5dr_ste, miss_list_node);
 	stats_tbl = first_ste->htbl;
 
-	/* Two options:
-	 * 1. ste is head:
-	 *	a. head ste is the only ste in the miss list
-	 *	b. head ste is not the only ste in the miss-list
-	 * 2. ste is not head
-	 */
-	if (first_ste == ste) { /* Ste is the head */
+	 
+	if (first_ste == ste) {  
 		struct mlx5dr_ste *last_ste;
 
 		last_ste = list_last_entry(mlx5dr_ste_get_miss_list(ste),
@@ -339,26 +314,26 @@ void mlx5dr_ste_free(struct mlx5dr_ste *ste,
 			next_ste = list_next_entry(ste, miss_list_node);
 
 		if (!next_ste) {
-			/* One and only entry in the list */
+			 
 			dr_ste_remove_head_ste(ste_ctx, ste,
 					       nic_matcher,
 					       &ste_info_head,
 					       &send_ste_list,
 					       stats_tbl);
 		} else {
-			/* First but not only entry in the list */
+			 
 			dr_ste_replace_head_ste(nic_matcher, ste,
 						next_ste, &ste_info_head,
 						&send_ste_list, stats_tbl);
 			put_on_origin_table = false;
 		}
-	} else { /* Ste in the middle of the list */
+	} else {  
 		dr_ste_remove_middle_ste(ste_ctx, ste,
 					 &ste_info_head, &send_ste_list,
 					 stats_tbl);
 	}
 
-	/* Update HW */
+	 
 	list_for_each_entry_safe(cur_ste_info, tmp_ste_info,
 				 &send_ste_list, send_list) {
 		list_del(&cur_ste_info->send_list);
@@ -397,7 +372,7 @@ void mlx5dr_ste_prepare_for_postsend(struct mlx5dr_ste_ctx *ste_ctx,
 		ste_ctx->prepare_for_postsend(hw_ste_p, ste_size);
 }
 
-/* Init one ste as a pattern for ste data array */
+ 
 void mlx5dr_ste_set_formatted_ste(struct mlx5dr_ste_ctx *ste_ctx,
 				  u16 gvmi,
 				  enum mlx5dr_domain_nic_type nic_type,
@@ -410,10 +385,7 @@ void mlx5dr_ste_set_formatted_ste(struct mlx5dr_ste_ctx *ste_ctx,
 
 	ste_ctx->ste_init(formatted_ste, htbl->lu_type, is_rx, gvmi);
 
-	/* Use temp ste because dr_ste_always_miss_addr/hit_htbl
-	 * touches bit_mask area which doesn't exist at ste->hw_ste.
-	 * Need to use a full-sized (DR_STE_SIZE) hw_ste.
-	 */
+	 
 	memcpy(tmp_hw_ste, formatted_ste, DR_STE_SIZE_REDUCED);
 	if (connect_info->type == CONNECT_HIT)
 		dr_ste_always_hit_htbl(ste_ctx, tmp_hw_ste,
@@ -470,7 +442,7 @@ int mlx5dr_ste_create_next_htbl(struct mlx5dr_matcher *matcher,
 			return -ENOMEM;
 		}
 
-		/* Write new table to HW */
+		 
 		info.type = CONNECT_MISS;
 		info.miss_icm_addr =
 			mlx5dr_icm_pool_get_chunk_icm_addr(nic_matcher->e_anchor->chunk);
@@ -625,7 +597,7 @@ int mlx5dr_ste_set_action_decap_l3_list(struct mlx5dr_ste_ctx *ste_ctx,
 					u8 *hw_action, u32 hw_action_sz,
 					u16 *used_hw_action_num)
 {
-	/* Only Ethernet frame is supported, with VLAN (18) or without (14) */
+	 
 	if (data_sz != HDR_LEN_L2 && data_sz != HDR_LEN_L2_W_VLAN)
 		return -EINVAL;
 
@@ -643,7 +615,7 @@ dr_ste_alloc_modify_hdr_chunk(struct mlx5dr_action *action)
 
 	chunk_size = ilog2(roundup_pow_of_two(action->rewrite->num_of_actions));
 
-	/* HW modify action index granularity is at least 64B */
+	 
 	chunk_size = max_t(u32, chunk_size, DR_CHUNK_SIZE_8);
 
 	action->rewrite->chunk = mlx5dr_icm_alloc_chunk(dmn->action_icm_pool,
@@ -773,11 +745,9 @@ int mlx5dr_ste_build_ste_arr(struct mlx5dr_matcher *matcher,
 		if (ret)
 			return ret;
 
-		/* Connect the STEs */
+		 
 		if (i < (nic_matcher->num_of_builders - 1)) {
-			/* Need the next builder for these fields,
-			 * not relevant for the last ste in the chain.
-			 */
+			 
 			sb++;
 			ste_ctx->set_next_lu_type(ste_arr, sb->lu_type);
 			ste_ctx->set_byte_mask(ste_arr, sb->byte_mask);
@@ -1411,7 +1381,7 @@ void mlx5dr_ste_build_src_gvmi_qpn(struct mlx5dr_ste_ctx *ste_ctx,
 				   struct mlx5dr_domain *dmn,
 				   bool inner, bool rx)
 {
-	/* Set vhca_id_valid before we reset source_eswitch_owner_vhca_id */
+	 
 	sb->vhca_id_valid = mask->misc.source_eswitch_owner_vhca_id;
 
 	sb->rx = rx;

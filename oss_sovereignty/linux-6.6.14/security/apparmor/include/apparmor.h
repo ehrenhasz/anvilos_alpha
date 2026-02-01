@@ -1,21 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AppArmor security module
- *
- * This file contains AppArmor basic global
- *
- * Copyright (C) 1998-2008 Novell/SUSE
- * Copyright 2009-2017 Canonical Ltd.
- */
+ 
+ 
 
 #ifndef __APPARMOR_H
 #define __APPARMOR_H
 
 #include <linux/types.h>
 
-/*
- * Class of mediation types in the AppArmor policy db
- */
+ 
 #define AA_CLASS_NONE		0
 #define AA_CLASS_UNKNOWN	1
 #define AA_CLASS_FILE		2
@@ -39,7 +30,7 @@
 
 #define AA_CLASS_LAST		AA_CLASS_DBUS
 
-/* Control parameters settable through module/boot flags */
+ 
 extern enum audit_mode aa_g_audit;
 extern bool aa_g_audit_header;
 extern bool aa_g_debug;
@@ -59,7 +50,7 @@ extern unsigned int aa_g_path_max;
 #define AA_MIN_CLEVEL 0
 #define AA_MAX_CLEVEL 0
 #define AA_DEFAULT_CLEVEL 0
-#endif /* CONFIG_SECURITY_APPARMOR_EXPORT_BINARY */
+#endif  
 
 
-#endif /* __APPARMOR_H */
+#endif  

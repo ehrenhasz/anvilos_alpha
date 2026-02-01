@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Siemens SIMATIC IPC driver for CMOS battery monitoring
- *
- * Copyright (c) Siemens AG, 2023
- *
- * Authors:
- *  Gerd Haeussler <gerd.haeussler.ext@siemens.com>
- *  Henning Schild <henning.schild@siemens.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -27,7 +19,7 @@
 
 #include "simatic-ipc-batt.h"
 
-#define BATT_DELAY_MS	(1000 * 60 * 60 * 24)	/* 24 h delay */
+#define BATT_DELAY_MS	(1000 * 60 * 60 * 24)	 
 
 #define SIMATIC_IPC_BATT_LEVEL_FULL	3000
 #define SIMATIC_IPC_BATT_LEVEL_CRIT	2750
@@ -217,7 +209,7 @@ nogpio:
 		goto out;
 	}
 
-	/* warn about aging battery even if userspace never reads hwmon */
+	 
 	simatic_ipc_batt_read_value(dev);
 
 	return 0;

@@ -6,16 +6,16 @@ double modf(double x, double *iptr)
 	uint64_t mask;
 	int e = (int)(u.i>>52 & 0x7ff) - 0x3ff;
 
-	/* no fractional part */
+	 
 	if (e >= 52) {
 		*iptr = x;
-		if (e == 0x400 && u.i<<12 != 0) /* nan */
+		if (e == 0x400 && u.i<<12 != 0)  
 			return x;
 		u.i &= 1ULL<<63;
 		return u.f;
 	}
 
-	/* no integral part*/
+	 
 	if (e < 0) {
 		u.i &= 1ULL<<63;
 		*iptr = u.f;

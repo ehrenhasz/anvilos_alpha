@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM cgroup
 
@@ -204,7 +204,7 @@ DEFINE_EVENT(cgroup_event, cgroup_notify_frozen,
 	TP_ARGS(cgrp, path, val)
 );
 
-#endif /* _TRACE_CGROUP_H */
+#endif  
 
-/* This part must be outside protection */
+ 
 #include <trace/define_trace.h>

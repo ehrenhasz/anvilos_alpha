@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// MP8867/MP8869 regulator driver
-//
-// Copyright (C) 2020 Synaptics Incorporated
-//
-// Author: Jisheng Zhang <jszhang@kernel.org>
+
+
+
+
+
+
+
 
 #include <linux/gpio/consumer.h>
 #include <linux/i2c.h>

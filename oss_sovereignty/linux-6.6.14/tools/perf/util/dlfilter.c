@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * dlfilter.c: Interface to perf script --dlfilter shared object
- * Copyright (c) 2021, Intel Corporation.
- */
+
+ 
 #include <dlfcn.h>
 #include <stdlib.h>
 #include <string.h>
@@ -93,7 +90,7 @@ static const struct perf_dlfilter_al *dlfilter__resolve_ip(void *ctx)
 	if (!d->ctx_valid)
 		return NULL;
 
-	/* 'size' is also used to indicate already initialized */
+	 
 	if (d_al->size)
 		return d_al;
 
@@ -119,7 +116,7 @@ static const struct perf_dlfilter_al *dlfilter__resolve_addr(void *ctx)
 	if (!d->ctx_valid || !d->d_sample->addr_correlates_sym)
 		return NULL;
 
-	/* 'size' is also used to indicate already initialized */
+	 
 	if (d_addr_al->size)
 		return d_addr_al;
 
@@ -187,7 +184,7 @@ static __s32 dlfilter__resolve_address(void *ctx, __u64 address, struct perf_dlf
 
 	if (has_priv(d_al_p))
 		d_al_p->priv = memdup(&al, sizeof(al));
-	else /* Avoid leak for v0 API */
+	else  
 		addr_location__exit(&al);
 
 	return 0;
@@ -197,7 +194,7 @@ static void dlfilter__al_cleanup(void *ctx __maybe_unused, struct perf_dlfilter_
 {
 	struct addr_location *al;
 
-	/* Ensure backward compatibility */
+	 
 	if (!has_priv(d_al_p) || !d_al_p->priv)
 		return;
 
@@ -341,10 +338,7 @@ static char *find_dlfilter(const char *file)
 		goto out;
 
 	if (!access(file, R_OK)) {
-		/*
-		 * Prepend "./" so that dlopen will find the file in the
-		 * current directory.
-		 */
+		 
 		snprintf(path, sizeof(path), "./%s", file);
 		file = path;
 		goto out;
@@ -510,8 +504,8 @@ int dlfilter__do_filter_event(struct dlfilter *d,
 	d->d_addr_al   = &d_addr_al;
 
 	d_sample.size  = sizeof(d_sample);
-	d_ip_al.size   = 0; /* To indicate d_ip_al is not initialized */
-	d_addr_al.size = 0; /* To indicate d_addr_al is not initialized */
+	d_ip_al.size   = 0;  
+	d_addr_al.size = 0;  
 
 	ASSIGN(ip);
 	ASSIGN(pid);

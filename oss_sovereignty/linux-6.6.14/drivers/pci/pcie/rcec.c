@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Root Complex Event Collector Support
- *
- * Authors:
- *  Sean V Kelley <sean.v.kelley@intel.com>
- *  Qiuxu Zhuo <qiuxu.zhuo@intel.com>
- *
- * Copyright (C) 2020 Intel Corp.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -26,11 +18,11 @@ static bool rcec_assoc_rciep(struct pci_dev *rcec, struct pci_dev *rciep)
 	unsigned long bitmap = rcec->rcec_ea->bitmap;
 	unsigned int devn;
 
-	/* An RCiEP found on a different bus in range */
+	 
 	if (rcec->bus->number != rciep->bus->number)
 		return true;
 
-	/* Same bus, so check bitmap */
+	 
 	for_each_set_bit(devn, &bitmap, 32)
 		if (devn == PCI_SLOT(rciep->devfn))
 			return true;
@@ -77,18 +69,18 @@ static void walk_rcec(int (*cb)(struct pci_dev *dev, void *data),
 	if (!rcec->rcec_ea)
 		return;
 
-	/* Walk own bus for bitmap based association */
+	 
 	pci_walk_bus(rcec->bus, cb, rcec_data);
 
 	nextbusn = rcec->rcec_ea->nextbusn;
 	lastbusn = rcec->rcec_ea->lastbusn;
 
-	/* All RCiEP devices are on the same bus as the RCEC */
+	 
 	if (nextbusn == 0xff && lastbusn == 0x00)
 		return;
 
 	for (bnr = nextbusn; bnr <= lastbusn; bnr++) {
-		/* No association indicated (PCIe 5.0-1, 7.9.10.3) */
+		 
 		if (bnr == rcec->bus->number)
 			continue;
 
@@ -96,17 +88,12 @@ static void walk_rcec(int (*cb)(struct pci_dev *dev, void *data),
 		if (!bus)
 			continue;
 
-		/* Find RCiEP devices on the given bus ranges */
+		 
 		pci_walk_bus(bus, cb, rcec_data);
 	}
 }
 
-/**
- * pcie_link_rcec - Link RCiEP devices associated with RCEC.
- * @rcec: RCEC whose RCiEP devices should be linked.
- *
- * Link the given RCEC to each RCiEP device found.
- */
+ 
 void pcie_link_rcec(struct pci_dev *rcec)
 {
 	struct walk_rcec_data rcec_data;
@@ -121,16 +108,7 @@ void pcie_link_rcec(struct pci_dev *rcec)
 	walk_rcec(link_rcec_helper, &rcec_data);
 }
 
-/**
- * pcie_walk_rcec - Walk RCiEP devices associating with RCEC and call callback.
- * @rcec:	RCEC whose RCiEP devices should be walked
- * @cb:		Callback to be called for each RCiEP device found
- * @userdata:	Arbitrary pointer to be passed to callback
- *
- * Walk the given RCEC. Call the callback on each RCiEP found.
- *
- * If @cb returns anything other than 0, break out.
- */
+ 
 void pcie_walk_rcec(struct pci_dev *rcec, int (*cb)(struct pci_dev *, void *),
 		    void *userdata)
 {
@@ -152,7 +130,7 @@ void pci_rcec_init(struct pci_dev *dev)
 	u32 rcec, hdr, busn;
 	u8 ver;
 
-	/* Only for Root Complex Event Collectors */
+	 
 	if (pci_pcie_type(dev) != PCI_EXP_TYPE_RC_EC)
 		return;
 
@@ -167,7 +145,7 @@ void pci_rcec_init(struct pci_dev *dev)
 	pci_read_config_dword(dev, rcec + PCI_RCEC_RCIEP_BITMAP,
 			      &rcec_ea->bitmap);
 
-	/* Check whether RCEC BUSN register is present */
+	 
 	pci_read_config_dword(dev, rcec, &hdr);
 	ver = PCI_EXT_CAP_VER(hdr);
 	if (ver >= PCI_RCEC_BUSN_REG_VER) {
@@ -175,7 +153,7 @@ void pci_rcec_init(struct pci_dev *dev)
 		rcec_ea->nextbusn = PCI_RCEC_BUSN_NEXT(busn);
 		rcec_ea->lastbusn = PCI_RCEC_BUSN_LAST(busn);
 	} else {
-		/* Avoid later ver check by setting nextbusn */
+		 
 		rcec_ea->nextbusn = 0xff;
 		rcec_ea->lastbusn = 0x00;
 	}

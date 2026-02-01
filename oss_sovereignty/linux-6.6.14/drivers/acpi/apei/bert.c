@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * APEI Boot Error Record Table (BERT) support
- *
- * Copyright 2011 Intel Corp.
- *   Author: Huang Ying <ying.huang@intel.com>
- *
- * Under normal circumstances, when a hardware error occurs, the error
- * handler receives control and processes the error. This gives OSPM a
- * chance to process the error condition, report it, and optionally attempt
- * recovery. In some cases, the system is unable to process an error.
- * For example, system firmware or a management controller may choose to
- * reset the system or the system might experience an uncontrolled crash
- * or reset.The boot error source is used to report unhandled errors that
- * occurred in a previous boot. This mechanism is described in the BERT
- * table.
- *
- * For more information about BERT, please refer to ACPI Specification
- * version 4.0, section 17.3.1
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -36,13 +18,7 @@
 
 static int bert_disable __initdata;
 
-/*
- * Print "all" the error records in the BERT table, but avoid huge spam to
- * the console if the BIOS included oversize records, or too many records.
- * Skipping some records here does not lose anything because the full
- * data is available to user tools in:
- *	/sys/firmware/acpi/tables/data/BERT
- */
+ 
 static void __init bert_print_all(struct acpi_bert_region *region,
 				  unsigned int region_len)
 {
@@ -60,7 +36,7 @@ static void __init bert_print_all(struct acpi_bert_region *region,
 			break;
 		}
 
-		/* No more error records. */
+		 
 		if (!estatus->block_status)
 			break;
 
@@ -78,11 +54,7 @@ static void __init bert_print_all(struct acpi_bert_region *region,
 			skipped++;
 		}
 
-		/*
-		 * Because the boot error source is "one-time polled" type,
-		 * clear Block Status of current Generic Error Status Block,
-		 * once it's printed.
-		 */
+		 
 		estatus->block_status = 0;
 
 		estatus = (void *)estatus + estatus_len;

@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BME680 - I2C Driver
- *
- * Copyright (C) 2018 Himanshu Jha <himanshujha199640@gmail.com>
- *
- * 7-Bit I2C slave address is:
- *	- 0x76 if SDO is pulled to GND
- *	- 0x77 if SDO is pulled to VDDIO
- *
- * Note: SDO pin cannot be left floating otherwise I2C address
- *	 will be undefined.
- */
+
+ 
 #include <linux/i2c.h>
 #include <linux/module.h>
 #include <linux/regmap.h>

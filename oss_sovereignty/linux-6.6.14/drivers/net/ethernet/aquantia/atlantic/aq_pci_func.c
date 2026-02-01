@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- *
- * Copyright (C) 2014-2019 aQuantia Corporation
- * Copyright (C) 2019-2020 Marvell International Ltd.
- */
 
-/* File aq_pci_func.c: Definition of PCI functions. */
+ 
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -271,7 +267,7 @@ static int aq_pci_probe(struct pci_dev *pdev,
 			}
 
 			reg_sz = pci_resource_len(pdev, bar);
-			if ((reg_sz <= 24 /*ATL_REGS_SIZE*/)) {
+			if ((reg_sz <= 24  )) {
 				err = -EIO;
 				goto err_free_aq_hw_priv;
 			}
@@ -293,11 +289,11 @@ static int aq_pci_probe(struct pci_dev *pdev,
 	numvecs = min((u8)AQ_CFG_VECS_DEF,
 		      aq_nic_get_cfg(self)->aq_hw_caps->msix_irqs);
 	numvecs = min(numvecs, num_online_cpus());
-	/* Request IRQ vector for PTP */
+	 
 	numvecs += 1;
 
 	numvecs += AQ_HW_SERVICE_IRQS;
-	/*enable interrupts */
+	 
 #if !AQ_CFG_FORCE_LEGACY_INT
 	err = pci_alloc_irq_vectors(self->pdev, 1, numvecs,
 				    PCI_IRQ_MSIX | PCI_IRQ_MSI |
@@ -309,7 +305,7 @@ static int aq_pci_probe(struct pci_dev *pdev,
 #endif
 	self->irqvecs = numvecs;
 
-	/* net device init */
+	 
 	aq_nic_cfg_start(self);
 
 	aq_nic_ndev_init(self);

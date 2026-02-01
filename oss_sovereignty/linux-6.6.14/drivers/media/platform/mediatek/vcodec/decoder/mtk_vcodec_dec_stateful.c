@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <media/v4l2-event.h>
 #include <media/v4l2-mem2mem.h>
@@ -46,12 +46,7 @@ static const unsigned int num_supported_formats =
 #define DEFAULT_OUT_FMT_IDX 0
 #define DEFAULT_CAP_FMT_IDX 3
 
-/*
- * This function tries to clean all display buffers, the buffers will return
- * in display order.
- * Note the buffers returned from codec driver may still be in driver's
- * reference list.
- */
+ 
 static struct vb2_buffer *get_display_buffer(struct mtk_vcodec_dec_ctx *ctx)
 {
 	struct vdec_fb *disp_frame_buffer = NULL;
@@ -87,14 +82,7 @@ static struct vb2_buffer *get_display_buffer(struct mtk_vcodec_dec_ctx *ctx)
 	return &vb->vb2_buf;
 }
 
-/*
- * This function tries to clean all capture buffers that are not used as
- * reference buffers by codec driver any more
- * In this case, we need re-queue buffer to vb2 buffer if user space
- * already returns this buffer to v4l2 or this buffer is just the output of
- * previous sps/pps/resolution change decode, or do nothing if user
- * space still owns this buffer
- */
+ 
 static struct vb2_buffer *get_free_buffer(struct mtk_vcodec_dec_ctx *ctx)
 {
 	struct mtk_video_dec_buf *dstbuf;
@@ -122,28 +110,13 @@ static struct vb2_buffer *get_free_buffer(struct mtk_vcodec_dec_ctx *ctx)
 	if (dstbuf->used) {
 		if (dstbuf->queued_in_vb2 && dstbuf->queued_in_v4l2 &&
 		    free_frame_buffer->status == FB_ST_FREE) {
-			/*
-			 * After decode sps/pps or non-display buffer, we don't
-			 * need to return capture buffer to user space, but
-			 * just re-queue this capture buffer to vb2 queue.
-			 * This reduce overheads that dq/q unused capture
-			 * buffer. In this case, queued_in_vb2 = true.
-			 */
+			 
 			mtk_v4l2_vdec_dbg(2, ctx, "[%d]status=%x queue id=%d to rdy_queue %d",
 					  ctx->id, free_frame_buffer->status,
 					  vb->vb2_buf.index, dstbuf->queued_in_vb2);
 			v4l2_m2m_buf_queue(ctx->m2m_ctx, vb);
 		} else if (!dstbuf->queued_in_vb2 && dstbuf->queued_in_v4l2) {
-			/*
-			 * If buffer in v4l2 driver but not in vb2 queue yet,
-			 * and we get this buffer from free_list, it means
-			 * that codec driver do not use this buffer as
-			 * reference buffer anymore. We should q buffer to vb2
-			 * queue, so later work thread could get this buffer
-			 * for decode. In this case, queued_in_vb2 = false
-			 * means this buffer is not from previous decode
-			 * output.
-			 */
+			 
 			mtk_v4l2_vdec_dbg(2, ctx,
 					  "[%d]status=%x queue id=%d to rdy_queue",
 					  ctx->id, free_frame_buffer->status,
@@ -151,14 +124,7 @@ static struct vb2_buffer *get_free_buffer(struct mtk_vcodec_dec_ctx *ctx)
 			v4l2_m2m_buf_queue(ctx->m2m_ctx, vb);
 			dstbuf->queued_in_vb2 = true;
 		} else {
-			/*
-			 * Codec driver do not need to reference this capture
-			 * buffer and this buffer is not in v4l2 driver.
-			 * Then we don't need to do any thing, just add log when
-			 * we need to debug buffer flow.
-			 * When this buffer q from user space, it could
-			 * directly q to vb2 buffer
-			 */
+			 
 			mtk_v4l2_vdec_dbg(3, ctx, "[%d]status=%x err queue id=%d %d %d",
 					  ctx->id, free_frame_buffer->status,
 					  vb->vb2_buf.index, dstbuf->queued_in_vb2,
@@ -323,7 +289,7 @@ static void mtk_vdec_worker(struct work_struct *work)
 		mtk_v4l2_vdec_dbg(1, ctx, "Got empty flush input buffer.");
 		src_buf = v4l2_m2m_src_buf_remove(ctx->m2m_ctx);
 
-		/* update dst buf status */
+		 
 		dst_buf = v4l2_m2m_dst_buf_remove(ctx->m2m_ctx);
 		mutex_lock(&ctx->lock);
 		dst_buf_info->used = false;
@@ -377,10 +343,7 @@ static void mtk_vdec_worker(struct work_struct *work)
 		}
 		v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_ERROR);
 	} else if (!res_chg) {
-		/*
-		 * we only return src buffer with VB2_BUF_STATE_DONE
-		 * when decode success without resolution change
-		 */
+		 
 		src_buf = v4l2_m2m_src_buf_remove(ctx->m2m_ctx);
 		v4l2_m2m_buf_done(src_buf, VB2_BUF_STATE_DONE);
 	}
@@ -391,20 +354,9 @@ static void mtk_vdec_worker(struct work_struct *work)
 
 	if (!ret && res_chg) {
 		mtk_vdec_pic_info_update(ctx);
-		/*
-		 * On encountering a resolution change in the stream.
-		 * The driver must first process and decode all
-		 * remaining buffers from before the resolution change
-		 * point, so call flush decode here
-		 */
+		 
 		mtk_vdec_flush_decoder(ctx);
-		/*
-		 * After all buffers containing decoded frames from
-		 * before the resolution change point ready to be
-		 * dequeued on the CAPTURE queue, the driver sends a
-		 * V4L2_EVENT_SOURCE_CHANGE event for source change
-		 * type V4L2_EVENT_SRC_CH_RESOLUTION
-		 */
+		 
 		mtk_vdec_queue_res_chg_event(ctx);
 	}
 	v4l2_m2m_job_finish(dev->m2m_dev_dec, ctx->m2m_ctx);
@@ -423,9 +375,7 @@ static void vb2ops_vdec_stateful_buf_queue(struct vb2_buffer *vb)
 
 	mtk_v4l2_vdec_dbg(3, ctx, "[%d] (%d) id=%d, vb=%p", ctx->id,
 			  vb->vb2_queue->type, vb->index, vb);
-	/*
-	 * check if this buffer is ready to be used after decode
-	 */
+	 
 	if (vb->vb2_queue->type != V4L2_BUF_TYPE_VIDEO_OUTPUT_MPLANE) {
 		struct mtk_video_dec_buf *buf;
 
@@ -459,7 +409,7 @@ static void vb2ops_vdec_stateful_buf_queue(struct vb2_buffer *vb)
 	}
 
 	if (src_buf == &ctx->empty_flush_buf.vb) {
-		/* This shouldn't happen. Just in case. */
+		 
 		mtk_v4l2_vdec_err(ctx, "Invalid flush buffer.");
 		v4l2_m2m_src_buf_remove(ctx->m2m_ctx);
 		return;
@@ -473,12 +423,7 @@ static void vb2ops_vdec_stateful_buf_queue(struct vb2_buffer *vb)
 
 	ret = vdec_if_decode(ctx, &src_mem, NULL, &res_chg);
 	if (ret || !res_chg) {
-		/*
-		 * fb == NULL means to parse SPS/PPS header or
-		 * resolution info in src_mem. Decode can fail
-		 * if there is no SPS header or picture info
-		 * in bs
-		 */
+		 
 
 		src_buf = v4l2_m2m_src_buf_remove(ctx->m2m_ctx);
 		if (ret == -EIO) {
@@ -560,9 +505,7 @@ static int mtk_vcodec_dec_ctrls_setup(struct mtk_vcodec_dec_ctx *ctx)
 			       V4L2_CID_MPEG_VIDEO_VP9_PROFILE,
 			       V4L2_MPEG_VIDEO_VP9_PROFILE_0, 0,
 			       V4L2_MPEG_VIDEO_VP9_PROFILE_0);
-	/*
-	 * H264. Baseline / Extended decoding is not supported.
-	 */
+	 
 	v4l2_ctrl_new_std_menu(&ctx->ctrl_hdl, &mtk_vcodec_dec_ctrl_ops,
 			       V4L2_CID_MPEG_VIDEO_H264_PROFILE, V4L2_MPEG_VIDEO_H264_PROFILE_HIGH,
 			       BIT(V4L2_MPEG_VIDEO_H264_PROFILE_BASELINE) |

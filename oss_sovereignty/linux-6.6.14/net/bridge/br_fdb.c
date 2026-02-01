@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Forwarding database
- *	Linux ethernet bridge
- *
- *	Authors:
- *	Lennert Buytenhek		<buytenh@gnu.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -60,9 +54,7 @@ void br_fdb_hash_fini(struct net_bridge *br)
 	rhashtable_destroy(&br->fdb_hash_tbl);
 }
 
-/* if topology_changing then use forward_delay (default 15 sec)
- * otherwise keep longer (default 5 minutes)
- */
+ 
 static inline unsigned long hold_time(const struct net_bridge *br)
 {
 	return br->topology_change ? br->forward_delay : br->ageing_time;
@@ -175,13 +167,13 @@ nla_put_failure:
 static inline size_t fdb_nlmsg_size(void)
 {
 	return NLMSG_ALIGN(sizeof(struct ndmsg))
-		+ nla_total_size(ETH_ALEN) /* NDA_LLADDR */
-		+ nla_total_size(sizeof(u32)) /* NDA_MASTER */
-		+ nla_total_size(sizeof(u32)) /* NDA_FLAGS_EXT */
-		+ nla_total_size(sizeof(u16)) /* NDA_VLAN */
+		+ nla_total_size(ETH_ALEN)  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u32))  
+		+ nla_total_size(sizeof(u16))  
 		+ nla_total_size(sizeof(struct nda_cacheinfo))
-		+ nla_total_size(0) /* NDA_FDB_EXT_ATTRS */
-		+ nla_total_size(sizeof(u8)); /* NFEA_ACTIVITY_NOTIFY */
+		+ nla_total_size(0)  
+		+ nla_total_size(sizeof(u8));  
 }
 
 static void fdb_notify(struct net_bridge *br,
@@ -201,7 +193,7 @@ static void fdb_notify(struct net_bridge *br,
 
 	err = fdb_fill_info(skb, br, fdb, 0, 0, type, 0);
 	if (err < 0) {
-		/* -EMSGSIZE implies BUG in fdb_nlmsg_size() */
+		 
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(skb);
 		goto errout;
@@ -226,7 +218,7 @@ static struct net_bridge_fdb_entry *fdb_find_rcu(struct rhashtable *tbl,
 	return rhashtable_lookup(tbl, &key, br_fdb_rht_params);
 }
 
-/* requires bridge hash_lock */
+ 
 static struct net_bridge_fdb_entry *br_fdb_find(struct net_bridge *br,
 						const unsigned char *addr,
 						__u16 vid)
@@ -273,11 +265,7 @@ struct net_bridge_fdb_entry *br_fdb_find_rcu(struct net_bridge *br,
 	return fdb_find_rcu(&br->fdb_hash_tbl, addr, vid);
 }
 
-/* When a static FDB entry is added, the mac address from the entry is
- * added to the bridge private HW address list and all required ports
- * are then updated with the new information.
- * Called under RTNL.
- */
+ 
 static void fdb_add_hw_addr(struct net_bridge *br, const unsigned char *addr)
 {
 	int err;
@@ -301,11 +289,7 @@ undo:
 	}
 }
 
-/* When a static FDB entry is deleted, the HW address from that entry is
- * also removed from the bridge private HW address list and updates all
- * the ports with needed information.
- * Called under RTNL.
- */
+ 
 static void fdb_del_hw_addr(struct net_bridge *br, const unsigned char *addr)
 {
 	struct net_bridge_port *p;
@@ -333,7 +317,7 @@ static void fdb_delete(struct net_bridge *br, struct net_bridge_fdb_entry *f,
 	call_rcu(&f->rcu, fdb_rcu_free);
 }
 
-/* Delete a local entry if no other port had the same address. */
+ 
 static void fdb_delete_local(struct net_bridge *br,
 			     const struct net_bridge_port *p,
 			     struct net_bridge_fdb_entry *f)
@@ -344,7 +328,7 @@ static void fdb_delete_local(struct net_bridge *br,
 	struct net_bridge_port *op;
 	u16 vid = f->key.vlan_id;
 
-	/* Maybe another port has same hw addr? */
+	 
 	list_for_each_entry(op, &br->port_list, list) {
 		vg = nbp_vlan_group(op);
 		if (op != p && ether_addr_equal(op->dev->dev_addr, addr) &&
@@ -357,7 +341,7 @@ static void fdb_delete_local(struct net_bridge *br,
 
 	vg = br_vlan_group(br);
 	v = br_vlan_find(vg, vid);
-	/* Maybe bridge device has same hw addr? */
+	 
 	if (p && ether_addr_equal(br->dev->dev_addr, addr) &&
 	    (!vid || (v && br_vlan_should_use(v)))) {
 		f->dst = NULL;
@@ -422,9 +406,7 @@ static int fdb_add_local(struct net_bridge *br, struct net_bridge_port *source,
 
 	fdb = br_fdb_find(br, addr, vid);
 	if (fdb) {
-		/* it is okay to have multiple ports with same
-		 * address, just use the first one.
-		 */
+		 
 		if (test_bit(BR_FDB_LOCAL, &fdb->flags))
 			return 0;
 		br_warn(br, "adding interface %s with same address as a received packet (addr:%pM, vlan:%u)\n",
@@ -454,29 +436,23 @@ void br_fdb_changeaddr(struct net_bridge_port *p, const unsigned char *newaddr)
 	hlist_for_each_entry(f, &br->fdb_list, fdb_node) {
 		if (f->dst == p && test_bit(BR_FDB_LOCAL, &f->flags) &&
 		    !test_bit(BR_FDB_ADDED_BY_USER, &f->flags)) {
-			/* delete old one */
+			 
 			fdb_delete_local(br, p, f);
 
-			/* if this port has no vlan information
-			 * configured, we can safely be done at
-			 * this point.
-			 */
+			 
 			if (!vg || !vg->num_vlans)
 				goto insert;
 		}
 	}
 
 insert:
-	/* insert new address,  may fail if invalid address or dup. */
+	 
 	fdb_add_local(br, p, newaddr, 0);
 
 	if (!vg || !vg->num_vlans)
 		goto done;
 
-	/* Now add entries for every VLAN configured on the port.
-	 * This function runs under RTNL so the bitmap will not change
-	 * from under us.
-	 */
+	 
 	list_for_each_entry(v, &vg->vlan_list, vlist)
 		fdb_add_local(br, p, newaddr, v->vid);
 
@@ -492,7 +468,7 @@ void br_fdb_change_mac_address(struct net_bridge *br, const u8 *newaddr)
 
 	spin_lock_bh(&br->hash_lock);
 
-	/* If old entry was unassociated with any port, then delete it. */
+	 
 	f = br_fdb_find(br, br->dev->dev_addr, 0);
 	if (f && test_bit(BR_FDB_LOCAL, &f->flags) &&
 	    !f->dst && !test_bit(BR_FDB_ADDED_BY_USER, &f->flags))
@@ -502,10 +478,7 @@ void br_fdb_change_mac_address(struct net_bridge *br, const u8 *newaddr)
 	vg = br_vlan_group(br);
 	if (!vg || !vg->num_vlans)
 		goto out;
-	/* Now remove and add entries for every VLAN configured on the
-	 * bridge.  This function runs under RTNL so the bitmap will not
-	 * change from under us.
-	 */
+	 
 	list_for_each_entry(v, &vg->vlan_list, vlist) {
 		if (!br_vlan_should_use(v))
 			continue;
@@ -528,10 +501,7 @@ void br_fdb_cleanup(struct work_struct *work)
 	unsigned long work_delay = delay;
 	unsigned long now = jiffies;
 
-	/* this part is tricky, in order to avoid blocking learning and
-	 * consequently forwarding, we rely on rcu to delete objects with
-	 * delayed freeing allowing us to continue traversing
-	 */
+	 
 	rcu_read_lock();
 	hlist_for_each_entry_rcu(f, &br->fdb_list, fdb_node) {
 		unsigned long this_timer = f->updated + delay;
@@ -560,7 +530,7 @@ void br_fdb_cleanup(struct work_struct *work)
 	}
 	rcu_read_unlock();
 
-	/* Cleanup minimum 10 milliseconds apart */
+	 
 	work_delay = max_t(unsigned long, work_delay, msecs_to_jiffies(10));
 	mod_delayed_work(system_long_wq, &br->gc_work, work_delay);
 }
@@ -582,7 +552,7 @@ static bool __fdb_flush_matches(const struct net_bridge *br,
 	return true;
 }
 
-/* Flush forwarding database entries matching the description */
+ 
 void br_fdb_flush(struct net_bridge *br,
 		  const struct net_bridge_fdb_flush_desc *desc)
 {
@@ -710,7 +680,7 @@ int br_fdb_delete_bulk(struct ndmsg *ndm, struct nlattr *tb[],
 			return err;
 		desc.port_ifindex = ifidx;
 	} else if (p) {
-		/* flush was invoked with port device and NTF_MASTER */
+		 
 		desc.port_ifindex = p->dev->ifindex;
 	}
 
@@ -722,10 +692,7 @@ int br_fdb_delete_bulk(struct ndmsg *ndm, struct nlattr *tb[],
 	return 0;
 }
 
-/* Flush all entries referring to a specific port.
- * if do_all is set also flush static entries
- * if vid is set delete all entries that match the vlan_id
- */
+ 
 void br_fdb_delete_by_port(struct net_bridge *br,
 			   const struct net_bridge_port *p,
 			   u16 vid,
@@ -755,8 +722,7 @@ void br_fdb_delete_by_port(struct net_bridge *br,
 }
 
 #if IS_ENABLED(CONFIG_ATM_LANE)
-/* Interface used by ATM LANE hook to test
- * if an addr is on some other bridge port */
+ 
 int br_fdb_test_addr(struct net_device *dev, unsigned char *addr)
 {
 	struct net_bridge_fdb_entry *fdb;
@@ -781,12 +747,9 @@ int br_fdb_test_addr(struct net_device *dev, unsigned char *addr)
 
 	return ret;
 }
-#endif /* CONFIG_ATM_LANE */
+#endif  
 
-/*
- * Fill buffer with forwarding table records in
- * the API format.
- */
+ 
 int br_fdb_fillbuf(struct net_bridge *br, void *buf,
 		   unsigned long maxnum, unsigned long skip)
 {
@@ -804,7 +767,7 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf,
 		if (has_expired(br, f))
 			continue;
 
-		/* ignore pseudo entry for local MAC address */
+		 
 		if (!f->dst)
 			continue;
 
@@ -813,10 +776,10 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf,
 			continue;
 		}
 
-		/* convert from internal format to API */
+		 
 		memcpy(fe->mac_addr, f->key.addr.addr, ETH_ALEN);
 
-		/* due to ABI compat need to split into hi/lo */
+		 
 		fe->port_no = f->dst->port_no;
 		fe->port_hi = f->dst->port_no >> 8;
 
@@ -831,7 +794,7 @@ int br_fdb_fillbuf(struct net_bridge *br, void *buf,
 	return num;
 }
 
-/* Add entry for local address of interface */
+ 
 int br_fdb_add_local(struct net_bridge *br, struct net_bridge_port *source,
 		     const unsigned char *addr, u16 vid)
 {
@@ -843,7 +806,7 @@ int br_fdb_add_local(struct net_bridge *br, struct net_bridge_port *source,
 	return ret;
 }
 
-/* returns true if the fdb was modified */
+ 
 static bool __fdb_mark_active(struct net_bridge_fdb_entry *fdb)
 {
 	return !!(test_bit(BR_FDB_NOTIFY_INACTIVE, &fdb->flags) &&
@@ -855,13 +818,13 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
 {
 	struct net_bridge_fdb_entry *fdb;
 
-	/* some users want to always flood. */
+	 
 	if (hold_time(br) == 0)
 		return;
 
 	fdb = fdb_find_rcu(&br->fdb_hash_tbl, addr, vid);
 	if (likely(fdb)) {
-		/* attempt to update an entry for a local interface */
+		 
 		if (unlikely(test_bit(BR_FDB_LOCAL, &fdb->flags))) {
 			if (net_ratelimit())
 				br_warn(br, "received packet on %s with own address as source address (addr:%pM, vlan:%u)\n",
@@ -875,20 +838,18 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
 				fdb_modified = __fdb_mark_active(fdb);
 			}
 
-			/* fastpath: update of existing entry */
+			 
 			if (unlikely(source != READ_ONCE(fdb->dst) &&
 				     !test_bit(BR_FDB_STICKY, &fdb->flags))) {
 				br_switchdev_fdb_notify(br, fdb, RTM_DELNEIGH);
 				WRITE_ONCE(fdb->dst, source);
 				fdb_modified = true;
-				/* Take over HW learned entry */
+				 
 				if (unlikely(test_bit(BR_FDB_ADDED_BY_EXT_LEARN,
 						      &fdb->flags)))
 					clear_bit(BR_FDB_ADDED_BY_EXT_LEARN,
 						  &fdb->flags);
-				/* Clear locked flag when roaming to an
-				 * unlocked port.
-				 */
+				 
 				if (unlikely(test_bit(BR_FDB_LOCKED, &fdb->flags)))
 					clear_bit(BR_FDB_LOCKED, &fdb->flags);
 			}
@@ -907,14 +868,12 @@ void br_fdb_update(struct net_bridge *br, struct net_bridge_port *source,
 			trace_br_fdb_update(br, source, addr, vid, flags);
 			fdb_notify(br, fdb, RTM_NEWNEIGH, true);
 		}
-		/* else  we lose race and someone else inserts
-		 * it first, don't bother updating
-		 */
+		 
 		spin_unlock(&br->hash_lock);
 	}
 }
 
-/* Dump information about entries, in response to GETNEIGH */
+ 
 int br_fdb_dump(struct sk_buff *skb,
 		struct netlink_callback *cb,
 		struct net_device *dev,
@@ -941,11 +900,7 @@ int br_fdb_dump(struct sk_buff *skb,
 		if (filter_dev && (!f->dst || f->dst->dev != filter_dev)) {
 			if (filter_dev != dev)
 				goto skip;
-			/* !f->dst is a special case for bridge
-			 * It means the MAC belongs to the bridge
-			 * Therefore need a little more filtering
-			 * we only want to dump the !f->dst case
-			 */
+			 
 			if (f->dst)
 				goto skip;
 		}
@@ -993,23 +948,23 @@ errout:
 	return err;
 }
 
-/* returns true if the fdb is modified */
+ 
 static bool fdb_handle_notify(struct net_bridge_fdb_entry *fdb, u8 notify)
 {
 	bool modified = false;
 
-	/* allow to mark an entry as inactive, usually done on creation */
+	 
 	if ((notify & FDB_NOTIFY_INACTIVE_BIT) &&
 	    !test_and_set_bit(BR_FDB_NOTIFY_INACTIVE, &fdb->flags))
 		modified = true;
 
 	if ((notify & FDB_NOTIFY_BIT) &&
 	    !test_and_set_bit(BR_FDB_NOTIFY, &fdb->flags)) {
-		/* enabled activity tracking */
+		 
 		modified = true;
 	} else if (!(notify & FDB_NOTIFY_BIT) &&
 		   test_and_clear_bit(BR_FDB_NOTIFY, &fdb->flags)) {
-		/* disabled activity tracking, clear notify state */
+		 
 		clear_bit(BR_FDB_NOTIFY_INACTIVE, &fdb->flags);
 		modified = true;
 	}
@@ -1017,7 +972,7 @@ static bool fdb_handle_notify(struct net_bridge_fdb_entry *fdb, u8 notify)
 	return modified;
 }
 
-/* Update (create or replace) forwarding database entry */
+ 
 static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
 			 const u8 *addr, struct ndmsg *ndm, u16 flags, u16 vid,
 			 struct nlattr *nfea_tb[])
@@ -1029,7 +984,7 @@ static int fdb_add_entry(struct net_bridge *br, struct net_bridge_port *source,
 	bool modified = false;
 	u8 notify = 0;
 
-	/* If the port cannot learn allow only local and static entries */
+	 
 	if (source && !(state & NUD_PERMANENT) && !(state & NUD_NOARP) &&
 	    !(source->state == BR_STATE_LEARNING ||
 	      source->state == BR_STATE_FORWARDING))
@@ -1154,7 +1109,7 @@ static const struct nla_policy br_nda_fdb_pol[NFEA_MAX + 1] = {
 	[NFEA_DONT_REFRESH]	= { .type = NLA_FLAG },
 };
 
-/* Add new permanent fdb entry with RTM_NEWNEIGH */
+ 
 int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
 	       struct net_device *dev,
 	       const unsigned char *addr, u16 vid, u16 nlh_flags,
@@ -1219,7 +1174,7 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
 			return -EINVAL;
 		}
 
-		/* VID was specified, so use it. */
+		 
 		err = __br_fdb_add(ndm, br, p, addr, nlh_flags, vid, nfea_tb,
 				   extack);
 	} else {
@@ -1228,10 +1183,7 @@ int br_fdb_add(struct ndmsg *ndm, struct nlattr *tb[],
 		if (err || !vg || !vg->num_vlans)
 			goto out;
 
-		/* We have vlans configured on this port and user didn't
-		 * specify a VLAN.  To be nice, add/update entry for every
-		 * vlan on this port.
-		 */
+		 
 		list_for_each_entry(v, &vg->vlan_list, vlist) {
 			if (!br_vlan_should_use(v))
 				continue;
@@ -1274,7 +1226,7 @@ static int __br_fdb_delete(struct net_bridge *br,
 	return err;
 }
 
-/* Remove neighbor entry with RTM_DELNEIGH */
+ 
 int br_fdb_delete(struct ndmsg *ndm, struct nlattr *tb[],
 		  struct net_device *dev,
 		  const unsigned char *addr, u16 vid,
@@ -1331,10 +1283,10 @@ int br_fdb_sync_static(struct net_bridge *br, struct net_bridge_port *p)
 
 	ASSERT_RTNL();
 
-	/* the key here is that static entries change only under rtnl */
+	 
 	rcu_read_lock();
 	hlist_for_each_entry_rcu(f, &br->fdb_list, fdb_node) {
-		/* We only care for static entries */
+		 
 		if (!test_bit(BR_FDB_STATIC, &f->flags))
 			continue;
 		err = dev_uc_add(p->dev, f->key.addr.addr);
@@ -1348,7 +1300,7 @@ done:
 
 rollback:
 	hlist_for_each_entry_rcu(tmp, &br->fdb_list, fdb_node) {
-		/* We only care for static entries */
+		 
 		if (!test_bit(BR_FDB_STATIC, &tmp->flags))
 			continue;
 		if (tmp == f)
@@ -1367,7 +1319,7 @@ void br_fdb_unsync_static(struct net_bridge *br, struct net_bridge_port *p)
 
 	rcu_read_lock();
 	hlist_for_each_entry_rcu(f, &br->fdb_list, fdb_node) {
-		/* We only care for static entries */
+		 
 		if (!test_bit(BR_FDB_STATIC, &f->flags))
 			continue;
 
@@ -1426,10 +1378,10 @@ int br_fdb_external_learn_add(struct net_bridge *br, struct net_bridge_port *p,
 		}
 
 		if (test_bit(BR_FDB_ADDED_BY_EXT_LEARN, &fdb->flags)) {
-			/* Refresh entry */
+			 
 			fdb->used = jiffies;
 		} else if (!test_bit(BR_FDB_ADDED_BY_USER, &fdb->flags)) {
-			/* Take over SW learned entry */
+			 
 			set_bit(BR_FDB_ADDED_BY_EXT_LEARN, &fdb->flags);
 			modified = true;
 		}

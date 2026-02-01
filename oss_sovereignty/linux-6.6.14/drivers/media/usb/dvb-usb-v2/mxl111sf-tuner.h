@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *  mxl111sf-tuner.h - driver for the MaxLinear MXL111SF CMOS tuner
- *
- *  Copyright (C) 2010-2014 Michael Krufky <mkrufky@linuxtv.org>
- */
+ 
+ 
 
 #ifndef __MXL111SF_TUNER_H__
 #define __MXL111SF_TUNER_H__
@@ -13,22 +9,22 @@
 
 enum mxl_if_freq {
 #if 0
-	MXL_IF_LO    = 0x00, /* other IF < 9MHz */
+	MXL_IF_LO    = 0x00,  
 #endif
-	MXL_IF_4_0   = 0x01, /* 4.0   MHz */
-	MXL_IF_4_5   = 0x02, /* 4.5   MHz */
-	MXL_IF_4_57  = 0x03, /* 4.57  MHz */
-	MXL_IF_5_0   = 0x04, /* 5.0   MHz */
-	MXL_IF_5_38  = 0x05, /* 5.38  MHz */
-	MXL_IF_6_0   = 0x06, /* 6.0   MHz */
-	MXL_IF_6_28  = 0x07, /* 6.28  MHz */
-	MXL_IF_7_2   = 0x08, /* 7.2   MHz */
-	MXL_IF_35_25 = 0x09, /* 35.25 MHz */
-	MXL_IF_36    = 0x0a, /* 36    MHz */
-	MXL_IF_36_15 = 0x0b, /* 36.15 MHz */
-	MXL_IF_44    = 0x0c, /* 44    MHz */
+	MXL_IF_4_0   = 0x01,  
+	MXL_IF_4_5   = 0x02,  
+	MXL_IF_4_57  = 0x03,  
+	MXL_IF_5_0   = 0x04,  
+	MXL_IF_5_38  = 0x05,  
+	MXL_IF_6_0   = 0x06,  
+	MXL_IF_6_28  = 0x07,  
+	MXL_IF_7_2   = 0x08,  
+	MXL_IF_35_25 = 0x09,  
+	MXL_IF_36    = 0x0a,  
+	MXL_IF_36_15 = 0x0b,  
+	MXL_IF_44    = 0x0c,  
 #if 0
-	MXL_IF_HI    = 0x0f, /* other IF > 35 MHz and < 45 MHz */
+	MXL_IF_HI    = 0x0f,  
 #endif
 };
 
@@ -44,7 +40,7 @@ struct mxl111sf_tuner_config {
 	int (*ant_hunt)(struct dvb_frontend *fe);
 };
 
-/* ------------------------------------------------------------------------ */
+ 
 
 #if IS_ENABLED(CONFIG_DVB_USB_MXL111SF)
 extern
@@ -62,4 +58,4 @@ struct dvb_frontend *mxl111sf_tuner_attach(struct dvb_frontend *fe,
 }
 #endif
 
-#endif /* __MXL111SF_TUNER_H__ */
+#endif  

@@ -1,16 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2013  Davidlohr Bueso <davidlohr@hp.com>
- *
- * futex-requeue: Block a bunch of threads on futex1 and requeue them
- *                on futex2, N at a time.
- *
- * This program is particularly useful to measure the latency of nthread
- * requeues without waking up any tasks (in the non-pi case) -- thus
- * mimicking a regular futex_wait.
- */
 
-/* For the CLR_() macros */
+ 
+
+ 
 #include <string.h>
 #include <pthread.h>
 
@@ -42,10 +33,7 @@ static unsigned int threads_starting;
 static int futex_flag = 0;
 
 static struct bench_futex_parameters params = {
-	/*
-	 * How many tasks to requeue at a time.
-	 * Default to 1 in order to make the kernel work more.
-	 */
+	 
 	.nrequeue = 1,
 };
 
@@ -105,7 +93,7 @@ static void *workerfn(void *arg __maybe_unused)
 			ret = futex_wait_requeue_pi(&futex1, 0, &futex2,
 						    NULL, futex_flag);
 			if (!ret) {
-				/* got the lock at futex2 */
+				 
 				futex_unlock_pi(&futex2, futex_flag);
 				break;
 			}
@@ -134,7 +122,7 @@ static void block_threads(pthread_t *w, struct perf_cpu_map *cpu)
 	BUG_ON(!cpuset);
 	size = CPU_ALLOC_SIZE(nrcpus);
 
-	/* create and block all threads */
+	 
 	for (i = 0; i < params.nthreads; i++) {
 		pthread_attr_t thread_attr;
 
@@ -219,10 +207,10 @@ int bench_futex_requeue(int argc, const char **argv)
 		unsigned int nrequeued = 0, wakeups = 0;
 		struct timeval start, end, runtime;
 
-		/* create, launch & block all threads */
+		 
 		block_threads(worker, cpu);
 
-		/* make sure all threads are already blocked */
+		 
 		mutex_lock(&thread_lock);
 		while (threads_starting)
 			cond_wait(&thread_parent, &thread_lock);
@@ -231,17 +219,12 @@ int bench_futex_requeue(int argc, const char **argv)
 
 		usleep(100000);
 
-		/* Ok, all threads are patiently blocked, start requeueing */
+		 
 		gettimeofday(&start, NULL);
 		while (nrequeued < params.nthreads) {
 			int r;
 
-			/*
-			 * For the regular non-pi case, do not wakeup any tasks
-			 * blocked on futex1, allowing us to really measure
-			 * futex_wait functionality. For the PI case the first
-			 * waiter is always awoken.
-			 */
+			 
 			if (!params.pi) {
 				r = futex_cmp_requeue(&futex1, 0, &futex2, 0,
 						      params.nrequeue,
@@ -250,7 +233,7 @@ int bench_futex_requeue(int argc, const char **argv)
 				r = futex_cmp_requeue_pi(&futex1, 0, &futex2,
 							 params.nrequeue,
 							 futex_flag);
-				wakeups++; /* assume no error */
+				wakeups++;  
 			}
 
 			if (r < 0)
@@ -284,7 +267,7 @@ int bench_futex_requeue(int argc, const char **argv)
 		}
 
 		if (!params.pi) {
-			/* everybody should be blocked on futex2, wake'em up */
+			 
 			nrequeued = futex_wake(&futex2, nrequeued, futex_flag);
 			if (params.nthreads != nrequeued)
 				warnx("couldn't wakeup all tasks (%d/%d)",
@@ -298,7 +281,7 @@ int bench_futex_requeue(int argc, const char **argv)
 		}
 	}
 
-	/* cleanup & report results */
+	 
 	cond_destroy(&thread_parent);
 	cond_destroy(&thread_worker);
 	mutex_destroy(&thread_lock);

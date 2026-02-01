@@ -1,40 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * TI CAL camera interface driver
- *
- * Copyright (c) 2015 Texas Instruments Inc.
- *
- * Benoit Parrot, <bparrot@ti.com>
- */
+ 
+ 
 
 #ifndef __TI_CAL_REGS_H
 #define __TI_CAL_REGS_H
 
-/*
- * struct cal_dev.flags possibilities
- *
- * DRA72_CAL_PRE_ES2_LDO_DISABLE:
- *   Errata i913: CSI2 LDO Needs to be disabled when module is powered on
- *
- *   Enabling CSI2 LDO shorts it to core supply. It is crucial the 2 CSI2
- *   LDOs on the device are disabled if CSI-2 module is powered on
- *   (0x4845 B304 | 0x4845 B384 [28:27] = 0x1) or in ULPS (0x4845 B304
- *   | 0x4845 B384 [28:27] = 0x2) mode. Common concerns include: high
- *   current draw on the module supply in active mode.
- *
- *   Errata does not apply when CSI-2 module is powered off
- *   (0x4845 B304 | 0x4845 B384 [28:27] = 0x0).
- *
- * SW Workaround:
- *	Set the following register bits to disable the LDO,
- *	which is essentially CSI2 REG10 bit 6:
- *
- *		Core 0:  0x4845 B828 = 0x0000 0040
- *		Core 1:  0x4845 B928 = 0x0000 0040
- */
+ 
 #define DRA72_CAL_PRE_ES2_LDO_DISABLE BIT(0)
 
-/* CAL register offsets */
+ 
 
 #define CAL_HL_REVISION			0x0000
 #define CAL_HL_HWINFO			0x0004
@@ -75,18 +48,16 @@
 #define CAL_CSI2_CTX(phy, csi2_ctx)	(0x330U + (phy) * 0x80U + (csi2_ctx) * 4)
 #define CAL_CSI2_STATUS(phy, csi2_ctx)	(0x350U + (phy) * 0x80U + (csi2_ctx) * 4)
 
-/* CAL CSI2 PHY register offsets */
+ 
 #define CAL_CSI2_PHY_REG0		0x000
 #define CAL_CSI2_PHY_REG1		0x004
 #define CAL_CSI2_PHY_REG2		0x008
 #define CAL_CSI2_PHY_REG10		0x028
 
-/* CAL Control Module Core Camerrx Control register offsets */
+ 
 #define CM_CTRL_CORE_CAMERRX_CONTROL	0x000
 
-/*********************************************************************
-* Field Definition Macros
-*********************************************************************/
+ 
 
 #define CAL_HL_REVISION_MINOR_MASK		GENMASK(5, 0)
 #define CAL_HL_REVISION_CUSTOM_MASK		GENMASK(7, 6)

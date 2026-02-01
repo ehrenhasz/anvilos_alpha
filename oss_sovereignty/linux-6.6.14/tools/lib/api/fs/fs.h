@@ -1,14 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __API_FS__
 #define __API_FS__
 
 #include <stdbool.h>
 #include <unistd.h>
 
-/*
- * On most systems <limits.h> would have given us this, but  not on some systems
- * (e.g. GNU/Hurd).
- */
+ 
 #ifndef PATH_MAX
 #define PATH_MAX 4096
 #endif
@@ -18,18 +15,7 @@
 	const char *name##__mount(void);	\
 	bool name##__configured(void);		\
 
-/*
- * The xxxx__mountpoint() entry points find the first match mount point for each
- * filesystems listed below, where xxxx is the filesystem type.
- *
- * The interface is as follows:
- *
- * - If a mount point is found on first call, it is cached and used for all
- *   subsequent calls.
- *
- * - If a mount point is not found, NULL is returned on first call and all
- *   subsequent calls.
- */
+ 
 FS(sysfs)
 FS(procfs)
 FS(debugfs)
@@ -59,4 +45,4 @@ int sysfs__read_str(const char *entry, char **buf, size_t *sizep);
 int sysfs__read_bool(const char *entry, bool *value);
 
 int sysfs__write_int(const char *entry, int value);
-#endif /* __API_FS__ */
+#endif  

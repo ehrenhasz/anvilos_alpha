@@ -1,13 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
+ 
 #ifndef __HID_ROCCAT_KONEPLUS_H
 #define __HID_ROCCAT_KONEPLUS_H
 
-/*
- * Copyright (c) 2010 Stefan Achatz <erazor_de@users.sourceforge.net>
- */
+ 
 
-/*
- */
+ 
 
 #include <linux/types.h>
 
@@ -31,14 +28,14 @@ enum koneplus_control_requests {
 };
 
 struct koneplus_actual_profile {
-	uint8_t command; /* KONEPLUS_COMMAND_ACTUAL_PROFILE */
-	uint8_t size; /* always 3 */
-	uint8_t actual_profile; /* Range 0-4! */
+	uint8_t command;  
+	uint8_t size;  
+	uint8_t actual_profile;  
 } __attribute__ ((__packed__));
 
 struct koneplus_info {
-	uint8_t command; /* KONEPLUS_COMMAND_INFO */
-	uint8_t size; /* always 6 */
+	uint8_t command;  
+	uint8_t size;  
 	uint8_t firmware_version;
 	uint8_t unknown[3];
 } __attribute__ ((__packed__));
@@ -66,7 +63,7 @@ enum koneplus_mouse_report_numbers {
 };
 
 struct koneplus_mouse_report_button {
-	uint8_t report_number; /* always KONEPLUS_MOUSE_REPORT_NUMBER_BUTTON */
+	uint8_t report_number;  
 	uint8_t zero1;
 	uint8_t type;
 	uint8_t data1;
@@ -76,24 +73,22 @@ struct koneplus_mouse_report_button {
 } __attribute__ ((__packed__));
 
 enum koneplus_mouse_report_button_types {
-	/* data1 = new profile range 1-5 */
+	 
 	KONEPLUS_MOUSE_REPORT_BUTTON_TYPE_PROFILE = 0x20,
 
-	/* data1 = button number range 1-24; data2 = action */
+	 
 	KONEPLUS_MOUSE_REPORT_BUTTON_TYPE_QUICKLAUNCH = 0x60,
 
-	/* data1 = button number range 1-24; data2 = action */
+	 
 	KONEPLUS_MOUSE_REPORT_BUTTON_TYPE_TIMER = 0x80,
 
-	/* data1 = setting number range 1-5 */
+	 
 	KONEPLUS_MOUSE_REPORT_BUTTON_TYPE_CPI = 0xb0,
 
-	/* data1 and data2 = range 0x1-0xb */
+	 
 	KONEPLUS_MOUSE_REPORT_BUTTON_TYPE_SENSITIVITY = 0xc0,
 
-	/* data1 = 22 = next track...
-	 * data2 = action
-	 */
+	 
 	KONEPLUS_MOUSE_REPORT_BUTTON_TYPE_MULTIMEDIA = 0xf0,
 	KONEPLUS_MOUSE_REPORT_TALK = 0xff,
 };

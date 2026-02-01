@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          Vincent Abriou <vincent.abriou@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/io.h>
@@ -21,7 +15,7 @@
 
 #define VTG_MODE_MASTER         0
 
-/* registers offset */
+ 
 #define VTG_MODE            0x0000
 #define VTG_CLKLN           0x0008
 #define VTG_HLFLN           0x000C
@@ -64,26 +58,18 @@
 #define VTG_IRQ_TOP         BIT(1)
 #define VTG_IRQ_MASK        (VTG_IRQ_TOP | VTG_IRQ_BOTTOM)
 
-/* Delay introduced by the HDMI in nb of pixel */
+ 
 #define HDMI_DELAY          (5)
 
-/* Delay introduced by the DVO in nb of pixel */
+ 
 #define DVO_DELAY           (7)
 
-/* delay introduced by the Arbitrary Waveform Generator in nb of pixels */
+ 
 #define AWG_DELAY_HD        (-9)
 #define AWG_DELAY_ED        (-8)
 #define AWG_DELAY_SD        (-7)
 
-/*
- * STI VTG register offset structure
- *
- *@h_hd:     stores the VTG_H_HD_x     register offset
- *@top_v_vd: stores the VTG_TOP_V_VD_x register offset
- *@bot_v_vd: stores the VTG_BOT_V_VD_x register offset
- *@top_v_hd: stores the VTG_TOP_V_HD_x register offset
- *@bot_v_hd: stores the VTG_BOT_V_HD_x register offset
- */
+ 
 struct sti_vtg_regs_offs {
 	u32 h_hd;
 	u32 top_v_vd;
@@ -104,15 +90,7 @@ static const struct sti_vtg_regs_offs vtg_regs_offs[VTG_MAX_SYNC_OUTPUT] = {
 	  VTG_TOP_V_VD_4, VTG_BOT_V_VD_4, VTG_TOP_V_HD_4, VTG_BOT_V_HD_4 }
 };
 
-/*
- * STI VTG synchronisation parameters structure
- *
- *@hsync: sample number falling and rising edge
- *@vsync_line_top: vertical top field line number falling and rising edge
- *@vsync_line_bot: vertical bottom field line number falling and rising edge
- *@vsync_off_top: vertical top field sample number rising and falling edge
- *@vsync_off_bot: vertical bottom field sample number rising and falling edge
- */
+ 
 struct sti_vtg_sync_params {
 	u32 hsync;
 	u32 vsync_line_top;
@@ -121,16 +99,7 @@ struct sti_vtg_sync_params {
 	u32 vsync_off_bot;
 };
 
-/*
- * STI VTG structure
- *
- * @regs: register mapping
- * @sync_params: synchronisation parameters used to generate timings
- * @irq: VTG irq
- * @irq_status: store the IRQ status value
- * @notifier_list: notifier callback
- * @crtc: the CRTC for vblank event
- */
+ 
 struct sti_vtg {
 	void __iomem *regs;
 	struct sti_vtg_sync_params sync_params[VTG_MAX_SYNC_OUTPUT];
@@ -168,11 +137,11 @@ static void vtg_set_output_window(void __iomem *regs,
 	u32 xstop = sti_vtg_get_pixel_number(*mode, mode->hdisplay - 1);
 	u32 ystop = sti_vtg_get_line_number(*mode, mode->vdisplay - 1);
 
-	/* Set output window to fit the display mode selected */
+	 
 	video_top_field_start = (ystart << 16) | xstart;
 	video_top_field_stop = (ystop << 16) | xstop;
 
-	/* Only progressive supported for now */
+	 
 	video_bottom_field_start = video_top_field_start;
 	video_bottom_field_stop = video_top_field_stop;
 
@@ -192,7 +161,7 @@ static void vtg_set_hsync_vsync_pos(struct sti_vtg_sync_params *sync,
 
 	clocksperline = mode->htotal;
 
-	/* Get the hsync position */
+	 
 	start = 0;
 	stop = mode->hsync_end - mode->hsync_start;
 
@@ -211,7 +180,7 @@ static void vtg_set_hsync_vsync_pos(struct sti_vtg_sync_params *sync,
 
 	sync->hsync = (stop << 16) | start;
 
-	/* Get the vsync position */
+	 
 	if (delay >= 0) {
 		risesync_top = 1;
 		fallsync_top = risesync_top;
@@ -230,7 +199,7 @@ static void vtg_set_hsync_vsync_pos(struct sti_vtg_sync_params *sync,
 	sync->vsync_line_top = (fallsync_top << 16) | risesync_top;
 	sync->vsync_off_top = (fallsync_offs_top << 16) | risesync_offs_top;
 
-	/* Only progressive supported for now */
+	 
 	sync->vsync_line_bot = sync->vsync_line_top;
 	sync->vsync_off_bot = sync->vsync_off_top;
 }
@@ -242,28 +211,28 @@ static void vtg_set_mode(struct sti_vtg *vtg,
 {
 	unsigned int i;
 
-	/* Set the number of clock cycles per line */
+	 
 	writel(mode->htotal, vtg->regs + VTG_CLKLN);
 
-	/* Set Half Line Per Field (only progressive supported for now) */
+	 
 	writel(mode->vtotal * 2, vtg->regs + VTG_HLFLN);
 
-	/* Program output window */
+	 
 	vtg_set_output_window(vtg->regs, mode);
 
-	/* Set hsync and vsync position for HDMI */
+	 
 	vtg_set_hsync_vsync_pos(&sync[VTG_SYNC_ID_HDMI - 1], HDMI_DELAY, mode);
 
-	/* Set hsync and vsync position for HD DCS */
+	 
 	vtg_set_hsync_vsync_pos(&sync[VTG_SYNC_ID_HDDCS - 1], 0, mode);
 
-	/* Set hsync and vsync position for HDF */
+	 
 	vtg_set_hsync_vsync_pos(&sync[VTG_SYNC_ID_HDF - 1], AWG_DELAY_HD, mode);
 
-	/* Set hsync and vsync position for DVO */
+	 
 	vtg_set_hsync_vsync_pos(&sync[VTG_SYNC_ID_DVO - 1], DVO_DELAY, mode);
 
-	/* Progam the syncs outputs */
+	 
 	for (i = 0; i < VTG_MAX_SYNC_OUTPUT ; i++) {
 		writel(sync[i].hsync,
 		       vtg->regs + vtg_regs_offs[i].h_hd);
@@ -277,13 +246,13 @@ static void vtg_set_mode(struct sti_vtg *vtg,
 		       vtg->regs + vtg_regs_offs[i].bot_v_hd);
 	}
 
-	/* mode */
+	 
 	writel(type, vtg->regs + VTG_MODE);
 }
 
 static void vtg_enable_irq(struct sti_vtg *vtg)
 {
-	/* clear interrupt status and mask */
+	 
 	writel(0xFFFF, vtg->regs + VTG_HOST_ITS_BCLR);
 	writel(0xFFFF, vtg->regs + VTG_HOST_ITM_BCLR);
 	writel(VTG_IRQ_MASK, vtg->regs + VTG_HOST_ITM_BSET);
@@ -292,7 +261,7 @@ static void vtg_enable_irq(struct sti_vtg *vtg)
 void sti_vtg_set_config(struct sti_vtg *vtg,
 		const struct drm_display_mode *mode)
 {
-	/* write configuration */
+	 
 	vtg_set_mode(vtg, VTG_MODE_MASTER, vtg->sync_params, mode);
 
 	vtg_reset(vtg);
@@ -300,18 +269,7 @@ void sti_vtg_set_config(struct sti_vtg *vtg,
 	vtg_enable_irq(vtg);
 }
 
-/**
- * sti_vtg_get_line_number
- *
- * @mode: display mode to be used
- * @y:    line
- *
- * Return the line number according to the display mode taking
- * into account the Sync and Back Porch information.
- * Video frame line numbers start at 1, y starts at 0.
- * In interlaced modes the start line is the field line number of the odd
- * field, but y is still defined as a progressive frame.
- */
+ 
 u32 sti_vtg_get_line_number(struct drm_display_mode mode, int y)
 {
 	u32 start_line = mode.vtotal - mode.vsync_start + 1;
@@ -322,16 +280,7 @@ u32 sti_vtg_get_line_number(struct drm_display_mode mode, int y)
 	return start_line + y;
 }
 
-/**
- * sti_vtg_get_pixel_number
- *
- * @mode: display mode to be used
- * @x:    row
- *
- * Return the pixel number according to the display mode taking
- * into account the Sync and Back Porch information.
- * Pixels are counted from 0.
- */
+ 
 u32 sti_vtg_get_pixel_number(struct drm_display_mode mode, int x)
 {
 	return mode.htotal - mode.hsync_start + x;
@@ -370,7 +319,7 @@ static irqreturn_t vtg_irq(int irq, void *arg)
 
 	writel(vtg->irq_status, vtg->regs + VTG_HOST_ITS_BCLR);
 
-	/* force sync bus write */
+	 
 	readl(vtg->regs + VTG_HOST_ITS);
 
 	return IRQ_WAKE_THREAD;
@@ -387,7 +336,7 @@ static int vtg_probe(struct platform_device *pdev)
 	if (!vtg)
 		return -ENOMEM;
 
-	/* Get Memory ressources */
+	 
 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
 	if (!res) {
 		DRM_ERROR("Get memory resource failed\n");
@@ -424,7 +373,7 @@ static int vtg_probe(struct platform_device *pdev)
 
 static const struct of_device_id vtg_of_match[] = {
 	{ .compatible = "st,vtg", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, vtg_of_match);
 

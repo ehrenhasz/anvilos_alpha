@@ -1,25 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Comedi driver for NI 670x devices
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 1997-2001 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: ni_670x
- * Description: National Instruments 670x
- * Author: Bart Joris <bjoris@advalvas.be>
- * Updated: Wed, 11 Dec 2002 18:25:35 -0800
- * Devices: [National Instruments] PCI-6703 (ni_670x), PCI-6704
- * Status: unknown
- *
- * Commands are not supported.
- *
- * Manuals:
- *   322110a.pdf	PCI/PXI-6704 User Manual
- *   322110b.pdf	PCI/PXI-6703/6704 User Manual
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -77,22 +59,13 @@ static int ni_670x_ao_insn_write(struct comedi_device *dev,
 	unsigned int val = s->readback[chan];
 	int i;
 
-	/*
-	 * Channel number mapping:
-	 *
-	 * NI 6703/ NI 6704 | NI 6704 Only
-	 * -------------------------------
-	 * vch(0)  :  0     | ich(16) :  1
-	 * vch(1)  :  2     | ich(17) :  3
-	 * ...              | ...
-	 * vch(15) : 30     | ich(31) : 31
-	 */
+	 
 	for (i = 0; i < insn->n; i++) {
 		val = data[i];
-		/* First write in channel register which channel to use */
+		 
 		writel(((chan & 15) << 1) | ((chan & 16) >> 4),
 		       dev->mmio + AO_CHAN_OFFSET);
-		/* write channel value */
+		 
 		writel(val, dev->mmio + AO_VALUE_OFFSET);
 	}
 	s->readback[chan] = val;
@@ -129,25 +102,25 @@ static int ni_670x_dio_insn_config(struct comedi_device *dev,
 	return insn->n;
 }
 
-/* ripped from mite.h and mite_setup2() to avoid mite dependency */
-#define MITE_IODWBSR	0xc0	 /* IO Device Window Base Size Register */
-#define WENAB		BIT(7) /* window enable */
+ 
+#define MITE_IODWBSR	0xc0	  
+#define WENAB		BIT(7)  
 
 static int ni_670x_mite_init(struct pci_dev *pcidev)
 {
 	void __iomem *mite_base;
 	u32 main_phys_addr;
 
-	/* ioremap the MITE registers (BAR 0) temporarily */
+	 
 	mite_base = pci_ioremap_bar(pcidev, 0);
 	if (!mite_base)
 		return -ENOMEM;
 
-	/* set data window to main registers (BAR 1) */
+	 
 	main_phys_addr = pci_resource_start(pcidev, 1);
 	writel(main_phys_addr | WENAB, mite_base + MITE_IODWBSR);
 
-	/* finished with MITE registers */
+	 
 	iounmap(mite_base);
 	return 0;
 }
@@ -190,7 +163,7 @@ static int ni_670x_auto_attach(struct comedi_device *dev,
 		return ret;
 
 	s = &dev->subdevices[0];
-	/* analog output subdevice */
+	 
 	s->type = COMEDI_SUBD_AO;
 	s->subdev_flags = SDF_WRITABLE;
 	s->n_chan = board->ao_chans;
@@ -218,7 +191,7 @@ static int ni_670x_auto_attach(struct comedi_device *dev,
 		return ret;
 
 	s = &dev->subdevices[1];
-	/* digital i/o subdevice */
+	 
 	s->type = COMEDI_SUBD_DIO;
 	s->subdev_flags = SDF_READABLE | SDF_WRITABLE;
 	s->n_chan = 8;
@@ -227,9 +200,9 @@ static int ni_670x_auto_attach(struct comedi_device *dev,
 	s->insn_bits = ni_670x_dio_insn_bits;
 	s->insn_config = ni_670x_dio_insn_config;
 
-	/* Config of misc registers */
+	 
 	writel(0x10, dev->mmio + MISC_CONTROL_OFFSET);
-	/* Config of ao registers */
+	 
 	writel(0x00, dev->mmio + AO_CONTROL_OFFSET);
 
 	return 0;

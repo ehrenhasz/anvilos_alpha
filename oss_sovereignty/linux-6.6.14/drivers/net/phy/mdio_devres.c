@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <linux/device.h>
 #include <linux/of_mdio.h>
@@ -16,17 +16,7 @@ static void devm_mdiobus_free(struct device *dev, void *this)
 	mdiobus_free(dr->mii);
 }
 
-/**
- * devm_mdiobus_alloc_size - Resource-managed mdiobus_alloc_size()
- * @dev:		Device to allocate mii_bus for
- * @sizeof_priv:	Space to allocate for private structure
- *
- * Managed mdiobus_alloc_size. mii_bus allocated with this function is
- * automatically freed on driver detach.
- *
- * RETURNS:
- * Pointer to allocated mii_bus on success, NULL on out-of-memory error.
- */
+ 
 struct mii_bus *devm_mdiobus_alloc_size(struct device *dev, int sizeof_priv)
 {
 	struct mdiobus_devres *dr;
@@ -62,14 +52,7 @@ static int mdiobus_devres_match(struct device *dev,
 	return mii == res->mii;
 }
 
-/**
- * __devm_mdiobus_register - Resource-managed variant of mdiobus_register()
- * @dev:	Device to register mii_bus for
- * @bus:	MII bus structure to register
- * @owner:	Owning module
- *
- * Returns 0 on success, negative error number on failure.
- */
+ 
 int __devm_mdiobus_register(struct device *dev, struct mii_bus *bus,
 			    struct module *owner)
 {
@@ -97,13 +80,7 @@ int __devm_mdiobus_register(struct device *dev, struct mii_bus *bus,
 EXPORT_SYMBOL(__devm_mdiobus_register);
 
 #if IS_ENABLED(CONFIG_OF_MDIO)
-/**
- * __devm_of_mdiobus_register - Resource managed variant of of_mdiobus_register()
- * @dev:	Device to register mii_bus for
- * @mdio:	MII bus structure to register
- * @np:		Device node to parse
- * @owner:	Owning module
- */
+ 
 int __devm_of_mdiobus_register(struct device *dev, struct mii_bus *mdio,
 			       struct device_node *np, struct module *owner)
 {
@@ -129,6 +106,6 @@ int __devm_of_mdiobus_register(struct device *dev, struct mii_bus *mdio,
 	return 0;
 }
 EXPORT_SYMBOL(__devm_of_mdiobus_register);
-#endif /* CONFIG_OF_MDIO */
+#endif  
 
 MODULE_LICENSE("GPL");

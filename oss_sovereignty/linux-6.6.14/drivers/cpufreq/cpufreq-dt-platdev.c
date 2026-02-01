@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Linaro.
- * Viresh Kumar <viresh.kumar@linaro.org>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -11,10 +8,7 @@
 
 #include "cpufreq-dt.h"
 
-/*
- * Machines for which the cpufreq device is *always* created, mostly used for
- * platforms using "operating-points" (V1) property.
- */
+ 
 static const struct of_device_id allowlist[] __initconst = {
 	{ .compatible = "allwinner,sun4i-a10", },
 	{ .compatible = "allwinner,sun5i-a10s", },
@@ -98,10 +92,7 @@ static const struct of_device_id allowlist[] __initconst = {
 	{ }
 };
 
-/*
- * Machines for which the cpufreq device is *not* created, mostly used for
- * platforms using "operating-points-v2" property.
- */
+ 
 static const struct of_device_id blocklist[] __initconst = {
 	{ .compatible = "allwinner,sun50i-h6", },
 

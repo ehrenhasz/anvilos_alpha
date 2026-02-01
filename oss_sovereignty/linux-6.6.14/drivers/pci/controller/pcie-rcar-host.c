@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe driver for Renesas R-Car SoCs
- *  Copyright (C) 2014-2020 Renesas Electronics Europe Ltd
- *
- * Based on:
- *  arch/sh/drivers/pci/pcie-sh7786.c
- *  arch/sh/drivers/pci/ops-sh7786.c
- *  Copyright (C) 2009 - 2011  Paul Mundt
- *
- * Author: Phil Edworthy <phil.edworthy@renesas.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -41,7 +31,7 @@ struct rcar_msi {
 	int irq2;
 };
 
-/* Structure representing the PCIe interface */
+ 
 struct rcar_pcie_host {
 	struct rcar_pcie	pcie;
 	struct phy		*phy;
@@ -67,12 +57,7 @@ static int rcar_pcie_wakeup(struct device *pcie_dev, void __iomem *pcie_base)
 
 	pmsr = readl(pcie_base + PMSR);
 
-	/*
-	 * Test if the PCIe controller received PM_ENTER_L1 DLLP and
-	 * the PCIe controller is not in L1 link state. If true, apply
-	 * fix, which will put the controller into L1 link state, from
-	 * which it can return to L0s/L0 on its own.
-	 */
+	 
 	if ((pmsr & PMEL1RX) && ((pmsr & PMSTATE) != PMSTATE_L1)) {
 		writel(L1IATN, pcie_base + PMCTLR);
 		ret = readl_poll_timeout_atomic(pcie_base + PMSR, val,
@@ -147,7 +132,7 @@ static int rcar_pci_read_reg_workaround(struct rcar_pcie *pcie, u32 *val,
 	return error;
 }
 
-/* Serialization is provided by 'pci_lock' in drivers/pci/access.c */
+ 
 static int rcar_pcie_config_access(struct rcar_pcie_host *host,
 		unsigned char access_type, struct pci_bus *bus,
 		unsigned int devfn, int where, u32 *data)
@@ -156,7 +141,7 @@ static int rcar_pcie_config_access(struct rcar_pcie_host *host,
 	unsigned int dev, func, reg, index;
 	int ret;
 
-	/* Wake the bus up in case it is in L1 state. */
+	 
 	ret = rcar_pcie_wakeup(pcie->dev, pcie->base);
 	if (ret) {
 		PCI_SET_ERROR_RESPONSE(data);
@@ -168,21 +153,7 @@ static int rcar_pcie_config_access(struct rcar_pcie_host *host,
 	reg = where & ~3;
 	index = reg / 4;
 
-	/*
-	 * While each channel has its own memory-mapped extended config
-	 * space, it's generally only accessible when in endpoint mode.
-	 * When in root complex mode, the controller is unable to target
-	 * itself with either type 0 or type 1 accesses, and indeed, any
-	 * controller initiated target transfer to its own config space
-	 * result in a completer abort.
-	 *
-	 * Each channel effectively only supports a single device, but as
-	 * the same channel <-> device access works for any PCI_SLOT()
-	 * value, we cheat a bit here and bind the controller's config
-	 * space to devfn 0 in order to enable self-enumeration. In this
-	 * case the regular ECAR/ECDR path is sidelined and the mangled
-	 * config access itself is initiated as an internal bus transaction.
-	 */
+	 
 	if (pci_is_root_bus(bus)) {
 		if (dev != 0)
 			return PCIBIOS_DEVICE_NOT_FOUND;
@@ -195,24 +166,24 @@ static int rcar_pcie_config_access(struct rcar_pcie_host *host,
 		return PCIBIOS_SUCCESSFUL;
 	}
 
-	/* Clear errors */
+	 
 	rcar_pci_write_reg(pcie, rcar_pci_read_reg(pcie, PCIEERRFR), PCIEERRFR);
 
-	/* Set the PIO address */
+	 
 	rcar_pci_write_reg(pcie, PCIE_CONF_BUS(bus->number) |
 		PCIE_CONF_DEV(dev) | PCIE_CONF_FUNC(func) | reg, PCIECAR);
 
-	/* Enable the configuration access */
+	 
 	if (pci_is_root_bus(bus->parent))
 		rcar_pci_write_reg(pcie, PCIECCTLR_CCIE | TYPE0, PCIECCTLR);
 	else
 		rcar_pci_write_reg(pcie, PCIECCTLR_CCIE | TYPE1, PCIECCTLR);
 
-	/* Check for errors */
+	 
 	if (rcar_pci_read_reg(pcie, PCIEERRFR) & UNSUPPORTED_REQUEST)
 		return PCIBIOS_DEVICE_NOT_FOUND;
 
-	/* Check for master and target aborts */
+	 
 	if (rcar_read_conf(pcie, RCONF(PCI_STATUS)) &
 		(PCI_STATUS_REC_MASTER_ABORT | PCI_STATUS_REC_TARGET_ABORT))
 		return PCIBIOS_DEVICE_NOT_FOUND;
@@ -222,7 +193,7 @@ static int rcar_pcie_config_access(struct rcar_pcie_host *host,
 	else
 		ret = rcar_pci_write_reg_workaround(pcie, *data, PCIECDR);
 
-	/* Disable the configuration access */
+	 
 	rcar_pci_write_reg(pcie, 0, PCIECCTLR);
 
 	return ret;
@@ -250,7 +221,7 @@ static int rcar_pcie_read_conf(struct pci_bus *bus, unsigned int devfn,
 	return ret;
 }
 
-/* Serialization is provided by 'pci_lock' in drivers/pci/access.c */
+ 
 static int rcar_pcie_write_conf(struct pci_bus *bus, unsigned int devfn,
 				int where, int size, u32 val)
 {
@@ -307,24 +278,24 @@ static void rcar_pcie_force_speedup(struct rcar_pcie *pcie)
 	if ((macsr & LINK_SPEED) == LINK_SPEED_5_0GTS)
 		goto done;
 
-	/* Set target link speed to 5.0 GT/s */
+	 
 	rcar_rmw32(pcie, EXPCAP(12), PCI_EXP_LNKSTA_CLS,
 		   PCI_EXP_LNKSTA_CLS_5_0GB);
 
-	/* Set speed change reason as intentional factor */
+	 
 	rcar_rmw32(pcie, MACCGSPSETR, SPCNGRSN, 0);
 
-	/* Clear SPCHGFIN, SPCHGSUC, and SPCHGFAIL */
+	 
 	if (macsr & (SPCHGFIN | SPCHGSUC | SPCHGFAIL))
 		rcar_pci_write_reg(pcie, macsr, MACSR);
 
-	/* Start link speed change */
+	 
 	rcar_rmw32(pcie, MACCTLR, SPEED_CHANGE, SPEED_CHANGE);
 
 	while (timeout--) {
 		macsr = rcar_pci_read_reg(pcie, MACSR);
 		if (macsr & SPCHGFIN) {
-			/* Clear the interrupt bits */
+			 
 			rcar_pci_write_reg(pcie, macsr, MACSR);
 
 			if (macsr & SPCHGFAIL)
@@ -351,10 +322,10 @@ static void rcar_pcie_hw_enable(struct rcar_pcie_host *host)
 	LIST_HEAD(res);
 	int i = 0;
 
-	/* Try setting 5 GT/s link speed */
+	 
 	rcar_pcie_force_speedup(pcie);
 
-	/* Setup PCI resources */
+	 
 	resource_list_for_each_entry(win, &bridge->windows) {
 		struct resource *res = win->res;
 
@@ -413,18 +384,18 @@ static void phy_write_reg(struct rcar_pcie *pcie,
 		((lane & 0xf) << LANE_POS) |
 		((addr & 0xff) << ADR_POS);
 
-	/* Set write data */
+	 
 	rcar_pci_write_reg(pcie, data, H1_PCIEPHYDOUTR);
 	rcar_pci_write_reg(pcie, phyaddr, H1_PCIEPHYADRR);
 
-	/* Ignore errors as they will be dealt with if the data link is down */
+	 
 	phy_wait_for_ack(pcie);
 
-	/* Clear command */
+	 
 	rcar_pci_write_reg(pcie, 0, H1_PCIEPHYDOUTR);
 	rcar_pci_write_reg(pcie, 0, H1_PCIEPHYADRR);
 
-	/* Ignore errors as they will be dealt with if the data link is down */
+	 
 	phy_wait_for_ack(pcie);
 }
 
@@ -432,65 +403,58 @@ static int rcar_pcie_hw_init(struct rcar_pcie *pcie)
 {
 	int err;
 
-	/* Begin initialization */
+	 
 	rcar_pci_write_reg(pcie, 0, PCIETCTLR);
 
-	/* Set mode */
+	 
 	rcar_pci_write_reg(pcie, 1, PCIEMSR);
 
 	err = rcar_pcie_wait_for_phyrdy(pcie);
 	if (err)
 		return err;
 
-	/*
-	 * Initial header for port config space is type 1, set the device
-	 * class to match. Hardware takes care of propagating the IDSETR
-	 * settings, so there is no need to bother with a quirk.
-	 */
+	 
 	rcar_pci_write_reg(pcie, PCI_CLASS_BRIDGE_PCI_NORMAL << 8, IDSETR1);
 
-	/*
-	 * Setup Secondary Bus Number & Subordinate Bus Number, even though
-	 * they aren't used, to avoid bridge being detected as broken.
-	 */
+	 
 	rcar_rmw32(pcie, RCONF(PCI_SECONDARY_BUS), 0xff, 1);
 	rcar_rmw32(pcie, RCONF(PCI_SUBORDINATE_BUS), 0xff, 1);
 
-	/* Initialize default capabilities. */
+	 
 	rcar_rmw32(pcie, REXPCAP(0), 0xff, PCI_CAP_ID_EXP);
 	rcar_rmw32(pcie, REXPCAP(PCI_EXP_FLAGS),
 		PCI_EXP_FLAGS_TYPE, PCI_EXP_TYPE_ROOT_PORT << 4);
 	rcar_rmw32(pcie, RCONF(PCI_HEADER_TYPE), 0x7f,
 		PCI_HEADER_TYPE_BRIDGE);
 
-	/* Enable data link layer active state reporting */
+	 
 	rcar_rmw32(pcie, REXPCAP(PCI_EXP_LNKCAP), PCI_EXP_LNKCAP_DLLLARC,
 		PCI_EXP_LNKCAP_DLLLARC);
 
-	/* Write out the physical slot number = 0 */
+	 
 	rcar_rmw32(pcie, REXPCAP(PCI_EXP_SLTCAP), PCI_EXP_SLTCAP_PSN, 0);
 
-	/* Set the completion timer timeout to the maximum 50ms. */
+	 
 	rcar_rmw32(pcie, TLCTLR + 1, 0x3f, 50);
 
-	/* Terminate list of capabilities (Next Capability Offset=0) */
+	 
 	rcar_rmw32(pcie, RVCCAP(0), 0xfff00000, 0);
 
-	/* Enable MSI */
+	 
 	if (IS_ENABLED(CONFIG_PCI_MSI))
 		rcar_pci_write_reg(pcie, 0x801f0000, PCIEMSITXR);
 
 	rcar_pci_write_reg(pcie, MACCTLR_INIT_VAL, MACCTLR);
 
-	/* Finish initialization - establish a PCI Express link */
+	 
 	rcar_pci_write_reg(pcie, CFINIT, PCIETCTLR);
 
-	/* This will timeout if we don't have a link. */
+	 
 	err = rcar_pcie_wait_for_dl(pcie);
 	if (err)
 		return err;
 
-	/* Enable INTx interrupts */
+	 
 	rcar_rmw32(pcie, PCIEINTXR, 0, 0xF << 8);
 
 	wmb();
@@ -502,7 +466,7 @@ static int rcar_pcie_phy_init_h1(struct rcar_pcie_host *host)
 {
 	struct rcar_pcie *pcie = &host->pcie;
 
-	/* Initialize the phy */
+	 
 	phy_write_reg(pcie, 0, 0x42, 0x1, 0x0EC34191);
 	phy_write_reg(pcie, 1, 0x42, 0x1, 0x0EC34180);
 	phy_write_reg(pcie, 0, 0x43, 0x1, 0x00210188);
@@ -527,17 +491,14 @@ static int rcar_pcie_phy_init_gen2(struct rcar_pcie_host *host)
 {
 	struct rcar_pcie *pcie = &host->pcie;
 
-	/*
-	 * These settings come from the R-Car Series, 2nd Generation User's
-	 * Manual, section 50.3.1 (2) Initialization of the physical layer.
-	 */
+	 
 	rcar_pci_write_reg(pcie, 0x000f0030, GEN2_PCIEPHYADDR);
 	rcar_pci_write_reg(pcie, 0x00381203, GEN2_PCIEPHYDATA);
 	rcar_pci_write_reg(pcie, 0x00000001, GEN2_PCIEPHYCTRL);
 	rcar_pci_write_reg(pcie, 0x00000006, GEN2_PCIEPHYCTRL);
 
 	rcar_pci_write_reg(pcie, 0x000f0054, GEN2_PCIEPHYADDR);
-	/* The following value is for DC connection, no termination resistor */
+	 
 	rcar_pci_write_reg(pcie, 0x13802007, GEN2_PCIEPHYDATA);
 	rcar_pci_write_reg(pcie, 0x00000001, GEN2_PCIEPHYCTRL);
 	rcar_pci_write_reg(pcie, 0x00000006, GEN2_PCIEPHYCTRL);
@@ -570,7 +531,7 @@ static irqreturn_t rcar_pcie_msi_irq(int irq, void *data)
 
 	reg = rcar_pci_read_reg(pcie, PCIEMSIFR);
 
-	/* MSI & INTx share an interrupt - we only handle MSI here */
+	 
 	if (!reg)
 		return IRQ_NONE;
 
@@ -580,12 +541,12 @@ static irqreturn_t rcar_pcie_msi_irq(int irq, void *data)
 
 		ret = generic_handle_domain_irq(msi->domain->parent, index);
 		if (ret) {
-			/* Unknown MSI, just clear it */
+			 
 			dev_dbg(dev, "unexpected MSI\n");
 			rcar_pci_write_reg(pcie, BIT(index), PCIEMSIFR);
 		}
 
-		/* see if there's any more pending in this vector */
+		 
 		reg = rcar_pci_read_reg(pcie, PCIEMSIFR);
 	}
 
@@ -621,7 +582,7 @@ static void rcar_msi_irq_ack(struct irq_data *d)
 	struct rcar_msi *msi = irq_data_get_irq_chip_data(d);
 	struct rcar_pcie *pcie = &msi_to_host(msi)->pcie;
 
-	/* clear the interrupt */
+	 
 	rcar_pci_write_reg(pcie, BIT(d->hwirq), PCIEMSIFR);
 }
 
@@ -776,7 +737,7 @@ static int rcar_pcie_enable_msi(struct rcar_pcie_host *host)
 	if (err)
 		return err;
 
-	/* Two irqs are for MSI, but they are also used for non-MSI irqs */
+	 
 	err = devm_request_irq(dev, msi->irq1, rcar_pcie_msi_irq,
 			       IRQF_SHARED | IRQF_NO_THREAD,
 			       rcar_msi_bottom_chip.name, host);
@@ -793,13 +754,10 @@ static int rcar_pcie_enable_msi(struct rcar_pcie_host *host)
 		goto err;
 	}
 
-	/* disable all MSIs */
+	 
 	rcar_pci_write_reg(pcie, 0, PCIEMSIIER);
 
-	/*
-	 * Setup MSI data target using RC base address address, which
-	 * is guaranteed to be in the low 32bit range on any R-Car HW.
-	 */
+	 
 	rcar_pci_write_reg(pcie, lower_32_bits(res.start) | MSIFE, PCIEMSIALR);
 	rcar_pci_write_reg(pcie, upper_32_bits(res.start), PCIEMSIAUR);
 
@@ -814,10 +772,10 @@ static void rcar_pcie_teardown_msi(struct rcar_pcie_host *host)
 {
 	struct rcar_pcie *pcie = &host->pcie;
 
-	/* Disable all MSI interrupts */
+	 
 	rcar_pci_write_reg(pcie, 0, PCIEMSIIER);
 
-	/* Disable address decoding of the MSI interrupt, MSIFE */
+	 
 	rcar_pci_write_reg(pcie, 0, PCIEMSIALR);
 
 	rcar_free_domains(&host->msi);
@@ -893,18 +851,14 @@ static int rcar_pcie_inbound_ranges(struct rcar_pcie *pcie,
 			dev_err(pcie->dev, "Failed to map inbound regions!\n");
 			return -EINVAL;
 		}
-		/*
-		 * If the size of the range is larger than the alignment of
-		 * the start address, we have to use multiple entries to
-		 * perform the mapping.
-		 */
+		 
 		if (cpu_addr > 0) {
 			unsigned long nr_zeros = __ffs64(cpu_addr);
 			u64 alignment = 1ULL << nr_zeros;
 
 			size = min(size, alignment);
 		}
-		/* Hardware supports max 4GiB inbound region */
+		 
 		size = min(size, 1ULL << 32);
 
 		mask = roundup_pow_of_two(size) - 1;
@@ -1001,7 +955,7 @@ static int rcar_pcie_probe(struct platform_device *pdev)
 		goto err_clk_disable;
 	}
 
-	/* Failure to get a link might just be that no cards are inserted */
+	 
 	if (rcar_pcie_hw_init(pcie)) {
 		dev_info(dev, "PCIe link down\n");
 		err = -ENODEV;
@@ -1062,7 +1016,7 @@ static int rcar_pcie_resume(struct device *dev)
 	if (err)
 		return 0;
 
-	/* Failure to get a link might just be that no cards are inserted */
+	 
 	err = host->phy_init_fn(host);
 	if (err) {
 		dev_info(dev, "PCIe link down\n");
@@ -1072,7 +1026,7 @@ static int rcar_pcie_resume(struct device *dev)
 	data = rcar_pci_read_reg(pcie, MACSR);
 	dev_info(dev, "PCIe x%d: link up\n", (data >> 20) & 0x3f);
 
-	/* Enable MSI */
+	 
 	if (IS_ENABLED(CONFIG_PCI_MSI)) {
 		struct resource res;
 		u32 val;
@@ -1099,7 +1053,7 @@ static int rcar_pcie_resume_noirq(struct device *dev)
 	    !(rcar_pci_read_reg(pcie, PCIETCTLR) & DL_DOWN))
 		return 0;
 
-	/* Re-establish the PCIe link */
+	 
 	rcar_pci_write_reg(pcie, MACCTLR_INIT_VAL, MACCTLR);
 	rcar_pci_write_reg(pcie, CFINIT, PCIETCTLR);
 	return rcar_pcie_wait_for_dl(pcie);

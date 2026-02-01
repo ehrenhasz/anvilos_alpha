@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiaEn Wu <chiaen_wu@richtek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -49,31 +45,31 @@
 #define MT6370_ADC_CHAN_MAX		9
 
 enum mt6370_chg_reg_field {
-	/* MT6370_REG_CHG_CTRL2 */
+	 
 	F_IINLMTSEL, F_CFO_EN, F_CHG_EN,
-	/* MT6370_REG_CHG_CTRL3 */
+	 
 	F_IAICR, F_AICR_EN, F_ILIM_EN,
-	/* MT6370_REG_CHG_CTRL4 */
+	 
 	F_VOREG,
-	/* MT6370_REG_CHG_CTRL6 */
+	 
 	F_VMIVR,
-	/* MT6370_REG_CHG_CTRL7 */
+	 
 	F_ICHG,
-	/* MT6370_REG_CHG_CTRL8 */
+	 
 	F_IPREC,
-	/* MT6370_REG_CHG_CTRL9 */
+	 
 	F_IEOC,
-	/* MT6370_REG_DEVICE_TYPE */
+	 
 	F_USBCHGEN,
-	/* MT6370_REG_USB_STATUS1 */
+	 
 	F_USB_STAT, F_CHGDET,
-	/* MT6370_REG_CHG_STAT */
+	 
 	F_CHG_STAT, F_BOOST_STAT, F_VBAT_LVL,
-	/* MT6370_REG_FLED_EN */
+	 
 	F_FL_STROBE,
-	/* MT6370_REG_CHG_STAT1 */
+	 
 	F_CHG_MIVR_STAT,
-	/* MT6370_REG_OVPCTRL_STAT */
+	 
 	F_UVP_D_STAT,
 	F_MAX
 };
@@ -315,7 +311,7 @@ static int mt6370_chg_toggle_cfo(struct mt6370_priv *priv)
 	int ret;
 	unsigned int fl_strobe;
 
-	/* check if flash led in strobe mode */
+	 
 	ret = mt6370_chg_field_get(priv, F_FL_STROBE, &fl_strobe);
 	if (ret) {
 		dev_err(priv->dev, "Failed to get FL_STROBE_EN\n");
@@ -327,14 +323,14 @@ static int mt6370_chg_toggle_cfo(struct mt6370_priv *priv)
 		return -EINVAL;
 	}
 
-	/* cfo off */
+	 
 	ret = mt6370_chg_field_set(priv, F_CFO_EN, 0);
 	if (ret) {
 		dev_err(priv->dev, "Failed to disable CFO_EN\n");
 		return ret;
 	}
 
-	/* cfo on */
+	 
 	ret = mt6370_chg_field_set(priv, F_CFO_EN, 1);
 	if (ret)
 		dev_err(priv->dev, "Failed to enable CFO_EN\n");
@@ -396,7 +392,7 @@ static void mt6370_chg_pwr_rdy_check(struct mt6370_priv *priv)
 	unsigned int opposite_pwr_rdy, otg_en;
 	union power_supply_propval val;
 
-	/* Check in OTG mode or not */
+	 
 	ret = mt6370_chg_field_get(priv, F_BOOST_STAT, &otg_en);
 	if (ret) {
 		dev_err(priv->dev, "Failed to get OTG state\n");
@@ -701,28 +697,28 @@ static int mt6370_chg_init_setting(struct mt6370_priv *priv)
 {
 	int ret;
 
-	/* Disable usb_chg_en */
+	 
 	ret = mt6370_chg_field_set(priv, F_USBCHGEN, 0);
 	if (ret) {
 		dev_err(priv->dev, "Failed to disable usb_chg_en\n");
 		return ret;
 	}
 
-	/* Disable input current limit */
+	 
 	ret = mt6370_chg_field_set(priv, F_ILIM_EN, 0);
 	if (ret) {
 		dev_err(priv->dev, "Failed to disable input current limit\n");
 		return ret;
 	}
 
-	/* ICHG/IEOC Workaround, ICHG can not be set less than 900mA */
+	 
 	ret = mt6370_chg_field_set(priv, F_ICHG, 900000);
 	if (ret) {
 		dev_err(priv->dev, "Failed to set ICHG to 900mA");
 		return ret;
 	}
 
-	/* Change input current limit selection to using IAICR results */
+	 
 	ret = mt6370_chg_field_set(priv, F_IINLMTSEL, 2);
 	if (ret) {
 		dev_err(priv->dev, "Failed to set IINLMTSEL\n");
@@ -787,7 +783,7 @@ static irqreturn_t mt6370_attach_i_handler(int irq, void *data)
 	unsigned int otg_en;
 	int ret;
 
-	/* Check in OTG mode or not */
+	 
 	ret = mt6370_chg_field_get(priv, F_BOOST_STAT, &otg_en);
 	if (ret) {
 		dev_err(priv->dev, "Failed to get OTG state\n");

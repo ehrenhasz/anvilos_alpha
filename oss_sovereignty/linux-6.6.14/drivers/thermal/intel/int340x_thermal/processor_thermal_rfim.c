@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * processor thermal device RFIM control
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,7 +16,7 @@ struct mmio_reg {
 	u16 shift;
 };
 
-/* These will represent sysfs attribute names */
+ 
 static const char * const fivr_strings[] = {
 	"vco_ref_code_lo",
 	"vco_ref_code_hi",
@@ -31,12 +28,12 @@ static const char * const fivr_strings[] = {
 };
 
 static const struct mmio_reg tgl_fivr_mmio_regs[] = {
-	{ 0, 0x5A18, 3, 0x7, 11}, /* vco_ref_code_lo */
-	{ 0, 0x5A18, 8, 0xFF, 16}, /* vco_ref_code_hi */
-	{ 0, 0x5A08, 8, 0xFF, 0}, /* spread_spectrum_pct */
-	{ 0, 0x5A08, 1, 0x1, 8}, /* spread_spectrum_clk_enable */
-	{ 1, 0x5A10, 12, 0xFFF, 0}, /* rfi_vco_ref_code */
-	{ 1, 0x5A14, 2, 0x3, 1}, /* fivr_fffc_rev */
+	{ 0, 0x5A18, 3, 0x7, 11},  
+	{ 0, 0x5A18, 8, 0xFF, 16},  
+	{ 0, 0x5A08, 8, 0xFF, 0},  
+	{ 0, 0x5A08, 1, 0x1, 8},  
+	{ 1, 0x5A10, 12, 0xFFF, 0},  
+	{ 1, 0x5A14, 2, 0x3, 1},  
 };
 
 static const char * const dlvr_strings[] = {
@@ -52,17 +49,17 @@ static const char * const dlvr_strings[] = {
 };
 
 static const struct mmio_reg dlvr_mmio_regs[] = {
-	{ 0, 0x15A08, 5, 0x1F, 0}, /* dlvr_spread_spectrum_pct */
-	{ 0, 0x15A08, 1, 0x1, 5}, /* dlvr_control_mode */
-	{ 0, 0x15A08, 1, 0x1, 6}, /* dlvr_control_lock */
-	{ 0, 0x15A08, 1, 0x1, 7}, /* dlvr_rfim_enable */
-	{ 0, 0x15A08, 12, 0xFFF, 8}, /* dlvr_freq_select */
-	{ 1, 0x15A10, 2, 0x3, 30}, /* dlvr_hardware_rev */
-	{ 1, 0x15A10, 16, 0xFFFF, 0}, /* dlvr_freq_mhz */
-	{ 1, 0x15A10, 1, 0x1, 16}, /* dlvr_pll_busy */
+	{ 0, 0x15A08, 5, 0x1F, 0},  
+	{ 0, 0x15A08, 1, 0x1, 5},  
+	{ 0, 0x15A08, 1, 0x1, 6},  
+	{ 0, 0x15A08, 1, 0x1, 7},  
+	{ 0, 0x15A08, 12, 0xFFF, 8},  
+	{ 1, 0x15A10, 2, 0x3, 30},  
+	{ 1, 0x15A10, 16, 0xFFFF, 0},  
+	{ 1, 0x15A10, 1, 0x1, 16},  
 };
 
-/* These will represent sysfs attribute names */
+ 
 static const char * const dvfs_strings[] = {
 	"rfi_restriction_run_busy",
 	"rfi_restriction_err_code",
@@ -77,15 +74,15 @@ static const char * const dvfs_strings[] = {
 };
 
 static const struct mmio_reg adl_dvfs_mmio_regs[] = {
-	{ 0, 0x5A38, 1, 0x1, 31}, /* rfi_restriction_run_busy */
-	{ 0, 0x5A38, 7, 0x7F, 24}, /* rfi_restriction_err_code */
-	{ 0, 0x5A38, 8, 0xFF, 16}, /* rfi_restriction_data_rate */
-	{ 0, 0x5A38, 16, 0xFFFF, 0}, /* rfi_restriction_data_rate_base */
-	{ 0, 0x5A30, 10, 0x3FF, 0}, /* ddr_data_rate_point_0 */
-	{ 0, 0x5A30, 10, 0x3FF, 10}, /* ddr_data_rate_point_1 */
-	{ 0, 0x5A30, 10, 0x3FF, 20}, /* ddr_data_rate_point_2 */
-	{ 0, 0x5A30, 10, 0x3FF, 30}, /* ddr_data_rate_point_3 */
-	{ 0, 0x5A40, 1, 0x1, 0}, /* rfi_disable */
+	{ 0, 0x5A38, 1, 0x1, 31},  
+	{ 0, 0x5A38, 7, 0x7F, 24},  
+	{ 0, 0x5A38, 8, 0xFF, 16},  
+	{ 0, 0x5A38, 16, 0xFFFF, 0},  
+	{ 0, 0x5A30, 10, 0x3FF, 0},  
+	{ 0, 0x5A30, 10, 0x3FF, 10},  
+	{ 0, 0x5A30, 10, 0x3FF, 20},  
+	{ 0, 0x5A30, 10, 0x3FF, 30},  
+	{ 0, 0x5A40, 1, 0x1, 0},  
 };
 
 #define RFIM_SHOW(suffix, table)\

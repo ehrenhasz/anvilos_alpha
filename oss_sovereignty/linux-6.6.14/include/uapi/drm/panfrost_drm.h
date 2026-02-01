@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2018 Broadcom
- * Copyright © 2019 Collabora ltd.
- */
+ 
+ 
 #ifndef _PANFROST_DRM_H_
 #define _PANFROST_DRM_H_
 
@@ -30,103 +27,65 @@ extern "C" {
 #define DRM_IOCTL_PANFROST_GET_BO_OFFSET	DRM_IOWR(DRM_COMMAND_BASE + DRM_PANFROST_GET_BO_OFFSET, struct drm_panfrost_get_bo_offset)
 #define DRM_IOCTL_PANFROST_MADVISE		DRM_IOWR(DRM_COMMAND_BASE + DRM_PANFROST_MADVISE, struct drm_panfrost_madvise)
 
-/*
- * Unstable ioctl(s): only exposed when the unsafe unstable_ioctls module
- * param is set to true.
- * All these ioctl(s) are subject to deprecation, so please don't rely on
- * them for anything but debugging purpose.
- */
+ 
 #define DRM_IOCTL_PANFROST_PERFCNT_ENABLE	DRM_IOW(DRM_COMMAND_BASE + DRM_PANFROST_PERFCNT_ENABLE, struct drm_panfrost_perfcnt_enable)
 #define DRM_IOCTL_PANFROST_PERFCNT_DUMP		DRM_IOW(DRM_COMMAND_BASE + DRM_PANFROST_PERFCNT_DUMP, struct drm_panfrost_perfcnt_dump)
 
 #define PANFROST_JD_REQ_FS (1 << 0)
-/**
- * struct drm_panfrost_submit - ioctl argument for submitting commands to the 3D
- * engine.
- *
- * This asks the kernel to have the GPU execute a render command list.
- */
+ 
 struct drm_panfrost_submit {
 
-	/** Address to GPU mapping of job descriptor */
+	 
 	__u64 jc;
 
-	/** An optional array of sync objects to wait on before starting this job. */
+	 
 	__u64 in_syncs;
 
-	/** Number of sync objects to wait on before starting this job. */
+	 
 	__u32 in_sync_count;
 
-	/** An optional sync object to place the completion fence in. */
+	 
 	__u32 out_sync;
 
-	/** Pointer to a u32 array of the BOs that are referenced by the job. */
+	 
 	__u64 bo_handles;
 
-	/** Number of BO handles passed in (size is that times 4). */
+	 
 	__u32 bo_handle_count;
 
-	/** A combination of PANFROST_JD_REQ_* */
+	 
 	__u32 requirements;
 };
 
-/**
- * struct drm_panfrost_wait_bo - ioctl argument for waiting for
- * completion of the last DRM_PANFROST_SUBMIT on a BO.
- *
- * This is useful for cases where multiple processes might be
- * rendering to a BO and you want to wait for all rendering to be
- * completed.
- */
+ 
 struct drm_panfrost_wait_bo {
 	__u32 handle;
 	__u32 pad;
-	__s64 timeout_ns;	/* absolute */
+	__s64 timeout_ns;	 
 };
 
-/* Valid flags to pass to drm_panfrost_create_bo */
+ 
 #define PANFROST_BO_NOEXEC	1
 #define PANFROST_BO_HEAP	2
 
-/**
- * struct drm_panfrost_create_bo - ioctl argument for creating Panfrost BOs.
- *
- * The flags argument is a bit mask of PANFROST_BO_* flags.
- */
+ 
 struct drm_panfrost_create_bo {
 	__u32 size;
 	__u32 flags;
-	/** Returned GEM handle for the BO. */
+	 
 	__u32 handle;
-	/* Pad, must be zero-filled. */
+	 
 	__u32 pad;
-	/**
-	 * Returned offset for the BO in the GPU address space.  This offset
-	 * is private to the DRM fd and is valid for the lifetime of the GEM
-	 * handle.
-	 *
-	 * This offset value will always be nonzero, since various HW
-	 * units treat 0 specially.
-	 */
+	 
 	__u64 offset;
 };
 
-/**
- * struct drm_panfrost_mmap_bo - ioctl argument for mapping Panfrost BOs.
- *
- * This doesn't actually perform an mmap.  Instead, it returns the
- * offset you need to use in an mmap on the DRM device node.  This
- * means that tools like valgrind end up knowing about the mapped
- * memory.
- *
- * There are currently no values for the flags argument, but it may be
- * used in a future extension.
- */
+ 
 struct drm_panfrost_mmap_bo {
-	/** Handle for the object being mapped. */
+	 
 	__u32 handle;
 	__u32 flags;
-	/** offset into the drm node to use for subsequent mmap call. */
+	 
 	__u64 offset;
 };
 
@@ -180,11 +139,7 @@ struct drm_panfrost_get_param {
 	__u64 value;
 };
 
-/**
- * Returns the offset for the BO in the GPU address space for this DRM fd.
- * This is the same value returned by drm_panfrost_create_bo, if that was called
- * from this DRM fd.
- */
+ 
 struct drm_panfrost_get_bo_offset {
 	__u32 handle;
 	__u32 pad;
@@ -193,10 +148,7 @@ struct drm_panfrost_get_bo_offset {
 
 struct drm_panfrost_perfcnt_enable {
 	__u32 enable;
-	/*
-	 * On bifrost we have 2 sets of counters, this parameter defines the
-	 * one to track.
-	 */
+	 
 	__u32 counterset;
 };
 
@@ -204,41 +156,28 @@ struct drm_panfrost_perfcnt_dump {
 	__u64 buf_ptr;
 };
 
-/* madvise provides a way to tell the kernel in case a buffers contents
- * can be discarded under memory pressure, which is useful for userspace
- * bo cache where we want to optimistically hold on to buffer allocate
- * and potential mmap, but allow the pages to be discarded under memory
- * pressure.
- *
- * Typical usage would involve madvise(DONTNEED) when buffer enters BO
- * cache, and madvise(WILLNEED) if trying to recycle buffer from BO cache.
- * In the WILLNEED case, 'retained' indicates to userspace whether the
- * backing pages still exist.
- */
-#define PANFROST_MADV_WILLNEED 0	/* backing pages are needed, status returned in 'retained' */
-#define PANFROST_MADV_DONTNEED 1	/* backing pages not needed */
+ 
+#define PANFROST_MADV_WILLNEED 0	 
+#define PANFROST_MADV_DONTNEED 1	 
 
 struct drm_panfrost_madvise {
-	__u32 handle;         /* in, GEM handle */
-	__u32 madv;           /* in, PANFROST_MADV_x */
-	__u32 retained;       /* out, whether backing store still exists */
+	__u32 handle;          
+	__u32 madv;            
+	__u32 retained;        
 };
 
-/* Definitions for coredump decoding in user space */
+ 
 #define PANFROSTDUMP_MAJOR 1
 #define PANFROSTDUMP_MINOR 0
 
-#define PANFROSTDUMP_MAGIC 0x464E4150 /* PANF */
+#define PANFROSTDUMP_MAGIC 0x464E4150  
 
 #define PANFROSTDUMP_BUF_REG 0
 #define PANFROSTDUMP_BUF_BOMAP (PANFROSTDUMP_BUF_REG + 1)
 #define PANFROSTDUMP_BUF_BO (PANFROSTDUMP_BUF_BOMAP + 1)
 #define PANFROSTDUMP_BUF_TRAILER (PANFROSTDUMP_BUF_BO + 1)
 
-/*
- * This structure is the native endianness of the dumping machine, tools can
- * detect the endianness by looking at the value in 'magic'.
- */
+ 
 struct panfrost_dump_object_header {
 	__u32 magic;
 	__u32 type;
@@ -260,16 +199,13 @@ struct panfrost_dump_object_header {
 			__u32 data[2];
 		} bomap;
 
-		/*
-		 * Force same size in case we want to expand the header
-		 * with new fields and also keep it 512-byte aligned
-		 */
+		 
 
 		__u32 sizer[496];
 	};
 };
 
-/* Registers object, an array of these */
+ 
 struct panfrost_dump_registers {
 	__u32 reg;
 	__u32 value;
@@ -279,4 +215,4 @@ struct panfrost_dump_registers {
 }
 #endif
 
-#endif /* _PANFROST_DRM_H_ */
+#endif  

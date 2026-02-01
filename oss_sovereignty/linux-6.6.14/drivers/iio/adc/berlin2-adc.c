@@ -1,14 +1,4 @@
-/*
- * Marvell Berlin2 ADC driver
- *
- * Copyright (C) 2015 Marvell Technology Group Ltd.
- *
- * Antoine Tenart <antoine.tenart@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/iio/iio.h>
 #include <linux/iio/driver.h>
@@ -28,7 +18,7 @@
 #define BERLIN2_SM_CTRL				0x14
 #define  BERLIN2_SM_CTRL_SM_SOC_INT		BIT(1)
 #define  BERLIN2_SM_CTRL_SOC_SM_INT		BIT(2)
-#define  BERLIN2_SM_CTRL_ADC_SEL(x)		((x) << 5)	/* 0-15 */
+#define  BERLIN2_SM_CTRL_ADC_SEL(x)		((x) << 5)	 
 #define  BERLIN2_SM_CTRL_ADC_SEL_MASK		GENMASK(8, 5)
 #define  BERLIN2_SM_CTRL_ADC_POWER		BIT(9)
 #define  BERLIN2_SM_CTRL_ADC_CLKSEL_DIV2	(0x0 << 10)
@@ -46,17 +36,17 @@
 #define  BERLIN2_SM_CTRL_ADC_VREF_INT		(0x1 << 17)
 #define  BERLIN2_SM_CTRL_ADC_ROTATE		BIT(19)
 #define  BERLIN2_SM_CTRL_TSEN_EN		BIT(20)
-#define  BERLIN2_SM_CTRL_TSEN_CLK_SEL_125	(0x0 << 21)	/* 1.25 MHz */
-#define  BERLIN2_SM_CTRL_TSEN_CLK_SEL_250	(0x1 << 21)	/* 2.5 MHz */
-#define  BERLIN2_SM_CTRL_TSEN_MODE_0_125	(0x0 << 22)	/* 0-125 C */
-#define  BERLIN2_SM_CTRL_TSEN_MODE_10_50	(0x1 << 22)	/* 10-50 C */
+#define  BERLIN2_SM_CTRL_TSEN_CLK_SEL_125	(0x0 << 21)	 
+#define  BERLIN2_SM_CTRL_TSEN_CLK_SEL_250	(0x1 << 21)	 
+#define  BERLIN2_SM_CTRL_TSEN_MODE_0_125	(0x0 << 22)	 
+#define  BERLIN2_SM_CTRL_TSEN_MODE_10_50	(0x1 << 22)	 
 #define  BERLIN2_SM_CTRL_TSEN_RESET		BIT(29)
 #define BERLIN2_SM_ADC_DATA			0x20
 #define  BERLIN2_SM_ADC_MASK			GENMASK(9, 0)
 #define BERLIN2_SM_ADC_STATUS			0x1c
-#define  BERLIN2_SM_ADC_STATUS_DATA_RDY(x)	BIT(x)		/* 0-15 */
+#define  BERLIN2_SM_ADC_STATUS_DATA_RDY(x)	BIT(x)		 
 #define  BERLIN2_SM_ADC_STATUS_DATA_RDY_MASK	GENMASK(15, 0)
-#define  BERLIN2_SM_ADC_STATUS_INT_EN(x)	(BIT(x) << 16)	/* 0-15 */
+#define  BERLIN2_SM_ADC_STATUS_INT_EN(x)	(BIT(x) << 16)	 
 #define  BERLIN2_SM_ADC_STATUS_INT_EN_MASK	GENMASK(31, 16)
 #define BERLIN2_SM_TSEN_STATUS			0x24
 #define  BERLIN2_SM_TSEN_STATUS_DATA_RDY	BIT(0)
@@ -65,8 +55,8 @@
 #define  BERLIN2_SM_TSEN_MASK			GENMASK(9, 0)
 #define BERLIN2_SM_TSEN_CTRL			0x74
 #define  BERLIN2_SM_TSEN_CTRL_START		BIT(8)
-#define  BERLIN2_SM_TSEN_CTRL_SETTLING_4	(0x0 << 21)	/* 4 us */
-#define  BERLIN2_SM_TSEN_CTRL_SETTLING_12	(0x1 << 21)	/* 12 us */
+#define  BERLIN2_SM_TSEN_CTRL_SETTLING_4	(0x0 << 21)	 
+#define  BERLIN2_SM_TSEN_CTRL_SETTLING_12	(0x1 << 21)	 
 #define  BERLIN2_SM_TSEN_CTRL_SETTLING_MASK	BIT(21)
 #define  BERLIN2_SM_TSEN_CTRL_TRIM(x)		((x) << 22)
 #define  BERLIN2_SM_TSEN_CTRL_TRIM_MASK		GENMASK(25, 22)
@@ -89,21 +79,21 @@ struct berlin2_adc_priv {
 	}
 
 static const struct iio_chan_spec berlin2_adc_channels[] = {
-	BERLIN2_ADC_CHANNEL(0, IIO_VOLTAGE),	/* external input */
-	BERLIN2_ADC_CHANNEL(1, IIO_VOLTAGE),	/* external input */
-	BERLIN2_ADC_CHANNEL(2, IIO_VOLTAGE),	/* external input */
-	BERLIN2_ADC_CHANNEL(3, IIO_VOLTAGE),	/* external input */
-	BERLIN2_ADC_CHANNEL(4, IIO_VOLTAGE),	/* reserved */
-	BERLIN2_ADC_CHANNEL(5, IIO_VOLTAGE),	/* reserved */
-	{					/* temperature sensor */
+	BERLIN2_ADC_CHANNEL(0, IIO_VOLTAGE),	 
+	BERLIN2_ADC_CHANNEL(1, IIO_VOLTAGE),	 
+	BERLIN2_ADC_CHANNEL(2, IIO_VOLTAGE),	 
+	BERLIN2_ADC_CHANNEL(3, IIO_VOLTAGE),	 
+	BERLIN2_ADC_CHANNEL(4, IIO_VOLTAGE),	 
+	BERLIN2_ADC_CHANNEL(5, IIO_VOLTAGE),	 
+	{					 
 		.channel		= 6,
 		.datasheet_name		= "channel6",
 		.type			= IIO_TEMP,
 		.indexed		= 0,
 		.info_mask_separate	= BIT(IIO_CHAN_INFO_PROCESSED),
 	},
-	BERLIN2_ADC_CHANNEL(7, IIO_VOLTAGE),	/* reserved */
-	IIO_CHAN_SOFT_TIMESTAMP(8),		/* timestamp */
+	BERLIN2_ADC_CHANNEL(7, IIO_VOLTAGE),	 
+	IIO_CHAN_SOFT_TIMESTAMP(8),		 
 };
 
 static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
@@ -113,11 +103,11 @@ static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
 
 	mutex_lock(&priv->lock);
 
-	/* Enable the interrupts */
+	 
 	regmap_write(priv->regmap, BERLIN2_SM_ADC_STATUS,
 		     BERLIN2_SM_ADC_STATUS_INT_EN(channel));
 
-	/* Configure the ADC */
+	 
 	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
 			   BERLIN2_SM_CTRL_ADC_RESET |
 			   BERLIN2_SM_CTRL_ADC_SEL_MASK |
@@ -128,7 +118,7 @@ static int berlin2_adc_read(struct iio_dev *indio_dev, int channel)
 	ret = wait_event_interruptible_timeout(priv->wq, priv->data_available,
 					       msecs_to_jiffies(1000));
 
-	/* Disable the interrupts */
+	 
 	regmap_update_bits(priv->regmap, BERLIN2_SM_ADC_STATUS,
 			   BERLIN2_SM_ADC_STATUS_INT_EN(channel), 0);
 
@@ -157,17 +147,17 @@ static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
 
 	mutex_lock(&priv->lock);
 
-	/* Enable interrupts */
+	 
 	regmap_write(priv->regmap, BERLIN2_SM_TSEN_STATUS,
 		     BERLIN2_SM_TSEN_STATUS_INT_EN);
 
-	/* Configure the ADC */
+	 
 	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
 			   BERLIN2_SM_CTRL_TSEN_RESET |
 			   BERLIN2_SM_CTRL_ADC_ROTATE,
 			   BERLIN2_SM_CTRL_ADC_ROTATE);
 
-	/* Configure the temperature sensor */
+	 
 	regmap_update_bits(priv->regmap, BERLIN2_SM_TSEN_CTRL,
 			   BERLIN2_SM_TSEN_CTRL_TRIM_MASK |
 			   BERLIN2_SM_TSEN_CTRL_SETTLING_MASK |
@@ -179,7 +169,7 @@ static int berlin2_adc_tsen_read(struct iio_dev *indio_dev)
 	ret = wait_event_interruptible_timeout(priv->wq, priv->data_available,
 					       msecs_to_jiffies(1000));
 
-	/* Disable interrupts */
+	 
 	regmap_update_bits(priv->regmap, BERLIN2_SM_TSEN_STATUS,
 			   BERLIN2_SM_TSEN_STATUS_INT_EN, 0);
 
@@ -228,7 +218,7 @@ static int berlin2_adc_read_raw(struct iio_dev *indio_dev,
 		if (temp > 2047)
 			temp -= 4096;
 
-		/* Convert to milli Celsius */
+		 
 		*val = ((temp * 100000) / 264 - 270000);
 		return IIO_VAL_INT;
 	default:
@@ -338,7 +328,7 @@ static int berlin2_adc_probe(struct platform_device *pdev)
 	indio_dev->channels = berlin2_adc_channels;
 	indio_dev->num_channels = ARRAY_SIZE(berlin2_adc_channels);
 
-	/* Power up the ADC */
+	 
 	regmap_update_bits(priv->regmap, BERLIN2_SM_CTRL,
 			   BERLIN2_SM_CTRL_ADC_POWER,
 			   BERLIN2_SM_CTRL_ADC_POWER);

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _UAPI_LINUX_MMAN_H
 #define _UAPI_LINUX_MMAN_H
 
@@ -14,17 +14,11 @@
 #define OVERCOMMIT_ALWAYS		1
 #define OVERCOMMIT_NEVER		2
 
-#define MAP_SHARED	0x01		/* Share changes */
-#define MAP_PRIVATE	0x02		/* Changes are private */
-#define MAP_SHARED_VALIDATE 0x03	/* share + validate extension flags */
+#define MAP_SHARED	0x01		 
+#define MAP_PRIVATE	0x02		 
+#define MAP_SHARED_VALIDATE 0x03	 
 
-/*
- * Huge page size encoding when MAP_HUGETLB is specified, and a huge page
- * size other than the default is desired.  See hugetlb_encode.h.
- * All known huge page size encodings are provided here.  It is the
- * responsibility of the application to know which sizes are supported on
- * the running system.  See mmap(2) man page for details.
- */
+ 
 #define MAP_HUGE_SHIFT	HUGETLB_FLAG_ENCODE_SHIFT
 #define MAP_HUGE_MASK	HUGETLB_FLAG_ENCODE_MASK
 
@@ -55,4 +49,4 @@ struct cachestat {
 	__u64 nr_recently_evicted;
 };
 
-#endif /* _UAPI_LINUX_MMAN_H */
+#endif  

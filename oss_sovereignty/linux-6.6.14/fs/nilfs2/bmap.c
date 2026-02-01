@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NILFS block mapping.
- *
- * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Koji Sato.
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/string.h>
@@ -39,26 +33,7 @@ static int nilfs_bmap_convert_error(struct nilfs_bmap *bmap,
 	return err;
 }
 
-/**
- * nilfs_bmap_lookup_at_level - find a data block or node block
- * @bmap: bmap
- * @key: key
- * @level: level
- * @ptrp: place to store the value associated to @key
- *
- * Description: nilfs_bmap_lookup_at_level() finds a record whose key
- * matches @key in the block at @level of the bmap.
- *
- * Return Value: On success, 0 is returned and the record associated with @key
- * is stored in the place pointed by @ptrp. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-ENOENT - A record associated with @key does not exist.
- */
+ 
 int nilfs_bmap_lookup_at_level(struct nilfs_bmap *bmap, __u64 key, int level,
 			       __u64 *ptrp)
 {
@@ -76,12 +51,7 @@ int nilfs_bmap_lookup_at_level(struct nilfs_bmap *bmap, __u64 key, int level,
 		if (!ret)
 			*ptrp = blocknr;
 		else if (ret == -ENOENT) {
-			/*
-			 * If there was no valid entry in DAT for the block
-			 * address obtained by b_ops->bop_lookup, then pass
-			 * internal code -EINVAL to nilfs_bmap_convert_error
-			 * to treat it as metadata corruption.
-			 */
+			 
 			ret = -EINVAL;
 		}
 	}
@@ -129,24 +99,7 @@ static int nilfs_bmap_do_insert(struct nilfs_bmap *bmap, __u64 key, __u64 ptr)
 	return bmap->b_ops->bop_insert(bmap, key, ptr);
 }
 
-/**
- * nilfs_bmap_insert - insert a new key-record pair into a bmap
- * @bmap: bmap
- * @key: key
- * @rec: record
- *
- * Description: nilfs_bmap_insert() inserts the new key-record pair specified
- * by @key and @rec into @bmap.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-EEXIST - A record associated with @key already exist.
- */
+ 
 int nilfs_bmap_insert(struct nilfs_bmap *bmap, __u64 key, unsigned long rec)
 {
 	int ret;
@@ -184,24 +137,7 @@ static int nilfs_bmap_do_delete(struct nilfs_bmap *bmap, __u64 key)
 	return bmap->b_ops->bop_delete(bmap, key);
 }
 
-/**
- * nilfs_bmap_seek_key - seek a valid entry and return its key
- * @bmap: bmap struct
- * @start: start key number
- * @keyp: place to store valid key
- *
- * Description: nilfs_bmap_seek_key() seeks a valid key on @bmap
- * starting from @start, and stores it to @keyp if found.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-ENOENT - No valid entry was found
- */
+ 
 int nilfs_bmap_seek_key(struct nilfs_bmap *bmap, __u64 start, __u64 *keyp)
 {
 	int ret;
@@ -228,23 +164,7 @@ int nilfs_bmap_last_key(struct nilfs_bmap *bmap, __u64 *keyp)
 	return ret;
 }
 
-/**
- * nilfs_bmap_delete - delete a key-record pair from a bmap
- * @bmap: bmap
- * @key: key
- *
- * Description: nilfs_bmap_delete() deletes the key-record pair specified by
- * @key from @bmap.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-ENOENT - A record associated with @key does not exist.
- */
+ 
 int nilfs_bmap_delete(struct nilfs_bmap *bmap, __u64 key)
 {
 	int ret;
@@ -282,21 +202,7 @@ static int nilfs_bmap_do_truncate(struct nilfs_bmap *bmap, __u64 key)
 	return 0;
 }
 
-/**
- * nilfs_bmap_truncate - truncate a bmap to a specified key
- * @bmap: bmap
- * @key: key
- *
- * Description: nilfs_bmap_truncate() removes key-record pairs whose keys are
- * greater than or equal to @key from @bmap.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 int nilfs_bmap_truncate(struct nilfs_bmap *bmap, __u64 key)
 {
 	int ret;
@@ -308,12 +214,7 @@ int nilfs_bmap_truncate(struct nilfs_bmap *bmap, __u64 key)
 	return nilfs_bmap_convert_error(bmap, __func__, ret);
 }
 
-/**
- * nilfs_bmap_clear - free resources a bmap holds
- * @bmap: bmap
- *
- * Description: nilfs_bmap_clear() frees resources associated with @bmap.
- */
+ 
 void nilfs_bmap_clear(struct nilfs_bmap *bmap)
 {
 	down_write(&bmap->b_sem);
@@ -322,21 +223,7 @@ void nilfs_bmap_clear(struct nilfs_bmap *bmap)
 	up_write(&bmap->b_sem);
 }
 
-/**
- * nilfs_bmap_propagate - propagate dirty state
- * @bmap: bmap
- * @bh: buffer head
- *
- * Description: nilfs_bmap_propagate() marks the buffers that directly or
- * indirectly refer to the block specified by @bh dirty.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 int nilfs_bmap_propagate(struct nilfs_bmap *bmap, struct buffer_head *bh)
 {
 	int ret;
@@ -348,11 +235,7 @@ int nilfs_bmap_propagate(struct nilfs_bmap *bmap, struct buffer_head *bh)
 	return nilfs_bmap_convert_error(bmap, __func__, ret);
 }
 
-/**
- * nilfs_bmap_lookup_dirty_buffers -
- * @bmap: bmap
- * @listp: pointer to buffer head list
- */
+ 
 void nilfs_bmap_lookup_dirty_buffers(struct nilfs_bmap *bmap,
 				     struct list_head *listp)
 {
@@ -360,25 +243,7 @@ void nilfs_bmap_lookup_dirty_buffers(struct nilfs_bmap *bmap,
 		bmap->b_ops->bop_lookup_dirty_buffers(bmap, listp);
 }
 
-/**
- * nilfs_bmap_assign - assign a new block number to a block
- * @bmap: bmap
- * @bh: pointer to buffer head
- * @blocknr: block number
- * @binfo: block information
- *
- * Description: nilfs_bmap_assign() assigns the block number @blocknr to the
- * buffer specified by @bh.
- *
- * Return Value: On success, 0 is returned and the buffer head of a newly
- * create buffer and the block information associated with the buffer are
- * stored in the place pointed by @bh and @binfo, respectively. On error, one
- * of the following negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 int nilfs_bmap_assign(struct nilfs_bmap *bmap,
 		      struct buffer_head **bh,
 		      unsigned long blocknr,
@@ -393,22 +258,7 @@ int nilfs_bmap_assign(struct nilfs_bmap *bmap,
 	return nilfs_bmap_convert_error(bmap, __func__, ret);
 }
 
-/**
- * nilfs_bmap_mark - mark block dirty
- * @bmap: bmap
- * @key: key
- * @level: level
- *
- * Description: nilfs_bmap_mark() marks the block specified by @key and @level
- * as dirty.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 int nilfs_bmap_mark(struct nilfs_bmap *bmap, __u64 key, int level)
 {
 	int ret;
@@ -423,15 +273,7 @@ int nilfs_bmap_mark(struct nilfs_bmap *bmap, __u64 key, int level)
 	return nilfs_bmap_convert_error(bmap, __func__, ret);
 }
 
-/**
- * nilfs_bmap_test_and_clear_dirty - test and clear a bmap dirty state
- * @bmap: bmap
- *
- * Description: nilfs_test_and_clear() is the atomic operation to test and
- * clear the dirty state of @bmap.
- *
- * Return Value: 1 is returned if @bmap is dirty, or 0 if clear.
- */
+ 
 int nilfs_bmap_test_and_clear_dirty(struct nilfs_bmap *bmap)
 {
 	int ret;
@@ -444,9 +286,7 @@ int nilfs_bmap_test_and_clear_dirty(struct nilfs_bmap *bmap)
 }
 
 
-/*
- * Internal use only
- */
+ 
 __u64 nilfs_bmap_data_get_key(const struct nilfs_bmap *bmap,
 			      const struct buffer_head *bh)
 {
@@ -489,18 +329,7 @@ __u64 nilfs_bmap_find_target_in_group(const struct nilfs_bmap *bmap)
 static struct lock_class_key nilfs_bmap_dat_lock_key;
 static struct lock_class_key nilfs_bmap_mdt_lock_key;
 
-/**
- * nilfs_bmap_read - read a bmap from an inode
- * @bmap: bmap
- * @raw_inode: on-disk inode
- *
- * Description: nilfs_bmap_read() initializes the bmap @bmap.
- *
- * Return Value: On success, 0 is returned. On error, the following negative
- * error code is returned.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 int nilfs_bmap_read(struct nilfs_bmap *bmap, struct nilfs_inode *raw_inode)
 {
 	if (raw_inode == NULL)
@@ -539,13 +368,7 @@ int nilfs_bmap_read(struct nilfs_bmap *bmap, struct nilfs_inode *raw_inode)
 		nilfs_btree_init(bmap) : nilfs_direct_init(bmap);
 }
 
-/**
- * nilfs_bmap_write - write back a bmap to an inode
- * @bmap: bmap
- * @raw_inode: on-disk inode
- *
- * Description: nilfs_bmap_write() stores @bmap in @raw_inode.
- */
+ 
 void nilfs_bmap_write(struct nilfs_bmap *bmap, struct nilfs_inode *raw_inode)
 {
 	down_write(&bmap->b_sem);

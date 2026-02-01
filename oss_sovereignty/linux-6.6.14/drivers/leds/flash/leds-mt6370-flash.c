@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2023 Richtek Technology Corp.
- *
- * Authors:
- *   Alice Chen <alice_chen@richtek.com>
- *   ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -27,7 +21,7 @@ enum {
 	MT6370_MAX_LEDS
 };
 
-/* Virtual definition for multicolor */
+ 
 
 #define MT6370_REG_FLEDEN		0x17E
 #define MT6370_REG_STRBTO		0x173
@@ -97,10 +91,7 @@ static int mt6370_torch_brightness_set(struct led_classdev *lcdev, enum led_brig
 
 	mutex_lock(&priv->lock);
 
-	/*
-	 * There is only one set of flash control logic, and this flag is used to check if 'strobe'
-	 * is currently being used.
-	 */
+	 
 	if (priv->fled_strobe_used) {
 		dev_warn(lcdev->dev, "Please disable strobe first [%d]\n", priv->fled_strobe_used);
 		ret = -EBUSY;
@@ -120,10 +111,7 @@ static int mt6370_torch_brightness_set(struct led_classdev *lcdev, enum led_brig
 		if (led->led_no == MT6370_LED_JOINT) {
 			u32 flevel[MT6370_MAX_LEDS];
 
-			/*
-			 * There're two flash channels in MT6370. If joint flash output is used,
-			 * torch current will be averaged output from both channels.
-			 */
+			 
 			flevel[0] = level / 2;
 			flevel[1] = level - flevel[0];
 			for (i = 0; i < MT6370_MAX_LEDS; i++) {
@@ -153,11 +141,7 @@ unlock:
 
 static int mt6370_flash_brightness_set(struct led_classdev_flash *fl_cdev, u32 brightness)
 {
-	/*
-	 * Because of the current spikes when turning on the flash, the brightness should be kept
-	 * by the LED framework. This empty function is used to prevent checking failure when
-	 * led_classdev_flash registers ops.
-	 */
+	 
 	return 0;
 }
 
@@ -172,10 +156,7 @@ static int _mt6370_flash_brightness_set(struct led_classdev_flash *fl_cdev, u32 
 	if (led->led_no == MT6370_LED_JOINT) {
 		u32 flevel[MT6370_MAX_LEDS];
 
-		/*
-		 * There're two flash channels in MT6370. If joint flash output is used, storbe
-		 * current will be averaged output from both channels.
-		 */
+		 
 		flevel[0] = val / 2;
 		flevel[1] = val - flevel[0];
 		for (i = 0; i < MT6370_MAX_LEDS; i++) {
@@ -207,10 +188,7 @@ static int mt6370_strobe_set(struct led_classdev_flash *fl_cdev, bool state)
 
 	mutex_lock(&priv->lock);
 
-	/*
-	 * There is only one set of flash control logic, and this flag is used to check if 'torch'
-	 * is currently being used.
-	 */
+	 
 	if (priv->fled_torch_used) {
 		dev_warn(lcdev->dev, "Please disable torch first [0x%x]\n", priv->fled_torch_used);
 		ret = -EBUSY;
@@ -231,20 +209,14 @@ static int mt6370_strobe_set(struct led_classdev_flash *fl_cdev, bool state)
 		goto unlock;
 	}
 
-	/*
-	 * If the flash needs to turn on, configure the flash current to ramp up to the setting
-	 * value. Otherwise, always revert to the minimum one.
-	 */
+	 
 	ret = _mt6370_flash_brightness_set(fl_cdev, state ? s->val : s->min);
 	if (ret) {
 		dev_err(lcdev->dev, "[%d] Failed to set brightness\n", led->led_no);
 		goto unlock;
 	}
 
-	/*
-	 * For the flash to turn on/off, we must wait for HW ramping up/down time 5ms/500us to
-	 * prevent the unexpected problem.
-	 */
+	 
 	if (!priv->fled_strobe_used && curr)
 		usleep_range(5000, 6000);
 	else if (priv->fled_strobe_used && !curr)
@@ -460,7 +432,7 @@ static int mt6370_init_flash_properties(struct device *dev, struct mt6370_led *l
 		priv->leds_active |= BIT(sources[i]);
 	}
 
-	/* If both channels are specified in 'led-sources', joint flash output mode is used */
+	 
 	led->led_no = num == 2 ? MT6370_LED_JOINT : sources[0];
 
 	max_ua = num == 2 ? MT6370_ITORCH_DOUBLE_MAX_uA : MT6370_ITORCH_MAX_uA;
@@ -484,7 +456,7 @@ static int mt6370_init_flash_properties(struct device *dev, struct mt6370_led *l
 	s->step = MT6370_ISTRB_STEP_uA;
 	s->val = s->max = val;
 
-	/* Always configure to the minimum level when off to prevent flash current spikes. */
+	 
 	ret = _mt6370_flash_brightness_set(flash, s->min);
 	if (ret)
 		return ret;

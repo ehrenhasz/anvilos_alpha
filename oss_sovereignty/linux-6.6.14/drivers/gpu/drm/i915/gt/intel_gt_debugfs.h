@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef INTEL_GT_DEBUGFS_H
 #define INTEL_GT_DEBUGFS_H
@@ -46,8 +44,8 @@ void intel_gt_debugfs_register_files(struct dentry *root,
 				     const struct intel_gt_debugfs_file *files,
 				     unsigned long count, void *data);
 
-/* functions that need to be accessed by the upper level non-gt interfaces */
+ 
 int intel_gt_debugfs_reset_show(struct intel_gt *gt, u64 *val);
 void intel_gt_debugfs_reset_store(struct intel_gt *gt, u64 val);
 
-#endif /* INTEL_GT_DEBUGFS_H */
+#endif  

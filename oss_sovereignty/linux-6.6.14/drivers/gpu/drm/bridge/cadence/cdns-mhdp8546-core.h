@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Cadence MHDP8546 DP bridge driver.
- *
- * Copyright (C) 2020 Cadence Design Systems, Inc.
- *
- * Author: Quentin Schulz <quentin.schulz@free-electrons.com>
- *         Swapnil Jakhade <sjakhade@cadence.com>
- */
+ 
+ 
 
 #ifndef CDNS_MHDP8546_CORE_H
 #define CDNS_MHDP8546_CORE_H
@@ -23,7 +16,7 @@ struct clk;
 struct device;
 struct phy;
 
-/* Register offsets */
+ 
 #define CDNS_APB_CTRL				0x00000
 #define CDNS_CPU_STALL				BIT(3)
 
@@ -198,7 +191,7 @@ struct phy;
 #define CDNS_DP_BYTE_COUNT(s)			(CDNS_DPTX_STREAM(s) + 0x7c)
 #define CDNS_DP_BYTE_COUNT_BYTES_IN_CHUNK_SHIFT	16
 
-/* mailbox */
+ 
 #define MAILBOX_RETRY_US			1000
 #define MAILBOX_TIMEOUT_US			2000000
 
@@ -214,7 +207,7 @@ struct phy;
 #define MB_MODULE_ID_HDCP_GENERAL		0x09
 #define MB_MODULE_ID_GENERAL			0x0a
 
-/* firmware and opcodes */
+ 
 #define FW_NAME					"cadence/mhdp8546.bin"
 #define CDNS_MHDP_IMEM				0x10000
 
@@ -240,13 +233,13 @@ struct phy;
 #define FW_STANDBY				0
 #define FW_ACTIVE				1
 
-/* HPD */
+ 
 #define DPTX_READ_EVENT_HPD_TO_HIGH             BIT(0)
 #define DPTX_READ_EVENT_HPD_TO_LOW              BIT(1)
 #define DPTX_READ_EVENT_HPD_PULSE               BIT(2)
 #define DPTX_READ_EVENT_HPD_STATE               BIT(3)
 
-/* general */
+ 
 #define CDNS_DP_TRAINING_PATTERN_4		0x7
 
 #define CDNS_KEEP_ALIVE_TIMEOUT			2000
@@ -269,7 +262,7 @@ struct phy;
 #define CDNS_LANE_MAPPING_FLIPPED		0x1b
 
 #define CDNS_DP_MAX_NUM_LANES			4
-#define CDNS_DP_TEST_VSC_SDP			BIT(6) /* 1.3+ */
+#define CDNS_DP_TEST_VSC_SDP			BIT(6)  
 #define CDNS_DP_TEST_COLOR_FORMAT_RAW_Y_ONLY	BIT(7)
 
 #define CDNS_MHDP_MAX_STREAMS			4
@@ -311,14 +304,10 @@ struct cdns_mhdp_display_fmt {
 	bool y_only;
 };
 
-/*
- * These enums present MHDP hw initialization state
- * Legal state transitions are:
- * MHDP_HW_READY <-> MHDP_HW_STOPPED
- */
+ 
 enum mhdp_hw_state {
-	MHDP_HW_READY = 1,	/* HW ready, FW active */
-	MHDP_HW_STOPPED		/* Driver removal FW to be stopped */
+	MHDP_HW_READY = 1,	 
+	MHDP_HW_STOPPED		 
 };
 
 struct cdns_mhdp_device;
@@ -346,7 +335,7 @@ struct cdns_mhdp_platform_info {
 struct cdns_mhdp_hdcp {
 	struct delayed_work check_work;
 	struct work_struct prop_work;
-	struct mutex mutex; /* mutex to protect hdcp.value */
+	struct mutex mutex;  
 	u32 value;
 	u8 hdcp_content_type;
 };
@@ -362,17 +351,10 @@ struct cdns_mhdp_device {
 
 	const struct cdns_mhdp_platform_info *info;
 
-	/* This is to protect mailbox communications with the firmware */
+	 
 	struct mutex mbox_mutex;
 
-	/*
-	 * "link_mutex" protects the access to all the link parameters
-	 * including the link training process. Link training will be
-	 * invoked both from threaded interrupt handler and from atomic
-	 * callbacks when link_up is not set. So this mutex protects
-	 * flags such as link_up, bridge_enabled, link.num_lanes,
-	 * link.rate etc.
-	 */
+	 
 	struct mutex link_mutex;
 
 	struct drm_connector connector;
@@ -389,21 +371,14 @@ struct cdns_mhdp_device {
 	bool link_up;
 	bool plugged;
 
-	/*
-	 * "start_lock" protects the access to bridge_attached and
-	 * hw_state data members that control the delayed firmware
-	 * loading and attaching the bridge. They are accessed from
-	 * both the DRM core and cdns_mhdp_fw_cb(). In most cases just
-	 * protecting the data members is enough, but the irq mask
-	 * setting needs to be protected when enabling the FW.
-	 */
+	 
 	spinlock_t start_lock;
 	bool bridge_attached;
 	bool bridge_enabled;
 	enum mhdp_hw_state hw_state;
 	wait_queue_head_t fw_load_wq;
 
-	/* Work struct to schedule a uevent on link train failure */
+	 
 	struct work_struct modeset_retry_work;
 	struct work_struct hpd_work;
 

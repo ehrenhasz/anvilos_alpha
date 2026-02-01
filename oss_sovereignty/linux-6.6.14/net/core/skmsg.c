@@ -1,186 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2017 - 2018 Covalent IO, Inc. http://covalent.io */
 
-#include <linux/skmsg.h>
-#include <linux/skbuff.h>
-#include <linux/scatterlist.h>
-
-#include <net/sock.h>
-#include <net/tcp.h>
-#include <net/tls.h>
-#include <trace/events/sock.h>
-
-static bool sk_msg_try_coalesce_ok(struct sk_msg *msg, int elem_first_coalesce)
-{
-	if (msg->sg.end > msg->sg.start &&
-	    elem_first_coalesce < msg->sg.end)
-		return true;
-
-	if (msg->sg.end < msg->sg.start &&
-	    (elem_first_coalesce > msg->sg.start ||
-	     elem_first_coalesce < msg->sg.end))
-		return true;
-
-	return false;
-}
-
-int sk_msg_alloc(struct sock *sk, struct sk_msg *msg, int len,
-		 int elem_first_coalesce)
-{
-	struct page_frag *pfrag = sk_page_frag(sk);
-	u32 osize = msg->sg.size;
-	int ret = 0;
-
-	len -= msg->sg.size;
-	while (len > 0) {
-		struct scatterlist *sge;
-		u32 orig_offset;
-		int use, i;
-
-		if (!sk_page_frag_refill(sk, pfrag)) {
-			ret = -ENOMEM;
-			goto msg_trim;
-		}
-
-		orig_offset = pfrag->offset;
-		use = min_t(int, len, pfrag->size - orig_offset);
-		if (!sk_wmem_schedule(sk, use)) {
-			ret = -ENOMEM;
-			goto msg_trim;
-		}
-
-		i = msg->sg.end;
-		sk_msg_iter_var_prev(i);
-		sge = &msg->sg.data[i];
-
-		if (sk_msg_try_coalesce_ok(msg, elem_first_coalesce) &&
-		    sg_page(sge) == pfrag->page &&
-		    sge->offset + sge->length == orig_offset) {
-			sge->length += use;
-		} else {
-			if (sk_msg_full(msg)) {
-				ret = -ENOSPC;
-				break;
-			}
-
-			sge = &msg->sg.data[msg->sg.end];
-			sg_unmark_end(sge);
-			sg_set_page(sge, pfrag->page, use, orig_offset);
-			get_page(pfrag->page);
-			sk_msg_iter_next(msg, end);
-		}
-
-		sk_mem_charge(sk, use);
-		msg->sg.size += use;
-		pfrag->offset += use;
-		len -= use;
-	}
-
-	return ret;
-
-msg_trim:
-	sk_msg_trim(sk, msg, osize);
-	return ret;
-}
-EXPORT_SYMBOL_GPL(sk_msg_alloc);
-
-int sk_msg_clone(struct sock *sk, struct sk_msg *dst, struct sk_msg *src,
-		 u32 off, u32 len)
-{
-	int i = src->sg.start;
-	struct scatterlist *sge = sk_msg_elem(src, i);
-	struct scatterlist *sgd = NULL;
-	u32 sge_len, sge_off;
-
-	while (off) {
-		if (sge->length > off)
-			break;
-		off -= sge->length;
-		sk_msg_iter_var_next(i);
-		if (i == src->sg.end && off)
-			return -ENOSPC;
-		sge = sk_msg_elem(src, i);
-	}
-
-	while (len) {
-		sge_len = sge->length - off;
-		if (sge_len > len)
-			sge_len = len;
-
-		if (dst->sg.end)
-			sgd = sk_msg_elem(dst, dst->sg.end - 1);
-
-		if (sgd &&
-		    (sg_page(sge) == sg_page(sgd)) &&
-		    (sg_virt(sge) + off == sg_virt(sgd) + sgd->length)) {
-			sgd->length += sge_len;
-			dst->sg.size += sge_len;
-		} else if (!sk_msg_full(dst)) {
-			sge_off = sge->offset + off;
-			sk_msg_page_add(dst, sg_page(sge), sge_len, sge_off);
-		} else {
-			return -ENOSPC;
-		}
-
-		off = 0;
-		len -= sge_len;
-		sk_mem_charge(sk, sge_len);
-		sk_msg_iter_var_next(i);
-		if (i == src->sg.end && len)
-			return -ENOSPC;
-		sge = sk_msg_elem(src, i);
-	}
-
-	return 0;
-}
-EXPORT_SYMBOL_GPL(sk_msg_clone);
-
-void sk_msg_return_zero(struct sock *sk, struct sk_msg *msg, int bytes)
-{
-	int i = msg->sg.start;
-
-	do {
-		struct scatterlist *sge = sk_msg_elem(msg, i);
-
-		if (bytes < sge->length) {
-			sge->length -= bytes;
-			sge->offset += bytes;
-			sk_mem_uncharge(sk, bytes);
-			break;
-		}
-
-		sk_mem_uncharge(sk, sge->length);
-		bytes -= sge->length;
-		sge->length = 0;
-		sge->offset = 0;
-		sk_msg_iter_var_next(i);
-	} while (bytes && i != msg->sg.end);
-	msg->sg.start = i;
-}
-EXPORT_SYMBOL_GPL(sk_msg_return_zero);
-
-void sk_msg_return(struct sock *sk, struct sk_msg *msg, int bytes)
-{
-	int i = msg->sg.start;
-
-	do {
-		struct scatterlist *sge = &msg->sg.data[i];
-		int uncharge = (bytes < sge->length) ? bytes : sge->length;
-
-		sk_mem_uncharge(sk, uncharge);
-		bytes -= uncharge;
-		sk_msg_iter_var_next(i);
-	} while (i != msg->sg.end);
-}
-EXPORT_SYMBOL_GPL(sk_msg_return);
-
-static int sk_msg_free_elem(struct sock *sk, struct sk_msg *msg, u32 i,
-			    bool charge)
-{
-	struct scatterlist *sge = sk_msg_elem(msg, i);
-	u32 len = sge->length;
-
-	/* When the skb owns the memory we free it from consume_skb path. */
+ 
 	if (!msg->skb) {
 		if (charge)
 			sk_mem_uncharge(sk, len);
@@ -283,19 +102,14 @@ void sk_msg_trim(struct sock *sk, struct sk_msg *msg, int len)
 
 	msg->sg.data[i].length -= trim;
 	sk_mem_uncharge(sk, trim);
-	/* Adjust copybreak if it falls into the trimmed part of last buf */
+	 
 	if (msg->sg.curr == i && msg->sg.copybreak > msg->sg.data[i].length)
 		msg->sg.copybreak = msg->sg.data[i].length;
 out:
 	sk_msg_iter_var_next(i);
 	msg->sg.end = i;
 
-	/* If we trim data a full sg elem before curr pointer update
-	 * copybreak and current so that any future copy operations
-	 * start at new copy location.
-	 * However trimed data that has not yet been used in a copy op
-	 * does not require an update.
-	 */
+	 
 	if (!msg->sg.size) {
 		msg->sg.curr = msg->sg.start;
 		msg->sg.copybreak = 0;
@@ -348,17 +162,12 @@ int sk_msg_zerocopy_from_iter(struct sock *sk, struct iov_iter *from,
 			num_elems++;
 			i++;
 		}
-		/* When zerocopy is mixed with sk_msg_*copy* operations we
-		 * may have a copybreak set in this case clear and prefer
-		 * zerocopy remainder when possible.
-		 */
+		 
 		msg->sg.copybreak = 0;
 		msg->sg.curr = msg->sg.end;
 	}
 out:
-	/* Revert iov_iter updates, msg will need to use 'trim' later if it
-	 * also needs to be cleared.
-	 */
+	 
 	if (ret)
 		iov_iter_revert(from, msg->sg.size - orig);
 	return ret;
@@ -375,7 +184,7 @@ int sk_msg_memcopy_from_iter(struct sock *sk, struct iov_iter *from,
 
 	do {
 		sge = sk_msg_elem(msg, i);
-		/* This is possible if a trim operation shrunk the buffer */
+		 
 		if (msg->sg.copybreak >= sge->length) {
 			msg->sg.copybreak = 0;
 			sk_msg_iter_var_next(i);
@@ -408,7 +217,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(sk_msg_memcopy_from_iter);
 
-/* Receive sk_msg from psock->ingress_msg to @msg. */
+ 
 int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
 		   int len, int flags)
 {
@@ -454,9 +263,7 @@ int sk_msg_recvmsg(struct sock *sk, struct sk_psock *psock, struct msghdr *msg,
 						put_page(page);
 				}
 			} else {
-				/* Lets not optimize peek case if copy_page_to_iter
-				 * didn't copy the entire length lets just break.
-				 */
+				 
 				if (copy != sge->length)
 					goto out;
 				sk_msg_iter_var_next(i);
@@ -532,11 +339,7 @@ static int sk_psock_skb_ingress_enqueue(struct sk_buff *skb,
 
 	num_sge = skb_to_sgvec(skb, msg->sg.data, off, len);
 	if (num_sge < 0) {
-		/* skb linearize may fail with ENOMEM, but lets simply try again
-		 * later if this happens. Under memory pressure we don't want to
-		 * drop the skb. We need to linearize the skb so that the mapping
-		 * in skb_to_sgvec can not error.
-		 */
+		 
 		if (skb_linearize(skb))
 			return -EAGAIN;
 
@@ -566,22 +369,14 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb,
 	struct sk_msg *msg;
 	int err;
 
-	/* If we are receiving on the same sock skb->sk is already assigned,
-	 * skip memory accounting and owner transition seeing it already set
-	 * correctly.
-	 */
+	 
 	if (unlikely(skb->sk == sk))
 		return sk_psock_skb_ingress_self(psock, skb, off, len);
 	msg = sk_psock_create_ingress_msg(sk, skb);
 	if (!msg)
 		return -EAGAIN;
 
-	/* This will transition ownership of the data from the socket where
-	 * the BPF program was run initiating the redirect to the socket
-	 * we will eventually receive this data on. The data will be released
-	 * from skb_consume found in __tcp_bpf_recvmsg() after its been copied
-	 * into user buffers.
-	 */
+	 
 	skb_set_owner_r(skb, sk);
 	err = sk_psock_skb_ingress_enqueue(skb, off, len, psock, sk, msg);
 	if (err < 0)
@@ -589,10 +384,7 @@ static int sk_psock_skb_ingress(struct sk_psock *psock, struct sk_buff *skb,
 	return err;
 }
 
-/* Puts an skb on the ingress queue of the socket already assigned to the
- * skb. In this case we do not need to check memory limits or skb_set_owner_r
- * because the skb is already accounted for here.
- */
+ 
 static int sk_psock_skb_ingress_self(struct sk_psock *psock, struct sk_buff *skb,
 				     u32 off, u32 len)
 {
@@ -674,14 +466,12 @@ static void sk_psock_backlog(struct work_struct *work)
 				if (ret == -EAGAIN) {
 					sk_psock_skb_state(psock, state, len, off);
 
-					/* Delay slightly to prioritize any
-					 * other work that might be here.
-					 */
+					 
 					if (sk_psock_test_state(psock, SK_PSOCK_TX_ENABLED))
 						schedule_delayed_work(&psock->work, 1);
 					goto end;
 				}
-				/* Hard errors break pipe and stop xmit. */
+				 
 				sk_psock_report_error(psock, ret ? -ret : EPIPE);
 				sk_psock_clear_state(psock, SK_PSOCK_TX_ENABLED);
 				goto end;
@@ -811,7 +601,7 @@ static void sk_psock_destroy(struct work_struct *work)
 {
 	struct sk_psock *psock = container_of(to_rcu_work(work),
 					      struct sk_psock, rwork);
-	/* No sk_callback_lock since already detached. */
+	 
 
 	sk_psock_done_strp(psock);
 
@@ -906,19 +696,14 @@ static int sk_psock_skb_redirect(struct sk_psock *from, struct sk_buff *skb)
 	struct sock *sk_other;
 
 	sk_other = skb_bpf_redirect_fetch(skb);
-	/* This error is a buggy BPF program, it returned a redirect
-	 * return code, but then didn't set a redirect interface.
-	 */
+	 
 	if (unlikely(!sk_other)) {
 		skb_bpf_redirect_clear(skb);
 		sock_drop(from->sk, skb);
 		return -EIO;
 	}
 	psock_other = sk_psock(sk_other);
-	/* This error indicates the socket is being torn down or had another
-	 * error that caused the pipe to break. We can't send a packet on
-	 * a socket that is in this state so we drop the skb.
-	 */
+	 
 	if (!psock_other || sock_flag(sk_other, SOCK_DEAD)) {
 		skb_bpf_redirect_clear(skb);
 		sock_drop(from->sk, skb);
@@ -990,12 +775,7 @@ static int sk_psock_verdict_apply(struct sk_psock *psock, struct sk_buff *skb,
 
 		skb_bpf_set_ingress(skb);
 
-		/* If the queue is empty then we can submit directly
-		 * into the msg queue. If its not empty we have to
-		 * queue work otherwise we may get OOO data. Otherwise,
-		 * if sk_psock_skb_ingress errors will be handled by
-		 * retrying later from workqueue.
-		 */
+		 
 		if (skb_queue_empty(&psock->ingress_skb)) {
 			len = skb->len;
 			off = 0;
@@ -1103,7 +883,7 @@ static int sk_psock_strp_parse(struct strparser *strp, struct sk_buff *skb)
 	return ret;
 }
 
-/* Called with socket lock held. */
+ 
 static void sk_psock_strp_data_ready(struct sock *sk)
 {
 	struct sk_psock *psock;
@@ -1165,7 +945,7 @@ void sk_psock_stop_strp(struct sock *sk, struct sk_psock *psock)
 
 static void sk_psock_done_strp(struct sk_psock *psock)
 {
-	/* Parser has been stopped */
+	 
 	if (sk_psock_test_state(psock, SK_PSOCK_RX_STRP_ENABLED))
 		strp_done(&psock->strp);
 }
@@ -1173,7 +953,7 @@ static void sk_psock_done_strp(struct sk_psock *psock)
 static void sk_psock_done_strp(struct sk_psock *psock)
 {
 }
-#endif /* CONFIG_BPF_STREAM_PARSER */
+#endif  
 
 static int sk_psock_verdict_recv(struct sock *sk, struct sk_buff *skb)
 {

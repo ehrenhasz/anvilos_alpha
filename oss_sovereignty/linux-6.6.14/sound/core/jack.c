@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Jack abstraction layer
- *
- *  Copyright 2008 Wolfson Microelectronics
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/slab.h>
@@ -17,12 +13,12 @@
 
 struct snd_jack_kctl {
 	struct snd_kcontrol *kctl;
-	struct list_head list;  /* list of controls belong to the same jack */
-	unsigned int mask_bits; /* only masked status bits are reported via kctl */
-	struct snd_jack *jack;  /* pointer to struct snd_jack */
-	bool sw_inject_enable;  /* allow to inject plug event via debugfs */
+	struct list_head list;   
+	unsigned int mask_bits;  
+	struct snd_jack *jack;   
+	bool sw_inject_enable;   
 #ifdef CONFIG_SND_JACK_INJECTION_DEBUG
-	struct dentry *jack_debugfs_root; /* jack_kctl debugfs root */
+	struct dentry *jack_debugfs_root;  
 #endif
 };
 
@@ -35,7 +31,7 @@ static const int jack_switch_types[SND_JACK_SWITCH_TYPES] = {
 	SW_VIDEOOUT_INSERT,
 	SW_LINEIN_INSERT,
 };
-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+#endif  
 
 static int snd_jack_dev_disconnect(struct snd_device *device)
 {
@@ -48,15 +44,14 @@ static int snd_jack_dev_disconnect(struct snd_device *device)
 		return 0;
 	}
 
-	/* If the input device is registered with the input subsystem
-	 * then we need to use a different deallocator. */
+	 
 	if (jack->registered)
 		input_unregister_device(jack->input_dev);
 	else
 		input_free_device(jack->input_dev);
 	jack->input_dev = NULL;
 	mutex_unlock(&jack->input_dev_lock);
-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+#endif  
 	return 0;
 }
 
@@ -100,11 +95,11 @@ static int snd_jack_dev_register(struct snd_device *device)
 
 	jack->input_dev->name = jack->name;
 
-	/* Default to the sound card device. */
+	 
 	if (!jack->input_dev->dev.parent)
 		jack->input_dev->dev.parent = snd_card_get_device_link(card);
 
-	/* Add capabilities for any keys that are enabled */
+	 
 	for (i = 0; i < ARRAY_SIZE(jack->key); i++) {
 		int testbit = SND_JACK_BTN_0 >> i;
 
@@ -124,7 +119,7 @@ static int snd_jack_dev_register(struct snd_device *device)
 	mutex_unlock(&jack->input_dev_lock);
 	return err;
 }
-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+#endif  
 
 #ifdef CONFIG_SND_JACK_INJECTION_DEBUG
 static void snd_jack_inject_report(struct snd_jack_kctl *jack_kctl, int status)
@@ -164,7 +159,7 @@ static void snd_jack_inject_report(struct snd_jack_kctl *jack_kctl, int status)
 	}
 
 	input_sync(jack->input_dev);
-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+#endif  
 }
 
 static ssize_t sw_inject_enable_read(struct file *file,
@@ -239,7 +234,7 @@ static ssize_t jack_kctl_id_read(struct file *file,
 	return ret;
 }
 
-/* the bit definition is aligned with snd_jack_types in jack.h */
+ 
 static const char * const jack_events_name[] = {
 	"HEADPHONE(0x0001)", "MICROPHONE(0x0002)", "LINEOUT(0x0004)",
 	"MECHANICAL(0x0008)", "VIDEOOUT(0x0010)", "LINEIN(0x0020)",
@@ -247,7 +242,7 @@ static const char * const jack_events_name[] = {
 	"BTN_2(0x1000)", "BTN_1(0x2000)", "BTN_0(0x4000)", "",
 };
 
-/* the recommended buffer size is 256 */
+ 
 static int parse_mask_bits(unsigned int mask_bits, char *buf, size_t buf_size)
 {
 	int i;
@@ -349,7 +344,7 @@ static int snd_jack_debugfs_add_inject_node(struct snd_jack *jack,
 	char *tname;
 	int i;
 
-	/* Don't create injection interface for Phantom jacks */
+	 
 	if (strstr(jack_kctl->kctl->id.name, "Phantom"))
 		return 0;
 
@@ -357,7 +352,7 @@ static int snd_jack_debugfs_add_inject_node(struct snd_jack *jack,
 	if (!tname)
 		return -ENOMEM;
 
-	/* replace the chars which are not suitable for folder's name with _ */
+	 
 	for (i = 0; tname[i]; i++)
 		if (!isalnum(tname[i]))
 			tname[i] = '_';
@@ -392,7 +387,7 @@ static void snd_jack_debugfs_clear_inject_node(struct snd_jack_kctl *jack_kctl)
 	debugfs_remove(jack_kctl->jack_debugfs_root);
 	jack_kctl->jack_debugfs_root = NULL;
 }
-#else /* CONFIG_SND_JACK_INJECTION_DEBUG */
+#else  
 static int snd_jack_debugfs_add_inject_node(struct snd_jack *jack,
 					    struct snd_jack_kctl *jack_kctl)
 {
@@ -402,7 +397,7 @@ static int snd_jack_debugfs_add_inject_node(struct snd_jack *jack,
 static void snd_jack_debugfs_clear_inject_node(struct snd_jack_kctl *jack_kctl)
 {
 }
-#endif /* CONFIG_SND_JACK_INJECTION_DEBUG */
+#endif  
 
 static void snd_jack_kctl_private_free(struct snd_kcontrol *kctl)
 {
@@ -454,17 +449,7 @@ error:
 	return NULL;
 }
 
-/**
- * snd_jack_add_new_kctl - Create a new snd_jack_kctl and add it to jack
- * @jack:  the jack instance which the kctl will attaching to
- * @name:  the name for the snd_kcontrol object
- * @mask:  a bitmask of enum snd_jack_type values that can be detected
- *         by this snd_jack_kctl object.
- *
- * Creates a new snd_kcontrol object and adds it to the jack kctl_list.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_jack_add_new_kctl(struct snd_jack *jack, const char * name, int mask)
 {
 	struct snd_jack_kctl *jack_kctl;
@@ -478,21 +463,7 @@ int snd_jack_add_new_kctl(struct snd_jack *jack, const char * name, int mask)
 }
 EXPORT_SYMBOL(snd_jack_add_new_kctl);
 
-/**
- * snd_jack_new - Create a new jack
- * @card:  the card instance
- * @id:    an identifying string for this jack
- * @type:  a bitmask of enum snd_jack_type values that can be detected by
- *         this jack
- * @jjack: Used to provide the allocated jack object to the caller.
- * @initial_kctl: if true, create a kcontrol and add it to the jack list.
- * @phantom_jack: Don't create a input device for phantom jacks.
- *
- * Creates a new jack object.
- *
- * Return: Zero if successful, or a negative error code on failure.
- * On success @jjack will be initialised.
- */
+ 
 int snd_jack_new(struct snd_card *card, const char *id, int type,
 		 struct snd_jack **jjack, bool initial_kctl, bool phantom_jack)
 {
@@ -504,7 +475,7 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
 #ifdef CONFIG_SND_JACK_INPUT_DEV
 		.dev_register = snd_jack_dev_register,
 		.dev_disconnect = snd_jack_dev_disconnect,
-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+#endif  
 	};
 
 	if (initial_kctl) {
@@ -526,7 +497,7 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
 #ifdef CONFIG_SND_JACK_INPUT_DEV
 	mutex_init(&jack->input_dev_lock);
 
-	/* don't create input device for phantom jack */
+	 
 	if (!phantom_jack) {
 		int i;
 
@@ -546,7 +517,7 @@ int snd_jack_new(struct snd_card *card, const char *id, int type,
 						     jack_switch_types[i]);
 
 	}
-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+#endif  
 
 	err = snd_device_new(card, SNDRV_DEV_JACK, jack, &ops);
 	if (err < 0)
@@ -573,16 +544,7 @@ fail_input:
 EXPORT_SYMBOL(snd_jack_new);
 
 #ifdef CONFIG_SND_JACK_INPUT_DEV
-/**
- * snd_jack_set_parent - Set the parent device for a jack
- *
- * @jack:   The jack to configure
- * @parent: The device to set as parent for the jack.
- *
- * Set the parent for the jack devices in the device tree.  This
- * function is only valid prior to registration of the jack.  If no
- * parent is configured then the parent device will be the sound card.
- */
+ 
 void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
 {
 	WARN_ON(jack->registered);
@@ -597,31 +559,7 @@ void snd_jack_set_parent(struct snd_jack *jack, struct device *parent)
 }
 EXPORT_SYMBOL(snd_jack_set_parent);
 
-/**
- * snd_jack_set_key - Set a key mapping on a jack
- *
- * @jack:    The jack to configure
- * @type:    Jack report type for this key
- * @keytype: Input layer key type to be reported
- *
- * Map a SND_JACK_BTN_* button type to an input layer key, allowing
- * reporting of keys on accessories via the jack abstraction.  If no
- * mapping is provided but keys are enabled in the jack type then
- * BTN_n numeric buttons will be reported.
- *
- * If jacks are not reporting via the input API this call will have no
- * effect.
- *
- * Note that this is intended to be use by simple devices with small
- * numbers of keys that can be reported.  It is also possible to
- * access the input device directly - devices with complex input
- * capabilities on accessories should consider doing this rather than
- * using this abstraction.
- *
- * This function may only be called prior to registration of the jack.
- *
- * Return: Zero if successful, or a negative error code on failure.
- */
+ 
 int snd_jack_set_key(struct snd_jack *jack, enum snd_jack_types type,
 		     int keytype)
 {
@@ -637,16 +575,9 @@ int snd_jack_set_key(struct snd_jack *jack, enum snd_jack_types type,
 	return 0;
 }
 EXPORT_SYMBOL(snd_jack_set_key);
-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+#endif  
 
-/**
- * snd_jack_report - Report the current status of a jack
- * Note: This function uses mutexes and should be called from a
- * context which can sleep (such as a workqueue).
- *
- * @jack:   The jack to report status for
- * @status: The current status of the jack
- */
+ 
 void snd_jack_report(struct snd_jack *jack, int status)
 {
 	struct snd_jack_kctl *jack_kctl;
@@ -692,6 +623,6 @@ void snd_jack_report(struct snd_jack *jack, int status)
 
 	input_sync(idev);
 	input_put_device(idev);
-#endif /* CONFIG_SND_JACK_INPUT_DEV */
+#endif  
 }
 EXPORT_SYMBOL(snd_jack_report);

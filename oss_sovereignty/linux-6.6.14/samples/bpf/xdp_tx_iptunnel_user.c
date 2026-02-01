@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2016 Facebook
- */
+
+ 
 #include <linux/bpf.h>
 #include <linux/if_link.h>
 #include <assert.h>
@@ -45,8 +44,7 @@ static void int_exit(int sig)
 	exit(0);
 }
 
-/* simple per-protocol drop counter
- */
+ 
 static void poll_stats(unsigned int kill_after_s)
 {
 	const unsigned int nr_protos = 256;
@@ -227,7 +225,7 @@ int main(int argc, char **argv)
 			xdp_flags |= XDP_FLAGS_SKB_MODE;
 			break;
 		case 'N':
-			/* default, set below */
+			 
 			break;
 		case 'F':
 			xdp_flags &= ~XDP_FLAGS_UPDATE_IF_NOEXIST;

@@ -1,24 +1,8 @@
-/* imalloc.h -- internal malloc definitions shared by source files. */
+ 
 
-/* Copyright (C) 2001-2020 Free Software Foundation, Inc.
+ 
 
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
-
-/* Must be included *after* config.h */
+ 
 
 #ifndef _IMALLOC_H
 #define _IMALLOC_H
@@ -32,12 +16,10 @@
 
 #define MALLOC_WRAPFUNCS
 
-/* If defined, as it is by default, use the lesscore() function to attempt
-   to reduce the top of the heap when freeing memory blocks larger than a
-   defined threshold. */
+ 
 #define USE_LESSCORE
 
-/* Generic pointer type. */
+ 
 #ifndef PTR_T
 #  if defined (__STDC__)
 #    define PTR_T void *
@@ -55,22 +37,22 @@
 #    define CPP_STRING(x) #x
 #  else
 #    define CPP_STRING(x) "x"
-#  endif /* !HAVE_STRINGIZE */
-#endif /* !__STRING */
+#  endif  
+#endif  
 
 #if __GNUC__ > 1
 #  define FASTCOPY(s, d, n)  __builtin_memcpy (d, s, n)
-#else /* !__GNUC__ */
+#else  
 #  if !defined (HAVE_BCOPY)
 #    if !defined (HAVE_MEMMOVE)
 #      define FASTCOPY(s, d, n)  memcpy (d, s, n)
 #    else
 #      define FASTCOPY(s, d, n)  memmove (d, s, n)
-#    endif /* !HAVE_MEMMOVE */
-#  else /* HAVE_BCOPY */
+#    endif  
+#  else  
 #    define FASTCOPY(s, d, n)  bcopy (s, d, n)
-#  endif /* HAVE_BCOPY */
-#endif /* !__GNUC__ */
+#  endif  
+#endif  
 
 #if !defined (PARAMS)
 #  if defined (__STDC__) || defined (__GNUC__) || defined (__cplusplus) || defined (PROTOTYPES)
@@ -80,8 +62,7 @@
 #  endif
 #endif
 
-/* Use Duff's device for good zeroing/copying performance.  DO NOT call the
-   Duff's device macros with NBYTES == 0. */
+ 
 
 #define MALLOC_BZERO(charp, nbytes)					\
 do {									\
@@ -175,4 +156,4 @@ do {									\
 extern void _malloc_block_signals PARAMS((sigset_t *, sigset_t *));
 extern void _malloc_unblock_signals PARAMS((sigset_t *, sigset_t *));
 
-#endif /* _IMALLOC_H */
+#endif  

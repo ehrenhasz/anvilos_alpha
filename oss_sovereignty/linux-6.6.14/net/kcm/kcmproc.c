@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/in.h>
 #include <linux/inet.h>
 #include <linux/list.h>
@@ -102,7 +102,7 @@ static void kcm_format_mux_header(struct seq_file *seq)
 		   "Smem",
 		   "Status");
 
-	/* XXX: pdsts header stuff here */
+	 
 	seq_puts(seq, "\n");
 }
 
@@ -189,7 +189,7 @@ kcm_format_mux(struct kcm_mux *mux, loff_t idx, struct seq_file *seq)
 	struct kcm_sock *kcm;
 	struct kcm_psock *psock;
 
-	/* mux information */
+	 
 	seq_printf(seq,
 		   "%-6s%-8s %-10llu %-16llu %-10llu %-16llu %-8s %-8s %-8s %-8s ",
 		   "mux", "",
@@ -202,7 +202,7 @@ kcm_format_mux(struct kcm_mux *mux, loff_t idx, struct seq_file *seq)
 	seq_printf(seq, "KCMs: %d, Psocks %d\n",
 		   mux->kcm_socks_cnt, mux->psocks_cnt);
 
-	/* kcm sock information */
+	 
 	i = 0;
 	spin_lock_bh(&mux->lock);
 	list_for_each_entry(kcm, &mux->kcm_socks, kcm_sock_list) {
@@ -384,4 +384,4 @@ void __exit kcm_proc_exit(void)
 	unregister_pernet_subsys(&kcm_net_ops);
 }
 
-#endif /* CONFIG_PROC_FS */
+#endif  

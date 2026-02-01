@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+ 
+ 
 
 #ifndef __LSDC_GFXPLL_H__
 #define __LSDC_GFXPLL_H__
@@ -36,9 +34,9 @@ struct loongson_gfxpll {
 	struct drm_device *ddev;
 	void __iomem *mmio;
 
-	/* PLL register offset */
+	 
 	u32 reg_base;
-	/* PLL register size in bytes */
+	 
 	u32 reg_size;
 
 	const struct loongson_gfxpll_funcs *funcs;

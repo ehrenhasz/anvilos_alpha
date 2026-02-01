@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_RUNQ_H__
 #define __NVKM_RUNQ_H__
 #include <core/os.h>

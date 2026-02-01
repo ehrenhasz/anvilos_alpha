@@ -1,37 +1,4 @@
-/*
- * net/tipc/monitor.c
- *
- * Copyright (c) 2016, Ericsson AB
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the names of the copyright holders nor the names of its
- *    contributors may be used to endorse or promote products derived from
- *    this software without specific prior written permission.
- *
- * Alternatively, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") version 2 as published by the Free
- * Software Foundation.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR CONTRIBUTORS BE
- * LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
- * CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
- * SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
- * INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
- * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
- * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
- * POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include <net/genetlink.h>
 #include "core.h"
@@ -43,14 +10,7 @@
 #define MON_TIMEOUT          120000
 #define MAX_PEER_DOWN_EVENTS 4
 
-/* struct tipc_mon_domain: domain record to be transferred between peers
- * @len: actual size of domain record
- * @gen: current generation of sender's domain
- * @ack_gen: most recent generation of self's domain acked by peer
- * @member_cnt: number of domain member nodes described in this record
- * @up_map: bit map indicating which of the members the sender considers up
- * @members: identity of the domain members
- */
+ 
 struct tipc_mon_domain {
 	u16 len;
 	u16 gen;
@@ -60,18 +20,7 @@ struct tipc_mon_domain {
 	u32 members[MAX_MON_DOMAIN];
 };
 
-/* struct tipc_peer: state of a peer node and its domain
- * @addr: tipc node identity of peer
- * @head_map: shows which other nodes currently consider peer 'up'
- * @domain: most recent domain record from peer
- * @hash: position in hashed lookup list
- * @list: position in linked list, in circular ascending order by 'addr'
- * @applied: number of reported domain members applied on this monitor list
- * @is_up: peer is up as seen from this node
- * @is_head: peer is assigned domain head as seen from this node
- * @is_local: peer is in local domain and should be continuously monitored
- * @down_cnt: - numbers of other peers which have reported this on lost
- */
+ 
 struct tipc_peer {
 	u32 addr;
 	struct tipc_mon_domain *domain;
@@ -134,15 +83,13 @@ static inline u64 mon_le64_to_cpu(u64 val)
 	return be64_to_cpu((__force __be64)val);
 }
 
-/* dom_rec_len(): actual length of domain record for transport
- */
+ 
 static int dom_rec_len(struct tipc_mon_domain *dom, u16 mcnt)
 {
 	return (offsetof(struct tipc_mon_domain, members)) + (mcnt * sizeof(u32));
 }
 
-/* dom_size() : calculate size of own domain based on number of peers
- */
+ 
 static int dom_size(int peers)
 {
 	int i = 0;
@@ -206,8 +153,7 @@ static inline bool tipc_mon_is_active(struct net *net, struct tipc_monitor *mon)
 	return mon->peer_cnt > tn->mon_threshold;
 }
 
-/* mon_identify_lost_members() : - identify amd mark potentially lost members
- */
+ 
 static void mon_identify_lost_members(struct tipc_peer *peer,
 				      struct tipc_mon_domain *dom_bef,
 				      int applied_bef)
@@ -220,28 +166,27 @@ static void mon_identify_lost_members(struct tipc_peer *peer,
 	for (i = 0; i < applied_bef; i++) {
 		member = peer_nxt(member);
 
-		/* Do nothing if self or peer already see member as down */
+		 
 		if (!member->is_up || !map_get(dom_bef->up_map, i))
 			continue;
 
-		/* Loss of local node must be detected by active probing */
+		 
 		if (member->is_local)
 			continue;
 
-		/* Start probing if member was removed from applied domain */
+		 
 		if (!applied_aft || (applied_aft < i)) {
 			member->down_cnt = 1;
 			continue;
 		}
 
-		/* Member loss is confirmed if it is still in applied domain */
+		 
 		if (!map_get(dom_aft->up_map, i))
 			member->down_cnt++;
 	}
 }
 
-/* mon_apply_domain() : match a peer's domain record against monitor list
- */
+ 
 static void mon_apply_domain(struct tipc_monitor *mon,
 			     struct tipc_peer *peer)
 {
@@ -253,7 +198,7 @@ static void mon_apply_domain(struct tipc_monitor *mon,
 	if (!dom || !peer->is_up)
 		return;
 
-	/* Scan across domain members and match against monitor list */
+	 
 	peer->applied = 0;
 	member = peer_nxt(peer);
 	for (i = 0; i < dom->member_cnt; i++) {
@@ -265,8 +210,7 @@ static void mon_apply_domain(struct tipc_monitor *mon,
 	}
 }
 
-/* mon_update_local_domain() : update after peer addition/removal/up/down
- */
+ 
 static void mon_update_local_domain(struct tipc_monitor *mon)
 {
 	struct tipc_peer *self = mon->self;
@@ -277,11 +221,11 @@ static void mon_update_local_domain(struct tipc_monitor *mon)
 	u16 member_cnt, i;
 	bool diff;
 
-	/* Update local domain size based on current size of cluster */
+	 
 	member_cnt = dom_size(mon->peer_cnt) - 1;
 	self->applied = member_cnt;
 
-	/* Update native and cached outgoing local domain records */
+	 
 	dom->len = dom_rec_len(dom, member_cnt);
 	diff = dom->member_cnt != member_cnt;
 	dom->member_cnt = member_cnt;
@@ -303,8 +247,7 @@ static void mon_update_local_domain(struct tipc_monitor *mon)
 	mon_apply_domain(mon, self);
 }
 
-/* mon_update_neighbors() : update preceding neighbors of added/removed peer
- */
+ 
 static void mon_update_neighbors(struct tipc_monitor *mon,
 				 struct tipc_peer *peer)
 {
@@ -317,10 +260,7 @@ static void mon_update_neighbors(struct tipc_monitor *mon,
 	}
 }
 
-/* mon_assign_roles() : reassign peer roles after a network change
- * The monitor list is consistent at this stage; i.e., each peer is monitoring
- * a set of domain members as matched between domain record and the monitor list
- */
+ 
 static void mon_assign_roles(struct tipc_monitor *mon, struct tipc_peer *head)
 {
 	struct tipc_peer *peer = peer_nxt(head);
@@ -330,14 +270,14 @@ static void mon_assign_roles(struct tipc_monitor *mon, struct tipc_peer *head)
 	for (; peer != self; peer = peer_nxt(peer)) {
 		peer->is_local = false;
 
-		/* Update domain member */
+		 
 		if (i++ < head->applied) {
 			peer->is_head = false;
 			if (head == self)
 				peer->is_local = true;
 			continue;
 		}
-		/* Assign next domain head */
+		 
 		if (!peer->is_up)
 			continue;
 		if (peer->is_head)
@@ -374,7 +314,7 @@ void tipc_mon_remove_peer(struct net *net, u32 addr, int bearer_id)
 		mon_update_local_domain(mon);
 	mon_update_neighbors(mon, prev);
 
-	/* Revert to full-mesh monitoring if we reach threshold */
+	 
 	if (!tipc_mon_is_active(net, mon)) {
 		list_for_each_entry(peer, &self->list, list) {
 			kfree(peer->domain);
@@ -399,11 +339,11 @@ static bool tipc_mon_add_peer(struct tipc_monitor *mon, u32 addr,
 		return false;
 	p->addr = addr;
 
-	/* Add new peer to lookup list */
+	 
 	INIT_LIST_HEAD(&p->list);
 	hlist_add_head(&p->hash, &mon->peers[tipc_hashfn(addr)]);
 
-	/* Sort new peer into iterator list, in ascending circular order */
+	 
 	prev = self;
 	list_for_each_entry(cur, &self->list, list) {
 		if ((addr > prev->addr) && (addr < cur->addr))
@@ -475,8 +415,7 @@ exit:
 	write_unlock_bh(&mon->lock);
 }
 
-/* tipc_mon_rcv - process monitor domain event message
- */
+ 
 void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
 		  struct tipc_mon_state *state, int bearer_id)
 {
@@ -495,7 +434,7 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
 
 	state->probing = false;
 
-	/* Sanity check received domain record */
+	 
 	if (new_member_cnt > MAX_MON_DOMAIN)
 		return;
 	if (dlen < dom_rec_len(arrv_dom, 0))
@@ -505,7 +444,7 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
 	if (dlen < new_dlen || arrv_dlen != new_dlen)
 		return;
 
-	/* Synch generation numbers with peer if link just came up */
+	 
 	if (!state->synched) {
 		state->peer_gen = new_gen - 1;
 		state->acked_gen = acked_gen;
@@ -515,7 +454,7 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
 	if (more(acked_gen, state->acked_gen))
 		state->acked_gen = acked_gen;
 
-	/* Drop duplicate unless we are waiting for a probe response */
+	 
 	if (!more(new_gen, state->peer_gen) && !probing)
 		return;
 
@@ -524,22 +463,22 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
 	if (!peer || !peer->is_up)
 		goto exit;
 
-	/* Peer is confirmed, stop any ongoing probing */
+	 
 	peer->down_cnt = 0;
 
-	/* Task is done for duplicate record */
+	 
 	if (!more(new_gen, state->peer_gen))
 		goto exit;
 
 	state->peer_gen = new_gen;
 
-	/* Cache current domain record for later use */
+	 
 	dom_bef.member_cnt = 0;
 	dom = peer->domain;
 	if (dom)
 		memcpy(&dom_bef, dom, dom->len);
 
-	/* Transform and store received domain record */
+	 
 	if (!dom || (dom->len < new_dlen)) {
 		kfree(dom);
 		dom = kmalloc(new_dlen, GFP_ATOMIC);
@@ -554,7 +493,7 @@ void tipc_mon_rcv(struct net *net, void *data, u16 dlen, u32 addr,
 	for (i = 0; i < new_member_cnt; i++)
 		dom->members[i] = mon_le32_to_cpu(arrv_dom->members[i]);
 
-	/* Update peers affected by this domain record */
+	 
 	applied_bef = peer->applied;
 	mon_apply_domain(mon, peer);
 	mon_identify_lost_members(peer, &dom_bef, applied_bef);
@@ -571,13 +510,13 @@ void tipc_mon_prep(struct net *net, void *data, int *dlen,
 	u16 gen = mon->dom_gen;
 	u16 len;
 
-	/* Send invalid record if not active */
+	 
 	if (!tipc_mon_is_active(net, mon)) {
 		dom->len = 0;
 		return;
 	}
 
-	/* Send only a dummy record with ack if peer has acked our last sent */
+	 
 	if (likely(state->acked_gen == gen)) {
 		len = dom_rec_len(dom, 0);
 		*dlen = len;
@@ -587,7 +526,7 @@ void tipc_mon_prep(struct net *net, void *data, int *dlen,
 		dom->member_cnt = 0;
 		return;
 	}
-	/* Send the full record */
+	 
 	read_lock_bh(&mon->lock);
 	len = mon_le16_to_cpu(mon->cache.len);
 	*dlen = len;
@@ -609,7 +548,7 @@ void tipc_mon_get_state(struct net *net, u32 addr,
 		return;
 	}
 
-	/* Used cached state if table has not changed */
+	 
 	if (!state->probing &&
 	    (state->list_gen == mon->list_gen) &&
 	    (state->acked_gen == mon->dom_gen))

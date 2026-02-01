@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments N-Port Ethernet Switch Address Lookup Engine
- *
- * Copyright (C) 2012 Texas Instruments
- *
- */
+
+ 
 #include <linux/bitmap.h>
 #include <linux/if_vlan.h>
 #include <linux/kernel.h>
@@ -27,7 +22,7 @@
 #define ALE_VERSION_1R3		0x0103
 #define ALE_VERSION_1R4		0x0104
 
-/* ALE Registers */
+ 
 #define ALE_IDVER		0x00
 #define ALE_STATUS		0x04
 #define ALE_CONTROL		0x08
@@ -38,7 +33,7 @@
 #define ALE_TABLE		0x34
 #define ALE_PORTCTL		0x40
 
-/* ALE NetCP NU switch specific Registers */
+ 
 #define ALE_UNKNOWNVLAN_MEMBER			0x90
 #define ALE_UNKNOWNVLAN_UNREG_MCAST_FLOOD	0x94
 #define ALE_UNKNOWNVLAN_REG_MCAST_FLOOD		0x98
@@ -47,17 +42,12 @@
 
 #define AM65_CPSW_ALE_THREAD_DEF_REG 0x134
 
-/* ALE_AGING_TIMER */
+ 
 #define ALE_AGING_TIMER_MASK	GENMASK(23, 0)
 
 #define ALE_RATE_LIMIT_MIN_PPS 1000
 
-/**
- * struct ale_entry_fld - The ALE tbl entry field description
- * @start_bit: field start bit
- * @num_bits: field bit length
- * @flags: field flags
- */
+ 
 struct ale_entry_fld {
 	u8 start_bit;
 	u8 num_bits;
@@ -65,21 +55,13 @@ struct ale_entry_fld {
 };
 
 enum {
-	CPSW_ALE_F_STATUS_REG = BIT(0), /* Status register present */
-	CPSW_ALE_F_HW_AUTOAGING = BIT(1), /* HW auto aging */
+	CPSW_ALE_F_STATUS_REG = BIT(0),  
+	CPSW_ALE_F_HW_AUTOAGING = BIT(1),  
 
 	CPSW_ALE_F_COUNT
 };
 
-/**
- * struct cpsw_ale_dev_id - The ALE version/SoC specific configuration
- * @dev_id: ALE version/SoC id
- * @features: features supported by ALE
- * @tbl_entries: number of ALE entries
- * @major_ver_mask: mask of ALE Major Version Value in ALE_IDVER reg.
- * @nu_switch_ale: NU Switch ALE
- * @vlan_entry_tbl: ALE vlan entry fields description tbl
- */
+ 
 struct cpsw_ale_dev_id {
 	const char *dev_id;
 	u32 features;
@@ -111,13 +93,13 @@ static inline int cpsw_ale_get_field(u32 *ale_entry, u32 start, u32 bits)
 
 	idx    = start / 32;
 	idx2 = (start + bits - 1) / 32;
-	/* Check if bits to be fetched exceed a word */
+	 
 	if (idx != idx2) {
-		idx2 = 2 - idx2; /* flip */
+		idx2 = 2 - idx2;  
 		hi_val = ale_entry[idx2] << ((idx2 * 32) - start);
 	}
 	start -= idx * 32;
-	idx    = 2 - idx; /* flip */
+	idx    = 2 - idx;  
 	return (hi_val + (ale_entry[idx] >> start)) & BITMASK(bits);
 }
 
@@ -129,14 +111,14 @@ static inline void cpsw_ale_set_field(u32 *ale_entry, u32 start, u32 bits,
 	value &= BITMASK(bits);
 	idx = start / 32;
 	idx2 = (start + bits - 1) / 32;
-	/* Check if bits to be set exceed a word */
+	 
 	if (idx != idx2) {
-		idx2 = 2 - idx2; /* flip */
+		idx2 = 2 - idx2;  
 		ale_entry[idx2] &= ~(BITMASK(bits + start - (idx2 * 32)));
 		ale_entry[idx2] |= (value >> ((idx2 * 32) - start));
 	}
 	start -= idx * 32;
-	idx = 2 - idx; /* flip */
+	idx = 2 - idx;  
 	ale_entry[idx] &= ~(BITMASK(bits) << start);
 	ale_entry[idx] |=  (value << start);
 }
@@ -191,7 +173,7 @@ enum {
 		 ALE_FLD_SIZE_PORT_MASK_BITS,	\
 }
 
-/* dm814x, am3/am4/am5, k2hk */
+ 
 static const struct ale_entry_fld vlan_entry_cpsw[ALE_ENT_VID_LAST] = {
 	ALE_ENTRY_FLD(ALE_ENT_VID_MEMBER_LIST, 0, 3),
 	ALE_ENTRY_FLD(ALE_ENT_VID_UNREG_MCAST_MSK, 8, 3),
@@ -199,7 +181,7 @@ static const struct ale_entry_fld vlan_entry_cpsw[ALE_ENT_VID_LAST] = {
 	ALE_ENTRY_FLD(ALE_ENT_VID_FORCE_UNTAGGED_MSK, 24, 3),
 };
 
-/* k2e/k2l, k3 am65/j721e cpsw2g  */
+ 
 static const struct ale_entry_fld vlan_entry_nu[ALE_ENT_VID_LAST] = {
 	ALE_ENTRY_FLD_DYN_MSK_SIZE(ALE_ENT_VID_MEMBER_LIST, 0),
 	ALE_ENTRY_FLD(ALE_ENT_VID_UNREG_MCAST_IDX, 20, 3),
@@ -207,7 +189,7 @@ static const struct ale_entry_fld vlan_entry_nu[ALE_ENT_VID_LAST] = {
 	ALE_ENTRY_FLD(ALE_ENT_VID_REG_MCAST_IDX, 44, 3),
 };
 
-/* K3 j721e/j7200 cpsw9g/5g, am64x cpsw3g  */
+ 
 static const struct ale_entry_fld vlan_entry_k3_cpswxg[] = {
 	ALE_ENTRY_FLD_DYN_MSK_SIZE(ALE_ENT_VID_MEMBER_LIST, 0),
 	ALE_ENTRY_FLD_DYN_MSK_SIZE(ALE_ENT_VID_UNREG_MCAST_MSK, 12),
@@ -294,7 +276,7 @@ static void cpsw_ale_vlan_set_fld(struct cpsw_ale *ale,
 			       ale->vlan_entry_tbl, fld_id, value);
 }
 
-/* The MAC address field in the ALE entry cannot be macroized as above */
+ 
 static inline void cpsw_ale_get_addr(u32 *ale_entry, u8 *addr)
 {
 	int i;
@@ -421,10 +403,10 @@ static void cpsw_ale_flush_mcast(struct cpsw_ale *ale, u32 *ale_entry,
 	mask = cpsw_ale_get_port_mask(ale_entry,
 				      ale->port_mask_bits);
 	if ((mask & port_mask) == 0)
-		return; /* ports dont intersect, not interested */
+		return;  
 	mask &= ~port_mask;
 
-	/* free if only remaining port is host port */
+	 
 	if (mask)
 		cpsw_ale_set_port_mask(ale_entry, mask,
 				       ale->port_mask_bits);
@@ -443,11 +425,7 @@ int cpsw_ale_flush_multicast(struct cpsw_ale *ale, int port_mask, int vid)
 		if (ret != ALE_TYPE_ADDR && ret != ALE_TYPE_VLAN_ADDR)
 			continue;
 
-		/* if vid passed is -1 then remove all multicast entry from
-		 * the table irrespective of vlan id, if a valid vlan id is
-		 * passed then remove only multicast added to that vlan id.
-		 * if vlan id doesn't match then move on to next entry.
-		 */
+		 
 		if (vid != -1 && cpsw_ale_get_vlan_id(ale_entry) != vid)
 			continue;
 
@@ -581,18 +559,18 @@ int cpsw_ale_del_mcast(struct cpsw_ale *ale, const u8 *addr, int port_mask,
 	return 0;
 }
 
-/* ALE NetCP NU switch specific vlan functions */
+ 
 static void cpsw_ale_set_vlan_mcast(struct cpsw_ale *ale, u32 *ale_entry,
 				    int reg_mcast, int unreg_mcast)
 {
 	int idx;
 
-	/* Set VLAN registered multicast flood mask */
+	 
 	idx = cpsw_ale_vlan_get_fld(ale, ale_entry,
 				    ALE_ENT_VID_REG_MCAST_IDX);
 	writel(reg_mcast, ale->params.ale_regs + ALE_VLAN_MASK_MUX(idx));
 
-	/* Set VLAN unregistered multicast flood mask */
+	 
 	idx = cpsw_ale_vlan_get_fld(ale, ale_entry,
 				    ALE_ENT_VID_UNREG_MCAST_IDX);
 	writel(unreg_mcast, ale->params.ale_regs + ALE_VLAN_MASK_MUX(idx));
@@ -718,17 +696,12 @@ int cpsw_ale_del_vlan(struct cpsw_ale *ale, u16 vid, int port_mask)
 
 	cpsw_ale_read(ale, idx, ale_entry);
 
-	/* if !port_mask - force remove VLAN (legacy).
-	 * Check if there are other VLAN members ports
-	 * if no - remove VLAN.
-	 * if yes it means same VLAN was added to >1 port in multi port mode, so
-	 * remove port_mask ports from VLAN ALE entry excluding Host port.
-	 */
+	 
 	members = cpsw_ale_vlan_get_fld(ale, ale_entry, ALE_ENT_VID_MEMBER_LIST);
 	members &= ~port_mask;
 
 	if (!port_mask || !members) {
-		/* last port or force remove - remove VLAN */
+		 
 		cpsw_ale_set_vlan_untag(ale, ale_entry, vid, 0);
 		cpsw_ale_set_entry_type(ale_entry, ALE_TYPE_FREE);
 	} else {
@@ -1110,7 +1083,7 @@ int cpsw_ale_control_set(struct cpsw_ale *ale, int port, int control,
 
 	info = &ale_controls[control];
 	if (info->port_offset == 0 && info->port_shift == 0)
-		port = 0; /* global, port is a dont care */
+		port = 0;  
 
 	if (port < 0 || port >= ale->params.ale_ports)
 		return -EINVAL;
@@ -1140,7 +1113,7 @@ int cpsw_ale_control_get(struct cpsw_ale *ale, int port, int control)
 
 	info = &ale_controls[control];
 	if (info->port_offset == 0 && info->port_shift == 0)
-		port = 0; /* global, port is a dont care */
+		port = 0;  
 
 	if (port < 0 || port >= ale->params.ale_ports)
 		return -EINVAL;
@@ -1261,22 +1234,11 @@ void cpsw_ale_start(struct cpsw_ale *ale)
 {
 	unsigned long ale_prescale;
 
-	/* configure Broadcast and Multicast Rate Limit
-	 * number_of_packets = (Fclk / ALE_PRESCALE) * port.BCAST/MCAST_LIMIT
-	 * ALE_PRESCALE width is 19bit and min value 0x10
-	 * port.BCAST/MCAST_LIMIT is 8bit
-	 *
-	 * For multi port configuration support the ALE_PRESCALE is configured to 1ms interval,
-	 * which allows to configure port.BCAST/MCAST_LIMIT per port and achieve:
-	 * min number_of_packets = 1000 when port.BCAST/MCAST_LIMIT = 1
-	 * max number_of_packets = 1000 * 255 = 255000 when port.BCAST/MCAST_LIMIT = 0xFF
-	 */
+	 
 	ale_prescale = ale->params.bus_freq / ALE_RATE_LIMIT_MIN_PPS;
 	writel((u32)ale_prescale, ale->params.ale_regs + ALE_PRESCALE);
 
-	/* Allow MC/BC rate limiting globally.
-	 * The actual Rate Limit cfg enabled per-port by port.BCAST/MCAST_LIMIT
-	 */
+	 
 	cpsw_ale_control_set(ale, 0, ALE_RATE_LIMIT, 1);
 
 	cpsw_ale_control_set(ale, 0, ALE_ENABLE, 1);
@@ -1294,14 +1256,14 @@ void cpsw_ale_stop(struct cpsw_ale *ale)
 
 static const struct cpsw_ale_dev_id cpsw_ale_id_match[] = {
 	{
-		/* am3/4/5, dra7. dm814x, 66ak2hk-gbe */
+		 
 		.dev_id = "cpsw",
 		.tbl_entries = 1024,
 		.major_ver_mask = 0xff,
 		.vlan_entry_tbl = vlan_entry_cpsw,
 	},
 	{
-		/* 66ak2h_xgbe */
+		 
 		.dev_id = "66ak2h-xgbe",
 		.tbl_entries = 2048,
 		.major_ver_mask = 0xff,
@@ -1402,13 +1364,7 @@ struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
 		ale_entries =
 			readl_relaxed(ale->params.ale_regs + ALE_STATUS) &
 			ALE_STATUS_SIZE_MASK;
-		/* ALE available on newer NetCP switches has introduced
-		 * a register, ALE_STATUS, to indicate the size of ALE
-		 * table which shows the size as a multiple of 1024 entries.
-		 * For these, params.ale_entries will be set to zero. So
-		 * read the register and update the value of ale_entries.
-		 * return error if ale_entries is zero in ALE_STATUS.
-		 */
+		 
 		if (!ale_entries)
 			return ERR_PTR(-EINVAL);
 
@@ -1418,19 +1374,14 @@ struct cpsw_ale *cpsw_ale_create(struct cpsw_ale_params *params)
 	dev_info(ale->params.dev,
 		 "ALE Table size %ld\n", ale->params.ale_entries);
 
-	/* set default bits for existing h/w */
+	 
 	ale->port_mask_bits = ale->params.ale_ports;
 	ale->port_num_bits = order_base_2(ale->params.ale_ports);
 	ale->vlan_field_bits = ale->params.ale_ports;
 
-	/* Set defaults override for ALE on NetCP NU switch and for version
-	 * 1R3
-	 */
+	 
 	if (ale->params.nu_switch_ale) {
-		/* Separate registers for unknown vlan configuration.
-		 * Also there are N bits, where N is number of ale
-		 * ports and shift value should be 0
-		 */
+		 
 		ale_controls[ALE_PORT_UNKNOWN_VLAN_MEMBER].bits =
 					ale->params.ale_ports;
 		ale_controls[ALE_PORT_UNKNOWN_VLAN_MEMBER].offset =

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2002,2005 Silicon Graphics, Inc.
- * Copyright (c) 2010 David Chinner.
- * Copyright (c) 2011 Christoph Hellwig.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_format.h"
@@ -39,7 +34,7 @@ xfs_extent_busy_insert_list(
 	INIT_LIST_HEAD(&new->list);
 	new->flags = flags;
 
-	/* trace before insert to be able to see failed inserts */
+	 
 	trace_xfs_extent_busy(pag->pag_mount, pag->pag_agno, bno, len);
 
 	spin_lock(&pag->pagb_lock);
@@ -62,7 +57,7 @@ xfs_extent_busy_insert_list(
 	rb_link_node(&new->rb_node, parent, rbp);
 	rb_insert_color(&new->rb_node, &pag->pagb_tree);
 
-	/* always process discard lists in fifo order */
+	 
 	list_add_tail(&new->list, busy_list);
 	spin_unlock(&pag->pagb_lock);
 }
@@ -89,15 +84,7 @@ xfs_extent_busy_insert_discard(
 			busy_list);
 }
 
-/*
- * Search for a busy extent within the range of the extent we are about to
- * allocate.  You need to be holding the busy extent tree lock when calling
- * xfs_extent_busy_search(). This function returns 0 for no overlapping busy
- * extent, -1 for an overlapping but not exact busy extent, and 1 for an exact
- * match. This is done so that a non-zero return indicates an overlap that
- * will require a synchronous transaction, but it can still be
- * used to distinguish between a partial or exact match.
- */
+ 
 int
 xfs_extent_busy_search(
 	struct xfs_mount	*mp,
@@ -109,23 +96,23 @@ xfs_extent_busy_search(
 	struct xfs_extent_busy	*busyp;
 	int			match = 0;
 
-	/* find closest start bno overlap */
+	 
 	spin_lock(&pag->pagb_lock);
 	rbp = pag->pagb_tree.rb_node;
 	while (rbp) {
 		busyp = rb_entry(rbp, struct xfs_extent_busy, rb_node);
 		if (bno < busyp->bno) {
-			/* may overlap, but exact start block is lower */
+			 
 			if (bno + len > busyp->bno)
 				match = -1;
 			rbp = rbp->rb_left;
 		} else if (bno > busyp->bno) {
-			/* may overlap, but exact start block is higher */
+			 
 			if (bno < busyp->bno + busyp->length)
 				match = -1;
 			rbp = rbp->rb_right;
 		} else {
-			/* bno matches busyp, length determines exact match */
+			 
 			match = (busyp->length == len) ? 1 : -1;
 			break;
 		}
@@ -134,17 +121,7 @@ xfs_extent_busy_search(
 	return match;
 }
 
-/*
- * The found free extent [fbno, fend] overlaps part or all of the given busy
- * extent.  If the overlap covers the beginning, the end, or all of the busy
- * extent, the overlapping portion can be made unbusy and used for the
- * allocation.  We can't split a busy extent because we can't modify a
- * transaction/CIL context busy list, but we can update an entry's block
- * number or length.
- *
- * Returns true if the extent can safely be reused, or false if the search
- * needs to be restarted.
- */
+ 
 STATIC bool
 xfs_extent_busy_update_extent(
 	struct xfs_mount	*mp,
@@ -159,11 +136,7 @@ xfs_extent_busy_update_extent(
 	xfs_agblock_t		bbno = busyp->bno;
 	xfs_agblock_t		bend = bbno + busyp->length;
 
-	/*
-	 * This extent is currently being discarded.  Give the thread
-	 * performing the discard a chance to mark the extent unbusy
-	 * and retry.
-	 */
+	 
 	if (busyp->flags & XFS_EXTENT_BUSY_DISCARDED) {
 		spin_unlock(&pag->pagb_lock);
 		delay(1);
@@ -171,109 +144,28 @@ xfs_extent_busy_update_extent(
 		return false;
 	}
 
-	/*
-	 * If there is a busy extent overlapping a user allocation, we have
-	 * no choice but to force the log and retry the search.
-	 *
-	 * Fortunately this does not happen during normal operation, but
-	 * only if the filesystem is very low on space and has to dip into
-	 * the AGFL for normal allocations.
-	 */
+	 
 	if (userdata)
 		goto out_force_log;
 
 	if (bbno < fbno && bend > fend) {
-		/*
-		 * Case 1:
-		 *    bbno           bend
-		 *    +BBBBBBBBBBBBBBBBB+
-		 *        +---------+
-		 *        fbno   fend
-		 */
+		 
 
-		/*
-		 * We would have to split the busy extent to be able to track
-		 * it correct, which we cannot do because we would have to
-		 * modify the list of busy extents attached to the transaction
-		 * or CIL context, which is immutable.
-		 *
-		 * Force out the log to clear the busy extent and retry the
-		 * search.
-		 */
+		 
 		goto out_force_log;
 	} else if (bbno >= fbno && bend <= fend) {
-		/*
-		 * Case 2:
-		 *    bbno           bend
-		 *    +BBBBBBBBBBBBBBBBB+
-		 *    +-----------------+
-		 *    fbno           fend
-		 *
-		 * Case 3:
-		 *    bbno           bend
-		 *    +BBBBBBBBBBBBBBBBB+
-		 *    +--------------------------+
-		 *    fbno                    fend
-		 *
-		 * Case 4:
-		 *             bbno           bend
-		 *             +BBBBBBBBBBBBBBBBB+
-		 *    +--------------------------+
-		 *    fbno                    fend
-		 *
-		 * Case 5:
-		 *             bbno           bend
-		 *             +BBBBBBBBBBBBBBBBB+
-		 *    +-----------------------------------+
-		 *    fbno                             fend
-		 *
-		 */
+		 
 
-		/*
-		 * The busy extent is fully covered by the extent we are
-		 * allocating, and can simply be removed from the rbtree.
-		 * However we cannot remove it from the immutable list
-		 * tracking busy extents in the transaction or CIL context,
-		 * so set the length to zero to mark it invalid.
-		 *
-		 * We also need to restart the busy extent search from the
-		 * tree root, because erasing the node can rearrange the
-		 * tree topology.
-		 */
+		 
 		rb_erase(&busyp->rb_node, &pag->pagb_tree);
 		busyp->length = 0;
 		return false;
 	} else if (fend < bend) {
-		/*
-		 * Case 6:
-		 *              bbno           bend
-		 *             +BBBBBBBBBBBBBBBBB+
-		 *             +---------+
-		 *             fbno   fend
-		 *
-		 * Case 7:
-		 *             bbno           bend
-		 *             +BBBBBBBBBBBBBBBBB+
-		 *    +------------------+
-		 *    fbno            fend
-		 *
-		 */
+		 
 		busyp->bno = fend;
 		busyp->length = bend - fend;
 	} else if (bbno < fbno) {
-		/*
-		 * Case 8:
-		 *    bbno           bend
-		 *    +BBBBBBBBBBBBBBBBB+
-		 *        +-------------+
-		 *        fbno       fend
-		 *
-		 * Case 9:
-		 *    bbno           bend
-		 *    +BBBBBBBBBBBBBBBBB+
-		 *        +----------------------+
-		 *        fbno                fend
-		 */
+		 
 		busyp->length = fbno - busyp->bno;
 	} else {
 		ASSERT(0);
@@ -291,9 +183,7 @@ out_force_log:
 }
 
 
-/*
- * For a given extent [fbno, flen], make sure we can reuse it safely.
- */
+ 
 void
 xfs_extent_busy_reuse(
 	struct xfs_mount	*mp,
@@ -329,18 +219,7 @@ restart:
 	spin_unlock(&pag->pagb_lock);
 }
 
-/*
- * For a given extent [fbno, flen], search the busy extent list to find a
- * subset of the extent that is not busy.  If *rlen is smaller than
- * args->minlen no suitable extent could be found, and the higher level
- * code needs to force out the log and retry the allocation.
- *
- * Return the current busy generation for the AG if the extent is busy. This
- * value can be used to wait for at least one of the currently busy extents
- * to be cleared. Note that the busy list is not guaranteed to be empty after
- * the gen is woken. The state of a specific extent must always be confirmed
- * with another call to xfs_extent_busy_trim() before it can be used.
- */
+ 
 bool
 xfs_extent_busy_trim(
 	struct xfs_alloc_arg	*args,
@@ -375,119 +254,31 @@ xfs_extent_busy_trim(
 		}
 
 		if (bbno <= fbno) {
-			/* start overlap */
+			 
 
-			/*
-			 * Case 1:
-			 *    bbno           bend
-			 *    +BBBBBBBBBBBBBBBBB+
-			 *        +---------+
-			 *        fbno   fend
-			 *
-			 * Case 2:
-			 *    bbno           bend
-			 *    +BBBBBBBBBBBBBBBBB+
-			 *    +-------------+
-			 *    fbno       fend
-			 *
-			 * Case 3:
-			 *    bbno           bend
-			 *    +BBBBBBBBBBBBBBBBB+
-			 *        +-------------+
-			 *        fbno       fend
-			 *
-			 * Case 4:
-			 *    bbno           bend
-			 *    +BBBBBBBBBBBBBBBBB+
-			 *    +-----------------+
-			 *    fbno           fend
-			 *
-			 * No unbusy region in extent, return failure.
-			 */
+			 
 			if (fend <= bend)
 				goto fail;
 
-			/*
-			 * Case 5:
-			 *    bbno           bend
-			 *    +BBBBBBBBBBBBBBBBB+
-			 *        +----------------------+
-			 *        fbno                fend
-			 *
-			 * Case 6:
-			 *    bbno           bend
-			 *    +BBBBBBBBBBBBBBBBB+
-			 *    +--------------------------+
-			 *    fbno                    fend
-			 *
-			 * Needs to be trimmed to:
-			 *                       +-------+
-			 *                       fbno fend
-			 */
+			 
 			fbno = bend;
 		} else if (bend >= fend) {
-			/* end overlap */
+			 
 
-			/*
-			 * Case 7:
-			 *             bbno           bend
-			 *             +BBBBBBBBBBBBBBBBB+
-			 *    +------------------+
-			 *    fbno            fend
-			 *
-			 * Case 8:
-			 *             bbno           bend
-			 *             +BBBBBBBBBBBBBBBBB+
-			 *    +--------------------------+
-			 *    fbno                    fend
-			 *
-			 * Needs to be trimmed to:
-			 *    +-------+
-			 *    fbno fend
-			 */
+			 
 			fend = bbno;
 		} else {
-			/* middle overlap */
+			 
 
-			/*
-			 * Case 9:
-			 *             bbno           bend
-			 *             +BBBBBBBBBBBBBBBBB+
-			 *    +-----------------------------------+
-			 *    fbno                             fend
-			 *
-			 * Can be trimmed to:
-			 *    +-------+        OR         +-------+
-			 *    fbno fend                   fbno fend
-			 *
-			 * Backward allocation leads to significant
-			 * fragmentation of directories, which degrades
-			 * directory performance, therefore we always want to
-			 * choose the option that produces forward allocation
-			 * patterns.
-			 * Preferring the lower bno extent will make the next
-			 * request use "fend" as the start of the next
-			 * allocation;  if the segment is no longer busy at
-			 * that point, we'll get a contiguous allocation, but
-			 * even if it is still busy, we will get a forward
-			 * allocation.
-			 * We try to avoid choosing the segment at "bend",
-			 * because that can lead to the next allocation
-			 * taking the segment at "fbno", which would be a
-			 * backward allocation.  We only use the segment at
-			 * "fbno" if it is much larger than the current
-			 * requested size, because in that case there's a
-			 * good chance subsequent allocations will be
-			 * contiguous.
-			 */
+			 
 			if (bbno - fbno >= args->maxlen) {
-				/* left candidate fits perfect */
+				 
 				fend = bbno;
 			} else if (fend - bend >= args->maxlen * 4) {
-				/* right candidate has enough free space */
+				 
 				fbno = bend;
 			} else if (bbno - fbno >= args->minlen) {
-				/* left candidate fits minimum requirement */
+				 
 				fend = bbno;
 			} else {
 				goto fail;
@@ -509,10 +300,7 @@ out:
 	spin_unlock(&args->pag->pagb_lock);
 	return ret;
 fail:
-	/*
-	 * Return a zero extent length as failure indications.  All callers
-	 * re-check if the trimmed extent satisfies the minlen requirement.
-	 */
+	 
 	flen = 0;
 	goto out;
 }
@@ -548,11 +336,7 @@ xfs_extent_busy_put_pag(
 	xfs_perag_put(pag);
 }
 
-/*
- * Remove all extents on the passed in list from the busy extents tree.
- * If do_discard is set skip extents that need to be discarded, and mark
- * these as undergoing a discard operation instead.
- */
+ 
 void
 xfs_extent_busy_clear(
 	struct xfs_mount	*mp,
@@ -587,20 +371,7 @@ xfs_extent_busy_clear(
 		xfs_extent_busy_put_pag(pag, wakeup);
 }
 
-/*
- * Flush out all busy extents for this AG.
- *
- * If the current transaction is holding busy extents, the caller may not want
- * to wait for committed busy extents to resolve. If we are being told just to
- * try a flush or progress has been made since we last skipped a busy extent,
- * return immediately to allow the caller to try again.
- *
- * If we are freeing extents, we might actually be holding the only free extents
- * in the transaction busy list and the log force won't resolve that situation.
- * In this case, we must return -EAGAIN to avoid a deadlock by informing the
- * caller it needs to commit the busy extents it holds before retrying the
- * extent free operation.
- */
+ 
 int
 xfs_extent_busy_flush(
 	struct xfs_trans	*tp,
@@ -615,7 +386,7 @@ xfs_extent_busy_flush(
 	if (error)
 		return error;
 
-	/* Avoid deadlocks on uncommitted busy extents. */
+	 
 	if (!list_empty(&tp->t_busy)) {
 		if (alloc_flags & XFS_ALLOC_FLAG_TRYFLUSH)
 			return 0;
@@ -627,7 +398,7 @@ xfs_extent_busy_flush(
 			return -EAGAIN;
 	}
 
-	/* Wait for committed busy extents to resolve. */
+	 
 	do {
 		prepare_to_wait(&pag->pagb_wait, &wait, TASK_KILLABLE);
 		if  (busy_gen != READ_ONCE(pag->pagb_gen))
@@ -658,9 +429,7 @@ xfs_extent_busy_wait_all(
 	}
 }
 
-/*
- * Callback for list_sort to sort busy extents by the AG they reside in.
- */
+ 
 int
 xfs_extent_busy_ag_cmp(
 	void			*priv,

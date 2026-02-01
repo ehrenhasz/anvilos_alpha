@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*******************************************************************************
-
-  Header file for stmmac platform data
-
-  Copyright (C) 2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
+ 
 
 #ifndef __STMMAC_PLATFORM_DATA
 #define __STMMAC_PLATFORM_DATA
@@ -23,19 +15,17 @@
 #define STMMAC_RX_COE_TYPE1	1
 #define STMMAC_RX_COE_TYPE2	2
 
-/* Define the macros for CSR clock range parameters to be passed by
- * platform code.
- * This could also be configured at run time using CPU freq framework. */
+ 
 
-/* MDC Clock Selection define*/
-#define	STMMAC_CSR_60_100M	0x0	/* MDC = clk_scr_i/42 */
-#define	STMMAC_CSR_100_150M	0x1	/* MDC = clk_scr_i/62 */
-#define	STMMAC_CSR_20_35M	0x2	/* MDC = clk_scr_i/16 */
-#define	STMMAC_CSR_35_60M	0x3	/* MDC = clk_scr_i/26 */
-#define	STMMAC_CSR_150_250M	0x4	/* MDC = clk_scr_i/102 */
-#define	STMMAC_CSR_250_300M	0x5	/* MDC = clk_scr_i/122 */
+ 
+#define	STMMAC_CSR_60_100M	0x0	 
+#define	STMMAC_CSR_100_150M	0x1	 
+#define	STMMAC_CSR_20_35M	0x2	 
+#define	STMMAC_CSR_35_60M	0x3	 
+#define	STMMAC_CSR_150_250M	0x4	 
+#define	STMMAC_CSR_250_300M	0x5	 
 
-/* MTL algorithms identifiers */
+ 
 #define MTL_TX_ALGORITHM_WRR	0x0
 #define MTL_TX_ALGORITHM_WFQ	0x1
 #define MTL_TX_ALGORITHM_DWRR	0x2
@@ -43,28 +33,21 @@
 #define MTL_RX_ALGORITHM_SP	0x4
 #define MTL_RX_ALGORITHM_WSP	0x5
 
-/* RX/TX Queue Mode */
+ 
 #define MTL_QUEUE_AVB		0x0
 #define MTL_QUEUE_DCB		0x1
 
-/* The MDC clock could be set higher than the IEEE 802.3
- * specified frequency limit 0f 2.5 MHz, by programming a clock divider
- * of value different than the above defined values. The resultant MDIO
- * clock frequency of 12.5 MHz is applicable for the interfacing chips
- * supporting higher MDC clocks.
- * The MDC clock selection macros need to be defined for MDC clock rate
- * of 12.5 MHz, corresponding to the following selection.
- */
-#define STMMAC_CSR_I_4		0x8	/* clk_csr_i/4 */
-#define STMMAC_CSR_I_6		0x9	/* clk_csr_i/6 */
-#define STMMAC_CSR_I_8		0xA	/* clk_csr_i/8 */
-#define STMMAC_CSR_I_10		0xB	/* clk_csr_i/10 */
-#define STMMAC_CSR_I_12		0xC	/* clk_csr_i/12 */
-#define STMMAC_CSR_I_14		0xD	/* clk_csr_i/14 */
-#define STMMAC_CSR_I_16		0xE	/* clk_csr_i/16 */
-#define STMMAC_CSR_I_18		0xF	/* clk_csr_i/18 */
+ 
+#define STMMAC_CSR_I_4		0x8	 
+#define STMMAC_CSR_I_6		0x9	 
+#define STMMAC_CSR_I_8		0xA	 
+#define STMMAC_CSR_I_10		0xB	 
+#define STMMAC_CSR_I_12		0xC	 
+#define STMMAC_CSR_I_14		0xD	 
+#define STMMAC_CSR_I_16		0xE	 
+#define STMMAC_CSR_I_18		0xF	 
 
-/* AXI DMA Burst length supported */
+ 
 #define DMA_AXI_BLEN_4		(1 << 1)
 #define DMA_AXI_BLEN_8		(1 << 2)
 #define DMA_AXI_BLEN_16		(1 << 3)
@@ -78,7 +61,7 @@
 
 struct stmmac_priv;
 
-/* Platfrom data for platform device structure's platform_data field */
+ 
 
 struct stmmac_mdio_bus_data {
 	unsigned int phy_mask;
@@ -140,7 +123,7 @@ struct stmmac_rxq_cfg {
 struct stmmac_txq_cfg {
 	u32 weight;
 	u8 mode_to_use;
-	/* Credit Base Shaper parameters */
+	 
 	u32 send_slope;
 	u32 idle_slope;
 	u32 high_credit;
@@ -150,7 +133,7 @@ struct stmmac_txq_cfg {
 	int tbs_en;
 };
 
-/* FPE link state */
+ 
 enum stmmac_fpe_state {
 	FPE_STATE_OFF = 0,
 	FPE_STATE_CAPABLE = 1,
@@ -158,7 +141,7 @@ enum stmmac_fpe_state {
 	FPE_STATE_ON = 3,
 };
 
-/* FPE link-partner hand-shaking mPacket type */
+ 
 enum stmmac_mpacket_type {
 	MPACKET_VERIFY = 0,
 	MPACKET_RESPONSE = 1,
@@ -170,11 +153,11 @@ enum stmmac_fpe_task_state_t {
 };
 
 struct stmmac_fpe_cfg {
-	bool enable;				/* FPE enable */
-	bool hs_enable;				/* FPE handshake enable */
-	enum stmmac_fpe_state lp_fpe_state;	/* Link Partner FPE state */
-	enum stmmac_fpe_state lo_fpe_state;	/* Local station FPE state */
-	u32 fpe_csr;				/* MAC_FPE_CTRL_STS reg cache */
+	bool enable;				 
+	bool hs_enable;				 
+	enum stmmac_fpe_state lp_fpe_state;	 
+	enum stmmac_fpe_state lo_fpe_state;	 
+	u32 fpe_csr;				 
 };
 
 struct stmmac_safety_feature_cfg {
@@ -189,7 +172,7 @@ struct stmmac_safety_feature_cfg {
 	u32 tmouten;
 };
 
-/* Addresses that may be customized by a platform */
+ 
 struct dwmac4_addrs {
 	u32 dma_chan;
 	u32 dma_chan_offset;
@@ -224,20 +207,9 @@ struct dwmac4_addrs {
 struct plat_stmmacenet_data {
 	int bus_id;
 	int phy_addr;
-	/* MAC ----- optional PCS ----- SerDes ----- optional PHY ----- Media
-	 *       ^                               ^
-	 * mac_interface                   phy_interface
-	 *
-	 * mac_interface is the MAC-side interface, which may be the same
-	 * as phy_interface if there is no intervening PCS. If there is a
-	 * PCS, then mac_interface describes the interface mode between the
-	 * MAC and PCS, and phy_interface describes the interface mode
-	 * between the PCS and PHY.
-	 */
+	 
 	phy_interface_t mac_interface;
-	/* phy_interface is the PHY-side interface - the interface used by
-	 * an attached PHY.
-	 */
+	 
 	phy_interface_t phy_interface;
 	struct stmmac_mdio_bus_data *mdio_bus_data;
 	struct device_node *phy_node;

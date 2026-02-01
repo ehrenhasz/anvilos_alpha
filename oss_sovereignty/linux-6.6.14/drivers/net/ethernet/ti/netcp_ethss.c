@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Keystone GBE and XGBE subsystem code
- *
- * Copyright (C) 2014 Texas Instruments Incorporated
- * Authors:	Sandeep Nair <sandeep_n@ti.com>
- *		Sandeep Paulraj <s-paulraj@ti.com>
- *		Cyril Chemparathy <cyril@ti.com>
- *		Santosh Shilimkar <santosh.shilimkar@ti.com>
- *		Wingman Kwok <w-kwok2@ti.com>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -33,16 +24,16 @@
 #define GBE_MINOR_VERSION(reg)		(reg & 0xff)
 #define GBE_RTL_VERSION(reg)		((reg >> 11) & 0x1f)
 
-/* 1G Ethernet SS defines */
+ 
 #define GBE_MODULE_NAME			"netcp-gbe"
 #define GBE_SS_VERSION_14		0x4ed2
 
 #define GBE_SS_REG_INDEX		0
 #define GBE_SGMII34_REG_INDEX		1
 #define GBE_SM_REG_INDEX		2
-/* offset relative to base of GBE_SS_REG_INDEX */
+ 
 #define GBE13_SGMII_MODULE_OFFSET	0x100
-/* offset relative to base of GBE_SM_REG_INDEX */
+ 
 #define GBE13_HOST_PORT_OFFSET		0x34
 #define GBE13_SLAVE_PORT_OFFSET		0x60
 #define GBE13_EMAC_OFFSET		0x100
@@ -52,7 +43,7 @@
 #define GBE13_ALE_OFFSET		0x600
 #define GBE13_HOST_PORT_NUM		0
 
-/* 1G Ethernet NU SS defines */
+ 
 #define GBENU_MODULE_NAME		"netcp-gbenu"
 #define GBE_SS_ID_NU			0x4ee6
 #define GBE_SS_ID_2U			0x4ee8
@@ -81,7 +72,7 @@
 #define GBENU_HOST_PORT_NUM		0
 #define GBENU_SGMII_MODULE_SIZE		0x100
 
-/* 10G Ethernet SS defines */
+ 
 #define XGBE_MODULE_NAME		"netcp-xgbe"
 #define XGBE_SS_VERSION_10		0x4ee4
 
@@ -89,10 +80,10 @@
 #define XGBE_SM_REG_INDEX		1
 #define XGBE_SERDES_REG_INDEX		2
 
-/* offset relative to base of XGBE_SS_REG_INDEX */
+ 
 #define XGBE10_SGMII_MODULE_OFFSET	0x100
 #define IS_SS_ID_XGBE(d)		((d)->ss_version == XGBE_SS_VERSION_10)
-/* offset relative to base of XGBE_SM_REG_INDEX */
+ 
 #define XGBE10_HOST_PORT_OFFSET		0x34
 #define XGBE10_SLAVE_PORT_OFFSET	0x64
 #define XGBE10_EMAC_OFFSET		0x400
@@ -103,7 +94,7 @@
 
 #define	GBE_TIMER_INTERVAL			(HZ / 2)
 
-/* Soft reset register values */
+ 
 #define SOFT_RESET_MASK				BIT(0)
 #define SOFT_RESET				BIT(0)
 #define DEVICE_EMACSL_RESET_POLL_COUNT		100
@@ -153,7 +144,7 @@
 #define XGBE_STATS1_MODULE			1
 #define XGBE_STATS2_MODULE			2
 
-/* s: 0-based slave_port */
+ 
 #define SGMII_BASE(d, s) \
 	(((s) < 2) ? (d)->sgmii_port_regs : (d)->sgmii_port34_regs)
 
@@ -180,7 +171,7 @@
 #define HOST_TX_PRI_MAP_DEFAULT			0x00000000
 
 #if IS_ENABLED(CONFIG_TI_CPTS)
-/* Px_TS_CTL register fields */
+ 
 #define TS_RX_ANX_F_EN				BIT(0)
 #define TS_RX_VLAN_LT1_EN			BIT(1)
 #define TS_RX_VLAN_LT2_EN			BIT(2)
@@ -195,11 +186,11 @@
 #define TS_MSG_TYPE_EN_SHIFT			16
 #define TS_MSG_TYPE_EN_MASK			0xffff
 
-/* Px_TS_SEQ_LTYPE register fields */
+ 
 #define TS_SEQ_ID_OFS_SHIFT			16
 #define TS_SEQ_ID_OFS_MASK			0x3f
 
-/* Px_TS_CTL_LTYPE2 register fields */
+ 
 #define TS_107					BIT(16)
 #define TS_129					BIT(17)
 #define TS_130					BIT(18)
@@ -225,9 +216,9 @@
 
 #define TS_CTL_MADDR_SHIFT			16
 
-/* The PTP event messages - Sync, Delay_Req, Pdelay_Req, and Pdelay_Resp. */
+ 
 #define EVENT_MSG_BITS (BIT(0) | BIT(1) | BIT(2) | BIT(3))
-#endif /* CONFIG_TI_CPTS */
+#endif  
 
 struct xgbe_ss_regs {
 	u32	id_ver;
@@ -358,12 +349,12 @@ struct xgbe_hw_stats {
 
 struct gbenu_ss_regs {
 	u32	id_ver;
-	u32	synce_count;		/* NU */
-	u32	synce_mux;		/* NU */
-	u32	control;		/* 2U */
-	u32	__rsvd_0[2];		/* 2U */
-	u32	rgmii_status;		/* 2U */
-	u32	ss_status;		/* 2U */
+	u32	synce_count;		 
+	u32	synce_mux;		 
+	u32	control;		 
+	u32	__rsvd_0[2];		 
+	u32	rgmii_status;		 
+	u32	ss_status;		 
 };
 
 struct gbenu_switch_regs {
@@ -372,38 +363,38 @@ struct gbenu_switch_regs {
 	u32	__rsvd_0[2];
 	u32	emcontrol;
 	u32	stat_port_en;
-	u32	ptype;			/* NU */
+	u32	ptype;			 
 	u32	soft_idle;
-	u32	thru_rate;		/* NU */
-	u32	gap_thresh;		/* NU */
-	u32	tx_start_wds;		/* NU */
-	u32	eee_prescale;		/* 2U */
-	u32	tx_g_oflow_thresh_set;	/* NU */
-	u32	tx_g_oflow_thresh_clr;	/* NU */
-	u32	tx_g_buf_thresh_set_l;	/* NU */
-	u32	tx_g_buf_thresh_set_h;	/* NU */
-	u32	tx_g_buf_thresh_clr_l;	/* NU */
-	u32	tx_g_buf_thresh_clr_h;	/* NU */
+	u32	thru_rate;		 
+	u32	gap_thresh;		 
+	u32	tx_start_wds;		 
+	u32	eee_prescale;		 
+	u32	tx_g_oflow_thresh_set;	 
+	u32	tx_g_oflow_thresh_clr;	 
+	u32	tx_g_buf_thresh_set_l;	 
+	u32	tx_g_buf_thresh_set_h;	 
+	u32	tx_g_buf_thresh_clr_l;	 
+	u32	tx_g_buf_thresh_clr_h;	 
 };
 
 struct gbenu_port_regs {
 	u32	__rsvd_0;
 	u32	control;
-	u32	max_blks;		/* 2U */
+	u32	max_blks;		 
 	u32	mem_align1;
 	u32	blk_cnt;
 	u32	port_vlan;
-	u32	tx_pri_map;		/* NU */
-	u32	pri_ctl;		/* 2U */
+	u32	tx_pri_map;		 
+	u32	pri_ctl;		 
 	u32	rx_pri_map;
 	u32	rx_maxlen;
-	u32	tx_blks_pri;		/* NU */
+	u32	tx_blks_pri;		 
 	u32	__rsvd_1;
-	u32	idle2lpi;		/* 2U */
-	u32	lpi2idle;		/* 2U */
-	u32	eee_status;		/* 2U */
+	u32	idle2lpi;		 
+	u32	lpi2idle;		 
+	u32	eee_status;		 
 	u32	__rsvd_2;
-	u32	__rsvd_3[176];		/* NU: more to add */
+	u32	__rsvd_3[176];		 
 	u32	__rsvd_4[2];
 	u32	sa_lo;
 	u32	sa_hi;
@@ -417,22 +408,22 @@ struct gbenu_port_regs {
 struct gbenu_host_port_regs {
 	u32	__rsvd_0;
 	u32	control;
-	u32	flow_id_offset;		/* 2U */
+	u32	flow_id_offset;		 
 	u32	__rsvd_1;
 	u32	blk_cnt;
 	u32	port_vlan;
-	u32	tx_pri_map;		/* NU */
+	u32	tx_pri_map;		 
 	u32	pri_ctl;
 	u32	rx_pri_map;
 	u32	rx_maxlen;
-	u32	tx_blks_pri;		/* NU */
+	u32	tx_blks_pri;		 
 	u32	__rsvd_2;
-	u32	idle2lpi;		/* 2U */
-	u32	lpi2wake;		/* 2U */
-	u32	eee_status;		/* 2U */
+	u32	idle2lpi;		 
+	u32	lpi2wake;		 
+	u32	eee_status;		 
 	u32	__rsvd_3;
-	u32	__rsvd_4[184];		/* NU */
-	u32	host_blks_pri;		/* NU */
+	u32	__rsvd_4[184];		 
+	u32	host_blks_pri;		 
 };
 
 struct gbenu_emac_regs {
@@ -441,43 +432,40 @@ struct gbenu_emac_regs {
 	u32	soft_reset;
 	u32	boff_test;
 	u32	rx_pause;
-	u32	__rsvd_0[11];		/* NU */
+	u32	__rsvd_0[11];		 
 	u32	tx_pause;
-	u32	__rsvd_1[11];		/* NU */
+	u32	__rsvd_1[11];		 
 	u32	em_control;
 	u32	tx_gap;
 };
 
-/* Some hw stat regs are applicable to slave port only.
- * This is handled by gbenu_et_stats struct.  Also some
- * are for SS version NU and some are for 2U.
- */
+ 
 struct gbenu_hw_stats {
 	u32	rx_good_frames;
 	u32	rx_broadcast_frames;
 	u32	rx_multicast_frames;
-	u32	rx_pause_frames;		/* slave */
+	u32	rx_pause_frames;		 
 	u32	rx_crc_errors;
-	u32	rx_align_code_errors;		/* slave */
+	u32	rx_align_code_errors;		 
 	u32	rx_oversized_frames;
-	u32	rx_jabber_frames;		/* slave */
+	u32	rx_jabber_frames;		 
 	u32	rx_undersized_frames;
-	u32	rx_fragments;			/* slave */
+	u32	rx_fragments;			 
 	u32	ale_drop;
 	u32	ale_overrun_drop;
 	u32	rx_bytes;
 	u32	tx_good_frames;
 	u32	tx_broadcast_frames;
 	u32	tx_multicast_frames;
-	u32	tx_pause_frames;		/* slave */
-	u32	tx_deferred_frames;		/* slave */
-	u32	tx_collision_frames;		/* slave */
-	u32	tx_single_coll_frames;		/* slave */
-	u32	tx_mult_coll_frames;		/* slave */
-	u32	tx_excessive_collisions;	/* slave */
-	u32	tx_late_collisions;		/* slave */
-	u32	rx_ipg_error;			/* slave 10G only */
-	u32	tx_carrier_sense_errors;	/* slave */
+	u32	tx_pause_frames;		 
+	u32	tx_deferred_frames;		 
+	u32	tx_collision_frames;		 
+	u32	tx_single_coll_frames;		 
+	u32	tx_mult_coll_frames;		 
+	u32	tx_excessive_collisions;	 
+	u32	tx_late_collisions;		 
+	u32	rx_ipg_error;			 
+	u32	tx_carrier_sense_errors;	 
 	u32	tx_bytes;
 	u32	tx_64B_frames;
 	u32	tx_65_to_127B_frames;
@@ -500,11 +488,11 @@ struct gbenu_hw_stats {
 	u32	ale_unknown_bcast;
 	u32	ale_unknown_bcast_bytes;
 	u32	ale_pol_match;
-	u32	ale_pol_match_red;		/* NU */
-	u32	ale_pol_match_yellow;		/* NU */
+	u32	ale_pol_match_red;		 
+	u32	ale_pol_match_yellow;		 
 	u32	__rsvd_1[44];
 	u32	tx_mem_protect_err;
-	/* following NU only */
+	 
 	u32	tx_pri0;
 	u32	tx_pri1;
 	u32	tx_pri2;
@@ -550,7 +538,7 @@ struct gbe_ss_regs {
 struct gbe_ss_regs_ofs {
 	u16	id_ver;
 	u16	control;
-	u16	rgmii_status; /* 2U */
+	u16	rgmii_status;  
 };
 
 struct gbe_switch_regs {
@@ -601,7 +589,7 @@ struct gbe_port_regs_ofs {
 	u16	ts_vlan;
 	u16	ts_ctl_ltype2;
 	u16	ts_ctl2;
-	u16	rx_maxlen;	/* 2U, NU */
+	u16	rx_maxlen;	 
 };
 
 struct gbe_host_port_regs {
@@ -690,8 +678,8 @@ struct gbe_slave {
 	void __iomem			*emac_regs;
 	struct gbe_port_regs_ofs	port_regs_ofs;
 	struct gbe_emac_regs_ofs	emac_regs_ofs;
-	int				slave_num; /* 0 based logical number */
-	int				port_num;  /* actual port number */
+	int				slave_num;  
+	int				port_num;   
 	atomic_t			link_state;
 	bool				open;
 	struct phy_device		*phy;
@@ -712,7 +700,7 @@ struct gbe_priv {
 	u32				ale_ports;
 	bool				enable_ale;
 	u8				max_num_slaves;
-	u8				max_num_ports; /* max_num_slaves + 1 */
+	u8				max_num_ports;  
 	u8				num_stats_mods;
 	struct netcp_tx_pipe		tx_pipe;
 
@@ -747,7 +735,7 @@ struct gbe_priv {
 	u32				*hw_stats_prev;
 	const struct netcp_ethtool_stat *et_stats;
 	int				num_et_stats;
-	/*  Lock for updating the hwstats */
+	 
 	spinlock_t			hw_stats_lock;
 
 	int                             cpts_registered;
@@ -769,7 +757,7 @@ struct gbe_intf {
 static struct netcp_module gbe_module;
 static struct netcp_module xgbe_module;
 
-/* Statistic management */
+ 
 struct netcp_ethtool_stat {
 	char desc[ETH_GSTRING_LEN];
 	int type;
@@ -806,7 +794,7 @@ struct netcp_ethtool_stat {
 }
 
 static const struct netcp_ethtool_stat gbe13_et_stats[] = {
-	/* GBE module A */
+	 
 	GBE_STATSA_INFO(rx_good_frames),
 	GBE_STATSA_INFO(rx_broadcast_frames),
 	GBE_STATSA_INFO(rx_multicast_frames),
@@ -841,7 +829,7 @@ static const struct netcp_ethtool_stat gbe13_et_stats[] = {
 	GBE_STATSA_INFO(rx_sof_overruns),
 	GBE_STATSA_INFO(rx_mof_overruns),
 	GBE_STATSA_INFO(rx_dma_overruns),
-	/* GBE module B */
+	 
 	GBE_STATSB_INFO(rx_good_frames),
 	GBE_STATSB_INFO(rx_broadcast_frames),
 	GBE_STATSB_INFO(rx_multicast_frames),
@@ -876,7 +864,7 @@ static const struct netcp_ethtool_stat gbe13_et_stats[] = {
 	GBE_STATSB_INFO(rx_sof_overruns),
 	GBE_STATSB_INFO(rx_mof_overruns),
 	GBE_STATSB_INFO(rx_dma_overruns),
-	/* GBE module C */
+	 
 	GBE_STATSC_INFO(rx_good_frames),
 	GBE_STATSC_INFO(rx_broadcast_frames),
 	GBE_STATSC_INFO(rx_multicast_frames),
@@ -911,7 +899,7 @@ static const struct netcp_ethtool_stat gbe13_et_stats[] = {
 	GBE_STATSC_INFO(rx_sof_overruns),
 	GBE_STATSC_INFO(rx_mof_overruns),
 	GBE_STATSC_INFO(rx_dma_overruns),
-	/* GBE module D */
+	 
 	GBE_STATSD_INFO(rx_good_frames),
 	GBE_STATSD_INFO(rx_broadcast_frames),
 	GBE_STATSD_INFO(rx_multicast_frames),
@@ -948,7 +936,7 @@ static const struct netcp_ethtool_stat gbe13_et_stats[] = {
 	GBE_STATSD_INFO(rx_dma_overruns),
 };
 
-/* This is the size of entries in GBENU_STATS_HOST */
+ 
 #define GBENU_ET_STATS_HOST_SIZE	52
 
 #define GBENU_STATS_HOST(field)					\
@@ -958,7 +946,7 @@ static const struct netcp_ethtool_stat gbe13_et_stats[] = {
 	offsetof(struct gbenu_hw_stats, field)			\
 }
 
-/* This is the size of entries in GBENU_STATS_PORT */
+ 
 #define GBENU_ET_STATS_PORT_SIZE	65
 
 #define GBENU_STATS_P1(field)					\
@@ -1018,7 +1006,7 @@ static const struct netcp_ethtool_stat gbe13_et_stats[] = {
 }
 
 static const struct netcp_ethtool_stat gbenu_et_stats[] = {
-	/* GBENU Host Module */
+	 
 	GBENU_STATS_HOST(rx_good_frames),
 	GBENU_STATS_HOST(rx_broadcast_frames),
 	GBENU_STATS_HOST(rx_multicast_frames),
@@ -1071,7 +1059,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 	GBENU_STATS_HOST(tx_pri5_drop_bcnt),
 	GBENU_STATS_HOST(tx_pri6_drop_bcnt),
 	GBENU_STATS_HOST(tx_pri7_drop_bcnt),
-	/* GBENU Module 1 */
+	 
 	GBENU_STATS_P1(rx_good_frames),
 	GBENU_STATS_P1(rx_broadcast_frames),
 	GBENU_STATS_P1(rx_multicast_frames),
@@ -1137,7 +1125,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 	GBENU_STATS_P1(tx_pri5_drop_bcnt),
 	GBENU_STATS_P1(tx_pri6_drop_bcnt),
 	GBENU_STATS_P1(tx_pri7_drop_bcnt),
-	/* GBENU Module 2 */
+	 
 	GBENU_STATS_P2(rx_good_frames),
 	GBENU_STATS_P2(rx_broadcast_frames),
 	GBENU_STATS_P2(rx_multicast_frames),
@@ -1203,7 +1191,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 	GBENU_STATS_P2(tx_pri5_drop_bcnt),
 	GBENU_STATS_P2(tx_pri6_drop_bcnt),
 	GBENU_STATS_P2(tx_pri7_drop_bcnt),
-	/* GBENU Module 3 */
+	 
 	GBENU_STATS_P3(rx_good_frames),
 	GBENU_STATS_P3(rx_broadcast_frames),
 	GBENU_STATS_P3(rx_multicast_frames),
@@ -1269,7 +1257,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 	GBENU_STATS_P3(tx_pri5_drop_bcnt),
 	GBENU_STATS_P3(tx_pri6_drop_bcnt),
 	GBENU_STATS_P3(tx_pri7_drop_bcnt),
-	/* GBENU Module 4 */
+	 
 	GBENU_STATS_P4(rx_good_frames),
 	GBENU_STATS_P4(rx_broadcast_frames),
 	GBENU_STATS_P4(rx_multicast_frames),
@@ -1335,7 +1323,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 	GBENU_STATS_P4(tx_pri5_drop_bcnt),
 	GBENU_STATS_P4(tx_pri6_drop_bcnt),
 	GBENU_STATS_P4(tx_pri7_drop_bcnt),
-	/* GBENU Module 5 */
+	 
 	GBENU_STATS_P5(rx_good_frames),
 	GBENU_STATS_P5(rx_broadcast_frames),
 	GBENU_STATS_P5(rx_multicast_frames),
@@ -1401,7 +1389,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 	GBENU_STATS_P5(tx_pri5_drop_bcnt),
 	GBENU_STATS_P5(tx_pri6_drop_bcnt),
 	GBENU_STATS_P5(tx_pri7_drop_bcnt),
-	/* GBENU Module 6 */
+	 
 	GBENU_STATS_P6(rx_good_frames),
 	GBENU_STATS_P6(rx_broadcast_frames),
 	GBENU_STATS_P6(rx_multicast_frames),
@@ -1467,7 +1455,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 	GBENU_STATS_P6(tx_pri5_drop_bcnt),
 	GBENU_STATS_P6(tx_pri6_drop_bcnt),
 	GBENU_STATS_P6(tx_pri7_drop_bcnt),
-	/* GBENU Module 7 */
+	 
 	GBENU_STATS_P7(rx_good_frames),
 	GBENU_STATS_P7(rx_broadcast_frames),
 	GBENU_STATS_P7(rx_multicast_frames),
@@ -1533,7 +1521,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 	GBENU_STATS_P7(tx_pri5_drop_bcnt),
 	GBENU_STATS_P7(tx_pri6_drop_bcnt),
 	GBENU_STATS_P7(tx_pri7_drop_bcnt),
-	/* GBENU Module 8 */
+	 
 	GBENU_STATS_P8(rx_good_frames),
 	GBENU_STATS_P8(rx_broadcast_frames),
 	GBENU_STATS_P8(rx_multicast_frames),
@@ -1623,7 +1611,7 @@ static const struct netcp_ethtool_stat gbenu_et_stats[] = {
 }
 
 static const struct netcp_ethtool_stat xgbe10_et_stats[] = {
-	/* GBE module 0 */
+	 
 	XGBE_STATS0_INFO(rx_good_frames),
 	XGBE_STATS0_INFO(rx_broadcast_frames),
 	XGBE_STATS0_INFO(rx_multicast_frames),
@@ -1646,7 +1634,7 @@ static const struct netcp_ethtool_stat xgbe10_et_stats[] = {
 	XGBE_STATS0_INFO(rx_sof_overruns),
 	XGBE_STATS0_INFO(rx_mof_overruns),
 	XGBE_STATS0_INFO(rx_dma_overruns),
-	/* XGBE module 1 */
+	 
 	XGBE_STATS1_INFO(rx_good_frames),
 	XGBE_STATS1_INFO(rx_broadcast_frames),
 	XGBE_STATS1_INFO(rx_multicast_frames),
@@ -1683,7 +1671,7 @@ static const struct netcp_ethtool_stat xgbe10_et_stats[] = {
 	XGBE_STATS1_INFO(rx_sof_overruns),
 	XGBE_STATS1_INFO(rx_mof_overruns),
 	XGBE_STATS1_INFO(rx_dma_overruns),
-	/* XGBE module 2 */
+	 
 	XGBE_STATS2_INFO(rx_good_frames),
 	XGBE_STATS2_INFO(rx_broadcast_frames),
 	XGBE_STATS2_INFO(rx_multicast_frames),
@@ -1833,9 +1821,7 @@ static inline void gbe_update_hw_stats_entry(struct gbe_priv *gbe_dev,
 	u32  __iomem *p_stats_entry;
 	u32 curr, delta;
 
-	/* The hw_stats_regs pointers are already
-	 * properly set to point to the right base:
-	 */
+	 
 	base = gbe_dev->hw_stats_regs[gbe_dev->et_stats[et_stats_entry].type];
 	p_stats_entry = base + gbe_dev->et_stats[et_stats_entry].offset;
 	curr = readl(p_stats_entry);
@@ -1876,7 +1862,7 @@ static inline void gbe_stats_mod_visible_ver14(struct gbe_priv *gbe_dev,
 		return;
 	}
 
-	/* make the stat module visible */
+	 
 	writel(val, GBE_REG_ADDR(gbe_dev, switch_regs, stat_port_en));
 }
 
@@ -2038,7 +2024,7 @@ static int keystone_get_ts_info(struct net_device *ndev,
 	info->rx_filters = 0;
 	return 0;
 }
-#endif /* CONFIG_TI_CPTS */
+#endif  
 
 static const struct ethtool_ops keystone_ethtool_ops = {
 	.get_drvinfo		= keystone_get_drvinfo,
@@ -2192,28 +2178,26 @@ static void gbe_adjust_link_sec_slaves(struct net_device *ndev)
 		netcp_ethss_update_link_state(gbe_dev, slave, NULL);
 }
 
-/* Reset EMAC
- * Soft reset is set and polled until clear, or until a timeout occurs
- */
+ 
 static int gbe_port_reset(struct gbe_slave *slave)
 {
 	u32 i, v;
 
-	/* Set the soft reset bit */
+	 
 	writel(SOFT_RESET, GBE_REG_ADDR(slave, emac_regs, soft_reset));
 
-	/* Wait for the bit to clear */
+	 
 	for (i = 0; i < DEVICE_EMACSL_RESET_POLL_COUNT; i++) {
 		v = readl(GBE_REG_ADDR(slave, emac_regs, soft_reset));
 		if ((v & SOFT_RESET_MASK) != SOFT_RESET)
 			return 0;
 	}
 
-	/* Timeout on the reset */
+	 
 	return GMACSL_RET_WARN_RESET_INCOMPLETE;
 }
 
-/* Configure EMAC */
+ 
 static void gbe_port_config(struct gbe_priv *gbe_dev, struct gbe_slave *slave,
 			    int max_rx_len)
 {
@@ -2223,7 +2207,7 @@ static void gbe_port_config(struct gbe_priv *gbe_dev, struct gbe_slave *slave,
 	if (max_rx_len > NETCP_MAX_FRAME_SIZE)
 		max_rx_len = NETCP_MAX_FRAME_SIZE;
 
-	/* Enable correct MII mode at SS level */
+	 
 	if (IS_SS_ID_XGBE(gbe_dev) &&
 	    (slave->link_interface >= XGMII_LINK_MAC_PHY)) {
 		xgmii_mode = readl(GBE_REG_ADDR(gbe_dev, ss_regs, control));
@@ -2258,7 +2242,7 @@ static void gbe_slave_stop(struct gbe_intf *intf)
 	if (!IS_SS_ID_2U(gbe_dev))
 		gbe_sgmii_rtreset(gbe_dev, slave, true);
 	gbe_port_reset(slave);
-	/* Disable forwarding */
+	 
 	cpsw_ale_control_set(gbe_dev->ale, slave->port_num,
 			     ALE_PORT_STATE, ALE_PORT_STATE_DISABLE);
 	cpsw_ale_del_mcast(gbe_dev->ale, intf->ndev->broadcast,
@@ -2299,14 +2283,12 @@ static int gbe_slave_open(struct gbe_intf *gbe_intf)
 		gbe_sgmii_rtreset(priv, slave, false);
 	gbe_port_config(priv, slave, priv->rx_packet_max);
 	gbe_set_slave_mac(slave, gbe_intf);
-	/* For NU & 2U switch, map the vlan priorities to zero
-	 * as we only configure to use priority 0
-	 */
+	 
 	if (IS_SS_ID_MU(priv))
 		writel(HOST_TX_PRI_MAP_DEFAULT,
 		       GBE_REG_ADDR(slave, port_regs, rx_pri_map));
 
-	/* enable forwarding */
+	 
 	cpsw_ale_control_set(priv->ale, slave->port_num,
 			     ALE_PORT_STATE, ALE_PORT_STATE_FORWARD);
 	cpsw_ale_add_mcast(priv->ale, gbe_intf->ndev->broadcast,
@@ -2319,9 +2301,7 @@ static int gbe_slave_open(struct gbe_intf *gbe_intf)
 	} else if (slave->link_interface == RGMII_LINK_MAC_PHY) {
 		has_phy = true;
 		err = of_get_phy_mode(slave->node, &phy_mode);
-		/* if phy-mode is not present, default to
-		 * PHY_INTERFACE_MODE_RGMII
-		 */
+		 
 		if (err)
 			phy_mode = PHY_INTERFACE_MODE_RGMII;
 
@@ -2361,12 +2341,12 @@ static void gbe_init_host_port(struct gbe_priv *priv)
 {
 	int bypass_en = 1;
 
-	/* Host Tx Pri */
+	 
 	if (IS_SS_ID_NU(priv) || IS_SS_ID_XGBE(priv))
 		writel(HOST_TX_PRI_MAP_DEFAULT,
 		       GBE_REG_ADDR(priv, host_port_regs, tx_pri_map));
 
-	/* Max length register */
+	 
 	writel(NETCP_MAX_FRAME_SIZE, GBE_REG_ADDR(priv, host_port_regs,
 						  rx_maxlen));
 
@@ -2469,7 +2449,7 @@ static int gbe_add_addr(void *intf_priv, struct netcp_addr *naddr)
 		gbe_add_ucast_addr(gbe_intf, naddr->addr);
 		break;
 	case ADDR_ANY:
-		/* nothing to do for promiscuous */
+		 
 	default:
 		break;
 	}
@@ -2495,7 +2475,7 @@ static int gbe_del_addr(void *intf_priv, struct netcp_addr *naddr)
 		gbe_del_ucast_addr(gbe_intf, naddr->addr);
 		break;
 	case ADDR_ANY:
-		/* nothing to do for promiscuous */
+		 
 	default:
 		break;
 	}
@@ -2557,10 +2537,7 @@ static int gbe_txtstamp_mark_pkt(struct gbe_intf *gbe_intf,
 	    !gbe_dev->tx_ts_enabled)
 		return 0;
 
-	/* If phy has the txtstamp api, assume it will do it.
-	 * We mark it here because skb_tx_timestamp() is called
-	 * after all the txhooks are called.
-	 */
+	 
 	if (phy_has_txtstamp(phydev)) {
 		skb_shinfo(p_info->skb)->tx_flags |= SKBTX_IN_PROGRESS;
 		return 0;
@@ -2759,7 +2736,7 @@ static inline int gbe_hwtstamp_set(struct gbe_intf *gbe_intf, struct ifreq *req)
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_TI_CPTS */
+#endif  
 
 static int gbe_set_rx_mode(void *intf_priv, bool promisc)
 {
@@ -2769,9 +2746,7 @@ static int gbe_set_rx_mode(void *intf_priv, bool promisc)
 	unsigned long timeout;
 	int i, ret = -ETIMEDOUT;
 
-	/* Disable(1)/Enable(0) Learn for all ports (host is port 0 and
-	 * slaves are port 1 and up
-	 */
+	 
 	for (i = 0; i <= gbe_dev->num_slaves; i++) {
 		cpsw_ale_control_set(ale, i,
 				     ALE_PORT_NOLEARN, !!promisc);
@@ -2780,7 +2755,7 @@ static int gbe_set_rx_mode(void *intf_priv, bool promisc)
 	}
 
 	if (!promisc) {
-		/* Don't Flood All Unicast Packets to Host port */
+		 
 		cpsw_ale_control_set(ale, 0, ALE_P0_UNI_FLOOD, 0);
 		dev_vdbg(gbe_dev->dev, "promiscuous mode disabled\n");
 		return 0;
@@ -2788,7 +2763,7 @@ static int gbe_set_rx_mode(void *intf_priv, bool promisc)
 
 	timeout = jiffies + HZ;
 
-	/* Clear All Untouched entries */
+	 
 	cpsw_ale_control_set(ale, 0, ALE_AGEOUT, 1);
 	do {
 		cpu_relax();
@@ -2799,18 +2774,18 @@ static int gbe_set_rx_mode(void *intf_priv, bool promisc)
 
 	} while (time_after(timeout, jiffies));
 
-	/* Make sure it is not a false timeout */
+	 
 	if (ret && !cpsw_ale_control_get(ale, 0, ALE_AGEOUT))
 		return ret;
 
 	cpsw_ale_control_set(ale, 0, ALE_AGEOUT, 1);
 
-	/* Clear all mcast from ALE */
+	 
 	cpsw_ale_flush_multicast(ale,
 				 GBE_PORT_MASK(gbe_dev->ale_ports),
 				 -1);
 
-	/* Flood All Unicast Packets to Host port */
+	 
 	cpsw_ale_control_set(ale, 0, ALE_P0_UNI_FLOOD, 1);
 	dev_vdbg(gbe_dev->dev, "promiscuous mode enabled\n");
 	return ret;
@@ -2842,7 +2817,7 @@ static void netcp_ethss_timer(struct timer_list *t)
 	struct gbe_intf *gbe_intf;
 	struct gbe_slave *slave;
 
-	/* Check & update SGMII link state of interfaces */
+	 
 	for_each_intf(gbe_intf, gbe_dev) {
 		if (!gbe_intf->slave->open)
 			continue;
@@ -2850,12 +2825,12 @@ static void netcp_ethss_timer(struct timer_list *t)
 					      gbe_intf->ndev);
 	}
 
-	/* Check & update SGMII link state of secondary ports */
+	 
 	for_each_sec_slave(slave, gbe_dev) {
 		netcp_ethss_update_link_state(gbe_dev, slave, NULL);
 	}
 
-	/* A timer runs as a BH, no need to block them */
+	 
 	spin_lock(&gbe_dev->hw_stats_lock);
 
 	if (IS_SS_ID_VER_14(gbe_dev))
@@ -2900,7 +2875,7 @@ static int gbe_open(void *intf_priv, struct net_device *ndev)
 		GBE_MAJOR_VERSION(reg), GBE_MINOR_VERSION(reg),
 		GBE_RTL_VERSION(reg), GBE_IDENT(reg));
 
-	/* For 10G and on NetCP 1.5, use directed to port */
+	 
 	if (IS_SS_ID_XGBE(gbe_dev) || IS_SS_ID_MU(gbe_dev))
 		gbe_intf->tx_pipe.flags = SWITCH_TO_PORT_IN_TAGINFO;
 
@@ -2918,10 +2893,10 @@ static int gbe_open(void *intf_priv, struct net_device *ndev)
 
 	gbe_slave_stop(gbe_intf);
 
-	/* disable priority elevation and enable statistics on all ports */
+	 
 	writel(0, GBE_REG_ADDR(gbe_dev, switch_regs, ptype));
 
-	/* Control register */
+	 
 	val = GBE_CTL_P0_ENABLE;
 	if (IS_SS_ID_MU(gbe_dev)) {
 		val |= ETH_SW_CTL_P0_TX_CRC_REMOVE;
@@ -2929,7 +2904,7 @@ static int gbe_open(void *intf_priv, struct net_device *ndev)
 	}
 	writel(val, GBE_REG_ADDR(gbe_dev, switch_regs, control));
 
-	/* All statistics enabled and STAT AB visible by default */
+	 
 	writel(gbe_dev->stats_en_mask, GBE_REG_ADDR(gbe_dev, switch_regs,
 						    stat_port_en));
 
@@ -2984,7 +2959,7 @@ static void init_slave_ts_ctl(struct gbe_slave *slave)
 static void init_slave_ts_ctl(struct gbe_slave *slave)
 {
 }
-#endif /* CONFIG_TI_CPTS */
+#endif  
 
 static int init_slave(struct gbe_priv *gbe_dev, struct gbe_slave *slave,
 		      struct device_node *node)
@@ -3018,7 +2993,7 @@ static int init_slave(struct gbe_priv *gbe_dev, struct gbe_slave *slave,
 	else
 		slave->mac_control = GBE_DEF_1G_MAC_CONTROL;
 
-	/* Emac regs memmap are contiguous but port regs are not */
+	 
 	port_reg_num = slave->slave_num;
 	if (IS_SS_ID_VER_14(gbe_dev)) {
 		if (slave->slave_num > 1) {
@@ -3052,7 +3027,7 @@ static int init_slave(struct gbe_priv *gbe_dev, struct gbe_slave *slave,
 				(emac_reg_blk_sz * slave->slave_num);
 
 	if (IS_SS_ID_VER_14(gbe_dev)) {
-		/* Initialize  slave port register offsets */
+		 
 		GBE_SET_REG_OFS(slave, port_regs, port_vlan);
 		GBE_SET_REG_OFS(slave, port_regs, tx_pri_map);
 		GBE_SET_REG_OFS(slave, port_regs, sa_lo);
@@ -3063,13 +3038,13 @@ static int init_slave(struct gbe_priv *gbe_dev, struct gbe_slave *slave,
 		GBE_SET_REG_OFS(slave, port_regs, ts_ctl_ltype2);
 		GBE_SET_REG_OFS(slave, port_regs, ts_ctl2);
 
-		/* Initialize EMAC register offsets */
+		 
 		GBE_SET_REG_OFS(slave, emac_regs, mac_control);
 		GBE_SET_REG_OFS(slave, emac_regs, soft_reset);
 		GBE_SET_REG_OFS(slave, emac_regs, rx_maxlen);
 
 	} else if (IS_SS_ID_MU(gbe_dev)) {
-		/* Initialize  slave port register offsets */
+		 
 		GBENU_SET_REG_OFS(slave, port_regs, port_vlan);
 		GBENU_SET_REG_OFS(slave, port_regs, tx_pri_map);
 		GBENU_SET_REG_OFS(slave, port_regs, rx_pri_map);
@@ -3082,12 +3057,12 @@ static int init_slave(struct gbe_priv *gbe_dev, struct gbe_slave *slave,
 		GBENU_SET_REG_OFS(slave, port_regs, ts_ctl2);
 		GBENU_SET_REG_OFS(slave, port_regs, rx_maxlen);
 
-		/* Initialize EMAC register offsets */
+		 
 		GBENU_SET_REG_OFS(slave, emac_regs, mac_control);
 		GBENU_SET_REG_OFS(slave, emac_regs, soft_reset);
 
 	} else if (IS_SS_ID_XGBE(gbe_dev)) {
-		/* Initialize  slave port register offsets */
+		 
 		XGBE_SET_REG_OFS(slave, port_regs, port_vlan);
 		XGBE_SET_REG_OFS(slave, port_regs, tx_pri_map);
 		XGBE_SET_REG_OFS(slave, port_regs, sa_lo);
@@ -3098,7 +3073,7 @@ static int init_slave(struct gbe_priv *gbe_dev, struct gbe_slave *slave,
 		XGBE_SET_REG_OFS(slave, port_regs, ts_ctl_ltype2);
 		XGBE_SET_REG_OFS(slave, port_regs, ts_ctl2);
 
-		/* Initialize EMAC register offsets */
+		 
 		XGBE_SET_REG_OFS(slave, emac_regs, mac_control);
 		XGBE_SET_REG_OFS(slave, emac_regs, soft_reset);
 		XGBE_SET_REG_OFS(slave, emac_regs, rx_maxlen);
@@ -3153,11 +3128,11 @@ static void init_secondary_ports(struct gbe_priv *gbe_dev,
 		}
 	}
 
-	/* of_phy_connect() is needed only for MAC-PHY interface */
+	 
 	if (!mac_phy_link)
 		return;
 
-	/* Allocate dummy netdev device for attaching to phy device */
+	 
 	gbe_dev->dummy_ndev = alloc_netdev(sizeof(gbe_dev), "dummy",
 					NET_NAME_UNKNOWN, ether_setup);
 	if (!gbe_dev->dummy_ndev) {
@@ -3304,18 +3279,18 @@ static int set_xgbe_ethss10_priv(struct gbe_priv *gbe_dev,
 	gbe_dev->host_port = XGBE10_HOST_PORT_NUM;
 	gbe_dev->stats_en_mask = (1 << (gbe_dev->max_num_ports)) - 1;
 
-	/* Subsystem registers */
+	 
 	XGBE_SET_REG_OFS(gbe_dev, ss_regs, id_ver);
 	XGBE_SET_REG_OFS(gbe_dev, ss_regs, control);
 
-	/* Switch module registers */
+	 
 	XGBE_SET_REG_OFS(gbe_dev, switch_regs, id_ver);
 	XGBE_SET_REG_OFS(gbe_dev, switch_regs, control);
 	XGBE_SET_REG_OFS(gbe_dev, switch_regs, ptype);
 	XGBE_SET_REG_OFS(gbe_dev, switch_regs, stat_port_en);
 	XGBE_SET_REG_OFS(gbe_dev, switch_regs, flow_control);
 
-	/* Host port registers */
+	 
 	XGBE_SET_REG_OFS(gbe_dev, host_port_regs, port_vlan);
 	XGBE_SET_REG_OFS(gbe_dev, host_port_regs, tx_pri_map);
 	XGBE_SET_REG_OFS(gbe_dev, host_port_regs, rx_maxlen);
@@ -3411,10 +3386,7 @@ static int set_gbe_ethss14_priv(struct gbe_priv *gbe_dev,
 	gbe_dev->sgmii_port_regs = gbe_dev->ss_regs + GBE13_SGMII_MODULE_OFFSET;
 	gbe_dev->host_port_regs = gbe_dev->switch_regs + GBE13_HOST_PORT_OFFSET;
 
-	/* K2HK has only 2 hw stats modules visible at a time, so
-	 * module 0 & 2 points to one base and
-	 * module 1 & 3 points to the other base
-	 */
+	 
 	for (i = 0; i < gbe_dev->max_num_slaves; i++) {
 		gbe_dev->hw_stats_regs[i] =
 			gbe_dev->switch_regs + GBE13_HW_STATS_OFFSET +
@@ -3427,10 +3399,10 @@ static int set_gbe_ethss14_priv(struct gbe_priv *gbe_dev,
 	gbe_dev->host_port = GBE13_HOST_PORT_NUM;
 	gbe_dev->stats_en_mask = GBE13_REG_VAL_STAT_ENABLE_ALL;
 
-	/* Subsystem registers */
+	 
 	GBE_SET_REG_OFS(gbe_dev, ss_regs, id_ver);
 
-	/* Switch module registers */
+	 
 	GBE_SET_REG_OFS(gbe_dev, switch_regs, id_ver);
 	GBE_SET_REG_OFS(gbe_dev, switch_regs, control);
 	GBE_SET_REG_OFS(gbe_dev, switch_regs, soft_reset);
@@ -3438,7 +3410,7 @@ static int set_gbe_ethss14_priv(struct gbe_priv *gbe_dev,
 	GBE_SET_REG_OFS(gbe_dev, switch_regs, ptype);
 	GBE_SET_REG_OFS(gbe_dev, switch_regs, flow_control);
 
-	/* Host port registers */
+	 
 	GBE_SET_REG_OFS(gbe_dev, host_port_regs, port_vlan);
 	GBE_SET_REG_OFS(gbe_dev, host_port_regs, rx_maxlen);
 	return 0;
@@ -3499,10 +3471,7 @@ static int set_gbenu_ethss_priv(struct gbe_priv *gbe_dev,
 		gbe_dev->sgmii_port_regs =
 		       gbe_dev->ss_regs + GBENU_SGMII_MODULE_OFFSET;
 
-	/* Although sgmii modules are mem mapped to one contiguous
-	 * region on GBENU devices, setting sgmii_port34_regs allows
-	 * consistent code when accessing sgmii api
-	 */
+	 
 	gbe_dev->sgmii_port34_regs = gbe_dev->sgmii_port_regs +
 				     (2 * GBENU_SGMII_MODULE_SIZE);
 
@@ -3518,25 +3487,22 @@ static int set_gbenu_ethss_priv(struct gbe_priv *gbe_dev,
 	gbe_dev->host_port = GBENU_HOST_PORT_NUM;
 	gbe_dev->stats_en_mask = (1 << (gbe_dev->max_num_ports)) - 1;
 
-	/* Subsystem registers */
+	 
 	GBENU_SET_REG_OFS(gbe_dev, ss_regs, id_ver);
-	/* ok to set for MU, but used by 2U only */
+	 
 	GBENU_SET_REG_OFS(gbe_dev, ss_regs, rgmii_status);
 
-	/* Switch module registers */
+	 
 	GBENU_SET_REG_OFS(gbe_dev, switch_regs, id_ver);
 	GBENU_SET_REG_OFS(gbe_dev, switch_regs, control);
 	GBENU_SET_REG_OFS(gbe_dev, switch_regs, stat_port_en);
 	GBENU_SET_REG_OFS(gbe_dev, switch_regs, ptype);
 
-	/* Host port registers */
+	 
 	GBENU_SET_REG_OFS(gbe_dev, host_port_regs, port_vlan);
 	GBENU_SET_REG_OFS(gbe_dev, host_port_regs, rx_maxlen);
 
-	/* For NU only.  2U does not need tx_pri_map.
-	 * NU cppi port 0 tx pkt streaming interface has (n-1)*8 egress threads
-	 * while 2U has only 1 such thread
-	 */
+	 
 	GBENU_SET_REG_OFS(gbe_dev, host_port_regs, tx_pri_map);
 	return 0;
 }
@@ -3580,7 +3546,7 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
 	gbe_dev->netcp_device = netcp_device;
 	gbe_dev->rx_packet_max = NETCP_MAX_FRAME_SIZE;
 
-	/* init the hw stats lock */
+	 
 	spin_lock_init(&gbe_dev->hw_stats_lock);
 
 	gbe_dev->enable_ale = of_property_read_bool(node, "enable-ale");
@@ -3648,7 +3614,7 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
 		return ret;
 	}
 
-	/* Create network interfaces */
+	 
 	INIT_LIST_HEAD(&gbe_dev->gbe_intf_head);
 	for_each_child_of_node(interfaces, interface) {
 		ret = of_property_read_u32(interface, "slave-port", &slave_num);
@@ -3668,7 +3634,7 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
 	if (!gbe_dev->num_slaves)
 		dev_warn(dev, "No network interface configured\n");
 
-	/* Initialize Secondary slave ports */
+	 
 	secondary_ports = of_get_child_by_name(node, "secondary-slave-ports");
 	INIT_LIST_HEAD(&gbe_dev->secondary_slaves);
 	if (secondary_ports && (gbe_dev->num_slaves <  gbe_dev->max_num_slaves))
@@ -3716,7 +3682,7 @@ static int gbe_probe(struct netcp_device *netcp_device, struct device *dev,
 		goto free_sec_ports;
 	}
 
-	/* initialize host port */
+	 
 	gbe_init_host_port(gbe_dev);
 
 	spin_lock_bh(&gbe_dev->hw_stats_lock);

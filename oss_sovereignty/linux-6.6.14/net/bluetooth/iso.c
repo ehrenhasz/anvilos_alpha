@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BlueZ - Bluetooth protocol stack for Linux
- *
- * Copyright (C) 2022 Intel Corporation
- * Copyright 2023 NXP
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/debugfs.h>
@@ -21,11 +16,11 @@ static struct bt_sock_list iso_sk_list = {
 	.lock = __RW_LOCK_UNLOCKED(iso_sk_list.lock)
 };
 
-/* ---- ISO connections ---- */
+ 
 struct iso_conn {
 	struct hci_conn	*hcon;
 
-	/* @lock: spinlock protecting changes to iso_conn fields */
+	 
 	spinlock_t	lock;
 	struct sock	*sk;
 
@@ -42,13 +37,13 @@ struct iso_conn {
 static void iso_sock_close(struct sock *sk);
 static void iso_sock_kill(struct sock *sk);
 
-/* ----- ISO socket info ----- */
+ 
 #define iso_pi(sk) ((struct iso_pinfo *)sk)
 
 #define EIR_SERVICE_DATA_LENGTH 4
 #define BASE_MAX_LENGTH (HCI_MAX_PER_AD_LENGTH - EIR_SERVICE_DATA_LENGTH)
 
-/* iso_pinfo flags values */
+ 
 enum {
 	BT_SK_BIG_SYNC,
 	BT_SK_PA_SYNC,
@@ -80,7 +75,7 @@ static bool iso_match_sid(struct sock *sk, void *data);
 static bool iso_match_sync_handle(struct sock *sk, void *data);
 static void iso_sock_disconn(struct sock *sk);
 
-/* ---- ISO timers ---- */
+ 
 #define ISO_CONN_TIMEOUT	(HZ * 40)
 #define ISO_DISCONN_TIMEOUT	(HZ * 2)
 
@@ -127,7 +122,7 @@ static void iso_sock_clear_timer(struct sock *sk)
 	cancel_delayed_work(&iso_pi(sk)->conn->timeout_work);
 }
 
-/* ---- ISO connections ---- */
+ 
 static struct iso_conn *iso_conn_add(struct hci_conn *hcon)
 {
 	struct iso_conn *conn = hcon->iso_data;
@@ -154,7 +149,7 @@ static struct iso_conn *iso_conn_add(struct hci_conn *hcon)
 	return conn;
 }
 
-/* Delete channel. Must be called on the locked socket. */
+ 
 static void iso_chan_del(struct sock *sk, int err)
 {
 	struct iso_conn *conn;
@@ -198,7 +193,7 @@ static void iso_conn_del(struct hci_conn *hcon, int err)
 
 	BT_DBG("hcon %p conn %p, err %d", hcon, conn, err);
 
-	/* Kill socket */
+	 
 	iso_conn_lock(conn);
 	sk = conn->sk;
 	if (sk)
@@ -213,7 +208,7 @@ static void iso_conn_del(struct hci_conn *hcon, int err)
 		sock_put(sk);
 	}
 
-	/* Ensure no more work items will run before freeing conn. */
+	 
 	cancel_delayed_work_sync(&conn->timeout_work);
 
 	hcon->iso_data = NULL;
@@ -283,20 +278,20 @@ static int iso_connect_bis(struct sock *sk)
 		goto unlock;
 	}
 
-	/* Fail if user set invalid QoS */
+	 
 	if (iso_pi(sk)->qos_user_set && !check_bcast_qos(&iso_pi(sk)->qos)) {
 		iso_pi(sk)->qos = default_qos;
 		err = -EINVAL;
 		goto unlock;
 	}
 
-	/* Fail if out PHYs are marked as disabled */
+	 
 	if (!iso_pi(sk)->qos.bcast.out.phy) {
 		err = -EINVAL;
 		goto unlock;
 	}
 
-	/* Just bind if DEFER_SETUP has been set */
+	 
 	if (test_bit(BT_SK_DEFER_SETUP, &bt_sk(sk)->flags)) {
 		hcon = hci_bind_bis(hdev, &iso_pi(sk)->dst,
 				    &iso_pi(sk)->qos, iso_pi(sk)->base_len,
@@ -331,7 +326,7 @@ static int iso_connect_bis(struct sock *sk)
 		goto unlock;
 	}
 
-	/* Update source addr of the socket */
+	 
 	bacpy(&iso_pi(sk)->src, &hcon->src);
 
 	if (hcon->state == BT_CONNECTED) {
@@ -374,20 +369,20 @@ static int iso_connect_cis(struct sock *sk)
 		goto unlock;
 	}
 
-	/* Fail if user set invalid QoS */
+	 
 	if (iso_pi(sk)->qos_user_set && !check_ucast_qos(&iso_pi(sk)->qos)) {
 		iso_pi(sk)->qos = default_qos;
 		err = -EINVAL;
 		goto unlock;
 	}
 
-	/* Fail if either PHYs are marked as disabled */
+	 
 	if (!iso_pi(sk)->qos.ucast.in.phy && !iso_pi(sk)->qos.ucast.out.phy) {
 		err = -EINVAL;
 		goto unlock;
 	}
 
-	/* Just bind if DEFER_SETUP has been set */
+	 
 	if (test_bit(BT_SK_DEFER_SETUP, &bt_sk(sk)->flags)) {
 		hcon = hci_bind_cis(hdev, &iso_pi(sk)->dst,
 				    le_addr_type(iso_pi(sk)->dst_type),
@@ -421,7 +416,7 @@ static int iso_connect_cis(struct sock *sk)
 		goto unlock;
 	}
 
-	/* Update source addr of the socket */
+	 
 	bacpy(&iso_pi(sk)->src, &hcon->src);
 
 	if (hcon->state == BT_CONNECTED) {
@@ -465,7 +460,7 @@ static int iso_send_frame(struct sock *sk, struct sk_buff *skb)
 
 	len = skb->len;
 
-	/* Push ISO data header */
+	 
 	hdr = skb_push(skb, HCI_ISO_DATA_HDR_SIZE);
 	hdr->sn = cpu_to_le16(conn->tx_sn++);
 	hdr->slen = cpu_to_le16(hci_iso_data_len_pack(len,
@@ -502,7 +497,7 @@ drop:
 	kfree_skb(skb);
 }
 
-/* -------- Socket interface ---------- */
+ 
 static struct sock *__iso_get_sock_listen_by_addr(bdaddr_t *src, bdaddr_t *dst)
 {
 	struct sock *sk;
@@ -545,13 +540,7 @@ static struct sock *__iso_get_sock_listen_by_sid(bdaddr_t *ba, bdaddr_t *bc,
 
 typedef bool (*iso_sock_match_t)(struct sock *sk, void *data);
 
-/* Find socket listening:
- * source bdaddr (Unicast)
- * destination bdaddr (Broadcast only)
- * match func - pass NULL to ignore
- * match func data - pass -1 to ignore
- * Returns closest match.
- */
+ 
 static struct sock *iso_get_sock_listen(bdaddr_t *src, bdaddr_t *dst,
 					iso_sock_match_t match, void *data)
 {
@@ -563,19 +552,19 @@ static struct sock *iso_get_sock_listen(bdaddr_t *src, bdaddr_t *dst,
 		if (sk->sk_state != BT_LISTEN)
 			continue;
 
-		/* Match Broadcast destination */
+		 
 		if (bacmp(dst, BDADDR_ANY) && bacmp(&iso_pi(sk)->dst, dst))
 			continue;
 
-		/* Use Match function if provided */
+		 
 		if (match && !match(sk, data))
 			continue;
 
-		/* Exact match. */
+		 
 		if (!bacmp(&iso_pi(sk)->src, src))
 			break;
 
-		/* Closest match */
+		 
 		if (!bacmp(&iso_pi(sk)->src, BDADDR_ANY))
 			sk1 = sk;
 	}
@@ -599,15 +588,13 @@ static void iso_sock_cleanup_listen(struct sock *parent)
 
 	BT_DBG("parent %p", parent);
 
-	/* Close not yet accepted channels */
+	 
 	while ((sk = bt_accept_dequeue(parent, NULL))) {
 		iso_sock_close(sk);
 		iso_sock_kill(sk);
 	}
 
-	/* If listening socket stands for a PA sync connection,
-	 * properly disconnect the hcon and socket.
-	 */
+	 
 	if (iso_pi(parent)->conn && iso_pi(parent)->conn->hcon &&
 	    test_bit(HCI_CONN_PA_SYNC, &iso_pi(parent)->conn->hcon->flags)) {
 		iso_sock_disconn(parent);
@@ -618,9 +605,7 @@ static void iso_sock_cleanup_listen(struct sock *parent)
 	sock_set_flag(parent, SOCK_ZAPPED);
 }
 
-/* Kill socket (only if zapped and orphan)
- * Must be called on unlocked socket.
- */
+ 
 static void iso_sock_kill(struct sock *sk)
 {
 	if (!sock_flag(sk, SOCK_ZAPPED) || sk->sk_socket ||
@@ -629,7 +614,7 @@ static void iso_sock_kill(struct sock *sk)
 
 	BT_DBG("sk %p state %d", sk, sk->sk_state);
 
-	/* Kill poor orphan */
+	 
 	bt_sock_unlink(&iso_sk_list, sk);
 	sock_set_flag(sk, SOCK_DEAD);
 	sock_put(sk);
@@ -681,7 +666,7 @@ static void __iso_sock_close(struct sock *sk)
 	}
 }
 
-/* Must be called on unlocked socket. */
+ 
 static void iso_sock_close(struct sock *sk)
 {
 	iso_sock_clear_timer(sk);
@@ -749,7 +734,7 @@ static struct sock *iso_sock_alloc(struct net *net, struct socket *sock,
 	sk->sk_destruct = iso_sock_destruct;
 	sk->sk_sndtimeo = ISO_CONN_TIMEOUT;
 
-	/* Set address type as public as default src address is BDADDR_ANY */
+	 
 	iso_pi(sk)->src_type = BDADDR_LE_PUBLIC;
 
 	iso_pi(sk)->qos = default_qos;
@@ -837,7 +822,7 @@ static int iso_sock_bind(struct socket *sock, struct sockaddr *addr,
 		goto done;
 	}
 
-	/* Check if the address type is of LE type */
+	 
 	if (!bdaddr_type_is_le(sa->iso_bdaddr_type)) {
 		err = -EINVAL;
 		goto done;
@@ -846,7 +831,7 @@ static int iso_sock_bind(struct socket *sock, struct sockaddr *addr,
 	bacpy(&iso_pi(sk)->src, &sa->iso_bdaddr);
 	iso_pi(sk)->src_type = sa->iso_bdaddr_type;
 
-	/* Check for Broadcast address */
+	 
 	if (addr_len > sizeof(*sa)) {
 		err = iso_sock_bind_bc(sock, addr, addr_len);
 		if (err)
@@ -879,7 +864,7 @@ static int iso_sock_connect(struct socket *sock, struct sockaddr *addr,
 	if (sk->sk_type != SOCK_SEQPACKET)
 		return -EINVAL;
 
-	/* Check if the address type is of LE type */
+	 
 	if (!bdaddr_type_is_le(sa->iso_bdaddr_type))
 		return -EINVAL;
 
@@ -933,7 +918,7 @@ static int iso_listen_bis(struct sock *sk)
 	if (!hdev)
 		return -EHOSTUNREACH;
 
-	/* Fail if user set invalid QoS */
+	 
 	if (iso_pi(sk)->qos_user_set && !check_bcast_qos(&iso_pi(sk)->qos)) {
 		iso_pi(sk)->qos = default_qos;
 		return -EINVAL;
@@ -1015,7 +1000,7 @@ static int iso_sock_accept(struct socket *sock, struct socket *newsock,
 
 	BT_DBG("sk %p timeo %ld", sk, timeo);
 
-	/* Wait for an incoming connection. (wake-one). */
+	 
 	add_wait_queue_exclusive(sk_sleep(sk), &wait);
 	while (1) {
 		if (sk->sk_state != BT_LISTEN) {
@@ -1113,7 +1098,7 @@ static int iso_sock_sendmsg(struct socket *sock, struct msghdr *msg,
 
 	BT_DBG("skb %p len %d", sk, skb->len);
 
-	/* Continuation fragments */
+	 
 	frag = &skb_shinfo(skb)->frag_list;
 	while (len) {
 		struct sk_buff *tmp;
@@ -1223,7 +1208,7 @@ static int iso_sock_recvmsg(struct socket *sock, struct msghdr *msg,
 
 static bool check_io_qos(struct bt_iso_io_qos *qos)
 {
-	/* If no PHY is enable SDU must be 0 */
+	 
 	if (!qos->phy && qos->sdu)
 		return false;
 
@@ -1596,7 +1581,7 @@ static void iso_conn_ready(struct iso_conn *conn)
 			ev = hci_recv_event_data(hcon->hdev,
 						 HCI_EVT_LE_BIG_SYNC_ESTABILISHED);
 
-			/* Get reference to PA sync parent socket, if it exists */
+			 
 			parent = iso_get_sock_listen(&hcon->src,
 						     &hcon->dst,
 						     iso_match_pa_sync_flag, NULL);
@@ -1640,17 +1625,13 @@ static void iso_conn_ready(struct iso_conn *conn)
 
 		bacpy(&iso_pi(sk)->src, &hcon->src);
 
-		/* Convert from HCI to three-value type */
+		 
 		if (hcon->src_type == ADDR_LE_DEV_PUBLIC)
 			iso_pi(sk)->src_type = BDADDR_LE_PUBLIC;
 		else
 			iso_pi(sk)->src_type = BDADDR_LE_RANDOM;
 
-		/* If hcon has no destination address (BDADDR_ANY) it means it
-		 * was created by HCI_EV_LE_BIG_SYNC_ESTABILISHED or
-		 * HCI_EV_LE_PA_SYNC_ESTABLISHED so we need to initialize using
-		 * the parent socket destination address.
-		 */
+		 
 		if (!bacmp(&hcon->dst, BDADDR_ANY)) {
 			bacpy(&hcon->dst, &iso_pi(parent)->dst);
 			hcon->dst_type = iso_pi(parent)->dst_type;
@@ -1677,7 +1658,7 @@ static void iso_conn_ready(struct iso_conn *conn)
 
 		if ((ev && ((struct hci_evt_le_big_sync_estabilished *)ev)->status) ||
 		    (ev2 && ev2->status)) {
-			/* Trigger error signal on child socket */
+			 
 			sk->sk_err = ECONNREFUSED;
 			sk->sk_error_report(sk);
 		}
@@ -1687,7 +1668,7 @@ static void iso_conn_ready(struct iso_conn *conn)
 		else
 			sk->sk_state = BT_CONNECTED;
 
-		/* Wake up parent */
+		 
 		parent->sk_data_ready(parent);
 
 		release_sock(parent);
@@ -1715,7 +1696,7 @@ static bool iso_match_sync_handle_pa_report(struct sock *sk, void *data)
 	return le16_to_cpu(ev->sync_handle) == iso_pi(sk)->sync_handle;
 }
 
-/* ----- ISO interface with lower layer (HCI) ----- */
+ 
 
 int iso_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr, __u8 *flags)
 {
@@ -1727,20 +1708,7 @@ int iso_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr, __u8 *flags)
 
 	bt_dev_dbg(hdev, "bdaddr %pMR", bdaddr);
 
-	/* Broadcast receiver requires handling of some events before it can
-	 * proceed to establishing a BIG sync:
-	 *
-	 * 1. HCI_EV_LE_PA_SYNC_ESTABLISHED: The socket may specify a specific
-	 * SID to listen to and once sync is estabilished its handle needs to
-	 * be stored in iso_pi(sk)->sync_handle so it can be matched once
-	 * receiving the BIG Info.
-	 * 2. HCI_EVT_LE_BIG_INFO_ADV_REPORT: When connect_ind is triggered by a
-	 * a BIG Info it attempts to check if there any listening socket with
-	 * the same sync_handle and if it does then attempt to create a sync.
-	 * 3. HCI_EV_LE_PER_ADV_REPORT: When a PA report is received, it is stored
-	 * in iso_pi(sk)->base so it can be passed up to user, in the case of a
-	 * broadcast sink.
-	 */
+	 
 	ev1 = hci_recv_event_data(hdev, HCI_EV_LE_PA_SYNC_ESTABLISHED);
 	if (ev1) {
 		sk = iso_get_sock_listen(&hdev->bdaddr, bdaddr, iso_match_sid,
@@ -1753,7 +1721,7 @@ int iso_connect_ind(struct hci_dev *hdev, bdaddr_t *bdaddr, __u8 *flags)
 
 	ev2 = hci_recv_event_data(hdev, HCI_EVT_LE_BIG_INFO_ADV_REPORT);
 	if (ev2) {
-		/* Try to get PA sync listening socket, if it exists */
+		 
 		sk = iso_get_sock_listen(&hdev->bdaddr, bdaddr,
 						iso_match_pa_sync_flag, NULL);
 		if (!sk)
@@ -1812,7 +1780,7 @@ static void iso_connect_cfm(struct hci_conn *hcon, __u8 status)
 		if (hcon->type != LE_LINK)
 			return;
 
-		/* Check if LE link has failed */
+		 
 		if (status) {
 			struct hci_link *link, *t;
 
@@ -1823,18 +1791,14 @@ static void iso_connect_cfm(struct hci_conn *hcon, __u8 status)
 			return;
 		}
 
-		/* Create CIS if pending */
+		 
 		hci_le_create_cis_pending(hcon->hdev);
 		return;
 	}
 
 	BT_DBG("hcon %p bdaddr %pMR status %d", hcon, &hcon->dst, status);
 
-	/* Similar to the success case, if HCI_CONN_BIG_SYNC_FAILED or
-	 * HCI_CONN_PA_SYNC_FAILED is set, queue the failed connection
-	 * into the accept queue of the listening socket and wake up
-	 * userspace, to inform the user about the event.
-	 */
+	 
 	if (!status || test_bit(HCI_CONN_BIG_SYNC_FAILED, &hcon->flags) ||
 	    test_bit(HCI_CONN_PA_SYNC_FAILED, &hcon->flags)) {
 		struct iso_conn *conn;
@@ -1883,7 +1847,7 @@ void iso_recv(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
 		if (ts) {
 			struct hci_iso_ts_data_hdr *hdr;
 
-			/* TODO: add timestamp to the packet? */
+			 
 			hdr = skb_pull_data(skb, HCI_ISO_TS_DATA_HDR_SIZE);
 			if (!hdr) {
 				BT_ERR("Frame is too short (len %d)", skb->len);
@@ -1910,7 +1874,7 @@ void iso_recv(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
 		       skb->len, flags);
 
 		if (len == skb->len) {
-			/* Complete frame received */
+			 
 			hci_skb_pkt_status(skb) = flags & 0x03;
 			iso_recv_frame(conn, skb);
 			return;
@@ -1928,7 +1892,7 @@ void iso_recv(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
 			goto drop;
 		}
 
-		/* Allocate skb for the complete frame (with header) */
+		 
 		conn->rx_skb = bt_skb_alloc(len, GFP_KERNEL);
 		if (!conn->rx_skb)
 			goto drop;
@@ -1971,10 +1935,7 @@ void iso_recv(struct hci_conn *hcon, struct sk_buff *skb, u16 flags)
 		if (!conn->rx_len) {
 			struct sk_buff *rx_skb = conn->rx_skb;
 
-			/* Complete frame received. iso_recv_frame
-			 * takes ownership of the skb so set the global
-			 * rx_skb pointer to NULL first.
-			 */
+			 
 			conn->rx_skb = NULL;
 			iso_recv_frame(conn, rx_skb);
 		}

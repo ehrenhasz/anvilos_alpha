@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - backlight driver
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/err.h>
@@ -15,7 +9,7 @@
 #include <linux/pwm.h>
 #include <linux/slab.h>
 
-/* Register address */
+ 
 #define LP8788_BL_CONFIG		0x96
 #define LP8788_BL_EN			BIT(0)
 #define LP8788_BL_PWM_INPUT_EN		BIT(5)
@@ -75,10 +69,7 @@ static int lp8788_backlight_configure(struct lp8788_bl *bl)
 	int ret;
 	u8 val;
 
-	/*
-	 * Update chip configuration if platform data exists,
-	 * otherwise use the default settings.
-	 */
+	 
 	if (pdata) {
 		cfg->bl_mode    = pdata->bl_mode;
 		cfg->dim_mode   = pdata->dim_mode;
@@ -88,17 +79,17 @@ static int lp8788_backlight_configure(struct lp8788_bl *bl)
 		cfg->pwm_pol    = pdata->pwm_pol;
 	}
 
-	/* Brightness ramp up/down */
+	 
 	val = (cfg->rise_time << LP8788_BL_RAMP_RISE_SHIFT) | cfg->fall_time;
 	ret = lp8788_write_byte(bl->lp, LP8788_BL_RAMP, val);
 	if (ret)
 		return ret;
 
-	/* Fullscale current setting */
+	 
 	val = (cfg->full_scale << LP8788_BL_FULLSCALE_SHIFT) |
 		(cfg->dim_mode << LP8788_BL_DIM_MODE_SHIFT);
 
-	/* Brightness control mode */
+	 
 	switch (cfg->bl_mode) {
 	case LP8788_BL_REGISTER_ONLY:
 		val |= LP8788_BL_EN;
@@ -132,7 +123,7 @@ static void lp8788_pwm_ctrl(struct lp8788_bl *bl, int br, int max_br)
 	duty = br * period / max_br;
 	dev = bl->lp->dev;
 
-	/* request PWM device with the consumer name */
+	 
 	if (!bl->pwm) {
 		pwm = devm_pwm_get(dev, LP8788_DEV_BACKLIGHT);
 		if (IS_ERR(pwm)) {
@@ -142,10 +133,7 @@ static void lp8788_pwm_ctrl(struct lp8788_bl *bl, int br, int max_br)
 
 		bl->pwm = pwm;
 
-		/*
-		 * FIXME: pwm_apply_args() should be removed when switching to
-		 * the atomic PWM API.
-		 */
+		 
 		pwm_apply_args(pwm);
 	}
 
@@ -194,7 +182,7 @@ static int lp8788_backlight_register(struct lp8788_bl *bl)
 	props.type = BACKLIGHT_PLATFORM;
 	props.max_brightness = MAX_BRIGHTNESS;
 
-	/* Initial brightness */
+	 
 	if (pdata)
 		init_brt = min_t(int, pdata->initial_brightness,
 				props.max_brightness);
@@ -203,7 +191,7 @@ static int lp8788_backlight_register(struct lp8788_bl *bl)
 
 	props.brightness = init_brt;
 
-	/* Backlight device name */
+	 
 	if (!pdata || !pdata->name)
 		name = DEFAULT_BL_NAME;
 	else

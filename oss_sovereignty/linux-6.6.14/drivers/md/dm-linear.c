@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2001-2003 Sistina Software (UK) Limited.
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm.h"
 #include <linux/module.h>
@@ -16,17 +12,13 @@
 
 #define DM_MSG_PREFIX "linear"
 
-/*
- * Linear: maps a linear range of a device.
- */
+ 
 struct linear_c {
 	struct dm_dev *dev;
 	sector_t start;
 };
 
-/*
- * Construct a linear mapping: <dev_path> <offset>
- */
+ 
 static int linear_ctr(struct dm_target *ti, unsigned int argc, char **argv)
 {
 	struct linear_c *lc;
@@ -125,9 +117,7 @@ static int linear_prepare_ioctl(struct dm_target *ti, struct block_device **bdev
 
 	*bdev = dev->bdev;
 
-	/*
-	 * Only pass ioctls through if the device sizes match exactly.
-	 */
+	 
 	if (lc->start || ti->len != bdev_nr_sectors(dev->bdev))
 		return 1;
 	return 0;

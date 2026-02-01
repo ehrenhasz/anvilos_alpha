@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Copyright 2018 NXP.
- *
- * This driver supports the SCCG plls found in the imx8m SOCs
- *
- * Documentation for this SCCG pll can be found at:
- *   https://www.nxp.com/docs/en/reference-manual/IMX8MDQLQRM.pdf#page=834
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -18,7 +11,7 @@
 
 #include "clk.h"
 
-/* PLL CFGs */
+ 
 #define PLL_CFG0		0x0
 #define PLL_CFG1		0x4
 #define PLL_CFG2		0x8
@@ -33,7 +26,7 @@
 #define PLL_LOCK_MASK		BIT(31)
 #define PLL_PD_MASK		BIT(7)
 
-/* These are the specification limits for the SSCG PLL */
+ 
 #define PLL_REF_MIN_FREQ		25000000UL
 #define PLL_REF_MAX_FREQ		235000000UL
 
@@ -101,7 +94,7 @@ static int clk_sscg_pll_wait_lock(struct clk_sscg_pll *pll)
 
 	val = readl_relaxed(pll->base + PLL_CFG0);
 
-	/* don't wait for lock if all plls are bypassed */
+	 
 	if (!(val & SSCG_PLL_BYPASS2_MASK))
 		return readl_poll_timeout(pll->base, val, val & PLL_LOCK_MASK,
 						0, PLL_SCCG_LOCK_TIMEOUT);
@@ -362,7 +355,7 @@ static int clk_sscg_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	struct clk_sscg_pll_setup *setup = &pll->setup;
 	u32 val;
 
-	/* set bypass here too since the parent might be the same */
+	 
 	val = readl(pll->base + PLL_CFG0);
 	val &= ~SSCG_PLL_BYPASS_MASK;
 	val |= FIELD_PREP(SSCG_PLL_BYPASS_MASK, setup->bypass);

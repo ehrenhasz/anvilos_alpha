@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Versatile Express SPC CPUFreq Interface driver
- *
- * Copyright (C) 2013 - 2019 ARM Ltd.
- * Sudeep Holla <sudeep.holla@arm.com>
- *
- * Copyright (C) 2013 Linaro.
- * Viresh Kumar <viresh.kumar@linaro.org>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -24,7 +16,7 @@
 #include <linux/topology.h>
 #include <linux/types.h>
 
-/* Currently we support only two clusters */
+ 
 #define A15_CLUSTER	0
 #define A7_CLUSTER	1
 #define MAX_CLUSTERS	2
@@ -49,8 +41,8 @@ static struct clk *clk[MAX_CLUSTERS];
 static struct cpufreq_frequency_table *freq_table[MAX_CLUSTERS + 1];
 static atomic_t cluster_usage[MAX_CLUSTERS + 1];
 
-static unsigned int clk_big_min;	/* (Big) clock frequencies */
-static unsigned int clk_little_max;	/* Maximum clock frequency (Little) */
+static unsigned int clk_big_min;	 
+static unsigned int clk_little_max;	 
 
 static DEFINE_PER_CPU(unsigned int, physical_cluster);
 static DEFINE_PER_CPU(unsigned int, cpu_last_req_freq);
@@ -89,7 +81,7 @@ static unsigned int clk_get_cpu_rate(unsigned int cpu)
 	u32 cur_cluster = per_cpu(physical_cluster, cpu);
 	u32 rate = clk_get_rate(clk[cur_cluster]) / 1000;
 
-	/* For switcher we use virtual A7 clock rates */
+	 
 	if (is_bL_switching_enabled())
 		rate = VIRT_FREQ(cur_cluster, rate);
 
@@ -126,14 +118,7 @@ ve_spc_cpufreq_set_rate(u32 cpu, u32 old_cluster, u32 new_cluster, u32 rate)
 
 	ret = clk_set_rate(clk[new_cluster], new_rate * 1000);
 	if (!ret) {
-		/*
-		 * FIXME: clk_set_rate hasn't returned an error here however it
-		 * may be that clk_change_rate failed due to hardware or
-		 * firmware issues and wasn't able to report that due to the
-		 * current design of the clk core layer. To work around this
-		 * problem we will read back the clock rate and check it is
-		 * correct. This needs to be removed once clk core is fixed.
-		 */
+		 
 		if (clk_get_rate(clk[new_cluster]) != new_rate * 1000)
 			ret = -EIO;
 	}
@@ -151,14 +136,14 @@ ve_spc_cpufreq_set_rate(u32 cpu, u32 old_cluster, u32 new_cluster, u32 rate)
 
 	mutex_unlock(&cluster_lock[new_cluster]);
 
-	/* Recalc freq for old cluster when switching clusters */
+	 
 	if (old_cluster != new_cluster) {
-		/* Switch cluster */
+		 
 		bL_switch_request(cpu, new_cluster);
 
 		mutex_lock(&cluster_lock[old_cluster]);
 
-		/* Set freq of old cluster if there are cpus left on it */
+		 
 		new_rate = find_cluster_maxfreq(old_cluster);
 		new_rate = ACTUAL_FREQ(old_cluster, new_rate);
 
@@ -173,7 +158,7 @@ ve_spc_cpufreq_set_rate(u32 cpu, u32 old_cluster, u32 new_cluster, u32 rate)
 	return 0;
 }
 
-/* Set clock frequency */
+ 
 static int ve_spc_cpufreq_set_target(struct cpufreq_policy *policy,
 				     unsigned int index)
 {
@@ -207,7 +192,7 @@ static inline u32 get_table_count(struct cpufreq_frequency_table *table)
 	return count;
 }
 
-/* get the minimum frequency in the cpufreq_frequency_table */
+ 
 static inline u32 get_table_min(struct cpufreq_frequency_table *table)
 {
 	struct cpufreq_frequency_table *pos;
@@ -219,7 +204,7 @@ static inline u32 get_table_min(struct cpufreq_frequency_table *table)
 	return min_freq;
 }
 
-/* get the maximum frequency in the cpufreq_frequency_table */
+ 
 static inline u32 get_table_max(struct cpufreq_frequency_table *table)
 {
 	struct cpufreq_frequency_table *pos;
@@ -258,13 +243,13 @@ static int merge_cluster_tables(void)
 
 	freq_table[MAX_CLUSTERS] = table;
 
-	/* Add in reverse order to get freqs in increasing order */
+	 
 	for (i = MAX_CLUSTERS - 1; i >= 0; i--, count = k) {
 		for (j = 0; freq_table[i][j].frequency != CPUFREQ_TABLE_END;
 		     j++) {
 			if (i == A15_CLUSTER &&
 			    search_frequency(table, count, freq_table[i][j].frequency))
-				continue; /* skip duplicates */
+				continue;  
 			table[k++].frequency =
 				VIRT_FREQ(i, freq_table[i][j].frequency);
 		}
@@ -309,7 +294,7 @@ static void put_cluster_clk_and_freq_table(struct device *cpu_dev,
 		_put_cluster_clk_and_freq_table(cdev, cpumask);
 	}
 
-	/* free virtual table */
+	 
 	kfree(freq_table[cluster]);
 }
 
@@ -322,10 +307,7 @@ static int _get_cluster_clk_and_freq_table(struct device *cpu_dev,
 	if (freq_table[cluster])
 		return 0;
 
-	/*
-	 * platform specific SPC code must initialise the opp table
-	 * so just check if the OPP count is non-zero
-	 */
+	 
 	ret = dev_pm_opp_get_opp_count(cpu_dev) <= 0;
 	if (ret)
 		goto out;
@@ -365,10 +347,7 @@ static int get_cluster_clk_and_freq_table(struct device *cpu_dev,
 		return ret;
 	}
 
-	/*
-	 * Get data for all clusters and fill virtual cluster with a merge of
-	 * both
-	 */
+	 
 	for_each_present_cpu(i) {
 		struct device *cdev = get_cpu_device(i);
 
@@ -384,7 +363,7 @@ static int get_cluster_clk_and_freq_table(struct device *cpu_dev,
 	if (ret)
 		goto put_clusters;
 
-	/* Assuming 2 cluster, set clk_big_min and clk_little_max */
+	 
 	clk_big_min = get_table_min(freq_table[A15_CLUSTER]);
 	clk_little_max = VIRT_FREQ(A7_CLUSTER,
 				   get_table_max(freq_table[A7_CLUSTER]));
@@ -406,7 +385,7 @@ put_clusters:
 	return ret;
 }
 
-/* Per-CPU initialization */
+ 
 static int ve_spc_cpufreq_init(struct cpufreq_policy *policy)
 {
 	u32 cur_cluster = cpu_to_cluster(policy->cpu);
@@ -428,7 +407,7 @@ static int ve_spc_cpufreq_init(struct cpufreq_policy *policy)
 		for_each_cpu(cpu, policy->cpus)
 			per_cpu(physical_cluster, cpu) = cur_cluster;
 	} else {
-		/* Assumption: during init, we are always running on A15 */
+		 
 		per_cpu(physical_cluster, policy->cpu) = A15_CLUSTER;
 	}
 
@@ -437,7 +416,7 @@ static int ve_spc_cpufreq_init(struct cpufreq_policy *policy)
 		return ret;
 
 	policy->freq_table = freq_table[cur_cluster];
-	policy->cpuinfo.transition_latency = 1000000; /* 1 ms */
+	policy->cpuinfo.transition_latency = 1000000;  
 
 	if (is_bL_switching_enabled())
 		per_cpu(cpu_last_req_freq, policy->cpu) =

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Sharp LS037V7DW01 LCD Panel Driver
- *
- * Copyright (C) 2019 Texas Instruments Incorporated
- *
- * Based on the omapdrm-specific panel-sharp-ls037v7dw01 driver
- *
- * Copyright (C) 2013 Texas Instruments Incorporated
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -26,11 +17,11 @@ struct ls037v7dw01_panel {
 	struct platform_device *pdev;
 
 	struct regulator *vdd;
-	struct gpio_desc *resb_gpio;	/* low = reset active min 20 us */
-	struct gpio_desc *ini_gpio;	/* high = power on */
-	struct gpio_desc *mo_gpio;	/* low = 480x640, high = 240x320 */
-	struct gpio_desc *lr_gpio;	/* high = conventional horizontal scanning */
-	struct gpio_desc *ud_gpio;	/* high = conventional vertical scanning */
+	struct gpio_desc *resb_gpio;	 
+	struct gpio_desc *ini_gpio;	 
+	struct gpio_desc *mo_gpio;	 
+	struct gpio_desc *lr_gpio;	 
+	struct gpio_desc *ud_gpio;	 
 };
 
 #define to_ls037v7dw01_device(p) \
@@ -43,7 +34,7 @@ static int ls037v7dw01_disable(struct drm_panel *panel)
 	gpiod_set_value_cansleep(lcd->ini_gpio, 0);
 	gpiod_set_value_cansleep(lcd->resb_gpio, 0);
 
-	/* Wait at least 5 vsyncs after disabling the LCD. */
+	 
 	msleep(100);
 
 	return 0;
@@ -74,7 +65,7 @@ static int ls037v7dw01_enable(struct drm_panel *panel)
 {
 	struct ls037v7dw01_panel *lcd = to_ls037v7dw01_device(panel);
 
-	/* Wait couple of vsyncs before enabling the LCD. */
+	 
 	msleep(50);
 
 	gpiod_set_value_cansleep(lcd->resb_gpio, 1);
@@ -113,12 +104,7 @@ static int ls037v7dw01_get_modes(struct drm_panel *panel,
 
 	connector->display_info.width_mm = ls037v7dw01_mode.width_mm;
 	connector->display_info.height_mm = ls037v7dw01_mode.height_mm;
-	/*
-	 * FIXME: According to the datasheet pixel data is sampled on the
-	 * rising edge of the clock, but the code running on the SDP3430
-	 * indicates sampling on the negative edge. This should be tested on a
-	 * real device.
-	 */
+	 
 	connector->display_info.bus_flags = DRM_BUS_FLAG_DE_HIGH
 					  | DRM_BUS_FLAG_SYNC_SAMPLE_POSEDGE
 					  | DRM_BUS_FLAG_PIXDATA_SAMPLE_NEGEDGE;
@@ -200,7 +186,7 @@ static void ls037v7dw01_remove(struct platform_device *pdev)
 
 static const struct of_device_id ls037v7dw01_of_match[] = {
 	{ .compatible = "sharp,ls037v7dw01", },
-	{ /* sentinel */ },
+	{   },
 };
 
 MODULE_DEVICE_TABLE(of, ls037v7dw01_of_match);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ucall support. A ucall is a "hypercall to userspace".
- *
- * Copyright (C) 2018, Red Hat, Inc.
- */
+
+ 
 #include "kvm_util.h"
 
 vm_vaddr_t *ucall_exit_mmio_addr;

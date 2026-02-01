@@ -1,13 +1,10 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 #include <linux/rtnetlink.h>
 #include "core.h"
 #include "debug.h"
 
-/* World regdom to be used in case default regd from fw is unavailable */
+ 
 #define ATH12K_2GHZ_CH01_11      REG_RULE(2412 - 10, 2462 + 10, 40, 0, 20, 0)
 #define ATH12K_5GHZ_5150_5350    REG_RULE(5150 - 10, 5350 + 10, 80, 0, 30,\
 					  NL80211_RRF_NO_IR)
@@ -33,10 +30,7 @@ static bool ath12k_regdom_changes(struct ath12k *ar, char *alpha2)
 	const struct ieee80211_regdomain *regd;
 
 	regd = rcu_dereference_rtnl(ar->hw->wiphy->regd);
-	/* This can happen during wiphy registration where the previous
-	 * user request is received before we update the regd received
-	 * from firmware.
-	 */
+	 
 	if (!regd)
 		return true;
 
@@ -54,11 +48,7 @@ ath12k_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
 	ath12k_dbg(ar->ab, ATH12K_DBG_REG,
 		   "Regulatory Notification received for %s\n", wiphy_name(wiphy));
 
-	/* Currently supporting only General User Hints. Cell base user
-	 * hints to be handled later.
-	 * Hints from other sources like Core, Beacons are not expected for
-	 * self managed wiphy's
-	 */
+	 
 	if (!(request->initiator == NL80211_REGDOM_SET_BY_USER &&
 	      request->user_reg_hint_type == NL80211_USER_REG_HINT_USER)) {
 		ath12k_warn(ar->ab, "Unexpected Regulatory event for this wiphy\n");
@@ -76,10 +66,7 @@ ath12k_reg_notifier(struct wiphy *wiphy, struct regulatory_request *request)
 		return;
 	}
 
-	/* Set the country code to the firmware and wait for
-	 * the WMI_REG_CHAN_LIST_CC EVENT for updating the
-	 * reg info
-	 */
+	 
 	arg.flags = ALPHA_IS_SET;
 	memcpy(&arg.cc_info.alpha2, request->alpha2, 2);
 	arg.cc_info.alpha2[2] = 0;
@@ -138,7 +125,7 @@ int ath12k_reg_update_chan_list(struct ath12k *ar)
 			if (channel->flags & IEEE80211_CHAN_DISABLED)
 				continue;
 
-			/* TODO: Set to true/false based on some condition? */
+			 
 			ch->allow_ht = true;
 			ch->allow_vht = true;
 			ch->allow_he = true;
@@ -155,7 +142,7 @@ int ath12k_reg_update_chan_list(struct ath12k *ar)
 			ch->maxregpower = channel->max_reg_power * 2;
 			ch->antennamax = channel->max_antenna_gain * 2;
 
-			/* TODO: Use appropriate phymodes */
+			 
 			if (channel->band == NL80211_BAND_2GHZ)
 				ch->phy_mode = MODE_11G;
 			else
@@ -172,9 +159,7 @@ int ath12k_reg_update_chan_list(struct ath12k *ar)
 				   ch->antennamax, ch->phy_mode);
 
 			ch++;
-			/* TODO: use quarrter/half rate, cfreq12, dfs_cfreq2
-			 * set_agile, reg_class_idx
-			 */
+			 
 		}
 	}
 
@@ -189,7 +174,7 @@ static void ath12k_copy_regd(struct ieee80211_regdomain *regd_orig,
 {
 	u8 i;
 
-	/* The caller should have checked error conditions */
+	 
 	memcpy(regd_copy, regd_orig, sizeof(*regd_orig));
 
 	for (i = 0; i < regd_orig->n_reg_rules; i++)
@@ -209,11 +194,7 @@ int ath12k_regd_update(struct ath12k *ar, bool init)
 	spin_lock_bh(&ab->base_lock);
 
 	if (init) {
-		/* Apply the regd received during init through
-		 * WMI_REG_CHAN_LIST_CC event. In case of failure to
-		 * receive the regd, initialize with a default world
-		 * regulatory.
-		 */
+		 
 		if (ab->default_regd[pdev_id]) {
 			regd = ab->default_regd[pdev_id];
 		} else {
@@ -333,11 +314,7 @@ ath12k_reg_can_intersect(struct ieee80211_reg_rule *rule1,
 	     start_freq2 < end_freq1))
 		return true;
 
-	/* TODO: Should we restrict intersection feasibility
-	 *  based on min bandwidth of the intersected region also,
-	 *  say the intersected rule should have a  min bandwidth
-	 * of 20MHz?
-	 */
+	 
 
 	return false;
 }
@@ -373,10 +350,10 @@ static void ath12k_reg_intersect_rules(struct ieee80211_reg_rule *rule1,
 	new_rule->power_rule.max_eirp = min_t(u32, rule1->power_rule.max_eirp,
 					      rule2->power_rule.max_eirp);
 
-	/* Use the flags of both the rules */
+	 
 	new_rule->flags = rule1->flags | rule2->flags;
 
-	/* To be safe, lts use the max cac timeout of both rules */
+	 
 	new_rule->dfs_cac_ms = max_t(u32, rule1->dfs_cac_ms,
 				     rule2->dfs_cac_ms);
 }
@@ -394,7 +371,7 @@ ath12k_regd_intersect(struct ieee80211_regdomain *default_regd,
 	num_curr_regd_rules = curr_regd->n_reg_rules;
 	num_new_regd_rules = 0;
 
-	/* Find the number of intersecting rules to allocate new regd memory */
+	 
 	for (i = 0; i < num_old_regd_rules; i++) {
 		old_rule = default_regd->reg_rules + i;
 		for (j = 0; j < num_curr_regd_rules; j++) {
@@ -415,10 +392,7 @@ ath12k_regd_intersect(struct ieee80211_regdomain *default_regd,
 	if (!new_regd)
 		return NULL;
 
-	/* We set the new country and dfs region directly and only trim
-	 * the freq, power, antenna gain by intersecting with the
-	 * default regdomain. Also MAX of the dfs cac timeout is selected.
-	 */
+	 
 	new_regd->n_reg_rules = num_new_regd_rules;
 	memcpy(new_regd->alpha2, curr_regd->alpha2, sizeof(new_regd->alpha2));
 	new_regd->dfs_region = curr_regd->dfs_region;
@@ -574,17 +548,14 @@ ath12k_reg_build_regd(struct ath12k_base *ab,
 
 	num_rules = reg_info->num_5g_reg_rules + reg_info->num_2g_reg_rules;
 
-	/* FIXME: Currently taking reg rules for 6G only from Indoor AP mode list.
-	 * This can be updated to choose the combination dynamically based on AP
-	 * type and client type, after complete 6G regulatory support is added.
-	 */
+	 
 	if (reg_info->is_ext_reg_event)
 		num_rules += reg_info->num_6g_reg_rules_ap[WMI_REG_INDOOR_AP];
 
 	if (!num_rules)
 		goto ret;
 
-	/* Add max additional rules to accommodate weather radar band */
+	 
 	if (reg_info->dfs_region == ATH12K_DFS_REG_ETSI)
 		num_rules += 2;
 
@@ -603,9 +574,7 @@ ath12k_reg_build_regd(struct ath12k_base *ab,
 		   "\r\nCountry %s, CFG Regdomain %s FW Regdomain %d, num_reg_rules %d\n",
 		   alpha2, ath12k_reg_get_regdom_str(tmp_regd->dfs_region),
 		   reg_info->dfs_region, num_rules);
-	/* Update reg_rules[] below. Firmware is expected to
-	 * send these rules in order(2G rules first and then 5G)
-	 */
+	 
 	for (; i < num_rules; i++) {
 		if (reg_info->num_2g_reg_rules &&
 		    (i < reg_info->num_2g_reg_rules)) {
@@ -619,12 +588,7 @@ ath12k_reg_build_regd(struct ath12k_base *ab,
 			max_bw = min_t(u16, reg_rule->max_bw,
 				       reg_info->max_bw_5g);
 
-			/* FW doesn't pass NL80211_RRF_AUTO_BW flag for
-			 * BW Auto correction, we can enable this by default
-			 * for all 5G rules here. The regulatory core performs
-			 * BW correction if required and applies flags as
-			 * per other BW rule flags we pass from here
-			 */
+			 
 			flags = NL80211_RRF_AUTO_BW;
 		} else if (reg_info->is_ext_reg_event &&
 			   reg_info->num_6g_reg_rules_ap[WMI_REG_INDOOR_AP] &&
@@ -645,11 +609,7 @@ ath12k_reg_build_regd(struct ath12k_base *ab,
 				       reg_rule->ant_gain, reg_rule->reg_power,
 				       flags);
 
-		/* Update dfs cac timeout if the dfs domain is ETSI and the
-		 * new rule covers weather radar band.
-		 * Default value of '0' corresponds to 60s timeout, so no
-		 * need to update that for other rules.
-		 */
+		 
 		if (flags & NL80211_RRF_DFS &&
 		    reg_info->dfs_region == ATH12K_DFS_REG_ETSI &&
 		    (reg_rule->end_freq > ETSI_WEATHER_RADAR_BAND_LOW &&
@@ -681,9 +641,7 @@ ath12k_reg_build_regd(struct ath12k_base *ab,
 	if (intersect) {
 		default_regd = ab->default_regd[reg_info->phy_id];
 
-		/* Get a new regd by intersecting the received regd with
-		 * our default regd.
-		 */
+		 
 		new_regd = ath12k_regd_intersect(default_regd, tmp_regd);
 		kfree(tmp_regd);
 		if (!new_regd) {
@@ -706,12 +664,8 @@ void ath12k_regd_update_work(struct work_struct *work)
 
 	ret = ath12k_regd_update(ar, false);
 	if (ret) {
-		/* Firmware has already moved to the new regd. We need
-		 * to maintain channel consistency across FW, Host driver
-		 * and userspace. Hence as a fallback mechanism we can set
-		 * the prev or default country code to the firmware.
-		 */
-		/* TODO: Implement Fallback Mechanism */
+		 
+		 
 	}
 }
 

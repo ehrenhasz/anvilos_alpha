@@ -1,23 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2021 Microsoft Corporation
- *
- * Author: Lakshmi Ramasubramanian (nramas@linux.microsoft.com)
- *
- * Measure critical data structures maintained by SELinux
- * using IMA subsystem.
- */
+
+ 
 #include <linux/vmalloc.h>
 #include <linux/ima.h>
 #include "security.h"
 #include "ima.h"
 
-/*
- * selinux_ima_collect_state - Read selinux configuration settings
- *
- * On success returns the configuration settings string.
- * On error, returns NULL.
- */
+ 
 static char *selinux_ima_collect_state(void)
 {
 	const char *on = "=1;", *off = "=0;";
@@ -64,9 +52,7 @@ static char *selinux_ima_collect_state(void)
 	return buf;
 }
 
-/*
- * selinux_ima_measure_state_locked - Measure SELinux state and hash of policy
- */
+ 
 void selinux_ima_measure_state_locked(void)
 {
 	char *state_str = NULL;
@@ -88,9 +74,7 @@ void selinux_ima_measure_state_locked(void)
 
 	kfree(state_str);
 
-	/*
-	 * Measure SELinux policy only after initialization is completed.
-	 */
+	 
 	if (!selinux_initialized())
 		return;
 
@@ -107,9 +91,7 @@ void selinux_ima_measure_state_locked(void)
 	vfree(policy);
 }
 
-/*
- * selinux_ima_measure_state - Measure SELinux state and hash of policy
- */
+ 
 void selinux_ima_measure_state(void)
 {
 	lockdep_assert_not_held(&selinux_state.policy_mutex);

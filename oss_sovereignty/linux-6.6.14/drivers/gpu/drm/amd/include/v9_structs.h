@@ -1,25 +1,4 @@
-/*
- * Copyright 2012-2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef V9_STRUCTS_H_
 #define V9_STRUCTS_H_
@@ -151,7 +130,7 @@ struct v9_sdma_mqd {
 	uint32_t reserved_123;
 	uint32_t reserved_124;
 	uint32_t reserved_125;
-	/* reserved_126,127: repurposed for driver-internal use */
+	 
 	uint32_t sdma_engine_id;
 	uint32_t sdma_queue_id;
 };
@@ -204,10 +183,10 @@ struct v9_mqd {
 			uint32_t compute_static_thread_mgmt_se7;
 		};
 		struct {
-			uint32_t compute_current_logic_xcc_id; // offset: 39  (0x27)
-			uint32_t compute_restart_cg_tg_id; // offset: 40  (0x28)
-			uint32_t compute_tg_chunk_size; // offset: 41  (0x29)
-			uint32_t compute_restore_tg_chunk_size; // offset: 42  (0x2A)
+			uint32_t compute_current_logic_xcc_id; 
+			uint32_t compute_restart_cg_tg_id; 
+			uint32_t compute_tg_chunk_size; 
+			uint32_t compute_restore_tg_chunk_size; 
 		};
 	};
 	uint32_t reserved_43;
@@ -398,8 +377,8 @@ struct v9_mqd {
 			uint32_t reserved_226;
 		};
 		struct {
-			uint32_t pm4_target_xcc_in_xcp; // offset: 225  (0xE1)
-			uint32_t cp_mqd_stride_size; // offset: 226  (0xE2)
+			uint32_t pm4_target_xcc_in_xcp; 
+			uint32_t cp_mqd_stride_size; 
 		};
 	};
 	uint32_t reserved_227;
@@ -697,31 +676,31 @@ struct v9_mqd_allocation {
 	uint32_t dynamic_rb_mask;
 };
 
-/* from vega10 all CSA format is shifted to chain ib compatible mode */
+ 
 struct v9_ce_ib_state {
-    /* section of non chained ib part */
+     
     uint32_t ce_ib_completion_status;
     uint32_t ce_constegnine_count;
     uint32_t ce_ibOffset_ib1;
     uint32_t ce_ibOffset_ib2;
 
-    /* section of chained ib */
+     
     uint32_t ce_chainib_addrlo_ib1;
     uint32_t ce_chainib_addrlo_ib2;
     uint32_t ce_chainib_addrhi_ib1;
     uint32_t ce_chainib_addrhi_ib2;
     uint32_t ce_chainib_size_ib1;
     uint32_t ce_chainib_size_ib2;
-}; /* total 10 DWORD */
+};  
 
 struct v9_de_ib_state {
-    /* section of non chained ib part */
+     
     uint32_t ib_completion_status;
     uint32_t de_constEngine_count;
     uint32_t ib_offset_ib1;
     uint32_t ib_offset_ib2;
 
-    /* section of chained ib */
+     
     uint32_t chain_ib_addrlo_ib1;
     uint32_t chain_ib_addrlo_ib2;
     uint32_t chain_ib_addrhi_ib1;
@@ -729,19 +708,19 @@ struct v9_de_ib_state {
     uint32_t chain_ib_size_ib1;
     uint32_t chain_ib_size_ib2;
 
-    /* section of non chained ib part */
+     
     uint32_t preamble_begin_ib1;
     uint32_t preamble_begin_ib2;
     uint32_t preamble_end_ib1;
     uint32_t preamble_end_ib2;
 
-    /* section of chained ib */
+     
     uint32_t chain_ib_pream_addrlo_ib1;
     uint32_t chain_ib_pream_addrlo_ib2;
     uint32_t chain_ib_pream_addrhi_ib1;
     uint32_t chain_ib_pream_addrhi_ib2;
 
-    /* section of non chained ib part */
+     
     uint32_t draw_indirect_baseLo;
     uint32_t draw_indirect_baseHi;
     uint32_t disp_indirect_baseLo;
@@ -751,18 +730,18 @@ struct v9_de_ib_state {
     uint32_t index_base_addrlo;
     uint32_t index_base_addrhi;
     uint32_t sample_cntl;
-}; /* Total of 27 DWORD */
+};  
 
 struct v9_gfx_meta_data {
-    /* 10 DWORD, address must be 4KB aligned */
+     
     struct v9_ce_ib_state ce_payload;
     uint32_t reserved1[54];
-    /* 27 DWORD, address must be 64B aligned */
+     
     struct v9_de_ib_state de_payload;
-    /* PFP IB base address which get pre-empted */
+     
     uint32_t DeIbBaseAddrLo;
     uint32_t DeIbBaseAddrHi;
     uint32_t reserved2[931];
-}; /* Total of 4K Bytes */
+};  
 
-#endif /* V9_STRUCTS_H_ */
+#endif  

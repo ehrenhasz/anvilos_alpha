@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2010
- *
- * Author: Arun R Murthy <arun.murthy@stericsson.com>
- * Datasheet: https://web.archive.org/web/20130614115108/http://www.stericsson.com/developers/CD00291561_UM1031_AB8500_user_manual-rev5_CTDS_public.pdf
- */
+
+ 
 #include <linux/err.h>
 #include <linux/platform_device.h>
 #include <linux/slab.h>
@@ -13,10 +8,7 @@
 #include <linux/mfd/abx500/ab8500.h>
 #include <linux/module.h>
 
-/*
- * PWM Out generators
- * Bank: 0x10
- */
+ 
 #define AB8500_PWM_OUT_CTRL1_REG	0x60
 #define AB8500_PWM_OUT_CTRL2_REG	0x61
 #define AB8500_PWM_OUT_CTRL7_REG	0x66
@@ -46,40 +38,12 @@ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return -EINVAL;
 
 	if (state->enabled) {
-		/*
-		 * A time quantum is
-		 *   q = (32 - FreqPWMOutx[3:0]) / AB8500_PWM_CLKRATE
-		 * The period is always 1024 q, duty_cycle is between 1q and 1024q.
-		 *
-		 * FreqPWMOutx[3:0] | output frequency | output frequency | 1024q = period
-		 *                  | (from manual)    |   (1 / 1024q)    | = 1 / freq
-		 * -----------------+------------------+------------------+--------------
-		 *      b0000       |      293 Hz      |  292.968750 Hz   | 3413333.33 ns
-		 *      b0001       |      302 Hz      |  302.419355 Hz   | 3306666.66 ns
-		 *      b0010       |      312 Hz      |  312.500000 Hz   | 3200000    ns
-		 *      b0011       |      323 Hz      |  323.275862 Hz   | 3093333.33 ns
-		 *      b0100       |      334 Hz      |  334.821429 Hz   | 2986666.66 ns
-		 *      b0101       |      347 Hz      |  347.222222 Hz   | 2880000    ns
-		 *      b0110       |      360 Hz      |  360.576923 Hz   | 2773333.33 ns
-		 *      b0111       |      375 Hz      |  375.000000 Hz   | 2666666.66 ns
-		 *      b1000       |      390 Hz      |  390.625000 Hz   | 2560000    ns
-		 *      b1001       |      407 Hz      |  407.608696 Hz   | 2453333.33 ns
-		 *      b1010       |      426 Hz      |  426.136364 Hz   | 2346666.66 ns
-		 *      b1011       |      446 Hz      |  446.428571 Hz   | 2240000    ns
-		 *      b1100       |      468 Hz      |  468.750000 Hz   | 2133333.33 ns
-		 *      b1101       |      493 Hz      |  493.421053 Hz   | 2026666.66 ns
-		 *      b1110       |      520 Hz      |  520.833333 Hz   | 1920000    ns
-		 *      b1111       |      551 Hz      |  551.470588 Hz   | 1813333.33 ns
-		 *
-		 *
-		 * AB8500_PWM_CLKRATE is a multiple of 1024, so the division by
-		 * 1024 can be done in this factor without loss of precision.
-		 */
+		 
 		div = min_t(u64, mul_u64_u64_div_u64(state->period,
 						     AB8500_PWM_CLKRATE >> 10,
-						     NSEC_PER_SEC), 32); /* 32 - FreqPWMOutx[3:0] */
+						     NSEC_PER_SEC), 32);  
 		if (div <= 16)
-			/* requested period < 3413333.33 */
+			 
 			return -EINVAL;
 
 		duty_steps = max_t(u64, mul_u64_u64_div_u64(state->duty_cycle,
@@ -87,10 +51,7 @@ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 							    (u64)NSEC_PER_SEC * div), 1024);
 	}
 
-	/*
-	 * The hardware doesn't support duty_steps = 0 explicitly, but emits low
-	 * when disabled.
-	 */
+	 
 	if (!state->enabled || duty_steps == 0) {
 		ret = abx500_mask_and_set_register_interruptible(chip->dev,
 					AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG,
@@ -102,15 +63,9 @@ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 		return ret;
 	}
 
-	/*
-	 * The lower 8 bits of duty_steps is written to ...
-	 * AB8500_PWM_OUT_CTRL1_REG[0:7]
-	 */
+	 
 	lower_val = (duty_steps - 1) & 0x00ff;
-	/*
-	 * The two remaining high bits to
-	 * AB8500_PWM_OUT_CTRL2_REG[0:1]; together with FreqPWMOutx.
-	 */
+	 
 	higher_val = ((duty_steps - 1) & 0x0300) >> 8 | (32 - div) << 4;
 
 	reg = AB8500_PWM_OUT_CTRL1_REG + (ab8500->hwid * 2);
@@ -125,7 +80,7 @@ static int ab8500_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 	if (ret < 0)
 		return ret;
 
-	/* enable */
+	 
 	ret = abx500_mask_and_set_register_interruptible(chip->dev,
 				AB8500_MISC, AB8500_PWM_OUT_CTRL7_REG,
 				1 << ab8500->hwid, 1 << ab8500->hwid);
@@ -192,10 +147,7 @@ static int ab8500_pwm_probe(struct platform_device *pdev)
 	if (pdev->id < 1 || pdev->id > 31)
 		return dev_err_probe(&pdev->dev, -EINVAL, "Invalid device id %d\n", pdev->id);
 
-	/*
-	 * Nothing to be done in probe, this is required to get the
-	 * device which is required for ab8500 read and write
-	 */
+	 
 	ab8500 = devm_kzalloc(&pdev->dev, sizeof(*ab8500), GFP_KERNEL);
 	if (ab8500 == NULL)
 		return -ENOMEM;

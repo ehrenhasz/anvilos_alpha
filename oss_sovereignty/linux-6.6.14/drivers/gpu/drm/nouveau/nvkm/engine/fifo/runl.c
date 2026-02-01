@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "runl.h"
 #include "cgrp.h"
 #include "chan.h"
@@ -65,17 +45,17 @@ nvkm_runl_rc(struct nvkm_runl *runl)
 	int rc, state, i;
 	bool reset;
 
-	/* Runlist is blocked before scheduling recovery - fetch count. */
+	 
 	BUG_ON(!mutex_is_locked(&runl->mutex));
 	rc = atomic_xchg(&runl->rc_pending, 0);
 	if (!rc)
 		return;
 
-	/* Look for channel groups flagged for RC. */
+	 
 	nvkm_runl_foreach_cgrp_safe(cgrp, gtmp, runl) {
 		state = atomic_cmpxchg(&cgrp->rc, NVKM_CGRP_RC_PENDING, NVKM_CGRP_RC_RUNNING);
 		if (state == NVKM_CGRP_RC_PENDING) {
-			/* Disable all channels in them, and remove from runlist. */
+			 
 			nvkm_cgrp_foreach_chan_safe(chan, ctmp, cgrp) {
 				nvkm_chan_error(chan, false);
 				nvkm_chan_remove_locked(chan);
@@ -83,7 +63,7 @@ nvkm_runl_rc(struct nvkm_runl *runl)
 		}
 	}
 
-	/* On GPUs with runlist preempt, wait for PBDMA(s) servicing runlist to go idle. */
+	 
 	if (runl->func->preempt) {
 		for (i = 0; i < runl->runq_nr; i++) {
 			struct nvkm_runq *runq = runl->runq[i];
@@ -97,7 +77,7 @@ nvkm_runl_rc(struct nvkm_runl *runl)
 		}
 	}
 
-	/* Look for engines that are still on flagged channel groups - reset them. */
+	 
 	nvkm_runl_foreach_engn_cond(engn, runl, engn->func->cxid) {
 		cgrp = nvkm_engn_cgrp_get(engn, &flags);
 		if (!cgrp) {
@@ -113,16 +93,16 @@ nvkm_runl_rc(struct nvkm_runl *runl)
 		}
 
 		ENGN_DEBUG(engn, "resetting...");
-		/*TODO: can we do something less of a potential catastrophe on failure? */
+		 
 		WARN_ON(nvkm_engine_reset(engn->engine));
 	}
 
-	/* Submit runlist update, and clear any remaining exception state. */
+	 
 	runl->func->update(runl);
 	if (runl->func->fault_clear)
 		runl->func->fault_clear(runl);
 
-	/* Unblock runlist processing. */
+	 
 	while (rc--)
 		nvkm_runl_allow(runl);
 	runl->func->wait(runl);
@@ -157,7 +137,7 @@ nvkm_runl_rc_engn(struct nvkm_runl *runl, struct nvkm_engn *engn)
 	struct nvkm_cgrp *cgrp;
 	unsigned long flags;
 
-	/* Lookup channel group currently on engine. */
+	 
 	cgrp = nvkm_engn_cgrp_get(engn, &flags);
 	if (!cgrp) {
 		ENGN_DEBUG(engn, "rc skipped, not on channel");
@@ -359,7 +339,7 @@ nvkm_runl_add(struct nvkm_runl *runl, int engi, const struct nvkm_engn_func *fun
 	engn->fault = -1;
 	list_add_tail(&engn->head, &runl->engns);
 
-	/* Lookup MMU engine ID for fault handling. */
+	 
 	if (device->top)
 		engn->fault = nvkm_top_fault_id(device, engine->subdev.type, engine->subdev.inst);
 

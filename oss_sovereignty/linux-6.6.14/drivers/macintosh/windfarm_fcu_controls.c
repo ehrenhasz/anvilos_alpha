@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Windfarm PowerMac thermal control. FCU fan control
- *
- * Copyright 2012 Benjamin Herrenschmidt, IBM Corp.
- */
+
+ 
 #undef DEBUG
 
 #include <linux/types.h>
@@ -30,22 +26,10 @@
 #define DBG(args...)	do { } while(0)
 #endif
 
-/*
- * This option is "weird" :) Basically, if you define this to 1
- * the control loop for the RPMs fans (not PWMs) will apply the
- * correction factor obtained from the PID to the actual RPM
- * speed read from the FCU.
- *
- * If you define the below constant to 0, then it will be
- * applied to the setpoint RPM speed, that is basically the
- * speed we proviously "asked" for.
- *
- * I'm using 0 for now which is what therm_pm72 used to do and
- * what Darwin -apparently- does based on observed behaviour.
- */
+ 
 #define RPM_PID_USE_ACTUAL_SPEED	0
 
-/* Default min/max for pumps */
+ 
 #define CPU_PUMP_OUTPUT_MAX		3200
 #define CPU_PUMP_OUTPUT_MIN		1250
 
@@ -183,7 +167,7 @@ static int wf_fcu_fan_get_rpm(struct wf_control *ct, s32 *value)
 	if ((active & (1 << fan->id)) == 0)
 		return -ENXIO;
 
-	/* Programmed value or real current speed */
+	 
 #if RPM_PID_USE_ACTUAL_SPEED
 	reg_base = 0x11;
 #else
@@ -287,7 +271,7 @@ static void wf_fcu_get_pump_minmax(struct wf_fcu_fan *fan)
 	u16 pump_min = 0, pump_max = 0xffff;
 	u16 tmp[4];
 
-	/* Try to fetch pumps min/max infos from eeprom */
+	 
 	if (mpu) {
 		memcpy(&tmp, mpu->processor_part_num, 8);
 		if (tmp[0] != 0xffff && tmp[1] != 0xffff) {
@@ -300,10 +284,7 @@ static void wf_fcu_get_pump_minmax(struct wf_fcu_fan *fan)
 		}
 	}
 
-	/* Double check the values, this _IS_ needed as the EEPROM on
-	 * some dual 2.5Ghz G5s seem, at least, to have both min & max
-	 * same to the same value ... (grrrr)
-	 */
+	 
 	if (pump_min == pump_max || pump_min == 0 || pump_max == 0xffff) {
 		pump_min = CPU_PUMP_OUTPUT_MIN;
 		pump_max = CPU_PUMP_OUTPUT_MAX;
@@ -322,11 +303,11 @@ static void wf_fcu_get_rpmfan_minmax(struct wf_fcu_fan *fan)
 	const struct mpu_data *mpu0 = wf_get_mpu(0);
 	const struct mpu_data *mpu1 = wf_get_mpu(1);
 
-	/* Default */
+	 
 	fan->min = 2400 >> pv->rpm_shift;
 	fan->max = 56000 >> pv->rpm_shift;
 
-	/* CPU fans have min/max in MPU */
+	 
 	if (mpu0 && !strcmp(fan->ctrl.name, "cpu-front-fan-0")) {
 		fan->min = max(fan->min, (s32)mpu0->rminn_intake_fan);
 		fan->max = min(fan->max, (s32)mpu0->rmaxn_intake_fan);
@@ -347,7 +328,7 @@ static void wf_fcu_get_rpmfan_minmax(struct wf_fcu_fan *fan)
 		fan->max = min(fan->max, (s32)mpu1->rmaxn_exhaust_fan);
 		goto bail;
 	}
-	/* Rackmac variants, we just use mpu0 intake */
+	 
 	if (!strncmp(fan->ctrl.name, "cpu-fan", 7)) {
 		fan->min = max(fan->min, (s32)mpu0->rminn_intake_fan);
 		fan->max = min(fan->max, (s32)mpu0->rmaxn_intake_fan);
@@ -371,9 +352,7 @@ static void wf_fcu_add_fan(struct wf_fcu_priv *pv, const char *name,
 	fan->ctrl.name = name;
 	fan->ctrl.priv = fan;
 
-	/* min/max is oddball but the code comes from
-	 * therm_pm72 which seems to work so ...
-	 */
+	 
 	if (type == FCU_FAN_RPM) {
 		if (!strncmp(name, "cpu-pump", strlen("cpu-pump")))
 			wf_fcu_get_pump_minmax(fan);
@@ -399,12 +378,10 @@ static void wf_fcu_add_fan(struct wf_fcu_priv *pv, const char *name,
 
 static void wf_fcu_lookup_fans(struct wf_fcu_priv *pv)
 {
-	/* Translation of device-tree location properties to
-	 * windfarm fan names
-	 */
+	 
 	static const struct {
-		const char *dt_name;	/* Device-tree name */
-		const char *ct_name;	/* Control name */
+		const char *dt_name;	 
+		const char *ct_name;	 
 	} loc_trans[] = {
 		{ "BACKSIDE",		"backside-fan",		},
 		{ "SYS CTRLR FAN",	"backside-fan",		},
@@ -437,18 +414,18 @@ static void wf_fcu_lookup_fans(struct wf_fcu_priv *pv)
 
 		DBG(" control: %pOFn, type: %s\n", np, of_node_get_device_type(np));
 
-		/* Detect control type */
+		 
 		if (of_node_is_type(np, "fan-rpm-control") ||
 		    of_node_is_type(np, "fan-rpm"))
 			type = FCU_FAN_RPM;
 		if (of_node_is_type(np, "fan-pwm-control") ||
 		    of_node_is_type(np, "fan-pwm"))
 			type = FCU_FAN_PWM;
-		/* Only care about fans for now */
+		 
 		if (type == -1)
 			continue;
 
-		/* Lookup for a matching location */
+		 
 		loc = of_get_property(np, "location", NULL);
 		reg = of_get_property(np, "reg", NULL);
 		if (loc == NULL || reg == NULL)
@@ -479,7 +456,7 @@ static void wf_fcu_lookup_fans(struct wf_fcu_priv *pv)
 
 static void wf_fcu_default_fans(struct wf_fcu_priv *pv)
 {
-	/* We only support the default fans for PowerMac7,2 */
+	 
 	if (!of_machine_is_compatible("PowerMac7,2"))
 		return;
 
@@ -527,27 +504,21 @@ static int wf_fcu_probe(struct i2c_client *client)
 	INIT_LIST_HEAD(&pv->fan_list);
 	pv->i2c = client;
 
-	/*
-	 * First we must start the FCU which will query the
-	 * shift value to apply to RPMs
-	 */
+	 
 	if (wf_fcu_init_chip(pv)) {
 		pr_err("wf_fcu: Initialization failed !\n");
 		kfree(pv);
 		return -ENXIO;
 	}
 
-	/* First lookup fans in the device-tree */
+	 
 	wf_fcu_lookup_fans(pv);
 
-	/*
-	 * Older machines don't have the device-tree entries
-	 * we are looking for, just hard code the list
-	 */
+	 
 	if (list_empty(&pv->fan_list))
 		wf_fcu_default_fans(pv);
 
-	/* Still no fans ? FAIL */
+	 
 	if (list_empty(&pv->fan_list)) {
 		pr_err("wf_fcu: Failed to find fans for your machine\n");
 		kfree(pv);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for STMicroelectronics Multi-Function eXpander (STMFX) GPIO expander
- *
- * Copyright (C) 2019 STMicroelectronics
- * Author(s): Amelie Delaunay <amelie.delaunay@st.com>.
- */
+
+ 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
 #include <linux/mfd/stmfx.h>
@@ -18,29 +13,29 @@
 #include "core.h"
 #include "pinctrl-utils.h"
 
-/* GPIOs expander */
-/* GPIO_STATE1 0x10, GPIO_STATE2 0x11, GPIO_STATE3 0x12 */
-#define STMFX_REG_GPIO_STATE		STMFX_REG_GPIO_STATE1 /* R */
-/* GPIO_DIR1 0x60, GPIO_DIR2 0x61, GPIO_DIR3 0x63 */
-#define STMFX_REG_GPIO_DIR		STMFX_REG_GPIO_DIR1 /* RW */
-/* GPIO_TYPE1 0x64, GPIO_TYPE2 0x65, GPIO_TYPE3 0x66 */
-#define STMFX_REG_GPIO_TYPE		STMFX_REG_GPIO_TYPE1 /* RW */
-/* GPIO_PUPD1 0x68, GPIO_PUPD2 0x69, GPIO_PUPD3 0x6A */
-#define STMFX_REG_GPIO_PUPD		STMFX_REG_GPIO_PUPD1 /* RW */
-/* GPO_SET1 0x6C, GPO_SET2 0x6D, GPO_SET3 0x6E */
-#define STMFX_REG_GPO_SET		STMFX_REG_GPO_SET1 /* RW */
-/* GPO_CLR1 0x70, GPO_CLR2 0x71, GPO_CLR3 0x72 */
-#define STMFX_REG_GPO_CLR		STMFX_REG_GPO_CLR1 /* RW */
-/* IRQ_GPI_SRC1 0x48, IRQ_GPI_SRC2 0x49, IRQ_GPI_SRC3 0x4A */
-#define STMFX_REG_IRQ_GPI_SRC		STMFX_REG_IRQ_GPI_SRC1 /* RW */
-/* IRQ_GPI_EVT1 0x4C, IRQ_GPI_EVT2 0x4D, IRQ_GPI_EVT3 0x4E */
-#define STMFX_REG_IRQ_GPI_EVT		STMFX_REG_IRQ_GPI_EVT1 /* RW */
-/* IRQ_GPI_TYPE1 0x50, IRQ_GPI_TYPE2 0x51, IRQ_GPI_TYPE3 0x52 */
-#define STMFX_REG_IRQ_GPI_TYPE		STMFX_REG_IRQ_GPI_TYPE1 /* RW */
-/* IRQ_GPI_PENDING1 0x0C, IRQ_GPI_PENDING2 0x0D, IRQ_GPI_PENDING3 0x0E*/
-#define STMFX_REG_IRQ_GPI_PENDING	STMFX_REG_IRQ_GPI_PENDING1 /* R */
-/* IRQ_GPI_ACK1 0x54, IRQ_GPI_ACK2 0x55, IRQ_GPI_ACK3 0x56 */
-#define STMFX_REG_IRQ_GPI_ACK		STMFX_REG_IRQ_GPI_ACK1 /* RW */
+ 
+ 
+#define STMFX_REG_GPIO_STATE		STMFX_REG_GPIO_STATE1  
+ 
+#define STMFX_REG_GPIO_DIR		STMFX_REG_GPIO_DIR1  
+ 
+#define STMFX_REG_GPIO_TYPE		STMFX_REG_GPIO_TYPE1  
+ 
+#define STMFX_REG_GPIO_PUPD		STMFX_REG_GPIO_PUPD1  
+ 
+#define STMFX_REG_GPO_SET		STMFX_REG_GPO_SET1  
+ 
+#define STMFX_REG_GPO_CLR		STMFX_REG_GPO_CLR1  
+ 
+#define STMFX_REG_IRQ_GPI_SRC		STMFX_REG_IRQ_GPI_SRC1  
+ 
+#define STMFX_REG_IRQ_GPI_EVT		STMFX_REG_IRQ_GPI_EVT1  
+ 
+#define STMFX_REG_IRQ_GPI_TYPE		STMFX_REG_IRQ_GPI_TYPE1  
+ 
+#define STMFX_REG_IRQ_GPI_PENDING	STMFX_REG_IRQ_GPI_PENDING1  
+ 
+#define STMFX_REG_IRQ_GPI_ACK		STMFX_REG_IRQ_GPI_ACK1  
 
 #define NR_GPIO_REGS			3
 #define NR_GPIOS_PER_REG		8
@@ -48,10 +43,7 @@
 #define get_shift(offset)		((offset) % NR_GPIOS_PER_REG)
 #define get_mask(offset)		(BIT(get_shift(offset)))
 
-/*
- * STMFX pinctrl can have up to 24 pins if STMFX other functions are not used.
- * Pins availability is managed thanks to gpio-ranges property.
- */
+ 
 static const struct pinctrl_pin_desc stmfx_pins[] = {
 	PINCTRL_PIN(0, "gpio0"),
 	PINCTRL_PIN(1, "gpio1"),
@@ -85,15 +77,15 @@ struct stmfx_pinctrl {
 	struct pinctrl_dev *pctl_dev;
 	struct pinctrl_desc pctl_desc;
 	struct gpio_chip gpio_chip;
-	struct mutex lock; /* IRQ bus lock */
+	struct mutex lock;  
 	unsigned long gpio_valid_mask;
-	/* Cache of IRQ_GPI_* registers for bus_lock */
+	 
 	u8 irq_gpi_src[NR_GPIO_REGS];
 	u8 irq_gpi_type[NR_GPIO_REGS];
 	u8 irq_gpi_evt[NR_GPIO_REGS];
 	u8 irq_toggle_edge[NR_GPIO_REGS];
 #ifdef CONFIG_PM
-	/* Backup of GPIO_* registers for suspend/resume */
+	 
 	u8 bkp_gpio_state[NR_GPIO_REGS];
 	u8 bkp_gpio_dir[NR_GPIO_REGS];
 	u8 bkp_gpio_type[NR_GPIO_REGS];
@@ -133,9 +125,7 @@ static int stmfx_gpio_get_direction(struct gpio_chip *gc, unsigned int offset)
 	int ret;
 
 	ret = regmap_read(pctl->stmfx->map, reg, &val);
-	/*
-	 * On stmfx, gpio pins direction is (0)input, (1)output.
-	 */
+	 
 	if (ret)
 		return ret;
 
@@ -229,10 +219,7 @@ static int stmfx_pinconf_get(struct pinctrl_dev *pctldev,
 	if (dir < 0)
 		return dir;
 
-	/*
-	 * Currently the gpiolib IN is 1 and OUT is 0 but let's not count
-	 * on it just to be on the safe side also in the future :)
-	 */
+	 
 	dir = (dir == GPIO_LINE_DIRECTION_IN) ? 1 : 0;
 
 	type = stmfx_pinconf_get_type(pctl, pin);
@@ -463,12 +450,7 @@ static int stmfx_pinctrl_irq_set_type(struct irq_data *data, unsigned int type)
 	else
 		pctl->irq_gpi_type[reg] &= ~mask;
 
-	/*
-	 * In case of (type & IRQ_TYPE_EDGE_BOTH), we need to know current
-	 * GPIO value to set the right edge trigger. But in atomic context
-	 * here we can't access registers over I2C. That's why (type &
-	 * IRQ_TYPE_EDGE_BOTH) will be managed in .irq_sync_unlock.
-	 */
+	 
 
 	if ((type & IRQ_TYPE_EDGE_BOTH) == IRQ_TYPE_EDGE_BOTH)
 		pctl->irq_toggle_edge[reg] |= mask;
@@ -493,11 +475,7 @@ static void stmfx_pinctrl_irq_bus_sync_unlock(struct irq_data *data)
 	u32 reg = get_reg(data->hwirq);
 	u32 mask = get_mask(data->hwirq);
 
-	/*
-	 * In case of IRQ_TYPE_EDGE_BOTH), read the current GPIO value
-	 * (this couldn't be done in .irq_set_type because of atomic context)
-	 * to set the right irq trigger type.
-	 */
+	 
 	if (pctl->irq_toggle_edge[reg] & mask) {
 		if (stmfx_gpio_get(gpio_chip, data->hwirq))
 			pctl->irq_gpi_type[reg] &= ~mask;
@@ -664,7 +642,7 @@ static int stmfx_pinctrl_probe(struct platform_device *pdev)
 
 	mutex_init(&pctl->lock);
 
-	/* Register pin controller */
+	 
 	pctl->pctl_desc.name = "stmfx-pinctrl";
 	pctl->pctl_desc.pctlops = &stmfx_pinctrl_ops;
 	pctl->pctl_desc.confops = &stmfx_pinconf_ops;
@@ -686,7 +664,7 @@ static int stmfx_pinctrl_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Register gpio controller */
+	 
 	pctl->gpio_chip.label = "stmfx-gpio";
 	pctl->gpio_chip.parent = pctl->dev;
 	pctl->gpio_chip.get_direction = stmfx_gpio_get_direction;
@@ -701,7 +679,7 @@ static int stmfx_pinctrl_probe(struct platform_device *pdev)
 
 	girq = &pctl->gpio_chip.irq;
 	gpio_irq_chip_set_chip(girq, &stmfx_pinctrl_irq_chip);
-	/* This will let us handle the parent IRQ in the driver */
+	 
 	girq->parent_handler = NULL;
 	girq->num_parents = 0;
 	girq->parents = NULL;

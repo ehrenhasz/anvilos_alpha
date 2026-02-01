@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../pci.h"
@@ -59,10 +59,10 @@ void rtl8812ae_sw_led_on(struct ieee80211_hw *hw, enum rtl_led_pin pin)
 		ledreg, pin);
 
 	ledcfg =  rtl_read_byte(rtlpriv, ledreg);
-	ledcfg |= BIT(5); /*Set 0x4c[21]*/
+	ledcfg |= BIT(5);  
 	ledcfg &= ~(BIT(7) | BIT(6) | BIT(3) | BIT(2) | BIT(1) | BIT(0));
-		/*Clear 0x4c[23:22] and 0x4c[19:16]*/
-	rtl_write_byte(rtlpriv, ledreg, ledcfg); /*SW control led0 on.*/
+		 
+	rtl_write_byte(rtlpriv, ledreg, ledcfg);  
 }
 
 void rtl8821ae_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin)
@@ -81,7 +81,7 @@ void rtl8821ae_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin)
 	case LED_PIN_LED0:
 		ledcfg &= 0xf0;
 		if (rtlpriv->ledctl.led_opendrain) {
-			ledcfg &= 0x90; /* Set to software control. */
+			ledcfg &= 0x90;  
 			rtl_write_byte(rtlpriv, REG_LEDCFG2, (ledcfg|BIT(3)));
 			ledcfg = rtl_read_byte(rtlpriv, REG_MAC_PINMUX_CFG);
 			ledcfg &= 0xFE;
@@ -94,7 +94,7 @@ void rtl8821ae_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin)
 		break;
 	case LED_PIN_LED1:
 		ledcfg = rtl_read_byte(rtlpriv, REG_LEDCFG1);
-		ledcfg &= 0x10; /* Set to software control. */
+		ledcfg &= 0x10;  
 		rtl_write_byte(rtlpriv, REG_LEDCFG1, ledcfg|BIT(3));
 		break;
 	default:
@@ -126,16 +126,16 @@ void rtl8812ae_sw_led_off(struct ieee80211_hw *hw, enum rtl_led_pin pin)
 	rtl_dbg(rtlpriv, COMP_LED, DBG_LOUD,
 		"In SwLedOff,LedAddr:%X LEDPIN=%d\n",
 		ledreg, pin);
-	/*Open-drain arrangement for controlling the LED*/
+	 
 	if (rtlpriv->ledctl.led_opendrain) {
 		u8 ledcfg = rtl_read_byte(rtlpriv, ledreg);
 
-		ledreg &= 0xd0; /* Set to software control.*/
+		ledreg &= 0xd0;  
 		rtl_write_byte(rtlpriv, ledreg, (ledcfg | BIT(3)));
 
-		/*Open-drain arrangement*/
+		 
 		ledcfg = rtl_read_byte(rtlpriv, REG_MAC_PINMUX_CFG);
-		ledcfg &= 0xFE;/*Set GPIO[8] to input mode*/
+		ledcfg &= 0xFE; 
 		rtl_write_byte(rtlpriv, REG_MAC_PINMUX_CFG, ledcfg);
 	} else {
 		rtl_write_byte(rtlpriv, ledreg, 0x28);

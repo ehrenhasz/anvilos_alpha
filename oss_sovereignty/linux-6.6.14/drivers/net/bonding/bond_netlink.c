@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * drivers/net/bond/bond_netlink.c - Netlink interface for bonding
- * Copyright (c) 2013 Jiri Pirko <jiri@resnulli.us>
- * Copyright (c) 2013 Scott Feldman <sfeldma@cumulusnetworks.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/errno.h>
@@ -19,15 +15,15 @@
 static size_t bond_get_slave_size(const struct net_device *bond_dev,
 				  const struct net_device *slave_dev)
 {
-	return nla_total_size(sizeof(u8)) +	/* IFLA_BOND_SLAVE_STATE */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_SLAVE_MII_STATUS */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_SLAVE_LINK_FAILURE_COUNT */
-		nla_total_size(MAX_ADDR_LEN) +	/* IFLA_BOND_SLAVE_PERM_HWADDR */
-		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_QUEUE_ID */
-		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_AGGREGATOR_ID */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_SLAVE_AD_ACTOR_OPER_PORT_STATE */
-		nla_total_size(sizeof(u16)) +	/* IFLA_BOND_SLAVE_AD_PARTNER_OPER_PORT_STATE */
-		nla_total_size(sizeof(s32)) +	/* IFLA_BOND_SLAVE_PRIO */
+	return nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(MAX_ADDR_LEN) +	 
+		nla_total_size(sizeof(u16)) +	 
+		nla_total_size(sizeof(u16)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u16)) +	 
+		nla_total_size(sizeof(s32)) +	 
 		0;
 }
 
@@ -84,7 +80,7 @@ nla_put_failure:
 	return -EMSGSIZE;
 }
 
-/* Limit the max delay range to 300s */
+ 
 static struct netlink_range_validation delay_range = {
 	.max = 300000,
 };
@@ -157,7 +153,7 @@ static int bond_slave_changelink(struct net_device *bond_dev,
 		u16 queue_id = nla_get_u16(data[IFLA_BOND_SLAVE_QUEUE_ID]);
 		char queue_id_str[IFNAMSIZ + 7];
 
-		/* queue_id option setting expects slave_name:queue_id */
+		 
 		snprintf(queue_id_str, sizeof(queue_id_str), "%s:%u\n",
 			 slave_dev->name, queue_id);
 		bond_opt_initstr(&newval, queue_id_str);
@@ -575,44 +571,44 @@ static int bond_newlink(struct net *src_net, struct net_device *bond_dev,
 
 static size_t bond_get_size(const struct net_device *bond_dev)
 {
-	return nla_total_size(sizeof(u8)) +	/* IFLA_BOND_MODE */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_ACTIVE_SLAVE */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_MIIMON */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_UPDELAY */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_DOWNDELAY */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_USE_CARRIER */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_ARP_INTERVAL */
-						/* IFLA_BOND_ARP_IP_TARGET */
+	return nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u32)) +	 
+						 
 		nla_total_size(sizeof(struct nlattr)) +
 		nla_total_size(sizeof(u32)) * BOND_MAX_ARP_TARGETS +
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_ARP_VALIDATE */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_ARP_ALL_TARGETS */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_PRIMARY */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_PRIMARY_RESELECT */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_FAIL_OVER_MAC */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_XMIT_HASH_POLICY */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_RESEND_IGMP */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_NUM_PEER_NOTIF */
-		nla_total_size(sizeof(u8)) +   /* IFLA_BOND_ALL_SLAVES_ACTIVE */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_MIN_LINKS */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_LP_INTERVAL */
-		nla_total_size(sizeof(u32)) +  /* IFLA_BOND_PACKETS_PER_SLAVE */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_AD_LACP_ACTIVE */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_AD_LACP_RATE */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_AD_SELECT */
-		nla_total_size(sizeof(struct nlattr)) + /* IFLA_BOND_AD_INFO */
-		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_INFO_AGGREGATOR */
-		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_INFO_NUM_PORTS */
-		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_INFO_ACTOR_KEY */
-		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_INFO_PARTNER_KEY*/
-		nla_total_size(ETH_ALEN) +    /* IFLA_BOND_AD_INFO_PARTNER_MAC*/
-		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_ACTOR_SYS_PRIO */
-		nla_total_size(sizeof(u16)) + /* IFLA_BOND_AD_USER_PORT_KEY */
-		nla_total_size(ETH_ALEN) + /* IFLA_BOND_AD_ACTOR_SYSTEM */
-		nla_total_size(sizeof(u8)) + /* IFLA_BOND_TLB_DYNAMIC_LB */
-		nla_total_size(sizeof(u32)) +	/* IFLA_BOND_PEER_NOTIF_DELAY */
-		nla_total_size(sizeof(u8)) +	/* IFLA_BOND_MISSED_MAX */
-						/* IFLA_BOND_NS_IP6_TARGET */
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u8)) +    
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u32)) +   
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(u8)) +	 
+		nla_total_size(sizeof(struct nlattr)) +  
+		nla_total_size(sizeof(u16)) +  
+		nla_total_size(sizeof(u16)) +  
+		nla_total_size(sizeof(u16)) +  
+		nla_total_size(sizeof(u16)) +  
+		nla_total_size(ETH_ALEN) +     
+		nla_total_size(sizeof(u16)) +  
+		nla_total_size(sizeof(u16)) +  
+		nla_total_size(ETH_ALEN) +  
+		nla_total_size(sizeof(u8)) +  
+		nla_total_size(sizeof(u32)) +	 
+		nla_total_size(sizeof(u8)) +	 
+						 
 		nla_total_size(sizeof(struct nlattr)) +
 		nla_total_size(sizeof(struct in6_addr)) * BOND_MAX_NS_TARGETS +
 		0;
@@ -901,8 +897,7 @@ struct rtnl_link_ops bond_link_ops __read_mostly = {
 	.get_size		= bond_get_size,
 	.fill_info		= bond_fill_info,
 	.get_num_tx_queues	= bond_get_num_tx_queues,
-	.get_num_rx_queues	= bond_get_num_tx_queues, /* Use the same number
-							     as for TX queues */
+	.get_num_rx_queues	= bond_get_num_tx_queues,  
 	.fill_linkxstats        = bond_fill_linkxstats,
 	.get_linkxstats_size    = bond_get_linkxstats_size,
 	.slave_maxtype		= IFLA_BOND_SLAVE_MAX,

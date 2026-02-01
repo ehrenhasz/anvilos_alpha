@@ -1,12 +1,12 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR BSD-3-Clause) */
-/* Copyright 2019 NXP */
+ 
+ 
 
 #ifndef _FSL_ENETC_MDIO_H_
 #define _FSL_ENETC_MDIO_H_
 
 #include <linux/phy.h>
 
-/* PCS registers */
+ 
 #define ENETC_PCS_LINK_TIMER1			0x12
 #define ENETC_PCS_LINK_TIMER1_VAL		0x06a0
 #define ENETC_PCS_LINK_TIMER2			0x13
@@ -17,10 +17,7 @@
 #define ENETC_PCS_IF_MODE_SGMII_SPEED(x)	(((x) << 2) & GENMASK(3, 2))
 #define ENETC_PCS_IF_MODE_DUPLEX_HALF		BIT(3)
 
-/* Not a mistake, the SerDes PLL needs to be set at 3.125 GHz by Reset
- * Configuration Word (RCW, outside Linux control) for 2.5G SGMII mode. The PCS
- * still thinks it's at gigabit.
- */
+ 
 enum enetc_pcs_speed {
 	ENETC_PCS_SPEED_10	= 0,
 	ENETC_PCS_SPEED_100	= 1,

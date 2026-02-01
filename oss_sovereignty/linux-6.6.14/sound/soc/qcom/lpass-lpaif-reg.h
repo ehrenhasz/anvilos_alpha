@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2010-2011,2013-2015 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __LPASS_LPAIF_REG_H__
 #define __LPASS_LPAIF_REG_H__
 
-/* LPAIF I2S */
+ 
 
 #define LPAIF_I2SCTL_REG_ADDR(v, addr, port) \
 	(v->i2sctrl_reg_base + (addr) + v->i2sctrl_reg_stride * (port))
@@ -64,7 +62,7 @@
 #define LPAIF_DMACTL_RESET_STATE	0x00200000
 
 
-/* LPAIF IRQ */
+ 
 #define LPAIF_IRQ_REG_ADDR(v, addr, port) \
 	(v->irq_reg_base + (addr) + v->irq_reg_stride * (port))
 
@@ -74,7 +72,7 @@
 #define LPAIF_IRQSTAT_REG(v, port)	LPAIF_IRQ_REG_ADDR(v, 0x4, (port))
 #define LPAIF_IRQCLEAR_REG(v, port)	LPAIF_IRQ_REG_ADDR(v, 0xC, (port))
 
-/* LPAIF RXTX IRQ */
+ 
 #define LPAIF_RXTX_IRQ_REG_ADDR(v, addr, port) \
 		(v->rxtx_irq_reg_base + (addr) + v->rxtx_irq_reg_stride * (port))
 
@@ -82,7 +80,7 @@
 #define LPAIF_RXTX_IRQSTAT_REG(v, port) LPAIF_RXTX_IRQ_REG_ADDR(v, 0x4, port)
 #define LPAIF_RXTX_IRQCLEAR_REG(v, port) LPAIF_RXTX_IRQ_REG_ADDR(v, 0xC, port)
 
-/* LPAIF VA IRQ */
+ 
 #define LPAIF_VA_IRQ_REG_ADDR(v, addr, port) \
 		(v->va_irq_reg_base + (addr) + v->va_irq_reg_stride * (port))
 
@@ -108,7 +106,7 @@
 #define LPAIF_IRQ_HDMI_SDEEP_AUD_DIS(chan)	(1 << (24 + chan))
 #define LPAIF_IRQ_HDMI_METADONE		BIT(23)
 
-/* LPAIF DMA */
+ 
 #define LPAIF_HDMI_RDMA_REG_ADDR(v, addr, chan) \
 	(v->hdmi_rdma_reg_base + (addr) + v->hdmi_rdma_reg_stride * (chan))
 
@@ -316,4 +314,4 @@
 #define LPAIF_DMACTL_DYNCLK_OFF		0
 #define LPAIF_DMACTL_DYNCLK_ON		1
 
-#endif /* __LPASS_LPAIF_REG_H__ */
+#endif  

@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-//
-// Copyright (c) 2018 BayLibre, SAS.
-// Author: Jerome Brunet <jbrunet@baylibre.com>
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -25,7 +25,7 @@ static unsigned int axg_tdm_slots_total(u32 *mask)
 	if (!mask)
 		return 0;
 
-	/* Count the total number of slots provided by all 4 lanes */
+	 
 	for (i = 0; i < AXG_TDM_NUM_LANES; i++)
 		slots += hweight32(mask[i]);
 
@@ -45,7 +45,7 @@ int axg_tdm_set_tdm_slots(struct snd_soc_dai *dai, u32 *tx_mask,
 	tx_slots = axg_tdm_slots_total(tx_mask);
 	rx_slots = axg_tdm_slots_total(rx_mask);
 
-	/* We should at least have a slot for a valid interface */
+	 
 	if (!tx_slots && !rx_slots) {
 		dev_err(dai->dev, "interface has no slot\n");
 		return -EINVAL;
@@ -77,7 +77,7 @@ int axg_tdm_set_tdm_slots(struct snd_soc_dai *dai, u32 *tx_mask,
 
 	iface->slot_width = slot_width;
 
-	/* Amend the dai driver and let dpcm merge do its job */
+	 
 	if (tx) {
 		tx->mask = tx_mask;
 		dai->driver->playback.channels_max = tx_slots;
@@ -153,7 +153,7 @@ static int axg_tdm_iface_startup(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Apply component wide rate symmetry */
+	 
 	if (snd_soc_component_active(dai->component)) {
 		ret = snd_pcm_hw_constraint_single(substream->runtime,
 						   SNDRV_PCM_HW_PARAM_RATE,
@@ -177,10 +177,10 @@ static int axg_tdm_iface_set_stream(struct snd_pcm_substream *substream,
 	unsigned int channels = params_channels(params);
 	unsigned int width = params_width(params);
 
-	/* Save rate and sample_bits for component symmetry */
+	 
 	iface->rate = params_rate(params);
 
-	/* Make sure this interface can cope with the stream */
+	 
 	if (axg_tdm_slots_total(ts->mask) < channels) {
 		dev_err(dai->dev, "not enough slots for channels\n");
 		return -EINVAL;
@@ -191,7 +191,7 @@ static int axg_tdm_iface_set_stream(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* Save the parameter for tdmout/tdmin widgets */
+	 
 	ts->physical_width = params_physical_width(params);
 	ts->width = params_width(params);
 	ts->channels = params_channels(params);
@@ -216,18 +216,13 @@ static int axg_tdm_iface_set_lrclk(struct snd_soc_dai *dai,
 	case SND_SOC_DAIFMT_I2S:
 	case SND_SOC_DAIFMT_LEFT_J:
 	case SND_SOC_DAIFMT_RIGHT_J:
-		/* 50% duty cycle ratio */
+		 
 		ratio_num = 1;
 		break;
 
 	case SND_SOC_DAIFMT_DSP_A:
 	case SND_SOC_DAIFMT_DSP_B:
-		/*
-		 * A zero duty cycle ratio will result in setting the mininum
-		 * ratio possible which, for this clock, is 1 cycle of the
-		 * parent bclk clock high and the rest low, This is exactly
-		 * what we want here.
-		 */
+		 
 		ratio_num = 0;
 		break;
 
@@ -242,7 +237,7 @@ static int axg_tdm_iface_set_lrclk(struct snd_soc_dai *dai,
 		return ret;
 	}
 
-	/* Set sample clock inversion */
+	 
 	ret = clk_set_phase(iface->lrclk,
 			    axg_tdm_lrclk_invert(iface->fmt) ? 180 : 0);
 	if (ret) {
@@ -264,10 +259,10 @@ static int axg_tdm_iface_set_sclk(struct snd_soc_dai *dai,
 	srate = iface->slots * iface->slot_width * params_rate(params);
 
 	if (!iface->mclk_rate) {
-		/* If no specific mclk is requested, default to bit clock * 4 */
+		 
 		clk_set_rate(iface->mclk, 4 * srate);
 	} else {
-		/* Check if we can actually get the bit clock from mclk */
+		 
 		if (iface->mclk_rate % srate) {
 			dev_err(dai->dev,
 				"can't derive sclk %lu from mclk %lu\n",
@@ -282,7 +277,7 @@ static int axg_tdm_iface_set_sclk(struct snd_soc_dai *dai,
 		return ret;
 	}
 
-	/* Set the bit clock inversion */
+	 
 	ret = clk_set_phase(iface->sclk,
 			    axg_tdm_sclk_invert(iface->fmt) ? 0 : 180);
 	if (ret) {
@@ -343,7 +338,7 @@ static int axg_tdm_iface_hw_free(struct snd_pcm_substream *substream,
 {
 	struct axg_tdm_stream *ts = snd_soc_dai_get_dma_data(dai, substream);
 
-	/* Stop all attached formatters */
+	 
 	axg_tdm_stream_stop(ts);
 
 	return 0;
@@ -354,7 +349,7 @@ static int axg_tdm_iface_prepare(struct snd_pcm_substream *substream,
 {
 	struct axg_tdm_stream *ts = snd_soc_dai_get_dma_data(dai, substream);
 
-	/* Force all attached formatters to update */
+	 
 	return axg_tdm_stream_reset(ts);
 }
 
@@ -405,7 +400,7 @@ static const struct snd_soc_dai_ops axg_tdm_iface_ops = {
 	.hw_free	= axg_tdm_iface_hw_free,
 };
 
-/* TDM Backend DAIs */
+ 
 static const struct snd_soc_dai_driver axg_tdm_iface_dai_drv[] = {
 	[TDM_IFACE_PAD] = {
 		.name = "TDM Pad",
@@ -501,11 +496,7 @@ static int axg_tdm_iface_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	platform_set_drvdata(pdev, iface);
 
-	/*
-	 * Duplicate dai driver: depending on the slot masks configuration
-	 * We'll change the number of channel provided by DAI stream, so dpcm
-	 * channel merge can be done properly
-	 */
+	 
 	dai_drv = devm_kcalloc(dev, ARRAY_SIZE(axg_tdm_iface_dai_drv),
 			       sizeof(*dai_drv), GFP_KERNEL);
 	if (!dai_drv)
@@ -515,22 +506,17 @@ static int axg_tdm_iface_probe(struct platform_device *pdev)
 		memcpy(&dai_drv[i], &axg_tdm_iface_dai_drv[i],
 		       sizeof(*dai_drv));
 
-	/* Bit clock provided on the pad */
+	 
 	iface->sclk = devm_clk_get(dev, "sclk");
 	if (IS_ERR(iface->sclk))
 		return dev_err_probe(dev, PTR_ERR(iface->sclk), "failed to get sclk\n");
 
-	/* Sample clock provided on the pad */
+	 
 	iface->lrclk = devm_clk_get(dev, "lrclk");
 	if (IS_ERR(iface->lrclk))
 		return dev_err_probe(dev, PTR_ERR(iface->lrclk), "failed to get lrclk\n");
 
-	/*
-	 * mclk maybe be missing when the cpu dai is in slave mode and
-	 * the codec does not require it to provide a master clock.
-	 * At this point, ignore the error if mclk is missing. We'll
-	 * throw an error if the cpu dai is master and mclk is missing
-	 */
+	 
 	iface->mclk = devm_clk_get_optional(dev, "mclk");
 	if (IS_ERR(iface->mclk))
 		return dev_err_probe(dev, PTR_ERR(iface->mclk), "failed to get mclk\n");

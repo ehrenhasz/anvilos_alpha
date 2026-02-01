@@ -1,4 +1,4 @@
-// cc_fuzz_target test for ssh-agent.
+
 extern "C" {
 
 #include <stdint.h>
@@ -12,4 +12,4 @@ int LLVMFuzzerTestOneInput(const uint8_t* s, size_t slen)
 	return 0;
 }
 
-} // extern
+} 

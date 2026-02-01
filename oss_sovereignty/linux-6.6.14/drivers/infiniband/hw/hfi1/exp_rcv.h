@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause */
-/*
- * Copyright(c) 2017 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _HFI1_EXP_RCV_H
 #define _HFI1_EXP_RCV_H
@@ -30,10 +28,7 @@
 		(tid) |= EXP_TID_SET(field, (value));			\
 	} while (0)
 
-/*
- * Define fields in the KDETH header so we can update the header
- * template.
- */
+ 
 #define KDETH_OFFSET_SHIFT        0
 #define KDETH_OFFSET_MASK         0x7fff
 #define KDETH_OM_SHIFT            15
@@ -67,7 +62,7 @@
 
 #define KDETH_RESET(dw, field, val) ({ dw = 0; KDETH_SET(dw, field, val); })
 
-/* KDETH OM multipliers and switch over point */
+ 
 #define KDETH_OM_SMALL     4
 #define KDETH_OM_SMALL_SHIFT     2
 #define KDETH_OM_LARGE     64
@@ -82,19 +77,10 @@ struct tid_group {
 	u8 map;
 };
 
-/*
- * Write an "empty" RcvArray entry.
- * This function exists so the TID registaration code can use it
- * to write to unused/unneeded entries and still take advantage
- * of the WC performance improvements. The HFI will ignore this
- * write to the RcvArray entry.
- */
+ 
 static inline void rcv_array_wc_fill(struct hfi1_devdata *dd, u32 index)
 {
-	/*
-	 * Doing the WC fill writes only makes sense if the device is
-	 * present and the RcvArray has been mapped as WC memory.
-	 */
+	 
 	if ((dd->flags & HFI1_PRESENT) && dd->rcvarray_wc) {
 		writeq(0, dd->rcvarray_wc + (index * 8));
 		if ((index & 3) == 3)
@@ -142,22 +128,14 @@ static inline u32 create_tid(u32 rcventry, u32 npages)
 		EXP_TID_SET(LEN, npages);
 }
 
-/**
- * hfi1_tid_group_to_idx - convert an index to a group
- * @rcd - the receive context
- * @grp - the group pointer
- */
+ 
 static inline u16
 hfi1_tid_group_to_idx(struct hfi1_ctxtdata *rcd, struct tid_group *grp)
 {
 	return grp - &rcd->groups[0];
 }
 
-/**
- * hfi1_idx_to_tid_group - convert a group to an index
- * @rcd - the receive context
- * @idx - the index
- */
+ 
 static inline struct tid_group *
 hfi1_idx_to_tid_group(struct hfi1_ctxtdata *rcd, u16 idx)
 {
@@ -168,4 +146,4 @@ int hfi1_alloc_ctxt_rcv_groups(struct hfi1_ctxtdata *rcd);
 void hfi1_free_ctxt_rcv_groups(struct hfi1_ctxtdata *rcd);
 void hfi1_exp_tid_group_init(struct hfi1_ctxtdata *rcd);
 
-#endif /* _HFI1_EXP_RCV_H */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Meta Platforms, Inc. and affiliates. */
+
+ 
 
 #include <stdbool.h>
 #include <linux/bpf.h>
@@ -25,7 +25,7 @@ __failure __msg("math between map_value pointer and register with unbounded min 
 int iter_err_unsafe_c_loop(const void *ctx)
 {
 	struct bpf_iter_num it;
-	int *v, i = zero; /* obscure initial value of i */
+	int *v, i = zero;  
 
 	MY_PID_GUARD();
 
@@ -35,7 +35,7 @@ int iter_err_unsafe_c_loop(const void *ctx)
 	}
 	bpf_iter_num_destroy(&it);
 
-	small_arr[i] = 123; /* invalid */
+	small_arr[i] = 123;  
 
 	return 0;
 }
@@ -49,8 +49,8 @@ int iter_err_unsafe_asm_loop(const void *ctx)
 	MY_PID_GUARD();
 
 	asm volatile (
-		"r6 = %[zero];" /* iteration counter */
-		"r1 = %[it];" /* iterator state */
+		"r6 = %[zero];"  
+		"r1 = %[it];"  
 		"r2 = 0;"
 		"r3 = 1000;"
 		"r4 = 1;"
@@ -68,7 +68,7 @@ int iter_err_unsafe_asm_loop(const void *ctx)
 		"r2 = r6;"
 		"r2 <<= 2;"
 		"r1 += r2;"
-		"*(u32 *)(r1 + 0) = r6;" /* invalid */
+		"*(u32 *)(r1 + 0) = r6;"  
 		:
 		: [it]"r"(&it),
 		  [small_arr]"p"(small_arr),
@@ -113,7 +113,7 @@ int iter_while_loop_auto_cleanup(const void *ctx)
 	while ((v = bpf_iter_num_next(&it))) {
 		bpf_printk("ITER_BASIC: E1 VAL: v=%d", *v);
 	}
-	/* (!) no explicit bpf_iter_num_destroy() */
+	 
 
 	return 0;
 }
@@ -283,9 +283,7 @@ int iter_obfuscate_counter(const void *ctx)
 {
 	struct bpf_iter_num it;
 	int *v, sum = 0;
-	/* Make i's initial value unknowable for verifier to prevent it from
-	 * pruning if/else branch inside the loop body and marking i as precise.
-	 */
+	 
 	int i = zero;
 
 	MY_PID_GUARD();
@@ -296,15 +294,7 @@ int iter_obfuscate_counter(const void *ctx)
 
 		i += 1;
 
-		/* If we initialized i as `int i = 0;` above, verifier would
-		 * track that i becomes 1 on first iteration after increment
-		 * above, and here verifier would eagerly prune else branch
-		 * and mark i as precise, ruining open-coded iterator logic
-		 * completely, as each next iteration would have a different
-		 * *precise* value of i, and thus there would be no
-		 * convergence of state. This would result in reaching maximum
-		 * instruction limit, no matter what the limit is.
-		 */
+		 
 		if (i == 1)
 			x = 123;
 		else
@@ -343,13 +333,10 @@ int iter_search_loop(const void *ctx)
 		}
 	}
 
-	/* should fail to verify if bpf_iter_num_destroy() is here */
+	 
 
 	if (found)
-		/* here found element will be wrong, we should have copied
-		 * value to a variable, but here we want to make sure we can
-		 * access memory after the loop anyways
-		 */
+		 
 		bpf_printk("ITER_SEARCH_LOOP: FOUND IT = %d!\n", *elem);
 	else
 		bpf_printk("ITER_SEARCH_LOOP: NOT FOUND IT!\n");
@@ -399,7 +386,7 @@ int iter_nested_iters(const void *ctx)
 		}
 	}
 
-	/* zero-initialize sums */
+	 
 	sum = 0;
 	bpf_for(row, 0, ARRAY_SIZE(arr2d)) {
 		arr2d_row_sums[row] = 0;
@@ -408,7 +395,7 @@ int iter_nested_iters(const void *ctx)
 		arr2d_col_sums[col] = 0;
 	}
 
-	/* calculate sums */
+	 
 	bpf_for(row, 0, ARRAY_SIZE(arr2d)) {
 		bpf_for(col, 0, ARRAY_SIZE(arr2d[0])) {
 			sum += arr2d[row][col];
@@ -448,7 +435,7 @@ int iter_nested_deeply_iters(const void *ctx)
 				}
 			}
 		}
-		/* validate that we can break from inside bpf_repeat() */
+		 
 		break;
 	}
 
@@ -489,7 +476,7 @@ int iter_subprog_iters(const void *ctx)
 		fill_inner_dimension(row);
 	}
 
-	/* zero-initialize sums */
+	 
 	sum = 0;
 	bpf_for(row, 0, ARRAY_SIZE(arr2d)) {
 		arr2d_row_sums[row] = 0;
@@ -498,7 +485,7 @@ int iter_subprog_iters(const void *ctx)
 		arr2d_col_sums[col] = 0;
 	}
 
-	/* calculate sums */
+	 
 	bpf_for(row, 0, ARRAY_SIZE(arr2d)) {
 		sum += sum_inner_dimension(row);
 	}
@@ -624,16 +611,11 @@ int iter_stack_array_loop(const void *ctx)
 
 	MY_PID_GUARD();
 
-	/* zero-init arr1 and arr2 in such a way that verifier doesn't know
-	 * it's all zeros; if we don't do that, we'll make BPF verifier track
-	 * all combination of zero/non-zero stack slots for arr1/arr2, which
-	 * will lead to O(2^(ARRAY_SIZE(arr1)+ARRAY_SIZE(arr2))) different
-	 * states
-	 */
+	 
 	__bpf_memzero(arr1, sizeof(arr1));
 	__bpf_memzero(arr2, sizeof(arr1));
 
-	/* validate that we can break and continue when using bpf_for() */
+	 
 	bpf_for(i, 0, ARRAY_SIZE(arr1)) {
 		if (i & 1) {
 			arr1[i] = i;
@@ -687,25 +669,25 @@ int iter_pass_iter_ptr_to_subprog(const void *ctx)
 
 	MY_PID_GUARD();
 
-	/* fill arr1 */
+	 
 	n = ARRAY_SIZE(arr1);
 	bpf_iter_num_new(&it, 0, n);
 	fill(&it, arr1, n, 2);
 	bpf_iter_num_destroy(&it);
 
-	/* fill arr2 */
+	 
 	n = ARRAY_SIZE(arr2);
 	bpf_iter_num_new(&it, 0, n);
 	fill(&it, arr2, n, 10);
 	bpf_iter_num_destroy(&it);
 
-	/* sum arr1 */
+	 
 	n = ARRAY_SIZE(arr1);
 	bpf_iter_num_new(&it, 0, n);
 	sum1 = sum(&it, arr1, n);
 	bpf_iter_num_destroy(&it);
 
-	/* sum arr2 */
+	 
 	n = ARRAY_SIZE(arr2);
 	bpf_iter_num_new(&it, 0, n);
 	sum2 = sum(&it, arr2, n);

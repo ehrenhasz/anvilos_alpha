@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013-2014, NVIDIA CORPORATION.  All rights reserved.
- *
- * Based on drivers/misc/eeprom/sunxi_sid.c
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/clk.h>
@@ -160,7 +156,7 @@ static const struct tegra_fuse_info tegra20_fuse_info = {
 	.spare = 0x100,
 };
 
-/* Early boot code. This code is called before the devices are created */
+ 
 
 static void __init tegra20_fuse_add_randomness(void)
 {

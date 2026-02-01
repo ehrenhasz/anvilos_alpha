@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ROHM BU21023/24 Dual touch support resistive touch screen driver
- * Copyright (C) 2012 ROHM CO.,LTD.
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/firmware.h>
 #include <linux/i2c.h>
@@ -23,7 +20,7 @@
 #define FIRMWARE_BLOCK_SIZE		32U
 #define FIRMWARE_RETRY_MAX		4
 
-#define SAMPLING_DELAY			12	/* msec */
+#define SAMPLING_DELAY			12	 
 
 #define CALIBRATION_RETRY_MAX		6
 
@@ -31,11 +28,9 @@
 #define ROHM_TS_ABS_X_MAX		990
 #define ROHM_TS_ABS_Y_MIN		160
 #define ROHM_TS_ABS_Y_MAX		920
-#define ROHM_TS_DISPLACEMENT_MAX	0	/* zero for infinite */
+#define ROHM_TS_DISPLACEMENT_MAX	0	 
 
-/*
- * BU21023GUL/BU21023MUV/BU21024FV-M registers map
- */
+ 
 #define VADOUT_YP_H		0x00
 #define VADOUT_YP_L		0x01
 #define VADOUT_XP_H		0x02
@@ -68,14 +63,10 @@
 #define Z_PARAM_H		0x18
 #define Z_PARAM_L		0x19
 
-/*
- * Value for VADOUT_*_L
- */
+ 
 #define VADOUT_L_MASK		0x01
 
-/*
- * Value for PRM*_*_L
- */
+ 
 #define PRM_L_MASK		0x01
 
 #define POS_X1_H		0x20
@@ -87,9 +78,7 @@
 #define POS_Y2_H		0x26
 #define POS_Y2_L		0x27
 
-/*
- * Value for POS_*_L
- */
+ 
 #define POS_L_MASK		0x01
 
 #define TOUCH			0x28
@@ -111,9 +100,7 @@
 #define INT_MASK		0x3d
 #define INT_CLEAR		0x3e
 
-/*
- * Values for INT_*
- */
+ 
 #define COORD_UPDATE		0x01
 #define CALIBRATION_DONE	0x02
 #define SLEEP_IN		0x04
@@ -125,9 +112,7 @@
 #define ERR_STATUS		0x2b
 #define ERR_MASK		0x3f
 
-/*
- * Values for ERR_*
- */
+ 
 #define ADC_TIMEOUT		0x01
 #define CPU_TIMEOUT		0x02
 #define CALIBRATION_ERR		0x04
@@ -137,7 +122,7 @@
 #define PROGRAM_LOAD_HOST		0x02
 #define PROGRAM_LOAD_EEPROM		0x03
 #define CENSOR_4PORT			0x04
-#define CENSOR_8PORT			0x00	/* Not supported by BU21023 */
+#define CENSOR_8PORT			0x00	 
 #define CALIBRATION_TYPE_DEFAULT	0x08
 #define CALIBRATION_TYPE_SPECIAL	0x00
 #define INT_ACTIVE_HIGH			0x10
@@ -195,7 +180,7 @@
 #define FORCE_CALIBRATION_ON	0x01
 #define FORCE_CALIBRATION_OFF	0x00
 
-#define CPU_FREQ		0x50	/* 10 / (reg + 1) MHz */
+#define CPU_FREQ		0x50	 
 #define CPU_FREQ_10MHZ		0x00
 #define CPU_FREQ_5MHZ		0x01
 #define CPU_FREQ_1MHZ		0x09
@@ -216,7 +201,7 @@
 #define PROGRAM_VERSION		0x5f
 
 #define ADC_CTRL		0x60
-#define ADC_DIV_MASK		0x1f	/* The minimum value is 4 */
+#define ADC_DIV_MASK		0x1f	 
 #define ADC_DIV_DEFAULT		0x08
 
 #define ADC_WAIT		0x61
@@ -266,19 +251,7 @@ struct rohm_ts_data {
 	u8 setup2;
 };
 
-/*
- * rohm_i2c_burst_read - execute combined I2C message for ROHM BU21023/24
- * @client: Handle to ROHM BU21023/24
- * @start: Where to start read address from ROHM BU21023/24
- * @buf: Where to store read data from ROHM BU21023/24
- * @len: How many bytes to read
- *
- * Returns negative errno, else zero on success.
- *
- * Note
- * In BU21023/24 burst read, stop condition is needed after "address write".
- * Therefore, transmission is performed in 2 steps.
- */
+ 
 static int rohm_i2c_burst_read(struct i2c_client *client, u8 start, void *buf,
 			       size_t len)
 {
@@ -314,7 +287,7 @@ static int rohm_ts_manual_calibration(struct rohm_ts_data *ts)
 {
 	struct i2c_client *client = ts->client;
 	struct device *dev = &client->dev;
-	u8 buf[33];	/* for PRM1_X_H(0x08)-TOUCH(0x28) */
+	u8 buf[33];	 
 
 	int retry;
 	bool success = false;
@@ -356,7 +329,7 @@ static int rohm_ts_manual_calibration(struct rohm_ts_data *ts)
 		goto out;
 
 	for (retry = 0; retry < CALIBRATION_RETRY_MAX; retry++) {
-		/* wait 2 sampling for update */
+		 
 		mdelay(2 * SAMPLING_DELAY);
 
 #define READ_CALIB_BUF(reg)	buf[((reg) - PRM1_X_H)]
@@ -369,7 +342,7 @@ static int rohm_ts_manual_calibration(struct rohm_ts_data *ts)
 			continue;
 
 		if (first_time) {
-			/* generate calibration parameter */
+			 
 			calib_x = ((int)READ_CALIB_BUF(PRM1_X_H) << 2 |
 				READ_CALIB_BUF(PRM1_X_L)) - AXIS_OFFSET;
 			calib_y = ((int)READ_CALIB_BUF(PRM1_Y_H) << 2 |
@@ -382,30 +355,30 @@ static int rohm_ts_manual_calibration(struct rohm_ts_data *ts)
 
 			first_time = false;
 		} else {
-			/* generate adjustment parameter */
+			 
 			err_x = (int)READ_CALIB_BUF(PRM1_X_H) << 2 |
 				READ_CALIB_BUF(PRM1_X_L);
 			err_y = (int)READ_CALIB_BUF(PRM1_Y_H) << 2 |
 				READ_CALIB_BUF(PRM1_Y_L);
 
-			/* X axis ajust */
+			 
 			if (err_x <= 4)
 				calib_x -= AXIS_ADJUST;
 			else if (err_x >= 60)
 				calib_x += AXIS_ADJUST;
 
-			/* Y axis ajust */
+			 
 			if (err_y <= 4)
 				calib_y -= AXIS_ADJUST;
 			else if (err_y >= 60)
 				calib_y += AXIS_ADJUST;
 		}
 
-		/* generate calibration setting value */
+		 
 		reg_x = calib_x + ((calib_x & 0x200) << 1);
 		reg_y = calib_y + ((calib_y & 0x200) << 1);
 
-		/* convert for register format */
+		 
 		reg1 = reg_x >> 3;
 		reg2 = (reg_y & 0x7) << 4 | (reg_x & 0x7);
 		reg3 = reg_y >> 3;
@@ -425,9 +398,7 @@ static int rohm_ts_manual_calibration(struct rohm_ts_data *ts)
 		if (error)
 			goto out;
 
-		/*
-		 * force calibration sequcence
-		 */
+		 
 		error = i2c_smbus_write_byte_data(client, FORCE_CALIBRATION,
 						  FORCE_CALIBRATION_OFF);
 		if (error)
@@ -438,14 +409,12 @@ static int rohm_ts_manual_calibration(struct rohm_ts_data *ts)
 		if (error)
 			goto out;
 
-		/* clear all interrupts */
+		 
 		error = i2c_smbus_write_byte_data(client, INT_CLEAR, 0xff);
 		if (error)
 			goto out;
 
-		/*
-		 * Wait for the status change of calibration, max 10 sampling
-		 */
+		 
 		calibration_done = false;
 
 		for (i = 0; i < 10; i++) {
@@ -491,14 +460,14 @@ static int rohm_ts_manual_calibration(struct rohm_ts_data *ts)
 		if (error)
 			goto out;
 
-		/* calibration data enable */
+		 
 		error = i2c_smbus_write_byte_data(client, TEST1,
 						  DUALTOUCH_STABILIZE_ON |
 						  DUALTOUCH_REG_ON);
 		if (error)
 			goto out;
 
-		/* wait 10 sampling */
+		 
 		mdelay(10 * SAMPLING_DELAY);
 
 		error = -EBUSY;
@@ -507,7 +476,7 @@ static int rohm_ts_manual_calibration(struct rohm_ts_data *ts)
 out:
 	error2 = i2c_smbus_write_byte_data(client, INT_MASK, INT_ALL);
 	if (!error2)
-		/* Clear all interrupts */
+		 
 		error2 = i2c_smbus_write_byte_data(client, INT_CLEAR, 0xff);
 
 	return error ? error : error2;
@@ -524,7 +493,7 @@ static irqreturn_t rohm_ts_soft_irq(int irq, void *dev_id)
 	struct input_dev *input_dev = ts->input;
 	struct device *dev = &client->dev;
 
-	u8 buf[10];	/* for POS_X1_H(0x20)-TOUCH_GESTURE(0x29) */
+	u8 buf[10];	 
 
 	struct input_mt_pos pos[MAX_CONTACTS];
 	int slots[MAX_CONTACTS];
@@ -540,7 +509,7 @@ static irqreturn_t rohm_ts_soft_irq(int irq, void *dev_id)
 	if (error)
 		return IRQ_HANDLED;
 
-	/* Clear all interrupts */
+	 
 	error = i2c_smbus_write_byte_data(client, INT_CLEAR, 0xff);
 	if (error)
 		return IRQ_HANDLED;
@@ -553,7 +522,7 @@ static irqreturn_t rohm_ts_soft_irq(int irq, void *dev_id)
 
 	touch_flags = READ_POS_BUF(TOUCH_GESTURE) & TOUCH_MASK;
 	if (touch_flags) {
-		/* generate coordinates */
+		 
 		pos[0].x = ((s16)READ_POS_BUF(POS_X1_H) << 2) |
 			   READ_POS_BUF(POS_X1_L);
 		pos[0].y = ((s16)READ_POS_BUF(POS_Y1_H) << 2) |
@@ -666,7 +635,7 @@ static int rohm_ts_load_firmware(struct i2c_client *client,
 		if (retry) {
 			dev_warn(dev, "retrying firmware load\n");
 
-			/* settings for retry */
+			 
 			error = i2c_smbus_write_byte_data(client, EX_WDAT, 0);
 			if (error)
 				goto out;
@@ -685,7 +654,7 @@ static int rohm_ts_load_firmware(struct i2c_client *client,
 		if (error)
 			goto out;
 
-		/* firmware load to the device */
+		 
 		offset = 0;
 		len = fw->size;
 
@@ -701,14 +670,14 @@ static int rohm_ts_load_firmware(struct i2c_client *client,
 			offset += xfer_len;
 		}
 
-		/* check firmware load result */
+		 
 		status = i2c_smbus_read_byte_data(client, INT_STATUS);
 		if (status < 0) {
 			error = status;
 			goto out;
 		}
 
-		/* clear all interrupts */
+		 
 		error = i2c_smbus_write_byte_data(client, INT_CLEAR, 0xff);
 		if (error)
 			goto out;
@@ -866,21 +835,19 @@ static int rohm_ts_device_init(struct i2c_client *client, u8 setup2)
 
 	disable_irq(client->irq);
 
-	/*
-	 * Wait 200usec for reset
-	 */
+	 
 	udelay(200);
 
-	/* Release analog reset */
+	 
 	error = i2c_smbus_write_byte_data(client, SYSTEM,
 					  ANALOG_POWER_ON | CPU_POWER_OFF);
 	if (error)
 		return error;
 
-	/* Waiting for the analog warm-up, max. 200usec */
+	 
 	udelay(200);
 
-	/* clear all interrupts */
+	 
 	error = i2c_smbus_write_byte_data(client, INT_CLEAR, 0xff);
 	if (error)
 		return error;
@@ -929,9 +896,7 @@ static int rohm_ts_device_init(struct i2c_client *client, u8 setup2)
 	if (error)
 		return error;
 
-	/*
-	 * Panel setup, these values change with the panel.
-	 */
+	 
 	error = i2c_smbus_write_byte_data(client, STEP_X, STEP_X_DEFAULT);
 	if (error)
 		return error;
@@ -965,7 +930,7 @@ static int rohm_ts_device_init(struct i2c_client *client, u8 setup2)
 	if (error)
 		return error;
 
-	/* Fixed value settings */
+	 
 	error = i2c_smbus_write_byte_data(client, CALIBRATION_ADJUST,
 					  CALIBRATION_ADJUST_DEFAULT);
 	if (error)
@@ -987,12 +952,7 @@ static int rohm_ts_device_init(struct i2c_client *client, u8 setup2)
 		return error;
 	}
 
-	/*
-	 * Manual calibration results are not changed in same environment.
-	 * If the force calibration is performed,
-	 * the controller will not require calibration request interrupt
-	 * when the typical values are set to the calibration registers.
-	 */
+	 
 	error = i2c_smbus_write_byte_data(client, CALIBRATION_REG1,
 					  CALIBRATION_REG1_DEFAULT);
 	if (error)
@@ -1018,12 +978,12 @@ static int rohm_ts_device_init(struct i2c_client *client, u8 setup2)
 	if (error)
 		return error;
 
-	/* Clear all interrupts */
+	 
 	error = i2c_smbus_write_byte_data(client, INT_CLEAR, 0xff);
 	if (error)
 		return error;
 
-	/* Enable coordinates update interrupt */
+	 
 	error = i2c_smbus_write_byte_data(client, INT_MASK,
 					  CALIBRATION_DONE | SLEEP_OUT |
 					  SLEEP_IN | PROGRAM_LOAD_DONE);
@@ -1036,7 +996,7 @@ static int rohm_ts_device_init(struct i2c_client *client, u8 setup2)
 	if (error)
 		return error;
 
-	/* controller CPU power on */
+	 
 	error = i2c_smbus_write_byte_data(client, SYSTEM,
 					  ANALOG_POWER_ON | CPU_POWER_ON);
 
@@ -1112,7 +1072,7 @@ static int rohm_bu21023_i2c_probe(struct i2c_client *client)
 		return -EOPNOTSUPP;
 	}
 
-	/* Turn off CPU just in case */
+	 
 	error = rohm_ts_power_off(client);
 	if (error)
 		return error;
@@ -1175,7 +1135,7 @@ static int rohm_bu21023_i2c_probe(struct i2c_client *client)
 
 static const struct i2c_device_id rohm_bu21023_i2c_id[] = {
 	{ BU21023_NAME, 0 },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, rohm_bu21023_i2c_id);
 

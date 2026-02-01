@@ -1,51 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * comedi/drivers/ni_labpc.c
- * Driver for National Instruments Lab-PC series boards and compatibles
- * Copyright (C) 2001-2003 Frank Mori Hess <fmhess@users.sourceforge.net>
- */
 
-/*
- * Driver: ni_labpc
- * Description: National Instruments Lab-PC (& compatibles)
- * Devices: [National Instruments] Lab-PC-1200 (lab-pc-1200),
- *   Lab-PC-1200AI (lab-pc-1200ai), Lab-PC+ (lab-pc+)
- * Author: Frank Mori Hess <fmhess@users.sourceforge.net>
- * Status: works
- *
- * Configuration options - ISA boards:
- *   [0] - I/O port base address
- *   [1] - IRQ (optional, required for timed or externally triggered
- *		conversions)
- *   [2] - DMA channel (optional)
- *
- * Tested with lab-pc-1200.  For the older Lab-PC+, not all input
- * ranges and analog references will work, the available ranges/arefs
- * will depend on how you have configured the jumpers on your board
- * (see your owner's manual).
- *
- * Kernel-level ISA plug-and-play support for the lab-pc-1200 boards
- * has not yet been added to the driver, mainly due to the fact that
- * I don't know the device id numbers. If you have one of these boards,
- * please file a bug report at https://comedi.org/ so I can get the
- * necessary information from you.
- *
- * The 1200 series boards have onboard calibration dacs for correcting
- * analog input/output offsets and gains. The proper settings for these
- * caldacs are stored on the board's eeprom. To read the caldac values
- * from the eeprom and store them into a file that can be then be used
- * by comedilib, use the comedi_calibrate program.
- *
- * The Lab-pc+ has quirky chanlist requirements when scanning multiple
- * channels. Multiple channel scan sequence must start at highest channel,
- * then decrement down to channel 0. The rest of the cards can scan down
- * like lab-pc+ or scan up from channel zero. Chanlists consisting of all
- * one channel are also legal, and allow you to pace conversions in bursts.
- *
- * NI manuals:
- * 341309a (labpc-1200 register manual)
- * 320502b (lab-pc+)
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedidev.h>

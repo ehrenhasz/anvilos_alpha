@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * (C) COPYRIGHT 2016 ARM Limited. All rights reserved.
- * Author: Liviu Dudau <Liviu.Dudau@arm.com>
- *
- * ARM Mali DP500/DP550/DP650 hardware manipulation routines. This is where
- * the difference between various versions of the hardware is being dealt with
- * in an attempt to provide to the rest of the driver code a unified view
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -25,15 +18,15 @@
 #include "malidp_mw.h"
 
 enum {
-	MW_NOT_ENABLED = 0,	/* SE writeback not enabled */
-	MW_ONESHOT,		/* SE in one-shot mode for writeback */
-	MW_START,		/* SE started writeback */
-	MW_RESTART,		/* SE will start another writeback after this one */
-	MW_STOP,		/* SE needs to stop after this writeback */
+	MW_NOT_ENABLED = 0,	 
+	MW_ONESHOT,		 
+	MW_START,		 
+	MW_RESTART,		 
+	MW_STOP,		 
 };
 
 static const struct malidp_format_id malidp500_de_formats[] = {
-	/*    fourcc,   layers supporting the format,     internal id  */
+	 
 	{ DRM_FORMAT_ARGB2101010, DE_VIDEO1 | DE_GRAPHICS1 | DE_GRAPHICS2 | SE_MEMWRITE,  0 },
 	{ DRM_FORMAT_ABGR2101010, DE_VIDEO1 | DE_GRAPHICS1 | DE_GRAPHICS2 | SE_MEMWRITE,  1 },
 	{ DRM_FORMAT_ARGB8888, DE_VIDEO1 | DE_GRAPHICS1 | DE_GRAPHICS2,  2 },
@@ -51,7 +44,7 @@ static const struct malidp_format_id malidp500_de_formats[] = {
 	{ DRM_FORMAT_NV12, DE_VIDEO1 | SE_MEMWRITE, 14 },
 	{ DRM_FORMAT_YUV420, DE_VIDEO1, 15 },
 	{ DRM_FORMAT_XYUV8888, DE_VIDEO1, 16 },
-	/* These are supported with AFBC only */
+	 
 	{ DRM_FORMAT_YUV420_8BIT, DE_VIDEO1, 14 },
 	{ DRM_FORMAT_VUY888, DE_VIDEO1, 16 },
 	{ DRM_FORMAT_VUY101010, DE_VIDEO1, 17 },
@@ -64,7 +57,7 @@ static const struct malidp_format_id malidp500_de_formats[] = {
 #define AFBC_YUV_422_FORMAT_ID	MALIDP_ID(5, 1)
 
 #define MALIDP_COMMON_FORMATS \
-	/*    fourcc,   layers supporting the format,      internal id   */ \
+	  \
 	{ DRM_FORMAT_ARGB2101010, DE_VIDEO1 | DE_GRAPHICS1 | DE_VIDEO2 | SE_MEMWRITE, MALIDP_ID(0, 0) }, \
 	{ DRM_FORMAT_ABGR2101010, DE_VIDEO1 | DE_GRAPHICS1 | DE_VIDEO2 | SE_MEMWRITE, MALIDP_ID(0, 1) }, \
 	{ DRM_FORMAT_RGBA1010102, DE_VIDEO1 | DE_GRAPHICS1 | DE_VIDEO2 | SE_MEMWRITE, MALIDP_ID(0, 2) }, \
@@ -83,23 +76,23 @@ static const struct malidp_format_id malidp500_de_formats[] = {
 	{ DRM_FORMAT_ABGR1555, DE_VIDEO1 | DE_GRAPHICS1 | DE_VIDEO2, MALIDP_ID(4, 1) }, \
 	{ DRM_FORMAT_RGB565, DE_VIDEO1 | DE_GRAPHICS1 | DE_VIDEO2, MALIDP_ID(4, 2) }, \
 	{ DRM_FORMAT_BGR565, DE_VIDEO1 | DE_GRAPHICS1 | DE_VIDEO2, MALIDP_ID(4, 3) }, \
-	/* This is only supported with linear modifier */	\
+	 	\
 	{ DRM_FORMAT_XYUV8888, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(5, 0) },\
-	/* This is only supported with AFBC modifier */		\
+	 		\
 	{ DRM_FORMAT_VUY888, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(5, 0) }, \
 	{ DRM_FORMAT_YUYV, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(5, 2) },	\
-	/* This is only supported with linear modifier */ \
+	  \
 	{ DRM_FORMAT_UYVY, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(5, 3) },	\
 	{ DRM_FORMAT_NV12, DE_VIDEO1 | DE_VIDEO2 | SE_MEMWRITE, MALIDP_ID(5, 6) },	\
-	/* This is only supported with AFBC modifier */ \
+	  \
 	{ DRM_FORMAT_YUV420_8BIT, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(5, 6) }, \
 	{ DRM_FORMAT_YUV420, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(5, 7) }, \
-	/* This is only supported with linear modifier */ \
+	  \
 	{ DRM_FORMAT_XVYU2101010, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(6, 0)}, \
-	/* This is only supported with AFBC modifier */ \
+	  \
 	{ DRM_FORMAT_VUY101010, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(6, 0)}, \
 	{ DRM_FORMAT_X0L2, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(6, 6)}, \
-	/* This is only supported with AFBC modifier */ \
+	  \
 	{ DRM_FORMAT_YUV420_10BIT, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(6, 7)}, \
 	{ DRM_FORMAT_P010, DE_VIDEO1 | DE_VIDEO2, MALIDP_ID(6, 7)}
 
@@ -113,9 +106,7 @@ static const struct malidp_format_id malidp650_de_formats[] = {
 };
 
 static const struct malidp_layer malidp500_layers[] = {
-	/* id, base address, fb pointer address base, stride offset,
-	 *	yuv2rgb matrix offset, mmu control register offset, rotation_features
-	 */
+	 
 	{ DE_VIDEO1, MALIDP500_DE_LV_BASE, MALIDP500_DE_LV_PTR_BASE,
 		MALIDP_DE_LV_STRIDE0, MALIDP500_LV_YUV2RGB, 0, ROTATE_ANY,
 		MALIDP500_DE_LV_AD_CTRL },
@@ -128,9 +119,7 @@ static const struct malidp_layer malidp500_layers[] = {
 };
 
 static const struct malidp_layer malidp550_layers[] = {
-	/* id, base address, fb pointer address base, stride offset,
-	 *	yuv2rgb matrix offset, mmu control register offset, rotation_features
-	 */
+	 
 	{ DE_VIDEO1, MALIDP550_DE_LV1_BASE, MALIDP550_DE_LV1_PTR_BASE,
 		MALIDP_DE_LV_STRIDE0, MALIDP550_LV_YUV2RGB, 0, ROTATE_ANY,
 		MALIDP550_DE_LV1_AD_CTRL },
@@ -145,10 +134,7 @@ static const struct malidp_layer malidp550_layers[] = {
 };
 
 static const struct malidp_layer malidp650_layers[] = {
-	/* id, base address, fb pointer address base, stride offset,
-	 *	yuv2rgb matrix offset, mmu control register offset,
-	 *	rotation_features
-	 */
+	 
 	{ DE_VIDEO1, MALIDP550_DE_LV1_BASE, MALIDP550_DE_LV1_PTR_BASE,
 		MALIDP_DE_LV_STRIDE0, MALIDP550_LV_YUV2RGB,
 		MALIDP650_DE_LV_MMU_CTRL, ROTATE_ANY,
@@ -166,26 +152,26 @@ static const struct malidp_layer malidp650_layers[] = {
 };
 
 const u64 malidp_format_modifiers[] = {
-	/* All RGB formats (except XRGB, RGBX, XBGR, BGRX) */
+	 
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_SIZE_16X16 | AFBC_YTR | AFBC_SPARSE),
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_SIZE_16X16 | AFBC_YTR),
 
-	/* All RGB formats > 16bpp (except XRGB, RGBX, XBGR, BGRX) */
+	 
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_SIZE_16X16 | AFBC_YTR | AFBC_SPARSE | AFBC_SPLIT),
 
-	/* All 8 or 10 bit YUV 444 formats. */
-	/* In DP550, 10 bit YUV 420 format also supported */
+	 
+	 
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_SIZE_16X16 | AFBC_SPARSE | AFBC_SPLIT),
 
-	/* YUV 420, 422 P1 8 bit and YUV 444 8 bit/10 bit formats */
+	 
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_SIZE_16X16 | AFBC_SPARSE),
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_SIZE_16X16),
 
-	/* YUV 420, 422 P1 8, 10 bit formats */
+	 
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_SIZE_16X16 | AFBC_CBR | AFBC_SPARSE),
 	DRM_FORMAT_MOD_ARM_AFBC(AFBC_SIZE_16X16 | AFBC_CBR),
 
-	/* All formats */
+	 
 	DRM_FORMAT_MOD_LINEAR,
 
 	DRM_FORMAT_MOD_INVALID
@@ -270,13 +256,13 @@ static const u16 dp500_se_scaling_coeffs[][SE_N_SCALING_COEFFS] = {
 static int malidp500_query_hw(struct malidp_hw_device *hwdev)
 {
 	u32 conf = malidp_hw_read(hwdev, MALIDP500_CONFIG_ID);
-	/* bit 4 of the CONFIG_ID register holds the line size multiplier */
+	 
 	u8 ln_size_mult = conf & 0x10 ? 2 : 1;
 
 	hwdev->min_line_size = 2;
 	hwdev->max_line_size = SZ_2K * ln_size_mult;
 	hwdev->rotation_memory[0] = SZ_1K * 64 * ln_size_mult;
-	hwdev->rotation_memory[1] = 0; /* no second rotation memory bank */
+	hwdev->rotation_memory[1] = 0;  
 
 	return 0;
 }
@@ -290,10 +276,7 @@ static void malidp500_enter_config_mode(struct malidp_hw_device *hwdev)
 		status = malidp_hw_read(hwdev, hwdev->hw->map.dc_base + MALIDP_REG_STATUS);
 		if ((status & MALIDP500_DC_CONFIG_REQ) == MALIDP500_DC_CONFIG_REQ)
 			break;
-		/*
-		 * entering config mode can take as long as the rendering
-		 * of a full frame, hence the long sleep here
-		 */
+		 
 		usleep_range(1000, 10000);
 		count--;
 	}
@@ -349,12 +332,7 @@ static void malidp500_modeset(struct malidp_hw_device *hwdev, struct videomode *
 	val |= MALIDP_DE_DEFAULT_PREFETCH_START;
 	malidp_hw_setbits(hwdev, val, MALIDP500_DC_CONTROL);
 
-	/*
-	 * Mali-DP500 encodes the background color like this:
-	 *    - red   @ MALIDP500_BGND_COLOR[12:0]
-	 *    - green @ MALIDP500_BGND_COLOR[27:16]
-	 *    - blue  @ (MALIDP500_BGND_COLOR + 4)[12:0]
-	 */
+	 
 	val = ((MALIDP_BGND_COLOR_G & 0xfff) << 16) |
 	      (MALIDP_BGND_COLOR_R & 0xfff);
 	malidp_hw_write(hwdev, val, MALIDP500_BGND_COLOR);
@@ -380,10 +358,7 @@ static void malidp500_modeset(struct malidp_hw_device *hwdev, struct videomode *
 	else
 		malidp_hw_clearbits(hwdev, MALIDP_DISP_FUNC_ILACED, MALIDP_DE_DISPLAY_FUNC);
 
-	/*
-	 * Program the RQoS register to avoid high resolutions flicker
-	 * issue on the LS1028A.
-	 */
+	 
 	if (hwdev->arqos_value) {
 		val = hwdev->arqos_value;
 		malidp_hw_setbits(hwdev, val, MALIDP500_RQOS_QUALITY);
@@ -417,11 +392,7 @@ int malidp_format_get_bpp(u32 fmt)
 static int malidp500_rotmem_required(struct malidp_hw_device *hwdev, u16 w,
 				     u16 h, u32 fmt, bool has_modifier)
 {
-	/*
-	 * Each layer needs enough rotation memory to fit 8 lines
-	 * worth of pixel data. Required size is then:
-	 *    size = rotated_width * (bpp / 8) * 8;
-	 */
+	 
 	int bpp = malidp_format_get_bpp(fmt);
 
 	return w * bpp;
@@ -448,7 +419,7 @@ static int malidp500_se_set_scaling_coeffs(struct malidp_hw_device *hwdev,
 					   struct malidp_se_config *se_config,
 					   struct malidp_se_config *old_config)
 {
-	/* Get array indices into dp500_se_scaling_coeffs. */
+	 
 	u8 h = (u8)se_config->hcoeff - 1;
 	u8 v = (u8)se_config->vcoeff - 1;
 
@@ -481,19 +452,14 @@ static long malidp500_se_calc_mclk(struct malidp_hw_device *hwdev,
 				   struct videomode *vm)
 {
 	unsigned long mclk;
-	unsigned long pxlclk = vm->pixelclock; /* Hz */
+	unsigned long pxlclk = vm->pixelclock;  
 	unsigned long htotal = vm->hactive + vm->hfront_porch +
 			       vm->hback_porch + vm->hsync_len;
 	unsigned long input_size = se_config->input_w * se_config->input_h;
 	unsigned long a = 10;
 	long ret;
 
-	/*
-	 * mclk = max(a, 1.5) * pxlclk
-	 *
-	 * To avoid float calculaiton, using 15 instead of 1.5 and div by
-	 * 10 to get mclk.
-	 */
+	 
 	if (se_config->scale_enable) {
 		a = 15 * input_size / (htotal * se_config->output_h);
 		if (a < 15)
@@ -517,10 +483,10 @@ static int malidp500_enable_memwrite(struct malidp_hw_device *hwdev,
 	u32 base = MALIDP500_SE_MEMWRITE_BASE;
 	u32 de_base = malidp_get_block_base(hwdev, MALIDP_DE_BLOCK);
 
-	/* enable the scaling engine block */
+	 
 	malidp_hw_setbits(hwdev, MALIDP_SCALE_ENGINE_EN, de_base + MALIDP_DE_DISPLAY_FUNC);
 
-	/* restart the writeback if already enabled */
+	 
 	if (hwdev->mw_state != MW_NOT_ENABLED)
 		hwdev->mw_state = MW_RESTART;
 	else
@@ -579,21 +545,21 @@ static int malidp550_query_hw(struct malidp_hw_device *hwdev)
 	switch (ln_size) {
 	case 0:
 		hwdev->max_line_size = SZ_2K;
-		/* two banks of 64KB for rotation memory */
+		 
 		rsize = 64;
 		break;
 	case 1:
 		hwdev->max_line_size = SZ_4K;
-		/* two banks of 128KB for rotation memory */
+		 
 		rsize = 128;
 		break;
 	case 2:
 		hwdev->max_line_size = 1280;
-		/* two banks of 40KB for rotation memory */
+		 
 		rsize = 40;
 		break;
 	case 3:
-		/* reserved value */
+		 
 		hwdev->max_line_size = 0;
 		return -EINVAL;
 	}
@@ -611,10 +577,7 @@ static void malidp550_enter_config_mode(struct malidp_hw_device *hwdev)
 		status = malidp_hw_read(hwdev, hwdev->hw->map.dc_base + MALIDP_REG_STATUS);
 		if ((status & MALIDP550_DC_CONFIG_REQ) == MALIDP550_DC_CONFIG_REQ)
 			break;
-		/*
-		 * entering config mode can take as long as the rendering
-		 * of a full frame, hence the long sleep here
-		 */
+		 
 		usleep_range(1000, 10000);
 		count--;
 	}
@@ -663,15 +626,7 @@ static void malidp550_modeset(struct malidp_hw_device *hwdev, struct videomode *
 	malidp_hw_write(hwdev, hwdev->output_color_depth,
 		hwdev->hw->map.out_depth_base);
 	malidp_hw_write(hwdev, val, MALIDP550_DE_CONTROL);
-	/*
-	 * Mali-DP550 and Mali-DP650 encode the background color like this:
-	 *   - red   @ MALIDP550_DE_BGND_COLOR[23:16]
-	 *   - green @ MALIDP550_DE_BGND_COLOR[15:8]
-	 *   - blue  @ MALIDP550_DE_BGND_COLOR[7:0]
-	 *
-	 * We need to truncate the least significant 4 bits from the default
-	 * MALIDP_BGND_COLOR_x values
-	 */
+	 
 	val = (((MALIDP_BGND_COLOR_R >> 4) & 0xff) << 16) |
 	      (((MALIDP_BGND_COLOR_G >> 4) & 0xff) << 8) |
 	      ((MALIDP_BGND_COLOR_B >> 4) & 0xff);
@@ -707,7 +662,7 @@ static int malidpx50_get_bytes_per_column(u32 fmt)
 	u32 bytes_per_column;
 
 	switch (fmt) {
-	/* 8 lines at 4 bytes per pixel */
+	 
 	case DRM_FORMAT_ARGB2101010:
 	case DRM_FORMAT_ABGR2101010:
 	case DRM_FORMAT_RGBA1010102:
@@ -722,7 +677,7 @@ static int malidpx50_get_bytes_per_column(u32 fmt)
 	case DRM_FORMAT_BGRX8888:
 	case DRM_FORMAT_RGB888:
 	case DRM_FORMAT_BGR888:
-	/* 16 lines at 2 bytes per pixel */
+	 
 	case DRM_FORMAT_RGBA5551:
 	case DRM_FORMAT_ABGR1555:
 	case DRM_FORMAT_RGB565:
@@ -732,20 +687,20 @@ static int malidpx50_get_bytes_per_column(u32 fmt)
 	case DRM_FORMAT_X0L0:
 		bytes_per_column = 32;
 		break;
-	/* 16 lines at 1.5 bytes per pixel */
+	 
 	case DRM_FORMAT_NV12:
 	case DRM_FORMAT_YUV420:
-	/* 8 lines at 3 bytes per pixel */
+	 
 	case DRM_FORMAT_VUY888:
-	/* 16 lines at 12 bits per pixel */
+	 
 	case DRM_FORMAT_YUV420_8BIT:
-	/* 8 lines at 3 bytes per pixel */
+	 
 	case DRM_FORMAT_P010:
 		bytes_per_column = 24;
 		break;
-	/* 8 lines at 30 bits per pixel */
+	 
 	case DRM_FORMAT_VUY101010:
-	/* 16 lines at 15 bits per pixel */
+	 
 	case DRM_FORMAT_YUV420_10BIT:
 		bytes_per_column = 30;
 		break;
@@ -762,11 +717,11 @@ static int malidp550_rotmem_required(struct malidp_hw_device *hwdev, u16 w,
 	int bytes_per_column = 0;
 
 	switch (fmt) {
-	/* 8 lines at 15 bits per pixel */
+	 
 	case DRM_FORMAT_YUV420_10BIT:
 		bytes_per_column = 15;
 		break;
-	/* Uncompressed YUV 420 10 bit single plane cannot be rotated */
+	 
 	case DRM_FORMAT_X0L2:
 		if (has_modifier)
 			bytes_per_column = 8;
@@ -789,7 +744,7 @@ static int malidp650_rotmem_required(struct malidp_hw_device *hwdev, u16 w,
 	int bytes_per_column = 0;
 
 	switch (fmt) {
-	/* 16 lines at 2 bytes per pixel */
+	 
 	case DRM_FORMAT_X0L2:
 		bytes_per_column = 32;
 		break;
@@ -837,7 +792,7 @@ static long malidp550_se_calc_mclk(struct malidp_hw_device *hwdev,
 		denominator = (htotal - 2) * se_config->output_h;
 	}
 
-	/* mclk can't be slower than pxlclk. */
+	 
 	if (numerator < denominator)
 		numerator = denominator = 1;
 	mclk = (pxlclk * numerator) / denominator;
@@ -858,7 +813,7 @@ static int malidp550_enable_memwrite(struct malidp_hw_device *hwdev,
 	u32 base = MALIDP550_SE_MEMWRITE_BASE;
 	u32 de_base = malidp_get_block_base(hwdev, MALIDP_DE_BLOCK);
 
-	/* enable the scaling engine block */
+	 
 	malidp_hw_setbits(hwdev, MALIDP_SCALE_ENGINE_EN, de_base + MALIDP_DE_DISPLAY_FUNC);
 
 	hwdev->mw_state = MW_ONESHOT;
@@ -915,17 +870,17 @@ static int malidp650_query_hw(struct malidp_hw_device *hwdev)
 	switch (ln_size) {
 	case 0:
 	case 2:
-		/* reserved values */
+		 
 		hwdev->max_line_size = 0;
 		return -EINVAL;
 	case 1:
 		hwdev->max_line_size = SZ_4K;
-		/* two banks of 128KB for rotation memory */
+		 
 		rsize = 128;
 		break;
 	case 3:
 		hwdev->max_line_size = 2560;
-		/* two banks of 80KB for rotation memory */
+		 
 		rsize = 80;
 	}
 
@@ -940,7 +895,7 @@ const struct malidp_hw malidp_device[MALIDP_MAX_DEVICES] = {
 			.se_base = MALIDP500_SE_BASE,
 			.dc_base = MALIDP500_DC_BASE,
 			.out_depth_base = MALIDP500_OUTPUT_DEPTH,
-			.features = 0,	/* no CLEARIRQ register */
+			.features = 0,	 
 			.n_layers = ARRAY_SIZE(malidp500_layers),
 			.layers = malidp500_layers,
 			.de_irq_map = {
@@ -1096,11 +1051,7 @@ u8 malidp_hw_get_format_id(const struct malidp_hw_regmap *map,
 	for (i = 0; i < map->n_pixel_formats; i++) {
 		if (((map->pixel_formats[i].layer & layer_id) == layer_id) &&
 		    (map->pixel_formats[i].format == format)) {
-			/*
-			 * In some DP550 and DP650, DRM_FORMAT_YUYV + AFBC modifier
-			 * is supported by a different h/w format id than
-			 * DRM_FORMAT_YUYV (only).
-			 */
+			 
 			if (format == DRM_FORMAT_YUYV &&
 			    (has_modifier) &&
 			    (map->features & MALIDP_DEVICE_AFBC_YUYV_USE_422_P2))
@@ -1179,19 +1130,15 @@ static irqreturn_t malidp_de_irq(int irq, void *arg)
 	hw = hwdev->hw;
 	de = &hw->map.de_irq_map;
 
-	/*
-	 * if we are suspended it is likely that we were invoked because
-	 * we share an interrupt line with some other driver, don't try
-	 * to read the hardware registers
-	 */
+	 
 	if (hwdev->pm_suspended)
 		return IRQ_NONE;
 
-	/* first handle the config valid IRQ */
+	 
 	dc_status = malidp_hw_read(hwdev, hw->map.dc_base + MALIDP_REG_STATUS);
 	if (dc_status & hw->map.dc_irq_map.vsync_irq) {
 		malidp_hw_clear_irq(hwdev, MALIDP_DC_BLOCK, dc_status);
-		/* do we have a page flip event? */
+		 
 		if (malidp->event != NULL) {
 			spin_lock(&drm->event_lock);
 			drm_crtc_send_vblank_event(&malidp->crtc, malidp->event);
@@ -1207,7 +1154,7 @@ static irqreturn_t malidp_de_irq(int irq, void *arg)
 		return ret;
 
 	mask = malidp_hw_read(hwdev, MALIDP_REG_MASKIRQ);
-	/* keep the status of the enabled interrupts, plus the error bits */
+	 
 	status &= (mask | de->err_mask);
 	if ((status & de->vsync_irq) && malidp->crtc.enabled)
 		drm_crtc_handle_vblank(&malidp->crtc);
@@ -1235,17 +1182,17 @@ static irqreturn_t malidp_de_irq_thread_handler(int irq, void *arg)
 
 void malidp_de_irq_hw_init(struct malidp_hw_device *hwdev)
 {
-	/* ensure interrupts are disabled */
+	 
 	malidp_hw_disable_irq(hwdev, MALIDP_DE_BLOCK, 0xffffffff);
 	malidp_hw_clear_irq(hwdev, MALIDP_DE_BLOCK, 0xffffffff);
 	malidp_hw_disable_irq(hwdev, MALIDP_DC_BLOCK, 0xffffffff);
 	malidp_hw_clear_irq(hwdev, MALIDP_DC_BLOCK, 0xffffffff);
 
-	/* first enable the DC block IRQs */
+	 
 	malidp_hw_enable_irq(hwdev, MALIDP_DC_BLOCK,
 			     hwdev->hw->map.dc_irq_map.irq_mask);
 
-	/* now enable the DE block IRQs */
+	 
 	malidp_hw_enable_irq(hwdev, MALIDP_DE_BLOCK,
 			     hwdev->hw->map.de_irq_map.irq_mask);
 }
@@ -1256,7 +1203,7 @@ int malidp_de_irq_init(struct drm_device *drm, int irq)
 	struct malidp_hw_device *hwdev = malidp->dev;
 	int ret;
 
-	/* ensure interrupts are disabled */
+	 
 	malidp_hw_disable_irq(hwdev, MALIDP_DE_BLOCK, 0xffffffff);
 	malidp_hw_clear_irq(hwdev, MALIDP_DE_BLOCK, 0xffffffff);
 	malidp_hw_disable_irq(hwdev, MALIDP_DC_BLOCK, 0xffffffff);
@@ -1292,11 +1239,7 @@ static irqreturn_t malidp_se_irq(int irq, void *arg)
 	const struct malidp_irq_map *se = &hw->map.se_irq_map;
 	u32 status, mask;
 
-	/*
-	 * if we are suspended it is likely that we were invoked because
-	 * we share an interrupt line with some other driver, don't try
-	 * to read the hardware registers
-	 */
+	 
 	if (hwdev->pm_suspended)
 		return IRQ_NONE;
 
@@ -1319,20 +1262,16 @@ static irqreturn_t malidp_se_irq(int irq, void *arg)
 			break;
 		case MW_STOP:
 			drm_writeback_signal_completion(&malidp->mw_connector, 0);
-			/* disable writeback after stop */
+			 
 			hwdev->mw_state = MW_NOT_ENABLED;
 			break;
 		case MW_RESTART:
 			drm_writeback_signal_completion(&malidp->mw_connector, 0);
-			fallthrough;	/* to a new start */
+			fallthrough;	 
 		case MW_START:
-			/* writeback started, need to emulate one-shot mode */
+			 
 			hw->disable_memwrite(hwdev);
-			/*
-			 * only set config_valid HW bit if there is no other update
-			 * in progress or if we raced ahead of the DE IRQ handler
-			 * and config_valid flag will not be update until later
-			 */
+			 
 			status = malidp_hw_read(hwdev, hw->map.dc_base + MALIDP_REG_STATUS);
 			if ((atomic_read(&malidp->config_valid) != MALIDP_CONFIG_START) ||
 			    (status & hw->map.dc_irq_map.vsync_irq))
@@ -1348,7 +1287,7 @@ static irqreturn_t malidp_se_irq(int irq, void *arg)
 
 void malidp_se_irq_hw_init(struct malidp_hw_device *hwdev)
 {
-	/* ensure interrupts are disabled */
+	 
 	malidp_hw_disable_irq(hwdev, MALIDP_SE_BLOCK, 0xffffffff);
 	malidp_hw_clear_irq(hwdev, MALIDP_SE_BLOCK, 0xffffffff);
 
@@ -1367,7 +1306,7 @@ int malidp_se_irq_init(struct drm_device *drm, int irq)
 	struct malidp_hw_device *hwdev = malidp->dev;
 	int ret;
 
-	/* ensure interrupts are disabled */
+	 
 	malidp_hw_disable_irq(hwdev, MALIDP_SE_BLOCK, 0xffffffff);
 	malidp_hw_clear_irq(hwdev, MALIDP_SE_BLOCK, 0xffffffff);
 

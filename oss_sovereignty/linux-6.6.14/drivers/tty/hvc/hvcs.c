@@ -1,54 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * IBM eServer Hypervisor Virtual Console Server Device Driver
- * Copyright (C) 2003, 2004 IBM Corp.
- *  Ryan S. Arnold (rsa@us.ibm.com)
- *
- * Author(s) :  Ryan S. Arnold <rsa@us.ibm.com>
- *
- * This is the device driver for the IBM Hypervisor Virtual Console Server,
- * "hvcs".  The IBM hvcs provides a tty driver interface to allow Linux
- * user space applications access to the system consoles of logically
- * partitioned operating systems, e.g. Linux, running on the same partitioned
- * Power5 ppc64 system.  Physical hardware consoles per partition are not
- * practical on this hardware so system consoles are accessed by this driver
- * using inter-partition firmware interfaces to virtual terminal devices.
- *
- * A vty is known to the HMC as a "virtual serial server adapter".  It is a
- * virtual terminal device that is created by firmware upon partition creation
- * to act as a partitioned OS's console device.
- *
- * Firmware dynamically (via hotplug) exposes vty-servers to a running ppc64
- * Linux system upon their creation by the HMC or their exposure during boot.
- * The non-user interactive backend of this driver is implemented as a vio
- * device driver so that it can receive notification of vty-server lifetimes
- * after it registers with the vio bus to handle vty-server probe and remove
- * callbacks.
- *
- * Many vty-servers can be configured to connect to one vty, but a vty can
- * only be actively connected to by a single vty-server, in any manner, at one
- * time.  If the HMC is currently hosting the console for a target Linux
- * partition; attempts to open the tty device to the partition's console using
- * the hvcs on any partition will return -EBUSY with every open attempt until
- * the HMC frees the connection between its vty-server and the desired
- * partition's vty device.  Conversely, a vty-server may only be connected to
- * a single vty at one time even though it may have several configured vty
- * partner possibilities.
- *
- * Firmware does not provide notification of vty partner changes to this
- * driver.  This means that an HMC Super Admin may add or remove partner vtys
- * from a vty-server's partner list but the changes will not be signaled to
- * the vty-server.  Firmware only notifies the driver when a vty-server is
- * added or removed from the system.  To compensate for this deficiency, this
- * driver implements a sysfs update attribute which provides a method for
- * rescanning partner information upon a user's request.
- *
- * Each vty-server, prior to being exposed to this driver is reference counted
- * using the 2.6 Linux kernel kref construct.
- *
- * For direction on installation and usage of this driver please reference
- * Documentation/powerpc/hvcs.rst.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/init.h>
@@ -73,46 +24,7 @@
 #include <linux/termios_internal.h>
 #include <asm/vio.h>
 
-/*
- * 1.3.0 -> 1.3.1 In hvcs_open memset(..,0x00,..) instead of memset(..,0x3F,00).
- * Removed braces around single statements following conditionals.  Removed '=
- * 0' after static int declarations since these default to zero.  Removed
- * list_for_each_safe() and replaced with list_for_each_entry() in
- * hvcs_get_by_index().  The 'safe' version is un-needed now that the driver is
- * using spinlocks.  Changed spin_lock_irqsave() to spin_lock() when locking
- * hvcs_structs_lock and hvcs_pi_lock since these are not touched in an int
- * handler.  Initialized hvcs_structs_lock and hvcs_pi_lock to
- * SPIN_LOCK_UNLOCKED at declaration time rather than in hvcs_module_init().
- * Added spin_lock around list_del() in destroy_hvcs_struct() to protect the
- * list traversals from a deletion.  Removed '= NULL' from pointer declaration
- * statements since they are initialized NULL by default.  Removed wmb()
- * instances from hvcs_try_write().  They probably aren't needed with locking in
- * place.  Added check and cleanup for hvcs_pi_buff = kmalloc() in
- * hvcs_module_init().  Exposed hvcs_struct.index via a sysfs attribute so that
- * the coupling between /dev/hvcs* and a vty-server can be automatically
- * determined.  Moved kobject_put() in hvcs_open outside of the
- * spin_unlock_irqrestore().
- *
- * 1.3.1 -> 1.3.2 Changed method for determining hvcs_struct->index and had it
- * align with how the tty layer always assigns the lowest index available.  This
- * change resulted in a list of ints that denotes which indexes are available.
- * Device additions and removals use the new hvcs_get_index() and
- * hvcs_return_index() helper functions.  The list is created with
- * hvsc_alloc_index_list() and it is destroyed with hvcs_free_index_list().
- * Without these fixes hotplug vty-server adapter support goes crazy with this
- * driver if the user removes a vty-server adapter.  Moved free_irq() outside of
- * the hvcs_final_close() function in order to get it out of the spinlock.
- * Rearranged hvcs_close().  Cleaned up some printks and did some housekeeping
- * on the changelog.  Removed local CLC_LENGTH and used HVCS_CLC_LENGTH from
- * arch/powerepc/include/asm/hvcserver.h
- *
- * 1.3.2 -> 1.3.3 Replaced yield() in hvcs_close() with tty_wait_until_sent() to
- * prevent possible lockup with realtime scheduling as similarly pointed out by
- * akpm in hvc_console.  Changed resulted in the removal of hvcs_final_close()
- * to reorder cleanup operations and prevent discarding of pending data during
- * an hvcs_close().  Removed spinlock protection of hvcs_struct data members in
- * hvcs_write_room() and hvcs_chars_in_buffer() because they aren't needed.
- */
+ 
 
 #define HVCS_DRIVER_VERSION "1.3.3"
 
@@ -121,63 +33,28 @@ MODULE_DESCRIPTION("IBM hvcs (Hypervisor Virtual Console Server) Driver");
 MODULE_LICENSE("GPL");
 MODULE_VERSION(HVCS_DRIVER_VERSION);
 
-/*
- * Wait this long per iteration while trying to push buffered data to the
- * hypervisor before allowing the tty to complete a close operation.
- */
-#define HVCS_CLOSE_WAIT (HZ/100) /* 1/10 of a second */
+ 
+#define HVCS_CLOSE_WAIT (HZ/100)  
 
-/*
- * Since the Linux TTY code does not currently (2-04-2004) support dynamic
- * addition of tty derived devices and we shouldn't allocate thousands of
- * tty_device pointers when the number of vty-server & vty partner connections
- * will most often be much lower than this, we'll arbitrarily allocate
- * HVCS_DEFAULT_SERVER_ADAPTERS tty_structs and cdev's by default when we
- * register the tty_driver. This can be overridden using an insmod parameter.
- */
+ 
 #define HVCS_DEFAULT_SERVER_ADAPTERS	64
 
-/*
- * The user can't insmod with more than HVCS_MAX_SERVER_ADAPTERS hvcs device
- * nodes as a sanity check.  Theoretically there can be over 1 Billion
- * vty-server & vty partner connections.
- */
+ 
 #define HVCS_MAX_SERVER_ADAPTERS	1024
 
-/*
- * We let Linux assign us a major number and we start the minors at zero.  There
- * is no intuitive mapping between minor number and the target vty-server
- * adapter except that each new vty-server adapter is always assigned to the
- * smallest minor number available.
- */
+ 
 #define HVCS_MINOR_START	0
 
-/*
- * The hcall interface involves putting 8 chars into each of two registers.
- * We load up those 2 registers (in arch/powerpc/platforms/pseries/hvconsole.c)
- * by casting char[16] to long[2].  It would work without __ALIGNED__, but a 
- * little (tiny) bit slower because an unaligned load is slower than aligned 
- * load.
- */
+ 
 #define __ALIGNED__	__attribute__((__aligned__(8)))
 
-/*
- * How much data can firmware send with each hvc_put_chars()?  Maybe this
- * should be moved into an architecture specific area.
- */
+ 
 #define HVCS_BUFF_LEN	16
 
-/*
- * This is the maximum amount of data we'll let the user send us (hvcs_write) at
- * once in a chunk as a sanity check.
- */
+ 
 #define HVCS_MAX_FROM_USER	4096
 
-/*
- * Be careful when adding flags to this line discipline.  Don't add anything
- * that will cause echoing or we'll go into recursive loop echoing chars back
- * and forth with the console drivers.
- */
+ 
 static const struct ktermios hvcs_tty_termios = {
 	.c_iflag = IGNBRK | IGNPAR,
 	.c_oflag = OPOST,
@@ -187,104 +64,57 @@ static const struct ktermios hvcs_tty_termios = {
 	.c_ospeed = 38400
 };
 
-/*
- * This value is used to take the place of a command line parameter when the
- * module is inserted.  It starts as -1 and stays as such if the user doesn't
- * specify a module insmod parameter.  If they DO specify one then it is set to
- * the value of the integer passed in.
- */
+ 
 static int hvcs_parm_num_devs = -1;
 module_param(hvcs_parm_num_devs, int, 0);
 
 static const char hvcs_driver_name[] = "hvcs";
 static const char hvcs_device_node[] = "hvcs";
 
-/* Status of partner info rescan triggered via sysfs. */
+ 
 static int hvcs_rescan_status;
 
 static struct tty_driver *hvcs_tty_driver;
 
-/*
- * In order to be somewhat sane this driver always associates the hvcs_struct
- * index element with the numerically equal tty->index.  This means that a
- * hotplugged vty-server adapter will always map to the lowest index valued
- * device node.  If vty-servers were hotplug removed from the system and then
- * new ones added the new vty-server may have the largest slot number of all
- * the vty-server adapters in the partition but it may have the lowest dev node
- * index of all the adapters due to the hole left by the hotplug removed
- * adapter.  There are a set of functions provided to get the lowest index for
- * a new device as well as return the index to the list.  This list is allocated
- * with a number of elements equal to the number of device nodes requested when
- * the module was inserted.
- */
+ 
 static int *hvcs_index_list;
 
-/*
- * How large is the list?  This is kept for traversal since the list is
- * dynamically created.
- */
+ 
 static int hvcs_index_count;
 
-/*
- * Used by the khvcsd to pick up I/O operations when the kernel_thread is
- * already awake but potentially shifted to TASK_INTERRUPTIBLE state.
- */
+ 
 static int hvcs_kicked;
 
-/*
- * Use by the kthread construct for task operations like waking the sleeping
- * thread and stopping the kthread.
- */
+ 
 static struct task_struct *hvcs_task;
 
-/*
- * We allocate this for the use of all of the hvcs_structs when they fetch
- * partner info.
- */
+ 
 static unsigned long *hvcs_pi_buff;
 
-/* Only allow one hvcs_struct to use the hvcs_pi_buff at a time. */
+ 
 static DEFINE_SPINLOCK(hvcs_pi_lock);
 
-/* One vty-server per hvcs_struct */
+ 
 struct hvcs_struct {
 	struct tty_port port;
 	spinlock_t lock;
 
-	/*
-	 * This index identifies this hvcs device as the complement to a
-	 * specific tty index.
-	 */
+	 
 	unsigned int index;
 
-	/*
-	 * Used to tell the driver kernel_thread what operations need to take
-	 * place upon this hvcs_struct instance.
-	 */
+	 
 	int todo_mask;
 
-	/*
-	 * This buffer is required so that when hvcs_write_room() reports that
-	 * it can send HVCS_BUFF_LEN characters that it will buffer the full
-	 * HVCS_BUFF_LEN characters if need be.  This is essential for opost
-	 * writes since they do not do high level buffering and expect to be
-	 * able to send what the driver commits to sending buffering
-	 * [e.g. tab to space conversions in n_tty.c opost()].
-	 */
+	 
 	char buffer[HVCS_BUFF_LEN];
 	int chars_in_buffer;
 
-	/*
-	 * Any variable below is valid before a tty is connected and
-	 * stays valid after the tty is disconnected.  These shouldn't be
-	 * whacked until the kobject refcount reaches zero though some entries
-	 * may be changed via sysfs initiatives.
-	 */
-	int connected; /* is the vty-server currently connected to a vty? */
-	uint32_t p_unit_address; /* partner unit address */
-	uint32_t p_partition_ID; /* partner partition ID */
-	char p_location_code[HVCS_CLC_LENGTH + 1]; /* CLC + Null Term */
-	struct list_head next; /* list management */
+	 
+	int connected;  
+	uint32_t p_unit_address;  
+	uint32_t p_partition_ID;  
+	char p_location_code[HVCS_CLC_LENGTH + 1];  
+	struct list_head next;  
 	struct vio_dev *vdev;
 	struct completion *destroyed;
 };
@@ -309,7 +139,7 @@ static inline struct hvcs_struct *from_vio_dev(struct vio_dev *viod)
 {
 	return dev_get_drvdata(&viod->dev);
 }
-/* The sysfs interface for the driver and devices */
+ 
 
 static ssize_t hvcs_partner_vtys_show(struct device *dev, struct device_attribute *attr, char *buf)
 {
@@ -342,10 +172,7 @@ static DEVICE_ATTR(partner_clcs, S_IRUGO, hvcs_partner_clcs_show, NULL);
 static ssize_t hvcs_current_vty_store(struct device *dev, struct device_attribute *attr, const char * buf,
 		size_t count)
 {
-	/*
-	 * Don't need this feature at the present time because firmware doesn't
-	 * yet support multiple partners.
-	 */
+	 
 	printk(KERN_INFO "HVCS: Denied current_vty change: -EPERM.\n");
 	return -EPERM;
 }
@@ -373,7 +200,7 @@ static ssize_t hvcs_vterm_state_store(struct device *dev, struct device_attribut
 	struct hvcs_struct *hvcsd = from_vio_dev(viod);
 	unsigned long flags;
 
-	/* writing a '0' to this sysfs entry will result in the disconnect. */
+	 
 	if (simple_strtol(buf, NULL, 0) != 0)
 		return -EINVAL;
 
@@ -447,7 +274,7 @@ ATTRIBUTE_GROUPS(hvcs_dev);
 
 static ssize_t rescan_show(struct device_driver *ddp, char *buf)
 {
-	/* A 1 means it is updating, a 0 means it is done updating */
+	 
 	return snprintf(buf, PAGE_SIZE, "%d\n", hvcs_rescan_status);
 }
 
@@ -503,11 +330,7 @@ static void hvcs_throttle(struct tty_struct *tty)
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
 }
 
-/*
- * If the device is being removed we don't have to worry about this interrupt
- * handler taking any further interrupts because they are disabled which means
- * the hvcs_struct will always be valid in this handler.
- */
+ 
 static irqreturn_t hvcs_handle_interrupt(int irq, void *dev_instance)
 {
 	struct hvcs_struct *hvcsd = dev_instance;
@@ -521,7 +344,7 @@ static irqreturn_t hvcs_handle_interrupt(int irq, void *dev_instance)
 	return IRQ_HANDLED;
 }
 
-/* This function must be called with the hvcsd->lock held */
+ 
 static void hvcs_try_write(struct hvcs_struct *hvcsd)
 {
 	uint32_t unit_address = hvcsd->vdev->unit_address;
@@ -529,22 +352,17 @@ static void hvcs_try_write(struct hvcs_struct *hvcsd)
 	int sent;
 
 	if (hvcsd->todo_mask & HVCS_TRY_WRITE) {
-		/* won't send partial writes */
+		 
 		sent = hvc_put_chars(unit_address,
 				&hvcsd->buffer[0],
 				hvcsd->chars_in_buffer );
 		if (sent > 0) {
 			hvcsd->chars_in_buffer = 0;
-			/* wmb(); */
+			 
 			hvcsd->todo_mask &= ~(HVCS_TRY_WRITE);
-			/* wmb(); */
+			 
 
-			/*
-			 * We are still obligated to deliver the data to the
-			 * hypervisor even if the tty has been closed because
-			 * we committed to delivering it.  But don't try to wake
-			 * a non-existent tty.
-			 */
+			 
 			if (tty) {
 				tty_wakeup(tty);
 			}
@@ -573,7 +391,7 @@ static int hvcs_io(struct hvcs_struct *hvcsd)
 	} else if (!(hvcsd->todo_mask & (HVCS_READ_MASK)))
 		goto bail;
 
-	/* remove the read masks */
+	 
 	hvcsd->todo_mask &= ~(HVCS_READ_MASK);
 
 	if (tty_buffer_request_room(&hvcsd->port, HVCS_BUFF_LEN) >= HVCS_BUFF_LEN) {
@@ -583,16 +401,16 @@ static int hvcs_io(struct hvcs_struct *hvcsd)
 		tty_insert_flip_string(&hvcsd->port, buf, got);
 	}
 
-	/* Give the TTY time to process the data we just sent. */
+	 
 	if (got)
 		hvcsd->todo_mask |= HVCS_QUICK_READ;
 
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
-	/* This is synch -- FIXME :js: it is not! */
+	 
 	if (got)
 		tty_flip_buffer_push(&hvcsd->port);
 	else {
-		/* Do this _after_ the flip_buffer_push */
+		 
 		spin_lock_irqsave(&hvcsd->lock, flags);
 		vio_enable_interrupts(hvcsd->vdev);
 		spin_unlock_irqrestore(&hvcsd->lock, flags);
@@ -623,11 +441,7 @@ static int khvcsd(void *unused)
 		}
 		spin_unlock(&hvcs_structs_lock);
 
-		/*
-		 * If any of the hvcs adapters want to try a write or quick read
-		 * don't schedule(), yield a smidgen then execute the hvcs_io
-		 * thread again for those that want the write.
-		 */
+		 
 		 if (hvcs_todo_mask & (HVCS_TRY_WRITE | HVCS_QUICK_READ)) {
 			yield();
 			continue;
@@ -650,7 +464,7 @@ MODULE_DEVICE_TABLE(vio, hvcs_driver_table);
 
 static void hvcs_return_index(int index)
 {
-	/* Paranoia check */
+	 
 	if (!hvcs_index_list)
 		return;
 	if (index < 0 || index >= hvcs_index_count)
@@ -672,7 +486,7 @@ static void hvcs_destruct_port(struct tty_port *p)
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
 	comp = hvcsd->destroyed;
-	/* the list_del poisons the pointers */
+	 
 	list_del(&(hvcsd->next));
 
 	if (hvcsd->connected == 1) {
@@ -710,12 +524,12 @@ static const struct tty_port_operations hvcs_port_ops = {
 static int hvcs_get_index(void)
 {
 	int i;
-	/* Paranoia check */
+	 
 	if (!hvcs_index_list) {
 		printk(KERN_ERR "HVCS: hvcs_index_list NOT valid!.\n");
 		return -EFAULT;
 	}
-	/* Find the numerically lowest first free index. */
+	 
 	for(i = 0; i < hvcs_index_count; i++) {
 		if (hvcs_index_list[i] == -1) {
 			hvcs_index_list[i] = 0;
@@ -737,14 +551,14 @@ static int hvcs_probe(
 		return -EPERM;
 	}
 
-	/* Make sure we are properly initialized */
+	 
 	rc = hvcs_initialize();
 	if (rc) {
 		pr_err("HVCS: Failed to initialize core driver.\n");
 		return rc;
 	}
 
-	/* early to avoid cleanup on failure */
+	 
 	index = hvcs_get_index();
 	if (index < 0) {
 		return -EFAULT;
@@ -763,36 +577,26 @@ static int hvcs_probe(
 
 	hvcsd->index = index;
 
-	/* hvcsd->index = ++hvcs_struct_count; */
+	 
 	hvcsd->chars_in_buffer = 0;
 	hvcsd->todo_mask = 0;
 	hvcsd->connected = 0;
 
-	/*
-	 * This will populate the hvcs_struct's partner info fields for the
-	 * first time.
-	 */
+	 
 	if (hvcs_get_pi(hvcsd)) {
 		printk(KERN_ERR "HVCS: Failed to fetch partner"
 			" info for vty-server@%X on device probe.\n",
 			hvcsd->vdev->unit_address);
 	}
 
-	/*
-	 * If a user app opens a tty that corresponds to this vty-server before
-	 * the hvcs_struct has been added to the devices list then the user app
-	 * will get -ENODEV.
-	 */
+	 
 	spin_lock(&hvcs_structs_lock);
 	list_add_tail(&(hvcsd->next), &hvcs_structs);
 	spin_unlock(&hvcs_structs_lock);
 
 	printk(KERN_INFO "HVCS: vty-server@%X added to the vio bus.\n", dev->unit_address);
 
-	/*
-	 * DON'T enable interrupts here because there is no user to receive the
-	 * data.
-	 */
+	 
 	return 0;
 }
 
@@ -803,7 +607,7 @@ static void hvcs_remove(struct vio_dev *dev)
 	unsigned long flags;
 	struct tty_struct *tty;
 
-	/* By this time the vty-server won't be getting any more interrupts */
+	 
 
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
@@ -812,10 +616,7 @@ static void hvcs_remove(struct vio_dev *dev)
 
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
 
-	/*
-	 * The tty should always be valid at this time unless a
-	 * simultaneous tty close already cleaned up the hvcs_struct.
-	 */
+	 
 	if (tty) {
 		tty_vhangup(tty);
 		tty_kref_put(tty);
@@ -838,30 +639,18 @@ static struct vio_driver hvcs_vio_driver = {
 	},
 };
 
-/* Only called from hvcs_get_pi please */
+ 
 static void hvcs_set_pi(struct hvcs_partner_info *pi, struct hvcs_struct *hvcsd)
 {
 	hvcsd->p_unit_address = pi->unit_address;
 	hvcsd->p_partition_ID  = pi->partition_ID;
 
-	/* copy the null-term char too */
+	 
 	strscpy(hvcsd->p_location_code, pi->location_code,
 		sizeof(hvcsd->p_location_code));
 }
 
-/*
- * Traverse the list and add the partner info that is found to the hvcs_struct
- * struct entry. NOTE: At this time I know that partner info will return a
- * single entry but in the future there may be multiple partner info entries per
- * vty-server and you'll want to zero out that list and reset it.  If for some
- * reason you have an old version of this driver but there IS more than one
- * partner info then hvcsd->p_* will hold the last partner info data from the
- * firmware query.  A good way to update this code would be to replace the three
- * partner info fields in hvcs_struct with a list of hvcs_partner_info
- * instances.
- *
- * This function must be called with the hvcsd->lock held.
- */
+ 
 static int hvcs_get_pi(struct hvcs_struct *hvcsd)
 {
 	struct hvcs_partner_info *pi;
@@ -882,7 +671,7 @@ static int hvcs_get_pi(struct hvcs_struct *hvcsd)
 		return retval;
 	}
 
-	/* nixes the values if the partner vty went away */
+	 
 	hvcsd->p_unit_address = 0;
 	hvcsd->p_partition_ID = 0;
 
@@ -893,10 +682,7 @@ static int hvcs_get_pi(struct hvcs_struct *hvcsd)
 	return 0;
 }
 
-/*
- * This function is executed by the driver "rescan" sysfs entry.  It shouldn't
- * be executed elsewhere, in order to prevent deadlock issues.
- */
+ 
 static int hvcs_rescan_devices_list(void)
 {
 	struct hvcs_struct *hvcsd;
@@ -915,11 +701,7 @@ static int hvcs_rescan_devices_list(void)
 	return 0;
 }
 
-/*
- * Farm this off into its own function because it could be more complex once
- * multiple partners support is added. This function should be called with
- * the hvcsd->lock held.
- */
+ 
 static int hvcs_has_pi(struct hvcs_struct *hvcsd)
 {
 	if ((!hvcsd->p_unit_address) || (!hvcsd->p_partition_ID))
@@ -927,24 +709,13 @@ static int hvcs_has_pi(struct hvcs_struct *hvcsd)
 	return 1;
 }
 
-/*
- * NOTE: It is possible that the super admin removed a partner vty and then
- * added a different vty as the new partner.
- *
- * This function must be called with the hvcsd->lock held.
- */
+ 
 static int hvcs_partner_connect(struct hvcs_struct *hvcsd)
 {
 	int retval;
 	unsigned int unit_address = hvcsd->vdev->unit_address;
 
-	/*
-	 * If there wasn't any pi when the device was added it doesn't meant
-	 * there isn't any now.  This driver isn't notified when a new partner
-	 * vty is added to a vty-server so we discover changes on our own.
-	 * Please see comments in hvcs_register_connection() for justification
-	 * of this bizarre code.
-	 */
+	 
 	retval = hvcs_register_connection(unit_address,
 			hvcsd->p_partition_ID,
 			hvcsd->p_unit_address);
@@ -954,10 +725,7 @@ static int hvcs_partner_connect(struct hvcs_struct *hvcsd)
 	} else if (retval != -EINVAL)
 		return retval;
 
-	/*
-	 * As per the spec re-get the pi and try again if -EINVAL after the
-	 * first connection attempt.
-	 */
+	 
 	if (hvcs_get_pi(hvcsd))
 		return -ENOMEM;
 
@@ -972,18 +740,13 @@ static int hvcs_partner_connect(struct hvcs_struct *hvcsd)
 		return retval;
 	}
 
-	/*
-	 * EBUSY is the most likely scenario though the vty could have been
-	 * removed or there really could be an hcall error due to the parameter
-	 * data but thanks to ambiguous firmware return codes we can't really
-	 * tell.
-	 */
+	 
 	printk(KERN_INFO "HVCS: vty-server or partner"
 			" vty is busy.  Try again later.\n");
 	return -EBUSY;
 }
 
-/* This function must be called with the hvcsd->lock held */
+ 
 static void hvcs_partner_free(struct hvcs_struct *hvcsd)
 {
 	int retval;
@@ -993,23 +756,17 @@ static void hvcs_partner_free(struct hvcs_struct *hvcsd)
 	hvcsd->connected = 0;
 }
 
-/* This helper function must be called WITHOUT the hvcsd->lock held */
+ 
 static int hvcs_enable_device(struct hvcs_struct *hvcsd, uint32_t unit_address,
 		unsigned int irq, struct vio_dev *vdev)
 {
 	unsigned long flags;
 	int rc;
 
-	/*
-	 * It is possible that the vty-server was removed between the time that
-	 * the conn was registered and now.
-	 */
+	 
 	rc = request_irq(irq, &hvcs_handle_interrupt, 0, "ibmhvcs", hvcsd);
 	if (!rc) {
-		/*
-		 * It is possible the vty-server was removed after the irq was
-		 * requested but before we have time to enable interrupts.
-		 */
+		 
 		if (vio_enable_interrupts(vdev) == H_SUCCESS)
 			return 0;
 		else {
@@ -1029,13 +786,7 @@ static int hvcs_enable_device(struct hvcs_struct *hvcsd, uint32_t unit_address,
 
 }
 
-/*
- * This always increments the kref ref count if the call is successful.
- * Please remember to dec when you are done with the instance.
- *
- * NOTICE: Do NOT hold either the hvcs_struct.lock or hvcs_structs_lock when
- * calling this function or you will get deadlock.
- */
+ 
 static struct hvcs_struct *hvcs_get_by_index(int index)
 {
 	struct hvcs_struct *hvcsd;
@@ -1065,10 +816,7 @@ static int hvcs_install(struct tty_driver *driver, struct tty_struct *tty)
 	unsigned int irq;
 	int retval;
 
-	/*
-	 * Is there a vty-server that shares the same index?
-	 * This function increments the kref index.
-	 */
+	 
 	hvcsd = hvcs_get_by_index(tty->index);
 	if (!hvcsd) {
 		printk(KERN_WARNING "HVCS: open failed, no device associated"
@@ -1093,10 +841,7 @@ static int hvcs_install(struct tty_driver *driver, struct tty_struct *tty)
 
 	memset(&hvcsd->buffer[0], 0x00, HVCS_BUFF_LEN);
 
-	/*
-	 * Save these in the spinlock for the enable operations that need them
-	 * outside of the spinlock.
-	 */
+	 
 	irq = hvcsd->vdev->irq;
 	vdev = hvcsd->vdev;
 	unit_address = hvcsd->vdev->unit_address;
@@ -1104,10 +849,7 @@ static int hvcs_install(struct tty_driver *driver, struct tty_struct *tty)
 	hvcsd->todo_mask |= HVCS_SCHED_READ;
 	spin_unlock_irqrestore(&hvcsd->lock, flags);
 
-	/*
-	 * This must be done outside of the spinlock because it requests irqs
-	 * and will grab the spinlock and free the connection if it fails.
-	 */
+	 
 	retval = hvcs_enable_device(hvcsd, unit_address, irq, vdev);
 	if (retval) {
 		printk(KERN_WARNING "HVCS: enable device failed.\n");
@@ -1130,10 +872,7 @@ err_put:
 	return retval;
 }
 
-/*
- * This is invoked via the tty_open interface when a user app connects to the
- * /dev node.
- */
+ 
 static int hvcs_open(struct tty_struct *tty, struct file *filp)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
@@ -1158,18 +897,11 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
 	unsigned long flags;
 	int irq;
 
-	/*
-	 * Is someone trying to close the file associated with this device after
-	 * we have hung up?  If so tty->driver_data wouldn't be valid.
-	 */
+	 
 	if (tty_hung_up_p(filp))
 		return;
 
-	/*
-	 * No driver_data means that this close was probably issued after a
-	 * failed hvcs_open by the tty layer's release_dev() api and we can just
-	 * exit cleanly.
-	 */
+	 
 	if (!tty->driver_data)
 		return;
 
@@ -1183,11 +915,7 @@ static void hvcs_close(struct tty_struct *tty, struct file *filp)
 
 		vio_disable_interrupts(hvcsd->vdev);
 
-		/*
-		 * NULL this early so that the kernel_thread doesn't try to
-		 * execute any operations on the TTY even though it is obligated
-		 * to deliver any pending I/O to the hypervisor.
-		 */
+		 
 		hvcsd->port.tty = NULL;
 
 		irq = hvcsd->vdev->irq;
@@ -1209,11 +937,7 @@ static void hvcs_cleanup(struct tty_struct * tty)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
 
-	/*
-	 * This line is important because it tells hvcs_open that this
-	 * device needs to be re-configured the next time hvcs_open is
-	 * called.
-	 */
+	 
 	tty->driver_data = NULL;
 
 	tty_port_put(&hvcsd->port);
@@ -1227,19 +951,14 @@ static void hvcs_hangup(struct tty_struct * tty)
 
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
-	/*
-	 * Don't kref put inside the spinlock because the destruction
-	 * callback may use the spinlock and it may get called before the
-	 * spinlock has been released.
-	 */
+	 
 	vio_disable_interrupts(hvcsd->vdev);
 
 	hvcsd->todo_mask = 0;
 	hvcsd->port.tty = NULL;
 	hvcsd->port.count = 0;
 
-	/* This will drop any buffered data on the floor which is OK in a hangup
-	 * scenario. */
+	 
 	memset(&hvcsd->buffer[0], 0x00, HVCS_BUFF_LEN);
 	hvcsd->chars_in_buffer = 0;
 
@@ -1250,13 +969,7 @@ static void hvcs_hangup(struct tty_struct * tty)
 	free_irq(irq, hvcsd);
 }
 
-/*
- * NOTE: This is almost always from_user since user level apps interact with the
- * /dev nodes. I'm trusting that if hvcs_write gets called and interrupted by
- * hvcs_remove (which removes the target device and executes tty_hangup()) that
- * tty_hangup will allow hvcs_write time to complete execution before it
- * terminates our device.
- */
+ 
 static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
@@ -1267,14 +980,11 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 	size_t tosend = 0;
 	int result = 0;
 
-	/*
-	 * If they don't check the return code off of their open they may
-	 * attempt this even if there is no connected device.
-	 */
+	 
 	if (!hvcsd)
 		return -ENODEV;
 
-	/* Reasonable size to prevent user level flooding */
+	 
 	if (count > HVCS_MAX_FROM_USER) {
 		printk(KERN_WARNING "HVCS write: count being truncated to"
 				" HVCS_MAX_FROM_USER.\n");
@@ -1285,12 +995,7 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 
 	spin_lock_irqsave(&hvcsd->lock, flags);
 
-	/*
-	 * Somehow an open succeeded but the device was removed or the
-	 * connection terminated between the vty-server and partner vty during
-	 * the middle of a write operation?  This is a crummy place to do this
-	 * but we want to keep it all in the spinlock.
-	 */
+	 
 	if (hvcsd->port.count <= 0) {
 		spin_unlock_irqrestore(&hvcsd->lock, flags);
 		return -ENODEV;
@@ -1301,10 +1006,7 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 	while (count > 0) {
 		tosend = min_t(size_t, count,
 			       (HVCS_BUFF_LEN - hvcsd->chars_in_buffer));
-		/*
-		 * No more space, this probably means that the last call to
-		 * hvcs_write() didn't succeed and the buffer was filled up.
-		 */
+		 
 		if (!tosend)
 			break;
 
@@ -1316,22 +1018,14 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 
 		result = 0;
 
-		/*
-		 * If this is true then we don't want to try writing to the
-		 * hypervisor because that is the kernel_threads job now.  We'll
-		 * just add to the buffer.
-		 */
+		 
 		if (!(hvcsd->todo_mask & HVCS_TRY_WRITE))
-			/* won't send partial writes */
+			 
 			result = hvc_put_chars(unit_address,
 					&hvcsd->buffer[0],
 					hvcsd->chars_in_buffer);
 
-		/*
-		 * Since we know we have enough room in hvcsd->buffer for
-		 * tosend we record that it was sent regardless of whether the
-		 * hypervisor actually took it because we have it buffered.
-		 */
+		 
 		total_sent+=tosend;
 		count-=tosend;
 		if (result == 0) {
@@ -1341,10 +1035,7 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 		}
 
 		hvcsd->chars_in_buffer = 0;
-		/*
-		 * Test after the chars_in_buffer reset otherwise this could
-		 * deadlock our writes if hvc_put_chars fails.
-		 */
+		 
 		if (result < 0)
 			break;
 	}
@@ -1357,11 +1048,7 @@ static ssize_t hvcs_write(struct tty_struct *tty, const u8 *buf, size_t count)
 		return total_sent;
 }
 
-/*
- * This is really asking how much can we guarantee that we can send or that we
- * absolutely WILL BUFFER if we can't send it.  This driver MUST honor the
- * return value, hence the reason for hvcs_struct buffering.
- */
+ 
 static unsigned int hvcs_write_room(struct tty_struct *tty)
 {
 	struct hvcs_struct *hvcsd = tty->driver_data;
@@ -1408,7 +1095,7 @@ static int hvcs_alloc_index_list(int n)
 
 static void hvcs_free_index_list(void)
 {
-	/* Paranoia check to be thorough. */
+	 
 	kfree(hvcs_index_list);
 	hvcs_index_list = NULL;
 	hvcs_index_count = 0;
@@ -1424,7 +1111,7 @@ static int hvcs_initialize(void)
 		return 0;
 	}
 
-	/* Has the user specified an overload with an insmod param? */
+	 
 	if (hvcs_parm_num_devs <= 0 ||
 		(hvcs_parm_num_devs > HVCS_MAX_SERVER_ADAPTERS)) {
 		num_ttys_to_alloc = HVCS_DEFAULT_SERVER_ADAPTERS;
@@ -1446,27 +1133,17 @@ static int hvcs_initialize(void)
 	hvcs_tty_driver->driver_name = hvcs_driver_name;
 	hvcs_tty_driver->name = hvcs_device_node;
 
-	/*
-	 * We'll let the system assign us a major number, indicated by leaving
-	 * it blank.
-	 */
+	 
 
 	hvcs_tty_driver->minor_start = HVCS_MINOR_START;
 	hvcs_tty_driver->type = TTY_DRIVER_TYPE_SYSTEM;
 
-	/*
-	 * We role our own so that we DONT ECHO.  We can't echo because the
-	 * device we are connecting to already echoes by default and this would
-	 * throw us into a horrible recursive echo-echo-echo loop.
-	 */
+	 
 	hvcs_tty_driver->init_termios = hvcs_tty_termios;
 
 	tty_set_operations(hvcs_tty_driver, &hvcs_ops);
 
-	/*
-	 * The following call will result in sysfs entries that denote the
-	 * dynamically assigned major and minor numbers for our devices.
-	 */
+	 
 	if (tty_register_driver(hvcs_tty_driver)) {
 		printk(KERN_ERR "HVCS: registration as a tty driver failed.\n");
 		rc = -EIO;
@@ -1516,18 +1193,12 @@ static int __init hvcs_module_init(void)
 
 static void __exit hvcs_module_exit(void)
 {
-	/*
-	 * This driver receives hvcs_remove callbacks for each device upon
-	 * module removal.
-	 */
+	 
 	vio_unregister_driver(&hvcs_vio_driver);
 	if (!hvcs_task)
 		return;
 
-	/*
-	 * This synchronous operation  will wake the khvcsd kthread if it is
-	 * asleep and will return when khvcsd has terminated.
-	 */
+	 
 	kthread_stop(hvcs_task);
 
 	spin_lock(&hvcs_pi_lock);

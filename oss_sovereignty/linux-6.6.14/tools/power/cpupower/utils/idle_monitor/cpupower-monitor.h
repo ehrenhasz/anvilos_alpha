@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
- */
+ 
+ 
 
 #ifndef __CPUIDLE_INFO_HW__
 #define __CPUIDLE_INFO_HW__
@@ -14,10 +12,7 @@
 #define MONITORS_MAX 20
 #define MONITOR_NAME_LEN 20
 
-/* CSTATE_NAME_LEN is limited by header field width defined
- * in cpupower-monitor.c. Header field width is defined to be
- * sum of percent width and two spaces for padding.
- */
+ 
 #ifdef __powerpc__
 #define CSTATE_NAME_LEN 7
 #else
@@ -27,13 +22,12 @@
 
 extern int cpu_count;
 
-/* Hard to define the right names ...: */
+ 
 enum power_range_e {
-	RANGE_THREAD,	/* Lowest in topology hierarcy, AMD: core, Intel: thread
-			   kernel sysfs: cpu */
-	RANGE_CORE,	/* AMD: unit, Intel: core, kernel_sysfs: core_id */
-	RANGE_PACKAGE,	/* Package, processor socket */
-	RANGE_MACHINE,	/* Machine, platform wide */
+	RANGE_THREAD,	 
+	RANGE_CORE,	 
+	RANGE_PACKAGE,	 
+	RANGE_MACHINE,	 
 	RANGE_MAX };
 
 typedef struct cstate {
@@ -42,7 +36,7 @@ typedef struct cstate {
 	char name[CSTATE_NAME_LEN];
 	char desc[CSTATE_DESC_LEN];
 
-	/* either provide a percentage or a general count */
+	 
 	int (*get_count_percent)(unsigned int self_id, double *percent,
 				 unsigned int cpu);
 	int (*get_count)(unsigned int self_id, unsigned long long *count,
@@ -50,7 +44,7 @@ typedef struct cstate {
 } cstate_t;
 
 struct cpuidle_monitor {
-	/* Name must not contain whitespaces */
+	 
 	char name[MONITOR_NAME_LEN];
 	int name_len;
 	int hw_states_num;
@@ -76,7 +70,7 @@ extern long long timespec_diff_us(struct timespec start, struct timespec end);
 }
 
 
-/* Taken over from x86info project sources  -> return 0 on success */
+ 
 #include <sched.h>
 #include <sys/types.h>
 #include <unistd.h>
@@ -92,4 +86,4 @@ static inline int bind_cpu(int cpu)
 	return 1;
 }
 
-#endif /* __CPUIDLE_INFO_HW__ */
+#endif  

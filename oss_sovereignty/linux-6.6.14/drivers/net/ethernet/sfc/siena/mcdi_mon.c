@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2011-2013 Solarflare Communications Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/slab.h>
@@ -16,17 +13,17 @@
 
 enum efx_hwmon_type {
 	EFX_HWMON_UNKNOWN,
-	EFX_HWMON_TEMP,         /* temperature */
-	EFX_HWMON_COOL,         /* cooling device, probably a heatsink */
-	EFX_HWMON_IN,		/* voltage */
-	EFX_HWMON_CURR,		/* current */
-	EFX_HWMON_POWER,	/* power */
+	EFX_HWMON_TEMP,          
+	EFX_HWMON_COOL,          
+	EFX_HWMON_IN,		 
+	EFX_HWMON_CURR,		 
+	EFX_HWMON_POWER,	 
 	EFX_HWMON_TYPES_COUNT
 };
 
 static const char *const efx_hwmon_unit[EFX_HWMON_TYPES_COUNT] = {
 	[EFX_HWMON_TEMP]  = " degC",
-	[EFX_HWMON_COOL]  = " rpm", /* though nonsense for a heatsink */
+	[EFX_HWMON_COOL]  = " rpm",  
 	[EFX_HWMON_IN]    = " mV",
 	[EFX_HWMON_CURR]  = " mA",
 	[EFX_HWMON_POWER] = " W",
@@ -110,8 +107,7 @@ void efx_siena_mcdi_sensor_event(struct efx_nic *efx, efx_qword_t *ev)
 	state = EFX_QWORD_FIELD(*ev, MCDI_EVENT_SENSOREVT_STATE);
 	value = EFX_QWORD_FIELD(*ev, MCDI_EVENT_SENSOREVT_VALUE);
 
-	/* Deal gracefully with the board having more drivers than we
-	 * know about, but do not expect new sensor states. */
+	 
 	if (type < ARRAY_SIZE(efx_mcdi_sensor_type)) {
 		name = efx_mcdi_sensor_type[type].label;
 		hwmon_type = efx_mcdi_sensor_type[type].hwmon_type;
@@ -169,13 +165,13 @@ static int efx_mcdi_mon_get_entry(struct device *dev, unsigned int index,
 
 	mutex_lock(&hwmon->update_lock);
 
-	/* Use cached value if last update was < 1 s ago */
+	 
 	if (time_before(jiffies, hwmon->last_update + HZ))
 		rc = 0;
 	else
 		rc = efx_mcdi_mon_update(efx);
 
-	/* Copy out the requested entry */
+	 
 	*entry = ((efx_dword_t *)hwmon->dma_buf.addr)[index];
 
 	mutex_unlock(&hwmon->update_lock);
@@ -205,15 +201,15 @@ static ssize_t efx_mcdi_mon_show_value(struct device *dev,
 
 	switch (mon_attr->hwmon_type) {
 	case EFX_HWMON_TEMP:
-		/* Convert temperature from degrees to milli-degrees Celsius */
+		 
 		value *= 1000;
 		break;
 	case EFX_HWMON_POWER:
-		/* Convert power from watts to microwatts */
+		 
 		value *= 1000000;
 		break;
 	default:
-		/* No conversion needed */
+		 
 		break;
 	}
 
@@ -232,15 +228,15 @@ static ssize_t efx_mcdi_mon_show_limit(struct device *dev,
 
 	switch (mon_attr->hwmon_type) {
 	case EFX_HWMON_TEMP:
-		/* Convert temperature from degrees to milli-degrees Celsius */
+		 
 		value *= 1000;
 		break;
 	case EFX_HWMON_POWER:
-		/* Convert power from watts to microwatts */
+		 
 		value *= 1000000;
 		break;
 	default:
-		/* No conversion needed */
+		 
 		break;
 	}
 
@@ -312,7 +308,7 @@ int efx_siena_mcdi_mon_probe(struct efx_nic *efx)
 	u32 mask;
 	int rc, i, j, type;
 
-	/* Find out how many sensors are present */
+	 
 	n_sensors = 0;
 	page = 0;
 	do {
@@ -332,7 +328,7 @@ int efx_siena_mcdi_mon_probe(struct efx_nic *efx)
 	} while (mask & (1 << MC_CMD_SENSOR_PAGE0_NEXT));
 	n_pages = page;
 
-	/* Don't create a device if there are none */
+	 
 	if (n_sensors == 0)
 		return 0;
 
@@ -345,10 +341,7 @@ int efx_siena_mcdi_mon_probe(struct efx_nic *efx)
 	mutex_init(&hwmon->update_lock);
 	efx_mcdi_mon_update(efx);
 
-	/* Allocate space for the maximum possible number of
-	 * attributes for this set of sensors:
-	 * value, min, max, crit, alarm and label for each sensor.
-	 */
+	 
 	n_attrs = 6 * n_sensors;
 	hwmon->attrs = kcalloc(n_attrs, sizeof(*hwmon->attrs), GFP_KERNEL);
 	if (!hwmon->attrs) {
@@ -368,7 +361,7 @@ int efx_siena_mcdi_mon_probe(struct efx_nic *efx)
 		unsigned hwmon_index;
 		u16 min1, max1, min2, max2;
 
-		/* Find next sensor type or exit if there is none */
+		 
 		do {
 			type++;
 
@@ -395,7 +388,7 @@ int efx_siena_mcdi_mon_probe(struct efx_nic *efx)
 						   SENSOR_INFO_OUT_MASK) &
 					~(1 << MC_CMD_SENSOR_PAGE0_NEXT));
 
-				/* Check again for short response */
+				 
 				if (outlen <
 				    MC_CMD_SENSOR_INFO_OUT_LEN(hweight32(mask))) {
 					rc = -EIO;
@@ -408,7 +401,7 @@ int efx_siena_mcdi_mon_probe(struct efx_nic *efx)
 		if (type < ARRAY_SIZE(efx_mcdi_sensor_type)) {
 			hwmon_type = efx_mcdi_sensor_type[type].hwmon_type;
 
-			/* Skip sensors specific to a different port */
+			 
 			if (hwmon_type != EFX_HWMON_UNKNOWN &&
 			    efx_mcdi_sensor_type[type].port >= 0 &&
 			    efx_mcdi_sensor_type[type].port !=
@@ -421,27 +414,24 @@ int efx_siena_mcdi_mon_probe(struct efx_nic *efx)
 		switch (hwmon_type) {
 		case EFX_HWMON_TEMP:
 			hwmon_prefix = "temp";
-			hwmon_index = ++n_temp; /* 1-based */
+			hwmon_index = ++n_temp;  
 			break;
 		case EFX_HWMON_COOL:
-			/* This is likely to be a heatsink, but there
-			 * is no convention for representing cooling
-			 * devices other than fans.
-			 */
+			 
 			hwmon_prefix = "fan";
-			hwmon_index = ++n_cool; /* 1-based */
+			hwmon_index = ++n_cool;  
 			break;
 		default:
 			hwmon_prefix = "in";
-			hwmon_index = n_in++; /* 0-based */
+			hwmon_index = n_in++;  
 			break;
 		case EFX_HWMON_CURR:
 			hwmon_prefix = "curr";
-			hwmon_index = ++n_curr; /* 1-based */
+			hwmon_index = ++n_curr;  
 			break;
 		case EFX_HWMON_POWER:
 			hwmon_prefix = "power";
-			hwmon_index = ++n_power; /* 1-based */
+			hwmon_index = ++n_power;  
 			break;
 		}
 
@@ -475,9 +465,7 @@ int efx_siena_mcdi_mon_probe(struct efx_nic *efx)
 				i, type, max1);
 
 			if (min2 != max2) {
-				/* Assume max2 is critical value.
-				 * But we have no good way to expose min2.
-				 */
+				 
 				snprintf(name, sizeof(name), "%s%u_crit",
 					 hwmon_prefix, hwmon_index);
 				efx_mcdi_mon_add_attr(
@@ -528,4 +516,4 @@ void efx_siena_mcdi_mon_remove(struct efx_nic *efx)
 	efx_siena_free_buffer(efx, &hwmon->dma_buf);
 }
 
-#endif /* CONFIG_SFC_SIENA_MCDI_MON */
+#endif  

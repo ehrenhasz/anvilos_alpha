@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/bits.h>
 #include <linux/delay.h>
@@ -23,19 +23,19 @@
 #define MT6360_REG_PMUADCIDLET	0x358
 #define MT6360_REG_PMUADCRPT1	0x35A
 
-/* PMUCHGCTRL3 0x313 */
+ 
 #define MT6360_AICR_MASK	GENMASK(7, 2)
 #define MT6360_AICR_SHFT	2
 #define MT6360_AICR_400MA	0x6
-/* PMUADCCFG 0x356 */
+ 
 #define MT6360_ADCEN_MASK	BIT(15)
-/* PMUADCRPT1 0x35A */
+ 
 #define MT6360_PREFERCH_MASK	GENMASK(7, 4)
 #define MT6360_PREFERCH_SHFT	4
 #define MT6360_RPTCH_MASK	GENMASK(3, 0)
 #define MT6360_NO_PREFER	15
 
-/* Time in ms */
+ 
 #define ADC_WAIT_TIME_MS	25
 #define ADC_CONV_TIMEOUT_MS	100
 #define ADC_LOOP_TIME_US	2000
@@ -58,7 +58,7 @@ enum {
 struct mt6360_adc_data {
 	struct device *dev;
 	struct regmap *regmap;
-	/* Due to only one set of ADC control, this lock is used to prevent the race condition */
+	 
 	struct mutex adc_lock;
 	ktime_t last_off_timestamps[MT6360_CHAN_MAX];
 };
@@ -73,7 +73,7 @@ static int mt6360_adc_read_channel(struct mt6360_adc_data *mad, int channel, int
 
 	mutex_lock(&mad->adc_lock);
 
-	/* Select the preferred ADC channel */
+	 
 	ret = regmap_update_bits(mad->regmap, MT6360_REG_PMUADCRPT1, MT6360_PREFERCH_MASK,
 				 channel << MT6360_PREFERCH_SHFT);
 	if (ret)
@@ -102,17 +102,7 @@ static int mt6360_adc_read_channel(struct mt6360_adc_data *mad, int channel, int
 		if (ret)
 			goto out_adc_conv;
 
-		/*
-		 * There are two functions, ZCV and TypeC OTP, running ADC VBAT and TS in
-		 * background, and ADC samples are taken on a fixed frequency no matter read the
-		 * previous one or not.
-		 * To avoid conflict, We set minimum time threshold after enable ADC and
-		 * check report channel is the same.
-		 * The worst case is run the same ADC twice and background function is also running,
-		 * ADC conversion sequence is desire channel before start ADC, background ADC,
-		 * desire channel after start ADC.
-		 * So the minimum correct data is three times of typical conversion time.
-		 */
+		 
 		if ((rpt[0] & MT6360_RPTCH_MASK) == channel)
 			break;
 
@@ -128,11 +118,11 @@ static int mt6360_adc_read_channel(struct mt6360_adc_data *mad, int channel, int
 	ret = IIO_VAL_INT;
 
 out_adc_conv:
-	/* Only keep ADC enable */
+	 
 	adc_enable = cpu_to_be16(MT6360_ADCEN_MASK);
 	regmap_raw_write(mad->regmap, MT6360_REG_PMUADCCFG, &adc_enable, sizeof(adc_enable));
 	mad->last_off_timestamps[channel] = ktime_get();
-	/* Config prefer channel to NO_PREFER */
+	 
 	regmap_update_bits(mad->regmap, MT6360_REG_PMUADCRPT1, MT6360_PREFERCH_MASK,
 			   MT6360_NO_PREFER << MT6360_PREFERCH_SHFT);
 out_adc_lock:
@@ -164,8 +154,8 @@ static int mt6360_adc_read_scale(struct mt6360_adc_data *mad, int channel, int *
 		*val = 2500;
 
 		if (channel == MT6360_CHAN_IBUS) {
-			/* IBUS will be affected by input current limit for the different Ron */
-			/* Check whether the config is <400mA or not */
+			 
+			 
 			ret = regmap_read(mad->regmap, MT6360_REG_PMUCHGCTRL3, &regval);
 			if (ret)
 				return ret;
@@ -290,18 +280,18 @@ static inline int mt6360_adc_reset(struct mt6360_adc_data *info)
 	ktime_t all_off_time;
 	int i, ret;
 
-	/* Clear ADC idle wait time to 0 */
+	 
 	ret = regmap_write(info->regmap, MT6360_REG_PMUADCIDLET, 0);
 	if (ret)
 		return ret;
 
-	/* Only keep ADC enable, but keep all channels off */
+	 
 	adc_enable = cpu_to_be16(MT6360_ADCEN_MASK);
 	ret = regmap_raw_write(info->regmap, MT6360_REG_PMUADCCFG, &adc_enable, sizeof(adc_enable));
 	if (ret)
 		return ret;
 
-	/* Reset all channel off time to the current one */
+	 
 	all_off_time = ktime_get();
 	for (i = 0; i < MT6360_CHAN_MAX; i++)
 		info->last_off_timestamps[i] = all_off_time;

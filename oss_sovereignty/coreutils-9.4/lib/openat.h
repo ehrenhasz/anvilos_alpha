@@ -1,26 +1,9 @@
-/* provide a replacement openat function
-   Copyright (C) 2004-2006, 2008-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* written by Jim Meyering */
+ 
 
 #ifndef _GL_HEADER_OPENAT
 #define _GL_HEADER_OPENAT
 
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE, _Noreturn,
-   _GL_ATTRIBUTE_DEPRECATED, HAVE_OPENAT.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -50,9 +33,7 @@ bool openat_needs_fchdir (void);
 _Noreturn void openat_restore_fail (int);
 _Noreturn void openat_save_fail (int);
 
-/* Using these function names makes application code
-   slightly more readable than it would be with
-   fchownat (..., 0) or fchownat (..., AT_SYMLINK_NOFOLLOW).  */
+ 
 
 #if GNULIB_CHOWNAT
 
@@ -116,12 +97,8 @@ lstatat (int fd, char const *name, struct stat *st)
 
 #endif
 
-/* For now, there are no wrappers named laccessat or leuidaccessat,
-   since gnulib doesn't support faccessat(,AT_SYMLINK_NOFOLLOW) and
-   since access rights on symlinks are of limited utility.  Likewise,
-   wrappers are not provided for accessat or euidaccessat, so as to
-   avoid dragging in -lgen on some platforms.  */
+ 
 
 _GL_INLINE_HEADER_END
 
-#endif /* _GL_HEADER_OPENAT */
+#endif  

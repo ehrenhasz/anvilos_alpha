@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Support ct functions for openvswitch and used by OVS and TC conntrack. */
+
+ 
 
 #include <net/netfilter/nf_conntrack_helper.h>
 #include <net/netfilter/nf_conntrack_seqadj.h>
@@ -8,7 +8,7 @@
 #include <net/ip.h>
 #include <linux/netfilter_ipv6.h>
 
-/* 'skb' should already be pulled to nh_ofs. */
+ 
 int nf_ct_helper(struct sk_buff *skb, struct nf_conn *ct,
 		 enum ip_conntrack_info ctinfo, u16 proto)
 {
@@ -64,10 +64,7 @@ int nf_ct_helper(struct sk_buff *skb, struct nf_conn *ct,
 	if (err != NF_ACCEPT)
 		return err;
 
-	/* Adjust seqs after helper.  This is needed due to some helpers (e.g.,
-	 * FTP with NAT) adusting the TCP payload size when mangling IP
-	 * addresses and/or port numbers in the text-based control connection.
-	 */
+	 
 	if (test_bit(IPS_SEQ_ADJUST_BIT, &ct->status) &&
 	    !nf_ct_seq_adjust(skb, ct, ctinfo, protoff))
 		return NF_DROP;
@@ -106,12 +103,7 @@ int nf_ct_add_helper(struct nf_conn *ct, const char *name, u8 family,
 }
 EXPORT_SYMBOL_GPL(nf_ct_add_helper);
 
-/* Trim the skb to the length specified by the IP/IPv6 header,
- * removing any trailing lower-layer padding. This prepares the skb
- * for higher-layer processing that assumes skb->len excludes padding
- * (such as nf_ip_checksum). The caller needs to pull the skb to the
- * network header, and ensure ip_hdr/ipv6_hdr points to valid data.
- */
+ 
 int nf_ct_skb_network_trim(struct sk_buff *skb, int family)
 {
 	unsigned int len;
@@ -138,9 +130,7 @@ int nf_ct_skb_network_trim(struct sk_buff *skb, int family)
 }
 EXPORT_SYMBOL_GPL(nf_ct_skb_network_trim);
 
-/* Returns 0 on success, -EINPROGRESS if 'skb' is stolen, or other nonzero
- * value if 'skb' is freed.
- */
+ 
 int nf_ct_handle_fragments(struct net *net, struct sk_buff *skb,
 			   u16 zone, u8 family, u8 *proto, u16 *mru)
 {

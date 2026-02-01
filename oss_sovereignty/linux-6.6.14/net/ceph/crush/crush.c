@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #ifdef __KERNEL__
 # include <linux/slab.h>
 # include <linux/crush/crush.h>
@@ -19,11 +19,7 @@ const char *crush_bucket_alg_name(int alg)
 	}
 }
 
-/**
- * crush_get_bucket_item_weight - Get weight of an item in given bucket
- * @b: bucket pointer
- * @p: item index in bucket
- */
+ 
 int crush_get_bucket_item_weight(const struct crush_bucket *b, int p)
 {
 	if ((__u32)p >= b->size)
@@ -101,13 +97,10 @@ void crush_destroy_bucket(struct crush_bucket *b)
 	}
 }
 
-/**
- * crush_destroy - Destroy a crush_map
- * @map: crush_map pointer
- */
+ 
 void crush_destroy(struct crush_map *map)
 {
-	/* buckets */
+	 
 	if (map->buckets) {
 		__s32 b;
 		for (b = 0; b < map->max_buckets; b++) {
@@ -118,7 +111,7 @@ void crush_destroy(struct crush_map *map)
 		kfree(map->buckets);
 	}
 
-	/* rules */
+	 
 	if (map->rules) {
 		__u32 b;
 		for (b = 0; b < map->max_rules; b++)

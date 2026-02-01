@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// soc-apci.c - support for ACPI enumeration.
-//
-// Copyright (c) 2013-15, Intel Corporation.
+
+
+
+
+
 
 #include <linux/export.h>
 #include <linux/module.h>
@@ -41,7 +41,7 @@ snd_soc_acpi_find_machine(struct snd_soc_acpi_mach *machines)
 			if (mach->machine_quirk) {
 				mach_alt = mach->machine_quirk(mach);
 				if (!mach_alt)
-					continue; /* not full match, ignore */
+					continue;  
 				mach = mach_alt;
 			}
 
@@ -128,7 +128,7 @@ EXPORT_SYMBOL_GPL(snd_soc_acpi_codec_list);
 #define SDW_CODEC_ADR_MASK(_adr) ((_adr) & (SDW_DISCO_LINK_ID_MASK | SDW_VERSION_MASK | \
 				  SDW_MFG_ID_MASK | SDW_PART_ID_MASK))
 
-/* Check if all Slaves defined on the link can be found */
+ 
 bool snd_soc_acpi_sdw_link_slaves_found(struct device *dev,
 					const struct snd_soc_acpi_link_adr *link,
 					struct sdw_extended_slave_id *ids,
@@ -147,7 +147,7 @@ bool snd_soc_acpi_sdw_link_slaves_found(struct device *dev,
 		version = SDW_VERSION(adr);
 
 		for (j = 0; j < num_slaves; j++) {
-			/* find out how many identical parts were reported on that link */
+			 
 			if (ids[j].link_id == link_id &&
 			    ids[j].id.part_id == part_id &&
 			    ids[j].id.mfg_id == mfg_id &&
@@ -164,7 +164,7 @@ bool snd_soc_acpi_sdw_link_slaves_found(struct device *dev,
 			    ids[j].id.sdw_version != version)
 				continue;
 
-			/* find out how many identical parts are expected */
+			 
 			for (k = 0; k < link->num_adr; k++) {
 				u64 adr2 = link->adr_d[k].adr;
 
@@ -173,11 +173,7 @@ bool snd_soc_acpi_sdw_link_slaves_found(struct device *dev,
 			}
 
 			if (reported_part_count == expected_part_count) {
-				/*
-				 * we have to check unique id
-				 * if there is more than one
-				 * Slave on the link
-				 */
+				 
 				unique_id = SDW_UNIQUE_ID(adr);
 				if (reported_part_count == 1 ||
 				    ids[j].id.unique_id == unique_id) {

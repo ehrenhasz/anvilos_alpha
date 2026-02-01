@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010-2011,2013-2015 The Linux Foundation. All rights reserved.
- *
- * storm.c -- ALSA SoC machine driver for QTi ipq806x-based Storm board
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -32,11 +28,7 @@ static int storm_ops_hw_params(struct snd_pcm_substream *substream,
 		return bitwidth;
 	}
 
-	/*
-	 * as the CPU DAI is the I2S bus master and no system clock is needed by
-	 * the MAX98357a DAC, simply set the system clock to be a constant
-	 * multiple of the bit clock for the clock divider
-	 */
+	 
 	sysclk_freq = rate * bitwidth * 2 * STORM_SYSCLK_MULT;
 
 	ret = snd_soc_dai_set_sysclk(asoc_rtd_to_cpu(soc_runtime, 0), 0, sysclk_freq, 0);

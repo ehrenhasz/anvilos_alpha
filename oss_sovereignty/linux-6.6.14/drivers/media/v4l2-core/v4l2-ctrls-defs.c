@@ -1,19 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * V4L2 controls framework control definitions.
- *
- * Copyright (C) 2010-2021  Hans Verkuil <hverkuil-cisco@xs4all.nl>
- */
+
+ 
 
 #include <linux/export.h>
 #include <media/v4l2-ctrls.h>
 
-/*
- * Returns NULL or a character pointer array containing the menu for
- * the given control ID. The pointer array ends with a NULL pointer.
- * An empty string signifies a menu entry that is invalid. This allows
- * drivers to disable certain options if it is not supported.
- */
+ 
 const char * const *v4l2_ctrl_get_menu(u32 id)
 {
 	static const char * const mpeg_audio_sampling_freq[] = {
@@ -757,10 +748,7 @@ const char * const *v4l2_ctrl_get_menu(u32 id)
 EXPORT_SYMBOL(v4l2_ctrl_get_menu);
 
 #define __v4l2_qmenu_int_len(arr, len) ({ *(len) = ARRAY_SIZE(arr); (arr); })
-/*
- * Returns NULL or an s64 type array containing the menu for given
- * control ID. The total number of the menu items is returned in @len.
- */
+ 
 const s64 *v4l2_ctrl_get_int_menu(u32 id, u32 *len)
 {
 	static const s64 qmenu_int_vpx_num_partitions[] = {
@@ -783,12 +771,12 @@ const s64 *v4l2_ctrl_get_int_menu(u32 id, u32 *len)
 }
 EXPORT_SYMBOL(v4l2_ctrl_get_int_menu);
 
-/* Return the control name. */
+ 
 const char *v4l2_ctrl_get_name(u32 id)
 {
 	switch (id) {
-	/* USER controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_USER_CLASS:		return "User Controls";
 	case V4L2_CID_BRIGHTNESS:		return "Brightness";
 	case V4L2_CID_CONTRAST:			return "Contrast";
@@ -832,14 +820,7 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_COLORFX_CBCR:		return "Color Effects, CbCr";
 	case V4L2_CID_COLORFX_RGB:              return "Color Effects, RGB";
 
-	/*
-	 * Codec controls
-	 *
-	 * The MPEG controls are applicable to all codec controls
-	 * and the 'MPEG' part of the define is historical.
-	 *
-	 * Keep the order of the 'case's the same as in videodev2.h!
-	 */
+	 
 	case V4L2_CID_CODEC_CLASS:		return "Codec Controls";
 	case V4L2_CID_MPEG_STREAM_TYPE:		return "Stream Type";
 	case V4L2_CID_MPEG_STREAM_PID_PMT:	return "Stream PMT Program ID";
@@ -973,7 +954,7 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_FWHT_I_FRAME_QP:				return "FWHT I-Frame QP Value";
 	case V4L2_CID_FWHT_P_FRAME_QP:				return "FWHT P-Frame QP Value";
 
-	/* VPX controls */
+	 
 	case V4L2_CID_MPEG_VIDEO_VPX_NUM_PARTITIONS:		return "VPX Number of Partitions";
 	case V4L2_CID_MPEG_VIDEO_VPX_IMD_DISABLE_4X4:		return "VPX Intra Mode Decision Disable";
 	case V4L2_CID_MPEG_VIDEO_VPX_NUM_REF_FRAMES:		return "VPX No. of Refs for P Frame";
@@ -989,7 +970,7 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_MPEG_VIDEO_VP9_PROFILE:			return "VP9 Profile";
 	case V4L2_CID_MPEG_VIDEO_VP9_LEVEL:			return "VP9 Level";
 
-	/* HEVC controls */
+	 
 	case V4L2_CID_MPEG_VIDEO_HEVC_I_FRAME_QP:		return "HEVC I-Frame QP Value";
 	case V4L2_CID_MPEG_VIDEO_HEVC_P_FRAME_QP:		return "HEVC P-Frame QP Value";
 	case V4L2_CID_MPEG_VIDEO_HEVC_B_FRAME_QP:		return "HEVC B-Frame QP Value";
@@ -1042,12 +1023,12 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_MPEG_VIDEO_REF_NUMBER_FOR_PFRAMES:	return "Reference Frames for a P-Frame";
 	case V4L2_CID_MPEG_VIDEO_PREPEND_SPSPPS_TO_IDR:		return "Prepend SPS and PPS to IDR";
 
-	/* AV1 controls */
+	 
 	case V4L2_CID_MPEG_VIDEO_AV1_PROFILE:			return "AV1 Profile";
 	case V4L2_CID_MPEG_VIDEO_AV1_LEVEL:			return "AV1 Level";
 
-	/* CAMERA controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_CAMERA_CLASS:		return "Camera Controls";
 	case V4L2_CID_EXPOSURE_AUTO:		return "Auto Exposure";
 	case V4L2_CID_EXPOSURE_ABSOLUTE:	return "Exposure Time, Absolute";
@@ -1087,8 +1068,8 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_CAMERA_SENSOR_ROTATION:	return "Camera Sensor Rotation";
 	case V4L2_CID_HDR_SENSOR_MODE:		return "HDR Sensor Mode";
 
-	/* FM Radio Modulator controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_FM_TX_CLASS:		return "FM Radio Modulator Controls";
 	case V4L2_CID_RDS_TX_DEVIATION:		return "RDS Signal Deviation";
 	case V4L2_CID_RDS_TX_PI:		return "RDS Program ID";
@@ -1119,8 +1100,8 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_TUNE_POWER_LEVEL:		return "Tune Power Level";
 	case V4L2_CID_TUNE_ANTENNA_CAPACITOR:	return "Tune Antenna Capacitor";
 
-	/* Flash controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_FLASH_CLASS:		return "Flash Controls";
 	case V4L2_CID_FLASH_LED_MODE:		return "LED Mode";
 	case V4L2_CID_FLASH_STROBE_SOURCE:	return "Strobe Source";
@@ -1135,16 +1116,16 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_FLASH_CHARGE:		return "Charge";
 	case V4L2_CID_FLASH_READY:		return "Ready to Strobe";
 
-	/* JPEG encoder controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_JPEG_CLASS:		return "JPEG Compression Controls";
 	case V4L2_CID_JPEG_CHROMA_SUBSAMPLING:	return "Chroma Subsampling";
 	case V4L2_CID_JPEG_RESTART_INTERVAL:	return "Restart Interval";
 	case V4L2_CID_JPEG_COMPRESSION_QUALITY:	return "Compression Quality";
 	case V4L2_CID_JPEG_ACTIVE_MARKER:	return "Active Markers";
 
-	/* Image source controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_IMAGE_SOURCE_CLASS:	return "Image Source Controls";
 	case V4L2_CID_VBLANK:			return "Vertical Blanking";
 	case V4L2_CID_HBLANK:			return "Horizontal Blanking";
@@ -1155,8 +1136,8 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_TEST_PATTERN_GREENB:	return "Green (Blue) Pixel Value";
 	case V4L2_CID_NOTIFY_GAINS:		return "Notify Gains";
 
-	/* Image processing controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_IMAGE_PROC_CLASS:		return "Image Processing Controls";
 	case V4L2_CID_LINK_FREQ:		return "Link Frequency";
 	case V4L2_CID_PIXEL_RATE:		return "Pixel Rate";
@@ -1164,8 +1145,8 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_DEINTERLACING_MODE:	return "Deinterlacing Mode";
 	case V4L2_CID_DIGITAL_GAIN:		return "Digital Gain";
 
-	/* DV controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_DV_CLASS:			return "Digital Video Controls";
 	case V4L2_CID_DV_TX_HOTPLUG:		return "Hotplug Present";
 	case V4L2_CID_DV_TX_RXSENSE:		return "RxSense Present";
@@ -1198,16 +1179,16 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_RDS_RX_TRAFFIC_PROGRAM:	return "RDS Traffic Program";
 	case V4L2_CID_RDS_RX_MUSIC_SPEECH:	return "RDS Music";
 
-	/* Detection controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_DETECT_CLASS:		return "Detection Controls";
 	case V4L2_CID_DETECT_MD_MODE:		return "Motion Detection Mode";
 	case V4L2_CID_DETECT_MD_GLOBAL_THRESHOLD: return "MD Global Threshold";
 	case V4L2_CID_DETECT_MD_THRESHOLD_GRID:	return "MD Threshold Grid";
 	case V4L2_CID_DETECT_MD_REGION_GRID:	return "MD Region Grid";
 
-	/* Stateless Codec controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_CODEC_STATELESS_CLASS:	return "Stateless Codec Controls";
 	case V4L2_CID_STATELESS_H264_DECODE_MODE:		return "H264 Decode Mode";
 	case V4L2_CID_STATELESS_H264_START_CODE:		return "H264 Start Code";
@@ -1237,8 +1218,8 @@ const char *v4l2_ctrl_get_name(u32 id)
 	case V4L2_CID_STATELESS_AV1_FRAME:			return "AV1 Frame Parameters";
 	case V4L2_CID_STATELESS_AV1_FILM_GRAIN:			return "AV1 Film Grain";
 
-	/* Colorimetry controls */
-	/* Keep the order of the 'case's the same as in v4l2-controls.h! */
+	 
+	 
 	case V4L2_CID_COLORIMETRY_CLASS:	return "Colorimetry Controls";
 	case V4L2_CID_COLORIMETRY_HDR10_CLL_INFO:		return "HDR10 Content Light Info";
 	case V4L2_CID_COLORIMETRY_HDR10_MASTERING_DISPLAY:	return "HDR10 Mastering Display";
@@ -1452,7 +1433,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
 	case V4L2_CID_CODEC_STATELESS_CLASS:
 	case V4L2_CID_COLORIMETRY_CLASS:
 		*type = V4L2_CTRL_TYPE_CTRL_CLASS;
-		/* You can neither read nor write these */
+		 
 		*flags |= V4L2_CTRL_FLAG_READ_ONLY | V4L2_CTRL_FLAG_WRITE_ONLY;
 		*min = *max = *step = *def = 0;
 		break;
@@ -1461,7 +1442,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
 		*type = V4L2_CTRL_TYPE_INTEGER;
 		*step = 1;
 		*min = 0;
-		/* Max is calculated as RGB888 that is 2^24 - 1 */
+		 
 		*max = 0xffffff;
 		break;
 	case V4L2_CID_COLORFX_CBCR:
@@ -1502,7 +1483,7 @@ void v4l2_ctrl_fill(u32 id, const char **name, enum v4l2_ctrl_type *type,
 	case V4L2_CID_MPEG_VIDEO_DEC_CONCEAL_COLOR:
 		*type = V4L2_CTRL_TYPE_INTEGER64;
 		*min = 0;
-		/* default for 8 bit black, luma is 16, chroma is 128 */
+		 
 		*def = 0x8000800010LL;
 		*max = 0xffffffffffffLL;
 		*step = 1;

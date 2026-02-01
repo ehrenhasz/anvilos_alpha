@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __ASM_GENERIC_NUMA_H
 #define __ASM_GENERIC_NUMA_H
 
@@ -13,14 +13,14 @@ extern nodemask_t numa_nodes_parsed __initdata;
 
 extern bool numa_off;
 
-/* Mappings between node number and cpus on that node. */
+ 
 extern cpumask_var_t node_to_cpumask_map[MAX_NUMNODES];
 void numa_clear_node(unsigned int cpu);
 
 #ifdef CONFIG_DEBUG_PER_CPU_MAPS
 const struct cpumask *cpumask_of_node(int node);
 #else
-/* Returns a pointer to the cpumask of CPUs on Node 'node'. */
+ 
 static inline const struct cpumask *cpumask_of_node(int node)
 {
 	if (node == NUMA_NO_NODE)
@@ -39,7 +39,7 @@ void numa_store_cpu_info(unsigned int cpu);
 void numa_add_cpu(unsigned int cpu);
 void numa_remove_cpu(unsigned int cpu);
 
-#else	/* CONFIG_NUMA */
+#else	 
 
 static inline void numa_store_cpu_info(unsigned int cpu) { }
 static inline void numa_add_cpu(unsigned int cpu) { }
@@ -47,6 +47,6 @@ static inline void numa_remove_cpu(unsigned int cpu) { }
 static inline void arch_numa_init(void) { }
 static inline void early_map_cpu_to_node(unsigned int cpu, int nid) { }
 
-#endif	/* CONFIG_NUMA */
+#endif	 
 
-#endif	/* __ASM_GENERIC_NUMA_H */
+#endif	 

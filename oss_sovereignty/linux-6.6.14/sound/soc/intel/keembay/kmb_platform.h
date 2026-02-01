@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  Intel KeemBay Platform driver
- *
- *  Copyright (C) 2020 Intel Corporation.
- *
- */
+ 
+ 
 
 #ifndef KMB_PLATFORM_H_
 #define KMB_PLATFORM_H_
@@ -14,8 +9,8 @@
 #include <linux/types.h>
 #include <sound/dmaengine_pcm.h>
 
-/* Register values with reference to KMB databook v1.1 */
-/* common register for all channel */
+ 
+ 
 #define IER		0x000
 #define IRER		0x004
 #define ITER		0x008
@@ -24,13 +19,13 @@
 #define RXFFR		0x014
 #define TXFFR		0x018
 
-/* Interrupt status register fields */
+ 
 #define ISR_TXFO	BIT(5)
 #define ISR_TXFE	BIT(4)
 #define ISR_RXFO	BIT(1)
 #define ISR_RXDA	BIT(0)
 
-/* I2S Tx Rx Registers for all channels */
+ 
 #define LRBR_LTHR(x)	(0x40 * (x) + 0x020)
 #define RRBR_RTHR(x)	(0x40 * (x) + 0x024)
 #define RER(x)		(0x40 * (x) + 0x028)
@@ -46,13 +41,13 @@
 #define RFF(x)		(0x40 * (x) + 0x050)
 #define TFF(x)		(0x40 * (x) + 0x054)
 
-/* I2S COMP Registers */
+ 
 #define I2S_COMP_PARAM_2	0x01F0
 #define I2S_COMP_PARAM_1	0x01F4
 #define I2S_COMP_VERSION	0x01F8
 #define I2S_COMP_TYPE		0x01FC
 
-/* PSS_GEN_CTRL_I2S_GEN_CFG_0 Registers */
+ 
 #define I2S_GEN_CFG_0		0x000
 #define PSS_CPR_RST_EN		0x010
 #define PSS_CPR_RST_SET		0x014
@@ -61,13 +56,10 @@
 
 #define CLOCK_PROVIDER_MODE	BIT(13)
 
-/* Interrupt Flag */
+ 
 #define TX_INT_FLAG		GENMASK(5, 4)
 #define RX_INT_FLAG		GENMASK(1, 0)
-/*
- * Component parameter register fields - define the I2S block's
- * configuration.
- */
+ 
 #define	COMP1_TX_WORDSIZE_3(r)		FIELD_GET(GENMASK(27, 25), (r))
 #define	COMP1_TX_WORDSIZE_2(r)		FIELD_GET(GENMASK(24, 22), (r))
 #define	COMP1_TX_WORDSIZE_1(r)		FIELD_GET(GENMASK(21, 19), (r))
@@ -81,22 +73,22 @@
 #define	COMP2_RX_WORDSIZE_1(r)		FIELD_GET(GENMASK(5, 3), (r))
 #define	COMP2_RX_WORDSIZE_0(r)		FIELD_GET(GENMASK(2, 0), (r))
 
-/* Add 1 to the below registers to indicate the actual size */
+ 
 #define	COMP1_TX_CHANNELS(r)	(FIELD_GET(GENMASK(10, 9), (r)) + 1)
 #define	COMP1_RX_CHANNELS(r)	(FIELD_GET(GENMASK(8, 7), (r)) + 1)
 #define	COMP1_FIFO_DEPTH(r)	(FIELD_GET(GENMASK(3, 2), (r)) + 1)
 
-/* Number of entries in WORDSIZE and DATA_WIDTH parameter registers */
-#define	COMP_MAX_WORDSIZE	8	/* 3 bits register width */
+ 
+#define	COMP_MAX_WORDSIZE	8	 
 
 #define MAX_CHANNEL_NUM		8
 #define MIN_CHANNEL_NUM		2
 #define MAX_ISR			4
 
-#define TWO_CHANNEL_SUPPORT	2	/* up to 2.0 */
-#define FOUR_CHANNEL_SUPPORT	4	/* up to 3.1 */
-#define SIX_CHANNEL_SUPPORT	6	/* up to 5.1 */
-#define EIGHT_CHANNEL_SUPPORT	8	/* up to 7.1 */
+#define TWO_CHANNEL_SUPPORT	2	 
+#define FOUR_CHANNEL_SUPPORT	4	 
+#define SIX_CHANNEL_SUPPORT	6	 
+#define EIGHT_CHANNEL_SUPPORT	8	 
 
 #define DWC_I2S_PLAY	BIT(0)
 #define DWC_I2S_RECORD	BIT(1)
@@ -111,12 +103,7 @@
 #define I2S_DMAEN_RXBLOCK	(1 << 16)
 #define I2S_DMAEN_TXBLOCK	(1 << 17)
 
-/*
- * struct i2s_clk_config_data - represent i2s clk configuration data
- * @chan_nr: number of channel
- * @data_width: number of bits per sample (8/16/24/32 bit)
- * @sample_rate: sampling frequency (8Khz, 16Khz, 48Khz)
- */
+ 
 struct i2s_clk_config_data {
 	int chan_nr;
 	u32 data_width;
@@ -137,14 +124,14 @@ struct kmb_i2s_info {
 	u32 xfer_resolution;
 	u32 fifo_th;
 	bool clock_provider;
-	/* data related to DMA transfers b/w i2s and DMAC */
+	 
 	struct snd_dmaengine_dai_dma_data play_dma_data;
 	struct snd_dmaengine_dai_dma_data capture_dma_data;
 
 	struct i2s_clk_config_data config;
 	int (*i2s_clk_cfg)(struct i2s_clk_config_data *config);
 
-	/* data related to PIO transfers */
+	 
 	bool use_pio;
 	struct snd_pcm_substream *tx_substream;
 	struct snd_pcm_substream *rx_substream;
@@ -153,4 +140,4 @@ struct kmb_i2s_info {
 	bool iec958_fmt;
 };
 
-#endif /* KMB_PLATFORM_H_ */
+#endif  

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/value_ptr_arith.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -403,7 +403,7 @@ __retval(0)
 __naked void value_pointer_and_scalar_1(void)
 {
 	asm volatile ("					\
-	/* load map value pointer into r0 and r2 */	\
+	 	\
 	r0 = 1;						\
 	r1 = %[map_array_48b] ll;			\
 	r2 = r10;					\
@@ -413,32 +413,30 @@ __naked void value_pointer_and_scalar_1(void)
 	call %[bpf_map_lookup_elem];			\
 	if r0 != 0 goto l0_%=;				\
 	exit;						\
-l0_%=:	/* load some number from the map into r1 */	\
+l0_%=:	 	\
 	r1 = *(u8*)(r0 + 0);				\
-	/* depending on r1, branch: */			\
+	 			\
 	if r1 != 0 goto l1_%=;				\
-	/* branch A */					\
+	 					\
 	r2 = r0;					\
 	r3 = 0;						\
 	goto l2_%=;					\
-l1_%=:	/* branch B */					\
+l1_%=:	 					\
 	r2 = 0;						\
 	r3 = 0x100000;					\
-l2_%=:	/* common instruction */			\
+l2_%=:	 			\
 	r2 += r3;					\
-	/* depending on r1, branch: */			\
+	 			\
 	if r1 != 0 goto l3_%=;				\
-	/* branch A */					\
+	 					\
 	goto l4_%=;					\
-l3_%=:	/* branch B */					\
+l3_%=:	 					\
 	r0 = 0x13371337;				\
-	/* verifier follows fall-through */		\
+	 		\
 	if r2 != 0x100000 goto l4_%=;			\
 	r0 = 0;						\
 	exit;						\
-l4_%=:	/* fake-dead code; targeted from branch A to	\
-	 * prevent dead code sanitization		\
-	 */						\
+l4_%=:	 						\
 	r0 = *(u8*)(r0 + 0);				\
 	r0 = 0;						\
 	exit;						\
@@ -455,7 +453,7 @@ __retval(0)
 __naked void value_pointer_and_scalar_2(void)
 {
 	asm volatile ("					\
-	/* load map value pointer into r0 and r2 */	\
+	 	\
 	r0 = 1;						\
 	r1 = %[map_array_48b] ll;			\
 	r2 = r10;					\
@@ -465,33 +463,30 @@ __naked void value_pointer_and_scalar_2(void)
 	call %[bpf_map_lookup_elem];			\
 	if r0 != 0 goto l0_%=;				\
 	exit;						\
-l0_%=:	/* load some number from the map into r1 */	\
+l0_%=:	 	\
 	r1 = *(u8*)(r0 + 0);				\
-	/* depending on r1, branch: */			\
+	 			\
 	if r1 == 0 goto l1_%=;				\
-	/* branch A */					\
+	 					\
 	r2 = 0;						\
 	r3 = 0x100000;					\
 	goto l2_%=;					\
-l1_%=:	/* branch B */					\
+l1_%=:	 					\
 	r2 = r0;					\
 	r3 = 0;						\
-l2_%=:	/* common instruction */			\
+l2_%=:	 			\
 	r2 += r3;					\
-	/* depending on r1, branch: */			\
+	 			\
 	if r1 != 0 goto l3_%=;				\
-	/* branch A */					\
+	 					\
 	goto l4_%=;					\
-l3_%=:	/* branch B */					\
+l3_%=:	 					\
 	r0 = 0x13371337;				\
-	/* verifier follows fall-through */		\
+	 		\
 	if r2 != 0x100000 goto l4_%=;			\
 	r0 = 0;						\
 	exit;						\
-l4_%=:	/* fake-dead code; targeted from branch A to	\
-	 * prevent dead code sanitization, rejected	\
-	 * via branch B however				\
-	 */						\
+l4_%=:	 						\
 	r0 = *(u8*)(r0 + 0);				\
 	r0 = 0;						\
 	exit;						\

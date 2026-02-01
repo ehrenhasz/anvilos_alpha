@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hardware monitoring driver for Maxim MAX16064
- *
- * Copyright (c) 2011 Ericsson AB.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -97,7 +93,7 @@ static const struct i2c_device_id max16064_id[] = {
 
 MODULE_DEVICE_TABLE(i2c, max16064_id);
 
-/* This is the driver that will be inserted */
+ 
 static struct i2c_driver max16064_driver = {
 	.driver = {
 		   .name = "max16064",

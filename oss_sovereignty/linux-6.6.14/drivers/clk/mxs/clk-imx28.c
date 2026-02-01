@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk/mxs.h>
 #include <linux/clkdev.h>
@@ -54,17 +52,7 @@ static void __iomem *digctrl;
 #define DIGCTRL digctrl
 #define BP_SAIF_CLKMUX		10
 
-/*
- * HW_SAIF_CLKMUX_SEL:
- *  DIRECT(0x0): SAIF0 clock pins selected for SAIF0 input clocks, and SAIF1
- *		clock pins selected for SAIF1 input clocks.
- *  CROSSINPUT(0x1): SAIF1 clock inputs selected for SAIF0 input clocks, and
- *		SAIF0 clock inputs selected for SAIF1 input clocks.
- *  EXTMSTR0(0x2): SAIF0 clock pin selected for both SAIF0 and SAIF1 input
- *		clocks.
- *  EXTMSTR1(0x3): SAIF1 clock pin selected for both SAIF0 and SAIF1 input
- *		clocks.
- */
+ 
 int mxs_saif_clkmux_select(unsigned int clkmux)
 {
 	if (clkmux > 0x3)
@@ -80,16 +68,16 @@ static void __init clk_misc_init(void)
 {
 	u32 val;
 
-	/* Gate off cpu clock in WFI for power saving */
+	 
 	writel_relaxed(1 << BP_CPU_INTERRUPT_WAIT, CPU + SET);
 
-	/* 0 is a bad default value for a divider */
+	 
 	writel_relaxed(1 << BP_ENET_DIV_TIME, ENET + SET);
 
-	/* Clear BYPASS for SAIF */
+	 
 	writel_relaxed(0x3 << BP_CLKSEQ_BYPASS_SAIF0, CLKSEQ + CLR);
 
-	/* SAIF has to use frac div for functional operation */
+	 
 	val = readl_relaxed(SAIF0);
 	val |= 1 << BP_SAIF_DIV_FRAC_EN;
 	writel_relaxed(val, SAIF0);
@@ -98,21 +86,15 @@ static void __init clk_misc_init(void)
 	val |= 1 << BP_SAIF_DIV_FRAC_EN;
 	writel_relaxed(val, SAIF1);
 
-	/* Extra fec clock setting */
+	 
 	val = readl_relaxed(ENET);
 	val &= ~(1 << BP_ENET_SLEEP);
 	writel_relaxed(val, ENET);
 
-	/*
-	 * Source ssp clock from ref_io than ref_xtal,
-	 * as ref_xtal only provides 24 MHz as maximum.
-	 */
+	 
 	writel_relaxed(0xf << BP_CLKSEQ_BYPASS_SSP0, CLKSEQ + CLR);
 
-	/*
-	 * 480 MHz seems too high to be ssp clock source directly,
-	 * so set frac0 to get a 288 MHz ref_io0 and ref_io1.
-	 */
+	 
 	val = readl_relaxed(FRAC0);
 	val &= ~((0x3f << BP_FRAC0_IO0FRAC) | (0x3f << BP_FRAC0_IO1FRAC));
 	val |= (30 << BP_FRAC0_IO0FRAC) | (30 << BP_FRAC0_IO1FRAC);

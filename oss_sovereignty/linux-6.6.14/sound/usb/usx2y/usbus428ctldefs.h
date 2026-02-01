@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *
- * Copyright (c) 2003 by Karsten Wiese <annabellesgarden@yahoo.de>
- */
+ 
+ 
 
 enum E_IN84 {
 	E_FADER_0 = 0,

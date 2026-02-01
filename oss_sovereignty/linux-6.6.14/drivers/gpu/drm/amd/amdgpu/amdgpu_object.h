@@ -1,30 +1,4 @@
-/*
- * Copyright 2008 Advanced Micro Devices, Inc.
- * Copyright 2008 Red Hat Inc.
- * Copyright 2009 Jerome Glisse.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alex Deucher
- *          Jerome Glisse
- */
+ 
 #ifndef __AMDGPU_OBJECT_H__
 #define __AMDGPU_OBJECT_H__
 
@@ -39,7 +13,7 @@
 #define AMDGPU_BO_INVALID_OFFSET	LONG_MAX
 #define AMDGPU_BO_MAX_PLACEMENTS	3
 
-/* BO flag to indicate a KFD userptr BO */
+ 
 #define AMDGPU_AMDKFD_CREATE_USERPTR_BO	(1ULL << 63)
 
 #define to_amdgpu_bo_user(abo) container_of((abo), struct amdgpu_bo_user, bo)
@@ -56,11 +30,11 @@ struct amdgpu_bo_param {
 	bool				no_wait_gpu;
 	struct dma_resv			*resv;
 	void				(*destroy)(struct ttm_buffer_object *bo);
-	/* xcp partition number plus 1, 0 means any partition */
+	 
 	int8_t				xcp_id_plus1;
 };
 
-/* bo virtual addresses in a vm */
+ 
 struct amdgpu_bo_va_mapping {
 	struct amdgpu_bo_va		*bo_va;
 	struct list_head		list;
@@ -72,28 +46,28 @@ struct amdgpu_bo_va_mapping {
 	uint64_t			flags;
 };
 
-/* User space allocated BO in a VM */
+ 
 struct amdgpu_bo_va {
 	struct amdgpu_vm_bo_base	base;
 
-	/* protected by bo being reserved */
+	 
 	unsigned			ref_count;
 
-	/* all other members protected by the VM PD being reserved */
+	 
 	struct dma_fence	        *last_pt_update;
 
-	/* mappings for this bo_va */
+	 
 	struct list_head		invalids;
 	struct list_head		valids;
 
-	/* If the mappings are cleared or filled */
+	 
 	bool				cleared;
 
 	bool				is_xgmi;
 };
 
 struct amdgpu_bo {
-	/* Protected by tbo.reserved */
+	 
 	u32				preferred_domains;
 	u32				allowed_domains;
 	struct ttm_place		placements[AMDGPU_BO_MAX_PLACEMENTS];
@@ -101,9 +75,9 @@ struct amdgpu_bo {
 	struct ttm_buffer_object	tbo;
 	struct ttm_bo_kmap_obj		kmap;
 	u64				flags;
-	/* per VM structure for page tables and with virtual addresses */
+	 
 	struct amdgpu_vm_bo_base	*vm_bo;
-	/* Constant after initialization */
+	 
 	struct amdgpu_bo		*parent;
 
 #ifdef CONFIG_MMU_NOTIFIER
@@ -111,11 +85,7 @@ struct amdgpu_bo {
 #endif
 	struct kgd_mem                  *kfd_bo;
 
-	/*
-	 * For GPUs with spatial partitioning, xcp partition number, -1 means
-	 * any partition. For other ASICs without spatial partition, always 0
-	 * for memory accounting.
-	 */
+	 
 	int8_t				xcp_id;
 };
 
@@ -136,23 +106,23 @@ struct amdgpu_bo_vm {
 };
 
 struct amdgpu_mem_stats {
-	/* current VRAM usage, includes visible VRAM */
+	 
 	uint64_t vram;
-	/* current visible VRAM usage */
+	 
 	uint64_t visible_vram;
-	/* current GTT usage */
+	 
 	uint64_t gtt;
-	/* current system memory usage */
+	 
 	uint64_t cpu;
-	/* sum of evicted buffers, includes visible VRAM */
+	 
 	uint64_t evicted_vram;
-	/* sum of evicted buffers due to CPU access */
+	 
 	uint64_t evicted_visible_vram;
-	/* how much userspace asked for, includes vis.VRAM */
+	 
 	uint64_t requested_vram;
-	/* how much userspace asked for */
+	 
 	uint64_t requested_visible_vram;
-	/* how much userspace asked for */
+	 
 	uint64_t requested_gtt;
 };
 
@@ -161,12 +131,7 @@ static inline struct amdgpu_bo *ttm_to_amdgpu_bo(struct ttm_buffer_object *tbo)
 	return container_of(tbo, struct amdgpu_bo, tbo);
 }
 
-/**
- * amdgpu_mem_type_to_domain - return domain corresponding to mem_type
- * @mem_type:	ttm memory type
- *
- * Returns corresponding domain of the ttm mem_type
- */
+ 
 static inline unsigned amdgpu_mem_type_to_domain(u32 mem_type)
 {
 	switch (mem_type) {
@@ -190,15 +155,7 @@ static inline unsigned amdgpu_mem_type_to_domain(u32 mem_type)
 	return 0;
 }
 
-/**
- * amdgpu_bo_reserve - reserve bo
- * @bo:		bo structure
- * @no_intr:	don't return -ERESTARTSYS on pending signal
- *
- * Returns:
- * -ERESTARTSYS: A wait for the buffer to become unreserved was interrupted by
- * a signal. Release all buffer reservations and return to user-space.
- */
+ 
 static inline int amdgpu_bo_reserve(struct amdgpu_bo *bo, bool no_intr)
 {
 	struct amdgpu_device *adev = amdgpu_ttm_adev(bo->tbo.bdev);
@@ -233,20 +190,13 @@ static inline unsigned amdgpu_bo_gpu_page_alignment(struct amdgpu_bo *bo)
 	return (bo->tbo.page_alignment << PAGE_SHIFT) / AMDGPU_GPU_PAGE_SIZE;
 }
 
-/**
- * amdgpu_bo_mmap_offset - return mmap offset of bo
- * @bo:	amdgpu object for which we query the offset
- *
- * Returns mmap offset of the object.
- */
+ 
 static inline u64 amdgpu_bo_mmap_offset(struct amdgpu_bo *bo)
 {
 	return drm_vma_node_offset_addr(&bo->tbo.base.vma_node);
 }
 
-/**
- * amdgpu_bo_in_cpu_visible_vram - check if BO is (partly) in visible VRAM
- */
+ 
 static inline bool amdgpu_bo_in_cpu_visible_vram(struct amdgpu_bo *bo)
 {
 	struct amdgpu_device *adev = amdgpu_ttm_adev(bo->tbo.bdev);
@@ -266,33 +216,19 @@ static inline bool amdgpu_bo_in_cpu_visible_vram(struct amdgpu_bo *bo)
 	return false;
 }
 
-/**
- * amdgpu_bo_explicit_sync - return whether the bo is explicitly synced
- */
+ 
 static inline bool amdgpu_bo_explicit_sync(struct amdgpu_bo *bo)
 {
 	return bo->flags & AMDGPU_GEM_CREATE_EXPLICIT_SYNC;
 }
 
-/**
- * amdgpu_bo_encrypted - test if the BO is encrypted
- * @bo: pointer to a buffer object
- *
- * Return true if the buffer object is encrypted, false otherwise.
- */
+ 
 static inline bool amdgpu_bo_encrypted(struct amdgpu_bo *bo)
 {
 	return bo->flags & AMDGPU_GEM_CREATE_ENCRYPTED;
 }
 
-/**
- * amdgpu_bo_shadowed - check if the BO is shadowed
- *
- * @bo: BO to be tested.
- *
- * Returns:
- * NULL if not shadowed or else return a BO pointer.
- */
+ 
 static inline struct amdgpu_bo *amdgpu_bo_shadowed(struct amdgpu_bo *bo)
 {
 	if (bo->tbo.type == ttm_bo_type_kernel)
@@ -365,9 +301,7 @@ int amdgpu_bo_restore_shadow(struct amdgpu_bo *shadow,
 uint32_t amdgpu_bo_get_preferred_domain(struct amdgpu_device *adev,
 					    uint32_t domain);
 
-/*
- * sub allocation
- */
+ 
 static inline struct amdgpu_sa_manager *
 to_amdgpu_sa_manager(struct drm_suballoc_manager *manager)
 {

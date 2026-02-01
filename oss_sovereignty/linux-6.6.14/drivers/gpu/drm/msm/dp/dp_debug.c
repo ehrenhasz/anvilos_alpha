@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017-2020, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #define pr_fmt(fmt)"[drm-dp] %s: " fmt, __func__
 
@@ -73,7 +71,7 @@ static int dp_debug_show(struct seq_file *seq, void *p)
 	seq_printf(seq, "\t\tbpp = %d\n",
 			debug->panel->dp_mode.bpp);
 
-	/* Link Information */
+	 
 	seq_printf(seq, "\tdp_link:\n\t\ttest_requested = %d\n",
 			debug->link->sink_request);
 	seq_printf(seq, "\t\tnum_lanes = %d\n",
@@ -157,9 +155,7 @@ static ssize_t dp_test_active_write(struct file *file,
 			return status;
 		}
 		DRM_DEBUG_DRIVER("Got %d for test active\n", val);
-		/* To prevent erroneous activation of the compliance
-		 * testing code, only accept an actual value of 1 here
-		 */
+		 
 		if (val == 1)
 			debug->panel->video_test = true;
 		else

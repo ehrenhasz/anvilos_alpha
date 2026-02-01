@@ -1,23 +1,6 @@
-/* xmalloc.c -- safe versions of malloc and realloc */
+ 
 
-/* Copyright (C) 1991-2017 Free Software Foundation, Inc.
-
-   This file is part of the GNU Readline Library (Readline), a library
-   for reading lines of text with interactive input and history editing.      
-
-   Readline is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Readline is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Readline.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #define READLINE_LIBRARY
 
@@ -31,15 +14,15 @@
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #include "xmalloc.h"
 
-/* **************************************************************** */
-/*								    */
-/*		   Memory Allocation and Deallocation.		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 static void
 memory_error_and_abort (char *fname)
@@ -48,9 +31,7 @@ memory_error_and_abort (char *fname)
   exit (2);
 }
 
-/* Return a pointer to free()able block of memory large enough
-   to hold BYTES number of bytes.  If the memory cannot be allocated,
-   print an error message and abort. */
+ 
 PTR_T
 xmalloc (size_t bytes)
 {

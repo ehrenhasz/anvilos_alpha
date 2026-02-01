@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  linux/fs/fat/cache.c
- *
- *  Written 1992,1993 by Werner Almesberger
- *
- *  Mar 1999. AV. Changed cache, so that it uses the starting cluster instead
- *	of inode number.
- *  May 1999. AV. Fixed the bogosity with FAT32 (read "FAT28"). Fscking lusers.
- *  Copyright (C) 2012-2013 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/slab.h>
 #include <asm/unaligned.h>
@@ -21,9 +12,9 @@
 
 struct exfat_cache {
 	struct list_head cache_list;
-	unsigned int nr_contig;	/* number of contiguous clusters */
-	unsigned int fcluster;	/* cluster number in the file. */
-	unsigned int dcluster;	/* cluster number on disk. */
+	unsigned int nr_contig;	 
+	unsigned int fcluster;	 
+	unsigned int dcluster;	 
 };
 
 struct exfat_cache_id {
@@ -91,7 +82,7 @@ static unsigned int exfat_cache_lookup(struct inode *inode,
 
 	spin_lock(&ei->cache_lru_lock);
 	list_for_each_entry(p, &ei->cache_lru, cache_list) {
-		/* Find the cache of "fclus" or nearest cache. */
+		 
 		if (p->fcluster <= fclus && hit->fcluster < p->fcluster) {
 			hit = p;
 			if (hit->fcluster + hit->nr_contig < fclus) {
@@ -124,7 +115,7 @@ static struct exfat_cache *exfat_cache_merge(struct inode *inode,
 	struct exfat_cache *p;
 
 	list_for_each_entry(p, &ei->cache_lru, cache_list) {
-		/* Find the same part as "new" in cluster-chain. */
+		 
 		if (p->fcluster == new->fcluster) {
 			if (new->nr_contig > p->nr_contig)
 				p->nr_contig = new->nr_contig;
@@ -140,13 +131,13 @@ static void exfat_cache_add(struct inode *inode,
 	struct exfat_inode_info *ei = EXFAT_I(inode);
 	struct exfat_cache *cache, *tmp;
 
-	if (new->fcluster == EXFAT_EOF_CLUSTER) /* dummy cache */
+	if (new->fcluster == EXFAT_EOF_CLUSTER)  
 		return;
 
 	spin_lock(&ei->cache_lru_lock);
 	if (new->id != EXFAT_CACHE_VALID &&
 	    new->id != ei->cache_valid_id)
-		goto unlock;	/* this cache was invalidated */
+		goto unlock;	 
 
 	cache = exfat_cache_merge(inode, new);
 	if (cache == NULL) {
@@ -186,10 +177,7 @@ unlock:
 	spin_unlock(&ei->cache_lru_lock);
 }
 
-/*
- * Cache invalidation occurs rarely, thus the LRU chain is not updated. It
- * fixes itself after a while.
- */
+ 
 static void __exfat_cache_inval_inode(struct inode *inode)
 {
 	struct exfat_inode_info *ei = EXFAT_I(inode);
@@ -202,7 +190,7 @@ static void __exfat_cache_inval_inode(struct inode *inode)
 		ei->nr_caches--;
 		exfat_cache_free(cache);
 	}
-	/* Update. The copy of caches before this id is discarded. */
+	 
 	ei->cache_valid_id++;
 	if (ei->cache_valid_id == EXFAT_CACHE_VALID)
 		ei->cache_valid_id++;
@@ -255,9 +243,7 @@ int exfat_get_cluster(struct inode *inode, unsigned int cluster,
 	*dclus = ei->start_clu;
 	*last_dclus = *dclus;
 
-	/*
-	 * Don`t use exfat_cache if zero offset or non-cluster allocation
-	 */
+	 
 	if (cluster == 0 || *dclus == EXFAT_EOF_CLUSTER)
 		return 0;
 
@@ -265,10 +251,7 @@ int exfat_get_cluster(struct inode *inode, unsigned int cluster,
 
 	if (exfat_cache_lookup(inode, cluster, &cid, fclus, dclus) ==
 			EXFAT_EOF_CLUSTER) {
-		/*
-		 * dummy, always not contiguous
-		 * This is reinitialized by cache_init(), later.
-		 */
+		 
 		WARN_ON(cid.id != EXFAT_CACHE_VALID ||
 			cid.fcluster != EXFAT_EOF_CLUSTER ||
 			cid.dcluster != EXFAT_EOF_CLUSTER ||
@@ -279,7 +262,7 @@ int exfat_get_cluster(struct inode *inode, unsigned int cluster,
 		return 0;
 
 	while (*fclus < cluster) {
-		/* prevent the infinite loop of cluster chain */
+		 
 		if (*fclus > limit) {
 			exfat_fs_error(sb,
 				"detected the cluster chain loop (i_pos %u)",

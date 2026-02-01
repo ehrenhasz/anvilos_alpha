@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Etnaviv Project
- * Copyright (C) 2017 Zodiac Inflight Innovations
- */
+
+ 
 
 #include "common.xml.h"
 #include "etnaviv_gpu.h"
@@ -23,7 +20,7 @@ struct etnaviv_pm_signal {
 struct etnaviv_pm_domain {
 	char name[64];
 
-	/* profile register */
+	 
 	u32 profile_read;
 	u32 profile_config;
 
@@ -67,7 +64,7 @@ static u32 pipe_perf_reg_read(struct etnaviv_gpu *gpu,
 		value += perf_reg_read(gpu, domain, signal);
 	}
 
-	/* switch back to pixel pipe 0 to prevent GPU hang */
+	 
 	pipe_select(gpu, clock, 0);
 
 	return value;
@@ -86,7 +83,7 @@ static u32 pipe_reg_read(struct etnaviv_gpu *gpu,
 		value += gpu_read(gpu, signal->data);
 	}
 
-	/* switch back to pixel pipe 0 to prevent GPU hang */
+	 
 	pipe_select(gpu, clock, 0);
 
 	return value;

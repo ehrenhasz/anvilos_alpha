@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Samsung Electronics Co., Ltd.
- * Copyright (c) 2013 Linaro Ltd.
- * Author: Thomas Abraham <thomas.ab@samsung.com>
- *
- * Common Clock Framework support for Exynos5250 SoC.
-*/
+
+ 
 
 #include <dt-bindings/clock/exynos5250.h>
 #include <linux/clk-provider.h>
@@ -83,7 +77,7 @@
 #define SRC_CDREX		0x20200
 #define PLL_DIV2_SEL		0x20a24
 
-/*Below definitions are used for PWR_CTRL settings*/
+ 
 #define PWR_CTRL1_CORE2_DOWN_RATIO		(7 << 28)
 #define PWR_CTRL1_CORE1_DOWN_RATIO		(7 << 16)
 #define PWR_CTRL1_DIV2_DOWN_EN			(1 << 9)
@@ -100,21 +94,18 @@
 #define PWR_CTRL2_CORE2_UP_RATIO		(1 << 4)
 #define PWR_CTRL2_CORE1_UP_RATIO		(1 << 0)
 
-/* NOTE: Must be equal to the last clock ID increased by one */
+ 
 #define CLKS_NR					(CLK_MOUT_VPLLSRC + 1)
 
-/* list of PLLs to be registered */
+ 
 enum exynos5250_plls {
 	apll, mpll, cpll, epll, vpll, gpll, bpll,
-	nr_plls			/* number of PLLs */
+	nr_plls			 
 };
 
 static void __iomem *reg_base;
 
-/*
- * list of controller registers to be saved and restored during a
- * suspend/resume cycle.
- */
+ 
 static const unsigned long exynos5250_clk_regs[] __initconst = {
 	SRC_CPU,
 	DIV_CPU0,
@@ -169,7 +160,7 @@ static const unsigned long exynos5250_clk_regs[] __initconst = {
 	GATE_IP_ISP1,
 };
 
-/* list of all parent clock list */
+ 
 PNAME(mout_apll_p)	= { "fin_pll", "fout_apll", };
 PNAME(mout_cpu_p)	= { "mout_apll", "mout_mpll", };
 PNAME(mout_mpll_fout_p)	= { "fout_mplldiv2", "fout_mpll" };
@@ -223,12 +214,12 @@ PNAME(mout_audio2_p)	= { "cdclk2", "fin_pll", "sclk_hdmi27m", "sclk_dptxphy",
 PNAME(mout_spdif_p)	= { "sclk_audio0", "sclk_audio1", "sclk_audio2",
 				"spdif_extclk" };
 
-/* fixed rate clocks generated outside the soc */
+ 
 static struct samsung_fixed_rate_clock exynos5250_fixed_rate_ext_clks[] __initdata = {
 	FRATE(CLK_FIN_PLL, "fin_pll", NULL, 0, 0),
 };
 
-/* fixed rate clocks generated inside the soc */
+ 
 static const struct samsung_fixed_rate_clock exynos5250_fixed_rate_clks[] __initconst = {
 	FRATE(CLK_SCLK_HDMIPHY, "sclk_hdmiphy", NULL, 0, 24000000),
 	FRATE(0, "sclk_hdmi27m", NULL, 0, 27000000),
@@ -246,28 +237,17 @@ static const struct samsung_mux_clock exynos5250_pll_pmux_clks[] __initconst = {
 };
 
 static const struct samsung_mux_clock exynos5250_mux_clks[] __initconst = {
-	/*
-	 * NOTE: Following table is sorted by (clock domain, register address,
-	 * bitfield shift) triplet in ascending order. When adding new entries,
-	 * please make sure that the order is kept, to avoid merge conflicts
-	 * and make further work with defined data easier.
-	 */
+	 
 
-	/*
-	 * CMU_CPU
-	 */
+	 
 	MUX_F(CLK_MOUT_APLL, "mout_apll", mout_apll_p, SRC_CPU, 0, 1,
 					CLK_SET_RATE_PARENT, 0),
 	MUX(0, "mout_cpu", mout_cpu_p, SRC_CPU, 16, 1),
 
-	/*
-	 * CMU_CORE
-	 */
+	 
 	MUX(CLK_MOUT_MPLL, "mout_mpll", mout_mpll_p, SRC_CORE1, 8, 1),
 
-	/*
-	 * CMU_TOP
-	 */
+	 
 	MUX(0, "mout_aclk166", mout_aclk166_p, SRC_TOP0, 8, 1),
 	MUX(0, "mout_aclk200", mout_aclk200_p, SRC_TOP0, 12, 1),
 	MUX(0, "mout_aclk300_disp1_mid", mout_aclk200_p, SRC_TOP0, 14, 1),
@@ -332,9 +312,7 @@ static const struct samsung_mux_clock exynos5250_mux_clks[] __initconst = {
 	MUX(0, "mout_spi1", mout_group1_p, SRC_PERIC1, 20, 4),
 	MUX(0, "mout_spi2", mout_group1_p, SRC_PERIC1, 24, 4),
 
-	/*
-	 * CMU_CDREX
-	 */
+	 
 	MUX(0, "mout_bpll", mout_bpll_p, SRC_CDREX, 0, 1),
 
 	MUX(0, "mout_mpll_fout", mout_mpll_fout_p, PLL_DIV2_SEL, 4, 1),
@@ -342,23 +320,14 @@ static const struct samsung_mux_clock exynos5250_mux_clks[] __initconst = {
 };
 
 static const struct samsung_div_clock exynos5250_div_clks[] __initconst = {
-	/*
-	 * NOTE: Following table is sorted by (clock domain, register address,
-	 * bitfield shift) triplet in ascending order. When adding new entries,
-	 * please make sure that the order is kept, to avoid merge conflicts
-	 * and make further work with defined data easier.
-	 */
+	 
 
-	/*
-	 * CMU_CPU
-	 */
+	 
 	DIV(0, "div_arm", "mout_cpu", DIV_CPU0, 0, 3),
 	DIV(0, "div_apll", "mout_apll", DIV_CPU0, 24, 3),
 	DIV(CLK_DIV_ARM2, "div_arm2", "div_arm", DIV_CPU0, 28, 3),
 
-	/*
-	 * CMU_TOP
-	 */
+	 
 	DIV(0, "div_aclk66", "div_aclk66_pre", DIV_TOP0, 0, 3),
 	DIV(0, "div_aclk166", "mout_aclk166", DIV_TOP0, 8, 3),
 	DIV(0, "div_aclk200", "mout_aclk200", DIV_TOP0, 12, 3),
@@ -434,24 +403,15 @@ static const struct samsung_div_clock exynos5250_div_clks[] __initconst = {
 };
 
 static const struct samsung_gate_clock exynos5250_gate_clks[] __initconst = {
-	/*
-	 * NOTE: Following table is sorted by (clock domain, register address,
-	 * bitfield shift) triplet in ascending order. When adding new entries,
-	 * please make sure that the order is kept, to avoid merge conflicts
-	 * and make further work with defined data easier.
-	 */
+	 
 
-	/*
-	 * CMU_ACP
-	 */
+	 
 	GATE(CLK_MDMA0, "mdma0", "div_aclk266", GATE_IP_ACP, 1, 0, 0),
 	GATE(CLK_SSS, "sss", "div_aclk266", GATE_IP_ACP, 2, 0, 0),
 	GATE(CLK_G2D, "g2d", "div_aclk200", GATE_IP_ACP, 3, 0, 0),
 	GATE(CLK_SMMU_MDMA0, "smmu_mdma0", "div_aclk266", GATE_IP_ACP, 5, 0, 0),
 
-	/*
-	 * CMU_TOP
-	 */
+	 
 	GATE(CLK_SCLK_CAM_BAYER, "sclk_cam_bayer", "div_cam_bayer",
 			SRC_MASK_GSCL, 12, CLK_SET_RATE_PARENT, 0),
 	GATE(CLK_SCLK_CAM0, "sclk_cam0", "div_cam0",
@@ -671,9 +631,9 @@ static const struct samsung_gate_clock exynos5250_disp_gate_clks[] __initconst =
 };
 
 static struct exynos5_subcmu_reg_dump exynos5250_disp_suspend_regs[] = {
-	{ GATE_IP_DISP1, 0xffffffff, 0xffffffff }, /* DISP1 gates */
-	{ SRC_TOP3, 0, BIT(4) },	/* MUX mout_aclk200_disp1_sub */
-	{ SRC_TOP3, 0, BIT(6) },	/* MUX mout_aclk300_disp1_sub */
+	{ GATE_IP_DISP1, 0xffffffff, 0xffffffff },  
+	{ SRC_TOP3, 0, BIT(4) },	 
+	{ SRC_TOP3, 0, BIT(6) },	 
 };
 
 static const struct exynos5_subcmu_info exynos5250_disp_subcmu = {
@@ -689,17 +649,17 @@ static const struct exynos5_subcmu_info *exynos5250_subcmus[] = {
 };
 
 static const struct samsung_pll_rate_table vpll_24mhz_tbl[] __initconst = {
-	/* sorted in descending order */
-	/* PLL_36XX_RATE(rate, m, p, s, k) */
+	 
+	 
 	PLL_36XX_RATE(24 * MHZ, 266000000, 266, 3, 3, 0),
-	/* Not in UM, but need for eDP on snow */
+	 
 	PLL_36XX_RATE(24 * MHZ, 70500000, 94, 2, 4, 0),
 	{ },
 };
 
 static const struct samsung_pll_rate_table epll_24mhz_tbl[] __initconst = {
-	/* sorted in descending order */
-	/* PLL_36XX_RATE(rate, m, p, s, k) */
+	 
+	 
 	PLL_36XX_RATE(24 * MHZ, 192000000, 64, 2, 2, 0),
 	PLL_36XX_RATE(24 * MHZ, 180633605, 90, 3, 2, 20762),
 	PLL_36XX_RATE(24 * MHZ, 180000000, 90, 3, 2, 0),
@@ -712,8 +672,8 @@ static const struct samsung_pll_rate_table epll_24mhz_tbl[] __initconst = {
 };
 
 static const struct samsung_pll_rate_table apll_24mhz_tbl[] __initconst = {
-	/* sorted in descending order */
-	/* PLL_35XX_RATE(fin, rate, m, p, s) */
+	 
+	 
 	PLL_35XX_RATE(24 * MHZ, 1700000000, 425, 6, 0),
 	PLL_35XX_RATE(24 * MHZ, 1600000000, 200, 3, 0),
 	PLL_35XX_RATE(24 * MHZ, 1500000000, 250, 4, 0),
@@ -785,7 +745,7 @@ static const struct of_device_id ext_clk_match[] __initconst = {
 	{ },
 };
 
-/* register exynox5250 clocks */
+ 
 static void __init exynos5250_clk_init(struct device_node *np)
 {
 	struct samsung_clk_provider *ctx;
@@ -832,21 +792,14 @@ static void __init exynos5250_clk_init(struct device_node *np)
 	samsung_clk_register_cpu(ctx, exynos5250_cpu_clks,
 			ARRAY_SIZE(exynos5250_cpu_clks));
 
-	/*
-	 * Enable arm clock down (in idle) and set arm divider
-	 * ratios in WFI/WFE state.
-	 */
+	 
 	tmp = (PWR_CTRL1_CORE2_DOWN_RATIO | PWR_CTRL1_CORE1_DOWN_RATIO |
 		PWR_CTRL1_DIV2_DOWN_EN | PWR_CTRL1_DIV1_DOWN_EN |
 		PWR_CTRL1_USE_CORE1_WFE | PWR_CTRL1_USE_CORE0_WFE |
 		PWR_CTRL1_USE_CORE1_WFI | PWR_CTRL1_USE_CORE0_WFI);
 	__raw_writel(tmp, reg_base + PWR_CTRL1);
 
-	/*
-	 * Enable arm clock up (on exiting idle). Set arm divider
-	 * ratios when not in idle along with the standby duration
-	 * ratios.
-	 */
+	 
 	tmp = (PWR_CTRL2_DIV2_UP_EN | PWR_CTRL2_DIV1_UP_EN |
 		PWR_CTRL2_DUR_STANDBY2_VAL | PWR_CTRL2_DUR_STANDBY1_VAL |
 		PWR_CTRL2_CORE2_UP_RATIO | PWR_CTRL2_CORE1_UP_RATIO);

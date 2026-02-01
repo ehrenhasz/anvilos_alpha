@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell OcteonTX CPT driver
- *
- * Copyright (C) 2019 Marvell International Ltd.
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2 as
- * published by the Free Software Foundation.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/module.h>
@@ -81,7 +74,7 @@ static void free_pending_queues(struct otx_cpt_pending_qinfo *pqinfo)
 		if (!queue->head)
 			continue;
 
-		/* free single queue */
+		 
 		kfree_sensitive((queue->head));
 		queue->front = 0;
 		queue->rear = 0;
@@ -111,7 +104,7 @@ static int alloc_pending_queues(struct otx_cpt_pending_qinfo *pqinfo, u32 qlen,
 		queue->rear = 0;
 		queue->qlen = qlen;
 
-		/* init queue spin lock */
+		 
 		spin_lock_init(&queue->lock);
 	}
 	return 0;
@@ -160,7 +153,7 @@ static void free_command_queues(struct otx_cptvf *cptvf,
 	struct pci_dev *pdev = cptvf->pdev;
 	int i;
 
-	/* clean up for each queue */
+	 
 	for (i = 0; i < cptvf->num_queues; i++) {
 		queue = &cqinfo->queue[i];
 
@@ -194,15 +187,15 @@ static int alloc_command_queues(struct otx_cptvf *cptvf,
 	int i;
 
 
-	/* Qsize in dwords, needed for SADDR config, 1-next chunk pointer */
+	 
 	cptvf->qsize = min(qlen, cqinfo->qchunksize) *
 		       OTX_CPT_NEXT_CHUNK_PTR_SIZE + 1;
-	/* Qsize in bytes to create space for alignment */
+	 
 	q_size = qlen * OTX_CPT_INST_SIZE;
 
 	qcsize_bytes = cqinfo->qchunksize * OTX_CPT_INST_SIZE;
 
-	/* per queue initialization */
+	 
 	for (i = 0; i < cptvf->num_queues; i++) {
 		rem_q_size = q_size;
 		first = NULL;
@@ -244,9 +237,7 @@ static int alloc_command_queues(struct otx_cptvf *cptvf,
 			last = curr;
 		} while (rem_q_size);
 
-		/*
-		 * Make the queue circular, tie back last chunk entry to head
-		 */
+		 
 		curr = first;
 		*((u64 *)(&last->head[last->size])) = (u64)curr->dma_addr;
 		queue->qhead = curr;
@@ -264,7 +255,7 @@ static int init_command_queues(struct otx_cptvf *cptvf, u32 qlen)
 	struct pci_dev *pdev = cptvf->pdev;
 	int ret;
 
-	/* setup command queues */
+	 
 	ret = alloc_command_queues(cptvf, &cptvf->cqinfo, qlen);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to allocate command queues (%u)\n",
@@ -300,7 +291,7 @@ static int cptvf_sw_init(struct otx_cptvf *cptvf, u32 qlen, u32 num_queues)
 	int ret;
 
 	max_dev_queues = OTX_CPT_NUM_QS_PER_VF;
-	/* possible cpus */
+	 
 	num_queues = min_t(u32, num_queues, max_dev_queues);
 	cptvf->num_queues = num_queues;
 
@@ -318,7 +309,7 @@ static int cptvf_sw_init(struct otx_cptvf *cptvf, u32 qlen, u32 num_queues)
 		goto setup_pqfail;
 	}
 
-	/* Create worker threads for BH processing */
+	 
 	ret = init_worker_threads(cptvf);
 	if (ret) {
 		dev_err(&pdev->dev, "Failed to setup worker threads\n");
@@ -356,7 +347,7 @@ void otx_cptvf_write_vq_doorbell(struct otx_cptvf *cptvf, u32 val)
 	union otx_cptx_vqx_doorbell vqx_dbell;
 
 	vqx_dbell.u = readq(cptvf->reg_base + OTX_CPT_VQX_DOORBELL(0));
-	vqx_dbell.s.dbell_cnt = val * 8; /* Num of Instructions * 8 words */
+	vqx_dbell.s.dbell_cnt = val * 8;  
 	writeq(vqx_dbell.u, cptvf->reg_base + OTX_CPT_VQX_DOORBELL(0));
 }
 
@@ -409,7 +400,7 @@ static void cptvf_enable_swerr_interrupts(struct otx_cptvf *cptvf)
 	union otx_cptx_vqx_misc_ena_w1s vqx_misc_ena;
 
 	vqx_misc_ena.u = readq(cptvf->reg_base + OTX_CPT_VQX_MISC_ENA_W1S(0));
-	/* Enable SWERR interrupts for the requested VF */
+	 
 	vqx_misc_ena.s.swerr = 1;
 	writeq(vqx_misc_ena.u, cptvf->reg_base + OTX_CPT_VQX_MISC_ENA_W1S(0));
 }
@@ -419,7 +410,7 @@ static void cptvf_enable_mbox_interrupts(struct otx_cptvf *cptvf)
 	union otx_cptx_vqx_misc_ena_w1s vqx_misc_ena;
 
 	vqx_misc_ena.u = readq(cptvf->reg_base + OTX_CPT_VQX_MISC_ENA_W1S(0));
-	/* Enable MBOX interrupt for the requested VF */
+	 
 	vqx_misc_ena.s.mbox = 1;
 	writeq(vqx_misc_ena.u, cptvf->reg_base + OTX_CPT_VQX_MISC_ENA_W1S(0));
 }
@@ -429,7 +420,7 @@ static void cptvf_enable_done_interrupts(struct otx_cptvf *cptvf)
 	union otx_cptx_vqx_done_ena_w1s vqx_done_ena;
 
 	vqx_done_ena.u = readq(cptvf->reg_base + OTX_CPT_VQX_DONE_ENA_W1S(0));
-	/* Enable DONE interrupt for the requested VF */
+	 
 	vqx_done_ena.s.done = 1;
 	writeq(vqx_done_ena.u, cptvf->reg_base + OTX_CPT_VQX_DONE_ENA_W1S(0));
 }
@@ -439,7 +430,7 @@ static void cptvf_clear_dovf_intr(struct otx_cptvf *cptvf)
 	union otx_cptx_vqx_misc_int vqx_misc_int;
 
 	vqx_misc_int.u = readq(cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.dovf = 1;
 	writeq(vqx_misc_int.u, cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
 }
@@ -449,7 +440,7 @@ static void cptvf_clear_irde_intr(struct otx_cptvf *cptvf)
 	union otx_cptx_vqx_misc_int vqx_misc_int;
 
 	vqx_misc_int.u = readq(cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.irde = 1;
 	writeq(vqx_misc_int.u, cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
 }
@@ -459,7 +450,7 @@ static void cptvf_clear_nwrp_intr(struct otx_cptvf *cptvf)
 	union otx_cptx_vqx_misc_int vqx_misc_int;
 
 	vqx_misc_int.u = readq(cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.nwrp = 1;
 	writeq(vqx_misc_int.u, cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
 }
@@ -469,7 +460,7 @@ static void cptvf_clear_mbox_intr(struct otx_cptvf *cptvf)
 	union otx_cptx_vqx_misc_int vqx_misc_int;
 
 	vqx_misc_int.u = readq(cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.mbox = 1;
 	writeq(vqx_misc_int.u, cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
 }
@@ -479,7 +470,7 @@ static void cptvf_clear_swerr_intr(struct otx_cptvf *cptvf)
 	union otx_cptx_vqx_misc_int vqx_misc_int;
 
 	vqx_misc_int.u = readq(cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
-	/* W1C for the VF */
+	 
 	vqx_misc_int.s.swerr = 1;
 	writeq(vqx_misc_int.u, cptvf->reg_base + OTX_CPT_VQX_MISC_INT(0));
 }
@@ -497,7 +488,7 @@ static irqreturn_t cptvf_misc_intr_handler(int __always_unused irq,
 	u64 intr;
 
 	intr = cptvf_read_vf_misc_intr_status(cptvf);
-	/* Check for MISC interrupt types */
+	 
 	if (likely(intr & OTX_CPT_VF_INTR_MBOX_MASK)) {
 		dev_dbg(&pdev->dev, "Mailbox interrupt 0x%llx on CPT VF %d\n",
 			intr, cptvf->vfid);
@@ -505,7 +496,7 @@ static irqreturn_t cptvf_misc_intr_handler(int __always_unused irq,
 		cptvf_clear_mbox_intr(cptvf);
 	} else if (unlikely(intr & OTX_CPT_VF_INTR_DOVF_MASK)) {
 		cptvf_clear_dovf_intr(cptvf);
-		/* Clear doorbell count */
+		 
 		otx_cptvf_write_vq_doorbell(cptvf, 0);
 		dev_err(&pdev->dev,
 		"Doorbell overflow error interrupt 0x%llx on CPT VF %d\n",
@@ -568,16 +559,13 @@ static irqreturn_t cptvf_done_intr_handler(int __always_unused irq,
 {
 	struct otx_cptvf *cptvf = (struct otx_cptvf *)cptvf_dev;
 	struct pci_dev *pdev = cptvf->pdev;
-	/* Read the number of completions */
+	 
 	u32 intr = cptvf_read_vq_done_count(cptvf);
 
 	if (intr) {
 		struct otx_cptvf_wqe *wqe;
 
-		/*
-		 * Acknowledge the number of scheduled completions for
-		 * processing
-		 */
+		 
 		cptvf_write_vq_done_ack(cptvf, intr);
 		wqe = get_cptvf_vq_wqe(cptvf, 0);
 		if (unlikely(!wqe)) {
@@ -623,21 +611,21 @@ static void cptvf_device_init(struct otx_cptvf *cptvf)
 {
 	u64 base_addr = 0;
 
-	/* Disable the VQ */
+	 
 	cptvf_write_vq_ctl(cptvf, 0);
-	/* Reset the doorbell */
+	 
 	otx_cptvf_write_vq_doorbell(cptvf, 0);
-	/* Clear inflight */
+	 
 	cptvf_write_vq_inprog(cptvf, 0);
-	/* Write VQ SADDR */
+	 
 	base_addr = (u64)(cptvf->cqinfo.queue[0].qhead->dma_addr);
 	cptvf_write_vq_saddr(cptvf, base_addr);
-	/* Configure timerhold / coalescence */
+	 
 	cptvf_write_vq_done_timewait(cptvf, OTX_CPT_TIMER_HOLD);
 	cptvf_write_vq_done_numwait(cptvf, OTX_CPT_COUNT_HOLD);
-	/* Enable the VQ */
+	 
 	cptvf_write_vq_ctl(cptvf, 1);
-	/* Flag the VF ready */
+	 
 	cptvf->flags |= OTX_CPT_FLAG_DEVICE_READY;
 }
 
@@ -807,7 +795,7 @@ static int otx_cptvf_probe(struct pci_dev *pdev,
 		goto release_regions;
 	}
 
-	/* MAP PF's configuration registers */
+	 
 	cptvf->reg_base = pci_iomap(pdev, OTX_CPT_VF_PCI_CFG_BAR, 0);
 	if (!cptvf->reg_base) {
 		dev_err(dev, "Cannot map config register space, aborting\n");
@@ -832,30 +820,30 @@ static int otx_cptvf_probe(struct pci_dev *pdev,
 		goto free_vectors;
 	}
 
-	/* Enable mailbox interrupt */
+	 
 	cptvf_enable_mbox_interrupts(cptvf);
 	cptvf_enable_swerr_interrupts(cptvf);
 
-	/* Check cpt pf status, gets chip ID / device Id from PF if ready */
+	 
 	err = otx_cptvf_check_pf_ready(cptvf);
 	if (err)
 		goto free_misc_irq;
 
-	/* CPT VF software resources initialization */
+	 
 	cptvf->cqinfo.qchunksize = OTX_CPT_CMD_QCHUNK_SIZE;
 	err = cptvf_sw_init(cptvf, OTX_CPT_CMD_QLEN, OTX_CPT_NUM_QS_PER_VF);
 	if (err) {
 		dev_err(dev, "cptvf_sw_init() failed\n");
 		goto free_misc_irq;
 	}
-	/* Convey VQ LEN to PF */
+	 
 	err = otx_cptvf_send_vq_size_msg(cptvf);
 	if (err)
 		goto sw_cleanup;
 
-	/* CPT VF device initialization */
+	 
 	cptvf_device_init(cptvf);
-	/* Send msg to PF to assign currnet Q to required group */
+	 
 	err = otx_cptvf_send_vf_to_grp_msg(cptvf, cptvf->vfgrp);
 	if (err)
 		goto sw_cleanup;
@@ -873,10 +861,10 @@ static int otx_cptvf_probe(struct pci_dev *pdev,
 		goto free_done_irq;
 	}
 
-	/* Enable done interrupt */
+	 
 	cptvf_enable_done_interrupts(cptvf);
 
-	/* Set irq affinity masks */
+	 
 	cptvf_set_irq_affinity(cptvf, CPT_VF_INT_VEC_E_MISC);
 	cptvf_set_irq_affinity(cptvf, CPT_VF_INT_VEC_E_DONE);
 
@@ -884,7 +872,7 @@ static int otx_cptvf_probe(struct pci_dev *pdev,
 	if (err)
 		goto free_irq_affinity;
 
-	/* Initialize algorithms and set ops */
+	 
 	err = otx_cpt_crypto_init(pdev, THIS_MODULE,
 		    cptvf->vftype == OTX_CPT_SE_TYPES ? OTX_CPT_SE : OTX_CPT_AE,
 		    cptvf->vftype, 1, cptvf->num_vfs);
@@ -935,7 +923,7 @@ static void otx_cptvf_remove(struct pci_dev *pdev)
 		return;
 	}
 
-	/* Convey DOWN to PF */
+	 
 	if (otx_cptvf_send_vf_down(cptvf)) {
 		dev_err(&pdev->dev, "PF not responding to DOWN msg\n");
 	} else {
@@ -954,10 +942,10 @@ static void otx_cptvf_remove(struct pci_dev *pdev)
 	}
 }
 
-/* Supported devices */
+ 
 static const struct pci_device_id otx_cptvf_id_table[] = {
 	{PCI_VDEVICE(CAVIUM, OTX_CPT_PCI_VF_DEVICE_ID), 0},
-	{ 0, }  /* end of table */
+	{ 0, }   
 };
 
 static struct pci_driver otx_cptvf_pci_driver = {

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ALSA SoC driver for Migo-R
-//
-// Copyright (C) 2009-2010 Guennadi Liakhovetski <g.liakhovetski@gmx.de>
+
+
+
+
+
 
 #include <linux/clkdev.h>
 #include <linux/device.h>
@@ -20,12 +20,12 @@
 #include "../codecs/wm8978.h"
 #include "siu.h"
 
-/* Default 8000Hz sampling frequency */
+ 
 static unsigned long codec_freq = 8000 * 512;
 
 static unsigned int use_count;
 
-/* External clock, sourced from the codec at the SIUMCKB pin */
+ 
 static unsigned long siumckb_recalc(struct clk *clk)
 {
 	return codec_freq;
@@ -37,7 +37,7 @@ static struct sh_clk_ops siumckb_clk_ops = {
 
 static struct clk siumckb_clk = {
 	.ops		= &siumckb_clk_ops,
-	.rate		= 0, /* initialised at run-time */
+	.rate		= 0,  
 };
 
 static struct clk_lookup *siumckb_lookup;
@@ -60,10 +60,7 @@ static int migor_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 
 	codec_freq = rate * 512;
-	/*
-	 * This propagates the parent frequency change to children and
-	 * recalculates the frequency table
-	 */
+	 
 	clk_set_rate(&siumckb_clk, codec_freq);
 	dev_dbg(codec_dai->dev, "%s: configure %luHz\n", __func__, codec_freq);
 
@@ -106,23 +103,23 @@ static const struct snd_soc_dapm_widget migor_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route audio_map[] = {
-	/* Headphone output connected to LHP/RHP, enable OUT4 for VMID */
+	 
 	{ "Headphone", NULL,  "OUT4 VMID" },
 	{ "OUT4 VMID", NULL,  "LHP" },
 	{ "OUT4 VMID", NULL,  "RHP" },
 
-	/* On-board microphone */
+	 
 	{ "RMICN", NULL, "Mic Bias" },
 	{ "RMICP", NULL, "Mic Bias" },
 	{ "Mic Bias", NULL, "Onboard Microphone" },
 
-	/* External microphone */
+	 
 	{ "LMICN", NULL, "Mic Bias" },
 	{ "LMICP", NULL, "Mic Bias" },
 	{ "Mic Bias", NULL, "External Microphone" },
 };
 
-/* migor digital audio interface glue - connects codec <--> CPU */
+ 
 SND_SOC_DAILINK_DEFS(wm8978,
 	DAILINK_COMP_ARRAY(COMP_CPU("siu-pcm-audio")),
 	DAILINK_COMP_ARRAY(COMP_CODEC("wm8978.0-001a", "wm8978-hifi")),
@@ -137,7 +134,7 @@ static struct snd_soc_dai_link migor_dai = {
 	SND_SOC_DAILINK_REG(wm8978),
 };
 
-/* migor audio machine driver */
+ 
 static struct snd_soc_card snd_soc_migor = {
 	.name = "Migo-R",
 	.owner = THIS_MODULE,
@@ -166,7 +163,7 @@ static int __init migor_init(void)
 		goto eclkdevalloc;
 	}
 
-	/* Port number used on this machine: port B */
+	 
 	migor_snd_device = platform_device_alloc("soc-audio", 1);
 	if (!migor_snd_device) {
 		ret = -ENOMEM;

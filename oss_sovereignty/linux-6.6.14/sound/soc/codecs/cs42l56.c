@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cs42l56.c -- CS42L56 ALSA SoC audio driver
- *
- * Copyright 2014 CirrusLogic, Inc.
- *
- * Author: Brian Austin <brian.austin@cirrus.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -60,50 +54,50 @@ struct  cs42l56_private {
 };
 
 static const struct reg_default cs42l56_reg_defaults[] = {
-	{ 3, 0x7f },	/* r03	- Power Ctl 1 */
-	{ 4, 0xff },	/* r04	- Power Ctl 2 */
-	{ 5, 0x00 },	/* ro5	- Clocking Ctl 1 */
-	{ 6, 0x0b },	/* r06	- Clocking Ctl 2 */
-	{ 7, 0x00 },	/* r07	- Serial Format */
-	{ 8, 0x05 },	/* r08	- Class H Ctl */
-	{ 9, 0x0c },	/* r09	- Misc Ctl */
-	{ 10, 0x80 },	/* r0a	- INT Status */
-	{ 11, 0x00 },	/* r0b	- Playback Ctl */
-	{ 12, 0x0c },	/* r0c	- DSP Mute Ctl */
-	{ 13, 0x00 },	/* r0d	- ADCA Mixer Volume */
-	{ 14, 0x00 },	/* r0e	- ADCB Mixer Volume */
-	{ 15, 0x00 },	/* r0f	- PCMA Mixer Volume */
-	{ 16, 0x00 },	/* r10	- PCMB Mixer Volume */
-	{ 17, 0x00 },	/* r11	- Analog Input Advisory Volume */
-	{ 18, 0x00 },	/* r12	- Digital Input Advisory Volume */
-	{ 19, 0x00 },	/* r13	- Master A Volume */
-	{ 20, 0x00 },	/* r14	- Master B Volume */
-	{ 21, 0x00 },	/* r15	- Beep Freq / On Time */
-	{ 22, 0x00 },	/* r16	- Beep Volume / Off Time */
-	{ 23, 0x00 },	/* r17	- Beep Tone Ctl */
-	{ 24, 0x88 },	/* r18	- Tone Ctl */
-	{ 25, 0x00 },	/* r19	- Channel Mixer & Swap */
-	{ 26, 0x00 },	/* r1a	- AIN Ref Config / ADC Mux */
-	{ 27, 0xa0 },	/* r1b	- High-Pass Filter Ctl */
-	{ 28, 0x00 },	/* r1c	- Misc ADC Ctl */
-	{ 29, 0x00 },	/* r1d	- Gain & Bias Ctl */
-	{ 30, 0x00 },	/* r1e	- PGAA Mux & Volume */
-	{ 31, 0x00 },	/* r1f	- PGAB Mux & Volume */
-	{ 32, 0x00 },	/* r20	- ADCA Attenuator */
-	{ 33, 0x00 },	/* r21	- ADCB Attenuator */
-	{ 34, 0x00 },	/* r22	- ALC Enable & Attack Rate */
-	{ 35, 0xbf },	/* r23	- ALC Release Rate */
-	{ 36, 0x00 },	/* r24	- ALC Threshold */
-	{ 37, 0x00 },	/* r25	- Noise Gate Ctl */
-	{ 38, 0x00 },	/* r26	- ALC, Limiter, SFT, ZeroCross */
-	{ 39, 0x00 },	/* r27	- Analog Mute, LO & HP Mux */
-	{ 40, 0x00 },	/* r28	- HP A Volume */
-	{ 41, 0x00 },	/* r29	- HP B Volume */
-	{ 42, 0x00 },	/* r2a	- LINEOUT A Volume */
-	{ 43, 0x00 },	/* r2b	- LINEOUT B Volume */
-	{ 44, 0x00 },	/* r2c	- Limit Threshold Ctl */
-	{ 45, 0x7f },	/* r2d	- Limiter Ctl & Release Rate */
-	{ 46, 0x00 },	/* r2e	- Limiter Attack Rate */
+	{ 3, 0x7f },	 
+	{ 4, 0xff },	 
+	{ 5, 0x00 },	 
+	{ 6, 0x0b },	 
+	{ 7, 0x00 },	 
+	{ 8, 0x05 },	 
+	{ 9, 0x0c },	 
+	{ 10, 0x80 },	 
+	{ 11, 0x00 },	 
+	{ 12, 0x0c },	 
+	{ 13, 0x00 },	 
+	{ 14, 0x00 },	 
+	{ 15, 0x00 },	 
+	{ 16, 0x00 },	 
+	{ 17, 0x00 },	 
+	{ 18, 0x00 },	 
+	{ 19, 0x00 },	 
+	{ 20, 0x00 },	 
+	{ 21, 0x00 },	 
+	{ 22, 0x00 },	 
+	{ 23, 0x00 },	 
+	{ 24, 0x88 },	 
+	{ 25, 0x00 },	 
+	{ 26, 0x00 },	 
+	{ 27, 0xa0 },	 
+	{ 28, 0x00 },	 
+	{ 29, 0x00 },	 
+	{ 30, 0x00 },	 
+	{ 31, 0x00 },	 
+	{ 32, 0x00 },	 
+	{ 33, 0x00 },	 
+	{ 34, 0x00 },	 
+	{ 35, 0xbf },	 
+	{ 36, 0x00 },	 
+	{ 37, 0x00 },	 
+	{ 38, 0x00 },	 
+	{ 39, 0x00 },	 
+	{ 40, 0x00 },	 
+	{ 41, 0x00 },	 
+	{ 42, 0x00 },	 
+	{ 43, 0x00 },	 
+	{ 44, 0x00 },	 
+	{ 45, 0x7f },	 
+	{ 46, 0x00 },	 
 };
 
 static bool cs42l56_readable_register(struct device *dev, unsigned int reg)
@@ -631,66 +625,66 @@ struct cs42l56_clk_para {
 };
 
 static const struct cs42l56_clk_para clk_ratio_table[] = {
-	/* 8k */
+	 
 	{ 6000000, 8000, CS42L56_MCLK_LRCLK_768 },
 	{ 6144000, 8000, CS42L56_MCLK_LRCLK_750 },
 	{ 12000000, 8000, CS42L56_MCLK_LRCLK_768 },
 	{ 12288000, 8000, CS42L56_MCLK_LRCLK_750 },
 	{ 24000000, 8000, CS42L56_MCLK_LRCLK_768 },
 	{ 24576000, 8000, CS42L56_MCLK_LRCLK_750 },
-	/* 11.025k */
+	 
 	{ 5644800, 11025, CS42L56_MCLK_LRCLK_512},
 	{ 11289600, 11025, CS42L56_MCLK_LRCLK_512},
 	{ 22579200, 11025, CS42L56_MCLK_LRCLK_512 },
-	/* 11.0294k */
+	 
 	{ 6000000, 110294, CS42L56_MCLK_LRCLK_544 },
 	{ 12000000, 110294, CS42L56_MCLK_LRCLK_544 },
 	{ 24000000, 110294, CS42L56_MCLK_LRCLK_544 },
-	/* 12k */
+	 
 	{ 6000000, 12000, CS42L56_MCLK_LRCLK_500 },
 	{ 6144000, 12000, CS42L56_MCLK_LRCLK_512 },
 	{ 12000000, 12000, CS42L56_MCLK_LRCLK_500 },
 	{ 12288000, 12000, CS42L56_MCLK_LRCLK_512 },
 	{ 24000000, 12000, CS42L56_MCLK_LRCLK_500 },
 	{ 24576000, 12000, CS42L56_MCLK_LRCLK_512 },
-	/* 16k */
+	 
 	{ 6000000, 16000, CS42L56_MCLK_LRCLK_375 },
 	{ 6144000, 16000, CS42L56_MCLK_LRCLK_384 },
 	{ 12000000, 16000, CS42L56_MCLK_LRCLK_375 },
 	{ 12288000, 16000, CS42L56_MCLK_LRCLK_384 },
 	{ 24000000, 16000, CS42L56_MCLK_LRCLK_375 },
 	{ 24576000, 16000, CS42L56_MCLK_LRCLK_384 },
-	/* 22.050k */
+	 
 	{ 5644800, 22050, CS42L56_MCLK_LRCLK_256 },
 	{ 11289600, 22050, CS42L56_MCLK_LRCLK_256 },
 	{ 22579200, 22050, CS42L56_MCLK_LRCLK_256 },
-	/* 22.0588k */
+	 
 	{ 6000000, 220588, CS42L56_MCLK_LRCLK_272 },
 	{ 12000000, 220588, CS42L56_MCLK_LRCLK_272 },
 	{ 24000000, 220588, CS42L56_MCLK_LRCLK_272 },
-	/* 24k */
+	 
 	{ 6000000, 24000, CS42L56_MCLK_LRCLK_250 },
 	{ 6144000, 24000, CS42L56_MCLK_LRCLK_256 },
 	{ 12000000, 24000, CS42L56_MCLK_LRCLK_250 },
 	{ 12288000, 24000, CS42L56_MCLK_LRCLK_256 },
 	{ 24000000, 24000, CS42L56_MCLK_LRCLK_250 },
 	{ 24576000, 24000, CS42L56_MCLK_LRCLK_256 },
-	/* 32k */
+	 
 	{ 6000000, 32000, CS42L56_MCLK_LRCLK_187P5 },
 	{ 6144000, 32000, CS42L56_MCLK_LRCLK_192 },
 	{ 12000000, 32000, CS42L56_MCLK_LRCLK_187P5 },
 	{ 12288000, 32000, CS42L56_MCLK_LRCLK_192 },
 	{ 24000000, 32000, CS42L56_MCLK_LRCLK_187P5 },
 	{ 24576000, 32000, CS42L56_MCLK_LRCLK_192 },
-	/* 44.118k */
+	 
 	{ 6000000, 44118, CS42L56_MCLK_LRCLK_136 },
 	{ 12000000, 44118, CS42L56_MCLK_LRCLK_136 },
 	{ 24000000, 44118, CS42L56_MCLK_LRCLK_136 },
-	/* 44.1k */
+	 
 	{ 5644800, 44100, CS42L56_MCLK_LRCLK_128 },
 	{ 11289600, 44100, CS42L56_MCLK_LRCLK_128 },
 	{ 22579200, 44100, CS42L56_MCLK_LRCLK_128 },
-	/* 48k */
+	 
 	{ 6000000, 48000, CS42L56_MCLK_LRCLK_125 },
 	{ 6144000, 48000, CS42L56_MCLK_LRCLK_128 },
 	{ 12000000, 48000, CS42L56_MCLK_LRCLK_125 },
@@ -767,7 +761,7 @@ static int cs42l56_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	 /* interface format */
+	  
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		cs42l56->iface_fmt = CS42L56_DIG_FMT_I2S;
@@ -779,7 +773,7 @@ static int cs42l56_set_dai_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* sclk inversion */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		cs42l56->iface_inv = 0;
@@ -805,7 +799,7 @@ static int cs42l56_mute(struct snd_soc_dai *dai, int mute, int direction)
 	struct snd_soc_component *component = dai->component;
 
 	if (mute) {
-		/* Hit the DSP Mixer first */
+		 
 		snd_soc_component_update_bits(component, CS42L56_DSP_MUTE_CTL,
 				    CS42L56_ADCAMIX_MUTE_MASK |
 				    CS42L56_ADCBMIX_MUTE_MASK |
@@ -814,12 +808,12 @@ static int cs42l56_mute(struct snd_soc_dai *dai, int mute, int direction)
 				    CS42L56_MSTB_MUTE_MASK |
 				    CS42L56_MSTA_MUTE_MASK,
 				    CS42L56_MUTE_ALL);
-		/* Mute ADC's */
+		 
 		snd_soc_component_update_bits(component, CS42L56_MISC_ADC_CTL,
 				    CS42L56_ADCA_MUTE_MASK |
 				    CS42L56_ADCB_MUTE_MASK,
 				    CS42L56_MUTE_ALL);
-		/* HP And LO */
+		 
 		snd_soc_component_update_bits(component, CS42L56_HPA_VOLUME,
 				    CS42L56_HP_MUTE_MASK, CS42L56_MUTE_ALL);
 		snd_soc_component_update_bits(component, CS42L56_HPB_VOLUME,
@@ -993,9 +987,7 @@ static void cs42l56_beep_work(struct work_struct *work)
 	snd_soc_dapm_sync(dapm);
 }
 
-/* For usability define a way of injecting beep events for the device -
- * many systems will not have a keyboard.
- */
+ 
 static int cs42l56_beep_event(struct input_dev *dev, unsigned int type,
 			     unsigned int code, int hz)
 {
@@ -1015,7 +1007,7 @@ static int cs42l56_beep_event(struct input_dev *dev, unsigned int type,
 		return -1;
 	}
 
-	/* Kick the beep from a workqueue */
+	 
 	cs42l56->beep_rate = hz;
 	schedule_work(&cs42l56->beep_work);
 	return 0;

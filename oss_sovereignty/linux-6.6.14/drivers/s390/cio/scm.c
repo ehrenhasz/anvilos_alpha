@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Recognize and maintain s390 storage class memory.
- *
- * Copyright IBM Corp. 2012
- * Author(s): Sebastian Ott <sebott@linux.vnet.ibm.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/module.h>
@@ -49,10 +44,7 @@ static struct bus_type scm_bus_type = {
 	.uevent = scmdev_uevent,
 };
 
-/**
- * scm_driver_register() - register a scm driver
- * @scmdrv: driver to be registered
- */
+ 
 int scm_driver_register(struct scm_driver *scmdrv)
 {
 	struct device_driver *drv = &scmdrv->drv;
@@ -63,10 +55,7 @@ int scm_driver_register(struct scm_driver *scmdrv)
 }
 EXPORT_SYMBOL_GPL(scm_driver_register);
 
-/**
- * scm_driver_unregister() - deregister a scm driver
- * @scmdrv: driver to be deregistered
- */
+ 
 void scm_driver_unregister(struct scm_driver *scmdrv)
 {
 	driver_unregister(&scmdrv->drv);
@@ -151,9 +140,7 @@ static void scmdev_setup(struct scm_device *scmdev, struct sale *sale,
 	scmdev->dev.groups = scmdev_attr_groups;
 }
 
-/*
- * Check for state-changes, notify the driver and userspace.
- */
+ 
 static void scmdev_update(struct scm_device *scmdev, struct sale *sale)
 {
 	struct scm_driver *scmdrv;
@@ -202,7 +189,7 @@ static int scm_add(struct chsc_scm_info *scm_info, size_t num)
 		scmdev = scmdev_find(sale);
 		if (scmdev) {
 			scmdev_update(scmdev, sale);
-			/* Release reference from scm_find(). */
+			 
 			put_device(&scmdev->dev);
 			continue;
 		}
@@ -212,7 +199,7 @@ static int scm_add(struct chsc_scm_info *scm_info, size_t num)
 		scmdev_setup(scmdev, sale, scm_info->is, scm_info->mbc);
 		ret = device_register(&scmdev->dev);
 		if (ret) {
-			/* Release reference from device_initialize(). */
+			 
 			put_device(&scmdev->dev);
 			return ret;
 		}

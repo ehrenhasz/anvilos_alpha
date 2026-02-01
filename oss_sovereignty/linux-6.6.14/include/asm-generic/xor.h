@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/asm-generic/xor.h
- *
- * Generic optimized RAID-5 checksumming functions.
- */
+ 
+ 
 
 #include <linux/prefetch.h>
 
@@ -107,8 +103,8 @@ xor_32regs_2(unsigned long bytes, unsigned long * __restrict p1,
 
 	do {
 		register long d0, d1, d2, d3, d4, d5, d6, d7;
-		d0 = p1[0];	/* Pull the stuff into registers	*/
-		d1 = p1[1];	/*  ... in bursts, if possible.		*/
+		d0 = p1[0];	 
+		d1 = p1[1];	 
 		d2 = p1[2];
 		d3 = p1[3];
 		d4 = p1[4];
@@ -123,7 +119,7 @@ xor_32regs_2(unsigned long bytes, unsigned long * __restrict p1,
 		d5 ^= p2[5];
 		d6 ^= p2[6];
 		d7 ^= p2[7];
-		p1[0] = d0;	/* Store the result (in bursts)		*/
+		p1[0] = d0;	 
 		p1[1] = d1;
 		p1[2] = d2;
 		p1[3] = d3;
@@ -145,8 +141,8 @@ xor_32regs_3(unsigned long bytes, unsigned long * __restrict p1,
 
 	do {
 		register long d0, d1, d2, d3, d4, d5, d6, d7;
-		d0 = p1[0];	/* Pull the stuff into registers	*/
-		d1 = p1[1];	/*  ... in bursts, if possible.		*/
+		d0 = p1[0];	 
+		d1 = p1[1];	 
 		d2 = p1[2];
 		d3 = p1[3];
 		d4 = p1[4];
@@ -169,7 +165,7 @@ xor_32regs_3(unsigned long bytes, unsigned long * __restrict p1,
 		d5 ^= p3[5];
 		d6 ^= p3[6];
 		d7 ^= p3[7];
-		p1[0] = d0;	/* Store the result (in bursts)		*/
+		p1[0] = d0;	 
 		p1[1] = d1;
 		p1[2] = d2;
 		p1[3] = d3;
@@ -193,8 +189,8 @@ xor_32regs_4(unsigned long bytes, unsigned long * __restrict p1,
 
 	do {
 		register long d0, d1, d2, d3, d4, d5, d6, d7;
-		d0 = p1[0];	/* Pull the stuff into registers	*/
-		d1 = p1[1];	/*  ... in bursts, if possible.		*/
+		d0 = p1[0];	 
+		d1 = p1[1];	 
 		d2 = p1[2];
 		d3 = p1[3];
 		d4 = p1[4];
@@ -225,7 +221,7 @@ xor_32regs_4(unsigned long bytes, unsigned long * __restrict p1,
 		d5 ^= p4[5];
 		d6 ^= p4[6];
 		d7 ^= p4[7];
-		p1[0] = d0;	/* Store the result (in bursts)		*/
+		p1[0] = d0;	 
 		p1[1] = d1;
 		p1[2] = d2;
 		p1[3] = d3;
@@ -251,8 +247,8 @@ xor_32regs_5(unsigned long bytes, unsigned long * __restrict p1,
 
 	do {
 		register long d0, d1, d2, d3, d4, d5, d6, d7;
-		d0 = p1[0];	/* Pull the stuff into registers	*/
-		d1 = p1[1];	/*  ... in bursts, if possible.		*/
+		d0 = p1[0];	 
+		d1 = p1[1];	 
 		d2 = p1[2];
 		d3 = p1[3];
 		d4 = p1[4];
@@ -291,7 +287,7 @@ xor_32regs_5(unsigned long bytes, unsigned long * __restrict p1,
 		d5 ^= p5[5];
 		d6 ^= p5[6];
 		d7 ^= p5[7];
-		p1[0] = d0;	/* Store the result (in bursts)		*/
+		p1[0] = d0;	 
 		p1[1] = d1;
 		p1[2] = d2;
 		p1[3] = d3;
@@ -456,8 +452,8 @@ xor_32regs_p_2(unsigned long bytes, unsigned long * __restrict p1,
 		prefetchw(p1+8);
 		prefetch(p2+8);
  once_more:
-		d0 = p1[0];	/* Pull the stuff into registers	*/
-		d1 = p1[1];	/*  ... in bursts, if possible.		*/
+		d0 = p1[0];	 
+		d1 = p1[1];	 
 		d2 = p1[2];
 		d3 = p1[3];
 		d4 = p1[4];
@@ -472,7 +468,7 @@ xor_32regs_p_2(unsigned long bytes, unsigned long * __restrict p1,
 		d5 ^= p2[5];
 		d6 ^= p2[6];
 		d7 ^= p2[7];
-		p1[0] = d0;	/* Store the result (in bursts)		*/
+		p1[0] = d0;	 
 		p1[1] = d1;
 		p1[2] = d2;
 		p1[3] = d3;
@@ -505,8 +501,8 @@ xor_32regs_p_3(unsigned long bytes, unsigned long * __restrict p1,
 		prefetch(p2+8);
 		prefetch(p3+8);
  once_more:
-		d0 = p1[0];	/* Pull the stuff into registers	*/
-		d1 = p1[1];	/*  ... in bursts, if possible.		*/
+		d0 = p1[0];	 
+		d1 = p1[1];	 
 		d2 = p1[2];
 		d3 = p1[3];
 		d4 = p1[4];
@@ -529,7 +525,7 @@ xor_32regs_p_3(unsigned long bytes, unsigned long * __restrict p1,
 		d5 ^= p3[5];
 		d6 ^= p3[6];
 		d7 ^= p3[7];
-		p1[0] = d0;	/* Store the result (in bursts)		*/
+		p1[0] = d0;	 
 		p1[1] = d1;
 		p1[2] = d2;
 		p1[3] = d3;
@@ -566,8 +562,8 @@ xor_32regs_p_4(unsigned long bytes, unsigned long * __restrict p1,
 		prefetch(p3+8);
 		prefetch(p4+8);
  once_more:
-		d0 = p1[0];	/* Pull the stuff into registers	*/
-		d1 = p1[1];	/*  ... in bursts, if possible.		*/
+		d0 = p1[0];	 
+		d1 = p1[1];	 
 		d2 = p1[2];
 		d3 = p1[3];
 		d4 = p1[4];
@@ -598,7 +594,7 @@ xor_32regs_p_4(unsigned long bytes, unsigned long * __restrict p1,
 		d5 ^= p4[5];
 		d6 ^= p4[6];
 		d7 ^= p4[7];
-		p1[0] = d0;	/* Store the result (in bursts)		*/
+		p1[0] = d0;	 
 		p1[1] = d1;
 		p1[2] = d2;
 		p1[3] = d3;
@@ -639,8 +635,8 @@ xor_32regs_p_5(unsigned long bytes, unsigned long * __restrict p1,
 		prefetch(p4+8);
 		prefetch(p5+8);
  once_more:
-		d0 = p1[0];	/* Pull the stuff into registers	*/
-		d1 = p1[1];	/*  ... in bursts, if possible.		*/
+		d0 = p1[0];	 
+		d1 = p1[1];	 
 		d2 = p1[2];
 		d3 = p1[3];
 		d4 = p1[4];
@@ -679,7 +675,7 @@ xor_32regs_p_5(unsigned long bytes, unsigned long * __restrict p1,
 		d5 ^= p5[5];
 		d6 ^= p5[6];
 		d7 ^= p5[7];
-		p1[0] = d0;	/* Store the result (in bursts)		*/
+		p1[0] = d0;	 
 		p1[1] = d1;
 		p1[2] = d2;
 		p1[3] = d3;

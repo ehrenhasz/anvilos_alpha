@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Littlemill audio support
-//
-// Copyright 2011 Wolfson Microelectronics
+
+
+
+
+
 
 #include <sound/soc.h>
 #include <sound/soc-dapm.h>
@@ -30,10 +30,7 @@ static int littlemill_set_bias_level(struct snd_soc_card *card,
 
 	switch (level) {
 	case SND_SOC_BIAS_PREPARE:
-		/*
-		 * If we've not already clocked things via hw_params()
-		 * then do so now, otherwise these are noops.
-		 */
+		 
 		if (dapm->bias_level == SND_SOC_BIAS_STANDBY) {
 			ret = snd_soc_dai_set_pll(aif1_dai, WM8994_FLL1,
 						  WM8994_FLL_SRC_MCLK2, 32768,
@@ -247,10 +244,10 @@ static const struct snd_soc_dapm_route audio_paths[] = {
 	{ "Headphone", NULL, "HPOUT1L" },
 	{ "Headphone", NULL, "HPOUT1R" },
 
-	{ "AMIC", NULL, "MICBIAS1" },   /* Default for AMICBIAS jumper */
+	{ "AMIC", NULL, "MICBIAS1" },    
 	{ "IN1LN", NULL, "AMIC" },
 
-	{ "DMIC", NULL, "MICBIAS2" },   /* Default for DMICBIAS jumper */
+	{ "DMIC", NULL, "MICBIAS2" },    
 	{ "DMIC1DAT", NULL, "DMIC" },
 	{ "DMIC2DAT", NULL, "DMIC" },
 
@@ -305,10 +302,10 @@ static int littlemill_late_probe(struct snd_soc_card *card)
 	if (ret)
 		return ret;
 
-	/* This will check device compatibility itself */
+	 
 	wm8958_mic_detect(component, &littlemill_headset, NULL, NULL, NULL, NULL);
 
-	/* As will this */
+	 
 	wm8994_mic_detect(component, &littlemill_headset, 1);
 
 	return 0;

@@ -1,19 +1,4 @@
-/*
- * Copyright (c) 2004-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include "core.h"
 
@@ -89,11 +74,7 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 	if (ret)
 		goto err_wq;
 
-	/*
-	 * Turn on power to get hardware (target) version and leave power
-	 * on delibrately as we will boot the hardware anyway within few
-	 * seconds.
-	 */
+	 
 	ret = ath6kl_hif_power_on(ar);
 	if (ret)
 		goto err_bmi_cleanup;
@@ -123,12 +104,9 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 	if (ret)
 		goto err_htc_cleanup;
 
-	/* FIXME: we should free all firmwares in the error cases below */
+	 
 
-	/*
-	 * Backwards compatibility support for older ar6004 firmware images
-	 * which do not set these feature flags.
-	 */
+	 
 	if (ar->target_type == TARGET_TYPE_AR6004 &&
 	    ar->fw_api <= 4) {
 		__set_bit(ATH6KL_FW_CAPABILITY_64BIT_RATES,
@@ -141,7 +119,7 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 				  ar->fw_capabilities);
 	}
 
-	/* Indicate that WMI is enabled (although not ready yet) */
+	 
 	set_bit(WMI_ENABLED, &ar->flag);
 	ar->wmi = ath6kl_wmi_init(ar);
 	if (!ar->wmi) {
@@ -152,13 +130,13 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 
 	ath6kl_dbg(ATH6KL_DBG_TRC, "%s: got wmi @ 0x%p.\n", __func__, ar->wmi);
 
-	/* setup access class priority mappings */
-	ar->ac_stream_pri_map[WMM_AC_BK] = 0; /* lowest  */
+	 
+	ar->ac_stream_pri_map[WMM_AC_BK] = 0;  
 	ar->ac_stream_pri_map[WMM_AC_BE] = 1;
 	ar->ac_stream_pri_map[WMM_AC_VI] = 2;
-	ar->ac_stream_pri_map[WMM_AC_VO] = 3; /* highest */
+	ar->ac_stream_pri_map[WMM_AC_VO] = 3;  
 
-	/* allocate some buffers that handle larger AMSDU frames */
+	 
 	ath6kl_refill_amsdu_rxbufs(ar, ATH6KL_MAX_AMSDU_RX_BUFFERS);
 
 	ath6kl_cookie_init(ar);
@@ -194,7 +172,7 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 		goto err_rxbuf_cleanup;
 	}
 
-	/* give our connected endpoints some buffers */
+	 
 	ath6kl_rx_refill(ar->htc_target, ar->ctrl_ep);
 	ath6kl_rx_refill(ar->htc_target, ar->ac2ep_map[WMM_AC_BE]);
 
@@ -214,7 +192,7 @@ int ath6kl_core_init(struct ath6kl *ar, enum ath6kl_htc_type htc_type)
 	rtnl_lock();
 	wiphy_lock(ar->wiphy);
 
-	/* Add an initial station interface */
+	 
 	wdev = ath6kl_interface_add(ar, "wlan%d", NET_NAME_ENUM,
 				    NL80211_IFTYPE_STATION, 0, INFRA_NETWORK);
 
@@ -303,7 +281,7 @@ struct ath6kl *ath6kl_core_create(struct device *dev)
 	memset((u8 *)ar->sta_list, 0,
 	       AP_MAX_NUM_STA * sizeof(struct ath6kl_sta));
 
-	/* Init the PS queues */
+	 
 	for (ctr = 0; ctr < AP_MAX_NUM_STA; ctr++) {
 		spin_lock_init(&ar->sta_list[ctr].psq_lock);
 		skb_queue_head_init(&ar->sta_list[ctr].psq);

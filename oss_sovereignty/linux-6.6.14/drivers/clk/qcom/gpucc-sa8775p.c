@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021-2022, Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -23,7 +20,7 @@
 #include "reset.h"
 #include "gdsc.h"
 
-/* Need to match the order of clocks in DT binding */
+ 
 enum {
 	DT_BI_TCXO,
 	DT_GCC_GPU_GPLL0_CLK_SRC,
@@ -44,7 +41,7 @@ static const struct pll_vco lucid_evo_vco[] = {
 	{ 249600000, 2020000000, 0 },
 };
 
-/* 810MHz configuration */
+ 
 static struct alpha_pll_config gpu_cc_pll0_config = {
 	.l = 0x2a,
 	.alpha = 0x3000,
@@ -70,7 +67,7 @@ static struct clk_alpha_pll gpu_cc_pll0 = {
 	},
 };
 
-/* 1000MHz configuration */
+ 
 static struct alpha_pll_config gpu_cc_pll1_config = {
 	.l = 0x34,
 	.alpha = 0x1555,

@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Register map access API - AC'97 support
-//
-// Copyright 2013 Linaro Ltd.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/err.h>

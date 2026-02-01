@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2001 Sistina Software (UK) Limited
- *
- * This file is released under the GPL.
- */
+
+ 
 
 #include "dm-core.h"
 
@@ -112,15 +108,10 @@ void dm_unregister_target(struct target_type *tt)
 }
 EXPORT_SYMBOL(dm_unregister_target);
 
-/*
- * io-err: always fails an io, useful for bringing
- * up LVs that have holes in them.
- */
+ 
 static int io_err_ctr(struct dm_target *tt, unsigned int argc, char **args)
 {
-	/*
-	 * Return error for discards instead of -EOPNOTSUPP
-	 */
+	 
 	tt->num_discard_bios = 1;
 	tt->discards_supported = true;
 
@@ -129,7 +120,7 @@ static int io_err_ctr(struct dm_target *tt, unsigned int argc, char **args)
 
 static void io_err_dtr(struct dm_target *tt)
 {
-	/* empty */
+	 
 }
 
 static int io_err_map(struct dm_target *tt, struct bio *bio)

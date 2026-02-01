@@ -1,62 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/**************************************************************************
- *
- * Copyright 2016 VMware, Inc., Palo Alto, CA., USA
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the
- * "Software"), to deal in the Software without restriction, including
- * without limitation the rights to use, copy, modify, merge, publish,
- * distribute, sub license, and/or sell copies of the Software, and to
- * permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice (including the
- * next paragraph) shall be included in all copies or substantial portions
- * of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT. IN NO EVENT SHALL
- * THE COPYRIGHT HOLDERS, AUTHORS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM,
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
- * USE OR OTHER DEALINGS IN THE SOFTWARE.
- *
- **************************************************************************/
+
+ 
 
 #include "vmwgfx_drv.h"
 #include "vmwgfx_resource_priv.h"
 
-/**
- * struct vmw_user_simple_resource - User-space simple resource struct
- *
- * @base: The TTM base object implementing user-space visibility.
- * @simple: The embedded struct vmw_simple_resource.
- */
+ 
 struct vmw_user_simple_resource {
 	struct ttm_base_object base;
 	struct vmw_simple_resource simple;
-/*
- * Nothing to be placed after @simple, since size of @simple is
- * unknown.
- */
+ 
 };
 
 
-/**
- * vmw_simple_resource_init - Initialize a simple resource object.
- *
- * @dev_priv: Pointer to a struct device private.
- * @simple: The struct vmw_simple_resource to initialize.
- * @data: Data passed to the information initialization function.
- * @res_free: Function pointer to destroy the simple resource.
- *
- * Returns:
- *   0 if succeeded.
- *   Negative error value if error, in which case the resource will have been
- * freed.
- */
+ 
 static int vmw_simple_resource_init(struct vmw_private *dev_priv,
 				    struct vmw_simple_resource *simple,
 				    void *data,
@@ -84,13 +40,7 @@ static int vmw_simple_resource_init(struct vmw_private *dev_priv,
 	return 0;
 }
 
-/**
- * vmw_simple_resource_free - Free a simple resource object.
- *
- * @res: The struct vmw_resource member of the simple resource object.
- *
- * Frees memory for the object.
- */
+ 
 static void vmw_simple_resource_free(struct vmw_resource *res)
 {
 	struct vmw_user_simple_resource *usimple =
@@ -100,15 +50,7 @@ static void vmw_simple_resource_free(struct vmw_resource *res)
 	ttm_base_object_kfree(usimple, base);
 }
 
-/**
- * vmw_simple_resource_base_release - TTM object release callback
- *
- * @p_base: The struct ttm_base_object member of the simple resource object.
- *
- * Called when the last reference to the embedded struct ttm_base_object is
- * gone. Typically results in an object free, unless there are other
- * references to the embedded struct vmw_resource.
- */
+ 
 static void vmw_simple_resource_base_release(struct ttm_base_object **p_base)
 {
 	struct ttm_base_object *base = *p_base;
@@ -120,20 +62,7 @@ static void vmw_simple_resource_base_release(struct ttm_base_object **p_base)
 	vmw_resource_unreference(&res);
 }
 
-/**
- * vmw_simple_resource_create_ioctl - Helper to set up an ioctl function to
- * create a struct vmw_simple_resource.
- *
- * @dev: Pointer to a struct drm device.
- * @data: Ioctl argument.
- * @file_priv: Pointer to a struct drm_file identifying the caller.
- * @func: Pointer to a struct vmw_simple_resource_func identifying the
- * simple resource type.
- *
- * Returns:
- *   0 if success,
- *   Negative error value on error.
- */
+ 
 int
 vmw_simple_resource_create_ioctl(struct drm_device *dev, void *data,
 				 struct drm_file *file_priv,
@@ -161,9 +90,7 @@ vmw_simple_resource_create_ioctl(struct drm_device *dev, void *data,
 	usimple->base.shareable = false;
 	usimple->base.tfile = NULL;
 
-	/*
-	 * From here on, the destructor takes over resource freeing.
-	 */
+	 
 	ret = vmw_simple_resource_init(dev_priv, &usimple->simple,
 				       data, vmw_simple_resource_free);
 	if (ret)
@@ -186,18 +113,7 @@ out_ret:
 	return ret;
 }
 
-/**
- * vmw_simple_resource_lookup - Look up a simple resource from its user-space
- * handle.
- *
- * @tfile: struct ttm_object_file identifying the caller.
- * @handle: The user-space handle.
- * @func: The struct vmw_simple_resource_func identifying the simple resource
- * type.
- *
- * Returns: Refcounted pointer to the embedded struct vmw_resource if
- * successful. Error pointer otherwise.
- */
+ 
 struct vmw_resource *
 vmw_simple_resource_lookup(struct ttm_object_file *tfile,
 			   uint32_t handle,

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Handle device page faults
- *
- * Copyright (C) 2020 ARM Ltd.
- */
+
+ 
 
 #include <linux/iommu.h>
 #include <linux/list.h>
@@ -13,26 +9,14 @@
 
 #include "iommu-sva.h"
 
-/**
- * struct iopf_queue - IO Page Fault queue
- * @wq: the fault workqueue
- * @devices: devices attached to this queue
- * @lock: protects the device list
- */
+ 
 struct iopf_queue {
 	struct workqueue_struct		*wq;
 	struct list_head		devices;
 	struct mutex			lock;
 };
 
-/**
- * struct iopf_device_param - IO Page Fault data attached to a device
- * @dev: the device that owns this param
- * @queue: IOPF queue
- * @queue_list: index into queue->devices
- * @partial: faults that are part of a Page Request Group for which the last
- *           request hasn't been submitted yet.
- */
+ 
 struct iopf_device_param {
 	struct device			*dev;
 	struct iopf_queue		*queue;
@@ -83,10 +67,7 @@ static void iopf_handler(struct work_struct *work)
 		status = IOMMU_PAGE_RESP_INVALID;
 
 	list_for_each_entry_safe(iopf, next, &group->faults, list) {
-		/*
-		 * For the moment, errors are sticky: don't handle subsequent
-		 * faults in the group if there is an error.
-		 */
+		 
 		if (status == IOMMU_PAGE_RESP_SUCCESS)
 			status = domain->iopf_handler(&iopf->fault,
 						      domain->fault_data);
@@ -100,46 +81,7 @@ static void iopf_handler(struct work_struct *work)
 	kfree(group);
 }
 
-/**
- * iommu_queue_iopf - IO Page Fault handler
- * @fault: fault event
- * @cookie: struct device, passed to iommu_register_device_fault_handler.
- *
- * Add a fault to the device workqueue, to be handled by mm.
- *
- * This module doesn't handle PCI PASID Stop Marker; IOMMU drivers must discard
- * them before reporting faults. A PASID Stop Marker (LRW = 0b100) doesn't
- * expect a response. It may be generated when disabling a PASID (issuing a
- * PASID stop request) by some PCI devices.
- *
- * The PASID stop request is issued by the device driver before unbind(). Once
- * it completes, no page request is generated for this PASID anymore and
- * outstanding ones have been pushed to the IOMMU (as per PCIe 4.0r1.0 - 6.20.1
- * and 10.4.1.2 - Managing PASID TLP Prefix Usage). Some PCI devices will wait
- * for all outstanding page requests to come back with a response before
- * completing the PASID stop request. Others do not wait for page responses, and
- * instead issue this Stop Marker that tells us when the PASID can be
- * reallocated.
- *
- * It is safe to discard the Stop Marker because it is an optimization.
- * a. Page requests, which are posted requests, have been flushed to the IOMMU
- *    when the stop request completes.
- * b. The IOMMU driver flushes all fault queues on unbind() before freeing the
- *    PASID.
- *
- * So even though the Stop Marker might be issued by the device *after* the stop
- * request completes, outstanding faults will have been dealt with by the time
- * the PASID is freed.
- *
- * Any valid page fault will be eventually routed to an iommu domain and the
- * page fault handler installed there will get called. The users of this
- * handling framework should guarantee that the iommu domain could only be
- * freed after the device has stopped generating page faults (or the iommu
- * hardware has been set to block the page faults) and the pending page faults
- * have been flushed.
- *
- * Return: 0 on success and <0 on error.
- */
+ 
 int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
 {
 	int ret;
@@ -153,13 +95,10 @@ int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
 	lockdep_assert_held(&param->lock);
 
 	if (fault->type != IOMMU_FAULT_PAGE_REQ)
-		/* Not a recoverable page fault */
+		 
 		return -EOPNOTSUPP;
 
-	/*
-	 * As long as we're holding param->lock, the queue can't be unlinked
-	 * from the device and therefore cannot disappear.
-	 */
+	 
 	iopf_param = param->iopf_param;
 	if (!iopf_param)
 		return -ENODEV;
@@ -171,7 +110,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
 
 		iopf->fault = *fault;
 
-		/* Non-last request of a group. Postpone until the last one */
+		 
 		list_add(&iopf->list, &iopf_param->partial);
 
 		return 0;
@@ -179,11 +118,7 @@ int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
 
 	group = kzalloc(sizeof(*group), GFP_KERNEL);
 	if (!group) {
-		/*
-		 * The caller will send a response to the hardware. But we do
-		 * need to clean up before leaving, otherwise partial faults
-		 * will be stuck.
-		 */
+		 
 		ret = -ENOMEM;
 		goto cleanup_partial;
 	}
@@ -194,10 +129,10 @@ int iommu_queue_iopf(struct iommu_fault *fault, void *cookie)
 	list_add(&group->last_fault.list, &group->faults);
 	INIT_WORK(&group->work, iopf_handler);
 
-	/* See if we have partial faults for this group */
+	 
 	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list) {
 		if (iopf->fault.prm.grpid == fault->prm.grpid)
-			/* Insert *before* the last fault */
+			 
 			list_move(&iopf->list, &group->faults);
 	}
 
@@ -215,18 +150,7 @@ cleanup_partial:
 }
 EXPORT_SYMBOL_GPL(iommu_queue_iopf);
 
-/**
- * iopf_queue_flush_dev - Ensure that all queued faults have been processed
- * @dev: the endpoint whose faults need to be flushed.
- *
- * The IOMMU driver calls this before releasing a PASID, to ensure that all
- * pending faults for this PASID have been handled, and won't hit the address
- * space of the next process that uses this PASID. The driver must make sure
- * that no new fault is added to the queue. In particular it must flush its
- * low-level queue before calling this function.
- *
- * Return: 0 on success and <0 on error.
- */
+ 
 int iopf_queue_flush_dev(struct device *dev)
 {
 	int ret = 0;
@@ -248,16 +172,7 @@ int iopf_queue_flush_dev(struct device *dev)
 }
 EXPORT_SYMBOL_GPL(iopf_queue_flush_dev);
 
-/**
- * iopf_queue_discard_partial - Remove all pending partial fault
- * @queue: the queue whose partial faults need to be discarded
- *
- * When the hardware queue overflows, last page faults in a group may have been
- * lost and the IOMMU driver calls this to discard all partial faults. The
- * driver shouldn't be adding new faults to this queue concurrently.
- *
- * Return: 0 on success and <0 on error.
- */
+ 
 int iopf_queue_discard_partial(struct iopf_queue *queue)
 {
 	struct iopf_fault *iopf, *next;
@@ -279,13 +194,7 @@ int iopf_queue_discard_partial(struct iopf_queue *queue)
 }
 EXPORT_SYMBOL_GPL(iopf_queue_discard_partial);
 
-/**
- * iopf_queue_add_device - Add producer to the fault queue
- * @queue: IOPF queue
- * @dev: device to add
- *
- * Return: 0 on success and <0 on error.
- */
+ 
 int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev)
 {
 	int ret = -EBUSY;
@@ -320,15 +229,7 @@ int iopf_queue_add_device(struct iopf_queue *queue, struct device *dev)
 }
 EXPORT_SYMBOL_GPL(iopf_queue_add_device);
 
-/**
- * iopf_queue_remove_device - Remove producer from fault queue
- * @queue: IOPF queue
- * @dev: device to remove
- *
- * Caller makes sure that no more faults are reported for this device.
- *
- * Return: 0 on success and <0 on error.
- */
+ 
 int iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
 {
 	int ret = -EINVAL;
@@ -352,7 +253,7 @@ int iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
 	if (ret)
 		return ret;
 
-	/* Just in case some faults are still stuck */
+	 
 	list_for_each_entry_safe(iopf, next, &iopf_param->partial, list)
 		kfree(iopf);
 
@@ -362,12 +263,7 @@ int iopf_queue_remove_device(struct iopf_queue *queue, struct device *dev)
 }
 EXPORT_SYMBOL_GPL(iopf_queue_remove_device);
 
-/**
- * iopf_queue_alloc - Allocate and initialize a fault queue
- * @name: a unique string identifying the queue (for workqueue)
- *
- * Return: the queue on success and NULL on error.
- */
+ 
 struct iopf_queue *iopf_queue_alloc(const char *name)
 {
 	struct iopf_queue *queue;
@@ -376,12 +272,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name)
 	if (!queue)
 		return NULL;
 
-	/*
-	 * The WQ is unordered because the low-level handler enqueues faults by
-	 * group. PRI requests within a group have to be ordered, but once
-	 * that's dealt with, the high-level function can handle groups out of
-	 * order.
-	 */
+	 
 	queue->wq = alloc_workqueue("iopf_queue/%s", WQ_UNBOUND, 0, name);
 	if (!queue->wq) {
 		kfree(queue);
@@ -395,13 +286,7 @@ struct iopf_queue *iopf_queue_alloc(const char *name)
 }
 EXPORT_SYMBOL_GPL(iopf_queue_alloc);
 
-/**
- * iopf_queue_free - Free IOPF queue
- * @queue: queue to free
- *
- * Counterpart to iopf_queue_alloc(). The driver must not be queuing faults or
- * adding/removing devices on this queue anymore.
- */
+ 
 void iopf_queue_free(struct iopf_queue *queue)
 {
 	struct iopf_device_param *iopf_param, *next;

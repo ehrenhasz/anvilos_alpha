@@ -1,9 +1,5 @@
-/* $OpenBSD: chacha.c,v 1.2 2023/07/17 05:26:38 djm Exp $ */
-/*
-chacha-merged.c version 20080118
-D. J. Bernstein
-Public domain.
-*/
+ 
+ 
 
 #include "includes.h"
 
@@ -60,10 +56,10 @@ chacha_keysetup(chacha_ctx *x,const u8 *k,u32 kbits)
   x->input[5] = U8TO32_LITTLE(k + 4);
   x->input[6] = U8TO32_LITTLE(k + 8);
   x->input[7] = U8TO32_LITTLE(k + 12);
-  if (kbits == 256) { /* recommended */
+  if (kbits == 256) {  
     k += 16;
     constants = sigma;
-  } else { /* kbits == 128 */
+  } else {  
     constants = tau;
   }
   x->input[8] = U8TO32_LITTLE(k + 0);
@@ -183,7 +179,7 @@ chacha_encrypt_bytes(chacha_ctx *x,const u8 *m,u8 *c,u32 bytes)
     j12 = PLUSONE(j12);
     if (!j12) {
       j13 = PLUSONE(j13);
-      /* stopping at 2^70 bytes per nonce is user's responsibility */
+       
     }
 
     U32TO8_LITTLE(c + 0,x0);

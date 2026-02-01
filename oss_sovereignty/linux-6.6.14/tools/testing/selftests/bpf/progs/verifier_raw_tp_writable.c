@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/raw_tp_writable.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -20,23 +20,23 @@ __flag(BPF_F_ANY_ALIGNMENT)
 __naked void tracepoint_writable_reject_variable_offset(void)
 {
 	asm volatile ("					\
-	/* r6 is our tp buffer */			\
+	 			\
 	r6 = *(u64*)(r1 + 0);				\
 	r1 = %[map_hash_8b] ll;				\
-	/* move the key (== 0) to r10-8 */		\
+	 		\
 	w0 = 0;						\
 	r2 = r10;					\
 	r2 += -8;					\
 	*(u64*)(r2 + 0) = r0;				\
-	/* lookup in the map */				\
+	 				\
 	call %[bpf_map_lookup_elem];			\
-	/* exit clean if null */			\
+	 			\
 	if r0 != 0 goto l0_%=;				\
 	exit;						\
-l0_%=:	/* shift the buffer pointer to a variable location */\
+l0_%=:	 \
 	r0 = *(u32*)(r0 + 0);				\
 	r6 += r0;					\
-	/* clobber whatever's there */			\
+	 			\
 	r7 = 4242;					\
 	*(u64*)(r6 + 0) = r7;				\
 	r0 = 0;						\

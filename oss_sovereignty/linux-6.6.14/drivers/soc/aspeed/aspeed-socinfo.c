@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Copyright 2019 IBM Corp. */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -13,16 +13,16 @@ static struct {
 	const char *name;
 	const u32 id;
 } const rev_table[] = {
-	/* AST2400 */
+	 
 	{ "AST2400", 0x02000303 },
 	{ "AST1400", 0x02010103 },
 	{ "AST1250", 0x02010303 },
-	/* AST2500 */
+	 
 	{ "AST2500", 0x04000303 },
 	{ "AST2510", 0x04000103 },
 	{ "AST2520", 0x04000203 },
 	{ "AST2530", 0x04000403 },
-	/* AST2600 */
+	 
 	{ "AST2600", 0x05000303 },
 	{ "AST2620", 0x05010203 },
 	{ "AST2605", 0x05030103 },
@@ -48,7 +48,7 @@ static const char *siliconid_to_rev(u32 siliconid)
 	unsigned int gen = (siliconid >> 24) & 0xff;
 
 	if (gen < 0x5) {
-		/* AST2500 and below */
+		 
 		switch (rev) {
 		case 0:
 			return "A0";
@@ -58,7 +58,7 @@ static const char *siliconid_to_rev(u32 siliconid)
 			return "A2";
 		}
 	} else {
-		/* AST2600 */
+		 
 		switch (rev) {
 		case 0:
 			return "A0";
@@ -99,7 +99,7 @@ static int __init aspeed_socinfo_init(void)
 	siliconid = readl(reg);
 	iounmap(reg);
 
-	/* This is optional, the ast2400 does not have it */
+	 
 	reg = of_iomap(np, 1);
 	if (reg) {
 		has_chipid = true;
@@ -113,13 +113,7 @@ static int __init aspeed_socinfo_init(void)
 	if (!attrs)
 		return -ENODEV;
 
-	/*
-	 * Machine: Romulus BMC
-	 * Family: AST2500
-	 * Revision: A1
-	 * SoC ID: raw silicon revision id
-	 * Serial Number: 64-bit chipid
-	 */
+	 
 
 	np = of_find_node_by_path("/");
 	of_property_read_string(np, "model", &machine);

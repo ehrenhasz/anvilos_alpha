@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AB8500 system control driver
- *
- * Copyright (C) ST-Ericsson SA 2010
- * Author: Mattias Nilsson <mattias.i.nilsson@stericsson.com> for ST Ericsson.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -18,7 +13,7 @@
 #include <linux/mfd/abx500/ab8500.h>
 #include <linux/mfd/abx500/ab8500-sysctrl.h>
 
-/* RtcCtrl bits */
+ 
 #define AB8500_ALARM_MIN_LOW  0x08
 #define AB8500_ALARM_MIN_MID 0x09
 #define RTC_CTRL 0x0B
@@ -42,10 +37,7 @@ static void ab8500_power_off(void)
 		return;
 	}
 
-	/*
-	 * If we have a charger connected and we're powering off,
-	 * reboot into charge-only mode.
-	 */
+	 
 
 	for (i = 0; i < ARRAY_SIZE(pss); i++) {
 		psy = power_supply_get_by_name(pss[i]);
@@ -65,7 +57,7 @@ static void ab8500_power_off(void)
 	if (!charger_present)
 		goto shutdown;
 
-	/* Check if battery is known */
+	 
 	psy = power_supply_get_by_name("ab8500_btemp");
 	if (psy) {
 		ret = power_supply_get_property(psy,

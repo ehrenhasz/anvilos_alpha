@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_DEVICE_TEGRA_H__
 #define __NVKM_DEVICE_TEGRA_H__
 #include <core/device.h>
@@ -17,9 +17,7 @@ struct nvkm_device_tegra {
 	struct regulator *vdd;
 
 	struct {
-		/*
-		 * Protects accesses to mm from subsystems
-		 */
+		 
 		struct mutex mutex;
 
 		struct nvkm_mm mm;
@@ -32,19 +30,11 @@ struct nvkm_device_tegra {
 };
 
 struct nvkm_device_tegra_func {
-	/*
-	 * If an IOMMU is used, indicates which address bit will trigger a
-	 * IOMMU translation when set (when this bit is not set, IOMMU is
-	 * bypassed). A value of 0 means an IOMMU is never used.
-	 */
+	 
 	u8 iommu_bit;
-	/*
-	 * Whether the chip requires a reference clock
-	 */
+	 
 	bool require_ref_clk;
-	/*
-	 * Whether the chip requires the VDD regulator
-	 */
+	 
 	bool require_vdd;
 };
 

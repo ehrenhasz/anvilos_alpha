@@ -1,29 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ke_counter.c
- * Comedi driver for Kolter-Electronic PCI Counter 1 Card
- *
- * COMEDI - Linux Control and Measurement Device Interface
- * Copyright (C) 2000 David A. Schleef <ds@schleef.org>
- */
 
-/*
- * Driver: ke_counter
- * Description: Driver for Kolter Electronic Counter Card
- * Devices: [Kolter Electronic] PCI Counter Card (ke_counter)
- * Author: Michael Hillmann
- * Updated: Mon, 14 Apr 2008 15:42:42 +0100
- * Status: tested
- *
- * Configuration Options: not applicable, uses PCI auto config
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/comedi/comedi_pci.h>
 
-/*
- * PCI BAR 0 Register I/O map
- */
+ 
 #define KE_RESET_REG(x)			(0x00 + ((x) * 0x20))
 #define KE_LATCH_REG(x)			(0x00 + ((x) * 0x20))
 #define KE_LSB_REG(x)			(0x04 + ((x) * 0x20))
@@ -49,7 +32,7 @@ static int ke_counter_insn_write(struct comedi_device *dev,
 	for (i = 0; i < insn->n; i++) {
 		val = data[0];
 
-		/* Order matters */
+		 
 		outb((val >> 24) & 0xff, dev->iobase + KE_SIGN_REG(chan));
 		outb((val >> 16) & 0xff, dev->iobase + KE_MSB_REG(chan));
 		outb((val >> 8) & 0xff, dev->iobase + KE_MID_REG(chan));
@@ -69,7 +52,7 @@ static int ke_counter_insn_read(struct comedi_device *dev,
 	int i;
 
 	for (i = 0; i < insn->n; i++) {
-		/* Order matters */
+		 
 		inb(dev->iobase + KE_LATCH_REG(chan));
 
 		val = inb(dev->iobase + KE_LSB_REG(chan));
@@ -101,13 +84,13 @@ static int ke_counter_insn_config(struct comedi_device *dev,
 	switch (data[0]) {
 	case INSN_CONFIG_SET_CLOCK_SRC:
 		switch (data[1]) {
-		case KE_CLK_20MHZ:	/* default */
+		case KE_CLK_20MHZ:	 
 			src = KE_OSC_SEL_20MHZ;
 			break;
-		case KE_CLK_4MHZ:	/* option */
+		case KE_CLK_4MHZ:	 
 			src = KE_OSC_SEL_4MHZ;
 			break;
-		case KE_CLK_EXT:	/* Pin 21 on D-sub */
+		case KE_CLK_EXT:	 
 			src = KE_OSC_SEL_EXT;
 			break;
 		default:
@@ -120,15 +103,15 @@ static int ke_counter_insn_config(struct comedi_device *dev,
 		switch (src) {
 		case KE_OSC_SEL_20MHZ:
 			data[1] = KE_CLK_20MHZ;
-			data[2] = 50;	/* 50ns */
+			data[2] = 50;	 
 			break;
 		case KE_OSC_SEL_4MHZ:
 			data[1] = KE_CLK_4MHZ;
-			data[2] = 250;	/* 250ns */
+			data[2] = 250;	 
 			break;
 		case KE_OSC_SEL_EXT:
 			data[1] = KE_CLK_EXT;
-			data[2] = 0;	/* Unknown */
+			data[2] = 0;	 
 			break;
 		default:
 			return -EINVAL;

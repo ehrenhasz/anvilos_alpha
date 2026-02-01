@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Virtio PCI driver - modern (virtio 1.0) device support
- *
- * This module allows virtio devices to be used over a virtual PCI device.
- * This can be used with QEMU based VMMs like KVM or Xen.
- *
- * Copyright IBM Corp. 2007
- * Copyright Red Hat, Inc. 2014
- *
- * Authors:
- *  Anthony Liguori  <aliguori@us.ibm.com>
- *  Rusty Russell <rusty@rustcorp.com.au>
- *  Michael S. Tsirkin <mst@redhat.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #define VIRTIO_PCI_NO_LEGACY
@@ -39,16 +26,16 @@ static void vp_transport_features(struct virtio_device *vdev, u64 features)
 		__virtio_set_bit(vdev, VIRTIO_F_RING_RESET);
 }
 
-/* virtio config->finalize_features() implementation */
+ 
 static int vp_finalize_features(struct virtio_device *vdev)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
 	u64 features = vdev->features;
 
-	/* Give virtio_ring a chance to accept features. */
+	 
 	vring_transport_features(vdev);
 
-	/* Give virtio_pci a chance to accept features. */
+	 
 	vp_transport_features(vdev, features);
 
 	if (!__virtio_test_bit(vdev, VIRTIO_F_VERSION_1)) {
@@ -62,7 +49,7 @@ static int vp_finalize_features(struct virtio_device *vdev)
 	return 0;
 }
 
-/* virtio config->get() implementation */
+ 
 static void vp_get(struct virtio_device *vdev, unsigned int offset,
 		   void *buf, unsigned int len)
 {
@@ -99,8 +86,7 @@ static void vp_get(struct virtio_device *vdev, unsigned int offset,
 	}
 }
 
-/* the config->set() implementation.  it's symmetric to the config->get()
- * implementation */
+ 
 static void vp_set(struct virtio_device *vdev, unsigned int offset,
 		   const void *buf, unsigned int len)
 {
@@ -144,7 +130,7 @@ static u32 vp_generation(struct virtio_device *vdev)
 	return vp_modern_generation(&vp_dev->mdev);
 }
 
-/* config->{get,set}_status() implementations */
+ 
 static u8 vp_get_status(struct virtio_device *vdev)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
@@ -156,7 +142,7 @@ static void vp_set_status(struct virtio_device *vdev, u8 status)
 {
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
 
-	/* We should never be setting status to 0. */
+	 
 	BUG_ON(status == 0);
 	vp_modern_set_status(&vp_dev->mdev, status);
 }
@@ -166,16 +152,12 @@ static void vp_reset(struct virtio_device *vdev)
 	struct virtio_pci_device *vp_dev = to_vp_device(vdev);
 	struct virtio_pci_modern_device *mdev = &vp_dev->mdev;
 
-	/* 0 status means a reset. */
+	 
 	vp_modern_set_status(mdev, 0);
-	/* After writing 0 to device_status, the driver MUST wait for a read of
-	 * device_status to return 0 before reinitializing the device.
-	 * This will flush out the status write, and flush in device writes,
-	 * including MSI-X interrupts, if any.
-	 */
+	 
 	while (vp_modern_get_status(mdev))
 		msleep(1);
-	/* Flush pending VQ/configuration callbacks. */
+	 
 	vp_synchronize_vectors(vdev);
 }
 
@@ -187,7 +169,7 @@ static int vp_active_vq(struct virtqueue *vq, u16 msix_vec)
 
 	index = vq->index;
 
-	/* activate the queue */
+	 
 	vp_modern_set_queue_size(mdev, index, virtqueue_get_vring_size(vq));
 	vp_modern_queue_address(mdev, index, virtqueue_get_desc_addr(vq),
 				virtqueue_get_avail_addr(vq),
@@ -216,7 +198,7 @@ static int vp_modern_disable_vq_and_reset(struct virtqueue *vq)
 
 	info = vp_dev->vqs[vq->index];
 
-	/* delete vq from irq handler */
+	 
 	spin_lock_irqsave(&vp_dev->lock, flags);
 	list_del(&info->node);
 	spin_unlock_irqrestore(&vp_dev->lock, flags);
@@ -227,12 +209,7 @@ static int vp_modern_disable_vq_and_reset(struct virtqueue *vq)
 	__virtqueue_break(vq);
 #endif
 
-	/* For the case where vq has an exclusive irq, call synchronize_irq() to
-	 * wait for completion.
-	 *
-	 * note: We can't use disable_irq() since it conflicts with the affinity
-	 * managed IRQ that is used by some drivers.
-	 */
+	 
 	if (vp_dev->per_vq_vectors && info->msix_vector != VIRTIO_MSI_NO_VECTOR)
 		synchronize_irq(pci_irq_vector(vp_dev->pci_dev, info->msix_vector));
 
@@ -320,14 +297,14 @@ static struct virtqueue *setup_vq(struct virtio_pci_device *vp_dev,
 	if (index >= vp_modern_get_num_queues(mdev))
 		return ERR_PTR(-EINVAL);
 
-	/* Check if queue is either not available or already active. */
+	 
 	num = vp_modern_get_queue_size(mdev, index);
 	if (!num || vp_modern_get_queue_enable(mdev, index))
 		return ERR_PTR(-ENOENT);
 
 	info->msix_vector = msix_vec;
 
-	/* create the vring */
+	 
 	vq = vring_create_virtqueue(index, num,
 				    SMP_CACHE_BYTES, &vp_dev->vdev,
 				    true, true, ctx,
@@ -367,9 +344,7 @@ static int vp_modern_find_vqs(struct virtio_device *vdev, unsigned int nvqs,
 	if (rc)
 		return rc;
 
-	/* Select and activate all queues. Has to be done last: once we do
-	 * this, there's no way to go back except reset.
-	 */
+	 
 	list_for_each_entry(vq, &vdev->vqs, list)
 		vp_modern_set_queue_enable(&vp_dev->mdev, vq->index, true);
 
@@ -426,11 +401,9 @@ static int virtio_pci_find_shm_cap(struct pci_dev *dev, u8 required_id,
 		if (res_bar >= PCI_STD_NUM_BARS)
 			continue;
 
-		/* Type and ID match, and the BAR value isn't reserved.
-		 * Looks good.
-		 */
+		 
 
-		/* Read the lower 32bit of length and offset */
+		 
 		pci_read_config_dword(dev, pos + offsetof(struct virtio_pci_cap,
 							  offset), &tmp32);
 		res_offset = tmp32;
@@ -438,7 +411,7 @@ static int virtio_pci_find_shm_cap(struct pci_dev *dev, u8 required_id,
 							  length), &tmp32);
 		res_length = tmp32;
 
-		/* and now the top half */
+		 
 		pci_read_config_dword(dev,
 				      pos + offsetof(struct virtio_pci_cap64,
 						     offset_hi), &tmp32);
@@ -531,7 +504,7 @@ static const struct virtio_config_ops virtio_pci_config_ops = {
 	.enable_vq_after_reset = vp_modern_enable_vq_after_reset,
 };
 
-/* the PCI probing function */
+ 
 int virtio_pci_modern_probe(struct virtio_pci_device *vp_dev)
 {
 	struct virtio_pci_modern_device *mdev = &vp_dev->mdev;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Asia Better Technology Ltd. Y030XX067A IPS LCD panel driver
- *
- * Copyright (C) 2020, Paul Cercueil <paul@crapouillou.net>
- * Copyright (C) 2020, Christophe Branchereau <cbranchereau@gmail.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -171,7 +166,7 @@ static int y030xx067a_prepare(struct drm_panel *panel)
 		return err;
 	}
 
-	/* Reset the chip */
+	 
 	gpiod_set_value_cansleep(priv->reset_gpio, 1);
 	usleep_range(1000, 20000);
 	gpiod_set_value_cansleep(priv->reset_gpio, 0);
@@ -208,7 +203,7 @@ static int y030xx067a_enable(struct drm_panel *panel)
 	regmap_set_bits(priv->map, 0x06, REG06_XPSAVE);
 
 	if (panel->backlight) {
-		/* Wait for the picture to be ready before enabling backlight */
+		 
 		msleep(120);
 	}
 
@@ -328,7 +323,7 @@ static void y030xx067a_remove(struct spi_device *spi)
 }
 
 static const struct drm_display_mode y030xx067a_modes[] = {
-	{ /* 60 Hz */
+	{  
 		.clock = 14400,
 		.hdisplay = 320,
 		.hsync_start = 320 + 10,
@@ -340,7 +335,7 @@ static const struct drm_display_mode y030xx067a_modes[] = {
 		.vtotal = 480 + 84 + 20 + 16,
 		.flags = DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC,
 	},
-	{ /* 50 Hz */
+	{  
 		.clock = 12000,
 		.hdisplay = 320,
 		.hsync_start = 320 + 10,
@@ -365,7 +360,7 @@ static const struct y030xx067a_info y030xx067a_info = {
 
 static const struct of_device_id y030xx067a_of_match[] = {
 	{ .compatible = "abt,y030xx067a", .data = &y030xx067a_info },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, y030xx067a_of_match);
 

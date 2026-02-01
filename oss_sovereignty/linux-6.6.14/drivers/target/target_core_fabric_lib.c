@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * Filename:  target_core_fabric_lib.c
- *
- * This file contains generic high level protocol identifier and PR
- * handlers for TCM fabric modules
- *
- * (c) Copyright 2010-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ******************************************************************************/
 
-/*
- * See SPC4, section 7.5 "Protocol specific parameters" for details
- * on the formats implemented in this file.
- */
+ 
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -39,7 +26,7 @@ static int sas_get_pr_transport_id(
 {
 	int ret;
 
-	/* Skip over 'naa. prefix */
+	 
 	ret = hex2bin(&buf[4], &nacl->initiatorname[4], 8);
 	if (ret) {
 		pr_debug("%s: invalid hex string\n", __func__);
@@ -58,10 +45,7 @@ static int fc_get_pr_transport_id(
 	int i, ret;
 	u32 off = 8;
 
-	/*
-	 * We convert the ASCII formatted N Port name into a binary
-	 * encoded TransportID.
-	 */
+	 
 	ptr = &se_nacl->initiatorname[0];
 	for (i = 0; i < 23; ) {
 		if (!strncmp(&ptr[i], ":", 1)) {
@@ -75,9 +59,7 @@ static int fc_get_pr_transport_id(
 		}
 		i += 2;
 	}
-	/*
-	 * The FC Transport ID is a hardcoded 24-byte length
-	 */
+	 
 	return 24;
 }
 
@@ -136,55 +118,18 @@ static int iscsi_get_pr_transport_id(
 	u16 len = 0;
 
 	spin_lock_irq(&se_nacl->nacl_sess_lock);
-	/*
-	 * Only null terminate the last field.
-	 *
-	 * From spc4r37 section 7.6.4.6: TransportID for initiator ports using
-	 * SCSI over iSCSI.
-	 *
-	 * Table 507 TPID=0 Initiator device TransportID
-	 *
-	 * The null-terminated, null-padded (see 4.3.2) ISCSI NAME field shall
-	 * contain the iSCSI name of an iSCSI initiator node (see RFC 7143).
-	 * The first ISCSI NAME field byte containing an ASCII null character
-	 * terminates the ISCSI NAME field without regard for the specified
-	 * length of the iSCSI TransportID or the contents of the ADDITIONAL
-	 * LENGTH field.
-	 */
+	 
 	len = sprintf(&buf[off], "%s", se_nacl->initiatorname);
 	off += len;
 	if ((*format_code == 1) && (pr_reg->isid_present_at_reg)) {
-		/*
-		 * Set FORMAT CODE 01b for iSCSI Initiator port TransportID
-		 * format.
-		 */
+		 
 		buf[0] |= 0x40;
-		/*
-		 * From spc4r37 Section 7.6.4.6
-		 *
-		 * Table 508 TPID=1 Initiator port TransportID.
-		 *
-		 * The ISCSI NAME field shall not be null-terminated
-		 * (see 4.3.2) and shall not be padded.
-		 *
-		 * The SEPARATOR field shall contain the five ASCII
-		 * characters ",i,0x".
-		 *
-		 * The null-terminated, null-padded ISCSI INITIATOR SESSION ID
-		 * field shall contain the iSCSI initiator session identifier
-		 * (see RFC 3720) in the form of ASCII characters that are the
-		 * hexadecimal digits converted from the binary iSCSI initiator
-		 * session identifier value. The first ISCSI INITIATOR SESSION
-		 * ID field byte containing an ASCII null character terminates
-		 * the ISCSI INITIATOR SESSION ID field without regard for the
-		 * specified length of the iSCSI TransportID or the contents
-		 * of the ADDITIONAL LENGTH field.
-		 */
-		buf[off++] = 0x2c; /* ASCII Character: "," */
-		buf[off++] = 0x69; /* ASCII Character: "i" */
-		buf[off++] = 0x2c; /* ASCII Character: "," */
-		buf[off++] = 0x30; /* ASCII Character: "0" */
-		buf[off++] = 0x78; /* ASCII Character: "x" */
+		 
+		buf[off++] = 0x2c;  
+		buf[off++] = 0x69;  
+		buf[off++] = 0x2c;  
+		buf[off++] = 0x30;  
+		buf[off++] = 0x78;  
 		len += 5;
 
 		isid_len = sprintf(buf + off, "%s", pr_reg->pr_reg_isid);
@@ -194,20 +139,13 @@ static int iscsi_get_pr_transport_id(
 	buf[off] = '\0';
 	len += 1;
 	spin_unlock_irq(&se_nacl->nacl_sess_lock);
-	/*
-	 * The ADDITIONAL LENGTH field specifies the number of bytes that follow
-	 * in the TransportID. The additional length shall be at least 20 and
-	 * shall be a multiple of four.
-	*/
+	 
 	padding = ((-len) & 3);
 	if (padding != 0)
 		len += padding;
 
 	put_unaligned_be16(len, &buf[2]);
-	/*
-	 * Increment value for total payload + header length for
-	 * full status descriptor
-	 */
+	 
 	len += 4;
 
 	return len;
@@ -222,36 +160,21 @@ static int iscsi_get_pr_transport_id_len(
 
 	spin_lock_irq(&se_nacl->nacl_sess_lock);
 	len = strlen(se_nacl->initiatorname);
-	/*
-	 * Add extra byte for NULL terminator
-	 */
+	 
 	len++;
-	/*
-	 * If there is ISID present with the registration, use format code:
-	 * 01b: iSCSI Initiator port TransportID format
-	 *
-	 * If there is not an active iSCSI session, use format code:
-	 * 00b: iSCSI Initiator device TransportID format
-	 */
+	 
 	if (pr_reg->isid_present_at_reg) {
-		len += 5; /* For ",i,0x" ASCII separator */
+		len += 5;  
 		len += strlen(pr_reg->pr_reg_isid);
 		*format_code = 1;
 	} else
 		*format_code = 0;
 	spin_unlock_irq(&se_nacl->nacl_sess_lock);
-	/*
-	 * The ADDITIONAL LENGTH field specifies the number of bytes that follow
-	 * in the TransportID. The additional length shall be at least 20 and
-	 * shall be a multiple of four.
-	 */
+	 
 	padding = ((-len) & 3);
 	if (padding != 0)
 		len += padding;
-	/*
-	 * Increment value for total payload + header length for
-	 * full status descriptor
-	 */
+	 
 	len += 4;
 
 	return len;
@@ -266,40 +189,21 @@ static char *iscsi_parse_pr_out_transport_id(
 	char *p;
 	int i;
 	u8 format_code = (buf[0] & 0xc0);
-	/*
-	 * Check for FORMAT CODE 00b or 01b from spc4r17, section 7.5.4.6:
-	 *
-	 *       TransportID for initiator ports using SCSI over iSCSI,
-	 *       from Table 388 -- iSCSI TransportID formats.
-	 *
-	 *    00b     Initiator port is identified using the world wide unique
-	 *            SCSI device name of the iSCSI initiator
-	 *            device containing the initiator port (see table 389).
-	 *    01b     Initiator port is identified using the world wide unique
-	 *            initiator port identifier (see table 390).10b to 11b
-	 *            Reserved
-	 */
+	 
 	if ((format_code != 0x00) && (format_code != 0x40)) {
 		pr_err("Illegal format code: 0x%02x for iSCSI"
 			" Initiator Transport ID\n", format_code);
 		return NULL;
 	}
-	/*
-	 * If the caller wants the TransportID Length, we set that value for the
-	 * entire iSCSI Tarnsport ID now.
-	 */
+	 
 	if (out_tid_len) {
-		/* The shift works thanks to integer promotion rules */
+		 
 		*out_tid_len = get_unaligned_be16(&buf[2]);
-		/* Add four bytes for iSCSI Transport ID header */
+		 
 		*out_tid_len += 4;
 	}
 
-	/*
-	 * Check for ',i,0x' separator between iSCSI Name and iSCSI Initiator
-	 * Session ID as defined in Table 390 - iSCSI initiator port TransportID
-	 * format.
-	 */
+	 
 	if (format_code == 0x40) {
 		p = strstr(&buf[4], ",i,0x");
 		if (!p) {
@@ -308,24 +212,13 @@ static char *iscsi_parse_pr_out_transport_id(
 				&buf[4]);
 			return NULL;
 		}
-		*p = '\0'; /* Terminate iSCSI Name */
-		p += 5; /* Skip over ",i,0x" separator */
+		*p = '\0';  
+		p += 5;  
 
 		*port_nexus_ptr = p;
-		/*
-		 * Go ahead and do the lower case conversion of the received
-		 * 12 ASCII characters representing the ISID in the TransportID
-		 * for comparison against the running iSCSI session's ISID from
-		 * iscsi_target.c:lio_sess_get_initiator_sid()
-		 */
+		 
 		for (i = 0; i < 12; i++) {
-			/*
-			 * The first ISCSI INITIATOR SESSION ID field byte
-			 * containing an ASCII null character terminates the
-			 * ISCSI INITIATOR SESSION ID field without regard for
-			 * the specified length of the iSCSI TransportID or the
-			 * contents of the ADDITIONAL LENGTH field.
-			 */
+			 
 			if (*p == '\0')
 				break;
 
@@ -358,9 +251,7 @@ int target_get_pr_transport_id_len(struct se_node_acl *nacl,
 		return -EINVAL;
 	}
 
-	/*
-	 * Most transports use a fixed length 24 byte identifier.
-	 */
+	 
 	*format_code = 0;
 	return 24;
 }
@@ -394,10 +285,7 @@ const char *target_parse_pr_out_transport_id(struct se_portal_group *tpg,
 
 	switch (tpg->proto_id) {
 	case SCSI_PROTOCOL_SAS:
-		/*
-		 * Assume the FORMAT CODE 00b from spc4r17, 7.5.4.7 TransportID
-		 * for initiator ports using SCSI over SAS Serial SCSI Protocol.
-		 */
+		 
 		offset = 4;
 		break;
 	case SCSI_PROTOCOL_SBP:

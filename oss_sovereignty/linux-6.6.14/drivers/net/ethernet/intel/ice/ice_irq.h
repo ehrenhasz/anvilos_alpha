@@ -1,18 +1,18 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2023, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_IRQ_H_
 #define _ICE_IRQ_H_
 
 struct ice_irq_entry {
 	unsigned int index;
-	bool dynamic;	/* allocation type flag */
+	bool dynamic;	 
 };
 
 struct ice_irq_tracker {
 	struct xarray entries;
-	u16 num_entries;	/* total vectors available */
-	u16 num_static;	/* preallocated entries */
+	u16 num_entries;	 
+	u16 num_static;	 
 };
 
 int ice_init_interrupt_scheme(struct ice_pf *pf);

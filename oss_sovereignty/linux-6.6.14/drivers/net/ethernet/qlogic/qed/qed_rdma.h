@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause) */
-/* QLogic qed NIC Driver
- * Copyright (c) 2015-2017  QLogic Corporation
- * Copyright (c) 2019-2020 Marvell International Ltd.
- */
+ 
+ 
 
 #ifndef _QED_RDMA_H
 #define _QED_RDMA_H
@@ -28,7 +25,7 @@
 #define QED_RDMA_MAX_MR_SIZE                (0x10000000000ULL)
 #define QED_RDMA_MAX_CQS                    (RDMA_MAX_CQS)
 #define QED_RDMA_MAX_MRS                    (RDMA_MAX_TIDS)
-/* Add 1 for header element */
+ 
 #define QED_RDMA_MAX_SRQ_ELEM_PER_WQE	    (RDMA_MAX_SGE_PER_RQ_WQE + 1)
 #define QED_RDMA_MAX_SGE_PER_SRQ_WQE        (RDMA_MAX_SGE_PER_RQ_WQE)
 #define QED_RDMA_SRQ_WQE_ELEM_SIZE          (16)
@@ -37,9 +34,7 @@
 #define QED_RDMA_MAX_CQE_32_BIT             (0x7FFFFFFF - 1)
 #define QED_RDMA_MAX_CQE_16_BIT             (0x7FFF - 1)
 
-/* Up to 2^16 XRC Domains are supported, but the actual number of supported XRC
- * SRQs is much smaller so there's no need to have that many domains.
- */
+ 
 #define QED_RDMA_MAX_XRCDS      (roundup_pow_of_two(RDMA_MAX_XRC_SRQS))
 
 enum qed_rdma_toggle_bit {
@@ -55,7 +50,7 @@ struct qed_bmap {
 };
 
 struct qed_rdma_info {
-	/* spin lock to protect bitmaps */
+	 
 	spinlock_t lock;
 
 	struct qed_bmap cq_map;
@@ -125,7 +120,7 @@ struct qed_rdma_qp {
 	u16 udp_src_port;
 	u8 stats_queue;
 
-	/* requeseter */
+	 
 	u8 max_rd_atomic_req;
 	u32 sq_psn;
 	u16 sq_cq_id;
@@ -137,7 +132,7 @@ struct qed_rdma_qp {
 	bool req_offloaded;
 	bool has_req;
 
-	/* responder */
+	 
 	u8 max_rd_atomic_resp;
 	u32 rq_psn;
 	u16 rq_cq_id;

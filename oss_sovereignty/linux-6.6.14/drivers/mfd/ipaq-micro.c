@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Compaq iPAQ h3xxx Atmel microcontroller companion support
- *
- * This is an Atmel AT90LS8535 with a special flashed-in firmware that
- * implements the special protocol used by this driver.
- *
- * based on previous kernel 2.4 version by Andrew Christian
- * Author : Alessandro Gardich <gremlin@gremlin.it>
- * Author : Dmitry Artamonow <mad_soft@inbox.ru>
- * Author : Linus Walleij <linus.walleij@linaro.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -51,7 +41,7 @@ static void ipaq_micro_trigger_tx(struct ipaq_micro *micro)
 	tx->len = bp;
 	tx->index = 0;
 
-	/* Enable interrupt */
+	 
 	val = readl(micro->base + UTCR3);
 	val |= UTCR3_TIE;
 	writel(val, micro->base + UTCR3);
@@ -89,7 +79,7 @@ static void micro_rx_msg(struct ipaq_micro *micro, u8 id, int len, u8 *data)
 	case MSG_NOTIFY_LED:
 	case MSG_THERMAL_SENSOR:
 	case MSG_BATTERY:
-		/* Handle synchronous messages */
+		 
 		if (micro->msg && micro->msg->id == id) {
 			struct ipaq_micro_msg *msg = micro->msg;
 
@@ -139,24 +129,24 @@ static void micro_process_char(struct ipaq_micro *micro, u8 ch)
 	struct ipaq_micro_rxdev *rx = &micro->rx;
 
 	switch (rx->state) {
-	case STATE_SOF:	/* Looking for SOF */
+	case STATE_SOF:	 
 		if (ch == CHAR_SOF)
-			rx->state = STATE_ID; /* Next byte is the id and len */
+			rx->state = STATE_ID;  
 		break;
-	case STATE_ID: /* Looking for id and len byte */
+	case STATE_ID:  
 		rx->id = (ch & 0xf0) >> 4;
 		rx->len = (ch & 0x0f);
 		rx->index = 0;
 		rx->chksum = ch;
 		rx->state = (rx->len > 0) ? STATE_DATA : STATE_CHKSUM;
 		break;
-	case STATE_DATA: /* Looking for 'len' data bytes */
+	case STATE_DATA:  
 		rx->chksum += ch;
 		rx->buf[rx->index] = ch;
 		if (++rx->index == rx->len)
 			rx->state = STATE_CHKSUM;
 		break;
-	case STATE_CHKSUM: /* Looking for the checksum */
+	case STATE_CHKSUM:  
 		if (ch == rx->chksum)
 			micro_rx_msg(micro, rx->id, rx->len, rx->buf);
 		rx->state = STATE_SOF;
@@ -193,7 +183,7 @@ static void ipaq_micro_get_version(struct ipaq_micro *micro)
 	} else if (msg.rx_len == 9) {
 		memcpy(micro->version, msg.rx_data, 4);
 		micro->version[4] = '\0';
-		/* Bytes 4-7 are "pack", byte 8 is "boot type" */
+		 
 	} else {
 		dev_err(micro->dev,
 			"illegal version message %d bytes\n", msg.rx_len);
@@ -246,7 +236,7 @@ static void __init ipaq_micro_eeprom_dump(struct ipaq_micro *micro)
 	str = ipaq_micro_str(dump+10, 40);
 	if (str) {
 		dev_info(micro->dev, "serial number: %s\n", str);
-		/* Feed the random pool with this */
+		 
 		add_device_randomness(str, strlen(str));
 		kfree(str);
 	}
@@ -284,7 +274,7 @@ static void micro_tx_chars(struct ipaq_micro *micro)
 		tx->index++;
 	}
 
-	/* Stop interrupts */
+	 
 	val = readl(micro->base + UTCR3);
 	val &= ~UTCR3_TIE;
 	writel(val, micro->base + UTCR3);
@@ -298,26 +288,26 @@ static void micro_reset_comm(struct ipaq_micro *micro)
 	if (micro->msg)
 		complete(&micro->msg->ack);
 
-	/* Initialize Serial channel protocol frame */
-	rx->state = STATE_SOF;  /* Reset the state machine */
+	 
+	rx->state = STATE_SOF;   
 
-	/* Set up interrupts */
-	writel(0x01, micro->sdlc + 0x0); /* Select UART mode */
+	 
+	writel(0x01, micro->sdlc + 0x0);  
 
-	/* Clean up CR3 */
+	 
 	writel(0x0, micro->base + UTCR3);
 
-	/* Format: 8N1 */
+	 
 	writel(UTCR0_8BitData | UTCR0_1StpBit, micro->base + UTCR0);
 
-	/* Baud rate: 115200 */
+	 
 	writel(0x0, micro->base + UTCR1);
 	writel(0x1, micro->base + UTCR2);
 
-	/* Clear SR0 */
+	 
 	writel(0xff, micro->base + UTSR0);
 
-	/* Enable RX int, disable TX int */
+	 
 	writel(UTCR3_TXE | UTCR3_RXE | UTCR3_RIE, micro->base + UTCR3);
 	val = readl(micro->base + UTCR3);
 	val &= ~UTCR3_TIE;
@@ -334,12 +324,12 @@ static irqreturn_t micro_serial_isr(int irq, void *dev_id)
 	do {
 		if (status & (UTSR0_RID | UTSR0_RFS)) {
 			if (status & UTSR0_RID)
-				/* Clear the Receiver IDLE bit */
+				 
 				writel(UTSR0_RID, micro->base + UTSR0);
 			micro_rx_chars(micro);
 		}
 
-		/* Clear break bits */
+		 
 		if (status & (UTSR0_RBB | UTSR0_REB))
 			writel(status & (UTSR0_RBB | UTSR0_REB),
 			       micro->base + UTSR0);
@@ -418,7 +408,7 @@ static int __init micro_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Check version */
+	 
 	ipaq_micro_get_version(micro);
 	dev_info(&pdev->dev, "Atmel micro ASIC version %s\n", micro->version);
 	ipaq_micro_eeprom_dump(micro);

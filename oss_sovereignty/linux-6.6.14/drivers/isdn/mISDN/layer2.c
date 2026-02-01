@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Author	Karsten Keil <kkeil@novell.com>
- *
- * Copyright 2008  by Karsten Keil <kkeil@novell.com>
- */
+
+ 
 
 #include <linux/mISDNif.h>
 #include <linux/slab.h>
@@ -798,7 +793,7 @@ tx_ui(struct layer2 *l2)
 
 	i = sethdraddr(l2, header, CMD);
 	if (test_bit(FLG_LAPD_NET, &l2->flag))
-		header[1] = 0xff; /* tei 127 */
+		header[1] = 0xff;  
 	header[i++] = UI;
 	while ((skb = skb_dequeue(&l2->ui_queue))) {
 		memcpy(skb_push(skb, i), header, i);
@@ -823,9 +818,7 @@ l2_got_ui(struct FsmInst *fi, int event, void *arg)
 	struct sk_buff *skb = arg;
 
 	skb_pull(skb, l2headersize(l2, 1));
-/*
- *		in states 1-3 for broadcast
- */
+ 
 
 	if (l2->tm)
 		l2_tei(l2, MDL_STATUS_UI_IND, 0);
@@ -968,10 +961,7 @@ l2_restart_multi(struct FsmInst *fi, int event, void *arg)
 
 	if (est)
 		l2up_create(l2, DL_ESTABLISH_IND, 0, NULL);
-/*		mISDN_queue_data(&l2->inst, l2->inst.id | MSG_BROADCAST,
- *		    MGR_SHORTSTATUS | INDICATION, SSTATUS_L2_ESTABLISHED,
- *		    0, NULL, 0);
- */
+ 
 	if (skb_queue_len(&l2->i_queue) && cansend(l2))
 		mISDN_FsmEvent(fi, EV_L2_ACK_PULL, NULL);
 }
@@ -1308,7 +1298,7 @@ l2_got_iframe(struct FsmInst *fi, int event, void *arg)
 			skb_pull(skb, l2headersize(l2, 0));
 			l2up(l2, DL_DATA_IND, skb);
 		} else {
-			/* n(s)!=v(r) */
+			 
 			dev_kfree_skb(skb);
 			if (test_and_set_bit(FLG_REJEXC, &l2->flag)) {
 				if (PollFlag)
@@ -1574,7 +1564,7 @@ l2_got_FRMR(struct FsmInst *fi, int event, void *arg)
 
 	skb_pull(skb, l2addrsize(l2) + 1);
 
-	if (!(skb->data[0] & 1) || ((skb->data[0] & 3) == 1) || /* I or S */
+	if (!(skb->data[0] & 1) || ((skb->data[0] & 3) == 1) ||  
 	    (IsUA(skb->data) && (fi->state == ST_L2_7))) {
 		l2mgr(l2, MDL_ERROR_IND, (void *) 'K');
 		establishlink(fi);
@@ -1642,10 +1632,7 @@ l2_tei_remove(struct FsmInst *fi, int event, void *arg)
 	stop_t200(l2, 17);
 	mISDN_FsmDelTimer(&l2->t203, 19);
 	l2up_create(l2, DL_RELEASE_IND, 0, NULL);
-/*	mISDN_queue_data(&l2->inst, l2->inst.id | MSG_BROADCAST,
- *		MGR_SHORTSTATUS_IND, SSTATUS_L2_RELEASED,
- *		0, NULL, 0);
- */
+ 
 	mISDN_FsmChangeState(fi, ST_L2_1);
 }
 
@@ -1866,7 +1853,7 @@ ph_data_indication(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb)
 		mISDN_FsmEvent(&l2->l2m, EV_L2_FRAME_ERROR, (void *) 'N');
 		return ret;
 	}
-	if (test_bit(FLG_LAPD, &l2->flag)) { /* Maybe not needed */
+	if (test_bit(FLG_LAPD, &l2->flag)) {  
 		psapi = *datap++;
 		ptei = *datap++;
 		if ((psapi & 1) || !(ptei & 1)) {
@@ -1878,7 +1865,7 @@ ph_data_indication(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb)
 		psapi >>= 2;
 		ptei >>= 1;
 		if (psapi != l2->sapi) {
-			/* not our business */
+			 
 			if (*debug & DEBUG_L2)
 				printk(KERN_DEBUG "%s: sapi %d/%d mismatch\n",
 				       mISDNDevName4ch(&l2->ch), psapi,
@@ -1887,7 +1874,7 @@ ph_data_indication(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb)
 			return 0;
 		}
 		if ((ptei != l2->tei) && (ptei != GROUP_TEI)) {
-			/* not our business */
+			 
 			if (*debug & DEBUG_L2)
 				printk(KERN_DEBUG "%s: tei %d/%d mismatch\n",
 				       mISDNDevName4ch(&l2->ch), ptei, l2->tei);
@@ -1896,11 +1883,11 @@ ph_data_indication(struct layer2 *l2, struct mISDNhead *hh, struct sk_buff *skb)
 		}
 	} else
 		datap += l;
-	if (!(*datap & 1)) {	/* I-Frame */
+	if (!(*datap & 1)) {	 
 		c = iframe_error(l2, skb);
 		if (!c)
 			ret = mISDN_FsmEvent(&l2->l2m, EV_L2_I, skb);
-	} else if (IsSFrame(datap, l2)) {	/* S-Frame */
+	} else if (IsSFrame(datap, l2)) {	 
 		c = super_error(l2, skb);
 		if (!c)
 			ret = mISDN_FsmEvent(&l2->l2m, EV_L2_SUPER, skb);
@@ -1950,7 +1937,7 @@ l2_send(struct mISDNchannel *ch, struct sk_buff *skb)
 		       __func__, mISDNDevName4ch(&l2->ch), hh->prim, hh->id,
 		       l2->sapi, l2->tei);
 	if (hh->prim == DL_INTERN_MSG) {
-		struct mISDNhead *chh = hh + 1; /* saved copy */
+		struct mISDNhead *chh = hh + 1;  
 
 		*hh = *chh;
 		if (*debug & DEBUG_L2_RECV)
@@ -2049,7 +2036,7 @@ tei_l2(struct layer2 *l2, u_int cmd, u_long arg)
 		ret = mISDN_FsmEvent(&l2->l2m, EV_L2_MDL_ERROR, NULL);
 		break;
 	case (MDL_ERROR_RSP):
-		/* ETS 300-125 5.3.2.1 Test: TC13010 */
+		 
 		printk(KERN_NOTICE "%s: MDL_ERROR|REQ (tei_l2)\n",
 		       mISDNDevName4ch(&l2->ch));
 		ret = mISDN_FsmEvent(&l2->l2m, EV_L2_MDL_ERROR, NULL);

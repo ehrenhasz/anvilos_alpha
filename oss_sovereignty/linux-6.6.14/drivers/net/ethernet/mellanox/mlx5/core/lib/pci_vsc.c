@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-/* Copyright (c) 2019 Mellanox Technologies */
+
+ 
 
 #include <linux/pci.h>
 #include "mlx5_core.h"
@@ -75,7 +75,7 @@ int mlx5_vsc_gw_lock(struct mlx5_core_dev *dev)
 			goto pci_unlock;
 		}
 
-		/* Check if semaphore is already locked */
+		 
 		ret = vsc_read(dev, VSC_SEMAPHORE_OFFSET, &lock_val);
 		if (ret)
 			goto pci_unlock;
@@ -86,9 +86,7 @@ int mlx5_vsc_gw_lock(struct mlx5_core_dev *dev)
 			continue;
 		}
 
-		/* Read and write counter value, if written value is
-		 * the same, semaphore was acquired successfully.
-		 */
+		 
 		ret = vsc_read(dev, VSC_COUNTER_OFFSET, &counter);
 		if (ret)
 			goto pci_unlock;
@@ -132,18 +130,18 @@ int mlx5_vsc_gw_set_space(struct mlx5_core_dev *dev, u16 space,
 	if (ret_space_size)
 		*ret_space_size = 0;
 
-	/* Get a unique val */
+	 
 	ret = vsc_read(dev, VSC_CTRL_OFFSET, &val);
 	if (ret)
 		goto out;
 
-	/* Try to modify the lock */
+	 
 	val = MLX5_MERGE(val, space, VSC_SPACE_BIT_OFFS, VSC_SPACE_BIT_LEN);
 	ret = vsc_write(dev, VSC_CTRL_OFFSET, val);
 	if (ret)
 		goto out;
 
-	/* Verify lock was modified */
+	 
 	ret = vsc_read(dev, VSC_CTRL_OFFSET, &val);
 	if (ret)
 		goto out;
@@ -151,7 +149,7 @@ int mlx5_vsc_gw_set_space(struct mlx5_core_dev *dev, u16 space,
 	if (MLX5_EXTRACT(val, VSC_STATUS_BIT_OFFS, VSC_STATUS_BIT_LEN) == 0)
 		return -EINVAL;
 
-	/* Get space max address if indicated by size valid bit */
+	 
 	if (ret_space_size &&
 	    MLX5_EXTRACT(val, VSC_SIZE_VLD_BIT_OFFS, VSC_SIZE_VLD_BIT_LEN)) {
 		ret = vsc_read(dev, VSC_ADDR_OFFSET, &val);
@@ -201,7 +199,7 @@ static int mlx5_vsc_gw_write(struct mlx5_core_dev *dev, unsigned int address,
 			 VSC_FLAG_BIT_LEN + VSC_SYND_BIT_LEN))
 		return -EINVAL;
 
-	/* Set flag to 0x1 */
+	 
 	address = MLX5_MERGE(address, 1, VSC_FLAG_BIT_OFFS, 1);
 	ret = vsc_write(dev, VSC_DATA_OFFSET, data);
 	if (ret)
@@ -211,7 +209,7 @@ static int mlx5_vsc_gw_write(struct mlx5_core_dev *dev, unsigned int address,
 	if (ret)
 		goto out;
 
-	/* Wait for the flag to be cleared */
+	 
 	ret = mlx5_vsc_wait_on_flag(dev, 0);
 
 out:
@@ -293,18 +291,18 @@ int mlx5_vsc_sem_set_space(struct mlx5_core_dev *dev, u16 space,
 	}
 
 	if (state == MLX5_VSC_LOCK) {
-		/* Get a unique ID based on the counter */
+		 
 		ret = vsc_read(dev, VSC_COUNTER_OFFSET, &id);
 		if (ret)
 			return ret;
 	}
 
-	/* Try to modify lock */
+	 
 	ret = mlx5_vsc_gw_write(dev, space, id);
 	if (ret)
 		return ret;
 
-	/* Verify lock was modified */
+	 
 	ret = mlx5_vsc_gw_read(dev, space, &data);
 	if (ret)
 		return -EINVAL;

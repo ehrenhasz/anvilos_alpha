@@ -1,9 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2019-2022 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 #include "gaudi2_coresight_regs.h"
 #include <uapi/drm/habanalabs_accel.h>
 
@@ -41,15 +38,7 @@ enum gaudi2_xbar_edge_id {
 	XBAR_EDGE_ID_SIZE
 };
 
-/**
- * struct component_config_offsets - per cs_dbg unit - view off all related components indices
- * @funnel_id: funnel id - index in debug_funnel_regs
- * @etf_id: etf id - index in debug_etf_regs
- * @stm_id: stm id - index in debug_stm_regs
- * @spmu_id: spmu_id - index in debug_spmu_regs
- * @bmon_count: number of bmons per unit
- * @bmon_ids: array of bmon id (max size - MAX_BMONS_PER_UNIT) index in debug_bmon_regs
- */
+ 
 struct component_config_offsets {
 	u32 funnel_id;
 	u32 etf_id;
@@ -1984,16 +1973,11 @@ static int gaudi2_config_stm(struct hl_device *hdev, struct hl_debug_params *par
 
 	base_reg = debug_stm_regs[params->reg_idx];
 
-	/*
-	 * in case base reg is 0x0 we ignore this configuration
-	 */
+	 
 	if (!base_reg)
 		return 0;
 
-	/* check if stub component on pldm
-	 * we check offset 0xCFC STMDMAIDR in case
-	 * return value is 0x0 - hence stub component
-	 */
+	 
 	read_reg = RREG32(base_reg + mmSTM_STMDMAIDR_OFFSET);
 	if (hdev->pldm &&  read_reg == 0x0)
 		return 0;
@@ -2009,7 +1993,7 @@ static int gaudi2_config_stm(struct hl_device *hdev, struct hl_debug_params *par
 			return -EINVAL;
 
 		WREG32(base_reg + mmSTM_STMTCSR_OFFSET, 0x80004);
-		/* dummy read for pldm to flush outstanding writes */
+		 
 		if (hdev->pldm)
 			RREG32(base_reg + mmSTM_STMTCSR_OFFSET);
 
@@ -2071,19 +2055,12 @@ static int gaudi2_config_etf(struct hl_device *hdev, struct hl_debug_params *par
 
 	base_reg = debug_etf_regs[params->reg_idx];
 
-	/*
-	 * in case base reg is 0x0 we ignore this configuration
-	 */
+	 
 	if (!base_reg)
 		return 0;
 
 
-	/* in pldm we need to check if unit is not stub
-	 * for doing do need to read ETF STS register and check
-	 * it is not return 0x0 - in case it does
-	 * it means that this is stub, we ignore this and return 0
-	 * means success
-	 */
+	 
 	read_reg = RREG32(base_reg + mmETF_STS_OFFSET);
 	if (hdev->pldm &&  read_reg == 0x0)
 		return 0;
@@ -2236,13 +2213,13 @@ static int gaudi2_config_etr(struct hl_device *hdev, struct hl_ctx *ctx,
 		WREG32(mmPSOC_ETR_BUFWM, 0x3FFC);
 		WREG32(mmPSOC_ETR_RSZ, input->buffer_size);
 		WREG32(mmPSOC_ETR_MODE, input->sink_mode);
-		/* write the protection bits only if security is disable */
+		 
 		if (!(hdev->fw_components & FW_TYPE_BOOT_CPU)) {
-			/* make ETR not privileged */
+			 
 			val = FIELD_PREP(PSOC_ETR_AXICTL_PROTCTRLBIT0_MASK, 0);
-			/* make ETR non-secured (inverted logic) */
+			 
 			val |= FIELD_PREP(PSOC_ETR_AXICTL_PROTCTRLBIT1_MASK, 1);
-			/* burst size 16 */
+			 
 			val |= FIELD_PREP(PSOC_ETR_AXICTL_WRBURSTLEN_MASK, 0xF);
 			WREG32(mmPSOC_ETR_AXICTL, val);
 		}
@@ -2263,13 +2240,7 @@ static int gaudi2_config_etr(struct hl_device *hdev, struct hl_ctx *ctx,
 		if (params->output_size >= sizeof(u64)) {
 			u32 rwp, rwphi;
 
-			/*
-			 * The trace buffer address is 64 bits wide. The end of
-			 * the buffer is set in the RWP register (lower 32
-			 * bits), and in the RWPHI register (upper 8 bits).
-			 * The 24 msb of the 64-bit address are stored in a
-			 * global configuration register.
-			 */
+			 
 			rwp = RREG32(mmPSOC_ETR_RWP);
 			rwphi = RREG32(mmPSOC_ETR_RWPHI) & 0xff;
 			msb = RREG32(mmPSOC_GLOBAL_CONF_TRACE_ADDR);
@@ -2294,18 +2265,12 @@ static int gaudi2_config_funnel(struct hl_device *hdev, struct hl_debug_params *
 
 	base_reg = debug_funnel_regs[params->reg_idx];
 
-	/*
-	 * in case base reg is 0x0 we ignore this configuration
-	 */
+	 
 	if (!base_reg)
 		return 0;
 
 
-	/* in pldm we need to check if unit is not stub
-	 * for doing so, need to read DEVID value.
-	 * in case return 0x0 - it means that this is stub,
-	 * we ignore this and return 0 - means success
-	 */
+	 
 	read_reg = RREG32(base_reg + mmFUNNEL_DEVID_OFFSET);
 	if (hdev->pldm && read_reg == 0x0)
 		return 0;
@@ -2332,29 +2297,22 @@ static int gaudi2_config_bmon(struct hl_device *hdev, struct hl_debug_params *pa
 
 	base_reg = debug_bmon_regs[params->reg_idx];
 
-	/*
-	 * in case base reg is 0x0 we ignore this configuration
-	 */
+	 
 	if (!base_reg)
 		return 0;
 
 
-	/* in pldm we need to check if unit is not stub
-	 * for doing do need to read Control Register (offset 0x0) and check
-	 * it is not return 0x0 - in case it does
-	 * it means that this is stub, we ignore this and return 0
-	 * means success
-	 */
+	 
 	read_reg = RREG32(base_reg + mmBMON_CR_OFFSET);
 	if (hdev->pldm &&  read_reg == 0x0)
 		return 0;
 
 	WREG32(base_reg + mmBMON_ATTREN_OFFSET, 1);
-	/* dummy read for pldm to flush outstanding writes */
+	 
 	if (hdev->pldm)
 		RREG32(base_reg + mmBMON_ATTREN_OFFSET);
 
-	/* Write Only	Reset AXIMON */
+	 
 
 	WREG32(base_reg + mmBMON_RESET_OFFSET, 0x1);
 
@@ -2435,18 +2393,11 @@ static int gaudi2_config_spmu(struct hl_device *hdev, struct hl_debug_params *pa
 
 	base_reg = debug_spmu_regs[params->reg_idx];
 
-	/*
-	 * in case base reg is 0x0 we ignore this configuration
-	 */
+	 
 	if (!base_reg)
 		return 0;
 
-	/* in pldm we need to check if unit is not stub
-	 * for doing do need to read  PMTRC (at offset 0x200)
-	 * address and check if return value is 0x0 - in case it does
-	 * it means that this is stub, we ignore this and return 0
-	 * means success
-	 */
+	 
 	read_reg = RREG32(base_reg + mmSPMU_PMCR_EL0_OFFSET);
 	if (hdev->pldm && read_reg == 0x0)
 		return 0;
@@ -2465,7 +2416,7 @@ static int gaudi2_config_spmu(struct hl_device *hdev, struct hl_debug_params *pa
 		WREG32(base_reg + mmSPMU_PMCR_EL0_OFFSET, 0x41013046);
 		WREG32(base_reg + mmSPMU_PMCR_EL0_OFFSET, 0x41013040);
 
-		/* dummy read for pldm to flush outstanding writes */
+		 
 		if (hdev->pldm)
 			RREG32(base_reg);
 
@@ -2479,9 +2430,7 @@ static int gaudi2_config_spmu(struct hl_device *hdev, struct hl_debug_params *pa
 
 		WREG32(base_reg + mmSPMU_PMCR_EL0_OFFSET, 0x41013041);
 
-		/*
-		 * set enabled events mask based on input->event_types_num
-		 */
+		 
 		event_mask = 0x80000000;
 		event_mask |= GENMASK(input->event_types_num, 0);
 
@@ -2517,7 +2466,7 @@ static int gaudi2_config_spmu(struct hl_device *hdev, struct hl_debug_params *pa
 
 		WREG32(base_reg + mmSPMU_PMOVSSET_EL0_OFFSET, 0);
 
-		/* clean pmtrc to reset value */
+		 
 		WREG32(base_reg + mmSPMU_PMTRC_OFFSET, 0x100400);
 	}
 
@@ -2549,7 +2498,7 @@ int gaudi2_debug_coresight(struct hl_device *hdev, struct hl_ctx *ctx, void *dat
 		rc = gaudi2_config_spmu(hdev, params);
 		break;
 	case HL_DEBUG_OP_TIMESTAMP:
-		/* Do nothing as this opcode is deprecated */
+		 
 		break;
 	default:
 		dev_err(hdev->dev, "Unknown coresight id %d\n", params->op);
@@ -2564,7 +2513,7 @@ void gaudi2_halt_coresight(struct hl_device *hdev, struct hl_ctx *ctx)
 	struct hl_debug_params params = {};
 	int i, rc;
 
-	/* in pldm attempting to access stubbed etfs can cause problems */
+	 
 	if (!hdev->pldm)
 		for (i = GAUDI2_ETF_FIRST ; i <= GAUDI2_ETF_LAST ; i++) {
 			params.reg_idx = i;
@@ -2587,13 +2536,13 @@ static int gaudi2_coresight_set_disabled_components(struct hl_device *hdev, u32 
 	u32 disabled_mask;
 	u32 full_mask;
 
-	/* in case no unit - no need to do work */
+	 
 	if (!unit_count)
 		return 0;
 
 	full_mask = GENMASK(unit_count - 1, 0);
 
-	/* set the disable bits on disabled mask */
+	 
 	disabled_mask = (~enabled_mask) & full_mask;
 
 	while (disabled_mask) {
@@ -2605,17 +2554,7 @@ static int gaudi2_coresight_set_disabled_components(struct hl_device *hdev, u32 
 			return -EINVAL;
 		}
 
-		/*
-		 * in case mask is set, driver need to set to 0x0
-		 * all offsets for the following structures in the appropriate indices:
-		 * debug_funnel_regs - offsets for all cs_dbg FUNNELs
-		 * debug_etf_regs - offsets for all cs_dbg ETFs
-		 * debug_stm_regs - offsets for all cs_dbg STMs
-		 * debug_spmu_regs - offsets for all cs_dbg SPMUs
-		 * debug_bmon_regs - offsets for all cs_dbg BMONs
-		 * when value is set to COMPONENT_ID_INVALID -
-		 * it means there is no such register for current component.
-		 */
+		 
 
 		if (disabled_mask & component_mask) {
 			u32 bmon_idx;
@@ -2637,9 +2576,7 @@ static int gaudi2_coresight_set_disabled_components(struct hl_device *hdev, u32 
 			for (bmon_idx = 0; bmon_idx < binned_component->bmon_count; bmon_idx++)
 				debug_bmon_regs[binned_component->bmon_ids[bmon_idx]] = 0x0;
 
-			/*
-			 * reset enabled bit
-			 */
+			 
 			disabled_mask &= ~component_mask;
 		}
 
@@ -2654,14 +2591,9 @@ int gaudi2_coresight_init(struct hl_device *hdev)
 	struct asic_fixed_properties *prop = &hdev->asic_prop;
 	int ret;
 
-	/*
-	 * Mask out all the disabled binned offsets.
-	 * so when user request to configure a binned or masked out component,
-	 * driver will ignore programming it ( happens when offset value is set to 0x0 )
-	 * this is being set in gaudi2_coresight_set_disabled_components
-	 */
+	 
 
-	/* Set TPC disable components */
+	 
 	ret = gaudi2_coresight_set_disabled_components(hdev, TPC_ID_SIZE, prop->tpc_enabled_mask,
 							tpc_binning_cfg_table);
 	if (ret) {
@@ -2669,7 +2601,7 @@ int gaudi2_coresight_init(struct hl_device *hdev)
 		return ret;
 	}
 
-	/* Set decoder disable components */
+	 
 	ret = gaudi2_coresight_set_disabled_components(hdev, DEC_ID_SIZE,
 					prop->decoder_enabled_mask, decoder_binning_cfg_table);
 	if (ret) {
@@ -2677,7 +2609,7 @@ int gaudi2_coresight_init(struct hl_device *hdev)
 		return ret;
 	}
 
-	/* Set HBM (MC0 and MC1) disable components */
+	 
 	ret = gaudi2_coresight_set_disabled_components(hdev, HBM_ID_SIZE, prop->dram_enabled_mask,
 							hbm_mc0_binning_cfg_table);
 	if (ret) {
@@ -2692,7 +2624,7 @@ int gaudi2_coresight_init(struct hl_device *hdev)
 		return ret;
 	}
 
-	/* Set HIF_HMMU disable components */
+	 
 	ret = gaudi2_coresight_set_disabled_components(hdev, HMMU_ID_SIZE,
 					prop->hmmu_hif_enabled_mask, hmmu_binning_cfg_table);
 	if (ret) {
@@ -2700,7 +2632,7 @@ int gaudi2_coresight_init(struct hl_device *hdev)
 		return ret;
 	}
 
-	/* Set XBAR_EDGE disable components */
+	 
 	ret = gaudi2_coresight_set_disabled_components(hdev, XBAR_EDGE_ID_SIZE,
 					prop->xbar_edge_enabled_mask, xbar_edge_binning_cfg_table);
 	if (ret) {
@@ -2708,7 +2640,7 @@ int gaudi2_coresight_init(struct hl_device *hdev)
 		return ret;
 	}
 
-	/* Set EDMA disable components */
+	 
 	ret = gaudi2_coresight_set_disabled_components(hdev, EDMA_ID_SIZE, prop->edma_enabled_mask,
 							edma_binning_cfg_table);
 	if (ret) {

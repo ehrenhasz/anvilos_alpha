@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI LP8788 MFD - ldo regulator driver
- *
- * Copyright 2012 Texas Instruments
- *
- * Author: Milo(Woogyom) Kim <milo.kim@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -15,10 +9,10 @@
 #include <linux/gpio/consumer.h>
 #include <linux/mfd/lp8788.h>
 
-/* register address */
-#define LP8788_EN_LDO_A			0x0D	/* DLDO 1 ~ 8 */
-#define LP8788_EN_LDO_B			0x0E	/* DLDO 9 ~ 12, ALDO 1 ~ 4 */
-#define LP8788_EN_LDO_C			0x0F	/* ALDO 5 ~ 10 */
+ 
+#define LP8788_EN_LDO_A			0x0D	 
+#define LP8788_EN_LDO_B			0x0E	 
+#define LP8788_EN_LDO_C			0x0F	 
 #define LP8788_EN_SEL			0x10
 #define LP8788_DLDO1_VOUT		0x2E
 #define LP8788_DLDO2_VOUT		0x2F
@@ -44,8 +38,8 @@
 #define LP8788_ALDO10_VOUT		0x43
 #define LP8788_DLDO1_TIMESTEP		0x44
 
-/* mask/shift bits */
-#define LP8788_EN_DLDO1_M		BIT(0)	/* Addr 0Dh ~ 0Fh */
+ 
+#define LP8788_EN_DLDO1_M		BIT(0)	 
 #define LP8788_EN_DLDO2_M		BIT(1)
 #define LP8788_EN_DLDO3_M		BIT(2)
 #define LP8788_EN_DLDO4_M		BIT(3)
@@ -67,17 +61,17 @@
 #define LP8788_EN_ALDO8_M		BIT(3)
 #define LP8788_EN_ALDO9_M		BIT(4)
 #define LP8788_EN_ALDO10_M		BIT(5)
-#define LP8788_EN_SEL_DLDO911_M		BIT(0)	/* Addr 10h */
+#define LP8788_EN_SEL_DLDO911_M		BIT(0)	 
 #define LP8788_EN_SEL_DLDO7_M		BIT(1)
 #define LP8788_EN_SEL_ALDO7_M		BIT(2)
 #define LP8788_EN_SEL_ALDO5_M		BIT(3)
 #define LP8788_EN_SEL_ALDO234_M		BIT(4)
 #define LP8788_EN_SEL_ALDO1_M		BIT(5)
-#define LP8788_VOUT_5BIT_M		0x1F	/* Addr 2Eh ~ 43h */
+#define LP8788_VOUT_5BIT_M		0x1F	 
 #define LP8788_VOUT_4BIT_M		0x0F
 #define LP8788_VOUT_3BIT_M		0x07
 #define LP8788_VOUT_1BIT_M		0x01
-#define LP8788_STARTUP_TIME_M		0xF8	/* Addr 44h ~ 59h */
+#define LP8788_STARTUP_TIME_M		0xF8	 
 #define LP8788_STARTUP_TIME_S		3
 
 #define ENABLE_TIME_USEC		32
@@ -114,7 +108,7 @@ struct lp8788_ldo {
 	struct gpio_desc *ena_gpiod;
 };
 
-/* DLDO 1, 2, 3, 9 voltage table */
+ 
 static const int lp8788_dldo1239_vtbl[] = {
 	1800000, 1900000, 2000000, 2100000, 2200000, 2300000, 2400000, 2500000,
 	2600000, 2700000, 2800000, 2900000, 3000000, 2850000, 2850000, 2850000,
@@ -122,30 +116,30 @@ static const int lp8788_dldo1239_vtbl[] = {
 	2850000, 2850000, 2850000, 2850000, 2850000, 2850000, 2850000, 2850000,
 };
 
-/* DLDO 4 voltage table */
+ 
 static const int lp8788_dldo4_vtbl[] = { 1800000, 3000000 };
 
-/* DLDO 5, 7, 8 and ALDO 6 voltage table */
+ 
 static const int lp8788_dldo578_aldo6_vtbl[] = {
 	1800000, 1900000, 2000000, 2100000, 2200000, 2300000, 2400000, 2500000,
 	2600000, 2700000, 2800000, 2900000, 3000000, 3000000, 3000000, 3000000,
 };
 
-/* DLDO 6 voltage table */
+ 
 static const int lp8788_dldo6_vtbl[] = {
 	3000000, 3100000, 3200000, 3300000, 3400000, 3500000, 3600000, 3600000,
 };
 
-/* DLDO 10, 11 voltage table */
+ 
 static const int lp8788_dldo1011_vtbl[] = {
 	1100000, 1150000, 1200000, 1250000, 1300000, 1350000, 1400000, 1450000,
 	1500000, 1500000, 1500000, 1500000, 1500000, 1500000, 1500000, 1500000,
 };
 
-/* ALDO 1 voltage table */
+ 
 static const int lp8788_aldo1_vtbl[] = { 1800000, 2850000 };
 
-/* ALDO 7 voltage table */
+ 
 static const int lp8788_aldo7_vtbl[] = {
 	1200000, 1300000, 1400000, 1500000, 1600000, 1700000, 1800000, 1800000,
 };
@@ -497,11 +491,7 @@ static int lp8788_config_ldo_enable_mode(struct platform_device *pdev,
 		return 0;
 	}
 
-	/*
-	 * Do not use devm* here: the regulator core takes over the
-	 * lifecycle management of the GPIO descriptor.
-	 * FIXME: check default mode for GPIO here: high or low?
-	 */
+	 
 	ldo->ena_gpiod = gpiod_get_index_optional(&pdev->dev,
 					       "enable",
 					       enable_id,
@@ -510,7 +500,7 @@ static int lp8788_config_ldo_enable_mode(struct platform_device *pdev,
 	if (IS_ERR(ldo->ena_gpiod))
 		return PTR_ERR(ldo->ena_gpiod);
 
-	/* if no GPIO for ldo pin, then set default enable mode */
+	 
 	if (!ldo->ena_gpiod)
 		goto set_default_ldo_enable_mode;
 

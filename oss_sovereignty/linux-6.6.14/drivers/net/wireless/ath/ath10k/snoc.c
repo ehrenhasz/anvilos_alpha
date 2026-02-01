@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2018 The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -133,7 +131,7 @@ static struct ath10k_shadow_reg_cfg target_shadow_reg_cfg_map[] = {
 };
 
 static struct ce_attr host_ce_config_wlan[] = {
-	/* CE0: host->target HTC control streams */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 16,
@@ -142,7 +140,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.send_cb = ath10k_snoc_htc_tx_cb,
 	},
 
-	/* CE1: target->host HTT + HTC control */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -151,7 +149,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.recv_cb = ath10k_snoc_htt_htc_rx_cb,
 	},
 
-	/* CE2: target->host WMI */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -160,7 +158,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.recv_cb = ath10k_snoc_htc_rx_cb,
 	},
 
-	/* CE3: host->target WMI */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 32,
@@ -169,7 +167,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.send_cb = ath10k_snoc_htc_tx_cb,
 	},
 
-	/* CE4: host->target HTT */
+	 
 	{
 		.flags = CE_ATTR_FLAGS | CE_ATTR_DIS_INTR,
 		.src_nentries = 2048,
@@ -178,7 +176,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.send_cb = ath10k_snoc_htt_tx_cb,
 	},
 
-	/* CE5: target->host HTT (ipa_uc->target ) */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -187,7 +185,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.recv_cb = ath10k_snoc_htt_rx_cb,
 	},
 
-	/* CE6: target autonomous hif_memcpy */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -195,7 +193,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.dest_nentries = 0,
 	},
 
-	/* CE7: ce_diag, the Diagnostic Window */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 2,
@@ -203,7 +201,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.dest_nentries = 2,
 	},
 
-	/* CE8: Target to uMC */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -211,7 +209,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.dest_nentries = 128,
 	},
 
-	/* CE9 target->host HTT */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -220,7 +218,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.recv_cb = ath10k_snoc_htt_htc_rx_cb,
 	},
 
-	/* CE10: target->host HTT */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -229,7 +227,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 		.recv_cb = ath10k_snoc_htt_htc_rx_cb,
 	},
 
-	/* CE11: target -> host PKTLOG */
+	 
 	{
 		.flags = CE_ATTR_FLAGS,
 		.src_nentries = 0,
@@ -240,7 +238,7 @@ static struct ce_attr host_ce_config_wlan[] = {
 };
 
 static struct ce_pipe_config target_ce_config_wlan[] = {
-	/* CE0: host->target HTC control and raw streams */
+	 
 	{
 		.pipenum = __cpu_to_le32(0),
 		.pipedir = __cpu_to_le32(PIPEDIR_OUT),
@@ -250,7 +248,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE1: target->host HTT + HTC control */
+	 
 	{
 		.pipenum = __cpu_to_le32(1),
 		.pipedir = __cpu_to_le32(PIPEDIR_IN),
@@ -260,7 +258,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE2: target->host WMI */
+	 
 	{
 		.pipenum = __cpu_to_le32(2),
 		.pipedir = __cpu_to_le32(PIPEDIR_IN),
@@ -270,7 +268,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE3: host->target WMI */
+	 
 	{
 		.pipenum = __cpu_to_le32(3),
 		.pipedir = __cpu_to_le32(PIPEDIR_OUT),
@@ -280,7 +278,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE4: host->target HTT */
+	 
 	{
 		.pipenum = __cpu_to_le32(4),
 		.pipedir = __cpu_to_le32(PIPEDIR_OUT),
@@ -290,7 +288,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE5: target->host HTT (HIF->HTT) */
+	 
 	{
 		.pipenum = __cpu_to_le32(5),
 		.pipedir = __cpu_to_le32(PIPEDIR_OUT),
@@ -300,7 +298,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE6: Reserved for target autonomous hif_memcpy */
+	 
 	{
 		.pipenum = __cpu_to_le32(6),
 		.pipedir = __cpu_to_le32(PIPEDIR_INOUT),
@@ -310,7 +308,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE7 used only by Host */
+	 
 	{
 		.pipenum = __cpu_to_le32(7),
 		.pipedir = __cpu_to_le32(4),
@@ -320,7 +318,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE8 Target to uMC */
+	 
 	{
 		.pipenum = __cpu_to_le32(8),
 		.pipedir = __cpu_to_le32(PIPEDIR_IN),
@@ -330,7 +328,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE9 target->host HTT */
+	 
 	{
 		.pipenum = __cpu_to_le32(9),
 		.pipedir = __cpu_to_le32(PIPEDIR_IN),
@@ -340,7 +338,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE10 target->host HTT */
+	 
 	{
 		.pipenum = __cpu_to_le32(10),
 		.pipedir = __cpu_to_le32(PIPEDIR_IN),
@@ -350,7 +348,7 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 		.reserved = __cpu_to_le32(0),
 	},
 
-	/* CE11 target autonomous qcache memcpy */
+	 
 	{
 		.pipenum = __cpu_to_le32(11),
 		.pipedir = __cpu_to_le32(PIPEDIR_IN),
@@ -364,107 +362,107 @@ static struct ce_pipe_config target_ce_config_wlan[] = {
 static struct ce_service_to_pipe target_service_to_ce_map_wlan[] = {
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_DATA_VO),
-		__cpu_to_le32(PIPEDIR_OUT),	/* out = UL = host -> target */
+		__cpu_to_le32(PIPEDIR_OUT),	 
 		__cpu_to_le32(3),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_DATA_VO),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(2),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_DATA_BK),
-		__cpu_to_le32(PIPEDIR_OUT),	/* out = UL = host -> target */
+		__cpu_to_le32(PIPEDIR_OUT),	 
 		__cpu_to_le32(3),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_DATA_BK),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(2),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_DATA_BE),
-		__cpu_to_le32(PIPEDIR_OUT),	/* out = UL = host -> target */
+		__cpu_to_le32(PIPEDIR_OUT),	 
 		__cpu_to_le32(3),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_DATA_BE),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(2),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_DATA_VI),
-		__cpu_to_le32(PIPEDIR_OUT),	/* out = UL = host -> target */
+		__cpu_to_le32(PIPEDIR_OUT),	 
 		__cpu_to_le32(3),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_DATA_VI),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(2),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_CONTROL),
-		__cpu_to_le32(PIPEDIR_OUT),	/* out = UL = host -> target */
+		__cpu_to_le32(PIPEDIR_OUT),	 
 		__cpu_to_le32(3),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_WMI_CONTROL),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(2),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_RSVD_CTRL),
-		__cpu_to_le32(PIPEDIR_OUT),	/* out = UL = host -> target */
+		__cpu_to_le32(PIPEDIR_OUT),	 
 		__cpu_to_le32(0),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_RSVD_CTRL),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(2),
 	},
-	{ /* not used */
+	{  
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_TEST_RAW_STREAMS),
-		__cpu_to_le32(PIPEDIR_OUT),	/* out = UL = host -> target */
+		__cpu_to_le32(PIPEDIR_OUT),	 
 		__cpu_to_le32(0),
 	},
-	{ /* not used */
+	{  
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_TEST_RAW_STREAMS),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(2),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_HTT_DATA_MSG),
-		__cpu_to_le32(PIPEDIR_OUT),	/* out = UL = host -> target */
+		__cpu_to_le32(PIPEDIR_OUT),	 
 		__cpu_to_le32(4),
 	},
 	{
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_HTT_DATA_MSG),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(1),
 	},
-	{ /* not used */
+	{  
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_TEST_RAW_STREAMS),
 		__cpu_to_le32(PIPEDIR_OUT),
 		__cpu_to_le32(5),
 	},
-	{ /* in = DL = target -> host */
+	{  
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_HTT_DATA2_MSG),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(9),
 	},
-	{ /* in = DL = target -> host */
+	{  
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_HTT_DATA3_MSG),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(10),
 	},
-	{ /* in = DL = target -> host pktlog */
+	{  
 		__cpu_to_le32(ATH10K_HTC_SVC_ID_HTT_LOG_MSG),
-		__cpu_to_le32(PIPEDIR_IN),	/* in = DL = target -> host */
+		__cpu_to_le32(PIPEDIR_IN),	 
 		__cpu_to_le32(11),
 	},
-	/* (Additions here) */
+	 
 
-	{ /* must be last */
+	{  
 		__cpu_to_le32(0),
 		__cpu_to_le32(0),
 		__cpu_to_le32(0),
@@ -614,17 +612,13 @@ static void ath10k_snoc_htc_rx_cb(struct ath10k_ce_pipe *ce_state)
 
 static void ath10k_snoc_htt_htc_rx_cb(struct ath10k_ce_pipe *ce_state)
 {
-	/* CE4 polling needs to be done whenever CE pipe which transports
-	 * HTT Rx (target->host) is processed.
-	 */
+	 
 	ath10k_ce_per_engine_service(ce_state->ar, CE_POLL_PIPE);
 
 	ath10k_snoc_process_rx_cb(ce_state, ath10k_htc_rx_completion_handler);
 }
 
-/* Called by lower (CE) layer when data is received from the Target.
- * WCN3990 firmware uses separate CE(CE11) to transfer pktlog data.
- */
+ 
 static void ath10k_snoc_pktlog_rx_cb(struct ath10k_ce_pipe *ce_state)
 {
 	ath10k_snoc_process_rx_cb(ce_state, ath10k_htc_rx_completion_handler);
@@ -1050,12 +1044,7 @@ static void ath10k_snoc_wlan_disable(struct ath10k *ar)
 {
 	struct ath10k_snoc *ar_snoc = ath10k_snoc_priv(ar);
 
-	/* If both ATH10K_FLAG_CRASH_FLUSH and ATH10K_SNOC_FLAG_RECOVERY
-	 * flags are not set, it means that the driver has restarted
-	 * due to a crash inject via debugfs. In this case, the driver
-	 * needs to restart the firmware and hence send qmi wlan disable,
-	 * during the driver restart sequence.
-	 */
+	 
 	if (!test_bit(ATH10K_FLAG_CRASH_FLUSH, &ar->dev_flags) ||
 	    !test_bit(ATH10K_SNOC_FLAG_RECOVERY, &ar_snoc->flags))
 		ath10k_qmi_wlan_disable(ar);
@@ -1440,7 +1429,7 @@ static void ath10k_msa_dump_memory(struct ath10k *ar,
 	buf_len = crash_data->ramdump_buf_len;
 	memset(buf, 0, buf_len);
 
-	/* Reserve space for the header. */
+	 
 	hdr = (void *)buf;
 	buf += sizeof(*hdr);
 	buf_len -= sizeof(*hdr);

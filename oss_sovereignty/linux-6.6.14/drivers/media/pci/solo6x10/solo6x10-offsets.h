@@ -1,13 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+ 
+ 
 
 #ifndef __SOLO6X10_OFFSETS_H
 #define __SOLO6X10_OFFSETS_H
@@ -36,12 +28,10 @@
 #define SOLO_CAP_EXT_ADDR(__solo) \
 	(SOLO_G723_EXT_ADDR(__solo) + SOLO_G723_EXT_SIZE)
 
-/* 18 is the maximum number of pages required for PAL@D1, the largest frame
- * possible */
+ 
 #define SOLO_CAP_PAGE_SIZE			(18 << 16)
 
-/* Always allow the encoder enough for 16 channels, even if we have less. The
- * exception is if we have card with only 32Megs of memory. */
+ 
 #define SOLO_CAP_EXT_SIZE(__solo) \
 	((((__solo->sdram_size <= (32 << 20)) ? 4 : 16) + 1)	\
 	 * SOLO_CAP_PAGE_SIZE)
@@ -71,4 +61,4 @@
 #define SOLO_SDRAM_END(__solo) \
 	(SOLO_JPEG_EXT_ADDR(__solo) + SOLO_JPEG_EXT_SIZE(__solo))
 
-#endif /* __SOLO6X10_OFFSETS_H */
+#endif  

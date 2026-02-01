@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: ISC */
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- * Copyright (C) 2018 Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
- */
+ 
+ 
 
 #ifndef __MT76x02_EEPROM_H
 #define __MT76x02_EEPROM_H
@@ -42,7 +39,7 @@ enum mt76x02_eeprom_field {
 	MT_EE_TX_POWER_0_START_2G =		0x056,
 	MT_EE_TX_POWER_1_START_2G =		0x05c,
 
-	/* used as byte arrays */
+	 
 #define MT_TX_POWER_GROUP_SIZE_5G		5
 #define MT_TX_POWER_GROUPS_5G			6
 	MT_EE_TX_POWER_0_START_5G =		0x062,
@@ -182,4 +179,4 @@ int mt76x02_eeprom_copy(struct mt76x02_dev *dev,
 			enum mt76x02_eeprom_field field,
 			void *dest, int len);
 
-#endif /* __MT76x02_EEPROM_H */
+#endif  

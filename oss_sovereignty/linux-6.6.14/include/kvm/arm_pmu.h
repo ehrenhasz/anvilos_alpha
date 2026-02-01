@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2015 Linaro Ltd.
- * Author: Shannon Zhao <shannon.zhao@linaro.org>
- */
+ 
+ 
 
 #ifndef __ASM_ARM_KVM_PMU_H
 #define __ASM_ARM_KVM_PMU_H
@@ -15,7 +12,7 @@
 #if IS_ENABLED(CONFIG_HW_PERF_EVENTS) && IS_ENABLED(CONFIG_KVM)
 
 struct kvm_pmc {
-	u8 idx;	/* index into the pmu->pmc array */
+	u8 idx;	 
 	struct perf_event *perf_event;
 };
 
@@ -79,20 +76,14 @@ void kvm_vcpu_pmu_resync_el0(void);
 #define kvm_vcpu_has_pmu(vcpu)					\
 	(test_bit(KVM_ARM_VCPU_PMU_V3, (vcpu)->arch.features))
 
-/*
- * Updates the vcpu's view of the pmu events for this cpu.
- * Must be called before every vcpu run after disabling interrupts, to ensure
- * that an interrupt cannot fire and update the structure.
- */
+ 
 #define kvm_pmu_update_vcpu_events(vcpu)				\
 	do {								\
 		if (!has_vhe() && kvm_vcpu_has_pmu(vcpu))		\
 			vcpu->arch.pmu.events = *kvm_get_pmu_events();	\
 	} while (0)
 
-/*
- * Evaluates as true when emulating PMUv3p5, and false otherwise.
- */
+ 
 #define kvm_pmu_is_3p5(vcpu) ({						\
 	u64 val = IDREG(vcpu->kvm, SYS_ID_AA64DFR0_EL1);		\
 	u8 pmuver = SYS_FIELD_GET(ID_AA64DFR0_EL1, PMUVer, val);	\

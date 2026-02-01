@@ -69,9 +69,7 @@ struct nv50_dmac {
 	struct nvif_object sync;
 	struct nvif_object vram;
 
-	/* Protects against concurrent pushbuf access to this channel, lock is
-	 * grabbed by evo_wait (if the pushbuf reservation is successful) and
-	 * dropped again by evo_kick. */
+	 
 	struct mutex lock;
 
 	u32 cur;
@@ -98,12 +96,7 @@ int nv50_dmac_create(struct nvif_device *device, struct nvif_object *disp,
 		     s64 syncbuf, struct nv50_dmac *dmac);
 void nv50_dmac_destroy(struct nv50_dmac *);
 
-/*
- * For normal encoders this just returns the encoder. For active MST encoders,
- * this returns the real outp that's driving displays on the topology.
- * Inactive MST encoders return NULL, since they would have no real outp to
- * return anyway.
- */
+ 
 struct nouveau_encoder *nv50_real_outp(struct drm_encoder *encoder);
 
 bool nv50_has_mst(struct nouveau_drm *drm);

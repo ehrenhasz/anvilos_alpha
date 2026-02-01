@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include "mdp5_kms.h"
 
@@ -21,7 +18,7 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
 	if (IS_ERR(new_global_state))
 		return PTR_ERR(new_global_state);
 
-	/* grab old_state after mdp5_get_global_state(), since now we hold lock: */
+	 
 	old_global_state = mdp5_get_existing_global_state(mdp5_kms);
 
 	old_state = &old_global_state->hwpipe;
@@ -30,32 +27,21 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
 	for (i = 0; i < mdp5_kms->num_hwpipes; i++) {
 		struct mdp5_hw_pipe *cur = mdp5_kms->hwpipes[i];
 
-		/* skip if already in-use.. check both new and old state,
-		 * since we cannot immediately re-use a pipe that is
-		 * released in the current update in some cases:
-		 *  (1) mdp5 can have SMP (non-double-buffered)
-		 *  (2) hw pipe previously assigned to different CRTC
-		 *      (vblanks might not be aligned)
-		 */
+		 
 		if (new_state->hwpipe_to_plane[cur->idx] ||
 				old_state->hwpipe_to_plane[cur->idx])
 			continue;
 
-		/* skip if doesn't support some required caps: */
+		 
 		if (caps & ~cur->caps)
 			continue;
 
-		/*
-		 * don't assign a cursor pipe to a plane that isn't going to
-		 * be used as a cursor
-		 */
+		 
 		if (cur->caps & MDP_PIPE_CAP_CURSOR &&
 				plane->type != DRM_PLANE_TYPE_CURSOR)
 			continue;
 
-		/* possible candidate, take the one with the
-		 * fewest unneeded caps bits set:
-		 */
+		 
 		if (!(*hwpipe) || (hweight_long(cur->caps & ~caps) <
 				   hweight_long((*hwpipe)->caps & ~caps))) {
 			bool r_found = false;
@@ -66,11 +52,11 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
 					struct mdp5_hw_pipe *r_cur =
 							mdp5_kms->hwpipes[j];
 
-					/* reject different types of hwpipes */
+					 
 					if (r_cur->caps != cur->caps)
 						continue;
 
-					/* respect priority, eg. VIG0 > VIG1 */
+					 
 					if (cur->pipe > r_cur->pipe)
 						continue;
 
@@ -94,7 +80,7 @@ int mdp5_pipe_assign(struct drm_atomic_state *s, struct drm_plane *plane,
 	if (mdp5_kms->smp) {
 		int ret;
 
-		/* We don't support SMP and 2 hwpipes/plane together */
+		 
 		WARN_ON(r_hwpipe);
 
 		DBG("%s: alloc SMP blocks", (*hwpipe)->name);

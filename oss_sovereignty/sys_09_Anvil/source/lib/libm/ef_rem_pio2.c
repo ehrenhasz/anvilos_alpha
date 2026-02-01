@@ -1,39 +1,14 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * These math functions are taken from newlib-nano-2, the newlib/libm/math
- * directory, available from https://github.com/32bitmicro/newlib-nano-2.
- *
- * Appropriate copyright headers are reproduced below.
- */
+ 
 
-/* ef_rem_pio2.c -- float version of e_rem_pio2.c
- * Conversion to float by Ian Lance Taylor, Cygnus Support, ian@cygnus.com.
- */
+ 
 
-/*
- * ====================================================
- * Copyright (C) 1993 by Sun Microsystems, Inc. All rights reserved.
- *
- * Developed at SunPro, a Sun Microsystems, Inc. business.
- * Permission to use, copy, modify, and distribute this
- * software is freely granted, provided that this notice 
- * is preserved.
- * ====================================================
- *
- */
+ 
 
-/* __ieee754_rem_pio2f(x,y)
- * 
- * return the remainder of x rem pi/2 in y[0]+y[1] 
- * use __kernel_rem_pio2f()
- */
+ 
 
 #include "fdlibm.h"
 
-/*
- * Table of constants for 2/pi, 396 Hex digits (476 decimal) of 2/pi 
- */
+ 
 #ifdef __STDC__
 static const __uint8_t two_over_pi[] = {
 #else
@@ -63,8 +38,7 @@ static __uint8_t two_over_pi[] = {
 0x73, 0xA8, 0xC9, 0x60, 0xE2, 0x7B, 0xC0, 0x8C, 0x6B, 
 };
 
-/* This array is like the one in e_rem_pio2.c, but the numbers are
-   single precision and the last 8 bits are forced to 0.  */
+ 
 #ifdef __STDC__
 static const __int32_t npio2_hw[] = {
 #else
@@ -78,31 +52,23 @@ static __int32_t npio2_hw[] = {
 0x4242c700, 0x42490f00
 };
 
-/*
- * invpio2:  24 bits of 2/pi
- * pio2_1:   first  17 bit of pi/2
- * pio2_1t:  pi/2 - pio2_1
- * pio2_2:   second 17 bit of pi/2
- * pio2_2t:  pi/2 - (pio2_1+pio2_2)
- * pio2_3:   third  17 bit of pi/2
- * pio2_3t:  pi/2 - (pio2_1+pio2_2+pio2_3)
- */
+ 
 
 #ifdef __STDC__
 static const float 
 #else
 static float 
 #endif
-zero =  0.0000000000e+00f, /* 0x00000000 */
-half =  5.0000000000e-01f, /* 0x3f000000 */
-two8 =  2.5600000000e+02f, /* 0x43800000 */
-invpio2 =  6.3661980629e-01f, /* 0x3f22f984 */
-pio2_1  =  1.5707855225e+00f, /* 0x3fc90f80 */
-pio2_1t =  1.0804334124e-05f, /* 0x37354443 */
-pio2_2  =  1.0804273188e-05f, /* 0x37354400 */
-pio2_2t =  6.0770999344e-11f, /* 0x2e85a308 */
-pio2_3  =  6.0770943833e-11f, /* 0x2e85a300 */
-pio2_3t =  6.1232342629e-17f; /* 0x248d3132 */
+zero =  0.0000000000e+00f,  
+half =  5.0000000000e-01f,  
+two8 =  2.5600000000e+02f,  
+invpio2 =  6.3661980629e-01f,  
+pio2_1  =  1.5707855225e+00f,  
+pio2_1t =  1.0804334124e-05f,  
+pio2_2  =  1.0804273188e-05f,  
+pio2_2t =  6.0770999344e-11f,  
+pio2_3  =  6.0770943833e-11f,  
+pio2_3t =  6.1232342629e-17f;  
 
 #ifdef __STDC__
 	__int32_t __ieee754_rem_pio2f(float x, float *y)
@@ -118,26 +84,26 @@ pio2_3t =  6.1232342629e-17f; /* 0x248d3132 */
 
 	GET_FLOAT_WORD(hx,x);
 	ix = hx&0x7fffffff;
-	if(ix<=0x3f490fd8)   /* |x| ~<= pi/4 , no need for reduction */
+	if(ix<=0x3f490fd8)    
 	    {y[0] = x; y[1] = 0; return 0;}
-	if(ix<0x4016cbe4) {  /* |x| < 3pi/4, special case with n=+-1 */
+	if(ix<0x4016cbe4) {   
 	    if(hx>0) { 
 		z = x - pio2_1;
-		if((ix&0xfffffff0)!=0x3fc90fd0) { /* 24+24 bit pi OK */
+		if((ix&0xfffffff0)!=0x3fc90fd0) {  
 		    y[0] = z - pio2_1t;
 		    y[1] = (z-y[0])-pio2_1t;
-		} else {		/* near pi/2, use 24+24+24 bit pi */
+		} else {		 
 		    z -= pio2_2;
 		    y[0] = z - pio2_2t;
 		    y[1] = (z-y[0])-pio2_2t;
 		}
 		return 1;
-	    } else {	/* negative x */
+	    } else {	 
 		z = x + pio2_1;
-		if((ix&0xfffffff0)!=0x3fc90fd0) { /* 24+24 bit pi OK */
+		if((ix&0xfffffff0)!=0x3fc90fd0) {  
 		    y[0] = z + pio2_1t;
 		    y[1] = (z-y[0])+pio2_1t;
-		} else {		/* near pi/2, use 24+24+24 bit pi */
+		} else {		 
 		    z += pio2_2;
 		    y[0] = z + pio2_2t;
 		    y[1] = (z-y[0])+pio2_2t;
@@ -145,21 +111,21 @@ pio2_3t =  6.1232342629e-17f; /* 0x248d3132 */
 		return -1;
 	    }
 	}
-	if(ix<=0x43490f80) { /* |x| ~<= 2^7*(pi/2), medium size */
+	if(ix<=0x43490f80) {  
 	    t  = fabsf(x);
 	    n  = (__int32_t) (t*invpio2+half);
 	    fn = (float)n;
 	    r  = t-fn*pio2_1;
-	    w  = fn*pio2_1t;	/* 1st round good to 40 bit */
+	    w  = fn*pio2_1t;	 
 	    if(n<32&&(ix&0xffffff00)!=npio2_hw[n-1]) {	
-		y[0] = r-w;	/* quick check no cancellation */
+		y[0] = r-w;	 
 	    } else {
 	        __uint32_t high;
 	        j  = ix>>23;
 	        y[0] = r-w; 
 		GET_FLOAT_WORD(high,y[0]);
 	        i = j-((high>>23)&0xff);
-	        if(i>8) {  /* 2nd iteration needed, good to 57 */
+	        if(i>8) {   
 		    t  = r;
 		    w  = fn*pio2_2;	
 		    r  = t-w;
@@ -167,8 +133,8 @@ pio2_3t =  6.1232342629e-17f; /* 0x248d3132 */
 		    y[0] = r-w;
 		    GET_FLOAT_WORD(high,y[0]);
 		    i = j-((high>>23)&0xff);
-		    if(i>25)  {	/* 3rd iteration need, 74 bits acc */
-		    	t  = r;	/* will cover all possible cases */
+		    if(i>25)  {	 
+		    	t  = r;	 
 		    	w  = fn*pio2_3;	
 		    	r  = t-w;
 		    	w  = fn*pio2_3t-((t-r)-w);	
@@ -180,14 +146,12 @@ pio2_3t =  6.1232342629e-17f; /* 0x248d3132 */
 	    if(hx<0) 	{y[0] = -y[0]; y[1] = -y[1]; return -n;}
 	    else	 return n;
 	}
-    /* 
-     * all other (large) arguments
-     */
+     
 	if(!FLT_UWORD_IS_FINITE(ix)) {
 	    y[0]=y[1]=x-x; return 0;
 	}
-    /* set z = scalbn(|x|,ilogb(x)-7) */
-	e0 	= (int)((ix>>23)-134);	/* e0 = ilogb(z)-7; */
+     
+	e0 	= (int)((ix>>23)-134);	 
 	SET_FLOAT_WORD(z, ix - ((__int32_t)e0<<23));
 	for(i=0;i<2;i++) {
 		tx[i] = (float)((__int32_t)(z));
@@ -195,7 +159,7 @@ pio2_3t =  6.1232342629e-17f; /* 0x248d3132 */
 	}
 	tx[2] = z;
 	nx = 3;
-	while(tx[nx-1]==zero) nx--;	/* skip zero term */
+	while(tx[nx-1]==zero) nx--;	 
 	n  =  __kernel_rem_pio2f(tx,y,e0,nx,2,two_over_pi);
 	if(hx<0) {y[0] = -y[0]; y[1] = -y[1]; return -n;}
 	return n;

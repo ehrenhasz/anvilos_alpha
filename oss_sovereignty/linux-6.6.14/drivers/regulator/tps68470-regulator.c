@@ -1,17 +1,17 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Regulator driver for TPS68470 PMIC
-//
-// Copyright (c) 2021 Red Hat Inc.
-// Copyright (C) 2018 Intel Corporation
-//
-// Authors:
-//	Hans de Goede <hdegoede@redhat.com>
-//	Zaikuo Wang <zaikuo.wang@intel.com>
-//	Tianshu Qiu <tian.shu.qiu@intel.com>
-//	Jian Xu Zheng <jian.xu.zheng@intel.com>
-//	Yuning Pu <yuning.pu@intel.com>
-//	Rajmohan Mani <rajmohan.mani@intel.com>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -59,7 +59,7 @@ static int tps68470_regulator_enable(struct regulator_dev *rdev)
 	struct tps68470_regulator_data *data = rdev->reg_data;
 	int ret;
 
-	/* The Core buck regulator needs the PMIC's PLL to be enabled */
+	 
 	if (rdev->desc->id == TPS68470_CORE) {
 		ret = clk_prepare_enable(data->clk);
 		if (ret) {
@@ -81,7 +81,7 @@ static int tps68470_regulator_disable(struct regulator_dev *rdev)
 	return regulator_disable_regmap(rdev);
 }
 
-/* Operations permitted on DCDCx, LDO2, LDO3 and LDO4 */
+ 
 static const struct regulator_ops tps68470_regulator_ops = {
 	.is_enabled		= regulator_is_enabled_regmap,
 	.enable			= tps68470_regulator_enable,
@@ -116,11 +116,7 @@ static const struct regulator_desc regulators[] = {
 			   TPS68470_REG_VIOVAL, TPS68470_VIOVAL_IOVOLT_MASK,
 			   0, 0,
 			   tps68470_ldo_ranges, ARRAY_SIZE(tps68470_ldo_ranges)),
-/*
- * (1) This regulator must have the same voltage as VIO if S_IO LDO is used to
- *     power a sensor/VCM which I2C is daisy chained behind the PMIC.
- * (2) If there is no I2C daisy chain it can be set freely.
- */
+ 
 	TPS68470_REGULATOR(VSIO, TPS68470_VSIO, tps68470_regulator_ops, 126,
 			   TPS68470_REG_VSIOVAL, TPS68470_VSIOVAL_IOVOLT_MASK,
 			   TPS68470_REG_S_I2C_CTL, TPS68470_S_I2C_CTL_EN_MASK,
@@ -180,11 +176,7 @@ static struct platform_driver tps68470_regulator_driver = {
 	.probe = tps68470_regulator_probe,
 };
 
-/*
- * The ACPI tps68470 probe-ordering depends on the clk/gpio/regulator drivers
- * registering before the drivers for the camera-sensors which use them bind.
- * subsys_initcall() ensures this when the drivers are builtin.
- */
+ 
 static int __init tps68470_regulator_init(void)
 {
 	return platform_driver_register(&tps68470_regulator_driver);

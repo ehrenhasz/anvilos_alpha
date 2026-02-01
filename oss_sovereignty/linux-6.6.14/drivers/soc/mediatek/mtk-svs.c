@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 MediaTek Inc.
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -32,66 +30,66 @@
 #include <linux/spinlock.h>
 #include <linux/thermal.h>
 
-/* svs bank 1-line software id */
+ 
 #define SVSB_CPU_LITTLE			BIT(0)
 #define SVSB_CPU_BIG			BIT(1)
 #define SVSB_CCI			BIT(2)
 #define SVSB_GPU			BIT(3)
 
-/* svs bank 2-line type */
+ 
 #define SVSB_LOW			BIT(8)
 #define SVSB_HIGH			BIT(9)
 
-/* svs bank mode support */
+ 
 #define SVSB_MODE_ALL_DISABLE		0
 #define SVSB_MODE_INIT01		BIT(1)
 #define SVSB_MODE_INIT02		BIT(2)
 #define SVSB_MODE_MON			BIT(3)
 
-/* svs bank volt flags */
+ 
 #define SVSB_INIT01_PD_REQ		BIT(0)
 #define SVSB_INIT01_VOLT_IGNORE		BIT(1)
 #define SVSB_INIT01_VOLT_INC_ONLY	BIT(2)
 #define SVSB_MON_VOLT_IGNORE		BIT(16)
 #define SVSB_REMOVE_DVTFIXED_VOLT	BIT(24)
 
-/* svs bank register fields and common configuration */
+ 
 #define SVSB_PTPCONFIG_DETMAX		GENMASK(15, 0)
 #define SVSB_DET_MAX			FIELD_PREP(SVSB_PTPCONFIG_DETMAX, 0xffff)
 #define SVSB_DET_WINDOW			0xa28
 
-/* DESCHAR */
+ 
 #define SVSB_DESCHAR_FLD_MDES		GENMASK(7, 0)
 #define SVSB_DESCHAR_FLD_BDES		GENMASK(15, 8)
 
-/* TEMPCHAR */
+ 
 #define SVSB_TEMPCHAR_FLD_DVT_FIXED	GENMASK(7, 0)
 #define SVSB_TEMPCHAR_FLD_MTDES		GENMASK(15, 8)
 #define SVSB_TEMPCHAR_FLD_VCO		GENMASK(23, 16)
 
-/* DETCHAR */
+ 
 #define SVSB_DETCHAR_FLD_DCMDET		GENMASK(7, 0)
 #define SVSB_DETCHAR_FLD_DCBDET		GENMASK(15, 8)
 
-/* SVSEN (PTPEN) */
+ 
 #define SVSB_PTPEN_INIT01		BIT(0)
 #define SVSB_PTPEN_MON			BIT(1)
 #define SVSB_PTPEN_INIT02		(SVSB_PTPEN_INIT01 | BIT(2))
 #define SVSB_PTPEN_OFF			0x0
 
-/* FREQPCTS */
+ 
 #define SVSB_FREQPCTS_FLD_PCT0_4	GENMASK(7, 0)
 #define SVSB_FREQPCTS_FLD_PCT1_5	GENMASK(15, 8)
 #define SVSB_FREQPCTS_FLD_PCT2_6	GENMASK(23, 16)
 #define SVSB_FREQPCTS_FLD_PCT3_7	GENMASK(31, 24)
 
-/* INTSTS */
+ 
 #define SVSB_INTSTS_VAL_CLEAN		0x00ffffff
 #define SVSB_INTSTS_F0_COMPLETE		BIT(0)
 #define SVSB_INTSTS_FLD_MONVOP		GENMASK(23, 16)
 #define SVSB_RUNCONFIG_DEFAULT		0x80000000
 
-/* LIMITVALS */
+ 
 #define SVSB_LIMITVALS_FLD_DTLO		GENMASK(7, 0)
 #define SVSB_LIMITVALS_FLD_DTHI		GENMASK(15, 8)
 #define SVSB_LIMITVALS_FLD_VMIN		GENMASK(23, 16)
@@ -99,7 +97,7 @@
 #define SVSB_VAL_DTHI			0x1
 #define SVSB_VAL_DTLO			0xfe
 
-/* INTEN */
+ 
 #define SVSB_INTEN_F0EN			BIT(0)
 #define SVSB_INTEN_DACK0UPEN		BIT(8)
 #define SVSB_INTEN_DC0EN		BIT(9)
@@ -114,21 +112,21 @@
 					 SVSB_INTEN_INITPROD_OVF_EN |			\
 					 SVSB_INTEN_INITSUM_OVF_EN)
 
-/* TSCALCS */
+ 
 #define SVSB_TSCALCS_FLD_MTS		GENMASK(11, 0)
 #define SVSB_TSCALCS_FLD_BTS		GENMASK(23, 12)
 
-/* INIT2VALS */
+ 
 #define SVSB_INIT2VALS_FLD_DCVOFFSETIN	GENMASK(15, 0)
 #define SVSB_INIT2VALS_FLD_AGEVOFFSETIN	GENMASK(31, 16)
 
-/* VOPS */
+ 
 #define SVSB_VOPS_FLD_VOP0_4		GENMASK(7, 0)
 #define SVSB_VOPS_FLD_VOP1_5		GENMASK(15, 8)
 #define SVSB_VOPS_FLD_VOP2_6		GENMASK(23, 16)
 #define SVSB_VOPS_FLD_VOP3_7		GENMASK(31, 24)
 
-/* svs bank related setting */
+ 
 #define BITS8				8
 #define MAX_OPP_ENTRIES			16
 #define REG_BYTES			4
@@ -174,21 +172,7 @@ static DEFINE_SPINLOCK(svs_lock);
 #define svs_dentry_data(name)	{__stringify(name), &svs_##name##_debug_fops}
 #endif
 
-/**
- * enum svsb_phase - svs bank phase enumeration
- * @SVSB_PHASE_ERROR: svs bank encounters unexpected condition
- * @SVSB_PHASE_INIT01: svs bank basic init for data calibration
- * @SVSB_PHASE_INIT02: svs bank can provide voltages to opp table
- * @SVSB_PHASE_MON: svs bank can provide voltages with thermal effect
- * @SVSB_PHASE_MAX: total number of svs bank phase (debug purpose)
- *
- * Each svs bank has its own independent phase and we enable each svs bank by
- * running their phase orderly. However, when svs bank encounters unexpected
- * condition, it will fire an irq (PHASE_ERROR) to inform svs software.
- *
- * svs bank general phase-enabled order:
- * SVSB_PHASE_INIT01 -> SVSB_PHASE_INIT02 -> SVSB_PHASE_MON
- */
+ 
 enum svsb_phase {
 	SVSB_PHASE_ERROR = 0,
 	SVSB_PHASE_INIT01,
@@ -312,21 +296,7 @@ static const u32 svs_regs_v2[] = {
 	[THSLPEVEB]		= 0xf30,
 };
 
-/**
- * struct svs_platform - svs platform control
- * @base: svs platform register base
- * @dev: svs platform device
- * @main_clk: main clock for svs bank
- * @pbank: svs bank pointer needing to be protected by spin_lock section
- * @banks: svs banks that svs platform supports
- * @rst: svs platform reset control
- * @efuse_max: total number of svs efuse
- * @tefuse_max: total number of thermal efuse
- * @regs: svs platform registers map
- * @bank_max: total number of svs banks
- * @efuse: svs efuse data received from NVMEM framework
- * @tefuse: thermal efuse data received from NVMEM framework
- */
+ 
 struct svs_platform {
 	void __iomem *base;
 	struct device *dev;
@@ -351,76 +321,14 @@ struct svs_platform_data {
 	u32 bank_max;
 };
 
-/**
- * struct svs_bank - svs bank representation
- * @dev: bank device
- * @opp_dev: device for opp table/buck control
- * @init_completion: the timeout completion for bank init
- * @buck: regulator used by opp_dev
- * @tzd: thermal zone device for getting temperature
- * @lock: mutex lock to protect voltage update process
- * @set_freq_pct: function pointer to set bank frequency percent table
- * @get_volts: function pointer to get bank voltages
- * @name: bank name
- * @buck_name: regulator name
- * @tzone_name: thermal zone name
- * @phase: bank current phase
- * @volt_od: bank voltage overdrive
- * @reg_data: bank register data in different phase for debug purpose
- * @pm_runtime_enabled_count: bank pm runtime enabled count
- * @mode_support: bank mode support.
- * @freq_base: reference frequency for bank init
- * @turn_freq_base: refenrece frequency for 2-line turn point
- * @vboot: voltage request for bank init01 only
- * @opp_dfreq: default opp frequency table
- * @opp_dvolt: default opp voltage table
- * @freq_pct: frequency percent table for bank init
- * @volt: bank voltage table
- * @volt_step: bank voltage step
- * @volt_base: bank voltage base
- * @volt_flags: bank voltage flags
- * @vmax: bank voltage maximum
- * @vmin: bank voltage minimum
- * @age_config: bank age configuration
- * @age_voffset_in: bank age voltage offset
- * @dc_config: bank dc configuration
- * @dc_voffset_in: bank dc voltage offset
- * @dvt_fixed: bank dvt fixed value
- * @vco: bank VCO value
- * @chk_shift: bank chicken shift
- * @core_sel: bank selection
- * @opp_count: bank opp count
- * @int_st: bank interrupt identification
- * @sw_id: bank software identification
- * @cpu_id: cpu core id for SVS CPU bank use only
- * @ctl0: TS-x selection
- * @temp: bank temperature
- * @tzone_htemp: thermal zone high temperature threshold
- * @tzone_htemp_voffset: thermal zone high temperature voltage offset
- * @tzone_ltemp: thermal zone low temperature threshold
- * @tzone_ltemp_voffset: thermal zone low temperature voltage offset
- * @bts: svs efuse data
- * @mts: svs efuse data
- * @bdes: svs efuse data
- * @mdes: svs efuse data
- * @mtdes: svs efuse data
- * @dcbdet: svs efuse data
- * @dcmdet: svs efuse data
- * @turn_pt: 2-line turn point tells which opp_volt calculated by high/low bank
- * @type: bank type to represent it is 2-line (high/low) bank or 1-line bank
- *
- * Svs bank will generate suitalbe voltages by below general math equation
- * and provide these voltages to opp voltage table.
- *
- * opp_volt[i] = (volt[i] * volt_step) + volt_base;
- */
+ 
 struct svs_bank {
 	struct device *dev;
 	struct device *opp_dev;
 	struct completion init_completion;
 	struct regulator *buck;
 	struct thermal_zone_device *tzd;
-	struct mutex lock;	/* lock to protect voltage update process */
+	struct mutex lock;	 
 	void (*set_freq_pct)(struct svs_platform *svsp);
 	void (*get_volts)(struct svs_platform *svsp);
 	char *name;
@@ -474,7 +382,7 @@ struct svs_bank {
 
 static u32 percent(u32 numerator, u32 denominator)
 {
-	/* If not divide 1000, "numerator * 100" will have data overflow. */
+	 
 	numerator /= 1000;
 	denominator /= 1000;
 
@@ -543,10 +451,7 @@ static int svs_adjust_pm_opp_volts(struct svs_bank *svsb)
 
 	mutex_lock(&svsb->lock);
 
-	/*
-	 * 2-line bank updates its corresponding opp volts.
-	 * 1-line bank updates all opp volts.
-	 */
+	 
 	if (svsb->type == SVSB_HIGH) {
 		opp_start = 0;
 		opp_stop = svsb->turn_pt;
@@ -558,7 +463,7 @@ static int svs_adjust_pm_opp_volts(struct svs_bank *svsb)
 		opp_stop = svsb->opp_count;
 	}
 
-	/* Get thermal effect */
+	 
 	if (!IS_ERR_OR_NULL(svsb->tzd)) {
 		ret = thermal_zone_get_temp(svsb->tzd, &tzone_temp);
 		if (ret || (svsb->temp > SVSB_TEMP_UPPER_BOUND &&
@@ -573,7 +478,7 @@ static int svs_adjust_pm_opp_volts(struct svs_bank *svsb)
 		else if (tzone_temp <= svsb->tzone_ltemp)
 			temp_voffset += svsb->tzone_ltemp_voffset;
 
-		/* 2-line bank update all opp volts when running mon mode */
+		 
 		if (svsb->phase == SVSB_PHASE_MON && (svsb->type == SVSB_HIGH ||
 						      svsb->type == SVSB_LOW)) {
 			opp_start = 0;
@@ -581,14 +486,14 @@ static int svs_adjust_pm_opp_volts(struct svs_bank *svsb)
 		}
 	}
 
-	/* vmin <= svsb_volt (opp_volt) <= default opp voltage */
+	 
 	for (i = opp_start; i < opp_stop; i++) {
 		switch (svsb->phase) {
 		case SVSB_PHASE_ERROR:
 			opp_volt = svsb->opp_dvolt[i];
 			break;
 		case SVSB_PHASE_INIT01:
-			/* do nothing */
+			 
 			goto unlock_mutex;
 		case SVSB_PHASE_INIT02:
 		case SVSB_PHASE_MON:
@@ -847,7 +752,7 @@ static int svs_create_debug_cmds(struct svs_platform *svsp)
 
 	return 0;
 }
-#endif /* CONFIG_DEBUG_FS */
+#endif  
 
 static u32 interpolate(u32 f0, u32 f1, u32 v0, u32 v1, u32 fx)
 {
@@ -856,7 +761,7 @@ static u32 interpolate(u32 f0, u32 f1, u32 v0, u32 v1, u32 fx)
 	if (v0 == v1 || f0 == f1)
 		return v0;
 
-	/* *100 to have decimal fraction factor */
+	 
 	vx = (v0 * 100) - ((((v0 - v1) * 100) / (f0 - f1)) * (f0 - fx));
 
 	return DIV_ROUND_UP(vx, 100);
@@ -876,10 +781,10 @@ static void svs_get_bank_volts_v3(struct svs_platform *svsp)
 	vop74 = svs_readl_relaxed(svsp, VOP74);
 	vop30 = svs_readl_relaxed(svsp, VOP30);
 
-	/* Target is to set svsb->volt[] by algorithm */
+	 
 	if (turn_pt < middle_index) {
 		if (svsb->type == SVSB_HIGH) {
-			/* volt[0] ~ volt[turn_pt - 1] */
+			 
 			for (i = 0; i < turn_pt; i++) {
 				b_sft = BITS8 * (shift_byte % REG_BYTES);
 				vop = (shift_byte < REG_BYTES) ? &vop30 :
@@ -888,7 +793,7 @@ static void svs_get_bank_volts_v3(struct svs_platform *svsp)
 				shift_byte++;
 			}
 		} else if (svsb->type == SVSB_LOW) {
-			/* volt[turn_pt] + volt[j] ~ volt[opp_count - 1] */
+			 
 			j = svsb->opp_count - 7;
 			svsb->volt[turn_pt] = FIELD_GET(SVSB_VOPS_FLD_VOP0_4, vop30);
 			shift_byte++;
@@ -900,7 +805,7 @@ static void svs_get_bank_volts_v3(struct svs_platform *svsp)
 				shift_byte++;
 			}
 
-			/* volt[turn_pt + 1] ~ volt[j - 1] by interpolate */
+			 
 			for (i = turn_pt + 1; i < j; i++)
 				svsb->volt[i] = interpolate(svsb->freq_pct[turn_pt],
 							    svsb->freq_pct[j],
@@ -910,7 +815,7 @@ static void svs_get_bank_volts_v3(struct svs_platform *svsp)
 		}
 	} else {
 		if (svsb->type == SVSB_HIGH) {
-			/* volt[0] + volt[j] ~ volt[turn_pt - 1] */
+			 
 			j = turn_pt - 7;
 			svsb->volt[0] = FIELD_GET(SVSB_VOPS_FLD_VOP0_4, vop30);
 			shift_byte++;
@@ -922,7 +827,7 @@ static void svs_get_bank_volts_v3(struct svs_platform *svsp)
 				shift_byte++;
 			}
 
-			/* volt[1] ~ volt[j - 1] by interpolate */
+			 
 			for (i = 1; i < j; i++)
 				svsb->volt[i] = interpolate(svsb->freq_pct[0],
 							    svsb->freq_pct[j],
@@ -930,7 +835,7 @@ static void svs_get_bank_volts_v3(struct svs_platform *svsp)
 							    svsb->volt[j],
 							    svsb->freq_pct[i]);
 		} else if (svsb->type == SVSB_LOW) {
-			/* volt[turn_pt] ~ volt[opp_count - 1] */
+			 
 			for (i = turn_pt; i < svsb->opp_count; i++) {
 				b_sft = BITS8 * (shift_byte % REG_BYTES);
 				vop = (shift_byte < REG_BYTES) ? &vop30 :
@@ -970,18 +875,14 @@ static void svs_set_bank_freq_pct_v3(struct svs_platform *svsp)
 
 	turn_pt = svsb->turn_pt;
 
-	/* Target is to fill out freq_pct74 / freq_pct30 by algorithm */
+	 
 	if (turn_pt < middle_index) {
 		if (svsb->type == SVSB_HIGH) {
-			/*
-			 * If we don't handle this situation,
-			 * SVSB_HIGH's FREQPCT74 / FREQPCT30 would keep "0"
-			 * and this leads SVSB_LOW to work abnormally.
-			 */
+			 
 			if (turn_pt == 0)
 				freq_pct30 = svsb->freq_pct[0];
 
-			/* freq_pct[0] ~ freq_pct[turn_pt - 1] */
+			 
 			for (i = 0; i < turn_pt; i++) {
 				b_sft = BITS8 * (shift_byte % REG_BYTES);
 				freq_pct = (shift_byte < REG_BYTES) ?
@@ -990,10 +891,7 @@ static void svs_set_bank_freq_pct_v3(struct svs_platform *svsp)
 				shift_byte++;
 			}
 		} else if (svsb->type == SVSB_LOW) {
-			/*
-			 * freq_pct[turn_pt] +
-			 * freq_pct[opp_count - 7] ~ freq_pct[opp_count -1]
-			 */
+			 
 			freq_pct30 = svsb->freq_pct[turn_pt];
 			shift_byte++;
 			j = svsb->opp_count - 7;
@@ -1007,10 +905,7 @@ static void svs_set_bank_freq_pct_v3(struct svs_platform *svsp)
 		}
 	} else {
 		if (svsb->type == SVSB_HIGH) {
-			/*
-			 * freq_pct[0] +
-			 * freq_pct[turn_pt - 7] ~ freq_pct[turn_pt - 1]
-			 */
+			 
 			freq_pct30 = svsb->freq_pct[0];
 			shift_byte++;
 			j = turn_pt - 7;
@@ -1022,7 +917,7 @@ static void svs_set_bank_freq_pct_v3(struct svs_platform *svsp)
 				shift_byte++;
 			}
 		} else if (svsb->type == SVSB_LOW) {
-			/* freq_pct[turn_pt] ~ freq_pct[opp_count - 1] */
+			 
 			for (i = turn_pt; i < svsb->opp_count; i++) {
 				b_sft = BITS8 * (shift_byte % REG_BYTES);
 				freq_pct = (shift_byte < REG_BYTES) ?
@@ -1259,7 +1154,7 @@ static irqreturn_t svs_isr(int irq, void *data)
 		spin_lock_irqsave(&svs_lock, flags);
 		svsp->pbank = svsb;
 
-		/* Find out which svs bank fires interrupt */
+		 
 		if (svsb->int_st & svs_readl_relaxed(svsp, INTST)) {
 			spin_unlock_irqrestore(&svs_lock, flags);
 			continue;
@@ -1301,10 +1196,10 @@ static int svs_init01(struct svs_platform *svsp)
 	int ret = 0, r;
 	u32 opp_freq, opp_vboot, buck_volt, idx, i;
 
-	/* Keep CPUs' core power on for svs_init01 initialization */
+	 
 	cpuidle_pause_and_lock();
 
-	 /* Svs bank init01 preparation - power enable */
+	  
 	for (idx = 0; idx < svsp->bank_max; idx++) {
 		svsb = &svsp->banks[idx];
 
@@ -1318,7 +1213,7 @@ static int svs_init01(struct svs_platform *svsp)
 			goto svs_init01_resume_cpuidle;
 		}
 
-		/* Some buck doesn't support mode change. Show fail msg only */
+		 
 		ret = regulator_set_mode(svsb->buck, REGULATOR_MODE_FAST);
 		if (ret)
 			dev_notice(svsb->dev, "set fast mode fail: %d\n", ret);
@@ -1337,21 +1232,14 @@ static int svs_init01(struct svs_platform *svsp)
 		}
 	}
 
-	/*
-	 * Svs bank init01 preparation - vboot voltage adjustment
-	 * Sometimes two svs banks use the same buck. Therefore,
-	 * we have to set each svs bank to target voltage(vboot) first.
-	 */
+	 
 	for (idx = 0; idx < svsp->bank_max; idx++) {
 		svsb = &svsp->banks[idx];
 
 		if (!(svsb->mode_support & SVSB_MODE_INIT01))
 			continue;
 
-		/*
-		 * Find the fastest freq that can be run at vboot and
-		 * fix to that freq until svs_init01 is done.
-		 */
+		 
 		search_done = false;
 		opp_vboot = svs_bank_volt_to_opp_volt(svsb->vboot,
 						      svsb->volt_step,
@@ -1386,7 +1274,7 @@ static int svs_init01(struct svs_platform *svsp)
 		}
 	}
 
-	/* Svs bank init01 begins */
+	 
 	for (idx = 0; idx < svsp->bank_max; idx++) {
 		svsb = &svsp->banks[idx];
 
@@ -1490,11 +1378,7 @@ static int svs_init02(struct svs_platform *svsp)
 		}
 	}
 
-	/*
-	 * 2-line high/low bank update its corresponding opp voltages only.
-	 * Therefore, we sync voltages from opp for high/low bank voltages
-	 * consistency.
-	 */
+	 
 	for (idx = 0; idx < svsp->bank_max; idx++) {
 		svsb = &svsp->banks[idx];
 
@@ -1759,7 +1643,7 @@ static bool svs_mt8192_efuse_parsing(struct svs_platform *svsp)
 		return false;
 	}
 
-	/* Svs efuse parsing */
+	 
 	vmin = (svsp->efuse[19] >> 4) & GENMASK(1, 0);
 
 	for (idx = 0; idx < svsp->bank_max; idx++) {
@@ -1795,7 +1679,7 @@ static bool svs_mt8192_efuse_parsing(struct svs_platform *svsp)
 			break;
 
 	if (i == svsp->tefuse_max)
-		golden_temp = 50; /* All thermal efuse data are 0 */
+		golden_temp = 50;  
 	else
 		golden_temp = (svsp->tefuse[0] >> 24) & GENMASK(7, 0);
 
@@ -1827,7 +1711,7 @@ static bool svs_mt8183_efuse_parsing(struct svs_platform *svsp)
 		return false;
 	}
 
-	/* Svs efuse parsing */
+	 
 	ft_pgm = (svsp->efuse[0] >> 4) & GENMASK(3, 0);
 
 	for (idx = 0; idx < svsp->bank_max; idx++) {
@@ -1881,7 +1765,7 @@ static bool svs_mt8183_efuse_parsing(struct svs_platform *svsp)
 			svsb->mtdes  = svsp->efuse[5] & GENMASK(7, 0);
 
 			if (ft_pgm >= 2) {
-				svsb->freq_base = 800000000; /* 800MHz */
+				svsb->freq_base = 800000000;  
 				svsb->dvt_fixed = 2;
 			}
 			break;
@@ -1896,7 +1780,7 @@ static bool svs_mt8183_efuse_parsing(struct svs_platform *svsp)
 	if (ret)
 		return false;
 
-	/* Thermal efuse parsing */
+	 
 	adc_ge_t = (svsp->tefuse[1] >> 22) & GENMASK(9, 0);
 	adc_oe_t = (svsp->tefuse[1] >> 12) & GENMASK(9, 0);
 
@@ -2303,7 +2187,7 @@ static const struct of_device_id svs_of_match[] = {
 		.compatible = "mediatek,mt8183-svs",
 		.data = &svs_mt8183_platform_data,
 	}, {
-		/* Sentinel */
+		 
 	},
 };
 MODULE_DEVICE_TABLE(of, svs_of_match);

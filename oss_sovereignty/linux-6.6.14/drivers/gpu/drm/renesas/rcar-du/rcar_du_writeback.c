@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * R-Car Display Unit Writeback Support
- *
- * Copyright (C) 2019 Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_device.h>
@@ -18,11 +14,7 @@
 #include "rcar_du_kms.h"
 #include "rcar_du_writeback.h"
 
-/**
- * struct rcar_du_wb_conn_state - Driver-specific writeback connector state
- * @state: base DRM connector state
- * @format: format of the writeback framebuffer
- */
+ 
 struct rcar_du_wb_conn_state {
 	struct drm_connector_state state;
 	const struct rcar_du_format_info *format;
@@ -31,10 +23,7 @@ struct rcar_du_wb_conn_state {
 #define to_rcar_wb_conn_state(s) \
 	container_of(s, struct rcar_du_wb_conn_state, state)
 
-/**
- * struct rcar_du_wb_job - Driver-private data for writeback jobs
- * @sg_tables: scatter-gather tables for the framebuffer memory
- */
+ 
 struct rcar_du_wb_job {
 	struct sg_table sg_tables[3];
 };
@@ -61,7 +50,7 @@ static int rcar_du_wb_prepare_job(struct drm_writeback_connector *connector,
 	if (!rjob)
 		return -ENOMEM;
 
-	/* Map the framebuffer to the VSP. */
+	 
 	ret = rcar_du_vsp_map_fb(rcrtc->vsp, job->fb, rjob->sg_tables);
 	if (ret < 0) {
 		kfree(rjob);
@@ -154,10 +143,7 @@ static int rcar_du_wb_enc_atomic_check(struct drm_encoder *encoder,
 
 	fb = conn_state->writeback_job->fb;
 
-	/*
-	 * Verify that the framebuffer format is supported and that its size
-	 * matches the current mode.
-	 */
+	 
 	if (fb->width != mode->hdisplay || fb->height != mode->vdisplay) {
 		dev_dbg(dev->dev, "%s: invalid framebuffer size %ux%u\n",
 			__func__, fb->width, fb->height);
@@ -178,10 +164,7 @@ static const struct drm_encoder_helper_funcs rcar_du_wb_enc_helper_funcs = {
 	.atomic_check = rcar_du_wb_enc_atomic_check,
 };
 
-/*
- * Only RGB formats are currently supported as the VSP outputs RGB to the DU
- * and can't convert to YUV separately for writeback.
- */
+ 
 static const u32 writeback_formats[] = {
 	DRM_FORMAT_RGB332,
 	DRM_FORMAT_ARGB4444,

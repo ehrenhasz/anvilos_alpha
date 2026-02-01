@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * drivers/char/hw_random/ixp4xx-rng.c
- *
- * RNG driver for Intel IXP4xx family of NPUs
- *
- * Author: Deepak Saxena <dsaxena@plexity.net>
- *
- * Copyright 2005 (c) MontaVista Software, Inc.
- *
- * Fixes by Michael Buesch
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -43,7 +33,7 @@ static int ixp4xx_rng_probe(struct platform_device *pdev)
 	void __iomem * rng_base;
 	struct device *dev = &pdev->dev;
 
-	if (!cpu_is_ixp46x()) /* includes IXP455 */
+	if (!cpu_is_ixp46x())  
 		return -ENOSYS;
 
 	rng_base = devm_platform_ioremap_resource(pdev, 0);

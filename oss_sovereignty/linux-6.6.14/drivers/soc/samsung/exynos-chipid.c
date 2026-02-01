@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 Samsung Electronics Co., Ltd.
- *	      http://www.samsung.com/
- * Copyright (c) 2020 Krzysztof Kozlowski <krzk@kernel.org>
- *
- * Exynos - CHIP ID support
- * Author: Pankaj Dubey <pankaj.dubey@samsung.com>
- * Author: Bartlomiej Zolnierkiewicz <b.zolnierkie@samsung.com>
- * Author: Krzysztof Kozlowski <krzk@kernel.org>
- *
- * Samsung Exynos SoC Adaptive Supply Voltage and Chip ID support
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/errno.h>
@@ -26,9 +15,9 @@
 #include "exynos-asv.h"
 
 struct exynos_chipid_variant {
-	unsigned int rev_reg;		/* revision register offset */
-	unsigned int main_rev_shift;	/* main revision offset in rev_reg */
-	unsigned int sub_rev_shift;	/* sub revision offset in rev_reg */
+	unsigned int rev_reg;		 
+	unsigned int main_rev_shift;	 
+	unsigned int sub_rev_shift;	 
 };
 
 struct exynos_chipid_info {
@@ -40,10 +29,10 @@ static const struct exynos_soc_id {
 	const char *name;
 	unsigned int id;
 } soc_ids[] = {
-	/* List ordered by SoC name */
-	/* Compatible with: samsung,exynos4210-chipid */
+	 
+	 
 	{ "EXYNOS3250", 0xE3472000 },
-	{ "EXYNOS4210", 0x43200000 },	/* EVT0 revision */
+	{ "EXYNOS4210", 0x43200000 },	 
 	{ "EXYNOS4210", 0x43210000 },
 	{ "EXYNOS4212", 0x43220000 },
 	{ "EXYNOS4412", 0xE4412000 },
@@ -55,7 +44,7 @@ static const struct exynos_soc_id {
 	{ "EXYNOS5440", 0xE5440000 },
 	{ "EXYNOS5800", 0xE5422000 },
 	{ "EXYNOS7420", 0xE7420000 },
-	/* Compatible with: samsung,exynos850-chipid */
+	 
 	{ "EXYNOS7885", 0xE7885000 },
 	{ "EXYNOS850", 0xE3830000 },
 	{ "EXYNOSAUTOV9", 0xAAA80000 },
@@ -136,7 +125,7 @@ static int exynos_chipid_probe(struct platform_device *pdev)
 		return -ENODEV;
 	}
 
-	/* please note that the actual registration will be deferred */
+	 
 	soc_dev = soc_device_register(soc_dev_attr);
 	if (IS_ERR(soc_dev))
 		return PTR_ERR(soc_dev);

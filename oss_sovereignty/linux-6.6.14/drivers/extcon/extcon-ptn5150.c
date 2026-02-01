@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// extcon-ptn5150.c - PTN5150 CC logic extcon driver to support USB detection
-//
-// Based on extcon-sm5502.c driver
-// Copyright (c) 2018-2019 by Vijai Kumar K
-// Author: Vijai Kumar K <vijaikumar.kanagarajan@gmail.com>
-// Copyright (c) 2020 Krzysztof Kozlowski <krzk@kernel.org>
+
+
+
+
+
+
+
+
 
 #include <linux/bitfield.h>
 #include <linux/err.h>
@@ -19,7 +19,7 @@
 #include <linux/gpio/consumer.h>
 #include <linux/usb/role.h>
 
-/* PTN5150 registers */
+ 
 #define PTN5150_REG_DEVICE_ID			0x01
 #define PTN5150_REG_CONTROL			0x02
 #define PTN5150_REG_INT_STATUS			0x03
@@ -34,7 +34,7 @@
 #define PTN5150_DFP_ATTACHED			0x1
 #define PTN5150_UFP_ATTACHED			0x2
 
-/* Define PTN5150 MASK/SHIFT constant */
+ 
 #define PTN5150_REG_DEVICE_ID_VERSION		GENMASK(7, 3)
 #define PTN5150_REG_DEVICE_ID_VENDOR		GENMASK(2, 0)
 
@@ -56,7 +56,7 @@ struct ptn5150_info {
 	struct usb_role_switch *role_sw;
 };
 
-/* List of detectable cables */
+ 
 static const unsigned int ptn5150_extcon_cable[] = {
 	EXTCON_USB,
 	EXTCON_USB_HOST,
@@ -125,7 +125,7 @@ static void ptn5150_irq_work(struct work_struct *work)
 
 	mutex_lock(&info->mutex);
 
-	/* Clear interrupt. Read would clear the register */
+	 
 	ret = regmap_read(info->regmap, PTN5150_REG_INT_STATUS, &int_status);
 	if (ret) {
 		dev_err(info->dev, "failed to read INT STATUS %d\n", ret);
@@ -155,7 +155,7 @@ static void ptn5150_irq_work(struct work_struct *work)
 		}
 	}
 
-	/* Clear interrupt. Read would clear the register */
+	 
 	ret = regmap_read(info->regmap, PTN5150_REG_INT_REG_STATUS,
 			&int_status);
 	if (ret) {
@@ -194,7 +194,7 @@ static int ptn5150_init_dev_type(struct ptn5150_info *info)
 	dev_dbg(info->dev, "Device type: version: 0x%x, vendor: 0x%x\n",
 		version_id, vendor_id);
 
-	/* Clear any existing interrupts */
+	 
 	ret = regmap_read(info->regmap, PTN5150_REG_INT_STATUS, &reg_data);
 	if (ret) {
 		dev_err(info->dev,
@@ -285,14 +285,14 @@ static int ptn5150_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Allocate extcon device */
+	 
 	info->edev = devm_extcon_dev_allocate(info->dev, ptn5150_extcon_cable);
 	if (IS_ERR(info->edev)) {
 		dev_err(info->dev, "failed to allocate memory for extcon\n");
 		return -ENOMEM;
 	}
 
-	/* Register extcon device */
+	 
 	ret = devm_extcon_dev_register(info->dev, info->edev);
 	if (ret) {
 		dev_err(info->dev, "failed to register extcon device\n");
@@ -306,7 +306,7 @@ static int ptn5150_i2c_probe(struct i2c_client *i2c)
 	extcon_set_property_capability(info->edev, EXTCON_USB_HOST,
 					EXTCON_PROP_USB_TYPEC_POLARITY);
 
-	/* Initialize PTN5150 device and print vendor id and version id */
+	 
 	ret = ptn5150_init_dev_type(info);
 	if (ret)
 		return -EINVAL;
@@ -320,10 +320,7 @@ static int ptn5150_i2c_probe(struct i2c_client *i2c)
 	if (ret)
 		return ret;
 
-	/*
-	 * Update current extcon state if for example OTG connection was there
-	 * before the probe
-	 */
+	 
 	mutex_lock(&info->mutex);
 	ptn5150_check_state(info);
 	mutex_unlock(&info->mutex);

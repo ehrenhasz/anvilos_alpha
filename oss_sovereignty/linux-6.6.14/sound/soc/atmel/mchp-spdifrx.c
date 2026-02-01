@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Driver for Microchip S/PDIF RX Controller
-//
-// Copyright (C) 2020 Microchip Technology Inc. and its subsidiaries
-//
-// Author: Codrin Ciubotariu <codrin.ciubotariu@microchip.com>
+
+
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/io.h>
@@ -17,83 +17,75 @@
 #include <sound/pcm_params.h>
 #include <sound/soc.h>
 
-/*
- * ---- S/PDIF Receiver Controller Register map ----
- */
-#define SPDIFRX_CR			0x00	/* Control Register */
-#define SPDIFRX_MR			0x04	/* Mode Register */
+ 
+#define SPDIFRX_CR			0x00	 
+#define SPDIFRX_MR			0x04	 
 
-#define SPDIFRX_IER			0x10	/* Interrupt Enable Register */
-#define SPDIFRX_IDR			0x14	/* Interrupt Disable Register */
-#define SPDIFRX_IMR			0x18	/* Interrupt Mask Register */
-#define SPDIFRX_ISR			0x1c	/* Interrupt Status Register */
-#define SPDIFRX_RSR			0x20	/* Status Register */
-#define SPDIFRX_RHR			0x24	/* Holding Register */
+#define SPDIFRX_IER			0x10	 
+#define SPDIFRX_IDR			0x14	 
+#define SPDIFRX_IMR			0x18	 
+#define SPDIFRX_ISR			0x1c	 
+#define SPDIFRX_RSR			0x20	 
+#define SPDIFRX_RHR			0x24	 
 
 #define SPDIFRX_CHSR(channel, reg)	\
-	(0x30 + (channel) * 0x30 + (reg) * 4)	/* Channel x Status Registers */
+	(0x30 + (channel) * 0x30 + (reg) * 4)	 
 
 #define SPDIFRX_CHUD(channel, reg)	\
-	(0x48 + (channel) * 0x30 + (reg) * 4)	/* Channel x User Data Registers */
+	(0x48 + (channel) * 0x30 + (reg) * 4)	 
 
-#define SPDIFRX_WPMR			0xE4	/* Write Protection Mode Register */
-#define SPDIFRX_WPSR			0xE8	/* Write Protection Status Register */
+#define SPDIFRX_WPMR			0xE4	 
+#define SPDIFRX_WPSR			0xE8	 
 
-#define SPDIFRX_VERSION			0xFC	/* Version Register */
+#define SPDIFRX_VERSION			0xFC	 
 
-/*
- * ---- Control Register (Write-only) ----
- */
-#define SPDIFRX_CR_SWRST		BIT(0)	/* Software Reset */
+ 
+#define SPDIFRX_CR_SWRST		BIT(0)	 
 
-/*
- * ---- Mode Register (Read/Write) ----
- */
-/* Receive Enable */
+ 
+ 
 #define SPDIFRX_MR_RXEN_MASK		GENMASK(0, 0)
-#define SPDIFRX_MR_RXEN_DISABLE		(0 << 0)	/* SPDIF Receiver Disabled */
-#define SPDIFRX_MR_RXEN_ENABLE		(1 << 0)	/* SPDIF Receiver Enabled */
+#define SPDIFRX_MR_RXEN_DISABLE		(0 << 0)	 
+#define SPDIFRX_MR_RXEN_ENABLE		(1 << 0)	 
 
-/* Validity Bit Mode */
+ 
 #define SPDIFRX_MR_VBMODE_MASK		GENAMSK(1, 1)
 #define SPDIFRX_MR_VBMODE_ALWAYS_LOAD \
-	(0 << 1)	/* Load sample regardless of validity bit value */
+	(0 << 1)	 
 #define SPDIFRX_MR_VBMODE_DISCARD_IF_VB1 \
-	(1 << 1)	/* Load sample only if validity bit is 0 */
+	(1 << 1)	 
 
-/* Data Word Endian Mode */
+ 
 #define SPDIFRX_MR_ENDIAN_MASK		GENMASK(2, 2)
-#define SPDIFRX_MR_ENDIAN_LITTLE	(0 << 2)	/* Little Endian Mode */
-#define SPDIFRX_MR_ENDIAN_BIG		(1 << 2)	/* Big Endian Mode */
+#define SPDIFRX_MR_ENDIAN_LITTLE	(0 << 2)	 
+#define SPDIFRX_MR_ENDIAN_BIG		(1 << 2)	 
 
-/* Parity Bit Mode */
+ 
 #define SPDIFRX_MR_PBMODE_MASK		GENMASK(3, 3)
-#define SPDIFRX_MR_PBMODE_PARCHECK	(0 << 3)	/* Parity Check Enabled */
-#define SPDIFRX_MR_PBMODE_NOPARCHECK	(1 << 3)	/* Parity Check Disabled */
+#define SPDIFRX_MR_PBMODE_PARCHECK	(0 << 3)	 
+#define SPDIFRX_MR_PBMODE_NOPARCHECK	(1 << 3)	 
 
-/* Sample Data Width */
+ 
 #define SPDIFRX_MR_DATAWIDTH_MASK	GENMASK(5, 4)
 #define SPDIFRX_MR_DATAWIDTH(width) \
 	(((6 - (width) / 4) << 4) & SPDIFRX_MR_DATAWIDTH_MASK)
 
-/* Packed Data Mode in Receive Holding Register */
+ 
 #define SPDIFRX_MR_PACK_MASK		GENMASK(7, 7)
 #define SPDIFRX_MR_PACK_DISABLED	(0 << 7)
 #define SPDIFRX_MR_PACK_ENABLED		(1 << 7)
 
-/* Start of Block Bit Mode */
+ 
 #define SPDIFRX_MR_SBMODE_MASK		GENMASK(8, 8)
 #define SPDIFRX_MR_SBMODE_ALWAYS_LOAD	(0 << 8)
 #define SPDIFRX_MR_SBMODE_DISCARD	(1 << 8)
 
-/* Consecutive Preamble Error Threshold Automatic Restart */
+ 
 #define SPDIFRX_MR_AUTORST_MASK			GENMASK(24, 24)
 #define SPDIFRX_MR_AUTORST_NOACTION		(0 << 24)
 #define SPDIFRX_MR_AUTORST_UNLOCK_ON_PRE_ERR	(1 << 24)
 
-/*
- * ---- Interrupt Enable/Disable/Mask/Status Register (Write/Read-only) ----
- */
+ 
 #define SPDIFRX_IR_RXRDY			BIT(0)
 #define SPDIFRX_IR_LOCKED			BIT(1)
 #define SPDIFRX_IR_LOSS				BIT(2)
@@ -109,10 +101,8 @@
 #define SPDIFRX_IR_PRE_ERR			BIT(13)
 #define SPDIFRX_IR_CP_ERR			BIT(14)
 
-/*
- * ---- Receiver Status Register (Read/Write) ----
- */
-/* Enable Status */
+ 
+ 
 #define SPDIFRX_RSR_ULOCK			BIT(0)
 #define SPDIFRX_RSR_BADF			BIT(1)
 #define SPDIFRX_RSR_LOWF			BIT(2)
@@ -121,9 +111,7 @@
 #define SPDIFRX_RSR_IFS(reg)			\
 	(((reg) & SPDIFRX_RSR_IFS_MASK) >> 16)
 
-/*
- *  ---- Version Register (Read-only) ----
- */
+ 
 #define SPDIFRX_VERSION_MASK		GENMASK(11, 0)
 #define SPDIFRX_VERSION_MFN_MASK	GENMASK(18, 16)
 #define SPDIFRX_VERSION_MFN(reg)	(((reg) & SPDIFRX_VERSION_MFN_MASK) >> 16)
@@ -249,34 +237,19 @@ static const struct regmap_config mchp_spdifrx_regmap_config = {
 
 #define SPDIFRX_CHANNELS	2
 
-/**
- * struct mchp_spdifrx_ch_stat: MCHP SPDIFRX channel status
- * @data: channel status bits
- * @done: completion to signal channel status bits acquisition done
- */
+ 
 struct mchp_spdifrx_ch_stat {
 	unsigned char data[SPDIFRX_CS_BITS / 8];
 	struct completion done;
 };
 
-/**
- * struct mchp_spdifrx_user_data: MCHP SPDIFRX user data
- * @data: user data bits
- * @done: completion to signal user data bits acquisition done
- */
+ 
 struct mchp_spdifrx_user_data {
 	unsigned char data[SPDIFRX_UD_BITS / 8];
 	struct completion done;
 };
 
-/**
- * struct mchp_spdifrx_mixer_control: MCHP SPDIFRX mixer control data structure
- * @ch_stat: array of channel statuses
- * @user_data: array of user data
- * @ulock: ulock bit status
- * @badf: badf bit status
- * @signal: signal bit status
- */
+ 
 struct mchp_spdifrx_mixer_control {
 	struct mchp_spdifrx_ch_stat ch_stat[SPDIFRX_CHANNELS];
 	struct mchp_spdifrx_user_data user_data[SPDIFRX_CHANNELS];
@@ -285,17 +258,7 @@ struct mchp_spdifrx_mixer_control {
 	bool signal;
 };
 
-/**
- * struct mchp_spdifrx_dev: MCHP SPDIFRX device data structure
- * @capture: DAI DMA configuration data
- * @control: mixer controls
- * @mlock: mutex to protect concurency b/w configuration and control APIs
- * @dev: struct device
- * @regmap: regmap for this device
- * @pclk: peripheral clock
- * @gclk: generic clock
- * @trigger_enabled: true if enabled though trigger() ops
- */
+ 
 struct mchp_spdifrx_dev {
 	struct snd_dmaengine_dai_dma_data	capture;
 	struct mchp_spdifrx_mixer_control	control;
@@ -395,10 +358,10 @@ static int mchp_spdifrx_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_RESUME:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
 		mutex_lock(&dev->mlock);
-		/* Enable overrun interrupts */
+		 
 		regmap_write(dev->regmap, SPDIFRX_IER, SPDIFRX_IR_OVERRUN);
 
-		/* Enable receiver. */
+		 
 		regmap_update_bits(dev->regmap, SPDIFRX_MR, SPDIFRX_MR_RXEN_MASK,
 				   SPDIFRX_MR_RXEN_ENABLE);
 		dev->trigger_enabled = true;
@@ -408,10 +371,10 @@ static int mchp_spdifrx_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_SUSPEND:
 	case SNDRV_PCM_TRIGGER_PAUSE_PUSH:
 		mutex_lock(&dev->mlock);
-		/* Disable overrun interrupts */
+		 
 		regmap_write(dev->regmap, SPDIFRX_IDR, SPDIFRX_IR_OVERRUN);
 
-		/* Disable receiver. */
+		 
 		regmap_update_bits(dev->regmap, SPDIFRX_MR, SPDIFRX_MR_RXEN_MASK,
 				   SPDIFRX_MR_RXEN_DISABLE);
 		dev->trigger_enabled = false;
@@ -473,7 +436,7 @@ static int mchp_spdifrx_hw_params(struct snd_pcm_substream *substream,
 		goto unlock;
 	}
 
-	/* GCLK is enabled by runtime PM. */
+	 
 	clk_disable_unprepare(dev->gclk);
 
 	ret = clk_set_min_rate(dev->gclk, params_rate(params) *
@@ -482,7 +445,7 @@ static int mchp_spdifrx_hw_params(struct snd_pcm_substream *substream,
 		dev_err(dev->dev,
 			"unable to set gclk min rate: rate %u * ratio %u + 1\n",
 			params_rate(params), SPDIFRX_GCLK_RATIO_MIN);
-		/* Restore runtime PM state. */
+		 
 		clk_prepare_enable(dev->gclk);
 		goto unlock;
 	}
@@ -538,27 +501,15 @@ static int mchp_spdifrx_cs_get(struct mchp_spdifrx_dev *dev,
 	if (ret < 0)
 		goto unlock;
 
-	/*
-	 * We may reach this point with both clocks enabled but the receiver
-	 * still disabled. To void waiting for completion and return with
-	 * timeout check the dev->trigger_enabled.
-	 *
-	 * To retrieve data:
-	 * - if the receiver is enabled CSC IRQ will update the data in software
-	 *   caches (ch_stat->data)
-	 * - otherwise we just update it here the software caches with latest
-	 *   available information and return it; in this case we don't need
-	 *   spin locking as the IRQ is disabled and will not be raised from
-	 *   anywhere else.
-	 */
+	 
 
 	if (dev->trigger_enabled) {
 		reinit_completion(&ch_stat->done);
 		regmap_write(dev->regmap, SPDIFRX_IER, SPDIFRX_IR_CSC(channel));
-		/* Check for new data available */
+		 
 		ret = wait_for_completion_interruptible_timeout(&ch_stat->done,
 								msecs_to_jiffies(100));
-		/* Valid stream might not be present */
+		 
 		if (ret <= 0) {
 			dev_dbg(dev->dev, "channel status for channel %d timeout\n",
 				channel);
@@ -569,7 +520,7 @@ static int mchp_spdifrx_cs_get(struct mchp_spdifrx_dev *dev,
 			ret = 0;
 		}
 	} else {
-		/* Update software cache with latest channel status. */
+		 
 		mchp_spdifrx_channel_status_read(dev, channel);
 	}
 
@@ -625,23 +576,14 @@ static int mchp_spdifrx_subcode_ch_get(struct mchp_spdifrx_dev *dev,
 	if (ret < 0)
 		goto unlock;
 
-	/*
-	 * We may reach this point with both clocks enabled but the receiver
-	 * still disabled. To void waiting for completion to just timeout we
-	 * check here the dev->trigger_enabled flag.
-	 *
-	 * To retrieve data:
-	 * - if the receiver is enabled we need to wait for blockend IRQ to read
-	 *   data to and update it for us in software caches
-	 * - otherwise reading the SPDIFRX_CHUD() registers is enough.
-	 */
+	 
 
 	if (dev->trigger_enabled) {
 		reinit_completion(&user_data->done);
 		regmap_write(dev->regmap, SPDIFRX_IER, SPDIFRX_IR_BLOCKEND);
 		ret = wait_for_completion_interruptible_timeout(&user_data->done,
 								msecs_to_jiffies(100));
-		/* Valid stream might not be present. */
+		 
 		if (ret <= 0) {
 			dev_dbg(dev->dev, "user data for channel %d timeout\n",
 				channel);
@@ -652,7 +594,7 @@ static int mchp_spdifrx_subcode_ch_get(struct mchp_spdifrx_dev *dev,
 			ret = 0;
 		}
 	} else {
-		/* Update software cache with last available data. */
+		 
 		mchp_spdifrx_channel_user_data_read(dev, channel);
 	}
 
@@ -712,11 +654,7 @@ static int mchp_spdifrx_ulock_get(struct snd_kcontrol *kcontrol,
 	if (ret < 0)
 		goto unlock;
 
-	/*
-	 * The RSR.ULOCK has wrong value if both pclk and gclk are enabled
-	 * and the receiver is disabled. Thus we take into account the
-	 * dev->trigger_enabled here to return a real status.
-	 */
+	 
 	if (dev->trigger_enabled) {
 		regmap_read(dev->regmap, SPDIFRX_RSR, &val);
 		ctrl->ulock = !(val & SPDIFRX_RSR_ULOCK);
@@ -750,11 +688,7 @@ static int mchp_spdifrx_badf_get(struct snd_kcontrol *kcontrol,
 	if (ret < 0)
 		goto unlock;
 
-	/*
-	 * The RSR.ULOCK has wrong value if both pclk and gclk are enabled
-	 * and the receiver is disabled. Thus we take into account the
-	 * dev->trigger_enabled here to return a real status.
-	 */
+	 
 	if (dev->trigger_enabled) {
 		regmap_read(dev->regmap, SPDIFRX_RSR, &val);
 		ctrl->badf = !!(val & SPDIFRX_RSR_BADF);
@@ -788,16 +722,12 @@ static int mchp_spdifrx_signal_get(struct snd_kcontrol *kcontrol,
 	if (ret < 0)
 		goto unlock;
 
-	/*
-	 * To get the signal we need to have receiver enabled. This
-	 * could be enabled also from trigger() function thus we need to
-	 * take care of not disabling the receiver when it runs.
-	 */
+	 
 	if (!dev->trigger_enabled) {
 		regmap_update_bits(dev->regmap, SPDIFRX_MR, SPDIFRX_MR_RXEN_MASK,
 				   SPDIFRX_MR_RXEN_ENABLE);
 
-		/* Wait for RSR.ULOCK bit. */
+		 
 		while (--loops) {
 			regmap_read(dev->regmap, SPDIFRX_RSR, &val);
 			if (!(val & SPDIFRX_RSR_ULOCK))
@@ -852,20 +782,16 @@ static int mchp_spdifrx_rate_get(struct snd_kcontrol *kcontrol,
 	if (ret < 0)
 		goto unlock;
 
-	/*
-	 * The RSR.ULOCK has wrong value if both pclk and gclk are enabled
-	 * and the receiver is disabled. Thus we take into account the
-	 * dev->trigger_enabled here to return a real status.
-	 */
+	 
 	if (dev->trigger_enabled) {
 		regmap_read(dev->regmap, SPDIFRX_RSR, &val);
-		/* If the receiver is not locked, ISF data is invalid. */
+		 
 		if (val & SPDIFRX_RSR_ULOCK || !(val & SPDIFRX_RSR_IFS_MASK)) {
 			ucontrol->value.integer.value[0] = 0;
 			goto pm_runtime_put;
 		}
 	} else {
-		/* Reveicer is not locked, IFS data is invalid. */
+		 
 		ucontrol->value.integer.value[0] = 0;
 		goto pm_runtime_put;
 	}
@@ -883,7 +809,7 @@ unlock:
 }
 
 static struct snd_kcontrol_new mchp_spdifrx_ctrls[] = {
-	/* Channel status controller */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = SNDRV_CTL_NAME_IEC958("", CAPTURE, DEFAULT)
@@ -909,7 +835,7 @@ static struct snd_kcontrol_new mchp_spdifrx_ctrls[] = {
 		.info = mchp_spdifrx_info,
 		.get = mchp_spdifrx_cs_mask,
 	},
-	/* User bits controller */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = "IEC958 Subcode Capture Default Channel 1",
@@ -926,7 +852,7 @@ static struct snd_kcontrol_new mchp_spdifrx_ctrls[] = {
 		.info = mchp_spdifrx_info,
 		.get = mchp_spdifrx_subcode_ch2_get,
 	},
-	/* Lock status */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = SNDRV_CTL_NAME_IEC958("", CAPTURE, NONE) "Unlocked",
@@ -935,7 +861,7 @@ static struct snd_kcontrol_new mchp_spdifrx_ctrls[] = {
 		.info = mchp_spdifrx_boolean_info,
 		.get = mchp_spdifrx_ulock_get,
 	},
-	/* Bad format */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = SNDRV_CTL_NAME_IEC958("", CAPTURE, NONE)"Bad Format",
@@ -944,7 +870,7 @@ static struct snd_kcontrol_new mchp_spdifrx_ctrls[] = {
 		.info = mchp_spdifrx_boolean_info,
 		.get = mchp_spdifrx_badf_get,
 	},
-	/* Signal */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = SNDRV_CTL_NAME_IEC958("", CAPTURE, NONE) "Signal",
@@ -953,7 +879,7 @@ static struct snd_kcontrol_new mchp_spdifrx_ctrls[] = {
 		.info = mchp_spdifrx_boolean_info,
 		.get = mchp_spdifrx_signal_get,
 	},
-	/* Sampling rate */
+	 
 	{
 		.iface = SNDRV_CTL_ELEM_IFACE_PCM,
 		.name = SNDRV_CTL_NAME_IEC958("", CAPTURE, NONE) "Rate",
@@ -972,10 +898,10 @@ static int mchp_spdifrx_dai_probe(struct snd_soc_dai *dai)
 
 	snd_soc_dai_init_dma_data(dai, NULL, &dev->capture);
 
-	/* Software reset the IP */
+	 
 	regmap_write(dev->regmap, SPDIFRX_CR, SPDIFRX_CR_SWRST);
 
-	/* Default configuration */
+	 
 	regmap_write(dev->regmap, SPDIFRX_MR,
 		     SPDIFRX_MR_VBMODE_DISCARD_IF_VB1 |
 		     SPDIFRX_MR_SBMODE_DISCARD |
@@ -987,7 +913,7 @@ static int mchp_spdifrx_dai_probe(struct snd_soc_dai *dai)
 		init_completion(&ctrl->user_data[ch].done);
 	}
 
-	/* Add controls */
+	 
 	snd_soc_add_dai_controls(dai, mchp_spdifrx_ctrls,
 				 ARRAY_SIZE(mchp_spdifrx_ctrls));
 
@@ -998,7 +924,7 @@ static int mchp_spdifrx_dai_remove(struct snd_soc_dai *dai)
 {
 	struct mchp_spdifrx_dev *dev = snd_soc_dai_get_drvdata(dai);
 
-	/* Disable interrupts */
+	 
 	regmap_write(dev->regmap, SPDIFRX_IDR, GENMASK(14, 0));
 
 	return 0;
@@ -1032,7 +958,7 @@ static const struct of_device_id mchp_spdifrx_dt_ids[] = {
 	{
 		.compatible = "microchip,sama7g5-spdifrx",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mchp_spdifrx_dt_ids);
 
@@ -1088,12 +1014,12 @@ static int mchp_spdifrx_probe(struct platform_device *pdev)
 	int err;
 	u32 vers;
 
-	/* Get memory for driver data. */
+	 
 	dev = devm_kzalloc(&pdev->dev, sizeof(*dev), GFP_KERNEL);
 	if (!dev)
 		return -ENOMEM;
 
-	/* Map I/O registers. */
+	 
 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &mem);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -1103,7 +1029,7 @@ static int mchp_spdifrx_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Request IRQ. */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0)
 		return irq;
@@ -1113,7 +1039,7 @@ static int mchp_spdifrx_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/* Get the peripheral clock */
+	 
 	dev->pclk = devm_clk_get(&pdev->dev, "pclk");
 	if (IS_ERR(dev->pclk)) {
 		err = PTR_ERR(dev->pclk);
@@ -1122,7 +1048,7 @@ static int mchp_spdifrx_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/* Get the generated clock */
+	 
 	dev->gclk = devm_clk_get(&pdev->dev, "gclk");
 	if (IS_ERR(dev->gclk)) {
 		err = PTR_ERR(dev->gclk);
@@ -1131,13 +1057,7 @@ static int mchp_spdifrx_probe(struct platform_device *pdev)
 		return err;
 	}
 
-	/*
-	 * Signal control need a valid rate on gclk. hw_params() configures
-	 * it propertly but requesting signal before any hw_params() has been
-	 * called lead to invalid value returned for signal. Thus, configure
-	 * gclk at a valid rate, here, in initialization, to simplify the
-	 * control path.
-	 */
+	 
 	clk_set_min_rate(dev->gclk, 48000 * SPDIFRX_GCLK_RATIO_MIN + 1);
 
 	mutex_init(&dev->mlock);

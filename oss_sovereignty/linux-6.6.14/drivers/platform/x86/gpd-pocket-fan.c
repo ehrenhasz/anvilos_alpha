@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * GPD Pocket fan controller driver
- *
- * Copyright (C) 2017 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/devm-helpers.h>
@@ -89,7 +85,7 @@ static void gpd_pocket_fan_worker(struct work_struct *work)
 	speed = fan->last_speed;
 	min_speed = gpd_pocket_fan_min_speed();
 
-	/* Determine minimum speed */
+	 
 	for (i = min_speed; i < ARRAY_SIZE(temp_limits); i++) {
 		if (temp < temp_limits[i])
 			break;
@@ -97,7 +93,7 @@ static void gpd_pocket_fan_worker(struct work_struct *work)
 	if (speed < i)
 		speed = i;
 
-	/* Use hysteresis before lowering speed again */
+	 
 	for (i = min_speed; i < ARRAY_SIZE(temp_limits); i++) {
 		if (temp <= (temp_limits[i] - hysteresis))
 			break;
@@ -106,12 +102,12 @@ static void gpd_pocket_fan_worker(struct work_struct *work)
 		speed = i;
 
 	if (fan->last_speed <= 0 && speed)
-		speed = MAX_SPEED; /* kick start motor */
+		speed = MAX_SPEED;  
 
 set_speed:
 	gpd_pocket_fan_set_speed(fan, speed);
 
-	/* When mostly idle (low temp/speed), slow down the poll interval. */
+	 
 	queue_delayed_work(system_wq, &fan->work,
 			   msecs_to_jiffies(4000 / (speed + 1)));
 }
@@ -158,7 +154,7 @@ static int gpd_pocket_fan_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Note this returns a "weak" reference which we don't need to free */
+	 
 	fan->dts0 = thermal_zone_get_zone_by_name("soc_dts0");
 	if (IS_ERR(fan->dts0))
 		return -EPROBE_DEFER;

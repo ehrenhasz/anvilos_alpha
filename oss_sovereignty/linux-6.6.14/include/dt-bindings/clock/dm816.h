@@ -1,17 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2017 Texas Instruments, Inc.
- */
+ 
+ 
 #ifndef __DT_BINDINGS_CLK_DM816_H
 #define __DT_BINDINGS_CLK_DM816_H
 
 #define DM816_CLKCTRL_OFFSET	0x0
 #define DM816_CLKCTRL_INDEX(offset)	((offset) - DM816_CLKCTRL_OFFSET)
 
-/* default clocks */
+ 
 #define DM816_USB_OTG_HS_CLKCTRL	DM816_CLKCTRL_INDEX(0x58)
 
-/* alwon clocks */
+ 
 #define DM816_UART1_CLKCTRL	DM816_CLKCTRL_INDEX(0x150)
 #define DM816_UART2_CLKCTRL	DM816_CLKCTRL_INDEX(0x154)
 #define DM816_UART3_CLKCTRL	DM816_CLKCTRL_INDEX(0x158)

@@ -1,9 +1,4 @@
-/*
- * Broadcom specific AMBA
- * ChipCommon parallel flash
- *
- * Licensed under the GNU/GPL. See COPYING for details.
- */
+ 
 
 #include "bcma_private.h"
 

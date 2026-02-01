@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Facebook
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include <linux/pid.h>
 #include <linux/sched.h>
@@ -100,9 +97,7 @@ static void *bpf_pid_task_storage_lookup_elem(struct bpf_map *map, void *key)
 	if (IS_ERR(pid))
 		return ERR_CAST(pid);
 
-	/* We should be in an RCU read side critical section, it should be safe
-	 * to call pid_task.
-	 */
+	 
 	WARN_ON_ONCE(!rcu_read_lock_held());
 	task = pid_task(pid, PIDTYPE_PID);
 	if (!task) {
@@ -134,9 +129,7 @@ static long bpf_pid_task_storage_update_elem(struct bpf_map *map, void *key,
 	if (IS_ERR(pid))
 		return PTR_ERR(pid);
 
-	/* We should be in an RCU read side critical section, it should be safe
-	 * to call pid_task.
-	 */
+	 
 	WARN_ON_ONCE(!rcu_read_lock_held());
 	task = pid_task(pid, PIDTYPE_PID);
 	if (!task) {
@@ -185,9 +178,7 @@ static long bpf_pid_task_storage_delete_elem(struct bpf_map *map, void *key)
 	if (IS_ERR(pid))
 		return PTR_ERR(pid);
 
-	/* We should be in an RCU read side critical section, it should be safe
-	 * to call pid_task.
-	 */
+	 
 	WARN_ON_ONCE(!rcu_read_lock_held());
 	task = pid_task(pid, PIDTYPE_PID);
 	if (!task) {
@@ -203,7 +194,7 @@ out:
 	return err;
 }
 
-/* Called by bpf_task_storage_get*() helpers */
+ 
 static void *__bpf_task_storage_get(struct bpf_map *map,
 				    struct task_struct *task, void *value,
 				    u64 flags, gfp_t gfp_flags, bool nobusy)
@@ -214,7 +205,7 @@ static void *__bpf_task_storage_get(struct bpf_map *map,
 	if (sdata)
 		return sdata->data;
 
-	/* only allocate new storage, when the task is refcounted */
+	 
 	if (refcount_read(&task->usage) &&
 	    (flags & BPF_LOCAL_STORAGE_GET_F_CREATE) && nobusy) {
 		sdata = bpf_local_storage_update(
@@ -226,7 +217,7 @@ static void *__bpf_task_storage_get(struct bpf_map *map,
 	return NULL;
 }
 
-/* *gfp_flags* is a hidden argument provided by the verifier */
+ 
 BPF_CALL_5(bpf_task_storage_get_recur, struct bpf_map *, map, struct task_struct *,
 	   task, void *, value, u64, flags, gfp_t, gfp_flags)
 {
@@ -245,7 +236,7 @@ BPF_CALL_5(bpf_task_storage_get_recur, struct bpf_map *, map, struct task_struct
 	return (unsigned long)data;
 }
 
-/* *gfp_flags* is a hidden argument provided by the verifier */
+ 
 BPF_CALL_5(bpf_task_storage_get, struct bpf_map *, map, struct task_struct *,
 	   task, void *, value, u64, flags, gfp_t, gfp_flags)
 {
@@ -273,10 +264,7 @@ BPF_CALL_2(bpf_task_storage_delete_recur, struct bpf_map *, map, struct task_str
 		return -EINVAL;
 
 	nobusy = bpf_task_storage_trylock();
-	/* This helper must only be called from places where the lifetime of the task
-	 * is guaranteed. Either by being refcounted or by being protected
-	 * by an RCU read-side critical section.
-	 */
+	 
 	ret = task_storage_delete(task, map, nobusy);
 	if (nobusy)
 		bpf_task_storage_unlock();
@@ -293,10 +281,7 @@ BPF_CALL_2(bpf_task_storage_delete, struct bpf_map *, map, struct task_struct *,
 		return -EINVAL;
 
 	bpf_task_storage_lock();
-	/* This helper must only be called from places where the lifetime of the task
-	 * is guaranteed. Either by being refcounted or by being protected
-	 * by an RCU read-side critical section.
-	 */
+	 
 	ret = task_storage_delete(task, map, true);
 	bpf_task_storage_unlock();
 	return ret;

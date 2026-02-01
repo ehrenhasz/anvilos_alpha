@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Driver for the Intel integrated DMA 64-bit
- *
- * Copyright (C) 2015 Intel Corporation
- */
+ 
+ 
 
 #ifndef __DMA_IDMA64_H__
 #define __DMA_IDMA64_H__
@@ -17,60 +13,60 @@
 
 #include "virt-dma.h"
 
-/* Channel registers */
+ 
 
-#define IDMA64_CH_SAR		0x00	/* Source Address Register */
-#define IDMA64_CH_DAR		0x08	/* Destination Address Register */
-#define IDMA64_CH_LLP		0x10	/* Linked List Pointer */
-#define IDMA64_CH_CTL_LO	0x18	/* Control Register Low */
-#define IDMA64_CH_CTL_HI	0x1c	/* Control Register High */
+#define IDMA64_CH_SAR		0x00	 
+#define IDMA64_CH_DAR		0x08	 
+#define IDMA64_CH_LLP		0x10	 
+#define IDMA64_CH_CTL_LO	0x18	 
+#define IDMA64_CH_CTL_HI	0x1c	 
 #define IDMA64_CH_SSTAT		0x20
 #define IDMA64_CH_DSTAT		0x28
 #define IDMA64_CH_SSTATAR	0x30
 #define IDMA64_CH_DSTATAR	0x38
-#define IDMA64_CH_CFG_LO	0x40	/* Configuration Register Low */
-#define IDMA64_CH_CFG_HI	0x44	/* Configuration Register High */
+#define IDMA64_CH_CFG_LO	0x40	 
+#define IDMA64_CH_CFG_HI	0x44	 
 #define IDMA64_CH_SGR		0x48
 #define IDMA64_CH_DSR		0x50
 
 #define IDMA64_CH_LENGTH	0x58
 
-/* Bitfields in CTL_LO */
-#define IDMA64C_CTLL_INT_EN		(1 << 0)	/* irqs enabled? */
-#define IDMA64C_CTLL_DST_WIDTH(x)	((x) << 1)	/* bytes per element */
+ 
+#define IDMA64C_CTLL_INT_EN		(1 << 0)	 
+#define IDMA64C_CTLL_DST_WIDTH(x)	((x) << 1)	 
 #define IDMA64C_CTLL_SRC_WIDTH(x)	((x) << 4)
-#define IDMA64C_CTLL_DST_INC		(0 << 8)	/* DAR update/not */
+#define IDMA64C_CTLL_DST_INC		(0 << 8)	 
 #define IDMA64C_CTLL_DST_FIX		(1 << 8)
-#define IDMA64C_CTLL_SRC_INC		(0 << 10)	/* SAR update/not */
+#define IDMA64C_CTLL_SRC_INC		(0 << 10)	 
 #define IDMA64C_CTLL_SRC_FIX		(1 << 10)
-#define IDMA64C_CTLL_DST_MSIZE(x)	((x) << 11)	/* burst, #elements */
+#define IDMA64C_CTLL_DST_MSIZE(x)	((x) << 11)	 
 #define IDMA64C_CTLL_SRC_MSIZE(x)	((x) << 14)
-#define IDMA64C_CTLL_FC_M2P		(1 << 20)	/* mem-to-periph */
-#define IDMA64C_CTLL_FC_P2M		(2 << 20)	/* periph-to-mem */
-#define IDMA64C_CTLL_LLP_D_EN		(1 << 27)	/* dest block chain */
-#define IDMA64C_CTLL_LLP_S_EN		(1 << 28)	/* src block chain */
+#define IDMA64C_CTLL_FC_M2P		(1 << 20)	 
+#define IDMA64C_CTLL_FC_P2M		(2 << 20)	 
+#define IDMA64C_CTLL_LLP_D_EN		(1 << 27)	 
+#define IDMA64C_CTLL_LLP_S_EN		(1 << 28)	 
 
-/* Bitfields in CTL_HI */
+ 
 #define IDMA64C_CTLH_BLOCK_TS_MASK	((1 << 17) - 1)
 #define IDMA64C_CTLH_BLOCK_TS(x)	((x) & IDMA64C_CTLH_BLOCK_TS_MASK)
 #define IDMA64C_CTLH_DONE		(1 << 17)
 
-/* Bitfields in CFG_LO */
-#define IDMA64C_CFGL_DST_BURST_ALIGN	(1 << 0)	/* dst burst align */
-#define IDMA64C_CFGL_SRC_BURST_ALIGN	(1 << 1)	/* src burst align */
+ 
+#define IDMA64C_CFGL_DST_BURST_ALIGN	(1 << 0)	 
+#define IDMA64C_CFGL_SRC_BURST_ALIGN	(1 << 1)	 
 #define IDMA64C_CFGL_CH_SUSP		(1 << 8)
 #define IDMA64C_CFGL_FIFO_EMPTY		(1 << 9)
-#define IDMA64C_CFGL_CH_DRAIN		(1 << 10)	/* drain FIFO */
-#define IDMA64C_CFGL_DST_OPT_BL		(1 << 20)	/* optimize dst burst length */
-#define IDMA64C_CFGL_SRC_OPT_BL		(1 << 21)	/* optimize src burst length */
+#define IDMA64C_CFGL_CH_DRAIN		(1 << 10)	 
+#define IDMA64C_CFGL_DST_OPT_BL		(1 << 20)	 
+#define IDMA64C_CFGL_SRC_OPT_BL		(1 << 21)	 
 
-/* Bitfields in CFG_HI */
-#define IDMA64C_CFGH_SRC_PER(x)		((x) << 0)	/* src peripheral */
-#define IDMA64C_CFGH_DST_PER(x)		((x) << 4)	/* dst peripheral */
+ 
+#define IDMA64C_CFGH_SRC_PER(x)		((x) << 0)	 
+#define IDMA64C_CFGH_DST_PER(x)		((x) << 4)	 
 #define IDMA64C_CFGH_RD_ISSUE_THD(x)	((x) << 8)
 #define IDMA64C_CFGH_WR_ISSUE_THD(x)	((x) << 18)
 
-/* Interrupt registers */
+ 
 
 #define IDMA64_INT_XFER		0x00
 #define IDMA64_INT_BLOCK	0x08
@@ -78,21 +74,21 @@
 #define IDMA64_INT_DST_TRAN	0x18
 #define IDMA64_INT_ERROR	0x20
 
-#define IDMA64_RAW(x)		(0x2c0 + IDMA64_INT_##x)	/* r */
-#define IDMA64_STATUS(x)	(0x2e8 + IDMA64_INT_##x)	/* r (raw & mask) */
-#define IDMA64_MASK(x)		(0x310 + IDMA64_INT_##x)	/* rw (set = irq enabled) */
-#define IDMA64_CLEAR(x)		(0x338 + IDMA64_INT_##x)	/* w (ack, affects "raw") */
+#define IDMA64_RAW(x)		(0x2c0 + IDMA64_INT_##x)	 
+#define IDMA64_STATUS(x)	(0x2e8 + IDMA64_INT_##x)	 
+#define IDMA64_MASK(x)		(0x310 + IDMA64_INT_##x)	 
+#define IDMA64_CLEAR(x)		(0x338 + IDMA64_INT_##x)	 
 
-/* Common registers */
+ 
 
-#define IDMA64_STATUS_INT	0x360	/* r */
+#define IDMA64_STATUS_INT	0x360	 
 #define IDMA64_CFG		0x398
 #define IDMA64_CH_EN		0x3a0
 
-/* Bitfields in CFG */
+ 
 #define IDMA64_CFG_DMA_EN		(1 << 0)
 
-/* Hardware descriptor for Linked LIst transfers */
+ 
 struct idma64_lli {
 	u64		sar;
 	u64		dar;
@@ -129,7 +125,7 @@ struct idma64_chan {
 
 	void __iomem *regs;
 
-	/* hardware configuration */
+	 
 	enum dma_transfer_direction direction;
 	unsigned int mask;
 	struct dma_slave_config config;
@@ -185,7 +181,7 @@ struct idma64 {
 
 	void __iomem *regs;
 
-	/* channels */
+	 
 	unsigned short all_chan_mask;
 	struct idma64_chan *chan;
 };
@@ -210,14 +206,7 @@ static inline void idma64_writel(struct idma64 *idma64, int offset, u32 value)
 #define dma_writel(idma64, reg, value)		\
 	idma64_writel(idma64, IDMA64_##reg, (value))
 
-/**
- * struct idma64_chip - representation of iDMA 64-bit controller hardware
- * @dev:		struct device of the DMA controller
- * @sysdev:		struct device of the physical device that does DMA
- * @irq:		irq line
- * @regs:		memory mapped I/O space
- * @idma64:		struct idma64 that is filed by idma64_probe()
- */
+ 
 struct idma64_chip {
 	struct device	*dev;
 	struct device	*sysdev;
@@ -226,4 +215,4 @@ struct idma64_chip {
 	struct idma64	*idma64;
 };
 
-#endif /* __DMA_IDMA64_H__ */
+#endif  

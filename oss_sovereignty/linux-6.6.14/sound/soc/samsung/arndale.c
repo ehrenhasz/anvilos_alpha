@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2014, Insignal Co., Ltd.
-//
-//  Author: Claude <claude@insginal.co.kr>
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of_device.h>
@@ -59,7 +59,7 @@ static int arndale_wm1811_hw_params(struct snd_pcm_substream *substream,
 	struct snd_soc_dai *codec_dai = asoc_rtd_to_codec(rtd, 0);
 	unsigned int rfs, rclk;
 
-	/* Ensure AIF1CLK is >= 3 MHz for optimal performance */
+	 
 	if (params_width(params) == 24)
 		rfs = 384;
 	else if (params_rate(params) == 8000 || params_rate(params) == 11025)
@@ -69,13 +69,7 @@ static int arndale_wm1811_hw_params(struct snd_pcm_substream *substream,
 
 	rclk = params_rate(params) * rfs;
 
-	/*
-	 * We add 1 to the frequency value to ensure proper EPLL setting
-	 * for each audio sampling rate (see epll_24mhz_tbl in drivers/clk/
-	 * samsung/clk-exynos5250.c for list of available EPLL rates).
-	 * The CODEC uses clk API and the value will be rounded hence the MCLK1
-	 * clock's frequency will still be exact multiple of the sample rate.
-	 */
+	 
 	return snd_soc_dai_set_sysclk(codec_dai, WM8994_SYSCLK_MCLK1,
 					rclk + 1, SND_SOC_CLOCK_IN);
 }

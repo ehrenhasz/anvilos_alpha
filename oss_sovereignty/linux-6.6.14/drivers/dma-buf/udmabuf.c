@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/cred.h>
 #include <linux/device.h>
 #include <linux/dma-buf.h>

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Pengutronix, Jan Luebbe <kernel@pengutronix.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/edac.h>
@@ -14,7 +12,7 @@
 #include "edac_device.h"
 #include "edac_module.h"
 
-/************************ EDAC MC (DDR RAM) ********************************/
+ 
 
 #define SDRAM_NUM_CS 4
 
@@ -70,23 +68,23 @@
 
 struct axp_mc_drvdata {
 	void __iomem *base;
-	/* width in bytes */
+	 
 	unsigned int width;
-	/* bank interleaving */
+	 
 	bool cs_addr_sel[SDRAM_NUM_CS];
 
 	char msg[128];
 };
 
-/* derived from "DRAM Address Multiplexing" in the ARMADA XP Functional Spec */
+ 
 static uint32_t axp_mc_calc_address(struct axp_mc_drvdata *drvdata,
 				    uint8_t cs, uint8_t bank, uint16_t row,
 				    uint16_t col)
 {
 	if (drvdata->width == 8) {
-		/* 64 bit */
+		 
 		if (drvdata->cs_addr_sel[cs])
-			/* bank interleaved */
+			 
 			return (((row & 0xfff8) << 16) |
 				((bank & 0x7) << 16) |
 				((row & 0x7) << 13) |
@@ -96,9 +94,9 @@ static uint32_t axp_mc_calc_address(struct axp_mc_drvdata *drvdata,
 				 ((bank & 0x7) << 13) |
 				 ((col & 0x3ff)) << 3));
 	} else if (drvdata->width == 4) {
-		/* 32 bit */
+		 
 		if (drvdata->cs_addr_sel[cs])
-			/* bank interleaved */
+			 
 			return (((row & 0xfff0) << 15) |
 				((bank & 0x7) << 16) |
 				((row & 0xf) << 12) |
@@ -108,9 +106,9 @@ static uint32_t axp_mc_calc_address(struct axp_mc_drvdata *drvdata,
 				 ((bank & 0x7) << 12) |
 				 ((col & 0x3ff)) << 2));
 	} else {
-		/* 16 bit */
+		 
 		if (drvdata->cs_addr_sel[cs])
-			/* bank interleaved */
+			 
 			return (((row & 0xffe0) << 14) |
 				((bank & 0x7) << 16) |
 				((row & 0x1f) << 11) |
@@ -141,13 +139,13 @@ static void axp_mc_check(struct mem_ctl_info *mci)
 	cause_err = readl(drvdata->base + SDRAM_ERR_CAUSE_ERR_REG);
 	cause_msg = readl(drvdata->base + SDRAM_ERR_CAUSE_MSG_REG);
 
-	/* clear cause registers */
+	 
 	writel(~(SDRAM_ERR_CAUSE_DBE_MASK | SDRAM_ERR_CAUSE_SBE_MASK),
 	       drvdata->base + SDRAM_ERR_CAUSE_ERR_REG);
 	writel(~(SDRAM_ERR_CAUSE_DBE_MASK | SDRAM_ERR_CAUSE_SBE_MASK),
 	       drvdata->base + SDRAM_ERR_CAUSE_MSG_REG);
 
-	/* clear error counter registers */
+	 
 	if (cnt_sbe)
 		writel(0, drvdata->base + SDRAM_ERR_SBE_COUNT_REG);
 	if (cnt_dbe)
@@ -168,23 +166,23 @@ static void axp_mc_check(struct mem_ctl_info *mci)
 			dev_warn(mci->pdev, "inconsistent DBE count detected\n");
 	}
 
-	/* report earlier errors */
+	 
 	if (cnt_sbe)
 		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci,
-				     cnt_sbe, /* error count */
-				     0, 0, 0, /* pfn, offset, syndrome */
-				     -1, -1, -1, /* top, mid, low layer */
+				     cnt_sbe,  
+				     0, 0, 0,  
+				     -1, -1, -1,  
 				     mci->ctl_name,
 				     "details unavailable (multiple errors)");
 	if (cnt_dbe)
 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci,
-				     cnt_dbe, /* error count */
-				     0, 0, 0, /* pfn, offset, syndrome */
-				     -1, -1, -1, /* top, mid, low layer */
+				     cnt_dbe,  
+				     0, 0, 0,  
+				     -1, -1, -1,  
 				     mci->ctl_name,
 				     "details unavailable (multiple errors)");
 
-	/* report details for most recent error */
+	 
 	cs_val   = (addr & SDRAM_ERR_ADDR_CS_MASK) >> SDRAM_ERR_ADDR_CS_OFFSET;
 	bank_val = (addr & SDRAM_ERR_ADDR_BANK_MASK) >> SDRAM_ERR_ADDR_BANK_OFFSET;
 	row_val  = (calc_ecc & SDRAM_ERR_CALC_ECC_ROW_MASK) >> SDRAM_ERR_CALC_ECC_ROW_OFFSET;
@@ -192,26 +190,26 @@ static void axp_mc_check(struct mem_ctl_info *mci)
 	syndrome_val = (recv_ecc ^ calc_ecc) & 0xff;
 	addr_val = axp_mc_calc_address(drvdata, cs_val, bank_val, row_val,
 				       col_val);
-	msg += sprintf(msg, "row=0x%04x ", row_val); /* 11 chars */
-	msg += sprintf(msg, "bank=0x%x ", bank_val); /*  9 chars */
-	msg += sprintf(msg, "col=0x%04x ", col_val); /* 11 chars */
-	msg += sprintf(msg, "cs=%d", cs_val);	     /*  4 chars */
+	msg += sprintf(msg, "row=0x%04x ", row_val);  
+	msg += sprintf(msg, "bank=0x%x ", bank_val);  
+	msg += sprintf(msg, "col=0x%04x ", col_val);  
+	msg += sprintf(msg, "cs=%d", cs_val);	      
 
 	if (!(addr & SDRAM_ERR_ADDR_TYPE_MASK)) {
 		edac_mc_handle_error(HW_EVENT_ERR_CORRECTED, mci,
-				     1,	/* error count */
+				     1,	 
 				     addr_val >> PAGE_SHIFT,
 				     addr_val & ~PAGE_MASK,
 				     syndrome_val,
-				     cs_val, -1, -1, /* top, mid, low layer */
+				     cs_val, -1, -1,  
 				     mci->ctl_name, drvdata->msg);
 	} else {
 		edac_mc_handle_error(HW_EVENT_ERR_UNCORRECTED, mci,
-				     1,	/* error count */
+				     1,	 
 				     addr_val >> PAGE_SHIFT,
 				     addr_val & ~PAGE_MASK,
 				     syndrome_val,
-				     cs_val, -1, -1, /* top, mid, low layer */
+				     cs_val, -1, -1,  
 				     mci->ctl_name, drvdata->msg);
 	}
 }
@@ -225,10 +223,10 @@ static void axp_mc_read_config(struct mem_ctl_info *mci)
 
 	config = readl(drvdata->base + SDRAM_CONFIG_REG);
 	if (config & SDRAM_CONFIG_BUS_WIDTH_MASK)
-		/* 64 bit */
+		 
 		drvdata->width = 8;
 	else
-		/* 32 bit */
+		 
 		drvdata->width = 4;
 
 	addr_ctrl = readl(drvdata->base + SDRAM_ADDR_CTRL_REG);
@@ -247,22 +245,22 @@ static void axp_mc_read_config(struct mem_ctl_info *mci)
 			    ((addr_ctrl & SDRAM_ADDR_CTRL_SIZE_LOW_MASK(i)) >> SDRAM_ADDR_CTRL_SIZE_LOW_OFFSET(i)));
 
 		switch (cs_size) {
-		case 0: /* 2GBit */
+		case 0:  
 			dimm->nr_pages = 524288;
 			break;
-		case 1: /* 256MBit */
+		case 1:  
 			dimm->nr_pages = 65536;
 			break;
-		case 2: /* 512MBit */
+		case 2:  
 			dimm->nr_pages = 131072;
 			break;
-		case 3: /* 1GBit */
+		case 3:  
 			dimm->nr_pages = 262144;
 			break;
-		case 4: /* 4GBit */
+		case 4:  
 			dimm->nr_pages = 1048576;
 			break;
-		case 5: /* 8GBit */
+		case 5:  
 			dimm->nr_pages = 2097152;
 			break;
 		}
@@ -325,20 +323,20 @@ static int axp_mc_probe(struct platform_device *pdev)
 
 	axp_mc_read_config(mci);
 
-	/* These SoCs have a reduced width bus */
+	 
 	if (of_machine_is_compatible("marvell,armada380") ||
 	    of_machine_is_compatible("marvell,armadaxp-98dx3236"))
 		drvdata->width /= 2;
 
-	/* configure SBE threshold */
-	/* it seems that SBEs are not captured otherwise */
+	 
+	 
 	writel(1 << SDRAM_ERR_CTRL_THR_OFFSET, drvdata->base + SDRAM_ERR_CTRL_REG);
 
-	/* clear cause registers */
+	 
 	writel(~(SDRAM_ERR_CAUSE_DBE_MASK | SDRAM_ERR_CAUSE_SBE_MASK), drvdata->base + SDRAM_ERR_CAUSE_ERR_REG);
 	writel(~(SDRAM_ERR_CAUSE_DBE_MASK | SDRAM_ERR_CAUSE_SBE_MASK), drvdata->base + SDRAM_ERR_CAUSE_MSG_REG);
 
-	/* clear counter registers */
+	 
 	writel(0, drvdata->base + SDRAM_ERR_SBE_COUNT_REG);
 	writel(0, drvdata->base + SDRAM_ERR_DBE_COUNT_REG);
 
@@ -371,14 +369,14 @@ static struct platform_driver axp_mc_driver = {
 	},
 };
 
-/************************ EDAC Device (L2 Cache) ***************************/
+ 
 
 struct aurora_l2_drvdata {
 	void __iomem *base;
 
 	char msg[128];
 
-	/* error injection via debugfs */
+	 
 	uint32_t inject_addr;
 	uint32_t inject_mask;
 	uint8_t inject_ctl;
@@ -413,7 +411,7 @@ static void aurora_l2_check(struct edac_device_ctl_info *dci)
 
 	cnt_ce = (cnt & AURORA_ERR_CNT_CE_MASK) >> AURORA_ERR_CNT_CE_OFFSET;
 	cnt_ue = (cnt & AURORA_ERR_CNT_UE_MASK) >> AURORA_ERR_CNT_UE_OFFSET;
-	/* clear error counter registers */
+	 
 	if (cnt_ce || cnt_ue)
 		writel(AURORA_ERR_CNT_CLR, drvdata->base + AURORA_ERR_CNT_REG);
 
@@ -463,10 +461,10 @@ static void aurora_l2_check(struct edac_device_ctl_info *dci)
 	len += scnprintf(msg+len, size-len, "index=0x%x ", (way_cap & AURORA_ERR_WAY_IDX_MSK) >> AURORA_ERR_WAY_IDX_OFF);
 	len += scnprintf(msg+len, size-len, "way=0x%x", (way_cap & AURORA_ERR_WAY_CAP_WAY_MASK) >> AURORA_ERR_WAY_CAP_WAY_OFFSET);
 
-	/* clear error capture registers */
+	 
 	writel(AURORA_ERR_ATTR_CAP_VALID, drvdata->base + AURORA_ERR_ATTR_CAP_REG);
 	if (err) {
-		/* UnCorrECC or TagParity */
+		 
 		if (cnt_ue)
 			cnt_ue--;
 		edac_device_handle_ue(dci, 0, 0, drvdata->msg);
@@ -477,7 +475,7 @@ static void aurora_l2_check(struct edac_device_ctl_info *dci)
 	}
 
 clear_remaining:
-	/* report remaining errors */
+	 
 	while (cnt_ue--)
 		edac_device_handle_ue(dci, 0, 0, "details unavailable (multiple errors)");
 	while (cnt_ce--)
@@ -538,7 +536,7 @@ static int aurora_l2_probe(struct platform_device *pdev)
 	dci->ctl_name = id ? id->compatible : "unknown";
 	dci->dev_name = dev_name(&pdev->dev);
 
-	/* clear registers */
+	 
 	writel(AURORA_ERR_CNT_CLR, drvdata->base + AURORA_ERR_CNT_REG);
 	writel(AURORA_ERR_ATTR_CAP_VALID, drvdata->base + AURORA_ERR_ATTR_CAP_REG);
 
@@ -588,7 +586,7 @@ static struct platform_driver aurora_l2_driver = {
 	},
 };
 
-/************************ Driver registration ******************************/
+ 
 
 static struct platform_driver * const drivers[] = {
 	&axp_mc_driver,
@@ -602,7 +600,7 @@ static int __init armada_xp_edac_init(void)
 	if (ghes_get_devices())
 		return -EBUSY;
 
-	/* only polling is supported */
+	 
 	edac_op_state = EDAC_OPSTATE_POLL;
 
 	res = platform_register_drivers(drivers, ARRAY_SIZE(drivers));

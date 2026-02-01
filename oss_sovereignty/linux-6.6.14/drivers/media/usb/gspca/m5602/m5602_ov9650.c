@@ -1,17 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Driver for the ov9650 sensor
- *
- * Copyright (C) 2008 Erik Andrén
- * Copyright (C) 2007 Ilyes Gouta. Based on the m5603x Linux Driver Project.
- * Copyright (C) 2005 m5603x Linux Driver Project <m5602@x3ng.com.br>
- *
- * Portions of code to USB interface and ALi driver software,
- * Copyright (c) 2006 Willem Duinker
- * v4l2 interface modeled after the V4L2 driver
- * for SN9C10x PC Camera Controllers
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -21,7 +10,7 @@ static int ov9650_s_ctrl(struct v4l2_ctrl *ctrl);
 static void ov9650_dump_registers(struct sd *sd);
 
 static const unsigned char preinit_ov9650[][3] = {
-	/* [INITCAM] */
+	 
 	{BRIDGE, M5602_XB_MCU_CLK_DIV, 0x02},
 	{BRIDGE, M5602_XB_MCU_CLK_CTRL, 0xb0},
 	{BRIDGE, M5602_XB_SEN_CLK_DIV, 0x00},
@@ -37,16 +26,16 @@ static const unsigned char preinit_ov9650[][3] = {
 	{BRIDGE, M5602_XB_GPIO_DAT_H, 0x00},
 	{BRIDGE, M5602_XB_GPIO_DAT, 0x00},
 	{BRIDGE, M5602_XB_I2C_CLK_DIV, 0x0a},
-	/* Reset chip */
+	 
 	{SENSOR, OV9650_COM7, OV9650_REGISTER_RESET},
-	/* Enable double clock */
+	 
 	{SENSOR, OV9650_CLKRC, 0x80},
-	/* Do something out of spec with the power */
+	 
 	{SENSOR, OV9650_OFON, 0x40}
 };
 
 static const unsigned char init_ov9650[][3] = {
-	/* [INITCAM] */
+	 
 	{BRIDGE, M5602_XB_MCU_CLK_DIV, 0x02},
 	{BRIDGE, M5602_XB_MCU_CLK_CTRL, 0xb0},
 	{BRIDGE, M5602_XB_SEN_CLK_DIV, 0x00},
@@ -63,101 +52,93 @@ static const unsigned char init_ov9650[][3] = {
 	{BRIDGE, M5602_XB_GPIO_DAT, 0x00},
 	{BRIDGE, M5602_XB_I2C_CLK_DIV, 0x0a},
 
-	/* Reset chip */
+	 
 	{SENSOR, OV9650_COM7, OV9650_REGISTER_RESET},
-	/* One extra reset is needed in order to make the sensor behave
-	   properly when resuming from ram, could be a timing issue */
+	 
 	{SENSOR, OV9650_COM7, OV9650_REGISTER_RESET},
 
-	/* Enable double clock */
+	 
 	{SENSOR, OV9650_CLKRC, 0x80},
-	/* Do something out of spec with the power */
+	 
 	{SENSOR, OV9650_OFON, 0x40},
 
-	/* Set fast AGC/AEC algorithm with unlimited step size */
+	 
 	{SENSOR, OV9650_COM8, OV9650_FAST_AGC_AEC |
 			      OV9650_AEC_UNLIM_STEP_SIZE},
 
 	{SENSOR, OV9650_CHLF, 0x10},
 	{SENSOR, OV9650_ARBLM, 0xbf},
 	{SENSOR, OV9650_ACOM38, 0x81},
-	/* Turn off color matrix coefficient double option */
+	 
 	{SENSOR, OV9650_COM16, 0x00},
-	/* Enable color matrix for RGB/YUV, Delay Y channel,
-	set output Y/UV delay to 1 */
+	 
 	{SENSOR, OV9650_COM13, 0x19},
-	/* Enable digital BLC, Set output mode to U Y V Y */
+	 
 	{SENSOR, OV9650_TSLB, 0x0c},
-	/* Limit the AGC/AEC stable upper region */
+	 
 	{SENSOR, OV9650_COM24, 0x00},
-	/* Enable HREF and some out of spec things */
+	 
 	{SENSOR, OV9650_COM12, 0x73},
-	/* Set all DBLC offset signs to positive and
-	do some out of spec stuff */
+	 
 	{SENSOR, OV9650_DBLC1, 0xdf},
 	{SENSOR, OV9650_COM21, 0x06},
 	{SENSOR, OV9650_RSVD35, 0x91},
-	/* Necessary, no camera stream without it */
+	 
 	{SENSOR, OV9650_RSVD16, 0x06},
 	{SENSOR, OV9650_RSVD94, 0x99},
 	{SENSOR, OV9650_RSVD95, 0x99},
 	{SENSOR, OV9650_RSVD96, 0x04},
-	/* Enable full range output */
+	 
 	{SENSOR, OV9650_COM15, 0x0},
-	/* Enable HREF at optical black, enable ADBLC bias,
-	enable ADBLC, reset timings at format change */
+	 
 	{SENSOR, OV9650_COM6, 0x4b},
-	/* Subtract 32 from the B channel bias */
+	 
 	{SENSOR, OV9650_BBIAS, 0xa0},
-	/* Subtract 32 from the Gb channel bias */
+	 
 	{SENSOR, OV9650_GbBIAS, 0xa0},
-	/* Do not bypass the analog BLC and to some out of spec stuff */
+	 
 	{SENSOR, OV9650_Gr_COM, 0x00},
-	/* Subtract 32 from the R channel bias */
+	 
 	{SENSOR, OV9650_RBIAS, 0xa0},
-	/* Subtract 32 from the R channel bias */
+	 
 	{SENSOR, OV9650_RBIAS, 0x0},
 	{SENSOR, OV9650_COM26, 0x80},
 	{SENSOR, OV9650_ACOMA9, 0x98},
-	/* Set the AGC/AEC stable region upper limit */
+	 
 	{SENSOR, OV9650_AEW, 0x68},
-	/* Set the AGC/AEC stable region lower limit */
+	 
 	{SENSOR, OV9650_AEB, 0x5c},
-	/* Set the high and low limit nibbles to 3 */
+	 
 	{SENSOR, OV9650_VPT, 0xc3},
-	/* Set the Automatic Gain Ceiling (AGC) to 128x,
-	drop VSYNC at frame drop,
-	limit exposure timing,
-	drop frame when the AEC step is larger than the exposure gap */
+	 
 	{SENSOR, OV9650_COM9, 0x6e},
-	/* Set VSYNC negative, Set RESET to SLHS (slave mode horizontal sync)
-	and set PWDN to SLVS (slave mode vertical sync) */
+	 
 	{SENSOR, OV9650_COM10, 0x42},
-	/* Set horizontal column start high to default value */
-	{SENSOR, OV9650_HSTART, 0x1a}, /* 210 */
-	/* Set horizontal column end */
-	{SENSOR, OV9650_HSTOP, 0xbf}, /* 1534 */
-	/* Complementing register to the two writes above */
+	 
+	{SENSOR, OV9650_HSTART, 0x1a},  
+	 
+	{SENSOR, OV9650_HSTOP, 0xbf},  
+	 
 	{SENSOR, OV9650_HREF, 0xb2},
-	/* Set vertical row start high bits */
+	 
 	{SENSOR, OV9650_VSTRT, 0x02},
-	/* Set vertical row end low bits */
+	 
 	{SENSOR, OV9650_VSTOP, 0x7e},
-	/* Set complementing vertical frame control */
+	 
 	{SENSOR, OV9650_VREF, 0x10},
 	{SENSOR, OV9650_ADC, 0x04},
 	{SENSOR, OV9650_HV, 0x40},
 
-	/* Enable denoise, and white-pixel erase */
+	 
 	{SENSOR, OV9650_COM22, OV9650_DENOISE_ENABLE |
 		 OV9650_WHITE_PIXEL_ENABLE |
 		 OV9650_WHITE_PIXEL_OPTION},
 
-	/* Enable VARIOPIXEL */
+	 
 	{SENSOR, OV9650_COM3, OV9650_VARIOPIXEL},
 	{SENSOR, OV9650_COM4, OV9650_QVGA_VARIOPIXEL},
 
-	/* Put the sensor in soft sleep mode */
+	 
 	{SENSOR, OV9650_COM2, OV9650_SOFT_SLEEP | OV9650_OUTPUT_DRIVE_2X},
 };
 
@@ -171,8 +152,7 @@ static const unsigned char res_init_ov9650[][3] = {
 	{BRIDGE, M5602_XB_SIG_INI, 0x01}
 };
 
-/* Vertically and horizontally flips the image if matched, needed for machines
-   where the sensor is mounted upside down */
+ 
 static
     const
 	struct dmi_system_id ov9650_flip_dmi_table[] = {
@@ -302,14 +282,13 @@ int ov9650_probe(struct sd *sd)
 			pr_info("Forcing an %s sensor\n", ov9650.name);
 			goto sensor_found;
 		}
-		/* If we want to force another sensor,
-		   don't try to probe this one */
+		 
 		return -ENODEV;
 	}
 
 	gspca_dbg(gspca_dev, D_PROBE, "Probing for an ov9650 sensor\n");
 
-	/* Run the pre-init before probing the sensor */
+	 
 	for (i = 0; i < ARRAY_SIZE(preinit_ov9650) && !err; i++) {
 		u8 data = preinit_ov9650[i][2];
 		if (preinit_ov9650[i][0] == SENSOR)
@@ -428,7 +407,7 @@ int ov9650_start(struct sd *sd)
 	if (width <= 320)
 		hor_offs /= 2;
 
-	/* Synthesize the vsync/hsync setup */
+	 
 	for (i = 0; i < ARRAY_SIZE(res_init_ov9650) && !err; i++) {
 		if (res_init_ov9650[i][0] == BRIDGE)
 			err = m5602_write_bridge(sd, res_init_ov9650[i][1],
@@ -556,21 +535,21 @@ static int ov9650_set_exposure(struct gspca_dev *gspca_dev, __s32 val)
 
 	gspca_dbg(gspca_dev, D_CONF, "Set exposure to %d\n", val);
 
-	/* The 6 MSBs */
+	 
 	i2c_data = (val >> 10) & 0x3f;
 	err = m5602_write_sensor(sd, OV9650_AECHM,
 				  &i2c_data, 1);
 	if (err < 0)
 		return err;
 
-	/* The 8 middle bits */
+	 
 	i2c_data = (val >> 2) & 0xff;
 	err = m5602_write_sensor(sd, OV9650_AECH,
 				  &i2c_data, 1);
 	if (err < 0)
 		return err;
 
-	/* The 2 LSBs */
+	 
 	i2c_data = val & 0x03;
 	err = m5602_write_sensor(sd, OV9650_COM1, &i2c_data, 1);
 	return err;
@@ -584,21 +563,20 @@ static int ov9650_set_gain(struct gspca_dev *gspca_dev, __s32 val)
 
 	gspca_dbg(gspca_dev, D_CONF, "Setting gain to %d\n", val);
 
-	/* The 2 MSB */
-	/* Read the OV9650_VREF register first to avoid
-	   corrupting the VREF high and low bits */
+	 
+	 
 	err = m5602_read_sensor(sd, OV9650_VREF, &i2c_data, 1);
 	if (err < 0)
 		return err;
 
-	/* Mask away all uninteresting bits */
+	 
 	i2c_data = ((val & 0x0300) >> 2) |
 			(i2c_data & 0x3f);
 	err = m5602_write_sensor(sd, OV9650_VREF, &i2c_data, 1);
 	if (err < 0)
 		return err;
 
-	/* The 8 LSBs */
+	 
 	i2c_data = val & 0xff;
 	err = m5602_write_sensor(sd, OV9650_GAIN, &i2c_data, 1);
 	return err;
@@ -648,7 +626,7 @@ static int ov9650_set_hvflip(struct gspca_dev *gspca_dev)
 	if (err < 0)
 		return err;
 
-	/* When vflip is toggled we need to readjust the bridge hsync/vsync */
+	 
 	if (gspca_dev->streaming)
 		err = ov9650_start(sd);
 
@@ -778,7 +756,7 @@ static void ov9650_dump_registers(struct sd *sd)
 		else
 			pr_info("register 0x%x is read only\n", address);
 
-		/* Restore original value */
+		 
 		m5602_write_sensor(sd, address, &old_value, 1);
 	}
 }

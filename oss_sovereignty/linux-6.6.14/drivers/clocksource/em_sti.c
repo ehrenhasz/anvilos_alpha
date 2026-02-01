@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Emma Mobile Timer Support - STI
- *
- *  Copyright (C) 2012 Magnus Damm
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/platform_device.h>
@@ -65,22 +61,22 @@ static int em_sti_enable(struct em_sti_priv *p)
 {
 	int ret;
 
-	/* enable clock */
+	 
 	ret = clk_enable(p->clk);
 	if (ret) {
 		dev_err(&p->pdev->dev, "cannot enable clock\n");
 		return ret;
 	}
 
-	/* reset the counter */
+	 
 	em_sti_write(p, STI_SET_H, 0x40000000);
 	em_sti_write(p, STI_SET_L, 0x00000000);
 
-	/* mask and clear pending interrupts */
+	 
 	em_sti_write(p, STI_INTENCLR, 3);
 	em_sti_write(p, STI_INTFFCLR, 3);
 
-	/* enable updates of counter registers */
+	 
 	em_sti_write(p, STI_CONTROL, 1);
 
 	return 0;
@@ -88,10 +84,10 @@ static int em_sti_enable(struct em_sti_priv *p)
 
 static void em_sti_disable(struct em_sti_priv *p)
 {
-	/* mask interrupts */
+	 
 	em_sti_write(p, STI_INTENCLR, 3);
 
-	/* stop clock */
+	 
 	clk_disable(p->clk);
 }
 
@@ -100,11 +96,7 @@ static u64 em_sti_count(struct em_sti_priv *p)
 	u64 ticks;
 	unsigned long flags;
 
-	/* the STI hardware buffers the 48-bit count, but to
-	 * break it out into two 32-bit access the registers
-	 * must be accessed in a certain order.
-	 * Always read STI_COUNT_H before STI_COUNT_L.
-	 */
+	 
 	raw_spin_lock_irqsave(&p->lock, flags);
 	ticks = (u64)(em_sti_read(p, STI_COUNT_H) & 0xffff) << 32;
 	ticks |= em_sti_read(p, STI_COUNT_L);
@@ -119,17 +111,17 @@ static u64 em_sti_set_next(struct em_sti_priv *p, u64 next)
 
 	raw_spin_lock_irqsave(&p->lock, flags);
 
-	/* mask compare A interrupt */
+	 
 	em_sti_write(p, STI_INTENCLR, 1);
 
-	/* update compare A value */
+	 
 	em_sti_write(p, STI_COMPA_H, next >> 32);
 	em_sti_write(p, STI_COMPA_L, next & 0xffffffff);
 
-	/* clear compare A interrupt source */
+	 
 	em_sti_write(p, STI_INTFFCLR, 1);
 
-	/* unmask compare A interrupt */
+	 
 	em_sti_write(p, STI_INTENSET, 1);
 
 	raw_spin_unlock_irqrestore(&p->lock, flags);
@@ -292,7 +284,7 @@ static int em_sti_probe(struct platform_device *pdev)
 	if (irq < 0)
 		return irq;
 
-	/* map memory, let base point to the STI instance */
+	 
 	p->base = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(p->base))
 		return PTR_ERR(p->base);
@@ -305,7 +297,7 @@ static int em_sti_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* get hold of clock */
+	 
 	p->clk = devm_clk_get(&pdev->dev, "sclk");
 	if (IS_ERR(p->clk)) {
 		dev_err(&pdev->dev, "cannot get clock\n");

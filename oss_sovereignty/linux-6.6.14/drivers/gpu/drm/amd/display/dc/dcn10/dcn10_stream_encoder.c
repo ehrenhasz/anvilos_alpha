@@ -1,27 +1,4 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "dc_bios_types.h"
@@ -59,50 +36,37 @@ void enc1_update_generic_info_packet(
 	uint32_t packet_index,
 	const struct dc_info_packet *info_packet)
 {
-	/* TODOFPGA Figure out a proper number for max_retries polling for lock
-	 * use 50 for now.
-	 */
+	 
 	uint32_t max_retries = 50;
 
-	/*we need turn on clock before programming AFMT block*/
+	 
 	REG_UPDATE(AFMT_CNTL, AFMT_AUDIO_CLOCK_EN, 1);
 
 	if (packet_index >= 8)
 		ASSERT(0);
 
-	/* poll dig_update_lock is not locked -> asic internal signal
-	 * assume otg master lock will unlock it
-	 */
-/*		REG_WAIT(AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_LOCK_STATUS,
-			0, 10, max_retries);*/
+	 
+ 
 
-	/* check if HW reading GSP memory */
+	 
 	REG_WAIT(AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_CONFLICT,
 			0, 10, max_retries);
 
-	/* HW does is not reading GSP memory not reading too long ->
-	 * something wrong. clear GPS memory access and notify?
-	 * hw SW is writing to GSP memory
-	 */
+	 
 	REG_UPDATE(AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_CONFLICT_CLR, 1);
 
-	/* choose which generic packet to use */
+	 
 	REG_UPDATE(AFMT_VBI_PACKET_CONTROL,
 			AFMT_GENERIC_INDEX, packet_index);
 
-	/* write generic packet header
-	 * (4th byte is for GENERIC0 only)
-	 */
+	 
 	REG_SET_4(AFMT_GENERIC_HDR, 0,
 			AFMT_GENERIC_HB0, info_packet->hb0,
 			AFMT_GENERIC_HB1, info_packet->hb1,
 			AFMT_GENERIC_HB2, info_packet->hb2,
 			AFMT_GENERIC_HB3, info_packet->hb3);
 
-	/* write generic packet contents
-	 * (we never use last 4 bytes)
-	 * there are 8 (0-7) mmDIG0_AFMT_GENERIC0_x registers
-	 */
+	 
 	{
 		const uint32_t *content =
 			(const uint32_t *) &info_packet->sb[0];
@@ -168,13 +132,11 @@ static void enc1_update_hdmi_info_packet(
 			packet_index,
 			info_packet);
 
-		/* enable transmission of packet(s) -
-		 * packet transmission begins on the next frame
-		 */
+		 
 		cont = 1;
-		/* send packet(s) every frame */
+		 
 		send = 1;
-		/* select line number to send packets on */
+		 
 		line = 2;
 	} else {
 		cont = 0;
@@ -182,7 +144,7 @@ static void enc1_update_hdmi_info_packet(
 		line = 0;
 	}
 
-	/* choose which generic packet control to use */
+	 
 	switch (packet_index) {
 	case 0:
 		REG_UPDATE_3(HDMI_GENERIC_PACKET_CONTROL0,
@@ -233,7 +195,7 @@ static void enc1_update_hdmi_info_packet(
 				HDMI_GENERIC1_LINE, line);
 		break;
 	default:
-		/* invalid HW packet index */
+		 
 		DC_LOG_WARNING(
 			"Invalid HW packet index: %s()\n",
 			__func__);
@@ -241,7 +203,7 @@ static void enc1_update_hdmi_info_packet(
 	}
 }
 
-/* setup stream encoder in dp mode */
+ 
 void enc1_stream_encoder_dp_set_stream_attribute(
 	struct stream_encoder *enc,
 	struct dc_crtc_timing *crtc_timing,
@@ -255,7 +217,7 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 	uint32_t misc1 = 0;
 	uint32_t h_blank;
 	uint32_t h_back_porch;
-	uint8_t synchronous_clock = 0; /* asynchronous mode */
+	uint8_t synchronous_clock = 0;  
 	uint8_t colorimetry_bpc;
 	uint8_t dp_pixel_encoding = 0;
 	uint8_t dp_component_depth = 0;
@@ -264,7 +226,7 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 	struct dc_crtc_timing hw_crtc_timing = *crtc_timing;
 
 	if (hw_crtc_timing.flags.INTERLACE) {
-		/*the input timing is in VESA spec format with Interlace flag =1*/
+		 
 		hw_crtc_timing.v_total /= 2;
 		hw_crtc_timing.v_border_top /= 2;
 		hw_crtc_timing.v_addressable /= 2;
@@ -274,7 +236,7 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 	}
 
 
-	/* set pixel encoding */
+	 
 	switch (hw_crtc_timing.pixel_encoding) {
 	case PIXEL_ENCODING_YCBCR422:
 		dp_pixel_encoding = DP_PIXEL_ENCODING_TYPE_YCBCR422;
@@ -284,17 +246,10 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 
 		if (hw_crtc_timing.flags.Y_ONLY)
 			if (hw_crtc_timing.display_color_depth != COLOR_DEPTH_666)
-				/* HW testing only, no use case yet.
-				 * Color depth of Y-only could be
-				 * 8, 10, 12, 16 bits
-				 */
+				 
 				dp_pixel_encoding = DP_PIXEL_ENCODING_TYPE_Y_ONLY;
 
-		/* Note: DP_MSA_MISC1 bit 7 is the indicator
-		 * of Y-only mode.
-		 * This bit is set in HW if register
-		 * DP_PIXEL_ENCODING is programmed to 0x4
-		 */
+		 
 		break;
 	case PIXEL_ENCODING_YCBCR420:
 		dp_pixel_encoding = DP_PIXEL_ENCODING_TYPE_YCBCR420;
@@ -305,17 +260,13 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 	}
 
 	misc1 = REG_READ(DP_MSA_MISC);
-	/* For YCbCr420 and BT2020 Colorimetry Formats, VSC SDP shall be used.
-	 * When MISC1, bit 6, is Set to 1, a Source device uses a VSC SDP to indicate the
-	 * Pixel Encoding/Colorimetry Format and that a Sink device shall ignore MISC1, bit 7,
-	 * and MISC0, bits 7:1 (MISC1, bit 7, and MISC0, bits 7:1, become "don't care").
-	 */
+	 
 	if (use_vsc_sdp_for_colorimetry)
 		misc1 = misc1 | 0x40;
 	else
 		misc1 = misc1 & ~0x40;
 
-	/* set color depth */
+	 
 	switch (hw_crtc_timing.display_color_depth) {
 	case COLOR_DEPTH_666:
 		dp_component_depth = DP_COMPONENT_PIXEL_DEPTH_6BPC;
@@ -337,12 +288,12 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 		break;
 	}
 
-	/* Set DP pixel encoding and component depth */
+	 
 	REG_UPDATE_2(DP_PIXEL_FORMAT,
 			DP_PIXEL_ENCODING, dp_pixel_encoding,
 			DP_COMPONENT_DEPTH, dp_component_depth);
 
-	/* set dynamic range and YCbCr range */
+	 
 
 	switch (hw_crtc_timing.display_color_depth) {
 	case COLOR_DEPTH_666:
@@ -367,29 +318,29 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 
 	switch (output_color_space) {
 	case COLOR_SPACE_SRGB:
-		misc1 = misc1 & ~0x80; /* bit7 = 0*/
+		misc1 = misc1 & ~0x80;  
 		break;
 	case COLOR_SPACE_SRGB_LIMITED:
-		misc0 = misc0 | 0x8; /* bit3=1 */
-		misc1 = misc1 & ~0x80; /* bit7 = 0*/
+		misc0 = misc0 | 0x8;  
+		misc1 = misc1 & ~0x80;  
 		break;
 	case COLOR_SPACE_YCBCR601:
 	case COLOR_SPACE_YCBCR601_LIMITED:
-		misc0 = misc0 | 0x8; /* bit3=1, bit4=0 */
-		misc1 = misc1 & ~0x80; /* bit7 = 0*/
+		misc0 = misc0 | 0x8;  
+		misc1 = misc1 & ~0x80;  
 		if (hw_crtc_timing.pixel_encoding == PIXEL_ENCODING_YCBCR422)
-			misc0 = misc0 | 0x2; /* bit2=0, bit1=1 */
+			misc0 = misc0 | 0x2;  
 		else if (hw_crtc_timing.pixel_encoding == PIXEL_ENCODING_YCBCR444)
-			misc0 = misc0 | 0x4; /* bit2=1, bit1=0 */
+			misc0 = misc0 | 0x4;  
 		break;
 	case COLOR_SPACE_YCBCR709:
 	case COLOR_SPACE_YCBCR709_LIMITED:
-		misc0 = misc0 | 0x18; /* bit3=1, bit4=1 */
-		misc1 = misc1 & ~0x80; /* bit7 = 0*/
+		misc0 = misc0 | 0x18;  
+		misc1 = misc1 & ~0x80;  
 		if (hw_crtc_timing.pixel_encoding == PIXEL_ENCODING_YCBCR422)
-			misc0 = misc0 | 0x2; /* bit2=0, bit1=1 */
+			misc0 = misc0 | 0x2;  
 		else if (hw_crtc_timing.pixel_encoding == PIXEL_ENCODING_YCBCR444)
-			misc0 = misc0 | 0x4; /* bit2=1, bit1=0 */
+			misc0 = misc0 | 0x4;  
 		break;
 	case COLOR_SPACE_2020_RGB_LIMITEDRANGE:
 	case COLOR_SPACE_2020_RGB_FULLRANGE:
@@ -406,23 +357,19 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 	case COLOR_SPACE_CUSTOMPOINTS:
 	case COLOR_SPACE_UNKNOWN:
 	case COLOR_SPACE_YCBCR709_BLACK:
-		/* do nothing */
+		 
 		break;
 	}
 
 	REG_SET(DP_MSA_COLORIMETRY, 0, DP_MSA_MISC0, misc0);
-	REG_WRITE(DP_MSA_MISC, misc1);   /* MSA_MISC1 */
+	REG_WRITE(DP_MSA_MISC, misc1);    
 
-	/* dcn new register
-	 * dc_crtc_timing is vesa dmt struct. data from edid
-	 */
+	 
 	REG_SET_2(DP_MSA_TIMING_PARAM1, 0,
 			DP_MSA_HTOTAL, hw_crtc_timing.h_total,
 			DP_MSA_VTOTAL, hw_crtc_timing.v_total);
 
-	/* calculate from vesa timing parameters
-	 * h_active_start related to leading edge of sync
-	 */
+	 
 
 	h_blank = hw_crtc_timing.h_total - hw_crtc_timing.h_border_left -
 			hw_crtc_timing.h_addressable - hw_crtc_timing.h_border_right;
@@ -430,7 +377,7 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 	h_back_porch = h_blank - hw_crtc_timing.h_front_porch -
 			hw_crtc_timing.h_sync_width;
 
-	/* start at beginning of left border */
+	 
 	h_active_start = hw_crtc_timing.h_sync_width + h_back_porch;
 
 
@@ -439,7 +386,7 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 			hw_crtc_timing.v_front_porch;
 
 
-	/* start at beginning of left border */
+	 
 	REG_SET_2(DP_MSA_TIMING_PARAM2, 0,
 		DP_MSA_HSTART, h_active_start,
 		DP_MSA_VSTART, v_active_start);
@@ -454,7 +401,7 @@ void enc1_stream_encoder_dp_set_stream_attribute(
 			DP_MSA_VSYNCPOLARITY,
 			!hw_crtc_timing.flags.VSYNC_POSITIVE_POLARITY);
 
-	/* HWDITH include border or overscan */
+	 
 	REG_SET_2(DP_MSA_TIMING_PARAM4, 0,
 		DP_MSA_HWIDTH, hw_crtc_timing.h_border_left +
 		hw_crtc_timing.h_addressable + hw_crtc_timing.h_border_right,
@@ -477,7 +424,7 @@ void enc1_stream_encoder_set_stream_attribute_helper(
 	REG_UPDATE(DIG_FE_CNTL, TMDS_COLOR_FORMAT, 0);
 }
 
-/* setup stream encoder in hdmi mode */
+ 
 void enc1_stream_encoder_hdmi_set_stream_attribute(
 	struct stream_encoder *enc,
 	struct dc_crtc_timing *crtc_timing,
@@ -500,7 +447,7 @@ void enc1_stream_encoder_hdmi_set_stream_attribute(
 
 	enc1_stream_encoder_set_stream_attribute_helper(enc1, crtc_timing);
 
-	/* setup HDMI engine */
+	 
 	REG_UPDATE_6(HDMI_CONTROL,
 		HDMI_PACKET_GEN_VERSION, 1,
 		HDMI_KEEPOUT_MODE, 1,
@@ -557,22 +504,15 @@ void enc1_stream_encoder_hdmi_set_stream_attribute(
 	}
 
 	if (actual_pix_clk_khz >= HDMI_CLOCK_CHANNEL_RATE_MORE_340M) {
-		/* enable HDMI data scrambler
-		 * HDMI_CLOCK_CHANNEL_RATE_MORE_340M
-		 * Clock channel frequency is 1/4 of character rate.
-		 */
+		 
 		REG_UPDATE_2(HDMI_CONTROL,
 			HDMI_DATA_SCRAMBLE_EN, 1,
 			HDMI_CLOCK_CHANNEL_RATE, 1);
 	} else if (crtc_timing->flags.LTE_340MCSC_SCRAMBLE) {
 
-		/* TODO: New feature for DCE11, still need to implement */
+		 
 
-		/* enable HDMI data scrambler
-		 * HDMI_CLOCK_CHANNEL_FREQ_EQUAL_TO_CHAR_RATE
-		 * Clock channel frequency is the same
-		 * as character rate
-		 */
+		 
 		REG_UPDATE_2(HDMI_CONTROL,
 			HDMI_DATA_SCRAMBLE_EN, 1,
 			HDMI_CLOCK_CHANNEL_RATE, 0);
@@ -586,7 +526,7 @@ void enc1_stream_encoder_hdmi_set_stream_attribute(
 
 	REG_UPDATE(HDMI_VBI_PACKET_CONTROL, HDMI_ACP_SEND, 0);
 
-	/* following belongs to audio */
+	 
 	REG_UPDATE(HDMI_INFOFRAME_CONTROL0, HDMI_AUDIO_INFO_SEND, 1);
 
 	REG_UPDATE(AFMT_INFOFRAME_CONTROL0, AFMT_AUDIO_INFO_UPDATE, 1);
@@ -597,7 +537,7 @@ void enc1_stream_encoder_hdmi_set_stream_attribute(
 	REG_UPDATE(HDMI_GC, HDMI_GC_AVMUTE, 0);
 }
 
-/* setup stream encoder in dvi mode */
+ 
 void enc1_stream_encoder_dvi_set_stream_attribute(
 	struct stream_encoder *enc,
 	struct dc_crtc_timing *crtc_timing,
@@ -637,7 +577,7 @@ void enc1_stream_encoder_set_throttled_vcp_size(
 				x),
 			26));
 
-	// If y rounds up to integer, carry it over to x.
+	
 	if (y >> 26) {
 		x += 1;
 		y = 0;
@@ -647,9 +587,9 @@ void enc1_stream_encoder_set_throttled_vcp_size(
 		DP_MSE_RATE_X, x,
 		DP_MSE_RATE_Y, y);
 
-	/* wait for update to be completed on the link */
-	/* i.e. DP_MSE_RATE_UPDATE_PENDING field (read only) */
-	/* is reset to 0 (not pending) */
+	 
+	 
+	 
 	REG_WAIT(DP_MSE_RATE_UPDATE, DP_MSE_RATE_UPDATE_PENDING,
 			0,
 			10, DP_MST_UPDATE_MAX_RETRY);
@@ -661,10 +601,10 @@ static void enc1_stream_encoder_update_hdmi_info_packets(
 {
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 
-	/* for bring up, disable dp double  TODO */
+	 
 	REG_UPDATE(HDMI_DB_CONTROL, HDMI_DB_DISABLE, 1);
 
-	/*Always add mandatory packets first followed by optional ones*/
+	 
 	enc1_update_hdmi_info_packet(enc1, 0, &info_frame->avi);
 	enc1_update_hdmi_info_packet(enc1, 1, &info_frame->hfvsif);
 	enc1_update_hdmi_info_packet(enc1, 2, &info_frame->gamut);
@@ -678,7 +618,7 @@ static void enc1_stream_encoder_stop_hdmi_info_packets(
 {
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 
-	/* stop generic packets 0 & 1 on HDMI */
+	 
 	REG_SET_6(HDMI_GENERIC_PACKET_CONTROL0, 0,
 		HDMI_GENERIC1_CONT, 0,
 		HDMI_GENERIC1_LINE, 0,
@@ -687,7 +627,7 @@ static void enc1_stream_encoder_stop_hdmi_info_packets(
 		HDMI_GENERIC0_LINE, 0,
 		HDMI_GENERIC0_SEND, 0);
 
-	/* stop generic packets 2 & 3 on HDMI */
+	 
 	REG_SET_6(HDMI_GENERIC_PACKET_CONTROL1, 0,
 		HDMI_GENERIC0_CONT, 0,
 		HDMI_GENERIC0_LINE, 0,
@@ -696,7 +636,7 @@ static void enc1_stream_encoder_stop_hdmi_info_packets(
 		HDMI_GENERIC1_LINE, 0,
 		HDMI_GENERIC1_SEND, 0);
 
-	/* stop generic packets 2 & 3 on HDMI */
+	 
 	REG_SET_6(HDMI_GENERIC_PACKET_CONTROL2, 0,
 		HDMI_GENERIC0_CONT, 0,
 		HDMI_GENERIC0_LINE, 0,
@@ -724,56 +664,43 @@ void enc1_stream_encoder_update_dp_info_packets(
 	if (info_frame->vsc.valid)
 		enc1_update_generic_info_packet(
 					enc1,
-					0,  /* packetIndex */
+					0,   
 					&info_frame->vsc);
 
-	/* VSC SDP at packetIndex 1 is used by PSR in DMCUB FW.
-	 * Note that the enablement of GSP1 is not done below,
-	 * it's done in FW.
-	 */
+	 
 	if (info_frame->vsc.valid)
 		enc1_update_generic_info_packet(
 					enc1,
-					1,  /* packetIndex */
+					1,   
 					&info_frame->vsc);
 
 	if (info_frame->spd.valid)
 		enc1_update_generic_info_packet(
 				enc1,
-				2,  /* packetIndex */
+				2,   
 				&info_frame->spd);
 
 	if (info_frame->hdrsmd.valid)
 		enc1_update_generic_info_packet(
 				enc1,
-				3,  /* packetIndex */
+				3,   
 				&info_frame->hdrsmd);
 
-	/* packetIndex 4 is used for send immediate sdp message, and please
-	 * use other packetIndex (such as 5,6) for other info packet
-	 */
+	 
 
 	if (info_frame->adaptive_sync.valid)
 		enc1_update_generic_info_packet(
 				enc1,
-				5,  /* packetIndex */
+				5,   
 				&info_frame->adaptive_sync);
 
-	/* enable/disable transmission of packet(s).
-	 * If enabled, packet transmission begins on the next frame
-	 */
+	 
 	REG_UPDATE(DP_SEC_CNTL, DP_SEC_GSP0_ENABLE, info_frame->vsc.valid);
 	REG_UPDATE(DP_SEC_CNTL, DP_SEC_GSP2_ENABLE, info_frame->spd.valid);
 	REG_UPDATE(DP_SEC_CNTL, DP_SEC_GSP3_ENABLE, info_frame->hdrsmd.valid);
 	REG_UPDATE(DP_SEC_CNTL, DP_SEC_GSP5_ENABLE, info_frame->adaptive_sync.valid);
 
-	/* This bit is the master enable bit.
-	 * When enabling secondary stream engine,
-	 * this master bit must also be set.
-	 * This register shared with audio info frame.
-	 * Therefore we need to enable master bit
-	 * if at least on of the fields is not 0
-	 */
+	 
 	value = REG_READ(DP_SEC_CNTL);
 	if (value)
 		REG_UPDATE(DP_SEC_CNTL, DP_SEC_STREAM_ENABLE, 1);
@@ -787,51 +714,41 @@ void enc1_stream_encoder_send_immediate_sdp_message(
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 	uint32_t value = 0;
 
-	/* TODOFPGA Figure out a proper number for max_retries polling for lock
-	 * use 50 for now.
-	 */
+	 
 	uint32_t max_retries = 50;
 
-	/* check if GSP4 is transmitted */
+	 
 	REG_WAIT(DP_SEC_CNTL2, DP_SEC_GSP4_SEND_PENDING,
 		0, 10, max_retries);
 
-	/* disable GSP4 transmitting */
+	 
 	REG_UPDATE(DP_SEC_CNTL2, DP_SEC_GSP4_SEND, 0);
 
-	/* transmit GSP4 at the earliest time in a frame */
+	 
 	REG_UPDATE(DP_SEC_CNTL2, DP_SEC_GSP4_SEND_ANY_LINE, 1);
 
-	/*we need turn on clock before programming AFMT block*/
+	 
 	REG_UPDATE(AFMT_CNTL, AFMT_AUDIO_CLOCK_EN, 1);
 
-	/* check if HW reading GSP memory */
+	 
 	REG_WAIT(AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_CONFLICT,
 			0, 10, max_retries);
 
-	/* HW does is not reading GSP memory not reading too long ->
-	 * something wrong. clear GPS memory access and notify?
-	 * hw SW is writing to GSP memory
-	 */
+	 
 	REG_UPDATE(AFMT_VBI_PACKET_CONTROL, AFMT_GENERIC_CONFLICT_CLR, 1);
 
-	/* use generic packet 4 for immediate sdp message */
+	 
 	REG_UPDATE(AFMT_VBI_PACKET_CONTROL,
 			AFMT_GENERIC_INDEX, 4);
 
-	/* write generic packet header
-	 * (4th byte is for GENERIC0 only)
-	 */
+	 
 	REG_SET_4(AFMT_GENERIC_HDR, 0,
 			AFMT_GENERIC_HB0, custom_sdp_message[0],
 			AFMT_GENERIC_HB1, custom_sdp_message[1],
 			AFMT_GENERIC_HB2, custom_sdp_message[2],
 			AFMT_GENERIC_HB3, custom_sdp_message[3]);
 
-	/* write generic packet contents
-	 * (we never use last 4 bytes)
-	 * there are 8 (0-7) mmDIG0_AFMT_GENERIC0_x registers
-	 */
+	 
 	{
 		const uint32_t *content =
 			(const uint32_t *) &custom_sdp_message[4];
@@ -846,28 +763,18 @@ void enc1_stream_encoder_send_immediate_sdp_message(
 		REG_WRITE(AFMT_GENERIC_7, *content);
 	}
 
-	/* check whether GENERIC4 registers double buffer update in immediate mode
-	 * is pending
-	 */
+	 
 	REG_WAIT(AFMT_VBI_PACKET_CONTROL1, AFMT_GENERIC4_IMMEDIATE_UPDATE_PENDING,
 			0, 10, max_retries);
 
-	/* atomically update double-buffered GENERIC4 registers in immediate mode
-	 * (update immediately)
-	 */
+	 
 	REG_UPDATE(AFMT_VBI_PACKET_CONTROL1,
 			AFMT_GENERIC4_IMMEDIATE_UPDATE, 1);
 
-	/* enable GSP4 transmitting */
+	 
 	REG_UPDATE(DP_SEC_CNTL2, DP_SEC_GSP4_SEND, 1);
 
-	/* This bit is the master enable bit.
-	 * When enabling secondary stream engine,
-	 * this master bit must also be set.
-	 * This register shared with audio info frame.
-	 * Therefore we need to enable master bit
-	 * if at least on of the fields is not 0
-	 */
+	 
 	value = REG_READ(DP_SEC_CNTL);
 	if (value)
 		REG_UPDATE(DP_SEC_CNTL, DP_SEC_STREAM_ENABLE, 1);
@@ -876,7 +783,7 @@ void enc1_stream_encoder_send_immediate_sdp_message(
 void enc1_stream_encoder_stop_dp_info_packets(
 	struct stream_encoder *enc)
 {
-	/* stop generic packets on DP */
+	 
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 	uint32_t value = 0;
 
@@ -892,9 +799,7 @@ void enc1_stream_encoder_stop_dp_info_packets(
 		DP_SEC_MPG_ENABLE, 0,
 		DP_SEC_STREAM_ENABLE, 0);
 
-	/* this register shared with audio info frame.
-	 * therefore we need to keep master enabled
-	 * if at least one of the fields is not 0 */
+	 
 	value = REG_READ(DP_SEC_CNTL);
 	if (value)
 		REG_UPDATE(DP_SEC_CNTL, DP_SEC_STREAM_ENABLE, 1);
@@ -909,53 +814,35 @@ void enc1_stream_encoder_dp_blank(
 	uint32_t  reg1 = 0;
 	uint32_t max_retries = DP_BLANK_MAX_RETRY * 10;
 
-	/* Note: For CZ, we are changing driver default to disable
-	 * stream deferred to next VBLANK. If results are positive, we
-	 * will make the same change to all DCE versions. There are a
-	 * handful of panels that cannot handle disable stream at
-	 * HBLANK and will result in a white line flash across the
-	 * screen on stream disable.
-	 */
+	 
 	REG_GET(DP_VID_STREAM_CNTL, DP_VID_STREAM_ENABLE, &reg1);
 	if ((reg1 & 0x1) == 0)
-		/*stream not enabled*/
+		 
 		return;
-	/* Specify the video stream disable point
-	 * (2 = start of the next vertical blank)
-	 */
+	 
 	REG_UPDATE(DP_VID_STREAM_CNTL, DP_VID_STREAM_DIS_DEFER, 2);
-	/* Larger delay to wait until VBLANK - use max retry of
-	 * 10us*10200=102ms. This covers 100.0ms of minimum 10 Hz mode +
-	 * a little more because we may not trust delay accuracy.
-	 */
+	 
 	max_retries = DP_BLANK_MAX_RETRY * 501;
 
-	/* disable DP stream */
+	 
 	REG_UPDATE(DP_VID_STREAM_CNTL, DP_VID_STREAM_ENABLE, 0);
 
 	link->dc->link_srv->dp_trace_source_sequence(link, DPCD_SOURCE_SEQ_AFTER_DISABLE_DP_VID_STREAM);
 
-	/* the encoder stops sending the video stream
-	 * at the start of the vertical blanking.
-	 * Poll for DP_VID_STREAM_STATUS == 0
-	 */
+	 
 
 	REG_WAIT(DP_VID_STREAM_CNTL, DP_VID_STREAM_STATUS,
 			0,
 			10, max_retries);
 
-	/* Tell the DP encoder to ignore timing from CRTC, must be done after
-	 * the polling. If we set DP_STEER_FIFO_RESET before DP stream blank is
-	 * complete, stream status will be stuck in video stream enabled state,
-	 * i.e. DP_VID_STREAM_STATUS stuck at 1.
-	 */
+	 
 
 	REG_UPDATE(DP_STEER_FIFO, DP_STEER_FIFO_RESET, true);
 
 	link->dc->link_srv->dp_trace_source_sequence(link, DPCD_SOURCE_SEQ_AFTER_FIFO_STEER_RESET);
 }
 
-/* output video stream to link encoder */
+ 
 void enc1_stream_encoder_dp_unblank(
 	struct dc_link *link,
 	struct stream_encoder *enc,
@@ -969,14 +856,12 @@ void enc1_stream_encoder_dp_unblank(
 		uint32_t n_multiply = 0;
 		uint64_t m_vid_l = n_vid;
 
-		/* YCbCr 4:2:0 : Computed VID_M will be 2X the input rate */
+		 
 		if (param->timing.pixel_encoding == PIXEL_ENCODING_YCBCR420) {
-			/*this param->pixel_clk_khz is half of 444 rate for 420 already*/
+			 
 			n_multiply = 1;
 		}
-		/* M / N = Fstream / Flink
-		 * m_vid / n_vid = pixel rate / link rate
-		 */
+		 
 
 		m_vid_l *= param->timing.pix_clk_100hz / 10;
 		m_vid_l = div_u64(m_vid_l,
@@ -985,13 +870,11 @@ void enc1_stream_encoder_dp_unblank(
 
 		m_vid = (uint32_t) m_vid_l;
 
-		/* enable auto measurement */
+		 
 
 		REG_UPDATE(DP_VID_TIMING, DP_VID_M_N_GEN_EN, 0);
 
-		/* auto measurement need 1 full 0x8000 symbol cycle to kick in,
-		 * therefore program initial value for Mvid and Nvid
-		 */
+		 
 
 		REG_UPDATE(DP_VID_N, DP_VID_N, n_vid);
 
@@ -1002,26 +885,18 @@ void enc1_stream_encoder_dp_unblank(
 				DP_VID_N_MUL, n_multiply);
 	}
 
-	/* set DIG_START to 0x1 to resync FIFO */
+	 
 
 	REG_UPDATE(DIG_FE_CNTL, DIG_START, 1);
 
-	/* switch DP encoder to CRTC data */
+	 
 
 	REG_UPDATE(DP_STEER_FIFO, DP_STEER_FIFO_RESET, 0);
 
-	/* wait 100us for DIG/DP logic to prime
-	 * (i.e. a few video lines)
-	 */
+	 
 	udelay(100);
 
-	/* the hardware would start sending video at the start of the next DP
-	 * frame (i.e. rising edge of the vblank).
-	 * NOTE: We used to program DP_VID_STREAM_DIS_DEFER = 2 here, but this
-	 * register has no effect on enable transition! HW always guarantees
-	 * VID_STREAM enable at start of next frame, and this is not
-	 * programmable
-	 */
+	 
 
 	REG_UPDATE(DP_VID_STREAM_CNTL, DP_VID_STREAM_ENABLE, true);
 
@@ -1059,18 +934,18 @@ void enc1_reset_hdmi_stream_attribute(
 #include "include/audio_types.h"
 
 
-/* 25.2MHz/1.001*/
-/* 25.2MHz/1.001*/
-/* 25.2MHz*/
-/* 27MHz */
-/* 27MHz*1.001*/
-/* 27MHz*1.001*/
-/* 54MHz*/
-/* 54MHz*1.001*/
-/* 74.25MHz/1.001*/
-/* 74.25MHz*/
-/* 148.5MHz/1.001*/
-/* 148.5MHz*/
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
 
 static const struct audio_clock_info audio_clock_info_table[16] = {
 	{2517, 4576, 28125, 7007, 31250, 6864, 28125},
@@ -1132,15 +1007,13 @@ static union audio_cea_channels speakers_to_channels(
 {
 	union audio_cea_channels cea_channels = {0};
 
-	/* these are one to one */
+	 
 	cea_channels.channels.FL = speaker_flags.FL_FR;
 	cea_channels.channels.FR = speaker_flags.FL_FR;
 	cea_channels.channels.LFE = speaker_flags.LFE;
 	cea_channels.channels.FC = speaker_flags.FC;
 
-	/* if Rear Left and Right exist move RC speaker to channel 7
-	 * otherwise to channel 5
-	 */
+	 
 	if (speaker_flags.RL_RR) {
 		cea_channels.channels.RL_RC = speaker_flags.RL_RR;
 		cea_channels.channels.RR = speaker_flags.RL_RR;
@@ -1149,7 +1022,7 @@ static union audio_cea_channels speakers_to_channels(
 		cea_channels.channels.RL_RC = speaker_flags.RC;
 	}
 
-	/* FRONT Left Right Center and REAR Left Right Center are exclusive */
+	 
 	if (speaker_flags.FLC_FRC) {
 		cea_channels.channels.RC_RLC_FLC = speaker_flags.FLC_FRC;
 		cea_channels.channels.RRC_FRC = speaker_flags.FLC_FRC;
@@ -1191,26 +1064,25 @@ void get_audio_clock_info(
 	}
 
 	if (clock_info != NULL) {
-		/* search for exact pixel clock in table */
+		 
 		for (index = 0; index < audio_array_size; index++) {
 			if (clock_info[index].pixel_clock_in_10khz >
 				crtc_pixel_clock_in_10khz)
-				break;  /* not match */
+				break;   
 			else if (clock_info[index].pixel_clock_in_10khz ==
 					crtc_pixel_clock_in_10khz) {
-				/* match found */
+				 
 				*audio_clock_info = clock_info[index];
 				return;
 			}
 		}
 	}
 
-	/* not found */
+	 
 	if (actual_pixel_clock_100Hz == 0)
 		actual_pixel_clock_100Hz = crtc_pixel_clock_100Hz;
 
-	/* See HDMI spec  the table entry under
-	 *  pixel clock of "Other". */
+	 
 	audio_clock_info->pixel_clock_in_10khz =
 			actual_pixel_clock_100Hz / 100;
 	audio_clock_info->cts_32khz = actual_pixel_clock_100Hz / 10;
@@ -1233,15 +1105,15 @@ static void enc1_se_audio_setup(
 
 	ASSERT(audio_info);
 	if (audio_info == NULL)
-		/* This should not happen.it does so we don't get BSOD*/
+		 
 		return;
 
 	channels = speakers_to_channels(audio_info->flags.speaker_flags).all;
 
-	/* setup the audio stream source select (audio -> dig mapping) */
+	 
 	REG_SET(AFMT_AUDIO_SRC_CONTROL, 0, AFMT_AUDIO_SRC_SELECT, az_inst);
 
-	/* Channel allocation */
+	 
 	REG_UPDATE(AFMT_AUDIO_PACKET_CONTROL2, AFMT_AUDIO_CHANNEL_ENABLE, channels);
 }
 
@@ -1253,25 +1125,25 @@ static void enc1_se_setup_hdmi_audio(
 
 	struct audio_clock_info audio_clock_info = {0};
 
-	/* HDMI_AUDIO_PACKET_CONTROL */
+	 
 	REG_UPDATE(HDMI_AUDIO_PACKET_CONTROL,
 			HDMI_AUDIO_DELAY_EN, 1);
 
-	/* AFMT_AUDIO_PACKET_CONTROL */
+	 
 	REG_UPDATE(AFMT_AUDIO_PACKET_CONTROL, AFMT_60958_CS_UPDATE, 1);
 
-	/* AFMT_AUDIO_PACKET_CONTROL2 */
+	 
 	REG_UPDATE_2(AFMT_AUDIO_PACKET_CONTROL2,
 			AFMT_AUDIO_LAYOUT_OVRD, 0,
 			AFMT_60958_OSF_OVRD, 0);
 
-	/* HDMI_ACR_PACKET_CONTROL */
+	 
 	REG_UPDATE_3(HDMI_ACR_PACKET_CONTROL,
 			HDMI_ACR_AUTO_SEND, 1,
 			HDMI_ACR_SOURCE, 0,
 			HDMI_ACR_AUDIO_PRIORITY, 0);
 
-	/* Program audio clock sample/regeneration parameters */
+	 
 	get_audio_clock_info(crtc_info->color_depth,
 			     crtc_info->requested_pixel_clock_100Hz,
 			     crtc_info->calculated_pixel_clock_100Hz,
@@ -1282,43 +1154,35 @@ static void enc1_se_setup_hdmi_audio(
 			crtc_info->requested_pixel_clock_100Hz,		\
 			crtc_info->calculated_pixel_clock_100Hz);
 
-	/* HDMI_ACR_32_0__HDMI_ACR_CTS_32_MASK */
+	 
 	REG_UPDATE(HDMI_ACR_32_0, HDMI_ACR_CTS_32, audio_clock_info.cts_32khz);
 
-	/* HDMI_ACR_32_1__HDMI_ACR_N_32_MASK */
+	 
 	REG_UPDATE(HDMI_ACR_32_1, HDMI_ACR_N_32, audio_clock_info.n_32khz);
 
-	/* HDMI_ACR_44_0__HDMI_ACR_CTS_44_MASK */
+	 
 	REG_UPDATE(HDMI_ACR_44_0, HDMI_ACR_CTS_44, audio_clock_info.cts_44khz);
 
-	/* HDMI_ACR_44_1__HDMI_ACR_N_44_MASK */
+	 
 	REG_UPDATE(HDMI_ACR_44_1, HDMI_ACR_N_44, audio_clock_info.n_44khz);
 
-	/* HDMI_ACR_48_0__HDMI_ACR_CTS_48_MASK */
+	 
 	REG_UPDATE(HDMI_ACR_48_0, HDMI_ACR_CTS_48, audio_clock_info.cts_48khz);
 
-	/* HDMI_ACR_48_1__HDMI_ACR_N_48_MASK */
+	 
 	REG_UPDATE(HDMI_ACR_48_1, HDMI_ACR_N_48, audio_clock_info.n_48khz);
 
-	/* Video driver cannot know in advance which sample rate will
-	 * be used by HD Audio driver
-	 * HDMI_ACR_PACKET_CONTROL__HDMI_ACR_N_MULTIPLE field is
-	 * programmed below in interruppt callback
-	 */
+	 
 
-	/* AFMT_60958_0__AFMT_60958_CS_CHANNEL_NUMBER_L_MASK &
-	 * AFMT_60958_0__AFMT_60958_CS_CLOCK_ACCURACY_MASK
-	 */
+	 
 	REG_UPDATE_2(AFMT_60958_0,
 			AFMT_60958_CS_CHANNEL_NUMBER_L, 1,
 			AFMT_60958_CS_CLOCK_ACCURACY, 0);
 
-	/* AFMT_60958_1 AFMT_60958_CS_CHALNNEL_NUMBER_R */
+	 
 	REG_UPDATE(AFMT_60958_1, AFMT_60958_CS_CHANNEL_NUMBER_R, 2);
 
-	/* AFMT_60958_2 now keep this settings until
-	 * Programming guide comes out
-	 */
+	 
 	REG_UPDATE_6(AFMT_60958_2,
 			AFMT_60958_CS_CHANNEL_NUMBER_2, 3,
 			AFMT_60958_CS_CHANNEL_NUMBER_3, 4,
@@ -1333,33 +1197,31 @@ static void enc1_se_setup_dp_audio(
 {
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 
-	/* --- DP Audio packet configurations --- */
+	 
 
-	/* ATP Configuration */
+	 
 	REG_SET(DP_SEC_AUD_N, 0,
 			DP_SEC_AUD_N, DP_SEC_AUD_N__DP_SEC_AUD_N__DEFAULT);
 
-	/* Async/auto-calc timestamp mode */
+	 
 	REG_SET(DP_SEC_TIMESTAMP, 0, DP_SEC_TIMESTAMP_MODE,
 			DP_SEC_TIMESTAMP__DP_SEC_TIMESTAMP_MODE__AUTO_CALC);
 
-	/* --- The following are the registers
-	 *  copied from the SetupHDMI ---
-	 */
+	 
 
-	/* AFMT_AUDIO_PACKET_CONTROL */
+	 
 	REG_UPDATE(AFMT_AUDIO_PACKET_CONTROL, AFMT_60958_CS_UPDATE, 1);
 
-	/* AFMT_AUDIO_PACKET_CONTROL2 */
-	/* Program the ATP and AIP next */
+	 
+	 
 	REG_UPDATE_2(AFMT_AUDIO_PACKET_CONTROL2,
 			AFMT_AUDIO_LAYOUT_OVRD, 0,
 			AFMT_60958_OSF_OVRD, 0);
 
-	/* AFMT_INFOFRAME_CONTROL0 */
+	 
 	REG_UPDATE(AFMT_INFOFRAME_CONTROL0, AFMT_AUDIO_INFO_UPDATE, 1);
 
-	/* AFMT_60958_0__AFMT_60958_CS_CLOCK_ACCURACY_MASK */
+	 
 	REG_UPDATE(AFMT_60958_0, AFMT_60958_CS_CLOCK_ACCURACY, 0);
 }
 
@@ -1370,19 +1232,11 @@ void enc1_se_enable_audio_clock(
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 
 	if (REG(AFMT_CNTL) == 0)
-		return;   /* DCE8/10 does not have this register */
+		return;    
 
 	REG_UPDATE(AFMT_CNTL, AFMT_AUDIO_CLOCK_EN, !!enable);
 
-	/* wait for AFMT clock to turn on,
-	 * expectation: this should complete in 1-2 reads
-	 *
-	 * REG_WAIT(AFMT_CNTL, AFMT_AUDIO_CLOCK_ON, !!enable, 1, 10);
-	 *
-	 * TODO: wait for clock_on does not work well. May need HW
-	 * program sequence. But audio seems work normally even without wait
-	 * for clock_on status change
-	 */
+	 
 }
 
 void enc1_se_enable_dp_audio(
@@ -1390,15 +1244,15 @@ void enc1_se_enable_dp_audio(
 {
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 
-	/* Enable Audio packets */
+	 
 	REG_UPDATE(DP_SEC_CNTL, DP_SEC_ASP_ENABLE, 1);
 
-	/* Program the ATP and AIP next */
+	 
 	REG_UPDATE_2(DP_SEC_CNTL,
 			DP_SEC_ATP_ENABLE, 1,
 			DP_SEC_AIP_ENABLE, 1);
 
-	/* Program STREAM_ENABLE after all the other enables. */
+	 
 	REG_UPDATE(DP_SEC_CNTL, DP_SEC_STREAM_ENABLE, 1);
 }
 
@@ -1408,7 +1262,7 @@ static void enc1_se_disable_dp_audio(
 	struct dcn10_stream_encoder *enc1 = DCN10STRENC_FROM_STRENC(enc);
 	uint32_t value = 0;
 
-	/* Disable Audio packets */
+	 
 	REG_UPDATE_5(DP_SEC_CNTL,
 			DP_SEC_ASP_ENABLE, 0,
 			DP_SEC_ATP_ENABLE, 0,
@@ -1416,9 +1270,7 @@ static void enc1_se_disable_dp_audio(
 			DP_SEC_ACM_ENABLE, 0,
 			DP_SEC_STREAM_ENABLE, 0);
 
-	/* This register shared with encoder info frame. Therefore we need to
-	 * keep master enabled if at least on of the fields is not 0
-	 */
+	 
 	value = REG_READ(DP_SEC_CNTL);
 	if (value != 0)
 		REG_UPDATE(DP_SEC_CNTL, DP_SEC_STREAM_ENABLE, 1);

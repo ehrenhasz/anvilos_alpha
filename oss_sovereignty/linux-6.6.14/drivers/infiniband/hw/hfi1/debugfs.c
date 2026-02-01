@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 or BSD-3-Clause
-/*
- * Copyright(c) 2015-2018 Intel Corporation.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/seq_file.h>
@@ -22,7 +20,7 @@
 
 static struct dentry *hfi1_dbg_root;
 
-/* wrappers to enforce srcu in seq file */
+ 
 ssize_t hfi1_seq_read(struct file *file, char __user *buf, size_t size,
 		      loff_t *ppos)
 {
@@ -175,7 +173,7 @@ static void *_ctx_stats_seq_next(struct seq_file *s, void *v, loff_t *pos)
 
 static void _ctx_stats_seq_stop(struct seq_file *s, void *v)
 {
-	/* nothing allocated */
+	 
 }
 
 static int _ctx_stats_seq_show(struct seq_file *s, void *v)
@@ -223,7 +221,7 @@ static void *_qp_stats_seq_start(struct seq_file *s, loff_t *pos)
 
 	iter = rvt_qp_iter_init(s->private, 0, NULL);
 
-	/* stop calls rcu_read_unlock */
+	 
 	rcu_read_lock();
 
 	if (!iter)
@@ -413,7 +411,7 @@ DEBUGFS_SEQ_FILE_OPS(pios);
 DEBUGFS_SEQ_FILE_OPEN(pios)
 DEBUGFS_FILE_OPS(pios);
 
-/* read the per-device counters */
+ 
 static ssize_t dev_counters_read(struct file *file, char __user *buf,
 				 size_t count, loff_t *ppos)
 {
@@ -428,7 +426,7 @@ static ssize_t dev_counters_read(struct file *file, char __user *buf,
 	return rval;
 }
 
-/* read the per-device counters */
+ 
 static ssize_t dev_names_read(struct file *file, char __user *buf,
 			      size_t count, loff_t *ppos)
 {
@@ -448,12 +446,9 @@ struct counter_info {
 	const struct file_operations ops;
 };
 
-/*
- * Could use file_inode(file)->i_ino to figure out which file,
- * instead of separate routine for each, but for now, this works...
- */
+ 
 
-/* read the per-port names (same for each port) */
+ 
 static ssize_t portnames_read(struct file *file, char __user *buf,
 			      size_t count, loff_t *ppos)
 {
@@ -468,7 +463,7 @@ static ssize_t portnames_read(struct file *file, char __user *buf,
 	return rval;
 }
 
-/* read the per-port counters */
+ 
 static ssize_t portcntrs_debugfs_read(struct file *file, char __user *buf,
 				      size_t count, loff_t *ppos)
 {
@@ -521,14 +516,14 @@ static ssize_t asic_flags_read(struct file *file, char __user *buf,
 	used += scnprintf(tmp + used, size - used,
 			  "Resource flags: 0x%016llx\n", scratch0);
 
-	/* check permanent flag */
+	 
 	if (scratch0 & CR_THERM_INIT) {
 		used += scnprintf(tmp + used, size - used,
 				  "  0x%08x - thermal monitoring initialized\n",
 				  (u32)CR_THERM_INIT);
 	}
 
-	/* check each dynamic flag on each HFI */
+	 
 	for (i = 0; i < 2; i++) {
 		check_dyn_flag(scratch0, tmp, size, &used, dd->hfi1_id, i,
 			       CR_SBUS, "SBus");
@@ -560,7 +555,7 @@ static ssize_t asic_flags_write(struct file *file, const char __user *buf,
 	ppd = private2ppd(file);
 	dd = ppd->dd;
 
-	/* zero terminate and read the expected integer */
+	 
 	buff = memdup_user_nul(buf, count);
 	if (IS_ERR(buff))
 		return PTR_ERR(buff);
@@ -570,20 +565,20 @@ static ssize_t asic_flags_write(struct file *file, const char __user *buf,
 		goto do_free;
 	clear = value;
 
-	/* obtain exclusive access */
+	 
 	mutex_lock(&dd->asic_data->asic_resource_mutex);
 	acquire_hw_mutex(dd);
 
 	scratch0 = read_csr(dd, ASIC_CFG_SCRATCH);
 	scratch0 &= ~clear;
 	write_csr(dd, ASIC_CFG_SCRATCH, scratch0);
-	/* force write to be visible to other HFI on another OS */
+	 
 	(void)read_csr(dd, ASIC_CFG_SCRATCH);
 
 	release_hw_mutex(dd);
 	mutex_unlock(&dd->asic_data->asic_resource_mutex);
 
-	/* return the number of bytes written */
+	 
 	ret = count;
 
  do_free:
@@ -591,7 +586,7 @@ static ssize_t asic_flags_write(struct file *file, const char __user *buf,
 	return ret;
 }
 
-/* read the dc8051 memory */
+ 
 static ssize_t dc8051_memory_read(struct file *file, char __user *buf,
 				  size_t count, loff_t *ppos)
 {
@@ -600,7 +595,7 @@ static ssize_t dc8051_memory_read(struct file *file, char __user *buf,
 	void *tmp;
 	loff_t start, end;
 
-	/* the checks below expect the position to be positive */
+	 
 	if (*ppos < 0)
 		return -EINVAL;
 
@@ -608,15 +603,10 @@ static ssize_t dc8051_memory_read(struct file *file, char __user *buf,
 	if (!tmp)
 		return -ENOMEM;
 
-	/*
-	 * Fill in the requested portion of the temporary buffer from the
-	 * 8051 memory.  The 8051 memory read is done in terms of 8 bytes.
-	 * Adjust start and end to fit.  Skip reading anything if out of
-	 * range.
-	 */
-	start = *ppos & ~0x7;	/* round down */
+	 
+	start = *ppos & ~0x7;	 
 	if (start < DC8051_DATA_MEM_SIZE) {
-		end = (*ppos + count + 7) & ~0x7; /* round up */
+		end = (*ppos + count + 7) & ~0x7;  
 		if (end > DC8051_DATA_MEM_SIZE)
 			end = DC8051_DATA_MEM_SIZE;
 		rval = read_8051_data(ppd->dd, start, end - start,
@@ -642,23 +632,23 @@ static ssize_t debugfs_lcb_read(struct file *file, char __user *buf,
 
 	if (*ppos < 0)
 		return -EINVAL;
-	/* only read 8 byte quantities */
+	 
 	if ((count % 8) != 0)
 		return -EINVAL;
-	/* offset must be 8-byte aligned */
+	 
 	if ((*ppos % 8) != 0)
 		return -EINVAL;
-	/* do nothing if out of range or zero count */
+	 
 	if (*ppos >= (LCB_END - LCB_START) || !count)
 		return 0;
-	/* reduce count if needed */
+	 
 	if (*ppos + count > LCB_END - LCB_START)
 		count = (LCB_END - LCB_START) - *ppos;
 
 	csr_off = LCB_START + *ppos;
 	for (total = 0; total < count; total += 8, csr_off += 8) {
 		if (read_lcb_csr(dd, csr_off, (u64 *)&data))
-			break; /* failed */
+			break;  
 		if (put_user(data, (unsigned long __user *)(buf + total)))
 			break;
 	}
@@ -675,16 +665,16 @@ static ssize_t debugfs_lcb_write(struct file *file, const char __user *buf,
 
 	if (*ppos < 0)
 		return -EINVAL;
-	/* only write 8 byte quantities */
+	 
 	if ((count % 8) != 0)
 		return -EINVAL;
-	/* offset must be 8-byte aligned */
+	 
 	if ((*ppos % 8) != 0)
 		return -EINVAL;
-	/* do nothing if out of range or zero count */
+	 
 	if (*ppos >= (LCB_END - LCB_START) || !count)
 		return 0;
-	/* reduce count if needed */
+	 
 	if (*ppos + count > LCB_END - LCB_START)
 		count = (LCB_END - LCB_START) - *ppos;
 
@@ -693,15 +683,13 @@ static ssize_t debugfs_lcb_write(struct file *file, const char __user *buf,
 		if (get_user(data, (unsigned long __user *)(buf + total)))
 			break;
 		if (write_lcb_csr(dd, csr_off, data))
-			break; /* failed */
+			break;  
 	}
 	*ppos += total;
 	return total;
 }
 
-/*
- * read the per-port QSFP data for ppd
- */
+ 
 static ssize_t qsfp_debugfs_dump(struct file *file, char __user *buf,
 				 size_t count, loff_t *ppos)
 {
@@ -721,7 +709,7 @@ static ssize_t qsfp_debugfs_dump(struct file *file, char __user *buf,
 	return ret;
 }
 
-/* Do an i2c write operation on the chain for the given HFI. */
+ 
 static ssize_t __i2c_debugfs_write(struct file *file, const char __user *buf,
 				   size_t count, loff_t *ppos, u32 target)
 {
@@ -734,11 +722,11 @@ static ssize_t __i2c_debugfs_write(struct file *file, const char __user *buf,
 
 	ppd = private2ppd(file);
 
-	/* byte offset format: [offsetSize][i2cAddr][offsetHigh][offsetLow] */
+	 
 	i2c_addr = (*ppos >> 16) & 0xffff;
 	offset = *ppos & 0xffff;
 
-	/* explicitly reject invalid address 0 to catch cp and cat */
+	 
 	if (i2c_addr == 0)
 		return -EINVAL;
 
@@ -761,21 +749,21 @@ static ssize_t __i2c_debugfs_write(struct file *file, const char __user *buf,
 	return ret;
 }
 
-/* Do an i2c write operation on chain for HFI 0. */
+ 
 static ssize_t i2c1_debugfs_write(struct file *file, const char __user *buf,
 				  size_t count, loff_t *ppos)
 {
 	return __i2c_debugfs_write(file, buf, count, ppos, 0);
 }
 
-/* Do an i2c write operation on chain for HFI 1. */
+ 
 static ssize_t i2c2_debugfs_write(struct file *file, const char __user *buf,
 				  size_t count, loff_t *ppos)
 {
 	return __i2c_debugfs_write(file, buf, count, ppos, 1);
 }
 
-/* Do an i2c read operation on the chain for the given HFI. */
+ 
 static ssize_t __i2c_debugfs_read(struct file *file, char __user *buf,
 				  size_t count, loff_t *ppos, u32 target)
 {
@@ -788,11 +776,11 @@ static ssize_t __i2c_debugfs_read(struct file *file, char __user *buf,
 
 	ppd = private2ppd(file);
 
-	/* byte offset format: [offsetSize][i2cAddr][offsetHigh][offsetLow] */
+	 
 	i2c_addr = (*ppos >> 16) & 0xffff;
 	offset = *ppos & 0xffff;
 
-	/* explicitly reject invalid address 0 to catch cp and cat */
+	 
 	if (i2c_addr == 0)
 		return -EINVAL;
 
@@ -821,21 +809,21 @@ static ssize_t __i2c_debugfs_read(struct file *file, char __user *buf,
 	return ret;
 }
 
-/* Do an i2c read operation on chain for HFI 0. */
+ 
 static ssize_t i2c1_debugfs_read(struct file *file, char __user *buf,
 				 size_t count, loff_t *ppos)
 {
 	return __i2c_debugfs_read(file, buf, count, ppos, 0);
 }
 
-/* Do an i2c read operation on chain for HFI 1. */
+ 
 static ssize_t i2c2_debugfs_read(struct file *file, char __user *buf,
 				 size_t count, loff_t *ppos)
 {
 	return __i2c_debugfs_read(file, buf, count, ppos, 1);
 }
 
-/* Do a QSFP write operation on the i2c chain for the given HFI. */
+ 
 static ssize_t __qsfp_debugfs_write(struct file *file, const char __user *buf,
 				    size_t count, loff_t *ppos, u32 target)
 {
@@ -844,7 +832,7 @@ static ssize_t __qsfp_debugfs_write(struct file *file, const char __user *buf,
 	int ret;
 	int total_written;
 
-	if (*ppos + count > QSFP_PAGESIZE * 4) /* base page + page00-page03 */
+	if (*ppos + count > QSFP_PAGESIZE * 4)  
 		return -EINVAL;
 
 	ppd = private2ppd(file);
@@ -868,21 +856,21 @@ static ssize_t __qsfp_debugfs_write(struct file *file, const char __user *buf,
 	return ret;
 }
 
-/* Do a QSFP write operation on i2c chain for HFI 0. */
+ 
 static ssize_t qsfp1_debugfs_write(struct file *file, const char __user *buf,
 				   size_t count, loff_t *ppos)
 {
 	return __qsfp_debugfs_write(file, buf, count, ppos, 0);
 }
 
-/* Do a QSFP write operation on i2c chain for HFI 1. */
+ 
 static ssize_t qsfp2_debugfs_write(struct file *file, const char __user *buf,
 				   size_t count, loff_t *ppos)
 {
 	return __qsfp_debugfs_write(file, buf, count, ppos, 1);
 }
 
-/* Do a QSFP read operation on the i2c chain for the given HFI. */
+ 
 static ssize_t __qsfp_debugfs_read(struct file *file, char __user *buf,
 				   size_t count, loff_t *ppos, u32 target)
 {
@@ -891,7 +879,7 @@ static ssize_t __qsfp_debugfs_read(struct file *file, char __user *buf,
 	int ret;
 	int total_read;
 
-	if (*ppos + count > QSFP_PAGESIZE * 4) { /* base page + page00-page03 */
+	if (*ppos + count > QSFP_PAGESIZE * 4) {  
 		ret = -EINVAL;
 		goto _return;
 	}
@@ -926,14 +914,14 @@ static ssize_t __qsfp_debugfs_read(struct file *file, char __user *buf,
 	return ret;
 }
 
-/* Do a QSFP read operation on i2c chain for HFI 0. */
+ 
 static ssize_t qsfp1_debugfs_read(struct file *file, char __user *buf,
 				  size_t count, loff_t *ppos)
 {
 	return __qsfp_debugfs_read(file, buf, count, ppos, 0);
 }
 
-/* Do a QSFP read operation on i2c chain for HFI 1. */
+ 
 static ssize_t qsfp2_debugfs_read(struct file *file, char __user *buf,
 				  size_t count, loff_t *ppos)
 {
@@ -1159,7 +1147,7 @@ static void *_sdma_cpu_list_seq_next(struct seq_file *s, void *v, loff_t *pos)
 
 static void _sdma_cpu_list_seq_stop(struct seq_file *s, void *v)
 {
-	/* nothing allocated */
+	 
 }
 
 static int _sdma_cpu_list_seq_show(struct seq_file *s, void *v)
@@ -1209,12 +1197,12 @@ void hfi1_dbg_ibdev_init(struct hfi1_ibdev *ibd)
 	debugfs_create_file("sdma_cpu_list", 0444, root, ibd,
 			    &_sdma_cpu_list_file_ops);
 
-	/* dev counter files */
+	 
 	for (i = 0; i < ARRAY_SIZE(cntr_ops); i++)
 		debugfs_create_file(cntr_ops[i].name, 0444, root, dd,
 				    &cntr_ops[i].ops);
 
-	/* per port files */
+	 
 	for (ppd = dd->pport, j = 0; j < dd->num_pports; j++, ppd++)
 		for (i = 0; i < ARRAY_SIZE(port_cntr_ops); i++) {
 			snprintf(name,
@@ -1242,15 +1230,9 @@ out:
 	ibd->hfi1_ibdev_dbg = NULL;
 }
 
-/*
- * driver stats field names, one line per stat, single string.  Used by
- * programs like hfistats to print the stats in a way which works for
- * different versions of drivers, without changing program source.
- * if hfi1_ib_stats changes, this needs to change.  Names need to be
- * 12 chars or less (w/o newline), for proper display by hfistats utility.
- */
+ 
 static const char * const hfi1_statnames[] = {
-	/* must be element 0*/
+	 
 	"KernIntr",
 	"ErrorIntr",
 	"Tx_Errs",
@@ -1335,7 +1317,7 @@ static int _driver_stats_seq_show(struct seq_file *s, void *v)
 	loff_t *spos = v;
 	u64 *stats = (u64 *)&hfi1_stats;
 
-	/* special case for interrupts */
+	 
 	if (*spos == 0)
 		hfi1_sps_show_ints(s);
 	else

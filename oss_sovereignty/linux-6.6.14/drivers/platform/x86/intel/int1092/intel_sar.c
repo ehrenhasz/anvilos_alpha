@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, Intel Corporation.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/kobject.h>
@@ -9,17 +7,7 @@
 #include <linux/sysfs.h>
 #include "intel_sar.h"
 
-/**
- * get_int_value: Retrieve integer values from ACPI Object
- * @obj: acpi_object pointer which has the integer value
- * @out: output pointer will get integer value
- *
- * Function is used to retrieve integer value from acpi object.
- *
- * Return:
- * * 0 on success
- * * -EIO if there is an issue in acpi_object passed.
- */
+ 
 static int get_int_value(union acpi_object *obj, int *out)
 {
 	if (!obj || obj->type != ACPI_TYPE_INTEGER)
@@ -28,13 +16,7 @@ static int get_int_value(union acpi_object *obj, int *out)
 	return 0;
 }
 
-/**
- * update_sar_data: sar data is updated based on regulatory mode
- * @context: pointer to driver context structure
- *
- * sar_data is updated based on regulatory value
- * context->reg_value will never exceed MAX_REGULATORY
- */
+ 
 static void update_sar_data(struct wwan_sar_context *context)
 {
 	struct wwan_device_mode_configuration *config =
@@ -59,21 +41,7 @@ static void update_sar_data(struct wwan_sar_context *context)
 	}
 }
 
-/**
- * parse_package: parse acpi package for retrieving SAR information
- * @context: pointer to driver context structure
- * @item : acpi_object pointer
- *
- * Given acpi_object is iterated to retrieve information for each device mode.
- * If a given package corresponding to a specific device mode is faulty, it is
- * skipped and the specific entry in context structure will have the default value
- * of zero. Decoding of subsequent device modes is realized by having "continue"
- * statements in the for loop on encountering error in parsing given device mode.
- *
- * Return:
- * AE_OK if success
- * AE_ERROR on error
- */
+ 
 static acpi_status parse_package(struct wwan_sar_context *context, union acpi_object *item)
 {
 	struct wwan_device_mode_configuration *data;
@@ -115,16 +83,7 @@ static acpi_status parse_package(struct wwan_sar_context *context, union acpi_ob
 	return AE_OK;
 }
 
-/**
- * sar_get_device_mode: Extraction of information from BIOS via DSM calls
- * @device: ACPI device for which to retrieve the data
- *
- * Retrieve the current device mode information from the BIOS.
- *
- * Return:
- * AE_OK on success
- * AE_ERROR on error
- */
+ 
 static acpi_status sar_get_device_mode(struct platform_device *device)
 {
 	struct wwan_sar_context *context = dev_get_drvdata(&device->dev);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI Bandgap temperature sensor driver for J72XX SoC Family
- *
- * Copyright (C) 2021 Texas Instruments Incorporated - http://www.ti.com/
- */
+
+ 
 
 #include <linux/math.h>
 #include <linux/math64.h>
@@ -69,11 +65,7 @@ static void init_table(int factors_size, int *table, const s64 *factors)
 					 FACTORS_REDUCTION);
 }
 
-/**
- * struct err_values - structure containing error/reference values
- * @refs: reference error values for -40C, 30C, 125C & 150C
- * @errs: Actual error values for -40C, 30C, 125C & 150C read from the efuse
- */
+ 
 struct err_values {
 	int refs[4];
 	int errs[4];
@@ -95,20 +87,14 @@ static void create_table_segments(struct err_values *err_vals, int seg,
 	ref1 = err_vals->refs[seg];
 	ref2 = err_vals->refs[seg + 1];
 
-	/*
-	 * Calculate the slope with adc values read from the register
-	 * as the y-axis param and err in adc value as x-axis param
-	 */
+	 
 	num = ref2 - ref1;
 	den = err2 - err1;
 	if (den)
 		m = num / den;
 	c = ref2 - m * err2;
 
-	/*
-	 * Take care of divide by zero error if error values are same
-	 * Or when the slope is 0
-	 */
+	 
 	if (den != 0 && m != 0) {
 		for (i = idx1; i <= idx2; i++) {
 			err = (i - c) / m;
@@ -116,7 +102,7 @@ static void create_table_segments(struct err_values *err_vals, int seg,
 				continue;
 			derived_table[i] = ref_table[i + err];
 		}
-	} else { /* Constant error take care of divide by zero */
+	} else {  
 		for (i = idx1; i <= idx2; i++) {
 			if (((i + err1) < 0) || ((i + err1) >= TABLE_SIZE))
 				continue;
@@ -129,34 +115,23 @@ static int prep_lookup_table(struct err_values *err_vals, int *ref_table)
 {
 	int inc, i, seg;
 
-	/*
-	 * Fill up the lookup table under 3 segments
-	 * region -40C to +30C
-	 * region +30C to +125C
-	 * region +125C to +150C
-	 */
+	 
 	for (seg = 0; seg < 3; seg++)
 		create_table_segments(err_vals, seg, ref_table);
 
-	/* Get to the first valid temperature */
+	 
 	i = 0;
 	while (!derived_table[i])
 		i++;
 
-	/*
-	 * Get to the last zero index and back fill the temperature for
-	 * sake of continuity
-	 */
+	 
 	if (i) {
-		/* 300 milli celsius steps */
+		 
 		while (i--)
 			derived_table[i] = derived_table[i + 1] - 300;
 	}
 
-	/*
-	 * Fill the last trailing 0s which are unfilled with increments of
-	 * 100 milli celsius till 1023 code
-	 */
+	 
 	i = TABLE_SIZE - 1;
 	while (!derived_table[i])
 		i--;
@@ -180,7 +155,7 @@ struct k3_j72xx_bandgap {
 	struct k3_thermal_data *ts_data[K3_VTM_MAX_NUM_TS];
 };
 
-/* common data structures */
+ 
 struct k3_thermal_data {
 	struct k3_j72xx_bandgap *bgp;
 	u32 ctrl_offset;
@@ -193,7 +168,7 @@ static int two_cmp(int tmp, int mask)
 	tmp &= mask;
 	tmp += 1;
 
-	/* Return negative value */
+	 
 	return (0 - tmp);
 }
 
@@ -220,15 +195,7 @@ static inline int k3_bgp_read_temp(struct k3_thermal_data *devdata,
 	unsigned int dtemp, s0, s1, s2;
 
 	bgp = devdata->bgp;
-	/*
-	 * Errata is applicable for am654 pg 1.0 silicon/J7ES. There
-	 * is a variation of the order for certain degree centigrade on AM654.
-	 * Work around that by getting the average of two closest
-	 * readings out of three readings everytime we want to
-	 * report temperatures.
-	 *
-	 * Errata workaround.
-	 */
+	 
 	s0 = readl(bgp->base + devdata->stat_offset) &
 		K3_VTM_TS_STAT_DTEMP_MASK;
 	s1 = readl(bgp->base + devdata->stat_offset) &
@@ -245,7 +212,7 @@ static inline int k3_bgp_read_temp(struct k3_thermal_data *devdata,
 	return 0;
 }
 
-/* Get temperature callback function for thermal zone */
+ 
 static int k3_thermal_get_temp(struct thermal_zone_device *tz, int *temp)
 {
 	return k3_bgp_read_temp(thermal_zone_device_priv(tz), temp);
@@ -262,7 +229,7 @@ static int k3_j72xx_bandgap_temp_to_adc_code(int temp)
 	if (temp > 160000 || temp < -50000)
 		return -EINVAL;
 
-	/* Binary search to find the adc code */
+	 
 	while (low < (high - 1)) {
 		mid = (low + high) / 2;
 		if (temp <= derived_table[mid])
@@ -294,14 +261,14 @@ static void get_efuse_values(int id, struct k3_thermal_data *data, int *err,
 	};
 
 	for (i = 0; i < 3; i++) {
-		/* Extract the offset value using bit-mask */
+		 
 		if (ct_offsets[id][i] == -1 && i == 1) {
-			/* 25C offset Case of Sensor 2 split between 2 regs */
+			 
 			tmp = (readl(fuse_base + 0x8) & 0xE0000000) >> (29);
 			tmp |= ((readl(fuse_base + 0xC) & 0x1F) << 3);
 			pow = tmp & 0x80;
 		} else if (ct_offsets[id][i] == -1 && i == 2) {
-			/* 125C Case of Sensor 3 split between 2 regs */
+			 
 			tmp = (readl(fuse_base + 0x4) & 0xF8000000) >> (27);
 			tmp |= ((readl(fuse_base + 0x8) & 0xF) << 5);
 			pow = tmp & 0x100;
@@ -310,21 +277,21 @@ static void get_efuse_values(int id, struct k3_thermal_data *data, int *err,
 			tmp &= ct_bm[id][i];
 			tmp = tmp >> __ffs(ct_bm[id][i]);
 
-			/* Obtain the sign bit pow*/
+			 
 			pow = ct_bm[id][i] >> __ffs(ct_bm[id][i]);
 			pow += 1;
 			pow /= 2;
 		}
 
-		/* Check for negative value */
+		 
 		if (tmp & pow) {
-			/* 2's complement value */
+			 
 			tmp = two_cmp(tmp, ct_bm[id][i] >> __ffs(ct_bm[id][i]));
 		}
 		err[i] = tmp;
 	}
 
-	/* Err value for 150C is set to 0 */
+	 
 	err[i] = 0;
 }
 
@@ -390,15 +357,7 @@ static int k3_j72xx_bandgap_probe(struct platform_device *pdev)
 	if (driver_data)
 		workaround_needed = driver_data->has_errata_i2128;
 
-	/*
-	 * Some of TI's J721E SoCs require a software trimming procedure
-	 * for the temperature monitors to function properly. To determine
-	 * if this particular SoC is NOT affected, both bits in the
-	 * WKUP_SPARE_FUSE0[31:30] will be set (0xC0000000) indicating
-	 * when software trimming should NOT be applied.
-	 *
-	 * https://www.ti.com/lit/er/sprz455c/sprz455c.pdf
-	 */
+	 
 	if (workaround_needed) {
 		res = platform_get_resource(pdev, IORESOURCE_MEM, 2);
 		fuse_base = devm_ioremap_resource(dev, res);
@@ -420,7 +379,7 @@ static int k3_j72xx_bandgap_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Get the sensor count in the VTM */
+	 
 	val = readl(bgp->base + K3_VTM_DEVINFO_PWR0_OFFSET);
 	cnt = val & K3_VTM_DEVINFO_PWR0_TEMPSENS_CT_MASK;
 	cnt >>= __ffs(K3_VTM_DEVINFO_PWR0_TEMPSENS_CT_MASK);
@@ -449,7 +408,7 @@ static int k3_j72xx_bandgap_probe(struct platform_device *pdev)
 	else
 		init_table(3, ref_table, pvt_wa_factors);
 
-	/* Register the thermal sensors */
+	 
 	for (id = 0; id < cnt; id++) {
 		data[id].bgp = bgp;
 		data[id].ctrl_offset = K3_VTM_TMPSENS0_CTRL_OFFSET + id * 0x20;
@@ -457,7 +416,7 @@ static int k3_j72xx_bandgap_probe(struct platform_device *pdev)
 					K3_VTM_TMPSENS_STAT_OFFSET;
 
 		if (workaround_needed) {
-			/* ref adc values for -40C, 30C & 125C respectively */
+			 
 			err_vals.refs[0] = MINUS40CREF;
 			err_vals.refs[1] = PLUS30CREF;
 			err_vals.refs[2] = PLUS125CREF;
@@ -486,13 +445,7 @@ static int k3_j72xx_bandgap_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * Program TSHUT thresholds
-	 * Step 1: set the thresholds to ~123C and 105C WKUP_VTM_MISC_CTRL2
-	 * Step 2: WKUP_VTM_TMPSENS_CTRL_j set the MAXT_OUTRG_EN  bit
-	 *         This is already taken care as per of init
-	 * Step 3: WKUP_VTM_MISC_CTRL set the ANYMAXT_OUTRG_ALERT_EN  bit
-	 */
+	 
 	high_max = k3_j72xx_bandgap_temp_to_adc_code(MAX_TEMP);
 	low_temp = k3_j72xx_bandgap_temp_to_adc_code(COOL_DOWN_TEMP);
 
@@ -503,10 +456,7 @@ static int k3_j72xx_bandgap_probe(struct platform_device *pdev)
 	       K3_VTM_MISC_CTRL_OFFSET);
 
 	print_look_up_table(dev, ref_table);
-	/*
-	 * Now that the derived_table has the appropriate look up values
-	 * Free up the ref_table
-	 */
+	 
 	kfree(ref_table);
 
 	return 0;
@@ -546,7 +496,7 @@ static const struct of_device_id of_k3_j72xx_bandgap_match[] = {
 		.compatible = "ti,j7200-vtm",
 		.data = &k3_j72xx_bandgap_j7200_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, of_k3_j72xx_bandgap_match);
 

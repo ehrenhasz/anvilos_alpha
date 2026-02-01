@@ -1,41 +1,11 @@
-/* SPDX-License-Identifier: ((GPL-2.0 WITH Linux-syscall-note) OR Linux-OpenIB) */
-/*
- * Copyright (c) 2013-2015, Mellanox Technologies. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
+ 
 
 #ifndef MLX5_ABI_USER_H
 #define MLX5_ABI_USER_H
 
 #include <linux/types.h>
-#include <linux/if_ether.h>	/* For ETH_ALEN. */
+#include <linux/if_ether.h>	 
 #include <rdma/ib_user_ioctl_verbs.h>
 
 enum {
@@ -61,17 +31,10 @@ enum {
 	MLX5_WQ_FLAG_SIGNATURE		= 1 << 0,
 };
 
-/* Increment this value if any changes that break userspace ABI
- * compatibility are made.
- */
+ 
 #define MLX5_IB_UVERBS_ABI_VERSION	1
 
-/* Make sure that all structs defined in this file remain laid out so
- * that they pack the same way on 32-bit and 64-bit architectures (to
- * avoid incompatibility between 32-bit userspace and 64-bit kernels).
- * In particular do not use pointer types -- pass pointers in __u64
- * instead.
- */
+ 
 
 struct mlx5_ib_alloc_ucontext_req {
 	__u32	total_num_bfregs;
@@ -112,9 +75,7 @@ enum mlx5_user_cmds_supp_uhw {
 	MLX5_USER_CMDS_SUPP_UHW_CREATE_AH    = 1 << 1,
 };
 
-/* The eth_min_inline response value is set to off-by-one vs the FW
- * returned value to allow user-space to deal with older kernels.
- */
+ 
 enum mlx5_user_inline_mode {
 	MLX5_USER_INLINE_MODE_NA,
 	MLX5_USER_INLINE_MODE_NONE,
@@ -161,18 +122,15 @@ struct mlx5_ib_alloc_pd_resp {
 };
 
 struct mlx5_ib_tso_caps {
-	__u32 max_tso; /* Maximum tso payload size in bytes */
+	__u32 max_tso;  
 
-	/* Corresponding bit will be set if qp type from
-	 * 'enum ib_qp_type' is supported, e.g.
-	 * supported_qpts |= 1 << IB_QPT_UD
-	 */
+	 
 	__u32 supported_qpts;
 };
 
 struct mlx5_ib_rss_caps {
-	__aligned_u64 rx_hash_fields_mask; /* enum mlx5_rx_hash_fields */
-	__u8 rx_hash_function; /* enum mlx5_rx_hash_function_flags */
+	__aligned_u64 rx_hash_fields_mask;  
+	__u8 rx_hash_function;  
 	__u8 reserved[7];
 };
 
@@ -184,7 +142,7 @@ enum mlx5_ib_cqe_comp_res_format {
 
 struct mlx5_ib_cqe_comp_caps {
 	__u32 max_num;
-	__u32 supported_format; /* enum mlx5_ib_cqe_comp_res_format */
+	__u32 supported_format;  
 };
 
 enum mlx5_ib_packet_pacing_cap_flags {
@@ -193,14 +151,11 @@ enum mlx5_ib_packet_pacing_cap_flags {
 
 struct mlx5_packet_pacing_caps {
 	__u32 qp_rate_limit_min;
-	__u32 qp_rate_limit_max; /* In kpbs */
+	__u32 qp_rate_limit_max;  
 
-	/* Corresponding bit will be set if qp type from
-	 * 'enum ib_qp_type' is supported, e.g.
-	 * supported_qpts |= 1 << IB_QPT_RAW_PACKET
-	 */
+	 
 	__u32 supported_qpts;
-	__u8  cap_flags; /* enum mlx5_ib_packet_pacing_cap_flags */
+	__u8  cap_flags;  
 	__u8  reserved[3];
 };
 
@@ -217,12 +172,9 @@ enum mlx5_ib_sw_parsing_offloads {
 };
 
 struct mlx5_ib_sw_parsing_caps {
-	__u32 sw_parsing_offloads; /* enum mlx5_ib_sw_parsing_offloads */
+	__u32 sw_parsing_offloads;  
 
-	/* Corresponding bit will be set if qp type from
-	 * 'enum ib_qp_type' is supported, e.g.
-	 * supported_qpts |= 1 << IB_QPT_RAW_PACKET
-	 */
+	 
 	__u32 supported_qpts;
 };
 
@@ -232,10 +184,7 @@ struct mlx5_ib_striding_rq_caps {
 	__u32 min_single_wqe_log_num_of_strides;
 	__u32 max_single_wqe_log_num_of_strides;
 
-	/* Corresponding bit will be set if qp type from
-	 * 'enum ib_qp_type' is supported, e.g.
-	 * supported_qpts |= 1 << IB_QPT_RAW_PACKET
-	 */
+	 
 	__u32 supported_qpts;
 	__u32 reserved;
 };
@@ -246,7 +195,7 @@ struct mlx5_ib_dci_streams_caps {
 };
 
 enum mlx5_ib_query_dev_resp_flags {
-	/* Support 128B CQE compression */
+	 
 	MLX5_IB_QUERY_DEV_RESP_FLAGS_CQE_128B_COMP = 1 << 0,
 	MLX5_IB_QUERY_DEV_RESP_FLAGS_CQE_128B_PAD  = 1 << 1,
 	MLX5_IB_QUERY_DEV_RESP_PACKET_BASED_CREDIT_MODE = 1 << 2,
@@ -269,10 +218,10 @@ struct mlx5_ib_query_device_resp {
 	struct	mlx5_ib_cqe_comp_caps cqe_comp_caps;
 	struct	mlx5_packet_pacing_caps packet_pacing_caps;
 	__u32	mlx5_ib_support_multi_pkt_send_wqes;
-	__u32	flags; /* Use enum mlx5_ib_query_dev_resp_flags */
+	__u32	flags;  
 	struct mlx5_ib_sw_parsing_caps sw_parsing_caps;
 	struct mlx5_ib_striding_rq_caps striding_rq_caps;
-	__u32	tunnel_offloads_caps; /* enum mlx5_ib_tunnel_offloads */
+	__u32	tunnel_offloads_caps;  
 	struct  mlx5_ib_dci_streams_caps dci_streams_caps;
 	__u16 reserved;
 };
@@ -311,7 +260,7 @@ struct mlx5_ib_create_srq {
 	__aligned_u64 buf_addr;
 	__aligned_u64 db_addr;
 	__u32	flags;
-	__u32	reserved0; /* explicit padding (optional on i386) */
+	__u32	reserved0;  
 	__u32	uidx;
 	__u32	reserved1;
 };
@@ -344,19 +293,12 @@ struct mlx5_ib_create_qp {
 	__u16 reserved;
 };
 
-/* RX Hash function flags */
+ 
 enum mlx5_rx_hash_function_flags {
 	MLX5_RX_HASH_FUNC_TOEPLITZ	= 1 << 0,
 };
 
-/*
- * RX Hash flags, these flags allows to set which incoming packet's field should
- * participates in RX Hash. Each flag represent certain packet's field,
- * when the flag is set the field that is represented by the flag will
- * participate in RX Hash calculation.
- * Note: *IPV4 and *IPV6 flags can't be enabled together on the same QP
- * and *TCP and *UDP flags can't be enabled together on the same QP.
-*/
+ 
 enum mlx5_rx_hash_fields {
 	MLX5_RX_HASH_SRC_IPV4	= 1 << 0,
 	MLX5_RX_HASH_DST_IPV4	= 1 << 1,
@@ -367,16 +309,16 @@ enum mlx5_rx_hash_fields {
 	MLX5_RX_HASH_SRC_PORT_UDP	= 1 << 6,
 	MLX5_RX_HASH_DST_PORT_UDP	= 1 << 7,
 	MLX5_RX_HASH_IPSEC_SPI		= 1 << 8,
-	/* Save bits for future fields */
+	 
 	MLX5_RX_HASH_INNER		= (1UL << 31),
 };
 
 struct mlx5_ib_create_qp_rss {
-	__aligned_u64 rx_hash_fields_mask; /* enum mlx5_rx_hash_fields */
-	__u8 rx_hash_function; /* enum mlx5_rx_hash_function_flags */
-	__u8 rx_key_len; /* valid only for Toeplitz */
+	__aligned_u64 rx_hash_fields_mask;  
+	__u8 rx_hash_function;  
+	__u8 rx_key_len;  
 	__u8 reserved[6];
-	__u8 rx_hash_key[128]; /* valid only for Toeplitz */
+	__u8 rx_hash_key[128];  
 	__u32   comp_mask;
 	__u32	flags;
 };
@@ -482,7 +424,7 @@ enum mlx5_ib_mmap_cmd {
 	MLX5_IB_MMAP_GET_CONTIGUOUS_PAGES       = 1,
 	MLX5_IB_MMAP_WC_PAGE                    = 2,
 	MLX5_IB_MMAP_NC_PAGE                    = 3,
-	/* 5 is chosen in order to be compatible with old versions of libmlx5 */
+	 
 	MLX5_IB_MMAP_CORE_CLOCK                 = 5,
 	MLX5_IB_MMAP_ALLOC_WC                   = 6,
 	MLX5_IB_MMAP_CLOCK_INFO                 = 7,
@@ -493,7 +435,7 @@ enum {
 	MLX5_IB_CLOCK_INFO_KERNEL_UPDATING = 1,
 };
 
-/* Bit indexes for the mlx5_alloc_ucontext_resp.clock_info_versions bitmap */
+ 
 enum {
 	MLX5_IB_CLOCK_INFO_V1              = 0,
 };
@@ -512,12 +454,8 @@ struct mlx5_ib_flow_counters_data {
 struct mlx5_ib_create_flow {
 	__u32   ncounters_data;
 	__u32   reserved;
-	/*
-	 * Following are counters data based on ncounters_data, each
-	 * entry in the data[] should match a corresponding counter object
-	 * that was pointed by a counters spec upon the flow creation
-	 */
+	 
 	struct mlx5_ib_flow_counters_data data[];
 };
 
-#endif /* MLX5_ABI_USER_H */
+#endif  

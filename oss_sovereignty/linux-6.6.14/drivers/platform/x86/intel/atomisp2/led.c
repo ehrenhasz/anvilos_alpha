@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Driver for controlling LEDs for cameras connected to the Intel atomisp2
- * The main purpose of this driver is to turn off LEDs which are on at boot.
- *
- * Copyright (C) 2020 Hans de Goede <hdegoede@redhat.com>
- */
+
+ 
 
 #include <linux/dmi.h>
 #include <linux/gpio/consumer.h>
@@ -15,7 +10,7 @@
 #include <linux/platform_device.h>
 #include <linux/workqueue.h>
 
-/* This must be leds-gpio as the leds-gpio driver binds to the name */
+ 
 #define DEV_NAME		"leds-gpio"
 
 static const struct gpio_led atomisp2_leds[] = {
@@ -50,7 +45,7 @@ static const struct dmi_system_id atomisp2_led_systems[] __initconst = {
 	{
 		.matches = {
 			DMI_EXACT_MATCH(DMI_SYS_VENDOR, "ASUSTeK COMPUTER INC."),
-			/* Non exact match to also match T100TAF */
+			 
 			DMI_MATCH(DMI_PRODUCT_NAME, "T100TA"),
 		},
 		.driver_data = &asus_t100ta_lookup,
@@ -69,7 +64,7 @@ static const struct dmi_system_id atomisp2_led_systems[] __initconst = {
 		},
 		.driver_data = &asus_t100chi_lookup,
 	},
-	{} /* Terminating entry */
+	{}  
 };
 MODULE_DEVICE_TABLE(dmi, atomisp2_led_systems);
 
@@ -106,11 +101,7 @@ static void __exit atomisp2_led_cleanup(void)
 module_init(atomisp2_led_init);
 module_exit(atomisp2_led_cleanup);
 
-/*
- * The ACPI INIT method from Asus WMI's code on the T100TA and T200TA turns the
- * LED on (without the WMI interface allowing further control over the LED).
- * Ensure we are loaded after asus-nb-wmi so that we turn the LED off again.
- */
+ 
 MODULE_SOFTDEP("pre: asus_nb_wmi");
 MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com");
 MODULE_DESCRIPTION("Intel atomisp2 camera LED driver");

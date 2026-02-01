@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Benchmark scanning sysfs files for PMU information.
- *
- * Copyright 2023 Google LLC.
- */
+
+ 
 #include <stdio.h>
 #include "bench.h"
 #include "util/debug.h"

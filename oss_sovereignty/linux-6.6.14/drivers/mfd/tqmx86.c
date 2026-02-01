@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * TQ-Systems PLD MFD core driver, based on vendor driver by
- * Vadim V.Vlasov <vvlasov@dev.rtsoft.ru>
- *
- * Copyright (c) 2015 TQ-Systems GmbH
- * Copyright (c) 2019 Andrew Lunn <andrew@lunn.ch>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dmi.h>
@@ -65,10 +59,7 @@ static const struct resource tqmx_watchdog_resources[] = {
 	DEFINE_RES_IO(TQMX86_IOBASE_WATCHDOG, TQMX86_IOSIZE_WATCHDOG),
 };
 
-/*
- * The IRQ resource must be first, since it is updated with the
- * configured IRQ in the probe function.
- */
+ 
 static struct resource tqmx_gpio_resources[] = {
 	DEFINE_RES_IRQ(0),
 	DEFINE_RES_IO(TQMX86_IOBASE_GPIO, TQMX86_IOSIZE_GPIO),
@@ -76,7 +67,7 @@ static struct resource tqmx_gpio_resources[] = {
 
 static struct i2c_board_info tqmx86_i2c_devices[] = {
 	{
-		/* 4K EEPROM at 0x50 */
+		 
 		I2C_BOARD_INFO("24c32", 0x50),
 	},
 };
@@ -214,11 +205,7 @@ static int tqmx86_probe(struct platform_device *pdev)
 		 "Found %s - Board ID %d, PCB Revision %d, PLD Revision %d\n",
 		 board_name, board_id, rev >> 4, rev & 0xf);
 
-	/*
-	 * The I2C_DETECT register is in the range assigned to the I2C driver
-	 * later, so we don't extend TQMX86_IOSIZE. Use inb() for this one-off
-	 * access instead of ioport_map + unmap.
-	 */
+	 
 	i2c_det = inb(TQMX86_REG_I2C_DETECT);
 
 	if (gpio_irq_cfg) {
@@ -231,7 +218,7 @@ static int tqmx86_probe(struct platform_device *pdev)
 			return -EINVAL;
 		}
 
-		/* Assumes the IRQ resource is first. */
+		 
 		tqmx_gpio_resources[0].start = gpio_irq;
 	} else {
 		tqmx_gpio_resources[0].flags = 0;

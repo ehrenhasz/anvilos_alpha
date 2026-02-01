@@ -1,17 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Broadcom
- */
 
-/**
- * DOC: VC4 SDTV module
- *
- * The VEC encoder generates PAL or NTSC composite video output.
- *
- * TV mode selection is done by an atomic property on the encoder,
- * because a drm_mode_modeinfo is insufficient to distinguish between
- * PAL and PAL-M or NTSC and NTSC-J.
- */
+ 
+
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_drv.h>
@@ -28,7 +18,7 @@
 #include "vc4_drv.h"
 #include "vc4_regs.h"
 
-/* WSE Registers */
+ 
 #define VEC_WSE_RESET			0xc0
 
 #define VEC_WSE_CONTROL			0xc4
@@ -38,7 +28,7 @@
 #define VEC_WSE_VPS_DATA1		0xcc
 #define VEC_WSE_VPS_CONTROL		0xd0
 
-/* VEC Registers */
+ 
 #define VEC_REVID			0x100
 
 #define VEC_CONFIG0			0x104
@@ -78,26 +68,7 @@
 #define VEC_CLMP0_START			0x144
 #define VEC_CLMP0_END			0x148
 
-/*
- * These set the color subcarrier frequency
- * if VEC_CONFIG1_CUSTOM_FREQ is enabled.
- *
- * VEC_FREQ1_0 contains the most significant 16-bit half-word,
- * VEC_FREQ3_2 contains the least significant 16-bit half-word.
- * 0x80000000 seems to be equivalent to the pixel clock
- * (which itself is the VEC clock divided by 8).
- *
- * Reference values (with the default pixel clock of 13.5 MHz):
- *
- * NTSC  (3579545.[45] Hz)     - 0x21F07C1F
- * PAL   (4433618.75 Hz)       - 0x2A098ACB
- * PAL-M (3575611.[888111] Hz) - 0x21E6EFE3
- * PAL-N (3582056.25 Hz)       - 0x21F69446
- *
- * NOTE: For SECAM, it is used as the Dr center frequency,
- * regardless of whether VEC_CONFIG1_CUSTOM_FREQ is enabled or not;
- * that is specified as 4406250 Hz, which corresponds to 0x29C71C72.
- */
+ 
 #define VEC_FREQ3_2			0x180
 #define VEC_FREQ1_0			0x184
 
@@ -141,13 +112,7 @@
 #define VEC_INTERRUPT_CONTROL		0x190
 #define VEC_INTERRUPT_STATUS		0x194
 
-/*
- * Db center frequency for SECAM; the clock for this is the same as for
- * VEC_FREQ3_2/VEC_FREQ1_0, which is used for Dr center frequency.
- *
- * This is specified as 4250000 Hz, which corresponds to 0x284BDA13.
- * That is also the default value, so no need to set it explicitly.
- */
+ 
 #define VEC_FCW_SECAM_B			0x198
 #define VEC_SECAM_GAIN_VAL		0x19c
 
@@ -190,7 +155,7 @@ struct vc4_vec_variant {
 	u32 dac_config;
 };
 
-/* General VEC hardware state. */
+ 
 struct vc4_vec {
 	struct vc4_encoder encoder;
 	struct drm_connector connector;
@@ -298,7 +263,7 @@ static const struct vc4_vec_tv_mode vc4_vec_tv_modes[] = {
 		.config1 = VEC_CONFIG1_C_CVBS_CVBS,
 	},
 	{
-		/* PAL-60 */
+		 
 		.mode = DRM_MODE_TV_MODE_PAL,
 		.expected_htotal = 858,
 		.config0 = VEC_CONFIG0_PAL_M_STD,
@@ -567,13 +532,7 @@ static void vc4_vec_encoder_enable(struct drm_encoder *encoder,
 		goto err_dev_exit;
 	}
 
-	/*
-	 * We need to set the clock rate each time we enable the encoder
-	 * because there's a chance we share the same parent with the HDMI
-	 * clock, and both drivers are requesting different rates.
-	 * The good news is, these 2 encoders cannot be enabled at the same
-	 * time, thus preventing incompatible rate requests.
-	 */
+	 
 	ret = clk_set_rate(vec->clock, 108000000);
 	if (ret) {
 		DRM_ERROR("Failed to set clock rate: %d\n", ret);
@@ -586,24 +545,19 @@ static void vc4_vec_encoder_enable(struct drm_encoder *encoder,
 		goto err_put_runtime_pm;
 	}
 
-	/* Reset the different blocks */
+	 
 	VEC_WRITE(VEC_WSE_RESET, 1);
 	VEC_WRITE(VEC_SOFT_RESET, 1);
 
-	/* Disable the CGSM-A and WSE blocks */
+	 
 	VEC_WRITE(VEC_WSE_CONTROL, 0);
 
-	/* Write config common to all modes. */
+	 
 
-	/*
-	 * Color subcarrier phase: phase = 360 * SCHPH / 256.
-	 * 0x28 <=> 39.375 deg.
-	 */
+	 
 	VEC_WRITE(VEC_SCHPH, 0x28);
 
-	/*
-	 * Reset to default values.
-	 */
+	 
 	VEC_WRITE(VEC_CLMP0_START, 0xac);
 	VEC_WRITE(VEC_CLMP0_END, 0xec);
 	VEC_WRITE(VEC_CONFIG2,
@@ -613,7 +567,7 @@ static void vc4_vec_encoder_enable(struct drm_encoder *encoder,
 	VEC_WRITE(VEC_CONFIG3, VEC_CONFIG3_HORIZ_LEN_STD);
 	VEC_WRITE(VEC_DAC_CONFIG, vec->variant->dac_config);
 
-	/* Mask all interrupts. */
+	 
 	VEC_WRITE(VEC_MASK0, 0);
 
 	VEC_WRITE(VEC_CONFIG0, tv_mode->config0);
@@ -657,7 +611,7 @@ static int vc4_vec_encoder_atomic_check(struct drm_encoder *encoder,
 		return -EINVAL;
 
 	switch (mode->htotal) {
-	/* NTSC */
+	 
 	case 858:
 		if (mode->crtc_vtotal > 262)
 			return -EINVAL;
@@ -676,7 +630,7 @@ static int vc4_vec_encoder_atomic_check(struct drm_encoder *encoder,
 
 		break;
 
-	/* PAL/SECAM */
+	 
 	case 864:
 		if (mode->crtc_vtotal > 312)
 			return -EINVAL;
@@ -737,7 +691,7 @@ static const struct vc4_vec_variant bcm2711_vec_variant = {
 static const struct of_device_id vc4_vec_dt_match[] = {
 	{ .compatible = "brcm,bcm2835-vec", .data = &bcm2835_vec_variant },
 	{ .compatible = "brcm,bcm2711-vec", .data = &bcm2711_vec_variant },
-	{ /* sentinel */ },
+	{   },
 };
 
 static int vc4_vec_bind(struct device *dev, struct device *master, void *data)

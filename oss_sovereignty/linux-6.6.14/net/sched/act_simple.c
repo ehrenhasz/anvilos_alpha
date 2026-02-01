@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_simple.c	Simple example of an action
- *
- * Authors:	Jamal Hadi Salim (2005-8)
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -32,10 +28,7 @@ TC_INDIRECT_SCOPE int tcf_simp_act(struct sk_buff *skb,
 	tcf_lastuse_update(&d->tcf_tm);
 	bstats_update(&d->tcf_bstats, skb);
 
-	/* print policy string followed by _ then packet count
-	 * Example if this was the 3rd packet and the string was "hello"
-	 * then it would look like "hello_3" (without quotes)
-	 */
+	 
 	pr_info("simple: %s_%llu\n",
 		(char *)d->tcfd_defdata,
 		u64_stats_read(&d->tcf_bstats.packets));

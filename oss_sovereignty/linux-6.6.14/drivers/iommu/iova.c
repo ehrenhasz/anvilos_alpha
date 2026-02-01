@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright © 2006-2009, Intel Corporation.
- *
- * Author: Anil S Keshavamurthy <anil.s.keshavamurthy@intel.com>
- */
+
+ 
 
 #include <linux/iova.h>
 #include <linux/module.h>
@@ -12,10 +8,10 @@
 #include <linux/bitops.h>
 #include <linux/cpu.h>
 
-/* The anchor node sits above the top of the usable address space */
+ 
 #define IOVA_ANCHOR	~0UL
 
-#define IOVA_RANGE_CACHE_MAX_SIZE 6	/* log of max cached IOVA range size (in pages) */
+#define IOVA_RANGE_CACHE_MAX_SIZE 6	 
 
 static bool iova_rcache_insert(struct iova_domain *iovad,
 			       unsigned long pfn,
@@ -52,11 +48,7 @@ void
 init_iova_domain(struct iova_domain *iovad, unsigned long granule,
 	unsigned long start_pfn)
 {
-	/*
-	 * IOVA granularity will normally be equal to the smallest
-	 * supported IOMMU page size; both *must* be capable of
-	 * representing individual CPU pages exactly.
-	 */
+	 
 	BUG_ON((granule > PAGE_SIZE) || !is_power_of_2(granule));
 
 	spin_lock_init(&iovad->iova_rbtree_lock);
@@ -113,14 +105,7 @@ __cached_rbnode_delete_update(struct iova_domain *iovad, struct iova *free)
 static struct rb_node *iova_find_limit(struct iova_domain *iovad, unsigned long limit_pfn)
 {
 	struct rb_node *node, *next;
-	/*
-	 * Ideally what we'd like to judge here is whether limit_pfn is close
-	 * enough to the highest-allocated IOVA that starting the allocation
-	 * walk from the anchor node will be quicker than this initial work to
-	 * find an exact starting point (especially if that ends up being the
-	 * anchor node anyway). This is an incredibly crude approximation which
-	 * only really helps the most likely case, but is at least trivially easy.
-	 */
+	 
 	if (limit_pfn > iovad->dma_32bit_pfn)
 		return &iovad->anchor.node;
 
@@ -147,7 +132,7 @@ search_left:
 	return node;
 }
 
-/* Insert the iova into domain rbtree by holding writer lock */
+ 
 static void
 iova_insert_rbtree(struct rb_root *root, struct iova *iova,
 		   struct rb_node *start)
@@ -155,7 +140,7 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
 	struct rb_node **new, *parent = NULL;
 
 	new = (start) ? &start : &(root->rb_node);
-	/* Figure out where to put new node */
+	 
 	while (*new) {
 		struct iova *this = to_iova(*new);
 
@@ -166,11 +151,11 @@ iova_insert_rbtree(struct rb_root *root, struct iova *iova,
 		else if (iova->pfn_lo > this->pfn_lo)
 			new = &((*new)->rb_right);
 		else {
-			WARN_ON(1); /* this should not happen */
+			WARN_ON(1);  
 			return;
 		}
 	}
-	/* Add new node and rebalance tree. */
+	 
 	rb_link_node(&iova->node, parent, new);
 	rb_insert_color(&iova->node, root);
 }
@@ -189,7 +174,7 @@ static int __alloc_and_insert_iova_range(struct iova_domain *iovad,
 	if (size_aligned)
 		align_mask <<= fls_long(size - 1);
 
-	/* Walk the tree backwards */
+	 
 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
 	if (limit_pfn <= iovad->dma_32bit_pfn &&
 			size >= iovad->max32_alloc_size)
@@ -220,11 +205,11 @@ retry:
 		goto iova32_full;
 	}
 
-	/* pfn_lo will point to size aligned address if size_aligned is set */
+	 
 	new->pfn_lo = new_pfn;
 	new->pfn_hi = new->pfn_lo + size - 1;
 
-	/* If we have 'prev', it's a valid place to start the insertion. */
+	 
 	iova_insert_rbtree(&iovad->rbroot, new, prev);
 	__cached_rbnode_insert_update(iovad, new);
 
@@ -299,17 +284,7 @@ void iova_cache_put(void)
 }
 EXPORT_SYMBOL_GPL(iova_cache_put);
 
-/**
- * alloc_iova - allocates an iova
- * @iovad: - iova domain in question
- * @size: - size of page frames to allocate
- * @limit_pfn: - max limit address
- * @size_aligned: - set if size_aligned address range is required
- * This function allocates an iova in the range iovad->start_pfn to limit_pfn,
- * searching top-down from limit_pfn to iovad->start_pfn. If the size_aligned
- * flag is set then the allocated address iova->pfn_lo will be naturally
- * aligned on roundup_power_of_two(size).
- */
+ 
 struct iova *
 alloc_iova(struct iova_domain *iovad, unsigned long size,
 	unsigned long limit_pfn,
@@ -349,7 +324,7 @@ private_find_iova(struct iova_domain *iovad, unsigned long pfn)
 		else if (pfn > iova->pfn_hi)
 			node = node->rb_right;
 		else
-			return iova;	/* pfn falls within iova's range */
+			return iova;	 
 	}
 
 	return NULL;
@@ -362,19 +337,13 @@ static void remove_iova(struct iova_domain *iovad, struct iova *iova)
 	rb_erase(&iova->node, &iovad->rbroot);
 }
 
-/**
- * find_iova - finds an iova for a given pfn
- * @iovad: - iova domain in question.
- * @pfn: - page frame number
- * This function finds and returns an iova belonging to the
- * given domain which matches the given pfn.
- */
+ 
 struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
 {
 	unsigned long flags;
 	struct iova *iova;
 
-	/* Take the lock so that no other thread is manipulating the rbtree */
+	 
 	spin_lock_irqsave(&iovad->iova_rbtree_lock, flags);
 	iova = private_find_iova(iovad, pfn);
 	spin_unlock_irqrestore(&iovad->iova_rbtree_lock, flags);
@@ -382,12 +351,7 @@ struct iova *find_iova(struct iova_domain *iovad, unsigned long pfn)
 }
 EXPORT_SYMBOL_GPL(find_iova);
 
-/**
- * __free_iova - frees the given iova
- * @iovad: iova domain in question.
- * @iova: iova in question.
- * Frees the given iova belonging to the giving domain
- */
+ 
 void
 __free_iova(struct iova_domain *iovad, struct iova *iova)
 {
@@ -400,13 +364,7 @@ __free_iova(struct iova_domain *iovad, struct iova *iova)
 }
 EXPORT_SYMBOL_GPL(__free_iova);
 
-/**
- * free_iova - finds and frees the iova for a given pfn
- * @iovad: - iova domain in question.
- * @pfn: - pfn that is allocated previously
- * This functions finds an iova for a given pfn and then
- * frees the iova from that domain.
- */
+ 
 void
 free_iova(struct iova_domain *iovad, unsigned long pfn)
 {
@@ -425,16 +383,7 @@ free_iova(struct iova_domain *iovad, unsigned long pfn)
 }
 EXPORT_SYMBOL_GPL(free_iova);
 
-/**
- * alloc_iova_fast - allocates an iova from rcache
- * @iovad: - iova domain in question
- * @size: - size of page frames to allocate
- * @limit_pfn: - max limit address
- * @flush_rcache: - set to flush rcache on regular allocation failure
- * This function tries to satisfy an iova allocation from the rcache,
- * and falls back to regular allocation on failure. If regular allocation
- * fails too and the flush_rcache flag is set then the rcache will be flushed.
-*/
+ 
 unsigned long
 alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
 		unsigned long limit_pfn, bool flush_rcache)
@@ -442,12 +391,7 @@ alloc_iova_fast(struct iova_domain *iovad, unsigned long size,
 	unsigned long iova_pfn;
 	struct iova *new_iova;
 
-	/*
-	 * Freeing non-power-of-two-sized allocations back into the IOVA caches
-	 * will come back to bite us badly, so we have to waste a bit of space
-	 * rounding up anything cacheable to make sure that can't happen. The
-	 * order of the unadjusted size will still match upon freeing.
-	 */
+	 
 	if (size < (1 << (IOVA_RANGE_CACHE_MAX_SIZE - 1)))
 		size = roundup_pow_of_two(size);
 
@@ -463,7 +407,7 @@ retry:
 		if (!flush_rcache)
 			return 0;
 
-		/* Try replenishing IOVAs by flushing rcache. */
+		 
 		flush_rcache = false;
 		for_each_online_cpu(cpu)
 			free_cpu_cached_iovas(cpu, iovad);
@@ -475,14 +419,7 @@ retry:
 }
 EXPORT_SYMBOL_GPL(alloc_iova_fast);
 
-/**
- * free_iova_fast - free iova pfn range into rcache
- * @iovad: - iova domain in question.
- * @pfn: - pfn that is allocated previously
- * @size: - # of pages in range
- * This functions frees an iova range by trying to put it into the rcache,
- * falling back to regular iova deallocation via free_iova() if this fails.
- */
+ 
 void
 free_iova_fast(struct iova_domain *iovad, unsigned long pfn, unsigned long size)
 {
@@ -500,11 +437,7 @@ static void iova_domain_free_rcaches(struct iova_domain *iovad)
 	free_iova_rcaches(iovad);
 }
 
-/**
- * put_iova_domain - destroys the iova domain
- * @iovad: - iova domain in question.
- * All the iova's in that domain are destroyed.
- */
+ 
 void put_iova_domain(struct iova_domain *iovad)
 {
 	struct iova *iova, *tmp;
@@ -565,14 +498,7 @@ __adjust_overlap_range(struct iova *iova,
 		*pfn_lo = iova->pfn_hi + 1;
 }
 
-/**
- * reserve_iova - reserves an iova in the given range
- * @iovad: - iova domain pointer
- * @pfn_lo: - lower page frame address
- * @pfn_hi:- higher pfn adderss
- * This function allocates reserves the address range from pfn_lo to pfn_hi so
- * that this address is not dished out as part of alloc_iova.
- */
+ 
 struct iova *
 reserve_iova(struct iova_domain *iovad,
 	unsigned long pfn_lo, unsigned long pfn_hi)
@@ -582,7 +508,7 @@ reserve_iova(struct iova_domain *iovad,
 	struct iova *iova;
 	unsigned int overlap = 0;
 
-	/* Don't allow nonsensical pfns */
+	 
 	if (WARN_ON((pfn_hi | pfn_lo) > (ULLONG_MAX >> iova_shift(iovad))))
 		return NULL;
 
@@ -600,9 +526,7 @@ reserve_iova(struct iova_domain *iovad,
 				break;
 	}
 
-	/* We are here either because this is the first reserver node
-	 * or need to insert remaining non overlap addr range
-	 */
+	 
 	iova = __insert_new_range(iovad, pfn_lo, pfn_hi);
 finish:
 
@@ -611,21 +535,11 @@ finish:
 }
 EXPORT_SYMBOL_GPL(reserve_iova);
 
-/*
- * Magazine caches for IOVA ranges.  For an introduction to magazines,
- * see the USENIX 2001 paper "Magazines and Vmem: Extending the Slab
- * Allocator to Many CPUs and Arbitrary Resources" by Bonwick and Adams.
- * For simplicity, we use a static magazine size and don't implement the
- * dynamic size tuning described in the paper.
- */
+ 
 
-/*
- * As kmalloc's buffer size is fixed to power of 2, 127 is chosen to
- * assure size of 'iova_magazine' to be 1024 bytes, so that no memory
- * will be wasted.
- */
+ 
 #define IOVA_MAG_SIZE 127
-#define MAX_GLOBAL_MAGS 32	/* magazines per bin */
+#define MAX_GLOBAL_MAGS 32	 
 
 struct iova_magazine {
 	unsigned long size;
@@ -700,12 +614,12 @@ static unsigned long iova_magazine_pop(struct iova_magazine *mag,
 	int i;
 	unsigned long pfn;
 
-	/* Only fall back to the rbtree if we have no suitable pfns at all */
+	 
 	for (i = mag->size - 1; mag->pfns[i] > limit_pfn; i--)
 		if (i == 0)
 			return 0;
 
-	/* Swap it to pop it */
+	 
 	pfn = mag->pfns[i];
 	mag->pfns[i] = mag->pfns[--mag->size];
 
@@ -766,12 +680,7 @@ out_err:
 }
 EXPORT_SYMBOL_GPL(iova_domain_init_rcaches);
 
-/*
- * Try inserting IOVA range starting with 'iova_pfn' into 'rcache', and
- * return true on success.  Can fail if rcache is full and we can't free
- * space, and free_iova() (our only caller) will then return the IOVA
- * range to the rbtree instead.
- */
+ 
 static bool __iova_rcache_insert(struct iova_domain *iovad,
 				 struct iova_rcache *rcache,
 				 unsigned long iova_pfn)
@@ -831,11 +740,7 @@ static bool iova_rcache_insert(struct iova_domain *iovad, unsigned long pfn,
 	return __iova_rcache_insert(iovad, &iovad->rcaches[log_size], pfn);
 }
 
-/*
- * Caller wants to allocate a new IOVA range from 'rcache'.  If we can
- * satisfy the request, return a matching non-NULL range and remove
- * it from the 'rcache'.
- */
+ 
 static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
 				       unsigned long limit_pfn)
 {
@@ -870,11 +775,7 @@ static unsigned long __iova_rcache_get(struct iova_rcache *rcache,
 	return iova_pfn;
 }
 
-/*
- * Try to satisfy IOVA allocation range from rcache.  Fail if requested
- * size is too big or the DMA limit we are given isn't satisfied by the
- * top element in the magazine.
- */
+ 
 static unsigned long iova_rcache_get(struct iova_domain *iovad,
 				     unsigned long size,
 				     unsigned long limit_pfn)
@@ -887,9 +788,7 @@ static unsigned long iova_rcache_get(struct iova_domain *iovad,
 	return __iova_rcache_get(&iovad->rcaches[log_size], limit_pfn - size);
 }
 
-/*
- * free rcache data structures.
- */
+ 
 static void free_iova_rcaches(struct iova_domain *iovad)
 {
 	struct iova_rcache *rcache;
@@ -915,9 +814,7 @@ static void free_iova_rcaches(struct iova_domain *iovad)
 	iovad->rcaches = NULL;
 }
 
-/*
- * free all the IOVA ranges cached by a cpu (used when cpu is unplugged)
- */
+ 
 static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
 {
 	struct iova_cpu_rcache *cpu_rcache;
@@ -935,9 +832,7 @@ static void free_cpu_cached_iovas(unsigned int cpu, struct iova_domain *iovad)
 	}
 }
 
-/*
- * free all the IOVA ranges of global cache
- */
+ 
 static void free_global_cached_iovas(struct iova_domain *iovad)
 {
 	struct iova_rcache *rcache;

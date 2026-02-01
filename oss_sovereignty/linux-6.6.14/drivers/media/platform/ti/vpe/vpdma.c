@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VPDMA helper library
- *
- * Copyright (c) 2013 Texas Instruments Inc.
- *
- * David Griego, <dagriego@biglakesoftware.com>
- * Dale Farnsworth, <dale@farnsworth.org>
- * Archit Taneja, <archit@ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-mapping.h>
@@ -193,15 +185,7 @@ const struct vpdma_data_format vpdma_rgb_fmts[] = {
 };
 EXPORT_SYMBOL(vpdma_rgb_fmts);
 
-/*
- * To handle RAW format we are re-using the CBY422
- * vpdma data type so that we use the vpdma to re-order
- * the incoming bytes, as the parser assumes that the
- * first byte presented on the bus is the MSB of a 2
- * bytes value.
- * RAW8 handles from 1 to 8 bits
- * RAW16 handles from 9 to 16 bits
- */
+ 
 const struct vpdma_data_format vpdma_raw_fmts[] = {
 	[VPDMA_DATA_FMT_RAW8] = {
 		.type		= VPDMA_DATA_FMT_TYPE_YUV,
@@ -226,8 +210,8 @@ const struct vpdma_data_format vpdma_misc_fmts[] = {
 EXPORT_SYMBOL(vpdma_misc_fmts);
 
 struct vpdma_channel_info {
-	int num;		/* VPDMA channel number */
-	int cstat_offset;	/* client CSTAT register offset */
+	int num;		 
+	int cstat_offset;	 
 };
 
 static const struct vpdma_channel_info chan_info[] = {
@@ -323,10 +307,7 @@ void vpdma_dump_regs(struct vpdma_data *vpdma)
 	DUMPREG(MAX_SIZE2);
 	DUMPREG(MAX_SIZE3);
 
-	/*
-	 * dumping registers of only group0 and group3, because VPE channels
-	 * lie within group0 and group3 registers
-	 */
+	 
 	DUMPREG(INT_CHAN_STAT(0));
 	DUMPREG(INT_CHAN_MASK(0));
 	DUMPREG(INT_CHAN_STAT(3));
@@ -338,11 +319,7 @@ void vpdma_dump_regs(struct vpdma_data *vpdma)
 	DUMPREG(INT_LIST0_STAT);
 	DUMPREG(INT_LIST0_MASK);
 
-	/*
-	 * these are registers specific to VPE clients, we can make this
-	 * function dump client registers specific to VPE or VIP based on
-	 * who is using it
-	 */
+	 
 	DUMPREG(DEI_CHROMA1_CSTAT);
 	DUMPREG(DEI_LUMA1_CSTAT);
 	DUMPREG(DEI_CHROMA2_CSTAT);
@@ -357,9 +334,7 @@ void vpdma_dump_regs(struct vpdma_data *vpdma)
 }
 EXPORT_SYMBOL(vpdma_dump_regs);
 
-/*
- * Allocate a DMA buffer
- */
+ 
 int vpdma_alloc_desc_buf(struct vpdma_buf *buf, size_t size)
 {
 	buf->size = size;
@@ -383,9 +358,7 @@ void vpdma_free_desc_buf(struct vpdma_buf *buf)
 }
 EXPORT_SYMBOL(vpdma_free_desc_buf);
 
-/*
- * map descriptor/payload DMA buffer, enabling DMA access
- */
+ 
 int vpdma_map_desc_buf(struct vpdma_data *vpdma, struct vpdma_buf *buf)
 {
 	struct device *dev = &vpdma->pdev->dev;
@@ -404,10 +377,7 @@ int vpdma_map_desc_buf(struct vpdma_data *vpdma, struct vpdma_buf *buf)
 }
 EXPORT_SYMBOL(vpdma_map_desc_buf);
 
-/*
- * unmap descriptor/payload DMA buffer, disabling DMA access and
- * allowing the main processor to access the data
- */
+ 
 void vpdma_unmap_desc_buf(struct vpdma_data *vpdma, struct vpdma_buf *buf)
 {
 	struct device *dev = &vpdma->pdev->dev;
@@ -420,13 +390,7 @@ void vpdma_unmap_desc_buf(struct vpdma_data *vpdma, struct vpdma_buf *buf)
 }
 EXPORT_SYMBOL(vpdma_unmap_desc_buf);
 
-/*
- * Cleanup all pending descriptors of a list
- * First, stop the current list being processed.
- * If the VPDMA was busy, this step makes vpdma to accept post lists.
- * To cleanup the internal FSM, post abort list descriptor for all the
- * channels from @channels array of size @size.
- */
+ 
 int vpdma_list_cleanup(struct vpdma_data *vpdma, int list_num,
 		int *channels, int size)
 {
@@ -472,12 +436,7 @@ free_desc:
 }
 EXPORT_SYMBOL(vpdma_list_cleanup);
 
-/*
- * create a descriptor list, the user of this list will append configuration,
- * control and data descriptors to this list, this list will be submitted to
- * VPDMA. VPDMA's list parser will go through each descriptor and perform the
- * required DMA operations
- */
+ 
 int vpdma_create_desc_list(struct vpdma_desc_list *list, size_t size, int type)
 {
 	int r;
@@ -494,20 +453,14 @@ int vpdma_create_desc_list(struct vpdma_desc_list *list, size_t size, int type)
 }
 EXPORT_SYMBOL(vpdma_create_desc_list);
 
-/*
- * once a descriptor list is parsed by VPDMA, we reset the list by emptying it,
- * to allow new descriptors to be added to the list.
- */
+ 
 void vpdma_reset_desc_list(struct vpdma_desc_list *list)
 {
 	list->next = list->buf.addr;
 }
 EXPORT_SYMBOL(vpdma_reset_desc_list);
 
-/*
- * free the buffer allocated for the VPDMA descriptor list, this should be
- * called when the user doesn't want to use VPDMA any more.
- */
+ 
 void vpdma_free_desc_list(struct vpdma_desc_list *list)
 {
 	vpdma_free_desc_buf(&list->buf);
@@ -522,9 +475,7 @@ bool vpdma_list_busy(struct vpdma_data *vpdma, int list_num)
 }
 EXPORT_SYMBOL(vpdma_list_busy);
 
-/*
- * submit a list of DMA descriptors to the VPE VPDMA, do not wait for completion
- */
+ 
 int vpdma_submit_descs(struct vpdma_data *vpdma,
 			struct vpdma_desc_list *list, int list_num)
 {
@@ -534,7 +485,7 @@ int vpdma_submit_descs(struct vpdma_data *vpdma,
 	if (vpdma_list_busy(vpdma, list_num))
 		return -EBUSY;
 
-	/* 16-byte granularity */
+	 
 	list_size = (list->next - list->buf.addr) >> 4;
 
 	spin_lock_irqsave(&vpdma->lock, flags);
@@ -565,9 +516,7 @@ void vpdma_update_dma_addr(struct vpdma_data *vpdma,
 
 	dtd->start_addr = dma_addr;
 
-	/* Calculate write address from the offset of write_dtd from start
-	 * of the list->buf
-	 */
+	 
 	offset = (void *)write_dtd - list->buf.addr;
 	write_desc_addr = list->buf.dma_addr + offset;
 
@@ -625,11 +574,7 @@ static void dump_cfd(struct vpdma_cfd *cfd)
 		 cfd_get_payload_len(cfd));
 }
 
-/*
- * append a configuration descriptor to the given descriptor list, where the
- * payload is in the form of a simple data block specified in the descriptor
- * header, this is used to upload scaler coefficients to the scaler module
- */
+ 
 void vpdma_add_cfd_block(struct vpdma_desc_list *list, int client,
 		struct vpdma_buf *blk, u32 dest_offset)
 {
@@ -653,11 +598,7 @@ void vpdma_add_cfd_block(struct vpdma_desc_list *list, int client,
 }
 EXPORT_SYMBOL(vpdma_add_cfd_block);
 
-/*
- * append a configuration descriptor to the given descriptor list, where the
- * payload is in the address data block format, this is used to a configure a
- * discontiguous set of MMRs
- */
+ 
 void vpdma_add_cfd_adb(struct vpdma_desc_list *list, int client,
 		struct vpdma_buf *adb)
 {
@@ -682,11 +623,7 @@ void vpdma_add_cfd_adb(struct vpdma_desc_list *list, int client,
 };
 EXPORT_SYMBOL(vpdma_add_cfd_adb);
 
-/*
- * control descriptor format change based on what type of control descriptor it
- * is, we only use 'sync on channel' control descriptors for now, so assume it's
- * that
- */
+ 
 static void dump_ctd(struct vpdma_ctd *ctd)
 {
 	pr_debug("control descriptor\n");
@@ -695,11 +632,7 @@ static void dump_ctd(struct vpdma_ctd *ctd)
 		ctd_get_pkt_type(ctd), ctd_get_source(ctd), ctd_get_ctl(ctd));
 }
 
-/*
- * append a 'sync on channel' type control descriptor to the given descriptor
- * list, this descriptor stalls the VPDMA list till the time DMA is completed
- * on the specified channel
- */
+ 
 void vpdma_add_sync_on_channel_ctd(struct vpdma_desc_list *list,
 		enum vpdma_channel chan)
 {
@@ -720,11 +653,7 @@ void vpdma_add_sync_on_channel_ctd(struct vpdma_desc_list *list,
 }
 EXPORT_SYMBOL(vpdma_add_sync_on_channel_ctd);
 
-/*
- * append an 'abort_channel' type control descriptor to the given descriptor
- * list, this descriptor aborts any DMA transaction happening using the
- * specified channel
- */
+ 
 void vpdma_add_abort_channel_ctd(struct vpdma_desc_list *list,
 		int chan_num)
 {
@@ -790,20 +719,7 @@ static void dump_dtd(struct vpdma_dtd *dtd)
 	pr_debug("word7: client specific attr1 = 0x%08x\n", dtd->client_attr1);
 }
 
-/*
- * append an outbound data transfer descriptor to the given descriptor list,
- * this sets up a 'client to memory' VPDMA transfer for the given VPDMA channel
- *
- * @list: vpdma desc list to which we add this descriptor
- * @width: width of the image in pixels in memory
- * @c_rect: compose params of output image
- * @fmt: vpdma data format of the buffer
- * dma_addr: dma address as seen by VPDMA
- * max_width: enum for maximum width of data transfer
- * max_height: enum for maximum height of data transfer
- * chan: VPDMA channel
- * flags: VPDMA flags to configure some descriptor fields
- */
+ 
 void vpdma_add_out_dtd(struct vpdma_desc_list *list, int width,
 		int stride, const struct v4l2_rect *c_rect,
 		const struct vpdma_data_format *fmt, dma_addr_t dma_addr,
@@ -864,25 +780,7 @@ void vpdma_rawchan_add_out_dtd(struct vpdma_desc_list *list, int width,
 }
 EXPORT_SYMBOL(vpdma_rawchan_add_out_dtd);
 
-/*
- * append an inbound data transfer descriptor to the given descriptor list,
- * this sets up a 'memory to client' VPDMA transfer for the given VPDMA channel
- *
- * @list: vpdma desc list to which we add this descriptor
- * @width: width of the image in pixels in memory(not the cropped width)
- * @c_rect: crop params of input image
- * @fmt: vpdma data format of the buffer
- * dma_addr: dma address as seen by VPDMA
- * chan: VPDMA channel
- * field: top or bottom field info of the input image
- * flags: VPDMA flags to configure some descriptor fields
- * frame_width/height: the complete width/height of the image presented to the
- *			client (this makes sense when multiple channels are
- *			connected to the same client, forming a larger frame)
- * start_h, start_v: position where the given channel starts providing pixel
- *			data to the client (makes sense when multiple channels
- *			contribute to the client)
- */
+ 
 void vpdma_add_in_dtd(struct vpdma_desc_list *list, int width,
 		int stride, const struct v4l2_rect *c_rect,
 		const struct vpdma_data_format *fmt, dma_addr_t dma_addr,
@@ -979,7 +877,7 @@ void *vpdma_hwlist_release(struct vpdma_data *vpdma, int list_num)
 }
 EXPORT_SYMBOL(vpdma_hwlist_release);
 
-/* set or clear the mask for list complete interrupt */
+ 
 void vpdma_enable_list_complete_irq(struct vpdma_data *vpdma, int irq_num,
 		int list_num, bool enable)
 {
@@ -995,7 +893,7 @@ void vpdma_enable_list_complete_irq(struct vpdma_data *vpdma, int irq_num,
 }
 EXPORT_SYMBOL(vpdma_enable_list_complete_irq);
 
-/* get the LIST_STAT register */
+ 
 unsigned int vpdma_get_list_stat(struct vpdma_data *vpdma, int irq_num)
 {
 	u32 reg_addr = VPDMA_INT_LIST0_STAT + VPDMA_INTX_OFFSET * irq_num;
@@ -1004,7 +902,7 @@ unsigned int vpdma_get_list_stat(struct vpdma_data *vpdma, int irq_num)
 }
 EXPORT_SYMBOL(vpdma_get_list_stat);
 
-/* get the LIST_MASK register */
+ 
 unsigned int vpdma_get_list_mask(struct vpdma_data *vpdma, int irq_num)
 {
 	u32 reg_addr = VPDMA_INT_LIST0_MASK + VPDMA_INTX_OFFSET * irq_num;
@@ -1013,7 +911,7 @@ unsigned int vpdma_get_list_mask(struct vpdma_data *vpdma, int irq_num)
 }
 EXPORT_SYMBOL(vpdma_get_list_mask);
 
-/* clear previously occurred list interrupts in the LIST_STAT register */
+ 
 void vpdma_clear_list_stat(struct vpdma_data *vpdma, int irq_num,
 			   int list_num)
 {
@@ -1033,11 +931,7 @@ void vpdma_set_bg_color(struct vpdma_data *vpdma,
 }
 EXPORT_SYMBOL(vpdma_set_bg_color);
 
-/*
- * configures the output mode of the line buffer for the given client, the
- * line buffer content can either be mirrored(each line repeated twice) or
- * passed to the client as is
- */
+ 
 void vpdma_set_line_mode(struct vpdma_data *vpdma, int line_mode,
 		enum vpdma_channel chan)
 {
@@ -1048,10 +942,7 @@ void vpdma_set_line_mode(struct vpdma_data *vpdma, int line_mode,
 }
 EXPORT_SYMBOL(vpdma_set_line_mode);
 
-/*
- * configures the event which should trigger VPDMA transfer for the given
- * client
- */
+ 
 void vpdma_set_frame_start_event(struct vpdma_data *vpdma,
 		enum vpdma_frame_start_event fs_event,
 		enum vpdma_channel chan)
@@ -1076,7 +967,7 @@ static void vpdma_firmware_cb(const struct firmware *f, void *context)
 		return;
 	}
 
-	/* already initialized */
+	 
 	if (read_field_reg(vpdma, VPDMA_LIST_ATTR, VPDMA_LIST_RDY_MASK,
 			VPDMA_LIST_RDY_SHFT)) {
 		vpdma->cb(vpdma->pdev);
@@ -1096,7 +987,7 @@ static void vpdma_firmware_cb(const struct firmware *f, void *context)
 
 	write_reg(vpdma, VPDMA_LIST_ADDR, (u32) fw_dma_buf.dma_addr);
 
-	for (i = 0; i < 100; i++) {		/* max 1 second */
+	for (i = 0; i < 100; i++) {		 
 		msleep_interruptible(10);
 
 		if (read_field_reg(vpdma, VPDMA_LIST_ATTR, VPDMA_LIST_RDY_MASK,

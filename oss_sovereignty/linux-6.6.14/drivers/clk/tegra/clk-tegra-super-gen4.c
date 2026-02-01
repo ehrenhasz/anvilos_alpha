@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, 2013, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/clk-provider.h>
@@ -99,7 +97,7 @@ static void __init tegra_sclk_init(void __iomem *clk_base,
 	struct clk *clk;
 	struct clk **dt_clk;
 
-	/* SCLK_MUX */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_sclk_mux, tegra_clks);
 	if (dt_clk) {
 		clk = tegra_clk_register_super_mux("sclk_mux",
@@ -111,7 +109,7 @@ static void __init tegra_sclk_init(void __iomem *clk_base,
 		*dt_clk = clk;
 
 
-		/* SCLK */
+		 
 		dt_clk = tegra_lookup_dt_id(tegra_clk_sclk, tegra_clks);
 		if (dt_clk) {
 			clk = clk_register_divider(NULL, "sclk", "sclk_mux",
@@ -121,7 +119,7 @@ static void __init tegra_sclk_init(void __iomem *clk_base,
 			*dt_clk = clk;
 		}
 	} else {
-		/* SCLK */
+		 
 		dt_clk = tegra_lookup_dt_id(tegra_clk_sclk, tegra_clks);
 		if (dt_clk) {
 			clk = tegra_clk_register_super_mux("sclk",
@@ -135,7 +133,7 @@ static void __init tegra_sclk_init(void __iomem *clk_base,
 		}
 	}
 
-	/* HCLK */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_hclk, tegra_clks);
 	if (dt_clk) {
 		clk = clk_register_divider(NULL, "hclk_div", "sclk", 0,
@@ -148,7 +146,7 @@ static void __init tegra_sclk_init(void __iomem *clk_base,
 		*dt_clk = clk;
 	}
 
-	/* PCLK */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pclk, tegra_clks);
 	if (!dt_clk)
 		return;
@@ -171,7 +169,7 @@ static void __init tegra_super_clk_init(void __iomem *clk_base,
 	struct clk *clk;
 	struct clk **dt_clk;
 
-	/* CCLKG */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_cclk_g, tegra_clks);
 	if (dt_clk) {
 		if (gen_info->gen == gen5) {
@@ -192,15 +190,11 @@ static void __init tegra_super_clk_init(void __iomem *clk_base,
 		*dt_clk = clk;
 	}
 
-	/* CCLKLP */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_cclk_lp, tegra_clks);
 	if (dt_clk) {
 		if (gen_info->gen == gen5) {
-			/*
-			 * TEGRA210_CPU_CLK flag is not needed for cclk_lp as
-			 * cluster switching is not currently supported on
-			 * Tegra210 and also cpu_lp is not used.
-			 */
+			 
 			clk = tegra_clk_register_super_mux("cclk_lp",
 					gen_info->cclk_lp_parents,
 					gen_info->num_cclk_lp_parents,
@@ -223,7 +217,7 @@ static void __init tegra_super_clk_init(void __iomem *clk_base,
 #if defined(CONFIG_ARCH_TEGRA_114_SOC) || \
     defined(CONFIG_ARCH_TEGRA_124_SOC) || \
     defined(CONFIG_ARCH_TEGRA_210_SOC)
-	/* PLLX */
+	 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_x, tegra_clks);
 	if (!dt_clk)
 		return;
@@ -239,7 +233,7 @@ static void __init tegra_super_clk_init(void __iomem *clk_base,
 
 	*dt_clk = clk;
 
-	/* PLLX_OUT0 */
+	 
 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_x_out0, tegra_clks);
 	if (!dt_clk)

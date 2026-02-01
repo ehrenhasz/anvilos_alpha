@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2011 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -16,10 +16,7 @@
 #include "enic_dev.h"
 #include "enic_pp.h"
 
-/*
- * Checks validity of vf index that came in
- * port profile request
- */
+ 
 int enic_is_valid_pp_vf(struct enic *enic, int vf, int *err)
 {
 	if (vf != PORT_SELF_VF) {
@@ -188,7 +185,7 @@ static int enic_pp_disassociate(struct enic *enic, int vf,
 	if (err)
 		return err;
 
-	/* Deregister mac addresses */
+	 
 	if (!is_zero_ether_addr(pp->mac_addr))
 		ENIC_DEVCMD_PROXY_BY_INDEX(vf, err, enic, vnic_dev_del_addr,
 			pp->mac_addr);
@@ -211,8 +208,7 @@ static int enic_pp_preassociate_rr(struct enic *enic, int vf,
 		return err;
 
 	if (pp->request != PORT_REQUEST_ASSOCIATE) {
-		/* If pre-associate is not part of an associate.
-		We always disassociate first */
+		 
 		err = enic_pp_handlers[PORT_REQUEST_DISASSOCIATE](enic, vf,
 			prev_pp, restore_pp);
 		if (err)
@@ -227,9 +223,9 @@ static int enic_pp_preassociate_rr(struct enic *enic, int vf,
 	if (err)
 		return err;
 
-	/* If pre-associate is not part of an associate. */
+	 
 	if (pp->request != PORT_REQUEST_ASSOCIATE) {
-		/* Enable device as standby */
+		 
 		ENIC_DEVCMD_PROXY_BY_INDEX(vf, err, enic, vnic_dev_enable2,
 			active);
 		err = enic_dev_status_to_errno(err);
@@ -250,7 +246,7 @@ static int enic_pp_associate(struct enic *enic, int vf,
 	if (err)
 		return err;
 
-	/* Check if a pre-associate was called before */
+	 
 	if (prev_pp->request != PORT_REQUEST_PREASSOCIATE_RR ||
 		(prev_pp->request == PORT_REQUEST_PREASSOCIATE_RR &&
 			enic_are_pp_different(prev_pp, pp))) {
@@ -269,13 +265,13 @@ static int enic_pp_associate(struct enic *enic, int vf,
 
 	*restore_pp = 0;
 
-	/* Enable device as active */
+	 
 	ENIC_DEVCMD_PROXY_BY_INDEX(vf, err, enic, vnic_dev_enable2, active);
 	err = enic_dev_status_to_errno(err);
 	if (err)
 		return err;
 
-	/* Register mac address */
+	 
 	if (!is_zero_ether_addr(pp->mac_addr))
 		ENIC_DEVCMD_PROXY_BY_INDEX(vf, err, enic, vnic_dev_add_addr,
 			pp->mac_addr);

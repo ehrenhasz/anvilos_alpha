@@ -1,27 +1,6 @@
-/*
- * Resizable simple ram filesystem for Linux.
- *
- * Copyright (C) 2000 Linus Torvalds.
- *               2000 Transmeta Corp.
- *
- * Usage limits added by David Gibson, Linuxcare Australia.
- * This file is released under the GPL.
- */
+ 
 
-/*
- * NOTE! This filesystem is probably most useful
- * not as a real filesystem, but as an example of
- * how virtual filesystems can be written.
- *
- * It doesn't get much simpler than this. Consider
- * that this file implements the full semantics of
- * a POSIX-compliant read-write filesystem.
- *
- * Note in particular how the filesystem does not
- * need to implement any data structures of its own
- * to keep track of the virtual data: using the VFS
- * caches is sufficient.
- */
+ 
 
 #include <linux/fs.h>
 #include <linux/pagemap.h>
@@ -78,7 +57,7 @@ struct inode *ramfs_get_inode(struct super_block *sb,
 			inode->i_op = &ramfs_dir_inode_operations;
 			inode->i_fop = &simple_dir_operations;
 
-			/* directory inodes start off with i_nlink == 2 (for "." entry) */
+			 
 			inc_nlink(inode);
 			break;
 		case S_IFLNK:
@@ -90,10 +69,8 @@ struct inode *ramfs_get_inode(struct super_block *sb,
 	return inode;
 }
 
-/*
- * File creation. Allocate an inode, and we're done..
- */
-/* SMP-safe */
+ 
+ 
 static int
 ramfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 	    struct dentry *dentry, umode_t mode, dev_t dev)
@@ -103,7 +80,7 @@ ramfs_mknod(struct mnt_idmap *idmap, struct inode *dir,
 
 	if (inode) {
 		d_instantiate(dentry, inode);
-		dget(dentry);	/* Extra count - pin the dentry in core */
+		dget(dentry);	 
 		error = 0;
 		dir->i_mtime = inode_set_ctime_current(dir);
 	}
@@ -170,9 +147,7 @@ static const struct inode_operations ramfs_dir_inode_operations = {
 	.tmpfile	= ramfs_tmpfile,
 };
 
-/*
- * Display the mount options in /proc/mounts.
- */
+ 
 static int ramfs_show_options(struct seq_file *m, struct dentry *root)
 {
 	struct ramfs_fs_info *fsi = root->d_sb->s_fs_info;
@@ -208,12 +183,7 @@ static int ramfs_parse_param(struct fs_context *fc, struct fs_parameter *param)
 		opt = vfs_parse_fs_param_source(fc, param);
 		if (opt != -ENOPARAM)
 			return opt;
-		/*
-		 * We might like to report bad mount options here;
-		 * but traditionally ramfs has ignored all mount options,
-		 * and as it is used as a !CONFIG_SHMEM simple substitute
-		 * for tmpfs, better continue to ignore other mount options.
-		 */
+		 
 		return 0;
 	}
 	if (opt < 0)

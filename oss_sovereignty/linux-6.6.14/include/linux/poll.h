@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_POLL_H
 #define _LINUX_POLL_H
 
@@ -12,8 +12,7 @@
 #include <uapi/linux/poll.h>
 #include <uapi/linux/eventpoll.h>
 
-/* ~832 bytes of stack space used max in sys_select/sys_poll before allocating
-   additional memory. */
+ 
 #ifdef __clang__
 #define MAX_STACK_ALLOC 768
 #else
@@ -29,15 +28,10 @@
 
 struct poll_table_struct;
 
-/* 
- * structures and helpers for f_op->poll implementations
- */
+ 
 typedef void (*poll_queue_proc)(struct file *, wait_queue_head_t *, struct poll_table_struct *);
 
-/*
- * Do not touch the structure directly, use the access functions
- * poll_does_not_wait() and poll_requested_events() instead.
- */
+ 
 typedef struct poll_table_struct {
 	poll_queue_proc _qproc;
 	__poll_t _key;
@@ -49,22 +43,13 @@ static inline void poll_wait(struct file * filp, wait_queue_head_t * wait_addres
 		p->_qproc(filp, wait_address, p);
 }
 
-/*
- * Return true if it is guaranteed that poll will not wait. This is the case
- * if the poll() of another file descriptor in the set got an event, so there
- * is no need for waiting.
- */
+ 
 static inline bool poll_does_not_wait(const poll_table *p)
 {
 	return p == NULL || p->_qproc == NULL;
 }
 
-/*
- * Return the set of events that the application wants to poll for.
- * This is useful for drivers that need to know whether a DMA transfer has
- * to be started implicitly on poll(). You typically only want to do that
- * if the application is actually polling for POLLIN and/or POLLOUT.
- */
+ 
 static inline __poll_t poll_requested_events(const poll_table *p)
 {
 	return p ? p->_key : ~(__poll_t)0;
@@ -73,7 +58,7 @@ static inline __poll_t poll_requested_events(const poll_table *p)
 static inline void init_poll_funcptr(poll_table *pt, poll_queue_proc qproc)
 {
 	pt->_qproc = qproc;
-	pt->_key   = ~(__poll_t)0; /* all events enabled */
+	pt->_key   = ~(__poll_t)0;  
 }
 
 static inline bool file_can_poll(struct file *file)
@@ -95,9 +80,7 @@ struct poll_table_entry {
 	wait_queue_head_t *wait_address;
 };
 
-/*
- * Structures and helpers for select/poll syscall
- */
+ 
 struct poll_wqueues {
 	poll_table pt;
 	struct poll_table_page *table;
@@ -144,4 +127,4 @@ static inline __poll_t demangle_poll(u16 val)
 #undef __MAP
 
 
-#endif /* _LINUX_POLL_H */
+#endif  

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Range add and subtract
- */
+
+ 
 #include <linux/init.h>
 #include <linux/minmax.h>
 #include <linux/printk.h>
@@ -14,7 +12,7 @@ int add_range(struct range *range, int az, int nr_range, u64 start, u64 end)
 	if (start >= end)
 		return nr_range;
 
-	/* Out of slots: */
+	 
 	if (nr_range >= az)
 		return nr_range;
 
@@ -34,7 +32,7 @@ int add_range_with_merge(struct range *range, int az, int nr_range,
 	if (start >= end)
 		return nr_range;
 
-	/* get new start/end: */
+	 
 	for (i = 0; i < nr_range; i++) {
 		u64 common_start, common_end;
 
@@ -46,7 +44,7 @@ int add_range_with_merge(struct range *range, int az, int nr_range,
 		if (common_start > common_end)
 			continue;
 
-		/* new start/end, will add it back at last */
+		 
 		start = min(range[i].start, start);
 		end = max(range[i].end, end);
 
@@ -58,7 +56,7 @@ int add_range_with_merge(struct range *range, int az, int nr_range,
 		i--;
 	}
 
-	/* Need to add it: */
+	 
 	return add_range(range, az, nr_range, start, end);
 }
 
@@ -93,7 +91,7 @@ void subtract_range(struct range *range, int az, u64 start, u64 end)
 		}
 
 		if (start > range[j].start && end < range[j].end) {
-			/* Find the new spare: */
+			 
 			for (i = 0; i < az; i++) {
 				if (range[i].end == 0)
 					break;
@@ -144,7 +142,7 @@ int clean_sort_range(struct range *range, int az)
 		range[k].end   = 0;
 		k--;
 	}
-	/* count it */
+	 
 	for (i = 0; i < az; i++) {
 		if (!range[i].end) {
 			nr_range = i;
@@ -152,7 +150,7 @@ int clean_sort_range(struct range *range, int az)
 		}
 	}
 
-	/* sort them */
+	 
 	sort(range, nr_range, sizeof(struct range), cmp_range, NULL);
 
 	return nr_range;
@@ -160,6 +158,6 @@ int clean_sort_range(struct range *range, int az)
 
 void sort_range(struct range *range, int nr_range)
 {
-	/* sort them */
+	 
 	sort(range, nr_range, sizeof(struct range), cmp_range, NULL);
 }

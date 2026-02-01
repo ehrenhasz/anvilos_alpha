@@ -1,26 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- *
- */
+ 
 
 #ifndef __I915_VMA_H__
 #define __I915_VMA_H__
@@ -53,7 +31,7 @@ static inline bool i915_vma_is_active(const struct i915_vma *vma)
 	return !i915_active_is_idle(&vma->active);
 }
 
-/* do not reserve memory to prevent deadlocks */
+ 
 #define __EXEC_OBJECT_NO_RESERVE BIT(31)
 #define __EXEC_OBJECT_NO_REQUEST_AWAIT BIT(30)
 
@@ -125,45 +103,27 @@ static inline bool i915_vma_is_closed(const struct i915_vma *vma)
 	return !list_empty(&vma->closed_link);
 }
 
-/* Internal use only. */
+ 
 static inline u64 __i915_vma_size(const struct i915_vma *vma)
 {
 	return vma->node.size - 2 * vma->guard;
 }
 
-/**
- * i915_vma_size - Obtain the va range size of the vma
- * @vma: The vma
- *
- * GPU virtual address space may be allocated with padding. This
- * function returns the effective virtual address range size
- * with padding subtracted.
- *
- * Return: The effective virtual address range size.
- */
+ 
 static inline u64 i915_vma_size(const struct i915_vma *vma)
 {
 	GEM_BUG_ON(!drm_mm_node_allocated(&vma->node));
 	return __i915_vma_size(vma);
 }
 
-/* Internal use only. */
+ 
 static inline u64 __i915_vma_offset(const struct i915_vma *vma)
 {
-	/* The actual start of the vma->pages is after the guard pages. */
+	 
 	return vma->node.start + vma->guard;
 }
 
-/**
- * i915_vma_offset - Obtain the va offset of the vma
- * @vma: The vma
- *
- * GPU virtual address space may be allocated with padding. This
- * function returns the effective virtual address offset the gpu
- * should use to access the bound data.
- *
- * Return: The effective virtual address offset.
- */
+ 
 static inline u64 i915_vma_offset(const struct i915_vma *vma)
 {
 	GEM_BUG_ON(!drm_mm_node_allocated(&vma->node));
@@ -228,16 +188,7 @@ i915_vma_compare(struct i915_vma *vma,
 
 	assert_i915_gem_gtt_types();
 
-	/* gtt_view.type also encodes its size so that we both distinguish
-	 * different views using it as a "type" and also use a compact (no
-	 * accessing of uninitialised padding bytes) memcmp without storing
-	 * an extra parameter or adding more code.
-	 *
-	 * To ensure that the memcmp is valid for all branches of the union,
-	 * even though the code looks like it is just comparing one branch,
-	 * we assert above that all branches have the same address, and that
-	 * each branch has a unique type/size.
-	 */
+	 
 	BUILD_BUG_ON(I915_GTT_VIEW_NORMAL >= I915_GTT_VIEW_PARTIAL);
 	BUILD_BUG_ON(I915_GTT_VIEW_PARTIAL >= I915_GTT_VIEW_ROTATED);
 	BUILD_BUG_ON(I915_GTT_VIEW_ROTATED >= I915_GTT_VIEW_REMAPPED);
@@ -353,45 +304,13 @@ static inline bool i915_node_color_differs(const struct drm_mm_node *node,
 	return drm_mm_node_allocated(node) && node->color != color;
 }
 
-/**
- * i915_vma_pin_iomap - calls ioremap_wc to map the GGTT VMA via the aperture
- * @vma: VMA to iomap
- *
- * The passed in VMA has to be pinned in the global GTT mappable region.
- * An extra pinning of the VMA is acquired for the return iomapping,
- * the caller must call i915_vma_unpin_iomap to relinquish the pinning
- * after the iomapping is no longer required.
- *
- * Returns a valid iomapped pointer or ERR_PTR.
- */
+ 
 void __iomem *i915_vma_pin_iomap(struct i915_vma *vma);
 
-/**
- * i915_vma_unpin_iomap - unpins the mapping returned from i915_vma_iomap
- * @vma: VMA to unpin
- *
- * Unpins the previously iomapped VMA from i915_vma_pin_iomap().
- *
- * This function is only valid to be called on a VMA previously
- * iomapped by the caller with i915_vma_pin_iomap().
- */
+ 
 void i915_vma_unpin_iomap(struct i915_vma *vma);
 
-/**
- * i915_vma_pin_fence - pin fencing state
- * @vma: vma to pin fencing for
- *
- * This pins the fencing state (whether tiled or untiled) to make sure the
- * vma (and its object) is ready to be used as a scanout target. Fencing
- * status must be synchronize first by calling i915_vma_get_fence():
- *
- * The resulting fence pin reference must be released again with
- * i915_vma_unpin_fence().
- *
- * Returns:
- *
- * True if the vma has a fence, false otherwise.
- */
+ 
 int __must_check i915_vma_pin_fence(struct i915_vma *vma);
 void i915_vma_revoke_fence(struct i915_vma *vma);
 
@@ -403,14 +322,7 @@ static inline void __i915_vma_unpin_fence(struct i915_vma *vma)
 	atomic_dec(&vma->fence->pin_count);
 }
 
-/**
- * i915_vma_unpin_fence - unpin fencing state
- * @vma: vma to unpin fencing for
- *
- * This releases the fence pin reference acquired through
- * i915_vma_pin_fence. It will handle both objects with and without an
- * attached fence correctly, callers do not need to distinguish this.
- */
+ 
 static inline void
 i915_vma_unpin_fence(struct i915_vma *vma)
 {
@@ -444,15 +356,7 @@ void i915_ggtt_clear_scanout(struct drm_i915_gem_object *obj);
 
 #define for_each_until(cond) if (cond) break; else
 
-/**
- * for_each_ggtt_vma - Iterate over the GGTT VMA belonging to an object.
- * @V: the #i915_vma iterator
- * @OBJ: the #drm_i915_gem_object
- *
- * GGTT VMA are placed at the being of the object's vma_list, see
- * vma_create(), so we can stop our walk as soon as we see a ppgtt VMA,
- * or the list is empty ofc.
- */
+ 
 #define for_each_ggtt_vma(V, OBJ) \
 	list_for_each_entry(V, &(OBJ)->vma.list, obj_link)		\
 		for_each_until(!i915_vma_is_ggtt(V))
@@ -465,19 +369,11 @@ int i915_vma_wait_for_bind(struct i915_vma *vma);
 
 static inline int i915_vma_sync(struct i915_vma *vma)
 {
-	/* Wait for the asynchronous bindings and pending GPU reads */
+	 
 	return i915_active_wait(&vma->active);
 }
 
-/**
- * i915_vma_get_current_resource - Get the current resource of the vma
- * @vma: The vma to get the current resource from.
- *
- * It's illegal to call this function if the vma is not bound.
- *
- * Return: A refcounted pointer to the current vma resource
- * of the vma, assuming the vma is bound.
- */
+ 
 static inline struct i915_vma_resource *
 i915_vma_get_current_resource(struct i915_vma *vma)
 {

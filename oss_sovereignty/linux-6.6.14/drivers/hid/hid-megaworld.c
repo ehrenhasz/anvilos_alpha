@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Vibration support for Mega World controllers
- *
- * Copyright 2022 Frank Zago
- *
- * Derived from hid-zpff.c:
- *   Copyright (c) 2005, 2006 Anssi Hannula <anssi.hannula@gmail.com>
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/input.h>
@@ -71,12 +64,7 @@ static int mwctrl_init(struct hid_device *hid)
 
 	mwctrl->report = report;
 
-	/* Field 0 is always 2, and field 1 is always 0. The original
-	 * windows driver has a 5 bytes command, where the 5th byte is
-	 * a repeat of the 3rd byte, however the device has only 4
-	 * fields. It could be a bug in the driver, or there is a
-	 * different device that needs it.
-	 */
+	 
 	report->field[0]->value[0] = 0x02;
 
 	mwctrl->strong = &report->field[2]->value[0];

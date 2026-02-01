@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (C) 2019 Intel Corporation */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/module.h>
@@ -357,7 +357,7 @@ static const struct pinmux_ops eqbr_pinmux_ops = {
 
 static int get_drv_cur(void __iomem *mem, unsigned int offset)
 {
-	unsigned int idx = offset / DRV_CUR_PINS; /* 0-15, 16-31 per register*/
+	unsigned int idx = offset / DRV_CUR_PINS;  
 	unsigned int pin_offset = offset % DRV_CUR_PINS;
 
 	return PARSE_DRV_CURRENT(readl(mem + REG_DRCC(idx)), pin_offset);
@@ -601,7 +601,7 @@ static int funcs_utils(struct device *dev, struct eqbr_pmx_func *funcs,
 			continue;
 
 		if (of_property_read_string(np, "function", &fn_name)) {
-			/* some groups may not have function, it's OK */
+			 
 			dev_dbg(dev, "Group %s: not function binded!\n",
 				(char *)prop->value);
 			continue;
@@ -681,7 +681,7 @@ static int eqbr_build_functions(struct eqbr_pinctrl_drv_data *drvdata)
 
 	for (i = 0; i < nr_funcs; i++) {
 
-		/* Ignore the same function with multiple groups */
+		 
 		if (funcs[i].name == NULL)
 			continue;
 
@@ -869,7 +869,7 @@ static int pinbank_probe(struct eqbr_pinctrl_drv_data *drvdata)
 	struct eqbr_pin_bank *banks;
 	int i, nr_gpio;
 
-	/* Count gpio bank number */
+	 
 	nr_gpio = 0;
 	for_each_node_by_name(np_gpio, "gpio") {
 		if (of_device_is_available(np_gpio))
@@ -881,7 +881,7 @@ static int pinbank_probe(struct eqbr_pinctrl_drv_data *drvdata)
 		return -ENODEV;
 	}
 
-	/* Count pin bank number and gpio controller number */
+	 
 	banks = devm_kcalloc(dev, nr_gpio, sizeof(*banks), GFP_KERNEL);
 	if (!banks)
 		return -ENOMEM;
@@ -892,7 +892,7 @@ static int pinbank_probe(struct eqbr_pinctrl_drv_data *drvdata)
 
 	dev_dbg(dev, "found %d gpio controller!\n", nr_gpio);
 
-	/* Initialize Pin bank */
+	 
 	i = 0;
 	for_each_node_by_name(np_gpio, "gpio") {
 		if (!of_device_is_available(np_gpio))

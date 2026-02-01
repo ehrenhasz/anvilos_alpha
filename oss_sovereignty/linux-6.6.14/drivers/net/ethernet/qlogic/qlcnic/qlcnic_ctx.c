@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * QLogic qlcnic NIC Driver
- * Copyright (c) 2009-2013 QLogic Corporation
- */
+
+ 
 
 #include "qlcnic.h"
 
@@ -48,7 +45,7 @@ static inline u32 qlcnic_get_cmd_signature(struct qlcnic_hardware_context *ahw)
 	       (0xcafe << 16);
 }
 
-/* Allocate mailbox registers */
+ 
 int qlcnic_82xx_alloc_mbx_args(struct qlcnic_cmd_args *mbx,
 			       struct qlcnic_adapter *adapter, u32 type)
 {
@@ -79,7 +76,7 @@ int qlcnic_82xx_alloc_mbx_args(struct qlcnic_cmd_args *mbx,
 	return 0;
 }
 
-/* Free up mailbox registers */
+ 
 void qlcnic_free_mbx_args(struct qlcnic_cmd_args *cmd)
 {
 	kfree(cmd->req.arg);
@@ -95,7 +92,7 @@ qlcnic_poll_rsp(struct qlcnic_adapter *adapter)
 	int timeout = 0, err = 0;
 
 	do {
-		/* give atleast 1ms for firmware to respond */
+		 
 		mdelay(1);
 
 		if (++timeout > QLCNIC_OS_CRB_RETRY_COUNT)
@@ -119,7 +116,7 @@ int qlcnic_82xx_issue_cmd(struct qlcnic_adapter *adapter,
 
 	signature = qlcnic_get_cmd_signature(ahw);
 
-	/* Acquire semaphore before accessing CRB */
+	 
 	if (qlcnic_api_lock(adapter)) {
 		cmd->rsp.arg[0] = QLCNIC_RCODE_TIMEOUT;
 		return cmd->rsp.arg[0];
@@ -166,7 +163,7 @@ int qlcnic_82xx_issue_cmd(struct qlcnic_adapter *adapter,
 	for (i = 1; i < cmd->rsp.num; i++)
 		cmd->rsp.arg[i] = QLCRD32(adapter, QLCNIC_CDRP_ARG(i), &err);
 
-	/* Release semaphore */
+	 
 	qlcnic_api_unlock(adapter);
 	return cmd->rsp.arg[0];
 }
@@ -427,7 +424,7 @@ int qlcnic_82xx_fw_cmd_create_tx_ctx(struct qlcnic_adapter *adapter,
 	u64 phys_addr;
 	u16 msix_id;
 
-	/* reset host resources */
+	 
 	tx_ring->producer = 0;
 	tx_ring->sw_consumer = 0;
 	*(tx_ring->hw_consumer) = 0;
@@ -578,7 +575,7 @@ int qlcnic_alloc_hw_resources(struct qlcnic_adapter *adapter)
 		}
 
 		tx_ring->hw_consumer = ptr;
-		/* cmd desc ring */
+		 
 		addr = dma_alloc_coherent(&pdev->dev, TX_DESC_RINGSIZE(tx_ring),
 					  &tx_ring->phys_addr,
 					  GFP_KERNEL);
@@ -711,7 +708,7 @@ void qlcnic_fw_destroy_ctx(struct qlcnic_adapter *adapter)
 			if (adapter->ahw->diag_test != QLCNIC_LOOPBACK_TEST)
 				qlcnic_83xx_config_intrpt(adapter, 0);
 		}
-		/* Allow dma queues to drain after context reset */
+		 
 		mdelay(20);
 	}
 }
@@ -849,7 +846,7 @@ int qlcnic_82xx_get_mac_address(struct qlcnic_adapter *adapter, u8 *mac,
 	return err;
 }
 
-/* Get info of a NIC partition */
+ 
 int qlcnic_82xx_get_nic_info(struct qlcnic_adapter *adapter,
 			     struct qlcnic_info *npar_info, u8 func_id)
 {
@@ -900,7 +897,7 @@ out_free_dma:
 	return err;
 }
 
-/* Configure a NIC partition */
+ 
 int qlcnic_82xx_set_nic_info(struct qlcnic_adapter *adapter,
 			     struct qlcnic_info *nic)
 {
@@ -955,7 +952,7 @@ out_free_dma:
 	return err;
 }
 
-/* Get PCI Info of a partition */
+ 
 int qlcnic_82xx_get_pci_info(struct qlcnic_adapter *adapter,
 			     struct qlcnic_pci_info *pci_info)
 {
@@ -1024,7 +1021,7 @@ out_free_dma:
 	return err;
 }
 
-/* Configure eSwitch for port mirroring */
+ 
 int qlcnic_config_port_mirroring(struct qlcnic_adapter *adapter, u8 id,
 				 u8 enable_mirroring, u8 pci_func)
 {
@@ -1125,7 +1122,7 @@ out_free_dma:
 	return err;
 }
 
-/* This routine will retrieve the MAC statistics from firmware */
+ 
 int qlcnic_get_mac_stats(struct qlcnic_adapter *adapter,
 		struct qlcnic_mac_statistics *mac_stats)
 {
@@ -1312,13 +1309,7 @@ static int __qlcnic_get_eswitch_port_config(struct qlcnic_adapter *adapter,
 			pci_func);
 	return err;
 }
-/* Configure eSwitch port
-op_mode = 0 for setting default port behavior
-op_mode = 1 for setting  vlan id
-op_mode = 2 for deleting vlan id
-op_type = 0 for vlan_id
-op_type = 1 for port vlan_id
-*/
+ 
 int qlcnic_config_switch_port(struct qlcnic_adapter *adapter,
 		struct qlcnic_esw_func_cfg *esw_cfg)
 {

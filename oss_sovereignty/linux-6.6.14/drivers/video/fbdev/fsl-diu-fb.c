@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2008 Freescale Semiconductor, Inc. All Rights Reserved.
- *
- *  Freescale DIU Frame Buffer device driver
- *
- *  Authors: Hongjun Chen <hong-jun.chen@freescale.com>
- *           Paul Widmer <paul.widmer@freescale.com>
- *           Srikanth Srinivasan <srikanth.srinivasan@freescale.com>
- *           York Sun <yorksun@freescale.com>
- *
- *   Based on imxfb.c Copyright (C) 2004 S.Hauer, Pengutronix
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -33,25 +22,19 @@
 #include <linux/fsl-diu-fb.h>
 #include "edid.h"
 
-#define NUM_AOIS	5	/* 1 for plane 0, 2 for planes 1 & 2 each */
+#define NUM_AOIS	5	 
 
-/* HW cursor parameters */
+ 
 #define MAX_CURS		32
 
-/* INT_STATUS/INT_MASK field descriptions */
-#define INT_VSYNC	0x01	/* Vsync interrupt  */
-#define INT_VSYNC_WB	0x02	/* Vsync interrupt for write back operation */
-#define INT_UNDRUN	0x04	/* Under run exception interrupt */
-#define INT_PARERR	0x08	/* Display parameters error interrupt */
-#define INT_LS_BF_VS	0x10	/* Lines before vsync. interrupt */
+ 
+#define INT_VSYNC	0x01	 
+#define INT_VSYNC_WB	0x02	 
+#define INT_UNDRUN	0x04	 
+#define INT_PARERR	0x08	 
+#define INT_LS_BF_VS	0x10	 
 
-/*
- * List of supported video modes
- *
- * The first entry is the default video mode.  The remain entries are in
- * order if increasing resolution and frequency.  The 320x240-60 mode is
- * the initial AOI for the second and third planes.
- */
+ 
 static struct fb_videomode fsl_diu_mode_db[] = {
 	{
 		.refresh	= 60,
@@ -321,11 +304,11 @@ static unsigned int d_cache_line_size;
 static DEFINE_SPINLOCK(diu_lock);
 
 enum mfb_index {
-	PLANE0 = 0,	/* Plane 0, only one AOI that fills the screen */
-	PLANE1_AOI0,	/* Plane 1, first AOI */
-	PLANE1_AOI1,	/* Plane 1, second AOI */
-	PLANE2_AOI0,	/* Plane 2, first AOI */
-	PLANE2_AOI1,	/* Plane 2, second AOI */
+	PLANE0 = 0,	 
+	PLANE1_AOI0,	 
+	PLANE1_AOI1,	 
+	PLANE2_AOI0,	 
+	PLANE2_AOI1,	 
 };
 
 struct mfb_info {
@@ -336,33 +319,12 @@ struct mfb_info {
 	struct diu_ad *ad;
 	unsigned char g_alpha;
 	unsigned int count;
-	int x_aoi_d;		/* aoi display x offset to physical screen */
-	int y_aoi_d;		/* aoi display y offset to physical screen */
+	int x_aoi_d;		 
+	int y_aoi_d;		 
 	struct fsl_diu_data *parent;
 };
 
-/**
- * struct fsl_diu_data - per-DIU data structure
- * @dma_addr: DMA address of this structure
- * @fsl_diu_info: fb_info objects, one per AOI
- * @dev_attr: sysfs structure
- * @irq: IRQ
- * @monitor_port: the monitor port this DIU is connected to
- * @diu_reg: pointer to the DIU hardware registers
- * @reg_lock: spinlock for register access
- * @dummy_aoi: video buffer for the 4x4 32-bit dummy AOI
- * dummy_ad: DIU Area Descriptor for the dummy AOI
- * @ad[]: Area Descriptors for each real AOI
- * @gamma: gamma color table
- * @cursor: hardware cursor data
- * @blank_cursor: blank cursor for hiding cursor
- * @next_cursor: scratch space to build load cursor
- * @edid_data: EDID information buffer
- * @has_edid: whether or not the EDID buffer is valid
- *
- * This data structure must be allocated with 32-byte alignment, so that the
- * internal fields can be aligned properly.
- */
+ 
 struct fsl_diu_data {
 	dma_addr_t dma_addr;
 	struct fb_info fsl_diu_info[NUM_AOIS];
@@ -376,17 +338,17 @@ struct fsl_diu_data {
 	struct diu_ad dummy_ad __aligned(8);
 	struct diu_ad ad[NUM_AOIS] __aligned(8);
 	u8 gamma[256 * 3] __aligned(32);
-	/* It's easier to parse the cursor data as little-endian */
+	 
 	__le16 cursor[MAX_CURS * MAX_CURS] __aligned(32);
-	/* Blank cursor data -- used to hide the cursor */
+	 
 	__le16 blank_cursor[MAX_CURS * MAX_CURS] __aligned(32);
-	/* Scratch cursor data -- used to build new cursor */
+	 
 	__le16 next_cursor[MAX_CURS * MAX_CURS] __aligned(32);
 	uint8_t edid_data[EDID_LENGTH];
 	bool has_edid;
 } __aligned(32);
 
-/* Determine the DMA address of a member of the fsl_diu_data structure */
+ 
 #define DMA_ADDR(p, f) ((p)->dma_addr + offsetof(struct fsl_diu_data, f))
 
 static const struct mfb_info mfb_template[] = {
@@ -452,20 +414,7 @@ static void __attribute__ ((unused)) fsl_diu_dump(struct diu __iomem *hw)
 }
 #endif
 
-/**
- * fsl_diu_name_to_port - convert a port name to a monitor port enum
- *
- * Takes the name of a monitor port ("dvi", "lvds", or "dlvds") and returns
- * the enum fsl_diu_monitor_port that corresponds to that string.
- *
- * For compatibility with older versions, a number ("0", "1", or "2") is also
- * supported.
- *
- * If the string is unknown, DVI is assumed.
- *
- * If the particular port is not supported by the platform, another port
- * (platform-specific) is chosen instead.
- */
+ 
 static enum fsl_diu_monitor_port fsl_diu_name_to_port(const char *s)
 {
 	enum fsl_diu_monitor_port port = FSL_DIU_PORT_DVI;
@@ -486,10 +435,7 @@ static enum fsl_diu_monitor_port fsl_diu_name_to_port(const char *s)
 	return port;
 }
 
-/*
- * Workaround for failed writing desc register of planes.
- * Needed with MPC5121 DIU rev 2.0 silicon.
- */
+ 
 static void wr_reg_wa(u32 *reg, u32 val)
 {
 	do {
@@ -510,8 +456,8 @@ static void fsl_diu_enable_panel(struct fb_info *info)
 		break;
 	case PLANE1_AOI0:
 		cmfbi = &data->mfb[2];
-		if (hw->desc[1] != ad->paddr) {	/* AOI0 closed */
-			if (cmfbi->count > 0)	/* AOI1 open */
+		if (hw->desc[1] != ad->paddr) {	 
+			if (cmfbi->count > 0)	 
 				ad->next_ad =
 					cpu_to_le32(cmfbi->ad->paddr);
 			else
@@ -521,8 +467,8 @@ static void fsl_diu_enable_panel(struct fb_info *info)
 		break;
 	case PLANE2_AOI0:
 		cmfbi = &data->mfb[4];
-		if (hw->desc[2] != ad->paddr) {	/* AOI0 closed */
-			if (cmfbi->count > 0)	/* AOI1 open */
+		if (hw->desc[2] != ad->paddr) {	 
+			if (cmfbi->count > 0)	 
 				ad->next_ad =
 					cpu_to_le32(cmfbi->ad->paddr);
 			else
@@ -535,7 +481,7 @@ static void fsl_diu_enable_panel(struct fb_info *info)
 		ad->next_ad = 0;
 		if (hw->desc[1] == data->dummy_ad.paddr)
 			wr_reg_wa(&hw->desc[1], ad->paddr);
-		else					/* AOI0 open */
+		else					 
 			pmfbi->ad->next_ad = cpu_to_le32(ad->paddr);
 		break;
 	case PLANE2_AOI1:
@@ -543,7 +489,7 @@ static void fsl_diu_enable_panel(struct fb_info *info)
 		ad->next_ad = 0;
 		if (hw->desc[2] == data->dummy_ad.paddr)
 			wr_reg_wa(&hw->desc[2], ad->paddr);
-		else				/* AOI0 was open */
+		else				 
 			pmfbi->ad->next_ad = cpu_to_le32(ad->paddr);
 		break;
 	}
@@ -562,43 +508,43 @@ static void fsl_diu_disable_panel(struct fb_info *info)
 		break;
 	case PLANE1_AOI0:
 		cmfbi = &data->mfb[2];
-		if (cmfbi->count > 0)	/* AOI1 is open */
+		if (cmfbi->count > 0)	 
 			wr_reg_wa(&hw->desc[1], cmfbi->ad->paddr);
-					/* move AOI1 to the first */
-		else			/* AOI1 was closed */
+					 
+		else			 
 			wr_reg_wa(&hw->desc[1], data->dummy_ad.paddr);
-					/* close AOI 0 */
+					 
 		break;
 	case PLANE2_AOI0:
 		cmfbi = &data->mfb[4];
-		if (cmfbi->count > 0)	/* AOI1 is open */
+		if (cmfbi->count > 0)	 
 			wr_reg_wa(&hw->desc[2], cmfbi->ad->paddr);
-					/* move AOI1 to the first */
-		else			/* AOI1 was closed */
+					 
+		else			 
 			wr_reg_wa(&hw->desc[2], data->dummy_ad.paddr);
-					/* close AOI 0 */
+					 
 		break;
 	case PLANE1_AOI1:
 		pmfbi = &data->mfb[1];
 		if (hw->desc[1] != ad->paddr) {
-				/* AOI1 is not the first in the chain */
+				 
 			if (pmfbi->count > 0)
-					/* AOI0 is open, must be the first */
+					 
 				pmfbi->ad->next_ad = 0;
-		} else			/* AOI1 is the first in the chain */
+		} else			 
 			wr_reg_wa(&hw->desc[1], data->dummy_ad.paddr);
-					/* close AOI 1 */
+					 
 		break;
 	case PLANE2_AOI1:
 		pmfbi = &data->mfb[3];
 		if (hw->desc[2] != ad->paddr) {
-				/* AOI1 is not the first in the chain */
+				 
 			if (pmfbi->count > 0)
-				/* AOI0 is open, must be the first */
+				 
 				pmfbi->ad->next_ad = 0;
-		} else		/* AOI1 is the first in the chain */
+		} else		 
 			wr_reg_wa(&hw->desc[2], data->dummy_ad.paddr);
-				/* close AOI 1 */
+				 
 		break;
 	}
 }
@@ -689,13 +635,7 @@ static void adjust_aoi_size_position(struct fb_var_screeninfo *var,
 		break;
 	}
 }
-/*
- * Checks to see if the hardware supports the state requested by var passed
- * in. This function does not alter the hardware state! If the var passed in
- * is slightly off by what the hardware can support then we alter the var
- * PASSED in to what we can do. If the hardware doesn't support mode change
- * a -EINVAL will be returned by the upper layers.
- */
+ 
 static int fsl_diu_check_var(struct fb_var_screeninfo *var,
 				struct fb_info *info)
 {
@@ -773,7 +713,7 @@ static int fsl_diu_check_var(struct fb_var_screeninfo *var,
 	var->width = -1;
 	var->grayscale = 0;
 
-	/* Copy nonstd field to/from sync for fbset usage */
+	 
 	var->sync |= var->nonstd;
 	var->nonstd |= var->sync;
 
@@ -813,7 +753,7 @@ static void update_lcdc(struct fb_info *info)
 		diu_ops.set_monitor_port(data->monitor_port);
 	gamma_table_base = data->gamma;
 
-	/* Prep for DIU init  - gamma table, cursor table */
+	 
 
 	for (i = 0; i <= 2; i++)
 		for (j = 0; j <= 255; j++)
@@ -824,44 +764,34 @@ static void update_lcdc(struct fb_info *info)
 
 	disable_lcdc(info);
 
-	/* Program DIU registers */
+	 
 
 	out_be32(&hw->gamma, DMA_ADDR(data, gamma));
 
-	out_be32(&hw->bgnd, 0x007F7F7F); /* Set background to grey */
+	out_be32(&hw->bgnd, 0x007F7F7F);  
 	out_be32(&hw->disp_size, (var->yres << 16) | var->xres);
 
-	/* Horizontal and vertical configuration register */
-	temp = var->left_margin << 22 | /* BP_H */
-	       var->hsync_len << 11 |   /* PW_H */
-	       var->right_margin;       /* FP_H */
+	 
+	temp = var->left_margin << 22 |  
+	       var->hsync_len << 11 |    
+	       var->right_margin;        
 
 	out_be32(&hw->hsyn_para, temp);
 
-	temp = var->upper_margin << 22 | /* BP_V */
-	       var->vsync_len << 11 |    /* PW_V  */
-	       var->lower_margin;        /* FP_V  */
+	temp = var->upper_margin << 22 |  
+	       var->vsync_len << 11 |     
+	       var->lower_margin;         
 
 	out_be32(&hw->vsyn_para, temp);
 
 	diu_ops.set_pixel_clock(var->pixclock);
 
 #ifndef CONFIG_PPC_MPC512x
-	/*
-	 * The PLUT register is defined differently on the MPC5121 than it
-	 * is on other SOCs.  Unfortunately, there's no documentation that
-	 * explains how it's supposed to be programmed, so for now, we leave
-	 * it at the default value on the MPC5121.
-	 *
-	 * For other SOCs, program it for the highest priority, which will
-	 * reduce the chance of underrun. Technically, we should scale the
-	 * priority to match the screen resolution, but doing that properly
-	 * requires delicate fine-tuning for each use-case.
-	 */
+	 
 	out_be32(&hw->plut, 0x01F5F666);
 #endif
 
-	/* Enable the DIU */
+	 
 	enable_lcdc(info);
 }
 
@@ -900,29 +830,20 @@ static void unmap_video_memory(struct fb_info *info)
 		free_pages_exact(p, l);
 }
 
-/*
- * Using the fb_var_screeninfo in fb_info we set the aoi of this
- * particular framebuffer. It is a light version of fsl_diu_set_par.
- */
+ 
 static int fsl_diu_set_aoi(struct fb_info *info)
 {
 	struct fb_var_screeninfo *var = &info->var;
 	struct mfb_info *mfbi = info->par;
 	struct diu_ad *ad = mfbi->ad;
 
-	/* AOI should not be greater than display size */
+	 
 	ad->offset_xyi = cpu_to_le32((var->yoffset << 16) | var->xoffset);
 	ad->offset_xyd = cpu_to_le32((mfbi->y_aoi_d << 16) | mfbi->x_aoi_d);
 	return 0;
 }
 
-/**
- * fsl_diu_get_pixel_format: return the pixel format for a given color depth
- *
- * The pixel format is a 32-bit value that determine which bits in each
- * pixel are to be used for each color.  This is the default function used
- * if the platform does not define its own version.
- */
+ 
 static u32 fsl_diu_get_pixel_format(unsigned int bits_per_pixel)
 {
 #define PF_BYTE_F		0x10000000
@@ -955,13 +876,13 @@ static u32 fsl_diu_get_pixel_format(unsigned int bits_per_pixel)
 
 	switch (bits_per_pixel) {
 	case 32:
-		/* 0x88883316 */
+		 
 		return MAKE_PF(3, 2, 1, 0, 3, 8, 8, 8, 8);
 	case 24:
-		/* 0x88082219 */
+		 
 		return MAKE_PF(4, 0, 1, 2, 2, 8, 8, 8, 0);
 	case 16:
-		/* 0x65053118 */
+		 
 		return MAKE_PF(4, 2, 1, 0, 1, 5, 6, 5, 0);
 	default:
 		pr_err("fsl-diu: unsupported color depth %u\n", bits_per_pixel);
@@ -969,28 +890,7 @@ static u32 fsl_diu_get_pixel_format(unsigned int bits_per_pixel)
 	}
 }
 
-/*
- * Copies a cursor image from user space to the proper place in driver
- * memory so that the hardware can display the cursor image.
- *
- * Cursor data is represented as a sequence of 'width' bits packed into bytes.
- * That is, the first 8 bits are in the first byte, the second 8 bits in the
- * second byte, and so on.  Therefore, the each row of the cursor is (width +
- * 7) / 8 bytes of 'data'
- *
- * The DIU only supports cursors up to 32x32 (MAX_CURS).  We reject cursors
- * larger than this, so we already know that 'width' <= 32.  Therefore, we can
- * simplify our code by using a 32-bit big-endian integer ("line") to read in
- * a single line of pixels, and only look at the top 'width' bits of that
- * integer.
- *
- * This could result in an unaligned 32-bit read.  For example, if the cursor
- * is 24x24, then the first three bytes of 'image' contain the pixel data for
- * the top line of the cursor.  We do a 32-bit read of 'image', but we look
- * only at the top 24 bits.  Then we increment 'image' by 3 bytes.  The next
- * read is unaligned.  The only problem is that we might read past the end of
- * 'image' by 1-3 bytes, but that should not cause any problems.
- */
+ 
 static void fsl_diu_load_cursor_image(struct fb_info *info,
 	const void *image, uint16_t bg, uint16_t fg,
 	unsigned int width, unsigned int height)
@@ -1016,10 +916,7 @@ static void fsl_diu_load_cursor_image(struct fb_info *info,
 	}
 }
 
-/*
- * Set a hardware cursor.  The image data for the cursor is passed via the
- * fb_cursor object.
- */
+ 
 static int fsl_diu_cursor(struct fb_info *info, struct fb_cursor *cursor)
 {
 	struct mfb_info *mfbi = info->par;
@@ -1029,19 +926,13 @@ static int fsl_diu_cursor(struct fb_info *info, struct fb_cursor *cursor)
 	if (cursor->image.width > MAX_CURS || cursor->image.height > MAX_CURS)
 		return -EINVAL;
 
-	/* The cursor size has changed */
+	 
 	if (cursor->set & FB_CUR_SETSIZE) {
-		/*
-		 * The DIU cursor is a fixed size, so when we get this
-		 * message, instead of resizing the cursor, we just clear
-		 * all the image data, in expectation of new data.  However,
-		 * in tests this control does not appear to be normally
-		 * called.
-		 */
+		 
 		memset(data->cursor, 0, sizeof(data->cursor));
 	}
 
-	/* The cursor position has changed (cursor->image.dx|dy) */
+	 
 	if (cursor->set & FB_CUR_SETPOS) {
 		uint32_t xx, yy;
 
@@ -1051,16 +942,9 @@ static int fsl_diu_cursor(struct fb_info *info, struct fb_cursor *cursor)
 		out_be32(&hw->curs_pos, yy << 16 | xx);
 	}
 
-	/*
-	 * FB_CUR_SETIMAGE - the cursor image has changed
-	 * FB_CUR_SETCMAP  - the cursor colors has changed
-	 * FB_CUR_SETSHAPE - the cursor bitmask has changed
-	 */
+	 
 	if (cursor->set & (FB_CUR_SETSHAPE | FB_CUR_SETCMAP | FB_CUR_SETIMAGE)) {
-		/*
-		 * Determine the size of the cursor image data.  Normally,
-		 * it's 8x16.
-		 */
+		 
 		unsigned int image_size =
 			DIV_ROUND_UP(cursor->image.width, 8) *
 			cursor->image.height;
@@ -1085,7 +969,7 @@ static int fsl_diu_cursor(struct fb_info *info, struct fb_cursor *cursor)
 		     ((info->cmap.blue[fg_idx] & 0xf8) >> 3) |
 		     1 << 15;
 
-		/* Use 32-bit operations on the data to improve performance */
+		 
 		image = (uint32_t *)data->next_cursor;
 		source = (uint32_t *)cursor->image.data;
 		mask = (uint32_t *)cursor->mask;
@@ -1101,13 +985,7 @@ static int fsl_diu_cursor(struct fb_info *info, struct fb_cursor *cursor)
 			cursor->image.width, cursor->image.height);
 	}
 
-	/*
-	 * Show or hide the cursor.  The cursor data is always stored in the
-	 * 'cursor' memory block, and the actual cursor position is always in
-	 * the DIU's CURS_POS register.  To hide the cursor, we redirect the
-	 * CURSOR register to a blank cursor.  The show the cursor, we
-	 * redirect the CURSOR register to the real cursor data.
-	 */
+	 
 	if (cursor->enable)
 		out_be32(&hw->cursor, DMA_ADDR(data, cursor));
 	else
@@ -1116,14 +994,7 @@ static int fsl_diu_cursor(struct fb_info *info, struct fb_cursor *cursor)
 	return 0;
 }
 
-/*
- * Using the fb_var_screeninfo in fb_info we set the resolution of this
- * particular framebuffer. This function alters the fb_fix_screeninfo stored
- * in fb_info. It does not alter var in fb_info since we are using that
- * data. This means we depend on the data in var inside fb_info to be
- * supported by the hardware. fsl_diu_check_var is always called before
- * fsl_diu_set_par to ensure this.
- */
+ 
 static int fsl_diu_set_par(struct fb_info *info)
 {
 	unsigned long len;
@@ -1138,12 +1009,12 @@ static int fsl_diu_set_par(struct fb_info *info)
 	set_fix(info);
 
 	len = info->var.yres_virtual * info->fix.line_length;
-	/* Alloc & dealloc each time resolution/bpp change */
+	 
 	if (len != info->fix.smem_len) {
 		if (info->fix.smem_start)
 			unmap_video_memory(info);
 
-		/* Memory allocation for framebuffer */
+		 
 		if (map_video_memory(info)) {
 			fb_err(info, "unable to allocate fb memory 1\n");
 			return -ENOMEM;
@@ -1159,12 +1030,12 @@ static int fsl_diu_set_par(struct fb_info *info)
 	ad->addr    = cpu_to_le32(info->fix.smem_start);
 	ad->src_size_g_alpha = cpu_to_le32((var->yres_virtual << 12) |
 				var->xres_virtual) | mfbi->g_alpha;
-	/* AOI should not be greater than display size */
+	 
 	ad->aoi_size 	= cpu_to_le32((var->yres << 16) | var->xres);
 	ad->offset_xyi = cpu_to_le32((var->yoffset << 16) | var->xoffset);
 	ad->offset_xyd = cpu_to_le32((mfbi->y_aoi_d << 16) | mfbi->x_aoi_d);
 
-	/* Disable chroma keying function */
+	 
 	ad->ckmax_r = 0;
 	ad->ckmax_g = 0;
 	ad->ckmax_b = 0;
@@ -1183,34 +1054,20 @@ static inline __u32 CNVT_TOHW(__u32 val, __u32 width)
 	return ((val << width) + 0x7FFF - val) >> 16;
 }
 
-/*
- * Set a single color register. The values supplied have a 16 bit magnitude
- * which needs to be scaled in this function for the hardware. Things to take
- * into consideration are how many color registers, if any, are supported with
- * the current color visual. With truecolor mode no color palettes are
- * supported. Here a pseudo palette is created which we store the value in
- * pseudo_palette in struct fb_info. For pseudocolor mode we have a limited
- * color palette.
- */
+ 
 static int fsl_diu_setcolreg(unsigned int regno, unsigned int red,
 			     unsigned int green, unsigned int blue,
 			     unsigned int transp, struct fb_info *info)
 {
 	int ret = 1;
 
-	/*
-	 * If greyscale is true, then we convert the RGB value
-	 * to greyscale no matter what visual we are using.
-	 */
+	 
 	if (info->var.grayscale)
 		red = green = blue = (19595 * red + 38470 * green +
 				      7471 * blue) >> 16;
 	switch (info->fix.visual) {
 	case FB_VISUAL_TRUECOLOR:
-		/*
-		 * 16-bit True Colour.  We encode the RGB value
-		 * according to the RGB bitfield information.
-		 */
+		 
 		if (regno < 16) {
 			u32 *pal = info->pseudo_palette;
 			u32 v;
@@ -1234,17 +1091,13 @@ static int fsl_diu_setcolreg(unsigned int regno, unsigned int red,
 	return ret;
 }
 
-/*
- * Pan (or wrap, depending on the `vmode' field) the display using the
- * 'xoffset' and 'yoffset' fields of the 'var' structure. If the values
- * don't fit, return -EINVAL.
- */
+ 
 static int fsl_diu_pan_display(struct fb_var_screeninfo *var,
 			     struct fb_info *info)
 {
 	if ((info->var.xoffset == var->xoffset) &&
 	    (info->var.yoffset == var->yoffset))
-		return 0;	/* No change, do nothing */
+		return 0;	 
 
 	if (var->xoffset + info->var.xres > info->var.xres_virtual
 	    || var->yoffset + info->var.yres > info->var.yres_virtual)
@@ -1323,7 +1176,7 @@ static int fsl_diu_ioctl(struct fb_info *info, unsigned int cmd,
 			return -EFAULT;
 		break;
 	case MFB_SET_ALPHA:
-		/* set panel information */
+		 
 		if (copy_from_user(&global_alpha, buf, sizeof(global_alpha)))
 			return -EFAULT;
 		ad->src_size_g_alpha = (ad->src_size_g_alpha & (~0xff)) |
@@ -1331,7 +1184,7 @@ static int fsl_diu_ioctl(struct fb_info *info, unsigned int cmd,
 		mfbi->g_alpha = global_alpha;
 		break;
 	case MFB_SET_CHROMA_KEY:
-		/* set panel winformation */
+		 
 		if (copy_from_user(&ck, buf, sizeof(ck)))
 			return -EFAULT;
 
@@ -1363,7 +1216,7 @@ static int fsl_diu_ioctl(struct fb_info *info, unsigned int cmd,
 
 		if (copy_from_user(data->gamma, buf, sizeof(data->gamma)))
 			return -EFAULT;
-		setbits32(&data->diu_reg->gamma, 0); /* Force table reload */
+		setbits32(&data->diu_reg->gamma, 0);  
 		break;
 	}
 	case MFB_GET_GAMMA: {
@@ -1384,22 +1237,21 @@ static int fsl_diu_ioctl(struct fb_info *info, unsigned int cmd,
 
 static inline void fsl_diu_enable_interrupts(struct fsl_diu_data *data)
 {
-	u32 int_mask = INT_UNDRUN; /* enable underrun detection */
+	u32 int_mask = INT_UNDRUN;  
 
 	if (IS_ENABLED(CONFIG_NOT_COHERENT_CACHE))
-		int_mask |= INT_VSYNC; /* enable vertical sync */
+		int_mask |= INT_VSYNC;  
 
 	clrbits32(&data->diu_reg->int_mask, int_mask);
 }
 
-/* turn on fb if count == 1
- */
+ 
 static int fsl_diu_open(struct fb_info *info, int user)
 {
 	struct mfb_info *mfbi = info->par;
 	int res = 0;
 
-	/* free boot splash memory on first /dev/fb0 open */
+	 
 	if ((mfbi->index == PLANE0) && diu_ops.release_bootmem)
 		diu_ops.release_bootmem();
 
@@ -1420,8 +1272,7 @@ static int fsl_diu_open(struct fb_info *info, int user)
 	return res;
 }
 
-/* turn off fb if count == 0
- */
+ 
 static int fsl_diu_release(struct fb_info *info, int user)
 {
 	struct mfb_info *mfbi = info->par;
@@ -1433,7 +1284,7 @@ static int fsl_diu_release(struct fb_info *info, int user)
 		bool disable = true;
 		int i;
 
-		/* Disable interrupts only if all AOIs are closed */
+		 
 		for (i = 0; i < NUM_AOIS; i++) {
 			struct mfb_info *mi = data->fsl_diu_info[i].par;
 
@@ -1484,7 +1335,7 @@ static int install_fb(struct fb_info *info)
 
 	if (mfbi->index == PLANE0) {
 		if (data->has_edid) {
-			/* Now build modedb from EDID */
+			 
 			fb_edid_to_monspecs(data->edid_data, &info->monspecs);
 			fb_videomode_to_modelist(info->monspecs.modedb,
 						 info->monspecs.modedb_len,
@@ -1499,10 +1350,7 @@ static int install_fb(struct fb_info *info)
 	rc = fb_find_mode(&info->var, info, aoi_mode, db, dbsize, NULL,
 			  default_bpp);
 	if (!rc) {
-		/*
-		 * For plane 0 we continue and look into
-		 * driver's internal modedb.
-		 */
+		 
 		if ((mfbi->index == PLANE0) && data->has_edid)
 			has_default_mode = 0;
 		else
@@ -1516,15 +1364,12 @@ static int install_fb(struct fb_info *info)
 			has_default_mode = 1;
 	}
 
-	/* Still not found, use preferred mode from database if any */
+	 
 	if (!has_default_mode && info->monspecs.modedb) {
 		struct fb_monspecs *specs = &info->monspecs;
 		struct fb_videomode *modedb = &specs->modedb[0];
 
-		/*
-		 * Get preferred timing. If not found,
-		 * first mode in database will be used.
-		 */
+		 
 		if (specs->misc & FB_MISC_1ST_DETAIL) {
 			int i;
 
@@ -1580,7 +1425,7 @@ static irqreturn_t fsl_diu_isr(int irq, void *dev_id)
 	uint32_t status = in_be32(&hw->int_status);
 
 	if (status) {
-		/* This is the workaround for underrun */
+		 
 		if (status & INT_UNDRUN) {
 			out_be32(&hw->diu_mode, 0);
 			udelay(1);
@@ -1603,10 +1448,7 @@ static irqreturn_t fsl_diu_isr(int irq, void *dev_id)
 }
 
 #ifdef CONFIG_PM
-/*
- * Power management hooks. Note that we won't be called from IRQ context,
- * unlike the blank functions above, so we may sleep.
- */
+ 
 static int fsl_diu_suspend(struct platform_device *ofdev, pm_message_t state)
 {
 	struct fsl_diu_data *data;
@@ -1637,7 +1479,7 @@ static int fsl_diu_resume(struct platform_device *ofdev)
 #else
 #define fsl_diu_suspend NULL
 #define fsl_diu_resume NULL
-#endif				/* CONFIG_PM */
+#endif				 
 
 static ssize_t store_monitor(struct device *device,
 	struct device_attribute *attr, const char *buf, size_t count)
@@ -1650,9 +1492,7 @@ static ssize_t store_monitor(struct device *device,
 	data->monitor_port = fsl_diu_name_to_port(buf);
 
 	if (old_monitor_port != data->monitor_port) {
-		/* All AOIs need adjust pixel format
-		 * fsl_diu_set_par only change the pixsel format here
-		 * unlikely to fail. */
+		 
 		unsigned int i;
 
 		for (i=0; i < NUM_AOIS; i++)
@@ -1684,7 +1524,7 @@ static int fsl_diu_probe(struct platform_device *pdev)
 	struct device_node *np = pdev->dev.of_node;
 	struct mfb_info *mfbi;
 	struct fsl_diu_data *data;
-	dma_addr_t dma_addr; /* DMA addr of fsl_diu_data struct */
+	dma_addr_t dma_addr;  
 	const void *prop;
 	unsigned int i;
 	int ret;
@@ -1695,13 +1535,7 @@ static int fsl_diu_probe(struct platform_device *pdev)
 		return -ENOMEM;
 	data->dma_addr = dma_addr;
 
-	/*
-	 * dma_alloc_coherent() uses a page allocator, so the address is
-	 * always page-aligned.  We need the memory to be 32-byte aligned,
-	 * so that's good.  However, if one day the allocator changes, we
-	 * need to catch that.  It's not worth the effort to handle unaligned
-	 * alloctions now because it's highly unlikely to ever be a problem.
-	 */
+	 
 	if ((unsigned long)data & 31) {
 		dev_err(&pdev->dev, "misaligned allocation");
 		ret = -ENOMEM;
@@ -1716,22 +1550,19 @@ static int fsl_diu_probe(struct platform_device *pdev)
 		info->device = &pdev->dev;
 		info->par = &data->mfb[i];
 
-		/*
-		 * We store the physical address of the AD in the reserved
-		 * 'paddr' field of the AD itself.
-		 */
+		 
 		data->ad[i].paddr = DMA_ADDR(data, ad[i]);
 
 		info->fix.smem_start = 0;
 
-		/* Initialize the AOI data structure */
+		 
 		mfbi = info->par;
 		memcpy(mfbi, &mfb_template[i], sizeof(struct mfb_info));
 		mfbi->parent = data;
 		mfbi->ad = &data->ad[i];
 	}
 
-	/* Get the EDID data from the device tree, if present */
+	 
 	prop = of_get_property(np, "edid", &ret);
 	if (prop && ret == EDID_LENGTH) {
 		memcpy(data->edid_data, prop, EDID_LENGTH);
@@ -1745,7 +1576,7 @@ static int fsl_diu_probe(struct platform_device *pdev)
 		goto error;
 	}
 
-	/* Get the IRQ of the DIU */
+	 
 	data->irq = irq_of_parse_and_map(np, 0);
 
 	if (!data->irq) {
@@ -1755,7 +1586,7 @@ static int fsl_diu_probe(struct platform_device *pdev)
 	}
 	data->monitor_port = monitor_port;
 
-	/* Initialize the dummy Area Descriptor */
+	 
 	data->dummy_ad.addr = cpu_to_le32(DMA_ADDR(data, dummy_aoi));
 	data->dummy_ad.pix_fmt = 0x88882317;
 	data->dummy_ad.src_size_g_alpha = cpu_to_le32((4 << 12) | 4);
@@ -1765,20 +1596,14 @@ static int fsl_diu_probe(struct platform_device *pdev)
 	data->dummy_ad.next_ad = 0;
 	data->dummy_ad.paddr = DMA_ADDR(data, dummy_ad);
 
-	/*
-	 * Let DIU continue to display splash screen if it was pre-initialized
-	 * by the bootloader; otherwise, clear the display.
-	 */
+	 
 	if (in_be32(&data->diu_reg->diu_mode) == MFB_MODE0)
 		out_be32(&data->diu_reg->desc[0], 0);
 
 	out_be32(&data->diu_reg->desc[1], data->dummy_ad.paddr);
 	out_be32(&data->diu_reg->desc[2], data->dummy_ad.paddr);
 
-	/*
-	 * Older versions of U-Boot leave interrupts enabled, so disable
-	 * all of them and clear the status register.
-	 */
+	 
 	out_be32(&data->diu_reg->int_mask, 0xffffffff);
 	in_be32(&data->diu_reg->int_status);
 
@@ -1896,9 +1721,7 @@ static int __init fsl_diu_init(void)
 #ifndef MODULE
 	char *option;
 
-	/*
-	 * For kernel boot options (in 'video=xxxfb:<options>' format)
-	 */
+	 
 	if (fb_get_options("fslfb", &option))
 		return -ENODEV;
 	fsl_diu_setup(option);
@@ -1906,10 +1729,7 @@ static int __init fsl_diu_init(void)
 	monitor_port = fsl_diu_name_to_port(monitor_string);
 #endif
 
-	/*
-	 * Must to verify set_pixel_clock. If not implement on platform,
-	 * then that means that there is no platform support for the DIU.
-	 */
+	 
 	if (!diu_ops.set_pixel_clock)
 		return -ENODEV;
 
@@ -1930,10 +1750,7 @@ static int __init fsl_diu_init(void)
 		return -ENODEV;
 	}
 
-	/*
-	 * Freescale PLRU requires 13/8 times the cache size to do a proper
-	 * displacement flush
-	 */
+	 
 	coherence_data_size = be32_to_cpup(prop) * 13;
 	coherence_data_size /= 8;
 

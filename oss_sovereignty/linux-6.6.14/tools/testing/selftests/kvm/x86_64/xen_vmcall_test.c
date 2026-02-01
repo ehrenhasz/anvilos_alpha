@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * xen_vmcall_test
- *
- * Copyright © 2020 Amazon.com, Inc. or its affiliates.
- *
- * Userspace hypercall testing
- */
+
+ 
 
 #include "test_util.h"
 #include "kvm_util.h"
@@ -36,39 +30,39 @@ static void guest_code(void)
 	register unsigned long r8 __asm__("r8") = ARGVALUE(5);
 	register unsigned long r9 __asm__("r9") = ARGVALUE(6);
 
-	/* First a direct invocation of 'vmcall' */
+	 
 	__asm__ __volatile__("vmcall" :
 			     "=a"(rax) :
 			     "a"(rax), "D"(rdi), "S"(rsi), "d"(rdx),
 			     "r"(r10), "r"(r8), "r"(r9));
 	GUEST_ASSERT(rax == RETVALUE);
 
-	/* Fill in the Xen hypercall page */
+	 
 	__asm__ __volatile__("wrmsr" : : "c" (XEN_HYPERCALL_MSR),
 			     "a" (HCALL_REGION_GPA & 0xffffffff),
 			     "d" (HCALL_REGION_GPA >> 32));
 
-	/* Set Hyper-V Guest OS ID */
+	 
 	__asm__ __volatile__("wrmsr" : : "c" (HV_GUEST_OS_ID_MSR),
 			     "a" (0x5a), "d" (0));
 
-	/* Hyper-V hypercall page */
+	 
 	u64 msrval = HCALL_REGION_GPA + PAGE_SIZE + 1;
 	__asm__ __volatile__("wrmsr" : : "c" (HV_HYPERCALL_MSR),
 			     "a" (msrval & 0xffffffff),
 			     "d" (msrval >> 32));
 
-	/* Invoke a Xen hypercall */
+	 
 	__asm__ __volatile__("call *%1" : "=a"(rax) :
 			     "r"(HCALL_REGION_GPA + INPUTVALUE * 32),
 			     "a"(rax), "D"(rdi), "S"(rsi), "d"(rdx),
 			     "r"(r10), "r"(r8), "r"(r9));
 	GUEST_ASSERT(rax == RETVALUE);
 
-	/* Invoke a Hyper-V hypercall */
+	 
 	rax = 0;
-	rcx = HVCALL_SIGNAL_EVENT;	/* code */
-	rdx = 0x5a5a5a5a;		/* ingpa (badly aligned) */
+	rcx = HVCALL_SIGNAL_EVENT;	 
+	rdx = 0x5a5a5a5a;		 
 	__asm__ __volatile__("call *%1" : "=a"(rax) :
 			     "r"(HCALL_REGION_GPA + PAGE_SIZE),
 			     "a"(rax), "c"(rcx), "d"(rdx),
@@ -96,7 +90,7 @@ int main(int argc, char *argv[])
 	};
 	vm_ioctl(vm, KVM_XEN_HVM_CONFIG, &hvmc);
 
-	/* Map a region for the hypercall pages */
+	 
 	vm_userspace_mem_region_add(vm, VM_MEM_SRC_ANONYMOUS,
 				    HCALL_REGION_GPA, HCALL_REGION_SLOT, 2, 0);
 	virt_map(vm, HCALL_REGION_GPA, HCALL_REGION_GPA, 2);
@@ -127,7 +121,7 @@ int main(int argc, char *argv[])
 		switch (get_ucall(vcpu, &uc)) {
 		case UCALL_ABORT:
 			REPORT_GUEST_ASSERT(uc);
-			/* NOT REACHED */
+			 
 		case UCALL_SYNC:
 			break;
 		case UCALL_DONE:

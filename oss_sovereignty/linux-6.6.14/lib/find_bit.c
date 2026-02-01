@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* bit search implementation
- *
- * Copyright (C) 2004 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * Copyright (C) 2008 IBM Corporation
- * 'find_last_bit' is written by Rusty Russell <rusty@rustcorp.com.au>
- * (Inspired by David Howell's find_next_bit implementation)
- *
- * Rewritten by Yury Norov <yury.norov@gmail.com> to decrease
- * size and improve performance, 2015.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/bitmap.h>
@@ -19,12 +8,7 @@
 #include <linux/minmax.h>
 #include <linux/swab.h>
 
-/*
- * Common helper for find_bit() function family
- * @FETCH: The expression that fetches and pre-processes each word of bitmap(s)
- * @MUNGE: The expression that post-processes a word containing found bit (may be empty)
- * @size: The bitmap size in bits
- */
+ 
 #define FIND_FIRST_BIT(FETCH, MUNGE, size)					\
 ({										\
 	unsigned long idx, val, sz = (size);					\
@@ -40,13 +24,7 @@
 	sz;									\
 })
 
-/*
- * Common helper for find_next_bit() function family
- * @FETCH: The expression that fetches and pre-processes each word of bitmap(s)
- * @MUNGE: The expression that post-processes a word containing found bit (may be empty)
- * @size: The bitmap size in bits
- * @start: The bitnumber to start searching at
- */
+ 
 #define FIND_NEXT_BIT(FETCH, MUNGE, size, start)				\
 ({										\
 	unsigned long mask, idx, tmp, sz = (size), __start = (start);		\
@@ -93,36 +71,30 @@ out:										\
 })
 
 #ifndef find_first_bit
-/*
- * Find the first set bit in a memory region.
- */
+ 
 unsigned long _find_first_bit(const unsigned long *addr, unsigned long size)
 {
-	return FIND_FIRST_BIT(addr[idx], /* nop */, size);
+	return FIND_FIRST_BIT(addr[idx],  , size);
 }
 EXPORT_SYMBOL(_find_first_bit);
 #endif
 
 #ifndef find_first_and_bit
-/*
- * Find the first set bit in two memory regions.
- */
+ 
 unsigned long _find_first_and_bit(const unsigned long *addr1,
 				  const unsigned long *addr2,
 				  unsigned long size)
 {
-	return FIND_FIRST_BIT(addr1[idx] & addr2[idx], /* nop */, size);
+	return FIND_FIRST_BIT(addr1[idx] & addr2[idx],  , size);
 }
 EXPORT_SYMBOL(_find_first_and_bit);
 #endif
 
 #ifndef find_first_zero_bit
-/*
- * Find the first cleared bit in a memory region.
- */
+ 
 unsigned long _find_first_zero_bit(const unsigned long *addr, unsigned long size)
 {
-	return FIND_FIRST_BIT(~addr[idx], /* nop */, size);
+	return FIND_FIRST_BIT(~addr[idx],  , size);
 }
 EXPORT_SYMBOL(_find_first_zero_bit);
 #endif
@@ -130,7 +102,7 @@ EXPORT_SYMBOL(_find_first_zero_bit);
 #ifndef find_next_bit
 unsigned long _find_next_bit(const unsigned long *addr, unsigned long nbits, unsigned long start)
 {
-	return FIND_NEXT_BIT(addr[idx], /* nop */, nbits, start);
+	return FIND_NEXT_BIT(addr[idx],  , nbits, start);
 }
 EXPORT_SYMBOL(_find_next_bit);
 #endif
@@ -168,7 +140,7 @@ EXPORT_SYMBOL(__find_nth_and_andnot_bit);
 unsigned long _find_next_and_bit(const unsigned long *addr1, const unsigned long *addr2,
 					unsigned long nbits, unsigned long start)
 {
-	return FIND_NEXT_BIT(addr1[idx] & addr2[idx], /* nop */, nbits, start);
+	return FIND_NEXT_BIT(addr1[idx] & addr2[idx],  , nbits, start);
 }
 EXPORT_SYMBOL(_find_next_and_bit);
 #endif
@@ -177,7 +149,7 @@ EXPORT_SYMBOL(_find_next_and_bit);
 unsigned long _find_next_andnot_bit(const unsigned long *addr1, const unsigned long *addr2,
 					unsigned long nbits, unsigned long start)
 {
-	return FIND_NEXT_BIT(addr1[idx] & ~addr2[idx], /* nop */, nbits, start);
+	return FIND_NEXT_BIT(addr1[idx] & ~addr2[idx],  , nbits, start);
 }
 EXPORT_SYMBOL(_find_next_andnot_bit);
 #endif
@@ -186,7 +158,7 @@ EXPORT_SYMBOL(_find_next_andnot_bit);
 unsigned long _find_next_or_bit(const unsigned long *addr1, const unsigned long *addr2,
 					unsigned long nbits, unsigned long start)
 {
-	return FIND_NEXT_BIT(addr1[idx] | addr2[idx], /* nop */, nbits, start);
+	return FIND_NEXT_BIT(addr1[idx] | addr2[idx],  , nbits, start);
 }
 EXPORT_SYMBOL(_find_next_or_bit);
 #endif
@@ -195,7 +167,7 @@ EXPORT_SYMBOL(_find_next_or_bit);
 unsigned long _find_next_zero_bit(const unsigned long *addr, unsigned long nbits,
 					 unsigned long start)
 {
-	return FIND_NEXT_BIT(~addr[idx], /* nop */, nbits, start);
+	return FIND_NEXT_BIT(~addr[idx],  , nbits, start);
 }
 EXPORT_SYMBOL(_find_next_zero_bit);
 #endif
@@ -237,9 +209,7 @@ EXPORT_SYMBOL(find_next_clump8);
 #ifdef __BIG_ENDIAN
 
 #ifndef find_first_zero_bit_le
-/*
- * Find the first cleared bit in an LE memory region.
- */
+ 
 unsigned long _find_first_zero_bit_le(const unsigned long *addr, unsigned long size)
 {
 	return FIND_FIRST_BIT(~addr[idx], swab, size);
@@ -267,4 +237,4 @@ EXPORT_SYMBOL(_find_next_bit_le);
 
 #endif
 
-#endif /* __BIG_ENDIAN */
+#endif  

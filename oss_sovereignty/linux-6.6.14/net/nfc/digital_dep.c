@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NFC Digital Protocol stack
- * Copyright (c) 2013, Intel Corporation.
- */
+
+ 
 
 #define pr_fmt(fmt) "digital: %s: " fmt, __func__
 
@@ -115,29 +112,10 @@ static const u8 digital_payload_bits_map[4] = {
 	[3] = 254
 };
 
-/* Response Waiting Time for ATR_RES PDU in ms
- *
- * RWT(ATR_RES) = RWT(nfcdep,activation) + dRWT(nfcdep) + dT(nfcdep,initiator)
- *
- * with:
- *  RWT(nfcdep,activation) = 4096 * 2^12 / f(c) s
- *  dRWT(nfcdep) = 16 / f(c) s
- *  dT(nfcdep,initiator) = 100 ms
- *  f(c) = 13560000 Hz
- */
+ 
 #define DIGITAL_ATR_RES_RWT 1337
 
-/* Response Waiting Time for other DEP PDUs in ms
- *
- * max_rwt = rwt + dRWT(nfcdep) + dT(nfcdep,initiator)
- *
- * with:
- *  rwt = (256 * 16 / f(c)) * 2^wt s
- *  dRWT(nfcdep) = 16 / f(c) s
- *  dT(nfcdep,initiator) = 100 ms
- *  f(c) = 13560000 Hz
- *  0 <= wt <= 14 (given by the target by the TO field of ATR_RES response)
- */
+ 
 #define DIGITAL_NFC_DEP_IN_MAX_WT 14
 #define DIGITAL_NFC_DEP_TG_MAX_WT 14
 static const u16 digital_rwt_map[DIGITAL_NFC_DEP_IN_MAX_WT + 1] = {
@@ -375,7 +353,7 @@ static int digital_in_send_psl_req(struct nfc_digital_dev *ddev,
 	psl_req->dir = DIGITAL_NFC_DEP_FRAME_DIR_OUT;
 	psl_req->cmd = DIGITAL_CMD_PSL_REQ;
 	psl_req->did = 0;
-	psl_req->brs = (0x2 << 3) | 0x2; /* 424F both directions */
+	psl_req->brs = (0x2 << 3) | 0x2;  
 
 	payload_size = min(ddev->local_payload_max, ddev->remote_payload_max);
 	payload_bits = digital_payload_size_to_bits(payload_size);
@@ -805,10 +783,7 @@ static void digital_in_recv_dep_res(struct nfc_digital_dev *ddev, void *arg,
 			goto error;
 		}
 
-		/* If resp is NULL then we're still chaining so return and
-		 * wait for the next part of the PDU.  Else, the PDU is
-		 * complete so pass it up.
-		 */
+		 
 		if (!resp)
 			return;
 
@@ -837,9 +812,7 @@ static void digital_in_recv_dep_res(struct nfc_digital_dev *ddev, void *arg,
 			goto exit;
 		}
 
-		/* The initiator has received a valid ACK. Free the last sent
-		 * PDU and keep on sending chained skb.
-		 */
+		 
 		kfree_skb(ddev->saved_skb);
 		ddev->saved_skb = NULL;
 
@@ -852,7 +825,7 @@ static void digital_in_recv_dep_res(struct nfc_digital_dev *ddev, void *arg,
 		goto free_resp;
 
 	case DIGITAL_NFC_DEP_PFB_SUPERVISOR_PDU:
-		if (!DIGITAL_NFC_DEP_PFB_IS_TIMEOUT(pfb)) { /* ATN */
+		if (!DIGITAL_NFC_DEP_PFB_IS_TIMEOUT(pfb)) {  
 			rc = digital_in_send_saved_skb(ddev, data_exch);
 			if (rc)
 				goto error;
@@ -1145,17 +1118,10 @@ static void digital_tg_recv_dep_req(struct nfc_digital_dev *ddev, void *arg,
 		pr_debug("DIGITAL_NFC_DEP_PFB_I_PDU\n");
 
 		if (ddev->atn_count) {
-			/* The target has received (and replied to) at least one
-			 * ATN DEP_REQ.
-			 */
+			 
 			ddev->atn_count = 0;
 
-			/* pni of resp PDU equal to the target current pni - 1
-			 * means resp is the previous DEP_REQ PDU received from
-			 * the initiator so the target replies with saved_skb
-			 * which is the previous DEP_RES saved in
-			 * digital_tg_send_dep_res().
-			 */
+			 
 			if (DIGITAL_NFC_DEP_PFB_PNI(pfb) ==
 			  DIGITAL_NFC_DEP_PFB_PNI(ddev->curr_nfc_dep_pni - 1)) {
 				rc = digital_tg_send_saved_skb(ddev);
@@ -1165,11 +1131,7 @@ static void digital_tg_recv_dep_req(struct nfc_digital_dev *ddev, void *arg,
 				goto free_resp;
 			}
 
-			/* atn_count > 0 and PDU pni != curr_nfc_dep_pni - 1
-			 * means the target probably did not received the last
-			 * DEP_REQ PDU sent by the initiator. The target
-			 * fallbacks to normal processing then.
-			 */
+			 
 		}
 
 		if (DIGITAL_NFC_DEP_PFB_PNI(pfb) != ddev->curr_nfc_dep_pni) {
@@ -1189,17 +1151,14 @@ static void digital_tg_recv_dep_req(struct nfc_digital_dev *ddev, void *arg,
 			goto exit;
 		}
 
-		/* If resp is NULL then we're still chaining so return and
-		 * wait for the next part of the PDU.  Else, the PDU is
-		 * complete so pass it up.
-		 */
+		 
 		if (!resp)
 			return;
 
 		rc = 0;
 		break;
 	case DIGITAL_NFC_DEP_PFB_ACK_NACK_PDU:
-		if (DIGITAL_NFC_DEP_NACK_BIT_SET(pfb)) { /* NACK */
+		if (DIGITAL_NFC_DEP_NACK_BIT_SET(pfb)) {  
 			if (DIGITAL_NFC_DEP_PFB_PNI(pfb + 1) !=
 						ddev->curr_nfc_dep_pni) {
 				rc = -EIO;
@@ -1215,17 +1174,12 @@ static void digital_tg_recv_dep_req(struct nfc_digital_dev *ddev, void *arg,
 			goto free_resp;
 		}
 
-		/* ACK */
+		 
 		if (ddev->atn_count) {
-			/* The target has previously received one or more ATN
-			 * PDUs.
-			 */
+			 
 			ddev->atn_count = 0;
 
-			/* If the ACK PNI is equal to the target PNI - 1 means
-			 * that the initiator did not receive the previous PDU
-			 * sent by the target so re-send it.
-			 */
+			 
 			if (DIGITAL_NFC_DEP_PFB_PNI(pfb + 1) ==
 						ddev->curr_nfc_dep_pni) {
 				rc = digital_tg_send_saved_skb(ddev);
@@ -1235,13 +1189,10 @@ static void digital_tg_recv_dep_req(struct nfc_digital_dev *ddev, void *arg,
 				goto free_resp;
 			}
 
-			/* Otherwise, the target did not receive the previous
-			 * ACK PDU from the initiator. Fallback to normal
-			 * processing of chained PDU then.
-			 */
+			 
 		}
 
-		/* Keep on sending chained PDU */
+		 
 		if (!ddev->chaining_skb ||
 		    DIGITAL_NFC_DEP_PFB_PNI(pfb) !=
 					ddev->curr_nfc_dep_pni) {

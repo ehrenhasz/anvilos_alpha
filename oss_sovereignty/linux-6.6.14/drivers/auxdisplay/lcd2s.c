@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Console driver for LCD2S 4x20 character displays connected through i2c.
- *  The display also has a SPI interface, but the driver does not support
- *  this yet.
- *
- *  This is a driver allowing you to use a LCD2S 4x20 from Modtronix
- *  engineering as auxdisplay character device.
- *
- *  (C) 2019 by Lemonage Software GmbH
- *  Author: Lars Pöschel <poeschel@lemonage.de>
- *  All rights reserved.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/mod_devicetable.h>
 #include <linux/module.h>
@@ -125,7 +114,7 @@ static int lcd2s_init_display(struct charlcd *lcd)
 {
 	struct lcd2s_data *lcd2s = lcd->drvdata;
 
-	/* turn everything off, but display on */
+	 
 	lcd2s_i2c_smbus_write_byte(lcd2s->i2c, LCD2S_CMD_DISPLAY_ON);
 	lcd2s_i2c_smbus_write_byte(lcd2s->i2c, LCD2S_CMD_BACKLIGHT_OFF);
 	lcd2s_i2c_smbus_write_byte(lcd2s->i2c, LCD2S_CMD_CUR_MOVES_FWD);
@@ -216,13 +205,7 @@ static int lcd2s_lines(struct charlcd *lcd, enum charlcd_lines lines)
 	return 0;
 }
 
-/*
- * Generator: LGcxxxxx...xx; must have <c> between '0' and '7',
- * representing the numerical ASCII code of the redefined character,
- * and <xx...xx> a sequence of 16 hex digits representing 8 bytes
- * for each character. Most LCDs will only use 5 lower bits of
- * the 7 first bytes.
- */
+ 
 static int lcd2s_redefine_char(struct charlcd *lcd, char *esc)
 {
 	struct lcd2s_data *lcd2s = lcd->drvdata;
@@ -265,7 +248,7 @@ static int lcd2s_clear_display(struct charlcd *lcd)
 {
 	struct lcd2s_data *lcd2s = lcd->drvdata;
 
-	/* This implicitly sets cursor to first row and column */
+	 
 	lcd2s_i2c_smbus_write_byte(lcd2s->i2c, LCD2S_CMD_CLEAR);
 	return 0;
 }
@@ -302,7 +285,7 @@ static int lcd2s_i2c_probe(struct i2c_client *i2c)
 	if (!lcd2s)
 		return -ENOMEM;
 
-	/* Test, if the display is responding */
+	 
 	err = lcd2s_i2c_smbus_write_byte(i2c, LCD2S_CMD_DISPLAY_OFF);
 	if (err < 0)
 		return err;
@@ -315,7 +298,7 @@ static int lcd2s_i2c_probe(struct i2c_client *i2c)
 	lcd2s->i2c = i2c;
 	lcd2s->charlcd = lcd;
 
-	/* Required properties */
+	 
 	err = device_property_read_u32(&i2c->dev, "display-height-chars",
 			&lcd->height);
 	if (err)

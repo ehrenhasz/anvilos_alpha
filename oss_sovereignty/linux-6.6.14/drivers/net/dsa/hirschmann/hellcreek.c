@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * DSA driver for:
- * Hirschmann Hellcreek TSN switch.
- *
- * Copyright (C) 2019-2021 Linutronix GmbH
- * Author Kurt Kanzenbach <kurt@linutronix.de>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -143,7 +137,7 @@ static void hellcreek_select_counter(struct hellcreek *hellcreek, int counter)
 
 	hellcreek_write(hellcreek, val, HR_CSEL);
 
-	/* Data sheet states to wait at least 20 internal clock cycles */
+	 
 	ndelay(200);
 }
 
@@ -152,12 +146,12 @@ static void hellcreek_select_vlan(struct hellcreek *hellcreek, int vid,
 {
 	u16 val = 0;
 
-	/* Set pvid bit first */
+	 
 	if (pvid)
 		val |= HR_VIDCFG_PVID;
 	hellcreek_write(hellcreek, val, HR_VIDCFG);
 
-	/* Set vlan */
+	 
 	val |= vid << HR_VIDCFG_VID_SHIFT;
 	hellcreek_write(hellcreek, val, HR_VIDCFG);
 }
@@ -173,7 +167,7 @@ static int hellcreek_wait_until_ready(struct hellcreek *hellcreek)
 {
 	u16 val;
 
-	/* Wait up to 1ms, although 3 us should be enough */
+	 
 	return readx_poll_timeout(hellcreek_read_ctrl, hellcreek,
 				  val, val & HR_CTRL_C_READY,
 				  3, 1000);
@@ -230,9 +224,7 @@ static void hellcreek_feature_detect(struct hellcreek *hellcreek)
 
 	features = hellcreek_read(hellcreek, HR_FEABITS0);
 
-	/* Only detect the size of the FDB table. The size and current
-	 * utilization can be queried via devlink.
-	 */
+	 
 	hellcreek->fdb_entries = ((features & HR_FEABITS0_FDBBINS_MASK) >>
 			       HR_FEABITS0_FDBBINS_SHIFT) * 32;
 }
@@ -329,10 +321,7 @@ static void hellcreek_get_ethtool_stats(struct dsa_switch *ds, int port,
 
 		hellcreek_select_counter(hellcreek, offset);
 
-		/* The registers are locked internally by selecting the
-		 * counter. So low and high can be read without reading high
-		 * again.
-		 */
+		 
 		high  = hellcreek_read(hellcreek, HR_CRDH);
 		low   = hellcreek_read(hellcreek, HR_CRDL);
 		value = ((u64)high << 16) | low;
@@ -358,10 +347,7 @@ static int hellcreek_vlan_prepare(struct dsa_switch *ds, int port,
 
 	dev_dbg(hellcreek->dev, "VLAN prepare for port %d\n", port);
 
-	/* Restriction: Make sure that nobody uses the "private" VLANs. These
-	 * VLANs are internally used by the driver to ensure port
-	 * separation. Thus, they cannot be used by someone else.
-	 */
+	 
 	for (i = 0; i < hellcreek->pdata->num_ports; ++i) {
 		const u16 restricted_vid = hellcreek_private_vid(i);
 
@@ -417,7 +403,7 @@ static void hellcreek_apply_vlan(struct hellcreek *hellcreek, int port, u16 vid,
 	hellcreek_select_port(hellcreek, port);
 	hellcreek_select_vlan(hellcreek, vid, pvid);
 
-	/* Setup port vlan membership */
+	 
 	hellcreek_select_vlan_params(hellcreek, port, &shift, &mask);
 	val = hellcreek->vidmbrcfg[vid];
 	val &= ~mask;
@@ -444,7 +430,7 @@ static void hellcreek_unapply_vlan(struct hellcreek *hellcreek, int port,
 
 	hellcreek_select_vlan(hellcreek, vid, false);
 
-	/* Setup port vlan membership */
+	 
 	hellcreek_select_vlan_params(hellcreek, port, &shift, &mask);
 	val = hellcreek->vidmbrcfg[vid];
 	val &= ~mask;
@@ -584,7 +570,7 @@ static void hellcreek_setup_vlan_awareness(struct hellcreek *hellcreek,
 	mutex_unlock(&hellcreek->reg_lock);
 }
 
-/* Default setup for DSA: VLAN <X>: CPU and Port <X> egress untagged. */
+ 
 static void hellcreek_setup_vlan_membership(struct dsa_switch *ds, int port,
 					    bool enabled)
 {
@@ -592,13 +578,13 @@ static void hellcreek_setup_vlan_membership(struct dsa_switch *ds, int port,
 	int upstream = dsa_upstream_port(ds, port);
 	struct hellcreek *hellcreek = ds->priv;
 
-	/* Apply vid to port as egress untagged and port vlan id */
+	 
 	if (enabled)
 		hellcreek_apply_vlan(hellcreek, port, vid, true, true);
 	else
 		hellcreek_unapply_vlan(hellcreek, port, vid);
 
-	/* Apply vid to cpu port as well */
+	 
 	if (enabled)
 		hellcreek_apply_vlan(hellcreek, upstream, vid, false, true);
 	else
@@ -691,11 +677,11 @@ static int hellcreek_port_bridge_join(struct dsa_switch *ds, int port,
 
 	dev_dbg(hellcreek->dev, "Port %d joins a bridge\n", port);
 
-	/* When joining a vlan_filtering bridge, keep the switch VLAN aware */
+	 
 	if (!ds->vlan_filtering)
 		hellcreek_setup_vlan_awareness(hellcreek, false);
 
-	/* Drop private vlans */
+	 
 	hellcreek_setup_vlan_membership(ds, port, false);
 
 	return 0;
@@ -708,10 +694,10 @@ static void hellcreek_port_bridge_leave(struct dsa_switch *ds, int port,
 
 	dev_dbg(hellcreek->dev, "Port %d leaves a bridge\n", port);
 
-	/* Enable VLAN awareness */
+	 
 	hellcreek_setup_vlan_awareness(hellcreek, true);
 
-	/* Enable private vlans */
+	 
 	hellcreek_setup_vlan_membership(ds, port, true);
 }
 
@@ -725,12 +711,12 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
 		entry->portmask, entry->is_obt, entry->pass_blocked,
 		entry->reprio_en, entry->reprio_tc);
 
-	/* Add mac address */
+	 
 	hellcreek_write(hellcreek, entry->mac[1] | (entry->mac[0] << 8), HR_FDBWDH);
 	hellcreek_write(hellcreek, entry->mac[3] | (entry->mac[2] << 8), HR_FDBWDM);
 	hellcreek_write(hellcreek, entry->mac[5] | (entry->mac[4] << 8), HR_FDBWDL);
 
-	/* Meta data */
+	 
 	meta |= entry->portmask << HR_FDBWRM0_PORTMASK_SHIFT;
 	if (entry->is_obt)
 		meta |= HR_FDBWRM0_OBT;
@@ -742,10 +728,10 @@ static int __hellcreek_fdb_add(struct hellcreek *hellcreek,
 	}
 	hellcreek_write(hellcreek, meta, HR_FDBWRM0);
 
-	/* Commit */
+	 
 	hellcreek_write(hellcreek, 0x00, HR_FDBWRCMD);
 
-	/* Wait until done */
+	 
 	return hellcreek_wait_fdb_ready(hellcreek);
 }
 
@@ -754,10 +740,10 @@ static int __hellcreek_fdb_del(struct hellcreek *hellcreek,
 {
 	dev_dbg(hellcreek->dev, "Delete FDB entry: MAC=%pM!\n", entry->mac);
 
-	/* Delete by matching idx */
+	 
 	hellcreek_write(hellcreek, entry->idx | HR_FDBWRCMD_FDBDEL, HR_FDBWRCMD);
 
-	/* Wait until done */
+	 
 	return hellcreek_wait_fdb_ready(hellcreek);
 }
 
@@ -768,7 +754,7 @@ static void hellcreek_populate_fdb_entry(struct hellcreek *hellcreek,
 	unsigned char addr[ETH_ALEN];
 	u16 meta, mac;
 
-	/* Read values */
+	 
 	meta	= hellcreek_read(hellcreek, HR_FDBMDRD);
 	mac	= hellcreek_read(hellcreek, HR_FDBRDL);
 	addr[5] = mac & 0xff;
@@ -780,7 +766,7 @@ static void hellcreek_populate_fdb_entry(struct hellcreek *hellcreek,
 	addr[1] = mac & 0xff;
 	addr[0] = (mac & 0xff00) >> 8;
 
-	/* Populate @entry */
+	 
 	memcpy(entry->mac, addr, sizeof(addr));
 	entry->idx	    = idx;
 	entry->portmask	    = (meta & HR_FDBMDRD_PORTMASK_MASK) >>
@@ -795,39 +781,31 @@ static void hellcreek_populate_fdb_entry(struct hellcreek *hellcreek,
 	entry->reprio_en    = !!(meta & HR_FDBMDRD_REPRIO_EN);
 }
 
-/* Retrieve the index of a FDB entry by mac address. Currently we search through
- * the complete table in hardware. If that's too slow, we might have to cache
- * the complete FDB table in software.
- */
+ 
 static int hellcreek_fdb_get(struct hellcreek *hellcreek,
 			     const unsigned char *dest,
 			     struct hellcreek_fdb_entry *entry)
 {
 	size_t i;
 
-	/* Set read pointer to zero: The read of HR_FDBMAX (read-only register)
-	 * should reset the internal pointer. But, that doesn't work. The vendor
-	 * suggested a subsequent write as workaround. Same for HR_FDBRDH below.
-	 */
+	 
 	hellcreek_read(hellcreek, HR_FDBMAX);
 	hellcreek_write(hellcreek, 0x00, HR_FDBMAX);
 
-	/* We have to read the complete table, because the switch/driver might
-	 * enter new entries anywhere.
-	 */
+	 
 	for (i = 0; i < hellcreek->fdb_entries; ++i) {
 		struct hellcreek_fdb_entry tmp = { 0 };
 
-		/* Read entry */
+		 
 		hellcreek_populate_fdb_entry(hellcreek, &tmp, i);
 
-		/* Force next entry */
+		 
 		hellcreek_write(hellcreek, 0x00, HR_FDBRDH);
 
 		if (memcmp(tmp.mac, dest, ETH_ALEN))
 			continue;
 
-		/* Match found */
+		 
 		memcpy(entry, &tmp, sizeof(*entry));
 
 		return 0;
@@ -850,7 +828,7 @@ static int hellcreek_fdb_add(struct dsa_switch *ds, int port,
 
 	ret = hellcreek_fdb_get(hellcreek, addr, &entry);
 	if (ret) {
-		/* Not found */
+		 
 		memcpy(entry.mac, addr, sizeof(entry.mac));
 		entry.portmask = BIT(port);
 
@@ -860,7 +838,7 @@ static int hellcreek_fdb_add(struct dsa_switch *ds, int port,
 			goto out;
 		}
 	} else {
-		/* Found */
+		 
 		ret = __hellcreek_fdb_del(hellcreek, &entry);
 		if (ret) {
 			dev_err(hellcreek->dev, "Failed to delete FDB entry!\n");
@@ -896,10 +874,10 @@ static int hellcreek_fdb_del(struct dsa_switch *ds, int port,
 
 	ret = hellcreek_fdb_get(hellcreek, addr, &entry);
 	if (ret) {
-		/* Not found */
+		 
 		dev_err(hellcreek->dev, "FDB entry for deletion not found!\n");
 	} else {
-		/* Found */
+		 
 		ret = __hellcreek_fdb_del(hellcreek, &entry);
 		if (ret) {
 			dev_err(hellcreek->dev, "Failed to delete FDB entry!\n");
@@ -933,30 +911,27 @@ static int hellcreek_fdb_dump(struct dsa_switch *ds, int port,
 
 	mutex_lock(&hellcreek->reg_lock);
 
-	/* Set read pointer to zero: The read of HR_FDBMAX (read-only register)
-	 * should reset the internal pointer. But, that doesn't work. The vendor
-	 * suggested a subsequent write as workaround. Same for HR_FDBRDH below.
-	 */
+	 
 	entries = hellcreek_read(hellcreek, HR_FDBMAX);
 	hellcreek_write(hellcreek, 0x00, HR_FDBMAX);
 
 	dev_dbg(hellcreek->dev, "FDB dump for port %d, entries=%d!\n", port, entries);
 
-	/* Read table */
+	 
 	for (i = 0; i < hellcreek->fdb_entries; ++i) {
 		struct hellcreek_fdb_entry entry = { 0 };
 
-		/* Read entry */
+		 
 		hellcreek_populate_fdb_entry(hellcreek, &entry, i);
 
-		/* Force next entry */
+		 
 		hellcreek_write(hellcreek, 0x00, HR_FDBRDH);
 
-		/* Check valid */
+		 
 		if (is_zero_ether_addr(entry.mac))
 			continue;
 
-		/* Check port mask */
+		 
 		if (!(entry.portmask & BIT(port)))
 			continue;
 
@@ -979,12 +954,10 @@ static int hellcreek_vlan_filtering(struct dsa_switch *ds, int port,
 	dev_dbg(hellcreek->dev, "%s VLAN filtering on port %d\n",
 		vlan_filtering ? "Enable" : "Disable", port);
 
-	/* Configure port to drop packages with not known vids */
+	 
 	hellcreek_setup_ingressflt(hellcreek, port, vlan_filtering);
 
-	/* Enable VLAN awareness on the switch. This save due to
-	 * ds->vlan_filtering_is_global.
-	 */
+	 
 	hellcreek_setup_vlan_awareness(hellcreek, vlan_filtering);
 
 	return 0;
@@ -1033,23 +1006,7 @@ static void hellcreek_setup_tc_identity_mapping(struct hellcreek *hellcreek)
 {
 	int i;
 
-	/* The switch has multiple egress queues per port. The queue is selected
-	 * via the PCP field in the VLAN header. The switch internally deals
-	 * with traffic classes instead of PCP values and this mapping is
-	 * configurable.
-	 *
-	 * The default mapping is (PCP - TC):
-	 *  7 - 7
-	 *  6 - 6
-	 *  5 - 5
-	 *  4 - 4
-	 *  3 - 3
-	 *  2 - 1
-	 *  1 - 0
-	 *  0 - 2
-	 *
-	 * The default should be an identity mapping.
-	 */
+	 
 
 	for (i = 0; i < 8; ++i) {
 		mutex_lock(&hellcreek->reg_lock);
@@ -1066,20 +1023,20 @@ static void hellcreek_setup_tc_identity_mapping(struct hellcreek *hellcreek)
 static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
 {
 	static struct hellcreek_fdb_entry l2_ptp = {
-		/* MAC: 01-1B-19-00-00-00 */
+		 
 		.mac	      = { 0x01, 0x1b, 0x19, 0x00, 0x00, 0x00 },
-		.portmask     = 0x03,	/* Management ports */
+		.portmask     = 0x03,	 
 		.age	      = 0,
 		.is_obt	      = 0,
 		.pass_blocked = 0,
 		.is_static    = 1,
-		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+		.reprio_tc    = 6,	 
 		.reprio_en    = 1,
 	};
 	static struct hellcreek_fdb_entry udp4_ptp = {
-		/* MAC: 01-00-5E-00-01-81 */
+		 
 		.mac	      = { 0x01, 0x00, 0x5e, 0x00, 0x01, 0x81 },
-		.portmask     = 0x03,	/* Management ports */
+		.portmask     = 0x03,	 
 		.age	      = 0,
 		.is_obt	      = 0,
 		.pass_blocked = 0,
@@ -1088,9 +1045,9 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
 		.reprio_en    = 1,
 	};
 	static struct hellcreek_fdb_entry udp6_ptp = {
-		/* MAC: 33-33-00-00-01-81 */
+		 
 		.mac	      = { 0x33, 0x33, 0x00, 0x00, 0x01, 0x81 },
-		.portmask     = 0x03,	/* Management ports */
+		.portmask     = 0x03,	 
 		.age	      = 0,
 		.is_obt	      = 0,
 		.pass_blocked = 0,
@@ -1099,20 +1056,20 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
 		.reprio_en    = 1,
 	};
 	static struct hellcreek_fdb_entry l2_p2p = {
-		/* MAC: 01-80-C2-00-00-0E */
+		 
 		.mac	      = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x0e },
-		.portmask     = 0x03,	/* Management ports */
+		.portmask     = 0x03,	 
 		.age	      = 0,
 		.is_obt	      = 0,
 		.pass_blocked = 1,
 		.is_static    = 1,
-		.reprio_tc    = 6,	/* TC: 6 as per IEEE 802.1AS */
+		.reprio_tc    = 6,	 
 		.reprio_en    = 1,
 	};
 	static struct hellcreek_fdb_entry udp4_p2p = {
-		/* MAC: 01-00-5E-00-00-6B */
+		 
 		.mac	      = { 0x01, 0x00, 0x5e, 0x00, 0x00, 0x6b },
-		.portmask     = 0x03,	/* Management ports */
+		.portmask     = 0x03,	 
 		.age	      = 0,
 		.is_obt	      = 0,
 		.pass_blocked = 1,
@@ -1121,9 +1078,9 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
 		.reprio_en    = 1,
 	};
 	static struct hellcreek_fdb_entry udp6_p2p = {
-		/* MAC: 33-33-00-00-00-6B */
+		 
 		.mac	      = { 0x33, 0x33, 0x00, 0x00, 0x00, 0x6b },
-		.portmask     = 0x03,	/* Management ports */
+		.portmask     = 0x03,	 
 		.age	      = 0,
 		.is_obt	      = 0,
 		.pass_blocked = 1,
@@ -1132,9 +1089,9 @@ static int hellcreek_setup_fdb(struct hellcreek *hellcreek)
 		.reprio_en    = 1,
 	};
 	static struct hellcreek_fdb_entry stp = {
-		/* MAC: 01-80-C2-00-00-00 */
+		 
 		.mac	      = { 0x01, 0x80, 0xc2, 0x00, 0x00, 0x00 },
-		.portmask     = 0x03,	/* Management ports */
+		.portmask     = 0x03,	 
 		.age	      = 0,
 		.is_obt	      = 0,
 		.pass_blocked = 1,
@@ -1201,9 +1158,7 @@ static u64 hellcreek_devlink_fdb_table_get(void *priv)
 	struct hellcreek *hellcreek = priv;
 	u64 count = 0;
 
-	/* Reading this register has side effects. Synchronize against the other
-	 * FDB operations.
-	 */
+	 
 	mutex_lock(&hellcreek->reg_lock);
 	count = hellcreek_read(hellcreek, HR_FDBMAX);
 	mutex_unlock(&hellcreek->reg_lock);
@@ -1305,15 +1260,15 @@ static int hellcreek_devlink_region_fdb_snapshot(struct devlink *dl,
 
 	mutex_lock(&hellcreek->reg_lock);
 
-	/* Start table read */
+	 
 	hellcreek_read(hellcreek, HR_FDBMAX);
 	hellcreek_write(hellcreek, 0x00, HR_FDBMAX);
 
 	for (i = 0; i < hellcreek->fdb_entries; ++i, ++entry) {
-		/* Read current entry */
+		 
 		hellcreek_populate_fdb_entry(hellcreek, entry, i);
 
-		/* Advance read pointer */
+		 
 		hellcreek_write(hellcreek, 0x00, HR_FDBRDH);
 	}
 
@@ -1344,7 +1299,7 @@ static int hellcreek_setup_devlink_regions(struct dsa_switch *ds)
 	u64 size;
 	int ret;
 
-	/* VLAN table */
+	 
 	size = VLAN_N_VID * sizeof(struct hellcreek_devlink_vlan_entry);
 	ops  = &hellcreek_region_vlan_ops;
 
@@ -1354,7 +1309,7 @@ static int hellcreek_setup_devlink_regions(struct dsa_switch *ds)
 
 	hellcreek->vlan_region = region;
 
-	/* FDB table */
+	 
 	size = hellcreek->fdb_entries * sizeof(struct hellcreek_fdb_entry);
 	ops  = &hellcreek_region_fdb_ops;
 
@@ -1390,20 +1345,17 @@ static int hellcreek_setup(struct dsa_switch *ds)
 
 	dev_dbg(hellcreek->dev, "Set up the switch\n");
 
-	/* Let's go */
+	 
 	ret = hellcreek_enable_ip_core(hellcreek);
 	if (ret) {
 		dev_err(hellcreek->dev, "Failed to enable IP core!\n");
 		return ret;
 	}
 
-	/* Enable CPU/Tunnel ports */
+	 
 	hellcreek_setup_cpu_and_tunnel_port(hellcreek);
 
-	/* Switch config: Keep defaults, enable FDB aging and learning and tag
-	 * each frame from/to cpu port for DSA tagging.  Also enable the length
-	 * aware shaping mode. This eliminates the need for Qbv guard bands.
-	 */
+	 
 	swcfg |= HR_SWCFG_FDBAGE_EN |
 		HR_SWCFG_FDBLRN_EN  |
 		HR_SWCFG_ALWAYS_OBT |
@@ -1411,7 +1363,7 @@ static int hellcreek_setup(struct dsa_switch *ds)
 	hellcreek->swcfg = swcfg;
 	hellcreek_write(hellcreek, swcfg, HR_SWCFG);
 
-	/* Initial vlan membership to reflect port separation */
+	 
 	for (i = 0; i < ds->num_ports; ++i) {
 		if (!dsa_is_user_port(ds, i))
 			continue;
@@ -1419,16 +1371,14 @@ static int hellcreek_setup(struct dsa_switch *ds)
 		hellcreek_setup_vlan_membership(ds, i, true);
 	}
 
-	/* Configure PCP <-> TC mapping */
+	 
 	hellcreek_setup_tc_identity_mapping(hellcreek);
 
-	/* The VLAN awareness is a global switch setting. Therefore, mixed vlan
-	 * filtering setups are not supported.
-	 */
+	 
 	ds->vlan_filtering_is_global = true;
 	ds->needs_standalone_vlan_filtering = true;
 
-	/* Intercept _all_ PTP multicast traffic */
+	 
 	ret = hellcreek_setup_fdb(hellcreek);
 	if (ret) {
 		dev_err(hellcreek->dev,
@@ -1436,7 +1386,7 @@ static int hellcreek_setup(struct dsa_switch *ds)
 		return ret;
 	}
 
-	/* Register devlink resources with DSA */
+	 
 	ret = hellcreek_setup_devlink_resources(ds);
 	if (ret) {
 		dev_err(hellcreek->dev,
@@ -1473,17 +1423,10 @@ static void hellcreek_phylink_get_caps(struct dsa_switch *ds, int port,
 	__set_bit(PHY_INTERFACE_MODE_MII, config->supported_interfaces);
 	__set_bit(PHY_INTERFACE_MODE_RGMII, config->supported_interfaces);
 
-	/* Include GMII - the hardware does not support this interface
-	 * mode, but it's the default interface mode for phylib, so we
-	 * need it for compatibility with existing DT.
-	 */
+	 
 	__set_bit(PHY_INTERFACE_MODE_GMII, config->supported_interfaces);
 
-	/* The MAC settings are a hardware configuration option and cannot be
-	 * changed at run time or by strapping. Therefore the attached PHYs
-	 * should be programmed to only advertise settings which are supported
-	 * by the hardware.
-	 */
+	 
 	if (hellcreek->pdata->is_100_mbits)
 		config->mac_capabilities = MAC_100FD;
 	else
@@ -1502,20 +1445,14 @@ hellcreek_port_prechangeupper(struct dsa_switch *ds, int port,
 
 	dev_dbg(hellcreek->dev, "Pre change upper for port %d\n", port);
 
-	/*
-	 * Deny VLAN devices on top of lan ports with the same VLAN ids, because
-	 * it breaks the port separation due to the private VLANs. Example:
-	 *
-	 * lan0.100 *and* lan1.100 cannot be used in parallel. However, lan0.99
-	 * and lan1.100 works.
-	 */
+	 
 
 	if (!is_vlan_dev(info->upper_dev))
 		return 0;
 
 	vid = vlan_dev_vlan_id(info->upper_dev);
 
-	/* For all ports, check bitmaps */
+	 
 	mutex_lock(&hellcreek->vlan_lock);
 	for (i = 0; i < hellcreek->pdata->num_ports; ++i) {
 		if (!dsa_is_user_port(ds, i))
@@ -1530,7 +1467,7 @@ hellcreek_port_prechangeupper(struct dsa_switch *ds, int port,
 	if (used)
 		goto out;
 
-	/* Update bitmap */
+	 
 	set_bit(vid, hellcreek->ports[port].vlan_dev_bitmap);
 
 	ret = 0;
@@ -1605,10 +1542,10 @@ static void hellcreek_setup_gcl(struct hellcreek *hellcreek, int port,
 		if (i == schedule->num_entries)
 			data |= TR_GCLDAT_GCLWRLAST;
 
-		/* Gates states */
+		 
 		hellcreek_write(hellcreek, data, TR_GCLDAT);
 
-		/* Time interval */
+		 
 		hellcreek_write(hellcreek,
 				cur->interval & 0x0000ffff,
 				TR_GCLTIL);
@@ -1616,7 +1553,7 @@ static void hellcreek_setup_gcl(struct hellcreek *hellcreek, int port,
 				(cur->interval & 0xffff0000) >> 16,
 				TR_GCLTIH);
 
-		/* Commit entry */
+		 
 		data = ((i - 1) << TR_GCLCMD_GCLWRADR_SHIFT) |
 			(initial->gate_mask <<
 			 TR_GCLCMD_INIT_GATE_STATES_SHIFT);
@@ -1641,11 +1578,11 @@ static void hellcreek_switch_schedule(struct hellcreek *hellcreek,
 {
 	struct timespec64 ts = ktime_to_timespec64(start_time);
 
-	/* Start schedule at this point of time */
+	 
 	hellcreek_write(hellcreek, ts.tv_nsec & 0x0000ffff, TR_ESTWRL);
 	hellcreek_write(hellcreek, (ts.tv_nsec & 0xffff0000) >> 16, TR_ESTWRH);
 
-	/* Arm timer, set seconds and switch schedule */
+	 
 	hellcreek_write(hellcreek, TR_ESTCMD_ESTARM | TR_ESTCMD_ESTSWCFG |
 			((ts.tv_sec & TR_ESTCMD_ESTSEC_MASK) <<
 			 TR_ESTCMD_ESTSEC_SHIFT), TR_ESTCMD);
@@ -1656,19 +1593,14 @@ static bool hellcreek_schedule_startable(struct hellcreek *hellcreek, int port)
 	struct hellcreek_port *hellcreek_port = &hellcreek->ports[port];
 	s64 base_time_ns, current_ns;
 
-	/* The switch allows a schedule to be started only eight seconds within
-	 * the future. Therefore, check the current PTP time if the schedule is
-	 * startable or not.
-	 */
+	 
 
-	/* Use the "cached" time. That should be alright, as it's updated quite
-	 * frequently in the PTP code.
-	 */
+	 
 	mutex_lock(&hellcreek->ptp_lock);
 	current_ns = hellcreek->seconds * NSEC_PER_SEC + hellcreek->last_ts;
 	mutex_unlock(&hellcreek->ptp_lock);
 
-	/* Calculate difference to admin base time */
+	 
 	base_time_ns = ktime_to_ns(hellcreek_port->current_schedule->base_time);
 
 	return base_time_ns - current_ns < (s64)4 * NSEC_PER_SEC;
@@ -1681,10 +1613,10 @@ static void hellcreek_start_schedule(struct hellcreek *hellcreek, int port)
 	s64 current_ns;
 	u32 cycle_time;
 
-	/* First select port */
+	 
 	hellcreek_select_tgd(hellcreek, port);
 
-	/* Forward base time into the future if needed */
+	 
 	mutex_lock(&hellcreek->ptp_lock);
 	current_ns = hellcreek->seconds * NSEC_PER_SEC + hellcreek->last_ts;
 	mutex_unlock(&hellcreek->ptp_lock);
@@ -1701,7 +1633,7 @@ static void hellcreek_start_schedule(struct hellcreek *hellcreek, int port)
 		base_time = ktime_add_ns(base_time, (n + 1) * cycle_time);
 	}
 
-	/* Set admin base time and switch schedule */
+	 
 	hellcreek_switch_schedule(hellcreek, base_time);
 
 	taprio_offload_free(hellcreek_port->current_schedule);
@@ -1723,7 +1655,7 @@ static void hellcreek_check_schedule(struct work_struct *work)
 
 	mutex_lock(&hellcreek->reg_lock);
 
-	/* Check starting time */
+	 
 	startable = hellcreek_schedule_startable(hellcreek,
 						 hellcreek_port->port);
 	if (startable) {
@@ -1734,7 +1666,7 @@ static void hellcreek_check_schedule(struct work_struct *work)
 
 	mutex_unlock(&hellcreek->reg_lock);
 
-	/* Reschedule */
+	 
 	schedule_delayed_work(&hellcreek_port->schedule_work,
 			      HELLCREEK_SCHEDULE_PERIOD);
 }
@@ -1752,7 +1684,7 @@ static int hellcreek_port_set_schedule(struct dsa_switch *ds, int port,
 	dev_dbg(hellcreek->dev, "Configure traffic schedule on port %d\n",
 		port);
 
-	/* First cancel delayed work */
+	 
 	cancel_delayed_work_sync(&hellcreek_port->schedule_work);
 
 	mutex_lock(&hellcreek->reg_lock);
@@ -1763,26 +1695,26 @@ static int hellcreek_port_set_schedule(struct dsa_switch *ds, int port,
 	}
 	hellcreek_port->current_schedule = taprio_offload_get(taprio);
 
-	/* Configure max sdu */
+	 
 	hellcreek_setup_maxsdu(hellcreek, port, hellcreek_port->current_schedule);
 
-	/* Select tdg */
+	 
 	hellcreek_select_tgd(hellcreek, port);
 
-	/* Enable gating and keep defaults */
+	 
 	ctrl = (0xff << TR_TGDCTRL_ADMINGATESTATES_SHIFT) | TR_TGDCTRL_GATE_EN;
 	hellcreek_write(hellcreek, ctrl, TR_TGDCTRL);
 
-	/* Cancel pending schedule */
+	 
 	hellcreek_write(hellcreek, 0x00, TR_ESTCMD);
 
-	/* Setup a new schedule */
+	 
 	hellcreek_setup_gcl(hellcreek, port, hellcreek_port->current_schedule);
 
-	/* Configure cycle time */
+	 
 	hellcreek_set_cycle_time(hellcreek, hellcreek_port->current_schedule);
 
-	/* Check starting time */
+	 
 	startable = hellcreek_schedule_startable(hellcreek, port);
 	if (startable) {
 		hellcreek_start_schedule(hellcreek, port);
@@ -1792,7 +1724,7 @@ static int hellcreek_port_set_schedule(struct dsa_switch *ds, int port,
 
 	mutex_unlock(&hellcreek->reg_lock);
 
-	/* Schedule periodic schedule check */
+	 
 	schedule_delayed_work(&hellcreek_port->schedule_work,
 			      HELLCREEK_SCHEDULE_PERIOD);
 
@@ -1808,7 +1740,7 @@ static int hellcreek_port_del_schedule(struct dsa_switch *ds, int port)
 
 	dev_dbg(hellcreek->dev, "Remove traffic schedule on port %d\n", port);
 
-	/* First cancel delayed work */
+	 
 	cancel_delayed_work_sync(&hellcreek_port->schedule_work);
 
 	mutex_lock(&hellcreek->reg_lock);
@@ -1818,13 +1750,13 @@ static int hellcreek_port_del_schedule(struct dsa_switch *ds, int port)
 		hellcreek_port->current_schedule = NULL;
 	}
 
-	/* Reset max sdu */
+	 
 	hellcreek_reset_maxsdu(hellcreek, port);
 
-	/* Select tgd */
+	 
 	hellcreek_select_tgd(hellcreek, port);
 
-	/* Disable gating and return to regular switching flow */
+	 
 	hellcreek_write(hellcreek, 0xff << TR_TGDCTRL_ADMINGATESTATES_SHIFT,
 			TR_TGDCTRL);
 
@@ -1838,19 +1770,19 @@ static bool hellcreek_validate_schedule(struct hellcreek *hellcreek,
 {
 	size_t i;
 
-	/* Does this hellcreek version support Qbv in hardware? */
+	 
 	if (!hellcreek->pdata->qbv_support)
 		return false;
 
-	/* cycle time can only be 32bit */
+	 
 	if (schedule->cycle_time > (u32)-1)
 		return false;
 
-	/* cycle time extension is not supported */
+	 
 	if (schedule->cycle_time_extension)
 		return false;
 
-	/* Only set command is supported */
+	 
 	for (i = 0; i < schedule->num_entries; ++i)
 		if (schedule->entries[i].command != TC_TAPRIO_CMD_SET_GATES)
 			return false;
@@ -2101,7 +2033,7 @@ static const struct of_device_id hellcreek_of_match[] = {
 		.compatible = "hirschmann,hellcreek-de1soc-r1",
 		.data	    = &de1soc_r1_pdata,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, hellcreek_of_match);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2022 Red Hat, Inc.
- */
+
+ 
 
 #include <linux/bio.h>
 #include <linux/blk-crypto.h>
@@ -44,15 +42,7 @@ static inline bool dm_bvec_iter_rewind(const struct bio_vec *bv,
 
 #if defined(CONFIG_BLK_DEV_INTEGRITY)
 
-/**
- * dm_bio_integrity_rewind - Rewind integrity vector
- * @bio:	bio whose integrity vector to update
- * @bytes_done:	number of data bytes to rewind
- *
- * Description: This function calculates how many integrity bytes the
- * number of completed data bytes correspond to and rewind the
- * integrity vector accordingly.
- */
+ 
 static void dm_bio_integrity_rewind(struct bio *bio, unsigned int bytes_done)
 {
 	struct bio_integrity_payload *bip = bio_integrity(bio);
@@ -63,7 +53,7 @@ static void dm_bio_integrity_rewind(struct bio *bio, unsigned int bytes_done)
 	dm_bvec_iter_rewind(bip->bip_vec, &bip->bip_iter, bytes);
 }
 
-#else /* CONFIG_BLK_DEV_INTEGRITY */
+#else  
 
 static inline void dm_bio_integrity_rewind(struct bio *bio,
 					   unsigned int bytes_done)
@@ -74,7 +64,7 @@ static inline void dm_bio_integrity_rewind(struct bio *bio,
 
 #if defined(CONFIG_BLK_INLINE_ENCRYPTION)
 
-/* Decrements @dun by @dec, treating @dun as a multi-limb integer. */
+ 
 static void dm_bio_crypt_dun_decrement(u64 dun[BLK_CRYPTO_DUN_ARRAY_SIZE],
 				       unsigned int dec)
 {
@@ -99,7 +89,7 @@ static void dm_bio_crypt_rewind(struct bio *bio, unsigned int bytes)
 				   bytes >> bc->bc_key->data_unit_size_bits);
 }
 
-#else /* CONFIG_BLK_INLINE_ENCRYPTION */
+#else  
 
 static inline void dm_bio_crypt_rewind(struct bio *bio, unsigned int bytes)
 {
@@ -112,23 +102,14 @@ static inline void dm_bio_rewind_iter(const struct bio *bio,
 {
 	iter->bi_sector -= bytes >> 9;
 
-	/* No advance means no rewind */
+	 
 	if (bio_no_advance_iter(bio))
 		iter->bi_size += bytes;
 	else
 		dm_bvec_iter_rewind(bio->bi_io_vec, iter, bytes);
 }
 
-/**
- * dm_bio_rewind - update ->bi_iter of @bio by rewinding @bytes.
- * @bio: bio to rewind
- * @bytes: how many bytes to rewind
- *
- * WARNING:
- * Caller must ensure that @bio has a fixed end sector, to allow
- * rewinding from end of bio and restoring its original position.
- * Caller is also responsibile for restoring bio's size.
- */
+ 
 static void dm_bio_rewind(struct bio *bio, unsigned int bytes)
 {
 	if (bio_integrity(bio))
@@ -145,20 +126,13 @@ void dm_io_rewind(struct dm_io *io, struct bio_set *bs)
 	struct bio *orig = io->orig_bio;
 	struct bio *new_orig = bio_alloc_clone(orig->bi_bdev, orig,
 					       GFP_NOIO, bs);
-	/*
-	 * dm_bio_rewind can restore to previous position since the
-	 * end sector is fixed for original bio, but we still need
-	 * to restore bio's size manually (using io->sectors).
-	 */
+	 
 	dm_bio_rewind(new_orig, ((io->sector_offset << 9) -
 				 orig->bi_iter.bi_size));
 	bio_trim(new_orig, 0, io->sectors);
 
 	bio_chain(new_orig, orig);
-	/*
-	 * __bi_remaining was increased (by dm_split_and_process_bio),
-	 * so must drop the one added in bio_chain.
-	 */
+	 
 	atomic_dec(&orig->__bi_remaining);
 	io->orig_bio = new_orig;
 }

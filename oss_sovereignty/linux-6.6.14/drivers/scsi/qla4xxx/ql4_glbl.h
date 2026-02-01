@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * QLogic iSCSI HBA Driver
- * Copyright (c)  2003-2013 QLogic Corporation
- */
+ 
+ 
 
 #ifndef __QLA4x_GBL_H
 #define	__QLA4x_GBL_H
@@ -31,8 +28,7 @@ int qla4xxx_get_firmware_status(struct scsi_qla_host *ha);
 int qla4xxx_get_firmware_state(struct scsi_qla_host *ha);
 int qla4xxx_initialize_fw_cb(struct scsi_qla_host *ha);
 
-/* FIXME: Goodness!  this really wants a small struct to hold the
- * parameters. On x86 the args will get passed on the stack! */
+ 
 int qla4xxx_get_fwddb_entry(struct scsi_qla_host *ha,
 			    uint16_t fw_ddb_index,
 			    struct dev_db_entry *fw_ddb_entry,
@@ -194,7 +190,7 @@ int qla4xxx_flashdb_by_index(struct scsi_qla_host *ha,
 			     struct dev_db_entry *fw_ddb_entry,
 			     dma_addr_t fw_ddb_entry_dma, uint16_t ddb_index);
 
-/* BSG Functions */
+ 
 int qla4xxx_bsg_request(struct bsg_job *bsg_job);
 int qla4xxx_process_vendor_specific(struct bsg_job *bsg_job);
 
@@ -288,4 +284,4 @@ extern int ql4xenablemd;
 
 extern const struct attribute_group *qla4xxx_host_groups[];
 
-#endif /* _QLA4x_GBL_H */
+#endif  

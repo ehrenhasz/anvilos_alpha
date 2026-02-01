@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010, Intel Corporation.
- *
- * Author: John Fastabend <john.r.fastabend@intel.com>
- */
+
+ 
 
 #include <linux/rtnetlink.h>
 #include <linux/notifier.h>

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Machine driver for AMD Vangogh platform using either
- * NAU8821 & CS35L41 or NAU8821 & MAX98388 codecs.
- *
- * Copyright 2021 Advanced Micro Devices, Inc.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/dmi.h>
@@ -95,10 +90,7 @@ static int acp5x_8821_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_component *component = asoc_rtd_to_codec(rtd, 0)->component;
 	int ret;
 
-	/*
-	 * Headset buttons map to the google Reference headset.
-	 * These can be configured by userspace.
-	 */
+	 
 	ret = snd_soc_card_jack_new_pins(rtd->card, "Headset Jack",
 					 SND_JACK_HEADSET | SND_JACK_BTN_0,
 					 &vg_headset, acp5x_nau8821_jack_pins,
@@ -305,7 +297,7 @@ static const struct snd_soc_dapm_widget acp5x_8821_35l41_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route acp5x_8821_35l41_audio_route[] = {
-	/* HP jack connectors - unknown if we have jack detection */
+	 
 	{ "Headphone", NULL, "HPOL" },
 	{ "Headphone", NULL, "HPOR" },
 	{ "MICL", NULL, "Headset Mic" },

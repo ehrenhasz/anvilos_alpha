@@ -1,16 +1,4 @@
-/*
- * Combined Ethernet driver for Motorola MPC8xx and MPC82xx.
- *
- * Copyright (c) 2003 Intracom S.A.
- *  by Pantelis Antoniou <panto@intracom.gr>
- *
- * 2005 (c) MontaVista Software, Inc.
- * Vitaly Bordug <vbordug@ru.mvista.com>
- *
- * This file is licensed under the terms of the GNU General Public License
- * version 2. This program is licensed "as is" without any warranty of any
- * kind, whether express or implied.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/ioport.h>
@@ -35,11 +23,7 @@ struct bb_info {
 	u32 mdc_msk;
 };
 
-/* FIXME: If any other users of GPIO crop up, then these will have to
- * have some sort of global synchronization to avoid races with other
- * pins on the same port.  The ideal solution would probably be to
- * bind the ports to a GPIO driver, and have this be a client of it.
- */
+ 
 static inline void bb_set(u32 __iomem *p, u32 m)
 {
 	out_be32(p, in_be32(p) | m);
@@ -64,7 +48,7 @@ static inline void mdio_dir(struct mdiobb_ctrl *ctrl, int dir)
 	else
 		bb_clr(bitbang->dir, bitbang->mdio_msk);
 
-	/* Read back to flush the write. */
+	 
 	in_be32(bitbang->dir);
 }
 
@@ -83,7 +67,7 @@ static inline void mdio(struct mdiobb_ctrl *ctrl, int what)
 	else
 		bb_clr(bitbang->dat, bitbang->mdio_msk);
 
-	/* Read back to flush the write. */
+	 
 	in_be32(bitbang->dat);
 }
 
@@ -96,7 +80,7 @@ static inline void mdc(struct mdiobb_ctrl *ctrl, int what)
 	else
 		bb_clr(bitbang->dat, bitbang->mdc_msk);
 
-	/* Read back to flush the write. */
+	 
 	in_be32(bitbang->dat);
 }
 
@@ -122,10 +106,7 @@ static int fs_mii_bitbang_init(struct mii_bus *bus, struct device_node *np)
 	if (resource_size(&res) <= 13)
 		return -ENODEV;
 
-	/* This should really encode the pin number as well, but all
-	 * we get is an int, and the odds of multiple bitbang mdio buses
-	 * is low enough that it's not worth going too crazy.
-	 */
+	 
 	snprintf(bus->id, MII_BUS_ID_SIZE, "%x", res.start);
 
 	data = of_get_property(np, "fsl,mdio-pin", &len);

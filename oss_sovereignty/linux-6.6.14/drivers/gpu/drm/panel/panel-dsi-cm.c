@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic DSI Command Mode panel driver
- *
- * Copyright (C) 2013 Texas Instruments Incorporated - https://www.ti.com/
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #include <linux/backlight.h>
 #include <linux/delay.h>
@@ -50,10 +45,8 @@ struct panel_drv_data {
 	struct backlight_device *bldev;
 	struct backlight_device *extbldev;
 
-	unsigned long	hw_guard_end;	/* next value of jiffies when we can
-					 * issue the next sleep in/out command
-					 */
-	unsigned long	hw_guard_wait;	/* max guard time in jiffies */
+	unsigned long	hw_guard_end;	 
+	unsigned long	hw_guard_wait;	 
 
 	const struct dsic_panel_data *panel_data;
 
@@ -63,7 +56,7 @@ struct panel_drv_data {
 
 	bool use_dsi_backlight;
 
-	/* runtime variables */
+	 
 	bool enabled;
 
 	bool intro_printed;
@@ -271,12 +264,12 @@ static void dsicm_hw_reset(struct panel_drv_data *ddata)
 {
 	gpiod_set_value(ddata->reset_gpio, 1);
 	udelay(10);
-	/* reset the panel */
+	 
 	gpiod_set_value(ddata->reset_gpio, 0);
-	/* assert reset */
+	 
 	udelay(10);
 	gpiod_set_value(ddata->reset_gpio, 1);
-	/* wait after releasing reset */
+	 
 	usleep_range(5000, 10000);
 }
 
@@ -302,7 +295,7 @@ static int dsicm_power_on(struct panel_drv_data *ddata)
 		goto err;
 
 	r = dsicm_dcs_write_1(ddata, MIPI_DCS_WRITE_CONTROL_DISPLAY,
-			(1<<2) | (1<<5));	/* BL | BCTRL */
+			(1<<2) | (1<<5));	 
 	if (r)
 		goto err;
 
@@ -324,7 +317,7 @@ static int dsicm_power_on(struct panel_drv_data *ddata)
 			goto err;
 	}
 
-	/* possible panel bug */
+	 
 	msleep(100);
 
 	ddata->enabled = true;
@@ -493,7 +486,7 @@ static int dsicm_probe_of(struct mipi_dsi_device *dsi)
 	if (IS_ERR(backlight))
 		return PTR_ERR(backlight);
 
-	/* If no backlight device is found assume native backlight support */
+	 
 	if (backlight)
 		ddata->extbldev = backlight;
 	else

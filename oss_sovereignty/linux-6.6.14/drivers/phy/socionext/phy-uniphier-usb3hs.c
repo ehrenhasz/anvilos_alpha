@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * phy-uniphier-usb3hs.c - HS-PHY driver for Socionext UniPhier USB3 controller
- * Copyright 2015-2018 Socionext Inc.
- * Author:
- *      Kunihiko Hayashi <hayashi.kunihiko@socionext.com>
- * Contributors:
- *      Motoya Tanigawa <tanigawa.motoya@socionext.com>
- *      Masami Hiramatsu <masami.hiramatsu@linaro.org>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/bitops.h>
@@ -41,10 +33,10 @@
 
 #define PHY_F(regno, msb, lsb) { (regno), (msb), (lsb) }
 
-#define RX_CHK_SYNC	PHY_F(0, 5, 5)	/* RX sync mode */
-#define RX_SYNC_SEL	PHY_F(1, 1, 0)	/* RX sync length */
-#define LS_SLEW		PHY_F(10, 6, 6)	/* LS mode slew rate */
-#define FS_LS_DRV	PHY_F(10, 5, 5)	/* FS/LS slew rate */
+#define RX_CHK_SYNC	PHY_F(0, 5, 5)	 
+#define RX_SYNC_SEL	PHY_F(1, 1, 0)	 
+#define LS_SLEW		PHY_F(10, 6, 6)	 
+#define FS_LS_DRV	PHY_F(10, 5, 5)	 
 
 #define MAX_PHY_PARAMS	4
 
@@ -150,11 +142,7 @@ static int uniphier_u3hsphy_update_config(struct uniphier_u3hsphy_priv *priv,
 		if (ret == -EPROBE_DEFER)
 			return ret;
 
-		/*
-		 * call trim_func only when trimming parameters that aren't
-		 * all-zero can be acquired. All-zero parameters mean nothing
-		 * has been written to nvmem.
-		 */
+		 
 		if (!ret && trim_param_is_valid(&trim)) {
 			priv->data->trim_func(priv, pconfig, &trim);
 			trimmed = 1;
@@ -163,7 +151,7 @@ static int uniphier_u3hsphy_update_config(struct uniphier_u3hsphy_priv *priv,
 		}
 	}
 
-	/* use default parameters without trimming values */
+	 
 	if (!trimmed) {
 		*pconfig &= ~HSPHY_CFG0_HSDISC_MASK;
 		*pconfig |= FIELD_PREP(HSPHY_CFG0_HSDISC_MASK, 3);
@@ -451,7 +439,7 @@ static const struct of_device_id uniphier_u3hsphy_match[] = {
 		.compatible = "socionext,uniphier-nx1-usb3-hsphy",
 		.data = &uniphier_pxs3_data,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, uniphier_u3hsphy_match);
 

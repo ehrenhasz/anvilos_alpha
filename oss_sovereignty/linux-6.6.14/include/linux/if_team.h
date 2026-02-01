@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * include/linux/if_team.h - Network team device driver header
- * Copyright (c) 2011 Jiri Pirko <jpirko@redhat.com>
- */
+ 
+ 
 #ifndef _LINUX_IF_TEAM_H_
 #define _LINUX_IF_TEAM_H_
 
@@ -27,12 +24,12 @@ struct team;
 
 struct team_port {
 	struct net_device *dev;
-	struct hlist_node hlist; /* node in enabled ports hash list */
-	struct list_head list; /* node in ordinary list */
+	struct hlist_node hlist;  
+	struct list_head list;  
 	struct team *team;
-	int index; /* index of enabled port. If disabled, it's set to -1 */
+	int index;  
 
-	bool linkup; /* either state.linkup or user.linkup */
+	bool linkup;  
 
 	struct {
 		bool linkup;
@@ -40,20 +37,17 @@ struct team_port {
 		u8 duplex;
 	} state;
 
-	/* Values set by userspace */
+	 
 	struct {
 		bool linkup;
 		bool linkup_enabled;
 	} user;
 
-	/* Custom gennetlink interface related flags */
+	 
 	bool changed;
 	bool removed;
 
-	/*
-	 * A place for storing original values of the device before it
-	 * become a port.
-	 */
+	 
 	struct {
 		unsigned char dev_addr[MAX_ADDR_LEN];
 		unsigned int mtu;
@@ -63,9 +57,9 @@ struct team_port {
 	struct netpoll *np;
 #endif
 
-	s32 priority; /* lower number ~ higher priority */
+	s32 priority;  
 	u16 queue_id;
-	struct list_head qom_list; /* node in queue override mapping list */
+	struct list_head qom_list;  
 	struct rcu_head	rcu;
 	long mode_priv[];
 };
@@ -139,7 +133,7 @@ enum team_option_type {
 
 struct team_option_inst_info {
 	u32 array_index;
-	struct team_port *port; /* != NULL if per-port */
+	struct team_port *port;  
 };
 
 struct team_gsetter_ctx {
@@ -160,7 +154,7 @@ struct team_option {
 	struct list_head list;
 	const char *name;
 	bool per_port;
-	unsigned int array_size; /* != 0 means the option is array */
+	unsigned int array_size;  
 	enum team_option_type type;
 	void (*init)(struct team *team, struct team_option_inst_info *info);
 	void (*getter)(struct team *team, struct team_gsetter_ctx *ctx);
@@ -186,40 +180,38 @@ struct team_mode {
 #define TEAM_MODE_PRIV_SIZE (sizeof(long) * TEAM_MODE_PRIV_LONGS)
 
 struct team {
-	struct net_device *dev; /* associated netdevice */
+	struct net_device *dev;  
 	struct team_pcpu_stats __percpu *pcpu_stats;
 
 	const struct header_ops *header_ops_cache;
 
-	struct mutex lock; /* used for overall locking, e.g. port lists write */
+	struct mutex lock;  
 
-	/*
-	 * List of enabled ports and their count
-	 */
+	 
 	int en_port_count;
 	struct hlist_head en_port_hlist[TEAM_PORT_HASHENTRIES];
 
-	struct list_head port_list; /* list of all ports */
+	struct list_head port_list;  
 
 	struct list_head option_list;
-	struct list_head option_inst_list; /* list of option instances */
+	struct list_head option_inst_list;  
 
 	const struct team_mode *mode;
 	struct team_mode_ops ops;
 	bool user_carrier_enabled;
 	bool queue_override_enabled;
-	struct list_head *qom_lists; /* array of queue override mapping lists */
+	struct list_head *qom_lists;  
 	bool port_mtu_change_allowed;
 	bool notifier_ctx;
 	struct {
 		unsigned int count;
-		unsigned int interval; /* in ms */
+		unsigned int interval;  
 		atomic_t count_pending;
 		struct delayed_work dw;
 	} notify_peers;
 	struct {
 		unsigned int count;
-		unsigned int interval; /* in ms */
+		unsigned int interval;  
 		atomic_t count_pending;
 		struct delayed_work dw;
 	} mcast_rejoin;
@@ -315,4 +307,4 @@ extern void team_mode_unregister(const struct team_mode *mode);
 
 #define MODULE_ALIAS_TEAM_MODE(kind) MODULE_ALIAS("team-mode-" kind)
 
-#endif /* _LINUX_IF_TEAM_H_ */
+#endif  

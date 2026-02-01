@@ -1,16 +1,4 @@
-/*
- * Wacom W8001 penabled serial touchscreen driver
- *
- * Copyright (c) 2008 Jaya Kumar
- * Copyright (c) 2010 Red Hat, Inc.
- * Copyright (c) 2010 - 2011 Ping Cheng, Wacom. <pingc@wacom.com>
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License. See the file COPYING in the main directory of this archive for
- * more details.
- *
- * Layout based on Elo serial touchscreen driver by Vojtech Pavlik
- */
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -34,7 +22,7 @@ MODULE_LICENSE("GPL");
 #define W8001_LEAD_BYTE		0x80
 #define W8001_TAB_MASK		0x40
 #define W8001_TAB_BYTE		0x40
-/* set in first byte of touch data packets */
+ 
 #define W8001_TOUCH_MASK	(0x10 | W8001_LEAD_MASK)
 #define W8001_TOUCH_BYTE	(0x10 | W8001_LEAD_BYTE)
 
@@ -45,14 +33,14 @@ MODULE_LICENSE("GPL");
 #define W8001_CMD_QUERY		'*'
 #define W8001_CMD_TOUCHQUERY	'%'
 
-/* length of data packets in bytes, depends on device. */
+ 
 #define W8001_PKTLEN_TOUCH93	5
 #define W8001_PKTLEN_TOUCH9A	7
 #define W8001_PKTLEN_TPCPEN	9
-#define W8001_PKTLEN_TPCCTL	11	/* control packet */
+#define W8001_PKTLEN_TPCCTL	11	 
 #define W8001_PKTLEN_TOUCH2FG	13
 
-/* resolution in points/mm */
+ 
 #define W8001_PEN_RESOLUTION    100
 #define W8001_TOUCH_RESOLUTION  10
 
@@ -68,7 +56,7 @@ struct w8001_coord {
 	u8 tilt_y;
 };
 
-/* touch query reply packet */
+ 
 struct w8001_touch_query {
 	u16 x;
 	u16 y;
@@ -77,9 +65,7 @@ struct w8001_touch_query {
 	u8 sensor_id;
 };
 
-/*
- * Per-touchscreen data.
- */
+ 
 
 struct w8001 {
 	struct input_dev *pen_dev;
@@ -161,9 +147,9 @@ static void parse_multi_touch(struct w8001 *w8001)
 		if (touch) {
 			x = (data[6 * i + 1] << 7) | data[6 * i + 2];
 			y = (data[6 * i + 3] << 7) | data[6 * i + 4];
-			/* data[5,6] and [11,12] is finger capacity */
+			 
 
-			/* scale to pen maximum */
+			 
 			scale_touch_coordinates(w8001, &x, &y);
 
 			input_report_abs(dev, ABS_MT_POSITION_X, x);
@@ -172,10 +158,7 @@ static void parse_multi_touch(struct w8001 *w8001)
 		}
 	}
 
-	/* emulate single touch events when stylus is out of proximity.
-	 * This is to make single touch backward support consistent
-	 * across all Wacom single touch devices.
-	 */
+	 
 	if (w8001->type != BTN_TOOL_PEN &&
 			    w8001->type != BTN_TOOL_RUBBER) {
 		w8001->type = count == 1 ? BTN_TOOL_FINGER : KEY_RESERVED;
@@ -201,7 +184,7 @@ static void parse_touchquery(u8 *data, struct w8001_touch_query *query)
 	query->y |= data[6] << 2;
 	query->y |= (data[2] >> 3) & 0x3;
 
-	/* Early days' single-finger touch models need the following defaults */
+	 
 	if (!query->x && !query->y) {
 		query->x = 1024;
 		query->y = 1024;
@@ -215,15 +198,7 @@ static void report_pen_events(struct w8001 *w8001, struct w8001_coord *coord)
 {
 	struct input_dev *dev = w8001->pen_dev;
 
-	/*
-	 * We have 1 bit for proximity (rdy) and 3 bits for tip, side,
-	 * side2/eraser. If rdy && f2 are set, this can be either pen + side2,
-	 * or eraser. Assume:
-	 * - if dev is already in proximity and f2 is toggled → pen + side2
-	 * - if dev comes into proximity with f2 set → eraser
-	 * If f2 disappears after assuming eraser, fake proximity out for
-	 * eraser and in for pen.
-	 */
+	 
 
 	switch (w8001->type) {
 	case BTN_TOOL_RUBBER:
@@ -266,7 +241,7 @@ static void report_single_touch(struct w8001 *w8001, struct w8001_coord *coord)
 	unsigned int x = coord->x;
 	unsigned int y = coord->y;
 
-	/* scale to pen maximum */
+	 
 	scale_touch_coordinates(w8001, &x, &y);
 
 	input_report_abs(dev, ABS_X, x);
@@ -310,7 +285,7 @@ static irqreturn_t w8001_interrupt(struct serio *serio,
 		}
 		break;
 
-	/* Pen coordinates packet */
+	 
 	case W8001_PKTLEN_TPCPEN - 1:
 		tmp = w8001->data[0] & W8001_TAB_MASK;
 		if (unlikely(tmp == W8001_TAB_BYTE))
@@ -325,7 +300,7 @@ static irqreturn_t w8001_interrupt(struct serio *serio,
 		report_pen_events(w8001, &coord);
 		break;
 
-	/* control packet */
+	 
 	case W8001_PKTLEN_TPCCTL - 1:
 		tmp = w8001->data[0] & W8001_TOUCH_MASK;
 		if (tmp == W8001_TOUCH_BYTE)
@@ -337,18 +312,14 @@ static irqreturn_t w8001_interrupt(struct serio *serio,
 		complete(&w8001->cmd_done);
 		break;
 
-	/* 2 finger touch packet */
+	 
 	case W8001_PKTLEN_TOUCH2FG - 1:
 		w8001->idx = 0;
 		parse_multi_touch(w8001);
 		break;
 
 	default:
-		/*
-		 * ThinkPad X60 Tablet PC (pen only device) sometimes
-		 * sends invalid data packets that are larger than
-		 * W8001_PKTLEN_TPCPEN. Let's start over again.
-		 */
+		 
 		if (!w8001->touch_dev && w8001->idx > W8001_PKTLEN_TPCPEN - 1)
 			w8001->idx = 0;
 	}
@@ -414,7 +385,7 @@ static int w8001_detect(struct w8001 *w8001)
 	if (error)
 		return error;
 
-	msleep(250);	/* wait 250ms before querying the device */
+	msleep(250);	 
 
 	return 0;
 }
@@ -426,7 +397,7 @@ static int w8001_setup_pen(struct w8001 *w8001, char *basename,
 	struct w8001_coord coord;
 	int error;
 
-	/* penabled? */
+	 
 	error = w8001_command(w8001, W8001_CMD_QUERY, true);
 	if (error)
 		return error;
@@ -468,14 +439,11 @@ static int w8001_setup_touch(struct w8001 *w8001, char *basename,
 	int error;
 
 
-	/* Touch enabled? */
+	 
 	error = w8001_command(w8001, W8001_CMD_TOUCHQUERY, true);
 	if (error)
 		return error;
-	/*
-	 * Some non-touch devices may reply to the touch query. But their
-	 * second byte is empty, which indicates touch is not supported.
-	 */
+	 
 	if (!w8001->response[1])
 		return -ENXIO;
 
@@ -489,7 +457,7 @@ static int w8001_setup_touch(struct w8001 *w8001, char *basename,
 	w8001->max_touch_y = touch.y;
 
 	if (w8001->max_pen_x && w8001->max_pen_y) {
-		/* if pen is supported scale to pen maximum */
+		 
 		touch.x = w8001->max_pen_x;
 		touch.y = w8001->max_pen_y;
 		touch.panel_res = W8001_PEN_RESOLUTION;
@@ -565,9 +533,7 @@ static void w8001_set_devdata(struct input_dev *dev, struct w8001 *w8001,
 	input_set_drvdata(dev, w8001);
 }
 
-/*
- * w8001_disconnect() is the opposite of w8001_connect()
- */
+ 
 
 static void w8001_disconnect(struct serio *serio)
 {
@@ -584,11 +550,7 @@ static void w8001_disconnect(struct serio *serio)
 	serio_set_drvdata(serio, NULL);
 }
 
-/*
- * w8001_connect() is the routine that is called when someone adds a
- * new serio device that supports the w8001 protocol and registers it as
- * an input device.
- */
+ 
 
 static int w8001_connect(struct serio *serio, struct serio_driver *drv)
 {
@@ -622,9 +584,7 @@ static int w8001_connect(struct serio *serio, struct serio_driver *drv)
 	if (err)
 		goto fail3;
 
-	/* For backwards-compatibility we compose the basename based on
-	 * capabilities and then just append the tool type
-	 */
+	 
 	strscpy(basename, "Wacom Serial", sizeof(basename));
 
 	err_pen = w8001_setup_pen(w8001, basename, sizeof(basename));

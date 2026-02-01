@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2011 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "APPLY"
 
@@ -18,34 +15,7 @@
 #include "dss_features.h"
 #include "dispc-compat.h"
 
-/*
- * We have 4 levels of cache for the dispc settings. First two are in SW and
- * the latter two in HW.
- *
- *       set_info()
- *          v
- * +--------------------+
- * |     user_info      |
- * +--------------------+
- *          v
- *        apply()
- *          v
- * +--------------------+
- * |       info         |
- * +--------------------+
- *          v
- *      write_regs()
- *          v
- * +--------------------+
- * |  shadow registers  |
- * +--------------------+
- *          v
- * VFP or lcd/digit_enable
- *          v
- * +--------------------+
- * |      registers     |
- * +--------------------+
- */
+ 
 
 struct ovl_priv_data {
 
@@ -63,10 +33,7 @@ struct ovl_priv_data {
 	bool enabled;
 	u32 fifo_low, fifo_high;
 
-	/*
-	 * True if overlay is to be enabled. Used to check and calculate configs
-	 * for the overlay before it is enabled in the HW.
-	 */
+	 
 	bool enabling;
 };
 
@@ -80,14 +47,13 @@ struct mgr_priv_data {
 
 	bool shadow_info_dirty;
 
-	/* If true, GO bit is up and shadow registers cannot be written.
-	 * Never true for manual update displays */
+	 
 	bool busy;
 
-	/* If true, dispc output is enabled */
+	 
 	bool updating;
 
-	/* If true, a display is enabled using this manager */
+	 
 	bool enabled;
 
 	bool extra_info_dirty;
@@ -107,9 +73,9 @@ static struct {
 	bool irq_enabled;
 } dss_data;
 
-/* protects dss_data */
+ 
 static DEFINE_SPINLOCK(data_lock);
-/* lock for blocking functions */
+ 
 static DEFINE_MUTEX(apply_lock);
 static DECLARE_COMPLETION(extra_updated_completion);
 
@@ -162,10 +128,7 @@ static void apply_init_priv(void)
 		op->user_info = op->info;
 	}
 
-	/*
-	 * Initialize some of the lcd_config fields for TV manager, this lets
-	 * us prevent checking if the manager is LCD or TV at some places
-	 */
+	 
 	mp = &dss_data.mgr_priv_data_array[OMAP_DSS_CHANNEL_DIGIT];
 
 	mp->lcd_config.video_port_width = 24;
@@ -173,11 +136,7 @@ static void apply_init_priv(void)
 	mp->lcd_config.clock_info.pck_div = 1;
 }
 
-/*
- * A LCD manager's stallmode decides whether it is in manual or auto update. TV
- * manager is always auto update, stallmode field for TV manager is false by
- * default
- */
+ 
 static bool ovl_manual_update(struct omap_overlay *ovl)
 {
 	struct mgr_priv_data *mp = get_mgr_priv(ovl->manager);
@@ -212,7 +171,7 @@ static int dss_check_settings_low(struct omap_overlay_manager *mgr,
 	else
 		mi = &mp->info;
 
-	/* collect the infos to be tested into the array */
+	 
 	list_for_each_entry(ovl, &mgr->overlays, list) {
 		op = get_ovl_priv(ovl);
 
@@ -229,18 +188,13 @@ static int dss_check_settings_low(struct omap_overlay_manager *mgr,
 	return dss_mgr_check(mgr, mi, &mp->timings, &mp->lcd_config, ois);
 }
 
-/*
- * check manager and overlay settings using overlay_info from data->info
- */
+ 
 static int dss_check_settings(struct omap_overlay_manager *mgr)
 {
 	return dss_check_settings_low(mgr, false);
 }
 
-/*
- * check manager and overlay settings using overlay_info from ovl->info if
- * dirty and from data->info otherwise
- */
+ 
 static int dss_check_settings_apply(struct omap_overlay_manager *mgr)
 {
 	return dss_check_settings_low(mgr, true);
@@ -263,33 +217,29 @@ static bool need_isr(void)
 			continue;
 
 		if (mgr_manual_update(mgr)) {
-			/* to catch FRAMEDONE */
+			 
 			if (mp->updating)
 				return true;
 		} else {
-			/* to catch GO bit going down */
+			 
 			if (mp->busy)
 				return true;
 
-			/* to write new values to registers */
+			 
 			if (mp->info_dirty)
 				return true;
 
-			/* to set GO bit */
+			 
 			if (mp->shadow_info_dirty)
 				return true;
 
-			/*
-			 * NOTE: we don't check extra_info flags for disabled
-			 * managers, once the manager is enabled, the extra_info
-			 * related manager changes will be taken in by HW.
-			 */
+			 
 
-			/* to write new values to registers */
+			 
 			if (mp->extra_info_dirty)
 				return true;
 
-			/* to set GO bit */
+			 
 			if (mp->shadow_extra_info_dirty)
 				return true;
 
@@ -298,28 +248,24 @@ static bool need_isr(void)
 
 				op = get_ovl_priv(ovl);
 
-				/*
-				 * NOTE: we check extra_info flags even for
-				 * disabled overlays, as extra_infos need to be
-				 * always written.
-				 */
+				 
 
-				/* to write new values to registers */
+				 
 				if (op->extra_info_dirty)
 					return true;
 
-				/* to set GO bit */
+				 
 				if (op->shadow_extra_info_dirty)
 					return true;
 
 				if (!op->enabled)
 					continue;
 
-				/* to write new values to registers */
+				 
 				if (op->info_dirty)
 					return true;
 
-				/* to set GO bit */
+				 
 				if (op->shadow_info_dirty)
 					return true;
 			}
@@ -349,7 +295,7 @@ static bool need_go(struct omap_overlay_manager *mgr)
 	return false;
 }
 
-/* returns true if an extra_info field is currently being updated */
+ 
 static bool extra_info_update_ongoing(void)
 {
 	const int num_mgrs = dss_feat_get_num_mgrs();
@@ -383,7 +329,7 @@ static bool extra_info_update_ongoing(void)
 	return false;
 }
 
-/* wait until no extra_info updates are pending */
+ 
 static void wait_pending_extra_info_updates(void)
 {
 	bool updating;
@@ -507,11 +453,7 @@ static int dss_mgr_wait_for_go(struct omap_overlay_manager *mgr)
 			break;
 		}
 
-		/* 4 iterations is the worst case:
-		 * 1 - initial iteration, dirty = true (between VFP and VSYNC)
-		 * 2 - first VSYNC, dirty = true
-		 * 3 - dirty = false, shadow_dirty = true
-		 * 4 - shadow_dirty = false */
+		 
 		if (i++ == 3) {
 			DSSERR("mgr(%d)->wait_for_go() not finishing\n",
 					mgr->id);
@@ -584,11 +526,7 @@ static int dss_mgr_wait_for_go_ovl(struct omap_overlay *ovl)
 			break;
 		}
 
-		/* 4 iterations is the worst case:
-		 * 1 - initial iteration, dirty = true (between VFP and VSYNC)
-		 * 2 - first VSYNC, dirty = true
-		 * 3 - dirty = false, shadow_dirty = true
-		 * 4 - shadow_dirty = false */
+		 
 		if (i++ == 3) {
 			DSSERR("ovl(%d)->wait_for_go() not finishing\n",
 					ovl->id);
@@ -632,13 +570,10 @@ static void dss_ovl_write_regs(struct omap_overlay *ovl)
 
 	r = dispc_ovl_setup(ovl->id, oi, replication, &mp->timings, false);
 	if (r) {
-		/*
-		 * We can't do much here, as this function can be called from
-		 * vsync interrupt.
-		 */
+		 
 		DSSERR("dispc_ovl_setup failed for ovl %d\n", ovl->id);
 
-		/* This will leave fifo configurations in a nonoptimal state */
+		 
 		op->enabled = false;
 		dispc_ovl_enable(ovl->id, false);
 		return;
@@ -659,8 +594,7 @@ static void dss_ovl_write_regs_extra(struct omap_overlay *ovl)
 	if (!op->extra_info_dirty)
 		return;
 
-	/* note: write also when op->enabled == false, so that the ovl gets
-	 * disabled */
+	 
 
 	dispc_ovl_enable(ovl->id, op->enabled);
 	dispc_ovl_set_fifo_threshold(ovl->id, op->fifo_low, op->fifo_high);
@@ -684,7 +618,7 @@ static void dss_mgr_write_regs(struct omap_overlay_manager *mgr)
 
 	WARN_ON(mp->busy);
 
-	/* Commit overlay settings */
+	 
 	list_for_each_entry(ovl, &mgr->overlays, list) {
 		dss_ovl_write_regs(ovl);
 		dss_ovl_write_regs_extra(ovl);
@@ -710,7 +644,7 @@ static void dss_mgr_write_regs_extra(struct omap_overlay_manager *mgr)
 
 	dispc_mgr_set_timings(mgr->id, &mp->timings);
 
-	/* lcd_config parameters */
+	 
 	if (dss_mgr_is_lcd(mgr->id))
 		dispc_mgr_set_lcd_config(mgr->id, &mp->lcd_config);
 
@@ -882,7 +816,7 @@ static void dss_apply_irq_handler(void *data, u32 mask)
 
 	spin_lock(&data_lock);
 
-	/* clear busy, updating flags, shadow_dirty flags */
+	 
 	for (i = 0; i < num_mgrs; i++) {
 		struct omap_overlay_manager *mgr;
 		struct mgr_priv_data *mp;
@@ -911,7 +845,7 @@ static void dss_apply_irq_handler(void *data, u32 mask)
 	if (!extra_updating)
 		complete_all(&extra_updated_completion);
 
-	/* call framedone handlers for manual update displays */
+	 
 	for (i = 0; i < num_mgrs; i++) {
 		struct omap_overlay_manager *mgr;
 		struct mgr_priv_data *mp;
@@ -977,11 +911,11 @@ static int omap_dss_mgr_apply(struct omap_overlay_manager *mgr)
 		return r;
 	}
 
-	/* Configure overlays */
+	 
 	list_for_each_entry(ovl, &mgr->overlays, list)
 		omap_dss_mgr_apply_ovl(ovl);
 
-	/* Configure manager */
+	 
 	omap_dss_mgr_apply_mgr(mgr);
 
 	dss_write_regs();
@@ -1406,19 +1340,10 @@ static int dss_ovl_unset_manager(struct omap_overlay *ovl)
 
 	spin_unlock_irqrestore(&data_lock, flags);
 
-	/* wait for pending extra_info updates to ensure the ovl is disabled */
+	 
 	wait_pending_extra_info_updates();
 
-	/*
-	 * For a manual update display, there is no guarantee that the overlay
-	 * is really disabled in HW, we may need an extra update from this
-	 * manager before the configurations can go in. Return an error if the
-	 * overlay needed an update from the manager.
-	 *
-	 * TODO: Instead of returning an error, try to do a dummy manager update
-	 * here to disable the overlay in hardware. Use the *GATED fields in
-	 * the DISPC_CONFIG registers to do a dummy update.
-	 */
+	 
 	spin_lock_irqsave(&data_lock, flags);
 
 	if (ovl_manual_update(ovl) && op->extra_info_dirty) {

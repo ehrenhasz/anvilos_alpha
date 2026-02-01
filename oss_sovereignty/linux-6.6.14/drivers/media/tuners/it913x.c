@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ITE IT913X silicon tuner driver
- *
- *  Copyright (C) 2011 Malcolm Priestley (tvboxspy@gmail.com)
- *  IT9137 Copyright (C) ITE Tech Inc.
- */
+
+ 
 
 #include "it913x.h"
 #include <linux/platform_device.h>
@@ -47,14 +42,14 @@ static int it913x_init(struct dvb_frontend *fe)
 
 	switch (utmp) {
 	case 0:
-		/* 12.000 MHz */
+		 
 		dev->clk_mode = utmp;
 		dev->xtal = 2000;
 		dev->fdiv = 3;
 		iqik_m_cal = 16;
 		break;
 	case 1:
-		/* 20.480 MHz */
+		 
 		dev->clk_mode = utmp;
 		dev->xtal = 640;
 		dev->fdiv = 1;
@@ -96,12 +91,7 @@ static int it913x_init(struct dvb_frontend *fe)
 	dev->fn_min *= 1000;
 	dev_dbg(&pdev->dev, "fn_min %u\n", dev->fn_min);
 
-	/*
-	 * Chip version BX never sets that flag so we just wait 50ms in that
-	 * case. It is possible poll BX similarly than AX and then timeout in
-	 * order to get 50ms delay, but that causes about 120 extra I2C
-	 * messages. As for now, we just wait and reduce IO.
-	 */
+	 
 	if (dev->chip_ver == 1) {
 		#define TIMEOUT 50
 		timeout = jiffies + msecs_to_jiffies(TIMEOUT);
@@ -159,10 +149,7 @@ static int it913x_sleep(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/*
-	 * Writing '0x00' to master tuner register '0x80ec08' causes slave tuner
-	 * communication lost. Due to that, we cannot put master full sleep.
-	 */
+	 
 	if (dev->role == IT913X_ROLE_DUAL_MASTER)
 		len = 4;
 	else
@@ -279,7 +266,7 @@ static int it913x_set_params(struct dvb_frontend *fe)
 		pre_lo_freq++;
 
 	pre_lo_freq += (u32) n << 13;
-	/* Frequency OMEGA_IQIK_M_CAL_MID*/
+	 
 	t_cal_freq = pre_lo_freq + (u32)iqik_m_cal;
 	dev_dbg(&pdev->dev, "t_cal_freq %u, pre_lo_freq %u\n",
 			t_cal_freq, pre_lo_freq);
@@ -319,7 +306,7 @@ static int it913x_set_params(struct dvb_frontend *fe)
 		goto err;
 	}
 
-	/* XXX: latest windows driver does not set that at all */
+	 
 	ret = regmap_write(dev->regmap, 0x80ee06, lna_band);
 	if (ret)
 		goto err;
@@ -331,13 +318,13 @@ static int it913x_set_params(struct dvb_frontend *fe)
 	else if (c->bandwidth_hz <= 7000000)
 		u8tmp = 4;
 	else
-		u8tmp = 6;       /* 8000000 */
+		u8tmp = 6;        
 
 	ret = regmap_write(dev->regmap, 0x80ec56, u8tmp);
 	if (ret)
 		goto err;
 
-	/* XXX: latest windows driver sets different value (a8 != 68) */
+	 
 	ret = regmap_write(dev->regmap, 0x80ec4c, 0xa0 | (l_band << 3));
 	if (ret)
 		goto err;

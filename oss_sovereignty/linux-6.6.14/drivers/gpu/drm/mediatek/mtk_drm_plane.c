@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- * Author: CK Hu <ck.hu@mediatek.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -151,11 +148,7 @@ static void mtk_plane_update_new_state(struct drm_plane_state *new_state,
 	modifier = fb->modifier;
 
 	if (modifier == DRM_FORMAT_MOD_LINEAR) {
-		/*
-		 * Using dma_addr_t variable to calculate with multiplier of different types,
-		 * for example: addr += (new_state->src.x1 >> 16) * fb->format->cpp[0];
-		 * may cause coverity issue with unintentional overflow.
-		 */
+		 
 		offset = (new_state->src.x1 >> 16) * fb->format->cpp[0];
 		addr += offset;
 		offset = (new_state->src.y1 >> 16) * pitch;
@@ -177,23 +170,15 @@ static void mtk_plane_update_new_state(struct drm_plane_state *new_state,
 		hdr_offset = hdr_pitch * y_offset_in_blocks +
 			AFBC_HEADER_BLOCK_SIZE * x_offset_in_blocks;
 
-		/*
-		 * Using dma_addr_t variable to calculate with multiplier of different types,
-		 * for example: addr += hdr_pitch * y_offset_in_blocks;
-		 * may cause coverity issue with unintentional overflow.
-		 */
+		 
 		hdr_addr = addr + hdr_offset;
 
-		/* The data plane is offset by 1 additional block. */
+		 
 		offset = pitch * y_offset_in_blocks +
 			 AFBC_DATA_BLOCK_WIDTH * AFBC_DATA_BLOCK_HEIGHT *
 			 fb->format->cpp[0] * (x_offset_in_blocks + 1);
 
-		/*
-		 * Using dma_addr_t variable to calculate with multiplier of different types,
-		 * for example: addr += pitch * y_offset_in_blocks;
-		 * may cause coverity issue with unintentional overflow.
-		 */
+		 
 		addr = addr + hdr_size + offset;
 	}
 
@@ -230,7 +215,7 @@ static void mtk_plane_atomic_async_update(struct drm_plane *plane,
 
 	mtk_plane_update_new_state(new_state, new_plane_state);
 	swap(plane->state->fb, new_state->fb);
-	wmb(); /* Make sure the above parameters are set before update */
+	wmb();  
 	new_plane_state->pending.async_dirty = true;
 	mtk_drm_crtc_async_update(new_state->crtc, plane, state);
 }
@@ -284,7 +269,7 @@ static void mtk_plane_atomic_disable(struct drm_plane *plane,
 									   plane);
 	struct mtk_plane_state *mtk_plane_state = to_mtk_plane_state(new_state);
 	mtk_plane_state->pending.enable = false;
-	wmb(); /* Make sure the above parameter is set before update */
+	wmb();  
 	mtk_plane_state->pending.dirty = true;
 }
 
@@ -304,7 +289,7 @@ static void mtk_plane_atomic_update(struct drm_plane *plane,
 	}
 
 	mtk_plane_update_new_state(new_state, mtk_plane_state);
-	wmb(); /* Make sure the above parameters are set before update */
+	wmb();  
 	mtk_plane_state->pending.dirty = true;
 }
 

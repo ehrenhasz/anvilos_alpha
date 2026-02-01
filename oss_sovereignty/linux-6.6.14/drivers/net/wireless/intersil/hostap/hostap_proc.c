@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* /proc routines for Host AP driver */
+
+ 
 
 #include <linux/types.h>
 #include <linux/proc_fs.h>
@@ -77,7 +77,7 @@ static int prism2_stats_proc_show(struct seq_file *m, void *v)
 		   sums->rx_message_in_msg_fragments);
 	seq_printf(m, "RxMessageInBadMsgFragments=%u\n",
 		   sums->rx_message_in_bad_msg_fragments);
-	/* FIX: this may grow too long for one page(?) */
+	 
 
 	return 0;
 }
@@ -266,7 +266,7 @@ static int prism2_io_debug_proc_read(char *page, char **start, off_t off,
 
 	return count;
 }
-#endif /* PRISM2_IO_DEBUG */
+#endif  
 
 
 #ifndef PRISM2_NO_STATION_MODES
@@ -325,10 +325,10 @@ static void *prism2_scan_results_proc_start(struct seq_file *m, loff_t *_pos)
 	local_info_t *local = pde_data(file_inode(m->file));
 	spin_lock_bh(&local->lock);
 
-	/* We have a header (pos 0) + N results to show (pos 1...N) */
+	 
 	if (*_pos > local->last_scan_results_count)
 		return NULL;
-	return (void *)(unsigned long)(*_pos + 1); /* 0 would be EOF */
+	return (void *)(unsigned long)(*_pos + 1);  
 }
 
 static void *prism2_scan_results_proc_next(struct seq_file *m, void *v, loff_t *_pos)
@@ -338,7 +338,7 @@ static void *prism2_scan_results_proc_next(struct seq_file *m, void *v, loff_t *
 	++*_pos;
 	if (*_pos > local->last_scan_results_count)
 		return NULL;
-	return (void *)(unsigned long)(*_pos + 1); /* 0 would be EOF */
+	return (void *)(unsigned long)(*_pos + 1);  
 }
 
 static void prism2_scan_results_proc_stop(struct seq_file *m, void *v)
@@ -353,7 +353,7 @@ static const struct seq_operations prism2_scan_results_proc_seqops = {
 	.stop	= prism2_scan_results_proc_stop,
 	.show	= prism2_scan_results_proc_show,
 };
-#endif /* PRISM2_NO_STATION_MODES */
+#endif  
 
 
 void hostap_init_proc(local_info_t *local)
@@ -376,7 +376,7 @@ void hostap_init_proc(local_info_t *local)
 #ifndef PRISM2_NO_PROCFS_DEBUG
 	proc_create_single_data("debug", 0, local->proc,
 			prism2_debug_proc_show, local);
-#endif /* PRISM2_NO_PROCFS_DEBUG */
+#endif  
 	proc_create_single_data("stats", 0, local->proc, prism2_stats_proc_show,
 			local);
 	proc_create_seq_data("wds", 0, local->proc,
@@ -393,11 +393,11 @@ void hostap_init_proc(local_info_t *local)
 #ifdef PRISM2_IO_DEBUG
 	proc_create_single_data("io_debug", 0, local->proc,
 			prism2_debug_proc_show, local);
-#endif /* PRISM2_IO_DEBUG */
+#endif  
 #ifndef PRISM2_NO_STATION_MODES
 	proc_create_seq_data("scan_results", 0, local->proc,
 			&prism2_scan_results_proc_seqops, local);
-#endif /* PRISM2_NO_STATION_MODES */
+#endif  
 }
 
 

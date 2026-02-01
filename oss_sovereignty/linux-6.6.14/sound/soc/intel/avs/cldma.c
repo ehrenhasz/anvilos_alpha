@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/pci.h>
 #include <sound/hda_register.h>
@@ -11,14 +11,14 @@
 #include "cldma.h"
 #include "registers.h"
 
-/* Stream Registers */
+ 
 #define AZX_CL_SD_BASE			0x80
 #define AZX_SD_CTL_STRM_MASK		GENMASK(23, 20)
 #define AZX_SD_CTL_STRM(s)		(((s)->stream_tag << 20) & AZX_SD_CTL_STRM_MASK)
 #define AZX_SD_BDLPL_BDLPLBA_MASK	GENMASK(31, 7)
 #define AZX_SD_BDLPL_BDLPLBA(lb)	((lb) & AZX_SD_BDLPL_BDLPLBA_MASK)
 
-/* Software Position Based FIFO Capability Registers */
+ 
 #define AZX_CL_SPBFCS			0x20
 #define AZX_REG_CL_SPBFCTL		(AZX_CL_SPBFCS + 0x4)
 #define AZX_REG_CL_SD_SPIB		(AZX_CL_SPBFCS + 0x8)
@@ -43,7 +43,7 @@ struct hda_cldma {
 	struct delayed_work memcpy_work;
 	struct completion completion;
 
-	/* runtime */
+	 
 	void *position;
 	unsigned int remaining;
 	unsigned int sd_status;
@@ -115,7 +115,7 @@ static void cldma_memcpy_work(struct work_struct *work)
 
 		reinit_completion(&cl->completion);
 		hda_cldma_fill(cl);
-		/* enable CLDMA interrupt */
+		 
 		snd_hdac_adsp_updatel(cl, AVS_ADSP_REG_ADSPIC, AVS_ADSP_ADSPIC_CLDMA,
 				      AVS_ADSP_ADSPIC_CLDMA);
 	}
@@ -127,7 +127,7 @@ void hda_cldma_transfer(struct hda_cldma *cl, unsigned long start_delay)
 		return;
 
 	reinit_completion(&cl->completion);
-	/* fill buffer with the first chunk before scheduling run */
+	 
 	hda_cldma_fill(cl);
 
 	schedule_delayed_work(&cl->memcpy_work, start_delay);
@@ -137,13 +137,13 @@ int hda_cldma_start(struct hda_cldma *cl)
 {
 	unsigned int reg;
 
-	/* enable interrupts */
+	 
 	snd_hdac_adsp_updatel(cl, AVS_ADSP_REG_ADSPIC, AVS_ADSP_ADSPIC_CLDMA,
 			      AVS_ADSP_ADSPIC_CLDMA);
 	snd_hdac_stream_updateb(cl, SD_CTL, SD_INT_MASK | SD_CTL_DMA_START,
 				SD_INT_MASK | SD_CTL_DMA_START);
 
-	/* await DMA engine start */
+	 
 	return snd_hdac_stream_readb_poll(cl, SD_CTL, reg, reg & SD_CTL_DMA_START,
 					  AVS_CL_OP_INTERVAL_US, AVS_CL_OP_TIMEOUT_US);
 }
@@ -153,11 +153,11 @@ int hda_cldma_stop(struct hda_cldma *cl)
 	unsigned int reg;
 	int ret;
 
-	/* disable interrupts */
+	 
 	snd_hdac_adsp_updatel(cl, AVS_ADSP_REG_ADSPIC, AVS_ADSP_ADSPIC_CLDMA, 0);
 	snd_hdac_stream_updateb(cl, SD_CTL, SD_INT_MASK | SD_CTL_DMA_START, 0);
 
-	/* await DMA engine stop */
+	 
 	ret = snd_hdac_stream_readb_poll(cl, SD_CTL, reg, !(reg & SD_CTL_DMA_START),
 					 AVS_CL_OP_INTERVAL_US, AVS_CL_OP_TIMEOUT_US);
 	cancel_delayed_work_sync(&cl->memcpy_work);
@@ -197,7 +197,7 @@ int hda_cldma_reset(struct hda_cldma *cl)
 
 void hda_cldma_set_data(struct hda_cldma *cl, void *data, unsigned int size)
 {
-	/* setup runtime */
+	 
 	cl->position = data;
 	cl->remaining = size;
 }
@@ -222,7 +222,7 @@ static void cldma_setup_bdle(struct hda_cldma *cl, u32 bdle_size)
 		bdl[2] = cpu_to_le32(chunk);
 
 		remaining -= chunk;
-		/* set IOC only for the last entry */
+		 
 		bdl[3] = (remaining > 0) ? 0 : cpu_to_le32(0x01);
 
 		bdl += 4;
@@ -244,7 +244,7 @@ void hda_cldma_setup(struct hda_cldma *cl)
 	snd_hdac_stream_writeb(cl, SD_LVI, cl->num_periods - 1);
 
 	snd_hdac_stream_updatel(cl, SD_CTL, AZX_SD_CTL_STRM_MASK, AZX_SD_CTL_STRM(cl));
-	/* enable spib */
+	 
 	snd_hdac_stream_writel(cl, CL_SPBFCTL, 1);
 }
 
@@ -262,7 +262,7 @@ static irqreturn_t cldma_irq_handler(int irq, void *dev_id)
 	cl->sd_status = snd_hdac_stream_readb(cl, SD_STS);
 	dev_warn(cl->dev, "%s sd_status: 0x%08x\n", __func__, cl->sd_status);
 
-	/* disable CLDMA interrupt */
+	 
 	snd_hdac_adsp_updatel(cl, AVS_ADSP_REG_ADSPIC, AVS_ADSP_ADSPIC_CLDMA, 0);
 
 	complete(&cl->completion);

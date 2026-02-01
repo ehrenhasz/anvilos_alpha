@@ -1,12 +1,4 @@
-/*
- * Copyright (C) 2017 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/io.h>
 #include <linux/irq.h>
@@ -98,10 +90,7 @@ static int gicp_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
 	fwspec.param_count = 3;
 	fwspec.param[0] = GIC_SPI;
 	fwspec.param[1] = gicp_idx_to_spi(gicp, hwirq) - 32;
-	/*
-	 * Assume edge rising for now, it will be properly set when
-	 * ->set_type() is called
-	 */
+	 
 	fwspec.param[2] = IRQ_TYPE_EDGE_RISING;
 
 	ret = irq_domain_alloc_irqs_parent(domain, virq, 1, &fwspec);

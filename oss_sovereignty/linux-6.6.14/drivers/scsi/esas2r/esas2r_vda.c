@@ -1,46 +1,7 @@
-/*
- *  linux/drivers/scsi/esas2r/esas2r_vda.c
- *      esas2r driver VDA firmware interface functions
- *
- *  Copyright (c) 2001-2013 ATTO Technology, Inc.
- *  (mailto:linuxdrivers@attotech.com)
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
-/*
- *  This program is free software; you can redistribute it and/or modify
- *  it under the terms of the GNU General Public License as published by
- *  the Free Software Foundation; version 2 of the License.
- *
- *  This program is distributed in the hope that it will be useful,
- *  but WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- *  GNU General Public License for more details.
- *
- *  NO WARRANTY
- *  THE PROGRAM IS PROVIDED ON AN "AS IS" BASIS, WITHOUT WARRANTIES OR
- *  CONDITIONS OF ANY KIND, EITHER EXPRESS OR IMPLIED INCLUDING, WITHOUT
- *  LIMITATION, ANY WARRANTIES OR CONDITIONS OF TITLE, NON-INFRINGEMENT,
- *  MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE. Each Recipient is
- *  solely responsible for determining the appropriateness of using and
- *  distributing the Program and assumes all risks associated with its
- *  exercise of rights under this Agreement, including but not limited to
- *  the risks and costs of program errors, damage to or loss of data,
- *  programs or equipment, and unavailability or interruption of operations.
- *
- *  DISCLAIMER OF LIABILITY
- *  NEITHER RECIPIENT NOR ANY CONTRIBUTORS SHALL HAVE ANY LIABILITY FOR ANY
- *  DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- *  DAMAGES (INCLUDING WITHOUT LIMITATION LOST PROFITS), HOWEVER CAUSED AND
- *  ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR
- *  TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE
- *  USE OR DISTRIBUTION OF THE PROGRAM OR THE EXERCISE OF ANY RIGHTS GRANTED
- *  HEREUNDER, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGES
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program; if not, write to the Free Software
- *  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
- */
-/*=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=*/
+ 
+ 
+ 
+ 
 
 #include "esas2r.h"
 
@@ -61,7 +22,7 @@ static void clear_vda_request(struct esas2r_request *rq);
 static void esas2r_complete_vda_ioctl(struct esas2r_adapter *a,
 				      struct esas2r_request *rq);
 
-/* Prepare a VDA IOCTL request to be sent to the firmware. */
+ 
 bool esas2r_process_vda_ioctl(struct esas2r_adapter *a,
 			      struct atto_ioctl_vda *vi,
 			      struct esas2r_request *rq,
@@ -137,12 +98,7 @@ bool esas2r_process_vda_ioctl(struct esas2r_adapter *a,
 				     + offsetof(struct atto_ioctl_vda, cmd)
 				     + offsetof(struct atto_ioctl_vda_mgt_cmd,
 						data);
-		/*
-		 * build the data payload SGL here first since
-		 * esas2r_sgc_init() will modify the S/G list offset for the
-		 * management SGL (which is built below where the data SGL is
-		 * usually built).
-		 */
+		 
 
 		if (vi->data_length) {
 			u32 payldlen = 0;
@@ -165,7 +121,7 @@ bool esas2r_process_vda_ioctl(struct esas2r_adapter *a,
 				return false;
 			}
 
-			/* Setup the length so building the payload SGL works */
+			 
 			rq->vrq->mgt.length = cpu_to_le32(datalen);
 
 			if (payldlen) {
@@ -187,14 +143,11 @@ bool esas2r_process_vda_ioctl(struct esas2r_adapter *a,
 			rq->vrq->mgt.length = cpu_to_le32(datalen);
 		}
 
-		/*
-		 * Now that the payload SGL is built, if any, setup to build
-		 * the management SGL.
-		 */
+		 
 		firstsg = rq->vrq->mgt.sge;
 		sgc->cur_offset = cmdcurr_offset;
 
-		/* Finish initializing the management request. */
+		 
 		rq->vrq->mgt.mgt_func = vi->cmd.mgt.mgt_func;
 		rq->vrq->mgt.scan_generation = vi->cmd.mgt.scan_generation;
 		rq->vrq->mgt.dev_index =
@@ -342,7 +295,7 @@ static void esas2r_complete_vda_ioctl(struct esas2r_adapter *a,
 	}
 }
 
-/* Build a flash VDA request. */
+ 
 void esas2r_build_flash_req(struct esas2r_adapter *a,
 			    struct esas2r_request *rq,
 			    u8 sub_func,
@@ -368,7 +321,7 @@ void esas2r_build_flash_req(struct esas2r_adapter *a,
 	vrq->sub_func = sub_func;
 }
 
-/* Build a VDA management request. */
+ 
 void esas2r_build_mgt_req(struct esas2r_adapter *a,
 			  struct esas2r_request *rq,
 			  u8 sub_func,
@@ -416,7 +369,7 @@ void esas2r_build_mgt_req(struct esas2r_adapter *a,
 	}
 }
 
-/* Build a VDA asyncronous event (AE) request. */
+ 
 void esas2r_build_ae_req(struct esas2r_adapter *a, struct esas2r_request *rq)
 {
 	struct atto_vda_ae_req *vrq = &rq->vrq->ae;
@@ -444,7 +397,7 @@ void esas2r_build_ae_req(struct esas2r_adapter *a, struct esas2r_request *rq)
 	}
 }
 
-/* Build a VDA CLI request. */
+ 
 void esas2r_build_cli_req(struct esas2r_adapter *a,
 			  struct esas2r_request *rq,
 			  u32 length,
@@ -461,7 +414,7 @@ void esas2r_build_cli_req(struct esas2r_adapter *a,
 	vrq->sg_list_offset = (u8)offsetof(struct atto_vda_cli_req, sge);
 }
 
-/* Build a VDA IOCTL request. */
+ 
 void esas2r_build_ioctl_req(struct esas2r_adapter *a,
 			    struct esas2r_request *rq,
 			    u32 length,
@@ -478,7 +431,7 @@ void esas2r_build_ioctl_req(struct esas2r_adapter *a,
 	vrq->sg_list_offset = (u8)offsetof(struct atto_vda_ioctl_req, sge);
 }
 
-/* Build a VDA configuration request. */
+ 
 void esas2r_build_cfg_req(struct esas2r_adapter *a,
 			  struct esas2r_request *rq,
 			  u8 sub_func,
@@ -511,14 +464,11 @@ static void clear_vda_request(struct esas2r_request *rq)
 
 	rq->req_stat = RS_PENDING;
 
-	/* since the data buffer is separate clear that too */
+	 
 
 	memset(rq->data_buf, 0, ESAS2R_DATA_BUF_LEN);
 
-	/*
-	 * Setup next and prev pointer in case the request is not going through
-	 * esas2r_start_request().
-	 */
+	 
 
 	INIT_LIST_HEAD(&rq->req_list);
 }

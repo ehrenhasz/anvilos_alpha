@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Management Interface (SCMI) Message Mailbox Transport
- * driver.
- *
- * Copyright (C) 2019 ARM Ltd.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/device.h>
@@ -15,15 +10,7 @@
 
 #include "common.h"
 
-/**
- * struct scmi_mailbox - Structure representing a SCMI mailbox transport
- *
- * @cl: Mailbox Client
- * @chan: Transmit/Receive mailbox uni/bi-directional channel
- * @chan_receiver: Optional Receiver mailbox unidirectional channel
- * @cinfo: SCMI channel info
- * @shmem: Transmit/Receive shared memory area
- */
+ 
 struct scmi_mailbox {
 	struct mbox_client cl;
 	struct mbox_chan *chan;
@@ -52,11 +39,7 @@ static bool mailbox_chan_available(struct device_node *of_node, int idx)
 {
 	int num_mb;
 
-	/*
-	 * Just check if bidirrectional channels are involved, and check the
-	 * index accordingly; proper full validation will be made later
-	 * in mailbox_chan_setup().
-	 */
+	 
 	num_mb = of_count_phandle_with_args(of_node, "mboxes", "#mbox-cells");
 	if (num_mb == 3 && idx == 1)
 		idx = 2;
@@ -65,22 +48,7 @@ static bool mailbox_chan_available(struct device_node *of_node, int idx)
 					   "#mbox-cells", idx, NULL);
 }
 
-/**
- * mailbox_chan_validate  - Validate transport configuration and map channels
- *
- * @cdev: Reference to the underlying transport device carrying the
- *	  of_node descriptor to analyze.
- * @a2p_rx_chan: A reference to an optional unidirectional channel to use
- *		 for replies on the a2p channel. Set as zero if not present.
- * @p2a_chan: A reference to the optional p2a channel.
- *	      Set as zero if not present.
- *
- * At first, validate the transport configuration as described in terms of
- * 'mboxes' and 'shmem', then determin which mailbox channel indexes are
- * appropriate to be use in the current configuration.
- *
- * Return: 0 on Success or error
- */
+ 
 static int mailbox_chan_validate(struct device *cdev,
 				 int *a2p_rx_chan, int *p2a_chan)
 {
@@ -91,7 +59,7 @@ static int mailbox_chan_validate(struct device *cdev,
 	num_sh = of_count_phandle_with_args(np, "shmem", NULL);
 	dev_dbg(cdev, "Found %d mboxes and %d shmems !\n", num_mb, num_sh);
 
-	/* Bail out if mboxes and shmem descriptors are inconsistent */
+	 
 	if (num_mb <= 0 || num_sh <= 0 || num_sh > 2 || num_mb > 3 ||
 	    (num_mb == 1 && num_sh != 1) || (num_mb == 3 && num_sh != 2)) {
 		dev_warn(cdev,
@@ -100,7 +68,7 @@ static int mailbox_chan_validate(struct device *cdev,
 		return -EINVAL;
 	}
 
-	/* Bail out if provided shmem descriptors do not refer distinct areas  */
+	 
 	if (num_sh > 1) {
 		struct device_node *np_tx, *np_rx;
 
@@ -116,7 +84,7 @@ static int mailbox_chan_validate(struct device *cdev,
 		of_node_put(np_rx);
 	}
 
-	/* Calculate channels IDs to use depending on mboxes/shmem layout */
+	 
 	if (!ret) {
 		switch (num_mb) {
 		case 1:
@@ -201,7 +169,7 @@ static int mailbox_chan_setup(struct scmi_chan_info *cinfo, struct device *dev,
 		return ret;
 	}
 
-	/* Additional unidirectional channel for TX if needed */
+	 
 	if (tx && a2p_rx_chan) {
 		smbox->chan_receiver = mbox_request_channel(cl, a2p_rx_chan);
 		if (IS_ERR(smbox->chan_receiver)) {
@@ -243,7 +211,7 @@ static int mailbox_send_message(struct scmi_chan_info *cinfo,
 
 	ret = mbox_send_message(smbox->chan, xfer);
 
-	/* mbox_send_message returns non-negative value on success, so reset */
+	 
 	if (ret > 0)
 		ret = 0;
 
@@ -255,12 +223,7 @@ static void mailbox_mark_txdone(struct scmi_chan_info *cinfo, int ret,
 {
 	struct scmi_mailbox *smbox = cinfo->transport_info;
 
-	/*
-	 * NOTE: we might prefer not to need the mailbox ticker to manage the
-	 * transfer queueing since the protocol layer queues things by itself.
-	 * Unfortunately, we have to kick the mailbox framework after we have
-	 * received our message.
-	 */
+	 
 	mbox_client_txdone(smbox->chan, ret);
 }
 
@@ -309,7 +272,7 @@ static const struct scmi_transport_ops scmi_mailbox_ops = {
 
 const struct scmi_desc scmi_mailbox_desc = {
 	.ops = &scmi_mailbox_ops,
-	.max_rx_timeout_ms = 30, /* We may increase this if required */
-	.max_msg = 20, /* Limited by MBOX_TX_QUEUE_LEN */
+	.max_rx_timeout_ms = 30,  
+	.max_msg = 20,  
 	.max_msg_size = 128,
 };

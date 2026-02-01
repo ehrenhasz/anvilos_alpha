@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <sys/socket.h>
@@ -131,7 +131,7 @@ void producer(struct sockaddr_un *consumer_addr)
 	}
 
 	for (i = 0; i < 2; i++) {
-		/* Test 1: Test for SIGURG and OOB */
+		 
 		wait_for_signal(pipefd[0]);
 		memset(buf, 'x', sizeof(buf));
 		buf[63] = '@';
@@ -139,7 +139,7 @@ void producer(struct sockaddr_un *consumer_addr)
 
 		wait_for_signal(pipefd[0]);
 
-		/* Test 2: Test for OOB being overwitten */
+		 
 		memset(buf, 'x', sizeof(buf));
 		buf[63] = '%';
 		send(cfd, buf, sizeof(buf), MSG_OOB);
@@ -150,7 +150,7 @@ void producer(struct sockaddr_un *consumer_addr)
 
 		wait_for_signal(pipefd[0]);
 
-		/* Test 3: Test for SIOCATMARK */
+		 
 		memset(buf, 'x', sizeof(buf));
 		buf[63] = '@';
 		send(cfd, buf, sizeof(buf), MSG_OOB);
@@ -164,7 +164,7 @@ void producer(struct sockaddr_un *consumer_addr)
 
 		wait_for_signal(pipefd[0]);
 
-		/* Test 4: Test for 1byte OOB msg */
+		 
 		memset(buf, 'x', sizeof(buf));
 		buf[0] = '@';
 		send(cfd, buf, 1, MSG_OOB);
@@ -216,11 +216,7 @@ main(int argc, char **argv)
 	signal_recvd = 0;
 	signal_producer(pipefd[1]);
 
-	/* Test 1:
-	 * veriyf that SIGURG is
-	 * delivered, 63 bytes are
-	 * read, oob is '@', and POLLPRI works.
-	 */
+	 
 	wait_for_data(pfd, POLLPRI);
 	read_oob(pfd, &oob);
 	len = read_data(pfd, buf, 1024);
@@ -233,11 +229,7 @@ main(int argc, char **argv)
 	signal_recvd = 0;
 	signal_producer(pipefd[1]);
 
-	/* Test 2:
-	 * Verify that the first OOB is over written by
-	 * the 2nd one and the first OOB is returned as
-	 * part of the read, and sigurg is received.
-	 */
+	 
 	wait_for_data(pfd, POLLIN | POLLPRI);
 	len = 0;
 	while (len < 70)
@@ -253,15 +245,7 @@ main(int argc, char **argv)
 	signal_recvd = 0;
 	signal_producer(pipefd[1]);
 
-	/* Test 3:
-	 * verify that 2nd oob over writes
-	 * the first one and read breaks at
-	 * oob boundary returning 127 bytes
-	 * and sigurg is received and atmark
-	 * is set.
-	 * oob is '%' and second read returns
-	 * 64 bytes.
-	 */
+	 
 	len = 0;
 	wait_for_data(pfd, POLLIN | POLLPRI);
 	while (len < 150)
@@ -289,15 +273,7 @@ main(int argc, char **argv)
 	signal_recvd = 0;
 	signal_producer(pipefd[1]);
 
-	/* Test 4:
-	 * verify that a single byte
-	 * oob message is delivered.
-	 * set non blocking mode and
-	 * check proper error is
-	 * returned and sigurg is
-	 * received and correct
-	 * oob is read.
-	 */
+	 
 
 	set_filemode(pfd, 0);
 
@@ -316,7 +292,7 @@ main(int argc, char **argv)
 
 	set_filemode(pfd, 1);
 
-	/* Inline Testing */
+	 
 
 	on = 1;
 	if (setsockopt(pfd, SOL_SOCKET, SO_OOBINLINE, &on, sizeof(on))) {
@@ -327,11 +303,7 @@ main(int argc, char **argv)
 	signal_recvd = 0;
 	signal_producer(pipefd[1]);
 
-	/* Test 1 -- Inline:
-	 * Check that SIGURG is
-	 * delivered and 63 bytes are
-	 * read and oob is '@'
-	 */
+	 
 
 	wait_for_data(pfd, POLLIN | POLLPRI);
 	len = read_data(pfd, buf, 1024);
@@ -354,15 +326,7 @@ main(int argc, char **argv)
 	signal_recvd = 0;
 	signal_producer(pipefd[1]);
 
-	/* Test 2 -- Inline:
-	 * Verify that the first OOB is over written by
-	 * the 2nd one and read breaks correctly on
-	 * 2nd OOB boundary with the first OOB returned as
-	 * part of the read, and sigurg is delivered and
-	 * siocatmark returns true.
-	 * next read returns one byte, the oob byte
-	 * and siocatmark returns false.
-	 */
+	 
 	len = 0;
 	wait_for_data(pfd, POLLIN | POLLPRI);
 	while (len < 70)
@@ -386,15 +350,7 @@ main(int argc, char **argv)
 	signal_recvd = 0;
 	signal_producer(pipefd[1]);
 
-	/* Test 3 -- Inline:
-	 * verify that 2nd oob over writes
-	 * the first one and read breaks at
-	 * oob boundary returning 127 bytes
-	 * and sigurg is received and siocatmark
-	 * is true after the read.
-	 * subsequent read returns 65 bytes
-	 * because of oob which should be '%'.
-	 */
+	 
 	len = 0;
 	wait_for_data(pfd, POLLIN | POLLPRI);
 	while (len < 126)
@@ -420,12 +376,7 @@ main(int argc, char **argv)
 	signal_recvd = 0;
 	signal_producer(pipefd[1]);
 
-	/* Test 4 -- Inline:
-	 * verify that a single
-	 * byte oob message is delivered
-	 * and read returns one byte, the oob
-	 * byte and sigurg is received
-	 */
+	 
 	wait_for_data(pfd, POLLIN | POLLPRI);
 	len = read_data(pfd, buf, 1024);
 	if (!signal_recvd || len != 1 || buf[0] != '@') {

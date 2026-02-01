@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * extcon_gpio.c - Single-state GPIO extcon driver based on extcon class
- *
- * Copyright (C) 2008 Google, Inc.
- * Author: Mike Lockwood <lockwood@android.com>
- *
- * Modified by MyungJoo Ham <myungjoo.ham@samsung.com> to support extcon
- * (originally switch class is supported)
- */
+
+ 
 
 #include <linux/devm-helpers.h>
 #include <linux/extcon-provider.h>
@@ -20,18 +12,7 @@
 #include <linux/slab.h>
 #include <linux/workqueue.h>
 
-/**
- * struct gpio_extcon_data - A simple GPIO-controlled extcon device state container.
- * @edev:		Extcon device.
- * @work:		Work fired by the interrupt.
- * @debounce_jiffies:	Number of jiffies to wait for the GPIO to stabilize, from the debounce
- *			value.
- * @gpiod:		GPIO descriptor for this external connector.
- * @extcon_id:		The unique id of specific external connector.
- * @debounce:		Debounce time for GPIO IRQ in ms.
- * @check_on_resume:	Boolean describing whether to check the state of gpio
- *			while resuming from sleep.
- */
+ 
 struct gpio_extcon_data {
 	struct extcon_dev *edev;
 	struct delayed_work work;
@@ -74,13 +55,7 @@ static int gpio_extcon_probe(struct platform_device *pdev)
 	if (!data)
 		return -ENOMEM;
 
-	/*
-	 * FIXME: extcon_id represents the unique identifier of external
-	 * connectors such as EXTCON_USB, EXTCON_DISP_HDMI and so on. extcon_id
-	 * is necessary to register the extcon device. But, it's not yet
-	 * developed to get the extcon id from device-tree or others.
-	 * On later, it have to be solved.
-	 */
+	 
 	if (data->extcon_id > EXTCON_NONE)
 		return -EINVAL;
 
@@ -91,18 +66,13 @@ static int gpio_extcon_probe(struct platform_device *pdev)
 	if (irq <= 0)
 		return irq;
 
-	/*
-	 * It is unlikely that this is an acknowledged interrupt that goes
-	 * away after handling, what we are looking for are falling edges
-	 * if the signal is active low, and rising edges if the signal is
-	 * active high.
-	 */
+	 
 	if (gpiod_is_active_low(data->gpiod))
 		irq_flags = IRQF_TRIGGER_FALLING;
 	else
 		irq_flags = IRQF_TRIGGER_RISING;
 
-	/* Allocate the memory of extcon devie and register extcon device */
+	 
 	data->edev = devm_extcon_dev_allocate(dev, &data->extcon_id);
 	if (IS_ERR(data->edev)) {
 		dev_err(dev, "failed to allocate extcon device\n");
@@ -117,10 +87,7 @@ static int gpio_extcon_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/*
-	 * Request the interrupt of gpio to detect whether external connector
-	 * is attached or detached.
-	 */
+	 
 	ret = devm_request_any_context_irq(dev, irq,
 					gpio_irq_handler, irq_flags,
 					pdev->name, data);
@@ -128,7 +95,7 @@ static int gpio_extcon_probe(struct platform_device *pdev)
 		return ret;
 
 	platform_set_drvdata(pdev, data);
-	/* Perform initial detection */
+	 
 	gpio_extcon_work(&data->work.work);
 
 	return 0;

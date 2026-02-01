@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018-2021 Intel Corporation. All rights reserved.
-//
-// Author: Liam Girdwood <liam.r.girdwood@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -16,7 +16,7 @@
 #include "../ops.h"
 #include "../sof-pci-dev.h"
 
-/* platform specific devices */
+ 
 #include "hda.h"
 
 static const struct sof_dev_desc bxt_desc = {
@@ -29,7 +29,7 @@ static const struct sof_dev_desc bxt_desc = {
 	.chip_info = &apl_chip_info,
 	.ipc_supported_mask	= BIT(SOF_IPC) | BIT(SOF_INTEL_IPC4),
 	.ipc_default		= SOF_IPC,
-	.dspless_mode_supported	= true,		/* Only supported for HDaudio */
+	.dspless_mode_supported	= true,		 
 	.default_fw_path = {
 		[SOF_IPC] = "intel/sof",
 		[SOF_INTEL_IPC4] = "intel/avs/apl",
@@ -61,7 +61,7 @@ static const struct sof_dev_desc glk_desc = {
 	.chip_info = &apl_chip_info,
 	.ipc_supported_mask	= BIT(SOF_IPC) | BIT(SOF_INTEL_IPC4),
 	.ipc_default		= SOF_IPC,
-	.dspless_mode_supported	= true,		/* Only supported for HDaudio */
+	.dspless_mode_supported	= true,		 
 	.default_fw_path = {
 		[SOF_IPC] = "intel/sof",
 		[SOF_INTEL_IPC4] = "intel/avs/glk",
@@ -83,7 +83,7 @@ static const struct sof_dev_desc glk_desc = {
 	.ops_free = hda_ops_free,
 };
 
-/* PCI IDs */
+ 
 static const struct pci_device_id sof_pci_ids[] = {
 	{ PCI_DEVICE_DATA(INTEL, HDA_APL, &bxt_desc) },
 	{ PCI_DEVICE_DATA(INTEL, HDA_GML, &glk_desc) },
@@ -91,7 +91,7 @@ static const struct pci_device_id sof_pci_ids[] = {
 };
 MODULE_DEVICE_TABLE(pci, sof_pci_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver snd_sof_pci_intel_apl_driver = {
 	.name = "sof-audio-pci-intel-apl",
 	.id_table = sof_pci_ids,

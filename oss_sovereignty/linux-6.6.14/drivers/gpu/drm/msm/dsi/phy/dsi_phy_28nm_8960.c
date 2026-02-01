@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2015, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -10,31 +8,7 @@
 #include "dsi.xml.h"
 #include "dsi_phy_28nm_8960.xml.h"
 
-/*
- * DSI PLL 28nm (8960/A family) - clock diagram (eg: DSI1):
- *
- *
- *                        +------+
- *  dsi1vco_clk ----o-----| DIV1 |---dsi1pllbit (not exposed as clock)
- *  F * byte_clk    |     +------+
- *                  | bit clock divider (F / 8)
- *                  |
- *                  |     +------+
- *                  o-----| DIV2 |---dsi0pllbyte---o---> To byte RCG
- *                  |     +------+                 | (sets parent rate)
- *                  | byte clock divider (F)       |
- *                  |                              |
- *                  |                              o---> To esc RCG
- *                  |                                (doesn't set parent rate)
- *                  |
- *                  |     +------+
- *                  o-----| DIV3 |----dsi0pll------o---> To dsi RCG
- *                        +------+                 | (sets parent rate)
- *                  dsi clock divider (F * magic)  |
- *                                                 |
- *                                                 o---> To pixel rcg
- *                                                  (doesn't set parent rate)
- */
+ 
 
 #define POLL_MAX_READS		8000
 #define POLL_TIMEOUT_US		1
@@ -87,9 +61,7 @@ static bool pll_28nm_poll_for_ready(struct dsi_pll_28nm *pll_28nm,
 	return pll_locked;
 }
 
-/*
- * Clock Callbacks
- */
+ 
 static int dsi_pll_28nm_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 				     unsigned long parent_rate)
 {
@@ -162,7 +134,7 @@ static unsigned long dsi_pll_28nm_clk_recalc_rate(struct clk_hw *hw,
 		ref_divider &= 0x3f;
 		ref_divider += 1;
 
-		/* multiply by 2 */
+		 
 		vco_rate = (parent_rate / ref_divider) * fb_divider * 2;
 	} else {
 		vco_rate = 0;
@@ -188,13 +160,7 @@ static int dsi_pll_28nm_vco_prepare(struct clk_hw *hw)
 	if (unlikely(pll_28nm->phy->pll_on))
 		return 0;
 
-	/*
-	 * before enabling the PLL, configure the bit clock divider since we
-	 * don't expose it as a clock to the outside world
-	 * 1: read back the byte clock divider that should already be set
-	 * 2: divide by 8 to get bit clock divider
-	 * 3: write it to POSTDIV1
-	 */
+	 
 	val = dsi_phy_read(base + REG_DSI_28nm_8960_PHY_PLL_CTRL_9);
 	byte_div = val + 1;
 	bit_div = byte_div / 8;
@@ -204,7 +170,7 @@ static int dsi_pll_28nm_vco_prepare(struct clk_hw *hw)
 	val |= (bit_div - 1);
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_PLL_CTRL_8, val);
 
-	/* enable the PLL */
+	 
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_PLL_CTRL_0,
 		      DSI_28nm_8960_PHY_PLL_CTRL_0_ENABLE);
 
@@ -257,18 +223,7 @@ static const struct clk_ops clk_ops_dsi_pll_28nm_vco = {
 	.is_enabled = dsi_pll_28nm_clk_is_enabled,
 };
 
-/*
- * Custom byte clock divier clk_ops
- *
- * This clock is the entry point to configuring the PLL. The user (dsi host)
- * will set this clock's rate to the desired byte clock rate. The VCO lock
- * frequency is a multiple of the byte clock rate. The multiplication factor
- * (shown as F in the diagram above) is a function of the byte clock rate.
- *
- * This custom divider clock ensures that its parent (VCO) is set to the
- * desired rate, and that the byte clock postdivider (POSTDIV2) is configured
- * accordingly
- */
+ 
 #define to_clk_bytediv(_hw) container_of(_hw, struct clk_bytediv, hw)
 
 static unsigned long clk_bytediv_recalc_rate(struct clk_hw *hw,
@@ -282,12 +237,12 @@ static unsigned long clk_bytediv_recalc_rate(struct clk_hw *hw,
 	return parent_rate / (div + 1);
 }
 
-/* find multiplication factor(wrt byte clock) at which the VCO should be set */
+ 
 static unsigned int get_vco_mul_factor(unsigned long byte_clk_rate)
 {
 	unsigned long bit_mhz;
 
-	/* convert to bit clock in Mhz */
+	 
 	bit_mhz = (byte_clk_rate * 8) / 1000000;
 
 	if (bit_mhz < 125)
@@ -330,16 +285,14 @@ static int clk_bytediv_set_rate(struct clk_hw *hw, unsigned long rate,
 	return 0;
 }
 
-/* Our special byte clock divider ops */
+ 
 static const struct clk_ops clk_bytediv_ops = {
 	.round_rate = clk_bytediv_round_rate,
 	.set_rate = clk_bytediv_set_rate,
 	.recalc_rate = clk_bytediv_recalc_rate,
 };
 
-/*
- * PLL Callbacks
- */
+ 
 static void dsi_28nm_pll_save_state(struct msm_dsi_phy *phy)
 {
 	struct dsi_pll_28nm *pll_28nm = to_pll_28nm(phy->vco_hw);
@@ -413,7 +366,7 @@ static int pll_28nm_register(struct dsi_pll_28nm *pll_28nm, struct clk_hw **prov
 	if (ret)
 		return ret;
 
-	/* prepare and register bytediv */
+	 
 	bytediv->hw.init = &bytediv_init;
 	bytediv->reg = pll_28nm->phy->pll_base + REG_DSI_28nm_8960_PHY_PLL_CTRL_9;
 
@@ -427,14 +380,14 @@ static int pll_28nm_register(struct dsi_pll_28nm *pll_28nm, struct clk_hw **prov
 	};
 	bytediv_init.num_parents = 1;
 
-	/* DIV2 */
+	 
 	ret = devm_clk_hw_register(dev, &bytediv->hw);
 	if (ret)
 		return ret;
 	provided_clocks[DSI_BYTE_PLL_CLK] = &bytediv->hw;
 
 	snprintf(clk_name, sizeof(clk_name), "dsi%dpll", pll_28nm->phy->id + 1);
-	/* DIV3 */
+	 
 	hw = devm_clk_hw_register_divider_parent_hw(dev, clk_name,
 			&pll_28nm->clk_hw, 0, pll_28nm->phy->pll_base +
 				REG_DSI_28nm_8960_PHY_PLL_CTRL_10,
@@ -600,12 +553,12 @@ static int dsi_28nm_phy_enable(struct msm_dsi_phy *phy,
 
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_LDO_CTRL, 0x04);
 
-	/* strength control */
+	 
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_STRENGTH_0, 0xff);
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_STRENGTH_1, 0x00);
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_STRENGTH_2, 0x06);
 
-	/* phy ctrl */
+	 
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_CTRL_0, 0x5f);
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_CTRL_1, 0x00);
 	dsi_phy_write(base + REG_DSI_28nm_8960_PHY_CTRL_2, 0x00);
@@ -631,15 +584,12 @@ static void dsi_28nm_phy_disable(struct msm_dsi_phy *phy)
 {
 	dsi_phy_write(phy->base + REG_DSI_28nm_8960_PHY_CTRL_0, 0x0);
 
-	/*
-	 * Wait for the registers writes to complete in order to
-	 * ensure that the phy is completely disabled
-	 */
+	 
 	wmb();
 }
 
 static const struct regulator_bulk_data dsi_phy_28nm_8960_regulators[] = {
-	{ .supply = "vddio", .init_load_uA = 100000 },	/* 1.8 V */
+	{ .supply = "vddio", .init_load_uA = 100000 },	 
 };
 
 const struct msm_dsi_phy_cfg dsi_phy_28nm_8960_cfgs = {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2021 Red Hat Inc, Daniel Bristot de Oliveira <bristot@kernel.org>
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <getopt.h>
@@ -82,15 +80,13 @@ struct timerlat_hist_data {
 	int				nr_cpus;
 };
 
-/*
- * timerlat_free_histogram - free runtime data
- */
+ 
 static void
 timerlat_free_histogram(struct timerlat_hist_data *data)
 {
 	int cpu;
 
-	/* one histogram for IRQ and one for thread, per CPU */
+	 
 	for (cpu = 0; cpu < data->nr_cpus; cpu++) {
 		if (data->hist[cpu].irq)
 			free(data->hist[cpu].irq);
@@ -103,16 +99,14 @@ timerlat_free_histogram(struct timerlat_hist_data *data)
 
 	}
 
-	/* one set of histograms per CPU */
+	 
 	if (data->hist)
 		free(data->hist);
 
 	free(data);
 }
 
-/*
- * timerlat_alloc_histogram - alloc runtime data
- */
+ 
 static struct timerlat_hist_data
 *timerlat_alloc_histogram(int nr_cpus, int entries, int bucket_size)
 {
@@ -127,12 +121,12 @@ static struct timerlat_hist_data
 	data->bucket_size = bucket_size;
 	data->nr_cpus = nr_cpus;
 
-	/* one set of histograms per CPU */
+	 
 	data->hist = calloc(1, sizeof(*data->hist) * nr_cpus);
 	if (!data->hist)
 		goto cleanup;
 
-	/* one histogram for IRQ and one for thread, per cpu */
+	 
 	for (cpu = 0; cpu < nr_cpus; cpu++) {
 		data->hist[cpu].irq = calloc(1, sizeof(*data->hist->irq) * (entries + 1));
 		if (!data->hist[cpu].irq)
@@ -147,7 +141,7 @@ static struct timerlat_hist_data
 			goto cleanup;
 	}
 
-	/* set the min to max */
+	 
 	for (cpu = 0; cpu < nr_cpus; cpu++) {
 		data->hist[cpu].min_irq = ~0;
 		data->hist[cpu].min_thread = ~0;
@@ -161,9 +155,7 @@ cleanup:
 	return NULL;
 }
 
-/*
- * timerlat_hist_update - record a new timerlat occurent on cpu, updating data
- */
+ 
 static void
 timerlat_hist_update(struct osnoise_tool *tool, int cpu,
 		     unsigned long long context,
@@ -193,7 +185,7 @@ timerlat_hist_update(struct osnoise_tool *tool, int cpu,
 		update_min(&data->hist[cpu].min_thread, &latency);
 		update_sum(&data->hist[cpu].sum_thread, &latency);
 		update_max(&data->hist[cpu].max_thread, &latency);
-	} else { /* user */
+	} else {  
 		hist = data->hist[cpu].user;
 		data->hist[cpu].user_count++;
 		update_min(&data->hist[cpu].min_user, &latency);
@@ -207,9 +199,7 @@ timerlat_hist_update(struct osnoise_tool *tool, int cpu,
 		hist[entries]++;
 }
 
-/*
- * timerlat_hist_handler - this is the handler for timerlat tracer events
- */
+ 
 static int
 timerlat_hist_handler(struct trace_seq *s, struct tep_record *record,
 		     struct tep_event *event, void *data)
@@ -229,9 +219,7 @@ timerlat_hist_handler(struct trace_seq *s, struct tep_record *record,
 	return 0;
 }
 
-/*
- * timerlat_hist_header - print the header of the tracer to the output
- */
+ 
 static void timerlat_hist_header(struct osnoise_tool *tool)
 {
 	struct timerlat_hist_params *params = tool->params;
@@ -277,9 +265,7 @@ static void timerlat_hist_header(struct osnoise_tool *tool)
 	trace_seq_reset(s);
 }
 
-/*
- * timerlat_print_summary - print the summary of the hist data to the output
- */
+ 
 static void
 timerlat_print_summary(struct timerlat_hist_params *params,
 		       struct trace_instance *trace,
@@ -401,9 +387,7 @@ timerlat_print_summary(struct timerlat_hist_params *params,
 	trace_seq_reset(trace->seq);
 }
 
-/*
- * timerlat_print_stats - print data for all CPUs
- */
+ 
 static void
 timerlat_print_stats(struct timerlat_hist_params *params, struct osnoise_tool *tool)
 {
@@ -487,9 +471,7 @@ timerlat_print_stats(struct timerlat_hist_params *params, struct osnoise_tool *t
 	timerlat_print_summary(params, trace, data);
 }
 
-/*
- * timerlat_hist_usage - prints timerlat top usage message
- */
+ 
 static void timerlat_hist_usage(char *usage)
 {
 	int i;
@@ -549,9 +531,7 @@ static void timerlat_hist_usage(char *usage)
 	exit(1);
 }
 
-/*
- * timerlat_hist_parse_args - allocs, parse and fill the cmd line parameters
- */
+ 
 static struct timerlat_hist_params
 *timerlat_hist_parse_args(int argc, char *argv[])
 {
@@ -565,10 +545,10 @@ static struct timerlat_hist_params
 	if (!params)
 		exit(1);
 
-	/* disabled by default */
+	 
 	params->dma_latency = -1;
 
-	/* display data in microseconds */
+	 
 	params->output_divisor = 1000;
 	params->bucket_size = 1;
 	params->entries = 256;
@@ -607,13 +587,13 @@ static struct timerlat_hist_params
 			{0, 0, 0, 0}
 		};
 
-		/* getopt_long stores the option index here. */
+		 
 		int option_index = 0;
 
 		c = getopt_long(argc, argv, "a:c:C::b:d:e:E:DhH:i:np:P:s:t::T:u0123456:7:8:9\1",
 				 long_options, &option_index);
 
-		/* detect the end of the options. */
+		 
 		if (c == -1)
 			break;
 
@@ -621,14 +601,14 @@ static struct timerlat_hist_params
 		case 'a':
 			auto_thresh = get_llong_from_str(optarg);
 
-			/* set thread stop to auto_thresh */
+			 
 			params->stop_total_us = auto_thresh;
 			params->stop_us = auto_thresh;
 
-			/* get stack trace */
+			 
 			params->print_stack = auto_thresh;
 
-			/* set trace */
+			 
 			params->trace_output = "timerlat_trace.txt";
 
 			break;
@@ -641,10 +621,10 @@ static struct timerlat_hist_params
 		case 'C':
 			params->cgroup = 1;
 			if (!optarg) {
-				/* will inherit this cgroup */
+				 
 				params->cgroup_name = NULL;
 			} else if (*optarg == '=') {
-				/* skip the = */
+				 
 				params->cgroup_name = ++optarg;
 			}
 			break;
@@ -715,7 +695,7 @@ static struct timerlat_hist_params
 			break;
 		case 't':
 			if (optarg)
-				/* skip = */
+				 
 				params->trace_output = &optarg[1];
 			else
 				params->trace_output = "timerlat_trace.txt";
@@ -723,25 +703,25 @@ static struct timerlat_hist_params
 		case 'u':
 			params->user_hist = 1;
 			break;
-		case '0': /* no irq */
+		case '0':  
 			params->no_irq = 1;
 			break;
-		case '1': /* no thread */
+		case '1':  
 			params->no_thread = 1;
 			break;
-		case '2': /* no header */
+		case '2':  
 			params->no_header = 1;
 			break;
-		case '3': /* no summary */
+		case '3':  
 			params->no_summary = 1;
 			break;
-		case '4': /* no index */
+		case '4':  
 			params->no_index = 1;
 			break;
-		case '5': /* with zeros */
+		case '5':  
 			params->with_zeros = 1;
 			break;
-		case '6': /* trigger */
+		case '6':  
 			if (params->events) {
 				retval = trace_event_add_trigger(params->events, optarg);
 				if (retval) {
@@ -752,7 +732,7 @@ static struct timerlat_hist_params
 				timerlat_hist_usage("--trigger requires a previous -e\n");
 			}
 			break;
-		case '7': /* filter */
+		case '7':  
 			if (params->events) {
 				retval = trace_event_add_filter(params->events, optarg);
 				if (retval) {
@@ -792,18 +772,14 @@ static struct timerlat_hist_params
 	if (params->no_index && !params->with_zeros)
 		timerlat_hist_usage("no-index set with with-zeros is not set - it does not make sense");
 
-	/*
-	 * Auto analysis only happens if stop tracing, thus:
-	 */
+	 
 	if (!params->stop_us && !params->stop_total_us)
 		params->no_aa = 1;
 
 	return params;
 }
 
-/*
- * timerlat_hist_apply_config - apply the hist configs to the initialized tool
- */
+ 
 static int
 timerlat_hist_apply_config(struct osnoise_tool *tool, struct timerlat_hist_params *params)
 {
@@ -863,13 +839,7 @@ timerlat_hist_apply_config(struct osnoise_tool *tool, struct timerlat_hist_param
 			goto out_err;
 		}
 	} else if (params->cpus) {
-		/*
-		 * Even if the user do not set a house-keeping CPU, try to
-		 * move rtla to a CPU set different to the one where the user
-		 * set the workload to run.
-		 *
-		 * No need to check results as this is an automatic attempt.
-		 */
+		 
 		auto_house_keeping(&params->monitored_cpus);
 	}
 
@@ -887,9 +857,7 @@ out_err:
 	return -1;
 }
 
-/*
- * timerlat_init_hist - initialize a timerlat hist tool with parameters
- */
+ 
 static struct osnoise_tool
 *timerlat_init_hist(struct timerlat_hist_params *params)
 {
@@ -924,9 +892,7 @@ static void stop_hist(int sig)
 	stop_tracing = 1;
 }
 
-/*
- * timerlat_hist_set_signals - handles the signal to stop the tool
- */
+ 
 static void
 timerlat_hist_set_signals(struct timerlat_hist_params *params)
 {
@@ -1030,13 +996,7 @@ int timerlat_hist_main(int argc, char *argv[])
 		}
 	}
 
-	/*
-	 * Start the tracers here, after having set all instances.
-	 *
-	 * Let the trace instance start first for the case of hitting a stop
-	 * tracing while enabling other instances. The trace instance is the
-	 * one with most valuable information.
-	 */
+	 
 	if (params->trace_output)
 		trace_instance_start(&record->trace);
 	if (!params->no_aa)
@@ -1047,9 +1007,9 @@ int timerlat_hist_main(int argc, char *argv[])
 	timerlat_hist_set_signals(params);
 
 	if (params->user_hist) {
-		/* rtla asked to stop */
+		 
 		params_u.should_run = 1;
-		/* all threads left */
+		 
 		params_u.stopped_running = 0;
 
 		params_u.set = &params->monitored_cpus;
@@ -1082,7 +1042,7 @@ int timerlat_hist_main(int argc, char *argv[])
 		if (trace_is_off(&tool->trace, &record->trace))
 			break;
 
-		/* is there still any user-threads ? */
+		 
 		if (params->user_hist) {
 			if (params_u.stopped_running) {
 				debug_msg("timerlat user-space threads stopped!\n");

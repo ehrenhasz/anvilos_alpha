@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- * Copyright (c) 2018 Davide Caratti, Red Hat inc.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 
 #include <linux/bpf.h>
 #include <linux/pkt_cls.h>

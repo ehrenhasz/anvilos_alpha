@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Buffer/page management specific to NILFS
- *
- * Copyright (C) 2005-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Ryusuke Konishi and Seiji Kihara.
- */
+ 
+ 
 
 #ifndef _NILFS_PAGE_H
 #define _NILFS_PAGE_H
@@ -13,9 +7,7 @@
 #include <linux/buffer_head.h>
 #include "nilfs.h"
 
-/*
- * Extended buffer state bits
- */
+ 
 enum {
 	BH_NILFS_Allocated = BH_PrivateStart,
 	BH_NILFS_Node,
@@ -24,10 +16,10 @@ enum {
 	BH_NILFS_Redirected,
 };
 
-BUFFER_FNS(NILFS_Node, nilfs_node)		/* nilfs node buffers */
+BUFFER_FNS(NILFS_Node, nilfs_node)		 
 BUFFER_FNS(NILFS_Volatile, nilfs_volatile)
-BUFFER_FNS(NILFS_Checked, nilfs_checked)	/* buffer is verified */
-BUFFER_FNS(NILFS_Redirected, nilfs_redirected)	/* redirected to a copy */
+BUFFER_FNS(NILFS_Checked, nilfs_checked)	 
+BUFFER_FNS(NILFS_Redirected, nilfs_redirected)	 
 
 
 int __nilfs_clear_page_dirty(struct page *);
@@ -63,4 +55,4 @@ nilfs_page_get_nth_block(struct page *page, unsigned int count)
 	return bh;
 }
 
-#endif /* _NILFS_PAGE_H */
+#endif  

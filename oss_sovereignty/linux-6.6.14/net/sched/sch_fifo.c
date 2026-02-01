@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/sch_fifo.c	The simplest FIFO queue.
- *
- * Authors:	Alexey Kuznetsov, <kuznet@ms2.inr.ac.ru>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -14,7 +10,7 @@
 #include <net/pkt_sched.h>
 #include <net/pkt_cls.h>
 
-/* 1 band FIFO pseudo-"scheduler" */
+ 
 
 static int bfifo_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 			 struct sk_buff **to_free)
@@ -43,7 +39,7 @@ static int pfifo_tail_enqueue(struct sk_buff *skb, struct Qdisc *sch,
 		return qdisc_enqueue_tail(skb, sch);
 
 	prev_backlog = sch->qstats.backlog;
-	/* queue full, remove one skb to fulfill the limit */
+	 
 	__qdisc_queue_drop_head(sch, &sch->q, to_free);
 	qdisc_qstats_drop(sch);
 	qdisc_enqueue_tail(skb, sch);
@@ -223,13 +219,13 @@ struct Qdisc_ops pfifo_head_drop_qdisc_ops __read_mostly = {
 	.owner		=	THIS_MODULE,
 };
 
-/* Pass size change message down to embedded FIFO */
+ 
 int fifo_set_limit(struct Qdisc *q, unsigned int limit)
 {
 	struct nlattr *nla;
 	int ret = -ENOMEM;
 
-	/* Hack to avoid sending change message to non-FIFO */
+	 
 	if (strncmp(q->ops->id + 1, "fifo", 4) != 0)
 		return 0;
 

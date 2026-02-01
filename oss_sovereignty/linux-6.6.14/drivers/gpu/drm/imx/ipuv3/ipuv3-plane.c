@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * i.MX IPUv3 DP Overlay Planes
- *
- * Copyright (C) 2013 Philipp Zabel, Pengutronix
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -342,15 +338,11 @@ static bool ipu_plane_format_mod_supported(struct drm_plane *plane,
 {
 	struct ipu_soc *ipu = to_ipu_plane(plane)->ipu;
 
-	/* linear is supported for all planes and formats */
+	 
 	if (modifier == DRM_FORMAT_MOD_LINEAR)
 		return true;
 
-	/*
-	 * Without a PRG the possible modifiers list only includes the linear
-	 * modifier, so we always take the early return from this function and
-	 * only end up here if the PRG is present.
-	 */
+	 
 	return ipu_prg_format_supported(ipu, format, modifier);
 }
 
@@ -378,7 +370,7 @@ static int ipu_plane_atomic_check(struct drm_plane *plane,
 	bool can_position = (plane->type == DRM_PLANE_TYPE_OVERLAY);
 	int ret;
 
-	/* Ok to disable */
+	 
 	if (!fb)
 		return 0;
 
@@ -398,13 +390,13 @@ static int ipu_plane_atomic_check(struct drm_plane *plane,
 	if (ret)
 		return ret;
 
-	/* nothing to check when disabling or disabled */
+	 
 	if (!crtc_state->enable)
 		return 0;
 
 	switch (plane->type) {
 	case DRM_PLANE_TYPE_PRIMARY:
-		/* full plane minimum width is 13 pixels */
+		 
 		if (drm_rect_width(&new_state->dst) < 13)
 			return -EINVAL;
 		break;
@@ -418,13 +410,7 @@ static int ipu_plane_atomic_check(struct drm_plane *plane,
 	if (drm_rect_height(&new_state->dst) < 2)
 		return -EINVAL;
 
-	/*
-	 * We support resizing active plane or changing its format by
-	 * forcing CRTC mode change in plane's ->atomic_check callback
-	 * and disabling all affected active planes in CRTC's ->atomic_disable
-	 * callback.  The planes will be reenabled in plane's ->atomic_update
-	 * callback.
-	 */
+	 
 	if (old_fb &&
 	    (drm_rect_width(&new_state->dst) != drm_rect_width(&old_state->dst) ||
 	     drm_rect_height(&new_state->dst) != drm_rect_height(&old_state->dst) ||
@@ -455,14 +441,7 @@ static int ipu_plane_atomic_check(struct drm_plane *plane,
 	case DRM_FORMAT_YVU422:
 	case DRM_FORMAT_YUV444:
 	case DRM_FORMAT_YVU444:
-		/*
-		 * Multiplanar formats have to meet the following restrictions:
-		 * - The (up to) three plane addresses are EBA, EBA+UBO, EBA+VBO
-		 * - EBA, UBO and VBO are a multiple of 8
-		 * - UBO and VBO are unsigned and not larger than 0xfffff8
-		 * - Only EBA may be changed while scanout is active
-		 * - The strides of U and V planes must be identical.
-		 */
+		 
 		vbo = drm_plane_state_to_vbo(new_state);
 
 		if (vbo & 0x7 || vbo > 0xfffff8)
@@ -497,10 +476,7 @@ static int ipu_plane_atomic_check(struct drm_plane *plane,
 		if (old_fb && old_fb->pitches[1] != fb->pitches[1])
 			crtc_state->mode_changed = true;
 
-		/*
-		 * The x/y offsets must be even in case of horizontal/vertical
-		 * chroma subsampling.
-		 */
+		 
 		if (((new_state->src.x1 >> 16) & (fb->format->hsub - 1)) ||
 		    ((new_state->src.y1 >> 16) & (fb->format->vsub - 1)))
 			return -EINVAL;
@@ -556,14 +532,14 @@ static void ipu_calculate_bursts(u32 width, u32 cpp, u32 stride,
 	const unsigned int width_bytes = width * cpp;
 	unsigned int npb, bursts;
 
-	/* Maximum number of pixels per burst without overshooting stride */
+	 
 	for (npb = 64 / cpp; npb > 0; --npb) {
 		if (round_up(width_bytes, npb * cpp) <= stride)
 			break;
 	}
 	*burstsize = npb;
 
-	/* Maximum number of consecutive bursts without overshooting stride */
+	 
 	for (bursts = 8; bursts > 1; bursts /= 2) {
 		if (round_up(width_bytes, npb * cpp * bursts) <= stride)
 			break;
@@ -622,10 +598,7 @@ static void ipu_plane_atomic_update(struct drm_plane *plane,
 
 	eba = drm_plane_state_to_eba(new_state, 0);
 
-	/*
-	 * Configure PRG channel and attached PRE, this changes the EBA to an
-	 * internal SRAM location.
-	 */
+	 
 	if (ipu_state->use_pre) {
 		axi_id = ipu_chan_assign_axi_id(ipu_plane->dma);
 		ipu_prg_channel_configure(ipu_plane->ipu_ch, axi_id, width,
@@ -654,7 +627,7 @@ static void ipu_plane_atomic_update(struct drm_plane *plane,
 	}
 
 	if (old_state->fb && !drm_atomic_crtc_needs_modeset(crtc_state)) {
-		/* nothing to do if PRE is used */
+		 
 		if (ipu_state->use_pre)
 			return;
 		active = ipu_idmac_get_current_buffer(ipu_plane->ipu_ch);
@@ -779,21 +752,14 @@ bool ipu_plane_atomic_update_pending(struct drm_plane *plane)
 	struct drm_plane_state *state = plane->state;
 	struct ipu_plane_state *ipu_state = to_ipu_plane_state(state);
 
-	/* disabled crtcs must not block the update */
+	 
 	if (!state->crtc)
 		return false;
 
 	if (ipu_state->use_pre)
 		return ipu_prg_channel_configure_pending(ipu_plane->ipu_ch);
 
-	/*
-	 * Pretend no update is pending in the non-PRE/PRG case. For this to
-	 * happen, an atomic update would have to be deferred until after the
-	 * start of the next frame and simultaneously interrupt latency would
-	 * have to be high enough to let the atomic update finish and issue an
-	 * event before the previous end of frame interrupt handler can be
-	 * executed.
-	 */
+	 
 	return false;
 }
 int ipu_planes_assign_pre(struct drm_device *dev,
@@ -814,14 +780,7 @@ int ipu_planes_assign_pre(struct drm_device *dev,
 			return ret;
 	}
 
-	/*
-	 * We are going over the planes in 2 passes: first we assign PREs to
-	 * planes with a tiling modifier, which need the PREs to resolve into
-	 * linear. Any failure to assign a PRE there is fatal. In the second
-	 * pass we try to assign PREs to linear FBs, to improve memory access
-	 * patterns for them. Failure at this point is non-fatal, as we can
-	 * scan out linear FBs without a PRE.
-	 */
+	 
 	for_each_new_plane_in_state(state, plane, plane_state, i) {
 		ipu_state = to_ipu_plane_state(plane_state);
 		ipu_plane = to_ipu_plane(plane);
@@ -860,7 +819,7 @@ int ipu_planes_assign_pre(struct drm_device *dev,
 		    plane_state->fb->modifier != DRM_FORMAT_MOD_LINEAR)
 			continue;
 
-		/* make sure that modifier is initialized */
+		 
 		plane_state->fb->modifier = DRM_FORMAT_MOD_LINEAR;
 
 		if (ipu_prg_present(ipu_plane->ipu) && available_pres &&

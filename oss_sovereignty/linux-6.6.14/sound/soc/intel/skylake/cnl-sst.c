@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * cnl-sst.c - DSP library functions for CNL platform
- *
- * Copyright (C) 2016-17, Intel Corporation.
- *
- * Author: Guneshwor Singh <guneshwor.o.singh@intel.com>
- *
- * Modified from:
- *	HDA DSP library functions for SKL platform
- *	Copyright (C) 2014-15, Intel Corporation.
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -34,7 +20,7 @@
 
 #define CNL_ADSP_SRAM0_BASE	0x80000
 
-/* Firmware status window */
+ 
 #define CNL_ADSP_FW_STATUS	CNL_ADSP_SRAM0_BASE
 #define CNL_ADSP_ERROR_CODE	(CNL_ADSP_FW_STATUS + 0x4)
 
@@ -64,7 +50,7 @@ static int cnl_prepare_fw(struct sst_dsp *ctx, const void *fwdata, u32 fwsize)
 		goto base_fw_load_failed;
 	}
 
-	/* purge FW request */
+	 
 	sst_dsp_shim_write(ctx, CNL_ADSP_REG_HIPCIDR,
 			   CNL_ADSP_REG_HIPCIDR_BUSY | (CNL_IPC_PURGE |
 			   ((stream_tag - 1) << CNL_ROM_CTRL_DMA_ID)));
@@ -85,7 +71,7 @@ static int cnl_prepare_fw(struct sst_dsp *ctx, const void *fwdata, u32 fwsize)
 		goto base_fw_load_failed;
 	}
 
-	/* enable interrupt */
+	 
 	cnl_ipc_int_enable(ctx);
 	cnl_ipc_op_int_enable(ctx);
 
@@ -135,7 +121,7 @@ static int cnl_load_base_firmware(struct sst_dsp *ctx)
 		}
 	}
 
-	/* parse uuids if first boot */
+	 
 	if (cnl->is_first_boot) {
 		ret = snd_skl_parse_uuids(ctx, ctx->fw,
 					  CNL_ADSP_FW_HDR_OFFSET, 0);
@@ -212,7 +198,7 @@ static int cnl_set_dsp_D0(struct sst_dsp *ctx, unsigned int core_id)
 	}
 
 	if (core_id == SKL_DSP_CORE0_ID) {
-		/* enable interrupt */
+		 
 		cnl_ipc_int_enable(ctx);
 		cnl_ipc_op_int_enable(ctx);
 		cnl->boot_complete = false;
@@ -267,7 +253,7 @@ static int cnl_set_dsp_D3(struct sst_dsp *ctx, unsigned int core_id)
 		cnl->fw_loaded = false;
 	}
 
-	/* disable interrupts if core 0 */
+	 
 	if (core_id == SKL_DSP_CORE0_ID) {
 		skl_ipc_op_int_disable(ctx);
 		skl_ipc_int_disable(ctx);
@@ -318,7 +304,7 @@ static irqreturn_t cnl_dsp_irq_thread_handler(int irq, void *context)
 	u32 hipcida, hipctdr, hipctdd;
 	int ipc_irq = 0;
 
-	/* here we handle ipc interrupts only */
+	 
 	if (!(dsp->intr_status & CNL_ADSPIS_IPC))
 		return IRQ_NONE;
 
@@ -326,23 +312,23 @@ static irqreturn_t cnl_dsp_irq_thread_handler(int irq, void *context)
 	hipctdr = sst_dsp_shim_read_unlocked(dsp, CNL_ADSP_REG_HIPCTDR);
 	hipctdd = sst_dsp_shim_read_unlocked(dsp, CNL_ADSP_REG_HIPCTDD);
 
-	/* reply message from dsp */
+	 
 	if (hipcida & CNL_ADSP_REG_HIPCIDA_DONE) {
 		sst_dsp_shim_update_bits(dsp, CNL_ADSP_REG_HIPCCTL,
 			CNL_ADSP_REG_HIPCCTL_DONE, 0);
 
-		/* clear done bit - tell dsp operation is complete */
+		 
 		sst_dsp_shim_update_bits_forced(dsp, CNL_ADSP_REG_HIPCIDA,
 			CNL_ADSP_REG_HIPCIDA_DONE, CNL_ADSP_REG_HIPCIDA_DONE);
 
 		ipc_irq = 1;
 
-		/* unmask done interrupt */
+		 
 		sst_dsp_shim_update_bits(dsp, CNL_ADSP_REG_HIPCCTL,
 			CNL_ADSP_REG_HIPCCTL_DONE, CNL_ADSP_REG_HIPCCTL_DONE);
 	}
 
-	/* new message from dsp */
+	 
 	if (hipctdr & CNL_ADSP_REG_HIPCTDR_BUSY) {
 		header.primary = hipctdr;
 		header.extension = hipctdd;
@@ -352,17 +338,17 @@ static irqreturn_t cnl_dsp_irq_thread_handler(int irq, void *context)
 						header.extension);
 
 		if (CNL_IPC_GLB_NOTIFY_RSP_TYPE(header.primary)) {
-			/* Handle Immediate reply from DSP Core */
+			 
 			skl_ipc_process_reply(ipc, header);
 		} else {
 			dev_dbg(dsp->dev, "IPC irq: Notification from firmware\n");
 			skl_ipc_process_notification(ipc, header);
 		}
-		/* clear busy interrupt */
+		 
 		sst_dsp_shim_update_bits_forced(dsp, CNL_ADSP_REG_HIPCTDR,
 			CNL_ADSP_REG_HIPCTDR_BUSY, CNL_ADSP_REG_HIPCTDR_BUSY);
 
-		/* set done bit to ack dsp */
+		 
 		sst_dsp_shim_update_bits_forced(dsp, CNL_ADSP_REG_HIPCTDA,
 			CNL_ADSP_REG_HIPCTDA_DONE, CNL_ADSP_REG_HIPCTDA_DONE);
 		ipc_irq = 1;
@@ -373,7 +359,7 @@ static irqreturn_t cnl_dsp_irq_thread_handler(int irq, void *context)
 
 	cnl_ipc_int_enable(dsp);
 
-	/* continue to send any remaining messages */
+	 
 	schedule_work(&ipc->kwork);
 
 	return IRQ_HANDLED;
@@ -421,10 +407,7 @@ static int cnl_ipc_init(struct device *dev, struct skl_dev *cnl)
 	if (err)
 		return err;
 
-	/*
-	 * overriding tx_msg and is_dsp_busy since
-	 * ipc registers are different for cnl
-	 */
+	 
 	ipc->ops.tx_msg = cnl_ipc_tx_msg;
 	ipc->ops.tx_data_copy = skl_ipc_tx_data_copy;
 	ipc->ops.is_dsp_busy = cnl_ipc_is_dsp_busy;

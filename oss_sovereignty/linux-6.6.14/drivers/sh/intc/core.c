@@ -1,21 +1,4 @@
-/*
- * Shared interrupt handling code for IPR and INTC2 types of IRQs.
- *
- * Copyright (C) 2007, 2008 Magnus Damm
- * Copyright (C) 2009 - 2012 Paul Mundt
- *
- * Based on intc2.c and ipr.c
- *
- * Copyright (C) 1999  Niibe Yutaka & Takeshi Yaegashi
- * Copyright (C) 2000  Kazumoto Kojima
- * Copyright (C) 2001  David J. Mckay (david.mckay@st.com)
- * Copyright (C) 2003  Takashi Kusuda <kusuda-takashi@hitachi-ul.co.jp>
- * Copyright (C) 2005, 2006  Paul Mundt
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 #define pr_fmt(fmt) "intc: " fmt
 
 #include <linux/init.h>
@@ -39,12 +22,9 @@ LIST_HEAD(intc_list);
 DEFINE_RAW_SPINLOCK(intc_big_lock);
 static unsigned int nr_intc_controllers;
 
-/*
- * Default priority level
- * - this needs to be at least 2 for 5-bit priorities on 7780
- */
-static unsigned int default_prio_level = 2;	/* 2 - 16 */
-static unsigned int intc_prio_level[INTC_NR_IRQS];	/* for now */
+ 
+static unsigned int default_prio_level = 2;	 
+static unsigned int intc_prio_level[INTC_NR_IRQS];	 
 
 unsigned int intc_get_dfl_prio_level(void)
 {
@@ -84,14 +64,7 @@ static void __init intc_register_irq(struct intc_desc *desc,
 	radix_tree_insert(&d->tree, enum_id, intc_irq_xlate_get(irq));
 	raw_spin_unlock_irqrestore(&intc_big_lock, flags);
 
-	/*
-	 * Prefer single interrupt source bitmap over other combinations:
-	 *
-	 * 1. bitmap, single interrupt source
-	 * 2. priority, single interrupt source
-	 * 3. bitmap, multiple interrupt sources (groups)
-	 * 4. priority, multiple interrupt sources (groups)
-	 */
+	 
 	data[0] = intc_get_mask_handle(desc, d, enum_id, 0);
 	data[1] = intc_get_prio_handle(desc, d, enum_id, 0);
 
@@ -109,7 +82,7 @@ static void __init intc_register_irq(struct intc_desc *desc,
 	if (!data[primary])
 		primary ^= 1;
 
-	BUG_ON(!data[primary]); /* must have primary masking method */
+	BUG_ON(!data[primary]);  
 
 	irq_data = irq_get_irq_data(irq);
 
@@ -118,33 +91,28 @@ static void __init intc_register_irq(struct intc_desc *desc,
 				      "level");
 	irq_set_chip_data(irq, (void *)data[primary]);
 
-	/*
-	 * set priority level
-	 */
+	 
 	intc_set_prio_level(irq, intc_get_dfl_prio_level());
 
-	/* enable secondary masking method if present */
+	 
 	if (data[!primary])
 		_intc_enable(irq_data, data[!primary]);
 
-	/* add irq to d->prio list if priority is available */
+	 
 	if (data[1]) {
 		hp = d->prio + d->nr_prio;
 		hp->irq = irq;
 		hp->handle = data[1];
 
 		if (primary) {
-			/*
-			 * only secondary priority should access registers, so
-			 * set _INTC_FN(h) = REG_FN_ERR for intc_set_priority()
-			 */
+			 
 			hp->handle &= ~_INTC_MK(0x0f, 0, 0, 0, 0, 0);
 			hp->handle |= _INTC_MK(REG_FN_ERR, 0, 0, 0, 0, 0);
 		}
 		d->nr_prio++;
 	}
 
-	/* add irq to d->sense list if sense is available */
+	 
 	data[0] = intc_get_sense_handle(desc, d, enum_id);
 	if (data[0]) {
 		(d->sense + d->nr_sense)->irq = irq;
@@ -152,7 +120,7 @@ static void __init intc_register_irq(struct intc_desc *desc,
 		d->nr_sense++;
 	}
 
-	/* irq should be disabled by default */
+	 
 	d->chip.irq_mask(irq_data);
 
 	intc_set_ack_handle(irq, desc, d, enum_id);
@@ -310,19 +278,19 @@ int __init register_intc_controller(struct intc_desc *desc)
 	else
 		d->chip.irq_mask_ack = d->chip.irq_disable;
 
-	/* disable bits matching force_disable before registering irqs */
+	 
 	if (desc->force_disable)
 		intc_enable_disable_enum(desc, d, desc->force_disable, 0);
 
-	/* disable bits matching force_enable before registering irqs */
+	 
 	if (desc->force_enable)
 		intc_enable_disable_enum(desc, d, desc->force_enable, 0);
 
-	BUG_ON(k > 256); /* _INTC_ADDR_E() and _INTC_ADDR_D() are 8 bits */
+	BUG_ON(k > 256);  
 
 	intc_irq_domain_init(d, hw);
 
-	/* register the vectors one by one */
+	 
 	for (i = 0; i < hw->nr_vectors; i++) {
 		struct intc_vect *vect = hw->vectors + i;
 		unsigned int irq = evt2irq(vect->vect);
@@ -343,17 +311,13 @@ int __init register_intc_controller(struct intc_desc *desc)
 			if (vect->enum_id != vect2->enum_id)
 				continue;
 
-			/*
-			 * In the case of multi-evt handling and sparse
-			 * IRQ support, each vector still needs to have
-			 * its own backing irq_desc.
-			 */
+			 
 			if (!intc_map(d->domain, irq2))
 				continue;
 
 			vect2->enum_id = 0;
 
-			/* redirect this interrupts to the first one */
+			 
 			irq_set_chip(irq2, &dummy_irq_chip);
 			irq_set_chained_handler_and_data(irq2,
 							 intc_redirect_irq,
@@ -363,7 +327,7 @@ int __init register_intc_controller(struct intc_desc *desc)
 
 	intc_subgroup_init(desc, d);
 
-	/* enable bits matching force_enable after registering irqs */
+	 
 	if (desc->force_enable)
 		intc_enable_disable_enum(desc, d, desc->force_enable, 1);
 
@@ -404,7 +368,7 @@ static int intc_suspend(void)
 		if (d->skip_suspend)
 			continue;
 
-		/* enable wakeup irqs belonging to this intc controller */
+		 
 		for_each_active_irq(irq) {
 			struct irq_data *data;
 			struct irq_chip *chip;
@@ -436,10 +400,7 @@ static void intc_resume(void)
 
 			data = irq_get_irq_data(irq);
 			chip = irq_data_get_irq_chip(data);
-			/*
-			 * This will catch the redirect and VIRQ cases
-			 * due to the dummy_irq_chip being inserted.
-			 */
+			 
 			if (chip != &d->chip)
 				continue;
 			if (irqd_irq_disabled(data))

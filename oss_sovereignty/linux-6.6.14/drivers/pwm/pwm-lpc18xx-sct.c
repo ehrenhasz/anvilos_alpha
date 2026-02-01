@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NXP LPC18xx State Configurable Timer - Pulse Width Modulator driver
- *
- * Copyright (c) 2015 Ariel D'Alessandro <ariel@vanguardiasur.com>
- *
- * Notes
- * =====
- * NXP LPC18xx provides a State Configurable Timer (SCT) which can be configured
- * as a Pulse Width Modulator.
- *
- * SCT supports 16 outputs, 16 events and 16 registers. Each event will be
- * triggered when its related register matches the SCT counter value, and it
- * will set or clear a selected output.
- *
- * One of the events is preselected to generate the period, thus the maximum
- * number of simultaneous channels is limited to 15. Notice that period is
- * global to all the channels, thus PWM driver will refuse setting different
- * values to it, unless there's only one channel requested.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -27,7 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/pwm.h>
 
-/* LPC18xx SCT registers */
+ 
 #define LPC18XX_PWM_CONFIG		0x000
 #define LPC18XX_PWM_CONFIG_UNIFY	BIT(0)
 #define LPC18XX_PWM_CONFIG_NORELOAD	BIT(7)
@@ -70,16 +52,16 @@
 #define LPC18XX_PWM_OUTPUTCL_BASE	0x504
 #define LPC18XX_PWM_OUTPUTCL(_ch)	(LPC18XX_PWM_OUTPUTCL_BASE + _ch * 8)
 
-/* LPC18xx SCT unified counter */
+ 
 #define LPC18XX_PWM_TIMER_MAX		0xffffffff
 
-/* LPC18xx SCT events */
+ 
 #define LPC18XX_PWM_EVENT_PERIOD	0
 #define LPC18XX_PWM_EVENT_MAX		16
 
 #define LPC18XX_NUM_PWMS		16
 
-/* SCT conflict resolution */
+ 
 enum lpc18xx_pwm_res_action {
 	LPC18XX_PWM_RES_NONE,
 	LPC18XX_PWM_RES_SET,
@@ -133,11 +115,7 @@ static void lpc18xx_pwm_set_conflict_res(struct lpc18xx_pwm_chip *lpc18xx_pwm,
 
 	mutex_lock(&lpc18xx_pwm->res_lock);
 
-	/*
-	 * Simultaneous set and clear may happen on an output, that is the case
-	 * when duty_ns == period_ns. LPC18xx SCT allows to set a conflict
-	 * resolution action to be taken in such a case.
-	 */
+	 
 	val = lpc18xx_pwm_readl(lpc18xx_pwm, LPC18XX_PWM_RES_BASE);
 	val &= ~LPC18XX_PWM_RES_MASK(pwm->hwpwm);
 	val |= LPC18XX_PWM_RES(pwm->hwpwm, action);
@@ -151,12 +129,7 @@ static void lpc18xx_pwm_config_period(struct pwm_chip *chip, u64 period_ns)
 	struct lpc18xx_pwm_chip *lpc18xx_pwm = to_lpc18xx_pwm_chip(chip);
 	u32 val;
 
-	/*
-	 * With clk_rate < NSEC_PER_SEC this cannot overflow.
-	 * With period_ns < max_period_ns this also fits into an u32.
-	 * As period_ns >= min_period_ns = DIV_ROUND_UP(NSEC_PER_SEC, lpc18xx_pwm->clk_rate);
-	 * we have val >= 1.
-	 */
+	 
 	val = mul_u64_u64_div_u64(period_ns, lpc18xx_pwm->clk_rate, NSEC_PER_SEC);
 
 	lpc18xx_pwm_writel(lpc18xx_pwm,
@@ -175,10 +148,7 @@ static void lpc18xx_pwm_config_duty(struct pwm_chip *chip,
 	struct lpc18xx_pwm_data *lpc18xx_data = &lpc18xx_pwm->channeldata[pwm->hwpwm];
 	u32 val;
 
-	/*
-	 * With clk_rate <= NSEC_PER_SEC this cannot overflow.
-	 * With duty_ns <= period_ns < max_period_ns this also fits into an u32.
-	 */
+	 
 	val = mul_u64_u64_div_u64(duty_ns, lpc18xx_pwm->clk_rate, NSEC_PER_SEC);
 
 	lpc18xx_pwm_writel(lpc18xx_pwm,
@@ -207,11 +177,7 @@ static int lpc18xx_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
 	requested_events = bitmap_weight(&lpc18xx_pwm->event_map,
 					 LPC18XX_PWM_EVENT_MAX);
 
-	/*
-	 * The PWM supports only a single period for all PWM channels.
-	 * Once the period is set, it can only be changed if no more than one
-	 * channel is requested at that moment.
-	 */
+	 
 	if (requested_events > 2 && lpc18xx_pwm->period_ns != period_ns &&
 	    lpc18xx_pwm->period_ns) {
 		dev_err(chip->dev, "conflicting period requested for PWM %u\n",
@@ -377,9 +343,7 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev,
 				     -EINVAL, "pwm clock has no frequency\n");
 
-	/*
-	 * If clkrate is too fast, the calculations in .apply() might overflow.
-	 */
+	 
 	if (lpc18xx_pwm->clk_rate > NSEC_PER_SEC)
 		return dev_err_probe(&pdev->dev, -EINVAL, "pwm clock to fast\n");
 
@@ -396,14 +360,11 @@ static int lpc18xx_pwm_probe(struct platform_device *pdev)
 	lpc18xx_pwm->chip.ops = &lpc18xx_pwm_ops;
 	lpc18xx_pwm->chip.npwm = LPC18XX_NUM_PWMS;
 
-	/* SCT counter must be in unify (32 bit) mode */
+	 
 	lpc18xx_pwm_writel(lpc18xx_pwm, LPC18XX_PWM_CONFIG,
 			   LPC18XX_PWM_CONFIG_UNIFY);
 
-	/*
-	 * Everytime the timer counter reaches the period value, the related
-	 * event will be triggered and the counter reset to 0.
-	 */
+	 
 	set_bit(LPC18XX_PWM_EVENT_PERIOD, &lpc18xx_pwm->event_map);
 	lpc18xx_pwm->period_event = LPC18XX_PWM_EVENT_PERIOD;
 

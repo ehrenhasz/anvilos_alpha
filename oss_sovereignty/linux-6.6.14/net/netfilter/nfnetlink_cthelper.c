@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) 2012 Pablo Neira Ayuso <pablo@netfilter.org>
- *
- * This software has been sponsored by Vyatta Inc. <http://www.vyatta.com>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -48,18 +44,18 @@ nfnl_userspace_cthelper(struct sk_buff *skb, unsigned int protoff,
 	if (help == NULL)
 		return NF_DROP;
 
-	/* rcu_read_lock()ed by nf_hook_thresh */
+	 
 	helper = rcu_dereference(help->helper);
 	if (helper == NULL)
 		return NF_DROP;
 
-	/* This is a user-space helper not yet configured, skip. */
+	 
 	if ((helper->flags &
 	    (NF_CT_HELPER_F_USERSPACE | NF_CT_HELPER_F_CONFIGURED)) ==
 	     NF_CT_HELPER_F_USERSPACE)
 		return NF_ACCEPT;
 
-	/* If the user-space helper is not available, don't block traffic. */
+	 
 	return NF_QUEUE_NR(helper->queue_num) | NF_VERDICT_FLAG_QUEUE_BYPASS;
 }
 
@@ -83,7 +79,7 @@ nfnl_cthelper_parse_tuple(struct nf_conntrack_tuple *tuple,
 	if (!tb[NFCTH_TUPLE_L3PROTONUM] || !tb[NFCTH_TUPLE_L4PROTONUM])
 		return -EINVAL;
 
-	/* Not all fields are initialized so first zero the tuple */
+	 
 	memset(tuple, 0, sizeof(struct nf_conntrack_tuple));
 
 	tuple->src.l3num = ntohs(nla_get_be16(tb[NFCTH_TUPLE_L3PROTONUM]));
@@ -254,7 +250,7 @@ nfnl_cthelper_create(const struct nlattr * const tb[],
 	helper->from_nlattr = nfnl_cthelper_from_nlattr;
 	helper->to_nlattr = nfnl_cthelper_to_nlattr;
 
-	/* Default to queue number zero, this can be updated at any time. */
+	 
 	if (tb[NFCTH_QUEUE_NUM])
 		helper->queue_num = ntohl(nla_get_be32(tb[NFCTH_QUEUE_NUM]));
 
@@ -328,9 +324,7 @@ static int nfnl_cthelper_update_policy_all(struct nlattr *tb[],
 	if (!new_policy)
 		return -ENOMEM;
 
-	/* Check first that all policy attributes are well-formed, so we don't
-	 * leave things in inconsistent state on errors.
-	 */
+	 
 	for (i = 0; i < helper->expect_class_max + 1; i++) {
 
 		if (!tb[NFCTH_POLICY_SET + i]) {
@@ -344,7 +338,7 @@ static int nfnl_cthelper_update_policy_all(struct nlattr *tb[],
 		if (ret < 0)
 			goto err;
 	}
-	/* Now we can safely update them. */
+	 
 	for (i = 0; i < helper->expect_class_max + 1; i++) {
 		policy = (struct nf_conntrack_expect_policy *)
 				&helper->expect_policy[i];
@@ -585,7 +579,7 @@ restart:
 		hlist_for_each_entry_rcu(cur,
 				&nf_ct_helper_hash[cb->args[0]], hnode) {
 
-			/* skip non-userspace conntrack helpers. */
+			 
 			if (!(cur->flags & NF_CT_HELPER_F_USERSPACE))
 				continue;
 
@@ -728,7 +722,7 @@ static int nfnl_cthelper_del(struct sk_buff *skb, const struct nfnl_info *info,
 		}
 	}
 
-	/* Make sure we return success if we flush and there is no helpers */
+	 
 	return (found || j == 0) ? 0 : ret;
 }
 

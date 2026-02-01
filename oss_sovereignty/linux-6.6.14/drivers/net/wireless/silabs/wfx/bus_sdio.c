@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SDIO interface.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <linux/module.h>
 #include <linux/mmc/sdio.h>
 #include <linux/mmc/sdio_func.h>
@@ -59,7 +54,7 @@ static int wfx_sdio_copy_from_io(void *priv, unsigned int reg_id, void *dst, siz
 	WARN(!IS_ALIGNED((uintptr_t)dst, 4), "unaligned buffer address");
 	WARN(!IS_ALIGNED(count, 4), "unaligned buffer size");
 
-	/* Use queue mode buffers */
+	 
 	if (reg_id == WFX_REG_IN_OUT_QUEUE)
 		sdio_addr |= (bus->buf_id_rx + 1) << 7;
 	ret = sdio_memcpy_fromio(bus->func, dst, sdio_addr, count);
@@ -79,10 +74,10 @@ static int wfx_sdio_copy_to_io(void *priv, unsigned int reg_id, const void *src,
 	WARN(!IS_ALIGNED((uintptr_t)src, 4), "unaligned buffer address");
 	WARN(!IS_ALIGNED(count, 4), "unaligned buffer size");
 
-	/* Use queue mode buffers */
+	 
 	if (reg_id == WFX_REG_IN_OUT_QUEUE)
 		sdio_addr |= bus->buf_id_tx << 7;
-	/* FIXME: discards 'const' qualifier for src */
+	 
 	ret = sdio_memcpy_toio(bus->func, sdio_addr, (void *)src, count);
 	if (!ret && reg_id == WFX_REG_IN_OUT_QUEUE)
 		bus->buf_id_tx = (bus->buf_id_tx + 1) % 32;
@@ -219,7 +214,7 @@ static int wfx_sdio_probe(struct sdio_func *func, const struct sdio_device_id *i
 
 	sdio_claim_host(func);
 	ret = sdio_enable_func(func);
-	/* Block of 64 bytes is more efficient than 512B for frame sizes < 4k */
+	 
 	sdio_set_block_size(func, 64);
 	sdio_release_host(func);
 	if (ret)
@@ -255,7 +250,7 @@ static void wfx_sdio_remove(struct sdio_func *func)
 }
 
 static const struct sdio_device_id wfx_sdio_ids[] = {
-	/* WF200 does not have official VID/PID */
+	 
 	{ SDIO_DEVICE(0x0000, 0x1000) },
 	{ },
 };

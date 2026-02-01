@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose: MAC Data structure
- *
- * Author: Tevin Chen
- *
- * Date: Mar 17, 1997
- *
- */
+ 
+ 
 
 #ifndef __DEVICE_H__
 #define __DEVICE_H__
@@ -23,7 +13,7 @@
 #include <linux/crc32.h>
 #include <net/mac80211.h>
 
-/* device specific */
+ 
 
 #include "device_cfg.h"
 #include "card.h"
@@ -32,7 +22,7 @@
 #include "key.h"
 #include "mac.h"
 
-/*---------------------  Export Definitions -------------------------*/
+ 
 
 #define RATE_1M		0
 #define RATE_2M		1
@@ -55,7 +45,7 @@
 #define FB_RATE0                0
 #define FB_RATE1                1
 
-/* Antenna Mode */
+ 
 #define ANT_A                   0
 #define ANT_B                   1
 #define ANT_DIVERSITY           2
@@ -66,18 +56,18 @@
 #define BB_VGA_LEVEL            4
 #define BB_VGA_CHANGE_THRESHOLD 16
 
-#define MAKE_BEACON_RESERVED	10  /* (us) */
+#define MAKE_BEACON_RESERVED	10   
 
-/* BUILD OBJ mode */
+ 
 
 #define	AVAIL_TD(p, q)	((p)->opts.tx_descs[(q)] - ((p)->iTDUsed[(q)]))
 
-/* 0:11A 1:11B 2:11G */
+ 
 #define BB_TYPE_11A    0
 #define BB_TYPE_11B    1
 #define BB_TYPE_11G    2
 
-/* 0:11a, 1:11b, 2:11gb (only CCK in BasicRate), 3:11ga (OFDM in BasicRate) */
+ 
 #define PK_TYPE_11A     0
 #define PK_TYPE_11B     1
 #define PK_TYPE_11GB    2
@@ -87,10 +77,10 @@
 #define	OWNED_BY_NIC	1
 
 struct vnt_options {
-	int rx_descs0;		/* Number of RX descriptors0 */
-	int rx_descs1;		/* Number of RX descriptors1 */
-	int tx_descs[2];	/* Number of TX descriptors 0, 1 */
-	int int_works;		/* interrupt limits */
+	int rx_descs0;		 
+	int rx_descs1;		 
+	int tx_descs[2];	 
+	int int_works;		 
 	int short_retry;
 	int long_retry;
 	int bbp_type;
@@ -99,7 +89,7 @@ struct vnt_options {
 
 struct vnt_private {
 	struct pci_dev *pcid;
-	/* mac80211 */
+	 
 	struct ieee80211_hw *hw;
 	struct ieee80211_vif *vif;
 	unsigned long key_entry_inuse;
@@ -108,7 +98,7 @@ struct vnt_private {
 	int mc_list_count;
 	u8 mac_hw;
 
-/* dma addr, rx/tx pool */
+ 
 	dma_addr_t                  pool_dma;
 	dma_addr_t                  rd0_pool_dma;
 	dma_addr_t                  rd1_pool_dma;
@@ -151,7 +141,7 @@ struct vnt_private {
 
 	u32                         rx_bytes;
 
-	/* Version control */
+	 
 	unsigned char local_id;
 	unsigned char byRFType;
 
@@ -161,7 +151,7 @@ struct vnt_private {
 	unsigned char byOriginalZonetype;
 
 	unsigned char abyCurrentNetAddr[ETH_ALEN]; __aligned(2)
-	bool bLinkPass;          /* link status: OK or fail */
+	bool bLinkPass;           
 
 	unsigned int current_rssi;
 	unsigned char byCurrSQ;
@@ -174,25 +164,21 @@ struct vnt_private {
 	bool bTxRxAntInv;
 
 	unsigned char *pbyTmpBuff;
-	unsigned int	uSIFS;    /* Current SIFS */
-	unsigned int	uDIFS;    /* Current DIFS */
-	unsigned int	uEIFS;    /* Current EIFS */
-	unsigned int	uSlot;    /* Current SlotTime */
-	unsigned int	uCwMin;   /* Current CwMin */
-	unsigned int	uCwMax;   /* CwMax is fixed on 1023. */
-	/* PHY parameter */
+	unsigned int	uSIFS;     
+	unsigned int	uDIFS;     
+	unsigned int	uEIFS;     
+	unsigned int	uSlot;     
+	unsigned int	uCwMin;    
+	unsigned int	uCwMax;    
+	 
 	unsigned char bySIFS;
 	unsigned char byDIFS;
 	unsigned char byEIFS;
 	unsigned char bySlot;
 	unsigned char byCWMaxMin;
 
-	u8		byBBType; /* 0:11A, 1:11B, 2:11G */
-	u8		byPacketType; /*
-				       * 0:11a,1:11b,2:11gb (only CCK
-				       * in BasicRate), 3:11ga (OFDM in
-				       * Basic Rate)
-				       */
+	u8		byBBType;  
+	u8		byPacketType;  
 	unsigned short wBasicRate;
 	unsigned char byACKRate;
 	unsigned char byTopOFDMBasicRate;
@@ -224,14 +210,14 @@ struct vnt_private {
 	unsigned short wListenInterval;
 	bool bPWBitOn;
 
-	/* GPIO Radio Control */
+	 
 	unsigned char byRadioCtl;
 	unsigned char byGPIO;
 	bool hw_radio_off;
 	bool bPrvActive4RadioOFF;
 	bool bGPIOBlockRead;
 
-	/* Beacon related */
+	 
 	unsigned short wSeqCounter;
 	unsigned short wBCNBufLen;
 	bool bBeaconBufReady;
@@ -245,7 +231,7 @@ struct vnt_private {
 
 	unsigned char byAutoFBCtrl;
 
-	/* For Update BaseBand VGA Gain Offset */
+	 
 	bool bUpdateBBVGA;
 	unsigned int	uBBVGADiffCount;
 	unsigned char byBBVGANew;
@@ -258,10 +244,10 @@ struct vnt_private {
 
 	unsigned long dwDiagRefCount;
 
-	/* For FOE Tuning */
+	 
 	unsigned char byFOETuning;
 
-	/* For RF Power table */
+	 
 	unsigned char byCCKPwr;
 	unsigned char byOFDMPwrG;
 	unsigned char byCurPwr;
@@ -273,13 +259,13 @@ struct vnt_private {
 	char	abyRegPwr[CB_MAX_CHANNEL + 1];
 	char	abyLocalPwr[CB_MAX_CHANNEL + 1];
 
-	/* BaseBand Loopback Use */
+	 
 	unsigned char byBBCR4d;
 	unsigned char byBBCRc9;
 	unsigned char byBBCR88;
 	unsigned char byBBCR09;
 
-	unsigned char abyEEPROM[EEP_MAX_CONTEXT_SIZE]; /* unsigned long alignment */
+	unsigned char abyEEPROM[EEP_MAX_CONTEXT_SIZE];  
 
 	unsigned short wBeaconInterval;
 	u16 wake_up_count;

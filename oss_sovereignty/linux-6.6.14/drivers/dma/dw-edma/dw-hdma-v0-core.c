@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023 Cai Huoqing
- * Synopsys DesignWare HDMA v0 core
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/irqreturn.h>
@@ -49,7 +46,7 @@ __dw_ch_regs(struct dw_edma *dw, enum dw_edma_dir dir, u16 ch)
 		writel(value, &(__dw_ch_regs(dw, EDMA_DIR_READ, ch)->name));	\
 	} while (0)
 
-/* HDMA management callbacks */
+ 
 static void dw_hdma_v0_core_off(struct dw_edma *dw)
 {
 	int id;
@@ -237,26 +234,26 @@ static void dw_hdma_v0_core_start(struct dw_edma_chunk *chunk, bool first)
 	dw_hdma_v0_core_write_chunk(chunk);
 
 	if (first) {
-		/* Enable engine */
+		 
 		SET_CH_32(dw, chan->dir, chan->id, ch_en, BIT(0));
-		/* Interrupt enable&unmask - done, abort */
+		 
 		tmp = GET_CH_32(dw, chan->dir, chan->id, int_setup) |
 		      HDMA_V0_STOP_INT_MASK | HDMA_V0_ABORT_INT_MASK |
 		      HDMA_V0_LOCAL_STOP_INT_EN | HDMA_V0_LOCAL_STOP_INT_EN;
 		SET_CH_32(dw, chan->dir, chan->id, int_setup, tmp);
-		/* Channel control */
+		 
 		SET_CH_32(dw, chan->dir, chan->id, control1, HDMA_V0_LINKLIST_EN);
-		/* Linked list */
-		/* llp is not aligned on 64bit -> keep 32bit accesses */
+		 
+		 
 		SET_CH_32(dw, chan->dir, chan->id, llp.lsb,
 			  lower_32_bits(chunk->ll_region.paddr));
 		SET_CH_32(dw, chan->dir, chan->id, llp.msb,
 			  upper_32_bits(chunk->ll_region.paddr));
 	}
-	/* Set consumer cycle */
+	 
 	SET_CH_32(dw, chan->dir, chan->id, cycle_sync,
 		  HDMA_V0_CONSUMER_CYCLE_STAT | HDMA_V0_CONSUMER_CYCLE_BIT);
-	/* Doorbell */
+	 
 	SET_CH_32(dw, chan->dir, chan->id, doorbell, HDMA_V0_DOORBELL_START);
 }
 
@@ -264,17 +261,17 @@ static void dw_hdma_v0_core_ch_config(struct dw_edma_chan *chan)
 {
 	struct dw_edma *dw = chan->dw;
 
-	/* MSI done addr - low, high */
+	 
 	SET_CH_32(dw, chan->dir, chan->id, msi_stop.lsb, chan->msi.address_lo);
 	SET_CH_32(dw, chan->dir, chan->id, msi_stop.msb, chan->msi.address_hi);
-	/* MSI abort addr - low, high */
+	 
 	SET_CH_32(dw, chan->dir, chan->id, msi_abort.lsb, chan->msi.address_lo);
 	SET_CH_32(dw, chan->dir, chan->id, msi_abort.msb, chan->msi.address_hi);
-	/* config MSI data */
+	 
 	SET_CH_32(dw, chan->dir, chan->id, msi_msgdata, chan->msi.data);
 }
 
-/* HDMA debugfs callbacks */
+ 
 static void dw_hdma_v0_core_debugfs_on(struct dw_edma *dw)
 {
 	dw_hdma_v0_debugfs_on(dw);

@@ -1,17 +1,4 @@
-/*
- * Copyright (C) 2017 Netronome Systems, Inc.
- *
- * This software is licensed under the GNU General License Version 2,
- * June 1991 as shown in the file COPYING in the top-level directory of this
- * source tree.
- *
- * THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
- * WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
- * OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME
- * THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
- */
+ 
 
 #include <linux/bpf.h>
 #include <linux/bpf_verifier.h>
@@ -143,7 +130,7 @@ int nsim_bpf_setup_tc_block_cb(enum tc_setup_type type,
 			"netdevsim configured to reject BPF TC offload");
 		return -EOPNOTSUPP;
 	}
-	/* Note: progs without skip_sw will probably not be dev bound */
+	 
 	if (prog && !prog->aux->offload && !ns->bpf_tc_non_bound_accept) {
 		NSIM_EA(cls_bpf->common.extack,
 			"netdevsim configured to reject unbound programs");
@@ -155,7 +142,7 @@ int nsim_bpf_setup_tc_block_cb(enum tc_setup_type type,
 
 	oldprog = cls_bpf->oldprog;
 
-	/* Don't remove if oldprog doesn't match driver's state */
+	 
 	if (ns->bpf_offloaded != oldprog) {
 		oldprog = NULL;
 		if (!cls_bpf->prog)
@@ -230,7 +217,7 @@ static int nsim_bpf_create_prog(struct nsim_dev *nsim_dev,
 	state->prog = prog;
 	state->state = "verify";
 
-	/* Program id is not populated yet when we create the state. */
+	 
 	sprintf(name, "%u", nsim_dev->prog_id_gen++);
 	state->ddir = debugfs_create_dir(name, nsim_dev->ddir_bpf_bound_progs);
 	if (IS_ERR(state->ddir)) {

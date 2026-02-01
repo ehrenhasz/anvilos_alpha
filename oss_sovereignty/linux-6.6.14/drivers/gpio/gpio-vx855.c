@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Linux GPIOlib driver for the VIA VX855 integrated southbridge GPIO
- *
- * Copyright (C) 2009 VIA Technologies, Inc.
- * Copyright (C) 2010 One Laptop per Child
- * Author: Harald Welte <HaraldWelte@viatech.com>
- * All rights reserved.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/gpio/driver.h>
@@ -18,11 +11,7 @@
 
 #define MODULE_NAME "vx855_gpio"
 
-/* The VX855 south bridge has the following GPIO pins:
- *	GPI 0...13	General Purpose Input
- *	GPO 0...12	General Purpose Output
- *	GPIO 0...14	General Purpose I/O (Open-Drain)
- */
+ 
 
 #define NR_VX855_GPI	14
 #define NR_VX855_GPO	13
@@ -38,7 +27,7 @@ struct vx855_gpio {
 	u32 io_gpo;
 };
 
-/* resolve a GPIx into the corresponding bit position */
+ 
 static inline u_int32_t gpi_i_bit(int i)
 {
 	if (i < 10)
@@ -71,11 +60,7 @@ static inline u_int32_t gpio_o_bit(int i)
 		return 1 << (i + 13);
 }
 
-/* Mapping between numeric GPIO ID and the actual GPIO hardware numbering:
- * 0..13	GPI 0..13
- * 14..26	GPO 0..12
- * 27..41	GPIO 0..14
- */
+ 
 
 static int vx855gpio_direction_input(struct gpio_chip *gpio,
 				     unsigned int nr)
@@ -84,15 +69,15 @@ static int vx855gpio_direction_input(struct gpio_chip *gpio,
 	unsigned long flags;
 	u_int32_t reg_out;
 
-	/* Real GPI bits are always in input direction */
+	 
 	if (nr < NR_VX855_GPI)
 		return 0;
 
-	/* Real GPO bits cannot be put in output direction */
+	 
 	if (nr < NR_VX855_GPInO)
 		return -EINVAL;
 
-	/* Open Drain GPIO have to be set to one */
+	 
 	spin_lock_irqsave(&vg->lock, flags);
 	reg_out = inl(vg->io_gpo);
 	reg_out |= gpio_o_bit(nr - NR_VX855_GPInO);
@@ -113,8 +98,7 @@ static int vx855gpio_get(struct gpio_chip *gpio, unsigned int nr)
 		if (reg_in & gpi_i_bit(nr))
 			ret = 1;
 	} else if (nr < NR_VX855_GPInO) {
-		/* GPO don't have an input bit, we need to read it
-		 * back from the output register */
+		 
 		reg_in = inl(vg->io_gpo);
 		if (reg_in & gpo_o_bit(nr - NR_VX855_GPI))
 			ret = 1;
@@ -134,7 +118,7 @@ static void vx855gpio_set(struct gpio_chip *gpio, unsigned int nr,
 	unsigned long flags;
 	u_int32_t reg_out;
 
-	/* True GPI cannot be switched to output mode */
+	 
 	if (nr < NR_VX855_GPI)
 		return;
 
@@ -158,13 +142,11 @@ static void vx855gpio_set(struct gpio_chip *gpio, unsigned int nr,
 static int vx855gpio_direction_output(struct gpio_chip *gpio,
 				      unsigned int nr, int val)
 {
-	/* True GPI cannot be switched to output mode */
+	 
 	if (nr < NR_VX855_GPI)
 		return -EINVAL;
 
-	/* True GPO don't need to be switched to output mode,
-	 * and GPIO are open-drain, i.e. also need no switching,
-	 * so all we do is set the level */
+	 
 	vx855gpio_set(gpio, nr, val);
 
 	return 0;
@@ -175,18 +157,18 @@ static int vx855gpio_set_config(struct gpio_chip *gpio, unsigned int nr,
 {
 	enum pin_config_param param = pinconf_to_config_param(config);
 
-	/* The GPI cannot be single-ended */
+	 
 	if (nr < NR_VX855_GPI)
 		return -EINVAL;
 
-	/* The GPO's are push-pull */
+	 
 	if (nr < NR_VX855_GPInO) {
 		if (param != PIN_CONFIG_DRIVE_PUSH_PULL)
 			return -ENOTSUPP;
 		return 0;
 	}
 
-	/* The GPIO's are open drain */
+	 
 	if (param != PIN_CONFIG_DRIVE_OPEN_DRAIN)
 		return -ENOTSUPP;
 
@@ -224,7 +206,7 @@ static void vx855gpio_gpio_setup(struct vx855_gpio *vg)
 	c->names = vx855gpio_names;
 }
 
-/* This platform device is ordinarily registered by the vx855 mfd driver */
+ 
 static int vx855gpio_probe(struct platform_device *pdev)
 {
 	struct resource *res_gpi;
@@ -245,13 +227,7 @@ static int vx855gpio_probe(struct platform_device *pdev)
 	vg->io_gpo = res_gpo->start;
 	spin_lock_init(&vg->lock);
 
-	/*
-	 * A single byte is used to control various GPIO ports on the VX855,
-	 * and in the case of the OLPC XO-1.5, some of those ports are used
-	 * for switches that are interpreted and exposed through ACPI. ACPI
-	 * will have reserved the region, so our own reservation will not
-	 * succeed. Ignore and continue.
-	 */
+	 
 
 	if (!devm_request_region(&pdev->dev, res_gpi->start,
 				 resource_size(res_gpi), MODULE_NAME "_gpi"))

@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Client connection-specific management code.
- *
- * Copyright (C) 2016, 2020 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- *
- * Client connections need to be cached for a little while after they've made a
- * call so as to handle retransmitted DATA packets in case the server didn't
- * receive the final ACK or terminating ABORT we sent it.
- *
- * There are flags of relevance to the cache:
- *
- *  (2) DONT_REUSE - The connection should be discarded as soon as possible and
- *      should not be reused.  This is set when an exclusive connection is used
- *      or a call ID counter overflows.
- *
- * The caching state may only be changed if the cache lock is held.
- *
- * There are two idle client connection expiry durations.  If the total number
- * of connections is below the reap threshold, we use the normal duration; if
- * it's above, we use the fast duration.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -39,18 +19,14 @@ static void rxrpc_activate_bundle(struct rxrpc_bundle *bundle)
 	atomic_inc(&bundle->active);
 }
 
-/*
- * Release a connection ID for a client connection.
- */
+ 
 static void rxrpc_put_client_connection_id(struct rxrpc_local *local,
 					   struct rxrpc_connection *conn)
 {
 	idr_remove(&local->conn_ids, conn->proto.cid >> RXRPC_CIDSHIFT);
 }
 
-/*
- * Destroy the client connection ID tree.
- */
+ 
 static void rxrpc_destroy_client_conn_ids(struct rxrpc_local *local)
 {
 	struct rxrpc_connection *conn;
@@ -67,9 +43,7 @@ static void rxrpc_destroy_client_conn_ids(struct rxrpc_local *local)
 	idr_destroy(&local->conn_ids);
 }
 
-/*
- * Allocate a connection bundle.
- */
+ 
 static struct rxrpc_bundle *rxrpc_alloc_bundle(struct rxrpc_call *call,
 					       gfp_t gfp)
 {
@@ -129,18 +103,13 @@ void rxrpc_put_bundle(struct rxrpc_bundle *bundle, enum rxrpc_bundle_trace why)
 	}
 }
 
-/*
- * Get rid of outstanding client connection preallocations when a local
- * endpoint is destroyed.
- */
+ 
 void rxrpc_purge_client_connections(struct rxrpc_local *local)
 {
 	rxrpc_destroy_client_conn_ids(local);
 }
 
-/*
- * Allocate a client connection.
- */
+ 
 static struct rxrpc_connection *
 rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle)
 {
@@ -193,9 +162,7 @@ rxrpc_alloc_client_connection(struct rxrpc_bundle *bundle)
 	return conn;
 }
 
-/*
- * Determine if a connection may be reused.
- */
+ 
 static bool rxrpc_may_reuse_conn(struct rxrpc_connection *conn)
 {
 	struct rxrpc_net *rxnet;
@@ -213,12 +180,7 @@ static bool rxrpc_may_reuse_conn(struct rxrpc_connection *conn)
 	    conn->proto.epoch != rxnet->epoch)
 		goto mark_dont_reuse;
 
-	/* The IDR tree gets very expensive on memory if the connection IDs are
-	 * widely scattered throughout the number space, so we shall want to
-	 * kill off connections that, say, have an ID more than about four
-	 * times the maximum number of client conns away from the current
-	 * allocation point to try and keep the IDs concentrated.
-	 */
+	 
 	id_cursor = idr_get_cursor(&conn->local->conn_ids);
 	id = conn->proto.cid >> RXRPC_CIDSHIFT;
 	distance = id - id_cursor;
@@ -236,10 +198,7 @@ dont_reuse:
 	return false;
 }
 
-/*
- * Look up the conn bundle that matches the connection parameters, adding it if
- * it doesn't yet exist.
- */
+ 
 int rxrpc_look_up_bundle(struct rxrpc_call *call, gfp_t gfp)
 {
 	struct rxrpc_bundle *bundle, *candidate;
@@ -257,7 +216,7 @@ int rxrpc_look_up_bundle(struct rxrpc_call *call, gfp_t gfp)
 		return call->bundle ? 0 : -ENOMEM;
 	}
 
-	/* First, see if the bundle is already there. */
+	 
 	_debug("search 1");
 	spin_lock(&local->client_bundles_lock);
 	p = local->client_bundles.rb_node;
@@ -280,7 +239,7 @@ int rxrpc_look_up_bundle(struct rxrpc_call *call, gfp_t gfp)
 	spin_unlock(&local->client_bundles_lock);
 	_debug("not found");
 
-	/* It wasn't.  We need to add one. */
+	 
 	candidate = rxrpc_alloc_bundle(call, gfp);
 	if (!candidate)
 		return -ENOMEM;
@@ -325,9 +284,7 @@ found_bundle:
 	return 0;
 }
 
-/*
- * Allocate a new connection and add it into a bundle.
- */
+ 
 static bool rxrpc_add_conn_to_bundle(struct rxrpc_bundle *bundle,
 				     unsigned int slot)
 {
@@ -356,10 +313,7 @@ static bool rxrpc_add_conn_to_bundle(struct rxrpc_bundle *bundle,
 	return true;
 }
 
-/*
- * Add a connection to a bundle if there are no usable connections or we have
- * connections waiting for extra capacity.
- */
+ 
 static bool rxrpc_bundle_has_space(struct rxrpc_bundle *bundle)
 {
 	int slot = -1, i, usable;
@@ -368,7 +322,7 @@ static bool rxrpc_bundle_has_space(struct rxrpc_bundle *bundle)
 
 	bundle->alloc_error = 0;
 
-	/* See if there are any usable connections. */
+	 
 	usable = 0;
 	for (i = 0; i < ARRAY_SIZE(bundle->conns); i++) {
 		if (rxrpc_may_reuse_conn(bundle->conns[i]))
@@ -395,11 +349,7 @@ alloc_conn:
 	return slot >= 0 ? rxrpc_add_conn_to_bundle(bundle, slot) : false;
 }
 
-/*
- * Assign a channel to the call at the front of the queue and wake the call up.
- * We don't increment the callNumber counter until this number has been exposed
- * to the world.
- */
+ 
 static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
 				       unsigned int channel)
 {
@@ -415,9 +365,7 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
 
 	trace_rxrpc_client(conn, channel, rxrpc_client_chan_activate);
 
-	/* Cancel the final ACK on the previous call if it hasn't been sent yet
-	 * as the DATA packet will implicitly ACK it.
-	 */
+	 
 	clear_bit(RXRPC_CONN_FINAL_ACK_0 + channel, &conn->flags);
 	clear_bit(conn->bundle_shift + channel, &bundle->avail_chans);
 
@@ -444,9 +392,7 @@ static void rxrpc_activate_one_channel(struct rxrpc_connection *conn,
 	wake_up(&call->waitq);
 }
 
-/*
- * Remove a connection from the idle list if it's on it.
- */
+ 
 static void rxrpc_unidle_conn(struct rxrpc_connection *conn)
 {
 	if (!list_empty(&conn->cache_link)) {
@@ -455,9 +401,7 @@ static void rxrpc_unidle_conn(struct rxrpc_connection *conn)
 	}
 }
 
-/*
- * Assign channels and callNumbers to waiting calls.
- */
+ 
 static void rxrpc_activate_channels(struct rxrpc_bundle *bundle)
 {
 	struct rxrpc_connection *conn;
@@ -493,9 +437,7 @@ static void rxrpc_activate_channels(struct rxrpc_bundle *bundle)
 	}
 }
 
-/*
- * Connect waiting channels (called from the I/O thread).
- */
+ 
 void rxrpc_connect_client_calls(struct rxrpc_local *local)
 {
 	struct rxrpc_call *call;
@@ -514,10 +456,7 @@ void rxrpc_connect_client_calls(struct rxrpc_local *local)
 	}
 }
 
-/*
- * Note that a call, and thus a connection, is about to be exposed to the
- * world.
- */
+ 
 void rxrpc_expose_client_call(struct rxrpc_call *call)
 {
 	unsigned int channel = call->cid & RXRPC_CHANNELMASK;
@@ -525,11 +464,7 @@ void rxrpc_expose_client_call(struct rxrpc_call *call)
 	struct rxrpc_channel *chan = &conn->channels[channel];
 
 	if (!test_and_set_bit(RXRPC_CALL_EXPOSED, &call->flags)) {
-		/* Mark the call ID as being used.  If the callNumber counter
-		 * exceeds ~2 billion, we kill the connection after its
-		 * outstanding calls have finished so that the counter doesn't
-		 * wrap.
-		 */
+		 
 		chan->call_counter++;
 		if (chan->call_counter >= INT_MAX)
 			set_bit(RXRPC_CONN_DONT_REUSE, &conn->flags);
@@ -541,9 +476,7 @@ void rxrpc_expose_client_call(struct rxrpc_call *call)
 	}
 }
 
-/*
- * Set the reap timer.
- */
+ 
 static void rxrpc_set_client_reap_timer(struct rxrpc_local *local)
 {
 	if (!local->kill_all_client_conns) {
@@ -555,9 +488,7 @@ static void rxrpc_set_client_reap_timer(struct rxrpc_local *local)
 	}
 }
 
-/*
- * Disconnect a client call.
- */
+ 
 void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call *call)
 {
 	struct rxrpc_connection *conn;
@@ -569,9 +500,7 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
 
 	_enter("c=%x", call->debug_id);
 
-	/* Calls that have never actually been assigned a channel can simply be
-	 * discarded.
-	 */
+	 
 	conn = call->conn;
 	if (!conn) {
 		_debug("call is waiting");
@@ -591,15 +520,7 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
 
 	may_reuse = rxrpc_may_reuse_conn(conn);
 
-	/* If a client call was exposed to the world, we save the result for
-	 * retransmission.
-	 *
-	 * We use a barrier here so that the call number and abort code can be
-	 * read without needing to take a lock.
-	 *
-	 * TODO: Make the incoming packet handler check this and handle
-	 * terminal retransmission without requiring access to the call.
-	 */
+	 
 	if (test_bit(RXRPC_CALL_EXPOSED, &call->flags)) {
 		_debug("exposed %u,%u", call->call_id, call->abort_code);
 		__rxrpc_disconnect_call(conn, call);
@@ -612,36 +533,30 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
 		}
 	}
 
-	/* See if we can pass the channel directly to another call. */
+	 
 	if (may_reuse && !list_empty(&bundle->waiting_calls)) {
 		trace_rxrpc_client(conn, channel, rxrpc_client_chan_pass);
 		rxrpc_activate_one_channel(conn, channel);
 		return;
 	}
 
-	/* Schedule the final ACK to be transmitted in a short while so that it
-	 * can be skipped if we find a follow-on call.  The first DATA packet
-	 * of the follow on call will implicitly ACK this call.
-	 */
+	 
 	if (call->completion == RXRPC_CALL_SUCCEEDED &&
 	    test_bit(RXRPC_CALL_EXPOSED, &call->flags)) {
 		unsigned long final_ack_at = jiffies + 2;
 
 		WRITE_ONCE(chan->final_ack_at, final_ack_at);
-		smp_wmb(); /* vs rxrpc_process_delayed_final_acks() */
+		smp_wmb();  
 		set_bit(RXRPC_CONN_FINAL_ACK_0 + channel, &conn->flags);
 		rxrpc_reduce_conn_timer(conn, final_ack_at);
 	}
 
-	/* Deactivate the channel. */
+	 
 	chan->call = NULL;
 	set_bit(conn->bundle_shift + channel, &conn->bundle->avail_chans);
 	conn->act_chans	&= ~(1 << channel);
 
-	/* If no channels remain active, then put the connection on the idle
-	 * list for a short while.  Give it a ref to stop it going away if it
-	 * becomes unbundled.
-	 */
+	 
 	if (!conn->act_chans) {
 		trace_rxrpc_client(conn, channel, rxrpc_client_to_idle);
 		conn->idle_timestamp = jiffies;
@@ -653,9 +568,7 @@ void rxrpc_disconnect_client_call(struct rxrpc_bundle *bundle, struct rxrpc_call
 	}
 }
 
-/*
- * Remove a connection from a bundle.
- */
+ 
 static void rxrpc_unbundle_conn(struct rxrpc_connection *conn)
 {
 	struct rxrpc_bundle *bundle = conn->bundle;
@@ -679,9 +592,7 @@ static void rxrpc_unbundle_conn(struct rxrpc_connection *conn)
 	}
 }
 
-/*
- * Drop the active count on a bundle.
- */
+ 
 void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle)
 {
 	struct rxrpc_local *local;
@@ -704,9 +615,7 @@ void rxrpc_deactivate_bundle(struct rxrpc_bundle *bundle)
 	}
 }
 
-/*
- * Clean up a dead client connection.
- */
+ 
 void rxrpc_kill_client_conn(struct rxrpc_connection *conn)
 {
 	struct rxrpc_local *local = conn->local;
@@ -720,13 +629,7 @@ void rxrpc_kill_client_conn(struct rxrpc_connection *conn)
 	rxrpc_put_client_connection_id(local, conn);
 }
 
-/*
- * Discard expired client connections from the idle list.  Each conn in the
- * idle list has been exposed and holds an extra ref because of that.
- *
- * This may be called from conn setup or from a work item so cannot be
- * considered non-reentrant.
- */
+ 
 void rxrpc_discard_expired_client_conns(struct rxrpc_local *local)
 {
 	struct rxrpc_connection *conn;
@@ -735,9 +638,7 @@ void rxrpc_discard_expired_client_conns(struct rxrpc_local *local)
 
 	_enter("");
 
-	/* We keep an estimate of what the number of conns ought to be after
-	 * we've discarded some so that we don't overdo the discarding.
-	 */
+	 
 	nr_conns = atomic_read(&local->rxnet->nr_client_conns);
 
 next:
@@ -747,11 +648,7 @@ next:
 		return;
 
 	if (!local->kill_all_client_conns) {
-		/* If the number of connections is over the reap limit, we
-		 * expedite discard by reducing the expiry timeout.  We must,
-		 * however, have at least a short grace period to be able to do
-		 * final-ACK or ABORT retransmission.
-		 */
+		 
 		expiry = rxrpc_conn_idle_client_expiry;
 		if (nr_conns > rxrpc_reap_client_connections)
 			expiry = rxrpc_conn_idle_client_fast_expiry;
@@ -770,20 +667,14 @@ next:
 	list_del_init(&conn->cache_link);
 
 	rxrpc_unbundle_conn(conn);
-	/* Drop the ->cache_link ref */
+	 
 	rxrpc_put_connection(conn, rxrpc_conn_put_discard_idle);
 
 	nr_conns--;
 	goto next;
 
 not_yet_expired:
-	/* The connection at the front of the queue hasn't yet expired, so
-	 * schedule the work item for that point if we discarded something.
-	 *
-	 * We don't worry if the work item is already scheduled - it can look
-	 * after rescheduling itself at a later time.  We could cancel it, but
-	 * then things get messier.
-	 */
+	 
 	_debug("not yet");
 	if (!local->kill_all_client_conns)
 		timer_reduce(&local->client_conn_reap_timer, conn_expires_at);
@@ -791,9 +682,7 @@ not_yet_expired:
 	_leave("");
 }
 
-/*
- * Clean up the client connections on a local endpoint.
- */
+ 
 void rxrpc_clean_up_local_conns(struct rxrpc_local *local)
 {
 	struct rxrpc_connection *conn;

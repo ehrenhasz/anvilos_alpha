@@ -68,12 +68,12 @@ static void do_one_test(char *dstp, char *srcp, unsigned long len)
 		total_failed++;
 		printf("FAIL from=%p to=%p len=%ld returned %ld, expected %ld\n",
 		       srcp, dstp, len, got, expected);
-		//abort();
+		
 	} else
 		total_passed++;
 }
 
-//#define MAX_LEN 512
+
 #define MAX_LEN 16
 
 int test_copy_exception(void)
@@ -105,7 +105,7 @@ int test_copy_exception(void)
 	for (src = 0; src < MAX_LEN; src++) {
 		for (dst = 0; dst < MAX_LEN; dst++) {
 			for (len = 0; len < MAX_LEN+1; len++) {
-				// printf("from=%p to=%p len=%ld\n", q+dst, q+src, len);
+				
 				do_one_test(q+dst, q+src, len);
 			}
 		}

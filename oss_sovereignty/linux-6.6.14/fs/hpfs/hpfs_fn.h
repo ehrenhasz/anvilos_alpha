@@ -1,14 +1,8 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  linux/fs/hpfs/hpfs_fn.h
- *
- *  Mikulas Patocka (mikulas@artax.karlin.mff.cuni.cz), 1998-1999
- *
- *  function headers
- */
+ 
+ 
 
-//#define DBG
-//#define DEBUG_LOCKS
+
+
 #ifdef pr_fmt
 #undef pr_fmt
 #endif
@@ -45,47 +39,47 @@
 
 struct hpfs_inode_info {
 	loff_t mmu_private;
-	ino_t i_parent_dir;	/* (directories) gives fnode of parent dir */
-	unsigned i_dno;		/* (directories) root dnode */
-	unsigned i_dpos;	/* (directories) temp for readdir */
-	unsigned i_dsubdno;	/* (directories) temp for readdir */
-	unsigned i_file_sec;	/* (files) minimalist cache of alloc info */
-	unsigned i_disk_sec;	/* (files) minimalist cache of alloc info */
-	unsigned i_n_secs;	/* (files) minimalist cache of alloc info */
-	unsigned i_ea_size;	/* size of extended attributes */
-	unsigned i_ea_mode : 1;	/* file's permission is stored in ea */
-	unsigned i_ea_uid : 1;	/* file's uid is stored in ea */
-	unsigned i_ea_gid : 1;	/* file's gid is stored in ea */
+	ino_t i_parent_dir;	 
+	unsigned i_dno;		 
+	unsigned i_dpos;	 
+	unsigned i_dsubdno;	 
+	unsigned i_file_sec;	 
+	unsigned i_disk_sec;	 
+	unsigned i_n_secs;	 
+	unsigned i_ea_size;	 
+	unsigned i_ea_mode : 1;	 
+	unsigned i_ea_uid : 1;	 
+	unsigned i_ea_gid : 1;	 
 	unsigned i_dirty : 1;
 	loff_t **i_rddir_off;
 	struct inode vfs_inode;
 };
 
 struct hpfs_sb_info {
-	struct mutex hpfs_mutex;	/* global hpfs lock */
-	ino_t sb_root;			/* inode number of root dir */
-	unsigned sb_fs_size;		/* file system size, sectors */
-	unsigned sb_bitmaps;		/* sector number of bitmap list */
-	unsigned sb_dirband_start;	/* directory band start sector */
-	unsigned sb_dirband_size;	/* directory band size, dnodes */
-	unsigned sb_dmap;		/* sector number of dnode bit map */
-	unsigned sb_n_free;		/* free blocks for statfs, or -1 */
-	unsigned sb_n_free_dnodes;	/* free dnodes for statfs, or -1 */
-	kuid_t sb_uid;			/* uid from mount options */
-	kgid_t sb_gid;			/* gid from mount options */
-	umode_t sb_mode;		/* mode from mount options */
-	unsigned sb_eas : 2;		/* eas: 0-ignore, 1-ro, 2-rw */
-	unsigned sb_err : 2;		/* on errs: 0-cont, 1-ro, 2-panic */
-	unsigned sb_chk : 2;		/* checks: 0-no, 1-normal, 2-strict */
-	unsigned sb_lowercase : 1;	/* downcase filenames hackery */
-	unsigned sb_was_error : 1;	/* there was an error, set dirty flag */
-	unsigned sb_chkdsk : 2;		/* chkdsk: 0-no, 1-on errs, 2-allways */
-	unsigned char *sb_cp_table;	/* code page tables: */
-					/* 	128 bytes uppercasing table & */
-					/*	128 bytes lowercasing table */
-	__le32 *sb_bmp_dir;		/* main bitmap directory */
-	unsigned sb_c_bitmap;		/* current bitmap */
-	unsigned sb_max_fwd_alloc;	/* max forwad allocation */
+	struct mutex hpfs_mutex;	 
+	ino_t sb_root;			 
+	unsigned sb_fs_size;		 
+	unsigned sb_bitmaps;		 
+	unsigned sb_dirband_start;	 
+	unsigned sb_dirband_size;	 
+	unsigned sb_dmap;		 
+	unsigned sb_n_free;		 
+	unsigned sb_n_free_dnodes;	 
+	kuid_t sb_uid;			 
+	kgid_t sb_gid;			 
+	umode_t sb_mode;		 
+	unsigned sb_eas : 2;		 
+	unsigned sb_err : 2;		 
+	unsigned sb_chk : 2;		 
+	unsigned sb_lowercase : 1;	 
+	unsigned sb_was_error : 1;	 
+	unsigned sb_chkdsk : 2;		 
+	unsigned char *sb_cp_table;	 
+					 
+					 
+	__le32 *sb_bmp_dir;		 
+	unsigned sb_c_bitmap;		 
+	unsigned sb_max_fwd_alloc;	 
 	int sb_timeshift;
 	struct rcu_head rcu;
 
@@ -94,14 +88,14 @@ struct hpfs_sb_info {
 	secno hotfix_to[256];
 };
 
-/* Four 512-byte buffers and the 2k block obtained by concatenating them */
+ 
 
 struct quad_buffer_head {
 	struct buffer_head *bh[4];
 	void *data;
 };
 
-/* The b-tree down pointer from a dir entry */
+ 
 
 static inline dnode_secno de_down_pointer (struct hpfs_dirent *de)
 {
@@ -109,14 +103,14 @@ static inline dnode_secno de_down_pointer (struct hpfs_dirent *de)
   return le32_to_cpu(*(__le32 *) ((void *) de + le16_to_cpu(de->length) - 4));
 }
 
-/* The first dir entry in a dnode */
+ 
 
 static inline struct hpfs_dirent *dnode_first_de (struct dnode *dnode)
 {
   return (void *) dnode->dirent;
 }
 
-/* The end+1 of the dir entries */
+ 
 
 static inline struct hpfs_dirent *dnode_end_de (struct dnode *dnode)
 {
@@ -124,7 +118,7 @@ static inline struct hpfs_dirent *dnode_end_de (struct dnode *dnode)
   return (void *) dnode + le32_to_cpu(dnode->first_free);
 }
 
-/* The dir entry after dir entry de */
+ 
 
 static inline struct hpfs_dirent *de_next_de (struct hpfs_dirent *de)
 {
@@ -195,7 +189,7 @@ static inline unsigned tstbits(__le32 *bmp, unsigned b, unsigned n)
 	return 0;
 }
 
-/* alloc.c */
+ 
 
 int hpfs_chk_sectors(struct super_block *, secno, int, char *);
 secno hpfs_alloc_sector(struct super_block *, secno, unsigned, int);
@@ -208,7 +202,7 @@ struct fnode *hpfs_alloc_fnode(struct super_block *, secno, fnode_secno *, struc
 struct anode *hpfs_alloc_anode(struct super_block *, secno, anode_secno *, struct buffer_head **);
 int hpfs_trim_fs(struct super_block *, u64, u64, u64, unsigned *);
 
-/* anode.c */
+ 
 
 secno hpfs_bplus_lookup(struct super_block *, struct inode *, struct bplus_header *, unsigned, struct buffer_head *);
 secno hpfs_add_sector_to_btree(struct super_block *, secno, int, unsigned);
@@ -219,7 +213,7 @@ void hpfs_ea_remove(struct super_block *, secno, int, unsigned);
 void hpfs_truncate_btree(struct super_block *, secno, int, unsigned);
 void hpfs_remove_fnode(struct super_block *, fnode_secno fno);
 
-/* buffer.c */
+ 
 
 secno hpfs_search_hotfix_map(struct super_block *s, secno sec);
 unsigned hpfs_search_hotfix_map_for_range(struct super_block *s, secno sec, unsigned n);
@@ -231,16 +225,16 @@ void *hpfs_get_4sectors(struct super_block *, unsigned, struct quad_buffer_head 
 void hpfs_brelse4(struct quad_buffer_head *);
 void hpfs_mark_4buffers_dirty(struct quad_buffer_head *);
 
-/* dentry.c */
+ 
 
 extern const struct dentry_operations hpfs_dentry_operations;
 
-/* dir.c */
+ 
 
 struct dentry *hpfs_lookup(struct inode *, struct dentry *, unsigned int);
 extern const struct file_operations hpfs_dir_ops;
 
-/* dnode.c */
+ 
 
 int hpfs_add_pos(struct inode *, loff_t *);
 void hpfs_del_pos(struct inode *, loff_t *);
@@ -258,7 +252,7 @@ struct hpfs_dirent *map_dirent(struct inode *, dnode_secno,
 void hpfs_remove_dtree(struct super_block *, dnode_secno);
 struct hpfs_dirent *map_fnode_dirent(struct super_block *, fnode_secno, struct fnode *, struct quad_buffer_head *);
 
-/* ea.c */
+ 
 
 void hpfs_ea_ext_remove(struct super_block *, secno, int, unsigned);
 int hpfs_read_ea(struct super_block *, struct fnode *, char *, char *, int);
@@ -266,7 +260,7 @@ char *hpfs_get_ea(struct super_block *, struct fnode *, char *, int *);
 void hpfs_set_ea(struct inode *, struct fnode *, const char *,
 		 const char *, int);
 
-/* file.c */
+ 
 
 int hpfs_file_fsync(struct file *, loff_t, loff_t, int);
 void hpfs_truncate(struct inode *);
@@ -274,7 +268,7 @@ extern const struct file_operations hpfs_file_ops;
 extern const struct inode_operations hpfs_file_iops;
 extern const struct address_space_operations hpfs_aops;
 
-/* inode.c */
+ 
 
 void hpfs_init_inode(struct inode *);
 void hpfs_read_inode(struct inode *);
@@ -284,7 +278,7 @@ int hpfs_setattr(struct mnt_idmap *, struct dentry *, struct iattr *);
 void hpfs_write_if_changed(struct inode *);
 void hpfs_evict_inode(struct inode *);
 
-/* map.c */
+ 
 
 __le32 *hpfs_map_dnode_bitmap(struct super_block *, struct quad_buffer_head *);
 __le32 *hpfs_map_bitmap(struct super_block *, unsigned, struct quad_buffer_head *, char *);
@@ -297,7 +291,7 @@ struct anode *hpfs_map_anode(struct super_block *s, anode_secno, struct buffer_h
 struct dnode *hpfs_map_dnode(struct super_block *s, dnode_secno, struct quad_buffer_head *);
 dnode_secno hpfs_fnode_dno(struct super_block *s, ino_t ino);
 
-/* name.c */
+ 
 
 unsigned char hpfs_upcase(unsigned char *, unsigned char);
 int hpfs_chk_name(const unsigned char *, unsigned *);
@@ -307,7 +301,7 @@ int hpfs_compare_names(struct super_block *, const unsigned char *, unsigned,
 int hpfs_is_name_long(const unsigned char *, unsigned);
 void hpfs_adjust_length(const unsigned char *, unsigned *);
 
-/* namei.c */
+ 
 
 extern const struct inode_operations hpfs_dir_iops;
 extern const struct address_space_operations hpfs_symlink_aops;
@@ -322,7 +316,7 @@ static inline struct hpfs_sb_info *hpfs_sb(struct super_block *sb)
 	return sb->s_fs_info;
 }
 
-/* super.c */
+ 
 
 __printf(2, 3)
 void hpfs_error(struct super_block *, const char *, ...);
@@ -330,9 +324,7 @@ int hpfs_stop_cycles(struct super_block *, int, int *, int *, char *);
 unsigned hpfs_get_free_dnodes(struct super_block *);
 long hpfs_ioctl(struct file *file, unsigned cmd, unsigned long arg);
 
-/*
- * local time (HPFS) to GMT (Unix)
- */
+ 
 
 static inline time64_t local_to_gmt(struct super_block *s, time64_t t)
 {
@@ -351,15 +343,7 @@ static inline time32_t local_get_seconds(struct super_block *s)
 	return gmt_to_local(s, ktime_get_real_seconds());
 }
 
-/*
- * Locking:
- *
- * hpfs_lock() locks the whole filesystem. It must be taken
- * on any method called by the VFS.
- *
- * We don't do any per-file locking anymore, it is hard to
- * review and HPFS is not performance-sensitive anyway.
- */
+ 
 static inline void hpfs_lock(struct super_block *s)
 {
 	struct hpfs_sb_info *sbi = hpfs_sb(s);

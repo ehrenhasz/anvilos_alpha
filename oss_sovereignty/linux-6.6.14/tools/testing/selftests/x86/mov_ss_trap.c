@@ -1,24 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * mov_ss_trap.c: Exercise the bizarre side effects of a watchpoint on MOV SS
- *
- * This does MOV SS from a watchpointed address followed by various
- * types of kernel entries.  A MOV SS that hits a watchpoint will queue
- * up a #DB trap but will not actually deliver that trap.  The trap
- * will be delivered after the next instruction instead.  The CPU's logic
- * seems to be:
- *
- *  - Any fault: drop the pending #DB trap.
- *  - INT $N, INT3, INTO, SYSCALL, SYSENTER: enter the kernel and then
- *    deliver #DB.
- *  - ICEBP: enter the kernel but do not deliver the watchpoint trap
- *  - breakpoint: only one #DB is delivered (phew!)
- *
- * There are plenty of ways for a kernel to handle this incorrectly.  This
- * test tries to exercise all the cases.
- *
- * This should mostly cover CVE-2018-1087 and CVE-2018-8897.
- */
+ 
+ 
 #define _GNU_SOURCE
 
 #include <stdlib.h>
@@ -65,10 +46,10 @@ static void enable_watchpoint(void)
 
 		dr0 = (unsigned long)&ss;
 		dr1 = (unsigned long)breakpoint_insn;
-		dr7 = ((1UL << 1) |	/* G0 */
-		       (3UL << 16) |	/* RW0 = read or write */
-		       (1UL << 18) |	/* LEN0 = 2 bytes */
-		       (1UL << 3));	/* G1, RW1 = insn */
+		dr7 = ((1UL << 1) |	 
+		       (3UL << 16) |	 
+		       (1UL << 18) |	 
+		       (1UL << 3));	 
 
 		if (ptrace(PTRACE_ATTACH, parent, NULL, NULL) != 0)
 			err(1, "PTRACE_ATTACH");
@@ -184,7 +165,7 @@ int main()
 	if (sigsetjmp(jmpbuf, 1) == 0) {
 		printf("[RUN]\tMOV SS; ICEBP\n");
 
-		/* Some emulators (e.g. QEMU TCG) don't emulate ICEBP. */
+		 
 		sethandler(SIGILL, handle_and_longjmp, SA_RESETHAND);
 
 		asm volatile ("mov %[ss], %%ss; .byte 0xf1" :: [ss] "m" (ss));
@@ -203,10 +184,7 @@ int main()
 			      : [tmp] "=r" (nr) : [ss] "m" (ss));
 	}
 
-	/*
-	 * INT $1: if #DB has DPL=3 and there isn't special handling,
-	 * then the kernel will die.
-	 */
+	 
 	if (sigsetjmp(jmpbuf, 1) == 0) {
 		printf("[RUN]\tMOV SS; INT 1\n");
 		sethandler(SIGSEGV, handle_and_longjmp, SA_RESETHAND);
@@ -214,19 +192,12 @@ int main()
 	}
 
 #ifdef __x86_64__
-	/*
-	 * In principle, we should test 32-bit SYSCALL as well, but
-	 * the calling convention is so unpredictable that it's
-	 * not obviously worth the effort.
-	 */
+	 
 	if (sigsetjmp(jmpbuf, 1) == 0) {
 		printf("[RUN]\tMOV SS; SYSCALL\n");
 		sethandler(SIGILL, handle_and_longjmp, SA_RESETHAND);
 		nr = SYS_getpid;
-		/*
-		 * Toggle the high bit of RSP to make it noncanonical to
-		 * strengthen this test on non-SMAP systems.
-		 */
+		 
 		asm volatile ("btc $63, %%rsp\n\t"
 			      "mov %[ss], %%ss; syscall\n\t"
 			      "btc $63, %%rsp"
@@ -242,10 +213,7 @@ int main()
 	printf("[RUN]\tMOV SS; breakpointed NOP\n");
 	asm volatile ("mov %[ss], %%ss; breakpoint_insn: nop" :: [ss] "m" (ss));
 
-	/*
-	 * Invoking SYSENTER directly breaks all the rules.  Just handle
-	 * the SIGSEGV.
-	 */
+	 
 	if (sigsetjmp(jmpbuf, 1) == 0) {
 		printf("[RUN]\tMOV SS; SYSENTER\n");
 		stack_t stack = {
@@ -257,7 +225,7 @@ int main()
 		sethandler(SIGSEGV, handle_and_longjmp, SA_RESETHAND | SA_ONSTACK);
 		nr = SYS_getpid;
 		free(stack.ss_sp);
-		/* Clear EBP first to make sure we segfault cleanly. */
+		 
 		asm volatile ("xorl %%ebp, %%ebp; mov %[ss], %%ss; SYSENTER" : "+a" (nr)
 			      : [ss] "m" (ss) : "flags", "rcx"
 #ifdef __x86_64__
@@ -265,13 +233,13 @@ int main()
 #endif
 			);
 
-		/* We're unreachable here.  SYSENTER forgets RIP. */
+		 
 	}
 
 	if (sigsetjmp(jmpbuf, 1) == 0) {
 		printf("[RUN]\tMOV SS; INT $0x80\n");
 		sethandler(SIGSEGV, handle_and_longjmp, SA_RESETHAND);
-		nr = 20;	/* compat getpid */
+		nr = 20;	 
 		asm volatile ("mov %[ss], %%ss; int $0x80"
 			      : "+a" (nr) : [ss] "m" (ss)
 			      : "flags"

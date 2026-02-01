@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/******************************************************************************
- *
- * Module Name: osunixdir - Unix directory access interfaces
- *
- * Copyright (C) 2000 - 2023, Intel Corp.
- *
- *****************************************************************************/
+
+ 
 
 #include <acpi/acpi.h>
 
@@ -17,9 +11,7 @@
 #include <ctype.h>
 #include <sys/stat.h>
 
-/*
- * Allocated structure returned from os_open_directory
- */
+ 
 typedef struct external_find_info {
 	char *dir_pathname;
 	DIR *dir_ptr;
@@ -29,19 +21,7 @@ typedef struct external_find_info {
 
 } external_find_info;
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_os_open_directory
- *
- * PARAMETERS:  dir_pathname        - Full pathname to the directory
- *              wildcard_spec       - string of the form "*.c", etc.
- *
- * RETURN:      A directory "handle" to be used in subsequent search operations.
- *              NULL returned on failure.
- *
- * DESCRIPTION: Open a directory in preparation for a wildcard search
- *
- ******************************************************************************/
+ 
 
 void *acpi_os_open_directory(char *dir_pathname,
 			     char *wildcard_spec, char requested_file_type)
@@ -49,14 +29,14 @@ void *acpi_os_open_directory(char *dir_pathname,
 	struct external_find_info *external_info;
 	DIR *dir;
 
-	/* Allocate the info struct that will be returned to the caller */
+	 
 
 	external_info = calloc(1, sizeof(struct external_find_info));
 	if (!external_info) {
 		return (NULL);
 	}
 
-	/* Get the directory stream */
+	 
 
 	dir = opendir(dir_pathname);
 	if (!dir) {
@@ -65,7 +45,7 @@ void *acpi_os_open_directory(char *dir_pathname,
 		return (NULL);
 	}
 
-	/* Save the info in the return structure */
+	 
 
 	external_info->wildcard_spec = wildcard_spec;
 	external_info->requested_file_type = requested_file_type;
@@ -74,18 +54,7 @@ void *acpi_os_open_directory(char *dir_pathname,
 	return (external_info);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_os_get_next_filename
- *
- * PARAMETERS:  dir_handle          - Created via acpi_os_open_directory
- *
- * RETURN:      Next filename matched. NULL if no more matches.
- *
- * DESCRIPTION: Get the next file in the directory that matches the wildcard
- *              specification.
- *
- ******************************************************************************/
+ 
 
 char *acpi_os_get_next_filename(void *dir_handle)
 {
@@ -135,7 +104,7 @@ char *acpi_os_get_next_filename(void *dir_handle)
 				 && external_info->requested_file_type ==
 				 REQUEST_FILE_ONLY))) {
 
-				/* copy to a temp buffer because dir_entry struct is on the stack */
+				 
 
 				strcpy(external_info->temp_buffer,
 				       dir_entry->d_name);
@@ -147,23 +116,13 @@ char *acpi_os_get_next_filename(void *dir_handle)
 	return (NULL);
 }
 
-/*******************************************************************************
- *
- * FUNCTION:    acpi_os_close_directory
- *
- * PARAMETERS:  dir_handle          - Created via acpi_os_open_directory
- *
- * RETURN:      None.
- *
- * DESCRIPTION: Close the open directory and cleanup.
- *
- ******************************************************************************/
+ 
 
 void acpi_os_close_directory(void *dir_handle)
 {
 	struct external_find_info *external_info = dir_handle;
 
-	/* Close the directory and free allocations */
+	 
 
 	closedir(external_info->dir_ptr);
 	free(dir_handle);

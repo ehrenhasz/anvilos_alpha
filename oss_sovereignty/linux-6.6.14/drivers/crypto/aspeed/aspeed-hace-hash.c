@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2021 Aspeed Technology Inc.
- */
+
+ 
 
 #include "aspeed-hace.h"
 #include <crypto/engine.h>
@@ -24,7 +22,7 @@
 	dev_dbg((h)->dev, "%s() " fmt, __func__, ##__VA_ARGS__)
 #endif
 
-/* Initialization Vectors for SHA-family */
+ 
 static const __be32 sha1_iv[8] = {
 	cpu_to_be32(SHA1_H0), cpu_to_be32(SHA1_H1),
 	cpu_to_be32(SHA1_H2), cpu_to_be32(SHA1_H3),
@@ -59,21 +57,7 @@ static const __be64 sha512_iv[8] = {
 	cpu_to_be64(SHA512_H6), cpu_to_be64(SHA512_H7)
 };
 
-/* The purpose of this padding is to ensure that the padded message is a
- * multiple of 512 bits (SHA1/SHA224/SHA256) or 1024 bits (SHA384/SHA512).
- * The bit "1" is appended at the end of the message followed by
- * "padlen-1" zero bits. Then a 64 bits block (SHA1/SHA224/SHA256) or
- * 128 bits block (SHA384/SHA512) equals to the message length in bits
- * is appended.
- *
- * For SHA1/SHA224/SHA256, padlen is calculated as followed:
- *  - if message length < 56 bytes then padlen = 56 - message length
- *  - else padlen = 64 + 56 - message length
- *
- * For SHA384/SHA512, padlen is calculated as followed:
- *  - if message length < 112 bytes then padlen = 112 - message length
- *  - else padlen = 128 + 112 - message length
- */
+ 
 static void aspeed_ahash_fill_padding(struct aspeed_hace_dev *hace_dev,
 				      struct aspeed_sham_reqctx *rctx)
 {
@@ -108,10 +92,7 @@ static void aspeed_ahash_fill_padding(struct aspeed_hace_dev *hace_dev,
 	}
 }
 
-/*
- * Prepare DMA buffer before hardware engine
- * processing.
- */
+ 
 static int aspeed_ahash_dma_prepare(struct aspeed_hace_dev *hace_dev)
 {
 	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
@@ -157,10 +138,7 @@ static int aspeed_ahash_dma_prepare(struct aspeed_hace_dev *hace_dev)
 	return 0;
 }
 
-/*
- * Prepare DMA buffer as SG list buffer before
- * hardware engine processing.
- */
+ 
 static int aspeed_ahash_dma_prepare_sg(struct aspeed_hace_dev *hace_dev)
 {
 	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
@@ -214,7 +192,7 @@ static int aspeed_ahash_dma_prepare_sg(struct aspeed_hace_dev *hace_dev)
 		len = rctx->bufcnt;
 		length -= len;
 
-		/* Last sg list */
+		 
 		if (length == 0)
 			len |= HASH_SG_LAST_LIST;
 
@@ -231,7 +209,7 @@ static int aspeed_ahash_dma_prepare_sg(struct aspeed_hace_dev *hace_dev)
 			if (length > len)
 				length -= len;
 			else {
-				/* Last sg list */
+				 
 				len = length;
 				len |= HASH_SG_LAST_LIST;
 				length = 0;
@@ -282,10 +260,7 @@ static int aspeed_ahash_complete(struct aspeed_hace_dev *hace_dev)
 	return 0;
 }
 
-/*
- * Copy digest to the corresponding request result.
- * This function will be called at final() stage.
- */
+ 
 static int aspeed_ahash_transfer(struct aspeed_hace_dev *hace_dev)
 {
 	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
@@ -305,9 +280,7 @@ static int aspeed_ahash_transfer(struct aspeed_hace_dev *hace_dev)
 	return aspeed_ahash_complete(hace_dev);
 }
 
-/*
- * Trigger hardware engines to do the math.
- */
+ 
 static int aspeed_hace_ahash_trigger(struct aspeed_hace_dev *hace_dev,
 				     aspeed_hace_fn_t resume)
 {
@@ -330,7 +303,7 @@ static int aspeed_hace_ahash_trigger(struct aspeed_hace_dev *hace_dev,
 	ast_hace_write(hace_dev, hash_engine->src_length,
 		       ASPEED_HACE_HASH_DATA_LEN);
 
-	/* Memory barrier to ensure all data setup before engine starts */
+	 
 	mb();
 
 	ast_hace_write(hace_dev, rctx->cmd, ASPEED_HACE_HASH_CMD);
@@ -338,11 +311,7 @@ static int aspeed_hace_ahash_trigger(struct aspeed_hace_dev *hace_dev,
 	return -EINPROGRESS;
 }
 
-/*
- * HMAC resume aims to do the second pass produces
- * the final HMAC code derived from the inner hash
- * result and the outer key.
- */
+ 
 static int aspeed_ahash_hmac_resume(struct aspeed_hace_dev *hace_dev)
 {
 	struct aspeed_engine_hash *hash_engine = &hace_dev->hash_engine;
@@ -361,7 +330,7 @@ static int aspeed_ahash_hmac_resume(struct aspeed_hace_dev *hace_dev)
 	dma_unmap_single(hace_dev->dev, rctx->buffer_dma_addr,
 			 rctx->block_size * 2, DMA_TO_DEVICE);
 
-	/* o key pad + hash sum 1 */
+	 
 	memcpy(rctx->buffer, bctx->opad, rctx->block_size);
 	memcpy(rctx->buffer + rctx->block_size, rctx->digest, rctx->digsize);
 
@@ -649,10 +618,7 @@ static int aspeed_sham_finup(struct ahash_request *req)
 	if (rc1 == -EINPROGRESS || rc1 == -EBUSY)
 		return rc1;
 
-	/*
-	 * final() has to be always called to cleanup resources
-	 * even if update() failed, except EINPROGRESS
-	 */
+	 
 	rc2 = aspeed_sham_final(req);
 
 	return rc1 ? : rc2;
@@ -732,7 +698,7 @@ static int aspeed_sham_init(struct ahash_request *req)
 	rctx->digcnt[0] = 0;
 	rctx->digcnt[1] = 0;
 
-	/* HMAC init */
+	 
 	if (tctx->flags & SHA_FLAGS_HMAC) {
 		rctx->digcnt[0] = rctx->block_size;
 		rctx->bufcnt = rctx->block_size;
@@ -799,7 +765,7 @@ static int aspeed_sham_cra_init(struct crypto_tfm *tfm)
 				 sizeof(struct aspeed_sham_reqctx));
 
 	if (ast_alg->alg_base) {
-		/* hmac related */
+		 
 		struct aspeed_sha_hmac_ctx *bctx = tctx->base;
 
 		tctx->flags |= SHA_FLAGS_HMAC;

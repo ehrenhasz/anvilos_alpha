@@ -1,10 +1,4 @@
-/*
- * Flash and EPROM on Hitachi Solution Engine and similar boards.
- *
- * (C) 2001 Red Hat, Inc.
- *
- * GPL'd
- */
+ 
 
 #include <linux/module.h>
 #include <linux/types.h>
@@ -35,7 +29,7 @@ static const char * const probes[] = { "RedBoot", "cmdlinepart", NULL };
 
 static int __init init_soleng_maps(void)
 {
-	/* First probe at offset 0 */
+	 
 	soleng_flash_map.phys = 0;
 	soleng_flash_map.virt = (void __iomem *)P2SEGADDR(0);
 	soleng_eprom_map.phys = 0x01000000;
@@ -46,7 +40,7 @@ static int __init init_soleng_maps(void)
 	printk(KERN_NOTICE "Probing for flash chips at 0x00000000:\n");
 	flash_mtd = do_map_probe("cfi_probe", &soleng_flash_map);
 	if (!flash_mtd) {
-		/* Not there. Try swapping */
+		 
 		printk(KERN_NOTICE "Probing for flash chips at 0x01000000:\n");
 		soleng_flash_map.phys = 0x01000000;
 		soleng_flash_map.virt = P2SEGADDR(0x01000000);
@@ -54,7 +48,7 @@ static int __init init_soleng_maps(void)
 		soleng_eprom_map.virt = P1SEGADDR(0);
 		flash_mtd = do_map_probe("cfi_probe", &soleng_flash_map);
 		if (!flash_mtd) {
-			/* Eep. */
+			 
 			printk(KERN_NOTICE "Flash chips not detected at either possible location.\n");
 			return -ENXIO;
 		}

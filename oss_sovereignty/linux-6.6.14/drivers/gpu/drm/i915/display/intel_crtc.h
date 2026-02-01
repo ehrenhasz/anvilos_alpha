@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2020 Intel Corporation
- */
+ 
+ 
 
 #ifndef _INTEL_CRTC_H_
 #define _INTEL_CRTC_H_
@@ -16,10 +14,7 @@ struct intel_atomic_state;
 struct intel_crtc;
 struct intel_crtc_state;
 
-/*
- * FIXME: We should instead only take spinlocks once for the entire update
- * instead of once per mmio.
- */
+ 
 #if IS_ENABLED(CONFIG_PROVE_LOCKING)
 #define VBLANK_EVASION_TIME_US 250
 #else

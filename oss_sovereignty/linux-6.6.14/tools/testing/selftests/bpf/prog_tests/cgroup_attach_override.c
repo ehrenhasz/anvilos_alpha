@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 
@@ -13,7 +13,7 @@ static char bpf_log_buf[BPF_LOG_BUF_SIZE];
 static int prog_load(int verdict)
 {
 	struct bpf_insn prog[] = {
-		BPF_MOV64_IMM(BPF_REG_0, verdict), /* r0 = verdict */
+		BPF_MOV64_IMM(BPF_REG_0, verdict),  
 		BPF_EXIT_INSN(),
 	};
 	size_t insns_cnt = ARRAY_SIZE(prog);

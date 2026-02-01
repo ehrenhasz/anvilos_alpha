@@ -1,28 +1,14 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright 2003 Digi International (www.digi.com)
- *	Scott H Kilau <Scott_Kilau at digi dot com>
- *
- *	NOTE TO LINUX KERNEL HACKERS:  DO NOT REFORMAT THIS CODE!
- *
- *	This is shared code between Digi's CVS archive and the
- *	Linux Kernel sources.
- *	Changing the source just for reformatting needlessly breaks
- *	our CVS diff history.
- *
- *	Send any bug fixes/changes to:  Eng.Linux at digi dot com.
- *	Thank you.
- *
- */
 
-#include <linux/delay.h>	/* For udelay */
-#include <linux/io.h>		/* For read[bwl]/write[bwl] */
-#include <linux/serial.h>	/* For struct async_serial */
-#include <linux/serial_reg.h>	/* For the various UART offsets */
+ 
+
+#include <linux/delay.h>	 
+#include <linux/io.h>		 
+#include <linux/serial.h>	 
+#include <linux/serial_reg.h>	 
 #include <linux/pci.h>
 #include <linux/tty.h>
 
-#include "jsm.h"	/* Driver main header file */
+#include "jsm.h"	 
 
 static struct {
 	unsigned int rate;
@@ -55,32 +41,26 @@ static void cls_set_cts_flow_control(struct jsm_channel *ch)
 	u8 ier = readb(&ch->ch_cls_uart->ier);
 	u8 isr_fcr = 0;
 
-	/*
-	 * The Enhanced Register Set may only be accessed when
-	 * the Line Control Register is set to 0xBFh.
-	 */
+	 
 	writeb(UART_EXAR654_ENHANCED_REGISTER_SET, &ch->ch_cls_uart->lcr);
 
 	isr_fcr = readb(&ch->ch_cls_uart->isr_fcr);
 
-	/* Turn on CTS flow control, turn off IXON flow control */
+	 
 	isr_fcr |= (UART_EXAR654_EFR_ECB | UART_EXAR654_EFR_CTSDSR);
 	isr_fcr &= ~(UART_EXAR654_EFR_IXON);
 
 	writeb(isr_fcr, &ch->ch_cls_uart->isr_fcr);
 
-	/* Write old LCR value back out, which turns enhanced access off */
+	 
 	writeb(lcrb, &ch->ch_cls_uart->lcr);
 
-	/*
-	 * Enable interrupts for CTS flow, turn off interrupts for
-	 * received XOFF chars
-	 */
+	 
 	ier |= (UART_EXAR654_IER_CTSDSR);
 	ier &= ~(UART_EXAR654_IER_XOFF);
 	writeb(ier, &ch->ch_cls_uart->ier);
 
-	/* Set the usual FIFO values */
+	 
 	writeb((UART_FCR_ENABLE_FIFO), &ch->ch_cls_uart->isr_fcr);
 
 	writeb((UART_FCR_ENABLE_FIFO | UART_16654_FCR_RXTRIGGER_56 |
@@ -96,38 +76,32 @@ static void cls_set_ixon_flow_control(struct jsm_channel *ch)
 	u8 ier = readb(&ch->ch_cls_uart->ier);
 	u8 isr_fcr = 0;
 
-	/*
-	 * The Enhanced Register Set may only be accessed when
-	 * the Line Control Register is set to 0xBFh.
-	 */
+	 
 	writeb(UART_EXAR654_ENHANCED_REGISTER_SET, &ch->ch_cls_uart->lcr);
 
 	isr_fcr = readb(&ch->ch_cls_uart->isr_fcr);
 
-	/* Turn on IXON flow control, turn off CTS flow control */
+	 
 	isr_fcr |= (UART_EXAR654_EFR_ECB | UART_EXAR654_EFR_IXON);
 	isr_fcr &= ~(UART_EXAR654_EFR_CTSDSR);
 
 	writeb(isr_fcr, &ch->ch_cls_uart->isr_fcr);
 
-	/* Now set our current start/stop chars while in enhanced mode */
+	 
 	writeb(ch->ch_startc, &ch->ch_cls_uart->mcr);
 	writeb(0, &ch->ch_cls_uart->lsr);
 	writeb(ch->ch_stopc, &ch->ch_cls_uart->msr);
 	writeb(0, &ch->ch_cls_uart->spr);
 
-	/* Write old LCR value back out, which turns enhanced access off */
+	 
 	writeb(lcrb, &ch->ch_cls_uart->lcr);
 
-	/*
-	 * Disable interrupts for CTS flow, turn on interrupts for
-	 * received XOFF chars
-	 */
+	 
 	ier &= ~(UART_EXAR654_IER_CTSDSR);
 	ier |= (UART_EXAR654_IER_XOFF);
 	writeb(ier, &ch->ch_cls_uart->ier);
 
-	/* Set the usual FIFO values */
+	 
 	writeb((UART_FCR_ENABLE_FIFO), &ch->ch_cls_uart->isr_fcr);
 
 	writeb((UART_FCR_ENABLE_FIFO | UART_16654_FCR_RXTRIGGER_16 |
@@ -141,32 +115,26 @@ static void cls_set_no_output_flow_control(struct jsm_channel *ch)
 	u8 ier = readb(&ch->ch_cls_uart->ier);
 	u8 isr_fcr = 0;
 
-	/*
-	 * The Enhanced Register Set may only be accessed when
-	 * the Line Control Register is set to 0xBFh.
-	 */
+	 
 	writeb(UART_EXAR654_ENHANCED_REGISTER_SET, &ch->ch_cls_uart->lcr);
 
 	isr_fcr = readb(&ch->ch_cls_uart->isr_fcr);
 
-	/* Turn off IXON flow control, turn off CTS flow control */
+	 
 	isr_fcr |= (UART_EXAR654_EFR_ECB);
 	isr_fcr &= ~(UART_EXAR654_EFR_CTSDSR | UART_EXAR654_EFR_IXON);
 
 	writeb(isr_fcr, &ch->ch_cls_uart->isr_fcr);
 
-	/* Write old LCR value back out, which turns enhanced access off */
+	 
 	writeb(lcrb, &ch->ch_cls_uart->lcr);
 
-	/*
-	 * Disable interrupts for CTS flow, turn off interrupts for
-	 * received XOFF chars
-	 */
+	 
 	ier &= ~(UART_EXAR654_IER_CTSDSR);
 	ier &= ~(UART_EXAR654_IER_XOFF);
 	writeb(ier, &ch->ch_cls_uart->ier);
 
-	/* Set the usual FIFO values */
+	 
 	writeb((UART_FCR_ENABLE_FIFO), &ch->ch_cls_uart->isr_fcr);
 
 	writeb((UART_FCR_ENABLE_FIFO | UART_16654_FCR_RXTRIGGER_16 |
@@ -184,28 +152,25 @@ static void cls_set_rts_flow_control(struct jsm_channel *ch)
 	u8 ier = readb(&ch->ch_cls_uart->ier);
 	u8 isr_fcr = 0;
 
-	/*
-	 * The Enhanced Register Set may only be accessed when
-	 * the Line Control Register is set to 0xBFh.
-	 */
+	 
 	writeb(UART_EXAR654_ENHANCED_REGISTER_SET, &ch->ch_cls_uart->lcr);
 
 	isr_fcr = readb(&ch->ch_cls_uart->isr_fcr);
 
-	/* Turn on RTS flow control, turn off IXOFF flow control */
+	 
 	isr_fcr |= (UART_EXAR654_EFR_ECB | UART_EXAR654_EFR_RTSDTR);
 	isr_fcr &= ~(UART_EXAR654_EFR_IXOFF);
 
 	writeb(isr_fcr, &ch->ch_cls_uart->isr_fcr);
 
-	/* Write old LCR value back out, which turns enhanced access off */
+	 
 	writeb(lcrb, &ch->ch_cls_uart->lcr);
 
-	/* Enable interrupts for RTS flow */
+	 
 	ier |= (UART_EXAR654_IER_RTSDTR);
 	writeb(ier, &ch->ch_cls_uart->ier);
 
-	/* Set the usual FIFO values */
+	 
 	writeb((UART_FCR_ENABLE_FIFO), &ch->ch_cls_uart->isr_fcr);
 
 	writeb((UART_FCR_ENABLE_FIFO | UART_16654_FCR_RXTRIGGER_56 |
@@ -222,34 +187,31 @@ static void cls_set_ixoff_flow_control(struct jsm_channel *ch)
 	u8 ier = readb(&ch->ch_cls_uart->ier);
 	u8 isr_fcr = 0;
 
-	/*
-	 * The Enhanced Register Set may only be accessed when
-	 * the Line Control Register is set to 0xBFh.
-	 */
+	 
 	writeb(UART_EXAR654_ENHANCED_REGISTER_SET, &ch->ch_cls_uart->lcr);
 
 	isr_fcr = readb(&ch->ch_cls_uart->isr_fcr);
 
-	/* Turn on IXOFF flow control, turn off RTS flow control */
+	 
 	isr_fcr |= (UART_EXAR654_EFR_ECB | UART_EXAR654_EFR_IXOFF);
 	isr_fcr &= ~(UART_EXAR654_EFR_RTSDTR);
 
 	writeb(isr_fcr, &ch->ch_cls_uart->isr_fcr);
 
-	/* Now set our current start/stop chars while in enhanced mode */
+	 
 	writeb(ch->ch_startc, &ch->ch_cls_uart->mcr);
 	writeb(0, &ch->ch_cls_uart->lsr);
 	writeb(ch->ch_stopc, &ch->ch_cls_uart->msr);
 	writeb(0, &ch->ch_cls_uart->spr);
 
-	/* Write old LCR value back out, which turns enhanced access off */
+	 
 	writeb(lcrb, &ch->ch_cls_uart->lcr);
 
-	/* Disable interrupts for RTS flow */
+	 
 	ier &= ~(UART_EXAR654_IER_RTSDTR);
 	writeb(ier, &ch->ch_cls_uart->ier);
 
-	/* Set the usual FIFO values */
+	 
 	writeb((UART_FCR_ENABLE_FIFO), &ch->ch_cls_uart->isr_fcr);
 
 	writeb((UART_FCR_ENABLE_FIFO | UART_16654_FCR_RXTRIGGER_16 |
@@ -263,28 +225,25 @@ static void cls_set_no_input_flow_control(struct jsm_channel *ch)
 	u8 ier = readb(&ch->ch_cls_uart->ier);
 	u8 isr_fcr = 0;
 
-	/*
-	 * The Enhanced Register Set may only be accessed when
-	 * the Line Control Register is set to 0xBFh.
-	 */
+	 
 	writeb(UART_EXAR654_ENHANCED_REGISTER_SET, &ch->ch_cls_uart->lcr);
 
 	isr_fcr = readb(&ch->ch_cls_uart->isr_fcr);
 
-	/* Turn off IXOFF flow control, turn off RTS flow control */
+	 
 	isr_fcr |= (UART_EXAR654_EFR_ECB);
 	isr_fcr &= ~(UART_EXAR654_EFR_RTSDTR | UART_EXAR654_EFR_IXOFF);
 
 	writeb(isr_fcr, &ch->ch_cls_uart->isr_fcr);
 
-	/* Write old LCR value back out, which turns enhanced access off */
+	 
 	writeb(lcrb, &ch->ch_cls_uart->lcr);
 
-	/* Disable interrupts for RTS flow */
+	 
 	ier &= ~(UART_EXAR654_IER_RTSDTR);
 	writeb(ier, &ch->ch_cls_uart->ier);
 
-	/* Set the usual FIFO values */
+	 
 	writeb((UART_FCR_ENABLE_FIFO), &ch->ch_cls_uart->isr_fcr);
 
 	writeb((UART_FCR_ENABLE_FIFO | UART_16654_FCR_RXTRIGGER_16 |
@@ -295,20 +254,14 @@ static void cls_set_no_input_flow_control(struct jsm_channel *ch)
 	ch->ch_r_tlevel = 16;
 }
 
-/*
- * cls_clear_break.
- * Determines whether its time to shut off break condition.
- *
- * No locks are assumed to be held when calling this function.
- * channel lock is held and released in this function.
- */
+ 
 static void cls_clear_break(struct jsm_channel *ch)
 {
 	unsigned long lock_flags;
 
 	spin_lock_irqsave(&ch->ch_lock, lock_flags);
 
-	/* Turn break off, and unset some variables */
+	 
 	if (ch->ch_flags & CH_BREAK_SENDING) {
 		u8 temp = readb(&ch->ch_cls_uart->lcr);
 
@@ -338,7 +291,7 @@ static void cls_enable_receiver(struct jsm_channel *ch)
 	writeb(tmp, &ch->ch_cls_uart->ier);
 }
 
-/* Make the UART raise any of the output signals we want up */
+ 
 static void cls_assert_modem_signals(struct jsm_channel *ch)
 {
 	if (!ch)
@@ -361,53 +314,37 @@ static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
 
 	spin_lock_irqsave(&ch->ch_lock, flags);
 
-	/* cache head and tail of queue */
+	 
 	head = ch->ch_r_head & RQUEUEMASK;
 	tail = ch->ch_r_tail & RQUEUEMASK;
 
 	ch->ch_cached_lsr = 0;
 
-	/* Store how much space we have left in the queue */
+	 
 	qleft = tail - head - 1;
 	if (qleft < 0)
 		qleft += RQUEUEMASK + 1;
 
-	/*
-	 * Create a mask to determine whether we should
-	 * insert the character (if any) into our queue.
-	 */
+	 
 	if (ch->ch_c_iflag & IGNBRK)
 		error_mask |= UART_LSR_BI;
 
 	while (1) {
-		/*
-		 * Grab the linestatus register, we need to
-		 * check to see if there is any data to read
-		 */
+		 
 		linestatus = readb(&ch->ch_cls_uart->lsr);
 
-		/* Break out if there is no data to fetch */
+		 
 		if (!(linestatus & UART_LSR_DR))
 			break;
 
-		/*
-		 * Discard character if we are ignoring the error mask
-		 * which in this case is the break signal.
-		 */
+		 
 		if (linestatus & error_mask)  {
 			linestatus = 0;
 			readb(&ch->ch_cls_uart->txrx);
 			continue;
 		}
 
-		/*
-		 * If our queue is full, we have no choice but to drop some
-		 * data. The assumption is that HWFLOW or SWFLOW should have
-		 * stopped things way way before we got to this point.
-		 *
-		 * I decided that I wanted to ditch the oldest data first,
-		 * I hope thats okay with everyone? Yes? Good.
-		 */
+		 
 		while (qleft < 1) {
 			tail = (tail + 1) & RQUEUEMASK;
 			ch->ch_r_tail = tail;
@@ -428,14 +365,12 @@ static void cls_copy_data_from_uart_to_queue(struct jsm_channel *ch)
 		if (ch->ch_equeue[head] & UART_LSR_FE)
 			ch->ch_err_frame++;
 
-		/* Add to, and flip head if needed */
+		 
 		head = (head + 1) & RQUEUEMASK;
 		ch->ch_rxcount++;
 	}
 
-	/*
-	 * Write new final heads to channel structure.
-	 */
+	 
 	ch->ch_r_head = head & RQUEUEMASK;
 	ch->ch_e_head = head & EQUEUEMASK;
 
@@ -455,25 +390,25 @@ static void cls_copy_data_from_queue_to_uart(struct jsm_channel *ch)
 
 	circ = &ch->uart_port.state->xmit;
 
-	/* No data to write to the UART */
+	 
 	if (uart_circ_empty(circ))
 		return;
 
-	/* If port is "stopped", don't send any data to the UART */
+	 
 	if ((ch->ch_flags & CH_STOP) || (ch->ch_flags & CH_BREAK_SENDING))
 		return;
 
-	/* We have to do it this way, because of the EXAR TXFIFO count bug. */
+	 
 	if (!(ch->ch_flags & (CH_TX_FIFO_EMPTY | CH_TX_FIFO_LWM)))
 		return;
 
 	n = 32;
 
-	/* cache tail of queue */
+	 
 	tail = circ->tail & (UART_XMIT_SIZE - 1);
 	qlen = uart_circ_chars_pending(circ);
 
-	/* Find minimum of the FIFO space, versus queue length */
+	 
 	n = min(n, qlen);
 
 	while (n > 0) {
@@ -484,7 +419,7 @@ static void cls_copy_data_from_queue_to_uart(struct jsm_channel *ch)
 		len_written++;
 	}
 
-	/* Update the final tail */
+	 
 	circ->tail = tail & (UART_XMIT_SIZE - 1);
 
 	if (len_written > ch->ch_t_tlevel)
@@ -502,11 +437,7 @@ static void cls_parse_modem(struct jsm_channel *ch, u8 signals)
 		"neo_parse_modem: port: %d msignals: %x\n",
 		ch->ch_portnum, msignals);
 
-	/*
-	 * Scrub off lower bits.
-	 * They signify delta's, which I don't care about
-	 * Keep DDCD and DDSR though
-	 */
+	 
 	msignals &= 0xf8;
 
 	if (msignals & UART_MSR_DDCD)
@@ -545,17 +476,14 @@ static void cls_parse_modem(struct jsm_channel *ch, u8 signals)
 		!!((ch->ch_mistat | ch->ch_mostat) & UART_MSR_DCD));
 }
 
-/* Parse the ISR register for the specific port */
+ 
 static inline void cls_parse_isr(struct jsm_board *brd, uint port)
 {
 	struct jsm_channel *ch;
 	u8 isr = 0;
 	unsigned long flags;
 
-	/*
-	 * No need to verify board pointer, it was already
-	 * verified in the interrupt routine.
-	 */
+	 
 
 	if (port >= brd->nasync)
 		return;
@@ -564,42 +492,38 @@ static inline void cls_parse_isr(struct jsm_board *brd, uint port)
 	if (!ch)
 		return;
 
-	/* Here we try to figure out what caused the interrupt to happen */
+	 
 	while (1) {
 		isr = readb(&ch->ch_cls_uart->isr_fcr);
 
-		/* Bail if no pending interrupt on port */
+		 
 		if (isr & UART_IIR_NO_INT)
 			break;
 
-		/* Receive Interrupt pending */
+		 
 		if (isr & (UART_IIR_RDI | UART_IIR_RDI_TIMEOUT)) {
-			/* Read data from uart -> queue */
+			 
 			cls_copy_data_from_uart_to_queue(ch);
 			jsm_check_queue_flow_control(ch);
 		}
 
-		/* Transmit Hold register empty pending */
+		 
 		if (isr & UART_IIR_THRI) {
-			/* Transfer data (if any) from Write Queue -> UART. */
+			 
 			spin_lock_irqsave(&ch->ch_lock, flags);
 			ch->ch_flags |= (CH_TX_FIFO_EMPTY | CH_TX_FIFO_LWM);
 			spin_unlock_irqrestore(&ch->ch_lock, flags);
 			cls_copy_data_from_queue_to_uart(ch);
 		}
 
-		/*
-		 * CTS/RTS change of state:
-		 * Don't need to do anything, the cls_parse_modem
-		 * below will grab the updated modem signals.
-		 */
+		 
 
-		/* Parse any modem signal changes */
+		 
 		cls_parse_modem(ch, readb(&ch->ch_cls_uart->msr));
 	}
 }
 
-/* Channel lock MUST be held before calling this function! */
+ 
 static void cls_flush_uart_write(struct jsm_channel *ch)
 {
 	u8 tmp = 0;
@@ -612,7 +536,7 @@ static void cls_flush_uart_write(struct jsm_channel *ch)
 						&ch->ch_cls_uart->isr_fcr);
 
 	for (i = 0; i < 10; i++) {
-		/* Check to see if the UART feels it completely flushed FIFO */
+		 
 		tmp = readb(&ch->ch_cls_uart->isr_fcr);
 		if (tmp & UART_FCR_CLEAR_XMIT) {
 			jsm_dbg(IOCTL, &ch->ch_bd->pci_dev,
@@ -625,22 +549,13 @@ static void cls_flush_uart_write(struct jsm_channel *ch)
 	ch->ch_flags |= (CH_TX_FIFO_EMPTY | CH_TX_FIFO_LWM);
 }
 
-/* Channel lock MUST be held before calling this function! */
+ 
 static void cls_flush_uart_read(struct jsm_channel *ch)
 {
 	if (!ch)
 		return;
 
-	/*
-	 * For complete POSIX compatibility, we should be purging the
-	 * read FIFO in the UART here.
-	 *
-	 * However, clearing the read FIFO (UART_FCR_CLEAR_RCVR) also
-	 * incorrectly flushes write data as well as just basically trashing the
-	 * FIFO.
-	 *
-	 * Presumably, this is a bug in this UART.
-	 */
+	 
 
 	udelay(10);
 }
@@ -667,10 +582,7 @@ static void cls_send_stop_character(struct jsm_channel *ch)
 	}
 }
 
-/*
- * cls_param()
- * Send any/all changes to the line to the UART.
- */
+ 
 static void cls_param(struct jsm_channel *ch)
 {
 	u8 lcr = 0;
@@ -686,9 +598,7 @@ static void cls_param(struct jsm_channel *ch)
 	if (!bd)
 		return;
 
-	/*
-	 * If baud rate is zero, flush queues, and set mval to drop DTR.
-	 */
+	 
 	if ((ch->ch_c_cflag & CBAUD) == B0) {
 		ch->ch_r_head = 0;
 		ch->ch_r_tail = 0;
@@ -698,7 +608,7 @@ static void cls_param(struct jsm_channel *ch)
 		cls_flush_uart_write(ch);
 		cls_flush_uart_read(ch);
 
-		/* The baudrate is B0 so all modem lines are to be dropped. */
+		 
 		ch->ch_flags |= (CH_BAUD0);
 		ch->ch_mostat &= ~(UART_MCR_RTS | UART_MCR_DTR);
 		cls_assert_modem_signals(ch);
@@ -756,10 +666,7 @@ static void cls_param(struct jsm_channel *ch)
 	if (ch->ch_c_cflag & CRTSCTS)
 		cls_set_cts_flow_control(ch);
 	else if (ch->ch_c_iflag & IXON) {
-		/*
-		 * If start/stop is set to disable,
-		 * then we should disable flow control.
-		 */
+		 
 		if ((ch->ch_startc == __DISABLED_CHAR) ||
 			(ch->ch_stopc == __DISABLED_CHAR))
 			cls_set_no_output_flow_control(ch);
@@ -771,10 +678,7 @@ static void cls_param(struct jsm_channel *ch)
 	if (ch->ch_c_cflag & CRTSCTS)
 		cls_set_rts_flow_control(ch);
 	else if (ch->ch_c_iflag & IXOFF) {
-		/*
-		 * If start/stop is set to disable,
-		 * then we should disable flow control.
-		 */
+		 
 		if ((ch->ch_startc == __DISABLED_CHAR) ||
 			(ch->ch_stopc == __DISABLED_CHAR))
 			cls_set_no_input_flow_control(ch);
@@ -785,15 +689,11 @@ static void cls_param(struct jsm_channel *ch)
 
 	cls_assert_modem_signals(ch);
 
-	/* get current status of the modem signals now */
+	 
 	cls_parse_modem(ch, readb(&ch->ch_cls_uart->msr));
 }
 
-/*
- * cls_intr()
- *
- * Classic specific interrupt handler.
- */
+ 
 static irqreturn_t cls_intr(int irq, void *voidbrd)
 {
 	struct jsm_board *brd = voidbrd;
@@ -801,13 +701,10 @@ static irqreturn_t cls_intr(int irq, void *voidbrd)
 	unsigned char uart_poll;
 	uint i = 0;
 
-	/* Lock out the slow poller from running on this board. */
+	 
 	spin_lock_irqsave(&brd->bd_intr_lock, lock_flags);
 
-	/*
-	 * Check the board's global interrupt offset to see if we
-	 * acctually do have an interrupt pending on us.
-	 */
+	 
 	uart_poll = readb(brd->re_map_membase + UART_CLASSIC_POLL_ADDR_OFFSET);
 
 	jsm_dbg(INTR, &brd->pci_dev, "%s:%d uart_poll: %x\n",
@@ -820,9 +717,9 @@ static irqreturn_t cls_intr(int irq, void *voidbrd)
 		return IRQ_NONE;
 	}
 
-	/* At this point, we have at least SOMETHING to service, dig further. */
+	 
 
-	/* Parse each port to find out what caused the interrupt */
+	 
 	for (i = 0; i < brd->nasync; i++)
 		cls_parse_isr(brd, i);
 
@@ -831,7 +728,7 @@ static irqreturn_t cls_intr(int irq, void *voidbrd)
 	return IRQ_HANDLED;
 }
 
-/* Inits UART */
+ 
 static void cls_uart_init(struct jsm_channel *ch)
 {
 	unsigned char lcrb = readb(&ch->ch_cls_uart->lcr);
@@ -839,23 +736,20 @@ static void cls_uart_init(struct jsm_channel *ch)
 
 	writeb(0, &ch->ch_cls_uart->ier);
 
-	/*
-	 * The Enhanced Register Set may only be accessed when
-	 * the Line Control Register is set to 0xBFh.
-	 */
+	 
 	writeb(UART_EXAR654_ENHANCED_REGISTER_SET, &ch->ch_cls_uart->lcr);
 
 	isr_fcr = readb(&ch->ch_cls_uart->isr_fcr);
 
-	/* Turn on Enhanced/Extended controls */
+	 
 	isr_fcr |= (UART_EXAR654_EFR_ECB);
 
 	writeb(isr_fcr, &ch->ch_cls_uart->isr_fcr);
 
-	/* Write old LCR value back out, which turns enhanced access off */
+	 
 	writeb(lcrb, &ch->ch_cls_uart->lcr);
 
-	/* Clear out UART and FIFO */
+	 
 	readb(&ch->ch_cls_uart->txrx);
 
 	writeb((UART_FCR_ENABLE_FIFO|UART_FCR_CLEAR_RCVR|UART_FCR_CLEAR_XMIT),
@@ -868,27 +762,20 @@ static void cls_uart_init(struct jsm_channel *ch)
 	readb(&ch->ch_cls_uart->msr);
 }
 
-/*
- * Turns off UART.
- */
+ 
 static void cls_uart_off(struct jsm_channel *ch)
 {
-	/* Stop all interrupts from accurring. */
+	 
 	writeb(0, &ch->ch_cls_uart->ier);
 }
 
-/*
- * cls_get_uarts_bytes_left.
- * Returns 0 is nothing left in the FIFO, returns 1 otherwise.
- *
- * The channel lock MUST be held by the calling function.
- */
+ 
 static u32 cls_get_uart_bytes_left(struct jsm_channel *ch)
 {
 	u8 left = 0;
 	u8 lsr = readb(&ch->ch_cls_uart->lsr);
 
-	/* Determine whether the Transmitter is empty or not */
+	 
 	if (!(lsr & UART_LSR_TEMT))
 		left = 1;
 	else {
@@ -899,15 +786,10 @@ static u32 cls_get_uart_bytes_left(struct jsm_channel *ch)
 	return left;
 }
 
-/*
- * cls_send_break.
- * Starts sending a break thru the UART.
- *
- * The channel lock MUST be held by the calling function.
- */
+ 
 static void cls_send_break(struct jsm_channel *ch)
 {
-	/* Tell the UART to start sending the break */
+	 
 	if (!(ch->ch_flags & CH_BREAK_SENDING)) {
 		u8 temp = readb(&ch->ch_cls_uart->lcr);
 
@@ -916,13 +798,7 @@ static void cls_send_break(struct jsm_channel *ch)
 	}
 }
 
-/*
- * cls_send_immediate_char.
- * Sends a specific character as soon as possible to the UART,
- * jumping over any bytes that might be in the write queue.
- *
- * The channel lock MUST be held by the calling function.
- */
+ 
 static void cls_send_immediate_char(struct jsm_channel *ch, unsigned char c)
 {
 	writeb(c, &ch->ch_cls_uart->txrx);

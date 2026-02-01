@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2019 Damien P. George
- * Copyright (c) 2022 Blake W. Felt & Angus Gratton
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mpconfig.h"
 
@@ -66,8 +41,8 @@ const uint8_t mp_usbd_builtin_desc_cfg[MP_USBD_BUILTIN_DESC_CFG_LEN] = {
 };
 
 const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
-    char serial_buf[MICROPY_HW_USB_DESC_STR_MAX + 1]; // Includes terminating NUL byte
-    static uint16_t desc_wstr[MICROPY_HW_USB_DESC_STR_MAX + 1]; // Includes prefix uint16_t
+    char serial_buf[MICROPY_HW_USB_DESC_STR_MAX + 1]; 
+    static uint16_t desc_wstr[MICROPY_HW_USB_DESC_STR_MAX + 1]; 
     const char *desc_str = NULL;
     uint16_t desc_len;
 
@@ -76,23 +51,23 @@ const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
     #endif
 
     if (index == 0) {
-        // String descriptor 0 is special, see USB 2.0 section 9.6.7 String
-        //
-        // Expect any runtime value in desc_str to be a fully formed descriptor
+        
+        
+        
         if (desc_str == NULL) {
-            desc_str = "\x04\x03\x09\x04"; // Descriptor for "English"
+            desc_str = "\x04\x03\x09\x04"; 
         }
         if (desc_str[0] < sizeof(desc_wstr)) {
             memcpy(desc_wstr, desc_str, desc_str[0]);
             return desc_wstr;
         }
-        return NULL; // Descriptor length too long (or malformed), stall endpoint
+        return NULL; 
     }
 
-    // Otherwise, generate a "UNICODE" string descriptor from the C string
+    
 
     if (desc_str == NULL) {
-        // Fall back to the "static" string
+        
         switch (index) {
             case USBD_STR_SERIAL:
                 mp_usbd_port_get_serial_number(serial_buf);
@@ -120,17 +95,17 @@ const uint16_t *tud_descriptor_string_cb(uint8_t index, uint16_t langid) {
     }
 
     if (desc_str == NULL) {
-        return NULL; // No string, STALL the endpoint
+        return NULL; 
     }
 
-    // Convert from narrow string to wide string
+    
     desc_len = 2;
     for (int i = 0; i < MICROPY_HW_USB_DESC_STR_MAX && desc_str[i] != 0; i++) {
         desc_wstr[1 + i] = desc_str[i];
         desc_len += 2;
     }
 
-    // first byte is length (including header), second byte is string type
+    
     desc_wstr[0] = (TUSB_DESC_STRING << 8) | desc_len;
 
     return desc_wstr;
@@ -150,8 +125,8 @@ const uint8_t *tud_descriptor_configuration_cb(uint8_t index) {
 
 #else
 
-// If runtime device support is enabled, descriptor callbacks are implemented in usbd.c
 
-#endif // !MICROPY_HW_ENABLE_USB_RUNTIME_DEVICE
 
-#endif // MICROPY_HW_ENABLE_USBDEV
+#endif 
+
+#endif 

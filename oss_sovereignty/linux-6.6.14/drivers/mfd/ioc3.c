@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * SGI IOC3 multifunction device driver
- *
- * Copyright (C) 2018, 2019 Thomas Bogendoerfer <tbogendoerfer@suse.de>
- *
- * Based on work by:
- *   Stanislaw Skowronek <skylark@unaligned.org>
- *   Joshua Kinard <kumba@gentoo.org>
- *   Brent Casavant <bcasavan@sgi.com> - IOC4 master driver
- *   Pat Gefre <pfg@sgi.com> - IOC3 serial port IRQ demuxer
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/errno.h>
@@ -29,12 +19,12 @@
 #define IOC3_IRQ_SERIAL_B	15
 #define IOC3_IRQ_KBD		22
 
-/* Bitmask for selecting which IRQs are level triggered */
+ 
 #define IOC3_LVL_MASK	(BIT(IOC3_IRQ_SERIAL_A) | BIT(IOC3_IRQ_SERIAL_B))
 
-#define M48T35_REG_SIZE	32768	/* size of m48t35 registers */
+#define M48T35_REG_SIZE	32768	 
 
-/* 1.2 us latency timer (40 cycles at 33 MHz) */
+ 
 #define IOC3_LATENCY	40
 
 struct ioc3_priv_data {
@@ -78,7 +68,7 @@ static struct irq_chip ioc3_irq_chip = {
 static int ioc3_irq_domain_map(struct irq_domain *d, unsigned int irq,
 			      irq_hw_number_t hwirq)
 {
-	/* Set level IRQs for every interrupt contained in IOC3_LVL_MASK */
+	 
 	if (BIT(hwirq) & IOC3_LVL_MASK)
 		irq_set_chip_and_handler(irq, &ioc3_irq_chip, handle_level_irq);
 	else
@@ -108,7 +98,7 @@ static void ioc3_irq_handler(struct irq_desc *desc)
 
 	pending = readl(&regs->sio_ir);
 	mask = readl(&regs->sio_ies);
-	pending &= mask; /* Mask off not enabled interrupts */
+	pending &= mask;  
 
 	if (pending)
 		generic_handle_domain_irq(domain, __ffs(pending));
@@ -116,12 +106,7 @@ static void ioc3_irq_handler(struct irq_desc *desc)
 		spurious_interrupt();
 }
 
-/*
- * System boards/BaseIOs use more interrupt pins of the bridge ASIC
- * to which the IOC3 is connected. Since the IOC3 MFD driver
- * knows wiring of these extra pins, we use the map_irq function
- * to get interrupts activated
- */
+ 
 static int ioc3_map_irq(struct pci_dev *pdev, int slot, int pin)
 {
 	struct pci_host_bridge *hbrg = pci_find_host_bridge(pdev->bus);
@@ -184,20 +169,20 @@ static int ioc3_serial_setup(struct ioc3_priv_data *ipd)
 {
 	int ret;
 
-	/* Set gpio pins for RS232/RS422 mode selection */
+	 
 	writel(GPCR_UARTA_MODESEL | GPCR_UARTB_MODESEL,
 		&ipd->regs->gpcr_s);
-	/* Select RS232 mode for uart a */
+	 
 	writel(0, &ipd->regs->gppr[6]);
-	/* Select RS232 mode for uart b */
+	 
 	writel(0, &ipd->regs->gppr[7]);
 
-	/* Switch both ports to 16650 mode */
+	 
 	writel(readl(&ipd->regs->port_a.sscr) & ~SSCR_DMA_EN,
 	       &ipd->regs->port_a.sscr);
 	writel(readl(&ipd->regs->port_b.sscr) & ~SSCR_DMA_EN,
 	       &ipd->regs->port_b.sscr);
-	udelay(1000); /* Wait until mode switch is done */
+	udelay(1000);  
 
 	ret = mfd_add_devices(&ipd->pdev->dev, PLATFORM_DEVID_AUTO,
 			      ioc3_serial_cells, ARRAY_SIZE(ioc3_serial_cells),
@@ -272,10 +257,10 @@ static int ioc3_eth_setup(struct ioc3_priv_data *ipd)
 {
 	int ret;
 
-	/* Enable One-Wire bus */
+	 
 	writel(GPCR_MLAN_EN, &ipd->regs->gpcr_s);
 
-	/* Generate unique identifier */
+	 
 	snprintf(ioc3_w1_platform_data.dev_id,
 		 sizeof(ioc3_w1_platform_data.dev_id), "ioc3-%012llx",
 		 ipd->pdev->resource->start);
@@ -514,7 +499,7 @@ static int ioc3_cad_duo_setup(struct ioc3_priv_data *ipd)
 	return ioc3_kbd_setup(ipd);
 }
 
-/* Helper macro for filling ioc3_info array */
+ 
 #define IOC3_SID(_name, _sid, _setup) \
 	{								   \
 		.name = _name,						   \
@@ -542,13 +527,13 @@ static int ioc3_setup(struct ioc3_priv_data *ipd)
 	u32 sid;
 	int i;
 
-	/* Clear IRQs */
+	 
 	writel(~0, &ipd->regs->sio_iec);
 	writel(~0, &ipd->regs->sio_ir);
 	writel(0, &ipd->regs->eth.eier);
 	writel(~0, &ipd->regs->eth.eisr);
 
-	/* Read subsystem vendor id and subsystem id */
+	 
 	pci_read_config_dword(ipd->pdev, PCI_SUBSYSTEM_VENDOR_ID, &sid);
 
 	for (i = 0; i < ARRAY_SIZE(ioc3_infos); i++)
@@ -557,7 +542,7 @@ static int ioc3_setup(struct ioc3_priv_data *ipd)
 			return ioc3_infos[i].setup(ipd);
 		}
 
-	/* Treat everything not identified by PCI subid as CAD DUO */
+	 
 	pr_info("ioc3: CAD DUO\n");
 	return ioc3_cad_duo_setup(ipd);
 }
@@ -583,7 +568,7 @@ static int ioc3_mfd_probe(struct pci_dev *pdev,
 		goto out_disable_device;
 	}
 
-	/* Set up per-IOC3 data */
+	 
 	ipd = devm_kzalloc(&pdev->dev, sizeof(struct ioc3_priv_data),
 			   GFP_KERNEL);
 	if (!ipd) {
@@ -592,10 +577,7 @@ static int ioc3_mfd_probe(struct pci_dev *pdev,
 	}
 	ipd->pdev = pdev;
 
-	/*
-	 * Map all IOC3 registers.  These are shared between subdevices
-	 * so the main IOC3 module manages them.
-	 */
+	 
 	regs = pci_ioremap_bar(pdev, 0);
 	if (!regs) {
 		dev_warn(&pdev->dev, "ioc3: Unable to remap PCI BAR for %s.\n",
@@ -605,12 +587,12 @@ static int ioc3_mfd_probe(struct pci_dev *pdev,
 	}
 	ipd->regs = regs;
 
-	/* Track PCI-device specific data */
+	 
 	pci_set_drvdata(pdev, ipd);
 
 	ret = ioc3_setup(ipd);
 	if (ret) {
-		/* Remove all already added MFD devices */
+		 
 		mfd_remove_devices(&ipd->pdev->dev);
 		if (ipd->domain) {
 			struct fwnode_handle *fn = ipd->domain->fwnode;
@@ -636,11 +618,11 @@ static void ioc3_mfd_remove(struct pci_dev *pdev)
 
 	ipd = pci_get_drvdata(pdev);
 
-	/* Clear and disable all IRQs */
+	 
 	writel(~0, &ipd->regs->sio_iec);
 	writel(~0, &ipd->regs->sio_ir);
 
-	/* Release resources */
+	 
 	mfd_remove_devices(&ipd->pdev->dev);
 	if (ipd->domain) {
 		struct fwnode_handle *fn = ipd->domain->fwnode;

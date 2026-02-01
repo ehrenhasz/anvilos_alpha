@@ -1,27 +1,4 @@
-/*
- * Copyright 2020 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 #include "core_types.h"
@@ -34,7 +11,7 @@
 #define REG(reg) reg
 
 #define CTX \
-	ctx //dpp->base.ctx
+	ctx 
 
 #undef FN
 #define FN(reg_name, field_name) \
@@ -58,7 +35,7 @@ void cm_helper_program_gamcor_xfer_func(
 		exp_region_start, params->corner_points[0].red.custom_float_x,
 		exp_resion_start_segment, 0);
 
-	REG_SET(reg->start_slope_cntl_b, 0, //linear slope at start of curve
+	REG_SET(reg->start_slope_cntl_b, 0, 
 		field_region_linear_slope, params->corner_points[0].blue.custom_float_slope);
 	REG_SET(reg->start_slope_cntl_g, 0,
 		field_region_linear_slope, params->corner_points[0].green.custom_float_slope);
@@ -99,7 +76,7 @@ void cm_helper_program_gamcor_xfer_func(
 	}
 }
 
-/* driver uses 32 regions or less, but DCN HW has 34, extra 2 are set to 0 */
+ 
 #define MAX_REGIONS_NUMBER 34
 #define MAX_LOW_POINT      25
 #define NUMBER_REGIONS     32
@@ -132,19 +109,14 @@ bool cm3_helper_translate_curve_to_hw_format(
 
 	if (output_tf->tf == TRANSFER_FUNCTION_PQ || output_tf->tf == TRANSFER_FUNCTION_GAMMA22 ||
 		output_tf->tf == TRANSFER_FUNCTION_HLG) {
-		/* 32 segments
-		 * segments are from 2^-25 to 2^7
-		 */
+		 
 		for (i = 0; i < NUMBER_REGIONS ; i++)
 			seg_distr[i] = 3;
 
 		region_start = -MAX_LOW_POINT;
 		region_end   = NUMBER_REGIONS - MAX_LOW_POINT;
 	} else {
-		/* 11 segments
-		 * segment is from 2^-10 to 2^0
-		 * There are less than 256 points, for optimization
-		 */
+		 
 		seg_distr[0] = 3;
 		seg_distr[1] = 4;
 		seg_distr[2] = 4;
@@ -185,7 +157,7 @@ bool cm3_helper_translate_curve_to_hw_format(
 		}
 	}
 
-	/* last point */
+	 
 	start_index = (region_end + MAX_LOW_POINT) * NUMBER_SW_SEGMENTS;
 	rgb_resulted[hw_points - 1].red = output_tf->tf_pts.red[start_index];
 	rgb_resulted[hw_points - 1].green = output_tf->tf_pts.green[start_index];
@@ -195,7 +167,7 @@ bool cm3_helper_translate_curve_to_hw_format(
 	rgb_resulted[hw_points].green = rgb_resulted[hw_points - 1].green;
 	rgb_resulted[hw_points].blue = rgb_resulted[hw_points - 1].blue;
 
-	// All 3 color channels have same x
+	
 	corner_points[0].red.x = dc_fixpt_pow(dc_fixpt_from_int(2),
 					     dc_fixpt_from_int(region_start));
 	corner_points[0].green.x = corner_points[0].red.x;
@@ -217,9 +189,7 @@ bool cm3_helper_translate_curve_to_hw_format(
 	corner_points[0].blue.slope = dc_fixpt_div(corner_points[0].blue.y,
 			corner_points[0].blue.x);
 
-	/* see comment above, m_arrPoints[1].y should be the Y value for the
-	 * region end (m_numOfHwPoints), not last HW point(m_numOfHwPoints - 1)
-	 */
+	 
 	corner_points[1].red.y = rgb_resulted[hw_points - 1].red;
 	corner_points[1].green.y = rgb_resulted[hw_points - 1].green;
 	corner_points[1].blue.y = rgb_resulted[hw_points - 1].blue;
@@ -228,9 +198,7 @@ bool cm3_helper_translate_curve_to_hw_format(
 	corner_points[1].blue.slope = dc_fixpt_zero;
 
 	if (output_tf->tf == TRANSFER_FUNCTION_PQ || output_tf->tf == TRANSFER_FUNCTION_HLG) {
-		/* for PQ/HLG, we want to have a straight line from last HW X point,
-		 * and the slope to be such that we hit 1.0 at 10000/1000 nits.
-		 */
+		 
 
 		if (output_tf->tf == TRANSFER_FUNCTION_PQ)
 			end_value = dc_fixpt_from_int(125);
@@ -335,9 +303,7 @@ bool cm3_helper_translate_curve_to_degamma_hw_format(
 
 	for (i = region_end - region_start; i < MAX_REGIONS_NUMBER ; i++)
 		seg_distr[i] = -1;
-	/* 12 segments
-	 * segments are from 2^-12 to 0
-	 */
+	 
 	for (i = 0; i < NUM_DEGAMMA_REGIONS ; i++)
 		seg_distr[i] = 4;
 
@@ -362,7 +328,7 @@ bool cm3_helper_translate_curve_to_degamma_hw_format(
 		}
 	}
 
-	/* last point */
+	 
 	start_index = (region_end + MAX_LOW_POINT) * NUMBER_SW_SEGMENTS;
 	rgb_resulted[hw_points - 1].red = output_tf->tf_pts.red[start_index];
 	rgb_resulted[hw_points - 1].green = output_tf->tf_pts.green[start_index];
@@ -381,9 +347,7 @@ bool cm3_helper_translate_curve_to_degamma_hw_format(
 	corner_points[0].green.y = rgb_resulted[0].green;
 	corner_points[0].blue.y = rgb_resulted[0].blue;
 
-	/* see comment above, m_arrPoints[1].y should be the Y value for the
-	 * region end (m_numOfHwPoints), not last HW point(m_numOfHwPoints - 1)
-	 */
+	 
 	corner_points[1].red.y = rgb_resulted[hw_points - 1].red;
 	corner_points[1].green.y = rgb_resulted[hw_points - 1].green;
 	corner_points[1].blue.y = rgb_resulted[hw_points - 1].blue;
@@ -392,9 +356,7 @@ bool cm3_helper_translate_curve_to_degamma_hw_format(
 	corner_points[1].blue.slope = dc_fixpt_zero;
 
 	if (output_tf->tf == TRANSFER_FUNCTION_PQ) {
-		/* for PQ, we want to have a straight line from last HW X point,
-		 * and the slope to be such that we hit 1.0 at 10000 nits.
-		 */
+		 
 		const struct fixed31_32 end_value =
 				dc_fixpt_from_int(125);
 
@@ -468,9 +430,7 @@ bool cm3_helper_convert_to_custom_float(
 	fmt.mantissa_bits = 12;
 	fmt.sign = false;
 
-	/* corner_points[0] - beginning base, slope offset for R,G,B
-	 * corner_points[1] - end base, slope offset for R,G,B
-	 */
+	 
 	if (!convert_to_custom_float_format(corner_points[0].red.x, &fmt,
 				&corner_points[0].red.custom_float_x)) {
 		BREAK_TO_DEBUGGER();

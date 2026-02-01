@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// OWL composite clock driver
-//
-// Copyright (c) 2014 Actions Semi Inc.
-// Author: David Liu <liuwei@actions-semi.com>
-//
-// Copyright (c) 2018 Linaro Ltd.
-// Author: Manivannan Sadhasivam <manivannan.sadhasivam@linaro.org>
+
+
+
+
+
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/regmap.h>
@@ -144,26 +144,22 @@ static unsigned long owl_comp_fix_fact_recalc_rate(struct clk_hw *hw,
 static int owl_comp_fix_fact_set_rate(struct clk_hw *hw, unsigned long rate,
 			unsigned long parent_rate)
 {
-	/*
-	 * We must report success but we can do so unconditionally because
-	 * owl_comp_fix_fact_round_rate returns values that ensure this call is
-	 * a nop.
-	 */
+	 
 
 	return 0;
 }
 
 const struct clk_ops owl_comp_div_ops = {
-	/* mux_ops */
+	 
 	.get_parent	= owl_comp_get_parent,
 	.set_parent	= owl_comp_set_parent,
 
-	/* gate_ops */
+	 
 	.disable	= owl_comp_disable,
 	.enable		= owl_comp_enable,
 	.is_enabled	= owl_comp_is_enabled,
 
-	/* div_ops */
+	 
 	.determine_rate	= owl_comp_div_determine_rate,
 	.recalc_rate	= owl_comp_div_recalc_rate,
 	.set_rate	= owl_comp_div_set_rate,
@@ -171,28 +167,28 @@ const struct clk_ops owl_comp_div_ops = {
 
 
 const struct clk_ops owl_comp_fact_ops = {
-	/* mux_ops */
+	 
 	.get_parent	= owl_comp_get_parent,
 	.set_parent	= owl_comp_set_parent,
 
-	/* gate_ops */
+	 
 	.disable	= owl_comp_disable,
 	.enable		= owl_comp_enable,
 	.is_enabled	= owl_comp_is_enabled,
 
-	/* fact_ops */
+	 
 	.determine_rate	= owl_comp_fact_determine_rate,
 	.recalc_rate	= owl_comp_fact_recalc_rate,
 	.set_rate	= owl_comp_fact_set_rate,
 };
 
 const struct clk_ops owl_comp_fix_fact_ops = {
-	/* gate_ops */
+	 
 	.disable	= owl_comp_disable,
 	.enable		= owl_comp_enable,
 	.is_enabled	= owl_comp_is_enabled,
 
-	/* fix_fact_ops */
+	 
 	.round_rate	= owl_comp_fix_fact_round_rate,
 	.recalc_rate	= owl_comp_fix_fact_recalc_rate,
 	.set_rate	= owl_comp_fix_fact_set_rate,
@@ -200,12 +196,12 @@ const struct clk_ops owl_comp_fix_fact_ops = {
 
 
 const struct clk_ops owl_comp_pass_ops = {
-	/* mux_ops */
+	 
 	.determine_rate	= clk_hw_determine_rate_no_reparent,
 	.get_parent	= owl_comp_get_parent,
 	.set_parent	= owl_comp_set_parent,
 
-	/* gate_ops */
+	 
 	.disable	= owl_comp_disable,
 	.enable		= owl_comp_enable,
 	.is_enabled	= owl_comp_is_enabled,

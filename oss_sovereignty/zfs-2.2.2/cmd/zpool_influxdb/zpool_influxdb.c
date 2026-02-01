@@ -1,71 +1,4 @@
-/*
- * Gather top-level ZFS pool and resilver/scan statistics and print using
- * influxdb line protocol
- * usage: [options] [pool_name]
- * where options are:
- *   --execd, -e           run in telegraf execd input plugin mode, [CR] on
- *                         stdin causes a sample to be printed and wait for
- *                         the next [CR]
- *   --no-histograms, -n   don't print histogram data (reduces cardinality
- *                         if you don't care about histograms)
- *   --sum-histogram-buckets, -s sum histogram bucket values
- *
- * To integrate into telegraf use one of:
- * 1. the `inputs.execd` plugin with the `--execd` option
- * 2. the `inputs.exec` plugin to simply run with no options
- *
- * NOTE: libzfs is an unstable interface. YMMV.
- *
- * The design goals of this software include:
- * + be as lightweight as possible
- * + reduce the number of external dependencies as far as possible, hence
- *   there is no dependency on a client library for managing the metric
- *   collection -- info is printed, KISS
- * + broken pools or kernel bugs can cause this process to hang in an
- *   unkillable state. For this reason, it is best to keep the damage limited
- *   to a small process like zpool_influxdb rather than a larger collector.
- *
- * Copyright 2018-2020 Richard Elling
- *
- * This software is dual-licensed MIT and CDDL.
- *
- * The MIT License (MIT)
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License Version 1.0 (CDDL-1.0).
- * You can obtain a copy of the license from the top-level file
- * "OPENSOLARIS.LICENSE" or at <http://opensource.org/licenses/CDDL-1.0>.
- * You may not use this file except in compliance with the license.
- *
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * CDDL HEADER END
- */
+ 
 #include <string.h>
 #include <getopt.h>
 #include <stdio.h>
@@ -78,11 +11,11 @@
 #define	VDEV_MEASUREMENT	"zpool_vdev_stats"
 #define	POOL_LATENCY_MEASUREMENT	"zpool_latency"
 #define	POOL_QUEUE_MEASUREMENT	"zpool_vdev_queue"
-#define	MIN_LAT_INDEX	10  /* minimum latency index 10 = 1024ns */
+#define	MIN_LAT_INDEX	10   
 #define	POOL_IO_SIZE_MEASUREMENT	"zpool_io_size"
-#define	MIN_SIZE_INDEX	9  /* minimum size index 9 = 512 bytes */
+#define	MIN_SIZE_INDEX	9   
 
-/* global options */
+ 
 int execd_mode = 0;
 int no_histograms = 0;
 int sum_histogram_buckets = 0;
@@ -94,12 +27,7 @@ const char *tags = "";
 
 typedef int (*stat_printer_f)(nvlist_t *, const char *, const char *);
 
-/*
- * influxdb line protocol rules for escaping are important because the
- * zpool name can include characters that need to be escaped
- *
- * caller is responsible for freeing result
- */
+ 
 static char *
 escape_string(const char *s)
 {
@@ -127,9 +55,7 @@ escape_string(const char *s)
 	return (t);
 }
 
-/*
- * print key=value where value is a uint64_t
- */
+ 
 static void
 print_kv(const char *key, uint64_t value)
 {
@@ -137,12 +63,7 @@ print_kv(const char *key, uint64_t value)
 	    (u_longlong_t)value & metric_value_mask, metric_data_type);
 }
 
-/*
- * print_scan_status() prints the details as often seen in the "zpool status"
- * output. However, unlike the zpool command, which is intended for humans,
- * this output is suitable for long-term tracking in influxdb.
- * TODO: update to include issued scan data
- */
+ 
 static int
 print_scan_status(nvlist_t *nvroot, const char *pool_name)
 {
@@ -160,15 +81,11 @@ print_scan_status(nvlist_t *nvroot, const char *pool_name)
 	    ZPOOL_CONFIG_SCAN_STATS,
 	    (uint64_t **)&ps, &c);
 
-	/*
-	 * ignore if there are no stats
-	 */
+	 
 	if (ps == NULL)
 		return (0);
 
-	/*
-	 * return error if state is bogus
-	 */
+	 
 	if (ps->pss_state >= DSS_NUM_STATES ||
 	    ps->pss_func >= POOL_SCAN_FUNCS) {
 		if (complained_about_sync % 1000 == 0) {
@@ -198,7 +115,7 @@ print_scan_status(nvlist_t *nvroot, const char *pool_name)
 		func = "scan";
 	}
 
-	/* overall progress */
+	 
 	examined = ps->pss_examined ? ps->pss_examined : 1;
 	pct_done = 0.0;
 	if (ps->pss_to_examine > 0)
@@ -212,7 +129,7 @@ print_scan_status(nvlist_t *nvroot, const char *pool_name)
 	paused_time = 0;
 #endif
 
-	/* calculations for this pass */
+	 
 	if (ps->pss_state == DSS_SCANNING) {
 		elapsed = (int64_t)time(NULL) - (int64_t)ps->pss_pass_start -
 		    (int64_t)paused_time;
@@ -232,7 +149,7 @@ print_scan_status(nvlist_t *nvroot, const char *pool_name)
 	}
 	rate = rate ? rate : 1;
 
-	/* influxdb line protocol format: "tags metrics timestamp" */
+	 
 	printf("%s%s,function=%s,name=%s,state=%s ",
 	    SCAN_MEASUREMENT, tags, func, pool_name, state[ps->pss_state]);
 	print_kv("end_ts", ps->pss_end_time);
@@ -254,10 +171,7 @@ print_scan_status(nvlist_t *nvroot, const char *pool_name)
 	return (0);
 }
 
-/*
- * get a vdev name that corresponds to the top-level vdev names
- * printed by `zpool status`
- */
+ 
 static char *
 get_vdev_name(nvlist_t *nvroot, const char *parent_name)
 {
@@ -282,16 +196,7 @@ get_vdev_name(nvlist_t *nvroot, const char *parent_name)
 	return (vdev_name);
 }
 
-/*
- * get a string suitable for an influxdb tag that describes this vdev
- *
- * By default only the vdev hierarchical name is shown, separated by '/'
- * If the vdev has an associated path, which is typical of leaf vdevs,
- * then the path is added.
- * It would be nice to have the devid instead of the path, but under
- * Linux we cannot be sure a devid will exist and we'd rather have
- * something than nothing, so we'll use path instead.
- */
+ 
 static char *
 get_vdev_desc(nvlist_t *nvroot, const char *parent_name)
 {
@@ -330,10 +235,7 @@ get_vdev_desc(nvlist_t *nvroot, const char *parent_name)
 	return (vdev_desc);
 }
 
-/*
- * vdev summary stats are a combination of the data shown by
- * `zpool status` and `zpool list -v`
- */
+ 
 static int
 print_summary_stats(nvlist_t *nvroot, const char *pool_name,
     const char *parent_name)
@@ -364,16 +266,7 @@ print_summary_stats(nvlist_t *nvroot, const char *pool_name,
 	return (0);
 }
 
-/*
- * vdev latency stats are histograms stored as nvlist arrays of uint64.
- * Latency stats include the ZIO scheduler classes plus lower-level
- * vdev latencies.
- *
- * In many cases, the top-level "root" view obscures the underlying
- * top-level vdev operations. For example, if a pool has a log, special,
- * or cache device, then each can behave very differently. It is useful
- * to see how each is responding.
- */
+ 
 static int
 print_vdev_latency_stats(nvlist_t *nvroot, const char *pool_name,
     const char *parent_name)
@@ -382,7 +275,7 @@ print_vdev_latency_stats(nvlist_t *nvroot, const char *pool_name,
 	nvlist_t *nv_ex;
 	char *vdev_desc = NULL;
 
-	/* short_names become part of the metric name and are influxdb-ready */
+	 
 	struct lat_lookup {
 	    const char *name;
 	    const char *short_name;
@@ -420,13 +313,13 @@ print_vdev_latency_stats(nvlist_t *nvroot, const char *pool_name,
 			    lat_type[i].name);
 			return (3);
 		}
-		/* end count count, all of the arrays are the same size */
+		 
 		end = c - 1;
 	}
 
 	for (int bucket = 0; bucket <= end; bucket++) {
 		if (bucket < MIN_LAT_INDEX) {
-			/* don't print, but collect the sum */
+			 
 			for (int i = 0; lat_type[i].name; i++) {
 				lat_type[i].sum += lat_type[i].array[bucket];
 			}
@@ -458,16 +351,7 @@ print_vdev_latency_stats(nvlist_t *nvroot, const char *pool_name,
 	return (0);
 }
 
-/*
- * vdev request size stats are histograms stored as nvlist arrays of uint64.
- * Request size stats include the ZIO scheduler classes plus lower-level
- * vdev sizes. Both independent (ind) and aggregated (agg) sizes are reported.
- *
- * In many cases, the top-level "root" view obscures the underlying
- * top-level vdev operations. For example, if a pool has a log, special,
- * or cache device, then each can behave very differently. It is useful
- * to see how each is responding.
- */
+ 
 static int
 print_vdev_size_stats(nvlist_t *nvroot, const char *pool_name,
     const char *parent_name)
@@ -476,7 +360,7 @@ print_vdev_size_stats(nvlist_t *nvroot, const char *pool_name,
 	nvlist_t *nv_ex;
 	char *vdev_desc = NULL;
 
-	/* short_names become the field name */
+	 
 	struct size_lookup {
 	    const char *name;
 	    const char *short_name;
@@ -517,13 +401,13 @@ print_vdev_size_stats(nvlist_t *nvroot, const char *pool_name,
 			    size_type[i].name);
 			return (3);
 		}
-		/* end count count, all of the arrays are the same size */
+		 
 		end = c - 1;
 	}
 
 	for (int bucket = 0; bucket <= end; bucket++) {
 		if (bucket < MIN_SIZE_INDEX) {
-			/* don't print, but collect the sum */
+			 
 			for (int i = 0; size_type[i].name; i++) {
 				size_type[i].sum += size_type[i].array[bucket];
 			}
@@ -555,12 +439,7 @@ print_vdev_size_stats(nvlist_t *nvroot, const char *pool_name,
 	return (0);
 }
 
-/*
- * ZIO scheduler queue stats are stored as gauges. This is unfortunate
- * because the values can change very rapidly and any point-in-time
- * value will quickly be obsoleted. It is also not easy to downsample.
- * Thus only the top-level queue stats might be beneficial... maybe.
- */
+ 
 static int
 print_queue_stats(nvlist_t *nvroot, const char *pool_name,
     const char *parent_name)
@@ -568,7 +447,7 @@ print_queue_stats(nvlist_t *nvroot, const char *pool_name,
 	nvlist_t *nv_ex;
 	uint64_t value;
 
-	/* short_names are used for the field name */
+	 
 	struct queue_lookup {
 	    const char *name;
 	    const char *short_name;
@@ -612,16 +491,14 @@ print_queue_stats(nvlist_t *nvroot, const char *pool_name,
 	return (0);
 }
 
-/*
- * top-level vdev stats are at the pool level
- */
+ 
 static int
 print_top_level_vdev_stats(nvlist_t *nvroot, const char *pool_name)
 {
 	nvlist_t *nv_ex;
 	uint64_t value;
 
-	/* short_names become part of the metric name */
+	 
 	struct queue_lookup {
 	    const char *name;
 	    const char *short_name;
@@ -665,9 +542,7 @@ print_top_level_vdev_stats(nvlist_t *nvroot, const char *pool_name)
 	return (0);
 }
 
-/*
- * recursive stats printer
- */
+ 
 static int
 print_recursive_stats(stat_printer_f func, nvlist_t *nvroot,
     const char *pool_name, const char *parent_name, int descend)
@@ -696,12 +571,7 @@ print_recursive_stats(stat_printer_f func, nvlist_t *nvroot,
 	return (0);
 }
 
-/*
- * call-back to print the stats from the pool config
- *
- * Note: if the pool is broken, this can hang indefinitely and perhaps in an
- * unkillable state.
- */
+ 
 static int
 print_stats(zpool_handle_t *zhp, void *data)
 {
@@ -713,7 +583,7 @@ print_stats(zpool_handle_t *zhp, void *data)
 	struct timespec tv;
 	char *pool_name;
 
-	/* if not this pool return quickly */
+	 
 	if (data &&
 	    strncmp(data, zpool_get_name(zhp), ZFS_MAX_DATASET_NAME_LEN) != 0) {
 		zpool_close(zhp);
@@ -746,7 +616,7 @@ print_stats(zpool_handle_t *zhp, void *data)
 	pool_name = escape_string(zpool_get_name(zhp));
 	err = print_recursive_stats(print_summary_stats, nvroot,
 	    pool_name, NULL, 1);
-	/* if any of these return an error, skip the rest */
+	 
 	if (err == 0)
 	err = print_top_level_vdev_stats(nvroot, pool_name);
 

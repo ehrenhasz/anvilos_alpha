@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note
-/*
- * vdso_clock_getres.c: Sample code to test clock_getres.
- * Copyright (c) 2019 Arm Ltd.
- *
- * Compile with:
- * gcc -std=gnu99 vdso_clock_getres.c
- *
- * Tested on ARM, ARM64, MIPS32, x86 (32-bit and 64-bit),
- * Power (32-bit and 64-bit), S390x (32-bit and 64-bit).
- * Might work on other architectures.
- */
+
+ 
 
 #define _GNU_SOURCE
 #include <elf.h>
@@ -51,20 +41,7 @@ const char *vdso_clock_name[12] = {
 	"CLOCK_TAI",
 };
 
-/*
- * This function calls clock_getres in vdso and by system call
- * with different values for clock_id.
- *
- * Example of output:
- *
- * clock_id: CLOCK_REALTIME [PASS]
- * clock_id: CLOCK_BOOTTIME [PASS]
- * clock_id: CLOCK_TAI [PASS]
- * clock_id: CLOCK_REALTIME_COARSE [PASS]
- * clock_id: CLOCK_MONOTONIC [PASS]
- * clock_id: CLOCK_MONOTONIC_RAW [PASS]
- * clock_id: CLOCK_MONOTONIC_COARSE [PASS]
- */
+ 
 static inline int vdso_test_clock(unsigned int clock_id)
 {
 	struct timespec x, y;

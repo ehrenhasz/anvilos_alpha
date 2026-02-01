@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -120,10 +116,7 @@ static int vc4_v3d_debugfs_ident(struct seq_file *m, void *unused)
 	return 0;
 }
 
-/*
- * Wraps pm_runtime_get_sync() in a refcount, so that we can reliably
- * get the pm_runtime refcount to 0 in vc4_reset().
- */
+ 
 int
 vc4_v3d_pm_get(struct vc4_dev *vc4)
 {
@@ -163,10 +156,7 @@ static void vc4_v3d_init_hw(struct drm_device *dev)
 {
 	struct vc4_dev *vc4 = to_vc4_dev(dev);
 
-	/* Take all the memory that would have been reserved for user
-	 * QPU programs, since we don't have an interface for running
-	 * them, anyway.
-	 */
+	 
 	V3D_WRITE(V3D_VPMBASE, 0);
 }
 
@@ -185,16 +175,14 @@ try_again:
 	spin_lock_irqsave(&vc4->job_lock, irqflags);
 	slot = ffs(~vc4->bin_alloc_used);
 	if (slot != 0) {
-		/* Switch from ffs() bit index to a 0-based index. */
+		 
 		slot--;
 		vc4->bin_alloc_used |= BIT(slot);
 		spin_unlock_irqrestore(&vc4->job_lock, irqflags);
 		return slot;
 	}
 
-	/* Couldn't find an open slot.  Wait for render to complete
-	 * and try again.
-	 */
+	 
 	exec = vc4_last_render_job(vc4);
 	if (exec)
 		seqno = exec->seqno;
@@ -212,28 +200,7 @@ try_again:
 	return -ENOMEM;
 }
 
-/*
- * bin_bo_alloc() - allocates the memory that will be used for
- * tile binning.
- *
- * The binner has a limitation that the addresses in the tile state
- * buffer that point into the tile alloc buffer or binner overflow
- * memory only have 28 bits (256MB), and the top 4 on the bus for
- * tile alloc references end up coming from the tile state buffer's
- * address.
- *
- * To work around this, we allocate a single large buffer while V3D is
- * in use, make sure that it has the top 4 bits constant across its
- * entire extent, and then put the tile state, tile alloc, and binner
- * overflow memory inside that buffer.
- *
- * This creates a limitation where we may not be able to execute a job
- * if it doesn't fit within the buffer that we allocated up front.
- * However, it turns out that 16MB is "enough for anybody", and
- * real-world applications run into allocation failures from the
- * overall DMA pool before they make scenes complicated enough to run
- * out of bin space.
- */
+ 
 static int bin_bo_alloc(struct vc4_dev *vc4)
 {
 	struct vc4_v3d *v3d = vc4->v3d;
@@ -244,12 +211,7 @@ static int bin_bo_alloc(struct vc4_dev *vc4)
 	if (!v3d)
 		return -ENODEV;
 
-	/* We may need to try allocating more than once to get a BO
-	 * that doesn't cross 256MB.  Track the ones we've allocated
-	 * that failed so far, so that we can free them when we've got
-	 * one that succeeded (if we freed them right away, our next
-	 * allocation would probably be the same chunk of memory).
-	 */
+	 
 	INIT_LIST_HEAD(&list);
 
 	while (true) {
@@ -267,27 +229,12 @@ static int bin_bo_alloc(struct vc4_dev *vc4)
 			break;
 		}
 
-		/* Check if this BO won't trigger the addressing bug. */
+		 
 		if ((bo->base.dma_addr & 0xf0000000) ==
 		    ((bo->base.dma_addr + bo->base.base.size - 1) & 0xf0000000)) {
 			vc4->bin_bo = bo;
 
-			/* Set up for allocating 512KB chunks of
-			 * binner memory.  The biggest allocation we
-			 * need to do is for the initial tile alloc +
-			 * tile state buffer.  We can render to a
-			 * maximum of ((2048*2048) / (32*32) = 4096
-			 * tiles in a frame (until we do floating
-			 * point rendering, at which point it would be
-			 * 8192).  Tile state is 48b/tile (rounded to
-			 * a page), and tile alloc is 32b/tile
-			 * (rounded to a page), plus a page of extra,
-			 * for a total of 320kb for our worst-case.
-			 * We choose 512kb so that it divides evenly
-			 * into our 16MB, and the rest of the 512kb
-			 * will be used as storage for the overflow
-			 * from the initial 32b CL per bin.
-			 */
+			 
 			vc4->bin_alloc_size = 512 * 1024;
 			vc4->bin_alloc_used = 0;
 			vc4->bin_alloc_overflow = 0;
@@ -296,20 +243,17 @@ static int bin_bo_alloc(struct vc4_dev *vc4)
 
 			kref_init(&vc4->bin_bo_kref);
 
-			/* Enable the out-of-memory interrupt to set our
-			 * newly-allocated binner BO, potentially from an
-			 * already-pending-but-masked interrupt.
-			 */
+			 
 			V3D_WRITE(V3D_INTENA, V3D_INT_OUTOMEM);
 
 			break;
 		}
 
-		/* Put it on the list to free later, and try again. */
+		 
 		list_add(&bo->unref_head, &list);
 	}
 
-	/* Free all the BOs we allocated but didn't choose. */
+	 
 	while (!list_empty(&list)) {
 		struct vc4_bo *bo = list_last_entry(&list,
 						    struct vc4_bo, unref_head);
@@ -446,7 +390,7 @@ static int vc4_v3d_bind(struct device *dev, struct device *master, void *data)
 		int ret = PTR_ERR(v3d->clk);
 
 		if (ret == -ENOENT) {
-			/* bcm2835 didn't have a clock reference in the DT. */
+			 
 			ret = 0;
 			v3d->clk = NULL;
 		} else {
@@ -477,9 +421,7 @@ static int vc4_v3d_bind(struct device *dev, struct device *master, void *data)
 		goto err_put_runtime_pm;
 	}
 
-	/* Reset the binner overflow address/size at setup, to be sure
-	 * we don't reuse an old one.
-	 */
+	 
 	V3D_WRITE(V3D_BPOA, 0);
 	V3D_WRITE(V3D_BPOS, 0);
 
@@ -490,7 +432,7 @@ static int vc4_v3d_bind(struct device *dev, struct device *master, void *data)
 	}
 
 	pm_runtime_use_autosuspend(dev);
-	pm_runtime_set_autosuspend_delay(dev, 40); /* a little over 2 frames. */
+	pm_runtime_set_autosuspend_delay(dev, 40);  
 
 	return 0;
 
@@ -508,10 +450,7 @@ static void vc4_v3d_unbind(struct device *dev, struct device *master,
 
 	vc4_irq_uninstall(drm);
 
-	/* Disable the binner's overflow memory address, so the next
-	 * driver probe (if any) doesn't try to reuse our old
-	 * allocation.
-	 */
+	 
 	V3D_WRITE(V3D_BPOA, 0);
 	V3D_WRITE(V3D_BPOS, 0);
 

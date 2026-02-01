@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Maxim MAX9286 Quad GMSL2 Deserializer Driver
- *
- * Copyright (C) 2021 Renesas Electronics Corporation
- * Copyright (C) 2021 Niklas Söderlund
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -125,39 +120,39 @@ static void max96712_mipi_configure(struct max96712_priv *priv)
 
 	max96712_mipi_enable(priv, false);
 
-	/* Select 2x4 mode. */
+	 
 	max96712_write(priv, 0x8a0, 0x04);
 
-	/* TODO: Add support for 2-lane and 1-lane configurations. */
+	 
 	if (priv->cphy) {
-		/* Configure a 3-lane C-PHY using PHY0 and PHY1. */
+		 
 		max96712_write(priv, 0x94a, 0xa0);
 
-		/* Configure C-PHY timings. */
+		 
 		max96712_write(priv, 0x8ad, 0x3f);
 		max96712_write(priv, 0x8ae, 0x7d);
 	} else {
-		/* Configure a 4-lane D-PHY using PHY0 and PHY1. */
+		 
 		max96712_write(priv, 0x94a, 0xc0);
 	}
 
-	/* Configure lane mapping for PHY0 and PHY1. */
-	/* TODO: Add support for lane swapping. */
+	 
+	 
 	max96712_write(priv, 0x8a3, 0xe4);
 
-	/* Configure lane polarity for PHY0 and PHY1. */
+	 
 	for (i = 0; i < priv->mipi.num_data_lanes + 1; i++)
 		if (priv->mipi.lane_polarities[i])
 			phy5 |= BIT(i == 0 ? 5 : i < 3 ? i - 1 : i);
 	max96712_write(priv, 0x8a5, phy5);
 
-	/* Set link frequency for PHY0 and PHY1. */
+	 
 	max96712_update_bits(priv, 0x415, 0x3f,
 			     ((MAX96712_DPLL_FREQ / 100) & 0x1f) | BIT(5));
 	max96712_update_bits(priv, 0x418, 0x3f,
 			     ((MAX96712_DPLL_FREQ / 100) & 0x1f) | BIT(5));
 
-	/* Enable PHY0 and PHY1 */
+	 
 	max96712_update_bits(priv, 0x8a2, 0xf0, 0x30);
 }
 
@@ -180,10 +175,10 @@ static void max96712_pattern_enable(struct max96712_priv *priv, bool enable)
 		return;
 	}
 
-	/* PCLK 75MHz. */
+	 
 	max96712_write(priv, 0x0009, 0x01);
 
-	/* Configure Video Timing Generator for 1920x1080 @ 30 fps. */
+	 
 	max96712_write_bulk_value(priv, 0x1052, 0, 3);
 	max96712_write_bulk_value(priv, 0x1055, v_sw * h_tot, 3);
 	max96712_write_bulk_value(priv, 0x1058,
@@ -198,27 +193,27 @@ static void max96712_pattern_enable(struct max96712_priv *priv, bool enable)
 	max96712_write_bulk_value(priv, 0x1069, h_fp + h_sw + h_bp, 2);
 	max96712_write_bulk_value(priv, 0x106b, v_active, 2);
 
-	/* Generate VS, HS and DE in free-running mode. */
+	 
 	max96712_write(priv, 0x1050, 0xfb);
 
-	/* Configure Video Pattern Generator. */
+	 
 	if (priv->pattern == MAX96712_PATTERN_CHECKERBOARD) {
-		/* Set checkerboard pattern size. */
+		 
 		max96712_write(priv, 0x1074, 0x3c);
 		max96712_write(priv, 0x1075, 0x3c);
 		max96712_write(priv, 0x1076, 0x3c);
 
-		/* Set checkerboard pattern colors. */
+		 
 		max96712_write_bulk_value(priv, 0x106e, 0xfecc00, 3);
 		max96712_write_bulk_value(priv, 0x1071, 0x006aa7, 3);
 
-		/* Generate checkerboard pattern. */
+		 
 		max96712_write(priv, 0x1051, 0x10);
 	} else {
-		/* Set gradient increment. */
+		 
 		max96712_write(priv, 0x106d, 0x10);
 
-		/* Generate gradient pattern. */
+		 
 		max96712_write(priv, 0x1051, 0x20);
 	}
 }
@@ -299,10 +294,7 @@ static int max96712_v4l2_register(struct max96712_priv *priv)
 
 	v4l2_ctrl_handler_init(&priv->ctrl_handler, 2);
 
-	/*
-	 * TODO: Once V4L2_CID_LINK_FREQ is changed from a menu control to an
-	 * INT64 control it should be used here instead of V4L2_CID_PIXEL_RATE.
-	 */
+	 
 	pixel_rate = MAX96712_DPLL_FREQ / priv->mipi.num_data_lanes * 1000000;
 	v4l2_ctrl_new_std(&priv->ctrl_handler, NULL, V4L2_CID_PIXEL_RATE,
 			  pixel_rate, pixel_rate, 1, pixel_rate);
@@ -444,7 +436,7 @@ static void max96712_remove(struct i2c_client *client)
 
 static const struct of_device_id max96712_of_table[] = {
 	{ .compatible = "maxim,max96712" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, max96712_of_table);
 

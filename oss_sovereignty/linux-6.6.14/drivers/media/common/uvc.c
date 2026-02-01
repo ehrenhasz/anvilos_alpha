@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
+
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -7,9 +7,7 @@
 #include <linux/usb/uvc.h>
 #include <linux/videodev2.h>
 
-/* ------------------------------------------------------------------------
- * Video formats
- */
+ 
 
 static const struct uvc_format_desc uvc_fmts[] = {
 	{

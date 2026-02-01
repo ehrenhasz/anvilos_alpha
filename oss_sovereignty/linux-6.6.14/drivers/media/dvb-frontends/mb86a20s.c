@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *   Fujitu mb86a20s ISDB-T/ISDB-Tsb Module driver
- *
- *   Copyright (C) 2010-2013 Mauro Carvalho Chehab
- *   Copyright (C) 2009-2010 Douglas Landgraf <dougsland@redhat.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <asm/div64.h>
@@ -49,12 +44,9 @@ struct regdata {
 	u8 data;
 };
 
-#define BER_SAMPLING_RATE	1	/* Seconds */
+#define BER_SAMPLING_RATE	1	 
 
-/*
- * Initialization sequence: Use whatevere default values that PV SBTVD
- * does on its initialisation, obtained via USB snoop
- */
+ 
 static struct regdata mb86a20s_init1[] = {
 	{ 0x70, 0x0f },
 	{ 0x70, 0xff },
@@ -92,14 +84,8 @@ static struct regdata mb86a20s_init2[] = {
 	{ 0x04, 0x12 }, { 0x05, 0x00 },
 	{ 0x04, 0x13 }, { 0x05, 0xff },
 
-	/*
-	 * On this demod, when the bit count reaches the count below,
-	 * it collects the bit error count. The bit counters are initialized
-	 * to 65535 here. This warrants that all of them will be quickly
-	 * calculated when device gets locked. As TMCC is parsed, the values
-	 * will be adjusted later in the driver's code.
-	 */
-	{ 0x52, 0x01 },				/* Turn on BER before Viterbi */
+	 
+	{ 0x52, 0x01 },				 
 	{ 0x50, 0xa7 }, { 0x51, 0x00 },
 	{ 0x50, 0xa8 }, { 0x51, 0xff },
 	{ 0x50, 0xa9 }, { 0x51, 0xff },
@@ -110,14 +96,8 @@ static struct regdata mb86a20s_init2[] = {
 	{ 0x50, 0xae }, { 0x51, 0xff },
 	{ 0x50, 0xaf }, { 0x51, 0xff },
 
-	/*
-	 * On this demod, post BER counts blocks. When the count reaches the
-	 * value below, it collects the block error count. The block counters
-	 * are initialized to 127 here. This warrants that all of them will be
-	 * quickly calculated when device gets locked. As TMCC is parsed, the
-	 * values will be adjusted later in the driver's code.
-	 */
-	{ 0x5e, 0x07 },				/* Turn on BER after Viterbi */
+	 
+	{ 0x5e, 0x07 },				 
 	{ 0x50, 0xdc }, { 0x51, 0x00 },
 	{ 0x50, 0xdd }, { 0x51, 0x7f },
 	{ 0x50, 0xde }, { 0x51, 0x00 },
@@ -125,14 +105,8 @@ static struct regdata mb86a20s_init2[] = {
 	{ 0x50, 0xe0 }, { 0x51, 0x00 },
 	{ 0x50, 0xe1 }, { 0x51, 0x7f },
 
-	/*
-	 * On this demod, when the block count reaches the count below,
-	 * it collects the block error count. The block counters are initialized
-	 * to 127 here. This warrants that all of them will be quickly
-	 * calculated when device gets locked. As TMCC is parsed, the values
-	 * will be adjusted later in the driver's code.
-	 */
-	{ 0x50, 0xb0 }, { 0x51, 0x07 },		/* Enable PER */
+	 
+	{ 0x50, 0xb0 }, { 0x51, 0x07 },		 
 	{ 0x50, 0xb2 }, { 0x51, 0x00 },
 	{ 0x50, 0xb3 }, { 0x51, 0x7f },
 	{ 0x50, 0xb4 }, { 0x51, 0x00 },
@@ -140,10 +114,10 @@ static struct regdata mb86a20s_init2[] = {
 	{ 0x50, 0xb6 }, { 0x51, 0x00 },
 	{ 0x50, 0xb7 }, { 0x51, 0x7f },
 
-	{ 0x50, 0x50 }, { 0x51, 0x02 },		/* MER manual mode */
-	{ 0x50, 0x51 }, { 0x51, 0x04 },		/* MER symbol 4 */
-	{ 0x45, 0x04 },				/* CN symbol 4 */
-	{ 0x48, 0x04 },				/* CN manual mode */
+	{ 0x50, 0x50 }, { 0x51, 0x02 },		 
+	{ 0x50, 0x51 }, { 0x51, 0x04 },		 
+	{ 0x45, 0x04 },				 
+	{ 0x48, 0x04 },				 
 	{ 0x50, 0xd5 }, { 0x51, 0x01 },
 	{ 0x50, 0xd6 }, { 0x51, 0x1f },
 	{ 0x50, 0xd2 }, { 0x51, 0x03 },
@@ -194,20 +168,18 @@ static struct regdata mb86a20s_reset_reception[] = {
 };
 
 static struct regdata mb86a20s_per_ber_reset[] = {
-	{ 0x53, 0x00 },	/* pre BER Counter reset */
+	{ 0x53, 0x00 },	 
 	{ 0x53, 0x07 },
 
-	{ 0x5f, 0x00 },	/* post BER Counter reset */
+	{ 0x5f, 0x00 },	 
 	{ 0x5f, 0x07 },
 
-	{ 0x50, 0xb1 },	/* PER Counter reset */
+	{ 0x50, 0xb1 },	 
 	{ 0x51, 0x07 },
 	{ 0x51, 0x00 },
 };
 
-/*
- * I2C read/write functions and macros
- */
+ 
 
 static int mb86a20s_i2c_writereg(struct mb86a20s_state *state,
 			     u8 i2c_addr, u8 reg, u8 data)
@@ -272,11 +244,7 @@ static int mb86a20s_i2c_readreg(struct mb86a20s_state *state,
 	mb86a20s_i2c_writeregdata(state, state->config->demod_address, \
 	regdata, ARRAY_SIZE(regdata))
 
-/*
- * Ancillary internal routines (likely compiled inlined)
- *
- * The functions below assume that gateway lock has already obtained
- */
+ 
 
 static int mb86a20s_read_status(struct dvb_frontend *fe, enum fe_status *status)
 {
@@ -302,10 +270,7 @@ static int mb86a20s_read_status(struct dvb_frontend *fe, enum fe_status *status)
 	if (val >= 7)
 		*status |= FE_HAS_SYNC;
 
-	/*
-	 * Actually, on state S8, it starts receiving TS, but the TS
-	 * output is only on normal state after the transition to S9.
-	 */
+	 
 	if (val >= 9)
 		*status |= FE_HAS_LOCK;
 
@@ -326,10 +291,10 @@ static int mb86a20s_read_signal_strength(struct dvb_frontend *fe)
 	   (!time_after(jiffies, state->get_strength_time)))
 		return c->strength.stat[0].uvalue;
 
-	/* Reset its value if an error happen */
+	 
 	c->strength.stat[0].uvalue = 0;
 
-	/* Does a binary search to get RF strength */
+	 
 	rf_max = 0xfff;
 	rf_min = 0;
 	do {
@@ -357,7 +322,7 @@ static int mb86a20s_read_signal_strength(struct dvb_frontend *fe)
 		if (rf_max - rf_min < 4) {
 			rf = (rf_max + rf_min) / 2;
 
-			/* Rescale it from 2^12 (4096) to 2^16 */
+			 
 			rf = rf << (16 - 12);
 			if (rf)
 				rf |= (1 << 12) - 1;
@@ -378,9 +343,9 @@ static int mb86a20s_get_modulation(struct mb86a20s_state *state,
 {
 	int rc;
 	static unsigned char reg[] = {
-		[0] = 0x86,	/* Layer A */
-		[1] = 0x8a,	/* Layer B */
-		[2] = 0x8e,	/* Layer C */
+		[0] = 0x86,	 
+		[1] = 0x8a,	 
+		[2] = 0x8e,	 
 	};
 
 	if (layer >= ARRAY_SIZE(reg))
@@ -411,9 +376,9 @@ static int mb86a20s_get_fec(struct mb86a20s_state *state,
 	int rc;
 
 	static unsigned char reg[] = {
-		[0] = 0x87,	/* Layer A */
-		[1] = 0x8b,	/* Layer B */
-		[2] = 0x8f,	/* Layer C */
+		[0] = 0x87,	 
+		[1] = 0x8b,	 
+		[2] = 0x8f,	 
 	};
 
 	if (layer >= ARRAY_SIZE(reg))
@@ -449,9 +414,9 @@ static int mb86a20s_get_interleaving(struct mb86a20s_state *state,
 	};
 
 	static const unsigned char reg[] = {
-		[0] = 0x88,	/* Layer A */
-		[1] = 0x8c,	/* Layer B */
-		[2] = 0x90,	/* Layer C */
+		[0] = 0x88,	 
+		[1] = 0x8c,	 
+		[2] = 0x90,	 
 	};
 
 	if (layer >= ARRAY_SIZE(reg))
@@ -471,9 +436,9 @@ static int mb86a20s_get_segment_count(struct mb86a20s_state *state,
 {
 	int rc, count;
 	static unsigned char reg[] = {
-		[0] = 0x89,	/* Layer A */
-		[1] = 0x8d,	/* Layer B */
-		[2] = 0x91,	/* Layer C */
+		[0] = 0x89,	 
+		[1] = 0x8d,	 
+		[2] = 0x91,	 
 	};
 
 	dev_dbg(&state->i2c->dev, "%s called.\n", __func__);
@@ -501,11 +466,11 @@ static void mb86a20s_reset_frontend_cache(struct dvb_frontend *fe)
 
 	dev_dbg(&state->i2c->dev, "%s called.\n", __func__);
 
-	/* Fixed parameters */
+	 
 	c->delivery_system = SYS_ISDBT;
 	c->bandwidth_hz = 6000000;
 
-	/* Initialize values that will be later autodetected */
+	 
 	c->isdbt_layer_enabled = 0;
 	c->transmission_mode = TRANSMISSION_MODE_AUTO;
 	c->guard_interval = GUARD_INTERVAL_AUTO;
@@ -513,29 +478,26 @@ static void mb86a20s_reset_frontend_cache(struct dvb_frontend *fe)
 	c->isdbt_sb_segment_count = 0;
 }
 
-/*
- * Estimates the bit rate using the per-segment bit rate given by
- * ABNT/NBR 15601 spec (table 4).
- */
+ 
 static const u32 isdbt_rate[3][5][4] = {
-	{	/* DQPSK/QPSK */
-		{  280850,  312060,  330420,  340430 },	/* 1/2 */
-		{  374470,  416080,  440560,  453910 },	/* 2/3 */
-		{  421280,  468090,  495630,  510650 },	/* 3/4 */
-		{  468090,  520100,  550700,  567390 },	/* 5/6 */
-		{  491500,  546110,  578230,  595760 },	/* 7/8 */
-	}, {	/* QAM16 */
-		{  561710,  624130,  660840,  680870 },	/* 1/2 */
-		{  748950,  832170,  881120,  907820 },	/* 2/3 */
-		{  842570,  936190,  991260, 1021300 },	/* 3/4 */
-		{  936190, 1040210, 1101400, 1134780 },	/* 5/6 */
-		{  983000, 1092220, 1156470, 1191520 },	/* 7/8 */
-	}, {	/* QAM64 */
-		{  842570,  936190,  991260, 1021300 },	/* 1/2 */
-		{ 1123430, 1248260, 1321680, 1361740 },	/* 2/3 */
-		{ 1263860, 1404290, 1486900, 1531950 },	/* 3/4 */
-		{ 1404290, 1560320, 1652110, 1702170 },	/* 5/6 */
-		{ 1474500, 1638340, 1734710, 1787280 },	/* 7/8 */
+	{	 
+		{  280850,  312060,  330420,  340430 },	 
+		{  374470,  416080,  440560,  453910 },	 
+		{  421280,  468090,  495630,  510650 },	 
+		{  468090,  520100,  550700,  567390 },	 
+		{  491500,  546110,  578230,  595760 },	 
+	}, {	 
+		{  561710,  624130,  660840,  680870 },	 
+		{  748950,  832170,  881120,  907820 },	 
+		{  842570,  936190,  991260, 1021300 },	 
+		{  936190, 1040210, 1101400, 1134780 },	 
+		{  983000, 1092220, 1156470, 1191520 },	 
+	}, {	 
+		{  842570,  936190,  991260, 1021300 },	 
+		{ 1123430, 1248260, 1321680, 1361740 },	 
+		{ 1263860, 1404290, 1486900, 1531950 },	 
+		{ 1404290, 1560320, 1652110, 1702170 },	 
+		{ 1474500, 1638340, 1734710, 1787280 },	 
 	}
 };
 
@@ -544,11 +506,7 @@ static u32 isdbt_layer_min_bitrate(struct dtv_frontend_properties *c,
 {
 	int mod, fec, guard;
 
-	/*
-	 * If modulation/fec/guard is not detected, the default is
-	 * to consider the lowest bit rate, to avoid taking too long time
-	 * to get BER.
-	 */
+	 
 	switch (c->layer[layer].modulation) {
 	case DQPSK:
 	case QPSK:
@@ -610,10 +568,10 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 
 	dev_dbg(&state->i2c->dev, "%s called.\n", __func__);
 
-	/* Reset frontend cache to default values */
+	 
 	mb86a20s_reset_frontend_cache(fe);
 
-	/* Check for partial reception */
+	 
 	rc = mb86a20s_writereg(state, 0x6d, 0x85);
 	if (rc < 0)
 		return rc;
@@ -622,7 +580,7 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 		return rc;
 	c->isdbt_partial_reception = (rc & 0x10) ? 1 : 0;
 
-	/* Get per-layer data */
+	 
 
 	for (layer = 0; layer < NUM_LAYERS; layer++) {
 		dev_dbg(&state->i2c->dev, "%s: getting data for layer %c.\n",
@@ -661,7 +619,7 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 		rate = isdbt_layer_min_bitrate(c, layer);
 		counter = rate * BER_SAMPLING_RATE;
 
-		/* Avoids sampling too quickly or to overflow the register */
+		 
 		if (counter < 256)
 			counter = 256;
 		else if (counter > (1 << 24) - 1)
@@ -679,18 +637,18 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 		return rc;
 	if ((rc & 0x60) == 0x20) {
 		c->isdbt_sb_mode = 1;
-		/* At least, one segment should exist */
+		 
 		if (!c->isdbt_sb_segment_count)
 			c->isdbt_sb_segment_count = 1;
 	}
 
-	/* Get transmission mode and guard interval */
+	 
 	rc = mb86a20s_readreg(state, 0x07);
 	if (rc < 0)
 		return rc;
 	c->transmission_mode = TRANSMISSION_MODE_AUTO;
 	if ((rc & 0x60) == 0x20) {
-		/* Only modes 2 and 3 are supported */
+		 
 		switch ((rc >> 2) & 0x03) {
 		case 1:
 			c->transmission_mode = TRANSMISSION_MODE_4K;
@@ -702,7 +660,7 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 	}
 	c->guard_interval = GUARD_INTERVAL_AUTO;
 	if (!(rc & 0x10)) {
-		/* Guard interval 1/32 is not supported */
+		 
 		switch (rc & 0x3) {
 		case 0:
 			c->guard_interval = GUARD_INTERVAL_1_4;
@@ -719,7 +677,7 @@ static int mb86a20s_get_frontend(struct dvb_frontend *fe)
 
 noperlayer_error:
 
-	/* per-layer info is incomplete; discard all per-layer */
+	 
 	c->isdbt_layer_enabled = 0;
 
 	return rc;
@@ -733,7 +691,7 @@ static int mb86a20s_reset_counters(struct dvb_frontend *fe)
 
 	dev_dbg(&state->i2c->dev, "%s called.\n", __func__);
 
-	/* Reset the counters, if the channel changed */
+	 
 	if (state->last_frequency != c->frequency) {
 		memset(&c->cnr, 0, sizeof(c->cnr));
 		memset(&c->pre_bit_error, 0, sizeof(c->pre_bit_error));
@@ -746,14 +704,14 @@ static int mb86a20s_reset_counters(struct dvb_frontend *fe)
 		state->last_frequency = c->frequency;
 	}
 
-	/* Clear status for most stats */
+	 
 
-	/* BER/PER counter reset */
+	 
 	rc = mb86a20s_writeregdata(state, mb86a20s_per_ber_reset);
 	if (rc < 0)
 		goto err;
 
-	/* CNR counter reset */
+	 
 	rc = mb86a20s_readreg(state, 0x45);
 	if (rc < 0)
 		goto err;
@@ -765,7 +723,7 @@ static int mb86a20s_reset_counters(struct dvb_frontend *fe)
 	if (rc < 0)
 		goto err;
 
-	/* MER counter reset */
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0x50);
 	if (rc < 0)
 		goto err;
@@ -801,12 +759,12 @@ static int mb86a20s_get_pre_ber(struct dvb_frontend *fe,
 	if (layer >= NUM_LAYERS)
 		return -EINVAL;
 
-	/* Check if the BER measures are already available */
+	 
 	rc = mb86a20s_readreg(state, 0x54);
 	if (rc < 0)
 		return rc;
 
-	/* Check if data is available for that layer */
+	 
 	if (!(rc & (1 << layer))) {
 		dev_dbg(&state->i2c->dev,
 			"%s: preBER for layer %c is not available yet.\n",
@@ -814,7 +772,7 @@ static int mb86a20s_get_pre_ber(struct dvb_frontend *fe,
 		return -EBUSY;
 	}
 
-	/* Read Bit Error Count */
+	 
 	rc = mb86a20s_readreg(state, 0x55 + layer * 3);
 	if (rc < 0)
 		return rc;
@@ -832,7 +790,7 @@ static int mb86a20s_get_pre_ber(struct dvb_frontend *fe,
 		"%s: bit error before Viterbi for layer %c: %d.\n",
 		__func__, 'A' + layer, *error);
 
-	/* Read Bit Count */
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0xa7 + layer * 3);
 	if (rc < 0)
 		return rc;
@@ -860,12 +818,7 @@ static int mb86a20s_get_pre_ber(struct dvb_frontend *fe,
 		__func__, 'A' + layer, *count);
 
 
-	/*
-	 * As we get TMCC data from the frontend, we can better estimate the
-	 * BER bit counters, in order to do the BER measure during a longer
-	 * time. Use those data, if available, to update the bit count
-	 * measure.
-	 */
+	 
 
 	if (state->estimated_rate[layer]
 	    && state->estimated_rate[layer] != *count) {
@@ -873,10 +826,10 @@ static int mb86a20s_get_pre_ber(struct dvb_frontend *fe,
 			"%s: updating layer %c preBER counter to %d.\n",
 			__func__, 'A' + layer, state->estimated_rate[layer]);
 
-		/* Turn off BER before Viterbi */
+		 
 		rc = mb86a20s_writereg(state, 0x52, 0x00);
 
-		/* Update counter for this layer */
+		 
 		rc = mb86a20s_writereg(state, 0x50, 0xa7 + layer * 3);
 		if (rc < 0)
 			return rc;
@@ -899,16 +852,16 @@ static int mb86a20s_get_pre_ber(struct dvb_frontend *fe,
 		if (rc < 0)
 			return rc;
 
-		/* Turn on BER before Viterbi */
+		 
 		rc = mb86a20s_writereg(state, 0x52, 0x01);
 
-		/* Reset all preBER counters */
+		 
 		rc = mb86a20s_writereg(state, 0x53, 0x00);
 		if (rc < 0)
 			return rc;
 		rc = mb86a20s_writereg(state, 0x53, 0x07);
 	} else {
-		/* Reset counter to collect new data */
+		 
 		rc = mb86a20s_readreg(state, 0x53);
 		if (rc < 0)
 			return rc;
@@ -935,12 +888,12 @@ static int mb86a20s_get_post_ber(struct dvb_frontend *fe,
 	if (layer >= NUM_LAYERS)
 		return -EINVAL;
 
-	/* Check if the BER measures are already available */
+	 
 	rc = mb86a20s_readreg(state, 0x60);
 	if (rc < 0)
 		return rc;
 
-	/* Check if data is available for that layer */
+	 
 	if (!(rc & (1 << layer))) {
 		dev_dbg(&state->i2c->dev,
 			"%s: post BER for layer %c is not available yet.\n",
@@ -948,7 +901,7 @@ static int mb86a20s_get_post_ber(struct dvb_frontend *fe,
 		return -EBUSY;
 	}
 
-	/* Read Bit Error Count */
+	 
 	rc = mb86a20s_readreg(state, 0x64 + layer * 3);
 	if (rc < 0)
 		return rc;
@@ -966,7 +919,7 @@ static int mb86a20s_get_post_ber(struct dvb_frontend *fe,
 		"%s: post bit error for layer %c: %d.\n",
 		__func__, 'A' + layer, *error);
 
-	/* Read Bit Count */
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0xdc + layer * 2);
 	if (rc < 0)
 		return rc;
@@ -987,12 +940,7 @@ static int mb86a20s_get_post_ber(struct dvb_frontend *fe,
 		"%s: post bit count for layer %c: %d.\n",
 		__func__, 'A' + layer, *count);
 
-	/*
-	 * As we get TMCC data from the frontend, we can better estimate the
-	 * BER bit counters, in order to do the BER measure during a longer
-	 * time. Use those data, if available, to update the bit count
-	 * measure.
-	 */
+	 
 
 	if (!state->estimated_rate[layer])
 		goto reset_measurement;
@@ -1007,10 +955,10 @@ static int mb86a20s_get_post_ber(struct dvb_frontend *fe,
 			"%s: updating postBER counter on layer %c to %d.\n",
 			__func__, 'A' + layer, collect_rate);
 
-		/* Turn off BER after Viterbi */
+		 
 		rc = mb86a20s_writereg(state, 0x5e, 0x00);
 
-		/* Update counter for this layer */
+		 
 		rc = mb86a20s_writereg(state, 0x50, 0xdc + layer * 2);
 		if (rc < 0)
 			return rc;
@@ -1024,10 +972,10 @@ static int mb86a20s_get_post_ber(struct dvb_frontend *fe,
 		if (rc < 0)
 			return rc;
 
-		/* Turn on BER after Viterbi */
+		 
 		rc = mb86a20s_writereg(state, 0x5e, 0x07);
 
-		/* Reset all preBER counters */
+		 
 		rc = mb86a20s_writereg(state, 0x5f, 0x00);
 		if (rc < 0)
 			return rc;
@@ -1037,7 +985,7 @@ static int mb86a20s_get_post_ber(struct dvb_frontend *fe,
 	}
 
 reset_measurement:
-	/* Reset counter to collect new data */
+	 
 	rc = mb86a20s_readreg(state, 0x5f);
 	if (rc < 0)
 		return rc;
@@ -1062,7 +1010,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 	if (layer >= NUM_LAYERS)
 		return -EINVAL;
 
-	/* Check if the PER measures are already available */
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0xb8);
 	if (rc < 0)
 		return rc;
@@ -1070,7 +1018,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 	if (rc < 0)
 		return rc;
 
-	/* Check if data is available for that layer */
+	 
 
 	if (!(rc & (1 << layer))) {
 		dev_dbg(&state->i2c->dev,
@@ -1079,7 +1027,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 		return -EBUSY;
 	}
 
-	/* Read Packet error Count */
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0xb9 + layer * 2);
 	if (rc < 0)
 		return rc;
@@ -1097,7 +1045,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 	dev_dbg(&state->i2c->dev, "%s: block error for layer %c: %d.\n",
 		__func__, 'A' + layer, *error);
 
-	/* Read Bit Count */
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0xb2 + layer * 2);
 	if (rc < 0)
 		return rc;
@@ -1117,12 +1065,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 		"%s: block count for layer %c: %d.\n",
 		__func__, 'A' + layer, *count);
 
-	/*
-	 * As we get TMCC data from the frontend, we can better estimate the
-	 * BER bit counters, in order to do the BER measure during a longer
-	 * time. Use those data, if available, to update the bit count
-	 * measure.
-	 */
+	 
 
 	if (!state->estimated_rate[layer])
 		goto reset_measurement;
@@ -1138,7 +1081,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 			"%s: updating PER counter on layer %c to %d.\n",
 			__func__, 'A' + layer, collect_rate);
 
-		/* Stop PER measurement */
+		 
 		rc = mb86a20s_writereg(state, 0x50, 0xb0);
 		if (rc < 0)
 			return rc;
@@ -1146,7 +1089,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 		if (rc < 0)
 			return rc;
 
-		/* Update this layer's counter */
+		 
 		rc = mb86a20s_writereg(state, 0x50, 0xb2 + layer * 2);
 		if (rc < 0)
 			return rc;
@@ -1160,7 +1103,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 		if (rc < 0)
 			return rc;
 
-		/* start PER measurement */
+		 
 		rc = mb86a20s_writereg(state, 0x50, 0xb0);
 		if (rc < 0)
 			return rc;
@@ -1168,7 +1111,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 		if (rc < 0)
 			return rc;
 
-		/* Reset all counters to collect new data */
+		 
 		rc = mb86a20s_writereg(state, 0x50, 0xb1);
 		if (rc < 0)
 			return rc;
@@ -1181,7 +1124,7 @@ static int mb86a20s_get_blk_error(struct dvb_frontend *fe,
 	}
 
 reset_measurement:
-	/* Reset counter to collect new data */
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0xb1);
 	if (rc < 0)
 		return rc;
@@ -1201,9 +1144,7 @@ struct linear_segments {
 	unsigned x, y;
 };
 
-/*
- * All tables below return a dB/1000 measurement
- */
+ 
 
 static const struct linear_segments cnr_to_db_table[] = {
 	{ 19648,     0},
@@ -1354,14 +1295,14 @@ static u32 interpolate_value(u32 value, const struct linear_segments *segments,
 		return segments[len-1].y;
 
 	for (i = 1; i < len - 1; i++) {
-		/* If value is identical, no need to interpolate */
+		 
 		if (value == segments[i].x)
 			return segments[i].y;
 		if (value > segments[i].x)
 			break;
 	}
 
-	/* Linear interpolation between the two (x,y) points */
+	 
 	dy = segments[i].y - segments[i - 1].y;
 	dx = segments[i - 1].x - segments[i].x;
 	tmp64 = value - segments[i].x;
@@ -1379,7 +1320,7 @@ static int mb86a20s_get_main_CNR(struct dvb_frontend *fe)
 	u32 cnr_linear, cnr;
 	int rc, val;
 
-	/* Check if CNR is available */
+	 
 	rc = mb86a20s_readreg(state, 0x45);
 	if (rc < 0)
 		return rc;
@@ -1410,7 +1351,7 @@ static int mb86a20s_get_main_CNR(struct dvb_frontend *fe)
 	dev_dbg(&state->i2c->dev, "%s: CNR is %d.%03d dB (%d)\n",
 		__func__, cnr / 1000, cnr % 1000, cnr_linear);
 
-	/* CNR counter reset */
+	 
 	rc = mb86a20s_writereg(state, 0x45, val | 0x10);
 	if (rc < 0)
 		return rc;
@@ -1430,7 +1371,7 @@ static int mb86a20s_get_blk_error_layer_CNR(struct dvb_frontend *fe)
 
 	dev_dbg(&state->i2c->dev, "%s called.\n", __func__);
 
-	/* Check if the measures are already available */
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0x5b);
 	if (rc < 0)
 		return rc;
@@ -1438,14 +1379,14 @@ static int mb86a20s_get_blk_error_layer_CNR(struct dvb_frontend *fe)
 	if (rc < 0)
 		return rc;
 
-	/* Check if data is available */
+	 
 	if (!(rc & 0x01)) {
 		dev_dbg(&state->i2c->dev,
 			"%s: MER measures aren't available yet.\n", __func__);
 		return -EBUSY;
 	}
 
-	/* Read all layers */
+	 
 	for (layer = 0; layer < NUM_LAYERS; layer++) {
 		if (!(c->isdbt_layer_enabled & (1 << layer))) {
 			c->cnr.stat[1 + layer].scale = FE_SCALE_NOT_AVAILABLE;
@@ -1501,8 +1442,8 @@ static int mb86a20s_get_blk_error_layer_CNR(struct dvb_frontend *fe)
 
 	}
 
-	/* Start a new MER measurement */
-	/* MER counter reset */
+	 
+	 
 	rc = mb86a20s_writereg(state, 0x50, 0x50);
 	if (rc < 0)
 		return rc;
@@ -1529,12 +1470,12 @@ static void mb86a20s_stats_not_ready(struct dvb_frontend *fe)
 
 	dev_dbg(&state->i2c->dev, "%s called.\n", __func__);
 
-	/* Fill the length of each status counter */
+	 
 
-	/* Only global stats */
+	 
 	c->strength.len = 1;
 
-	/* Per-layer stats - 3 layers + global */
+	 
 	c->cnr.len = NUM_LAYERS + 1;
 	c->pre_bit_error.len = NUM_LAYERS + 1;
 	c->pre_bit_count.len = NUM_LAYERS + 1;
@@ -1543,11 +1484,11 @@ static void mb86a20s_stats_not_ready(struct dvb_frontend *fe)
 	c->block_error.len = NUM_LAYERS + 1;
 	c->block_count.len = NUM_LAYERS + 1;
 
-	/* Signal is always available */
+	 
 	c->strength.stat[0].scale = FE_SCALE_RELATIVE;
 	c->strength.stat[0].uvalue = 0;
 
-	/* Put all of them at FE_SCALE_NOT_AVAILABLE */
+	 
 	for (layer = 0; layer < NUM_LAYERS + 1; layer++) {
 		c->cnr.stat[layer].scale = FE_SCALE_NOT_AVAILABLE;
 		c->pre_bit_error.stat[layer].scale = FE_SCALE_NOT_AVAILABLE;
@@ -1576,20 +1517,16 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 
 	mb86a20s_get_main_CNR(fe);
 
-	/* Get per-layer stats */
+	 
 	mb86a20s_get_blk_error_layer_CNR(fe);
 
-	/*
-	 * At state 7, only CNR is available
-	 * For BER measures, state=9 is required
-	 * FIXME: we may get MER measures with state=8
-	 */
+	 
 	if (status_nr < 9)
 		return 0;
 
 	for (layer = 0; layer < NUM_LAYERS; layer++) {
 		if (c->isdbt_layer_enabled & (1 << layer)) {
-			/* Handle BER before vterbi */
+			 
 			rc = mb86a20s_get_pre_ber(fe, layer,
 						  &bit_error, &bit_count);
 			if (rc >= 0) {
@@ -1598,10 +1535,7 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 				c->pre_bit_count.stat[1 + layer].scale = FE_SCALE_COUNTER;
 				c->pre_bit_count.stat[1 + layer].uvalue += bit_count;
 			} else if (rc != -EBUSY) {
-				/*
-					* If an I/O error happened,
-					* measures are now unavailable
-					*/
+				 
 				c->pre_bit_error.stat[1 + layer].scale = FE_SCALE_NOT_AVAILABLE;
 				c->pre_bit_count.stat[1 + layer].scale = FE_SCALE_NOT_AVAILABLE;
 				dev_err(&state->i2c->dev,
@@ -1611,7 +1545,7 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 			if (c->block_error.stat[1 + layer].scale != FE_SCALE_NOT_AVAILABLE)
 				pre_ber_layers++;
 
-			/* Handle BER post vterbi */
+			 
 			rc = mb86a20s_get_post_ber(fe, layer,
 						   &bit_error, &bit_count);
 			if (rc >= 0) {
@@ -1620,10 +1554,7 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 				c->post_bit_count.stat[1 + layer].scale = FE_SCALE_COUNTER;
 				c->post_bit_count.stat[1 + layer].uvalue += bit_count;
 			} else if (rc != -EBUSY) {
-				/*
-					* If an I/O error happened,
-					* measures are now unavailable
-					*/
+				 
 				c->post_bit_error.stat[1 + layer].scale = FE_SCALE_NOT_AVAILABLE;
 				c->post_bit_count.stat[1 + layer].scale = FE_SCALE_NOT_AVAILABLE;
 				dev_err(&state->i2c->dev,
@@ -1633,7 +1564,7 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 			if (c->block_error.stat[1 + layer].scale != FE_SCALE_NOT_AVAILABLE)
 				post_ber_layers++;
 
-			/* Handle Block errors for PER/UCB reports */
+			 
 			rc = mb86a20s_get_blk_error(fe, layer,
 						&block_error,
 						&block_count);
@@ -1643,10 +1574,7 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 				c->block_count.stat[1 + layer].scale = FE_SCALE_COUNTER;
 				c->block_count.stat[1 + layer].uvalue += block_count;
 			} else if (rc != -EBUSY) {
-				/*
-					* If an I/O error happened,
-					* measures are now unavailable
-					*/
+				 
 				c->block_error.stat[1 + layer].scale = FE_SCALE_NOT_AVAILABLE;
 				c->block_count.stat[1 + layer].scale = FE_SCALE_NOT_AVAILABLE;
 				dev_err(&state->i2c->dev,
@@ -1657,32 +1585,23 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 			if (c->block_error.stat[1 + layer].scale != FE_SCALE_NOT_AVAILABLE)
 				per_layers++;
 
-			/* Update total preBER */
+			 
 			t_pre_bit_error += c->pre_bit_error.stat[1 + layer].uvalue;
 			t_pre_bit_count += c->pre_bit_count.stat[1 + layer].uvalue;
 
-			/* Update total postBER */
+			 
 			t_post_bit_error += c->post_bit_error.stat[1 + layer].uvalue;
 			t_post_bit_count += c->post_bit_count.stat[1 + layer].uvalue;
 
-			/* Update total PER */
+			 
 			t_block_error += c->block_error.stat[1 + layer].uvalue;
 			t_block_count += c->block_count.stat[1 + layer].uvalue;
 		}
 	}
 
-	/*
-	 * Start showing global count if at least one error count is
-	 * available.
-	 */
+	 
 	if (pre_ber_layers) {
-		/*
-		 * At least one per-layer BER measure was read. We can now
-		 * calculate the total BER
-		 *
-		 * Total Bit Error/Count is calculated as the sum of the
-		 * bit errors on all active layers.
-		 */
+		 
 		c->pre_bit_error.stat[0].scale = FE_SCALE_COUNTER;
 		c->pre_bit_error.stat[0].uvalue = t_pre_bit_error;
 		c->pre_bit_count.stat[0].scale = FE_SCALE_COUNTER;
@@ -1692,18 +1611,9 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 		c->pre_bit_count.stat[0].scale = FE_SCALE_COUNTER;
 	}
 
-	/*
-	 * Start showing global count if at least one error count is
-	 * available.
-	 */
+	 
 	if (post_ber_layers) {
-		/*
-		 * At least one per-layer BER measure was read. We can now
-		 * calculate the total BER
-		 *
-		 * Total Bit Error/Count is calculated as the sum of the
-		 * bit errors on all active layers.
-		 */
+		 
 		c->post_bit_error.stat[0].scale = FE_SCALE_COUNTER;
 		c->post_bit_error.stat[0].uvalue = t_post_bit_error;
 		c->post_bit_count.stat[0].scale = FE_SCALE_COUNTER;
@@ -1714,13 +1624,7 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 	}
 
 	if (per_layers) {
-		/*
-		 * At least one per-layer UCB measure was read. We can now
-		 * calculate the total UCB
-		 *
-		 * Total block Error/Count is calculated as the sum of the
-		 * block errors on all active layers.
-		 */
+		 
 		c->block_error.stat[0].scale = FE_SCALE_COUNTER;
 		c->block_error.stat[0].uvalue = t_block_error;
 		c->block_count.stat[0].scale = FE_SCALE_COUNTER;
@@ -1733,10 +1637,7 @@ static int mb86a20s_get_stats(struct dvb_frontend *fe, int status_nr)
 	return rc;
 }
 
-/*
- * The functions below are called via DVB callbacks, so they need to
- * properly use the I2C gate control
- */
+ 
 
 static int mb86a20s_initfe(struct dvb_frontend *fe)
 {
@@ -1751,7 +1652,7 @@ static int mb86a20s_initfe(struct dvb_frontend *fe)
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 0);
 
-	/* Initialize the frontend */
+	 
 	rc = mb86a20s_writeregdata(state, mb86a20s_init1);
 	if (rc < 0)
 		goto err;
@@ -1781,7 +1682,7 @@ static int mb86a20s_initfe(struct dvb_frontend *fe)
 	if (!fclk)
 		fclk = 32571428;
 
-	/* Adjust IF frequency to match tuner */
+	 
 	if (fe->ops.tuner_ops.get_if_frequency)
 		fe->ops.tuner_ops.get_if_frequency(fe, &state->if_freq);
 
@@ -1806,7 +1707,7 @@ static int mb86a20s_initfe(struct dvb_frontend *fe)
 	dev_dbg(&state->i2c->dev, "%s: fclk=%d, IF=%d, clock reg=0x%06llx\n",
 		__func__, fclk, state->if_freq, (long long)pll);
 
-	/* pll = freq[Hz] * 2^24/10^6 / 16.285714286 */
+	 
 	pll = state->if_freq * 1677721600L;
 	do_div(pll, 1628571429L);
 	rc = mb86a20s_writereg(state, 0x28, 0x20);
@@ -1885,10 +1786,7 @@ static int mb86a20s_set_frontend(struct dvb_frontend *fe)
 		state->subchannel = mb86a20s_subchannel[c->isdbt_sb_subchannel];
 	}
 
-	/*
-	 * Gate should already be opened, but it doesn't hurt to
-	 * double-check
-	 */
+	 
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 1);
 	fe->ops.tuner_ops.set_params(fe);
@@ -1896,23 +1794,7 @@ static int mb86a20s_set_frontend(struct dvb_frontend *fe)
 	if (fe->ops.tuner_ops.get_if_frequency)
 		fe->ops.tuner_ops.get_if_frequency(fe, &if_freq);
 
-	/*
-	 * Make it more reliable: if, for some reason, the initial
-	 * device initialization doesn't happen, initialize it when
-	 * a SBTVD parameters are adjusted.
-	 *
-	 * Unfortunately, due to a hard to track bug at tda829x/tda18271,
-	 * the agc callback logic is not called during DVB attach time,
-	 * causing mb86a20s to not be initialized with Kworld SBTVD.
-	 * So, this hack is needed, in order to make Kworld SBTVD to work.
-	 *
-	 * It is also needed to change the IF after the initial init.
-	 *
-	 * HACK: Always init the frontend when set_frontend is called:
-	 * it was noticed that, on some devices, it fails to lock on a
-	 * different channel. So, it is better to reset everything, even
-	 * wasting some time, than to loose channel lock.
-	 */
+	 
 	mb86a20s_initfe(fe);
 
 	if (fe->ops.i2c_gate_ctrl)
@@ -1939,7 +1821,7 @@ static int mb86a20s_read_status_and_stats(struct dvb_frontend *fe,
 	if (fe->ops.i2c_gate_ctrl)
 		fe->ops.i2c_gate_ctrl(fe, 0);
 
-	/* Get lock */
+	 
 	status_nr = mb86a20s_read_status(fe, status);
 	if (status_nr < 7) {
 		mb86a20s_stats_not_ready(fe);
@@ -1952,7 +1834,7 @@ static int mb86a20s_read_status_and_stats(struct dvb_frontend *fe,
 		goto error;
 	}
 
-	/* Get signal strength */
+	 
 	rc = mb86a20s_read_signal_strength(fe);
 	if (rc < 0) {
 		dev_err(&state->i2c->dev,
@@ -1960,21 +1842,21 @@ static int mb86a20s_read_status_and_stats(struct dvb_frontend *fe,
 		mb86a20s_stats_not_ready(fe);
 		mb86a20s_reset_frontend_cache(fe);
 
-		rc = 0;		/* Status is OK */
+		rc = 0;		 
 		goto error;
 	}
 
 	if (status_nr >= 7) {
-		/* Get TMCC info*/
+		 
 		rc = mb86a20s_get_frontend(fe);
 		if (rc < 0) {
 			dev_err(&state->i2c->dev,
 				"%s: Can't get FE TMCC data.\n", __func__);
-			rc = 0;		/* Status is OK */
+			rc = 0;		 
 			goto error;
 		}
 
-		/* Get statistics */
+		 
 		rc = mb86a20s_get_stats(fe, status_nr);
 		if (rc < 0 && rc != -EBUSY) {
 			dev_err(&state->i2c->dev,
@@ -1982,7 +1864,7 @@ static int mb86a20s_read_status_and_stats(struct dvb_frontend *fe,
 			rc = 0;
 			goto error;
 		}
-		rc = 0;	/* Don't return EBUSY to userspace */
+		rc = 0;	 
 	}
 	goto ok;
 
@@ -2051,21 +1933,21 @@ struct dvb_frontend *mb86a20s_attach(const struct mb86a20s_config *config,
 
 	dev_dbg(&i2c->dev, "%s called.\n", __func__);
 
-	/* allocate memory for the internal state */
+	 
 	state = kzalloc(sizeof(*state), GFP_KERNEL);
 	if (!state)
 		return NULL;
 
-	/* setup the state */
+	 
 	state->config = config;
 	state->i2c = i2c;
 
-	/* create dvb_frontend */
+	 
 	memcpy(&state->frontend.ops, &mb86a20s_ops,
 		sizeof(struct dvb_frontend_ops));
 	state->frontend.demodulator_priv = state;
 
-	/* Check if it is a mb86a20s frontend */
+	 
 	rev = mb86a20s_readreg(state, 0);
 	if (rev != 0x13) {
 		kfree(state);
@@ -2082,7 +1964,7 @@ EXPORT_SYMBOL_GPL(mb86a20s_attach);
 
 static const struct dvb_frontend_ops mb86a20s_ops = {
 	.delsys = { SYS_ISDBT },
-	/* Use dib8000 values per default */
+	 
 	.info = {
 		.name = "Fujitsu mb86A20s",
 		.caps = FE_CAN_RECOVER  |
@@ -2091,7 +1973,7 @@ static const struct dvb_frontend_ops mb86a20s_ops = {
 			FE_CAN_QPSK     | FE_CAN_QAM_16  | FE_CAN_QAM_64 |
 			FE_CAN_TRANSMISSION_MODE_AUTO | FE_CAN_QAM_AUTO |
 			FE_CAN_GUARD_INTERVAL_AUTO    | FE_CAN_HIERARCHY_AUTO,
-		/* Actually, those values depend on the used tuner */
+		 
 		.frequency_min_hz =  45 * MHz,
 		.frequency_max_hz = 864 * MHz,
 		.frequency_stepsize_hz = 62500,

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012 Samsung Electronics Co.Ltd
- * Authors:
- *	Eunchul Kim <chulspro.kim@samsung.com>
- *	Jinyoung Jeon <jy0.jeon@samsung.com>
- *	Sangmin Lee <lsmin.lee@samsung.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/component.h>
@@ -24,13 +18,7 @@
 #include "exynos_drm_ipp.h"
 #include "regs-gsc.h"
 
-/*
- * GSC stands for General SCaler and
- * supports image scaler/rotator and input/output DMA operations.
- * input DMA reads image data from the memory.
- * output DMA writes image data to memory.
- * GSC supports image rotation and image effect functions.
- */
+ 
 
 
 #define GSC_MAX_CLOCKS	8
@@ -64,16 +52,7 @@
 #define gsc_read(offset)		readl(ctx->regs + (offset))
 #define gsc_write(cfg, offset)	writel(cfg, ctx->regs + (offset))
 
-/*
- * A structure of scaler.
- *
- * @range: narrow, wide.
- * @pre_shfactor: pre sclaer shift factor.
- * @pre_hratio: horizontal ratio of the prescaler.
- * @pre_vratio: vertical ratio of the prescaler.
- * @main_hratio: the main scaler's horizontal ratio.
- * @main_vratio: the main scaler's vertical ratio.
- */
+ 
 struct gsc_scaler {
 	bool	range;
 	u32	pre_shfactor;
@@ -83,16 +62,7 @@ struct gsc_scaler {
 	unsigned long main_vratio;
 };
 
-/*
- * A structure of gsc context.
- *
- * @regs: memory mapped io registers.
- * @gsc_clk: gsc gate clock.
- * @sc: scaler infomations.
- * @id: gsc id.
- * @irq: irq number.
- * @rotation: supports rotation of src.
- */
+ 
 struct gsc_context {
 	struct exynos_drm_ipp ipp;
 	struct drm_device *drm_dev;
@@ -112,14 +82,7 @@ struct gsc_context {
 	bool	rotation;
 };
 
-/**
- * struct gsc_driverdata - per device type driver data for init time.
- *
- * @limits: picture size limits array
- * @num_limits: number of items in the aforementioned array
- * @clk_names: names of clocks needed by this variant
- * @num_clocks: the number of clocks needed by this variant
- */
+ 
 struct gsc_driverdata {
 	const struct drm_exynos_ipp_limit *limits;
 	int		num_limits;
@@ -127,9 +90,9 @@ struct gsc_driverdata {
 	int		num_clocks;
 };
 
-/* 8-tap Filter Coefficient */
+ 
 static const int h_coef_8t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_H_8T] = {
-	{	/* Ratio <= 65536 (~8:8) */
+	{	 
 		{  0,  0,   0, 128,   0,   0,  0,  0 },
 		{ -1,  2,  -6, 127,   7,  -2,  1,  0 },
 		{ -1,  4, -12, 125,  16,  -5,  1,  0 },
@@ -146,7 +109,7 @@ static const int h_coef_8t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_H_8T] = {
 		{  0,  2,  -8,  25, 120, -15,  5, -1 },
 		{  0,  1,  -5,  16, 125, -12,  4, -1 },
 		{  0,  1,  -2,   7, 127,  -6,  2, -1 }
-	}, {	/* 65536 < Ratio <= 74898 (~8:7) */
+	}, {	 
 		{  3, -8,  14, 111,  13,  -8,  3,  0 },
 		{  2, -6,   7, 112,  21, -10,  3, -1 },
 		{  2, -4,   1, 110,  28, -12,  4, -1 },
@@ -163,7 +126,7 @@ static const int h_coef_8t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_H_8T] = {
 		{ -1,  4, -13,  36, 106,  -3, -2,  1 },
 		{ -1,  4, -12,  28, 110,   1, -4,  2 },
 		{ -1,  3, -10,  21, 112,   7, -6,  2 }
-	}, {	/* 74898 < Ratio <= 87381 (~8:6) */
+	}, {	 
 		{ 2, -11,  25,  96, 25, -11,   2,  0 },
 		{ 2, -10,  19,  96, 31, -12,   2,  0 },
 		{ 2,  -9,  14,  94, 37, -12,   2,  0 },
@@ -180,7 +143,7 @@ static const int h_coef_8t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_H_8T] = {
 		{ 0,   1, -12,  43, 92,  10,  -8,  2 },
 		{ 0,   2, -12,  37, 94,  14,  -9,  2 },
 		{ 0,   2, -12,  31, 96,  19, -10,  2 }
-	}, {	/* 87381 < Ratio <= 104857 (~8:5) */
+	}, {	 
 		{ -1,  -8, 33,  80, 33,  -8,  -1,  0 },
 		{ -1,  -8, 28,  80, 37,  -7,  -2,  1 },
 		{  0,  -8, 24,  79, 41,  -7,  -2,  1 },
@@ -197,7 +160,7 @@ static const int h_coef_8t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_H_8T] = {
 		{  1,  -3, -6,  46, 78,  20,  -8,  0 },
 		{  1,  -2, -7,  41, 79,  24,  -8,  0 },
 		{  1,  -2, -7,  37, 80,  28,  -8, -1 }
-	}, {	/* 104857 < Ratio <= 131072 (~8:4) */
+	}, {	 
 		{ -3,   0, 35,  64, 35,   0,  -3,  0 },
 		{ -3,  -1, 32,  64, 38,   1,  -3,  0 },
 		{ -2,  -2, 29,  63, 41,   2,  -3,  0 },
@@ -214,7 +177,7 @@ static const int h_coef_8t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_H_8T] = {
 		{  0,  -4,  4,  43, 63,  27,  -3, -2 },
 		{  0,  -3,  2,  41, 63,  29,  -2, -2 },
 		{  0,  -3,  1,  38, 64,  32,  -1, -3 }
-	}, {	/* 131072 < Ratio <= 174762 (~8:3) */
+	}, {	 
 		{ -1,   8, 33,  48, 33,   8,  -1,  0 },
 		{ -1,   7, 31,  49, 35,   9,  -1, -1 },
 		{ -1,   6, 30,  49, 36,  10,  -1, -1 },
@@ -231,7 +194,7 @@ static const int h_coef_8t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_H_8T] = {
 		{ -1,  -1, 12,  38, 48,  28,   5, -1 },
 		{ -1,  -1, 10,  36, 49,  30,   6, -1 },
 		{ -1,  -1,  9,  35, 49,  31,   7, -1 }
-	}, {	/* 174762 < Ratio <= 262144 (~8:2) */
+	}, {	 
 		{  2,  13, 30,  38, 30,  13,   2,  0 },
 		{  2,  12, 29,  38, 30,  14,   3,  0 },
 		{  2,  11, 28,  38, 31,  15,   3,  0 },
@@ -251,9 +214,9 @@ static const int h_coef_8t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_H_8T] = {
 	}
 };
 
-/* 4-tap Filter Coefficient */
+ 
 static const int v_coef_4t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_V_4T] = {
-	{	/* Ratio <= 65536 (~8:8) */
+	{	 
 		{  0, 128,   0,  0 },
 		{ -4, 127,   5,  0 },
 		{ -6, 124,  11, -1 },
@@ -270,7 +233,7 @@ static const int v_coef_4t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_V_4T] = {
 		{ -1,  19, 118, -8 },
 		{ -1,  11, 124, -6 },
 		{  0,   5, 127, -4 }
-	}, {	/* 65536 < Ratio <= 74898 (~8:7) */
+	}, {	 
 		{  8, 112,   8,  0 },
 		{  4, 111,  14, -1 },
 		{  1, 109,  20, -2 },
@@ -287,7 +250,7 @@ static const int v_coef_4t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_V_4T] = {
 		{ -2,  27, 105, -2 },
 		{ -2,  20, 109,  1 },
 		{ -1,  14, 111,  4 }
-	}, {	/* 74898 < Ratio <= 87381 (~8:6) */
+	}, {	 
 		{ 16,  96,  16,  0 },
 		{ 12,  97,  21, -2 },
 		{  8,  96,  26, -2 },
@@ -304,7 +267,7 @@ static const int v_coef_4t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_V_4T] = {
 		{ -2,  32,  93,  5 },
 		{ -2,  26,  96,  8 },
 		{ -2,  21,  97, 12 }
-	}, {	/* 87381 < Ratio <= 104857 (~8:5) */
+	}, {	 
 		{ 22,  84,  22,  0 },
 		{ 18,  85,  26, -1 },
 		{ 14,  84,  31, -1 },
@@ -321,7 +284,7 @@ static const int v_coef_4t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_V_4T] = {
 		{ -1,  36,  82, 11 },
 		{ -1,  31,  84, 14 },
 		{ -1,  26,  85, 18 }
-	}, {	/* 104857 < Ratio <= 131072 (~8:4) */
+	}, {	 
 		{ 26,  76,  26,  0 },
 		{ 22,  76,  30,  0 },
 		{ 19,  75,  34,  0 },
@@ -338,7 +301,7 @@ static const int v_coef_4t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_V_4T] = {
 		{  1,  38,  73, 16 },
 		{  0,  34,  75, 19 },
 		{  0,  30,  76, 22 }
-	}, {	/* 131072 < Ratio <= 174762 (~8:3) */
+	}, {	 
 		{ 29,  70,  29,  0 },
 		{ 26,  68,  32,  2 },
 		{ 23,  67,  36,  2 },
@@ -355,7 +318,7 @@ static const int v_coef_4t[GSC_COEF_RATIO][GSC_COEF_ATTR][GSC_COEF_V_4T] = {
 		{  3,  39,  66, 20 },
 		{  2,  36,  67, 23 },
 		{  2,  32,  68, 26 }
-	}, {	/* 174762 < Ratio <= 262144 (~8:2) */
+	}, {	 
 		{ 32,  64,  32,  0 },
 		{ 28,  63,  34,  3 },
 		{ 25,  62,  37,  4 },
@@ -380,11 +343,11 @@ static int gsc_sw_reset(struct gsc_context *ctx)
 	u32 cfg;
 	int count = GSC_RESET_TIMEOUT;
 
-	/* s/w reset */
+	 
 	cfg = (GSC_SW_RESET_SRESET);
 	gsc_write(cfg, GSC_SW_RESET);
 
-	/* wait s/w reset complete */
+	 
 	while (count--) {
 		cfg = gsc_read(GSC_SW_RESET);
 		if (!cfg)
@@ -397,7 +360,7 @@ static int gsc_sw_reset(struct gsc_context *ctx)
 		return -EBUSY;
 	}
 
-	/* reset sequence */
+	 
 	cfg = gsc_read(GSC_IN_BASE_ADDR_Y_MASK);
 	cfg |= (GSC_IN_BASE_ADDR_MASK |
 		GSC_IN_BASE_ADDR_PINGPONG(0));
@@ -566,17 +529,17 @@ static void gsc_src_set_size(struct gsc_context *ctx,
 	struct gsc_scaler *sc = &ctx->sc;
 	u32 cfg;
 
-	/* pixel offset */
+	 
 	cfg = (GSC_SRCIMG_OFFSET_X(buf->rect.x) |
 		GSC_SRCIMG_OFFSET_Y(buf->rect.y));
 	gsc_write(cfg, GSC_SRCIMG_OFFSET);
 
-	/* cropped size */
+	 
 	cfg = (GSC_CROPPED_WIDTH(buf->rect.w) |
 		GSC_CROPPED_HEIGHT(buf->rect.h));
 	gsc_write(cfg, GSC_CROPPED_SIZE);
 
-	/* original size */
+	 
 	cfg = gsc_read(GSC_SRCIMG_SIZE);
 	cfg &= ~(GSC_SRCIMG_HEIGHT_MASK |
 		GSC_SRCIMG_WIDTH_MASK);
@@ -610,10 +573,10 @@ static void gsc_src_set_buf_seq(struct gsc_context *ctx, u32 buf_id,
 	u32 cfg;
 	u32 mask = 0x00000001 << buf_id;
 
-	/* mask register set */
+	 
 	cfg = gsc_read(GSC_IN_BASE_ADDR_Y_MASK);
 
-	/* sequence id */
+	 
 	cfg &= ~mask;
 	cfg |= masked << buf_id;
 	gsc_write(cfg, GSC_IN_BASE_ADDR_Y_MASK);
@@ -624,7 +587,7 @@ static void gsc_src_set_buf_seq(struct gsc_context *ctx, u32 buf_id,
 static void gsc_src_set_addr(struct gsc_context *ctx, u32 buf_id,
 			    struct exynos_drm_ipp_buffer *buf)
 {
-	/* address register set */
+	 
 	gsc_write(buf->dma_addr[0], GSC_IN_BASE_ADDR_Y(buf_id));
 	gsc_write(buf->dma_addr[1], GSC_IN_BASE_ADDR_CB(buf_id));
 	gsc_write(buf->dma_addr[2], GSC_IN_BASE_ADDR_CR(buf_id));
@@ -866,12 +829,12 @@ static void gsc_dst_set_size(struct gsc_context *ctx,
 	struct gsc_scaler *sc = &ctx->sc;
 	u32 cfg;
 
-	/* pixel offset */
+	 
 	cfg = (GSC_DSTIMG_OFFSET_X(buf->rect.x) |
 		GSC_DSTIMG_OFFSET_Y(buf->rect.y));
 	gsc_write(cfg, GSC_DSTIMG_OFFSET);
 
-	/* scaled size */
+	 
 	if (ctx->rotation)
 		cfg = (GSC_SCALED_WIDTH(buf->rect.h) |
 		       GSC_SCALED_HEIGHT(buf->rect.w));
@@ -880,7 +843,7 @@ static void gsc_dst_set_size(struct gsc_context *ctx,
 		       GSC_SCALED_HEIGHT(buf->rect.h));
 	gsc_write(cfg, GSC_SCALED_SIZE);
 
-	/* original size */
+	 
 	cfg = gsc_read(GSC_DSTIMG_SIZE);
 	cfg &= ~(GSC_DSTIMG_HEIGHT_MASK | GSC_DSTIMG_WIDTH_MASK);
 	cfg |= GSC_DSTIMG_WIDTH(buf->buf.pitch[0] / buf->format->cpp[0]) |
@@ -927,21 +890,21 @@ static void gsc_dst_set_buf_seq(struct gsc_context *ctx, u32 buf_id,
 	u32 cfg;
 	u32 mask = 0x00000001 << buf_id;
 
-	/* mask register set */
+	 
 	cfg = gsc_read(GSC_OUT_BASE_ADDR_Y_MASK);
 
-	/* sequence id */
+	 
 	cfg &= ~mask;
 	cfg |= masked << buf_id;
 	gsc_write(cfg, GSC_OUT_BASE_ADDR_Y_MASK);
 	gsc_write(cfg, GSC_OUT_BASE_ADDR_CB_MASK);
 	gsc_write(cfg, GSC_OUT_BASE_ADDR_CR_MASK);
 
-	/* interrupt enable */
+	 
 	if (enqueue && gsc_dst_get_buf_seq(ctx) >= GSC_BUF_START)
 		gsc_handle_irq(ctx, true, false, true);
 
-	/* interrupt disable */
+	 
 	if (!enqueue && gsc_dst_get_buf_seq(ctx) <= GSC_BUF_STOP)
 		gsc_handle_irq(ctx, false, false, true);
 }
@@ -949,7 +912,7 @@ static void gsc_dst_set_buf_seq(struct gsc_context *ctx, u32 buf_id,
 static void gsc_dst_set_addr(struct gsc_context *ctx,
 			     u32 buf_id, struct exynos_drm_ipp_buffer *buf)
 {
-	/* address register set */
+	 
 	gsc_write(buf->dma_addr[0], GSC_OUT_BASE_ADDR_Y(buf_id));
 	gsc_write(buf->dma_addr[1], GSC_OUT_BASE_ADDR_CB(buf_id));
 	gsc_write(buf->dma_addr[2], GSC_OUT_BASE_ADDR_CR(buf_id));
@@ -1065,14 +1028,14 @@ static int gsc_reset(struct gsc_context *ctx)
 	struct gsc_scaler *sc = &ctx->sc;
 	int ret;
 
-	/* reset h/w block */
+	 
 	ret = gsc_sw_reset(ctx);
 	if (ret < 0) {
 		dev_err(ctx->dev, "failed to reset hardware.\n");
 		return ret;
 	}
 
-	/* scaler setting */
+	 
 	memset(&ctx->sc, 0x0, sizeof(ctx->sc));
 	sc->range = true;
 
@@ -1085,20 +1048,20 @@ static void gsc_start(struct gsc_context *ctx)
 
 	gsc_handle_irq(ctx, true, false, true);
 
-	/* enable one shot */
+	 
 	cfg = gsc_read(GSC_ENABLE);
 	cfg &= ~(GSC_ENABLE_ON_CLEAR_MASK |
 		GSC_ENABLE_CLK_GATE_MODE_MASK);
 	cfg |= GSC_ENABLE_ON_CLEAR_ONESHOT;
 	gsc_write(cfg, GSC_ENABLE);
 
-	/* src dma memory */
+	 
 	cfg = gsc_read(GSC_IN_CON);
 	cfg &= ~(GSC_IN_PATH_MASK | GSC_IN_LOCAL_SEL_MASK);
 	cfg |= GSC_IN_PATH_MEMORY;
 	gsc_write(cfg, GSC_IN_CON);
 
-	/* dst dma memory */
+	 
 	cfg = gsc_read(GSC_OUT_CON);
 	cfg |= GSC_OUT_PATH_MEMORY;
 	gsc_write(cfg, GSC_OUT_CON);
@@ -1231,13 +1194,13 @@ static int gsc_probe(struct platform_device *pdev)
 	ctx->num_clocks = driver_data->num_clocks;
 	ctx->clk_names = driver_data->clk_names;
 
-	/* construct formats/limits array */
+	 
 	num_formats = ARRAY_SIZE(gsc_formats) + ARRAY_SIZE(gsc_tiled_formats);
 	formats = devm_kcalloc(dev, num_formats, sizeof(*formats), GFP_KERNEL);
 	if (!formats)
 		return -ENOMEM;
 
-	/* linear formats */
+	 
 	for (i = 0; i < ARRAY_SIZE(gsc_formats); i++) {
 		formats[i].fourcc = gsc_formats[i];
 		formats[i].type = DRM_EXYNOS_IPP_FORMAT_SOURCE |
@@ -1246,7 +1209,7 @@ static int gsc_probe(struct platform_device *pdev)
 		formats[i].num_limits = driver_data->num_limits;
 	}
 
-	/* tiled formats */
+	 
 	for (j = i, i = 0; i < ARRAY_SIZE(gsc_tiled_formats); j++, i++) {
 		formats[j].fourcc = gsc_tiled_formats[i];
 		formats[j].modifier = DRM_FORMAT_MOD_SAMSUNG_16_16_TILE;
@@ -1259,7 +1222,7 @@ static int gsc_probe(struct platform_device *pdev)
 	ctx->formats = formats;
 	ctx->num_formats = num_formats;
 
-	/* clock control */
+	 
 	for (i = 0; i < ctx->num_clocks; i++) {
 		ctx->clocks[i] = devm_clk_get(dev, ctx->clk_names[i]);
 		if (IS_ERR(ctx->clocks[i])) {
@@ -1273,7 +1236,7 @@ static int gsc_probe(struct platform_device *pdev)
 	if (IS_ERR(ctx->regs))
 		return PTR_ERR(ctx->regs);
 
-	/* resource irq */
+	 
 	ctx->irq = platform_get_irq(pdev, 0);
 	if (ctx->irq < 0)
 		return ctx->irq;
@@ -1285,7 +1248,7 @@ static int gsc_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* context initailization */
+	 
 	ctx->id = pdev->id;
 
 	platform_set_drvdata(pdev, ctx);

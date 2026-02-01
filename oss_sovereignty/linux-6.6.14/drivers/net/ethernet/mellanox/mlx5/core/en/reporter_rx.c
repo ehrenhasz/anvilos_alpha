@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2019 Mellanox Technologies.
+
+
 
 #include "health.h"
 #include "params.h"
@@ -8,7 +8,7 @@
 #include "ptp.h"
 #include "lib/tout.h"
 
-/* Keep this string array consistent with the MLX5E_RQ_STATE_* enums in en.h */
+ 
 static const char * const rq_sw_state_type_name[] = {
 	[MLX5E_RQ_STATE_ENABLED] = "enabled",
 	[MLX5E_RQ_STATE_RECOVERING] = "recovering",
@@ -87,7 +87,7 @@ static int mlx5e_rx_reporter_err_icosq_cqe_recover(void *ctx)
 
 	mutex_lock(&icosq->channel->icosq_recovery_lock);
 
-	/* mlx5e_close_rq cancels this work before RQ and ICOSQ are killed. */
+	 
 	rq = &icosq->channel->rq;
 	if (test_bit(MLX5E_RQ_STATE_ENABLED, &icosq->channel->xskrq.state))
 		xskrq = &icosq->channel->xskrq;
@@ -113,7 +113,7 @@ static int mlx5e_rx_reporter_err_icosq_cqe_recover(void *ctx)
 
 	mlx5e_deactivate_icosq(icosq);
 
-	/* At this point, both the rq and the icosq are disabled */
+	 
 
 	err = mlx5e_health_sq_to_ready(mdev, dev, icosq->sqn);
 	if (err)

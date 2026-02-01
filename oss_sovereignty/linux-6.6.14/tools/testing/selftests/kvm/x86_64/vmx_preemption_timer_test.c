@@ -1,15 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VMX-preemption timer test
- *
- * Copyright (C) 2020, Google, LLC.
- *
- * Test to ensure the VM-Enter after migration doesn't
- * incorrectly restarts the timer with the full timer
- * value instead of partially decayed timer value
- *
- */
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+ 
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -41,26 +32,19 @@ void l2_guest_code(void)
 	vmcall();
 	l2_vmx_pt_start = (rdtsc() >> vmx_pt_rate) << vmx_pt_rate;
 
-	/*
-	 * Wait until the 1st threshold has passed
-	 */
+	 
 	do {
 		l2_vmx_pt_finish = rdtsc();
 		vmx_pt_delta = (l2_vmx_pt_finish - l2_vmx_pt_start) >>
 				vmx_pt_rate;
 	} while (vmx_pt_delta < PREEMPTION_TIMER_VALUE_THRESHOLD1);
 
-	/*
-	 * Force L2 through Save and Restore cycle
-	 */
+	 
 	GUEST_SYNC(1);
 
 	l2_save_restore_done = 1;
 
-	/*
-	 * Now wait for the preemption timer to fire and
-	 * exit to L1
-	 */
+	 
 	while ((l2_vmx_pt_finish = rdtsc()))
 		;
 }
@@ -81,9 +65,7 @@ void l1_guest_code(struct vmx_pages *vmx_pages)
 	prepare_vmcs(vmx_pages, l2_guest_code,
 		     &l2_guest_stack[L2_GUEST_STACK_SIZE]);
 
-	/*
-	 * Check for Preemption timer support
-	 */
+	 
 	basic.val = rdmsr(MSR_IA32_VMX_BASIC);
 	ctrl_pin_rev.val = rdmsr(basic.ctrl ? MSR_IA32_VMX_TRUE_PINBASED_CTLS
 			: MSR_IA32_VMX_PINBASED_CTLS);
@@ -98,9 +80,7 @@ void l1_guest_code(struct vmx_pages *vmx_pages)
 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_VMCALL);
 	vmwrite(GUEST_RIP, vmreadz(GUEST_RIP) + vmreadz(VM_EXIT_INSTRUCTION_LEN));
 
-	/*
-	 * Turn on PIN control and resume the guest
-	 */
+	 
 	GUEST_ASSERT(!vmwrite(PIN_BASED_VM_EXEC_CONTROL,
 			      vmreadz(PIN_BASED_VM_EXEC_CONTROL) |
 			      PIN_BASED_VMX_PREEMPTION_TIMER));
@@ -118,15 +98,10 @@ void l1_guest_code(struct vmx_pages *vmx_pages)
 
 	l1_vmx_pt_finish = rdtsc();
 
-	/*
-	 * Ensure exit from L2 happens after L2 goes through
-	 * save and restore
-	 */
+	 
 	GUEST_ASSERT(l2_save_restore_done);
 
-	/*
-	 * Ensure the exit from L2 is due to preemption timer expiry
-	 */
+	 
 	GUEST_ASSERT(vmreadz(VM_EXIT_REASON) == EXIT_REASON_PREEMPTION_TIMER);
 
 	l1_tsc_deadline = l1_vmx_pt_start +
@@ -135,10 +110,7 @@ void l1_guest_code(struct vmx_pages *vmx_pages)
 	l2_tsc_deadline = l2_vmx_pt_start +
 		(PREEMPTION_TIMER_VALUE << vmx_pt_rate);
 
-	/*
-	 * Sync with the host and pass the l1|l2 pt_expiry_finish times and
-	 * tsc deadlines so that host can verify they are as expected
-	 */
+	 
 	GUEST_SYNC_ARGS(2, l1_vmx_pt_finish, l1_tsc_deadline,
 		l2_vmx_pt_finish, l2_tsc_deadline);
 }
@@ -162,15 +134,12 @@ int main(int argc, char *argv[])
 	struct ucall uc;
 	int stage;
 
-	/*
-	 * AMD currently does not implement any VMX features, so for now we
-	 * just early out.
-	 */
+	 
 	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_VMX));
 
 	TEST_REQUIRE(kvm_has_cap(KVM_CAP_NESTED_STATE));
 
-	/* Create VM */
+	 
 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
 
 	vcpu_regs_get(vcpu, &regs1);
@@ -185,7 +154,7 @@ int main(int argc, char *argv[])
 		switch (get_ucall(vcpu, &uc)) {
 		case UCALL_ABORT:
 			REPORT_GUEST_ASSERT(uc);
-			/* NOT REACHED */
+			 
 		case UCALL_SYNC:
 			break;
 		case UCALL_DONE:
@@ -194,18 +163,11 @@ int main(int argc, char *argv[])
 			TEST_FAIL("Unknown ucall %lu", uc.cmd);
 		}
 
-		/* UCALL_SYNC is handled here.  */
+		 
 		TEST_ASSERT(!strcmp((const char *)uc.args[0], "hello") &&
 			    uc.args[1] == stage, "Stage %d: Unexpected register values vmexit, got %lx",
 			    stage, (ulong)uc.args[1]);
-		/*
-		 * If this stage 2 then we should verify the vmx pt expiry
-		 * is as expected.
-		 * From L1's perspective verify Preemption timer hasn't
-		 * expired too early.
-		 * From L2's perspective verify Preemption timer hasn't
-		 * expired too late.
-		 */
+		 
 		if (stage == 2) {
 
 			pr_info("Stage %d: L1 PT expiry TSC (%lu) , L1 TSC deadline (%lu)\n",
@@ -229,7 +191,7 @@ int main(int argc, char *argv[])
 
 		kvm_vm_release(vm);
 
-		/* Restore state in a new VM.  */
+		 
 		vcpu = vm_recreate_with_one_vcpu(vm);
 		vcpu_load_state(vcpu, state);
 		kvm_x86_state_cleanup(state);

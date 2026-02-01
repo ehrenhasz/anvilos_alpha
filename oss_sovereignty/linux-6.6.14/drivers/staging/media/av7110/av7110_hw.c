@@ -1,18 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * av7110_hw.c: av7110 low level hardware access and firmware interface
- *
- * Copyright (C) 1999-2002 Ralph  Metzler
- *                       & Marcus Metzler for convergence integrated media GmbH
- *
- * originally based on code by:
- * Copyright (C) 1998,1999 Christian Theiss <mistert@rz.fh-augsburg.de>
- *
- * the project's page is at https://linuxtv.org
- */
 
-/* for debugging ARM communication: */
-//#define COM_DEBUG
+ 
+
+ 
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -25,20 +15,12 @@
 
 #define _NOHANDSHAKE
 
-/*
- * Max transfer size done by av7110_fw_cmd()
- *
- * The maximum size passed to this function is 6 bytes. The buffer also
- * uses two additional ones for type and size. So, 8 bytes is enough.
- */
+ 
 #define MAX_XFER_SIZE  8
 
-/****************************************************************************
- * DEBI functions
- ****************************************************************************/
+ 
 
-/* This DEBI code is based on the Stradis driver
-   by Nathan Laredo <laredo@gnu.org> */
+ 
 
 int av7110_debiwrite(struct av7110 *av7110, u32 config,
 		     int addr, u32 val, unsigned int count)
@@ -54,9 +36,9 @@ int av7110_debiwrite(struct av7110 *av7110, u32 config,
 		return -1;
 	}
 	saa7146_write(dev, DEBI_CONFIG, config);
-	if (count <= 4)		/* immediate transfer */
+	if (count <= 4)		 
 		saa7146_write(dev, DEBI_AD, val);
-	else			/* block transfer */
+	else			 
 		saa7146_write(dev, DEBI_AD, av7110->debi_bus);
 	saa7146_write(dev, DEBI_COMMAND, (count << 17) | (addr & 0xffff));
 	saa7146_write(dev, MC2, (2 << 16) | 2);
@@ -95,18 +77,18 @@ u32 av7110_debiread(struct av7110 *av7110, u32 config, int addr, unsigned int co
 
 
 
-/* av7110 ARM core boot stuff */
+ 
 #if 0
 void av7110_reset_arm(struct av7110 *av7110)
 {
 	saa7146_setgpio(av7110->dev, RESET_LINE, SAA7146_GPIO_OUTLO);
 
-	/* Disable DEBI and GPIO irq */
+	 
 	SAA7146_IER_DISABLE(av7110->dev, MASK_19 | MASK_03);
 	SAA7146_ISR_CLEAR(av7110->dev, MASK_19 | MASK_03);
 
 	saa7146_setgpio(av7110->dev, RESET_LINE, SAA7146_GPIO_OUTHI);
-	msleep(30);	/* the firmware needs some time to initialize */
+	msleep(30);	 
 
 	ARM_ResetMailBox(av7110);
 
@@ -116,7 +98,7 @@ void av7110_reset_arm(struct av7110 *av7110)
 	av7110->arm_ready = 1;
 	dprintk(1, "reset ARM\n");
 }
-#endif  /*  0  */
+#endif   
 
 static int waitdebi(struct av7110 *av7110, int adr, int state)
 {
@@ -189,8 +171,7 @@ static int load_dram(struct av7110 *av7110, u32 *data, int len)
 }
 
 
-/* we cannot write av7110 DRAM directly, so load a bootloader into
- * the DPRAM which implements a simple boot protocol */
+ 
 int av7110_bootarm(struct av7110 *av7110)
 {
 	const struct firmware *fw;
@@ -205,18 +186,18 @@ int av7110_bootarm(struct av7110 *av7110)
 
 	saa7146_setgpio(dev, RESET_LINE, SAA7146_GPIO_OUTLO);
 
-	/* Disable DEBI and GPIO irq */
+	 
 	SAA7146_IER_DISABLE(av7110->dev, MASK_03 | MASK_19);
 	SAA7146_ISR_CLEAR(av7110->dev, MASK_19 | MASK_03);
 
-	/* enable DEBI */
+	 
 	saa7146_write(av7110->dev, MC1, 0x08800880);
 	saa7146_write(av7110->dev, DD1_STREAM_B, 0x00000000);
 	saa7146_write(av7110->dev, MC2, (MASK_09 | MASK_25 | MASK_10 | MASK_26));
 
-	/* test DEBI */
+	 
 	iwdebi(av7110, DEBISWAP, DPRAM_BASE, 0x76543210, 4);
-	/* FIXME: Why does Nexus CA require 2x iwdebi for first init? */
+	 
 	iwdebi(av7110, DEBISWAP, DPRAM_BASE, 0x76543210, 4);
 
 	if ((ret=irdebi(av7110, DEBINOSWAP, DPRAM_BASE, 0, 4)) != 0x10325476) {
@@ -228,11 +209,11 @@ int av7110_bootarm(struct av7110 *av7110)
 		iwdebi(av7110, DEBISWAP, DPRAM_BASE + i, 0x00, 4);
 	dprintk(2, "debi test OK\n");
 
-	/* boot */
+	 
 	dprintk(1, "load boot code\n");
 	saa7146_setgpio(dev, ARM_IRQ_LINE, SAA7146_GPIO_IRQLO);
-	//saa7146_setgpio(dev, DEBI_DONE_LINE, SAA7146_GPIO_INPUT);
-	//saa7146_setgpio(dev, 3, SAA7146_GPIO_INPUT);
+	 
+	 
 
 	ret = request_firmware(&fw, fw_name, &dev->pci->dev);
 	if (ret) {
@@ -269,9 +250,9 @@ int av7110_bootarm(struct av7110 *av7110)
 		return -ETIMEDOUT;
 	}
 	saa7146_setgpio(dev, RESET_LINE, SAA7146_GPIO_OUTHI);
-	msleep(30);	/* the firmware needs some time to initialize */
+	msleep(30);	 
 
-	//ARM_ClearIrq(av7110);
+	
 	ARM_ResetMailBox(av7110);
 	SAA7146_ISR_CLEAR(av7110->dev, MASK_19 | MASK_03);
 	SAA7146_IER_ENABLE(av7110->dev, MASK_03);
@@ -282,9 +263,7 @@ int av7110_bootarm(struct av7110 *av7110)
 }
 MODULE_FIRMWARE("av7110/bootcode.bin");
 
-/****************************************************************************
- * DEBI command polling
- ****************************************************************************/
+ 
 
 int av7110_wait_msgstate(struct av7110 *av7110, u16 flags)
 {
@@ -293,12 +272,12 @@ int av7110_wait_msgstate(struct av7110 *av7110, u16 flags)
 	int err;
 
 	if (FW_VERSION(av7110->arm_app) <= 0x261c) {
-		/* not supported by old firmware */
+		 
 		msleep(50);
 		return 0;
 	}
 
-	/* new firmware */
+	 
 	start = jiffies;
 	for (;;) {
 		err = time_after(jiffies, start + ARM_WAIT_FREE);
@@ -327,7 +306,7 @@ static int __av7110_send_fw_cmd(struct av7110 *av7110, u16* buf, int length)
 	u32 stat;
 	int err;
 
-//	dprintk(4, "%p\n", av7110);
+
 
 	if (!av7110->arm_ready) {
 		dprintk(1, "arm not ready.\n");
@@ -390,7 +369,7 @@ static int __av7110_send_fw_cmd(struct av7110 *av7110, u16* buf, int length)
 	}
 
 	if (type != NULL) {
-		/* non-immediate COMMAND type */
+		 
 		start = jiffies;
 		for (;;) {
 			err = time_after(jiffies, start + ARM_WAIT_FREE);
@@ -457,7 +436,7 @@ static int av7110_send_fw_cmd(struct av7110 *av7110, u16* buf, int length)
 {
 	int ret;
 
-//	dprintk(4, "%p\n", av7110);
+
 
 	if (!av7110->arm_ready) {
 		dprintk(1, "arm not ready.\n");
@@ -480,7 +459,7 @@ int av7110_fw_cmd(struct av7110 *av7110, int type, int com, int num, ...)
 	u16 buf[MAX_XFER_SIZE];
 	int i, ret;
 
-//	dprintk(4, "%p\n", av7110);
+
 
 	if (2 + num > ARRAY_SIZE(buf)) {
 		printk(KERN_WARNING
@@ -527,7 +506,7 @@ int av7110_send_ci_cmd(struct av7110 *av7110, u8 subcom, u8 *buf, u8 len)
 		printk(KERN_ERR "dvb-ttpci: av7110_send_ci_cmd error %d\n", ret);
 	return ret;
 }
-#endif  /*  0  */
+#endif   
 
 int av7110_fw_request(struct av7110 *av7110, u16 *request_buf,
 		      int request_buf_len, u16 *reply_buf, int reply_buf_len)
@@ -616,11 +595,9 @@ static int av7110_fw_query(struct av7110 *av7110, u16 tag, u16* buf, s16 length)
 }
 
 
-/****************************************************************************
- * Firmware commands
- ****************************************************************************/
+ 
 
-/* get version of the firmware ROM, RTSL, video ucode and ARM application  */
+ 
 int av7110_firmversion(struct av7110 *av7110)
 {
 	u16 buf[20];
@@ -644,7 +621,7 @@ int av7110_firmversion(struct av7110 *av7110)
 	       av7110->dvb_adapter.num, av7110->arm_fw,
 	       av7110->arm_rtsl, av7110->arm_vid, av7110->arm_app);
 
-	/* print firmware capabilities */
+	 
 	if (FW_CI_LL_SUPPORT(av7110->arm_app))
 		printk("dvb-ttpci: firmware @ card %d supports CI link layer interface\n",
 		       av7110->dvb_adapter.num);
@@ -931,9 +908,9 @@ static u32 RGB2YUV(u16 R, u16 G, u16 B)
 	u16 y, u, v;
 	u16 Y, Cr, Cb;
 
-	y = R * 77 + G * 150 + B * 29;	/* Luma=0.299R+0.587G+0.114B 0..65535 */
-	u = 2048 + B * 8 -(y >> 5);	/* Cr 0..4095 */
-	v = 2048 + R * 8 -(y >> 5);	/* Cb 0..4095 */
+	y = R * 77 + G * 150 + B * 29;	 
+	u = 2048 + B * 8 -(y >> 5);	 
+	v = 2048 + R * 8 -(y >> 5);	 
 
 	Y = y / 256;
 	Cb = u / 16;
@@ -1006,15 +983,13 @@ static int OSDSetBlock(struct av7110 *av7110, int x0, int y0,
 	brest = size - bnum * lpb * bpl;
 
 	if (av7110->bmp_state == BMP_LOADING) {
-		/* possible if syscall is repeated by -ERESTARTSYS and if firmware cannot abort */
+		 
 		if (WARN_ON(FW_VERSION(av7110->arm_app) >= 0x261e))
 			return -EIO;
 		rc = WaitUntilBmpLoaded(av7110);
 		if (rc)
 			return rc;
-		/* just continue. This should work for all fw versions
-		 * if bnum==1 && !brest && LoadBitmap was successful
-		 */
+		 
 	}
 
 	rc = 0;
@@ -1202,4 +1177,4 @@ int av7110_osd_capability(struct av7110 *av7110, osd_cap_t *cap)
 		return -EINVAL;
 	}
 }
-#endif /* CONFIG_DVB_AV7110_OSD */
+#endif  

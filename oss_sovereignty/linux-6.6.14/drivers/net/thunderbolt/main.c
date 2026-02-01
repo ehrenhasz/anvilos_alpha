@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Networking over Thunderbolt/USB4 cables using USB4NET protocol
- * (formerly Apple ThunderboltIP).
- *
- * Copyright (C) 2017, Intel Corporation
- * Authors: Amir Levy <amir.jer.levy@intel.com>
- *          Michael Jamet <michael.jamet@intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/highmem.h>
@@ -25,7 +17,7 @@
 
 #include "trace.h"
 
-/* Protocol timeouts in ms */
+ 
 #define TBNET_LOGIN_DELAY	4500
 #define TBNET_LOGIN_TIMEOUT	500
 #define TBNET_LOGOUT_TIMEOUT	1000
@@ -40,7 +32,7 @@
 #define TBNET_FRAME_SIZE	SZ_4K
 #define TBNET_MAX_PAYLOAD_SIZE	\
 	(TBNET_FRAME_SIZE - sizeof(struct thunderbolt_ip_frame_header))
-/* Rx packets need to hold space for skb_shared_info */
+ 
 #define TBNET_RX_MAX_SIZE	\
 	(TBNET_FRAME_SIZE + SKB_DATA_ALIGN(sizeof(struct skb_shared_info)))
 #define TBNET_RX_PAGE_ORDER	get_order(TBNET_RX_MAX_SIZE)
@@ -48,17 +40,7 @@
 
 #define TBNET_L0_PORT_NUM(route) ((route) & GENMASK(5, 0))
 
-/**
- * struct thunderbolt_ip_frame_header - Header for each Thunderbolt frame
- * @frame_size: size of the data with the frame
- * @frame_index: running index on the frames
- * @frame_id: ID of the frame to match frames to specific packet
- * @frame_count: how many frames assembles a full packet
- *
- * Each data frame passed to the high-speed DMA ring has this header. If
- * the XDomain network directory announces that %TBNET_MATCH_FRAGS_ID is
- * supported then @frame_id is filled, otherwise it stays %0.
- */
+ 
 struct thunderbolt_ip_frame_header {
 	__le32 frame_size;
 	__le16 frame_index;
@@ -145,38 +127,7 @@ struct tbnet_ring {
 	struct tb_ring *ring;
 };
 
-/**
- * struct tbnet - ThunderboltIP network driver private data
- * @svc: XDomain service the driver is bound to
- * @xd: XDomain the service belongs to
- * @handler: ThunderboltIP configuration protocol handler
- * @dev: Networking device
- * @napi: NAPI structure for Rx polling
- * @stats: Network statistics
- * @skb: Network packet that is currently processed on Rx path
- * @command_id: ID used for next configuration protocol packet
- * @login_sent: ThunderboltIP login message successfully sent
- * @login_received: ThunderboltIP login message received from the remote
- *		    host
- * @local_transmit_path: HopID we are using to send out packets
- * @remote_transmit_path: HopID the other end is using to send packets to us
- * @connection_lock: Lock serializing access to @login_sent,
- *		     @login_received and @transmit_path.
- * @login_retries: Number of login retries currently done
- * @login_work: Worker to send ThunderboltIP login packets
- * @connected_work: Worker that finalizes the ThunderboltIP connection
- *		    setup and enables DMA paths for high speed data
- *		    transfers
- * @disconnect_work: Worker that handles tearing down the ThunderboltIP
- *		     connection
- * @rx_hdr: Copy of the currently processed Rx frame. Used when a
- *	    network packet consists of multiple Thunderbolt frames.
- *	    In host byte order.
- * @rx_ring: Software ring holding Rx frames
- * @frame_id: Frame ID use for next Tx packet
- *            (if %TBNET_MATCH_FRAGS_ID is supported in both ends)
- * @tx_ring: Software ring holding Tx frames
- */
+ 
 struct tbnet {
 	const struct tb_service *svc;
 	struct tb_xdomain *xd;
@@ -201,12 +152,12 @@ struct tbnet {
 	struct tbnet_ring tx_ring;
 };
 
-/* Network property directory UUID: c66189ca-1cce-4195-bdb8-49592e5f5a4f */
+ 
 static const uuid_t tbnet_dir_uuid =
 	UUID_INIT(0xc66189ca, 0x1cce, 0x4195,
 		  0xbd, 0xb8, 0x49, 0x59, 0x2e, 0x5f, 0x5a, 0x4f);
 
-/* ThunderboltIP protocol UUID: 798f589e-3616-8a47-97c6-5664a920c8dd */
+ 
 static const uuid_t tbnet_svc_uuid =
 	UUID_INIT(0x798f589e, 0x3616, 0x8a47,
 		  0x97, 0xc6, 0x56, 0x64, 0xa9, 0x20, 0xc8, 0xdd);
@@ -223,7 +174,7 @@ static void tbnet_fill_header(struct thunderbolt_ip_header *hdr, u64 route,
 {
 	u32 length_sn;
 
-	/* Length does not include route_hi/lo and length_sn fields */
+	 
 	length_sn = (size - 3 * 4) / 4;
 	length_sn |= (sequence << TBIP_HDR_SN_SHIFT) & TBIP_HDR_SN_MASK;
 
@@ -424,7 +375,7 @@ static int tbnet_handle_packet(const void *buf, size_t size, void *data)
 	u32 sequence;
 	u64 route;
 
-	/* Make sure the packet is for us */
+	 
 	if (size < sizeof(struct thunderbolt_ip_header))
 		return 0;
 	if (!uuid_equal(&pkg->hdr.initiator_uuid, net->xd->remote_uuid))
@@ -456,10 +407,7 @@ static int tbnet_handle_packet(const void *buf, size_t size, void *data)
 			net->login_received = true;
 			net->remote_transmit_path = pkg->transmit_path;
 
-			/* If we reached the number of max retries or
-			 * previous logout, schedule another round of
-			 * login retries
-			 */
+			 
 			if (net->login_retries >= TBNET_LOGIN_RETRIES ||
 			    !net->login_sent) {
 				net->login_retries = 0;
@@ -510,10 +458,7 @@ static int tbnet_alloc_rx_buffers(struct tbnet *net, unsigned int nbuffers)
 		if (tf->page)
 			break;
 
-		/* Allocate page (order > 0) so that it can hold maximum
-		 * ThunderboltIP frame (4kB) and the additional room for
-		 * SKB shared info required by build_skb().
-		 */
+		 
 		tf->page = dev_alloc_pages(TBNET_RX_PAGE_ORDER);
 		if (!tf->page) {
 			ret = -ENOMEM;
@@ -572,7 +517,7 @@ static void tbnet_tx_callback(struct tb_ring *ring, struct ring_frame *frame,
 	struct tbnet_frame *tf = container_of(frame, typeof(*tf), frame);
 	struct tbnet *net = netdev_priv(tf->dev);
 
-	/* Return buffer to the ring */
+	 
 	net->tx_ring.prod++;
 
 	if (tbnet_available_buffers(&net->tx_ring) >= TBNET_RING_SIZE / 2)
@@ -643,13 +588,7 @@ static void tbnet_connected_work(struct work_struct *work)
 		return;
 	}
 
-	/* Both logins successful so enable the rings, high-speed DMA
-	 * paths and start the network device queue.
-	 *
-	 * Note we enable the DMA paths last to make sure we have primed
-	 * the Rx ring before any incoming packets are allowed to
-	 * arrive.
-	 */
+	 
 	tb_ring_start(net->tx_ring.ring);
 	tb_ring_start(net->rx_ring.ring);
 
@@ -742,7 +681,7 @@ static bool tbnet_check_frame(struct tbnet *net, const struct tbnet_frame *tf,
 		return false;
 	}
 
-	/* Should be greater than just header i.e. contains data */
+	 
 	size = tbnet_frame_size(tf);
 	if (size <= sizeof(*hdr)) {
 		net->stats.rx_length_errors++;
@@ -759,19 +698,15 @@ static bool tbnet_check_frame(struct tbnet *net, const struct tbnet_frame *tf,
 		return false;
 	}
 
-	/* In case we're in the middle of packet, validate the frame
-	 * header based on first fragment of the packet.
-	 */
+	 
 	if (net->skb && net->rx_hdr.frame_count) {
-		/* Check the frame count fits the count field */
+		 
 		if (frame_count != le32_to_cpu(net->rx_hdr.frame_count)) {
 			net->stats.rx_length_errors++;
 			return false;
 		}
 
-		/* Check the frame identifiers are incremented correctly,
-		 * and id is matching.
-		 */
+		 
 		if (frame_index != le16_to_cpu(net->rx_hdr.frame_index) + 1 ||
 		    frame_id != le16_to_cpu(net->rx_hdr.frame_id)) {
 			net->stats.rx_missed_errors++;
@@ -786,7 +721,7 @@ static bool tbnet_check_frame(struct tbnet *net, const struct tbnet_frame *tf,
 		return true;
 	}
 
-	/* Start of packet, validate the frame header */
+	 
 	if (frame_count == 0 || frame_count > TBNET_RING_SIZE / 4) {
 		net->stats.rx_length_errors++;
 		return false;
@@ -816,10 +751,7 @@ static int tbnet_poll(struct napi_struct *napi, int budget)
 		bool last = true;
 		u32 frame_size;
 
-		/* Return some buffers to hardware, one at a time is too
-		 * slow so allocate MAX_SKB_FRAGS buffers at the same
-		 * time.
-		 */
+		 
 		if (cleaned_count >= MAX_SKB_FRAGS) {
 			tbnet_alloc_rx_buffers(net, cleaned_count);
 			cleaned_count = 0;
@@ -900,7 +832,7 @@ static int tbnet_poll(struct napi_struct *napi, int budget)
 		return budget;
 
 	napi_complete_done(napi, rx_packets);
-	/* Re-enable the ring interrupt */
+	 
 	tb_ring_poll_complete(net->rx_ring.ring);
 
 	return rx_packets;
@@ -945,7 +877,7 @@ static int tbnet_open(struct net_device *dev)
 	eof_mask = BIT(TBIP_PDF_FRAME_END);
 
 	flags = RING_FLAG_FRAME;
-	/* Only enable full E2E if the other end supports it too */
+	 
 	if (tbnet_e2e && net->svc->prtcstns & TBNET_E2E)
 		flags |= RING_FLAG_E2E;
 
@@ -992,7 +924,7 @@ static bool tbnet_xmit_csum_and_map(struct tbnet *net, struct sk_buff *skb,
 	struct thunderbolt_ip_frame_header *hdr = page_address(frames[0]->page);
 	struct device *dma_dev = tb_ring_dma_device(net->tx_ring.ring);
 	unsigned int i, len, offset = skb_transport_offset(skb);
-	/* Remove payload length from checksum */
+	 
 	u32 paylen = skb->len - skb_transport_offset(skb);
 	__wsum wsum = (__force __wsum)htonl(paylen);
 	__be16 protocol = skb->protocol;
@@ -1001,9 +933,7 @@ static bool tbnet_xmit_csum_and_map(struct tbnet *net, struct sk_buff *skb,
 	__sum16 *tucso;
 
 	if (skb->ip_summed != CHECKSUM_PARTIAL) {
-		/* No need to calculate checksum so we just update the
-		 * total frame count and sync the frames for DMA.
-		 */
+		 
 		for (i = 0; i < frame_count; i++) {
 			hdr = page_address(frames[i]->page);
 			hdr->frame_count = cpu_to_le32(frame_count);
@@ -1027,11 +957,7 @@ static bool tbnet_xmit_csum_and_map(struct tbnet *net, struct sk_buff *skb,
 		protocol = vhdr->h_vlan_encapsulated_proto;
 	}
 
-	/* Data points on the beginning of packet.
-	 * Check is the checksum absolute place in the packet.
-	 * ipcso will update IP checksum.
-	 * tucso will update TCP/UDP checksum.
-	 */
+	 
 	if (protocol == htons(ETH_P_IP)) {
 		__sum16 *ipcso = dest + ((void *)&(ip_hdr(skb)->check) - data);
 
@@ -1063,9 +989,7 @@ static bool tbnet_xmit_csum_and_map(struct tbnet *net, struct sk_buff *skb,
 		return false;
 	}
 
-	/* First frame was headers, rest of the frames contain data.
-	 * Calculate checksum over each frame.
-	 */
+	 
 	for (i = 0; i < frame_count; i++) {
 		hdr = page_address(frames[i]->page);
 		dest = (void *)(hdr + 1) + offset;
@@ -1080,9 +1004,7 @@ static bool tbnet_xmit_csum_and_map(struct tbnet *net, struct sk_buff *skb,
 
 	*tucso = csum_fold(wsum);
 
-	/* Checksum is finally calculated and we don't touch the memory
-	 * anymore, so DMA sync the frames now.
-	 */
+	 
 	for (i = 0; i < frame_count; i++) {
 		dma_sync_single_for_device(dma_dev, frames[i]->frame.buffer_phy,
 			tbnet_frame_size(frames[i]), DMA_TO_DEVICE);
@@ -1131,7 +1053,7 @@ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
 	hdr = page_address(frames[frame_index]->page);
 	dest = hdr + 1;
 
-	/* If overall packet is bigger than the frame data size */
+	 
 	while (data_len > TBNET_MAX_PAYLOAD_SIZE) {
 		unsigned int size_left = TBNET_MAX_PAYLOAD_SIZE;
 
@@ -1141,10 +1063,7 @@ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
 
 		do {
 			if (len > size_left) {
-				/* Copy data onto Tx buffer data with
-				 * full frame size then break and go to
-				 * next frame
-				 */
+				 
 				memcpy(dest, src, size_left);
 				len -= size_left;
 				dest += size_left;
@@ -1161,9 +1080,9 @@ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
 				unmap = false;
 			}
 
-			/* Ensure all fragments have been processed */
+			 
 			if (frag < skb_shinfo(skb)->nr_frags) {
-				/* Map and then unmap quickly */
+				 
 				src = tbnet_kmap_frag(skb, frag++, &len);
 				unmap = true;
 			} else if (unlikely(size_left > 0)) {
@@ -1188,7 +1107,7 @@ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
 
 	frames[frame_index]->frame.size = data_len + sizeof(*hdr);
 
-	/* In case the remaining data_len is smaller than a frame */
+	 
 	while (len < data_len) {
 		memcpy(dest, src, len);
 		data_len -= len;
@@ -1230,7 +1149,7 @@ static netdev_tx_t tbnet_start_xmit(struct sk_buff *skb,
 	return NETDEV_TX_OK;
 
 err_drop:
-	/* We can re-use the buffers */
+	 
 	net->tx_ring.cons -= frame_index;
 
 	dev_kfree_skb_any(skb);
@@ -1275,7 +1194,7 @@ static void tbnet_generate_mac(struct net_device *dev)
 
 	phy_port = tb_phy_port_from_link(TBNET_L0_PORT_NUM(xd->route));
 
-	/* Unicast and locally administered MAC */
+	 
 	addr[0] = phy_port << 4 | 0x02;
 	hash = jhash2((u32 *)xd->local_uuid, 4, 0);
 	memcpy(addr + 1, &hash, sizeof(hash));
@@ -1313,19 +1232,7 @@ static int tbnet_probe(struct tb_service *svc, const struct tb_service_id *id)
 	strcpy(dev->name, "thunderbolt%d");
 	dev->netdev_ops = &tbnet_netdev_ops;
 
-	/* ThunderboltIP takes advantage of TSO packets but instead of
-	 * segmenting them we just split the packet into Thunderbolt
-	 * frames (maximum payload size of each frame is 4084 bytes) and
-	 * calculate checksum over the whole packet here.
-	 *
-	 * The receiving side does the opposite if the host OS supports
-	 * LRO, otherwise it needs to split the large packet into MTU
-	 * sized smaller packets.
-	 *
-	 * In order to receive large packets from the networking stack,
-	 * we need to announce support for most of the offloading
-	 * features here.
-	 */
+	 
 	dev->hw_features = NETIF_F_SG | NETIF_F_ALL_TSO | NETIF_F_GRO |
 			   NETIF_F_IP_CSUM | NETIF_F_IPV6_CSUM;
 	dev->features = dev->hw_features | NETIF_F_HIGHDMA;
@@ -1333,7 +1240,7 @@ static int tbnet_probe(struct tb_service *svc, const struct tb_service_id *id)
 
 	netif_napi_add(dev, &net->napi, tbnet_poll);
 
-	/* MTU range: 68 - 65522 */
+	 
 	dev->min_mtu = ETH_MIN_MTU;
 	dev->max_mtu = TBNET_MAX_MTU - ETH_HLEN;
 

@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * AARCH64 specific definitions for NOLIBC
- * Copyright (C) 2017-2022 Willy Tarreau <w@1wt.eu>
- */
+ 
+ 
 
 #ifndef _NOLIBC_ARCH_AARCH64_H
 #define _NOLIBC_ARCH_AARCH64_H
@@ -10,19 +7,7 @@
 #include "compiler.h"
 #include "crt.h"
 
-/* Syscalls for AARCH64 :
- *   - registers are 64-bit
- *   - stack is 16-byte aligned
- *   - syscall number is passed in x8
- *   - arguments are in x0, x1, x2, x3, x4, x5
- *   - the system call is performed by calling svc 0
- *   - syscall return comes in x0.
- *   - the arguments are cast to long and assigned into the target registers
- *     which are then simply passed as registers to the asm code, so that we
- *     don't have to experience issues with register constraints.
- *
- * On aarch64, select() is not implemented so we have to use pselect6().
- */
+ 
 #define __ARCH_WANT_SYS_PSELECT6
 
 #define my_syscall0(num)                                                      \
@@ -144,14 +129,14 @@
 	_arg1;                                                                \
 })
 
-/* startup code */
+ 
 void __attribute__((weak, noreturn, optimize("Os", "omit-frame-pointer"))) __no_stack_protector _start(void)
 {
 	__asm__ volatile (
-		"mov x0, sp\n"          /* save stack pointer to x0, as arg1 of _start_c */
-		"and sp, x0, -16\n"     /* sp must be 16-byte aligned in the callee      */
-		"bl  _start_c\n"        /* transfer to c runtime                         */
+		"mov x0, sp\n"           
+		"and sp, x0, -16\n"      
+		"bl  _start_c\n"         
 	);
 	__builtin_unreachable();
 }
-#endif /* _NOLIBC_ARCH_AARCH64_H */
+#endif  

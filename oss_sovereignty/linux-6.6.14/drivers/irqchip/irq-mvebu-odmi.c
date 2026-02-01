@@ -1,12 +1,4 @@
-/*
- * Copyright (C) 2016 Marvell
- *
- * Thomas Petazzoni <thomas.petazzoni@free-electrons.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2.  This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #define pr_fmt(fmt) "GIC-ODMI: " fmt
 
@@ -26,10 +18,7 @@
 #define GICP_ODMIN_GM_EA_R0		0x108
 #define GICP_ODMIN_GM_EA_R1		0x118
 
-/*
- * We don't support the group events, so we simply have 8 interrupts
- * per frame.
- */
+ 
 #define NODMIS_SHIFT		3
 #define NODMIS_PER_FRAME	(1 << NODMIS_SHIFT)
 #define NODMIS_MASK		(NODMIS_PER_FRAME - 1)
@@ -44,7 +33,7 @@ static struct odmi_data *odmis;
 static unsigned long *odmis_bm;
 static unsigned int odmis_count;
 
-/* Protects odmis_bm */
+ 
 static DEFINE_SPINLOCK(odmis_bm_lock);
 
 static void odmi_compose_msi_msg(struct irq_data *d, struct msi_msg *msg)
@@ -112,7 +101,7 @@ static int odmi_irq_domain_alloc(struct irq_domain *domain, unsigned int virq,
 		return ret;
 	}
 
-	/* Configure the interrupt line to be edge */
+	 
 	d = irq_domain_get_irq_data(domain->parent, virq);
 	d->chip->irq_set_type(d, IRQ_TYPE_EDGE_RISING);
 
@@ -134,7 +123,7 @@ static void odmi_irq_domain_free(struct irq_domain *domain,
 
 	irq_domain_free_irqs_parent(domain, virq, nr_irqs);
 
-	/* Actually free the MSI */
+	 
 	spin_lock(&odmis_bm_lock);
 	__clear_bit(d->hwirq, odmis_bm);
 	spin_unlock(&odmis_bm_lock);

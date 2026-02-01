@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO PCI interrupt handling
- *
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- *
- * Derived from original vfio:
- * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
- * Author: Tom Lyon, pugs@cisco.com
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -81,9 +72,7 @@ vfio_irq_ctx_alloc(struct vfio_pci_core_device *vdev, unsigned long index)
 	return ctx;
 }
 
-/*
- * INTx
- */
+ 
 static void vfio_send_intx_eventfd(void *opaque, void *unused)
 {
 	struct vfio_pci_core_device *vdev = opaque;
@@ -98,7 +87,7 @@ static void vfio_send_intx_eventfd(void *opaque, void *unused)
 	}
 }
 
-/* Returns true if the INTx vfio_pci_irq_ctx.masked value is changed. */
+ 
 bool vfio_pci_intx_mask(struct vfio_pci_core_device *vdev)
 {
 	struct pci_dev *pdev = vdev->pdev;
@@ -108,12 +97,7 @@ bool vfio_pci_intx_mask(struct vfio_pci_core_device *vdev)
 
 	spin_lock_irqsave(&vdev->irqlock, flags);
 
-	/*
-	 * Masking can come from interrupt, ioctl, or config space
-	 * via INTx disable.  The latter means this can get called
-	 * even when not using intx delivery.  In this case, just
-	 * try to have the physical bit follow the virtual bit.
-	 */
+	 
 	if (unlikely(!is_intx(vdev))) {
 		if (vdev->pci_2_3)
 			pci_intx(pdev, 0);
@@ -125,10 +109,7 @@ bool vfio_pci_intx_mask(struct vfio_pci_core_device *vdev)
 		goto out_unlock;
 
 	if (!ctx->masked) {
-		/*
-		 * Can't use check_and_mask here because we always want to
-		 * mask, not just when something is pending.
-		 */
+		 
 		if (vdev->pci_2_3)
 			pci_intx(pdev, 0);
 		else
@@ -143,12 +124,7 @@ out_unlock:
 	return masked_changed;
 }
 
-/*
- * If this is triggered by an eventfd, we can't call eventfd_signal
- * or else we'll deadlock on the eventfd wait queue.  Return >0 when
- * a signal is necessary, which can then be handled via a work queue
- * or directly depending on the caller.
- */
+ 
 static int vfio_pci_intx_unmask_handler(void *opaque, void *unused)
 {
 	struct vfio_pci_core_device *vdev = opaque;
@@ -159,10 +135,7 @@ static int vfio_pci_intx_unmask_handler(void *opaque, void *unused)
 
 	spin_lock_irqsave(&vdev->irqlock, flags);
 
-	/*
-	 * Unmasking comes from ioctl or config, so again, have the
-	 * physical bit follow the virtual even when not using INTx.
-	 */
+	 
 	if (unlikely(!is_intx(vdev))) {
 		if (vdev->pci_2_3)
 			pci_intx(pdev, 1);
@@ -174,11 +147,7 @@ static int vfio_pci_intx_unmask_handler(void *opaque, void *unused)
 		goto out_unlock;
 
 	if (ctx->masked && !vdev->virq_disabled) {
-		/*
-		 * A pending interrupt here would immediately trigger,
-		 * but we can avoid that overhead by just re-sending
-		 * the interrupt to the user.
-		 */
+		 
 		if (vdev->pci_2_3) {
 			if (!pci_check_and_unmask_intx(pdev))
 				ret = 1;
@@ -217,7 +186,7 @@ static irqreturn_t vfio_intx_handler(int irq, void *dev_id)
 		disable_irq_nosync(vdev->pdev->irq);
 		ctx->masked = true;
 		ret = IRQ_HANDLED;
-	} else if (!ctx->masked &&  /* may be shared */
+	} else if (!ctx->masked &&   
 		   pci_check_and_mask_intx(vdev->pdev)) {
 		ctx->masked = true;
 		ret = IRQ_HANDLED;
@@ -245,12 +214,7 @@ static int vfio_intx_enable(struct vfio_pci_core_device *vdev)
 	if (!ctx)
 		return -ENOMEM;
 
-	/*
-	 * If the virtual interrupt is masked, restore it.  Devices
-	 * supporting DisINTx can be masked at the hardware level
-	 * here, non-PCI-2.3 devices will have to wait until the
-	 * interrupt is enabled.
-	 */
+	 
 	ctx->masked = vdev->virq_disabled;
 	if (vdev->pci_2_3)
 		pci_intx(vdev->pdev, !ctx->masked);
@@ -280,7 +244,7 @@ static int vfio_intx_set_signal(struct vfio_pci_core_device *vdev, int fd)
 		ctx->trigger = NULL;
 	}
 
-	if (fd < 0) /* Disable only */
+	if (fd < 0)  
 		return 0;
 
 	ctx->name = kasprintf(GFP_KERNEL_ACCOUNT, "vfio-intx(%s)",
@@ -308,10 +272,7 @@ static int vfio_intx_set_signal(struct vfio_pci_core_device *vdev, int fd)
 		return ret;
 	}
 
-	/*
-	 * INTx disable will stick across the new irq setup,
-	 * disable_irq won't.
-	 */
+	 
 	spin_lock_irqsave(&vdev->irqlock, flags);
 	if (!vdev->pci_2_3 && ctx->masked)
 		disable_irq_nosync(pdev->irq);
@@ -335,9 +296,7 @@ static void vfio_intx_disable(struct vfio_pci_core_device *vdev)
 	vfio_irq_ctx_free(vdev, ctx, 0);
 }
 
-/*
- * MSI/MSI-X
- */
+ 
 static irqreturn_t vfio_msihandler(int irq, void *arg)
 {
 	struct eventfd_ctx *trigger = arg;
@@ -356,7 +315,7 @@ static int vfio_msi_enable(struct vfio_pci_core_device *vdev, int nvec, bool msi
 	if (!is_irq_none(vdev))
 		return -EINVAL;
 
-	/* return the number of supported vectors if we can't get all: */
+	 
 	cmd = vfio_pci_memory_lock_and_enable(vdev);
 	ret = pci_alloc_irq_vectors(pdev, 1, nvec, flag);
 	if (ret < nvec) {
@@ -371,26 +330,14 @@ static int vfio_msi_enable(struct vfio_pci_core_device *vdev, int nvec, bool msi
 				VFIO_PCI_MSI_IRQ_INDEX;
 
 	if (!msix) {
-		/*
-		 * Compute the virtual hardware field for max msi vectors -
-		 * it is the log base 2 of the number of vectors.
-		 */
+		 
 		vdev->msi_qmax = fls(nvec * 2 - 1) - 1;
 	}
 
 	return 0;
 }
 
-/*
- * vfio_msi_alloc_irq() returns the Linux IRQ number of an MSI or MSI-X device
- * interrupt vector. If a Linux IRQ number is not available then a new
- * interrupt is allocated if dynamic MSI-X is supported.
- *
- * Where is vfio_msi_free_irq()? Allocated interrupts are maintained,
- * essentially forming a cache that subsequent allocations can draw from.
- * Interrupts are freed using pci_free_irq_vectors() when MSI/MSI-X is
- * disabled.
- */
+ 
 static int vfio_msi_alloc_irq(struct vfio_pci_core_device *vdev,
 			      unsigned int vector, bool msix)
 {
@@ -429,7 +376,7 @@ static int vfio_msi_set_vector_signal(struct vfio_pci_core_device *vdev,
 		cmd = vfio_pci_memory_lock_and_enable(vdev);
 		free_irq(irq, ctx->trigger);
 		vfio_pci_memory_unlock_and_restore(vdev, cmd);
-		/* Interrupt stays allocated, will be freed at MSI-X disable. */
+		 
 		kfree(ctx->name);
 		eventfd_ctx_put(ctx->trigger);
 		vfio_irq_ctx_free(vdev, ctx, vector);
@@ -439,7 +386,7 @@ static int vfio_msi_set_vector_signal(struct vfio_pci_core_device *vdev,
 		return 0;
 
 	if (irq == -EINVAL) {
-		/* Interrupt stays allocated, will be freed at MSI-X disable. */
+		 
 		irq = vfio_msi_alloc_irq(vdev, vector, msix);
 		if (irq < 0)
 			return irq;
@@ -462,11 +409,7 @@ static int vfio_msi_set_vector_signal(struct vfio_pci_core_device *vdev,
 		goto out_free_name;
 	}
 
-	/*
-	 * If the vector was previously allocated, refresh the on-device
-	 * message data before enabling in case it had been cleared or
-	 * corrupted (e.g. due to backdoor resets) since writing.
-	 */
+	 
 	cmd = vfio_pci_memory_lock_and_enable(vdev);
 	if (msix) {
 		struct msi_msg msg;
@@ -539,19 +482,14 @@ static void vfio_msi_disable(struct vfio_pci_core_device *vdev, bool msix)
 	pci_free_irq_vectors(pdev);
 	vfio_pci_memory_unlock_and_restore(vdev, cmd);
 
-	/*
-	 * Both disable paths above use pci_intx_for_msi() to clear DisINTx
-	 * via their shutdown paths.  Restore for NoINTx devices.
-	 */
+	 
 	if (vdev->nointx)
 		pci_intx(pdev, 0);
 
 	vdev->irq_type = VFIO_PCI_NUM_IRQS;
 }
 
-/*
- * IOCTL support
- */
+ 
 static int vfio_pci_set_intx_unmask(struct vfio_pci_core_device *vdev,
 				    unsigned index, unsigned start,
 				    unsigned count, uint32_t flags, void *data)
@@ -597,7 +535,7 @@ static int vfio_pci_set_intx_mask(struct vfio_pci_core_device *vdev,
 		if (mask)
 			vfio_pci_intx_mask(vdev);
 	} else if (flags & VFIO_IRQ_SET_DATA_EVENTFD) {
-		return -ENOTTY; /* XXX implement me */
+		return -ENOTTY;  
 	}
 
 	return 0;
@@ -703,7 +641,7 @@ static int vfio_pci_set_ctx_trigger_single(struct eventfd_ctx **ctx,
 					   unsigned int count, uint32_t flags,
 					   void *data)
 {
-	/* DATA_NONE/DATA_BOOL enables loopback testing */
+	 
 	if (flags & VFIO_IRQ_SET_DATA_NONE) {
 		if (*ctx) {
 			if (count) {
@@ -803,7 +741,7 @@ int vfio_pci_set_irqs_ioctl(struct vfio_pci_core_device *vdev, uint32_t flags,
 		switch (flags & VFIO_IRQ_SET_ACTION_TYPE_MASK) {
 		case VFIO_IRQ_SET_ACTION_MASK:
 		case VFIO_IRQ_SET_ACTION_UNMASK:
-			/* XXX Need masking support exported */
+			 
 			break;
 		case VFIO_IRQ_SET_ACTION_TRIGGER:
 			func = vfio_pci_set_msi_trigger;

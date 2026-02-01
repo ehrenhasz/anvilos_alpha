@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2015-2016 Vladimir Zapolskiy <vz@mleia.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "%s: " fmt, __func__
 

@@ -1,15 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ptrace test for GPR/FPR registers
- *
- * Copyright (C) 2015 Anshuman Khandual, IBM Corporation.
- */
+
+ 
 #include "ptrace.h"
 #include "ptrace-gpr.h"
 #include "reg.h"
 #include <time.h>
 
-/* Tracer and Tracee Shared Data */
+ 
 int shm_id;
 int *cptr, *pptr;
 
@@ -51,37 +47,37 @@ int trace_gpr(pid_t child)
 
 	FAIL_IF(start_trace(child));
 
-	// Check child GPRs match what we expect using GETREGS
+	
 	FAIL_IF(show_gpr(child, gpr));
 	FAIL_IF(validate_gpr(gpr, child_gpr_val));
 
-	// Check child FPRs match what we expect using GETFPREGS
+	
 	FAIL_IF(show_fpr(child, fpr));
 	memcpy(&tmp, &child_fpr_val, sizeof(tmp));
 	FAIL_IF(validate_fpr(fpr, tmp));
 
-	// Check child FPRs match what we expect using PEEKUSR
+	
 	peeked_fprs = peek_fprs(child);
 	FAIL_IF(!peeked_fprs);
 	FAIL_IF(validate_fpr(peeked_fprs, tmp));
 	free(peeked_fprs);
 
-	// Write child GPRs using SETREGS
+	
 	FAIL_IF(write_gpr(child, parent_gpr_val));
 
-	// Write child FPRs using SETFPREGS
+	
 	memcpy(&tmp, &parent_fpr_val, sizeof(tmp));
 	FAIL_IF(write_fpr(child, tmp));
 
-	// Check child FPRs match what we just set, using PEEKUSR
+	
 	peeked_fprs = peek_fprs(child);
 	FAIL_IF(!peeked_fprs);
 	FAIL_IF(validate_fpr(peeked_fprs, tmp));
 
-	// Write child FPRs using POKEUSR
+	
 	FAIL_IF(poke_fprs(child, (unsigned long *)peeked_fprs));
 
-	// Child will check its FPRs match before exiting
+	
 	FAIL_IF(stop_trace(child));
 
 	return TEST_PASS;
@@ -98,17 +94,17 @@ static uint64_t rand_reg(void)
 
 	r = random();
 
-	// Small values are typical
+	
 	result = r & 0xffff;
 	if (r & 0x10000)
 		return result;
 
-	// Pointers tend to have high bits set
+	
 	result |= random() << (__LONG_WIDTH__ - 31);
 	if (r & 0x100000)
 		return result;
 
-	// And sometimes we want a full 64-bit value
+	
 	result ^= random() << 16;
 
 	return result;

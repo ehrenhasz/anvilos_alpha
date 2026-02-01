@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2010, Lars-Peter Clausen <lars@metafoo.de>
- *  PWM beeper driver
- */
+
+ 
 
 #include <linux/input.h>
 #include <linux/regulator/consumer.h>
@@ -135,7 +132,7 @@ static int pwm_beeper_probe(struct platform_device *pdev)
 	if (IS_ERR(beeper->pwm))
 		return dev_err_probe(dev, PTR_ERR(beeper->pwm), "Failed to request PWM device\n");
 
-	/* Sync up PWM state and ensure it is off. */
+	 
 	pwm_init_state(beeper->pwm, &state);
 	state.enabled = false;
 	error = pwm_apply_state(beeper->pwm, &state);
@@ -198,11 +195,7 @@ static int pwm_beeper_suspend(struct device *dev)
 {
 	struct pwm_beeper *beeper = dev_get_drvdata(dev);
 
-	/*
-	 * Spinlock is taken here is not to protect write to
-	 * beeper->suspended, but to ensure that pwm_beeper_event
-	 * does not re-submit work once flag is set.
-	 */
+	 
 	spin_lock_irq(&beeper->input->event_lock);
 	beeper->suspended = true;
 	spin_unlock_irq(&beeper->input->event_lock);
@@ -220,7 +213,7 @@ static int pwm_beeper_resume(struct device *dev)
 	beeper->suspended = false;
 	spin_unlock_irq(&beeper->input->event_lock);
 
-	/* Let worker figure out if we should resume beeping */
+	 
 	schedule_work(&beeper->work);
 
 	return 0;

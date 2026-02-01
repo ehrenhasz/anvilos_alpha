@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2017-2019, The Linux Foundation. All rights reserved.
+
+
 
 #include <linux/kernel.h>
 #include <linux/bitops.h>
@@ -1226,10 +1226,7 @@ static struct clk_branch gcc_boot_rom_ahb_clk = {
 	},
 };
 
-/*
- * Clock ON depends on external parent 'config noc', so cant poll
- * delay and also mark as crtitical for camss boot
- */
+ 
 static struct clk_branch gcc_camera_ahb_clk = {
 	.halt_reg = 0xb008,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -1272,7 +1269,7 @@ static struct clk_branch gcc_camera_sf_axi_clk = {
 	},
 };
 
-/* XO critical input to camss, so no need to poll */
+ 
 static struct clk_branch gcc_camera_xo_clk = {
 	.halt_reg = 0xb044,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -1332,7 +1329,7 @@ static struct clk_branch gcc_cpuss_ahb_clk = {
 			.parent_hws = (const struct clk_hw *[]){
 				      &gcc_cpuss_ahb_clk_src.clkr.hw },
 			.num_parents = 1,
-			 /* required for cpuss */
+			  
 			.flags = CLK_IS_CRITICAL | CLK_SET_RATE_PARENT,
 			.ops = &clk_branch2_ops,
 		},
@@ -1347,7 +1344,7 @@ static struct clk_branch gcc_cpuss_dvm_bus_clk = {
 		.enable_mask = BIT(0),
 		.hw.init = &(struct clk_init_data){
 			.name = "gcc_cpuss_dvm_bus_clk",
-			 /* required for cpuss */
+			  
 			.flags = CLK_IS_CRITICAL,
 			.ops = &clk_branch2_ops,
 		},
@@ -1364,7 +1361,7 @@ static struct clk_branch gcc_cpuss_gnoc_clk = {
 		.enable_mask = BIT(22),
 		.hw.init = &(struct clk_init_data){
 			.name = "gcc_cpuss_gnoc_clk",
-			 /* required for cpuss */
+			  
 			.flags = CLK_IS_CRITICAL,
 			.ops = &clk_branch2_ops,
 		},
@@ -1397,10 +1394,7 @@ static struct clk_branch gcc_ddrss_gpu_axi_clk = {
 	},
 };
 
-/*
- * Clock ON depends on external parent 'config noc', so cant poll
- * delay and also mark as crtitical for disp boot
- */
+ 
 static struct clk_branch gcc_disp_ahb_clk = {
 	.halt_reg = 0xb00c,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -1443,7 +1437,7 @@ static struct clk_branch gcc_disp_sf_axi_clk = {
 	},
 };
 
-/* XO critical input to disp, so no need to poll */
+ 
 static struct clk_branch gcc_disp_xo_clk = {
 	.halt_reg = 0xb048,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -1581,7 +1575,7 @@ static struct clk_branch gcc_gpu_cfg_ahb_clk = {
 		.enable_mask = BIT(0),
 		.hw.init = &(struct clk_init_data){
 			.name = "gcc_gpu_cfg_ahb_clk",
-			 /* required for gpu */
+			  
 			.flags = CLK_IS_CRITICAL,
 			.ops = &clk_branch2_ops,
 		},
@@ -1695,7 +1689,7 @@ static struct clk_branch gcc_npu_cfg_ahb_clk = {
 		.enable_mask = BIT(0),
 		.hw.init = &(struct clk_init_data){
 			.name = "gcc_npu_cfg_ahb_clk",
-			 /* required for npu */
+			  
 			.flags = CLK_IS_CRITICAL,
 			.ops = &clk_branch2_ops,
 		},
@@ -1839,7 +1833,7 @@ static struct clk_branch gcc_pcie_0_mstr_axi_clk = {
 	},
 };
 
-/* Clock ON depends on external parent 'PIPE' clock, so dont poll */
+ 
 static struct clk_branch gcc_pcie_0_pipe_clk = {
 	.halt_reg = 0x6b024,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -1939,7 +1933,7 @@ static struct clk_branch gcc_pcie_1_mstr_axi_clk = {
 	},
 };
 
-/* Clock ON depends on external parent 'PIPE' clock, so dont poll */
+ 
 static struct clk_branch gcc_pcie_1_pipe_clk = {
 	.halt_reg = 0x8d024,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -2656,7 +2650,7 @@ static struct clk_branch gcc_sys_noc_cpuss_ahb_clk = {
 			.parent_hws = (const struct clk_hw *[]){
 				      &gcc_cpuss_ahb_clk_src.clkr.hw },
 			.num_parents = 1,
-			/* required for cpuss */
+			 
 			.flags = CLK_IS_CRITICAL | CLK_SET_RATE_PARENT,
 			.ops = &clk_branch2_ops,
 		},
@@ -2848,7 +2842,7 @@ static struct clk_branch gcc_ufs_card_phy_aux_hw_ctl_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_ufs_card_rx_symbol_0_clk = {
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
@@ -2861,7 +2855,7 @@ static struct clk_branch gcc_ufs_card_rx_symbol_0_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_ufs_card_rx_symbol_1_clk = {
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
@@ -2874,7 +2868,7 @@ static struct clk_branch gcc_ufs_card_rx_symbol_1_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_ufs_card_tx_symbol_0_clk = {
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
@@ -3067,7 +3061,7 @@ static struct clk_branch gcc_ufs_phy_phy_aux_hw_ctl_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_ufs_phy_rx_symbol_0_clk = {
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
@@ -3080,7 +3074,7 @@ static struct clk_branch gcc_ufs_phy_rx_symbol_0_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_ufs_phy_rx_symbol_1_clk = {
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
@@ -3093,7 +3087,7 @@ static struct clk_branch gcc_ufs_phy_rx_symbol_1_clk = {
 	},
 };
 
-/* external clocks so add BRANCH_HALT_SKIP */
+ 
 static struct clk_branch gcc_ufs_phy_tx_symbol_0_clk = {
 	.halt_check = BRANCH_HALT_SKIP,
 	.clkr = {
@@ -3356,10 +3350,7 @@ static struct clk_branch gcc_usb3_sec_phy_pipe_clk = {
 	},
 };
 
-/*
- * Clock ON depends on external parent 'config noc', so cant poll
- * delay and also mark as crtitical for video boot
- */
+ 
 static struct clk_branch gcc_video_ahb_clk = {
 	.halt_reg = 0xb004,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -3415,7 +3406,7 @@ static struct clk_branch gcc_video_axic_clk = {
 	},
 };
 
-/* XO critical input to video, so no need to poll */
+ 
 static struct clk_branch gcc_video_xo_clk = {
 	.halt_reg = 0xb040,
 	.halt_check = BRANCH_HALT_DELAY,
@@ -3782,7 +3773,7 @@ static int gcc_sm8150_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Disable the GPLL0 active input to NPU and GPU via MISC registers */
+	 
 	regmap_update_bits(regmap, 0x4d110, 0x3, 0x3);
 	regmap_update_bits(regmap, 0x71028, 0x3, 0x3);
 

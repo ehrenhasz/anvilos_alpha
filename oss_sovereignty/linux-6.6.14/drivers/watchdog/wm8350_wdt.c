@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Watchdog driver for the wm8350
- *
- * Copyright (C) 2007, 2008 Wolfson Microelectronics <linux@wolfsonmicro.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -25,8 +21,8 @@ MODULE_PARM_DESC(nowayout,
 static DEFINE_MUTEX(wdt_mutex);
 
 static struct {
-	unsigned int time;  /* Seconds */
-	u16 val;	    /* To be set in WM8350_SYSTEM_CONTROL_2 */
+	unsigned int time;   
+	u16 val;	     
 } wm8350_wdt_cfgs[] = {
 	{ 1, 0x02 },
 	{ 2, 0x04 },
@@ -150,7 +146,7 @@ static int wm8350_wdt_probe(struct platform_device *pdev)
 	watchdog_set_drvdata(&wm8350_wdt, wm8350);
 	wm8350_wdt.parent = &pdev->dev;
 
-	/* Default to 4s timeout */
+	 
 	wm8350_wdt_set_timeout(&wm8350_wdt, 4);
 
 	return devm_watchdog_register_device(&pdev->dev, &wm8350_wdt);

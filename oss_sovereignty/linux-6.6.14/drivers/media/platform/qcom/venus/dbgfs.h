@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2020 Linaro Ltd. */
+ 
+ 
 
 #ifndef __VENUS_DBGFS_H__
 #define __VENUS_DBGFS_H__

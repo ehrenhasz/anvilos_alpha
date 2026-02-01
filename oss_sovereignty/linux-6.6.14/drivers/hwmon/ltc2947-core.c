@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Analog Devices LTC2947 high precision power and energy monitor
- *
- * Copyright 2019 Analog Devices Inc.
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
 #include <linux/clk.h>
@@ -16,7 +12,7 @@
 
 #include "ltc2947.h"
 
-/* register's */
+ 
 #define LTC2947_REG_PAGE_CTRL		0xFF
 #define LTC2947_REG_CTRL		0xF0
 #define LTC2947_REG_TBCTL		0xE9
@@ -41,13 +37,13 @@
 #define LTC2947_GPIO_FAN_POL_MASK	BIT(7)
 #define LTC2947_GPIO_FAN_POL(x)		FIELD_PREP(LTC2947_GPIO_FAN_POL_MASK, x)
 #define LTC2947_REG_GPIO_ACCUM		0xE3
-/* 200Khz */
+ 
 #define LTC2947_CLK_MIN			200000
-/* 25Mhz */
+ 
 #define LTC2947_CLK_MAX			25000000
 #define LTC2947_PAGE0			0
 #define LTC2947_PAGE1			1
-/* Voltage registers */
+ 
 #define LTC2947_REG_VOLTAGE		0xA0
 #define LTC2947_REG_VOLTAGE_MAX		0x50
 #define LTC2947_REG_VOLTAGE_MIN		0x52
@@ -60,30 +56,30 @@
 #define LTC2947_REG_DVCC_THRE_L		0x9A
 #define LTC2947_VOLTAGE_GEN_CHAN	0
 #define LTC2947_VOLTAGE_DVCC_CHAN	1
-/* in mV */
+ 
 #define VOLTAGE_MAX			15500
 #define VOLTAGE_MIN			-300
 #define VDVCC_MAX			15000
 #define VDVCC_MIN			4750
-/* Current registers */
+ 
 #define LTC2947_REG_CURRENT		0x90
 #define LTC2947_REG_CURRENT_MAX		0x40
 #define LTC2947_REG_CURRENT_MIN		0x42
 #define LTC2947_REG_CURRENT_THRE_H	0x80
 #define LTC2947_REG_CURRENT_THRE_L	0x82
-/* in mA */
+ 
 #define CURRENT_MAX			30000
 #define CURRENT_MIN			-30000
-/* Power registers */
+ 
 #define LTC2947_REG_POWER		0x93
 #define LTC2947_REG_POWER_MAX		0x44
 #define LTC2947_REG_POWER_MIN		0x46
 #define LTC2947_REG_POWER_THRE_H	0x84
 #define LTC2947_REG_POWER_THRE_L	0x86
-/* in uW */
+ 
 #define POWER_MAX			450000000
 #define POWER_MIN			-450000000
-/* Temperature registers */
+ 
 #define LTC2947_REG_TEMP		0xA2
 #define LTC2947_REG_TEMP_MAX		0x54
 #define LTC2947_REG_TEMP_MIN		0x56
@@ -92,13 +88,13 @@
 #define LTC2947_REG_TEMP_FAN_THRE_H	0x9C
 #define LTC2947_REG_TEMP_FAN_THRE_L	0x9E
 #define LTC2947_TEMP_FAN_CHAN		1
-/* in millidegress Celsius */
+ 
 #define TEMP_MAX			85000
 #define TEMP_MIN			-40000
-/* Energy registers */
+ 
 #define LTC2947_REG_ENERGY1		0x06
 #define LTC2947_REG_ENERGY2		0x16
-/* Status/Alarm/Overflow registers */
+ 
 #define LTC2947_REG_STATUS		0x80
 #define LTC2947_REG_STATVT		0x81
 #define LTC2947_REG_STATIP		0x82
@@ -119,11 +115,7 @@
 struct ltc2947_data {
 	struct regmap *map;
 	struct device *dev;
-	/*
-	 * The mutex is needed because the device has 2 memory pages. When
-	 * reading/writing the correct page needs to be set so that, the
-	 * complete sequence select_page->read/write needs to be protected.
-	 */
+	 
 	struct mutex lock;
 	u32 lsb_energy;
 	bool gpio_out;
@@ -242,7 +234,7 @@ static int ltc2947_val_write(struct ltc2947_data *st, const u8 reg,
 	int ret;
 
 	mutex_lock(&st->lock);
-	/* set device on correct page */
+	 
 	ret = regmap_write(st->map, LTC2947_REG_PAGE_CTRL, page);
 	if (ret) {
 		mutex_unlock(&st->lock);
@@ -273,10 +265,7 @@ static int ltc2947_reset_history(struct ltc2947_data *st, const u8 reg_h,
 				 const u8 reg_l)
 {
 	int ret;
-	/*
-	 * let's reset the tracking register's. Tracking register's have all
-	 * 2 bytes size
-	 */
+	 
 	ret = ltc2947_val_write(st, reg_h, LTC2947_PAGE0, 2, 0x8000U);
 	if (ret)
 		return ret;
@@ -288,7 +277,7 @@ static int ltc2947_alarm_read(struct ltc2947_data *st, const u8 reg,
 			      const u32 mask, long *val)
 {
 	u8 offset = reg - LTC2947_REG_STATUS;
-	/* +1 to include status reg */
+	 
 	char alarms[LTC2947_ALERTS_SIZE + 1];
 	int ret = 0;
 
@@ -301,17 +290,13 @@ static int ltc2947_alarm_read(struct ltc2947_data *st, const u8 reg,
 		goto unlock;
 
 	dev_dbg(st->dev, "Read alarm, reg:%02X, mask:%02X\n", reg, mask);
-	/*
-	 * As stated in the datasheet, when Threshold and Overflow registers
-	 * are used, the status and all alert registers must be read in one
-	 * multi-byte transaction.
-	 */
+	 
 	ret = regmap_bulk_read(st->map, LTC2947_REG_STATUS, alarms,
 			       sizeof(alarms));
 	if (ret)
 		goto unlock;
 
-	/* get the alarm */
+	 
 	*val = !!(alarms[offset] & mask);
 unlock:
 	mutex_unlock(&st->lock);
@@ -330,7 +315,7 @@ static ssize_t ltc2947_show_value(struct device *dev,
 	if (ret)
 		return ret;
 
-	/* value in microJoule. st->lsb_energy was multiplied by 10E9 */
+	 
 	val = div_s64(val * st->lsb_energy, 1000);
 
 	return sprintf(buf, "%lld\n", val);
@@ -395,7 +380,7 @@ static int ltc2947_read_temp(struct device *dev, const u32 attr, long *val,
 	if (ret)
 		return ret;
 
-	/* in milidegrees celcius, temp is given by: */
+	 
 	*val = (__val * 204) + 5500;
 
 	return 0;
@@ -405,7 +390,7 @@ static int ltc2947_read_power(struct device *dev, const u32 attr, long *val)
 {
 	struct ltc2947_data *st = dev_get_drvdata(dev);
 	int ret;
-	u32 lsb = 200000; /* in uW */
+	u32 lsb = 200000;  
 	s64 __val = 0;
 
 	switch (attr) {
@@ -452,7 +437,7 @@ static int ltc2947_read_curr(struct device *dev, const u32 attr, long *val)
 {
 	struct ltc2947_data *st = dev_get_drvdata(dev);
 	int ret;
-	u8 lsb = 12; /* in mA */
+	u8 lsb = 12;  
 	s64 __val = 0;
 
 	switch (attr) {
@@ -500,7 +485,7 @@ static int ltc2947_read_in(struct device *dev, const u32 attr, long *val,
 {
 	struct ltc2947_data *st = dev_get_drvdata(dev);
 	int ret;
-	u8 lsb = 2; /* in mV */
+	u8 lsb = 2;  
 	s64 __val = 0;
 
 	if (channel < 0 || channel > LTC2947_VOLTAGE_DVCC_CHAN) {
@@ -943,7 +928,7 @@ static const struct hwmon_chip_info ltc2947_chip_info = {
 	.info = ltc2947_info,
 };
 
-/* energy attributes are 6bytes wide so we need u64 */
+ 
 static SENSOR_DEVICE_ATTR(energy1_input, 0444, ltc2947_show_value, NULL,
 			  LTC2947_REG_ENERGY1);
 static SENSOR_DEVICE_ATTR(energy2_input, 0444, ltc2947_show_value, NULL,
@@ -963,14 +948,11 @@ static int ltc2947_setup(struct ltc2947_data *st)
 	u32 dummy, deadband, pol;
 	u32 accum[2];
 
-	/* clear status register by reading it */
+	 
 	ret = regmap_read(st->map, LTC2947_REG_STATUS, &dummy);
 	if (ret)
 		return ret;
-	/*
-	 * Set max/min for power here since the default values x scale
-	 * would overflow on 32bit arch
-	 */
+	 
 	ret = ltc2947_val_write(st, LTC2947_REG_POWER_THRE_H, LTC2947_PAGE1, 2,
 				POWER_MAX / 200000);
 	if (ret)
@@ -981,7 +963,7 @@ static int ltc2947_setup(struct ltc2947_data *st)
 	if (ret)
 		return ret;
 
-	/* check external clock presence */
+	 
 	extclk = devm_clk_get_optional_enabled(st->dev, NULL);
 	if (IS_ERR(extclk))
 		return dev_err_probe(st->dev, PTR_ERR(extclk),
@@ -992,7 +974,7 @@ static int ltc2947_setup(struct ltc2947_data *st)
 		u8 pre = 0, div, tbctl;
 		u64 aux;
 
-		/* let's calculate and set the right valus in TBCTL */
+		 
 		rate_hz = clk_get_rate(extclk);
 		if (rate_hz < LTC2947_CLK_MIN || rate_hz > LTC2947_CLK_MAX) {
 			dev_err(st->dev, "Invalid rate:%lu for external clock",
@@ -1000,7 +982,7 @@ static int ltc2947_setup(struct ltc2947_data *st)
 			return -EINVAL;
 		}
 
-		/* as in table 1 of the datasheet */
+		 
 		if (rate_hz >= LTC2947_CLK_MIN && rate_hz <= 1000000)
 			pre = 0;
 		else if (rate_hz > 1000000 && rate_hz <= 2000000)
@@ -1013,25 +995,18 @@ static int ltc2947_setup(struct ltc2947_data *st)
 			pre = 4;
 		else if (rate_hz > 16000000 && rate_hz <= LTC2947_CLK_MAX)
 			pre = 5;
-		/*
-		 * Div is given by:
-		 *	floor(fref / (2^PRE * 32768))
-		 */
+		 
 		div = rate_hz / ((1 << pre) * 32768);
 		tbctl = LTC2947_PRE(pre) | LTC2947_DIV(div);
 
 		ret = regmap_write(st->map, LTC2947_REG_TBCTL, tbctl);
 		if (ret)
 			return ret;
-		/*
-		 * The energy lsb is given by (in W*s):
-		 *      06416 * (1/fref) * 2^PRE * (DIV + 1)
-		 * The value is multiplied by 10E9
-		 */
+		 
 		aux = (div + 1) * ((1 << pre) * 641600000ULL);
 		st->lsb_energy = DIV_ROUND_CLOSEST_ULL(aux, rate_hz);
 	} else {
-		/* 19.89E-6 * 10E9 */
+		 
 		st->lsb_energy = 19890;
 	}
 	ret = of_property_read_u32_array(st->dev->of_node,
@@ -1049,16 +1024,16 @@ static int ltc2947_setup(struct ltc2947_data *st)
 				   "adi,accumulation-deadband-microamp",
 				   &deadband);
 	if (!ret) {
-		/* the LSB is the same as the current, so 3mA */
+		 
 		ret = regmap_write(st->map, LTC2947_REG_ACCUM_DEADBAND,
 				   deadband / (1000 * 3));
 		if (ret)
 			return ret;
 	}
-	/* check gpio cfg */
+	 
 	ret = of_property_read_u32(st->dev->of_node, "adi,gpio-out-pol", &pol);
 	if (!ret) {
-		/* setup GPIO as output */
+		 
 		u32 gpio_ctl = LTC2947_GPIO_EN(1) | LTC2947_GPIO_FAN_EN(1) |
 			LTC2947_GPIO_FAN_POL(pol);
 
@@ -1070,10 +1045,7 @@ static int ltc2947_setup(struct ltc2947_data *st)
 	ret = of_property_read_u32_array(st->dev->of_node, "adi,gpio-in-accum",
 					 accum, ARRAY_SIZE(accum));
 	if (!ret) {
-		/*
-		 * Setup the accum options. The gpioctl is already defined as
-		 * input by default.
-		 */
+		 
 		u32 accum_val = LTC2947_ACCUM_POL_1(accum[0]) |
 				LTC2947_ACCUM_POL_2(accum[1]);
 
@@ -1088,7 +1060,7 @@ static int ltc2947_setup(struct ltc2947_data *st)
 			return ret;
 	}
 
-	/* set continuos mode */
+	 
 	return regmap_update_bits(st->map, LTC2947_REG_CTRL,
 				  LTC2947_CONT_MODE_MASK, LTC2947_CONT_MODE(1));
 }
@@ -1126,25 +1098,22 @@ static int ltc2947_resume(struct device *dev)
 	u32 ctrl = 0;
 	int ret;
 
-	/* dummy read to wake the device */
+	 
 	ret = regmap_read(st->map, LTC2947_REG_CTRL, &ctrl);
 	if (ret)
 		return ret;
-	/*
-	 * Wait for the device. It takes 100ms to wake up so, 10ms extra
-	 * should be enough.
-	 */
+	 
 	msleep(110);
 	ret = regmap_read(st->map, LTC2947_REG_CTRL, &ctrl);
 	if (ret)
 		return ret;
-	/* ctrl should be 0 */
+	 
 	if (ctrl != 0) {
 		dev_err(st->dev, "Device failed to wake up, ctl:%02X\n", ctrl);
 		return -ETIMEDOUT;
 	}
 
-	/* set continuous mode */
+	 
 	return regmap_update_bits(st->map, LTC2947_REG_CTRL,
 				  LTC2947_CONT_MODE_MASK, LTC2947_CONT_MODE(1));
 }

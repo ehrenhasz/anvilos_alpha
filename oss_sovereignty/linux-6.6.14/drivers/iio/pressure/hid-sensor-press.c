@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/platform_device.h>
 #include <linux/module.h>
@@ -38,7 +35,7 @@ static const u32 press_sensitivity_addresses[] = {
 	HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE
 };
 
-/* Channel definitions */
+ 
 static const struct iio_chan_spec press_channels[] = {
 	{
 		.type = IIO_PRESSURE,
@@ -53,18 +50,18 @@ static const struct iio_chan_spec press_channels[] = {
 
 };
 
-/* Adjust channel real bits based on report descriptor */
+ 
 static void press_adjust_channel_bit_mask(struct iio_chan_spec *channels,
 					int channel, int size)
 {
 	channels[channel].scan_type.sign = 's';
-	/* Real storage bits will change based on the report desc. */
+	 
 	channels[channel].scan_type.realbits = size * 8;
-	/* Maximum size of a sample to capture is u32 */
+	 
 	channels[channel].scan_type.storagebits = sizeof(u32) * 8;
 }
 
-/* Channel read_raw handler */
+ 
 static int press_read_raw(struct iio_dev *indio_dev,
 			      struct iio_chan_spec const *chan,
 			      int *val, int *val2,
@@ -132,7 +129,7 @@ static int press_read_raw(struct iio_dev *indio_dev,
 	return ret_type;
 }
 
-/* Channel write_raw handler */
+ 
 static int press_write_raw(struct iio_dev *indio_dev,
 			       struct iio_chan_spec const *chan,
 			       int val,
@@ -163,7 +160,7 @@ static const struct iio_info press_info = {
 	.write_raw = &press_write_raw,
 };
 
-/* Callback handler to send event after all samples are received and captured */
+ 
 static int press_proc_event(struct hid_sensor_hub_device *hsdev,
 				unsigned usage_id,
 				void *priv)
@@ -183,7 +180,7 @@ static int press_proc_event(struct hid_sensor_hub_device *hsdev,
 	return 0;
 }
 
-/* Capture samples in local storage */
+ 
 static int press_capture_sample(struct hid_sensor_hub_device *hsdev,
 				unsigned usage_id,
 				size_t raw_len, char *raw_data,
@@ -209,7 +206,7 @@ static int press_capture_sample(struct hid_sensor_hub_device *hsdev,
 	return ret;
 }
 
-/* Parse report which is specific to an usage id*/
+ 
 static int press_parse_report(struct platform_device *pdev,
 				struct hid_sensor_hub_device *hsdev,
 				struct iio_chan_spec *channels,
@@ -238,7 +235,7 @@ static int press_parse_report(struct platform_device *pdev,
 	return ret;
 }
 
-/* Function to initialize the processing for usage id */
+ 
 static int hid_press_probe(struct platform_device *pdev)
 {
 	int ret = 0;
@@ -322,7 +319,7 @@ error_remove_trigger:
 	return ret;
 }
 
-/* Function to deinitialize the processing for usage id */
+ 
 static int hid_press_remove(struct platform_device *pdev)
 {
 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
@@ -338,10 +335,10 @@ static int hid_press_remove(struct platform_device *pdev)
 
 static const struct platform_device_id hid_press_ids[] = {
 	{
-		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+		 
 		.name = "HID-SENSOR-200031",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, hid_press_ids);
 

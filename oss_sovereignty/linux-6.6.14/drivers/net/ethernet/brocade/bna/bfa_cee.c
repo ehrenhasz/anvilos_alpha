@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Linux network driver for QLogic BR-series Converged Network Adapter.
- */
-/*
- * Copyright (c) 2005-2014 Brocade Communications Systems, Inc.
- * Copyright (c) 2014-2015 QLogic Corporation
- * All rights reserved
- * www.qlogic.com
- */
+
+ 
+ 
 
 #include "bfa_cee.h"
 #include "bfi_cna.h"
@@ -44,29 +37,20 @@ bfa_cee_format_lldp_cfg(struct bfa_cee_lldp_cfg *lldp_cfg)
 			ntohs(lldp_cfg->enabled_system_cap);
 }
 
-/**
- * bfa_cee_attr_meminfo - Returns the size of the DMA memory needed by CEE attributes
- */
+ 
 static u32
 bfa_cee_attr_meminfo(void)
 {
 	return roundup(sizeof(struct bfa_cee_attr), BFA_DMA_ALIGN_SZ);
 }
-/**
- * bfa_cee_stats_meminfo - Returns the size of the DMA memory needed by CEE stats
- */
+ 
 static u32
 bfa_cee_stats_meminfo(void)
 {
 	return roundup(sizeof(struct bfa_cee_stats), BFA_DMA_ALIGN_SZ);
 }
 
-/**
- * bfa_cee_get_attr_isr - CEE ISR for get-attributes responses from f/w
- *
- * @cee: Pointer to the CEE module
- * @status: Return status from the f/w
- */
+ 
 static void
 bfa_cee_get_attr_isr(struct bfa_cee *cee, enum bfa_status status)
 {
@@ -81,12 +65,7 @@ bfa_cee_get_attr_isr(struct bfa_cee *cee, enum bfa_status status)
 		cee->cbfn.get_attr_cbfn(cee->cbfn.get_attr_cbarg, status);
 }
 
-/**
- * bfa_cee_get_stats_isr - CEE ISR for get-stats responses from f/w
- *
- * @cee: Pointer to the CEE module
- * @status: Return status from the f/w
- */
+ 
 static void
 bfa_cee_get_stats_isr(struct bfa_cee *cee, enum bfa_status status)
 {
@@ -101,12 +80,7 @@ bfa_cee_get_stats_isr(struct bfa_cee *cee, enum bfa_status status)
 		cee->cbfn.get_stats_cbfn(cee->cbfn.get_stats_cbarg, status);
 }
 
-/**
- * bfa_cee_reset_stats_isr - CEE ISR for reset-stats responses from f/w
- *
- * @cee: Input Pointer to the CEE module
- * @status: Return status from the f/w
- */
+ 
 static void
 bfa_cee_reset_stats_isr(struct bfa_cee *cee, enum bfa_status status)
 {
@@ -115,22 +89,14 @@ bfa_cee_reset_stats_isr(struct bfa_cee *cee, enum bfa_status status)
 	if (cee->cbfn.reset_stats_cbfn)
 		cee->cbfn.reset_stats_cbfn(cee->cbfn.reset_stats_cbarg, status);
 }
-/**
- * bfa_nw_cee_meminfo - Returns the size of the DMA memory needed by CEE module
- */
+ 
 u32
 bfa_nw_cee_meminfo(void)
 {
 	return bfa_cee_attr_meminfo() + bfa_cee_stats_meminfo();
 }
 
-/**
- * bfa_nw_cee_mem_claim - Initialized CEE DMA Memory
- *
- * @cee: CEE module pointer
- * @dma_kva: Kernel Virtual Address of CEE DMA Memory
- * @dma_pa:  Physical Address of CEE DMA Memory
- */
+ 
 void
 bfa_nw_cee_mem_claim(struct bfa_cee *cee, u8 *dma_kva, u64 dma_pa)
 {
@@ -143,16 +109,7 @@ bfa_nw_cee_mem_claim(struct bfa_cee *cee, u8 *dma_kva, u64 dma_pa)
 		(dma_kva + bfa_cee_attr_meminfo());
 }
 
-/**
- * bfa_nw_cee_get_attr - Send the request to the f/w to fetch CEE attributes.
- *
- * @cee: Pointer to the CEE module data structure.
- * @attr: attribute requested
- * @cbfn: function pointer
- * @cbarg: function pointer arguments
- *
- * Return: status
- */
+ 
 enum bfa_status
 bfa_nw_cee_get_attr(struct bfa_cee *cee, struct bfa_cee_attr *attr,
 		    bfa_cee_get_attr_cbfn_t cbfn, void *cbarg)
@@ -179,11 +136,7 @@ bfa_nw_cee_get_attr(struct bfa_cee *cee, struct bfa_cee_attr *attr,
 	return BFA_STATUS_OK;
 }
 
-/**
- * bfa_cee_isr - Handles Mail-box interrupts for CEE module.
- * @cbarg: argument passed containing pointer to the CEE module data structure.
- * @m: message pointer
- */
+ 
 
 static void
 bfa_cee_isr(void *cbarg, struct bfi_mbmsg *m)
@@ -208,12 +161,7 @@ bfa_cee_isr(void *cbarg, struct bfi_mbmsg *m)
 	}
 }
 
-/**
- * bfa_cee_notify - CEE module heart-beat failure handler.
- *
- * @arg: argument passed containing pointer to the CEE module data structure.
- * @event: IOC event type
- */
+ 
 
 static void
 bfa_cee_notify(void *arg, enum bfa_ioc_event event)
@@ -258,15 +206,7 @@ bfa_cee_notify(void *arg, enum bfa_ioc_event event)
 	}
 }
 
-/**
- * bfa_nw_cee_attach - CEE module-attach API
- *
- * @cee: Pointer to the CEE module data structure
- * @ioc: Pointer to the ioc module data structure
- * @dev: Pointer to the device driver module data structure.
- *       The device driver specific mbox ISR functions have
- *       this pointer as one of the parameters.
- */
+ 
 void
 bfa_nw_cee_attach(struct bfa_cee *cee, struct bfa_ioc *ioc,
 		void *dev)

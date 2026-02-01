@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  ms_block.h - Sony MemoryStick (legacy) storage support
-
- *  Copyright (C) 2013 Maxim Levitsky <maximlevitsky@gmail.com>
- *
- * Minor portions of the driver are copied from mspro_block.c which is
- * Copyright (C) 2007 Alex Dubov <oakad@yahoo.com>
- *
- * Also ms structures were copied from old broken driver by same author
- * These probably come from MS spec
- */
+ 
+ 
 
 #ifndef MS_BLOCK_NEW_H
 #define MS_BLOCK_NEW_H
@@ -154,13 +144,13 @@ struct msb_data {
 	int				caps;
 	int				disk_id;
 
-	/* IO */
+	 
 	struct workqueue_struct		*io_queue;
 	bool				io_queue_stopped;
 	struct work_struct		io_work;
 	bool				card_dead;
 
-	/* Media properties */
+	 
 	struct ms_boot_page		*boot_page;
 	u16				boot_block_locations[2];
 	int				boot_block_count;
@@ -173,26 +163,26 @@ struct msb_data {
 	int				block_count;
 	int				logical_block_count;
 
-	/* FTL tables */
+	 
 	unsigned long			*used_blocks_bitmap;
 	unsigned long			*erased_blocks_bitmap;
 	u16				*lba_to_pba_table;
 	int				free_block_count[MS_MAX_ZONES];
 	bool				ftl_initialized;
 
-	/* Cache */
+	 
 	unsigned char			*cache;
 	unsigned long			valid_cache_bitmap;
 	int				cache_block_lba;
 	bool				need_flush_cache;
 	struct timer_list		cache_flush_timer;
 
-	/* Preallocated buffers */
+	 
 	unsigned char			*block_buffer;
 	struct scatterlist		prealloc_sg[MS_BLOCK_MAX_SEGS+1];
 
 
-	/* handler's local data */
+	 
 	struct ms_register_addr		reg_addr;
 	bool				addr_valid;
 

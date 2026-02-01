@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __NET_VXLAN_H
 #define __NET_VXLAN_H 1
 
@@ -13,21 +13,13 @@
 #define IANA_VXLAN_UDP_PORT     4789
 #define IANA_VXLAN_GPE_UDP_PORT 4790
 
-/* VXLAN protocol (RFC 7348) header:
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |R|R|R|R|I|R|R|R|               Reserved                        |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                VXLAN Network Identifier (VNI) |   Reserved    |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * I = VXLAN Network Identifier (VNI) present.
- */
+ 
 struct vxlanhdr {
 	__be32 vx_flags;
 	__be32 vx_vni;
 };
 
-/* VXLAN header flags. */
+ 
 #define VXLAN_HF_VNI	cpu_to_be32(BIT(27))
 
 #define VXLAN_N_VID     (1u << 24)
@@ -40,53 +32,19 @@ struct vxlanhdr {
 #define FDB_HASH_BITS	8
 #define FDB_HASH_SIZE	(1<<FDB_HASH_BITS)
 
-/* Remote checksum offload for VXLAN (VXLAN_F_REMCSUM_[RT]X):
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |R|R|R|R|I|R|R|R|R|R|C|              Reserved                   |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |           VXLAN Network Identifier (VNI)      |O| Csum start  |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * C = Remote checksum offload bit. When set indicates that the
- *     remote checksum offload data is present.
- *
- * O = Offset bit. Indicates the checksum offset relative to
- *     checksum start.
- *
- * Csum start = Checksum start divided by two.
- *
- * http://tools.ietf.org/html/draft-herbert-vxlan-rco
- */
+ 
 
-/* VXLAN-RCO header flags. */
+ 
 #define VXLAN_HF_RCO	cpu_to_be32(BIT(21))
 
-/* Remote checksum offload header option */
-#define VXLAN_RCO_MASK	cpu_to_be32(0x7f)  /* Last byte of vni field */
-#define VXLAN_RCO_UDP	cpu_to_be32(0x80)  /* Indicate UDP RCO (TCP when not set *) */
-#define VXLAN_RCO_SHIFT	1		   /* Left shift of start */
+ 
+#define VXLAN_RCO_MASK	cpu_to_be32(0x7f)   
+#define VXLAN_RCO_UDP	cpu_to_be32(0x80)   
+#define VXLAN_RCO_SHIFT	1		    
 #define VXLAN_RCO_SHIFT_MASK ((1 << VXLAN_RCO_SHIFT) - 1)
 #define VXLAN_MAX_REMCSUM_START (0x7f << VXLAN_RCO_SHIFT)
 
-/*
- * VXLAN Group Based Policy Extension (VXLAN_F_GBP):
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |G|R|R|R|I|R|R|R|R|D|R|R|A|R|R|R|        Group Policy ID        |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                VXLAN Network Identifier (VNI) |   Reserved    |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * G = Group Policy ID present.
- *
- * D = Don't Learn bit. When set, this bit indicates that the egress
- *     VTEP MUST NOT learn the source address of the encapsulated frame.
- *
- * A = Indicates that the group policy has already been applied to
- *     this packet. Policies MUST NOT be applied by devices when the
- *     A bit is set.
- *
- * https://tools.ietf.org/html/draft-smith-vxlan-group-policy
- */
+ 
 struct vxlanhdr_gbp {
 	u8	vx_flags;
 #ifdef __LITTLE_ENDIAN_BITFIELD
@@ -108,17 +66,12 @@ struct vxlanhdr_gbp {
 	__be32	vx_vni;
 };
 
-/* VXLAN-GBP header flags. */
+ 
 #define VXLAN_HF_GBP	cpu_to_be32(BIT(31))
 
 #define VXLAN_GBP_USED_BITS (VXLAN_HF_GBP | cpu_to_be32(0xFFFFFF))
 
-/* skb->mark mapping
- *
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |R|R|R|R|R|R|R|R|R|D|R|R|A|R|R|R|        Group Policy ID        |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- */
+ 
 #define VXLAN_GBP_DONT_LEARN		(BIT(6) << 16)
 #define VXLAN_GBP_POLICY_APPLIED	(BIT(3) << 16)
 #define VXLAN_GBP_ID_MASK		(0xFFFF)
@@ -126,27 +79,7 @@ struct vxlanhdr_gbp {
 #define VXLAN_GBP_MASK (VXLAN_GBP_DONT_LEARN | VXLAN_GBP_POLICY_APPLIED | \
 			VXLAN_GBP_ID_MASK)
 
-/*
- * VXLAN Generic Protocol Extension (VXLAN_F_GPE):
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |R|R|Ver|I|P|R|O|       Reserved                |Next Protocol  |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- * |                VXLAN Network Identifier (VNI) |   Reserved    |
- * +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
- *
- * Ver = Version. Indicates VXLAN GPE protocol version.
- *
- * P = Next Protocol Bit. The P bit is set to indicate that the
- *     Next Protocol field is present.
- *
- * O = OAM Flag Bit. The O bit is set to indicate that the packet
- *     is an OAM packet.
- *
- * Next Protocol = This 8 bit field indicates the protocol header
- * immediately following the VXLAN GPE header.
- *
- * https://tools.ietf.org/html/draft-ietf-nvo3-vxlan-gpe-01
- */
+ 
 
 struct vxlanhdr_gpe {
 #if defined(__LITTLE_ENDIAN_BITFIELD)
@@ -170,7 +103,7 @@ struct vxlanhdr_gpe {
 	__be32	vx_vni;
 };
 
-/* VXLAN-GPE header flags. */
+ 
 #define VXLAN_HF_VER	cpu_to_be32(BIT(29) | BIT(28))
 #define VXLAN_HF_NP	cpu_to_be32(BIT(26))
 #define VXLAN_HF_OAM	cpu_to_be32(BIT(24))
@@ -182,7 +115,7 @@ struct vxlan_metadata {
 	u32		gbp;
 };
 
-/* per UDP socket information */
+ 
 struct vxlan_sock {
 	struct hlist_node hlist;
 	struct socket	 *sock;
@@ -260,13 +193,13 @@ struct vxlan_dev_node {
 
 struct vxlan_vni_node {
 	struct rhash_head vnode;
-	struct vxlan_dev_node hlist4; /* vni hash table for IPv4 socket */
+	struct vxlan_dev_node hlist4;  
 #if IS_ENABLED(CONFIG_IPV6)
-	struct vxlan_dev_node hlist6; /* vni hash table for IPv6 socket */
+	struct vxlan_dev_node hlist6;  
 #endif
 	struct list_head vlist;
 	__be32 vni;
-	union vxlan_addr remote_ip; /* default remote ip for this vni */
+	union vxlan_addr remote_ip;  
 	struct vxlan_vni_stats_pcpu __percpu *stats;
 
 	struct rcu_head rcu;
@@ -278,20 +211,20 @@ struct vxlan_vni_group {
 	u32			num_vnis;
 };
 
-/* Pseudo network device */
+ 
 struct vxlan_dev {
-	struct vxlan_dev_node hlist4;	/* vni hash table for IPv4 socket */
+	struct vxlan_dev_node hlist4;	 
 #if IS_ENABLED(CONFIG_IPV6)
-	struct vxlan_dev_node hlist6;	/* vni hash table for IPv6 socket */
+	struct vxlan_dev_node hlist6;	 
 #endif
-	struct list_head  next;		/* vxlan's per namespace list */
-	struct vxlan_sock __rcu *vn4_sock;	/* listening socket for IPv4 */
+	struct list_head  next;		 
+	struct vxlan_sock __rcu *vn4_sock;	 
 #if IS_ENABLED(CONFIG_IPV6)
-	struct vxlan_sock __rcu *vn6_sock;	/* listening socket for IPv6 */
+	struct vxlan_sock __rcu *vn6_sock;	 
 #endif
 	struct net_device *dev;
-	struct net	  *net;		/* netns for packet i/o */
-	struct vxlan_rdst default_dst;	/* default destination */
+	struct net	  *net;		 
+	struct vxlan_rdst default_dst;	 
 
 	struct timer_list age_timer;
 	spinlock_t	  hash_lock[FDB_HASH_SIZE];
@@ -330,9 +263,7 @@ struct vxlan_dev {
 #define VXLAN_F_MDB			0x40000
 #define VXLAN_F_LOCALBYPASS		0x80000
 
-/* Flags that are used in the receive path. These flags must match in
- * order for a socket to be shareable
- */
+ 
 #define VXLAN_F_RCV_FLAGS		(VXLAN_F_GBP |			\
 					 VXLAN_F_GPE |			\
 					 VXLAN_F_UDP_ZERO_CSUM6_RX |	\
@@ -341,7 +272,7 @@ struct vxlan_dev {
 					 VXLAN_F_COLLECT_METADATA |	\
 					 VXLAN_F_VNIFILTER)
 
-/* Flags that can be set together with VXLAN_F_GPE. */
+ 
 #define VXLAN_F_ALLOWED_GPE		(VXLAN_F_GPE |			\
 					 VXLAN_F_IPV6 |			\
 					 VXLAN_F_IPV6_LINKLOCAL |	\
@@ -388,8 +319,8 @@ static inline netdev_features_t vxlan_features_check(struct sk_buff *skb,
 
 static inline int vxlan_headroom(u32 flags)
 {
-	/* VXLAN:     IP4/6 header + UDP + VXLAN + Ethernet header */
-	/* VXLAN-GPE: IP4/6 header + UDP + VXLAN */
+	 
+	 
 	return (flags & VXLAN_F_IPV6 ? sizeof(struct ipv6hdr) :
 				       sizeof(struct iphdr)) +
 	       sizeof(struct udphdr) + sizeof(struct vxlanhdr) +
@@ -463,7 +394,7 @@ static inline bool vxlan_addr_multicast(const union vxlan_addr *ipa)
 		return ipv4_is_multicast(ipa->sin.sin_addr.s_addr);
 }
 
-#else /* !IS_ENABLED(CONFIG_IPV6) */
+#else  
 
 static inline bool vxlan_addr_any(const union vxlan_addr *ipa)
 {
@@ -475,7 +406,7 @@ static inline bool vxlan_addr_multicast(const union vxlan_addr *ipa)
 	return ipv4_is_multicast(ipa->sin.sin_addr.s_addr);
 }
 
-#endif /* IS_ENABLED(CONFIG_IPV6) */
+#endif  
 
 static inline bool netif_is_vxlan(const struct net_device *dev)
 {
@@ -484,7 +415,7 @@ static inline bool netif_is_vxlan(const struct net_device *dev)
 }
 
 struct switchdev_notifier_vxlan_fdb_info {
-	struct switchdev_notifier_info info; /* must be first */
+	struct switchdev_notifier_info info;  
 	union vxlan_addr remote_ip;
 	__be16 remote_port;
 	__be32 remote_vni;

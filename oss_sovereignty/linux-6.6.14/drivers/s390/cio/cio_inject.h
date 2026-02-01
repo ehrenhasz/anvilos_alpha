@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *    Copyright IBM Corp. 2021
- *    Author(s): Vineeth Vijayan <vneethv@linux.ibm.com>
- */
+ 
+ 
 
 #ifndef CIO_CRW_INJECT_H
 #define CIO_CRW_INJECT_H

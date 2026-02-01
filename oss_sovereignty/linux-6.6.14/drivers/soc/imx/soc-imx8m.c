@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/io.h>
@@ -25,7 +23,7 @@
 
 #define IMX8MP_OCOTP_UID_OFFSET		0x10
 
-/* Same as ANADIG_DIGPROG_IMX7D */
+ 
 #define ANADIG_DIGPROG_IMX8MM	0x800
 
 struct imx8_soc_data {
@@ -73,10 +71,7 @@ static u32 __init imx8mq_soc_revision(void)
 
 	clk_prepare_enable(clk);
 
-	/*
-	 * SOC revision on older imx8mq is not available in fuses so query
-	 * the value from ATF instead.
-	 */
+	 
 	rev = imx8mq_soc_revision_from_atf();
 	if (!rev) {
 		magic = readl_relaxed(ocotp_base + IMX8MQ_SW_INFO_B1);

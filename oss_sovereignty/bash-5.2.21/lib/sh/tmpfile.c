@@ -1,24 +1,6 @@
-/*
- * tmpfile.c - functions to create and safely open temp files for the shell.
- */
+ 
 
-/* Copyright (C) 2000-2020 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #include <config.h>
 
@@ -44,10 +26,10 @@ extern int errno;
 
 #define BASEOPENFLAGS	(O_CREAT | O_TRUNC | O_EXCL | O_BINARY)
 
-#define DEFAULT_TMPDIR		"."	/* bogus default, should be changed */
+#define DEFAULT_TMPDIR		"."	 
 #define DEFAULT_NAMEROOT	"shtmp"
 
-/* Use ANSI-C rand() interface if random(3) is not available */
+ 
 #if !HAVE_RANDOM
 #define random() rand()
 #endif
@@ -162,7 +144,7 @@ sh_mktmpname (nameroot, flags)
       free (filename);
       filename = NULL;
     }
-#else  /* !USE_MKTEMP */
+#else   
   sh_seedrand ();
   while (1)
     {
@@ -181,7 +163,7 @@ sh_mktmpname (nameroot, flags)
       if (r < 0 && errno == ENOENT)
 	break;
     }
-#endif /* !USE_MKTEMP */
+#endif  
 
   return filename;
 }
@@ -220,7 +202,7 @@ sh_mktmpfd (nameroot, flags, namep)
   if (namep)
     *namep = filename;
   return fd;
-#else /* !USE_MKSTEMP */
+#else  
   sh_seedrand ();
   do
     {
@@ -241,7 +223,7 @@ sh_mktmpfd (nameroot, flags, namep)
     free (filename);
 
   return fd;
-#endif /* !USE_MKSTEMP */
+#endif  
 }
 
 FILE *
@@ -293,7 +275,7 @@ sh_mktmpdir (nameroot, flags)
       filename = NULL;
     }
   return dirname;
-#else /* !USE_MKDTEMP */
+#else  
   filename = (char *)NULL;
   do
     {
@@ -307,5 +289,5 @@ sh_mktmpdir (nameroot, flags)
   while (fd < 0 && errno == EEXIST);
 
   return (filename);
-#endif /* !USE_MKDTEMP */
+#endif  
 }

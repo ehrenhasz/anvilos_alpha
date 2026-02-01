@@ -1,38 +1,4 @@
-/*
- * Copyright (c) 2004, 2005 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- * Copyright (c) 2005, 2006, 2007 Cisco Systems, Inc. All rights reserved.
- * Copyright (c) 2005, 2006, 2007, 2008 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2004 Voltaire, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/hardirq.h>
 #include <linux/export.h>
@@ -86,11 +52,7 @@ static void mlx4_add_cq_to_tasklet(struct mlx4_cq *cq)
 	bool kick;
 
 	spin_lock_irqsave(&tasklet_ctx->lock, flags);
-	/* When migrating CQs between EQs will be implemented, please note
-	 * that you need to sync this point. It is possible that
-	 * while migrating a CQ, completions on the old EQs could
-	 * still arrive.
-	 */
+	 
 	if (list_empty_careful(&cq->tasklet_ctx.list)) {
 		refcount_inc(&cq->refcount);
 		kick = list_empty(&tasklet_ctx->list);
@@ -115,9 +77,7 @@ void mlx4_cq_completion(struct mlx4_dev *dev, u32 cqn)
 		return;
 	}
 
-	/* Acessing the CQ outside of rcu_read_lock is safe, because
-	 * the CQ is freed only after interrupt handling is completed.
-	 */
+	 
 	++cq->arm_sn;
 
 	cq->comp(cq);
@@ -137,9 +97,7 @@ void mlx4_cq_event(struct mlx4_dev *dev, u32 cqn, int event_type)
 		return;
 	}
 
-	/* Acessing the CQ outside of rcu_read_lock is safe, because
-	 * the CQ is freed only after interrupt handling is completed.
-	 */
+	 
 	cq->event(cq, event_type);
 }
 
@@ -298,10 +256,7 @@ static int mlx4_init_user_cqes(void *buf, int entries, int cqe_size)
 	if (!init_ents)
 		return -ENOMEM;
 
-	/* Populate a list of CQ entries to reduce the number of
-	 * copy_to_user calls. 0xcc is the initialization value
-	 * required by the FW.
-	 */
+	 
 	memset(init_ents, 0xcc, PAGE_SIZE);
 
 	if (entries_per_copy < entries) {
@@ -477,6 +432,6 @@ void mlx4_cleanup_cq_table(struct mlx4_dev *dev)
 {
 	if (mlx4_is_slave(dev))
 		return;
-	/* Nothing to do to clean up radix_tree */
+	 
 	mlx4_bitmap_cleanup(&mlx4_priv(dev)->cq_table.bitmap);
 }

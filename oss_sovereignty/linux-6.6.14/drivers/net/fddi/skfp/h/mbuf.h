@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/******************************************************************************
- *
- *	(C)Copyright 1998,1999 SysKonnect,
- *	a business unit of Schneider & Koch & Co. Datensysteme GmbH.
- *
- *	The information in this file is provided "AS IS" without warranty.
- *
- ******************************************************************************/
+ 
+ 
 
 #ifndef	_MBUF_
 #define _MBUF_
@@ -28,9 +21,9 @@
 #endif
 
 struct s_mbuf {
-	struct s_mbuf	*sm_next ;		/* low level linked list */
-	short		sm_off ;			/* offset in m_data */
-	u_int		sm_len ;			/* len of data */
+	struct s_mbuf	*sm_next ;		 
+	short		sm_off ;			 
+	u_int		sm_len ;			 
 #ifdef	PCI
 	int		sm_use_count ;
 #endif
@@ -39,8 +32,8 @@ struct s_mbuf {
 
 typedef struct s_mbuf SMbuf ;
 
-/* mbuf head, to typed data */
+ 
 #define	smtod(x,t)	((t)((x)->sm_data + (x)->sm_off))
 #define	smtodoff(x,t,o)	((t)((x)->sm_data + (o)))
 
-#endif	/* _MBUF_ */
+#endif	 

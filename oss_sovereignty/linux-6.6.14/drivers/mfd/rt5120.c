@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/kernel.h>

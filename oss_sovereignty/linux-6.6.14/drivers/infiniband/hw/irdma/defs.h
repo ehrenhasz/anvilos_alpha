@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2015 - 2021 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_DEFS_H
 #define IRDMA_DEFS_H
 
@@ -137,7 +137,7 @@ enum irdma_protocol_used {
 #define IRDMA_CQE_QTYPE_RQ	0
 #define IRDMA_CQE_QTYPE_SQ	1
 
-#define IRDMA_QP_SW_MIN_WQSIZE	8u /* in WRs*/
+#define IRDMA_QP_SW_MIN_WQSIZE	8u  
 #define IRDMA_QP_WQE_MIN_SIZE	32
 #define IRDMA_QP_WQE_MAX_SIZE	256
 #define IRDMA_QP_WQE_MIN_QUANTA 1
@@ -213,11 +213,11 @@ enum irdma_cqp_op_type {
 	IRDMA_OP_DELETE_LOCAL_MAC_ENTRY		= 47,
 	IRDMA_OP_CQ_MODIFY			= 48,
 
-	/* Must be last entry*/
+	 
 	IRDMA_MAX_CQP_OPS			= 49,
 };
 
-/* CQP SQ WQES */
+ 
 #define IRDMA_CQP_OP_CREATE_QP				0
 #define IRDMA_CQP_OP_MODIFY_QP				0x1
 #define IRDMA_CQP_OP_DESTROY_QP				0x02
@@ -249,7 +249,7 @@ enum irdma_cqp_op_type {
 #define IRDMA_CQP_OP_QUERY_FPM_VAL			0x20
 #define IRDMA_CQP_OP_COMMIT_FPM_VAL			0x21
 #define IRDMA_CQP_OP_FLUSH_WQES				0x22
-/* IRDMA_CQP_OP_GEN_AE is the same value as IRDMA_CQP_OP_FLUSH_WQES */
+ 
 #define IRDMA_CQP_OP_GEN_AE				0x22
 #define IRDMA_CQP_OP_MANAGE_APBVT			0x23
 #define IRDMA_CQP_OP_NOP				0x24
@@ -265,7 +265,7 @@ enum irdma_cqp_op_type {
 #define IRDMA_CQP_OP_GATHER_STATS			0x2e
 #define IRDMA_CQP_OP_UP_MAP				0x2f
 
-/* Async Events codes */
+ 
 #define IRDMA_AE_AMP_UNALLOCATED_STAG					0x0102
 #define IRDMA_AE_AMP_INVALID_STAG					0x0103
 #define IRDMA_AE_AMP_BAD_QP						0x0104
@@ -455,7 +455,7 @@ enum irdma_cqp_op_type {
 #define IRDMA_CQ_DBSA_ARM_NEXT_SE BIT_ULL(15)
 #define IRDMA_CQ_DBSA_ARM_SEQ_NUM GENMASK_ULL(17, 16)
 
-/* CQP and iWARP Completion Queue */
+ 
 #define IRDMA_CQ_QPCTX IRDMA_CQPHC_QPCTX
 
 #define IRDMA_CCQ_OPRETVAL GENMASK_ULL(31, 0)
@@ -494,7 +494,7 @@ enum irdma_cqp_op_type {
 #define IRDMA_CEQE_CQCTX GENMASK_ULL(62, 0)
 #define IRDMA_CEQE_VALID BIT_ULL(63)
 
-/* AEQE format */
+ 
 #define IRDMA_AEQE_COMPCTX IRDMA_CQPHC_QPCTX
 #define IRDMA_AEQE_QPCQID_LOW GENMASK_ULL(17, 0)
 #define IRDMA_AEQE_QPCQID_HI BIT_ULL(46)
@@ -534,7 +534,7 @@ enum irdma_cqp_op_type {
 
 #define IRDMA_CQPSQ_PBUFADDR IRDMA_CQPHC_QPCTX
 
-/* Create/Modify/Destroy QP */
+ 
 
 #define IRDMA_CQPSQ_QP_NEWMSS GENMASK_ULL(45, 32)
 #define IRDMA_CQPSQ_QP_TERMLEN GENMASK_ULL(51, 48)
@@ -579,7 +579,7 @@ enum irdma_cqp_op_type {
 #define IRDMA_CQPSQ_CQ_AVOIDMEMCNFLCT BIT_ULL(61)
 #define IRDMA_CQPSQ_CQ_FIRSTPMPBLIDX GENMASK_ULL(27, 0)
 
-/* Allocate/Register/Register Shared/Deallocate Stag */
+ 
 #define IRDMA_CQPSQ_STAG_VA_FBO IRDMA_CQPHC_QPCTX
 #define IRDMA_CQPSQ_STAG_STAGLEN GENMASK_ULL(45, 0)
 #define IRDMA_CQPSQ_STAG_KEY GENMASK_ULL(7, 0)
@@ -624,7 +624,7 @@ enum irdma_cqp_op_type {
 #define IRDMA_CQPSQ_MVPBP_INV_PD_ENT BIT_ULL(62)
 #define IRDMA_CQPSQ_MVPBP_PD_PLPBA GENMASK_ULL(63, 3)
 
-/* Manage Push Page - MPP */
+ 
 #define IRDMA_INVALID_PUSH_PAGE_INDEX_GEN_1 0xffff
 #define IRDMA_INVALID_PUSH_PAGE_INDEX 0xffffffff
 
@@ -634,7 +634,7 @@ enum irdma_cqp_op_type {
 
 #define IRDMA_CQPSQ_MPP_FREE_PAGE BIT_ULL(62)
 
-/* Upload Context - UCTX */
+ 
 #define IRDMA_CQPSQ_UCTX_QPCTXADDR IRDMA_CQPHC_QPCTX
 #define IRDMA_CQPSQ_UCTX_QPID GENMASK_ULL(23, 0)
 #define IRDMA_CQPSQ_UCTX_QPTYPE GENMASK_ULL(51, 48)
@@ -890,7 +890,7 @@ enum irdma_cqp_op_type {
 #define IRDMAQPSQ_FIRSTPMPBLIDXHI GENMASK_ULL(11, 0)
 #define IRDMAQPSQ_PBLADDR GENMASK_ULL(63, 12)
 
-/* iwarp QP RQ WQE common fields */
+ 
 #define IRDMAQPRQ_ADDFRAGCNT IRDMAQPSQ_ADDFRAGCNT
 #define IRDMAQPRQ_VALID IRDMAQPSQ_VALID
 #define IRDMAQPRQ_COMPLCTX IRDMA_CQPHC_QPCTX
@@ -1111,47 +1111,27 @@ enum icrdma_protocol_used {
 	ICRDMA_ROCE_PROTOCOL_ONLY  = 2,
 };
 
-/**
- * set_64bit_val - set 64 bit value to hw wqe
- * @wqe_words: wqe addr to write
- * @byte_index: index in wqe
- * @val: value to write
- **/
+ 
 static inline void set_64bit_val(__le64 *wqe_words, u32 byte_index, u64 val)
 {
 	wqe_words[byte_index >> 3] = cpu_to_le64(val);
 }
 
-/**
- * set_32bit_val - set 32 bit value to hw wqe
- * @wqe_words: wqe addr to write
- * @byte_index: index in wqe
- * @val: value to write
- **/
+ 
 static inline void set_32bit_val(__le32 *wqe_words, u32 byte_index, u32 val)
 {
 	wqe_words[byte_index >> 2] = cpu_to_le32(val);
 }
 
-/**
- * get_64bit_val - read 64 bit value from wqe
- * @wqe_words: wqe addr
- * @byte_index: index to read from
- * @val: read value
- **/
+ 
 static inline void get_64bit_val(__le64 *wqe_words, u32 byte_index, u64 *val)
 {
 	*val = le64_to_cpu(wqe_words[byte_index >> 3]);
 }
 
-/**
- * get_32bit_val - read 32 bit value from wqe
- * @wqe_words: wqe addr
- * @byte_index: index to reaad from
- * @val: return 32 bit value
- **/
+ 
 static inline void get_32bit_val(__le32 *wqe_words, u32 byte_index, u32 *val)
 {
 	*val = le32_to_cpu(wqe_words[byte_index >> 2]);
 }
-#endif /* IRDMA_DEFS_H */
+#endif  

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2020 Samsung Electronics Co., Ltd.
- *	      http://www.samsung.com/
- * Author: Marek Szyprowski <m.szyprowski@samsung.com>
- *
- * Simplified generic voltage coupler from regulator core.c
- * The main difference is that it keeps current regulator voltage
- * if consumers didn't apply their constraints yet.
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -32,7 +24,7 @@ static int regulator_get_optimal_voltage(struct regulator_dev *rdev,
 
 	*current_uV = -1;
 
-	/* Find highest min desired voltage */
+	 
 	for (i = 0; i < n_coupled; i++) {
 		int tmp_min = 0;
 		int tmp_max = INT_MAX;
@@ -52,7 +44,7 @@ static int regulator_get_optimal_voltage(struct regulator_dev *rdev,
 			tmp_min = ret;
 		}
 
-		/* apply constraints */
+		 
 		ret = regulator_check_voltage(c_rdevs[i], &tmp_min, &tmp_max);
 		if (ret < 0)
 			return ret;
@@ -67,17 +59,10 @@ static int regulator_get_optimal_voltage(struct regulator_dev *rdev,
 
 	max_spread = constraints->max_spread[0];
 
-	/*
-	 * Let target_uV be equal to the desired one if possible.
-	 * If not, set it to minimum voltage, allowed by other coupled
-	 * regulators.
-	 */
+	 
 	target_uV = max(desired_min_uV, highest_min_uV - max_spread);
 
-	/*
-	 * Find min and max voltages, which currently aren't violating
-	 * max_spread.
-	 */
+	 
 	for (i = 1; i < n_coupled; i++) {
 		int tmp_act;
 
@@ -89,10 +74,7 @@ static int regulator_get_optimal_voltage(struct regulator_dev *rdev,
 		max_current_uV = max(tmp_act, max_current_uV);
 	}
 
-	/*
-	 * Correct target voltage, so as it currently isn't
-	 * violating max_spread
-	 */
+	 
 	possible_uV = max(target_uV, max_current_uV - max_spread);
 	possible_uV = min(possible_uV, min_current_uV + max_spread);
 
@@ -102,7 +84,7 @@ static int regulator_get_optimal_voltage(struct regulator_dev *rdev,
 	done = (possible_uV == target_uV);
 	desired_min_uV = possible_uV;
 
-	/* Set current_uV if wasn't done earlier in the code and if necessary */
+	 
 	if (*current_uV == -1) {
 		ret = regulator_get_voltage_rdev(rdev);
 		if (ret < 0)
@@ -131,10 +113,7 @@ static int exynos_coupler_balance_voltage(struct regulator_coupler *coupler,
 	c_rdevs = c_desc->coupled_rdevs;
 	n_coupled = c_desc->n_coupled;
 
-	/*
-	 * Find the best possible voltage change on each loop. Leave the loop
-	 * if there isn't any possible change.
-	 */
+	 
 	do {
 		best_c_rdev_done = false;
 		best_delta = 0;
@@ -143,17 +122,9 @@ static int exynos_coupler_balance_voltage(struct regulator_coupler *coupler,
 		best_c_rdev = 0;
 		best_rdev = NULL;
 
-		/*
-		 * Find highest difference between optimal voltage
-		 * and current voltage.
-		 */
+		 
 		for (i = 0; i < n_coupled; i++) {
-			/*
-			 * optimal_uV is the best voltage that can be set for
-			 * i-th regulator at the moment without violating
-			 * max_spread constraint in order to balance
-			 * the coupled voltages.
-			 */
+			 
 			int optimal_uV = 0, optimal_max_uV = 0, current_uV = 0;
 
 			if (test_bit(i, &c_rdev_done))
@@ -179,7 +150,7 @@ static int exynos_coupler_balance_voltage(struct regulator_coupler *coupler,
 			}
 		}
 
-		/* Nothing to change, return successfully */
+		 
 		if (!best_rdev) {
 			ret = 0;
 			goto out;

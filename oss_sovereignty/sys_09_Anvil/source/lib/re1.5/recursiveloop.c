@@ -1,6 +1,6 @@
-// Copyright 2007-2009 Russ Cox.  All Rights Reserved.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 #include "re1.5.h"
 
@@ -14,7 +14,7 @@ recursiveloop(char *pc, const char *sp, Subject *input, const char **subp, int n
 
 	for(;;) {
 		if(inst_is_consumer(*pc)) {
-			// If we need to match a character, but there's none left, it's fail
+			
 			if(sp >= input->end)
 				return 0;
 		}

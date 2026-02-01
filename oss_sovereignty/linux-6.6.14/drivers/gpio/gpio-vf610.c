@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Freescale vf610 GPIO support through PORT and GPIO
- *
- * Copyright (c) 2014 Toradex AG.
- *
- * Author: Stefan Agner <stefan@agner.ch>.
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -23,7 +17,7 @@
 #define VF610_GPIO_PER_PORT		32
 
 struct fsl_gpio_soc_data {
-	/* SoCs has a Port Data Direction Register (PDDR) */
+	 
 	bool have_paddr;
 };
 
@@ -67,7 +61,7 @@ static const struct fsl_gpio_soc_data imx_data = {
 static const struct of_device_id vf610_gpio_dt_ids[] = {
 	{ .compatible = "fsl,vf610-gpio",	.data = NULL, },
 	{ .compatible = "fsl,imx7ulp-gpio",	.data = &imx_data, },
-	{ /* sentinel */ }
+	{   }
 };
 
 static inline void vf610_gpio_writel(u32 val, void __iomem *reg)
@@ -293,10 +287,7 @@ static int vf610_gpio_probe(struct platform_device *pdev)
 		if (ret)
 			return ret;
 	} else if (ret == -EPROBE_DEFER) {
-		/*
-		 * Percolate deferrals, for anything else,
-		 * just live without the clocking.
-		 */
+		 
 		return ret;
 	}
 
@@ -327,11 +318,11 @@ static int vf610_gpio_probe(struct platform_device *pdev)
 	gc->direction_output = vf610_gpio_direction_output;
 	gc->set = vf610_gpio_set;
 
-	/* Mask all GPIO interrupts */
+	 
 	for (i = 0; i < gc->ngpio; i++)
 		vf610_gpio_writel(0, port->base + PORT_PCR(i));
 
-	/* Clear the interrupt status register for all GPIO's */
+	 
 	vf610_gpio_writel(~0, port->base + PORT_ISFR);
 
 	girq = &gc->irq;

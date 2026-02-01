@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 Linaro Ltd.
- * Copyright (c) 2014 HiSilicon Limited.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -28,7 +25,7 @@
 #define IR_INTC			0x30
 #define IR_START		0x34
 
-/* interrupt mask */
+ 
 #define INTMS_SYMBRCV		(BIT(24) | BIT(8))
 #define INTMS_TIMEOUT		(BIT(25) | BIT(9))
 #define INTMS_OVERFLOW		(BIT(26) | BIT(10))
@@ -40,7 +37,7 @@
 #define IR_CLK_ENABLE		BIT(4)
 #define IR_CLK_RESET		BIT(5)
 
-/* IR_ENABLE register bits */
+ 
 #define IR_ENABLE_EN		BIT(0)
 #define IR_ENABLE_EN_EXTRA	BIT(8)
 
@@ -50,18 +47,18 @@
 #define IR_CFG_FORMAT_SHIFT	14
 #define IR_CFG_INT_LEVEL_MASK	0x3f
 #define IR_CFG_INT_LEVEL_SHIFT	8
-/* only support raw mode */
+ 
 #define IR_CFG_MODE_RAW		BIT(7)
 #define IR_CFG_FREQ_MASK	0x7f
 #define IR_CFG_FREQ_SHIFT	0
 #define IR_CFG_INT_THRESHOLD	1
-/* symbol start from low to high, symbol stream end at high*/
+ 
 #define IR_CFG_SYMBOL_FMT	0
 #define IR_CFG_SYMBOL_MAXWIDTH	0x3e80
 
 #define IR_HIX5HD2_NAME		"hix5hd2-ir"
 
-/* Need to set extra bit for enabling IR */
+ 
 #define HIX5HD2_FLAG_EXTRA_ENABLE	BIT(0)
 
 struct hix5hd2_soc_data {
@@ -140,7 +137,7 @@ static int hix5hd2_ir_config(struct hix5hd2_ir_priv *priv)
 		}
 	}
 
-	/* Now only support raw mode, with symbol start from low to high */
+	 
 	rate = DIV_ROUND_CLOSEST(priv->rate, 1000000);
 	val = IR_CFG_SYMBOL_MAXWIDTH & IR_CFG_WIDTH_MASK << IR_CFG_WIDTH_SHIFT;
 	val |= IR_CFG_SYMBOL_FMT & IR_CFG_FORMAT_MASK << IR_CFG_FORMAT_SHIFT;
@@ -151,7 +148,7 @@ static int hix5hd2_ir_config(struct hix5hd2_ir_priv *priv)
 	writel_relaxed(val, priv->base + IR_CONFIG);
 
 	writel_relaxed(0x00, priv->base + IR_INTM);
-	/* write arbitrary value to start  */
+	 
 	writel_relaxed(0x01, priv->base + IR_START);
 	return 0;
 }
@@ -189,11 +186,7 @@ static irqreturn_t hix5hd2_ir_rx_interrupt(int irq, void *data)
 
 	irq_sr = readl_relaxed(priv->base + IR_INTS);
 	if (irq_sr & INTMS_OVERFLOW) {
-		/*
-		 * we must read IR_DATAL first, then we can clean up
-		 * IR_INTS availably since logic would not clear
-		 * fifo when overflow, drv do the job
-		 */
+		 
 		ir_raw_event_overflow(priv->rdev);
 		symb_num = readl_relaxed(priv->base + IR_DATAH);
 		for (i = 0; i < symb_num; i++)
@@ -233,7 +226,7 @@ static irqreturn_t hix5hd2_ir_rx_interrupt(int irq, void *data)
 			writel_relaxed(INT_CLR_TIMEOUT, priv->base + IR_INTC);
 	}
 
-	/* Empty software fifo */
+	 
 	ir_raw_event_handle(priv->rdev);
 	return IRQ_HANDLED;
 }

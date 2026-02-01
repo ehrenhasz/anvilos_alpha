@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016-2017 Imagination Technologies
- * Author: Paul Burton <paul.burton@mips.com>
- */
+
+ 
 
 #define pr_fmt(fmt) "clk-boston: " fmt
 
@@ -104,8 +101,5 @@ fail_input:
 	kfree(onecell);
 }
 
-/*
- * Use CLK_OF_DECLARE so that this driver is probed early enough to provide the
- * CPU frequency for use with the GIC or cop0 counters/timers.
- */
+ 
 CLK_OF_DECLARE(clk_boston, "img,boston-clock", clk_boston_setup);

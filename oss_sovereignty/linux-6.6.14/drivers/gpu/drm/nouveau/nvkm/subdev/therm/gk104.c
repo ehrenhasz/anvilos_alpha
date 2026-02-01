@@ -1,26 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Lyude Paul
- */
+ 
 #include <core/device.h>
 
 #include "priv.h"
@@ -34,7 +12,7 @@ gk104_clkgate_enable(struct nvkm_therm *base)
 	const struct gk104_clkgate_engine_info *order = therm->clkgate_order;
 	int i;
 
-	/* Program ENG_MANT, ENG_FILTER */
+	 
 	for (i = 0; order[i].type != NVKM_SUBDEV_NR; i++) {
 		if (!nvkm_device_subdev(dev, order[i].type, order[i].inst))
 			continue;
@@ -42,11 +20,11 @@ gk104_clkgate_enable(struct nvkm_therm *base)
 		nvkm_mask(dev, 0x20200 + order[i].offset, 0xff00, 0x4500);
 	}
 
-	/* magic */
+	 
 	nvkm_wr32(dev, 0x020288, therm->idle_filter->fecs);
 	nvkm_wr32(dev, 0x02028c, therm->idle_filter->hubmmu);
 
-	/* Enable clockgating (ENG_CLK = RUN->AUTO) */
+	 
 	for (i = 0; order[i].type != NVKM_SUBDEV_NR; i++) {
 		if (!nvkm_device_subdev(dev, order[i].type, order[i].inst))
 			continue;
@@ -63,7 +41,7 @@ gk104_clkgate_fini(struct nvkm_therm *base, bool suspend)
 	const struct gk104_clkgate_engine_info *order = therm->clkgate_order;
 	int i;
 
-	/* ENG_CLK = AUTO->RUN, ENG_PWR = RUN->AUTO */
+	 
 	for (i = 0; order[i].type != NVKM_SUBDEV_NR; i++) {
 		if (!nvkm_device_subdev(dev, order[i].type, order[i].inst))
 			continue;

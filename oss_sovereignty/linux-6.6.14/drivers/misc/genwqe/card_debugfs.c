@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * IBM Accelerator Family 'GenWQE'
- *
- * (C) Copyright IBM Corp. 2013
- *
- * Author: Frank Haverkamp <haver@linux.vnet.ibm.com>
- * Author: Joerg-Stephan Vogt <jsvogt@de.ibm.com>
- * Author: Michael Jung <mijung@gmx.net>
- * Author: Michael Ruettger <michael@ibmra.de>
- */
 
-/*
- * Debugfs interfaces for the GenWQE card. Help to debug potential
- * problems. Dump internal chip state for debugging and failure
- * determination.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -57,7 +44,7 @@ static int curr_dbg_uidn_show(struct seq_file *s, void *unused, int uid)
 	if (regs == NULL)
 		return -ENOMEM;
 
-	genwqe_stop_traps(cd); /* halt the traps while dumping data */
+	genwqe_stop_traps(cd);  
 	genwqe_ffdc_buff_read(cd, uid, regs, entries);
 	genwqe_start_traps(cd);
 
@@ -132,10 +119,10 @@ static int curr_regs_show(struct seq_file *s, void *unused)
 
 	for (i = 0; i < GENWQE_FFDC_REGS; i++) {
 		if (regs[i].addr == 0xffffffff)
-			break;  /* invalid entries */
+			break;   
 
 		if (regs[i].val == 0x0ull)
-			continue;  /* do not print 0x0 FIRs */
+			continue;   
 
 		seq_printf(s, "  0x%08x 0x%016llx\n",
 			   regs[i].addr, regs[i].val);
@@ -156,10 +143,10 @@ static int prev_regs_show(struct seq_file *s, void *unused)
 
 	for (i = 0; i < GENWQE_FFDC_REGS; i++) {
 		if (regs[i].addr == 0xffffffff)
-			break;  /* invalid entries */
+			break;   
 
 		if (regs[i].val == 0x0ull)
-			continue;  /* do not print 0x0 FIRs */
+			continue;   
 
 		seq_printf(s, "  0x%08x 0x%016llx\n",
 			   regs[i].addr, regs[i].val);
@@ -234,7 +221,7 @@ static int ddcb_info_show(struct seq_file *s, void *unused)
 		   queue->return_on_busy, queue->wait_on_busy,
 		   cd->irqs_processed);
 
-	/* Hardware State */
+	 
 	seq_printf(s, "  0x%08x 0x%016llx IO_QUEUE_CONFIG\n"
 		   "  0x%08x 0x%016llx IO_QUEUE_STATUS\n"
 		   "  0x%08x 0x%016llx IO_QUEUE_SEGMENT\n"
@@ -304,9 +291,9 @@ static int info_show(struct seq_file *s, void *unused)
 		   genwqe_is_privileged(cd) ?
 		   "Physical" : "Virtual or no SR-IOV",
 		   cd->card_idx, slu_id, app_id,
-		   (u16)((slu_id >> 12) & 0x0fLLU),	   /* month */
-		   (u16)((slu_id >>  4) & 0xffLLU),	   /* day */
-		   (u16)((slu_id >> 16) & 0x0fLLU) + 2010, /* year */
+		   (u16)((slu_id >> 12) & 0x0fLLU),	    
+		   (u16)((slu_id >>  4) & 0xffLLU),	    
+		   (u16)((slu_id >> 16) & 0x0fLLU) + 2010,  
 		   genwqe_base_clock_frequency(cd),
 		   (u16)((slu_id >> 32) & 0xffLLU), slu_id >> 40,
 		   bitstream);
@@ -327,7 +314,7 @@ void genwqe_init_debugfs(struct genwqe_dev *cd)
 
 	root = debugfs_create_dir(card_name, cd->debugfs_genwqe);
 
-	/* non privileged interfaces are done here */
+	 
 	debugfs_create_file("ddcb_info", S_IRUGO, root, cd, &ddcb_info_fops);
 	debugfs_create_file("info", S_IRUGO, root, cd, &info_fops);
 	debugfs_create_x64("err_inject", 0666, root, &cd->err_inject);
@@ -335,7 +322,7 @@ void genwqe_init_debugfs(struct genwqe_dev *cd)
 			   &cd->ddcb_software_timeout);
 	debugfs_create_u32("kill_timeout", 0666, root, &cd->kill_timeout);
 
-	/* privileged interfaces follow here */
+	 
 	if (!genwqe_is_privileged(cd)) {
 		cd->debugfs_root = root;
 		return;

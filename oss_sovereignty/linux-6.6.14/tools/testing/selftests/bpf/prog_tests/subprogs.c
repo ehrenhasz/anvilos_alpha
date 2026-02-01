@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <test_progs.h>
 #include "test_subprogs.skel.h"
 #include "test_subprogs_unused.skel.h"
@@ -41,7 +41,7 @@ static void test_subprogs_with_jit_harden_toggling(void)
 	if (!ASSERT_OK(err, "new toggler"))
 		goto out;
 
-	/* Make toggler thread to run */
+	 
 	usleep(1);
 
 	for (i = 0; i < loop; i++) {

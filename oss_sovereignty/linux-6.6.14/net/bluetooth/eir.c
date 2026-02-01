@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * BlueZ - Bluetooth protocol stack for Linux
- *
- * Copyright (C) 2021 Intel Corporation
- */
+
+ 
 
 #include <net/bluetooth/bluetooth.h>
 #include <net/bluetooth/hci_core.h>
@@ -17,7 +13,7 @@ static u8 eir_append_name(u8 *eir, u16 eir_len, u8 type, u8 *data, u8 data_len)
 {
 	u8 name[HCI_MAX_SHORT_NAME_LENGTH + 1];
 
-	/* If data is already NULL terminated just pass it directly */
+	 
 	if (data[data_len - 1] == '\0')
 		return eir_append_data(eir, eir_len, type, data, data_len);
 
@@ -32,17 +28,17 @@ u8 eir_append_local_name(struct hci_dev *hdev, u8 *ptr, u8 ad_len)
 	size_t short_len;
 	size_t complete_len;
 
-	/* no space left for name (+ NULL + type + len) */
+	 
 	if ((max_adv_len(hdev) - ad_len) < HCI_MAX_SHORT_NAME_LENGTH + 3)
 		return ad_len;
 
-	/* use complete name if present and fits */
+	 
 	complete_len = strnlen(hdev->dev_name, sizeof(hdev->dev_name));
 	if (complete_len && complete_len <= HCI_MAX_SHORT_NAME_LENGTH)
 		return eir_append_name(ptr, ad_len, EIR_NAME_COMPLETE,
 				       hdev->dev_name, complete_len + 1);
 
-	/* use short name if present */
+	 
 	short_len = strnlen(hdev->short_name, sizeof(hdev->short_name));
 	if (short_len)
 		return eir_append_name(ptr, ad_len, EIR_NAME_SHORT,
@@ -50,9 +46,7 @@ u8 eir_append_local_name(struct hci_dev *hdev, u8 *ptr, u8 ad_len)
 				       short_len == HCI_MAX_SHORT_NAME_LENGTH ?
 				       short_len : short_len + 1);
 
-	/* use shortened full name if present, we already know that name
-	 * is longer then HCI_MAX_SHORT_NAME_LENGTH
-	 */
+	 
 	if (complete_len)
 		return eir_append_name(ptr, ad_len, EIR_NAME_SHORT,
 				       hdev->dev_name,
@@ -107,7 +101,7 @@ static u8 *create_uuid16_list(struct hci_dev *hdev, u8 *data, ptrdiff_t len)
 			ptr += 2;
 		}
 
-		/* Stop if not enough space to put next UUID */
+		 
 		if ((ptr - data) + sizeof(u16) > len) {
 			uuids_start[1] = EIR_UUID16_SOME;
 			break;
@@ -140,7 +134,7 @@ static u8 *create_uuid32_list(struct hci_dev *hdev, u8 *data, ptrdiff_t len)
 			ptr += 2;
 		}
 
-		/* Stop if not enough space to put next UUID */
+		 
 		if ((ptr - data) + sizeof(u32) > len) {
 			uuids_start[1] = EIR_UUID32_SOME;
 			break;
@@ -173,7 +167,7 @@ static u8 *create_uuid128_list(struct hci_dev *hdev, u8 *data, ptrdiff_t len)
 			ptr += 2;
 		}
 
-		/* Stop if not enough space to put next UUID */
+		 
 		if ((ptr - data) + 16 > len) {
 			uuids_start[1] = EIR_UUID128_SOME;
 			break;
@@ -195,7 +189,7 @@ void eir_create(struct hci_dev *hdev, u8 *data)
 	name_len = strnlen(hdev->dev_name, sizeof(hdev->dev_name));
 
 	if (name_len > 0) {
-		/* EIR Data type */
+		 
 		if (name_len > 48) {
 			name_len = 48;
 			ptr[1] = EIR_NAME_SHORT;
@@ -203,7 +197,7 @@ void eir_create(struct hci_dev *hdev, u8 *data)
 			ptr[1] = EIR_NAME_COMPLETE;
 		}
 
-		/* EIR Data length */
+		 
 		ptr[0] = name_len + 1;
 
 		memcpy(ptr + 2, hdev->dev_name, name_len);
@@ -241,7 +235,7 @@ u8 eir_create_per_adv_data(struct hci_dev *hdev, u8 instance, u8 *ptr)
 	struct adv_info *adv = NULL;
 	u8 ad_len = 0;
 
-	/* Return 0 when the current instance identifier is invalid. */
+	 
 	if (instance) {
 		adv = hci_find_adv_instance(hdev, instance);
 		if (!adv)
@@ -263,7 +257,7 @@ u8 eir_create_adv_data(struct hci_dev *hdev, u8 instance, u8 *ptr)
 	u8 ad_len = 0, flags = 0;
 	u32 instance_flags;
 
-	/* Return 0 when the current instance identifier is invalid. */
+	 
 	if (instance) {
 		adv = hci_find_adv_instance(hdev, instance);
 		if (!adv)
@@ -272,16 +266,12 @@ u8 eir_create_adv_data(struct hci_dev *hdev, u8 instance, u8 *ptr)
 
 	instance_flags = hci_adv_instance_flags(hdev, instance);
 
-	/* If instance already has the flags set skip adding it once
-	 * again.
-	 */
+	 
 	if (adv && eir_get_data(adv->adv_data, adv->adv_data_len, EIR_FLAGS,
 				NULL))
 		goto skip_flags;
 
-	/* The Add Advertising command allows userspace to set both the general
-	 * and limited discoverable flags.
-	 */
+	 
 	if (instance_flags & MGMT_ADV_FLAG_DISCOV)
 		flags |= LE_AD_GENERAL;
 
@@ -292,15 +282,11 @@ u8 eir_create_adv_data(struct hci_dev *hdev, u8 instance, u8 *ptr)
 		flags |= LE_AD_NO_BREDR;
 
 	if (flags || (instance_flags & MGMT_ADV_FLAG_MANAGED_FLAGS)) {
-		/* If a discovery flag wasn't provided, simply use the global
-		 * settings.
-		 */
+		 
 		if (!flags)
 			flags |= mgmt_get_adv_discov_flags(hdev);
 
-		/* If flags would still be empty, then there is no need to
-		 * include the "Flags" AD field".
-		 */
+		 
 		if (flags) {
 			ptr[0] = 0x02;
 			ptr[1] = EIR_FLAGS;
@@ -330,7 +316,7 @@ skip_flags:
 			adv_tx_power = hdev->adv_tx_power;
 		}
 
-		/* Provide Tx Power only if we can provide a valid value for it */
+		 
 		if (adv_tx_power != HCI_TX_POWER_INVALID) {
 			ptr[0] = 0x02;
 			ptr[1] = EIR_TX_POWER;

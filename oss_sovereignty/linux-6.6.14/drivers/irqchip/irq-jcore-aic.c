@@ -1,12 +1,4 @@
-/*
- * J-Core SoC AIC driver
- *
- * Copyright (C) 2015-2016 Smart Energy Instruments, Inc.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 
 #include <linux/irq.h>
 #include <linux/io.h>
@@ -25,15 +17,7 @@
 
 static struct irq_chip jcore_aic;
 
-/*
- * The J-Core AIC1 and AIC2 are cpu-local interrupt controllers and do
- * not distinguish or use distinct irq number ranges for per-cpu event
- * interrupts (timer, IPI). Since information to determine whether a
- * particular irq number should be treated as per-cpu is not available
- * at mapping time, we use a wrapper handler function which chooses
- * the right handler at runtime based on whether IRQF_PERCPU was used
- * when requesting the irq.
- */
+ 
 
 static void handle_jcore_irq(struct irq_desc *desc)
 {
@@ -72,7 +56,7 @@ static int __init aic_irq_of_init(struct device_node *node,
 
 	pr_info("Initializing J-Core AIC\n");
 
-	/* AIC1 needs priority initialization to receive interrupts. */
+	 
 	if (of_device_is_compatible(node, "jcore,aic1")) {
 		unsigned cpu;
 
@@ -89,14 +73,7 @@ static int __init aic_irq_of_init(struct device_node *node,
 		min_irq = JCORE_AIC1_MIN_HWIRQ;
 	}
 
-	/*
-	 * The irq chip framework requires either mask/unmask or enable/disable
-	 * function pointers to be provided, but the hardware does not have any
-	 * such mechanism; the only interrupt masking is at the cpu level and
-	 * it affects all interrupts. We provide dummy mask/unmask. The hardware
-	 * handles all interrupt control and clears pending status when the cpu
-	 * accepts the interrupt.
-	 */
+	 
 	jcore_aic.irq_mask = noop;
 	jcore_aic.irq_unmask = noop;
 	jcore_aic.name = "AIC";

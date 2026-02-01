@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/drivers/media/platform/samsung/s5p-mfc/s5p_mfc_pm.c
- *
- * Copyright (c) 2010 Samsung Electronics Co., Ltd.
- *		http://www.samsung.com/
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -30,11 +25,11 @@ int s5p_mfc_init_pm(struct s5p_mfc_dev *dev)
 	pm->device = &dev->plat_dev->dev;
 	pm->clock_gate = NULL;
 
-	/* clock control */
+	 
 	for (i = 0; i < pm->num_clocks; i++) {
 		pm->clocks[i] = devm_clk_get(pm->device, pm->clk_names[i]);
 		if (IS_ERR(pm->clocks[i])) {
-			/* additional clocks are optional */
+			 
 			if (i && PTR_ERR(pm->clocks[i]) == -ENOENT) {
 				pm->clocks[i] = NULL;
 				continue;
@@ -82,7 +77,7 @@ int s5p_mfc_power_on(void)
 	if (ret < 0)
 		return ret;
 
-	/* clock control */
+	 
 	for (i = 0; i < pm->num_clocks; i++) {
 		ret = clk_prepare_enable(pm->clocks[i]);
 		if (ret < 0) {
@@ -92,7 +87,7 @@ int s5p_mfc_power_on(void)
 		}
 	}
 
-	/* prepare for software clock gating */
+	 
 	clk_disable(pm->clock_gate);
 
 	return 0;
@@ -107,7 +102,7 @@ int s5p_mfc_power_off(void)
 {
 	int i;
 
-	/* finish software clock gating */
+	 
 	clk_enable(pm->clock_gate);
 
 	for (i = 0; i < pm->num_clocks; i++)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 MediaTek Inc.
- *                    Weiyi Lu <weiyi.lu@mediatek.com>
- * Copyright (c) 2023 Collabora Ltd.
- *                    AngeloGioacchino Del Regno <angelogioacchino.delregno@collabora.com>
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/of.h>
 #include <linux/platform_device.h>
@@ -55,7 +50,7 @@ static const struct mtk_pll_div_table armca35pll_div_table[] = {
 	{ .div = 2, .freq = 500500000 },
 	{ .div = 3, .freq = 315250000 },
 	{ .div = 4, .freq = 157625000 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct mtk_pll_div_table armca72pll_div_table[] = {
@@ -64,7 +59,7 @@ static const struct mtk_pll_div_table armca72pll_div_table[] = {
 	{ .div = 2, .freq = 520000000 },
 	{ .div = 3, .freq = 315250000 },
 	{ .div = 4, .freq = 157625000 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct mtk_pll_div_table mmpll_div_table[] = {
@@ -73,7 +68,7 @@ static const struct mtk_pll_div_table mmpll_div_table[] = {
 	{ .div = 2, .freq = 601250000 },
 	{ .div = 3, .freq = 250250000 },
 	{ .div = 4, .freq = 125125000 },
-	{ /* sentinel */ }
+	{   }
 };
 
 static const struct mtk_pll_data plls[] = {
@@ -150,7 +145,7 @@ static void clk_mt2712_apmixed_remove(struct platform_device *pdev)
 
 static const struct of_device_id of_match_clk_mt2712_apmixed[] = {
 	{ .compatible = "mediatek,mt2712-apmixedsys" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt2712_apmixed);
 

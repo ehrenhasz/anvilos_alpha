@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel 8255 Programmable Peripheral Interface
- * Copyright (C) 2022 William Breathitt Gray
- */
+
+ 
 #include <linux/bits.h>
 #include <linux/device.h>
 #include <linux/err.h>
@@ -38,12 +35,12 @@ static int i8255_direction_mask(const unsigned int offset)
 	case I8255_PORTB:
 		return I8255_CONTROL_PORTB_DIRECTION;
 	case I8255_PORTC:
-		/* Port C can be configured by nibble */
+		 
 		if (line >= 4)
 			return I8255_CONTROL_PORTC_UPPER_DIRECTION;
 		return I8255_CONTROL_PORTC_LOWER_DIRECTION;
 	default:
-		/* Should never reach this path */
+		 
 		return 0;
 	}
 }
@@ -52,12 +49,12 @@ static int i8255_ppi_init(struct regmap *const map, const unsigned int base)
 {
 	int err;
 
-	/* Configure all ports to MODE 0 output mode */
+	 
 	err = regmap_write(map, base + I8255_CONTROL, I8255_CONTROL_MODE_SET);
 	if (err)
 		return err;
 
-	/* Initialize all GPIO to output 0 */
+	 
 	err = regmap_write(map, base + I8255_PORTA, 0x00);
 	if (err)
 		return err;
@@ -86,19 +83,12 @@ static int i8255_reg_mask_xlate(struct gpio_regmap *gpio, unsigned int base,
 		*mask = i8255_direction_mask(ppi_offset);
 		return 0;
 	default:
-		/* Should never reach this path */
+		 
 		return -EINVAL;
 	}
 }
 
-/**
- * devm_i8255_regmap_register - Register an i8255 GPIO controller
- * @dev:	device that is registering this i8255 GPIO device
- * @config:	configuration for i8255_regmap_config
- *
- * Registers an Intel 8255 Programmable Peripheral Interface GPIO controller.
- * Returns 0 on success and negative error number on failure.
- */
+ 
 int devm_i8255_regmap_register(struct device *const dev,
 			       const struct i8255_regmap_config *const config)
 {

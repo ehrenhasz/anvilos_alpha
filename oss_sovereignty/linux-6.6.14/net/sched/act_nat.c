@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Stateless NAT actions
- *
- * Copyright (c) 2007 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/init.h>
@@ -159,7 +155,7 @@ TC_INDIRECT_SCOPE int tcf_nat_act(struct sk_buff *skb,
 		new_addr &= mask;
 		new_addr |= addr & ~mask;
 
-		/* Rewrite IP header */
+		 
 		iph = ip_hdr(skb);
 		if (egress)
 			iph->saddr = new_addr;
@@ -174,7 +170,7 @@ TC_INDIRECT_SCOPE int tcf_nat_act(struct sk_buff *skb,
 
 	ihl = iph->ihl * 4;
 
-	/* It would be nice to share code with stateful NAT. */
+	 
 	switch (iph->frag_off & htons(IP_OFFSET) ? 0 : iph->protocol) {
 	case IPPROTO_TCP:
 	{
@@ -242,7 +238,7 @@ TC_INDIRECT_SCOPE int tcf_nat_act(struct sk_buff *skb,
 		new_addr &= mask;
 		new_addr |= addr & ~mask;
 
-		/* XXX Fix up the inner checksums. */
+		 
 		if (egress)
 			iph->daddr = new_addr;
 		else

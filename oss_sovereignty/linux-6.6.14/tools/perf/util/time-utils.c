@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <stdlib.h>
 #include <string.h>
 #include <linux/string.h>
@@ -34,7 +34,7 @@ int parse_nsec_time(const char *str, u64 *ptime)
 		strncpy(nsec_buf, end, 9);
 		nsec_buf[9] = '\0';
 
-		/* make it nsec precision */
+		 
 		for (i = strlen(nsec_buf); i < 9; i++)
 			nsec_buf[i] = '0';
 
@@ -72,7 +72,7 @@ static int split_start_end(char **start, char **end, const char *ostr, char ch)
 	if (ostr == NULL || *ostr == '\0')
 		return 0;
 
-	/* copy original string because we need to modify it */
+	 
 	str = strdup(ostr);
 	if (str == NULL)
 		return -ENOMEM;
@@ -107,7 +107,7 @@ int perf_time__parse_str(struct perf_time_interval *ptime, const char *ostr)
 
 	free(start_str);
 
-	/* make sure end time is after start time if it was given */
+	 
 	if (rc == 0 && ptime->end && ptime->end < ptime->start)
 		return -EINVAL;
 
@@ -124,7 +124,7 @@ static int perf_time__parse_strs(struct perf_time_interval *ptime,
 	char *str, *arg, *p;
 	int i, num = 0, rc = 0;
 
-	/* Count the commas */
+	 
 	for (cp = ostr; *cp; cp++)
 		num += !!(*cp == ',');
 
@@ -137,19 +137,19 @@ static int perf_time__parse_strs(struct perf_time_interval *ptime,
 	if (!str)
 		return -ENOMEM;
 
-	/* Split the string and parse each piece, except the last */
+	 
 	for (i = 0, p = str; i < num - 1; i++) {
 		arg = p;
-		/* Find next comma, there must be one */
+		 
 		p = skip_spaces(strchr(p, ',') + 1);
-		/* Skip the value, must not contain space or comma */
+		 
 		while (*p && !isspace(*p)) {
 			if (*p++ == ',') {
 				rc = -EINVAL;
 				goto out;
 			}
 		}
-		/* Split and parse */
+		 
 		if (*p)
 			*p++ = 0;
 		rc = perf_time__parse_str(ptime + i, arg);
@@ -157,12 +157,12 @@ static int perf_time__parse_strs(struct perf_time_interval *ptime,
 			goto out;
 	}
 
-	/* Parse the last piece */
+	 
 	rc = perf_time__parse_str(ptime + i, p);
 	if (rc < 0)
 		goto out;
 
-	/* Check there is no overlap */
+	 
 	for (i = 0; i < num - 1; i++) {
 		if (ptime[i].end >= ptime[i + 1].start) {
 			rc = -EINVAL;
@@ -222,12 +222,9 @@ static int percent_slash_split(char *str, struct perf_time_interval *ptime,
 	double pcnt, start_pcnt, end_pcnt;
 	int i;
 
-	/*
-	 * Example:
-	 * 10%/2: select the second 10% slice and the third 10% slice
-	 */
+	 
 
-	/* We can modify this string since the original one is copied */
+	 
 	p = strchr(str, '/');
 	if (!p)
 		return -1;
@@ -257,9 +254,7 @@ static int percent_dash_split(char *str, struct perf_time_interval *ptime,
 	double start_pcnt, end_pcnt;
 	int ret;
 
-	/*
-	 * Example: 0%-10%
-	 */
+	 
 
 	ret = split_start_end(&start_str, &end_str, str, '-');
 	if (ret || !start_str)
@@ -330,16 +325,11 @@ static int one_percent_convert(struct perf_time_interval *ptime_buf,
 	char *str;
 	int len = strlen(ostr), ret;
 
-	/*
-	 * c points to '%'.
-	 * '%' should be the last character
-	 */
+	 
 	if (ostr + len - 1 != c)
 		return -1;
 
-	/*
-	 * Construct a string like "xx%/1"
-	 */
+	 
 	str = malloc(len + 3);
 	if (str == NULL)
 		return -ENOMEM;
@@ -360,12 +350,7 @@ int perf_time__percent_parse_str(struct perf_time_interval *ptime_buf, int num,
 {
 	char *c;
 
-	/*
-	 * ostr example:
-	 * 10%/2,10%/3: select the second 10% slice and the third 10% slice
-	 * 0%-10%,30%-40%: multiple time range
-	 * 50%: just one percent
-	 */
+	 
 
 	memset(ptime_buf, 0, sizeof(*ptime_buf) * num);
 
@@ -394,9 +379,7 @@ struct perf_time_interval *perf_time__range_alloc(const char *ostr, int *size)
 	int i = 1;
 	struct perf_time_interval *ptime;
 
-	/*
-	 * At least allocate one time range.
-	 */
+	 
 	if (!ostr)
 		goto alloc;
 
@@ -418,11 +401,11 @@ alloc:
 
 bool perf_time__skip_sample(struct perf_time_interval *ptime, u64 timestamp)
 {
-	/* if time is not set don't drop sample */
+	 
 	if (timestamp == 0)
 		return false;
 
-	/* otherwise compare sample time to time window */
+	 
 	if ((ptime->start && timestamp < ptime->start) ||
 	    (ptime->end && timestamp > ptime->end)) {
 		return true;
@@ -443,9 +426,7 @@ bool perf_time__ranges_skip_sample(struct perf_time_interval *ptime_buf,
 	if (num == 1)
 		return perf_time__skip_sample(&ptime_buf[0], timestamp);
 
-	/*
-	 * start/end of multiple time ranges must be valid.
-	 */
+	 
 	for (i = 0; i < num; i++) {
 		ptime = &ptime_buf[i];
 

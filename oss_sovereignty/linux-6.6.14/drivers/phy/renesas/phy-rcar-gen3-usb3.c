@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car Gen3 for USB3.0 PHY driver
- *
- * Copyright (C) 2017 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -20,30 +16,30 @@
 #define USB30_PHY_ENABLE	0x060
 #define USB30_VBUS_EN		0x064
 
-/* USB30_CLKSET0 */
+ 
 #define CLKSET0_PRIVATE			0x05c0
 #define CLKSET0_USB30_FSEL_USB_EXTAL	0x0002
 
-/* USB30_CLKSET1 */
+ 
 #define CLKSET1_USB30_PLL_MULTI_SHIFT		6
 #define CLKSET1_USB30_PLL_MULTI_USB_EXTAL	(0x64 << \
 						 CLKSET1_USB30_PLL_MULTI_SHIFT)
-#define CLKSET1_PHYRESET	BIT(4)	/* 1: reset */
-#define CLKSET1_REF_CLKDIV	BIT(3)	/* 1: USB_EXTAL */
-#define CLKSET1_PRIVATE_2_1	BIT(1)	/* Write B'01 */
-#define CLKSET1_REF_CLK_SEL	BIT(0)	/* 1: USB3S0_CLK_P */
+#define CLKSET1_PHYRESET	BIT(4)	 
+#define CLKSET1_REF_CLKDIV	BIT(3)	 
+#define CLKSET1_PRIVATE_2_1	BIT(1)	 
+#define CLKSET1_REF_CLK_SEL	BIT(0)	 
 
-/* USB30_SSC_SET */
+ 
 #define SSC_SET_SSC_EN		BIT(12)
 #define SSC_SET_RANGE_SHIFT	9
 #define SSC_SET_RANGE_4980	(0x0 << SSC_SET_RANGE_SHIFT)
 #define SSC_SET_RANGE_4492	(0x1 << SSC_SET_RANGE_SHIFT)
 #define SSC_SET_RANGE_4003	(0x2 << SSC_SET_RANGE_SHIFT)
 
-/* USB30_PHY_ENABLE */
+ 
 #define PHY_ENABLE_RESET_EN	BIT(4)
 
-/* USB30_VBUS_EN */
+ 
 #define VBUS_EN_VBUS_EN		BIT(1)
 
 struct rcar_gen3_usb3 {
@@ -111,7 +107,7 @@ static int rcar_gen3_phy_usb3_init(struct phy *p)
 	if (!r->usb3s_clk && r->usb_extal)
 		rcar_gen3_phy_usb3_select_usb_extal(r);
 
-	/* Enables VBUS detection anyway */
+	 
 	writew(VBUS_EN_VBUS_EN, r->base + USB30_VBUS_EN);
 
 	return 0;
@@ -166,10 +162,7 @@ static int rcar_gen3_phy_usb3_probe(struct platform_device *pdev)
 		goto error;
 	}
 
-	/*
-	 * devm_phy_create() will call pm_runtime_enable(&phy->dev);
-	 * And then, phy-core will manage runtime pm for this device.
-	 */
+	 
 	pm_runtime_enable(dev);
 
 	r->phy = devm_phy_create(dev, NULL, &rcar_gen3_phy_usb3_ops);

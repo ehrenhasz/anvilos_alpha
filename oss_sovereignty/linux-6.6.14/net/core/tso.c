@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/export.h>
 #include <linux/if_vlan.h>
 #include <net/ip.h>
@@ -30,7 +30,7 @@ void tso_build_hdr(const struct sk_buff *skb, char *hdr, struct tso_t *tso,
 		put_unaligned_be32(tso->tcp_seq, &tcph->seq);
 
 		if (!is_last) {
-			/* Clear all special flags for not last packet */
+			 
 			tcph->psh = 0;
 			tcph->fin = 0;
 			tcph->rst = 0;
@@ -45,7 +45,7 @@ EXPORT_SYMBOL(tso_build_hdr);
 
 void tso_build_data(const struct sk_buff *skb, struct tso_t *tso, int size)
 {
-	tso->tcp_seq += size; /* not worth avoiding this operation for UDP */
+	tso->tcp_seq += size;  
 	tso->size -= size;
 	tso->data += size;
 
@@ -53,7 +53,7 @@ void tso_build_data(const struct sk_buff *skb, struct tso_t *tso, int size)
 	    (tso->next_frag_idx < skb_shinfo(skb)->nr_frags)) {
 		skb_frag_t *frag = &skb_shinfo(skb)->frags[tso->next_frag_idx];
 
-		/* Move to next segment */
+		 
 		tso->size = skb_frag_size(frag);
 		tso->data = skb_frag_address(frag);
 		tso->next_frag_idx++;
@@ -72,14 +72,14 @@ int tso_start(struct sk_buff *skb, struct tso_t *tso)
 	tso->next_frag_idx = 0;
 	tso->ipv6 = vlan_get_protocol(skb) == htons(ETH_P_IPV6);
 
-	/* Build first data */
+	 
 	tso->size = skb_headlen(skb) - hdr_len;
 	tso->data = skb->data + hdr_len;
 	if ((tso->size == 0) &&
 	    (tso->next_frag_idx < skb_shinfo(skb)->nr_frags)) {
 		skb_frag_t *frag = &skb_shinfo(skb)->frags[tso->next_frag_idx];
 
-		/* Move to next segment */
+		 
 		tso->size = skb_frag_size(frag);
 		tso->data = skb_frag_address(frag);
 		tso->next_frag_idx++;

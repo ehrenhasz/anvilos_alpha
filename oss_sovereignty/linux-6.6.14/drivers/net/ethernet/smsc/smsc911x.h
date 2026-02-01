@@ -1,14 +1,9 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/***************************************************************************
- *
- * Copyright (C) 2004-2008 SMSC
- * Copyright (C) 2005-2008 ARM
- *
- ***************************************************************************/
+ 
+ 
 #ifndef __SMSC911X_H__
 #define __SMSC911X_H__
 
-/*Chip ID*/
+ 
 #define LAN9115	0x01150000
 #define LAN9116	0x01160000
 #define LAN9117	0x01170000
@@ -28,12 +23,10 @@
 #define SMSC911X_EEPROM_SIZE	((u32)128)
 #define USE_DEBUG		0
 
-/* This is the maximum number of packets to be received every
- * NAPI poll */
+ 
 #define SMSC_NAPI_WEIGHT	16
 
-/* implements a PHY loopback test at initialisation time, to ensure a packet
- * can be successfully looped back */
+ 
 #define USE_PHY_WORK_AROUND
 
 #if USE_DEBUG >= 1
@@ -58,9 +51,9 @@
 		lockdep_assert_held(&pdata->mac_lock)
 #else
 #define SMSC_ASSERT_MAC_LOCK(pdata) do {} while (0)
-#endif				/* CONFIG_DEBUG_SPINLOCK */
+#endif				 
 
-/* SMSC911x registers and bitfields */
+ 
 #define RX_DATA_FIFO			0x00
 
 #define TX_DATA_FIFO			0x20
@@ -195,7 +188,7 @@
 #define HW_CFG_TR_			0x00003000
 #define HW_CFG_SRST_			0x00000001
 
-/* only available on 115/117 */
+ 
 #define HW_CFG_PHY_CLK_SEL_		0x00000060
 #define HW_CFG_PHY_CLK_SEL_INT_PHY_	0x00000000
 #define HW_CFG_PHY_CLK_SEL_EXT_PHY_	0x00000020
@@ -205,7 +198,7 @@
 #define HW_CFG_EXT_PHY_EN_		0x00000004
 #define HW_CFG_SRST_TO_			0x00000002
 
-/* only available  on 116/118 */
+ 
 #define HW_CFG_32_16_BIT_MODE_		0x00000004
 
 #define RX_DP_CTRL			0x78
@@ -310,10 +303,7 @@
 #define RESET_CTL			0x1F8
 #define RESET_CTL_DIGITAL_RST_		0x00000001
 
-/*
- * MAC Control and Status Register (Indirect Address)
- * Offset (through the MAC_CSR CMD and DATA port)
- */
+ 
 #define MAC_CR				0x01
 #define MAC_CR_RXALL_			0x80000000
 #define MAC_CR_HBDIS_			0x10000000
@@ -370,9 +360,7 @@
 #define WUCSR_WAKE_EN_			0x00000004
 #define WUCSR_MPEN_			0x00000002
 
-/*
- * Phy definitions (vendor-specific)
- */
+ 
 #define LAN9118_PHY_ID			0x00C0001C
 
 #define MII_INTSTS			0x1D
@@ -396,10 +384,7 @@
 #define LPA_PAUSE_ALL			(LPA_PAUSE_CAP | \
 					 LPA_PAUSE_ASYM)
 
-/*
- * Provide hooks to let the arch add to the initialisation procedure
- * and to override the source of the MAC address.
- */
+ 
 #define SMSC_INITIALIZE()		do {} while (0)
 #define smsc_get_mac(dev)		smsc911x_read_mac_address((dev))
 
@@ -409,4 +394,4 @@
 
 #include <linux/smscphy.h>
 
-#endif				/* __SMSC911X_H__ */
+#endif				 

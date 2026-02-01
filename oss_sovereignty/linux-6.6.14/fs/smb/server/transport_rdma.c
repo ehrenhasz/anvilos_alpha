@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   Copyright (C) 2017, Microsoft Corporation.
- *   Copyright (C) 2018, LG Electronics.
- *
- *   Author(s): Long Li <longli@microsoft.com>,
- *		Hyunchul Lee <hyc.lee@gmail.com>
- */
+
+ 
 
 #define SUBMOD_NAME	"smb_direct"
 
@@ -29,45 +23,38 @@
 
 #define SMB_DIRECT_VERSION_LE		cpu_to_le16(0x0100)
 
-/* SMB_DIRECT negotiation timeout in seconds */
+ 
 #define SMB_DIRECT_NEGOTIATE_TIMEOUT		120
 
 #define SMB_DIRECT_MAX_SEND_SGES		6
 #define SMB_DIRECT_MAX_RECV_SGES		1
 
-/*
- * Default maximum number of RDMA read/write outstanding on this connection
- * This value is possibly decreased during QP creation on hardware limit
- */
+ 
 #define SMB_DIRECT_CM_INITIATOR_DEPTH		8
 
-/* Maximum number of retries on data transfer operations */
+ 
 #define SMB_DIRECT_CM_RETRY			6
-/* No need to retry on Receiver Not Ready since SMB_DIRECT manages credits */
+ 
 #define SMB_DIRECT_CM_RNR_RETRY		0
 
-/*
- * User configurable initial values per SMB_DIRECT transport connection
- * as defined in [MS-SMBD] 3.1.1.1
- * Those may change after a SMB_DIRECT negotiation
- */
+ 
 
-/* Set 445 port to SMB Direct port by default */
+ 
 static int smb_direct_port = SMB_DIRECT_PORT_INFINIBAND;
 
-/* The local peer's maximum number of credits to grant to the peer */
+ 
 static int smb_direct_receive_credit_max = 255;
 
-/* The remote peer's credit request of local peer */
+ 
 static int smb_direct_send_credit_target = 255;
 
-/* The maximum single message size can be sent to remote peer */
+ 
 static int smb_direct_max_send_size = 1364;
 
-/*  The maximum fragmented upper-layer payload receive size supported */
+ 
 static int smb_direct_max_fragmented_recv_size = 1024 * 1024;
 
-/*  The maximum single-message size which can be received */
+ 
 static int smb_direct_max_receive_size = 1364;
 
 static int smb_direct_max_read_write_size = SMBD_DEFAULT_IOSIZE;
@@ -307,12 +294,7 @@ static void enqueue_reassembly(struct smb_direct_transport *t,
 	spin_lock(&t->reassembly_queue_lock);
 	list_add_tail(&recvmsg->list, &t->reassembly_queue);
 	t->reassembly_queue_length++;
-	/*
-	 * Make sure reassembly_data_length is updated after list and
-	 * reassembly_queue_length are updated. On the dequeue side
-	 * reassembly_data_length is checked without a lock to determine
-	 * if reassembly_queue_length and list is up to date
-	 */
+	 
 	virt_wmb();
 	t->reassembly_data_length += data_length;
 	spin_unlock(&t->reassembly_queue_lock);
@@ -685,22 +667,12 @@ again:
 		return -ENOTCONN;
 	}
 
-	/*
-	 * No need to hold the reassembly queue lock all the time as we are
-	 * the only one reading from the front of the queue. The transport
-	 * may add more entries to the back of the queue at the same time
-	 */
+	 
 	if (st->reassembly_data_length >= size) {
 		int queue_length;
 		int queue_removed = 0;
 
-		/*
-		 * Need to make sure reassembly_data_length is read before
-		 * reading reassembly_queue_length and calling
-		 * get_first_reassembly. This call is lock free
-		 * as we never read at the end of the queue which are being
-		 * updated in SOFTIRQ as more data is received
-		 */
+		 
 		virt_rmb();
 		queue_length = st->reassembly_queue_length;
 		data_read = 0;
@@ -714,14 +686,7 @@ again:
 				le32_to_cpu(data_transfer->remaining_data_length);
 			data_offset = le32_to_cpu(data_transfer->data_offset);
 
-			/*
-			 * The upper layer expects RFC1002 length at the
-			 * beginning of the payload. Return it to indicate
-			 * the total length of the packet. This minimize the
-			 * change to upper layer packet processing logic. This
-			 * will be eventually remove when an intermediate
-			 * transport layer is added
-			 */
+			 
 			if (recvmsg->first_segment && size == 4) {
 				unsigned int rfc1002_len =
 					data_length + remaining_data_length;
@@ -738,13 +703,10 @@ again:
 			memcpy(buf + data_read, (char *)data_transfer + data_offset + offset,
 			       to_copy);
 
-			/* move on to the next buffer? */
+			 
 			if (to_copy == data_length - offset) {
 				queue_length--;
-				/*
-				 * No need to lock if we are not at the
-				 * end of the queue
-				 */
+				 
 				if (queue_length) {
 					list_del(&recvmsg->list);
 				} else {
@@ -874,9 +836,7 @@ static void send_done(struct ib_cq *cq, struct ib_wc *wc)
 	if (atomic_dec_and_test(&t->send_pending))
 		wake_up(&t->wait_send_pending);
 
-	/* iterate and free the list of messages in reverse. the list's head
-	 * is invalid.
-	 */
+	 
 	for (pos = &sendmsg->list, prev = pos->prev, end = sendmsg->list.next;
 	     prev != end; pos = prev, prev = prev->prev) {
 		sibling = container_of(pos, struct smb_direct_sendmsg, list);
@@ -1028,7 +988,7 @@ static int smb_direct_create_header(struct smb_direct_transport *t,
 	if (IS_ERR(sendmsg))
 		return PTR_ERR(sendmsg);
 
-	/* Fill in the packet header */
+	 
 	packet = (struct smb_direct_data_transfer *)sendmsg->packet;
 	packet->credits_requested = cpu_to_le16(t->send_credit_target);
 	packet->credits_granted = cpu_to_le16(manage_credits_prior_sending(t));
@@ -1051,9 +1011,9 @@ static int smb_direct_create_header(struct smb_direct_transport *t,
 		    le32_to_cpu(packet->data_length),
 		    le32_to_cpu(packet->remaining_data_length));
 
-	/* Map the packet to DMA */
+	 
 	header_length = sizeof(struct smb_direct_data_transfer);
-	/* If this is a packet without payload, don't send padding */
+	 
 	if (!size)
 		header_length =
 			offsetof(struct smb_direct_data_transfer, padding);
@@ -1239,7 +1199,7 @@ static int smb_direct_writev(struct ksmbd_transport *t,
 	if (st->status != SMB_DIRECT_CS_CONNECTED)
 		return -ENOTCONN;
 
-	//FIXME: skip RFC1002 header..
+	
 	buflen -= 4;
 
 	remaining_data_length = buflen;
@@ -1260,7 +1220,7 @@ static int smb_direct_writev(struct ksmbd_transport *t,
 				if (ret)
 					goto done;
 			} else {
-				/* iov[start] is too big, break it */
+				 
 				int nvec  = (buflen + max_iov_size - 1) /
 						max_iov_size;
 
@@ -1286,7 +1246,7 @@ static int smb_direct_writev(struct ksmbd_transport *t,
 		} else {
 			i++;
 			if (i == niovs) {
-				/* send out all remaining vecs */
+				 
 				remaining_data_length -= buflen;
 				ret = smb_direct_post_send_data(st, &send_ctx,
 								&iov[start], i - start,
@@ -1301,12 +1261,7 @@ static int smb_direct_writev(struct ksmbd_transport *t,
 done:
 	ret = smb_direct_flush_send_list(st, &send_ctx, true);
 
-	/*
-	 * As an optimization, we don't wait for individual I/O to finish
-	 * before sending the next one.
-	 * Send them all and wait for pending send count to get to 0
-	 * that means all the I/Os have been out and we are good to return
-	 */
+	 
 
 	wait_event(st->wait_send_pending,
 		   atomic_read(&st->send_pending) == 0);
@@ -1372,7 +1327,7 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
 	if (buf_len > t->max_rdma_rw_size)
 		return -EINVAL;
 
-	/* calculate needed credits */
+	 
 	credits_needed = 0;
 	desc_buf = buf;
 	for (i = 0; i < desc_len / sizeof(*desc); i++) {
@@ -1402,7 +1357,7 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
 	if (ret < 0)
 		return ret;
 
-	/* build rdma_rw_ctx for each descriptor */
+	 
 	desc_buf = buf;
 	for (i = 0; i < desc_num; i++) {
 		msg = kzalloc(offsetof(struct smb_direct_rdma_rw_msg, sg_list) +
@@ -1454,7 +1409,7 @@ static int smb_direct_rdma_xmit(struct smb_direct_transport *t,
 		desc_buf += desc_buf_len;
 	}
 
-	/* concatenate work requests of rdma_rw_ctxs */
+	 
 	first_wr = NULL;
 	list_for_each_entry_reverse(msg, &msg_list, list) {
 		first_wr = rdma_rw_ctx_wrs(&msg->rw_ctx, t->qp, t->qp->port,
@@ -1712,9 +1667,7 @@ static int smb_direct_init_params(struct smb_direct_transport *t,
 	int max_send_sges, max_rw_wrs, max_send_wrs;
 	unsigned int max_sge_per_wr, wrs_per_credit;
 
-	/* need 3 more sge. because a SMB_DIRECT header, SMB2 header,
-	 * SMB2 response could be mapped.
-	 */
+	 
 	t->max_send_size = smb_direct_max_send_size;
 	max_send_sges = DIV_ROUND_UP(t->max_send_size, PAGE_SIZE) + 3;
 	if (max_send_sges > SMB_DIRECT_MAX_SEND_SGES) {
@@ -1722,13 +1675,7 @@ static int smb_direct_init_params(struct smb_direct_transport *t,
 		return -EINVAL;
 	}
 
-	/* Calculate the number of work requests for RDMA R/W.
-	 * The maximum number of pages which can be registered
-	 * with one Memory region can be transferred with one
-	 * R/W credit. And at least 4 work requests for each credit
-	 * are needed for MR registration, RDMA R/W, local & remote
-	 * MR invalidation.
-	 */
+	 
 	t->max_rdma_rw_size = smb_direct_max_read_write_size;
 	t->pages_per_rw_credit = smb_direct_get_max_fr_pages(t);
 	t->max_rw_credits = DIV_ROUND_UP(t->max_rdma_rw_size,
@@ -2137,7 +2084,7 @@ static int smb_direct_ib_client_add(struct ib_device *ib_dev)
 {
 	struct smb_direct_device *smb_dev;
 
-	/* Set 5445 port if device type is iWARP(No IB) */
+	 
 	if (ib_dev->node_type != RDMA_NODE_IB_CA)
 		smb_direct_port = SMB_DIRECT_PORT_IWARP;
 
@@ -2191,11 +2138,7 @@ int ksmbd_rdma_init(void)
 		return ret;
 	}
 
-	/* When a client is running out of send credits, the credits are
-	 * granted by the server's sending a packet using this queue.
-	 * This avoids the situation that a clients cannot send packets
-	 * for lack of credits
-	 */
+	 
 	smb_direct_wq = alloc_workqueue("ksmbd-smb_direct-wq",
 					WQ_HIGHPRI | WQ_MEM_RECLAIM, 0);
 	if (!smb_direct_wq)
@@ -2253,9 +2196,7 @@ bool ksmbd_rdma_capable_netdev(struct net_device *netdev)
 					goto out;
 				}
 				dev_put(ndev);
-			/* if ib_dev does not implement ops.get_netdev
-			 * check for matching infiniband GUID in hw_addr
-			 */
+			 
 			} else if (netdev->type == ARPHRD_INFINIBAND) {
 				struct netdev_hw_addr *ha;
 				union ib_gid gid;

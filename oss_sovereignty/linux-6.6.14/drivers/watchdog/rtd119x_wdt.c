@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Realtek RTD129x watchdog
- *
- * Copyright (c) 2017 Andreas Färber
- *
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>

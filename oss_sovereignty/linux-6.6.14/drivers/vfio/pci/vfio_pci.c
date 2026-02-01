@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, NVIDIA CORPORATION & AFFILIATES. All rights reserved
- *
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- *
- * Derived from original vfio:
- * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
- * Author: Tom Lyon, pugs@cisco.com
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -187,7 +178,7 @@ static int vfio_pci_sriov_configure(struct pci_dev *pdev, int nr_virtfn)
 }
 
 static const struct pci_device_id vfio_pci_table[] = {
-	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_ANY_ID, PCI_ANY_ID) }, /* match all by default */
+	{ PCI_DRIVER_OVERRIDE_DEVICE_VFIO(PCI_ANY_ID, PCI_ANY_ID) },  
 	{}
 };
 
@@ -208,11 +199,11 @@ static void __init vfio_pci_fill_ids(void)
 	char *p, *id;
 	int rc;
 
-	/* no ids passed actually */
+	 
 	if (ids[0] == '\0')
 		return;
 
-	/* add ids specified in the module parameter */
+	 
 	p = ids;
 	while ((id = strsep(&p, ","))) {
 		unsigned int vendor, device, subvendor = PCI_ANY_ID,
@@ -255,7 +246,7 @@ static int __init vfio_pci_init(void)
 
 	vfio_pci_core_set_params(nointxmask, is_disable_vga, disable_idle_d3);
 
-	/* Register and scan for devices */
+	 
 	ret = pci_register_driver(&vfio_pci_driver);
 	if (ret)
 		return ret;

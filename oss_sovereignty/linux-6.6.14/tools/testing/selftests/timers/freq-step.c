@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This test checks the response of the system clock to frequency
- * steps made with adjtimex(). The frequency error and stability of
- * the CLOCK_MONOTONIC clock relative to the CLOCK_MONOTONIC_RAW clock
- * is measured in two intervals following the step. The test fails if
- * values from the second interval exceed specified limits.
- *
- * Copyright (C) Miroslav Lichvar <mlichvar@redhat.com>  2017
- */
+
+ 
 
 #include <math.h>
 #include <stdio.h>

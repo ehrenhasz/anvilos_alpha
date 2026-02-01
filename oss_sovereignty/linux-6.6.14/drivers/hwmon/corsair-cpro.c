@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * corsair-cpro.c - Linux driver for Corsair Commander Pro
- * Copyright (C) 2020 Marius Zachmann <mail@mariuszachmann.de>
- *
- * This driver uses hid reports to communicate with the device to allow hidraw userspace drivers
- * still being used. The device does not use report ids. When using hidraw and this driver
- * simultaniously, reports could be switched.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/completion.h>
@@ -27,49 +20,14 @@
 #define LABEL_LENGTH		11
 #define REQ_TIMEOUT		300
 
-#define CTL_GET_TMP_CNCT	0x10	/*
-					 * returns in bytes 1-4 for each temp sensor:
-					 * 0 not connected
-					 * 1 connected
-					 */
-#define CTL_GET_TMP		0x11	/*
-					 * send: byte 1 is channel, rest zero
-					 * rcv:  returns temp for channel in centi-degree celsius
-					 * in bytes 1 and 2
-					 * returns 0x11 in byte 0 if no sensor is connected
-					 */
-#define CTL_GET_VOLT		0x12	/*
-					 * send: byte 1 is rail number: 0 = 12v, 1 = 5v, 2 = 3.3v
-					 * rcv:  returns millivolt in bytes 1,2
-					 * returns error 0x10 if request is invalid
-					 */
-#define CTL_GET_FAN_CNCT	0x20	/*
-					 * returns in bytes 1-6 for each fan:
-					 * 0 not connected
-					 * 1 3pin
-					 * 2 4pin
-					 */
-#define CTL_GET_FAN_RPM		0x21	/*
-					 * send: byte 1 is channel, rest zero
-					 * rcv:  returns rpm in bytes 1,2
-					 */
-#define CTL_GET_FAN_PWM		0x22	/*
-					 * send: byte 1 is channel, rest zero
-					 * rcv:  returns pwm in byte 1 if it was set
-					 *	 returns error 0x12 if fan is controlled via
-					 *	 fan_target or fan curve
-					 */
-#define CTL_SET_FAN_FPWM	0x23	/*
-					 * set fixed pwm
-					 * send: byte 1 is fan number
-					 * send: byte 2 is percentage from 0 - 100
-					 */
-#define CTL_SET_FAN_TARGET	0x24	/*
-					 * set target rpm
-					 * send: byte 1 is fan number
-					 * send: byte 2-3 is target
-					 * device accepts all values from 0x00 - 0xFFFF
-					 */
+#define CTL_GET_TMP_CNCT	0x10	 
+#define CTL_GET_TMP		0x11	 
+#define CTL_GET_VOLT		0x12	 
+#define CTL_GET_FAN_CNCT	0x20	 
+#define CTL_GET_FAN_RPM		0x21	 
+#define CTL_GET_FAN_PWM		0x22	 
+#define CTL_SET_FAN_FPWM	0x23	 
+#define CTL_SET_FAN_TARGET	0x24	 
 
 #define NUM_FANS		6
 #define NUM_TEMP_SENSORS	4
@@ -78,7 +36,7 @@ struct ccp_device {
 	struct hid_device *hdev;
 	struct device *hwmon_dev;
 	struct completion wait_input_report;
-	struct mutex mutex; /* whenever buffer is used, lock before send_usb_cmd */
+	struct mutex mutex;  
 	u8 *buffer;
 	int target[6];
 	DECLARE_BITMAP(temp_cnct, NUM_TEMP_SENSORS);
@@ -86,18 +44,18 @@ struct ccp_device {
 	char fan_label[6][LABEL_LENGTH];
 };
 
-/* converts response error in buffer to errno */
+ 
 static int ccp_get_errno(struct ccp_device *ccp)
 {
 	switch (ccp->buffer[0]) {
-	case 0x00: /* success */
+	case 0x00:  
 		return 0;
-	case 0x01: /* called invalid command */
+	case 0x01:  
 		return -EOPNOTSUPP;
-	case 0x10: /* called GET_VOLT / GET_TMP with invalid arguments */
+	case 0x10:  
 		return -EINVAL;
-	case 0x11: /* requested temps of disconnected sensors */
-	case 0x12: /* requested pwm of not pwm controlled channels */
+	case 0x11:  
+	case 0x12:  
 		return -ENODATA;
 	default:
 		hid_dbg(ccp->hdev, "unknown device response error: %d", ccp->buffer[0]);
@@ -105,7 +63,7 @@ static int ccp_get_errno(struct ccp_device *ccp)
 	}
 }
 
-/* send command, check for error in response, response in ccp->buffer */
+ 
 static int send_usb_cmd(struct ccp_device *ccp, u8 command, u8 byte1, u8 byte2, u8 byte3)
 {
 	unsigned long t;
@@ -134,7 +92,7 @@ static int ccp_raw_event(struct hid_device *hdev, struct hid_report *report, u8 
 {
 	struct ccp_device *ccp = hid_get_drvdata(hdev);
 
-	/* only copy buffer when requested */
+	 
 	if (completion_done(&ccp->wait_input_report))
 		return 0;
 
@@ -144,7 +102,7 @@ static int ccp_raw_event(struct hid_device *hdev, struct hid_report *report, u8 
 	return 0;
 }
 
-/* requests and returns single data values depending on channel */
+ 
 static int get_data(struct ccp_device *ccp, int command, int channel, bool two_byte_data)
 {
 	int ret;
@@ -171,7 +129,7 @@ static int set_pwm(struct ccp_device *ccp, int channel, long val)
 	if (val < 0 || val > 255)
 		return -EINVAL;
 
-	/* The Corsair Commander Pro uses values from 0-100 */
+	 
 	val = DIV_ROUND_CLOSEST(val * 100, 255);
 
 	mutex_lock(&ccp->mutex);
@@ -248,8 +206,8 @@ static int ccp_read(struct device *dev, enum hwmon_sensor_types type,
 			*val = ret;
 			return 0;
 		case hwmon_fan_target:
-			/* how to read target values from the device is unknown */
-			/* driver returns last set value or 0			*/
+			 
+			 
 			if (ccp->target[channel] < 0)
 				return -ENODATA;
 			*val = ccp->target[channel];
@@ -423,7 +381,7 @@ static const struct hwmon_chip_info ccp_chip_info = {
 	.info = ccp_info,
 };
 
-/* read fan connection status and set labels */
+ 
 static int get_fan_cnct(struct ccp_device *ccp)
 {
 	int channel;
@@ -461,7 +419,7 @@ static int get_fan_cnct(struct ccp_device *ccp)
 	return 0;
 }
 
-/* read temp sensor connection status */
+ 
 static int get_temp_cnct(struct ccp_device *ccp)
 {
 	int channel;
@@ -515,7 +473,7 @@ static int ccp_probe(struct hid_device *hdev, const struct hid_device_id *id)
 
 	hid_device_io_start(hdev);
 
-	/* temp and fan connection status only updates when device is powered on */
+	 
 	ret = get_temp_cnct(ccp);
 	if (ret)
 		goto out_hw_close;
@@ -575,9 +533,6 @@ static void __exit ccp_exit(void)
 	hid_unregister_driver(&ccp_driver);
 }
 
-/*
- * When compiling this driver as built-in, hwmon initcalls will get called before the
- * hid driver and this driver would fail to register. late_initcall solves this.
- */
+ 
 late_initcall(ccp_init);
 module_exit(ccp_exit);

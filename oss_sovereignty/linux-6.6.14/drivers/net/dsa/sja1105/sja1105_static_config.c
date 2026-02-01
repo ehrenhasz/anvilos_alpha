@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2016-2018 NXP
- * Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
+ 
 #include "sja1105_static_config.h"
 #include <linux/crc32.h>
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/errno.h>
 
-/* Convenience wrappers over the generic packing functions. These take into
- * account the SJA1105 memory layout quirks and provide some level of
- * programmer protection against incorrect API use. The errors are not expected
- * to occur durring runtime, therefore printing and swallowing them here is
- * appropriate instead of clutterring up higher-level code.
- */
+ 
 void sja1105_pack(void *buf, const u64 *val, int start, int end, size_t len)
 {
 	int rc = packing(buf, (u64 *)val, start, end, len,
@@ -75,14 +68,14 @@ void sja1105_packing(void *buf, u64 *val, int start, int end,
 	dump_stack();
 }
 
-/* Little-endian Ethernet CRC32 of data packed as big-endian u32 words */
+ 
 u32 sja1105_crc32(const void *buf, size_t len)
 {
 	unsigned int i;
 	u64 word;
 	u32 crc;
 
-	/* seed */
+	 
 	crc = ~0;
 	for (i = 0; i < len; i += 4) {
 		sja1105_unpack(buf + i, &word, 31, 0, 4);
@@ -143,9 +136,7 @@ static size_t sja1105et_general_params_entry_packing(void *buf, void *entry_ptr,
 	return size;
 }
 
-/* TPID and TPID2 are intentionally reversed so that semantic
- * compatibility with E/T is kept.
- */
+ 
 size_t sja1105pqrs_general_params_entry_packing(void *buf, void *entry_ptr,
 						enum packing_op op)
 {
@@ -710,7 +701,7 @@ size_t sja1105_vl_lookup_entry_packing(void *buf, void *entry_ptr,
 	const size_t size = SJA1105_SIZE_VL_LOOKUP_ENTRY;
 
 	if (entry->format == SJA1105_VL_FORMAT_PSFP) {
-		/* Interpreting vllupformat as 0 */
+		 
 		sja1105_packing(buf, &entry->destports,
 				95, 91, size, op);
 		sja1105_packing(buf, &entry->iscritical,
@@ -724,7 +715,7 @@ size_t sja1105_vl_lookup_entry_packing(void *buf, void *entry_ptr,
 		sja1105_packing(buf, &entry->vlanprior,
 				26, 24, size, op);
 	} else {
-		/* Interpreting vllupformat as 1 */
+		 
 		sja1105_packing(buf, &entry->egrmirr,
 				95, 91, size, op);
 		sja1105_packing(buf, &entry->ingrmirr,
@@ -744,7 +735,7 @@ size_t sja1110_vl_lookup_entry_packing(void *buf, void *entry_ptr,
 	const size_t size = SJA1105_SIZE_VL_LOOKUP_ENTRY;
 
 	if (entry->format == SJA1105_VL_FORMAT_PSFP) {
-		/* Interpreting vllupformat as 0 */
+		 
 		sja1105_packing(buf, &entry->destports,
 				94, 84, size, op);
 		sja1105_packing(buf, &entry->iscritical,
@@ -758,7 +749,7 @@ size_t sja1110_vl_lookup_entry_packing(void *buf, void *entry_ptr,
 		sja1105_packing(buf, &entry->vlanprior,
 				18, 16, size, op);
 	} else {
-		/* Interpreting vllupformat as 1 */
+		 
 		sja1105_packing(buf, &entry->egrmirr,
 				94, 84, size, op);
 		sja1105_packing(buf, &entry->ingrmirr,
@@ -926,15 +917,11 @@ size_t sja1105_table_header_packing(void *buf, void *entry_ptr,
 	return size;
 }
 
-/* WARNING: the *hdr pointer is really non-const, because it is
- * modifying the CRC of the header for a 2-stage packing operation
- */
+ 
 void
 sja1105_table_header_pack_with_crc(void *buf, struct sja1105_table_header *hdr)
 {
-	/* First pack the table as-is, then calculate the CRC, and
-	 * finally put the proper CRC into the packed buffer
-	 */
+	 
 	memset(buf, 0, SJA1105_SIZE_TABLE_HEADER);
 	sja1105_table_header_packing(buf, hdr, PACK);
 	hdr->crc = sja1105_crc32(buf, SJA1105_SIZE_TABLE_HEADER - 4);
@@ -951,13 +938,7 @@ static void sja1105_table_write_crc(u8 *table_start, u8 *crc_ptr)
 	sja1105_pack(crc_ptr, &computed_crc, 31, 0, 4);
 }
 
-/* The block IDs that the switches support are unfortunately sparse, so keep a
- * mapping table to "block indices" and translate back and forth so that we
- * don't waste useless memory in struct sja1105_static_config.
- * Also, since the block id comes from essentially untrusted input (unpacking
- * the static config from userspace) it has to be sanitized (range-checked)
- * before blindly indexing kernel memory with the blk_idx.
- */
+ 
 static u64 blk_id_map[BLK_IDX_MAX] = {
 	[BLK_IDX_SCHEDULE] = BLKID_SCHEDULE,
 	[BLK_IDX_SCHEDULE_ENTRY_POINTS] = BLKID_SCHEDULE_ENTRY_POINTS,
@@ -1152,11 +1133,7 @@ sja1105_static_config_pack(void *buf, struct sja1105_static_config *config)
 		sja1105_table_write_crc(table_start, p);
 		p += 4;
 	}
-	/* Final header:
-	 * Block ID does not matter
-	 * Length of 0 marks that header is final
-	 * CRC will be replaced on-the-fly on "config upload"
-	 */
+	 
 	header.block_id = 0;
 	header.len = 0;
 	header.crc = 0xDEADBEEF;
@@ -1171,11 +1148,11 @@ sja1105_static_config_get_length(const struct sja1105_static_config *config)
 	unsigned int header_count;
 	enum sja1105_blk_idx i;
 
-	/* Ending header */
+	 
 	header_count = 1;
 	sum = SJA1105_SIZE_DEVICE_ID;
 
-	/* Tables (headers and entries) */
+	 
 	for (i = 0; i < BLK_IDX_MAX; i++) {
 		const struct sja1105_table *table;
 
@@ -1185,17 +1162,17 @@ sja1105_static_config_get_length(const struct sja1105_static_config *config)
 
 		sum += table->ops->packed_entry_size * table->entry_count;
 	}
-	/* Headers have an additional CRC at the end */
+	 
 	sum += header_count * (SJA1105_SIZE_TABLE_HEADER + 4);
-	/* Last header does not have an extra CRC because there is no data */
+	 
 	sum -= 4;
 
 	return sum;
 }
 
-/* Compatibility matrices */
+ 
 
-/* SJA1105E: First generation, no TTEthernet */
+ 
 const struct sja1105_table_ops sja1105e_table_ops[BLK_IDX_MAX] = {
 	[BLK_IDX_L2_LOOKUP] = {
 		.packing = sja1105et_l2_lookup_entry_packing,
@@ -1265,7 +1242,7 @@ const struct sja1105_table_ops sja1105e_table_ops[BLK_IDX_MAX] = {
 	},
 };
 
-/* SJA1105T: First generation, TTEthernet */
+ 
 const struct sja1105_table_ops sja1105t_table_ops[BLK_IDX_MAX] = {
 	[BLK_IDX_SCHEDULE] = {
 		.packing = sja1105_schedule_entry_packing,
@@ -1383,7 +1360,7 @@ const struct sja1105_table_ops sja1105t_table_ops[BLK_IDX_MAX] = {
 	},
 };
 
-/* SJA1105P: Second generation, no TTEthernet, no SGMII */
+ 
 const struct sja1105_table_ops sja1105p_table_ops[BLK_IDX_MAX] = {
 	[BLK_IDX_L2_LOOKUP] = {
 		.packing = sja1105pqrs_l2_lookup_entry_packing,
@@ -1453,7 +1430,7 @@ const struct sja1105_table_ops sja1105p_table_ops[BLK_IDX_MAX] = {
 	},
 };
 
-/* SJA1105Q: Second generation, TTEthernet, no SGMII */
+ 
 const struct sja1105_table_ops sja1105q_table_ops[BLK_IDX_MAX] = {
 	[BLK_IDX_SCHEDULE] = {
 		.packing = sja1105_schedule_entry_packing,
@@ -1571,7 +1548,7 @@ const struct sja1105_table_ops sja1105q_table_ops[BLK_IDX_MAX] = {
 	},
 };
 
-/* SJA1105R: Second generation, no TTEthernet, SGMII */
+ 
 const struct sja1105_table_ops sja1105r_table_ops[BLK_IDX_MAX] = {
 	[BLK_IDX_L2_LOOKUP] = {
 		.packing = sja1105pqrs_l2_lookup_entry_packing,
@@ -1641,7 +1618,7 @@ const struct sja1105_table_ops sja1105r_table_ops[BLK_IDX_MAX] = {
 	},
 };
 
-/* SJA1105S: Second generation, TTEthernet, SGMII */
+ 
 const struct sja1105_table_ops sja1105s_table_ops[BLK_IDX_MAX] = {
 	[BLK_IDX_SCHEDULE] = {
 		.packing = sja1105_schedule_entry_packing,
@@ -1759,7 +1736,7 @@ const struct sja1105_table_ops sja1105s_table_ops[BLK_IDX_MAX] = {
 	},
 };
 
-/* SJA1110A: Third generation */
+ 
 const struct sja1105_table_ops sja1110_table_ops[BLK_IDX_MAX] = {
 	[BLK_IDX_SCHEDULE] = {
 		.packing = sja1110_schedule_entry_packing,
@@ -1891,9 +1868,7 @@ int sja1105_static_config_init(struct sja1105_static_config *config,
 
 	*config = (struct sja1105_static_config) {0};
 
-	/* Transfer static_ops array from priv into per-table ops
-	 * for handier access
-	 */
+	 
 	for (i = 0; i < BLK_IDX_MAX; i++)
 		config->tables[i].ops = &static_ops[i];
 
@@ -1929,7 +1904,7 @@ int sja1105_table_delete_entry(struct sja1105_table *table, int i)
 	return 0;
 }
 
-/* No pointers to table->entries should be kept when this is called. */
+ 
 int sja1105_table_resize(struct sja1105_table *table, size_t new_count)
 {
 	size_t entry_size = table->ops->unpacked_entry_size;

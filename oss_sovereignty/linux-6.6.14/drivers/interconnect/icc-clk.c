@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2023, Linaro Ltd.
- */
+ 
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -60,19 +58,7 @@ static int icc_clk_get_bw(struct icc_node *node, u32 *avg, u32 *peak)
 	return 0;
 }
 
-/**
- * icc_clk_register() - register a new clk-based interconnect provider
- * @dev: device supporting this provider
- * @first_id: an ID of the first provider's node
- * @num_clocks: number of instances of struct icc_clk_data
- * @data: data for the provider
- *
- * Registers and returns a clk-based interconnect provider. It is a simple
- * wrapper around COMMON_CLK framework, allowing other devices to vote on the
- * clock rate.
- *
- * Return: 0 on success, or an error code otherwise
- */
+ 
 struct icc_provider *icc_clk_register(struct device *dev,
 				      unsigned int first_id,
 				      unsigned int num_clocks,
@@ -117,7 +103,7 @@ struct icc_provider *icc_clk_register(struct device *dev,
 		node->name = devm_kasprintf(dev, GFP_KERNEL, "%s_master", data[i].name);
 		node->data = &qp->clocks[i];
 		icc_node_add(node, provider);
-		/* link to the next node, slave */
+		 
 		icc_link_create(node, first_id + j + 1);
 		onecell->nodes[j++] = node;
 
@@ -128,7 +114,7 @@ struct icc_provider *icc_clk_register(struct device *dev,
 		}
 
 		node->name = devm_kasprintf(dev, GFP_KERNEL, "%s_slave", data[i].name);
-		/* no data for slave node */
+		 
 		icc_node_add(node, provider);
 		onecell->nodes[j++] = node;
 	}
@@ -148,10 +134,7 @@ err:
 }
 EXPORT_SYMBOL_GPL(icc_clk_register);
 
-/**
- * icc_clk_unregister() - unregister a previously registered clk interconnect provider
- * @provider: provider returned by icc_clk_register()
- */
+ 
 void icc_clk_unregister(struct icc_provider *provider)
 {
 	struct icc_clk_provider *qp = container_of(provider, struct icc_clk_provider, provider);

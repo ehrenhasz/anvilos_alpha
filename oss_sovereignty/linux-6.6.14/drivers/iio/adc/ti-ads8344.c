@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * ADS8344 16-bit 8-Channel ADC driver
- *
- * Author: Gregory CLEMENT <gregory.clement@bootlin.com>
- *
- * Datasheet: https://www.ti.com/lit/ds/symlink/ads8344.pdf
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/iio/buffer.h>
@@ -17,15 +11,12 @@
 #define ADS8344_START BIT(7)
 #define ADS8344_SINGLE_END BIT(2)
 #define ADS8344_CHANNEL(channel) ((channel) << 4)
-#define ADS8344_CLOCK_INTERNAL 0x2 /* PD1 = 1 and PD0 = 0 */
+#define ADS8344_CLOCK_INTERNAL 0x2  
 
 struct ads8344 {
 	struct spi_device *spi;
 	struct regulator *reg;
-	/*
-	 * Lock protecting access to adc->tx_buff and rx_buff,
-	 * especially from concurrent read on sysfs file.
-	 */
+	 
 	struct mutex lock;
 
 	u8 tx_buf __aligned(IIO_DMA_MINALIGN);
@@ -119,7 +110,7 @@ static int ads8344_read_raw(struct iio_dev *iio,
 		if (*value < 0)
 			return *value;
 
-		/* convert regulator output voltage to mV */
+		 
 		*value /= 1000;
 		*shift = 16;
 

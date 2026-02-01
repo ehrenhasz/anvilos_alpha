@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Watchdog driver for the RTC based watchdog in STMP3xxx and i.MX23/28
- *
- * Author: Wolfram Sang <kernel@pengutronix.de>
- *
- * Copyright (C) 2011-12 Wolfram Sang, Pengutronix
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/watchdog.h>
@@ -14,7 +8,7 @@
 #include <linux/notifier.h>
 #include <linux/reboot.h>
 
-#define WDOG_TICK_RATE 1000 /* 1 kHz clock */
+#define WDOG_TICK_RATE 1000  
 #define STMP3XXX_DEFAULT_TIMEOUT 19
 #define STMP3XXX_MAX_TIMEOUT (UINT_MAX / WDOG_TICK_RATE)
 
@@ -72,9 +66,9 @@ static int wdt_notify_sys(struct notifier_block *nb, unsigned long code,
 			  void *unused)
 {
 	switch (code) {
-	case SYS_DOWN:	/* keep enabled, system might crash while going down */
+	case SYS_DOWN:	 
 		break;
-	case SYS_HALT:	/* allow the system to actually halt */
+	case SYS_HALT:	 
 	case SYS_POWER_OFF:
 		wdt_stop(&stmp3xxx_wdd);
 		break;

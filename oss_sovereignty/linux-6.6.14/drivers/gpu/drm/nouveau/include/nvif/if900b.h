@@ -3,11 +3,11 @@
 #include "if000a.h"
 
 struct gf100_mem_vn {
-	/* nvif_mem_vX ... */
+	 
 };
 
 struct gf100_mem_v0 {
-	/* nvif_mem_vX ... */
+	 
 	__u8  version;
 	__u8  contig;
 };

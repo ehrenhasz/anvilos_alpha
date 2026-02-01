@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2019-2022 Bootlin
- * Author: Paul Kocialkowski <paul.kocialkowski@bootlin.com>
- */
+
+ 
 
 #include <drm/drm_print.h>
 
@@ -170,7 +167,7 @@ void logicvc_of_property_parse_bool(struct device_node *of_node,
 	struct logicvc_of_property *property;
 
 	if (index >= LOGICVC_OF_PROPERTY_MAXIMUM) {
-		/* Fallback. */
+		 
 		*target = false;
 		return;
 	}

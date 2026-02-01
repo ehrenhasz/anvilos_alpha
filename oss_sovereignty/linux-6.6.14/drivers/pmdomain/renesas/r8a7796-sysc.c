@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas R-Car M3-W/W+ System Controller
- *
- * Copyright (C) 2016 Glider bvba
- * Copyright (C) 2018-2019 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/kernel.h>
@@ -46,7 +41,7 @@ const struct rcar_sysc_info r8a77960_sysc_info __initconst = {
 	.areas = r8a7796_areas,
 	.num_areas = ARRAY_SIZE(r8a7796_areas),
 };
-#endif /* CONFIG_SYSC_R8A77960 */
+#endif  
 
 #ifdef CONFIG_SYSC_R8A77961
 static int __init r8a77961_sysc_init(void)
@@ -64,4 +59,4 @@ const struct rcar_sysc_info r8a77961_sysc_info __initconst = {
 	.extmask_offs = 0x2f8,
 	.extmask_val = BIT(0),
 };
-#endif /* CONFIG_SYSC_R8A77961 */
+#endif  

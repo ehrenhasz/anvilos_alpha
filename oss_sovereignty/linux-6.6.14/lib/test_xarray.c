@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * test_xarray.c: Test the XArray API
- * Copyright (c) 2017-2018 Microsoft Corporation
- * Copyright (c) 2019-2020 Oracle
- * Author: Matthew Wilcox <willy@infradead.org>
- */
+
+ 
 
 #include <linux/xarray.h>
 #include <linux/module.h>
@@ -63,11 +58,7 @@ static void xa_erase_index(struct xarray *xa, unsigned long index)
 	XA_BUG_ON(xa, xa_load(xa, index) != NULL);
 }
 
-/*
- * If anyone needs this, please move it to xarray.c.  We have no current
- * users outside the test suite because all current multislot users want
- * to use the advanced API.
- */
+ 
 static void *xa_store_order(struct xarray *xa, unsigned long index,
 		unsigned order, void *entry, gfp_t gfp)
 {
@@ -88,15 +79,15 @@ static noinline void check_xa_err(struct xarray *xa)
 	XA_BUG_ON(xa, xa_err(xa_store_index(xa, 0, GFP_NOWAIT)) != 0);
 	XA_BUG_ON(xa, xa_err(xa_erase(xa, 0)) != 0);
 #ifndef __KERNEL__
-	/* The kernel does not fail GFP_NOWAIT allocations */
+	 
 	XA_BUG_ON(xa, xa_err(xa_store_index(xa, 1, GFP_NOWAIT)) != -ENOMEM);
 	XA_BUG_ON(xa, xa_err(xa_store_index(xa, 1, GFP_NOWAIT)) != -ENOMEM);
 #endif
 	XA_BUG_ON(xa, xa_err(xa_store_index(xa, 1, GFP_KERNEL)) != 0);
 	XA_BUG_ON(xa, xa_err(xa_store(xa, 1, xa_mk_value(0), GFP_KERNEL)) != 0);
 	XA_BUG_ON(xa, xa_err(xa_erase(xa, 1)) != 0);
-// kills the test-suite :-(
-//	XA_BUG_ON(xa, xa_err(xa_store(xa, 0, xa_mk_internal(0), 0)) != -EINVAL);
+
+
 }
 
 static noinline void check_xas_retry(struct xarray *xa)
@@ -127,7 +118,7 @@ static noinline void check_xas_retry(struct xarray *xa)
 	XA_BUG_ON(xa, xas_next_entry(&xas, ULONG_MAX) != xa_mk_value(0));
 	rcu_read_unlock();
 
-	/* Make sure we can iterate through retry entries */
+	 
 	xas_lock(&xas);
 	xas_set(&xas, 0);
 	xas_store(&xas, XA_RETRY_ENTRY);
@@ -177,32 +168,29 @@ static noinline void check_xa_mark_1(struct xarray *xa, unsigned long index)
 	unsigned int order;
 	unsigned int max_order = IS_ENABLED(CONFIG_XARRAY_MULTI) ? 8 : 1;
 
-	/* NULL elements have no marks set */
+	 
 	XA_BUG_ON(xa, xa_get_mark(xa, index, XA_MARK_0));
 	xa_set_mark(xa, index, XA_MARK_0);
 	XA_BUG_ON(xa, xa_get_mark(xa, index, XA_MARK_0));
 
-	/* Storing a pointer will not make a mark appear */
+	 
 	XA_BUG_ON(xa, xa_store_index(xa, index, GFP_KERNEL) != NULL);
 	XA_BUG_ON(xa, xa_get_mark(xa, index, XA_MARK_0));
 	xa_set_mark(xa, index, XA_MARK_0);
 	XA_BUG_ON(xa, !xa_get_mark(xa, index, XA_MARK_0));
 
-	/* Setting one mark will not set another mark */
+	 
 	XA_BUG_ON(xa, xa_get_mark(xa, index + 1, XA_MARK_0));
 	XA_BUG_ON(xa, xa_get_mark(xa, index, XA_MARK_1));
 
-	/* Storing NULL clears marks, and they can't be set again */
+	 
 	xa_erase_index(xa, index);
 	XA_BUG_ON(xa, !xa_empty(xa));
 	XA_BUG_ON(xa, xa_get_mark(xa, index, XA_MARK_0));
 	xa_set_mark(xa, index, XA_MARK_0);
 	XA_BUG_ON(xa, xa_get_mark(xa, index, XA_MARK_0));
 
-	/*
-	 * Storing a multi-index entry over entries with marks gives the
-	 * entire entry the union of the marks
-	 */
+	 
 	BUG_ON((index % 4) != 0);
 	for (order = 2; order < max_order; order++) {
 		unsigned long base = round_down(index, 1UL << order);
@@ -225,14 +213,14 @@ static noinline void check_xa_mark_1(struct xarray *xa, unsigned long index)
 			XA_BUG_ON(xa, xa_get_mark(xa, i, XA_MARK_1));
 			XA_BUG_ON(xa, !xa_get_mark(xa, i, XA_MARK_2));
 
-			/* We should see two elements in the array */
+			 
 			rcu_read_lock();
 			xas_for_each(&xas, entry, ULONG_MAX)
 				seen++;
 			rcu_read_unlock();
 			XA_BUG_ON(xa, seen != 2);
 
-			/* One of which is marked */
+			 
 			xas_set(&xas, 0);
 			seen = 0;
 			rcu_read_lock();
@@ -332,10 +320,7 @@ static noinline void check_xa_shrink(struct xarray *xa)
 	XA_BUG_ON(xa, xa_store_index(xa, 0, GFP_KERNEL) != NULL);
 	XA_BUG_ON(xa, xa_store_index(xa, 1, GFP_KERNEL) != NULL);
 
-	/*
-	 * Check that erasing the entry at 1 shrinks the tree and properly
-	 * marks the node as being deleted.
-	 */
+	 
 	xas_lock(&xas);
 	XA_BUG_ON(xa, xas_load(&xas) != xa_mk_value(1));
 	node = xas.xa_node;
@@ -429,7 +414,7 @@ static noinline void check_reserve(struct xarray *xa)
 	unsigned long index;
 	int count;
 
-	/* An array with a reserved entry is not empty */
+	 
 	XA_BUG_ON(xa, !xa_empty(xa));
 	XA_BUG_ON(xa, xa_reserve(xa, 12345678, GFP_KERNEL) != 0);
 	XA_BUG_ON(xa, xa_empty(xa));
@@ -437,14 +422,14 @@ static noinline void check_reserve(struct xarray *xa)
 	xa_release(xa, 12345678);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* Releasing a used entry does nothing */
+	 
 	XA_BUG_ON(xa, xa_reserve(xa, 12345678, GFP_KERNEL) != 0);
 	XA_BUG_ON(xa, xa_store_index(xa, 12345678, GFP_NOWAIT) != NULL);
 	xa_release(xa, 12345678);
 	xa_erase_index(xa, 12345678);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* cmpxchg sees a reserved entry as ZERO */
+	 
 	XA_BUG_ON(xa, xa_reserve(xa, 12345678, GFP_KERNEL) != 0);
 	XA_BUG_ON(xa, xa_cmpxchg(xa, 12345678, XA_ZERO_ENTRY,
 				xa_mk_value(12345678), GFP_NOWAIT) != NULL);
@@ -452,7 +437,7 @@ static noinline void check_reserve(struct xarray *xa)
 	xa_erase_index(xa, 12345678);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* xa_insert treats it as busy */
+	 
 	XA_BUG_ON(xa, xa_reserve(xa, 12345678, GFP_KERNEL) != 0);
 	XA_BUG_ON(xa, xa_insert(xa, 12345678, xa_mk_value(12345678), 0) !=
 			-EBUSY);
@@ -460,7 +445,7 @@ static noinline void check_reserve(struct xarray *xa)
 	XA_BUG_ON(xa, xa_erase(xa, 12345678) != NULL);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* Can iterate through a reserved entry */
+	 
 	xa_store_index(xa, 5, GFP_KERNEL);
 	XA_BUG_ON(xa, xa_reserve(xa, 6, GFP_KERNEL) != 0);
 	xa_store_index(xa, 7, GFP_KERNEL);
@@ -472,7 +457,7 @@ static noinline void check_reserve(struct xarray *xa)
 	}
 	XA_BUG_ON(xa, count != 2);
 
-	/* If we free a reserved entry, we should be able to allocate it */
+	 
 	if (xa->xa_flags & XA_FLAGS_ALLOC) {
 		u32 id;
 
@@ -600,7 +585,7 @@ static noinline void check_multi_store(struct xarray *xa)
 	unsigned long i, j, k;
 	unsigned int max_order = (sizeof(long) == 4) ? 30 : 60;
 
-	/* Loading from any position returns the same value */
+	 
 	xa_store_order(xa, 0, 1, xa_mk_value(0), GFP_KERNEL);
 	XA_BUG_ON(xa, xa_load(xa, 0) != xa_mk_value(0));
 	XA_BUG_ON(xa, xa_load(xa, 1) != xa_mk_value(0));
@@ -610,7 +595,7 @@ static noinline void check_multi_store(struct xarray *xa)
 	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->nr_values != 2);
 	rcu_read_unlock();
 
-	/* Storing adjacent to the value does not alter the value */
+	 
 	xa_store(xa, 3, xa, GFP_KERNEL);
 	XA_BUG_ON(xa, xa_load(xa, 0) != xa_mk_value(0));
 	XA_BUG_ON(xa, xa_load(xa, 1) != xa_mk_value(0));
@@ -620,7 +605,7 @@ static noinline void check_multi_store(struct xarray *xa)
 	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->nr_values != 2);
 	rcu_read_unlock();
 
-	/* Overwriting multiple indexes works */
+	 
 	xa_store_order(xa, 0, 2, xa_mk_value(1), GFP_KERNEL);
 	XA_BUG_ON(xa, xa_load(xa, 0) != xa_mk_value(1));
 	XA_BUG_ON(xa, xa_load(xa, 1) != xa_mk_value(1));
@@ -632,11 +617,11 @@ static noinline void check_multi_store(struct xarray *xa)
 	XA_BUG_ON(xa, xa_to_node(xa_head(xa))->nr_values != 4);
 	rcu_read_unlock();
 
-	/* We can erase multiple values with a single store */
+	 
 	xa_store_order(xa, 0, BITS_PER_LONG - 1, NULL, GFP_KERNEL);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* Even when the first slot is empty but the others aren't */
+	 
 	xa_store_index(xa, 1, GFP_KERNEL);
 	xa_store_index(xa, 2, GFP_KERNEL);
 	xa_store_order(xa, 0, 2, NULL, GFP_KERNEL);
@@ -680,38 +665,38 @@ static noinline void check_xa_alloc_1(struct xarray *xa, unsigned int base)
 	u32 id;
 
 	XA_BUG_ON(xa, !xa_empty(xa));
-	/* An empty array should assign %base to the first alloc */
+	 
 	xa_alloc_index(xa, base, GFP_KERNEL);
 
-	/* Erasing it should make the array empty again */
+	 
 	xa_erase_index(xa, base);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* And it should assign %base again */
+	 
 	xa_alloc_index(xa, base, GFP_KERNEL);
 
-	/* Allocating and then erasing a lot should not lose base */
+	 
 	for (i = base + 1; i < 2 * XA_CHUNK_SIZE; i++)
 		xa_alloc_index(xa, i, GFP_KERNEL);
 	for (i = base; i < 2 * XA_CHUNK_SIZE; i++)
 		xa_erase_index(xa, i);
 	xa_alloc_index(xa, base, GFP_KERNEL);
 
-	/* Destroying the array should do the same as erasing */
+	 
 	xa_destroy(xa);
 
-	/* And it should assign %base again */
+	 
 	xa_alloc_index(xa, base, GFP_KERNEL);
 
-	/* The next assigned ID should be base+1 */
+	 
 	xa_alloc_index(xa, base + 1, GFP_KERNEL);
 	xa_erase_index(xa, base + 1);
 
-	/* Storing a value should mark it used */
+	 
 	xa_store_index(xa, base + 1, GFP_KERNEL);
 	xa_alloc_index(xa, base + 2, GFP_KERNEL);
 
-	/* If we then erase base, it should be free */
+	 
 	xa_erase_index(xa, base);
 	xa_alloc_index(xa, base, GFP_KERNEL);
 
@@ -724,7 +709,7 @@ static noinline void check_xa_alloc_1(struct xarray *xa, unsigned int base)
 
 	xa_destroy(xa);
 
-	/* Check that we fail properly at the limit of allocation */
+	 
 	XA_BUG_ON(xa, xa_alloc(xa, &id, xa_mk_index(UINT_MAX - 1),
 				XA_LIMIT(UINT_MAX - 1, UINT_MAX),
 				GFP_KERNEL) != 0);
@@ -755,7 +740,7 @@ static noinline void check_xa_alloc_2(struct xarray *xa, unsigned int base)
 	unsigned long index;
 	void *entry;
 
-	/* Allocate and free a NULL and check xa_empty() behaves */
+	 
 	XA_BUG_ON(xa, !xa_empty(xa));
 	XA_BUG_ON(xa, xa_alloc(xa, &id, NULL, xa_limit_32b, GFP_KERNEL) != 0);
 	XA_BUG_ON(xa, id != base);
@@ -763,7 +748,7 @@ static noinline void check_xa_alloc_2(struct xarray *xa, unsigned int base)
 	XA_BUG_ON(xa, xa_erase(xa, id) != NULL);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* Ditto, but check destroy instead of erase */
+	 
 	XA_BUG_ON(xa, !xa_empty(xa));
 	XA_BUG_ON(xa, xa_alloc(xa, &id, NULL, xa_limit_32b, GFP_KERNEL) != 0);
 	XA_BUG_ON(xa, id != base);
@@ -830,7 +815,7 @@ static noinline void check_xa_alloc_3(struct xarray *xa, unsigned int base)
 		XA_BUG_ON(xa, xa_mk_index(id) != entry);
 	}
 
-	/* Check wrap-around is handled correctly */
+	 
 	if (base != 0)
 		xa_erase_index(xa, base);
 	xa_erase_index(xa, base + 1);
@@ -1007,10 +992,7 @@ static noinline void check_find_1(struct xarray *xa)
 
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/*
-	 * Check xa_find with all pairs between 0 and 99 inclusive,
-	 * starting at every index between 0 and 99
-	 */
+	 
 	for (i = 0; i < 100; i++) {
 		XA_BUG_ON(xa, xa_store_index(xa, i, GFP_KERNEL) != NULL);
 		xa_set_mark(xa, i, XA_MARK_0);
@@ -1126,7 +1108,7 @@ static noinline void check_find(struct xarray *xa)
 	check_multi_find_3(xa);
 }
 
-/* See find_swap_entry() in mm/shmem.c */
+ 
 static noinline unsigned long xa_find_entry(struct xarray *xa, void *item)
 {
 	XA_STATE(xas, xa, 0);
@@ -1612,10 +1594,7 @@ static void check_align_1(struct xarray *xa, char *name)
 	xa_destroy(xa);
 }
 
-/*
- * We should always be able to store without allocating memory after
- * reserving a slot.
- */
+ 
 static void check_align_2(struct xarray *xa, char *name)
 {
 	int i;
@@ -1703,10 +1682,7 @@ static noinline void check_workingset(struct xarray *xa, unsigned long index)
 	XA_BUG_ON(xa, !xa_empty(xa));
 }
 
-/*
- * Check that the pointer / value / sibling entries are accounted the
- * way we expect them to be.
- */
+ 
 static noinline void check_account(struct xarray *xa)
 {
 #ifdef CONFIG_XARRAY_MULTI
@@ -1762,11 +1738,11 @@ static noinline void check_destroy(struct xarray *xa)
 
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* Destroying an empty array is a no-op */
+	 
 	xa_destroy(xa);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
-	/* Destroying an array with a single entry */
+	 
 	for (index = 0; index < 1000; index++) {
 		xa_store_index(xa, index, GFP_KERNEL);
 		XA_BUG_ON(xa, xa_empty(xa));
@@ -1774,14 +1750,14 @@ static noinline void check_destroy(struct xarray *xa)
 		XA_BUG_ON(xa, !xa_empty(xa));
 	}
 
-	/* Destroying an array with a single entry at ULONG_MAX */
+	 
 	xa_store(xa, ULONG_MAX, xa, GFP_KERNEL);
 	XA_BUG_ON(xa, xa_empty(xa));
 	xa_destroy(xa);
 	XA_BUG_ON(xa, !xa_empty(xa));
 
 #ifdef CONFIG_XARRAY_MULTI
-	/* Destroying an array with a multi-index entry */
+	 
 	xa_store_order(xa, 1 << 11, 11, xa, GFP_KERNEL);
 	XA_BUG_ON(xa, xa_empty(xa));
 	xa_destroy(xa);

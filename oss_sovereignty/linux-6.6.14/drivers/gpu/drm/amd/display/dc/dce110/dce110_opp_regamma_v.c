@@ -1,31 +1,8 @@
-/*
- * Copyright 2012-15 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dm_services.h"
 
-/* include DCE11 register header files */
+ 
 #include "dce/dce_11_0_d.h"
 #include "dce/dce_11_0_sh_mask.h"
 
@@ -111,22 +88,7 @@ static void configure_regamma_mode(struct dce_transform *xfm_dce, uint32_t mode)
 	dm_write_reg(xfm_dce->base.ctx, mmGAMMA_CORR_CONTROL, 0);
 }
 
-/*
- *****************************************************************************
- *  Function: regamma_config_regions_and_segments
- *
- *     build regamma curve by using predefined hw points
- *     uses interface parameters ,like EDID coeff.
- *
- * @param   : parameters   interface parameters
- *  @return void
- *
- *  @note
- *
- *  @see
- *
- *****************************************************************************
- */
+ 
 static void regamma_config_regions_and_segments(
 	struct dce_transform *xfm_dce, const struct pwl_params *params)
 {
@@ -465,7 +427,7 @@ static void program_pwl(struct dce_transform *xfm_dce,
 	dm_write_reg(xfm_dce->base.ctx,
 		mmGAMMA_CORR_LUT_INDEX, 0);
 
-	/* Program REGAMMA_LUT_DATA */
+	 
 	{
 		const uint32_t addr = mmGAMMA_CORR_LUT_DATA;
 		uint32_t i = 0;
@@ -496,21 +458,21 @@ void dce110_opp_program_regamma_pwl_v(
 {
 	struct dce_transform *xfm_dce = TO_DCE_TRANSFORM(xfm);
 
-	/* Setup regions */
+	 
 	regamma_config_regions_and_segments(xfm_dce, params);
 
 	set_bypass_input_gamma(xfm_dce);
 
-	/* Power on gamma LUT memory */
+	 
 	power_on_lut(xfm, true, false, true);
 
-	/* Program PWL */
+	 
 	program_pwl(xfm_dce, params);
 
-	/* program regamma config */
+	 
 	configure_regamma_mode(xfm_dce, 1);
 
-	/* Power return to auto back */
+	 
 	power_on_lut(xfm, false, false, true);
 }
 
@@ -551,5 +513,5 @@ void dce110_opp_set_regamma_mode_v(
 	struct transform *xfm,
 	enum opp_regamma mode)
 {
-	// TODO: need to implement the function
+	
 }

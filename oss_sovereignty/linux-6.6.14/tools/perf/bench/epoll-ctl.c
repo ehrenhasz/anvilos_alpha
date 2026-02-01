@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Davidlohr Bueso.
- *
- * Benchmark the various operations allowed for epoll_ctl(2).
- * The idea is to concurrently stress a single epoll instance
- */
+
+ 
 #ifdef HAVE_EVENTFD_SUPPORT
-/* For the CLR_() macros */
+ 
 #include <string.h>
 #include <pthread.h>
 
@@ -37,11 +32,9 @@ static unsigned int nthreads = 0;
 static unsigned int nsecs    = 8;
 static bool done, __verbose, randomize;
 
-/*
- * epoll related shared variables.
- */
+ 
 
-/* Maximum number of nesting allowed inside epoll sets */
+ 
 #define EPOLL_MAXNESTS 4
 
 enum {
@@ -56,7 +49,7 @@ static int *epollfdp;
 static bool noaffinity;
 static unsigned int nested = 0;
 
-/* amount of fds to monitor, per thread */
+ 
 static unsigned int nfds = 64;
 
 static struct mutex thread_lock;
@@ -91,7 +84,7 @@ static void toggle_done(int sig __maybe_unused,
 			siginfo_t *info __maybe_unused,
 			void *uc __maybe_unused)
 {
-	/* inform all threads that we're done for the day */
+	 
 	done = true;
 	gettimeofday(&bench__end, NULL);
 	timersub(&bench__end, &bench__start, &bench__runtime);
@@ -116,8 +109,8 @@ static void nest_epollfd(void)
 			err(EXIT_FAILURE, "epoll_create");
 	}
 
-	ev.events = EPOLLHUP; /* anything */
-	ev.data.u64 = i; /* any number */
+	ev.events = EPOLLHUP;  
+	ev.data.u64 = i;  
 
 	for (i = nested - 1; i; i--) {
 		if (epoll_ctl(epollfdp[i - 1], EPOLL_CTL_ADD,
@@ -182,9 +175,9 @@ static void *workerfn(void *arg)
 	cond_wait(&thread_worker, &thread_lock);
 	mutex_unlock(&thread_lock);
 
-	/* Let 'em loose */
+	 
 	do {
-		/* random */
+		 
 		if (randomize) {
 			do_random_epoll_op(w);
 		} else {
@@ -251,11 +244,7 @@ static int do_threads(struct worker *worker, struct perf_cpu_map *cpu)
 				err(EXIT_FAILURE, "eventfd");
 		}
 
-		/*
-		 * Lets add 50% of the fdmap to the epoll instance, and
-		 * do it before any threads are started; otherwise there is
-		 * an initial bias of the call failing  (mod and del ops).
-		 */
+		 
 		if (randomize)
 			init_fdmaps(w, 50);
 
@@ -334,18 +323,16 @@ int bench_epoll_ctl(int argc, const char **argv)
 	if (!cpu)
 		goto errmem;
 
-	/* a single, main epoll instance */
+	 
 	epollfd = epoll_create(1);
 	if (epollfd < 0)
 		err(EXIT_FAILURE, "epoll_create");
 
-	/*
-	 * Deal with nested epolls, if any.
-	 */
+	 
 	if (nested)
 		nest_epollfd();
 
-	/* default to the number of CPUs */
+	 
 	if (!nthreads)
 		nthreads = perf_cpu_map__nr(cpu);
 
@@ -394,7 +381,7 @@ int bench_epoll_ctl(int argc, const char **argv)
 			err(EXIT_FAILURE, "pthread_join");
 	}
 
-	/* cleanup & report results */
+	 
 	cond_destroy(&thread_parent);
 	cond_destroy(&thread_worker);
 	mutex_destroy(&thread_lock);
@@ -430,4 +417,4 @@ int bench_epoll_ctl(int argc, const char **argv)
 errmem:
 	err(EXIT_FAILURE, "calloc");
 }
-#endif // HAVE_EVENTFD_SUPPORT
+#endif 

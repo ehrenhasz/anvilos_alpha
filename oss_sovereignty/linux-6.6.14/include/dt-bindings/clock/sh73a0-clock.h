@@ -1,12 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Copyright 2014 Ulrich Hecht
- */
+ 
+ 
 
 #ifndef __DT_BINDINGS_CLOCK_SH73A0_H__
 #define __DT_BINDINGS_CLOCK_SH73A0_H__
 
-/* CPG */
+ 
 #define SH73A0_CLK_MAIN		0
 #define SH73A0_CLK_PLL0		1
 #define SH73A0_CLK_PLL1		2
@@ -23,11 +21,11 @@
 #define SH73A0_CLK_ZX		13
 #define SH73A0_CLK_HP		14
 
-/* MSTP0 */
+ 
 #define SH73A0_CLK_IIC2		1
 #define SH73A0_CLK_MSIOF0	0
 
-/* MSTP1 */
+ 
 #define SH73A0_CLK_CEU1		29
 #define SH73A0_CLK_CSI2_RX1	28
 #define SH73A0_CLK_CEU0		27
@@ -38,7 +36,7 @@
 #define SH73A0_CLK_SGX		12
 #define SH73A0_CLK_LCDC0	0
 
-/* MSTP2 */
+ 
 #define SH73A0_CLK_SCIFA7	19
 #define SH73A0_CLK_SY_DMAC	18
 #define SH73A0_CLK_MP_DMAC	17
@@ -53,7 +51,7 @@
 #define SH73A0_CLK_SCIFA3	1
 #define SH73A0_CLK_SCIFA4	0
 
-/* MSTP3 */
+ 
 #define SH73A0_CLK_SCIFA6	31
 #define SH73A0_CLK_CMT1		29
 #define SH73A0_CLK_FSI		28
@@ -71,12 +69,12 @@
 #define SH73A0_CLK_TPU3		1
 #define SH73A0_CLK_TPU4		0
 
-/* MSTP4 */
+ 
 #define SH73A0_CLK_IIC3		11
 #define SH73A0_CLK_IIC4		10
 #define SH73A0_CLK_KEYSC	3
 
-/* MSTP5 */
+ 
 #define SH73A0_CLK_INTCA0	8
 
 #endif

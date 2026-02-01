@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_GR_PRIV_H__
 #define __NVKM_GR_PRIV_H__
 #define nvkm_gr(p) container_of((p), struct nvkm_gr, engine)
@@ -25,8 +25,7 @@ struct nvkm_gr_func {
 	int (*chan_new)(struct nvkm_gr *, struct nvkm_chan *,
 			const struct nvkm_oclass *, struct nvkm_object **);
 	int (*object_get)(struct nvkm_gr *, int, struct nvkm_sclass *);
-	/* Returns chipset-specific counts of units packed into an u64.
-	 */
+	 
 	u64 (*units)(struct nvkm_gr *);
 	bool (*chsw_load)(struct nvkm_gr *);
 	struct {

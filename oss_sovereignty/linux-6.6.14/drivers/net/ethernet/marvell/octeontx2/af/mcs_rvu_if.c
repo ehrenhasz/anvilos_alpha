@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Marvell CN10K MCS driver
- *
- * Copyright (C) 2022 Marvell.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/device.h>
@@ -42,12 +39,9 @@ void rvu_mcs_ptp_cfg(struct rvu *rvu, u8 rpm_id, u8 lmac_id, bool ena)
 	if (!rvu->mcs_blk_cnt)
 		return;
 
-	/* When ptp is enabled, RPM appends 8B header for all
-	 * RX packets. MCS PEX need to configure to skip 8B
-	 * during packet parsing.
-	 */
+	 
 
-	/* CNF10K-B */
+	 
 	if (rvu->mcs_blk_cnt > 1) {
 		mcs = mcs_get_pdata(rpm_id);
 		cfg = mcs_reg_read(mcs, MCSX_PEX_RX_SLAVE_PEX_CONFIGURATION);
@@ -58,7 +52,7 @@ void rvu_mcs_ptp_cfg(struct rvu *rvu, u8 rpm_id, u8 lmac_id, bool ena)
 		mcs_reg_write(mcs, MCSX_PEX_RX_SLAVE_PEX_CONFIGURATION, cfg);
 		return;
 	}
-	/* CN10KB */
+	 
 	mcs = mcs_get_pdata(0);
 	port = (rpm_id * rvu->hw->lmac_per_cgx) + lmac_id;
 	cfg = mcs_reg_read(mcs, MCSX_PEX_RX_SLAVE_PORT_CFGX(port));
@@ -93,7 +87,7 @@ int mcs_add_intr_wq_entry(struct mcs *mcs, struct mcs_intr_event *event)
 	struct rvu *rvu = mcs->rvu;
 	struct mcs_pfvf *pfvf;
 
-	/* Check if it is PF or VF */
+	 
 	if (pcifunc & RVU_PFVF_FUNC_MASK)
 		pfvf = &mcs->vf[rvu_get_hwvf(rvu, pcifunc)];
 	else
@@ -101,7 +95,7 @@ int mcs_add_intr_wq_entry(struct mcs *mcs, struct mcs_intr_event *event)
 
 	event->intr_mask &= pfvf->intr_mask;
 
-	/* Check PF/VF interrupt notification is enabled */
+	 
 	if (!(pfvf->intr_mask && event->intr_mask))
 		return 0;
 
@@ -160,7 +154,7 @@ static void mcs_intr_handler_task(struct work_struct *work)
 
 		spin_unlock_irqrestore(&rvu->mcs_intrq_lock, flags);
 		if (!qentry)
-			break; /* nothing more to process */
+			break;  
 
 		event = &qentry->intr_event;
 
@@ -182,7 +176,7 @@ int rvu_mbox_handler_mcs_intr_cfg(struct rvu *rvu,
 
 	mcs = mcs_get_pdata(req->mcs_id);
 
-	/* Check if it is PF or VF */
+	 
 	if (pcifunc & RVU_PFVF_FUNC_MASK)
 		pfvf = &mcs->vf[rvu_get_hwvf(rvu, pcifunc)];
 	else
@@ -203,7 +197,7 @@ int rvu_mbox_handler_mcs_get_hw_info(struct rvu *rvu,
 	if (!rvu->mcs_blk_cnt)
 		return MCS_AF_ERR_NOT_MAPPED;
 
-	/* MCS resources are same across all blocks */
+	 
 	mcs = mcs_get_pdata(0);
 	rsp->num_mcs_blks = rvu->mcs_blk_cnt;
 	rsp->tcam_entries = mcs->hw->tcam_entries;
@@ -261,10 +255,7 @@ int rvu_mbox_handler_mcs_get_flowid_stats(struct rvu *rvu,
 
 	mcs = mcs_get_pdata(req->mcs_id);
 
-	/* In CNF10K-B, before reading the statistics,
-	 * MCSX_MIL_GLOBAL.FORCE_CLK_EN_IP needs to be set
-	 * to get accurate statistics
-	 */
+	 
 	if (mcs->hw->mcs_blks > 1)
 		mcs_set_force_clk_en(mcs, true);
 
@@ -272,9 +263,7 @@ int rvu_mbox_handler_mcs_get_flowid_stats(struct rvu *rvu,
 	mcs_get_flowid_stats(mcs, rsp, req->id, req->dir);
 	mutex_unlock(&mcs->stats_lock);
 
-	/* Clear MCSX_MIL_GLOBAL.FORCE_CLK_EN_IP after reading
-	 * the statistics
-	 */
+	 
 	if (mcs->hw->mcs_blks > 1)
 		mcs_set_force_clk_en(mcs, false);
 
@@ -455,7 +444,7 @@ int rvu_mcs_flr_handler(struct rvu *rvu, u16 pcifunc)
 	struct mcs *mcs;
 	int mcs_id;
 
-	/* CNF10K-B mcs0-6 are mapped to RPM2-8*/
+	 
 	if (rvu->mcs_blk_cnt > 1) {
 		for (mcs_id = 0; mcs_id < rvu->mcs_blk_cnt; mcs_id++) {
 			mcs = mcs_get_pdata(mcs_id);
@@ -463,7 +452,7 @@ int rvu_mcs_flr_handler(struct rvu *rvu, u16 pcifunc)
 			mcs_free_all_rsrc(mcs, MCS_TX, pcifunc);
 		}
 	} else {
-		/* CN10K-B has only one mcs block */
+		 
 		mcs = mcs_get_pdata(0);
 		mcs_free_all_rsrc(mcs, MCS_RX, pcifunc);
 		mcs_free_all_rsrc(mcs, MCS_TX, pcifunc);
@@ -604,7 +593,7 @@ int rvu_mbox_handler_mcs_flowid_entry_write(struct rvu *rvu,
 
 	mcs = mcs_get_pdata(req->mcs_id);
 
-	/* TODO validate the flowid */
+	 
 	mcs_flowid_entry_write(mcs, req->data, req->mask,
 			       req->flow_id, req->dir);
 	map.secy = req->secy_id;
@@ -639,7 +628,7 @@ int rvu_mbox_handler_mcs_free_resources(struct rvu *rvu,
 		map = &mcs->tx;
 
 	mutex_lock(&rvu->rsrc_lock);
-	/* Free all the cam resources mapped to PF/VF */
+	 
 	if (req->all) {
 		rc = mcs_free_all_rsrc(mcs, req->dir, pcifunc);
 		goto exit;
@@ -656,7 +645,7 @@ int rvu_mbox_handler_mcs_free_resources(struct rvu *rvu,
 		break;
 	case MCS_RSRC_TYPE_SC:
 		rc = mcs_free_rsrc(&map->sc, map->sc2pf_map, req->rsrc_id, pcifunc);
-		/* Disable SC CAM only on RX side */
+		 
 		if (req->dir == MCS_RX)
 			mcs_ena_dis_sc_cam_entry(mcs, req->rsrc_id, false);
 		break;
@@ -873,16 +862,16 @@ int rvu_mcs_init(struct rvu *rvu)
 	if (!rvu->mcs_blk_cnt)
 		return 0;
 
-	/* Needed only for CN10K-B */
+	 
 	if (rvu->mcs_blk_cnt == 1) {
 		err = mcs_set_lmac_channels(0, hw->cgx_chan_base);
 		if (err)
 			return err;
-		/* Set active lmacs */
+		 
 		rvu_mcs_set_lmac_bmap(rvu);
 	}
 
-	/* Install default tcam bypass entry and set port to operational mode */
+	 
 	for (mcs_id = 0; mcs_id < rvu->mcs_blk_cnt; mcs_id++) {
 		mcs = mcs_get_pdata(mcs_id);
 		mcs_install_flowid_bypass_entry(mcs);
@@ -891,7 +880,7 @@ int rvu_mcs_init(struct rvu *rvu)
 
 		mcs->rvu = rvu;
 
-		/* Allocated memory for PFVF data */
+		 
 		mcs->pf = devm_kcalloc(mcs->dev, hw->total_pfs,
 				       sizeof(struct mcs_pfvf), GFP_KERNEL);
 		if (!mcs->pf)
@@ -903,7 +892,7 @@ int rvu_mcs_init(struct rvu *rvu)
 			return -ENOMEM;
 	}
 
-	/* Initialize the wq for handling mcs interrupts */
+	 
 	INIT_LIST_HEAD(&rvu->mcs_intrq_head);
 	INIT_WORK(&rvu->mcs_intr_work, mcs_intr_handler_task);
 	rvu->mcs_intr_wq = alloc_workqueue("mcs_intr_wq", 0, 0);

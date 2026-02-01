@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2009-2010  Realtek Corporation.*/
+ 
+ 
 
 #ifndef __RTL8821AE__FW__H__
 #define __RTL8821AE__FW__H__
@@ -35,15 +35,7 @@
 #define H2C_8821AE_AOAC_RSVDPAGE_LOC_LEN	7
 #define H2C_8821AE_DISCONNECT_DECISION_CTRL_LEN	3
 
-/* Fw PS state for RPWM.
-*BIT[2:0] = HW state
-
-*BIT[3] = Protocol PS state,
-1: register active state ,
-0: register sleep state
-
-*BIT[4] = sub-state
-*/
+ 
 #define	FW_PS_GO_ON			BIT(0)
 #define	FW_PS_TX_NULL			BIT(1)
 #define	FW_PS_RF_ON			BIT(2)
@@ -60,16 +52,16 @@
 #define	FW_PS_ACK		BIT(6)
 #define	FW_PS_TOGGLE		BIT(7)
 
- /* 8821AE RPWM value*/
- /* BIT[0] = 1: 32k, 0: 40M*/
- /* 32k*/
+  
+  
+  
 #define	FW_PS_CLOCK_OFF		BIT(0)
-/*40M*/
+ 
 #define	FW_PS_CLOCK_ON		0
 
 #define	FW_PS_STATE_MASK		(0x0F)
 #define	FW_PS_STATE_HW_MASK	(0x07)
-/*ISR_ENABLE, IMR_ENABLE, and PS mode should be inherited.*/
+ 
 #define	FW_PS_STATE_INT_MASK	(0x3F)
 
 #define	FW_PS_STATE(x)			(FW_PS_STATE_MASK & (x))
@@ -84,13 +76,13 @@
 #define	FW_PS_STATE_S2		(FW_PS_RF_OFF)
 #define	FW_PS_STATE_S3		(FW_PS_ALL_ON)
 #define	FW_PS_STATE_S4		((FW_PS_ST_ACTIVE) | (FW_PS_ALL_ON))
- /* ((FW_PS_RF_ON) | (FW_PS_REGISTER_ACTIVE))*/
+  
 #define	FW_PS_STATE_ALL_ON_8821AE	(FW_PS_CLOCK_ON)
- /* (FW_PS_RF_ON)*/
+  
 #define	FW_PS_STATE_RF_ON_8821AE	(FW_PS_CLOCK_ON)
- /* 0x0*/
+  
 #define	FW_PS_STATE_RF_OFF_8821AE	(FW_PS_CLOCK_ON)
- /* (FW_PS_STATE_RF_OFF)*/
+  
 #define	FW_PS_STATE_RF_OFF_LOW_PWR_8821AE	(FW_PS_CLOCK_OFF)
 
 #define	FW_PS_STATE_ALL_ON_92C	(FW_PS_STATE_S4)
@@ -98,7 +90,7 @@
 #define	FW_PS_STATE_RF_OFF_92C	(FW_PS_STATE_S2)
 #define	FW_PS_STATE_RF_OFF_LOW_PWR_92C	(FW_PS_STATE_S1)
 
-/* For 8821AE H2C PwrMode Cmd ID 5.*/
+ 
 #define	FW_PWR_STATE_ACTIVE	((FW_PS_RF_ON) | (FW_PS_REGISTER_ACTIVE))
 #define	FW_PWR_STATE_RF_OFF	0
 
@@ -143,7 +135,7 @@ enum rtl8821a_h2c_cmd {
 	H2C_8821AE_SELECTIVE_SUSPEND_ROF_CMD,
 	H2C_8821AE_P2P_PS_MODE,
 	H2C_8821AE_PSD_RESULT,
-	/*Not defined CTW CMD for P2P yet*/
+	 
 	H2C_8821AE_P2P_PS_CTW_CMD,
 	MAX_8821AE_H2CCMD
 };
@@ -195,13 +187,13 @@ enum rtl8821a_h2c_cmd {
 #define SET_H2CCMD_RSVDPAGE_LOC_BT_QOS_NULL_DATA(__ph2ccmd, __val)	\
 	*(u8 *)(__ph2ccmd + 4) = __val
 
-/* _MEDIA_STATUS_RPT_PARM_CMD1 */
+ 
 #define SET_H2CCMD_MSRRPT_PARM_OPMODE(__cmd, __value)	\
 	u8p_replace_bits(__cmd + 1, __value, BIT(0))
 #define SET_H2CCMD_MSRRPT_PARM_MACID_IND(__cmd, __value)	\
 	u8p_replace_bits(__cmd + 1, __value, BIT(1))
 
-/* AP_OFFLOAD */
+ 
 #define SET_H2CCMD_AP_OFFLOAD_ON(__cmd, __value)	\
 	*(u8 *)__cmd = __value
 #define SET_H2CCMD_AP_OFFLOAD_HIDDEN(__cmd, __value)	\
@@ -211,7 +203,7 @@ enum rtl8821a_h2c_cmd {
 #define SET_H2CCMD_AP_OFFLOAD_WAKEUP_EVT_RPT(__cmd, __value) \
 	*(u8 *)(__cmd + 3) = __value
 
-/* Keep Alive Control*/
+ 
 #define SET_8812_H2CCMD_KEEP_ALIVE_ENABLE(__cmd, __value)	\
 	u8p_replace_bits(__cmd, __value, BIT(0))
 #define SET_8812_H2CCMD_KEEP_ALIVE_ACCPEPT_USER_DEFINED(__cmd, __value)	\
@@ -219,7 +211,7 @@ enum rtl8821a_h2c_cmd {
 #define SET_8812_H2CCMD_KEEP_ALIVE_PERIOD(__cmd, __value)	\
 	*(u8 *)(__cmd + 1) = __value
 
-/*REMOTE_WAKE_CTRL */
+ 
 #define SET_8812_H2CCMD_REMOTE_WAKECTRL_ENABLE(__cmd, __value)	\
 	u8p_replace_bits(__cmd, __value, BIT(0))
 #define SET_8812_H2CCMD_REMOTE_WAKE_CTRL_ARP_OFFLOAD_EN(__cmd, __value)\
@@ -231,13 +223,13 @@ enum rtl8821a_h2c_cmd {
 #define SET_8812_H2CCMD_REMOTE_WAKE_CTRL_REALWOWV2_EN(__cmd, __value)\
 	u8p_replace_bits(__cmd, __value, BIT(6))
 
-/* GTK_OFFLOAD */
+ 
 #define SET_8812_H2CCMD_AOAC_GLOBAL_INFO_PAIRWISE_ENC_ALG(__cmd, __value)\
 	*(u8 *)__cmd = __value
 #define SET_8812_H2CCMD_AOAC_GLOBAL_INFO_GROUP_ENC_ALG(__cmd, __value)	\
 	*(u8 *)(__cmd + 1) = __value
 
-/* AOAC_RSVDPAGE_LOC */
+ 
 #define SET_8821AE_H2CCMD_AOAC_RSVDPAGE_LOC_REMOTE_WAKE_CTRL_INFO(__cmd, __value)	\
 	*(u8 *)__cmd = __value
 #define SET_8821AE_H2CCMD_AOAC_RSVDPAGE_LOC_ARP_RSP(__cmd, __value)	\
@@ -251,7 +243,7 @@ enum rtl8821a_h2c_cmd {
 #define SET_8821AE_H2CCMD_AOAC_RSVDPAGE_LOC_GTK_EXT_MEM(__cmd, __value)	\
 	*(u8 *)(__cmd + 5) = __value
 
-/* Disconnect_Decision_Control */
+ 
 #define SET_8812_H2CCMD_DISCONNECT_DECISION_CTRL_ENABLE(__cmd, __value)	\
 	u8p_replace_bits(__cmd, __value, BIT(0))
 #define SET_8812_H2CCMD_DISCONNECT_DECISION_CTRL_USER_SETTING(__cmd, __value)\

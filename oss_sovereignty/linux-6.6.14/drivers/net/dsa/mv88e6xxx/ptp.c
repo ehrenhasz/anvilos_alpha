@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Marvell 88E6xxx Switch PTP support
- *
- * Copyright (c) 2008 Marvell Semiconductor
- *
- * Copyright (c) 2017 National Instruments
- *      Erik Hons <erik.hons@ni.com>
- *      Brandon Streiff <brandon.streiff@ni.com>
- *      Dane Wagner <dane.wagner@ni.com>
- */
+
+ 
 
 #include "chip.h"
 #include "global1.h"
@@ -18,25 +9,13 @@
 
 #define MV88E6XXX_MAX_ADJ_PPB	1000000
 
-/* Family MV88E6250:
- * Raw timestamps are in units of 10-ns clock periods.
- *
- * clkadj = scaled_ppm * 10*2^28 / (10^6 * 2^16)
- * simplifies to
- * clkadj = scaled_ppm * 2^7 / 5^5
- */
+ 
 #define MV88E6250_CC_SHIFT	28
 #define MV88E6250_CC_MULT	(10 << MV88E6250_CC_SHIFT)
 #define MV88E6250_CC_MULT_NUM	(1 << 7)
 #define MV88E6250_CC_MULT_DEM	3125ULL
 
-/* Other families:
- * Raw timestamps are in units of 8-ns clock periods.
- *
- * clkadj = scaled_ppm * 8*2^28 / (10^6 * 2^16)
- * simplifies to
- * clkadj = scaled_ppm * 2^9 / 5^6
- */
+ 
 #define MV88E6XXX_CC_SHIFT	28
 #define MV88E6XXX_CC_MULT	(8 << MV88E6XXX_CC_SHIFT)
 #define MV88E6XXX_CC_MULT_NUM	(1 << 9)
@@ -67,7 +46,7 @@ static int mv88e6xxx_tai_write(struct mv88e6xxx_chip *chip, int addr, u16 data)
 	return chip->info->ops->avb_ops->tai_write(chip, addr, data);
 }
 
-/* TODO: places where this are called should be using pinctrl */
+ 
 static int mv88e6352_set_gpio_func(struct mv88e6xxx_chip *chip, int pin,
 				   int func, int input)
 {
@@ -111,12 +90,7 @@ static u64 mv88e6165_ptp_clock_read(const struct cyclecounter *cc)
 		return ((u32)phc_time[1] << 16) | phc_time[0];
 }
 
-/* mv88e6352_config_eventcap - configure TAI event capture
- * @event: PTP_CLOCK_PPS (internal) or PTP_CLOCK_EXTTS (external)
- * @rising: zero for falling-edge trigger, else rising-edge trigger
- *
- * This will also reset the capture sequence counter.
- */
+ 
 static int mv88e6352_config_eventcap(struct mv88e6xxx_chip *chip, int event,
 				     int rising)
 {
@@ -137,13 +111,13 @@ static int mv88e6352_config_eventcap(struct mv88e6xxx_chip *chip, int event,
 	if (event == PTP_CLOCK_PPS) {
 		cap_config = MV88E6XXX_TAI_EVENT_STATUS_CAP_TRIG;
 	} else if (event == PTP_CLOCK_EXTTS) {
-		/* if STATUS_CAP_TRIG is unset we capture PTP_EVREQ events */
+		 
 		cap_config = 0;
 	} else {
 		return -EINVAL;
 	}
 
-	/* Write the capture config; this also clears the capture counter */
+	 
 	err = mv88e6xxx_tai_write(chip, MV88E6XXX_TAI_EVENT_STATUS,
 				  cap_config);
 
@@ -177,16 +151,16 @@ static void mv88e6352_tai_event_work(struct work_struct *ugly)
 
 	raw_ts = ((u32)status[2] << 16) | status[1];
 
-	/* Clear the valid bit so the next timestamp can come in */
+	 
 	status[0] &= ~MV88E6XXX_TAI_EVENT_STATUS_VALID;
 	mv88e6xxx_reg_lock(chip);
 	err = mv88e6xxx_tai_write(chip, MV88E6XXX_TAI_EVENT_STATUS, status[0]);
 	mv88e6xxx_reg_unlock(chip);
 
-	/* This is an external timestamp */
+	 
 	ev.type = PTP_CLOCK_EXTTS;
 
-	/* We only have one timestamping channel. */
+	 
 	ev.index = 0;
 	mv88e6xxx_reg_lock(chip);
 	ev.timestamp = timecounter_cyc2time(&chip->tstamp_tc, raw_ts);
@@ -274,14 +248,14 @@ static int mv88e6352_ptp_enable_extts(struct mv88e6xxx_chip *chip,
 	int pin;
 	int err;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
 				PTP_RISING_EDGE |
 				PTP_FALLING_EDGE |
 				PTP_STRICT_FLAGS))
 		return -EOPNOTSUPP;
 
-	/* Reject requests to enable time stamping on both edges. */
+	 
 	if ((rq->extts.flags & PTP_STRICT_FLAGS) &&
 	    (rq->extts.flags & PTP_ENABLE_FEATURE) &&
 	    (rq->extts.flags & PTP_EXTTS_EDGES) == PTP_EXTTS_EDGES)
@@ -458,9 +432,7 @@ static u64 mv88e6xxx_ptp_clock_read(const struct cyclecounter *cc)
 	return 0;
 }
 
-/* With a 125MHz input clock, the 32-bit timestamp counter overflows in ~34.3
- * seconds; this task forces periodic reads so that we don't miss any.
- */
+ 
 #define MV88E6XXX_TAI_OVERFLOW_PERIOD (HZ * 16)
 static void mv88e6xxx_ptp_overflow_check(struct work_struct *work)
 {
@@ -479,7 +451,7 @@ int mv88e6xxx_ptp_setup(struct mv88e6xxx_chip *chip)
 	const struct mv88e6xxx_ptp_ops *ptp_ops = chip->info->ops->ptp_ops;
 	int i;
 
-	/* Set up the cycle counter */
+	 
 	memset(&chip->tstamp_cc, 0, sizeof(chip->tstamp_cc));
 	chip->tstamp_cc.read	= mv88e6xxx_ptp_clock_read;
 	chip->tstamp_cc.mask	= CYCLECOUNTER_MASK(32);

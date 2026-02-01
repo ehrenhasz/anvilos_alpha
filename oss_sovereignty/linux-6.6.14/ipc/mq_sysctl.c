@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2007 IBM Corporation
- *
- *  Author: Cedric Le Goater <clg@fr.ibm.com>
- */
+
+ 
 
 #include <linux/nsproxy.h>
 #include <linux/ipc_namespace.h>

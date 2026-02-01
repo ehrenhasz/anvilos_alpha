@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (c) by Jaroslav Kysela <perex@perex.cz>
- *  Routines for control of YMF724/740/744/754 chips
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -25,9 +22,7 @@
 
 #include <asm/byteorder.h>
 
-/*
- *  common I/O routines
- */
+ 
 
 static void snd_ymfpci_irq_wait(struct snd_ymfpci *chip);
 
@@ -100,9 +95,7 @@ static u16 snd_ymfpci_codec_read(struct snd_ac97 *ac97, u16 reg)
 	return snd_ymfpci_readw(chip, YDSXGR_PRISTATUSDATA);
 }
 
-/*
- *  Misc routines
- */
+ 
 
 static u32 snd_ymfpci_calc_delta(u32 rate)
 {
@@ -130,7 +123,7 @@ static u32 snd_ymfpci_calc_lpfK(u32 rate)
 	};
 	
 	if (rate == 44100)
-		return 0x40000000;	/* FIXME: What's the right value? */
+		return 0x40000000;	 
 	for (i = 0; i < 8; i++)
 		if (rate <= def_rate[i])
 			return val[i];
@@ -153,9 +146,7 @@ static u32 snd_ymfpci_calc_lpfQ(u32 rate)
 	return val[0];
 }
 
-/*
- *  Hardware start management
- */
+ 
 
 static void snd_ymfpci_hw_start(struct snd_ymfpci *chip)
 {
@@ -193,9 +184,7 @@ static void snd_ymfpci_hw_stop(struct snd_ymfpci *chip)
       	spin_unlock_irqrestore(&chip->reg_lock, flags);
 }
 
-/*
- *  Playback voice management
- */
+ 
 
 static int voice_alloc(struct snd_ymfpci *chip,
 		       enum snd_ymfpci_voice_type type, int pair,
@@ -252,7 +241,7 @@ static int snd_ymfpci_voice_alloc(struct snd_ymfpci *chip,
 		result = voice_alloc(chip, type, pair, rvoice);
 		if (result == 0 || type != YMFPCI_PCM)
 			break;
-		/* TODO: synth/midi voice deallocation */
+		 
 		break;
 	}
 	spin_unlock_irqrestore(&chip->voice_lock, flags);	
@@ -278,9 +267,7 @@ static int snd_ymfpci_voice_free(struct snd_ymfpci *chip, struct snd_ymfpci_voic
 	return 0;
 }
 
-/*
- *  PCM part
- */
+ 
 
 static void snd_ymfpci_pcm_interrupt(struct snd_ymfpci *chip, struct snd_ymfpci_voice *voice)
 {
@@ -302,12 +289,7 @@ static void snd_ymfpci_pcm_interrupt(struct snd_ymfpci *chip, struct snd_ymfpci_
 		ypcm->period_pos += delta;
 		ypcm->last_pos = pos;
 		if (ypcm->period_pos >= ypcm->period_size) {
-			/*
-			dev_dbg(chip->card->dev,
-			       "done - active_bank = 0x%x, start = 0x%x\n",
-			       chip->active_bank,
-			       voice->bank[chip->active_bank].start);
-			*/
+			 
 			ypcm->period_pos %= ypcm->period_size;
 			spin_unlock(&chip->reg_lock);
 			snd_pcm_period_elapsed(ypcm->substream);
@@ -355,12 +337,7 @@ static void snd_ymfpci_pcm_capture_interrupt(struct snd_pcm_substream *substream
 		ypcm->last_pos = pos;
 		if (ypcm->period_pos >= ypcm->period_size) {
 			ypcm->period_pos %= ypcm->period_size;
-			/*
-			dev_dbg(chip->card->dev,
-			       "done - active_bank = 0x%x, start = 0x%x\n",
-			       chip->active_bank,
-			       voice->bank[chip->active_bank].start);
-			*/
+			 
 			spin_unlock(&chip->reg_lock);
 			snd_pcm_period_elapsed(substream);
 			spin_lock(&chip->reg_lock);
@@ -455,9 +432,9 @@ static int snd_ymfpci_pcm_voice_alloc(struct snd_ymfpci_pcm *ypcm, int voices)
 		ypcm->voices[1] = NULL;
 	}
 	if (voices == 1 && ypcm->voices[0] != NULL)
-		return 0;		/* already allocated */
+		return 0;		 
 	if (voices == 2 && ypcm->voices[0] != NULL && ypcm->voices[1] != NULL)
-		return 0;		/* already allocated */
+		return 0;		 
 	if (voices > 1) {
 		if (ypcm->voices[0] != NULL && ypcm->voices[1] == NULL) {
 			snd_ymfpci_voice_free(ypcm->chip, ypcm->voices[0]);
@@ -564,10 +541,7 @@ static void snd_ymfpci_pcm_init_voice(struct snd_ymfpci_pcm *ypcm, unsigned int 
         				bank->eff3_gain_end = vol_right;
         			}
 		        } else {
-        			/* The SPDIF out channels seem to be swapped, so we have
-        			 * to swap them here, too.  The rear analog out channels
-        			 * will be wrong, but otherwise AC3 would not work.
-        			 */
+        			 
         			if (use_left) {
         				bank->eff3_gain =
         				bank->eff3_gain_end = vol_left;
@@ -609,7 +583,7 @@ static int snd_ymfpci_ac3_done(struct snd_ymfpci *chip)
 	snd_ymfpci_writel(chip, YDSXGR_MAPOFEFFECT,
 			  snd_ymfpci_readl(chip, YDSXGR_MAPOFEFFECT) & ~(3 << 3));
 	spin_unlock_irq(&chip->reg_lock);
-	// snd_ymfpci_irq_wait(chip);
+	 
 	if (chip->ac3_tmp_base.area) {
 		snd_dma_free_pages(&chip->ac3_tmp_base);
 		chip->ac3_tmp_base.area = NULL;
@@ -640,7 +614,7 @@ static int snd_ymfpci_playback_hw_free(struct snd_pcm_substream *substream)
 		return 0;
 	ypcm = runtime->private_data;
 
-	/* wait, until the PCI operations are not finished */
+	 
 	snd_ymfpci_irq_wait(chip);
 	if (ypcm->voices[1]) {
 		snd_ymfpci_voice_free(chip, ypcm->voices[1]);
@@ -681,7 +655,7 @@ static int snd_ymfpci_capture_hw_free(struct snd_pcm_substream *substream)
 {
 	struct snd_ymfpci *chip = snd_pcm_substream_chip(substream);
 
-	/* wait, until the PCI operations are not finished */
+	 
 	snd_ymfpci_irq_wait(chip);
 	return 0;
 }
@@ -833,9 +807,9 @@ static const struct snd_pcm_hardware snd_ymfpci_playback =
 	.rate_max =		48000,
 	.channels_min =		1,
 	.channels_max =		2,
-	.buffer_bytes_max =	256 * 1024, /* FIXME: enough? */
+	.buffer_bytes_max =	256 * 1024,  
 	.period_bytes_min =	64,
-	.period_bytes_max =	256 * 1024, /* FIXME: enough? */
+	.period_bytes_max =	256 * 1024,  
 	.periods_min =		3,
 	.periods_max =		1024,
 	.fifo_size =		0,
@@ -855,9 +829,9 @@ static const struct snd_pcm_hardware snd_ymfpci_capture =
 	.rate_max =		48000,
 	.channels_min =		1,
 	.channels_max =		2,
-	.buffer_bytes_max =	256 * 1024, /* FIXME: enough? */
+	.buffer_bytes_max =	256 * 1024,  
 	.period_bytes_min =	64,
-	.period_bytes_max =	256 * 1024, /* FIXME: enough? */
+	.period_bytes_max =	256 * 1024,  
 	.periods_min =		3,
 	.periods_max =		1024,
 	.fifo_size =		0,
@@ -876,7 +850,7 @@ static int snd_ymfpci_playback_open_1(struct snd_pcm_substream *substream)
 	int err;
 
 	runtime->hw = snd_ymfpci_playback;
-	/* FIXME? True value is 256/48 = 5.33333 ms */
+	 
 	err = snd_pcm_hw_constraint_minmax(runtime,
 					   SNDRV_PCM_HW_PARAM_PERIOD_TIME,
 					   5334, UINT_MAX);
@@ -897,20 +871,20 @@ static int snd_ymfpci_playback_open_1(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* call with spinlock held */
+ 
 static void ymfpci_open_extension(struct snd_ymfpci *chip)
 {
 	if (! chip->rear_opened) {
-		if (! chip->spdif_opened) /* set AC3 */
+		if (! chip->spdif_opened)  
 			snd_ymfpci_writel(chip, YDSXGR_MODE,
 					  snd_ymfpci_readl(chip, YDSXGR_MODE) | (1 << 30));
-		/* enable second codec (4CHEN) */
+		 
 		snd_ymfpci_writew(chip, YDSXGR_SECCONFIG,
 				  (snd_ymfpci_readw(chip, YDSXGR_SECCONFIG) & ~0x0330) | 0x0010);
 	}
 }
 
-/* call with spinlock held */
+ 
 static void ymfpci_close_extension(struct snd_ymfpci *chip)
 {
 	if (! chip->rear_opened) {
@@ -1004,7 +978,7 @@ static int snd_ymfpci_capture_open(struct snd_pcm_substream *substream,
 	int err;
 
 	runtime->hw = snd_ymfpci_capture;
-	/* FIXME? True value is 256/48 = 5.33333 ms */
+	 
 	err = snd_pcm_hw_constraint_minmax(runtime,
 					   SNDRV_PCM_HW_PARAM_PERIOD_TIME,
 					   5334, UINT_MAX);
@@ -1132,7 +1106,7 @@ int snd_ymfpci_pcm(struct snd_ymfpci *chip, int device)
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_ymfpci_playback_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_ymfpci_capture_rec_ops);
 
-	/* global setup */
+	 
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "YMFPCI");
 	chip->pcm = pcm;
@@ -1165,7 +1139,7 @@ int snd_ymfpci_pcm2(struct snd_ymfpci *chip, int device)
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &snd_ymfpci_capture_ac97_ops);
 
-	/* global setup */
+	 
 	pcm->info_flags = 0;
 	sprintf(pcm->name, "YMFPCI - %s",
 		chip->device_id == PCI_DEVICE_ID_YAMAHA_754 ? "Direct Recording" : "AC'97");
@@ -1199,7 +1173,7 @@ int snd_ymfpci_pcm_spdif(struct snd_ymfpci *chip, int device)
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_ymfpci_playback_spdif_ops);
 
-	/* global setup */
+	 
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "YMFPCI - IEC958");
 	chip->pcm_spdif = pcm;
@@ -1240,7 +1214,7 @@ int snd_ymfpci_pcm_4ch(struct snd_ymfpci *chip, int device)
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_ymfpci_playback_4ch_ops);
 
-	/* global setup */
+	 
 	pcm->info_flags = 0;
 	strcpy(pcm->name, "YMFPCI - Rear PCM");
 	chip->pcm_4ch = pcm;
@@ -1422,9 +1396,7 @@ static const struct snd_kcontrol_new snd_ymfpci_drec_source = {
 	.put =		snd_ymfpci_drec_source_put
 };
 
-/*
- *  Mixer controls
- */
+ 
 
 #define YMFPCI_SINGLE(xname, xindex, reg, shift) \
 { .iface = SNDRV_CTL_ELEM_IFACE_MIXER, .name = xname, .index = xindex, \
@@ -1561,9 +1533,7 @@ static int snd_ymfpci_put_nativedacvol(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/*
- * 4ch duplication
- */
+ 
 #define snd_ymfpci_info_dup4ch		snd_ctl_boolean_mono_info
 
 static int snd_ymfpci_get_dup4ch(struct snd_kcontrol *kcontrol, struct snd_ctl_elem_value *ucontrol)
@@ -1622,9 +1592,7 @@ YMFPCI_SINGLE(SNDRV_CTL_NAME_IEC958("Loop",NONE,NONE), 0, YDSXGR_SPDIFINCTRL, 4)
 };
 
 
-/*
- * GPIO
- */
+ 
 
 static int snd_ymfpci_get_gpio_out(struct snd_ymfpci *chip, int pin)
 {
@@ -1636,7 +1604,7 @@ static int snd_ymfpci_get_gpio_out(struct snd_ymfpci *chip, int pin)
 	reg &= ~(1 << (pin + 8));
 	reg |= (1 << pin);
 	snd_ymfpci_writew(chip, YDSXGR_GPIOFUNCENABLE, reg);
-	/* set the level mode for input line */
+	 
 	mode = snd_ymfpci_readw(chip, YDSXGR_GPIOTYPECONFIG);
 	mode &= ~(3 << (pin * 2));
 	snd_ymfpci_writew(chip, YDSXGR_GPIOTYPECONFIG, mode);
@@ -1695,9 +1663,7 @@ static const struct snd_kcontrol_new snd_ymfpci_rear_shared = {
 	.private_value = 2,
 };
 
-/*
- * PCM voice volume
- */
+ 
 
 static int snd_ymfpci_pcm_vol_info(struct snd_kcontrol *kcontrol,
 				   struct snd_ctl_elem_info *uinfo)
@@ -1761,9 +1727,7 @@ static const struct snd_kcontrol_new snd_ymfpci_pcm_volume = {
 };
 
 
-/*
- *  Mixer routines
- */
+ 
 
 static void snd_ymfpci_mixer_free_ac97_bus(struct snd_ac97_bus *bus)
 {
@@ -1793,7 +1757,7 @@ int snd_ymfpci_mixer(struct snd_ymfpci *chip, int rear_switch)
 	if (err < 0)
 		return err;
 	chip->ac97_bus->private_free = snd_ymfpci_mixer_free_ac97_bus;
-	chip->ac97_bus->no_vra = 1; /* YMFPCI doesn't need VRA */
+	chip->ac97_bus->no_vra = 1;  
 
 	memset(&ac97, 0, sizeof(ac97));
 	ac97.private_data = chip;
@@ -1802,7 +1766,7 @@ int snd_ymfpci_mixer(struct snd_ymfpci *chip, int rear_switch)
 	if (err < 0)
 		return err;
 
-	/* to be sure */
+	 
 	snd_ac97_update_bits(chip->ac97, AC97_EXTENDED_STATUS,
 			     AC97_EA_VRA|AC97_EA_VRM, 0);
 
@@ -1818,7 +1782,7 @@ int snd_ymfpci_mixer(struct snd_ymfpci *chip, int rear_switch)
 			return err;
 	}
 
-	/* add S/PDIF control */
+	 
 	if (snd_BUG_ON(!chip->pcm_spdif))
 		return -ENXIO;
 	kctl = snd_ctl_new1(&snd_ymfpci_spdif_default, chip);
@@ -1838,7 +1802,7 @@ int snd_ymfpci_mixer(struct snd_ymfpci *chip, int rear_switch)
 		return err;
 	chip->spdif_pcm_ctl = kctl;
 
-	/* direct recording source */
+	 
 	if (chip->device_id == PCI_DEVICE_ID_YAMAHA_754) {
 		kctl = snd_ctl_new1(&snd_ymfpci_drec_source, chip);
 		err = snd_ctl_add(chip->card, kctl);
@@ -1846,16 +1810,14 @@ int snd_ymfpci_mixer(struct snd_ymfpci *chip, int rear_switch)
 			return err;
 	}
 
-	/*
-	 * shared rear/line-in
-	 */
+	 
 	if (rear_switch) {
 		err = snd_ctl_add(chip->card, snd_ctl_new1(&snd_ymfpci_rear_shared, chip));
 		if (err < 0)
 			return err;
 	}
 
-	/* per-voice volume */
+	 
 	substream = chip->pcm->streams[SNDRV_PCM_STREAM_PLAYBACK].substream;
 	for (idx = 0; idx < 32; ++idx) {
 		kctl = snd_ctl_new1(&snd_ymfpci_pcm_volume, chip);
@@ -1877,9 +1839,7 @@ int snd_ymfpci_mixer(struct snd_ymfpci *chip, int rear_switch)
 }
 
 
-/*
- * timer
- */
+ 
 
 static int snd_ymfpci_timer_start(struct snd_timer *timer)
 {
@@ -1893,10 +1853,7 @@ static int snd_ymfpci_timer_start(struct snd_timer *timer)
 		chip->timer_ticks = timer->sticks;
 		count = timer->sticks - 1;
 	} else {
-		/*
-		 * Divisor 1 is not allowed; fake it by using divisor 2 and
-		 * counting two ticks for each interrupt.
-		 */
+		 
 		chip->timer_ticks = 2;
 		count = 2 - 1;
 	}
@@ -1928,7 +1885,7 @@ static int snd_ymfpci_timer_precise_resolution(struct snd_timer *timer,
 
 static const struct snd_timer_hardware snd_ymfpci_timer_hw = {
 	.flags = SNDRV_TIMER_HW_AUTO,
-	.resolution = 10417, /* 1 / 96 kHz = 10.41666...us */
+	.resolution = 10417,  
 	.ticks = 0x10000,
 	.start = snd_ymfpci_timer_start,
 	.stop = snd_ymfpci_timer_stop,
@@ -1957,9 +1914,7 @@ int snd_ymfpci_timer(struct snd_ymfpci *chip, int device)
 }
 
 
-/*
- *  proc interface
- */
+ 
 
 static void snd_ymfpci_proc_read(struct snd_info_entry *entry, 
 				 struct snd_info_buffer *buffer)
@@ -1977,16 +1932,14 @@ static int snd_ymfpci_proc_init(struct snd_card *card, struct snd_ymfpci *chip)
 	return snd_card_ro_proc_new(card, "ymfpci", chip, snd_ymfpci_proc_read);
 }
 
-/*
- *  initialization routines
- */
+ 
 
 static void snd_ymfpci_aclink_reset(struct pci_dev * pci)
 {
 	u8 cmd;
 
 	pci_read_config_byte(pci, PCIR_DSXG_CTRL, &cmd);
-#if 0 // force to reset
+#if 0  
 	if (cmd & 0x03) {
 #endif
 		pci_write_config_byte(pci, PCIR_DSXG_CTRL, cmd & 0xfc);
@@ -2076,13 +2029,13 @@ static void snd_ymfpci_download_image(struct snd_ymfpci *chip)
 	ctrl = snd_ymfpci_readw(chip, YDSXGR_GLOBALCTRL);
 	snd_ymfpci_writew(chip, YDSXGR_GLOBALCTRL, ctrl & ~0x0007);
 
-	/* setup DSP instruction code */
+	 
 	inst = (const __le32 *)chip->dsp_microcode->data;
 	for (i = 0; i < YDSXG_DSPLENGTH / 4; i++)
 		snd_ymfpci_writel(chip, YDSXGR_DSPINSTRAM + (i << 2),
 				  le32_to_cpu(inst[i]));
 
-	/* setup control instruction code */
+	 
 	inst = (const __le32 *)chip->controller_microcode->data;
 	for (i = 0; i < YDSXG_CTRLLENGTH / 4; i++)
 		snd_ymfpci_writel(chip, YDSXGR_CTRLINSTRAM + (i << 2),
@@ -2109,15 +2062,14 @@ static int snd_ymfpci_memalloc(struct snd_ymfpci *chip)
 	       ALIGN(chip->bank_size_capture * 2 * YDSXG_CAPTURE_VOICES, 0x100) +
 	       ALIGN(chip->bank_size_effect * 2 * YDSXG_EFFECT_VOICES, 0x100) +
 	       chip->work_size;
-	/* work_ptr must be aligned to 256 bytes, but it's already
-	   covered with the kernel page allocation mechanism */
+	 
 	chip->work_ptr = snd_devm_alloc_pages(&chip->pci->dev,
 					      SNDRV_DMA_TYPE_DEV, size);
 	if (!chip->work_ptr)
 		return -ENOMEM;
 	ptr = chip->work_ptr->area;
 	ptr_addr = chip->work_ptr->addr;
-	memset(ptr, 0, size);	/* for sure */
+	memset(ptr, 0, size);	 
 
 	chip->bank_base_playback = ptr;
 	chip->bank_base_playback_addr = ptr_addr;
@@ -2169,15 +2121,15 @@ static int snd_ymfpci_memalloc(struct snd_ymfpci *chip)
 	snd_ymfpci_writel(chip, YDSXGR_WORKBASE, chip->work_base_addr);
 	snd_ymfpci_writel(chip, YDSXGR_WORKSIZE, chip->work_size >> 2);
 
-	/* S/PDIF output initialization */
+	 
 	chip->spdif_bits = chip->spdif_pcm_bits = SNDRV_PCM_DEFAULT_CON_SPDIF & 0xffff;
 	snd_ymfpci_writew(chip, YDSXGR_SPDIFOUTCTRL, 0);
 	snd_ymfpci_writew(chip, YDSXGR_SPDIFOUTSTATUS, chip->spdif_bits);
 
-	/* S/PDIF input initialization */
+	 
 	snd_ymfpci_writew(chip, YDSXGR_SPDIFINCTRL, 0);
 
-	/* digital mixer setup */
+	 
 	for (reg = 0x80; reg < 0xc0; reg += 4)
 		snd_ymfpci_writel(chip, reg, 0);
 	snd_ymfpci_writel(chip, YDSXGR_NATIVEDACOUTVOL, 0x3fff3fff);
@@ -2226,7 +2178,7 @@ static int snd_ymfpci_suspend(struct device *dev)
 	struct snd_ymfpci *chip = card->private_data;
 	unsigned int i, legacy_reg_count = DSXG_PCI_NUM_SAVED_LEGACY_REGS;
 
-	if (chip->pci->device >= 0x0010) /* YMF 744/754 */
+	if (chip->pci->device >= 0x0010)  
 		legacy_reg_count = DSXG_PCI_NUM_SAVED_REGS;
 
 	snd_power_change_state(card, SNDRV_CTL_POWER_D3hot);
@@ -2254,7 +2206,7 @@ static int snd_ymfpci_resume(struct device *dev)
 	struct snd_ymfpci *chip = card->private_data;
 	unsigned int i, legacy_reg_count = DSXG_PCI_NUM_SAVED_LEGACY_REGS;
 
-	if (chip->pci->device >= 0x0010) /* YMF 744/754 */
+	if (chip->pci->device >= 0x0010)  
 		legacy_reg_count = DSXG_PCI_NUM_SAVED_REGS;
 
 	snd_ymfpci_aclink_reset(pci);
@@ -2271,7 +2223,7 @@ static int snd_ymfpci_resume(struct device *dev)
 		pci_write_config_word(chip->pci, pci_saved_regs_index[i],
 				      chip->saved_dsxg_pci_regs[i]);
 
-	/* start hw again */
+	 
 	if (chip->start_count > 0) {
 		spin_lock_irq(&chip->reg_lock);
 		snd_ymfpci_writel(chip, YDSXGR_MODE, chip->saved_ydsxgr_mode);
@@ -2291,7 +2243,7 @@ int snd_ymfpci_create(struct snd_card *card,
 	struct snd_ymfpci *chip = card->private_data;
 	int err;
 	
-	/* enable PCI device */
+	 
 	err = pcim_enable_device(pci);
 	if (err < 0)
 		return err;
@@ -2342,7 +2294,7 @@ int snd_ymfpci_create(struct snd_card *card,
 	}
 	snd_ymfpci_download_image(chip);
 
-	udelay(100); /* seems we need a delay after downloading image.. */
+	udelay(100);  
 
 	if (snd_ymfpci_memalloc(chip) < 0)
 		return -EIO;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PRCMU clock implementation for ux500 platform.
- *
- * Copyright (C) 2012 ST-Ericsson SA
- * Author: Ulf Hansson <ulf.hansson@linaro.org>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/mfd/dbx500-prcmu.h>
@@ -29,7 +24,7 @@ struct clk_prcmu_clkout {
 	u8 divider;
 };
 
-/* PRCMU clock operations. */
+ 
 
 static int clk_prcmu_prepare(struct clk_hw *hw)
 {
@@ -213,7 +208,7 @@ static struct clk_hw *clk_reg_prcmu(const char *name,
 
 	clk->cg_sel = cg_sel;
 	clk->opp_requested = 0;
-	/* "rate" can be used for changing the initial frequency */
+	 
 	if (rate)
 		prcmu_set_clock_rate(cg_sel, rate);
 
@@ -293,7 +288,7 @@ struct clk_hw *clk_reg_prcmu_opp_volt_scalable(const char *name,
 			&clk_prcmu_opp_volt_scalable_ops);
 }
 
-/* The clkout (external) clock is special and need special ops */
+ 
 
 static int clk_prcmu_clkout_prepare(struct clk_hw *hw)
 {
@@ -307,7 +302,7 @@ static void clk_prcmu_clkout_unprepare(struct clk_hw *hw)
 	struct clk_prcmu_clkout *clk = to_clk_prcmu_clkout(hw);
 	int ret;
 
-	/* The clkout clock is disabled by dividing by 0 */
+	 
 	ret = prcmu_config_clkout(clk->clkout_id, clk->source, 0);
 	if (ret)
 		pr_err("clk_prcmu: %s failed to disable %s\n", __func__,
@@ -334,7 +329,7 @@ static int clk_prcmu_clkout_set_parent(struct clk_hw *hw, u8 index)
 	struct clk_prcmu_clkout *clk = to_clk_prcmu_clkout(hw);
 
 	clk->source = index;
-	/* Make sure the change reaches the hardware immediately */
+	 
 	if (clk_hw_is_prepared(hw))
 		return clk_prcmu_clkout_prepare(hw);
 	return 0;

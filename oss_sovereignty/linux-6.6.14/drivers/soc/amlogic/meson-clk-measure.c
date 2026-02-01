@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (c) 2018 BayLibre, SAS
- * Author: Neil Armstrong <narmstrong@baylibre.com>
- */
+
+ 
 
 #include <linux/of_address.h>
 #include <linux/platform_device.h>
@@ -21,8 +18,8 @@ static DEFINE_MUTEX(measure_lock);
 
 #define MSR_DURATION		GENMASK(15, 0)
 #define MSR_ENABLE		BIT(16)
-#define MSR_CONT		BIT(17) /* continuous measurement */
-#define MSR_INTR		BIT(18) /* interrupts */
+#define MSR_CONT		BIT(17)  
+#define MSR_INTR		BIT(18)  
 #define MSR_RUN			BIT(19)
 #define MSR_CLK_SRC		GENMASK(26, 20)
 #define MSR_BUSY		BIT(31)
@@ -501,15 +498,15 @@ static int meson_measure_id(struct meson_msr_id *clk_msr_id,
 
 	regmap_write(priv->regmap, MSR_CLK_REG0, 0);
 
-	/* Set measurement duration */
+	 
 	regmap_update_bits(priv->regmap, MSR_CLK_REG0, MSR_DURATION,
 			   FIELD_PREP(MSR_DURATION, duration - 1));
 
-	/* Set ID */
+	 
 	regmap_update_bits(priv->regmap, MSR_CLK_REG0, MSR_CLK_SRC,
 			   FIELD_PREP(MSR_CLK_SRC, clk_msr_id->id));
 
-	/* Enable & Start */
+	 
 	regmap_update_bits(priv->regmap, MSR_CLK_REG0,
 			   MSR_RUN | MSR_ENABLE,
 			   MSR_RUN | MSR_ENABLE);
@@ -521,10 +518,10 @@ static int meson_measure_id(struct meson_msr_id *clk_msr_id,
 		return ret;
 	}
 
-	/* Disable */
+	 
 	regmap_update_bits(priv->regmap, MSR_CLK_REG0, MSR_ENABLE, 0);
 
-	/* Get the value in multiple of gate time counts */
+	 
 	regmap_read(priv->regmap, MSR_CLK_REG2, &val);
 
 	mutex_unlock(&measure_lock);
@@ -542,7 +539,7 @@ static int meson_measure_best_id(struct meson_msr_id *clk_msr_id,
 	unsigned int duration = DIV_MAX;
 	int ret;
 
-	/* Start from max duration and down to min duration */
+	 
 	do {
 		ret = meson_measure_id(clk_msr_id, duration);
 		if (ret >= 0)
@@ -676,7 +673,7 @@ static const struct of_device_id meson_msr_match_table[] = {
 		.compatible = "amlogic,meson-sm1-clk-measure",
 		.data = (void *)clk_msr_sm1,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, meson_msr_match_table);
 

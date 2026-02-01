@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2017 Facebook
- */
+
+ 
 #include <stddef.h>
 #include <string.h>
 #include <linux/bpf.h>
@@ -15,24 +14,7 @@
 #include <bpf/bpf_endian.h>
 #include "bpf_misc.h"
 
-/* llvm will optimize both subprograms into exactly the same BPF assembly
- *
- * Disassembly of section .text:
- *
- * 0000000000000000 test_pkt_access_subprog1:
- * ; 	return skb->len * 2;
- *        0:	61 10 00 00 00 00 00 00	r0 = *(u32 *)(r1 + 0)
- *        1:	64 00 00 00 01 00 00 00	w0 <<= 1
- *        2:	95 00 00 00 00 00 00 00	exit
- *
- * 0000000000000018 test_pkt_access_subprog2:
- * ; 	return skb->len * val;
- *        3:	61 10 00 00 00 00 00 00	r0 = *(u32 *)(r1 + 0)
- *        4:	64 00 00 00 01 00 00 00	w0 <<= 1
- *        5:	95 00 00 00 00 00 00 00	exit
- *
- * Which makes it an interesting test for BTF-enabled verifier.
- */
+ 
 static __attribute__ ((noinline))
 int test_pkt_access_subprog1(volatile struct __sk_buff *skb)
 {
@@ -94,7 +76,7 @@ int test_pkt_write_access_subprog(struct __sk_buff *skb, __u32 off)
 	tcp = data + off;
 	if (tcp + 1 > data_end)
 		return -1;
-	/* make modification to the packet data */
+	 
 	tcp->check++;
 	return 0;
 }
@@ -141,7 +123,7 @@ int test_pkt_access(struct __sk_buff *skb)
 			return TC_ACT_SHOT;
 		if (((void *)(tcp) + 20) > data_end || proto != 6)
 			return TC_ACT_SHOT;
-		barrier(); /* to force ordering of checks */
+		barrier();  
 		if (((void *)(tcp) + 18) > data_end)
 			return TC_ACT_SHOT;
 		if (tcp->urg_ptr == 123)

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Debug controller
- *
- * WARNING: This controller is for cgroup core debugging only.
- * Its interfaces are unstable and subject to changes at any time.
- */
+
+ 
 #include <linux/ctype.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
@@ -27,10 +22,7 @@ static void debug_css_free(struct cgroup_subsys_state *css)
 	kfree(css);
 }
 
-/*
- * debug_taskcount_read - return the number of tasks in a cgroup.
- * @cgrp: the cgroup in question
- */
+ 
 static u64 debug_taskcount_read(struct cgroup_subsys_state *css,
 				struct cftype *cft)
 {
@@ -57,9 +49,7 @@ static int current_css_set_read(struct seq_file *seq, void *v)
 		seq_printf(seq, " +%d", refcnt - cset->nr_tasks);
 	seq_puts(seq, "\n");
 
-	/*
-	 * Print the css'es stored in the current css_set.
-	 */
+	 
 	for_each_subsys(ss, i) {
 		css = cset->subsys[ss->id];
 		if (!css)
@@ -125,10 +115,7 @@ static int cgroup_css_links_read(struct seq_file *seq, void *v)
 		int count = 0;
 		int refcnt = refcount_read(&cset->refcount);
 
-		/*
-		 * Print out the proc_cset and threaded_cset relationship
-		 * and highlight difference between refcount and task_count.
-		 */
+		 
 		seq_printf(seq, "css_set %pK", cset);
 		if (rcu_dereference_protected(cset->dom_cset, 1) != cset) {
 			threaded_csets++;
@@ -150,10 +137,7 @@ static int cgroup_css_links_read(struct seq_file *seq, void *v)
 				int extra = refcnt - cset->nr_tasks;
 
 				seq_printf(seq, " +%d", extra);
-				/*
-				 * Take out the one additional reference in
-				 * init_css_set.
-				 */
+				 
 				if (cset == &init_css_set)
 					extra--;
 				extra_refs += extra;
@@ -172,7 +156,7 @@ static int cgroup_css_links_read(struct seq_file *seq, void *v)
 				seq_printf(seq, "  task %d\n",
 					   task_pid_vnr(task));
 		}
-		/* show # of overflowed tasks */
+		 
 		if (count > MAX_TASKS_SHOWN_PER_CSS)
 			seq_printf(seq, "  ... (%d)\n",
 				   count - MAX_TASKS_SHOWN_PER_CSS);
@@ -220,7 +204,7 @@ static int cgroup_subsys_states_read(struct seq_file *seq, void *v)
 
 		pbuf[0] = '\0';
 
-		/* Show the parent CSS if applicable*/
+		 
 		if (css->parent)
 			snprintf(pbuf, sizeof(pbuf) - 1, " P=%d",
 				 css->parent->id);
@@ -318,7 +302,7 @@ static struct cftype debug_legacy_files[] =  {
 		.read_u64 = releasable_read,
 	},
 
-	{ }	/* terminate */
+	{ }	 
 };
 
 static struct cftype debug_files[] =  {
@@ -360,7 +344,7 @@ static struct cftype debug_files[] =  {
 		.seq_show = cgroup_masks_read,
 	},
 
-	{ }	/* terminate */
+	{ }	 
 };
 
 struct cgroup_subsys debug_cgrp_subsys = {
@@ -369,10 +353,7 @@ struct cgroup_subsys debug_cgrp_subsys = {
 	.legacy_cftypes	= debug_legacy_files,
 };
 
-/*
- * On v2, debug is an implicit controller enabled by "cgroup_debug" boot
- * parameter.
- */
+ 
 void __init enable_debug_cgroup(void)
 {
 	debug_cgrp_subsys.dfl_cftypes = debug_files;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2017 Spreadtrum Communications Inc.
- */
+
+ 
 
 #include <linux/interrupt.h>
 #include <linux/kernel.h>
@@ -25,7 +23,7 @@
 #define SPRD_SC2731_IRQ_NUMS		16
 #define SPRD_SC2731_CHG_DET		0xedc
 
-/* PMIC charger detection definition */
+ 
 #define SPRD_PMIC_CHG_DET_DELAY_US	200000
 #define SPRD_PMIC_CHG_DET_TIMEOUT	2000000
 #define SPRD_PMIC_CHG_DET_DONE		BIT(11)
@@ -50,11 +48,7 @@ struct sprd_pmic_data {
 	u32 charger_det;
 };
 
-/*
- * Since different PMICs of SC27xx series can have different interrupt
- * base address and irq number, we should save irq number and irq base
- * in the device data structure.
- */
+ 
 static const struct sprd_pmic_data sc2730_data = {
 	.irq_base = SPRD_SC2730_IRQ_BASE,
 	.num_irqs = SPRD_SC2730_IRQ_NUMS,
@@ -121,11 +115,11 @@ static int sprd_pmic_spi_read(void *context,
 	u32 rx_buf[2] = { 0 };
 	int ret;
 
-	/* Now we only support one PMIC register to read every time. */
+	 
 	if (reg_size != sizeof(u32) || val_size != sizeof(u32))
 		return -EINVAL;
 
-	/* Copy address to read from into first element of SPI buffer. */
+	 
 	memcpy(rx_buf, reg, sizeof(u32));
 	ret = spi_read(spi, rx_buf, 1);
 	if (ret < 0)

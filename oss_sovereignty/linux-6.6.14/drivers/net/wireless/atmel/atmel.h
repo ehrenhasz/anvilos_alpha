@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*** -*- linux-c -*- **********************************************************
-
-     Driver for Atmel at76c502 at76c504 and at76c506 wireless cards.
-
-         Copyright 2005 Dan Williams and Red Hat, Inc.
-
-
-******************************************************************************/
+ 
+ 
 
 #ifndef _ATMEL_H
 #define _ATMEL_H

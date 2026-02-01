@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2018-2019,2020 Thomas E. Dickey                                *
- * Copyright 2000-2008,2012 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -45,7 +16,7 @@ is_termcap(const char *string)
     bool result = TRUE;
 
     if (string == 0 || *string == '\0') {
-	result = FALSE;		/* tparm() handles empty strings */
+	result = FALSE;		 
     } else {
 	while ((*string != '\0') && result) {
 	    if (*string == '%') {
@@ -114,25 +85,15 @@ tgoto_internal(const char *string, int x, int y)
 		break;
 	    case '+':
 		*value += UChar(*++string);
-		/* FALLTHRU */
+		 
 	    case '.':
-		/*
-		 * Guard against tputs() seeing a truncated string.  The
-		 * termcap documentation refers to a similar fixup for \n
-		 * and \r, but I don't see that it could work -TD
-		 */
+		 
 		if (*value == 0) {
 		    if (BC != 0) {
 			*value += 1;
 			need_BC = TRUE;
 		    } else {
-			/* tputs will pretend this is \0, which will almost
-			 * always work since ANSI-compatible terminals ignore
-			 * the character.  ECMA-48 does not document a C1
-			 * control for this value.  A few (obsolete) terminals
-			 * can use this value in special cases, such as cursor
-			 * addressing using single-byte coordinates.
-			 */
+			 
 			*value = 0200;
 		    }
 		}
@@ -155,14 +116,14 @@ tgoto_internal(const char *string, int x, int y)
 		    *value += string[2];
 		string += 2;
 		break;
-	    case 'n':		/* Datamedia 2500 */
+	    case 'n':		 
 		param[0] ^= 0140;
 		param[1] ^= 0140;
 		break;
-	    case 'B':		/* BCD */
+	    case 'B':		 
 		*value = 16 * (*value / 10) + (*value % 10);
 		break;
-	    case 'D':		/* Reverse coding (Delta Data) */
+	    case 'D':		 
 		*value -= 2 * (*value % 16);
 		break;
 	    }
@@ -192,10 +153,7 @@ tgoto_internal(const char *string, int x, int y)
 }
 #endif
 
-/*
- * Retained solely for upward compatibility.  Note the intentional reversing of
- * the last two arguments when invoking tparm().
- */
+ 
 NCURSES_EXPORT(char *)
 tgoto(const char *string, int x, int y)
 {

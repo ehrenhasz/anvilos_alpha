@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * IBM/3270 Driver
- *
- * Author(s):
- *   Original 3270 Code for 2.4 written by Richard Hitt (UTS Global)
- *   Rewritten for 2.5 by Martin Schwidefsky <schwidefsky@de.ibm.com>
- *     Copyright IBM Corp. 2003, 2009
- */
+ 
+ 
 
 #include <uapi/asm/raw3270.h>
 #include <asm/idals.h>
@@ -16,17 +9,17 @@ struct raw3270;
 struct raw3270_view;
 extern struct class *class3270;
 
-/* 3270 CCW request */
+ 
 struct raw3270_request {
-	struct list_head list;		/* list head for request queueing. */
-	struct raw3270_view *view;	/* view of this request */
-	struct ccw1 ccw;		/* single ccw. */
-	void *buffer;			/* output buffer. */
-	size_t size;			/* size of output buffer. */
-	int rescnt;			/* residual count from devstat. */
-	int rc;				/* return code for this request. */
+	struct list_head list;		 
+	struct raw3270_view *view;	 
+	struct ccw1 ccw;		 
+	void *buffer;			 
+	size_t size;			 
+	int rescnt;			 
+	int rc;				 
 
-	/* Callback for delivering final status. */
+	 
 	void (*callback)(struct raw3270_request *rq, void *data);
 	void *callback_data;
 };
@@ -47,9 +40,7 @@ raw3270_request_final(struct raw3270_request *rq)
 
 void raw3270_buffer_address(struct raw3270 *, char *, int, int);
 
-/*
- * Functions of a 3270 view.
- */
+ 
 struct raw3270_fn {
 	int  (*activate)(struct raw3270_view *rq);
 	void (*deactivate)(struct raw3270_view *rq);
@@ -62,25 +53,18 @@ struct raw3270_fn {
 		       int old_model, int old_cols, int old_rows);
 };
 
-/*
- * View structure chaining. The raw3270_view structure is meant to
- * be embedded at the start of the real view data structure, e.g.:
- *   struct example {
- *     struct raw3270_view view;
- *     ...
- *   };
- */
+ 
 struct raw3270_view {
 	struct list_head list;
-	spinlock_t lock; /* protects members of view */
+	spinlock_t lock;  
 #define RAW3270_VIEW_LOCK_IRQ	0
 #define RAW3270_VIEW_LOCK_BH	1
 	atomic_t ref_count;
 	struct raw3270 *dev;
 	struct raw3270_fn *fn;
 	unsigned int model;
-	unsigned int rows, cols;	/* # of rows & colums of the view */
-	unsigned char *ascebc;		/* ascii -> ebcdic table */
+	unsigned int rows, cols;	 
+	unsigned char *ascebc;		 
 };
 
 int raw3270_add_view(struct raw3270_view *view, struct raw3270_fn *fn, int minor, int subclass);
@@ -99,7 +83,7 @@ int raw3270_start_request(struct raw3270_view *view, struct raw3270_request *rq,
 			  int cmd, void *data, size_t len);
 void raw3270_read_modified_cb(struct raw3270_request *rq, void *data);
 
-/* Reference count inliner for view structures. */
+ 
 static inline void
 raw3270_get_view(struct raw3270_view *view)
 {
@@ -118,7 +102,7 @@ raw3270_put_view(struct raw3270_view *view)
 struct raw3270 *raw3270_setup_console(void);
 void raw3270_wait_cons_dev(struct raw3270 *rp);
 
-/* Notifier for device addition/removal */
+ 
 struct raw3270_notifier {
 	struct list_head list;
 	void (*create)(int minor);

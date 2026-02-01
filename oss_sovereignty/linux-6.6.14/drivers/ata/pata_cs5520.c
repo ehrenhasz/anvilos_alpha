@@ -1,27 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	IDE tuning and bus mastering support for the CS5510/CS5520
- *	chipsets
- *
- *	The CS5510/CS5520 are slightly unusual devices. Unlike the
- *	typical IDE controllers they do bus mastering with the drive in
- *	PIO mode and smarter silicon.
- *
- *	The practical upshot of this is that we must always tune the
- *	drive for the right PIO mode. We must also ignore all the blacklists
- *	and the drive bus mastering DMA information. Also to confuse matters
- *	further we can do DMA on PIO only drives.
- *
- *	DMA on the 5510 also requires we disable_hlt() during DMA on early
- *	revisions.
- *
- *	*** This driver is strictly experimental ***
- *
- *	(c) Copyright Red Hat Inc 2002
- *
- * Documentation:
- *	Not publicly available.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -48,15 +26,7 @@ static const struct pio_clocks cs5520_pio_clocks[]={
 	{1, 2, 1}
 };
 
-/**
- *	cs5520_set_timings	-	program PIO timings
- *	@ap: ATA port
- *	@adev: ATA device
- *	@pio: PIO ID
- *
- *	Program the PIO mode timings for the controller according to the pio
- *	clocking table.
- */
+ 
 
 static void cs5520_set_timings(struct ata_port *ap, struct ata_device *adev, int pio)
 {
@@ -65,29 +35,22 @@ static void cs5520_set_timings(struct ata_port *ap, struct ata_device *adev, int
 
 	pio -= XFER_PIO_0;
 
-	/* Channel command timing */
+	 
 	pci_write_config_byte(pdev, 0x62 + ap->port_no,
 				(cs5520_pio_clocks[pio].recovery << 4) |
 				(cs5520_pio_clocks[pio].assert));
-	/* FIXME: should these use address ? */
-	/* Read command timing */
+	 
+	 
 	pci_write_config_byte(pdev, 0x64 +  4*ap->port_no + slave,
 				(cs5520_pio_clocks[pio].recovery << 4) |
 				(cs5520_pio_clocks[pio].assert));
-	/* Write command timing */
+	 
 	pci_write_config_byte(pdev, 0x66 +  4*ap->port_no + slave,
 				(cs5520_pio_clocks[pio].recovery << 4) |
 				(cs5520_pio_clocks[pio].assert));
 }
 
-/**
- *	cs5520_set_piomode	-	program PIO timings
- *	@ap: ATA port
- *	@adev: ATA device
- *
- *	Program the PIO mode timings for the controller according to the pio
- *	clocking table.
- */
+ 
 
 static void cs5520_set_piomode(struct ata_port *ap, struct ata_device *adev)
 {
@@ -127,10 +90,10 @@ static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (rc)
 		return rc;
 
-	/* IDE port enable bits */
+	 
 	pci_read_config_byte(pdev, 0x60, &pcicfg);
 
-	/* Check if the ATA ports are enabled */
+	 
 	if ((pcicfg & 3) == 0)
 		return -ENODEV;
 
@@ -151,7 +114,7 @@ static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 	if (!host)
 		return -ENOMEM;
 
-	/* Perform set up for DMA */
+	 
 	if (pci_enable_device_io(pdev)) {
 		dev_err(&pdev->dev, "unable to configure BAR2.\n");
 		return -ENODEV;
@@ -162,7 +125,7 @@ static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		return -ENODEV;
 	}
 
-	/* Map IO ports and initialize host accordingly */
+	 
 	iomap[0] = devm_ioport_map(&pdev->dev, cmd_port[0], 8);
 	iomap[1] = devm_ioport_map(&pdev->dev, ctl_port[0], 1);
 	iomap[2] = devm_ioport_map(&pdev->dev, cmd_port[1], 8);
@@ -194,7 +157,7 @@ static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 		      "cmd 0x%x ctl 0x%x", cmd_port[1], ctl_port[1]);
 	ata_port_pbar_desc(host->ports[1], 4, 8, "bmdma");
 
-	/* activate the host */
+	 
 	pci_set_master(pdev);
 	rc = ata_host_start(host);
 	if (rc)
@@ -219,13 +182,7 @@ static int cs5520_init_one(struct pci_dev *pdev, const struct pci_device_id *id)
 }
 
 #ifdef CONFIG_PM_SLEEP
-/**
- *	cs5520_reinit_one	-	device resume
- *	@pdev: PCI device
- *
- *	Do any reconfiguration work needed by a resume from RAM. We need
- *	to restore DMA mode support on BIOSen which disabled it
- */
+ 
 
 static int cs5520_reinit_one(struct pci_dev *pdev)
 {
@@ -245,16 +202,7 @@ static int cs5520_reinit_one(struct pci_dev *pdev)
 	return 0;
 }
 
-/**
- *	cs5520_pci_device_suspend	-	device suspend
- *	@pdev: PCI device
- *	@mesg: PM event message
- *
- *	We have to cut and waste bits from the standard method because
- *	the 5520 is a bit odd and not just a pure ATA device. As a result
- *	we must not disable it. The needed code is short and this avoids
- *	chip specific mess in the core code.
- */
+ 
 
 static int cs5520_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 {
@@ -265,10 +213,9 @@ static int cs5520_pci_device_suspend(struct pci_dev *pdev, pm_message_t mesg)
 	pci_save_state(pdev);
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
-/* For now keep DMA off. We can set it for all but A rev CS5510 once the
-   core ATA code can handle it */
+ 
 
 static const struct pci_device_id pata_cs5520[] = {
 	{ PCI_VDEVICE(CYRIX, PCI_DEVICE_ID_CYRIX_5510), },

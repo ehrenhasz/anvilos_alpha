@@ -1,13 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_X86_PARAVIRT_TYPES_H
 #define _ASM_X86_PARAVIRT_TYPES_H
 
 #ifndef __ASSEMBLY__
-/* These all sit in the .parainstructions section to tell us what to patch. */
+ 
 struct paravirt_patch_site {
-	u8 *instr;		/* original instructions */
-	u8 type;		/* type of this instruction */
-	u8 len;			/* length of original instruction */
+	u8 *instr;		 
+	u8 type;		 
+	u8 len;			 
 };
 #endif
 
@@ -31,18 +31,15 @@ struct flush_tlb_info;
 struct mmu_gather;
 struct vm_area_struct;
 
-/*
- * Wrapper type for pointers to code which uses the non-standard
- * calling convention.  See PV_CALL_SAVE_REGS_THUNK below.
- */
+ 
 struct paravirt_callee_save {
 	void *func;
 };
 
-/* general info */
+ 
 struct pv_info {
 #ifdef CONFIG_PARAVIRT_XXL
-	u16 extra_user_64bit_cs;  /* __USER_CS if none */
+	u16 extra_user_64bit_cs;   
 #endif
 
 	const char *name;
@@ -50,7 +47,7 @@ struct pv_info {
 
 #ifdef CONFIG_PARAVIRT_XXL
 struct pv_lazy_ops {
-	/* Set deferred update mode, used for batching operations. */
+	 
 	void (*enter)(void);
 	void (*leave)(void);
 	void (*flush)(void);
@@ -58,7 +55,7 @@ struct pv_lazy_ops {
 #endif
 
 struct pv_cpu_ops {
-	/* hooks for various privileged instructions */
+	 
 	void (*io_delay)(void);
 
 #ifdef CONFIG_PARAVIRT_XXL
@@ -70,7 +67,7 @@ struct pv_cpu_ops {
 
 	void (*write_cr4)(unsigned long);
 
-	/* Segment descriptor handling */
+	 
 	void (*load_tr_desc)(void);
 	void (*load_gdt)(const struct desc_ptr *);
 	void (*load_idt)(const struct desc_ptr *);
@@ -96,18 +93,15 @@ struct pv_cpu_ops {
 
 	void (*wbinvd)(void);
 
-	/* cpuid emulation, mostly so that caps bits can be disabled */
+	 
 	void (*cpuid)(unsigned int *eax, unsigned int *ebx,
 		      unsigned int *ecx, unsigned int *edx);
 
-	/* Unsafe MSR operations.  These will warn or panic on failure. */
+	 
 	u64 (*read_msr)(unsigned int msr);
 	void (*write_msr)(unsigned int msr, unsigned low, unsigned high);
 
-	/*
-	 * Safe MSR operations.
-	 * read sets err to 0 or -EIO.  write returns 0 or -EIO.
-	 */
+	 
 	u64 (*read_msr_safe)(unsigned int msr, int *err);
 	int (*write_msr_safe)(unsigned int msr, unsigned low, unsigned high);
 
@@ -120,13 +114,7 @@ struct pv_cpu_ops {
 
 struct pv_irq_ops {
 #ifdef CONFIG_PARAVIRT_XXL
-	/*
-	 * Get/set interrupt state.  save_fl is expected to use X86_EFLAGS_IF;
-	 * all other bits returned from save_fl are undefined.
-	 *
-	 * NOTE: These functions callers expect the callee to preserve
-	 * more registers than the standard C calling convention.
-	 */
+	 
 	struct paravirt_callee_save save_fl;
 	struct paravirt_callee_save irq_disable;
 	struct paravirt_callee_save irq_enable;
@@ -137,7 +125,7 @@ struct pv_irq_ops {
 } __no_randomize_layout;
 
 struct pv_mmu_ops {
-	/* TLB operations */
+	 
 	void (*flush_tlb_user)(void);
 	void (*flush_tlb_kernel)(void);
 	void (*flush_tlb_one_user)(unsigned long addr);
@@ -146,7 +134,7 @@ struct pv_mmu_ops {
 
 	void (*tlb_remove_table)(struct mmu_gather *tlb, void *table);
 
-	/* Hook for intercepting the destruction of an mm_struct. */
+	 
 	void (*exit_mmap)(struct mm_struct *mm);
 	void (*notify_page_enc_status_changed)(unsigned long pfn, int npages, bool enc);
 
@@ -157,17 +145,14 @@ struct pv_mmu_ops {
 	unsigned long (*read_cr3)(void);
 	void (*write_cr3)(unsigned long);
 
-	/* Hook for intercepting the creation/use of an mm_struct. */
+	 
 	void (*enter_mmap)(struct mm_struct *mm);
 
-	/* Hooks for allocating and freeing a pagetable top-level */
+	 
 	int  (*pgd_alloc)(struct mm_struct *mm);
 	void (*pgd_free)(struct mm_struct *mm, pgd_t *pgd);
 
-	/*
-	 * Hooks for allocating/releasing pagetable pages when they're
-	 * attached to a pagetable
-	 */
+	 
 	void (*alloc_pte)(struct mm_struct *mm, unsigned long pfn);
 	void (*alloc_pmd)(struct mm_struct *mm, unsigned long pfn);
 	void (*alloc_pud)(struct mm_struct *mm, unsigned long pfn);
@@ -177,7 +162,7 @@ struct pv_mmu_ops {
 	void (*release_pud)(unsigned long pfn);
 	void (*release_p4d)(unsigned long pfn);
 
-	/* Pagetable manipulation functions */
+	 
 	void (*set_pte)(pte_t *ptep, pte_t pteval);
 	void (*set_pmd)(pmd_t *pmdp, pmd_t pmdval);
 
@@ -207,15 +192,14 @@ struct pv_mmu_ops {
 	struct paravirt_callee_save make_p4d;
 
 	void (*set_pgd)(pgd_t *pgdp, pgd_t pgdval);
-#endif	/* CONFIG_PGTABLE_LEVELS >= 5 */
+#endif	 
 
 	struct pv_lazy_ops lazy_mode;
 
-	/* dom0 ops */
+	 
 
-	/* Sometimes the physical address is a pfn, and sometimes its
-	   an mfn.  We can tell which is which from the index. */
-	void (*set_fixmap)(unsigned /* enum fixed_addresses */ idx,
+	 
+	void (*set_fixmap)(unsigned   idx,
 			   phys_addr_t phys, pgprot_t flags);
 #endif
 } __no_randomize_layout;
@@ -237,9 +221,7 @@ struct pv_lock_ops {
 	struct paravirt_callee_save vcpu_is_preempted;
 } __no_randomize_layout;
 
-/* This contains all the paravirt structures: we get a convenient
- * number for each function using the offset which we use to indicate
- * what to patch. */
+ 
 struct paravirt_patch_template {
 	struct pv_cpu_ops	cpu;
 	struct pv_irq_ops	irq;
@@ -256,10 +238,7 @@ extern struct paravirt_patch_template pv_ops;
 #define paravirt_type(op)				\
 	[paravirt_typenum] "i" (PARAVIRT_PATCH(op)),	\
 	[paravirt_opptr] "m" (pv_ops.op)
-/*
- * Generate some code, and mark it as patchable by the
- * apply_paravirt() alternate instruction patcher.
- */
+ 
 #define _paravirt_alt(insn_string, type)		\
 	"771:\n\t" insn_string "\n" "772:\n"		\
 	".pushsection .parainstructions,\"a\"\n"	\
@@ -270,91 +249,23 @@ extern struct paravirt_patch_template pv_ops;
 	_ASM_ALIGN "\n"					\
 	".popsection\n"
 
-/* Generate patchable code, with the default asm parameters. */
+ 
 #define paravirt_alt(insn_string)					\
 	_paravirt_alt(insn_string, "%c[paravirt_typenum]")
 
-/* Simple instruction patching code. */
+ 
 #define NATIVE_LABEL(a,x,b) "\n\t.globl " a #x "_" #b "\n" a #x "_" #b ":\n\t"
 
 unsigned int paravirt_patch(u8 type, void *insn_buff, unsigned long addr, unsigned int len);
 
 int paravirt_disable_iospace(void);
 
-/*
- * This generates an indirect call based on the operation type number.
- * The type number, computed in PARAVIRT_PATCH, is derived from the
- * offset into the paravirt_patch_template structure, and can therefore be
- * freely converted back into a structure offset.
- */
+ 
 #define PARAVIRT_CALL					\
 	ANNOTATE_RETPOLINE_SAFE				\
 	"call *%[paravirt_opptr];"
 
-/*
- * These macros are intended to wrap calls through one of the paravirt
- * ops structs, so that they can be later identified and patched at
- * runtime.
- *
- * Normally, a call to a pv_op function is a simple indirect call:
- * (pv_op_struct.operations)(args...).
- *
- * Unfortunately, this is a relatively slow operation for modern CPUs,
- * because it cannot necessarily determine what the destination
- * address is.  In this case, the address is a runtime constant, so at
- * the very least we can patch the call to a simple direct call, or,
- * ideally, patch an inline implementation into the callsite.  (Direct
- * calls are essentially free, because the call and return addresses
- * are completely predictable.)
- *
- * For i386, these macros rely on the standard gcc "regparm(3)" calling
- * convention, in which the first three arguments are placed in %eax,
- * %edx, %ecx (in that order), and the remaining arguments are placed
- * on the stack.  All caller-save registers (eax,edx,ecx) are expected
- * to be modified (either clobbered or used for return values).
- * X86_64, on the other hand, already specifies a register-based calling
- * conventions, returning at %rax, with parameters going in %rdi, %rsi,
- * %rdx, and %rcx. Note that for this reason, x86_64 does not need any
- * special handling for dealing with 4 arguments, unlike i386.
- * However, x86_64 also has to clobber all caller saved registers, which
- * unfortunately, are quite a bit (r8 - r11)
- *
- * The call instruction itself is marked by placing its start address
- * and size into the .parainstructions section, so that
- * apply_paravirt() in arch/i386/kernel/alternative.c can do the
- * appropriate patching under the control of the backend pv_init_ops
- * implementation.
- *
- * Unfortunately there's no way to get gcc to generate the args setup
- * for the call, and then allow the call itself to be generated by an
- * inline asm.  Because of this, we must do the complete arg setup and
- * return value handling from within these macros.  This is fairly
- * cumbersome.
- *
- * There are 5 sets of PVOP_* macros for dealing with 0-4 arguments.
- * It could be extended to more arguments, but there would be little
- * to be gained from that.  For each number of arguments, there are
- * two VCALL and CALL variants for void and non-void functions.
- *
- * When there is a return value, the invoker of the macro must specify
- * the return type.  The macro then uses sizeof() on that type to
- * determine whether it's a 32 or 64 bit value and places the return
- * in the right register(s) (just %eax for 32-bit, and %edx:%eax for
- * 64-bit). For x86_64 machines, it just returns in %rax regardless of
- * the return value size.
- *
- * 64-bit arguments are passed as a pair of adjacent 32-bit arguments;
- * i386 also passes 64-bit arguments as a pair of adjacent 32-bit arguments
- * in low,high order
- *
- * Small structures are passed and returned in registers.  The macro
- * calling convention can't directly deal with this, so the wrapper
- * functions must do it.
- *
- * These PVOP_* macros are only defined within this header.  This
- * means that all uses must be wrapped in inline functions.  This also
- * makes sure the incoming and outgoing types are always correct.
- */
+ 
 #ifdef CONFIG_X86_32
 #define PVOP_CALL_ARGS							\
 	unsigned long __eax = __eax, __edx = __edx, __ecx = __ecx;
@@ -372,8 +283,8 @@ int paravirt_disable_iospace(void);
 
 #define EXTRA_CLOBBERS
 #define VEXTRA_CLOBBERS
-#else  /* CONFIG_X86_64 */
-/* [re]ax isn't an arg, but the return val */
+#else   
+ 
 #define PVOP_CALL_ARGS						\
 	unsigned long __edi = __edi, __esi = __esi,		\
 		__edx = __edx, __ecx = __ecx, __eax = __eax;
@@ -388,12 +299,7 @@ int paravirt_disable_iospace(void);
 				"=c" (__ecx)
 #define PVOP_CALL_CLOBBERS	PVOP_VCALL_CLOBBERS, "=a" (__eax)
 
-/*
- * void functions are still allowed [re]ax for scratch.
- *
- * The ZERO_CALL_USED REGS feature may end up zeroing out callee-saved
- * registers. Make sure we model this with the appropriate clobbers.
- */
+ 
 #ifdef CONFIG_ZERO_CALL_USED_REGS
 #define PVOP_VCALLEE_CLOBBERS	"=a" (__eax), PVOP_VCALL_CLOBBERS
 #else
@@ -403,7 +309,7 @@ int paravirt_disable_iospace(void);
 
 #define EXTRA_CLOBBERS	 , "r8", "r9", "r10", "r11"
 #define VEXTRA_CLOBBERS	 , "rax", "r8", "r9", "r10", "r11"
-#endif	/* CONFIG_X86_32 */
+#endif	 
 
 #ifdef CONFIG_PARAVIRT_DEBUG
 #define PVOP_TEST_NULL(op)	BUG_ON(pv_ops.op == NULL)
@@ -558,6 +464,6 @@ unsigned long pv_native_read_cr2(void);
 extern struct paravirt_patch_site __parainstructions[],
 	__parainstructions_end[];
 
-#endif	/* __ASSEMBLY__ */
-#endif  /* CONFIG_PARAVIRT */
-#endif	/* _ASM_X86_PARAVIRT_TYPES_H */
+#endif	 
+#endif   
+#endif	 

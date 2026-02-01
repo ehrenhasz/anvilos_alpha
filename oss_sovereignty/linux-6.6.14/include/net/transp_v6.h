@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _TRANSP_V6_H
 #define _TRANSP_V6_H
 
 #include <net/checksum.h>
 #include <net/sock.h>
 
-/* IPv6 transport protocols */
+ 
 extern struct proto rawv6_prot;
 extern struct proto udpv6_prot;
 extern struct proto udplitev6_prot;
@@ -15,13 +15,13 @@ extern struct proto pingv6_prot;
 struct flowi6;
 struct ipcm6_cookie;
 
-/* extension headers */
+ 
 int ipv6_exthdrs_init(void);
 void ipv6_exthdrs_exit(void);
 int ipv6_frag_init(void);
 void ipv6_frag_exit(void);
 
-/* transport protocols */
+ 
 int pingv6_init(void);
 void pingv6_exit(void);
 int rawv6_init(void);
@@ -33,7 +33,7 @@ void udplitev6_exit(void);
 int tcpv6_init(void);
 void tcpv6_exit(void);
 
-/* this does all the common and the specific ctl work */
+ 
 void ip6_datagram_recv_ctl(struct sock *sk, struct msghdr *msg,
 			   struct sk_buff *skb);
 void ip6_datagram_recv_common_ctl(struct sock *sk, struct msghdr *msg,

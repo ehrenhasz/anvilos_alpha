@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/N1 Watchdog timer.
- * This is a 12-bit timer driver from a (62.5/16384) MHz clock. It can't even
- * cope with 2 seconds.
- *
- * Copyright 2018 Renesas Electronics Europe Ltd.
- *
- * Derived from Ralink RT288x watchdog timer.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -52,7 +44,7 @@ static int rzn1_wdt_ping(struct watchdog_device *w)
 {
 	struct rzn1_watchdog *wdt = watchdog_get_drvdata(w);
 
-	/* Any value retrigggers the watchdog */
+	 
 	writel(0, wdt->base + RZN1_WDT_RETRIGGER);
 
 	return 0;
@@ -63,13 +55,7 @@ static int rzn1_wdt_start(struct watchdog_device *w)
 	struct rzn1_watchdog *wdt = watchdog_get_drvdata(w);
 	u32 val;
 
-	/*
-	 * The hardware allows you to write to this reg only once.
-	 * Since this includes the reload value, there is no way to change the
-	 * timeout once started. Also note that the WDT clock is half the bus
-	 * fabric clock rate, so if the bus fabric clock rate is changed after
-	 * the WDT is started, the WDT interval will be wrong.
-	 */
+	 
 	val = RZN1_WDT_RETRIGGER_WDSI;
 	val |= RZN1_WDT_RETRIGGER_ENABLE;
 	val |= RZN1_WDT_RETRIGGER_PRESCALE;
@@ -144,13 +130,7 @@ static int rzn1_wdt_probe(struct platform_device *pdev)
 	wdt->wdtdev.ops = &rzn1_wdt_ops,
 	wdt->wdtdev.status = WATCHDOG_NOWAYOUT_INIT_STATUS,
 	wdt->wdtdev.parent = dev;
-	/*
-	 * The period of the watchdog cannot be changed once set
-	 * and is limited to a very short period.
-	 * Configure it for a 1s period once and for all, and
-	 * rely on the heart-beat provided by the watchdog core
-	 * to make this usable by the user-space.
-	 */
+	 
 	wdt->wdtdev.max_hw_heartbeat_ms = max_heart_beat_ms(wdt->clk_rate_khz);
 	if (wdt->wdtdev.max_hw_heartbeat_ms > 1000)
 		wdt->wdtdev.max_hw_heartbeat_ms = 1000;

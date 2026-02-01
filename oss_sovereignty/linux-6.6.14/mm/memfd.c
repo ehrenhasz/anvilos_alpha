@@ -1,11 +1,4 @@
-/*
- * memfd_create system call and file sealing support
- *
- * Code was originally included in shmem.c, and broken out to facilitate
- * use by hugetlbfs as well as tmpfs.
- *
- * This file is released under the GPL.
- */
+ 
 
 #include <linux/fs.h>
 #include <linux/vfs.h>
@@ -21,13 +14,9 @@
 #include <linux/pid_namespace.h>
 #include <uapi/linux/memfd.h>
 
-/*
- * We need a tag: a new tag would expand every xa_node by 8 bytes,
- * so reuse a tag which we firmly believe is never set or cleared on tmpfs
- * or hugetlbfs because they are memory only filesystems.
- */
+ 
 #define MEMFD_TAG_PINNED        PAGECACHE_TAG_TOWRITE
-#define LAST_SCAN               4       /* about 150ms max */
+#define LAST_SCAN               4        
 
 static void memfd_tag_pins(struct xa_state *xas)
 {
@@ -63,15 +52,7 @@ static void memfd_tag_pins(struct xa_state *xas)
 	xas_unlock_irq(xas);
 }
 
-/*
- * Setting SEAL_WRITE requires us to verify there's no pending writer. However,
- * via get_user_pages(), drivers might have some pending I/O without any active
- * user-space mappings (eg., direct-IO, AIO). Therefore, we look at all pages
- * and see whether it has an elevated ref-count. If so, we tag them and wait for
- * them to be dropped.
- * The caller must guarantee that no new user will acquire writable references
- * to those pages to avoid races.
- */
+ 
 static int memfd_wait_for_pins(struct address_space *mapping)
 {
 	XA_STATE(xas, &mapping->i_pages, 0);
@@ -105,11 +86,7 @@ static int memfd_wait_for_pins(struct address_space *mapping)
 
 			if (!xa_is_value(page) && cache_count !=
 			    page_count(page) - total_mapcount(page)) {
-				/*
-				 * On the last scan, we clean up all those tags
-				 * we inserted; but make a note that we still
-				 * found pages pinned.
-				 */
+				 
 				if (scan == LAST_SCAN)
 					error = -EBUSY;
 				else
@@ -160,37 +137,7 @@ static int memfd_add_seals(struct file *file, unsigned int seals)
 	unsigned int *file_seals;
 	int error;
 
-	/*
-	 * SEALING
-	 * Sealing allows multiple parties to share a tmpfs or hugetlbfs file
-	 * but restrict access to a specific subset of file operations. Seals
-	 * can only be added, but never removed. This way, mutually untrusted
-	 * parties can share common memory regions with a well-defined policy.
-	 * A malicious peer can thus never perform unwanted operations on a
-	 * shared object.
-	 *
-	 * Seals are only supported on special tmpfs or hugetlbfs files and
-	 * always affect the whole underlying inode. Once a seal is set, it
-	 * may prevent some kinds of access to the file. Currently, the
-	 * following seals are defined:
-	 *   SEAL_SEAL: Prevent further seals from being set on this file
-	 *   SEAL_SHRINK: Prevent the file from shrinking
-	 *   SEAL_GROW: Prevent the file from growing
-	 *   SEAL_WRITE: Prevent write access to the file
-	 *   SEAL_EXEC: Prevent modification of the exec bits in the file mode
-	 *
-	 * As we don't require any trust relationship between two parties, we
-	 * must prevent seals from being removed. Therefore, sealing a file
-	 * only adds a given set of seals to the file, it never touches
-	 * existing seals. Furthermore, the "setting seals"-operation can be
-	 * sealed itself, which basically prevents any further seal from being
-	 * added.
-	 *
-	 * Semantics of sealing are only defined on volatile files. Only
-	 * anonymous tmpfs and hugetlbfs files support sealing. More
-	 * importantly, seals are never written to disk. Therefore, there's
-	 * no plan to support it on other file types.
-	 */
+	 
 
 	if (!(file->f_mode & FMODE_WRITE))
 		return -EPERM;
@@ -222,9 +169,7 @@ static int memfd_add_seals(struct file *file, unsigned int seals)
 		}
 	}
 
-	/*
-	 * SEAL_EXEC implys SEAL_WRITE, making W^X from the start.
-	 */
+	 
 	if (seals & F_SEAL_EXEC && inode->i_mode & 0111)
 		seals |= F_SEAL_SHRINK|F_SEAL_GROW|F_SEAL_WRITE|F_SEAL_FUTURE_WRITE;
 
@@ -305,13 +250,13 @@ SYSCALL_DEFINE2(memfd_create,
 		if (flags & ~(unsigned int)MFD_ALL_FLAGS)
 			return -EINVAL;
 	} else {
-		/* Allow huge page size encoding in flags. */
+		 
 		if (flags & ~(unsigned int)(MFD_ALL_FLAGS |
 				(MFD_HUGE_MASK << MFD_HUGE_SHIFT)))
 			return -EINVAL;
 	}
 
-	/* Invalid if both EXEC and NOEXEC_SEAL are set.*/
+	 
 	if ((flags & MFD_EXEC) && (flags & MFD_NOEXEC_SEAL))
 		return -EINVAL;
 
@@ -325,7 +270,7 @@ SYSCALL_DEFINE2(memfd_create,
 	if (error < 0)
 		return error;
 
-	/* length includes terminating zero */
+	 
 	len = strnlen_user(uname, MFD_NAME_MAX_LEN + 1);
 	if (len <= 0)
 		return -EFAULT;
@@ -342,7 +287,7 @@ SYSCALL_DEFINE2(memfd_create,
 		goto err_name;
 	}
 
-	/* terminating-zero may have changed after strnlen_user() returned */
+	 
 	if (name[len + MFD_NAME_PREFIX_LEN - 1]) {
 		error = -EFAULT;
 		goto err_name;
@@ -378,7 +323,7 @@ SYSCALL_DEFINE2(memfd_create,
 			*file_seals |= F_SEAL_EXEC;
 		}
 	} else if (flags & MFD_ALLOW_SEALING) {
-		/* MFD_EXEC and MFD_ALLOW_SEALING are set */
+		 
 		file_seals = memfd_file_seals_ptr(file);
 		if (file_seals)
 			*file_seals &= ~F_SEAL_SEAL;

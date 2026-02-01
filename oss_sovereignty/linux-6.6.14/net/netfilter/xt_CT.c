@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2010 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/gfp.h>
@@ -19,7 +17,7 @@
 
 static inline int xt_ct_target(struct sk_buff *skb, struct nf_conn *ct)
 {
-	/* Previously seen (loopback)? Ignore. */
+	 
 	if (skb->_nfct != 0)
 		return XT_CONTINUE;
 
@@ -143,9 +141,7 @@ static void xt_ct_put_helper(struct nf_conn_help *help)
 	if (!help)
 		return;
 
-	/* not yet exposed to other cpus, or ruleset
-	 * already detached (post-replacement).
-	 */
+	 
 	helper = rcu_dereference_raw(help->helper);
 	if (helper)
 		nf_conntrack_helper_put(helper);
@@ -354,7 +350,7 @@ static struct xt_target xt_ct_tg_reg[] __read_mostly = {
 static unsigned int
 notrack_tg(struct sk_buff *skb, const struct xt_action_param *par)
 {
-	/* Previously seen (loopback)? Ignore. */
+	 
 	if (skb->_nfct != 0)
 		return XT_CONTINUE;
 

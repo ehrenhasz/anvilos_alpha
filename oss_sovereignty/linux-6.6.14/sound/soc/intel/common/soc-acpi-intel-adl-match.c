@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soc-apci-intel-adl-match.c - tables and support for ADL ACPI enumeration.
- *
- * Copyright (c) 2020, Intel Corporation.
- */
+
+ 
 
 #include <sound/soc-acpi.h>
 #include <sound/soc-acpi-intel-match.h>
@@ -90,7 +86,7 @@ static const struct snd_soc_acpi_adr_device rt711_sdca_2_adr[] = {
 
 static const struct snd_soc_acpi_adr_device rt1316_1_group1_adr[] = {
 	{
-		.adr = 0x000131025D131601ull, /* unique ID is set for some reason */
+		.adr = 0x000131025D131601ull,  
 		.num_endpoints = 1,
 		.endpoints = &spk_l_endpoint,
 		.name_prefix = "rt1316-1"
@@ -597,12 +593,12 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_adl_machines[] = {
 	{
 		.comp_ids = &essx_83x6,
 		.drv_name = "sof-essx8336",
-		.sof_tplg_filename = "sof-adl-es8336", /* the tplg suffix is added at run time */
+		.sof_tplg_filename = "sof-adl-es8336",  
 		.tplg_quirk_mask = SND_SOC_ACPI_TPLG_INTEL_SSP_NUMBER |
 					SND_SOC_ACPI_TPLG_INTEL_SSP_MSB |
 					SND_SOC_ACPI_TPLG_INTEL_DMIC_NUMBER,
 	},
-	/* place amp-only boards in the end of table */
+	 
 	{
 		.id = "CSC3541",
 		.drv_name = "adl_cs35l41",
@@ -617,88 +613,88 @@ struct snd_soc_acpi_mach snd_soc_acpi_intel_adl_machines[] = {
 };
 EXPORT_SYMBOL_GPL(snd_soc_acpi_intel_adl_machines);
 
-/* this table is used when there is no I2S codec present */
+ 
 struct snd_soc_acpi_mach snd_soc_acpi_intel_adl_sdw_machines[] = {
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = adl_default,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711-l0-rt1308-l12-rt715-l3.tplg",
 	},
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = adl_sdca_default,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711-l0-rt1316-l12-rt714-l3.tplg",
 	},
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = adl_sdca_3_in_1,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711-l0-rt1316-l13-rt714-l2.tplg",
 	},
 	{
-		.link_mask = 0xF, /* 4 active links required */
+		.link_mask = 0xF,  
 		.links = adl_sdw_rt711_link2_rt1316_link01_rt714_link3,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711-l2-rt1316-l01-rt714-l3.tplg",
 	},
 	{
-		.link_mask = 0x7, /* rt1316 on link0 and link1 & rt711 on link2*/
+		.link_mask = 0x7,  
 		.links = adl_sdw_rt711_link2_rt1316_link01,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711-l2-rt1316-l01.tplg",
 	},
 	{
-		.link_mask = 0xC, /* rt1316 on link2 & rt714 on link3 */
+		.link_mask = 0xC,  
 		.links = adl_sdw_rt1316_link2_rt714_link3,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt1316-l2-mono-rt714-l3.tplg",
 	},
 	{
-		.link_mask = 0x7, /* rt714 on link0 & two rt1316s on link1 and link2 */
+		.link_mask = 0x7,  
 		.links = adl_sdw_rt1316_link12_rt714_link0,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt1316-l12-rt714-l0.tplg",
 	},
 	{
-		.link_mask = 0x3, /* rt1316 on link1 & rt714 on link0 */
+		.link_mask = 0x3,  
 		.links = adl_sdw_rt1316_link1_rt714_link0,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt1316-l1-mono-rt714-l0.tplg",
 	},
 	{
-		.link_mask = 0x5, /* 2 active links required */
+		.link_mask = 0x5,  
 		.links = adl_sdw_rt1316_link2_rt714_link0,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt1316-l2-mono-rt714-l0.tplg",
 	},
 	{
-		.link_mask = 0x9, /* 2 active links required */
+		.link_mask = 0x9,  
 		.links = adl_sdw_rt711_link0_rt1316_link3,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711-l0-rt1316-l3.tplg",
 	},
 	{
-		.link_mask = 0x5, /* 2 active links required */
+		.link_mask = 0x5,  
 		.links = adl_sdw_rt711_link0_rt1316_link2,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711-l0-rt1316-l2.tplg",
 	},
 	{
-		.link_mask = 0x1, /* link0 required */
+		.link_mask = 0x1,  
 		.links = adl_rvp,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711.tplg",
 	},
 	{
-		.link_mask = 0x1, /* link0 required */
+		.link_mask = 0x1,  
 		.links = adlps_rvp,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-rt711.tplg",
 	},
 	{
-		.link_mask = 0x5, /* rt5682 on link0 & 2xmax98373 on link 2 */
+		.link_mask = 0x5,  
 		.links = adl_chromebook_base,
 		.drv_name = "sof_sdw",
 		.sof_tplg_filename = "sof-adl-sdw-max98373-rt5682.tplg",

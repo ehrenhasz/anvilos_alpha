@@ -1,22 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Medifield PNW Camera Imaging ISP subsystem.
- *
- * Copyright (c) 2010 Intel Corporation. All Rights Reserved.
- *
- * Copyright (c) 2010 Silicon Hive www.siliconhive.com.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version
- * 2 as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- *
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pm_runtime.h>
@@ -39,9 +22,7 @@
 #include "type_support.h"
 #include "device_access/device_access.h"
 
-/*
- * Videobuf2 ops
- */
+ 
 static int atomisp_queue_setup(struct vb2_queue *vq,
 			       unsigned int *nbuffers, unsigned int *nplanes,
 			       unsigned int sizes[], struct device *alloc_devs[])
@@ -49,12 +30,9 @@ static int atomisp_queue_setup(struct vb2_queue *vq,
 	struct atomisp_video_pipe *pipe = container_of(vq, struct atomisp_video_pipe, vb_queue);
 	int ret;
 
-	mutex_lock(&pipe->asd->isp->mutex); /* for get_css_frame_info() / set_fmt() */
+	mutex_lock(&pipe->asd->isp->mutex);  
 
-	/*
-	 * When VIDIOC_S_FMT has not been called before VIDIOC_REQBUFS, then
-	 * this will fail. Call atomisp_set_fmt() ourselves and try again.
-	 */
+	 
 	ret = atomisp_get_css_frame_info(pipe->asd, &pipe->frame_info);
 	if (ret) {
 		struct v4l2_format f = {
@@ -116,7 +94,7 @@ static int atomisp_q_one_metadata_buffer(struct atomisp_sub_device *asd,
 
 	if (asd->metadata_bufs_in_css[stream_id][css_pipe_id] >=
 	    ATOMISP_CSS_Q_DEPTH)
-		return 0; /* we have reached CSS queue depth */
+		return 0;  
 
 	if (!list_empty(&asd->metadata[md_type])) {
 		metadata_list = &asd->metadata[md_type];
@@ -154,7 +132,7 @@ static int atomisp_q_one_s3a_buffer(struct atomisp_sub_device *asd,
 	unsigned int exp_id;
 
 	if (asd->s3a_bufs_in_css[css_pipe_id] >= ATOMISP_CSS_Q_DEPTH)
-		return 0; /* we have reached CSS queue depth */
+		return 0;  
 
 	if (!list_empty(&asd->s3a_stats)) {
 		s3a_list = &asd->s3a_stats;
@@ -173,7 +151,7 @@ static int atomisp_q_one_s3a_buffer(struct atomisp_sub_device *asd,
 	hmm_flush_vmap(s3a_buf->s3a_data->data_ptr);
 	if (atomisp_q_s3a_buffer_to_css(asd, s3a_buf,
 					stream_id, css_pipe_id)) {
-		/* got from head, so return back to the head */
+		 
 		list_add(&s3a_buf->list, s3a_list);
 		return -EINVAL;
 	} else {
@@ -194,7 +172,7 @@ static int atomisp_q_one_dis_buffer(struct atomisp_sub_device *asd,
 	unsigned long irqflags;
 
 	if (asd->dis_bufs_in_css >=  ATOMISP_CSS_Q_DEPTH)
-		return 0; /* we have reached CSS queue depth */
+		return 0;  
 
 	spin_lock_irqsave(&asd->dis_stats_lock, irqflags);
 	if (list_empty(&asd->dis_stats)) {
@@ -213,7 +191,7 @@ static int atomisp_q_one_dis_buffer(struct atomisp_sub_device *asd,
 	if (atomisp_q_dis_buffer_to_css(asd, dis_buf,
 					stream_id, css_pipe_id)) {
 		spin_lock_irqsave(&asd->dis_stats_lock, irqflags);
-		/* got from tail, so return back to the tail */
+		 
 		list_add_tail(&dis_buf->list, &asd->dis_stats);
 		spin_unlock_irqrestore(&asd->dis_stats_lock, irqflags);
 		return -EINVAL;
@@ -261,10 +239,7 @@ static int atomisp_q_video_buffers_to_css(struct atomisp_sub_device *asd,
 		if (!frame)
 			return -EINVAL;
 
-		/*
-		 * If there is a per_frame setting to apply on the buffer,
-		 * do it before buffer en-queueing.
-		 */
+		 
 		param = pipe->frame_params[frame->vb.vb2_buf.index];
 		if (param) {
 			atomisp_makeup_css_parameters(asd,
@@ -285,14 +260,7 @@ static int atomisp_q_video_buffers_to_css(struct atomisp_sub_device *asd,
 			asd->params.dvs_6axis = (struct ia_css_dvs_6axis_config *)
 						param->params.dvs_6axis;
 
-			/*
-			 * WORKAROUND:
-			 * Because the camera halv3 can't ensure to set zoom
-			 * region to per_frame setting and global setting at
-			 * same time and only set zoom region to pre_frame
-			 * setting now.so when the pre_frame setting include
-			 * zoom region,I will set it to global setting.
-			 */
+			 
 			if (param->params.update_flag.dz_config &&
 			    asd->run_mode->val != ATOMISP_RUN_MODE_VIDEO
 			    && !err) {
@@ -306,7 +274,7 @@ static int atomisp_q_video_buffers_to_css(struct atomisp_sub_device *asd,
 			}
 			pipe->frame_params[frame->vb.vb2_buf.index] = NULL;
 		}
-		/* Enqueue buffer */
+		 
 		err = atomisp_q_video_buffer_to_css(asd, frame, stream_id,
 						    css_buf_type, css_pipe_id);
 		if (err) {
@@ -318,7 +286,7 @@ static int atomisp_q_video_buffers_to_css(struct atomisp_sub_device *asd,
 			return -EINVAL;
 		}
 
-		/* enqueue 3A/DIS/metadata buffers */
+		 
 		if (asd->params.curr_grid_info.s3a_grid.enable &&
 		    css_pipe_id == asd->params.s3a_enabled_pipe &&
 		    css_buf_type == IA_CSS_BUFFER_TYPE_OUTPUT_FRAME)
@@ -341,7 +309,7 @@ static int atomisp_q_video_buffers_to_css(struct atomisp_sub_device *asd,
 	return 0;
 }
 
-/* queue all available buffers to css */
+ 
 int atomisp_qbuffers_to_css(struct atomisp_sub_device *asd)
 {
 	enum ia_css_pipe_id pipe_id;
@@ -357,7 +325,7 @@ int atomisp_qbuffers_to_css(struct atomisp_sub_device *asd)
 	} else if (asd->run_mode->val == ATOMISP_RUN_MODE_PREVIEW) {
 		pipe_id = IA_CSS_PIPE_ID_PREVIEW;
 	} else {
-		/* ATOMISP_RUN_MODE_STILL_CAPTURE */
+		 
 		pipe_id = IA_CSS_PIPE_ID_CAPTURE;
 	}
 
@@ -385,23 +353,14 @@ static void atomisp_buf_queue(struct vb2_buffer *vb)
 		goto out_unlock;
 	}
 
-	/* FIXME this ugliness comes from the original atomisp buffer handling */
+	 
 	if (!(vb->skip_cache_sync_on_finish && vb->skip_cache_sync_on_prepare))
 		wbinvd();
 
 	pipe->frame_params[vb->index] = NULL;
 
 	spin_lock_irqsave(&pipe->irq_lock, irqflags);
-	/*
-	 * when a frame buffer meets following conditions, it should be put into
-	 * the waiting list:
-	 * 1.  It is not a main output frame, and it has a per-frame parameter
-	 *     to go with it.
-	 * 2.  It is not a main output frame, and the waiting buffer list is not
-	 *     empty, to keep the FIFO sequence of frame buffer processing, it
-	 *     is put to waiting list until previous per-frame parameter buffers
-	 *     get enqueued.
-	 */
+	 
 	if (pipe->frame_request_config_id[vb->index] ||
 	    !list_empty(&pipe->buffers_waiting_for_param))
 		list_add_tail(&frame->queue, &pipe->buffers_waiting_for_param);
@@ -410,7 +369,7 @@ static void atomisp_buf_queue(struct vb2_buffer *vb)
 
 	spin_unlock_irqrestore(&pipe->irq_lock, irqflags);
 
-	/* TODO: do this better, not best way to queue to css */
+	 
 	if (asd->streaming) {
 		if (!list_empty(&pipe->buffers_waiting_for_param))
 			atomisp_handle_parameter_and_buffer(pipe);
@@ -451,10 +410,7 @@ static void atomisp_dev_init_struct(struct atomisp_device *isp)
 
 	for (i = 0; i < isp->input_cnt; i++)
 		isp->inputs[i].asd = NULL;
-	/*
-	 * For Merrifield, frequency is scalable.
-	 * After boot-up, the default frequency is 200MHz.
-	 */
+	 
 	isp->running_freq = ISP_FREQ_200MHZ;
 }
 
@@ -471,7 +427,7 @@ static void atomisp_subdev_init_struct(struct atomisp_sub_device *asd)
 	asd->params.xnr_en = false;
 	asd->params.false_color = 0;
 	asd->params.yuv_ds_en = 0;
-	/* s3a grid not enabled for any pipe */
+	 
 	asd->params.s3a_enabled_pipe = IA_CSS_PIPE_ID_NUM;
 
 	asd->copy_mode = false;
@@ -483,9 +439,7 @@ static void atomisp_subdev_init_struct(struct atomisp_sub_device *asd)
 	atomisp_css_init_struct(asd);
 }
 
-/*
- * file operation functions
- */
+ 
 static int atomisp_open(struct file *file)
 {
 	struct video_device *vdev = video_devdata(file);
@@ -508,16 +462,14 @@ static int atomisp_open(struct file *file)
 		goto error;
 	}
 
-	/*
-	 * atomisp does not allow multiple open
-	 */
+	 
 	if (pipe->users) {
 		dev_dbg(isp->dev, "video node already opened\n");
 		mutex_unlock(&isp->mutex);
 		return -EBUSY;
 	}
 
-	/* runtime power management, turn on ISP */
+	 
 	ret = pm_runtime_resume_and_get(vdev->v4l2_dev->dev);
 	if (ret < 0) {
 		dev_err(isp->dev, "Failed to power on device\n");
@@ -533,7 +485,7 @@ static int atomisp_open(struct file *file)
 	}
 
 	atomisp_subdev_init_struct(asd);
-	/* Ensure that a mode is set */
+	 
 	v4l2_ctrl_s_ctrl(asd->run_mode, ATOMISP_RUN_MODE_PREVIEW);
 
 	pipe->users++;
@@ -562,20 +514,14 @@ static int atomisp_release(struct file *file)
 
 	dev_dbg(isp->dev, "release device %s\n", vdev->name);
 
-	/* Note file must not be used after this! */
+	 
 	vb2_fop_release(file);
 
 	mutex_lock(&isp->mutex);
 
 	pipe->users--;
 
-	/*
-	 * A little trick here:
-	 * file injection input resolution is recorded in the sink pad,
-	 * therefore can not be cleared when releaseing one device node.
-	 * The sink pad setting can only be cleared when all device nodes
-	 * get released.
-	 */
+	 
 	{
 		struct v4l2_mbus_framefmt isp_sink_fmt = { 0 };
 
@@ -593,7 +539,7 @@ static int atomisp_release(struct file *file)
 		if (ret && ret != -ENOIOCTLCMD)
 			dev_warn(isp->dev, "Failed to power-off sensor\n");
 
-		/* clear the asd field to show this camera is not used */
+		 
 		isp->inputs[asd->input_curr].asd = NULL;
 	}
 
@@ -623,10 +569,6 @@ const struct v4l2_file_operations atomisp_fops = {
 	.poll = vb2_fop_poll,
 	.unlocked_ioctl = video_ioctl2,
 #ifdef CONFIG_COMPAT
-	/*
-	 * this was removed because of bugs, the interface
-	 * needs to be made safe for compat tasks instead.
-	.compat_ioctl32 = atomisp_compat_ioctl32,
-	 */
+	 
 #endif
 };

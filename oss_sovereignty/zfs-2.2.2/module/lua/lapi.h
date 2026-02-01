@@ -1,8 +1,4 @@
-/*
-** $Id: lapi.h,v 2.7.1.1 2013/04/12 18:48:47 roberto Exp $
-** Auxiliary functions from Lua API
-** See Copyright Notice in lua.h
-*/
+ 
 
 #ifndef lapi_h
 #define lapi_h

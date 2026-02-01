@@ -1,12 +1,12 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license.  When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2018-2022 Intel Corporation. All rights reserved.
-//
-// Author: Ranjani Sridharan <ranjani.sridharan@linux.intel.com>
-//
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -16,7 +16,7 @@
 #include "../ops.h"
 #include "../sof-pci-dev.h"
 
-/* platform specific devices */
+ 
 #include "hda.h"
 #include "mtl.h"
 
@@ -31,7 +31,7 @@ static const struct sof_dev_desc mtl_desc = {
 	.chip_info = &mtl_chip_info,
 	.ipc_supported_mask	= BIT(SOF_INTEL_IPC4),
 	.ipc_default		= SOF_INTEL_IPC4,
-	.dspless_mode_supported	= true,		/* Only supported for HDaudio */
+	.dspless_mode_supported	= true,		 
 	.default_fw_path = {
 		[SOF_INTEL_IPC4] = "intel/sof-ipc4/mtl",
 	},
@@ -50,14 +50,14 @@ static const struct sof_dev_desc mtl_desc = {
 	.ops_free = hda_ops_free,
 };
 
-/* PCI IDs */
+ 
 static const struct pci_device_id sof_pci_ids[] = {
 	{ PCI_DEVICE_DATA(INTEL, HDA_MTL, &mtl_desc) },
 	{ 0, }
 };
 MODULE_DEVICE_TABLE(pci, sof_pci_ids);
 
-/* pci_driver definition */
+ 
 static struct pci_driver snd_sof_pci_intel_mtl_driver = {
 	.name = "sof-audio-pci-intel-mtl",
 	.id_table = sof_pci_ids,

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2022-2023 Intel Corporation
- */
+
+ 
 #include "mvm.h"
 #include "time-sync.h"
 #include "sta.h"
@@ -18,15 +16,15 @@ u32 iwl_mvm_sta_fw_id_mask(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 
 	mvmsta = iwl_mvm_sta_from_mac80211(sta);
 
-	/* it's easy when the STA is not an MLD */
+	 
 	if (!sta->valid_links)
 		return BIT(mvmsta->deflink.sta_id);
 
-	/* but if it is an MLD, get the mask of all the FW STAs it has ... */
+	 
 	for (link_id = 0; link_id < ARRAY_SIZE(mvmsta->link); link_id++) {
 		struct iwl_mvm_link_sta *link_sta;
 
-		/* unless we have a specific link in mind */
+		 
 		if (filter_link_id >= 0 && link_id != filter_link_id)
 			continue;
 
@@ -53,9 +51,7 @@ static int iwl_mvm_mld_send_sta_cmd(struct iwl_mvm *mvm,
 	return ret;
 }
 
-/*
- * Add an internal station to the FW table
- */
+ 
 static int iwl_mvm_mld_add_int_sta_to_fw(struct iwl_mvm *mvm,
 					 struct iwl_mvm_int_sta *sta,
 					 const u8 *addr, int link_id)
@@ -84,11 +80,7 @@ static int iwl_mvm_mld_add_int_sta_to_fw(struct iwl_mvm *mvm,
 	return iwl_mvm_mld_send_sta_cmd(mvm, &cmd);
 }
 
-/*
- * Remove a station from the FW table. Before sending the command to remove
- * the station validate that the station is indeed known to the driver (sanity
- * only).
- */
+ 
 static int iwl_mvm_mld_rm_sta_from_fw(struct iwl_mvm *mvm, u32 sta_id)
 {
 	struct iwl_mvm_remove_sta_cmd rm_sta_cmd = {
@@ -96,7 +88,7 @@ static int iwl_mvm_mld_rm_sta_from_fw(struct iwl_mvm *mvm, u32 sta_id)
 	};
 	int ret;
 
-	/* Note: internal stations are marked as error values */
+	 
 	if (!rcu_access_pointer(mvm->fw_id_to_mac_id[sta_id])) {
 		IWL_ERR(mvm, "Invalid station id %d\n", sta_id);
 		return -EINVAL;
@@ -130,9 +122,7 @@ static int iwl_mvm_add_aux_sta_to_fw(struct iwl_mvm *mvm,
 	return ret;
 }
 
-/*
- * Adds an internal sta to the FW table with its queues
- */
+ 
 int iwl_mvm_mld_add_int_sta_with_queue(struct iwl_mvm *mvm,
 				       struct iwl_mvm_int_sta *sta,
 				       const u8 *addr, int link_id,
@@ -153,10 +143,7 @@ int iwl_mvm_mld_add_int_sta_with_queue(struct iwl_mvm *mvm,
 	if (ret)
 		return ret;
 
-	/*
-	 * For 22000 firmware and on we cannot add queue to a station unknown
-	 * to firmware so enable queue here - after the station was added
-	 */
+	 
 	txq = iwl_mvm_tvqm_enable_txq(mvm, NULL, sta->sta_id, tid,
 				      wdg_timeout);
 	if (txq < 0) {
@@ -168,10 +155,7 @@ int iwl_mvm_mld_add_int_sta_with_queue(struct iwl_mvm *mvm,
 	return 0;
 }
 
-/*
- * Adds a new int sta: allocate it in the driver, add it to the FW table,
- * and add its queues.
- */
+ 
 static int iwl_mvm_mld_add_int_sta(struct iwl_mvm *mvm,
 				   struct iwl_mvm_int_sta *int_sta, u16 *queue,
 				   enum nl80211_iftype iftype,
@@ -183,7 +167,7 @@ static int iwl_mvm_mld_add_int_sta(struct iwl_mvm *mvm,
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* qmask argument is not used in the new tx api, send a don't care */
+	 
 	ret = iwl_mvm_allocate_int_sta(mvm, int_sta, 0, iftype,
 				       sta_type);
 	if (ret)
@@ -199,10 +183,7 @@ static int iwl_mvm_mld_add_int_sta(struct iwl_mvm *mvm,
 	return 0;
 }
 
-/* Allocate a new station entry for the broadcast station to the given vif,
- * and send it to the FW.
- * Note that each P2P mac should have its own broadcast station.
- */
+ 
 int iwl_mvm_mld_add_bcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			      struct ieee80211_bss_conf *link_conf)
 {
@@ -238,10 +219,7 @@ int iwl_mvm_mld_add_bcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 				       IWL_MAX_TID_COUNT, &wdg_timeout);
 }
 
-/* Allocate a new station entry for the broadcast station to the given vif,
- * and send it to the FW.
- * Note that each AP/GO mac should have its own multicast station.
- */
+ 
 int iwl_mvm_mld_add_mcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			      struct ieee80211_bss_conf *link_conf)
 {
@@ -259,11 +237,7 @@ int iwl_mvm_mld_add_mcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 		    vif->type != NL80211_IFTYPE_ADHOC))
 		return -EOPNOTSUPP;
 
-	/* In IBSS, ieee80211_check_queues() sets the cab_queue to be
-	 * invalid, so make sure we use the queue we want.
-	 * Note that this is done here as we want to avoid making DQA
-	 * changes in mac80211 layer.
-	 */
+	 
 	if (vif->type == NL80211_IFTYPE_ADHOC)
 		mvm_link->cab_queue = IWL_MVM_DQA_GCAST_QUEUE;
 
@@ -273,9 +247,7 @@ int iwl_mvm_mld_add_mcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 				       &timeout);
 }
 
-/* Allocate a new station entry for the sniffer station to the given vif,
- * and send it to the FW.
- */
+ 
 int iwl_mvm_mld_add_snif_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			     struct ieee80211_bss_conf *link_conf)
 {
@@ -295,9 +267,7 @@ int iwl_mvm_mld_add_aux_sta(struct iwl_mvm *mvm, u32 lmac_id)
 {
 	lockdep_assert_held(&mvm->mutex);
 
-	/* In CDB NICs we need to specify which lmac to use for aux activity;
-	 * use the link_id argument place to send lmac_id to the function.
-	 */
+	 
 	return iwl_mvm_mld_add_int_sta(mvm, &mvm->aux_sta, &mvm->aux_queue,
 				       NL80211_IFTYPE_UNSPECIFIED,
 				       STATION_TYPE_AUX, lmac_id, NULL,
@@ -333,8 +303,7 @@ static int iwl_mvm_mld_disable_txq(struct iwl_mvm *mvm, u32 sta_mask,
 	return ret;
 }
 
-/* Removes a sta from the FW table, disable its queues, and dealloc it
- */
+ 
 static int iwl_mvm_mld_rm_int_sta(struct iwl_mvm *mvm,
 				  struct iwl_mvm_int_sta *int_sta,
 				  bool flush, u8 tid, u16 *queuptr)
@@ -390,9 +359,7 @@ int iwl_mvm_mld_rm_bcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 				      true, IWL_MAX_TID_COUNT, queueptr);
 }
 
-/* Send the FW a request to remove the station from it's internal data
- * structures, and in addition remove it from the local data structure.
- */
+ 
 int iwl_mvm_mld_rm_mcast_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 			     struct ieee80211_bss_conf *link_conf)
 {
@@ -424,7 +391,7 @@ int iwl_mvm_mld_rm_aux_sta(struct iwl_mvm *mvm)
 				      IWL_MAX_TID_COUNT, &mvm->aux_queue);
 }
 
-/* send a cfg sta command to add/update a sta in firmware */
+ 
 static int iwl_mvm_mld_cfg_sta(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 			       struct ieee80211_vif *vif,
 			       struct ieee80211_link_sta *link_sta,
@@ -441,7 +408,7 @@ static int iwl_mvm_mld_cfg_sta(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 	};
 	u32 agg_size = 0, mpdu_dens = 0;
 
-	/* when adding sta, link should exist in FW */
+	 
 	if (WARN_ON(link_info->fw_link_id == IWL_MVM_FW_LINK_ID_INVALID))
 		return -EINVAL;
 
@@ -473,14 +440,14 @@ static int iwl_mvm_mld_cfg_sta(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 		WARN_ON(1);
 		break;
 	case IEEE80211_SMPS_STATIC:
-		/* override NSS */
+		 
 		cmd.mimo = cpu_to_le32(0);
 		break;
 	case IEEE80211_SMPS_DYNAMIC:
 		cmd.mimo_protection = cpu_to_le32(1);
 		break;
 	case IEEE80211_SMPS_OFF:
-		/* nothing */
+		 
 		break;
 	}
 
@@ -498,10 +465,10 @@ static int iwl_mvm_mld_cfg_sta(struct iwl_mvm *mvm, struct ieee80211_sta *sta,
 		cmd.trig_rnd_alloc =
 			cpu_to_le32(link_conf->uora_exists ? 1 : 0);
 
-		/* PPE Thresholds */
+		 
 		iwl_mvm_set_sta_pkt_ext(mvm, link_sta, &cmd.pkt_ext);
 
-		/* HTC flags */
+		 
 		cmd.htc_flags = iwl_mvm_get_sta_htc_flags(sta, link_sta);
 
 		if (link_sta->he_cap.he_cap_elem.mac_cap_info[2] &
@@ -576,7 +543,7 @@ static int iwl_mvm_mld_alloc_sta_link(struct iwl_mvm *mvm,
 	return 0;
 }
 
-/* allocate all the links of a sta, called when the station is first added */
+ 
 static int iwl_mvm_mld_alloc_sta_links(struct iwl_mvm *mvm,
 				       struct ieee80211_vif *vif,
 				       struct ieee80211_sta *sta)
@@ -616,9 +583,7 @@ static void iwl_mvm_mld_set_ap_sta_id(struct ieee80211_sta *sta,
 	}
 }
 
-/* FIXME: consider waiting for mac80211 to add the STA instead of allocating
- * queues here
- */
+ 
 static int iwl_mvm_alloc_sta_after_restart(struct iwl_mvm *mvm,
 					   struct ieee80211_vif *vif,
 					   struct ieee80211_sta *sta)
@@ -627,14 +592,11 @@ static int iwl_mvm_alloc_sta_after_restart(struct iwl_mvm *mvm,
 	struct iwl_mvm_vif *mvmvif = iwl_mvm_vif_from_mac80211(vif);
 	struct ieee80211_link_sta *link_sta;
 	unsigned int link_id;
-	/* no active link found */
+	 
 	int ret = -EINVAL;
 	int sta_id;
 
-	/* First add an empty station since allocating a queue requires
-	 * a valid station. Since we need a link_id to allocate a station,
-	 * pick up the first valid one.
-	 */
+	 
 	for_each_sta_active_link(vif, sta, link_sta, link_id) {
 		struct iwl_mvm_vif_link_info *mvm_link;
 		struct ieee80211_bss_conf *link_conf =
@@ -695,7 +657,7 @@ int iwl_mvm_mld_add_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 	if (ret)
 		goto err;
 
-	/* at this stage sta link pointers are already allocated */
+	 
 	ret = iwl_mvm_mld_update_sta(mvm, vif, sta);
 
 	for_each_sta_active_link(vif, sta, link_sta, link_id) {
@@ -725,7 +687,7 @@ int iwl_mvm_mld_add_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 	return 0;
 
 err:
-	/* remove all already allocated stations in FW */
+	 
 	for_each_set_bit(link_id, &link_sta_added_to_fw,
 			 IEEE80211_MLD_MAX_NUM_LINKS) {
 		struct iwl_mvm_link_sta *mvm_link_sta =
@@ -735,7 +697,7 @@ err:
 		iwl_mvm_mld_rm_sta_from_fw(mvm, mvm_link_sta->sta_id);
 	}
 
-	/* free all sta resources in the driver */
+	 
 	iwl_mvm_mld_sta_rm_all_sta_links(mvm, mvm_sta);
 	return ret;
 }
@@ -809,7 +771,7 @@ int iwl_mvm_mld_rm_sta(struct iwl_mvm *mvm, struct ieee80211_vif *vif,
 
 	lockdep_assert_held(&mvm->mutex);
 
-	/* flush its queues here since we are freeing mvm_sta */
+	 
 	for_each_sta_active_link(vif, sta, link_sta, link_id) {
 		struct iwl_mvm_link_sta *mvm_link_sta =
 			rcu_dereference_protected(mvm_sta->link[link_id],
@@ -909,7 +871,7 @@ void iwl_mvm_mld_modify_all_sta_disable_tx(struct iwl_mvm *mvm,
 
 	rcu_read_lock();
 
-	/* Block/unblock all the stations of the given mvmvif */
+	 
 	for (i = 0; i < mvm->fw->ucode_capa.num_stations; i++) {
 		sta = rcu_dereference(mvm->fw_id_to_mac_id[i]);
 		if (IS_ERR_OR_NULL(sta))
@@ -1158,7 +1120,7 @@ int iwl_mvm_mld_update_sta_links(struct iwl_mvm *mvm,
 	return 0;
 
 err:
-	/* remove all already allocated stations in FW */
+	 
 	for_each_set_bit(link_id, &link_sta_added_to_fw,
 			 IEEE80211_MLD_MAX_NUM_LINKS) {
 		mvm_sta_link =
@@ -1168,7 +1130,7 @@ err:
 		iwl_mvm_mld_rm_sta_from_fw(mvm, mvm_sta_link->sta_id);
 	}
 
-	/* remove all already allocated station links in driver */
+	 
 	for_each_set_bit(link_id, &link_sta_allocated,
 			 IEEE80211_MLD_MAX_NUM_LINKS) {
 		mvm_sta_link =

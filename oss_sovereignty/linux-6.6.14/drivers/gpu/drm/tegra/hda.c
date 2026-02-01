@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright (C) 2019 NVIDIA Corporation
- */
+
+ 
 
 #include <linux/bug.h>
 
@@ -58,6 +56,6 @@ void tegra_hda_parse_format(unsigned int format, struct tegra_hda_format *fmt)
 
 	channels = (format & AC_FMT_CHAN_MASK) >> AC_FMT_CHAN_SHIFT;
 
-	/* channels are encoded as n - 1 */
+	 
 	fmt->channels = channels + 1;
 }

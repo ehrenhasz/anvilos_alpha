@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * AArch64 code
- *
- * Copyright (C) 2018, Red Hat, Inc.
- */
+
+ 
 
 #include <linux/compiler.h>
 #include <assert.h>
@@ -134,12 +130,12 @@ static void _virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
 		ptep = addr_gpa2hva(vm, pte_addr(vm, *ptep)) + pud_index(vm, vaddr) * 8;
 		if (!*ptep)
 			*ptep = addr_pte(vm, vm_alloc_page_table(vm), 3);
-		/* fall through */
+		 
 	case 3:
 		ptep = addr_gpa2hva(vm, pte_addr(vm, *ptep)) + pmd_index(vm, vaddr) * 8;
 		if (!*ptep)
 			*ptep = addr_pte(vm, vm_alloc_page_table(vm), 3);
-		/* fall through */
+		 
 	case 2:
 		ptep = addr_gpa2hva(vm, pte_addr(vm, *ptep)) + pte_index(vm, vaddr) * 8;
 		break;
@@ -147,7 +143,7 @@ static void _virt_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr,
 		TEST_FAIL("Page table levels must be 2, 3, or 4");
 	}
 
-	*ptep = addr_pte(vm, paddr, (attr_idx << 2) | (1 << 10) | 3);  /* AF */
+	*ptep = addr_pte(vm, paddr, (attr_idx << 2) | (1 << 10) | 3);   
 }
 
 void virt_arch_pg_map(struct kvm_vm *vm, uint64_t vaddr, uint64_t paddr)
@@ -173,12 +169,12 @@ uint64_t *virt_get_pte_hva(struct kvm_vm *vm, vm_vaddr_t gva)
 		ptep = addr_gpa2hva(vm, pte_addr(vm, *ptep)) + pud_index(vm, gva) * 8;
 		if (!ptep)
 			goto unmapped_gva;
-		/* fall through */
+		 
 	case 3:
 		ptep = addr_gpa2hva(vm, pte_addr(vm, *ptep)) + pmd_index(vm, gva) * 8;
 		if (!ptep)
 			goto unmapped_gva;
-		/* fall through */
+		 
 	case 2:
 		ptep = addr_gpa2hva(vm, pte_addr(vm, *ptep)) + pte_index(vm, gva) * 8;
 		if (!ptep)
@@ -255,16 +251,13 @@ void aarch64_vcpu_setup(struct kvm_vcpu *vcpu, struct kvm_vcpu_init *init)
 
 	vcpu_ioctl(vcpu, KVM_ARM_VCPU_INIT, init);
 
-	/*
-	 * Enable FP/ASIMD to avoid trapping when accessing Q0-Q15
-	 * registers, which the variable argument list macros do.
-	 */
+	 
 	vcpu_set_reg(vcpu, KVM_ARM64_SYS_REG(SYS_CPACR_EL1), 3 << 20);
 
 	vcpu_get_reg(vcpu, KVM_ARM64_SYS_REG(SYS_SCTLR_EL1), &sctlr_el1);
 	vcpu_get_reg(vcpu, KVM_ARM64_SYS_REG(SYS_TCR_EL1), &tcr_el1);
 
-	/* Configure base granule size */
+	 
 	switch (vm->mode) {
 	case VM_MODE_P52V48_4K:
 		TEST_FAIL("AArch64 does not support 4K sized pages "
@@ -276,18 +269,18 @@ void aarch64_vcpu_setup(struct kvm_vcpu *vcpu, struct kvm_vcpu_init *init)
 	case VM_MODE_P48V48_64K:
 	case VM_MODE_P40V48_64K:
 	case VM_MODE_P36V48_64K:
-		tcr_el1 |= 1ul << 14; /* TG0 = 64KB */
+		tcr_el1 |= 1ul << 14;  
 		break;
 	case VM_MODE_P48V48_16K:
 	case VM_MODE_P40V48_16K:
 	case VM_MODE_P36V48_16K:
 	case VM_MODE_P36V47_16K:
-		tcr_el1 |= 2ul << 14; /* TG0 = 16KB */
+		tcr_el1 |= 2ul << 14;  
 		break;
 	case VM_MODE_P48V48_4K:
 	case VM_MODE_P40V48_4K:
 	case VM_MODE_P36V48_4K:
-		tcr_el1 |= 0ul << 14; /* TG0 = 4KB */
+		tcr_el1 |= 0ul << 14;  
 		break;
 	default:
 		TEST_FAIL("Unknown guest mode, mode: 0x%x", vm->mode);
@@ -295,36 +288,36 @@ void aarch64_vcpu_setup(struct kvm_vcpu *vcpu, struct kvm_vcpu_init *init)
 
 	ttbr0_el1 = vm->pgd & GENMASK(47, vm->page_shift);
 
-	/* Configure output size */
+	 
 	switch (vm->mode) {
 	case VM_MODE_P52V48_64K:
-		tcr_el1 |= 6ul << 32; /* IPS = 52 bits */
+		tcr_el1 |= 6ul << 32;  
 		ttbr0_el1 |= FIELD_GET(GENMASK(51, 48), vm->pgd) << 2;
 		break;
 	case VM_MODE_P48V48_4K:
 	case VM_MODE_P48V48_16K:
 	case VM_MODE_P48V48_64K:
-		tcr_el1 |= 5ul << 32; /* IPS = 48 bits */
+		tcr_el1 |= 5ul << 32;  
 		break;
 	case VM_MODE_P40V48_4K:
 	case VM_MODE_P40V48_16K:
 	case VM_MODE_P40V48_64K:
-		tcr_el1 |= 2ul << 32; /* IPS = 40 bits */
+		tcr_el1 |= 2ul << 32;  
 		break;
 	case VM_MODE_P36V48_4K:
 	case VM_MODE_P36V48_16K:
 	case VM_MODE_P36V48_64K:
 	case VM_MODE_P36V47_16K:
-		tcr_el1 |= 1ul << 32; /* IPS = 36 bits */
+		tcr_el1 |= 1ul << 32;  
 		break;
 	default:
 		TEST_FAIL("Unknown guest mode, mode: 0x%x", vm->mode);
 	}
 
-	sctlr_el1 |= (1 << 0) | (1 << 2) | (1 << 12) /* M | C | I */;
-	/* TCR_EL1 |= IRGN0:WBWA | ORGN0:WBWA | SH0:Inner-Shareable */;
+	sctlr_el1 |= (1 << 0) | (1 << 2) | (1 << 12)  ;
+	 ;
 	tcr_el1 |= (1 << 8) | (1 << 10) | (3 << 12);
-	tcr_el1 |= (64 - vm->va_bits) /* T0SZ */;
+	tcr_el1 |= (64 - vm->va_bits)  ;
 
 	vcpu_set_reg(vcpu, KVM_ARM64_SYS_REG(SYS_SCTLR_EL1), sctlr_el1);
 	vcpu_set_reg(vcpu, KVM_ARM64_SYS_REG(SYS_TCR_EL1), tcr_el1);
@@ -403,7 +396,7 @@ void assert_on_unhandled_exception(struct kvm_vcpu *vcpu)
 	if (get_ucall(vcpu, &uc) != UCALL_UNHANDLED)
 		return;
 
-	if (uc.args[2]) /* valid_ec */ {
+	if (uc.args[2])   {
 		assert(VECTOR_IS_SYNC(uc.args[0]));
 		TEST_FAIL("Unexpected exception (vector:0x%lx, ec:0x%lx)",
 			  uc.args[0], uc.args[1]);
@@ -568,19 +561,13 @@ void smccc_smc(uint32_t function_id, uint64_t arg0, uint64_t arg1,
 
 void kvm_selftest_arch_init(void)
 {
-	/*
-	 * arm64 doesn't have a true default mode, so start by computing the
-	 * available IPA space and page sizes early.
-	 */
+	 
 	guest_modes_append_default();
 }
 
 void vm_vaddr_populate_bitmap(struct kvm_vm *vm)
 {
-	/*
-	 * arm64 selftests use only TTBR0_EL1, meaning that the valid VA space
-	 * is [0, 2^(64 - TCR_EL1.T0SZ)).
-	 */
+	 
 	sparsebit_set_num(vm->vpages_valid, 0,
 			  (1ULL << vm->va_bits) >> vm->page_shift);
 }

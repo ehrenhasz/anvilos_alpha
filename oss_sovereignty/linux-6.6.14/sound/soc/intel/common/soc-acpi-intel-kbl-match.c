@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * soc-acpi-intel-kbl-match.c - tables and support for KBL ACPI enumeration.
- *
- * Copyright (c) 2018, Intel Corporation.
- *
- */
+
+ 
 
 #include <sound/soc-acpi.h>
 #include <sound/soc-acpi-intel-match.h>

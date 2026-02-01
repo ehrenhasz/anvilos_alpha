@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * mmp AXI peripharal clock operation source file
- *
- * Copyright (C) 2012 Marvell
- * Chao Xie <xiechao.mail@gmail.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/io.h>

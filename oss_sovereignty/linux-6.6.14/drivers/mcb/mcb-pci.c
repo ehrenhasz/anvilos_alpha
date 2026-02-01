@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * MEN Chameleon Bus.
- *
- * Copyright (C) 2014 MEN Mikroelektronik GmbH (www.men.de)
- * Author: Johannes Thumshirn <johannes.thumshirn@men.de>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -93,11 +88,11 @@ static int mcb_pci_probe(struct pci_dev *pdev, const struct pci_device_id *id)
 	table_size = ret;
 
 	if (table_size < CHAM_HEADER_SIZE) {
-		/* Release the previous resources */
+		 
 		devm_iounmap(&pdev->dev, priv->base);
 		devm_release_mem_region(&pdev->dev, priv->mapbase, CHAM_HEADER_SIZE);
 
-		/* Then, allocate it again with the actual chameleon table size */
+		 
 		res = devm_request_mem_region(&pdev->dev, priv->mapbase,
 						table_size,
 						KBUILD_MODNAME);

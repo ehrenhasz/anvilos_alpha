@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018, Richtek Technology Corporation
- *
- * Richtek RT1711H Type-C Chip Driver
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/kernel.h>
@@ -25,11 +21,11 @@
 #define RT1711H_PHYCTRL2	0x81
 
 #define RT1711H_RTCTRL4		0x93
-/* rx threshold of rd/rp: 1b0 for level 0.4V/0.7V, 1b1 for 0.35V/0.75V */
+ 
 #define RT1711H_BMCIO_RXDZSEL	BIT(0)
 
 #define RT1711H_RTCTRL8		0x9B
-/* Autoidle timeout = (tout * 2 + 1) * 6.4ms */
+ 
 #define RT1711H_RTCTRL8_SET(ck300, ship_off, auto_idle, tout) \
 			    (((ck300) << 7) | ((ship_off) << 5) | \
 			    ((auto_idle) << 3) | ((tout) & 0x07))
@@ -38,7 +34,7 @@
 
 #define RT1711H_RTCTRL11	0x9E
 
-/* I2C timeout = (tout + 1) * 12.5ms */
+ 
 #define RT1711H_RTCTRL11_SET(en, tout) \
 			     (((en) << 7) | ((tout) & 0x0F))
 
@@ -48,7 +44,7 @@
 #define RT1711H_RTCTRL16	0xA3
 
 #define RT1711H_RTCTRL18	0xAF
-/* 1b0 as fixed rx threshold of rd/rp 0.55V, 1b1 depends on RTCRTL4[0] */
+ 
 #define BMCIO_RXDZEN	BIT(0)
 
 struct rt1711h_chip {
@@ -84,7 +80,7 @@ static const struct regmap_config rt1711h_regmap_config = {
 	.reg_bits = 8,
 	.val_bits = 8,
 
-	.max_register = 0xFF, /* 0x80 .. 0xFF are vendor defined */
+	.max_register = 0xFF,  
 };
 
 static struct rt1711h_chip *tdata_to_rt1711h(struct tcpci_data *tdata)
@@ -98,13 +94,13 @@ static int rt1711h_init(struct tcpci *tcpci, struct tcpci_data *tdata)
 	struct regmap *regmap = chip->data.regmap;
 	int ret;
 
-	/* CK 300K from 320K, shipping off, auto_idle enable, tout = 32ms */
+	 
 	ret = rt1711h_write8(chip, RT1711H_RTCTRL8,
 			     RT1711H_RTCTRL8_SET(0, 1, 1, 2));
 	if (ret < 0)
 		return ret;
 
-	/* Enable PD30 extended message for RT1715 */
+	 
 	if (chip->did == RT1715_DID) {
 		ret = regmap_update_bits(regmap, RT1711H_RTCTRL8,
 					 RT1711H_ENEXTMSG, RT1711H_ENEXTMSG);
@@ -112,34 +108,34 @@ static int rt1711h_init(struct tcpci *tcpci, struct tcpci_data *tdata)
 			return ret;
 	}
 
-	/* I2C reset : (val + 1) * 12.5ms */
+	 
 	ret = rt1711h_write8(chip, RT1711H_RTCTRL11,
 			     RT1711H_RTCTRL11_SET(1, 0x0F));
 	if (ret < 0)
 		return ret;
 
-	/* tTCPCfilter : (26.7 * val) us */
+	 
 	ret = rt1711h_write8(chip, RT1711H_RTCTRL14, 0x0F);
 	if (ret < 0)
 		return ret;
 
-	/*  tDRP : (51.2 + 6.4 * val) ms */
+	 
 	ret = rt1711h_write8(chip, RT1711H_RTCTRL15, 0x04);
 	if (ret < 0)
 		return ret;
 
-	/* dcSRC.DRP : 33% */
+	 
 	ret = rt1711h_write16(chip, RT1711H_RTCTRL16, 330);
 	if (ret < 0)
 		return ret;
 
-	/* Enable phy discard retry, retry count 7, rx filter deglitch 100 us */
+	 
 	ret = rt1711h_write8(chip, RT1711H_PHYCTRL1, 0xF1);
 	if (ret < 0)
 		return ret;
 
-	/* Decrease wait time of BMC-encoded 1 bit from 2.67us to 2.55us */
-	/* wait time : (val * .4167) us */
+	 
+	 
 	return rt1711h_write8(chip, RT1711H_PHYCTRL2, 62);
 }
 
@@ -171,13 +167,7 @@ static int rt1711h_set_vconn(struct tcpci *tcpci, struct tcpci_data *tdata,
 				  RT1711H_AUTOIDLEEN, enable ? 0 : RT1711H_AUTOIDLEEN);
 }
 
-/*
- * Selects the CC PHY noise filter voltage level according to the remote current
- * CC voltage level.
- *
- * @status: The port's current cc status read from IC
- * Return 0 if writes succeed; failure code otherwise
- */
+ 
 static inline int rt1711h_init_cc_params(struct rt1711h_chip *chip, u8 status)
 {
 	int ret, cc1, cc2;
@@ -275,7 +265,7 @@ static irqreturn_t rt1711h_irq(int irq, void *dev_id)
 		ret = rt1711h_read8(chip, TCPC_CC_STATUS, &status);
 		if (ret < 0)
 			goto out;
-		/* Clear cc change event triggered by starting toggling */
+		 
 		if (status & TCPC_CC_STATUS_TOGGLING)
 			rt1711h_write8(chip, TCPC_ALERT, TCPC_ALERT_CC_STATUS);
 		else
@@ -356,7 +346,7 @@ static int rt1711h_probe(struct i2c_client *client)
 	if (ret < 0)
 		return ret;
 
-	/* Disable chip interrupts before requesting irq */
+	 
 	ret = rt1711h_write16(chip, TCPC_ALERT_MASK, 0);
 	if (ret < 0)
 		return ret;

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (c) 2011-2014, Intel Corporation.
- */
+ 
+ 
 
 #ifndef _NVME_H
 #define _NVME_H
@@ -37,11 +35,7 @@ extern unsigned int admin_timeout;
 #define  NVME_INLINE_METADATA_SG_CNT  1
 #endif
 
-/*
- * Default to a 4K page size, with the intention to update this
- * path in the future to accommodate architectures with differing
- * kernel and IO page sizes.
- */
+ 
 #define NVME_CTRL_PAGE_SHIFT	12
 #define NVME_CTRL_PAGE_SIZE	(1 << NVME_CTRL_PAGE_SHIFT)
 
@@ -49,124 +43,70 @@ extern struct workqueue_struct *nvme_wq;
 extern struct workqueue_struct *nvme_reset_wq;
 extern struct workqueue_struct *nvme_delete_wq;
 
-/*
- * List of workarounds for devices that required behavior not specified in
- * the standard.
- */
+ 
 enum nvme_quirks {
-	/*
-	 * Prefers I/O aligned to a stripe size specified in a vendor
-	 * specific Identify field.
-	 */
+	 
 	NVME_QUIRK_STRIPE_SIZE			= (1 << 0),
 
-	/*
-	 * The controller doesn't handle Identify value others than 0 or 1
-	 * correctly.
-	 */
+	 
 	NVME_QUIRK_IDENTIFY_CNS			= (1 << 1),
 
-	/*
-	 * The controller deterministically returns O's on reads to
-	 * logical blocks that deallocate was called on.
-	 */
+	 
 	NVME_QUIRK_DEALLOCATE_ZEROES		= (1 << 2),
 
-	/*
-	 * The controller needs a delay before starts checking the device
-	 * readiness, which is done by reading the NVME_CSTS_RDY bit.
-	 */
+	 
 	NVME_QUIRK_DELAY_BEFORE_CHK_RDY		= (1 << 3),
 
-	/*
-	 * APST should not be used.
-	 */
+	 
 	NVME_QUIRK_NO_APST			= (1 << 4),
 
-	/*
-	 * The deepest sleep state should not be used.
-	 */
+	 
 	NVME_QUIRK_NO_DEEPEST_PS		= (1 << 5),
 
-	/*
-	 * Set MEDIUM priority on SQ creation
-	 */
+	 
 	NVME_QUIRK_MEDIUM_PRIO_SQ		= (1 << 7),
 
-	/*
-	 * Ignore device provided subnqn.
-	 */
+	 
 	NVME_QUIRK_IGNORE_DEV_SUBNQN		= (1 << 8),
 
-	/*
-	 * Broken Write Zeroes.
-	 */
+	 
 	NVME_QUIRK_DISABLE_WRITE_ZEROES		= (1 << 9),
 
-	/*
-	 * Force simple suspend/resume path.
-	 */
+	 
 	NVME_QUIRK_SIMPLE_SUSPEND		= (1 << 10),
 
-	/*
-	 * Use only one interrupt vector for all queues
-	 */
+	 
 	NVME_QUIRK_SINGLE_VECTOR		= (1 << 11),
 
-	/*
-	 * Use non-standard 128 bytes SQEs.
-	 */
+	 
 	NVME_QUIRK_128_BYTES_SQES		= (1 << 12),
 
-	/*
-	 * Prevent tag overlap between queues
-	 */
+	 
 	NVME_QUIRK_SHARED_TAGS                  = (1 << 13),
 
-	/*
-	 * Don't change the value of the temperature threshold feature
-	 */
+	 
 	NVME_QUIRK_NO_TEMP_THRESH_CHANGE	= (1 << 14),
 
-	/*
-	 * The controller doesn't handle the Identify Namespace
-	 * Identification Descriptor list subcommand despite claiming
-	 * NVMe 1.3 compliance.
-	 */
+	 
 	NVME_QUIRK_NO_NS_DESC_LIST		= (1 << 15),
 
-	/*
-	 * The controller does not properly handle DMA addresses over
-	 * 48 bits.
-	 */
+	 
 	NVME_QUIRK_DMA_ADDRESS_BITS_48		= (1 << 16),
 
-	/*
-	 * The controller requires the command_id value be limited, so skip
-	 * encoding the generation sequence number.
-	 */
+	 
 	NVME_QUIRK_SKIP_CID_GEN			= (1 << 17),
 
-	/*
-	 * Reports garbage in the namespace identifiers (eui64, nguid, uuid).
-	 */
+	 
 	NVME_QUIRK_BOGUS_NID			= (1 << 18),
 
-	/*
-	 * No temperature thresholds for channels other than 0 (Composite).
-	 */
+	 
 	NVME_QUIRK_NO_SECONDARY_TEMP_THRESH	= (1 << 19),
 
-	/*
-	 * Disables simple suspend/resume path.
-	 */
+	 
 	NVME_QUIRK_FORCE_NO_SIMPLE_SUSPEND	= (1 << 20),
 };
 
-/*
- * Common request structure for NVMe passthrough.  All drivers must have
- * this structure as the first member of their request-private data.
- */
+ 
 struct nvme_request {
 	struct nvme_command	*cmd;
 	union nvme_result	result;
@@ -180,9 +120,7 @@ struct nvme_request {
 	struct nvme_ctrl	*ctrl;
 };
 
-/*
- * Mark a bio as coming in through the mpath node.
- */
+ 
 #define REQ_NVME_MPATH		REQ_DRV
 
 enum {
@@ -204,32 +142,10 @@ static inline u16 nvme_req_qid(struct request *req)
 	return req->mq_hctx->queue_num + 1;
 }
 
-/* The below value is the specific amount of delay needed before checking
- * readiness in case of the PCI_DEVICE(0x1c58, 0x0003), which needs the
- * NVME_QUIRK_DELAY_BEFORE_CHK_RDY quirk enabled. The value (in ms) was
- * found empirically.
- */
+ 
 #define NVME_QUIRK_DELAY_AMOUNT		2300
 
-/*
- * enum nvme_ctrl_state: Controller state
- *
- * @NVME_CTRL_NEW:		New controller just allocated, initial state
- * @NVME_CTRL_LIVE:		Controller is connected and I/O capable
- * @NVME_CTRL_RESETTING:	Controller is resetting (or scheduled reset)
- * @NVME_CTRL_CONNECTING:	Controller is disconnected, now connecting the
- *				transport
- * @NVME_CTRL_DELETING:		Controller is deleting (or scheduled deletion)
- * @NVME_CTRL_DELETING_NOIO:	Controller is deleting and I/O is not
- *				disabled/failed immediately. This state comes
- * 				after all async event processing took place and
- * 				before ns removal and the controller deletion
- * 				progress
- * @NVME_CTRL_DEAD:		Controller is non-present/unresponsive during
- *				shutdown or removal. In this case we forcibly
- *				kill all inflight I/O as they have no chance to
- *				complete
- */
+ 
 enum nvme_ctrl_state {
 	NVME_CTRL_NEW,
 	NVME_CTRL_LIVE,
@@ -244,8 +160,8 @@ struct nvme_fault_inject {
 #ifdef CONFIG_FAULT_INJECTION_DEBUG_FS
 	struct fault_attr attr;
 	struct dentry *parent;
-	bool dont_retry;	/* DNR, do not retry */
-	u16 status;		/* status code */
+	bool dont_retry;	 
+	u16 status;		 
 #endif
 };
 
@@ -277,7 +193,7 @@ struct nvme_ctrl {
 	struct list_head namespaces;
 	struct rw_semaphore namespaces_rwsem;
 	struct device ctrl_device;
-	struct device *device;	/* char device */
+	struct device *device;	 
 #ifdef CONFIG_NVME_HWMON
 	struct device *hwmon_device;
 #endif
@@ -343,7 +259,7 @@ struct nvme_ctrl {
 	unsigned long events;
 
 #ifdef CONFIG_NVME_MULTIPATH
-	/* asymmetric namespace access: */
+	 
 	u8 anacap;
 	u8 anatt;
 	u32 anagrpmax;
@@ -364,17 +280,17 @@ struct nvme_ctrl {
 	u16 transaction;
 #endif
 
-	/* Power saving configuration */
+	 
 	u64 ps_max_latency_us;
 	bool apst_enabled;
 
-	/* PCIe only: */
+	 
 	u16 hmmaxd;
 	u32 hmpre;
 	u32 hmmin;
 	u32 hmminds;
 
-	/* Fabrics only */
+	 
 	u32 ioccsz;
 	u32 iorcsz;
 	u16 icdoff;
@@ -405,10 +321,7 @@ enum nvme_iopolicy {
 struct nvme_subsystem {
 	int			instance;
 	struct device		dev;
-	/*
-	 * Because we unregister the device on the last put we need
-	 * a separate refcount.
-	 */
+	 
 	struct kref		ref;
 	struct list_head	entry;
 	struct mutex		lock;
@@ -421,16 +334,14 @@ struct nvme_subsystem {
 	u8			cmic;
 	enum nvme_subsys_type	subtype;
 	u16			vendor_id;
-	u16			awupf;	/* 0's based awupf value. */
+	u16			awupf;	 
 	struct ida		ns_ida;
 #ifdef CONFIG_NVME_MULTIPATH
 	enum nvme_iopolicy	iopolicy;
 #endif
 };
 
-/*
- * Container structure for uniqueue namespace identifiers.
- */
+ 
 struct nvme_ns_ids {
 	u8	eui64[8];
 	u8	nguid[16];
@@ -438,13 +349,7 @@ struct nvme_ns_ids {
 	u8	csi;
 };
 
-/*
- * Anchor structure for namespaces.  There is one for each namespace in a
- * NVMe subsystem that any of our controllers can see, and the namespace
- * structure for each controller is chained of it.  For private namespaces
- * there is a 1:1 relation to our namespace structures, that is ->list
- * only ever has a single entry for private namespaces.
- */
+ 
 struct nvme_ns_head {
 	struct list_head	list;
 	struct srcu_struct      srcu;
@@ -478,9 +383,9 @@ static inline bool nvme_ns_head_multipath(struct nvme_ns_head *head)
 }
 
 enum nvme_ns_features {
-	NVME_NS_EXT_LBAS = 1 << 0, /* support extended LBA format */
-	NVME_NS_METADATA_SUPPORTED = 1 << 1, /* support getting generated md */
-	NVME_NS_DEAC,		/* DEAC bit in Write Zeores supported */
+	NVME_NS_EXT_LBAS = 1 << 0,  
+	NVME_NS_METADATA_SUPPORTED = 1 << 1,  
+	NVME_NS_DEAC,		 
 };
 
 struct nvme_ns {
@@ -521,7 +426,7 @@ struct nvme_ns {
 
 };
 
-/* NVMe ns supports metadata actions by the controller (generate/strip) */
+ 
 static inline bool nvme_ns_has_pi(struct nvme_ns *ns)
 {
 	return ns->pi_type && ns->ms == ns->pi_size;
@@ -548,11 +453,7 @@ struct nvme_ctrl_ops {
 	bool (*supports_pci_p2pdma)(struct nvme_ctrl *ctrl);
 };
 
-/*
- * nvme command_id is constructed as such:
- * | xxxx | xxxxxxxxxxxx |
- *   gen    request tag
- */
+ 
 #define nvme_genctr_mask(gen)			(gen & 0xf)
 #define nvme_cid_install_genctr(gen)		(nvme_genctr_mask(gen) << 12)
 #define nvme_genctr_from_cid(cid)		((cid & 0xf000) >> 12)
@@ -591,9 +492,7 @@ static inline struct request *nvme_cid_to_rq(struct blk_mq_tags *tags,
 	return blk_mq_tag_to_rq(tags, nvme_tag_from_cid(command_id));
 }
 
-/*
- * Return the length of the string without the space padding
- */
+ 
 static inline int nvme_strlen(char *s, int len)
 {
 	while (s[len - 1] == ' ')
@@ -653,25 +552,19 @@ static inline int nvme_reset_subsystem(struct nvme_ctrl *ctrl)
 	return nvme_try_sched_reset(ctrl);
 }
 
-/*
- * Convert a 512B sector number to a device logical block number.
- */
+ 
 static inline u64 nvme_sect_to_lba(struct nvme_ns *ns, sector_t sector)
 {
 	return sector >> (ns->lba_shift - SECTOR_SHIFT);
 }
 
-/*
- * Convert a device logical block number to a 512B sector number.
- */
+ 
 static inline sector_t nvme_lba_to_sect(struct nvme_ns *ns, u64 lba)
 {
 	return lba << (ns->lba_shift - SECTOR_SHIFT);
 }
 
-/*
- * Convert byte length to nvme's 0-based num dwords
- */
+ 
 static inline u32 nvme_bytes_to_numd(size_t len)
 {
 	return (len >> 2) - 1;
@@ -691,16 +584,11 @@ static inline bool nvme_is_ana_error(u16 status)
 
 static inline bool nvme_is_path_error(u16 status)
 {
-	/* check for a status code type of 'path related status' */
+	 
 	return (status & 0x700) == 0x300;
 }
 
-/*
- * Fill in the status and result information from the CQE, and then figure out
- * if blk-mq will need to use IPI magic to complete the request, and if yes do
- * so.  If not let the caller complete the request without an indirect function
- * call.
- */
+ 
 static inline bool nvme_try_complete_req(struct request *req, __le16 status,
 		union nvme_result result)
 {
@@ -712,7 +600,7 @@ static inline bool nvme_try_complete_req(struct request *req, __le16 status,
 
 	rq->status = le16_to_cpu(status) >> 1;
 	rq->result = result;
-	/* inject error when permitted by fault injection framework */
+	 
 	nvme_should_fail(req);
 	if (unlikely(blk_should_fake_timeout(req->q)))
 		return true;
@@ -814,15 +702,7 @@ static inline bool nvme_check_ready(struct nvme_ctrl *ctrl, struct request *rq,
 	return __nvme_check_ready(ctrl, rq, queue_live);
 }
 
-/*
- * NSID shall be unique for all shared namespaces, or if at least one of the
- * following conditions is met:
- *   1. Namespace Management is supported by the controller
- *   2. ANA is supported by the controller
- *   3. NVM Set are supported by the controller
- *
- * In other case, private namespace are not required to report a unique NSID.
- */
+ 
 static inline bool nvme_is_unique_nsid(struct nvme_ctrl *ctrl,
 		struct nvme_ns_head *head)
 {
@@ -1002,7 +882,7 @@ static inline void nvme_mpath_start_request(struct request *rq)
 static inline void nvme_mpath_end_request(struct request *rq)
 {
 }
-#endif /* CONFIG_NVME_MULTIPATH */
+#endif  
 
 int nvme_revalidate_zones(struct nvme_ns *ns);
 int nvme_ns_report_zones(struct nvme_ns *ns, sector_t sector,
@@ -1111,7 +991,7 @@ const unsigned char *nvme_get_error_status_str(u16 status);
 const unsigned char *nvme_get_opcode_str(u8 opcode);
 const unsigned char *nvme_get_admin_opcode_str(u8 opcode);
 const unsigned char *nvme_get_fabrics_opcode_str(u8 opcode);
-#else /* CONFIG_NVME_VERBOSE_ERRORS */
+#else  
 static inline const unsigned char *nvme_get_error_status_str(u16 status)
 {
 	return "I/O Error";
@@ -1129,7 +1009,7 @@ static inline const unsigned char *nvme_get_fabrics_opcode_str(u8 opcode)
 {
 	return "Fabrics Cmd";
 }
-#endif /* CONFIG_NVME_VERBOSE_ERRORS */
+#endif  
 
 static inline const unsigned char *nvme_opcode_str(int qid, u8 opcode, u8 fctype)
 {
@@ -1138,4 +1018,4 @@ static inline const unsigned char *nvme_opcode_str(int qid, u8 opcode, u8 fctype
 	return qid ? nvme_get_opcode_str(opcode) :
 		nvme_get_admin_opcode_str(opcode);
 }
-#endif /* _NVME_H */
+#endif  

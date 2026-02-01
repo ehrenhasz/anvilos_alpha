@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/***************************************************************************
- *            au88x0_a3ddata.c
- *
- *  Wed Nov 19 21:11:32 2003
- *  Copyright  2003  mjander
- *  mjander@users.sourceforge.org
- ****************************************************************************/
 
-/*
- */
+ 
 
-/* Constant initializer values. */
+ 
+
+ 
 
 static const a3d_Hrtf_t A3dHrirZeros = {
 	0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,

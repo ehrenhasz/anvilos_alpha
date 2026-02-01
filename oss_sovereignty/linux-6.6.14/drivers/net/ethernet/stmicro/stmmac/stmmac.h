@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*******************************************************************************
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
+ 
 
 #ifndef __STMMAC_H__
 #define __STMMAC_H__
@@ -56,7 +51,7 @@ struct stmmac_tx_info {
 #define STMMAC_TBS_AVAIL	BIT(0)
 #define STMMAC_TBS_EN		BIT(1)
 
-/* Frequently used values are kept adjacent for cache effect */
+ 
 struct stmmac_tx_queue {
 	u32 tx_count_frames;
 	int tbs;
@@ -180,7 +175,7 @@ struct stmmac_flow_entry {
 	int is_l4;
 };
 
-/* Rx Frame Steering */
+ 
 enum stmmac_rfs_type {
 	STMMAC_RFS_T_VLAN,
 	STMMAC_RFS_T_LLDP,
@@ -199,17 +194,17 @@ struct stmmac_rfs_entry {
 struct stmmac_dma_conf {
 	unsigned int dma_buf_sz;
 
-	/* RX Queue */
+	 
 	struct stmmac_rx_queue rx_queue[MTL_MAX_RX_QUEUES];
 	unsigned int dma_rx_size;
 
-	/* TX Queue */
+	 
 	struct stmmac_tx_queue tx_queue[MTL_MAX_TX_QUEUES];
 	unsigned int dma_tx_size;
 };
 
 struct stmmac_priv {
-	/* Frequently used values are kept adjacent for cache effect */
+	 
 	u32 tx_coal_frames[MTL_MAX_TX_QUEUES];
 	u32 tx_coal_timer[MTL_MAX_TX_QUEUES];
 	u32 rx_coal_frames[MTL_MAX_TX_QUEUES];
@@ -234,7 +229,7 @@ struct stmmac_priv {
 
 	struct stmmac_dma_conf dma_conf;
 
-	/* Generic channel for NAPI */
+	 
 	struct stmmac_channel channel[STMMAC_CH_MAX];
 
 	int speed;
@@ -278,7 +273,7 @@ struct stmmac_priv {
 	int use_riwt;
 	int irq_wake;
 	rwlock_t ptp_lock;
-	/* Protects auxiliary snapshot registers from concurrent access. */
+	 
 	struct mutex aux_ts_lock;
 	wait_queue_head_t tstamp_busy_wait;
 
@@ -289,7 +284,7 @@ struct stmmac_priv {
 	int sfty_ue_irq;
 	int rx_irq[MTL_MAX_RX_QUEUES];
 	int tx_irq[MTL_MAX_TX_QUEUES];
-	/*irq name */
+	 
 	char int_name_mac[IFNAMSIZ + 9];
 	char int_name_wol[IFNAMSIZ + 9];
 	char int_name_lpi[IFNAMSIZ + 9];
@@ -306,13 +301,13 @@ struct stmmac_priv {
 	struct workqueue_struct *wq;
 	struct work_struct service_task;
 
-	/* Workqueue for handling FPE hand-shaking */
+	 
 	unsigned long fpe_task_state;
 	struct workqueue_struct *fpe_wq;
 	struct work_struct fpe_task;
 	char wq_name[IFNAMSIZ + 4];
 
-	/* TC Handling */
+	 
 	unsigned int tc_entries_max;
 	unsigned int tc_off_max;
 	struct stmmac_tc_entry *tc_entries;
@@ -323,13 +318,13 @@ struct stmmac_priv {
 	unsigned int rfs_entries_total;
 	struct stmmac_rfs_entry *rfs_entries;
 
-	/* Pulse Per Second output */
+	 
 	struct stmmac_pps_cfg pps[STMMAC_PPS_MAX];
 
-	/* Receive Side Scaling */
+	 
 	struct stmmac_rss rss;
 
-	/* XDP BPF Program */
+	 
 	unsigned long *af_xdp_zc_qps;
 	struct bpf_prog *xdp_prog;
 };
@@ -396,17 +391,17 @@ int stmmac_selftest_get_count(struct stmmac_priv *priv);
 static inline void stmmac_selftest_run(struct net_device *dev,
 				       struct ethtool_test *etest, u64 *buf)
 {
-	/* Not enabled */
+	 
 }
 static inline void stmmac_selftest_get_strings(struct stmmac_priv *priv,
 					       u8 *data)
 {
-	/* Not enabled */
+	 
 }
 static inline int stmmac_selftest_get_count(struct stmmac_priv *priv)
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_STMMAC_SELFTESTS */
+#endif  
 
-#endif /* __STMMAC_H__ */
+#endif  

@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "amdgpu_dm_hdcp.h"
 #include "amdgpu.h"
@@ -30,10 +7,7 @@
 #include <drm/display/drm_hdcp_helper.h>
 #include "hdcp_psp.h"
 
-/*
- * If the SRM version being loaded is less than or equal to the
- * currently loaded SRM, psp will return 0xFFFF as the version
- */
+ 
 #define PSP_SRM_VERSION_MAX 0xFFFF
 
 static bool
@@ -179,9 +153,7 @@ void hdcp_update_display(struct hdcp_workqueue *hdcp_work,
 	memset(&display_adjust, 0, sizeof(display_adjust));
 
 	if (enable_encryption) {
-		/* Explicitly set the saved SRM as sysfs call will be after we already enabled hdcp
-		 * (s3 resume case)
-		 */
+		 
 		if (hdcp_work->srm_size > 0)
 			psp_set_srm(hdcp_work->hdcp.config.psp.handle, hdcp_work->srm,
 				    hdcp_work->srm_size,
@@ -223,11 +195,7 @@ static void hdcp_remove_display(struct hdcp_workqueue *hdcp_work,
 	mutex_lock(&hdcp_w->mutex);
 	hdcp_w->aconnector[conn_index] = aconnector;
 
-	/* the removal of display will invoke auth reset -> hdcp destroy and
-	 * we'd expect the Content Protection (CP) property changed back to
-	 * DESIRED if at the time ENABLED. CP property change should occur
-	 * before the element removed from linked list.
-	 */
+	 
 	if (conn_state && conn_state->content_protection == DRM_MODE_CONTENT_PROTECTION_ENABLED) {
 		conn_state->content_protection = DRM_MODE_CONTENT_PROTECTION_DESIRED;
 
@@ -308,7 +276,7 @@ static void event_property_update(struct work_struct *work)
 
 		connector = &aconnector->base;
 
-		/* check if display connected */
+		 
 		if (connector->status != connector_status_connected)
 			continue;
 
@@ -377,7 +345,7 @@ static void event_property_validate(struct work_struct *work)
 		if (!aconnector)
 			continue;
 
-		/* check if display connected */
+		 
 		if (aconnector->base.status != connector_status_connected)
 			continue;
 
@@ -565,54 +533,7 @@ static void update_config(void *handle, struct cp_psp_stream_config *config)
 
 }
 
-/**
- * DOC: Add sysfs interface for set/get srm
- *
- * NOTE: From the usermodes prospective you only need to call write *ONCE*, the kernel
- *      will automatically call once or twice depending on the size
- *
- * call: "cat file > /sys/class/drm/card0/device/hdcp_srm" from usermode no matter what the size is
- *
- * The kernel can only send PAGE_SIZE at once and since MAX_SRM_FILE(5120) > PAGE_SIZE(4096),
- * srm_data_write can be called multiple times.
- *
- * sysfs interface doesn't tell us the size we will get so we are sending partial SRMs to psp and on
- * the last call we will send the full SRM. PSP will fail on every call before the last.
- *
- * This means we don't know if the SRM is good until the last call. And because of this
- * limitation we cannot throw errors early as it will stop the kernel from writing to sysfs
- *
- * Example 1:
- *	Good SRM size = 5096
- *	first call to write 4096 -> PSP fails
- *	Second call to write 1000 -> PSP Pass -> SRM is set
- *
- * Example 2:
- *	Bad SRM size = 4096
- *	first call to write 4096 -> PSP fails (This is the same as above, but we don't know if this
- *	is the last call)
- *
- * Solution?:
- *	1: Parse the SRM? -> It is signed so we don't know the EOF
- *	2: We can have another sysfs that passes the size before calling set. -> simpler solution
- *	below
- *
- * Easy Solution:
- * Always call get after Set to verify if set was successful.
- * +----------------------+
- * |   Why it works:      |
- * +----------------------+
- * PSP will only update its srm if its older than the one we are trying to load.
- * Always do set first than get.
- *	-if we try to "1. SET" a older version PSP will reject it and we can "2. GET" the newer
- *	version and save it
- *
- *	-if we try to "1. SET" a newer version PSP will accept it and we can "2. GET" the
- *	same(newer) version back and save it
- *
- *	-if we try to "1. SET" a newer version and PSP rejects it. That means the format is
- *	incorrect/corrupted and we should correct our SRM by getting it from PSP
- */
+ 
 static ssize_t srm_data_write(struct file *filp, struct kobject *kobj,
 			      struct bin_attribute *bin_attr, char *buffer,
 			      loff_t pos, size_t count)
@@ -674,30 +595,10 @@ ret:
 	return ret;
 }
 
-/* From the hdcp spec (5.Renewability) SRM needs to be stored in a non-volatile memory.
- *
- * For example,
- *	if Application "A" sets the SRM (ver 2) and we reboot/suspend and later when Application "B"
- *	needs to use HDCP, the version in PSP should be SRM(ver 2). So SRM should be persistent
- *	across boot/reboots/suspend/resume/shutdown
- *
- * Currently when the system goes down (suspend/shutdown) the SRM is cleared from PSP. For HDCP
- * we need to make the SRM persistent.
- *
- * -PSP owns the checking of SRM but doesn't have the ability to store it in a non-volatile memory.
- * -The kernel cannot write to the file systems.
- * -So we need usermode to do this for us, which is why an interface for usermode is needed
- *
- *
- *
- * Usermode can read/write to/from PSP using the sysfs interface
- * For example:
- *	to save SRM from PSP to storage : cat /sys/class/drm/card0/device/hdcp_srm > srmfile
- *	to load from storage to PSP: cat srmfile > /sys/class/drm/card0/device/hdcp_srm
- */
+ 
 static const struct bin_attribute data_attr = {
 	.attr = {.name = "hdcp_srm", .mode = 0664},
-	.size = PSP_HDCP_SRM_FIRST_GEN_MAX_SIZE, /* Limit SRM size */
+	.size = PSP_HDCP_SRM_FIRST_GEN_MAX_SIZE,  
 	.write = srm_data_write,
 	.read = srm_data_read,
 };
@@ -760,7 +661,7 @@ struct hdcp_workqueue *hdcp_create_workqueue(struct amdgpu_device *adev,
 	cp_psp->funcs.enable_assr = enable_assr;
 	cp_psp->handle = hdcp_work;
 
-	/* File created at /sys/class/drm/card0/device/hdcp_srm*/
+	 
 	hdcp_work[0].attr = data_attr;
 	sysfs_bin_attr_init(&hdcp_work[0].attr);
 

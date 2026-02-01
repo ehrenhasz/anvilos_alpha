@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_TASK_WORK_H
 #define _LINUX_TASK_WORK_H
 
@@ -38,4 +38,4 @@ static inline void exit_task_work(struct task_struct *task)
 	task_work_run();
 }
 
-#endif	/* _LINUX_TASK_WORK_H */
+#endif	 

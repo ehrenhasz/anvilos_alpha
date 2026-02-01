@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) Gao Xiang <xiang@kernel.org>
- *
- * For low-latency decompression algorithms (e.g. lz4), reserve consecutive
- * per-CPU virtual memory (in pages) in advance to store such inplace I/O
- * data if inplace decompression is failed (due to unmet inplace margin for
- * example).
- */
+
+ 
 #include "internal.h"
 
 struct erofs_pcpubuf {
@@ -24,11 +17,11 @@ void *erofs_get_pcpubuf(unsigned int requiredpages)
 	struct erofs_pcpubuf *pcb = &get_cpu_var(erofs_pcb);
 
 	raw_spin_lock(&pcb->lock);
-	/* check if the per-CPU buffer is too small */
+	 
 	if (requiredpages > pcb->nrpages) {
 		raw_spin_unlock(&pcb->lock);
 		put_cpu_var(erofs_pcb);
-		/* (for sparse checker) pretend pcb->lock is still taken */
+		 
 		__acquire(pcb->lock);
 		return NULL;
 	}
@@ -44,7 +37,7 @@ void erofs_put_pcpubuf(void *ptr) __releases(pcb->lock)
 	put_cpu_var(erofs_pcb);
 }
 
-/* the next step: support per-CPU page buffers hotplug */
+ 
 int erofs_pcpubuf_growsize(unsigned int nrpages)
 {
 	static DEFINE_MUTEX(pcb_resize_mutex);
@@ -55,7 +48,7 @@ int erofs_pcpubuf_growsize(unsigned int nrpages)
 	mutex_lock(&pcb_resize_mutex);
 	delta = nrpages - pcb_nrpages;
 	ret = 0;
-	/* avoid shrinking pcpubuf, since no idea how many fses rely on */
+	 
 	if (delta <= 0)
 		goto out;
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- * datasheet: https://www.ti.com/lit/ds/symlink/sn65dsi86.pdf
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/auxiliary_bus.h>
@@ -113,11 +110,11 @@
 
 #define MIN_DSI_CLK_FREQ_MHZ	40
 
-/* fudge factor required to account for 8b/10b encoding */
+ 
 #define DP_CLK_FUDGE_NUM	10
 #define DP_CLK_FUDGE_DEN	8
 
-/* Matches DP_AUX_MAX_PAYLOAD_BYTES (for now) */
+ 
 #define SN_AUX_MAX_PAYLOAD_BYTES	16
 
 #define SN_REGULATOR_SUPPLY_NUM		4
@@ -128,47 +125,9 @@
 
 #define SN_LINK_TRAINING_TRIES		10
 
-#define SN_PWM_GPIO_IDX			3 /* 4th GPIO */
+#define SN_PWM_GPIO_IDX			3  
 
-/**
- * struct ti_sn65dsi86 - Platform data for ti-sn65dsi86 driver.
- * @bridge_aux:   AUX-bus sub device for MIPI-to-eDP bridge functionality.
- * @gpio_aux:     AUX-bus sub device for GPIO controller functionality.
- * @aux_aux:      AUX-bus sub device for eDP AUX channel functionality.
- * @pwm_aux:      AUX-bus sub device for PWM controller functionality.
- *
- * @dev:          Pointer to the top level (i2c) device.
- * @regmap:       Regmap for accessing i2c.
- * @aux:          Our aux channel.
- * @bridge:       Our bridge.
- * @connector:    Our connector.
- * @host_node:    Remote DSI node.
- * @dsi:          Our MIPI DSI source.
- * @refclk:       Our reference clock.
- * @next_bridge:  The bridge on the eDP side.
- * @enable_gpio:  The GPIO we toggle to enable the bridge.
- * @supplies:     Data for bulk enabling/disabling our regulators.
- * @dp_lanes:     Count of dp_lanes we're using.
- * @ln_assign:    Value to program to the LN_ASSIGN register.
- * @ln_polrs:     Value for the 4-bit LN_POLRS field of SN_ENH_FRAME_REG.
- * @comms_enabled: If true then communication over the aux channel is enabled.
- * @comms_mutex:   Protects modification of comms_enabled.
- *
- * @gchip:        If we expose our GPIOs, this is used.
- * @gchip_output: A cache of whether we've set GPIOs to output.  This
- *                serves double-duty of keeping track of the direction and
- *                also keeping track of whether we've incremented the
- *                pm_runtime reference count for this pin, which we do
- *                whenever a pin is configured as an output.  This is a
- *                bitmap so we can do atomic ops on it without an extra
- *                lock so concurrent users of our 4 GPIOs don't stomp on
- *                each other's read-modify-write.
- *
- * @pchip:        pwm_chip if the PWM is exposed.
- * @pwm_enabled:  Used to track if the PWM signal is currently enabled.
- * @pwm_pin_busy: Track if GPIO4 is currently requested for GPIO or PWM.
- * @pwm_refclk_freq: Cache for the reference clock input to the PWM.
- */
+ 
 struct ti_sn65dsi86 {
 	struct auxiliary_device		*bridge_aux;
 	struct auxiliary_device		*gpio_aux;
@@ -257,7 +216,7 @@ static u32 ti_sn_bridge_get_dsi_freq(struct ti_sn65dsi86 *pdata)
 	return clk_freq_khz;
 }
 
-/* clk frequencies supported by bridge in Hz in case derived from REFCLK pin */
+ 
 static const u32 ti_sn_bridge_refclk_lut[] = {
 	12000000,
 	19200000,
@@ -266,7 +225,7 @@ static const u32 ti_sn_bridge_refclk_lut[] = {
 	38400000,
 };
 
-/* clk frequencies supported by bridge in Hz in case derived from DACP/N pin */
+ 
 static const u32 ti_sn_bridge_dsiclk_lut[] = {
 	468000000,
 	384000000,
@@ -293,22 +252,19 @@ static void ti_sn_bridge_set_refclk_freq(struct ti_sn65dsi86 *pdata)
 		refclk_lut_size = ARRAY_SIZE(ti_sn_bridge_dsiclk_lut);
 	}
 
-	/* for i equals to refclk_lut_size means default frequency */
+	 
 	for (i = 0; i < refclk_lut_size; i++)
 		if (refclk_lut[i] == refclk_rate)
 			break;
 
-	/* avoid buffer overflow and "1" is the default rate in the datasheet. */
+	 
 	if (i >= refclk_lut_size)
 		i = 1;
 
 	regmap_update_bits(pdata->regmap, SN_DPPLL_SRC_REG, REFCLK_FREQ_MASK,
 			   REFCLK_FREQ(i));
 
-	/*
-	 * The PWM refclk is based on the value written to SN_DPPLL_SRC_REG,
-	 * regardless of its actual sourcing.
-	 */
+	 
 	pdata->pwm_refclk_freq = ti_sn_bridge_refclk_lut[i];
 }
 
@@ -316,25 +272,10 @@ static void ti_sn65dsi86_enable_comms(struct ti_sn65dsi86 *pdata)
 {
 	mutex_lock(&pdata->comms_mutex);
 
-	/* configure bridge ref_clk */
+	 
 	ti_sn_bridge_set_refclk_freq(pdata);
 
-	/*
-	 * HPD on this bridge chip is a bit useless.  This is an eDP bridge
-	 * so the HPD is an internal signal that's only there to signal that
-	 * the panel is done powering up.  ...but the bridge chip debounces
-	 * this signal by between 100 ms and 400 ms (depending on process,
-	 * voltage, and temperate--I measured it at about 200 ms).  One
-	 * particular panel asserted HPD 84 ms after it was powered on meaning
-	 * that we saw HPD 284 ms after power on.  ...but the same panel said
-	 * that instead of looking at HPD you could just hardcode a delay of
-	 * 200 ms.  We'll assume that the panel driver will have the hardcoded
-	 * delay in its prepare and always disable HPD.
-	 *
-	 * If HPD somehow makes sense on some future panel we'll have to
-	 * change this to be conditional on someone specifying that HPD should
-	 * be used.
-	 */
+	 
 	regmap_update_bits(pdata->regmap, SN_HPD_DISABLE_REG, HPD_DISABLE,
 			   HPD_DISABLE);
 
@@ -364,18 +305,12 @@ static int __maybe_unused ti_sn65dsi86_resume(struct device *dev)
 		return ret;
 	}
 
-	/* td2: min 100 us after regulators before enabling the GPIO */
+	 
 	usleep_range(100, 110);
 
 	gpiod_set_value_cansleep(pdata->enable_gpio, 1);
 
-	/*
-	 * If we have a reference clock we can enable communication w/ the
-	 * panel (including the aux channel) w/out any need for an input clock
-	 * so we can do it in resume which lets us read the EDID before
-	 * pre_enable(). Without a reference clock we need the MIPI reference
-	 * clock so reading early doesn't work.
-	 */
+	 
 	if (pdata->refclk)
 		ti_sn65dsi86_enable_comms(pdata);
 
@@ -414,7 +349,7 @@ static int status_show(struct seq_file *s, void *data)
 
 	pm_runtime_get_sync(pdata->dev);
 
-	/* IRQ Status Registers, see Table 31 in datasheet */
+	 
 	for (reg = 0xf0; reg <= 0xf8; reg++) {
 		regmap_read(pdata->regmap, reg, &val);
 		seq_printf(s, "[0x%02x] = 0x%08x\n", reg, val);
@@ -440,10 +375,7 @@ static void ti_sn65dsi86_debugfs_init(struct ti_sn65dsi86 *pdata)
 
 	debugfs = debugfs_create_dir(dev_name(dev), NULL);
 
-	/*
-	 * We might get an error back if debugfs wasn't enabled in the kernel
-	 * so let's just silently return upon failure.
-	 */
+	 
 	if (IS_ERR_OR_NULL(debugfs))
 		return;
 
@@ -454,9 +386,7 @@ static void ti_sn65dsi86_debugfs_init(struct ti_sn65dsi86 *pdata)
 	debugfs_create_file("status", 0600, debugfs, pdata, &status_fops);
 }
 
-/* -----------------------------------------------------------------------------
- * Auxiliary Devices (*not* AUX)
- */
+ 
 
 static void ti_sn65dsi86_uninit_aux(void *data)
 {
@@ -510,9 +440,7 @@ static int ti_sn65dsi86_add_aux_device(struct ti_sn65dsi86 *pdata,
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * AUX Adapter
- */
+ 
 
 static struct ti_sn65dsi86 *aux_to_ti_sn65dsi86(struct drm_dp_aux *aux)
 {
@@ -538,12 +466,7 @@ static ssize_t ti_sn_aux_transfer(struct drm_dp_aux *aux,
 	pm_runtime_get_sync(pdata->dev);
 	mutex_lock(&pdata->comms_mutex);
 
-	/*
-	 * If someone tries to do a DDC over AUX transaction before pre_enable()
-	 * on a device without a dedicated reference clock then we just can't
-	 * do it. Fail right away. This prevents non-refclk users from reading
-	 * the EDID before enabling the panel but such is life.
-	 */
+	 
 	if (!pdata->comms_enabled) {
 		ret = -EIO;
 		goto exit;
@@ -555,7 +478,7 @@ static ssize_t ti_sn_aux_transfer(struct drm_dp_aux *aux,
 	case DP_AUX_NATIVE_READ:
 	case DP_AUX_I2C_READ:
 		regmap_write(pdata->regmap, SN_AUX_CMD_REG, request_val);
-		/* Assume it's good */
+		 
 		msg->reply = 0;
 		break;
 	default:
@@ -572,7 +495,7 @@ static ssize_t ti_sn_aux_transfer(struct drm_dp_aux *aux,
 	if (request == DP_AUX_NATIVE_WRITE || request == DP_AUX_I2C_WRITE)
 		regmap_bulk_write(pdata->regmap, SN_AUX_WDATA_REG(0), buf, len);
 
-	/* Clear old status bits before start so we don't get confused */
+	 
 	regmap_write(pdata->regmap, SN_AUX_CMD_STATUS_REG,
 		     AUX_IRQ_STATUS_NAT_I2C_FAIL |
 		     AUX_IRQ_STATUS_AUX_RPLY_TOUT |
@@ -580,7 +503,7 @@ static ssize_t ti_sn_aux_transfer(struct drm_dp_aux *aux,
 
 	regmap_write(pdata->regmap, SN_AUX_CMD_REG, request_val | AUX_CMD_SEND);
 
-	/* Zero delay loop because i2c transactions are slow already */
+	 
 	ret = regmap_read_poll_timeout(pdata->regmap, SN_AUX_CMD_REG, val,
 				       !(val & AUX_CMD_SEND), 0, 50 * 1000);
 	if (ret)
@@ -591,11 +514,7 @@ static ssize_t ti_sn_aux_transfer(struct drm_dp_aux *aux,
 		goto exit;
 
 	if (val & AUX_IRQ_STATUS_AUX_RPLY_TOUT) {
-		/*
-		 * The hardware tried the message seven times per the DP spec
-		 * but it hit a timeout. We ignore defers here because they're
-		 * handled in hardware.
-		 */
+		 
 		ret = -ETIMEDOUT;
 		goto exit;
 	}
@@ -635,14 +554,7 @@ exit:
 
 static int ti_sn_aux_wait_hpd_asserted(struct drm_dp_aux *aux, unsigned long wait_us)
 {
-	/*
-	 * The HPD in this chip is a bit useless (See comment in
-	 * ti_sn65dsi86_enable_comms) so if our driver is expected to wait
-	 * for HPD, we just assume it's asserted after the wait_us delay.
-	 *
-	 * In case we are asked to wait forever (wait_us=0) take conservative
-	 * 500ms delay.
-	 */
+	 
 	if (wait_us == 0)
 		wait_us = 500000;
 
@@ -667,10 +579,7 @@ static int ti_sn_aux_probe(struct auxiliary_device *adev,
 	if (ret)
 		return ret;
 
-	/*
-	 * The eDP to MIPI bridge parts don't work until the AUX channel is
-	 * setup so we don't add it in the main driver probe, we add it now.
-	 */
+	 
 	return ti_sn65dsi86_add_aux_device(pdata, &pdata->bridge_aux, "bridge");
 }
 
@@ -685,9 +594,7 @@ static struct auxiliary_driver ti_sn_aux_driver = {
 	.id_table = ti_sn_aux_id_table,
 };
 
-/*------------------------------------------------------------------------------
- * DRM Bridge
- */
+ 
 
 static struct ti_sn65dsi86 *bridge_to_ti_sn65dsi86(struct drm_bridge *bridge)
 {
@@ -713,12 +620,12 @@ static int ti_sn_attach_host(struct auxiliary_device *adev, struct ti_sn65dsi86 
 	if (IS_ERR(dsi))
 		return PTR_ERR(dsi);
 
-	/* TODO: setting to 4 MIPI lanes always for now */
+	 
 	dsi->lanes = 4;
 	dsi->format = MIPI_DSI_FMT_RGB888;
 	dsi->mode_flags = MIPI_DSI_MODE_VIDEO;
 
-	/* check if continuous dsi clock is required or not */
+	 
 	pm_runtime_get_sync(dev);
 	regmap_read(pdata->regmap, SN_DPPLL_SRC_REG, &val);
 	pm_runtime_put_autosuspend(dev);
@@ -743,10 +650,7 @@ static int ti_sn_bridge_attach(struct drm_bridge *bridge,
 		return ret;
 	}
 
-	/*
-	 * Attach the next bridge.
-	 * We never want the next bridge to *also* create a connector.
-	 */
+	 
 	ret = drm_bridge_attach(bridge->encoder, pdata->next_bridge,
 				&pdata->bridge, flags | DRM_BRIDGE_ATTACH_NO_CONNECTOR);
 	if (ret < 0)
@@ -781,14 +685,11 @@ ti_sn_bridge_mode_valid(struct drm_bridge *bridge,
 			const struct drm_display_info *info,
 			const struct drm_display_mode *mode)
 {
-	/* maximum supported resolution is 4K at 60 fps */
+	 
 	if (mode->clock > 594000)
 		return MODE_CLOCK_HIGH;
 
-	/*
-	 * The front and back porch registers are 8 bits, and pulse width
-	 * registers are 15 bits, so reject any modes with larger periods.
-	 */
+	 
 
 	if ((mode->hsync_start - mode->hdisplay) > 0xff)
 		return MODE_HBLANK_WIDE;
@@ -816,7 +717,7 @@ static void ti_sn_bridge_atomic_disable(struct drm_bridge *bridge,
 {
 	struct ti_sn65dsi86 *pdata = bridge_to_ti_sn65dsi86(bridge);
 
-	/* disable video stream */
+	 
 	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, VSTREAM_ENABLE, 0);
 }
 
@@ -827,12 +728,12 @@ static void ti_sn_bridge_set_dsi_rate(struct ti_sn65dsi86 *pdata)
 	struct drm_display_mode *mode =
 		&pdata->bridge.encoder->crtc->state->adjusted_mode;
 
-	/* set DSIA clk frequency */
+	 
 	bit_rate_mhz = (mode->clock / 1000) *
 			mipi_dsi_pixel_format_to_bpp(pdata->dsi->format);
 	clk_freq_mhz = bit_rate_mhz / (pdata->dsi->lanes * 2);
 
-	/* for each increment in val, frequency increases by 5MHz */
+	 
 	val = (MIN_DSI_CLK_FREQ_MHZ / 5) +
 		(((clk_freq_mhz - MIN_DSI_CLK_FREQ_MHZ) / 5) & 0xFF);
 	regmap_write(pdata->regmap, SN_DSIA_CLK_FREQ_REG, val);
@@ -846,11 +747,7 @@ static unsigned int ti_sn_bridge_get_bpp(struct drm_connector *connector)
 		return 24;
 }
 
-/*
- * LUT index corresponds to register value and
- * LUT values corresponds to dp data rate supported
- * by the bridge in Mbps unit.
- */
+ 
 static const unsigned int ti_sn_bridge_dp_rate_lut[] = {
 	0, 1620, 2160, 2430, 2700, 3240, 4320, 5400
 };
@@ -862,10 +759,10 @@ static int ti_sn_bridge_calc_min_dp_rate_idx(struct ti_sn65dsi86 *pdata, unsigne
 	struct drm_display_mode *mode =
 		&pdata->bridge.encoder->crtc->state->adjusted_mode;
 
-	/* Calculate minimum bit rate based on our pixel clock. */
+	 
 	bit_rate_khz = mode->clock * bpp;
 
-	/* Calculate minimum DP data rate, taking 80% as per DP spec */
+	 
 	dp_rate_mhz = DIV_ROUND_UP(bit_rate_khz * DP_CLK_FUDGE_NUM,
 				   1000 * pdata->dp_lanes * DP_CLK_FUDGE_DEN);
 
@@ -893,7 +790,7 @@ static unsigned int ti_sn_bridge_read_valid_rates(struct ti_sn65dsi86 *pdata)
 	}
 
 	if (dpcd_val >= DP_EDP_14) {
-		/* eDP 1.4 devices must provide a custom table */
+		 
 		__le16 sink_rates[DP_MAX_SUPPORTED_RATES];
 
 		ret = drm_dp_dpcd_read(&pdata->aux, DP_SUPPORTED_LINK_RATES,
@@ -903,7 +800,7 @@ static unsigned int ti_sn_bridge_read_valid_rates(struct ti_sn65dsi86 *pdata)
 			DRM_DEV_ERROR(pdata->dev,
 				"Can't read supported rate table (%d)\n", ret);
 
-			/* By zeroing we'll fall back to DP_MAX_LINK_RATE. */
+			 
 			memset(sink_rates, 0, sizeof(sink_rates));
 		}
 
@@ -930,7 +827,7 @@ static unsigned int ti_sn_bridge_read_valid_rates(struct ti_sn65dsi86 *pdata)
 			      "No matching eDP rates in table; falling back\n");
 	}
 
-	/* On older versions best we can do is use DP_MAX_LINK_RATE */
+	 
 	ret = drm_dp_dpcd_readb(&pdata->aux, DP_MAX_LINK_RATE, &dpcd_val);
 	if (ret != 1) {
 		DRM_DEV_ERROR(pdata->dev,
@@ -995,7 +892,7 @@ static void ti_sn_bridge_set_video_timings(struct ti_sn65dsi86 *pdata)
 	regmap_write(pdata->regmap, SN_CHA_VERTICAL_FRONT_PORCH_REG,
 		     (mode->vsync_start - mode->vdisplay) & 0xFF);
 
-	usleep_range(10000, 10500); /* 10ms delay recommended by spec */
+	usleep_range(10000, 10500);  
 }
 
 static unsigned int ti_sn_get_max_lanes(struct ti_sn65dsi86 *pdata)
@@ -1020,11 +917,11 @@ static int ti_sn_link_training(struct ti_sn65dsi86 *pdata, int dp_rate_idx,
 	int ret;
 	int i;
 
-	/* set dp clk frequency value */
+	 
 	regmap_update_bits(pdata->regmap, SN_DATARATE_CONFIG_REG,
 			   DP_DATARATE_MASK, DP_DATARATE(dp_rate_idx));
 
-	/* enable DP PLL */
+	 
 	regmap_write(pdata->regmap, SN_PLL_ENABLE_REG, 1);
 
 	ret = regmap_read_poll_timeout(pdata->regmap, SN_DPPLL_SRC_REG, val,
@@ -1035,14 +932,9 @@ static int ti_sn_link_training(struct ti_sn65dsi86 *pdata, int dp_rate_idx,
 		goto exit;
 	}
 
-	/*
-	 * We'll try to link train several times.  As part of link training
-	 * the bridge chip will write DP_SET_POWER_D0 to DP_SET_POWER.  If
-	 * the panel isn't ready quite it might respond NAK here which means
-	 * we need to try again.
-	 */
+	 
 	for (i = 0; i < SN_LINK_TRAINING_TRIES; i++) {
-		/* Semi auto link training mode */
+		 
 		regmap_write(pdata->regmap, SN_ML_TX_MODE_REG, 0x0A);
 		ret = regmap_read_poll_timeout(pdata->regmap, SN_ML_TX_MODE_REG, val,
 					       val == ML_TX_MAIN_LINK_OFF ||
@@ -1059,12 +951,12 @@ static int ti_sn_link_training(struct ti_sn65dsi86 *pdata, int dp_rate_idx,
 		break;
 	}
 
-	/* If we saw quite a few retries, add a note about it */
+	 
 	if (!ret && i > SN_LINK_TRAINING_TRIES / 2)
 		DRM_DEV_INFO(pdata->dev, "Link training needed %d retries\n", i);
 
 exit:
-	/* Disable the PLL if we failed */
+	 
 	if (ret)
 		regmap_write(pdata->regmap, SN_PLL_ENABLE_REG, 0);
 
@@ -1094,7 +986,7 @@ static void ti_sn_bridge_atomic_enable(struct drm_bridge *bridge,
 	max_dp_lanes = ti_sn_get_max_lanes(pdata);
 	pdata->dp_lanes = min(pdata->dp_lanes, max_dp_lanes);
 
-	/* DSI_A lane config */
+	 
 	val = CHA_DSI_LANES(SN_MAX_DP_LANES - pdata->dsi->lanes);
 	regmap_update_bits(pdata->regmap, SN_DSI_LANES_REG,
 			   CHA_DSI_LANES_MASK, val);
@@ -1103,18 +995,10 @@ static void ti_sn_bridge_atomic_enable(struct drm_bridge *bridge,
 	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, LN_POLRS_MASK,
 			   pdata->ln_polrs << LN_POLRS_OFFSET);
 
-	/* set dsi clk frequency value */
+	 
 	ti_sn_bridge_set_dsi_rate(pdata);
 
-	/*
-	 * The SN65DSI86 only supports ASSR Display Authentication method and
-	 * this method is enabled for eDP panels. An eDP panel must support this
-	 * authentication method. We need to enable this method in the eDP panel
-	 * at DisplayPort address 0x0010A prior to link training.
-	 *
-	 * As only ASSR is supported by SN65DSI86, for full DisplayPort displays
-	 * we need to disable the scrambler.
-	 */
+	 
 	if (pdata->bridge.type == DRM_MODE_CONNECTOR_eDP) {
 		drm_dp_dpcd_writeb(&pdata->aux, DP_EDP_CONFIGURATION_SET,
 				   DP_ALTERNATE_SCRAMBLER_RESET_ENABLE);
@@ -1127,18 +1011,18 @@ static void ti_sn_bridge_atomic_enable(struct drm_bridge *bridge,
 	}
 
 	bpp = ti_sn_bridge_get_bpp(connector);
-	/* Set the DP output format (18 bpp or 24 bpp) */
+	 
 	val = bpp == 18 ? BPP_18_RGB : 0;
 	regmap_update_bits(pdata->regmap, SN_DATA_FORMAT_REG, BPP_18_RGB, val);
 
-	/* DP lane config */
+	 
 	val = DP_NUM_LANES(min(pdata->dp_lanes, 3));
 	regmap_update_bits(pdata->regmap, SN_SSC_CONFIG_REG, DP_NUM_LANES_MASK,
 			   val);
 
 	valid_rates = ti_sn_bridge_read_valid_rates(pdata);
 
-	/* Train until we run out of rates */
+	 
 	for (dp_rate_idx = ti_sn_bridge_calc_min_dp_rate_idx(pdata, bpp);
 	     dp_rate_idx < ARRAY_SIZE(ti_sn_bridge_dp_rate_lut);
 	     dp_rate_idx++) {
@@ -1154,10 +1038,10 @@ static void ti_sn_bridge_atomic_enable(struct drm_bridge *bridge,
 		return;
 	}
 
-	/* config video parameters */
+	 
 	ti_sn_bridge_set_video_timings(pdata);
 
-	/* enable video stream */
+	 
 	regmap_update_bits(pdata->regmap, SN_ENH_FRAME_REG, VSTREAM_ENABLE,
 			   VSTREAM_ENABLE);
 }
@@ -1172,7 +1056,7 @@ static void ti_sn_bridge_atomic_pre_enable(struct drm_bridge *bridge,
 	if (!pdata->refclk)
 		ti_sn65dsi86_enable_comms(pdata);
 
-	/* td7: min 100 us after enable before DSI data */
+	 
 	usleep_range(100, 110);
 }
 
@@ -1181,11 +1065,11 @@ static void ti_sn_bridge_atomic_post_disable(struct drm_bridge *bridge,
 {
 	struct ti_sn65dsi86 *pdata = bridge_to_ti_sn65dsi86(bridge);
 
-	/* semi auto link training mode OFF */
+	 
 	regmap_write(pdata->regmap, SN_ML_TX_MODE_REG, 0);
-	/* Num lanes to 0 as per power sequencing in data sheet */
+	 
 	regmap_update_bits(pdata->regmap, SN_SSC_CONFIG_REG, DP_NUM_LANES_MASK, 0);
-	/* disable DP PLL */
+	 
 	regmap_write(pdata->regmap, SN_PLL_ENABLE_REG, 0);
 
 	if (!pdata->refclk)
@@ -1241,16 +1125,7 @@ static void ti_sn_bridge_parse_lanes(struct ti_sn65dsi86 *pdata,
 	int dp_lanes;
 	int i;
 
-	/*
-	 * Read config from the device tree about lane remapping and lane
-	 * polarities.  These are optional and we assume identity map and
-	 * normal polarity if nothing is specified.  It's OK to specify just
-	 * data-lanes but not lane-polarities but not vice versa.
-	 *
-	 * Error checking is light (we just make sure we don't crash or
-	 * buffer overrun) and we assume dts is well formed and specifying
-	 * mappings that the hardware supports.
-	 */
+	 
 	endpoint = of_graph_get_endpoint_by_regs(np, 1, -1);
 	dp_lanes = drm_of_get_data_lanes_count(endpoint, 1, SN_MAX_DP_LANES);
 	if (dp_lanes > 0) {
@@ -1263,17 +1138,13 @@ static void ti_sn_bridge_parse_lanes(struct ti_sn65dsi86 *pdata,
 	}
 	of_node_put(endpoint);
 
-	/*
-	 * Convert into register format.  Loop over all lanes even if
-	 * data-lanes had fewer elements so that we nicely initialize
-	 * the LN_ASSIGN register.
-	 */
+	 
 	for (i = SN_MAX_DP_LANES - 1; i >= 0; i--) {
 		ln_assign = ln_assign << LN_ASSIGN_WIDTH | lane_assignments[i];
 		ln_polrs = ln_polrs << 1 | lane_polarities[i];
 	}
 
-	/* Stash in our struct for when we power on */
+	 
 	pdata->dp_lanes = dp_lanes;
 	pdata->ln_assign = ln_assign;
 	pdata->ln_polrs = ln_polrs;
@@ -1358,9 +1229,7 @@ static struct auxiliary_driver ti_sn_bridge_driver = {
 	.id_table = ti_sn_bridge_id_table,
 };
 
-/* -----------------------------------------------------------------------------
- * PWM Controller
- */
+ 
 #if defined(CONFIG_PWM)
 static int ti_sn_pwm_pin_request(struct ti_sn65dsi86 *pdata)
 {
@@ -1391,17 +1260,7 @@ static void ti_sn_pwm_free(struct pwm_chip *chip, struct pwm_device *pwm)
 	ti_sn_pwm_pin_release(pdata);
 }
 
-/*
- * Limitations:
- * - The PWM signal is not driven when the chip is powered down, or in its
- *   reset state and the driver does not implement the "suspend state"
- *   described in the documentation. In order to save power, state->enabled is
- *   interpreted as denoting if the signal is expected to be valid, and is used
- *   to determine if the chip needs to be kept powered.
- * - Changing both period and duty_cycle is not done atomically, neither is the
- *   multi-byte register updates, so the output might briefly be undefined
- *   during update.
- */
+ 
 static int ti_sn_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 			   const struct pwm_state *state)
 {
@@ -1424,11 +1283,7 @@ static int ti_sn_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 
 	if (state->enabled) {
 		if (!pdata->pwm_enabled) {
-			/*
-			 * The chip might have been powered down while we
-			 * didn't hold a PM runtime reference, so mux in the
-			 * PWM function on the GPIO pin again.
-			 */
+			 
 			ret = regmap_update_bits(pdata->regmap, SN_GPIO_CTRL_REG,
 						 SN_GPIO_MUX_MASK << (2 * SN_PWM_GPIO_IDX),
 						 SN_GPIO_MUX_SPECIAL << (2 * SN_PWM_GPIO_IDX));
@@ -1438,51 +1293,15 @@ static int ti_sn_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 			}
 		}
 
-		/*
-		 * Per the datasheet the PWM frequency is given by:
-		 *
-		 *                          REFCLK_FREQ
-		 *   PWM_FREQ = -----------------------------------
-		 *               PWM_PRE_DIV * BACKLIGHT_SCALE + 1
-		 *
-		 * However, after careful review the author is convinced that
-		 * the documentation has lost some parenthesis around
-		 * "BACKLIGHT_SCALE + 1".
-		 *
-		 * With the period T_pwm = 1/PWM_FREQ this can be written:
-		 *
-		 *   T_pwm * REFCLK_FREQ = PWM_PRE_DIV * (BACKLIGHT_SCALE + 1)
-		 *
-		 * In order to keep BACKLIGHT_SCALE within its 16 bits,
-		 * PWM_PRE_DIV must be:
-		 *
-		 *                     T_pwm * REFCLK_FREQ
-		 *   PWM_PRE_DIV >= -------------------------
-		 *                   BACKLIGHT_SCALE_MAX + 1
-		 *
-		 * To simplify the search and to favour higher resolution of
-		 * the duty cycle over accuracy of the period, the lowest
-		 * possible PWM_PRE_DIV is used. Finally the scale is
-		 * calculated as:
-		 *
-		 *                      T_pwm * REFCLK_FREQ
-		 *   BACKLIGHT_SCALE = ---------------------- - 1
-		 *                          PWM_PRE_DIV
-		 *
-		 * Here T_pwm is represented in seconds, so appropriate scaling
-		 * to nanoseconds is necessary.
-		 */
+		 
 
-		/* Minimum T_pwm is 1 / REFCLK_FREQ */
+		 
 		if (state->period <= NSEC_PER_SEC / pdata->pwm_refclk_freq) {
 			ret = -EINVAL;
 			goto out;
 		}
 
-		/*
-		 * Maximum T_pwm is 255 * (65535 + 1) / REFCLK_FREQ
-		 * Limit period to this to avoid overflows
-		 */
+		 
 		period_max = div_u64((u64)NSEC_PER_SEC * 255 * (65535 + 1),
 				     pdata->pwm_refclk_freq);
 		period = min(state->period, period_max);
@@ -1491,17 +1310,7 @@ static int ti_sn_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
 					     (u64)NSEC_PER_SEC * (BACKLIGHT_SCALE_MAX + 1));
 		scale = div64_u64(period * pdata->pwm_refclk_freq, (u64)NSEC_PER_SEC * pre_div) - 1;
 
-		/*
-		 * The documentation has the duty ratio given as:
-		 *
-		 *     duty          BACKLIGHT
-		 *   ------- = ---------------------
-		 *    period    BACKLIGHT_SCALE + 1
-		 *
-		 * Solve for BACKLIGHT, substituting BACKLIGHT_SCALE according
-		 * to definition above and adjusting for nanosecond
-		 * representation of duty cycle gives us:
-		 */
+		 
 		backlight = div64_u64(state->duty_cycle * pdata->pwm_refclk_freq,
 				      (u64)NSEC_PER_SEC * pre_div);
 		if (backlight > scale)
@@ -1639,9 +1448,7 @@ static inline int ti_sn_pwm_register(void) { return 0; }
 static inline void ti_sn_pwm_unregister(void) {}
 #endif
 
-/* -----------------------------------------------------------------------------
- * GPIO Controller
- */
+ 
 #if defined(CONFIG_OF_GPIO)
 
 static int tn_sn_bridge_of_xlate(struct gpio_chip *chip,
@@ -1665,12 +1472,7 @@ static int ti_sn_bridge_gpio_get_direction(struct gpio_chip *chip,
 {
 	struct ti_sn65dsi86 *pdata = gpiochip_get_data(chip);
 
-	/*
-	 * We already have to keep track of the direction because we use
-	 * that to figure out whether we've powered the device.  We can
-	 * just return that rather than (maybe) powering up the device
-	 * to ask its direction.
-	 */
+	 
 	return test_bit(offset, pdata->gchip_output) ?
 		GPIO_LINE_DIRECTION_OUT : GPIO_LINE_DIRECTION_IN;
 }
@@ -1681,14 +1483,7 @@ static int ti_sn_bridge_gpio_get(struct gpio_chip *chip, unsigned int offset)
 	unsigned int val;
 	int ret;
 
-	/*
-	 * When the pin is an input we don't forcibly keep the bridge
-	 * powered--we just power it on to read the pin.  NOTE: part of
-	 * the reason this works is that the bridge defaults (when
-	 * powered back on) to all 4 GPIOs being configured as GPIO input.
-	 * Also note that if something else is keeping the chip powered the
-	 * pm_runtime functions are lightweight increments of a refcount.
-	 */
+	 
 	pm_runtime_get_sync(pdata->dev);
 	ret = regmap_read(pdata->regmap, SN_GPIO_IO_REG, &val);
 	pm_runtime_put_autosuspend(pdata->dev);
@@ -1737,11 +1532,7 @@ static int ti_sn_bridge_gpio_direction_input(struct gpio_chip *chip,
 		return ret;
 	}
 
-	/*
-	 * NOTE: if nobody else is powering the device this may fully power
-	 * it off and when it comes back it will have lost all state, but
-	 * that's OK because the default is input and we're now an input.
-	 */
+	 
 	pm_runtime_put_autosuspend(pdata->dev);
 
 	return 0;
@@ -1759,10 +1550,10 @@ static int ti_sn_bridge_gpio_direction_output(struct gpio_chip *chip,
 
 	pm_runtime_get_sync(pdata->dev);
 
-	/* Set value first to avoid glitching */
+	 
 	ti_sn_bridge_gpio_set(chip, offset, val);
 
-	/* Set direction */
+	 
 	ret = regmap_update_bits(pdata->regmap, SN_GPIO_CTRL_REG,
 				 SN_GPIO_MUX_MASK << shift,
 				 SN_GPIO_MUX_OUTPUT << shift);
@@ -1788,7 +1579,7 @@ static void ti_sn_bridge_gpio_free(struct gpio_chip *chip, unsigned int offset)
 {
 	struct ti_sn65dsi86 *pdata = gpiochip_get_data(chip);
 
-	/* We won't keep pm_runtime if we're input, so switch there on free */
+	 
 	ti_sn_bridge_gpio_direction_input(chip, offset);
 
 	if (offset == SN_PWM_GPIO_IDX)
@@ -1805,7 +1596,7 @@ static int ti_sn_gpio_probe(struct auxiliary_device *adev,
 	struct ti_sn65dsi86 *pdata = dev_get_drvdata(adev->dev.parent);
 	int ret;
 
-	/* Only init if someone is going to use us as a GPIO controller */
+	 
 	if (!of_property_read_bool(pdata->dev->of_node, "gpio-controller"))
 		return 0;
 
@@ -1862,9 +1653,7 @@ static inline void ti_sn_gpio_unregister(void) {}
 
 #endif
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove
- */
+ 
 
 static void ti_sn65dsi86_runtime_disable(void *data)
 {
@@ -1935,16 +1724,7 @@ static int ti_sn65dsi86_probe(struct i2c_client *client)
 
 	ti_sn65dsi86_debugfs_init(pdata);
 
-	/*
-	 * Break ourselves up into a collection of aux devices. The only real
-	 * motiviation here is to solve the chicken-and-egg problem of probe
-	 * ordering. The bridge wants the panel to be there when it probes.
-	 * The panel wants its HPD GPIO (provided by sn65dsi86 on some boards)
-	 * when it probes. The panel and maybe backlight might want the DDC
-	 * bus or the pwm_chip. Having sub-devices allows the some sub devices
-	 * to finish probing even if others return -EPROBE_DEFER and gets us
-	 * around the problems.
-	 */
+	 
 
 	if (IS_ENABLED(CONFIG_OF_GPIO)) {
 		ret = ti_sn65dsi86_add_aux_device(pdata, &pdata->gpio_aux, "gpio");
@@ -1958,12 +1738,7 @@ static int ti_sn65dsi86_probe(struct i2c_client *client)
 			return ret;
 	}
 
-	/*
-	 * NOTE: At the end of the AUX channel probe we'll add the aux device
-	 * for the bridge. This is because the bridge can't be used until the
-	 * AUX channel is there and this is a very simple solution to the
-	 * dependency problem.
-	 */
+	 
 	return ti_sn65dsi86_add_aux_device(pdata, &pdata->aux_aux, "aux");
 }
 

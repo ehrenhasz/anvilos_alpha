@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * AMD Platform Security Processor (PSP) interface driver
- *
- * Copyright (C) 2017-2019 Advanced Micro Devices, Inc.
- *
- * Author: Brijesh Singh <brijesh.singh@amd.com>
- */
+ 
+ 
 
 #ifndef __SEV_DEV_H__
 #define __SEV_DEV_H__
@@ -60,4 +54,4 @@ void sev_dev_destroy(struct psp_device *psp);
 void sev_pci_init(void);
 void sev_pci_exit(void);
 
-#endif /* __SEV_DEV_H */
+#endif  

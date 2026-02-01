@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, The Linux Foundation. All rights reserved.
- * Copyright (c) 2022, Qualcomm Innovation Center, Inc. All rights reserved.
- * Copyright (c) 2022, Linaro Limited
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -3349,15 +3345,10 @@ static int gcc_sm8550_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* FORCE_MEM_CORE_ON for ufs phy ice core clocks */
+	 
 	regmap_update_bits(regmap, gcc_ufs_phy_ice_core_clk.halt_reg, BIT(14), BIT(14));
 
-	/*
-	 * Keep the critical clock always-On
-	 * gcc_camera_ahb_clk, gcc_camera_xo_clk, gcc_disp_ahb_clk,
-	 * gcc_disp_xo_clk, gcc_gpu_cfg_ahb_clk, gcc_video_ahb_clk,
-	 * gcc_video_xo_clk
-	 */
+	 
 	regmap_update_bits(regmap, 0x26004, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x26028, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x27004, BIT(0), BIT(0));
@@ -3366,7 +3357,7 @@ static int gcc_sm8550_probe(struct platform_device *pdev)
 	regmap_update_bits(regmap, 0x32004, BIT(0), BIT(0));
 	regmap_update_bits(regmap, 0x32030, BIT(0), BIT(0));
 
-	/* Clear GDSC_SLEEP_ENA_VOTE to stop votes being auto-removed in sleep. */
+	 
 	regmap_write(regmap, 0x52024, 0x0);
 
 	return qcom_cc_really_probe(pdev, &gcc_sm8550_desc, regmap);

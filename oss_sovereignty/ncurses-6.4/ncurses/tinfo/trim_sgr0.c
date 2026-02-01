@@ -1,35 +1,6 @@
-/****************************************************************************
- * Copyright 2020,2021 Thomas E. Dickey                                     *
- * Copyright 2005-2012,2017 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas Dickey                                                   *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -43,7 +14,7 @@ MODULE_ID("$Id: trim_sgr0.c,v 1.21 2021/06/17 21:20:30 tom Exp $")
 #define CUR tp->
 
 #define CSI       233
-#define ESC       033		/* ^[ */
+#define ESC       033		 
 #define L_BRACK   '['
 
 static char *
@@ -98,10 +69,7 @@ skip_delay(const char *s)
     return s;
 }
 
-/*
- * Improve similar_sgr a little by moving the attr-string from the beginning
- * to the end of the s-string.
- */
+ 
 static bool
 rewrite_sgr(char *s, char *attr)
 {
@@ -122,7 +90,7 @@ rewrite_sgr(char *s, char *attr)
 	}
 	return TRUE;
     }
-    return FALSE;		/* oops */
+    return FALSE;		 
 }
 
 static bool
@@ -172,13 +140,7 @@ chop_out(char *string, unsigned i, unsigned j)
     return i;
 }
 
-/*
- * Compare, ignoring delays.  Some of the delay values are inconsistent, and
- * we do not want to be stopped by that.
- *
- * Returns the number of chars from 'full' that we matched.  If any mismatch
- * occurs, return zero.
- */
+ 
 static unsigned
 compare_part(const char *part, const char *full)
 {
@@ -193,13 +155,7 @@ compare_part(const char *part, const char *full)
 	    break;
 	}
 
-	/*
-	 * Adjust the return-value to allow the rare case of
-	 *      string<delay>string
-	 * to remove the whole piece.  The most common case is a delay at the
-	 * end of the string.  The adjusted string will retain the delay, which
-	 * is conservative.
-	 */
+	 
 	if (used_delay != 0) {
 	    used_full += used_delay;
 	    used_delay = 0;
@@ -221,17 +177,7 @@ compare_part(const char *part, const char *full)
     return used_full;
 }
 
-/*
- * While 'sgr0' is the "same" as termcap 'me', there is a compatibility issue.
- * The sgr/sgr0 capabilities include setting/clearing alternate character set
- * mode.  A termcap application cannot use sgr, so sgr0 strings that reset
- * alternate character set mode will be misinterpreted.  Here, we remove those
- * from the more common ISO/ANSI/VT100 entries, which have sgr0 agreeing with
- * sgr.
- *
- * This function returns the modified sgr0 if it can be modified, a null if
- * an error occurs, or the original sgr0 if no change is needed.
- */
+ 
 NCURSES_EXPORT(char *)
 _nc_trim_sgr0(TERMTYPE2 *tp)
 {
@@ -261,9 +207,7 @@ _nc_trim_sgr0(TERMTYPE2 *tp)
 		   && !similar_sgr(off, on)) {
 	    TR(TRACE_DATABASE, ("adjusting sgr(9:off) : %s", _nc_visbuf(off)));
 	    result = off;
-	    /*
-	     * If rmacs is a substring of sgr(0), remove that chunk.
-	     */
+	     
 	    if (PRESENT(exit_alt_charset_mode)) {
 		TR(TRACE_DATABASE, ("scan for rmacs %s", _nc_visbuf(exit_alt_charset_mode)));
 		j = strlen(off);
@@ -280,9 +224,7 @@ _nc_trim_sgr0(TERMTYPE2 *tp)
 		    }
 		}
 	    }
-	    /*
-	     * SGR 10 would reset to normal font.
-	     */
+	     
 	    if (!found) {
 		if ((i = (size_t) is_csi(off)) != 0
 		    && off[strlen(off) - 1] == 'm') {
@@ -317,19 +259,13 @@ _nc_trim_sgr0(TERMTYPE2 *tp)
 		result = exit_attribute_mode;
 	    }
 	} else {
-	    /*
-	     * Either the sgr does not reference alternate character set,
-	     * or it is incorrect.  That's too hard to decide right now.
-	     */
+	     
 	    free(off);
 	}
 	FreeIfNeeded(end);
 	FreeIfNeeded(on);
     } else {
-	/*
-	 * Possibly some applications are confused if sgr0 contains rmacs,
-	 * but that would be a different bug report -TD
-	 */
+	 
     }
 
     returnPtr(result);

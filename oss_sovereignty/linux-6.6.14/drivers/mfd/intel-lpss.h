@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Intel LPSS core support.
- *
- * Copyright (C) 2015, Intel Corporation
- *
- * Authors: Andy Shevchenko <andriy.shevchenko@linux.intel.com>
- *          Mika Westerberg <mika.westerberg@linux.intel.com>
- */
+ 
+ 
 
 #ifndef __MFD_INTEL_LPSS_H
 #define __MFD_INTEL_LPSS_H
@@ -47,10 +40,10 @@ int intel_lpss_resume(struct device *dev);
 	.runtime_suspend = intel_lpss_suspend,	\
 	.runtime_resume = intel_lpss_resume,
 
-#else /* !CONFIG_PM */
+#else  
 #define INTEL_LPSS_SLEEP_PM_OPS
 #define INTEL_LPSS_RUNTIME_PM_OPS
-#endif /* CONFIG_PM */
+#endif  
 
 #define INTEL_LPSS_PM_OPS(name)			\
 const struct dev_pm_ops name = {		\
@@ -58,4 +51,4 @@ const struct dev_pm_ops name = {		\
 	INTEL_LPSS_RUNTIME_PM_OPS		\
 }
 
-#endif /* __MFD_INTEL_LPSS_H */
+#endif  

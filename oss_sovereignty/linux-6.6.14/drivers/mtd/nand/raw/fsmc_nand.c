@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ST Microelectronics
- * Flexible Static Memory Controller (FSMC)
- * Driver for NAND portions
- *
- * Copyright © 2010 ST Microelectronics
- * Vipin Kumar <vipin.kumar@st.com>
- * Ashish Priyadarshi
- *
- * Based on drivers/mtd/nand/nomadik_nand.c (removed in v3.8)
- *  Copyright © 2007 STMicroelectronics Pvt. Ltd.
- *  Copyright © 2009 Alessandro Rubini
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -36,9 +24,9 @@
 #include <linux/amba/bus.h>
 #include <mtd/mtd-abi.h>
 
-/* fsmc controller registers for NOR flash */
+ 
 #define CTRL			0x0
-	/* ctrl register definitions */
+	 
 	#define BANK_ENABLE		BIT(0)
 	#define MUXED			BIT(1)
 	#define NOR_DEV			(2 << 2)
@@ -49,7 +37,7 @@
 	#define WAIT_ENB		BIT(13)
 
 #define CTRL_TIM		0x4
-	/* ctrl_tim register definitions */
+	 
 
 #define FSMC_NOR_BANK_SZ	0x8
 #define FSMC_NOR_REG_SIZE	0x40
@@ -58,9 +46,9 @@
 					 (FSMC_NOR_BANK_SZ * (bank)) +	\
 					 (reg))
 
-/* fsmc controller registers for NAND flash */
+ 
 #define FSMC_PC			0x00
-	/* pc register definitions */
+	 
 	#define FSMC_RESET		BIT(0)
 	#define FSMC_WAITON		BIT(1)
 	#define FSMC_ENABLE		BIT(2)
@@ -73,10 +61,10 @@
 	#define FSMC_TAR_SHIFT		(13)
 	#define FSMC_TAR_MASK		(0xF)
 #define STS			0x04
-	/* sts register definitions */
+	 
 	#define FSMC_CODE_RDY		BIT(15)
 #define COMM			0x08
-	/* comm register definitions */
+	 
 	#define FSMC_TSET_SHIFT		0
 	#define FSMC_TSET_MASK		0xFF
 	#define FSMC_TWAIT_SHIFT	8
@@ -94,11 +82,7 @@
 
 #define FSMC_BUSY_WAIT_TIMEOUT	(1 * HZ)
 
-/*
- * According to SPEAr300 Reference Manual (RM0082)
- *  TOUDEL = 7ns (Output delay from the flip-flops to the board)
- *  TINDEL = 5ns (Input delay from the board to the flipflop)
- */
+ 
 #define TOUTDEL	7000
 #define TINDEL	5000
 
@@ -116,30 +100,7 @@ enum access_mode {
 	USE_WORD_ACCESS,
 };
 
-/**
- * struct fsmc_nand_data - structure for FSMC NAND device state
- *
- * @base:		Inherit from the nand_controller struct
- * @pid:		Part ID on the AMBA PrimeCell format
- * @nand:		Chip related info for a NAND flash.
- *
- * @bank:		Bank number for probed device.
- * @dev:		Parent device
- * @mode:		Access mode
- * @clk:		Clock structure for FSMC.
- *
- * @read_dma_chan:	DMA channel for read access
- * @write_dma_chan:	DMA channel for write access to NAND
- * @dma_access_complete: Completion structure
- *
- * @dev_timings:	NAND timings
- *
- * @data_pa:		NAND Physical port for Data.
- * @data_va:		NAND port for Data.
- * @cmd_va:		NAND port for Command.
- * @addr_va:		NAND port for Address.
- * @regs_va:		Registers base address for a given bank.
- */
+ 
 struct fsmc_nand_data {
 	struct nand_controller	base;
 	u32			pid;
@@ -150,7 +111,7 @@ struct fsmc_nand_data {
 	enum access_mode	mode;
 	struct clk		*clk;
 
-	/* DMA related objects */
+	 
 	struct dma_chan		*read_dma_chan;
 	struct dma_chan		*write_dma_chan;
 	struct completion	dma_access_complete;
@@ -201,12 +162,7 @@ static const struct mtd_ooblayout_ops fsmc_ecc1_ooblayout_ops = {
 	.free = fsmc_ecc1_ooblayout_free,
 };
 
-/*
- * ECC placement definitions in oobfree type format.
- * There are 13 bytes of ecc for every 512 byte block and it has to be read
- * consecutively and immediately after the 512 byte data block for hardware to
- * generate the error bit offsets in 512 byte data.
- */
+ 
 static int fsmc_ecc4_ooblayout_ecc(struct mtd_info *mtd, int section,
 				   struct mtd_oob_region *oobregion)
 {
@@ -253,12 +209,7 @@ static inline struct fsmc_nand_data *nand_to_fsmc(struct nand_chip *chip)
 	return container_of(chip, struct fsmc_nand_data, nand);
 }
 
-/*
- * fsmc_nand_setup - FSMC (Flexible Static Memory Controller) init routine
- *
- * This routine initializes timing parameters related to NAND memory access in
- * FSMC registers
- */
+ 
 static void fsmc_nand_setup(struct fsmc_nand_data *host,
 			    struct fsmc_nand_timings *tims)
 {
@@ -326,11 +277,7 @@ static int fsmc_calc_timings(struct fsmc_nand_data *host,
 	else if (tims->tset > FSMC_TSET_MASK)
 		tims->tset = FSMC_TSET_MASK;
 
-	/*
-	 * According to SPEAr300 Reference Manual (RM0082) which gives more
-	 * information related to FSMSC timings than the SPEAr600 one (RM0305),
-	 *   twait >= tCEA - (tset * TCLK) + TOUTDEL + TINDEL
-	 */
+	 
 	twait_min = sdrt->tCEA_max - ((tims->tset + 1) * hclkn * 1000)
 		    + TOUTDEL + TINDEL;
 	twait = max3(sdrt->tRP_min, sdrt->tWP_min, twait_min);
@@ -368,9 +315,7 @@ static int fsmc_setup_interface(struct nand_chip *nand, int csline,
 	return 0;
 }
 
-/*
- * fsmc_enable_hwecc - Enables Hardware ECC through FSMC registers
- */
+ 
 static void fsmc_enable_hwecc(struct nand_chip *chip, int mode)
 {
 	struct fsmc_nand_data *host = nand_to_fsmc(chip);
@@ -383,11 +328,7 @@ static void fsmc_enable_hwecc(struct nand_chip *chip, int mode)
 		       host->regs_va + FSMC_PC);
 }
 
-/*
- * fsmc_read_hwecc_ecc4 - Hardware ECC calculator for ecc4 option supported by
- * FSMC. ECC is 13 bytes for 512 bytes of data (supports error correction up to
- * max of 8-bits)
- */
+ 
 static int fsmc_read_hwecc_ecc4(struct nand_chip *chip, const u8 *data,
 				u8 *ecc)
 {
@@ -431,11 +372,7 @@ static int fsmc_read_hwecc_ecc4(struct nand_chip *chip, const u8 *data,
 	return 0;
 }
 
-/*
- * fsmc_read_hwecc_ecc1 - Hardware ECC calculator for ecc1 option supported by
- * FSMC. ECC is 3 bytes for 512 bytes of data (supports error correction up to
- * max of 1-bit)
- */
+ 
 static int fsmc_read_hwecc_ecc1(struct nand_chip *chip, const u8 *data,
 				u8 *ecc)
 {
@@ -461,7 +398,7 @@ static int fsmc_correct_ecc1(struct nand_chip *chip,
 				      chip->ecc.size, sm_order);
 }
 
-/* Count the number of 0's in buff upto a max of max_bits */
+ 
 static int count_written_bits(u8 *buff, int size, int max_bits)
 {
 	int k, written_bits = 0;
@@ -550,12 +487,7 @@ unmap_dma:
 	return ret;
 }
 
-/*
- * fsmc_write_buf - write buffer to chip
- * @host:	FSMC NAND controller
- * @buf:	data buffer
- * @len:	number of bytes to write
- */
+ 
 static void fsmc_write_buf(struct fsmc_nand_data *host, const u8 *buf,
 			   int len)
 {
@@ -574,12 +506,7 @@ static void fsmc_write_buf(struct fsmc_nand_data *host, const u8 *buf,
 	}
 }
 
-/*
- * fsmc_read_buf - read chip data into buffer
- * @host:	FSMC NAND controller
- * @buf:	buffer to store date
- * @len:	number of bytes to read
- */
+ 
 static void fsmc_read_buf(struct fsmc_nand_data *host, u8 *buf, int len)
 {
 	int i;
@@ -597,36 +524,21 @@ static void fsmc_read_buf(struct fsmc_nand_data *host, u8 *buf, int len)
 	}
 }
 
-/*
- * fsmc_read_buf_dma - read chip data into buffer
- * @host:	FSMC NAND controller
- * @buf:	buffer to store date
- * @len:	number of bytes to read
- */
+ 
 static void fsmc_read_buf_dma(struct fsmc_nand_data *host, u8 *buf,
 			      int len)
 {
 	dma_xfer(host, buf, len, DMA_FROM_DEVICE);
 }
 
-/*
- * fsmc_write_buf_dma - write buffer to chip
- * @host:	FSMC NAND controller
- * @buf:	data buffer
- * @len:	number of bytes to write
- */
+ 
 static void fsmc_write_buf_dma(struct fsmc_nand_data *host, const u8 *buf,
 			       int len)
 {
 	dma_xfer(host, (void *)buf, len, DMA_TO_DEVICE);
 }
 
-/*
- * fsmc_exec_op - hook called by the core to execute NAND operations
- *
- * This controller is simple enough and thus does not need to use the parser
- * provided by the core, instead, handle every situation here.
- */
+ 
 static int fsmc_exec_op(struct nand_chip *chip, const struct nand_operation *op,
 			bool check_only)
 {
@@ -689,19 +601,7 @@ static int fsmc_exec_op(struct nand_chip *chip, const struct nand_operation *op,
 	return ret;
 }
 
-/*
- * fsmc_read_page_hwecc
- * @chip:	nand chip info structure
- * @buf:	buffer to store read data
- * @oob_required:	caller expects OOB data read to chip->oob_poi
- * @page:	page number to read
- *
- * This routine is needed for fsmc version 8 as reading from NAND chip has to be
- * performed in a strict sequence as follows:
- * data(512 byte) -> ecc(13 byte)
- * After this read, fsmc hardware generates and reports error data bits(up to a
- * max of 8 bits)
- */
+ 
 static int fsmc_read_page_hwecc(struct nand_chip *chip, u8 *buf,
 				int oob_required, int page)
 {
@@ -713,11 +613,7 @@ static int fsmc_read_page_hwecc(struct nand_chip *chip, u8 *buf,
 	u8 *ecc_calc = chip->ecc.calc_buf;
 	u8 *ecc_code = chip->ecc.code_buf;
 	int off, len, ret, group = 0;
-	/*
-	 * ecc_oob is intentionally taken as u16. In 16bit devices, we
-	 * end up reading 14 bytes (7 words) from oob. The local array is
-	 * to maintain word alignment
-	 */
+	 
 	u16 ecc_oob[7];
 	u8 *oob = (u8 *)&ecc_oob[0];
 	unsigned int max_bitflips = 0;
@@ -739,11 +635,7 @@ static int fsmc_read_page_hwecc(struct nand_chip *chip, u8 *buf,
 			off = oobregion.offset;
 			len = oobregion.length;
 
-			/*
-			 * length is intentionally kept a higher multiple of 2
-			 * to read at least 13 bytes even in case of 16 bit NAND
-			 * devices
-			 */
+			 
 			if (chip->options & NAND_BUSWIDTH_16)
 				len = roundup(len, 2);
 
@@ -766,16 +658,7 @@ static int fsmc_read_page_hwecc(struct nand_chip *chip, u8 *buf,
 	return max_bitflips;
 }
 
-/*
- * fsmc_bch8_correct_data
- * @mtd:	mtd info structure
- * @dat:	buffer of read data
- * @read_ecc:	ecc read from device spare area
- * @calc_ecc:	ecc calculated from read data
- *
- * calc_ecc is a 104 bit information containing maximum of 8 error
- * offset information of 13 bits each in 512 bytes of read data.
- */
+ 
 static int fsmc_bch8_correct_data(struct nand_chip *chip, u8 *dat,
 				  u8 *read_ecc, u8 *calc_ecc)
 {
@@ -786,25 +669,13 @@ static int fsmc_bch8_correct_data(struct nand_chip *chip, u8 *dat,
 
 	num_err = (readl_relaxed(host->regs_va + STS) >> 10) & 0xF;
 
-	/* no bit flipping */
+	 
 	if (likely(num_err == 0))
 		return 0;
 
-	/* too many errors */
+	 
 	if (unlikely(num_err > 8)) {
-		/*
-		 * This is a temporary erase check. A newly erased page read
-		 * would result in an ecc error because the oob data is also
-		 * erased to FF and the calculated ecc for an FF data is not
-		 * FF..FF.
-		 * This is a workaround to skip performing correction in case
-		 * data is FF..FF
-		 *
-		 * Logic:
-		 * For every page, each bit written as 0 is counted until these
-		 * number of bits are greater than 8 (the maximum correction
-		 * capability of FSMC for each 512 + 13 bytes)
-		 */
+		 
 
 		int bits_ecc = count_written_bits(read_ecc, chip->ecc.bytes, 8);
 		int bits_data = count_written_bits(dat, chip->ecc.size, 8);
@@ -818,15 +689,7 @@ static int fsmc_bch8_correct_data(struct nand_chip *chip, u8 *dat,
 		return -EBADMSG;
 	}
 
-	/*
-	 * ------------------- calc_ecc[] bit wise -----------|--13 bits--|
-	 * |---idx[7]--|--.....-----|---idx[2]--||---idx[1]--||---idx[0]--|
-	 *
-	 * calc_ecc is a 104 bit information containing maximum of 8 error
-	 * offset information of 13 bits each. calc_ecc is copied into a
-	 * u64 array and error offset indexes are populated in err_idx
-	 * array
-	 */
+	 
 	ecc1 = readl_relaxed(host->regs_va + ECC1);
 	ecc2 = readl_relaxed(host->regs_va + ECC2);
 	ecc3 = readl_relaxed(host->regs_va + ECC3);
@@ -894,7 +757,7 @@ static int fsmc_nand_probe_config_dt(struct platform_device *pdev,
 	if (ret)
 		host->dev_timings = NULL;
 
-	/* Set default NAND bank to 0 */
+	 
 	host->bank = 0;
 	if (!of_property_read_u32(np, "bank", &val)) {
 		if (val > 3) {
@@ -972,10 +835,7 @@ static int fsmc_nand_attach_chip(struct nand_chip *nand)
 		return -ENOTSUPP;
 	}
 
-	/*
-	 * Don't set layout for BCH4 SW ECC. This will be
-	 * generated later during BCH initialization.
-	 */
+	 
 	if (nand->ecc.engine_type == NAND_ECC_ENGINE_TYPE_ON_HOST) {
 		switch (mtd->oobsize) {
 		case 16:
@@ -1001,10 +861,7 @@ static const struct nand_controller_ops fsmc_nand_controller_ops = {
 	.setup_interface = fsmc_setup_interface,
 };
 
-/**
- * fsmc_nand_disable() - Disables the NAND bank
- * @host: The instance to disable
- */
+ 
 static void fsmc_nand_disable(struct fsmc_nand_data *host)
 {
 	u32 val;
@@ -1014,10 +871,7 @@ static void fsmc_nand_disable(struct fsmc_nand_data *host)
 	writel(val, host->regs_va + FSMC_PC);
 }
 
-/*
- * fsmc_nand_probe - Probe function
- * @pdev:       platform device structure
- */
+ 
 static int __init fsmc_nand_probe(struct platform_device *pdev)
 {
 	struct fsmc_nand_data *host;
@@ -1030,7 +884,7 @@ static int __init fsmc_nand_probe(struct platform_device *pdev)
 	u32 pid;
 	int i;
 
-	/* Allocate memory for the device structure (and zero it) */
+	 
 	host = devm_kzalloc(&pdev->dev, sizeof(*host), GFP_KERNEL);
 	if (!host)
 		return -ENOMEM;
@@ -1072,10 +926,7 @@ static int __init fsmc_nand_probe(struct platform_device *pdev)
 		return PTR_ERR(host->clk);
 	}
 
-	/*
-	 * This device ID is actually a common AMBA ID as used on the
-	 * AMBA PrimeCell bus. However it is not a PrimeCell.
-	 */
+	 
 	for (pid = 0, i = 0; i < 4; i++)
 		pid |= (readl(base + resource_size(res) - 0x20 + 4 * i) &
 			255) << (i * 8);
@@ -1092,7 +943,7 @@ static int __init fsmc_nand_probe(struct platform_device *pdev)
 	if (host->mode == USE_DMA_ACCESS)
 		init_completion(&host->dma_access_complete);
 
-	/* Link all private pointers */
+	 
 	mtd = nand_to_mtd(&host->nand);
 	nand_set_flash_node(nand, pdev->dev.of_node);
 
@@ -1126,9 +977,7 @@ static int __init fsmc_nand_probe(struct platform_device *pdev)
 	host->base.ops = &fsmc_nand_controller_ops;
 	nand->controller = &host->base;
 
-	/*
-	 * Scan to find existence of the device
-	 */
+	 
 	ret = nand_scan(nand, 1);
 	if (ret)
 		goto release_dma_write_chan;
@@ -1157,9 +1006,7 @@ disable_fsmc:
 	return ret;
 }
 
-/*
- * Clean up routine
- */
+ 
 static void fsmc_nand_remove(struct platform_device *pdev)
 {
 	struct fsmc_nand_data *host = platform_get_drvdata(pdev);

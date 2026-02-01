@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Garmin Chang <garmin.chang@mediatek.com>
- */
+
+ 
 
 #include <dt-bindings/clock/mediatek,mt8188-clk.h>
 #include <linux/clk-provider.h>
@@ -33,7 +30,7 @@ static const struct mtk_clk_desc ccu_desc = {
 
 static const struct of_device_id of_match_clk_mt8188_ccu[] = {
 	{ .compatible = "mediatek,mt8188-ccusys", .data = &ccu_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8188_ccu);
 

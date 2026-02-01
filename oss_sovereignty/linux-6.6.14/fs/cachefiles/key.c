@@ -1,25 +1,21 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Key to pathname encoder
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/slab.h>
 #include "internal.h"
 
 static const char cachefiles_charmap[64] =
-	"0123456789"			/* 0 - 9 */
-	"abcdefghijklmnopqrstuvwxyz"	/* 10 - 35 */
-	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"	/* 36 - 61 */
-	"_-"				/* 62 - 63 */
+	"0123456789"			 
+	"abcdefghijklmnopqrstuvwxyz"	 
+	"ABCDEFGHIJKLMNOPQRSTUVWXYZ"	 
+	"_-"				 
 	;
 
 static const char cachefiles_filecharmap[256] = {
-	/* we skip space and tab and control chars */
-	[33 ... 46] = 1,		/* '!' -> '.' */
-	/* we skip '/' as it's significant to pathwalk */
-	[48 ... 127] = 1,		/* '0' -> '~' */
+	 
+	[33 ... 46] = 1,		 
+	 
+	[48 ... 127] = 1,		 
 };
 
 static inline unsigned int how_many_hex_digits(unsigned int x)
@@ -27,13 +23,7 @@ static inline unsigned int how_many_hex_digits(unsigned int x)
 	return x ? round_up(ilog2(x) + 1, 4) / 4 : 0;
 }
 
-/*
- * turn the raw key into something cooked
- * - the key may be up to NAME_MAX in length (including the length word)
- *   - "base64" encode the strange keys, mapping 3 bytes of raw to four of
- *     cooked
- *   - need to cut the cooked key into 252 char lengths (189 raw bytes)
- */
+ 
 bool cachefiles_cook_key(struct cachefiles_object *object)
 {
 	const u8 *key = fscache_get_key(object->cookie), *kend;
@@ -52,22 +42,19 @@ bool cachefiles_cook_key(struct cachefiles_object *object)
 		print &= cachefiles_filecharmap[ch];
 	}
 
-	/* If the path is usable ASCII, then we render it directly */
+	 
 	if (print) {
 		len = 1 + keylen;
 		name = kmalloc(len + 1, GFP_KERNEL);
 		if (!name)
 			return false;
 
-		name[0] = 'D'; /* Data object type, string encoding */
+		name[0] = 'D';  
 		memcpy(name + 1, key, keylen);
 		goto success;
 	}
 
-	/* See if it makes sense to encode it as "hex,hex,hex" for each 32-bit
-	 * chunk.  We rely on the key having been padded out to a whole number
-	 * of 32-bit words.
-	 */
+	 
 	n = round_up(keylen, 4);
 	nbe = nle = 0;
 	for (i = 0; i < n; i += 4) {
@@ -80,14 +67,14 @@ bool cachefiles_cook_key(struct cachefiles_object *object)
 
 	b64len = DIV_ROUND_UP(keylen, 3);
 	pad = b64len * 3 - keylen;
-	b64len = 2 + b64len * 4; /* Length if we base64-encode it */
+	b64len = 2 + b64len * 4;  
 	_debug("len=%u nbe=%u nle=%u b64=%u", keylen, nbe, nle, b64len);
 	if (nbe < b64len || nle < b64len) {
 		unsigned int nlen = min(nbe, nle) + 1;
 		name = kmalloc(nlen, GFP_KERNEL);
 		if (!name)
 			return false;
-		sep = (nbe <= nle) ? 'S' : 'T'; /* Encoding indicator */
+		sep = (nbe <= nle) ? 'S' : 'T';  
 		len = 0;
 		for (i = 0; i < n; i += 4) {
 			u32 x;
@@ -103,7 +90,7 @@ bool cachefiles_cook_key(struct cachefiles_object *object)
 		goto success;
 	}
 
-	/* We need to base64-encode it */
+	 
 	name = kmalloc(b64len + 1, GFP_KERNEL);
 	if (!name)
 		return false;

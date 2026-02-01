@@ -1,60 +1,13 @@
-/*
- * Copyright(c) 2017 Intel Corporation.
- *
- * This file is provided under a dual BSD/GPLv2 license.  When using or
- * redistributing this file, you may do so under either license.
- *
- * GPL LICENSE SUMMARY
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of version 2 of the GNU General Public License as
- * published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- * General Public License for more details.
- *
- * BSD LICENSE
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *  - Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *  - Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in
- *    the documentation and/or other materials provided with the
- *    distribution.
- *  - Neither the name of Intel Corporation nor the names of its
- *    contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- *
- */
+ 
 
-/*
- * This file contains OPA VNIC encapsulation/decapsulation function.
- */
+ 
 
 #include <linux/if_ether.h>
 #include <linux/if_vlan.h>
 
 #include "opa_vnic_internal.h"
 
-/* OPA 16B Header fields */
+ 
 #define OPA_16B_LID_MASK        0xFFFFFull
 #define OPA_16B_SLID_HIGH_SHFT  8
 #define OPA_16B_SLID_MASK       0xF00ull
@@ -67,21 +20,21 @@
 
 #define OPA_VNIC_L4_HDR_SHFT    16
 
-/* L2+L4 hdr len is 20 bytes (5 quad words) */
+ 
 #define OPA_VNIC_HDR_QW_LEN   5
 
 static inline void opa_vnic_make_header(u8 *hdr, u32 slid, u32 dlid, u16 len,
 					u16 pkey, u16 entropy, u8 sc, u8 rc,
 					u8 l4_type, u16 l4_hdr)
 {
-	/* h[1]: LT=1, 16B L2=10 */
+	 
 	u32 h[OPA_VNIC_HDR_QW_LEN] = {0, 0xc0000000, 0, 0, 0};
 
 	h[2] = l4_type;
 	h[3] = entropy;
 	h[4] = l4_hdr << OPA_VNIC_L4_HDR_SHFT;
 
-	/* Extract and set 4 upper bits and 20 lower bits of the lids */
+	 
 	h[0] |= (slid & OPA_16B_LID_MASK);
 	h[2] |= ((slid >> (20 - OPA_16B_SLID_HIGH_SHFT)) & OPA_16B_SLID_MASK);
 
@@ -96,10 +49,7 @@ static inline void opa_vnic_make_header(u8 *hdr, u32 slid, u32 dlid, u16 len,
 	memcpy(hdr, h, OPA_VNIC_HDR_LEN);
 }
 
-/*
- * Using a simple hash table for mac table implementation with the last octet
- * of mac address as a key.
- */
+ 
 static void opa_vnic_free_mac_tbl(struct hlist_head *mactbl)
 {
 	struct opa_vnic_mac_tbl_node *node;
@@ -129,7 +79,7 @@ static struct hlist_head *opa_vnic_alloc_mac_tbl(void)
 	return mactbl;
 }
 
-/* opa_vnic_release_mac_tbl - empty and free the mac table */
+ 
 void opa_vnic_release_mac_tbl(struct opa_vnic_adapter *adapter)
 {
 	struct hlist_head *mactbl;
@@ -143,12 +93,7 @@ void opa_vnic_release_mac_tbl(struct opa_vnic_adapter *adapter)
 	mutex_unlock(&adapter->mactbl_lock);
 }
 
-/*
- * opa_vnic_query_mac_tbl - query the mac table for a section
- *
- * This function implements query of specific function of the mac table.
- * The function also expects the requested range to be valid.
- */
+ 
 void opa_vnic_query_mac_tbl(struct opa_vnic_adapter *adapter,
 			    struct opa_veswport_mactable *tbl)
 {
@@ -173,7 +118,7 @@ void opa_vnic_query_mac_tbl(struct opa_vnic_adapter *adapter,
 		    (node->index >= (loffset + lnum_entries)))
 			continue;
 
-		/* populate entry in the tbl corresponding to the index */
+		 
 		entry = &tbl->tbl_entries[node->index - loffset];
 		memcpy(entry->mac_addr, nentry->mac_addr,
 		       ARRAY_SIZE(entry->mac_addr));
@@ -186,21 +131,7 @@ get_mac_done:
 	rcu_read_unlock();
 }
 
-/*
- * opa_vnic_update_mac_tbl - update mac table section
- *
- * This function updates the specified section of the mac table.
- * The procedure includes following steps.
- *  - Allocate a new mac (hash) table.
- *  - Add the specified entries to the new table.
- *    (except the ones that are requested to be deleted).
- *  - Add all the other entries from the old mac table.
- *  - If there is a failure, free the new table and return.
- *  - Switch to the new table.
- *  - Free the old table and return.
- *
- * The function also expects the requested range to be valid.
- */
+ 
 int opa_vnic_update_mac_tbl(struct opa_vnic_adapter *adapter,
 			    struct opa_veswport_mactable *tbl)
 {
@@ -211,7 +142,7 @@ int opa_vnic_update_mac_tbl(struct opa_vnic_adapter *adapter,
 	u16 loffset, lnum_entries;
 
 	mutex_lock(&adapter->mactbl_lock);
-	/* allocate new mac table */
+	 
 	new_mactbl = opa_vnic_alloc_mac_tbl();
 	if (IS_ERR(new_mactbl)) {
 		mutex_unlock(&adapter->mactbl_lock);
@@ -221,7 +152,7 @@ int opa_vnic_update_mac_tbl(struct opa_vnic_adapter *adapter,
 	loffset = be16_to_cpu(tbl->offset);
 	lnum_entries = be16_to_cpu(tbl->num_entries);
 
-	/* add updated entries to the new mac table */
+	 
 	for (i = 0; i < lnum_entries; i++) {
 		struct __opa_vnic_mactable_entry *nentry;
 		struct opa_veswport_mactable_entry *entry =
@@ -234,7 +165,7 @@ int opa_vnic_update_mac_tbl(struct opa_vnic_adapter *adapter,
 		      mac_addr[3], mac_addr[4], mac_addr[5],
 		      entry->dlid_sd);
 
-		/* if the entry is being removed, do not add it */
+		 
 		if (!memcmp(mac_addr, empty_mac, ARRAY_SIZE(empty_mac)))
 			continue;
 
@@ -255,7 +186,7 @@ int opa_vnic_update_mac_tbl(struct opa_vnic_adapter *adapter,
 		vnic_hash_add(new_mactbl, &node->hlist, key);
 	}
 
-	/* add other entries from current mac table to new mac table */
+	 
 	old_mactbl = rcu_access_pointer(adapter->mactbl);
 	if (!old_mactbl)
 		goto switch_tbl;
@@ -278,13 +209,13 @@ int opa_vnic_update_mac_tbl(struct opa_vnic_adapter *adapter,
 	}
 
 switch_tbl:
-	/* switch to new table */
+	 
 	rcu_assign_pointer(adapter->mactbl, new_mactbl);
 	synchronize_rcu();
 
 	adapter->info.vport.mac_tbl_digest = be32_to_cpu(tbl->mac_tbl_digest);
 updt_done:
-	/* upon failure, free the new table; otherwise, free the old table */
+	 
 	if (rc)
 		opa_vnic_free_mac_tbl(new_mactbl);
 	else
@@ -294,7 +225,7 @@ updt_done:
 	return rc;
 }
 
-/* opa_vnic_chk_mac_tbl - check mac table for dlid */
+ 
 static uint32_t opa_vnic_chk_mac_tbl(struct opa_vnic_adapter *adapter,
 				     struct ethhdr *mac_hdr)
 {
@@ -312,13 +243,13 @@ static uint32_t opa_vnic_chk_mac_tbl(struct opa_vnic_adapter *adapter,
 	vnic_hash_for_each_possible(mactbl, node, hlist, key) {
 		struct __opa_vnic_mactable_entry *entry = &node->entry;
 
-		/* if related to source mac, skip */
+		 
 		if (unlikely(OPA_VNIC_DLID_SD_IS_SRC_MAC(entry->dlid_sd)))
 			continue;
 
 		if (!memcmp(node->entry.mac_addr, mac_hdr->h_dest,
 			    ARRAY_SIZE(node->entry.mac_addr))) {
-			/* mac address found */
+			 
 			dlid = OPA_VNIC_DLID_SD_GET_DLID(node->entry.dlid_sd);
 			break;
 		}
@@ -329,7 +260,7 @@ chk_done:
 	return dlid;
 }
 
-/* opa_vnic_get_dlid - find and return the DLID */
+ 
 static uint32_t opa_vnic_get_dlid(struct opa_vnic_adapter *adapter,
 				  struct sk_buff *skb, u8 def_port)
 {
@@ -359,7 +290,7 @@ static uint32_t opa_vnic_get_dlid(struct opa_vnic_adapter *adapter,
 	return dlid;
 }
 
-/* opa_vnic_get_sc - return the service class */
+ 
 static u8 opa_vnic_get_sc(struct __opa_veswport_info *info,
 			  struct sk_buff *skb)
 {
@@ -407,7 +338,7 @@ u8 opa_vnic_get_vl(struct opa_vnic_adapter *adapter, struct sk_buff *skb)
 	return vl;
 }
 
-/* opa_vnic_get_rc - return the routing control */
+ 
 static u8 opa_vnic_get_rc(struct __opa_veswport_info *info,
 			  struct sk_buff *skb)
 {
@@ -443,43 +374,43 @@ static u8 opa_vnic_get_rc(struct __opa_veswport_info *info,
 	return rout_ctrl;
 }
 
-/* opa_vnic_calc_entropy - calculate the packet entropy */
+ 
 u8 opa_vnic_calc_entropy(struct sk_buff *skb)
 {
 	u32 hash = skb_get_hash(skb);
 
-	/* store XOR of all bytes in lower 8 bits */
+	 
 	hash ^= hash >> 8;
 	hash ^= hash >> 16;
 
-	/* return lower 8 bits as entropy */
+	 
 	return (u8)(hash & 0xFF);
 }
 
-/* opa_vnic_get_def_port - get default port based on entropy */
+ 
 static inline u8 opa_vnic_get_def_port(struct opa_vnic_adapter *adapter,
 				       u8 entropy)
 {
 	u8 flow_id;
 
-	/* Add the upper and lower 4-bits of entropy to get the flow id */
+	 
 	flow_id = ((entropy & 0xf) + (entropy >> 4));
 	return adapter->flow_tbl[flow_id & (OPA_VNIC_FLOW_TBL_SIZE - 1)];
 }
 
-/* Calculate packet length including OPA header, crc and padding */
+ 
 static inline int opa_vnic_wire_length(struct sk_buff *skb)
 {
 	u32 pad_len;
 
-	/* padding for 8 bytes size alignment */
+	 
 	pad_len = -(skb->len + OPA_VNIC_ICRC_TAIL_LEN) & 0x7;
 	pad_len += OPA_VNIC_ICRC_TAIL_LEN;
 
 	return (skb->len + pad_len) >> 3;
 }
 
-/* opa_vnic_encap_skb - encapsulate skb packet with OPA header and meta data */
+ 
 void opa_vnic_encap_skb(struct opa_vnic_adapter *adapter, struct sk_buff *skb)
 {
 	struct __opa_veswport_info *info = &adapter->info;

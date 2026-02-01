@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * efi_secret module
- *
- * Copyright (C) 2022 IBM Corporation
- * Author: Dov Murik <dovmurik@linux.ibm.com>
- */
 
-/**
- * DOC: efi_secret: Allow reading EFI confidential computing (coco) secret area
- * via securityfs interface.
- *
- * When the module is loaded (and securityfs is mounted, typically under
- * /sys/kernel/security), a "secrets/coco" directory is created in securityfs.
- * In it, a file is created for each secret entry.  The name of each such file
- * is the GUID of the secret entry, and its content is the secret data.
- */
+ 
+
+ 
 
 #include <linux/platform_device.h>
 #include <linux/seq_file.h>
@@ -37,45 +24,15 @@ struct efi_secret {
 	u64 secret_data_len;
 };
 
-/*
- * Structure of the EFI secret area
- *
- * Offset   Length
- * (bytes)  (bytes)  Usage
- * -------  -------  -----
- *       0       16  Secret table header GUID (must be 1e74f542-71dd-4d66-963e-ef4287ff173b)
- *      16        4  Length of bytes of the entire secret area
- *
- *      20       16  First secret entry's GUID
- *      36        4  First secret entry's length in bytes (= 16 + 4 + x)
- *      40        x  First secret entry's data
- *
- *    40+x       16  Second secret entry's GUID
- *    56+x        4  Second secret entry's length in bytes (= 16 + 4 + y)
- *    60+x        y  Second secret entry's data
- *
- * (... and so on for additional entries)
- *
- * The GUID of each secret entry designates the usage of the secret data.
- */
+ 
 
-/**
- * struct secret_header - Header of entire secret area; this should be followed
- * by instances of struct secret_entry.
- * @guid:	Must be EFI_SECRET_TABLE_HEADER_GUID
- * @len:	Length in bytes of entire secret area, including header
- */
+ 
 struct secret_header {
 	efi_guid_t guid;
 	u32 len;
 } __attribute((packed));
 
-/**
- * struct secret_entry - Holds one secret entry
- * @guid:	Secret-specific GUID (or NULL_GUID if this secret entry was deleted)
- * @len:	Length of secret entry, including its guid and len fields
- * @data:	The secret data (full of zeros if this secret entry was deleted)
- */
+ 
 struct secret_entry {
 	efi_guid_t guid;
 	u32 len;
@@ -105,10 +62,7 @@ static int efi_secret_bin_file_show(struct seq_file *file, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(efi_secret_bin_file);
 
-/*
- * Overwrite memory content with zeroes, and ensure that dirty cache lines are
- * actually written back to memory, to clear out the secret.
- */
+ 
 static void wipe_memory(void *addr, size_t size)
 {
 	memzero_explicit(addr, size);
@@ -125,7 +79,7 @@ static int efi_secret_unlink(struct inode *dir, struct dentry *dentry)
 	int i;
 
 	if (e) {
-		/* Zero out the secret data */
+		 
 		wipe_memory(e->data, secret_entry_data_len(e));
 		e->guid = NULL_GUID;
 	}
@@ -136,10 +90,7 @@ static int efi_secret_unlink(struct inode *dir, struct dentry *dentry)
 		if (s->fs_files[i] == dentry)
 			s->fs_files[i] = NULL;
 
-	/*
-	 * securityfs_remove tries to lock the directory's inode, but we reach
-	 * the unlink callback when it's already locked
-	 */
+	 
 	inode_unlock(dir);
 	securityfs_remove(dentry);
 	inode_lock(dir);
@@ -223,10 +174,7 @@ static int efi_secret_securityfs_setup(struct platform_device *dev)
 	ptr = (void __force *)s->secret_data;
 	h = (struct secret_header *)ptr;
 	if (efi_guidcmp(h->guid, EFI_SECRET_TABLE_HEADER_GUID)) {
-		/*
-		 * This is not an error: it just means that EFI defines secret
-		 * area but it was not populated by the Guest Owner.
-		 */
+		 
 		dev_dbg(&dev->dev, "EFI secret area does not start with correct GUID\n");
 		return -ENODEV;
 	}
@@ -270,7 +218,7 @@ static int efi_secret_securityfs_setup(struct platform_device *dev)
 			goto err_cleanup;
 		}
 
-		/* Skip deleted entries (which will have NULL_GUID) */
+		 
 		if (efi_guidcmp(e->guid, NULL_GUID)) {
 			efi_guid_to_str(&e->guid, guid_str);
 

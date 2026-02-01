@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TI Bandgap temperature sensor driver for K3 SoC Family
- *
- * Copyright (C) 2020 Texas Instruments Incorporated - http://www.ti.com/
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -81,7 +77,7 @@ struct k3_bandgap {
 	const struct k3_bandgap_data *conf;
 };
 
-/* common data structures */
+ 
 struct k3_thermal_data {
 	struct thermal_zone_device *tzd;
 	struct k3_bandgap *bgp;
@@ -114,15 +110,7 @@ static int k3_bgp_read_temp(struct k3_thermal_data *devdata,
 
 	bgp = devdata->bgp;
 
-	/*
-	 * Errata is applicable for am654 pg 1.0 silicon. There
-	 * is a variation of the order for 8-10 degree centigrade.
-	 * Work around that by getting the average of two closest
-	 * readings out of three readings everytime we want to
-	 * report temperatures.
-	 *
-	 * Errata workaround.
-	 */
+	 
 	s0 = readl(bgp->base + devdata->stat_offset) &
 		K3_VTM_TS_STAT_DTEMP_MASK;
 	s1 = readl(bgp->base + devdata->stat_offset) &
@@ -186,7 +174,7 @@ static int k3_bandgap_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* Get the sensor count in the VTM */
+	 
 	val = readl(bgp->base + K3_VTM_DEVINFO_PWR0_OFFSET);
 	cnt = val & K3_VTM_DEVINFO_PWR0_TEMPSENS_CT_MASK;
 	cnt >>= __ffs(K3_VTM_DEVINFO_PWR0_TEMPSENS_CT_MASK);
@@ -197,7 +185,7 @@ static int k3_bandgap_probe(struct platform_device *pdev)
 		goto err_alloc;
 	}
 
-	/* Register the thermal sensors */
+	 
 	for (id = 0; id < cnt; id++) {
 		data[id].sensor_id = id;
 		data[id].bgp = bgp;
@@ -247,7 +235,7 @@ static const struct of_device_id of_k3_bandgap_match[] = {
 	{
 		.compatible = "ti,am654-vtm",
 	},
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, of_k3_bandgap_match);
 

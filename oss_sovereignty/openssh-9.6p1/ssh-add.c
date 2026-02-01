@@ -1,39 +1,5 @@
-/* $OpenBSD: ssh-add.c,v 1.169 2023/12/18 14:46:56 djm Exp $ */
-/*
- * Author: Tatu Ylonen <ylo@cs.hut.fi>
- * Copyright (c) 1995 Tatu Ylonen <ylo@cs.hut.fi>, Espoo, Finland
- *                    All rights reserved
- * Adds an identity to the authentication server, or removes an identity.
- *
- * As far as I am concerned, the code I have written for this software
- * can be used freely for any purpose.  Any derived versions of this
- * software must be clearly marked as such, and if the derived work is
- * incompatible with the protocol description in the RFC file, it must be
- * called by a name other than "ssh" or "Secure Shell".
- *
- * SSH2 implementation,
- * Copyright (c) 2000, 2001 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -70,10 +36,10 @@
 #include "sk-api.h"
 #include "hostfile.h"
 
-/* argv0 */
+ 
 extern char *__progname;
 
-/* Default files to add */
+ 
 static char *default_files[] = {
 #ifdef WITH_OPENSSL
 	_PATH_SSH_CLIENT_ID_RSA,
@@ -81,7 +47,7 @@ static char *default_files[] = {
 	_PATH_SSH_CLIENT_ID_ECDSA,
 	_PATH_SSH_CLIENT_ID_ECDSA_SK,
 #endif
-#endif /* WITH_OPENSSL */
+#endif  
 	_PATH_SSH_CLIENT_ID_ED25519,
 	_PATH_SSH_CLIENT_ID_ED25519_SK,
 	_PATH_SSH_CLIENT_ID_XMSS,
@@ -91,17 +57,17 @@ static char *default_files[] = {
 
 static int fingerprint_hash = SSH_FP_HASH_DEFAULT;
 
-/* Default lifetime (0 == forever) */
+ 
 static int lifetime = 0;
 
-/* User has to confirm key use */
+ 
 static int confirm = 0;
 
-/* Maximum number of signatures (XMSS) */
+ 
 static u_int maxsign = 0;
 static u_int minleft = 0;
 
-/* we keep a cache of one passphrase */
+ 
 static char *pass = NULL;
 static void
 clear_pass(void)
@@ -190,7 +156,7 @@ delete_file(int agent_fd, const char *filename, int key_only,
 	if (key_only)
 		goto out;
 
-	/* Now try to delete the corresponding certificate too */
+	 
 	free(comment);
 	comment = NULL;
 	xasprintf(&certpath, "%s-cert.pub", filename);
@@ -216,20 +182,16 @@ delete_file(int agent_fd, const char *filename, int key_only,
 	return ret;
 }
 
-/* Send a request to remove all identities. */
+ 
 static int
 delete_all(int agent_fd, int qflag)
 {
 	int ret = -1;
 
-	/*
-	 * Since the agent might be forwarded, old or non-OpenSSH, when asked
-	 * to remove all keys, attempt to remove both protocol v.1 and v.2
-	 * keys.
-	 */
+	 
 	if (ssh_remove_all_identities(agent_fd, 2) == 0)
 		ret = 0;
-	/* ignore error-code for ssh1 */
+	 
 	ssh_remove_all_identities(agent_fd, 1);
 
 	if (ret != 0)
@@ -263,10 +225,7 @@ add_file(int agent_fd, const char *filename, int key_only, int cert_only,
 		return -1;
 	}
 
-	/*
-	 * Since we'll try to load a keyfile multiple times, permission errors
-	 * will occur multiple times, so check perms first and bail if wrong.
-	 */
+	 
 	if (fd != STDIN_FILENO) {
 		if (sshkey_perm_ok(fd, filename) != 0) {
 			close(fd);
@@ -282,14 +241,14 @@ add_file(int agent_fd, const char *filename, int key_only, int cert_only,
 	}
 	close(fd);
 
-	/* At first, try empty passphrase */
+	 
 	if ((r = sshkey_parse_private_fileblob(keyblob, "", &private,
 	    &comment)) != 0 && r != SSH_ERR_KEY_WRONG_PASSPHRASE) {
 		fprintf(stderr, "Error loading key \"%s\": %s\n",
 		    filename, ssh_err(r));
 		goto fail_load;
 	}
-	/* try last */
+	 
 	if (private == NULL && pass != NULL) {
 		if ((r = sshkey_parse_private_fileblob(keyblob, pass, &private,
 		    &comment)) != 0 && r != SSH_ERR_KEY_WRONG_PASSPHRASE) {
@@ -299,7 +258,7 @@ add_file(int agent_fd, const char *filename, int key_only, int cert_only,
 		}
 	}
 	if (private == NULL) {
-		/* clear passphrase since it did not work */
+		 
 		clear_pass();
 		snprintf(msg, sizeof msg, "Enter passphrase for %s%s: ",
 		    filename, confirm ? " (will confirm each use)" : "");
@@ -329,7 +288,7 @@ add_file(int agent_fd, const char *filename, int key_only, int cert_only,
 		comment = xstrdup(filename);
 	sshbuf_free(keyblob);
 
-	/* For XMSS */
+	 
 	if ((r = sshkey_set_filename(private, filename)) != 0) {
 		fprintf(stderr, "Could not add filename to private key: %s (%s)\n",
 		    filename, comment);
@@ -368,7 +327,7 @@ add_file(int agent_fd, const char *filename, int key_only, int cert_only,
 			goto out;
 		}
 	} else {
-		/* Don't send provider constraint for other keys */
+		 
 		skprovider = NULL;
 	}
 
@@ -394,11 +353,11 @@ add_file(int agent_fd, const char *filename, int key_only, int cert_only,
 		    filename, ssh_err(r));
 	}
 
-	/* Skip trying to load the cert if requested */
+	 
 	if (key_only)
 		goto out;
 
-	/* Now try to add the certificate flavour too */
+	 
 	xasprintf(&certpath, "%s-cert.pub", filename);
 	if ((r = sshkey_load_public(certpath, &cert, NULL)) != 0) {
 		if (r != SSH_ERR_SYSTEM_ERROR || errno != ENOENT)
@@ -414,7 +373,7 @@ add_file(int agent_fd, const char *filename, int key_only, int cert_only,
 		goto out;
 	}
 
-	/* Graft with private bits */
+	 
 	if ((r = sshkey_to_certified(private)) != 0) {
 		error_fr(r, "sshkey_to_certified");
 		sshkey_free(cert);
@@ -434,7 +393,7 @@ add_file(int agent_fd, const char *filename, int key_only, int cert_only,
 		    private->cert->key_id);
 		goto out;
 	}
-	/* success */
+	 
 	if (!qflag) {
 		fprintf(stderr, "Certificate added: %s (%s)\n", certpath,
 		    private->cert->key_id);
@@ -518,7 +477,7 @@ test_key(int agent_fd, const char *filename)
 		error_r(r, "Signature verification failed for %s", filename);
 		goto done;
 	}
-	/* success */
+	 
 	ret = 0;
  done:
 	free(sig);
@@ -668,7 +627,7 @@ do_file(int agent_fd, int deleting, int key_only, int cert_only,
 	return 0;
 }
 
-/* Append string 's' to a NULL-terminated array of strings */
+ 
 static void
 stringlist_append(char ***listp, const char *s)
 {
@@ -678,7 +637,7 @@ stringlist_append(char ***listp, const char *s)
 		*listp = xcalloc(2, sizeof(**listp));
 	else {
 		for (i = 0; (*listp)[i] != NULL; i++)
-			; /* count */
+			;  
 		*listp = xrecallocarray(*listp, i + 1, i + 2, sizeof(**listp));
 	}
 	(*listp)[i] = xstrdup(s);
@@ -703,20 +662,20 @@ parse_dest_constraint_hop(const char *s, struct dest_constraint_hop *dch,
 		user = os;
 	}
 	cleanhostname(host);
-	/* Trivial case: username@ (all hosts) */
+	 
 	if (*host == '\0') {
 		if (user == NULL) {
 			fatal("Invalid key destination constraint \"%s\": "
 			    "does not specify user or host", s);
 		}
 		dch->user = xstrdup(user);
-		/* other fields left blank */
+		 
 		free(os);
 		return;
 	}
 	if (hostkey_files == NULL)
 		fatal_f("no hostkey files");
-	/* Otherwise we need to look up the keys for this hostname */
+	 
 	hostkeys = init_hostkeys();
 	for (i = 0; hostkey_files[i]; i++) {
 		path = tilde_expand_filename(hostkey_files[i], getuid());
@@ -762,10 +721,10 @@ parse_dest_constraint(const char *s, struct dest_constraint ***dcp,
 	dc = xcalloc(1, sizeof(*dc));
 	os = xstrdup(s);
 	if ((cp = strchr(os, '>')) == NULL) {
-		/* initial hop; no 'from' hop specified */
+		 
 		parse_dest_constraint_hop(os, &dc->to, hostkey_files);
 	} else {
-		/* two hops specified */
+		 
 		*(cp++) = '\0';
 		parse_dest_constraint_hop(os, &dc->from, hostkey_files);
 		parse_dest_constraint_hop(cp, &dc->to, hostkey_files);
@@ -774,7 +733,7 @@ parse_dest_constraint(const char *s, struct dest_constraint ***dcp,
 			    "user on 'from' host", os);
 		}
 	}
-	/* XXX eliminate or error on duplicates */
+	 
 	debug2_f("constraint %zu: %s%s%s (%u keys) > %s%s%s (%u keys)", *ndcp,
 	    dc->from.user ? dc->from.user : "", dc->from.user ? "@" : "",
 	    dc->from.hostname ? dc->from.hostname : "(ORIGIN)", dc->from.nkeys,
@@ -819,7 +778,7 @@ main(int argc, char **argv)
 	struct dest_constraint **dest_constraints = NULL;
 	size_t ndest_constraints = 0i, ncerts = 0;
 
-	/* Ensure that fds 0, 1 and 2 are open or directed to /dev/null */
+	 
 	sanitise_stdfd();
 
 	__progname = ssh_get_progname(argv[0]);
@@ -829,7 +788,7 @@ main(int argc, char **argv)
 
 	setvbuf(stdout, NULL, _IOLBF, 0);
 
-	/* First, get a connection to the authentication agent. */
+	 
 	switch (r = ssh_get_authentication_socket(&agent_fd)) {
 	case 0:
 		break;
@@ -963,7 +922,7 @@ main(int argc, char **argv)
 #endif
 
 	if (hostkey_files == NULL) {
-		/* use defaults from readconf.c */
+		 
 		stringlist_append(&hostkey_files, _PATH_SSH_USER_HOSTFILE);
 		stringlist_append(&hostkey_files, _PATH_SSH_USER_HOSTFILE2);
 		stringlist_append(&hostkey_files, _PATH_SSH_SYSTEM_HOSTFILE);

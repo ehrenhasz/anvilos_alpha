@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW_FW_H_
 #define __RTW_FW_H_
@@ -8,7 +7,7 @@
 #define H2C_PKT_SIZE		32
 #define H2C_PKT_HDR_SIZE	8
 
-/* FW bin information */
+ 
 #define FW_HDR_SIZE			64
 #define FW_HDR_CHKSUM_SIZE		8
 
@@ -88,7 +87,7 @@ struct rtw_h2c_register {
 
 #define RTW_H2C_W0_CMDID		GENMASK(7, 0)
 
-/* H2C_CMD_DEFAULT_PORT command */
+ 
 #define RTW_H2C_DEFAULT_PORT_W0_PORTID	GENMASK(15, 8)
 #define RTW_H2C_DEFAULT_PORT_W0_MACID	GENMASK(23, 16)
 
@@ -183,11 +182,11 @@ struct rtw_lps_pg_info_hdr {
 } __packed;
 
 struct rtw_rsvd_page {
-	/* associated with each vif */
+	 
 	struct list_head vif_list;
 	struct rtw_vif *rtwvif;
 
-	/* associated when build rsvd page */
+	 
 	struct list_head build_list;
 
 	struct sk_buff *skb;
@@ -225,12 +224,12 @@ enum rtw_packet_type {
 struct rtw_fw_wow_keep_alive_para {
 	bool adopt;
 	u8 pkt_type;
-	u8 period;		/* unit: sec */
+	u8 period;		 
 };
 
 struct rtw_fw_wow_disconnect_para {
 	bool adopt;
-	u8 period;		/* unit: sec */
+	u8 period;		 
 	u8 retry_count;
 };
 
@@ -300,26 +299,26 @@ struct rtw_fw_hdr {
 	__le16 signature;
 	u8 category;
 	u8 function;
-	__le16 version;		/* 0x04 */
+	__le16 version;		 
 	u8 subversion;
 	u8 subindex;
-	__le32 rsvd;		/* 0x08 */
-	__le32 feature;		/* 0x0C */
-	u8 month;		/* 0x10 */
+	__le32 rsvd;		 
+	__le32 feature;		 
+	u8 month;		 
 	u8 day;
 	u8 hour;
 	u8 min;
-	__le16 year;		/* 0x14 */
+	__le16 year;		 
 	__le16 rsvd3;
-	u8 mem_usage;		/* 0x18 */
+	u8 mem_usage;		 
 	u8 rsvd4[3];
-	__le16 h2c_fmt_ver;	/* 0x1C */
+	__le16 h2c_fmt_ver;	 
 	__le16 rsvd5;
-	__le32 dmem_addr;	/* 0x20 */
+	__le32 dmem_addr;	 
 	__le32 dmem_size;
 	__le32 rsvd6;
 	__le32 rsvd7;
-	__le32 imem_size;	/* 0x30 */
+	__le32 imem_size;	 
 	__le32 emem_size;
 	__le32 emem_addr;
 	__le32 imem_addr;
@@ -329,18 +328,18 @@ struct rtw_fw_hdr_legacy {
 	__le16 signature;
 	u8 category;
 	u8 function;
-	__le16 version;	/* 0x04 */
+	__le16 version;	 
 	u8 subversion1;
 	u8 subversion2;
-	u8 month;	/* 0x08 */
+	u8 month;	 
 	u8 day;
 	u8 hour;
 	u8 minute;
 	__le16 size;
 	__le16 rsvd2;
-	__le32 idx;	/* 0x10 */
+	__le32 idx;	 
 	__le32 rsvd3;
-	__le32 rsvd4;	/* 0x18 */
+	__le32 rsvd4;	 
 	__le32 rsvd5;
 } __packed;
 
@@ -349,7 +348,7 @@ struct rtw_fw_hdr_legacy {
 #define RTW_FW_SUIT_VER_CODE(s)	\
 	RTW_FW_VER_CODE((s).version, (s).sub_version, (s).sub_index)
 
-/* C2H */
+ 
 #define GET_CCX_REPORT_SEQNUM_V0(c2h_payload)	(c2h_payload[6] & 0xfc)
 #define GET_CCX_REPORT_STATUS_V0(c2h_payload)	(c2h_payload[0] & 0xc0)
 #define GET_CCX_REPORT_SEQNUM_V1(c2h_payload)	(c2h_payload[8] & 0xfc)
@@ -369,7 +368,7 @@ struct rtw_fw_hdr_legacy {
 #define GET_BCN_FILTER_NOTIFY_EVENT(c2h_payload)	(c2h_payload[1] & 0x10)
 #define GET_BCN_FILTER_NOTIFY_RSSI(c2h_payload)	(c2h_payload[2] - 100)
 
-/* PKT H2C */
+ 
 #define H2C_PKT_CMD_ID 0xFF
 #define H2C_PKT_CATEGORY 0x01
 
@@ -536,7 +535,7 @@ static inline void rtw_h2c_pkt_set_header(u8 *h2c_pkt, u8 sub_id)
 #define SCAN_OFFLOAD_SET_PKT_LOC(h2c_pkt, value)			       \
 	le32p_replace_bits((__le32 *)(h2c_pkt) + 0x05, value, GENMASK(15, 8))
 
-/* Command H2C */
+ 
 #define H2C_CMD_RSVD_PAGE		0x0
 #define H2C_CMD_MEDIA_STATUS_RPT	0x01
 #define H2C_CMD_SET_PWR_MODE		0x20

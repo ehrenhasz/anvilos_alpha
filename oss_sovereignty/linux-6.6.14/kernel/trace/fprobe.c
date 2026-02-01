@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * fprobe - Simple ftrace probe wrapper for function entry.
- */
+
+ 
 #define pr_fmt(fmt) "fprobe: " fmt
 
 #include <linux/err.h>
@@ -48,7 +46,7 @@ static inline void __fprobe_handler(unsigned long ip, unsigned long parent_ip,
 	if (fp->entry_handler)
 		ret = fp->entry_handler(fp, ip, parent_ip, ftrace_get_regs(fregs), entry_data);
 
-	/* If entry_handler returns !0, nmissed is not counted. */
+	 
 	if (rh) {
 		if (ret)
 			rethook_recycle(rh);
@@ -67,9 +65,7 @@ static void fprobe_handler(unsigned long ip, unsigned long parent_ip,
 	if (fprobe_disabled(fp))
 		return;
 
-	/* recursion detection has to go before any traceable function and
-	 * all functions before this point should be marked as notrace
-	 */
+	 
 	bit = ftrace_test_recursion_trylock(ip, parent_ip);
 	if (bit < 0) {
 		fp->nmissed++;
@@ -91,21 +87,14 @@ static void fprobe_kprobe_handler(unsigned long ip, unsigned long parent_ip,
 	if (fprobe_disabled(fp))
 		return;
 
-	/* recursion detection has to go before any traceable function and
-	 * all functions called before this point should be marked as notrace
-	 */
+	 
 	bit = ftrace_test_recursion_trylock(ip, parent_ip);
 	if (bit < 0) {
 		fp->nmissed++;
 		return;
 	}
 
-	/*
-	 * This user handler is shared with other kprobes and is not expected to be
-	 * called recursively. So if any other kprobe handler is running, this will
-	 * exit as kprobe does. See the section 'Share the callbacks with kprobes'
-	 * in Documentation/trace/fprobe.rst for more information.
-	 */
+	 
 	if (unlikely(kprobe_running())) {
 		fp->nmissed++;
 		goto recursion_unlock;
@@ -131,10 +120,7 @@ static void fprobe_exit_handler(struct rethook_node *rh, void *data,
 
 	fpr = container_of(rh, struct fprobe_rethook_node, node);
 
-	/*
-	 * we need to assure no calls to traceable functions in-between the
-	 * end of fprobe_handler and the beginning of fprobe_exit_handler.
-	 */
+	 
 	bit = ftrace_test_recursion_trylock(fpr->entry_ip, fpr->entry_parent_ip);
 	if (bit < 0) {
 		fp->nmissed++;
@@ -155,17 +141,17 @@ static int symbols_cmp(const void *a, const void *b)
 	return strcmp(*str_a, *str_b);
 }
 
-/* Convert ftrace location address from symbols */
+ 
 static unsigned long *get_ftrace_locations(const char **syms, int num)
 {
 	unsigned long *addrs;
 
-	/* Convert symbols to symbol address */
+	 
 	addrs = kcalloc(num, sizeof(*addrs), GFP_KERNEL);
 	if (!addrs)
 		return ERR_PTR(-ENOMEM);
 
-	/* ftrace_lookup_symbols expects sorted symbols */
+	 
 	sort(syms, num, sizeof(*syms), symbols_cmp, NULL);
 
 	if (!ftrace_lookup_symbols(syms, num, addrs))
@@ -197,7 +183,7 @@ static int fprobe_init_rethook(struct fprobe *fp, int num)
 		return 0;
 	}
 
-	/* Initialize rethook if needed */
+	 
 	if (fp->nr_maxactive)
 		size = fp->nr_maxactive;
 	else
@@ -225,24 +211,14 @@ static int fprobe_init_rethook(struct fprobe *fp, int num)
 static void fprobe_fail_cleanup(struct fprobe *fp)
 {
 	if (fp->rethook) {
-		/* Don't need to cleanup rethook->handler because this is not used. */
+		 
 		rethook_free(fp->rethook);
 		fp->rethook = NULL;
 	}
 	ftrace_free_filter(&fp->ops);
 }
 
-/**
- * register_fprobe() - Register fprobe to ftrace by pattern.
- * @fp: A fprobe data structure to be registered.
- * @filter: A wildcard pattern of probed symbols.
- * @notfilter: A wildcard pattern of NOT probed symbols.
- *
- * Register @fp to ftrace for enabling the probe on the symbols matched to @filter.
- * If @notfilter is not NULL, the symbols matched the @notfilter are not probed.
- *
- * Return 0 if @fp is registered successfully, -errno if not.
- */
+ 
 int register_fprobe(struct fprobe *fp, const char *filter, const char *notfilter)
 {
 	struct ftrace_hash *hash;
@@ -270,10 +246,7 @@ int register_fprobe(struct fprobe *fp, const char *filter, const char *notfilter
 			goto out;
 	}
 
-	/* TODO:
-	 * correctly calculate the total number of filtered symbols
-	 * from both filter and notfilter.
-	 */
+	 
 	hash = rcu_access_pointer(fp->ops.local_hash.filter_hash);
 	if (WARN_ON_ONCE(!hash))
 		goto out;
@@ -289,19 +262,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(register_fprobe);
 
-/**
- * register_fprobe_ips() - Register fprobe to ftrace by address.
- * @fp: A fprobe data structure to be registered.
- * @addrs: An array of target ftrace location addresses.
- * @num: The number of entries of @addrs.
- *
- * Register @fp to ftrace for enabling the probe on the address given by @addrs.
- * The @addrs must be the addresses of ftrace location address, which may be
- * the symbol address + arch-dependent offset.
- * If you unsure what this mean, please use other registration functions.
- *
- * Return 0 if @fp is registered successfully, -errno if not.
- */
+ 
 int register_fprobe_ips(struct fprobe *fp, unsigned long *addrs, int num)
 {
 	int ret;
@@ -325,17 +286,7 @@ int register_fprobe_ips(struct fprobe *fp, unsigned long *addrs, int num)
 }
 EXPORT_SYMBOL_GPL(register_fprobe_ips);
 
-/**
- * register_fprobe_syms() - Register fprobe to ftrace by symbols.
- * @fp: A fprobe data structure to be registered.
- * @syms: An array of target symbols.
- * @num: The number of entries of @syms.
- *
- * Register @fp to the symbols given by @syms array. This will be useful if
- * you are sure the symbols exist in the kernel.
- *
- * Return 0 if @fp is registered successfully, -errno if not.
- */
+ 
 int register_fprobe_syms(struct fprobe *fp, const char **syms, int num)
 {
 	unsigned long *addrs;
@@ -364,14 +315,7 @@ bool fprobe_is_registered(struct fprobe *fp)
 	return true;
 }
 
-/**
- * unregister_fprobe() - Unregister fprobe from ftrace
- * @fp: A fprobe data structure to be unregistered.
- *
- * Unregister fprobe (and remove ftrace hooks from the function entries).
- *
- * Return 0 if @fp is unregistered successfully, -errno if not.
- */
+ 
 int unregister_fprobe(struct fprobe *fp)
 {
 	int ret;

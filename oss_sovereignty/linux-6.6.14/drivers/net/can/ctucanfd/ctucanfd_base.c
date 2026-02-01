@@ -1,21 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- *
- * CTU CAN FD IP Core
- *
- * Copyright (C) 2015-2018 Ondrej Ille <ondrej.ille@gmail.com> FEE CTU
- * Copyright (C) 2018-2021 Ondrej Ille <ondrej.ille@gmail.com> self-funded
- * Copyright (C) 2018-2019 Martin Jerabek <martin.jerabek01@gmail.com> FEE CTU
- * Copyright (C) 2018-2022 Pavel Pisa <pisa@cmp.felk.cvut.cz> FEE CTU/self-funded
- *
- * Project advisors:
- *     Jiri Novak <jnovak@fel.cvut.cz>
- *     Pavel Pisa <pisa@cmp.felk.cvut.cz>
- *
- * Department of Measurement         (http://meas.fel.cvut.cz/)
- * Faculty of Electrical Engineering (http://www.fel.cvut.cz)
- * Czech Technical University        (http://www.cvut.cz/)
- ******************************************************************************/
+
+ 
 
 #include <linux/clk.h>
 #include <linux/errno.h>
@@ -45,13 +29,7 @@
 
 #define CTUCANFD_ID 0xCAFD
 
-/* TX buffer rotation:
- * - when a buffer transitions to empty state, rotate order and priorities
- * - if more buffers seem to transition at the same time, rotate by the number of buffers
- * - it may be assumed that buffers transition to empty state in FIFO order (because we manage
- *   priorities that way)
- * - at frame filling, do not rotate anything, just increment buffer modulo counter
- */
+ 
 
 #define CTUCANFD_FLAG_RX_FFW_BUFFERED	1
 
@@ -151,12 +129,7 @@ static void ctucan_write_txt_buf(struct ctucan_priv *priv, enum ctu_can_fd_can_r
 #define CTU_CAN_FD_TXTNF(priv) (!!FIELD_GET(REG_STATUS_TXNF, ctucan_read32(priv, CTUCANFD_STATUS)))
 #define CTU_CAN_FD_ENABLED(priv) (!!FIELD_GET(REG_MODE_ENA, ctucan_read32(priv, CTUCANFD_MODE)))
 
-/**
- * ctucan_state_to_str() - Converts CAN controller state code to corresponding text
- * @state:	CAN controller state code
- *
- * Return: Pointer to string representation of the error state
- */
+ 
 static const char *ctucan_state_to_str(enum can_state state)
 {
 	const char *txt = NULL;
@@ -166,12 +139,7 @@ static const char *ctucan_state_to_str(enum can_state state)
 	return txt ? txt : "UNKNOWN";
 }
 
-/**
- * ctucan_reset() - Issues software reset request to CTU CAN FD
- * @ndev:	Pointer to net_device structure
- *
- * Return: 0 for success, -%ETIMEDOUT if CAN controller does not leave reset
- */
+ 
 static int ctucan_reset(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -194,14 +162,7 @@ static int ctucan_reset(struct net_device *ndev)
 	} while (1);
 }
 
-/**
- * ctucan_set_btr() - Sets CAN bus bit timing in CTU CAN FD
- * @ndev:	Pointer to net_device structure
- * @bt:		Pointer to Bit timing structure
- * @nominal:	True - Nominal bit timing, False - Data bit timing
- *
- * Return: 0 - OK, -%EPERM if controller is enabled
- */
+ 
 static int ctucan_set_btr(struct net_device *ndev, struct can_bittiming *bt, bool nominal)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -218,11 +179,7 @@ static int ctucan_set_btr(struct net_device *ndev, struct can_bittiming *bt, boo
 	if (nominal)
 		max_ph1_len = 63;
 
-	/* The timing calculation functions have only constraints on tseg1, which is prop_seg +
-	 * phase1_seg combined. tseg1 is then split in half and stored into prog_seg and phase_seg1.
-	 * In CTU CAN FD, PROP is 6/7 bits wide but PH1 only 6/5, so we must re-distribute the
-	 * values here.
-	 */
+	 
 	if (phase_seg1 > max_ph1_len) {
 		prop_seg += phase_seg1 - max_ph1_len;
 		phase_seg1 = max_ph1_len;
@@ -251,57 +208,42 @@ static int ctucan_set_btr(struct net_device *ndev, struct can_bittiming *bt, boo
 	return 0;
 }
 
-/**
- * ctucan_set_bittiming() - CAN set nominal bit timing routine
- * @ndev:	Pointer to net_device structure
- *
- * Return: 0 on success, -%EPERM on error
- */
+ 
 static int ctucan_set_bittiming(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
 	struct can_bittiming *bt = &priv->can.bittiming;
 
-	/* Note that bt may be modified here */
+	 
 	return ctucan_set_btr(ndev, bt, true);
 }
 
-/**
- * ctucan_set_data_bittiming() - CAN set data bit timing routine
- * @ndev:	Pointer to net_device structure
- *
- * Return: 0 on success, -%EPERM on error
- */
+ 
 static int ctucan_set_data_bittiming(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
 	struct can_bittiming *dbt = &priv->can.data_bittiming;
 
-	/* Note that dbt may be modified here */
+	 
 	return ctucan_set_btr(ndev, dbt, false);
 }
 
-/**
- * ctucan_set_secondary_sample_point() - Sets secondary sample point in CTU CAN FD
- * @ndev:	Pointer to net_device structure
- *
- * Return: 0 on success, -%EPERM if controller is enabled
- */
+ 
 static int ctucan_set_secondary_sample_point(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
 	struct can_bittiming *dbt = &priv->can.data_bittiming;
 	int ssp_offset = 0;
-	u32 ssp_cfg = 0; /* No SSP by default */
+	u32 ssp_cfg = 0;  
 
 	if (CTU_CAN_FD_ENABLED(priv)) {
 		netdev_err(ndev, "BUG! Cannot set SSP - CAN is enabled\n");
 		return -EPERM;
 	}
 
-	/* Use SSP for bit-rates above 1 Mbits/s */
+	 
 	if (dbt->bitrate > 1000000) {
-		/* Calculate SSP in minimal time quanta */
+		 
 		ssp_offset = (priv->can.clock.freq / 1000) * dbt->sample_point / dbt->bitrate;
 
 		if (ssp_offset > 127) {
@@ -318,11 +260,7 @@ static int ctucan_set_secondary_sample_point(struct net_device *ndev)
 	return 0;
 }
 
-/**
- * ctucan_set_mode() - Sets CTU CAN FDs mode
- * @priv:	Pointer to private data
- * @mode:	Pointer to controller modes to be set
- */
+ 
 static void ctucan_set_mode(struct ctucan_priv *priv, const struct can_ctrlmode *mode)
 {
 	u32 mode_reg = ctucan_read32(priv, CTUCANFD_MODE);
@@ -347,31 +285,19 @@ static void ctucan_set_mode(struct ctucan_priv *priv, const struct can_ctrlmode 
 			(mode_reg | REG_MODE_NISOFD) :
 			(mode_reg & ~REG_MODE_NISOFD);
 
-	/* One shot mode supported indirectly via Retransmit limit */
+	 
 	mode_reg &= ~FIELD_PREP(REG_MODE_RTRTH, 0xF);
 	mode_reg = (mode->flags & CAN_CTRLMODE_ONE_SHOT) ?
 			(mode_reg | REG_MODE_RTRLE) :
 			(mode_reg & ~REG_MODE_RTRLE);
 
-	/* Some bits fixed:
-	 *   TSTM  - Off, User shall not be able to change REC/TEC by hand during operation
-	 */
+	 
 	mode_reg &= ~REG_MODE_TSTM;
 
 	ctucan_write32(priv, CTUCANFD_MODE, mode_reg);
 }
 
-/**
- * ctucan_chip_start() - This routine starts the driver
- * @ndev:	Pointer to net_device structure
- *
- * Routine expects that chip is in reset state. It setups initial
- * Tx buffers for FIFO priorities, sets bittiming, enables interrupts,
- * switches core to operational mode and changes controller
- * state to %CAN_STATE_STOPPED.
- *
- * Return: 0 on success and failure value on error
- */
+ 
 static int ctucan_chip_start(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -385,7 +311,7 @@ static int ctucan_chip_start(struct net_device *ndev)
 	priv->txb_tail = 0;
 	ctucan_write32(priv, CTUCANFD_TX_PRIORITY, priv->txb_prio);
 
-	/* Configure bit-rates and ssp */
+	 
 	err = ctucan_set_bittiming(ndev);
 	if (err < 0)
 		return err;
@@ -398,33 +324,33 @@ static int ctucan_chip_start(struct net_device *ndev)
 	if (err < 0)
 		return err;
 
-	/* Configure modes */
+	 
 	mode.flags = priv->can.ctrlmode;
 	mode.mask = 0xFFFFFFFF;
 	ctucan_set_mode(priv, &mode);
 
-	/* Configure interrupts */
+	 
 	int_ena = REG_INT_STAT_RBNEI |
 		  REG_INT_STAT_TXBHCI |
 		  REG_INT_STAT_EWLI |
 		  REG_INT_STAT_FCSI;
 
-	/* Bus error reporting -> Allow Error/Arb.lost interrupts */
+	 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) {
 		int_ena |= REG_INT_STAT_ALI |
 			   REG_INT_STAT_BEI;
 	}
 
-	int_msk = ~int_ena; /* Mask all disabled interrupts */
+	int_msk = ~int_ena;  
 
-	/* It's after reset, so there is no need to clear anything */
+	 
 	ctucan_write32(priv, CTUCANFD_INT_MASK_SET, int_msk);
 	ctucan_write32(priv, CTUCANFD_INT_ENA_SET, int_ena);
 
-	/* Controller enters ERROR_ACTIVE on initial FCSI */
+	 
 	priv->can.state = CAN_STATE_STOPPED;
 
-	/* Enable the controller */
+	 
 	mode_reg = ctucan_read32(priv, CTUCANFD_MODE);
 	mode_reg |= REG_MODE_ENA;
 	ctucan_write32(priv, CTUCANFD_MODE, mode_reg);
@@ -432,15 +358,7 @@ static int ctucan_chip_start(struct net_device *ndev)
 	return 0;
 }
 
-/**
- * ctucan_do_set_mode() - Sets mode of the driver
- * @ndev:	Pointer to net_device structure
- * @mode:	Tells the mode of the driver
- *
- * This check the drivers state and calls the corresponding modes to set.
- *
- * Return: 0 on success and failure value on error
- */
+ 
 static int ctucan_do_set_mode(struct net_device *ndev, enum can_mode mode)
 {
 	int ret;
@@ -465,13 +383,7 @@ static int ctucan_do_set_mode(struct net_device *ndev, enum can_mode mode)
 	return ret;
 }
 
-/**
- * ctucan_get_tx_status() - Gets status of TXT buffer
- * @priv:	Pointer to private data
- * @buf:	Buffer index (0-based)
- *
- * Return: Status of TXT buffer
- */
+ 
 static enum ctucan_txtb_status ctucan_get_tx_status(struct ctucan_priv *priv, u8 buf)
 {
 	u32 tx_status = ctucan_read32(priv, CTUCANFD_TX_STATUS);
@@ -480,14 +392,7 @@ static enum ctucan_txtb_status ctucan_get_tx_status(struct ctucan_priv *priv, u8
 	return status;
 }
 
-/**
- * ctucan_is_txt_buf_writable() - Checks if frame can be inserted to TXT Buffer
- * @priv:	Pointer to private data
- * @buf:	Buffer index (0-based)
- *
- * Return: True - Frame can be inserted to TXT Buffer, False - If attempted, frame will not be
- *	   inserted to TXT Buffer
- */
+ 
 static bool ctucan_is_txt_buf_writable(struct ctucan_priv *priv, u8 buf)
 {
 	enum ctucan_txtb_status buf_status;
@@ -499,19 +404,7 @@ static bool ctucan_is_txt_buf_writable(struct ctucan_priv *priv, u8 buf)
 	return true;
 }
 
-/**
- * ctucan_insert_frame() - Inserts frame to TXT buffer
- * @priv:	Pointer to private data
- * @cf:		Pointer to CAN frame to be inserted
- * @buf:	TXT Buffer index to which frame is inserted (0-based)
- * @isfdf:	True - CAN FD Frame, False - CAN 2.0 Frame
- *
- * Return: True - Frame inserted successfully
- *	   False - Frame was not inserted due to one of:
- *			1. TXT Buffer is not writable (it is in wrong state)
- *			2. Invalid TXT buffer index
- *			3. Invalid frame length
- */
+ 
 static bool ctucan_insert_frame(struct ctucan_priv *priv, const struct canfd_frame *cf, u8 buf,
 				bool isfdf)
 {
@@ -529,7 +422,7 @@ static bool ctucan_insert_frame(struct ctucan_priv *priv, const struct canfd_fra
 	if (cf->len > CANFD_MAX_DLEN)
 		return false;
 
-	/* Prepare Frame format */
+	 
 	if (cf->can_id & CAN_RTR_FLAG)
 		ffw |= REG_FRAME_FORMAT_W_RTR;
 
@@ -544,18 +437,18 @@ static bool ctucan_insert_frame(struct ctucan_priv *priv, const struct canfd_fra
 
 	ffw |= FIELD_PREP(REG_FRAME_FORMAT_W_DLC, can_fd_len2dlc(cf->len));
 
-	/* Prepare identifier */
+	 
 	if (cf->can_id & CAN_EFF_FLAG)
 		idw = cf->can_id & CAN_EFF_MASK;
 	else
 		idw = FIELD_PREP(REG_IDENTIFIER_W_IDENTIFIER_BASE, cf->can_id & CAN_SFF_MASK);
 
-	/* Write ID, Frame format, Don't write timestamp -> Time triggered transmission disabled */
+	 
 	buf_base = (buf + 1) * 0x100;
 	ctucan_write_txt_buf(priv, buf_base, CTUCANFD_FRAME_FORMAT_W, ffw);
 	ctucan_write_txt_buf(priv, buf_base, CTUCANFD_IDENTIFIER_W, idw);
 
-	/* Write Data payload */
+	 
 	if (!(cf->can_id & CAN_RTR_FLAG)) {
 		for (i = 0; i < cf->len; i += 4) {
 			u32 data = le32_to_cpu(*(__le32 *)(cf->data + i));
@@ -567,12 +460,7 @@ static bool ctucan_insert_frame(struct ctucan_priv *priv, const struct canfd_fra
 	return true;
 }
 
-/**
- * ctucan_give_txtb_cmd() - Applies command on TXT buffer
- * @priv:	Pointer to private data
- * @cmd:	Command to give
- * @buf:	Buffer index (0-based)
- */
+ 
 static void ctucan_give_txtb_cmd(struct ctucan_priv *priv, enum ctucan_txtb_command cmd, u8 buf)
 {
 	u32 tx_cmd = cmd;
@@ -581,17 +469,7 @@ static void ctucan_give_txtb_cmd(struct ctucan_priv *priv, enum ctucan_txtb_comm
 	ctucan_write32(priv, CTUCANFD_TX_COMMAND, tx_cmd);
 }
 
-/**
- * ctucan_start_xmit() - Starts the transmission
- * @skb:	sk_buff pointer that contains data to be Txed
- * @ndev:	Pointer to net_device structure
- *
- * Invoked from upper layers to initiate transmission. Uses the next available free TXT Buffer and
- * populates its fields to start the transmission.
- *
- * Return: %NETDEV_TX_OK on success, %NETDEV_TX_BUSY when no free TXT buffer is available,
- *         negative return values reserved for error cases
- */
+ 
 static netdev_tx_t ctucan_start_xmit(struct sk_buff *skb, struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -626,7 +504,7 @@ static netdev_tx_t ctucan_start_xmit(struct sk_buff *skb, struct net_device *nde
 	ctucan_give_txtb_cmd(priv, TXT_CMD_SET_READY, txtb_id);
 	priv->txb_head++;
 
-	/* Check if all TX buffers are full */
+	 
 	if (!CTU_CAN_FD_TXTNF(priv))
 		netif_stop_queue(ndev);
 
@@ -635,14 +513,7 @@ static netdev_tx_t ctucan_start_xmit(struct sk_buff *skb, struct net_device *nde
 	return NETDEV_TX_OK;
 }
 
-/**
- * ctucan_read_rx_frame() - Reads frame from RX FIFO
- * @priv:	Pointer to CTU CAN FD's private data
- * @cf:		Pointer to CAN frame struct
- * @ffw:	Previously read frame format word
- *
- * Note: Frame format word must be read separately and provided in 'ffw'.
- */
+ 
 static void ctucan_read_rx_frame(struct ctucan_priv *priv, struct canfd_frame *cf, u32 ffw)
 {
 	u32 idw;
@@ -656,7 +527,7 @@ static void ctucan_read_rx_frame(struct ctucan_priv *priv, struct canfd_frame *c
 	else
 		cf->can_id = (idw >> 18) & CAN_SFF_MASK;
 
-	/* BRS, ESI, RTR Flags */
+	 
 	if (FIELD_GET(REG_FRAME_FORMAT_W_FDF, ffw)) {
 		if (FIELD_GET(REG_FRAME_FORMAT_W_BRS, ffw))
 			cf->flags |= CANFD_BRS;
@@ -668,7 +539,7 @@ static void ctucan_read_rx_frame(struct ctucan_priv *priv, struct canfd_frame *c
 
 	wc = FIELD_GET(REG_FRAME_FORMAT_W_RWCNT, ffw) - 3;
 
-	/* DLC */
+	 
 	if (FIELD_GET(REG_FRAME_FORMAT_W_DLC, ffw) <= 8) {
 		len = FIELD_GET(REG_FRAME_FORMAT_W_DLC, ffw);
 	} else {
@@ -681,11 +552,11 @@ static void ctucan_read_rx_frame(struct ctucan_priv *priv, struct canfd_frame *c
 	if (unlikely(len > wc * 4))
 		len = wc * 4;
 
-	/* Timestamp - Read and throw away */
+	 
 	ctucan_read32(priv, CTUCANFD_RX_DATA);
 	ctucan_read32(priv, CTUCANFD_RX_DATA);
 
-	/* Data */
+	 
 	for (i = 0; i < len; i += 4) {
 		u32 data = ctucan_read32(priv, CTUCANFD_RX_DATA);
 		*(__le32 *)(cf->data + i) = cpu_to_le32(data);
@@ -696,16 +567,7 @@ static void ctucan_read_rx_frame(struct ctucan_priv *priv, struct canfd_frame *c
 	}
 }
 
-/**
- * ctucan_rx() -  Called from CAN ISR to complete the received frame processing
- * @ndev:	Pointer to net_device structure
- *
- * This function is invoked from the CAN isr(poll) to process the Rx frames. It does minimal
- * processing and invokes "netif_receive_skb" to complete further processing.
- * Return: 1 when frame is passed to the network layer, 0 when the first frame word is read but
- *	   system is out of free SKBs temporally and left code to resolve SKB allocation later,
- *         -%EAGAIN in a case of empty Rx FIFO.
- */
+ 
 static int ctucan_rx(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -744,12 +606,7 @@ static int ctucan_rx(struct net_device *ndev)
 	return 1;
 }
 
-/**
- * ctucan_read_fault_state() - Reads CTU CAN FDs fault confinement state.
- * @priv:	Pointer to private data
- *
- * Returns: Fault confinement state of controller
- */
+ 
 static enum can_state ctucan_read_fault_state(struct ctucan_priv *priv)
 {
 	u32 fs;
@@ -776,11 +633,7 @@ static enum can_state ctucan_read_fault_state(struct ctucan_priv *priv)
 	return CAN_STATE_ERROR_PASSIVE;
 }
 
-/**
- * ctucan_get_rec_tec() - Reads REC/TEC counter values from controller
- * @priv:	Pointer to private data
- * @bec:	Pointer to Error counter structure
- */
+ 
 static void ctucan_get_rec_tec(struct ctucan_priv *priv, struct can_berr_counter *bec)
 {
 	u32 err_ctrs = ctucan_read32(priv, CTUCANFD_REC);
@@ -789,14 +642,7 @@ static void ctucan_get_rec_tec(struct ctucan_priv *priv, struct can_berr_counter
 	bec->txerr = FIELD_GET(REG_REC_TEC_VAL, err_ctrs);
 }
 
-/**
- * ctucan_err_interrupt() - Error frame ISR
- * @ndev:	net_device pointer
- * @isr:	interrupt status register value
- *
- * This is the CAN error interrupt and it will check the type of error and forward the error
- * frame to upper layers.
- */
+ 
 static void ctucan_err_interrupt(struct net_device *ndev, u32 isr)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -822,11 +668,7 @@ static void ctucan_err_interrupt(struct net_device *ndev, u32 isr)
 
 	skb = alloc_can_err_skb(ndev, &cf);
 
-	/* EWLI: error warning limit condition met
-	 * FCSI: fault confinement state changed
-	 * ALI:  arbitration lost (just informative)
-	 * BEI:  bus error interrupt
-	 */
+	 
 	if (FIELD_GET(REG_INT_STAT_FCSI, isr) || FIELD_GET(REG_INT_STAT_EWLI, isr)) {
 		netdev_info(ndev, "state changes from %s to %s\n",
 			    ctucan_state_to_str(priv->can.state),
@@ -879,7 +721,7 @@ static void ctucan_err_interrupt(struct net_device *ndev, u32 isr)
 		}
 	}
 
-	/* Check for Arbitration Lost interrupt */
+	 
 	if (FIELD_GET(REG_INT_STAT_ALI, isr)) {
 		if (dologerr)
 			netdev_info(ndev, "arbitration lost\n");
@@ -890,7 +732,7 @@ static void ctucan_err_interrupt(struct net_device *ndev, u32 isr)
 		}
 	}
 
-	/* Check for Bus Error interrupt */
+	 
 	if (FIELD_GET(REG_INT_STAT_BEI, isr)) {
 		netdev_info(ndev, "bus error\n");
 		priv->can.can_stats.bus_error++;
@@ -909,15 +751,7 @@ static void ctucan_err_interrupt(struct net_device *ndev, u32 isr)
 	}
 }
 
-/**
- * ctucan_rx_poll() - Poll routine for rx packets (NAPI)
- * @napi:	NAPI structure pointer
- * @quota:	Max number of rx packets to be processed.
- *
- * This is the poll routine for rx part. It will process the packets maximux quota value.
- *
- * Return: Number of packets received
- */
+ 
 static int ctucan_rx_poll(struct napi_struct *napi, int quota)
 {
 	struct net_device *ndev = napi->dev;
@@ -934,7 +768,7 @@ static int ctucan_rx_poll(struct napi_struct *napi, int quota)
 		framecnt = FIELD_GET(REG_RX_STATUS_RXFRC, ctucan_read32(priv, CTUCANFD_RX_STATUS));
 	}
 
-	/* Check for RX FIFO Overflow */
+	 
 	status = ctucan_read32(priv, CTUCANFD_STATUS);
 	if (FIELD_GET(REG_STATUS_DOR, status)) {
 		struct net_device_stats *stats = &ndev->stats;
@@ -953,15 +787,13 @@ static int ctucan_rx_poll(struct napi_struct *napi, int quota)
 			netif_rx(skb);
 		}
 
-		/* Clear Data Overrun */
+		 
 		ctucan_write32(priv, CTUCANFD_COMMAND, REG_COMMAND_CDO);
 	}
 
 	if (!framecnt && res != 0) {
 		if (napi_complete_done(napi, work_done)) {
-			/* Clear and enable RBNEI. It is level-triggered, so
-			 * there is no race condition.
-			 */
+			 
 			ctucan_write32(priv, CTUCANFD_INT_STAT, REG_INT_STAT_RBNEI);
 			ctucan_write32(priv, CTUCANFD_INT_MASK_CLR, REG_INT_STAT_RBNEI);
 		}
@@ -970,10 +802,7 @@ static int ctucan_rx_poll(struct napi_struct *napi, int quota)
 	return work_done;
 }
 
-/**
- * ctucan_rotate_txb_prio() - Rotates priorities of TXT Buffers
- * @ndev:	net_device pointer
- */
+ 
 static void ctucan_rotate_txb_prio(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -985,10 +814,7 @@ static void ctucan_rotate_txb_prio(struct net_device *ndev)
 	ctucan_write32(priv, CTUCANFD_TX_PRIORITY, prio);
 }
 
-/**
- * ctucan_tx_interrupt() - Tx done Isr
- * @ndev:	net_device pointer
- */
+ 
 static void ctucan_tx_interrupt(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -999,12 +825,7 @@ static void ctucan_tx_interrupt(struct net_device *ndev)
 	enum ctucan_txtb_status txtb_status;
 	u32 txtb_id;
 
-	/*  read tx_status
-	 *  if txb[n].finished (bit 2)
-	 *	if ok -> echo
-	 *	if error / aborted -> ?? (find how to handle oneshot mode)
-	 *	txb_tail++
-	 */
+	 
 	do {
 		spin_lock_irqsave(&priv->tx_lock, flags);
 
@@ -1022,34 +843,25 @@ static void ctucan_tx_interrupt(struct net_device *ndev)
 				stats->tx_packets++;
 				break;
 			case TXT_ERR:
-				/* This indicated that retransmit limit has been reached. Obviously
-				 * we should not echo the frame, but also not indicate any kind of
-				 * error. If desired, it was already reported (possible multiple
-				 * times) on each arbitration lost.
-				 */
+				 
 				netdev_warn(ndev, "TXB in Error state\n");
 				can_free_echo_skb(ndev, txtb_id, NULL);
 				stats->tx_dropped++;
 				break;
 			case TXT_ABT:
-				/* Same as for TXT_ERR, only with different cause. We *could*
-				 * re-queue the frame, but multiqueue/abort is not supported yet
-				 * anyway.
-				 */
+				 
 				netdev_warn(ndev, "TXB in Aborted state\n");
 				can_free_echo_skb(ndev, txtb_id, NULL);
 				stats->tx_dropped++;
 				break;
 			default:
-				/* Bug only if the first buffer is not finished, otherwise it is
-				 * pretty much expected.
-				 */
+				 
 				if (first) {
 					netdev_err(ndev,
 						   "BUG: TXB#%u not in a finished state (0x%x)!\n",
 						   txtb_id, txtb_status);
 					spin_unlock_irqrestore(&priv->tx_lock, flags);
-					/* do not clear nor wake */
+					 
 					return;
 				}
 				goto clear;
@@ -1057,45 +869,30 @@ static void ctucan_tx_interrupt(struct net_device *ndev)
 			priv->txb_tail++;
 			first = false;
 			some_buffers_processed = true;
-			/* Adjust priorities *before* marking the buffer as empty. */
+			 
 			ctucan_rotate_txb_prio(ndev);
 			ctucan_give_txtb_cmd(priv, TXT_CMD_SET_EMPTY, txtb_id);
 		}
 clear:
 		spin_unlock_irqrestore(&priv->tx_lock, flags);
 
-		/* If no buffers were processed this time, we cannot clear - that would introduce
-		 * a race condition.
-		 */
+		 
 		if (some_buffers_processed) {
-			/* Clear the interrupt again. We do not want to receive again interrupt for
-			 * the buffer already handled. If it is the last finished one then it would
-			 * cause log of spurious interrupt.
-			 */
+			 
 			ctucan_write32(priv, CTUCANFD_INT_STAT, REG_INT_STAT_TXBHCI);
 		}
 	} while (some_buffers_processed);
 
 	spin_lock_irqsave(&priv->tx_lock, flags);
 
-	/* Check if at least one TX buffer is free */
+	 
 	if (CTU_CAN_FD_TXTNF(priv))
 		netif_wake_queue(ndev);
 
 	spin_unlock_irqrestore(&priv->tx_lock, flags);
 }
 
-/**
- * ctucan_interrupt() - CAN Isr
- * @irq:	irq number
- * @dev_id:	device id pointer
- *
- * This is the CTU CAN FD ISR. It checks for the type of interrupt
- * and invokes the corresponding ISR.
- *
- * Return:
- * IRQ_NONE - If CAN device is in sleep mode, IRQ_HANDLED otherwise
- */
+ 
 static irqreturn_t ctucan_interrupt(int irq, void *dev_id)
 {
 	struct net_device *ndev = (struct net_device *)dev_id;
@@ -1105,32 +902,30 @@ static irqreturn_t ctucan_interrupt(int irq, void *dev_id)
 	int irq_loops;
 
 	for (irq_loops = 0; irq_loops < 10000; irq_loops++) {
-		/* Get the interrupt status */
+		 
 		isr = ctucan_read32(priv, CTUCANFD_INT_STAT);
 
 		if (!isr)
 			return irq_loops ? IRQ_HANDLED : IRQ_NONE;
 
-		/* Receive Buffer Not Empty Interrupt */
+		 
 		if (FIELD_GET(REG_INT_STAT_RBNEI, isr)) {
 			ctucan_netdev_dbg(ndev, "RXBNEI\n");
-			/* Mask RXBNEI the first, then clear interrupt and schedule NAPI. Even if
-			 * another IRQ fires, RBNEI will always be 0 (masked).
-			 */
+			 
 			icr = REG_INT_STAT_RBNEI;
 			ctucan_write32(priv, CTUCANFD_INT_MASK_SET, icr);
 			ctucan_write32(priv, CTUCANFD_INT_STAT, icr);
 			napi_schedule(&priv->napi);
 		}
 
-		/* TXT Buffer HW Command Interrupt */
+		 
 		if (FIELD_GET(REG_INT_STAT_TXBHCI, isr)) {
 			ctucan_netdev_dbg(ndev, "TXBHCI\n");
-			/* Cleared inside */
+			 
 			ctucan_tx_interrupt(ndev);
 		}
 
-		/* Error interrupts */
+		 
 		if (FIELD_GET(REG_INT_STAT_EWLI, isr) ||
 		    FIELD_GET(REG_INT_STAT_FCSI, isr) ||
 		    FIELD_GET(REG_INT_STAT_ALI, isr)) {
@@ -1140,7 +935,7 @@ static irqreturn_t ctucan_interrupt(int irq, void *dev_id)
 			ctucan_write32(priv, CTUCANFD_INT_STAT, icr);
 			ctucan_err_interrupt(ndev, isr);
 		}
-		/* Ignore RI, TI, LFI, RFI, BSI */
+		 
 	}
 
 	netdev_err(ndev, "%s: stuck interrupt (isr=0x%08x), stopping\n", __func__, isr);
@@ -1164,20 +959,14 @@ static irqreturn_t ctucan_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/**
- * ctucan_chip_stop() - Driver stop routine
- * @ndev:	Pointer to net_device structure
- *
- * This is the drivers stop routine. It will disable the
- * interrupts and disable the controller.
- */
+ 
 static void ctucan_chip_stop(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
 	u32 mask = 0xffffffff;
 	u32 mode;
 
-	/* Disable interrupts and disable CAN */
+	 
 	ctucan_write32(priv, CTUCANFD_INT_ENA_CLR, mask);
 	ctucan_write32(priv, CTUCANFD_INT_MASK_SET, mask);
 	mode = ctucan_read32(priv, CTUCANFD_MODE);
@@ -1187,13 +976,7 @@ static void ctucan_chip_stop(struct net_device *ndev)
 	priv->can.state = CAN_STATE_STOPPED;
 }
 
-/**
- * ctucan_open() - Driver open routine
- * @ndev:	Pointer to net_device structure
- *
- * This is the driver open routine.
- * Return: 0 on success and failure value on error
- */
+ 
 static int ctucan_open(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -1211,7 +994,7 @@ static int ctucan_open(struct net_device *ndev)
 	if (ret < 0)
 		goto err_reset;
 
-	/* Common open */
+	 
 	ret = open_candev(ndev);
 	if (ret) {
 		netdev_warn(ndev, "open_candev failed!\n");
@@ -1247,12 +1030,7 @@ err_reset:
 	return ret;
 }
 
-/**
- * ctucan_close() - Driver close routine
- * @ndev:	Pointer to net_device structure
- *
- * Return: 0 always
- */
+ 
 static int ctucan_close(struct net_device *ndev)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -1268,14 +1046,7 @@ static int ctucan_close(struct net_device *ndev)
 	return 0;
 }
 
-/**
- * ctucan_get_berr_counter() - error counter routine
- * @ndev:	Pointer to net_device structure
- * @bec:	Pointer to can_berr_counter structure
- *
- * This is the driver error counter routine.
- * Return: 0 on success and failure value on error
- */
+ 
 static int ctucan_get_berr_counter(const struct net_device *ndev, struct can_berr_counter *bec)
 {
 	struct ctucan_priv *priv = netdev_priv(ndev);
@@ -1345,7 +1116,7 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
 	struct net_device *ndev;
 	int ret;
 
-	/* Create a CAN device instance */
+	 
 	ndev = alloc_candev(sizeof(struct ctucan_priv), ntxbufs);
 	if (!ndev)
 		return -ENOMEM;
@@ -1359,7 +1130,7 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
 	priv->can.data_bittiming_const = &ctu_can_fd_bit_timing_data_max;
 	priv->can.do_set_mode = ctucan_do_set_mode;
 
-	/* Needed for timing adjustment to be performed as soon as possible */
+	 
 	priv->can.do_set_bittiming = ctucan_set_bittiming;
 	priv->can.do_set_data_bittiming = ctucan_set_data_bittiming;
 
@@ -1373,9 +1144,9 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
 					| CAN_CTRLMODE_ONE_SHOT;
 	priv->mem_base = addr;
 
-	/* Get IRQ for the device */
+	 
 	ndev->irq = irq;
-	ndev->flags |= IFF_ECHO;	/* We support local echo */
+	ndev->flags |= IFF_ECHO;	 
 
 	if (set_drvdata_fnc)
 		set_drvdata_fnc(dev, ndev);
@@ -1383,7 +1154,7 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
 	ndev->netdev_ops = &ctucan_netdev_ops;
 	ndev->ethtool_ops = &ctucan_ethtool_ops;
 
-	/* Getting the can_clk info */
+	 
 	if (!can_clk_rate) {
 		priv->can_clk = devm_clk_get(dev, NULL);
 		if (IS_ERR(priv->can_clk)) {
@@ -1407,7 +1178,7 @@ int ctucan_probe_common(struct device *dev, void __iomem *addr, int irq, unsigne
 		goto err_pmdisable;
 	}
 
-	/* Check for big-endianity and set according IO-accessors */
+	 
 	if ((ctucan_read32(priv, CTUCANFD_DEVICE_ID) & 0xFFFF) != CTUCANFD_ID) {
 		priv->write_reg = ctucan_write32_be;
 		priv->read_reg = ctucan_read32_be;

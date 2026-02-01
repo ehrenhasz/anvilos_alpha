@@ -1,8 +1,6 @@
-/* SPDX-License-Identifier: MIT */
+ 
 
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
 
 #include <linux/delay.h>
 #include <linux/dma-fence.h>
@@ -403,7 +401,7 @@ static int test_wait_timeout(void *arg)
 	if (dma_fence_wait_timeout(wt.f, false, 2) == -ETIME) {
 		if (timer_pending(&wt.timer)) {
 			pr_notice("Timer did not fire within the jiffie!\n");
-			err = 0; /* not our fault! */
+			err = 0;  
 		} else {
 			pr_err("Wait reported incomplete after timeout\n");
 		}
@@ -440,7 +438,7 @@ err:
 	return err;
 }
 
-/* Now off to the races! */
+ 
 
 struct race_thread {
 	struct dma_fence __rcu **fences;

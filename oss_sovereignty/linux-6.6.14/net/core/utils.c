@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Generic address resultion entity
- *
- *	Authors:
- *	net_random Alan Cox
- *	net_ratelimit Andi Kleen
- *	in{4,6}_pton YOSHIFUJI Hideaki, Copyright (C)2006 USAGI/WIDE Project
- *
- *	Created by Alexey Kuznetsov <kuznet@ms2.inr.ac.ru>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/jiffies.h>
@@ -32,20 +23,14 @@
 #include <linux/uaccess.h>
 
 DEFINE_RATELIMIT_STATE(net_ratelimit_state, 5 * HZ, 10);
-/*
- * All net warning printk()s should be guarded by this function.
- */
+ 
 int net_ratelimit(void)
 {
 	return __ratelimit(&net_ratelimit_state);
 }
 EXPORT_SYMBOL(net_ratelimit);
 
-/*
- * Convert an ASCII string to binary IP.
- * This is outside of net/ipv4/ because various code that uses IP addresses
- * is otherwise not dependent on the TCP/IP stack.
- */
+ 
 
 __be32 in_aton(const char *str)
 {
@@ -75,12 +60,12 @@ EXPORT_SYMBOL(in_aton);
 #define IN6PTON_XDIGIT		0x00010000
 #define IN6PTON_DIGIT		0x00020000
 #define IN6PTON_COLON_MASK	0x00700000
-#define IN6PTON_COLON_1		0x00100000	/* single : requested */
-#define IN6PTON_COLON_2		0x00200000	/* second : requested */
-#define IN6PTON_COLON_1_2	0x00400000	/* :: requested */
-#define IN6PTON_DOT		0x00800000	/* . */
+#define IN6PTON_COLON_1		0x00100000	 
+#define IN6PTON_COLON_2		0x00200000	 
+#define IN6PTON_COLON_1_2	0x00400000	 
+#define IN6PTON_DOT		0x00800000	 
 #define IN6PTON_DELIM		0x10000000
-#define IN6PTON_NULL		0x20000000	/* first/tail */
+#define IN6PTON_NULL		0x20000000	 
 #define IN6PTON_UNKNOWN		0x40000000
 
 static inline int xdigit2bin(char c, int delim)
@@ -103,18 +88,7 @@ static inline int xdigit2bin(char c, int delim)
 	return IN6PTON_UNKNOWN;
 }
 
-/**
- * in4_pton - convert an IPv4 address from literal to binary representation
- * @src: the start of the IPv4 address string
- * @srclen: the length of the string, -1 means strlen(src)
- * @dst: the binary (u8[4] array) representation of the IPv4 address
- * @delim: the delimiter of the IPv4 address in @src, -1 means no delimiter
- * @end: A pointer to the end of the parsed string will be placed here
- *
- * Return one on success, return zero when any error occurs
- * and @end will point to the end of the parsed string.
- *
- */
+ 
 int in4_pton(const char *src, int srclen,
 	     u8 *dst,
 	     int delim, const char **end)
@@ -169,18 +143,7 @@ out:
 }
 EXPORT_SYMBOL(in4_pton);
 
-/**
- * in6_pton - convert an IPv6 address from literal to binary representation
- * @src: the start of the IPv6 address string
- * @srclen: the length of the string, -1 means strlen(src)
- * @dst: the binary (u8[16] array) representation of the IPv6 address
- * @delim: the delimiter of the IPv6 address in @src, -1 means no delimiter
- * @end: A pointer to the end of the parsed string will be placed here
- *
- * Return one on success, return zero when any error occurs
- * and @end will point to the end of the parsed string.
- *
- */
+ 
 int in6_pton(const char *src, int srclen,
 	     u8 *dst,
 	     int delim, const char **end)
@@ -207,21 +170,17 @@ int in6_pton(const char *src, int srclen,
 		if (!(c & state))
 			goto out;
 		if (c & (IN6PTON_DELIM | IN6PTON_COLON_MASK)) {
-			/* process one 16-bit word */
+			 
 			if (!(state & IN6PTON_NULL)) {
 				*d++ = (w >> 8) & 0xff;
 				*d++ = w & 0xff;
 			}
 			w = 0;
 			if (c & IN6PTON_DELIM) {
-				/* We've processed last word */
+				 
 				break;
 			}
-			/*
-			 * COLON_1 => XDIGIT
-			 * COLON_2 => XDIGIT|DELIM
-			 * COLON_1_2 => COLON_2
-			 */
+			 
 			switch (state & IN6PTON_COLON_MASK) {
 			case IN6PTON_COLON_2:
 				dc = d;
@@ -356,16 +315,7 @@ static int inet6_pton(struct net *net, const char *src, u16 port_num,
 	return 0;
 }
 
-/**
- * inet_pton_with_scope - convert an IPv4/IPv6 and port to socket address
- * @net: net namespace (used for scope handling)
- * @af: address family, AF_INET, AF_INET6 or AF_UNSPEC for either
- * @src: the start of the address string
- * @port: the start of the port string (or NULL for none)
- * @addr: output socket address
- *
- * Return zero on success, return errno when any error occurs.
- */
+ 
 int inet_pton_with_scope(struct net *net, __kernel_sa_family_t af,
 		const char *src, const char *port, struct sockaddr_storage *addr)
 {
@@ -438,23 +388,7 @@ void inet_proto_csum_replace4(__sum16 *sum, struct sk_buff *skb,
 }
 EXPORT_SYMBOL(inet_proto_csum_replace4);
 
-/**
- * inet_proto_csum_replace16 - update layer 4 header checksum field
- * @sum: Layer 4 header checksum field
- * @skb: sk_buff for the packet
- * @from: old IPv6 address
- * @to: new IPv6 address
- * @pseudohdr: True if layer 4 header checksum includes pseudoheader
- *
- * Update layer 4 header as per the update in IPv6 src/dst address.
- *
- * There is no need to update skb->csum in this function, because update in two
- * fields a.) IPv6 src/dst address and b.) L4 header checksum cancels each other
- * for skb->csum calculation. Whereas inet_proto_csum_replace4 function needs to
- * update skb->csum, because update in 3 fields a.) IPv4 src/dst address,
- * b.) IPv4 Header checksum and c.) L4 header checksum results in same diff as
- * L4 Header checksum for skb->csum calculation.
- */
+ 
 void inet_proto_csum_replace16(__sum16 *sum, struct sk_buff *skb,
 			       const __be32 *from, const __be32 *to,
 			       bool pseudohdr)

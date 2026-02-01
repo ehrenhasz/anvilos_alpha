@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (c) 1996, 2003 VIA Networking Technologies, Inc.
- * All rights reserved.
- *
- * Purpose:
- *
- * Author: Warren Hsu
- *
- * Date: Mar. 30, 2005
- *
- */
+ 
+ 
 
 #ifndef __USBPIPE_H__
 #define __USBPIPE_H__
@@ -64,4 +54,4 @@ int vnt_tx_context(struct vnt_private *priv,
 		   struct vnt_usb_send_context *context,
 		   struct sk_buff *skb);
 
-#endif /* __USBPIPE_H__ */
+#endif  

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/media/i2c/lm3646.c
- * General device driver for TI lm3646, Dual FLASH LED Driver
- *
- * Copyright (C) 2014 Texas Instruments
- *
- * Contact: Daniel Jeong <gshark.jeong@gmail.com>
- *			Ldd-Mlp <ldd-mlp@list.ti.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/i2c.h>
@@ -19,7 +11,7 @@
 #include <media/v4l2-ctrls.h>
 #include <media/v4l2-device.h>
 
-/* registers definitions */
+ 
 #define REG_ENABLE		0x01
 #define REG_TORCH_BR	0x05
 #define REG_FLASH_BR	0x05
@@ -36,7 +28,7 @@
 #define MASK_FLAG		0xFF
 #define MASK_STROBE_SRC	0x80
 
-/* Fault Mask */
+ 
 #define FAULT_TIMEOUT	(1<<0)
 #define FAULT_SHORT_CIRCUIT	(1<<1)
 #define FAULT_UVLO		(1<<2)
@@ -52,17 +44,7 @@ enum led_mode {
 	MODE_FLASH = 0x3,
 };
 
-/*
- * struct lm3646_flash
- *
- * @pdata: platform data
- * @regmap: reg. map for i2c
- * @lock: muxtex for serial access.
- * @led_mode: V4L2 LED mode
- * @ctrls_led: V4L2 controls
- * @subdev_led: V4L2 subdev
- * @mode_reg : mode register value
- */
+ 
 struct lm3646_flash {
 	struct device *dev;
 	struct lm3646_platform_data *pdata;
@@ -77,7 +59,7 @@ struct lm3646_flash {
 #define to_lm3646_flash(_ctrl)	\
 	container_of(_ctrl->handler, struct lm3646_flash, ctrls_led)
 
-/* enable mode control */
+ 
 static int lm3646_mode_ctrl(struct lm3646_flash *flash,
 			    enum v4l2_flash_led_mode led_mode)
 {
@@ -95,7 +77,7 @@ static int lm3646_mode_ctrl(struct lm3646_flash *flash,
 	return -EINVAL;
 }
 
-/* V4L2 controls  */
+ 
 static int lm3646_get_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct lm3646_flash *flash = to_lm3646_flash(ctrl);
@@ -141,7 +123,7 @@ static int lm3646_set_ctrl(struct v4l2_ctrl *ctrl)
 
 		if (ctrl->val != V4L2_FLASH_LED_MODE_FLASH)
 			return lm3646_mode_ctrl(flash, ctrl->val);
-		/* switch to SHDN mode before flash strobe on */
+		 
 		return lm3646_mode_ctrl(flash, V4L2_FLASH_LED_MODE_NONE);
 
 	case V4L2_CID_FLASH_STROBE_SOURCE:
@@ -151,20 +133,16 @@ static int lm3646_set_ctrl(struct v4l2_ctrl *ctrl)
 
 	case V4L2_CID_FLASH_STROBE:
 
-		/* read and check current mode of chip to start flash */
+		 
 		rval = regmap_read(flash->regmap, REG_ENABLE, &reg_val);
 		if (rval < 0 || ((reg_val & MASK_ENABLE) != MODE_SHDN))
 			return rval;
-		/* flash on */
+		 
 		return lm3646_mode_ctrl(flash, V4L2_FLASH_LED_MODE_FLASH);
 
 	case V4L2_CID_FLASH_STROBE_STOP:
 
-		/*
-		 * flash mode will be turned automatically
-		 * from FLASH mode to SHDN mode after flash duration timeout
-		 * read and check current mode of chip to stop flash
-		 */
+		 
 		rval = regmap_read(flash->regmap, REG_ENABLE, &reg_val);
 		if (rval < 0)
 			return rval;
@@ -207,41 +185,41 @@ static int lm3646_init_controls(struct lm3646_flash *flash)
 	const struct v4l2_ctrl_ops *ops = &lm3646_led_ctrl_ops;
 
 	v4l2_ctrl_handler_init(hdl, 8);
-	/* flash mode */
+	 
 	v4l2_ctrl_new_std_menu(hdl, ops, V4L2_CID_FLASH_LED_MODE,
 			       V4L2_FLASH_LED_MODE_TORCH, ~0x7,
 			       V4L2_FLASH_LED_MODE_NONE);
 
-	/* flash source */
+	 
 	v4l2_ctrl_new_std_menu(hdl, ops, V4L2_CID_FLASH_STROBE_SOURCE,
 			       0x1, ~0x3, V4L2_FLASH_STROBE_SOURCE_SOFTWARE);
 
-	/* flash strobe */
+	 
 	v4l2_ctrl_new_std(hdl, ops, V4L2_CID_FLASH_STROBE, 0, 0, 0, 0);
-	/* flash strobe stop */
+	 
 	v4l2_ctrl_new_std(hdl, ops, V4L2_CID_FLASH_STROBE_STOP, 0, 0, 0, 0);
 
-	/* flash strobe timeout */
+	 
 	v4l2_ctrl_new_std(hdl, ops, V4L2_CID_FLASH_TIMEOUT,
 			  LM3646_FLASH_TOUT_MIN,
 			  LM3646_FLASH_TOUT_MAX,
 			  LM3646_FLASH_TOUT_STEP, flash->pdata->flash_timeout);
 
-	/* max flash current */
+	 
 	v4l2_ctrl_new_std(hdl, ops, V4L2_CID_FLASH_INTENSITY,
 			  LM3646_TOTAL_FLASH_BRT_MIN,
 			  LM3646_TOTAL_FLASH_BRT_MAX,
 			  LM3646_TOTAL_FLASH_BRT_STEP,
 			  LM3646_TOTAL_FLASH_BRT_MAX);
 
-	/* max torch current */
+	 
 	v4l2_ctrl_new_std(hdl, ops, V4L2_CID_FLASH_TORCH_INTENSITY,
 			  LM3646_TOTAL_TORCH_BRT_MIN,
 			  LM3646_TOTAL_TORCH_BRT_MAX,
 			  LM3646_TOTAL_TORCH_BRT_STEP,
 			  LM3646_TOTAL_TORCH_BRT_MAX);
 
-	/* fault */
+	 
 	fault = v4l2_ctrl_new_std(hdl, ops, V4L2_CID_FLASH_FAULT, 0,
 				  V4L2_FLASH_FAULT_OVER_VOLTAGE
 				  | V4L2_FLASH_FAULT_OVER_TEMPERATURE
@@ -257,7 +235,7 @@ static int lm3646_init_controls(struct lm3646_flash *flash)
 	return 0;
 }
 
-/* initialize device */
+ 
 static const struct v4l2_subdev_ops lm3646_ops = {
 	.core = NULL,
 };
@@ -296,21 +274,18 @@ static int lm3646_init_device(struct lm3646_flash *flash)
 	unsigned int reg_val;
 	int rval;
 
-	/* read the value of mode register to reduce redundant i2c accesses */
+	 
 	rval = regmap_read(flash->regmap, REG_ENABLE, &reg_val);
 	if (rval < 0)
 		return rval;
 	flash->mode_reg = reg_val & 0xfc;
 
-	/* output disable */
+	 
 	rval = lm3646_mode_ctrl(flash, V4L2_FLASH_LED_MODE_NONE);
 	if (rval < 0)
 		return rval;
 
-	/*
-	 * LED1 flash current setting
-	 * LED2 flash current = Total(Max) flash current - LED1 flash current
-	 */
+	 
 	rval = regmap_update_bits(flash->regmap,
 				  REG_LED1_FLASH_BR, 0x7F,
 				  LM3646_LED1_FLASH_BRT_uA_TO_REG
@@ -319,10 +294,7 @@ static int lm3646_init_device(struct lm3646_flash *flash)
 	if (rval < 0)
 		return rval;
 
-	/*
-	 * LED1 torch current setting
-	 * LED2 torch current = Total(Max) torch current - LED1 torch current
-	 */
+	 
 	rval = regmap_update_bits(flash->regmap,
 				  REG_LED1_TORCH_BR, 0x7F,
 				  LM3646_LED1_TORCH_BRT_uA_TO_REG
@@ -330,7 +302,7 @@ static int lm3646_init_device(struct lm3646_flash *flash)
 	if (rval < 0)
 		return rval;
 
-	/* Reset flag register */
+	 
 	return regmap_read(flash->regmap, REG_FLAG, &reg_val);
 }
 
@@ -348,14 +320,14 @@ static int lm3646_probe(struct i2c_client *client)
 	if (IS_ERR(flash->regmap))
 		return PTR_ERR(flash->regmap);
 
-	/* check device tree if there is no platform data */
+	 
 	if (pdata == NULL) {
 		pdata = devm_kzalloc(&client->dev,
 				     sizeof(struct lm3646_platform_data),
 				     GFP_KERNEL);
 		if (pdata == NULL)
 			return -ENOMEM;
-		/* use default data in case of no platform data */
+		 
 		pdata->flash_timeout = LM3646_FLASH_TOUT_MAX;
 		pdata->led1_torch_brt = LM3646_LED1_TORCH_BRT_MAX;
 		pdata->led1_flash_brt = LM3646_LED1_FLASH_BRT_MAX;

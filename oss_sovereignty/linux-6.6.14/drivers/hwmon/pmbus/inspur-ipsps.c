@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2019 Inspur Corp.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/device.h>
@@ -66,7 +64,7 @@ static ssize_t ipsps_string_show(struct device *dev,
 	if (rc < 0)
 		return rc;
 
-	/* filled with printable characters, ending with # */
+	 
 	p = memscan(data, '#', rc);
 	*p = '\0';
 
@@ -92,8 +90,8 @@ static ssize_t ipsps_fw_version_show(struct device *dev,
 		return -EPROTO;
 
 	return sysfs_emit(buf, "%u.%02u%u-%u.%02u\n",
-			  data[1], data[2]/* < 100 */, data[3]/*< 10*/,
-			  data[4], data[5]/* < 100 */);
+			  data[1], data[2] , data[3] ,
+			  data[4], data[5] );
 }
 
 static ssize_t ipsps_mode_show(struct device *dev,

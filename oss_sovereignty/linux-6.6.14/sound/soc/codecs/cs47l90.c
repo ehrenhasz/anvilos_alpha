@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// ALSA SoC Audio driver for CS47L90 codec
-//
-// Copyright (C) 2015-2019 Cirrus Logic, Inc. and
-//                         Cirrus Logic International Semiconductor Ltd.
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -1082,10 +1082,7 @@ SND_SOC_DAPM_PGA("SPD1TX2", MADERA_SPD1_TX_CONTROL,
 SND_SOC_DAPM_OUT_DRV("SPD1", MADERA_SPD1_TX_CONTROL,
 		     MADERA_SPD1_ENA_SHIFT, 0, NULL, 0),
 
-/*
- * mux_in widgets : arranged in the order of sources
- * specified in MADERA_MIXER_INPUT_ROUTES
- */
+ 
 
 SND_SOC_DAPM_PGA("Noise Generator", MADERA_COMFORT_NOISE_GENERATOR,
 		 MADERA_NOISE_GEN_ENA_SHIFT, 0, NULL, 0),
@@ -1311,7 +1308,7 @@ WM_ADSP2("DSP5", 4, cs47l90_adsp_power_ev),
 WM_ADSP2("DSP6", 5, cs47l90_adsp_power_ev),
 WM_ADSP2("DSP7", 6, cs47l90_adsp_power_ev),
 
-/* end of ordered widget list */
+ 
 
 SND_SOC_DAPM_PGA("DFC1", MADERA_DFC1_CTRL, MADERA_DFC1_ENA_SHIFT, 0, NULL, 0),
 SND_SOC_DAPM_PGA("DFC2", MADERA_DFC2_CTRL, MADERA_DFC1_ENA_SHIFT, 0, NULL, 0),
@@ -1617,7 +1614,7 @@ SND_SOC_DAPM_OUTPUT("MICSUPP"),
 	{ name, "DFC8", "DFC8" }
 
 static const struct snd_soc_dapm_route cs47l90_dapm_routes[] = {
-	/* Internal clock domains */
+	 
 	{ "EQ1", NULL, "FXCLK" },
 	{ "EQ2", NULL, "FXCLK" },
 	{ "EQ3", NULL, "FXCLK" },
@@ -2511,7 +2508,7 @@ static int cs47l90_probe(struct platform_device *pdev)
 
 	BUILD_BUG_ON(ARRAY_SIZE(cs47l90_dai) > MADERA_MAX_DAI);
 
-	/* quick exit if Madera irqchip driver hasn't completed probe */
+	 
 	if (!madera->irq_dev) {
 		dev_dbg(&pdev->dev, "irqchip driver not ready\n");
 		return -EPROBE_DEFER;
@@ -2587,7 +2584,7 @@ static int cs47l90_probe(struct platform_device *pdev)
 	for (i = 0; i < ARRAY_SIZE(cs47l90_dai); i++)
 		madera_init_dai(&cs47l90->core, i);
 
-	/* Latch volume update bits */
+	 
 	for (i = 0; i < ARRAY_SIZE(cs47l90_digital_vu); i++)
 		regmap_update_bits(madera->regmap, cs47l90_digital_vu[i],
 				   CS47L90_DIG_VU, CS47L90_DIG_VU);

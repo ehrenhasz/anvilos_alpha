@@ -1,27 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Dave Airlie
- *          Alon Levy
- */
+ 
 
 #include <linux/io-mapping.h>
 #include <linux/pci.h>
@@ -129,7 +106,7 @@ int qxl_device_init(struct qxl_device *qdev,
 	}
 
 	if (pci_resource_len(pdev, 4) > 0) {
-		/* 64bit surface bar present */
+		 
 		sb = 4;
 		qdev->surfaceram_base = pci_resource_start(pdev, sb);
 		qdev->surfaceram_size = pci_resource_len(pdev, sb);
@@ -138,7 +115,7 @@ int qxl_device_init(struct qxl_device *qdev,
 					     qdev->surfaceram_size);
 	}
 	if (qdev->surface_mapping == NULL) {
-		/* 64bit surface bar not present (or mapping failed) */
+		 
 		sb = 1;
 		qdev->surfaceram_base = pci_resource_start(pdev, sb);
 		qdev->surfaceram_size = pci_resource_len(pdev, sb);
@@ -235,21 +212,17 @@ int qxl_device_init(struct qxl_device *qdev,
 
 	mutex_init(&qdev->async_io_mutex);
 
-	/* reset the device into a known state - no memslots, no primary
-	 * created, no surfaces. */
+	 
 	qxl_io_reset(qdev);
 
-	/* must initialize irq before first async io - slot creation */
+	 
 	r = qxl_irq_init(qdev);
 	if (r) {
 		DRM_ERROR("Unable to init qxl irq\n");
 		goto release_ring_free;
 	}
 
-	/*
-	 * Note that virtual is surface0. We rely on the single ioremap done
-	 * before.
-	 */
+	 
 	setup_slot(qdev, &qdev->main_slot, 0, "main",
 		   (unsigned long)qdev->vram_base,
 		   (unsigned long)qdev->rom->ram_header_offset);
@@ -284,7 +257,7 @@ void qxl_device_fini(struct qxl_device *qdev)
 {
 	int cur_idx;
 
-	/* check if qxl_device_init() was successful (gc_work is initialized last) */
+	 
 	if (!qdev->gc_work.func)
 		return;
 
@@ -297,10 +270,7 @@ void qxl_device_fini(struct qxl_device *qdev)
 		qdev->current_release_bo[cur_idx] = NULL;
 	}
 
-	/*
-	 * Ask host to release resources (+fill release ring),
-	 * then wait for the release actually happening.
-	 */
+	 
 	qxl_io_notify_oom(qdev);
 	wait_event_timeout(qdev->release_event,
 			   atomic_read(&qdev->release_count) == 0,

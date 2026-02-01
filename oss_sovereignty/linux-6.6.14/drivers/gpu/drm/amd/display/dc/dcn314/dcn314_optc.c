@@ -1,28 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+
+ 
 
 #include "dcn314_optc.h"
 
@@ -42,10 +19,7 @@
 #define FN(reg_name, field_name) \
 	optc1->tg_shift->field_name, optc1->tg_mask->field_name
 
-/*
- * Enable CRTC
- * Enable CRTC - call ASIC Control Object to enable Timing generator.
- */
+ 
 
 static void optc314_set_odm_combine(struct timing_generator *optc, int *opp_id, int opp_cnt,
 		struct dc_crtc_timing *timing)
@@ -54,14 +28,10 @@ static void optc314_set_odm_combine(struct timing_generator *optc, int *opp_id, 
 	uint32_t memory_mask = 0;
 	int h_active = timing->h_addressable + timing->h_border_left + timing->h_border_right;
 	int mpcc_hactive = h_active / opp_cnt;
-	/* Each memory instance is 2048x(314x2) bits to support half line of 4096 */
+	 
 	int odm_mem_count = (h_active + 2047) / 2048;
 
-	/*
-	 * display <= 4k : 2 memories + 2 pipes
-	 * 4k < display <= 8k : 4 memories + 2 pipes
-	 * 8k < display <= 12k : 6 memories + 4 pipes
-	 */
+	 
 	if (opp_cnt == 4) {
 		if (odm_mem_count <= 2)
 			memory_mask = 0x3;
@@ -107,17 +77,17 @@ static bool optc314_enable_crtc(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* opp instance for OTG, 1 to 1 mapping and odm will adjust */
+	 
 	REG_UPDATE(OPTC_DATA_SOURCE_SELECT,
 			OPTC_SEG0_SRC_SEL, optc->inst);
 
-	/* VTG enable first is for HW workaround */
+	 
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 1);
 
 	REG_SEQ_START();
 
-	/* Enable CRTC */
+	 
 	REG_UPDATE_2(OTG_CONTROL,
 			OTG_DISABLE_POINT_CNTL, 2,
 			OTG_MASTER_EN, 1);
@@ -128,21 +98,19 @@ static bool optc314_enable_crtc(struct timing_generator *optc)
 	return true;
 }
 
-/* disable_crtc */
+ 
 static bool optc314_disable_crtc(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* disable otg request until end of the first line
-	 * in the vertical blank region
-	 */
+	 
 	REG_UPDATE(OTG_CONTROL,
 			OTG_MASTER_EN, 0);
 
 	REG_UPDATE(CONTROL,
 			VTG0_ENABLE, 0);
 
-	/* CRTC disabled, so disable  clock. */
+	 
 	REG_WAIT(OTG_CLOCK_CONTROL,
 			OTG_BUSY, 0,
 			1, 100000);
@@ -154,10 +122,10 @@ static void optc314_phantom_crtc_post_enable(struct timing_generator *optc)
 {
 	struct optc *optc1 = DCN10TG_FROM_TG(optc);
 
-	/* Disable immediately. */
+	 
 	REG_UPDATE_2(OTG_CONTROL, OTG_DISABLE_POINT_CNTL, 0, OTG_MASTER_EN, 0);
 
-	/* CRTC disabled, so disable  clock. */
+	 
 	REG_WAIT(OTG_CLOCK_CONTROL, OTG_BUSY, 0, 1, 100000);
 }
 
@@ -204,14 +172,14 @@ static struct timing_generator_funcs dcn314_tg_funcs = {
 		.disable_crtc = optc314_disable_crtc,
 		.immediate_disable_crtc = optc31_immediate_disable_crtc,
 		.phantom_crtc_post_enable = optc314_phantom_crtc_post_enable,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.is_counter_moving = optc1_is_counter_moving,
 		.get_position = optc1_get_position,
 		.get_frame_count = optc1_get_vblank_counter,
 		.get_scanoutpos = optc1_get_crtc_scanoutpos,
 		.get_otg_active_size = optc1_get_otg_active_size,
 		.set_early_control = optc1_set_early_control,
-		/* used by enable_timing_synchronization. Not need for FPGA */
+		 
 		.wait_for_state = optc1_wait_for_state,
 		.set_blank_color = optc3_program_blank_color,
 		.did_triggered_reset_occur = optc1_did_triggered_reset_occur,

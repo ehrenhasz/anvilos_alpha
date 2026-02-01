@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Ralink MT7621/MT7628 built-in hardware watchdog timer
- *
- * Copyright (C) 2014 John Crispin <john@phrozen.org>
- *
- * This driver was based on: drivers/watchdog/rt2880_wdt.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/reset.h>
@@ -79,7 +73,7 @@ static int mt7621_wdt_start(struct watchdog_device *w)
 	struct mt7621_wdt_data *drvdata = watchdog_get_drvdata(w);
 	u32 t;
 
-	/* set the prescaler to 1ms == 1000us */
+	 
 	rt_wdt_w32(drvdata->base, TIMER_REG_TMR1CTL, 1000 << TMR1CTL_PRESCALE_SHIFT);
 
 	mt7621_wdt_set_timeout(w, w->timeout);
@@ -177,15 +171,7 @@ static int mt7621_wdt_probe(struct platform_device *pdev)
 	watchdog_set_drvdata(mt7621_wdt, drvdata);
 
 	if (mt7621_wdt_is_running(mt7621_wdt)) {
-		/*
-		 * Make sure to apply timeout from watchdog core, taking
-		 * the prescaler of this driver here into account (the
-		 * boot loader might be using a different prescaler).
-		 *
-		 * To avoid spurious resets because of different scaling,
-		 * we first disable the watchdog, set the new prescaler
-		 * and timeout, and then re-enable the watchdog.
-		 */
+		 
 		mt7621_wdt_stop(mt7621_wdt);
 		mt7621_wdt_start(mt7621_wdt);
 		set_bit(WDOG_HW_RUNNING, &mt7621_wdt->status);

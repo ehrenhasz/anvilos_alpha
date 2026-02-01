@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Fieldbus Device Driver Core
- *
- */
+
+ 
 
 #include <linux/mutex.h>
 #include <linux/module.h>
@@ -12,13 +9,13 @@
 #include <linux/slab.h>
 #include <linux/poll.h>
 
-/* move to <linux/fieldbus_dev.h> when taking this out of staging */
+ 
 #include "fieldbus_dev.h"
 
-/* Maximum number of fieldbus devices */
+ 
 #define MAX_FIELDBUSES		32
 
-/* the dev_t structure to store the dynamically allocated fieldbus devices */
+ 
 static dev_t fieldbus_devt;
 static DEFINE_IDA(fieldbus_ida);
 static DEFINE_MUTEX(fieldbus_mtx);
@@ -66,7 +63,7 @@ static ssize_t card_name_show(struct device *dev, struct device_attribute *attr,
 {
 	struct fieldbus_dev *fb = dev_get_drvdata(dev);
 
-	/* card_name was provided by child driver. */
+	 
 	return sysfs_emit(buf, "%s\n", fb->card_name);
 }
 static DEVICE_ATTR_RO(card_name);
@@ -211,7 +208,7 @@ static __poll_t fieldbus_poll(struct file *filp, poll_table *wait)
 	__poll_t mask = EPOLLIN | EPOLLRDNORM | EPOLLOUT | EPOLLWRNORM;
 
 	poll_wait(filp, &fbdev->dc_wq, wait);
-	/* data changed ? */
+	 
 	if (fbdev->dc_event != of->dc_event)
 		mask |= EPOLLPRI | EPOLLERR;
 	return mask;

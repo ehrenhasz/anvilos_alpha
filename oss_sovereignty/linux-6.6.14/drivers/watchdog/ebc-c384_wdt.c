@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Watchdog timer driver for the WinSystems EBC-C384
- * Copyright (C) 2016 William Breathitt Gray
- */
+
+ 
 #include <linux/device.h>
 #include <linux/dmi.h>
 #include <linux/errno.h>
@@ -17,10 +14,7 @@
 
 #define MODULE_NAME		"ebc-c384_wdt"
 #define WATCHDOG_TIMEOUT	60
-/*
- * The timeout value in minutes must fit in a single byte when sent to the
- * watchdog timer; the maximum timeout possible is 15300 (255 * 60) seconds.
- */
+ 
 #define WATCHDOG_MAX_TIMEOUT	15300
 #define BASE_ADDR		0x564
 #define ADDR_EXTENT		5
@@ -41,7 +35,7 @@ static int ebc_c384_wdt_start(struct watchdog_device *wdev)
 {
 	unsigned t = wdev->timeout;
 
-	/* resolution is in minutes for timeouts greater than 255 seconds */
+	 
 	if (t > 255)
 		t = DIV_ROUND_UP(t, 60);
 
@@ -59,17 +53,17 @@ static int ebc_c384_wdt_stop(struct watchdog_device *wdev)
 
 static int ebc_c384_wdt_set_timeout(struct watchdog_device *wdev, unsigned t)
 {
-	/* resolution is in minutes for timeouts greater than 255 seconds */
+	 
 	if (t > 255) {
-		/* round second resolution up to minute granularity */
+		 
 		wdev->timeout = roundup(t, 60);
 
-		/* set watchdog timer for minutes */
+		 
 		outb(0x00, CFG_ADDR);
 	} else {
 		wdev->timeout = t;
 
-		/* set watchdog timer for seconds */
+		 
 		outb(0x80, CFG_ADDR);
 	}
 

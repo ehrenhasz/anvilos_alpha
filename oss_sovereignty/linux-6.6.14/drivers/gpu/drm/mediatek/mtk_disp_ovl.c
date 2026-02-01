@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+
+ 
 
 #include <drm/drm_blend.h>
 #include <drm/drm_fourcc.h>
@@ -113,11 +111,7 @@ struct mtk_disp_ovl_data {
 	bool supports_clrfmt_ext;
 };
 
-/*
- * struct mtk_disp_ovl - DISP_OVL driver structure
- * @crtc: associated crtc to report vblank events to
- * @data: platform data
- */
+ 
 struct mtk_disp_ovl {
 	struct drm_crtc			*crtc;
 	struct clk			*clk;
@@ -132,7 +126,7 @@ static irqreturn_t mtk_disp_ovl_irq_handler(int irq, void *dev_id)
 {
 	struct mtk_disp_ovl *priv = dev_id;
 
-	/* Clear frame completion interrupt */
+	 
 	writel(0x0, priv->regs + DISP_REG_OVL_INTSTA);
 
 	if (!priv->vblank_cb)
@@ -304,14 +298,11 @@ int mtk_ovl_layer_check(struct device *dev, unsigned int idx,
 					 DRM_MODE_REFLECT_Y);
 	rotation &= ~DRM_MODE_ROTATE_0;
 
-	/* We can only do reflection, not rotation */
+	 
 	if ((rotation & DRM_MODE_ROTATE_MASK) != 0)
 		return -EINVAL;
 
-	/*
-	 * TODO: Rotating/reflecting YUV buffers is not supported at this time.
-	 *	 Only RGB[AX] variants are supported.
-	 */
+	 
 	if (state->fb->format->is_yuv && rotation != 0)
 		return -EINVAL;
 
@@ -358,11 +349,7 @@ void mtk_ovl_layer_off(struct device *dev, unsigned int idx,
 
 static unsigned int ovl_fmt_convert(struct mtk_disp_ovl *ovl, unsigned int fmt)
 {
-	/* The return value in switch "MEM_MODE_INPUT_FORMAT_XXX"
-	 * is defined in mediatek HW data sheet.
-	 * The alphabet order in XXX is no relation to data
-	 * arrangement in memory.
-	 */
+	 
 	switch (fmt) {
 	default:
 	case DRM_FORMAT_RGB565:

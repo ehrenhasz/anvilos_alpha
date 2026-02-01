@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (c) 2015 Quantenna Communications. All rights reserved. */
+ 
+ 
 
 #ifndef QTNFMAC_BUS_H
 #define QTNFMAC_BUS_H
@@ -33,14 +33,14 @@ enum qtnf_fw_state {
 struct qtnf_bus;
 
 struct qtnf_bus_ops {
-	/* mgmt methods */
+	 
 	int (*preinit)(struct qtnf_bus *);
 	void (*stop)(struct qtnf_bus *);
 
-	/* control path methods */
+	 
 	int (*control_tx)(struct qtnf_bus *, struct sk_buff *);
 
-	/* data xfer methods */
+	 
 	int (*data_tx)(struct qtnf_bus *bus, struct sk_buff *skb,
 		       unsigned int macid, unsigned int vifid);
 	void (*data_tx_timeout)(struct qtnf_bus *, struct net_device *);
@@ -64,11 +64,11 @@ struct qtnf_bus {
 	struct workqueue_struct *hprio_workqueue;
 	struct work_struct fw_work;
 	struct work_struct event_work;
-	struct mutex bus_lock; /* lock during command/event processing */
+	struct mutex bus_lock;  
 	struct dentry *dbg_dir;
 	struct notifier_block netdev_nb;
 	u8 hw_id[ETH_ALEN];
-	/* bus private data */
+	 
 	char bus_priv[] __aligned(sizeof(void *));
 };
 
@@ -97,7 +97,7 @@ static inline void *get_bus_priv(struct qtnf_bus *bus)
 	return &bus->bus_priv;
 }
 
-/* callback wrappers */
+ 
 
 static inline int qtnf_bus_preinit(struct qtnf_bus *bus)
 {
@@ -150,9 +150,9 @@ static __always_inline void qtnf_bus_unlock(struct qtnf_bus *bus)
 	mutex_unlock(&bus->bus_lock);
 }
 
-/* interface functions from common layer */
+ 
 
 int qtnf_core_attach(struct qtnf_bus *bus);
 void qtnf_core_detach(struct qtnf_bus *bus);
 
-#endif /* QTNFMAC_BUS_H */
+#endif  

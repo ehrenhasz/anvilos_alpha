@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- *
- * Copyright(c) 2003 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2015 Intel Deutschland GmbH
- * Copyright(c) 2018, 2020-2021 Intel Corporation
- *
- * Portions of this file are derived from the ipw3945 project, as well
- * as portionhelp of the ieee80211 subsystem header files.
- *****************************************************************************/
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/slab.h>
@@ -21,11 +13,7 @@
 #include "calib.h"
 #include "agn.h"
 
-/******************************************************************************
- *
- * Generic RX handler implementations
- *
- ******************************************************************************/
+ 
 
 static void iwlagn_rx_reply_error(struct iwl_priv *priv,
 				  struct iwl_rx_cmd_buffer *rxb)
@@ -45,10 +33,7 @@ static void iwlagn_rx_csa(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb)
 {
 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
 	struct iwl_csa_notification *csa = (void *)pkt->data;
-	/*
-	 * MULTI-FIXME
-	 * See iwlagn_mac_channel_switch.
-	 */
+	 
 	struct iwl_rxon_context *ctx = &priv->contexts[IWL_RXON_CTX_BSS];
 	struct iwl_rxon_cmd *rxon = (void *)&ctx->active;
 
@@ -127,12 +112,7 @@ static void iwlagn_rx_beacon_notif(struct iwl_priv *priv,
 	priv->ibss_manager = le32_to_cpu(beacon->ibss_mgr_status);
 }
 
-/*
- * iwl_good_plcp_health - checks for plcp error.
- *
- * When the plcp error is exceeding the thresholds, reset the radio
- * to improve the throughput.
- */
+ 
 static bool iwlagn_good_plcp_health(struct iwl_priv *priv,
 				 struct statistics_rx_phy *cur_ofdm,
 				 struct statistics_rx_ht_phy *cur_ofdm_ht,
@@ -151,7 +131,7 @@ static bool iwlagn_good_plcp_health(struct iwl_priv *priv,
 		le32_to_cpu(cur_ofdm_ht->plcp_err) -
 		le32_to_cpu(priv->statistics.rx_ofdm_ht.plcp_err);
 
-	/* Can be negative if firmware reset statistics */
+	 
 	if (delta <= 0)
 		return true;
 
@@ -189,15 +169,7 @@ int iwl_force_rf_reset(struct iwl_priv *priv, bool external)
 	rf_reset->reset_success_count++;
 	rf_reset->last_reset_jiffies = jiffies;
 
-	/*
-	 * There is no easy and better way to force reset the radio,
-	 * the only known method is switching channel which will force to
-	 * reset and tune the radio.
-	 * Use internal short scan (single channel) operation to should
-	 * achieve this objective.
-	 * Driver should reset the radio when number of consecutive missed
-	 * beacon, or any other uCode error condition detected.
-	 */
+	 
 	IWL_DEBUG_INFO(priv, "perform radio reset.\n");
 	iwl_internal_short_hw_scan(priv);
 	return 0;
@@ -217,11 +189,11 @@ static void iwlagn_recover_from_statistics(struct iwl_priv *priv,
 
 	msecs = jiffies_to_msecs(stamp - priv->rx_statistics_jiffies);
 
-	/* Only gather statistics and update time stamp when not associated */
+	 
 	if (!iwl_is_any_associated(priv))
 		return;
 
-	/* Do not check/recover when do not have enough statistics data */
+	 
 	if (msecs < 99)
 		return;
 
@@ -229,9 +201,7 @@ static void iwlagn_recover_from_statistics(struct iwl_priv *priv,
 		iwl_force_rf_reset(priv, false);
 }
 
-/* Calculate noise level, based on measurements during network silence just
- *   before arriving beacon.  This measurement can be done only if we know
- *   exactly when to expect beacons, therefore only when we're associated. */
+ 
 static void iwlagn_rx_calc_noise(struct iwl_priv *priv)
 {
 	struct statistics_rx_non_phy *rx_info;
@@ -262,7 +232,7 @@ static void iwlagn_rx_calc_noise(struct iwl_priv *priv)
 		num_active_rx++;
 	}
 
-	/* Average among active antennas */
+	 
 	if (num_active_rx)
 		last_rx_noise = (total_silence / num_active_rx) - 107;
 	else
@@ -274,11 +244,7 @@ static void iwlagn_rx_calc_noise(struct iwl_priv *priv)
 }
 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
-/*
- *  based on the assumption of all statistics counter are in DWORD
- *  FIXME: This function is for debugging, do not deal with
- *  the case of counters roll-over.
- */
+ 
 static void accum_stats(__le32 *prev, __le32 *cur, __le32 *delta,
 			__le32 *max_delta, __le32 *accum, int size)
 {
@@ -374,7 +340,7 @@ static void iwlagn_rx_statistics(struct iwl_priv *priv,
 		bt_activity = &stats->general.activity;
 
 #ifdef CONFIG_IWLWIFI_DEBUGFS
-		/* handle this exception directly */
+		 
 		priv->statistics.num_bt_kills = stats->rx.general.num_bt_kills;
 		le32_add_cpu(&priv->statistics.accum_num_bt_kills,
 			     le32_to_cpu(stats->rx.general.num_bt_kills));
@@ -424,10 +390,7 @@ static void iwlagn_rx_statistics(struct iwl_priv *priv,
 
 	set_bit(STATUS_STATISTICS, &priv->status);
 
-	/* Reschedule the statistics timer to occur in
-	 * reg_recalib_period seconds to ensure we get a
-	 * thermal update even if the uCode doesn't give
-	 * us one */
+	 
 	mod_timer(&priv->statistics_periodic, jiffies +
 		  msecs_to_jiffies(reg_recalib_period * 1000));
 
@@ -463,8 +426,7 @@ static void iwlagn_rx_reply_statistics(struct iwl_priv *priv,
 	iwlagn_rx_statistics(priv, rxb);
 }
 
-/* Handle notification from uCode that card's power state is changing
- * due to software, hardware, or critical temperature RFKILL */
+ 
 static void iwlagn_rx_card_state_notif(struct iwl_priv *priv,
 				       struct iwl_rx_cmd_buffer *rxb)
 {
@@ -535,8 +497,7 @@ static void iwlagn_rx_missed_beacon_notif(struct iwl_priv *priv,
 	}
 }
 
-/* Cache phy data (Rx signal strength, etc) for HT frame (REPLY_RX_PHY_CMD).
- * This will be used later in iwl_rx_reply_rx() for REPLY_RX_MPDU_CMD. */
+ 
 static void iwlagn_rx_reply_rx_phy(struct iwl_priv *priv,
 				   struct iwl_rx_cmd_buffer *rxb)
 {
@@ -548,9 +509,7 @@ static void iwlagn_rx_reply_rx_phy(struct iwl_priv *priv,
 	       sizeof(struct iwl_rx_phy_res));
 }
 
-/*
- * returns non-zero if packet should be dropped
- */
+ 
 static int iwlagn_set_decrypted_flag(struct iwl_priv *priv,
 				  struct ieee80211_hdr *hdr,
 				  u32 decrypt_res,
@@ -558,10 +517,7 @@ static int iwlagn_set_decrypted_flag(struct iwl_priv *priv,
 {
 	u16 fc = le16_to_cpu(hdr->frame_control);
 
-	/*
-	 * All contexts have the same setting here due to it being
-	 * a module parameter, so OK to check any context.
-	 */
+	 
 	if (priv->contexts[IWL_RXON_CTX_BSS].active.filter_flags &
 						RXON_FILTER_DIS_DECRYPT_MSK)
 		return 0;
@@ -572,8 +528,7 @@ static int iwlagn_set_decrypted_flag(struct iwl_priv *priv,
 	IWL_DEBUG_RX(priv, "decrypt_res:0x%x\n", decrypt_res);
 	switch (decrypt_res & RX_RES_STATUS_SEC_TYPE_MSK) {
 	case RX_RES_STATUS_SEC_TYPE_TKIP:
-		/* The uCode has got a bad phase 1 Key, pushes the packet.
-		 * Decryption will be done in SW. */
+		 
 		if ((decrypt_res & RX_RES_STATUS_DECRYPT_TYPE_MSK) ==
 		    RX_RES_STATUS_BAD_KEY_TTAK)
 			break;
@@ -581,8 +536,7 @@ static int iwlagn_set_decrypted_flag(struct iwl_priv *priv,
 	case RX_RES_STATUS_SEC_TYPE_WEP:
 		if ((decrypt_res & RX_RES_STATUS_DECRYPT_TYPE_MSK) ==
 		    RX_RES_STATUS_BAD_ICV_MIC) {
-			/* bad ICV, the packet is destroyed since the
-			 * decryption is inplace, drop it */
+			 
 			IWL_DEBUG_RX(priv, "Packet destroyed\n");
 			return -1;
 		}
@@ -613,30 +567,25 @@ static void iwlagn_pass_packet_to_mac80211(struct iwl_priv *priv,
 	struct iwl_rxon_context *ctx;
 	unsigned int hdrlen, fraglen;
 
-	/* We only process data packets if the interface is open */
+	 
 	if (unlikely(!priv->is_open)) {
 		IWL_DEBUG_DROP_LIMIT(priv,
 		    "Dropping packet while interface is not open.\n");
 		return;
 	}
 
-	/* In case of HW accelerated crypto and bad decryption, drop */
+	 
 	if (!iwlwifi_mod_params.swcrypto &&
 	    iwlagn_set_decrypted_flag(priv, hdr, ampdu_status, stats))
 		return;
 
-	/* Dont use dev_alloc_skb(), we'll have enough headroom once
-	 * ieee80211_hdr pulled.
-	 */
+	 
 	skb = alloc_skb(128, GFP_ATOMIC);
 	if (!skb) {
 		IWL_ERR(priv, "alloc_skb failed\n");
 		return;
 	}
-	/* If frame is small enough to fit in skb->head, pull it completely.
-	 * If not, only pull ieee80211_hdr so that splice() or TCP coalesce
-	 * are more efficient.
-	 */
+	 
 	hdrlen = (len <= skb_tailroom(skb)) ? len : sizeof(*hdr);
 
 	skb_put_data(skb, hdr, hdrlen);
@@ -650,13 +599,7 @@ static void iwlagn_pass_packet_to_mac80211(struct iwl_priv *priv,
 				fraglen, rxb->truesize);
 	}
 
-	/*
-	* Wake any queues that were stopped due to a passive channel tx
-	* failure. This can happen because the regulatory enforcement in
-	* the device waits for a beacon before allowing transmission,
-	* sometimes even after already having transmitted frames for the
-	* association because the new RXON may reset the information.
-	*/
+	 
 	if (unlikely(ieee80211_is_beacon(fc) && priv->passive_no_rx)) {
 		for_each_context(priv, ctx) {
 			if (!ether_addr_equal(hdr->addr3,
@@ -682,17 +625,17 @@ static u32 iwlagn_translate_rx_status(struct iwl_priv *priv, u32 decrypt_in)
 
 	decrypt_out |= (decrypt_in & RX_RES_STATUS_SEC_TYPE_MSK);
 
-	/* packet was not encrypted */
+	 
 	if ((decrypt_in & RX_RES_STATUS_SEC_TYPE_MSK) ==
 					RX_RES_STATUS_SEC_TYPE_NONE)
 		return decrypt_out;
 
-	/* packet was encrypted with unknown alg */
+	 
 	if ((decrypt_in & RX_RES_STATUS_SEC_TYPE_MSK) ==
 					RX_RES_STATUS_SEC_TYPE_ERR)
 		return decrypt_out;
 
-	/* decryption was not done in HW */
+	 
 	if ((decrypt_in & RX_MPDU_RES_STATUS_DEC_DONE_MSK) !=
 					RX_MPDU_RES_STATUS_DEC_DONE_MSK)
 		return decrypt_out;
@@ -700,9 +643,9 @@ static u32 iwlagn_translate_rx_status(struct iwl_priv *priv, u32 decrypt_in)
 	switch (decrypt_in & RX_RES_STATUS_SEC_TYPE_MSK) {
 
 	case RX_RES_STATUS_SEC_TYPE_CCMP:
-		/* alg is CCM: check MIC only */
+		 
 		if (!(decrypt_in & RX_MPDU_RES_STATUS_MIC_OK))
-			/* Bad MIC */
+			 
 			decrypt_out |= RX_RES_STATUS_BAD_ICV_MIC;
 		else
 			decrypt_out |= RX_RES_STATUS_DECRYPT_OK;
@@ -711,7 +654,7 @@ static u32 iwlagn_translate_rx_status(struct iwl_priv *priv, u32 decrypt_in)
 
 	case RX_RES_STATUS_SEC_TYPE_TKIP:
 		if (!(decrypt_in & RX_MPDU_RES_STATUS_TTAK_OK)) {
-			/* Bad TTAK */
+			 
 			decrypt_out |= RX_RES_STATUS_BAD_KEY_TTAK;
 			break;
 		}
@@ -730,13 +673,11 @@ static u32 iwlagn_translate_rx_status(struct iwl_priv *priv, u32 decrypt_in)
 	return decrypt_out;
 }
 
-/* Calc max signal level (dBm) among 3 possible receivers */
+ 
 static int iwlagn_calc_rssi(struct iwl_priv *priv,
 			     struct iwl_rx_phy_res *rx_resp)
 {
-	/* data from PHY/DSP regarding signal strength, etc.,
-	 *   contents are always there, not configurable by host
-	 */
+	 
 	struct iwlagn_non_cfg_phy *ncphy =
 		(struct iwlagn_non_cfg_phy *)rx_resp->non_cfg_phy_buf;
 	u32 val, rssi_a, rssi_b, rssi_c, max_rssi;
@@ -745,12 +686,7 @@ static int iwlagn_calc_rssi(struct iwl_priv *priv,
 	val  = le32_to_cpu(ncphy->non_cfg_phy[IWLAGN_RX_RES_AGC_IDX]);
 	agc = (val & IWLAGN_OFDM_AGC_MSK) >> IWLAGN_OFDM_AGC_BIT_POS;
 
-	/* Find max rssi among 3 possible receivers.
-	 * These values are measured by the digital signal processor (DSP).
-	 * They should stay fairly constant even as the signal strength varies,
-	 *   if the radio's automatic gain control (AGC) is working right.
-	 * AGC value (see below) will provide the "interesting" info.
-	 */
+	 
 	val = le32_to_cpu(ncphy->non_cfg_phy[IWLAGN_RX_RES_RSSI_AB_IDX]);
 	rssi_a = (val & IWLAGN_OFDM_RSSI_INBAND_A_BITMSK) >>
 		IWLAGN_OFDM_RSSI_A_BIT_POS;
@@ -766,12 +702,11 @@ static int iwlagn_calc_rssi(struct iwl_priv *priv,
 	IWL_DEBUG_STATS(priv, "Rssi In A %d B %d C %d Max %d AGC dB %d\n",
 		rssi_a, rssi_b, rssi_c, max_rssi, agc);
 
-	/* dBm = max_rssi dB - agc dB - constant.
-	 * Higher AGC (higher radio gain) means lower signal. */
+	 
 	return max_rssi - agc - IWLAGN_RSSI_OFFSET;
 }
 
-/* Called for REPLY_RX_MPDU_CMD */
+ 
 static void iwlagn_rx_reply_rx(struct iwl_priv *priv,
 			       struct iwl_rx_cmd_buffer *rxb)
 {
@@ -822,10 +757,10 @@ static void iwlagn_rx_reply_rx(struct iwl_priv *priv,
 		return;
 	}
 
-	/* This will be used in several places later */
+	 
 	rate_n_flags = le32_to_cpu(phy_res->rate_n_flags);
 
-	/* rx_status carries information about the packet to mac80211 */
+	 
 	rx_status.mactime = le64_to_cpu(phy_res->timestamp);
 	rx_status.band = (phy_res->phy_flags & RX_RES_PHY_FLAGS_BAND_24_MSK) ?
 				NL80211_BAND_2GHZ : NL80211_BAND_5GHZ;
@@ -836,50 +771,33 @@ static void iwlagn_rx_reply_rx(struct iwl_priv *priv,
 		iwlagn_hwrate_to_mac80211_idx(rate_n_flags, rx_status.band);
 	rx_status.flag = 0;
 
-	/* TSF isn't reliable. In order to allow smooth user experience,
-	 * this W/A doesn't propagate it to the mac80211 */
-	/*rx_status.flag |= RX_FLAG_MACTIME_START;*/
+	 
+	 
 
 	priv->ucode_beacon_time = le32_to_cpu(phy_res->beacon_time_stamp);
 
-	/* Find max signal strength (dBm) among 3 antenna/receiver chains */
+	 
 	rx_status.signal = iwlagn_calc_rssi(priv, phy_res);
 
 	IWL_DEBUG_STATS_LIMIT(priv, "Rssi %d, TSF %llu\n",
 		rx_status.signal, (unsigned long long)rx_status.mactime);
 
-	/*
-	 * "antenna number"
-	 *
-	 * It seems that the antenna field in the phy flags value
-	 * is actually a bit field. This is undefined by radiotap,
-	 * it wants an actual antenna number but I always get "7"
-	 * for most legacy frames I receive indicating that the
-	 * same frame was received on all three RX chains.
-	 *
-	 * I think this field should be removed in favor of a
-	 * new 802.11n radiotap field "RX chains" that is defined
-	 * as a bitmask.
-	 */
+	 
 	rx_status.antenna =
 		(le16_to_cpu(phy_res->phy_flags) & RX_RES_PHY_FLAGS_ANTENNA_MSK)
 		>> RX_RES_PHY_FLAGS_ANTENNA_POS;
 
-	/* set the preamble flag if appropriate */
+	 
 	if (phy_res->phy_flags & RX_RES_PHY_FLAGS_SHORT_PREAMBLE_MSK)
 		rx_status.enc_flags |= RX_ENC_FLAG_SHORTPRE;
 
 	if (phy_res->phy_flags & RX_RES_PHY_FLAGS_AGG_MSK) {
-		/*
-		 * We know which subframes of an A-MPDU belong
-		 * together since we get a single PHY response
-		 * from the firmware for all of them
-		 */
+		 
 		rx_status.flag |= RX_FLAG_AMPDU_DETAILS;
 		rx_status.ampdu_reference = priv->ampdu_ref;
 	}
 
-	/* Set up the HT phy flags */
+	 
 	if (rate_n_flags & RATE_MCS_HT_MSK)
 		rx_status.encoding = RX_ENC_HT;
 	if (rate_n_flags & RATE_MCS_HT40_MSK)
@@ -902,16 +820,16 @@ static void iwlagn_rx_noa_notification(struct iwl_priv *priv,
 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
 	struct iwl_wipan_noa_notification *noa_notif = (void *)pkt->data;
 
-	/* no condition -- we're in softirq */
+	 
 	old_data = rcu_dereference_protected(priv->noa_data, true);
 
 	if (noa_notif->noa_active) {
 		u32 len = le16_to_cpu(noa_notif->noa_attribute.length);
 		u32 copylen = len;
 
-		/* EID, len, OUI, subtype */
+		 
 		len += 1 + 1 + 3 + 1;
-		/* P2P id, P2P length */
+		 
 		len += 1 + 2;
 		copylen += 1 + 2;
 
@@ -919,7 +837,7 @@ static void iwlagn_rx_noa_notification(struct iwl_priv *priv,
 		if (new_data) {
 			new_data->length = len;
 			new_data->data[0] = WLAN_EID_VENDOR_SPECIFIC;
-			new_data->data[1] = len - 2; /* not counting EID, len */
+			new_data->data[1] = len - 2;  
 			new_data->data[2] = (WLAN_OUI_WFA >> 16) & 0xff;
 			new_data->data[3] = (WLAN_OUI_WFA >> 8) & 0xff;
 			new_data->data[4] = (WLAN_OUI_WFA >> 0) & 0xff;
@@ -936,12 +854,7 @@ static void iwlagn_rx_noa_notification(struct iwl_priv *priv,
 		kfree_rcu(old_data, rcu_head);
 }
 
-/*
- * iwl_setup_rx_handlers - Initialize Rx handler callbacks
- *
- * Setup the RX handlers for each of the reply types sent from the uCode
- * to the host.
- */
+ 
 void iwl_setup_rx_handlers(struct iwl_priv *priv)
 {
 	void (**handlers)(struct iwl_priv *priv, struct iwl_rx_cmd_buffer *rxb);
@@ -960,11 +873,7 @@ void iwl_setup_rx_handlers(struct iwl_priv *priv)
 
 	handlers[REPLY_WIPAN_NOA_NOTIFICATION]	= iwlagn_rx_noa_notification;
 
-	/*
-	 * The same handler is used for both the REPLY to a discrete
-	 * statistics request from the host as well as for the periodic
-	 * statistics notifications (after received beacons) from the uCode.
-	 */
+	 
 	handlers[REPLY_STATISTICS_CMD]		= iwlagn_rx_reply_statistics;
 	handlers[STATISTICS_NOTIFICATION]	= iwlagn_rx_statistics;
 
@@ -974,20 +883,20 @@ void iwl_setup_rx_handlers(struct iwl_priv *priv)
 	handlers[MISSED_BEACONS_NOTIFICATION]	=
 		iwlagn_rx_missed_beacon_notif;
 
-	/* Rx handlers */
+	 
 	handlers[REPLY_RX_PHY_CMD]		= iwlagn_rx_reply_rx_phy;
 	handlers[REPLY_RX_MPDU_CMD]		= iwlagn_rx_reply_rx;
 
-	/* block ack */
+	 
 	handlers[REPLY_COMPRESSED_BA]		=
 		iwlagn_rx_reply_compressed_ba;
 
 	priv->rx_handlers[REPLY_TX] = iwlagn_rx_reply_tx;
 
-	/* set up notification wait support */
+	 
 	iwl_notification_wait_init(&priv->notif_wait);
 
-	/* Set up BT Rx handlers */
+	 
 	if (priv->lib->bt_params)
 		iwlagn_bt_rx_handler_setup(priv);
 }
@@ -998,21 +907,15 @@ void iwl_rx_dispatch(struct iwl_op_mode *op_mode, struct napi_struct *napi,
 	struct iwl_rx_packet *pkt = rxb_addr(rxb);
 	struct iwl_priv *priv = IWL_OP_MODE_GET_DVM(op_mode);
 
-	/*
-	 * Do the notification wait before RX handlers so
-	 * even if the RX handler consumes the RXB we have
-	 * access to it in the notification wait entry.
-	 */
+	 
 	iwl_notification_wait_notify(&priv->notif_wait, pkt);
 
-	/* Based on type of command response or notification,
-	 *   handle those that need handling via function in
-	 *   rx_handlers table.  See iwl_setup_rx_handlers() */
+	 
 	if (priv->rx_handlers[pkt->hdr.cmd]) {
 		priv->rx_handlers_stats[pkt->hdr.cmd]++;
 		priv->rx_handlers[pkt->hdr.cmd](priv, rxb);
 	} else {
-		/* No handling needed */
+		 
 		IWL_DEBUG_RX(priv, "No handler needed for %s, 0x%02x\n",
 			     iwl_get_cmd_string(priv->trans,
 						WIDE_ID(0, pkt->hdr.cmd)),

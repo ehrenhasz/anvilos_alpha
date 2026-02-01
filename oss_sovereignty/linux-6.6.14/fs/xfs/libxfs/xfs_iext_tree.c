@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2017 Christoph Hellwig.
- */
+
+ 
 
 #include "xfs.h"
 #include "xfs_shared.h"
@@ -13,18 +11,7 @@
 #include "xfs_inode.h"
 #include "xfs_trace.h"
 
-/*
- * In-core extent record layout:
- *
- * +-------+----------------------------+
- * | 00:53 | all 54 bits of startoff    |
- * | 54:63 | low 10 bits of startblock  |
- * +-------+----------------------------+
- * | 00:20 | all 21 bits of length      |
- * |    21 | unwritten extent bit       |
- * | 22:63 | high 42 bits of startblock |
- * +-------+----------------------------+
- */
+ 
 #define XFS_IEXT_STARTOFF_MASK		xfs_mask64lo(BMBT_STARTOFF_BITLEN)
 #define XFS_IEXT_LENGTH_MASK		xfs_mask64lo(BMBT_BLOCKCOUNT_BITLEN)
 #define XFS_IEXT_STARTBLOCK_MASK	xfs_mask64lo(BMBT_STARTBLOCK_BITLEN)
@@ -34,10 +21,7 @@ struct xfs_iext_rec {
 	uint64_t			hi;
 };
 
-/*
- * Given that the length can't be a zero, only an empty hi value indicates an
- * unused record.
- */
+ 
 static bool xfs_iext_rec_is_empty(struct xfs_iext_rec *rec)
 {
 	return rec->hi == 0;
@@ -92,27 +76,7 @@ enum {
 				sizeof(struct xfs_iext_rec),
 };
 
-/*
- * In-core extent btree block layout:
- *
- * There are two types of blocks in the btree: leaf and inner (non-leaf) blocks.
- *
- * The leaf blocks are made up by %KEYS_PER_NODE extent records, which each
- * contain the startoffset, blockcount, startblock and unwritten extent flag.
- * See above for the exact format, followed by pointers to the previous and next
- * leaf blocks (if there are any).
- *
- * The inner (non-leaf) blocks first contain KEYS_PER_NODE lookup keys, followed
- * by an equal number of pointers to the btree blocks at the next lower level.
- *
- *		+-------+-------+-------+-------+-------+----------+----------+
- * Leaf:	| rec 1 | rec 2 | rec 3 | rec 4 | rec N | prev-ptr | next-ptr |
- *		+-------+-------+-------+-------+-------+----------+----------+
- *
- *		+-------+-------+-------+-------+-------+-------+------+-------+
- * Inner:	| key 1 | key 2 | key 3 | key N | ptr 1 | ptr 2 | ptr3 | ptr N |
- *		+-------+-------+-------+-------+-------+-------+------+-------+
- */
+ 
 struct xfs_iext_node {
 	uint64_t		keys[KEYS_PER_NODE];
 #define XFS_IEXT_KEY_INVALID	(1ULL << 63)
@@ -459,7 +423,7 @@ xfs_iext_split_node(
 	int			nr_keep = nr_move + (KEYS_PER_NODE & 1);
 	int			i = 0;
 
-	/* for sequential append operations just spill over into the new node */
+	 
 	if (*pos == KEYS_PER_NODE) {
 		*nodep = new;
 		*pos = 0;
@@ -514,10 +478,7 @@ again:
 	if (nr_entries == KEYS_PER_NODE)
 		new = xfs_iext_split_node(&node, &pos, &nr_entries);
 
-	/*
-	 * Update the pointers in higher levels if the first entry changes
-	 * in an existing node.
-	 */
+	 
 	if (node != new && pos == 0 && nr_entries > 0)
 		xfs_iext_update_node(ifp, node->keys[0], offset, level, node);
 
@@ -547,7 +508,7 @@ xfs_iext_split_leaf(
 	int			nr_keep = nr_move + (RECS_PER_LEAF & 1);
 	int			i;
 
-	/* for sequential append operations just spill over into the new node */
+	 
 	if (cur->pos == RECS_PER_LEAF) {
 		cur->leaf = new;
 		cur->pos = 0;
@@ -586,7 +547,7 @@ xfs_iext_alloc_root(
 	ifp->if_u1.if_root = kmem_zalloc(sizeof(struct xfs_iext_rec), KM_NOFS);
 	ifp->if_height = 1;
 
-	/* now that we have a node step into it */
+	 
 	cur->leaf = ifp->if_u1.if_root;
 	cur->pos = 0;
 }
@@ -599,7 +560,7 @@ xfs_iext_realloc_root(
 	int64_t new_size = ifp->if_bytes + sizeof(struct xfs_iext_rec);
 	void *new;
 
-	/* account for the prev/next pointers */
+	 
 	if (new_size / sizeof(struct xfs_iext_rec) == RECS_PER_LEAF)
 		new_size = NODE_SIZE;
 
@@ -609,13 +570,7 @@ xfs_iext_realloc_root(
 	cur->leaf = new;
 }
 
-/*
- * Increment the sequence counter on extent tree changes. If we are on a COW
- * fork, this allows the writeback code to skip looking for a COW extent if the
- * COW fork hasn't changed. We use WRITE_ONCE here to ensure the update to the
- * sequence counter is seen before the modifications to the extent tree itself
- * take effect.
- */
+ 
 static inline void xfs_iext_inc_seq(struct xfs_ifork *ifp)
 {
 	WRITE_ONCE(ifp->if_seq, READ_ONCE(ifp->if_seq) + 1);
@@ -648,10 +603,7 @@ xfs_iext_insert(
 	if (nr_entries == RECS_PER_LEAF)
 		new = xfs_iext_split_leaf(cur, &nr_entries);
 
-	/*
-	 * Update the pointers in higher levels if the first entry changes
-	 * in an existing node.
-	 */
+	 
 	if (cur->leaf != new && cur->pos == 0 && nr_entries > 0) {
 		xfs_iext_update_node(ifp, xfs_iext_leaf_key(cur->leaf, 0),
 				offset, 1, cur->leaf);
@@ -675,11 +627,7 @@ xfs_iext_rebalance_node(
 	struct xfs_iext_node	*node,
 	int			nr_entries)
 {
-	/*
-	 * If the neighbouring nodes are completely full, or have different
-	 * parents, we might never be able to merge our node, and will only
-	 * delete it once the number of entries hits zero.
-	 */
+	 
 	if (nr_entries == 0)
 		return node;
 
@@ -701,11 +649,7 @@ xfs_iext_rebalance_node(
 		int nr_next = xfs_iext_node_nr_entries(next, 0), i;
 
 		if (nr_entries + nr_next <= KEYS_PER_NODE) {
-			/*
-			 * Merge the next node into this node so that we don't
-			 * have to do an additional update of the keys in the
-			 * higher levels.
-			 */
+			 
 			for (i = 0; i < nr_next; i++) {
 				node->keys[nr_entries + i] = next->keys[i];
 				node->ptrs[nr_entries + i] = next->ptrs[i];
@@ -754,11 +698,7 @@ again:
 		return;
 
 	if (level < ifp->if_height) {
-		/*
-		 * If we aren't at the root yet try to find a neighbour node to
-		 * merge with (or delete the node if it is empty), and then
-		 * recurse up to the next level.
-		 */
+		 
 		level++;
 		parent = xfs_iext_find_level(ifp, offset, level);
 		pos = xfs_iext_node_pos(parent, offset);
@@ -773,10 +713,7 @@ again:
 			goto again;
 		}
 	} else if (nr_entries == 1) {
-		/*
-		 * If we are at the root and only one entry is left we can just
-		 * free this node and update the root pointer.
-		 */
+		 
 		ASSERT(node == ifp->if_u1.if_root);
 		ifp->if_u1.if_root = node->ptrs[0];
 		ifp->if_height--;
@@ -792,11 +729,7 @@ xfs_iext_rebalance_leaf(
 	xfs_fileoff_t		offset,
 	int			nr_entries)
 {
-	/*
-	 * If the neighbouring nodes are completely full we might never be able
-	 * to merge our node, and will only delete it once the number of
-	 * entries hits zero.
-	 */
+	 
 	if (nr_entries == 0)
 		goto remove_node;
 
@@ -819,11 +752,7 @@ xfs_iext_rebalance_leaf(
 		int nr_next = xfs_iext_leaf_nr_entries(ifp, leaf->next, 0), i;
 
 		if (nr_entries + nr_next <= RECS_PER_LEAF) {
-			/*
-			 * Merge the next node into this node so that we don't
-			 * have to do an additional update of the keys in the
-			 * higher levels.
-			 */
+			 
 			for (i = 0; i < nr_next; i++) {
 				leaf->recs[nr_entries + i] =
 					leaf->next->recs[i];
@@ -904,17 +833,7 @@ xfs_iext_remove(
 		xfs_iext_free_last_leaf(ifp);
 }
 
-/*
- * Lookup the extent covering bno.
- *
- * If there is an extent covering bno return the extent index, and store the
- * expanded extent structure in *gotp, and the extent cursor in *cur.
- * If there is no extent covering bno, but there is an extent after it (e.g.
- * it lies in a hole) return that extent in *gotp and its cursor in *cur
- * instead.
- * If bno is beyond the last extent return false, and return an invalid
- * cursor value.
- */
+ 
 bool
 xfs_iext_lookup_extent(
 	struct xfs_inode	*ip,
@@ -940,7 +859,7 @@ xfs_iext_lookup_extent(
 			goto found;
 	}
 
-	/* Try looking in the next node for an entry > offset */
+	 
 	if (ifp->if_height == 1 || !cur->leaf->next)
 		return false;
 	cur->leaf = cur->leaf->next;
@@ -952,10 +871,7 @@ found:
 	return true;
 }
 
-/*
- * Returns the last extent before end, and if this extent doesn't cover
- * end, update end to the end of the extent.
- */
+ 
 bool
 xfs_iext_lookup_extent_before(
 	struct xfs_inode	*ip,
@@ -964,7 +880,7 @@ xfs_iext_lookup_extent_before(
 	struct xfs_iext_cursor	*cur,
 	struct xfs_bmbt_irec	*gotp)
 {
-	/* could be optimized to not even look up the next on a match.. */
+	 
 	if (xfs_iext_lookup_extent(ip, ifp, *end - 1, cur, gotp) &&
 	    gotp->br_startoff <= *end - 1)
 		return true;
@@ -1000,10 +916,7 @@ xfs_iext_update_extent(
 	trace_xfs_bmap_post_update(ip, cur, state, _RET_IP_);
 }
 
-/*
- * Return true if the cursor points at an extent and return the extent structure
- * in gotp.  Else return false.
- */
+ 
 bool
 xfs_iext_get_extent(
 	struct xfs_ifork	*ifp,
@@ -1016,10 +929,7 @@ xfs_iext_get_extent(
 	return true;
 }
 
-/*
- * This is a recursive function, because of that we need to be extremely
- * careful with stack usage.
- */
+ 
 static void
 xfs_iext_destroy_node(
 	struct xfs_iext_node	*node,

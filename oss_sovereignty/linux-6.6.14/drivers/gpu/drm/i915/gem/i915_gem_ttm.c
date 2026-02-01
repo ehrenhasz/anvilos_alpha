@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <linux/shmem_fs.h>
 
@@ -27,25 +25,10 @@
 #define I915_TTM_PRIO_HAS_PAGES 2
 #define I915_TTM_PRIO_NEEDS_CPU_ACCESS 3
 
-/*
- * Size of struct ttm_place vector in on-stack struct ttm_placement allocs
- */
+ 
 #define I915_TTM_MAX_PLACEMENTS INTEL_REGION_UNKNOWN
 
-/**
- * struct i915_ttm_tt - TTM page vector with additional private information
- * @ttm: The base TTM page vector.
- * @dev: The struct device used for dma mapping and unmapping.
- * @cached_rsgt: The cached scatter-gather table.
- * @is_shmem: Set if using shmem.
- * @filp: The shmem file, if using shmem backend.
- *
- * Note that DMA may be going on right up to the point where the page-
- * vector is unpopulated in delayed destroy. Hence keep the
- * scatter-gather table mapped and cached up to that point. This is
- * different from the cached gem object io scatter-gather table which
- * doesn't have an associated dma mapping.
- */
+ 
 struct i915_ttm_tt {
 	struct ttm_tt ttm;
 	struct device *dev;
@@ -69,15 +52,7 @@ static struct ttm_placement i915_sys_placement = {
 	.busy_placement = &sys_placement_flags,
 };
 
-/**
- * i915_ttm_sys_placement - Return the struct ttm_placement to be
- * used for an object in system memory.
- *
- * Rather than making the struct extern, use this
- * function.
- *
- * Return: A pointer to a static variable for sys placement.
- */
+ 
 struct ttm_placement *i915_ttm_sys_placement(void)
 {
 	return &i915_sys_placement;
@@ -85,23 +60,16 @@ struct ttm_placement *i915_ttm_sys_placement(void)
 
 static int i915_ttm_err_to_gem(int err)
 {
-	/* Fastpath */
+	 
 	if (likely(!err))
 		return 0;
 
 	switch (err) {
 	case -EBUSY:
-		/*
-		 * TTM likes to convert -EDEADLK to -EBUSY, and wants us to
-		 * restart the operation, since we don't record the contending
-		 * lock. We use -EAGAIN to restart.
-		 */
+		 
 		return -EAGAIN;
 	case -ENOSPC:
-		/*
-		 * Memory type / region is full, and we can't evict.
-		 * Except possibly system, that returns -ENOMEM;
-		 */
+		 
 		return -ENXIO;
 	default:
 		break;
@@ -113,11 +81,7 @@ static int i915_ttm_err_to_gem(int err)
 static enum ttm_caching
 i915_ttm_select_tt_caching(const struct drm_i915_gem_object *obj)
 {
-	/*
-	 * Objects only allowed in system get cached cpu-mappings, or when
-	 * evicting lmem-only buffers to system for swapping. Other objects get
-	 * WC mapping for now. Even if in system.
-	 */
+	 
 	if (obj->mm.n_placements <= 1)
 		return ttm_cached;
 
@@ -170,7 +134,7 @@ i915_ttm_placement_from_obj(const struct drm_i915_gem_object *obj,
 				   obj->mm.region, requested, obj->bo_offset,
 				   obj->base.size, flags);
 
-	/* Cache this on object? */
+	 
 	placement->num_busy_placement = num_allowed;
 	for (i = 0; i < placement->num_busy_placement; ++i)
 		i915_ttm_place_from_region(obj->mm.placements[i], busy + i,
@@ -366,15 +330,11 @@ static bool i915_ttm_eviction_valuable(struct ttm_buffer_object *bo,
 	if (i915_ttm_is_ghost_object(bo))
 		return false;
 
-	/*
-	 * EXTERNAL objects should never be swapped out by TTM, instead we need
-	 * to handle that ourselves. TTM will already skip such objects for us,
-	 * but we would like to avoid grabbing locks for no good reason.
-	 */
+	 
 	if (bo->ttm && bo->ttm->page_flags & TTM_TT_FLAG_EXTERNAL)
 		return false;
 
-	/* Will do for now. Our pinned objects are still on TTM's LRU lists */
+	 
 	if (!i915_gem_object_evictable(obj))
 		return false;
 
@@ -387,13 +347,7 @@ static void i915_ttm_evict_flags(struct ttm_buffer_object *bo,
 	*placement = i915_sys_placement;
 }
 
-/**
- * i915_ttm_free_cached_io_rsgt - Free object cached LMEM information
- * @obj: The GEM object
- * This function frees any LMEM-related information that is cached on
- * the object. For example the radix tree for fast page lookup and the
- * cached refcounted sg-table
- */
+ 
 void i915_ttm_free_cached_io_rsgt(struct drm_i915_gem_object *obj)
 {
 	struct radix_tree_iter iter;
@@ -411,15 +365,7 @@ void i915_ttm_free_cached_io_rsgt(struct drm_i915_gem_object *obj)
 	obj->ttm.cached_io_rsgt = NULL;
 }
 
-/**
- * i915_ttm_purge - Clear an object of its memory
- * @obj: The object
- *
- * This function is called to clear an object of it's memory when it is
- * marked as not needed anymore.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int i915_ttm_purge(struct drm_i915_gem_object *obj)
 {
 	struct ttm_buffer_object *bo = i915_gem_to_ttm(obj);
@@ -440,12 +386,7 @@ int i915_ttm_purge(struct drm_i915_gem_object *obj)
 		return ret;
 
 	if (bo->ttm && i915_tt->filp) {
-		/*
-		 * The below fput(which eventually calls shmem_truncate) might
-		 * be delayed by worker, so when directly called to purge the
-		 * pages(like by the shrinker) we should try to be more
-		 * aggressive and release the pages immediately.
-		 */
+		 
 		shmem_truncate_range(file_inode(i915_tt->filp),
 				     0, (loff_t)-1);
 		fput(fetch_and_zero(&i915_tt->filp));
@@ -511,12 +452,7 @@ static void i915_ttm_delete_mem_notify(struct ttm_buffer_object *bo)
 {
 	struct drm_i915_gem_object *obj = i915_ttm_to_gem(bo);
 
-	/*
-	 * This gets called twice by ttm, so long as we have a ttm resource or
-	 * ttm_tt then we can still safely call this. Due to pipeline-gutting,
-	 * we maybe have NULL bo->resource, but in that case we should always
-	 * have a ttm alive (like if the pages are swapped out).
-	 */
+	 
 	if ((bo->resource || bo->ttm) && !i915_ttm_is_ghost_object(bo)) {
 		__i915_gem_object_pages_fini(obj);
 		i915_ttm_free_cached_io_rsgt(obj);
@@ -551,20 +487,7 @@ static struct i915_refct_sgt *i915_ttm_tt_get_st(struct ttm_tt *ttm)
 	return i915_refct_sgt_get(&i915_tt->cached_rsgt);
 }
 
-/**
- * i915_ttm_resource_get_st - Get a refcounted sg-table pointing to the
- * resource memory
- * @obj: The GEM object used for sg-table caching
- * @res: The struct ttm_resource for which an sg-table is requested.
- *
- * This function returns a refcounted sg-table representing the memory
- * pointed to by @res. If @res is the object's current resource it may also
- * cache the sg_table on the object or attempt to access an already cached
- * sg-table. The refcounted sg-table needs to be put when no-longer in use.
- *
- * Return: A valid pointer to a struct i915_refct_sgt or error pointer on
- * failure.
- */
+ 
 struct i915_refct_sgt *
 i915_ttm_resource_get_st(struct drm_i915_gem_object *obj,
 			 struct ttm_resource *res)
@@ -579,10 +502,7 @@ i915_ttm_resource_get_st(struct drm_i915_gem_object *obj,
 	if (!page_alignment)
 		page_alignment = obj->mm.region->min_page_size;
 
-	/*
-	 * If CPU mapping differs, we need to add the ttm_tt pages to
-	 * the resulting st. Might make sense for GGTT.
-	 */
+	 
 	GEM_WARN_ON(!i915_ttm_cpu_maps_iomem(res));
 	if (bo->resource == res) {
 		if (!obj->ttm.cached_io_rsgt) {
@@ -639,14 +559,7 @@ static void i915_ttm_swap_notify(struct ttm_buffer_object *bo)
 		i915_ttm_purge(obj);
 }
 
-/**
- * i915_ttm_resource_mappable - Return true if the ttm resource is CPU
- * accessible.
- * @res: The TTM resource to check.
- *
- * This is interesting on small-BAR systems where we may encounter lmem objects
- * that can't be accessed via the CPU.
- */
+ 
 bool i915_ttm_resource_mappable(struct ttm_resource *res)
 {
 	struct i915_ttm_buddy_resource *bman_res = to_ttm_buddy_resource(res);
@@ -714,11 +627,7 @@ static int i915_ttm_access_memory(struct ttm_buffer_object *bo,
 	unsigned long page = offset >> PAGE_SHIFT;
 	unsigned long bytes_left = len;
 
-	/*
-	 * TODO: For now just let it fail if the resource is non-mappable,
-	 * otherwise we need to perform the memcpy from the gpu here, without
-	 * interfering with the object (like moving the entire thing).
-	 */
+	 
 	if (!i915_ttm_resource_mappable(bo->resource))
 		return -EIO;
 
@@ -748,10 +657,7 @@ static int i915_ttm_access_memory(struct ttm_buffer_object *bo,
 	return len;
 }
 
-/*
- * All callbacks need to take care not to downcast a struct ttm_buffer_object
- * without checking its subclass, since it might be a TTM ghost object.
- */
+ 
 static struct ttm_device_funcs i915_ttm_bo_driver = {
 	.ttm_tt_create = i915_ttm_tt_create,
 	.ttm_tt_populate = i915_ttm_tt_populate,
@@ -767,11 +673,7 @@ static struct ttm_device_funcs i915_ttm_bo_driver = {
 	.access_memory = i915_ttm_access_memory,
 };
 
-/**
- * i915_ttm_driver - Return a pointer to the TTM device funcs
- *
- * Return: Pointer to statically allocated TTM device funcs.
- */
+ 
 struct ttm_device_funcs *i915_ttm_driver(void)
 {
 	return &i915_ttm_bo_driver;
@@ -788,23 +690,17 @@ static int __i915_ttm_get_pages(struct drm_i915_gem_object *obj,
 	int real_num_busy;
 	int ret;
 
-	/* First try only the requested placement. No eviction. */
+	 
 	real_num_busy = fetch_and_zero(&placement->num_busy_placement);
 	ret = ttm_bo_validate(bo, placement, &ctx);
 	if (ret) {
 		ret = i915_ttm_err_to_gem(ret);
-		/*
-		 * Anything that wants to restart the operation gets to
-		 * do that.
-		 */
+		 
 		if (ret == -EDEADLK || ret == -EINTR || ret == -ERESTARTSYS ||
 		    ret == -EAGAIN)
 			return ret;
 
-		/*
-		 * If the initial attempt fails, allow all accepted placements,
-		 * evicting if necessary.
-		 */
+		 
 		placement->num_busy_placement = real_num_busy;
 		ret = ttm_bo_validate(bo, placement, &ctx);
 		if (ret)
@@ -842,32 +738,19 @@ static int i915_ttm_get_pages(struct drm_i915_gem_object *obj)
 	struct ttm_place requested, busy[I915_TTM_MAX_PLACEMENTS];
 	struct ttm_placement placement;
 
-	/* restricted by sg_alloc_table */
+	 
 	if (overflows_type(obj->base.size >> PAGE_SHIFT, unsigned int))
 		return -E2BIG;
 
 	GEM_BUG_ON(obj->mm.n_placements > I915_TTM_MAX_PLACEMENTS);
 
-	/* Move to the requested placement. */
+	 
 	i915_ttm_placement_from_obj(obj, &requested, busy, &placement);
 
 	return __i915_ttm_get_pages(obj, &placement);
 }
 
-/**
- * DOC: Migration vs eviction
- *
- * GEM migration may not be the same as TTM migration / eviction. If
- * the TTM core decides to evict an object it may be evicted to a
- * TTM memory type that is not in the object's allowable GEM regions, or
- * in fact theoretically to a TTM memory type that doesn't correspond to
- * a GEM memory region. In that case the object's GEM region is not
- * updated, and the data is migrated back to the GEM region at
- * get_pages time. TTM may however set up CPU ptes to the object even
- * when it is evicted.
- * Gem forced migration using the i915_ttm_migrate() op, is allowed even
- * to regions that are not in the object's list of allowable placements.
- */
+ 
 static int __i915_ttm_migrate(struct drm_i915_gem_object *obj,
 			      struct intel_memory_region *mr,
 			      unsigned int flags)
@@ -887,11 +770,7 @@ static int __i915_ttm_migrate(struct drm_i915_gem_object *obj,
 	if (ret)
 		return ret;
 
-	/*
-	 * Reinitialize the region bindings. This is primarily
-	 * required for objects where the new region is not in
-	 * its allowable placements.
-	 */
+	 
 	if (obj->mm.region != mr) {
 		i915_gem_object_release_memory_region(obj);
 		i915_gem_object_init_memory_region(obj, mr);
@@ -910,22 +789,13 @@ static int i915_ttm_migrate(struct drm_i915_gem_object *obj,
 static void i915_ttm_put_pages(struct drm_i915_gem_object *obj,
 			       struct sg_table *st)
 {
-	/*
-	 * We're currently not called from a shrinker, so put_pages()
-	 * typically means the object is about to destroyed, or called
-	 * from move_notify(). So just avoid doing much for now.
-	 * If the object is not destroyed next, The TTM eviction logic
-	 * and shrinkers will move it out if needed.
-	 */
+	 
 
 	if (obj->mm.rsgt)
 		i915_refct_sgt_put(fetch_and_zero(&obj->mm.rsgt));
 }
 
-/**
- * i915_ttm_adjust_lru - Adjust an object's position on relevant LRU lists.
- * @obj: The object
- */
+ 
 void i915_ttm_adjust_lru(struct drm_i915_gem_object *obj)
 {
 	struct ttm_buffer_object *bo = i915_gem_to_ttm(obj);
@@ -934,37 +804,11 @@ void i915_ttm_adjust_lru(struct drm_i915_gem_object *obj)
 	bool shrinkable =
 		bo->ttm && i915_tt->filp && ttm_tt_is_populated(bo->ttm);
 
-	/*
-	 * Don't manipulate the TTM LRUs while in TTM bo destruction.
-	 * We're called through i915_ttm_delete_mem_notify().
-	 */
+	 
 	if (!kref_read(&bo->kref))
 		return;
 
-	/*
-	 * We skip managing the shrinker LRU in set_pages() and just manage
-	 * everything here. This does at least solve the issue with having
-	 * temporary shmem mappings(like with evicted lmem) not being visible to
-	 * the shrinker. Only our shmem objects are shrinkable, everything else
-	 * we keep as unshrinkable.
-	 *
-	 * To make sure everything plays nice we keep an extra shrink pin in TTM
-	 * if the underlying pages are not currently shrinkable. Once we release
-	 * our pin, like when the pages are moved to shmem, the pages will then
-	 * be added to the shrinker LRU, assuming the caller isn't also holding
-	 * a pin.
-	 *
-	 * TODO: consider maybe also bumping the shrinker list here when we have
-	 * already unpinned it, which should give us something more like an LRU.
-	 *
-	 * TODO: There is a small window of opportunity for this function to
-	 * get called from eviction after we've dropped the last GEM refcount,
-	 * but before the TTM deleted flag is set on the object. Avoid
-	 * adjusting the shrinker list in such cases, since the object is
-	 * not available to the shrinker anyway due to its zero refcount.
-	 * To fix this properly we should move to a TTM shrinker LRU list for
-	 * these objects.
-	 */
+	 
 	if (kref_get_unless_zero(&obj->base.refcount)) {
 		if (shrinkable != obj->mm.ttm_shrinkable) {
 			if (shrinkable) {
@@ -981,12 +825,10 @@ void i915_ttm_adjust_lru(struct drm_i915_gem_object *obj)
 		i915_gem_object_put(obj);
 	}
 
-	/*
-	 * Put on the correct LRU list depending on the MADV status
-	 */
+	 
 	spin_lock(&bo->bdev->lru_lock);
 	if (shrinkable) {
-		/* Try to keep shmem_tt from being considered for shrinking. */
+		 
 		bo->priority = TTM_MAX_BO_PRIORITY - 1;
 	} else if (obj->mm.madv != I915_MADV_WILLNEED) {
 		bo->priority = I915_TTM_PRIO_PURGE;
@@ -996,14 +838,7 @@ void i915_ttm_adjust_lru(struct drm_i915_gem_object *obj)
 		struct ttm_resource_manager *man =
 			ttm_manager_type(bo->bdev, bo->resource->mem_type);
 
-		/*
-		 * If we need to place an LMEM resource which doesn't need CPU
-		 * access then we should try not to victimize mappable objects
-		 * first, since we likely end up stealing more of the mappable
-		 * portion. And likewise when we try to find space for a mappble
-		 * object, we know not to ever victimize objects that don't
-		 * occupy any mappable pages.
-		 */
+		 
 		if (i915_ttm_cpu_maps_iomem(bo->resource) &&
 		    i915_ttm_buddy_man_visible_size(man) < man->size &&
 		    !(obj->flags & I915_BO_ALLOC_GPU_ONLY))
@@ -1016,21 +851,7 @@ void i915_ttm_adjust_lru(struct drm_i915_gem_object *obj)
 	spin_unlock(&bo->bdev->lru_lock);
 }
 
-/*
- * TTM-backed gem object destruction requires some clarification.
- * Basically we have two possibilities here. We can either rely on the
- * i915 delayed destruction and put the TTM object when the object
- * is idle. This would be detected by TTM which would bypass the
- * TTM delayed destroy handling. The other approach is to put the TTM
- * object early and rely on the TTM destroyed handling, and then free
- * the leftover parts of the GEM object once TTM's destroyed list handling is
- * complete. For now, we rely on the latter for two reasons:
- * a) TTM can evict an object even when it's on the delayed destroy list,
- * which in theory allows for complete eviction.
- * b) There is work going on in TTM to allow freeing an object even when
- * it's not idle, and using the TTM destroyed list handling could help us
- * benefit from that.
- */
+ 
 static void i915_ttm_delayed_free(struct drm_i915_gem_object *obj)
 {
 	GEM_BUG_ON(!obj->ttm.created);
@@ -1048,7 +869,7 @@ static vm_fault_t vm_fault_ttm(struct vm_fault *vmf)
 	vm_fault_t ret;
 	int idx;
 
-	/* Sanity check that we allow writing into this object */
+	 
 	if (unlikely(i915_gem_object_is_readonly(obj) &&
 		     area->vm_flags & VM_WRITE))
 		return VM_FAULT_SIGBUS;
@@ -1062,16 +883,11 @@ static vm_fault_t vm_fault_ttm(struct vm_fault *vmf)
 		return VM_FAULT_SIGBUS;
 	}
 
-	/*
-	 * This must be swapped out with shmem ttm_tt (pipeline-gutting).
-	 * Calling ttm_bo_validate() here with TTM_PL_SYSTEM should only go as
-	 * far as far doing a ttm_bo_move_null(), which should skip all the
-	 * other junk.
-	 */
+	 
 	if (!bo->resource) {
 		struct ttm_operation_ctx ctx = {
 			.interruptible = true,
-			.no_wait_gpu = true, /* should be idle already */
+			.no_wait_gpu = true,  
 		};
 		int err;
 
@@ -1123,10 +939,7 @@ static vm_fault_t vm_fault_ttm(struct vm_fault *vmf)
 	if (ret == VM_FAULT_RETRY && !(vmf->flags & FAULT_FLAG_RETRY_NOWAIT))
 		goto out_rpm;
 
-	/*
-	 * ttm_bo_vm_reserve() already has dma_resv_lock.
-	 * userfault_count is protected by dma_resv lock and rpm wakeref.
-	 */
+	 
 	if (ret == VM_FAULT_NOPAGE && wakeref && !obj->userfault_count) {
 		obj->userfault_count = 1;
 		spin_lock(&to_i915(obj->base.dev)->runtime_pm.lmem_userfault_lock);
@@ -1191,7 +1004,7 @@ static const struct vm_operations_struct vm_ops_ttm = {
 
 static u64 i915_ttm_mmap_offset(struct drm_i915_gem_object *obj)
 {
-	/* The ttm_bo must be allocated with I915_BO_ALLOC_USER */
+	 
 	GEM_BUG_ON(!drm_mm_node_allocated(&obj->base.vma_node.vm_node));
 
 	return drm_vma_node_offset_addr(&obj->base.vma_node);
@@ -1207,7 +1020,7 @@ static void i915_ttm_unmap_virtual(struct drm_i915_gem_object *obj)
 	if (i915_ttm_cpu_maps_iomem(bo->resource)) {
 		wakeref = intel_runtime_pm_get(&to_i915(obj->base.dev)->runtime_pm);
 
-		/* userfault_count is protected by obj lock and rpm wakeref. */
+		 
 		if (obj->userfault_count) {
 			spin_lock(&to_i915(obj->base.dev)->runtime_pm.lmem_userfault_lock);
 			list_del(&obj->userfault_link);
@@ -1251,21 +1064,13 @@ void i915_ttm_bo_destroy(struct ttm_buffer_object *bo)
 	mutex_destroy(&obj->ttm.get_io_page.lock);
 
 	if (obj->ttm.created) {
-		/*
-		 * We freely manage the shrinker LRU outide of the mm.pages life
-		 * cycle. As a result when destroying the object we should be
-		 * extra paranoid and ensure we remove it from the LRU, before
-		 * we free the object.
-		 *
-		 * Touching the ttm_shrinkable outside of the object lock here
-		 * should be safe now that the last GEM object ref was dropped.
-		 */
+		 
 		if (obj->mm.ttm_shrinkable)
 			i915_gem_object_make_unshrinkable(obj);
 
 		i915_ttm_backup_free(obj);
 
-		/* This releases all gem object bindings to the backend. */
+		 
 		__i915_gem_free_object(obj);
 
 		call_rcu(&obj->rcu, __i915_gem_free_object_rcu);
@@ -1274,15 +1079,7 @@ void i915_ttm_bo_destroy(struct ttm_buffer_object *bo)
 	}
 }
 
-/*
- * __i915_gem_ttm_object_init - Initialize a ttm-backed i915 gem object
- * @mem: The initial memory region for the object.
- * @obj: The gem object.
- * @size: Object size in bytes.
- * @flags: gem object flags.
- *
- * Return: 0 on success, negative error code on failure.
- */
+ 
 int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
 			       struct drm_i915_gem_object *obj,
 			       resource_size_t offset,
@@ -1304,7 +1101,7 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
 
 	obj->bo_offset = offset;
 
-	/* Don't put on a region list until we're either locked or fully initialized. */
+	 
 	obj->mm.region = mem;
 	INIT_LIST_HEAD(&obj->mm.region_link);
 
@@ -1315,35 +1112,18 @@ int __i915_gem_ttm_object_init(struct intel_memory_region *mem,
 
 	obj->base.vma_node.driver_private = i915_gem_to_ttm(obj);
 
-	/* Forcing the page size is kernel internal only */
+	 
 	GEM_BUG_ON(page_size && obj->mm.n_placements);
 
-	/*
-	 * Keep an extra shrink pin to prevent the object from being made
-	 * shrinkable too early. If the ttm_tt is ever allocated in shmem, we
-	 * drop the pin. The TTM backend manages the shrinker LRU itself,
-	 * outside of the normal mm.pages life cycle.
-	 */
+	 
 	i915_gem_object_make_unshrinkable(obj);
 
-	/*
-	 * If this function fails, it will call the destructor, but
-	 * our caller still owns the object. So no freeing in the
-	 * destructor until obj->ttm.created is true.
-	 * Similarly, in delayed_destroy, we can't call ttm_bo_put()
-	 * until successful initialization.
-	 */
+	 
 	ret = ttm_bo_init_reserved(&i915->bdev, i915_gem_to_ttm(obj), bo_type,
 				   &i915_sys_placement, page_size >> PAGE_SHIFT,
 				   &ctx, NULL, NULL, i915_ttm_bo_destroy);
 
-	/*
-	 * XXX: The ttm_bo_init_reserved() functions returns -ENOSPC if the size
-	 * is too big to add vma. The direct function that returns -ENOSPC is
-	 * drm_mm_insert_node_in_range(). To handle the same error as other code
-	 * that returns -E2BIG when the size is too large, it converts -ENOSPC to
-	 * -E2BIG.
-	 */
+	 
 	if (size >> PAGE_SHIFT > INT_MAX && ret == -ENOSPC)
 		ret = -E2BIG;
 

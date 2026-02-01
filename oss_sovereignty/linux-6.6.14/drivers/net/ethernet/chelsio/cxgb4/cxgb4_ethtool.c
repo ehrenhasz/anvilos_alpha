@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2013-2015 Chelsio Communications.  All rights reserved.
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/mdio.h>
@@ -245,9 +243,7 @@ static void get_strings(struct net_device *dev, u32 stringset, u8 *data)
 	}
 }
 
-/* port stats maintained per queue of the port. They should be in the same
- * order as in stats_strings above.
- */
+ 
 struct queue_port_stats {
 	u64 tso;
 	u64 uso;
@@ -416,13 +412,7 @@ static int identify_port(struct net_device *dev,
 	return t4_identify_port(adap, adap->pf, netdev2pinfo(dev)->viid, val);
 }
 
-/**
- *	from_fw_port_mod_type - translate Firmware Port/Module type to Ethtool
- *	@port_type: Firmware Port Type
- *	@mod_type: Firmware Module Type
- *
- *	Translate Firmware Port/Module type to Ethtool Port Type.
- */
+ 
 static int from_fw_port_mod_type(enum fw_port_type port_type,
 				 enum fw_port_module_type mod_type)
 {
@@ -460,13 +450,7 @@ static int from_fw_port_mod_type(enum fw_port_type port_type,
 	return PORT_OTHER;
 }
 
-/**
- *	speed_to_fw_caps - translate Port Speed to Firmware Port Capabilities
- *	@speed: speed in Kb/s
- *
- *	Translates a specific Port Speed into a Firmware Port Capabilities
- *	value.
- */
+ 
 static unsigned int speed_to_fw_caps(int speed)
 {
 	if (speed == 100)
@@ -490,15 +474,7 @@ static unsigned int speed_to_fw_caps(int speed)
 	return 0;
 }
 
-/**
- *	fw_caps_to_lmm - translate Firmware to ethtool Link Mode Mask
- *	@port_type: Firmware Port Type
- *	@fw_caps: Firmware Port Capabilities
- *	@link_mode_mask: ethtool Link Mode Mask
- *
- *	Translate a Firmware Port Capabilities specification to an ethtool
- *	Link Mode Mask.
- */
+ 
 static void fw_caps_to_lmm(enum fw_port_type port_type,
 			   fw_port_cap32_t fw_caps,
 			   unsigned long *link_mode_mask)
@@ -627,14 +603,7 @@ static void fw_caps_to_lmm(enum fw_port_type port_type,
 	#undef SET_LMM
 }
 
-/**
- *	lmm_to_fw_caps - translate ethtool Link Mode Mask to Firmware
- *	capabilities
- *	@link_mode_mask: ethtool Link Mode Mask
- *
- *	Translate ethtool Link Mode Mask into a Firmware Port capabilities
- *	value.
- */
+ 
 static unsigned int lmm_to_fw_caps(const unsigned long *link_mode_mask)
 {
 	unsigned int fw_caps = 0;
@@ -665,10 +634,7 @@ static int get_link_ksettings(struct net_device *dev,
 	struct port_info *pi = netdev_priv(dev);
 	struct ethtool_link_settings *base = &link_ksettings->base;
 
-	/* For the nonce, the Firmware doesn't send up Port State changes
-	 * when the Virtual Interface attached to the Port is down.  So
-	 * if it's down, let's grab any changes.
-	 */
+	 
 	if (!netif_running(dev))
 		(void)t4_update_port_info(pi);
 
@@ -724,7 +690,7 @@ static int set_link_ksettings(struct net_device *dev,
 	unsigned int fw_caps;
 	int ret = 0;
 
-	/* only full-duplex supported */
+	 
 	if (base->duplex != DUPLEX_FULL)
 		return -EINVAL;
 
@@ -733,7 +699,7 @@ static int set_link_ksettings(struct net_device *dev,
 	    base->autoneg == AUTONEG_DISABLE) {
 		fw_caps = speed_to_fw_caps(base->speed);
 
-		/* Speed must be supported by Physical Port Capabilities. */
+		 
 		if (!(lc->pcaps & fw_caps))
 			return -EINVAL;
 
@@ -749,9 +715,7 @@ static int set_link_ksettings(struct net_device *dev,
 	}
 	lc->autoneg = base->autoneg;
 
-	/* If the firmware rejects the Link Configuration request, back out
-	 * the changes and report the error.
-	 */
+	 
 	ret = t4_link_l1cfg(pi->adapter, pi->adapter->mbox, pi->tx_chan, lc);
 	if (ret)
 		*lc = old_lc;
@@ -759,7 +723,7 @@ static int set_link_ksettings(struct net_device *dev,
 	return ret;
 }
 
-/* Translate the Firmware FEC value into the ethtool value. */
+ 
 static inline unsigned int fwcap_to_eth_fec(unsigned int fw_fec)
 {
 	unsigned int eth_fec = 0;
@@ -769,14 +733,14 @@ static inline unsigned int fwcap_to_eth_fec(unsigned int fw_fec)
 	if (fw_fec & FW_PORT_CAP32_FEC_BASER_RS)
 		eth_fec |= ETHTOOL_FEC_BASER;
 
-	/* if nothing is set, then FEC is off */
+	 
 	if (!eth_fec)
 		eth_fec = ETHTOOL_FEC_OFF;
 
 	return eth_fec;
 }
 
-/* Translate Common Code FEC value into ethtool value. */
+ 
 static inline unsigned int cc_to_eth_fec(unsigned int cc_fec)
 {
 	unsigned int eth_fec = 0;
@@ -788,14 +752,14 @@ static inline unsigned int cc_to_eth_fec(unsigned int cc_fec)
 	if (cc_fec & FEC_BASER_RS)
 		eth_fec |= ETHTOOL_FEC_BASER;
 
-	/* if nothing is set, then FEC is off */
+	 
 	if (!eth_fec)
 		eth_fec = ETHTOOL_FEC_OFF;
 
 	return eth_fec;
 }
 
-/* Translate ethtool FEC value into Common Code value. */
+ 
 static inline unsigned int eth_to_cc_fec(unsigned int eth_fec)
 {
 	unsigned int cc_fec = 0;
@@ -818,17 +782,12 @@ static int get_fecparam(struct net_device *dev, struct ethtool_fecparam *fec)
 	const struct port_info *pi = netdev_priv(dev);
 	const struct link_config *lc = &pi->link_cfg;
 
-	/* Translate the Firmware FEC Support into the ethtool value.  We
-	 * always support IEEE 802.3 "automatic" selection of Link FEC type if
-	 * any FEC is supported.
-	 */
+	 
 	fec->fec = fwcap_to_eth_fec(lc->pcaps);
 	if (fec->fec != ETHTOOL_FEC_OFF)
 		fec->fec |= ETHTOOL_FEC_AUTO;
 
-	/* Translate the current internal FEC parameters into the
-	 * ethtool values.
-	 */
+	 
 	fec->active_fec = cc_to_eth_fec(lc->fec);
 
 	return 0;
@@ -841,14 +800,10 @@ static int set_fecparam(struct net_device *dev, struct ethtool_fecparam *fec)
 	struct link_config old_lc;
 	int ret;
 
-	/* Save old Link Configuration in case the L1 Configure below
-	 * fails.
-	 */
+	 
 	old_lc = *lc;
 
-	/* Try to perform the L1 Configure and return the result of that
-	 * effort.  If it fails, revert the attempted change.
-	 */
+	 
 	lc->requested_fec = eth_to_cc_fec(fec->fec);
 	ret = t4_link_l1cfg(pi->adapter, pi->adapter->mbox,
 			    pi->tx_chan, lc);
@@ -935,14 +890,7 @@ static int set_sge_param(struct net_device *dev, struct ethtool_ringparam *e,
 	return 0;
 }
 
-/**
- * set_rx_intr_params - set a net devices's RX interrupt holdoff paramete!
- * @dev: the network device
- * @us: the hold-off time in us, or 0 to disable timer
- * @cnt: the hold-off packet count, or 0 to disable counter
- *
- * Set the RX interrupt hold-off parameters for a network device.
- */
+ 
 static int set_rx_intr_params(struct net_device *dev,
 			      unsigned int us, unsigned int cnt)
 {
@@ -981,9 +929,7 @@ static int get_adaptive_rx_setting(struct net_device *dev)
 	return q->rspq.adaptive_rx;
 }
 
-/* Return the current global Adapter SGE Doorbell Queue Timer Tick for all
- * Ethernet TX Queues.
- */
+ 
 static int get_dbqtimer_tick(struct net_device *dev)
 {
 	struct port_info *pi = netdev_priv(dev);
@@ -995,9 +941,7 @@ static int get_dbqtimer_tick(struct net_device *dev)
 	return adap->sge.dbqtimer_tick;
 }
 
-/* Return the SGE Doorbell Queue Timer Value for the Ethernet TX Queues
- * associated with a Network Device.
- */
+ 
 static int get_dbqtimer(struct net_device *dev)
 {
 	struct port_info *pi = netdev_priv(dev);
@@ -1009,17 +953,11 @@ static int get_dbqtimer(struct net_device *dev)
 	if (!(adap->flags & CXGB4_SGE_DBQ_TIMER))
 		return 0;
 
-	/* all of the TX Queues use the same Timer Index */
+	 
 	return adap->sge.dbqtimer_val[txq->dbqtimerix];
 }
 
-/* Set the global Adapter SGE Doorbell Queue Timer Tick for all Ethernet TX
- * Queues.  This is the fundamental "Tick" that sets the scale of values which
- * can be used.  Individual Ethernet TX Queues index into a relatively small
- * array of Tick Multipliers.  Changing the base Tick will thus change all of
- * the resulting Timer Values associated with those multipliers for all
- * Ethernet TX Queues.
- */
+ 
 static int set_dbqtimer_tick(struct net_device *dev, int usecs)
 {
 	struct port_info *pi = netdev_priv(dev);
@@ -1031,11 +969,11 @@ static int set_dbqtimer_tick(struct net_device *dev, int usecs)
 	if (!(adap->flags & CXGB4_SGE_DBQ_TIMER))
 		return 0;
 
-	/* return early if it's the same Timer Tick we're already using */
+	 
 	if (s->dbqtimer_tick == usecs)
 		return 0;
 
-	/* attempt to set the new Timer Tick value */
+	 
 	param = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
 		 FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_DBQ_TIMERTICK));
 	val = usecs;
@@ -1044,16 +982,13 @@ static int set_dbqtimer_tick(struct net_device *dev, int usecs)
 		return ret;
 	s->dbqtimer_tick = usecs;
 
-	/* if successful, reread resulting dependent Timer values */
+	 
 	ret = t4_read_sge_dbqtimers(adap, ARRAY_SIZE(s->dbqtimer_val),
 				    s->dbqtimer_val);
 	return ret;
 }
 
-/* Set the SGE Doorbell Queue Timer Value for the Ethernet TX Queues
- * associated with a Network Device.  There is a relatively small array of
- * possible Timer Values so we need to pick the closest value available.
- */
+ 
 static int set_dbqtimer(struct net_device *dev, int usecs)
 {
 	int qix, timerix, min_timerix, delta, min_delta;
@@ -1067,9 +1002,7 @@ static int set_dbqtimer(struct net_device *dev, int usecs)
 	if (!(adap->flags & CXGB4_SGE_DBQ_TIMER))
 		return 0;
 
-	/* Find the SGE Doorbell Timer Value that's closest to the requested
-	 * value.
-	 */
+	 
 	min_delta = INT_MAX;
 	min_timerix = 0;
 	for (timerix = 0; timerix < ARRAY_SIZE(s->dbqtimer_val); timerix++) {
@@ -1082,10 +1015,7 @@ static int set_dbqtimer(struct net_device *dev, int usecs)
 		}
 	}
 
-	/* Return early if it's the same Timer Index we're already using.
-	 * We use the same Timer Index for all of the TX Queues for an
-	 * interface so it's only necessary to check the first one.
-	 */
+	 
 	txq = &s->ethtxq[pi->first_qset];
 	if (txq->dbqtimerix == min_timerix)
 		return 0;
@@ -1107,16 +1037,7 @@ static int set_dbqtimer(struct net_device *dev, int usecs)
 	return 0;
 }
 
-/* Set the global Adapter SGE Doorbell Queue Timer Tick for all Ethernet TX
- * Queues and the Timer Value for the Ethernet TX Queues associated with a
- * Network Device.  Since changing the global Tick changes all of the
- * available Timer Values, we need to do this first before selecting the
- * resulting closest Timer Value.  Moreover, since the Tick is global,
- * changing it affects the Timer Values for all Network Devices on the
- * adapter.  So, before changing the Tick, we grab all of the current Timer
- * Values for other Network Devices on this Adapter and then attempt to select
- * new Timer Values which are close to the old values ...
- */
+ 
 static int set_dbqtimer_tickval(struct net_device *dev,
 				int tick_usecs, int timer_usecs)
 {
@@ -1126,21 +1047,19 @@ static int set_dbqtimer_tickval(struct net_device *dev,
 	unsigned int port;
 	int ret;
 
-	/* Grab the other adapter Network Interface current timers and fill in
-	 * the new one for this Network Interface.
-	 */
+	 
 	for_each_port(adap, port)
 		if (port == pi->port_id)
 			timer[port] = timer_usecs;
 		else
 			timer[port] = get_dbqtimer(adap->port[port]);
 
-	/* Change the global Tick first ... */
+	 
 	ret = set_dbqtimer_tick(dev, tick_usecs);
 	if (ret)
 		return ret;
 
-	/* ... and then set all of the Network Interface Timer Values ... */
+	 
 	for_each_port(adap, port) {
 		ret = set_dbqtimer(adap->port[port], timer[port]);
 		if (ret)
@@ -1186,8 +1105,7 @@ static int get_coalesce(struct net_device *dev, struct ethtool_coalesce *c,
 	return 0;
 }
 
-/* The next two routines implement eeprom read/write from physical addresses.
- */
+ 
 static int eeprom_rd_phys(struct adapter *adap, unsigned int phys_addr, u32 *v)
 {
 	int vaddr = t4_eeprom_ptov(phys_addr, adap->pf, EEPROMPFSIZE);
@@ -1251,8 +1169,7 @@ static int set_eeprom(struct net_device *dev, struct ethtool_eeprom *eeprom,
 	}
 
 	if (aligned_offset != eeprom->offset || aligned_len != eeprom->len) {
-		/* RMW possibly needed for first or last words.
-		 */
+		 
 		buf = kvzalloc(aligned_len, GFP_KERNEL);
 		if (!buf)
 			return -ENOMEM;
@@ -1345,11 +1262,7 @@ static int cxgb4_ethtool_flash_phy(struct net_device *netdev,
 		return ret;
 	}
 
-	/* We have to RESET the chip/firmware because we need the
-	 * chip in uninitialized state for loading new PHY image.
-	 * Otherwise, the running firmware will only store the PHY
-	 * image in local RAM which will be lost after next reset.
-	 */
+	 
 	ret = t4_fw_reset(adap, adap->mbox, PIORSTMODE_F | PIORST_F);
 	if (ret < 0) {
 		dev_err(adap->pdev_dev,
@@ -1375,11 +1288,7 @@ static int cxgb4_ethtool_flash_fw(struct net_device *netdev,
 	unsigned int mbox = PCIE_FW_MASTER_M + 1;
 	int ret;
 
-	/* If the adapter has been fully initialized then we'll go ahead and
-	 * try to get the firmware's cooperation in upgrading to the new
-	 * firmware image otherwise we'll try to do the entire job from the
-	 * host ... and we always "force" the operation in this path.
-	 */
+	 
 	if (adap->flags & CXGB4_FULL_INIT_DONE)
 		mbox = adap->mbox;
 
@@ -1509,7 +1418,7 @@ static int set_flash(struct net_device *netdev, struct ethtool_flash *ef)
 	master = PCIE_FW_MASTER_G(pcie_fw);
 	if (pcie_fw & PCIE_FW_MASTER_VLD_F)
 		master_vld = 1;
-	/* if csiostor is the master return */
+	 
 	if (master_vld && (master != adap->pf)) {
 		dev_warn(adap->pdev_dev,
 			 "cxgb4 driver needs to be loaded as MASTER to support FW flash\n");
@@ -1608,16 +1517,14 @@ static int set_rss_table(struct net_device *dev, const u32 *p, const u8 *key,
 	unsigned int i;
 	struct port_info *pi = netdev_priv(dev);
 
-	/* We require at least one supported parameter to be changed and no
-	 * change in any of the unsupported parameters
-	 */
+	 
 	if (key ||
 	    (hfunc != ETH_RSS_HASH_NO_CHANGE && hfunc != ETH_RSS_HASH_TOP))
 		return -EOPNOTSUPP;
 	if (!p)
 		return 0;
 
-	/* Interface must be brought up atleast once */
+	 
 	if (pi->adapter->flags & CXGB4_FULL_INIT_DONE) {
 		for (i = 0; i < pi->rss_size; i++)
 			pi->rss[i] = p[i];
@@ -1713,7 +1620,7 @@ static int cxgb4_ntuple_get_filter(struct net_device *dev,
 	if (!(adap->flags & CXGB4_FULL_INIT_DONE))
 		return -EAGAIN;
 
-	/* Check for maximum filter range */
+	 
 	if (!adap->ethtool_filters)
 		return -EOPNOTSUPP;
 
@@ -1725,7 +1632,7 @@ static int cxgb4_ntuple_get_filter(struct net_device *dev,
 
 	ftid = adap->ethtool_filters->port[pi->port_id].loc_array[loc];
 
-	/* Fetch filter_entry */
+	 
 	f = cxgb4_get_filter_entry(adap, ftid);
 
 	cxgb4_fill_filter_rule(&cmd->fs, &f->fs);
@@ -1826,7 +1733,7 @@ static int cxgb4_ntuple_del_filter(struct net_device *dev,
 	int ret;
 
 	if (!(adapter->flags & CXGB4_FULL_INIT_DONE))
-		return -EAGAIN;  /* can still change nfilters */
+		return -EAGAIN;   
 
 	if (!adapter->ethtool_filters)
 		return -EOPNOTSUPP;
@@ -1862,7 +1769,7 @@ err:
 	return ret;
 }
 
-/* Add Ethtool n-tuple filters. */
+ 
 static int cxgb4_ntuple_set_filter(struct net_device *netdev,
 				   struct ethtool_rxnfc *cmd)
 {
@@ -1876,7 +1783,7 @@ static int cxgb4_ntuple_set_filter(struct net_device *netdev,
 	int ret;
 
 	if (!(adapter->flags & CXGB4_FULL_INIT_DONE))
-		return -EAGAIN;  /* can still change nfilters */
+		return -EAGAIN;   
 
 	if (!adapter->ethtool_filters)
 		return -EOPNOTSUPP;
@@ -1995,9 +1902,7 @@ static int get_dump_data(struct net_device *dev, struct ethtool_dump *eth_dump,
 
 static bool cxgb4_fw_mod_type_info_available(unsigned int fw_mod_type)
 {
-	/* Read port module EEPROM as long as it is plugged-in and
-	 * safe to read.
-	 */
+	 
 	return (fw_mod_type != FW_PORT_MOD_TYPE_NONE &&
 		fw_mod_type != FW_PORT_MOD_TYPE_ERROR);
 }
@@ -2048,9 +1953,7 @@ static int cxgb4_get_module_info(struct net_device *dev,
 		ret = t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
 				I2C_DEV_ADDR_A0, SFF_REV_ADDR,
 				SFF_REV_LEN, &sff_rev);
-		/* For QSFP type ports, revision value >= 3
-		 * means the SFP is 8636 compliant.
-		 */
+		 
 		if (ret)
 			return ret;
 		if (sff_rev >= 0x3) {
@@ -2081,21 +1984,19 @@ static int cxgb4_get_module_eeprom(struct net_device *dev,
 		return t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
 				 I2C_DEV_ADDR_A0, offset, len, data);
 
-	/* offset + len spans 0xa0 and 0xa1 pages */
+	 
 	if (offset <= I2C_PAGE_SIZE) {
-		/* read 0xa0 page */
+		 
 		len = I2C_PAGE_SIZE - offset;
 		ret =  t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan,
 				 I2C_DEV_ADDR_A0, offset, len, data);
 		if (ret)
 			return ret;
 		offset = I2C_PAGE_SIZE;
-		/* Remaining bytes to be read from second page =
-		 * Total length - bytes read from first page
-		 */
+		 
 		len = eprom->len - len;
 	}
-	/* Read additional optical diagnostics from page 0xa2 if supported */
+	 
 	return t4_i2c_rd(adapter, adapter->mbox, pi->tx_chan, I2C_DEV_ADDR_A2,
 			 offset, len, &data[eprom->len - len]);
 }
@@ -2108,12 +2009,7 @@ static u32 cxgb4_get_priv_flags(struct net_device *netdev)
 	return (adapter->eth_flags | pi->eth_flags);
 }
 
-/**
- *	set_flags - set/unset specified flags if passed in new_flags
- *	@cur_flags: pointer to current flags
- *	@new_flags: new incoming flags
- *	@flags: set of flags to set/unset
- */
+ 
 static inline void set_flags(u32 *cur_flags, u32 new_flags, u32 flags)
 {
 	*cur_flags = (*cur_flags & ~flags) | (new_flags & flags);

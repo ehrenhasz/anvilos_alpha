@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * emac-rockchip.c - Rockchip EMAC specific glue layer
- *
- * Copyright (C) 2014 Romain Perier <romain.perier@gmail.com>
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/mfd/syscon.h>
@@ -85,7 +81,7 @@ static const struct of_device_id emac_rockchip_dt_ids[] = {
 		.compatible = "rockchip,rk3188-emac",
 		.data = &emac_rk3188_emac_data,
 	},
-	{ /* Sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, emac_rockchip_dt_ids);
@@ -117,7 +113,7 @@ static int emac_rockchip_probe(struct platform_device *pdev)
 	if (err)
 		goto out_netdev;
 
-	/* RK3036/RK3066/RK3188 SoCs only support RMII */
+	 
 	if (interface != PHY_INTERFACE_MODE_RMII) {
 		dev_err(dev, "unsupported phy interface mode %d\n", interface);
 		err = -ENOTSUPP;
@@ -158,7 +154,7 @@ static int emac_rockchip_probe(struct platform_device *pdev)
 		goto out_netdev;
 	}
 
-	/* Optional regulator for PHY */
+	 
 	priv->regulator = devm_regulator_get_optional(dev, "phy");
 	if (IS_ERR(priv->regulator)) {
 		if (PTR_ERR(priv->regulator) == -EPROBE_DEFER) {
@@ -177,10 +173,10 @@ static int emac_rockchip_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Set speed 100M */
+	 
 	data = (1 << (priv->soc_data->grf_speed_offset + 16)) |
 	       (1 << priv->soc_data->grf_speed_offset);
-	/* Set RMII mode */
+	 
 	data |= (1 << (priv->soc_data->grf_mode_offset + 16)) |
 		(0 << priv->soc_data->grf_mode_offset);
 
@@ -191,7 +187,7 @@ static int emac_rockchip_probe(struct platform_device *pdev)
 		goto out_regulator_disable;
 	}
 
-	/* RMII interface needs always a rate of 50MHz */
+	 
 	err = clk_set_rate(priv->refclk, 50000000);
 	if (err) {
 		dev_err(dev,
@@ -214,7 +210,7 @@ static int emac_rockchip_probe(struct platform_device *pdev)
 			goto out_regulator_disable;
 		}
 
-		/* RMII TX/RX needs always a rate of 25MHz */
+		 
 		err = clk_set_rate(priv->macclk, 25000000);
 		if (err) {
 			dev_err(dev,

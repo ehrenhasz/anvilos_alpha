@@ -1,19 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2011 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 
 #ifndef __HAL_PHY_RF_8723B_H__
 #define __HAL_PHY_RF_8723B_H__
 
-/*--------------------------Define Parameters-------------------------------*/
-#define	IQK_DELAY_TIME_8723B		20		/* ms */
+ 
+#define	IQK_DELAY_TIME_8723B		20		 
 #define IQK_DEFERRED_TIME_8723B		4
 #define	index_mapping_NUM_8723B		15
 #define AVG_THERMAL_NUM_8723B		4
-#define	RF_T_METER_8723B					0x42	/*  */
+#define	RF_T_METER_8723B					0x42	 
 
 
 void ConfigureTxpowerTrack_8723B(struct txpwrtrack_cfg *pConfig);
@@ -32,7 +28,7 @@ void ODM_TxPwrTrackSetPwr_8723B(
 	u8 ChannelMappedIndex
 );
 
-/* 1 7. IQK */
+ 
 void PHY_IQCalibrate_8723B(
 	struct adapter *Adapter,
 	bool bReCovery,
@@ -43,14 +39,14 @@ void PHY_IQCalibrate_8723B(
 
 void ODM_SetIQCbyRFpath(struct dm_odm_t *pDM_Odm, u32 RFpath);
 
-/*  */
-/*  LC calibrate */
-/*  */
+ 
+ 
+ 
 void PHY_LCCalibrate_8723B(struct dm_odm_t *pDM_Odm);
 
-/*  */
-/*  AP calibrate */
-/*  */
+ 
+ 
+ 
 void PHY_DigitalPredistortion_8723B(struct adapter *padapter);
 
 
@@ -72,4 +68,4 @@ void _PHY_MACSettingCalibration_8723B(
 	struct adapter *padapter, u32 *MACReg, u32 *MACBackup
 );
 
-#endif /*  #ifndef __HAL_PHY_RF_8188E_H__ */
+#endif  

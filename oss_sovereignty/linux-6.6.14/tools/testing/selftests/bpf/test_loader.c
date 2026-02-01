@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (c) 2022 Meta Platforms, Inc. and affiliates. */
+
+ 
 #include <linux/capability.h>
 #include <stdlib.h>
 #include <test_progs.h>
@@ -28,7 +28,7 @@
 #define TEST_TAG_AUXILIARY "comment:test_auxiliary"
 #define TEST_TAG_AUXILIARY_UNPRIV "comment:test_auxiliary_unpriv"
 
-/* Warning: duplicated in bpf_misc.h */
+ 
 #define POINTER_VALUE	0xcafe4all
 #define TEST_DATA_LEN	64
 
@@ -153,10 +153,7 @@ static int parse_retval(const char *str, int *val, const char *name)
 	return parse_int(str, val, name);
 }
 
-/* Uses btf_decl_tag attributes to describe the expected test
- * behavior, see bpf_misc.h for detailed description of each attribute
- * and attribute combinations.
- */
+ 
 static int parse_test_spec(struct test_loader *tester,
 			   struct bpf_object *obj,
 			   struct bpf_program *prog,
@@ -265,7 +262,7 @@ static int parse_test_spec(struct test_loader *tester,
 				spec->prog_flags |= BPF_F_SLEEPABLE;
 			} else if (strcmp(val, "BPF_F_XDP_HAS_FRAGS") == 0) {
 				spec->prog_flags |= BPF_F_XDP_HAS_FRAGS;
-			} else /* assume numeric value */ {
+			} else   {
 				err = parse_int(val, &tmp, "test prog flags");
 				if (err)
 					goto cleanup;
@@ -352,10 +349,7 @@ static void prepare_case(struct test_loader *tester,
 
 	bpf_program__set_log_buf(prog, tester->log_buf, tester->log_buf_sz);
 
-	/* Make sure we set at least minimal log level, unless test requires
-	 * even higher level already. Make sure to preserve independent log
-	 * level 4 (verifier stats), though.
-	 */
+	 
 	if ((spec->log_level & 3) < min_log_level)
 		bpf_program__set_log_level(prog, (spec->log_level & 4) | min_log_level);
 	else
@@ -391,9 +385,9 @@ static void validate_case(struct test_loader *tester,
 
 		match = strstr(tester->log_buf + tester->next_match_pos, expect_msg);
 		if (!ASSERT_OK_PTR(match, "expect_msg")) {
-			/* if we are in verbose mode, we've already emitted log */
+			 
 			if (env.verbosity == VERBOSE_NONE)
-				emit_verifier_log(tester->log_buf, true /*force*/);
+				emit_verifier_log(tester->log_buf, true  );
 			for (j = 0; j < i; j++)
 				fprintf(stderr,
 					"MATCHED  MSG: '%s'\n", subspec->expect_msgs[j]);
@@ -525,9 +519,7 @@ static bool should_do_test_run(struct test_spec *spec, struct test_subspec *subs
 	return true;
 }
 
-/* this function is forced noinline and has short generic name to look better
- * in test_progs output (in case of a failure)
- */
+ 
 static noinline
 void run_subtest(struct test_loader *tester,
 		 struct bpf_object_open_opts *open_opts,
@@ -562,7 +554,7 @@ void run_subtest(struct test_loader *tester,
 	}
 
 	tobj = bpf_object__open_mem(obj_bytes, obj_byte_cnt, open_opts);
-	if (!ASSERT_OK_PTR(tobj, "obj_open_mem")) /* shouldn't happen */
+	if (!ASSERT_OK_PTR(tobj, "obj_open_mem"))  
 		goto subtest_cleanup;
 
 	i = 0;
@@ -586,34 +578,28 @@ void run_subtest(struct test_loader *tester,
 
 	prepare_case(tester, spec, tobj, tprog);
 
-	/* By default bpf_object__load() automatically creates all
-	 * maps declared in the skeleton. Some map types are only
-	 * allowed in priv mode. Disable autoload for such maps in
-	 * unpriv mode.
-	 */
+	 
 	bpf_object__for_each_map(map, tobj)
 		bpf_map__set_autocreate(map, !unpriv || is_unpriv_capable_map(map));
 
 	err = bpf_object__load(tobj);
 	if (subspec->expect_failure) {
 		if (!ASSERT_ERR(err, "unexpected_load_success")) {
-			emit_verifier_log(tester->log_buf, false /*force*/);
+			emit_verifier_log(tester->log_buf, false  );
 			goto tobj_cleanup;
 		}
 	} else {
 		if (!ASSERT_OK(err, "unexpected_load_failure")) {
-			emit_verifier_log(tester->log_buf, true /*force*/);
+			emit_verifier_log(tester->log_buf, true  );
 			goto tobj_cleanup;
 		}
 	}
 
-	emit_verifier_log(tester->log_buf, false /*force*/);
+	emit_verifier_log(tester->log_buf, false  );
 	validate_case(tester, subspec, tobj, tprog, err);
 
 	if (should_do_test_run(spec, subspec)) {
-		/* For some reason test_verifier executes programs
-		 * with all capabilities restored. Do the same here.
-		 */
+		 
 		if (restore_capabilities(&caps))
 			goto tobj_cleanup;
 
@@ -652,7 +638,7 @@ static void process_subtest(struct test_loader *tester,
 	size_t obj_byte_cnt;
 
 	if (tester_init(tester) < 0)
-		return; /* failed to initialize tester */
+		return;  
 
 	obj_bytes = elf_bytes_factory(&obj_byte_cnt);
 	obj = bpf_object__open_mem(obj_bytes, obj_byte_cnt, &open_opts);
@@ -669,7 +655,7 @@ static void process_subtest(struct test_loader *tester,
 
 	i = 0;
 	bpf_object__for_each_program(prog, obj) {
-		/* ignore tests for which  we can't derive test specification */
+		 
 		err = parse_test_spec(tester, obj, prog, &specs[i++]);
 		if (err)
 			PRINT_FAIL("Can't parse test spec for program '%s'\n",
@@ -702,6 +688,6 @@ void test_loader__run_subtests(struct test_loader *tester,
 			       const char *skel_name,
 			       skel_elf_bytes_fn elf_bytes_factory)
 {
-	/* see comment in run_subtest() for why we do this function nesting */
+	 
 	process_subtest(tester, skel_name, elf_bytes_factory);
 }

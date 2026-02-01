@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <drm/drm_crtc.h>
 #include <drm/drm_probe_helper.h>
@@ -59,9 +56,9 @@ static void mdp4_dtv_encoder_mode_set(struct drm_encoder *encoder,
 		ctrl_pol |= MDP4_DTV_CTRL_POLARITY_HSYNC_LOW;
 	if (mode->flags & DRM_MODE_FLAG_NVSYNC)
 		ctrl_pol |= MDP4_DTV_CTRL_POLARITY_VSYNC_LOW;
-	/* probably need to get DATA_EN polarity from panel.. */
+	 
 
-	dtv_hsync_skew = 0;  /* get this from panel? */
+	dtv_hsync_skew = 0;   
 
 	hsync_start_x = (mode->htotal - mode->hsync_start);
 	hsync_end_x = mode->htotal - (mode->hsync_start - mode->hdisplay) - 1;
@@ -104,14 +101,7 @@ static void mdp4_dtv_encoder_disable(struct drm_encoder *encoder)
 
 	mdp4_write(mdp4_kms, REG_MDP4_DTV_ENABLE, 0);
 
-	/*
-	 * Wait for a vsync so we know the ENABLE=0 latched before
-	 * the (connector) source of the vsync's gets disabled,
-	 * otherwise we end up in a funny state if we re-enable
-	 * before the disable latches, which results that some of
-	 * the settings changes for the new modeset (like new
-	 * scanout buffer) don't latch properly..
-	 */
+	 
 	mdp_irq_wait(&mdp4_kms->base, MDP4_IRQ_EXTERNAL_VSYNC);
 
 	clk_disable_unprepare(mdp4_dtv_encoder->hdmi_clk);
@@ -170,7 +160,7 @@ long mdp4_dtv_round_pixclk(struct drm_encoder *encoder, unsigned long rate)
 	return clk_round_rate(mdp4_dtv_encoder->mdp_clk, rate);
 }
 
-/* initialize encoder */
+ 
 struct drm_encoder *mdp4_dtv_encoder_init(struct drm_device *dev)
 {
 	struct drm_encoder *encoder = NULL;

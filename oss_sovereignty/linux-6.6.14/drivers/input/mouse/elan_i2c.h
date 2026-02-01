@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Elan I2C/SMBus Touchpad driver
- *
- * Copyright (c) 2013 ELAN Microelectronics Corp.
- *
- * Author: 林政維 (Duson Lin) <dusonlin@emc.com.tw>
- *
- * Based on cyapa driver:
- * copyright (c) 2011-2012 Cypress Semiconductor, Inc.
- * copyright (c) 2011-2012 Google, Inc.
- *
- * Trademarks are the property of their respective owners.
- */
+ 
+ 
 
 #ifndef _ELAN_I2C_H
 #define _ELAN_I2C_H
@@ -31,20 +19,20 @@
 #define ETP_REPORT_ID		0x5D
 #define ETP_TP_REPORT_ID	0x5E
 #define ETP_TP_REPORT_ID2	0x5F
-#define ETP_REPORT_ID2		0x60	/* High precision report */
+#define ETP_REPORT_ID2		0x60	 
 
 #define ETP_REPORT_ID_OFFSET	2
 #define ETP_TOUCH_INFO_OFFSET	3
 #define ETP_FINGER_DATA_OFFSET	4
 #define ETP_HOVER_INFO_OFFSET	30
-#define ETP_MK_DATA_OFFSET	33	/* For high precision reports */
+#define ETP_MK_DATA_OFFSET	33	 
 
 #define ETP_MAX_REPORT_LEN	39
 
 #define ETP_MAX_FINGERS		5
 #define ETP_FINGER_DATA_LEN	5
 
-/* IAP Firmware handling */
+ 
 #define ETP_PRODUCT_ID_FORMAT_STRING	"%d.0"
 #define ETP_FW_NAME		"elan_i2c_" ETP_PRODUCT_ID_FORMAT_STRING ".bin"
 #define ETP_IAP_START_ADDR	0x0083
@@ -118,4 +106,4 @@ struct elan_transport_ops {
 
 extern const struct elan_transport_ops elan_smbus_ops, elan_i2c_ops;
 
-#endif /* _ELAN_I2C_H */
+#endif  

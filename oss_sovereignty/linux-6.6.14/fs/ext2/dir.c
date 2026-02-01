@@ -1,26 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/ext2/dir.c
- *
- * Copyright (C) 1992, 1993, 1994, 1995
- * Remy Card (card@masi.ibp.fr)
- * Laboratoire MASI - Institut Blaise Pascal
- * Universite Pierre et Marie Curie (Paris VI)
- *
- *  from
- *
- *  linux/fs/minix/dir.c
- *
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *
- *  ext2 directory handling functions
- *
- *  Big-endian to little-endian byte-swapping/bitmaps by
- *        David S. Miller (davem@caip.rutgers.edu), 1995
- *
- * All code that works with directory layout had been switched to pagecache
- * and moved here. AV
- */
+
+ 
 
 #include "ext2.h"
 #include <linux/buffer_head.h>
@@ -30,11 +9,7 @@
 
 typedef struct ext2_dir_entry_2 ext2_dirent;
 
-/*
- * Tests against MAX_REC_LEN etc were put in place for 64k block
- * sizes; if that is not possible on this arch, we can skip
- * those tests and speed things up.
- */
+ 
 static inline unsigned ext2_rec_len_from_disk(__le16 dlen)
 {
 	unsigned len = le16_to_cpu(dlen);
@@ -57,19 +32,13 @@ static inline __le16 ext2_rec_len_to_disk(unsigned len)
 	return cpu_to_le16(len);
 }
 
-/*
- * ext2 uses block-sized chunks. Arguably, sector-sized ones would be
- * more robust, but we have what we have
- */
+ 
 static inline unsigned ext2_chunk_size(struct inode *inode)
 {
 	return inode->i_sb->s_blocksize;
 }
 
-/*
- * Return the offset into page `page_nr' of the last valid
- * byte in that page, plus one.
- */
+ 
 static unsigned
 ext2_last_byte(struct inode *inode, unsigned long page_nr)
 {
@@ -135,7 +104,7 @@ out:
 	SetPageChecked(page);
 	return true;
 
-	/* Too bad, we had an error */
+	 
 
 Ebadsize:
 	if (!quiet)
@@ -179,13 +148,7 @@ fail:
 	return false;
 }
 
-/*
- * Calls to ext2_get_page()/ext2_put_page() must be nested according to the
- * rules documented in kmap_local_page()/kunmap_local().
- *
- * NOTE: ext2_find_entry() and ext2_dotdot() act as a call to ext2_get_page()
- * and should be treated as a call to ext2_get_page() for nesting purposes.
- */
+ 
 static void *ext2_get_page(struct inode *dir, unsigned long n,
 				   int quiet, struct page **page)
 {
@@ -208,11 +171,7 @@ fail:
 	return ERR_PTR(-EIO);
 }
 
-/*
- * NOTE! unlike strncmp, ext2_match returns 1 for success, 0 for failure.
- *
- * len <= EXT2_NAME_LEN and de != NULL are guaranteed by caller.
- */
+ 
 static inline int ext2_match (int len, const char * const name,
 					struct ext2_dir_entry_2 * de)
 {
@@ -223,9 +182,7 @@ static inline int ext2_match (int len, const char * const name,
 	return !memcmp(name, de->name, len);
 }
 
-/*
- * p is at least 6 bytes before the end of page
- */
+ 
 static inline ext2_dirent *ext2_next_entry(ext2_dirent *p)
 {
 	return (ext2_dirent *)((char *)p +
@@ -322,22 +279,7 @@ ext2_readdir(struct file *file, struct dir_context *ctx)
 	return 0;
 }
 
-/*
- *	ext2_find_entry()
- *
- * finds an entry in the specified directory with the wanted name. It
- * returns the page in which the entry was found (as a parameter - res_page),
- * and the entry itself. Page is returned mapped and unlocked.
- * Entry is guaranteed to be valid.
- *
- * On Success ext2_put_page() should be called on *res_page.
- *
- * NOTE: Calls to ext2_get_page()/ext2_put_page() must be nested according to
- * the rules documented in kmap_local_page()/kunmap_local().
- *
- * ext2_find_entry() and ext2_dotdot() act as a call to ext2_get_page() and
- * should be treated as a call to ext2_get_page() for nesting purposes.
- */
+ 
 struct ext2_dir_entry_2 *ext2_find_entry (struct inode *dir,
 			const struct qstr *child, struct page **res_page)
 {
@@ -353,7 +295,7 @@ struct ext2_dir_entry_2 *ext2_find_entry (struct inode *dir,
 	if (npages == 0)
 		goto out;
 
-	/* OFFSET_CACHE */
+	 
 	*res_page = NULL;
 
 	start = ei->i_dir_start_lookup;
@@ -382,7 +324,7 @@ struct ext2_dir_entry_2 *ext2_find_entry (struct inode *dir,
 
 		if (++n >= npages)
 			n = 0;
-		/* next page is past the blocks we've got */
+		 
 		if (unlikely(n > (dir->i_blocks >> (PAGE_SHIFT - 9)))) {
 			ext2_error(dir->i_sb, __func__,
 				"dir %lu size %lld exceeds block count %llu",
@@ -400,18 +342,7 @@ found:
 	return de;
 }
 
-/*
- * Return the '..' directory entry and the page in which the entry was found
- * (as a parameter - p).
- *
- * On Success ext2_put_page() should be called on *p.
- *
- * NOTE: Calls to ext2_get_page()/ext2_put_page() must be nested according to
- * the rules documented in kmap_local_page()/kunmap_local().
- *
- * ext2_find_entry() and ext2_dotdot() act as a call to ext2_get_page() and
- * should be treated as a call to ext2_get_page() for nesting purposes.
- */
+ 
 struct ext2_dir_entry_2 *ext2_dotdot(struct inode *dir, struct page **p)
 {
 	ext2_dirent *de = ext2_get_page(dir, 0, 0, p);
@@ -474,9 +405,7 @@ int ext2_set_link(struct inode *dir, struct ext2_dir_entry_2 *de,
 	return ext2_handle_dirsync(dir);
 }
 
-/*
- *	Parent is locked.
- */
+ 
 int ext2_add_link (struct dentry *dentry, struct inode *inode)
 {
 	struct inode *dir = d_inode(dentry->d_parent);
@@ -492,11 +421,7 @@ int ext2_add_link (struct dentry *dentry, struct inode *inode)
 	loff_t pos;
 	int err;
 
-	/*
-	 * We take care of directory expansion in the same loop.
-	 * This code plays outside i_size, so it locks the page
-	 * to protect that region.
-	 */
+	 
 	for (n = 0; n <= npages; n++) {
 		char *kaddr = ext2_get_page(dir, n, 0, &page);
 		char *dir_end;
@@ -509,7 +434,7 @@ int ext2_add_link (struct dentry *dentry, struct inode *inode)
 		kaddr += PAGE_SIZE - reclen;
 		while ((char *)de <= kaddr) {
 			if ((char *)de == dir_end) {
-				/* We hit i_size */
+				 
 				name_len = 0;
 				rec_len = chunk_size;
 				de->rec_len = ext2_rec_len_to_disk(chunk_size);
@@ -559,7 +484,7 @@ got_it:
 	EXT2_I(dir)->i_flags &= ~EXT2_BTREE_FL;
 	mark_inode_dirty(dir);
 	err = ext2_handle_dirsync(dir);
-	/* OFFSET_CACHE */
+	 
 out_put:
 	ext2_put_page(page, de);
 	return err;
@@ -568,10 +493,7 @@ out_unlock:
 	goto out_put;
 }
 
-/*
- * ext2_delete_entry deletes a directory entry by merging it with the
- * previous entry. Page is up-to-date.
- */
+ 
 int ext2_delete_entry(struct ext2_dir_entry_2 *dir, struct page *page)
 {
 	struct inode *inode = page->mapping->host;
@@ -612,9 +534,7 @@ int ext2_delete_entry(struct ext2_dir_entry_2 *dir, struct page *page)
 	return ext2_handle_dirsync(inode);
 }
 
-/*
- * Set the first fragment of directory.
- */
+ 
 int ext2_make_empty(struct inode *inode, struct inode *parent)
 {
 	struct page *page = grab_cache_page(inode->i_mapping, 0);
@@ -654,9 +574,7 @@ fail:
 	return err;
 }
 
-/*
- * routine to check that the specified directory is empty (for rmdir)
- */
+ 
 int ext2_empty_dir (struct inode * inode)
 {
 	struct page *page;
@@ -681,7 +599,7 @@ int ext2_empty_dir (struct inode * inode)
 				goto not_empty;
 			}
 			if (de->inode != 0) {
-				/* check for . and .. */
+				 
 				if (de->name[0] != '.')
 					goto not_empty;
 				if (de->name_len > 2)

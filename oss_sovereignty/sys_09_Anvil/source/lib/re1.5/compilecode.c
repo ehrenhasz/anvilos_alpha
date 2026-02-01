@@ -1,10 +1,10 @@
-// Copyright 2014 Paul Sokolovsky.
-// Use of this source code is governed by a BSD-style
-// license that can be found in the LICENSE file.
+
+
+
 
 #include "re1.5.h"
 
-// Matches: DSWdsw
+
 #define MATCH_NAMED_CLASS_CHAR(c) (((c) | 0x20) == 'd' || ((c) | 0x24) == 'w')
 
 #define INSERT_CODE(at, num, pc) \
@@ -33,7 +33,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
         switch (*re) {
         case '\\':
             re++;
-            if (!*re) return NULL; // Trailing backslash
+            if (!*re) return NULL; 
             if (MATCH_NAMED_CLASS_CHAR(*re)) {
                 term = PC;
                 EMIT(PC++, NamedClass);
@@ -63,7 +63,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             } else {
                 EMIT(PC++, Class);
             }
-            PC++; // Skip # of pair byte
+            PC++; 
             prog->len++;
             for (cnt = 0; *re != ']'; re++, cnt++) {
                 char c = *re;
@@ -101,7 +101,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             }
 
             re = _compilecode(re + 1, prog, sizecode);
-            if (re == NULL || *re != ')') return NULL; // error, or no matching paren
+            if (re == NULL || *re != ')') return NULL; 
 
             if (capture) {
                 EMIT(PC++, Save);
@@ -112,7 +112,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             break;
         }
         case '?':
-            if (PC == term) return NULL; // nothing to repeat
+            if (PC == term) return NULL; 
             INSERT_CODE(term, 2, PC);
             if (re[1] == '?') {
                 EMIT(term, RSplit);
@@ -125,7 +125,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             term = PC;
             break;
         case '*':
-            if (PC == term) return NULL; // nothing to repeat
+            if (PC == term) return NULL; 
             INSERT_CODE(term, 2, PC);
             EMIT(PC, Jmp);
             EMIT_CHECKED(PC + 1, REL(PC, term));
@@ -141,7 +141,7 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
             term = PC;
             break;
         case '+':
-            if (PC == term) return NULL; // nothing to repeat
+            if (PC == term) return NULL; 
             if (re[1] == '?') {
                 EMIT(PC, Split);
                 re++;
@@ -187,11 +187,11 @@ static const char *_compilecode(const char *re, ByteProg *prog, int sizecode)
 int re1_5_sizecode(const char *re)
 {
     ByteProg dummyprog = {
-         // Save 0, Save 1, Match; more bytes for "search" (vs "match") prefix code
+         
         .bytelen = 5 + NON_ANCHORED_PREFIX
     };
 
-    if (_compilecode(re, &dummyprog, /*sizecode*/1) == NULL) return -1;
+    if (_compilecode(re, &dummyprog,  1) == NULL) return -1;
 
     return dummyprog.bytelen;
 }
@@ -202,9 +202,9 @@ int re1_5_compilecode(ByteProg *prog, const char *re)
     prog->bytelen = 0;
     prog->sub = 0;
 
-    // Add code to implement non-anchored operation ("search"),
-    // for anchored operation ("match"), this code will be just skipped.
-    // TODO: Implement search in much more efficient manner
+    
+    
+    
     prog->insts[prog->bytelen++] = RSplit;
     prog->insts[prog->bytelen++] = 3;
     prog->insts[prog->bytelen++] = Any;
@@ -216,7 +216,7 @@ int re1_5_compilecode(ByteProg *prog, const char *re)
     prog->insts[prog->bytelen++] = 0;
     prog->len++;
 
-    re = _compilecode(re, prog, /*sizecode*/0);
+    re = _compilecode(re, prog,  0);
     if (re == NULL || *re) return 1;
 
     prog->insts[prog->bytelen++] = Save;

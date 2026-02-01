@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <test_progs.h>
 #include <linux/pkt_cls.h>
@@ -77,7 +77,7 @@ static int test_tc_bpf_api(struct bpf_tc_hook *hook, int fd)
 	if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_hook_create invalid hook = NULL"))
 		return -EINVAL;
 
-	/* hook ifindex = 0 */
+	 
 	ret = bpf_tc_hook_create(&inv_hook);
 	if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_hook_create invalid hook ifindex == 0"))
 		return -EINVAL;
@@ -99,7 +99,7 @@ static int test_tc_bpf_api(struct bpf_tc_hook *hook, int fd)
 	if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_query invalid hook ifindex == 0"))
 		return -EINVAL;
 
-	/* hook ifindex < 0 */
+	 
 	inv_hook.ifindex = -1;
 
 	ret = bpf_tc_hook_create(&inv_hook);
@@ -125,7 +125,7 @@ static int test_tc_bpf_api(struct bpf_tc_hook *hook, int fd)
 
 	inv_hook.ifindex = LO_IFINDEX;
 
-	/* hook.attach_point invalid */
+	 
 	inv_hook.attach_point = 0xabcd;
 	ret = bpf_tc_hook_create(&inv_hook);
 	if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_hook_create invalid hook.attach_point"))
@@ -149,7 +149,7 @@ static int test_tc_bpf_api(struct bpf_tc_hook *hook, int fd)
 
 	inv_hook.attach_point = BPF_TC_INGRESS;
 
-	/* hook.attach_point valid, but parent invalid */
+	 
 	inv_hook.parent = TC_H_MAKE(1UL << 16, 10);
 	ret = bpf_tc_hook_create(&inv_hook);
 	if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_hook_create invalid hook parent"))
@@ -173,9 +173,7 @@ static int test_tc_bpf_api(struct bpf_tc_hook *hook, int fd)
 
 	inv_hook.attach_point = BPF_TC_CUSTOM;
 	inv_hook.parent = 0;
-	/* These return EOPNOTSUPP instead of EINVAL as parent is checked after
-	 * attach_point of the hook.
-	 */
+	 
 	ret = bpf_tc_hook_create(&inv_hook);
 	if (!ASSERT_EQ(ret, -EOPNOTSUPP, "bpf_tc_hook_create invalid hook parent"))
 		return -EINVAL;
@@ -198,7 +196,7 @@ static int test_tc_bpf_api(struct bpf_tc_hook *hook, int fd)
 
 	inv_hook.attach_point = BPF_TC_INGRESS;
 
-	/* detach */
+	 
 	{
 		TEST_DECLARE_OPTS(fd);
 
@@ -235,7 +233,7 @@ static int test_tc_bpf_api(struct bpf_tc_hook *hook, int fd)
 			return -EINVAL;
 	}
 
-	/* query */
+	 
 	{
 		TEST_DECLARE_OPTS(fd);
 
@@ -271,13 +269,13 @@ static int test_tc_bpf_api(struct bpf_tc_hook *hook, int fd)
 		if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_query invalid priority > UINT16_MAX"))
 			return -EINVAL;
 
-		/* when chain is not present, kernel returns -EINVAL */
+		 
 		ret = bpf_tc_query(hook, &opts_hp);
 		if (!ASSERT_EQ(ret, -EINVAL, "bpf_tc_query valid handle, priority set"))
 			return -EINVAL;
 	}
 
-	/* attach */
+	 
 	{
 		TEST_DECLARE_OPTS(fd);
 
@@ -401,7 +399,7 @@ void tc_bpf_non_root(void)
 	__u64 caps = 0;
 	int ret;
 
-	/* In case CAP_BPF and CAP_PERFMON is not set */
+	 
 	ret = cap_enable_effective(1ULL << CAP_BPF | 1ULL << CAP_NET_ADMIN, &caps);
 	if (!ASSERT_OK(ret, "set_cap_bpf_cap_net_admin"))
 		return;

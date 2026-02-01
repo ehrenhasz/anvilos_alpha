@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ARM DynamIQ Shared Unit (DSU) PMU driver
- *
- * Copyright (C) ARM Limited, 2017.
- *
- * Based on ARM CCI-PMU, ARMv8 PMU-v3 drivers.
- */
+
+ 
 
 #define PMUNAME		"arm_dsu"
 #define DRVNAME		PMUNAME "_pmu"
@@ -31,7 +25,7 @@
 #include <asm/arm_dsu_pmu.h>
 #include <asm/local64.h>
 
-/* PMU event codes */
+ 
 #define DSU_PMU_EVT_CYCLES		0x11
 #define DSU_PMU_EVT_CHAIN		0x1e
 
@@ -55,18 +49,10 @@
 #define DSU_ACTIVE_CPU_MASK		0x0
 #define DSU_ASSOCIATED_CPU_MASK		0x1
 
-/*
- * We use the index of the counters as they appear in the counter
- * bit maps in the PMU registers (e.g CLUSTERPMSELR).
- * i.e,
- *	counter 0	- Bit 0
- *	counter 1	- Bit 1
- *	...
- *	Cycle counter	- Bit 31
- */
+ 
 #define DSU_PMU_IDX_CYCLE_COUNTER	31
 
-/* All event counters are 32bit, with a 64bit Cycle counter */
+ 
 #define DSU_PMU_COUNTER_WIDTH(idx)	\
 	(((idx) == DSU_PMU_IDX_CYCLE_COUNTER) ? 64 : 32)
 
@@ -95,21 +81,7 @@ struct dsu_hw_events {
 	struct perf_event	*events[DSU_PMU_MAX_HW_CNTRS];
 };
 
-/*
- * struct dsu_pmu	- DSU PMU descriptor
- *
- * @pmu_lock		: Protects accesses to DSU PMU register from normal vs
- *			  interrupt handler contexts.
- * @hw_events		: Holds the event counter state.
- * @associated_cpus	: CPUs attached to the DSU.
- * @active_cpu		: CPU to which the PMU is bound for accesses.
- * @cpuhp_node		: Node for CPU hotplug notifier link.
- * @num_counters	: Number of event counters implemented by the PMU,
- *			  excluding the cycle counter.
- * @irq			: Interrupt line for counter overflow.
- * @cpmceid_bitmap	: Bitmap for the availability of architected common
- *			  events (event_code < 0x40).
- */
+ 
 struct dsu_pmu {
 	struct pmu			pmu;
 	struct device			*dev;
@@ -352,7 +324,7 @@ static void dsu_pmu_event_update(struct perf_event *event)
 	u64 delta, prev_count, new_count;
 
 	do {
-		/* We may also be called from the irq handler */
+		 
 		prev_count = local64_read(&hwc->prev_count);
 		new_count = dsu_pmu_read_counter(event);
 	} while (local64_cmpxchg(&hwc->prev_count, prev_count, new_count) !=
@@ -371,13 +343,7 @@ static inline u32 dsu_pmu_get_reset_overflow(void)
 	return __dsu_pmu_get_reset_overflow();
 }
 
-/**
- * dsu_pmu_set_event_period: Set the period for the counter.
- *
- * All DSU PMU event counters, except the cycle counter are 32bit
- * counters. To handle cases of extreme interrupt latency, we program
- * the counter with half of the max count for the counters.
- */
+ 
 static void dsu_pmu_set_event_period(struct perf_event *event)
 {
 	int idx = event->hw.idx;
@@ -416,7 +382,7 @@ static void dsu_pmu_start(struct perf_event *event, int pmu_flags)
 {
 	struct dsu_pmu *dsu_pmu = to_dsu_pmu(event->pmu);
 
-	/* We always reprogram the counter */
+	 
 	if (pmu_flags & PERF_EF_RELOAD)
 		WARN_ON(!(event->hw.state & PERF_HES_UPTODATE));
 	dsu_pmu_set_event_period(event);
@@ -482,7 +448,7 @@ static void dsu_pmu_enable(struct pmu *pmu)
 	unsigned long flags;
 	struct dsu_pmu *dsu_pmu = to_dsu_pmu(pmu);
 
-	/* If no counters are added, skip enabling the PMU */
+	 
 	if (bitmap_empty(dsu_pmu->hw_events.used_mask, DSU_PMU_MAX_HW_CNTRS))
 		return;
 
@@ -512,16 +478,13 @@ static bool dsu_pmu_validate_event(struct pmu *pmu,
 {
 	if (is_software_event(event))
 		return true;
-	/* Reject groups spanning multiple HW PMUs. */
+	 
 	if (event->pmu != pmu)
 		return false;
 	return dsu_pmu_get_event_idx(hw_events, event) >= 0;
 }
 
-/*
- * Make sure the group of events can be scheduled at once
- * on the PMU.
- */
+ 
 static bool dsu_pmu_validate_group(struct perf_event *event)
 {
 	struct perf_event *sibling, *leader = event->group_leader;
@@ -547,13 +510,13 @@ static int dsu_pmu_event_init(struct perf_event *event)
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/* We don't support sampling */
+	 
 	if (is_sampling_event(event)) {
 		dev_dbg(dsu_pmu->pmu.dev, "Can't support sampling events\n");
 		return -EOPNOTSUPP;
 	}
 
-	/* We cannot support task bound events */
+	 
 	if (event->cpu < 0 || event->attach_state & PERF_ATTACH_TASK) {
 		dev_dbg(dsu_pmu->pmu.dev, "Can't support per-task counters\n");
 		return -EINVAL;
@@ -569,12 +532,7 @@ static int dsu_pmu_event_init(struct perf_event *event)
 			 "Requested cpu is not associated with the DSU\n");
 		return -EINVAL;
 	}
-	/*
-	 * Choose the current active CPU to read the events. We don't want
-	 * to migrate the event contexts, irq handling etc to the requested
-	 * CPU. As long as the requested CPU is within the same DSU, we
-	 * are fine.
-	 */
+	 
 	event->cpu = cpumask_first(&dsu_pmu->active_cpu);
 	if (event->cpu >= nr_cpu_ids)
 		return -EINVAL;
@@ -594,18 +552,12 @@ static struct dsu_pmu *dsu_pmu_alloc(struct platform_device *pdev)
 		return ERR_PTR(-ENOMEM);
 
 	raw_spin_lock_init(&dsu_pmu->pmu_lock);
-	/*
-	 * Initialise the number of counters to -1, until we probe
-	 * the real number on a connected CPU.
-	 */
+	 
 	dsu_pmu->num_counters = -1;
 	return dsu_pmu;
 }
 
-/**
- * dsu_pmu_dt_get_cpus: Get the list of CPUs in the cluster
- * from device tree.
- */
+ 
 static int dsu_pmu_dt_get_cpus(struct device *dev, cpumask_t *mask)
 {
 	int i = 0, n, cpu;
@@ -620,11 +572,7 @@ static int dsu_pmu_dt_get_cpus(struct device *dev, cpumask_t *mask)
 			break;
 		cpu = of_cpu_node_to_id(cpu_node);
 		of_node_put(cpu_node);
-		/*
-		 * We have to ignore the failures here and continue scanning
-		 * the list to handle cases where the nr_cpus could be capped
-		 * in the running kernel.
-		 */
+		 
 		if (cpu < 0)
 			continue;
 		cpumask_set_cpu(cpu, mask);
@@ -632,20 +580,14 @@ static int dsu_pmu_dt_get_cpus(struct device *dev, cpumask_t *mask)
 	return 0;
 }
 
-/**
- * dsu_pmu_acpi_get_cpus: Get the list of CPUs in the cluster
- * from ACPI.
- */
+ 
 static int dsu_pmu_acpi_get_cpus(struct device *dev, cpumask_t *mask)
 {
 #ifdef CONFIG_ACPI
 	struct acpi_device *parent_adev = acpi_dev_parent(ACPI_COMPANION(dev));
 	int cpu;
 
-	/*
-	 * A dsu pmu node is inside a cluster parent node along with cpu nodes.
-	 * We need to find out all cpus that have the same parent with this pmu.
-	 */
+	 
 	for_each_possible_cpu(cpu) {
 		struct acpi_device *acpi_dev;
 		struct device *cpu_dev = get_cpu_device(cpu);
@@ -662,9 +604,7 @@ static int dsu_pmu_acpi_get_cpus(struct device *dev, cpumask_t *mask)
 	return 0;
 }
 
-/*
- * dsu_pmu_probe_pmu: Probe the PMU details on a CPU in the cluster.
- */
+ 
 static void dsu_pmu_probe_pmu(struct dsu_pmu *dsu_pmu)
 {
 	u64 num_counters;
@@ -672,7 +612,7 @@ static void dsu_pmu_probe_pmu(struct dsu_pmu *dsu_pmu)
 
 	num_counters = (__dsu_pmu_read_pmcr() >> CLUSTERPMCR_N_SHIFT) &
 						CLUSTERPMCR_N_MASK;
-	/* We can only support up to 31 independent counters */
+	 
 	if (WARN_ON(num_counters > 31))
 		num_counters = 31;
 	dsu_pmu->num_counters = num_counters;
@@ -691,15 +631,12 @@ static void dsu_pmu_set_active_cpu(int cpu, struct dsu_pmu *dsu_pmu)
 		pr_warn("Failed to set irq affinity to %d\n", cpu);
 }
 
-/*
- * dsu_pmu_init_pmu: Initialise the DSU PMU configurations if
- * we haven't done it already.
- */
+ 
 static void dsu_pmu_init_pmu(struct dsu_pmu *dsu_pmu)
 {
 	if (dsu_pmu->num_counters == -1)
 		dsu_pmu_probe_pmu(dsu_pmu);
-	/* Reset the interrupt overflow mask */
+	 
 	dsu_pmu_get_reset_overflow();
 }
 
@@ -817,7 +754,7 @@ static int dsu_pmu_cpu_online(unsigned int cpu, struct hlist_node *node)
 	if (!cpumask_test_cpu(cpu, &dsu_pmu->associated_cpus))
 		return 0;
 
-	/* If the PMU is already managed, there is nothing to do */
+	 
 	if (!cpumask_empty(&dsu_pmu->active_cpu))
 		return 0;
 
@@ -837,7 +774,7 @@ static int dsu_pmu_cpu_teardown(unsigned int cpu, struct hlist_node *node)
 		return 0;
 
 	dst = dsu_pmu_get_online_cpu_any_but(dsu_pmu, cpu);
-	/* If there are no active CPUs in the DSU, leave IRQ disabled */
+	 
 	if (dst >= nr_cpu_ids)
 		return 0;
 

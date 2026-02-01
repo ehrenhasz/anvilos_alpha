@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * SpanDSP - a series of DSP components for telephony
- *
- * biquad.h - General telephony bi-quad section routines (currently this just
- *            handles canonic/type 2 form)
- *
- * Written by Steve Underwood <steveu@coppice.org>
- *
- * Copyright (C) 2001 Steve Underwood
- *
- * All rights reserved.
- */
+ 
+ 
 
 struct biquad2_state {
 	int32_t gain;

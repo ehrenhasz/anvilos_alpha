@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Broadcom Corporation
- * Copyright 2013 Linaro Limited
- */
+
+ 
 
 #include "clk-kona.h"
 #include "dt-bindings/clock/bcm281xx.h"
@@ -10,7 +7,7 @@
 #define BCM281XX_CCU_COMMON(_name, _ucase_name) \
 	KONA_CCU_COMMON(BCM281XX, _name, _ucase_name)
 
-/* Root CCU */
+ 
 
 static struct peri_clk_data frac_1m_data = {
 	.gate		= HW_SW_GATE(0x214, 16, 0, 1),
@@ -28,7 +25,7 @@ static struct ccu_data root_ccu_data = {
 	},
 };
 
-/* AON CCU */
+ 
 
 static struct peri_clk_data hub_timer_data = {
 	.gate		= HW_SW_GATE(0x0414, 16, 0, 1),
@@ -70,7 +67,7 @@ static struct ccu_data aon_ccu_data = {
 	},
 };
 
-/* Hub CCU */
+ 
 
 static struct peri_clk_data tmon_1m_data = {
 	.gate		= HW_SW_GATE(0x04a4, 18, 2, 3),
@@ -89,7 +86,7 @@ static struct ccu_data hub_ccu_data = {
 	},
 };
 
-/* Master CCU */
+ 
 
 static struct peri_clk_data sdio1_data = {
 	.gate		= HW_SW_GATE(0x0358, 18, 2, 3),
@@ -149,7 +146,7 @@ static struct peri_clk_data usb_ic_data = {
 	.trig		= TRIGGER(0x0afc, 7),
 };
 
-/* also called usbh_48m */
+ 
 static struct peri_clk_data hsic2_48m_data = {
 	.gate		= HW_SW_GATE(0x0370, 18, 2, 3),
 	.clocks		= CLOCKS("ref_crystal",
@@ -160,7 +157,7 @@ static struct peri_clk_data hsic2_48m_data = {
 	.trig		= TRIGGER(0x0afc, 5),
 };
 
-/* also called usbh_12m */
+ 
 static struct peri_clk_data hsic2_12m_data = {
 	.gate		= HW_SW_GATE(0x0370, 20, 4, 5),
 	.div		= DIVIDER(0x0a38, 12, 2),
@@ -193,7 +190,7 @@ static struct ccu_data master_ccu_data = {
 	},
 };
 
-/* Slave CCU */
+ 
 
 static struct peri_clk_data uartb_data = {
 	.gate		= HW_SW_GATE(0x0400, 18, 2, 3),
@@ -328,7 +325,7 @@ static struct ccu_data slave_ccu_data = {
 	},
 };
 
-/* Device tree match table callback functions */
+ 
 
 static void __init kona_dt_root_ccu_setup(struct device_node *node)
 {

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* keytable for Terratec Cinergy C PCI Remote Controller
- *
- * Copyright (c) 2010 by Igor M. Liplianin <liplianin@me.by>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
@@ -18,7 +15,7 @@ static struct rc_map_table terratec_cinergy_c_pci[] = {
 	{ 0x37, KEY_NUMERIC_7},
 	{ 0x36, KEY_NUMERIC_8},
 	{ 0x35, KEY_NUMERIC_9},
-	{ 0x34, KEY_VIDEO_NEXT}, /* AV */
+	{ 0x34, KEY_VIDEO_NEXT},  
 	{ 0x33, KEY_NUMERIC_0},
 	{ 0x32, KEY_REFRESH},
 	{ 0x30, KEY_EPG},
@@ -39,16 +36,16 @@ static struct rc_map_table terratec_cinergy_c_pci[] = {
 	{ 0x20, KEY_CHANNELDOWN},
 	{ 0x1f, KEY_PAUSE},
 	{ 0x1e, KEY_HOME},
-	{ 0x1d, KEY_MENU}, /* DVD Menu */
+	{ 0x1d, KEY_MENU},  
 	{ 0x1c, KEY_SUBTITLE},
-	{ 0x1b, KEY_TEXT}, /* Teletext */
+	{ 0x1b, KEY_TEXT},  
 	{ 0x1a, KEY_DELETE},
 	{ 0x19, KEY_TV},
 	{ 0x18, KEY_DVD},
 	{ 0x17, KEY_STOP},
 	{ 0x16, KEY_VIDEO},
-	{ 0x15, KEY_AUDIO}, /* Music */
-	{ 0x14, KEY_SCREEN}, /* Pic */
+	{ 0x15, KEY_AUDIO},  
+	{ 0x14, KEY_SCREEN},  
 	{ 0x13, KEY_PLAY},
 	{ 0x12, KEY_BACK},
 	{ 0x11, KEY_REWIND},
@@ -63,7 +60,7 @@ static struct rc_map_list terratec_cinergy_c_pci_map = {
 	.map = {
 		.scan     = terratec_cinergy_c_pci,
 		.size     = ARRAY_SIZE(terratec_cinergy_c_pci),
-		.rc_proto = RC_PROTO_UNKNOWN,	/* Legacy IR type */
+		.rc_proto = RC_PROTO_UNKNOWN,	 
 		.name     = RC_MAP_TERRATEC_CINERGY_C_PCI,
 	}
 };

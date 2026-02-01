@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * ZyDAS ZD1301 driver (demodulator)
- *
- * Copyright (C) 2015 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "zd1301_demod.h"
 
@@ -46,7 +42,7 @@ static int zd1301_demod_set_frontend(struct dvb_frontend *fe)
 	dev_dbg(&pdev->dev, "frequency=%u bandwidth_hz=%u\n",
 		c->frequency, c->bandwidth_hz);
 
-	/* Program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params &&
 	    fe->ops.tuner_ops.get_if_frequency) {
 		ret = fe->ops.tuner_ops.set_params(fe);
@@ -216,7 +212,7 @@ static int zd1301_demod_get_tune_settings(struct dvb_frontend *fe,
 
 	dev_dbg(&pdev->dev, "\n");
 
-	/* ~180ms seems to be enough */
+	 
 	settings->min_delay_ms = 400;
 
 	return 0;
@@ -241,19 +237,7 @@ static int zd1301_demod_read_status(struct dvb_frontend *fe,
 
 	dev_dbg(&pdev->dev, "lock byte=%02x\n", u8tmp);
 
-	/*
-	 * Interesting registers here are:
-	 * 0x6a05: get some gain value
-	 * 0x6a06: get about same gain value than set to 0x6a43
-	 * 0x6a07: get some gain value
-	 * 0x6a43: set gain value by driver
-	 * 0x6a24: get demod lock bits (FSM stage?)
-	 *
-	 * Driver should implement some kind of algorithm to calculate suitable
-	 * value for register 0x6a43, based likely values from register 0x6a05
-	 * and 0x6a07. Looks like gain register 0x6a43 value could be from
-	 * range 0x00 - 0x70.
-	 */
+	 
 
 	if (dev->gain != zd1301_demod_gain) {
 		dev->gain = zd1301_demod_gain;
@@ -355,7 +339,7 @@ static int zd1301_demod_i2c_master_xfer(struct i2c_adapter *adapter,
 		if (ret)
 			goto err;
 
-		/* Poll xfer ready */
+		 
 		timeout = jiffies + msecs_to_jiffies(I2C_XFER_TIMEOUT);
 		for (u8tmp = 1; !time_after(jiffies, timeout) && u8tmp;) {
 			usleep_range(500, 800);
@@ -409,7 +393,7 @@ static int zd1301_demod_i2c_master_xfer(struct i2c_adapter *adapter,
 		if (ret)
 			goto err;
 
-		/* Poll xfer ready */
+		 
 		timeout = jiffies + msecs_to_jiffies(I2C_XFER_TIMEOUT);
 		for (u8tmp = 1; !time_after(jiffies, timeout) && u8tmp;) {
 			usleep_range(500, 800);
@@ -450,7 +434,7 @@ struct i2c_adapter *zd1301_demod_get_i2c_adapter(struct platform_device *pdev)
 }
 EXPORT_SYMBOL(zd1301_demod_get_i2c_adapter);
 
-/* Platform driver interface */
+ 
 static int zd1301_demod_probe(struct platform_device *pdev)
 {
 	struct zd1301_demod_dev *dev;
@@ -476,11 +460,11 @@ static int zd1301_demod_probe(struct platform_device *pdev)
 		goto err;
 	}
 
-	/* Setup the state */
+	 
 	dev->pdev = pdev;
 	dev->gain = zd1301_demod_gain;
 
-	/* Sleep */
+	 
 	ret = zd1301_demod_wreg(dev, 0x6840, 0x21);
 	if (ret)
 		goto err_kfree;
@@ -488,7 +472,7 @@ static int zd1301_demod_probe(struct platform_device *pdev)
 	if (ret)
 		goto err_kfree;
 
-	/* Create I2C adapter */
+	 
 	strscpy(dev->adapter.name, "ZyDAS ZD1301 demod",
 		sizeof(dev->adapter.name));
 	dev->adapter.algo = &zd1301_demod_i2c_algorithm;
@@ -501,7 +485,7 @@ static int zd1301_demod_probe(struct platform_device *pdev)
 		goto err_kfree;
 	}
 
-	/* Create dvb frontend */
+	 
 	memcpy(&dev->frontend.ops, &zd1301_demod_ops, sizeof(dev->frontend.ops));
 	dev->frontend.demodulator_priv = dev;
 	platform_set_drvdata(pdev, dev);

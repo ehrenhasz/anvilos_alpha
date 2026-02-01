@@ -72,10 +72,7 @@ static void dump_pages_test(struct gup_test *gup, struct page **pages,
 	unsigned int index_to_dump;
 	unsigned int i;
 
-	/*
-	 * Zero out any user-supplied page index that is out of range. Remember:
-	 * .which_pages[] contains a 1-based set of page indices.
-	 */
+	 
 	for (i = 0; i < GUP_TEST_MAX_PAGES_TO_DUMP; i++) {
 		if (gup->which_pages[i] > nr_pages) {
 			pr_warn("ZEROING due to out of range: .which_pages[%u]: %u\n",
@@ -88,7 +85,7 @@ static void dump_pages_test(struct gup_test *gup, struct page **pages,
 		index_to_dump = gup->which_pages[i];
 
 		if (index_to_dump) {
-			index_to_dump--; // Decode from 1-based, to 0-based
+			index_to_dump--; 
 			pr_info("---- page #%u, starting from user virt addr: 0x%llx\n",
 				index_to_dump, gup->addr);
 			dump_page(pages[index_to_dump],
@@ -173,16 +170,13 @@ static int __gup_test_ioctl(unsigned int cmd,
 	}
 	end_time = ktime_get();
 
-	/* Shifting the meaning of nr_pages: now it is actual number pinned: */
+	 
 	nr_pages = i;
 
 	gup->get_delta_usec = ktime_us_delta(end_time, start_time);
 	gup->size = addr - gup->addr;
 
-	/*
-	 * Take an un-benchmark-timed moment to verify DMA pinned
-	 * state: print a warning if any non-dma-pinned pages are found:
-	 */
+	 
 	verify_dma_pinned(cmd, pages, nr_pages);
 
 	if (cmd == DUMP_USER_PAGES_TEST)

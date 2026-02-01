@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Driver for DVBSky USB2.0 receiver
- *
- * Copyright (C) 2013 Max nibble <nibble.max@gmail.com>
- */
+
+ 
 
 #include "dvb_usb.h"
 #include "m88ds3103.h"
@@ -12,7 +8,7 @@
 #include "si2168.h"
 #include "si2157.h"
 
-#define DVBSKY_MSG_DELAY	0/*2000*/
+#define DVBSKY_MSG_DELAY	0 
 #define DVBSKY_BUF_LEN	64
 
 static int dvb_usb_dvbsky_disable_rc;
@@ -29,7 +25,7 @@ struct dvbsky_state {
 	struct i2c_client *i2c_client_tuner;
 	struct i2c_client *i2c_client_ci;
 
-	/* fe hook functions*/
+	 
 	int (*fe_set_voltage)(struct dvb_frontend *fe,
 		enum fe_sec_voltage voltage);
 	int (*fe_read_status)(struct dvb_frontend *fe,
@@ -82,7 +78,7 @@ static int dvbsky_streaming_ctrl(struct dvb_frontend *fe, int onoff)
 	return dvbsky_stream_ctrl(d, (onoff == 0) ? 0 : 1);
 }
 
-/* GPIO */
+ 
 static int dvbsky_gpio_ctrl(struct dvb_usb_device *d, u8 gport, u8 value)
 {
 	int ret;
@@ -95,7 +91,7 @@ static int dvbsky_gpio_ctrl(struct dvb_usb_device *d, u8 gport, u8 value)
 	return ret;
 }
 
-/* I2C */
+ 
 static int dvbsky_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 	int num)
 {
@@ -122,7 +118,7 @@ static int dvbsky_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 			goto i2c_error;
 		}
 		if (msg[0].flags & I2C_M_RD) {
-			/* single read */
+			 
 			obuf[0] = 0x09;
 			obuf[1] = 0;
 			obuf[2] = msg[0].len;
@@ -132,7 +128,7 @@ static int dvbsky_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 			if (!ret)
 				memcpy(msg[0].buf, &ibuf[1], msg[0].len);
 		} else {
-			/* write */
+			 
 			obuf[0] = 0x08;
 			obuf[1] = msg[0].addr;
 			obuf[2] = msg[0].len;
@@ -148,7 +144,7 @@ static int dvbsky_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg msg[],
 			ret = -EOPNOTSUPP;
 			goto i2c_error;
 		}
-		/* write then read */
+		 
 		obuf[0] = 0x09;
 		obuf[1] = msg[0].len;
 		obuf[2] = msg[1].len;
@@ -263,7 +259,7 @@ static int dvbsky_usb_read_status(struct dvb_frontend *fe,
 
 	ret = state->fe_read_status(fe, status);
 
-	/* it need resync slave fifo when signal change from unlock to lock.*/
+	 
 	if ((*status & FE_HAS_LOCK) && (!state->last_lock))
 		dvbsky_stream_ctrl(d, 1);
 
@@ -279,7 +275,7 @@ static int dvbsky_s960_attach(struct dvb_usb_adapter *adap)
 	struct m88ds3103_platform_data m88ds3103_pdata = {};
 	struct ts2020_config ts2020_config = {};
 
-	/* attach demod */
+	 
 	m88ds3103_pdata.clk = 27000000;
 	m88ds3103_pdata.i2c_wr_max = 33;
 	m88ds3103_pdata.clk_out = 0;
@@ -299,7 +295,7 @@ static int dvbsky_s960_attach(struct dvb_usb_adapter *adap)
 	adap->fe[0] = m88ds3103_pdata.get_dvb_frontend(state->i2c_client_demod);
 	i2c_adapter = m88ds3103_pdata.get_i2c_adapter(state->i2c_client_demod);
 
-	/* attach tuner */
+	 
 	ts2020_config.fe = adap->fe[0];
 	ts2020_config.get_agc_pwm = m88ds3103_get_agc_pwm;
 
@@ -311,15 +307,15 @@ static int dvbsky_s960_attach(struct dvb_usb_adapter *adap)
 		return -ENODEV;
 	}
 
-	/* delegate signal strength measurement to tuner */
+	 
 	adap->fe[0]->ops.read_signal_strength =
 			adap->fe[0]->ops.tuner_ops.get_rf_strength;
 
-	/* hook fe: need to resync the slave fifo when signal locks. */
+	 
 	state->fe_read_status = adap->fe[0]->ops.read_status;
 	adap->fe[0]->ops.read_status = dvbsky_usb_read_status;
 
-	/* hook fe: LNB off/on is control by Cypress usb chip. */
+	 
 	state->fe_set_voltage = adap->fe[0]->ops.set_voltage;
 	adap->fe[0]->ops.set_voltage = dvbsky_usb_set_voltage;
 
@@ -349,8 +345,8 @@ static int dvbsky_ci_ctrl(void *priv, u8 read, int addr,
 	int ret = 0;
 	u8 command[4], respond[2], command_size, respond_size;
 
-	command[1] = (u8)((addr >> 8) & 0xff); /*high part of address*/
-	command[2] = (u8)(addr & 0xff); /*low part of address*/
+	command[1] = (u8)((addr >> 8) & 0xff);  
+	command[2] = (u8)(addr & 0xff);  
 	if (read) {
 		command[0] = 0x71;
 		command_size = 3;
@@ -382,7 +378,7 @@ static int dvbsky_s960c_attach(struct dvb_usb_adapter *adap)
 	struct ts2020_config ts2020_config = {};
 	struct sp2_config sp2_config = {};
 
-	/* attach demod */
+	 
 	m88ds3103_pdata.clk = 27000000;
 	m88ds3103_pdata.i2c_wr_max = 33;
 	m88ds3103_pdata.clk_out = 0;
@@ -402,7 +398,7 @@ static int dvbsky_s960c_attach(struct dvb_usb_adapter *adap)
 	adap->fe[0] = m88ds3103_pdata.get_dvb_frontend(state->i2c_client_demod);
 	i2c_adapter = m88ds3103_pdata.get_i2c_adapter(state->i2c_client_demod);
 
-	/* attach tuner */
+	 
 	ts2020_config.fe = adap->fe[0];
 	ts2020_config.get_agc_pwm = m88ds3103_get_agc_pwm;
 
@@ -414,7 +410,7 @@ static int dvbsky_s960c_attach(struct dvb_usb_adapter *adap)
 		return -ENODEV;
 	}
 
-	/* attach ci controller */
+	 
 	sp2_config.dvb_adap = &adap->dvb_adap;
 	sp2_config.priv = d;
 	sp2_config.ci_control = dvbsky_ci_ctrl;
@@ -429,15 +425,15 @@ static int dvbsky_s960c_attach(struct dvb_usb_adapter *adap)
 		return -ENODEV;
 	}
 
-	/* delegate signal strength measurement to tuner */
+	 
 	adap->fe[0]->ops.read_signal_strength =
 			adap->fe[0]->ops.tuner_ops.get_rf_strength;
 
-	/* hook fe: need to resync the slave fifo when signal locks. */
+	 
 	state->fe_read_status = adap->fe[0]->ops.read_status;
 	adap->fe[0]->ops.read_status = dvbsky_usb_read_status;
 
-	/* hook fe: LNB off/on is control by Cypress usb chip. */
+	 
 	state->fe_set_voltage = adap->fe[0]->ops.set_voltage;
 	adap->fe[0]->ops.set_voltage = dvbsky_usb_ci_set_voltage;
 
@@ -453,7 +449,7 @@ static int dvbsky_t680c_attach(struct dvb_usb_adapter *adap)
 	struct si2157_config si2157_config = {};
 	struct sp2_config sp2_config = {};
 
-	/* attach demod */
+	 
 	si2168_config.i2c_adapter = &i2c_adapter;
 	si2168_config.fe = &adap->fe[0];
 	si2168_config.ts_mode = SI2168_TS_PARALLEL;
@@ -464,7 +460,7 @@ static int dvbsky_t680c_attach(struct dvb_usb_adapter *adap)
 	if (!state->i2c_client_demod)
 		return -ENODEV;
 
-	/* attach tuner */
+	 
 	si2157_config.fe = adap->fe[0];
 	si2157_config.if_port = 1;
 
@@ -476,7 +472,7 @@ static int dvbsky_t680c_attach(struct dvb_usb_adapter *adap)
 		return -ENODEV;
 	}
 
-	/* attach ci controller */
+	 
 	sp2_config.dvb_adap = &adap->dvb_adap;
 	sp2_config.priv = d;
 	sp2_config.ci_control = dvbsky_ci_ctrl;
@@ -502,7 +498,7 @@ static int dvbsky_t330_attach(struct dvb_usb_adapter *adap)
 	struct si2168_config si2168_config = {};
 	struct si2157_config si2157_config = {};
 
-	/* attach demod */
+	 
 	si2168_config.i2c_adapter = &i2c_adapter;
 	si2168_config.fe = &adap->fe[0];
 	si2168_config.ts_mode = SI2168_TS_PARALLEL;
@@ -514,7 +510,7 @@ static int dvbsky_t330_attach(struct dvb_usb_adapter *adap)
 	if (!state->i2c_client_demod)
 		return -ENODEV;
 
-	/* attach tuner */
+	 
 	si2157_config.fe = adap->fe[0];
 	si2157_config.if_port = 1;
 
@@ -537,7 +533,7 @@ static int dvbsky_mygica_t230c_attach(struct dvb_usb_adapter *adap)
 	struct si2168_config si2168_config = {};
 	struct si2157_config si2157_config = {};
 
-	/* attach demod */
+	 
 	si2168_config.i2c_adapter = &i2c_adapter;
 	si2168_config.fe = &adap->fe[0];
 	si2168_config.ts_mode = SI2168_TS_PARALLEL;
@@ -553,7 +549,7 @@ static int dvbsky_mygica_t230c_attach(struct dvb_usb_adapter *adap)
 	if (!state->i2c_client_demod)
 		return -ENODEV;
 
-	/* attach tuner */
+	 
 	si2157_config.fe = adap->fe[0];
 	if (le16_to_cpu(d->udev->descriptor.idProduct) == USB_PID_MYGICA_T230) {
 		si2157_config.if_port = 1;
@@ -621,7 +617,7 @@ static int dvbsky_frontend_detach(struct dvb_usb_adapter *adap)
 	return 0;
 }
 
-/* DVB USB Driver stuff */
+ 
 static struct dvb_usb_device_properties dvbsky_s960_props = {
 	.driver_name = KBUILD_MODNAME,
 	.owner = THIS_MODULE,

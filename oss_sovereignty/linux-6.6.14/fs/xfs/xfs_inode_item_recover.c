@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2000-2006 Silicon Graphics, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -41,35 +38,7 @@ xlog_recover_inode_ra_pass2(
 	}
 }
 
-/*
- * Inode fork owner changes
- *
- * If we have been told that we have to reparent the inode fork, it's because an
- * extent swap operation on a CRC enabled filesystem has been done and we are
- * replaying it. We need to walk the BMBT of the appropriate fork and change the
- * owners of it.
- *
- * The complexity here is that we don't have an inode context to work with, so
- * after we've replayed the inode we need to instantiate one.  This is where the
- * fun begins.
- *
- * We are in the middle of log recovery, so we can't run transactions. That
- * means we cannot use cache coherent inode instantiation via xfs_iget(), as
- * that will result in the corresponding iput() running the inode through
- * xfs_inactive(). If we've just replayed an inode core that changes the link
- * count to zero (i.e. it's been unlinked), then xfs_inactive() will run
- * transactions (bad!).
- *
- * So, to avoid this, we instantiate an inode directly from the inode core we've
- * just recovered. We have the buffer still locked, and all we really need to
- * instantiate is the inode core and the forks being modified. We can do this
- * manually, then run the inode btree owner change, and then tear down the
- * xfs_inode without having to run any transactions at all.
- *
- * Also, because we don't have a transaction context available here but need to
- * gather all the buffers we modify for writeback so we pass the buffer_list
- * instead for the operation to use.
- */
+ 
 
 STATIC int
 xfs_recover_inode_owner_change(
@@ -87,7 +56,7 @@ xfs_recover_inode_owner_change(
 	if (!ip)
 		return -ENOMEM;
 
-	/* instantiate the inode */
+	 
 	ASSERT(dip->di_version >= 3);
 
 	error = xfs_inode_from_disk(ip, dip);
@@ -121,7 +90,7 @@ static inline bool xfs_log_dinode_has_bigtime(const struct xfs_log_dinode *ld)
 	       (ld->di_flags2 & XFS_DIFLAG2_BIGTIME);
 }
 
-/* Convert a log timestamp to an ondisk timestamp. */
+ 
 static inline xfs_timestamp_t
 xfs_log_dinode_to_disk_ts(
 	struct xfs_log_dinode		*from,
@@ -297,10 +266,7 @@ xlog_recover_inode_commit_pass2(
 			goto error;
 	}
 
-	/*
-	 * Inode buffers can be freed, look out for it,
-	 * and do not replay the inode.
-	 */
+	 
 	if (xlog_is_buffer_cancelled(log, in_f->ilf_blkno, in_f->ilf_len)) {
 		error = 0;
 		trace_xfs_log_recover_inode_cancel(log, in_f);
@@ -315,10 +281,7 @@ xlog_recover_inode_commit_pass2(
 	ASSERT(in_f->ilf_fields & XFS_ILOG_CORE);
 	dip = xfs_buf_offset(bp, in_f->ilf_boffset);
 
-	/*
-	 * Make sure the place we're flushing out to really looks
-	 * like an inode!
-	 */
+	 
 	if (XFS_IS_CORRUPT(mp, !xfs_verify_magic16(bp, dip->di_magic))) {
 		xfs_alert(mp,
 	"%s: Bad inode magic number, dip = "PTR_FMT", dino bp = "PTR_FMT", ino = %lld",
@@ -335,22 +298,7 @@ xlog_recover_inode_commit_pass2(
 		goto out_release;
 	}
 
-	/*
-	 * If the inode has an LSN in it, recover the inode only if the on-disk
-	 * inode's LSN is older than the lsn of the transaction we are
-	 * replaying. We can have multiple checkpoints with the same start LSN,
-	 * so the current LSN being equal to the on-disk LSN doesn't necessarily
-	 * mean that the on-disk inode is more recent than the change being
-	 * replayed.
-	 *
-	 * We must check the current_lsn against the on-disk inode
-	 * here because the we can't trust the log dinode to contain a valid LSN
-	 * (see comment below before replaying the log dinode for details).
-	 *
-	 * Note: we still need to replay an owner change even though the inode
-	 * is more recent than the transaction as there is no guarantee that all
-	 * the btree blocks are more recent than this transaction, too.
-	 */
+	 
 	if (dip->di_version >= 3) {
 		xfs_lsn_t	lsn = be64_to_cpu(dip->di_lsn);
 
@@ -361,23 +309,13 @@ xlog_recover_inode_commit_pass2(
 		}
 	}
 
-	/*
-	 * di_flushiter is only valid for v1/2 inodes. All changes for v3 inodes
-	 * are transactional and if ordering is necessary we can determine that
-	 * more accurately by the LSN field in the V3 inode core. Don't trust
-	 * the inode versions we might be changing them here - use the
-	 * superblock flag to determine whether we need to look at di_flushiter
-	 * to skip replay when the on disk inode is newer than the log one
-	 */
+	 
 	if (!xfs_has_v3inodes(mp)) {
 		if (ldip->di_flushiter < be16_to_cpu(dip->di_flushiter)) {
-			/*
-			 * Deal with the wrap case, DI_MAX_FLUSH is less
-			 * than smaller numbers
-			 */
+			 
 			if (be16_to_cpu(dip->di_flushiter) == DI_MAX_FLUSH &&
 			    ldip->di_flushiter < (DI_MAX_FLUSH >> 1)) {
-				/* do nothing */
+				 
 			} else {
 				trace_xfs_log_recover_inode_skip(log, in_f);
 				error = 0;
@@ -385,7 +323,7 @@ xlog_recover_inode_commit_pass2(
 			}
 		}
 
-		/* Take the opportunity to reset the flush iteration count */
+		 
 		ldip->di_flushiter = 0;
 	}
 
@@ -441,16 +379,7 @@ xlog_recover_inode_commit_pass2(
 		goto out_release;
 	}
 
-	/*
-	 * Recover the log dinode inode into the on disk inode.
-	 *
-	 * The LSN in the log dinode is garbage - it can be zero or reflect
-	 * stale in-memory runtime state that isn't coherent with the changes
-	 * logged in this transaction or the changes written to the on-disk
-	 * inode.  Hence we write the current lSN into the inode because that
-	 * matches what xfs_iflush() would write inode the inode when flushing
-	 * the changes in this transaction.
-	 */
+	 
 	xfs_log_dinode_to_disk(ldip, dip, current_lsn);
 
 	fields = in_f->ilf_fields;
@@ -479,18 +408,12 @@ xlog_recover_inode_commit_pass2(
 		break;
 
 	default:
-		/*
-		 * There are no data fork flags set.
-		 */
+		 
 		ASSERT((fields & XFS_ILOG_DFORK) == 0);
 		break;
 	}
 
-	/*
-	 * If we logged any attribute data, recover it.  There may or
-	 * may not have been any other non-core data logged in this
-	 * transaction.
-	 */
+	 
 	if (in_f->ilf_fields & XFS_ILOG_AFORK) {
 		if (in_f->ilf_fields & XFS_ILOG_DFORK) {
 			attr_index = 3;
@@ -525,12 +448,12 @@ xlog_recover_inode_commit_pass2(
 	}
 
 out_owner_change:
-	/* Recover the swapext owner change unless inode has been deleted */
+	 
 	if ((in_f->ilf_fields & (XFS_ILOG_DOWNER|XFS_ILOG_AOWNER)) &&
 	    (dip->di_mode != 0))
 		error = xfs_recover_inode_owner_change(mp, dip, in_f,
 						       buffer_list);
-	/* re-generate the checksum. */
+	 
 	xfs_dinode_calc_crc(log->l_mp, dip);
 
 	ASSERT(bp->b_mount == mp);

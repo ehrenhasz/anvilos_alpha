@@ -1,16 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
- * Copyright 2020 NXP
- */
+
+ 
 #include "sja1105.h"
 
-/* Since devlink regions have a fixed size and the static config has a variable
- * size, we need to calculate the maximum possible static config size by
- * creating a dummy config with all table entries populated to the max, and get
- * its packed length. This is done dynamically as opposed to simply hardcoding
- * a number, since currently not all static config tables are implemented, so
- * we are avoiding a possible code desynchronization.
- */
+ 
 static size_t sja1105_static_config_get_max_size(struct sja1105_private *priv)
 {
 	struct sja1105_static_config config;

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 Richtek Technology Corp.
- *
- * Author: ChiYuan Huang <cy_huang@richtek.com>
- *         ChiaEn Wu <chiaen_wu@richtek.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/bitfield.h>
@@ -73,7 +68,7 @@
 #define RT9466_VID			0x8
 #define RT9467_VID			0x9
 
-/* IRQ number */
+ 
 #define RT9467_IRQ_TS_STATC	0
 #define RT9467_IRQ_CHG_FAULT	1
 #define RT9467_IRQ_CHG_STATC	2
@@ -104,39 +99,39 @@
 #define RT9467_IRQ_DCDT		31
 
 enum rt9467_fields {
-	/* RT9467_REG_CORE_CTRL0 */
+	 
 	F_RST = 0,
-	/* RT9467_REG_CHG_CTRL1 */
+	 
 	F_HZ, F_OTG_PIN_EN, F_OPA_MODE,
-	/* RT9467_REG_CHG_CTRL2 */
+	 
 	F_SHIP_MODE, F_TE, F_IINLMTSEL, F_CFO_EN, F_CHG_EN,
-	/* RT9467_REG_CHG_CTRL3 */
+	 
 	F_IAICR, F_ILIM_EN,
-	/* RT9467_REG_CHG_CTRL4 */
+	 
 	F_VOREG,
-	/* RT9467_REG_CHG_CTRL6 */
+	 
 	F_VMIVR,
-	/* RT9467_REG_CHG_CTRL7 */
+	 
 	F_ICHG,
-	/* RT9467_REG_CHG_CTRL8 */
+	 
 	F_IPREC,
-	/* RT9467_REG_CHG_CTRL9 */
+	 
 	F_IEOC,
-	/* RT9467_REG_CHG_CTRL12 */
+	 
 	F_WT_FC,
-	/* RT9467_REG_CHG_CTRL13 */
+	 
 	F_OCP,
-	/* RT9467_REG_CHG_CTRL14 */
+	 
 	F_AICL_MEAS, F_AICL_VTH,
-	/* RT9467_REG_CHG_DPDM1 */
+	 
 	F_USBCHGEN,
-	/* RT9467_REG_CHG_DPDM2 */
+	 
 	F_USB_STATUS,
-	/* RT9467_REG_DEVICE_ID */
+	 
 	F_VENDOR,
-	/* RT9467_REG_CHG_STAT */
+	 
 	F_CHG_STAT,
-	/* RT9467_REG_CHG_STATC */
+	 
 	F_PWR_RDY, F_CHG_MIVR,
 	F_MAX_FIELDS
 };
@@ -261,7 +256,7 @@ enum rt9467_iin_limit_sel {
 	RT9467_IINLMTSEL_3_2A = 0,
 	RT9467_IINLMTSEL_CHG_TYP,
 	RT9467_IINLMTSEL_AICR,
-	RT9467_IINLMTSEL_LOWER_LEVEL, /* lower of above three */
+	RT9467_IINLMTSEL_LOWER_LEVEL,  
 };
 
 struct rt9467_chg_data {
@@ -433,7 +428,7 @@ static int rt9467_get_adc_raw_data(struct rt9467_chg_data *data,
 	if (ret)
 		goto adc_unlock;
 
-	/* Minimum wait time for one channel processing */
+	 
 	msleep(RT9467_ADCCONV_TIME_MS);
 
 	ret = regmap_read_poll_timeout(data->regmap, RT9467_REG_CHG_ADC,
@@ -483,7 +478,7 @@ static int rt9467_get_adc(struct rt9467_chg_data *data,
 		*val /= 400;
 		return 0;
 	case RT9467_ADC_IBUS:
-		/* UUG MOS turn-on ratio will affect the IBUS adc scale */
+		 
 		ret = rt9467_get_value_from_ranges(data, F_IAICR,
 						   RT9467_RANGE_IAICR, &aicr_ua);
 		if (ret)
@@ -492,7 +487,7 @@ static int rt9467_get_adc(struct rt9467_chg_data *data,
 		*val *= aicr_ua < 400000 ? 29480 : 50000;
 		return 0;
 	case RT9467_ADC_IBAT:
-		/* PP MOS turn-on ratio will affect the ICHG adc scale */
+		 
 		ret = rt9467_get_value_from_ranges(data, F_ICHG,
 						   RT9467_RANGE_ICHG, &ichg_ua);
 		if (ret)
@@ -584,12 +579,12 @@ static int rt9467_run_aicl(struct rt9467_chg_data *data)
 		return ret;
 	}
 
-	/* AICL_VTH = MIVR_VTH + 200mV */
+	 
 	aicl_vth = mivr_vth + RT9467_AICLVTH_GAP_uV;
 	ret = rt9467_set_value_from_ranges(data, F_AICL_VTH,
 					   RT9467_RANGE_AICL_VTH, aicl_vth);
 
-	/* Trigger AICL function */
+	 
 	ret = regmap_field_write(data->rm_field[F_AICL_MEAS], 1);
 	if (ret) {
 		dev_err(data->dev, "Failed to set aicl measurement\n");
@@ -848,10 +843,7 @@ static int rt9467_mivr_handler(struct rt9467_chg_data *data)
 	unsigned int mivr_act;
 	int ret, ibus_ma;
 
-	/*
-	 * back-boost workaround
-	 * If (mivr_active & ibus < 100mA), toggle cfo bit
-	 */
+	 
 	ret = regmap_field_read(data->rm_field[F_CHG_MIVR], &mivr_act);
 	if (ret) {
 		dev_err(data->dev, "Failed to read MIVR stat\n");
@@ -907,7 +899,7 @@ static irqreturn_t rt9467_wdt_handler(int irq, void *priv)
 	unsigned int dev_id;
 	int ret;
 
-	/* Any i2c communication can kick watchdog timer */
+	 
 	ret = regmap_read(data->regmap, RT9467_REG_DEVICE_ID, &dev_id);
 	if (ret) {
 		dev_err(data->dev, "Failed to kick wdt (%d)\n", ret);
@@ -1057,36 +1049,36 @@ static int rt9467_do_charger_init(struct rt9467_chg_data *data)
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to make statc unmask\n");
 
-	/* Select IINLMTSEL to use AICR */
+	 
 	ret = regmap_field_write(data->rm_field[F_IINLMTSEL],
 				 RT9467_IINLMTSEL_AICR);
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to set iinlmtsel to AICR\n");
 
-	/* Wait for AICR Rampping */
+	 
 	msleep(150);
 
-	/* Disable hardware ILIM */
+	 
 	ret = regmap_field_write(data->rm_field[F_ILIM_EN], 0);
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to disable hardware ILIM\n");
 
-	/* Set inductor OCP to high level */
+	 
 	ret = regmap_field_write(data->rm_field[F_OCP], 1);
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to set higher inductor OCP level\n");
 
-	/* Set charge termination default enable */
+	 
 	ret = regmap_field_write(data->rm_field[F_TE], 1);
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to set TE=1\n");
 
-	/* Set 12hrs fast charger timer */
+	 
 	ret = regmap_field_write(data->rm_field[F_WT_FC], 4);
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to set WT_FC\n");
 
-	/* Toggle BC12 function */
+	 
 	ret = regmap_field_write(data->rm_field[F_USBCHGEN], 0);
 	if (ret)
 		return dev_err_probe(dev, ret, "Failed to disable BC12\n");
@@ -1141,7 +1133,7 @@ static int rt9467_reset_chip(struct rt9467_chg_data *data)
 {
 	int ret;
 
-	/* Disable HZ before reset chip */
+	 
 	ret = regmap_field_write(data->rm_field[F_HZ], 0);
 	if (ret)
 		return ret;
@@ -1191,7 +1183,7 @@ static int rt9467_charger_probe(struct i2c_client *i2c)
 	data->dev = &i2c->dev;
 	i2c_set_clientdata(i2c, data);
 
-	/* Default pull charge enable gpio to make 'CHG_EN' by SW control only */
+	 
 	ceb_gpio = devm_gpiod_get_optional(dev, "charge-enable", GPIOD_OUT_HIGH);
 	if (IS_ERR(ceb_gpio))
 		return dev_err_probe(dev, PTR_ERR(ceb_gpio),

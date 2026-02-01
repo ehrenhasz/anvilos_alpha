@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * omap-mailbox: interprocessor communication module for OMAP
- */
+ 
+ 
 
 #ifndef OMAP_MAILBOX_H
 #define OMAP_MAILBOX_H
@@ -23,4 +21,4 @@ struct mbox_chan *omap_mbox_request_channel(struct mbox_client *cl,
 void omap_mbox_enable_irq(struct mbox_chan *chan, omap_mbox_irq_t irq);
 void omap_mbox_disable_irq(struct mbox_chan *chan, omap_mbox_irq_t irq);
 
-#endif /* OMAP_MAILBOX_H */
+#endif  

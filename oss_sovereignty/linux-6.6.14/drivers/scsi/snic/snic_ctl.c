@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright 2014 Cisco Systems, Inc.  All rights reserved.
+
+
 
 #include <linux/errno.h>
 #include <linux/pci.h>
@@ -17,9 +17,7 @@
 #include "cq_enet_desc.h"
 #include "snic_fwint.h"
 
-/*
- * snic_handle_link : Handles link flaps.
- */
+ 
 void
 snic_handle_link(struct work_struct *work)
 {
@@ -37,10 +35,7 @@ snic_handle_link(struct work_struct *work)
 }
 
 
-/*
- * snic_ver_enc : Encodes version str to int
- * version string is similar to netmask string
- */
+ 
 static int
 snic_ver_enc(const char *s)
 {
@@ -49,7 +44,7 @@ snic_ver_enc(const char *s)
 	char c;
 	const char *p = s;
 
-	/* validate version string */
+	 
 	if ((strlen(s) > 15) || (strlen(s) < 7))
 		goto end;
 
@@ -65,7 +60,7 @@ snic_ver_enc(const char *s)
 		v[i] = v[i] * 10 + (c - '0');
 	}
 
-	/* validate sub version numbers */
+	 
 	for (i = 3; i >= 0; i--)
 		if (v[i] > 0xff)
 			goto end;
@@ -80,14 +75,9 @@ end:
 	}
 
 	return x;
-} /* end of snic_ver_enc */
+}  
 
-/*
- * snic_qeueue_exch_ver_req :
- *
- * Queues Exchange Version Request, to communicate host information
- * in return, it gets firmware version details
- */
+ 
 int
 snic_queue_exch_ver_req(struct snic *snic)
 {
@@ -107,7 +97,7 @@ snic_queue_exch_ver_req(struct snic *snic)
 
 	req = rqi_to_req(rqi);
 
-	/* Initialize snic_host_req */
+	 
 	snic_io_hdr_enc(&req->hdr, SNIC_REQ_EXCH_VER, 0, SCSI_NO_TAG,
 			snic->config.hid, 0, (ulong)rqi);
 	ver = snic_ver_enc(SNIC_DRV_VERSION);
@@ -129,11 +119,9 @@ snic_queue_exch_ver_req(struct snic *snic)
 
 error:
 	return ret;
-} /* end of snic_queue_exch_ver_req */
+}  
 
-/*
- * snic_io_exch_ver_cmpl_handler
- */
+ 
 void
 snic_io_exch_ver_cmpl_handler(struct snic *snic, struct snic_fw_req *fwreq)
 {
@@ -180,7 +168,7 @@ snic_io_exch_ver_cmpl_handler(struct snic *snic, struct snic_fw_req *fwreq)
 		       "HBA Capabilities = 0x%x\n",
 		       le32_to_cpu(exv_cmpl->hba_cap));
 
-	/* Updating SGList size */
+	 
 	max_sgs = snic->fwinfo.max_sgs_per_cmd;
 	if (max_sgs && max_sgs < SNIC_MAX_SG_DESC_CNT) {
 		snic->shost->sg_tablesize = max_sgs;
@@ -206,13 +194,9 @@ exch_cmpl_end:
 	snic_release_untagged_req(snic, rqi);
 
 	SNIC_HOST_INFO(snic->shost, "Exch_cmpl Done, hdr_stat %d.\n", hdr_stat);
-} /* end of snic_io_exch_ver_cmpl_handler */
+}  
 
-/*
- * snic_get_conf
- *
- * Synchronous call, and Retrieves snic params.
- */
+ 
 int
 snic_get_conf(struct snic *snic)
 {
@@ -227,13 +211,10 @@ snic_get_conf(struct snic *snic)
 	snic->fwinfo.wait = &wait;
 	spin_unlock_irqrestore(&snic->snic_lock, flags);
 
-	/* Additional delay to handle HW Resource initialization. */
+	 
 	msleep(50);
 
-	/*
-	 * Exch ver req can be ignored by FW, if HW Resource initialization
-	 * is in progress, Hence retry.
-	 */
+	 
 	do {
 		ret = snic_queue_exch_ver_req(snic);
 		if (ret)
@@ -246,7 +227,7 @@ snic_get_conf(struct snic *snic)
 			SNIC_HOST_ERR(snic->shost,
 				      "Failed to retrieve snic params,\n");
 
-		/* Unset fwinfo.wait, on success or on last retry */
+		 
 		if (ret == 0 || nr_retries == 1)
 			snic->fwinfo.wait = NULL;
 
@@ -254,4 +235,4 @@ snic_get_conf(struct snic *snic)
 	} while (ret && --nr_retries);
 
 	return ret;
-} /* end of snic_get_info */
+}  

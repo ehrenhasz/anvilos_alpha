@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/module.h>
 #include <crypto/internal/rsa.h>
 #include <crypto/internal/akcipher.h>
@@ -256,9 +256,7 @@ static int qat_dh_compute_value(struct kpp_request *req)
 		ICP_QAT_FW_COMN_FLAGS_BUILD(QAT_COMN_PTR_TYPE_FLAT,
 					    QAT_COMN_CD_FLD_TYPE_64BIT_ADR);
 
-	/*
-	 * If no source is provided use g as base
-	 */
+	 
 	if (req->src) {
 		qat_req->in.dh.in.xa = ctx->dma_xa;
 		qat_req->in.dh.in.p = ctx->dma_p;
@@ -278,13 +276,7 @@ static int qat_dh_compute_value(struct kpp_request *req)
 
 	ret = -ENOMEM;
 	if (req->src) {
-		/*
-		 * src can be of any size in valid range, but HW expects it to
-		 * be the same as modulo p so in case it is different we need
-		 * to allocate a new buf and copy src data.
-		 * In other case we just need to map the user provided buffer.
-		 * Also need to make sure that it is in contiguous buffer.
-		 */
+		 
 		if (sg_is_last(req->src) && req->src_len == ctx->p_size) {
 			qat_req->src_align = NULL;
 			vaddr = sg_virt(req->src);
@@ -306,13 +298,7 @@ static int qat_dh_compute_value(struct kpp_request *req)
 		if (unlikely(dma_mapping_error(dev, qat_req->in.dh.in.b)))
 			goto unmap_src;
 	}
-	/*
-	 * dst can be of any size in valid range, but HW expects it to be the
-	 * same as modulo m so in case it is different we need to allocate a
-	 * new buf and copy src data.
-	 * In other case we just need to map the user provided buffer.
-	 * Also need to make sure that it is in contiguous buffer.
-	 */
+	 
 	if (sg_is_last(req->dst) && req->dst_len == ctx->p_size) {
 		qat_req->dst_align = NULL;
 		vaddr = sg_virt(req->dst);
@@ -330,7 +316,7 @@ static int qat_dh_compute_value(struct kpp_request *req)
 
 	qat_req->in.dh.in_tab[n_input_params] = 0;
 	qat_req->out.dh.out_tab[1] = 0;
-	/* Mapping in.in.b or in.in_g2.xa is the same */
+	 
 	qat_req->phy_in = dma_map_single(dev, &qat_req->in.dh,
 					 sizeof(struct qat_dh_input_params),
 					 DMA_TO_DEVICE);
@@ -407,7 +393,7 @@ static int qat_dh_set_params(struct qat_dh_ctx *ctx, struct dh *params)
 		return -ENOMEM;
 	memcpy(ctx->p, params->p, ctx->p_size);
 
-	/* If g equals 2 don't copy it */
+	 
 	if (params->g_size == 1 && *(char *)params->g == 0x02) {
 		ctx->g2 = true;
 		return 0;
@@ -454,7 +440,7 @@ static int qat_dh_set_secret(struct crypto_kpp *tfm, const void *buf,
 	if (crypto_dh_decode_key(buf, len, &params) < 0)
 		return -EINVAL;
 
-	/* Free old secret if any */
+	 
 	qat_dh_clear_ctx(dev, ctx);
 
 	ret = qat_dh_set_params(ctx, &params);
@@ -685,13 +671,7 @@ static int qat_rsa_enc(struct akcipher_request *req)
 	qat_req->in.rsa.enc.n = ctx->dma_n;
 	ret = -ENOMEM;
 
-	/*
-	 * src can be of any size in valid range, but HW expects it to be the
-	 * same as modulo n so in case it is different we need to allocate a
-	 * new buf and copy src data.
-	 * In other case we just need to map the user provided buffer.
-	 * Also need to make sure that it is in contiguous buffer.
-	 */
+	 
 	if (sg_is_last(req->src) && req->src_len == ctx->key_sz) {
 		qat_req->src_align = NULL;
 		vaddr = sg_virt(req->src);
@@ -829,13 +809,7 @@ static int qat_rsa_dec(struct akcipher_request *req)
 	}
 	ret = -ENOMEM;
 
-	/*
-	 * src can be of any size in valid range, but HW expects it to be the
-	 * same as modulo n so in case it is different we need to allocate a
-	 * new buf and copy src data.
-	 * In other case we just need to map the user provided buffer.
-	 * Also need to make sure that it is in contiguous buffer.
-	 */
+	 
 	if (sg_is_last(req->src) && req->src_len == ctx->key_sz) {
 		qat_req->src_align = NULL;
 		vaddr = sg_virt(req->src);
@@ -941,7 +915,7 @@ static int qat_rsa_set_n(struct qat_rsa_ctx *ctx, const char *value,
 
 	ctx->key_sz = vlen;
 	ret = -EINVAL;
-	/* invalid key size provided */
+	 
 	if (!qat_rsa_enc_fn_id(ctx->key_sz))
 		goto err;
 
@@ -1028,7 +1002,7 @@ static void qat_rsa_setkey_crt(struct qat_rsa_ctx *ctx, struct rsa_key *rsa_key)
 	unsigned int len;
 	unsigned int half_key_sz = ctx->key_sz / 2;
 
-	/* p */
+	 
 	ptr = rsa_key->p;
 	len = rsa_key->p_sz;
 	qat_rsa_drop_leading_zeros(&ptr, &len);
@@ -1039,7 +1013,7 @@ static void qat_rsa_setkey_crt(struct qat_rsa_ctx *ctx, struct rsa_key *rsa_key)
 		goto err;
 	memcpy(ctx->p + (half_key_sz - len), ptr, len);
 
-	/* q */
+	 
 	ptr = rsa_key->q;
 	len = rsa_key->q_sz;
 	qat_rsa_drop_leading_zeros(&ptr, &len);
@@ -1050,7 +1024,7 @@ static void qat_rsa_setkey_crt(struct qat_rsa_ctx *ctx, struct rsa_key *rsa_key)
 		goto free_p;
 	memcpy(ctx->q + (half_key_sz - len), ptr, len);
 
-	/* dp */
+	 
 	ptr = rsa_key->dp;
 	len = rsa_key->dp_sz;
 	qat_rsa_drop_leading_zeros(&ptr, &len);
@@ -1062,7 +1036,7 @@ static void qat_rsa_setkey_crt(struct qat_rsa_ctx *ctx, struct rsa_key *rsa_key)
 		goto free_q;
 	memcpy(ctx->dp + (half_key_sz - len), ptr, len);
 
-	/* dq */
+	 
 	ptr = rsa_key->dq;
 	len = rsa_key->dq_sz;
 	qat_rsa_drop_leading_zeros(&ptr, &len);
@@ -1074,7 +1048,7 @@ static void qat_rsa_setkey_crt(struct qat_rsa_ctx *ctx, struct rsa_key *rsa_key)
 		goto free_dp;
 	memcpy(ctx->dq + (half_key_sz - len), ptr, len);
 
-	/* qinv */
+	 
 	ptr = rsa_key->qinv;
 	len = rsa_key->qinv_sz;
 	qat_rsa_drop_leading_zeros(&ptr, &len);
@@ -1113,7 +1087,7 @@ static void qat_rsa_clear_ctx(struct device *dev, struct qat_rsa_ctx *ctx)
 {
 	unsigned int half_key_sz = ctx->key_sz / 2;
 
-	/* Free the old key if any */
+	 
 	if (ctx->n)
 		dma_free_coherent(dev, ctx->key_sz, ctx->n, ctx->dma_n);
 	if (ctx->e)
@@ -1186,12 +1160,12 @@ static int qat_rsa_setkey(struct crypto_akcipher *tfm, const void *key,
 	}
 
 	if (!ctx->n || !ctx->e) {
-		/* invalid key provided */
+		 
 		ret = -EINVAL;
 		goto free;
 	}
 	if (private && !ctx->d) {
-		/* invalid private key provided */
+		 
 		ret = -EINVAL;
 		goto free;
 	}

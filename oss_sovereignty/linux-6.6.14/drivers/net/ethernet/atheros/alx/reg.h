@@ -1,36 +1,4 @@
-/*
- * Copyright (c) 2013 Johannes Berg <johannes@sipsolutions.net>
- *
- *  This file is free software: you may copy, redistribute and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation, either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  This file is distributed in the hope that it will be useful, but
- *  WITHOUT ANY WARRANTY; without even the implied warranty of
- *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *  General Public License for more details.
- *
- *  You should have received a copy of the GNU General Public License
- *  along with this program.  If not, see <http://www.gnu.org/licenses/>.
- *
- * This file incorporates work covered by the following copyright and
- * permission notice:
- *
- * Copyright (c) 2012 Qualcomm Atheros, Inc.
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #ifndef ALX_REG_H
 #define ALX_REG_H
@@ -43,11 +11,7 @@
 #define ALX_DEV_ID_AR8171				0x10A1
 #define ALX_DEV_ID_AR8172				0x10A0
 
-/* rev definition,
- * bit(0): with xD support
- * bit(1): with Card Reader function
- * bit(7:2): real revision
- */
+ 
 #define ALX_PCI_REVID_SHIFT				3
 #define ALX_REV_A0					0
 #define ALX_REV_A1					1
@@ -63,14 +27,14 @@
 #define ALX_UE_SVRT_FCPROTERR				BIT(13)
 #define ALX_UE_SVRT_DLPROTERR				BIT(4)
 
-/* eeprom & flash load register */
+ 
 #define ALX_EFLD					0x0204
 #define ALX_EFLD_F_EXIST				BIT(10)
 #define ALX_EFLD_E_EXIST				BIT(9)
 #define ALX_EFLD_STAT					BIT(5)
 #define ALX_EFLD_START					BIT(0)
 
-/* eFuse load register */
+ 
 #define ALX_SLD						0x0218
 #define ALX_SLD_STAT					BIT(12)
 #define ALX_SLD_START					BIT(11)
@@ -81,13 +45,13 @@
 
 #define ALX_PMCTRL					0x12F8
 #define ALX_PMCTRL_HOTRST_WTEN				BIT(31)
-/* bit30: L0s/L1 controlled by MAC based on throughput(setting in 15A0) */
+ 
 #define ALX_PMCTRL_ASPM_FCEN				BIT(30)
 #define ALX_PMCTRL_SADLY_EN				BIT(29)
 #define ALX_PMCTRL_LCKDET_TIMER_MASK			0xF
 #define ALX_PMCTRL_LCKDET_TIMER_SHIFT			24
 #define ALX_PMCTRL_LCKDET_TIMER_DEF			0xC
-/* bit[23:20] if pm_request_l1 time > @, then enter L0s not L1 */
+ 
 #define ALX_PMCTRL_L1REQ_TO_MASK			0xF
 #define ALX_PMCTRL_L1REQ_TO_SHIFT			20
 #define ALX_PMCTRL_L1REG_TO_DEF				0xF
@@ -96,33 +60,33 @@
 #define ALX_PMCTRL_L1_TIMER_SHIFT			16
 #define ALX_PMCTRL_L1_TIMER_16US			4
 #define ALX_PMCTRL_RCVR_WT_1US				BIT(15)
-/* bit13: enable pcie clk switch in L1 state */
+ 
 #define ALX_PMCTRL_L1_CLKSW_EN				BIT(13)
 #define ALX_PMCTRL_L0S_EN				BIT(12)
 #define ALX_PMCTRL_RXL1_AFTER_L0S			BIT(11)
 #define ALX_PMCTRL_L1_BUFSRX_EN				BIT(7)
-/* bit6: power down serdes RX */
+ 
 #define ALX_PMCTRL_L1_SRDSRX_PWD			BIT(6)
 #define ALX_PMCTRL_L1_SRDSPLL_EN			BIT(5)
 #define ALX_PMCTRL_L1_SRDS_EN				BIT(4)
 #define ALX_PMCTRL_L1_EN				BIT(3)
 
-/*******************************************************/
-/* following registers are mapped only to memory space */
-/*******************************************************/
+ 
+ 
+ 
 
 #define ALX_MASTER					0x1400
-/* bit12: 1:alwys select pclk from serdes, not sw to 25M */
+ 
 #define ALX_MASTER_PCLKSEL_SRDS				BIT(12)
-/* bit11: irq moduration for rx */
+ 
 #define ALX_MASTER_IRQMOD2_EN				BIT(11)
-/* bit10: irq moduration for tx/rx */
+ 
 #define ALX_MASTER_IRQMOD1_EN				BIT(10)
 #define ALX_MASTER_SYSALVTIMER_EN			BIT(7)
 #define ALX_MASTER_OOB_DIS				BIT(6)
-/* bit5: wakeup without pcie clk */
+ 
 #define ALX_MASTER_WAKEN_25M				BIT(5)
-/* bit0: MAC & DMA reset */
+ 
 #define ALX_MASTER_DMA_MAC_RST				BIT(0)
 #define ALX_DMA_MAC_RST_TO				50
 
@@ -132,9 +96,9 @@
 
 #define ALX_PHY_CTRL					0x140C
 #define ALX_PHY_CTRL_100AB_EN				BIT(17)
-/* bit14: affect MAC & PHY, go to low power sts */
+ 
 #define ALX_PHY_CTRL_POWER_DOWN				BIT(14)
-/* bit13: 1:pll always ON, 0:can switch in lpw */
+ 
 #define ALX_PHY_CTRL_PLL_ON				BIT(13)
 #define ALX_PHY_CTRL_RST_ANALOG				BIT(12)
 #define ALX_PHY_CTRL_HIB_PULSE				BIT(11)
@@ -142,7 +106,7 @@
 #define ALX_PHY_CTRL_IDDQ				BIT(7)
 #define ALX_PHY_CTRL_GATE_25M				BIT(5)
 #define ALX_PHY_CTRL_LED_MODE				BIT(2)
-/* bit0: out of dsp RST state */
+ 
 #define ALX_PHY_CTRL_DSPRST_OUT				BIT(0)
 #define ALX_PHY_CTRL_DSPRST_TO				80
 #define ALX_PHY_CTRL_CLS	(ALX_PHY_CTRL_LED_MODE | \
@@ -168,7 +132,7 @@
 #define ALX_MDIO_CLK_SEL_25MD128			7
 #define ALX_MDIO_START					BIT(23)
 #define ALX_MDIO_SPRES_PRMBL				BIT(22)
-/* bit21: 1:read,0:write */
+ 
 #define ALX_MDIO_OP_READ				BIT(21)
 #define ALX_MDIO_REG_MASK				0x1F
 #define ALX_MDIO_REG_SHIFT				16
@@ -189,7 +153,7 @@
 #define ALX_LPI_CTRL					0x1440
 #define ALX_LPI_CTRL_EN					BIT(0)
 
-/* for B0+, bit[13..] for C0+ */
+ 
 #define ALX_HRTBT_EXT_CTRL				0x1AD0
 #define L1F_HRTBT_EXT_CTRL_PERIOD_HIGH_MASK		0x3F
 #define L1F_HRTBT_EXT_CTRL_PERIOD_HIGH_SHIFT		24
@@ -219,7 +183,7 @@
 #define ALX_HRTBT_REM_IPV6_ADDR1			0x1AE0
 #define ALX_HRTBT_REM_IPV6_ADDR0			0x1AE4
 
-/* 1B8C ~ 1B94 for C0+ */
+ 
 #define ALX_SWOI_ACER_CTRL				0x1B8C
 #define ALX_SWOI_ORIG_ACK_NAK_EN			BIT(20)
 #define ALX_SWOI_ORIG_ACK_NAK_PKT_LEN_MASK		0XFF
@@ -243,15 +207,15 @@
 #define ALX_SWOI_IOAC_CTRL_3_SWOI_2_HDR_ADDR_MASK	0xFFF
 #define ALX_SWOI_IOAC_CTRL_3_SWOI_2_HDR_ADDR_SHIFT	0
 
-/* for B0 */
+ 
 #define ALX_IDLE_DECISN_TIMER				0x1474
-/* 1ms */
+ 
 #define ALX_IDLE_DECISN_TIMER_DEF			0x400
 
 #define ALX_MAC_CTRL					0x1480
 #define ALX_MAC_CTRL_FAST_PAUSE				BIT(31)
 #define ALX_MAC_CTRL_WOLSPED_SWEN			BIT(30)
-/* bit29: 1:legacy(hi5b), 0:marvl(lo5b)*/
+ 
 #define ALX_MAC_CTRL_MHASH_ALG_HI5B			BIT(29)
 #define ALX_MAC_CTRL_BRD_EN				BIT(26)
 #define ALX_MAC_CTRL_MULTIALL_EN			BIT(25)
@@ -300,19 +264,19 @@
 #define ALX_RRD_ADDR_LO					0x1568
 #define ALX_RRD_RING_SZ					0x1578
 
-/* pri3: highest, pri0: lowest */
+ 
 #define ALX_TPD_PRI3_ADDR_LO				0x14E4
 #define ALX_TPD_PRI2_ADDR_LO				0x14E0
 #define ALX_TPD_PRI1_ADDR_LO				0x157C
 #define ALX_TPD_PRI0_ADDR_LO				0x1580
 
-/* producer index is 16bit */
+ 
 #define ALX_TPD_PRI3_PIDX				0x1618
 #define ALX_TPD_PRI2_PIDX				0x161A
 #define ALX_TPD_PRI1_PIDX				0x15F0
 #define ALX_TPD_PRI0_PIDX				0x15F2
 
-/* consumer index is 16bit */
+ 
 #define ALX_TPD_PRI3_CIDX				0x161C
 #define ALX_TPD_PRI2_CIDX				0x161E
 #define ALX_TPD_PRI1_CIDX				0x15F4
@@ -333,7 +297,7 @@
 #define ALX_TXQ_TPD_BURSTPREF_DEF			5
 
 #define ALX_TXQ1					0x1594
-/* bit11:  drop large packet, len > (rfd buf) */
+ 
 #define ALX_TXQ1_ERRLGPKT_DROP_EN			BIT(11)
 #define ALX_TXQ1_JUMBO_TSO_TH				(7*1024)
 
@@ -371,10 +335,7 @@
 #define ALX_RXQ2_RXF_XOFF_THRESH_SHIFT			16
 #define ALX_RXQ2_RXF_XON_THRESH_MASK			0xFFF
 #define ALX_RXQ2_RXF_XON_THRESH_SHIFT			0
-/* Size = tx-packet(1522) + IPG(12) + SOF(8) + 64(Pause) + IPG(12) + SOF(8) +
- *        rx-packet(1522) + delay-of-link(64)
- *      = 3212.
- */
+ 
 #define ALX_RXQ2_RXF_FLOW_CTRL_RSVD			3212
 
 #define ALX_DMA						0x15C0
@@ -386,7 +347,7 @@
 #define ALX_DMA_RDLY_CNT_MASK				0x1F
 #define ALX_DMA_RDLY_CNT_SHIFT				11
 #define ALX_DMA_RDLY_CNT_DEF				15
-/* bit10: 0:tpd with pri, 1: data */
+ 
 #define ALX_DMA_RREQ_PRI_DATA				BIT(10)
 #define ALX_DMA_RREQ_BLEN_MASK				0x7
 #define ALX_DMA_RREQ_BLEN_SHIFT				4
@@ -404,7 +365,7 @@
 
 #define ALX_RFD_CIDX					0x15F8
 
-/* MIB */
+ 
 #define ALX_MIB_BASE					0x1700
 
 #define ALX_MIB_RX_OK					(ALX_MIB_BASE + 0)
@@ -487,9 +448,9 @@
 
 #define ALX_IMR						0x1604
 
-/* re-send assert msg if SW no response */
+ 
 #define ALX_INT_RETRIG					0x1608
-/* 40ms */
+ 
 #define ALX_INT_RETRIG_TO				20000
 
 #define ALX_SMB_TIMER					0x15C4
@@ -512,24 +473,24 @@
 					 ALX_CLK_GATE_DMAR | \
 					 ALX_CLK_GATE_DMAW)
 
-/* interop between drivers */
+ 
 #define ALX_DRV						0x1804
 #define ALX_DRV_PHY_AUTO				BIT(28)
 #define ALX_DRV_PHY_1000				BIT(27)
 #define ALX_DRV_PHY_100					BIT(26)
 #define ALX_DRV_PHY_10					BIT(25)
 #define ALX_DRV_PHY_DUPLEX				BIT(24)
-/* bit23: adv Pause */
+ 
 #define ALX_DRV_PHY_PAUSE				BIT(23)
-/* bit22: adv Asym Pause */
+ 
 #define ALX_DRV_PHY_MASK				0xFF
 #define ALX_DRV_PHY_SHIFT				21
 #define ALX_DRV_PHY_UNKNOWN				0
 
-/* flag of phy inited */
+ 
 #define ALX_PHY_INITED					0x003F
 
-/* reg 1830 ~ 186C for C0+, 16 bit map patterns and wake packet detection */
+ 
 #define ALX_WOL_CTRL2					0x1830
 #define ALX_WOL_CTRL2_DATA_STORE			BIT(3)
 #define ALX_WOL_CTRL2_PTRN_EVT				BIT(2)
@@ -656,7 +617,7 @@
 #define ALX_ACER_TIMER_THRES_SHIFT			0
 #define ALX_ACER_TIMER_THRES_DEF			1
 
-/* RSS definitions */
+ 
 #define ALX_RSS_KEY0					0x14B0
 #define ALX_RSS_KEY1					0x14B4
 #define ALX_RSS_KEY2					0x14B8
@@ -689,14 +650,14 @@
 #define ALX_MSI_ID_MAP					0x15D4
 
 #define ALX_MSI_RETRANS_TIMER				0x1920
-/* bit16: 1:line,0:standard */
+ 
 #define ALX_MSI_MASK_SEL_LINE				BIT(16)
 #define ALX_MSI_RETRANS_TM_MASK				0xFFFF
 #define ALX_MSI_RETRANS_TM_SHIFT			0
 
-/* CR DMA ctrl */
+ 
 
-/* TX QoS */
+ 
 #define ALX_WRR						0x1938
 #define ALX_WRR_PRI_MASK				0x3
 #define ALX_WRR_PRI_SHIFT				29
@@ -730,17 +691,17 @@
 #define ALX_MSIC2_CALB_START				BIT(0)
 
 #define ALX_MISC3					0x19CC
-/* bit1: 1:Software control 25M */
+ 
 #define ALX_MISC3_25M_BY_SW				BIT(1)
-/* bit0: 25M switch to intnl OSC */
+ 
 #define ALX_MISC3_25M_NOTO_INTNL			BIT(0)
 
-/* MSIX tbl in memory space */
+ 
 #define ALX_MSIX_ENTRY_BASE				0x2000
 
-/********************* PHY regs definition ***************************/
+ 
 
-/* PHY Specific Status Register */
+ 
 #define ALX_MII_GIGA_PSSR				0x11
 #define ALX_GIGA_PSSR_SPD_DPLX_RESOLVED			0x0800
 #define ALX_GIGA_PSSR_DPLX				0x2000
@@ -749,24 +710,24 @@
 #define ALX_GIGA_PSSR_100MBS				0x4000
 #define ALX_GIGA_PSSR_1000MBS				0x8000
 
-/* PHY Interrupt Enable Register */
+ 
 #define ALX_MII_IER					0x12
 #define ALX_IER_LINK_UP					0x0400
 #define ALX_IER_LINK_DOWN				0x0800
 
-/* PHY Interrupt Status Register */
+ 
 #define ALX_MII_ISR					0x13
 
 #define ALX_MII_DBG_ADDR				0x1D
 #define ALX_MII_DBG_DATA				0x1E
 
-/***************************** debug port *************************************/
+ 
 
 #define ALX_MIIDBG_ANACTRL				0x00
 #define ALX_ANACTRL_DEF					0x02EF
 
 #define ALX_MIIDBG_SYSMODCTRL				0x04
-/* en half bias */
+ 
 #define ALX_SYSMODCTRL_IECHOADJ_DEF			0xBB8B
 
 #define ALX_MIIDBG_SRDSYSMOD				0x05
@@ -817,7 +778,7 @@
 #define ALX_GREENCFG2_BP_GREEN				0x8000
 #define ALX_GREENCFG2_GATE_DFSE_EN			0x0080
 
-/******* dev 3 *********/
+ 
 #define ALX_MIIEXT_PCS					3
 
 #define ALX_MIIEXT_CLDCTRL3				0x8003
@@ -835,7 +796,7 @@
 #define ALX_MIIEXT_VDRVBIAS				0x8062
 #define ALX_VDRVBIAS_DEF				0x3
 
-/********* dev 7 **********/
+ 
 #define ALX_MIIEXT_ANEG					7
 
 #define ALX_MIIEXT_LOCAL_EEEADV				0x3C
@@ -846,7 +807,7 @@
 #define ALX_AFE_10BT_100M_TH				0x0040
 
 #define ALX_MIIEXT_S3DIG10				0x8023
-/* bit0: 1:bypass 10BT rx fifo, 0:original 10BT rx */
+ 
 #define ALX_MIIEXT_S3DIG10_SL				0x0001
 #define ALX_MIIEXT_S3DIG10_DEF				0
 

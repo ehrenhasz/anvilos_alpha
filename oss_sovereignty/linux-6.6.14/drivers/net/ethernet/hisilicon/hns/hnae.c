@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
@@ -124,7 +122,7 @@ static void hnae_free_buffers(struct hnae_ring *ring)
 		hnae_free_buffer_detach(ring, i);
 }
 
-/* Allocate memory for raw pkg, and map with dma */
+ 
 static int hnae_alloc_buffers(struct hnae_ring *ring)
 {
 	int i, j, ret;
@@ -143,7 +141,7 @@ out_buffer_fail:
 	return ret;
 }
 
-/* free desc along with its attached buffer */
+ 
 static void hnae_free_desc(struct hnae_ring *ring)
 {
 	dma_unmap_single(ring_to_dev(ring), ring->desc_dma_addr,
@@ -154,7 +152,7 @@ static void hnae_free_desc(struct hnae_ring *ring)
 	ring->desc = NULL;
 }
 
-/* alloc desc, without buffer attached */
+ 
 static int hnae_alloc_desc(struct hnae_ring *ring)
 {
 	int size = ring->desc_num * sizeof(ring->desc[0]);
@@ -175,7 +173,7 @@ static int hnae_alloc_desc(struct hnae_ring *ring)
 	return 0;
 }
 
-/* fini ring, also free the buffer for the ring */
+ 
 static void hnae_fini_ring(struct hnae_ring *ring)
 {
 	if (is_rx_ring(ring))
@@ -188,7 +186,7 @@ static void hnae_fini_ring(struct hnae_ring *ring)
 	ring->next_to_use = 0;
 }
 
-/* init ring, and with buffer for rx ring */
+ 
 static int
 hnae_init_ring(struct hnae_queue *q, struct hnae_ring *ring, int flags)
 {
@@ -202,7 +200,7 @@ hnae_init_ring(struct hnae_queue *q, struct hnae_ring *ring, int flags)
 	ring->coal_param = q->handle->coal_param;
 	assert(!ring->desc && !ring->desc_cb && !ring->desc_dma_addr);
 
-	/* not matter for tx or rx ring, the ntc and ntc start from 0 */
+	 
 	assert(ring->next_to_use == 0);
 	assert(ring->next_to_clean == 0);
 
@@ -270,9 +268,7 @@ static void hnae_fini_queue(struct hnae_queue *q)
 	hnae_fini_ring(&q->rx_ring);
 }
 
-/*
- * ae_chain - define ae chain head
- */
+ 
 static RAW_NOTIFIER_HEAD(ae_chain);
 
 int hnae_register_notifier(struct notifier_block *nb)
@@ -293,13 +289,13 @@ int hnae_reinit_handle(struct hnae_handle *handle)
 	int i, j;
 	int ret;
 
-	for (i = 0; i < handle->q_num; i++) /* free ring*/
+	for (i = 0; i < handle->q_num; i++)  
 		hnae_fini_queue(handle->qs[i]);
 
 	if (handle->dev->ops->reset)
 		handle->dev->ops->reset(handle);
 
-	for (i = 0; i < handle->q_num; i++) {/* reinit ring*/
+	for (i = 0; i < handle->q_num; i++) { 
 		ret = hnae_init_queue(handle, handle->qs[i], handle->dev);
 		if (ret)
 			goto out_when_init_queue;
@@ -312,14 +308,7 @@ out_when_init_queue:
 }
 EXPORT_SYMBOL(hnae_reinit_handle);
 
-/* hnae_get_handle - get a handle from the AE
- * @owner_dev: the dev use this handle
- * @ae_id: the id of the ae to be used
- * @ae_opts: the options set for the handle
- * @bops: the callbacks for buffer management
- *
- * return handle ptr or ERR_PTR
- */
+ 
 struct hnae_handle *hnae_get_handle(struct device *owner_dev,
 				    const struct fwnode_handle	*fwnode,
 				    u32 port_id,
@@ -393,12 +382,7 @@ static void hnae_release(struct device *dev)
 {
 }
 
-/**
- * hnae_ae_register - register a AE engine to hnae framework
- * @hdev: the hnae ae engine device
- * @owner:  the module who provides this dev
- * NOTE: the duplicated name will not be checked
- */
+ 
 int hnae_ae_register(struct hnae_ae_dev *hdev, struct module *owner)
 {
 	static atomic_t id = ATOMIC_INIT(-1);
@@ -436,10 +420,7 @@ int hnae_ae_register(struct hnae_ae_dev *hdev, struct module *owner)
 }
 EXPORT_SYMBOL(hnae_ae_register);
 
-/**
- * hnae_ae_unregister - unregisters a HNAE AE engine
- * @hdev: the device to unregister
- */
+ 
 void hnae_ae_unregister(struct hnae_ae_dev *hdev)
 {
 	device_unregister(&hdev->cls_dev);
@@ -464,4 +445,4 @@ MODULE_AUTHOR("Hisilicon, Inc.");
 MODULE_LICENSE("GPL");
 MODULE_DESCRIPTION("Hisilicon Network Acceleration Engine Framework");
 
-/* vi: set tw=78 noet: */
+ 

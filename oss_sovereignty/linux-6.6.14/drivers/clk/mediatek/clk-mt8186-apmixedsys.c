@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Author: Chun-Jie Chen <chun-jie.chen@mediatek.com>
+
+
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/platform_device.h>
@@ -44,10 +44,7 @@
 	}
 
 static const struct mtk_pll_data plls[] = {
-	/*
-	 * armpll_ll/armpll_bl/ccipll are main clock source of AP MCU,
-	 * should not be closed in Linux world.
-	 */
+	 
 	PLL(CLK_APMIXED_ARMPLL_LL, "armpll_ll", 0x0204, 0x0210, 0,
 	    PLL_AO, 0, 22, 0x0208, 24, 0, 0, 0, 0x0208),
 	PLL(CLK_APMIXED_ARMPLL_BL, "armpll_bl", 0x0214, 0x0220, 0,

@@ -1,10 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0
- *
- * ASoC simple sound card support
- *
- * Copyright (C) 2012 Renesas Solutions Corp.
- * Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
- */
+ 
 
 #ifndef __SIMPLE_CARD_H
 #define __SIMPLE_CARD_H
@@ -23,4 +17,4 @@ struct asoc_simple_card_info {
 	struct asoc_simple_dai codec_dai;
 };
 
-#endif /* __SIMPLE_CARD_H */
+#endif  

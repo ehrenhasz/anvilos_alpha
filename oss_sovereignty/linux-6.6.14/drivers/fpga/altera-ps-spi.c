@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Altera Passive Serial SPI Driver
- *
- *  Copyright (c) 2017 United Western Technologies, Corporation
- *
- *  Joshua Clayton <stillcompiling@gmail.com>
- *
- * Manage Altera FPGA firmware that is loaded over SPI using the passive
- * serial configuration method.
- * Firmware must be in binary "rbf" format.
- * Works on Arria 10, Cyclone V and Stratix V. Should work on Cyclone series.
- * May work on other Altera FPGAs.
- */
+
+ 
 
 #include <linux/bitrev.h>
 #include <linux/delay.h>
@@ -46,17 +34,9 @@ struct altera_ps_conf {
 	char mgr_name[64];
 };
 
-/*          |   Arria 10  |   Cyclone5  |   Stratix5  |
- * t_CF2ST0 |     [; 600] |     [; 600] |     [; 600] |ns
- * t_CFG    |        [2;] |        [2;] |        [2;] |µs
- * t_STATUS | [268; 3000] | [268; 1506] | [268; 1506] |µs
- * t_CF2ST1 |    [; 3000] |    [; 1506] |    [; 1506] |µs
- * t_CF2CK  |     [3010;] |     [1506;] |     [1506;] |µs
- * t_ST2CK  |       [10;] |        [2;] |        [2;] |µs
- * t_CD2UM  |  [175; 830] |  [175; 437] |  [175; 437] |µs
- */
+ 
 static struct altera_ps_data c5_data = {
-	/* these values for Cyclone5 are compatible with Stratix5 */
+	 
 	.devtype = CYCLONE5,
 	.status_wait_min_us = 268,
 	.status_wait_max_us = 1506,
@@ -66,13 +46,13 @@ static struct altera_ps_data c5_data = {
 
 static struct altera_ps_data a10_data = {
 	.devtype = ARRIA10,
-	.status_wait_min_us = 268,  /* min(t_STATUS) */
-	.status_wait_max_us = 3000, /* max(t_CF2ST1) */
-	.t_cfg_us = 2,    /* max { min(t_CFG), max(tCF2ST0) } */
-	.t_st2ck_us = 10, /* min(t_ST2CK) */
+	.status_wait_min_us = 268,   
+	.status_wait_max_us = 3000,  
+	.t_cfg_us = 2,     
+	.t_st2ck_us = 10,  
 };
 
-/* Array index is enum altera_ps_devtype */
+ 
 static const struct altera_ps_data *altera_ps_data_map[] = {
 	&c5_data,
 	&a10_data,
@@ -120,7 +100,7 @@ static int altera_ps_write_init(struct fpga_manager *mgr,
 
 	gpiod_set_value_cansleep(conf->config, 1);
 
-	/* wait min reset pulse time */
+	 
 	altera_ps_delay(conf->data->t_cfg_us);
 
 	if (!gpiod_get_value_cansleep(conf->status)) {
@@ -136,11 +116,11 @@ static int altera_ps_write_init(struct fpga_manager *mgr,
 	if (max % min)
 		waits++;
 
-	/* wait for max { max(t_STATUS), max(t_CF2ST1) } */
+	 
 	for (i = 0; i < waits; i++) {
 		usleep_range(min, min + 10);
 		if (!gpiod_get_value_cansleep(conf->status)) {
-			/* wait for min(t_ST2CK)*/
+			 
 			altera_ps_delay(conf->data->t_st2ck_us);
 			return 0;
 		}
@@ -156,7 +136,7 @@ static void rev_buf(char *buf, size_t len)
 	size_t extra_bytes = (len & 0x03);
 	const u32 *fw_end = (u32 *)(buf + len - extra_bytes);
 
-	/* set buffer to lsb first */
+	 
 	while (fw32 < fw_end) {
 		*fw32 = bitrev8x4(*fw32);
 		fw32++;
@@ -217,10 +197,7 @@ static int altera_ps_write_complete(struct fpga_manager *mgr,
 		}
 	}
 
-	/*
-	 * After CONF_DONE goes high, send two additional falling edges on DCLK
-	 * to begin initialization and enter user mode
-	 */
+	 
 	ret = spi_write(conf->spi, dummy, 1);
 	if (ret) {
 		dev_err(&mgr->dev, "spi error during end sequence: %d\n", ret);
@@ -242,7 +219,7 @@ static const struct altera_ps_data *id_to_data(const struct spi_device_id *id)
 	kernel_ulong_t devtype = id->driver_data;
 	const struct altera_ps_data *data;
 
-	/* someone added a altera_ps_devtype without adding to the map array */
+	 
 	if (devtype >= ARRAY_SIZE(altera_ps_data_map))
 		return NULL;
 
@@ -298,7 +275,7 @@ static int altera_ps_probe(struct spi_device *spi)
 		dev_warn(&spi->dev, "Not using confd gpio");
 	}
 
-	/* Register manager with unique name */
+	 
 	snprintf(conf->mgr_name, sizeof(conf->mgr_name), "%s %s",
 		 dev_driver_string(&spi->dev), dev_name(&spi->dev));
 

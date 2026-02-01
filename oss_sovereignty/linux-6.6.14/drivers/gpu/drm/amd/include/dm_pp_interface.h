@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #ifndef _DM_PP_INTERFACE_
 #define _DM_PP_INTERFACE_
 
@@ -51,60 +30,55 @@ struct single_display_configuration
 	uint32_t controller_id;
 	uint32_t signal_type;
 	uint32_t display_state;
-	/* phy id for the primary internal transmitter */
+	 
 	uint8_t primary_transmitter_phyi_d;
-	/* bitmap with the active lanes */
+	 
 	uint8_t primary_transmitter_active_lanemap;
-	/* phy id for the secondary internal transmitter (for dual-link dvi) */
+	 
 	uint8_t secondary_transmitter_phy_id;
-	/* bitmap with the active lanes */
+	 
 	uint8_t secondary_transmitter_active_lanemap;
-	/* misc phy settings for SMU. */
+	 
 	uint32_t config_flags;
 	uint32_t display_type;
 	uint32_t view_resolution_cx;
 	uint32_t view_resolution_cy;
 	enum amd_pp_display_config_type displayconfigtype;
-	uint32_t vertical_refresh; /* for active display */
+	uint32_t vertical_refresh;  
 };
 
 #define MAX_NUM_DISPLAY 32
 
 struct amd_pp_display_configuration {
-	bool nb_pstate_switch_disable;/* controls NB PState switch */
-	bool cpu_cc6_disable; /* controls CPU CState switch ( on or off) */
+	bool nb_pstate_switch_disable; 
+	bool cpu_cc6_disable;  
 	bool cpu_pstate_disable;
 	uint32_t cpu_pstate_separation_time;
 
-	uint32_t num_display;  /* total number of display*/
+	uint32_t num_display;   
 	uint32_t num_path_including_non_display;
 	uint32_t crossfire_display_index;
 	uint32_t min_mem_set_clock;
 	uint32_t min_core_set_clock;
-	/* unit 10KHz x bit*/
+	 
 	uint32_t min_bus_bandwidth;
-	/* minimum required stutter sclk, in 10khz uint32_t ulMinCoreSetClk;*/
+	 
 	uint32_t min_core_set_clock_in_sr;
 
 	struct single_display_configuration displays[MAX_NUM_DISPLAY];
 
-	uint32_t vrefresh; /* for active display*/
+	uint32_t vrefresh;  
 
-	uint32_t min_vblank_time; /* for active display*/
+	uint32_t min_vblank_time;  
 	bool multi_monitor_in_sync;
-	/* Controller Index of primary display - used in MCLK SMC switching hang
-	 * SW Workaround*/
+	 
 	uint32_t crtc_index;
-	/* htotal*1000/pixelclk - used in MCLK SMC switching hang SW Workaround*/
+	 
 	uint32_t line_time_in_us;
 	bool invalid_vblank_time;
 
 	uint32_t display_clk;
-	/*
-	 * for given display configuration if multimonitormnsync == false then
-	 * Memory clock DPMS with this latency or below is allowed, DPMS with
-	 * higher latency not allowed.
-	 */
+	 
 	uint32_t dce_tolerable_mclk_in_active_latency;
 	uint32_t min_dcef_set_clk;
 	uint32_t min_dcef_deep_sleep_set_clk;
@@ -191,4 +165,4 @@ struct pp_display_clock_request {
 	uint32_t clock_freq_in_khz;
 };
 
-#endif /* _DM_PP_INTERFACE_ */
+#endif  

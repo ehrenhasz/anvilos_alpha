@@ -1,36 +1,6 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- * This file implements 8b/10b link training specially modified to support an
- * embedded retimer chip. This retimer chip is referred as fixed vs pe retimer.
- * Unlike native dp connection this chip requires a modified link training
- * protocol based on 8b/10b link training. Since this is a non standard sequence
- * and we must support this hardware, we decided to isolate it in its own
- * training sequence inside its own file.
- */
+ 
 #include "link_dp_training_fixed_vs_pe_retimer.h"
 #include "link_dp_training_8b_10b.h"
 #include "link_dpcd.h"
@@ -51,7 +21,7 @@ void dp_fixed_vs_pe_read_lane_adjust(
 	uint8_t dprx_pe = 0;
 	uint8_t lane;
 
-	/* W/A to read lane settings requested by DPRX */
+	 
 	link_configure_fixed_vs_pe_retimer(link->ddc,
 			&vendor_lttpr_write_data_vs[0], sizeof(vendor_lttpr_write_data_vs));
 
@@ -86,7 +56,7 @@ void dp_fixed_vs_pe_set_retimer_lane_settings(
 				dpcd_lane_adjust[lane].bits.PRE_EMPHASIS_SET << (2 * lane);
 	}
 
-	/* Force LTTPR to output desired VS and PE */
+	 
 	link_configure_fixed_vs_pe_retimer(link->ddc,
 			&vendor_lttpr_write_data_reset[0], sizeof(vendor_lttpr_write_data_reset));
 
@@ -110,11 +80,11 @@ static enum link_training_result perform_fixed_vs_pe_nontransparent_training_seq
 	uint8_t repeater_cnt;
 	uint8_t repeater_id;
 
-	/* Fixed VS/PE specific: Force CR AUX RD Interval to at least 16ms */
+	 
 	if (lt_settings->cr_pattern_time < 16000)
 		lt_settings->cr_pattern_time = 16000;
 
-	/* Fixed VS/PE specific: Toggle link rate */
+	 
 	apply_toggle_rate_wa = ((link->vendor_specific_lttpr_link_rate_wa == target_rate) || (link->vendor_specific_lttpr_link_rate_wa == 0));
 	target_rate = get_dpcd_link_rate(&lt_settings->link_settings);
 	toggle_rate = (target_rate == 0x6) ? 0xA : 0x6;
@@ -125,10 +95,10 @@ static enum link_training_result perform_fixed_vs_pe_nontransparent_training_seq
 	if (link->ctx->dc->work_arounds.lt_early_cr_pattern)
 		start_clock_recovery_pattern_early(link, link_res, lt_settings, DPRX);
 
-	/* 1. set link rate, lane count and spread. */
+	 
 	dpcd_set_link_settings(link, lt_settings);
 
-	/* Fixed VS/PE specific: Toggle link rate back*/
+	 
 	if (apply_toggle_rate_wa) {
 		core_link_write_dpcd(
 				link,
@@ -141,9 +111,7 @@ static enum link_training_result perform_fixed_vs_pe_nontransparent_training_seq
 
 	if (lt_settings->lttpr_mode == LTTPR_MODE_NON_TRANSPARENT) {
 
-		/* 2. perform link training (set link training done
-		 *  to false is done as well)
-		 */
+		 
 		repeater_cnt = dp_parse_lttpr_repeater_count(link->dpcd_caps.lttpr_caps.phy_repeater_cnt);
 
 		for (repeater_id = repeater_cnt; (repeater_id > 0 && status == LINK_TRAINING_SUCCESS);
@@ -212,7 +180,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 	uint8_t toggle_rate;
 	uint8_t rate;
 
-	/* Only 8b/10b is supported */
+	 
 	ASSERT(link_dp_get_encoding_format(&lt_settings->link_settings) ==
 			DP_8b_10b_ENCODING);
 
@@ -225,13 +193,13 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 		if (offset == 2) {
 			pre_disable_intercept_delay_ms = link->dc->debug.fixed_vs_aux_delay_config_wa;
 
-		/* Certain display and cable configuration require extra delay */
+		 
 		} else if (offset > 2) {
 			pre_disable_intercept_delay_ms = link->dc->debug.fixed_vs_aux_delay_config_wa * 2;
 		}
 	}
 
-	/* Vendor specific: Reset lane settings */
+	 
 	link_configure_fixed_vs_pe_retimer(link->ddc,
 			&vendor_lttpr_write_data_reset[0], sizeof(vendor_lttpr_write_data_reset));
 	link_configure_fixed_vs_pe_retimer(link->ddc,
@@ -239,12 +207,12 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 	link_configure_fixed_vs_pe_retimer(link->ddc,
 			&vendor_lttpr_write_data_pe[0], sizeof(vendor_lttpr_write_data_pe));
 
-	/* Vendor specific: Enable intercept */
+	 
 	link_configure_fixed_vs_pe_retimer(link->ddc,
 			&vendor_lttpr_write_data_intercept_en[0], sizeof(vendor_lttpr_write_data_intercept_en));
 
 
-	/* 1. set link rate, lane count and spread. */
+	 
 
 	downspread.raw = (uint8_t)(lt_settings->link_settings.link_spread);
 
@@ -268,7 +236,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 
 	rate = get_dpcd_link_rate(&lt_settings->link_settings);
 
-	/* Vendor specific: Toggle link rate */
+	 
 	toggle_rate = (rate == 0x6) ? 0xA : 0x6;
 
 	if (link->vendor_specific_lttpr_link_rate_wa == rate || link->vendor_specific_lttpr_link_rate_wa == 0) {
@@ -306,9 +274,9 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 				&vendor_lttpr_write_data_4lane_5[0], sizeof(vendor_lttpr_write_data_4lane_5));
 	}
 
-	/* 2. Perform link training */
+	 
 
-	/* Perform Clock Recovery Sequence */
+	 
 	if (status == LINK_TRAINING_SUCCESS) {
 		const uint8_t max_vendor_dpcd_retries = 10;
 		uint32_t retries_cr;
@@ -331,24 +299,22 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 			(retry_count < LINK_TRAINING_MAX_CR_RETRY)) {
 
 
-			/* 1. call HWSS to set lane settings */
+			 
 			dp_set_hw_lane_settings(
 					link,
 					link_res,
 					lt_settings,
 					0);
 
-			/* 2. update DPCD of the receiver */
+			 
 			if (!retry_count) {
-				/* EPR #361076 - write as a 5-byte burst,
-				 * but only for the 1-st iteration.
-				 */
+				 
 				dpcd_set_lt_pattern_and_lane_settings(
 						link,
 						lt_settings,
 						lt_settings->pattern_for_cr,
 						0);
-				/* Vendor specific: Disable intercept */
+				 
 				for (i = 0; i < max_vendor_dpcd_retries; i++) {
 					if (pre_disable_intercept_delay_ms != 0)
 						msleep(pre_disable_intercept_delay_ms);
@@ -372,7 +338,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 							lt_settings->dpcd_lane_settings[lane].bits.PRE_EMPHASIS_SET << (2 * lane);
 				}
 
-				/* Vendor specific: Update VS and PE to DPRX requested value */
+				 
 				link_configure_fixed_vs_pe_retimer(link->ddc,
 						&vendor_lttpr_write_data_vs[0], sizeof(vendor_lttpr_write_data_vs));
 				link_configure_fixed_vs_pe_retimer(link->ddc,
@@ -384,16 +350,14 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 						0);
 			}
 
-			/* 3. wait receiver to lock-on*/
+			 
 			wait_time_microsec = lt_settings->cr_pattern_time;
 
 			dp_wait_for_training_aux_rd_interval(
 					link,
 					wait_time_microsec);
 
-			/* 4. Read lane status and requested drive
-			 * settings as set by the sink
-			 */
+			 
 			dp_get_lane_status_and_lane_adjust(
 					link,
 					lt_settings,
@@ -402,27 +366,25 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 					dpcd_lane_adjust,
 					0);
 
-			/* 5. check CR done*/
+			 
 			if (dp_is_cr_done(lane_count, dpcd_lane_status)) {
 				status = LINK_TRAINING_SUCCESS;
 				break;
 			}
 
-			/* 6. max VS reached*/
+			 
 			if (dp_is_max_vs_reached(lt_settings))
 				break;
 
-			/* 7. same lane settings */
-			/* Note: settings are the same for all lanes,
-			 * so comparing first lane is sufficient
-			 */
+			 
+			 
 			if (lt_settings->dpcd_lane_settings[0].bits.VOLTAGE_SWING_SET ==
 					dpcd_lane_adjust[0].bits.VOLTAGE_SWING_LANE)
 				retries_cr++;
 			else
 				retries_cr = 0;
 
-			/* 8. update VS/PE/PC2 in lt_settings*/
+			 
 			dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
 					lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
 			retry_count++;
@@ -439,7 +401,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 		status = dp_get_cr_failure(lane_count, dpcd_lane_status);
 	}
 
-	/* Perform Channel EQ Sequence */
+	 
 	if (status == LINK_TRAINING_SUCCESS) {
 		enum dc_dp_training_pattern tr_pattern;
 		uint32_t retries_ch_eq;
@@ -449,7 +411,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 		union lane_status dpcd_lane_status[LANE_COUNT_DP_MAX] = {0};
 		union lane_adjust dpcd_lane_adjust[LANE_COUNT_DP_MAX] = {0};
 
-		/* Note: also check that TPS4 is a supported feature*/
+		 
 		tr_pattern = lt_settings->pattern_for_eq;
 
 		dp_set_hw_training_pattern(link, link_res, tr_pattern, 0);
@@ -471,17 +433,15 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 						lt_settings->dpcd_lane_settings[lane].bits.PRE_EMPHASIS_SET << (2 * lane);
 			}
 
-			/* Vendor specific: Update VS and PE to DPRX requested value */
+			 
 			link_configure_fixed_vs_pe_retimer(link->ddc,
 					&vendor_lttpr_write_data_vs[0], sizeof(vendor_lttpr_write_data_vs));
 			link_configure_fixed_vs_pe_retimer(link->ddc,
 					&vendor_lttpr_write_data_pe[0], sizeof(vendor_lttpr_write_data_pe));
 
-			/* 2. update DPCD*/
+			 
 			if (!retries_ch_eq)
-				/* EPR #361076 - write as a 5-byte burst,
-				 * but only for the 1-st iteration
-				 */
+				 
 
 				dpcd_set_lt_pattern_and_lane_settings(
 					link,
@@ -490,16 +450,14 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 			else
 				dpcd_set_lane_settings(link, lt_settings, 0);
 
-			/* 3. wait for receiver to lock-on*/
+			 
 			wait_time_microsec = lt_settings->eq_pattern_time;
 
 			dp_wait_for_training_aux_rd_interval(
 					link,
 					wait_time_microsec);
 
-			/* 4. Read lane status and requested
-			 * drive settings as set by the sink
-			 */
+			 
 			dp_get_lane_status_and_lane_adjust(
 				link,
 				lt_settings,
@@ -508,13 +466,13 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 				dpcd_lane_adjust,
 				0);
 
-			/* 5. check CR done*/
+			 
 			if (!dp_is_cr_done(lane_count, dpcd_lane_status)) {
 				status = LINK_TRAINING_EQ_FAIL_CR;
 				break;
 			}
 
-			/* 6. check CHEQ done*/
+			 
 			if (dp_is_ch_eq_done(lane_count, dpcd_lane_status) &&
 					dp_is_symbol_locked(lane_count, dpcd_lane_status) &&
 					dp_is_interlane_aligned(dpcd_lane_status_updated)) {
@@ -522,7 +480,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence_legacy(
 				break;
 			}
 
-			/* 7. update VS/PE/PC2 in lt_settings*/
+			 
 			dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
 					lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
 		}
@@ -559,7 +517,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 	uint8_t toggle_rate;
 	uint8_t rate;
 
-	/* Only 8b/10b is supported */
+	 
 	ASSERT(link_dp_get_encoding_format(&lt_settings->link_settings) ==
 			DP_8b_10b_ENCODING);
 
@@ -572,13 +530,13 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 		if (offset == 2) {
 			pre_disable_intercept_delay_ms = link->dc->debug.fixed_vs_aux_delay_config_wa;
 
-		/* Certain display and cable configuration require extra delay */
+		 
 		} else if (offset > 2) {
 			pre_disable_intercept_delay_ms = link->dc->debug.fixed_vs_aux_delay_config_wa * 2;
 		}
 	}
 
-	/* Vendor specific: Reset lane settings */
+	 
 	link_configure_fixed_vs_pe_retimer(link->ddc,
 			&vendor_lttpr_write_data_reset[0], sizeof(vendor_lttpr_write_data_reset));
 	link_configure_fixed_vs_pe_retimer(link->ddc,
@@ -586,11 +544,11 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 	link_configure_fixed_vs_pe_retimer(link->ddc,
 			&vendor_lttpr_write_data_pe[0], sizeof(vendor_lttpr_write_data_pe));
 
-	/* Vendor specific: Enable intercept */
+	 
 	link_configure_fixed_vs_pe_retimer(link->ddc,
 			&vendor_lttpr_write_data_intercept_en[0], sizeof(vendor_lttpr_write_data_intercept_en));
 
-	/* 1. set link rate, lane count and spread. */
+	 
 
 	downspread.raw = (uint8_t)(lt_settings->link_settings.link_spread);
 
@@ -614,7 +572,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 
 	rate = get_dpcd_link_rate(&lt_settings->link_settings);
 
-	/* Vendor specific: Toggle link rate */
+	 
 	toggle_rate = (rate == 0x6) ? 0xA : 0x6;
 
 	if (link->vendor_specific_lttpr_link_rate_wa == rate || link->vendor_specific_lttpr_link_rate_wa == 0) {
@@ -652,9 +610,9 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 				&vendor_lttpr_write_data_4lane_5[0], sizeof(vendor_lttpr_write_data_4lane_5));
 	}
 
-	/* 2. Perform link training */
+	 
 
-	/* Perform Clock Recovery Sequence */
+	 
 	if (status == LINK_TRAINING_SUCCESS) {
 		const uint8_t max_vendor_dpcd_retries = 10;
 		uint32_t retries_cr;
@@ -677,24 +635,22 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 			(retry_count < LINK_TRAINING_MAX_CR_RETRY)) {
 
 
-			/* 1. call HWSS to set lane settings */
+			 
 			dp_set_hw_lane_settings(
 					link,
 					link_res,
 					lt_settings,
 					0);
 
-			/* 2. update DPCD of the receiver */
+			 
 			if (!retry_count) {
-				/* EPR #361076 - write as a 5-byte burst,
-				 * but only for the 1-st iteration.
-				 */
+				 
 				dpcd_set_lt_pattern_and_lane_settings(
 						link,
 						lt_settings,
 						lt_settings->pattern_for_cr,
 						0);
-				/* Vendor specific: Disable intercept */
+				 
 				for (i = 0; i < max_vendor_dpcd_retries; i++) {
 					if (pre_disable_intercept_delay_ms != 0)
 						msleep(pre_disable_intercept_delay_ms);
@@ -718,7 +674,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 							lt_settings->dpcd_lane_settings[lane].bits.PRE_EMPHASIS_SET << (2 * lane);
 				}
 
-				/* Vendor specific: Update VS and PE to DPRX requested value */
+				 
 				link_configure_fixed_vs_pe_retimer(link->ddc,
 						&vendor_lttpr_write_data_vs[0], sizeof(vendor_lttpr_write_data_vs));
 				link_configure_fixed_vs_pe_retimer(link->ddc,
@@ -730,16 +686,14 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 						0);
 			}
 
-			/* 3. wait receiver to lock-on*/
+			 
 			wait_time_microsec = lt_settings->cr_pattern_time;
 
 			dp_wait_for_training_aux_rd_interval(
 					link,
 					wait_time_microsec);
 
-			/* 4. Read lane status and requested drive
-			 * settings as set by the sink
-			 */
+			 
 			dp_get_lane_status_and_lane_adjust(
 					link,
 					lt_settings,
@@ -748,27 +702,25 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 					dpcd_lane_adjust,
 					0);
 
-			/* 5. check CR done*/
+			 
 			if (dp_is_cr_done(lane_count, dpcd_lane_status)) {
 				status = LINK_TRAINING_SUCCESS;
 				break;
 			}
 
-			/* 6. max VS reached*/
+			 
 			if (dp_is_max_vs_reached(lt_settings))
 				break;
 
-			/* 7. same lane settings */
-			/* Note: settings are the same for all lanes,
-			 * so comparing first lane is sufficient
-			 */
+			 
+			 
 			if (lt_settings->dpcd_lane_settings[0].bits.VOLTAGE_SWING_SET ==
 					dpcd_lane_adjust[0].bits.VOLTAGE_SWING_LANE)
 				retries_cr++;
 			else
 				retries_cr = 0;
 
-			/* 8. update VS/PE/PC2 in lt_settings*/
+			 
 			dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
 					lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
 			retry_count++;
@@ -785,7 +737,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 		status = dp_get_cr_failure(lane_count, dpcd_lane_status);
 	}
 
-	/* Perform Channel EQ Sequence */
+	 
 	if (status == LINK_TRAINING_SUCCESS) {
 		enum dc_dp_training_pattern tr_pattern;
 		uint32_t retries_ch_eq;
@@ -803,7 +755,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 				sizeof(vendor_lttpr_write_data_adicora_eq2));
 
 
-		/* Note: also check that TPS4 is a supported feature*/
+		 
 		tr_pattern = lt_settings->pattern_for_eq;
 
 		dp_set_hw_training_pattern(link, link_res, tr_pattern, 0);
@@ -825,17 +777,15 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 						lt_settings->dpcd_lane_settings[lane].bits.PRE_EMPHASIS_SET << (2 * lane);
 			}
 
-			/* Vendor specific: Update VS and PE to DPRX requested value */
+			 
 			link_configure_fixed_vs_pe_retimer(link->ddc,
 					&vendor_lttpr_write_data_vs[0], sizeof(vendor_lttpr_write_data_vs));
 			link_configure_fixed_vs_pe_retimer(link->ddc,
 					&vendor_lttpr_write_data_pe[0], sizeof(vendor_lttpr_write_data_pe));
 
-			/* 2. update DPCD*/
+			 
 			if (!retries_ch_eq) {
-				/* EPR #361076 - write as a 5-byte burst,
-				 * but only for the 1-st iteration
-				 */
+				 
 
 				dpcd_set_lt_pattern_and_lane_settings(
 					link,
@@ -849,16 +799,14 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 			} else
 				dpcd_set_lane_settings(link, lt_settings, 0);
 
-			/* 3. wait for receiver to lock-on*/
+			 
 			wait_time_microsec = lt_settings->eq_pattern_time;
 
 			dp_wait_for_training_aux_rd_interval(
 					link,
 					wait_time_microsec);
 
-			/* 4. Read lane status and requested
-			 * drive settings as set by the sink
-			 */
+			 
 			dp_get_lane_status_and_lane_adjust(
 				link,
 				lt_settings,
@@ -867,13 +815,13 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 				dpcd_lane_adjust,
 				0);
 
-			/* 5. check CR done*/
+			 
 			if (!dp_is_cr_done(lane_count, dpcd_lane_status)) {
 				status = LINK_TRAINING_EQ_FAIL_CR;
 				break;
 			}
 
-			/* 6. check CHEQ done*/
+			 
 			if (dp_is_ch_eq_done(lane_count, dpcd_lane_status) &&
 					dp_is_symbol_locked(lane_count, dpcd_lane_status) &&
 					dp_is_interlane_aligned(dpcd_lane_status_updated)) {
@@ -881,7 +829,7 @@ enum link_training_result dp_perform_fixed_vs_pe_training_sequence(
 				break;
 			}
 
-			/* 7. update VS/PE/PC2 in lt_settings*/
+			 
 			dp_decide_lane_settings(lt_settings, dpcd_lane_adjust,
 					lt_settings->hw_lane_settings, lt_settings->dpcd_lane_settings);
 		}

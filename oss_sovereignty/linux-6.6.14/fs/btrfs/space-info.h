@@ -1,71 +1,30 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 #ifndef BTRFS_SPACE_INFO_H
 #define BTRFS_SPACE_INFO_H
 
 #include "volumes.h"
 
-/*
- * Different levels for to flush space when doing space reservations.
- *
- * The higher the level, the more methods we try to reclaim space.
- */
+ 
 enum btrfs_reserve_flush_enum {
-	/* If we are in the transaction, we can't flush anything.*/
+	 
 	BTRFS_RESERVE_NO_FLUSH,
 
-	/*
-	 * Flush space by:
-	 * - Running delayed inode items
-	 * - Allocating a new chunk
-	 */
+	 
 	BTRFS_RESERVE_FLUSH_LIMIT,
 
-	/*
-	 * Flush space by:
-	 * - Running delayed inode items
-	 * - Running delayed refs
-	 * - Running delalloc and waiting for ordered extents
-	 * - Allocating a new chunk
-	 * - Committing transaction
-	 */
+	 
 	BTRFS_RESERVE_FLUSH_EVICT,
 
-	/*
-	 * Flush space by above mentioned methods and by:
-	 * - Running delayed iputs
-	 * - Committing transaction
-	 *
-	 * Can be interrupted by a fatal signal.
-	 */
+	 
 	BTRFS_RESERVE_FLUSH_DATA,
 	BTRFS_RESERVE_FLUSH_FREE_SPACE_INODE,
 	BTRFS_RESERVE_FLUSH_ALL,
 
-	/*
-	 * Pretty much the same as FLUSH_ALL, but can also steal space from
-	 * global rsv.
-	 *
-	 * Can be interrupted by a fatal signal.
-	 */
+	 
 	BTRFS_RESERVE_FLUSH_ALL_STEAL,
 
-	/*
-	 * This is for btrfs_use_block_rsv only.  We have exhausted our block
-	 * rsv and our global block rsv.  This can happen for things like
-	 * delalloc where we are overwriting a lot of extents with a single
-	 * extent and didn't reserve enough space.  Alternatively it can happen
-	 * with delalloc where we reserve 1 extents worth for a large extent but
-	 * fragmentation leads to multiple extents being created.  This will
-	 * give us the reservation in the case of
-	 *
-	 * if (num_bytes < (space_info->total_bytes -
-	 *		    btrfs_space_info_used(space_info, false))
-	 *
-	 * Which ignores bytes_may_use.  This is potentially dangerous, but our
-	 * reservation system is generally pessimistic so is able to absorb this
-	 * style of mistake.
-	 */
+	 
 	BTRFS_RESERVE_FLUSH_EMERGENCY,
 };
 
@@ -86,71 +45,49 @@ enum btrfs_flush_state {
 struct btrfs_space_info {
 	spinlock_t lock;
 
-	u64 total_bytes;	/* total bytes in the space,
-				   this doesn't take mirrors into account */
-	u64 bytes_used;		/* total bytes used,
-				   this doesn't take mirrors into account */
-	u64 bytes_pinned;	/* total bytes pinned, will be freed when the
-				   transaction finishes */
-	u64 bytes_reserved;	/* total bytes the allocator has reserved for
-				   current allocations */
-	u64 bytes_may_use;	/* number of bytes that may be used for
-				   delalloc/allocations */
-	u64 bytes_readonly;	/* total bytes that are read only */
-	u64 bytes_zone_unusable;	/* total bytes that are unusable until
-					   resetting the device zone */
+	u64 total_bytes;	 
+	u64 bytes_used;		 
+	u64 bytes_pinned;	 
+	u64 bytes_reserved;	 
+	u64 bytes_may_use;	 
+	u64 bytes_readonly;	 
+	u64 bytes_zone_unusable;	 
 
-	u64 max_extent_size;	/* This will hold the maximum extent size of
-				   the space info if we had an ENOSPC in the
-				   allocator. */
-	/* Chunk size in bytes */
+	u64 max_extent_size;	 
+	 
 	u64 chunk_size;
 
-	/*
-	 * Once a block group drops below this threshold (percents) we'll
-	 * schedule it for reclaim.
-	 */
+	 
 	int bg_reclaim_threshold;
 
-	int clamp;		/* Used to scale our threshold for preemptive
-				   flushing. The value is >> clamp, so turns
-				   out to be a 2^clamp divisor. */
+	int clamp;		 
 
-	unsigned int full:1;	/* indicates that we cannot allocate any more
-				   chunks for this space */
-	unsigned int chunk_alloc:1;	/* set if we are allocating a chunk */
+	unsigned int full:1;	 
+	unsigned int chunk_alloc:1;	 
 
-	unsigned int flush:1;		/* set if we are trying to make space */
+	unsigned int flush:1;		 
 
-	unsigned int force_alloc;	/* set if we need to force a chunk
-					   alloc for this space */
+	unsigned int force_alloc;	 
 
-	u64 disk_used;		/* total bytes used on disk */
-	u64 disk_total;		/* total bytes on disk, takes mirrors into
-				   account */
+	u64 disk_used;		 
+	u64 disk_total;		 
 
 	u64 flags;
 
 	struct list_head list;
-	/* Protected by the spinlock 'lock'. */
+	 
 	struct list_head ro_bgs;
 	struct list_head priority_tickets;
 	struct list_head tickets;
 
-	/*
-	 * Size of space that needs to be reclaimed in order to satisfy pending
-	 * tickets
-	 */
+	 
 	u64 reclaim_size;
 
-	/*
-	 * tickets_id just indicates the next ticket will be handled, so note
-	 * it's not stored per ticket.
-	 */
+	 
 	u64 tickets_id;
 
 	struct rw_semaphore groups_sem;
-	/* for block groups in our same type */
+	 
 	struct list_head block_groups[BTRFS_NR_RAID_TYPES];
 
 	struct kobject kobj;
@@ -171,10 +108,7 @@ static inline bool btrfs_mixed_space_info(struct btrfs_space_info *space_info)
 		(space_info->flags & BTRFS_BLOCK_GROUP_DATA));
 }
 
-/*
- *
- * Declare a helper function to detect underflow of various space info members
- */
+ 
 #define DECLARE_SPACE_INFO_UPDATE(name, trace_name)			\
 static inline void							\
 btrfs_space_info_update_##name(struct btrfs_fs_info *fs_info,		\
@@ -237,4 +171,4 @@ void btrfs_dump_space_info_for_trans_abort(struct btrfs_fs_info *fs_info);
 void btrfs_init_async_reclaim_work(struct btrfs_fs_info *fs_info);
 u64 btrfs_account_ro_block_groups_free_space(struct btrfs_space_info *sinfo);
 
-#endif /* BTRFS_SPACE_INFO_H */
+#endif  

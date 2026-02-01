@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Freescale MU used as MSI controller
- *
- * Copyright (c) 2018 Pengutronix, Oleksij Rempel <o.rempel@pengutronix.de>
- * Copyright 2022 NXP
- *	Frank Li <Frank.Li@nxp.com>
- *	Peng Fan <peng.fan@nxp.com>
- *
- * Based on drivers/mailbox/imx-mailbox.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/irq.h>
@@ -46,16 +37,16 @@ enum imx_mu_type {
 	IMX_MU_V2 = BIT(1),
 };
 
-/* Receive Interrupt Enable */
+ 
 #define IMX_MU_xCR_RIEn(data, x) ((data->cfg->type) & IMX_MU_V2 ? BIT(x) : BIT(24 + (3 - (x))))
 #define IMX_MU_xSR_RFn(data, x) ((data->cfg->type) & IMX_MU_V2 ? BIT(x) : BIT(24 + (3 - (x))))
 
 struct imx_mu_dcfg {
 	enum imx_mu_type type;
-	u32     xTR;            /* Transmit Register0 */
-	u32     xRR;            /* Receive Register0 */
-	u32     xSR[IMX_MU_xSR_MAX];         /* Status Registers */
-	u32     xCR[IMX_MU_xCR_MAX];         /* Control Registers */
+	u32     xTR;             
+	u32     xRR;             
+	u32     xSR[IMX_MU_xSR_MAX];          
+	u32     xCR[IMX_MU_xCR_MAX];          
 };
 
 struct imx_mu_msi {
@@ -221,7 +212,7 @@ static int imx_mu_msi_domains_init(struct imx_mu_msi *msi_data, struct device *d
 	struct fwnode_handle *fwnodes = dev_fwnode(dev);
 	struct irq_domain *parent;
 
-	/* Initialize MSI domain parent */
+	 
 	parent = irq_domain_create_linear(fwnodes,
 					    IMX_MU_CHANS,
 					    &imx_mu_msi_domain_ops,
@@ -248,7 +239,7 @@ static int imx_mu_msi_domains_init(struct imx_mu_msi *msi_data, struct device *d
 	return 0;
 }
 
-/* Register offset of different version MU IP */
+ 
 static const struct imx_mu_dcfg imx_mu_cfg_imx6sx = {
 	.type	= 0,
 	.xTR    = 0x0,

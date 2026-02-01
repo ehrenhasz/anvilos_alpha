@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019 MediaTek Inc.
- * Author: Wendell Lin <wendell.lin@mediatek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/clk-provider.h>
@@ -48,7 +45,7 @@ static const struct of_device_id of_match_clk_mt6779_cam[] = {
 		.compatible = "mediatek,mt6779-camsys",
 		.data = &cam_desc,
 	}, {
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt6779_cam);

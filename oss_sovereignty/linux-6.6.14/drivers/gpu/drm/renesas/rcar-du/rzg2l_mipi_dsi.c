@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * RZ/G2L MIPI DSI Encoder Driver
- *
- * Copyright (C) 2022 Renesas Electronics Corporation
- */
+
+ 
 #include <linux/clk.h>
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -180,9 +176,7 @@ static u32 rzg2l_mipi_dsi_link_read(struct rzg2l_mipi_dsi *dsi, u32 reg)
 	return ioread32(dsi->mmio + LINK_REG_OFFSET + reg);
 }
 
-/* -----------------------------------------------------------------------------
- * Hardware Setup
- */
+ 
 
 static int rzg2l_mipi_dsi_dphy_init(struct rzg2l_mipi_dsi *dsi,
 				    unsigned long hsfreq)
@@ -196,14 +190,14 @@ static int rzg2l_mipi_dsi_dphy_init(struct rzg2l_mipi_dsi *dsi,
 	u32 dphytim3;
 	int ret;
 
-	/* All DSI global operation timings are set with recommended setting */
+	 
 	for (i = 0; i < ARRAY_SIZE(rzg2l_mipi_dsi_global_timings); ++i) {
 		dphy_timings = &rzg2l_mipi_dsi_global_timings[i];
 		if (hsfreq <= dphy_timings->hsfreq_max)
 			break;
 	}
 
-	/* Initializing DPHY before accessing LINK */
+	 
 	dphyctrl0 = DSIDPHYCTRL0_CAL_EN_HSRX_OFS | DSIDPHYCTRL0_CMN_MASTER_EN |
 		    DSIDPHYCTRL0_RE_VDD_DETVCCQLV18 | DSIDPHYCTRL0_EN_BGR;
 
@@ -269,16 +263,7 @@ static int rzg2l_mipi_dsi_startup(struct rzg2l_mipi_dsi *dsi,
 	u32 golpbkt;
 	int ret;
 
-	/*
-	 * Relationship between hsclk and vclk must follow
-	 * vclk * bpp = hsclk * 8 * lanes
-	 * where vclk: video clock (Hz)
-	 *       bpp: video pixel bit depth
-	 *       hsclk: DSI HS Byte clock frequency (Hz)
-	 *       lanes: number of data lanes
-	 *
-	 * hsclk(bit) = hsclk(byte) * 8
-	 */
+	 
 	bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
 	hsfreq = (mode->clock * bpp * 8) / (8 * dsi->lanes);
 
@@ -292,18 +277,11 @@ static int rzg2l_mipi_dsi_startup(struct rzg2l_mipi_dsi *dsi,
 	if (ret < 0)
 		goto err_phy;
 
-	/* Enable Data lanes and Clock lanes */
+	 
 	txsetr = TXSETR_DLEN | TXSETR_NUMLANEUSE(dsi->lanes - 1) | TXSETR_CLEN;
 	rzg2l_mipi_dsi_link_write(dsi, TXSETR, txsetr);
 
-	/*
-	 * Global timings characteristic depends on high speed Clock Frequency
-	 * Currently MIPI DSI-IF just supports maximum FHD@60 with:
-	 * - videoclock = 148.5 (MHz)
-	 * - bpp: maximum 24bpp
-	 * - data lanes: maximum 4 lanes
-	 * Therefore maximum hsclk will be 891 Mbps.
-	 */
+	 
 	if (hsfreq > 445500) {
 		clkkpt = 12;
 		clkbfht = 15;
@@ -355,7 +333,7 @@ static void rzg2l_mipi_dsi_set_display_timing(struct rzg2l_mipi_dsi *dsi,
 	u32 delay[2];
 	u8 index;
 
-	/* Configuration for Pixel Packet */
+	 
 	dsi_format = mipi_dsi_pixel_format_to_bpp(dsi->format);
 	switch (dsi_format) {
 	case 24:
@@ -372,7 +350,7 @@ static void rzg2l_mipi_dsi_set_display_timing(struct rzg2l_mipi_dsi *dsi,
 
 	rzg2l_mipi_dsi_link_write(dsi, VICH1PPSETR, vich1ppsetr);
 
-	/* Configuration for Video Parameters */
+	 
 	vich1vssetr = VICH1VSSETR_VACTIVE(mode->vdisplay) |
 		      VICH1VSSETR_VSA(mode->vsync_end - mode->vsync_start);
 	vich1vssetr |= (mode->flags & DRM_MODE_FLAG_PVSYNC) ?
@@ -394,11 +372,7 @@ static void rzg2l_mipi_dsi_set_display_timing(struct rzg2l_mipi_dsi *dsi,
 	rzg2l_mipi_dsi_link_write(dsi, VICH1HSSETR, vich1hssetr);
 	rzg2l_mipi_dsi_link_write(dsi, VICH1HPSETR, vich1hpsetr);
 
-	/*
-	 * Configuration for Delay Value
-	 * Delay value based on 2 ranges of video clock.
-	 * 74.25MHz is videoclock of HD@60p or FHD@30p
-	 */
+	 
 	if (mode->clock > 74250) {
 		delay[0] = 231;
 		delay[1] = 216;
@@ -425,7 +399,7 @@ static int rzg2l_mipi_dsi_start_hs_clock(struct rzg2l_mipi_dsi *dsi)
 
 	is_clk_cont = !(dsi->mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS);
 
-	/* Start HS clock */
+	 
 	hsclksetr = HSCLKSETR_HSCLKRUN_HS | (is_clk_cont ?
 					     HSCLKSETR_HSCLKMODE_CONT :
 					     HSCLKSETR_HSCLKMODE_NON_CONT);
@@ -455,7 +429,7 @@ static int rzg2l_mipi_dsi_stop_hs_clock(struct rzg2l_mipi_dsi *dsi)
 
 	is_clk_cont = !(dsi->mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS);
 
-	/* Stop HS clock */
+	 
 	rzg2l_mipi_dsi_link_write(dsi, HSCLKSETR,
 				  is_clk_cont ? HSCLKSETR_HSCLKMODE_CONT :
 				  HSCLKSETR_HSCLKMODE_NON_CONT);
@@ -479,7 +453,7 @@ static int rzg2l_mipi_dsi_start_video(struct rzg2l_mipi_dsi *dsi)
 	u32 status;
 	int ret;
 
-	/* Configuration for Blanking sequence and start video input*/
+	 
 	vich1set0r = VICH1SET0R_HFPNOLP | VICH1SET0R_HBPNOLP |
 		     VICH1SET0R_HSANOLP | VICH1SET0R_VSTART;
 	rzg2l_mipi_dsi_link_write(dsi, VICH1SET0R, vich1set0r);
@@ -518,9 +492,7 @@ err:
 	return ret;
 }
 
-/* -----------------------------------------------------------------------------
- * Bridge
- */
+ 
 
 static int rzg2l_mipi_dsi_attach(struct drm_bridge *bridge,
 				 enum drm_bridge_attach_flags flags)
@@ -598,9 +570,7 @@ static const struct drm_bridge_funcs rzg2l_mipi_dsi_bridge_ops = {
 	.mode_valid = rzg2l_mipi_dsi_bridge_mode_valid,
 };
 
-/* -----------------------------------------------------------------------------
- * Host setting
- */
+ 
 
 static int rzg2l_mipi_dsi_host_attach(struct mipi_dsi_host *host,
 				      struct mipi_dsi_device *device)
@@ -656,9 +626,7 @@ static const struct mipi_dsi_host_ops rzg2l_mipi_dsi_host_ops = {
 	.detach = rzg2l_mipi_dsi_host_detach,
 };
 
-/* -----------------------------------------------------------------------------
- * Power Management
- */
+ 
 
 static int __maybe_unused rzg2l_mipi_pm_runtime_suspend(struct device *dev)
 {
@@ -690,9 +658,7 @@ static const struct dev_pm_ops rzg2l_mipi_pm_ops = {
 	SET_RUNTIME_PM_OPS(rzg2l_mipi_pm_runtime_suspend, rzg2l_mipi_pm_runtime_resume, NULL)
 };
 
-/* -----------------------------------------------------------------------------
- * Probe & Remove
- */
+ 
 
 static int rzg2l_mipi_dsi_probe(struct platform_device *pdev)
 {
@@ -746,11 +712,7 @@ static int rzg2l_mipi_dsi_probe(struct platform_device *pdev)
 	if (ret < 0)
 		goto err_pm_disable;
 
-	/*
-	 * TXSETR register can be read only after DPHY init. But during probe
-	 * mode->clock and format are not available. So initialize DPHY with
-	 * timing parameters for 80Mbps.
-	 */
+	 
 	ret = rzg2l_mipi_dsi_dphy_init(dsi, 80000);
 	if (ret < 0)
 		goto err_phy;
@@ -760,11 +722,11 @@ static int rzg2l_mipi_dsi_probe(struct platform_device *pdev)
 	rzg2l_mipi_dsi_dphy_exit(dsi);
 	pm_runtime_put(dsi->dev);
 
-	/* Initialize the DRM bridge. */
+	 
 	dsi->bridge.funcs = &rzg2l_mipi_dsi_bridge_ops;
 	dsi->bridge.of_node = dsi->dev->of_node;
 
-	/* Init host device */
+	 
 	dsi->host.dev = dsi->dev;
 	dsi->host.ops = &rzg2l_mipi_dsi_host_ops;
 	ret = mipi_dsi_host_register(&dsi->host);
@@ -791,7 +753,7 @@ static void rzg2l_mipi_dsi_remove(struct platform_device *pdev)
 
 static const struct of_device_id rzg2l_mipi_dsi_of_table[] = {
 	{ .compatible = "renesas,rzg2l-mipi-dsi" },
-	{ /* sentinel */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, rzg2l_mipi_dsi_of_table);

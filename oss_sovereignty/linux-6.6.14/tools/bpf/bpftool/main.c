@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause)
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+
+ 
 
 #include <ctype.h>
 #include <errno.h>
@@ -92,11 +92,7 @@ static const struct cmd commands[] = {
 };
 
 #ifndef BPFTOOL_VERSION
-/* bpftool's major and minor version numbers are aligned on libbpf's. There is
- * an offset of 6 for the version number, because bpftool's version was higher
- * than libbpf's when we adopted this scheme. The patch number remains at 0
- * for now. Set BPFTOOL_VERSION to override.
- */
+ 
 #define BPFTOOL_MAJOR_VERSION (LIBBPF_MAJOR_VERSION + 6)
 #define BPFTOOL_MINOR_VERSION LIBBPF_MINOR_VERSION
 #define BPFTOOL_PATCH_VERSION 0
@@ -133,16 +129,14 @@ static int do_version(int argc, char **argv)
 
 	for (i = 0; commands[i].cmd; i++) {
 		if (!strcmp(commands[i].cmd, "prog")) {
-			/* Assume we run a bootstrap version if "bpftool prog"
-			 * is not available.
-			 */
+			 
 			bootstrap = !commands[i].func;
 			break;
 		}
 	}
 
 	if (json_output) {
-		jsonw_start_object(json_wtr);	/* root object */
+		jsonw_start_object(json_wtr);	 
 
 		jsonw_name(json_wtr, "version");
 #ifdef BPFTOOL_VERSION
@@ -156,14 +150,14 @@ static int do_version(int argc, char **argv)
 			     libbpf_major_version(), libbpf_minor_version());
 
 		jsonw_name(json_wtr, "features");
-		jsonw_start_object(json_wtr);	/* features */
+		jsonw_start_object(json_wtr);	 
 		jsonw_bool_field(json_wtr, "libbfd", has_libbfd);
 		jsonw_bool_field(json_wtr, "llvm", has_llvm);
 		jsonw_bool_field(json_wtr, "skeletons", has_skeletons);
 		jsonw_bool_field(json_wtr, "bootstrap", bootstrap);
-		jsonw_end_object(json_wtr);	/* features */
+		jsonw_end_object(json_wtr);	 
 
-		jsonw_end_object(json_wtr);	/* root object */
+		jsonw_end_object(json_wtr);	 
 	} else {
 		unsigned int nb_features = 0;
 
@@ -222,7 +216,7 @@ bool is_prefix(const char *pfx, const char *str)
 	return !memcmp(str, pfx, strlen(pfx));
 }
 
-/* Last argument MUST be NULL pointer */
+ 
 int detect_common_prefix(const char *arg, ...)
 {
 	unsigned int count = 0;
@@ -260,7 +254,7 @@ void fprint_hex(FILE *f, void *arg, unsigned int n, const char *sep)
 		const char *pfx = "";
 
 		if (!i)
-			/* nothing */;
+			 ;
 		else if (!(i % 16))
 			fprintf(f, "\n");
 		else if (!(i % 8))
@@ -272,7 +266,7 @@ void fprint_hex(FILE *f, void *arg, unsigned int n, const char *sep)
 	}
 }
 
-/* Split command line into argument vector. */
+ 
 static int make_args(char *line, char *n_argv[], int maxargs, int cmd_nb)
 {
 	static const char ws[] = " \t\r\n";
@@ -280,7 +274,7 @@ static int make_args(char *line, char *n_argv[], int maxargs, int cmd_nb)
 	int n_argc = 0;
 
 	while (*cp) {
-		/* Skip leading whitespace. */
+		 
 		cp += strspn(cp, ws);
 
 		if (*cp == '\0')
@@ -291,12 +285,12 @@ static int make_args(char *line, char *n_argv[], int maxargs, int cmd_nb)
 			return -1;
 		}
 
-		/* Word begins with quote. */
+		 
 		if (*cp == '\'' || *cp == '"') {
 			char quote = *cp++;
 
 			n_argv[n_argc++] = cp;
-			/* Find ending quote. */
+			 
 			cp = strchr(cp, quote);
 			if (!cp) {
 				p_err("unterminated quoted string in command %d",
@@ -306,13 +300,13 @@ static int make_args(char *line, char *n_argv[], int maxargs, int cmd_nb)
 		} else {
 			n_argv[n_argc++] = cp;
 
-			/* Find end of word. */
+			 
 			cp += strcspn(cp, ws);
 			if (*cp == '\0')
 				break;
 		}
 
-		/* Separate words. */
+		 
 		*cp++ = 0;
 	}
 	n_argv[n_argc] = NULL;
@@ -364,9 +358,7 @@ static int do_batch(int argc, char **argv)
 			break;
 		}
 
-		/* Append continuation lines if any (coming after a line ending
-		 * with '\' in the batch file).
-		 */
+		 
 		while ((cp = strstr(buf, "\\\n")) != NULL) {
 			if (!fgets(contline, sizeof(contline), fp) ||
 			    strlen(contline) == 0) {
@@ -456,12 +448,7 @@ int main(int argc, char **argv)
 	setlinebuf(stdout);
 
 #ifdef USE_LIBCAP
-	/* Libcap < 2.63 hooks before main() to compute the number of
-	 * capabilities of the running kernel, and doing so it calls prctl()
-	 * which may fail and set errno to non-zero.
-	 * Let's reset errno to make sure this does not interfere with the
-	 * batch mode.
-	 */
+	 
 	errno = 0;
 #endif
 
@@ -483,7 +470,7 @@ int main(int argc, char **argv)
 			return do_help(argc, argv);
 		case 'p':
 			pretty_output = true;
-			/* fall through */
+			 
 		case 'j':
 			if (!json_output) {
 				json_wtr = jsonw_new(stdout);

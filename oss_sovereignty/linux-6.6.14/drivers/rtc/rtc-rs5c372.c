@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An I2C driver for Ricoh RS5C372, R2025S/D and RV5C38[67] RTCs
- *
- * Copyright (C) 2005 Pavel Mironchik <pmironchik@optifacio.net>
- * Copyright (C) 2006 Tower Technologies
- * Copyright (C) 2008 Paul Mundt
- */
+
+ 
 
 #include <linux/i2c.h>
 #include <linux/rtc.h>
@@ -14,12 +8,7 @@
 #include <linux/module.h>
 #include <linux/of.h>
 
-/*
- * Ricoh has a family of I2C based RTCs, which differ only slightly from
- * each other.  Differences center on pinout (e.g. how many interrupts,
- * output clock, etc) and how the control registers are used.  The '372
- * is significant only because that's the one this driver first supported.
- */
+ 
 #define RS5C372_REG_SECS	0
 #define RS5C372_REG_MINS	1
 #define RS5C372_REG_HOURS	2
@@ -28,39 +17,39 @@
 #define RS5C372_REG_MONTH	5
 #define RS5C372_REG_YEAR	6
 #define RS5C372_REG_TRIM	7
-#	define RS5C372_TRIM_XSL		0x80		/* only if RS5C372[a|b] */
+#	define RS5C372_TRIM_XSL		0x80		 
 #	define RS5C372_TRIM_MASK	0x7F
-#	define R2221TL_TRIM_DEV		(1 << 7)	/* only if R2221TL */
+#	define R2221TL_TRIM_DEV		(1 << 7)	 
 #	define RS5C372_TRIM_DECR	(1 << 6)
 
-#define RS5C_REG_ALARM_A_MIN	8			/* or ALARM_W */
+#define RS5C_REG_ALARM_A_MIN	8			 
 #define RS5C_REG_ALARM_A_HOURS	9
 #define RS5C_REG_ALARM_A_WDAY	10
 
-#define RS5C_REG_ALARM_B_MIN	11			/* or ALARM_D */
+#define RS5C_REG_ALARM_B_MIN	11			 
 #define RS5C_REG_ALARM_B_HOURS	12
-#define RS5C_REG_ALARM_B_WDAY	13			/* (ALARM_B only) */
+#define RS5C_REG_ALARM_B_WDAY	13			 
 
 #define RS5C_REG_CTRL1		14
-#	define RS5C_CTRL1_AALE		(1 << 7)	/* or WALE */
-#	define RS5C_CTRL1_BALE		(1 << 6)	/* or DALE */
+#	define RS5C_CTRL1_AALE		(1 << 7)	 
+#	define RS5C_CTRL1_BALE		(1 << 6)	 
 #	define RV5C387_CTRL1_24		(1 << 5)
 #	define RS5C372A_CTRL1_SL1	(1 << 5)
 #	define RS5C_CTRL1_CT_MASK	(7 << 0)
-#	define RS5C_CTRL1_CT0		(0 << 0)	/* no periodic irq */
-#	define RS5C_CTRL1_CT4		(4 << 0)	/* 1 Hz level irq */
+#	define RS5C_CTRL1_CT0		(0 << 0)	 
+#	define RS5C_CTRL1_CT4		(4 << 0)	 
 #define RS5C_REG_CTRL2		15
 #	define RS5C372_CTRL2_24		(1 << 5)
-#	define RS5C_CTRL2_XSTP		(1 << 4)	/* only if !R2x2x */
-#	define R2x2x_CTRL2_VDET		(1 << 6)	/* only if  R2x2x */
-#	define R2x2x_CTRL2_XSTP		(1 << 5)	/* only if  R2x2x */
-#	define R2x2x_CTRL2_PON		(1 << 4)	/* only if  R2x2x */
+#	define RS5C_CTRL2_XSTP		(1 << 4)	 
+#	define R2x2x_CTRL2_VDET		(1 << 6)	 
+#	define R2x2x_CTRL2_XSTP		(1 << 5)	 
+#	define R2x2x_CTRL2_PON		(1 << 4)	 
 #	define RS5C_CTRL2_CTFG		(1 << 2)
-#	define RS5C_CTRL2_AAFG		(1 << 1)	/* or WAFG */
-#	define RS5C_CTRL2_BAFG		(1 << 0)	/* or DAFG */
+#	define RS5C_CTRL2_AAFG		(1 << 1)	 
+#	define RS5C_CTRL2_BAFG		(1 << 0)	 
 
 
-/* to read (style 1) or write registers starting at R */
+ 
 #define RS5C_ADDR(R)		(((R) << 4) | 0)
 
 
@@ -114,11 +103,7 @@ static const __maybe_unused struct of_device_id rs5c372_of_match[] = {
 };
 MODULE_DEVICE_TABLE(of, rs5c372_of_match);
 
-/* REVISIT:  this assumes that:
- *  - we're in the 21st century, so it's safe to ignore the century
- *    bit for rv5c38[67] (REG_MONTH bit 7);
- *  - we should use ALARM_A not ALARM_B (may be wrong on some boards)
- */
+ 
 struct rs5c372 {
 	struct i2c_client	*client;
 	struct rtc_device	*rtc;
@@ -142,17 +127,7 @@ static int rs5c_get_regs(struct rs5c372 *rs5c)
 		},
 	};
 
-	/* This implements the third reading method from the datasheet, using
-	 * an internal address that's reset after each transaction (by STOP)
-	 * to 0x0f ... so we read extra registers, and skip the first one.
-	 *
-	 * The first method doesn't work with the iop3xx adapter driver, on at
-	 * least 80219 chips; this works around that bug.
-	 *
-	 * The third method on the other hand doesn't work for the SMBus-only
-	 * configurations, so we use the first method there, stripping off
-	 * the extra register in the process.
-	 */
+	 
 	if (rs5c->smbus) {
 		int addr = RS5C_ADDR(RS5C372_REG_SECS);
 		int size = sizeof(rs5c->buf) - 1;
@@ -241,10 +216,10 @@ static int rs5c372_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	tm->tm_wday = bcd2bin(rs5c->regs[RS5C372_REG_WDAY] & 0x07);
 	tm->tm_mday = bcd2bin(rs5c->regs[RS5C372_REG_DAY] & 0x3f);
 
-	/* tm->tm_mon is zero-based */
+	 
 	tm->tm_mon = bcd2bin(rs5c->regs[RS5C372_REG_MONTH] & 0x1f) - 1;
 
-	/* year is 1900 + tm->tm_year */
+	 
 	tm->tm_year = bcd2bin(rs5c->regs[RS5C372_REG_YEAR]) + 100;
 
 	dev_dbg(&client->dev, "%s: tm is secs=%d, mins=%d, hours=%d, "
@@ -288,7 +263,7 @@ static int rs5c372_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	addr = RS5C_ADDR(RS5C_REG_CTRL2);
 	ctrl2 = i2c_smbus_read_byte_data(client, addr);
 
-	/* clear rtc warning bits */
+	 
 	switch (rs5c->type) {
 	case rtc_r2025sd:
 	case rtc_r2221tl:
@@ -386,14 +361,7 @@ static int rs5c_rtc_alarm_irq_enable(struct device *dev, unsigned int enabled)
 }
 
 
-/* NOTE:  Since RTC_WKALM_{RD,SET} were originally defined for EFI,
- * which only exposes a polled programming interface; and since
- * these calls map directly to those EFI requests; we don't demand
- * we have an IRQ for this chip when we go through this API.
- *
- * The older x86_pc derived RTC_ALM_{READ,SET} calls require irqs
- * though, managed through RTC_AIE_{ON,OFF} requests.
- */
+ 
 
 static int rs5c_read_alarm(struct device *dev, struct rtc_wkalrm *t)
 {
@@ -405,12 +373,12 @@ static int rs5c_read_alarm(struct device *dev, struct rtc_wkalrm *t)
 	if (status < 0)
 		return status;
 
-	/* report alarm time */
+	 
 	t->time.tm_sec = 0;
 	t->time.tm_min = bcd2bin(rs5c->regs[RS5C_REG_ALARM_A_MIN] & 0x7f);
 	t->time.tm_hour = rs5c_reg2hr(rs5c, rs5c->regs[RS5C_REG_ALARM_A_HOURS]);
 
-	/* ... and status */
+	 
 	t->enabled = !!(rs5c->regs[RS5C_REG_CTRL1] & RS5C_CTRL1_AALE);
 	t->pending = !!(rs5c->regs[RS5C_REG_CTRL2] & RS5C_CTRL2_AAFG);
 
@@ -424,15 +392,15 @@ static int rs5c_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 	int			status, addr, i;
 	unsigned char		buf[3];
 
-	/* only handle up to 24 hours in the future, like RTC_ALM_SET */
+	 
 	if (t->time.tm_mday != -1
 			|| t->time.tm_mon != -1
 			|| t->time.tm_year != -1)
 		return -EINVAL;
 
-	/* REVISIT: round up tm_sec */
+	 
 
-	/* if needed, disable irq (clears pending status) */
+	 
 	status = rs5c_get_regs(rs5c);
 	if (status < 0)
 		return status;
@@ -446,10 +414,10 @@ static int rs5c_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 		rs5c->regs[RS5C_REG_CTRL1] = buf[0];
 	}
 
-	/* set alarm */
+	 
 	buf[0] = bin2bcd(t->time.tm_min);
 	buf[1] = rs5c_hr2reg(rs5c, t->time.tm_hour);
-	buf[2] = 0x7f;	/* any/all days */
+	buf[2] = 0x7f;	 
 
 	for (i = 0; i < sizeof(buf); i++) {
 		addr = RS5C_ADDR(RS5C_REG_ALARM_A_MIN + i);
@@ -459,7 +427,7 @@ static int rs5c_set_alarm(struct device *dev, struct rtc_wkalrm *t)
 		}
 	}
 
-	/* ... and maybe enable its irq */
+	 
 	if (t->enabled) {
 		addr = RS5C_ADDR(RS5C_REG_CTRL1);
 		buf[0] = rs5c->regs[RS5C_REG_CTRL1] | RS5C_CTRL1_AALE;
@@ -526,7 +494,7 @@ static int rs5c372_ioctl(struct device *dev, unsigned int cmd, unsigned long arg
 
 		return put_user(flags, (unsigned int __user *)arg);
 	case RTC_VL_CLR:
-		/* clear VDET bit */
+		 
 		if (rs5c->type == rtc_r2025sd || rs5c->type == rtc_r2221tl) {
 			ctrl2 &= ~R2x2x_CTRL2_VDET;
 			if (i2c_smbus_write_byte_data(rs5c->client, addr, ctrl2) < 0) {
@@ -565,10 +533,10 @@ static int rs5c372_read_offset(struct device *dev, long *offset)
 		break;
 	}
 
-	/* Only bits[0:5] repsents the time counts */
+	 
 	val &= 0x3F;
 
-	/* If bits[1:5] are all 0, it means no increment or decrement */
+	 
 	if (!(val & 0x3E)) {
 		*offset = 0;
 	} else {
@@ -600,22 +568,13 @@ static int rs5c372_set_offset(struct device *dev, long offset)
 		}
 		break;
 	case rtc_r2221tl:
-		/*
-		 * Check if it is possible to use high resolution mode (DEV=1).
-		 * In this mode, the minimum resolution is 2 / (32768 * 20 * 3),
-		 * which is about 1017 ppb.
-		 */
+		 
 		steps = DIV_ROUND_CLOSEST(offset, 1017);
 		if (steps >= -0x3E && steps <= 0x3E) {
 			ppb_per_step = 1017;
 			val |= R2221TL_TRIM_DEV;
 		} else {
-			/*
-			 * offset is out of the range of high resolution mode.
-			 * Try to use low resolution mode (DEV=0). In this mode,
-			 * the minimum resolution is 2 / (32768 * 20), which is
-			 * about 3051 ppb.
-			 */
+			 
 			steps = LONG_MIN;
 		}
 		break;
@@ -637,12 +596,7 @@ static int rs5c372_set_offset(struct device *dev, long offset)
 	}
 
 	if (!steps || !(val & 0x3E)) {
-		/*
-		 * if offset is too small, set oscillation adjustment register
-		 * or time trimming register with its default value whic means
-		 * no increment or decrement. But for rs5c372[a|b], the XSL bit
-		 * should be kept unchanged.
-		 */
+		 
 		if (rs5c->type == rtc_rs5c372a || rs5c->type == rtc_rs5c372b)
 			val &= RS5C372_TRIM_XSL;
 		else
@@ -729,9 +683,9 @@ static int rs5c_sysfs_register(struct device *dev)
 
 static void rs5c_sysfs_unregister(struct device *dev)
 {
-	/* nothing */
+	 
 }
-#endif	/* SYSFS */
+#endif	 
 
 static struct i2c_driver rs5c372_driver;
 
@@ -759,7 +713,7 @@ static int rs5c_oscillator_setup(struct rs5c372 *rs5c372)
 		break;
 	}
 
-	/* use 24hr mode */
+	 
 	switch (rs5c372->type) {
 	case rtc_rs5c372a:
 	case rtc_rs5c372b:
@@ -774,7 +728,7 @@ static int rs5c_oscillator_setup(struct rs5c372 *rs5c372)
 		rs5c372->time24 = 1;
 		break;
 	default:
-		/* impossible */
+		 
 		break;
 	}
 
@@ -801,16 +755,13 @@ static int rs5c372_probe(struct i2c_client *client)
 
 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
 			I2C_FUNC_SMBUS_BYTE_DATA | I2C_FUNC_SMBUS_I2C_BLOCK)) {
-		/*
-		 * If we don't have any master mode adapter, try breaking
-		 * it down in to the barest of capabilities.
-		 */
+		 
 		if (i2c_check_functionality(client->adapter,
 				I2C_FUNC_SMBUS_BYTE_DATA |
 				I2C_FUNC_SMBUS_I2C_BLOCK))
 			smbus_mode = 1;
 		else {
-			/* Still no good, give up */
+			 
 			err = -ENODEV;
 			goto exit;
 		}
@@ -832,7 +783,7 @@ static int rs5c372_probe(struct i2c_client *client)
 		rs5c372->type = id->driver_data;
 	}
 
-	/* we read registers 0x0f then 0x00-0x0f; skip the first one */
+	 
 	rs5c372->regs = &rs5c372->buf[1];
 	rs5c372->smbus = smbus_mode;
 
@@ -840,13 +791,11 @@ static int rs5c372_probe(struct i2c_client *client)
 	if (err < 0)
 		goto exit;
 
-	/* clock may be set for am/pm or 24 hr time */
+	 
 	switch (rs5c372->type) {
 	case rtc_rs5c372a:
 	case rtc_rs5c372b:
-		/* alarm uses ALARM_A; and nINTRA on 372a, nINTR on 372b.
-		 * so does periodic irq, except some 327a modes.
-		 */
+		 
 		if (rs5c372->regs[RS5C_REG_CTRL2] & RS5C372_CTRL2_24)
 			rs5c372->time24 = 1;
 		break;
@@ -856,21 +805,14 @@ static int rs5c372_probe(struct i2c_client *client)
 	case rtc_rv5c387a:
 		if (rs5c372->regs[RS5C_REG_CTRL1] & RV5C387_CTRL1_24)
 			rs5c372->time24 = 1;
-		/* alarm uses ALARM_W; and nINTRB for alarm and periodic
-		 * irq, on both 386 and 387
-		 */
+		 
 		break;
 	default:
 		dev_err(&client->dev, "unknown RTC type\n");
 		goto exit;
 	}
 
-	/* if the oscillator lost power and no other software (like
-	 * the bootloader) set it up, do it here.
-	 *
-	 * The R2025S/D does this a little differently than the other
-	 * parts, so we special case that..
-	 */
+	 
 	err = rs5c_oscillator_setup(rs5c372);
 	if (unlikely(err < 0)) {
 		dev_err(&client->dev, "setup error\n");
@@ -890,7 +832,7 @@ static int rs5c372_probe(struct i2c_client *client)
 			rs5c372->time24 ? "24hr" : "am/pm"
 			);
 
-	/* REVISIT use client->irq to register alarm irq ... */
+	 
 	rs5c372->rtc = devm_rtc_device_register(&client->dev,
 					rs5c372_driver.driver.name,
 					&rs5c372_rtc_ops, THIS_MODULE);

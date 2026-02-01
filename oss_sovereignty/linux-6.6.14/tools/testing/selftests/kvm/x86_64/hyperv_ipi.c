@@ -1,12 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hyper-V HvCallSendSyntheticClusterIpi{,Ex} tests
- *
- * Copyright (C) 2022, Red Hat, Inc.
- *
- */
 
-#define _GNU_SOURCE /* for program_invocation_short_name */
+ 
+
+#define _GNU_SOURCE  
 #include <pthread.h>
 #include <inttypes.h>
 
@@ -33,14 +28,14 @@ enum HV_GENERIC_SET_FORMAT {
 	HV_GENERIC_SET_ALL,
 };
 
-/* HvCallSendSyntheticClusterIpi hypercall */
+ 
 struct hv_send_ipi {
 	u32 vector;
 	u32 reserved;
 	u64 cpu_mask;
 };
 
-/* HvCallSendSyntheticClusterIpiEx hypercall */
+ 
 struct hv_send_ipi_ex {
 	u32 vector;
 	u32 reserved;
@@ -62,7 +57,7 @@ static void receiver_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 
 	vcpu_id = rdmsr(HV_X64_MSR_VP_INDEX);
 
-	/* Signal sender vCPU we're ready */
+	 
 	ipis_rcvd[vcpu_id] = (u64)-1;
 
 	for (;;)
@@ -94,12 +89,12 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	hv_init(pgs_gpa);
 	GUEST_SYNC(stage++);
 
-	/* Wait for receiver vCPUs to come up */
+	 
 	while (!ipis_rcvd[RECEIVER_VCPU_ID_1] || !ipis_rcvd[RECEIVER_VCPU_ID_2])
 		nop_loop();
 	ipis_rcvd[RECEIVER_VCPU_ID_1] = ipis_rcvd[RECEIVER_VCPU_ID_2] = 0;
 
-	/* 'Slow' HvCallSendSyntheticClusterIpi to RECEIVER_VCPU_ID_1 */
+	 
 	ipi->vector = IPI_VECTOR;
 	ipi->cpu_mask = 1 << RECEIVER_VCPU_ID_1;
 	hyperv_hypercall(HVCALL_SEND_IPI, pgs_gpa, pgs_gpa + 4096);
@@ -107,7 +102,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ipis_expected[1]);
 	GUEST_SYNC(stage++);
-	/* 'Fast' HvCallSendSyntheticClusterIpi to RECEIVER_VCPU_ID_1 */
+	 
 	hyperv_hypercall(HVCALL_SEND_IPI | HV_HYPERCALL_FAST_BIT,
 			 IPI_VECTOR, 1 << RECEIVER_VCPU_ID_1);
 	nop_loop();
@@ -115,7 +110,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ipis_expected[1]);
 	GUEST_SYNC(stage++);
 
-	/* 'Slow' HvCallSendSyntheticClusterIpiEx to RECEIVER_VCPU_ID_1 */
+	 
 	memset(hcall_page, 0, 4096);
 	ipi_ex->vector = IPI_VECTOR;
 	ipi_ex->vp_set.format = HV_GENERIC_SET_SPARSE_4K;
@@ -127,7 +122,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ipis_expected[1]);
 	GUEST_SYNC(stage++);
-	/* 'XMM Fast' HvCallSendSyntheticClusterIpiEx to RECEIVER_VCPU_ID_1 */
+	 
 	hyperv_write_xmm_input(&ipi_ex->vp_set.valid_bank_mask, 1);
 	hyperv_hypercall(HVCALL_SEND_IPI_EX | HV_HYPERCALL_FAST_BIT |
 			 (1 << HV_HYPERCALL_VARHEAD_OFFSET),
@@ -137,7 +132,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ipis_expected[1]);
 	GUEST_SYNC(stage++);
 
-	/* 'Slow' HvCallSendSyntheticClusterIpiEx to RECEIVER_VCPU_ID_2 */
+	 
 	memset(hcall_page, 0, 4096);
 	ipi_ex->vector = IPI_VECTOR;
 	ipi_ex->vp_set.format = HV_GENERIC_SET_SPARSE_4K;
@@ -149,7 +144,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ipis_expected[0]);
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
 	GUEST_SYNC(stage++);
-	/* 'XMM Fast' HvCallSendSyntheticClusterIpiEx to RECEIVER_VCPU_ID_2 */
+	 
 	hyperv_write_xmm_input(&ipi_ex->vp_set.valid_bank_mask, 1);
 	hyperv_hypercall(HVCALL_SEND_IPI_EX | HV_HYPERCALL_FAST_BIT |
 			 (1 << HV_HYPERCALL_VARHEAD_OFFSET),
@@ -159,7 +154,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
 	GUEST_SYNC(stage++);
 
-	/* 'Slow' HvCallSendSyntheticClusterIpiEx to both RECEIVER_VCPU_ID_{1,2} */
+	 
 	memset(hcall_page, 0, 4096);
 	ipi_ex->vector = IPI_VECTOR;
 	ipi_ex->vp_set.format = HV_GENERIC_SET_SPARSE_4K;
@@ -172,7 +167,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
 	GUEST_SYNC(stage++);
-	/* 'XMM Fast' HvCallSendSyntheticClusterIpiEx to both RECEIVER_VCPU_ID_{1, 2} */
+	 
 	hyperv_write_xmm_input(&ipi_ex->vp_set.valid_bank_mask, 2);
 	hyperv_hypercall(HVCALL_SEND_IPI_EX | HV_HYPERCALL_FAST_BIT |
 			 (2 << HV_HYPERCALL_VARHEAD_OFFSET),
@@ -182,7 +177,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
 	GUEST_SYNC(stage++);
 
-	/* 'Slow' HvCallSendSyntheticClusterIpiEx to HV_GENERIC_SET_ALL */
+	 
 	memset(hcall_page, 0, 4096);
 	ipi_ex->vector = IPI_VECTOR;
 	ipi_ex->vp_set.format = HV_GENERIC_SET_ALL;
@@ -191,9 +186,7 @@ static void sender_guest_code(void *hcall_page, vm_vaddr_t pgs_gpa)
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_1] == ++ipis_expected[0]);
 	GUEST_ASSERT(ipis_rcvd[RECEIVER_VCPU_ID_2] == ++ipis_expected[1]);
 	GUEST_SYNC(stage++);
-	/*
-	 * 'XMM Fast' HvCallSendSyntheticClusterIpiEx to HV_GENERIC_SET_ALL.
-	 */
+	 
 	ipi_ex->vp_set.valid_bank_mask = 0;
 	hyperv_write_xmm_input(&ipi_ex->vp_set.valid_bank_mask, 2);
 	hyperv_hypercall(HVCALL_SEND_IPI_EX | HV_HYPERCALL_FAST_BIT,
@@ -250,7 +243,7 @@ int main(int argc, char *argv[])
 
 	vm = vm_create_with_one_vcpu(&vcpu[0], sender_guest_code);
 
-	/* Hypercall input/output */
+	 
 	hcall_page = vm_vaddr_alloc_pages(vm, 2);
 	memset(addr_gva2hva(vm, hcall_page), 0x0, 2 * getpagesize());
 
@@ -294,7 +287,7 @@ int main(int argc, char *argv[])
 			goto done;
 		case UCALL_ABORT:
 			REPORT_GUEST_ASSERT(uc);
-			/* NOT REACHED */
+			 
 		default:
 			TEST_FAIL("Unknown ucall %lu", uc.cmd);
 		}

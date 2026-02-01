@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019, Huaqin Telecom Technology Co., Ltd
- *
- * Author: Jerry Han <jerry.han.hq@gmail.com>
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/kernel.h>
@@ -116,7 +111,7 @@ static int boe_panel_unprepare(struct drm_panel *panel)
 	if (err < 0)
 		dev_err(panel->dev, "failed to enter sleep mode: %d\n", err);
 
-	/* sleep_mode_delay: 1ms - 2ms */
+	 
 	usleep_range(1000, 2000);
 
 	disable_gpios(pinfo);
@@ -135,27 +130,27 @@ static int boe_panel_prepare(struct drm_panel *panel)
 		return 0;
 
 	gpiod_set_value(pinfo->pp18_gpio, 1);
-	/* T1: 5ms - 6ms */
+	 
 	usleep_range(5000, 6000);
 	gpiod_set_value(pinfo->pp33_gpio, 1);
 
-	/* reset sequence */
-	/* T2: 14ms - 15ms */
+	 
+	 
 	usleep_range(14000, 15000);
 	gpiod_set_value(pinfo->enable_gpio, 1);
 
-	/* T3: 1ms - 2ms */
+	 
 	usleep_range(1000, 2000);
 	gpiod_set_value(pinfo->enable_gpio, 0);
 
-	/* T4: 1ms - 2ms */
+	 
 	usleep_range(1000, 2000);
 	gpiod_set_value(pinfo->enable_gpio, 1);
 
-	/* T5: 5ms - 6ms */
+	 
 	usleep_range(5000, 6000);
 
-	/* send init code */
+	 
 	err = send_mipi_cmds(panel, pinfo->desc->on_cmds);
 	if (err < 0) {
 		dev_err(panel->dev, "failed to send DCS Init Code: %d\n", err);
@@ -168,7 +163,7 @@ static int boe_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/* T6: 120ms - 121ms */
+	 
 	usleep_range(120000, 121000);
 
 	err = mipi_dsi_dcs_set_display_on(pinfo->link);
@@ -177,7 +172,7 @@ static int boe_panel_prepare(struct drm_panel *panel)
 		goto poweroff;
 	}
 
-	/* T7: 20ms - 21ms */
+	 
 	usleep_range(20000, 21000);
 
 	pinfo->prepared = true;
@@ -255,7 +250,7 @@ static const struct drm_display_mode default_display_mode = {
 	.vtotal = 1920 + 10 + 14 + 4,
 };
 
-/* 8 inch */
+ 
 static const struct panel_cmd boe_himax8279d8p_on_cmds[] = {
 	{ 0xB0, 0x05 },
 	{ 0xB1, 0xE5 },
@@ -532,7 +527,7 @@ static const struct panel_desc boe_himax8279d8p_panel_desc = {
 	.on_cmds_num = 260,
 };
 
-/* 10 inch */
+ 
 static const struct panel_cmd boe_himax8279d10p_on_cmds[] = {
 	{ 0xB0, 0x05 },
 	{ 0xB1, 0xE5 },
@@ -842,7 +837,7 @@ static const struct of_device_id panel_of_match[] = {
 		.data = &boe_himax8279d10p_panel_desc,
 	},
 	{
-		/* sentinel */
+		 
 	}
 };
 MODULE_DEVICE_TABLE(of, panel_of_match);

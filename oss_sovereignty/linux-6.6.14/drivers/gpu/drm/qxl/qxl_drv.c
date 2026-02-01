@@ -1,31 +1,4 @@
-/* qxl_drv.c -- QXL driver -*- linux-c -*-
- *
- * Copyright 2011 Red Hat, Inc.
- * All Rights Reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * VA LINUX SYSTEMS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors:
- *    Dave Airlie <airlie@redhat.com>
- *    Alon Levy <alevy@redhat.com>
- */
+ 
 
 #include "qxl_drv.h"
 
@@ -82,7 +55,7 @@ qxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (pdev->revision < 4) {
 		DRM_ERROR("qxl too old, doesn't support client_monitors_config,"
 			  " use xf86-video-qxl in user mode");
-		return -EINVAL; /* TODO: ENODEV ? */
+		return -EINVAL;  
 	}
 
 	qdev = devm_drm_dev_alloc(&pdev->dev, &qxl_driver,
@@ -118,7 +91,7 @@ qxl_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 
 	drm_kms_helper_poll_init(&qdev->ddev);
 
-	/* Complete initialization. */
+	 
 	ret = drm_dev_register(&qdev->ddev, ent->driver_data);
 	if (ret)
 		goto modeset_cleanup;
@@ -143,11 +116,7 @@ static void qxl_drm_release(struct drm_device *dev)
 {
 	struct qxl_device *qdev = to_qxl(dev);
 
-	/*
-	 * TODO: qxl_device_fini() call should be in qxl_pci_remove(),
-	 * reordering qxl_modeset_fini() + qxl_device_fini() calls is
-	 * non-trivial though.
-	 */
+	 
 	qxl_modeset_fini(qdev);
 	qxl_device_fini(qdev);
 }

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: MIT
+
 #include "hdmi.h"
 
 void pack_hdmi_infoframe(struct packed_hdmi_infoframe *packed_frame,
@@ -11,16 +11,9 @@ void pack_hdmi_infoframe(struct packed_hdmi_infoframe *packed_frame,
 	u32 subpack1_high = 0;
 
 	switch (len) {
-		/*
-		 * "When in doubt, use brute force."
-		 *     -- Ken Thompson.
-		 */
+		 
 	default:
-		/*
-		 * We presume that no valid frame is longer than 17
-		 * octets, including header...  And truncate to that
-		 * if it's longer.
-		 */
+		 
 	case 17:
 		subpack1_high = (raw_frame[16] << 16);
 		fallthrough;

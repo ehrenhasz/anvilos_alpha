@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2013 Daniel Tang <tangrs@tangrs.id.au>
- */
+
+ 
 
 #include <linux/input/matrix_keypad.h>
 #include <linux/platform_device.h>
@@ -38,9 +36,9 @@ struct nspire_keypad {
 	struct matrix_keymap_data *keymap;
 	int row_shift;
 
-	/* Maximum delay estimated assuming 33MHz APB */
-	u32 scan_interval;	/* In microseconds (~2000us max) */
-	u32 row_delay;		/* In microseconds (~500us max) */
+	 
+	u32 scan_interval;	 
+	u32 row_delay;		 
 
 	u16 state[KEYPAD_BITMASK_ROWS];
 
@@ -108,22 +106,22 @@ static int nspire_keypad_open(struct input_dev *input)
 		cycles_per_us = 1;
 
 	delay_cycles = cycles_per_us * keypad->scan_interval;
-	WARN_ON(delay_cycles >= (1 << 16)); /* Overflow */
+	WARN_ON(delay_cycles >= (1 << 16));  
 	delay_cycles &= 0xffff;
 
 	row_delay_cycles = cycles_per_us * keypad->row_delay;
-	WARN_ON(row_delay_cycles >= (1 << 14)); /* Overflow */
+	WARN_ON(row_delay_cycles >= (1 << 14));  
 	row_delay_cycles &= 0x3fff;
 
-	val |= 3 << 0; /* Set scan mode to 3 (continuous scan) */
-	val |= row_delay_cycles << 2; /* Delay between scanning each row */
-	val |= delay_cycles << 16; /* Delay between scans */
+	val |= 3 << 0;  
+	val |= row_delay_cycles << 2;  
+	val |= delay_cycles << 16;  
 	writel(val, keypad->reg_base + KEYPAD_SCAN_MODE);
 
 	val = (KEYPAD_BITMASK_ROWS & 0xff) | (KEYPAD_BITMASK_COLS & 0xff)<<8;
 	writel(val, keypad->reg_base + KEYPAD_CNTL);
 
-	/* Enable interrupts */
+	 
 	keypad->int_mask = 1 << 1;
 	writel(keypad->int_mask, keypad->reg_base + KEYPAD_INTMSK);
 
@@ -134,9 +132,9 @@ static void nspire_keypad_close(struct input_dev *input)
 {
 	struct nspire_keypad *keypad = input_get_drvdata(input);
 
-	/* Disable interrupts */
+	 
 	writel(0, keypad->reg_base + KEYPAD_INTMSK);
-	/* Acknowledge existing interrupts */
+	 
 	writel(~0, keypad->reg_base + KEYPAD_INT);
 
 	clk_disable_unprepare(keypad->clk);
@@ -202,15 +200,15 @@ static int nspire_keypad_probe(struct platform_device *pdev)
 		return error;
 	}
 
-	/* Disable interrupts */
+	 
 	writel(0, keypad->reg_base + KEYPAD_INTMSK);
-	/* Acknowledge existing interrupts */
+	 
 	writel(~0, keypad->reg_base + KEYPAD_INT);
 
-	/* Disable GPIO interrupts to prevent hanging on touchpad */
-	/* Possibly used to detect touchpad events */
+	 
+	 
 	writel(0, keypad->reg_base + KEYPAD_UNKNOWN_INT);
-	/* Acknowledge existing GPIO interrupts */
+	 
 	writel(~0, keypad->reg_base + KEYPAD_UNKNOWN_INT_STS);
 
 	clk_disable_unprepare(keypad->clk);

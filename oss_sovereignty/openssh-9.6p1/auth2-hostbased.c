@@ -1,27 +1,5 @@
-/* $OpenBSD: auth2-hostbased.c,v 1.52 2023/03/05 05:34:09 dtucker Exp $ */
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -52,7 +30,7 @@
 #include "ssherr.h"
 #include "match.h"
 
-/* import */
+ 
 extern ServerOptions options;
 
 static int
@@ -66,7 +44,7 @@ userauth_hostbased(struct ssh *ssh, const char *method)
 	size_t alen, blen, slen;
 	int r, pktype, authenticated = 0;
 
-	/* XXX use sshkey_froms() */
+	 
 	if ((r = sshpkt_get_cstring(ssh, &pkalg, &alen)) != 0 ||
 	    (r = sshpkt_get_string(ssh, &pkblob, &blen)) != 0 ||
 	    (r = sshpkt_get_cstring(ssh, &chost, NULL)) != 0 ||
@@ -82,7 +60,7 @@ userauth_hostbased(struct ssh *ssh, const char *method)
 #endif
 	pktype = sshkey_type_from_name(pkalg);
 	if (pktype == KEY_UNSPEC) {
-		/* this is perfectly legal */
+		 
 		logit_f("unsupported public key algorithm: %s",
 		    pkalg);
 		goto done;
@@ -125,7 +103,7 @@ userauth_hostbased(struct ssh *ssh, const char *method)
 
 	if ((b = sshbuf_new()) == NULL)
 		fatal_f("sshbuf_new failed");
-	/* reconstruct packet */
+	 
 	if ((r = sshbuf_put_stringb(b, ssh->kex->session_id)) != 0 ||
 	    (r = sshbuf_put_u8(b, SSH2_MSG_USERAUTH_REQUEST)) != 0 ||
 	    (r = sshbuf_put_cstring(b, authctxt->user)) != 0 ||
@@ -143,7 +121,7 @@ userauth_hostbased(struct ssh *ssh, const char *method)
 	auth2_record_info(authctxt,
 	    "client user \"%.100s\", client host \"%.100s\"", cuser, chost);
 
-	/* test for allowed key and correct signature */
+	 
 	authenticated = 0;
 	if (PRIVSEP(hostbased_key_allowed(ssh, authctxt->pw, cuser,
 	    chost, key)) &&
@@ -164,7 +142,7 @@ done:
 	return authenticated;
 }
 
-/* return 1 if given hostkey is allowed */
+ 
 int
 hostbased_key_allowed(struct ssh *ssh, struct passwd *pw,
     const char *cuser, char *chost, struct sshkey *key)
@@ -221,7 +199,7 @@ hostbased_key_allowed(struct ssh *ssh, struct passwd *pw,
 	    _PATH_SSH_SYSTEM_HOSTFILE,
 	    options.ignore_user_known_hosts ? NULL : _PATH_SSH_USER_HOSTFILE);
 
-	/* backward compat if no key has been found. */
+	 
 	if (host_status == HOST_NEW) {
 		host_status = check_key_in_hostfiles(pw, key, lookup,
 		    _PATH_SSH_SYSTEM_HOSTFILE2,

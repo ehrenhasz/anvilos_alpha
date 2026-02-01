@@ -1,15 +1,4 @@
-/*
- * drivers/cpufreq/spear-cpufreq.c
- *
- * CPU Frequency Scaling for SPEAr platform
- *
- * Copyright (C) 2012 ST Microelectronics
- * Deepak Sikri <deepak.sikri@st.com>
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -23,7 +12,7 @@
 #include <linux/slab.h>
 #include <linux/types.h>
 
-/* SPEAr CPUFreq driver data structure */
+ 
 static struct {
 	struct clk *clk;
 	unsigned int transition_latency;
@@ -35,10 +24,7 @@ static struct clk *spear1340_cpu_get_possible_parent(unsigned long newfreq)
 {
 	struct clk *sys_pclk;
 	int pclk;
-	/*
-	 * In SPEAr1340, cpu clk's parent sys clk can take input from
-	 * following sources
-	 */
+	 
 	static const char * const sys_clk_src[] = {
 		"sys_syn_clk",
 		"pll1_clk",
@@ -46,20 +32,17 @@ static struct clk *spear1340_cpu_get_possible_parent(unsigned long newfreq)
 		"pll3_clk",
 	};
 
-	/*
-	 * As sys clk can have multiple source with their own range
-	 * limitation so we choose possible sources accordingly
-	 */
+	 
 	if (newfreq <= 300000000)
-		pclk = 0; /* src is sys_syn_clk */
+		pclk = 0;  
 	else if (newfreq > 300000000 && newfreq <= 500000000)
-		pclk = 3; /* src is pll3_clk */
+		pclk = 3;  
 	else if (newfreq == 600000000)
-		pclk = 1; /* src is pll1_clk */
+		pclk = 1;  
 	else
 		return ERR_PTR(-EINVAL);
 
-	/* Get parent to sys clock */
+	 
 	sys_pclk = clk_get(NULL, sys_clk_src[pclk]);
 	if (IS_ERR(sys_pclk))
 		pr_err("Failed to get %s clock\n", sys_clk_src[pclk]);
@@ -67,12 +50,7 @@ static struct clk *spear1340_cpu_get_possible_parent(unsigned long newfreq)
 	return sys_pclk;
 }
 
-/*
- * In SPEAr1340, we cannot use newfreq directly because we need to actually
- * access a source clock (clk) which might not be ancestor of cpu at present.
- * Hence in SPEAr1340 we would operate on source clock directly before switching
- * cpu clock to it.
- */
+ 
 static int spear1340_set_cpu_rate(struct clk *sys_pclk, unsigned long newfreq)
 {
 	struct clk *sys_clk;
@@ -84,7 +62,7 @@ static int spear1340_set_cpu_rate(struct clk *sys_pclk, unsigned long newfreq)
 		return PTR_ERR(sys_clk);
 	}
 
-	/* Set the rate of the source clock before changing the parent */
+	 
 	ret = clk_set_rate(sys_pclk, newfreq);
 	if (ret) {
 		pr_err("Failed to set sys clk rate to %lu\n", newfreq);
@@ -110,26 +88,17 @@ static int spear_cpufreq_target(struct cpufreq_policy *policy,
 	newfreq = spear_cpufreq.freq_tbl[index].frequency * 1000;
 
 	if (of_machine_is_compatible("st,spear1340")) {
-		/*
-		 * SPEAr1340 is special in the sense that due to the possibility
-		 * of multiple clock sources for cpu clk's parent we can have
-		 * different clock source for different frequency of cpu clk.
-		 * Hence we need to choose one from amongst these possible clock
-		 * sources.
-		 */
+		 
 		srcclk = spear1340_cpu_get_possible_parent(newfreq);
 		if (IS_ERR(srcclk)) {
 			pr_err("Failed to get src clk\n");
 			return PTR_ERR(srcclk);
 		}
 
-		/* SPEAr1340: src clk is always 2 * intended cpu clk */
+		 
 		mult = 2;
 	} else {
-		/*
-		 * src clock to be altered is ancestor of cpu clock. Hence we
-		 * can directly work on cpu clk
-		 */
+		 
 		srcclk = spear_cpufreq.clk;
 	}
 

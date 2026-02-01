@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2013 Patrick McHardy <kaber@trash.net>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -325,7 +323,7 @@ static void __net_exit synproxy_proc_exit(struct net *net)
 {
 	return;
 }
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 static int __net_init synproxy_net_init(struct net *net)
 {
@@ -513,9 +511,7 @@ synproxy_send_server_syn(struct net *net,
 	nth->source	= th->source;
 	nth->dest	= th->dest;
 	nth->seq	= htonl(recv_seq - 1);
-	/* ack_seq is used to relay our ISN to the synproxy hook to initialize
-	 * sequence number translation once a connection tracking entry exists.
-	 */
+	 
 	nth->ack_seq	= htonl(ntohl(th->ack_seq) - 1);
 	tcp_flag_word(nth) = TCP_FLAG_SYN;
 	if (opts->options & NF_SYNPROXY_OPT_ECN)
@@ -679,10 +675,7 @@ ipv4_synproxy_hook(void *priv, struct sk_buff *skb,
 		    CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL)
 			break;
 
-		/* Reopened connection - reset the sequence number and timestamp
-		 * adjustments, they will get initialized once the connection is
-		 * reestablished.
-		 */
+		 
 		nf_ct_seqadj_init(ct, ctinfo, 0);
 		synproxy->tsoff = 0;
 		this_cpu_inc(snet->stats->conn_reopened);
@@ -693,10 +686,7 @@ ipv4_synproxy_hook(void *priv, struct sk_buff *skb,
 
 		if (!th->syn && th->ack &&
 		    CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
-			/* Keep-Alives are sent with SEG.SEQ = SND.NXT-1,
-			 * therefore we need to add 1 to make the SYN sequence
-			 * number match the one of first SYN.
-			 */
+			 
 			if (synproxy_recv_client_ack(net, skb, th, &opts,
 						     ntohl(th->seq) + 1)) {
 				this_cpu_inc(snet->stats->cookie_retrans);
@@ -927,9 +917,7 @@ synproxy_send_server_syn_ipv6(struct net *net, const struct sk_buff *skb,
 	nth->source	= th->source;
 	nth->dest	= th->dest;
 	nth->seq	= htonl(recv_seq - 1);
-	/* ack_seq is used to relay our ISN to the synproxy hook to initialize
-	 * sequence number translation once a connection tracking entry exists.
-	 */
+	 
 	nth->ack_seq	= htonl(ntohl(th->ack_seq) - 1);
 	tcp_flag_word(nth) = TCP_FLAG_SYN;
 	if (opts->options & NF_SYNPROXY_OPT_ECN)
@@ -1102,10 +1090,7 @@ ipv6_synproxy_hook(void *priv, struct sk_buff *skb,
 		    CTINFO2DIR(ctinfo) != IP_CT_DIR_ORIGINAL)
 			break;
 
-		/* Reopened connection - reset the sequence number and timestamp
-		 * adjustments, they will get initialized once the connection is
-		 * reestablished.
-		 */
+		 
 		nf_ct_seqadj_init(ct, ctinfo, 0);
 		synproxy->tsoff = 0;
 		this_cpu_inc(snet->stats->conn_reopened);
@@ -1116,10 +1101,7 @@ ipv6_synproxy_hook(void *priv, struct sk_buff *skb,
 
 		if (!th->syn && th->ack &&
 		    CTINFO2DIR(ctinfo) == IP_CT_DIR_ORIGINAL) {
-			/* Keep-Alives are sent with SEG.SEQ = SND.NXT-1,
-			 * therefore we need to add 1 to make the SYN sequence
-			 * number match the one of first SYN.
-			 */
+			 
 			if (synproxy_recv_client_ack_ipv6(net, skb, th, &opts,
 							  ntohl(th->seq) + 1)) {
 				this_cpu_inc(snet->stats->cookie_retrans);
@@ -1213,7 +1195,7 @@ nf_synproxy_ipv6_fini(struct synproxy_net *snet, struct net *net)
 					ARRAY_SIZE(ipv6_synproxy_ops));
 }
 EXPORT_SYMBOL_GPL(nf_synproxy_ipv6_fini);
-#endif /* CONFIG_IPV6 */
+#endif  
 
 MODULE_LICENSE("GPL");
 MODULE_AUTHOR("Patrick McHardy <kaber@trash.net>");

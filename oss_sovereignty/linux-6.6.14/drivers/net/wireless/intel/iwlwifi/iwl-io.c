@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2003-2014, 2018-2022 Intel Corporation
- * Copyright (C) 2015-2016 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/export.h>
@@ -45,7 +42,7 @@ u32 iwl_read32(struct iwl_trans *trans, u32 ofs)
 }
 IWL_EXPORT_SYMBOL(iwl_read32);
 
-#define IWL_POLL_INTERVAL 10	/* microseconds */
+#define IWL_POLL_INTERVAL 10	 
 
 int iwl_poll_bit(struct iwl_trans *trans, u32 addr,
 		 u32 bits, u32 mask, int timeout)
@@ -72,7 +69,7 @@ u32 iwl_read_direct32(struct iwl_trans *trans, u32 reg)
 		return value;
 	}
 
-	/* return as if we have a HW timeout/failure */
+	 
 	return 0x5a5a5a5a;
 }
 IWL_EXPORT_SYMBOL(iwl_read_direct32);
@@ -144,7 +141,7 @@ u32 iwl_read_prph(struct iwl_trans *trans, u32 ofs)
 		return val;
 	}
 
-	/* return as if we have a HW timeout/failure */
+	 
 	return 0x5a5a5a5a;
 }
 IWL_EXPORT_SYMBOL(iwl_read_prph);
@@ -278,13 +275,7 @@ static int iwl_dump_rfh(struct iwl_trans *trans, char **buf)
 #ifdef CONFIG_IWLWIFI_DEBUGFS
 	if (buf) {
 		int pos = 0;
-		/*
-		 * Register (up to 34 for name + 8 blank/q for MQ): 40 chars
-		 * Colon + space: 2 characters
-		 * 0X%08x: 10 characters
-		 * New line: 1 character
-		 * Total of 53 characters
-		 */
+		 
 		size_t bufsz = ARRAY_SIZE(rfh_tbl) * 53 +
 			       ARRAY_SIZE(rfh_mq_tbl) * 53 * num_q + 40;
 
@@ -438,7 +429,7 @@ static void iwl_dump_host_monitor(struct iwl_trans *trans)
 					    IWL_HOST_MON_BLOCK_PEMON_VEC0, 1);
 		break;
 	default:
-		/* not supported yet */
+		 
 		return;
 	}
 }
@@ -450,14 +441,11 @@ int iwl_finish_nic_init(struct iwl_trans *trans)
 	int err;
 
 	if (cfg_trans->bisr_workaround) {
-		/* ensure the TOP FSM isn't still in previous reset */
+		 
 		mdelay(2);
 	}
 
-	/*
-	 * Set "initialization complete" bit to move adapter from
-	 * D0U* --> D0A* (powered-up active) state.
-	 */
+	 
 	if (cfg_trans->device_family >= IWL_DEVICE_FAMILY_BZ) {
 		iwl_set_bit(trans, CSR_GP_CNTRL,
 			    CSR_GP_CNTRL_REG_FLAG_MAC_CLOCK_READY |
@@ -472,11 +460,7 @@ int iwl_finish_nic_init(struct iwl_trans *trans)
 	if (cfg_trans->device_family == IWL_DEVICE_FAMILY_8000)
 		udelay(2);
 
-	/*
-	 * Wait for clock stabilization; once stabilized, access to
-	 * device-internal resources is supported, e.g. iwl_write_prph()
-	 * and accesses to uCode SRAM.
-	 */
+	 
 	err = iwl_poll_bit(trans, CSR_GP_CNTRL, poll_ready, poll_ready, 25000);
 	if (err < 0) {
 		IWL_DEBUG_INFO(trans, "Failed to wake NIC\n");
@@ -485,7 +469,7 @@ int iwl_finish_nic_init(struct iwl_trans *trans)
 	}
 
 	if (cfg_trans->bisr_workaround) {
-		/* ensure BISR shift has finished */
+		 
 		udelay(200);
 	}
 
@@ -499,9 +483,7 @@ void iwl_trans_sync_nmi_with_addr(struct iwl_trans *trans, u32 inta_addr,
 	unsigned long timeout = jiffies + IWL_TRANS_NMI_TIMEOUT;
 	bool interrupts_enabled = test_bit(STATUS_INT_ENABLED, &trans->status);
 
-	/* if the interrupts were already disabled, there is no point in
-	 * calling iwl_disable_interrupts
-	 */
+	 
 	if (interrupts_enabled)
 		iwl_trans_interrupts(trans, false);
 
@@ -509,9 +491,9 @@ void iwl_trans_sync_nmi_with_addr(struct iwl_trans *trans, u32 inta_addr,
 	while (time_after(timeout, jiffies)) {
 		u32 inta_hw = iwl_read32(trans, inta_addr);
 
-		/* Error detected by uCode */
+		 
 		if (inta_hw & sw_err_bit) {
-			/* Clear causes register */
+			 
 			iwl_write32(trans, inta_addr, inta_hw & sw_err_bit);
 			break;
 		}
@@ -519,10 +501,7 @@ void iwl_trans_sync_nmi_with_addr(struct iwl_trans *trans, u32 inta_addr,
 		mdelay(1);
 	}
 
-	/* enable interrupts only if there were already enabled before this
-	 * function to avoid a case were the driver enable interrupts before
-	 * proper configurations were made
-	 */
+	 
 	if (interrupts_enabled)
 		iwl_trans_interrupts(trans, true);
 

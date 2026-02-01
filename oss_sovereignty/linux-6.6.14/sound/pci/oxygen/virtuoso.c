@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * C-Media CMI8788 driver for Asus Xonar cards
- *
- * Copyright (c) Clemens Ladisch <clemens@ladisch.de>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/delay.h>

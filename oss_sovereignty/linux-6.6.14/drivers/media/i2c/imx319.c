@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (C) 2018 Intel Corporation
+
+
 
 #include <asm/unaligned.h>
 #include <linux/acpi.h>
@@ -15,42 +15,29 @@
 #define IMX319_MODE_STANDBY		0x00
 #define IMX319_MODE_STREAMING		0x01
 
-/* Chip ID */
+ 
 #define IMX319_REG_CHIP_ID		0x0016
 #define IMX319_CHIP_ID			0x0319
 
-/* V_TIMING internal */
+ 
 #define IMX319_REG_FLL			0x0340
 #define IMX319_FLL_MAX			0xffff
 
-/* Exposure control */
+ 
 #define IMX319_REG_EXPOSURE		0x0202
 #define IMX319_EXPOSURE_MIN		1
 #define IMX319_EXPOSURE_STEP		1
 #define IMX319_EXPOSURE_DEFAULT		0x04f6
 
-/*
- *  the digital control register for all color control looks like:
- *  +-----------------+------------------+
- *  |      [7:0]      |       [15:8]     |
- *  +-----------------+------------------+
- *  |	  0x020f      |       0x020e     |
- *  --------------------------------------
- *  it is used to calculate the digital gain times value(integral + fractional)
- *  the [15:8] bits is the fractional part and [7:0] bits is the integral
- *  calculation equation is:
- *      gain value (unit: times) = REG[15:8] + REG[7:0]/0x100
- *  Only value in 0x0100 ~ 0x0FFF range is allowed.
- *  Analog gain use 10 bits in the registers and allowed range is 0 ~ 960
- */
-/* Analog gain control */
+ 
+ 
 #define IMX319_REG_ANALOG_GAIN		0x0204
 #define IMX319_ANA_GAIN_MIN		0
 #define IMX319_ANA_GAIN_MAX		960
 #define IMX319_ANA_GAIN_STEP		1
 #define IMX319_ANA_GAIN_DEFAULT		0
 
-/* Digital gain control */
+ 
 #define IMX319_REG_DPGA_USE_GLOBAL_GAIN	0x3ff9
 #define IMX319_REG_DIG_GAIN_GLOBAL	0x020e
 #define IMX319_DGTL_GAIN_MIN		256
@@ -58,7 +45,7 @@
 #define IMX319_DGTL_GAIN_STEP		1
 #define IMX319_DGTL_GAIN_DEFAULT	256
 
-/* Test Pattern Control */
+ 
 #define IMX319_REG_TEST_PATTERN		0x0600
 #define IMX319_TEST_PATTERN_DISABLED		0
 #define IMX319_TEST_PATTERN_SOLID_COLOR		1
@@ -66,10 +53,10 @@
 #define IMX319_TEST_PATTERN_GRAY_COLOR_BARS	3
 #define IMX319_TEST_PATTERN_PN9			4
 
-/* Flip Control */
+ 
 #define IMX319_REG_ORIENTATION		0x0101
 
-/* default link frequency and external clock */
+ 
 #define IMX319_LINK_FREQ_DEFAULT	482400000
 #define IMX319_EXT_CLK			19200000
 #define IMX319_LINK_FREQ_INDEX		0
@@ -84,30 +71,30 @@ struct imx319_reg_list {
 	const struct imx319_reg *regs;
 };
 
-/* Mode : resolution and related config&values */
+ 
 struct imx319_mode {
-	/* Frame width */
+	 
 	u32 width;
-	/* Frame height */
+	 
 	u32 height;
 
-	/* V-timing */
+	 
 	u32 fll_def;
 	u32 fll_min;
 
-	/* H-timing */
+	 
 	u32 llp;
 
-	/* index of link frequency */
+	 
 	u32 link_freq_index;
 
-	/* Default register values */
+	 
 	struct imx319_reg_list reg_list;
 };
 
 struct imx319_hwcfg {
-	u32 ext_clk;			/* sensor external clk */
-	s64 *link_freqs;		/* CSI-2 link frequencies */
+	u32 ext_clk;			 
+	s64 *link_freqs;		 
 	unsigned int nr_of_link_freqs;
 };
 
@@ -116,7 +103,7 @@ struct imx319 {
 	struct media_pad pad;
 
 	struct v4l2_ctrl_handler ctrl_handler;
-	/* V4L2 Controls */
+	 
 	struct v4l2_ctrl *link_freq;
 	struct v4l2_ctrl *pixel_rate;
 	struct v4l2_ctrl *vblank;
@@ -125,22 +112,18 @@ struct imx319 {
 	struct v4l2_ctrl *vflip;
 	struct v4l2_ctrl *hflip;
 
-	/* Current mode */
+	 
 	const struct imx319_mode *cur_mode;
 
 	struct imx319_hwcfg *hwcfg;
-	s64 link_def_freq;	/* CSI-2 link default frequency */
+	s64 link_def_freq;	 
 
-	/*
-	 * Mutex for serialized access:
-	 * Protect sensor set pad format and start/stop streaming safely.
-	 * Protect access to sensor v4l2 controls.
-	 */
+	 
 	struct mutex mutex;
 
-	/* Streaming on/off */
+	 
 	bool streaming;
-	/* True if the device has been identified */
+	 
 	bool identified;
 };
 
@@ -1656,12 +1639,12 @@ static const char * const imx319_test_pattern_menu[] = {
 	"Pseudorandom Sequence (PN9)",
 };
 
-/* supported link frequencies */
+ 
 static const s64 link_freq_menu_items[] = {
 	IMX319_LINK_FREQ_DEFAULT,
 };
 
-/* Mode configs */
+ 
 static const struct imx319_mode supported_modes[] = {
 	{
 		.width = 3280,
@@ -1766,13 +1749,10 @@ static inline struct imx319 *to_imx319(struct v4l2_subdev *_sd)
 	return container_of(_sd, struct imx319, sd);
 }
 
-/* Get bayer order based on flip setting. */
+ 
 static u32 imx319_get_format_code(struct imx319 *imx319)
 {
-	/*
-	 * Only one bayer order is supported.
-	 * It depends on the flip settings.
-	 */
+	 
 	u32 code;
 	static const u32 codes[2][2] = {
 		{ MEDIA_BUS_FMT_SRGGB10_1X10, MEDIA_BUS_FMT_SGRBG10_1X10, },
@@ -1785,7 +1765,7 @@ static u32 imx319_get_format_code(struct imx319 *imx319)
 	return code;
 }
 
-/* Read registers up to 4 at a time */
+ 
 static int imx319_read_reg(struct imx319 *imx319, u16 reg, u32 len, u32 *val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx319->sd);
@@ -1798,13 +1778,13 @@ static int imx319_read_reg(struct imx319 *imx319, u16 reg, u32 len, u32 *val)
 		return -EINVAL;
 
 	put_unaligned_be16(reg, addr_buf);
-	/* Write register address */
+	 
 	msgs[0].addr = client->addr;
 	msgs[0].flags = 0;
 	msgs[0].len = ARRAY_SIZE(addr_buf);
 	msgs[0].buf = addr_buf;
 
-	/* Read data from register */
+	 
 	msgs[1].addr = client->addr;
 	msgs[1].flags = I2C_M_RD;
 	msgs[1].len = len;
@@ -1819,7 +1799,7 @@ static int imx319_read_reg(struct imx319 *imx319, u16 reg, u32 len, u32 *val)
 	return 0;
 }
 
-/* Write registers up to 4 at a time */
+ 
 static int imx319_write_reg(struct imx319 *imx319, u16 reg, u32 len, u32 val)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx319->sd);
@@ -1836,7 +1816,7 @@ static int imx319_write_reg(struct imx319 *imx319, u16 reg, u32 len, u32 val)
 	return 0;
 }
 
-/* Write a list of registers */
+ 
 static int imx319_write_regs(struct imx319 *imx319,
 			     const struct imx319_reg *regs, u32 len)
 {
@@ -1857,7 +1837,7 @@ static int imx319_write_regs(struct imx319 *imx319,
 	return 0;
 }
 
-/* Open sub-device */
+ 
 static int imx319_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 {
 	struct imx319 *imx319 = to_imx319(sd);
@@ -1866,7 +1846,7 @@ static int imx319_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 
 	mutex_lock(&imx319->mutex);
 
-	/* Initialize try_fmt */
+	 
 	try_fmt->width = imx319->cur_mode->width;
 	try_fmt->height = imx319->cur_mode->height;
 	try_fmt->code = imx319_get_format_code(imx319);
@@ -1885,10 +1865,10 @@ static int imx319_set_ctrl(struct v4l2_ctrl *ctrl)
 	s64 max;
 	int ret;
 
-	/* Propagate change of current control to all related controls */
+	 
 	switch (ctrl->id) {
 	case V4L2_CID_VBLANK:
-		/* Update max exposure while meeting expected vblanking */
+		 
 		max = imx319->cur_mode->height + ctrl->val - 18;
 		__v4l2_ctrl_modify_range(imx319->exposure,
 					 imx319->exposure->minimum,
@@ -1896,16 +1876,13 @@ static int imx319_set_ctrl(struct v4l2_ctrl *ctrl)
 		break;
 	}
 
-	/*
-	 * Applying V4L2 control value only happens
-	 * when power is up for streaming
-	 */
+	 
 	if (!pm_runtime_get_if_in_use(&client->dev))
 		return 0;
 
 	switch (ctrl->id) {
 	case V4L2_CID_ANALOGUE_GAIN:
-		/* Analog gain = 1024/(1024 - ctrl->val) times */
+		 
 		ret = imx319_write_reg(imx319, IMX319_REG_ANALOG_GAIN, 2,
 				       ctrl->val);
 		break;
@@ -1918,7 +1895,7 @@ static int imx319_set_ctrl(struct v4l2_ctrl *ctrl)
 				       ctrl->val);
 		break;
 	case V4L2_CID_VBLANK:
-		/* Update FLL that meets expected vertical blanking */
+		 
 		ret = imx319_write_reg(imx319, IMX319_REG_FLL, 2,
 				       imx319->cur_mode->height + ctrl->val);
 		break;
@@ -2045,10 +2022,7 @@ imx319_set_pad_format(struct v4l2_subdev *sd,
 
 	mutex_lock(&imx319->mutex);
 
-	/*
-	 * Only one bayer order is supported.
-	 * It depends on the flip settings.
-	 */
+	 
 	fmt->format.code = imx319_get_format_code(imx319);
 
 	mode = v4l2_find_nearest_size(supported_modes,
@@ -2064,7 +2038,7 @@ imx319_set_pad_format(struct v4l2_subdev *sd,
 		pixel_rate = imx319->link_def_freq * 2 * 4;
 		do_div(pixel_rate, 10);
 		__v4l2_ctrl_s_ctrl_int64(imx319->pixel_rate, pixel_rate);
-		/* Update limits and set FPS to default */
+		 
 		height = imx319->cur_mode->height;
 		vblank_def = imx319->cur_mode->fll_def - height;
 		vblank_min = imx319->cur_mode->fll_min - height;
@@ -2073,10 +2047,7 @@ imx319_set_pad_format(struct v4l2_subdev *sd,
 					 vblank_def);
 		__v4l2_ctrl_s_ctrl(imx319->vblank, vblank_def);
 		h_blank = mode->llp - imx319->cur_mode->width;
-		/*
-		 * Currently hblank is not changeable.
-		 * So FPS control is done only by vblank.
-		 */
+		 
 		__v4l2_ctrl_modify_range(imx319->hblank, h_blank,
 					 h_blank, 1, h_blank);
 	}
@@ -2086,7 +2057,7 @@ imx319_set_pad_format(struct v4l2_subdev *sd,
 	return 0;
 }
 
-/* Verify chip ID */
+ 
 static int imx319_identify_module(struct imx319 *imx319)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx319->sd);
@@ -2111,7 +2082,7 @@ static int imx319_identify_module(struct imx319 *imx319)
 	return 0;
 }
 
-/* Start streaming */
+ 
 static int imx319_start_streaming(struct imx319 *imx319)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx319->sd);
@@ -2122,7 +2093,7 @@ static int imx319_start_streaming(struct imx319 *imx319)
 	if (ret)
 		return ret;
 
-	/* Global Setting */
+	 
 	reg_list = &imx319_global_setting;
 	ret = imx319_write_regs(imx319, reg_list->regs, reg_list->num_of_regs);
 	if (ret) {
@@ -2130,7 +2101,7 @@ static int imx319_start_streaming(struct imx319 *imx319)
 		return ret;
 	}
 
-	/* Apply default values of current mode */
+	 
 	reg_list = &imx319->cur_mode->reg_list;
 	ret = imx319_write_regs(imx319, reg_list->regs, reg_list->num_of_regs);
 	if (ret) {
@@ -2138,12 +2109,12 @@ static int imx319_start_streaming(struct imx319 *imx319)
 		return ret;
 	}
 
-	/* set digital gain control to all color mode */
+	 
 	ret = imx319_write_reg(imx319, IMX319_REG_DPGA_USE_GLOBAL_GAIN, 1, 1);
 	if (ret)
 		return ret;
 
-	/* Apply customized values from user */
+	 
 	ret =  __v4l2_ctrl_handler_setup(imx319->sd.ctrl_handler);
 	if (ret)
 		return ret;
@@ -2152,7 +2123,7 @@ static int imx319_start_streaming(struct imx319 *imx319)
 				1, IMX319_MODE_STREAMING);
 }
 
-/* Stop streaming */
+ 
 static int imx319_stop_streaming(struct imx319 *imx319)
 {
 	return imx319_write_reg(imx319, IMX319_REG_MODE_SELECT,
@@ -2176,10 +2147,7 @@ static int imx319_set_stream(struct v4l2_subdev *sd, int enable)
 		if (ret < 0)
 			goto err_unlock;
 
-		/*
-		 * Apply default & customized values
-		 * and then start streaming.
-		 */
+		 
 		ret = imx319_start_streaming(imx319);
 		if (ret)
 			goto err_rpm_put;
@@ -2190,7 +2158,7 @@ static int imx319_set_stream(struct v4l2_subdev *sd, int enable)
 
 	imx319->streaming = enable;
 
-	/* vflip and hflip cannot change during streaming */
+	 
 	__v4l2_ctrl_grab(imx319->vflip, enable);
 	__v4l2_ctrl_grab(imx319->hflip, enable);
 
@@ -2267,7 +2235,7 @@ static const struct v4l2_subdev_internal_ops imx319_internal_ops = {
 	.open = imx319_open,
 };
 
-/* Initialize control handlers */
+ 
 static int imx319_init_controls(struct imx319 *imx319)
 {
 	struct i2c_client *client = v4l2_get_subdevdata(&imx319->sd);
@@ -2294,15 +2262,15 @@ static int imx319_init_controls(struct imx319 *imx319)
 	if (imx319->link_freq)
 		imx319->link_freq->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/* pixel_rate = link_freq * 2 * nr_of_lanes / bits_per_sample */
+	 
 	pixel_rate = imx319->link_def_freq * 2 * 4;
 	do_div(pixel_rate, 10);
-	/* By default, PIXEL_RATE is read only */
+	 
 	imx319->pixel_rate = v4l2_ctrl_new_std(ctrl_hdlr, &imx319_ctrl_ops,
 					       V4L2_CID_PIXEL_RATE, pixel_rate,
 					       pixel_rate, 1, pixel_rate);
 
-	/* Initial vblank/hblank/exposure parameters based on current mode */
+	 
 	mode = imx319->cur_mode;
 	vblank_def = mode->fll_def - mode->height;
 	vblank_min = mode->fll_min - mode->height;
@@ -2318,7 +2286,7 @@ static int imx319_init_controls(struct imx319 *imx319)
 	if (imx319->hblank)
 		imx319->hblank->flags |= V4L2_CTRL_FLAG_READ_ONLY;
 
-	/* fll >= exposure time + adjust parameter (default value is 18) */
+	 
 	exposure_max = mode->fll_def - 18;
 	imx319->exposure = v4l2_ctrl_new_std(ctrl_hdlr, &imx319_ctrl_ops,
 					     V4L2_CID_EXPOSURE,
@@ -2339,7 +2307,7 @@ static int imx319_init_controls(struct imx319 *imx319)
 			  IMX319_ANA_GAIN_MIN, IMX319_ANA_GAIN_MAX,
 			  IMX319_ANA_GAIN_STEP, IMX319_ANA_GAIN_DEFAULT);
 
-	/* Digital gain */
+	 
 	v4l2_ctrl_new_std(ctrl_hdlr, &imx319_ctrl_ops, V4L2_CID_DIGITAL_GAIN,
 			  IMX319_DGTL_GAIN_MIN, IMX319_DGTL_GAIN_MAX,
 			  IMX319_DGTL_GAIN_STEP, IMX319_DGTL_GAIN_DEFAULT);
@@ -2445,12 +2413,12 @@ static int imx319_probe(struct i2c_client *client)
 
 	mutex_init(&imx319->mutex);
 
-	/* Initialize subdev */
+	 
 	v4l2_i2c_subdev_init(&imx319->sd, client, &imx319_subdev_ops);
 
 	full_power = acpi_dev_state_d0(&client->dev);
 	if (full_power) {
-		/* Check module identity */
+		 
 		ret = imx319_identify_module(imx319);
 		if (ret) {
 			dev_err(&client->dev, "failed to find sensor: %d", ret);
@@ -2479,7 +2447,7 @@ static int imx319_probe(struct i2c_client *client)
 		goto error_probe;
 	}
 
-	/* Set default mode to max resolution */
+	 
 	imx319->cur_mode = &supported_modes[0];
 
 	ret = imx319_init_controls(imx319);
@@ -2488,14 +2456,14 @@ static int imx319_probe(struct i2c_client *client)
 		goto error_probe;
 	}
 
-	/* Initialize subdev */
+	 
 	imx319->sd.internal_ops = &imx319_internal_ops;
 	imx319->sd.flags |= V4L2_SUBDEV_FL_HAS_DEVNODE |
 		V4L2_SUBDEV_FL_HAS_EVENTS;
 	imx319->sd.entity.ops = &imx319_subdev_entity_ops;
 	imx319->sd.entity.function = MEDIA_ENT_F_CAM_SENSOR;
 
-	/* Initialize source pad */
+	 
 	imx319->pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = media_entity_pads_init(&imx319->sd.entity, 1, &imx319->pad);
 	if (ret) {
@@ -2507,7 +2475,7 @@ static int imx319_probe(struct i2c_client *client)
 	if (ret < 0)
 		goto error_media_entity;
 
-	/* Set the device's state to active if it's in D0 state. */
+	 
 	if (full_power)
 		pm_runtime_set_active(&client->dev);
 	pm_runtime_enable(&client->dev);
@@ -2548,7 +2516,7 @@ static const struct dev_pm_ops imx319_pm_ops = {
 
 static const struct acpi_device_id imx319_acpi_ids[] __maybe_unused = {
 	{ "SONY319A" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(acpi, imx319_acpi_ids);
 

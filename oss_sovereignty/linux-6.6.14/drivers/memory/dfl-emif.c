@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DFL device driver for EMIF private feature
- *
- * Copyright (C) 2020 Intel Corporation, Inc.
- *
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/dfl.h>
 #include <linux/errno.h>
@@ -26,18 +21,10 @@
 #define EMIF_CTRL_CLEAR_EN_SFT		0
 #define EMIF_CTRL_CLEAR_EN_MSK		GENMASK_ULL(7, 0)
 
-#define EMIF_POLL_INVL			10000 /* us */
-#define EMIF_POLL_TIMEOUT		5000000 /* us */
+#define EMIF_POLL_INVL			10000  
+#define EMIF_POLL_TIMEOUT		5000000  
 
-/*
- * The Capability Register replaces the Control Register (at the same
- * offset) for EMIF feature revisions > 0. The bitmask that indicates
- * the presence of memory channels exists in both the Capability Register
- * and Control Register definitions. These can be thought of as a C union.
- * The Capability Register definitions are used to check for the existence
- * of a memory channel, and the Control Register definitions are used for
- * managing the memory-clear functionality in revision 0.
- */
+ 
 #define EMIF_CAPABILITY_BASE		0x10
 #define EMIF_CAPABILITY_CHN_MSK_V0	GENMASK_ULL(3, 0)
 #define EMIF_CAPABILITY_CHN_MSK		GENMASK_ULL(7, 0)
@@ -45,7 +32,7 @@
 struct dfl_emif {
 	struct device *dev;
 	void __iomem *base;
-	spinlock_t lock;	/* Serialises access to EMIF_CTRL reg */
+	spinlock_t lock;	 
 };
 
 struct emif_attr {
@@ -86,7 +73,7 @@ static ssize_t emif_clear_store(struct device *dev,
 	clear_en_msk = BIT_ULL(EMIF_CTRL_CLEAR_EN_SFT + eattr->index);
 
 	spin_lock(&de->lock);
-	/* The CLEAR_EN field is WO, but other fields are RW */
+	 
 	val = readq(base + EMIF_CTRL);
 	val &= ~EMIF_CTRL_CLEAR_EN_MSK;
 	val |= clear_en_msk;
@@ -189,12 +176,7 @@ static umode_t dfl_emif_visible(struct kobject *kobj,
 	struct dfl_device *ddev = to_dfl_dev(de->dev);
 	u64 val;
 
-	/*
-	 * This device supports up to 8 memory interfaces, but not all
-	 * interfaces are used on different platforms. The read out value of
-	 * CAPABILITY_CHN_MSK field (which is a bitmap) indicates which
-	 * interfaces are available.
-	 */
+	 
 	if (ddev->revision > 0 && strstr(attr->name, "_clear"))
 		return 0;
 

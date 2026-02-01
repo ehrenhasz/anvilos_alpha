@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Author: Yinbo Zhu <zhuyinbo@loongson.cn>
- * Copyright (C) 2022-2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/slab.h>
@@ -15,22 +12,12 @@
 static struct soc_device_attribute soc_dev_attr;
 static struct soc_device *soc_dev;
 
-/*
- * Global Utility Registers.
- *
- * Not all registers defined in this structure are available on all chips, so
- * you are expected to know whether a given register actually exists on your
- * chip before you access it.
- *
- * Also, some registers are similar on different chips but have slightly
- * different names.  In these cases, one name is chosen to avoid extraneous
- * #ifdefs.
- */
+ 
 struct scfg_guts {
-	u32     svr;            /* Version Register */
+	u32     svr;             
 	u8      res0[4];
-	u16     feature;        /* Feature Register */
-	u32     vendor;         /* Vendor Register */
+	u16     feature;         
+	u32     vendor;          
 	u8      res1[6];
 	u32     id;
 	u8      res2[0x3ff8 - 0x18];
@@ -48,14 +35,12 @@ struct loongson2_soc_die_attr {
 	u32	mask;
 };
 
-/* SoC die attribute definition for Loongson-2 platform */
+ 
 static const struct loongson2_soc_die_attr loongson2_soc_die[] = {
 
-	/*
-	 * LoongArch-based SoCs Loongson-2 Series
-	 */
+	 
 
-	/* Die: 2k1000, SoC: 2k1000 */
+	 
 	{ .die		= "2K1000",
 	  .svr		= 0x00000013,
 	  .mask		= 0x000000ff,
@@ -98,7 +83,7 @@ static int loongson2_guts_probe(struct platform_device *pdev)
 	const char *machine;
 	u32 svr;
 
-	/* Initialize guts */
+	 
 	guts = devm_kzalloc(dev, sizeof(*guts), GFP_KERNEL);
 	if (!guts)
 		return -ENOMEM;
@@ -109,7 +94,7 @@ static int loongson2_guts_probe(struct platform_device *pdev)
 	if (IS_ERR(guts->regs))
 		return PTR_ERR(guts->regs);
 
-	/* Register soc device */
+	 
 	root = of_find_node_by_path("/");
 	if (of_property_read_string(root, "model", &machine))
 		of_property_read_string_index(root, "compatible", 0, &machine);
@@ -155,10 +140,7 @@ static int loongson2_guts_remove(struct platform_device *dev)
 	return 0;
 }
 
-/*
- * Table for matching compatible strings, for device tree
- * guts node, for Loongson-2 SoCs.
- */
+ 
 static const struct of_device_id loongson2_guts_of_match[] = {
 	{ .compatible = "loongson,ls2k-chipid", },
 	{}

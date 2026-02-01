@@ -1,13 +1,13 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (c) 2022 MediaTek Inc.
-// Copyright (c) 2022 BayLibre, SAS.
-// Author: Chen Zhong <chen.zhong@mediatek.com>
-// Author: Fabien Parent <fparent@baylibre.com>
-// Author: Alexandre Mergnat <amergnat@baylibre.com>
-//
-// Based on mt6397-regulator.c
-//
+
+
+
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -20,13 +20,7 @@
 #include <linux/regulator/mt6357-regulator.h>
 #include <linux/regulator/of_regulator.h>
 
-/*
- * MT6357 regulators' information
- *
- * @desc: standard fields of regulator description.
- * @da_vsel_reg: Monitor register for query buck's voltage.
- * @da_vsel_mask: Mask for query buck's voltage.
- */
+ 
 struct mt6357_regulator_info {
 	struct regulator_desc desc;
 	u32 da_vsel_reg;
@@ -116,15 +110,7 @@ struct mt6357_regulator_info {
 	},						\
 }
 
-/**
- * mt6357_get_buck_voltage_sel - get_voltage_sel for regmap users
- *
- * @rdev: regulator to operate on
- *
- * Regulators that use regmap for their register I/O can set the
- * da_vsel_reg and da_vsel_mask fields in the info structure and
- * then use this as their get_voltage_vsel operation.
- */
+ 
 static int mt6357_get_buck_voltage_sel(struct regulator_dev *rdev)
 {
 	int ret, regval;
@@ -338,9 +324,9 @@ static const struct linear_range buck_volt_range4[] = {
 	REGULATOR_LINEAR_RANGE(1200000, 0, 0x7f, 12500),
 };
 
-/* The array is indexed by id(MT6357_ID_XXX) */
+ 
 static struct mt6357_regulator_info mt6357_regulators[] = {
-	/* Bucks */
+	 
 	MT6357_BUCK("buck-vcore", VCORE, 518750, 1312500, 6250,
 		buck_volt_range1, MT6357_BUCK_VCORE_ELR0, 0x7f, 0x7f),
 	MT6357_BUCK("buck-vproc", VPROC, 518750, 1312500, 6250,
@@ -352,7 +338,7 @@ static struct mt6357_regulator_info mt6357_regulators[] = {
 	MT6357_BUCK("buck-vs1", VS1, 1200000, 2787500, 12500,
 		buck_volt_range4, MT6357_BUCK_VS1_ELR0, 0x7f, 0x7f),
 
-	/* LDOs */
+	 
 	MT6357_LDO("ldo-vcama", VCAMA, vcama_voltages,
 		   MT6357_LDO_VCAMA_CON0, MT6357_VCAMA_ANA_CON0, 0xf00),
 	MT6357_LDO("ldo-vcamd", VCAMD, vcamd_voltages,
@@ -432,7 +418,7 @@ static int mt6357_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id mt6357_platform_ids[] = {
 	{ "mt6357-regulator" },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(platform, mt6357_platform_ids);
 

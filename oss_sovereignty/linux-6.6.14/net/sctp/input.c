@@ -1,36 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* SCTP kernel implementation
- * Copyright (c) 1999-2000 Cisco, Inc.
- * Copyright (c) 1999-2001 Motorola, Inc.
- * Copyright (c) 2001-2003 International Business Machines, Corp.
- * Copyright (c) 2001 Intel Corp.
- * Copyright (c) 2001 Nokia, Inc.
- * Copyright (c) 2001 La Monte H.P. Yarroll
- *
- * This file is part of the SCTP kernel implementation
- *
- * These functions handle all input from the IP layer into SCTP.
- *
- * Please send any bug reports or fixes you make to the
- * email address(es):
- *    lksctp developers <linux-sctp@vger.kernel.org>
- *
- * Written or modified by:
- *    La Monte H.P. Yarroll <piggy@acm.org>
- *    Karl Knutson <karl@athena.chicago.il.us>
- *    Xingang Guo <xingang.guo@intel.com>
- *    Jon Grimm <jgrimm@us.ibm.com>
- *    Hui Huang <hui.huang@nokia.com>
- *    Daisy Chang <daisyc@us.ibm.com>
- *    Sridhar Samudrala <sri@us.ibm.com>
- *    Ardelle Fan <ardelle.fan@intel.com>
- */
+
+ 
 
 #include <linux/types.h>
-#include <linux/list.h> /* For struct list_head */
+#include <linux/list.h>  
 #include <linux/socket.h>
 #include <linux/ip.h>
-#include <linux/time.h> /* For struct timeval */
+#include <linux/time.h>  
 #include <linux/slab.h>
 #include <net/ip.h>
 #include <net/icmp.h>
@@ -44,7 +19,7 @@
 #include <linux/rhashtable.h>
 #include <net/sock_reuseport.h>
 
-/* Forward declarations for internal helpers. */
+ 
 static int sctp_rcv_ootb(struct sk_buff *);
 static struct sctp_association *__sctp_rcv_lookup(struct net *net,
 				      struct sk_buff *skb,
@@ -67,7 +42,7 @@ static struct sctp_association *__sctp_lookup_association(
 static int sctp_add_backlog(struct sock *sk, struct sk_buff *skb);
 
 
-/* Calculate the SCTP checksum of an SCTP packet.  */
+ 
 static inline int sctp_rcv_checksum(struct net *net, struct sk_buff *skb)
 {
 	struct sctphdr *sh = sctp_hdr(skb);
@@ -75,16 +50,14 @@ static inline int sctp_rcv_checksum(struct net *net, struct sk_buff *skb)
 	__le32 val = sctp_compute_cksum(skb, 0);
 
 	if (val != cmp) {
-		/* CRC failure, dump it. */
+		 
 		__SCTP_INC_STATS(net, SCTP_MIB_CHECKSUMERRORS);
 		return -1;
 	}
 	return 0;
 }
 
-/*
- * This is the routine which IP calls when receiving an SCTP packet.
- */
+ 
 int sctp_rcv(struct sk_buff *skb)
 {
 	struct sock *sk;
@@ -106,25 +79,20 @@ int sctp_rcv(struct sk_buff *skb)
 
 	__SCTP_INC_STATS(net, SCTP_MIB_INSCTPPACKS);
 
-	/* If packet is too small to contain a single chunk, let's not
-	 * waste time on it anymore.
-	 */
+	 
 	if (skb->len < sizeof(struct sctphdr) + sizeof(struct sctp_chunkhdr) +
 		       skb_transport_offset(skb))
 		goto discard_it;
 
-	/* If the packet is fragmented and we need to do crc checking,
-	 * it's better to just linearize it otherwise crc computing
-	 * takes longer.
-	 */
+	 
 	if ((!is_gso && skb_linearize(skb)) ||
 	    !pskb_may_pull(skb, sizeof(struct sctphdr)))
 		goto discard_it;
 
-	/* Pull up the IP header. */
+	 
 	__skb_pull(skb, skb_transport_offset(skb));
 
-	skb->csum_valid = 0; /* Previous value not applicable */
+	skb->csum_valid = 0;  
 	if (skb_csum_unnecessary(skb))
 		__skb_decr_checksum_unnecessary(skb);
 	else if (!sctp_checksum_disable &&
@@ -141,23 +109,13 @@ int sctp_rcv(struct sk_buff *skb)
 		goto discard_it;
 	SCTP_INPUT_CB(skb)->af = af;
 
-	/* Initialize local addresses for lookups. */
+	 
 	af->from_skb(&src, skb, 1);
 	af->from_skb(&dest, skb, 0);
 	dif = af->skb_iif(skb);
 	sdif = af->skb_sdif(skb);
 
-	/* If the packet is to or from a non-unicast address,
-	 * silently discard the packet.
-	 *
-	 * This is not clearly defined in the RFC except in section
-	 * 8.4 - OOTB handling.  However, based on the book "Stream Control
-	 * Transmission Protocol" 2.1, "It is important to note that the
-	 * IP address of an SCTP transport address must be a routable
-	 * unicast address.  In other words, IP multicast addresses and
-	 * IP broadcast addresses cannot be used in an SCTP transport
-	 * address."
-	 */
+	 
 	if (!af->addr_valid(&src, NULL, skb) ||
 	    !af->addr_valid(&dest, NULL, skb))
 		goto discard_it;
@@ -167,18 +125,11 @@ int sctp_rcv(struct sk_buff *skb)
 	if (!asoc)
 		ep = __sctp_rcv_lookup_endpoint(net, skb, &dest, &src, dif, sdif);
 
-	/* Retrieve the common input handling substructure. */
+	 
 	rcvr = asoc ? &asoc->base : &ep->base;
 	sk = rcvr->sk;
 
-	/*
-	 * RFC 2960, 8.4 - Handle "Out of the blue" Packets.
-	 * An SCTP packet is called an "out of the blue" (OOTB)
-	 * packet if it is correctly formed, i.e., passed the
-	 * receiver's checksum check, but the receiver is not
-	 * able to identify the association to which this
-	 * packet belongs.
-	 */
+	 
 	if (!asoc) {
 		if (sctp_rcv_ootb(skb)) {
 			__SCTP_INC_STATS(net, SCTP_MIB_OUTOFBLUES);
@@ -193,38 +144,29 @@ int sctp_rcv(struct sk_buff *skb)
 	if (sk_filter(sk, skb))
 		goto discard_release;
 
-	/* Create an SCTP packet structure. */
+	 
 	chunk = sctp_chunkify(skb, asoc, sk, GFP_ATOMIC);
 	if (!chunk)
 		goto discard_release;
 	SCTP_INPUT_CB(skb)->chunk = chunk;
 
-	/* Remember what endpoint is to handle this packet. */
+	 
 	chunk->rcvr = rcvr;
 
-	/* Remember the SCTP header. */
+	 
 	chunk->sctp_hdr = sctp_hdr(skb);
 
-	/* Set the source and destination addresses of the incoming chunk.  */
+	 
 	sctp_init_addrs(chunk, &src, &dest);
 
-	/* Remember where we came from.  */
+	 
 	chunk->transport = transport;
 
-	/* Acquire access to the sock lock. Note: We are safe from other
-	 * bottom halves on this lock, but a user may be in the lock too,
-	 * so check if it is busy.
-	 */
+	 
 	bh_lock_sock(sk);
 
 	if (sk != rcvr->sk) {
-		/* Our cached sk is different from the rcvr->sk.  This is
-		 * because migrate()/accept() may have moved the association
-		 * to a new socket and released all the sockets.  So now we
-		 * are holding a lock on the old socket while the user may
-		 * be doing something with the new socket.  Switch our veiw
-		 * of the current sk.
-		 */
+		 
 		bh_unlock_sock(sk);
 		sk = rcvr->sk;
 		bh_lock_sock(sk);
@@ -234,7 +176,7 @@ int sctp_rcv(struct sk_buff *skb)
 		if (sctp_add_backlog(sk, skb)) {
 			bh_unlock_sock(sk);
 			sctp_chunk_free(chunk);
-			skb = NULL; /* sctp_chunk_free already freed the skb */
+			skb = NULL;  
 			goto discard_release;
 		}
 		__SCTP_INC_STATS(net, SCTP_MIB_IN_PKT_BACKLOG);
@@ -245,7 +187,7 @@ int sctp_rcv(struct sk_buff *skb)
 
 	bh_unlock_sock(sk);
 
-	/* Release the asoc/ep ref we took in the lookup calls. */
+	 
 	if (transport)
 		sctp_transport_put(transport);
 	else
@@ -259,7 +201,7 @@ discard_it:
 	return 0;
 
 discard_release:
-	/* Release the asoc/ep ref we took in the lookup calls. */
+	 
 	if (transport)
 		sctp_transport_put(transport);
 	else
@@ -268,11 +210,7 @@ discard_release:
 	goto discard_it;
 }
 
-/* Process the backlog queue of the socket.  Every skb on
- * the backlog holds a ref on an association or endpoint.
- * We hold this ref throughout the state machine to make
- * sure that the structure we need is still around.
- */
+ 
 int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 {
 	struct sctp_chunk *chunk = SCTP_INPUT_CB(skb)->chunk;
@@ -283,26 +221,14 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 
 	rcvr = chunk->rcvr;
 
-	/* If the rcvr is dead then the association or endpoint
-	 * has been deleted and we can safely drop the chunk
-	 * and refs that we are holding.
-	 */
+	 
 	if (rcvr->dead) {
 		sctp_chunk_free(chunk);
 		goto done;
 	}
 
 	if (unlikely(rcvr->sk != sk)) {
-		/* In this case, the association moved from one socket to
-		 * another.  We are currently sitting on the backlog of the
-		 * old socket, so we need to move.
-		 * However, since we are here in the process context we
-		 * need to take make sure that the user doesn't own
-		 * the new socket when we process the packet.
-		 * If the new socket is user-owned, queue the chunk to the
-		 * backlog of the new socket without dropping any refs.
-		 * Otherwise, we can safely push the chunk on the inqueue.
-		 */
+		 
 
 		sk = rcvr->sk;
 		local_bh_disable();
@@ -319,7 +245,7 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 		bh_unlock_sock(sk);
 		local_bh_enable();
 
-		/* If the chunk was backloged again, don't drop refs */
+		 
 		if (backloged)
 			return 0;
 	} else {
@@ -333,7 +259,7 @@ int sctp_backlog_rcv(struct sock *sk, struct sk_buff *skb)
 	}
 
 done:
-	/* Release the refs we took in sctp_add_backlog */
+	 
 	if (SCTP_EP_TYPE_ASSOCIATION == rcvr->type)
 		sctp_transport_put(t);
 	else if (SCTP_EP_TYPE_SOCKET == rcvr->type)
@@ -353,10 +279,7 @@ static int sctp_add_backlog(struct sock *sk, struct sk_buff *skb)
 
 	ret = sk_add_backlog(sk, skb, READ_ONCE(sk->sk_rcvbuf));
 	if (!ret) {
-		/* Hold the assoc/ep while hanging on the backlog queue.
-		 * This way, we know structures we need will not disappear
-		 * from us
-		 */
+		 
 		if (SCTP_EP_TYPE_ASSOCIATION == rcvr->type)
 			sctp_transport_hold(t);
 		else if (SCTP_EP_TYPE_SOCKET == rcvr->type)
@@ -368,7 +291,7 @@ static int sctp_add_backlog(struct sock *sk, struct sk_buff *skb)
 
 }
 
-/* Handle icmp frag needed error. */
+ 
 void sctp_icmp_frag_needed(struct sock *sk, struct sctp_association *asoc,
 			   struct sctp_transport *t, __u32 pmtu)
 {
@@ -385,23 +308,17 @@ void sctp_icmp_frag_needed(struct sock *sk, struct sctp_association *asoc,
 	}
 
 	if (!(t->param_flags & SPP_PMTUD_ENABLE))
-		/* We can't allow retransmitting in such case, as the
-		 * retransmission would be sized just as before, and thus we
-		 * would get another icmp, and retransmit again.
-		 */
+		 
 		return;
 
-	/* Update transports view of the MTU. Return if no update was needed.
-	 * If an update wasn't needed/possible, it also doesn't make sense to
-	 * try to retransmit now.
-	 */
+	 
 	if (!sctp_transport_update_pmtu(t, pmtu))
 		return;
 
-	/* Update association pmtu. */
+	 
 	sctp_assoc_sync_pmtu(asoc);
 
-	/* Retransmit with the new pmtu setting. */
+	 
 	sctp_retransmit(&asoc->outqueue, t, SCTP_RTXR_PMTUD);
 }
 
@@ -417,17 +334,7 @@ void sctp_icmp_redirect(struct sock *sk, struct sctp_transport *t,
 		dst->ops->redirect(dst, sk, skb);
 }
 
-/*
- * SCTP Implementer's Guide, 2.37 ICMP handling procedures
- *
- * ICMP8) If the ICMP code is a "Unrecognized next header type encountered"
- *        or a "Protocol Unreachable" treat this message as an abort
- *        with the T bit set.
- *
- * This function sends an event to the state machine, which will abort the
- * association.
- *
- */
+ 
 void sctp_icmp_proto_unreachable(struct sock *sk,
 			   struct sctp_association *asoc,
 			   struct sctp_transport *t)
@@ -456,7 +363,7 @@ void sctp_icmp_proto_unreachable(struct sock *sk,
 	}
 }
 
-/* Common lookup code for icmp/icmpv6 error handler. */
+ 
 struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 			     struct sctphdr *sctphdr,
 			     struct sctp_association **app,
@@ -480,33 +387,20 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 		return NULL;
 	}
 
-	/* Initialize local addresses for lookups. */
+	 
 	af->from_skb(&saddr, skb, 1);
 	af->from_skb(&daddr, skb, 0);
 
-	/* Look for an association that matches the incoming ICMP error
-	 * packet.
-	 */
+	 
 	asoc = __sctp_lookup_association(net, &saddr, &daddr, &transport, dif, sdif);
 	if (!asoc)
 		return NULL;
 
 	sk = asoc->base.sk;
 
-	/* RFC 4960, Appendix C. ICMP Handling
-	 *
-	 * ICMP6) An implementation MUST validate that the Verification Tag
-	 * contained in the ICMP message matches the Verification Tag of
-	 * the peer.  If the Verification Tag is not 0 and does NOT
-	 * match, discard the ICMP message.  If it is 0 and the ICMP
-	 * message contains enough bytes to verify that the chunk type is
-	 * an INIT chunk and that the Initiate Tag matches the tag of the
-	 * peer, continue with ICMP7.  If the ICMP message is too short
-	 * or the chunk type or the Initiate Tag does not match, silently
-	 * discard the packet.
-	 */
+	 
 	if (vtag == 0) {
-		/* chunk header + first 4 octects of init header */
+		 
 		chunkhdr = skb_header_pointer(skb, skb_transport_offset(skb) +
 					      sizeof(struct sctphdr),
 					      sizeof(struct sctp_chunkhdr) +
@@ -522,9 +416,7 @@ struct sock *sctp_err_lookup(struct net *net, int family, struct sk_buff *skb,
 
 	bh_lock_sock(sk);
 
-	/* If too many ICMPs get dropped on busy
-	 * servers this needs to be solved differently.
-	 */
+	 
 	if (sock_owned_by_user(sk))
 		__NET_INC_STATS(net, LINUX_MIB_LOCKDROPPEDICMPS);
 
@@ -537,7 +429,7 @@ out:
 	return NULL;
 }
 
-/* Common cleanup code for icmp/icmpv6 error handler. */
+ 
 void sctp_err_finish(struct sock *sk, struct sctp_transport *t)
 	__releases(&((__sk)->sk_lock.slock))
 {
@@ -584,26 +476,12 @@ static void sctp_v4_err_handle(struct sctp_transport *t, struct sk_buff *skb,
 	if (!sock_owned_by_user(sk) && inet_test_bit(RECVERR, sk)) {
 		sk->sk_err = err;
 		sk_error_report(sk);
-	} else {  /* Only an error on timeout */
+	} else {   
 		WRITE_ONCE(sk->sk_err_soft, err);
 	}
 }
 
-/*
- * This routine is called by the ICMP module when it gets some
- * sort of error condition.  If err < 0 then the socket should
- * be closed and the error returned to the user.  If err > 0
- * it's just the icmp type << 8 | icmp code.  After adjustment
- * header points to the first 8 bytes of the sctp header.  We need
- * to find the appropriate port.
- *
- * The locking strategy used here is very "optimistic". When
- * someone else accesses the socket the ICMP is just dropped
- * and for some paths there is no check at all.
- * A more general error queue to queue errors for later handling
- * is probably better.
- *
- */
+ 
 int sctp_v4_err(struct sk_buff *skb, __u32 info)
 {
 	const struct iphdr *iph = (const struct iphdr *)skb->data;
@@ -615,13 +493,13 @@ int sctp_v4_err(struct sk_buff *skb, __u32 info)
 	__u16 saveip, savesctp;
 	struct sock *sk;
 
-	/* Fix up skb to look at the embedded net header. */
+	 
 	saveip = skb->network_header;
 	savesctp = skb->transport_header;
 	skb_reset_network_header(skb);
 	skb_set_transport_header(skb, iph->ihl * 4);
 	sk = sctp_err_lookup(net, AF_INET, skb, sctp_hdr(skb), &asoc, &transport);
-	/* Put back, the original values. */
+	 
 	skb->network_header = saveip;
 	skb->transport_header = savesctp;
 	if (!sk) {
@@ -653,7 +531,7 @@ int sctp_udp_v4_err(struct sock *sk, struct sk_buff *skb)
 	skb->transport_header -= sizeof(struct udphdr);
 	hdr = (struct icmphdr *)(skb_network_header(skb) - sizeof(struct icmphdr));
 	if (hdr->type == ICMP_REDIRECT) {
-		/* can't be handled without outer iphdr known, leave it to udp_err */
+		 
 		sctp_err_finish(sk, t);
 		return 0;
 	}
@@ -665,32 +543,21 @@ int sctp_udp_v4_err(struct sock *sk, struct sk_buff *skb)
 	return 1;
 }
 
-/*
- * RFC 2960, 8.4 - Handle "Out of the blue" Packets.
- *
- * This function scans all the chunks in the OOTB packet to determine if
- * the packet should be discarded right away.  If a response might be needed
- * for this packet, or, if further processing is possible, the packet will
- * be queued to a proper inqueue for the next phase of handling.
- *
- * Output:
- * Return 0 - If further processing is needed.
- * Return 1 - If the packet can be discarded right away.
- */
+ 
 static int sctp_rcv_ootb(struct sk_buff *skb)
 {
 	struct sctp_chunkhdr *ch, _ch;
 	int ch_end, offset = 0;
 
-	/* Scan through all the chunks in the packet.  */
+	 
 	do {
-		/* Make sure we have at least the header there */
+		 
 		if (offset + sizeof(_ch) > skb->len)
 			break;
 
 		ch = skb_header_pointer(skb, offset, sizeof(*ch), &_ch);
 
-		/* Break out if chunk length is less then minimal. */
+		 
 		if (!ch || ntohs(ch->length) < sizeof(_ch))
 			break;
 
@@ -698,25 +565,15 @@ static int sctp_rcv_ootb(struct sk_buff *skb)
 		if (ch_end > skb->len)
 			break;
 
-		/* RFC 8.4, 2) If the OOTB packet contains an ABORT chunk, the
-		 * receiver MUST silently discard the OOTB packet and take no
-		 * further action.
-		 */
+		 
 		if (SCTP_CID_ABORT == ch->type)
 			goto discard;
 
-		/* RFC 8.4, 6) If the packet contains a SHUTDOWN COMPLETE
-		 * chunk, the receiver should silently discard the packet
-		 * and take no further action.
-		 */
+		 
 		if (SCTP_CID_SHUTDOWN_COMPLETE == ch->type)
 			goto discard;
 
-		/* RFC 4460, 2.11.2
-		 * This will discard packets with INIT chunk bundled as
-		 * subsequent chunks in the packet.  When INIT is first,
-		 * the normal INIT processing will discard the chunk.
-		 */
+		 
 		if (SCTP_CID_INIT == ch->type && (void *)ch != skb->data)
 			goto discard;
 
@@ -729,7 +586,7 @@ discard:
 	return 1;
 }
 
-/* Insert endpoint into the hash table.  */
+ 
 static int __sctp_hash_endpoint(struct sctp_endpoint *ep)
 {
 	struct sock *sk = ep->base.sk;
@@ -781,7 +638,7 @@ static int __sctp_hash_endpoint(struct sctp_endpoint *ep)
 	return 0;
 }
 
-/* Add an endpoint to the hash. Local BH-safe. */
+ 
 int sctp_hash_endpoint(struct sctp_endpoint *ep)
 {
 	int err;
@@ -793,7 +650,7 @@ int sctp_hash_endpoint(struct sctp_endpoint *ep)
 	return err;
 }
 
-/* Remove endpoint from the hash table.  */
+ 
 static void __sctp_unhash_endpoint(struct sctp_endpoint *ep)
 {
 	struct sock *sk = ep->base.sk;
@@ -811,7 +668,7 @@ static void __sctp_unhash_endpoint(struct sctp_endpoint *ep)
 	write_unlock(&head->lock);
 }
 
-/* Remove endpoint from the hash.  Local BH-safe. */
+ 
 void sctp_unhash_endpoint(struct sctp_endpoint *ep)
 {
 	local_bh_disable();
@@ -833,7 +690,7 @@ static inline __u32 sctp_hashfn(const struct net *net, __be16 lport,
 			     (__force __u32)lport, net_hash_mix(net), seed);
 }
 
-/* Look up an endpoint. */
+ 
 static struct sctp_endpoint *__sctp_rcv_lookup_endpoint(
 					struct net *net, struct sk_buff *skb,
 					const union sctp_addr *laddr,
@@ -872,7 +729,7 @@ hit:
 	return ep;
 }
 
-/* rhashtable for transport */
+ 
 struct sctp_hash_cmp_arg {
 	const union sctp_addr	*paddr;
 	const struct net	*net;
@@ -988,7 +845,7 @@ bool sctp_sk_bound_dev_eq(struct net *net, int bound_dev_if, int dif, int sdif)
 	return inet_bound_dev_eq(l3mdev_accept, bound_dev_if, dif, sdif);
 }
 
-/* return a transport with holding it */
+ 
 struct sctp_transport *sctp_addrs_lookup_transport(
 				struct net *net,
 				const union sctp_addr *laddr,
@@ -1022,7 +879,7 @@ struct sctp_transport *sctp_addrs_lookup_transport(
 	return NULL;
 }
 
-/* return a transport without holding it, as it's only used under sock lock */
+ 
 struct sctp_transport *sctp_epaddr_lookup_transport(
 				const struct sctp_endpoint *ep,
 				const union sctp_addr *paddr)
@@ -1045,7 +902,7 @@ struct sctp_transport *sctp_epaddr_lookup_transport(
 	return NULL;
 }
 
-/* Look up an association. */
+ 
 static struct sctp_association *__sctp_lookup_association(
 					struct net *net,
 					const union sctp_addr *local,
@@ -1067,7 +924,7 @@ out:
 	return asoc;
 }
 
-/* Look up an association. protected by RCU read lock */
+ 
 static
 struct sctp_association *sctp_lookup_association(struct net *net,
 						 const union sctp_addr *laddr,
@@ -1084,7 +941,7 @@ struct sctp_association *sctp_lookup_association(struct net *net,
 	return asoc;
 }
 
-/* Is there an association matching the given local and peer addresses? */
+ 
 bool sctp_has_association(struct net *net,
 			  const union sctp_addr *laddr,
 			  const union sctp_addr *paddr,
@@ -1100,24 +957,7 @@ bool sctp_has_association(struct net *net,
 	return false;
 }
 
-/*
- * SCTP Implementors Guide, 2.18 Handling of address
- * parameters within the INIT or INIT-ACK.
- *
- * D) When searching for a matching TCB upon reception of an INIT
- *    or INIT-ACK chunk the receiver SHOULD use not only the
- *    source address of the packet (containing the INIT or
- *    INIT-ACK) but the receiver SHOULD also use all valid
- *    address parameters contained within the chunk.
- *
- * 2.18.3 Solution description
- *
- * This new text clearly specifies to an implementor the need
- * to look within the INIT or INIT-ACK. Any implementation that
- * does not do this, may not be able to establish associations
- * in certain circumstances.
- *
- */
+ 
 static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
 	struct sk_buff *skb,
 	const union sctp_addr *laddr, struct sctp_transport **transportp,
@@ -1131,28 +971,15 @@ static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
 	struct sctp_init_chunk *init;
 	struct sctp_af *af;
 
-	/*
-	 * This code will NOT touch anything inside the chunk--it is
-	 * strictly READ-ONLY.
-	 *
-	 * RFC 2960 3  SCTP packet Format
-	 *
-	 * Multiple chunks can be bundled into one SCTP packet up to
-	 * the MTU size, except for the INIT, INIT ACK, and SHUTDOWN
-	 * COMPLETE chunks.  These chunks MUST NOT be bundled with any
-	 * other chunk in a packet.  See Section 6.10 for more details
-	 * on chunk bundling.
-	 */
+	 
 
-	/* Find the start of the TLVs and the end of the chunk.  This is
-	 * the region we search for address parameters.
-	 */
+	 
 	init = (struct sctp_init_chunk *)skb->data;
 
-	/* Walk the parameters looking for embedded addresses. */
+	 
 	sctp_walk_params(params, init) {
 
-		/* Note: Ignoring hostname addresses. */
+		 
 		af = sctp_get_af_specific(param_type2af(params.p->type));
 		if (!af)
 			continue;
@@ -1168,20 +995,7 @@ static struct sctp_association *__sctp_rcv_init_lookup(struct net *net,
 	return NULL;
 }
 
-/* ADD-IP, Section 5.2
- * When an endpoint receives an ASCONF Chunk from the remote peer
- * special procedures may be needed to identify the association the
- * ASCONF Chunk is associated with. To properly find the association
- * the following procedures SHOULD be followed:
- *
- * D2) If the association is not found, use the address found in the
- * Address Parameter TLV combined with the port number found in the
- * SCTP common header. If found proceed to rule D4.
- *
- * D2-ext) If more than one ASCONF Chunks are packed together, use the
- * address found in the ASCONF Address Parameter TLV of each of the
- * subsequent ASCONF Chunks. If found, proceed to rule D4.
- */
+ 
 static struct sctp_association *__sctp_rcv_asconf_lookup(
 					struct net *net,
 					struct sctp_chunkhdr *ch,
@@ -1198,7 +1012,7 @@ static struct sctp_association *__sctp_rcv_asconf_lookup(
 	if (ntohs(ch->length) < sizeof(*asconf) + sizeof(struct sctp_paramhdr))
 		return NULL;
 
-	/* Skip over the ADDIP header and find the Address parameter */
+	 
 	param = (union sctp_addr_param *)(asconf + 1);
 
 	af = sctp_get_af_specific(param_type2af(param->p.type));
@@ -1212,15 +1026,7 @@ static struct sctp_association *__sctp_rcv_asconf_lookup(
 }
 
 
-/* SCTP-AUTH, Section 6.3:
-*    If the receiver does not find a STCB for a packet containing an AUTH
-*    chunk as the first chunk and not a COOKIE-ECHO chunk as the second
-*    chunk, it MUST use the chunks after the AUTH chunk to look up an existing
-*    association.
-*
-* This means that any chunks that can help us identify the association need
-* to be looked at to find this association.
-*/
+ 
 static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 				      struct sk_buff *skb,
 				      const union sctp_addr *laddr,
@@ -1233,12 +1039,10 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 	unsigned int chunk_num = 1;
 	__u8 *ch_end;
 
-	/* Walk through the chunks looking for AUTH or ASCONF chunks
-	 * to help us find the association.
-	 */
+	 
 	ch = (struct sctp_chunkhdr *)skb->data;
 	do {
-		/* Break out if chunk length is less then minimal. */
+		 
 		if (ntohs(ch->length) < sizeof(*ch))
 			break;
 
@@ -1252,13 +1056,7 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 			break;
 
 		case SCTP_CID_COOKIE_ECHO:
-			/* If a packet arrives containing an AUTH chunk as
-			 * a first chunk, a COOKIE-ECHO chunk as the second
-			 * chunk, and possibly more chunks after them, and
-			 * the receiver does not have an STCB for that
-			 * packet, then authentication is based on
-			 * the contents of the COOKIE- ECHO chunk.
-			 */
+			 
 			if (have_auth == 1 && chunk_num == 2)
 				return NULL;
 			break;
@@ -1284,12 +1082,7 @@ static struct sctp_association *__sctp_rcv_walk_lookup(struct net *net,
 	return asoc;
 }
 
-/*
- * There are circumstances when we need to look inside the SCTP packet
- * for information to help us find the association.   Examples
- * include looking inside of INIT/INIT-ACK chunks or after the AUTH
- * chunks.
- */
+ 
 static struct sctp_association *__sctp_rcv_lookup_harder(struct net *net,
 				      struct sk_buff *skb,
 				      const union sctp_addr *laddr,
@@ -1298,32 +1091,24 @@ static struct sctp_association *__sctp_rcv_lookup_harder(struct net *net,
 {
 	struct sctp_chunkhdr *ch;
 
-	/* We do not allow GSO frames here as we need to linearize and
-	 * then cannot guarantee frame boundaries. This shouldn't be an
-	 * issue as packets hitting this are mostly INIT or INIT-ACK and
-	 * those cannot be on GSO-style anyway.
-	 */
+	 
 	if (skb_is_gso(skb) && skb_is_gso_sctp(skb))
 		return NULL;
 
 	ch = (struct sctp_chunkhdr *)skb->data;
 
-	/* The code below will attempt to walk the chunk and extract
-	 * parameter information.  Before we do that, we need to verify
-	 * that the chunk length doesn't cause overflow.  Otherwise, we'll
-	 * walk off the end.
-	 */
+	 
 	if (SCTP_PAD4(ntohs(ch->length)) > skb->len)
 		return NULL;
 
-	/* If this is INIT/INIT-ACK look inside the chunk too. */
+	 
 	if (ch->type == SCTP_CID_INIT || ch->type == SCTP_CID_INIT_ACK)
 		return __sctp_rcv_init_lookup(net, skb, laddr, transportp, dif, sdif);
 
 	return __sctp_rcv_walk_lookup(net, skb, laddr, transportp, dif, sdif);
 }
 
-/* Lookup an association for an inbound skb. */
+ 
 static struct sctp_association *__sctp_rcv_lookup(struct net *net,
 				      struct sk_buff *skb,
 				      const union sctp_addr *paddr,
@@ -1337,10 +1122,7 @@ static struct sctp_association *__sctp_rcv_lookup(struct net *net,
 	if (asoc)
 		goto out;
 
-	/* Further lookup for INIT/INIT-ACK packets.
-	 * SCTP Implementors Guide, 2.18 Handling of address
-	 * parameters within the INIT or INIT-ACK.
-	 */
+	 
 	asoc = __sctp_rcv_lookup_harder(net, skb, laddr, transportp, dif, sdif);
 	if (asoc)
 		goto out;

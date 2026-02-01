@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/clk.h>
 
@@ -67,13 +62,13 @@ sti_crtc_mode_set(struct drm_crtc *crtc, struct drm_display_mode *mode)
 		pix_clk = compo->clk_pix_aux;
 	}
 
-	/* Prepare and enable the compo IP clock */
+	 
 	if (clk_prepare_enable(compo_clk)) {
 		DRM_INFO("Failed to prepare/enable compositor clk\n");
 		goto compo_error;
 	}
 
-	/* Set rate and prepare/enable pixel clock */
+	 
 	if (clk_set_rate(pix_clk, rate) < 0) {
 		DRM_ERROR("Cannot set rate (%dHz) for pix clk\n", rate);
 		goto pix_error;
@@ -108,12 +103,12 @@ static void sti_crtc_disable(struct drm_crtc *crtc)
 
 	DRM_DEBUG_KMS("CRTC:%d (%s)\n", crtc->base.id, sti_mixer_to_str(mixer));
 
-	/* Disable Background */
+	 
 	sti_mixer_set_background_status(mixer, false);
 
 	drm_crtc_vblank_off(crtc);
 
-	/* Disable pixel clock and compo IP clocks */
+	 
 	if (mixer->id == STI_MIXER_MAIN) {
 		clk_disable_unprepare(compo->clk_pix_main);
 		clk_disable_unprepare(compo->clk_compo_main);
@@ -143,17 +138,17 @@ static void sti_crtc_atomic_flush(struct drm_crtc *crtc,
 
 	DRM_DEBUG_DRIVER("\n");
 
-	/* perform plane actions */
+	 
 	list_for_each_entry(p, &drm_dev->mode_config.plane_list, head) {
 		struct sti_plane *plane = to_sti_plane(p);
 
 		switch (plane->status) {
 		case STI_PLANE_UPDATED:
-			/* ignore update for other CRTC */
+			 
 			if (p->state->crtc != crtc)
 				continue;
 
-			/* update planes tag as updated */
+			 
 			DRM_DEBUG_DRIVER("update plane %s\n",
 					 sti_plane_to_str(plane));
 
@@ -169,7 +164,7 @@ static void sti_crtc_atomic_flush(struct drm_crtc *crtc,
 				break;
 			}
 
-			/* if plane is HQVDP_0 then commit the vid[0] */
+			 
 			if (plane->desc == STI_HQVDP_0)
 				sti_vid_commit(compo->vid[0], p->state);
 
@@ -177,7 +172,7 @@ static void sti_crtc_atomic_flush(struct drm_crtc *crtc,
 
 			break;
 		case STI_PLANE_DISABLING:
-			/* disabling sequence for planes tag as disabling */
+			 
 			DRM_DEBUG_DRIVER("disable plane %s from mixer\n",
 					 sti_plane_to_str(plane));
 
@@ -188,19 +183,19 @@ static void sti_crtc_atomic_flush(struct drm_crtc *crtc,
 			}
 
 			if (plane->desc == STI_CURSOR)
-				/* tag plane status for disabled */
+				 
 				plane->status = STI_PLANE_DISABLED;
 			else
-				/* tag plane status for flushing */
+				 
 				plane->status = STI_PLANE_FLUSHING;
 
-			/* if plane is HQVDP_0 then disable the vid[0] */
+			 
 			if (plane->desc == STI_HQVDP_0)
 				sti_vid_disable(compo->vid[0]);
 
 			break;
 		default:
-			/* Other status case are not handled */
+			 
 			break;
 		}
 	}
@@ -262,8 +257,7 @@ int sti_crtc_vblank_cb(struct notifier_block *nb,
 	if (mixer->status == STI_MIXER_DISABLING) {
 		struct drm_plane *p;
 
-		/* Disable mixer only if all overlay planes (GDP and VDP)
-		 * are disabled */
+		 
 		list_for_each_entry(p, &crtc->dev->mode_config.plane_list,
 				    head) {
 			struct sti_plane *plane = to_sti_plane(p);

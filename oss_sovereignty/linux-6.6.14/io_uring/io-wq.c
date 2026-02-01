@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Basic worker thread pool for io_uring
- *
- * Copyright (C) 2019 Jens Axboe
- *
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/init.h>
 #include <linux/errno.h>
@@ -25,23 +20,21 @@
 #define WORKER_IDLE_TIMEOUT	(5 * HZ)
 
 enum {
-	IO_WORKER_F_UP		= 1,	/* up and active */
-	IO_WORKER_F_RUNNING	= 2,	/* account as running */
-	IO_WORKER_F_FREE	= 4,	/* worker on free list */
-	IO_WORKER_F_BOUND	= 8,	/* is doing bounded work */
+	IO_WORKER_F_UP		= 1,	 
+	IO_WORKER_F_RUNNING	= 2,	 
+	IO_WORKER_F_FREE	= 4,	 
+	IO_WORKER_F_BOUND	= 8,	 
 };
 
 enum {
-	IO_WQ_BIT_EXIT		= 0,	/* wq exiting */
+	IO_WQ_BIT_EXIT		= 0,	 
 };
 
 enum {
-	IO_ACCT_STALLED_BIT	= 0,	/* stalled on hash */
+	IO_ACCT_STALLED_BIT	= 0,	 
 };
 
-/*
- * One for each thread in a wq pool
- */
+ 
 struct io_worker {
 	refcount_t ref;
 	unsigned flags;
@@ -90,9 +83,7 @@ enum {
 	IO_WQ_ACCT_NR,
 };
 
-/*
- * Per io_wq state
-  */
+ 
 struct io_wq {
 	unsigned long state;
 
@@ -110,7 +101,7 @@ struct io_wq {
 
 	struct io_wq_acct acct[IO_WQ_ACCT_NR];
 
-	/* lock protects access to elements below */
+	 
 	raw_spinlock_t lock;
 
 	struct hlist_nulls_head free_list;
@@ -230,11 +221,7 @@ static void io_worker_exit(struct io_worker *worker)
 	list_del_rcu(&worker->all_list);
 	raw_spin_unlock(&wq->lock);
 	io_wq_dec_running(worker);
-	/*
-	 * this worker is a goner, clear ->worker_private to avoid any
-	 * inc/dec running calls that could happen as part of exit from
-	 * touching 'worker'.
-	 */
+	 
 	current->worker_private = NULL;
 
 	kfree_rcu(worker, rcu);
@@ -248,10 +235,7 @@ static inline bool __io_acct_run_queue(struct io_wq_acct *acct)
 		!wq_list_empty(&acct->work_list);
 }
 
-/*
- * If there's work to do, returns true with acct->lock acquired. If not,
- * returns false with no lock held.
- */
+ 
 static inline bool io_acct_run_queue(struct io_wq_acct *acct)
 	__acquires(&acct->lock)
 {
@@ -263,10 +247,7 @@ static inline bool io_acct_run_queue(struct io_wq_acct *acct)
 	return false;
 }
 
-/*
- * Check head of free list for an available worker. If one isn't available,
- * caller must create one.
- */
+ 
 static bool io_wq_activate_free_worker(struct io_wq *wq,
 					struct io_wq_acct *acct)
 	__must_hold(RCU)
@@ -274,11 +255,7 @@ static bool io_wq_activate_free_worker(struct io_wq *wq,
 	struct hlist_nulls_node *n;
 	struct io_worker *worker;
 
-	/*
-	 * Iterate free_list and see if we can find an idle worker to
-	 * activate. If a given worker is on the free_list but in the process
-	 * of exiting, keep trying.
-	 */
+	 
 	hlist_nulls_for_each_entry_rcu(worker, n, &wq->free_list, nulls_node) {
 		if (!io_worker_get(worker))
 			continue;
@@ -286,11 +263,7 @@ static bool io_wq_activate_free_worker(struct io_wq *wq,
 			io_worker_release(worker);
 			continue;
 		}
-		/*
-		 * If the worker is already running, it's either already
-		 * starting work or finishing work. In either case, if it does
-		 * to go sleep, we'll kick off a new task for this work anyway.
-		 */
+		 
 		wake_up_process(worker->task);
 		io_worker_release(worker);
 		return true;
@@ -299,16 +272,10 @@ static bool io_wq_activate_free_worker(struct io_wq *wq,
 	return false;
 }
 
-/*
- * We need a worker. If we find a free one, we're good. If not, and we're
- * below the max number of workers, create one.
- */
+ 
 static bool io_wq_create_worker(struct io_wq *wq, struct io_wq_acct *acct)
 {
-	/*
-	 * Most likely an attempt to queue unbounded work on an io_wq that
-	 * wasn't setup with any unbounded workers.
-	 */
+	 
 	if (unlikely(!acct->max_workers))
 		pr_warn_once("io-wq is not configured for unbound workers");
 
@@ -365,17 +332,12 @@ static bool io_queue_worker_create(struct io_worker *worker,
 {
 	struct io_wq *wq = worker->wq;
 
-	/* raced with exit, just ignore create call */
+	 
 	if (test_bit(IO_WQ_BIT_EXIT, &wq->state))
 		goto fail;
 	if (!io_worker_get(worker))
 		goto fail;
-	/*
-	 * create_state manages ownership of create_work/index. We should
-	 * only need one entry per worker, as the worker going to sleep
-	 * will trigger the condition, and waking will clear it once it
-	 * runs the task_work.
-	 */
+	 
 	if (test_bit(0, &worker->create_state) ||
 	    test_and_set_bit_lock(0, &worker->create_state))
 		goto fail_release;
@@ -384,12 +346,7 @@ static bool io_queue_worker_create(struct io_worker *worker,
 	init_task_work(&worker->create_work, func);
 	worker->create_index = acct->index;
 	if (!task_work_add(wq->task, &worker->create_work, TWA_SIGNAL)) {
-		/*
-		 * EXIT may have been set after checking it above, check after
-		 * adding the task_work and remove any creation item if it is
-		 * now set. wq exit does that too, but we can have added this
-		 * work item after we canceled in io_wq_exit_workers().
-		 */
+		 
 		if (test_bit(IO_WQ_BIT_EXIT, &wq->state))
 			io_wq_cancel_tw_create(wq);
 		io_worker_ref_put(wq);
@@ -424,10 +381,7 @@ static void io_wq_dec_running(struct io_worker *worker)
 	io_queue_worker_create(worker, acct, create_worker_cb);
 }
 
-/*
- * Worker will start processing some work. Move it to the busy list, if
- * it's currently on the freelist
- */
+ 
 static void __io_worker_busy(struct io_wq *wq, struct io_worker *worker)
 {
 	if (worker->flags & IO_WORKER_F_FREE) {
@@ -438,9 +392,7 @@ static void __io_worker_busy(struct io_wq *wq, struct io_worker *worker)
 	}
 }
 
-/*
- * No work, worker going to sleep. Move to freelist.
- */
+ 
 static void __io_worker_idle(struct io_wq *wq, struct io_worker *worker)
 	__must_hold(wq->lock)
 {
@@ -486,17 +438,17 @@ static struct io_wq_work *io_get_next_work(struct io_wq_acct *acct,
 
 		work = container_of(node, struct io_wq_work, list);
 
-		/* not hashed, can run anytime */
+		 
 		if (!io_wq_is_hashed(work)) {
 			wq_list_del(&acct->work_list, node, prev);
 			return work;
 		}
 
 		hash = io_get_work_hash(work);
-		/* all items with this hash lie in [work, tail] */
+		 
 		tail = wq->hash_tail[hash];
 
-		/* hashed, can run if not already running */
+		 
 		if (!test_and_set_bit(hash, &wq->hash->map)) {
 			wq->hash_tail[hash] = NULL;
 			wq_list_cut(&acct->work_list, &tail->list, prev);
@@ -504,17 +456,14 @@ static struct io_wq_work *io_get_next_work(struct io_wq_acct *acct,
 		}
 		if (stall_hash == -1U)
 			stall_hash = hash;
-		/* fast forward to a next hash, for-each will fix up @prev */
+		 
 		node = &tail->list;
 	}
 
 	if (stall_hash != -1U) {
 		bool unstalled;
 
-		/*
-		 * Set this before dropping the lock to avoid racing with new
-		 * work being added and clearing the stalled bit.
-		 */
+		 
 		set_bit(IO_ACCT_STALLED_BIT, &acct->flags);
 		raw_spin_unlock(&acct->lock);
 		unstalled = io_wait_on_hash(wq, stall_hash);
@@ -543,9 +492,7 @@ static void io_assign_current_work(struct io_worker *worker,
 	raw_spin_unlock(&worker->lock);
 }
 
-/*
- * Called with acct->lock held, drops it before returning
- */
+ 
 static void io_worker_handle_work(struct io_wq_acct *acct,
 				  struct io_worker *worker)
 	__releases(&acct->lock)
@@ -556,25 +503,13 @@ static void io_worker_handle_work(struct io_wq_acct *acct,
 	do {
 		struct io_wq_work *work;
 
-		/*
-		 * If we got some work, mark us as busy. If we didn't, but
-		 * the list isn't empty, it means we stalled on hashed work.
-		 * Mark us stalled so we don't keep looking for work when we
-		 * can't make progress, any work completion or insertion will
-		 * clear the stalled flag.
-		 */
+		 
 		work = io_get_next_work(acct, worker);
 		raw_spin_unlock(&acct->lock);
 		if (work) {
 			__io_worker_busy(wq, worker);
 
-			/*
-			 * Make sure cancelation can find this, even before
-			 * it becomes the active work. That avoids a window
-			 * where the work has been removed from our general
-			 * work list, but isn't yet discoverable as the
-			 * current work item for this worker.
-			 */
+			 
 			raw_spin_lock(&worker->lock);
 			worker->next_work = work;
 			raw_spin_unlock(&worker->lock);
@@ -584,7 +519,7 @@ static void io_worker_handle_work(struct io_wq_acct *acct,
 		io_assign_current_work(worker, work);
 		__set_current_state(TASK_RUNNING);
 
-		/* handle a whole dependent link */
+		 
 		do {
 			struct io_wq_work *next_hashed, *linked;
 			unsigned int hash = io_get_work_hash(work);
@@ -607,7 +542,7 @@ static void io_worker_handle_work(struct io_wq_acct *acct,
 				io_wq_enqueue(wq, linked);
 
 			if (hash != -1U && !next_hashed) {
-				/* serialize hash clear with wake_up() */
+				 
 				spin_lock_irq(&wq->hash->wait.lock);
 				clear_bit(hash, &wq->hash->map);
 				clear_bit(IO_ACCT_STALLED_BIT, &acct->flags);
@@ -641,18 +576,12 @@ static int io_wq_worker(void *data)
 
 		set_current_state(TASK_INTERRUPTIBLE);
 
-		/*
-		 * If we have work to do, io_acct_run_queue() returns with
-		 * the acct->lock held. If not, it will drop it.
-		 */
+		 
 		while (io_acct_run_queue(acct))
 			io_worker_handle_work(acct, worker);
 
 		raw_spin_lock(&wq->lock);
-		/*
-		 * Last sleep timed out. Exit if we're not the last worker,
-		 * or if someone modified our affinity.
-		 */
+		 
 		if (last_timeout && (exit_mask || acct->nr_workers > 1)) {
 			acct->nr_workers--;
 			raw_spin_unlock(&wq->lock);
@@ -686,9 +615,7 @@ static int io_wq_worker(void *data)
 	return 0;
 }
 
-/*
- * Called when a worker is scheduled in. Mark us as currently running.
- */
+ 
 void io_wq_worker_running(struct task_struct *tsk)
 {
 	struct io_worker *worker = tsk->worker_private;
@@ -703,10 +630,7 @@ void io_wq_worker_running(struct task_struct *tsk)
 	io_wq_inc_running(worker);
 }
 
-/*
- * Called when worker is going to sleep. If there are no workers currently
- * running and we have work pending, wake up a free one or create a new one.
- */
+ 
 void io_wq_worker_sleeping(struct task_struct *tsk)
 {
 	struct io_worker *worker = tsk->worker_private;
@@ -744,10 +668,7 @@ static bool io_wq_work_match_all(struct io_wq_work *work, void *data)
 
 static inline bool io_should_retry_thread(long err)
 {
-	/*
-	 * Prevent perpetual task_work retry, if the task (or its group) is
-	 * exiting.
-	 */
+	 
 	if (fatal_signal_pending(current))
 		return false;
 
@@ -799,7 +720,7 @@ static void create_worker_cont(struct callback_head *cb)
 		return;
 	}
 
-	/* re-create attempts grab a new worker ref, drop the existing one */
+	 
 	io_worker_release(worker);
 	schedule_work(&worker->work);
 }
@@ -854,10 +775,7 @@ fail:
 	return true;
 }
 
-/*
- * Iterate the passed in list and call the specific function for each
- * worker that isn't exiting
- */
+ 
 static bool io_wq_for_each_worker(struct io_wq *wq,
 				  bool (*func)(struct io_worker *, void *),
 				  void *data)
@@ -867,7 +785,7 @@ static bool io_wq_for_each_worker(struct io_wq *wq,
 
 	list_for_each_entry_rcu(worker, &wq->all_list, all_list) {
 		if (io_worker_get(worker)) {
-			/* no task if node is/was offline */
+			 
 			if (worker->task)
 				ret = func(worker, data);
 			io_worker_release(worker);
@@ -928,10 +846,7 @@ void io_wq_enqueue(struct io_wq *wq, struct io_wq_work *work)
 	unsigned work_flags = work->flags;
 	bool do_create;
 
-	/*
-	 * If io-wq is exiting for this task, or if the request has explicitly
-	 * been marked as one that should not get executed, cancel it here.
-	 */
+	 
 	if (test_bit(IO_WQ_BIT_EXIT, &wq->state) ||
 	    (work->flags & IO_WQ_WORK_CANCEL)) {
 		io_run_cancel(work, wq);
@@ -962,7 +877,7 @@ void io_wq_enqueue(struct io_wq *wq, struct io_wq_work *work)
 		}
 		raw_spin_unlock(&wq->lock);
 
-		/* fatal condition, failed to create the first worker */
+		 
 		match.fn		= io_wq_work_match_item,
 		match.data		= work,
 		match.cancel_all	= false,
@@ -971,10 +886,7 @@ void io_wq_enqueue(struct io_wq *wq, struct io_wq_work *work)
 	}
 }
 
-/*
- * Work items that hash to the same value will not be done in parallel.
- * Used to limit concurrent writes, generally hashed by inode.
- */
+ 
 void io_wq_hash_work(struct io_wq_work *work, void *val)
 {
 	unsigned int bit;
@@ -1000,10 +912,7 @@ static bool io_wq_worker_cancel(struct io_worker *worker, void *data)
 {
 	struct io_cb_cancel_data *match = data;
 
-	/*
-	 * Hold the lock to avoid ->cur_work going out of scope, caller
-	 * may dereference the passed in work.
-	 */
+	 
 	raw_spin_lock(&worker->lock);
 	if (__io_wq_worker_cancel(worker, match, worker->cur_work) ||
 	    __io_wq_worker_cancel(worker, match, worker->next_work))
@@ -1048,7 +957,7 @@ static bool io_acct_cancel_pending_work(struct io_wq *wq,
 		raw_spin_unlock(&acct->lock);
 		io_run_cancel(work, wq);
 		match->nr_pending++;
-		/* not safe to continue after unlock */
+		 
 		return true;
 	}
 	raw_spin_unlock(&acct->lock);
@@ -1089,19 +998,7 @@ enum io_wq_cancel io_wq_cancel_cb(struct io_wq *wq, work_cancel_fn *cancel,
 		.cancel_all	= cancel_all,
 	};
 
-	/*
-	 * First check pending list, if we're lucky we can just remove it
-	 * from there. CANCEL_OK means that the work is returned as-new,
-	 * no completion will be posted for it.
-	 *
-	 * Then check if a free (going busy) or busy worker has the work
-	 * currently running. If we find it there, we'll return CANCEL_RUNNING
-	 * as an indication that we attempt to signal cancellation. The
-	 * completion will run normally in this case.
-	 *
-	 * Do both of these while holding the wq->lock, to ensure that
-	 * we'll find a work item regardless of state.
-	 */
+	 
 	io_wq_cancel_pending_work(wq, &match);
 	if (match.nr_pending && !match.cancel_all)
 		return IO_WQ_CANCEL_OK;
@@ -1219,10 +1116,7 @@ static void io_wq_cancel_tw_create(struct io_wq *wq)
 
 		worker = container_of(cb, struct io_worker, create_work);
 		io_worker_cancel_cb(worker);
-		/*
-		 * Only the worker continuation helper has worker allocated and
-		 * hence needs freeing.
-		 */
+		 
 		if (cb->func == create_worker_cont)
 			kfree(worker);
 	}
@@ -1329,10 +1223,7 @@ int io_wq_cpu_affinity(struct io_uring_task *tctx, cpumask_var_t mask)
 	return 0;
 }
 
-/*
- * Set max number of unbounded workers, returns old value. If new_count is 0,
- * then just return the old value.
- */
+ 
 int io_wq_max_workers(struct io_wq *wq, int *new_count)
 {
 	struct io_wq_acct *acct;

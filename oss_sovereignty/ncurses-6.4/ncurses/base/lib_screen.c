@@ -1,38 +1,6 @@
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2017,2018 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996 on                 *
- *     and: Juergen Pfeifer                         2009                    *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -44,7 +12,7 @@
 
 MODULE_ID("$Id: lib_screen.c,v 1.104 2021/10/23 17:12:16 tom Exp $")
 
-#define MAX_SIZE 0x3fff		/* 16k is big enough for a window or pad */
+#define MAX_SIZE 0x3fff		 
 
 #define MARKER '\\'
 #define APPEND '+'
@@ -55,30 +23,26 @@ MODULE_ID("$Id: lib_screen.c,v 1.104 2021/10/23 17:12:16 tom Exp $")
 #if USE_STRING_HACKS && HAVE_SNPRINTF
 #define ARG_SLIMIT(name) size_t name,
 #else
-#define ARG_SLIMIT(name)	/* nothing */
+#define ARG_SLIMIT(name)	 
 #endif
 
 #define CUR_SLIMIT _nc_SLIMIT(limit - (size_t) (target - base))
 #define TOP_SLIMIT _nc_SLIMIT(sizeof(buffer))
 
-/*
- * Use 0x888888 as the magic number for new-format files, since it cannot be
- * mistaken for the _cury/_curx pair of 16-bit numbers which start the old
- * format.  It happens to be unused in the file 5.22 database (2015/03/07).
- */
+ 
 static const char my_magic[] =
 {'\210', '\210', '\210', '\210', 0};
 
 #if NCURSES_EXT_PUTWIN
 typedef enum {
-    pINT			/* int */
-    ,pSHORT			/* short */
-    ,pBOOL			/* bool */
-    ,pATTR			/* attr_t */
-    ,pCHAR			/* chtype */
-    ,pSIZE			/* NCURSES_SIZE_T */
+    pINT			 
+    ,pSHORT			 
+    ,pBOOL			 
+    ,pATTR			 
+    ,pCHAR			 
+    ,pSIZE			 
 #if NCURSES_WIDECHAR
-    ,pCCHAR			/* cchar_t */
+    ,pCCHAR			 
 #endif
 } PARAM_TYPE;
 
@@ -164,9 +128,7 @@ static const SCR_PARAMS scr_params[] =
 
 static const NCURSES_CH_T blank = NewChar(BLANK_TEXT);
 
-/*
- * Allocate and read a line of text.  Caller must free it.
- */
+ 
 static char *
 read_txt(FILE *fp)
 {
@@ -333,7 +295,7 @@ decode_chtype(char *source, chtype fillin, chtype *target)
     source = decode_attr(source, &attr, &color);
     source = decode_char(source, &value);
     *target = (ChCharOf(value) | attr | (chtype) COLOR_PAIR(color));
-    /* FIXME - ignore combining characters */
+     
     return source;
 }
 
@@ -358,7 +320,7 @@ decode_cchar(char *source, cchar_t *fillin, cchar_t *target)
     memset(chars, 0, sizeof(chars));
     source = decode_char(source, &value);
     chars[0] = (wchar_t) value;
-    /* handle combining characters */
+     
     while (source[0] == MARKER && source[1] == APPEND) {
 	source += 2;
 	source = decode_char(source, &value);
@@ -470,17 +432,12 @@ read_row(char *source, NCURSES_CH_T *prior, NCURSES_CH_T *target, int length)
     while (length-- > 0) {
 	*target++ = blank;
     }
-    /* FIXME - see what error conditions should apply if I need to return ERR */
+     
     return 0;
 }
-#endif /* NCURSES_EXT_PUTWIN */
+#endif  
 
-/*
- * Originally, getwin/putwin used fread/fwrite, because they used binary data.
- * The new format uses printable ASCII, which does not have as predictable
- * sizes.  Consequently, we use buffered I/O, e.g., fgetc/fprintf, which need
- * special handling if we want to read screen dumps from an older library.
- */
+ 
 static int
 read_block(void *target, size_t length, FILE *fp)
 {
@@ -511,16 +468,11 @@ NCURSES_SP_NAME(getwin) (NCURSES_SP_DCLx FILE *filep)
 	returnWin(0);
     }
 
-    /*
-     * Read the first 4 bytes to determine first if this is an old-format
-     * screen-dump, or new-format.
-     */
+     
     if (read_block(&tmp, (size_t) 4, filep) < 0) {
 	returnWin(0);
     }
-    /*
-     * If this is a new-format file, and we do not support it, give up.
-     */
+     
     if (!memcmp(&tmp, my_magic, (size_t) 4)) {
 #if NCURSES_EXT_PUTWIN
 	if (read_win(&tmp, filep) < 0)
@@ -532,9 +484,7 @@ NCURSES_SP_NAME(getwin) (NCURSES_SP_DCLx FILE *filep)
 	old_format = TRUE;
     }
 
-    /*
-     * Check the window-size:
-     */
+     
     if (tmp._maxy == 0 ||
 	tmp._maxy > MAX_SIZE ||
 	tmp._maxx == 0 ||
@@ -552,11 +502,7 @@ NCURSES_SP_NAME(getwin) (NCURSES_SP_DCLx FILE *filep)
 					tmp._maxx + 1, 0, 0);
     }
 
-    /*
-     * We deliberately do not restore the _parx, _pary, or _parent
-     * fields, because the window hierarchy within which they
-     * made sense is probably gone.
-     */
+     
     if (nwin != 0) {
 	int n;
 	size_t linesize = sizeof(NCURSES_CH_T) * (size_t) (tmp._maxx + 1);
@@ -809,10 +755,7 @@ putwin(WINDOW *win, FILE *filep)
 
 	clearerr(filep);
 
-	/*
-	 * Our magic number is technically nonprinting, but aside from that,
-	 * all of the file is printable ASCII.
-	 */
+	 
 #define PUTS(s) if (fputs(s, filep) == EOF || ferror(filep)) returnCode(code)
 	PUTS(my_magic);
 	PUTS(version);
@@ -876,16 +819,14 @@ putwin(WINDOW *win, FILE *filep)
 		break;
 #endif
 	    }
-	    /*
-	     * Only write non-default data.
-	     */
+	     
 	    if (*buffer != '\0') {
 		if (fprintf(filep, "%s=%s\n", name, buffer) <= 0
 		    || ferror(filep))
 		    returnCode(code);
 	    }
 	}
-	/* Write row-data */
+	 
 	fprintf(filep, "rows:\n");
 	for (y = 0; y <= win->_maxy; y++) {
 	    NCURSES_CH_T *data = win->_line[y].text;
@@ -912,12 +853,7 @@ putwin(WINDOW *win, FILE *filep)
 	code = OK;
     }
 #else
-    /*
-     * This is the original putwin():
-     * A straight binary dump is simple, but its format can depend on whether
-     * ncurses is compiled with wide-character support, and also may depend
-     * on the version of ncurses, e.g., if the WINDOW structure is extended.
-     */
+     
     if (win != 0) {
 	size_t len = (size_t) (win->_maxx + 1);
 	int y;
@@ -940,9 +876,7 @@ putwin(WINDOW *win, FILE *filep)
     returnCode(code);
 }
 
-/*
- * Replace a window covering the whole screen, i.e., newscr or curscr.
- */
+ 
 static WINDOW *
 replace_window(WINDOW *target, FILE *source)
 {

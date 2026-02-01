@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
-*******************************************************************************
-**
-**  Copyright (C) Sistina Software, Inc.  1997-2003  All rights reserved.
-**  Copyright (C) 2004-2010 Red Hat, Inc.  All rights reserved.
-**
-**
-*******************************************************************************
-******************************************************************************/
+
+ 
 
 #include <trace/events/dlm.h>
 
@@ -45,9 +37,7 @@ int dlm_enqueue_lkb_callback(struct dlm_lkb *lkb, uint32_t flags, int mode,
 	int prev_mode;
 
 	if (flags & DLM_CB_BAST) {
-		/* if cb is a bast, it should be skipped if the blocking mode is
-		 * compatible with the last granted mode
-		 */
+		 
 		if (lkb->lkb_last_cast) {
 			if (dlm_modes_compat(mode, lkb->lkb_last_cast->mode)) {
 				log_debug(ls, "skip %x bast mode %d for cast mode %d",
@@ -57,12 +47,7 @@ int dlm_enqueue_lkb_callback(struct dlm_lkb *lkb, uint32_t flags, int mode,
 			}
 		}
 
-		/*
-		 * Suppress some redundant basts here, do more on removal.
-		 * Don't even add a bast if the callback just before it
-		 * is a bast for the same mode or a more restrictive mode.
-		 * (the addional > PR check is needed for PR/CW inversion)
-		 */
+		 
 		if (lkb->lkb_last_cb && lkb->lkb_last_cb->flags & DLM_CB_BAST) {
 			prev_mode = lkb->lkb_last_cb->mode;
 
@@ -102,13 +87,13 @@ int dlm_enqueue_lkb_callback(struct dlm_lkb *lkb, uint32_t flags, int mode,
 
 int dlm_dequeue_lkb_callback(struct dlm_lkb *lkb, struct dlm_callback **cb)
 {
-	/* oldest undelivered cb is callbacks first entry */
+	 
 	*cb = list_first_entry_or_null(&lkb->lkb_callbacks,
 				       struct dlm_callback, list);
 	if (!*cb)
 		return DLM_DEQUEUE_CALLBACK_EMPTY;
 
-	/* remove it from callbacks so shift others down */
+	 
 	list_del(&(*cb)->list);
 	if (list_empty(&lkb->lkb_callbacks))
 		return DLM_DEQUEUE_CALLBACK_LAST;
@@ -201,7 +186,7 @@ void dlm_callback_work(struct work_struct *work)
 	}
 
 out:
-	/* undo kref_get from dlm_add_callback, may cause lkb to be freed */
+	 
 	dlm_put_lkb(lkb);
 }
 

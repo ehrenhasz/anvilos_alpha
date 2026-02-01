@@ -1,21 +1,4 @@
-/*
- * vpif - Video Port Interface driver
- * VPIF is a receiver and transmitter for video data. It has two channels(0, 1)
- * that receiving video byte stream and two channels(2, 3) for video output.
- * The hardware supports SDTV, HDTV formats, raw data capture.
- * Currently, the driver supports NTSC and PAL standards.
- *
- * Copyright (C) 2009 Texas Instruments Incorporated - https://www.ti.com/
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed .as is. WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -54,13 +37,9 @@ EXPORT_SYMBOL_GPL(vpif_lock);
 void __iomem *vpif_base;
 EXPORT_SYMBOL_GPL(vpif_base);
 
-/*
- * vpif_ch_params: video standard configuration parameters for vpif
- *
- * The table must include all presets from supported subdevices.
- */
+ 
 const struct vpif_channel_config_params vpif_ch_params[] = {
-	/* HDTV formats */
+	 
 	{
 		.name = "480p59_94",
 		.width = 720,
@@ -187,7 +166,7 @@ const struct vpif_channel_config_params vpif_ch_params[] = {
 		.dv_timings = V4L2_DV_BT_CEA_1920X1080P60,
 	},
 
-	/* SDTV formats */
+	 
 	{
 		.name = "NTSC_M",
 		.width = 720,
@@ -242,7 +221,7 @@ static inline void vpif_wr_bit(u32 reg, u32 bit, u32 val)
 		vpif_clr_bit(reg, bit);
 }
 
-/* This structure is used to keep track of VPIF size register's offsets */
+ 
 struct vpif_registers {
 	u32 h_cfg, v_cfg_00, v_cfg_01, v_cfg_02, v_cfg, ch_ctrl;
 	u32 line_offset, vanc0_strt, vanc0_size, vanc1_strt;
@@ -251,21 +230,21 @@ struct vpif_registers {
 };
 
 static const struct vpif_registers vpifregs[VPIF_NUM_CHANNELS] = {
-	/* Channel0 */
+	 
 	{
 		VPIF_CH0_H_CFG, VPIF_CH0_V_CFG_00, VPIF_CH0_V_CFG_01,
 		VPIF_CH0_V_CFG_02, VPIF_CH0_V_CFG_03, VPIF_CH0_CTRL,
 		VPIF_CH0_IMG_ADD_OFST, 0, 0, 0, 0, 0x1FFF, 0xFFF,
 		VPIF_CH0_MAX_MODES,
 	},
-	/* Channel1 */
+	 
 	{
 		VPIF_CH1_H_CFG, VPIF_CH1_V_CFG_00, VPIF_CH1_V_CFG_01,
 		VPIF_CH1_V_CFG_02, VPIF_CH1_V_CFG_03, VPIF_CH1_CTRL,
 		VPIF_CH1_IMG_ADD_OFST, 0, 0, 0, 0, 0x1FFF, 0xFFF,
 		VPIF_CH1_MAX_MODES,
 	},
-	/* Channel2 */
+	 
 	{
 		VPIF_CH2_H_CFG, VPIF_CH2_V_CFG_00, VPIF_CH2_V_CFG_01,
 		VPIF_CH2_V_CFG_02, VPIF_CH2_V_CFG_03, VPIF_CH2_CTRL,
@@ -273,7 +252,7 @@ static const struct vpif_registers vpifregs[VPIF_NUM_CHANNELS] = {
 		VPIF_CH2_VANC1_STRT, VPIF_CH2_VANC1_SIZE, 0x7FF, 0x7FF,
 		VPIF_CH2_MAX_MODES
 	},
-	/* Channel3 */
+	 
 	{
 		VPIF_CH3_H_CFG, VPIF_CH3_V_CFG_00, VPIF_CH3_V_CFG_01,
 		VPIF_CH3_V_CFG_02, VPIF_CH3_V_CFG_03, VPIF_CH3_CTRL,
@@ -283,11 +262,7 @@ static const struct vpif_registers vpifregs[VPIF_NUM_CHANNELS] = {
 	},
 };
 
-/* vpif_set_mode_info:
- * This function is used to set horizontal and vertical config parameters
- * As per the standard in the channel, configure the values of L1, L3,
- * L5, L7  L9, L11 in VPIF Register , also write width and height
- */
+ 
 static void vpif_set_mode_info(const struct vpif_channel_config_params *config,
 				u8 channel_id, u8 config_channel_id)
 {
@@ -317,11 +292,7 @@ static void vpif_set_mode_info(const struct vpif_channel_config_params *config,
 	regw(value, vpifregs[channel_id].v_cfg);
 }
 
-/* config_vpif_params
- * Function to set the parameters of a channel
- * Mainly modifies the channel ciontrol register
- * It sets frame format, yc mux mode
- */
+ 
 static void config_vpif_params(struct vpif_params *vpifparams,
 				u8 channel_id, u8 found)
 {
@@ -345,14 +316,14 @@ static void config_vpif_params(struct vpif_params *vpifparams,
 		vpif_wr_bit(reg, VPIF_CH_INPUT_FIELD_FRAME_BIT,
 					vpifparams->video_params.storage_mode);
 
-		/* Set raster scanning SDR Format */
+		 
 		vpif_clr_bit(reg, VPIF_CH_SDR_FMT_BIT);
 		vpif_wr_bit(reg, VPIF_CH_DATA_MODE_BIT, config->capture_format);
 
-		if (channel_id > 1)	/* Set the Pixel enable bit */
+		if (channel_id > 1)	 
 			vpif_set_bit(reg, VPIF_DISPLAY_PIX_EN_BIT);
 		else if (config->capture_format) {
-			/* Set the polarity of various pins */
+			 
 			vpif_wr_bit(reg, VPIF_CH_FID_POLARITY_BIT,
 					vpifparams->iface.fid_pol);
 			vpif_wr_bit(reg, VPIF_CH_V_VALID_POLARITY_BIT,
@@ -361,7 +332,7 @@ static void config_vpif_params(struct vpif_params *vpifparams,
 					vpifparams->iface.hd_pol);
 
 			value = regr(reg);
-			/* Set data width */
+			 
 			value &= ~(0x3u <<
 					VPIF_CH_DATA_WIDTH_BIT);
 			value |= ((vpifparams->params.data_sz) <<
@@ -369,15 +340,13 @@ static void config_vpif_params(struct vpif_params *vpifparams,
 			regw(value, reg);
 		}
 
-		/* Write the pitch in the driver */
+		 
 		regw((vpifparams->video_params.hpitch),
 						vpifregs[i].line_offset);
 	}
 }
 
-/* vpif_set_video_params
- * This function is used to set video parameters in VPIF register
- */
+ 
 int vpif_set_video_params(struct vpif_params *vpifparams, u8 channel_id)
 {
 	const struct vpif_channel_config_params *config = &vpifparams->std_info;
@@ -385,7 +354,7 @@ int vpif_set_video_params(struct vpif_params *vpifparams, u8 channel_id)
 
 	vpif_set_mode_info(config, channel_id, channel_id);
 	if (!config->ycmux_mode) {
-		/* YC are on separate channels (HDTV formats) */
+		 
 		vpif_set_mode_info(config, channel_id + 1, channel_id);
 		found = 2;
 	}
@@ -459,22 +428,14 @@ static int vpif_probe(struct platform_device *pdev)
 	pm_runtime_enable(&pdev->dev);
 	pm_runtime_get(&pdev->dev);
 
-	/*
-	 * If VPIF Node has endpoints, assume "new" DT support,
-	 * where capture and display drivers don't have DT nodes
-	 * so their devices need to be registered manually here
-	 * for their legacy platform_drivers to work.
-	 */
+	 
 	endpoint = of_graph_get_next_endpoint(pdev->dev.of_node,
 					      endpoint);
 	if (!endpoint)
 		return 0;
 	of_node_put(endpoint);
 
-	/*
-	 * For DT platforms, manually create platform_devices for
-	 * capture/display drivers.
-	 */
+	 
 	irq = platform_get_irq(pdev, 0);
 	if (irq < 0) {
 		ret = irq;
@@ -579,7 +540,7 @@ static const struct dev_pm_ops vpif_pm = {
 #if IS_ENABLED(CONFIG_OF)
 static const struct of_device_id vpif_of_match[] = {
 	{ .compatible = "ti,da850-vpif", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, vpif_of_match);
 #endif

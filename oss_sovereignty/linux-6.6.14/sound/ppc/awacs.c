@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * PMac AWACS lowlevel functions
- *
- * Copyright (c) by Takashi Iwai <tiwai@suse.de>
- * code based on dmasound.c.
- */
+
+ 
 
 
 #include <linux/io.h>
@@ -30,7 +25,7 @@ struct awacs_amp {
 
 #define CHECK_CUDA_AMP() (sys_ctrler == SYS_CTRLER_CUDA)
 
-#endif /* PMAC_AMP_AVAIL */
+#endif  
 
 
 static void snd_pmac_screamer_wait(struct snd_pmac *chip)
@@ -45,9 +40,7 @@ static void snd_pmac_screamer_wait(struct snd_pmac *chip)
 	}
 }
 
-/*
- * write AWACS register
- */
+ 
 static void
 snd_pmac_awacs_write(struct snd_pmac *chip, int val)
 {
@@ -78,18 +71,16 @@ snd_pmac_awacs_write_noreg(struct snd_pmac *chip, int reg, int val)
 }
 
 #ifdef CONFIG_PM
-/* Recalibrate chip */
+ 
 static void screamer_recalibrate(struct snd_pmac *chip)
 {
 	if (chip->model != PMAC_SCREAMER)
 		return;
 
-	/* Sorry for the horrible delays... I hope to get that improved
-	 * by making the whole PM process asynchronous in a future version
-	 */
+	 
 	snd_pmac_awacs_write_noreg(chip, 1, chip->awacs_reg[1]);
 	if (chip->manufacturer == 0x1)
-		/* delay for broken crystal part */
+		 
 		msleep(750);
 	snd_pmac_awacs_write_noreg(chip, 1,
 				   chip->awacs_reg[1] | MASK_RECALIBRATE |
@@ -99,13 +90,11 @@ static void screamer_recalibrate(struct snd_pmac *chip)
 }
 
 #else
-#define screamer_recalibrate(chip) /* NOP */
+#define screamer_recalibrate(chip)  
 #endif
 
 
-/*
- * additional callback to set the pcm format
- */
+ 
 static void snd_pmac_awacs_set_format(struct snd_pmac *chip)
 {
 	chip->awacs_reg[1] &= ~MASK_SAMPLERATE;
@@ -114,12 +103,8 @@ static void snd_pmac_awacs_set_format(struct snd_pmac *chip)
 }
 
 
-/*
- * AWACS volume callbacks
- */
-/*
- * volumes: 0-15 stereo
- */
+ 
+ 
 static int snd_pmac_awacs_info_volume(struct snd_kcontrol *kcontrol,
 				      struct snd_ctl_elem_info *uinfo)
 {
@@ -193,9 +178,7 @@ static int snd_pmac_awacs_put_volume(struct snd_kcontrol *kcontrol,
   .put = snd_pmac_awacs_put_volume, \
   .private_value = (xreg) | ((xshift) << 8) | ((xinverted) << 16) }
 
-/*
- * mute master/ogain for AWACS: mono
- */
+ 
 static int snd_pmac_awacs_get_switch(struct snd_kcontrol *kcontrol,
 				     struct snd_ctl_elem_value *ucontrol)
 {
@@ -246,12 +229,7 @@ static int snd_pmac_awacs_put_switch(struct snd_kcontrol *kcontrol,
 
 
 #ifdef PMAC_AMP_AVAIL
-/*
- * controls for perch/whisper extension cards, e.g. G3 desktop
- *
- * TDA7433 connected via i2c address 0x45 (= 0x8a),
- * accessed through cuda
- */
+ 
 static void awacs_set_cuda(int reg, int val)
 {
 	struct adb_request req;
@@ -261,9 +239,7 @@ static void awacs_set_cuda(int reg, int val)
 		cuda_poll();
 }
 
-/*
- * level = 0 - 14, 7 = 0 dB
- */
+ 
 static void awacs_amp_set_tone(struct awacs_amp *amp, int bass, int treble)
 {
 	amp->amp_tone[0] = bass;
@@ -275,9 +251,7 @@ static void awacs_amp_set_tone(struct awacs_amp *amp, int bass, int treble)
 	awacs_set_cuda(2, (bass << 4) | treble);
 }
 
-/*
- * vol = 0 - 31 (attenuation), 32 = mute bit, stereo
- */
+ 
 static int awacs_amp_set_vol(struct awacs_amp *amp, int index,
 			     int lvol, int rvol, int do_check)
 {
@@ -291,9 +265,7 @@ static int awacs_amp_set_vol(struct awacs_amp *amp, int index,
 	return 1;
 }
 
-/*
- * 0 = -79 dB, 79 = 0 dB, 99 = +20 dB
- */
+ 
 static void awacs_amp_set_master(struct awacs_amp *amp, int vol)
 {
 	amp->amp_master = vol;
@@ -315,9 +287,7 @@ static void awacs_amp_free(struct snd_pmac *chip)
 }
 
 
-/*
- * mixer controls
- */
+ 
 static int snd_pmac_awacs_info_volume_amp(struct snd_kcontrol *kcontrol,
 					  struct snd_ctl_elem_info *uinfo)
 {
@@ -520,12 +490,10 @@ static const struct snd_kcontrol_new snd_pmac_awacs_amp_spk_sw = {
 	.private_value = AMP_CH_SPK,
 };
 
-#endif /* PMAC_AMP_AVAIL */
+#endif  
 
 
-/*
- * mic boost for screamer
- */
+ 
 static int snd_pmac_screamer_mic_boost_info(struct snd_kcontrol *kcontrol,
 					    struct snd_ctl_elem_info *uinfo)
 {
@@ -580,13 +548,11 @@ static int snd_pmac_screamer_mic_boost_put(struct snd_kcontrol *kcontrol,
 	return changed;
 }
 
-/*
- * lists of mixer elements
- */
+ 
 static const struct snd_kcontrol_new snd_pmac_awacs_mixers[] = {
 	AWACS_SWITCH("Master Capture Switch", 1, SHIFT_LOOPTHRU, 0),
 	AWACS_VOLUME("Master Capture Volume", 0, 4, 0),
-/*	AWACS_SWITCH("Unknown Playback Switch", 6, SHIFT_PAROUT0, 0), */
+ 
 };
 
 static const struct snd_kcontrol_new snd_pmac_screamer_mixers_beige[] = {
@@ -627,9 +593,7 @@ static const struct snd_kcontrol_new snd_pmac_awacs_mixers_pmac[] = {
 	AWACS_SWITCH("CD Capture Switch", 0, SHIFT_MUX_CD, 0),
 };
 
-/* FIXME: is this correct order?
- * screamer (powerbook G3 pismo) seems to have different bits...
- */
+ 
 static const struct snd_kcontrol_new snd_pmac_awacs_mixers2[] = {
 	AWACS_SWITCH("Line Capture Switch", 0, SHIFT_MUX_LINE, 0),
 	AWACS_SWITCH("Mic Capture Switch", 0, SHIFT_MUX_MIC, 0),
@@ -697,9 +661,7 @@ static const struct snd_kcontrol_new snd_pmac_awacs_speaker_sw_imac2 =
 AWACS_SWITCH("Speaker Playback Switch", 1, SHIFT_PAROUT1, 0);
 
 
-/*
- * add new mixer elements to the card
- */
+ 
 static int build_mixers(struct snd_pmac *chip, int nums,
 			const struct snd_kcontrol_new *mixers)
 {
@@ -714,9 +676,7 @@ static int build_mixers(struct snd_pmac *chip, int nums,
 }
 
 
-/*
- * restore all registers
- */
+ 
 static void awacs_restore_all_regs(struct snd_pmac *chip)
 {
 	snd_pmac_awacs_write_noreg(chip, 0, chip->awacs_reg[0]);
@@ -749,7 +709,7 @@ static void snd_pmac_awacs_resume(struct snd_pmac *chip)
 
 	awacs_restore_all_regs(chip);
 	if (chip->model == PMAC_SCREAMER) {
-		/* reset power bits in reg 6 */
+		 
 		mdelay(5);
 		snd_pmac_awacs_write_noreg(chip, 6, chip->awacs_reg[6]);
 	}
@@ -766,7 +726,7 @@ static void snd_pmac_awacs_resume(struct snd_pmac *chip)
 	}
 #endif
 }
-#endif /* CONFIG_PM */
+#endif  
 
 #define IS_PM7500 (of_machine_is_compatible("AAPL,7500") \
 		|| of_machine_is_compatible("AAPL,8500") \
@@ -782,9 +742,7 @@ static void snd_pmac_awacs_resume(struct snd_pmac *chip)
 static int imac1, imac2;
 
 #ifdef PMAC_SUPPORT_AUTOMUTE
-/*
- * auto-mute stuffs
- */
+ 
 static int snd_pmac_awacs_detect_headphone(struct snd_pmac *chip)
 {
 	return (in_le32(&chip->awacs->codec_stat) & chip->hp_stat_mask) ? 1 : 0;
@@ -854,12 +812,10 @@ static void snd_pmac_awacs_update_automute(struct snd_pmac *chip, int do_notify)
 		}
 	}
 }
-#endif /* PMAC_SUPPORT_AUTOMUTE */
+#endif  
 
 
-/*
- * initialize chip
- */
+ 
 int
 snd_pmac_awacs_init(struct snd_pmac *chip)
 {
@@ -876,27 +832,25 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 	imac1 = IS_IMAC1;
 	imac2 = IS_IMAC2;
 	imac = imac1 || imac2;
-	/* looks like MASK_GAINLINE triggers something, so we set here
-	 * as start-up
-	 */
+	 
 	chip->awacs_reg[0] = MASK_MUX_CD | 0xff | MASK_GAINLINE;
 	chip->awacs_reg[1] = MASK_CMUTE | MASK_AMUTE;
-	/* FIXME: Only machines with external SRS module need MASK_PAROUT */
+	 
 	if (chip->has_iic || chip->device_id == 0x5 ||
-	    /* chip->_device_id == 0x8 || */
+	     
 	    chip->device_id == 0xb)
 		chip->awacs_reg[1] |= MASK_PAROUT;
-	/* get default volume from nvram */
-	// vol = (~nvram_read_byte(0x1308) & 7) << 1;
-	// vol = ((pmac_xpram_read( 8 ) & 7 ) << 1 );
-	vol = 0x0f; /* no, on alsa, muted as default */
+	 
+	
+	
+	vol = 0x0f;  
 	vol = vol + (vol << 6);
 	chip->awacs_reg[2] = vol;
 	chip->awacs_reg[4] = vol;
 	if (chip->model == PMAC_SCREAMER) {
-		/* FIXME: screamer has loopthru vol control */
+		 
 		chip->awacs_reg[5] = vol;
-		/* FIXME: maybe should be vol << 3 for PCMCIA speaker */
+		 
 		chip->awacs_reg[6] = MASK_MIC_BOOST;
 		chip->awacs_reg[7] = 0;
 	}
@@ -913,16 +867,16 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 			return -ENOMEM;
 		chip->mixer_data = amp;
 		chip->mixer_free = awacs_amp_free;
-		/* mute and zero vol */
+		 
 		awacs_amp_set_vol(amp, 0, 63, 63, 0);
 		awacs_amp_set_vol(amp, 1, 63, 63, 0);
-		awacs_amp_set_tone(amp, 7, 7); /* 0 dB */
-		awacs_amp_set_master(amp, 79); /* 0 dB */
+		awacs_amp_set_tone(amp, 7, 7);  
+		awacs_amp_set_master(amp, 79);  
 	}
-#endif /* PMAC_AMP_AVAIL */
+#endif  
 
 	if (chip->hp_stat_mask == 0) {
-		/* set headphone-jack detection bit */
+		 
 		switch (chip->model) {
 		case PMAC_AWACS:
 			chip->hp_stat_mask = pm7500 || pm5500 ? MASK_HDPCONN
@@ -953,9 +907,7 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 		}
 	}
 
-	/*
-	 * build mixers
-	 */
+	 
 	strcpy(chip->card->mixername, "PowerMac AWACS");
 
 	err = build_mixers(chip, ARRAY_SIZE(snd_pmac_awacs_mixers),
@@ -1021,17 +973,12 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 		return err;
 #ifdef PMAC_AMP_AVAIL
 	if (chip->mixer_data) {
-		/* use amplifier.  the signal is connected from route A
-		 * to the amp.  the amp has its headphone and speaker
-		 * volumes and mute switches, so we use them instead of
-		 * screamer registers.
-		 * in this case, it seems the route C is not used.
-		 */
+		 
 		err = build_mixers(chip, ARRAY_SIZE(snd_pmac_awacs_amp_vol),
 					snd_pmac_awacs_amp_vol);
 		if (err < 0)
 			return err;
-		/* overwrite */
+		 
 		chip->master_sw_ctl = snd_ctl_new1(&snd_pmac_awacs_amp_hp_sw,
 							chip);
 		err = snd_ctl_add(chip->card, chip->master_sw_ctl);
@@ -1043,9 +990,9 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 		if (err < 0)
 			return err;
 	} else
-#endif /* PMAC_AMP_AVAIL */
+#endif  
 	{
-		/* route A = headphone, route C = speaker */
+		 
 		err = snd_ctl_add(chip->card,
 		    (speaker_vol = snd_ctl_new1(snd_pmac_awacs_speaker_vol,
 						chip)));
@@ -1110,9 +1057,7 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 	if (err < 0)
 		return err;
 
-	/*
-	 * set lowlevel callbacks
-	 */
+	 
 	chip->set_format = snd_pmac_awacs_set_format;
 #ifdef CONFIG_PM
 	chip->suspend = snd_pmac_awacs_suspend;
@@ -1124,7 +1069,7 @@ snd_pmac_awacs_init(struct snd_pmac *chip)
 		return err;
 	chip->detect_headphone = snd_pmac_awacs_detect_headphone;
 	chip->update_automute = snd_pmac_awacs_update_automute;
-	snd_pmac_awacs_update_automute(chip, 0); /* update the status only */
+	snd_pmac_awacs_update_automute(chip, 0);  
 #endif
 	if (chip->model == PMAC_SCREAMER) {
 		snd_pmac_awacs_write_noreg(chip, 6, chip->awacs_reg[6]);

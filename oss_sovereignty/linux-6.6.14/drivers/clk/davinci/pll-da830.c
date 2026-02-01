@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PLL clock descriptions for TI DA830/OMAP-L137/AM17XX
- *
- * Copyright (C) 2018 David Lechner <david@lechnology.com>
- */
+
+ 
 
 #include <linux/clkdev.h>
 #include <linux/clk/davinci.h>
@@ -23,12 +19,7 @@ static const struct davinci_pll_clk_info da830_pll_info = {
 	.flags = PLL_HAS_CLKMODE | PLL_HAS_PREDIV | PLL_HAS_POSTDIV,
 };
 
-/*
- * NB: Technically, the clocks flagged as SYSCLK_FIXED_DIV are "fixed ratio",
- * meaning that we could change the divider as long as we keep the correct
- * ratio between all of the clocks, but we don't support that because there is
- * currently not a need for it.
- */
+ 
 
 SYSCLK(2, pll0_sysclk2, pll0_pllen, 5, SYSCLK_FIXED_DIV);
 SYSCLK(3, pll0_sysclk3, pll0_pllen, 5, 0);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * virtio-snd: Virtio sound device
- * Copyright (C) 2021 OpenSynergy GmbH
- */
+
+ 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
 #include <linux/virtio_config.h>
@@ -17,15 +14,7 @@ MODULE_PARM_DESC(msg_timeout_ms, "Message completion timeout in milliseconds");
 
 static void virtsnd_remove(struct virtio_device *vdev);
 
-/**
- * virtsnd_event_send() - Add an event to the event queue.
- * @vqueue: Underlying event virtqueue.
- * @event: Event.
- * @notify: Indicates whether or not to send a notification to the device.
- * @gfp: Kernel flags for memory allocation.
- *
- * Context: Any context.
- */
+ 
 static void virtsnd_event_send(struct virtqueue *vqueue,
 			       struct virtio_snd_event *event, bool notify,
 			       gfp_t gfp)
@@ -33,7 +22,7 @@ static void virtsnd_event_send(struct virtqueue *vqueue,
 	struct scatterlist sg;
 	struct scatterlist *psgs[1] = { &sg };
 
-	/* reset event content */
+	 
 	memset(event, 0, sizeof(*event));
 
 	sg_init_one(&sg, event, sizeof(*event));
@@ -45,13 +34,7 @@ static void virtsnd_event_send(struct virtqueue *vqueue,
 		virtqueue_notify(vqueue);
 }
 
-/**
- * virtsnd_event_dispatch() - Dispatch an event from the device side.
- * @snd: VirtIO sound device.
- * @event: VirtIO sound event.
- *
- * Context: Any context.
- */
+ 
 static void virtsnd_event_dispatch(struct virtio_snd *snd,
 				   struct virtio_snd_event *event)
 {
@@ -67,15 +50,7 @@ static void virtsnd_event_dispatch(struct virtio_snd *snd,
 	}
 }
 
-/**
- * virtsnd_event_notify_cb() - Dispatch all reported events from the event queue.
- * @vqueue: Underlying event virtqueue.
- *
- * This callback function is called upon a vring interrupt request from the
- * device.
- *
- * Context: Interrupt context.
- */
+ 
 static void virtsnd_event_notify_cb(struct virtqueue *vqueue)
 {
 	struct virtio_snd *snd = vqueue->vdev->priv;
@@ -97,15 +72,7 @@ static void virtsnd_event_notify_cb(struct virtqueue *vqueue)
 	spin_unlock_irqrestore(&queue->lock, flags);
 }
 
-/**
- * virtsnd_find_vqs() - Enumerate and initialize all virtqueues.
- * @snd: VirtIO sound device.
- *
- * After calling this function, the event queue is disabled.
- *
- * Context: Any context.
- * Return: 0 on success, -errno on failure.
- */
+ 
 static int virtsnd_find_vqs(struct virtio_snd *snd)
 {
 	struct virtio_device *vdev = snd->vdev;
@@ -136,7 +103,7 @@ static int virtsnd_find_vqs(struct virtio_snd *snd)
 	for (i = 0; i < VIRTIO_SND_VQ_MAX; ++i)
 		snd->queues[i].vqueue = vqs[i];
 
-	/* Allocate events and populate the event queue */
+	 
 	virtqueue_disable_cb(vqs[VIRTIO_SND_VQ_EVENT]);
 
 	n = virtqueue_get_vring_size(vqs[VIRTIO_SND_VQ_EVENT]);
@@ -153,12 +120,7 @@ static int virtsnd_find_vqs(struct virtio_snd *snd)
 	return 0;
 }
 
-/**
- * virtsnd_enable_event_vq() - Enable the event virtqueue.
- * @snd: VirtIO sound device.
- *
- * Context: Any context.
- */
+ 
 static void virtsnd_enable_event_vq(struct virtio_snd *snd)
 {
 	struct virtio_snd_queue *queue = virtsnd_event_queue(snd);
@@ -167,12 +129,7 @@ static void virtsnd_enable_event_vq(struct virtio_snd *snd)
 		virtsnd_event_notify_cb(queue->vqueue);
 }
 
-/**
- * virtsnd_disable_event_vq() - Disable the event virtqueue.
- * @snd: VirtIO sound device.
- *
- * Context: Any context.
- */
+ 
 static void virtsnd_disable_event_vq(struct virtio_snd *snd)
 {
 	struct virtio_snd_queue *queue = virtsnd_event_queue(snd);
@@ -189,13 +146,7 @@ static void virtsnd_disable_event_vq(struct virtio_snd *snd)
 	}
 }
 
-/**
- * virtsnd_build_devs() - Read configuration and build ALSA devices.
- * @snd: VirtIO sound device.
- *
- * Context: Any context that permits to sleep.
- * Return: 0 on success, -errno on failure.
- */
+ 
 static int virtsnd_build_devs(struct virtio_snd *snd)
 {
 	struct virtio_device *vdev = snd->vdev;
@@ -256,13 +207,7 @@ static int virtsnd_build_devs(struct virtio_snd *snd)
 	return snd_card_register(snd->card);
 }
 
-/**
- * virtsnd_validate() - Validate if the device can be started.
- * @vdev: VirtIO parent device.
- *
- * Context: Any context.
- * Return: 0 on success, -EINVAL on failure.
- */
+ 
 static int virtsnd_validate(struct virtio_device *vdev)
 {
 	if (!vdev->config->get) {
@@ -287,13 +232,7 @@ static int virtsnd_validate(struct virtio_device *vdev)
 	return 0;
 }
 
-/**
- * virtsnd_probe() - Create and initialize the device.
- * @vdev: VirtIO parent device.
- *
- * Context: Any context that permits to sleep.
- * Return: 0 on success, -errno on failure.
- */
+ 
 static int virtsnd_probe(struct virtio_device *vdev)
 {
 	struct virtio_snd *snd;
@@ -332,12 +271,7 @@ on_exit:
 	return rc;
 }
 
-/**
- * virtsnd_remove() - Remove VirtIO and ALSA devices.
- * @vdev: VirtIO parent device.
- *
- * Context: Any context that permits to sleep.
- */
+ 
 static void virtsnd_remove(struct virtio_device *vdev)
 {
 	struct virtio_snd *snd = vdev->priv;
@@ -363,13 +297,7 @@ static void virtsnd_remove(struct virtio_device *vdev)
 }
 
 #ifdef CONFIG_PM_SLEEP
-/**
- * virtsnd_freeze() - Suspend device.
- * @vdev: VirtIO parent device.
- *
- * Context: Any context.
- * Return: 0 on success, -errno on failure.
- */
+ 
 static int virtsnd_freeze(struct virtio_device *vdev)
 {
 	struct virtio_snd *snd = vdev->priv;
@@ -390,13 +318,7 @@ static int virtsnd_freeze(struct virtio_device *vdev)
 	return 0;
 }
 
-/**
- * virtsnd_restore() - Resume device.
- * @vdev: VirtIO parent device.
- *
- * Context: Any context.
- * Return: 0 on success, -errno on failure.
- */
+ 
 static int virtsnd_restore(struct virtio_device *vdev)
 {
 	struct virtio_snd *snd = vdev->priv;
@@ -412,7 +334,7 @@ static int virtsnd_restore(struct virtio_device *vdev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct virtio_device_id id_table[] = {
 	{ VIRTIO_ID_SOUND, VIRTIO_DEV_ANY_ID },

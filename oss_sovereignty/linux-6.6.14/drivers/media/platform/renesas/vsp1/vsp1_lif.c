@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * vsp1_lif.c  --  R-Car VSP1 LCD Controller Interface
- *
- * Copyright (C) 2013-2014 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -19,9 +13,7 @@
 #define LIF_MIN_SIZE				2U
 #define LIF_MAX_SIZE				8190U
 
-/* -----------------------------------------------------------------------------
- * Device Access
- */
+ 
 
 static inline void vsp1_lif_write(struct vsp1_lif *lif,
 				  struct vsp1_dl_body *dlb, u32 reg, u32 data)
@@ -30,9 +22,7 @@ static inline void vsp1_lif_write(struct vsp1_lif *lif,
 			       data);
 }
 
-/* -----------------------------------------------------------------------------
- * V4L2 Subdevice Operations
- */
+ 
 
 static const unsigned int lif_codes[] = {
 	MEDIA_BUS_FMT_ARGB8888_1X32,
@@ -79,9 +69,7 @@ static const struct v4l2_subdev_ops lif_ops = {
 	.pad    = &lif_pad_ops,
 };
 
-/* -----------------------------------------------------------------------------
- * VSP1 Entity Operations
- */
+ 
 
 static void lif_configure_stream(struct vsp1_entity *entity,
 				 struct vsp1_pipeline *pipe,
@@ -131,12 +119,7 @@ static void lif_configure_stream(struct vsp1_entity *entity,
 			(format->code == 0 ? VI6_LIF_CTRL_CFMT : 0) |
 			VI6_LIF_CTRL_REQSEL | VI6_LIF_CTRL_LIF_EN);
 
-	/*
-	 * On R-Car V3M and RZ/G2L the LIF0 buffer attribute register has to be
-	 * set to a non-default value to guarantee proper operation (otherwise
-	 * artifacts may appear on the output). The value required by the
-	 * manual is not explained but is likely a buffer size or threshold.
-	 */
+	 
 	if (vsp1_feature(entity->vsp1, VSP1_HAS_NON_ZERO_LBA))
 		vsp1_lif_write(lif, dlb, VI6_LIF_LBA,
 			       VI6_LIF_LBA_LBA0 |
@@ -147,9 +130,7 @@ static const struct vsp1_entity_operations lif_entity_ops = {
 	.configure_stream = lif_configure_stream,
 };
 
-/* -----------------------------------------------------------------------------
- * Initialization and Cleanup
- */
+ 
 
 struct vsp1_lif *vsp1_lif_create(struct vsp1_device *vsp1, unsigned int index)
 {
@@ -164,11 +145,7 @@ struct vsp1_lif *vsp1_lif_create(struct vsp1_device *vsp1, unsigned int index)
 	lif->entity.type = VSP1_ENTITY_LIF;
 	lif->entity.index = index;
 
-	/*
-	 * The LIF is never exposed to userspace, but media entity registration
-	 * requires a function to be set. Use PROC_VIDEO_PIXEL_FORMATTER just to
-	 * avoid triggering a WARN_ON(), the value won't be seen anywhere.
-	 */
+	 
 	ret = vsp1_entity_init(vsp1, &lif->entity, "lif", 2, &lif_ops,
 			       MEDIA_ENT_F_PROC_VIDEO_PIXEL_FORMATTER);
 	if (ret < 0)

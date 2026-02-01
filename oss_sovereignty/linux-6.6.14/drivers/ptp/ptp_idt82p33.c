@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 Integrated Device Technology, Inc
-//
+
+
+
+
 
 #define pr_fmt(fmt) "IDT_82p33xxx: " fmt
 
@@ -29,7 +29,7 @@ MODULE_FIRMWARE(FW_FILENAME);
 
 #define EXTTS_PERIOD_MS (95)
 
-/* Module Parameters */
+ 
 static u32 phase_snap_threshold = SNAP_THRESHOLD_NS;
 module_param(phase_snap_threshold, uint, 0);
 MODULE_PARM_DESC(phase_snap_threshold,
@@ -164,7 +164,7 @@ static int idt82p33_get_extts(struct idt82p33_channel *channel,
 	if (err)
 		return err;
 
-	/* Since trigger is not self clearing itself, we have to poll tod_sts */
+	 
 	if (memcmp(buf, channel->extts_tod_sts, TOD_BYTE_COUNT) == 0)
 		return -EAGAIN;
 
@@ -203,7 +203,7 @@ static int map_ref_to_tod_trig_sel(int ref, u8 *trigger)
 
 static bool is_one_shot(u8 mask)
 {
-	/* Treat single bit PLL masks as continuous trigger */
+	 
 	if ((mask == 1) || (mask == 2))
 		return false;
 	else
@@ -216,7 +216,7 @@ static int arm_tod_read_with_trigger(struct idt82p33_channel *channel, u8 trigge
 	u8 buf[TOD_BYTE_COUNT];
 	int err;
 
-	/* Remember the current tod_sts before setting the trigger */
+	 
 	err = idt82p33_read(idt82p33, channel->dpll_tod_sts, buf, sizeof(buf));
 
 	if (err)
@@ -246,14 +246,14 @@ static int idt82p33_extts_enable(struct idt82p33_channel *channel,
 	idt82p33  = channel->idt82p33;
 	old_mask = idt82p33->extts_mask;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
 				PTP_RISING_EDGE |
 				PTP_FALLING_EDGE |
 				PTP_STRICT_FLAGS))
 		return -EOPNOTSUPP;
 
-	/* Reject requests to enable time stamping on falling edge */
+	 
 	if ((rq->extts.flags & PTP_ENABLE_FEATURE) &&
 	    (rq->extts.flags & PTP_FALLING_EDGE))
 		return -EOPNOTSUPP;
@@ -262,11 +262,11 @@ static int idt82p33_extts_enable(struct idt82p33_channel *channel,
 		return -EINVAL;
 
 	if (on) {
-		/* Return if it was already enabled */
+		 
 		if (idt82p33->extts_mask & mask)
 			return 0;
 
-		/* Use the pin configured for the channel */
+		 
 		ref = ptp_find_pin(channel->ptp_clock, PTP_PF_EXTTS, channel->plln);
 
 		if (ref < 0) {
@@ -357,7 +357,7 @@ static u8 idt82p33_extts_enable_mask(struct idt82p33_channel *channel,
 		} else {
 			err = idt82p33_extts_check_channel(idt82p33, i);
 			if (err == 0 && idt82p33->extts_single_shot)
-				/* trigger happened so we won't re-enable it */
+				 
 				extts_mask &= ~mask;
 		}
 	}
@@ -378,7 +378,7 @@ static int _idt82p33_gettime(struct idt82p33_channel *channel,
 	u8 new_mask = 0;
 	int err;
 
-	/* Disable extts */
+	 
 	if (old_mask)
 		new_mask = idt82p33_extts_enable_mask(channel, old_mask, false);
 
@@ -397,7 +397,7 @@ static int _idt82p33_gettime(struct idt82p33_channel *channel,
 	if (err)
 		return err;
 
-	/* Re-enable extts */
+	 
 	if (new_mask)
 		idt82p33_extts_enable_mask(channel, new_mask, true);
 
@@ -406,11 +406,7 @@ static int _idt82p33_gettime(struct idt82p33_channel *channel,
 	return 0;
 }
 
-/*
- *   TOD Trigger:
- *   Bits[7:4] Write 0x9, MSB write
- *   Bits[3:0] Read 0x9, LSB read
- */
+ 
 
 static int _idt82p33_settime(struct idt82p33_channel *channel,
 			     struct timespec64 const *ts)
@@ -440,9 +436,7 @@ static int _idt82p33_settime(struct idt82p33_channel *channel,
 
 	idt82p33_timespec_to_byte_array(&local_ts, buf);
 
-	/*
-	 * Store the new time value.
-	 */
+	 
 	for (i = 0; i < TOD_BYTE_COUNT; i++) {
 		err = idt82p33_write(idt82p33, channel->dpll_tod_cnfg + i,
 				     &buf[i], sizeof(buf[i]));
@@ -495,7 +489,7 @@ static int _idt82p33_adjtime_internal_triggered(struct idt82p33_channel *channel
 		return err;
 
 	if (ts.tv_nsec > (NSEC_PER_SEC - 5 * NSEC_PER_MSEC)) {
-		/*  Too close to miss next trigger, so skip it */
+		 
 		mdelay(6);
 		ns = (ts.tv_sec + 2) * NSEC_PER_SEC + delta_ns + delay_ns;
 	} else
@@ -504,14 +498,12 @@ static int _idt82p33_adjtime_internal_triggered(struct idt82p33_channel *channel
 	ts = ns_to_timespec64(ns);
 	idt82p33_timespec_to_byte_array(&ts, buf);
 
-	/*
-	 * Store the new time value.
-	 */
+	 
 	err = idt82p33_write(idt82p33, channel->dpll_tod_cnfg, buf, sizeof(buf));
 	if (err)
 		return err;
 
-	/* Schedule to implement the workaround in one second */
+	 
 	(void)div_s64_rem(delta_ns, NSEC_PER_SEC, &remainder);
 	if (remainder != 0)
 		schedule_delayed_work(&channel->adjtime_work, HZ);
@@ -527,7 +519,7 @@ static void idt82p33_adjtime_workaround(struct work_struct *work)
 	struct idt82p33 *idt82p33 = channel->idt82p33;
 
 	mutex_lock(idt82p33->lock);
-	/* Workaround for TOD-to-output alignment issue */
+	 
 	_idt82p33_adjtime_internal_triggered(channel, 0);
 	mutex_unlock(idt82p33->lock);
 }
@@ -539,19 +531,7 @@ static int _idt82p33_adjfine(struct idt82p33_channel *channel, long scaled_ppm)
 	int err, i;
 	s64 fcw;
 
-	/*
-	 * Frequency Control Word unit is: 1.6861512 * 10^-10 ppm
-	 *
-	 * adjfreq:
-	 *       ppb * 10^14
-	 * FCW = -----------
-	 *         16861512
-	 *
-	 * adjfine:
-	 *       scaled_ppm * 5^12 * 10^5
-	 * FCW = ------------------------
-	 *            16861512 * 2^4
-	 */
+	 
 
 	fcw = scaled_ppm * 762939453125ULL;
 	fcw = div_s64(fcw, 8430756LL);
@@ -572,7 +552,7 @@ static int _idt82p33_adjfine(struct idt82p33_channel *channel, long scaled_ppm)
 	return err;
 }
 
-/* ppb = scaled_ppm * 125 / 2^13 */
+ 
 static s32 idt82p33_ddco_scaled_ppm(long current_ppm, s32 ddco_ppb)
 {
 	s64 scaled_ppm = div_s64(((s64)ddco_ppb << 13), 125);
@@ -608,14 +588,11 @@ static int idt82p33_start_ddco(struct idt82p33_channel *channel, s32 delta_ns)
 	s32 ppb;
 	int err;
 
-	/* If the ToD correction is less than 5 nanoseconds, then skip it.
-	 * The error introduced by the ToD adjustment procedure would be bigger
-	 * than the required ToD correction
-	 */
+	 
 	if (abs(delta_ns) < DDCO_THRESHOLD_NS)
 		return 0;
 
-	/* For most cases, keep ddco duration 1 second */
+	 
 	ppb = delta_ns;
 	while (abs(ppb) > DCO_MAX_PPB) {
 		duration_ms *= 2;
@@ -627,7 +604,7 @@ static int idt82p33_start_ddco(struct idt82p33_channel *channel, s32 delta_ns)
 	if (err)
 		return err;
 
-	/* schedule the worker to cancel ddco */
+	 
 	ptp_schedule_worker(channel->ptp_clock,
 			    msecs_to_jiffies(duration_ms) - 1);
 	channel->ddco = true;
@@ -718,7 +695,7 @@ static int idt82p33_measure_tod_write_9_byte_overhead(
 
 		start = ktime_get_raw();
 
-		/* Need one less byte for applicable overhead */
+		 
 		for (j = 0; j < (TOD_BYTE_COUNT - 1); j++) {
 			err = idt82p33_write(idt82p33,
 					     channel->dpll_tod_cnfg + i,
@@ -873,7 +850,7 @@ static long idt82p33_work_handler(struct ptp_clock_info *ptp)
 	(void)idt82p33_stop_ddco(channel);
 	mutex_unlock(idt82p33->lock);
 
-	/* Return a negative value here to not reschedule */
+	 
 	return -1;
 }
 
@@ -899,7 +876,7 @@ static int idt82p33_perout_enable(struct idt82p33_channel *channel,
 				  bool enable,
 				  struct ptp_perout_request *perout)
 {
-	/* Enable/disable individual output instead */
+	 
 	return idt82p33_output_enable(channel, enable, perout->index);
 }
 
@@ -955,7 +932,7 @@ static int idt82p33_enable(struct ptp_clock_info *ptp,
 		if (!on)
 			err = idt82p33_perout_enable(channel, false,
 						     &rq->perout);
-		/* Only accept a 1-PPS aligned to the second. */
+		 
 		else if (rq->perout.start.nsec || rq->perout.period.sec != 1 ||
 			 rq->perout.period.nsec)
 			err = -ERANGE;
@@ -992,7 +969,7 @@ static int idt82p33_adjwritephase(struct ptp_clock_info *ptp, s32 offset_ns)
 	u8 val[4] = {0};
 	int err;
 
-	/* Convert from phaseoffset_fs to register value */
+	 
 	offset_regval = div_s64((s64)(-offset_ns) * 1000000000ll,
 				IDT_T0DPLL_PHASE_RESOL);
 
@@ -1063,7 +1040,7 @@ static int idt82p33_adjtime(struct ptp_clock_info *ptp, s64 delta_ns)
 		return err;
 	}
 
-	/* Use more accurate internal 1pps triggered write first */
+	 
 	err = _idt82p33_adjtime_internal_triggered(channel, delta_ns);
 	if (err && delta_ns > IMMEDIATE_SNAP_THRESHOLD_NS)
 		err = _idt82p33_adjtime_immediate(channel, delta_ns);
@@ -1285,7 +1262,7 @@ static int idt82p33_load_firmware(struct idt82p33 *idt82p33)
 	int err;
 	s32 len;
 
-	if (firmware) /* module parameter */
+	if (firmware)  
 		snprintf(fname, sizeof(fname), "%s", firmware);
 
 	dev_info(idt82p33->dev, "requesting firmware '%s'\n", fname);
@@ -1320,7 +1297,7 @@ static int idt82p33_load_firmware(struct idt82p33 *idt82p33)
 		}
 
 		if (err == 0) {
-			/* Page size 128, last 4 bytes of page skipped */
+			 
 			if (loaddr > 0x7b)
 				continue;
 
@@ -1361,11 +1338,11 @@ static void idt82p33_extts_check(struct work_struct *work)
 		err = idt82p33_extts_check_channel(idt82p33, i);
 
 		if (err == 0) {
-			/* trigger clears itself, so clear the mask */
+			 
 			if (idt82p33->extts_single_shot) {
 				idt82p33->extts_mask &= ~mask;
 			} else {
-				/* Re-arm */
+				 
 				channel = &idt82p33->channel[i];
 				arm_tod_read_with_trigger(channel, channel->tod_trigger);
 			}
@@ -1405,7 +1382,7 @@ static int idt82p33_probe(struct platform_device *pdev)
 
 	mutex_lock(idt82p33->lock);
 
-	/* cold reset before loading firmware */
+	 
 	idt82p33_reset(idt82p33, true);
 
 	err = idt82p33_load_firmware(idt82p33);
@@ -1413,7 +1390,7 @@ static int idt82p33_probe(struct platform_device *pdev)
 		dev_warn(idt82p33->dev,
 			 "loading firmware failed with %d\n", err);
 
-	/* soft reset after loading firmware */
+	 
 	idt82p33_reset(idt82p33, false);
 
 	if (idt82p33->pll_mask) {

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (c) 2021 pureLiFi
- */
+ 
+ 
 
 #ifndef PLFXLC_USB_H
 #define PLFXLC_USB_H
@@ -21,12 +19,12 @@
 #define PURELIFI_XC_VENDOR_ID_0  0x2EF5
 #define PURELIFI_XC_PRODUCT_ID_0 0x0008
 #define PURELIFI_XL_VENDOR_ID_0  0x2EF5
-#define PURELIFI_XL_PRODUCT_ID_0 0x000A /* Station */
+#define PURELIFI_XL_PRODUCT_ID_0 0x000A  
 
 #define PLF_FPGA_STATUS_LEN 2
 #define PLF_FPGA_STATE_LEN 9
 #define PLF_BULK_TLEN 16384
-#define PLF_FPGA_MG 6 /* Magic check */
+#define PLF_FPGA_MG 6  
 #define PLF_XL_BUF_LEN 64
 #define PLF_MSG_STATUS_OFFSET 7
 
@@ -37,15 +35,15 @@
 
 #define plfxlc_usb_dev(usb) (&(usb)->intf->dev)
 
-/* Tx retry backoff timer (in milliseconds) */
+ 
 #define TX_RETRY_BACKOFF_MS 10
 #define STA_QUEUE_CLEANUP_MS 5000
 
-/* Tx retry backoff timer (in jiffies) */
+ 
 #define TX_RETRY_BACKOFF_JIFF ((TX_RETRY_BACKOFF_MS * HZ) / 1000)
 #define STA_QUEUE_CLEANUP_JIFF ((STA_QUEUE_CLEANUP_MS * HZ) / 1000)
 
-/* Ensures that MAX_TRANSFER_SIZE is even. */
+ 
 #define MAX_TRANSFER_SIZE (USB_MAX_TRANSFER_SIZE & ~1)
 #define plfxlc_urb_dev(urb) (&(urb)->dev->dev)
 
@@ -64,7 +62,7 @@ enum {
 };
 
 struct plfxlc_usb_interrupt {
-	spinlock_t lock; /* spin lock for usb interrupt buffer */
+	spinlock_t lock;  
 	struct urb *urb;
 	void *buffer;
 	int interval;
@@ -73,8 +71,8 @@ struct plfxlc_usb_interrupt {
 #define RX_URBS_COUNT 5
 
 struct plfxlc_usb_rx {
-	spinlock_t lock; /* spin lock for rx urb */
-	struct mutex setup_mutex; /* mutex lockt for rx urb */
+	spinlock_t lock;  
+	struct mutex setup_mutex;  
 	u8 fragment[2 * USB_MAX_RX_SIZE];
 	unsigned int fragment_length;
 	unsigned int usb_packet_size;
@@ -83,9 +81,7 @@ struct plfxlc_usb_rx {
 };
 
 struct plf_station {
-   /*  7...3    |    2      |     1     |     0	    |
-    * Reserved  | Heartbeat | FIFO full | Connected |
-    */
+    
 	unsigned char flag;
 	unsigned char mac[ETH_ALEN];
 	struct sk_buff_head data_list;
@@ -110,7 +106,7 @@ struct plfxlc_firmware_file {
 
 struct plfxlc_usb_tx {
 	unsigned long enabled;
-	spinlock_t lock; /* spinlock for USB tx */
+	spinlock_t lock;  
 	u8 mac_fifo_full;
 	struct sk_buff_head submitted_skbs;
 	struct usb_anchor submitted;
@@ -120,17 +116,15 @@ struct plfxlc_usb_tx {
 	struct plf_station station[MAX_STA_NUM];
 };
 
-/* Contains the usb parts. The structure doesn't require a lock because intf
- * will not be changed after initialization.
- */
+ 
 struct plfxlc_usb {
 	struct timer_list sta_queue_cleanup;
 	struct plfxlc_usb_rx rx;
 	struct plfxlc_usb_tx tx;
 	struct usb_interface *intf;
 	struct usb_interface *ez_usb;
-	u8 req_buf[64]; /* plfxlc_usb_iowrite16v needs 62 bytes */
-	u8 sidx; /* store last served */
+	u8 req_buf[64];  
+	u8 sidx;  
 	bool rx_usb_enabled;
 	bool initialized;
 	bool was_running;
@@ -187,7 +181,7 @@ int plfxlc_usb_enable_rx(struct plfxlc_usb *usb);
 int plfxlc_usb_init_hw(struct plfxlc_usb *usb);
 const char *plfxlc_speed(enum usb_device_speed speed);
 
-/* Firmware declarations */
+ 
 int plfxlc_download_xl_firmware(struct usb_interface *intf);
 int plfxlc_download_fpga(struct usb_interface *intf);
 
@@ -195,4 +189,4 @@ int plfxlc_upload_mac_and_serial(struct usb_interface *intf,
 				 unsigned char *hw_address,
 				 unsigned char *serial_number);
 
-#endif /* PLFXLC_USB_H */
+#endif  

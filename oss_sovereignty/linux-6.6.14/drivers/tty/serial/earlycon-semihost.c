@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2012 ARM Ltd.
- * Author: Marc Zyngier <marc.zyngier@arm.com>
- *
- * Adapted for ARM and earlycon:
- * Copyright (C) 2014 Linaro Ltd.
- * Author: Rob Herring <robh@kernel.org>
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/console.h>
 #include <linux/init.h>

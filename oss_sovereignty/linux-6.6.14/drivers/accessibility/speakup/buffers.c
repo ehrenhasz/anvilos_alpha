@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/console.h>
 #include <linux/types.h>
 #include <linux/wait.h>
@@ -6,21 +6,14 @@
 #include "speakup.h"
 #include "spk_priv.h"
 
-#define SYNTH_BUF_SIZE 8192	/* currently 8K bytes */
+#define SYNTH_BUF_SIZE 8192	 
 
-static u16 synth_buffer[SYNTH_BUF_SIZE];	/* guess what this is for! */
+static u16 synth_buffer[SYNTH_BUF_SIZE];	 
 static u16 *buff_in = synth_buffer;
 static u16 *buff_out = synth_buffer;
 static u16 *buffer_end = synth_buffer + SYNTH_BUF_SIZE - 1;
 
-/* These try to throttle applications by stopping the TTYs
- * Note: we need to make sure that we will restart them eventually, which is
- * usually not possible to do from the notifiers. TODO: it should be possible
- * starting from linux 2.6.26.
- *
- * So we only stop when we know alive == 1 (else we discard the data anyway),
- * and the alive synth will eventually call start_ttys from the thread context.
- */
+ 
 void speakup_start_ttys(void)
 {
 	int i;
@@ -63,9 +56,7 @@ EXPORT_SYMBOL_GPL(synth_buffer_empty);
 void synth_buffer_add(u16 ch)
 {
 	if (!synth->alive) {
-		/* This makes sure that we won't stop TTYs if there is no synth
-		 * to restart them
-		 */
+		 
 		return;
 	}
 	if (synth_buffer_free() <= 100) {
@@ -77,9 +68,7 @@ void synth_buffer_add(u16 ch)
 	*buff_in++ = ch;
 	if (buff_in > buffer_end)
 		buff_in = synth_buffer;
-	/* We have written something to the speech synthesis, so we are not
-	 * paused any more.
-	 */
+	 
 	spk_paused = false;
 }
 

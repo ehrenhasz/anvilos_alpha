@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * UEFI Common Platform Error Record (CPER) support for CXL Section.
- *
- * Copyright (C) 2022 Advanced Micro Devices, Inc.
- *
- * Author: Smita Koralahalli <Smita.KoralahalliChannabasappa@amd.com>
- */
+
+ 
 
 #include <linux/cper.h>
 #include "cper_cxl.h"
@@ -18,7 +12,7 @@
 #define PROT_ERR_VALID_DVSEC			BIT_ULL(5)
 #define PROT_ERR_VALID_ERROR_LOG		BIT_ULL(6)
 
-/* CXL RAS Capability Structure, CXL v3.0 sec 8.2.4.16 */
+ 
 struct cxl_ras_capability_regs {
 	u32 uncor_status;
 	u32 uncor_mask;
@@ -40,19 +34,16 @@ static const char * const prot_err_agent_type_strs[] = {
 	"CXL Upstream Switch Port",
 };
 
-/*
- * The layout of the enumeration and the values matches CXL Agent Type
- * field in the UEFI 2.10 Section N.2.13,
- */
+ 
 enum {
-	RCD,	/* Restricted CXL Device */
-	RCH_DP,	/* Restricted CXL Host Downstream Port */
-	DEVICE,	/* CXL Device */
-	LD,	/* CXL Logical Device */
-	FMLD,	/* CXL Fabric Manager managed Logical Device */
-	RP,	/* CXL Root Port */
-	DSP,	/* CXL Downstream Switch Port */
-	USP,	/* CXL Upstream Switch Port */
+	RCD,	 
+	RCH_DP,	 
+	DEVICE,	 
+	LD,	 
+	FMLD,	 
+	RP,	 
+	DSP,	 
+	USP,	 
 };
 
 void cper_print_prot_err(const char *pfx, const struct cper_sec_prot_err *prot_err)
@@ -65,12 +56,7 @@ void cper_print_prot_err(const char *pfx, const struct cper_sec_prot_err *prot_e
 
 	if (prot_err->valid_bits & PROT_ERR_VALID_AGENT_ADDRESS) {
 		switch (prot_err->agent_type) {
-		/*
-		 * According to UEFI 2.10 Section N.2.13, the term CXL Device
-		 * is used to refer to Restricted CXL Device, CXL Device, CXL
-		 * Logical Device or a CXL Fabric Manager Managed Logical
-		 * Device.
-		 */
+		 
 		case RCD:
 		case DEVICE:
 		case LD:

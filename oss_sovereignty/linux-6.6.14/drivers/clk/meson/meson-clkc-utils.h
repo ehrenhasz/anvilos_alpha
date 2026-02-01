@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0+ OR MIT) */
-/*
- * Copyright (c) 2023 Neil Armstrong <neil.armstrong@linaro.org>
- */
+ 
+ 
 
 #ifndef __MESON_CLKC_UTILS_H__
 #define __MESON_CLKC_UTILS_H__

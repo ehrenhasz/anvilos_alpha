@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * An I2C driver for the Intersil ISL 12022
- *
- * Author: Roman Fietze <roman.fietze@telemotive.de>
- *
- * Based on the Philips PCF8563 RTC
- * by Alessandro Zummo <a.zummo@towertech.it>.
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/bitfield.h>
@@ -21,7 +14,7 @@
 
 #include <asm/byteorder.h>
 
-/* ISL register offsets */
+ 
 #define ISL12022_REG_SC		0x00
 #define ISL12022_REG_MN		0x01
 #define ISL12022_REG_HR		0x02
@@ -38,8 +31,8 @@
 #define ISL12022_REG_BETA	0x0d
 #define ISL12022_REG_TEMP_L	0x28
 
-/* ISL register bits */
-#define ISL12022_HR_MIL		(1 << 7)	/* military or 24 hour time */
+ 
+#define ISL12022_HR_MIL		(1 << 7)	 
 
 #define ISL12022_SR_LBAT85	(1 << 2)
 #define ISL12022_SR_LBAT75	(1 << 1)
@@ -64,10 +57,7 @@ static umode_t isl12022_hwmon_is_visible(const void *data,
 	return 0;
 }
 
-/*
- * A user-initiated temperature conversion is not started by this function,
- * so the temperature is updated once every ~60 seconds.
- */
+ 
 static int isl12022_hwmon_read_temp(struct device *dev, long *mC)
 {
 	struct regmap *regmap = dev_get_drvdata(dev);
@@ -77,9 +67,7 @@ static int isl12022_hwmon_read_temp(struct device *dev, long *mC)
 	ret = regmap_bulk_read(regmap, ISL12022_REG_TEMP_L, &buf, sizeof(buf));
 	if (ret)
 		return ret;
-	/*
-	 * Temperature is represented as a 10-bit number, unit half-Kelvins.
-	 */
+	 
 	temp = le16_to_cpu(buf);
 	temp *= 500;
 	temp -= 273000;
@@ -137,10 +125,7 @@ static void isl12022_hwmon_register(struct device *dev)
 		dev_warn(dev, "unable to register hwmon device: %pe\n", hwmon);
 }
 
-/*
- * In the routines that deal directly with the isl12022 hardware, we use
- * rtc_time -- month 0-11, hour 0-23, yr = calendar year-epoch.
- */
+ 
 static int isl12022_rtc_read_time(struct device *dev, struct rtc_time *tm)
 {
 	struct regmap *regmap = dev_get_drvdata(dev);
@@ -184,23 +169,23 @@ static int isl12022_rtc_set_time(struct device *dev, struct rtc_time *tm)
 
 	dev_dbg(dev, "%s: %ptR\n", __func__, tm);
 
-	/* Ensure the write enable bit is set. */
+	 
 	ret = regmap_update_bits(regmap, ISL12022_REG_INT,
 				 ISL12022_INT_WRTC, ISL12022_INT_WRTC);
 	if (ret)
 		return ret;
 
-	/* hours, minutes and seconds */
+	 
 	buf[ISL12022_REG_SC] = bin2bcd(tm->tm_sec);
 	buf[ISL12022_REG_MN] = bin2bcd(tm->tm_min);
 	buf[ISL12022_REG_HR] = bin2bcd(tm->tm_hour) | ISL12022_HR_MIL;
 
 	buf[ISL12022_REG_DT] = bin2bcd(tm->tm_mday);
 
-	/* month, 1 - 12 */
+	 
 	buf[ISL12022_REG_MO] = bin2bcd(tm->tm_mon + 1);
 
-	/* year and century */
+	 
 	buf[ISL12022_REG_YR] = bin2bcd(tm->tm_year % 100);
 
 	buf[ISL12022_REG_DW] = tm->tm_wday & 0x07;
@@ -253,10 +238,7 @@ static int isl12022_register_clock(struct device *dev)
 	int ret;
 
 	if (!device_property_present(dev, "#clock-cells")) {
-		/*
-		 * Disabling the F_OUT pin reduces the power
-		 * consumption in battery mode by ~25%.
-		 */
+		 
 		regmap_update_bits(regmap, ISL12022_REG_INT, ISL12022_INT_FO_MASK,
 				   ISL12022_INT_FO_OFF);
 
@@ -266,9 +248,7 @@ static int isl12022_register_clock(struct device *dev)
 	if (!IS_ENABLED(CONFIG_COMMON_CLK))
 		return 0;
 
-	/*
-	 * For now, only support a fixed clock of 32768Hz (the reset default).
-	 */
+	 
 	ret = regmap_update_bits(regmap, ISL12022_REG_INT,
 				 ISL12022_INT_FO_MASK, ISL12022_INT_FO_32K);
 	if (ret)
@@ -312,13 +292,7 @@ static void isl12022_set_trip_levels(struct device *dev)
 	if (ret)
 		dev_warn(dev, "unable to set battery alarm levels: %d\n", ret);
 
-	/*
-	 * Force a write of the TSE bit in the BETA register, in order
-	 * to trigger an update of the LBAT75 and LBAT85 bits in the
-	 * status register. In battery backup mode, those bits have
-	 * another meaning, so without this, they may contain stale
-	 * values for up to a minute after power-on.
-	 */
+	 
 	regmap_write_bits(regmap, ISL12022_REG_BETA,
 			  ISL12022_BETA_TSE, ISL12022_BETA_TSE);
 }
@@ -359,7 +333,7 @@ static int isl12022_probe(struct i2c_client *client)
 }
 
 static const struct of_device_id isl12022_dt_match[] = {
-	{ .compatible = "isl,isl12022" }, /* for backward compat., don't use */
+	{ .compatible = "isl,isl12022" },  
 	{ .compatible = "isil,isl12022" },
 	{ },
 };

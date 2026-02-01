@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2015 Broadcom Corporation
+
+
 
 #include <linux/delay.h>
 #include <linux/io.h>
@@ -20,25 +20,14 @@ enum cygnus_pcie_phy_id {
 
 struct cygnus_pcie_phy_core;
 
-/**
- * struct cygnus_pcie_phy - Cygnus PCIe PHY device
- * @core: pointer to the Cygnus PCIe PHY core control
- * @id: internal ID to identify the Cygnus PCIe PHY
- * @phy: pointer to the kernel PHY device
- */
+ 
 struct cygnus_pcie_phy {
 	struct cygnus_pcie_phy_core *core;
 	enum cygnus_pcie_phy_id id;
 	struct phy *phy;
 };
 
-/**
- * struct cygnus_pcie_phy_core - Cygnus PCIe PHY core control
- * @dev: pointer to device
- * @base: base register
- * @lock: mutex to protect access to individual PHYs
- * @phys: pointer to Cygnus PHY device
- */
+ 
 struct cygnus_pcie_phy_core {
 	struct device *dev;
 	void __iomem *base;
@@ -73,10 +62,7 @@ static int cygnus_pcie_power_config(struct cygnus_pcie_phy *phy, bool enable)
 		val = readl(core->base + PCIE_CFG_OFFSET);
 		val &= ~BIT(shift);
 		writel(val, core->base + PCIE_CFG_OFFSET);
-		/*
-		 * Wait 50 ms for the PCIe Serdes to stabilize after the analog
-		 * front end is brought up
-		 */
+		 
 		msleep(50);
 	} else {
 		val = readl(core->base + PCIE_CFG_OFFSET);
@@ -191,7 +177,7 @@ put_child:
 
 static const struct of_device_id cygnus_pcie_phy_match_table[] = {
 	{ .compatible = "brcm,cygnus-pcie-phy" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, cygnus_pcie_phy_match_table);
 

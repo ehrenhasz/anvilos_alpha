@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB
-// Copyright (c) 2023, NVIDIA CORPORATION & AFFILIATES. All rights reserved
+
+
 
 #include <linux/hwmon.h>
 #include <linux/bitmap.h>
@@ -9,15 +9,13 @@
 #include "mlx5_core.h"
 #include "hwmon.h"
 
-#define CHANNELS_TYPE_NUM 2 /* chip channel and temp channel */
+#define CHANNELS_TYPE_NUM 2  
 #define CHIP_CONFIG_NUM 1
 
-/* module 0 is mapped to sensor_index 64 in MTMP register */
+ 
 #define to_mtmp_module_sensor_idx(idx) (64 + (idx))
 
-/* All temperatures retrieved in units of 0.125C. hwmon framework expect
- * it in units of millidegrees C. Hence multiply values by 125.
- */
+ 
 #define mtmp_temp_to_mdeg(temp) ((temp) * 125)
 
 struct temp_channel_desc {
@@ -25,7 +23,7 @@ struct temp_channel_desc {
 	char sensor_name[32];
 };
 
-/* chip_channel_config and channel_info arrays must be 0-terminated, hence + 1 */
+ 
 struct mlx5_hwmon {
 	struct mlx5_core_dev *mdev;
 	struct device *hwmon_dev;
@@ -306,7 +304,7 @@ static struct mlx5_hwmon *mlx5_hwmon_alloc(struct mlx5_core_dev *mdev)
 	if (err)
 		goto err_free_hwmon;
 
-	/* check if module sensor has thermal mon cap. if yes, allocate channel desc for it */
+	 
 	err = mlx5_hwmon_is_module_mon_cap(mdev, &mon_cap);
 	if (err)
 		goto err_free_hwmon;
@@ -320,7 +318,7 @@ static struct mlx5_hwmon *mlx5_hwmon_alloc(struct mlx5_core_dev *mdev)
 		goto err_free_hwmon;
 	}
 
-	/* sensors configuration values array, must be 0-terminated hence, + 1 */
+	 
 	hwmon->temp_channel_config = kcalloc(sensors_count + 1, sizeof(*hwmon->temp_channel_config),
 					     GFP_KERNEL);
 	if (!hwmon->temp_channel_config) {

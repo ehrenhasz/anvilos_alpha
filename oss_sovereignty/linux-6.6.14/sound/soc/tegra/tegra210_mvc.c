@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// tegra210_mvc.c - Tegra210 MVC driver
-//
-// Copyright (c) 2021 NVIDIA CORPORATION.  All rights reserved.
+
+
+
+
+
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -92,12 +92,7 @@ static void tegra210_mvc_write_ram(struct regmap *regmap)
 
 static void tegra210_mvc_conv_vol(struct tegra210_mvc *mvc, u8 chan, s32 val)
 {
-	/*
-	 * Volume control read from mixer control is with
-	 * 100x scaling; for CURVE_POLY the reg range
-	 * is 0-100 (linear, Q24) and for CURVE_LINEAR
-	 * it is -120dB to +40dB (Q8)
-	 */
+	 
 	if (mvc->curve_type == CURVE_POLY) {
 		if (val > 10000)
 			val = 10000;
@@ -127,13 +122,7 @@ static int tegra210_mvc_get_mute(struct snd_kcontrol *kcontrol,
 	u32 val = tegra210_mvc_get_ctrl_reg(kcontrol);
 	u8 mute_mask = TEGRA210_GET_MUTE_VAL(val);
 
-	/*
-	 * If per channel control is enabled, then return
-	 * exact mute/unmute setting of all channels.
-	 *
-	 * Else report setting based on CH0 bit to reflect
-	 * the correct HW state.
-	 */
+	 
 	if (val & TEGRA210_MVC_PER_CHAN_CTRL_EN) {
 		ucontrol->value.integer.value[0] = mute_mask;
 	} else {
@@ -153,13 +142,7 @@ static int tegra210_mvc_get_master_mute(struct snd_kcontrol *kcontrol,
 	u32 val = tegra210_mvc_get_ctrl_reg(kcontrol);
 	u8 mute_mask = TEGRA210_GET_MUTE_VAL(val);
 
-	/*
-	 * If per channel control is disabled, then return
-	 * master mute/unmute setting based on CH0 bit.
-	 *
-	 * Else report settings based on state of all
-	 * channels.
-	 */
+	 
 	if (!(val & TEGRA210_MVC_PER_CHAN_CTRL_EN)) {
 		ucontrol->value.integer.value[0] =
 			mute_mask & TEGRA210_MVC_CH0_MUTE_EN;
@@ -321,7 +304,7 @@ static int tegra210_mvc_update_vol(struct snd_kcontrol *kcontrol,
 			mvc->volume[i] = mvc->volume[chan];
 	}
 
-	/* Configure init volume same as target volume */
+	 
 	regmap_write(mvc->regmap,
 		TEGRA210_MVC_REG_OFFSET(TEGRA210_MVC_INIT_VOL, chan),
 		mvc->volume[chan]);
@@ -357,7 +340,7 @@ static void tegra210_mvc_reset_vol_settings(struct tegra210_mvc *mvc,
 {
 	int i;
 
-	/* Change volume to default init for new curve type */
+	 
 	if (mvc->curve_type == CURVE_POLY) {
 		for (i = 0; i < TEGRA210_MVC_MAX_CHAN_COUNT; i++)
 			mvc->volume[i] = TEGRA210_MVC_INIT_VOL_DEFAULT_POLY;
@@ -368,13 +351,13 @@ static void tegra210_mvc_reset_vol_settings(struct tegra210_mvc *mvc,
 
 	pm_runtime_get_sync(dev);
 
-	/* Program curve type */
+	 
 	regmap_update_bits(mvc->regmap, TEGRA210_MVC_CTRL,
 			   TEGRA210_MVC_CURVE_TYPE_MASK,
 			   mvc->curve_type <<
 			   TEGRA210_MVC_CURVE_TYPE_SHIFT);
 
-	/* Init volume for all channels */
+	 
 	for (i = 0; i < TEGRA210_MVC_MAX_CHAN_COUNT; i++) {
 		regmap_write(mvc->regmap,
 			TEGRA210_MVC_REG_OFFSET(TEGRA210_MVC_INIT_VOL, i),
@@ -384,7 +367,7 @@ static void tegra210_mvc_reset_vol_settings(struct tegra210_mvc *mvc,
 			mvc->volume[i]);
 	}
 
-	/* Trigger volume switch */
+	 
 	regmap_update_bits(mvc->regmap, TEGRA210_MVC_SWITCH,
 			   TEGRA210_MVC_VOLUME_SWITCH_MASK,
 			   TEGRA210_MVC_VOLUME_SWITCH_TRIGGER);
@@ -467,12 +450,7 @@ static int tegra210_mvc_hw_params(struct snd_pcm_substream *substream,
 	struct tegra210_mvc *mvc = snd_soc_dai_get_drvdata(dai);
 	int err, val;
 
-	/*
-	 * Soft Reset: Below performs module soft reset which clears
-	 * all FSM logic, flushes flow control of FIFO and resets the
-	 * state register. It also brings module back to disabled
-	 * state (without flushing the data in the pipe).
-	 */
+	 
 	regmap_write(mvc->regmap, TEGRA210_MVC_SOFT_RESET, 1);
 
 	err = regmap_read_poll_timeout(mvc->regmap, TEGRA210_MVC_SOFT_RESET,
@@ -482,14 +460,14 @@ static int tegra210_mvc_hw_params(struct snd_pcm_substream *substream,
 		return err;
 	}
 
-	/* Set RX CIF */
+	 
 	err = tegra210_mvc_set_audio_cif(mvc, params, TEGRA210_MVC_RX_CIF_CTRL);
 	if (err) {
 		dev_err(dev, "Can't set MVC RX CIF: %d\n", err);
 		return err;
 	}
 
-	/* Set TX CIF */
+	 
 	err = tegra210_mvc_set_audio_cif(mvc, params, TEGRA210_MVC_TX_CIF_CTRL);
 	if (err) {
 		dev_err(dev, "Can't set MVC TX CIF: %d\n", err);
@@ -498,12 +476,12 @@ static int tegra210_mvc_hw_params(struct snd_pcm_substream *substream,
 
 	tegra210_mvc_write_ram(mvc->regmap);
 
-	/* Program poly_n1, poly_n2, duration */
+	 
 	regmap_write(mvc->regmap, TEGRA210_MVC_POLY_N1, gain_params.poly_n1);
 	regmap_write(mvc->regmap, TEGRA210_MVC_POLY_N2, gain_params.poly_n2);
 	regmap_write(mvc->regmap, TEGRA210_MVC_DURATION, gain_params.duration);
 
-	/* Program duration_inv */
+	 
 	regmap_write(mvc->regmap, TEGRA210_MVC_DURATION_INV,
 		     gain_params.duration_inv);
 
@@ -530,7 +508,7 @@ static const struct soc_enum tegra210_mvc_curve_type_ctrl =
 		       tegra210_mvc_put_vol)
 
 static const struct snd_kcontrol_new tegra210_mvc_vol_ctrl[] = {
-	/* Per channel volume control */
+	 
 	TEGRA210_MVC_VOL_CTRL(1),
 	TEGRA210_MVC_VOL_CTRL(2),
 	TEGRA210_MVC_VOL_CTRL(3),
@@ -540,17 +518,17 @@ static const struct snd_kcontrol_new tegra210_mvc_vol_ctrl[] = {
 	TEGRA210_MVC_VOL_CTRL(7),
 	TEGRA210_MVC_VOL_CTRL(8),
 
-	/* Per channel mute */
+	 
 	SOC_SINGLE_EXT("Per Chan Mute Mask",
 		       TEGRA210_MVC_CTRL, 0, TEGRA210_MUTE_MASK_EN, 0,
 		       tegra210_mvc_get_mute, tegra210_mvc_put_mute),
 
-	/* Master volume */
+	 
 	SOC_SINGLE_EXT("Volume", TEGRA210_MVC_TARGET_VOL, 0, 16000, 0,
 		       tegra210_mvc_get_master_vol,
 		       tegra210_mvc_put_master_vol),
 
-	/* Master mute */
+	 
 	SOC_SINGLE_EXT("Mute", TEGRA210_MVC_CTRL, 0, 1, 0,
 		       tegra210_mvc_get_master_mute,
 		       tegra210_mvc_put_master_mute),
@@ -560,7 +538,7 @@ static const struct snd_kcontrol_new tegra210_mvc_vol_ctrl[] = {
 };
 
 static struct snd_soc_dai_driver tegra210_mvc_dais[] = {
-	/* Input */
+	 
 	{
 		.name = "MVC-RX-CIF",
 		.playback = {
@@ -583,7 +561,7 @@ static struct snd_soc_dai_driver tegra210_mvc_dais[] = {
 		},
 	},
 
-	/* Output */
+	 
 	{
 		.name = "MVC-TX-CIF",
 		.playback = {

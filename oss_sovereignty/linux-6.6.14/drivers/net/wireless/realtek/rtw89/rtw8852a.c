@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright(c) 2019-2020  Realtek Corporation
- */
+
+ 
 
 #include "coex.h"
 #include "fw.h"
@@ -18,26 +17,26 @@
 	RTW8852A_FW_BASENAME ".bin"
 
 static const struct rtw89_hfc_ch_cfg rtw8852a_hfc_chcfg_pcie[] = {
-	{128, 1896, grp_0}, /* ACH 0 */
-	{128, 1896, grp_0}, /* ACH 1 */
-	{128, 1896, grp_0}, /* ACH 2 */
-	{128, 1896, grp_0}, /* ACH 3 */
-	{128, 1896, grp_1}, /* ACH 4 */
-	{128, 1896, grp_1}, /* ACH 5 */
-	{128, 1896, grp_1}, /* ACH 6 */
-	{128, 1896, grp_1}, /* ACH 7 */
-	{32, 1896, grp_0}, /* B0MGQ */
-	{128, 1896, grp_0}, /* B0HIQ */
-	{32, 1896, grp_1}, /* B1MGQ */
-	{128, 1896, grp_1}, /* B1HIQ */
-	{40, 0, 0} /* FWCMDQ */
+	{128, 1896, grp_0},  
+	{128, 1896, grp_0},  
+	{128, 1896, grp_0},  
+	{128, 1896, grp_0},  
+	{128, 1896, grp_1},  
+	{128, 1896, grp_1},  
+	{128, 1896, grp_1},  
+	{128, 1896, grp_1},  
+	{32, 1896, grp_0},  
+	{128, 1896, grp_0},  
+	{32, 1896, grp_1},  
+	{128, 1896, grp_1},  
+	{40, 0, 0}  
 };
 
 static const struct rtw89_hfc_pub_cfg rtw8852a_hfc_pubcfg_pcie = {
-	1896, /* Group 0 */
-	1896, /* Group 1 */
-	3792, /* Public Max */
-	0 /* WP threshold */
+	1896,  
+	1896,  
+	3792,  
+	0  
 };
 
 static const struct rtw89_hfc_param_ini rtw8852a_hfc_param_ini_pcie[] = {
@@ -572,7 +571,7 @@ static void rtw8852a_phycap_parsing_tssi(struct rtw89_dev *rtwdev, u8 *phycap_ma
 
 	for (i = 0; i < RF_PATH_NUM_8852A; i++) {
 		for (j = 0; j < TSSI_TRIM_CH_GROUP_NUM; j++) {
-			/* addrs are in decreasing order */
+			 
 			ofst = tssi_trim_addr[i] - addr - j;
 			tssi->tssi_trim[i][j] = phycap_map[ofst];
 
@@ -837,7 +836,7 @@ static void rtw8852a_ctrl_ch(struct rtw89_dev *rtwdev, u8 central_ch,
 	bool is_2g = central_ch <= 14;
 
 	if (phy_idx == RTW89_PHY_0) {
-		/* Path A */
+		 
 		rtw8852a_ch_setting(rtwdev, central_ch, RF_PATH_A);
 		if (is_2g)
 			rtw89_phy_write32_idx(rtwdev, R_PATH0_TIA_ERR_G1,
@@ -848,7 +847,7 @@ static void rtw8852a_ctrl_ch(struct rtw89_dev *rtwdev, u8 central_ch,
 					      B_PATH0_TIA_ERR_G1_SEL, 0,
 					      phy_idx);
 
-		/* Path B */
+		 
 		if (!rtwdev->dbcc_en) {
 			rtw8852a_ch_setting(rtwdev, central_ch, RF_PATH_B);
 			if (is_2g)
@@ -867,12 +866,12 @@ static void rtw8852a_ctrl_ch(struct rtw89_dev *rtwdev, u8 central_ch,
 				rtw89_phy_write32_set(rtwdev, R_2P4G_BAND,
 						      B_2P4G_BAND_SEL);
 		}
-		/* SCO compensate FC setting */
+		 
 		sco_comp = rtw8852a_sco_mapping(central_ch);
 		rtw89_phy_write32_idx(rtwdev, R_FC0_BW, B_FC0_BW_INV,
 				      sco_comp, phy_idx);
 	} else {
-		/* Path B */
+		 
 		rtw8852a_ch_setting(rtwdev, central_ch, RF_PATH_B);
 		if (is_2g)
 			rtw89_phy_write32_idx(rtwdev, R_P1_MODE,
@@ -882,13 +881,13 @@ static void rtw8852a_ctrl_ch(struct rtw89_dev *rtwdev, u8 central_ch,
 			rtw89_phy_write32_idx(rtwdev, R_P1_MODE,
 					      B_P1_MODE_SEL,
 					      0, phy_idx);
-		/* SCO compensate FC setting */
+		 
 		sco_comp = rtw8852a_sco_mapping(central_ch);
 		rtw89_phy_write32_idx(rtwdev, R_FC0_BW, B_FC0_BW_INV,
 				      sco_comp, phy_idx);
 	}
 
-	/* Band edge */
+	 
 	if (is_2g)
 		rtw89_phy_write32_idx(rtwdev, R_BANDEDGE, B_BANDEDGE_EN, 1,
 				      phy_idx);
@@ -896,7 +895,7 @@ static void rtw8852a_ctrl_ch(struct rtw89_dev *rtwdev, u8 central_ch,
 		rtw89_phy_write32_idx(rtwdev, R_BANDEDGE, B_BANDEDGE_EN, 0,
 				      phy_idx);
 
-	/* CCK parameters */
+	 
 	if (central_ch == 14) {
 		rtw89_phy_write32_mask(rtwdev, R_TXFIR0, B_TXFIR_C01,
 				       0x3b13ff);
@@ -980,7 +979,7 @@ static void
 rtw8852a_ctrl_bw(struct rtw89_dev *rtwdev, u8 pri_ch, u8 bw,
 		 enum rtw89_phy_idx phy_idx)
 {
-	/* Switch bandwidth */
+	 
 	switch (bw) {
 	case RTW89_CHANNEL_WIDTH_5:
 		rtw89_phy_write32_idx(rtwdev, R_FC0_BW, B_FC0_BW_SET, 0x0,
@@ -1707,37 +1706,37 @@ static void rtw8852a_btc_init_cfg(struct rtw89_dev *rtwdev)
 		.direction = RTW89_MAC_AX_COEX_INNER,
 	};
 
-	/* PTA init  */
+	 
 	rtw89_mac_coex_init(rtwdev, &coex_params);
 
-	/* set WL Tx response = Hi-Pri */
+	 
 	chip->ops->btc_set_wl_pri(rtwdev, BTC_PRI_MASK_TX_RESP, true);
 	chip->ops->btc_set_wl_pri(rtwdev, BTC_PRI_MASK_BEACON, true);
 
-	/* set rf gnt debug off */
+	 
 	rtw89_write_rf(rtwdev, RF_PATH_A, RR_WLSEL, 0xfffff, 0x0);
 	rtw89_write_rf(rtwdev, RF_PATH_B, RR_WLSEL, 0xfffff, 0x0);
 
-	/* set WL Tx thru in TRX mask table if GNT_WL = 0 && BT_S1 = ss group */
+	 
 	if (module->ant.type == BTC_ANT_SHARED) {
 		rtw8852a_set_trx_mask(rtwdev,
 				      RF_PATH_A, BTC_BT_SS_GROUP, 0x5ff);
 		rtw8852a_set_trx_mask(rtwdev,
 				      RF_PATH_B, BTC_BT_SS_GROUP, 0x5ff);
-		/* set path-A(S0) Tx/Rx no-mask if GNT_WL=0 && BT_S1=tx group */
+		 
 		rtw8852a_set_trx_mask(rtwdev,
 				      RF_PATH_A, BTC_BT_TX_GROUP, 0x5ff);
-	} else { /* set WL Tx stb if GNT_WL = 0 && BT_S1 = ss group for 3-ant */
+	} else {  
 		rtw8852a_set_trx_mask(rtwdev,
 				      RF_PATH_A, BTC_BT_SS_GROUP, 0x5df);
 		rtw8852a_set_trx_mask(rtwdev,
 				      RF_PATH_B, BTC_BT_SS_GROUP, 0x5df);
 	}
 
-	/* set PTA break table */
+	 
 	rtw89_write32(rtwdev, R_BTC_BREAK_TABLE, BTC_BREAK_PARAM);
 
-	 /* enable BT counter 0xda40[16,2] = 2b'11 */
+	  
 	rtw89_write32_set(rtwdev,
 			  R_AX_CSR_MODE, B_AX_BT_CNT_RST | B_AX_STATIS_BT_EN);
 	btc->cx.wl.status.map.init_ok = true;
@@ -1840,29 +1839,29 @@ rtw8852a_btc_set_wl_txpwr_ctrl(struct rtw89_dev *rtwdev, u32 txpwr_val)
 static
 s8 rtw8852a_btc_get_bt_rssi(struct rtw89_dev *rtwdev, s8 val)
 {
-	/* +6 for compensate offset */
+	 
 	return clamp_t(s8, val + 6, -100, 0) + 100;
 }
 
 static struct rtw89_btc_rf_trx_para rtw89_btc_8852a_rf_ul[] = {
-	{255, 0, 0, 7}, /* 0 -> original */
-	{255, 2, 0, 7}, /* 1 -> for BT-connected ACI issue && BTG co-rx */
-	{255, 0, 0, 7}, /* 2 ->reserved for shared-antenna */
-	{255, 0, 0, 7}, /* 3- >reserved for shared-antenna */
-	{255, 0, 0, 7}, /* 4 ->reserved for shared-antenna */
-	{255, 0, 0, 7}, /* the below id is for non-shared-antenna free-run */
+	{255, 0, 0, 7},  
+	{255, 2, 0, 7},  
+	{255, 0, 0, 7},  
+	{255, 0, 0, 7},  
+	{255, 0, 0, 7},  
+	{255, 0, 0, 7},  
 	{6, 1, 0, 7},
 	{13, 1, 0, 7},
 	{13, 1, 0, 7}
 };
 
 static struct rtw89_btc_rf_trx_para rtw89_btc_8852a_rf_dl[] = {
-	{255, 0, 0, 7}, /* 0 -> original */
-	{255, 2, 0, 7}, /* 1 -> reserved for shared-antenna */
-	{255, 0, 0, 7}, /* 2 ->reserved for shared-antenna */
-	{255, 0, 0, 7}, /* 3- >reserved for shared-antenna */
-	{255, 0, 0, 7}, /* 4 ->reserved for shared-antenna */
-	{255, 0, 0, 7}, /* the below id is for non-shared-antenna free-run */
+	{255, 0, 0, 7},  
+	{255, 2, 0, 7},  
+	{255, 0, 0, 7},  
+	{255, 0, 0, 7},  
+	{255, 0, 0, 7},  
+	{255, 0, 0, 7},  
 	{255, 1, 0, 7},
 	{255, 1, 0, 7},
 	{255, 1, 0, 7}
@@ -1907,7 +1906,7 @@ void rtw8852a_btc_update_bt_cnt(struct rtw89_dev *rtwdev)
 	cx->cnt_bt[BTC_BCNT_LOPRI_TX] = FIELD_GET(B_AX_STATIS_BT_LO_TX_1_MASK, val);
 	cx->cnt_bt[BTC_BCNT_LOPRI_RX] = FIELD_GET(B_AX_STATIS_BT_LO_RX_1_MASK, val);
 
-	/* clock-gate off before reset counter*/
+	 
 	rtw89_write32_set(rtwdev, R_AX_BTC_CFG, B_AX_DIS_BTC_CLK_G);
 	rtw89_write32_clr(rtwdev, R_AX_CSR_MODE, B_AX_BT_CNT_RST);
 	rtw89_write32_set(rtwdev, R_AX_CSR_MODE, B_AX_BT_CNT_RST);
@@ -1921,7 +1920,7 @@ void rtw8852a_btc_wl_s1_standby(struct rtw89_dev *rtwdev, bool state)
 	rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWA, RFREG_MASK, 0x1);
 	rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWD1, RFREG_MASK, 0x1);
 
-	/* set WL standby = Rx for GNT_BT_Tx = 1->0 settle issue */
+	 
 	if (state)
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWD0,
 			       RFREG_MASK, 0xa2d7c);
@@ -1934,13 +1933,10 @@ void rtw8852a_btc_wl_s1_standby(struct rtw89_dev *rtwdev, bool state)
 
 static void rtw8852a_set_wl_lna2(struct rtw89_dev *rtwdev, u8 level)
 {
-	/* level=0 Default:    TIA 1/0= (LNA2,TIAN6) = (7,1)/(5,1) = 21dB/12dB
-	 * level=1 Fix LNA2=5: TIA 1/0= (LNA2,TIAN6) = (5,0)/(5,1) = 18dB/12dB
-	 * To improve BT ACI in co-rx
-	 */
+	 
 
 	switch (level) {
-	case 0: /* default */
+	case 0:  
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWE, RFREG_MASK, 0x1000);
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWA, RFREG_MASK, 0x3);
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWD0, RFREG_MASK, 0x17);
@@ -1948,7 +1944,7 @@ static void rtw8852a_set_wl_lna2(struct rtw89_dev *rtwdev, u8 level)
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWD0, RFREG_MASK, 0x15);
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWE, RFREG_MASK, 0x0);
 		break;
-	case 1: /* Fix LNA2=5  */
+	case 1:  
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWE, RFREG_MASK, 0x1000);
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWA, RFREG_MASK, 0x3);
 		rtw89_write_rf(rtwdev, RF_PATH_B, RR_LUTWD0, RFREG_MASK, 0x5);
@@ -1964,16 +1960,16 @@ static void rtw8852a_btc_set_wl_rx_gain(struct rtw89_dev *rtwdev, u32 level)
 	struct rtw89_btc *btc = &rtwdev->btc;
 
 	switch (level) {
-	case 0: /* original */
+	case 0:  
 	default:
 		rtw8852a_bb_ctrl_btc_preagc(rtwdev, false);
 		btc->dm.wl_lna2 = 0;
 		break;
-	case 1: /* for FDD free-run */
+	case 1:  
 		rtw8852a_bb_ctrl_btc_preagc(rtwdev, true);
 		btc->dm.wl_lna2 = 0;
 		break;
-	case 2: /* for BTG Co-Rx*/
+	case 2:  
 		rtw8852a_bb_ctrl_btc_preagc(rtwdev, false);
 		btc->dm.wl_lna2 = 1;
 		break;

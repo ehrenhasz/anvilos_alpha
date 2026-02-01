@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_DCCP_H
 #define _LINUX_DCCP_H
 
@@ -21,32 +21,15 @@ enum dccp_state {
 	DCCP_REQUESTING	     = TCP_SYN_SENT,
 	DCCP_LISTEN	     = TCP_LISTEN,
 	DCCP_RESPOND	     = TCP_SYN_RECV,
-	/*
-	 * States involved in closing a DCCP connection:
-	 * 1) ACTIVE_CLOSEREQ is entered by a server sending a CloseReq.
-	 *
-	 * 2) CLOSING can have three different meanings (RFC 4340, 8.3):
-	 *  a. Client has performed active-close, has sent a Close to the server
-	 *     from state OPEN or PARTOPEN, and is waiting for the final Reset
-	 *     (in this case, SOCK_DONE == 1).
-	 *  b. Client is asked to perform passive-close, by receiving a CloseReq
-	 *     in (PART)OPEN state. It sends a Close and waits for final Reset
-	 *     (in this case, SOCK_DONE == 0).
-	 *  c. Server performs an active-close as in (a), keeps TIMEWAIT state.
-	 *
-	 * 3) The following intermediate states are employed to give passively
-	 *    closing nodes a chance to process their unread data:
-	 *    - PASSIVE_CLOSE    (from OPEN => CLOSED) and
-	 *    - PASSIVE_CLOSEREQ (from (PART)OPEN to CLOSING; case (b) above).
-	 */
+	 
 	DCCP_ACTIVE_CLOSEREQ = TCP_FIN_WAIT1,
-	DCCP_PASSIVE_CLOSE   = TCP_CLOSE_WAIT,	/* any node receiving a Close */
+	DCCP_PASSIVE_CLOSE   = TCP_CLOSE_WAIT,	 
 	DCCP_CLOSING	     = TCP_CLOSING,
 	DCCP_TIME_WAIT	     = TCP_TIME_WAIT,
 	DCCP_CLOSED	     = TCP_CLOSE,
 	DCCP_NEW_SYN_RECV    = TCP_NEW_SYN_RECV,
 	DCCP_PARTOPEN	     = TCP_MAX_STATES,
-	DCCP_PASSIVE_CLOSEREQ,			/* clients receiving CloseReq */
+	DCCP_PASSIVE_CLOSEREQ,			 
 	DCCP_MAX_STATES
 };
 
@@ -144,19 +127,7 @@ static inline unsigned int dccp_hdr_len(const struct sk_buff *skb)
 	return __dccp_hdr_len(dccp_hdr(skb));
 }
 
-/**
- * struct dccp_request_sock  -  represent DCCP-specific connection request
- * @dreq_inet_rsk: structure inherited from
- * @dreq_iss: initial sequence number, sent on the first Response (RFC 4340, 7.1)
- * @dreq_gss: greatest sequence number sent (for retransmitted Responses)
- * @dreq_isr: initial sequence number received in the first Request
- * @dreq_gsr: greatest sequence number received (for retransmitted Request(s))
- * @dreq_service: service code present on the Request (there is just one)
- * @dreq_featneg: feature negotiation options for this connection
- * The following two fields are analogous to the ones in dccp_sock:
- * @dreq_timestamp_echo: last received timestamp to echo (13.1)
- * @dreq_timestamp_echo: the time of receiving the last @dreq_timestamp_echo
- */
+ 
 struct dccp_request_sock {
 	struct inet_request_sock dreq_inet_rsk;
 	__u64			 dreq_iss;
@@ -218,51 +189,9 @@ static inline bool dccp_list_has_service(const struct dccp_service_list *sl,
 
 struct dccp_ackvec;
 
-/**
- * struct dccp_sock - DCCP socket state
- *
- * @dccps_swl - sequence number window low
- * @dccps_swh - sequence number window high
- * @dccps_awl - acknowledgement number window low
- * @dccps_awh - acknowledgement number window high
- * @dccps_iss - initial sequence number sent
- * @dccps_isr - initial sequence number received
- * @dccps_osr - first OPEN sequence number received
- * @dccps_gss - greatest sequence number sent
- * @dccps_gsr - greatest valid sequence number received
- * @dccps_gar - greatest valid ack number received on a non-Sync; initialized to %dccps_iss
- * @dccps_service - first (passive sock) or unique (active sock) service code
- * @dccps_service_list - second .. last service code on passive socket
- * @dccps_timestamp_echo - latest timestamp received on a TIMESTAMP option
- * @dccps_timestamp_time - time of receiving latest @dccps_timestamp_echo
- * @dccps_l_ack_ratio - feature-local Ack Ratio
- * @dccps_r_ack_ratio - feature-remote Ack Ratio
- * @dccps_l_seq_win - local Sequence Window (influences ack number validity)
- * @dccps_r_seq_win - remote Sequence Window (influences seq number validity)
- * @dccps_pcslen - sender   partial checksum coverage (via sockopt)
- * @dccps_pcrlen - receiver partial checksum coverage (via sockopt)
- * @dccps_send_ndp_count - local Send NDP Count feature (7.7.2)
- * @dccps_ndp_count - number of Non Data Packets since last data packet
- * @dccps_mss_cache - current value of MSS (path MTU minus header sizes)
- * @dccps_rate_last - timestamp for rate-limiting DCCP-Sync (RFC 4340, 7.5.4)
- * @dccps_featneg - tracks feature-negotiation state (mostly during handshake)
- * @dccps_hc_rx_ackvec - rx half connection ack vector
- * @dccps_hc_rx_ccid - CCID used for the receiver (or receiving half-connection)
- * @dccps_hc_tx_ccid - CCID used for the sender (or sending half-connection)
- * @dccps_options_received - parsed set of retrieved options
- * @dccps_qpolicy - TX dequeueing policy, one of %dccp_packet_dequeueing_policy
- * @dccps_tx_qlen - maximum length of the TX queue
- * @dccps_role - role of this sock, one of %dccp_role
- * @dccps_hc_rx_insert_options - receiver wants to add options when acking
- * @dccps_hc_tx_insert_options - sender wants to add options when sending
- * @dccps_server_timewait - server holds timewait state on close (RFC 4340, 8.3)
- * @dccps_sync_scheduled - flag which signals "send out-of-band message soon"
- * @dccps_xmitlet - tasklet scheduled by the TX CCID to dequeue data packets
- * @dccps_xmit_timer - used by the TX CCID to delay sending (rate-based pacing)
- * @dccps_syn_rtt - RTT sample from Request/Response exchange (in usecs)
- */
+ 
 struct dccp_sock {
-	/* inet_connection_sock has to be the first member of dccp_sock */
+	 
 	struct inet_connection_sock	dccps_inet_connection;
 #define dccps_syn_rtt			dccps_inet_connection.icsk_ack.lrcvtime
 	__u64				dccps_swl;
@@ -321,4 +250,4 @@ static inline const char *dccp_role(const struct sock *sk)
 
 extern void dccp_syn_ack_timeout(const struct request_sock *req);
 
-#endif /* _LINUX_DCCP_H */
+#endif  

@@ -1,21 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * This file and its contents are supplied under the terms of the
- * Common Development and Distribution License ("CDDL"), version 1.0.
- * You may only use this file in accordance with the terms of version
- * 1.0 of the CDDL.
- *
- * A full copy of the text of the CDDL should have accompanied this
- * source.  A copy of the CDDL is also available via the Internet at
- * http://www.illumos.org/license/CDDL.
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (c) 2017, Datto, Inc. All rights reserved.
- */
+ 
 
 #include <sys/dmu.h>
 #include <sys/hkdf.h>
@@ -28,7 +13,7 @@ hkdf_sha512_extract(uint8_t *salt, uint_t salt_len, uint8_t *key_material,
 {
 	crypto_key_t key;
 
-	/* initialize the salt as a crypto key */
+	 
 	key.ck_length = CRYPTO_BYTES2BITS(salt_len);
 	key.ck_data = salt;
 
@@ -51,7 +36,7 @@ hkdf_sha512_expand(uint8_t *extract_key, uint8_t *info, uint_t info_len,
 	if (N > 255)
 		return (SET_ERROR(EINVAL));
 
-	/* initialize the salt as a crypto key */
+	 
 	key.ck_length = CRYPTO_BYTES2BITS(SHA512_DIGEST_LENGTH);
 	key.ck_data = extract_key;
 
@@ -71,13 +56,7 @@ hkdf_sha512_expand(uint8_t *extract_key, uint8_t *info, uint_t info_len,
 	return (0);
 }
 
-/*
- * HKDF is designed to be a relatively fast function for deriving keys from a
- * master key + a salt. We use this function to generate new encryption keys
- * so as to avoid hitting the cryptographic limits of the underlying
- * encryption modes. Note that, for the sake of deriving encryption keys, the
- * info parameter is called the "salt" everywhere else in the code.
- */
+ 
 int
 hkdf_sha512(uint8_t *key_material, uint_t km_len, uint8_t *salt,
     uint_t salt_len, uint8_t *info, uint_t info_len, uint8_t *output_key,

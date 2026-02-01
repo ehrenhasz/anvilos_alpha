@@ -1,24 +1,4 @@
-/*
- * Copyright 2021 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include <core/intr.h>
 #include <core/device.h>
 #include <core/subdev.h>
@@ -170,7 +150,7 @@ nvkm_intr(int irq, void *arg)
 	bool pending = false;
 	int prio, leaf;
 
-	/* Disable all top-level interrupt sources, and re-arm MSI interrupts. */
+	 
 	spin_lock(&device->intr.lock);
 	if (!device->intr.armed)
 		goto done_unlock;
@@ -178,7 +158,7 @@ nvkm_intr(int irq, void *arg)
 	nvkm_intr_unarm_locked(device);
 	nvkm_pci_msi_rearm(device);
 
-	/* Fetch pending interrupt masks. */
+	 
 	list_for_each_entry(intr, &device->intr.intr, head) {
 		if (intr->func->pending(intr))
 			pending = true;
@@ -187,11 +167,11 @@ nvkm_intr(int irq, void *arg)
 	if (!pending)
 		goto done;
 
-	/* Check that GPU is still on the bus by reading NV_PMC_BOOT_0. */
+	 
 	if (WARN_ON(nvkm_rd32(device, 0x000000) == 0xffffffff))
 		goto done;
 
-	/* Execute handlers. */
+	 
 	for (prio = 0; prio < ARRAY_SIZE(device->intr.prio); prio++) {
 		list_for_each_entry(inth, &device->intr.prio[prio], head) {
 			struct nvkm_intr *intr = inth->intr;
@@ -207,7 +187,7 @@ nvkm_intr(int irq, void *arg)
 		}
 	}
 
-	/* Nothing handled?  Some debugging/protection from IRQ storms is in order... */
+	 
 	if (ret == IRQ_NONE) {
 		list_for_each_entry(intr, &device->intr.intr, head) {
 			for (leaf = 0; leaf < intr->leaves; leaf++) {
@@ -221,7 +201,7 @@ nvkm_intr(int irq, void *arg)
 	}
 
 done:
-	/* Re-enable all top-level interrupt sources. */
+	 
 	nvkm_intr_rearm_locked(device);
 done_unlock:
 	spin_unlock(&device->intr.lock);

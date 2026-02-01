@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 MediaTek Inc.
- * Author: James Liao <jamesjj.liao@mediatek.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -350,46 +347,46 @@ static const char * const hdmipll_parents[] = {
 };
 
 static const struct mtk_composite top_muxes[] = {
-	/* CLK_CFG_0 */
+	 
 	MUX_GATE(CLK_TOP_AXI_SEL, "axi_sel", axi_parents,
 		0x0140, 0, 3, INVALID_MUX_GATE_BIT),
 	MUX_GATE(CLK_TOP_SMI_SEL, "smi_sel", smi_parents, 0x0140, 8, 4, 15),
 	MUX_GATE(CLK_TOP_MFG_SEL, "mfg_sel", mfg_parents, 0x0140, 16, 4, 23),
 	MUX_GATE(CLK_TOP_IRDA_SEL, "irda_sel", irda_parents, 0x0140, 24, 2, 31),
-	/* CLK_CFG_1 */
+	 
 	MUX_GATE(CLK_TOP_CAM_SEL, "cam_sel", cam_parents, 0x0144, 0, 3, 7),
 	MUX_GATE(CLK_TOP_AUD_INTBUS_SEL, "aud_intbus_sel", aud_intbus_parents,
 		0x0144, 8, 2, 15),
 	MUX_GATE(CLK_TOP_JPG_SEL, "jpg_sel", jpg_parents, 0x0144, 16, 3, 23),
 	MUX_GATE(CLK_TOP_DISP_SEL, "disp_sel", disp_parents, 0x0144, 24, 3, 31),
-	/* CLK_CFG_2 */
+	 
 	MUX_GATE(CLK_TOP_MSDC30_1_SEL, "msdc30_1_sel", msdc30_parents, 0x0148, 0, 3, 7),
 	MUX_GATE(CLK_TOP_MSDC30_2_SEL, "msdc30_2_sel", msdc30_parents, 0x0148, 8, 3, 15),
 	MUX_GATE(CLK_TOP_MSDC30_3_SEL, "msdc30_3_sel", msdc30_parents, 0x0148, 16, 3, 23),
 	MUX_GATE(CLK_TOP_MSDC30_4_SEL, "msdc30_4_sel", msdc30_parents, 0x0148, 24, 3, 31),
-	/* CLK_CFG_3 */
+	 
 	MUX_GATE(CLK_TOP_USB20_SEL, "usb20_sel", usb20_parents, 0x014c, 0, 2, 7),
-	/* CLK_CFG_4 */
+	 
 	MUX_GATE(CLK_TOP_VENC_SEL, "venc_sel", venc_parents, 0x0150, 8, 3, 15),
 	MUX_GATE(CLK_TOP_SPI_SEL, "spi_sel", spi_parents, 0x0150, 16, 3, 23),
 	MUX_GATE(CLK_TOP_UART_SEL, "uart_sel", uart_parents, 0x0150, 24, 2, 31),
-	/* CLK_CFG_6 */
+	 
 	MUX_GATE(CLK_TOP_MEM_SEL, "mem_sel", mem_parents, 0x0158, 0, 2, 7),
 	MUX_GATE(CLK_TOP_CAMTG_SEL, "camtg_sel", camtg_parents, 0x0158, 8, 3, 15),
 	MUX_GATE(CLK_TOP_AUDIO_SEL, "audio_sel", audio_parents, 0x0158, 24, 2, 31),
-	/* CLK_CFG_7 */
+	 
 	MUX_GATE(CLK_TOP_FIX_SEL, "fix_sel", fix_parents, 0x015c, 0, 3, 7),
 	MUX_GATE(CLK_TOP_VDEC_SEL, "vdec_sel", vdec_parents, 0x015c, 8, 4, 15),
 	MUX_GATE(CLK_TOP_DDRPHYCFG_SEL, "ddrphycfg_sel", ddrphycfg_parents,
 		0x015c, 16, 2, 23),
 	MUX_GATE(CLK_TOP_DPILVDS_SEL, "dpilvds_sel", dpilvds_parents, 0x015c, 24, 3, 31),
-	/* CLK_CFG_8 */
+	 
 	MUX_GATE(CLK_TOP_PMICSPI_SEL, "pmicspi_sel", pmicspi_parents, 0x0164, 0, 3, 7),
 	MUX_GATE(CLK_TOP_MSDC30_0_SEL, "msdc30_0_sel", msdc30_parents, 0x0164, 8, 3, 15),
 	MUX_GATE(CLK_TOP_SMI_MFG_AS_SEL, "smi_mfg_as_sel", smi_mfg_as_parents,
 		0x0164, 16, 2, 23),
 	MUX_GATE(CLK_TOP_GCPU_SEL, "gcpu_sel", gcpu_parents, 0x0164, 24, 3, 31),
-	/* CLK_CFG_9 */
+	 
 	MUX_GATE(CLK_TOP_DPI1_SEL, "dpi1_sel", dpi1_parents, 0x0168, 0, 2, 7),
 	MUX_GATE_FLAGS(CLK_TOP_CCI_SEL, "cci_sel", cci_parents, 0x0168, 8, 3, 15, CLK_IS_CRITICAL),
 	MUX_GATE(CLK_TOP_APLL_SEL, "apll_sel", apll_parents, 0x0168, 16, 3, 23),
@@ -446,7 +443,7 @@ static const struct mtk_gate_regs peri1_cg_regs = {
 
 static const struct mtk_gate peri_gates[] = {
 	GATE_DUMMY(CLK_DUMMY, "peri_dummy"),
-	/* PERI0 */
+	 
 	GATE_PERI0(CLK_PERI_I2C5, "i2c5_ck", "axi_sel", 31),
 	GATE_PERI0(CLK_PERI_I2C4, "i2c4_ck", "axi_sel", 30),
 	GATE_PERI0(CLK_PERI_I2C3, "i2c3_ck", "axi_sel", 29),
@@ -479,7 +476,7 @@ static const struct mtk_gate peri_gates[] = {
 	GATE_PERI0(CLK_PERI_PWM1, "pwm1_ck", "axi_sel", 2),
 	GATE_PERI0(CLK_PERI_THERM, "therm_ck", "axi_sel", 1),
 	GATE_PERI0(CLK_PERI_NFI, "nfi_ck", "axi_sel", 0),
-	/* PERI1 */
+	 
 	GATE_PERI1(CLK_PERI_USBSLV, "usbslv_ck", "axi_sel", 8),
 	GATE_PERI1(CLK_PERI_USB1_MCU, "usb1_mcu_ck", "axi_sel", 7),
 	GATE_PERI1(CLK_PERI_USB0_MCU, "usb0_mcu_ck", "axi_sel", 6),
@@ -507,13 +504,13 @@ static u16 infrasys_rst_ofs[] = { 0x30, 0x34, };
 static u16 pericfg_rst_ofs[] = { 0x0, 0x4, };
 
 static const struct mtk_clk_rst_desc clk_rst_desc[] = {
-	/* infrasys */
+	 
 	{
 		.version = MTK_RST_SIMPLE,
 		.rst_bank_ofs = infrasys_rst_ofs,
 		.rst_bank_nr = ARRAY_SIZE(infrasys_rst_ofs),
 	},
-	/* pericfg */
+	 
 	{
 		.version = MTK_RST_SIMPLE,
 		.rst_bank_ofs = pericfg_rst_ofs,
@@ -548,7 +545,7 @@ static const struct of_device_id of_match_clk_mt8135[] = {
 	{ .compatible = "mediatek,mt8135-infracfg", .data = &infra_desc },
 	{ .compatible = "mediatek,mt8135-pericfg", .data = &peri_desc },
 	{ .compatible = "mediatek,mt8135-topckgen", .data = &topck_desc },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_match_clk_mt8135);
 

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* AF_XDP internal functions
- * Copyright(c) 2018 Intel Corporation.
- */
+ 
+ 
 
 #ifndef _LINUX_XDP_SOCK_H
 #define _LINUX_XDP_SOCK_H
@@ -39,13 +37,13 @@ struct xdp_umem {
 
 struct xsk_map {
 	struct bpf_map map;
-	spinlock_t lock; /* Synchronize map updates */
+	spinlock_t lock;  
 	atomic_t count;
 	struct xdp_sock __rcu *xsk_map[];
 };
 
 struct xdp_sock {
-	/* struct sock must be the first member of struct xdp_sock */
+	 
 	struct sock sk;
 	struct xsk_queue *rx ____cacheline_aligned_in_smp;
 	struct net_device *dev;
@@ -63,26 +61,23 @@ struct xdp_sock {
 
 	struct xsk_queue *tx ____cacheline_aligned_in_smp;
 	struct list_head tx_list;
-	/* Protects generic receive. */
+	 
 	spinlock_t rx_lock;
 
-	/* Statistics */
+	 
 	u64 rx_dropped;
 	u64 rx_queue_full;
 
-	/* When __xsk_generic_xmit() must return before it sees the EOP descriptor for the current
-	 * packet, the partially built skb is saved here so that packet building can resume in next
-	 * call of __xsk_generic_xmit().
-	 */
+	 
 	struct sk_buff *skb;
 
 	struct list_head map_list;
-	/* Protects map_list */
+	 
 	spinlock_t map_list_lock;
-	/* Protects multiple processes in the control path */
+	 
 	struct mutex mutex;
-	struct xsk_queue *fq_tmp; /* Only as tmp storage before bind */
-	struct xsk_queue *cq_tmp; /* Only as tmp storage before bind */
+	struct xsk_queue *fq_tmp;  
+	struct xsk_queue *cq_tmp;  
 };
 
 #ifdef CONFIG_XDP_SOCKETS
@@ -107,6 +102,6 @@ static inline void __xsk_map_flush(void)
 {
 }
 
-#endif /* CONFIG_XDP_SOCKETS */
+#endif  
 
-#endif /* _LINUX_XDP_SOCK_H */
+#endif  

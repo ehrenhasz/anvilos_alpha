@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023 Oracle and/or its affiliates.
- *
- * KUnit test of the handshake upcall mechanism.
- */
+
+ 
 
 #include <kunit/test.h>
 #include <kunit/visibility.h>
@@ -120,7 +116,7 @@ handshake_req_alloc_get_desc(const struct handshake_req_alloc_test_param *param,
 	strscpy(desc, param->desc, KUNIT_PARAM_DESC_SIZE);
 }
 
-/* Creates the function handshake_req_alloc_gen_params */
+ 
 KUNIT_ARRAY_PARAM(handshake_req_alloc, handshake_req_alloc_params,
 		  handshake_req_alloc_get_desc);
 
@@ -129,12 +125,12 @@ static void handshake_req_alloc_case(struct kunit *test)
 	const struct handshake_req_alloc_test_param *param = test->param_value;
 	struct handshake_req *result;
 
-	/* Arrange */
+	 
 
-	/* Act */
+	 
 	result = handshake_req_alloc(param->proto, param->gfp);
 
-	/* Assert */
+	 
 	if (param->expect_success)
 		KUNIT_EXPECT_NOT_NULL(test, result);
 	else
@@ -148,15 +144,15 @@ static void handshake_req_submit_test1(struct kunit *test)
 	struct socket *sock;
 	int err, result;
 
-	/* Arrange */
+	 
 	err = __sock_create(&init_net, PF_INET, SOCK_STREAM, IPPROTO_TCP,
 			    &sock, 1);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Act */
+	 
 	result = handshake_req_submit(sock, NULL, GFP_KERNEL);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ(test, result, -EINVAL);
 
 	sock_release(sock);
@@ -167,17 +163,17 @@ static void handshake_req_submit_test2(struct kunit *test)
 	struct handshake_req *req;
 	int result;
 
-	/* Arrange */
+	 
 	req = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_NULL(test, req);
 
-	/* Act */
+	 
 	result = handshake_req_submit(NULL, req, GFP_KERNEL);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ(test, result, -EINVAL);
 
-	/* handshake_req_submit() destroys @req on error */
+	 
 }
 
 static void handshake_req_submit_test3(struct kunit *test)
@@ -186,7 +182,7 @@ static void handshake_req_submit_test3(struct kunit *test)
 	struct socket *sock;
 	int err, result;
 
-	/* Arrange */
+	 
 	req = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_NULL(test, req);
 
@@ -195,13 +191,13 @@ static void handshake_req_submit_test3(struct kunit *test)
 	KUNIT_ASSERT_EQ(test, err, 0);
 	sock->file = NULL;
 
-	/* Act */
+	 
 	result = handshake_req_submit(sock, req, GFP_KERNEL);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ(test, result, -EINVAL);
 
-	/* handshake_req_submit() destroys @req on error */
+	 
 	sock_release(sock);
 }
 
@@ -212,7 +208,7 @@ static void handshake_req_submit_test4(struct kunit *test)
 	struct file *filp;
 	int err;
 
-	/* Arrange */
+	 
 	req = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_NULL(test, req);
 
@@ -227,10 +223,10 @@ static void handshake_req_submit_test4(struct kunit *test)
 	err = handshake_req_submit(sock, req, GFP_KERNEL);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* Act */
+	 
 	result = handshake_req_hash_lookup(sock->sk);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_NOT_NULL(test, result);
 	KUNIT_EXPECT_PTR_EQ(test, req, result);
 
@@ -247,7 +243,7 @@ static void handshake_req_submit_test5(struct kunit *test)
 	struct net *net;
 	int saved, err;
 
-	/* Arrange */
+	 
 	req = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_NULL(test, req);
 
@@ -266,10 +262,10 @@ static void handshake_req_submit_test5(struct kunit *test)
 	saved = hn->hn_pending;
 	hn->hn_pending = hn->hn_pending_max + 1;
 
-	/* Act */
+	 
 	err = handshake_req_submit(sock, req, GFP_KERNEL);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ(test, err, -EAGAIN);
 
 	fput(filp);
@@ -283,7 +279,7 @@ static void handshake_req_submit_test6(struct kunit *test)
 	struct file *filp;
 	int err;
 
-	/* Arrange */
+	 
 	req1 = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_NULL(test, req1);
 	req2 = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
@@ -297,12 +293,12 @@ static void handshake_req_submit_test6(struct kunit *test)
 	KUNIT_ASSERT_NOT_NULL(test, sock->sk);
 	sock->file = filp;
 
-	/* Act */
+	 
 	err = handshake_req_submit(sock, req1, GFP_KERNEL);
 	KUNIT_ASSERT_EQ(test, err, 0);
 	err = handshake_req_submit(sock, req2, GFP_KERNEL);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_EQ(test, err, -EBUSY);
 
 	handshake_req_cancel(sock->sk);
@@ -317,7 +313,7 @@ static void handshake_req_cancel_test1(struct kunit *test)
 	bool result;
 	int err;
 
-	/* Arrange */
+	 
 	req = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_NULL(test, req);
 
@@ -332,12 +328,12 @@ static void handshake_req_cancel_test1(struct kunit *test)
 	err = handshake_req_submit(sock, req, GFP_KERNEL);
 	KUNIT_ASSERT_EQ(test, err, 0);
 
-	/* NB: handshake_req hasn't been accepted */
+	 
 
-	/* Act */
+	 
 	result = handshake_req_cancel(sock->sk);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_TRUE(test, result);
 
 	fput(filp);
@@ -353,7 +349,7 @@ static void handshake_req_cancel_test2(struct kunit *test)
 	bool result;
 	int err;
 
-	/* Arrange */
+	 
 	req = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_NULL(test, req);
 
@@ -372,14 +368,14 @@ static void handshake_req_cancel_test2(struct kunit *test)
 	hn = handshake_pernet(net);
 	KUNIT_ASSERT_NOT_NULL(test, hn);
 
-	/* Pretend to accept this request */
+	 
 	next = handshake_req_next(hn, HANDSHAKE_HANDLER_CLASS_TLSHD);
 	KUNIT_ASSERT_PTR_EQ(test, req, next);
 
-	/* Act */
+	 
 	result = handshake_req_cancel(sock->sk);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_TRUE(test, result);
 
 	fput(filp);
@@ -395,7 +391,7 @@ static void handshake_req_cancel_test3(struct kunit *test)
 	bool result;
 	int err;
 
-	/* Arrange */
+	 
 	req = handshake_req_alloc(&handshake_req_alloc_proto_good, GFP_KERNEL);
 	KUNIT_ASSERT_NOT_NULL(test, req);
 
@@ -414,17 +410,17 @@ static void handshake_req_cancel_test3(struct kunit *test)
 	hn = handshake_pernet(net);
 	KUNIT_ASSERT_NOT_NULL(test, hn);
 
-	/* Pretend to accept this request */
+	 
 	next = handshake_req_next(hn, HANDSHAKE_HANDLER_CLASS_TLSHD);
 	KUNIT_ASSERT_PTR_EQ(test, req, next);
 
-	/* Pretend to complete this request */
+	 
 	handshake_complete(next, -ETIMEDOUT, NULL);
 
-	/* Act */
+	 
 	result = handshake_req_cancel(sock->sk);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_FALSE(test, result);
 
 	fput(filp);
@@ -451,7 +447,7 @@ static void handshake_req_destroy_test1(struct kunit *test)
 	struct file *filp;
 	int err;
 
-	/* Arrange */
+	 
 	handshake_req_destroy_test = NULL;
 
 	req = handshake_req_alloc(&handshake_req_alloc_proto_destroy, GFP_KERNEL);
@@ -470,10 +466,10 @@ static void handshake_req_destroy_test1(struct kunit *test)
 
 	handshake_req_cancel(sock->sk);
 
-	/* Act */
+	 
 	fput(filp);
 
-	/* Assert */
+	 
 	KUNIT_EXPECT_PTR_EQ(test, handshake_req_destroy_test, req);
 }
 

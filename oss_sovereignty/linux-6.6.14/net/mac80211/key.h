@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright 2002-2004, Instant802 Networks, Inc.
- * Copyright 2005, Devicescape Software, Inc.
- * Copyright (C) 2019, 2022 Intel Corporation
- */
+ 
+ 
 
 #ifndef IEEE80211_KEY_H
 #define IEEE80211_KEY_H
@@ -18,20 +14,14 @@
 #define NUM_DEFAULT_KEYS 4
 #define NUM_DEFAULT_MGMT_KEYS 2
 #define NUM_DEFAULT_BEACON_KEYS 2
-#define INVALID_PTK_KEYIDX 2 /* Keyidx always pointing to a NULL key for PTK */
+#define INVALID_PTK_KEYIDX 2  
 
 struct ieee80211_local;
 struct ieee80211_sub_if_data;
 struct ieee80211_link_data;
 struct sta_info;
 
-/**
- * enum ieee80211_internal_key_flags - internal key flags
- *
- * @KEY_FLAG_UPLOADED_TO_HARDWARE: Indicates that this key is present
- *	in the hardware for TX crypto hardware acceleration.
- * @KEY_FLAG_TAINTED: Key is tainted and packets should be dropped.
- */
+ 
 enum ieee80211_internal_key_flags {
 	KEY_FLAG_UPLOADED_TO_HARDWARE	= BIT(0),
 	KEY_FLAG_TAINTED		= BIT(1),
@@ -44,15 +34,15 @@ enum ieee80211_internal_tkip_state {
 };
 
 struct tkip_ctx {
-	u16 p1k[5];	/* p1k cache */
-	u32 p1k_iv32;	/* iv32 for which p1k computed */
+	u16 p1k[5];	 
+	u32 p1k_iv32;	 
 	enum ieee80211_internal_tkip_state state;
 };
 
 struct tkip_ctx_rx {
 	struct tkip_ctx ctx;
-	u32 iv32;	/* current iv32 */
-	u16 iv16;	/* current iv16 */
+	u32 iv32;	 
+	u16 iv16;	 
 };
 
 struct ieee80211_key {
@@ -60,61 +50,52 @@ struct ieee80211_key {
 	struct ieee80211_sub_if_data *sdata;
 	struct sta_info *sta;
 
-	/* for sdata list */
+	 
 	struct list_head list;
 
-	/* protected by key mutex */
+	 
 	unsigned int flags;
 
 	union {
 		struct {
-			/* protects tx context */
+			 
 			spinlock_t txlock;
 
-			/* last used TSC */
+			 
 			struct tkip_ctx tx;
 
-			/* last received RSC */
+			 
 			struct tkip_ctx_rx rx[IEEE80211_NUM_TIDS];
 
-			/* number of mic failures */
+			 
 			u32 mic_failures;
 		} tkip;
 		struct {
-			/*
-			 * Last received packet number. The first
-			 * IEEE80211_NUM_TIDS counters are used with Data
-			 * frames and the last counter is used with Robust
-			 * Management frames.
-			 */
+			 
 			u8 rx_pn[IEEE80211_NUM_TIDS + 1][IEEE80211_CCMP_PN_LEN];
 			struct crypto_aead *tfm;
-			u32 replays; /* dot11RSNAStatsCCMPReplays */
+			u32 replays;  
 		} ccmp;
 		struct {
 			u8 rx_pn[IEEE80211_CMAC_PN_LEN];
 			struct crypto_shash *tfm;
-			u32 replays; /* dot11RSNAStatsCMACReplays */
-			u32 icverrors; /* dot11RSNAStatsCMACICVErrors */
+			u32 replays;  
+			u32 icverrors;  
 		} aes_cmac;
 		struct {
 			u8 rx_pn[IEEE80211_GMAC_PN_LEN];
 			struct crypto_aead *tfm;
-			u32 replays; /* dot11RSNAStatsCMACReplays */
-			u32 icverrors; /* dot11RSNAStatsCMACICVErrors */
+			u32 replays;  
+			u32 icverrors;  
 		} aes_gmac;
 		struct {
-			/* Last received packet number. The first
-			 * IEEE80211_NUM_TIDS counters are used with Data
-			 * frames and the last counter is used with Robust
-			 * Management frames.
-			 */
+			 
 			u8 rx_pn[IEEE80211_NUM_TIDS + 1][IEEE80211_GCMP_PN_LEN];
 			struct crypto_aead *tfm;
-			u32 replays; /* dot11RSNAStatsGCMPReplays */
+			u32 replays;  
 		} gcmp;
 		struct {
-			/* generic cipher scheme */
+			 
 			u8 rx_pn[IEEE80211_NUM_TIDS + 1][IEEE80211_MAX_PN_LEN];
 		} gen;
 	} u;
@@ -129,10 +110,7 @@ struct ieee80211_key {
 
 	unsigned int color;
 
-	/*
-	 * key config, must be last because it contains key
-	 * material as variable length member
-	 */
+	 
 	struct ieee80211_key_conf conf;
 };
 
@@ -140,10 +118,7 @@ struct ieee80211_key *
 ieee80211_key_alloc(u32 cipher, int idx, size_t key_len,
 		    const u8 *key_data,
 		    size_t seq_len, const u8 *seq);
-/*
- * Insert a key into data structures (sdata, sta if necessary)
- * to make it used, free old key. On failure, also free the new key.
- */
+ 
 int ieee80211_key_link(struct ieee80211_key *key,
 		       struct ieee80211_link_data *link,
 		       struct sta_info *sta);
@@ -176,4 +151,4 @@ int ieee80211_key_switch_links(struct ieee80211_sub_if_data *sdata,
 
 void ieee80211_delayed_tailroom_dec(struct work_struct *wk);
 
-#endif /* IEEE80211_KEY_H */
+#endif  

@@ -1,16 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * This file contains platform specific structure definitions
- * and init function used by Cannon Lake Point PCH.
- *
- * Copyright (c) 2022, Intel Corporation.
- * All Rights Reserved.
- *
- */
+
+ 
 
 #include "core.h"
 
-/* Cannon Lake: PGD PFET Enable Ack Status Register(s) bitmap */
+ 
 const struct pmc_bit_map cnp_pfear_map[] = {
 	{"PMC",                 BIT(0)},
 	{"OPI-DMI",             BIT(1)},
@@ -87,10 +80,7 @@ const struct pmc_bit_map cnp_pfear_map[] = {
 };
 
 const struct pmc_bit_map *ext_cnp_pfear_map[] = {
-	/*
-	 * Check intel_pmc_core_ids[] users of cnp_reg_map for
-	 * a list of core SoCs using this.
-	 */
+	 
 	cnp_pfear_map,
 	NULL
 };
@@ -159,7 +149,7 @@ const struct pmc_bit_map cnp_ltr_show_map[] = {
 	{"XHCI",		CNP_PMC_LTR_XHCI},
 	{"Reserved",		CNP_PMC_LTR_RESERVED},
 	{"ME",			CNP_PMC_LTR_ME},
-	/* EVA is Enterprise Value Add, doesn't really exist on PCH */
+	 
 	{"EVA",			CNP_PMC_LTR_EVA},
 	{"SOUTHPORT_C",		CNP_PMC_LTR_SPC},
 	{"HD_AUDIO",		CNP_PMC_LTR_AZ},
@@ -173,14 +163,11 @@ const struct pmc_bit_map cnp_ltr_show_map[] = {
 	{"ISH",			CNP_PMC_LTR_ISH},
 	{"UFSX2",		CNP_PMC_LTR_UFSX2},
 	{"EMMC",		CNP_PMC_LTR_EMMC},
-	/*
-	 * Check intel_pmc_core_ids[] users of cnp_reg_map for
-	 * a list of core SoCs using this.
-	 */
+	 
 	{"WIGIG",		ICL_PMC_LTR_WIGIG},
 	{"THC0",                TGL_PMC_LTR_THC0},
 	{"THC1",                TGL_PMC_LTR_THC1},
-	/* Below two cannot be used for LTR_IGNORE */
+	 
 	{"CURRENT_PLATFORM",	CNP_PMC_LTR_CUR_PLT},
 	{"AGGREGATED_SYSTEM",	CNP_PMC_LTR_CUR_ASLT},
 	{}
@@ -206,11 +193,7 @@ const struct pmc_reg_map cnp_reg_map = {
 
 void cnl_suspend(struct pmc_dev *pmcdev)
 {
-	/*
-	 * Due to a hardware limitation, the GBE LTR blocks PC10
-	 * when a cable is attached. To unblock PC10 during suspend,
-	 * tell the PMC to ignore it.
-	 */
+	 
 	pmc_core_send_ltr_ignore(pmcdev, 3, 1);
 }
 

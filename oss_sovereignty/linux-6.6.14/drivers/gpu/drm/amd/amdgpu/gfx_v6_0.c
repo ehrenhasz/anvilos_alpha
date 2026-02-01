@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/firmware.h>
 #include <linux/module.h>
 
@@ -73,7 +52,7 @@ MODULE_FIRMWARE("amdgpu/hainan_rlc.bin");
 
 static u32 gfx_v6_0_get_csb_size(struct amdgpu_device *adev);
 static void gfx_v6_0_get_csb_buffer(struct amdgpu_device *adev, volatile u32 *buffer);
-//static void gfx_v6_0_init_cp_pg_table(struct amdgpu_device *adev);
+
 static void gfx_v6_0_init_pg(struct amdgpu_device *adev);
 
 #define ARRAY_MODE(x)					((x) << GB_TILE_MODE0__ARRAY_MODE__SHIFT)
@@ -1437,12 +1416,12 @@ static void gfx_v6_0_write_harvested_raster_configs(struct amdgpu_device *adev,
 			}
 		}
 
-		/* GRBM_GFX_INDEX has a different offset on SI */
+		 
 		gfx_v6_0_select_se_sh(adev, se, 0xffffffff, 0xffffffff, 0);
 		WREG32(mmPA_SC_RASTER_CONFIG, raster_config_se);
 	}
 
-	/* GRBM_GFX_INDEX has a different offset on SI */
+	 
 	gfx_v6_0_select_se_sh(adev, 0xffffffff, 0xffffffff, 0xffffffff, 0);
 }
 
@@ -1484,7 +1463,7 @@ static void gfx_v6_0_setup_rb(struct amdgpu_device *adev)
 							adev->gfx.config.backend_enable_mask,
 							num_rb_pipes);
 
-	/* cache the values for userspace */
+	 
 	for (i = 0; i < adev->gfx.config.max_shader_engines; i++) {
 		for (j = 0; j < adev->gfx.config.max_sh_per_se; j++) {
 			gfx_v6_0_select_se_sh(adev, i, j, 0xffffffff, 0);
@@ -1806,7 +1785,7 @@ static void gfx_v6_0_ring_emit_fence(struct amdgpu_ring *ring, u64 addr,
 {
 	bool write64bit = flags & AMDGPU_FENCE_FLAG_64BIT;
 	bool int_sel = flags & AMDGPU_FENCE_FLAG_INT;
-	/* flush read cache over gart */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_SET_CONFIG_REG, 1));
 	amdgpu_ring_write(ring, (mmCP_COHER_CNTL2 - PACKET3_SET_CONFIG_REG_START));
 	amdgpu_ring_write(ring, 0);
@@ -1817,8 +1796,8 @@ static void gfx_v6_0_ring_emit_fence(struct amdgpu_ring *ring, u64 addr,
 			  PACKET3_SH_ICACHE_ACTION_ENA);
 	amdgpu_ring_write(ring, 0xFFFFFFFF);
 	amdgpu_ring_write(ring, 0);
-	amdgpu_ring_write(ring, 10); /* poll interval */
-	/* EVENT_WRITE_EOP - flush caches, send int */
+	amdgpu_ring_write(ring, 10);  
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_EVENT_WRITE_EOP, 4));
 	amdgpu_ring_write(ring, EVENT_TYPE(CACHE_FLUSH_AND_INV_TS_EVENT) | EVENT_INDEX(5));
 	amdgpu_ring_write(ring, addr & 0xfffffffc);
@@ -1837,7 +1816,7 @@ static void gfx_v6_0_ring_emit_ib(struct amdgpu_ring *ring,
 	unsigned vmid = AMDGPU_JOB_GET_VMID(job);
 	u32 header, control = 0;
 
-	/* insert SWITCH_BUFFER packet before first IB in the ring frame */
+	 
 	if (flags & AMDGPU_HAVE_CTX_SWITCH) {
 		amdgpu_ring_write(ring, PACKET3(PACKET3_SWITCH_BUFFER, 0));
 		amdgpu_ring_write(ring, 0);
@@ -1860,16 +1839,7 @@ static void gfx_v6_0_ring_emit_ib(struct amdgpu_ring *ring,
 	amdgpu_ring_write(ring, control);
 }
 
-/**
- * gfx_v6_0_ring_test_ib - basic ring IB test
- *
- * @ring: amdgpu_ring structure holding ring information
- * @timeout: timeout value in jiffies, or MAX_SCHEDULE_TIMEOUT
- *
- * Allocate an IB and execute it on the gfx ring (SI).
- * Provides a basic gfx ring test to verify that IBs are working.
- * Returns 0 on success, error on failure.
- */
+ 
 static int gfx_v6_0_ring_test_ib(struct amdgpu_ring *ring, long timeout)
 {
 	struct amdgpu_device *adev = ring->adev;
@@ -1946,7 +1916,7 @@ static int gfx_v6_0_cp_gfx_load_microcode(struct amdgpu_device *adev)
 	amdgpu_ucode_print_gfx_hdr(&ce_hdr->header);
 	amdgpu_ucode_print_gfx_hdr(&me_hdr->header);
 
-	/* PFP */
+	 
 	fw_data = (const __le32 *)
 		(adev->gfx.pfp_fw->data + le32_to_cpu(pfp_hdr->header.ucode_array_offset_bytes));
 	fw_size = le32_to_cpu(pfp_hdr->header.ucode_size_bytes) / 4;
@@ -1955,7 +1925,7 @@ static int gfx_v6_0_cp_gfx_load_microcode(struct amdgpu_device *adev)
 		WREG32(mmCP_PFP_UCODE_DATA, le32_to_cpup(fw_data++));
 	WREG32(mmCP_PFP_UCODE_ADDR, 0);
 
-	/* CE */
+	 
 	fw_data = (const __le32 *)
 		(adev->gfx.ce_fw->data + le32_to_cpu(ce_hdr->header.ucode_array_offset_bytes));
 	fw_size = le32_to_cpu(ce_hdr->header.ucode_size_bytes) / 4;
@@ -1964,7 +1934,7 @@ static int gfx_v6_0_cp_gfx_load_microcode(struct amdgpu_device *adev)
 		WREG32(mmCP_CE_UCODE_DATA, le32_to_cpup(fw_data++));
 	WREG32(mmCP_CE_UCODE_ADDR, 0);
 
-	/* ME */
+	 
 	fw_data = (const __be32 *)
 		(adev->gfx.me_fw->data + le32_to_cpu(me_hdr->header.ucode_array_offset_bytes));
 	fw_size = le32_to_cpu(me_hdr->header.ucode_size_bytes) / 4;
@@ -2056,14 +2026,14 @@ static int gfx_v6_0_cp_gfx_resume(struct amdgpu_device *adev)
 	WREG32(mmCP_SEM_WAIT_TIMER, 0x0);
 	WREG32(mmCP_SEM_INCOMPLETE_TIMER_CNTL, 0x0);
 
-	/* Set the write pointer delay */
+	 
 	WREG32(mmCP_RB_WPTR_DELAY, 0);
 
 	WREG32(mmCP_DEBUG, 0);
 	WREG32(mmSCRATCH_ADDR, 0);
 
-	/* ring 0 - compute and gfx */
-	/* Set ring buffer size */
+	 
+	 
 	ring = &adev->gfx.gfx_ring[0];
 	rb_bufsz = order_base_2(ring->ring_size / 8);
 	tmp = (order_base_2(AMDGPU_GPU_PAGE_SIZE/8) << 8) | rb_bufsz;
@@ -2073,12 +2043,12 @@ static int gfx_v6_0_cp_gfx_resume(struct amdgpu_device *adev)
 #endif
 	WREG32(mmCP_RB0_CNTL, tmp);
 
-	/* Initialize the ring buffer's read and write pointers */
+	 
 	WREG32(mmCP_RB0_CNTL, tmp | CP_RB0_CNTL__RB_RPTR_WR_ENA_MASK);
 	ring->wptr = 0;
 	WREG32(mmCP_RB0_WPTR, ring->wptr);
 
-	/* set the wb address whether it's enabled or not */
+	 
 	rptr_addr = ring->rptr_gpu_addr;
 	WREG32(mmCP_RB0_RPTR_ADDR, lower_32_bits(rptr_addr));
 	WREG32(mmCP_RB0_RPTR_ADDR_HI, upper_32_bits(rptr_addr) & 0xFF);
@@ -2090,7 +2060,7 @@ static int gfx_v6_0_cp_gfx_resume(struct amdgpu_device *adev)
 
 	WREG32(mmCP_RB0_BASE, ring->gpu_addr >> 8);
 
-	/* start the rings */
+	 
 	gfx_v6_0_cp_gfx_start(adev);
 	r = amdgpu_ring_test_helper(ring);
 	if (r)
@@ -2150,8 +2120,8 @@ static int gfx_v6_0_cp_compute_resume(struct amdgpu_device *adev)
 	int i, r;
 	u64 rptr_addr;
 
-	/* ring1  - compute only */
-	/* Set ring buffer size */
+	 
+	 
 
 	ring = &adev->gfx.compute_ring[0];
 	rb_bufsz = order_base_2(ring->ring_size / 8);
@@ -2228,7 +2198,7 @@ static void gfx_v6_0_enable_gui_idle_interrupt(struct amdgpu_device *adev,
 	WREG32(mmCP_INT_CNTL_RING0, tmp);
 
 	if (!enable) {
-		/* read a gfx register */
+		 
 		tmp = RREG32(mmDB_DEPTH_INFO);
 
 		mask = RLC_BUSY_STATUS | GFX_POWER_STATUS | GFX_CLOCK_STATUS | GFX_LS_STATUS;
@@ -2269,17 +2239,17 @@ static void gfx_v6_0_ring_emit_pipeline_sync(struct amdgpu_ring *ring)
 	uint64_t addr = ring->fence_drv.gpu_addr;
 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WAIT_REG_MEM, 5));
-	amdgpu_ring_write(ring, (WAIT_REG_MEM_MEM_SPACE(1) | /* memory */
-				 WAIT_REG_MEM_FUNCTION(3) | /* equal */
-				 WAIT_REG_MEM_ENGINE(usepfp)));   /* pfp or me */
+	amdgpu_ring_write(ring, (WAIT_REG_MEM_MEM_SPACE(1) |  
+				 WAIT_REG_MEM_FUNCTION(3) |  
+				 WAIT_REG_MEM_ENGINE(usepfp)));    
 	amdgpu_ring_write(ring, addr & 0xfffffffc);
 	amdgpu_ring_write(ring, upper_32_bits(addr) & 0xffffffff);
 	amdgpu_ring_write(ring, seq);
 	amdgpu_ring_write(ring, 0xffffffff);
-	amdgpu_ring_write(ring, 4); /* poll interval */
+	amdgpu_ring_write(ring, 4);  
 
 	if (usepfp) {
-		/* synce CE with ME to prevent CE fetch CEIB before context switch done */
+		 
 		amdgpu_ring_write(ring, PACKET3(PACKET3_SWITCH_BUFFER, 0));
 		amdgpu_ring_write(ring, 0);
 		amdgpu_ring_write(ring, PACKET3(PACKET3_SWITCH_BUFFER, 0));
@@ -2294,22 +2264,22 @@ static void gfx_v6_0_ring_emit_vm_flush(struct amdgpu_ring *ring,
 
 	amdgpu_gmc_emit_flush_gpu_tlb(ring, vmid, pd_addr);
 
-	/* wait for the invalidate to complete */
+	 
 	amdgpu_ring_write(ring, PACKET3(PACKET3_WAIT_REG_MEM, 5));
-	amdgpu_ring_write(ring, (WAIT_REG_MEM_FUNCTION(0) |  /* always */
-				 WAIT_REG_MEM_ENGINE(0))); /* me */
+	amdgpu_ring_write(ring, (WAIT_REG_MEM_FUNCTION(0) |   
+				 WAIT_REG_MEM_ENGINE(0)));  
 	amdgpu_ring_write(ring, mmVM_INVALIDATE_REQUEST);
 	amdgpu_ring_write(ring, 0);
-	amdgpu_ring_write(ring, 0); /* ref */
-	amdgpu_ring_write(ring, 0); /* mask */
-	amdgpu_ring_write(ring, 0x20); /* poll interval */
+	amdgpu_ring_write(ring, 0);  
+	amdgpu_ring_write(ring, 0);  
+	amdgpu_ring_write(ring, 0x20);  
 
 	if (usepfp) {
-		/* sync PFP to ME, otherwise we might get invalid PFP reads */
+		 
 		amdgpu_ring_write(ring, PACKET3(PACKET3_PFP_SYNC_ME, 0));
 		amdgpu_ring_write(ring, 0x0);
 
-		/* synce CE with ME to prevent CE fetch CEIB before context switch done */
+		 
 		amdgpu_ring_write(ring, PACKET3(PACKET3_SWITCH_BUFFER, 0));
 		amdgpu_ring_write(ring, 0);
 		amdgpu_ring_write(ring, PACKET3(PACKET3_SWITCH_BUFFER, 0));
@@ -2349,14 +2319,14 @@ static int gfx_v6_0_rlc_init(struct amdgpu_device *adev)
 	cs_data = adev->gfx.rlc.cs_data;
 
 	if (src_ptr) {
-		/* init save restore block */
+		 
 		r = amdgpu_gfx_rlc_init_sr(adev, dws);
 		if (r)
 			return r;
 	}
 
 	if (cs_data) {
-		/* clear state block */
+		 
 		adev->gfx.rlc.clear_state_size = gfx_v6_0_get_csb_size(adev);
 		dws = adev->gfx.rlc.clear_state_size + (256 / 4);
 
@@ -2372,7 +2342,7 @@ static int gfx_v6_0_rlc_init(struct amdgpu_device *adev)
 			return r;
 		}
 
-		/* set up the cs buffer */
+		 
 		dst_ptr = adev->gfx.rlc.cs_ptr;
 		reg_list_mc_addr = adev->gfx.rlc.clear_state_gpu_addr + 256;
 		dst_ptr[0] = cpu_to_le32(upper_32_bits(reg_list_mc_addr));
@@ -2467,7 +2437,7 @@ static bool gfx_v6_0_lbpw_supported(struct amdgpu_device *adev)
 {
 	u32 tmp;
 
-	/* Enable LBPW only for DDR3 */
+	 
 	tmp = RREG32(mmMC_SEQ_MISC0);
 	if ((tmp & 0xF0000000) == 0xB0000000)
 		return true;
@@ -2617,21 +2587,7 @@ static void gfx_v6_0_enable_mgcg(struct amdgpu_device *adev, bool enable)
 		gfx_v6_0_update_rlc(adev, tmp);
 	}
 }
-/*
-static void gfx_v6_0_update_cg(struct amdgpu_device *adev,
-			       bool enable)
-{
-	gfx_v6_0_enable_gui_idle_interrupt(adev, false);
-	if (enable) {
-		gfx_v6_0_enable_mgcg(adev, true);
-		gfx_v6_0_enable_cgcg(adev, true);
-	} else {
-		gfx_v6_0_enable_cgcg(adev, false);
-		gfx_v6_0_enable_mgcg(adev, false);
-	}
-	gfx_v6_0_enable_gui_idle_interrupt(adev, true);
-}
-*/
+ 
 
 static void gfx_v6_0_enable_sclk_slowdown_on_pu(struct amdgpu_device *adev,
 						bool enable)
@@ -2659,74 +2615,7 @@ static void gfx_v6_0_enable_cp_pg(struct amdgpu_device *adev, bool enable)
 static void gfx_v6_0_enable_gds_pg(struct amdgpu_device *adev, bool enable)
 {
 }
-/*
-static void gfx_v6_0_init_cp_pg_table(struct amdgpu_device *adev)
-{
-	const __le32 *fw_data;
-	volatile u32 *dst_ptr;
-	int me, i, max_me = 4;
-	u32 bo_offset = 0;
-	u32 table_offset, table_size;
-
-	if (adev->asic_type == CHIP_KAVERI)
-		max_me = 5;
-
-	if (adev->gfx.rlc.cp_table_ptr == NULL)
-		return;
-
-	dst_ptr = adev->gfx.rlc.cp_table_ptr;
-	for (me = 0; me < max_me; me++) {
-		if (me == 0) {
-			const struct gfx_firmware_header_v1_0 *hdr =
-				(const struct gfx_firmware_header_v1_0 *)adev->gfx.ce_fw->data;
-			fw_data = (const __le32 *)
-				(adev->gfx.ce_fw->data +
-				 le32_to_cpu(hdr->header.ucode_array_offset_bytes));
-			table_offset = le32_to_cpu(hdr->jt_offset);
-			table_size = le32_to_cpu(hdr->jt_size);
-		} else if (me == 1) {
-			const struct gfx_firmware_header_v1_0 *hdr =
-				(const struct gfx_firmware_header_v1_0 *)adev->gfx.pfp_fw->data;
-			fw_data = (const __le32 *)
-				(adev->gfx.pfp_fw->data +
-				 le32_to_cpu(hdr->header.ucode_array_offset_bytes));
-			table_offset = le32_to_cpu(hdr->jt_offset);
-			table_size = le32_to_cpu(hdr->jt_size);
-		} else if (me == 2) {
-			const struct gfx_firmware_header_v1_0 *hdr =
-				(const struct gfx_firmware_header_v1_0 *)adev->gfx.me_fw->data;
-			fw_data = (const __le32 *)
-				(adev->gfx.me_fw->data +
-				 le32_to_cpu(hdr->header.ucode_array_offset_bytes));
-			table_offset = le32_to_cpu(hdr->jt_offset);
-			table_size = le32_to_cpu(hdr->jt_size);
-		} else if (me == 3) {
-			const struct gfx_firmware_header_v1_0 *hdr =
-				(const struct gfx_firmware_header_v1_0 *)adev->gfx.mec_fw->data;
-			fw_data = (const __le32 *)
-				(adev->gfx.mec_fw->data +
-				 le32_to_cpu(hdr->header.ucode_array_offset_bytes));
-			table_offset = le32_to_cpu(hdr->jt_offset);
-			table_size = le32_to_cpu(hdr->jt_size);
-		} else {
-			const struct gfx_firmware_header_v1_0 *hdr =
-				(const struct gfx_firmware_header_v1_0 *)adev->gfx.mec2_fw->data;
-			fw_data = (const __le32 *)
-				(adev->gfx.mec2_fw->data +
-				 le32_to_cpu(hdr->header.ucode_array_offset_bytes));
-			table_offset = le32_to_cpu(hdr->jt_offset);
-			table_size = le32_to_cpu(hdr->jt_size);
-		}
-
-		for (i = 0; i < table_size; i ++) {
-			dst_ptr[bo_offset + i] =
-				cpu_to_le32(le32_to_cpu(fw_data[table_offset + i]));
-		}
-
-		bo_offset += table_size;
-	}
-}
-*/
+ 
 static void gfx_v6_0_enable_gfx_cgpg(struct amdgpu_device *adev,
 				     bool enable)
 {
@@ -2811,9 +2700,9 @@ static u32 gfx_v6_0_get_csb_size(struct amdgpu_device *adev)
 	if (adev->gfx.rlc.cs_data == NULL)
 		return 0;
 
-	/* begin clear state */
+	 
 	count += 2;
-	/* context control state */
+	 
 	count += 3;
 
 	for (sect = adev->gfx.rlc.cs_data; sect->section != NULL; ++sect) {
@@ -2824,11 +2713,11 @@ static u32 gfx_v6_0_get_csb_size(struct amdgpu_device *adev)
 				return 0;
 		}
 	}
-	/* pa_sc_raster_config */
+	 
 	count += 3;
-	/* end clear state */
+	 
 	count += 2;
-	/* clear state */
+	 
 	count += 2;
 
 	return count;
@@ -2970,7 +2859,7 @@ static void wave_read_regs(struct amdgpu_device *adev, uint32_t simd,
 
 static void gfx_v6_0_read_wave_data(struct amdgpu_device *adev, uint32_t xcc_id, uint32_t simd, uint32_t wave, uint32_t *dst, int *no_fields)
 {
-	/* type 0 wave data */
+	 
 	dst[(*no_fields)++] = 0;
 	dst[(*no_fields)++] = wave_read_ind(adev, simd, wave, ixSQ_WAVE_STATUS);
 	dst[(*no_fields)++] = wave_read_ind(adev, simd, wave, ixSQ_WAVE_PC_LO);
@@ -3436,10 +3325,10 @@ static void gfx_v6_0_emit_mem_sync(struct amdgpu_ring *ring)
 	amdgpu_ring_write(ring, PACKET3_TCL1_ACTION_ENA |
 			  PACKET3_TC_ACTION_ENA |
 			  PACKET3_SH_KCACHE_ACTION_ENA |
-			  PACKET3_SH_ICACHE_ACTION_ENA);  /* CP_COHER_CNTL */
-	amdgpu_ring_write(ring, 0xffffffff);  /* CP_COHER_SIZE */
-	amdgpu_ring_write(ring, 0);  /* CP_COHER_BASE */
-	amdgpu_ring_write(ring, 0x0000000A); /* poll interval */
+			  PACKET3_SH_ICACHE_ACTION_ENA);   
+	amdgpu_ring_write(ring, 0xffffffff);   
+	amdgpu_ring_write(ring, 0);   
+	amdgpu_ring_write(ring, 0x0000000A);  
 }
 
 static const struct amd_ip_funcs gfx_v6_0_ip_funcs = {
@@ -3468,13 +3357,13 @@ static const struct amdgpu_ring_funcs gfx_v6_0_ring_funcs_gfx = {
 	.get_wptr = gfx_v6_0_ring_get_wptr,
 	.set_wptr = gfx_v6_0_ring_set_wptr_gfx,
 	.emit_frame_size =
-		5 + 5 + /* hdp flush / invalidate */
-		14 + 14 + 14 + /* gfx_v6_0_ring_emit_fence x3 for user fence, vm fence */
-		7 + 4 + /* gfx_v6_0_ring_emit_pipeline_sync */
-		SI_FLUSH_GPU_TLB_NUM_WREG * 5 + 7 + 6 + /* gfx_v6_0_ring_emit_vm_flush */
-		3 + 2 + /* gfx_v6_ring_emit_cntxcntl including vgt flush */
-		5, /* SURFACE_SYNC */
-	.emit_ib_size = 6, /* gfx_v6_0_ring_emit_ib */
+		5 + 5 +  
+		14 + 14 + 14 +  
+		7 + 4 +  
+		SI_FLUSH_GPU_TLB_NUM_WREG * 5 + 7 + 6 +  
+		3 + 2 +  
+		5,  
+	.emit_ib_size = 6,  
 	.emit_ib = gfx_v6_0_ring_emit_ib,
 	.emit_fence = gfx_v6_0_ring_emit_fence,
 	.emit_pipeline_sync = gfx_v6_0_ring_emit_pipeline_sync,
@@ -3495,12 +3384,12 @@ static const struct amdgpu_ring_funcs gfx_v6_0_ring_funcs_compute = {
 	.get_wptr = gfx_v6_0_ring_get_wptr,
 	.set_wptr = gfx_v6_0_ring_set_wptr_compute,
 	.emit_frame_size =
-		5 + 5 + /* hdp flush / invalidate */
-		7 + /* gfx_v6_0_ring_emit_pipeline_sync */
-		SI_FLUSH_GPU_TLB_NUM_WREG * 5 + 7 + /* gfx_v6_0_ring_emit_vm_flush */
-		14 + 14 + 14 + /* gfx_v6_0_ring_emit_fence x3 for user fence, vm fence */
-		5, /* SURFACE_SYNC */
-	.emit_ib_size = 6, /* gfx_v6_0_ring_emit_ib */
+		5 + 5 +  
+		7 +  
+		SI_FLUSH_GPU_TLB_NUM_WREG * 5 + 7 +  
+		14 + 14 + 14 +  
+		5,  
+	.emit_ib_size = 6,  
 	.emit_ib = gfx_v6_0_ring_emit_ib,
 	.emit_fence = gfx_v6_0_ring_emit_fence,
 	.emit_pipeline_sync = gfx_v6_0_ring_emit_pipeline_sync,

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO: IOMMU DMA mapping support for TCE on POWER
- *
- * Copyright (C) 2013 IBM Corp.  All rights reserved.
- *     Author: Alexey Kardashevskiy <aik@ozlabs.ru>
- * Copyright Gavin Shan, IBM Corporation 2014.
- *
- * Derived from original vfio_iommu_type1.c:
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -34,32 +24,20 @@
 static void tce_iommu_detach_group(void *iommu_data,
 		struct iommu_group *iommu_group);
 
-/*
- * VFIO IOMMU fd for SPAPR_TCE IOMMU implementation
- *
- * This code handles mapping and unmapping of user data buffers
- * into DMA'ble space using the IOMMU
- */
+ 
 
 struct tce_iommu_group {
 	struct list_head next;
 	struct iommu_group *grp;
 };
 
-/*
- * A container needs to remember which preregistered region  it has
- * referenced to do proper cleanup at the userspace process exit.
- */
+ 
 struct tce_iommu_prereg {
 	struct list_head next;
 	struct mm_iommu_table_group_mem_t *mem;
 };
 
-/*
- * The container descriptor supports only a single group per container.
- * Required by the API as the container is not supplied with the IOMMU group
- * at the moment of initialization.
- */
+ 
 struct tce_container {
 	struct mutex lock;
 	bool enabled;
@@ -187,11 +165,7 @@ static bool tce_page_is_contained(struct mm_struct *mm, unsigned long hpa,
 		return size == (1UL << it_page_shift);
 
 	page = pfn_to_page(hpa >> PAGE_SHIFT);
-	/*
-	 * Check that the TCE table granularity is not bigger than the size of
-	 * a page we just found. Otherwise the hardware can get access to
-	 * a bigger memory chunk that it should.
-	 */
+	 
 	return page_shift(compound_head(page)) >= it_page_shift;
 }
 
@@ -245,35 +219,7 @@ static int tce_iommu_enable(struct tce_container *container)
 	if (container->enabled)
 		return -EBUSY;
 
-	/*
-	 * When userspace pages are mapped into the IOMMU, they are effectively
-	 * locked memory, so, theoretically, we need to update the accounting
-	 * of locked pages on each map and unmap.  For powerpc, the map unmap
-	 * paths can be very hot, though, and the accounting would kill
-	 * performance, especially since it would be difficult to impossible
-	 * to handle the accounting in real mode only.
-	 *
-	 * To address that, rather than precisely accounting every page, we
-	 * instead account for a worst case on locked memory when the iommu is
-	 * enabled and disabled.  The worst case upper bound on locked memory
-	 * is the size of the whole iommu window, which is usually relatively
-	 * small (compared to total memory sizes) on POWER hardware.
-	 *
-	 * Also we don't have a nice way to fail on H_PUT_TCE due to ulimits,
-	 * that would effectively kill the guest at random points, much better
-	 * enforcing the limit based on the max that the guest can map.
-	 *
-	 * Unfortunately at the moment it counts whole tables, no matter how
-	 * much memory the guest has. I.e. for 4GB guest and 4 IOMMU groups
-	 * each with 2GB DMA window, 8GB will be counted here. The reason for
-	 * this is that we cannot tell here the amount of RAM used by the guest
-	 * as this information is only available from KVM and VFIO is
-	 * KVM agnostic.
-	 *
-	 * So we do not allow enabling a container without a group attached
-	 * as there is no way to know how much we should increment
-	 * the locked_vm counter.
-	 */
+	 
 	if (!tce_groups_attached(container))
 		return -ENODEV;
 
@@ -354,10 +300,7 @@ static void tce_iommu_release(void *iommu_data)
 		tce_iommu_detach_group(iommu_data, tcegrp->grp);
 	}
 
-	/*
-	 * If VFIO created a table, it was not disposed
-	 * by tce_iommu_detach_group() so do it now.
-	 */
+	 
 	for (i = 0; i < IOMMU_TABLE_GROUP_MAX_TABLES; ++i) {
 		struct iommu_table *tbl = container->tables[i];
 
@@ -440,18 +383,11 @@ static int tce_iommu_clear(struct tce_container *container,
 
 	for ( ; entry < lastentry; ++entry) {
 		if (tbl->it_indirect_levels && tbl->it_userspace) {
-			/*
-			 * For multilevel tables, we can take a shortcut here
-			 * and skip some TCEs as we know that the userspace
-			 * addresses cache is a mirror of the real TCE table
-			 * and if it is missing some indirect levels, then
-			 * the hardware table does not have them allocated
-			 * either and therefore does not require updating.
-			 */
+			 
 			__be64 *pua = IOMMU_TABLE_USERSPACE_ENTRY_RO(tbl,
 					entry);
 			if (!pua) {
-				/* align to level_size which is power of two */
+				 
 				entry |= tbl->it_level_size - 1;
 				continue;
 			}
@@ -569,18 +505,18 @@ static long tce_iommu_build_v2(struct tce_container *container,
 			break;
 		}
 
-		/* Preserve offset within IOMMU page */
+		 
 		hpa |= tce & IOMMU_PAGE_MASK(tbl) & ~PAGE_MASK;
 		dirtmp = direction;
 
-		/* The registered region is being unregistered */
+		 
 		if (mm_iommu_mapped_inc(mem))
 			break;
 
 		ret = iommu_tce_xchg_no_kill(container->mm, tbl, entry + i,
 				&hpa, &dirtmp);
 		if (ret) {
-			/* dirtmp cannot be DMA_NONE here */
+			 
 			tce_iommu_unuse_page_v2(container, tbl, entry + i);
 			pr_err("iommu_tce: %s failed ioba=%lx, tce=%lx, ret=%ld\n",
 					__func__, entry << tbl->it_page_shift,
@@ -654,7 +590,7 @@ static long tce_iommu_create_window(struct tce_container *container,
 	if (num < 0)
 		return num;
 
-	/* Get the first group for ops::create_table */
+	 
 	tcegrp = list_first_entry(&container->group_list,
 			struct tce_iommu_group, next);
 	table_group = iommu_group_get_iommudata(tcegrp->grp);
@@ -669,7 +605,7 @@ static long tce_iommu_create_window(struct tce_container *container,
 			!table_group->ops->create_table)
 		return -EPERM;
 
-	/* Create TCE table */
+	 
 	ret = tce_iommu_create_table(container, table_group, num,
 			page_shift, window_size, levels, &tbl);
 	if (ret)
@@ -677,10 +613,7 @@ static long tce_iommu_create_window(struct tce_container *container,
 
 	BUG_ON(!tbl->it_ops->free);
 
-	/*
-	 * Program the table to every group.
-	 * Groups have been tested for compatibility at the attach time.
-	 */
+	 
 	list_for_each_entry(tcegrp, &container->group_list, next) {
 		table_group = iommu_group_get_iommudata(tcegrp->grp);
 
@@ -691,7 +624,7 @@ static long tce_iommu_create_window(struct tce_container *container,
 
 	container->tables[num] = tbl;
 
-	/* Return start address assigned by platform in create_table() */
+	 
 	*start_addr = tbl->it_offset << tbl->it_page_shift;
 
 	return 0;
@@ -720,24 +653,18 @@ static long tce_iommu_remove_window(struct tce_container *container,
 
 	BUG_ON(!tbl->it_size);
 
-	/* Detach groups from IOMMUs */
+	 
 	list_for_each_entry(tcegrp, &container->group_list, next) {
 		table_group = iommu_group_get_iommudata(tcegrp->grp);
 
-		/*
-		 * SPAPR TCE IOMMU exposes the default DMA window to
-		 * the guest via dma32_window_start/size of
-		 * VFIO_IOMMU_SPAPR_TCE_GET_INFO. Some platforms allow
-		 * the userspace to remove this window, some do not so
-		 * here we check for the platform capability.
-		 */
+		 
 		if (!table_group->ops || !table_group->ops->unset_window)
 			return -EPERM;
 
 		table_group->ops->unset_window(table_group, num);
 	}
 
-	/* Free table */
+	 
 	tce_iommu_clear(container, tbl, tbl->it_offset, tbl->it_size);
 	tce_iommu_free_table(container, tbl);
 	container->tables[num] = NULL;
@@ -845,10 +772,7 @@ static long tce_iommu_ioctl(void *iommu_data,
 		}
 	}
 
-	/*
-	 * Sanity check to prevent one userspace from manipulating
-	 * another userspace mm.
-	 */
+	 
 	BUG_ON(!container);
 	if (container->mm && container->mm != current->mm)
 		return -EPERM;
@@ -935,7 +859,7 @@ static long tce_iommu_ioctl(void *iommu_data,
 				(param.vaddr & ~IOMMU_PAGE_MASK(tbl)))
 			return -EINVAL;
 
-		/* iova is checked by the IOMMU API */
+		 
 		if (param.flags & VFIO_DMA_MAP_FLAG_READ) {
 			if (param.flags & VFIO_DMA_MAP_FLAG_WRITE)
 				direction = DMA_BIDIRECTIONAL;
@@ -986,7 +910,7 @@ static long tce_iommu_ioctl(void *iommu_data,
 		if (param.argsz < minsz)
 			return -EINVAL;
 
-		/* No flag is supported now */
+		 
 		if (param.flags)
 			return -EINVAL;
 
@@ -1032,7 +956,7 @@ static long tce_iommu_ioctl(void *iommu_data,
 		if (param.argsz < minsz)
 			return -EINVAL;
 
-		/* No flag is supported now */
+		 
 		if (param.flags)
 			return -EINVAL;
 
@@ -1061,7 +985,7 @@ static long tce_iommu_ioctl(void *iommu_data,
 		if (param.argsz < minsz)
 			return -EINVAL;
 
-		/* No flag is supported now */
+		 
 		if (param.flags)
 			return -EINVAL;
 
@@ -1207,7 +1131,7 @@ static long tce_iommu_take_ownership(struct tce_container *container,
 {
 	long i, ret = 0;
 
-	/* Set all windows to the new group */
+	 
 	for (i = 0; i < IOMMU_TABLE_GROUP_MAX_TABLES; ++i) {
 		struct iommu_table *tbl = container->tables[i];
 
@@ -1241,30 +1165,26 @@ static int tce_iommu_attach_group(void *iommu_data,
 
 	mutex_lock(&container->lock);
 
-	/* pr_debug("tce_vfio: Attaching group #%u to iommu %p\n",
-			iommu_group_id(iommu_group), iommu_group); */
+	 
 	table_group = iommu_group_get_iommudata(iommu_group);
 	if (!table_group) {
 		ret = -ENODEV;
 		goto unlock_exit;
 	}
 
-	/* v2 requires full support of dynamic DMA windows */
+	 
 	if (container->v2 && table_group->max_dynamic_windows_supported == 0) {
 		ret = -EINVAL;
 		goto unlock_exit;
 	}
 
-	/* v1 reuses TCE tables and does not share them among PEs */
+	 
 	if (!container->v2 && tce_groups_attached(container)) {
 		ret = -EBUSY;
 		goto unlock_exit;
 	}
 
-	/*
-	 * Check if new group has the same iommu_table_group_ops
-	 * (i.e. compatible)
-	 */
+	 
 	list_for_each_entry(tcegrp, &container->group_list, next) {
 		struct iommu_table_group *table_group_tmp;
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vxcan.c - Virtual CAN Tunnel for cross namespace communication
- *
- * This code is derived from drivers/net/can/vcan.c for the virtual CAN
- * specific parts and from drivers/net/veth.c to implement the netlink API
- * for network interface pairs in a common and established way.
- *
- * Copyright (c) 2017 Oliver Hartkopp <socketcan@hartkopp.net>
- */
+
+ 
 
 #include <linux/ethtool.h>
 #include <linux/module.h>
@@ -63,7 +55,7 @@ static netdev_tx_t vxcan_xmit(struct sk_buff *oskb, struct net_device *dev)
 		goto out_unlock;
 	}
 
-	/* reset CAN GW hop counter */
+	 
 	skb->csum_start = 0;
 	skb->pkt_type   = PACKET_BROADCAST;
 	skb->dev        = peer;
@@ -127,7 +119,7 @@ static int vxcan_get_iflink(const struct net_device *dev)
 
 static int vxcan_change_mtu(struct net_device *dev, int new_mtu)
 {
-	/* Do not allow changing the MTU while running */
+	 
 	if (dev->flags & IFF_UP)
 		return -EBUSY;
 
@@ -169,7 +161,7 @@ static void vxcan_setup(struct net_device *dev)
 	can_set_ml_priv(dev, can_ml);
 }
 
-/* forward declaration for rtnl_create_link() */
+ 
 static struct rtnl_link_ops vxcan_link_ops;
 
 static int vxcan_newlink(struct net *net, struct net_device *dev,
@@ -186,7 +178,7 @@ static int vxcan_newlink(struct net *net, struct net_device *dev,
 	struct ifinfomsg *ifmp = NULL;
 	int err;
 
-	/* register peer device */
+	 
 	if (data && data[VXCAN_INFO_PEER]) {
 		struct nlattr *nla_peer;
 
@@ -235,7 +227,7 @@ static int vxcan_newlink(struct net *net, struct net_device *dev,
 	if (err < 0)
 		goto unregister_network_device;
 
-	/* register first device */
+	 
 	if (tb[IFLA_IFNAME])
 		nla_strscpy(dev->name, tb[IFLA_IFNAME], IFNAMSIZ);
 	else
@@ -247,7 +239,7 @@ static int vxcan_newlink(struct net *net, struct net_device *dev,
 
 	netif_carrier_off(dev);
 
-	/* cross link the device pair */
+	 
 	priv = netdev_priv(dev);
 	rcu_assign_pointer(priv->peer, peer);
 
@@ -269,10 +261,7 @@ static void vxcan_dellink(struct net_device *dev, struct list_head *head)
 	priv = netdev_priv(dev);
 	peer = rtnl_dereference(priv->peer);
 
-	/* Note : dellink() is called from default_device_exit_batch(),
-	 * before a rcu_synchronize() point. The devices are guaranteed
-	 * not being freed before one RCU grace period.
-	 */
+	 
 	RCU_INIT_POINTER(priv->peer, NULL);
 	unregister_netdevice_queue(dev, head);
 

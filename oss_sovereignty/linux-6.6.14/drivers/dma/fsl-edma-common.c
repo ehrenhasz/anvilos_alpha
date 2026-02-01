@@ -1,7 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// Copyright (c) 2013-2014 Freescale Semiconductor, Inc
-// Copyright (c) 2017 Sysam, Angelo Dureghello  <angelo@sysam.it>
+
+
+
+
 
 #include <linux/dmapool.h>
 #include <linux/module.h>
@@ -47,7 +47,7 @@ void fsl_edma_tx_chan_handler(struct fsl_edma_chan *fsl_chan)
 	spin_lock(&fsl_chan->vchan.lock);
 
 	if (!fsl_chan->edesc) {
-		/* terminate_all called before */
+		 
 		spin_unlock(&fsl_chan->vchan.lock);
 		return;
 	}
@@ -74,7 +74,7 @@ static void fsl_edma3_enable_request(struct fsl_edma_chan *fsl_chan)
 
 	flags = fsl_edma_drvflags(fsl_chan);
 	val = edma_readl_chreg(fsl_chan, ch_sbr);
-	/* Remote/local swapped wrongly on iMX8 QM Audio edma */
+	 
 	if (flags & FSL_EDMA_DRV_QUIRK_SWAPPED) {
 		if (!fsl_chan->is_rxchan)
 			val |= EDMA_V3_CH_SBR_RD;
@@ -93,10 +93,7 @@ static void fsl_edma3_enable_request(struct fsl_edma_chan *fsl_chan)
 	edma_writel_chreg(fsl_chan, val, ch_sbr);
 
 	if (flags & FSL_EDMA_DRV_HAS_CHMUX) {
-		/*
-		 * ch_mux: With the exception of 0, attempts to write a value
-		 * already in use will be forced to 0.
-		 */
+		 
 		if (!edma_readl_chreg(fsl_chan, ch_mux))
 			edma_writel_chreg(fsl_chan, fsl_chan->srcid, ch_mux);
 	}
@@ -118,9 +115,7 @@ static void fsl_edma_enable_request(struct fsl_edma_chan *fsl_chan)
 		edma_writeb(fsl_chan->edma, EDMA_SEEI_SEEI(ch), regs->seei);
 		edma_writeb(fsl_chan->edma, ch, regs->serq);
 	} else {
-		/* ColdFire is big endian, and accesses natively
-		 * big endian I/O peripherals
-		 */
+		 
 		iowrite8(EDMA_SEEI_SEEI(ch), regs->seei);
 		iowrite8(ch, regs->serq);
 	}
@@ -152,9 +147,7 @@ void fsl_edma_disable_request(struct fsl_edma_chan *fsl_chan)
 		edma_writeb(fsl_chan->edma, ch, regs->cerq);
 		edma_writeb(fsl_chan->edma, EDMA_CEEI_CEEI(ch), regs->ceei);
 	} else {
-		/* ColdFire is big endian, and accesses natively
-		 * big endian I/O peripherals
-		 */
+		 
 		iowrite8(ch, regs->cerq);
 		iowrite8(EDMA_CEEI_CEEI(ch), regs->ceei);
 	}
@@ -320,7 +313,7 @@ static bool fsl_edma_prep_slave_dma(struct fsl_edma_chan *fsl_chan,
 		break;
 	}
 
-	/* Already mapped for this config? */
+	 
 	if (fsl_chan->dma_dir == dma_dir)
 		return true;
 
@@ -356,7 +349,7 @@ static size_t fsl_edma_desc_residue(struct fsl_edma_chan *fsl_chan,
 	u32 nbytes = 0;
 	int i;
 
-	/* calculate the total size in this desc */
+	 
 	for (len = i = 0; i < fsl_chan->edesc->n_tcds; i++) {
 		nbytes = le32_to_cpu(edesc->tcd[i].vtcd->nbytes);
 		if (nbytes & (EDMA_V3_TCD_NBYTES_DMLOE | EDMA_V3_TCD_NBYTES_SMLOE))
@@ -372,7 +365,7 @@ static size_t fsl_edma_desc_residue(struct fsl_edma_chan *fsl_chan,
 	else
 		cur_addr = edma_read_tcdreg(fsl_chan, daddr);
 
-	/* figure out the finished and calculate the residue */
+	 
 	for (i = 0; i < fsl_chan->edesc->n_tcds; i++) {
 		nbytes = le32_to_cpu(edesc->tcd[i].vtcd->nbytes);
 		if (nbytes & (EDMA_V3_TCD_NBYTES_DMLOE | EDMA_V3_TCD_NBYTES_SMLOE))
@@ -431,12 +424,7 @@ static void fsl_edma_set_tcd_regs(struct fsl_edma_chan *fsl_chan,
 {
 	u16 csr = 0;
 
-	/*
-	 * TCD parameters are stored in struct fsl_edma_hw_tcd in little
-	 * endian format. However, we need to load the TCD registers in
-	 * big- or little-endian obeying the eDMA engine model endian,
-	 * and this is performed from specific edma_write functions
-	 */
+	 
 	edma_write_tcdreg(fsl_chan, 0, csr);
 
 	edma_write_tcdreg(fsl_chan, tcd->saddr, saddr);
@@ -461,11 +449,7 @@ static void fsl_edma_set_tcd_regs(struct fsl_edma_chan *fsl_chan,
 		tcd->csr = cpu_to_le16(csr);
 	}
 
-	/*
-	 * Must clear CHn_CSR[DONE] bit before enable TCDn_CSR[ESG] at EDMAv3
-	 * eDMAv4 have not such requirement.
-	 * Change MLINK need clear CHn_CSR[DONE] for both eDMAv3 and eDMAv4.
-	 */
+	 
 	if (((fsl_edma_drvflags(fsl_chan) & FSL_EDMA_DRV_CLEAR_DONE_E_SG) &&
 		(csr & EDMA_TCD_CSR_E_SG)) ||
 	    ((fsl_edma_drvflags(fsl_chan) & FSL_EDMA_DRV_CLEAR_DONE_E_LINK) &&
@@ -487,12 +471,7 @@ void fsl_edma_fill_tcd(struct fsl_edma_chan *fsl_chan,
 	u16 csr = 0;
 	u32 burst;
 
-	/*
-	 * eDMA hardware SGs require the TCDs to be stored in little
-	 * endian format irrespective of the register endian model.
-	 * So we put the value in little endian in memory, waiting
-	 * for fsl_edma_set_tcd_regs doing the swap.
-	 */
+	 
 	tcd->saddr = cpu_to_le32(src);
 	tcd->daddr = cpu_to_le32(dst);
 
@@ -501,11 +480,11 @@ void fsl_edma_fill_tcd(struct fsl_edma_chan *fsl_chan,
 	tcd->soff = cpu_to_le16(soff);
 
 	if (fsl_chan->is_multi_fifo) {
-		/* set mloff to support multiple fifo */
+		 
 		burst = cfg->direction == DMA_DEV_TO_MEM ?
 				cfg->src_addr_width : cfg->dst_addr_width;
 		nbytes |= EDMA_V3_TCD_NBYTES_MLOFF(-(burst * 4));
-		/* enable DMLOE/SMLOE */
+		 
 		if (cfg->direction == DMA_MEM_TO_DEV) {
 			nbytes |= EDMA_V3_TCD_NBYTES_DMLOE;
 			nbytes &= ~EDMA_V3_TCD_NBYTES_SMLOE;
@@ -615,7 +594,7 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
 		if (dma_buf_next >= dma_addr + buf_len)
 			dma_buf_next = dma_addr;
 
-		/* get next sg's physical address */
+		 
 		last_sg = fsl_desc->tcd[(i + 1) % sg_len].ptcd;
 
 		if (direction == DMA_MEM_TO_DEV) {
@@ -629,7 +608,7 @@ struct dma_async_tx_descriptor *fsl_edma_prep_dma_cyclic(
 			soff = fsl_chan->is_multi_fifo ? 4 : 0;
 			doff = fsl_chan->cfg.src_addr_width;
 		} else {
-			/* DMA_DEV_TO_DEV */
+			 
 			src_addr = fsl_chan->cfg.src_addr;
 			dst_addr = fsl_chan->cfg.dst_addr;
 			soff = doff = 0;
@@ -693,18 +672,14 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
 			soff = 0;
 			doff = fsl_chan->cfg.src_addr_width;
 		} else {
-			/* DMA_DEV_TO_DEV */
+			 
 			src_addr = fsl_chan->cfg.src_addr;
 			dst_addr = fsl_chan->cfg.dst_addr;
 			soff = 0;
 			doff = 0;
 		}
 
-		/*
-		 * Choose the suitable burst length if sg_dma_len is not
-		 * multiple of burst length so that the whole transfer length is
-		 * multiple of minor loop(burst length).
-		 */
+		 
 		if (sg_dma_len(sg) % nbytes) {
 			u32 width = (direction == DMA_DEV_TO_MEM) ? doff : soff;
 			u32 burst = (direction == DMA_DEV_TO_MEM) ?
@@ -718,7 +693,7 @@ struct dma_async_tx_descriptor *fsl_edma_prep_slave_sg(
 					break;
 				}
 			}
-			/* Set burst size as 1 if there's no suitable one */
+			 
 			if (j == 1)
 				nbytes = width;
 		}
@@ -755,7 +730,7 @@ struct dma_async_tx_descriptor *fsl_edma_prep_memcpy(struct dma_chan *chan,
 
 	fsl_chan->is_sw = true;
 
-	/* To match with copy_align and max_seg_size so 1 tcd is enough */
+	 
 	fsl_edma_fill_tcd(fsl_chan, fsl_desc->tcd[0].vtcd, dma_src, dma_dst,
 			fsl_edma_get_tcd_attr(DMA_SLAVE_BUSWIDTH_32_BYTES),
 			32, len, 0, 1, 1, 32, 0, true, true, false);
@@ -788,7 +763,7 @@ void fsl_edma_issue_pending(struct dma_chan *chan)
 
 	if (unlikely(fsl_chan->pm_state != RUNNING)) {
 		spin_unlock_irqrestore(&fsl_chan->vchan.lock, flags);
-		/* cannot submit due to suspend */
+		 
 		return;
 	}
 
@@ -842,14 +817,7 @@ void fsl_edma_cleanup_vchan(struct dma_device *dmadev)
 	}
 }
 
-/*
- * On the 32 channels Vybrid/mpc577x edma version, register offsets are
- * different compared to ColdFire mcf5441x 64 channels edma.
- *
- * This function sets up register offsets as per proper declared version
- * so must be called in xxx_edma_probe() just after setting the
- * edma "version" and "membase" appropriately.
- */
+ 
 void fsl_edma_setup_regs(struct fsl_edma_engine *edma)
 {
 	bool is64 = !!(edma->drvdata->flags & FSL_EDMA_DRV_EDMA64);

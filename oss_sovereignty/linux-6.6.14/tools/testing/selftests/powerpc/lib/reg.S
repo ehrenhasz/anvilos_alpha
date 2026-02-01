@@ -1,14 +1,10 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * test helper assembly functions
- *
- * Copyright (C) 2016 Simon Guo, IBM Corporation.
- */
+ 
+ 
 #include <ppc-asm.h>
 #include "reg.h"
 
 
-/* Non volatile GPR - unsigned long buf[18] */
+ 
 FUNC_START(load_gpr)
 	ld	14, 0*8(3)
 	ld	15, 1*8(3)
@@ -53,7 +49,7 @@ FUNC_START(store_gpr)
 	blr
 FUNC_END(store_gpr)
 
-/* Double Precision Float - double buf[32] */
+ 
 FUNC_START(store_fpr)
 	stfd  0,  0*8(3)
 	stfd  1,  1*8(3)
@@ -90,7 +86,7 @@ FUNC_START(store_fpr)
 	blr
 FUNC_END(store_fpr)
 
-/* VMX/VSX registers - unsigned long buf[128] */
+ 
 FUNC_START(loadvsx)
 	lis	4, 0
 	LXVD2X	(0,(4),(3))

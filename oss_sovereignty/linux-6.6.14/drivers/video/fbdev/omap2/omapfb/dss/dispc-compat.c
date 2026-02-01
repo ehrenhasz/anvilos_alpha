@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Texas Instruments
- * Author: Tomi Valkeinen <tomi.valkeinen@ti.com>
- */
+
+ 
 
 #define DSS_SUBSYS_NAME "APPLY"
 
@@ -114,7 +111,7 @@ static void dispc_dump_irqs(struct seq_file *s)
 }
 #endif
 
-/* dispc.irq_lock has to be locked by the caller */
+ 
 static void _omap_dispc_set_irqs(void)
 {
 	u32 mask;
@@ -147,7 +144,7 @@ int omap_dispc_register_isr(omap_dispc_isr_t isr, void *arg, u32 mask)
 
 	spin_lock_irqsave(&dispc_compat.irq_lock, flags);
 
-	/* check for duplicate entry */
+	 
 	for (i = 0; i < DISPC_MAX_NR_ISRS; i++) {
 		isr_data = &dispc_compat.registered_isr[i];
 		if (isr_data->isr == isr && isr_data->arg == arg &&
@@ -204,7 +201,7 @@ int omap_dispc_unregister_isr(omap_dispc_isr_t isr, void *arg, u32 mask)
 				isr_data->mask != mask)
 			continue;
 
-		/* found the correct isr */
+		 
 
 		isr_data->isr = NULL;
 		isr_data->arg = NULL;
@@ -244,10 +241,7 @@ static void print_irq_status(u32 status)
 #undef PIS
 }
 
-/* Called from dss.c. Note that we don't touch clocks here,
- * but we presume they are on because we got an IRQ. However,
- * an irq handler may turn the clocks off, so we may not have
- * clock later in the function. */
+ 
 static irqreturn_t omap_dispc_irq_handler(int irq, void *arg)
 {
 	int i;
@@ -262,7 +256,7 @@ static irqreturn_t omap_dispc_irq_handler(int irq, void *arg)
 	irqstatus = dispc_read_irqstatus();
 	irqenable = dispc_read_irqenable();
 
-	/* IRQ is not for us */
+	 
 	if (!(irqstatus & irqenable)) {
 		spin_unlock(&dispc_compat.irq_lock);
 		return IRQ_NONE;
@@ -277,14 +271,12 @@ static irqreturn_t omap_dispc_irq_handler(int irq, void *arg)
 
 	print_irq_status(irqstatus);
 
-	/* Ack the interrupt. Do it here before clocks are possibly turned
-	 * off */
+	 
 	dispc_clear_irqstatus(irqstatus);
-	/* flush posted write */
+	 
 	dispc_read_irqstatus();
 
-	/* make a copy and unlock, so that isrs can unregister
-	 * themselves */
+	 
 	memcpy(registered_isr, dispc_compat.registered_isr,
 			sizeof(registered_isr));
 
@@ -424,10 +416,7 @@ int dss_dispc_initialize_irq(void)
 	if (dss_feat_get_num_ovls() > 3)
 		dispc_compat.irq_error_mask |= DISPC_IRQ_VID3_FIFO_UNDERFLOW;
 
-	/*
-	 * there's SYNC_LOST_DIGIT waiting after enabling the DSS,
-	 * so clear it
-	 */
+	 
 	dispc_clear_irqstatus(dispc_read_irqstatus());
 
 	INIT_WORK(&dispc_compat.error_work, dispc_error_worker);
@@ -468,10 +457,7 @@ static void dispc_mgr_disable_lcd_out(enum omap_channel channel)
 	if (!dispc_mgr_is_enabled(channel))
 		return;
 
-	/*
-	 * When we disable LCD output, we need to wait for FRAMEDONE to know
-	 * that DISPC has finished with the LCD output.
-	 */
+	 
 
 	irq = dispc_mgr_get_framedone_irq(channel);
 
@@ -482,7 +468,7 @@ static void dispc_mgr_disable_lcd_out(enum omap_channel channel)
 
 	dispc_mgr_enable(channel, false);
 
-	/* if we couldn't register for framedone, just sleep and exit */
+	 
 	if (r) {
 		msleep(100);
 		return;
@@ -502,7 +488,7 @@ static void dispc_digit_out_enable_isr(void *data, u32 mask)
 {
 	struct completion *compl = data;
 
-	/* ignore any sync lost interrupts */
+	 
 	if (mask & (DISPC_IRQ_EVSYNC_EVEN | DISPC_IRQ_EVSYNC_ODD))
 		complete(compl);
 }
@@ -516,11 +502,7 @@ static void dispc_mgr_enable_digit_out(void)
 	if (dispc_mgr_is_enabled(OMAP_DSS_CHANNEL_DIGIT))
 		return;
 
-	/*
-	 * Digit output produces some sync lost interrupts during the first
-	 * frame when enabling. Those need to be ignored, so we register for the
-	 * sync lost irq to prevent the error handler from triggering.
-	 */
+	 
 
 	irq_mask = dispc_mgr_get_vsync_irq(OMAP_DSS_CHANNEL_DIGIT) |
 		dispc_mgr_get_sync_lost_irq(OMAP_DSS_CHANNEL_DIGIT);
@@ -534,7 +516,7 @@ static void dispc_mgr_enable_digit_out(void)
 
 	dispc_mgr_enable(OMAP_DSS_CHANNEL_DIGIT, true);
 
-	/* wait for the first evsync */
+	 
 	if (!wait_for_completion_timeout(&vsync_compl, msecs_to_jiffies(100)))
 		DSSERR("timeout waiting for digit out to start\n");
 
@@ -554,27 +536,16 @@ static void dispc_mgr_disable_digit_out(void)
 	if (!dispc_mgr_is_enabled(OMAP_DSS_CHANNEL_DIGIT))
 		return;
 
-	/*
-	 * When we disable the digit output, we need to wait for FRAMEDONE to
-	 * know that DISPC has finished with the output.
-	 */
+	 
 
 	irq_mask = dispc_mgr_get_framedone_irq(OMAP_DSS_CHANNEL_DIGIT);
 	num_irqs = 1;
 
 	if (!irq_mask) {
-		/*
-		 * omap 2/3 don't have framedone irq for TV, so we need to use
-		 * vsyncs for this.
-		 */
+		 
 
 		irq_mask = dispc_mgr_get_vsync_irq(OMAP_DSS_CHANNEL_DIGIT);
-		/*
-		 * We need to wait for both even and odd vsyncs. Note that this
-		 * is not totally reliable, as we could get a vsync interrupt
-		 * before we disable the output, which leads to timeout in the
-		 * wait_for_completion.
-		 */
+		 
 		num_irqs = 2;
 	}
 
@@ -585,7 +556,7 @@ static void dispc_mgr_disable_digit_out(void)
 
 	dispc_mgr_enable(OMAP_DSS_CHANNEL_DIGIT, false);
 
-	/* if we couldn't register the irq, just sleep and exit */
+	 
 	if (r) {
 		msleep(100);
 		return;

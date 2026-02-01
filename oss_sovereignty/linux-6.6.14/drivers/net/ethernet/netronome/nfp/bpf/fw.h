@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0-only OR BSD-2-Clause) */
-/* Copyright (C) 2017-2018 Netronome Systems, Inc. */
+ 
+ 
 
 #ifndef NFP_BPF_FW_H
 #define NFP_BPF_FW_H 1
@@ -8,9 +8,7 @@
 #include <linux/types.h>
 #include "../ccm.h"
 
-/* Kernel's enum bpf_reg_type is not uABI so people may change it breaking
- * our FW ABI.  In that case we will do translation in the driver.
- */
+ 
 #define NFP_BPF_SCALAR_VALUE		1
 #define NFP_BPF_MAP_VALUE		4
 #define NFP_BPF_STACK			6
@@ -51,11 +49,9 @@ struct nfp_bpf_cap_tlv_maps {
 	__le32 max_elem_sz;
 };
 
-/*
- * Types defined for map related control messages
- */
+ 
 
-/* BPF ABIv2 fixed-length control message fields */
+ 
 #define CMSG_MAP_KEY_LW			16
 #define CMSG_MAP_VALUE_LW		16
 
@@ -77,11 +73,11 @@ struct cmsg_reply_map_simple {
 
 struct cmsg_req_map_alloc_tbl {
 	struct nfp_ccm_hdr hdr;
-	__be32 key_size;		/* in bytes */
-	__be32 value_size;		/* in bytes */
+	__be32 key_size;		 
+	__be32 value_size;		 
 	__be32 max_entries;
 	__be32 map_type;
-	__be32 map_flags;		/* reserved */
+	__be32 map_flags;		 
 };
 
 struct cmsg_reply_map_alloc_tbl {

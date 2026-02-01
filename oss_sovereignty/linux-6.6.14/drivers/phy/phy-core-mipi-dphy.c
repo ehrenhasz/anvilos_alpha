@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2013 NVIDIA Corporation
- * Copyright (C) 2018 Cadence Design Systems Inc.
- */
+ 
+ 
 
 #include <linux/errno.h>
 #include <linux/export.h>
@@ -12,11 +9,7 @@
 #include <linux/phy/phy.h>
 #include <linux/phy/phy-mipi-dphy.h>
 
-/*
- * Minimum D-PHY timings based on MIPI D-PHY specification. Derived
- * from the valid ranges specified in Section 6.9, Table 14, Page 41
- * of the D-PHY specification (v1.2).
- */
+ 
 static int phy_mipi_dphy_calc_config(unsigned long pixel_clock,
 				     unsigned int bpp,
 				     unsigned int lanes,
@@ -52,17 +45,7 @@ static int phy_mipi_dphy_calc_config(unsigned long pixel_clock,
 	cfg->hs_settle = 85000 + 6 * ui;
 	cfg->hs_skip = 40000;
 
-	/*
-	 * The MIPI D-PHY specification (Section 6.9, v1.2, Table 14, Page 40)
-	 * contains this formula as:
-	 *
-	 *     T_HS-TRAIL = max(n * 8 * ui, 60 + n * 4 * ui)
-	 *
-	 * where n = 1 for forward-direction HS mode and n = 4 for reverse-
-	 * direction HS mode. There's only one setting and this function does
-	 * not parameterize on anything other that ui, so this code will
-	 * assumes that reverse-direction HS mode is supported and uses n = 4.
-	 */
+	 
 	cfg->hs_trail = max(4 * 8 * ui, 60000 + 4 * 4 * ui);
 
 	cfg->init = 100;
@@ -100,10 +83,7 @@ int phy_mipi_dphy_get_default_config_for_hsclk(unsigned long long hs_clk_rate,
 }
 EXPORT_SYMBOL(phy_mipi_dphy_get_default_config_for_hsclk);
 
-/*
- * Validate D-PHY configuration according to MIPI D-PHY specification
- * (v1.2, Section Section 6.9 "Global Operation Timing Parameters").
- */
+ 
 int phy_mipi_dphy_config_validate(struct phy_configure_opts_mipi_dphy *cfg)
 {
 	unsigned long long ui;

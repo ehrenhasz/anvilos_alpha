@@ -1,24 +1,4 @@
-/*
- * Copyright 2018 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "nouveau_svm.h"
 #include "nouveau_drv.h"
 #include "nouveau_chan.h"
@@ -119,7 +99,7 @@ nouveau_svmm_bind(struct drm_device *dev, void *data,
 	args->va_start &= PAGE_MASK;
 	args->va_end = ALIGN(args->va_end, PAGE_SIZE);
 
-	/* Sanity check arguments */
+	 
 	if (args->reserved0 || args->reserved1)
 		return -EINVAL;
 	if (args->header & (~NOUVEAU_SVM_BIND_VALID_MASK))
@@ -139,7 +119,7 @@ nouveau_svmm_bind(struct drm_device *dev, void *data,
 	priority = args->header >> NOUVEAU_SVM_BIND_PRIORITY_SHIFT;
 	priority &= NOUVEAU_SVM_BIND_PRIORITY_MASK;
 
-	/* FIXME support CPU target ie all target value < GPU_VRAM */
+	 
 	target = args->header >> NOUVEAU_SVM_BIND_TARGET_SHIFT;
 	target &= NOUVEAU_SVM_BIND_TARGET_MASK;
 	switch (target) {
@@ -149,19 +129,11 @@ nouveau_svmm_bind(struct drm_device *dev, void *data,
 		return -EINVAL;
 	}
 
-	/*
-	 * FIXME: For now refuse non 0 stride, we need to change the migrate
-	 * kernel function to handle stride to avoid to create a mess within
-	 * each device driver.
-	 */
+	 
 	if (args->stride)
 		return -EINVAL;
 
-	/*
-	 * Ok we are ask to do something sane, for now we only support migrate
-	 * commands but we will add things like memory policy (what to do on
-	 * page fault) and maybe some other commands.
-	 */
+	 
 
 	mm = get_task_mm(current);
 	if (!mm) {
@@ -185,17 +157,13 @@ nouveau_svmm_bind(struct drm_device *dev, void *data,
 
 		addr = max(addr, vma->vm_start);
 		next = min(vma->vm_end, end);
-		/* This is a best effort so we ignore errors */
+		 
 		nouveau_dmem_migrate_vma(cli->drm, cli->svm.svmm, vma, addr,
 					 next);
 		addr = next;
 	}
 
-	/*
-	 * FIXME Return the number of page we have migrated, again we need to
-	 * update the migrate API to return that information so that we can
-	 * report it to user space.
-	 */
+	 
 	args->result = 0;
 
 	mmap_read_unlock(mm);
@@ -204,7 +172,7 @@ nouveau_svmm_bind(struct drm_device *dev, void *data,
 	return 0;
 }
 
-/* Unlink channel instance from SVMM. */
+ 
 void
 nouveau_svmm_part(struct nouveau_svmm *svmm, u64 inst)
 {
@@ -220,7 +188,7 @@ nouveau_svmm_part(struct nouveau_svmm *svmm, u64 inst)
 	}
 }
 
-/* Link channel instance to SVMM. */
+ 
 int
 nouveau_svmm_join(struct nouveau_svmm *svmm, u64 inst)
 {
@@ -238,7 +206,7 @@ nouveau_svmm_join(struct nouveau_svmm *svmm, u64 inst)
 	return 0;
 }
 
-/* Invalidate SVMM address-range on GPU. */
+ 
 void
 nouveau_svmm_invalidate(struct nouveau_svmm *svmm, u64 start, u64 limit)
 {
@@ -269,10 +237,7 @@ nouveau_svmm_invalidate_range_start(struct mmu_notifier *mn,
 	if (unlikely(!svmm->vmm))
 		goto out;
 
-	/*
-	 * Ignore invalidation callbacks for device private pages since
-	 * the invalidation is handled as part of the migration process.
-	 */
+	 
 	if (update->event == MMU_NOTIFY_MIGRATE &&
 	    update->owner == svmm->vmm->cli->drm->dev)
 		goto out;
@@ -324,11 +289,11 @@ nouveau_svmm_init(struct drm_device *dev, void *data,
 	struct drm_nouveau_svm_init *args = data;
 	int ret;
 
-	/* We need to fail if svm is disabled */
+	 
 	if (!cli->drm->svm)
 		return -ENOSYS;
 
-	/* Allocate tracking for SVM-enabled VMM. */
+	 
 	if (!(svmm = kzalloc(sizeof(*svmm), GFP_KERNEL)))
 		return -ENOMEM;
 	svmm->vmm = &cli->svm;
@@ -336,19 +301,14 @@ nouveau_svmm_init(struct drm_device *dev, void *data,
 	svmm->unmanaged.limit = args->unmanaged_addr + args->unmanaged_size;
 	mutex_init(&svmm->mutex);
 
-	/* Check that SVM isn't already enabled for the client. */
+	 
 	mutex_lock(&cli->mutex);
 	if (cli->svm.cli) {
 		ret = -EBUSY;
 		goto out_free;
 	}
 
-	/* Allocate a new GPU VMM that can support SVM (managed by the
-	 * client, with replayable faults enabled).
-	 *
-	 * All future channel/memory allocations will make use of this
-	 * VMM instead of the standard one.
-	 */
+	 
 	ret = nvif_vmm_ctor(&cli->mmu, "svmVmm",
 			    cli->vmm.vmm.object.oclass, MANAGED,
 			    args->unmanaged_addr, args->unmanaged_size,
@@ -363,7 +323,7 @@ nouveau_svmm_init(struct drm_device *dev, void *data,
 	ret = __mmu_notifier_register(&svmm->notifier, current->mm);
 	if (ret)
 		goto out_mm_unlock;
-	/* Note, ownership of svmm transfers to mmu_notifier */
+	 
 
 	cli->svm.svmm = svmm;
 	cli->svm.cli = cli;
@@ -379,7 +339,7 @@ out_free:
 	return ret;
 }
 
-/* Issue fault replay for GPU to retry accesses that faulted previously. */
+ 
 static void
 nouveau_svm_fault_replay(struct nouveau_svm *svm)
 {
@@ -390,11 +350,7 @@ nouveau_svm_fault_replay(struct nouveau_svm *svm)
 				 sizeof(struct gp100_vmm_fault_replay_vn)));
 }
 
-/* Cancel a replayable fault that could not be handled.
- *
- * Cancelling the fault will trigger recovery to reset the engine
- * and kill the offending channel (ie. GPU SIGSEGV).
- */
+ 
 static void
 nouveau_svm_fault_cancel(struct nouveau_svm *svm,
 			 u64 inst, u8 hub, u8 gpc, u8 client)
@@ -471,7 +427,7 @@ nouveau_svm_fault_cache(struct nouveau_svm *svm,
 	const u8  client = (info & 0x00007f00) >> 8;
 	struct nouveau_svm_fault *fault;
 
-	//XXX: i think we're supposed to spin waiting */
+	 
 	if (WARN_ON(!(info & 0x80000000)))
 		return;
 
@@ -517,13 +473,7 @@ static bool nouveau_svm_range_invalidate(struct mmu_interval_notifier *mni,
 	    range->owner == sn->svmm->vmm->cli->drm->dev)
 		return true;
 
-	/*
-	 * serializes the update to mni->invalidate_seq done by caller and
-	 * prevents invalidation of the PTE from progressing while HW is being
-	 * programmed. This is very hacky and only works because the normal
-	 * notifier that does invalidation is always called after the range
-	 * notifier.
-	 */
+	 
 	if (mmu_notifier_range_blockable(range))
 		mutex_lock(&sn->svmm->mutex);
 	else if (!mutex_trylock(&sn->svmm->mutex))
@@ -543,27 +493,14 @@ static void nouveau_hmm_convert_pfn(struct nouveau_drm *drm,
 {
 	struct page *page;
 
-	/*
-	 * The address prepared here is passed through nvif_object_ioctl()
-	 * to an eventual DMA map in something like gp100_vmm_pgt_pfn()
-	 *
-	 * This is all just encoding the internal hmm representation into a
-	 * different nouveau internal representation.
-	 */
+	 
 	if (!(range->hmm_pfns[0] & HMM_PFN_VALID)) {
 		args->p.phys[0] = 0;
 		return;
 	}
 
 	page = hmm_pfn_to_page(range->hmm_pfns[0]);
-	/*
-	 * Only map compound pages to the GPU if the CPU is also mapping the
-	 * page as a compound page. Otherwise, the PTE protections might not be
-	 * consistent (e.g., CPU only maps part of a compound page).
-	 * Note that the underlying page might still be larger than the
-	 * CPU mapping (e.g., a PUD sized compound page partially mapped with
-	 * a PMD sized page table entry).
-	 */
+	 
 	if (hmm_pfn_to_map_order(range->hmm_pfns[0])) {
 		unsigned long addr = args->p.addr;
 
@@ -627,7 +564,7 @@ static int nouveau_atomic_range_fault(struct nouveau_svmm *svmm,
 		mutex_unlock(&svmm->mutex);
 	}
 
-	/* Map the page on the GPU. */
+	 
 	args->p.page = 12;
 	args->p.size = PAGE_SIZE;
 	args->p.addr = start;
@@ -656,7 +593,7 @@ static int nouveau_range_fault(struct nouveau_svmm *svmm,
 {
 	unsigned long timeout =
 		jiffies + msecs_to_jiffies(HMM_RANGE_DEFAULT_TIMEOUT);
-	/* Have HMM fault pages within the fault window to the GPU. */
+	 
 	unsigned long hmm_pfns[1];
 	struct hmm_range range = {
 		.notifier = &notifier->notifier,
@@ -728,9 +665,7 @@ nouveau_svm_fault(struct work_struct *work)
 	int fi, fn;
 	int replay = 0, atomic = 0, ret;
 
-	/* Parse available fault buffer entries into a cache, and update
-	 * the GET pointer so HW can reuse the entries.
-	 */
+	 
 	SVM_DBG(svm, "fault handler");
 	if (buffer->get == buffer->put) {
 		buffer->put = nvif_rd32(device, buffer->putaddr);
@@ -749,14 +684,11 @@ nouveau_svm_fault(struct work_struct *work)
 	nvif_wr32(device, buffer->getaddr, buffer->get);
 	SVM_DBG(svm, "%d fault(s) pending", buffer->fault_nr);
 
-	/* Sort parsed faults by instance pointer to prevent unnecessary
-	 * instance to SVMM translations, followed by address and access
-	 * type to reduce the amount of work when handling the faults.
-	 */
+	 
 	sort(buffer->fault, buffer->fault_nr, sizeof(*buffer->fault),
 	     nouveau_svm_fault_cmp, NULL);
 
-	/* Lookup SVMM structure for each unique instance pointer. */
+	 
 	mutex_lock(&svm->mutex);
 	for (fi = 0, svmm = NULL; fi < buffer->fault_nr; fi++) {
 		if (!svmm || buffer->fault[fi]->inst != inst) {
@@ -770,7 +702,7 @@ nouveau_svm_fault(struct work_struct *work)
 	}
 	mutex_unlock(&svm->mutex);
 
-	/* Process list of faults. */
+	 
 	args.i.i.version = 0;
 	args.i.i.type = NVIF_IOCTL_V0_MTHD;
 	args.i.m.version = 0;
@@ -781,41 +713,32 @@ nouveau_svm_fault(struct work_struct *work)
 		struct svm_notifier notifier;
 		struct mm_struct *mm;
 
-		/* Cancel any faults from non-SVM channels. */
+		 
 		if (!(svmm = buffer->fault[fi]->svmm)) {
 			nouveau_svm_fault_cancel_fault(svm, buffer->fault[fi]);
 			continue;
 		}
 		SVMM_DBG(svmm, "addr %016llx", buffer->fault[fi]->addr);
 
-		/* We try and group handling of faults within a small
-		 * window into a single update.
-		 */
+		 
 		start = buffer->fault[fi]->addr;
 		limit = start + PAGE_SIZE;
 		if (start < svmm->unmanaged.limit)
 			limit = min_t(u64, limit, svmm->unmanaged.start);
 
-		/*
-		 * Prepare the GPU-side update of all pages within the
-		 * fault window, determining required pages and access
-		 * permissions based on pending faults.
-		 */
+		 
 		args.i.p.addr = start;
 		args.i.p.page = PAGE_SHIFT;
 		args.i.p.size = PAGE_SIZE;
-		/*
-		 * Determine required permissions based on GPU fault
-		 * access flags.
-		 */
+		 
 		switch (buffer->fault[fi]->access) {
-		case 0: /* READ. */
+		case 0:  
 			hmm_flags = HMM_PFN_REQ_FAULT;
 			break;
-		case 2: /* ATOMIC. */
+		case 2:  
 			atomic = true;
 			break;
-		case 3: /* PREFETCH. */
+		case 3:  
 			hmm_flags = 0;
 			break;
 		default:
@@ -842,15 +765,7 @@ nouveau_svm_fault(struct work_struct *work)
 
 		limit = args.i.p.addr + args.i.p.size;
 		for (fn = fi; ++fn < buffer->fault_nr; ) {
-			/* It's okay to skip over duplicate addresses from the
-			 * same SVMM as faults are ordered by access type such
-			 * that only the first one needs to be handled.
-			 *
-			 * ie. WRITE faults appear first, thus any handling of
-			 * pending READ faults will already be satisfied.
-			 * But if a large page is mapped, make sure subsequent
-			 * fault addresses have sufficient access permission.
-			 */
+			 
 			if (buffer->fault[fn]->svmm != svmm ||
 			    buffer->fault[fn]->addr >= limit ||
 			    (buffer->fault[fi]->access == FAULT_ACCESS_READ &&
@@ -865,7 +780,7 @@ nouveau_svm_fault(struct work_struct *work)
 				break;
 		}
 
-		/* If handling failed completely, cancel all faults. */
+		 
 		if (ret) {
 			while (fi < fn) {
 				struct nouveau_svm_fault *fault =
@@ -877,7 +792,7 @@ nouveau_svm_fault(struct work_struct *work)
 			replay++;
 	}
 
-	/* Issue fault replay to the GPU. */
+	 
 	if (replay)
 		nouveau_svm_fault_replay(svm);
 }
@@ -1056,10 +971,7 @@ nouveau_svm_init(struct nouveau_drm *drm)
 	struct nouveau_svm *svm;
 	int ret;
 
-	/* Disable on Volta and newer until channel recovery is fixed,
-	 * otherwise clients will have a trivial way to trash the GPU
-	 * for everyone.
-	 */
+	 
 	if (drm->client.device.info.family > NV_DEVICE_INFO_V0_PASCAL)
 		return;
 

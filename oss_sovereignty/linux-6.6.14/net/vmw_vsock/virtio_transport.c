@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * virtio transport for vsock
- *
- * Copyright (C) 2013-2015 Red Hat, Inc.
- * Author: Asias He <asias@redhat.com>
- *         Stefan Hajnoczi <stefanha@redhat.com>
- *
- * Some of the code is take from Gerd Hoffmann <kraxel@redhat.com>'s
- * early virtio-vsock proof-of-concept bits.
- */
+
+ 
 #include <linux/spinlock.h>
 #include <linux/module.h>
 #include <linux/list.h>
@@ -23,21 +14,19 @@
 
 static struct workqueue_struct *virtio_vsock_workqueue;
 static struct virtio_vsock __rcu *the_virtio_vsock;
-static DEFINE_MUTEX(the_virtio_vsock_mutex); /* protects the_virtio_vsock */
-static struct virtio_transport virtio_transport; /* forward declaration */
+static DEFINE_MUTEX(the_virtio_vsock_mutex);  
+static struct virtio_transport virtio_transport;  
 
 struct virtio_vsock {
 	struct virtio_device *vdev;
 	struct virtqueue *vqs[VSOCK_VQ_MAX];
 
-	/* Virtqueue processing is deferred to a workqueue */
+	 
 	struct work_struct tx_work;
 	struct work_struct rx_work;
 	struct work_struct event_work;
 
-	/* The following fields are protected by tx_lock.  vqs[VSOCK_VQ_TX]
-	 * must be accessed with tx_lock held.
-	 */
+	 
 	struct mutex tx_lock;
 	bool tx_run;
 
@@ -46,17 +35,13 @@ struct virtio_vsock {
 
 	atomic_t queued_replies;
 
-	/* The following fields are protected by rx_lock.  vqs[VSOCK_VQ_RX]
-	 * must be accessed with rx_lock held.
-	 */
+	 
 	struct mutex rx_lock;
 	bool rx_run;
 	int rx_buf_nr;
 	int rx_buf_max_nr;
 
-	/* The following fields are protected by event_lock.
-	 * vqs[VSOCK_VQ_EVENT] must be accessed with event_lock held.
-	 */
+	 
 	struct mutex event_lock;
 	bool event_run;
 	struct virtio_vsock_event event_list[8];
@@ -120,9 +105,7 @@ virtio_transport_send_pkt_work(struct work_struct *work)
 		}
 
 		ret = virtqueue_add_sgs(vq, sgs, out_sg, in_sg, skb, GFP_KERNEL);
-		/* Usually this means that there is no more space available in
-		 * the vq
-		 */
+		 
 		if (ret < 0) {
 			virtio_vsock_skb_queue_head(&vsock->send_pkt_queue, skb);
 			break;
@@ -134,7 +117,7 @@ virtio_transport_send_pkt_work(struct work_struct *work)
 
 			val = atomic_dec_return(&vsock->queued_replies);
 
-			/* Do we now have resources to resume rx processing? */
+			 
 			if (val + 1 == virtqueue_get_vring_size(rx_vq))
 				restart_rx = true;
 		}
@@ -280,19 +263,19 @@ out:
 		queue_work(virtio_vsock_workqueue, &vsock->send_pkt_work);
 }
 
-/* Is there space left for replies to rx packets? */
+ 
 static bool virtio_transport_more_replies(struct virtio_vsock *vsock)
 {
 	struct virtqueue *vq = vsock->vqs[VSOCK_VQ_RX];
 	int val;
 
-	smp_rmb(); /* paired with atomic_inc() and atomic_dec_return() */
+	smp_rmb();  
 	val = atomic_read(&vsock->queued_replies);
 
 	return val < virtqueue_get_vring_size(vq);
 }
 
-/* event_lock must be held */
+ 
 static int virtio_vsock_event_fill_one(struct virtio_vsock *vsock,
 				       struct virtio_vsock_event *event)
 {
@@ -306,7 +289,7 @@ static int virtio_vsock_event_fill_one(struct virtio_vsock *vsock,
 	return virtqueue_add_inbuf(vq, &sg, 1, event, GFP_KERNEL);
 }
 
-/* event_lock must be held */
+ 
 static void virtio_vsock_event_fill(struct virtio_vsock *vsock)
 {
 	size_t i;
@@ -322,10 +305,7 @@ static void virtio_vsock_event_fill(struct virtio_vsock *vsock)
 
 static void virtio_vsock_reset_sock(struct sock *sk)
 {
-	/* vmci_transport.c doesn't take sk_lock here either.  At least we're
-	 * under vsock_table_lock so the sock cannot disappear while we're
-	 * executing.
-	 */
+	 
 
 	sk->sk_state = TCP_CLOSE;
 	sk->sk_err = ECONNRESET;
@@ -342,7 +322,7 @@ static void virtio_vsock_update_guest_cid(struct virtio_vsock *vsock)
 	vsock->guest_cid = le64_to_cpu(guest_cid);
 }
 
-/* event_lock must be held */
+ 
 static void virtio_vsock_event_handle(struct virtio_vsock *vsock,
 				      struct virtio_vsock_event *event)
 {
@@ -500,10 +480,7 @@ static void virtio_transport_rx_work(struct work_struct *work)
 			unsigned int len;
 
 			if (!virtio_transport_more_replies(vsock)) {
-				/* Stop rx until the device processes already
-				 * pending replies.  Leave rx virtqueue
-				 * callbacks disabled.
-				 */
+				 
 				goto out;
 			}
 
@@ -513,7 +490,7 @@ static void virtio_transport_rx_work(struct work_struct *work)
 
 			vsock->rx_buf_nr--;
 
-			/* Drop short/long packets */
+			 
 			if (unlikely(len < sizeof(struct virtio_vsock_hdr) ||
 				     len > virtio_vsock_skb_len(skb))) {
 				kfree_skb(skb);
@@ -575,15 +552,7 @@ static void virtio_vsock_vqs_start(struct virtio_vsock *vsock)
 	vsock->event_run = true;
 	mutex_unlock(&vsock->event_lock);
 
-	/* virtio_transport_send_pkt() can queue packets once
-	 * the_virtio_vsock is set, but they won't be processed until
-	 * vsock->tx_run is set to true. We queue vsock->send_pkt_work
-	 * when initialization finishes to send those packets queued
-	 * earlier.
-	 * We don't need to queue the other workers (rx, event) because
-	 * as long as we don't fill the queues with empty buffers, the
-	 * host can't send us any notification.
-	 */
+	 
 	queue_work(virtio_vsock_workqueue, &vsock->send_pkt_work);
 }
 
@@ -592,13 +561,11 @@ static void virtio_vsock_vqs_del(struct virtio_vsock *vsock)
 	struct virtio_device *vdev = vsock->vdev;
 	struct sk_buff *skb;
 
-	/* Reset all connected sockets when the VQs disappear */
+	 
 	vsock_for_each_connected_socket(&virtio_transport.transport,
 					virtio_vsock_reset_sock);
 
-	/* Stop all work handlers to make sure no one is accessing the device,
-	 * so we can safely call virtio_reset_device().
-	 */
+	 
 	mutex_lock(&vsock->rx_lock);
 	vsock->rx_run = false;
 	mutex_unlock(&vsock->rx_lock);
@@ -611,9 +578,7 @@ static void virtio_vsock_vqs_del(struct virtio_vsock *vsock)
 	vsock->event_run = false;
 	mutex_unlock(&vsock->event_lock);
 
-	/* Flush all device writes and interrupts, device will not use any
-	 * more buffers.
-	 */
+	 
 	virtio_reset_device(vdev);
 
 	mutex_lock(&vsock->rx_lock);
@@ -628,7 +593,7 @@ static void virtio_vsock_vqs_del(struct virtio_vsock *vsock)
 
 	virtio_vsock_skb_queue_purge(&vsock->send_pkt_queue);
 
-	/* Delete virtqueues and flush outstanding callbacks if any */
+	 
 	vdev->config->del_vqs(vdev);
 }
 
@@ -641,7 +606,7 @@ static int virtio_vsock_probe(struct virtio_device *vdev)
 	if (ret)
 		return ret;
 
-	/* Only one virtio-vsock device per guest is supported */
+	 
 	if (rcu_dereference_protected(the_virtio_vsock,
 				lockdep_is_held(&the_virtio_vsock_mutex))) {
 		ret = -EBUSY;
@@ -703,9 +668,7 @@ static void virtio_vsock_remove(struct virtio_device *vdev)
 
 	virtio_vsock_vqs_del(vsock);
 
-	/* Other works can be queued before 'config->del_vqs()', so we flush
-	 * all works before to free the vsock object to avoid use after free.
-	 */
+	 
 	flush_work(&vsock->rx_work);
 	flush_work(&vsock->tx_work);
 	flush_work(&vsock->event_work);
@@ -740,7 +703,7 @@ static int virtio_vsock_restore(struct virtio_device *vdev)
 
 	mutex_lock(&the_virtio_vsock_mutex);
 
-	/* Only one virtio-vsock device per guest is supported */
+	 
 	if (rcu_dereference_protected(the_virtio_vsock,
 				lockdep_is_held(&the_virtio_vsock_mutex))) {
 		ret = -EBUSY;
@@ -758,7 +721,7 @@ out:
 	mutex_unlock(&the_virtio_vsock_mutex);
 	return ret;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static struct virtio_device_id id_table[] = {
 	{ VIRTIO_ID_VSOCK, VIRTIO_DEV_ANY_ID },

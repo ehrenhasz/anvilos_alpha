@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2009, Intel Corporation.
- *
- * Author: Weidong Han <weidong.han@intel.com>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/acpi.h>
@@ -33,11 +29,7 @@ static int xen_add_device(struct device *dev)
 #endif
 #ifdef CONFIG_PCI_MMCONFIG
 	static bool pci_mcfg_reserved = false;
-	/*
-	 * Reserve MCFG areas in Xen on first invocation due to this being
-	 * potentially called from inside of acpi_init immediately after
-	 * MCFG table has been finally parsed.
-	 */
+	 
 	if (!pci_mcfg_reserved) {
 		xen_mcfg_late();
 		pci_mcfg_reserved = true;
@@ -75,10 +67,7 @@ static int xen_add_device(struct device *dev)
 			handle = ACPI_HANDLE(physfn->bus->bridge);
 #endif
 		if (!handle) {
-			/*
-			 * This device was not listed in the ACPI name space at
-			 * all. Try to get acpi handle of parent pci bus.
-			 */
+			 
 			struct pci_bus *pbus;
 			for (pbus = pci_dev->bus; pbus; pbus = pbus->parent) {
 				handle = acpi_pci_get_bridge_handle(pbus);
@@ -102,7 +91,7 @@ static int xen_add_device(struct device *dev)
 				status = acpi_get_parent(handle, &handle);
 			} while (ACPI_SUCCESS(status));
 		}
-#endif /* CONFIG_ACPI */
+#endif  
 
 		r = HYPERVISOR_physdev_op(PHYSDEVOP_pci_device_add, add);
 		if (r != -ENOSYS)
@@ -229,7 +218,7 @@ static int xen_mcfg_late(void)
 	if (list_empty(&pci_mmcfg_list))
 		return 0;
 
-	/* Check whether they are in the right area. */
+	 
 	list_for_each_entry(cfg, &pci_mmcfg_list, list) {
 		struct physdev_pci_mmcfg_reserved r;
 

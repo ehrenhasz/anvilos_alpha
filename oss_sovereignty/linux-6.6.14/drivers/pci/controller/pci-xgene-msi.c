@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * APM X-Gene MSI Driver
- *
- * Copyright (c) 2014, Applied Micro Circuits Corporation
- * Author: Tanmay Inamdar <tinamdar@apm.com>
- *	   Duc Dang <dhdang@apm.com>
- */
+
+ 
 #include <linux/cpu.h>
 #include <linux/interrupt.h>
 #include <linux/irqdomain.h>
@@ -41,7 +35,7 @@ struct xgene_msi {
 	int			num_cpus;
 };
 
-/* Global data */
+ 
 static struct xgene_msi xgene_msi_ctrl;
 
 static struct irq_chip xgene_msi_top_irq_chip = {
@@ -58,39 +52,9 @@ static struct  msi_domain_info xgene_msi_domain_info = {
 	.chip	= &xgene_msi_top_irq_chip,
 };
 
-/*
- * X-Gene v1 has 16 groups of MSI termination registers MSInIRx, where
- * n is group number (0..F), x is index of registers in each group (0..7)
- * The register layout is as follows:
- * MSI0IR0			base_addr
- * MSI0IR1			base_addr +  0x10000
- * ...				...
- * MSI0IR6			base_addr +  0x60000
- * MSI0IR7			base_addr +  0x70000
- * MSI1IR0			base_addr +  0x80000
- * MSI1IR1			base_addr +  0x90000
- * ...				...
- * MSI1IR7			base_addr +  0xF0000
- * MSI2IR0			base_addr + 0x100000
- * ...				...
- * MSIFIR0			base_addr + 0x780000
- * MSIFIR1			base_addr + 0x790000
- * ...				...
- * MSIFIR7			base_addr + 0x7F0000
- * MSIINT0			base_addr + 0x800000
- * MSIINT1			base_addr + 0x810000
- * ...				...
- * MSIINTF			base_addr + 0x8F0000
- *
- * Each index register supports 16 MSI vectors (0..15) to generate interrupt.
- * There are total 16 GIC IRQs assigned for these 16 groups of MSI termination
- * registers.
- *
- * Each MSI termination group has 1 MSIINTn register (n is 0..15) to indicate
- * the MSI pending status caused by 1 of its 8 index registers.
- */
+ 
 
-/* MSInIRx read helper */
+ 
 static u32 xgene_msi_ir_read(struct xgene_msi *msi,
 				    u32 msi_grp, u32 msir_idx)
 {
@@ -98,31 +62,13 @@ static u32 xgene_msi_ir_read(struct xgene_msi *msi,
 			      (msi_grp << 19) + (msir_idx << 16));
 }
 
-/* MSIINTn read helper */
+ 
 static u32 xgene_msi_int_read(struct xgene_msi *msi, u32 msi_grp)
 {
 	return readl_relaxed(msi->msi_regs + MSI_INT0 + (msi_grp << 16));
 }
 
-/*
- * With 2048 MSI vectors supported, the MSI message can be constructed using
- * following scheme:
- * - Divide into 8 256-vector groups
- *		Group 0: 0-255
- *		Group 1: 256-511
- *		Group 2: 512-767
- *		...
- *		Group 7: 1792-2047
- * - Each 256-vector group is divided into 16 16-vector groups
- *	As an example: 16 16-vector groups for 256-vector group 0-255 is
- *		Group 0: 0-15
- *		Group 1: 16-32
- *		...
- *		Group 15: 240-255
- * - The termination address of MSI vector in 256-vector group n and 16-vector
- *   group x is the address of MSIxIRn
- * - The data for MSI vector in 16-vector group x is x
- */
+ 
 static u32 hwirq_to_reg_set(unsigned long hwirq)
 {
 	return (hwirq / (NR_HW_IRQS * IRQS_PER_IDX));
@@ -150,15 +96,7 @@ static void xgene_compose_msi_msg(struct irq_data *data, struct msi_msg *msg)
 	msg->data = hwirq_to_msi_data(data->hwirq);
 }
 
-/*
- * X-Gene v1 only has 16 MSI GIC IRQs for 2048 MSI vectors.  To maintain
- * the expected behaviour of .set_affinity for each MSI interrupt, the 16
- * MSI GIC IRQs are statically allocated to 8 X-Gene v1 cores (2 GIC IRQs
- * for each core).  The MSI vector is moved fom 1 MSI GIC IRQ to another
- * MSI GIC IRQ to steer its MSI interrupt to correct X-Gene v1 core.  As a
- * consequence, the total MSI vectors that X-Gene v1 supports will be
- * reduced to 256 (2048/8) vectors.
- */
+ 
 static int hwirq_to_cpu(unsigned long hwirq)
 {
 	return (hwirq % xgene_msi_ctrl.num_cpus);
@@ -179,7 +117,7 @@ static int xgene_msi_set_affinity(struct irq_data *irqdata,
 	if (curr_cpu == target_cpu)
 		return IRQ_SET_MASK_OK_DONE;
 
-	/* Update MSI number to target the new CPU */
+	 
 	irqdata->hwirq = hwirq_to_canonical_hwirq(irqdata->hwirq) + target_cpu;
 
 	return IRQ_SET_MASK_OK;
@@ -298,34 +236,18 @@ static void xgene_msi_isr(struct irq_desc *desc)
 	xgene_msi = msi_groups->msi;
 	msi_grp = msi_groups->msi_grp;
 
-	/*
-	 * MSIINTn (n is 0..F) indicates if there is a pending MSI interrupt
-	 * If bit x of this register is set (x is 0..7), one or more interrupts
-	 * corresponding to MSInIRx is set.
-	 */
+	 
 	grp_select = xgene_msi_int_read(xgene_msi, msi_grp);
 	while (grp_select) {
 		msir_index = ffs(grp_select) - 1;
-		/*
-		 * Calculate MSInIRx address to read to check for interrupts
-		 * (refer to termination address and data assignment
-		 * described in xgene_compose_msi_msg() )
-		 */
+		 
 		msir_val = xgene_msi_ir_read(xgene_msi, msi_grp, msir_index);
 		while (msir_val) {
 			intr_index = ffs(msir_val) - 1;
-			/*
-			 * Calculate MSI vector number (refer to the termination
-			 * address and data assignment described in
-			 * xgene_compose_msi_msg function)
-			 */
+			 
 			hw_irq = (((msir_index * IRQS_PER_IDX) + intr_index) *
 				 NR_HW_IRQS) + msi_grp;
-			/*
-			 * As we have multiple hw_irq that maps to single MSI,
-			 * always look up the virq using the hw_irq as seen from
-			 * CPU0
-			 */
+			 
 			hw_irq = hwirq_to_canonical_hwirq(hw_irq);
 			ret = generic_handle_domain_irq(xgene_msi->inner_domain, hw_irq);
 			WARN_ON_ONCE(ret);
@@ -334,11 +256,7 @@ static void xgene_msi_isr(struct irq_desc *desc)
 		grp_select &= ~(1 << msir_index);
 
 		if (!grp_select) {
-			/*
-			 * We handled all interrupts happened in this group,
-			 * resample this group MSI_INTx register in case
-			 * something else has been made pending in the meantime
-			 */
+			 
 			grp_select = xgene_msi_int_read(xgene_msi, msi_grp);
 		}
 	}
@@ -380,11 +298,7 @@ static int xgene_msi_hwirq_alloc(unsigned int cpu)
 		irq_set_chained_handler_and_data(msi_group->gic_irq,
 			xgene_msi_isr, msi_group);
 
-		/*
-		 * Statically allocate MSI GIC IRQs to each CPU core.
-		 * With 8-core X-Gene v1, 2 MSI GIC IRQs are allocated
-		 * to each core.
-		 */
+		 
 		if (alloc_cpumask_var(&mask, GFP_KERNEL)) {
 			cpumask_clear(mask);
 			cpumask_set_cpu(cpu, mask);
@@ -473,16 +387,12 @@ static int xgene_msi_probe(struct platform_device *pdev)
 		xgene_msi->msi_groups[irq_index].msi = xgene_msi;
 	}
 
-	/*
-	 * MSInIRx registers are read-to-clear; before registering
-	 * interrupt handlers, read all of them to clear spurious
-	 * interrupts that may occur before the driver is probed.
-	 */
+	 
 	for (irq_index = 0; irq_index < NR_HW_IRQS; irq_index++) {
 		for (msi_idx = 0; msi_idx < IDX_PER_GROUP; msi_idx++)
 			xgene_msi_ir_read(xgene_msi, irq_index, msi_idx);
 
-		/* Read MSIINTn to confirm */
+		 
 		msi_val = xgene_msi_int_read(xgene_msi, irq_index);
 		if (msi_val) {
 			dev_err(&pdev->dev, "Failed to clear spurious IRQ\n");

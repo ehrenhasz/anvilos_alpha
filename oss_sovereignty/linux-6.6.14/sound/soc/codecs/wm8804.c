@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wm8804.c  --  WM8804 S/PDIF transceiver driver
- *
- * Copyright 2010-11 Wolfson Microelectronics plc
- *
- * Author: Dimitris Papastamos <dp@opensource.wolfsonmicro.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -34,26 +28,26 @@ static const char *wm8804_supply_names[WM8804_NUM_SUPPLIES] = {
 };
 
 static const struct reg_default wm8804_reg_defaults[] = {
-	{ 3,  0x21 },     /* R3  - PLL1 */
-	{ 4,  0xFD },     /* R4  - PLL2 */
-	{ 5,  0x36 },     /* R5  - PLL3 */
-	{ 6,  0x07 },     /* R6  - PLL4 */
-	{ 7,  0x16 },     /* R7  - PLL5 */
-	{ 8,  0x18 },     /* R8  - PLL6 */
-	{ 9,  0xFF },     /* R9  - SPDMODE */
-	{ 10, 0x00 },     /* R10 - INTMASK */
-	{ 18, 0x00 },     /* R18 - SPDTX1 */
-	{ 19, 0x00 },     /* R19 - SPDTX2 */
-	{ 20, 0x00 },     /* R20 - SPDTX3 */
-	{ 21, 0x71 },     /* R21 - SPDTX4 */
-	{ 22, 0x0B },     /* R22 - SPDTX5 */
-	{ 23, 0x70 },     /* R23 - GPO0 */
-	{ 24, 0x57 },     /* R24 - GPO1 */
-	{ 26, 0x42 },     /* R26 - GPO2 */
-	{ 27, 0x06 },     /* R27 - AIFTX */
-	{ 28, 0x06 },     /* R28 - AIFRX */
-	{ 29, 0x80 },     /* R29 - SPDRX1 */
-	{ 30, 0x07 },     /* R30 - PWRDN */
+	{ 3,  0x21 },      
+	{ 4,  0xFD },      
+	{ 5,  0x36 },      
+	{ 6,  0x07 },      
+	{ 7,  0x16 },      
+	{ 8,  0x18 },      
+	{ 9,  0xFF },      
+	{ 10, 0x00 },      
+	{ 18, 0x00 },      
+	{ 19, 0x00 },      
+	{ 20, 0x00 },      
+	{ 21, 0x71 },      
+	{ 22, 0x0B },      
+	{ 23, 0x70 },      
+	{ 24, 0x57 },      
+	{ 26, 0x42 },      
+	{ 27, 0x06 },      
+	{ 28, 0x06 },      
+	{ 29, 0x80 },      
+	{ 30, 0x07 },      
 };
 
 struct wm8804_priv {
@@ -74,11 +68,7 @@ static int txsrc_put(struct snd_kcontrol *kcontrol,
 static int wm8804_aif_event(struct snd_soc_dapm_widget *w,
 			    struct snd_kcontrol *kcontrol, int event);
 
-/*
- * We can't use the same notifier block for more than one supply and
- * there's no way I can see to get from a callback to the caller
- * except container_of().
- */
+ 
 #define WM8804_REGULATOR_EVENT(n) \
 static int wm8804_regulator_event_##n(struct notifier_block *nb, \
 				      unsigned long event, void *data)    \
@@ -139,13 +129,13 @@ static int wm8804_aif_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* power up the aif */
+		 
 		if (!wm8804->aif_pwr)
 			snd_soc_component_update_bits(component, WM8804_PWRDN, 0x10, 0x0);
 		wm8804->aif_pwr++;
 		break;
 	case SND_SOC_DAPM_POST_PMD:
-		/* power down only both paths are disabled */
+		 
 		wm8804->aif_pwr--;
 		if (!wm8804->aif_pwr)
 			snd_soc_component_update_bits(component, WM8804_PWRDN, 0x10, 0x10);
@@ -171,16 +161,16 @@ static int txsrc_put(struct snd_kcontrol *kcontrol,
 	snd_soc_dapm_mutex_lock(dapm);
 
 	if (snd_soc_component_test_bits(component, e->reg, mask, val)) {
-		/* save the current power state of the transmitter */
+		 
 		txpwr = snd_soc_component_read(component, WM8804_PWRDN) & 0x4;
 
-		/* power down the transmitter */
+		 
 		snd_soc_component_update_bits(component, WM8804_PWRDN, 0x4, 0x4);
 
-		/* set the tx source */
+		 
 		snd_soc_component_update_bits(component, e->reg, mask, val);
 
-		/* restore the transmitter's configuration */
+		 
 		snd_soc_component_update_bits(component, WM8804_PWRDN, 0x4, txpwr);
 	}
 
@@ -239,7 +229,7 @@ static int wm8804_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* set data format */
+	 
 	snd_soc_component_update_bits(component, WM8804_AIFTX, 0x3, format);
 	snd_soc_component_update_bits(component, WM8804_AIFRX, 0x3, format);
 
@@ -255,7 +245,7 @@ static int wm8804_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* set master/slave mode */
+	 
 	snd_soc_component_update_bits(component, WM8804_AIFRX, 0x40, master << 6);
 
 	bcp = lrp = 0;
@@ -276,7 +266,7 @@ static int wm8804_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/* set frame inversion */
+	 
 	snd_soc_component_update_bits(component, WM8804_AIFTX, 0x10 | 0x20,
 			    (bcp << 4) | (lrp << 5));
 	snd_soc_component_update_bits(component, WM8804_AIFRX, 0x10 | 0x20,
@@ -309,7 +299,7 @@ static int wm8804_hw_params(struct snd_pcm_substream *substream,
 		return -EINVAL;
 	}
 
-	/* set word length */
+	 
 	snd_soc_component_update_bits(component, WM8804_AIFTX, 0xc, blen << 2);
 	snd_soc_component_update_bits(component, WM8804_AIFRX, 0xc, blen << 2);
 
@@ -324,7 +314,7 @@ struct pll_div {
 	u32 k:22;
 };
 
-/* PLL rate to output rate divisions */
+ 
 static struct {
 	unsigned int div;
 	unsigned int freqmode;
@@ -348,10 +338,7 @@ static int pll_factors(struct pll_div *pll_div, unsigned int target,
 	unsigned long int K, Ndiv, Nmod, tmp;
 	int i;
 
-	/*
-	 * Scale the output frequency up; the PLL should run in the
-	 * region of 90-100MHz.
-	 */
+	 
 	for (i = 0; i < ARRAY_SIZE(post_table); i++) {
 		tmp = target * post_table[i].div;
 		if ((tmp >= 90000000 && tmp <= 100000000) &&
@@ -407,7 +394,7 @@ static int wm8804_set_pll(struct snd_soc_dai *dai, int pll_id,
 	bool change;
 
 	if (!freq_in || !freq_out) {
-		/* disable the PLL */
+		 
 		regmap_update_bits_check(wm8804->regmap, WM8804_PWRDN,
 					 0x1, 0x1, &change);
 		if (change)
@@ -421,24 +408,24 @@ static int wm8804_set_pll(struct snd_soc_dai *dai, int pll_id,
 		if (ret)
 			return ret;
 
-		/* power down the PLL before reprogramming it */
+		 
 		regmap_update_bits_check(wm8804->regmap, WM8804_PWRDN,
 					 0x1, 0x1, &change);
 		if (!change)
 			pm_runtime_get_sync(wm8804->dev);
 
-		/* set PLLN and PRESCALE */
+		 
 		snd_soc_component_update_bits(component, WM8804_PLL4, 0xf | 0x10,
 				    pll_div.n | (pll_div.prescale << 4));
-		/* set mclkdiv and freqmode */
+		 
 		snd_soc_component_update_bits(component, WM8804_PLL5, 0x3 | 0x8,
 				    pll_div.freqmode | (pll_div.mclkdiv << 3));
-		/* set PLLK */
+		 
 		snd_soc_component_write(component, WM8804_PLL1, pll_div.k & 0xff);
 		snd_soc_component_write(component, WM8804_PLL2, (pll_div.k >> 8) & 0xff);
 		snd_soc_component_write(component, WM8804_PLL3, pll_div.k >> 16);
 
-		/* power up the PLL */
+		 
 		snd_soc_component_update_bits(component, WM8804_PWRDN, 0x1, 0);
 	}
 
@@ -597,7 +584,7 @@ int wm8804_probe(struct device *dev, struct regmap *regmap)
 	wm8804->disable_nb[0].notifier_call = wm8804_regulator_event_0;
 	wm8804->disable_nb[1].notifier_call = wm8804_regulator_event_1;
 
-	/* This should really be moved into the regulator core */
+	 
 	for (i = 0; i < ARRAY_SIZE(wm8804->supplies); i++) {
 		struct regulator *regulator = wm8804->supplies[i].consumer;
 
@@ -696,7 +683,7 @@ static int wm8804_runtime_resume(struct device *dev)
 
 	regcache_sync(wm8804->regmap);
 
-	/* Power up OSCCLK */
+	 
 	regmap_update_bits(wm8804->regmap, WM8804_PWRDN, 0x8, 0x0);
 
 	return 0;
@@ -706,7 +693,7 @@ static int wm8804_runtime_suspend(struct device *dev)
 {
 	struct wm8804_priv *wm8804 = dev_get_drvdata(dev);
 
-	/* Power down OSCCLK */
+	 
 	regmap_update_bits(wm8804->regmap, WM8804_PWRDN, 0x8, 0x8);
 
 	regulator_bulk_disable(ARRAY_SIZE(wm8804->supplies),

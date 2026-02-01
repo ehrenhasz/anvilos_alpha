@@ -1,14 +1,4 @@
-/*
- *  Backlight Driver for HP Jornada 680
- *
- *  Copyright (c) 2005 Andriy Skulysh
- *
- *  Based on Sharp's Corgi Backlight Driver
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>

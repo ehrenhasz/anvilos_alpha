@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	TDA665x tuner driver
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-*/
+ 
+ 
 
 #ifndef __TDA665x_H
 #define __TDA665x_H
@@ -35,6 +31,6 @@ static inline struct dvb_frontend *tda665x_attach(struct dvb_frontend *fe,
 	return NULL;
 }
 
-#endif /* CONFIG_DVB_TDA665x */
+#endif  
 
-#endif /* __TDA665x_H */
+#endif  

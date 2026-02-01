@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Transparent proxy support for Linux/iptables
- *
- * Copyright (c) 2006-2010 BalaBit IT Ltd.
- * Author: Balazs Scheidler, Krisztian Kovacs
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>
@@ -44,10 +39,7 @@ tproxy_tg4(struct net *net, struct sk_buff *skb, __be32 laddr, __be16 lport,
 	if (hp == NULL)
 		return NF_DROP;
 
-	/* check if there's an ongoing connection on the packet
-	 * addresses, this happens if the redirect already happened
-	 * and the current packet belongs to an already established
-	 * connection */
+	 
 	sk = nf_tproxy_get_sock_v4(net, skb, iph->protocol,
 				   iph->saddr, iph->daddr,
 				   hp->source, hp->dest,
@@ -57,22 +49,20 @@ tproxy_tg4(struct net *net, struct sk_buff *skb, __be32 laddr, __be16 lport,
 	if (!lport)
 		lport = hp->dest;
 
-	/* UDP has no TCP_TIME_WAIT state, so we never enter here */
+	 
 	if (sk && sk->sk_state == TCP_TIME_WAIT)
-		/* reopening a TIME_WAIT connection needs special handling */
+		 
 		sk = nf_tproxy_handle_time_wait4(net, skb, laddr, lport, sk);
 	else if (!sk)
-		/* no, there's no established connection, check if
-		 * there's a listener on the redirected addr/port */
+		 
 		sk = nf_tproxy_get_sock_v4(net, skb, iph->protocol,
 					   iph->saddr, laddr,
 					   hp->source, lport,
 					   skb->dev, NF_TPROXY_LOOKUP_LISTENER);
 
-	/* NOTE: assign_sock consumes our sk reference */
+	 
 	if (sk && nf_tproxy_sk_is_transparent(sk)) {
-		/* This should be in a separate target, but we don't do multiple
-		   targets on the same rule yet */
+		 
 		skb->mark = (skb->mark & ~mark_mask) ^ mark_value;
 		nf_tproxy_assign_sock(skb, sk);
 		return NF_ACCEPT;
@@ -121,10 +111,7 @@ tproxy_tg6_v1(struct sk_buff *skb, const struct xt_action_param *par)
 	if (!hp)
 		return NF_DROP;
 
-	/* check if there's an ongoing connection on the packet
-	 * addresses, this happens if the redirect already happened
-	 * and the current packet belongs to an already established
-	 * connection */
+	 
 	sk = nf_tproxy_get_sock_v6(xt_net(par), skb, thoff, tproto,
 				   &iph->saddr, &iph->daddr,
 				   hp->source, hp->dest,
@@ -133,10 +120,10 @@ tproxy_tg6_v1(struct sk_buff *skb, const struct xt_action_param *par)
 	laddr = nf_tproxy_laddr6(skb, &tgi->laddr.in6, &iph->daddr);
 	lport = tgi->lport ? tgi->lport : hp->dest;
 
-	/* UDP has no TCP_TIME_WAIT state, so we never enter here */
+	 
 	if (sk && sk->sk_state == TCP_TIME_WAIT) {
 		const struct xt_tproxy_target_info_v1 *tgi = par->targinfo;
-		/* reopening a TIME_WAIT connection needs special handling */
+		 
 		sk = nf_tproxy_handle_time_wait6(skb, tproto, thoff,
 					      xt_net(par),
 					      &tgi->laddr.in6,
@@ -144,17 +131,15 @@ tproxy_tg6_v1(struct sk_buff *skb, const struct xt_action_param *par)
 					      sk);
 	}
 	else if (!sk)
-		/* no there's no established connection, check if
-		 * there's a listener on the redirected addr/port */
+		 
 		sk = nf_tproxy_get_sock_v6(xt_net(par), skb, thoff,
 					   tproto, &iph->saddr, laddr,
 					   hp->source, lport,
 					   xt_in(par), NF_TPROXY_LOOKUP_LISTENER);
 
-	/* NOTE: assign_sock consumes our sk reference */
+	 
 	if (sk && nf_tproxy_sk_is_transparent(sk)) {
-		/* This should be in a separate target, but we don't do multiple
-		   targets on the same rule yet */
+		 
 		skb->mark = (skb->mark & ~tgi->mark_mask) ^ tgi->mark_value;
 		nf_tproxy_assign_sock(skb, sk);
 		return NF_ACCEPT;

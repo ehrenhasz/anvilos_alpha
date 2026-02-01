@@ -1,16 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Standalone EHCI usb debug driver
- *
- * Originally written by:
- *  Eric W. Biederman" <ebiederm@xmission.com> and
- *  Yinghai Lu <yhlu.kernel@gmail.com>
- *
- * Changes for early/late printk and HW errata:
- *  Jason Wessel <jason.wessel@windriver.com>
- *  Copyright (C) 2009 Wind River Systems, Inc.
- *
- */
+ 
+ 
 
 #ifndef __LINUX_USB_EHCI_DBGP_H
 #define __LINUX_USB_EHCI_DBGP_H
@@ -18,9 +7,7 @@
 #include <linux/console.h>
 #include <linux/types.h>
 
-/* Appendix C, Debug port ... intended for use with special "debug devices"
- * that can help if there's no serial console.  (nonstandard enumeration.)
- */
+ 
 struct ehci_dbg_port {
 	u32	control;
 #define DBGP_OWNER	(1<<30)
@@ -46,7 +33,7 @@ struct ehci_dbg_port {
 #ifdef CONFIG_EARLY_PRINTK_DBGP
 extern int early_dbgp_init(char *s);
 extern struct console early_dbgp_console;
-#endif /* CONFIG_EARLY_PRINTK_DBGP */
+#endif  
 
 struct usb_hcd;
 
@@ -56,7 +43,7 @@ extern int xen_dbgp_external_startup(struct usb_hcd *);
 #else
 static inline int xen_dbgp_reset_prep(struct usb_hcd *hcd)
 {
-	return 1; /* Shouldn't this be 0? */
+	return 1;  
 }
 
 static inline int xen_dbgp_external_startup(struct usb_hcd *hcd)
@@ -66,7 +53,7 @@ static inline int xen_dbgp_external_startup(struct usb_hcd *hcd)
 #endif
 
 #ifdef CONFIG_EARLY_PRINTK_DBGP
-/* Call backs from ehci host driver to ehci debug driver */
+ 
 extern int dbgp_external_startup(struct usb_hcd *);
 extern int dbgp_reset_prep(struct usb_hcd *);
 #else
@@ -81,4 +68,4 @@ static inline int dbgp_external_startup(struct usb_hcd *hcd)
 }
 #endif
 
-#endif /* __LINUX_USB_EHCI_DBGP_H */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -41,13 +38,7 @@ enum intr_type {
 	INTR_MSIX_TYPE,
 };
 
-/**
- * parse_capability - convert device capabilities to NIC capabilities
- * @hwdev: the HW device to set and convert device capabilities for
- * @dev_cap: device capabilities from FW
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int parse_capability(struct hinic_hwdev *hwdev,
 			    struct hinic_dev_cap *dev_cap)
 {
@@ -61,7 +52,7 @@ static int parse_capability(struct hinic_hwdev *hwdev,
 	num_ceqs = HINIC_HWIF_NUM_CEQS(hwdev->hwif);
 	num_irqs = HINIC_HWIF_NUM_IRQS(hwdev->hwif);
 
-	/* Each QP has its own (SQ + RQ) interrupts */
+	 
 	nic_cap->num_qps = (num_irqs - (num_aeqs + num_ceqs)) / 2;
 
 	if (nic_cap->num_qps > HINIC_Q_CTXT_MAX)
@@ -85,12 +76,7 @@ static int parse_capability(struct hinic_hwdev *hwdev,
 	return 0;
 }
 
-/**
- * get_capability - get device capabilities from FW
- * @pfhwdev: the PF HW device to get capabilities for
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int get_capability(struct hinic_pfhwdev *pfhwdev)
 {
 	struct hinic_hwdev *hwdev = &pfhwdev->hwdev;
@@ -113,12 +99,7 @@ static int get_capability(struct hinic_pfhwdev *pfhwdev)
 	return parse_capability(hwdev, &dev_cap);
 }
 
-/**
- * get_dev_cap - get device capabilities
- * @hwdev: the NIC HW device to get capabilities for
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int get_dev_cap(struct hinic_hwdev *hwdev)
 {
 	struct hinic_hwif *hwif = hwdev->hwif;
@@ -145,12 +126,7 @@ static int get_dev_cap(struct hinic_hwdev *hwdev)
 	return 0;
 }
 
-/**
- * init_msix - enable the msix and save the entries
- * @hwdev: the NIC HW device
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int init_msix(struct hinic_hwdev *hwdev)
 {
 	struct hinic_hwif *hwif = hwdev->hwif;
@@ -182,10 +158,7 @@ static int init_msix(struct hinic_hwdev *hwdev)
 	return 0;
 }
 
-/**
- * disable_msix - disable the msix
- * @hwdev: the NIC HW device
- **/
+ 
 static void disable_msix(struct hinic_hwdev *hwdev)
 {
 	struct hinic_hwif *hwif = hwdev->hwif;
@@ -194,17 +167,7 @@ static void disable_msix(struct hinic_hwdev *hwdev)
 	pci_disable_msix(pdev);
 }
 
-/**
- * hinic_port_msg_cmd - send port msg to mgmt
- * @hwdev: the NIC HW device
- * @cmd: the port command
- * @buf_in: input buffer
- * @in_size: input size
- * @buf_out: output buffer
- * @out_size: returned output size
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_port_msg_cmd(struct hinic_hwdev *hwdev, enum hinic_port_cmd cmd,
 		       void *buf_in, u16 in_size, void *buf_out, u16 *out_size)
 {
@@ -230,12 +193,7 @@ int hinic_hilink_msg_cmd(struct hinic_hwdev *hwdev, enum hinic_hilink_cmd cmd,
 				 HINIC_MGMT_MSG_SYNC);
 }
 
-/**
- * init_fw_ctxt- Init Firmware tables before network mgmt and io operations
- * @hwdev: the NIC HW device
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int init_fw_ctxt(struct hinic_hwdev *hwdev)
 {
 	struct hinic_hwif *hwif = hwdev->hwif;
@@ -259,14 +217,7 @@ static int init_fw_ctxt(struct hinic_hwdev *hwdev)
 	return 0;
 }
 
-/**
- * set_hw_ioctxt - set the shape of the IO queues in FW
- * @hwdev: the NIC HW device
- * @rq_depth: rq depth
- * @sq_depth: sq depth
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int set_hw_ioctxt(struct hinic_hwdev *hwdev, unsigned int sq_depth,
 			 unsigned int rq_depth)
 {
@@ -338,12 +289,7 @@ static int wait_for_db_state(struct hinic_hwdev *hwdev)
 	return -EFAULT;
 }
 
-/**
- * clear_io_resources - set the IO resources as not active in the NIC
- * @hwdev: the NIC HW device
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int clear_io_resources(struct hinic_hwdev *hwdev)
 {
 	struct hinic_cmd_clear_io_res cmd_clear_io_res;
@@ -352,7 +298,7 @@ static int clear_io_resources(struct hinic_hwdev *hwdev)
 	struct hinic_pfhwdev *pfhwdev;
 	int err;
 
-	/* sleep 100ms to wait for firmware stopping I/O */
+	 
 	msleep(100);
 
 	cmd_clear_io_res.func_idx = HINIC_HWIF_FUNC_IDX(hwif);
@@ -371,13 +317,7 @@ static int clear_io_resources(struct hinic_hwdev *hwdev)
 	return 0;
 }
 
-/**
- * set_resources_state - set the state of the resources in the NIC
- * @hwdev: the NIC HW device
- * @state: the state to set
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int set_resources_state(struct hinic_hwdev *hwdev,
 			       enum hinic_res_state state)
 {
@@ -397,13 +337,7 @@ static int set_resources_state(struct hinic_hwdev *hwdev,
 				 NULL, HINIC_MGMT_MSG_SYNC);
 }
 
-/**
- * get_base_qpn - get the first qp number
- * @hwdev: the NIC HW device
- * @base_qpn: returned qp number
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 static int get_base_qpn(struct hinic_hwdev *hwdev, u16 *base_qpn)
 {
 	struct hinic_cmd_base_qpn cmd_base_qpn;
@@ -427,14 +361,7 @@ static int get_base_qpn(struct hinic_hwdev *hwdev, u16 *base_qpn)
 	return 0;
 }
 
-/**
- * hinic_hwdev_ifup - Preparing the HW for passing IO
- * @hwdev: the NIC HW device
- * @sq_depth: the send queue depth
- * @rq_depth: the receive queue depth
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_hwdev_ifup(struct hinic_hwdev *hwdev, u16 sq_depth, u16 rq_depth)
 {
 	struct hinic_func_to_io *func_to_io = &hwdev->func_to_io;
@@ -502,11 +429,7 @@ err_create_qps:
 	return err;
 }
 
-/**
- * hinic_hwdev_ifdown - Closing the HW for passing IO
- * @hwdev: the NIC HW device
- *
- **/
+ 
 void hinic_hwdev_ifdown(struct hinic_hwdev *hwdev)
 {
 	struct hinic_func_to_io *func_to_io = &hwdev->func_to_io;
@@ -518,13 +441,7 @@ void hinic_hwdev_ifdown(struct hinic_hwdev *hwdev)
 	hinic_io_free(func_to_io);
 }
 
-/**
- * hinic_hwdev_cb_register - register callback handler for MGMT events
- * @hwdev: the NIC HW device
- * @cmd: the mgmt event
- * @handle: private data for the handler
- * @handler: event handler
- **/
+ 
 void hinic_hwdev_cb_register(struct hinic_hwdev *hwdev,
 			     enum hinic_mgmt_msg_cmd cmd, void *handle,
 			     void (*handler)(void *handle, void *buf_in,
@@ -545,11 +462,7 @@ void hinic_hwdev_cb_register(struct hinic_hwdev *hwdev,
 	nic_cb->cb_state = HINIC_CB_ENABLED;
 }
 
-/**
- * hinic_hwdev_cb_unregister - unregister callback handler for MGMT events
- * @hwdev: the NIC HW device
- * @cmd: the mgmt event
- **/
+ 
 void hinic_hwdev_cb_unregister(struct hinic_hwdev *hwdev,
 			       enum hinic_mgmt_msg_cmd cmd)
 {
@@ -574,15 +487,7 @@ void hinic_hwdev_cb_unregister(struct hinic_hwdev *hwdev,
 	nic_cb->handler = NULL;
 }
 
-/**
- * nic_mgmt_msg_handler - nic mgmt event handler
- * @handle: private data for the handler
- * @cmd: message command
- * @buf_in: input buffer
- * @in_size: input size
- * @buf_out: output buffer
- * @out_size: returned output size
- **/
+ 
 static void nic_mgmt_msg_handler(void *handle, u8 cmd, void *buf_in,
 				 u16 in_size, void *buf_out, u16 *out_size)
 {
@@ -688,7 +593,7 @@ static void comm_mgmt_msg_handler(void *handle, u8 cmd, void *buf_in,
 	*out_size = 0;
 }
 
-/* pf fault report event */
+ 
 static void pf_fault_event_handler(void *dev, void *buf_in, u16 in_size,
 				   void *buf_out, u16 *out_size)
 {
@@ -728,12 +633,7 @@ static void mgmt_watchdog_timeout_event_handler(void *dev,
 			      "FW fatal error reported", watchdog_info);
 }
 
-/**
- * init_pfhwdev - Initialize the extended components of PF
- * @pfhwdev: the HW device for PF
- *
- * Return 0 - success, negative - failure
- **/
+ 
 static int init_pfhwdev(struct hinic_pfhwdev *pfhwdev)
 {
 	struct hinic_hwdev *hwdev = &pfhwdev->hwdev;
@@ -776,10 +676,7 @@ static int init_pfhwdev(struct hinic_pfhwdev *pfhwdev)
 	return 0;
 }
 
-/**
- * free_pfhwdev - Free the extended components of PF
- * @pfhwdev: the HW device for PF
- **/
+ 
 static void free_pfhwdev(struct hinic_pfhwdev *pfhwdev)
 {
 	struct hinic_hwdev *hwdev = &pfhwdev->hwdev;
@@ -815,7 +712,7 @@ static int hinic_l2nic_reset(struct hinic_hwdev *hwdev)
 	pfhwdev = container_of(hwdev, struct hinic_pfhwdev, hwdev);
 
 	l2nic_reset.func_id = HINIC_HWIF_FUNC_IDX(hwdev->hwif);
-	/* 0 represents standard l2nic reset flow */
+	 
 	l2nic_reset.reset_flag = 0;
 
 	err = hinic_msg_to_mgmt(&pfhwdev->pf_to_mgmt, HINIC_MOD_COMM,
@@ -893,15 +790,7 @@ int hinic_set_interrupt_cfg(struct hinic_hwdev *hwdev,
 	return 0;
 }
 
-/**
- * hinic_init_hwdev - Initialize the NIC HW
- * @pdev: the NIC pci device
- * @devlink: the poniter of hinic devlink
- *
- * Return initialized NIC HW device
- *
- * Initialize the NIC HW device and return a pointer to it
- **/
+ 
 struct hinic_hwdev *hinic_init_hwdev(struct pci_dev *pdev, struct devlink *devlink)
 {
 	struct hinic_pfhwdev *pfhwdev;
@@ -1012,10 +901,7 @@ err_pfhwdev_alloc:
 	return ERR_PTR(err);
 }
 
-/**
- * hinic_free_hwdev - Free the NIC HW device
- * @hwdev: the NIC HW device
- **/
+ 
 void hinic_free_hwdev(struct hinic_hwdev *hwdev)
 {
 	struct hinic_pfhwdev *pfhwdev = container_of(hwdev,
@@ -1035,12 +921,7 @@ void hinic_free_hwdev(struct hinic_hwdev *hwdev)
 	hinic_free_hwif(hwdev->hwif);
 }
 
-/**
- * hinic_hwdev_num_qps - return the number QPs available for use
- * @hwdev: the NIC HW device
- *
- * Return number QPs available for use
- **/
+ 
 int hinic_hwdev_num_qps(struct hinic_hwdev *hwdev)
 {
 	struct hinic_cap *nic_cap = &hwdev->nic_cap;
@@ -1048,13 +929,7 @@ int hinic_hwdev_num_qps(struct hinic_hwdev *hwdev)
 	return nic_cap->num_qps;
 }
 
-/**
- * hinic_hwdev_get_sq - get SQ
- * @hwdev: the NIC HW device
- * @i: the position of the SQ
- *
- * Return: the SQ in the i position
- **/
+ 
 struct hinic_sq *hinic_hwdev_get_sq(struct hinic_hwdev *hwdev, int i)
 {
 	struct hinic_func_to_io *func_to_io = &hwdev->func_to_io;
@@ -1066,13 +941,7 @@ struct hinic_sq *hinic_hwdev_get_sq(struct hinic_hwdev *hwdev, int i)
 	return &qp->sq;
 }
 
-/**
- * hinic_hwdev_get_rq - get RQ
- * @hwdev: the NIC HW device
- * @i: the position of the RQ
- *
- * Return: the RQ in the i position
- **/
+ 
 struct hinic_rq *hinic_hwdev_get_rq(struct hinic_hwdev *hwdev, int i)
 {
 	struct hinic_func_to_io *func_to_io = &hwdev->func_to_io;
@@ -1084,30 +953,13 @@ struct hinic_rq *hinic_hwdev_get_rq(struct hinic_hwdev *hwdev, int i)
 	return &qp->rq;
 }
 
-/**
- * hinic_hwdev_msix_cnt_set - clear message attribute counters for msix entry
- * @hwdev: the NIC HW device
- * @msix_index: msix_index
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_hwdev_msix_cnt_set(struct hinic_hwdev *hwdev, u16 msix_index)
 {
 	return hinic_msix_attr_cnt_clear(hwdev->hwif, msix_index);
 }
 
-/**
- * hinic_hwdev_msix_set - set message attribute for msix entry
- * @hwdev: the NIC HW device
- * @msix_index: msix_index
- * @pending_limit: the maximum pending interrupt events (unit 8)
- * @coalesc_timer: coalesc period for interrupt (unit 8 us)
- * @lli_timer_cfg: replenishing period for low latency credit (unit 8 us)
- * @lli_credit_limit: maximum credits for low latency msix messages (unit 8)
- * @resend_timer: maximum wait for resending msix (unit coalesc period)
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_hwdev_msix_set(struct hinic_hwdev *hwdev, u16 msix_index,
 			 u8 pending_limit, u8 coalesc_timer,
 			 u8 lli_timer_cfg, u8 lli_credit_limit,
@@ -1119,15 +971,7 @@ int hinic_hwdev_msix_set(struct hinic_hwdev *hwdev, u16 msix_index,
 				   resend_timer);
 }
 
-/**
- * hinic_hwdev_hw_ci_addr_set - set cons idx addr and attributes in HW for sq
- * @hwdev: the NIC HW device
- * @sq: send queue
- * @pending_limit: the maximum pending update ci events (unit 8)
- * @coalesc_timer: coalesc period for update ci (unit 8 us)
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_hwdev_hw_ci_addr_set(struct hinic_hwdev *hwdev, struct hinic_sq *sq,
 			       u8 pending_limit, u8 coalesc_timer)
 {
@@ -1157,13 +1001,7 @@ int hinic_hwdev_hw_ci_addr_set(struct hinic_hwdev *hwdev, struct hinic_sq *sq,
 				 NULL, HINIC_MGMT_MSG_SYNC);
 }
 
-/**
- * hinic_hwdev_set_msix_state- set msix state
- * @hwdev: the NIC HW device
- * @msix_index: IRQ corresponding index number
- * @flag: msix state
- *
- **/
+ 
 void hinic_hwdev_set_msix_state(struct hinic_hwdev *hwdev, u16 msix_index,
 				enum hinic_msix_state flag)
 {

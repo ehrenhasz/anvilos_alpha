@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-//
-// helpers.c  --  Voltage/Current Regulator framework helper functions.
-//
-// Copyright 2007, 2008 Wolfson Microelectronics PLC.
-// Copyright 2008 SlimLogic Ltd.
+
+
+
+
+
+
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -16,15 +16,7 @@
 
 #include "internal.h"
 
-/**
- * regulator_is_enabled_regmap - standard is_enabled() for regmap users
- *
- * @rdev: regulator to operate on
- *
- * Regulators that use regmap for their register I/O can set the
- * enable_reg and enable_mask fields in their descriptor and then use
- * this as their is_enabled operation, saving some code.
- */
+ 
 int regulator_is_enabled_regmap(struct regulator_dev *rdev)
 {
 	unsigned int val;
@@ -48,15 +40,7 @@ int regulator_is_enabled_regmap(struct regulator_dev *rdev)
 }
 EXPORT_SYMBOL_GPL(regulator_is_enabled_regmap);
 
-/**
- * regulator_enable_regmap - standard enable() for regmap users
- *
- * @rdev: regulator to operate on
- *
- * Regulators that use regmap for their register I/O can set the
- * enable_reg and enable_mask fields in their descriptor and then use
- * this as their enable() operation, saving some code.
- */
+ 
 int regulator_enable_regmap(struct regulator_dev *rdev)
 {
 	unsigned int val;
@@ -74,15 +58,7 @@ int regulator_enable_regmap(struct regulator_dev *rdev)
 }
 EXPORT_SYMBOL_GPL(regulator_enable_regmap);
 
-/**
- * regulator_disable_regmap - standard disable() for regmap users
- *
- * @rdev: regulator to operate on
- *
- * Regulators that use regmap for their register I/O can set the
- * enable_reg and enable_mask fields in their descriptor and then use
- * this as their disable() operation, saving some code.
- */
+ 
 int regulator_disable_regmap(struct regulator_dev *rdev)
 {
 	unsigned int val;
@@ -118,16 +94,7 @@ static int regulator_range_selector_to_index(struct regulator_dev *rdev,
 	return -EINVAL;
 }
 
-/**
- * regulator_get_voltage_sel_pickable_regmap - pickable range get_voltage_sel
- *
- * @rdev: regulator to operate on
- *
- * Regulators that use regmap for their register I/O and use pickable
- * ranges can set the vsel_reg, vsel_mask, vsel_range_reg and vsel_range_mask
- * fields in their descriptor and then use this as their get_voltage_vsel
- * operation, saving some code.
- */
+ 
 int regulator_get_voltage_sel_pickable_regmap(struct regulator_dev *rdev)
 {
 	unsigned int r_val;
@@ -161,17 +128,7 @@ int regulator_get_voltage_sel_pickable_regmap(struct regulator_dev *rdev)
 }
 EXPORT_SYMBOL_GPL(regulator_get_voltage_sel_pickable_regmap);
 
-/**
- * regulator_set_voltage_sel_pickable_regmap - pickable range set_voltage_sel
- *
- * @rdev: regulator to operate on
- * @sel: Selector to set
- *
- * Regulators that use regmap for their register I/O and use pickable
- * ranges can set the vsel_reg, vsel_mask, vsel_range_reg and vsel_range_mask
- * fields in their descriptor and then use this as their set_voltage_vsel
- * operation, saving some code.
- */
+ 
 int regulator_set_voltage_sel_pickable_regmap(struct regulator_dev *rdev,
 					      unsigned int sel)
 {
@@ -226,15 +183,7 @@ int regulator_set_voltage_sel_pickable_regmap(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_set_voltage_sel_pickable_regmap);
 
-/**
- * regulator_get_voltage_sel_regmap - standard get_voltage_sel for regmap users
- *
- * @rdev: regulator to operate on
- *
- * Regulators that use regmap for their register I/O can set the
- * vsel_reg and vsel_mask fields in their descriptor and then use this
- * as their get_voltage_vsel operation, saving some code.
- */
+ 
 int regulator_get_voltage_sel_regmap(struct regulator_dev *rdev)
 {
 	unsigned int val;
@@ -251,16 +200,7 @@ int regulator_get_voltage_sel_regmap(struct regulator_dev *rdev)
 }
 EXPORT_SYMBOL_GPL(regulator_get_voltage_sel_regmap);
 
-/**
- * regulator_set_voltage_sel_regmap - standard set_voltage_sel for regmap users
- *
- * @rdev: regulator to operate on
- * @sel: Selector to set
- *
- * Regulators that use regmap for their register I/O can set the
- * vsel_reg and vsel_mask fields in their descriptor and then use this
- * as their set_voltage_vsel operation, saving some code.
- */
+ 
 int regulator_set_voltage_sel_regmap(struct regulator_dev *rdev, unsigned sel)
 {
 	int ret;
@@ -280,18 +220,7 @@ int regulator_set_voltage_sel_regmap(struct regulator_dev *rdev, unsigned sel)
 }
 EXPORT_SYMBOL_GPL(regulator_set_voltage_sel_regmap);
 
-/**
- * regulator_map_voltage_iterate - map_voltage() based on list_voltage()
- *
- * @rdev: Regulator to operate on
- * @min_uV: Lower bound for voltage
- * @max_uV: Upper bound for voltage
- *
- * Drivers implementing set_voltage_sel() and list_voltage() can use
- * this as their map_voltage() operation.  It will find a suitable
- * voltage by calling list_voltage() until it gets something in bounds
- * for the requested voltages.
- */
+ 
 int regulator_map_voltage_iterate(struct regulator_dev *rdev,
 				  int min_uV, int max_uV)
 {
@@ -299,9 +228,7 @@ int regulator_map_voltage_iterate(struct regulator_dev *rdev,
 	int selector = 0;
 	int i, ret;
 
-	/* Find the smallest voltage that falls within the specified
-	 * range.
-	 */
+	 
 	for (i = 0; i < rdev->desc->n_voltages; i++) {
 		ret = rdev->desc->ops->list_voltage(rdev, i);
 		if (ret < 0)
@@ -320,16 +247,7 @@ int regulator_map_voltage_iterate(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_map_voltage_iterate);
 
-/**
- * regulator_map_voltage_ascend - map_voltage() for ascendant voltage list
- *
- * @rdev: Regulator to operate on
- * @min_uV: Lower bound for voltage
- * @max_uV: Upper bound for voltage
- *
- * Drivers that have ascendant voltage list can use this as their
- * map_voltage() operation.
- */
+ 
 int regulator_map_voltage_ascend(struct regulator_dev *rdev,
 				 int min_uV, int max_uV)
 {
@@ -351,22 +269,13 @@ int regulator_map_voltage_ascend(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_map_voltage_ascend);
 
-/**
- * regulator_map_voltage_linear - map_voltage() for simple linear mappings
- *
- * @rdev: Regulator to operate on
- * @min_uV: Lower bound for voltage
- * @max_uV: Upper bound for voltage
- *
- * Drivers providing min_uV and uV_step in their regulator_desc can
- * use this as their map_voltage() operation.
- */
+ 
 int regulator_map_voltage_linear(struct regulator_dev *rdev,
 				 int min_uV, int max_uV)
 {
 	int ret, voltage;
 
-	/* Allow uV_step to be 0 for fixed voltage */
+	 
 	if (rdev->desc->n_voltages == 1 && rdev->desc->uV_step == 0) {
 		if (min_uV <= rdev->desc->min_uV && rdev->desc->min_uV <= max_uV)
 			return 0;
@@ -388,7 +297,7 @@ int regulator_map_voltage_linear(struct regulator_dev *rdev,
 
 	ret += rdev->desc->linear_min_sel;
 
-	/* Map back into a voltage to verify we're still in bounds */
+	 
 	voltage = rdev->desc->ops->list_voltage(rdev, ret);
 	if (voltage < min_uV || voltage > max_uV)
 		return -EINVAL;
@@ -397,16 +306,7 @@ int regulator_map_voltage_linear(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_map_voltage_linear);
 
-/**
- * regulator_map_voltage_linear_range - map_voltage() for multiple linear ranges
- *
- * @rdev: Regulator to operate on
- * @min_uV: Lower bound for voltage
- * @max_uV: Upper bound for voltage
- *
- * Drivers providing linear_ranges in their descriptor can use this as
- * their map_voltage() callback.
- */
+ 
 int regulator_map_voltage_linear_range(struct regulator_dev *rdev,
 				       int min_uV, int max_uV)
 {
@@ -430,10 +330,7 @@ int regulator_map_voltage_linear_range(struct regulator_dev *rdev,
 			continue;
 		ret = sel;
 
-		/*
-		 * Map back into a voltage to verify we're still in bounds.
-		 * If we are not, then continue checking rest of the ranges.
-		 */
+		 
 		voltage = rdev->desc->ops->list_voltage(rdev, sel);
 		if (voltage >= min_uV && voltage <= max_uV)
 			break;
@@ -446,16 +343,7 @@ int regulator_map_voltage_linear_range(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_map_voltage_linear_range);
 
-/**
- * regulator_map_voltage_pickable_linear_range - map_voltage, pickable ranges
- *
- * @rdev: Regulator to operate on
- * @min_uV: Lower bound for voltage
- * @max_uV: Upper bound for voltage
- *
- * Drivers providing pickable linear_ranges in their descriptor can use
- * this as their map_voltage() callback.
- */
+ 
 int regulator_map_voltage_pickable_linear_range(struct regulator_dev *rdev,
 						int min_uV, int max_uV)
 {
@@ -493,11 +381,7 @@ int regulator_map_voltage_pickable_linear_range(struct regulator_dev *rdev,
 
 		voltage = rdev->desc->ops->list_voltage(rdev, ret);
 
-		/*
-		 * Map back into a voltage to verify we're still in bounds.
-		 * We may have overlapping voltage ranges. Hence we don't
-		 * exit but retry until we have checked all ranges.
-		 */
+		 
 		if (voltage < min_uV || voltage > max_uV)
 			selector += linear_range_values_in_range(range);
 		else
@@ -511,18 +395,7 @@ int regulator_map_voltage_pickable_linear_range(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_map_voltage_pickable_linear_range);
 
-/**
- * regulator_desc_list_voltage_linear - List voltages with simple calculation
- *
- * @desc: Regulator desc for regulator which volatges are to be listed
- * @selector: Selector to convert into a voltage
- *
- * Regulators with a simple linear mapping between voltages and
- * selectors can set min_uV and uV_step in the regulator descriptor
- * and then use this function prior regulator registration to list
- * the voltages. This is useful when voltages need to be listed during
- * device-tree parsing.
- */
+ 
 int regulator_desc_list_voltage_linear(const struct regulator_desc *desc,
 				       unsigned int selector)
 {
@@ -538,16 +411,7 @@ int regulator_desc_list_voltage_linear(const struct regulator_desc *desc,
 }
 EXPORT_SYMBOL_GPL(regulator_desc_list_voltage_linear);
 
-/**
- * regulator_list_voltage_linear - List voltages with simple calculation
- *
- * @rdev: Regulator device
- * @selector: Selector to convert into a voltage
- *
- * Regulators with a simple linear mapping between voltages and
- * selectors can set min_uV and uV_step in the regulator descriptor
- * and then use this function as their list_voltage() operation,
- */
+ 
 int regulator_list_voltage_linear(struct regulator_dev *rdev,
 				  unsigned int selector)
 {
@@ -555,15 +419,7 @@ int regulator_list_voltage_linear(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_list_voltage_linear);
 
-/**
- * regulator_list_voltage_pickable_linear_range - pickable range list voltages
- *
- * @rdev: Regulator device
- * @selector: Selector to convert into a voltage
- *
- * list_voltage() operation, intended to be used by drivers utilizing pickable
- * ranges helpers.
- */
+ 
 int regulator_list_voltage_pickable_linear_range(struct regulator_dev *rdev,
 						 unsigned int selector)
 {
@@ -585,16 +441,7 @@ int regulator_list_voltage_pickable_linear_range(struct regulator_dev *rdev,
 
 		if (all_sels + sel_indexes >= selector) {
 			selector -= all_sels;
-			/*
-			 * As we see here, pickable ranges work only as
-			 * long as the first selector for each pickable
-			 * range is 0, and the each subsequent range for
-			 * this 'pick' follow immediately at next unused
-			 * selector (Eg. there is no gaps between ranges).
-			 * I think this is fine but it probably should be
-			 * documented. OTOH, whole pickable range stuff
-			 * might benefit from some documentation
-			 */
+			 
 			return range->min + (range->step * selector);
 		}
 
@@ -605,18 +452,7 @@ int regulator_list_voltage_pickable_linear_range(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_list_voltage_pickable_linear_range);
 
-/**
- * regulator_desc_list_voltage_linear_range - List voltages for linear ranges
- *
- * @desc: Regulator desc for regulator which volatges are to be listed
- * @selector: Selector to convert into a voltage
- *
- * Regulators with a series of simple linear mappings between voltages
- * and selectors who have set linear_ranges in the regulator descriptor
- * can use this function prior regulator registration to list voltages.
- * This is useful when voltages need to be listed during device-tree
- * parsing.
- */
+ 
 int regulator_desc_list_voltage_linear_range(const struct regulator_desc *desc,
 					     unsigned int selector)
 {
@@ -635,16 +471,7 @@ int regulator_desc_list_voltage_linear_range(const struct regulator_desc *desc,
 }
 EXPORT_SYMBOL_GPL(regulator_desc_list_voltage_linear_range);
 
-/**
- * regulator_list_voltage_linear_range - List voltages for linear ranges
- *
- * @rdev: Regulator device
- * @selector: Selector to convert into a voltage
- *
- * Regulators with a series of simple linear mappings between voltages
- * and selectors can set linear_ranges in the regulator descriptor and
- * then use this function as their list_voltage() operation,
- */
+ 
 int regulator_list_voltage_linear_range(struct regulator_dev *rdev,
 					unsigned int selector)
 {
@@ -652,16 +479,7 @@ int regulator_list_voltage_linear_range(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_list_voltage_linear_range);
 
-/**
- * regulator_list_voltage_table - List voltages with table based mapping
- *
- * @rdev: Regulator device
- * @selector: Selector to convert into a voltage
- *
- * Regulators with table based mapping between voltages and
- * selectors can set volt_table in the regulator descriptor
- * and then use this function as their list_voltage() operation.
- */
+ 
 int regulator_list_voltage_table(struct regulator_dev *rdev,
 				 unsigned int selector)
 {
@@ -679,12 +497,7 @@ int regulator_list_voltage_table(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_list_voltage_table);
 
-/**
- * regulator_set_bypass_regmap - Default set_bypass() using regmap
- *
- * @rdev: device to operate on.
- * @enable: state to set.
- */
+ 
 int regulator_set_bypass_regmap(struct regulator_dev *rdev, bool enable)
 {
 	unsigned int val;
@@ -702,11 +515,7 @@ int regulator_set_bypass_regmap(struct regulator_dev *rdev, bool enable)
 }
 EXPORT_SYMBOL_GPL(regulator_set_bypass_regmap);
 
-/**
- * regulator_set_soft_start_regmap - Default set_soft_start() using regmap
- *
- * @rdev: device to operate on.
- */
+ 
 int regulator_set_soft_start_regmap(struct regulator_dev *rdev)
 {
 	unsigned int val;
@@ -720,11 +529,7 @@ int regulator_set_soft_start_regmap(struct regulator_dev *rdev)
 }
 EXPORT_SYMBOL_GPL(regulator_set_soft_start_regmap);
 
-/**
- * regulator_set_pull_down_regmap - Default set_pull_down() using regmap
- *
- * @rdev: device to operate on.
- */
+ 
 int regulator_set_pull_down_regmap(struct regulator_dev *rdev)
 {
 	unsigned int val;
@@ -738,12 +543,7 @@ int regulator_set_pull_down_regmap(struct regulator_dev *rdev)
 }
 EXPORT_SYMBOL_GPL(regulator_set_pull_down_regmap);
 
-/**
- * regulator_get_bypass_regmap - Default get_bypass() using regmap
- *
- * @rdev: device to operate on.
- * @enable: current state.
- */
+ 
 int regulator_get_bypass_regmap(struct regulator_dev *rdev, bool *enable)
 {
 	unsigned int val;
@@ -763,13 +563,7 @@ int regulator_get_bypass_regmap(struct regulator_dev *rdev, bool *enable)
 }
 EXPORT_SYMBOL_GPL(regulator_get_bypass_regmap);
 
-/**
- * regulator_set_active_discharge_regmap - Default set_active_discharge()
- *					   using regmap
- *
- * @rdev: device to operate on.
- * @enable: state to set, 0 to disable and 1 to enable.
- */
+ 
 int regulator_set_active_discharge_regmap(struct regulator_dev *rdev,
 					  bool enable)
 {
@@ -786,17 +580,7 @@ int regulator_set_active_discharge_regmap(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_set_active_discharge_regmap);
 
-/**
- * regulator_set_current_limit_regmap - set_current_limit for regmap users
- *
- * @rdev: regulator to operate on
- * @min_uA: Lower bound for current limit
- * @max_uA: Upper bound for current limit
- *
- * Regulators that use regmap for their register I/O can set curr_table,
- * csel_reg and csel_mask fields in their descriptor and then use this
- * as their set_current_limit operation, saving some code.
- */
+ 
 int regulator_set_current_limit_regmap(struct regulator_dev *rdev,
 				       int min_uA, int max_uA)
 {
@@ -810,7 +594,7 @@ int regulator_set_current_limit_regmap(struct regulator_dev *rdev,
 		const unsigned int *curr_table = rdev->desc->curr_table;
 		bool ascend = curr_table[n_currents - 1] > curr_table[0];
 
-		/* search for closest to maximum */
+		 
 		if (ascend) {
 			for (i = n_currents - 1; i >= 0; i--) {
 				if (min_uA <= curr_table[i] &&
@@ -840,15 +624,7 @@ int regulator_set_current_limit_regmap(struct regulator_dev *rdev,
 }
 EXPORT_SYMBOL_GPL(regulator_set_current_limit_regmap);
 
-/**
- * regulator_get_current_limit_regmap - get_current_limit for regmap users
- *
- * @rdev: regulator to operate on
- *
- * Regulators that use regmap for their register I/O can set the
- * csel_reg and csel_mask fields in their descriptor and then use this
- * as their get_current_limit operation, saving some code.
- */
+ 
 int regulator_get_current_limit_regmap(struct regulator_dev *rdev)
 {
 	unsigned int val;
@@ -872,16 +648,7 @@ int regulator_get_current_limit_regmap(struct regulator_dev *rdev)
 }
 EXPORT_SYMBOL_GPL(regulator_get_current_limit_regmap);
 
-/**
- * regulator_bulk_set_supply_names - initialize the 'supply' fields in an array
- *                                   of regulator_bulk_data structs
- *
- * @consumers: array of regulator_bulk_data entries to initialize
- * @supply_names: array of supply name strings
- * @num_supplies: number of supply names to initialize
- *
- * Note: the 'consumers' array must be the size of 'num_supplies'.
- */
+ 
 void regulator_bulk_set_supply_names(struct regulator_bulk_data *consumers,
 				     const char *const *supply_names,
 				     unsigned int num_supplies)
@@ -893,31 +660,14 @@ void regulator_bulk_set_supply_names(struct regulator_bulk_data *consumers,
 }
 EXPORT_SYMBOL_GPL(regulator_bulk_set_supply_names);
 
-/**
- * regulator_is_equal - test whether two regulators are the same
- *
- * @reg1: first regulator to operate on
- * @reg2: second regulator to operate on
- */
+ 
 bool regulator_is_equal(struct regulator *reg1, struct regulator *reg2)
 {
 	return reg1->rdev == reg2->rdev;
 }
 EXPORT_SYMBOL_GPL(regulator_is_equal);
 
-/**
- * regulator_find_closest_bigger - helper to find offset in ramp delay table
- *
- * @target: targeted ramp_delay
- * @table: table with supported ramp delays
- * @num_sel: number of entries in the table
- * @sel: Pointer to store table offset
- *
- * This is the internal helper used by regulator_set_ramp_delay_regmap to
- * map ramp delay to register value. It should only be used directly if
- * regulator_set_ramp_delay_regmap cannot handle a specific device setup
- * (e.g. because the value is split over multiple registers).
- */
+ 
 int regulator_find_closest_bigger(unsigned int target, const unsigned int *table,
 				  unsigned int num_sel, unsigned int *sel)
 {
@@ -951,16 +701,7 @@ int regulator_find_closest_bigger(unsigned int target, const unsigned int *table
 }
 EXPORT_SYMBOL_GPL(regulator_find_closest_bigger);
 
-/**
- * regulator_set_ramp_delay_regmap - set_ramp_delay() helper
- *
- * @rdev: regulator to operate on
- * @ramp_delay: ramp-rate value given in units V/S (uV/uS)
- *
- * Regulators that use regmap for their register I/O can set the ramp_reg
- * and ramp_mask fields in their descriptor and then use this as their
- * set_ramp_delay operation, saving some code.
- */
+ 
 int regulator_set_ramp_delay_regmap(struct regulator_dev *rdev, int ramp_delay)
 {
 	int ret;

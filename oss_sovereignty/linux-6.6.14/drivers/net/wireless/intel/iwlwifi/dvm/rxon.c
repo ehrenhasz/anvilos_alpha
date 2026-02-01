@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/******************************************************************************
- *
- * Copyright(c) 2003 - 2014 Intel Corporation. All rights reserved.
- * Copyright(c) 2015 Intel Deutschland GmbH
- *****************************************************************************/
+
+ 
 
 #include <linux/etherdevice.h>
 #include "iwl-trans.h"
@@ -12,9 +8,7 @@
 #include "agn.h"
 #include "calib.h"
 
-/*
- * initialize rxon structure with default values from eeprom
- */
+ 
 void iwl_connection_init_rx_config(struct iwl_priv *priv,
 				   struct iwl_rxon_context *ctx)
 {
@@ -51,8 +45,7 @@ void iwl_connection_init_rx_config(struct iwl_priv *priv,
 	}
 
 #if 0
-	/* TODO:  Figure out when short_preamble would be set and cache from
-	 * that */
+	 
 	if (!hw_to_local(priv->hw)->short_preamble)
 		ctx->staging.flags &= ~RXON_FLG_SHORT_PREAMBLE_MSK;
 	else
@@ -65,7 +58,7 @@ void iwl_connection_init_rx_config(struct iwl_priv *priv,
 
 	iwl_set_flags_for_band(priv, ctx, priv->band, ctx->vif);
 
-	/* clear both MIX and PURE40 mode flag */
+	 
 	ctx->staging.flags &= ~(RXON_FLG_CHANNEL_MODE_MIXED |
 					RXON_FLG_CHANNEL_MODE_PURE_40);
 	if (ctx->vif)
@@ -239,26 +232,11 @@ static u16 iwl_adjust_beacon_interval(u16 beacon_val, u16 max_beacon_val)
 	u16 new_val;
 	u16 beacon_factor;
 
-	/*
-	 * If mac80211 hasn't given us a beacon interval, program
-	 * the default into the device (not checking this here
-	 * would cause the adjustment below to return the maximum
-	 * value, which may break PAN.)
-	 */
+	 
 	if (!beacon_val)
 		return DEFAULT_BEACON_INTERVAL;
 
-	/*
-	 * If the beacon interval we obtained from the peer
-	 * is too large, we'll have to wake up more often
-	 * (and in IBSS case, we'll beacon too much)
-	 *
-	 * For example, if max_beacon_val is 4096, and the
-	 * requested beacon interval is 7000, we'll have to
-	 * use 3500 to be able to wake up on the beacons.
-	 *
-	 * This could badly influence beacon detection stats.
-	 */
+	 
 
 	beacon_factor = (beacon_val + max_beacon_val) / max_beacon_val;
 	new_val = beacon_val / beacon_factor;
@@ -289,10 +267,7 @@ static int iwl_send_rxon_timing(struct iwl_priv *priv,
 
 	beacon_int = vif ? vif->bss_conf.beacon_int : 0;
 
-	/*
-	 * TODO: For IBSS we need to get atim_window from mac80211,
-	 *	 for now just always use 0
-	 */
+	 
 	ctx->timing.atim_window = 0;
 
 	if (ctx->ctxid == IWL_RXON_CTX_PAN &&
@@ -320,7 +295,7 @@ static int iwl_send_rxon_timing(struct iwl_priv *priv,
 
 	ctx->beacon_int = beacon_int;
 
-	tsf = priv->timestamp; /* tsf is modifed by do_div: copy it */
+	tsf = priv->timestamp;  
 	interval_tm = beacon_int * TIME_UNIT;
 	rem = do_div(tsf, interval_tm);
 	ctx->timing.beacon_init_val = cpu_to_le32(interval_tm - rem);
@@ -361,12 +336,9 @@ static int iwlagn_rxon_disconn(struct iwl_priv *priv,
 	if (ret)
 		return ret;
 
-	/*
-	 * Un-assoc RXON clears the station table and WEP
-	 * keys, so we have to restore those afterwards.
-	 */
+	 
 	iwl_clear_ucode_stations(priv, ctx);
-	/* update -- might need P2P now */
+	 
 	iwl_update_bcast_station(priv, ctx);
 	iwl_restore_stations(priv, ctx);
 	ret = iwl_restore_default_wep_keys(priv, ctx);
@@ -412,11 +384,10 @@ static int iwl_set_tx_power(struct iwl_priv *priv, s8 tx_power, bool force)
 	if (!iwl_is_ready_rf(priv))
 		return -EIO;
 
-	/* scan complete and commit_rxon use tx_power_next value,
-	 * it always need to be updated for newest request */
+	 
 	priv->tx_power_next = tx_power;
 
-	/* do not set tx power when scanning or channel changing */
+	 
 	defer = test_bit(STATUS_SCANNING, &priv->status) ||
 		memcmp(&ctx->active, &ctx->staging, sizeof(ctx->staging));
 	if (defer && !force) {
@@ -429,7 +400,7 @@ static int iwl_set_tx_power(struct iwl_priv *priv, s8 tx_power, bool force)
 
 	ret = iwlagn_send_tx_power(priv);
 
-	/* if fail to set tx_power, restore the orig. tx power */
+	 
 	if (ret) {
 		priv->tx_power_user_lmt = prev_tx_power;
 		priv->tx_power_next = prev_tx_power;
@@ -443,7 +414,7 @@ static int iwlagn_rxon_connect(struct iwl_priv *priv,
 	int ret;
 	struct iwl_rxon_cmd *active = (void *)&ctx->active;
 
-	/* RXON timing must be before associated RXON */
+	 
 	if (ctx->ctxid == IWL_RXON_CTX_BSS) {
 		ret = iwl_send_rxon_timing(priv, ctx);
 		if (ret) {
@@ -451,14 +422,10 @@ static int iwlagn_rxon_connect(struct iwl_priv *priv,
 			return ret;
 		}
 	}
-	/* QoS info may be cleared by previous un-assoc RXON */
+	 
 	iwlagn_update_qos(priv, ctx);
 
-	/*
-	 * We'll run into this code path when beaconing is
-	 * enabled, but then we also need to send the beacon
-	 * to the device.
-	 */
+	 
 	if (ctx->vif && (ctx->vif->type == NL80211_IFTYPE_AP)) {
 		ret = iwlagn_update_beacon(priv, ctx->vif);
 		if (ret) {
@@ -470,12 +437,7 @@ static int iwlagn_rxon_connect(struct iwl_priv *priv,
 	}
 
 	priv->start_calib = 0;
-	/*
-	 * Apply the new configuration.
-	 *
-	 * Associated RXON doesn't clear the station table in uCode,
-	 * so we don't need to restore stations etc. after this.
-	 */
+	 
 	ret = iwl_dvm_send_cmd_pdu(priv, ctx->rxon_cmd, 0,
 		      sizeof(struct iwl_rxon_cmd), &ctx->staging);
 	if (ret) {
@@ -484,19 +446,13 @@ static int iwlagn_rxon_connect(struct iwl_priv *priv,
 	}
 	memcpy(active, &ctx->staging, sizeof(*active));
 
-	/* IBSS beacon needs to be sent after setting assoc */
+	 
 	if (ctx->vif && (ctx->vif->type == NL80211_IFTYPE_ADHOC))
 		if (iwlagn_update_beacon(priv, ctx->vif))
 			IWL_ERR(priv, "Error sending IBSS beacon\n");
 	iwl_init_sensitivity(priv);
 
-	/*
-	 * If we issue a new RXON command which required a tune then
-	 * we must send a new TXPOWER command or we won't be able to
-	 * Tx any frames.
-	 *
-	 * It's expected we set power here if channel is changing.
-	 */
+	 
 	ret = iwl_set_tx_power(priv, priv->tx_power_next, true);
 	if (ret) {
 		IWL_ERR(priv, "Error sending TX power (%d)\n", ret);
@@ -523,28 +479,23 @@ int iwlagn_set_pan_params(struct iwl_priv *priv)
 	ctx_bss = &priv->contexts[IWL_RXON_CTX_BSS];
 	ctx_pan = &priv->contexts[IWL_RXON_CTX_PAN];
 
-	/*
-	 * If the PAN context is inactive, then we don't need
-	 * to update the PAN parameters, the last thing we'll
-	 * have done before it goes inactive is making the PAN
-	 * parameters be WLAN-only.
-	 */
+	 
 	if (!ctx_pan->is_active)
 		return 0;
 
 	memset(&cmd, 0, sizeof(cmd));
 
-	/* only 2 slots are currently allowed */
+	 
 	cmd.num_slots = 2;
 
-	cmd.slots[0].type = 0; /* BSS */
-	cmd.slots[1].type = 1; /* PAN */
+	cmd.slots[0].type = 0;  
+	cmd.slots[1].type = 1;  
 
 	if (ctx_bss->vif && ctx_pan->vif) {
 		int bcnint = ctx_pan->beacon_int;
 		int dtim = ctx_pan->vif->bss_conf.dtim_period ?: 1;
 
-		/* should be set, but seems unused?? */
+		 
 		cmd.flags |= cpu_to_le16(IWL_WIPAN_PARAMS_FLG_SLOTTED_MODE);
 
 		if (ctx_pan->vif->type == NL80211_IFTYPE_AP &&
@@ -608,26 +559,20 @@ static void _iwl_set_rxon_ht(struct iwl_priv *priv,
 		return;
 	}
 
-	/* FIXME: if the definition of ht.protection changed, the "translation"
-	 * will be needed for rxon->flags
-	 */
+	 
 	rxon->flags |= cpu_to_le32(ctx->ht.protection <<
 				   RXON_FLG_HT_OPERATING_MODE_POS);
 
-	/* Set up channel bandwidth:
-	 * 20 MHz only, 20/40 mixed or pure 40 if ht40 ok */
-	/* clear the HT channel mode before set the mode */
+	 
+	 
 	rxon->flags &= ~(RXON_FLG_CHANNEL_MODE_MSK |
 			 RXON_FLG_CTRL_CHANNEL_LOC_HI_MSK);
 	if (iwl_is_ht40_tx_allowed(priv, ctx, NULL)) {
-		/* pure ht40 */
+		 
 		if (ctx->ht.protection ==
 		    IEEE80211_HT_OP_MODE_PROTECTION_20MHZ) {
 			rxon->flags |= RXON_FLG_CHANNEL_MODE_PURE_40;
-			/*
-			 * Note: control channel is opposite of extension
-			 * channel
-			 */
+			 
 			switch (ctx->ht.extension_chan_offset) {
 			case IEEE80211_HT_PARAM_CHA_SEC_ABOVE:
 				rxon->flags &=
@@ -639,10 +584,7 @@ static void _iwl_set_rxon_ht(struct iwl_priv *priv,
 				break;
 			}
 		} else {
-			/*
-			 * Note: control channel is opposite of extension
-			 * channel
-			 */
+			 
 			switch (ctx->ht.extension_chan_offset) {
 			case IEEE80211_HT_PARAM_CHA_SEC_ABOVE:
 				rxon->flags &=
@@ -655,10 +597,7 @@ static void _iwl_set_rxon_ht(struct iwl_priv *priv,
 				break;
 			case IEEE80211_HT_PARAM_CHA_SEC_NONE:
 			default:
-				/*
-				 * channel location only valid if in Mixed
-				 * mode
-				 */
+				 
 				IWL_ERR(priv,
 					"invalid extension channel offset\n");
 				break;
@@ -684,13 +623,7 @@ void iwl_set_rxon_ht(struct iwl_priv *priv, struct iwl_ht_config *ht_conf)
 		_iwl_set_rxon_ht(priv, ht_conf, ctx);
 }
 
-/*
- * iwl_set_rxon_channel - Set the band and channel values in staging RXON
- * @ch: requested channel as a pointer to struct ieee80211_channel
-
- * NOTE:  Does not commit to the hardware; it sets appropriate bit fields
- * in the staging RXON flag structure based on the ch->band
- */
+ 
 void iwl_set_rxon_channel(struct iwl_priv *priv, struct ieee80211_channel *ch,
 			 struct iwl_rxon_context *ctx)
 {
@@ -724,7 +657,7 @@ void iwl_set_flags_for_band(struct iwl_priv *priv,
 		      | RXON_FLG_CCK_MSK);
 		ctx->staging.flags |= RXON_FLG_SHORT_SLOT_MSK;
 	} else {
-		/* Copied from iwl_post_associate() */
+		 
 		if (vif && vif->bss_conf.use_short_slot)
 			ctx->staging.flags |= RXON_FLG_SHORT_SLOT_MSK;
 		else
@@ -748,7 +681,7 @@ static void iwl_set_rxon_hwcrypto(struct iwl_priv *priv,
 
 }
 
-/* validate RXON structure is valid */
+ 
 static int iwl_check_rxon_cmd(struct iwl_priv *priv,
 			      struct iwl_rxon_context *ctx)
 {
@@ -779,7 +712,7 @@ static int iwl_check_rxon_cmd(struct iwl_priv *priv,
 		errors |= BIT(4);
 	}
 
-	/* make sure basic rates 6Mbps and 1Mbps are supported */
+	 
 	if ((rxon->ofdm_basic_rates & IWL_RATE_6M_MASK) == 0 &&
 	    (rxon->cck_basic_rates & IWL_RATE_1M_MASK) == 0) {
 		IWL_WARN(priv, "neither 1 nor 6 are basic\n");
@@ -821,14 +754,7 @@ static int iwl_check_rxon_cmd(struct iwl_priv *priv,
 	return errors ? -EINVAL : 0;
 }
 
-/*
- * iwl_full_rxon_required - check if full RXON (vs RXON_ASSOC) cmd is needed
- * @priv: staging_rxon is compared to active_rxon
- *
- * If the RXON structure is changing enough to require a new tune,
- * or is clearing the RXON_FILTER_ASSOC_MSK, then return 1 to indicate that
- * a new tune (full RXON command, rather than RXON_ASSOC cmd) is required.
- */
+ 
 static int iwl_full_rxon_required(struct iwl_priv *priv,
 				  struct iwl_rxon_context *ctx)
 {
@@ -849,7 +775,7 @@ static int iwl_full_rxon_required(struct iwl_priv *priv,
 		return 1;					\
 	}
 
-	/* These items are only settable from the full RXON command */
+	 
 	CHK(!iwl_is_associated_ctx(ctx));
 	CHK(!ether_addr_equal(staging->bssid_addr, active->bssid_addr));
 	CHK(!ether_addr_equal(staging->node_addr, active->node_addr));
@@ -866,15 +792,13 @@ static int iwl_full_rxon_required(struct iwl_priv *priv,
 		active->ofdm_ht_triple_stream_basic_rates);
 	CHK_NEQ(staging->assoc_id, active->assoc_id);
 
-	/* flags, filter_flags, ofdm_basic_rates, and cck_basic_rates can
-	 * be updated with the RXON_ASSOC command -- however only some
-	 * flag transitions are allowed using RXON_ASSOC */
+	 
 
-	/* Check if we are not switching bands */
+	 
 	CHK_NEQ(staging->flags & RXON_FLG_BAND_24G_MSK,
 		active->flags & RXON_FLG_BAND_24G_MSK);
 
-	/* Check if we are switching association toggle */
+	 
 	CHK_NEQ(staging->filter_flags & RXON_FILTER_ASSOC_MSK,
 		active->filter_flags & RXON_FILTER_ASSOC_MSK);
 
@@ -942,87 +866,37 @@ static void iwl_calc_basic_rates(struct iwl_priv *priv,
 		}
 	}
 
-	/*
-	 * Now we've got the basic rates as bitmaps in the ofdm and cck
-	 * variables. This isn't sufficient though, as there might not
-	 * be all the right rates in the bitmap. E.g. if the only basic
-	 * rates are 5.5 Mbps and 11 Mbps, we still need to add 1 Mbps
-	 * and 6 Mbps because the 802.11-2007 standard says in 9.6:
-	 *
-	 *    [...] a STA responding to a received frame shall transmit
-	 *    its Control Response frame [...] at the highest rate in the
-	 *    BSSBasicRateSet parameter that is less than or equal to the
-	 *    rate of the immediately previous frame in the frame exchange
-	 *    sequence ([...]) and that is of the same modulation class
-	 *    ([...]) as the received frame. If no rate contained in the
-	 *    BSSBasicRateSet parameter meets these conditions, then the
-	 *    control frame sent in response to a received frame shall be
-	 *    transmitted at the highest mandatory rate of the PHY that is
-	 *    less than or equal to the rate of the received frame, and
-	 *    that is of the same modulation class as the received frame.
-	 *
-	 * As a consequence, we need to add all mandatory rates that are
-	 * lower than all of the basic rates to these bitmaps.
-	 */
+	 
 
 	if (IWL_RATE_24M_INDEX < lowest_present_ofdm)
 		ofdm |= IWL_RATE_24M_MASK >> IWL_FIRST_OFDM_RATE;
 	if (IWL_RATE_12M_INDEX < lowest_present_ofdm)
 		ofdm |= IWL_RATE_12M_MASK >> IWL_FIRST_OFDM_RATE;
-	/* 6M already there or needed so always add */
+	 
 	ofdm |= IWL_RATE_6M_MASK >> IWL_FIRST_OFDM_RATE;
 
-	/*
-	 * CCK is a bit more complex with DSSS vs. HR/DSSS vs. ERP.
-	 * Note, however:
-	 *  - if no CCK rates are basic, it must be ERP since there must
-	 *    be some basic rates at all, so they're OFDM => ERP PHY
-	 *    (or we're in 5 GHz, and the cck bitmap will never be used)
-	 *  - if 11M is a basic rate, it must be ERP as well, so add 5.5M
-	 *  - if 5.5M is basic, 1M and 2M are mandatory
-	 *  - if 2M is basic, 1M is mandatory
-	 *  - if 1M is basic, that's the only valid ACK rate.
-	 * As a consequence, it's not as complicated as it sounds, just add
-	 * any lower rates to the ACK rate bitmap.
-	 */
+	 
 	if (IWL_RATE_11M_INDEX < lowest_present_cck)
 		cck |= IWL_RATE_11M_MASK >> IWL_FIRST_CCK_RATE;
 	if (IWL_RATE_5M_INDEX < lowest_present_cck)
 		cck |= IWL_RATE_5M_MASK >> IWL_FIRST_CCK_RATE;
 	if (IWL_RATE_2M_INDEX < lowest_present_cck)
 		cck |= IWL_RATE_2M_MASK >> IWL_FIRST_CCK_RATE;
-	/* 1M already there or needed so always add */
+	 
 	cck |= IWL_RATE_1M_MASK >> IWL_FIRST_CCK_RATE;
 
 	IWL_DEBUG_RATE(priv, "Set basic rates cck:0x%.2x ofdm:0x%.2x\n",
 		       cck, ofdm);
 
-	/* "basic_rates" is a misnomer here -- should be called ACK rates */
+	 
 	ctx->staging.cck_basic_rates = cck;
 	ctx->staging.ofdm_basic_rates = ofdm;
 }
 
-/*
- * iwlagn_commit_rxon - commit staging_rxon to hardware
- *
- * The RXON command in staging_rxon is committed to the hardware and
- * the active_rxon structure is updated with the new data.  This
- * function correctly transitions out of the RXON_ASSOC_MSK state if
- * a HW tune is required based on the RXON structure changes.
- *
- * The connect/disconnect flow should be as the following:
- *
- * 1. make sure send RXON command with association bit unset if not connect
- *	this should include the channel and the band for the candidate
- *	to be connected to
- * 2. Add Station before RXON association with the AP
- * 3. RXON_timing has to send before RXON for connection
- * 4. full RXON command - associated bit set
- * 5. use RXON_ASSOC command to update any flags changes
- */
+ 
 int iwlagn_commit_rxon(struct iwl_priv *priv, struct iwl_rxon_context *ctx)
 {
-	/* cast away the const for active_rxon in this function */
+	 
 	struct iwl_rxon_cmd *active = (void *)&ctx->active;
 	bool new_assoc = !!(ctx->staging.filter_flags & RXON_FILTER_ASSOC_MSK);
 	int ret;
@@ -1032,22 +906,19 @@ int iwlagn_commit_rxon(struct iwl_priv *priv, struct iwl_rxon_context *ctx)
 	if (!iwl_is_alive(priv))
 		return -EBUSY;
 
-	/* This function hardcodes a bunch of dual-mode assumptions */
+	 
 	BUILD_BUG_ON(NUM_IWL_RXON_CTX != 2);
 
 	if (!ctx->is_active)
 		return 0;
 
-	/* always get timestamp with Rx frame */
+	 
 	ctx->staging.flags |= RXON_FLG_TSF2HOST_MSK;
 
-	/* recalculate basic rates */
+	 
 	iwl_calc_basic_rates(priv, ctx);
 
-	/*
-	 * force CTS-to-self frames protection if RTS-CTS is not preferred
-	 * one aggregation protection method
-	 */
+	 
 	if (!priv->hw_params.use_rts_for_aggregation)
 		ctx->staging.flags |= RXON_FLG_SELF_CTS_EN;
 
@@ -1064,10 +935,7 @@ int iwlagn_commit_rxon(struct iwl_priv *priv, struct iwl_rxon_context *ctx)
 		return -EINVAL;
 	}
 
-	/*
-	 * receive commit_rxon request
-	 * abort any previous channel switch if still in process
-	 */
+	 
 	if (test_bit(STATUS_CHANNEL_SWITCH_PENDING, &priv->status) &&
 	    (priv->switch_channel != ctx->staging.channel)) {
 		IWL_DEBUG_11H(priv, "abort channel switch on %d\n",
@@ -1075,11 +943,7 @@ int iwlagn_commit_rxon(struct iwl_priv *priv, struct iwl_rxon_context *ctx)
 		iwl_chswitch_done(priv, false);
 	}
 
-	/*
-	 * If we don't need to send a full RXON, we can use
-	 * iwl_rxon_assoc_cmd which is used to reconfigure filter
-	 * and other flags for the current radio configuration.
-	 */
+	 
 	if (!iwl_full_rxon_required(priv, ctx)) {
 		ret = iwlagn_send_rxon_assoc(priv, ctx);
 		if (ret) {
@@ -1088,13 +952,10 @@ int iwlagn_commit_rxon(struct iwl_priv *priv, struct iwl_rxon_context *ctx)
 		}
 
 		memcpy(active, &ctx->staging, sizeof(*active));
-		/*
-		 * We do not commit tx power settings while channel changing,
-		 * do it now if after settings changed.
-		 */
+		 
 		iwl_set_tx_power(priv, priv->tx_power_next, false);
 
-		/* make sure we are in the right PS state */
+		 
 		iwl_power_update_mode(priv, true);
 
 		return 0;
@@ -1111,12 +972,7 @@ int iwlagn_commit_rxon(struct iwl_priv *priv, struct iwl_rxon_context *ctx)
 		       le16_to_cpu(ctx->staging.channel),
 		       ctx->staging.bssid_addr);
 
-	/*
-	 * Always clear associated first, but with the correct config.
-	 * This is required as for example station addition for the
-	 * AP station must be done after the BSSID is set to correctly
-	 * set up filters in the device.
-	 */
+	 
 	ret = iwlagn_rxon_disconn(priv, ctx);
 	if (ret)
 		return ret;
@@ -1173,44 +1029,32 @@ int iwlagn_mac_config(struct ieee80211_hw *hw, u32 changed)
 
 	if (changed & (IEEE80211_CONF_CHANGE_SMPS |
 		       IEEE80211_CONF_CHANGE_CHANNEL)) {
-		/* mac80211 uses static for non-HT which is what we want */
+		 
 		priv->current_ht_config.smps = conf->smps_mode;
 
-		/*
-		 * Recalculate chain counts.
-		 *
-		 * If monitor mode is enabled then mac80211 will
-		 * set up the SM PS mode to OFF if an HT channel is
-		 * configured.
-		 */
+		 
 		for_each_context(priv, ctx)
 			iwlagn_set_rxon_chain(priv, ctx);
 	}
 
 	if (changed & IEEE80211_CONF_CHANGE_CHANNEL) {
 		for_each_context(priv, ctx) {
-			/* Configure HT40 channels */
+			 
 			if (ctx->ht.enabled != conf_is_ht(conf))
 				ctx->ht.enabled = conf_is_ht(conf);
 
 			if (ctx->ht.enabled) {
-				/* if HT40 is used, it should not change
-				 * after associated except channel switch */
+				 
 				if (!ctx->ht.is_40mhz ||
 						!iwl_is_associated_ctx(ctx))
 					iwlagn_config_ht40(conf, ctx);
 			} else
 				ctx->ht.is_40mhz = false;
 
-			/*
-			 * Default to no protection. Protection mode will
-			 * later be set from BSS config in iwl_ht_conf
-			 */
+			 
 			ctx->ht.protection = IEEE80211_HT_OP_MODE_PROTECTION_NONE;
 
-			/* if we are switching from ht to 2.4 clear flags
-			 * from any ht related info since 2.4 does not
-			 * support ht */
+			 
 			if (le16_to_cpu(ctx->staging.channel) !=
 			    channel->hw_value)
 				ctx->staging.flags = 0;
@@ -1269,12 +1113,7 @@ static void iwlagn_check_needed_chains(struct iwl_priv *priv,
 		rcu_read_lock();
 		sta = ieee80211_find_sta(vif, bss_conf->bssid);
 		if (!sta) {
-			/*
-			 * If at all, this can only happen through a race
-			 * when the AP disconnects us while we're still
-			 * setting up the connection, in that case mac80211
-			 * will soon tell us about that.
-			 */
+			 
 			need_multiple = false;
 			rcu_read_unlock();
 			break;
@@ -1284,27 +1123,19 @@ static void iwlagn_check_needed_chains(struct iwl_priv *priv,
 
 		need_multiple = true;
 
-		/*
-		 * If the peer advertises no support for receiving 2 and 3
-		 * stream MCS rates, it can't be transmitting them either.
-		 */
+		 
 		if (ht_cap->mcs.rx_mask[1] == 0 &&
 		    ht_cap->mcs.rx_mask[2] == 0) {
 			need_multiple = false;
 		} else if (!(ht_cap->mcs.tx_params &
 						IEEE80211_HT_MCS_TX_DEFINED)) {
-			/* If it can't TX MCS at all ... */
+			 
 			need_multiple = false;
 		} else if (ht_cap->mcs.tx_params &
 						IEEE80211_HT_MCS_TX_RX_DIFF) {
 			int maxstreams;
 
-			/*
-			 * But if it can receive them, it might still not
-			 * be able to transmit them, which is what we need
-			 * to check here -- so check the number of streams
-			 * it advertises for TX (if different from RX).
-			 */
+			 
 
 			maxstreams = (ht_cap->mcs.tx_params &
 				 IEEE80211_HT_MCS_TX_MAX_STREAMS_MASK);
@@ -1319,11 +1150,11 @@ static void iwlagn_check_needed_chains(struct iwl_priv *priv,
 		rcu_read_unlock();
 		break;
 	case NL80211_IFTYPE_ADHOC:
-		/* currently */
+		 
 		need_multiple = false;
 		break;
 	default:
-		/* only AP really */
+		 
 		need_multiple = true;
 		break;
 	}
@@ -1331,7 +1162,7 @@ static void iwlagn_check_needed_chains(struct iwl_priv *priv,
 	ctx->ht_need_multiple_chains = need_multiple;
 
 	if (!need_multiple) {
-		/* check all contexts */
+		 
 		for_each_context(priv, tmp) {
 			if (!tmp->vif)
 				continue;
@@ -1357,7 +1188,7 @@ static void iwlagn_chain_noise_reset(struct iwl_priv *priv)
 	    iwl_is_any_associated(priv)) {
 		struct iwl_calib_chain_noise_reset_cmd cmd;
 
-		/* clear data for chain noise calibration algorithm */
+		 
 		data->chain_noise_a = 0;
 		data->chain_noise_b = 0;
 		data->chain_noise_c = 0;
@@ -1393,10 +1224,7 @@ void iwlagn_bss_info_changed(struct ieee80211_hw *hw,
 	mutex_lock(&priv->mutex);
 
 	if (changes & BSS_CHANGED_IDLE && vif->cfg.idle) {
-		/*
-		 * If we go idle, then clearly no "passive-no-rx"
-		 * workaround is needed any more, this is a reset.
-		 */
+		 
 		iwlagn_lift_passive_no_rx(priv);
 	}
 
@@ -1474,13 +1302,7 @@ void iwlagn_bss_info_changed(struct ieee80211_hw *hw,
 		}
 	}
 
-	/*
-	 * If the ucode decides to do beacon filtering before
-	 * association, it will lose beacons that are needed
-	 * before sending frames out on passive channels. This
-	 * causes association failures on those channels. Enable
-	 * receiving beacons in such cases.
-	 */
+	 
 
 	if (vif->type == NL80211_IFTYPE_STATION) {
 		if (!vif->cfg.assoc)
@@ -1494,15 +1316,11 @@ void iwlagn_bss_info_changed(struct ieee80211_hw *hw,
 		iwlagn_commit_rxon(priv, ctx);
 
 	if (changes & BSS_CHANGED_ASSOC && vif->cfg.assoc) {
-		/*
-		 * The chain noise calibration will enable PM upon
-		 * completion. If calibration has already been run
-		 * then we need to enable power management here.
-		 */
+		 
 		if (priv->chain_noise_data.state == IWL_CHAIN_NOISE_DONE)
 			iwl_power_update_mode(priv, false);
 
-		/* Enable RX differential gain and sensitivity calibrations */
+		 
 		iwlagn_chain_noise_reset(priv);
 		priv->start_calib = 1;
 	}
@@ -1528,17 +1346,11 @@ void iwlagn_post_scan(struct iwl_priv *priv)
 {
 	struct iwl_rxon_context *ctx;
 
-	/*
-	 * We do not commit power settings while scan is pending,
-	 * do it now if the settings changed.
-	 */
+	 
 	iwl_power_set_mode(priv, &priv->power_data.sleep_cmd_next, false);
 	iwl_set_tx_power(priv, priv->tx_power_next, false);
 
-	/*
-	 * Since setting the RXON may have been deferred while
-	 * performing the scan, fire one off if needed
-	 */
+	 
 	for_each_context(priv, ctx)
 		if (memcmp(&ctx->staging, &ctx->active, sizeof(ctx->staging)))
 			iwlagn_commit_rxon(priv, ctx);

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * System Control and Power Interface (SCMI) Protocol based clock driver
- *
- * Copyright (C) 2018-2022 ARM Ltd.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/device.h>
@@ -43,12 +39,7 @@ static long scmi_clk_round_rate(struct clk_hw *hw, unsigned long rate,
 	u64 fmin, fmax, ftmp;
 	struct scmi_clk *clk = to_scmi_clk(hw);
 
-	/*
-	 * We can't figure out what rate it will be, so just return the
-	 * rate back to the caller. scmi_clk_recalc_rate() will be called
-	 * after the rate is set and we'll know what rate the clock is
-	 * running at then.
-	 */
+	 
 	if (clk->info->rate_discrete)
 		return rate;
 
@@ -60,7 +51,7 @@ static long scmi_clk_round_rate(struct clk_hw *hw, unsigned long rate,
 		return fmax;
 
 	ftmp = rate - fmin;
-	ftmp += clk->info->range.step_size - 1; /* to round up */
+	ftmp += clk->info->range.step_size - 1;  
 	do_div(ftmp, clk->info->range.step_size);
 
 	return ftmp * clk->info->range.step_size + fmin;
@@ -102,19 +93,7 @@ static void scmi_clk_atomic_disable(struct clk_hw *hw)
 	scmi_proto_clk_ops->disable_atomic(clk->ph, clk->id);
 }
 
-/*
- * We can provide enable/disable atomic callbacks only if the underlying SCMI
- * transport for an SCMI instance is configured to handle SCMI commands in an
- * atomic manner.
- *
- * When no SCMI atomic transport support is available we instead provide only
- * the prepare/unprepare API, as allowed by the clock framework when atomic
- * calls are not available.
- *
- * Two distinct sets of clk_ops are provided since we could have multiple SCMI
- * instances with different underlying transport quality, so they cannot be
- * shared.
- */
+ 
 static const struct clk_ops scmi_clk_ops = {
 	.recalc_rate = scmi_clk_recalc_rate,
 	.round_rate = scmi_clk_round_rate,
@@ -220,11 +199,7 @@ static int scmi_clocks_probe(struct scmi_device *sdev)
 		sclk->id = idx;
 		sclk->ph = ph;
 
-		/*
-		 * Note that when transport is atomic but SCMI protocol did not
-		 * specify (or support) an enable_latency associated with a
-		 * clock, we default to use atomic operations mode.
-		 */
+		 
 		if (is_atomic &&
 		    sclk->info->enable_latency <= atomic_threshold)
 			scmi_ops = &scmi_atomic_clk_ops;

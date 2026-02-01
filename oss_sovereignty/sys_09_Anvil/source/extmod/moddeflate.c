@@ -1,32 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2023 Jim Mussared
- *
- * Based on extmod/modzlib.c
- * Copyright (c) 2014-2016 Paul Sokolovsky
- * Copyright (c) 2021-2023 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdio.h>
 #include <string.h>
@@ -39,23 +11,23 @@
 
 #include "lib/uzlib/uzlib.h"
 
-#if 0 // print debugging info
+#if 0 
 #define DEBUG_printf DEBUG_printf
-#else // don't print debugging info
+#else 
 #define DEBUG_printf(...) (void)0
 #endif
 
 typedef enum {
     DEFLATEIO_FORMAT_MIN = 0,
-    DEFLATEIO_FORMAT_AUTO = DEFLATEIO_FORMAT_MIN, // Read mode this means auto-detect zlib/gzip, write mode this means RAW.
+    DEFLATEIO_FORMAT_AUTO = DEFLATEIO_FORMAT_MIN, 
     DEFLATEIO_FORMAT_RAW = 1,
     DEFLATEIO_FORMAT_ZLIB = 2,
     DEFLATEIO_FORMAT_GZIP = 3,
     DEFLATEIO_FORMAT_MAX = DEFLATEIO_FORMAT_GZIP,
 } deflateio_format_t;
 
-// This is used when the wbits is unset in the DeflateIO constructor. Default
-// to the smallest window size (faster compression, less RAM usage, etc).
+
+
 const int DEFLATEIO_DEFAULT_WBITS = 8;
 
 typedef struct {
@@ -113,31 +85,31 @@ static bool deflateio_init_read(mp_obj_deflateio_t *self) {
     self->read->decomp.source_read_cb = deflateio_read_stream;
     self->read->eof = false;
 
-    // Don't modify self->window_bits as it may also be used for write.
+    
     int wbits = self->window_bits;
 
     if (self->format == DEFLATEIO_FORMAT_RAW) {
         if (wbits == 0) {
-            // The docs recommends always setting wbits explicitly when using
-            // RAW, but we still allow a default.
+            
+            
             wbits = DEFLATEIO_DEFAULT_WBITS;
         }
     } else {
-        // Parse the header if we're in NONE/ZLIB/GZIP modes.
+        
         int header_wbits;
         int header_type = uzlib_parse_zlib_gzip_header(&self->read->decomp, &header_wbits);
         if (header_type < 0) {
-            // Stream header was invalid.
+            
             return false;
         }
         if ((self->format == DEFLATEIO_FORMAT_ZLIB && header_type != UZLIB_HEADER_ZLIB) || (self->format == DEFLATEIO_FORMAT_GZIP && header_type != UZLIB_HEADER_GZIP)) {
-            // Not what we expected.
+            
             return false;
         }
-        // header_wbits will either be 15 (gzip) or 8-15 (zlib).
+        
         if (wbits == 0 || header_wbits < wbits) {
-            // If the header specified something lower, then use that instead.
-            // No point doing a bigger allocation than we need to.
+            
+            
             wbits = header_wbits;
         }
     }
@@ -173,7 +145,7 @@ static bool deflateio_init_write(mp_obj_deflateio_t *self) {
 
     int wbits = self->window_bits;
     if (wbits == 0) {
-        // Same default wbits for all formats.
+        
         wbits = DEFLATEIO_DEFAULT_WBITS;
     }
     size_t window_len = 1 << wbits;
@@ -183,31 +155,31 @@ static bool deflateio_init_write(mp_obj_deflateio_t *self) {
     self->write->lz77.dest_write_data = self;
     self->write->lz77.dest_write_cb = deflateio_out_byte;
 
-    // Write header if needed.
+    
     mp_uint_t ret = 0;
     int err;
     if (self->format == DEFLATEIO_FORMAT_ZLIB) {
-        // -----CMF------  ----------FLG---------------
-        // CINFO(5) CM(3)  FLEVEL(2) FDICT(1) FCHECK(5)
-        uint8_t buf[] = { 0x08, 0x80 }; // CM=2 (deflate), FLEVEL=2 (default), FDICT=0 (no dictionary)
-        buf[0] |= MAX(wbits - 8, 1) << 4; // base-2 logarithm of the LZ77 window size, minus eight.
-        buf[1] |= 31 - ((buf[0] * 256 + buf[1]) % 31); // (CMF*256 + FLG) % 31 == 0.
+        
+        
+        uint8_t buf[] = { 0x08, 0x80 }; 
+        buf[0] |= MAX(wbits - 8, 1) << 4; 
+        buf[1] |= 31 - ((buf[0] * 256 + buf[1]) % 31); 
         ret = stream->write(self->stream, buf, sizeof(buf), &err);
 
-        self->write->input_checksum = 1; // ADLER32
+        self->write->input_checksum = 1; 
     } else if (self->format == DEFLATEIO_FORMAT_GZIP) {
-        // ID1(8) ID2(8) CM(8) ---FLG--- MTIME(32) XFL(8) OS(8)
-        // FLG: x x x FCOMMENT FNAME FEXTRA FHCRC FTEXT
-        uint8_t buf[] = { 0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x03 }; // MTIME=0, XFL=4 (fastest), OS=3 (unix)
+        
+        
+        uint8_t buf[] = { 0x1f, 0x8b, 0x08, 0x00, 0x00, 0x00, 0x00, 0x00, 0x04, 0x03 }; 
         ret = stream->write(self->stream, buf, sizeof(buf), &err);
 
-        self->write->input_checksum = ~0; // CRC32
+        self->write->input_checksum = ~0; 
     }
     if (ret == MP_STREAM_ERROR) {
         return false;
     }
 
-    // Write starting block.
+    
     uzlib_start_block(&self->write->lz77);
 
     return true;
@@ -215,7 +187,7 @@ static bool deflateio_init_write(mp_obj_deflateio_t *self) {
 #endif
 
 static mp_obj_t deflateio_make_new(const mp_obj_type_t *type, size_t n_args, size_t n_kw, const mp_obj_t *args_in) {
-    // args: stream, format=NONE, wbits=0, close=False
+    
     mp_arg_check_num(n_args, n_kw, 1, 4, false);
 
     mp_int_t format = n_args > 1 ? mp_obj_get_int(args_in[1]) : DEFLATEIO_FORMAT_AUTO;
@@ -315,14 +287,14 @@ static mp_uint_t deflateio_ioctl(mp_obj_t self_in, mp_uint_t request, uintptr_t 
 
                 const mp_stream_p_t *stream = mp_get_stream(self->stream);
 
-                // Write footer if needed.
+                
                 if (self->format == DEFLATEIO_FORMAT_ZLIB || self->format == DEFLATEIO_FORMAT_GZIP) {
                     char footer[8];
                     size_t footer_len;
                     if (self->format == DEFLATEIO_FORMAT_ZLIB) {
                         put_be32(&footer[0], self->write->input_checksum);
                         footer_len = 4;
-                    } else { // DEFLATEIO_FORMAT_GZIP
+                    } else { 
                         put_le32(&footer[0], ~self->write->input_checksum);
                         put_le32(&footer[4], self->write->input_len);
                         footer_len = 8;
@@ -334,13 +306,13 @@ static mp_uint_t deflateio_ioctl(mp_obj_t self_in, mp_uint_t request, uintptr_t 
             }
             #endif
 
-            // Only close the stream if required. e.g. when using io.BytesIO
-            // it needs to stay open so that getvalue() can be called.
+            
+            
             if (self->close) {
                 mp_stream_close(self->stream);
             }
 
-            // Either way, free the reference to the stream.
+            
             self->stream = MP_OBJ_NULL;
         }
 
@@ -398,10 +370,10 @@ const mp_obj_module_t mp_module_deflate = {
 };
 
 MP_REGISTER_MODULE(MP_QSTR_deflate, mp_module_deflate);
-#endif // !MICROPY_ENABLE_DYNRUNTIME
+#endif 
 
-// Source files #include'd here to make sure they're compiled in
-// only if the module is enabled.
+
+
 
 #include "lib/uzlib/tinflate.c"
 #include "lib/uzlib/header.c"
@@ -412,4 +384,4 @@ MP_REGISTER_MODULE(MP_QSTR_deflate, mp_module_deflate);
 #include "lib/uzlib/lz77.c"
 #endif
 
-#endif // MICROPY_PY_DEFLATE
+#endif 

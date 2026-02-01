@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2019 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DP_H__
 #define __INTEL_DP_H__
@@ -144,4 +142,4 @@ void intel_dp_phy_test(struct intel_encoder *encoder);
 
 void intel_dp_wait_source_oui(struct intel_dp *intel_dp);
 
-#endif /* __INTEL_DP_H__ */
+#endif  

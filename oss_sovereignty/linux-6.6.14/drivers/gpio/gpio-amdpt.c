@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Promontory GPIO driver
- *
- * Copyright (C) 2015 ASMedia Technology Inc.
- * Author: YD Tseng <yd_tseng@asmedia.com.tw>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -16,7 +11,7 @@
 #define PT_TOTAL_GPIO 8
 #define PT_TOTAL_GPIO_EX 24
 
-/* PCI-E MMIO register offsets */
+ 
 #define PT_DIRECTION_REG   0x00
 #define PT_INPUTDATA_REG   0x04
 #define PT_OUTPUTDATA_REG  0x08
@@ -114,7 +109,7 @@ static int pt_gpio_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, pt_gpio);
 
-	/* initialize register setting */
+	 
 	writel(0, pt_gpio->reg_base + PT_SYNC_REG);
 	writel(0, pt_gpio->reg_base + PT_CLOCKRATE_REG);
 

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for Atmel SAMA5D4 Watchdog Timer
- *
- * Copyright (C) 2015-2019 Microchip Technology Inc. and its subsidiaries
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -18,7 +14,7 @@
 
 #include "at91sam9_wdt.h"
 
-/* minimum and maximum watchdog timeout, in seconds */
+ 
 #define MIN_WDT_TIMEOUT		1
 #define MAX_WDT_TIMEOUT		16
 #define WDT_DEFAULT_TIMEOUT	MAX_WDT_TIMEOUT
@@ -53,16 +49,12 @@ MODULE_PARM_DESC(nowayout,
 #define wdt_read(wdt, field) \
 	readl_relaxed((wdt)->reg_base + (field))
 
-/* 4 slow clock periods is 4/32768 = 122.07µs*/
+ 
 #define WDT_DELAY	usecs_to_jiffies(123)
 
 static void wdt_write(struct sama5d4_wdt *wdt, u32 field, u32 val)
 {
-	/*
-	 * WDT_CR and WDT_MR must not be modified within three slow clock
-	 * periods following a restart of the watchdog performed by a write
-	 * access in WDT_CR.
-	 */
+	 
 	while (time_before(jiffies, wdt->last_ping + WDT_DELAY))
 		usleep_range(30, 125);
 	writel_relaxed(val, wdt->reg_base + field);
@@ -133,13 +125,7 @@ static int sama5d4_wdt_set_timeout(struct watchdog_device *wdd,
 	wdt->mr &= ~AT91_WDT_WDV;
 	wdt->mr |= AT91_WDT_SET_WDV(value);
 
-	/*
-	 * WDDIS has to be 0 when updating WDD/WDV. The datasheet states: When
-	 * setting the WDDIS bit, and while it is set, the fields WDV and WDD
-	 * must not be modified.
-	 * If the watchdog is enabled, then the timeout can be updated. Else,
-	 * wait that the user enables it.
-	 */
+	 
 	if (wdt_enabled)
 		wdt_write(wdt, AT91_WDT_MR, wdt->mr & ~AT91_WDT_WDDIS);
 
@@ -207,12 +193,7 @@ static int sama5d4_wdt_init(struct sama5d4_wdt *wdt)
 	u32 reg, val;
 
 	val = WDT_SEC2TICKS(WDT_DEFAULT_TIMEOUT);
-	/*
-	 * When booting and resuming, the bootloader may have changed the
-	 * watchdog configuration.
-	 * If the watchdog is already running, we can safely update it.
-	 * Else, we have to disable it properly.
-	 */
+	 
 	if (!wdt_enabled) {
 		reg = wdt_read(wdt, AT91_WDT_MR);
 		if (wdt->sam9x60_support && (!(reg & AT91_SAM9X60_WDDIS)))
@@ -359,11 +340,7 @@ static int sama5d4_wdt_resume_early(struct device *dev)
 {
 	struct sama5d4_wdt *wdt = dev_get_drvdata(dev);
 
-	/*
-	 * FIXME: writing MR also pings the watchdog which may not be desired.
-	 * This should only be done when the registers are lost on suspend but
-	 * there is no way to get this information right now.
-	 */
+	 
 	sama5d4_wdt_init(wdt);
 
 	if (watchdog_active(&wdt->wdd))

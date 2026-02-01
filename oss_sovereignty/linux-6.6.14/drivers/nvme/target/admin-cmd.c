@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * NVMe admin command implementation.
- * Copyright (c) 2015-2016 HGST, a Western Digital Company.
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/rculist.h>
@@ -18,7 +15,7 @@ u32 nvmet_get_log_page_len(struct nvme_command *cmd)
 
 	len <<= 16;
 	len += le16_to_cpu(cmd->get_log_page.numdl);
-	/* NUMD is a 0's based value */
+	 
 	len += 1;
 	len *= sizeof(u32);
 
@@ -81,7 +78,7 @@ static u16 nvmet_get_smart_log_nsid(struct nvmet_req *req,
 	if (status)
 		return status;
 
-	/* we don't have the right data for file backed ns */
+	 
 	if (!req->ns->bdev)
 		return NVME_SC_SUCCESS;
 
@@ -111,7 +108,7 @@ static u16 nvmet_get_smart_log_all(struct nvmet_req *req,
 
 	ctrl = req->sq->ctrl;
 	xa_for_each(&ctrl->subsys->namespaces, idx, ns) {
-		/* we don't have the right data for file backed ns */
+		 
 		if (!ns->bdev)
 			continue;
 		host_reads += part_stat_read(ns->bdev, ios[READ]);
@@ -276,7 +273,7 @@ static void nvmet_execute_get_log_page_ana(struct nvmet_req *req)
 {
 	struct nvme_ana_rsp_hdr hdr = { 0, };
 	struct nvme_ana_group_desc *desc;
-	size_t offset = sizeof(struct nvme_ana_rsp_hdr); /* start beyond hdr */
+	size_t offset = sizeof(struct nvme_ana_rsp_hdr);  
 	size_t len;
 	u32 grpid;
 	u16 ngrps = 0;
@@ -311,7 +308,7 @@ static void nvmet_execute_get_log_page_ana(struct nvmet_req *req)
 
 	kfree(desc);
 
-	/* copy the header last once we know the number of groups */
+	 
 	status = nvmet_copy_to_sgl(req, 0, &hdr, sizeof(hdr));
 out:
 	nvmet_req_complete(req, status);
@@ -328,11 +325,7 @@ static void nvmet_execute_get_log_page(struct nvmet_req *req)
 	case NVME_LOG_SMART:
 		return nvmet_execute_get_log_page_smart(req);
 	case NVME_LOG_FW_SLOT:
-		/*
-		 * We only support a single firmware slot which always is
-		 * active, so we can zero out the whole firmware slot log and
-		 * still claim to fully implement this mandatory log page.
-		 */
+		 
 		return nvmet_execute_get_log_page_noop(req);
 	case NVME_LOG_CHANGED_NS:
 		return nvmet_execute_get_log_changed_ns(req);
@@ -367,7 +360,7 @@ static void nvmet_execute_identify_ctrl(struct nvmet_req *req)
 		goto out;
 	}
 
-	/* XXX: figure out how to assign real vendors IDs. */
+	 
 	id->vid = 0;
 	id->ssvid = 0;
 
@@ -386,11 +379,11 @@ static void nvmet_execute_identify_ctrl(struct nvmet_req *req)
 	else
 		id->cntrltype = NVME_CTRL_IO;
 
-	/* we support multiple ports, multiples hosts and ANA: */
+	 
 	id->cmic = NVME_CTRL_CMIC_MULTI_PORT | NVME_CTRL_CMIC_MULTI_CTRL |
 		NVME_CTRL_CMIC_ANA;
 
-	/* Limit MDTS according to transport capability */
+	 
 	if (ctrl->ops->get_mdts)
 		id->mdts = ctrl->ops->get_mdts(ctrl);
 	else
@@ -399,35 +392,31 @@ static void nvmet_execute_identify_ctrl(struct nvmet_req *req)
 	id->cntlid = cpu_to_le16(ctrl->cntlid);
 	id->ver = cpu_to_le32(ctrl->subsys->ver);
 
-	/* XXX: figure out what to do about RTD3R/RTD3 */
+	 
 	id->oaes = cpu_to_le32(NVMET_AEN_CFG_OPTIONAL);
 	id->ctratt = cpu_to_le32(NVME_CTRL_ATTR_HID_128_BIT |
 		NVME_CTRL_ATTR_TBKAS);
 
 	id->oacs = 0;
 
-	/*
-	 * We don't really have a practical limit on the number of abort
-	 * comands.  But we don't do anything useful for abort either, so
-	 * no point in allowing more abort commands than the spec requires.
-	 */
+	 
 	id->acl = 3;
 
 	id->aerl = NVMET_ASYNC_EVENTS - 1;
 
-	/* first slot is read-only, only one slot supported */
+	 
 	id->frmw = (1 << 0) | (1 << 1);
 	id->lpa = (1 << 0) | (1 << 1) | (1 << 2);
 	id->elpe = NVMET_ERROR_LOG_SLOTS - 1;
 	id->npss = 0;
 
-	/* We support keep-alive timeout in granularity of seconds */
+	 
 	id->kas = cpu_to_le16(NVMET_KAS);
 
 	id->sqes = (0x6 << 4) | 0x6;
 	id->cqes = (0x4 << 4) | 0x4;
 
-	/* no enforcement soft-limit for maxcmd - pick arbitrary high value */
+	 
 	id->maxcmd = cpu_to_le16(NVMET_MAX_CMD);
 
 	id->nn = cpu_to_le32(NVMET_MAX_NAMESPACES);
@@ -435,17 +424,14 @@ static void nvmet_execute_identify_ctrl(struct nvmet_req *req)
 	id->oncs = cpu_to_le16(NVME_CTRL_ONCS_DSM |
 			NVME_CTRL_ONCS_WRITE_ZEROES);
 
-	/* XXX: don't report vwc if the underlying device is write through */
+	 
 	id->vwc = NVME_CTRL_VWC_PRESENT;
 
-	/*
-	 * We can't support atomic writes bigger than a LBA without support
-	 * from the backend device.
-	 */
+	 
 	id->awun = 0;
 	id->awupf = 0;
 
-	id->sgls = cpu_to_le32(1 << 0);	/* we always support SGLs */
+	id->sgls = cpu_to_le32(1 << 0);	 
 	if (ctrl->ops->flags & NVMF_KEYED_SGLS)
 		id->sgls |= cpu_to_le32(1 << 2);
 	if (req->port->inline_data_size)
@@ -453,34 +439,28 @@ static void nvmet_execute_identify_ctrl(struct nvmet_req *req)
 
 	strscpy(id->subnqn, ctrl->subsys->subsysnqn, sizeof(id->subnqn));
 
-	/*
-	 * Max command capsule size is sqe + in-capsule data size.
-	 * Disable in-capsule data for Metadata capable controllers.
-	 */
+	 
 	cmd_capsule_size = sizeof(struct nvme_command);
 	if (!ctrl->pi_support)
 		cmd_capsule_size += req->port->inline_data_size;
 	id->ioccsz = cpu_to_le32(cmd_capsule_size / 16);
 
-	/* Max response capsule size is cqe */
+	 
 	id->iorcsz = cpu_to_le32(sizeof(struct nvme_completion) / 16);
 
 	id->msdbd = ctrl->ops->msdbd;
 
 	id->anacap = (1 << 0) | (1 << 1) | (1 << 2) | (1 << 3) | (1 << 4);
-	id->anatt = 10; /* random value */
+	id->anatt = 10;  
 	id->anagrpmax = cpu_to_le32(NVMET_MAX_ANAGRPS);
 	id->nanagrpid = cpu_to_le32(NVMET_MAX_ANAGRPS);
 
-	/*
-	 * Meh, we don't really support any power state.  Fake up the same
-	 * values that qemu does.
-	 */
+	 
 	id->psd[0].max_power = cpu_to_le16(0x9c4);
 	id->psd[0].entry_lat = cpu_to_le32(0x10);
 	id->psd[0].exit_lat = cpu_to_le32(0x4);
 
-	id->nwpc = 1 << 0; /* write protect and no write protect */
+	id->nwpc = 1 << 0;  
 
 	status = nvmet_copy_to_sgl(req, 0, id, sizeof(*id));
 
@@ -506,7 +486,7 @@ static void nvmet_execute_identify_ns(struct nvmet_req *req)
 		goto out;
 	}
 
-	/* return an all zeroed buffer if we can't find an active namespace */
+	 
 	status = nvmet_req_find_ns(req);
 	if (status) {
 		status = 0;
@@ -519,10 +499,7 @@ static void nvmet_execute_identify_ns(struct nvmet_req *req)
 		mutex_unlock(&req->ns->subsys->lock);
 	}
 
-	/*
-	 * nuse = ncap = nsze isn't always true, but we have no way to find
-	 * that out from the underlying device.
-	 */
+	 
 	id->ncap = id->nsze =
 		cpu_to_le64(req->ns->size >> req->ns->blksize_shift);
 	switch (req->port->ana_state[req->ns->anagrpid]) {
@@ -537,17 +514,11 @@ static void nvmet_execute_identify_ns(struct nvmet_req *req)
 	if (req->ns->bdev)
 		nvmet_bdev_set_limits(req->ns->bdev, id);
 
-	/*
-	 * We just provide a single LBA format that matches what the
-	 * underlying device reports.
-	 */
+	 
 	id->nlbaf = 0;
 	id->flbas = 0;
 
-	/*
-	 * Our namespace might always be shared.  Not just with other
-	 * controllers, but also with any other user of the block device.
-	 */
+	 
 	id->nmic = NVME_NS_NMIC_SHARED;
 	id->anagrpid = cpu_to_le32(req->ns->anagrpid);
 
@@ -670,7 +641,7 @@ out:
 
 static void nvmet_execute_identify_ctrl_nvm(struct nvmet_req *req)
 {
-	/* Not supported: return zeroes */
+	 
 	nvmet_req_complete(req,
 		   nvmet_zero_sgl(req, 0, sizeof(struct nvme_id_ctrl_nvm)));
 }
@@ -696,7 +667,7 @@ static void nvmet_execute_identify(struct nvmet_req *req)
 	case NVME_ID_CNS_CS_NS:
 		switch (req->cmd->identify.csi) {
 		case NVME_CSI_NVM:
-			/* Not supported */
+			 
 			break;
 		case NVME_CSI_ZNS:
 			if (IS_ENABLED(CONFIG_BLK_DEV_ZONED)) {
@@ -727,13 +698,7 @@ static void nvmet_execute_identify(struct nvmet_req *req)
 	nvmet_req_complete(req, NVME_SC_INVALID_FIELD | NVME_SC_DNR);
 }
 
-/*
- * A "minimum viable" abort implementation: the command is mandatory in the
- * spec, but we are not required to do any useful work.  We couldn't really
- * do a useful abort, so don't bother even with waiting for the command
- * to be exectuted and return immediately telling the command to abort
- * wasn't found.
- */
+ 
 static void nvmet_execute_abort(struct nvmet_req *req)
 {
 	if (!nvmet_check_transfer_len(req, 0))
@@ -900,11 +865,7 @@ void nvmet_execute_get_features(struct nvmet_req *req)
 		return;
 
 	switch (cdw10 & 0xff) {
-	/*
-	 * These features are mandatory in the spec, but we don't
-	 * have a useful way to implement them.  We'll eventually
-	 * need to come up with some fake values for these.
-	 */
+	 
 #if 0
 	case NVME_FEAT_ARBITRATION:
 		break;
@@ -935,7 +896,7 @@ void nvmet_execute_get_features(struct nvmet_req *req)
 		nvmet_get_feat_kato(req);
 		break;
 	case NVME_FEAT_HOST_ID:
-		/* need 128-bit host identifier flag */
+		 
 		if (!(req->cmd->common.cdw11 & cpu_to_le32(1 << 0))) {
 			req->error_loc =
 				offsetof(struct nvme_common_command, cdw11);

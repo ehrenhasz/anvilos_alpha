@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/delay.h>
@@ -50,7 +48,7 @@ struct lt8912 {
 static int lt8912_write_init_config(struct lt8912 *lt)
 {
 	const struct reg_sequence seq[] = {
-		/* Digital clock en*/
+		 
 		{0x08, 0xff},
 		{0x09, 0xff},
 		{0x0a, 0xff},
@@ -58,7 +56,7 @@ static int lt8912_write_init_config(struct lt8912 *lt)
 		{0x0c, 0xff},
 		{0x42, 0x04},
 
-		/*Tx Analog*/
+		 
 		{0x31, 0xb1},
 		{0x32, 0xb1},
 		{0x33, 0x0e},
@@ -66,18 +64,18 @@ static int lt8912_write_init_config(struct lt8912 *lt)
 		{0x38, 0x22},
 		{0x60, 0x82},
 
-		/*Cbus Analog*/
+		 
 		{0x39, 0x45},
 		{0x3a, 0x00},
 		{0x3b, 0x00},
 
-		/*HDMI Pll Analog*/
+		 
 		{0x44, 0x31},
 		{0x55, 0x44},
 		{0x57, 0x01},
 		{0x5a, 0x02},
 
-		/*MIPI Analog*/
+		 
 		{0x3e, 0xd6},
 		{0x3f, 0xd4},
 		{0x41, 0x3c},
@@ -164,32 +162,32 @@ static int lt8912_write_rxlogicres_config(struct lt8912 *lt)
 	return ret;
 };
 
-/* enable LVDS output with some hardcoded configuration, not required for the HDMI output */
+ 
 static int lt8912_write_lvds_config(struct lt8912 *lt)
 {
 	const struct reg_sequence seq[] = {
-		// lvds power up
+		
 		{0x44, 0x30},
 		{0x51, 0x05},
 
-		// core pll bypass
-		{0x50, 0x24}, // cp=50uA
-		{0x51, 0x2d}, // Pix_clk as reference, second order passive LPF PLL
-		{0x52, 0x04}, // loopdiv=0, use second-order PLL
-		{0x69, 0x0e}, // CP_PRESET_DIV_RATIO
+		
+		{0x50, 0x24}, 
+		{0x51, 0x2d}, 
+		{0x52, 0x04}, 
+		{0x69, 0x0e}, 
 		{0x69, 0x8e},
 		{0x6a, 0x00},
-		{0x6c, 0xb8}, // RGD_CP_SOFT_K_EN,RGD_CP_SOFT_K[13:8]
+		{0x6c, 0xb8}, 
 		{0x6b, 0x51},
 
-		{0x04, 0xfb}, // core pll reset
+		{0x04, 0xfb}, 
 		{0x04, 0xff},
 
-		// scaler bypass
-		{0x7f, 0x00}, // disable scaler
-		{0xa8, 0x13}, // 0x13: JEIDA, 0x33: VESA
+		
+		{0x7f, 0x00}, 
+		{0xa8, 0x13}, 
 
-		{0x02, 0xf7}, // lvds pll reset
+		{0x02, 0xf7}, 
 		{0x02, 0xff},
 		{0x03, 0xcf},
 		{0x03, 0xff},
@@ -217,10 +215,7 @@ static const struct regmap_config lt8912_regmap_config = {
 static int lt8912_init_i2c(struct lt8912 *lt, struct i2c_client *client)
 {
 	unsigned int i;
-	/*
-	 * At this time we only initialize 2 chips, but the lt8912 provides
-	 * a third interface for the audio over HDMI configuration.
-	 */
+	 
 	struct i2c_board_info info[] = {
 		{ I2C_BOARD_INFO("lt8912p0", I2C_ADDR_MAIN), },
 		{ I2C_BOARD_INFO("lt8912p1", I2C_ADDR_CEC_DSI), },
@@ -614,10 +609,7 @@ static struct edid *lt8912_bridge_get_edid(struct drm_bridge *bridge,
 {
 	struct lt8912 *lt = bridge_to_lt8912(bridge);
 
-	/*
-	 * edid must be read through the ddc bus but it must be
-	 * given to the hdmi connector node.
-	 */
+	 
 	if (lt->hdmi_port->ops & DRM_BRIDGE_OP_EDID)
 		return drm_bridge_get_edid(lt->hdmi_port, connector);
 

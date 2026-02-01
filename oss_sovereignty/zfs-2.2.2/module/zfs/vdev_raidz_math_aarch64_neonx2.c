@@ -1,26 +1,5 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
-/*
- * Copyright (C) 2016 Romain Dolbeau. All rights reserved.
- */
+ 
+ 
 
 #include <sys/isa_defs.h>
 
@@ -206,10 +185,7 @@
 #include "vdev_raidz_math_impl.h"
 
 DEFINE_GEN_METHODS(aarch64_neonx2);
-/*
- * If compiled with -O0, gcc doesn't do any stack frame coalescing
- * and -Wframe-larger-than=1024 is triggered in debug mode.
- */
+ 
 #if defined(__GNUC__) && !defined(__clang__)
 #pragma GCC diagnostic ignored "-Wframe-larger-than="
 #endif
@@ -233,4 +209,4 @@ const raidz_impl_ops_t vdev_raidz_aarch64_neonx2_impl = {
 	.name = "aarch64_neonx2"
 };
 
-#endif /* defined(__aarch64__) */
+#endif  

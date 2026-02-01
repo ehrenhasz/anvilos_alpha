@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2023 Isovalent */
+
+ 
 #include <uapi/linux/if_link.h>
 #include <net/if.h>
 #include <test_progs.h>
@@ -2530,7 +2530,7 @@ static void test_tc_opts_query_target(int target)
 
 	assert_mprog_count(target, 4);
 
-	/* Test 1: Double query via libbpf API */
+	 
 	err = bpf_prog_query_opts(loopback, target, &optq);
 	if (!ASSERT_OK(err, "prog_query"))
 		goto cleanup4;
@@ -2556,7 +2556,7 @@ static void test_tc_opts_query_target(int target)
 	ASSERT_EQ(optq.prog_ids[4], 0, "prog_ids[4]");
 	ASSERT_EQ(optq.link_ids, NULL, "link_ids");
 
-	/* Test 2: Double query via bpf_attr & bpf(2) directly */
+	 
 	memset(&attr, 0, attr_size);
 	attr.query.target_ifindex = loopback;
 	attr.query.attach_type = target;

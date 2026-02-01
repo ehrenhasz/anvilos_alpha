@@ -1,12 +1,6 @@
-/*  $OpenBSD: sntrup761.c,v 1.6 2023/01/11 02:13:52 djm Exp $ */
+ 
 
-/*
- * Public Domain, Authors:
- * - Daniel J. Bernstein
- * - Chitchanok Chuengsatiansup
- * - Tanja Lange
- * - Christine van Vredendaal
- */
+ 
 
 #include "includes.h"
 
@@ -24,7 +18,7 @@
 #define int64 crypto_int64
 #define uint64 crypto_uint64
 
-/* from supercop-20201130/crypto_sort/int32/portable4/int32_minmax.inc */
+ 
 #define int32_MINMAX(a,b) \
 do { \
   int64_t ab = (int64_t)b ^ (int64_t)a; \
@@ -36,7 +30,7 @@ do { \
   b ^= c; \
 } while(0)
 
-/* from supercop-20201130/crypto_sort/int32/portable4/sort.c */
+ 
 
 
 static void crypto_sort_int32(void *array,long long n)
@@ -82,7 +76,7 @@ static void crypto_sort_int32(void *array,long long n)
         }
         i += 2 * p;
       }
-      /* now i + p > n - q */
+       
       j = i;
       while (j < n - q) {
         int32 a = x[j + p];
@@ -97,10 +91,10 @@ static void crypto_sort_int32(void *array,long long n)
   }
 }
 
-/* from supercop-20201130/crypto_sort/uint32/useint32/sort.c */
+ 
 
-/* can save time by vectorizing xor loops */
-/* can save time by integrating xor loops with int32_sort */
+ 
+ 
 
 static void crypto_sort_uint32(void *array,long long n)
 {
@@ -111,16 +105,9 @@ static void crypto_sort_uint32(void *array,long long n)
   for (j = 0;j < n;++j) x[j] ^= 0x80000000;
 }
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/uint32.c */
+ 
 
-/*
-CPU division instruction typically takes time depending on x.
-This software is designed to take time independent of x.
-Time still varies depending on m; user must ensure that m is constant.
-Time also varies on CPUs where multiplication is variable-time.
-There could be more CPU issues.
-There could also be compiler issues.
-*/
+ 
 
 static void uint32_divmod_uint14(uint32 *q,uint16 *r,uint32 x,uint16 m)
 {
@@ -130,37 +117,37 @@ static void uint32_divmod_uint14(uint32 *q,uint16 *r,uint32 x,uint16 m)
 
   v /= m;
 
-  /* caller guarantees m > 0 */
-  /* caller guarantees m < 16384 */
-  /* vm <= 2^31 <= vm+m-1 */
-  /* xvm <= 2^31 x <= xvm+x(m-1) */
+   
+   
+   
+   
 
   *q = 0;
 
   qpart = (x*(uint64)v)>>31;
-  /* 2^31 qpart <= xv <= 2^31 qpart + 2^31-1 */
-  /* 2^31 qpart m <= xvm <= 2^31 qpart m + (2^31-1)m */
-  /* 2^31 qpart m <= 2^31 x <= 2^31 qpart m + (2^31-1)m + x(m-1) */
-  /* 0 <= 2^31 newx <= (2^31-1)m + x(m-1) */
-  /* 0 <= newx <= (1-1/2^31)m + x(m-1)/2^31 */
-  /* 0 <= newx <= (1-1/2^31)(2^14-1) + (2^32-1)((2^14-1)-1)/2^31 */
+   
+   
+   
+   
+   
+   
 
   x -= qpart*m; *q += qpart;
-  /* x <= 49146 */
+   
 
   qpart = (x*(uint64)v)>>31;
-  /* 0 <= newx <= (1-1/2^31)m + x(m-1)/2^31 */
-  /* 0 <= newx <= m + 49146(2^14-1)/2^31 */
-  /* 0 <= newx <= m + 0.4 */
-  /* 0 <= newx <= m */
+   
+   
+   
+   
 
   x -= qpart*m; *q += qpart;
-  /* x <= m */
+   
 
   x -= m; *q += 1;
   mask = -(x>>31);
   x += mask&(uint32)m; *q += mask;
-  /* x < m */
+   
 
   *r = x;
 }
@@ -174,7 +161,7 @@ static uint16 uint32_mod_uint14(uint32 x,uint16 m)
   return r;
 }
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/int32.c */
+ 
 
 static void int32_divmod_uint14(int32 *q,uint16 *r,int32 x,uint16 m)
 {
@@ -199,24 +186,24 @@ static uint16 int32_mod_uint14(int32 x,uint16 m)
   return r;
 }
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/paramsmenu.h */
-/* pick one of these three: */
+ 
+ 
 #define SIZE761
 #undef SIZE653
 #undef SIZE857
 
-/* pick one of these two: */
-#define SNTRUP /* Streamlined NTRU Prime */
-#undef LPR /* NTRU LPRime */
+ 
+#define SNTRUP  
+#undef LPR  
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/params.h */
+ 
 #ifndef params_H
 #define params_H
 
-/* menu of parameter choices: */
+ 
 
 
-/* what the menu means: */
+ 
 
 #if defined(SIZE761)
 #define p 761
@@ -273,18 +260,18 @@ static uint16 int32_mod_uint14(int32 x,uint16 m)
 
 #endif
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/Decode.h */
+ 
 #ifndef Decode_H
 #define Decode_H
 
 
-/* Decode(R,s,M,len) */
-/* assumes 0 < M[i] < 16384 */
-/* produces 0 <= R[i] < M[i] */
+ 
+ 
+ 
 
 #endif
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/Decode.c */
+ 
 
 static void Decode(uint16 *out,const unsigned char *S,const uint16 *M,long long len)
 {
@@ -329,7 +316,7 @@ static void Decode(uint16 *out,const unsigned char *S,const uint16 *M,long long 
       uint16 r0;
       r += bottomt[i/2]*R2[i/2];
       uint32_divmod_uint14(&r1,&r0,r,M[i]);
-      r1 = uint32_mod_uint14(r1,M[i+1]); /* only needed for invalid inputs */
+      r1 = uint32_mod_uint14(r1,M[i+1]);  
       *out++ = r0;
       *out++ = r1;
     }
@@ -338,19 +325,19 @@ static void Decode(uint16 *out,const unsigned char *S,const uint16 *M,long long 
   }
 }
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/Encode.h */
+ 
 #ifndef Encode_H
 #define Encode_H
 
 
-/* Encode(s,R,M,len) */
-/* assumes 0 <= R[i] < M[i] < 16384 */
+ 
+ 
 
 #endif
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/Encode.c */
+ 
 
-/* 0 <= R[i] < M[i] < 16384 */
+ 
 static void Encode(unsigned char *out,const uint16 *R,const uint16 *M,long long len)
 {
   if (len == 1) {
@@ -386,59 +373,59 @@ static void Encode(unsigned char *out,const uint16 *R,const uint16 *M,long long 
   }
 }
 
-/* from supercop-20201130/crypto_kem/sntrup761/ref/kem.c */
+ 
 
 #ifdef LPR
 #endif
 
 
-/* ----- masks */
+ 
 
 #ifndef LPR
 
-/* return -1 if x!=0; else return 0 */
+ 
 static int int16_nonzero_mask(int16 x)
 {
-  uint16 u = x; /* 0, else 1...65535 */
-  uint32 v = u; /* 0, else 1...65535 */
-  v = -v; /* 0, else 2^32-65535...2^32-1 */
-  v >>= 31; /* 0, else 1 */
-  return -v; /* 0, else -1 */
+  uint16 u = x;  
+  uint32 v = u;  
+  v = -v;  
+  v >>= 31;  
+  return -v;  
 }
 
 #endif
 
-/* return -1 if x<0; otherwise return 0 */
+ 
 static int int16_negative_mask(int16 x)
 {
   uint16 u = x;
   u >>= 15;
   return -(int) u;
-  /* alternative with gcc -fwrapv: */
-  /* x>>15 compiles to CPU's arithmetic right shift */
+   
+   
 }
 
-/* ----- arithmetic mod 3 */
+ 
 
 typedef int8 small;
 
-/* F3 is always represented as -1,0,1 */
-/* so ZZ_fromF3 is a no-op */
+ 
+ 
 
-/* x must not be close to top int16 */
+ 
 static small F3_freeze(int16 x)
 {
   return int32_mod_uint14(x+1,3)-1;
 }
 
-/* ----- arithmetic mod q */
+ 
 
 #define q12 ((q-1)/2)
 typedef int16 Fq;
-/* always represented as -q12...q12 */
-/* so ZZ_fromFq is a no-op */
+ 
+ 
 
-/* x must not be close to top int32 */
+ 
 static Fq Fq_freeze(int32 x)
 {
   return int32_mod_uint14(x+q12,q)-q12;
@@ -460,7 +447,7 @@ static Fq Fq_recip(Fq a1)
 
 #endif
 
-/* ----- Top and Right */
+ 
 
 #ifdef LPR
 #define tau 16
@@ -476,11 +463,11 @@ static Fq Right(int8 T)
 }
 #endif
 
-/* ----- small polynomials */
+ 
 
 #ifndef LPR
 
-/* 0 if Weightw_is(r), else -1 */
+ 
 static int Weightw_mask(small *r)
 {
   int weight = 0;
@@ -490,14 +477,14 @@ static int Weightw_mask(small *r)
   return int16_nonzero_mask(weight-w);
 }
 
-/* R3_fromR(R_fromRq(r)) */
+ 
 static void R3_fromRq(small *out,const Fq *r)
 {
   int i;
   for (i = 0;i < p;++i) out[i] = F3_freeze(r[i]);
 }
 
-/* h = f*g in the ring R3 */
+ 
 static void R3_mult(small *h,const small *f,const small *g)
 {
   small fg[p+p-1];
@@ -523,7 +510,7 @@ static void R3_mult(small *h,const small *f,const small *g)
   for (i = 0;i < p;++i) h[i] = fg[i];
 }
 
-/* returns 0 if recip succeeded; else -1 */
+ 
 static int R3_recip(small *out,const small *in)
 {
   small f[p+1],g[p+1],v[p+1],r[p+1];
@@ -569,9 +556,9 @@ static int R3_recip(small *out,const small *in)
 
 #endif
 
-/* ----- polynomials mod q */
+ 
 
-/* h = f*g in the ring Rq */
+ 
 static void Rq_mult_small(Fq *h,const Fq *f,const small *g)
 {
   Fq fg[p+p-1];
@@ -599,7 +586,7 @@ static void Rq_mult_small(Fq *h,const Fq *f,const small *g)
 
 #ifndef LPR
 
-/* h = 3f in Rq */
+ 
 static void Rq_mult3(Fq *h,const Fq *f)
 {
   int i;
@@ -607,8 +594,8 @@ static void Rq_mult3(Fq *h,const Fq *f)
   for (i = 0;i < p;++i) h[i] = Fq_freeze(3*f[i]);
 }
 
-/* out = 1/(3*in) in Rq */
-/* returns 0 if recip succeeded; else -1 */
+ 
+ 
 static int Rq_recip3(Fq *out,const small *in)
 {
   Fq f[p+1],g[p+1],v[p+1],r[p+1];
@@ -657,7 +644,7 @@ static int Rq_recip3(Fq *out,const small *in)
 
 #endif
 
-/* ----- rounded polynomials mod q */
+ 
 
 static void Round(Fq *out,const Fq *a)
 {
@@ -665,7 +652,7 @@ static void Round(Fq *out,const Fq *a)
   for (i = 0;i < p;++i) out[i] = a[i]-F3_freeze(a[i]);
 }
 
-/* ----- sorting to generate short polynomial */
+ 
 
 static void Short_fromlist(small *out,const uint32 *in)
 {
@@ -678,11 +665,11 @@ static void Short_fromlist(small *out,const uint32 *in)
   for (i = 0;i < p;++i) out[i] = (L[i]&3)-1;
 }
 
-/* ----- underlying hash function */
+ 
 
 #define Hash_bytes 32
 
-/* e.g., b = 0 means out = Hash0(in) */
+ 
 static void Hash_prefix(unsigned char *out,int b,const unsigned char *in,int inlen)
 {
   unsigned char x[inlen+1];
@@ -695,7 +682,7 @@ static void Hash_prefix(unsigned char *out,int b,const unsigned char *in,int inl
   for (i = 0;i < 32;++i) out[i] = h[i];
 }
 
-/* ----- higher-level randomness */
+ 
 
 static uint32 urandom32(void)
 {
@@ -730,11 +717,11 @@ static void Small_random(small *out)
 
 #endif
 
-/* ----- Streamlined NTRU Prime Core */
+ 
 
 #ifndef LPR
 
-/* h,(f,ginv) = KeyGen() */
+ 
 static void KeyGen(Fq *h,small *f,small *ginv)
 {
   small g[p];
@@ -745,11 +732,11 @@ static void KeyGen(Fq *h,small *f,small *ginv)
     if (R3_recip(ginv,g) == 0) break;
   }
   Short_random(f);
-  Rq_recip3(finv,f); /* always works */
+  Rq_recip3(finv,f);  
   Rq_mult_small(h,finv,g);
 }
 
-/* c = Encrypt(r,h) */
+ 
 static void Encrypt(Fq *c,const small *r,const Fq *h)
 {
   Fq hr[p];
@@ -758,7 +745,7 @@ static void Encrypt(Fq *c,const small *r,const Fq *h)
   Round(c,hr);
 }
 
-/* r = Decrypt(c,(f,ginv)) */
+ 
 static void Decrypt(small *r,const Fq *c,const small *f,const small *ginv)
 {
   Fq cf[p];
@@ -773,18 +760,18 @@ static void Decrypt(small *r,const Fq *c,const small *f,const small *ginv)
   R3_fromRq(e,cf3);
   R3_mult(ev,e,ginv);
 
-  mask = Weightw_mask(ev); /* 0 if weight w, else -1 */
+  mask = Weightw_mask(ev);  
   for (i = 0;i < w;++i) r[i] = ((ev[i]^1)&~mask)^1;
   for (i = w;i < p;++i) r[i] = ev[i]&~mask;
 }
 
 #endif
 
-/* ----- NTRU LPRime Core */
+ 
 
 #ifdef LPR
 
-/* (G,A),a = KeyGen(G); leaves G unchanged */
+ 
 static void KeyGen(Fq *A,small *a,const Fq *G)
 {
   Fq aG[p];
@@ -794,7 +781,7 @@ static void KeyGen(Fq *A,small *a,const Fq *G)
   Round(A,aG);
 }
 
-/* B,T = Encrypt(r,(G,A),b) */
+ 
 static void Encrypt(Fq *B,int8 *T,const int8 *r,const Fq *G,const Fq *A,const small *b)
 {
   Fq bG[p];
@@ -807,7 +794,7 @@ static void Encrypt(Fq *B,int8 *T,const int8 *r,const Fq *G,const Fq *A,const sm
   for (i = 0;i < I;++i) T[i] = Top(Fq_freeze(bA[i]+r[i]*q12));
 }
 
-/* r = Decrypt((B,T),a) */
+ 
 static void Decrypt(int8 *r,const Fq *B,const int8 *T,const small *a)
 {
   Fq aB[p];
@@ -820,12 +807,12 @@ static void Decrypt(int8 *r,const Fq *B,const int8 *T,const small *a)
 
 #endif
 
-/* ----- encoding I-bit inputs */
+ 
 
 #ifdef LPR
 
 #define Inputs_bytes (I/8)
-typedef int8 Inputs[I]; /* passed by reference */
+typedef int8 Inputs[I];  
 
 static void Inputs_encode(unsigned char *s,const Inputs r)
 {
@@ -836,7 +823,7 @@ static void Inputs_encode(unsigned char *s,const Inputs r)
 
 #endif
 
-/* ----- Expand */
+ 
 
 #ifdef LPR
 
@@ -857,7 +844,7 @@ static void Expand(uint32 *L,const unsigned char *k)
 
 #endif
 
-/* ----- Seeds */
+ 
 
 #ifdef LPR
 
@@ -870,11 +857,11 @@ static void Seeds_random(unsigned char *s)
 
 #endif
 
-/* ----- Generator, HashShort */
+ 
 
 #ifdef LPR
 
-/* G = Generator(k) */
+ 
 static void Generator(Fq *G,const unsigned char *k)
 {
   uint32 L[p];
@@ -884,7 +871,7 @@ static void Generator(Fq *G,const unsigned char *k)
   for (i = 0;i < p;++i) G[i] = uint32_mod_uint14(L[i],q)-q12;
 }
 
-/* out = HashShort(r) */
+ 
 static void HashShort(small *out,const Inputs r)
 {
   unsigned char s[Inputs_bytes];
@@ -899,11 +886,11 @@ static void HashShort(small *out,const Inputs r)
 
 #endif
 
-/* ----- NTRU LPRime Expand */
+ 
 
 #ifdef LPR
 
-/* (S,A),a = XKeyGen() */
+ 
 static void XKeyGen(unsigned char *S,Fq *A,small *a)
 {
   Fq G[p];
@@ -913,7 +900,7 @@ static void XKeyGen(unsigned char *S,Fq *A,small *a)
   KeyGen(A,a,G);
 }
 
-/* B,T = XEncrypt(r,(S,A)) */
+ 
 static void XEncrypt(Fq *B,int8 *T,const int8 *r,const unsigned char *S,const Fq *A)
 {
   Fq G[p];
@@ -928,11 +915,11 @@ static void XEncrypt(Fq *B,int8 *T,const int8 *r,const unsigned char *S,const Fq
 
 #endif
 
-/* ----- encoding small polynomials (including short polynomials) */
+ 
 
 #define Small_bytes ((p+3)/4)
 
-/* these are the only functions that rely on p mod 4 = 1 */
+ 
 
 static void Small_encode(unsigned char *s,const small *f)
 {
@@ -966,7 +953,7 @@ static void Small_decode(small *f,const unsigned char *s)
   *f++ = ((small)(x&3))-1;
 }
 
-/* ----- encoding general polynomials */
+ 
 
 #ifndef LPR
 
@@ -992,7 +979,7 @@ static void Rq_decode(Fq *r,const unsigned char *s)
 
 #endif
 
-/* ----- encoding rounded polynomials */
+ 
 
 static void Rounded_encode(unsigned char *s,const Fq *r)
 {
@@ -1014,7 +1001,7 @@ static void Rounded_decode(Fq *r,const unsigned char *s)
   for (i = 0;i < p;++i) r[i] = R[i]*3-q12;
 }
 
-/* ----- encoding top polynomials */
+ 
 
 #ifdef LPR
 
@@ -1038,11 +1025,11 @@ static void Top_decode(int8 *T,const unsigned char *s)
 
 #endif
 
-/* ----- Streamlined NTRU Prime Core plus encoding */
+ 
 
 #ifndef LPR
 
-typedef small Inputs[p]; /* passed by reference */
+typedef small Inputs[p];  
 #define Inputs_random Short_random
 #define Inputs_encode Small_encode
 #define Inputs_bytes Small_bytes
@@ -1051,7 +1038,7 @@ typedef small Inputs[p]; /* passed by reference */
 #define SecretKeys_bytes (2*Small_bytes)
 #define PublicKeys_bytes Rq_bytes
 
-/* pk,sk = ZKeyGen() */
+ 
 static void ZKeyGen(unsigned char *pk,unsigned char *sk)
 {
   Fq h[p];
@@ -1063,7 +1050,7 @@ static void ZKeyGen(unsigned char *pk,unsigned char *sk)
   Small_encode(sk,v);
 }
 
-/* C = ZEncrypt(r,pk) */
+ 
 static void ZEncrypt(unsigned char *C,const Inputs r,const unsigned char *pk)
 {
   Fq h[p];
@@ -1073,7 +1060,7 @@ static void ZEncrypt(unsigned char *C,const Inputs r,const unsigned char *pk)
   Rounded_encode(C,c);
 }
 
-/* r = ZDecrypt(C,sk) */
+ 
 static void ZDecrypt(Inputs r,const unsigned char *C,const unsigned char *sk)
 {
   small f[p],v[p];
@@ -1087,7 +1074,7 @@ static void ZDecrypt(Inputs r,const unsigned char *C,const unsigned char *sk)
 
 #endif
 
-/* ----- NTRU LPRime Expand plus encoding */
+ 
 
 #ifdef LPR
 
@@ -1104,7 +1091,7 @@ static void Inputs_random(Inputs r)
   for (i = 0;i < I;++i) r[i] = 1&(s[i>>3]>>(i&7));
 }
 
-/* pk,sk = ZKeyGen() */
+ 
 static void ZKeyGen(unsigned char *pk,unsigned char *sk)
 {
   Fq A[p];
@@ -1115,7 +1102,7 @@ static void ZKeyGen(unsigned char *pk,unsigned char *sk)
   Small_encode(sk,a);
 }
 
-/* c = ZEncrypt(r,pk) */
+ 
 static void ZEncrypt(unsigned char *c,const Inputs r,const unsigned char *pk)
 {
   Fq A[p];
@@ -1128,7 +1115,7 @@ static void ZEncrypt(unsigned char *c,const Inputs r,const unsigned char *pk)
   Top_encode(c,T);
 }
 
-/* r = ZDecrypt(C,sk) */
+ 
 static void ZDecrypt(Inputs r,const unsigned char *c,const unsigned char *sk)
 {
   small a[p];
@@ -1143,11 +1130,11 @@ static void ZDecrypt(Inputs r,const unsigned char *c,const unsigned char *sk)
 
 #endif
 
-/* ----- confirmation hash */
+ 
 
 #define Confirm_bytes 32
 
-/* h = HashConfirm(r,pk,cache); cache is Hash4(pk) */
+ 
 static void HashConfirm(unsigned char *h,const unsigned char *r,const unsigned char *pk,const unsigned char *cache)
 {
 #ifndef LPR
@@ -1166,9 +1153,9 @@ static void HashConfirm(unsigned char *h,const unsigned char *r,const unsigned c
   Hash_prefix(h,2,x,sizeof x);
 }
 
-/* ----- session-key hash */
+ 
 
-/* k = HashSession(b,y,z) */
+ 
 static void HashSession(unsigned char *k,int b,const unsigned char *y,const unsigned char *z)
 {
 #ifndef LPR
@@ -1187,9 +1174,9 @@ static void HashSession(unsigned char *k,int b,const unsigned char *y,const unsi
   Hash_prefix(k,b,x,sizeof x);
 }
 
-/* ----- Streamlined NTRU Prime and NTRU LPRime */
+ 
 
-/* pk,sk = KEM_KeyGen() */
+ 
 static void KEM_KeyGen(unsigned char *pk,unsigned char *sk)
 {
   int i;
@@ -1200,7 +1187,7 @@ static void KEM_KeyGen(unsigned char *pk,unsigned char *sk)
   Hash_prefix(sk,4,pk,PublicKeys_bytes);
 }
 
-/* c,r_enc = Hide(r,pk,cache); cache is Hash4(pk) */
+ 
 static void Hide(unsigned char *c,unsigned char *r_enc,const Inputs r,const unsigned char *pk,const unsigned char *cache)
 {
   Inputs_encode(r_enc,r);
@@ -1208,7 +1195,7 @@ static void Hide(unsigned char *c,unsigned char *r_enc,const Inputs r,const unsi
   HashConfirm(c,r_enc,pk,cache);
 }
 
-/* c,k = Encap(pk) */
+ 
 static void Encap(unsigned char *c,unsigned char *k,const unsigned char *pk)
 {
   Inputs r;
@@ -1221,7 +1208,7 @@ static void Encap(unsigned char *c,unsigned char *k,const unsigned char *pk)
   HashSession(k,1,r_enc,c);
 }
 
-/* 0 if matching ciphertext+confirm, else -1 */
+ 
 static int Ciphertexts_diff_mask(const unsigned char *c,const unsigned char *c2)
 {
   uint16 differentbits = 0;
@@ -1231,7 +1218,7 @@ static int Ciphertexts_diff_mask(const unsigned char *c,const unsigned char *c2)
   return (1&((differentbits-1)>>8))-1;
 }
 
-/* k = Decap(c,sk) */
+ 
 static void Decap(unsigned char *k,const unsigned char *c,const unsigned char *sk)
 {
   const unsigned char *pk = sk + SecretKeys_bytes;
@@ -1250,7 +1237,7 @@ static void Decap(unsigned char *k,const unsigned char *c,const unsigned char *s
   HashSession(k,1+mask,r_enc,c);
 }
 
-/* ----- crypto_kem API */
+ 
 
 
 int crypto_kem_sntrup761_keypair(unsigned char *pk,unsigned char *sk)
@@ -1270,4 +1257,4 @@ int crypto_kem_sntrup761_dec(unsigned char *k,const unsigned char *c,const unsig
   Decap(k,c,sk);
   return 0;
 }
-#endif /* USE_SNTRUP761X25519 */
+#endif  

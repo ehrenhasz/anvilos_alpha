@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause
-/* Copyright 2016-2018 NXP
- * Copyright (c) 2018-2019, Vladimir Oltean <olteanv@gmail.com>
- */
+
+ 
 #include <linux/packing.h>
 #include "sja1105.h"
 
@@ -9,7 +7,7 @@
 #define SJA1110_BASE_MCSS_CLK	SJA1110_CGU_ADDR(0x70)
 #define SJA1110_BASE_TIMER_CLK	SJA1110_CGU_ADDR(0x74)
 
-/* Common structure for CFG_PAD_MIIx_RX and CFG_PAD_MIIx_TX */
+ 
 struct sja1105_cfg_pad_mii {
 	u64 d32_os;
 	u64 d32_ih;
@@ -36,10 +34,7 @@ struct sja1105_cfg_pad_mii_id {
 	u64 txc_pd;
 };
 
-/* UM10944 Table 82.
- * IDIV_0_C to IDIV_4_C control registers
- * (addr. 10000Bh to 10000Fh)
- */
+ 
 struct sja1105_cgu_idiv {
 	u64 clksrc;
 	u64 autoblock;
@@ -47,11 +42,7 @@ struct sja1105_cgu_idiv {
 	u64 pd;
 };
 
-/* PLL_1_C control register
- *
- * SJA1105 E/T: UM10944 Table 81 (address 10000Ah)
- * SJA1105 P/Q/R/S: UM11040 Table 116 (address 10000Ah)
- */
+ 
 struct sja1105_cgu_pll_ctrl {
 	u64 pllclksrc;
 	u64 msel;
@@ -89,10 +80,7 @@ enum {
 	CLKSRC_IDIV4		= 0x15,
 };
 
-/* UM10944 Table 83.
- * MIIx clock control registers 1 to 30
- * (addresses 100013h to 100035h)
- */
+ 
 struct sja1105_cgu_mii_ctrl {
 	u64 clksrc;
 	u64 autoblock;
@@ -126,11 +114,11 @@ static int sja1105_cgu_idiv_config(struct sja1105_private *priv, int port,
 		return -ERANGE;
 	}
 
-	/* Payload for packed_buf */
-	idiv.clksrc    = 0x0A;            /* 25MHz */
-	idiv.autoblock = 1;               /* Block clk automatically */
-	idiv.idiv      = factor - 1;      /* Divide by 1 or 10 */
-	idiv.pd        = enabled ? 0 : 1; /* Power down? */
+	 
+	idiv.clksrc    = 0x0A;             
+	idiv.autoblock = 1;                
+	idiv.idiv      = factor - 1;       
+	idiv.pd        = enabled ? 0 : 1;  
 	sja1105_cgu_idiv_packing(packed_buf, &idiv, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->cgu_idiv[port],
@@ -178,10 +166,10 @@ static int sja1105_cgu_mii_tx_clk_config(struct sja1105_private *priv,
 	else
 		clksrc = phy_clk_sources[port];
 
-	/* Payload for packed_buf */
+	 
 	mii_tx_clk.clksrc    = clksrc;
-	mii_tx_clk.autoblock = 1;  /* Autoblock clk while changing clksrc */
-	mii_tx_clk.pd        = 0;  /* Power Down off => enabled */
+	mii_tx_clk.autoblock = 1;   
+	mii_tx_clk.pd        = 0;   
 	sja1105_cgu_mii_control_packing(packed_buf, &mii_tx_clk, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->mii_tx_clk[port],
@@ -205,10 +193,10 @@ sja1105_cgu_mii_rx_clk_config(struct sja1105_private *priv, int port)
 	if (regs->mii_rx_clk[port] == SJA1105_RSV_ADDR)
 		return 0;
 
-	/* Payload for packed_buf */
+	 
 	mii_rx_clk.clksrc    = clk_sources[port];
-	mii_rx_clk.autoblock = 1;  /* Autoblock clk while changing clksrc */
-	mii_rx_clk.pd        = 0;  /* Power Down off => enabled */
+	mii_rx_clk.autoblock = 1;   
+	mii_rx_clk.pd        = 0;   
 	sja1105_cgu_mii_control_packing(packed_buf, &mii_rx_clk, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->mii_rx_clk[port],
@@ -232,10 +220,10 @@ sja1105_cgu_mii_ext_tx_clk_config(struct sja1105_private *priv, int port)
 	if (regs->mii_ext_tx_clk[port] == SJA1105_RSV_ADDR)
 		return 0;
 
-	/* Payload for packed_buf */
+	 
 	mii_ext_tx_clk.clksrc    = clk_sources[port];
-	mii_ext_tx_clk.autoblock = 1; /* Autoblock clk while changing clksrc */
-	mii_ext_tx_clk.pd        = 0; /* Power Down off => enabled */
+	mii_ext_tx_clk.autoblock = 1;  
+	mii_ext_tx_clk.pd        = 0;  
 	sja1105_cgu_mii_control_packing(packed_buf, &mii_ext_tx_clk, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->mii_ext_tx_clk[port],
@@ -259,10 +247,10 @@ sja1105_cgu_mii_ext_rx_clk_config(struct sja1105_private *priv, int port)
 	if (regs->mii_ext_rx_clk[port] == SJA1105_RSV_ADDR)
 		return 0;
 
-	/* Payload for packed_buf */
+	 
 	mii_ext_rx_clk.clksrc    = clk_sources[port];
-	mii_ext_rx_clk.autoblock = 1; /* Autoblock clk while changing clksrc */
-	mii_ext_rx_clk.pd        = 0; /* Power Down off => enabled */
+	mii_ext_rx_clk.autoblock = 1;  
+	mii_ext_rx_clk.pd        = 0;  
 	sja1105_cgu_mii_control_packing(packed_buf, &mii_ext_rx_clk, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->mii_ext_rx_clk[port],
@@ -277,41 +265,30 @@ static int sja1105_mii_clocking_setup(struct sja1105_private *priv, int port,
 
 	dev_dbg(dev, "Configuring MII-%s clocking\n",
 		(role == XMII_MAC) ? "MAC" : "PHY");
-	/* If role is MAC, disable IDIV
-	 * If role is PHY, enable IDIV and configure for 1/1 divider
-	 */
+	 
 	rc = sja1105_cgu_idiv_config(priv, port, (role == XMII_PHY), 1);
 	if (rc < 0)
 		return rc;
 
-	/* Configure CLKSRC of MII_TX_CLK_n
-	 *   * If role is MAC, select TX_CLK_n
-	 *   * If role is PHY, select IDIV_n
-	 */
+	 
 	rc = sja1105_cgu_mii_tx_clk_config(priv, port, role);
 	if (rc < 0)
 		return rc;
 
-	/* Configure CLKSRC of MII_RX_CLK_n
-	 * Select RX_CLK_n
-	 */
+	 
 	rc = sja1105_cgu_mii_rx_clk_config(priv, port);
 	if (rc < 0)
 		return rc;
 
 	if (role == XMII_PHY) {
-		/* Per MII spec, the PHY (which is us) drives the TX_CLK pin */
+		 
 
-		/* Configure CLKSRC of EXT_TX_CLK_n
-		 * Select IDIV_n
-		 */
+		 
 		rc = sja1105_cgu_mii_ext_tx_clk_config(priv, port);
 		if (rc < 0)
 			return rc;
 
-		/* Configure CLKSRC of EXT_RX_CLK_n
-		 * Select IDIV_n
-		 */
+		 
 		rc = sja1105_cgu_mii_ext_rx_clk_config(priv, port);
 		if (rc < 0)
 			return rc;
@@ -354,11 +331,11 @@ static int sja1105_cgu_rgmii_tx_clk_config(struct sja1105_private *priv,
 		clksrc = clk_sources[port];
 	}
 
-	/* RGMII: 125MHz for 1000, 25MHz for 100, 2.5MHz for 10 */
+	 
 	txc.clksrc = clksrc;
-	/* Autoblock clk while changing clksrc */
+	 
 	txc.autoblock = 1;
-	/* Power Down off => enabled */
+	 
 	txc.pd = 0;
 	sja1105_cgu_mii_control_packing(packed_buf, &txc, PACK);
 
@@ -366,7 +343,7 @@ static int sja1105_cgu_rgmii_tx_clk_config(struct sja1105_private *priv,
 				packed_buf, SJA1105_SIZE_CGU_CMD);
 }
 
-/* AGU */
+ 
 static void
 sja1105_cfg_pad_mii_packing(void *buf, struct sja1105_cfg_pad_mii *cmd,
 			    enum packing_op op)
@@ -397,20 +374,20 @@ static int sja1105_rgmii_cfg_pad_tx_config(struct sja1105_private *priv,
 	if (regs->pad_mii_tx[port] == SJA1105_RSV_ADDR)
 		return 0;
 
-	/* Payload */
-	pad_mii_tx.d32_os    = 3; /* TXD[3:2] output stage: */
-				  /*          high noise/high speed */
-	pad_mii_tx.d10_os    = 3; /* TXD[1:0] output stage: */
-				  /*          high noise/high speed */
-	pad_mii_tx.d32_ipud  = 2; /* TXD[3:2] input stage: */
-				  /*          plain input (default) */
-	pad_mii_tx.d10_ipud  = 2; /* TXD[1:0] input stage: */
-				  /*          plain input (default) */
-	pad_mii_tx.ctrl_os   = 3; /* TX_CTL / TX_ER output stage */
-	pad_mii_tx.ctrl_ipud = 2; /* TX_CTL / TX_ER input stage (default) */
-	pad_mii_tx.clk_os    = 3; /* TX_CLK output stage */
-	pad_mii_tx.clk_ih    = 0; /* TX_CLK input hysteresis (default) */
-	pad_mii_tx.clk_ipud  = 2; /* TX_CLK input stage (default) */
+	 
+	pad_mii_tx.d32_os    = 3;  
+				   
+	pad_mii_tx.d10_os    = 3;  
+				   
+	pad_mii_tx.d32_ipud  = 2;  
+				   
+	pad_mii_tx.d10_ipud  = 2;  
+				   
+	pad_mii_tx.ctrl_os   = 3;  
+	pad_mii_tx.ctrl_ipud = 2;  
+	pad_mii_tx.clk_os    = 3;  
+	pad_mii_tx.clk_ih    = 0;  
+	pad_mii_tx.clk_ipud  = 2;  
 	sja1105_cfg_pad_mii_packing(packed_buf, &pad_mii_tx, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->pad_mii_tx[port],
@@ -426,27 +403,27 @@ static int sja1105_cfg_pad_rx_config(struct sja1105_private *priv, int port)
 	if (regs->pad_mii_rx[port] == SJA1105_RSV_ADDR)
 		return 0;
 
-	/* Payload */
-	pad_mii_rx.d32_ih    = 0; /* RXD[3:2] input stage hysteresis: */
-				  /*          non-Schmitt (default) */
-	pad_mii_rx.d32_ipud  = 2; /* RXD[3:2] input weak pull-up/down */
-				  /*          plain input (default) */
-	pad_mii_rx.d10_ih    = 0; /* RXD[1:0] input stage hysteresis: */
-				  /*          non-Schmitt (default) */
-	pad_mii_rx.d10_ipud  = 2; /* RXD[1:0] input weak pull-up/down */
-				  /*          plain input (default) */
-	pad_mii_rx.ctrl_ih   = 0; /* RX_DV/CRS_DV/RX_CTL and RX_ER */
-				  /* input stage hysteresis: */
-				  /* non-Schmitt (default) */
-	pad_mii_rx.ctrl_ipud = 3; /* RX_DV/CRS_DV/RX_CTL and RX_ER */
-				  /* input stage weak pull-up/down: */
-				  /* pull-down */
-	pad_mii_rx.clk_os    = 2; /* RX_CLK/RXC output stage: */
-				  /* medium noise/fast speed (default) */
-	pad_mii_rx.clk_ih    = 0; /* RX_CLK/RXC input hysteresis: */
-				  /* non-Schmitt (default) */
-	pad_mii_rx.clk_ipud  = 2; /* RX_CLK/RXC input pull-up/down: */
-				  /* plain input (default) */
+	 
+	pad_mii_rx.d32_ih    = 0;  
+				   
+	pad_mii_rx.d32_ipud  = 2;  
+				   
+	pad_mii_rx.d10_ih    = 0;  
+				   
+	pad_mii_rx.d10_ipud  = 2;  
+				   
+	pad_mii_rx.ctrl_ih   = 0;  
+				   
+				   
+	pad_mii_rx.ctrl_ipud = 3;  
+				   
+				   
+	pad_mii_rx.clk_os    = 2;  
+				   
+	pad_mii_rx.clk_ih    = 0;  
+				   
+	pad_mii_rx.clk_ipud  = 2;  
+				   
 	sja1105_cfg_pad_mii_packing(packed_buf, &pad_mii_rx, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->pad_mii_rx[port],
@@ -476,16 +453,7 @@ sja1110_cfg_pad_mii_id_packing(void *buf, struct sja1105_cfg_pad_mii_id *cmd,
 	const int size = SJA1105_SIZE_CGU_CMD;
 	u64 range = 4;
 
-	/* Fields RXC_RANGE and TXC_RANGE select the input frequency range:
-	 * 0 = 2.5MHz
-	 * 1 = 25MHz
-	 * 2 = 50MHz
-	 * 3 = 125MHz
-	 * 4 = Automatically determined by port speed.
-	 * There's no point in defining a structure different than the one for
-	 * SJA1105, so just hardcode the frequency range to automatic, just as
-	 * before.
-	 */
+	 
 	sja1105_packing(buf, &cmd->rxc_stable_ovr, 26, 26, size, op);
 	sja1105_packing(buf, &cmd->rxc_delay,      25, 21, size, op);
 	sja1105_packing(buf, &range,               20, 18, size, op);
@@ -498,13 +466,7 @@ sja1110_cfg_pad_mii_id_packing(void *buf, struct sja1105_cfg_pad_mii_id *cmd,
 	sja1105_packing(buf, &cmd->txc_pd,          0,  0, size, op);
 }
 
-/* The RGMII delay setup procedure is 2-step and gets called upon each
- * .phylink_mac_config. Both are strategic.
- * The reason is that the RX Tunable Delay Line of the SJA1105 MAC has issues
- * with recovering from a frequency change of the link partner's RGMII clock.
- * The easiest way to recover from this is to temporarily power down the TDL,
- * as it will re-lock at the new frequency afterwards.
- */
+ 
 int sja1105pqrs_setup_rgmii_delay(const void *ctx, int port)
 {
 	const struct sja1105_private *priv = ctx;
@@ -520,7 +482,7 @@ int sja1105pqrs_setup_rgmii_delay(const void *ctx, int port)
 	if (tx_delay)
 		pad_mii_id.txc_delay = SJA1105_RGMII_DELAY_PS_TO_HW(tx_delay);
 
-	/* Stage 1: Turn the RGMII delay lines off. */
+	 
 	pad_mii_id.rxc_bypass = 1;
 	pad_mii_id.rxc_pd = 1;
 	pad_mii_id.txc_bypass = 1;
@@ -532,7 +494,7 @@ int sja1105pqrs_setup_rgmii_delay(const void *ctx, int port)
 	if (rc < 0)
 		return rc;
 
-	/* Stage 2: Turn the RGMII delay lines on. */
+	 
 	if (rx_delay) {
 		pad_mii_id.rxc_bypass = 0;
 		pad_mii_id.rxc_pd = 0;
@@ -561,7 +523,7 @@ int sja1110_setup_rgmii_delay(const void *ctx, int port)
 
 	if (rx_delay) {
 		pad_mii_id.rxc_delay = SJA1105_RGMII_DELAY_PS_TO_HW(rx_delay);
-		/* The "BYPASS" bit in SJA1110 is actually a "don't bypass" */
+		 
 		pad_mii_id.rxc_bypass = 1;
 		pad_mii_id.rxc_pd = 0;
 	}
@@ -593,18 +555,16 @@ static int sja1105_rgmii_clocking_setup(struct sja1105_private *priv, int port,
 		port, speed);
 
 	if (speed == priv->info->port_speed[SJA1105_SPEED_1000MBPS]) {
-		/* 1000Mbps, IDIV disabled (125 MHz) */
+		 
 		rc = sja1105_cgu_idiv_config(priv, port, false, 1);
 	} else if (speed == priv->info->port_speed[SJA1105_SPEED_100MBPS]) {
-		/* 100Mbps, IDIV enabled, divide by 1 (25 MHz) */
+		 
 		rc = sja1105_cgu_idiv_config(priv, port, true, 1);
 	} else if (speed == priv->info->port_speed[SJA1105_SPEED_10MBPS]) {
-		/* 10Mbps, IDIV enabled, divide by 10 (2.5 MHz) */
+		 
 		rc = sja1105_cgu_idiv_config(priv, port, true, 10);
 	} else if (speed == priv->info->port_speed[SJA1105_SPEED_AUTO]) {
-		/* Skip CGU configuration if there is no speed available
-		 * (e.g. link is not established yet)
-		 */
+		 
 		dev_dbg(dev, "Speed not available, skipping CGU config\n");
 		return 0;
 	} else {
@@ -649,10 +609,10 @@ static int sja1105_cgu_rmii_ref_clk_config(struct sja1105_private *priv,
 	if (regs->rmii_ref_clk[port] == SJA1105_RSV_ADDR)
 		return 0;
 
-	/* Payload for packed_buf */
+	 
 	ref_clk.clksrc    = clk_sources[port];
-	ref_clk.autoblock = 1;      /* Autoblock clk while changing clksrc */
-	ref_clk.pd        = 0;      /* Power Down off => enabled */
+	ref_clk.autoblock = 1;       
+	ref_clk.pd        = 0;       
 	sja1105_cgu_mii_control_packing(packed_buf, &ref_clk, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->rmii_ref_clk[port],
@@ -669,10 +629,10 @@ sja1105_cgu_rmii_ext_tx_clk_config(struct sja1105_private *priv, int port)
 	if (regs->rmii_ext_tx_clk[port] == SJA1105_RSV_ADDR)
 		return 0;
 
-	/* Payload for packed_buf */
+	 
 	ext_tx_clk.clksrc    = CLKSRC_PLL1;
-	ext_tx_clk.autoblock = 1;   /* Autoblock clk while changing clksrc */
-	ext_tx_clk.pd        = 0;   /* Power Down off => enabled */
+	ext_tx_clk.autoblock = 1;    
+	ext_tx_clk.pd        = 0;    
 	sja1105_cgu_mii_control_packing(packed_buf, &ext_tx_clk, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, regs->rmii_ext_tx_clk[port],
@@ -690,13 +650,9 @@ static int sja1105_cgu_rmii_pll_config(struct sja1105_private *priv)
 	if (regs->rmii_pll1 == SJA1105_RSV_ADDR)
 		return 0;
 
-	/* PLL1 must be enabled and output 50 Mhz.
-	 * This is done by writing first 0x0A010941 to
-	 * the PLL_1_C register and then deasserting
-	 * power down (PD) 0x0A010940.
-	 */
+	 
 
-	/* Step 1: PLL1 setup for 50Mhz */
+	 
 	pll.pllclksrc = 0xA;
 	pll.msel      = 0x1;
 	pll.autoblock = 0x1;
@@ -714,7 +670,7 @@ static int sja1105_cgu_rmii_pll_config(struct sja1105_private *priv)
 		return rc;
 	}
 
-	/* Step 2: Enable PLL1 */
+	 
 	pll.pd = 0x0;
 
 	sja1105_cgu_pll_control_packing(packed_buf, &pll, PACK);
@@ -735,18 +691,18 @@ static int sja1105_rmii_clocking_setup(struct sja1105_private *priv, int port,
 
 	dev_dbg(dev, "Configuring RMII-%s clocking\n",
 		(role == XMII_MAC) ? "MAC" : "PHY");
-	/* AH1601.pdf chapter 2.5.1. Sources */
+	 
 	if (role == XMII_MAC) {
-		/* Configure and enable PLL1 for 50Mhz output */
+		 
 		rc = sja1105_cgu_rmii_pll_config(priv);
 		if (rc < 0)
 			return rc;
 	}
-	/* Disable IDIV for this port */
+	 
 	rc = sja1105_cgu_idiv_config(priv, port, false, 1);
 	if (rc < 0)
 		return rc;
-	/* Source to sink mappings */
+	 
 	rc = sja1105_cgu_rmii_ref_clk_config(priv, port);
 	if (rc < 0)
 		return rc;
@@ -768,9 +724,9 @@ int sja1105_clocking_setup_port(struct sja1105_private *priv, int port)
 
 	mii = priv->static_config.tables[BLK_IDX_XMII_PARAMS].entries;
 
-	/* RGMII etc */
+	 
 	phy_mode = mii->xmii_mode[port];
-	/* MAC or PHY, for applicable types (not RGMII) */
+	 
 	role = mii->phy_mac[port];
 
 	switch (phy_mode) {
@@ -784,7 +740,7 @@ int sja1105_clocking_setup_port(struct sja1105_private *priv, int port)
 		rc = sja1105_rgmii_clocking_setup(priv, port, role);
 		break;
 	case XMII_MODE_SGMII:
-		/* Nothing to do in the CGU for SGMII */
+		 
 		rc = 0;
 		break;
 	default:
@@ -798,7 +754,7 @@ int sja1105_clocking_setup_port(struct sja1105_private *priv, int port)
 		return rc;
 	}
 
-	/* Internally pull down the RX_DV/CRS_DV/RX_CTL and RX_ER inputs */
+	 
 	return sja1105_cfg_pad_rx_config(priv, port);
 }
 
@@ -839,7 +795,7 @@ int sja1110_disable_microcontroller(struct sja1105_private *priv)
 	};
 	int rc;
 
-	/* Power down the BASE_TIMER_CLK to disable the watchdog timer */
+	 
 	sja1110_cgu_outclk_packing(packed_buf, &outclk_7_c, PACK);
 
 	rc = sja1105_xfer_buf(priv, SPI_WRITE, SJA1110_BASE_TIMER_CLK,
@@ -847,7 +803,7 @@ int sja1110_disable_microcontroller(struct sja1105_private *priv)
 	if (rc)
 		return rc;
 
-	/* Power down the BASE_MCSS_CLOCK to gate the microcontroller off */
+	 
 	sja1110_cgu_outclk_packing(packed_buf, &outclk_6_c, PACK);
 
 	return sja1105_xfer_buf(priv, SPI_WRITE, SJA1110_BASE_MCSS_CLK,

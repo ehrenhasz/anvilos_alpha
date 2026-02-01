@@ -1,25 +1,4 @@
-/*
- * Copyright 2015 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 
 
 #ifndef _FIJI_PP_SMC_H_
@@ -50,16 +29,16 @@
 #define PPSMC_EXTRAFLAGS_AC2DC_ACTION_GOTODPMLOWSTATE   0x00
 #define PPSMC_EXTRAFLAGS_AC2DC_ACTION_GOTOINITIALSTATE  0x01
 
-/* Defines for DPM 2.0 */
+ 
 #define PPSMC_DPM2FLAGS_TDPCLMP                         0x01
 #define PPSMC_DPM2FLAGS_PWRSHFT                         0x02
 #define PPSMC_DPM2FLAGS_OCP                             0x04
 
-/* Defines for display watermark level */
+ 
 #define PPSMC_DISPLAY_WATERMARK_LOW                     0
 #define PPSMC_DISPLAY_WATERMARK_HIGH                    1
 
-/* In the HW performance level's state flags: */
+ 
 #define PPSMC_STATEFLAG_AUTO_PULSE_SKIP    0x01
 #define PPSMC_STATEFLAG_POWERBOOST         0x02
 #define PPSMC_STATEFLAG_PSKIP_ON_TDP_FAULT 0x04
@@ -68,7 +47,7 @@
 #define PPSMC_STATEFLAG_DEEPSLEEP_THROTTLE 0x20
 #define PPSMC_STATEFLAG_DEEPSLEEP_BYPASS   0x40
 
-/* Fan control algorithm: */
+ 
 #define FDO_MODE_HARDWARE 0
 #define FDO_MODE_PIECE_WISE_LINEAR 1
 
@@ -77,13 +56,13 @@ enum FAN_CONTROL {
   FAN_CONTROL_TABLE
 };
 
-/* Gemini Modes*/
-#define PPSMC_GeminiModeNone   0  /*Single GPU board*/
-#define PPSMC_GeminiModeMaster 1  /*Master GPU on a Gemini board*/
-#define PPSMC_GeminiModeSlave  2  /*Slave GPU on a Gemini board*/
+ 
+#define PPSMC_GeminiModeNone   0   
+#define PPSMC_GeminiModeMaster 1   
+#define PPSMC_GeminiModeSlave  2   
 
 
-/* Return codes for driver to SMC communication. */
+ 
 #define PPSMC_Result_OK             ((uint16_t)0x01)
 #define PPSMC_Result_NoMore         ((uint16_t)0x02)
 
@@ -175,7 +154,7 @@ enum FAN_CONTROL {
 
 #define PPSMC_MSG_BREAK                       ((uint16_t)0xF8)
 
-/* Trinity Specific Messages*/
+ 
 #define PPSMC_MSG_Test                        ((uint16_t) 0x100)
 #define PPSMC_MSG_DPM_Voltage_Pwrmgt          ((uint16_t) 0x101)
 #define PPSMC_MSG_DPM_Config                  ((uint16_t) 0x102)
@@ -397,10 +376,10 @@ enum FAN_CONTROL {
 #define PPSMC_MSG_AgmResetPsm                 ((uint16_t) 0x403)
 #define PPSMC_MSG_ReadVftCell                 ((uint16_t) 0x404)
 
-/* AVFS Only - Remove Later */
+ 
 #define PPSMC_MSG_VftTableIsValid             ((uint16_t) 0x666)
 
-/* If the SMC firmware has an event status soft register this is what the individual bits mean.*/
+ 
 #define PPSMC_EVENT_STATUS_THERMAL          0x00000001
 #define PPSMC_EVENT_STATUS_REGULATORHOT     0x00000002
 #define PPSMC_EVENT_STATUS_DC               0x00000004

@@ -53,7 +53,7 @@ static inline bool housekeeping_test_cpu(int cpu, enum hk_type type)
 }
 
 static inline void housekeeping_init(void) { }
-#endif /* CONFIG_CPU_ISOLATION */
+#endif  
 
 static inline bool housekeeping_cpu(int cpu, enum hk_type type)
 {
@@ -70,4 +70,4 @@ static inline bool cpu_is_isolated(int cpu)
 		 !housekeeping_test_cpu(cpu, HK_TYPE_TICK);
 }
 
-#endif /* _LINUX_SCHED_ISOLATION_H */
+#endif  

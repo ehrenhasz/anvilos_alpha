@@ -1,11 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/* This logic is lifted from a real-world use case of packet parsing, used in
- * the open source library katran, a layer 4 load balancer.
- *
- * This test demonstrates how to parse packet contents using dynptrs. The
- * original code (parsing without dynptrs) can be found in test_parse_tcp_hdr_opt.c
- */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -18,11 +13,11 @@
 
 char _license[] SEC("license") = "GPL";
 
-/* Kind number used for experiments */
+ 
 const __u32 tcp_hdr_opt_kind_tpr = 0xFD;
-/* Length of the tcp header option */
+ 
 const __u32 tcp_hdr_opt_len_tpr = 6;
-/* maximum number of header options to check to lookup server_id */
+ 
 const __u32 tcp_hdr_opt_max_opt_checks = 15;
 
 __u32 server_id;
@@ -99,7 +94,7 @@ int xdp_ingress_v6(struct xdp_md *xdp)
 
 	off += sizeof(struct tcphdr);
 
-	/* max number of bytes of options in tcp header is 40 bytes */
+	 
 	for (int i = 0; i < tcp_hdr_opt_max_opt_checks; i++) {
 		err = parse_hdr_opt(&ptr, &off, &hdr_bytes_remaining, &server_id);
 

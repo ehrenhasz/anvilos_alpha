@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015 Broadcom Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -32,7 +30,7 @@ static const struct of_device_id iproc_pcie_of_match_table[] = {
 		.compatible = "brcm,iproc-pcie-paxc-v2",
 		.data = (int *)IPROC_PCIE_PAXC_V2,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, iproc_pcie_of_match_table);
 
@@ -82,19 +80,15 @@ static int iproc_pltfm_pcie_probe(struct platform_device *pdev)
 		pcie->need_ob_cfg = true;
 	}
 
-	/*
-	 * DT nodes are not used by all platforms that use the iProc PCIe
-	 * core driver. For platforms that require explicit inbound mapping
-	 * configuration, "dma-ranges" would have been present in DT
-	 */
+	 
 	pcie->need_ib_cfg = of_property_read_bool(np, "dma-ranges");
 
-	/* PHY use is optional */
+	 
 	pcie->phy = devm_phy_optional_get(dev, "pcie-phy");
 	if (IS_ERR(pcie->phy))
 		return PTR_ERR(pcie->phy);
 
-	/* PAXC doesn't support legacy IRQs, skip mapping */
+	 
 	switch (pcie->type) {
 	case IPROC_PCIE_PAXC:
 	case IPROC_PCIE_PAXC_V2:

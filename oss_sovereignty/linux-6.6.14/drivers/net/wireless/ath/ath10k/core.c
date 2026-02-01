@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2005-2011 Atheros Communications Inc.
- * Copyright (c) 2011-2017 Qualcomm Atheros, Inc.
- * Copyright (c) 2018-2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/firmware.h>
@@ -35,13 +31,13 @@ static bool uart_print;
 static bool skip_otp;
 static bool fw_diag_log;
 
-/* frame mode values are mapped as per enum ath10k_hw_txrx_mode */
+ 
 unsigned int ath10k_frame_mode = ATH10K_HW_TXRX_NATIVE_WIFI;
 
 unsigned long ath10k_coredump_mask = BIT(ATH10K_FW_CRASH_DUMP_REGISTERS) |
 				     BIT(ATH10K_FW_CRASH_DUMP_CE_DATA);
 
-/* FIXME: most of these should be readonly */
+ 
 module_param_named(debug_mask, ath10k_debug_mask, uint, 0644);
 module_param_named(cryptmode, ath10k_cryptmode_param, uint, 0644);
 module_param(uart_print, bool, 0644);
@@ -350,7 +346,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
 		.max_probe_resp_desc_thres = 0,
 		.cal_data_len = 8124,
 		.fw = {
-			/* uses same binaries as hw3.0 */
+			 
 			.dir = QCA6174_HW_3_0_FW_DIR,
 			.board = QCA6174_HW_3_0_BOARD_DATA_FILE,
 			.board_size = QCA6174_BOARD_DATA_SZ,
@@ -460,9 +456,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
 		.spectral_bin_discard = 12,
 		.spectral_bin_offset = 8,
 
-		/* Can do only 2x2 VHT160 or 80+80. 1560Mbps is 4x4 80Mhz
-		 * or 2x2 160Mhz, long-guard-interval.
-		 */
+		 
 		.vht160_mcs_rx_highest = 1560,
 		.vht160_mcs_tx_highest = 1560,
 		.n_cipher_suites = 11,
@@ -510,9 +504,7 @@ static const struct ath10k_hw_params ath10k_hw_params_list[] = {
 		.spectral_bin_discard = 12,
 		.spectral_bin_offset = 8,
 
-		/* Can do only 1x1 VHT160 or 80+80. 780Mbps is 2x2 80Mhz or
-		 * 1x1 160Mhz, long-guard-interval.
-		 */
+		 
 		.vht160_mcs_rx_highest = 780,
 		.vht160_mcs_tx_highest = 780,
 		.n_cipher_suites = 11,
@@ -758,7 +750,7 @@ static unsigned int ath10k_core_get_fw_feature_str(char *buf,
 						   size_t buf_len,
 						   enum ath10k_fw_features feat)
 {
-	/* make sure that ath10k_core_fw_feature_str[] gets updated */
+	 
 	BUILD_BUG_ON(ARRAY_SIZE(ath10k_core_fw_feature_str) !=
 		     ATH10K_FW_FEATURE_COUNT);
 
@@ -848,7 +840,7 @@ static int ath10k_init_configure_target(struct ath10k *ar)
 	u32 param_host;
 	int ret;
 
-	/* tell target which HTC version it is used*/
+	 
 	ret = ath10k_bmi_write32(ar, hi_app_host_interest,
 				 HTC_PROTOCOL_VERSION);
 	if (ret) {
@@ -856,24 +848,24 @@ static int ath10k_init_configure_target(struct ath10k *ar)
 		return ret;
 	}
 
-	/* set the firmware mode to STA/IBSS/AP */
+	 
 	ret = ath10k_bmi_read32(ar, hi_option_flag, &param_host);
 	if (ret) {
 		ath10k_err(ar, "setting firmware mode (1/2) failed\n");
 		return ret;
 	}
 
-	/* TODO following parameters need to be re-visited. */
-	/* num_device */
+	 
+	 
 	param_host |= (1 << HI_OPTION_NUM_DEV_SHIFT);
-	/* Firmware mode */
-	/* FIXME: Why FW_MODE_AP ??.*/
+	 
+	 
 	param_host |= (HI_OPTION_FW_MODE_AP << HI_OPTION_FW_MODE_SHIFT);
-	/* mac_addr_method */
+	 
 	param_host |= (1 << HI_OPTION_MAC_ADDR_METHOD_SHIFT);
-	/* firmware_bridge */
+	 
 	param_host |= (0 << HI_OPTION_FW_BRIDGE_SHIFT);
-	/* fwsubmode */
+	 
 	param_host |= (0 << HI_OPTION_FW_SUBMODE_SHIFT);
 
 	ret = ath10k_bmi_write32(ar, hi_option_flag, param_host);
@@ -882,14 +874,14 @@ static int ath10k_init_configure_target(struct ath10k *ar)
 		return ret;
 	}
 
-	/* We do all byte-swapping on the host */
+	 
 	ret = ath10k_bmi_write32(ar, hi_be, 0);
 	if (ret) {
 		ath10k_err(ar, "setting host CPU BE mode failed\n");
 		return ret;
 	}
 
-	/* FW descriptor/Data swap flags */
+	 
 	ret = ath10k_bmi_write32(ar, hi_fw_swap, 0);
 
 	if (ret) {
@@ -897,10 +889,7 @@ static int ath10k_init_configure_target(struct ath10k *ar)
 		return ret;
 	}
 
-	/* Some devices have a special sanity check that verifies the PCI
-	 * Device ID is written to this host interest var. It is known to be
-	 * required to boot QCA6164.
-	 */
+	 
 	ret = ath10k_bmi_write32(ar, hi_hci_uart_pwr_mgmt_params_ext,
 				 ar->dev_id);
 	if (ret) {
@@ -1083,7 +1072,7 @@ static void ath10k_core_check_bdfext(const struct dmi_header *hdr, void *data)
 		return;
 	}
 
-	/* Only one string exists (per spec) */
+	 
 	bdf_ext = (char *)hdr + hdr->length;
 
 	if (memcmp(bdf_ext, magic, strlen(magic)) != 0) {
@@ -1100,7 +1089,7 @@ static void ath10k_core_check_bdfext(const struct dmi_header *hdr, void *data)
 		}
 	}
 
-	/* Copy extension name without magic suffix */
+	 
 	if (strscpy(ar->id.bdf_ext, bdf_ext + strlen(magic),
 		    sizeof(ar->id.bdf_ext)) < 0) {
 		ath10k_dbg(ar, ATH10K_DBG_BOOT,
@@ -1171,15 +1160,12 @@ static int ath10k_download_fw(struct ath10k *ar)
 		   "boot uploading firmware image %pK len %d\n",
 		   data, data_len);
 
-	/* Check if device supports to download firmware via
-	 * diag copy engine. Downloading firmware via diag CE
-	 * greatly reduces the time to download firmware.
-	 */
+	 
 	if (ar->hw_params.fw_diag_ce_download) {
 		ret = ath10k_hw_diag_fast_download(ar, address,
 						   data, data_len);
 		if (ret == 0)
-			/* firmware upload via diag ce was successful */
+			 
 			return 0;
 
 		ath10k_warn(ar,
@@ -1242,7 +1228,7 @@ static int ath10k_fetch_cal_file(struct ath10k *ar)
 {
 	char filename[100];
 
-	/* pre-cal-<bus>-<id>.bin */
+	 
 	scnprintf(filename, sizeof(filename), "pre-cal-%s-%s.bin",
 		  ath10k_bus_str(ar->hif.bus), dev_name(ar->dev));
 
@@ -1250,13 +1236,13 @@ static int ath10k_fetch_cal_file(struct ath10k *ar)
 	if (!IS_ERR(ar->pre_cal_file))
 		goto success;
 
-	/* cal-<bus>-<id>.bin */
+	 
 	scnprintf(filename, sizeof(filename), "cal-%s-%s.bin",
 		  ath10k_bus_str(ar->hif.bus), dev_name(ar->dev));
 
 	ar->cal_file = ath10k_fetch_fw_file(ar, ATH10K_FW_DIR, filename);
 	if (IS_ERR(ar->cal_file))
-		/* calibration file is optional, don't print any warnings */
+		 
 		return PTR_ERR(ar->cal_file);
 success:
 	ath10k_dbg(ar, ATH10K_DBG_BOOT, "found calibration file %s/%s\n",
@@ -1326,7 +1312,7 @@ static int ath10k_core_parse_bd_ie_board(struct ath10k *ar,
 
 	name_match_found = false;
 
-	/* go through ATH10K_BD_IE_BOARD_ elements */
+	 
 	while (buf_len > sizeof(struct ath10k_fw_ie)) {
 		hdr = buf;
 		board_ie_id = le32_to_cpu(hdr->id);
@@ -1362,7 +1348,7 @@ static int ath10k_core_parse_bd_ie_board(struct ath10k *ar,
 			break;
 		case ATH10K_BD_IE_BOARD_DATA:
 			if (!name_match_found)
-				/* no match found */
+				 
 				break;
 
 			if (bd_ie_type == ATH10K_BD_IE_BOARD) {
@@ -1389,14 +1375,14 @@ static int ath10k_core_parse_bd_ie_board(struct ath10k *ar,
 			break;
 		}
 
-		/* jump over the padding */
+		 
 		board_ie_len = ALIGN(board_ie_len, 4);
 
 		buf_len -= board_ie_len;
 		buf += board_ie_len;
 	}
 
-	/* no match found */
+	 
 	ret = -ENOENT;
 
 out:
@@ -1432,24 +1418,24 @@ static int ath10k_core_search_bd(struct ath10k *ar,
 							    boardname,
 							    ATH10K_BD_IE_BOARD);
 			if (ret == -ENOENT)
-				/* no match found, continue */
+				 
 				break;
 
-			/* either found or error, so stop searching */
+			 
 			goto out;
 		case ATH10K_BD_IE_BOARD_EXT:
 			ret = ath10k_core_parse_bd_ie_board(ar, data, ie_len,
 							    boardname,
 							    ATH10K_BD_IE_BOARD_EXT);
 			if (ret == -ENOENT)
-				/* no match found, continue */
+				 
 				break;
 
-			/* either found or error, so stop searching */
+			 
 			goto out;
 		}
 
-		/* jump over the padding */
+		 
 		ie_len = ALIGN(ie_len, 4);
 
 		len -= ie_len;
@@ -1457,7 +1443,7 @@ static int ath10k_core_search_bd(struct ath10k *ar,
 	}
 
 out:
-	/* return result of parse_bd_ie_board() or -ENOENT */
+	 
 	return ret;
 }
 
@@ -1471,7 +1457,7 @@ static int ath10k_core_fetch_board_data_api_n(struct ath10k *ar,
 	const u8 *data;
 	int ret;
 
-	/* Skip if already fetched during board data download */
+	 
 	if (!ar->normal_mode_fw.board)
 		ar->normal_mode_fw.board = ath10k_fetch_fw_file(ar,
 								ar->hw_params.fw.dir,
@@ -1482,7 +1468,7 @@ static int ath10k_core_fetch_board_data_api_n(struct ath10k *ar,
 	data = ar->normal_mode_fw.board->data;
 	len = ar->normal_mode_fw.board->size;
 
-	/* magic has extra null byte padded */
+	 
 	magic_len = strlen(ATH10K_BOARD_MAGIC) + 1;
 	if (len < magic_len) {
 		ath10k_err(ar, "failed to find magic value in %s/%s, file too short: %zu\n",
@@ -1497,7 +1483,7 @@ static int ath10k_core_fetch_board_data_api_n(struct ath10k *ar,
 		goto err;
 	}
 
-	/* magic is padded to 4 bytes */
+	 
 	magic_len = ALIGN(magic_len, 4);
 	if (len < magic_len) {
 		ath10k_err(ar, "failed: %s/%s too small to contain board data, len: %zu\n",
@@ -1509,10 +1495,10 @@ static int ath10k_core_fetch_board_data_api_n(struct ath10k *ar,
 	data += magic_len;
 	len -= magic_len;
 
-	/* attempt to find boardname in the IE list */
+	 
 	ret = ath10k_core_search_bd(ar, boardname, data, len);
 
-	/* if we didn't find it and have a fallback name, try that */
+	 
 	if (ret == -ENOENT && fallback_boardname1)
 		ret = ath10k_core_search_bd(ar, fallback_boardname1, data, len);
 
@@ -1540,7 +1526,7 @@ static int ath10k_core_create_board_name(struct ath10k *ar, char *name,
 					 size_t name_len, bool with_variant,
 					 bool with_chip_id)
 {
-	/* strlen(',variant=') + strlen(ar->id.bdf_ext) */
+	 
 	char variant[9 + ATH10K_SMBIOS_BDF_EXT_STR_LENGTH] = { 0 };
 
 	if (with_variant && ar->id.bdf_ext[0] != '\0')
@@ -1595,7 +1581,7 @@ static int ath10k_core_create_eboard_name(struct ath10k *ar, char *name,
 		ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot using eboard name '%s'\n", name);
 		return 0;
 	}
-	/* Fallback if returned board id is zero */
+	 
 	return -1;
 }
 
@@ -1605,7 +1591,7 @@ int ath10k_core_fetch_board_file(struct ath10k *ar, int bd_ie_type)
 	int ret;
 
 	if (bd_ie_type == ATH10K_BD_IE_BOARD) {
-		/* With variant and chip id */
+		 
 		ret = ath10k_core_create_board_name(ar, boardname,
 						    sizeof(boardname), true,
 						    true);
@@ -1614,7 +1600,7 @@ int ath10k_core_fetch_board_file(struct ath10k *ar, int bd_ie_type)
 			return ret;
 		}
 
-		/* Without variant and only chip-id */
+		 
 		ret = ath10k_core_create_board_name(ar, fallback_boardname1,
 						    sizeof(boardname), false,
 						    true);
@@ -1624,7 +1610,7 @@ int ath10k_core_fetch_board_file(struct ath10k *ar, int bd_ie_type)
 			return ret;
 		}
 
-		/* Without variant and without chip-id */
+		 
 		ret = ath10k_core_create_board_name(ar, fallback_boardname2,
 						    sizeof(boardname), false,
 						    false);
@@ -1755,10 +1741,10 @@ static int ath10k_download_board_data(struct ath10k *ar, const void *data,
 	if (!ar->id.ext_bid_supported)
 		goto exit;
 
-	/* Extended board data download */
+	 
 	ret = ath10k_core_get_ext_board_id_from_otp(ar);
 	if (ret == -EOPNOTSUPP) {
-		/* Not fetching ext_board_data if ext board id is 0 */
+		 
 		ath10k_dbg(ar, ATH10K_DBG_BOOT, "otp returned ext board id 0\n");
 		return 0;
 	} else if (ret) {
@@ -1800,7 +1786,7 @@ static int ath10k_download_and_run_otp(struct ath10k *ar)
 		return ret;
 	}
 
-	/* OTP is optional */
+	 
 
 	if (!ar->running_fw->fw_file.otp_data ||
 	    !ar->running_fw->fw_file.otp_len) {
@@ -1821,7 +1807,7 @@ static int ath10k_download_and_run_otp(struct ath10k *ar)
 		return ret;
 	}
 
-	/* As of now pre-cal is valid for 10_4 variants */
+	 
 	if (ar->cal_mode == ATH10K_PRE_CAL_MODE_DT ||
 	    ar->cal_mode == ATH10K_PRE_CAL_MODE_FILE ||
 	    ar->cal_mode == ATH10K_PRE_CAL_MODE_NVMEM)
@@ -1876,13 +1862,11 @@ static int ath10k_download_cal_dt(struct ath10k *ar, const char *dt_name)
 
 	node = ar->dev->of_node;
 	if (!node)
-		/* Device Tree is optional, don't print any warnings if
-		 * there's no node for ath10k.
-		 */
+		 
 		return -ENOENT;
 
 	if (!of_get_property(node, dt_name, &data_len)) {
-		/* The calibration data node is optional */
+		 
 		return -ENOENT;
 	}
 
@@ -1993,7 +1977,7 @@ int ath10k_core_fetch_firmware_api_n(struct ath10k *ar, const char *name,
 	const u8 *data;
 	__le32 *timestamp, *version;
 
-	/* first fetch the firmware file (firmware-*.bin) */
+	 
 	fw_file->firmware = ath10k_fetch_fw_file(ar, ar->hw_params.fw.dir,
 						 name);
 	if (IS_ERR(fw_file->firmware))
@@ -2002,7 +1986,7 @@ int ath10k_core_fetch_firmware_api_n(struct ath10k *ar, const char *name,
 	data = fw_file->firmware->data;
 	len = fw_file->firmware->size;
 
-	/* magic also includes the null byte, check that as well */
+	 
 	magic_len = strlen(ATH10K_FIRMWARE_MAGIC) + 1;
 
 	if (len < magic_len) {
@@ -2018,13 +2002,13 @@ int ath10k_core_fetch_firmware_api_n(struct ath10k *ar, const char *name,
 		goto err;
 	}
 
-	/* jump over the padding */
+	 
 	magic_len = ALIGN(magic_len, 4);
 
 	len -= magic_len;
 	data += magic_len;
 
-	/* loop elements */
+	 
 	while (len > sizeof(struct ath10k_fw_ie)) {
 		hdr = (struct ath10k_fw_ie *)data;
 
@@ -2139,7 +2123,7 @@ int ath10k_core_fetch_firmware_api_n(struct ath10k *ar, const char *name,
 			break;
 		}
 
-		/* jump over the padding */
+		 
 		ie_len = ALIGN(ie_len, 4);
 
 		len -= ie_len;
@@ -2185,7 +2169,7 @@ static int ath10k_core_fetch_firmware_files(struct ath10k *ar)
 	int ret, i;
 	char fw_name[100];
 
-	/* calibration file is optional, don't check for any errors */
+	 
 	ath10k_fetch_cal_file(ar);
 
 	for (i = ATH10K_FW_API_MAX; i >= ATH10K_FW_API_MIN; i--) {
@@ -2200,7 +2184,7 @@ static int ath10k_core_fetch_firmware_files(struct ath10k *ar)
 			goto success;
 	}
 
-	/* we end up here if we couldn't fetch any firmware */
+	 
 
 	ath10k_err(ar, "Failed to find firmware-N.bin (N between %d and %d) from %s: %d",
 		   ATH10K_FW_API_MIN, ATH10K_FW_API_MAX, ar->hw_params.fw.dir,
@@ -2390,10 +2374,7 @@ static int ath10k_init_uart(struct ath10k *ar)
 {
 	int ret;
 
-	/*
-	 * Explicitly setting UART prints to zero as target turns it on
-	 * based on scratch registers.
-	 */
+	 
 	ret = ath10k_bmi_write32(ar, hi_serial_enable, 0);
 	if (ret) {
 		ath10k_warn(ar, "could not disable UART prints (%d)\n", ret);
@@ -2426,7 +2407,7 @@ static int ath10k_init_uart(struct ath10k *ar)
 		return ret;
 	}
 
-	/* Set the UART baud rate to 19200. */
+	 
 	ret = ath10k_bmi_write32(ar, hi_desired_baud_rate, 19200);
 	if (ret) {
 		ath10k_warn(ar, "could not set the baud rate (%d)\n", ret);
@@ -2508,9 +2489,7 @@ static void ath10k_core_restart(struct work_struct *work)
 
 	set_bit(ATH10K_FLAG_CRASH_FLUSH, &ar->dev_flags);
 
-	/* Place a barrier to make sure the compiler doesn't reorder
-	 * CRASH_FLUSH and calling other functions.
-	 */
+	 
 	barrier();
 
 	ieee80211_stop_queues(ar->hw);
@@ -2528,11 +2507,7 @@ static void ath10k_core_restart(struct work_struct *work)
 	wake_up(&ar->wmi.tx_credits_wq);
 	wake_up(&ar->peer_mapping_wq);
 
-	/* TODO: We can have one instance of cancelling coverage_class_work by
-	 * moving it to ath10k_halt(), so that both stop() and restart() would
-	 * call that but it takes conf_mutex() and if we call cancel_work_sync()
-	 * with conf_mutex it will deadlock.
-	 */
+	 
 	cancel_work_sync(&ar->set_coverage_class_work);
 
 	mutex_lock(&ar->conf_mutex);
@@ -2545,13 +2520,11 @@ static void ath10k_core_restart(struct work_struct *work)
 		ieee80211_restart_hw(ar->hw);
 		break;
 	case ATH10K_STATE_OFF:
-		/* this can happen if driver is being unloaded
-		 * or if the crash happens during FW probing
-		 */
+		 
 		ath10k_warn(ar, "cannot restart a device that hasn't been started\n");
 		break;
 	case ATH10K_STATE_RESTARTING:
-		/* hw restart might be requested from multiple places */
+		 
 		break;
 	case ATH10K_STATE_RESTARTED:
 		ar->state = ATH10K_STATE_WEDGED;
@@ -2637,21 +2610,11 @@ static int ath10k_core_init_firmware_features(struct ath10k *ar)
 	if (test_bit(ATH10K_FLAG_RAW_MODE, &ar->dev_flags)) {
 		ar->wmi.rx_decap_mode = ATH10K_HW_TXRX_RAW;
 
-		/* Workaround:
-		 *
-		 * Firmware A-MSDU aggregation breaks with RAW Tx encap mode
-		 * and causes enormous performance issues (malformed frames,
-		 * etc).
-		 *
-		 * Disabling A-MSDU makes RAW mode stable with heavy traffic
-		 * albeit a bit slower compared to regular operation.
-		 */
+		 
 		ar->htt.max_num_amsdu = 1;
 	}
 
-	/* Backwards compatibility for firmwares without
-	 * ATH10K_FW_IE_WMI_OP_VERSION.
-	 */
+	 
 	if (fw_file->wmi_op_version == ATH10K_FW_WMI_OP_VERSION_UNSET) {
 		if (test_bit(ATH10K_FW_FEATURE_WMI_10X, fw_file->fw_features)) {
 			if (test_bit(ATH10K_FW_FEATURE_WMI_10_2,
@@ -2735,9 +2698,7 @@ static int ath10k_core_init_firmware_features(struct ath10k *ar)
 	else
 		ar->max_num_peers = max_num_peers;
 
-	/* Backwards compatibility for firmwares without
-	 * ATH10K_FW_IE_HTT_OP_VERSION.
-	 */
+	 
 	if (fw_file->htt_op_version == ATH10K_FW_HTT_OP_VERSION_UNSET) {
 		switch (fw_file->wmi_op_version) {
 		case ATH10K_FW_WMI_OP_VERSION_MAIN:
@@ -2788,20 +2749,7 @@ static int ath10k_core_reset_rx_filter(struct ath10k *ar)
 		return ret;
 	}
 
-	/* WMI and HTT may use separate HIF pipes and are not guaranteed to be
-	 * serialized properly implicitly.
-	 *
-	 * Moreover (most) WMI commands have no explicit acknowledges. It is
-	 * possible to infer it implicitly by poking firmware with echo
-	 * command - getting a reply means all preceding comments have been
-	 * (mostly) processed.
-	 *
-	 * In case of vdev create/delete this is sufficient.
-	 *
-	 * Without this it's possible to end up with a race when HTT Rx ring is
-	 * started before vdev create/delete hack is complete allowing a short
-	 * window of opportunity to receive (and Tx ACK) a bunch of frames.
-	 */
+	 
 	ret = ath10k_wmi_barrier(ar);
 	if (ret) {
 		ath10k_err(ar, "failed to ping firmware: %d\n", ret);
@@ -2815,10 +2763,7 @@ static int ath10k_core_compat_services(struct ath10k *ar)
 {
 	struct ath10k_fw_file *fw_file = &ar->normal_mode_fw.fw_file;
 
-	/* all 10.x firmware versions support thermal throttling but don't
-	 * advertise the support via service flags so we have to hardcode
-	 * it here
-	 */
+	 
 	switch (fw_file->wmi_op_version) {
 	case ATH10K_FW_WMI_OP_VERSION_10_1:
 	case ATH10K_FW_WMI_OP_VERSION_10_2:
@@ -2845,15 +2790,10 @@ static int ath10k_core_copy_target_iram(struct ath10k *ar)
 	int i, ret;
 	u32 len, remaining_len;
 
-	/* copy target iram feature must work also when
-	 * ATH10K_FW_CRASH_DUMP_RAM_DATA is disabled, so
-	 * _ath10k_coredump_get_mem_layout() to accomplist that
-	 */
+	 
 	hw_mem = _ath10k_coredump_get_mem_layout(ar);
 	if (!hw_mem)
-		/* if CONFIG_DEV_COREDUMP is disabled we get NULL, then
-		 * just silently disable the feature by doing nothing
-		 */
+		 
 		return 0;
 
 	for (i = 0; i < hw_mem->region_table.size; i++) {
@@ -2928,7 +2868,7 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
 		      ar->running_fw->fw_file.fw_features)) {
 		ath10k_bmi_start(ar);
 
-		/* Enable hardware clock to speed up firmware download */
+		 
 		if (ar->hw_params.hw_ops->enable_pll_clk) {
 			status = ar->hw_params.hw_ops->enable_pll_clk(ar);
 			ath10k_dbg(ar, ATH10K_DBG_BOOT, "boot enable pll ret %d\n",
@@ -2944,13 +2884,7 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
 		if (status)
 			goto err;
 
-		/* Some of qca988x solutions are having global reset issue
-		 * during target initialization. Bypassing PLL setting before
-		 * downloading firmware and letting the SoC run on REF_CLK is
-		 * fixing the problem. Corresponding firmware change is also
-		 * needed to set the clock source once the target is
-		 * initialized.
-		 */
+		 
 		if (test_bit(ATH10K_FW_FEATURE_SUPPORTS_SKIP_CLOCK_INIT,
 			     ar->running_fw->fw_file.fw_features)) {
 			status = ath10k_bmi_write32(ar, hi_skip_clock_init, 1);
@@ -3012,9 +2946,7 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
 		goto err_wmi_detach;
 	}
 
-	/* If firmware indicates Full Rx Reorder support it must be used in a
-	 * slightly different manner. Let HTT code know.
-	 */
+	 
 	ar->htt.rx_ring.in_ord_rx = !!(test_bit(WMI_SERVICE_RX_FULL_REORDER,
 						ar->wmi.svc_map));
 
@@ -3089,7 +3021,7 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
 		if (ath10k_peer_stats_enabled(ar))
 			val = WMI_10_4_PEER_STATS;
 
-		/* Enable vdev stats by default */
+		 
 		val |= WMI_10_4_VDEV_STATS;
 
 		if (test_bit(WMI_SERVICE_BSS_CHANNEL_INFO_64, ar->wmi.svc_map))
@@ -3097,15 +3029,7 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
 
 		ath10k_core_fetch_btcoex_dt(ar);
 
-		/* 10.4 firmware supports BT-Coex without reloading firmware
-		 * via pdev param. To support Bluetooth coexistence pdev param,
-		 * WMI_COEX_GPIO_SUPPORT of extended resource config should be
-		 * enabled always.
-		 *
-		 * We can still enable BTCOEX if firmware has the support
-		 * even though btceox_support value is
-		 * ATH10K_DT_BTCOEX_NOT_FOUND
-		 */
+		 
 
 		if (test_bit(WMI_SERVICE_COEX_GPIO, ar->wmi.svc_map) &&
 		    test_bit(ATH10K_FW_FEATURE_BTCOEX_PARAM,
@@ -3167,19 +3091,7 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
 		goto err_hif_stop;
 	}
 
-	/* Some firmware revisions do not properly set up hardware rx filter
-	 * registers.
-	 *
-	 * A known example from QCA9880 and 10.2.4 is that MAC_PCU_ADDR1_MASK
-	 * is filled with 0s instead of 1s allowing HW to respond with ACKs to
-	 * any frames that matches MAC_PCU_RX_FILTER which is also
-	 * misconfigured to accept anything.
-	 *
-	 * The ADDR1 is programmed using internal firmware structure field and
-	 * can't be (easily/sanely) reached from the driver explicitly. It is
-	 * possible to implicitly make it correct by creating a dummy vdev and
-	 * then deleting it.
-	 */
+	 
 	if (ar->hw_params.hw_filter_reset_required &&
 	    mode == ATH10K_FIRMWARE_MODE_NORMAL) {
 		status = ath10k_core_reset_rx_filter(ar);
@@ -3203,7 +3115,7 @@ int ath10k_core_start(struct ath10k *ar, enum ath10k_firmware_mode mode,
 
 	INIT_LIST_HEAD(&ar->arvifs);
 
-	/* we don't care about HTT in UTF mode */
+	 
 	if (mode == ATH10K_FIRMWARE_MODE_NORMAL) {
 		status = ath10k_htt_setup(&ar->htt);
 		if (status) {
@@ -3265,7 +3177,7 @@ void ath10k_core_stop(struct ath10k *ar)
 	lockdep_assert_held(&ar->conf_mutex);
 	ath10k_debug_stop(ar);
 
-	/* try to suspend target */
+	 
 	if (ar->state != ATH10K_STATE_RESTARTING &&
 	    ar->state != ATH10K_STATE_UTF)
 		ath10k_wait_for_suspend(ar, WMI_PDEV_SUSPEND_AND_DISABLE_INTR);
@@ -3279,11 +3191,7 @@ void ath10k_core_stop(struct ath10k *ar)
 }
 EXPORT_SYMBOL(ath10k_core_stop);
 
-/* mac80211 manages fw/hw initialization through start/stop hooks. However in
- * order to know what hw capabilities should be advertised to mac80211 it is
- * necessary to load the firmware (and tear it down immediately since start
- * hook will try to init it again) before registering
- */
+ 
 static int ath10k_core_probe_fw(struct ath10k *ar)
 {
 	struct bmi_target_info target_info;
@@ -3355,9 +3263,7 @@ static int ath10k_core_probe_fw(struct ath10k *ar)
 		      ar->normal_mode_fw.fw_file.fw_features)) {
 		ret = ath10k_core_pre_cal_download(ar);
 		if (ret) {
-			/* pre calibration data download is not necessary
-			 * for all the chipsets. Ignore failures and continue.
-			 */
+			 
 			ath10k_dbg(ar, ATH10K_DBG_BOOT,
 				   "could not load pre cal data: %d\n", ret);
 		}
@@ -3440,7 +3346,7 @@ static void ath10k_core_register_work(struct work_struct *work)
 	struct ath10k *ar = container_of(work, struct ath10k, register_work);
 	int status;
 
-	/* peer stats are enabled by default */
+	 
 	set_bit(ATH10K_FLAG_PEER_STATS, &ar->dev_flags);
 
 	status = ath10k_core_probe_fw(ar);
@@ -3494,9 +3400,7 @@ err_unregister_mac:
 err_release_fw:
 	ath10k_core_free_firmware_files(ar);
 err:
-	/* TODO: It's probably a good idea to release device from the driver
-	 * but calling device_release_driver() here will cause a deadlock.
-	 */
+	 
 	return;
 }
 
@@ -3519,16 +3423,10 @@ void ath10k_core_unregister(struct ath10k *ar)
 		return;
 
 	ath10k_thermal_unregister(ar);
-	/* Stop spectral before unregistering from mac80211 to remove the
-	 * relayfs debugfs file cleanly. Otherwise the parent debugfs tree
-	 * would be already be free'd recursively, leading to a double free.
-	 */
+	 
 	ath10k_spectral_destroy(ar);
 
-	/* We must unregister from mac80211 before we stop HTC and HIF.
-	 * Otherwise we will fail to submit commands to FW and mac80211 will be
-	 * unhappy about callback failures.
-	 */
+	 
 	ath10k_mac_unregister(ar);
 
 	ath10k_testmode_destroy(ar);

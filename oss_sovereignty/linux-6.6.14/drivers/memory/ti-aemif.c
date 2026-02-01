@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI AEMIF driver
- *
- * Copyright (C) 2010 - 2013 Texas Instruments Incorporated. http://www.ti.com/
- *
- * Authors:
- * Murali Karicheri <m-karicheri2@ti.com>
- * Ivan Khoronzhuk <ivan.khoronzhuk@ti.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -80,20 +72,7 @@
 				EW(EW_MAX) | SSTROBE(SSTROBE_MAX) | \
 				ASIZE_MAX)
 
-/**
- * struct aemif_cs_data: structure to hold cs parameters
- * @cs: chip-select number
- * @wstrobe: write strobe width, ns
- * @rstrobe: read strobe width, ns
- * @wsetup: write setup width, ns
- * @whold: write hold width, ns
- * @rsetup: read setup width, ns
- * @rhold: read hold width, ns
- * @ta: minimum turn around time, ns
- * @enable_ss: enable/disable select strobe mode
- * @enable_ew: enable/disable extended wait mode
- * @asize: width of the asynchronous device's data bus
- */
+ 
 struct aemif_cs_data {
 	u8	cs;
 	u16	wstrobe;
@@ -108,15 +87,7 @@ struct aemif_cs_data {
 	u8	asize;
 };
 
-/**
- * struct aemif_device: structure to hold device data
- * @base: base address of AEMIF registers
- * @clk: source clock
- * @clk_rate: clock's rate in kHz
- * @num_cs: number of assigned chip-selects
- * @cs_offset: start number of cs nodes
- * @cs_data: array of chip-select settings
- */
+ 
 struct aemif_device {
 	void __iomem *base;
 	struct clk *clk;
@@ -126,16 +97,7 @@ struct aemif_device {
 	struct aemif_cs_data cs_data[NUM_CS];
 };
 
-/**
- * aemif_calc_rate - calculate timing data.
- * @pdev: platform device to calculate for
- * @wanted: The cycle time needed in nanoseconds.
- * @clk: The input clock rate in kHz.
- * @max: The maximum divider value that can be programmed.
- *
- * On success, returns the calculated timing value minus 1 for easy
- * programming into AEMIF timing registers, else negative errno.
- */
+ 
 static int aemif_calc_rate(struct platform_device *pdev, int wanted,
 			   unsigned long clk, int max)
 {
@@ -146,31 +108,18 @@ static int aemif_calc_rate(struct platform_device *pdev, int wanted,
 	dev_dbg(&pdev->dev, "%s: result %d from %ld, %d\n", __func__, result,
 		clk, wanted);
 
-	/* It is generally OK to have a more relaxed timing than requested... */
+	 
 	if (result < 0)
 		result = 0;
 
-	/* ... But configuring tighter timings is not an option. */
+	 
 	else if (result > max)
 		result = -EINVAL;
 
 	return result;
 }
 
-/**
- * aemif_config_abus - configure async bus parameters
- * @pdev: platform device to configure for
- * @csnum: aemif chip select number
- *
- * This function programs the given timing values (in real clock) into the
- * AEMIF registers taking the AEMIF clock into account.
- *
- * This function does not use any locking while programming the AEMIF
- * because it is expected that there is only one user of a given
- * chip-select.
- *
- * Returns 0 on success, else negative errno.
- */
+ 
 static int aemif_config_abus(struct platform_device *pdev, int csnum)
 {
 	struct aemif_device *aemif = platform_get_drvdata(pdev);
@@ -219,15 +168,7 @@ static inline int aemif_cycles_to_nsec(int val, unsigned long clk_rate)
 	return ((val + 1) * NSEC_PER_MSEC) / clk_rate;
 }
 
-/**
- * aemif_get_hw_params - function to read hw register values
- * @pdev: platform device to read for
- * @csnum: aemif chip select number
- *
- * This function reads the defaults from the registers and update
- * the timing values. Required for get/set commands and also for
- * the case when driver needs to use defaults in hardware.
- */
+ 
 static void aemif_get_hw_params(struct platform_device *pdev, int csnum)
 {
 	struct aemif_device *aemif = platform_get_drvdata(pdev);
@@ -250,14 +191,7 @@ static void aemif_get_hw_params(struct platform_device *pdev, int csnum)
 	data->asize = val & ASIZE_MAX;
 }
 
-/**
- * of_aemif_parse_abus_config - parse CS configuration from DT
- * @pdev: platform device to parse for
- * @np: device node ptr
- *
- * This function update the emif async bus configuration based on the values
- * configured in a cs device binding node.
- */
+ 
 static int of_aemif_parse_abus_config(struct platform_device *pdev,
 				      struct device_node *np)
 {
@@ -284,10 +218,10 @@ static int of_aemif_parse_abus_config(struct platform_device *pdev,
 	data = &aemif->cs_data[aemif->num_cs];
 	data->cs = cs;
 
-	/* read the current value in the hw register */
+	 
 	aemif_get_hw_params(pdev, aemif->num_cs++);
 
-	/* override the values from device node */
+	 
 	if (!of_property_read_u32(np, "ti,cs-min-turnaround-ns", &val))
 		data->ta = val;
 
@@ -368,12 +302,7 @@ static int aemif_probe(struct platform_device *pdev)
 	}
 
 	if (np) {
-		/*
-		 * For every controller device node, there is a cs device node
-		 * that describe the bus configuration parameters. This
-		 * functions iterate over these nodes and update the cs data
-		 * array.
-		 */
+		 
 		for_each_available_child_of_node(np, child_np) {
 			ret = of_aemif_parse_abus_config(pdev, child_np);
 			if (ret < 0) {
@@ -397,10 +326,7 @@ static int aemif_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * Create a child devices explicitly from here to guarantee that the
-	 * child will be probed after the AEMIF timing parameters are set.
-	 */
+	 
 	if (np) {
 		for_each_available_child_of_node(np, child_np) {
 			ret = of_platform_populate(child_np, NULL,

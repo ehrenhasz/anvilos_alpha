@@ -1,22 +1,6 @@
-/* xmalloc.c -- safe versions of malloc and realloc */
+ 
 
-/* Copyright (C) 1991-2016 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the GNU Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #if defined (HAVE_CONFIG_H)
 #include <config.h>
@@ -33,7 +17,7 @@
 #  include <stdlib.h>
 #else
 #  include "ansi_stdlib.h"
-#endif /* HAVE_STDLIB_H */
+#endif  
 
 #include "error.h"
 
@@ -44,8 +28,8 @@
 #    define PTR_T void *
 #  else
 #    define PTR_T char *
-#  endif /* !__STDC__ */
-#endif /* !PTR_T */
+#  endif  
+#endif  
 
 #if HAVE_SBRK && !HAVE_DECL_SBRK
 extern char *sbrk();
@@ -57,11 +41,11 @@ static int brkfound;
 static size_t allocated;
 #endif
 
-/* **************************************************************** */
-/*								    */
-/*		   Memory Allocation and Deallocation.		    */
-/*								    */
-/* **************************************************************** */
+ 
+ 
+ 
+ 
+ 
 
 #if HAVE_SBRK && defined (USING_BASH_MALLOC)
 #define FINDBRK() \
@@ -93,12 +77,10 @@ allocerr (func, bytes)
       fatal_error (_("%s: cannot allocate %lu bytes (%lu bytes allocated)"), func, (unsigned long)bytes, (unsigned long)allocated);
 #else
       fatal_error (_("%s: cannot allocate %lu bytes"), func, (unsigned long)bytes);
-#endif /* !HAVE_SBRK */
+#endif  
 }
 
-/* Return a pointer to free()able block of memory large enough
-   to hold BYTES number of bytes.  If the memory cannot be allocated,
-   print an error message and abort. */
+ 
 PTR_T
 xmalloc (bytes)
      size_t bytes;
@@ -140,8 +122,7 @@ xrealloc (pointer, bytes)
   return (temp);
 }
 
-/* Use this as the function to call when adding unwind protects so we
-   don't need to know what free() returns. */
+ 
 void
 xfree (string)
      PTR_T string;
@@ -165,7 +146,7 @@ sh_allocerr (func, bytes, file, line)
       fatal_error (_("%s: %s:%d: cannot allocate %lu bytes (%lu bytes allocated)"), func, file, line, (unsigned long)bytes, (unsigned long)allocated);
 #else
       fatal_error (_("%s: %s:%d: cannot allocate %lu bytes"), func, file, line, (unsigned long)bytes);
-#endif /* !HAVE_SBRK */
+#endif  
 }
 
 PTR_T

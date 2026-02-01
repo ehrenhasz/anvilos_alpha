@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// AMD Renoir ACP PCI Driver
-//
-//Copyright 2020 Advanced Micro Devices, Inc.
+
+
+
+
+
 
 #include <linux/pci.h>
 #include <linux/acpi.h>
@@ -20,11 +20,7 @@ static int acp_power_gating;
 module_param(acp_power_gating, int, 0644);
 MODULE_PARM_DESC(acp_power_gating, "Enable acp power gating");
 
-/*
- * dmic_acpi_check = -1 - Use ACPI/DMI method to detect the DMIC hardware presence at runtime
- *                 =  0 - Skip the DMIC device creation and return probe failure
- *                 =  1 - Force DMIC support
- */
+ 
 static int dmic_acpi_check = ACP_DMIC_AUTO;
 module_param(dmic_acpi_check, bint, 0644);
 MODULE_PARM_DESC(dmic_acpi_check, "Digital microphone presence (-1=auto, 0=none, 1=force)");
@@ -121,14 +117,14 @@ static int rn_acp_init(void __iomem *acp_base)
 {
 	int ret;
 
-	/* power on */
+	 
 	ret = rn_acp_power_on(acp_base);
 	if (ret) {
 		pr_err("ACP power on failed\n");
 		return ret;
 	}
 	rn_writel(0x01, acp_base + ACP_CONTROL);
-	/* Reset */
+	 
 	ret = rn_acp_reset(acp_base);
 	if (ret) {
 		pr_err("ACP reset failed\n");
@@ -144,7 +140,7 @@ static int rn_acp_deinit(void __iomem *acp_base)
 	int ret;
 
 	rn_acp_disable_interrupts(acp_base);
-	/* Reset */
+	 
 	ret = rn_acp_reset(acp_base);
 	if (ret) {
 		pr_err("ACP reset failed\n");
@@ -152,7 +148,7 @@ static int rn_acp_deinit(void __iomem *acp_base)
 	}
 	rn_writel(0x00, acp_base + ACP_CLKMUX_SEL);
 	rn_writel(0x00, acp_base + ACP_CONTROL);
-	/* power off */
+	 
 	if (acp_power_gating) {
 		ret = rn_acp_power_off(acp_base);
 		if (ret) {
@@ -165,35 +161,35 @@ static int rn_acp_deinit(void __iomem *acp_base)
 
 static const struct dmi_system_id rn_acp_quirk_table[] = {
 	{
-		/* Lenovo IdeaPad S340-14API */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "81NB"),
 		}
 	},
 	{
-		/* Lenovo IdeaPad Flex 5 14ARE05 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "81X2"),
 		}
 	},
 	{
-		/* Lenovo IdeaPad 5 15ARE05 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
 			DMI_EXACT_MATCH(DMI_PRODUCT_NAME, "81YQ"),
 		}
 	},
 	{
-		/* Lenovo ThinkPad E14 Gen 2 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "20T6CTO1WW"),
 		}
 	},
 	{
-		/* Lenovo ThinkPad X395 */
+		 
 		.matches = {
 			DMI_EXACT_MATCH(DMI_BOARD_VENDOR, "LENOVO"),
 			DMI_EXACT_MATCH(DMI_BOARD_NAME, "20NLCTO1WW"),
@@ -216,12 +212,12 @@ static int snd_rn_acp_probe(struct pci_dev *pci,
 	int ret, index;
 	u32 addr;
 
-	/* Return if acp config flag is defined */
+	 
 	flag = snd_amd_acp_find_config(pci);
 	if (flag)
 		return -ENODEV;
 
-	/* Renoir device check */
+	 
 	if (pci->revision != 0x01)
 		return -ENODEV;
 
@@ -243,13 +239,13 @@ static int snd_rn_acp_probe(struct pci_dev *pci,
 		goto release_regions;
 	}
 
-	/* check for msi interrupt support */
+	 
 	ret = pci_enable_msi(pci);
 	if (ret)
-		/* msi is not enabled */
+		 
 		irqflags = IRQF_SHARED;
 	else
-		/* msi is enabled */
+		 
 		irqflags = 0;
 
 	addr = pci_resource_start(pci, 0);

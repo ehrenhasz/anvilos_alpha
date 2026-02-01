@@ -1,15 +1,4 @@
-/*
- * Copyright (C) 2016 Broadcom
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License as
- * published by the Free Software Foundation version 2.
- *
- * This program is distributed "as is" WITHOUT ANY WARRANTY of any
- * kind, whether express or implied; without even the implied warranty
- * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
 #define pr_fmt(fmt)		KBUILD_MODNAME ": " fmt
 
@@ -72,10 +61,7 @@ static void platform_bgmac_clk_enable(struct bgmac *bgmac, u32 flags)
 	if (!bgmac->plat.idm_base)
 		return;
 
-	/* The Reset Control register only contains a single bit to show if the
-	 * controller is currently in reset.  Do a sanity check here, just in
-	 * case the bootloader happened to leave the device in reset.
-	 */
+	 
 	val = bgmac_idm_read(bgmac, BCMA_RESET_CTL);
 	if (val) {
 		bgmac_idm_write(bgmac, BCMA_RESET_CTL, 0);
@@ -84,7 +70,7 @@ static void platform_bgmac_clk_enable(struct bgmac *bgmac, u32 flags)
 	}
 
 	val = bgmac_idm_read(bgmac, BCMA_IOCTL);
-	/* Some bits of BCMA_IOCTL set by HW/ATF and should not change */
+	 
 	val |= flags & ~(BGMAC_AWCACHE | BGMAC_ARCACHE | BGMAC_AWUSER |
 			 BGMAC_ARUSER);
 	val |= BGMAC_CLK_EN;
@@ -96,13 +82,13 @@ static void platform_bgmac_clk_enable(struct bgmac *bgmac, u32 flags)
 static void platform_bgmac_cco_ctl_maskset(struct bgmac *bgmac, u32 offset,
 					   u32 mask, u32 set)
 {
-	/* This shouldn't be encountered */
+	 
 	WARN_ON(1);
 }
 
 static u32 platform_bgmac_get_bus_clock(struct bgmac *bgmac)
 {
-	/* This shouldn't be encountered */
+	 
 	WARN_ON(1);
 
 	return 0;
@@ -111,7 +97,7 @@ static u32 platform_bgmac_get_bus_clock(struct bgmac *bgmac)
 static void platform_bgmac_cmn_maskset32(struct bgmac *bgmac, u16 offset,
 					 u32 mask, u32 set)
 {
-	/* This shouldn't be encountered */
+	 
 	WARN_ON(1);
 }
 
@@ -123,7 +109,7 @@ static void bgmac_nicpm_speed_set(struct net_device *net_dev)
 	if (!bgmac->plat.nicpm_base)
 		return;
 
-	/* SET RGMII IO CONFIG */
+	 
 	writel(NICPM_PADRING_CFG_INIT_VAL,
 	       bgmac->plat.nicpm_base + NICPM_PADRING_CFG);
 
@@ -181,7 +167,7 @@ static int bgmac_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, bgmac);
 
-	/* Set the features of the 4707 family */
+	 
 	bgmac->feature_flags |= BGMAC_FEAT_CLKCTLST;
 	bgmac->feature_flags |= BGMAC_FEAT_NO_RESET;
 	bgmac->feature_flags |= BGMAC_FEAT_CMDCFG_SR_REV4;
@@ -209,7 +195,7 @@ static int bgmac_probe(struct platform_device *pdev)
 	if (IS_ERR(bgmac->plat.base))
 		return PTR_ERR(bgmac->plat.base);
 
-	/* The idm_base resource is optional for some platforms */
+	 
 	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "idm_base");
 	if (regs) {
 		bgmac->plat.idm_base = devm_ioremap_resource(&pdev->dev, regs);
@@ -218,7 +204,7 @@ static int bgmac_probe(struct platform_device *pdev)
 		bgmac->feature_flags &= ~BGMAC_FEAT_IDM_MASK;
 	}
 
-	/* The nicpm_base resource is optional for some platforms */
+	 
 	regs = platform_get_resource_byname(pdev, IORESOURCE_MEM, "nicpm_base");
 	if (regs) {
 		bgmac->plat.nicpm_base = devm_ioremap_resource(&pdev->dev,
@@ -278,7 +264,7 @@ static const struct dev_pm_ops bgmac_pm_ops = {
 #define BGMAC_PM_OPS (&bgmac_pm_ops)
 #else
 #define BGMAC_PM_OPS NULL
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct of_device_id bgmac_of_enet_match[] = {
 	{.compatible = "brcm,amac",},

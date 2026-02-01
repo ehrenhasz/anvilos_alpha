@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Support for rfkill on some Fujitsu-Siemens Amilo laptops.
- * Copyright 2011 Ben Hutchings.
- *
- * Based in part on the fsam7440 driver, which is:
- * Copyright 2005 Alejandro Vidal Mata & Javier Vidal Mata.
- * and on the fsaa1655g driver, which is:
- * Copyright 2006 Martin Večeřa.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/dmi.h>
@@ -17,10 +9,7 @@
 #include <linux/platform_device.h>
 #include <linux/rfkill.h>
 
-/*
- * These values were obtained from disassembling and debugging the
- * PM.exe program installed in the Fujitsu-Siemens AMILO A1655G
- */
+ 
 #define A1655_WIFI_COMMAND	0x10C5
 #define A1655_WIFI_ON		0x25
 #define A1655_WIFI_OFF		0x45
@@ -40,10 +29,7 @@ static const struct rfkill_ops amilo_a1655_rfkill_ops = {
 	.set_block = amilo_a1655_rfkill_set_block
 };
 
-/*
- * These values were obtained from disassembling the PM.exe program
- * installed in the Fujitsu-Siemens AMILO M 7440
- */
+ 
 #define M7440_PORT1		0x118f
 #define M7440_PORT2		0x118e
 #define M7440_RADIO_ON1		0x12
@@ -59,7 +45,7 @@ static int amilo_m7440_rfkill_set_block(void *data, bool blocked)
 	outb(val1, M7440_PORT1);
 	outb(val2, M7440_PORT2);
 
-	/* Check whether the state has changed correctly */
+	 
 	if (inb(M7440_PORT1) != val1 || inb(M7440_PORT2) != val2)
 		return -EIO;
 

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2014, Intel Corporation.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/platform_device.h>
@@ -34,7 +31,7 @@ static const u32 rotation_sensitivity_addresses[] = {
 	HID_USAGE_SENSOR_ORIENT_QUATERNION,
 };
 
-/* Channel definitions */
+ 
 static const struct iio_chan_spec dev_rot_channels[] = {
 	{
 		.type = IIO_ROT,
@@ -50,19 +47,19 @@ static const struct iio_chan_spec dev_rot_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(1)
 };
 
-/* Adjust channel real bits based on report descriptor */
+ 
 static void dev_rot_adjust_channel_bit_mask(struct iio_chan_spec *chan,
 						int size)
 {
 	chan->scan_type.sign = 's';
-	/* Real storage bits will change based on the report desc. */
+	 
 	chan->scan_type.realbits = size * 8;
-	/* Maximum size of a sample to capture is u32 */
+	 
 	chan->scan_type.storagebits = sizeof(u32) * 8;
 	chan->scan_type.repeat = 4;
 }
 
-/* Channel read_raw handler */
+ 
 static int dev_rot_read_raw(struct iio_dev *indio_dev,
 				struct iio_chan_spec const *chan,
 				int size, int *vals, int *val_len,
@@ -110,7 +107,7 @@ static int dev_rot_read_raw(struct iio_dev *indio_dev,
 	return ret_type;
 }
 
-/* Channel write_raw handler */
+ 
 static int dev_rot_write_raw(struct iio_dev *indio_dev,
 			       struct iio_chan_spec const *chan,
 			       int val,
@@ -141,7 +138,7 @@ static const struct iio_info dev_rot_info = {
 	.write_raw = &dev_rot_write_raw,
 };
 
-/* Callback handler to send event after all samples are received and captured */
+ 
 static int dev_rot_proc_event(struct hid_sensor_hub_device *hsdev,
 				unsigned usage_id,
 				void *priv)
@@ -163,7 +160,7 @@ static int dev_rot_proc_event(struct hid_sensor_hub_device *hsdev,
 	return 0;
 }
 
-/* Capture samples in local storage */
+ 
 static int dev_rot_capture_sample(struct hid_sensor_hub_device *hsdev,
 				unsigned usage_id,
 				size_t raw_len, char *raw_data,
@@ -193,7 +190,7 @@ static int dev_rot_capture_sample(struct hid_sensor_hub_device *hsdev,
 	return 0;
 }
 
-/* Parse report which is specific to an usage id*/
+ 
 static int dev_rot_parse_report(struct platform_device *pdev,
 				struct hid_sensor_hub_device *hsdev,
 				struct iio_chan_spec *channels,
@@ -227,7 +224,7 @@ static int dev_rot_parse_report(struct platform_device *pdev,
 	return 0;
 }
 
-/* Function to initialize the processing for usage id */
+ 
 static int hid_dev_rot_probe(struct platform_device *pdev)
 {
 	int ret;
@@ -326,7 +323,7 @@ error_remove_trigger:
 	return ret;
 }
 
-/* Function to deinitialize the processing for usage id */
+ 
 static int hid_dev_rot_remove(struct platform_device *pdev)
 {
 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
@@ -342,18 +339,18 @@ static int hid_dev_rot_remove(struct platform_device *pdev)
 
 static const struct platform_device_id hid_dev_rot_ids[] = {
 	{
-		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+		 
 		.name = "HID-SENSOR-20008a",
 	},
 	{
-		/* Relative orientation(AG) sensor */
+		 
 		.name = "HID-SENSOR-20008e",
 	},
 	{
-		/* Geomagnetic orientation(AM) sensor */
+		 
 		.name = "HID-SENSOR-2000c1",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, hid_dev_rot_ids);
 

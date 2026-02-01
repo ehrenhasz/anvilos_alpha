@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  of-thermal.c - Generic Thermal Management device tree support.
- *
- *  Copyright (C) 2013 Texas Instruments
- *  Copyright (C) 2013 Eduardo Valentin <eduardo.valentin@ti.com>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -18,7 +13,7 @@
 
 #include "thermal_core.h"
 
-/***   functions parsing device tree nodes   ***/
+ 
 
 static int of_find_trip_id(struct device_node *np, struct device_node *trip)
 {
@@ -32,9 +27,7 @@ static int of_find_trip_id(struct device_node *np, struct device_node *trip)
 		return -EINVAL;
 	}
 
-	/*
-	 * Find the trip id point associated with the cooling device map
-	 */
+	 
 	for_each_child_of_node(trips, t) {
 
 		if (t == trip) {
@@ -51,10 +44,7 @@ out:
 	return i;
 }
 
-/*
- * It maps 'enum thermal_trip_type' found in include/linux/thermal.h
- * into the device tree binding of 'trip', property type.
- */
+ 
 static const char * const trip_types[] = {
 	[THERMAL_TRIP_ACTIVE]	= "active",
 	[THERMAL_TRIP_PASSIVE]	= "passive",
@@ -62,16 +52,7 @@ static const char * const trip_types[] = {
 	[THERMAL_TRIP_CRITICAL]	= "critical",
 };
 
-/**
- * thermal_of_get_trip_type - Get phy mode for given device_node
- * @np:	Pointer to the given device_node
- * @type: Pointer to resulting trip type
- *
- * The function gets trip type string from property 'type',
- * and store its index in trip_types table in @type,
- *
- * Return: 0 on success, or errno in error case.
- */
+ 
 static int thermal_of_get_trip_type(struct device_node *np,
 				    enum thermal_trip_type *type)
 {
@@ -178,10 +159,7 @@ static struct device_node *of_thermal_zone_find(struct device_node *sensor, int 
 		return ERR_PTR(-ENODEV);
 	}
 
-	/*
-	 * Search for each thermal zone, a defined sensor
-	 * corresponding to the one passed as parameter
-	 */
+	 
 	for_each_available_child_of_node(np, tz) {
 
 		int count, i;
@@ -251,11 +229,7 @@ static void thermal_of_parameters_init(struct device_node *np,
 	if (!of_property_read_u32(np, "sustainable-power", &prop))
 		tzp->sustainable_power = prop;
 
-	/*
-	 * For now, the thermal framework supports only one sensor per
-	 * thermal zone. Thus, we are considering only the first two
-	 * values as slope and offset.
-	 */
+	 
 	ret = of_property_read_u32_array(np, "coefficients", coef, ncoef);
 	if (ret) {
 		coef[0] = 1;
@@ -372,11 +346,7 @@ static int thermal_of_for_each_cooling_device(struct device_node *tz_np, struct 
 		return -ENOENT;
 	}
 
-	/*
-	 * At this point, we don't want to bail out when there is an
-	 * error, we will try to bind/unbind as many as possible
-	 * cooling devices
-	 */
+	 
 	for (i = 0; i < count; i++)
 		action(map_np, i, trip_id, tz, cdev);
 
@@ -428,14 +398,7 @@ static int thermal_of_unbind(struct thermal_zone_device *tz,
 	return thermal_of_for_each_cooling_maps(tz, cdev, __thermal_of_unbind);
 }
 
-/**
- * thermal_of_zone_unregister - Cleanup the specific allocated ressources
- *
- * This function disables the thermal zone and frees the different
- * ressources allocated specific to the thermal OF.
- *
- * @tz: a pointer to the thermal zone structure
- */
+ 
 static void thermal_of_zone_unregister(struct thermal_zone_device *tz)
 {
 	struct thermal_trip *trips = tz->trips;
@@ -447,26 +410,7 @@ static void thermal_of_zone_unregister(struct thermal_zone_device *tz)
 	kfree(ops);
 }
 
-/**
- * thermal_of_zone_register - Register a thermal zone with device node
- * sensor
- *
- * The thermal_of_zone_register() parses a device tree given a device
- * node sensor and identifier. It searches for the thermal zone
- * associated to the couple sensor/id and retrieves all the thermal
- * zone properties and registers new thermal zone with those
- * properties.
- *
- * @sensor: A device node pointer corresponding to the sensor in the device tree
- * @id: An integer as sensor identifier
- * @data: A private data to be stored in the thermal zone dedicated private area
- * @ops: A set of thermal sensor ops
- *
- * Return: a valid thermal zone structure pointer on success.
- * 	- EINVAL: if the device tree thermal description is malformed
- *	- ENOMEM: if one structure can not be allocated
- *	- Other negative errors are returned by the underlying called functions
- */
+ 
 static struct thermal_zone_device *thermal_of_zone_register(struct device_node *sensor, int id, void *data,
 							    const struct thermal_zone_device_ops *ops)
 {
@@ -554,16 +498,7 @@ static int devm_thermal_of_zone_match(struct device *dev, void *res,
 	return *r == data;
 }
 
-/**
- * devm_thermal_of_zone_register - register a thermal tied with the sensor life cycle
- *
- * This function is the device version of the thermal_of_zone_register() function.
- *
- * @dev: a device structure pointer to sensor to be tied with the thermal zone OF life cycle
- * @sensor_id: the sensor identifier
- * @data: a pointer to a private data to be stored in the thermal zone 'devdata' field
- * @ops: a pointer to the ops structure associated with the sensor
- */
+ 
 struct thermal_zone_device *devm_thermal_of_zone_register(struct device *dev, int sensor_id, void *data,
 							  const struct thermal_zone_device_ops *ops)
 {
@@ -587,19 +522,7 @@ struct thermal_zone_device *devm_thermal_of_zone_register(struct device *dev, in
 }
 EXPORT_SYMBOL_GPL(devm_thermal_of_zone_register);
 
-/**
- * devm_thermal_of_zone_unregister - Resource managed version of
- *				thermal_of_zone_unregister().
- * @dev: Device for which which resource was allocated.
- * @tz: a pointer to struct thermal_zone where the sensor is registered.
- *
- * This function removes the sensor callbacks and private data from the
- * thermal zone device registered with devm_thermal_zone_of_sensor_register()
- * API. It will also silent the zone by remove the .get_temp() and .get_trend()
- * thermal zone device callbacks.
- * Normally this function will not need to be called and the resource
- * management code will ensure that the resource is freed.
- */
+ 
 void devm_thermal_of_zone_unregister(struct device *dev, struct thermal_zone_device *tz)
 {
 	WARN_ON(devres_release(dev, devm_thermal_of_zone_release,

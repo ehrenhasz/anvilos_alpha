@@ -1,13 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/errno.h>
 
 int ceph_armor(char *dst, const char *src, const char *end);
 int ceph_unarmor(char *dst, const char *src, const char *end);
 
-/*
- * base64 encode/decode.
- */
+ 
 
 static const char *pem_key =
 	"ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
@@ -30,7 +28,7 @@ static int decode_bits(char c)
 	if (c == '/')
 		return 63;
 	if (c == '=')
-		return 0; /* just non-negative, please */
+		return 0;  
 	return -EINVAL;
 }
 

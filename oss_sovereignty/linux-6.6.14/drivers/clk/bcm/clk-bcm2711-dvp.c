@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-// Copyright 2020 Cerno
+
+
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -103,7 +103,7 @@ static void clk_dvp_remove(struct platform_device *pdev)
 
 static const struct of_device_id clk_dvp_dt_ids[] = {
 	{ .compatible = "brcm,brcm2711-dvp", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, clk_dvp_dt_ids);
 

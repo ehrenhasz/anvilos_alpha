@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * NILFS disk address translation.
- *
- * Copyright (C) 2006-2008 Nippon Telegraph and Telephone Corporation.
- *
- * Written by Koji Sato.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/buffer_head.h>
@@ -20,12 +14,7 @@
 #define NILFS_CNO_MIN	((__u64)1)
 #define NILFS_CNO_MAX	(~(__u64)0)
 
-/**
- * struct nilfs_dat_info - on-memory private data of DAT file
- * @mi: on-memory private data of metadata file
- * @palloc_cache: persistent object allocator cache of DAT file
- * @shadow: shadow map of DAT file
- */
+ 
 struct nilfs_dat_info {
 	struct nilfs_mdt_info mi;
 	struct nilfs_palloc_cache palloc_cache;
@@ -48,10 +37,7 @@ static int nilfs_dat_prepare_entry(struct inode *dat,
 		nilfs_err(dat->i_sb,
 			  "DAT doesn't have a block to manage vblocknr = %llu",
 			  (unsigned long long)req->pr_entry_nr);
-		/*
-		 * Return internal code -EINVAL to notify bmap layer of
-		 * metadata corruption.
-		 */
+		 
 		ret = -EINVAL;
 	}
 	return ret;
@@ -270,20 +256,7 @@ void nilfs_dat_abort_update(struct inode *dat,
 	nilfs_dat_abort_alloc(dat, newreq);
 }
 
-/**
- * nilfs_dat_mark_dirty -
- * @dat: DAT file inode
- * @vblocknr: virtual block number
- *
- * Description:
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 int nilfs_dat_mark_dirty(struct inode *dat, __u64 vblocknr)
 {
 	struct nilfs_palloc_req req;
@@ -296,45 +269,13 @@ int nilfs_dat_mark_dirty(struct inode *dat, __u64 vblocknr)
 	return ret;
 }
 
-/**
- * nilfs_dat_freev - free virtual block numbers
- * @dat: DAT file inode
- * @vblocknrs: array of virtual block numbers
- * @nitems: number of virtual block numbers
- *
- * Description: nilfs_dat_freev() frees the virtual block numbers specified by
- * @vblocknrs and @nitems.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-ENOENT - The virtual block number have not been allocated.
- */
+ 
 int nilfs_dat_freev(struct inode *dat, __u64 *vblocknrs, size_t nitems)
 {
 	return nilfs_palloc_freev(dat, vblocknrs, nitems);
 }
 
-/**
- * nilfs_dat_move - change a block number
- * @dat: DAT file inode
- * @vblocknr: virtual block number
- * @blocknr: block number
- *
- * Description: nilfs_dat_move() changes the block number associated with
- * @vblocknr to @blocknr.
- *
- * Return Value: On success, 0 is returned. On error, one of the following
- * negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- */
+ 
 int nilfs_dat_move(struct inode *dat, __u64 vblocknr, sector_t blocknr)
 {
 	struct buffer_head *entry_bh;
@@ -346,14 +287,7 @@ int nilfs_dat_move(struct inode *dat, __u64 vblocknr, sector_t blocknr)
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * The given disk block number (blocknr) is not yet written to
-	 * the device at this point.
-	 *
-	 * To prevent nilfs_dat_translate() from returning the
-	 * uncommitted block number, this makes a copy of the entry
-	 * buffer and redirects nilfs_dat_translate() to the copy.
-	 */
+	 
 	if (!buffer_nilfs_redirected(entry_bh)) {
 		ret = nilfs_mdt_freeze_buffer(dat, entry_bh);
 		if (ret) {
@@ -386,25 +320,7 @@ int nilfs_dat_move(struct inode *dat, __u64 vblocknr, sector_t blocknr)
 	return 0;
 }
 
-/**
- * nilfs_dat_translate - translate a virtual block number to a block number
- * @dat: DAT file inode
- * @vblocknr: virtual block number
- * @blocknrp: pointer to a block number
- *
- * Description: nilfs_dat_translate() maps the virtual block number @vblocknr
- * to the corresponding block number.
- *
- * Return Value: On success, 0 is returned and the block number associated
- * with @vblocknr is stored in the place pointed by @blocknrp. On error, one
- * of the following negative error codes is returned.
- *
- * %-EIO - I/O error.
- *
- * %-ENOMEM - Insufficient amount of memory available.
- *
- * %-ENOENT - A block number associated with @vblocknr does not exist.
- */
+ 
 int nilfs_dat_translate(struct inode *dat, __u64 vblocknr, sector_t *blocknrp)
 {
 	struct buffer_head *entry_bh, *bh;
@@ -458,7 +374,7 @@ ssize_t nilfs_dat_get_vinfo(struct inode *dat, void *buf, unsigned int visz,
 		if (ret < 0)
 			return ret;
 		kaddr = kmap_atomic(entry_bh->b_page);
-		/* last virtual block number in this block */
+		 
 		first = vinfo->vi_vblocknr;
 		do_div(first, entries_per_block);
 		first *= entries_per_block;
@@ -480,13 +396,7 @@ ssize_t nilfs_dat_get_vinfo(struct inode *dat, void *buf, unsigned int visz,
 	return nvi;
 }
 
-/**
- * nilfs_dat_read - read or get dat inode
- * @sb: super block instance
- * @entry_size: size of a dat entry
- * @raw_inode: on-disk dat inode
- * @inodep: buffer to store the inode
- */
+ 
 int nilfs_dat_read(struct super_block *sb, size_t entry_size,
 		   struct nilfs_inode *raw_inode, struct inode **inodep)
 {

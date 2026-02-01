@@ -1,15 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *
- *		SNMP MIB entries for the IP subsystem.
- *		
- *		Alan Cox <gw4pts@gw4pts.ampr.org>
- *
- *		We don't chose to implement SNMP in the kernel (this would
- *		be silly as SNMP is a pain in the backside in places). We do
- *		however need to collect the MIB statistics and export them
- *		out of /proc (eventually)
- */
+ 
+ 
  
 #ifndef _SNMP_H
 #define _SNMP_H
@@ -18,14 +8,8 @@
 #include <linux/snmp.h>
 #include <linux/smp.h>
 
-/*
- * Mibs are stored in array of unsigned long.
- */
-/*
- * struct snmp_mib{}
- *  - list of entries for particular API (such as /proc/net/snmp)
- *  - name of entries.
- */
+ 
+ 
 struct snmp_mib {
 	const char *name;
 	int entry;
@@ -41,20 +25,18 @@ struct snmp_mib {
 	.entry = 0,		\
 }
 
-/*
- * We use unsigned longs for most mibs but u64 for ipstats.
- */
+ 
 #include <linux/u64_stats_sync.h>
 
-/* IPstats */
+ 
 #define IPSTATS_MIB_MAX	__IPSTATS_MIB_MAX
 struct ipstats_mib {
-	/* mibs[] must be first field of struct ipstats_mib */
+	 
 	u64		mibs[IPSTATS_MIB_MAX];
 	struct u64_stats_sync syncp;
 };
 
-/* ICMP */
+ 
 #define ICMP_MIB_MAX	__ICMP_MIB_MAX
 struct icmp_mib {
 	unsigned long	mibs[ICMP_MIB_MAX];
@@ -65,53 +47,53 @@ struct icmpmsg_mib {
 	atomic_long_t	mibs[ICMPMSG_MIB_MAX];
 };
 
-/* ICMP6 (IPv6-ICMP) */
+ 
 #define ICMP6_MIB_MAX	__ICMP6_MIB_MAX
-/* per network ns counters */
+ 
 struct icmpv6_mib {
 	unsigned long	mibs[ICMP6_MIB_MAX];
 };
-/* per device counters, (shared on all cpus) */
+ 
 struct icmpv6_mib_device {
 	atomic_long_t	mibs[ICMP6_MIB_MAX];
 };
 
 #define ICMP6MSG_MIB_MAX  __ICMP6MSG_MIB_MAX
-/* per network ns counters */
+ 
 struct icmpv6msg_mib {
 	atomic_long_t	mibs[ICMP6MSG_MIB_MAX];
 };
-/* per device counters, (shared on all cpus) */
+ 
 struct icmpv6msg_mib_device {
 	atomic_long_t	mibs[ICMP6MSG_MIB_MAX];
 };
 
 
-/* TCP */
+ 
 #define TCP_MIB_MAX	__TCP_MIB_MAX
 struct tcp_mib {
 	unsigned long	mibs[TCP_MIB_MAX];
 };
 
-/* UDP */
+ 
 #define UDP_MIB_MAX	__UDP_MIB_MAX
 struct udp_mib {
 	unsigned long	mibs[UDP_MIB_MAX];
 };
 
-/* Linux */
+ 
 #define LINUX_MIB_MAX	__LINUX_MIB_MAX
 struct linux_mib {
 	unsigned long	mibs[LINUX_MIB_MAX];
 };
 
-/* Linux Xfrm */
+ 
 #define LINUX_MIB_XFRMMAX	__LINUX_MIB_XFRMMAX
 struct linux_xfrm_mib {
 	unsigned long	mibs[LINUX_MIB_XFRMMAX];
 };
 
-/* Linux TLS */
+ 
 #define LINUX_MIB_TLSMAX	__LINUX_MIB_TLSMAX
 struct linux_tls_mib {
 	unsigned long	mibs[LINUX_MIB_TLSMAX];

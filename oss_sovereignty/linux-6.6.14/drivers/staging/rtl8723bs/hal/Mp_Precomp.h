@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2013 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
+ 
+ 
 #ifndef __MP_PRECOMP_H__
 #define __MP_PRECOMP_H__
 
@@ -20,4 +16,4 @@
 #include "HalBtc8723b1Ant.h"
 #include "HalBtc8723b2Ant.h"
 
-#endif /*  __MP_PRECOMP_H__ */
+#endif  

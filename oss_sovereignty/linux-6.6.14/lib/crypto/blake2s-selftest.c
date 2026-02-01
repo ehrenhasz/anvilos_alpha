@@ -1,67 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include <crypto/internal/blake2s.h>
 #include <linux/kernel.h>
 #include <linux/random.h>
 #include <linux/string.h>
 
-/*
- * blake2s_testvecs[] generated with the program below (using libb2-dev and
- * libssl-dev [OpenSSL])
- *
- * #include <blake2.h>
- * #include <stdint.h>
- * #include <stdio.h>
- *
- * #include <openssl/evp.h>
- *
- * #define BLAKE2S_TESTVEC_COUNT	256
- *
- * static void print_vec(const uint8_t vec[], int len)
- * {
- *	int i;
- *
- *	printf("  { ");
- *	for (i = 0; i < len; i++) {
- *		if (i && (i % 12) == 0)
- *			printf("\n    ");
- *		printf("0x%02x, ", vec[i]);
- *	}
- *	printf("},\n");
- * }
- *
- * int main(void)
- * {
- *	uint8_t key[BLAKE2S_KEYBYTES];
- *	uint8_t buf[BLAKE2S_TESTVEC_COUNT];
- *	uint8_t hash[BLAKE2S_OUTBYTES];
- *	int i, j;
- *
- *	key[0] = key[1] = 1;
- *	for (i = 2; i < BLAKE2S_KEYBYTES; ++i)
- *		key[i] = key[i - 2] + key[i - 1];
- *
- *	for (i = 0; i < BLAKE2S_TESTVEC_COUNT; ++i)
- *		buf[i] = (uint8_t)i;
- *
- *	printf("static const u8 blake2s_testvecs[][BLAKE2S_HASH_SIZE] __initconst = {\n");
- *
- *	for (i = 0; i < BLAKE2S_TESTVEC_COUNT; ++i) {
- *		int outlen = 1 + i % BLAKE2S_OUTBYTES;
- *		int keylen = (13 * i) % (BLAKE2S_KEYBYTES + 1);
- *
- *		blake2s(hash, buf, key + BLAKE2S_KEYBYTES - keylen, outlen, i,
- *			keylen);
- *		print_vec(hash, outlen);
- *	}
- *	printf("};\n\n");
- *
- *	return 0;
- *}
- */
+ 
 static const u8 blake2s_testvecs[][BLAKE2S_HASH_SIZE] __initconst = {
   { 0xa1, },
   { 0x7c, 0x89, },

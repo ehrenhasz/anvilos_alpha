@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Extcon charger detection driver for Intel Cherrytrail Whiskey Cove PMIC
- * Copyright (C) 2017 Hans de Goede <hdegoede@redhat.com>
- *
- * Based on various non upstream patches to support the CHT Whiskey Cove PMIC:
- * Copyright (C) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 
 #include <linux/extcon-provider.h>
 #include <linux/interrupt.h>
@@ -64,9 +58,9 @@
 
 #define CHT_WC_CHGDISCTRL		0x5e2f
 #define CHT_WC_CHGDISCTRL_OUT		BIT(0)
-/* 0 - open drain, 1 - regular push-pull output */
+ 
 #define CHT_WC_CHGDISCTRL_DRV		BIT(4)
-/* 0 - pin is controlled by SW, 1 - by HW */
+ 
 #define CHT_WC_CHGDISCTRL_FN		BIT(6)
 
 #define CHT_WC_PWRSRC_IRQ		0x6e03
@@ -121,18 +115,7 @@ static int cht_wc_extcon_get_id(struct cht_wc_extcon_data *ext, int pwrsrc_sts)
 		return INTEL_USB_ID_GND;
 	case CHT_WC_PWRSRC_RID_FLOAT:
 		return INTEL_USB_ID_FLOAT;
-	/*
-	 * According to the spec. we should read the USB-ID pin ADC value here
-	 * to determine the resistance of the used pull-down resister and then
-	 * return RID_A / RID_B / RID_C based on this. But all "Accessory
-	 * Charger Adapter"s (ACAs) which users can actually buy always use
-	 * a combination of a charging port with one or more USB-A ports, so
-	 * they should always use a resistor indicating RID_A. But the spec
-	 * is hard to read / badly-worded so some of them actually indicate
-	 * they are a RID_B ACA evnen though they clearly are a RID_A ACA.
-	 * To workaround this simply always return INTEL_USB_RID_A, which
-	 * matches all the ACAs which users can actually buy.
-	 */
+	 
 	case CHT_WC_PWRSRC_RID_ACA:
 		return INTEL_USB_RID_A;
 	default:
@@ -146,7 +129,7 @@ static int cht_wc_extcon_get_charger(struct cht_wc_extcon_data *ext,
 	int ret, usbsrc, status;
 	unsigned long timeout;
 
-	/* Charger detection can take upto 600ms, wait 800ms max. */
+	 
 	timeout = jiffies + msecs_to_jiffies(800);
 	do {
 		ret = regmap_read(ext->regmap, CHT_WC_USBSRC, &usbsrc);
@@ -160,7 +143,7 @@ static int cht_wc_extcon_get_charger(struct cht_wc_extcon_data *ext,
 		    status == CHT_WC_USBSRC_STS_FAIL)
 			break;
 
-		msleep(50); /* Wait a bit before retrying */
+		msleep(50);  
 	} while (time_before(jiffies, timeout));
 
 	if (status != CHT_WC_USBSRC_STS_SUCCESS) {
@@ -171,7 +154,7 @@ static int cht_wc_extcon_get_charger(struct cht_wc_extcon_data *ext,
 				dev_warn(ext->dev, "Timeout detecting charger type\n");
 		}
 
-		/* Safe fallback */
+		 
 		usbsrc = CHT_WC_USBSRC_TYPE_SDP << CHT_WC_USBSRC_TYPE_SHIFT;
 	}
 
@@ -193,7 +176,7 @@ static int cht_wc_extcon_get_charger(struct cht_wc_extcon_data *ext,
 		return EXTCON_CHG_USB_CDP;
 	case CHT_WC_USBSRC_TYPE_DCP:
 	case CHT_WC_USBSRC_TYPE_DCP_EXTPHY:
-	case CHT_WC_USBSRC_TYPE_MHL: /* MHL2+ delivers upto 2A, treat as DCP */
+	case CHT_WC_USBSRC_TYPE_MHL:  
 		ext->usb_type = POWER_SUPPLY_USB_TYPE_DCP;
 		return EXTCON_CHG_USB_DCP;
 	case CHT_WC_USBSRC_TYPE_ACA:
@@ -216,10 +199,7 @@ static void cht_wc_extcon_set_5v_boost(struct cht_wc_extcon_data *ext,
 {
 	int ret, val;
 
-	/*
-	 * The 5V boost converter is enabled through a gpio on the PMIC, since
-	 * there currently is no gpio driver we access the gpio reg directly.
-	 */
+	 
 	val = CHT_WC_VBUS_GPIO_CTLO_DRV_OD | CHT_WC_VBUS_GPIO_CTLO_DIR_OUT;
 	if (enable)
 		val |= CHT_WC_VBUS_GPIO_CTLO_OUTPUT;
@@ -265,7 +245,7 @@ static void cht_wc_extcon_enable_charging(struct cht_wc_extcon_data *ext,
 		dev_err(ext->dev, "Error updating CHGDISCTRL reg: %d\n", ret);
 }
 
-/* Small helper to sync EXTCON_CHG_USB_SDP and EXTCON_USB state */
+ 
 static void cht_wc_extcon_set_state(struct cht_wc_extcon_data *ext,
 				    unsigned int cable, bool state)
 {
@@ -278,7 +258,7 @@ static void cht_wc_extcon_pwrsrc_event(struct cht_wc_extcon_data *ext)
 {
 	int ret, pwrsrc_sts, id;
 	unsigned int cable = EXTCON_NONE;
-	/* Ignore errors in host mode, as the 5v boost converter is on then */
+	 
 	bool ignore_get_charger_errors = ext->usb_host;
 	enum usb_role role;
 
@@ -295,16 +275,16 @@ static void cht_wc_extcon_pwrsrc_event(struct cht_wc_extcon_data *ext)
 		cht_wc_extcon_enable_charging(ext, false);
 		cht_wc_extcon_set_otgmode(ext, true);
 
-		/* The 5v boost causes a false VBUS / SDP detect, skip */
+		 
 		goto charger_det_done;
 	}
 
 	cht_wc_extcon_set_otgmode(ext, false);
 	cht_wc_extcon_enable_charging(ext, true);
 
-	/* Plugged into a host/charger or not connected? */
+	 
 	if (!(pwrsrc_sts & CHT_WC_PWRSRC_VBUS)) {
-		/* Route D+ and D- to PMIC for future charger detection */
+		 
 		cht_wc_extcon_set_phymux(ext, MUX_SEL_PMIC);
 		goto set_state;
 	}
@@ -314,7 +294,7 @@ static void cht_wc_extcon_pwrsrc_event(struct cht_wc_extcon_data *ext)
 		cable = ret;
 
 charger_det_done:
-	/* Route D+ and D- to SoC for the host or gadget controller */
+	 
 	cht_wc_extcon_set_phymux(ext, MUX_SEL_SOC);
 
 set_state:
@@ -334,7 +314,7 @@ set_state:
 	else
 		role = USB_ROLE_NONE;
 
-	/* Note: this is a no-op when ext->role_sw is NULL */
+	 
 	ret = usb_role_switch_set_role(ext->role_sw, role);
 	if (ret)
 		dev_err(ext->dev, "Error setting USB-role: %d\n", ret);
@@ -409,7 +389,7 @@ static void cht_wc_extcon_put_role_sw(void *data)
 	usb_role_switch_put(ext->role_sw);
 }
 
-/* Some boards require controlling the role-sw and Vbus based on the id-pin */
+ 
 static int cht_wc_extcon_get_role_sw_and_regulator(struct cht_wc_extcon_data *ext)
 {
 	int ret;
@@ -422,13 +402,7 @@ static int cht_wc_extcon_get_role_sw_and_regulator(struct cht_wc_extcon_data *ex
 	if (ret)
 		return ret;
 
-	/*
-	 * On x86/ACPI platforms the regulator <-> consumer link is provided
-	 * by platform_data passed to the regulator driver. This means that
-	 * this info is not available before the regulator driver has bound.
-	 * Use devm_regulator_get_optional() to avoid getting a dummy
-	 * regulator and wait for the regulator to show up if necessary.
-	 */
+	 
 	ext->vbus_boost = devm_regulator_get_optional(ext->dev, "vbus");
 	if (IS_ERR(ext->vbus_boost)) {
 		ret = PTR_ERR(ext->vbus_boost);
@@ -514,41 +488,23 @@ static int cht_wc_extcon_probe(struct platform_device *pdev)
 	ext->regmap = pmic->regmap;
 	ext->previous_cable = EXTCON_NONE;
 
-	/* Initialize extcon device */
+	 
 	ext->edev = devm_extcon_dev_allocate(ext->dev, cht_wc_extcon_cables);
 	if (IS_ERR(ext->edev))
 		return PTR_ERR(ext->edev);
 
 	switch (pmic->cht_wc_model) {
 	case INTEL_CHT_WC_GPD_WIN_POCKET:
-		/*
-		 * When a host-cable is detected the BIOS enables an external 5v boost
-		 * converter to power connected devices there are 2 problems with this:
-		 * 1) This gets seen by the external battery charger as a valid Vbus
-		 *    supply and it then tries to feed Vsys from this creating a
-		 *    feedback loop which causes aprox. 300 mA extra battery drain
-		 *    (and unless we drive the external-charger-disable pin high it
-		 *    also tries to charge the battery causing even more feedback).
-		 * 2) This gets seen by the pwrsrc block as a SDP USB Vbus supply
-		 * Since the external battery charger has its own 5v boost converter
-		 * which does not have these issues, we simply turn the separate
-		 * external 5v boost converter off and leave it off entirely.
-		 */
+		 
 		cht_wc_extcon_set_5v_boost(ext, false);
 		break;
 	case INTEL_CHT_WC_LENOVO_YOGABOOK1:
 	case INTEL_CHT_WC_LENOVO_YT3_X90:
-		/* Do this first, as it may very well return -EPROBE_DEFER. */
+		 
 		ret = cht_wc_extcon_get_role_sw_and_regulator(ext);
 		if (ret)
 			return ret;
-		/*
-		 * The bq25890 used here relies on this driver's BC-1.2 charger
-		 * detection, and the bq25890 driver expect this info to be
-		 * available through a parent power_supply class device which
-		 * models the detected charger (idem to how the Type-C TCPM code
-		 * registers a power_supply classdev for the connected charger).
-		 */
+		 
 		ret = cht_wc_extcon_register_psy(ext);
 		if (ret)
 			return ret;
@@ -562,15 +518,15 @@ static int cht_wc_extcon_probe(struct platform_device *pdev)
 		break;
 	}
 
-	/* Enable sw control */
+	 
 	ret = cht_wc_extcon_sw_control(ext, true);
 	if (ret)
 		goto disable_sw_control;
 
-	/* Disable charging by external battery charger */
+	 
 	cht_wc_extcon_enable_charging(ext, false);
 
-	/* Register extcon device */
+	 
 	ret = devm_extcon_dev_register(ext->dev, ext->edev);
 	if (ret) {
 		dev_err(ext->dev, "Error registering extcon device: %d\n", ret);
@@ -583,15 +539,12 @@ static int cht_wc_extcon_probe(struct platform_device *pdev)
 		goto disable_sw_control;
 	}
 
-	/*
-	 * If no USB host or device connected, route D+ and D- to PMIC for
-	 * initial charger detection
-	 */
+	 
 	id = cht_wc_extcon_get_id(ext, pwrsrc_sts);
 	if (id != INTEL_USB_ID_GND)
 		cht_wc_extcon_set_phymux(ext, MUX_SEL_PMIC);
 
-	/* Get initial state */
+	 
 	cht_wc_extcon_pwrsrc_event(ext);
 
 	ret = devm_request_threaded_irq(ext->dev, irq, NULL, cht_wc_extcon_isr,
@@ -601,7 +554,7 @@ static int cht_wc_extcon_probe(struct platform_device *pdev)
 		goto disable_sw_control;
 	}
 
-	/* Unmask irqs */
+	 
 	ret = regmap_write(ext->regmap, CHT_WC_PWRSRC_IRQ_MASK, mask);
 	if (ret) {
 		dev_err(ext->dev, "Error writing irq-mask: %d\n", ret);

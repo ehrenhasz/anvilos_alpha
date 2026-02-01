@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * 88pm860x-codec.h -- 88PM860x ALSA SoC Audio Driver
- *
- * Copyright 2010 Marvell International Ltd.
- *	Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+ 
+ 
 
 #ifndef __88PM860X_H
 #define __88PM860X_H
@@ -74,7 +69,7 @@
 #define PM860X_PLL_ADJ_1		0x3c
 #define PM860X_PLL_ADJ_2		0x3d
 
-/* bits definition */
+ 
 #define PM860X_CLK_DIR_IN		0
 #define PM860X_CLK_DIR_OUT		1
 
@@ -90,4 +85,4 @@ extern int pm860x_hs_jack_detect(struct snd_soc_component *, struct snd_soc_jack
 extern int pm860x_mic_jack_detect(struct snd_soc_component *, struct snd_soc_jack *,
 				  int);
 
-#endif	/* __88PM860X_H */
+#endif	 

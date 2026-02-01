@@ -1,37 +1,4 @@
-/*
- * Copyright(c) 2011-2016 Intel Corporation. All rights reserved.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- *
- * Authors:
- *    Kevin Tian <kevin.tian@intel.com>
- *
- * Contributors:
- *    Bing Niu <bing.niu@intel.com>
- *    Xu Han <xu.han@intel.com>
- *    Ping Gao <ping.a.gao@intel.com>
- *    Xiaoguang Chen <xiaoguang.chen@intel.com>
- *    Yang Liu <yang2.liu@intel.com>
- *    Tina Zhang <tina.zhang@intel.com>
- *
- */
+ 
 
 #include <uapi/drm/drm_fourcc.h>
 #include "i915_drv.h"
@@ -41,9 +8,9 @@
 
 #define PRIMARY_FORMAT_NUM	16
 struct pixel_format {
-	int drm_format;	/* Pixel format in DRM definition */
-	int bpp; /* Bits per pixel, 0 indicates invalid */
-	const char *desc; /* The description */
+	int drm_format;	 
+	int bpp;  
+	const char *desc;  
 };
 
 static const struct pixel_format bdw_pixel_formats[] = {
@@ -55,7 +22,7 @@ static const struct pixel_format bdw_pixel_formats[] = {
 	{DRM_FORMAT_XRGB2101010, 32, "32-bit BGRX (2:10:10:10 MSB-X:R:G:B)"},
 	{DRM_FORMAT_XBGR8888, 32, "32-bit RGBX (8:8:8:8 MSB-X:B:G:R)"},
 
-	/* non-supported format has bpp default to 0 */
+	 
 	{0, 0, NULL},
 };
 
@@ -75,7 +42,7 @@ static const struct pixel_format skl_pixel_formats[] = {
 	{DRM_FORMAT_XBGR2101010, 32, "32-bit RGBX (2:10:10:10 MSB-X:B:G:R)"},
 	{DRM_FORMAT_XRGB2101010, 32, "32-bit BGRX (2:10:10:10 MSB-X:R:G:B)"},
 
-	/* non-supported format has bpp default to 0 */
+	 
 	{0, 0, NULL},
 };
 
@@ -191,15 +158,7 @@ static int get_active_pipe(struct intel_vgpu *vgpu)
 	return i;
 }
 
-/**
- * intel_vgpu_decode_primary_plane - Decode primary plane
- * @vgpu: input vgpu
- * @plane: primary plane to save decoded info
- * This function is called for decoding plane
- *
- * Returns:
- * 0 on success, non-zero if failed.
- */
+ 
 int intel_vgpu_decode_primary_plane(struct intel_vgpu *vgpu,
 	struct intel_vgpu_primary_plane_format *plane)
 {
@@ -266,7 +225,7 @@ int intel_vgpu_decode_primary_plane(struct intel_vgpu *vgpu,
 	plane->width += 1;
 	plane->height = (vgpu_vreg_t(vgpu, PIPESRC(pipe)) &
 			_PIPE_V_SRCSZ_MASK) >> _PIPE_V_SRCSZ_SHIFT;
-	plane->height += 1;	/* raw height is one minus the real value */
+	plane->height += 1;	 
 
 	val = vgpu_vreg_t(vgpu, DSPTILEOFF(pipe));
 	plane->x_offset = (val & _PRI_PLANE_X_OFF_MASK) >>
@@ -279,11 +238,11 @@ int intel_vgpu_decode_primary_plane(struct intel_vgpu *vgpu,
 
 #define CURSOR_FORMAT_NUM	(1 << 6)
 struct cursor_mode_format {
-	int drm_format;	/* Pixel format in DRM definition */
-	u8 bpp; /* Bits per pixel; 0 indicates invalid */
-	u32 width; /* In pixel */
-	u32 height; /* In lines */
-	const char *desc; /* The description */
+	int drm_format;	 
+	u8 bpp;  
+	u32 width;  
+	u32 height;  
+	const char *desc;  
 };
 
 static const struct cursor_mode_format cursor_pixel_formats[] = {
@@ -292,7 +251,7 @@ static const struct cursor_mode_format cursor_pixel_formats[] = {
 	{DRM_FORMAT_ARGB8888, 32, 64, 64, "64x64 32bpp ARGB"},
 	{DRM_FORMAT_ARGB8888, 32, 64, 64, "64x64 32bpp ARGB"},
 
-	/* non-supported format has bpp default to 0 */
+	 
 	{0, 0, 0, 0, NULL},
 };
 
@@ -321,15 +280,7 @@ static int cursor_mode_to_drm(int mode)
 	return cursor_pixel_formats_index;
 }
 
-/**
- * intel_vgpu_decode_cursor_plane - Decode sprite plane
- * @vgpu: input vgpu
- * @plane: cursor plane to save decoded info
- * This function is called for decoding plane
- *
- * Returns:
- * 0 on success, non-zero if failed.
- */
+ 
 int intel_vgpu_decode_cursor_plane(struct intel_vgpu *vgpu,
 	struct intel_vgpu_cursor_plane_format *plane)
 {
@@ -400,15 +351,7 @@ static const struct pixel_format sprite_pixel_formats[SPRITE_FORMAT_NUM] = {
 		"YUV 32-bit 4:4:4 packed (8:8:8:8 MSB-X:Y:U:V)"},
 };
 
-/**
- * intel_vgpu_decode_sprite_plane - Decode sprite plane
- * @vgpu: input vgpu
- * @plane: sprite plane to save decoded info
- * This function is called for decoding plane
- *
- * Returns:
- * 0 on success, non-zero if failed.
- */
+ 
 int intel_vgpu_decode_sprite_plane(struct intel_vgpu *vgpu,
 	struct intel_vgpu_sprite_plane_format *plane)
 {
@@ -440,9 +383,7 @@ int intel_vgpu_decode_sprite_plane(struct intel_vgpu *vgpu,
 	plane->bpp = sprite_pixel_formats[fmt].bpp;
 	drm_format = sprite_pixel_formats[fmt].drm_format;
 
-	/* Order of RGB values in an RGBxxx buffer may be ordered RGB or
-	 * BGR depending on the state of the color_order field
-	 */
+	 
 	if (!color_order) {
 		if (drm_format == DRM_FORMAT_XRGB2101010)
 			drm_format = DRM_FORMAT_XBGR2101010;
@@ -465,7 +406,7 @@ int intel_vgpu_decode_sprite_plane(struct intel_vgpu *vgpu,
 			drm_format = DRM_FORMAT_VYUY;
 			break;
 		default:
-			/* yuv_order has only 2 bits */
+			 
 			break;
 		}
 	}
@@ -491,8 +432,8 @@ int intel_vgpu_decode_sprite_plane(struct intel_vgpu *vgpu,
 		_SPRITE_SIZE_HEIGHT_SHIFT;
 	plane->width = (val & _SPRITE_SIZE_WIDTH_MASK) >>
 		_SPRITE_SIZE_WIDTH_SHIFT;
-	plane->height += 1;	/* raw height is one minus the real value */
-	plane->width += 1;	/* raw width is one minus the real value */
+	plane->height += 1;	 
+	plane->width += 1;	 
 
 	val = vgpu_vreg_t(vgpu, SPRPOS(pipe));
 	plane->x_pos = (val & _SPRITE_POS_X_MASK) >> _SPRITE_POS_X_SHIFT;

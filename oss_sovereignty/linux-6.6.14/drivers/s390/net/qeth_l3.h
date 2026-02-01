@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *    Copyright IBM Corp. 2007
- *    Author(s): Utz Bacher <utz.bacher@de.ibm.com>,
- *		 Frank Pavlic <fpavlic@de.ibm.com>,
- *		 Thomas Spatzier <tspat@de.ibm.com>,
- *		 Frank Blaschka <frank.blaschka@de.ibm.com>
- */
+ 
+ 
 
 #ifndef __QETH_L3_H__
 #define __QETH_L3_H__
@@ -24,11 +18,9 @@ struct qeth_ipaddr {
 	enum qeth_ip_types type;
 	u8 is_multicast:1;
 	u8 disp_flag:2;
-	u8 ipato:1;			/* ucast only */
+	u8 ipato:1;			 
 
-	/* is changed only for normal ip addresses
-	 * for non-normal addresses it always is  1
-	 */
+	 
 	int  ref_counter;
 	enum qeth_prot_versions proto;
 	union {
@@ -67,16 +59,7 @@ static inline bool qeth_l3_addr_match_ip(struct qeth_ipaddr *a1,
 static inline bool qeth_l3_addr_match_all(struct qeth_ipaddr *a1,
 					  struct qeth_ipaddr *a2)
 {
-	/* Assumes that the pair was obtained via qeth_l3_addr_find_by_ip(),
-	 * so 'proto' and 'addr' match for sure.
-	 *
-	 * For ucast:
-	 * -	'mask'/'pfxlen' for RXIP/VIPA is always 0. For NORMAL, matching
-	 *	values are required to avoid mixups in takeover eligibility.
-	 *
-	 * For mcast,
-	 * -	'mask'/'pfxlen' is always 0.
-	 */
+	 
 	if (a1->type != a2->type)
 		return false;
 	if (a1->proto == QETH_PROT_IPV6)
@@ -115,4 +98,4 @@ int qeth_l3_modify_rxip_vipa(struct qeth_card *card, bool add, const u8 *ip,
 			     enum qeth_ip_types type,
 			     enum qeth_prot_versions proto);
 
-#endif /* __QETH_L3_H__ */
+#endif  

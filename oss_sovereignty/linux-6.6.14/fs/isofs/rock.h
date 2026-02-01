@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * These structs are used by the system-use-sharing protocol, in which the
- * Rock Ridge extensions are embedded.  It is quite possible that other
- * extensions are present on the disk, and this is fine as long as they
- * all use SUSP
- */
+ 
+ 
 
 struct SU_SP_s {
 	__u8 magic[2];
@@ -66,24 +61,22 @@ struct RR_PL_s {
 };
 
 struct stamp {
-	__u8 time[7];		/* actually 6 unsigned, 1 signed */
+	__u8 time[7];		 
 } __attribute__ ((packed));
 
 struct RR_TF_s {
 	__u8 flags;
-	struct stamp times[];	/* Variable number of these beasts */
+	struct stamp times[];	 
 } __attribute__ ((packed));
 
-/* Linux-specific extension for transparent decompression */
+ 
 struct RR_ZF_s {
 	__u8 algorithm[2];
 	__u8 parms[2];
 	__u8 real_size[8];
 };
 
-/*
- * These are the bits and their meanings for flags in the TF structure.
- */
+ 
 #define TF_CREATE 1
 #define TF_MODIFY 2
 #define TF_ACCESS 4
@@ -113,11 +106,11 @@ struct rock_ridge {
 	} u;
 };
 
-#define RR_PX 1			/* POSIX attributes */
-#define RR_PN 2			/* POSIX devices */
-#define RR_SL 4			/* Symbolic link */
-#define RR_NM 8			/* Alternate Name */
-#define RR_CL 16		/* Child link */
-#define RR_PL 32		/* Parent link */
-#define RR_RE 64		/* Relocation directory */
-#define RR_TF 128		/* Timestamps */
+#define RR_PX 1			 
+#define RR_PN 2			 
+#define RR_SL 4			 
+#define RR_NM 8			 
+#define RR_CL 16		 
+#define RR_PL 32		 
+#define RR_RE 64		 
+#define RR_TF 128		 

@@ -1,21 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2005 IBM Corporation
- *
- * Authors:
- * Kylene Hall <kjhall@us.ibm.com>
- *
- * Maintained by: <tpmdd-devel@lists.sourceforge.net>
- *
- * Device driver for TCG/TCPA TPM (trusted platform module).
- * Specifications at www.trustedcomputinggroup.org
- *
- * These difference are required on power because the device must be
- * discovered through the device tree and iomap must be used to get
- * around the need for holes in the io_page_mask.  This does not happen
- * automatically because the tpm is not a normal pci device and lives
- * under the root node.
- */
+ 
+ 
 
 struct tpm_atmel_priv {
 	int region_size;
@@ -85,7 +69,7 @@ static void __iomem * atmel_get_base_addr(unsigned long *base, int *region_size)
 	outb(val, atmel_get_priv(chip)->base + offset)
 #define atmel_request_region request_region
 #define atmel_release_region release_region
-/* Atmel definitions */
+ 
 enum tpm_atmel_addr {
 	TPM_ATMEL_BASE_ADDR_LO = 0x08,
 	TPM_ATMEL_BASE_ADDR_HI = 0x09
@@ -97,23 +81,23 @@ static inline int tpm_read_index(int base, int index)
 	return inb(base+1) & 0xFF;
 }
 
-/* Verify this is a 1.1 Atmel TPM */
+ 
 static int atmel_verify_tpm11(void)
 {
 
-	/* verify that it is an Atmel part */
+	 
 	if (tpm_read_index(TPM_ADDR, 4) != 'A' ||
 	    tpm_read_index(TPM_ADDR, 5) != 'T' ||
 	    tpm_read_index(TPM_ADDR, 6) != 'M' ||
 	    tpm_read_index(TPM_ADDR, 7) != 'L')
 		return 1;
 
-	/* query chip for its version number */
+	 
 	if (tpm_read_index(TPM_ADDR, 0x00) != 1 ||
 	    tpm_read_index(TPM_ADDR, 0x01) != 1)
 		return 1;
 
-	/* This is an atmel supported part */
+	 
 	return 0;
 }
 
@@ -121,7 +105,7 @@ static inline void atmel_put_base_addr(void __iomem *iobase)
 {
 }
 
-/* Determine where to talk to device */
+ 
 static void __iomem * atmel_get_base_addr(unsigned long *base, int *region_size)
 {
 	int lo, hi;

@@ -1,89 +1,14 @@
-/* Extended regular expression matching and search library.
-   Copyright (C) 2002-2023 Free Software Foundation, Inc.
-   This file is part of the GNU C Library.
-   Contributed by Isamu Hasegawa <isamu@yamato.ibm.com>.
-
-   The GNU C Library is free software; you can redistribute it and/or
-   modify it under the terms of the GNU Lesser General Public
-   License as published by the Free Software Foundation; either
-   version 2.1 of the License, or (at your option) any later version.
-
-   The GNU C Library is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-   Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public
-   License along with the GNU C Library; if not, see
-   <https://www.gnu.org/licenses/>.  */
-
-#ifndef _REGEX_INTERNAL_H
-#define _REGEX_INTERNAL_H 1
-
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <langinfo.h>
-#include <locale.h>
-#include <wchar.h>
-#include <wctype.h>
-#include <stdckdint.h>
-#include <stdint.h>
-
-#ifndef _LIBC
-# include <dynarray.h>
-#endif
-
-#include <intprops.h>
-#include <verify.h>
-
-#if defined DEBUG && DEBUG != 0
-# include <assert.h>
-# define DEBUG_ASSERT(x) assert (x)
-#else
-# define DEBUG_ASSERT(x) assume (x)
-#endif
-
-#ifdef _LIBC
-# include <libc-lock.h>
-# define lock_define(name) __libc_lock_define (, name)
-# define lock_init(lock) (__libc_lock_init (lock), 0)
-# define lock_fini(lock) ((void) 0)
-# define lock_lock(lock) __libc_lock_lock (lock)
-# define lock_unlock(lock) __libc_lock_unlock (lock)
-#elif defined GNULIB_LOCK && !defined GNULIB_REGEX_SINGLE_THREAD
-# include "glthread/lock.h"
-# define lock_define(name) gl_lock_define (, name)
-# define lock_init(lock) glthread_lock_init (&(lock))
-# define lock_fini(lock) glthread_lock_destroy (&(lock))
-# define lock_lock(lock) glthread_lock_lock (&(lock))
-# define lock_unlock(lock) glthread_lock_unlock (&(lock))
-#elif defined GNULIB_PTHREAD && !defined GNULIB_REGEX_SINGLE_THREAD
-# include <pthread.h>
-# define lock_define(name) pthread_mutex_t name;
-# define lock_init(lock) pthread_mutex_init (&(lock), 0)
-# define lock_fini(lock) pthread_mutex_destroy (&(lock))
-# define lock_lock(lock) pthread_mutex_lock (&(lock))
-# define lock_unlock(lock) pthread_mutex_unlock (&(lock))
-#else
-# define lock_define(name)
-# define lock_init(lock) 0
-# define lock_fini(lock) ((void) 0)
-  /* The 'dfa' avoids an "unused variable 'dfa'" warning from GCC.  */
+ 
 # define lock_lock(lock) ((void) dfa)
 # define lock_unlock(lock) ((void) 0)
 #endif
 
-/* In case that the system doesn't have isblank().  */
+ 
 #if !defined _LIBC && ! (defined isblank || (HAVE_ISBLANK && HAVE_DECL_ISBLANK))
 # define isblank(ch) ((ch) == ' ' || (ch) == '\t')
 #endif
 
-/* regex code assumes isascii has its usual numeric meaning,
-   even if the portable character set uses EBCDIC encoding,
-   and even if wint_t is wider than int.  */
+ 
 #ifndef _LIBC
 # undef isascii
 # define isascii(c) (((c) & ~0x7f) == 0)
@@ -97,7 +22,7 @@
 # endif
 #endif
 
-/* This is for other GNU distributions with internationalized messages.  */
+ 
 #if (HAVE_LIBINTL_H && ENABLE_NLS) || defined _LIBC
 # include <libintl.h>
 # ifdef _LIBC
@@ -111,24 +36,23 @@
 #endif
 
 #ifndef gettext_noop
-/* This define is so xgettext can find the internationalizable
-   strings.  */
+ 
 # define gettext_noop(String) String
 #endif
 
-/* Number of ASCII characters.  */
+ 
 #define ASCII_CHARS 0x80
 
-/* Number of single byte characters.  */
+ 
 #define SBC_MAX (UCHAR_MAX + 1)
 
 #define COLL_ELEM_LEN_MAX 8
 
-/* The character which represents newline.  */
+ 
 #define NEWLINE_CHAR '\n'
 #define WIDE_NEWLINE_CHAR L'\n'
 
-/* Rename to standard API for using out of glibc.  */
+ 
 #ifndef _LIBC
 # undef __wctype
 # undef __iswalnum
@@ -144,20 +68,13 @@
 # define __mbrtowc mbrtowc
 # define __wcrtomb wcrtomb
 # define __regfree regfree
-#endif /* not _LIBC */
+#endif  
 
-/* Types related to integers.  Unless protected by #ifdef _LIBC, the
-   regex code should avoid exact-width types like int32_t and uint64_t
-   as some non-GCC platforms lack them, an issue when this code is
-   used in Gnulib.  */
+ 
 
 #ifndef ULONG_WIDTH
 # define ULONG_WIDTH REGEX_UINTEGER_WIDTH (ULONG_MAX)
-/* The number of usable bits in an unsigned integer type with maximum
-   value MAX, as an int expression suitable in #if.  Cover all known
-   practical hosts.  This implementation exploits the fact that MAX is
-   1 less than a power of 2, and merely counts the number of 1 bits in
-   MAX; "COBn" means "count the number of 1 bits in the low-order n bits".  */
+ 
 # define REGEX_UINTEGER_WIDTH(max) REGEX_COB128 (max)
 # define REGEX_COB128(n) (REGEX_COB64 ((n) >> 31 >> 31 >> 2) + REGEX_COB64 (n))
 # define REGEX_COB64(n) (REGEX_COB32 ((n) >> 31 >> 1) + REGEX_COB32 (n))
@@ -170,13 +87,7 @@
 # endif
 #endif
 
-/* The type of indexes into strings.  This is signed, not size_t,
-   since the API requires indexes to fit in regoff_t anyway, and using
-   signed integers makes the code a bit smaller and presumably faster.
-   The traditional GNU regex implementation uses int for indexes.
-   The POSIX-compatible implementation uses a possibly-wider type.
-   The name 'Idx' is three letters to minimize the hassle of
-   reindenting a lot of regex code that formerly used 'int'.  */
+ 
 typedef regoff_t Idx;
 #ifdef _REGEX_LARGE_OFFSETS
 # define IDX_MAX SSIZE_MAX
@@ -184,18 +95,17 @@ typedef regoff_t Idx;
 # define IDX_MAX INT_MAX
 #endif
 
-/* A hash value, suitable for computing hash tables.  */
+ 
 typedef __re_size_t re_hashval_t;
 
-/* An integer used to represent a set of bits.  It must be unsigned,
-   and must be at least as wide as unsigned int.  */
+ 
 typedef unsigned long int bitset_word_t;
-/* All bits set in a bitset_word_t.  */
+ 
 #define BITSET_WORD_MAX ULONG_MAX
-/* Number of bits in a bitset_word_t.  */
+ 
 #define BITSET_WORD_BITS ULONG_WIDTH
 
-/* Number of bitset_word_t values in a bitset_t.  */
+ 
 #define BITSET_WORDS ((SBC_MAX + BITSET_WORD_BITS - 1) / BITSET_WORD_BITS)
 
 typedef bitset_word_t bitset_t[BITSET_WORDS];
@@ -238,7 +148,7 @@ typedef enum
 {
   NON_TYPE = 0,
 
-  /* Node type, These are used by token, node, tree.  */
+   
   CHARACTER = 1,
   END_OF_RE = 2,
   SIMPLE_BRACKET = 3,
@@ -247,8 +157,7 @@ typedef enum
   COMPLEX_BRACKET = 6,
   OP_UTF8_PERIOD = 7,
 
-  /* We define EPSILON_BIT as a macro so that OP_OPEN_SUBEXP is used
-     when the debugger shows values of this enum type.  */
+   
 #define EPSILON_BIT 8
   OP_OPEN_SUBEXP = EPSILON_BIT | 0,
   OP_CLOSE_SUBEXP = EPSILON_BIT | 1,
@@ -256,11 +165,11 @@ typedef enum
   OP_DUP_ASTERISK = EPSILON_BIT | 3,
   ANCHOR = EPSILON_BIT | 4,
 
-  /* Tree type, these are used only by tree. */
+   
   CONCAT = 16,
   SUBEXP = 17,
 
-  /* Token type, these are used only by token.  */
+   
   OP_DUP_PLUS = 18,
   OP_DUP_QUESTION,
   OP_OPEN_BRACKET,
@@ -285,20 +194,20 @@ typedef enum
 
 typedef struct
 {
-  /* Multibyte characters.  */
+   
   wchar_t *mbchars;
 
 #ifdef _LIBC
-  /* Collating symbols.  */
+   
   int32_t *coll_syms;
 #endif
 
 #ifdef _LIBC
-  /* Equivalence classes. */
+   
   int32_t *equiv_classes;
 #endif
 
-  /* Range expressions. */
+   
 #ifdef _LIBC
   uint32_t *range_starts;
   uint32_t *range_ends;
@@ -307,25 +216,25 @@ typedef struct
   wchar_t *range_ends;
 #endif
 
-  /* Character classes. */
+   
   wctype_t *char_classes;
 
-  /* If this character set is the non-matching list.  */
+   
   unsigned int non_match : 1;
 
-  /* # of multibyte characters.  */
+   
   Idx nmbchars;
 
-  /* # of collating symbols.  */
+   
   Idx ncoll_syms;
 
-  /* # of equivalence classes. */
+   
   Idx nequiv_classes;
 
-  /* # of range expressions. */
+   
   Idx nranges;
 
-  /* # of character classes. */
+   
   Idx nchar_classes;
 } re_charset_t;
 
@@ -333,23 +242,22 @@ typedef struct
 {
   union
   {
-    unsigned char c;		/* for CHARACTER */
-    re_bitset_ptr_t sbcset;	/* for SIMPLE_BRACKET */
-    re_charset_t *mbcset;	/* for COMPLEX_BRACKET */
-    Idx idx;			/* for BACK_REF */
-    re_context_type ctx_type;	/* for ANCHOR */
+    unsigned char c;		 
+    re_bitset_ptr_t sbcset;	 
+    re_charset_t *mbcset;	 
+    Idx idx;			 
+    re_context_type ctx_type;	 
   } opr;
 #if (__GNUC__ >= 2 || defined __clang__) && !defined __STRICT_ANSI__
   re_token_type_t type : 8;
 #else
   re_token_type_t type;
 #endif
-  unsigned int constraint : 10;	/* context constraint */
+  unsigned int constraint : 10;	 
   unsigned int duplicated : 1;
   unsigned int opt_subexp : 1;
   unsigned int accept_mb : 1;
-  /* These 2 bits can be moved into the union if needed (e.g. if running out
-     of bits; move opr.c to opr.c.c and move the flags to opr.c.flags).  */
+   
   unsigned int mb_partial : 1;
   unsigned int word_char : 1;
 } re_token_t;
@@ -358,48 +266,40 @@ typedef struct
 
 struct re_string_t
 {
-  /* Indicate the raw buffer which is the original string passed as an
-     argument of regexec(), re_search(), etc..  */
+   
   const unsigned char *raw_mbs;
-  /* Store the multibyte string.  In case of "case insensitive mode" like
-     REG_ICASE, upper cases of the string are stored, otherwise MBS points
-     the same address that RAW_MBS points.  */
+   
   unsigned char *mbs;
-  /* Store the wide character string which is corresponding to MBS.  */
+   
   wint_t *wcs;
   Idx *offsets;
   mbstate_t cur_state;
-  /* Index in RAW_MBS.  Each character mbs[i] corresponds to
-     raw_mbs[raw_mbs_idx + i].  */
+   
   Idx raw_mbs_idx;
-  /* The length of the valid characters in the buffers.  */
+   
   Idx valid_len;
-  /* The corresponding number of bytes in raw_mbs array.  */
+   
   Idx valid_raw_len;
-  /* The length of the buffers MBS and WCS.  */
+   
   Idx bufs_len;
-  /* The index in MBS, which is updated by re_string_fetch_byte.  */
+   
   Idx cur_idx;
-  /* length of RAW_MBS array.  */
+   
   Idx raw_len;
-  /* This is RAW_LEN - RAW_MBS_IDX + VALID_LEN - VALID_RAW_LEN.  */
+   
   Idx len;
-  /* End of the buffer may be shorter than its length in the cases such
-     as re_match_2, re_search_2.  Then, we use STOP for end of the buffer
-     instead of LEN.  */
+   
   Idx raw_stop;
-  /* This is RAW_STOP - RAW_MBS_IDX adjusted through OFFSETS.  */
+   
   Idx stop;
 
-  /* The context of mbs[0].  We store the context independently, since
-     the context of mbs[0] may be different from raw_mbs[0], which is
-     the beginning of the input string.  */
+   
   unsigned int tip_context;
-  /* The translation passed as a part of an argument of re_compile_pattern.  */
+   
   RE_TRANSLATE_TYPE trans;
-  /* Copy of re_dfa_t's word_char.  */
+   
   re_const_bitset_ptr_t word_char;
-  /* true if REG_ICASE.  */
+   
   unsigned char icase;
   unsigned char is_utf8;
   unsigned char map_notascii;
@@ -463,8 +363,7 @@ struct bin_tree_t
 
   re_token_t token;
 
-  /* 'node_idx' is the index in dfa->nodes, if 'type' == 0.
-     Otherwise 'type' indicate the type of this node.  */
+   
   Idx node_idx;
 };
 typedef struct bin_tree_t bin_tree_t;
@@ -517,11 +416,9 @@ struct re_dfastate_t
   struct re_dfastate_t **trtable, **word_trtable;
   unsigned int context : 4;
   unsigned int halt : 1;
-  /* If this state can accept "multi byte".
-     Note that we refer to multibyte characters, and multi character
-     collating elements as "multi byte".  */
+   
   unsigned int accept_mb : 1;
-  /* If this state has backreference node(s).  */
+   
   unsigned int has_backref : 1;
   unsigned int has_constraint : 1;
 };
@@ -534,7 +431,7 @@ struct re_state_table_entry
   re_dfastate_t **array;
 };
 
-/* Array type used in re_sub_match_last_t and re_sub_match_top_t.  */
+ 
 
 typedef struct
 {
@@ -543,26 +440,24 @@ typedef struct
   re_dfastate_t **array;
 } state_array_t;
 
-/* Store information about the node NODE whose type is OP_CLOSE_SUBEXP.  */
+ 
 
 typedef struct
 {
   Idx node;
-  Idx str_idx; /* The position NODE match at.  */
+  Idx str_idx;  
   state_array_t path;
 } re_sub_match_last_t;
 
-/* Store information about the node NODE whose type is OP_OPEN_SUBEXP.
-   And information about the node, whose type is OP_CLOSE_SUBEXP,
-   corresponding to NODE is stored in LASTS.  */
+ 
 
 typedef struct
 {
   Idx str_idx;
   Idx node;
   state_array_t *path;
-  Idx alasts; /* Allocation size of LASTS.  */
-  Idx nlasts; /* The number of LASTS.  */
+  Idx alasts;  
+  Idx nlasts;  
   re_sub_match_last_t **lasts;
 } re_sub_match_top_t;
 
@@ -578,18 +473,18 @@ struct re_backref_cache_entry
 
 typedef struct
 {
-  /* The string object corresponding to the input string.  */
+   
   re_string_t input;
   const re_dfa_t *const dfa;
-  /* EFLAGS of the argument of regexec.  */
+   
   int eflags;
-  /* Where the matching ends.  */
+   
   Idx match_last;
   Idx last_node;
-  /* The state log used by the matcher.  */
+   
   re_dfastate_t **state_log;
   Idx state_log_top;
-  /* Back reference cache.  */
+   
   Idx nbkref_ents;
   Idx abkref_ents;
   struct re_backref_cache_entry *bkref_ents;
@@ -643,19 +538,17 @@ struct re_dfa_t
   re_bitset_ptr_t sb_char;
   int str_tree_storage_idx;
 
-  /* number of subexpressions 're_nsub' is in regex_t.  */
+   
   re_hashval_t state_hash_mask;
   Idx init_node;
-  Idx nbackref; /* The number of backreference in this dfa.  */
+  Idx nbackref;  
 
-  /* Bitmap expressing which backreference is used.  */
+   
   bitset_word_t used_bkref_map;
   bitset_word_t completed_bkref_map;
 
   unsigned int has_plural_match : 1;
-  /* If this dfa has "multibyte node", which is a backreference or
-     a node which can accept multibyte character or multi character
-     collating element.  */
+   
   unsigned int has_mb_node : 1;
   unsigned int is_utf8 : 1;
   unsigned int map_notascii : 1;
@@ -698,7 +591,7 @@ typedef struct
 } bracket_elem_t;
 
 
-/* Functions for bitset_t operation.  */
+ 
 
 static inline void
 bitset_set (bitset_t set, Idx i)
@@ -767,7 +660,7 @@ bitset_mask (bitset_t dest, const bitset_t src)
     dest[bitset_i] &= src[bitset_i];
 }
 
-/* Functions for re_string.  */
+ 
 static int
 __attribute__ ((pure, unused))
 re_string_char_size_at (const re_string_t *pstr, Idx idx)
@@ -814,7 +707,7 @@ re_string_elem_size_at (const re_string_t *pstr, Idx idx)
       findidx (table, indirect, extra, &p, pstr->len - idx);
       return p - pstr->mbs - idx;
     }
-#endif /* _LIBC */
+#endif  
 
   return 1;
 }
@@ -829,4 +722,4 @@ re_string_elem_size_at (const re_string_t *pstr, Idx idx)
 # include "attribute.h"
 #endif
 
-#endif /*  _REGEX_INTERNAL_H */
+#endif  

@@ -1,19 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* Volume handling.
- *
- * Copyright (C) 2021 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/slab.h>
 #include "internal.h"
 #include <trace/events/fscache.h>
 
-/*
- * Allocate and set up a volume representation.  We make sure all the fanout
- * directories are created and pinned.
- */
+ 
 void cachefiles_acquire_volume(struct fscache_volume *vcookie)
 {
 	struct cachefiles_volume *volume;
@@ -78,7 +71,7 @@ retry:
 	cachefiles_end_secure(cache, saved_cred);
 
 	vcookie->cache_priv = volume;
-	n_accesses = atomic_inc_return(&vcookie->n_accesses); /* Stop wakeups on dec-to-0 */
+	n_accesses = atomic_inc_return(&vcookie->n_accesses);  
 	trace_fscache_access_volume(vcookie->debug_id, 0,
 				    refcount_read(&vcookie->ref),
 				    n_accesses, fscache_access_cache_pin);
@@ -102,9 +95,7 @@ error_vol:
 	cachefiles_end_secure(cache, saved_cred);
 }
 
-/*
- * Release a volume representation.
- */
+ 
 static void __cachefiles_free_volume(struct cachefiles_volume *volume)
 {
 	int i;

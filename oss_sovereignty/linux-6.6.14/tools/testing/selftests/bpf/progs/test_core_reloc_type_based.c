@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-// Copyright (c) 2020 Facebook
+
+
 
 #include <linux/bpf.h>
 #include <stdint.h>
@@ -102,12 +102,7 @@ struct core_reloc_type_based_output {
 SEC("raw_tracepoint/sys_enter")
 int test_core_type_based(void *ctx)
 {
-	/* Support for the BPF_TYPE_MATCHES argument to the
-	 * __builtin_preserve_type_info builtin was added at some point during
-	 * development of clang 15 and it's what we require for this test. Part of it
-	 * could run with merely __builtin_preserve_type_info (which could be checked
-	 * separately), but we have to find an upper bound.
-	 */
+	 
 #if __has_builtin(__builtin_preserve_type_info) && __clang_major__ >= 15
 	struct core_reloc_type_based_output *out = (void *)&data.out;
 

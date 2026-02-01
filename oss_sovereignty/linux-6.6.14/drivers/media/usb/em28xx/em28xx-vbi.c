@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0+
-//
-// em28xx-vbi.c - VBI driver for em28xx
-//
-// Copyright (C) 2009 Devin Heitmueller <dheitmueller@kernellabs.com>
-//
-// This work was sponsored by EyeMagnet Limited.
+
+
+
+
+
+
+
 
 #include "em28xx.h"
 
@@ -16,7 +16,7 @@
 
 #include "em28xx-v4l.h"
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int vbi_queue_setup(struct vb2_queue *vq,
 			   unsigned int *nbuffers, unsigned int *nplanes,

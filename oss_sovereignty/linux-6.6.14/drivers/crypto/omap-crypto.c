@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * OMAP Crypto driver common support routines.
- *
- * Copyright (c) 2017 Texas Instruments Incorporated
- *   Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>

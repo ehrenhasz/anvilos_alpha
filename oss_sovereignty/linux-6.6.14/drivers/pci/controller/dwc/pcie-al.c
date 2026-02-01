@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Amazon's Annapurna Labs IP (used in chips
- * such as Graviton and Alpine)
- *
- * Copyright 2019 Amazon.com, Inc. or its affiliates. All Rights Reserved.
- *
- * Author: Jonathan Chocron <jonnyc@amazon.com>
- */
+
+ 
 
 #include <linux/pci.h>
 #include <linux/pci-ecam.h>
@@ -27,10 +20,7 @@ static void __iomem *al_pcie_map_bus(struct pci_bus *bus, unsigned int devfn,
 	void __iomem *dbi_base = pcie->dbi_base;
 
 	if (bus->number == cfg->busr.start) {
-		/*
-		 * The DW PCIe core doesn't filter out transactions to other
-		 * devices/functions on the root bus num, so we do this here.
-		 */
+		 
 		if (PCI_SLOT(devfn) > 0)
 			return NULL;
 		else
@@ -84,7 +74,7 @@ const struct pci_ecam_ops al_pcie_ops = {
 	}
 };
 
-#endif /* defined(CONFIG_ACPI) && defined(CONFIG_PCI_QUIRKS) */
+#endif  
 
 #ifdef CONFIG_PCIE_AL
 
@@ -129,7 +119,7 @@ struct al_pcie_target_bus_cfg {
 
 struct al_pcie {
 	struct dw_pcie *pci;
-	void __iomem *controller_base; /* base of PCIe unit (not DW core) */
+	void __iomem *controller_base;  
 	struct device *dev;
 	resource_size_t ecam_size;
 	unsigned int controller_rev_id;
@@ -262,9 +252,9 @@ static void al_pcie_config_prepare(struct al_pcie *pcie)
 		ecam_bus_mask = 255;
 	}
 
-	/* This portion is taken from the transaction address */
+	 
 	target_bus_cfg->ecam_mask = ecam_bus_mask;
-	/* This portion is taken from the cfg_target_bus reg */
+	 
 	target_bus_cfg->reg_mask = ~target_bus_cfg->ecam_mask;
 	target_bus_cfg->reg_val = bus->start & target_bus_cfg->reg_mask;
 
@@ -274,7 +264,7 @@ static void al_pcie_config_prepare(struct al_pcie *pcie)
 	secondary_bus = bus->start + 1;
 	subordinate_bus = bus->end;
 
-	/* Set the valid values of secondary and subordinate buses */
+	 
 	cfg_control_offset = AXI_BASE_OFFSET + pcie->reg_offsets.ob_ctrl +
 			     CFG_CONTROL;
 
@@ -377,4 +367,4 @@ static struct platform_driver al_pcie_driver = {
 };
 builtin_platform_driver(al_pcie_driver);
 
-#endif /* CONFIG_PCIE_AL*/
+#endif  

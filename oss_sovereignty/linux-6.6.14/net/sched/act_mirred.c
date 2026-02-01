@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/act_mirred.c	packet mirroring and redirect actions
- *
- * Authors:	Jamal Hadi Salim (2002-4)
- *
- * TODO: Add ingress support (and socket redirect support)
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/kernel.h>
@@ -78,7 +72,7 @@ static void tcf_mirred_release(struct tc_action *a)
 	list_del(&m->tcfm_list);
 	spin_unlock(&mirred_list_lock);
 
-	/* last reference to action, no need to lock */
+	 
 	dev = rcu_dereference_protected(m->tcfm_dev, 1);
 	netdev_put(dev, &m->tcfm_dev_tracker);
 }
@@ -270,10 +264,7 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
 		goto out;
 	}
 
-	/* we could easily avoid the clone only if called by ingress and clsact;
-	 * since we can't easily detect the clsact caller, skip clone only for
-	 * ingress - that covers the TC S/W datapath.
-	 */
+	 
 	is_redirect = tcf_mirred_is_act_redirect(m_eaction);
 	at_ingress = skb_at_tc_ingress(skb);
 	use_reinsert = at_ingress && is_redirect &&
@@ -286,9 +277,9 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
 
 	want_ingress = tcf_mirred_act_wants_ingress(m_eaction);
 
-	/* All mirred/redirected skbs should clear previous ct info */
+	 
 	nf_reset_ct(skb2);
-	if (want_ingress && !at_ingress) /* drop dst for egress -> ingress */
+	if (want_ingress && !at_ingress)  
 		skb_dst_drop(skb2);
 
 	expects_nh = want_ingress || !m_mac_header_xmit;
@@ -297,10 +288,10 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
 		mac_len = skb_at_tc_ingress(skb) ? skb->mac_len :
 			  skb_network_offset(skb);
 		if (expects_nh) {
-			/* target device/action expect data at nh */
+			 
 			skb_pull_rcsum(skb2, mac_len);
 		} else {
-			/* target device/action expect data at mac */
+			 
 			skb_push_rcsum(skb2, mac_len);
 		}
 	}
@@ -308,11 +299,11 @@ TC_INDIRECT_SCOPE int tcf_mirred_act(struct sk_buff *skb,
 	skb2->skb_iif = skb->dev->ifindex;
 	skb2->dev = dev;
 
-	/* mirror is always swallowed */
+	 
 	if (is_redirect) {
 		skb_set_redirected(skb2, skb2->tc_at_ingress);
 
-		/* let's the caller reinsert the packet, if possible */
+		 
 		if (use_reinsert) {
 			err = tcf_mirred_forward(want_ingress, skb);
 			if (err)
@@ -393,9 +384,7 @@ static int mirred_device_event(struct notifier_block *unused,
 			spin_lock_bh(&m->tcf_lock);
 			if (tcf_mirred_dev_dereference(m) == dev) {
 				netdev_put(dev, &m->tcfm_dev_tracker);
-				/* Note : no rcu grace period necessary, as
-				 * net_device are already rcu protected.
-				 */
+				 
 				RCU_INIT_POINTER(m->tcfm_dev, NULL);
 			}
 			spin_unlock_bh(&m->tcf_lock);

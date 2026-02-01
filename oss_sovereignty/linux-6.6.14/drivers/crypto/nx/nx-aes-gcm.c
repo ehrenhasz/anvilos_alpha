@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AES GCM routines supporting the Power 7+ Nest Accelerators driver
- *
- * Copyright (C) 2012 International Business Machines Inc.
- *
- * Author: Kent Yoder <yoder1@us.ibm.com>
- */
+
+ 
 
 #include <crypto/internal/aead.h>
 #include <crypto/aes.h>
@@ -118,17 +112,14 @@ static int nx_gca(struct nx_crypto_ctx  *nx_ctx,
 
 	NX_CPB_FDM(csbcpb_aead) &= ~NX_FDM_CONTINUATION;
 
-	/* page_limit: number of sg entries that fit on one page */
+	 
 	max_sg_len = min_t(u64, nx_driver.of.max_sg_len/sizeof(struct nx_sg),
 			   nx_ctx->ap->sglen);
 	max_sg_len = min_t(u64, max_sg_len,
 			   nx_ctx->ap->databytelen/NX_PAGE_SIZE);
 
 	do {
-		/*
-		 * to_process: the data chunk to process in this update.
-		 * This value is bound by sg list limits.
-		 */
+		 
 		to_process = min_t(u64, nbytes - processed,
 				   nx_ctx->ap->databytelen);
 		to_process = min_t(u64, to_process,
@@ -177,25 +168,22 @@ static int gmac(struct aead_request *req, const u8 *iv, unsigned int assoclen)
 	unsigned int processed = 0, to_process;
 	unsigned int max_sg_len;
 
-	/* Set GMAC mode */
+	 
 	csbcpb->cpb.hdr.mode = NX_MODE_AES_GMAC;
 
 	NX_CPB_FDM(csbcpb) &= ~NX_FDM_CONTINUATION;
 
-	/* page_limit: number of sg entries that fit on one page */
+	 
 	max_sg_len = min_t(u64, nx_driver.of.max_sg_len/sizeof(struct nx_sg),
 			   nx_ctx->ap->sglen);
 	max_sg_len = min_t(u64, max_sg_len,
 			   nx_ctx->ap->databytelen/NX_PAGE_SIZE);
 
-	/* Copy IV */
+	 
 	memcpy(csbcpb->cpb.aes_gcm.iv_or_cnt, iv, AES_BLOCK_SIZE);
 
 	do {
-		/*
-		 * to_process: the data chunk to process in this update.
-		 * This value is bound by sg list limits.
-		 */
+		 
 		to_process = min_t(u64, nbytes - processed,
 				   nx_ctx->ap->databytelen);
 		to_process = min_t(u64, to_process,
@@ -234,7 +222,7 @@ static int gmac(struct aead_request *req, const u8 *iv, unsigned int assoclen)
 	} while (processed < nbytes);
 
 out:
-	/* Restore GCM mode */
+	 
 	csbcpb->cpb.hdr.mode = NX_MODE_AES_GCM;
 	return rc;
 }
@@ -249,12 +237,9 @@ static int gcm_empty(struct aead_request *req, const u8 *iv, int enc)
 	struct nx_sg *in_sg, *out_sg;
 	int len;
 
-	/* For scenarios where the input message is zero length, AES CTR mode
-	 * may be used. Set the source data to be a single block (16B) of all
-	 * zeros, and set the input IV value to be the same as the GMAC IV
-	 * value. - nx_wb 4.8.1.3 */
+	 
 
-	/* Change to ECB mode */
+	 
 	csbcpb->cpb.hdr.mode = NX_MODE_AES_ECB;
 	memcpy(csbcpb->cpb.aes_ecb.key, csbcpb->cpb.aes_gcm.key,
 			sizeof(csbcpb->cpb.aes_ecb.key));
@@ -265,7 +250,7 @@ static int gcm_empty(struct aead_request *req, const u8 *iv, int enc)
 
 	len = AES_BLOCK_SIZE;
 
-	/* Encrypt the counter/IV */
+	 
 	in_sg = nx_build_sg_list(nx_ctx->in_sg, (u8 *) iv,
 				 &len, nx_ctx->ap->sglen);
 
@@ -288,17 +273,14 @@ static int gcm_empty(struct aead_request *req, const u8 *iv, int enc)
 		goto out;
 	atomic_inc(&(nx_ctx->stats->aes_ops));
 
-	/* Copy out the auth tag */
+	 
 	memcpy(csbcpb->cpb.aes_gcm.out_pat_or_mac, out,
 			crypto_aead_authsize(crypto_aead_reqtfm(req)));
 out:
-	/* Restore XCBC mode */
+	 
 	csbcpb->cpb.hdr.mode = NX_MODE_AES_GCM;
 
-	/*
-	 * ECB key uses the same region that GCM AAD and counter, so it's safe
-	 * to just fill it with zeroes.
-	 */
+	 
 	memset(csbcpb->cpb.aes_ecb.key, 0, sizeof(csbcpb->cpb.aes_ecb.key));
 
 	return rc;
@@ -318,7 +300,7 @@ static int gcm_aes_nx_crypt(struct aead_request *req, int enc,
 
 	spin_lock_irqsave(&nx_ctx->lock, irq_flags);
 
-	/* initialize the counter */
+	 
 	*(u32 *)&rctx->iv[NX_GCM_CTR_OFFSET] = 1;
 
 	if (nbytes == 0) {
@@ -332,7 +314,7 @@ static int gcm_aes_nx_crypt(struct aead_request *req, int enc,
 			goto mac;
 	}
 
-	/* Process associated data */
+	 
 	csbcpb->cpb.aes_gcm.bit_length_aad = assoclen * 8;
 	if (assoclen) {
 		rc = nx_gca(nx_ctx, req, csbcpb->cpb.aes_gcm.in_pat_or_aad,
@@ -341,7 +323,7 @@ static int gcm_aes_nx_crypt(struct aead_request *req, int enc,
 			goto out;
 	}
 
-	/* Set flags for encryption */
+	 
 	NX_CPB_FDM(csbcpb) &= ~NX_FDM_CONTINUATION;
 	if (enc) {
 		NX_CPB_FDM(csbcpb) |= NX_FDM_ENDE_ENCRYPT;
@@ -390,7 +372,7 @@ static int gcm_aes_nx_crypt(struct aead_request *req, int enc,
 
 mac:
 	if (enc) {
-		/* copy out the auth tag */
+		 
 		scatterwalk_map_and_copy(
 			csbcpb->cpb.aes_gcm.out_pat_or_mac,
 			req->dst, req->assoclen + nbytes,

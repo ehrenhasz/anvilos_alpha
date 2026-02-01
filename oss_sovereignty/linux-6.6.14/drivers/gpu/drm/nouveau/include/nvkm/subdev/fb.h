@@ -1,11 +1,11 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_FB_H__
 #define __NVKM_FB_H__
 #include <core/subdev.h>
 #include <core/falcon.h>
 #include <core/mm.h>
 
-/* memory type/access flags, do not match hardware values */
+ 
 #define NV_MEM_ACCESS_RO  1
 #define NV_MEM_ACCESS_WO  2
 #define NV_MEM_ACCESS_RW (NV_MEM_ACCESS_RO | NV_MEM_ACCESS_WO)
@@ -44,7 +44,7 @@ struct nvkm_fb {
 	struct nvkm_ram *ram;
 
 	struct {
-		struct mutex mutex; /* protects mm and nvkm_memory::tags */
+		struct mutex mutex;  
 		struct nvkm_mm mm;
 	} tags;
 

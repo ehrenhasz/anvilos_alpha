@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * V4L2 Capture CSI Subdev for Freescale i.MX5/6 SOC
- *
- * Copyright (c) 2014-2017 Mentor Graphics Inc.
- * Copyright (C) 2017 Pengutronix, Philipp Zabel <kernel@pengutronix.de>
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/gcd.h>
 #include <linux/interrupt.h>
@@ -23,30 +18,16 @@
 #include <media/imx.h>
 #include "imx-media.h"
 
-/*
- * Min/Max supported width and heights.
- *
- * We allow planar output, so we have to align width by 16 pixels
- * to meet IDMAC alignment requirements.
- *
- * TODO: move this into pad format negotiation, if capture device
- * has not requested planar formats, we should allow 8 pixel
- * alignment.
- */
+ 
 #define MIN_W       32
 #define MIN_H       32
 #define MAX_W      4096
 #define MAX_H      4096
-#define W_ALIGN    1 /* multiple of 2 pixels */
-#define H_ALIGN    1 /* multiple of 2 lines */
-#define S_ALIGN    1 /* multiple of 2 */
+#define W_ALIGN    1  
+#define H_ALIGN    1  
+#define S_ALIGN    1  
 
-/*
- * struct csi_skip_desc - CSI frame skipping descriptor
- * @keep - number of frames kept per max_ratio frames
- * @max_ratio - width of skip_smfc, written to MAX_RATIO bitfield
- * @skip_smfc - skip pattern written to the SKIP_SMFC bitfield
- */
+ 
 struct csi_skip_desc {
 	u8 keep;
 	u8 max_ratio;
@@ -60,13 +41,13 @@ struct csi_priv {
 	struct media_pad pad[CSI_NUM_PADS];
 	struct v4l2_async_notifier notifier;
 
-	/* the video device at IDMAC output pad */
+	 
 	struct imx_media_video_dev *vdev;
 	struct imx_media_fim *fim;
 	int csi_id;
 	int smfc_id;
 
-	/* lock to protect all members below */
+	 
 	struct mutex lock;
 
 	int active_output_pad;
@@ -82,36 +63,36 @@ struct csi_priv {
 	struct v4l2_rect compose;
 	const struct csi_skip_desc *skip;
 
-	/* active vb2 buffers to send to video dev sink */
+	 
 	struct imx_media_buffer *active_vb2_buf[2];
 	struct imx_media_dma_buf underrun_buf;
 
-	int ipu_buf_num;  /* ipu double buffer index: 0-1 */
+	int ipu_buf_num;   
 
-	/* the sink for the captured frames */
+	 
 	struct media_entity *sink;
 	enum ipu_csi_dest dest;
-	/* the source subdev */
+	 
 	struct v4l2_subdev *src_sd;
 
-	/* the mipi virtual channel number at link validate */
+	 
 	int vc_num;
 
-	/* media bus config of the upstream subdevice CSI is receiving from */
+	 
 	struct v4l2_mbus_config mbus_cfg;
 
-	spinlock_t irqlock; /* protect eof_irq handler */
+	spinlock_t irqlock;  
 	struct timer_list eof_timeout_timer;
 	int eof_irq;
 	int nfb4eof_irq;
 
 	struct v4l2_ctrl_handler ctrl_hdlr;
 
-	int stream_count; /* streaming counter */
-	u32 frame_sequence; /* frame sequence counter */
-	bool last_eof;   /* waiting for last EOF at stream off */
-	bool nfb4eof;    /* NFB4EOF encountered during streaming */
-	bool interweave_swap; /* swap top/bottom lines when interweaving */
+	int stream_count;  
+	u32 frame_sequence;  
+	bool last_eof;    
+	bool nfb4eof;     
+	bool interweave_swap;  
 	struct completion last_eof_comp;
 };
 
@@ -135,21 +116,12 @@ static inline bool is_parallel_16bit_bus(struct v4l2_mbus_config *mbus_cfg)
 	return is_parallel_bus(mbus_cfg) && mbus_cfg->bus.parallel.bus_width >= 16;
 }
 
-/*
- * Check for conditions that require the IPU to handle the
- * data internally as generic data, aka passthrough mode:
- * - raw bayer media bus formats, or
- * - BT.656 and BT.1120 (8/10-bit YUV422) data can always be processed
- *   on-the-fly
- * - the CSI is receiving from a 16-bit parallel bus, or
- * - the CSI is receiving from an 8-bit parallel bus and the incoming
- *   media bus format is other than UYVY8_2X8/YUYV8_2X8.
- */
+ 
 static inline bool requires_passthrough(struct v4l2_mbus_config *mbus_cfg,
 					struct v4l2_mbus_framefmt *infmt,
 					const struct imx_media_pixfmt *incc)
 {
-	if (mbus_cfg->type == V4L2_MBUS_BT656) // including BT.1120
+	if (mbus_cfg->type == V4L2_MBUS_BT656) 
 		return false;
 
 	return incc->bayer || is_parallel_16bit_bus(mbus_cfg) ||
@@ -158,12 +130,7 @@ static inline bool requires_passthrough(struct v4l2_mbus_config *mbus_cfg,
 		 infmt->code != MEDIA_BUS_FMT_YUYV8_2X8);
 }
 
-/*
- * Queries the media bus config of the upstream entity that provides data to
- * the CSI. This will either be the entity directly upstream from the CSI-2
- * receiver, directly upstream from a video mux, or directly upstream from
- * the CSI itself.
- */
+ 
 static int csi_get_upstream_mbus_config(struct csi_priv *priv,
 					struct v4l2_mbus_config *mbus_cfg)
 {
@@ -178,11 +145,7 @@ static int csi_get_upstream_mbus_config(struct csi_priv *priv,
 
 	switch (sd->grp_id) {
 	case IMX_MEDIA_GRP_ID_CSI_MUX:
-		/*
-		 * CSI is connected directly to CSI mux, skip up to
-		 * CSI-2 receiver if it is in the path, otherwise stay
-		 * with the CSI mux.
-		 */
+		 
 		sd = imx_media_pipeline_subdev(&sd->entity,
 					       IMX_MEDIA_GRP_ID_CSI2,
 					       true);
@@ -192,15 +155,12 @@ static int csi_get_upstream_mbus_config(struct csi_priv *priv,
 	case IMX_MEDIA_GRP_ID_CSI2:
 		break;
 	default:
-		/*
-		 * the source is neither the CSI mux nor the CSI-2 receiver,
-		 * get the source pad directly upstream from CSI itself.
-		 */
+		 
 		sd = &priv->sd;
 		break;
 	}
 
-	/* get source pad of entity directly upstream from sd */
+	 
 	remote_pad = media_entity_remote_pad_unique(&sd->entity,
 						    MEDIA_PAD_FL_SOURCE);
 	if (IS_ERR(remote_pad))
@@ -280,7 +240,7 @@ static void csi_vb2_buf_done(struct csi_priv *priv)
 	priv->frame_sequence++;
 	priv->nfb4eof = false;
 
-	/* get next queued buffer */
+	 
 	next = imx_media_capture_device_next_buf(vdev);
 	if (next) {
 		phys = vb2_dma_contig_plane_dma_addr(&next->vbuf.vb2_buf, 0);
@@ -312,17 +272,17 @@ static irqreturn_t csi_idmac_eof_interrupt(int irq, void *dev_id)
 	}
 
 	if (priv->fim)
-		/* call frame interval monitor */
+		 
 		imx_media_fim_eof_monitor(priv->fim, ktime_get());
 
 	csi_vb2_buf_done(priv);
 
-	/* select new IPU buf */
+	 
 	ipu_idmac_select_buffer(priv->idmac_ch, priv->ipu_buf_num);
-	/* toggle IPU double-buffer index */
+	 
 	priv->ipu_buf_num ^= 1;
 
-	/* bump the EOF timeout timer */
+	 
 	mod_timer(&priv->eof_timeout_timer,
 		  jiffies + msecs_to_jiffies(IMX_MEDIA_EOF_TIMEOUT));
 
@@ -337,10 +297,7 @@ static irqreturn_t csi_idmac_nfb4eof_interrupt(int irq, void *dev_id)
 
 	spin_lock(&priv->irqlock);
 
-	/*
-	 * this is not an unrecoverable error, just mark
-	 * the next captured frame with vb2 error flag.
-	 */
+	 
 	priv->nfb4eof = true;
 
 	v4l2_err(&priv->sd, "NFB4EOF\n");
@@ -350,10 +307,7 @@ static irqreturn_t csi_idmac_nfb4eof_interrupt(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * EOF timeout timer function. This is an unrecoverable condition
- * without a stream restart.
- */
+ 
 static void csi_idmac_eof_timeout(struct timer_list *t)
 {
 	struct csi_priv *priv = from_timer(priv, t, eof_timeout_timer);
@@ -361,7 +315,7 @@ static void csi_idmac_eof_timeout(struct timer_list *t)
 
 	v4l2_err(&priv->sd, "EOF timeout\n");
 
-	/* signal a fatal error to capture device */
+	 
 	imx_media_capture_device_error(vdev);
 }
 
@@ -390,7 +344,7 @@ static void csi_idmac_unsetup_vb2_buf(struct csi_priv *priv,
 	struct imx_media_buffer *buf;
 	int i;
 
-	/* return any remaining active frames with return_status */
+	 
 	for (i = 0; i < 2; i++) {
 		buf = priv->active_vb2_buf[i];
 		if (buf) {
@@ -402,7 +356,7 @@ static void csi_idmac_unsetup_vb2_buf(struct csi_priv *priv,
 	}
 }
 
-/* init the SMFC IDMAC channel */
+ 
 static int csi_idmac_setup_channel(struct csi_priv *priv)
 {
 	struct imx_media_video_dev *vdev = priv->vdev;
@@ -435,11 +389,7 @@ static int csi_idmac_setup_channel(struct csi_priv *priv)
 	passthrough = requires_passthrough(&priv->mbus_cfg, infmt, incc);
 	passthrough_cycles = 1;
 
-	/*
-	 * If the field type at capture interface is interlaced, and
-	 * the output IDMAC pad is sequential, enable interweave at
-	 * the IDMAC output channel.
-	 */
+	 
 	interweave = V4L2_FIELD_IS_INTERLACED(image.pix.field) &&
 		V4L2_FIELD_IS_SEQUENTIAL(outfmt->field);
 	priv->interweave_swap = interweave &&
@@ -470,10 +420,7 @@ static int csi_idmac_setup_channel(struct csi_priv *priv)
 			     ((image.pix.width & 0x1f) ?
 			      ((image.pix.width & 0xf) ? 8 : 16) : 32) : 64;
 		passthrough_bits = 16;
-		/*
-		 * Skip writing U and V components to odd rows (but not
-		 * when enabling IDMAC interweaving, they are incompatible).
-		 */
+		 
 		if (!interweave)
 			ipu_cpmem_skip_odd_chroma_rows(priv->idmac_ch);
 		break;
@@ -490,7 +437,7 @@ static int csi_idmac_setup_channel(struct csi_priv *priv)
 			passthrough_cycles = incc->cycles;
 			break;
 		}
-		fallthrough;	/* non-passthrough RGB565 (CSI-2 bus) */
+		fallthrough;	 
 	default:
 		burst_size = (image.pix.width & 0xf) ? 8 : 16;
 		passthrough_bits = 16;
@@ -499,7 +446,7 @@ static int csi_idmac_setup_channel(struct csi_priv *priv)
 
 	if (passthrough) {
 		if (priv->interweave_swap) {
-			/* start interweave scan at 1st top line (2nd line) */
+			 
 			image.phys0 += image.pix.bytesperline;
 			image.phys1 += image.pix.bytesperline;
 		}
@@ -514,7 +461,7 @@ static int csi_idmac_setup_channel(struct csi_priv *priv)
 						 passthrough_bits);
 	} else {
 		if (priv->interweave_swap) {
-			/* start interweave scan at 1st top line (2nd line) */
+			 
 			image.rect.top = 1;
 		}
 
@@ -525,18 +472,7 @@ static int csi_idmac_setup_channel(struct csi_priv *priv)
 
 	ipu_cpmem_set_burstsize(priv->idmac_ch, burst_size);
 
-	/*
-	 * Set the channel for the direct CSI-->memory via SMFC
-	 * use-case to very high priority, by enabling the watermark
-	 * signal in the SMFC, enabling WM in the channel, and setting
-	 * the channel priority to high.
-	 *
-	 * Refer to the i.mx6 rev. D TRM Table 36-8: Calculated priority
-	 * value.
-	 *
-	 * The WM's are set very low by intention here to ensure that
-	 * the SMFC FIFOs do not overflow.
-	 */
+	 
 	ipu_smfc_set_watermark(priv->smfc, 0x02, 0x01);
 	ipu_cpmem_set_high_priority(priv->idmac_ch);
 	ipu_idmac_enable_watermark(priv->idmac_ch, true);
@@ -585,11 +521,11 @@ static int csi_idmac_setup(struct csi_priv *priv)
 
 	ipu_smfc_enable(priv->smfc);
 
-	/* set buffers ready */
+	 
 	ipu_idmac_select_buffer(priv->idmac_ch, 0);
 	ipu_idmac_select_buffer(priv->idmac_ch, 1);
 
-	/* enable the channels */
+	 
 	ipu_idmac_enable_channel(priv->idmac_ch);
 
 	return 0;
@@ -613,7 +549,7 @@ static int csi_idmac_start(struct csi_priv *priv)
 
 	priv->ipu_buf_num = 0;
 
-	/* init EOF completion waitq */
+	 
 	init_completion(&priv->last_eof_comp);
 	priv->frame_sequence = 0;
 	priv->last_eof = false;
@@ -649,7 +585,7 @@ static int csi_idmac_start(struct csi_priv *priv)
 		goto out_free_nfb4eof_irq;
 	}
 
-	/* start the EOF timeout timer */
+	 
 	mod_timer(&priv->eof_timeout_timer,
 		  jiffies + msecs_to_jiffies(IMX_MEDIA_EOF_TIMEOUT));
 
@@ -671,14 +607,12 @@ static void csi_idmac_wait_last_eof(struct csi_priv *priv)
 	unsigned long flags;
 	int ret;
 
-	/* mark next EOF interrupt as the last before stream off */
+	 
 	spin_lock_irqsave(&priv->irqlock, flags);
 	priv->last_eof = true;
 	spin_unlock_irqrestore(&priv->irqlock, flags);
 
-	/*
-	 * and then wait for interrupt handler to mark completion.
-	 */
+	 
 	ret = wait_for_completion_timeout(
 		&priv->last_eof_comp, msecs_to_jiffies(IMX_MEDIA_EOF_TIMEOUT));
 	if (ret == 0)
@@ -694,13 +628,13 @@ static void csi_idmac_stop(struct csi_priv *priv)
 
 	imx_media_free_dma_buf(priv->dev, &priv->underrun_buf);
 
-	/* cancel the EOF timeout timer */
+	 
 	del_timer_sync(&priv->eof_timeout_timer);
 
 	csi_idmac_put_ipu_resources(priv);
 }
 
-/* Update the CSI whole sensor and active windows */
+ 
 static int csi_setup(struct csi_priv *priv)
 {
 	struct v4l2_mbus_framefmt *infmt, *outfmt;
@@ -715,10 +649,7 @@ static int csi_setup(struct csi_priv *priv)
 	if_fmt = *infmt;
 	crop = priv->crop;
 
-	/*
-	 * if cycles is set, we need to handle this over multiple cycles as
-	 * generic/bayer data
-	 */
+	 
 	if (is_parallel_bus(&priv->mbus_cfg) && incc->cycles) {
 		if_fmt.width *= incc->cycles;
 		crop.width *= incc->cycles;
@@ -751,13 +682,13 @@ static int csi_start(struct csi_priv *priv)
 	input_fi = &priv->frame_interval[CSI_SINK_PAD];
 	output_fi = &priv->frame_interval[priv->active_output_pad];
 
-	/* start upstream */
+	 
 	ret = v4l2_subdev_call(priv->src_sd, video, s_stream, 1);
 	ret = (ret && ret != -ENOIOCTLCMD) ? ret : 0;
 	if (ret)
 		return ret;
 
-	/* Skip first few frames from a BT.656 source */
+	 
 	if (priv->mbus_cfg.type == V4L2_MBUS_BT656) {
 		u32 delay_usec, bad_frames = 20;
 
@@ -778,7 +709,7 @@ static int csi_start(struct csi_priv *priv)
 	if (ret)
 		goto idmac_stop;
 
-	/* start the frame interval monitor */
+	 
 	if (priv->fim && priv->dest == IPU_CSI_DEST_IDMAC)
 		imx_media_fim_set_stream(priv->fim, output_fi, true);
 
@@ -806,38 +737,34 @@ static void csi_stop(struct csi_priv *priv)
 	if (priv->dest == IPU_CSI_DEST_IDMAC)
 		csi_idmac_wait_last_eof(priv);
 
-	/*
-	 * Disable the CSI asap, after syncing with the last EOF.
-	 * Doing so after the IDMA channel is disabled has shown to
-	 * create hard system-wide hangs.
-	 */
+	 
 	ipu_csi_disable(priv->csi);
 
-	/* stop upstream */
+	 
 	v4l2_subdev_call(priv->src_sd, video, s_stream, 0);
 
 	if (priv->dest == IPU_CSI_DEST_IDMAC) {
 		csi_idmac_stop(priv);
 
-		/* stop the frame interval monitor */
+		 
 		if (priv->fim)
 			imx_media_fim_set_stream(priv->fim, NULL, false);
 	}
 }
 
 static const struct csi_skip_desc csi_skip[12] = {
-	{ 1, 1, 0x00 }, /* Keep all frames */
-	{ 5, 6, 0x10 }, /* Skip every sixth frame */
-	{ 4, 5, 0x08 }, /* Skip every fifth frame */
-	{ 3, 4, 0x04 }, /* Skip every fourth frame */
-	{ 2, 3, 0x02 }, /* Skip every third frame */
-	{ 3, 5, 0x0a }, /* Skip frames 1 and 3 of every 5 */
-	{ 1, 2, 0x01 }, /* Skip every second frame */
-	{ 2, 5, 0x0b }, /* Keep frames 1 and 4 of every 5 */
-	{ 1, 3, 0x03 }, /* Keep one in three frames */
-	{ 1, 4, 0x07 }, /* Keep one in four frames */
-	{ 1, 5, 0x0f }, /* Keep one in five frames */
-	{ 1, 6, 0x1f }, /* Keep one in six frames */
+	{ 1, 1, 0x00 },  
+	{ 5, 6, 0x10 },  
+	{ 4, 5, 0x08 },  
+	{ 3, 4, 0x04 },  
+	{ 2, 3, 0x02 },  
+	{ 3, 5, 0x0a },  
+	{ 1, 2, 0x01 },  
+	{ 2, 5, 0x0b },  
+	{ 1, 3, 0x03 },  
+	{ 1, 4, 0x07 },  
+	{ 1, 5, 0x0f },  
+	{ 1, 6, 0x1f },  
 };
 
 static void csi_apply_skip_interval(const struct csi_skip_desc *skip,
@@ -848,7 +775,7 @@ static void csi_apply_skip_interval(const struct csi_skip_desc *skip,
 	interval->numerator *= skip->max_ratio;
 	interval->denominator *= skip->keep;
 
-	/* Reduce fraction to lowest terms */
+	 
 	div = gcd(interval->numerator, interval->denominator);
 	if (div > 1) {
 		interval->numerator /= div;
@@ -856,11 +783,7 @@ static void csi_apply_skip_interval(const struct csi_skip_desc *skip,
 	}
 }
 
-/*
- * Find the skip pattern to produce the output frame interval closest to the
- * requested one, for the given input frame interval. Updates the output frame
- * interval to the exact value.
- */
+ 
 static const struct csi_skip_desc *csi_find_best_skip(struct v4l2_fract *in,
 						      struct v4l2_fract *out)
 {
@@ -869,7 +792,7 @@ static const struct csi_skip_desc *csi_find_best_skip(struct v4l2_fract *in,
 	u64 want_us;
 	int i;
 
-	/* Default to 1:1 ratio */
+	 
 	if (out->numerator == 0 || out->denominator == 0 ||
 	    in->numerator == 0 || in->denominator == 0) {
 		*out = *in;
@@ -878,7 +801,7 @@ static const struct csi_skip_desc *csi_find_best_skip(struct v4l2_fract *in,
 
 	want_us = div_u64((u64)USEC_PER_SEC * out->numerator, out->denominator);
 
-	/* Find the reduction closest to the requested time per frame */
+	 
 	for (i = 0; i < ARRAY_SIZE(csi_skip); i++, skip++) {
 		u64 tmp, err;
 
@@ -898,9 +821,7 @@ static const struct csi_skip_desc *csi_find_best_skip(struct v4l2_fract *in,
 	return best_skip;
 }
 
-/*
- * V4L2 subdev operations.
- */
+ 
 
 static int csi_g_frame_interval(struct v4l2_subdev *sd,
 				struct v4l2_subdev_frame_interval *fi)
@@ -932,27 +853,21 @@ static int csi_s_frame_interval(struct v4l2_subdev *sd,
 
 	switch (fi->pad) {
 	case CSI_SINK_PAD:
-		/* No limits on valid input frame intervals */
+		 
 		if (fi->interval.numerator == 0 ||
 		    fi->interval.denominator == 0)
 			fi->interval = *input_fi;
-		/* Reset output intervals and frame skipping ratio to 1:1 */
+		 
 		priv->frame_interval[CSI_SRC_PAD_IDMAC] = fi->interval;
 		priv->frame_interval[CSI_SRC_PAD_DIRECT] = fi->interval;
 		priv->skip = &csi_skip[0];
 		break;
 	case CSI_SRC_PAD_IDMAC:
-		/*
-		 * frame interval at IDMAC output pad depends on input
-		 * interval, modified by frame skipping.
-		 */
+		 
 		priv->skip = csi_find_best_skip(input_fi, &fi->interval);
 		break;
 	case CSI_SRC_PAD_DIRECT:
-		/*
-		 * frame interval at DIRECT output pad is same as input
-		 * interval.
-		 */
+		 
 		fi->interval = *input_fi;
 		break;
 	default:
@@ -978,10 +893,7 @@ static int csi_s_stream(struct v4l2_subdev *sd, int enable)
 		goto out;
 	}
 
-	/*
-	 * enable/disable streaming only if stream_count is
-	 * going from 0 to 1 / 1 to 0.
-	 */
+	 
 	if (priv->stream_count != !enable)
 		goto update_count;
 
@@ -1039,7 +951,7 @@ static int csi_link_setup(struct media_entity *entity,
 		goto out;
 	}
 
-	/* this is a source pad */
+	 
 
 	if (flags & MEDIA_LNK_FL_ENABLED) {
 		if (priv->sink) {
@@ -1050,15 +962,15 @@ static int csi_link_setup(struct media_entity *entity,
 		v4l2_ctrl_handler_free(&priv->ctrl_hdlr);
 		v4l2_ctrl_handler_init(&priv->ctrl_hdlr, 0);
 		priv->sink = NULL;
-		/* do not apply IC burst alignment in csi_try_crop */
+		 
 		priv->active_output_pad = CSI_SRC_PAD_IDMAC;
 		goto out;
 	}
 
-	/* record which output pad is now active */
+	 
 	priv->active_output_pad = local->index;
 
-	/* set CSI destination */
+	 
 	if (local->index == CSI_SRC_PAD_IDMAC) {
 		if (!is_media_entity_v4l2_video_device(remote->entity)) {
 			ret = -EINVAL;
@@ -1125,18 +1037,12 @@ static int csi_link_validate(struct v4l2_subdev *sd,
 	priv->mbus_cfg = mbus_cfg;
 	is_csi2 = !is_parallel_bus(&mbus_cfg);
 	if (is_csi2) {
-		/*
-		 * NOTE! It seems the virtual channels from the mipi csi-2
-		 * receiver are used only for routing by the video mux's,
-		 * or for hard-wired routing to the CSI's. Once the stream
-		 * enters the CSI's however, they are treated internally
-		 * in the IPU as virtual channel 0.
-		 */
+		 
 		ipu_csi_set_mipi_datatype(priv->csi, 0,
 					  &priv->format_mbus[CSI_SINK_PAD]);
 	}
 
-	/* select either parallel or MIPI-CSI2 as input to CSI */
+	 
 	ipu_set_csi_src_mux(priv->ipu, priv->csi_id, is_csi2);
 
 	mutex_unlock(&priv->lock);
@@ -1186,23 +1092,18 @@ static void csi_try_crop(struct csi_priv *priv,
 	crop->width = min_t(__u32, infmt->width, crop->width);
 	if (crop->left + crop->width > infmt->width)
 		crop->left = infmt->width - crop->width;
-	/* adjust crop left/width to h/w alignment restrictions */
+	 
 	crop->left &= ~0x3;
 	if (priv->active_output_pad == CSI_SRC_PAD_DIRECT)
-		crop->width &= ~0x7; /* multiple of 8 pixels (IC burst) */
+		crop->width &= ~0x7;  
 	else
-		crop->width &= ~0x1; /* multiple of 2 pixels */
+		crop->width &= ~0x1;  
 
 	in_height = infmt->height;
 	if (infmt->field == V4L2_FIELD_ALTERNATE)
 		in_height *= 2;
 
-	/*
-	 * FIXME: not sure why yet, but on interlaced bt.656,
-	 * changing the vertical cropping causes loss of vertical
-	 * sync, so fix it to NTSC/PAL active lines. NTSC contains
-	 * 2 extra lines of active video that need to be cropped.
-	 */
+	 
 	if (mbus_cfg->type == V4L2_MBUS_BT656 &&
 	    (V4L2_FIELD_HAS_BOTH(infmt->field) ||
 	     infmt->field == V4L2_FIELD_ALTERNATE)) {
@@ -1371,10 +1272,7 @@ static void csi_try_field(struct csi_priv *priv,
 	struct v4l2_mbus_framefmt *infmt =
 		__csi_get_fmt(priv, sd_state, CSI_SINK_PAD, sdformat->which);
 
-	/*
-	 * no restrictions on sink pad field type except must
-	 * be initialized.
-	 */
+	 
 	if (sdformat->pad == CSI_SINK_PAD) {
 		if (sdformat->format.field == V4L2_FIELD_ANY)
 			sdformat->format.field = V4L2_FIELD_NONE;
@@ -1384,30 +1282,18 @@ static void csi_try_field(struct csi_priv *priv,
 	switch (infmt->field) {
 	case V4L2_FIELD_SEQ_TB:
 	case V4L2_FIELD_SEQ_BT:
-		/*
-		 * If the user requests sequential at the source pad,
-		 * allow it (along with possibly inverting field order).
-		 * Otherwise passthrough the field type.
-		 */
+		 
 		if (!V4L2_FIELD_IS_SEQUENTIAL(sdformat->format.field))
 			sdformat->format.field = infmt->field;
 		break;
 	case V4L2_FIELD_ALTERNATE:
-		/*
-		 * This driver does not support alternate field mode, and
-		 * the CSI captures a whole frame, so the CSI never presents
-		 * alternate mode at its source pads. If user has not
-		 * already requested sequential, translate ALTERNATE at
-		 * sink pad to SEQ_TB or SEQ_BT at the source pad depending
-		 * on input height (assume NTSC BT order if 480 total active
-		 * frame lines, otherwise PAL TB order).
-		 */
+		 
 		if (!V4L2_FIELD_IS_SEQUENTIAL(sdformat->format.field))
 			sdformat->format.field = (infmt->height == 480 / 2) ?
 				V4L2_FIELD_SEQ_BT : V4L2_FIELD_SEQ_TB;
 		break;
 	default:
-		/* Passthrough for all other input field types */
+		 
 		sdformat->format.field = infmt->field;
 		break;
 	}
@@ -1454,7 +1340,7 @@ static void csi_try_fmt(struct csi_priv *priv,
 
 		csi_try_field(priv, sd_state, sdformat);
 
-		/* propagate colorimetry from sink */
+		 
 		sdformat->format.colorspace = infmt->colorspace;
 		sdformat->format.xfer_func = infmt->xfer_func;
 		sdformat->format.quantization = infmt->quantization;
@@ -1478,7 +1364,7 @@ static void csi_try_fmt(struct csi_priv *priv,
 
 		csi_try_field(priv, sd_state, sdformat);
 
-		/* Reset crop and compose rectangles */
+		 
 		crop->left = 0;
 		crop->top = 0;
 		crop->width = sdformat->format.width;
@@ -1537,7 +1423,7 @@ static int csi_set_fmt(struct v4l2_subdev *sd,
 	if (sdformat->pad == CSI_SINK_PAD) {
 		int pad;
 
-		/* propagate format to source pads */
+		 
 		for (pad = CSI_SINK_PAD + 1; pad < CSI_NUM_PADS; pad++) {
 			const struct imx_media_pixfmt *outcc;
 			struct v4l2_mbus_framefmt *outfmt;
@@ -1663,11 +1549,7 @@ static int csi_set_selection(struct v4l2_subdev *sd,
 
 	switch (sel->target) {
 	case V4L2_SEL_TGT_CROP:
-		/*
-		 * Modifying the crop rectangle always changes the format on
-		 * the source pads. If the KEEP_CONFIG flag is set, just return
-		 * the current crop rectangle.
-		 */
+		 
 		if (sel->flags & V4L2_SEL_FLAG_KEEP_CONFIG) {
 			sel->r = priv->crop;
 			if (sel->which == V4L2_SUBDEV_FORMAT_TRY)
@@ -1679,16 +1561,12 @@ static int csi_set_selection(struct v4l2_subdev *sd,
 
 		*crop = sel->r;
 
-		/* Reset scaling to 1:1 */
+		 
 		compose->width = crop->width;
 		compose->height = crop->height;
 		break;
 	case V4L2_SEL_TGT_COMPOSE:
-		/*
-		 * Modifying the compose rectangle always changes the format on
-		 * the source pads. If the KEEP_CONFIG flag is set, just return
-		 * the current compose rectangle.
-		 */
+		 
 		if (sel->flags & V4L2_SEL_FLAG_KEEP_CONFIG) {
 			sel->r = priv->compose;
 			if (sel->which == V4L2_SUBDEV_FORMAT_TRY)
@@ -1712,7 +1590,7 @@ static int csi_set_selection(struct v4l2_subdev *sd,
 		goto out;
 	}
 
-	/* Reset source pads to sink compose rectangle */
+	 
 	for (pad = CSI_SINK_PAD + 1; pad < CSI_NUM_PADS; pad++) {
 		struct v4l2_mbus_framefmt *outfmt;
 
@@ -1750,7 +1628,7 @@ static int csi_registered(struct v4l2_subdev *sd)
 	int i, ret;
 	u32 code;
 
-	/* get handle to IPU CSI */
+	 
 	csi = ipu_csi_get(priv->ipu, priv->csi_id);
 	if (IS_ERR(csi)) {
 		v4l2_err(&priv->sd, "failed to get CSI%d\n", priv->csi_id);
@@ -1763,7 +1641,7 @@ static int csi_registered(struct v4l2_subdev *sd)
 		if (i != CSI_SINK_PAD)
 			imx_media_enum_ipu_formats(&code, 0, PIXFMT_SEL_YUV);
 
-		/* set a default mbus format  */
+		 
 		ret = imx_media_init_mbus_fmt(&priv->format_mbus[i],
 					      IMX_MEDIA_DEF_PIX_WIDTH,
 					      IMX_MEDIA_DEF_PIX_HEIGHT, code,
@@ -1771,15 +1649,15 @@ static int csi_registered(struct v4l2_subdev *sd)
 		if (ret)
 			goto put_csi;
 
-		/* init default frame interval */
+		 
 		priv->frame_interval[i].numerator = 1;
 		priv->frame_interval[i].denominator = 30;
 	}
 
-	/* disable frame skipping */
+	 
 	priv->skip = &csi_skip[0];
 
-	/* init default crop and compose rectangle sizes */
+	 
 	priv->crop.width = IMX_MEDIA_DEF_PIX_WIDTH;
 	priv->crop.height = IMX_MEDIA_DEF_PIX_HEIGHT;
 	priv->compose.width = IMX_MEDIA_DEF_PIX_WIDTH;
@@ -1828,10 +1706,7 @@ static void csi_unregistered(struct v4l2_subdev *sd)
 		ipu_csi_put(priv->csi);
 }
 
-/*
- * The CSI has only one fwnode endpoint, at the sink pad. Verify the
- * endpoint belongs to us, and return CSI_SINK_PAD.
- */
+ 
 static int csi_get_fwnode_pad(struct media_entity *entity,
 			      struct fwnode_endpoint *endpoint)
 {
@@ -1897,10 +1772,7 @@ static int imx_csi_notify_bound(struct v4l2_async_notifier *notifier,
 	struct csi_priv *priv = notifier_to_dev(notifier);
 	struct media_pad *sink = &priv->sd.entity.pads[CSI_SINK_PAD];
 
-	/*
-	 * If the subdev is a video mux, it must be one of the CSI
-	 * muxes. Mark it as such via its group id.
-	 */
+	 
 	if (sd->entity.function == MEDIA_ENT_F_VID_MUX)
 		sd->grp_id = IMX_MEDIA_GRP_ID_CSI_MUX;
 
@@ -1920,7 +1792,7 @@ static int imx_csi_async_register(struct csi_priv *priv)
 
 	v4l2_async_subdev_nf_init(&priv->notifier, &priv->sd);
 
-	/* get this CSI's port id */
+	 
 	ret = fwnode_property_read_u32(dev_fwnode(priv->dev), "reg", &port);
 	if (ret < 0)
 		return ret;
@@ -1936,7 +1808,7 @@ static int imx_csi_async_register(struct csi_priv *priv)
 
 		if (IS_ERR(asd)) {
 			ret = PTR_ERR(asd);
-			/* OK if asd already exists */
+			 
 			if (ret != -EEXIST)
 				return ret;
 		}
@@ -1969,10 +1841,10 @@ static int imx_csi_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* get parent IPU */
+	 
 	priv->ipu = dev_get_drvdata(priv->dev->parent);
 
-	/* get our CSI id */
+	 
 	pdata = priv->dev->platform_data;
 	priv->csi_id = pdata->csi;
 	priv->smfc_id = (priv->csi_id == 0) ? 0 : 2;
@@ -2010,12 +1882,7 @@ static int imx_csi_probe(struct platform_device *pdev)
 	v4l2_ctrl_handler_init(&priv->ctrl_hdlr, 0);
 	priv->sd.ctrl_handler = &priv->ctrl_hdlr;
 
-	/*
-	 * The IPUv3 driver did not assign an of_node to this
-	 * device. As a result, pinctrl does not automatically
-	 * configure our pin groups, so we need to do that manually
-	 * here, after setting this device's of_node.
-	 */
+	 
 	priv->dev->of_node = pdata->of_node;
 	pinctrl = devm_pinctrl_get_select_default(priv->dev);
 	if (IS_ERR(pinctrl)) {

@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *	Generic address resolution entity
- *
- *	Authors:
- *	Pedro Roque		<roque@di.fc.ul.pt>
- *	Alexey Kuznetsov	<kuznet@ms2.inr.ac.ru>
- *
- *	Fixes:
- *	Vitaly E. Lavrov	releasing NULL neighbor in neigh_add.
- *	Harald Welte		Add neighbour cache statistics like rtstat
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -61,33 +51,7 @@ static int pneigh_ifdown_and_unlock(struct neigh_table *tbl,
 static const struct seq_operations neigh_stat_seq_ops;
 #endif
 
-/*
-   Neighbour hash table buckets are protected with rwlock tbl->lock.
-
-   - All the scans/updates to hash buckets MUST be made under this lock.
-   - NOTHING clever should be made under this lock: no callbacks
-     to protocol backends, no attempts to send something to network.
-     It will result in deadlocks, if backend/driver wants to use neighbour
-     cache.
-   - If the entry requires some non-trivial actions, increase
-     its reference count and release table lock.
-
-   Neighbour entries are protected:
-   - with reference count.
-   - with rwlock neigh->lock
-
-   Reference count prevents destruction.
-
-   neigh->lock mainly serializes ll address data and its validity state.
-   However, the same lock is used to protect another entry fields:
-    - timer
-    - resolution queue
-
-   Again, nothing clever shall be made under neigh->lock,
-   the most complicated procedure, which we allow is dev->hard_header.
-   It is supposed, that dev->hard_header is simplistic and does
-   not make callbacks to neighbour tables.
- */
+ 
 
 static int neigh_blackhole(struct neighbour *neigh, struct sk_buff *skb)
 {
@@ -103,11 +67,7 @@ static void neigh_cleanup_and_release(struct neighbour *neigh)
 	neigh_release(neigh);
 }
 
-/*
- * It is random distribution in the interval (1/2)*base...(3/2)*base.
- * It corresponds to default IPv6 settings and is not overridable,
- * because it is really reasonable choice.
- */
+ 
 
 unsigned long neigh_rand_reach_time(unsigned long base)
 {
@@ -135,9 +95,7 @@ static void neigh_update_gc_list(struct neighbour *n)
 	if (n->dead)
 		goto out;
 
-	/* remove from the gc list if new state is permanent or if neighbor
-	 * is externally learned; otherwise entry should be on the gc list
-	 */
+	 
 	exempt_from_gc = n->nud_state & NUD_PERMANENT ||
 			 n->flags & NTF_EXT_LEARNED;
 	on_gc_list = !list_empty(&n->gc_list);
@@ -146,7 +104,7 @@ static void neigh_update_gc_list(struct neighbour *n)
 		list_del_init(&n->gc_list);
 		atomic_dec(&n->tbl->gc_entries);
 	} else if (!exempt_from_gc && !on_gc_list) {
-		/* add entries to the tail; cleaning removes from the front */
+		 
 		list_add_tail(&n->gc_list, &n->tbl->gc_list);
 		atomic_inc(&n->tbl->gc_entries);
 	}
@@ -297,10 +255,7 @@ unlock:
 
 static void neigh_add_timer(struct neighbour *n, unsigned long when)
 {
-	/* Use safe distance from the jiffies - LONG_MAX point while timer
-	 * is running in DELAY/PROBE state but still show to user space
-	 * large times in the past.
-	 */
+	 
 	unsigned long mint = jiffies - (LONG_MAX - 86400 * HZ);
 
 	neigh_hold(n);
@@ -407,15 +362,7 @@ static void neigh_flush_dev(struct neigh_table *tbl, struct net_device *dev,
 			neigh_del_timer(n);
 			neigh_mark_dead(n);
 			if (refcount_read(&n->refcnt) != 1) {
-				/* The most unpleasant situation.
-				   We must destroy neighbour entry,
-				   but someone still uses it.
-
-				   The destroy will be delayed until
-				   the last user releases us, but
-				   we must kill timers etc. and move
-				   it to safe state.
-				 */
+				 
 				__skb_queue_purge(&n->arp_queue);
 				n->arp_queue_len_bytes = 0;
 				WRITE_ONCE(n->output, neigh_blackhole);
@@ -656,7 +603,7 @@ ___neigh_create(struct neigh_table *tbl, const void *pkey,
 	n->dev = dev;
 	netdev_hold(dev, &n->dev_tracker, GFP_ATOMIC);
 
-	/* Protocol specific setup. */
+	 
 	if (tbl->constructor &&	(error = tbl->constructor(n)) < 0) {
 		rc = ERR_PTR(error);
 		goto out_neigh_release;
@@ -670,7 +617,7 @@ ___neigh_create(struct neigh_table *tbl, const void *pkey,
 		}
 	}
 
-	/* Device specific setup. */
+	 
 	if (n->parms->neigh_setup &&
 	    (error = n->parms->neigh_setup(n)) < 0) {
 		rc = ERR_PTR(error);
@@ -882,10 +829,7 @@ static inline void neigh_parms_put(struct neigh_parms *parms)
 		neigh_parms_destroy(parms);
 }
 
-/*
- *	neighbour must already be out of the table;
- *
- */
+ 
 void neigh_destroy(struct neighbour *neigh)
 {
 	struct net_device *dev = neigh->dev;
@@ -919,11 +863,7 @@ void neigh_destroy(struct neighbour *neigh)
 }
 EXPORT_SYMBOL(neigh_destroy);
 
-/* Neighbour state is suspicious;
-   disable fast path.
-
-   Called with write_locked neigh.
- */
+ 
 static void neigh_suspect(struct neighbour *neigh)
 {
 	neigh_dbg(2, "neigh %p is suspected\n", neigh);
@@ -931,11 +871,7 @@ static void neigh_suspect(struct neighbour *neigh)
 	WRITE_ONCE(neigh->output, neigh->ops->output);
 }
 
-/* Neighbour state is OK;
-   enable fast path.
-
-   Called with write_locked neigh.
- */
+ 
 static void neigh_connect(struct neighbour *neigh)
 {
 	neigh_dbg(2, "neigh %p is connected\n", neigh);
@@ -957,9 +893,7 @@ static void neigh_periodic_work(struct work_struct *work)
 	nht = rcu_dereference_protected(tbl->nht,
 					lockdep_is_held(&tbl->lock));
 
-	/*
-	 *	periodically recompute ReachableTime from random function
-	 */
+	 
 
 	if (time_after(jiffies, tbl->last_rand + 300 * HZ)) {
 		struct neigh_parms *p;
@@ -1010,10 +944,7 @@ static void neigh_periodic_work(struct work_struct *work)
 next_elt:
 			np = &n->next;
 		}
-		/*
-		 * It's fine to release lock here, even if hash table
-		 * grows while we are preempted.
-		 */
+		 
 		write_unlock_bh(&tbl->lock);
 		cond_resched();
 		write_lock_bh(&tbl->lock);
@@ -1021,10 +952,7 @@ next_elt:
 						lockdep_is_held(&tbl->lock));
 	}
 out:
-	/* Cycle through all hash buckets every BASE_REACHABLE_TIME/2 ticks.
-	 * ARP entry timeouts range from 1/2 BASE_REACHABLE_TIME to 3/2
-	 * BASE_REACHABLE_TIME.
-	 */
+	 
 	queue_delayed_work(system_power_efficient_wq, &tbl->gc_work,
 			      NEIGH_VAR(&tbl->parms, BASE_REACHABLE_TIME) >> 1);
 	write_unlock_bh(&tbl->lock);
@@ -1048,11 +976,7 @@ static void neigh_invalidate(struct neighbour *neigh)
 	neigh_dbg(2, "neigh %p is failed\n", neigh);
 	neigh->updated = jiffies;
 
-	/* It is very thin place. report_unreachable is very complicated
-	   routine. Particularly, it can hit the same neighbour entry!
-
-	   So that, we try to be accurate and avoid dead loop. --ANK
-	 */
+	 
 	while (neigh->nud_state == NUD_FAILED &&
 	       (skb = __skb_dequeue(&neigh->arp_queue)) != NULL) {
 		write_unlock(&neigh->lock);
@@ -1067,7 +991,7 @@ static void neigh_probe(struct neighbour *neigh)
 	__releases(neigh->lock)
 {
 	struct sk_buff *skb = skb_peek_tail(&neigh->arp_queue);
-	/* keep skb alive even if arp_queue overflows */
+	 
 	if (skb)
 		skb = skb_clone(skb, GFP_ATOMIC);
 	write_unlock(&neigh->lock);
@@ -1077,7 +1001,7 @@ static void neigh_probe(struct neighbour *neigh)
 	consume_skb(skb);
 }
 
-/* Called when a timer expires for a neighbour entry. */
+ 
 
 static void neigh_timer_handler(struct timer_list *t)
 {
@@ -1135,7 +1059,7 @@ static void neigh_timer_handler(struct timer_list *t)
 					 HZ/100);
 		}
 	} else {
-		/* NUD_PROBE|NUD_INCOMPLETE */
+		 
 		next = now + max(NEIGH_VAR(neigh->parms, RETRANS_TIME), HZ/100);
 	}
 
@@ -1275,25 +1199,7 @@ static void neigh_update_hhs(struct neighbour *neigh)
 	}
 }
 
-/* Generic update routine.
-   -- lladdr is new lladdr or NULL, if it is not supplied.
-   -- new    is new state.
-   -- flags
-	NEIGH_UPDATE_F_OVERRIDE allows to override existing lladdr,
-				if it is different.
-	NEIGH_UPDATE_F_WEAK_OVERRIDE will suspect existing "connected"
-				lladdr instead of overriding it
-				if it is different.
-	NEIGH_UPDATE_F_ADMIN	means that the change is administrative.
-	NEIGH_UPDATE_F_USE	means that the entry is user triggered.
-	NEIGH_UPDATE_F_MANAGED	means that the entry will be auto-refreshed.
-	NEIGH_UPDATE_F_OVERRIDE_ISROUTER allows to override existing
-				NTF_ROUTER flag.
-	NEIGH_UPDATE_F_ISROUTER	indicates if the neighbour is known as
-				a router.
-
-   Caller MUST hold reference count on the entry.
- */
+ 
 static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
 			  u8 new, u32 flags, u32 nlmsg_pid,
 			  struct netlink_ext_ack *extack)
@@ -1344,23 +1250,17 @@ static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
 		goto out;
 	}
 
-	/* Compare new lladdr with cached one */
+	 
 	if (!dev->addr_len) {
-		/* First case: device needs no address. */
+		 
 		lladdr = neigh->ha;
 	} else if (lladdr) {
-		/* The second case: if something is already cached
-		   and a new address is proposed:
-		   - compare new & old
-		   - if they are different, check override flag
-		 */
+		 
 		if ((old & NUD_VALID) &&
 		    !memcmp(lladdr, neigh->ha, dev->addr_len))
 			lladdr = neigh->ha;
 	} else {
-		/* No address is supplied; if we know something,
-		   use it, otherwise discard the request.
-		 */
+		 
 		err = -EINVAL;
 		if (!(old & NUD_VALID)) {
 			NL_SET_ERR_MSG(extack, "No link layer address given");
@@ -1369,15 +1269,11 @@ static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
 		lladdr = neigh->ha;
 	}
 
-	/* Update confirmed timestamp for neighbour entry after we
-	 * received ARP packet even if it doesn't change IP to MAC binding.
-	 */
+	 
 	if (new & NUD_CONNECTED)
 		neigh->confirmed = jiffies;
 
-	/* If entry was valid and address is not changed,
-	   do not change entry state, if new one is STALE.
-	 */
+	 
 	err = 0;
 	update_isrouter = flags & NEIGH_UPDATE_F_OVERRIDE_ISROUTER;
 	if (old & NUD_VALID) {
@@ -1396,10 +1292,7 @@ static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
 		}
 	}
 
-	/* Update timestamp only once we know we will make a change to the
-	 * neighbour entry. Otherwise we risk to move the locktime window with
-	 * noop updates and ignore relevant ARP updates.
-	 */
+	 
 	if (new != old || lladdr != neigh->ha)
 		neigh->updated = jiffies;
 
@@ -1435,7 +1328,7 @@ static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
 	if (!(old & NUD_VALID)) {
 		struct sk_buff *skb;
 
-		/* Again: avoid dead loop if something went wrong */
+		 
 
 		while (neigh->nud_state & NUD_VALID &&
 		       (skb = __skb_dequeue(&neigh->arp_queue)) != NULL) {
@@ -1445,13 +1338,7 @@ static int __neigh_update(struct neighbour *neigh, const u8 *lladdr,
 
 			rcu_read_lock();
 
-			/* Why not just use 'neigh' as-is?  The problem is that
-			 * things such as shaper, eql, and sch_teql can end up
-			 * using alternative, different, neigh objects to output
-			 * the packet in the output path.  So what we need to do
-			 * here is re-lookup the top-level neigh in the path so
-			 * we can reinject the packet there.
-			 */
+			 
 			n2 = NULL;
 			if (dst && dst->obsolete != DST_OBSOLETE_DEAD) {
 				n2 = dst_neigh_lookup_skb(dst, skb);
@@ -1489,9 +1376,7 @@ int neigh_update(struct neighbour *neigh, const u8 *lladdr, u8 new,
 }
 EXPORT_SYMBOL(neigh_update);
 
-/* Update the neigh to listen temporarily for probe responses, even if it is
- * in a NUD_FAILED state. The caller has to hold neigh->lock for writing.
- */
+ 
 void __neigh_set_probe_once(struct neighbour *neigh)
 {
 	if (neigh->dead)
@@ -1520,7 +1405,7 @@ struct neighbour *neigh_event_ns(struct neigh_table *tbl,
 }
 EXPORT_SYMBOL(neigh_event_ns);
 
-/* called with read_lock_bh(&n->lock); */
+ 
 static void neigh_hh_init(struct neighbour *n)
 {
 	struct net_device *dev = n->dev;
@@ -1529,16 +1414,14 @@ static void neigh_hh_init(struct neighbour *n)
 
 	write_lock_bh(&n->lock);
 
-	/* Only one thread can come in here and initialize the
-	 * hh_cache entry.
-	 */
+	 
 	if (!hh->hh_len)
 		dev->header_ops->cache(n, hh, prot);
 
 	write_unlock_bh(&n->lock);
 }
 
-/* Slow and careful. */
+ 
 
 int neigh_resolve_output(struct neighbour *neigh, struct sk_buff *skb)
 {
@@ -1573,7 +1456,7 @@ out_kfree_skb:
 }
 EXPORT_SYMBOL(neigh_resolve_output);
 
-/* As fast as possible without hh cache */
+ 
 
 int neigh_connected_output(struct neighbour *neigh, struct sk_buff *skb)
 {
@@ -1656,9 +1539,7 @@ static void neigh_proxy_process(struct timer_list *t)
 
 static unsigned long neigh_proxy_delay(struct neigh_parms *p)
 {
-	/* If proxy_delay is zero, do not call get_random_u32_below()
-	 * as it is undefined behavior.
-	 */
+	 
 	unsigned long proxy_delay = NEIGH_VAR(p, PROXY_DELAY);
 
 	return proxy_delay ?
@@ -1833,7 +1714,7 @@ EXPORT_SYMBOL(neigh_table_init);
 int neigh_table_clear(int index, struct neigh_table *tbl)
 {
 	neigh_tables[index] = NULL;
-	/* It is not clean... Fix it to unload IPv6 module safely */
+	 
 	cancel_delayed_work_sync(&tbl->managed_work);
 	cancel_delayed_work_sync(&tbl->gc_work);
 	del_timer_sync(&tbl->proxy_timer);
@@ -2121,7 +2002,7 @@ static int neightbl_fill_parms(struct sk_buff *skb, struct neigh_parms *parms)
 	    nla_put_u32(skb, NDTPA_REFCNT, refcount_read(&parms->refcnt)) ||
 	    nla_put_u32(skb, NDTPA_QUEUE_LENBYTES,
 			NEIGH_VAR(parms, QUEUE_LEN_BYTES)) ||
-	    /* approximative value for deprecated QUEUE_LEN (in packets) */
+	     
 	    nla_put_u32(skb, NDTPA_QUEUE_LEN,
 			NEIGH_VAR(parms, QUEUE_LEN_BYTES) / SKB_TRUESIZE(ETH_FRAME_LEN)) ||
 	    nla_put_u32(skb, NDTPA_PROXY_QLEN, NEIGH_VAR(parms, PROXY_QLEN)) ||
@@ -2345,10 +2226,7 @@ static int neightbl_set(struct sk_buff *skb, struct nlmsghdr *nlh,
 	if (!found)
 		return -ENOENT;
 
-	/*
-	 * We acquire tbl->lock to be nice to the periodic timers and
-	 * make sure they always see a consistent set of values.
-	 */
+	 
 	write_lock_bh(&tbl->lock);
 
 	if (tb[NDTA_PARMS]) {
@@ -2408,10 +2286,7 @@ static int neightbl_set(struct sk_buff *skb, struct nlmsghdr *nlh,
 			case NDTPA_BASE_REACHABLE_TIME:
 				NEIGH_VAR_SET(p, BASE_REACHABLE_TIME,
 					      nla_get_msecs(tbp[i]));
-				/* update reachable_time as well, otherwise, the change will
-				 * only be effective after the next time neigh_periodic_work
-				 * decides to recompute it (can be multiple minutes)
-				 */
+				 
 				p->reachable_time =
 					neigh_rand_reach_time(NEIGH_VAR(p, BASE_REACHABLE_TIME));
 				break;
@@ -2676,9 +2551,7 @@ static bool neigh_master_filtered(struct net_device *dev, int master_idx)
 
 	master = dev ? netdev_master_upper_dev_get(dev) : NULL;
 
-	/* 0 is already used to denote NDA_MASTER wasn't passed, therefore need another
-	 * invalid value for ifindex to denote "no master".
-	 */
+	 
 	if (master_idx == -1)
 		return !!master;
 
@@ -2835,7 +2708,7 @@ static int neigh_valid_dump_req(const struct nlmsghdr *nlh,
 		if (!tb[i])
 			continue;
 
-		/* all new attributes should require strict_check */
+		 
 		switch (i) {
 		case NDA_IFINDEX:
 			filter->dev_idx = nla_get_u32(tb[i]);
@@ -2865,9 +2738,7 @@ static int neigh_dump_info(struct sk_buff *skb, struct netlink_callback *cb)
 
 	family = ((struct rtgenmsg *)nlmsg_data(nlh))->rtgen_family;
 
-	/* check for full ndmsg structure presence, family member is
-	 * the same for both structures
-	 */
+	 
 	if (nlmsg_len(nlh) >= sizeof(struct ndmsg) &&
 	    ((struct ndmsg *)nlmsg_data(nlh))->ndm_flags == NTF_PROXY)
 		proxy = 1;
@@ -2963,12 +2834,12 @@ static int neigh_valid_get_req(const struct nlmsghdr *nlh,
 static inline size_t neigh_nlmsg_size(void)
 {
 	return NLMSG_ALIGN(sizeof(struct ndmsg))
-	       + nla_total_size(MAX_ADDR_LEN) /* NDA_DST */
-	       + nla_total_size(MAX_ADDR_LEN) /* NDA_LLADDR */
+	       + nla_total_size(MAX_ADDR_LEN)  
+	       + nla_total_size(MAX_ADDR_LEN)  
 	       + nla_total_size(sizeof(struct nda_cacheinfo))
-	       + nla_total_size(4)  /* NDA_PROBES */
-	       + nla_total_size(4)  /* NDA_FLAGS_EXT */
-	       + nla_total_size(1); /* NDA_PROTOCOL */
+	       + nla_total_size(4)   
+	       + nla_total_size(4)   
+	       + nla_total_size(1);  
 }
 
 static int neigh_get_reply(struct net *net, struct neighbour *neigh,
@@ -2995,9 +2866,9 @@ errout:
 static inline size_t pneigh_nlmsg_size(void)
 {
 	return NLMSG_ALIGN(sizeof(struct ndmsg))
-	       + nla_total_size(MAX_ADDR_LEN) /* NDA_DST */
-	       + nla_total_size(4)  /* NDA_FLAGS_EXT */
-	       + nla_total_size(1); /* NDA_PROTOCOL */
+	       + nla_total_size(MAX_ADDR_LEN)  
+	       + nla_total_size(4)   
+	       + nla_total_size(1);  
 }
 
 static int pneigh_get_reply(struct net *net, struct pneigh_entry *neigh,
@@ -3090,7 +2961,7 @@ void neigh_for_each(struct neigh_table *tbl, void (*cb)(struct neighbour *, void
 	rcu_read_lock();
 	nht = rcu_dereference(tbl->nht);
 
-	read_lock_bh(&tbl->lock); /* avoid resizes */
+	read_lock_bh(&tbl->lock);  
 	for (chain = 0; chain < (1 << nht->hash_shift); chain++) {
 		struct neighbour *n;
 
@@ -3104,7 +2975,7 @@ void neigh_for_each(struct neigh_table *tbl, void (*cb)(struct neighbour *, void
 }
 EXPORT_SYMBOL(neigh_for_each);
 
-/* The tbl->lock must be held as a writer and BH disabled. */
+ 
 void __neigh_for_each_release(struct neigh_table *tbl,
 			      int (*cb)(struct neighbour *))
 {
@@ -3421,7 +3292,7 @@ void neigh_seq_stop(struct seq_file *seq, void *v)
 }
 EXPORT_SYMBOL(neigh_seq_stop);
 
-/* statistics via seq_file */
+ 
 
 static void *neigh_stat_seq_start(struct seq_file *seq, loff_t *pos)
 {
@@ -3502,7 +3373,7 @@ static const struct seq_operations neigh_stat_seq_ops = {
 	.stop	= neigh_stat_seq_stop,
 	.show	= neigh_stat_seq_show,
 };
-#endif /* CONFIG_PROC_FS */
+#endif  
 
 static void __neigh_notify(struct neighbour *n, int type, int flags,
 			   u32 pid)
@@ -3517,7 +3388,7 @@ static void __neigh_notify(struct neighbour *n, int type, int flags,
 
 	err = neigh_fill_info(skb, n, pid, 0, type, flags);
 	if (err < 0) {
-		/* -EMSGSIZE implies BUG in neigh_nlmsg_size() */
+		 
 		WARN_ON(err == -EMSGSIZE);
 		kfree_skb(skb);
 		goto errout;
@@ -3586,7 +3457,7 @@ static void neigh_proc_update(struct ctl_table *ctl, int write)
 	set_bit(index, p->data_state);
 	if (index == NEIGH_VAR_DELAY_PROBE_TIME)
 		call_netevent_notifiers(NETEVENT_DELAY_PROBE_TIME_UPDATE, p);
-	if (!dev) /* NULL dev means this is default value */
+	if (!dev)  
 		neigh_copy_dflt_parms(net, p, index);
 }
 
@@ -3686,10 +3557,7 @@ static int neigh_proc_base_reachable_time(struct ctl_table *ctl, int write,
 		ret = -1;
 
 	if (write && ret == 0) {
-		/* update reachable_time as well, otherwise, the change will
-		 * only be effective after the next time neigh_periodic_work
-		 * decides to recompute it
-		 */
+		 
 		p->reachable_time =
 			neigh_rand_reach_time(NEIGH_VAR(p, BASE_REACHABLE_TIME));
 	}
@@ -3806,7 +3674,7 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
 	neigh_vars_size = ARRAY_SIZE(t->neigh_vars);
 	if (dev) {
 		dev_name_source = dev->name;
-		/* Terminate the table early */
+		 
 		memset(&t->neigh_vars[NEIGH_VAR_GC_INTERVAL], 0,
 		       sizeof(t->neigh_vars[NEIGH_VAR_GC_INTERVAL]));
 		neigh_vars_size = NEIGH_VAR_BASE_REACHABLE_TIME_MS + 1;
@@ -3820,25 +3688,20 @@ int neigh_sysctl_register(struct net_device *dev, struct neigh_parms *p,
 	}
 
 	if (handler) {
-		/* RetransTime */
+		 
 		t->neigh_vars[NEIGH_VAR_RETRANS_TIME].proc_handler = handler;
-		/* ReachableTime */
+		 
 		t->neigh_vars[NEIGH_VAR_BASE_REACHABLE_TIME].proc_handler = handler;
-		/* RetransTime (in milliseconds)*/
+		 
 		t->neigh_vars[NEIGH_VAR_RETRANS_TIME_MS].proc_handler = handler;
-		/* ReachableTime (in milliseconds) */
+		 
 		t->neigh_vars[NEIGH_VAR_BASE_REACHABLE_TIME_MS].proc_handler = handler;
 	} else {
-		/* Those handlers will update p->reachable_time after
-		 * base_reachable_time(_ms) is set to ensure the new timer starts being
-		 * applied after the next neighbour update instead of waiting for
-		 * neigh_periodic_work to update its value (can be multiple minutes)
-		 * So any handler that replaces them should do this as well
-		 */
-		/* ReachableTime */
+		 
+		 
 		t->neigh_vars[NEIGH_VAR_BASE_REACHABLE_TIME].proc_handler =
 			neigh_proc_base_reachable_time;
-		/* ReachableTime (in milliseconds) */
+		 
 		t->neigh_vars[NEIGH_VAR_BASE_REACHABLE_TIME_MS].proc_handler =
 			neigh_proc_base_reachable_time;
 	}
@@ -3883,7 +3746,7 @@ void neigh_sysctl_unregister(struct neigh_parms *p)
 }
 EXPORT_SYMBOL(neigh_sysctl_unregister);
 
-#endif	/* CONFIG_SYSCTL */
+#endif	 
 
 static int __init neigh_init(void)
 {

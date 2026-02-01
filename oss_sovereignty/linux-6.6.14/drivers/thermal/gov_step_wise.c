@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  step_wise.c - A step-by-step Thermal throttling governor
- *
- *  Copyright (C) 2012 Intel Corp
- *  Copyright (C) 2012 Durgadoss R <durgadoss.r@intel.com>
- *
- *  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- *
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/thermal.h>
 #include <linux/minmax.h>
@@ -16,17 +7,7 @@
 
 #include "thermal_core.h"
 
-/*
- * If the temperature is higher than a trip point,
- *    a. if the trend is THERMAL_TREND_RAISING, use higher cooling
- *       state for this trip point
- *    b. if the trend is THERMAL_TREND_DROPPING, do nothing
- * If the temperature is lower than a trip point,
- *    a. if the trend is THERMAL_TREND_RAISING, do nothing
- *    b. if the trend is THERMAL_TREND_DROPPING, use lower cooling
- *       state for this trip point, if the cooling state already
- *       equals lower limit, deactivate the thermal instance
- */
+ 
 static unsigned long get_target_state(struct thermal_instance *instance,
 				enum thermal_trend trend, bool throttle)
 {
@@ -34,11 +15,7 @@ static unsigned long get_target_state(struct thermal_instance *instance,
 	unsigned long cur_state;
 	unsigned long next_target;
 
-	/*
-	 * We keep this instance the way it is by default.
-	 * Otherwise, we use the current state of the
-	 * cdev in use to determine the next_target.
-	 */
+	 
 	cdev->ops->get_cur_state(cdev, &cur_state);
 	next_target = instance->target;
 	dev_dbg(&cdev->device, "cur_state=%ld\n", cur_state);
@@ -71,10 +48,7 @@ static unsigned long get_target_state(struct thermal_instance *instance,
 static void update_passive_instance(struct thermal_zone_device *tz,
 				enum thermal_trip_type type, int value)
 {
-	/*
-	 * If value is +1, activate a passive instance.
-	 * If value is -1, deactivate a passive instance.
-	 */
+	 
 	if (type == THERMAL_TRIP_PASSIVE)
 		tz->passive += value;
 }
@@ -111,33 +85,23 @@ static void thermal_zone_trip_update(struct thermal_zone_device *tz, int trip_id
 		if (instance->initialized && old_target == instance->target)
 			continue;
 
-		/* Activate a passive thermal instance */
+		 
 		if (old_target == THERMAL_NO_TARGET &&
 			instance->target != THERMAL_NO_TARGET)
 			update_passive_instance(tz, trip.type, 1);
-		/* Deactivate a passive thermal instance */
+		 
 		else if (old_target != THERMAL_NO_TARGET &&
 			instance->target == THERMAL_NO_TARGET)
 			update_passive_instance(tz, trip.type, -1);
 
 		instance->initialized = true;
 		mutex_lock(&instance->cdev->lock);
-		instance->cdev->updated = false; /* cdev needs update */
+		instance->cdev->updated = false;  
 		mutex_unlock(&instance->cdev->lock);
 	}
 }
 
-/**
- * step_wise_throttle - throttles devices associated with the given zone
- * @tz: thermal_zone_device
- * @trip: trip point index
- *
- * Throttling Logic: This uses the trend of the thermal zone to throttle.
- * If the thermal zone is 'heating up' this throttles all the cooling
- * devices associated with the zone and its particular trip point, by one
- * step. If the zone is 'cooling down' it brings back the performance of
- * the devices by one step.
- */
+ 
 static int step_wise_throttle(struct thermal_zone_device *tz, int trip)
 {
 	struct thermal_instance *instance;

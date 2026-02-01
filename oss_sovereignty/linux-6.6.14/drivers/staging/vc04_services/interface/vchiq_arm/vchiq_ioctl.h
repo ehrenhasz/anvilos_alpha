@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright (c) 2010-2012 Broadcom. All rights reserved. */
+ 
+ 
 
 #ifndef VCHIQ_IOCTLS_H
 #define VCHIQ_IOCTLS_H
@@ -18,15 +18,15 @@ struct vchiq_service_params {
 			       unsigned int handle,
 			       void *bulk_userdata);
 	void __user *userdata;
-	short version;       /* Increment for non-trivial changes */
-	short version_min;   /* Update for incompatible changes */
+	short version;        
+	short version_min;    
 };
 
 struct vchiq_create_service {
 	struct vchiq_service_params params;
 	int is_open;
 	int is_vchi;
-	unsigned int handle;       /* OUT */
+	unsigned int handle;        
 };
 
 struct vchiq_queue_message {
@@ -54,7 +54,7 @@ struct vchiq_await_completion {
 	unsigned int count;
 	struct vchiq_completion_data __user *buf;
 	unsigned int msgbufsize;
-	unsigned int msgbufcount; /* IN/OUT */
+	unsigned int msgbufcount;  
 	void * __user *msgbufs;
 };
 

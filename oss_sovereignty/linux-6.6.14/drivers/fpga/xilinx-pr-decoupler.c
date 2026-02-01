@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, National Instruments Corp.
- * Copyright (c) 2017, Xilinx Inc
- *
- * FPGA Bridge Driver for the Xilinx LogiCORE Partial Reconfiguration
- * Decoupler IP Core.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/io.h>

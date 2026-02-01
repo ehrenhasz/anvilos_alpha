@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2014 Red Hat, Inc.
- * All Rights Reserved.
- */
+
+ 
 #include "xfs.h"
 #include "xfs_fs.h"
 #include "xfs_shared.h"
@@ -26,10 +23,7 @@
 
 struct kmem_cache	*xfs_rmap_intent_cache;
 
-/*
- * Lookup the first record less than or equal to [bno, len, owner, offset]
- * in the btree given by cur.
- */
+ 
 int
 xfs_rmap_lookup_le(
 	struct xfs_btree_cur	*cur,
@@ -62,10 +56,7 @@ xfs_rmap_lookup_le(
 	return 0;
 }
 
-/*
- * Lookup the record exactly matching [bno, len, owner, offset]
- * in the btree given by cur.
- */
+ 
 int
 xfs_rmap_lookup_eq(
 	struct xfs_btree_cur	*cur,
@@ -84,11 +75,7 @@ xfs_rmap_lookup_eq(
 	return xfs_btree_lookup(cur, XFS_LOOKUP_EQ, stat);
 }
 
-/*
- * Update the record referred to by cur to the value given
- * by [bno, len, owner, offset].
- * This either works (return 0) or gets an EFSCORRUPTED error.
- */
+ 
 STATIC int
 xfs_rmap_update(
 	struct xfs_btree_cur	*cur,
@@ -192,7 +179,7 @@ done:
 	return error;
 }
 
-/* Convert an internal btree record to an rmap record. */
+ 
 xfs_failaddr_t
 xfs_rmap_btrec_to_irec(
 	const union xfs_btree_rec	*rec,
@@ -205,7 +192,7 @@ xfs_rmap_btrec_to_irec(
 			irec);
 }
 
-/* Simple checks for rmap records. */
+ 
 xfs_failaddr_t
 xfs_rmap_check_irec(
 	struct xfs_btree_cur		*cur,
@@ -225,7 +212,7 @@ xfs_rmap_check_irec(
 		if (irec->rm_blockcount != XFS_AGFL_BLOCK(mp) + 1)
 			return __this_address;
 	} else {
-		/* check for valid extent range, including overflow */
+		 
 		if (!xfs_verify_agbext(cur->bc_ag.pag, irec->rm_startblock,
 						       irec->rm_blockcount))
 			return __this_address;
@@ -236,7 +223,7 @@ xfs_rmap_check_irec(
 	       irec->rm_owner >= XFS_RMAP_OWN_MIN)))
 		return __this_address;
 
-	/* Check flags. */
+	 
 	is_inode = !XFS_RMAP_NON_INODE_OWNER(irec->rm_owner);
 	is_bmbt = irec->rm_flags & XFS_RMAP_BMBT_BLOCK;
 	is_attr = irec->rm_flags & XFS_RMAP_ATTR_FORK;
@@ -254,7 +241,7 @@ xfs_rmap_check_irec(
 	if (!is_inode && (is_bmbt || is_unwritten || is_attr))
 		return __this_address;
 
-	/* Check for a valid fork offset, if applicable. */
+	 
 	if (is_inode && !is_bmbt &&
 	    !xfs_verify_fileext(mp, irec->rm_offset, irec->rm_blockcount))
 		return __this_address;
@@ -280,9 +267,7 @@ xfs_rmap_complain_bad_rec(
 	return -EFSCORRUPTED;
 }
 
-/*
- * Get the data from the pointed-to record.
- */
+ 
 int
 xfs_rmap_get_rec(
 	struct xfs_btree_cur	*cur,
@@ -311,7 +296,7 @@ struct xfs_find_left_neighbor_info {
 	struct xfs_rmap_irec	*irec;
 };
 
-/* For each rmap given, figure out if it matches the key we want. */
+ 
 STATIC int
 xfs_rmap_find_left_neighbor_helper(
 	struct xfs_btree_cur		*cur,
@@ -336,11 +321,7 @@ xfs_rmap_find_left_neighbor_helper(
 	return -ECANCELED;
 }
 
-/*
- * Find the record to the left of the given extent, being careful only to
- * return a match with the same owner and adjacent physical and logical
- * block ranges.
- */
+ 
 STATIC int
 xfs_rmap_find_left_neighbor(
 	struct xfs_btree_cur	*cur,
@@ -374,22 +355,7 @@ xfs_rmap_find_left_neighbor(
 	trace_xfs_rmap_find_left_neighbor_query(cur->bc_mp,
 			cur->bc_ag.pag->pag_agno, bno, 0, owner, offset, flags);
 
-	/*
-	 * Historically, we always used the range query to walk every reverse
-	 * mapping that could possibly overlap the key that the caller asked
-	 * for, and filter out the ones that don't.  That is very slow when
-	 * there are a lot of records.
-	 *
-	 * However, there are two scenarios where the classic btree search can
-	 * produce correct results -- if the index contains a record that is an
-	 * exact match for the lookup key; and if there are no other records
-	 * between the record we want and the key we supplied.
-	 *
-	 * As an optimization, try a non-overlapped lookup first.  This makes
-	 * extent conversion and remap operations run a bit faster if the
-	 * physical extents aren't being shared.  If we don't find what we
-	 * want, we fall back to the overlapped query.
-	 */
+	 
 	error = xfs_rmap_lookup_le(cur, bno, owner, offset, flags, irec,
 			&found);
 	if (error)
@@ -410,7 +376,7 @@ xfs_rmap_find_left_neighbor(
 	return 0;
 }
 
-/* For each rmap given, figure out if it matches the key we want. */
+ 
 STATIC int
 xfs_rmap_lookup_le_range_helper(
 	struct xfs_btree_cur		*cur,
@@ -436,12 +402,7 @@ xfs_rmap_lookup_le_range_helper(
 	return -ECANCELED;
 }
 
-/*
- * Find the record to the left of the given extent, being careful only to
- * return a match with the same owner and overlapping physical and logical
- * block ranges.  This is the overlapping-interval version of
- * xfs_rmap_lookup_le.
- */
+ 
 int
 xfs_rmap_lookup_le_range(
 	struct xfs_btree_cur	*cur,
@@ -470,22 +431,7 @@ xfs_rmap_lookup_le_range(
 	trace_xfs_rmap_lookup_le_range(cur->bc_mp, cur->bc_ag.pag->pag_agno,
 			bno, 0, owner, offset, flags);
 
-	/*
-	 * Historically, we always used the range query to walk every reverse
-	 * mapping that could possibly overlap the key that the caller asked
-	 * for, and filter out the ones that don't.  That is very slow when
-	 * there are a lot of records.
-	 *
-	 * However, there are two scenarios where the classic btree search can
-	 * produce correct results -- if the index contains a record that is an
-	 * exact match for the lookup key; and if there are no other records
-	 * between the record we want and the key we supplied.
-	 *
-	 * As an optimization, try a non-overlapped lookup first.  This makes
-	 * scrub run much faster on most filesystems because bmbt records are
-	 * usually an exact match for rmap records.  If we don't find what we
-	 * want, we fall back to the overlapped query.
-	 */
+	 
 	error = xfs_rmap_lookup_le(cur, bno, owner, offset, flags, irec,
 			&found);
 	if (error)
@@ -506,10 +452,7 @@ xfs_rmap_lookup_le_range(
 	return 0;
 }
 
-/*
- * Perform all the relevant owner checks for a removal op.  If we're doing an
- * unknown-owner removal then we have no owner information to check.
- */
+ 
 static int
 xfs_rmap_free_check_owner(
 	struct xfs_mount	*mp,
@@ -525,7 +468,7 @@ xfs_rmap_free_check_owner(
 	if (owner == XFS_RMAP_OWN_UNKNOWN)
 		return 0;
 
-	/* Make sure the unwritten flag matches. */
+	 
 	if (XFS_IS_CORRUPT(mp,
 			   (flags & XFS_RMAP_UNWRITTEN) !=
 			   (rec->rm_flags & XFS_RMAP_UNWRITTEN))) {
@@ -533,13 +476,13 @@ xfs_rmap_free_check_owner(
 		goto out;
 	}
 
-	/* Make sure the owner matches what we expect to find in the tree. */
+	 
 	if (XFS_IS_CORRUPT(mp, owner != rec->rm_owner)) {
 		error = -EFSCORRUPTED;
 		goto out;
 	}
 
-	/* Check the offset, if necessary. */
+	 
 	if (XFS_RMAP_NON_INODE_OWNER(owner))
 		goto out;
 
@@ -565,24 +508,7 @@ out:
 	return error;
 }
 
-/*
- * Find the extent in the rmap btree and remove it.
- *
- * The record we find should always be an exact match for the extent that we're
- * looking for, since we insert them into the btree without modification.
- *
- * Special Case #1: when growing the filesystem, we "free" an extent when
- * growing the last AG. This extent is new space and so it is not tracked as
- * used space in the btree. The growfs code will pass in an owner of
- * XFS_RMAP_OWN_NULL to indicate that it expected that there is no owner of this
- * extent. We verify that - the extent lookup result in a record that does not
- * overlap.
- *
- * Special Case #2: EFIs do not record the owner of the extent, so when
- * recovering EFIs from the log we pass in XFS_RMAP_OWN_UNKNOWN to tell the rmap
- * btree to ignore the owner (i.e. wildcard match) so we don't trigger
- * corruption checks during log recovery.
- */
+ 
 STATIC int
 xfs_rmap_unmap(
 	struct xfs_btree_cur		*cur,
@@ -609,11 +535,7 @@ xfs_rmap_unmap(
 	trace_xfs_rmap_unmap(mp, cur->bc_ag.pag->pag_agno, bno, len,
 			unwritten, oinfo);
 
-	/*
-	 * We should always have a left record because there's a static record
-	 * for the AG headers at rm_startblock == 0 created by mkfs/growfs that
-	 * will not ever be removed from the tree.
-	 */
+	 
 	error = xfs_rmap_lookup_le(cur, bno, owner, offset, flags, &ltrec, &i);
 	if (error)
 		goto out_error;
@@ -628,13 +550,7 @@ xfs_rmap_unmap(
 			ltrec.rm_offset, ltrec.rm_flags);
 	ltoff = ltrec.rm_offset;
 
-	/*
-	 * For growfs, the incoming extent must be beyond the left record we
-	 * just found as it is new space and won't be used by anyone. This is
-	 * just a corruption check as we don't actually do anything with this
-	 * extent.  Note that we need to use >= instead of > because it might
-	 * be the case that the "left" extent goes all the way to EOFS.
-	 */
+	 
 	if (owner == XFS_RMAP_OWN_NULL) {
 		if (XFS_IS_CORRUPT(mp,
 				   bno <
@@ -645,13 +561,7 @@ xfs_rmap_unmap(
 		goto out_done;
 	}
 
-	/*
-	 * If we're doing an unknown-owner removal for EFI recovery, we expect
-	 * to find the full range in the rmapbt or nothing at all.  If we
-	 * don't find any rmaps overlapping either end of the range, we're
-	 * done.  Hopefully this means that the EFI creator already queued
-	 * (and finished) a RUI to remove the rmap.
-	 */
+	 
 	if (owner == XFS_RMAP_OWN_UNKNOWN &&
 	    ltrec.rm_startblock + ltrec.rm_blockcount <= bno) {
 		struct xfs_rmap_irec    rtrec;
@@ -672,7 +582,7 @@ xfs_rmap_unmap(
 			goto out_done;
 	}
 
-	/* Make sure the extent we found covers the entire freeing range. */
+	 
 	if (XFS_IS_CORRUPT(mp,
 			   ltrec.rm_startblock > bno ||
 			   ltrec.rm_startblock + ltrec.rm_blockcount <
@@ -681,14 +591,14 @@ xfs_rmap_unmap(
 		goto out_error;
 	}
 
-	/* Check owner information. */
+	 
 	error = xfs_rmap_free_check_owner(mp, ltoff, &ltrec, len, owner,
 			offset, flags);
 	if (error)
 		goto out_error;
 
 	if (ltrec.rm_startblock == bno && ltrec.rm_blockcount == len) {
-		/* exact match, simply remove the record from rmap tree */
+		 
 		trace_xfs_rmap_delete(mp, cur->bc_ag.pag->pag_agno,
 				ltrec.rm_startblock, ltrec.rm_blockcount,
 				ltrec.rm_owner, ltrec.rm_offset,
@@ -701,16 +611,7 @@ xfs_rmap_unmap(
 			goto out_error;
 		}
 	} else if (ltrec.rm_startblock == bno) {
-		/*
-		 * overlap left hand side of extent: move the start, trim the
-		 * length and update the current record.
-		 *
-		 *       ltbno                ltlen
-		 * Orig:    |oooooooooooooooooooo|
-		 * Freeing: |fffffffff|
-		 * Result:            |rrrrrrrrrr|
-		 *         bno       len
-		 */
+		 
 		ltrec.rm_startblock += len;
 		ltrec.rm_blockcount -= len;
 		if (!ignore_off)
@@ -719,34 +620,14 @@ xfs_rmap_unmap(
 		if (error)
 			goto out_error;
 	} else if (ltrec.rm_startblock + ltrec.rm_blockcount == bno + len) {
-		/*
-		 * overlap right hand side of extent: trim the length and update
-		 * the current record.
-		 *
-		 *       ltbno                ltlen
-		 * Orig:    |oooooooooooooooooooo|
-		 * Freeing:            |fffffffff|
-		 * Result:  |rrrrrrrrrr|
-		 *                    bno       len
-		 */
+		 
 		ltrec.rm_blockcount -= len;
 		error = xfs_rmap_update(cur, &ltrec);
 		if (error)
 			goto out_error;
 	} else {
 
-		/*
-		 * overlap middle of extent: trim the length of the existing
-		 * record to the length of the new left-extent size, increment
-		 * the insertion position so we can insert a new record
-		 * containing the remaining right-extent space.
-		 *
-		 *       ltbno                ltlen
-		 * Orig:    |oooooooooooooooooooo|
-		 * Freeing:       |fffffffff|
-		 * Result:  |rrrrr|         |rrrr|
-		 *               bno       len
-		 */
+		 
 		xfs_extlen_t	orig_len = ltrec.rm_blockcount;
 
 		ltrec.rm_blockcount = bno - ltrec.rm_startblock;
@@ -788,9 +669,7 @@ out_error:
 	return error;
 }
 
-/*
- * Remove a reference to an extent in the rmap btree.
- */
+ 
 int
 xfs_rmap_free(
 	struct xfs_trans		*tp,
@@ -815,11 +694,7 @@ xfs_rmap_free(
 	return error;
 }
 
-/*
- * A mergeable rmap must have the same owner and the same values for
- * the unwritten, attr_fork, and bmbt flags.  The startblock and
- * offset are checked separately.
- */
+ 
 static bool
 xfs_rmap_is_mergeable(
 	struct xfs_rmap_irec	*irec,
@@ -842,12 +717,7 @@ xfs_rmap_is_mergeable(
 	return true;
 }
 
-/*
- * When we allocate a new block, the first thing we do is add a reference to
- * the extent in the rmap btree. This takes the form of a [agbno, length,
- * owner, offset] record.  Flags are encoded in the high bits of the offset
- * field.
- */
+ 
 STATIC int
 xfs_rmap_map(
 	struct xfs_btree_cur		*cur,
@@ -878,11 +748,7 @@ xfs_rmap_map(
 			unwritten, oinfo);
 	ASSERT(!xfs_rmap_should_skip_owner_update(oinfo));
 
-	/*
-	 * For the initial lookup, look for an exact match or the left-adjacent
-	 * record for our insertion point. This will also give us the record for
-	 * start block contiguity tests.
-	 */
+	 
 	error = xfs_rmap_lookup_le(cur, bno, owner, offset, flags, &ltrec,
 			&have_lt);
 	if (error)
@@ -904,11 +770,7 @@ xfs_rmap_map(
 		goto out_error;
 	}
 
-	/*
-	 * Increment the cursor to see if we have a right-adjacent record to our
-	 * insertion point. This will give us the record for end block
-	 * contiguity tests.
-	 */
+	 
 	error = xfs_btree_increment(cur, 0, &have_gt);
 	if (error)
 		goto out_error;
@@ -932,37 +794,18 @@ xfs_rmap_map(
 			have_gt = 0;
 	}
 
-	/*
-	 * Note: cursor currently points one record to the right of ltrec, even
-	 * if there is no record in the tree to the right.
-	 */
+	 
 	if (have_lt &&
 	    ltrec.rm_startblock + ltrec.rm_blockcount == bno &&
 	    (ignore_off || ltrec.rm_offset + ltrec.rm_blockcount == offset)) {
-		/*
-		 * left edge contiguous, merge into left record.
-		 *
-		 *       ltbno     ltlen
-		 * orig:   |ooooooooo|
-		 * adding:           |aaaaaaaaa|
-		 * result: |rrrrrrrrrrrrrrrrrrr|
-		 *                  bno       len
-		 */
+		 
 		ltrec.rm_blockcount += len;
 		if (have_gt &&
 		    bno + len == gtrec.rm_startblock &&
 		    (ignore_off || offset + len == gtrec.rm_offset) &&
 		    (unsigned long)ltrec.rm_blockcount + len +
 				gtrec.rm_blockcount <= XFS_RMAP_LEN_MAX) {
-			/*
-			 * right edge also contiguous, delete right record
-			 * and merge into left record.
-			 *
-			 *       ltbno     ltlen    gtbno     gtlen
-			 * orig:   |ooooooooo|         |ooooooooo|
-			 * adding:           |aaaaaaaaa|
-			 * result: |rrrrrrrrrrrrrrrrrrrrrrrrrrrrr|
-			 */
+			 
 			ltrec.rm_blockcount += gtrec.rm_blockcount;
 			trace_xfs_rmap_delete(mp, cur->bc_ag.pag->pag_agno,
 					gtrec.rm_startblock,
@@ -979,7 +822,7 @@ xfs_rmap_map(
 			}
 		}
 
-		/* point the cursor back to the left record and update */
+		 
 		error = xfs_btree_decrement(cur, 0, &have_gt);
 		if (error)
 			goto out_error;
@@ -989,15 +832,7 @@ xfs_rmap_map(
 	} else if (have_gt &&
 		   bno + len == gtrec.rm_startblock &&
 		   (ignore_off || offset + len == gtrec.rm_offset)) {
-		/*
-		 * right edge contiguous, merge into right record.
-		 *
-		 *                 gtbno     gtlen
-		 * Orig:             |ooooooooo|
-		 * adding: |aaaaaaaaa|
-		 * Result: |rrrrrrrrrrrrrrrrrrr|
-		 *        bno       len
-		 */
+		 
 		gtrec.rm_startblock = bno;
 		gtrec.rm_blockcount += len;
 		if (!ignore_off)
@@ -1006,10 +841,7 @@ xfs_rmap_map(
 		if (error)
 			goto out_error;
 	} else {
-		/*
-		 * no contiguous edge with identical owner, insert
-		 * new record at current cursor position.
-		 */
+		 
 		cur->bc_rec.r.rm_startblock = bno;
 		cur->bc_rec.r.rm_blockcount = len;
 		cur->bc_rec.r.rm_owner = owner;
@@ -1035,9 +867,7 @@ out_error:
 	return error;
 }
 
-/*
- * Add a reference to an extent in the rmap btree.
- */
+ 
 int
 xfs_rmap_alloc(
 	struct xfs_trans		*tp,
@@ -1073,10 +903,7 @@ xfs_rmap_alloc(
 #define PREV		r[2]
 #define NEW		r[3]
 
-/*
- * Convert an unwritten extent to a real extent or vice versa.
- * Does not handle overlapping extents.
- */
+ 
 STATIC int
 xfs_rmap_convert(
 	struct xfs_btree_cur		*cur,
@@ -1086,9 +913,9 @@ xfs_rmap_convert(
 	const struct xfs_owner_info	*oinfo)
 {
 	struct xfs_mount		*mp = cur->bc_mp;
-	struct xfs_rmap_irec		r[4];	/* neighbor extent entries */
-						/* left is 0, right is 1, */
-						/* prev is 2, new is 3 */
+	struct xfs_rmap_irec		r[4];	 
+						 
+						 
 	uint64_t		owner;
 	uint64_t		offset;
 	uint64_t		new_endoff;
@@ -1107,11 +934,7 @@ xfs_rmap_convert(
 	trace_xfs_rmap_convert(mp, cur->bc_ag.pag->pag_agno, bno, len,
 			unwritten, oinfo);
 
-	/*
-	 * For the initial lookup, look for an exact match or the left-adjacent
-	 * record for our insertion point. This will also give us the record for
-	 * start block contiguity tests.
-	 */
+	 
 	error = xfs_rmap_lookup_le(cur, bno, owner, offset, oldext, &PREV, &i);
 	if (error)
 		goto done;
@@ -1130,20 +953,13 @@ xfs_rmap_convert(
 	ASSERT((PREV.rm_flags & XFS_RMAP_UNWRITTEN) == oldext);
 	newext = ~oldext & XFS_RMAP_UNWRITTEN;
 
-	/*
-	 * Set flags determining what part of the previous oldext allocation
-	 * extent is being replaced by a newext allocation.
-	 */
+	 
 	if (PREV.rm_offset == offset)
 		state |= RMAP_LEFT_FILLING;
 	if (PREV.rm_offset + PREV.rm_blockcount == new_endoff)
 		state |= RMAP_RIGHT_FILLING;
 
-	/*
-	 * Decrement the cursor to see if we have a left-adjacent record to our
-	 * insertion point. This will give us the record for end block
-	 * contiguity tests.
-	 */
+	 
 	error = xfs_btree_decrement(cur, 0, &i);
 	if (error)
 		goto done;
@@ -1172,11 +988,7 @@ xfs_rmap_convert(
 			state |= RMAP_LEFT_CONTIG;
 	}
 
-	/*
-	 * Increment the cursor to see if we have a right-adjacent record to our
-	 * insertion point. This will give us the record for end block
-	 * contiguity tests.
-	 */
+	 
 	error = xfs_btree_increment(cur, 0, &i);
 	if (error)
 		goto done;
@@ -1210,7 +1022,7 @@ xfs_rmap_convert(
 			state |= RMAP_RIGHT_CONTIG;
 	}
 
-	/* check that left + prev + right is not too long */
+	 
 	if ((state & (RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG |
 			 RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG)) ==
 	    (RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG |
@@ -1222,7 +1034,7 @@ xfs_rmap_convert(
 	trace_xfs_rmap_convert_state(mp, cur->bc_ag.pag->pag_agno, state,
 			_RET_IP_);
 
-	/* reset the cursor back to PREV */
+	 
 	error = xfs_rmap_lookup_le(cur, bno, owner, offset, oldext, NULL, &i);
 	if (error)
 		goto done;
@@ -1231,17 +1043,12 @@ xfs_rmap_convert(
 		goto done;
 	}
 
-	/*
-	 * Switch out based on the FILLING and CONTIG state bits.
-	 */
+	 
 	switch (state & (RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG |
 			 RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG)) {
 	case RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG |
 	     RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG:
-		/*
-		 * Setting all of a previous oldext extent to newext.
-		 * The left and right neighbors are both contiguous with new.
-		 */
+		 
 		error = xfs_btree_increment(cur, 0, &i);
 		if (error)
 			goto done;
@@ -1293,10 +1100,7 @@ xfs_rmap_convert(
 		break;
 
 	case RMAP_LEFT_FILLING | RMAP_RIGHT_FILLING | RMAP_LEFT_CONTIG:
-		/*
-		 * Setting all of a previous oldext extent to newext.
-		 * The left neighbor is contiguous, the right is not.
-		 */
+		 
 		trace_xfs_rmap_delete(mp, cur->bc_ag.pag->pag_agno,
 				PREV.rm_startblock, PREV.rm_blockcount,
 				PREV.rm_owner, PREV.rm_offset,
@@ -1323,10 +1127,7 @@ xfs_rmap_convert(
 		break;
 
 	case RMAP_LEFT_FILLING | RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG:
-		/*
-		 * Setting all of a previous oldext extent to newext.
-		 * The right neighbor is contiguous, the left is not.
-		 */
+		 
 		error = xfs_btree_increment(cur, 0, &i);
 		if (error)
 			goto done;
@@ -1361,11 +1162,7 @@ xfs_rmap_convert(
 		break;
 
 	case RMAP_LEFT_FILLING | RMAP_RIGHT_FILLING:
-		/*
-		 * Setting all of a previous oldext extent to newext.
-		 * Neither the left nor right neighbors are contiguous with
-		 * the new one.
-		 */
+		 
 		NEW = PREV;
 		NEW.rm_flags = newext;
 		error = xfs_rmap_update(cur, &NEW);
@@ -1374,10 +1171,7 @@ xfs_rmap_convert(
 		break;
 
 	case RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG:
-		/*
-		 * Setting the first part of a previous oldext extent to newext.
-		 * The left neighbor is contiguous.
-		 */
+		 
 		NEW = PREV;
 		NEW.rm_offset += len;
 		NEW.rm_startblock += len;
@@ -1396,10 +1190,7 @@ xfs_rmap_convert(
 		break;
 
 	case RMAP_LEFT_FILLING:
-		/*
-		 * Setting the first part of a previous oldext extent to newext.
-		 * The left neighbor is not contiguous.
-		 */
+		 
 		NEW = PREV;
 		NEW.rm_startblock += len;
 		NEW.rm_offset += len;
@@ -1425,10 +1216,7 @@ xfs_rmap_convert(
 		break;
 
 	case RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG:
-		/*
-		 * Setting the last part of a previous oldext extent to newext.
-		 * The right neighbor is contiguous with the new allocation.
-		 */
+		 
 		NEW = PREV;
 		NEW.rm_blockcount -= len;
 		error = xfs_rmap_update(cur, &NEW);
@@ -1447,10 +1235,7 @@ xfs_rmap_convert(
 		break;
 
 	case RMAP_RIGHT_FILLING:
-		/*
-		 * Setting the last part of a previous oldext extent to newext.
-		 * The right neighbor is not contiguous.
-		 */
+		 
 		NEW = PREV;
 		NEW.rm_blockcount -= len;
 		error = xfs_rmap_update(cur, &NEW);
@@ -1482,12 +1267,8 @@ xfs_rmap_convert(
 		break;
 
 	case 0:
-		/*
-		 * Setting the middle part of a previous oldext extent to
-		 * newext.  Contiguity is impossible here.
-		 * One extent becomes three extents.
-		 */
-		/* new right extent - oldext */
+		 
+		 
 		NEW.rm_startblock = bno + len;
 		NEW.rm_owner = owner;
 		NEW.rm_offset = new_endoff;
@@ -1497,7 +1278,7 @@ xfs_rmap_convert(
 		error = xfs_rmap_update(cur, &NEW);
 		if (error)
 			goto done;
-		/* new left extent - oldext */
+		 
 		NEW = PREV;
 		NEW.rm_blockcount = offset - PREV.rm_offset;
 		cur->bc_rec.r = NEW;
@@ -1512,11 +1293,7 @@ xfs_rmap_convert(
 			error = -EFSCORRUPTED;
 			goto done;
 		}
-		/*
-		 * Reset the cursor to the position of the new extent
-		 * we are about to insert as we can't trust it after
-		 * the previous insert.
-		 */
+		 
 		error = xfs_rmap_lookup_eq(cur, bno, len, owner, offset,
 				oldext, &i);
 		if (error)
@@ -1525,7 +1302,7 @@ xfs_rmap_convert(
 			error = -EFSCORRUPTED;
 			goto done;
 		}
-		/* new middle extent - newext */
+		 
 		cur->bc_rec.r.rm_flags &= ~XFS_RMAP_UNWRITTEN;
 		cur->bc_rec.r.rm_flags |= newext;
 		trace_xfs_rmap_insert(mp, cur->bc_ag.pag->pag_agno, bno, len,
@@ -1546,9 +1323,7 @@ xfs_rmap_convert(
 	case RMAP_LEFT_CONTIG | RMAP_RIGHT_CONTIG:
 	case RMAP_LEFT_CONTIG:
 	case RMAP_RIGHT_CONTIG:
-		/*
-		 * These cases are all impossible.
-		 */
+		 
 		ASSERT(0);
 	}
 
@@ -1561,11 +1336,7 @@ done:
 	return error;
 }
 
-/*
- * Convert an unwritten extent to a real extent or vice versa.  If there is no
- * possibility of overlapping extents, delegate to the simpler convert
- * function.
- */
+ 
 STATIC int
 xfs_rmap_convert_shared(
 	struct xfs_btree_cur		*cur,
@@ -1575,9 +1346,9 @@ xfs_rmap_convert_shared(
 	const struct xfs_owner_info	*oinfo)
 {
 	struct xfs_mount		*mp = cur->bc_mp;
-	struct xfs_rmap_irec		r[4];	/* neighbor extent entries */
-						/* left is 0, right is 1, */
-						/* prev is 2, new is 3 */
+	struct xfs_rmap_irec		r[4];	 
+						 
+						 
 	uint64_t		owner;
 	uint64_t		offset;
 	uint64_t		new_endoff;
@@ -1596,11 +1367,7 @@ xfs_rmap_convert_shared(
 	trace_xfs_rmap_convert(mp, cur->bc_ag.pag->pag_agno, bno, len,
 			unwritten, oinfo);
 
-	/*
-	 * For the initial lookup, look for and exact match or the left-adjacent
-	 * record for our insertion point. This will also give us the record for
-	 * start block contiguity tests.
-	 */
+	 
 	error = xfs_rmap_lookup_le_range(cur, bno, owner, offset, oldext,
 			&PREV, &i);
 	if (error)
@@ -1615,16 +1382,13 @@ xfs_rmap_convert_shared(
 	ASSERT((PREV.rm_flags & XFS_RMAP_UNWRITTEN) == oldext);
 	newext = ~oldext & XFS_RMAP_UNWRITTEN;
 
-	/*
-	 * Set flags determining what part of the previous oldext allocation
-	 * extent is being replaced by a newext allocation.
-	 */
+	 
 	if (PREV.rm_offset == offset)
 		state |= RMAP_LEFT_FILLING;
 	if (PREV.rm_offset + PREV.rm_blockcount == new_endoff)
 		state |= RMAP_RIGHT_FILLING;
 
-	/* Is there a left record that abuts our range? */
+	 
 	error = xfs_rmap_find_left_neighbor(cur, bno, owner, offset, newext,
 			&LEFT, &i);
 	if (error)
@@ -1641,7 +1405,7 @@ xfs_rmap_convert_shared(
 			state |= RMAP_LEFT_CONTIG;
 	}
 
-	/* Is there a right record that abuts our range? */
+	 
 	error = xfs_rmap_lookup_eq(cur, bno + len, len, owner, offset + len,
 			newext, &i);
 	if (error)
@@ -1667,7 +1431,7 @@ xfs_rmap_convert_shared(
 			state |= RMAP_RIGHT_CONTIG;
 	}
 
-	/* check that left + prev + right is not too long */
+	 
 	if ((state & (RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG |
 			 RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG)) ==
 	    (RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG |
@@ -1678,17 +1442,12 @@ xfs_rmap_convert_shared(
 
 	trace_xfs_rmap_convert_state(mp, cur->bc_ag.pag->pag_agno, state,
 			_RET_IP_);
-	/*
-	 * Switch out based on the FILLING and CONTIG state bits.
-	 */
+	 
 	switch (state & (RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG |
 			 RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG)) {
 	case RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG |
 	     RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG:
-		/*
-		 * Setting all of a previous oldext extent to newext.
-		 * The left and right neighbors are both contiguous with new.
-		 */
+		 
 		error = xfs_rmap_delete(cur, RIGHT.rm_startblock,
 				RIGHT.rm_blockcount, RIGHT.rm_owner,
 				RIGHT.rm_offset, RIGHT.rm_flags);
@@ -1716,10 +1475,7 @@ xfs_rmap_convert_shared(
 		break;
 
 	case RMAP_LEFT_FILLING | RMAP_RIGHT_FILLING | RMAP_LEFT_CONTIG:
-		/*
-		 * Setting all of a previous oldext extent to newext.
-		 * The left neighbor is contiguous, the right is not.
-		 */
+		 
 		error = xfs_rmap_delete(cur, PREV.rm_startblock,
 				PREV.rm_blockcount, PREV.rm_owner,
 				PREV.rm_offset, PREV.rm_flags);
@@ -1742,10 +1498,7 @@ xfs_rmap_convert_shared(
 		break;
 
 	case RMAP_LEFT_FILLING | RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG:
-		/*
-		 * Setting all of a previous oldext extent to newext.
-		 * The right neighbor is contiguous, the left is not.
-		 */
+		 
 		error = xfs_rmap_delete(cur, RIGHT.rm_startblock,
 				RIGHT.rm_blockcount, RIGHT.rm_owner,
 				RIGHT.rm_offset, RIGHT.rm_flags);
@@ -1769,11 +1522,7 @@ xfs_rmap_convert_shared(
 		break;
 
 	case RMAP_LEFT_FILLING | RMAP_RIGHT_FILLING:
-		/*
-		 * Setting all of a previous oldext extent to newext.
-		 * Neither the left nor right neighbors are contiguous with
-		 * the new one.
-		 */
+		 
 		NEW = PREV;
 		error = xfs_rmap_lookup_eq(cur, NEW.rm_startblock,
 				NEW.rm_blockcount, NEW.rm_owner,
@@ -1791,10 +1540,7 @@ xfs_rmap_convert_shared(
 		break;
 
 	case RMAP_LEFT_FILLING | RMAP_LEFT_CONTIG:
-		/*
-		 * Setting the first part of a previous oldext extent to newext.
-		 * The left neighbor is contiguous.
-		 */
+		 
 		NEW = PREV;
 		error = xfs_rmap_delete(cur, NEW.rm_startblock,
 				NEW.rm_blockcount, NEW.rm_owner,
@@ -1826,10 +1572,7 @@ xfs_rmap_convert_shared(
 		break;
 
 	case RMAP_LEFT_FILLING:
-		/*
-		 * Setting the first part of a previous oldext extent to newext.
-		 * The left neighbor is not contiguous.
-		 */
+		 
 		NEW = PREV;
 		error = xfs_rmap_delete(cur, NEW.rm_startblock,
 				NEW.rm_blockcount, NEW.rm_owner,
@@ -1850,10 +1593,7 @@ xfs_rmap_convert_shared(
 		break;
 
 	case RMAP_RIGHT_FILLING | RMAP_RIGHT_CONTIG:
-		/*
-		 * Setting the last part of a previous oldext extent to newext.
-		 * The right neighbor is contiguous with the new allocation.
-		 */
+		 
 		NEW = PREV;
 		error = xfs_rmap_lookup_eq(cur, NEW.rm_startblock,
 				NEW.rm_blockcount, NEW.rm_owner,
@@ -1885,10 +1625,7 @@ xfs_rmap_convert_shared(
 		break;
 
 	case RMAP_RIGHT_FILLING:
-		/*
-		 * Setting the last part of a previous oldext extent to newext.
-		 * The right neighbor is not contiguous.
-		 */
+		 
 		NEW = PREV;
 		error = xfs_rmap_lookup_eq(cur, NEW.rm_startblock,
 				NEW.rm_blockcount, NEW.rm_owner,
@@ -1909,12 +1646,8 @@ xfs_rmap_convert_shared(
 		break;
 
 	case 0:
-		/*
-		 * Setting the middle part of a previous oldext extent to
-		 * newext.  Contiguity is impossible here.
-		 * One extent becomes three extents.
-		 */
-		/* new right extent - oldext */
+		 
+		 
 		NEW.rm_startblock = bno + len;
 		NEW.rm_owner = owner;
 		NEW.rm_offset = new_endoff;
@@ -1926,7 +1659,7 @@ xfs_rmap_convert_shared(
 				NEW.rm_flags);
 		if (error)
 			goto done;
-		/* new left extent - oldext */
+		 
 		NEW = PREV;
 		error = xfs_rmap_lookup_eq(cur, NEW.rm_startblock,
 				NEW.rm_blockcount, NEW.rm_owner,
@@ -1941,7 +1674,7 @@ xfs_rmap_convert_shared(
 		error = xfs_rmap_update(cur, &NEW);
 		if (error)
 			goto done;
-		/* new middle extent - newext */
+		 
 		NEW.rm_startblock = bno;
 		NEW.rm_blockcount = len;
 		NEW.rm_owner = owner;
@@ -1961,9 +1694,7 @@ xfs_rmap_convert_shared(
 	case RMAP_LEFT_CONTIG | RMAP_RIGHT_CONTIG:
 	case RMAP_LEFT_CONTIG:
 	case RMAP_RIGHT_CONTIG:
-		/*
-		 * These cases are all impossible.
-		 */
+		 
 		ASSERT(0);
 	}
 
@@ -1981,15 +1712,7 @@ done:
 #undef	RIGHT
 #undef	PREV
 
-/*
- * Find an extent in the rmap btree and unmap it.  For rmap extent types that
- * can overlap (data fork rmaps on reflink filesystems) we must be careful
- * that the prev/next records in the btree might belong to another owner.
- * Therefore we must use delete+insert to alter any of the key fields.
- *
- * For every other situation there can only be one owner for a given extent,
- * so we can call the regular _free function.
- */
+ 
 STATIC int
 xfs_rmap_unmap_shared(
 	struct xfs_btree_cur		*cur,
@@ -2013,11 +1736,7 @@ xfs_rmap_unmap_shared(
 	trace_xfs_rmap_unmap(mp, cur->bc_ag.pag->pag_agno, bno, len,
 			unwritten, oinfo);
 
-	/*
-	 * We should always have a left record because there's a static record
-	 * for the AG headers at rm_startblock == 0 created by mkfs/growfs that
-	 * will not ever be removed from the tree.
-	 */
+	 
 	error = xfs_rmap_lookup_le_range(cur, bno, owner, offset, flags,
 			&ltrec, &i);
 	if (error)
@@ -2028,7 +1747,7 @@ xfs_rmap_unmap_shared(
 	}
 	ltoff = ltrec.rm_offset;
 
-	/* Make sure the extent we found covers the entire freeing range. */
+	 
 	if (XFS_IS_CORRUPT(mp,
 			   ltrec.rm_startblock > bno ||
 			   ltrec.rm_startblock + ltrec.rm_blockcount <
@@ -2037,13 +1756,13 @@ xfs_rmap_unmap_shared(
 		goto out_error;
 	}
 
-	/* Make sure the owner matches what we expect to find in the tree. */
+	 
 	if (XFS_IS_CORRUPT(mp, owner != ltrec.rm_owner)) {
 		error = -EFSCORRUPTED;
 		goto out_error;
 	}
 
-	/* Make sure the unwritten flag matches. */
+	 
 	if (XFS_IS_CORRUPT(mp,
 			   (flags & XFS_RMAP_UNWRITTEN) !=
 			   (ltrec.rm_flags & XFS_RMAP_UNWRITTEN))) {
@@ -2051,7 +1770,7 @@ xfs_rmap_unmap_shared(
 		goto out_error;
 	}
 
-	/* Check the offset. */
+	 
 	if (XFS_IS_CORRUPT(mp, ltrec.rm_offset > offset)) {
 		error = -EFSCORRUPTED;
 		goto out_error;
@@ -2062,32 +1781,23 @@ xfs_rmap_unmap_shared(
 	}
 
 	if (ltrec.rm_startblock == bno && ltrec.rm_blockcount == len) {
-		/* Exact match, simply remove the record from rmap tree. */
+		 
 		error = xfs_rmap_delete(cur, ltrec.rm_startblock,
 				ltrec.rm_blockcount, ltrec.rm_owner,
 				ltrec.rm_offset, ltrec.rm_flags);
 		if (error)
 			goto out_error;
 	} else if (ltrec.rm_startblock == bno) {
-		/*
-		 * Overlap left hand side of extent: move the start, trim the
-		 * length and update the current record.
-		 *
-		 *       ltbno                ltlen
-		 * Orig:    |oooooooooooooooooooo|
-		 * Freeing: |fffffffff|
-		 * Result:            |rrrrrrrrrr|
-		 *         bno       len
-		 */
+		 
 
-		/* Delete prev rmap. */
+		 
 		error = xfs_rmap_delete(cur, ltrec.rm_startblock,
 				ltrec.rm_blockcount, ltrec.rm_owner,
 				ltrec.rm_offset, ltrec.rm_flags);
 		if (error)
 			goto out_error;
 
-		/* Add an rmap at the new offset. */
+		 
 		ltrec.rm_startblock += len;
 		ltrec.rm_blockcount -= len;
 		ltrec.rm_offset += len;
@@ -2097,16 +1807,7 @@ xfs_rmap_unmap_shared(
 		if (error)
 			goto out_error;
 	} else if (ltrec.rm_startblock + ltrec.rm_blockcount == bno + len) {
-		/*
-		 * Overlap right hand side of extent: trim the length and
-		 * update the current record.
-		 *
-		 *       ltbno                ltlen
-		 * Orig:    |oooooooooooooooooooo|
-		 * Freeing:            |fffffffff|
-		 * Result:  |rrrrrrrrrr|
-		 *                    bno       len
-		 */
+		 
 		error = xfs_rmap_lookup_eq(cur, ltrec.rm_startblock,
 				ltrec.rm_blockcount, ltrec.rm_owner,
 				ltrec.rm_offset, ltrec.rm_flags, &i);
@@ -2121,21 +1822,10 @@ xfs_rmap_unmap_shared(
 		if (error)
 			goto out_error;
 	} else {
-		/*
-		 * Overlap middle of extent: trim the length of the existing
-		 * record to the length of the new left-extent size, increment
-		 * the insertion position so we can insert a new record
-		 * containing the remaining right-extent space.
-		 *
-		 *       ltbno                ltlen
-		 * Orig:    |oooooooooooooooooooo|
-		 * Freeing:       |fffffffff|
-		 * Result:  |rrrrr|         |rrrr|
-		 *               bno       len
-		 */
+		 
 		xfs_extlen_t	orig_len = ltrec.rm_blockcount;
 
-		/* Shrink the left side of the rmap */
+		 
 		error = xfs_rmap_lookup_eq(cur, ltrec.rm_startblock,
 				ltrec.rm_blockcount, ltrec.rm_owner,
 				ltrec.rm_offset, ltrec.rm_flags, &i);
@@ -2150,7 +1840,7 @@ xfs_rmap_unmap_shared(
 		if (error)
 			goto out_error;
 
-		/* Add an rmap at the new offset */
+		 
 		error = xfs_rmap_insert(cur, bno + len,
 				orig_len - len - ltrec.rm_blockcount,
 				ltrec.rm_owner, offset + len,
@@ -2168,15 +1858,7 @@ out_error:
 	return error;
 }
 
-/*
- * Find an extent in the rmap btree and map it.  For rmap extent types that
- * can overlap (data fork rmaps on reflink filesystems) we must be careful
- * that the prev/next records in the btree might belong to another owner.
- * Therefore we must use delete+insert to alter any of the key fields.
- *
- * For every other situation there can only be one owner for a given extent,
- * so we can call the regular _alloc function.
- */
+ 
 STATIC int
 xfs_rmap_map_shared(
 	struct xfs_btree_cur		*cur,
@@ -2202,7 +1884,7 @@ xfs_rmap_map_shared(
 	trace_xfs_rmap_map(mp, cur->bc_ag.pag->pag_agno, bno, len,
 			unwritten, oinfo);
 
-	/* Is there a left record that abuts our range? */
+	 
 	error = xfs_rmap_find_left_neighbor(cur, bno, owner, offset, flags,
 			&ltrec, &have_lt);
 	if (error)
@@ -2211,7 +1893,7 @@ xfs_rmap_map_shared(
 	    !xfs_rmap_is_mergeable(&ltrec, owner, flags))
 		have_lt = 0;
 
-	/* Is there a right record that abuts our range? */
+	 
 	error = xfs_rmap_lookup_eq(cur, bno + len, len, owner, offset + len,
 			flags, &have_gt);
 	if (error)
@@ -2236,28 +1918,12 @@ xfs_rmap_map_shared(
 	if (have_lt &&
 	    ltrec.rm_startblock + ltrec.rm_blockcount == bno &&
 	    ltrec.rm_offset + ltrec.rm_blockcount == offset) {
-		/*
-		 * Left edge contiguous, merge into left record.
-		 *
-		 *       ltbno     ltlen
-		 * orig:   |ooooooooo|
-		 * adding:           |aaaaaaaaa|
-		 * result: |rrrrrrrrrrrrrrrrrrr|
-		 *                  bno       len
-		 */
+		 
 		ltrec.rm_blockcount += len;
 		if (have_gt &&
 		    bno + len == gtrec.rm_startblock &&
 		    offset + len == gtrec.rm_offset) {
-			/*
-			 * Right edge also contiguous, delete right record
-			 * and merge into left record.
-			 *
-			 *       ltbno     ltlen    gtbno     gtlen
-			 * orig:   |ooooooooo|         |ooooooooo|
-			 * adding:           |aaaaaaaaa|
-			 * result: |rrrrrrrrrrrrrrrrrrrrrrrrrrrrr|
-			 */
+			 
 			ltrec.rm_blockcount += gtrec.rm_blockcount;
 			error = xfs_rmap_delete(cur, gtrec.rm_startblock,
 					gtrec.rm_blockcount, gtrec.rm_owner,
@@ -2266,7 +1932,7 @@ xfs_rmap_map_shared(
 				goto out_error;
 		}
 
-		/* Point the cursor back to the left record and update. */
+		 
 		error = xfs_rmap_lookup_eq(cur, ltrec.rm_startblock,
 				ltrec.rm_blockcount, ltrec.rm_owner,
 				ltrec.rm_offset, ltrec.rm_flags, &i);
@@ -2283,23 +1949,15 @@ xfs_rmap_map_shared(
 	} else if (have_gt &&
 		   bno + len == gtrec.rm_startblock &&
 		   offset + len == gtrec.rm_offset) {
-		/*
-		 * Right edge contiguous, merge into right record.
-		 *
-		 *                 gtbno     gtlen
-		 * Orig:             |ooooooooo|
-		 * adding: |aaaaaaaaa|
-		 * Result: |rrrrrrrrrrrrrrrrrrr|
-		 *        bno       len
-		 */
-		/* Delete the old record. */
+		 
+		 
 		error = xfs_rmap_delete(cur, gtrec.rm_startblock,
 				gtrec.rm_blockcount, gtrec.rm_owner,
 				gtrec.rm_offset, gtrec.rm_flags);
 		if (error)
 			goto out_error;
 
-		/* Move the start and re-add it. */
+		 
 		gtrec.rm_startblock = bno;
 		gtrec.rm_blockcount += len;
 		gtrec.rm_offset = offset;
@@ -2309,10 +1967,7 @@ xfs_rmap_map_shared(
 		if (error)
 			goto out_error;
 	} else {
-		/*
-		 * No contiguous edge with identical owner, insert
-		 * new record at current cursor position.
-		 */
+		 
 		error = xfs_rmap_insert(cur, bno, len, owner, offset, flags);
 		if (error)
 			goto out_error;
@@ -2327,7 +1982,7 @@ out_error:
 	return error;
 }
 
-/* Insert a raw rmap into the rmapbt. */
+ 
 int
 xfs_rmap_map_raw(
 	struct xfs_btree_cur	*cur,
@@ -2360,7 +2015,7 @@ struct xfs_rmap_query_range_info {
 	void				*priv;
 };
 
-/* Format btree record and pass to our callback. */
+ 
 STATIC int
 xfs_rmap_query_range_helper(
 	struct xfs_btree_cur		*cur,
@@ -2380,7 +2035,7 @@ xfs_rmap_query_range_helper(
 	return query->fn(cur, &irec, query->priv);
 }
 
-/* Find all rmaps between two keys. */
+ 
 int
 xfs_rmap_query_range(
 	struct xfs_btree_cur			*cur,
@@ -2397,7 +2052,7 @@ xfs_rmap_query_range(
 			xfs_rmap_query_range_helper, &query);
 }
 
-/* Find all rmaps. */
+ 
 int
 xfs_rmap_query_all(
 	struct xfs_btree_cur			*cur,
@@ -2411,7 +2066,7 @@ xfs_rmap_query_all(
 	return xfs_btree_query_all(cur, xfs_rmap_query_range_helper, &query);
 }
 
-/* Clean up after calling xfs_rmap_finish_one. */
+ 
 void
 xfs_rmap_finish_one_cleanup(
 	struct xfs_trans	*tp,
@@ -2428,13 +2083,7 @@ xfs_rmap_finish_one_cleanup(
 		xfs_trans_brelse(tp, agbp);
 }
 
-/*
- * Process one of the deferred rmap operations.  We pass back the
- * btree cursor to maintain our lock on the rmapbt between calls.
- * This saves time and eliminates a buffer deadlock between the
- * superblock and the AGF because we'll always grab them in the same
- * order.
- */
+ 
 int
 xfs_rmap_finish_one(
 	struct xfs_trans		*tp,
@@ -2459,10 +2108,7 @@ xfs_rmap_finish_one(
 	if (XFS_TEST_ERROR(false, mp, XFS_ERRTAG_RMAP_FINISH_ONE))
 		return -EIO;
 
-	/*
-	 * If we haven't gotten a cursor or the cursor AG doesn't match
-	 * the startblock, get one now.
-	 */
+	 
 	rcur = *pcur;
 	if (rcur != NULL && rcur->bc_ag.pag != ri->ri_pag) {
 		xfs_rmap_finish_one_cleanup(tp, rcur, 0);
@@ -2470,11 +2116,7 @@ xfs_rmap_finish_one(
 		*pcur = NULL;
 	}
 	if (rcur == NULL) {
-		/*
-		 * Refresh the freelist before we start changing the
-		 * rmapbt, because a shape change could cause us to
-		 * allocate blocks.
-		 */
+		 
 		error = xfs_free_extent_fix_freelist(tp, ri->ri_pag, &agbp);
 		if (error)
 			return error;
@@ -2525,9 +2167,7 @@ xfs_rmap_finish_one(
 	return error;
 }
 
-/*
- * Don't defer an rmap if we aren't an rmap filesystem.
- */
+ 
 static bool
 xfs_rmap_update_is_needed(
 	struct xfs_mount	*mp,
@@ -2536,10 +2176,7 @@ xfs_rmap_update_is_needed(
 	return xfs_has_rmapbt(mp) && whichfork != XFS_COW_FORK;
 }
 
-/*
- * Record a rmap intent; the list is kept sorted first by AG and then by
- * increasing age.
- */
+ 
 static void
 __xfs_rmap_add(
 	struct xfs_trans		*tp,
@@ -2570,7 +2207,7 @@ __xfs_rmap_add(
 	xfs_defer_add(tp, XFS_DEFER_OPS_TYPE_RMAP, &ri->ri_list);
 }
 
-/* Map an extent into a file. */
+ 
 void
 xfs_rmap_map_extent(
 	struct xfs_trans	*tp,
@@ -2589,7 +2226,7 @@ xfs_rmap_map_extent(
 	__xfs_rmap_add(tp, type, ip->i_ino, whichfork, PREV);
 }
 
-/* Unmap an extent out of a file. */
+ 
 void
 xfs_rmap_unmap_extent(
 	struct xfs_trans	*tp,
@@ -2608,12 +2245,7 @@ xfs_rmap_unmap_extent(
 	__xfs_rmap_add(tp, type, ip->i_ino, whichfork, PREV);
 }
 
-/*
- * Convert a data fork extent from unwritten to real or vice versa.
- *
- * Note that tp can be NULL here as no transaction is used for COW fork
- * unwritten conversion.
- */
+ 
 void
 xfs_rmap_convert_extent(
 	struct xfs_mount	*mp,
@@ -2633,7 +2265,7 @@ xfs_rmap_convert_extent(
 	__xfs_rmap_add(tp, type, ip->i_ino, whichfork, PREV);
 }
 
-/* Schedule the creation of an rmap for non-file data. */
+ 
 void
 xfs_rmap_alloc_extent(
 	struct xfs_trans	*tp,
@@ -2655,7 +2287,7 @@ xfs_rmap_alloc_extent(
 	__xfs_rmap_add(tp, XFS_RMAP_ALLOC, owner, XFS_DATA_FORK, &bmap);
 }
 
-/* Schedule the deletion of an rmap for non-file data. */
+ 
 void
 xfs_rmap_free_extent(
 	struct xfs_trans	*tp,
@@ -2677,7 +2309,7 @@ xfs_rmap_free_extent(
 	__xfs_rmap_add(tp, XFS_RMAP_FREE, owner, XFS_DATA_FORK, &bmap);
 }
 
-/* Compare rmap records.  Returns -1 if a < b, 1 if a > b, and 0 if equal. */
+ 
 int
 xfs_rmap_compare(
 	const struct xfs_rmap_irec	*a,
@@ -2705,11 +2337,7 @@ xfs_rmap_compare(
 		return 0;
 }
 
-/*
- * Scan the physical storage part of the keyspace of the reverse mapping index
- * and tell us if the area has no records, is fully mapped by records, or is
- * partially filled.
- */
+ 
 int
 xfs_rmap_has_records(
 	struct xfs_btree_cur	*cur,
@@ -2732,20 +2360,20 @@ xfs_rmap_has_records(
 }
 
 struct xfs_rmap_ownercount {
-	/* Owner that we're looking for. */
+	 
 	struct xfs_rmap_irec	good;
 
-	/* rmap search keys */
+	 
 	struct xfs_rmap_irec	low;
 	struct xfs_rmap_irec	high;
 
 	struct xfs_rmap_matches	*results;
 
-	/* Stop early if we find a nonmatch? */
+	 
 	bool			stop_on_nonmatch;
 };
 
-/* Does this rmap represent space that can have multiple owners? */
+ 
 static inline bool
 xfs_rmap_shareable(
 	struct xfs_mount		*mp,
@@ -2787,7 +2415,7 @@ xfs_rmap_ownercount_init(
 		roc->good.rm_flags |= XFS_RMAP_BMBT_BLOCK;
 }
 
-/* Figure out if this is a match for the owner. */
+ 
 STATIC int
 xfs_rmap_count_owners_helper(
 	struct xfs_btree_cur		*cur,
@@ -2803,7 +2431,7 @@ xfs_rmap_count_owners_helper(
 	filedata = !XFS_RMAP_NON_INODE_OWNER(check.rm_owner) &&
 		   !(check.rm_flags & XFS_RMAP_BMBT_BLOCK);
 
-	/* Trim the part of check that comes before the comparison range. */
+	 
 	delta = (int64_t)roc->good.rm_startblock - check.rm_startblock;
 	if (delta > 0) {
 		check.rm_startblock += delta;
@@ -2812,13 +2440,13 @@ xfs_rmap_count_owners_helper(
 			check.rm_offset += delta;
 	}
 
-	/* Trim the part of check that comes after the comparison range. */
+	 
 	delta = (check.rm_startblock + check.rm_blockcount) -
 		(roc->good.rm_startblock + roc->good.rm_blockcount);
 	if (delta > 0)
 		check.rm_blockcount -= delta;
 
-	/* Don't care about unwritten status for establishing ownership. */
+	 
 	keyflags = check.rm_flags & (XFS_RMAP_ATTR_FORK | XFS_RMAP_BMBT_BLOCK);
 
 	if (check.rm_startblock	== roc->good.rm_startblock &&
@@ -2840,7 +2468,7 @@ xfs_rmap_count_owners_helper(
 	return 0;
 }
 
-/* Count the number of owners and non-owners of this range of blocks. */
+ 
 int
 xfs_rmap_count_owners(
 	struct xfs_btree_cur		*cur,
@@ -2858,20 +2486,14 @@ xfs_rmap_count_owners(
 	if (error)
 		return error;
 
-	/*
-	 * There can't be any non-owner rmaps that conflict with the given
-	 * owner if we didn't find any rmaps matching the owner.
-	 */
+	 
 	if (!results->matches)
 		results->bad_non_owner_matches = 0;
 
 	return 0;
 }
 
-/*
- * Given an extent and some owner info, can we find records overlapping
- * the extent whose owner info does not match the given owner?
- */
+ 
 int
 xfs_rmap_has_other_keys(
 	struct xfs_btree_cur		*cur,

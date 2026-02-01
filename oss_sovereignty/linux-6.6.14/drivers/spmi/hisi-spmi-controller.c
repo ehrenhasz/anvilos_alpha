@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/delay.h>
 #include <linux/err.h>
@@ -12,9 +12,7 @@
 #include <linux/slab.h>
 #include <linux/spmi.h>
 
-/*
- * SPMI register addr
- */
+ 
 #define SPMI_CHANNEL_OFFSET				0x0300
 #define SPMI_SLAVE_OFFSET				0x20
 
@@ -33,16 +31,14 @@
 #define SPMI_APB_SPMI_RDATA3_BASE_ADDR			0x0210
 
 #define SPMI_PER_DATAREG_BYTE				4
-/*
- * SPMI cmd register
- */
+ 
 #define SPMI_APB_SPMI_CMD_EN				BIT(31)
 #define SPMI_APB_SPMI_CMD_TYPE_OFFSET			24
 #define SPMI_APB_SPMI_CMD_LENGTH_OFFSET			20
 #define SPMI_APB_SPMI_CMD_SLAVEID_OFFSET		16
 #define SPMI_APB_SPMI_CMD_ADDR_OFFSET			0
 
-/* Command Opcodes */
+ 
 
 enum spmi_controller_cmd_op_code {
 	SPMI_CMD_REG_ZERO_WRITE = 0,
@@ -58,16 +54,14 @@ enum spmi_controller_cmd_op_code {
 	SPMI_CMD_REG_WAKEUP = 10,
 };
 
-/*
- * SPMI status register
- */
+ 
 #define SPMI_APB_TRANS_DONE			BIT(0)
 #define SPMI_APB_TRANS_FAIL			BIT(2)
 
-/* Command register fields */
+ 
 #define SPMI_CONTROLLER_CMD_MAX_BYTE_COUNT	16
 
-/* Maximum number of support PMIC peripherals */
+ 
 #define SPMI_CONTROLLER_TIMEOUT_US		1000
 #define SPMI_CONTROLLER_MAX_TRANS_BYTES		16
 
@@ -144,8 +138,8 @@ static int spmi_read_cmd(struct spmi_controller *ctrl,
 	cmd = SPMI_APB_SPMI_CMD_EN |
 	     (op_code << SPMI_APB_SPMI_CMD_TYPE_OFFSET) |
 	     ((bc - 1) << SPMI_APB_SPMI_CMD_LENGTH_OFFSET) |
-	     ((slave_id & 0xf) << SPMI_APB_SPMI_CMD_SLAVEID_OFFSET) |  /* slvid */
-	     ((slave_addr & 0xffff)  << SPMI_APB_SPMI_CMD_ADDR_OFFSET); /* slave_addr */
+	     ((slave_id & 0xf) << SPMI_APB_SPMI_CMD_SLAVEID_OFFSET) |   
+	     ((slave_addr & 0xffff)  << SPMI_APB_SPMI_CMD_ADDR_OFFSET);  
 
 	spin_lock_irqsave(&spmi_controller->lock, flags);
 
@@ -223,7 +217,7 @@ static int spmi_write_cmd(struct spmi_controller *ctrl,
 	      ((slave_id & 0xf) << SPMI_APB_SPMI_CMD_SLAVEID_OFFSET) |
 	      ((slave_addr & 0xffff)  << SPMI_APB_SPMI_CMD_ADDR_OFFSET);
 
-	/* Write data to FIFOs */
+	 
 	spin_lock_irqsave(&spmi_controller->lock, flags);
 
 	for (i = 0; bc > i * SPMI_PER_DATAREG_BYTE; i++) {
@@ -242,7 +236,7 @@ static int spmi_write_cmd(struct spmi_controller *ctrl,
 		       SPMI_PER_DATAREG_BYTE * i);
 	}
 
-	/* Start the transaction */
+	 
 	writel(cmd, spmi_controller->base + chnl_ofst + SPMI_APB_SPMI_CMD_BASE_ADDR);
 
 	rc = spmi_controller_wait_for_done(&ctrl->dev, spmi_controller,
@@ -307,7 +301,7 @@ static int spmi_controller_probe(struct platform_device *pdev)
 	ctrl->dev.parent = pdev->dev.parent;
 	ctrl->dev.of_node = of_node_get(pdev->dev.of_node);
 
-	/* Callbacks */
+	 
 	ctrl->read_cmd = spmi_read_cmd;
 	ctrl->write_cmd = spmi_write_cmd;
 

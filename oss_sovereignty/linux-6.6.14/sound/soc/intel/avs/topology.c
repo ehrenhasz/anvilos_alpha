@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/firmware.h>
 #include <linux/uuid.h>
@@ -16,21 +16,15 @@
 #include "control.h"
 #include "topology.h"
 
-/* Get pointer to vendor array at the specified offset. */
+ 
 #define avs_tplg_vendor_array_at(array, offset) \
 	((struct snd_soc_tplg_vendor_array *)((u8 *)array + offset))
 
-/* Get pointer to vendor array that is next in line. */
+ 
 #define avs_tplg_vendor_array_next(array) \
 	(avs_tplg_vendor_array_at(array, le32_to_cpu((array)->size)))
 
-/*
- * Scan provided block of tuples for the specified token. If found,
- * @offset is updated with position at which first matching token is
- * located.
- *
- * Returns 0 on success, -ENOENT if not found and error code otherwise.
- */
+ 
 static int
 avs_tplg_vendor_array_lookup(struct snd_soc_tplg_vendor_array *tuples,
 			     u32 block_size, u32 token, u32 *offset)
@@ -58,15 +52,7 @@ avs_tplg_vendor_array_lookup(struct snd_soc_tplg_vendor_array *tuples,
 	return -ENOENT;
 }
 
-/*
- * See avs_tplg_vendor_array_lookup() for description.
- *
- * Behaves exactly like avs_tplg_vendor_lookup() but starts from the
- * next vendor array in line. Useful when searching for the finish line
- * of an arbitrary entry in a list of entries where each is composed of
- * several vendor tuples and a specific token marks the beginning of
- * a new entry block.
- */
+ 
 static int
 avs_tplg_vendor_array_lookup_next(struct snd_soc_tplg_vendor_array *tuples,
 				  u32 block_size, u32 token, u32 *offset)
@@ -86,16 +72,7 @@ avs_tplg_vendor_array_lookup_next(struct snd_soc_tplg_vendor_array *tuples,
 	return ret;
 }
 
-/*
- * Scan provided block of tuples for the specified token which marks
- * the border of an entry block. Behavior is similar to
- * avs_tplg_vendor_array_lookup() except 0 is also returned if no
- * matching token has been found. In such case, returned @size is
- * assigned to @block_size as the entire block belongs to the current
- * entry.
- *
- * Returns 0 on success, error code otherwise.
- */
+ 
 static int
 avs_tplg_vendor_entry_size(struct snd_soc_tplg_vendor_array *tuples,
 			   u32 block_size, u32 entry_id_token, u32 *size)
@@ -111,14 +88,7 @@ avs_tplg_vendor_entry_size(struct snd_soc_tplg_vendor_array *tuples,
 	return ret;
 }
 
-/*
- * Vendor tuple parsing descriptor.
- *
- * @token: vendor specific token that identifies tuple
- * @type: tuple type, one of SND_SOC_TPLG_TUPLE_TYPE_XXX
- * @offset: offset of a struct's field to initialize
- * @parse: parsing function, extracts and assigns value to object's field
- */
+ 
 struct avs_tplg_token_parser {
 	enum avs_tplg_token token;
 	u32 type;
@@ -199,12 +169,12 @@ static int avs_parse_uuid_tokens(struct snd_soc_component *comp, void *object,
 	struct snd_soc_tplg_vendor_uuid_elem *tuple;
 	int ret, i, j;
 
-	/* Parse element by element. */
+	 
 	for (i = 0; i < le32_to_cpu(tuples->num_elems); i++) {
 		tuple = &tuples->uuid[i];
 
 		for (j = 0; j < count; j++) {
-			/* Ignore non-UUID tokens. */
+			 
 			if (parsers[j].type != SND_SOC_TPLG_TUPLE_TYPE_UUID ||
 			    parsers[j].token != le32_to_cpu(tuple->token))
 				continue;
@@ -225,12 +195,12 @@ static int avs_parse_string_tokens(struct snd_soc_component *comp, void *object,
 	struct snd_soc_tplg_vendor_string_elem *tuple;
 	int ret, i, j;
 
-	/* Parse element by element. */
+	 
 	for (i = 0; i < le32_to_cpu(tuples->num_elems); i++) {
 		tuple = &tuples->string[i];
 
 		for (j = 0; j < count; j++) {
-			/* Ignore non-string tokens. */
+			 
 			if (parsers[j].type != SND_SOC_TPLG_TUPLE_TYPE_STRING ||
 			    parsers[j].token != le32_to_cpu(tuple->token))
 				continue;
@@ -251,12 +221,12 @@ static int avs_parse_word_tokens(struct snd_soc_component *comp, void *object,
 	struct snd_soc_tplg_vendor_value_elem *tuple;
 	int ret, i, j;
 
-	/* Parse element by element. */
+	 
 	for (i = 0; i < le32_to_cpu(tuples->num_elems); i++) {
 		tuple = &tuples->value[i];
 
 		for (j = 0; j < count; j++) {
-			/* Ignore non-integer tokens. */
+			 
 			if (!(parsers[j].type == SND_SOC_TPLG_TUPLE_TYPE_WORD ||
 			      parsers[j].type == SND_SOC_TPLG_TUPLE_TYPE_SHORT ||
 			      parsers[j].type == SND_SOC_TPLG_TUPLE_TYPE_BYTE ||
@@ -289,7 +259,7 @@ static int avs_parse_tokens(struct snd_soc_component *comp, void *object,
 			return -EINVAL;
 		}
 
-		/* Make sure there is enough data before parsing. */
+		 
 		priv_size -= array_size;
 		if (priv_size < 0) {
 			dev_err(comp->dev, "invalid array size 0x%x\n", array_size);
@@ -378,10 +348,7 @@ static int parse_link_formatted_string(struct snd_soc_component *comp, void *ele
 	struct snd_soc_acpi_mach *mach = dev_get_platdata(comp->card->dev);
 	char *val = (char *)((u8 *)object + offset);
 
-	/*
-	 * Dynamic naming - string formats, e.g.: ssp%d - supported only for
-	 * topologies describing single device e.g.: an I2S codec on SSP0.
-	 */
+	 
 	if (hweight_long(mach->mach_params.i2s_link_mask) != 1)
 		return avs_parse_string_token(comp, elem, object, offset);
 
@@ -399,7 +366,7 @@ parse_dictionary_header(struct snd_soc_component *comp,
 {
 	struct snd_soc_tplg_vendor_value_elem *tuple;
 
-	/* Dictionary header consists of single tuple - entry count. */
+	 
 	tuple = tuples->value;
 	if (le32_to_cpu(tuple->token) != num_entries_token) {
 		dev_err(comp->dev, "invalid dictionary header, expected: %d\n",
@@ -463,7 +430,7 @@ static int parse_dictionary(struct snd_soc_component *comp,
 		return ret;
 
 	block_size -= le32_to_cpu(tuples->size);
-	/* With header parsed, move on to parsing entries. */
+	 
 	tuples = avs_tplg_vendor_array_next(tuples);
 
 	return parse_dictionary_entries(comp, tuples, block_size, *dict,
@@ -817,7 +784,7 @@ assign_copier_gtw_instance(struct snd_soc_component *comp, struct avs_tplg_modcf
 	if (!guid_equal(&cfg->type, &AVS_COPIER_MOD_UUID))
 		return;
 
-	/* Only I2S boards assign port instance in ->i2s_link_mask. */
+	 
 	switch (cfg->copier.dma_type) {
 	case AVS_DMA_I2S_LINK_OUTPUT:
 	case AVS_DMA_I2S_LINK_INPUT:
@@ -828,7 +795,7 @@ assign_copier_gtw_instance(struct snd_soc_component *comp, struct avs_tplg_modcf
 
 	mach = dev_get_platdata(comp->card->dev);
 
-	/* Automatic assignment only when board describes single SSP. */
+	 
 	if (hweight_long(mach->mach_params.i2s_link_mask) == 1 && !cfg->copier.vindex.i2s.instance)
 		cfg->copier.vindex.i2s.instance = __ffs(mach->mach_params.i2s_link_mask);
 }
@@ -841,7 +808,7 @@ static int avs_tplg_parse_modcfg_ext(struct snd_soc_component *comp,
 	u32 esize;
 	int ret;
 
-	/* See where pin block starts. */
+	 
 	ret = avs_tplg_vendor_entry_size(tuples, block_size,
 					 AVS_TKN_PIN_FMT_INDEX_U32, &esize);
 	if (ret)
@@ -852,11 +819,11 @@ static int avs_tplg_parse_modcfg_ext(struct snd_soc_component *comp,
 	if (ret)
 		return ret;
 
-	/* Update copier gateway based on board's i2s_link_mask. */
+	 
 	assign_copier_gtw_instance(comp, cfg);
 
 	block_size -= esize;
-	/* Parse trailing in/out pin formats if any. */
+	 
 	if (block_size) {
 		struct avs_tplg_pin_format *pins;
 		u32 num_pins;
@@ -899,7 +866,7 @@ static int avs_tplg_parse_modcfgs_ext(struct snd_soc_component *comp,
 		return ret;
 
 	block_size -= le32_to_cpu(tuples->size);
-	/* With header parsed, move on to parsing entries. */
+	 
 	tuples = avs_tplg_vendor_array_next(tuples);
 
 	for (i = 0; i < tplg->num_modcfgs_ext; i++) {
@@ -1126,7 +1093,7 @@ static const struct avs_tplg_token_parser bindings_parsers[] = {
 	{
 		.token = AVS_TKN_PPL_BINDING_ID_U32,
 		.type = SND_SOC_TPLG_TUPLE_TYPE_WORD,
-		.offset = 0, /* to treat pipeline->bindings as dictionary */
+		.offset = 0,  
 		.parse = avs_parse_binding_ptr,
 	},
 };
@@ -1146,7 +1113,7 @@ avs_tplg_pipeline_create(struct snd_soc_component *comp, struct avs_tplg_path *o
 	pipeline->owner = owner;
 	INIT_LIST_HEAD(&pipeline->mod_list);
 
-	/* Pipeline header MUST be followed by at least one module. */
+	 
 	ret = avs_tplg_vendor_array_lookup(tuples, block_size,
 					   AVS_TKN_MOD_ID_U32, &offset);
 	if (!ret && !offset)
@@ -1154,7 +1121,7 @@ avs_tplg_pipeline_create(struct snd_soc_component *comp, struct avs_tplg_path *o
 	if (ret)
 		return ERR_PTR(ret);
 
-	/* Process header which precedes module sections. */
+	 
 	ret = avs_parse_tokens(comp, pipeline, pipeline_parsers,
 			       ARRAY_SIZE(pipeline_parsers), tuples, offset);
 	if (ret < 0)
@@ -1163,14 +1130,14 @@ avs_tplg_pipeline_create(struct snd_soc_component *comp, struct avs_tplg_path *o
 	block_size -= offset;
 	tuples = avs_tplg_vendor_array_at(tuples, offset);
 
-	/* Optionally, binding sections follow module ones. */
+	 
 	ret = avs_tplg_vendor_array_lookup_next(tuples, block_size,
 						AVS_TKN_PPL_BINDING_ID_U32, &offset);
 	if (ret) {
 		if (ret != -ENOENT)
 			return ERR_PTR(ret);
 
-		/* Does header information match actual block layout? */
+		 
 		if (pipeline->num_bindings)
 			return ERR_PTR(-EINVAL);
 
@@ -1206,7 +1173,7 @@ avs_tplg_pipeline_create(struct snd_soc_component *comp, struct avs_tplg_path *o
 		tuples = avs_tplg_vendor_array_at(tuples, esize);
 	} while (modblk_size > 0);
 
-	/* What's left is optional range of bindings. */
+	 
 	ret = parse_dictionary_entries(comp, tuples, block_size, pipeline->bindings,
 				       pipeline->num_bindings, sizeof(*pipeline->bindings),
 				       AVS_TKN_PPL_BINDING_ID_U32,
@@ -1256,7 +1223,7 @@ avs_tplg_path_create(struct snd_soc_component *comp, struct avs_tplg_path_templa
 	INIT_LIST_HEAD(&path->ppl_list);
 	INIT_LIST_HEAD(&path->node);
 
-	/* Path header MAY be followed by one or more pipelines. */
+	 
 	ret = avs_tplg_vendor_array_lookup(tuples, block_size,
 					   AVS_TKN_PPL_ID_U32, &offset);
 	if (ret == -ENOENT)
@@ -1266,7 +1233,7 @@ avs_tplg_path_create(struct snd_soc_component *comp, struct avs_tplg_path_templa
 	else if (!offset)
 		return ERR_PTR(-EINVAL);
 
-	/* Process header which precedes pipeline sections. */
+	 
 	ret = avs_parse_tokens(comp, path, parsers, num_parsers, tuples, offset);
 	if (ret < 0)
 		return ERR_PTR(ret);
@@ -1315,13 +1282,13 @@ static int parse_path_template(struct snd_soc_component *comp,
 	u32 offset;
 	int ret;
 
-	/* Path template header MUST be followed by at least one path variant. */
+	 
 	ret = avs_tplg_vendor_array_lookup(tuples, block_size,
 					   AVS_TKN_PATH_ID_U32, &offset);
 	if (ret)
 		return ret;
 
-	/* Process header which precedes path variants sections. */
+	 
 	ret = avs_parse_tokens(comp, template, tmpl_tokens, num_tmpl_tokens, tuples, offset);
 	if (ret < 0)
 		return ret;
@@ -1362,7 +1329,7 @@ avs_tplg_path_template_create(struct snd_soc_component *comp, struct avs_tplg *o
 	if (!template)
 		return ERR_PTR(-ENOMEM);
 
-	template->owner = owner; /* Used to access component tplg is assigned to. */
+	template->owner = owner;  
 	INIT_LIST_HEAD(&template->path_list);
 	INIT_LIST_HEAD(&template->node);
 
@@ -1383,7 +1350,7 @@ static int avs_route_load(struct snd_soc_component *comp, int index,
 	char buf[SNDRV_CTL_ELEM_ID_NAME_MAXLEN];
 	u32 port;
 
-	/* See parse_link_formatted_string() for dynamic naming when(s). */
+	 
 	if (hweight_long(mach->mach_params.i2s_link_mask) == 1) {
 		port = __ffs(mach->mach_params.i2s_link_mask);
 
@@ -1420,10 +1387,10 @@ static int avs_widget_load(struct snd_soc_component *comp, int index,
 	tplg = acomp->tplg;
 	mach = dev_get_platdata(comp->card->dev);
 
-	/* See parse_link_formatted_string() for dynamic naming when(s). */
+	 
 	if (hweight_long(mach->mach_params.i2s_link_mask) == 1) {
 		kfree(w->name);
-		/* w->name is freed later by soc_tplg_dapm_widget_create() */
+		 
 		w->name = kasprintf(GFP_KERNEL, dw->name, __ffs(mach->mach_params.i2s_link_mask));
 		if (!w->name)
 			return -ENOMEM;
@@ -1437,7 +1404,7 @@ static int avs_widget_load(struct snd_soc_component *comp, int index,
 		return PTR_ERR(template);
 	}
 
-	w->priv = template; /* link path information to widget */
+	w->priv = template;  
 	list_add_tail(&template->node, &tplg->path_tmpl_list);
 	return 0;
 }
@@ -1470,10 +1437,10 @@ static int avs_link_load(struct snd_soc_component *comp, int index, struct snd_s
 	}
 
 	if (!link->no_pcm) {
-		/* Stream control handled by IPCs. */
+		 
 		link->nonatomic = true;
 
-		/* Open LINK (BE) pipes last and close them first to prevent xruns. */
+		 
 		link->trigger[0] = SND_SOC_DPCM_TRIGGER_PRE;
 		link->trigger[1] = SND_SOC_DPCM_TRIGGER_PRE;
 	}
@@ -1507,7 +1474,7 @@ static int avs_manifest(struct snd_soc_component *comp, int index,
 
 	ret = avs_tplg_vendor_array_lookup(tuples, remaining,
 					   AVS_TKN_MANIFEST_NUM_LIBRARIES_U32, &offset);
-	/* Manifest MUST begin with a header. */
+	 
 	if (!ret && !offset)
 		ret = -EINVAL;
 	if (ret) {
@@ -1515,7 +1482,7 @@ static int avs_manifest(struct snd_soc_component *comp, int index,
 		return ret;
 	}
 
-	/* Process header which precedes any of the dictionaries. */
+	 
 	ret = avs_parse_tokens(comp, acomp->tplg, manifest_parsers,
 			       ARRAY_SIZE(manifest_parsers), tuples, offset);
 	if (ret < 0)
@@ -1531,7 +1498,7 @@ static int avs_manifest(struct snd_soc_component *comp, int index,
 		return ret;
 	}
 
-	/* Libraries dictionary. */
+	 
 	ret = avs_tplg_parse_libraries(comp, tuples, offset);
 	if (ret < 0)
 		return ret;
@@ -1546,7 +1513,7 @@ static int avs_manifest(struct snd_soc_component *comp, int index,
 		return ret;
 	}
 
-	/* Audio formats dictionary. */
+	 
 	ret = avs_tplg_parse_audio_formats(comp, tuples, offset);
 	if (ret < 0)
 		return ret;
@@ -1561,7 +1528,7 @@ static int avs_manifest(struct snd_soc_component *comp, int index,
 		return ret;
 	}
 
-	/* Module configs-base dictionary. */
+	 
 	ret = avs_tplg_parse_modcfgs_base(comp, tuples, offset);
 	if (ret < 0)
 		return ret;
@@ -1576,7 +1543,7 @@ static int avs_manifest(struct snd_soc_component *comp, int index,
 		return ret;
 	}
 
-	/* Module configs-ext dictionary. */
+	 
 	ret = avs_tplg_parse_modcfgs_ext(comp, tuples, offset);
 	if (ret < 0)
 		return ret;
@@ -1591,7 +1558,7 @@ static int avs_manifest(struct snd_soc_component *comp, int index,
 		return ret;
 	}
 
-	/* Pipeline configs dictionary. */
+	 
 	ret = avs_tplg_parse_pplcfgs(comp, tuples, offset);
 	if (ret < 0)
 		return ret;
@@ -1599,7 +1566,7 @@ static int avs_manifest(struct snd_soc_component *comp, int index,
 	remaining -= offset;
 	tuples = avs_tplg_vendor_array_at(tuples, offset);
 
-	/* Bindings dictionary. */
+	 
 	return avs_tplg_parse_bindings(comp, tuples, remaining);
 }
 

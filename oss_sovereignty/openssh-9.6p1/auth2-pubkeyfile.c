@@ -1,28 +1,5 @@
-/* $OpenBSD: auth2-pubkeyfile.c,v 1.4 2023/03/05 05:34:09 dtucker Exp $ */
-/*
- * Copyright (c) 2000 Markus Friedl.  All rights reserved.
- * Copyright (c) 2010 Damien Miller.  All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * THIS SOFTWARE IS PROVIDED BY THE AUTHOR ``AS IS'' AND ANY EXPRESS OR
- * IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED WARRANTIES
- * OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE DISCLAIMED.
- * IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY DIRECT, INDIRECT,
- * INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT
- * NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF
- * THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
+ 
 
 #include "includes.h"
 
@@ -59,10 +36,7 @@ auth_authorise_keyopts(struct passwd *pw, struct sshauthopt *opts,
 	time_t now = time(NULL);
 	char buf[64];
 
-	/*
-	 * Check keys/principals file expiry time.
-	 * NB. validity interval in certificate is handled elsewhere.
-	 */
+	 
 	if (opts->valid_before && now > 0 &&
 	    opts->valid_before < (uint64_t)now) {
 		format_absolute_time(opts->valid_before, buf, sizeof(buf));
@@ -70,33 +44,33 @@ auth_authorise_keyopts(struct passwd *pw, struct sshauthopt *opts,
 		auth_debug_add("%s: entry expired at %s", loc, buf);
 		return -1;
 	}
-	/* Consistency checks */
+	 
 	if (opts->cert_principals != NULL && !opts->cert_authority) {
 		debug("%s: principals on non-CA key", loc);
 		auth_debug_add("%s: principals on non-CA key", loc);
-		/* deny access */
+		 
 		return -1;
 	}
-	/* cert-authority flag isn't valid in authorized_principals files */
+	 
 	if (!allow_cert_authority && opts->cert_authority) {
 		debug("%s: cert-authority flag invalid here", loc);
 		auth_debug_add("%s: cert-authority flag invalid here", loc);
-		/* deny access */
+		 
 		return -1;
 	}
 
-	/* Perform from= checks */
+	 
 	if (opts->required_from_host_keys != NULL) {
 		switch (match_host_and_ip(remote_host, remote_ip,
 		    opts->required_from_host_keys )) {
 		case 1:
-			/* Host name matches. */
+			 
 			break;
 		case -1:
 		default:
 			debug("%s: invalid from criteria", loc);
 			auth_debug_add("%s: invalid from criteria", loc);
-			/* FALLTHROUGH */
+			 
 		case 0:
 			logit("%s: Authentication tried for %.100s with "
 			    "correct key but not from a permitted "
@@ -106,22 +80,22 @@ auth_authorise_keyopts(struct passwd *pw, struct sshauthopt *opts,
 			auth_debug_add("%s: Your host '%.200s' is not "
 			    "permitted to use this key for login.",
 			    loc, remote_host);
-			/* deny access */
+			 
 			return -1;
 		}
 	}
-	/* Check source-address restriction from certificate */
+	 
 	if (opts->required_from_host_cert != NULL) {
 		switch (addr_match_cidr_list(remote_ip,
 		    opts->required_from_host_cert)) {
 		case 1:
-			/* accepted */
+			 
 			break;
 		case -1:
 		default:
-			/* invalid */
+			 
 			error("%s: Certificate source-address invalid", loc);
-			/* FALLTHROUGH */
+			 
 		case 0:
 			logit("%s: Authentication tried for %.100s with valid "
 			    "certificate but not from a permitted source "
@@ -132,12 +106,7 @@ auth_authorise_keyopts(struct passwd *pw, struct sshauthopt *opts,
 			return -1;
 		}
 	}
-	/*
-	 *
-	 * XXX this is spammy. We should report remotely only for keys
-	 *     that are successful in actual auth attempts, and not PK_OK
-	 *     tests.
-	 */
+	 
 	auth_log_authopts(loc, opts, 1);
 
 	return 0;
@@ -149,7 +118,7 @@ match_principals_option(const char *principal_list, struct sshkey_cert *cert)
 	char *result;
 	u_int i;
 
-	/* XXX percent_expand() sequences for authorized_principals? */
+	 
 
 	for (i = 0; i < cert->nprincipals; i++) {
 		if ((result = match_list(cert->principals[i],
@@ -163,11 +132,7 @@ match_principals_option(const char *principal_list, struct sshkey_cert *cert)
 	return 0;
 }
 
-/*
- * Process a single authorized_principals format line. Returns 0 and sets
- * authoptsp is principal is authorised, -1 otherwise. "loc" is used as a
- * log preamble for file/line information.
- */
+ 
 int
 auth_check_principals_line(char *cp, const struct sshkey_cert *cert,
     const char *loc, struct sshauthopt **authoptsp)
@@ -180,15 +145,12 @@ auth_check_principals_line(char *cp, const struct sshkey_cert *cert,
 	if (authoptsp != NULL)
 		*authoptsp = NULL;
 
-	/* Trim trailing whitespace. */
+	 
 	ep = cp + strlen(cp) - 1;
 	while (ep > cp && (*ep == '\n' || *ep == ' ' || *ep == '\t'))
 		*ep-- = '\0';
 
-	/*
-	 * If the line has internal whitespace then assume it has
-	 * key options.
-	 */
+	 
 	line_opts = NULL;
 	if ((ep = strrchr(cp, ' ')) != NULL ||
 	    (ep = strrchr(cp, '\t')) != NULL) {
@@ -202,7 +164,7 @@ auth_check_principals_line(char *cp, const struct sshkey_cert *cert,
 		auth_debug_add("%s: bad principals options: %s", loc, reason);
 		return -1;
 	}
-	/* Check principals in cert against those on line */
+	 
 	for (i = 0; i < cert->nprincipals; i++) {
 		if (strcmp(cp, cert->principals[i]) != 0)
 			continue;
@@ -232,14 +194,14 @@ auth_process_principals(FILE *f, const char *file,
 
 	while (getline(&line, &linesize, f) != -1) {
 		linenum++;
-		/* Always consume entire input */
+		 
 		if (found_principal)
 			continue;
 
-		/* Skip leading whitespace. */
+		 
 		for (cp = line; *cp == ' ' || *cp == '\t'; cp++)
 			;
-		/* Skip blank and comment lines. */
+		 
 		if ((ep = strchr(cp, '#')) != NULL)
 			*ep = '\0';
 		if (!*cp || *cp == '\n')
@@ -255,11 +217,7 @@ auth_process_principals(FILE *f, const char *file,
 	return found_principal;
 }
 
-/*
- * Check a single line of an authorized_keys-format file. Returns 0 if key
- * matches, -1 otherwise. Will return key/cert options via *authoptsp
- * on success. "loc" is used as file/line location in log messages.
- */
+ 
 int
 auth_check_authkey_line(struct passwd *pw, struct sshkey *key,
     char *cp, const char *remote_ip, const char *remote_host, const char *loc,
@@ -280,10 +238,10 @@ auth_check_authkey_line(struct passwd *pw, struct sshkey *key,
 		goto out;
 	}
 
-	/* XXX djm: peek at key type in line and skip if unwanted */
+	 
 
 	if (sshkey_read(found, &cp) != 0) {
-		/* no key?  check for options */
+		 
 		debug2("%s: check options: '%s'", loc, cp);
 		key_options = cp;
 		if (sshkey_advance_past_options(&cp) != 0) {
@@ -292,30 +250,30 @@ auth_check_authkey_line(struct passwd *pw, struct sshkey *key,
 		}
 		skip_space(&cp);
 		if (sshkey_read(found, &cp) != 0) {
-			/* still no key?  advance to next line*/
+			 
 			debug2("%s: advance: '%s'", loc, cp);
 			goto out;
 		}
 	}
-	/* Parse key options now; we need to know if this is a CA key */
+	 
 	if ((keyopts = sshauthopt_parse(key_options, &reason)) == NULL) {
 		debug("%s: bad key options: %s", loc, reason);
 		auth_debug_add("%s: bad key options: %s", loc, reason);
 		goto out;
 	}
-	/* Ignore keys that don't match or incorrectly marked as CAs */
+	 
 	if (sshkey_is_cert(key)) {
-		/* Certificate; check signature key against CA */
+		 
 		if (!sshkey_equal(found, key->cert->signature_key) ||
 		    !keyopts->cert_authority)
 			goto out;
 	} else {
-		/* Plain key: check it against key found in file */
+		 
 		if (!sshkey_equal(found, key) || keyopts->cert_authority)
 			goto out;
 	}
 
-	/* We have a candidate key, perform authorisation checks */
+	 
 	if ((fp = sshkey_fingerprint(found,
 	    SSH_FP_HASH_DEFAULT, SSH_FP_DEFAULT)) == NULL)
 		fatal_f("fingerprint failed");
@@ -328,7 +286,7 @@ auth_check_authkey_line(struct passwd *pw, struct sshkey *key,
 		reason = "Refused by key options";
 		goto fail_reason;
 	}
-	/* That's all we need for plain keys. */
+	 
 	if (!sshkey_is_cert(key)) {
 		verbose("Accepted key %s %s found at %s",
 		    sshkey_type(found), fp, loc);
@@ -337,11 +295,9 @@ auth_check_authkey_line(struct passwd *pw, struct sshkey *key,
 		goto success;
 	}
 
-	/*
-	 * Additional authorisation for certificates.
-	 */
+	 
 
-	/* Parse and check options present in certificate */
+	 
 	if ((certopts = sshauthopt_from_cert(key)) == NULL) {
 		reason = "Invalid certificate options";
 		goto fail_reason;
@@ -354,11 +310,7 @@ auth_check_authkey_line(struct passwd *pw, struct sshkey *key,
 	if ((finalopts = sshauthopt_merge(keyopts, certopts, &reason)) == NULL)
 		goto fail_reason;
 
-	/*
-	 * If the user has specified a list of principals as
-	 * a key option, then prefer that list to matching
-	 * their username in the certificate principals list.
-	 */
+	 
 	if (keyopts->cert_principals != NULL &&
 	    !match_principals_option(keyopts->cert_principals, key->cert)) {
 		reason = "Certificate does not contain an authorized principal";
@@ -382,7 +334,7 @@ auth_check_authkey_line(struct passwd *pw, struct sshkey *key,
 		*authoptsp = finalopts;
 		finalopts = NULL;
 	}
-	/* success */
+	 
 	ret = 0;
 	goto out;
 
@@ -398,10 +350,7 @@ auth_check_authkey_line(struct passwd *pw, struct sshkey *key,
 	return ret;
 }
 
-/*
- * Checks whether key is allowed in authorized_keys-format file,
- * returns 1 if the key is allowed or 0 otherwise.
- */
+ 
 int
 auth_check_authkeys_file(struct passwd *pw, FILE *f, char *file,
     struct sshkey *key, const char *remote_ip,
@@ -417,11 +366,11 @@ auth_check_authkeys_file(struct passwd *pw, FILE *f, char *file,
 
 	while (getline(&line, &linesize, f) != -1) {
 		linenum++;
-		/* Always consume entire file */
+		 
 		if (found_key)
 			continue;
 
-		/* Skip leading whitespace, empty and comment lines. */
+		 
 		cp = line;
 		skip_space(&cp);
 		if (!*cp || *cp == '\n' || *cp == '#')

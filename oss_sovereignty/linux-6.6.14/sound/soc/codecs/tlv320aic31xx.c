@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ALSA SoC TLV320AIC31xx CODEC Driver
- *
- * Copyright (C) 2014-2017 Texas Instruments Incorporated - https://www.ti.com/
- *	Jyri Sarha <jsarha@ti.com>
- *
- * Based on ground work by: Ajit Kulkarni <x0175765@ti.com>
- *
- * The TLV320AIC31xx series of audio codecs are low-power, highly integrated
- * high performance codecs which provides a stereo DAC, a mono ADC,
- * and mono/stereo Class-D speaker driver.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -83,15 +72,15 @@ static const struct reg_default aic31xx_reg_defaults[] = {
 static bool aic31xx_volatile(struct device *dev, unsigned int reg)
 {
 	switch (reg) {
-	case AIC31XX_PAGECTL: /* regmap implementation requires this */
-	case AIC31XX_RESET: /* always clears after write */
+	case AIC31XX_PAGECTL:  
+	case AIC31XX_RESET:  
 	case AIC31XX_OT_FLAG:
 	case AIC31XX_ADCFLAG:
 	case AIC31XX_DACFLAG1:
 	case AIC31XX_DACFLAG2:
-	case AIC31XX_OFFLAG: /* Sticky interrupt flags */
-	case AIC31XX_INTRDACFLAG: /* Sticky interrupt flags */
-	case AIC31XX_INTRADCFLAG: /* Sticky interrupt flags */
+	case AIC31XX_OFFLAG:  
+	case AIC31XX_INTRDACFLAG:  
+	case AIC31XX_INTRADCFLAG:  
 	case AIC31XX_INTRDACFLAG2:
 	case AIC31XX_INTRADCFLAG2:
 	case AIC31XX_HSDETECT:
@@ -107,9 +96,9 @@ static bool aic31xx_writeable(struct device *dev, unsigned int reg)
 	case AIC31XX_ADCFLAG:
 	case AIC31XX_DACFLAG1:
 	case AIC31XX_DACFLAG2:
-	case AIC31XX_OFFLAG: /* Sticky interrupt flags */
-	case AIC31XX_INTRDACFLAG: /* Sticky interrupt flags */
-	case AIC31XX_INTRADCFLAG: /* Sticky interrupt flags */
+	case AIC31XX_OFFLAG:  
+	case AIC31XX_INTRDACFLAG:  
+	case AIC31XX_INTRADCFLAG:  
 	case AIC31XX_INTRDACFLAG2:
 	case AIC31XX_INTRADCFLAG2:
 		return false;
@@ -176,7 +165,7 @@ struct aic31xx_priv {
 	int rate_div_line;
 	bool master_dapm_route_applied;
 	int irq;
-	u8 ocmv; /* output common-mode voltage */
+	u8 ocmv;  
 };
 
 struct aic31xx_rate_divs {
@@ -193,68 +182,68 @@ struct aic31xx_rate_divs {
 	u8 madc;
 };
 
-/* ADC dividers can be disabled by configuring them to 0 */
+ 
 static const struct aic31xx_rate_divs aic31xx_divs[] = {
-	/* mclk/p    rate  pll: r  j     d     dosr ndac mdac  aors nadc madc */
-	/* 8k rate */
+	 
+	 
 	{  512000,   8000,	4, 48,   0,	128,  48,  2,   128,  48,  2},
 	{12000000,   8000,	1, 8, 1920,	128,  48,  2,	128,  48,  2},
 	{12000000,   8000,	1, 8, 1920,	128,  32,  3,	128,  32,  3},
 	{12500000,   8000,	1, 7, 8643,	128,  48,  2,	128,  48,  2},
-	/* 11.025k rate */
+	 
 	{  705600,  11025,	3, 48,   0,	128,  24,  3,	128,  24,  3},
 	{12000000,  11025,	1, 7, 5264,	128,  32,  2,	128,  32,  2},
 	{12000000,  11025,	1, 8, 4672,	128,  24,  3,	128,  24,  3},
 	{12500000,  11025,	1, 7, 2253,	128,  32,  2,	128,  32,  2},
-	/* 16k rate */
+	 
 	{  512000,  16000,	4, 48,   0,	128,  16,  3,	128,  16,  3},
 	{ 1024000,  16000,	2, 48,   0,	128,  16,  3,	128,  16,  3},
 	{12000000,  16000,	1, 8, 1920,	128,  24,  2,	128,  24,  2},
 	{12000000,  16000,	1, 8, 1920,	128,  16,  3,	128,  16,  3},
 	{12500000,  16000,	1, 7, 8643,	128,  24,  2,	128,  24,  2},
-	/* 22.05k rate */
+	 
 	{  705600,  22050,	4, 36,   0,	128,  12,  3,	128,  12,  3},
 	{ 1411200,  22050,	2, 36,   0,	128,  12,  3,	128,  12,  3},
 	{12000000,  22050,	1, 7, 5264,	128,  16,  2,	128,  16,  2},
 	{12000000,  22050,	1, 8, 4672,	128,  12,  3,	128,  12,  3},
 	{12500000,  22050,	1, 7, 2253,	128,  16,  2,	128,  16,  2},
-	/* 32k rate */
+	 
 	{ 1024000,  32000,      2, 48,   0,	128,  12,  2,	128,  12,  2},
 	{ 2048000,  32000,      1, 48,   0,	128,  12,  2,	128,  12,  2},
 	{12000000,  32000,	1, 8, 1920,	128,  12,  2,	128,  12,  2},
 	{12000000,  32000,	1, 8, 1920,	128,   8,  3,	128,   8,  3},
 	{12500000,  32000,	1, 7, 8643,	128,  12,  2,	128,  12,  2},
-	/* 44.1k rate */
+	 
 	{ 1411200,  44100,	2, 32,   0,	128,   8,  2,	128,   8,  2},
 	{ 2822400,  44100,	1, 32,   0,	128,   8,  2,	128,   8,  2},
 	{12000000,  44100,	1, 7, 5264,	128,   8,  2,	128,   8,  2},
 	{12000000,  44100,	1, 8, 4672,	128,   6,  3,	128,   6,  3},
 	{12500000,  44100,	1, 7, 2253,	128,   8,  2,	128,   8,  2},
-	/* 48k rate */
+	 
 	{ 1536000,  48000,	2, 32,   0,	128,   8,  2,	128,   8,  2},
 	{ 3072000,  48000,	1, 32,   0,	128,   8,  2,	128,   8,  2},
 	{12000000,  48000,	1, 8, 1920,	128,   8,  2,	128,   8,  2},
 	{12000000,  48000,	1, 7, 6800,	 96,   5,  4,	 96,   5,  4},
 	{12500000,  48000,	1, 7, 8643,	128,   8,  2,	128,   8,  2},
-	/* 88.2k rate */
+	 
 	{ 2822400,  88200,	2, 16,   0,	 64,   8,  2,	 64,   8,  2},
 	{ 5644800,  88200,	1, 16,   0,	 64,   8,  2,	 64,   8,  2},
 	{12000000,  88200,	1, 7, 5264,	 64,   8,  2,	 64,   8,  2},
 	{12000000,  88200,	1, 8, 4672,	 64,   6,  3,	 64,   6,  3},
 	{12500000,  88200,	1, 7, 2253,	 64,   8,  2,	 64,   8,  2},
-	/* 96k rate */
+	 
 	{ 3072000,  96000,	2, 16,   0,	 64,   8,  2,	 64,   8,  2},
 	{ 6144000,  96000,	1, 16,   0,	 64,   8,  2,	 64,   8,  2},
 	{12000000,  96000,	1, 8, 1920,	 64,   8,  2,	 64,   8,  2},
 	{12000000,  96000,	1, 7, 6800,	 48,   5,  4,	 48,   5,  4},
 	{12500000,  96000,	1, 7, 8643,	 64,   8,  2,	 64,   8,  2},
-	/* 176.4k rate */
+	 
 	{ 5644800, 176400,	2, 8,    0,	 32,   8,  2,	 32,   8,  2},
 	{11289600, 176400,	1, 8,    0,	 32,   8,  2,	 32,   8,  2},
 	{12000000, 176400,	1, 7, 5264,	 32,   8,  2,	 32,   8,  2},
 	{12000000, 176400,	1, 8, 4672,	 32,   6,  3,	 32,   6,  3},
 	{12500000, 176400,	1, 7, 2253,	 32,   8,  2,	 32,   8,  2},
-	/* 192k rate */
+	 
 	{ 6144000, 192000,	2, 8,	 0,	 32,   8,  2,	 32,   8,  2},
 	{12288000, 192000,	1, 8,	 0,	 32,   8,  2,	 32,   8,  2},
 	{12000000, 192000,	1, 8, 1920,	 32,   8,  2,	 32,   8,  2},
@@ -316,9 +305,7 @@ static const DECLARE_TLV_DB_SCALE(class_D_drv_tlv, 600, 600, 0);
 static const DECLARE_TLV_DB_SCALE(hp_vol_tlv, -6350, 50, 0);
 static const DECLARE_TLV_DB_SCALE(sp_vol_tlv, -6350, 50, 0);
 
-/*
- * controls to be exported to the user space
- */
+ 
 static const struct snd_kcontrol_new common31xx_snd_controls[] = {
 	SOC_DOUBLE_R_S_TLV("DAC Playback Volume", AIC31XX_LDACVOL,
 			   AIC31XX_RDACVOL, 0, -127, 48, 7, 0, dac_vol_tlv),
@@ -331,11 +318,7 @@ static const struct snd_kcontrol_new common31xx_snd_controls[] = {
 	SOC_DOUBLE_R_TLV("HP Analog Playback Volume", AIC31XX_LANALOGHPL,
 			 AIC31XX_RANALOGHPR, 0, 0x7F, 1, hp_vol_tlv),
 
-	/* HP de-pop control: apply power not immediately but via ramp
-	 * function with these psarameters. Note that power up sequence
-	 * has to wait for this to complete; this is implemented by
-	 * polling HP driver status in aic31xx_dapm_power_event()
-	 */
+	 
 	SOC_ENUM("HP Output Driver Power-On time", hp_poweron_time_enum),
 	SOC_ENUM("HP Output Driver Ramp-up step", hp_rampup_step_enum),
 
@@ -516,7 +499,7 @@ static int mic_bias_event(struct snd_soc_dapm_widget *w,
 
 	switch (event) {
 	case SND_SOC_DAPM_POST_PMU:
-		/* change mic bias voltage to user defined */
+		 
 		snd_soc_component_update_bits(component, AIC31XX_MICBIAS,
 				    AIC31XX_MICBIAS_MASK,
 				    aic31xx->micbias_vg <<
@@ -524,7 +507,7 @@ static int mic_bias_event(struct snd_soc_dapm_widget *w,
 		dev_dbg(component->dev, "%s: turned on\n", __func__);
 		break;
 	case SND_SOC_DAPM_PRE_PMD:
-		/* turn mic bias off */
+		 
 		snd_soc_component_update_bits(component, AIC31XX_MICBIAS,
 				    AIC31XX_MICBIAS_MASK, 0);
 		dev_dbg(component->dev, "%s: turned off\n", __func__);
@@ -540,7 +523,7 @@ static const struct snd_soc_dapm_widget common31xx_dapm_widgets[] = {
 			 SND_SOC_NOPM, 0, 0, &ldac_in_control),
 	SND_SOC_DAPM_MUX("DAC Right Input",
 			 SND_SOC_NOPM, 0, 0, &rdac_in_control),
-	/* DACs */
+	 
 	SND_SOC_DAPM_DAC_E("DAC Left", "Left Playback",
 			   AIC31XX_DACSETUP, 7, 0, aic31xx_dapm_power_event,
 			   SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
@@ -549,13 +532,13 @@ static const struct snd_soc_dapm_widget common31xx_dapm_widgets[] = {
 			   AIC31XX_DACSETUP, 6, 0, aic31xx_dapm_power_event,
 			   SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_POST_PMD),
 
-	/* HP */
+	 
 	SND_SOC_DAPM_SWITCH("HP Left", SND_SOC_NOPM, 0, 0,
 			    &aic31xx_dapm_hpl_switch),
 	SND_SOC_DAPM_SWITCH("HP Right", SND_SOC_NOPM, 0, 0,
 			    &aic31xx_dapm_hpr_switch),
 
-	/* Output drivers */
+	 
 	SND_SOC_DAPM_OUT_DRV_E("HPL Driver", AIC31XX_HPDRIVER, 7, 0,
 			       NULL, 0, aic31xx_dapm_power_event,
 			       SND_SOC_DAPM_POST_PMD | SND_SOC_DAPM_POST_PMU),
@@ -563,25 +546,25 @@ static const struct snd_soc_dapm_widget common31xx_dapm_widgets[] = {
 			       NULL, 0, aic31xx_dapm_power_event,
 			       SND_SOC_DAPM_POST_PMD | SND_SOC_DAPM_POST_PMU),
 
-	/* Mic Bias */
+	 
 	SND_SOC_DAPM_SUPPLY("MICBIAS", SND_SOC_NOPM, 0, 0, mic_bias_event,
 			    SND_SOC_DAPM_POST_PMU | SND_SOC_DAPM_PRE_PMD),
 
-	/* Keep BCLK/WCLK enabled even if DAC/ADC is powered down */
+	 
 	SND_SOC_DAPM_SUPPLY("Activate I2S clocks", AIC31XX_IFACE2, 2, 0,
 			    NULL, 0),
 
-	/* Outputs */
+	 
 	SND_SOC_DAPM_OUTPUT("HPL"),
 	SND_SOC_DAPM_OUTPUT("HPR"),
 };
 
 static const struct snd_soc_dapm_widget dac31xx_dapm_widgets[] = {
-	/* Inputs */
+	 
 	SND_SOC_DAPM_INPUT("AIN1"),
 	SND_SOC_DAPM_INPUT("AIN2"),
 
-	/* Output Mixers */
+	 
 	SND_SOC_DAPM_MIXER("Output Left", SND_SOC_NOPM, 0, 0,
 			   dac31xx_left_output_switches,
 			   ARRAY_SIZE(dac31xx_left_output_switches)),
@@ -591,12 +574,12 @@ static const struct snd_soc_dapm_widget dac31xx_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_widget aic31xx_dapm_widgets[] = {
-	/* Inputs */
+	 
 	SND_SOC_DAPM_INPUT("MIC1LP"),
 	SND_SOC_DAPM_INPUT("MIC1RP"),
 	SND_SOC_DAPM_INPUT("MIC1LM"),
 
-	/* Input Selection to MIC_PGA */
+	 
 	SND_SOC_DAPM_MUX("MIC1LP P-Terminal", SND_SOC_NOPM, 0, 0,
 			 &p_term_mic1lp),
 	SND_SOC_DAPM_MUX("MIC1RP P-Terminal", SND_SOC_NOPM, 0, 0,
@@ -604,7 +587,7 @@ static const struct snd_soc_dapm_widget aic31xx_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("MIC1LM P-Terminal", SND_SOC_NOPM, 0, 0,
 			 &p_term_mic1lm),
 
-	/* ADC */
+	 
 	SND_SOC_DAPM_ADC_E("ADC", "Capture", AIC31XX_ADCSETUP, 7, 0,
 			   aic31xx_dapm_power_event, SND_SOC_DAPM_POST_PMU |
 			   SND_SOC_DAPM_POST_PMD),
@@ -612,11 +595,11 @@ static const struct snd_soc_dapm_widget aic31xx_dapm_widgets[] = {
 	SND_SOC_DAPM_MUX("MIC1LM M-Terminal", SND_SOC_NOPM, 0, 0,
 			 &m_term_mic1lm),
 
-	/* Enabling & Disabling MIC Gain Ctl */
+	 
 	SND_SOC_DAPM_PGA("MIC_GAIN_CTL", AIC31XX_MICPGA,
 			 7, 1, NULL, 0),
 
-	/* Output Mixers */
+	 
 	SND_SOC_DAPM_MIXER("Output Left", SND_SOC_NOPM, 0, 0,
 			   aic31xx_left_output_switches,
 			   ARRAY_SIZE(aic31xx_left_output_switches)),
@@ -628,7 +611,7 @@ static const struct snd_soc_dapm_widget aic31xx_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_widget aic311x_dapm_widgets[] = {
-	/* AIC3111 and AIC3110 have stereo class-D amplifier */
+	 
 	SND_SOC_DAPM_OUT_DRV_E("SPL ClassD", AIC31XX_SPKAMP, 7, 0, NULL, 0,
 			       aic31xx_dapm_power_event, SND_SOC_DAPM_POST_PMU |
 			       SND_SOC_DAPM_POST_PMD),
@@ -643,7 +626,7 @@ static const struct snd_soc_dapm_widget aic311x_dapm_widgets[] = {
 	SND_SOC_DAPM_OUTPUT("SPR"),
 };
 
-/* AIC3100 and AIC3120 have only mono class-D amplifier */
+ 
 static const struct snd_soc_dapm_widget aic310x_dapm_widgets[] = {
 	SND_SOC_DAPM_OUT_DRV_E("SPK ClassD", AIC31XX_SPKAMP, 7, 0, NULL, 0,
 			       aic31xx_dapm_power_event, SND_SOC_DAPM_POST_PMU |
@@ -655,7 +638,7 @@ static const struct snd_soc_dapm_widget aic310x_dapm_widgets[] = {
 
 static const struct snd_soc_dapm_route
 common31xx_audio_map[] = {
-	/* DAC Input Routing */
+	 
 	{"DAC Left Input", "Left Data", "AIF IN"},
 	{"DAC Left Input", "Right Data", "AIF IN"},
 	{"DAC Left Input", "Mono", "AIF IN"},
@@ -665,12 +648,12 @@ common31xx_audio_map[] = {
 	{"DAC Left", NULL, "DAC Left Input"},
 	{"DAC Right", NULL, "DAC Right Input"},
 
-	/* HPL path */
+	 
 	{"HP Left", "Switch", "Output Left"},
 	{"HPL Driver", NULL, "HP Left"},
 	{"HPL", NULL, "HPL Driver"},
 
-	/* HPR path */
+	 
 	{"HP Right", "Switch", "Output Right"},
 	{"HPR Driver", NULL, "HP Right"},
 	{"HPR", NULL, "HPR Driver"},
@@ -678,19 +661,19 @@ common31xx_audio_map[] = {
 
 static const struct snd_soc_dapm_route
 dac31xx_audio_map[] = {
-	/* Left Output */
+	 
 	{"Output Left", "From Left DAC", "DAC Left"},
 	{"Output Left", "From AIN1", "AIN1"},
 	{"Output Left", "From AIN2", "AIN2"},
 
-	/* Right Output */
+	 
 	{"Output Right", "From Right DAC", "DAC Right"},
 	{"Output Right", "From AIN2", "AIN2"},
 };
 
 static const struct snd_soc_dapm_route
 aic31xx_audio_map[] = {
-	/* Mic input */
+	 
 	{"MIC1LP P-Terminal", "FFR 10 Ohm", "MIC1LP"},
 	{"MIC1LP P-Terminal", "FFR 20 Ohm", "MIC1LP"},
 	{"MIC1LP P-Terminal", "FFR 40 Ohm", "MIC1LP"},
@@ -714,24 +697,24 @@ aic31xx_audio_map[] = {
 
 	{"AIF OUT", NULL, "ADC"},
 
-	/* Left Output */
+	 
 	{"Output Left", "From Left DAC", "DAC Left"},
 	{"Output Left", "From MIC1LP", "MIC1LP"},
 	{"Output Left", "From MIC1RP", "MIC1RP"},
 
-	/* Right Output */
+	 
 	{"Output Right", "From Right DAC", "DAC Right"},
 	{"Output Right", "From MIC1RP", "MIC1RP"},
 };
 
 static const struct snd_soc_dapm_route
 aic311x_audio_map[] = {
-	/* SP L path */
+	 
 	{"Speaker Left", "Switch", "Output Left"},
 	{"SPL ClassD", NULL, "Speaker Left"},
 	{"SPL", NULL, "SPL ClassD"},
 
-	/* SP R path */
+	 
 	{"Speaker Right", "Switch", "Output Right"},
 	{"SPR ClassD", NULL, "Speaker Right"},
 	{"SPR", NULL, "SPR ClassD"},
@@ -739,22 +722,13 @@ aic311x_audio_map[] = {
 
 static const struct snd_soc_dapm_route
 aic310x_audio_map[] = {
-	/* SP L path */
+	 
 	{"Speaker", "Switch", "Output Left"},
 	{"SPK ClassD", NULL, "Speaker"},
 	{"SPK", NULL, "SPK ClassD"},
 };
 
-/*
- * Always connected DAPM routes for codec clock master modes.
- * If the codec is the master on the I2S bus, we need to power up components
- * to have valid DAC_CLK.
- *
- * In order to have the I2S clocks on the bus either the DACs/ADC need to be
- * enabled, or the P0/R29/D2 (Keep bclk/wclk in power down) need to be set.
- *
- * Otherwise the codec will not generate clocks on the bus.
- */
+ 
 static const struct snd_soc_dapm_route
 common31xx_cm_audio_map[] = {
 	{"HPL", NULL, "AIF IN"},
@@ -869,7 +843,7 @@ static int aic31xx_setup_pll(struct snd_soc_component *component,
 	}
 	mclk_p = aic31xx->sysclk / aic31xx->p_div;
 
-	/* Use PLL as CODEC_CLKIN and DAC_CLK as BDIV_CLKIN */
+	 
 	snd_soc_component_update_bits(component, AIC31XX_CLKMUX,
 			    AIC31XX_CODEC_CLKIN_MASK, AIC31XX_CODEC_CLKIN_PLL);
 	snd_soc_component_update_bits(component, AIC31XX_IFACE2,
@@ -894,22 +868,16 @@ static int aic31xx_setup_pll(struct snd_soc_component *component,
 		dev_err(component->dev,
 			"%s: Sample rate (%u) and format not supported\n",
 			__func__, params_rate(params));
-		/* See bellow for details how fix this. */
+		 
 		return -EINVAL;
 	}
 	if (bclk_score != 0) {
 		dev_warn(component->dev, "Can not produce exact bitclock");
-		/* This is fine if using dsp format, but if using i2s
-		   there may be trouble. To fix the issue edit the
-		   aic31xx_divs table for your mclk and sample
-		   rate. Details can be found from:
-		   https://www.ti.com/lit/ds/symlink/tlv320aic3100.pdf
-		   Section: 5.6 CLOCK Generation and PLL
-		*/
+		 
 	}
 	i = match;
 
-	/* PLL configuration */
+	 
 	snd_soc_component_update_bits(component, AIC31XX_PLLPR, AIC31XX_PLL_MASK,
 			    (aic31xx->p_div << 4) | aic31xx_divs[i].pll_r);
 	snd_soc_component_write(component, AIC31XX_PLLJ, aic31xx_divs[i].pll_j);
@@ -919,7 +887,7 @@ static int aic31xx_setup_pll(struct snd_soc_component *component,
 	snd_soc_component_write(component, AIC31XX_PLLDLSB,
 		      aic31xx_divs[i].pll_d & 0xff);
 
-	/* DAC dividers configuration */
+	 
 	snd_soc_component_update_bits(component, AIC31XX_NDAC, AIC31XX_PLL_MASK,
 			    aic31xx_divs[i].ndac);
 	snd_soc_component_update_bits(component, AIC31XX_MDAC, AIC31XX_PLL_MASK,
@@ -928,7 +896,7 @@ static int aic31xx_setup_pll(struct snd_soc_component *component,
 	snd_soc_component_write(component, AIC31XX_DOSRMSB, aic31xx_divs[i].dosr >> 8);
 	snd_soc_component_write(component, AIC31XX_DOSRLSB, aic31xx_divs[i].dosr & 0xff);
 
-	/* ADC dividers configuration. Write reset value 1 if not used. */
+	 
 	snd_soc_component_update_bits(component, AIC31XX_NADC, AIC31XX_PLL_MASK,
 			    aic31xx_divs[i].nadc ? aic31xx_divs[i].nadc : 1);
 	snd_soc_component_update_bits(component, AIC31XX_MADC, AIC31XX_PLL_MASK,
@@ -936,7 +904,7 @@ static int aic31xx_setup_pll(struct snd_soc_component *component,
 
 	snd_soc_component_write(component, AIC31XX_AOSR, aic31xx_divs[i].aosr);
 
-	/* Bit clock divider configuration. */
+	 
 	snd_soc_component_update_bits(component, AIC31XX_BCLKN,
 			    AIC31XX_PLL_MASK, bclk_n);
 
@@ -996,10 +964,7 @@ static int aic31xx_hw_params(struct snd_pcm_substream *substream,
 			    AIC31XX_IFACE1_DATALEN_MASK,
 			    data);
 
-	/*
-	 * If BCLK is used as PLL input, the sysclk is determined by the hw
-	 * params. So it must be updated here to match the input frequency.
-	 */
+	 
 	if (aic31xx->sysclk_id == AIC31XX_PLL_CLKIN_BCLK) {
 		aic31xx->sysclk = params_rate(params) * params_width(params) *
 				  params_channels(params);
@@ -1036,10 +1001,7 @@ static int aic31xx_clock_master_routes(struct snd_soc_component *component,
 	fmt &= SND_SOC_DAIFMT_CLOCK_PROVIDER_MASK;
 	if (fmt == SND_SOC_DAIFMT_CBC_CFC &&
 	    aic31xx->master_dapm_route_applied) {
-		/*
-		 * Remove the DAPM route(s) for codec clock master modes,
-		 * if applied
-		 */
+		 
 		ret = snd_soc_dapm_del_routes(dapm, common31xx_cm_audio_map,
 					ARRAY_SIZE(common31xx_cm_audio_map));
 		if (!ret && !(aic31xx->codec_type & DAC31XX_BIT))
@@ -1053,10 +1015,7 @@ static int aic31xx_clock_master_routes(struct snd_soc_component *component,
 		aic31xx->master_dapm_route_applied = false;
 	} else if (fmt != SND_SOC_DAIFMT_CBC_CFC &&
 		   !aic31xx->master_dapm_route_applied) {
-		/*
-		 * Add the needed DAPM route(s) for codec clock master modes,
-		 * if it is not done already
-		 */
+		 
 		ret = snd_soc_dapm_add_routes(dapm, common31xx_cm_audio_map,
 					ARRAY_SIZE(common31xx_cm_audio_map));
 		if (!ret && !(aic31xx->codec_type & DAC31XX_BIT))
@@ -1100,7 +1059,7 @@ static int aic31xx_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* signal polarity */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -1112,7 +1071,7 @@ static int aic31xx_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		break;
@@ -1120,11 +1079,7 @@ static int aic31xx_set_dai_fmt(struct snd_soc_dai *codec_dai,
 		dsp_a_val = 0x1;
 		fallthrough;
 	case SND_SOC_DAIFMT_DSP_B:
-		/*
-		 * NOTE: This CODEC samples on the falling edge of BCLK in
-		 * DSP mode, this is inverted compared to what most DAIs
-		 * expect, so we invert for this mode
-		 */
+		 
 		iface_reg2 ^= AIC31XX_BCLKINV_MASK;
 		iface_reg1 |= (AIC31XX_DSP_MODE <<
 			       AIC31XX_IFACE1_DATATYPE_SHIFT);
@@ -1185,7 +1140,7 @@ static int aic31xx_set_dai_sysclk(struct snd_soc_dai *codec_dai,
 		return -EINVAL;
 	}
 
-	/* set clock on MCLK, BCLK, or GPIO1 as PLL input */
+	 
 	snd_soc_component_update_bits(component, AIC31XX_CLKMUX, AIC31XX_PLL_CLKIN_MASK,
 			    clk_id << AIC31XX_PLL_CLKIN_SHIFT);
 
@@ -1203,10 +1158,7 @@ static int aic31xx_regulator_event(struct notifier_block *nb,
 	struct aic31xx_priv *aic31xx = disable_nb->aic31xx;
 
 	if (event & REGULATOR_EVENT_DISABLE) {
-		/*
-		 * Put codec to reset and as at least one of the
-		 * supplies was disabled.
-		 */
+		 
 		if (aic31xx->gpio_reset)
 			gpiod_set_value(aic31xx->gpio_reset, 1);
 
@@ -1223,12 +1175,12 @@ static int aic31xx_reset(struct aic31xx_priv *aic31xx)
 
 	if (aic31xx->gpio_reset) {
 		gpiod_set_value(aic31xx->gpio_reset, 1);
-		ndelay(10); /* At least 10ns */
+		ndelay(10);  
 		gpiod_set_value(aic31xx->gpio_reset, 0);
 	} else {
 		ret = regmap_write(aic31xx->regmap, AIC31XX_RESET, 1);
 	}
-	mdelay(1); /* At least 1ms */
+	mdelay(1);  
 
 	return ret;
 }
@@ -1278,7 +1230,7 @@ static int aic31xx_power_on(struct snd_soc_component *component)
 
 	regcache_cache_only(aic31xx->regmap, false);
 
-	/* Reset device registers for a consistent power-on like state */
+	 
 	ret = aic31xx_reset(aic31xx);
 	if (ret < 0)
 		dev_err(aic31xx->dev, "Could not reset device: %d\n", ret);
@@ -1293,11 +1245,7 @@ static int aic31xx_power_on(struct snd_soc_component *component)
 		return ret;
 	}
 
-	/*
-	 * The jack detection configuration is in the same register
-	 * that is used to report jack detect status so is volatile
-	 * and not covered by the cache sync, restore it separately.
-	 */
+	 
 	aic31xx_set_jack(component, aic31xx->jack, NULL);
 
 	return 0;
@@ -1353,7 +1301,7 @@ static int aic31xx_set_jack(struct snd_soc_component *component,
 
 	aic31xx->jack = jack;
 
-	/* Enable/Disable jack detection */
+	 
 	regmap_write(aic31xx->regmap, AIC31XX_HSDETECT,
 		     jack ? AIC31XX_HSD_ENABLE : 0);
 
@@ -1395,7 +1343,7 @@ static int aic31xx_codec_probe(struct snd_soc_component *component)
 	if (ret)
 		return ret;
 
-	/* set output common-mode voltage */
+	 
 	snd_soc_component_update_bits(component, AIC31XX_HPDRIVER,
 				      AIC31XX_HPD_OCMV_MASK,
 				      aic31xx->ocmv << AIC31XX_HPD_OCMV_SHIFT);
@@ -1477,7 +1425,7 @@ static const struct of_device_id tlv320aic31xx_of_match[] = {
 	{},
 };
 MODULE_DEVICE_TABLE(of, tlv320aic31xx_of_match);
-#endif /* CONFIG_OF */
+#endif  
 
 #ifdef CONFIG_ACPI
 static const struct acpi_device_id aic31xx_acpi_match[] = {
@@ -1597,7 +1545,7 @@ static void aic31xx_configure_ocmv(struct aic31xx_priv *priv)
 
 	if (dev->fwnode &&
 	    fwnode_property_read_u32(dev->fwnode, "ai31xx-ocmv", &value)) {
-		/* OCMV setting is forced by DT */
+		 
 		if (value <= 3) {
 			priv->ocmv = value;
 			return;

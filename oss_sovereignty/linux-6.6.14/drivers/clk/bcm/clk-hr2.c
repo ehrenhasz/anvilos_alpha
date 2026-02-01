@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-// Copyright (C) 2017 Broadcom
+
+
 
 #include <linux/kernel.h>
 #include <linux/err.h>

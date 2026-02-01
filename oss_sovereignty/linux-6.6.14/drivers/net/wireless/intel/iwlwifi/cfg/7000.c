@@ -1,26 +1,22 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2012-2014, 2018-2020, 2023 Intel Corporation
- * Copyright (C) 2013-2014 Intel Mobile Communications GmbH
- * Copyright (C) 2015 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/module.h>
 #include <linux/stringify.h>
 #include "iwl-config.h"
 
-/* Highest firmware API version supported */
+ 
 #define IWL7260_UCODE_API_MAX	17
 #define IWL7265_UCODE_API_MAX	17
 #define IWL7265D_UCODE_API_MAX	29
 #define IWL3168_UCODE_API_MAX	29
 
-/* Lowest firmware API version supported */
+ 
 #define IWL7260_UCODE_API_MIN	17
 #define IWL7265_UCODE_API_MIN	17
 #define IWL7265D_UCODE_API_MIN	22
 #define IWL3168_UCODE_API_MIN	22
 
-/* NVM versions */
+ 
 #define IWL7260_NVM_VERSION		0x0a1d
 #define IWL3160_NVM_VERSION		0x709
 #define IWL3165_NVM_VERSION		0x709
@@ -28,7 +24,7 @@
 #define IWL7265_NVM_VERSION		0x0a1d
 #define IWL7265D_NVM_VERSION		0x0c11
 
-/* DCCM offsets and lengths */
+ 
 #define IWL7000_DCCM_OFFSET		0x800000
 #define IWL7260_DCCM_LEN		0x14000
 #define IWL3160_DCCM_LEN		0x10000

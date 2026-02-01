@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AES XCBC routines supporting the Power 7+ Nest Accelerators driver
- *
- * Copyright (C) 2011-2012 International Business Machines Inc.
- *
- * Author: Kent Yoder <yoder1@us.ibm.com>
- */
+
+ 
 
 #include <crypto/internal/hash.h>
 #include <crypto/aes.h>
@@ -45,17 +39,7 @@ static int nx_xcbc_set_key(struct crypto_shash *desc,
 	return 0;
 }
 
-/*
- * Based on RFC 3566, for a zero-length message:
- *
- * n = 1
- * K1 = E(K, 0x01010101010101010101010101010101)
- * K3 = E(K, 0x03030303030303030303030303030303)
- * E[0] = 0x00000000000000000000000000000000
- * M[1] = 0x80000000000000000000000000000000 (0 length message with padding)
- * E[1] = (K1, M[1] ^ E[0] ^ K3)
- * Tag = M[1]
- */
+ 
 static int nx_xcbc_empty(struct shash_desc *desc, u8 *out)
 {
 	struct nx_crypto_ctx *nx_ctx = crypto_tfm_ctx(&desc->tfm->base);
@@ -66,18 +50,18 @@ static int nx_xcbc_empty(struct shash_desc *desc, u8 *out)
 	int rc = 0;
 	int len;
 
-	/* Change to ECB mode */
+	 
 	csbcpb->cpb.hdr.mode = NX_MODE_AES_ECB;
 	memcpy(key, csbcpb->cpb.aes_xcbc.key, AES_BLOCK_SIZE);
 	memcpy(csbcpb->cpb.aes_ecb.key, key, AES_BLOCK_SIZE);
 	NX_CPB_FDM(csbcpb) |= NX_FDM_ENDE_ENCRYPT;
 
-	/* K1 and K3 base patterns */
+	 
 	memset(keys[0], 0x01, sizeof(keys[0]));
 	memset(keys[1], 0x03, sizeof(keys[1]));
 
 	len = sizeof(keys);
-	/* Generate K1 and K3 encrypting the patterns */
+	 
 	in_sg = nx_build_sg_list(nx_ctx->in_sg, (u8 *) keys, &len,
 				 nx_ctx->ap->sglen);
 
@@ -98,12 +82,12 @@ static int nx_xcbc_empty(struct shash_desc *desc, u8 *out)
 		goto out;
 	atomic_inc(&(nx_ctx->stats->aes_ops));
 
-	/* XOr K3 with the padding for a 0 length message */
+	 
 	keys[1][0] ^= 0x80;
 
 	len = sizeof(keys[1]);
 
-	/* Encrypt the final result */
+	 
 	memcpy(csbcpb->cpb.aes_ecb.key, keys[0], AES_BLOCK_SIZE);
 	in_sg = nx_build_sg_list(nx_ctx->in_sg, (u8 *) keys[1], &len,
 				 nx_ctx->ap->sglen);
@@ -127,7 +111,7 @@ static int nx_xcbc_empty(struct shash_desc *desc, u8 *out)
 	atomic_inc(&(nx_ctx->stats->aes_ops));
 
 out:
-	/* Restore XCBC mode */
+	 
 	csbcpb->cpb.hdr.mode = NX_MODE_AES_XCBC_MAC;
 	memcpy(csbcpb->cpb.aes_xcbc.key, key, AES_BLOCK_SIZE);
 	NX_CPB_FDM(csbcpb) &= ~NX_FDM_ENDE_ENCRYPT;
@@ -182,10 +166,7 @@ static int nx_xcbc_update(struct shash_desc *desc,
 
 	total = sctx->count + len;
 
-	/* 2 cases for total data len:
-	 *  1: <= AES_BLOCK_SIZE: copy into state, return 0
-	 *  2: > AES_BLOCK_SIZE: process X blocks, copy in leftover
-	 */
+	 
 	if (total <= AES_BLOCK_SIZE) {
 		memcpy(sctx->buffer + sctx->count, data, len);
 		sctx->count += len;
@@ -215,11 +196,7 @@ static int nx_xcbc_update(struct shash_desc *desc,
 
 		leftover = total - to_process;
 
-		/* the hardware will not accept a 0 byte operation for this
-		 * algorithm and the operation MUST be finalized to be correct.
-		 * So if we happen to get an update that falls on a block sized
-		 * boundary, we must save off the last block to finalize with
-		 * later. */
+		 
 		if (!leftover) {
 			to_process -= AES_BLOCK_SIZE;
 			leftover = AES_BLOCK_SIZE;
@@ -251,8 +228,7 @@ static int nx_xcbc_update(struct shash_desc *desc,
 		nx_ctx->op.inlen = (nx_ctx->in_sg - in_sg) *
 					sizeof(struct nx_sg);
 
-		/* we've hit the nx chip previously and we're updating again,
-		 * so copy over the partial digest */
+		 
 		if (NX_CPB_FDM(csbcpb) & NX_FDM_CONTINUATION) {
 			memcpy(csbcpb->cpb.aes_xcbc.cv,
 				csbcpb->cpb.aes_xcbc.out_cv_mac,
@@ -271,7 +247,7 @@ static int nx_xcbc_update(struct shash_desc *desc,
 
 		atomic_inc(&(nx_ctx->stats->aes_ops));
 
-		/* everything after the first update is continuation */
+		 
 		NX_CPB_FDM(csbcpb) |= NX_FDM_CONTINUATION;
 
 		total -= to_process;
@@ -280,7 +256,7 @@ static int nx_xcbc_update(struct shash_desc *desc,
 		in_sg = nx_ctx->in_sg;
 	} while (leftover > AES_BLOCK_SIZE);
 
-	/* copy the leftover back into the state struct */
+	 
 	memcpy(sctx->buffer, data, leftover);
 	sctx->count = leftover;
 
@@ -302,22 +278,16 @@ static int nx_xcbc_final(struct shash_desc *desc, u8 *out)
 	spin_lock_irqsave(&nx_ctx->lock, irq_flags);
 
 	if (NX_CPB_FDM(csbcpb) & NX_FDM_CONTINUATION) {
-		/* we've hit the nx chip previously, now we're finalizing,
-		 * so copy over the partial digest */
+		 
 		memcpy(csbcpb->cpb.aes_xcbc.cv,
 		       csbcpb->cpb.aes_xcbc.out_cv_mac, AES_BLOCK_SIZE);
 	} else if (sctx->count == 0) {
-		/*
-		 * we've never seen an update, so this is a 0 byte op. The
-		 * hardware cannot handle a 0 byte op, so just ECB to
-		 * generate the hash.
-		 */
+		 
 		rc = nx_xcbc_empty(desc, out);
 		goto out;
 	}
 
-	/* final is represented by continuing the operation and indicating that
-	 * this is not an intermediate operation */
+	 
 	NX_CPB_FDM(csbcpb) &= ~NX_FDM_INTERMEDIATE;
 
 	len = sctx->count;

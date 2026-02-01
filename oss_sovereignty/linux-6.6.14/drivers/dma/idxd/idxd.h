@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright(c) 2019 Intel Corporation. All rights rsvd. */
+ 
+ 
 #ifndef _IDXD_H_
 #define _IDXD_H_
 
@@ -76,10 +76,7 @@ struct idxd_irq_entry {
 	int vector;
 	struct llist_head pending_llist;
 	struct list_head work_list;
-	/*
-	 * Lock to protect access between irq thread process descriptor
-	 * and irq thread processing error descriptor.
-	 */
+	 
 	spinlock_t list_lock;
 	int int_handle;
 	ioasid_t pasid;
@@ -200,7 +197,7 @@ struct idxd_wq {
 	enum idxd_wq_type type;
 	struct idxd_group *group;
 	int client_count;
-	struct mutex wq_lock;	/* mutex for workqueue */
+	struct mutex wq_lock;	 
 	u32 size;
 	u32 threshold;
 	u32 priority;
@@ -224,7 +221,7 @@ struct idxd_wq {
 	u64 max_xfer_bytes;
 	u32 max_batch_size;
 
-	/* Lock to protect upasid_xa access. */
+	 
 	struct mutex uc_lock;
 	struct xarray upasid_xa;
 };
@@ -236,7 +233,7 @@ struct idxd_engine {
 	struct idxd_device *idxd;
 };
 
-/* shadow registers */
+ 
 struct idxd_hw {
 	u32 version;
 	union gen_cap_reg gen_cap;
@@ -278,13 +275,13 @@ struct idxd_driver_data {
 };
 
 struct idxd_evl {
-	/* Lock to protect event log access. */
+	 
 	spinlock_t lock;
 	void *log;
 	dma_addr_t dma;
-	/* Total size of event log = number of entries * entry size. */
+	 
 	unsigned int log_size;
-	/* The number of entries in the event log. */
+	 
 	u16 size;
 	u16 head;
 	unsigned long *bmap;
@@ -296,7 +293,7 @@ struct idxd_evl_fault {
 	struct idxd_wq *wq;
 	u8 status;
 
-	/* make this last member always */
+	 
 	struct __evl_entry entry[];
 };
 
@@ -310,13 +307,13 @@ struct idxd_device {
 	int id;
 	int major;
 	u32 cmd_status;
-	struct idxd_irq_entry ie;	/* misc irq, msix 0 */
+	struct idxd_irq_entry ie;	 
 
 	struct pci_dev *pdev;
 	void __iomem *reg_base;
 
-	spinlock_t dev_lock;	/* spinlock for device */
-	spinlock_t cmd_lock;	/* spinlock for device commands */
+	spinlock_t dev_lock;	 
+	spinlock_t cmd_lock;	 
 	struct completion *cmd_done;
 	struct idxd_group **groups;
 	struct idxd_wq **wqs;
@@ -342,7 +339,7 @@ struct idxd_device {
 	int max_wqs;
 	int max_wq_size;
 	int rdbuf_limit;
-	int nr_rdbufs;		/* non-reserved read buffers */
+	int nr_rdbufs;		 
 	unsigned int wqcfg_size;
 	unsigned long *wq_enable_map;
 
@@ -374,7 +371,7 @@ static inline unsigned int evl_size(struct idxd_device *idxd)
 	return idxd->evl->size * evl_ent_size(idxd);
 }
 
-/* IDXD software descriptor */
+ 
 struct idxd_desc {
 	union {
 		struct dsa_hw_desc *hw;
@@ -394,10 +391,7 @@ struct idxd_desc {
 	struct idxd_wq *wq;
 };
 
-/*
- * This is software defined error for the completion status. We overload the error code
- * that will never appear in completion status and only SWERR register.
- */
+ 
 enum idxd_completion_status {
 	IDXD_COMP_DESC_ABORT = 0xff,
 };
@@ -583,14 +577,7 @@ static inline int idxd_get_wq_portal_full_offset(int wq_id,
 
 #define IDXD_PORTAL_MASK	(PAGE_SIZE - 1)
 
-/*
- * Even though this function can be accessed by multiple threads, it is safe to use.
- * At worst the address gets used more than once before it gets incremented. We don't
- * hit a threshold until iops becomes many million times a second. So the occasional
- * reuse of the same address is tolerable compare to using an atomic variable. This is
- * safe on a system that has atomic load/store for 32bit integers. Given that this is an
- * Intel iEP device, that should not be a problem.
- */
+ 
 static inline void __iomem *idxd_wq_portal_addr(struct idxd_wq *wq)
 {
 	int ofs = wq->portal_offset;
@@ -614,11 +601,7 @@ static inline int idxd_wq_refcount(struct idxd_wq *wq)
 	return wq->client_count;
 };
 
-/*
- * Intel IAA does not support batch processing.
- * The max batch size of device, max batch size of wq and
- * max batch shift of wqcfg should be always 0 on IAA.
- */
+ 
 static inline void idxd_set_max_batch_size(int idxd_type, struct idxd_device *idxd,
 					   u32 max_batch_size)
 {
@@ -664,13 +647,13 @@ void idxd_wqs_quiesce(struct idxd_device *idxd);
 bool idxd_queue_int_handle_resubmit(struct idxd_desc *desc);
 void multi_u64_to_bmap(unsigned long *bmap, u64 *val, int count);
 
-/* device interrupt control */
+ 
 irqreturn_t idxd_misc_thread(int vec, void *data);
 irqreturn_t idxd_wq_thread(int irq, void *data);
 void idxd_mask_error_interrupts(struct idxd_device *idxd);
 void idxd_unmask_error_interrupts(struct idxd_device *idxd);
 
-/* device control */
+ 
 int idxd_device_drv_probe(struct idxd_dev *idxd_dev);
 void idxd_device_drv_remove(struct idxd_dev *idxd_dev);
 int drv_enable_wq(struct idxd_wq *wq);
@@ -688,7 +671,7 @@ int idxd_device_request_int_handle(struct idxd_device *idxd, int idx, int *handl
 int idxd_device_release_int_handle(struct idxd_device *idxd, int handle,
 				   enum idxd_interrupt_type irq_type);
 
-/* work queue control */
+ 
 void idxd_wqs_unmap_portal(struct idxd_device *idxd);
 int idxd_wq_alloc_resources(struct idxd_wq *wq);
 void idxd_wq_free_resources(struct idxd_wq *wq);
@@ -706,19 +689,19 @@ int idxd_wq_init_percpu_ref(struct idxd_wq *wq);
 void idxd_wq_free_irq(struct idxd_wq *wq);
 int idxd_wq_request_irq(struct idxd_wq *wq);
 
-/* submission */
+ 
 int idxd_submit_desc(struct idxd_wq *wq, struct idxd_desc *desc);
 struct idxd_desc *idxd_alloc_desc(struct idxd_wq *wq, enum idxd_op_type optype);
 void idxd_free_desc(struct idxd_wq *wq, struct idxd_desc *desc);
 int idxd_enqcmds(struct idxd_wq *wq, void __iomem *portal, const void *desc);
 
-/* dmaengine */
+ 
 int idxd_register_dma_device(struct idxd_device *idxd);
 void idxd_unregister_dma_device(struct idxd_device *idxd);
 void idxd_dma_complete_txd(struct idxd_desc *desc,
 			   enum idxd_complete_type comp_type, bool free_desc);
 
-/* cdev */
+ 
 int idxd_cdev_register(void);
 void idxd_cdev_remove(void);
 int idxd_cdev_get_major(struct idxd_device *idxd);
@@ -728,7 +711,7 @@ int idxd_copy_cr(struct idxd_wq *wq, ioasid_t pasid, unsigned long addr,
 		 void *buf, int len);
 void idxd_user_counter_increment(struct idxd_wq *wq, u32 pasid, int index);
 
-/* perfmon */
+ 
 #if IS_ENABLED(CONFIG_INTEL_IDXD_PERFMON)
 int perfmon_pmu_init(struct idxd_device *idxd);
 void perfmon_pmu_remove(struct idxd_device *idxd);
@@ -743,7 +726,7 @@ static inline void perfmon_init(void) {}
 static inline void perfmon_exit(void) {}
 #endif
 
-/* debugfs */
+ 
 int idxd_device_init_debugfs(struct idxd_device *idxd);
 void idxd_device_remove_debugfs(struct idxd_device *idxd);
 int idxd_init_debugfs(void);

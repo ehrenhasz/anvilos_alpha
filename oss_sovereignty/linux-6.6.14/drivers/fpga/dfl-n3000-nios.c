@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * DFL device driver for Nios private feature on Intel PAC (Programmable
- * Acceleration Card) N3000
- *
- * Copyright (C) 2019-2020 Intel Corporation, Inc.
- *
- * Authors:
- *   Wu Hao <hao.wu@intel.com>
- *   Xu Yilun <yilun.xu@intel.com>
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/dfl.h>
 #include <linux/errno.h>
@@ -23,10 +14,7 @@
 #include <linux/spi/spi.h>
 #include <linux/types.h>
 
-/*
- * N3000 Nios private feature registers, named as NIOS_SPI_XX on spec.
- * NS is the abbreviation of NIOS_SPI.
- */
+ 
 #define N3000_NS_PARAM				0x8
 #define N3000_NS_PARAM_SHIFT_MODE_MSK		BIT_ULL(1)
 #define N3000_NS_PARAM_SHIFT_MODE_MSB		0
@@ -49,11 +37,11 @@
 #define N3000_NS_STAT_RD_DATA			GENMASK_ULL(31, 0)
 #define N3000_NS_STAT_RW_VAL			BIT_ULL(32)
 
-/* Nios handshake registers, indirect access */
+ 
 #define N3000_NIOS_INIT				0x1000
 #define N3000_NIOS_INIT_DONE			BIT(0)
 #define N3000_NIOS_INIT_START			BIT(1)
-/* Mode for retimer A, link 0, the same below */
+ 
 #define N3000_NIOS_INIT_REQ_FEC_MODE_A0_MSK	GENMASK(9, 8)
 #define N3000_NIOS_INIT_REQ_FEC_MODE_A1_MSK	GENMASK(11, 10)
 #define N3000_NIOS_INIT_REQ_FEC_MODE_A2_MSK	GENMASK(13, 12)
@@ -71,13 +59,13 @@
 #define N3000_NIOS_FW_VERSION_MINOR		GENMASK(27, 24)
 #define N3000_NIOS_FW_VERSION_MAJOR		GENMASK(31, 28)
 
-/* The retimers we use on Intel PAC N3000 is Parkvale, abbreviated to PKVL */
+ 
 #define N3000_NIOS_PKVL_A_MODE_STS		0x1020
 #define N3000_NIOS_PKVL_B_MODE_STS		0x1024
 #define N3000_NIOS_PKVL_MODE_STS_GROUP_MSK	GENMASK(15, 8)
 #define N3000_NIOS_PKVL_MODE_STS_GROUP_OK	0x0
 #define N3000_NIOS_PKVL_MODE_STS_ID_MSK		GENMASK(7, 0)
-/* When GROUP MASK field == GROUP_OK  */
+ 
 #define N3000_NIOS_PKVL_MODE_ID_RESET		0x0
 #define N3000_NIOS_PKVL_MODE_ID_4X10G		0x1
 #define N3000_NIOS_PKVL_MODE_ID_4X25G		0x2
@@ -85,10 +73,10 @@
 #define N3000_NIOS_PKVL_MODE_ID_2X25G_2X10G	0x4
 #define N3000_NIOS_PKVL_MODE_ID_1X25G		0x5
 
-#define N3000_NIOS_REGBUS_RETRY_COUNT		10000	/* loop count */
+#define N3000_NIOS_REGBUS_RETRY_COUNT		10000	 
 
-#define N3000_NIOS_INIT_TIMEOUT			10000000	/* usec */
-#define N3000_NIOS_INIT_TIME_INTV		100000		/* usec */
+#define N3000_NIOS_INIT_TIMEOUT			10000000	 
+#define N3000_NIOS_INIT_TIME_INTV		100000		 
 
 #define N3000_NIOS_INIT_REQ_FEC_MODE_MSK_ALL	\
 	(N3000_NIOS_INIT_REQ_FEC_MODE_A0_MSK |	\
@@ -242,7 +230,7 @@ static ssize_t fec_mode_show(struct device *dev,
 	struct n3000_nios *nn = dev_get_drvdata(dev);
 	int ret;
 
-	/* FEC mode setting is not supported in early FW versions */
+	 
 	ret = regmap_read(nn->regmap, N3000_NIOS_FW_VERSION, &val);
 	if (ret)
 		return ret;
@@ -250,7 +238,7 @@ static ssize_t fec_mode_show(struct device *dev,
 	if (FIELD_GET(N3000_NIOS_FW_VERSION_MAJOR, val) < 3)
 		return sysfs_emit(buf, "not supported\n");
 
-	/* If no 25G links, FEC mode setting is not supported either */
+	 
 	ret = get_retimer_mode(nn, N3000_NIOS_PKVL_A_MODE_STS, &retimer_a_mode);
 	if (ret)
 		return ret;
@@ -263,15 +251,12 @@ static ssize_t fec_mode_show(struct device *dev,
 	    !IS_RETIMER_FEC_SUPPORTED(retimer_b_mode))
 		return sysfs_emit(buf, "not supported\n");
 
-	/* get the valid FEC mode for 25G links */
+	 
 	ret = regmap_read(nn->regmap, N3000_NIOS_INIT, &val);
 	if (ret)
 		return ret;
 
-	/*
-	 * FEC mode should always be the same for all links, as we set them
-	 * in this way.
-	 */
+	 
 	fec_modes = (val & N3000_NIOS_INIT_REQ_FEC_MODE_MSK_ALL);
 	if (fec_modes == N3000_NIOS_INIT_REQ_FEC_MODE_NO_ALL)
 		return sysfs_emit(buf, "no\n");
@@ -299,29 +284,13 @@ static int n3000_nios_init_done_check(struct n3000_nios *nn)
 	struct device *dev = nn->dev;
 	int ret, ret2;
 
-	/*
-	 * The SPI is shared by the Nios core inside the FPGA, Nios will use
-	 * this SPI master to do some one time initialization after power up,
-	 * and then release the control to OS. The driver needs to poll on
-	 * INIT_DONE to see when driver could take the control.
-	 *
-	 * Please note that after Nios firmware version 3.0.0, INIT_START is
-	 * introduced, so driver needs to trigger START firstly and then check
-	 * INIT_DONE.
-	 */
+	 
 
 	ret = regmap_read(nn->regmap, N3000_NIOS_FW_VERSION, &val);
 	if (ret)
 		return ret;
 
-	/*
-	 * If Nios version register is totally uninitialized(== 0x0), then the
-	 * Nios firmware is missing. So host could take control of SPI master
-	 * safely, but initialization work for Nios is not done. To restore the
-	 * card, we need to reprogram a new Nios firmware via the BMC chip on
-	 * SPI bus. So the driver doesn't error out, it continues to create the
-	 * spi controller device and spi_board_info for BMC.
-	 */
+	 
 	if (val == 0) {
 		dev_err(dev, "Nios version reg = 0x%x, skip INIT_DONE check, but the retimer may be uninitialized\n",
 			val);
@@ -329,31 +298,19 @@ static int n3000_nios_init_done_check(struct n3000_nios *nn)
 	}
 
 	if (FIELD_GET(N3000_NIOS_FW_VERSION_MAJOR, val) >= 3) {
-		/* read NIOS_INIT to check if retimer initialization is done */
+		 
 		ret = regmap_read(nn->regmap, N3000_NIOS_INIT, &val);
 		if (ret)
 			return ret;
 
-		/* check if retimers are initialized already */
+		 
 		if (val & (N3000_NIOS_INIT_DONE | N3000_NIOS_INIT_START))
 			goto nios_init_done;
 
-		/* configure FEC mode per module param */
+		 
 		val = N3000_NIOS_INIT_START;
 
-		/*
-		 * When the retimer is to be set to 10G mode, there is no FEC
-		 * mode setting, so the REQ_FEC_MODE field will be ignored by
-		 * Nios firmware in this case. But we should still fill the FEC
-		 * mode field cause host could not get the retimer working mode
-		 * until the Nios init is done.
-		 *
-		 * For now the driver doesn't support the retimer FEC mode
-		 * switching per user's request. It is always set to Reed
-		 * Solomon FEC.
-		 *
-		 * The driver will set the same FEC mode for all links.
-		 */
+		 
 		val |= N3000_NIOS_INIT_REQ_FEC_MODE_RS_ALL;
 
 		ret = regmap_write(nn->regmap, N3000_NIOS_INIT, val);
@@ -362,7 +319,7 @@ static int n3000_nios_init_done_check(struct n3000_nios *nn)
 	}
 
 nios_init_done:
-	/* polls on NIOS_INIT_DONE */
+	 
 	ret = regmap_read_poll_timeout(nn->regmap, N3000_NIOS_INIT, val,
 				       val & N3000_NIOS_INIT_DONE,
 				       N3000_NIOS_INIT_TIME_INTV,
@@ -380,22 +337,11 @@ nios_init_done:
 		return ret2;
 
 	if (!ret) {
-		/*
-		 * After INIT_DONE is detected, it still needs to check if the
-		 * Nios firmware reports any error during the retimer
-		 * configuration.
-		 */
+		 
 		if (IS_MODE_STATUS_OK(state_a) && IS_MODE_STATUS_OK(state_b))
 			return 0;
 
-		/*
-		 * If the retimer configuration is failed, the Nios firmware
-		 * will still release the spi controller for host to
-		 * communicate with the BMC. It makes possible for people to
-		 * reprogram a new Nios firmware and restore the card. So the
-		 * driver doesn't error out, it continues to create the spi
-		 * controller device and spi_board_info for BMC.
-		 */
+		 
 		dev_err(dev, "NIOS_INIT_DONE OK, but err on retimer init\n");
 	}
 
@@ -457,14 +403,7 @@ static int n3000_nios_poll_stat_timeout(void __iomem *base, u64 *v)
 {
 	int loops;
 
-	/*
-	 * We don't use the time based timeout here for performance.
-	 *
-	 * The regbus read/write is on the critical path of Intel PAC N3000
-	 * image programming. The time based timeout checking will add too much
-	 * overhead on it. Usually the state changes in 1 or 2 loops on the
-	 * test server, and we set 10000 times loop here for safety.
-	 */
+	 
 	for (loops = N3000_NIOS_REGBUS_RETRY_COUNT; loops > 0 ; loops--) {
 		*v = readq(base + N3000_NS_STAT);
 		if (*v & N3000_NS_STAT_RW_VAL)

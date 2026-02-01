@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/*
- * Siemens System Memory Buffer driver.
- * Copyright(c) 2022, HiSilicon Limited.
- */
+
+ 
 
 #include <linux/atomic.h>
 #include <linux/acpi.h>
@@ -36,22 +33,18 @@ static void smb_update_data_size(struct smb_drv_data *drvdata)
 	buf_wrptr = readl(drvdata->base + SMB_LB_WR_ADDR_REG) -
 			  sdb->buf_hw_base;
 
-	/* Buffer is full */
+	 
 	if (buf_wrptr == sdb->buf_rdptr && smb_buffer_not_empty(drvdata)) {
 		sdb->data_size = sdb->buf_size;
 		return;
 	}
 
-	/* The buffer mode is circular buffer mode */
+	 
 	sdb->data_size = CIRC_CNT(buf_wrptr, sdb->buf_rdptr,
 				  sdb->buf_size);
 }
 
-/*
- * The read pointer adds @nbytes bytes (may round up to the beginning)
- * after the data is read or discarded, while needing to update the
- * available data size.
- */
+ 
 static void smb_update_read_ptr(struct smb_drv_data *drvdata, u32 nbytes)
 {
 	struct smb_data_buffer *sdb = &drvdata->sdb;
@@ -69,26 +62,19 @@ static void smb_reset_buffer(struct smb_drv_data *drvdata)
 	struct smb_data_buffer *sdb = &drvdata->sdb;
 	u32 write_ptr;
 
-	/*
-	 * We must flush and discard any data left in hardware path
-	 * to avoid corrupting the next session.
-	 * Note: The write pointer will never exceed the read pointer.
-	 */
+	 
 	writel(SMB_LB_PURGE_PURGED, drvdata->base + SMB_LB_PURGE_REG);
 
-	/* Reset SMB logical buffer status flags */
+	 
 	writel(SMB_LB_INT_STS_RESET, drvdata->base + SMB_LB_INT_STS_REG);
 
 	write_ptr = readl(drvdata->base + SMB_LB_WR_ADDR_REG);
 
-	/* Do nothing, not data left in hardware path */
+	 
 	if (!write_ptr || write_ptr == sdb->buf_rdptr + sdb->buf_hw_base)
 		return;
 
-	/*
-	 * The SMB_LB_WR_ADDR_REG register is read-only,
-	 * Synchronize the read pointer to write pointer.
-	 */
+	 
 	writel(write_ptr, drvdata->base + SMB_LB_RD_ADDR_REG);
 	sdb->buf_rdptr = write_ptr - sdb->buf_hw_base;
 }
@@ -137,7 +123,7 @@ static ssize_t smb_read(struct file *file, char __user *data, size_t len,
 
 	to_copy = min(sdb->data_size, len);
 
-	/* Copy parts of trace data when read pointer wrap around SMB buffer */
+	 
 	if (sdb->buf_rdptr + to_copy > sdb->buf_size)
 		to_copy = sdb->buf_size - sdb->buf_rdptr;
 
@@ -233,10 +219,10 @@ static int smb_enable_perf(struct coresight_device *csdev, void *data)
 	if (!buf)
 		return -EINVAL;
 
-	/* Get a handle on the pid of the target process */
+	 
 	pid = buf->pid;
 
-	/* Device is already in used by other session */
+	 
 	if (drvdata->pid != -1 && drvdata->pid != pid)
 		return -EBUSY;
 
@@ -257,13 +243,13 @@ static int smb_enable(struct coresight_device *csdev, enum cs_mode mode,
 
 	spin_lock(&drvdata->spinlock);
 
-	/* Do nothing, the trace data is reading by other interface now */
+	 
 	if (drvdata->reading) {
 		ret = -EBUSY;
 		goto out;
 	}
 
-	/* Do nothing, the SMB is already enabled as other mode */
+	 
 	if (drvdata->mode != CS_MODE_DISABLED && drvdata->mode != mode) {
 		ret = -EBUSY;
 		goto out;
@@ -309,12 +295,12 @@ static int smb_disable(struct coresight_device *csdev)
 		goto out;
 	}
 
-	/* Complain if we (somehow) got out of sync */
+	 
 	WARN_ON_ONCE(drvdata->mode == CS_MODE_DISABLED);
 
 	smb_disable_hw(drvdata);
 
-	/* Dissociate from the target process. */
+	 
 	drvdata->pid = -1;
 	drvdata->mode = CS_MODE_DISABLED;
 
@@ -369,7 +355,7 @@ static void smb_sync_perf_buffer(struct smb_drv_data *drvdata,
 
 		to_copy = min(sdb->data_size, pg_space);
 
-		/* Copy parts of trace data when read pointer wrap around */
+		 
 		if (sdb->buf_rdptr + to_copy > sdb->buf_size)
 			to_copy = sdb->buf_size - sdb->buf_rdptr;
 
@@ -403,18 +389,14 @@ static unsigned long smb_update_buffer(struct coresight_device *csdev,
 
 	spin_lock(&drvdata->spinlock);
 
-	/* Don't do anything if another tracer is using this sink. */
+	 
 	if (atomic_read(&csdev->refcnt) != 1)
 		goto out;
 
 	smb_disable_hw(drvdata);
 	smb_update_data_size(drvdata);
 
-	/*
-	 * The SMB buffer may be bigger than the space available in the
-	 * perf ring buffer (handle->size). If so advance the offset so
-	 * that we get the latest trace data.
-	 */
+	 
 	if (sdb->data_size > handle->size) {
 		smb_update_read_ptr(drvdata, sdb->data_size - handle->size);
 		lost = true;
@@ -460,10 +442,7 @@ static int smb_init_data_buffer(struct platform_device *pdev,
 	if (sdb->buf_size == 0)
 		return -EINVAL;
 
-	/*
-	 * This is a chunk of memory, use classic mapping with better
-	 * performance.
-	 */
+	 
 	base = devm_memremap(&pdev->dev, sdb->buf_hw_base, sdb->buf_size,
 				MEMREMAP_WB);
 	if (IS_ERR(base))
@@ -538,10 +517,7 @@ static int smb_config_inport(struct device *dev, bool enable)
 	guid_t guid;
 	u64 rev = 0;
 
-	/*
-	 * Using DSM calls to enable/disable ultrasoc hardwares on
-	 * tracing path, to prevent ultrasoc packet format being exposed.
-	 */
+	 
 	if (guid_parse(ULTRASOC_SMB_DSM_UUID, &guid)) {
 		dev_err(dev, "Get GUID failed\n");
 		return -EINVAL;

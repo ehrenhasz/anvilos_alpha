@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Spreadtrum hardware spinlock driver
- * Copyright (C) 2017 Spreadtrum  - http://www.spreadtrum.com
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -17,17 +14,17 @@
 
 #include "hwspinlock_internal.h"
 
-/* hwspinlock registers definition */
+ 
 #define HWSPINLOCK_RECCTRL		0x4
 #define HWSPINLOCK_MASTERID(_X_)	(0x80 + 0x4 * (_X_))
 #define HWSPINLOCK_TOKEN(_X_)		(0x800 + 0x4 * (_X_))
 
-/* unlocked value */
+ 
 #define HWSPINLOCK_NOTTAKEN		0x55aa10c5
-/* bits definition of RECCTRL reg */
+ 
 #define HWSPINLOCK_USER_BITS		0x1
 
-/* hwspinlock number */
+ 
 #define SPRD_HWLOCKS_NUM		32
 
 struct sprd_hwspinlock_dev {
@@ -36,7 +33,7 @@ struct sprd_hwspinlock_dev {
 	struct hwspinlock_device bank;
 };
 
-/* try to lock the hardware spinlock */
+ 
 static int sprd_hwspinlock_trylock(struct hwspinlock *lock)
 {
 	struct sprd_hwspinlock_dev *sprd_hwlock =
@@ -48,7 +45,7 @@ static int sprd_hwspinlock_trylock(struct hwspinlock *lock)
 		return 1;
 
 	lock_id = hwlock_to_id(lock);
-	/* get the hardware spinlock master/user id */
+	 
 	user_id = readl(sprd_hwlock->base + HWSPINLOCK_MASTERID(lock_id));
 	dev_warn(sprd_hwlock->bank.dev,
 		 "hwspinlock [%d] lock failed and master/user id = %d!\n",
@@ -56,7 +53,7 @@ static int sprd_hwspinlock_trylock(struct hwspinlock *lock)
 	return 0;
 }
 
-/* unlock the hardware spinlock */
+ 
 static void sprd_hwspinlock_unlock(struct hwspinlock *lock)
 {
 	void __iomem *lock_addr = lock->priv;
@@ -64,7 +61,7 @@ static void sprd_hwspinlock_unlock(struct hwspinlock *lock)
 	writel(HWSPINLOCK_NOTTAKEN, lock_addr);
 }
 
-/* The specs recommended below number as the retry delay time */
+ 
 static void sprd_hwspinlock_relax(struct hwspinlock *lock)
 {
 	ndelay(10);
@@ -120,7 +117,7 @@ static int sprd_hwspinlock_probe(struct platform_device *pdev)
 		return ret;
 	}
 
-	/* set the hwspinlock to record user id to identify subsystems */
+	 
 	writel(HWSPINLOCK_USER_BITS, sprd_hwlock->base + HWSPINLOCK_RECCTRL);
 
 	for (i = 0; i < SPRD_HWLOCKS_NUM; i++) {
@@ -137,7 +134,7 @@ static int sprd_hwspinlock_probe(struct platform_device *pdev)
 
 static const struct of_device_id sprd_hwspinlock_of_match[] = {
 	{ .compatible = "sprd,hwspinlock-r3p0", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, sprd_hwspinlock_of_match);
 

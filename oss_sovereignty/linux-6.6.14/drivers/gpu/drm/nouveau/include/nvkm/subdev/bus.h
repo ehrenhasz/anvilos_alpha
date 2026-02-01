@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_BUS_H__
 #define __NVKM_BUS_H__
 #include <core/subdev.h>
@@ -8,7 +8,7 @@ struct nvkm_bus {
 	struct nvkm_subdev subdev;
 };
 
-/* interface to sequencer */
+ 
 struct nvkm_hwsq;
 int  nvkm_hwsq_init(struct nvkm_subdev *, struct nvkm_hwsq **);
 int  nvkm_hwsq_fini(struct nvkm_hwsq **, bool exec);

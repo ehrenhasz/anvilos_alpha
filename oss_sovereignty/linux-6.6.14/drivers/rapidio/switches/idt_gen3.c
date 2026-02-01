@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IDT RXS Gen.3 Serial RapidIO switch family support
- *
- * Copyright 2016 Integrated Device Technology, Inc.
- */
+
+ 
 
 #include <linux/stat.h>
 #include <linux/module.h>
@@ -51,16 +47,14 @@ idtg3_route_add_entry(struct rio_mport *mport, u16 destid, u8 hopcount,
 		entry = RIO_RT_ENTRY_DROP_PKT;
 
 	if (table == RIO_GLOBAL_TABLE) {
-		/* Use broadcast register to update all per-port tables */
+		 
 		err = rio_mport_write_config_32(mport, destid, hopcount,
 				RIO_BC_L2_Gn_ENTRYx_CSR(0, route_destid),
 				entry);
 		return err;
 	}
 
-	/*
-	 * Verify that specified port/table number is valid
-	 */
+	 
 	err = rio_mport_read_config_32(mport, destid, hopcount,
 				       RIO_SWP_INFO_CAR, &rval);
 	if (err)
@@ -90,11 +84,7 @@ idtg3_route_get_entry(struct rio_mport *mport, u16 destid, u8 hopcount,
 	if (err)
 		return err;
 
-	/*
-	 * This switch device does not have the dedicated global routing table.
-	 * It is substituted by reading routing table of the ingress port of
-	 * maintenance read requests.
-	 */
+	 
 	if (table == RIO_GLOBAL_TABLE)
 		table = RIO_GET_PORT_NUM(rval);
 	else if (table >= RIO_GET_TOTAL_PORTS(rval))
@@ -153,10 +143,7 @@ idtg3_route_clr_table(struct rio_mport *mport, u16 destid, u8 hopcount,
 	return err;
 }
 
-/*
- * This routine performs device-specific initialization only.
- * All standard EM configuration should be performed at upper level.
- */
+ 
 static int
 idtg3_em_init(struct rio_dev *rdev)
 {
@@ -165,14 +152,14 @@ idtg3_em_init(struct rio_dev *rdev)
 
 	pr_debug("RIO: %s [%d:%d]\n", __func__, rdev->destid, rdev->hopcount);
 
-	/* Disable assertion of interrupt signal */
+	 
 	rio_write_config_32(rdev, RIO_EM_DEV_INT_EN, 0);
 
-	/* Disable port-write event notifications during initialization */
+	 
 	rio_write_config_32(rdev, rdev->em_efptr + RIO_EM_PW_TX_CTRL,
 			    RIO_EM_PW_TX_CTRL_PW_DIS);
 
-	/* Configure Port-Write notifications for hot-swap events */
+	 
 	tmp = RIO_GET_TOTAL_PORTS(rdev->swpinfo);
 	for (i = 0; i < tmp; i++) {
 
@@ -182,51 +169,36 @@ idtg3_em_init(struct rio_dev *rdev)
 		if (rval & RIO_PORT_N_ERR_STS_PORT_UA)
 			continue;
 
-		/* Clear events signaled before enabling notification */
+		 
 		rio_write_config_32(rdev,
 			rdev->em_efptr + RIO_EM_PN_ERR_DETECT(i), 0);
 
-		/* Enable event notifications */
+		 
 		rio_write_config_32(rdev,
 			rdev->em_efptr + RIO_EM_PN_ERRRATE_EN(i),
 			RIO_EM_PN_ERRRATE_EN_OK2U | RIO_EM_PN_ERRRATE_EN_U2OK);
-		/* Enable port-write generation on events */
+		 
 		rio_write_config_32(rdev, RIO_PLM_SPx_PW_EN(i),
 			RIO_PLM_SPx_PW_EN_OK2U | RIO_PLM_SPx_PW_EN_LINIT);
 
 	}
 
-	/* Set Port-Write destination port */
+	 
 	tmp = RIO_GET_PORT_NUM(rdev->swpinfo);
 	rio_write_config_32(rdev, RIO_PW_ROUTE, 1 << tmp);
 
 
-	/* Enable sending port-write event notifications */
+	 
 	rio_write_config_32(rdev, rdev->em_efptr + RIO_EM_PW_TX_CTRL, 0);
 
-	/* set TVAL = ~50us */
+	 
 	rio_write_config_32(rdev,
 		rdev->phys_efptr + RIO_PORT_LINKTO_CTL_CSR, 0x8e << 8);
 	return 0;
 }
 
 
-/*
- * idtg3_em_handler - device-specific error handler
- *
- * If the link is down (PORT_UNINIT) does nothing - this is considered
- * as link partner removal from the port.
- *
- * If the link is up (PORT_OK) - situation is handled as *new* device insertion.
- * In this case ERR_STOP bits are cleared by issuing soft reset command to the
- * reporting port. Inbound and outbound ackIDs are cleared by the reset as well.
- * This way the port is synchronized with freshly inserted device (assuming it
- * was reset/powered-up on insertion).
- *
- * TODO: This is not sufficient in a situation when a link between two devices
- * was down and up again (e.g. cable disconnect). For that situation full ackID
- * realignment process has to be implemented.
- */
+ 
 static int
 idtg3_em_handler(struct rio_dev *rdev, u8 pnum)
 {
@@ -237,14 +209,11 @@ idtg3_em_handler(struct rio_dev *rdev, u8 pnum)
 			RIO_DEV_PORT_N_ERR_STS_CSR(rdev, pnum),
 			&err_status);
 
-	/* Do nothing for device/link removal */
+	 
 	if (err_status & RIO_PORT_N_ERR_STS_PORT_UNINIT)
 		return 0;
 
-	/* When link is OK we have a device insertion.
-	 * Request port soft reset to clear errors if they present.
-	 * Inbound and outbound ackIDs will be 0 after reset.
-	 */
+	 
 	if (err_status & (RIO_PORT_N_ERR_STS_OUT_ES |
 				RIO_PORT_N_ERR_STS_INP_ES)) {
 		rio_read_config_32(rdev, RIO_PLM_SPx_IMP_SPEC_CTL(pnum), &rval);
@@ -281,10 +250,7 @@ static int idtg3_probe(struct rio_dev *rdev, const struct rio_device_id *id)
 	rdev->rswitch->ops = &idtg3_switch_ops;
 
 	if (rdev->do_enum) {
-		/* Disable hierarchical routing support: Existing fabric
-		 * enumeration/discovery process (see rio-scan.c) uses 8-bit
-		 * flat destination ID routing only.
-		 */
+		 
 		rio_write_config_32(rdev, 0x5000 + RIO_BC_RT_CTL_CSR, 0);
 	}
 
@@ -302,18 +268,14 @@ static void idtg3_remove(struct rio_dev *rdev)
 	spin_unlock(&rdev->rswitch->lock);
 }
 
-/*
- * Gen3 switches repeat sending PW messages until a corresponding event flag
- * is cleared. Use shutdown notification to disable generation of port-write
- * messages if their destination node is shut down.
- */
+ 
 static void idtg3_shutdown(struct rio_dev *rdev)
 {
 	int i;
 	u32 rval;
 	u16 destid;
 
-	/* Currently the enumerator node acts also as PW handler */
+	 
 	if (!rdev->do_enum)
 		return;
 
@@ -322,13 +284,11 @@ static void idtg3_shutdown(struct rio_dev *rdev)
 	rio_read_config_32(rdev, RIO_PW_ROUTE, &rval);
 	i = RIO_GET_PORT_NUM(rdev->swpinfo);
 
-	/* Check port-write destination port */
+	 
 	if (!((1 << i) & rval))
 		return;
 
-	/* Disable sending port-write event notifications if PW destID
-	 * matches to one of the enumerator node
-	 */
+	 
 	rio_read_config_32(rdev, rdev->em_efptr + RIO_EM_PW_TGT_DEVID, &rval);
 
 	if (rval & RIO_EM_PW_TGT_DEVID_DEV16)
@@ -347,7 +307,7 @@ static void idtg3_shutdown(struct rio_dev *rdev)
 static const struct rio_device_id idtg3_id_table[] = {
 	{RIO_DEVICE(RIO_DID_IDTRXS1632, RIO_VID_IDT)},
 	{RIO_DEVICE(RIO_DID_IDTRXS2448, RIO_VID_IDT)},
-	{ 0, }	/* terminate list */
+	{ 0, }	 
 };
 
 static struct rio_driver idtg3_driver = {

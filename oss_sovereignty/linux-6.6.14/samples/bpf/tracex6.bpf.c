@@ -46,12 +46,7 @@ int bpf_prog1(struct pt_regs *ctx)
 	return 0;
 }
 
-/*
- * Since *_map_lookup_elem can't be expected to trigger bpf programs
- * due to potential deadlocks (bpf_disable_instrumentation), this bpf
- * program will be attached to bpf_map_copy_value (which is called
- * from map_lookup_elem) and will only filter the hashtable type.
- */
+ 
 SEC("kprobe/bpf_map_copy_value")
 int BPF_KPROBE(bpf_prog2, struct bpf_map *map)
 {

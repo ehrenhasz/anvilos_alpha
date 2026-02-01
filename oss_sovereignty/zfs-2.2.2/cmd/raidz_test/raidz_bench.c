@@ -1,27 +1,6 @@
-/*
- * CDDL HEADER START
- *
- * The contents of this file are subject to the terms of the
- * Common Development and Distribution License (the "License").
- * You may not use this file except in compliance with the License.
- *
- * You can obtain a copy of the license at usr/src/OPENSOLARIS.LICENSE
- * or https://opensource.org/licenses/CDDL-1.0.
- * See the License for the specific language governing permissions
- * and limitations under the License.
- *
- * When distributing Covered Code, include this CDDL HEADER in each
- * file and include the License file at usr/src/OPENSOLARIS.LICENSE.
- * If applicable, add the following below this CDDL HEADER, with the
- * fields enclosed by brackets "[]" replaced with your own identifying
- * information: Portions Copyright [yyyy] [name of copyright owner]
- *
- * CDDL HEADER END
- */
+ 
 
-/*
- * Copyright (C) 2016 Gvozden Nešković. All rights reserved.
- */
+ 
 
 #include <sys/zfs_context.h>
 #include <sys/time.h>
@@ -49,10 +28,7 @@ bench_init_raidz_map(void)
 	zio_bench.io_offset = 0;
 	zio_bench.io_size = max_data_size;
 
-	/*
-	 * To permit larger column sizes these have to be done
-	 * allocated using aligned alloc instead of zio_abd_buf_alloc
-	 */
+	 
 	zio_bench.io_abd = raidz_alloc(max_data_size);
 
 	init_zio_abd(&zio_bench);
@@ -61,7 +37,7 @@ bench_init_raidz_map(void)
 static void
 bench_fini_raidz_maps(void)
 {
-	/* tear down golden zio */
+	 
 	raidz_free(zio_bench.io_abd, max_data_size);
 	memset(&zio_bench, 0, sizeof (zio_t));
 }
@@ -74,11 +50,11 @@ run_gen_bench_impl(const char *impl)
 	hrtime_t start;
 	double elapsed, d_bw;
 
-	/* Benchmark generate functions */
+	 
 	for (fn = 0; fn < RAIDZ_GEN_NUM; fn++) {
 
 		for (ds = MIN_CS_SHIFT; ds <= MAX_CS_SHIFT; ds++) {
-			/* create suitable raidz_map */
+			 
 			ncols = rto_opts.rto_dcols + fn + 1;
 			zio_bench.io_size = 1ULL << ds;
 
@@ -93,7 +69,7 @@ run_gen_bench_impl(const char *impl)
 				    BENCH_ASHIFT, ncols, fn+1);
 			}
 
-			/* estimate iteration count */
+			 
 			iter_cnt = GEN_BENCH_MEMORY;
 			iter_cnt /= zio_bench.io_size;
 
@@ -146,26 +122,23 @@ run_rec_bench_impl(const char *impl)
 	hrtime_t start;
 	double elapsed, d_bw;
 	static const int tgt[7][3] = {
-		{1, 2, 3},	/* rec_p:   bad QR & D[0]	*/
-		{0, 2, 3},	/* rec_q:   bad PR & D[0]	*/
-		{0, 1, 3},	/* rec_r:   bad PQ & D[0]	*/
-		{2, 3, 4},	/* rec_pq:  bad R  & D[0][1]	*/
-		{1, 3, 4},	/* rec_pr:  bad Q  & D[0][1]	*/
-		{0, 3, 4},	/* rec_qr:  bad P  & D[0][1]	*/
-		{3, 4, 5}	/* rec_pqr: bad    & D[0][1][2] */
+		{1, 2, 3},	 
+		{0, 2, 3},	 
+		{0, 1, 3},	 
+		{2, 3, 4},	 
+		{1, 3, 4},	 
+		{0, 3, 4},	 
+		{3, 4, 5}	 
 	};
 
 	for (fn = 0; fn < RAIDZ_REC_NUM; fn++) {
 		for (ds = MIN_CS_SHIFT; ds <= MAX_CS_SHIFT; ds++) {
 
-			/* create suitable raidz_map */
+			 
 			ncols = rto_opts.rto_dcols + PARITY_PQR;
 			zio_bench.io_size = 1ULL << ds;
 
-			/*
-			 * raidz block is too short to test
-			 * the requested method
-			 */
+			 
 			if (zio_bench.io_size / rto_opts.rto_dcols <
 			    (1ULL << BENCH_ASHIFT))
 				continue;
@@ -181,11 +154,11 @@ run_rec_bench_impl(const char *impl)
 				    BENCH_ASHIFT, ncols, PARITY_PQR);
 			}
 
-			/* estimate iteration count */
+			 
 			iter_cnt = (REC_BENCH_MEMORY);
 			iter_cnt /= zio_bench.io_size;
 
-			/* calculate how many bad columns there are */
+			 
 			nbad = MIN(3, raidz_ncols(rm_bench) -
 			    raidz_parity(rm_bench));
 

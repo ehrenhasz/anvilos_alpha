@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014 Free Electrons
- *
- * Author: Boris BREZILLON <boris.brezillon@free-electrons.com>
- *
- * Allwinner PRCM (Power/Reset/Clock Management) driver
- */
+
+ 
 
 #include <linux/mfd/core.h>
 #include <linux/init.h>
@@ -122,7 +116,7 @@ static const struct of_device_id sun6i_prcm_dt_ids[] = {
 		.compatible = "allwinner,sun8i-a23-prcm",
 		.data = &sun8i_a23_prcm_data,
 	},
-	{ /* sentinel */ },
+	{   },
 };
 
 static int sun6i_prcm_probe(struct platform_device *pdev)

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Tegra124 DFLL FCPU clock source driver
- *
- * Copyright (C) 2012-2019 NVIDIA Corporation.  All rights reserved.
- *
- * Aleksandr Frid <afrid@nvidia.com>
- * Paul Walmsley <pwalmsley@nvidia.com>
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/err.h>
@@ -28,7 +21,7 @@ struct dfll_fcpu_data {
 	unsigned int cpu_cvb_tables_size;
 };
 
-/* Maximum CPU frequency, indexed by CPU speedo id */
+ 
 static const unsigned long tegra124_cpu_max_freq_table[] = {
 	[0] = 2014500000UL,
 	[1] = 2320500000UL,
@@ -616,10 +609,7 @@ static void tegra124_dfll_fcpu_remove(struct platform_device *pdev)
 {
 	struct tegra_dfll_soc_data *soc;
 
-	/*
-	 * Note that exiting early here is dangerous as after this function
-	 * returns *soc is freed.
-	 */
+	 
 	soc = tegra_dfll_unregister(pdev);
 	if (IS_ERR(soc))
 		return;

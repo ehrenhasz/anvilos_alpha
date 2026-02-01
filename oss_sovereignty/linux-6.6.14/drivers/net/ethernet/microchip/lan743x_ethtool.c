@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/* Copyright (C) 2018 Microchip Technology Inc. */
+ 
+ 
 
 #include <linux/netdevice.h>
 #include <linux/net_tstamp.h>
@@ -10,7 +10,7 @@
 #include <linux/sched.h>
 #include <linux/iopoll.h>
 
-/* eeprom */
+ 
 #define LAN743X_EEPROM_MAGIC		    (0x74A5)
 #define LAN743X_OTP_MAGIC		    (0x74F3)
 #define EEPROM_INDICATOR_1		    (0xA5)
@@ -21,7 +21,7 @@
 #define OTP_INDICATOR_1			    (0xF3)
 #define OTP_INDICATOR_2			    (0xF7)
 
-#define LOCK_TIMEOUT_MAX_CNT		    (100) // 1 sec (10 msce * 100)
+#define LOCK_TIMEOUT_MAX_CNT		    (100) 
 
 #define LAN743X_CSR_READ_OP(offset)	     lan743x_csr_read(adapter, offset)
 
@@ -32,7 +32,7 @@ static int lan743x_otp_power_up(struct lan743x_adapter *adapter)
 	reg_value = lan743x_csr_read(adapter, OTP_PWR_DN);
 
 	if (reg_value & OTP_PWR_DN_PWRDN_N_) {
-		/* clear it and wait to be cleared */
+		 
 		reg_value &= ~OTP_PWR_DN_PWRDN_N_;
 		lan743x_csr_write(adapter, OTP_PWR_DN, reg_value);
 
@@ -48,7 +48,7 @@ static void lan743x_otp_power_down(struct lan743x_adapter *adapter)
 
 	reg_value = lan743x_csr_read(adapter, OTP_PWR_DN);
 	if (!(reg_value & OTP_PWR_DN_PWRDN_N_)) {
-		/* set power down bit */
+		 
 		reg_value |= OTP_PWR_DN_PWRDN_N_;
 		lan743x_csr_write(adapter, OTP_PWR_DN, reg_value);
 	}
@@ -135,7 +135,7 @@ static int lan743x_otp_write(struct lan743x_adapter *adapter, u32 offset,
 	if (ret < 0)
 		return ret;
 
-	/* set to BYTE program mode */
+	 
 	lan743x_csr_write(adapter, OTP_PRGM_MODE, OTP_PRGM_MODE_BYTE_);
 
 	for (i = 0; i < length; i++) {
@@ -220,9 +220,7 @@ static void lan743x_hs_otp_power_up(struct lan743x_adapter *adapter)
 	if (reg_value & OTP_PWR_DN_PWRDN_N_) {
 		reg_value &= ~OTP_PWR_DN_PWRDN_N_;
 		lan743x_csr_write(adapter, HS_OTP_PWR_DN, reg_value);
-		/* To flush the posted write so the subsequent delay is
-		 * guaranteed to happen after the write at the hardware
-		 */
+		 
 		lan743x_csr_read(adapter, HS_OTP_PWR_DN);
 		udelay(1);
 	}
@@ -236,9 +234,7 @@ static void lan743x_hs_otp_power_down(struct lan743x_adapter *adapter)
 	if (!(reg_value & OTP_PWR_DN_PWRDN_N_)) {
 		reg_value |= OTP_PWR_DN_PWRDN_N_;
 		lan743x_csr_write(adapter, HS_OTP_PWR_DN, reg_value);
-		/* To flush the posted write so the subsequent delay is
-		 * guaranteed to happen after the write at the hardware
-		 */
+		 
 		lan743x_csr_read(adapter, HS_OTP_PWR_DN);
 		udelay(1);
 	}
@@ -330,7 +326,7 @@ static int lan743x_hs_otp_write(struct lan743x_adapter *adapter, u32 offset,
 	if (ret < 0)
 		goto power_down;
 
-	/* set to BYTE program mode */
+	 
 	lan743x_csr_write(adapter, HS_OTP_PRGM_MODE, OTP_PRGM_MODE_BYTE_);
 
 	lan743x_hs_syslock_release(adapter);
@@ -452,7 +448,7 @@ static int lan743x_eeprom_write(struct lan743x_adapter *adapter,
 	if (retval)
 		return retval;
 
-	/* Issue write/erase enable command */
+	 
 	val = E2P_CMD_EPC_BUSY_ | E2P_CMD_EPC_CMD_EWEN_;
 	lan743x_csr_write(adapter, E2P_CMD, val);
 
@@ -461,11 +457,11 @@ static int lan743x_eeprom_write(struct lan743x_adapter *adapter,
 		return retval;
 
 	for (i = 0; i < length; i++) {
-		/* Fill data register */
+		 
 		val = data[i];
 		lan743x_csr_write(adapter, E2P_DATA, val);
 
-		/* Send "write" command */
+		 
 		val = E2P_CMD_EPC_BUSY_ | E2P_CMD_EPC_CMD_WRITE_;
 		val |= (offset & E2P_CMD_EPC_ADDR_MASK_);
 		lan743x_csr_write(adapter, E2P_CMD, val);
@@ -554,11 +550,11 @@ static int lan743x_hs_eeprom_write(struct lan743x_adapter *adapter,
 		if (retval < 0)
 			return retval;
 
-		/* Fill data register */
+		 
 		val = data[i];
 		lan743x_csr_write(adapter, HS_E2P_DATA, val);
 
-		/* Send "write" command */
+		 
 		val = HS_E2P_CMD_EPC_BUSY_ | HS_E2P_CMD_EPC_CMD_WRITE_;
 		val |= (offset & HS_E2P_CMD_EPC_ADDR_MASK_);
 		lan743x_csr_write(adapter, HS_E2P_CMD, val);
@@ -641,7 +637,7 @@ static int lan743x_ethtool_set_eeprom(struct net_device *netdev,
 	int ret = -EINVAL;
 
 	if (adapter->flags & LAN743X_ADAPTER_FLAG_OTP) {
-		/* Beware!  OTP is One Time Programming ONLY! */
+		 
 		if (ee->magic == LAN743X_OTP_MAGIC) {
 			if (adapter->is_pci11x1x)
 				ret = lan743x_hs_otp_write(adapter, ee->offset,
@@ -1076,7 +1072,7 @@ static int lan743x_ethtool_get_eee(struct net_device *netdev,
 		eee->eee_enabled = true;
 		eee->eee_active = !!(eee->advertised & eee->lp_advertised);
 		eee->tx_lpi_enabled = true;
-		/* EEE_TX_LPI_REQ_DLY & tx_lpi_timer are same uSec unit */
+		 
 		buf = lan743x_csr_read(adapter, MAC_EEE_TX_LPI_REQ_DLY_CNT);
 		eee->tx_lpi_timer = buf;
 	} else {
@@ -1188,7 +1184,7 @@ static int lan743x_ethtool_set_wol(struct net_device *netdev,
 	return netdev->phydev ? phy_ethtool_set_wol(netdev->phydev, wol)
 			: -ENETDOWN;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static void lan743x_common_regs(struct net_device *dev, void *p)
 {

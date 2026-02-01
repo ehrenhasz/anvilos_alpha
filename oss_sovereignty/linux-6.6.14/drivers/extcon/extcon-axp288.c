@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * extcon-axp288.c - X-Power AXP288 PMIC extcon cable detection driver
- *
- * Copyright (c) 2017-2018 Hans de Goede <hdegoede@redhat.com>
- * Copyright (C) 2015 Intel Corporation
- * Author: Ramakrishna Pallala <ramakrishna.pallala@intel.com>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -26,14 +20,14 @@
 #include <asm/intel-family.h>
 #include <asm/iosf_mbi.h>
 
-/* Power source status register */
+ 
 #define PS_STAT_VBUS_TRIGGER		BIT(0)
 #define PS_STAT_BAT_CHRG_DIR		BIT(2)
 #define PS_STAT_VBUS_ABOVE_VHOLD	BIT(3)
 #define PS_STAT_VBUS_VALID		BIT(4)
 #define PS_STAT_VBUS_PRESENT		BIT(5)
 
-/* BC module global register */
+ 
 #define BC_GLOBAL_RUN			BIT(0)
 #define BC_GLOBAL_DET_STAT		BIT(2)
 #define BC_GLOBAL_DBP_TOUT		BIT(3)
@@ -45,12 +39,12 @@
 #define BC_GLOBAL_DCD_TOUT_900MS	3
 #define BC_GLOBAL_DCD_DET_SEL		BIT(7)
 
-/* BC module vbus control and status register */
+ 
 #define VBUS_CNTL_DPDM_PD_EN		BIT(4)
 #define VBUS_CNTL_DPDM_FD_EN		BIT(5)
 #define VBUS_CNTL_FIRST_PO_STAT		BIT(6)
 
-/* BC USB status register */
+ 
 #define USB_STAT_BUS_STAT_MASK		(BIT(3)|BIT(2)|BIT(1)|BIT(0))
 #define USB_STAT_BUS_STAT_SHIFT		0
 #define USB_STAT_BUS_STAT_ATHD		0
@@ -61,7 +55,7 @@
 #define USB_STAT_DEAD_BAT_DET		BIT(6)
 #define USB_STAT_DBP_UNCFG		BIT(7)
 
-/* BC detect status register */
+ 
 #define DET_STAT_MASK			(BIT(7)|BIT(6)|BIT(5))
 #define DET_STAT_SHIFT			5
 #define DET_STAT_SDP			1
@@ -112,7 +106,7 @@ static const struct x86_cpu_id cherry_trail_cpu_ids[] = {
 	{}
 };
 
-/* Power up/down reason string array */
+ 
 static const char * const axp288_pwr_up_down_info[] = {
 	"Last wake caused by user pressing the power button",
 	"Last wake caused by a charger insertion",
@@ -124,10 +118,7 @@ static const char * const axp288_pwr_up_down_info[] = {
 	"Last shutdown caused by user pressing the power button",
 };
 
-/*
- * Decode and log the given "reset source indicator" (rsi)
- * register and then clear it.
- */
+ 
 static void axp288_extcon_log_rsi(struct axp288_extcon_info *info)
 {
 	unsigned int val, i, clear_mask = 0;
@@ -145,24 +136,13 @@ static void axp288_extcon_log_rsi(struct axp288_extcon_info *info)
 		dev_dbg(info->dev, "%s\n", axp288_pwr_up_down_info[i]);
 	clear_mask = bits;
 
-	/* Clear the register value for next reboot (write 1 to clear bit) */
+	 
 	regmap_write(info->regmap, AXP288_PS_BOOT_REASON_REG, clear_mask);
 }
 
-/*
- * The below code to control the USB role-switch on devices with an AXP288
- * may seem out of place, but there are 2 reasons why this is the best place
- * to control the USB role-switch on such devices:
- * 1) On many devices the USB role is controlled by AML code, but the AML code
- *    only switches between the host and none roles, because of Windows not
- *    really using device mode. To make device mode work we need to toggle
- *    between the none/device roles based on Vbus presence, and this driver
- *    gets interrupts on Vbus insertion / removal.
- * 2) In order for our BC1.2 charger detection to work properly the role
- *    mux must be properly set to device mode before we do the detection.
- */
+ 
 
-/* Returns the id-pin value, note pulled low / false == host-mode */
+ 
 static bool axp288_get_id_pin(struct axp288_extcon_info *info)
 {
 	enum usb_role role;
@@ -170,7 +150,7 @@ static bool axp288_get_id_pin(struct axp288_extcon_info *info)
 	if (info->id_extcon)
 		return extcon_get_state(info->id_extcon, EXTCON_USB_HOST) <= 0;
 
-	/* We cannot access the id-pin, see what mode the AML code has set */
+	 
 	role = usb_role_switch_get_role(info->role_sw);
 	return role != USB_ROLE_HOST;
 }
@@ -224,7 +204,7 @@ static int axp288_handle_chrg_det_event(struct axp288_extcon_info *info)
 	if (!vbus_attach)
 		goto no_vbus;
 
-	/* Check charger detection completion status */
+	 
 	ret = regmap_read(info->regmap, AXP288_BC_GLOBAL_REG, &cfg);
 	if (ret < 0)
 		goto dev_det_ret;
@@ -275,7 +255,7 @@ no_vbus:
 
 	if (info->role_sw && info->vbus_attach != vbus_attach) {
 		info->vbus_attach = vbus_attach;
-		/* Setting the role can take a while */
+		 
 		queue_work(system_long_wq, &info->role_work);
 	}
 
@@ -296,7 +276,7 @@ static int axp288_extcon_id_evt(struct notifier_block *nb,
 	struct axp288_extcon_info *info =
 		container_of(nb, struct axp288_extcon_info, id_nb);
 
-	/* We may not sleep and setting the role can take a while */
+	 
 	queue_work(system_long_wq, &info->role_work);
 
 	return NOTIFY_OK;
@@ -324,7 +304,7 @@ static int axp288_extcon_enable(struct axp288_extcon_info *info)
 
 	regmap_update_bits(info->regmap, AXP288_BC_GLOBAL_REG,
 						BC_GLOBAL_RUN, 0);
-	/* Enable the charger detection logic */
+	 
 	regmap_update_bits(info->regmap, AXP288_BC_GLOBAL_REG,
 					BC_GLOBAL_RUN, BC_GLOBAL_RUN);
 
@@ -413,7 +393,7 @@ static int axp288_extcon_probe(struct platform_device *pdev)
 
 	iosf_mbi_unblock_punit_i2c_access();
 
-	/* Initialize extcon device */
+	 
 	info->edev = devm_extcon_dev_allocate(&pdev->dev,
 					      axp288_extcon_cables);
 	if (IS_ERR(info->edev)) {
@@ -421,7 +401,7 @@ static int axp288_extcon_probe(struct platform_device *pdev)
 		return PTR_ERR(info->edev);
 	}
 
-	/* Register extcon device */
+	 
 	ret = devm_extcon_dev_register(&pdev->dev, info->edev);
 	if (ret) {
 		dev_err(&pdev->dev, "failed to register extcon device\n");
@@ -459,13 +439,13 @@ static int axp288_extcon_probe(struct platform_device *pdev)
 			return ret;
 	}
 
-	/* Make sure the role-sw is set correctly before doing BC detection */
+	 
 	if (info->role_sw) {
 		queue_work(system_long_wq, &info->role_work);
 		flush_work(&info->role_work);
 	}
 
-	/* Start charger cable type detection */
+	 
 	ret = axp288_extcon_enable(info);
 	if (ret < 0)
 		return ret;
@@ -490,11 +470,7 @@ static int __maybe_unused axp288_extcon_resume(struct device *dev)
 {
 	struct axp288_extcon_info *info = dev_get_drvdata(dev);
 
-	/*
-	 * Wakeup when a charger is connected to do charger-type
-	 * connection and generate an extcon event which makes the
-	 * axp288 charger driver set the input current limit.
-	 */
+	 
 	if (device_may_wakeup(dev))
 		disable_irq_wake(info->irq[VBUS_RISING_IRQ]);
 

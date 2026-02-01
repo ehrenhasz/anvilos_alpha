@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: (BSD-3-Clause OR GPL-2.0-only)
-/* Copyright(c) 2014 - 2020 Intel Corporation */
+
+ 
 #include <linux/delay.h>
 #include <linux/nospec.h>
 #include "adf_accel_devices.h"
@@ -175,7 +175,7 @@ static int adf_init_ring(struct adf_etr_ring_data *ring)
 		return -ENOMEM;
 
 	memset(ring->base_addr, 0x7F, ring_size_bytes);
-	/* The base_addr has to be aligned to the size of the buffer */
+	 
 	if (adf_check_ring_alignment(ring->dma_addr, ring_size_bytes)) {
 		dev_err(&GET_DEV(accel_dev), "Ring address not aligned\n");
 		dma_free_coherent(&GET_DEV(accel_dev), ring_size_bytes,
@@ -279,7 +279,7 @@ int adf_create_ring(struct adf_accel_dev *accel_dev, const char *section,
 	if (ret)
 		goto err;
 
-	/* Enable HW arbitration for the given ring */
+	 
 	adf_update_ring_arb(ring);
 
 	if (adf_ring_debugfs_add(ring, ring_name)) {
@@ -289,7 +289,7 @@ int adf_create_ring(struct adf_accel_dev *accel_dev, const char *section,
 		goto err;
 	}
 
-	/* Enable interrupts if needed */
+	 
 	if (callback && (!poll_mode))
 		adf_enable_ring_irq(bank, ring->ring_number);
 	*ring_ptr = ring;
@@ -306,10 +306,10 @@ void adf_remove_ring(struct adf_etr_ring_data *ring)
 	struct adf_etr_bank_data *bank = ring->bank;
 	struct adf_hw_csr_ops *csr_ops = GET_CSR_OPS(bank->accel_dev);
 
-	/* Disable interrupts for the given ring */
+	 
 	adf_disable_ring_irq(bank, ring->ring_number);
 
-	/* Clear PCI config space */
+	 
 
 	csr_ops->write_csr_ring_config(bank->csr_addr, bank->bank_number,
 				       ring->ring_number, 0);
@@ -317,7 +317,7 @@ void adf_remove_ring(struct adf_etr_ring_data *ring)
 				     ring->ring_number, 0);
 	adf_ring_debugfs_rm(ring);
 	adf_unreserve_ring(bank, ring->ring_number);
-	/* Disable HW arbitration for the given ring */
+	 
 	adf_update_ring_arb(ring);
 	adf_cleanup_ring(ring);
 }
@@ -343,7 +343,7 @@ void adf_response_handler(uintptr_t bank_addr)
 	struct adf_etr_bank_data *bank = (void *)bank_addr;
 	struct adf_hw_csr_ops *csr_ops = GET_CSR_OPS(bank->accel_dev);
 
-	/* Handle all the responses and reenable IRQs */
+	 
 	adf_ring_response_handler(bank);
 
 	csr_ops->write_csr_int_flag_and_col(bank->csr_addr, bank->bank_number,
@@ -401,16 +401,14 @@ static int adf_init_bank(struct adf_accel_dev *accel_dev,
 	bank->accel_dev = accel_dev;
 	spin_lock_init(&bank->lock);
 
-	/* Allocate the rings in the bank */
+	 
 	size = num_rings_per_bank * sizeof(struct adf_etr_ring_data);
 	bank->rings = kzalloc_node(size, GFP_KERNEL,
 				   dev_to_node(&GET_DEV(accel_dev)));
 	if (!bank->rings)
 		return -ENOMEM;
 
-	/* Enable IRQ coalescing always. This will allow to use
-	 * the optimised flag and coalesc register.
-	 * If it is disabled in the config file just use min time value */
+	 
 	if ((adf_get_cfg_int(accel_dev, "Accelerator0",
 			     ADF_ETRMGR_COALESCING_ENABLED_FORMAT, bank_num,
 			     &coalesc_enabled) == 0) && coalesc_enabled)
@@ -461,16 +459,7 @@ err:
 	return -ENOMEM;
 }
 
-/**
- * adf_init_etr_data() - Initialize transport rings for acceleration device
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function is the initializes the communications channels (rings) to the
- * acceleration device accel_dev.
- * To be used by QAT device specific drivers.
- *
- * Return: 0 on success, error code otherwise.
- */
+ 
 int adf_init_etr_data(struct adf_accel_dev *accel_dev)
 {
 	struct adf_etr_data *etr_data;
@@ -498,7 +487,7 @@ int adf_init_etr_data(struct adf_accel_dev *accel_dev)
 	i = hw_data->get_etr_bar_id(hw_data);
 	csr_addr = accel_dev->accel_pci_dev.pci_bars[i].virt_addr;
 
-	/* accel_dev->debugfs_dir should always be non-NULL here */
+	 
 	etr_data->debug = debugfs_create_dir("transport",
 					     accel_dev->debugfs_dir);
 
@@ -551,16 +540,7 @@ static void adf_cleanup_etr_handles(struct adf_accel_dev *accel_dev)
 		cleanup_bank(&etr_data->banks[i]);
 }
 
-/**
- * adf_cleanup_etr_data() - Clear transport rings for acceleration device
- * @accel_dev:  Pointer to acceleration device.
- *
- * Function is the clears the communications channels (rings) of the
- * acceleration device accel_dev.
- * To be used by QAT device specific drivers.
- *
- * Return: void
- */
+ 
 void adf_cleanup_etr_data(struct adf_accel_dev *accel_dev)
 {
 	struct adf_etr_data *etr_data = accel_dev->transport;

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Implementation of get_cpuid().
- *
- * Author: Nikita Shubin <n.shubin@yadro.com>
- */
+
+ 
 
 #include <stdio.h>
 #include <stdlib.h>

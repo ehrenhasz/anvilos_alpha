@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Pablo Neira Ayuso <pablo@netfilter.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -17,31 +15,7 @@ struct nft_bitmap_elem {
 	struct nft_set_ext	ext;
 };
 
-/* This bitmap uses two bits to represent one element. These two bits determine
- * the element state in the current and the future generation.
- *
- * An element can be in three states. The generation cursor is represented using
- * the ^ character, note that this cursor shifts on every successful transaction.
- * If no transaction is going on, we observe all elements are in the following
- * state:
- *
- * 11 = this element is active in the current generation. In case of no updates,
- * ^    it stays active in the next generation.
- * 00 = this element is inactive in the current generation. In case of no
- * ^    updates, it stays inactive in the next generation.
- *
- * On transaction handling, we observe these two temporary states:
- *
- * 01 = this element is inactive in the current generation and it becomes active
- * ^    in the next one. This happens when the element is inserted but commit
- *      path has not yet been executed yet, so activation is still pending. On
- *      transaction abortion, the element is removed.
- * 10 = this element is active in the current generation and it becomes inactive
- * ^    in the next one. This happens when the element is deactivated but commit
- *      path has not yet been executed yet, so removal is still pending. On
- *      transaction abortion, the next generation bit is reset to go back to
- *      restore its previous state.
- */
+ 
 struct nft_bitmap {
 	struct	list_head	list;
 	u16			bitmap_size;
@@ -64,9 +38,7 @@ static inline void nft_bitmap_location(const struct nft_set *set,
 	*off = k % BITS_PER_BYTE;
 }
 
-/* Fetch the two bits that represent the element and check if it is active based
- * on the generation mask.
- */
+ 
 static inline bool
 nft_bitmap_active(const u8 *bitmap, u32 idx, u32 off, u8 genmask)
 {
@@ -137,7 +109,7 @@ static int nft_bitmap_insert(const struct net *net, const struct nft_set *set,
 	}
 
 	nft_bitmap_location(set, nft_set_ext_key(&new->ext), &idx, &off);
-	/* Enter 01 state. */
+	 
 	priv->bitmap[idx] |= (genmask << off);
 	list_add_tail_rcu(&new->head, &priv->list);
 
@@ -154,7 +126,7 @@ static void nft_bitmap_remove(const struct net *net,
 	u32 idx, off;
 
 	nft_bitmap_location(set, nft_set_ext_key(&be->ext), &idx, &off);
-	/* Enter 00 state. */
+	 
 	priv->bitmap[idx] &= ~(genmask << off);
 	list_del_rcu(&be->head);
 }
@@ -169,7 +141,7 @@ static void nft_bitmap_activate(const struct net *net,
 	u32 idx, off;
 
 	nft_bitmap_location(set, nft_set_ext_key(&be->ext), &idx, &off);
-	/* Enter 11 state. */
+	 
 	priv->bitmap[idx] |= (genmask << off);
 	nft_set_elem_change_active(net, set, &be->ext);
 }
@@ -183,7 +155,7 @@ static bool nft_bitmap_flush(const struct net *net,
 	u32 idx, off;
 
 	nft_bitmap_location(set, nft_set_ext_key(&be->ext), &idx, &off);
-	/* Enter 10 state, similar to deactivation. */
+	 
 	priv->bitmap[idx] &= ~(genmask << off);
 	nft_set_elem_change_active(net, set, &be->ext);
 
@@ -205,7 +177,7 @@ static void *nft_bitmap_deactivate(const struct net *net,
 	if (!be)
 		return NULL;
 
-	/* Enter 10 state. */
+	 
 	priv->bitmap[idx] &= ~(genmask << off);
 	nft_set_elem_change_active(net, set, &be->ext);
 
@@ -237,10 +209,7 @@ cont:
 	}
 }
 
-/* The bitmap size is pow(2, key length in bits) / bits per byte. This is
- * multiplied by two since each element takes two bits. For 8 bit keys, the
- * bitmap consumes 66 bytes. For 16 bit keys, 16388 bytes.
- */
+ 
 static inline u32 nft_bitmap_size(u32 klen)
 {
 	return ((2 << ((klen * BITS_PER_BYTE) - 1)) / BITS_PER_BYTE) << 1;
@@ -284,7 +253,7 @@ static void nft_bitmap_destroy(const struct nft_ctx *ctx,
 static bool nft_bitmap_estimate(const struct nft_set_desc *desc, u32 features,
 				struct nft_set_estimate *est)
 {
-	/* Make sure bitmaps we don't get bitmaps larger than 16 Kbytes. */
+	 
 	if (desc->klen > 2)
 		return false;
 	else if (desc->expr)

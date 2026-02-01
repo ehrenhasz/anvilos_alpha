@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * NBUS driver for TS-4600 based boards
- *
- * Copyright (c) 2016 - Savoir-faire Linux
- * Author: Sebastien Bourdelin <sebastien.bourdelin@savoirfairelinux.com>
- *
- * This driver implements a GPIOs bit-banged bus, called the NBUS by Technologic
- * Systems. It is used to communicate with the peripherals in the FPGA on the
- * TS-4600 SoM.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/gpio/consumer.h>
@@ -36,9 +27,7 @@ struct ts_nbus {
 	struct mutex lock;
 };
 
-/*
- * request all gpios required by the bus.
- */
+ 
 static int ts_nbus_init_pdata(struct platform_device *pdev, struct ts_nbus
 		*ts_nbus)
 {
@@ -82,10 +71,7 @@ static int ts_nbus_init_pdata(struct platform_device *pdev, struct ts_nbus
 	return 0;
 }
 
-/*
- * the data gpios are used for reading and writing values, their directions
- * should be adjusted accordingly.
- */
+ 
 static void ts_nbus_set_direction(struct ts_nbus *ts_nbus, int direction)
 {
 	int i;
@@ -94,17 +80,12 @@ static void ts_nbus_set_direction(struct ts_nbus *ts_nbus, int direction)
 		if (direction == TS_NBUS_DIRECTION_IN)
 			gpiod_direction_input(ts_nbus->data->desc[i]);
 		else
-			/* when used as output the default state of the data
-			 * lines are set to high */
+			 
 			gpiod_direction_output(ts_nbus->data->desc[i], 1);
 	}
 }
 
-/*
- * reset the bus in its initial state.
- * The data, csn, strobe and ale lines must be zero'ed to let the FPGA knows a
- * new transaction can be process.
- */
+ 
 static void ts_nbus_reset_bus(struct ts_nbus *ts_nbus)
 {
 	DECLARE_BITMAP(values, 8);
@@ -118,18 +99,13 @@ static void ts_nbus_reset_bus(struct ts_nbus *ts_nbus)
 	gpiod_set_value_cansleep(ts_nbus->ale, 0);
 }
 
-/*
- * let the FPGA knows it can process.
- */
+ 
 static void ts_nbus_start_transaction(struct ts_nbus *ts_nbus)
 {
 	gpiod_set_value_cansleep(ts_nbus->strobe, 1);
 }
 
-/*
- * read a byte value from the data gpios.
- * return 0 on success or negative errno on failure.
- */
+ 
 static int ts_nbus_read_byte(struct ts_nbus *ts_nbus, u8 *val)
 {
 	struct gpio_descs *gpios = ts_nbus->data;
@@ -147,9 +123,7 @@ static int ts_nbus_read_byte(struct ts_nbus *ts_nbus, u8 *val)
 	return 0;
 }
 
-/*
- * set the data gpios accordingly to the byte value.
- */
+ 
 static void ts_nbus_write_byte(struct ts_nbus *ts_nbus, u8 byte)
 {
 	struct gpio_descs *gpios = ts_nbus->data;
@@ -160,11 +134,7 @@ static void ts_nbus_write_byte(struct ts_nbus *ts_nbus, u8 byte)
 	gpiod_set_array_value_cansleep(8, gpios->desc, gpios->info, values);
 }
 
-/*
- * reading the bus consists of resetting the bus, then notifying the FPGA to
- * send the data in the data gpios and return the read value.
- * return 0 on success or negative errno on failure.
- */
+ 
 static int ts_nbus_read_bus(struct ts_nbus *ts_nbus, u8 *val)
 {
 	ts_nbus_reset_bus(ts_nbus);
@@ -173,11 +143,7 @@ static int ts_nbus_read_bus(struct ts_nbus *ts_nbus, u8 *val)
 	return ts_nbus_read_byte(ts_nbus, val);
 }
 
-/*
- * writing to the bus consists of resetting the bus, then define the type of
- * command (address/value), write the data and notify the FPGA to retrieve the
- * value in the data gpios.
- */
+ 
 static void ts_nbus_write_bus(struct ts_nbus *ts_nbus, int cmd, u8 val)
 {
 	ts_nbus_reset_bus(ts_nbus);
@@ -189,38 +155,35 @@ static void ts_nbus_write_bus(struct ts_nbus *ts_nbus, int cmd, u8 val)
 	ts_nbus_start_transaction(ts_nbus);
 }
 
-/*
- * read the value in the FPGA register at the given address.
- * return 0 on success or negative errno on failure.
- */
+ 
 int ts_nbus_read(struct ts_nbus *ts_nbus, u8 adr, u16 *val)
 {
 	int ret, i;
 	u8 byte;
 
-	/* bus access must be atomic */
+	 
 	mutex_lock(&ts_nbus->lock);
 
-	/* set the bus in read mode */
+	 
 	gpiod_set_value_cansleep(ts_nbus->txrx, 0);
 
-	/* write address */
+	 
 	ts_nbus_write_bus(ts_nbus, TS_NBUS_WRITE_ADR, adr);
 
-	/* set the data gpios direction as input before reading */
+	 
 	ts_nbus_set_direction(ts_nbus, TS_NBUS_DIRECTION_IN);
 
-	/* reading value MSB first */
+	 
 	do {
 		*val = 0;
 		byte = 0;
 		for (i = 1; i >= 0; i--) {
-			/* read a byte from the bus, leave on error */
+			 
 			ret = ts_nbus_read_bus(ts_nbus, &byte);
 			if (ret < 0)
 				goto err;
 
-			/* append the byte read to the final value */
+			 
 			*val |= byte << (i * 8);
 		}
 		gpiod_set_value_cansleep(ts_nbus->csn, 1);
@@ -228,7 +191,7 @@ int ts_nbus_read(struct ts_nbus *ts_nbus, u8 adr, u16 *val)
 	} while (ret);
 
 err:
-	/* restore the data gpios direction as output after reading */
+	 
 	ts_nbus_set_direction(ts_nbus, TS_NBUS_DIRECTION_OUT);
 
 	mutex_unlock(&ts_nbus->lock);
@@ -237,27 +200,25 @@ err:
 }
 EXPORT_SYMBOL_GPL(ts_nbus_read);
 
-/*
- * write the desired value in the FPGA register at the given address.
- */
+ 
 int ts_nbus_write(struct ts_nbus *ts_nbus, u8 adr, u16 val)
 {
 	int i;
 
-	/* bus access must be atomic */
+	 
 	mutex_lock(&ts_nbus->lock);
 
-	/* set the bus in write mode */
+	 
 	gpiod_set_value_cansleep(ts_nbus->txrx, 1);
 
-	/* write address */
+	 
 	ts_nbus_write_bus(ts_nbus, TS_NBUS_WRITE_ADR, adr);
 
-	/* writing value MSB first */
+	 
 	for (i = 1; i >= 0; i--)
 		ts_nbus_write_bus(ts_nbus, TS_NBUS_WRITE_VAL, (u8)(val >> (i * 8)));
 
-	/* wait for completion */
+	 
 	gpiod_set_value_cansleep(ts_nbus->csn, 1);
 	while (gpiod_get_value_cansleep(ts_nbus->rdy) != 0) {
 		gpiod_set_value_cansleep(ts_nbus->csn, 0);
@@ -302,24 +263,17 @@ static int ts_nbus_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/*
-	 * FIXME: pwm_apply_args() should be removed when switching to
-	 * the atomic PWM API.
-	 */
+	 
 	pwm_apply_args(pwm);
 	ret = pwm_config(pwm, pargs.period, pargs.period);
 	if (ret < 0)
 		return ret;
 
-	/*
-	 * we can now start the FPGA and populate the peripherals.
-	 */
+	 
 	pwm_enable(pwm);
 	ts_nbus->pwm = pwm;
 
-	/*
-	 * let the child nodes retrieve this instance of the ts-nbus.
-	 */
+	 
 	dev_set_drvdata(dev, ts_nbus);
 
 	ret = of_platform_populate(dev->of_node, NULL, NULL, dev);
@@ -335,7 +289,7 @@ static int ts_nbus_remove(struct platform_device *pdev)
 {
 	struct ts_nbus *ts_nbus = dev_get_drvdata(&pdev->dev);
 
-	/* shutdown the FPGA */
+	 
 	mutex_lock(&ts_nbus->lock);
 	pwm_disable(ts_nbus->pwm);
 	mutex_unlock(&ts_nbus->lock);

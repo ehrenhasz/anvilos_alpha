@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Chelsio Communications, Inc.
- */
+
+ 
 
 #define DRV_NAME "cxgbit"
 #define DRV_VERSION "1.0.0-ko"
@@ -15,7 +13,7 @@
 #endif
 
 LIST_HEAD(cdev_list_head);
-/* cdev list lock */
+ 
 DEFINE_MUTEX(cdev_list_lock);
 
 void _cxgbit_free_cdev(struct kref *kref)
@@ -34,7 +32,7 @@ static void cxgbit_set_mdsl(struct cxgbit_device *cdev)
 	u32 mdsl;
 
 #define CXGBIT_T5_MAX_PDU_LEN 16224
-#define CXGBIT_PDU_NONPAYLOAD_LEN 312 /* 48(BHS) + 256(AHS) + 8(Digest) */
+#define CXGBIT_PDU_NONPAYLOAD_LEN 312  
 	if (is_t5(lldi->adapter_type)) {
 		mdsl = min_t(u32, lldi->iscsi_iolen - CXGBIT_PDU_NONPAYLOAD_LEN,
 			     CXGBIT_T5_MAX_PDU_LEN - CXGBIT_PDU_NONPAYLOAD_LEN);
@@ -222,7 +220,7 @@ cxgbit_copy_frags(struct sk_buff *skb, const struct pkt_gl *gl,
 	u8 skb_frag_idx = skb_shinfo(skb)->nr_frags;
 	u8 i;
 
-	/* usually there's just one frag */
+	 
 	__skb_fill_page_desc(skb, skb_frag_idx, gl->frags[0].page,
 			     gl->frags[0].offset + offset,
 			     gl->frags[0].size - offset);
@@ -234,7 +232,7 @@ cxgbit_copy_frags(struct sk_buff *skb, const struct pkt_gl *gl,
 
 	skb_shinfo(skb)->nr_frags += gl->nfrags;
 
-	/* get a reference to the last page, we don't own it */
+	 
 	get_page(gl->frags[gl->nfrags - 1].page);
 }
 

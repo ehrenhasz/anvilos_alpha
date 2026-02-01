@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/ptp_classify.h>
 
@@ -8,22 +8,15 @@
 
 #define LAN966X_MAX_PTP_ID	512
 
-/* Represents 1ppm adjustment in 2^59 format with 6.037735849ns as reference
- * The value is calculated as following: (1/1000000)/((2^-59)/6.037735849)
- */
+ 
 #define LAN966X_1PPM_FORMAT		3480517749723LL
 
-/* Represents 1ppb adjustment in 2^29 format with 6.037735849ns as reference
- * The value is calculated as following: (1/1000000000)/((2^59)/6.037735849)
- */
+ 
 #define LAN966X_1PPB_FORMAT		3480517749LL
 
 #define TOD_ACC_PIN		0x7
 
-/* This represents the base rule ID for the PTP rules that are added in the
- * VCAP to trap frames to CPU. This number needs to be bigger than the maximum
- * number of entries that can exist in the VCAP.
- */
+ 
 #define LAN966X_VCAP_PTP_RULE_ID	1000000
 #define LAN966X_VCAP_L2_PTP_TRAP	(LAN966X_VCAP_PTP_RULE_ID + 0)
 #define LAN966X_VCAP_IPV4_EV_PTP_TRAP	(LAN966X_VCAP_PTP_RULE_ID + 1)
@@ -42,9 +35,7 @@ enum {
 
 static u64 lan966x_ptp_get_nominal_value(void)
 {
-	/* This is the default value that for each system clock, the time of day
-	 * is increased. It has the format 5.59 nanosecond.
-	 */
+	 
 	return 0x304d4873ecade305;
 }
 
@@ -62,7 +53,7 @@ static int lan966x_ptp_add_trap(struct lan966x_port *port,
 	if (!IS_ERR(vrule)) {
 		u32 value, mask;
 
-		/* Just modify the ingress port mask and exit */
+		 
 		vcap_rule_get_key_u32(vrule, VCAP_KF_IF_IGR_PORT_MASK,
 				      &value, &mask);
 		mask &= ~BIT(port->chip_port);
@@ -92,7 +83,7 @@ static int lan966x_ptp_add_trap(struct lan966x_port *port,
 	err = vcap_add_rule(vrule);
 
 free_rule:
-	/* Free the local copy of the rule */
+	 
 	vcap_free_rule(vrule);
 	return err;
 }
@@ -112,7 +103,7 @@ static int lan966x_ptp_del_trap(struct lan966x_port *port,
 	vcap_rule_get_key_u32(vrule, VCAP_KF_IF_IGR_PORT_MASK, &value, &mask);
 	mask |= BIT(port->chip_port);
 
-	/* No other port requires this trap, so it is safe to remove it */
+	 
 	if (mask == GENMASK(lan966x->num_phys_ports, 0)) {
 		err = vcap_del_rule(lan966x->vcap_ctrl, port->dev, rule_id);
 		goto free_rule;
@@ -303,7 +294,7 @@ int lan966x_ptp_hwtstamp_set(struct lan966x_port *port,
 		return -ERANGE;
 	}
 
-	/* Commit back the result & save it */
+	 
 	mutex_lock(&lan966x->ptp_lock);
 	phc = &lan966x->phc[LAN966X_PHC_PORT];
 	phc->hwtstamp_config = *cfg;
@@ -342,9 +333,7 @@ static int lan966x_ptp_classify(struct lan966x_port *port, struct sk_buff *skb)
 	if (port->ptp_tx_cmd == IFH_REW_OP_TWO_STEP_PTP)
 		return IFH_REW_OP_TWO_STEP_PTP;
 
-	/* If it is sync and run 1 step then set the correct operation,
-	 * otherwise run as 2 step
-	 */
+	 
 	msgtype = ptp_get_msgtype(header, type);
 	if ((msgtype & 0xf) == 0)
 		return IFH_REW_OP_ONE_STEP_PTP;
@@ -423,7 +412,7 @@ static void lan966x_get_hwtimestamp(struct lan966x *lan966x,
 				    struct timespec64 *ts,
 				    u32 nsec)
 {
-	/* Read current PTP time to get seconds */
+	 
 	unsigned long flags;
 	u32 curr_nsec;
 
@@ -442,7 +431,7 @@ static void lan966x_get_hwtimestamp(struct lan966x *lan966x,
 
 	ts->tv_nsec = nsec;
 
-	/* Sec has incremented since the ts was registered */
+	 
 	if (curr_nsec < nsec)
 		ts->tv_sec--;
 
@@ -465,7 +454,7 @@ irqreturn_t lan966x_ptp_irq_handler(int irq, void *args)
 
 		val = lan_rd(lan966x, PTP_TWOSTEP_CTRL);
 
-		/* Check if a timestamp can be retrieved */
+		 
 		if (!(val & PTP_TWOSTEP_CTRL_VLD))
 			break;
 
@@ -474,30 +463,28 @@ irqreturn_t lan966x_ptp_irq_handler(int irq, void *args)
 		if (!(val & PTP_TWOSTEP_CTRL_STAMP_TX))
 			continue;
 
-		/* Retrieve the ts Tx port */
+		 
 		txport = PTP_TWOSTEP_CTRL_STAMP_PORT_GET(val);
 
-		/* Retrieve its associated skb */
+		 
 		port = lan966x->ports[txport];
 
-		/* Retrieve the delay */
+		 
 		delay = lan_rd(lan966x, PTP_TWOSTEP_STAMP);
 		delay = PTP_TWOSTEP_STAMP_STAMP_NSEC_GET(delay);
 
-		/* Get next timestamp from fifo, which needs to be the
-		 * rx timestamp which represents the id of the frame
-		 */
+		 
 		lan_rmw(PTP_TWOSTEP_CTRL_NXT_SET(1),
 			PTP_TWOSTEP_CTRL_NXT,
 			lan966x, PTP_TWOSTEP_CTRL);
 
 		val = lan_rd(lan966x, PTP_TWOSTEP_CTRL);
 
-		/* Check if a timestamp can be retried */
+		 
 		if (!(val & PTP_TWOSTEP_CTRL_VLD))
 			break;
 
-		/* Read RX timestamping to get the ID */
+		 
 		id = lan_rd(lan966x, PTP_TWOSTEP_STAMP);
 
 		spin_lock_irqsave(&port->tx_skbs.lock, flags);
@@ -511,7 +498,7 @@ irqreturn_t lan966x_ptp_irq_handler(int irq, void *args)
 		}
 		spin_unlock_irqrestore(&port->tx_skbs.lock, flags);
 
-		/* Next ts */
+		 
 		lan_rmw(PTP_TWOSTEP_CTRL_NXT_SET(1),
 			PTP_TWOSTEP_CTRL_NXT,
 			lan966x, PTP_TWOSTEP_CTRL);
@@ -523,10 +510,10 @@ irqreturn_t lan966x_ptp_irq_handler(int irq, void *args)
 		lan966x->ptp_skbs--;
 		spin_unlock_irqrestore(&lan966x->ptp_ts_id_lock, flags);
 
-		/* Get the h/w timestamp */
+		 
 		lan966x_get_hwtimestamp(lan966x, &ts, delay);
 
-		/* Set the timestamp into the skb */
+		 
 		shhwtstamps.hwtstamp = ktime_set(ts.tv_sec, ts.tv_nsec);
 		skb_tstamp_tx(skb_match, &shhwtstamps);
 
@@ -549,7 +536,7 @@ irqreturn_t lan966x_ptp_ext_irq_handler(int irq, void *args)
 	if (!(lan_rd(lan966x, PTP_PIN_INTR)))
 		return IRQ_NONE;
 
-	/* Go through all domains and see which pin generated the interrupt */
+	 
 	for (i = 0; i < LAN966X_PHC_COUNT; ++i) {
 		struct ptp_clock_event ptp_event = {0};
 
@@ -563,12 +550,10 @@ irqreturn_t lan966x_ptp_ext_irq_handler(int irq, void *args)
 
 		spin_lock_irqsave(&lan966x->ptp_clock_lock, flags);
 
-		/* Enable to get the new interrupt.
-		 * By writing 1 it clears the bit
-		 */
+		 
 		lan_wr(BIT(pin), lan966x, PTP_PIN_INTR);
 
-		/* Get current time */
+		 
 		s = lan_rd(lan966x, PTP_TOD_SEC_MSB(pin));
 		s <<= 32;
 		s |= lan_rd(lan966x, PTP_TOD_SEC_LSB(pin));
@@ -612,10 +597,7 @@ static int lan966x_ptp_adjfine(struct ptp_clock_info *ptp, long scaled_ppm)
 
 	tod_inc = lan966x_ptp_get_nominal_value();
 
-	/* The multiplication is split in 2 separate additions because of
-	 * overflow issues. If scaled_ppm with 16bit fractional part was bigger
-	 * than 20ppm then we got overflow.
-	 */
+	 
 	ref = LAN966X_1PPM_FORMAT * (scaled_ppm >> 16);
 	ref += (LAN966X_1PPM_FORMAT * (0xffff & scaled_ppm)) >> 16;
 	tod_inc = neg_adj ? tod_inc - ref : tod_inc + ref;
@@ -649,7 +631,7 @@ static int lan966x_ptp_settime64(struct ptp_clock_info *ptp,
 
 	spin_lock_irqsave(&lan966x->ptp_clock_lock, flags);
 
-	/* Must be in IDLE mode before the time can be loaded */
+	 
 	lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_IDLE) |
 		PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
 		PTP_PIN_CFG_PIN_SYNC_SET(0),
@@ -658,14 +640,14 @@ static int lan966x_ptp_settime64(struct ptp_clock_info *ptp,
 		PTP_PIN_CFG_PIN_SYNC,
 		lan966x, PTP_PIN_CFG(TOD_ACC_PIN));
 
-	/* Set new value */
+	 
 	lan_wr(PTP_TOD_SEC_MSB_TOD_SEC_MSB_SET(upper_32_bits(ts->tv_sec)),
 	       lan966x, PTP_TOD_SEC_MSB(TOD_ACC_PIN));
 	lan_wr(lower_32_bits(ts->tv_sec),
 	       lan966x, PTP_TOD_SEC_LSB(TOD_ACC_PIN));
 	lan_wr(ts->tv_nsec, lan966x, PTP_TOD_NSEC(TOD_ACC_PIN));
 
-	/* Apply new values */
+	 
 	lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_LOAD) |
 		PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
 		PTP_PIN_CFG_PIN_SYNC_SET(0),
@@ -705,7 +687,7 @@ int lan966x_ptp_gettime64(struct ptp_clock_info *ptp, struct timespec64 *ts)
 
 	spin_unlock_irqrestore(&lan966x->ptp_clock_lock, flags);
 
-	/* Deal with negative values */
+	 
 	if ((ns & 0xFFFFFFF0) == 0x3FFFFFF0) {
 		s--;
 		ns &= 0xf;
@@ -726,7 +708,7 @@ static int lan966x_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 
 		spin_lock_irqsave(&lan966x->ptp_clock_lock, flags);
 
-		/* Must be in IDLE mode before the time can be loaded */
+		 
 		lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_IDLE) |
 			PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
 			PTP_PIN_CFG_PIN_SYNC_SET(0),
@@ -738,7 +720,7 @@ static int lan966x_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 		lan_wr(PTP_TOD_NSEC_TOD_NSEC_SET(delta),
 		       lan966x, PTP_TOD_NSEC(TOD_ACC_PIN));
 
-		/* Adjust time with the value of PTP_TOD_NSEC */
+		 
 		lan_rmw(PTP_PIN_CFG_PIN_ACTION_SET(PTP_PIN_ACTION_DELTA) |
 			PTP_PIN_CFG_PIN_DOM_SET(phc->index) |
 			PTP_PIN_CFG_PIN_SYNC_SET(0),
@@ -749,7 +731,7 @@ static int lan966x_ptp_adjtime(struct ptp_clock_info *ptp, s64 delta)
 
 		spin_unlock_irqrestore(&lan966x->ptp_clock_lock, flags);
 	} else {
-		/* Fall back using lan966x_ptp_settime64 which is not exact */
+		 
 		struct timespec64 ts;
 		u64 now;
 
@@ -772,7 +754,7 @@ static int lan966x_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
 	struct ptp_clock_info *info;
 	int i;
 
-	/* Currently support only 1 channel */
+	 
 	if (chan != 0)
 		return -1;
 
@@ -785,14 +767,11 @@ static int lan966x_ptp_verify(struct ptp_clock_info *ptp, unsigned int pin,
 		return -1;
 	}
 
-	/* The PTP pins are shared by all the PHC. So it is required to see if
-	 * the pin is connected to another PHC. The pin is connected to another
-	 * PHC if that pin already has a function on that PHC.
-	 */
+	 
 	for (i = 0; i < LAN966X_PHC_COUNT; ++i) {
 		info = &lan966x->phc[i].info;
 
-		/* Ignore the check with ourself */
+		 
 		if (ptp == info)
 			continue;
 
@@ -917,7 +896,7 @@ static int lan966x_ptp_extts(struct ptp_clock_info *ptp,
 	if (lan966x->ptp_ext_irq <= 0)
 		return -EOPNOTSUPP;
 
-	/* Reject requests with unsupported flags */
+	 
 	if (rq->extts.flags & ~(PTP_ENABLE_FEATURE |
 				PTP_RISING_EDGE |
 				PTP_STRICT_FLAGS))
@@ -1027,10 +1006,10 @@ int lan966x_ptp_init(struct lan966x *lan966x)
 	spin_lock_init(&lan966x->ptp_ts_id_lock);
 	mutex_init(&lan966x->ptp_lock);
 
-	/* Disable master counters */
+	 
 	lan_wr(PTP_DOM_CFG_ENA_SET(0), lan966x, PTP_DOM_CFG);
 
-	/* Configure the nominal TOD increment per clock cycle */
+	 
 	lan_rmw(PTP_DOM_CFG_CLKCFG_DIS_SET(0x7),
 		PTP_DOM_CFG_CLKCFG_DIS,
 		lan966x, PTP_DOM_CFG);
@@ -1046,7 +1025,7 @@ int lan966x_ptp_init(struct lan966x *lan966x)
 		PTP_DOM_CFG_CLKCFG_DIS,
 		lan966x, PTP_DOM_CFG);
 
-	/* Enable master counters */
+	 
 	lan_wr(PTP_DOM_CFG_ENA_SET(0x7), lan966x, PTP_DOM_CFG);
 
 	for (i = 0; i < lan966x->num_phys_ports; i++) {
@@ -1095,7 +1074,7 @@ void lan966x_ptp_rxtstamp(struct lan966x *lan966x, struct sk_buff *skb,
 	phc = &lan966x->phc[LAN966X_PHC_PORT];
 	lan966x_ptp_gettime64(&phc->info, &ts);
 
-	/* Drop the sub-ns precision */
+	 
 	timestamp = timestamp >> 2;
 	if (ts.tv_nsec < timestamp)
 		ts.tv_sec--;
@@ -1108,6 +1087,6 @@ void lan966x_ptp_rxtstamp(struct lan966x *lan966x, struct sk_buff *skb,
 
 u32 lan966x_ptp_get_period_ps(void)
 {
-	/* This represents the system clock period in picoseconds */
+	 
 	return 15125;
 }

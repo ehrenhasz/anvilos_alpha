@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef DRBD_POLYMORPH_PRINTK_H
 #define DRBD_POLYMORPH_PRINTK_H
 
@@ -125,11 +125,7 @@ void drbd_dyn_dbg_with_wrong_object_type(void);
 				#exp, __func__);				\
 	} while (0)
 
-/**
- * expect  -  Make an assertion
- *
- * Unlike the assert macro, this macro returns a boolean result.
- */
+ 
 #define expect(x, exp) ({							\
 		bool _bool = (exp);						\
 		if (!_bool && drbd_ratelimit())					\

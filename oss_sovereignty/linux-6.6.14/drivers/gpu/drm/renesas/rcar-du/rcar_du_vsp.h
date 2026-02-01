@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * R-Car Display Unit VSP-Based Compositor
- *
- * Copyright (C) 2015 Renesas Electronics Corporation
- *
- * Contact: Laurent Pinchart (laurent.pinchart@ideasonboard.com)
- */
+ 
+ 
 
 #ifndef __RCAR_DU_VSP_H__
 #define __RCAR_DU_VSP_H__
@@ -36,12 +30,7 @@ static inline struct rcar_du_vsp_plane *to_rcar_vsp_plane(struct drm_plane *p)
 	return container_of(p, struct rcar_du_vsp_plane, plane);
 }
 
-/**
- * struct rcar_du_vsp_plane_state - Driver-specific plane state
- * @state: base DRM plane state
- * @format: information about the pixel format used by the plane
- * @sg_tables: scatter-gather tables for the frame buffer memory
- */
+ 
 struct rcar_du_vsp_plane_state {
 	struct drm_plane_state state;
 
@@ -90,4 +79,4 @@ static inline void rcar_du_vsp_unmap_fb(struct rcar_du_vsp *vsp,
 }
 #endif
 
-#endif /* __RCAR_DU_VSP_H__ */
+#endif  

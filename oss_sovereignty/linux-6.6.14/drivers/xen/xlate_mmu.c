@@ -1,32 +1,4 @@
-/*
- * MMU operations common to all auto-translated physmap guests.
- *
- * Copyright (C) 2015 Citrix Systems R&D Ltd.
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation; or, when distributed
- * separately from the Linux kernel or incorporated into other
- * software packages, subject to the following license:
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this source file (the "Software"), to deal in the Software without
- * restriction, including without limitation the rights to use, copy, modify,
- * merge, publish, distribute, sublicense, and/or sell copies of the Software,
- * and to permit persons to whom the Software is furnished to do so, subject to
- * the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 #include <linux/kernel.h>
 #include <linux/mm.h>
 #include <linux/slab.h>
@@ -44,7 +16,7 @@
 
 typedef void (*xen_gfn_fn_t)(unsigned long gfn, void *data);
 
-/* Break down the pages in 4KB chunk and call fn for each gfn */
+ 
 static void xen_for_each_gfn(struct page **pages, unsigned nr_gfn,
 			     xen_gfn_fn_t fn, void *data)
 {
@@ -62,8 +34,8 @@ static void xen_for_each_gfn(struct page **pages, unsigned nr_gfn,
 }
 
 struct remap_data {
-	xen_pfn_t *fgfn; /* foreign domain's gfn */
-	int nr_fgfn; /* Number of foreign gfn left to map */
+	xen_pfn_t *fgfn;  
+	int nr_fgfn;  
 	pgprot_t prot;
 	domid_t  domid;
 	struct vm_area_struct *vma;
@@ -73,12 +45,12 @@ struct remap_data {
 	int *err_ptr;
 	int mapped;
 
-	/* Hypercall parameters */
+	 
 	int h_errs[XEN_PFN_PER_PAGE];
 	xen_ulong_t h_idxs[XEN_PFN_PER_PAGE];
 	xen_pfn_t h_gpfns[XEN_PFN_PER_PAGE];
 
-	int h_iter;	/* Iterator */
+	int h_iter;	 
 };
 
 static void setup_hparams(unsigned long gfn, void *data)
@@ -120,7 +92,7 @@ static int remap_pte_fn(pte_t *ptep, unsigned long addr, void *data)
 
 	rc = HYPERVISOR_memory_op(XENMEM_add_to_physmap_range, &xatp);
 
-	/* info->err_ptr expect to have one error status per Xen PFN */
+	 
 	for (i = 0; i < nr_gfn; i++) {
 		int err = (rc < 0) ? rc : info->h_errs[i];
 
@@ -129,11 +101,7 @@ static int remap_pte_fn(pte_t *ptep, unsigned long addr, void *data)
 			info->mapped++;
 	}
 
-	/*
-	 * Note: The hypercall will return 0 in most of the case if even if
-	 * all the fgmfn are not mapped. We still have to update the pte
-	 * as the userspace may decide to continue.
-	 */
+	 
 	if (!rc)
 		set_pte_at(info->vma->vm_mm, addr, ptep, pte);
 
@@ -151,8 +119,7 @@ int xen_xlate_remap_gfn_array(struct vm_area_struct *vma,
 	struct remap_data data;
 	unsigned long range = DIV_ROUND_UP(nr, XEN_PFN_PER_PAGE) << PAGE_SHIFT;
 
-	/* Kept here for the purpose of making sure code doesn't break
-	   x86 PVOPS */
+	 
 	BUG_ON(!((vma->vm_flags & (VM_PFNMAP | VM_IO)) == (VM_PFNMAP | VM_IO)));
 
 	data.fgfn = gfn;
@@ -201,16 +168,7 @@ static void setup_balloon_gfn(unsigned long gfn, void *data)
 	info->pfns[info->idx++] = gfn;
 }
 
-/**
- * xen_xlate_map_ballooned_pages - map a new set of ballooned pages
- * @gfns: returns the array of corresponding GFNs
- * @virt: returns the virtual address of the mapped region
- * @nr_grant_frames: number of GFNs
- * @return 0 on success, error otherwise
- *
- * This allocates a set of ballooned pages and maps them into the
- * kernel's address space.
- */
+ 
 int __init xen_xlate_map_ballooned_pages(xen_pfn_t **gfns, void **virt,
 					 unsigned long nr_grant_frames)
 {
@@ -281,7 +239,7 @@ static int remap_pfn_fn(pte_t *ptep, unsigned long addr, void *data)
 	return 0;
 }
 
-/* Used by the privcmd module, but has to be built-in on ARM */
+ 
 int xen_remap_vma_range(struct vm_area_struct *vma, unsigned long addr, unsigned long len)
 {
 	struct remap_pfn r = {

@@ -1,40 +1,8 @@
-/****************************************************************************
- * Copyright 2018-2020,2021 Thomas E. Dickey                                *
- * Copyright 2017 Free Software Foundation, Inc.                            *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey                                                *
- ****************************************************************************/
+ 
 
-/* new_pair.c
- *
- * New color-pair functions, alloc_pair and free_pair
- */
+ 
 
 #define NEW_PAIR_INTERNAL 1
 #include <curses.priv.h>
@@ -51,7 +19,7 @@
 
 #if NCURSES_EXT_COLORS
 
-/* fix redefinition versys tic.h */
+ 
 #undef entry
 #define entry my_entry
 #undef ENTRY
@@ -93,9 +61,7 @@ next_len(SCREEN *sp, int pair)
     return result;
 }
 
-/*
- * Trace the contents of LRU color-pairs.
- */
+ 
 static void
 dumpit(SCREEN *sp, int pair, const char *tag)
 {
@@ -127,7 +93,7 @@ dumpit(SCREEN *sp, int pair, const char *tag)
     }
 }
 #else
-#define dumpit(sp, pair, tag)	/* nothing */
+#define dumpit(sp, pair, tag)	 
 #endif
 
 static int
@@ -165,7 +131,7 @@ delink_color_pair(SCREEN *sp, int pair)
     int prev = list[pair].prev;
     int next = list[pair].next;
 
-    /* delink this from its current location */
+     
     if (list[prev].next == pair &&
 	list[next].prev == pair) {
 	list[prev].next = next;
@@ -174,9 +140,7 @@ delink_color_pair(SCREEN *sp, int pair)
     }
 }
 
-/*
- * Discard all nodes in the fast-index.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_free_ordered_pairs(SCREEN *sp)
 {
@@ -188,10 +152,7 @@ _nc_free_ordered_pairs(SCREEN *sp)
     }
 }
 
-/*
- * Use this call to update the fast-index when modifying an entry in the color
- * pair table.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_reset_color_pair(SCREEN *sp, int pair, colorpair_t * next)
 {
@@ -205,24 +166,21 @@ _nc_reset_color_pair(SCREEN *sp, int pair, colorpair_t * next)
 	delink_color_pair(sp, pair);
 	if (last->mode > cpFREE &&
 	    (last->fg != next->fg || last->bg != next->bg)) {
-	    /* remove the old entry from fast index */
+	     
 	    tdelete(last, &sp->_ordered_pairs, compare_data);
 	    used = FALSE;
 	} else {
 	    used = (last->mode != cpFREE);
 	}
 	if (!used) {
-	    /* create a new entry in fast index */
+	     
 	    *last = *next;
 	    tsearch(last, &sp->_ordered_pairs, compare_data);
 	}
     }
 }
 
-/*
- * Use this call to relink the newest pair to the front of the list, keeping
- * "0" first.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_set_color_pair(SCREEN *sp, int pair, int mode)
 {
@@ -234,7 +192,7 @@ _nc_set_color_pair(SCREEN *sp, int pair, int mode)
 	    sp->_pairs_used++;
 	list[pair].mode = mode;
 	if (list[0].next != pair) {
-	    /* link it at the front of the list */
+	     
 	    list[pair].next = list[0].next;
 	    list[list[pair].next].prev = pair;
 	    list[pair].prev = 0;
@@ -244,9 +202,7 @@ _nc_set_color_pair(SCREEN *sp, int pair, int mode)
     }
 }
 
-/*
- * If we reallocate the color-pair array, we have to adjust the fast-index.
- */
+ 
 NCURSES_EXPORT(void)
 _nc_copy_pairs(SCREEN *sp, colorpair_t * target, colorpair_t * source, int length)
 {
@@ -269,18 +225,12 @@ NCURSES_SP_NAME(alloc_pair) (NCURSES_SP_DCLx int fg, int bg)
     if (SP_PARM == 0) {
 	pair = -1;
     } else if ((pair = _nc_find_color_pair(SP_PARM, fg, bg)) < 0) {
-	/*
-	 * Check if all of the slots have been used.  If not, find one and
-	 * use that.
-	 */
+	 
 	if (SP_PARM->_pairs_used + 1 < SP_PARM->_pair_limit) {
 	    bool found = FALSE;
 	    int hint = SP_PARM->_recent_pair;
 
-	    /*
-	     * The linear search is done to allow mixing calls to init_pair()
-	     * and alloc_pair().  The former can make gaps...
-	     */
+	     
 	    for (pair = hint + 1; pair < SP_PARM->_pair_alloc; pair++) {
 		if (SP_PARM->_color_pairs[pair].mode == cpFREE) {
 		    T(("found gap %d", pair));
@@ -312,7 +262,7 @@ NCURSES_SP_NAME(alloc_pair) (NCURSES_SP_DCLx int fg, int bg)
 		pair = ERR;
 	    }
 	} else {
-	    /* reuse the oldest one */
+	     
 	    pair = SP_PARM->_color_pairs[0].prev;
 	    T(("reusing %d", pair));
 	}
@@ -390,4 +340,4 @@ void
 _nc_new_pair(void)
 {
 }
-#endif /* NCURSES_EXT_COLORS */
+#endif  

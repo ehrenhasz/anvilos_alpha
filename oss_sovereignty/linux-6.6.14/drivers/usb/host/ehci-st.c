@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ST EHCI driver
- *
- * Copyright (C) 2014 STMicroelectronics – All Rights Reserved
- *
- * Author: Peter Griffin <peter.griffin@linaro.org>
- *
- * Derived from ehci-platform.c
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -52,7 +44,7 @@ static int st_ehci_platform_reset(struct usb_hcd *hcd)
 	struct ehci_hcd *ehci = hcd_to_ehci(hcd);
 	u32 threshold;
 
-	/* Set EHCI packet buffer IN/OUT threshold to 128 bytes */
+	 
 	threshold = 128 | (128 << 16);
 	writel(threshold, hcd->regs + AHB2STBUS_INSREG01);
 
@@ -74,8 +66,7 @@ static int st_ehci_platform_power_on(struct platform_device *dev)
 	if (ret)
 		goto err_assert_power;
 
-	/* some SoCs don't have a dedicated 48Mhz clock, but those that do
-	   need the rate to be explicitly set */
+	 
 	if (priv->clk48) {
 		ret = clk_set_rate(priv->clk48, 48000000);
 		if (ret)
@@ -185,8 +176,7 @@ static int st_ehci_platform_probe(struct platform_device *dev)
 		}
 	}
 
-	/* some SoCs don't have a dedicated 48Mhz clock, but those that
-	   do need the rate to be explicitly set */
+	 
 	priv->clk48 = devm_clk_get(&dev->dev, "clk48");
 	if (IS_ERR(priv->clk48)) {
 		dev_info(&dev->dev, "48MHz clk not found\n");
@@ -310,11 +300,11 @@ static int st_ehci_resume(struct device *dev)
 
 static SIMPLE_DEV_PM_OPS(st_ehci_pm_ops, st_ehci_suspend, st_ehci_resume);
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static const struct of_device_id st_ehci_ids[] = {
 	{ .compatible = "st,st-ehci-300x", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, st_ehci_ids);
 

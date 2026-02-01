@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * JZ47xx ECC common code
- *
- * Copyright (c) 2015 Imagination Technologies
- * Author: Alex Smith <alex.smith@imgtec.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/init.h>
@@ -15,16 +10,7 @@
 
 #include "ingenic_ecc.h"
 
-/**
- * ingenic_ecc_calculate() - calculate ECC for a data buffer
- * @ecc: ECC device.
- * @params: ECC parameters.
- * @buf: input buffer with raw data.
- * @ecc_code: output buffer with ECC.
- *
- * Return: 0 on success, -ETIMEDOUT if timed out while waiting for ECC
- * controller.
- */
+ 
 int ingenic_ecc_calculate(struct ingenic_ecc *ecc,
 			  struct ingenic_ecc_params *params,
 			  const u8 *buf, u8 *ecc_code)
@@ -32,19 +18,7 @@ int ingenic_ecc_calculate(struct ingenic_ecc *ecc,
 	return ecc->ops->calculate(ecc, params, buf, ecc_code);
 }
 
-/**
- * ingenic_ecc_correct() - detect and correct bit errors
- * @ecc: ECC device.
- * @params: ECC parameters.
- * @buf: raw data read from the chip.
- * @ecc_code: ECC read from the chip.
- *
- * Given the raw data and the ECC read from the NAND device, detects and
- * corrects errors in the data.
- *
- * Return: the number of bit errors corrected, -EBADMSG if there are too many
- * errors to correct or -ETIMEDOUT if we timed out waiting for the controller.
- */
+ 
 int ingenic_ecc_correct(struct ingenic_ecc *ecc,
 			struct ingenic_ecc_params *params,
 			u8 *buf, u8 *ecc_code)
@@ -52,17 +26,7 @@ int ingenic_ecc_correct(struct ingenic_ecc *ecc,
 	return ecc->ops->correct(ecc, params, buf, ecc_code);
 }
 
-/**
- * ingenic_ecc_get() - get the ECC controller device
- * @np: ECC device tree node.
- *
- * Gets the ECC controller device from the specified device tree node. The
- * device must be released with ingenic_ecc_release() when it is no longer being
- * used.
- *
- * Return: a pointer to ingenic_ecc, errors are encoded into the pointer.
- * PTR_ERR(-EPROBE_DEFER) if the device hasn't been initialised yet.
- */
+ 
 static struct ingenic_ecc *ingenic_ecc_get(struct device_node *np)
 {
 	struct platform_device *pdev;
@@ -83,16 +47,7 @@ static struct ingenic_ecc *ingenic_ecc_get(struct device_node *np)
 	return ecc;
 }
 
-/**
- * of_ingenic_ecc_get() - get the ECC controller from a DT node
- * @of_node: the node that contains an ecc-engine property.
- *
- * Get the ecc-engine property from the given device tree
- * node and pass it to ingenic_ecc_get to do the work.
- *
- * Return: a pointer to ingenic_ecc, errors are encoded into the pointer.
- * PTR_ERR(-EPROBE_DEFER) if the device hasn't been initialised yet.
- */
+ 
 struct ingenic_ecc *of_ingenic_ecc_get(struct device_node *of_node)
 {
 	struct ingenic_ecc *ecc = NULL;
@@ -100,10 +55,7 @@ struct ingenic_ecc *of_ingenic_ecc_get(struct device_node *of_node)
 
 	np = of_parse_phandle(of_node, "ecc-engine", 0);
 
-	/*
-	 * If the ecc-engine property is not found, check for the deprecated
-	 * ingenic,bch-controller property
-	 */
+	 
 	if (!np)
 		np = of_parse_phandle(of_node, "ingenic,bch-controller", 0);
 
@@ -114,10 +66,7 @@ struct ingenic_ecc *of_ingenic_ecc_get(struct device_node *of_node)
 	return ecc;
 }
 
-/**
- * ingenic_ecc_release() - release the ECC controller device
- * @ecc: ECC device.
- */
+ 
 void ingenic_ecc_release(struct ingenic_ecc *ecc)
 {
 	clk_disable_unprepare(ecc->clk);

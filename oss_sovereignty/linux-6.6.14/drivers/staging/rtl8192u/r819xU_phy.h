@@ -1,15 +1,15 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _R819XU_PHY_H
 #define _R819XU_PHY_H
 
-/* Channel switch: The size of command tables for switch channel */
+ 
 #define MAX_PRECMD_CNT 16
 #define MAX_RFDEPENDCMD_CNT 16
 #define MAX_POSTCMD_CNT 16
 
 enum baseband_config_type {
-	BASEBAND_CONFIG_PHY_REG = 0,			//Radio Path A
-	BASEBAND_CONFIG_AGC_TAB = 1,			//Radio Path B
+	BASEBAND_CONFIG_PHY_REG = 0,			
+	BASEBAND_CONFIG_AGC_TAB = 1,			
 };
 
 enum switch_chan_cmd_id {
@@ -21,8 +21,8 @@ enum switch_chan_cmd_id {
 	CMD_ID_RF_WRITE_REG,
 };
 
-/* -----------------------Define structure---------------------- */
-/* 1. Switch channel related */
+ 
+ 
 struct sw_chnl_cmd {
 	enum switch_chan_cmd_id	cmd_id;
 	u32		        para_1;
@@ -35,15 +35,15 @@ enum hw90_block_e {
 	HW90_BLOCK_PHY0 = 1,
 	HW90_BLOCK_PHY1 = 2,
 	HW90_BLOCK_RF = 3,
-	HW90_BLOCK_MAXIMUM = 4, /* Never use this */
+	HW90_BLOCK_MAXIMUM = 4,  
 };
 
 enum rf90_radio_path_e {
-	RF90_PATH_A = 0,			/* Radio Path A */
-	RF90_PATH_B = 1,			/* Radio Path B */
-	RF90_PATH_C = 2,			/* Radio Path C */
-	RF90_PATH_D = 3,			/* Radio Path D */
-	RF90_PATH_MAX				/* Max RF number 92 support */
+	RF90_PATH_A = 0,			 
+	RF90_PATH_B = 1,			 
+	RF90_PATH_C = 2,			 
+	RF90_PATH_D = 3,			 
+	RF90_PATH_MAX				 
 };
 
 u8 rtl8192_phy_CheckIsLegalRFPath(struct net_device *dev, u32 e_rfpath);

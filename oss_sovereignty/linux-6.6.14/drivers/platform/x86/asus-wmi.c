@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Asus PC WMI hotkey driver
- *
- * Copyright(C) 2010 Intel Corporation.
- * Copyright(C) 2010-2011 Corentin Chary <corentin.chary@gmail.com>
- *
- * Portions based on wistron_btns.c:
- * Copyright (C) 2005 Miloslav Trmac <mitr@volny.cz>
- * Copyright (C) 2005 Bernhard Rosenkraenzer <bero@arklinux.org>
- * Copyright (C) 2005 Dmitry Torokhov <dtor@mail.ru>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -79,7 +69,7 @@ module_param(fnlock_default, bool, 0444);
 #define ASUS_FAN_SFUN_READ		0x06
 #define ASUS_FAN_SFUN_WRITE		0x07
 
-/* Based on standard hwmon pwmX_enable values */
+ 
 #define ASUS_FAN_CTRL_FULLSPEED		0
 #define ASUS_FAN_CTRL_MANUAL		1
 #define ASUS_FAN_CTRL_AUTO		2
@@ -104,7 +94,7 @@ module_param(fnlock_default, bool, 0444);
 #define WMI_EVENT_QUEUE_SIZE		0x10
 #define WMI_EVENT_QUEUE_END		0x1
 #define WMI_EVENT_MASK			0xFFFF
-/* The WMI hotkey event value is always the same. */
+ 
 #define WMI_EVENT_VALUE_ATK		0xFF
 
 #define WMI_EVENT_MASK			0xFFFF
@@ -114,10 +104,10 @@ module_param(fnlock_default, bool, 0444);
 #define FAN_CURVE_DEV_CPU		0x00
 #define FAN_CURVE_DEV_GPU		0x01
 #define FAN_CURVE_DEV_MID		0x02
-/* Mask to determine if setting temperature or percentage */
+ 
 #define FAN_CURVE_PWM_MASK		0x04
 
-/* Limits for tunables available on ASUS ROG laptops */
+ 
 #define PPT_TOTAL_MIN		5
 #define PPT_TOTAL_MAX		250
 #define PPT_CPU_MIN			5
@@ -144,40 +134,29 @@ static bool ashs_present(void)
 struct bios_args {
 	u32 arg0;
 	u32 arg1;
-	u32 arg2; /* At least TUF Gaming series uses 3 dword input buffer. */
+	u32 arg2;  
 	u32 arg3;
-	u32 arg4; /* Some ROG laptops require a full 5 input args */
+	u32 arg4;  
 	u32 arg5;
 } __packed;
 
-/*
- * Struct that's used for all methods called via AGFN. Naming is
- * identically to the AML code.
- */
+ 
 struct agfn_args {
-	u16 mfun; /* probably "Multi-function" to be called */
-	u16 sfun; /* probably "Sub-function" to be called */
-	u16 len;  /* size of the hole struct, including subfunction fields */
-	u8 stas;  /* not used by now */
-	u8 err;   /* zero on success */
+	u16 mfun;  
+	u16 sfun;  
+	u16 len;   
+	u8 stas;   
+	u8 err;    
 } __packed;
 
-/* struct used for calling fan read and write methods */
+ 
 struct agfn_fan_args {
-	struct agfn_args agfn;	/* common fields */
-	u8 fan;			/* fan number: 0: set auto mode 1: 1st fan */
-	u32 speed;		/* read: RPM/100 - write: 0-255 */
+	struct agfn_args agfn;	 
+	u8 fan;			 
+	u32 speed;		 
 } __packed;
 
-/*
- * <platform>/    - debugfs root directory
- *   dev_id      - current dev_id
- *   ctrl_param  - current ctrl_param
- *   method_id   - current method_id
- *   devs        - call DEVS(dev_id, ctrl_param) and print result
- *   dsts        - call DSTS(dev_id)  and print result
- *   call        - call method_id(dev_id, ctrl_param) and print result
- */
+ 
 struct asus_wmi_debug {
 	struct dentry *root;
 	u32 method_id;
@@ -193,8 +172,8 @@ struct asus_rfkill {
 
 enum fan_type {
 	FAN_TYPE_NONE = 0,
-	FAN_TYPE_AGFN,		/* deprecated on newer platforms */
-	FAN_TYPE_SPEC83,	/* starting in Spec 8.3, use CPU_FAN_CTRL */
+	FAN_TYPE_AGFN,		 
+	FAN_TYPE_SPEC83,	 
 };
 
 struct fan_curve_data {
@@ -257,7 +236,7 @@ struct asus_wmi {
 	bool dgpu_disable_available;
 	bool gpu_mux_mode_available;
 
-	/* Tunables provided by ASUS for gaming laptops */
+	 
 	bool ppt_pl2_sppt_available;
 	bool ppt_pl1_spl_available;
 	bool ppt_apu_sppt_available;
@@ -280,7 +259,7 @@ struct asus_wmi {
 	struct platform_profile_handler platform_profile_handler;
 	bool platform_profile_support;
 
-	// The RSOC controls the maximum charging percentage.
+	 
 	bool battery_rsoc_available;
 
 	bool panel_overdrive_available;
@@ -299,7 +278,7 @@ struct asus_wmi {
 	struct asus_wmi_driver *driver;
 };
 
-/* WMI ************************************************************************/
+ 
 
 static int asus_wmi_evaluate_method3(u32 method_id,
 		u32 arg0, u32 arg1, u32 arg2, u32 *retval)
@@ -379,10 +358,7 @@ static int asus_wmi_evaluate_method5(u32 method_id,
 	return 0;
 }
 
-/*
- * Returns as an error if the method output is not a buffer. Typically this
- * means that the method called is unsupported.
- */
+ 
 static int asus_wmi_evaluate_method_buf(u32 method_id,
 		u32 arg0, u32 arg1, u8 *ret_buffer, size_t size)
 {
@@ -423,10 +399,7 @@ static int asus_wmi_evaluate_method_buf(u32 method_id,
 
 		if (err == ASUS_WMI_UNSUPPORTED_METHOD)
 			err = -ENODEV;
-		/*
-		 * At least one method returns a 0 with no buffer if no arg
-		 * is provided, such as ASUS_WMI_DEVID_CPU_FAN_CURVE
-		 */
+		 
 		if (err == 0)
 			err = -ENODATA;
 		break;
@@ -450,10 +423,7 @@ static int asus_wmi_evaluate_method_agfn(const struct acpi_buffer args)
 	u32 retval;
 	u32 status;
 
-	/*
-	 * Copy to dma capable address otherwise memory corruption occurs as
-	 * bios has to be able to access it.
-	 */
+	 
 	input.pointer = kmemdup(args.pointer, args.length, GFP_DMA | GFP_KERNEL);
 	input.length = args.length;
 	if (!input.pointer)
@@ -484,7 +454,7 @@ static int asus_wmi_set_devstate(u32 dev_id, u32 ctrl_param,
 					ctrl_param, retval);
 }
 
-/* Helper for special devices with magic return codes */
+ 
 static int asus_wmi_get_devstate_bits(struct asus_wmi *asus,
 				      u32 dev_id, u32 mask)
 {
@@ -520,7 +490,7 @@ static bool asus_wmi_dev_is_present(struct asus_wmi *asus, u32 dev_id)
 	return status == 0 && (retval & ASUS_WMI_DSTS_PRESENCE_BIT);
 }
 
-/* Input **********************************************************************/
+ 
 static void asus_wmi_tablet_sw_report(struct asus_wmi *asus, bool value)
 {
 	input_report_switch(asus->inputdev, SW_TABLET_MODE,
@@ -599,7 +569,7 @@ static void asus_wmi_input_exit(struct asus_wmi *asus)
 	asus->inputdev = NULL;
 }
 
-/* Tablet mode ****************************************************************/
+ 
 
 static void asus_wmi_tablet_mode_get_state(struct asus_wmi *asus)
 {
@@ -613,7 +583,7 @@ static void asus_wmi_tablet_mode_get_state(struct asus_wmi *asus)
 		asus_wmi_tablet_sw_report(asus, result);
 }
 
-/* Charging mode, 1=Barrel, 2=USB ******************************************/
+ 
 static ssize_t charge_mode_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -629,7 +599,7 @@ static ssize_t charge_mode_show(struct device *dev,
 
 static DEVICE_ATTR_RO(charge_mode);
 
-/* dGPU ********************************************************************/
+ 
 static ssize_t dgpu_disable_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -643,12 +613,7 @@ static ssize_t dgpu_disable_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", result);
 }
 
-/*
- * A user may be required to store the value twice, typcial store first, then
- * rescan PCI bus to activate power, then store a second time to save correctly.
- * The reason for this is that an extra code path in the ACPI is enabled when
- * the device and bus are powered.
- */
+ 
 static ssize_t dgpu_disable_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -668,7 +633,7 @@ static ssize_t dgpu_disable_store(struct device *dev,
 	if (asus->gpu_mux_mode_available) {
 		result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_GPU_MUX);
 		if (result < 0)
-			/* An error here may signal greater failure of GPU handling */
+			 
 			return result;
 		if (!result && disable) {
 			err = -ENODEV;
@@ -694,7 +659,7 @@ static ssize_t dgpu_disable_store(struct device *dev,
 }
 static DEVICE_ATTR_RW(dgpu_disable);
 
-/* eGPU ********************************************************************/
+ 
 static ssize_t egpu_enable_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -708,7 +673,7 @@ static ssize_t egpu_enable_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", result);
 }
 
-/* The ACPI call to enable the eGPU also disables the internal dGPU */
+ 
 static ssize_t egpu_enable_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -734,7 +699,7 @@ static ssize_t egpu_enable_store(struct device *dev,
 	if (asus->gpu_mux_mode_available) {
 		result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_GPU_MUX);
 		if (result < 0) {
-			/* An error here may signal greater failure of GPU handling */
+			 
 			pr_warn("Failed to get gpu mux status: %d\n", result);
 			return result;
 		}
@@ -762,7 +727,7 @@ static ssize_t egpu_enable_store(struct device *dev,
 }
 static DEVICE_ATTR_RW(egpu_enable);
 
-/* Is eGPU connected? *********************************************************/
+ 
 static ssize_t egpu_connected_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -778,7 +743,7 @@ static ssize_t egpu_connected_show(struct device *dev,
 
 static DEVICE_ATTR_RO(egpu_connected);
 
-/* gpu mux switch *************************************************************/
+ 
 static ssize_t gpu_mux_mode_show(struct device *dev,
 				 struct device_attribute *attr, char *buf)
 {
@@ -810,7 +775,7 @@ static ssize_t gpu_mux_mode_store(struct device *dev,
 	if (asus->dgpu_disable_available) {
 		result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_DGPU);
 		if (result < 0)
-			/* An error here may signal greater failure of GPU handling */
+			 
 			return result;
 		if (result && !optimus) {
 			err = -ENODEV;
@@ -822,7 +787,7 @@ static ssize_t gpu_mux_mode_store(struct device *dev,
 	if (asus->egpu_enable_available) {
 		result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_EGPU);
 		if (result < 0)
-			/* An error here may signal greater failure of GPU handling */
+			 
 			return result;
 		if (result && !optimus) {
 			err = -ENODEV;
@@ -836,7 +801,7 @@ static ssize_t gpu_mux_mode_store(struct device *dev,
 		dev_err(dev, "Failed to set GPU MUX mode: %d\n", err);
 		return err;
 	}
-	/* !1 is considered a fail by ASUS */
+	 
 	if (result != 1) {
 		dev_warn(dev, "Failed to set GPU MUX mode (result): 0x%x\n", result);
 		return -EIO;
@@ -848,7 +813,7 @@ static ssize_t gpu_mux_mode_store(struct device *dev,
 }
 static DEVICE_ATTR_RW(gpu_mux_mode);
 
-/* TUF Laptop Keyboard RGB Modes **********************************************/
+ 
 static ssize_t kbd_rgb_mode_store(struct device *dev,
 				 struct device_attribute *attr,
 				 const char *buf, size_t count)
@@ -859,7 +824,7 @@ static ssize_t kbd_rgb_mode_store(struct device *dev,
 	if (sscanf(buf, "%d %d %d %d %d %d", &cmd, &mode, &r, &g, &b, &speed) != 6)
 		return -EINVAL;
 
-	/* B3 is set and B4 is save to BIOS */
+	 
 	switch (cmd) {
 	case 0:
 		cmd = 0xb3;
@@ -871,7 +836,7 @@ static ssize_t kbd_rgb_mode_store(struct device *dev,
 		return -EINVAL;
 	}
 
-	/* These are the known usable modes across all TUF/ROG */
+	 
 	if (mode >= 12 || mode == 9)
 		mode = 10;
 
@@ -916,7 +881,7 @@ static const struct attribute_group kbd_rgb_mode_group = {
 	.attrs = kbd_rgb_mode_attrs,
 };
 
-/* TUF Laptop Keyboard RGB State **********************************************/
+ 
 static ssize_t kbd_rgb_state_store(struct device *dev,
 				 struct device_attribute *attr,
 				 const char *buf, size_t count)
@@ -940,7 +905,7 @@ static ssize_t kbd_rgb_state_store(struct device *dev,
 	if (keyboard)
 		flags |= BIT(7);
 
-	/* 0xbd is the required default arg0 for the method. Nothing happens otherwise */
+	 
 	err = asus_wmi_evaluate_method3(ASUS_WMI_METHODID_DEVS,
 			ASUS_WMI_DEVID_TUF_RGB_STATE, 0xbd | cmd << 8 | (flags << 16), 0, NULL);
 	if (err)
@@ -974,7 +939,7 @@ static const struct attribute_group *kbd_rgb_mode_groups[] = {
 	NULL,
 };
 
-/* Tunable: PPT: Intel=PL1, AMD=SPPT *****************************************/
+ 
 static ssize_t ppt_pl2_sppt_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -1008,7 +973,7 @@ static ssize_t ppt_pl2_sppt_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(ppt_pl2_sppt);
 
-/* Tunable: PPT, Intel=PL1, AMD=SPL ******************************************/
+ 
 static ssize_t ppt_pl1_spl_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -1042,7 +1007,7 @@ static ssize_t ppt_pl1_spl_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(ppt_pl1_spl);
 
-/* Tunable: PPT APU FPPT ******************************************************/
+ 
 static ssize_t ppt_fppt_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -1076,7 +1041,7 @@ static ssize_t ppt_fppt_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(ppt_fppt);
 
-/* Tunable: PPT APU SPPT *****************************************************/
+ 
 static ssize_t ppt_apu_sppt_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -1110,7 +1075,7 @@ static ssize_t ppt_apu_sppt_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(ppt_apu_sppt);
 
-/* Tunable: PPT platform SPPT ************************************************/
+ 
 static ssize_t ppt_platform_sppt_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -1144,7 +1109,7 @@ static ssize_t ppt_platform_sppt_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(ppt_platform_sppt);
 
-/* Tunable: NVIDIA dynamic boost *********************************************/
+ 
 static ssize_t nv_dynamic_boost_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -1178,7 +1143,7 @@ static ssize_t nv_dynamic_boost_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(nv_dynamic_boost);
 
-/* Tunable: NVIDIA temperature target ****************************************/
+ 
 static ssize_t nv_temp_target_store(struct device *dev,
 				    struct device_attribute *attr,
 				    const char *buf, size_t count)
@@ -1212,9 +1177,9 @@ static ssize_t nv_temp_target_store(struct device *dev,
 }
 static DEVICE_ATTR_WO(nv_temp_target);
 
-/* Battery ********************************************************************/
+ 
 
-/* The battery maximum charging percentage */
+ 
 static int charge_end_threshold;
 
 static ssize_t charge_control_end_threshold_store(struct device *dev,
@@ -1237,9 +1202,7 @@ static ssize_t charge_control_end_threshold_store(struct device *dev,
 	if (rv != 1)
 		return -EIO;
 
-	/* There isn't any method in the DSDT to read the threshold, so we
-	 * save the threshold.
-	 */
+	 
 	charge_end_threshold = value;
 	return count;
 }
@@ -1255,11 +1218,7 @@ static DEVICE_ATTR_RW(charge_control_end_threshold);
 
 static int asus_wmi_battery_add(struct power_supply *battery, struct acpi_battery_hook *hook)
 {
-	/* The WMI method does not provide a way to specific a battery, so we
-	 * just assume it is the first battery.
-	 * Note: On some newer ASUS laptops (Zenbook UM431DA), the primary/first
-	 * battery is named BATT.
-	 */
+	 
 	if (strcmp(battery->desc->name, "BAT0") != 0 &&
 	    strcmp(battery->desc->name, "BAT1") != 0 &&
 	    strcmp(battery->desc->name, "BATC") != 0 &&
@@ -1270,10 +1229,7 @@ static int asus_wmi_battery_add(struct power_supply *battery, struct acpi_batter
 	    &dev_attr_charge_control_end_threshold))
 		return -ENODEV;
 
-	/* The charge threshold is only reset when the system is power cycled,
-	 * and we can't get the current threshold so let set it to 100% when
-	 * a battery is added.
-	 */
+	 
 	asus_wmi_set_devstate(ASUS_WMI_DEVID_RSOC, 100, NULL);
 	charge_end_threshold = 100;
 
@@ -1308,14 +1264,9 @@ static void asus_wmi_battery_exit(struct asus_wmi *asus)
 		battery_hook_unregister(&battery_hook);
 }
 
-/* LEDs ***********************************************************************/
+ 
 
-/*
- * These functions actually update the LED's, and are called from a
- * workqueue. By doing this as separate work rather than when the LED
- * subsystem asks, we avoid messing with the Asus ACPI stuff during a
- * potentially bad time, such as a timer interrupt.
- */
+ 
 static void tpd_led_update(struct work_struct *work)
 {
 	int ctrl_param;
@@ -1364,16 +1315,11 @@ static int kbd_led_read(struct asus_wmi *asus, int *level, int *env)
 {
 	int retval;
 
-	/*
-	 * bits 0-2: level
-	 * bit 7: light on/off
-	 * bit 8-10: environment (0: dark, 1: normal, 2: light)
-	 * bit 17: status unknown
-	 */
+	 
 	retval = asus_wmi_get_devstate_bits(asus, ASUS_WMI_DEVID_KBD_BACKLIGHT,
 					    0xFFFF);
 
-	/* Unknown status is considered as off */
+	 
 	if (retval == 0x8000)
 		retval = 0;
 
@@ -1402,7 +1348,7 @@ static void do_kbd_led_set(struct led_classdev *led_cdev, int value)
 static void kbd_led_set(struct led_classdev *led_cdev,
 			enum led_brightness value)
 {
-	/* Prevent disabling keyboard backlight on module unregister */
+	 
 	if (led_cdev->flags & LED_UNREGISTERING)
 		return;
 
@@ -1622,11 +1568,9 @@ error:
 	return rv;
 }
 
-/* RF *************************************************************************/
+ 
 
-/*
- * PCI hotplug (for wlan rfkill)
- */
+ 
 static bool asus_wlan_rfkill_blocked(struct asus_wmi *asus)
 {
 	int result = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_WLAN);
@@ -1678,7 +1622,7 @@ static void asus_rfkill_hotplug(struct asus_wmi *asus)
 		if (!blocked) {
 			dev = pci_get_slot(bus, 0);
 			if (dev) {
-				/* Device already present */
+				 
 				pci_dev_put(dev);
 				goto out_unlock;
 			}
@@ -1708,13 +1652,7 @@ static void asus_rfkill_notify(acpi_handle handle, u32 event, void *data)
 	if (event != ACPI_NOTIFY_BUS_CHECK)
 		return;
 
-	/*
-	 * We can't call directly asus_rfkill_hotplug because most
-	 * of the time WMBC is still being executed and not reetrant.
-	 * There is currently no way to tell ACPICA that  we want this
-	 * method to be serialized, we schedule a asus_rfkill_hotplug
-	 * call later, in a safer context.
-	 */
+	 
 	queue_work(asus->hotplug_workqueue, &asus->hotplug_work);
 }
 
@@ -1811,23 +1749,14 @@ error_workqueue:
 	return ret;
 }
 
-/*
- * Rfkill devices
- */
+ 
 static int asus_rfkill_set(void *data, bool blocked)
 {
 	struct asus_rfkill *priv = data;
 	u32 ctrl_param = !blocked;
 	u32 dev_id = priv->dev_id;
 
-	/*
-	 * If the user bit is set, BIOS can't set and record the wlan status,
-	 * it will report the value read from id ASUS_WMI_DEVID_WLAN_LED
-	 * while we query the wlan status through WMI(ASUS_WMI_DEVID_WLAN).
-	 * So, we have to record wlan status in id ASUS_WMI_DEVID_WLAN_LED
-	 * while setting the wlan status through WMI.
-	 * This is also the behavior that windows app will do.
-	 */
+	 
 	if ((dev_id == ASUS_WMI_DEVID_WLAN) &&
 	     priv->asus->driver->wlan_ctrl_by_user)
 		dev_id = ASUS_WMI_DEVID_WLAN_LED;
@@ -1854,13 +1783,7 @@ static int asus_rfkill_wlan_set(void *data, bool blocked)
 	struct asus_wmi *asus = priv->asus;
 	int ret;
 
-	/*
-	 * This handler is enabled only if hotplug is enabled.
-	 * In this case, the asus_wmi_set_devstate() will
-	 * trigger a wmi notification and we need to wait
-	 * this call to finish before being able to call
-	 * any wmi method
-	 */
+	 
 	mutex_lock(&asus->wmi_lock);
 	ret = asus_rfkill_set(data, blocked);
 	mutex_unlock(&asus->wmi_lock);
@@ -1928,10 +1851,7 @@ static void asus_wmi_rfkill_exit(struct asus_wmi *asus)
 		rfkill_destroy(asus->wlan.rfkill);
 		asus->wlan.rfkill = NULL;
 	}
-	/*
-	 * Refresh pci hotplug in case the rfkill state was changed after
-	 * asus_unregister_rfkill_notifier()
-	 */
+	 
 	asus_rfkill_hotplug(asus);
 	if (asus->hotplug_slot.ops)
 		pci_hp_deregister(&asus->hotplug_slot);
@@ -2013,20 +1933,14 @@ static int asus_wmi_rfkill_init(struct asus_wmi *asus)
 		goto exit;
 
 	result = asus_setup_pci_hotplug(asus);
-	/*
-	 * If we get -EBUSY then something else is handling the PCI hotplug -
-	 * don't fail in this case
-	 */
+	 
 	if (result == -EBUSY)
 		result = 0;
 
 	asus_register_rfkill_notifier(asus, "\\_SB.PCI0.P0P5");
 	asus_register_rfkill_notifier(asus, "\\_SB.PCI0.P0P6");
 	asus_register_rfkill_notifier(asus, "\\_SB.PCI0.P0P7");
-	/*
-	 * Refresh pci hotplug in case the rfkill state was changed during
-	 * setup.
-	 */
+	 
 	asus_rfkill_hotplug(asus);
 
 exit:
@@ -2039,7 +1953,7 @@ exit:
 	return result;
 }
 
-/* Panel Overdrive ************************************************************/
+ 
 static ssize_t panel_od_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -2087,7 +2001,7 @@ static ssize_t panel_od_store(struct device *dev,
 }
 static DEVICE_ATTR_RW(panel_od);
 
-/* Mini-LED mode **************************************************************/
+ 
 static ssize_t mini_led_mode_show(struct device *dev,
 				   struct device_attribute *attr, char *buf)
 {
@@ -2135,7 +2049,7 @@ static ssize_t mini_led_mode_store(struct device *dev,
 }
 static DEVICE_ATTR_RW(mini_led_mode);
 
-/* Quirks *********************************************************************/
+ 
 
 static void asus_wmi_set_xusb2pr(struct asus_wmi *asus)
 {
@@ -2162,16 +2076,13 @@ static void asus_wmi_set_xusb2pr(struct asus_wmi *asus)
 			orig_ports_available, ports_available);
 }
 
-/*
- * Some devices dont support or have borcken get_als method
- * but still support set method.
- */
+ 
 static void asus_wmi_set_als(void)
 {
 	asus_wmi_set_devstate(ASUS_WMI_DEVID_ALS_ENABLE, 1, NULL);
 }
 
-/* Hwmon device ***************************************************************/
+ 
 
 static int asus_agfn_fan_speed_read(struct asus_wmi *asus, int fan,
 					  int *speed)
@@ -2213,7 +2124,7 @@ static int asus_agfn_fan_speed_write(struct asus_wmi *asus, int fan,
 	struct acpi_buffer input = { (acpi_size) sizeof(args), &args };
 	int status;
 
-	/* 1: for setting 1st fan's speed 0: setting auto mode */
+	 
 	if (fan != 1 && fan != 0)
 		return -EINVAL;
 
@@ -2228,10 +2139,7 @@ static int asus_agfn_fan_speed_write(struct asus_wmi *asus, int fan,
 	return 0;
 }
 
-/*
- * Check if we can read the speed of one fan. If true we assume we can also
- * control it.
- */
+ 
 static bool asus_wmi_has_agfn_fan(struct asus_wmi *asus)
 {
 	int status;
@@ -2246,14 +2154,7 @@ static bool asus_wmi_has_agfn_fan(struct asus_wmi *asus)
 	if (status != 0)
 		return false;
 
-	/*
-	 * We need to find a better way, probably using sfun,
-	 * bits or spec ...
-	 * Currently we disable it if:
-	 * - ASUS_WMI_UNSUPPORTED_METHOD is returned
-	 * - reverved bits are non-zero
-	 * - sfun and presence bit are not set
-	 */
+	 
 	return !(value == ASUS_WMI_UNSUPPORTED_METHOD || value & 0xFFF80000
 		 || (!asus->sfun && !(value & ASUS_WMI_DSTS_PRESENCE_BIT)));
 }
@@ -2284,9 +2185,7 @@ static int asus_fan_set_auto(struct asus_wmi *asus)
 		return -ENXIO;
 	}
 
-	/*
-	 * Modern models like the G713 also have GPU fan control (this is not AGFN)
-	 */
+	 
 	if (asus->gpu_fan_type == FAN_TYPE_SPEC83) {
 		status = asus_wmi_set_devstate(ASUS_WMI_DEVID_GPU_FAN_CTRL,
 					       0, &retval);
@@ -2308,21 +2207,18 @@ static ssize_t pwm1_show(struct device *dev,
 	int err;
 	int value;
 
-	/* If we already set a value then just return it */
+	 
 	if (asus->agfn_pwm >= 0)
 		return sprintf(buf, "%d\n", asus->agfn_pwm);
 
-	/*
-	 * If we haven't set already set a value through the AGFN interface,
-	 * we read a current value through the (now-deprecated) FAN_CTRL device.
-	 */
+	 
 	err = asus_wmi_get_devstate(asus, ASUS_WMI_DEVID_FAN_CTRL, &value);
 	if (err < 0)
 		return err;
 
 	value &= 0xFF;
 
-	if (value == 1) /* Low Speed */
+	if (value == 1)  
 		value = 85;
 	else if (value == 2)
 		value = 170;
@@ -2378,7 +2274,7 @@ static ssize_t fan1_input_show(struct device *dev,
 		break;
 
 	case FAN_TYPE_AGFN:
-		/* no speed readable on manual mode */
+		 
 		if (asus->fan_pwm_mode == ASUS_FAN_CTRL_MANUAL)
 			return -ENXIO;
 
@@ -2402,15 +2298,7 @@ static ssize_t pwm1_enable_show(struct device *dev,
 {
 	struct asus_wmi *asus = dev_get_drvdata(dev);
 
-	/*
-	 * Just read back the cached pwm mode.
-	 *
-	 * For the CPU_FAN device, the spec indicates that we should be
-	 * able to read the device status and consult bit 19 to see if we
-	 * are in Full On or Automatic mode. However, this does not work
-	 * in practice on X532FL at least (the bit is always 0) and there's
-	 * also nothing in the DSDT to indicate that this behaviour exists.
-	 */
+	 
 	return sysfs_emit(buf, "%d\n", asus->fan_pwm_mode);
 }
 
@@ -2430,7 +2318,7 @@ static ssize_t pwm1_enable_store(struct device *dev,
 		return ret;
 
 	if (asus->fan_type == FAN_TYPE_SPEC83) {
-		switch (state) { /* standard documented hwmon values */
+		switch (state) {  
 		case ASUS_FAN_CTRL_FULLSPEED:
 			value = 1;
 			break;
@@ -2466,7 +2354,7 @@ static ssize_t pwm1_enable_store(struct device *dev,
 
 	asus->fan_pwm_mode = state;
 
-	/* Must set to disabled if mode is toggled */
+	 
 	if (asus->cpu_fan_curve_available)
 		asus->custom_fan_curves[FAN_CURVE_DEV_CPU].enabled = false;
 	if (asus->gpu_fan_curve_available)
@@ -2500,7 +2388,7 @@ static ssize_t asus_hwmon_temp1(struct device *dev,
 		       deci_kelvin_to_millicelsius(value & 0xFFFF));
 }
 
-/* GPU fan on modern ROG laptops */
+ 
 static ssize_t fan2_input_show(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
@@ -2525,7 +2413,7 @@ static ssize_t fan2_label_show(struct device *dev,
 	return sysfs_emit(buf, "%s\n", ASUS_GPU_FAN_DESC);
 }
 
-/* Middle/Center fan on modern ROG laptops */
+ 
 static ssize_t fan3_input_show(struct device *dev,
 					struct device_attribute *attr,
 					char *buf)
@@ -2573,7 +2461,7 @@ static ssize_t pwm2_enable_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	switch (state) { /* standard documented hwmon values */
+	switch (state) {  
 	case ASUS_FAN_CTRL_FULLSPEED:
 		value = 1;
 		break;
@@ -2619,7 +2507,7 @@ static ssize_t pwm3_enable_store(struct device *dev,
 	if (ret)
 		return ret;
 
-	switch (state) { /* standard documented hwmon values */
+	switch (state) {  
 	case ASUS_FAN_CTRL_FULLSPEED:
 		value = 1;
 		break;
@@ -2642,21 +2530,21 @@ static ssize_t pwm3_enable_store(struct device *dev,
 	return count;
 }
 
-/* Fan1 */
+ 
 static DEVICE_ATTR_RW(pwm1);
 static DEVICE_ATTR_RW(pwm1_enable);
 static DEVICE_ATTR_RO(fan1_input);
 static DEVICE_ATTR_RO(fan1_label);
-/* Fan2 - GPU fan */
+ 
 static DEVICE_ATTR_RW(pwm2_enable);
 static DEVICE_ATTR_RO(fan2_input);
 static DEVICE_ATTR_RO(fan2_label);
-/* Fan3 - Middle/center fan */
+ 
 static DEVICE_ATTR_RW(pwm3_enable);
 static DEVICE_ATTR_RO(fan3_input);
 static DEVICE_ATTR_RO(fan3_label);
 
-/* Temperature */
+ 
 static DEVICE_ATTR(temp1_input, S_IRUGO, asus_hwmon_temp1, NULL);
 
 static struct attribute *hwmon_attributes[] = {
@@ -2706,12 +2594,9 @@ static umode_t asus_hwmon_sysfs_is_visible(struct kobject *kobj,
 						&value);
 
 		if (err < 0)
-			return 0; /* can't return negative here */
+			return 0;  
 
-		/*
-		 * If the temperature value in deci-Kelvin is near the absolute
-		 * zero temperature, something is clearly wrong
-		 */
+		 
 		if (value == 0 || value == 1)
 			return 0;
 	}
@@ -2754,11 +2639,11 @@ static int asus_wmi_fan_init(struct asus_wmi *asus)
 	else if (asus_wmi_has_agfn_fan(asus))
 		asus->fan_type = FAN_TYPE_AGFN;
 
-	/*  Modern models like G713 also have GPU fan control */
+	 
 	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_GPU_FAN_CTRL))
 		asus->gpu_fan_type = FAN_TYPE_SPEC83;
 
-	/* Some models also have a center/middle fan */
+	 
 	if (asus_wmi_dev_is_present(asus, ASUS_WMI_DEVID_MID_FAN_CTRL))
 		asus->mid_fan_type = FAN_TYPE_SPEC83;
 
@@ -2770,7 +2655,7 @@ static int asus_wmi_fan_init(struct asus_wmi *asus)
 	return 0;
 }
 
-/* Fan mode *******************************************************************/
+ 
 
 static int fan_boost_mode_check_present(struct asus_wmi *asus)
 {
@@ -2886,10 +2771,10 @@ static ssize_t fan_boost_mode_store(struct device *dev,
 	return count;
 }
 
-// Fan boost mode: 0 - normal, 1 - overboost, 2 - silent
+ 
 static DEVICE_ATTR_RW(fan_boost_mode);
 
-/* Custom fan curves **********************************************************/
+ 
 
 static void fan_curve_copy_from_buf(struct fan_curve_data *data, u8 *buf)
 {
@@ -2914,7 +2799,7 @@ static int fan_curve_get_factory_default(struct asus_wmi *asus, u32 fan_dev)
 
 	if (asus->throttle_thermal_policy_available)
 		mode = asus->throttle_thermal_policy_mode;
-	/* DEVID_<C/G>PU_FAN_CURVE is switched for OVERBOOST vs SILENT */
+	 
 	if (mode == 2)
 		mode = 1;
 	else if (mode == 1)
@@ -2941,7 +2826,7 @@ static int fan_curve_get_factory_default(struct asus_wmi *asus, u32 fan_dev)
 	return 0;
 }
 
-/* Check if capability exists, and populate defaults */
+ 
 static int fan_curve_check_present(struct asus_wmi *asus, bool *available,
 				   u32 fan_dev)
 {
@@ -2961,7 +2846,7 @@ static int fan_curve_check_present(struct asus_wmi *asus, bool *available,
 	return 0;
 }
 
-/* Determine which fan the attribute is for if SENSOR_ATTR */
+ 
 static struct fan_curve_data *fan_curve_attr_select(struct asus_wmi *asus,
 					      struct device_attribute *attr)
 {
@@ -2970,7 +2855,7 @@ static struct fan_curve_data *fan_curve_attr_select(struct asus_wmi *asus,
 	return &asus->custom_fan_curves[index];
 }
 
-/* Determine which fan the attribute is for if SENSOR_ATTR_2 */
+ 
 static struct fan_curve_data *fan_curve_attr_2_select(struct asus_wmi *asus,
 					    struct device_attribute *attr)
 {
@@ -2999,9 +2884,7 @@ static ssize_t fan_curve_show(struct device *dev,
 	return sysfs_emit(buf, "%d\n", value);
 }
 
-/*
- * "fan_dev" is the related WMI method such as ASUS_WMI_DEVID_CPU_FAN_CURVE.
- */
+ 
 static int fan_curve_write(struct asus_wmi *asus,
 			   struct fan_curve_data *data)
 {
@@ -3016,7 +2899,7 @@ static int fan_curve_write(struct asus_wmi *asus,
 	for (i = 0; i < FAN_CURVE_POINTS / 2; i++) {
 		arg1 += (temps[i]) << shift;
 		arg2 += (temps[i + 4]) << shift;
-		/* Scale to percentage for device */
+		 
 		arg3 += (100 * percents[i] / 255) << shift;
 		arg4 += (100 * percents[i + 4] / 255) << shift;
 		shift += 8;
@@ -3050,11 +2933,7 @@ static ssize_t fan_curve_store(struct device *dev,
 	else
 		data->temps[index] = value;
 
-	/*
-	 * Mark as disabled so the user has to explicitly enable to apply a
-	 * changed fan curve. This prevents potential lockups from writing out
-	 * many changes as one-write-per-change.
-	 */
+	 
 	data->enabled = false;
 
 	return count;
@@ -3096,10 +2975,7 @@ static ssize_t fan_curve_enable_store(struct device *dev,
 	case 2:
 		data->enabled = false;
 		break;
-	/*
-	 * Auto + reset the fan curve data to defaults. Make it an explicit
-	 * option so that users don't accidentally overwrite a set fan curve.
-	 */
+	 
 	case 3:
 		err = fan_curve_get_factory_default(asus, data->device_id);
 		if (err)
@@ -3115,21 +2991,18 @@ static ssize_t fan_curve_enable_store(struct device *dev,
 		if (err)
 			return err;
 	} else {
-		/*
-		 * For machines with throttle this is the only way to reset fans
-		 * to default mode of operation (does not erase curve data).
-		 */
+		 
 		if (asus->throttle_thermal_policy_available) {
 			err = throttle_thermal_policy_write(asus);
 			if (err)
 				return err;
-		/* Similar is true for laptops with this fan */
+		 
 		} else if (asus->fan_type == FAN_TYPE_SPEC83) {
 			err = asus_fan_set_auto(asus);
 			if (err)
 				return err;
 		} else {
-			/* Safeguard against fautly ACPI tables */
+			 
 			err = fan_curve_get_factory_default(asus, data->device_id);
 			if (err)
 				return err;
@@ -3141,7 +3014,7 @@ static ssize_t fan_curve_enable_store(struct device *dev,
 	return count;
 }
 
-/* CPU */
+ 
 static SENSOR_DEVICE_ATTR_RW(pwm1_enable, fan_curve_enable, FAN_CURVE_DEV_CPU);
 static SENSOR_DEVICE_ATTR_2_RW(pwm1_auto_point1_temp, fan_curve,
 			       FAN_CURVE_DEV_CPU, 0);
@@ -3177,7 +3050,7 @@ static SENSOR_DEVICE_ATTR_2_RW(pwm1_auto_point7_pwm, fan_curve,
 static SENSOR_DEVICE_ATTR_2_RW(pwm1_auto_point8_pwm, fan_curve,
 			       FAN_CURVE_DEV_CPU | FAN_CURVE_PWM_MASK, 7);
 
-/* GPU */
+ 
 static SENSOR_DEVICE_ATTR_RW(pwm2_enable, fan_curve_enable, FAN_CURVE_DEV_GPU);
 static SENSOR_DEVICE_ATTR_2_RW(pwm2_auto_point1_temp, fan_curve,
 			       FAN_CURVE_DEV_GPU, 0);
@@ -3213,7 +3086,7 @@ static SENSOR_DEVICE_ATTR_2_RW(pwm2_auto_point7_pwm, fan_curve,
 static SENSOR_DEVICE_ATTR_2_RW(pwm2_auto_point8_pwm, fan_curve,
 			       FAN_CURVE_DEV_GPU | FAN_CURVE_PWM_MASK, 7);
 
-/* MID */
+ 
 static SENSOR_DEVICE_ATTR_RW(pwm3_enable, fan_curve_enable, FAN_CURVE_DEV_MID);
 static SENSOR_DEVICE_ATTR_2_RW(pwm3_auto_point1_temp, fan_curve,
 			       FAN_CURVE_DEV_MID, 0);
@@ -3250,7 +3123,7 @@ static SENSOR_DEVICE_ATTR_2_RW(pwm3_auto_point8_pwm, fan_curve,
 			       FAN_CURVE_DEV_MID | FAN_CURVE_PWM_MASK, 7);
 
 static struct attribute *asus_fan_curve_attr[] = {
-	/* CPU */
+	 
 	&sensor_dev_attr_pwm1_enable.dev_attr.attr,
 	&sensor_dev_attr_pwm1_auto_point1_temp.dev_attr.attr,
 	&sensor_dev_attr_pwm1_auto_point2_temp.dev_attr.attr,
@@ -3268,7 +3141,7 @@ static struct attribute *asus_fan_curve_attr[] = {
 	&sensor_dev_attr_pwm1_auto_point6_pwm.dev_attr.attr,
 	&sensor_dev_attr_pwm1_auto_point7_pwm.dev_attr.attr,
 	&sensor_dev_attr_pwm1_auto_point8_pwm.dev_attr.attr,
-	/* GPU */
+	 
 	&sensor_dev_attr_pwm2_enable.dev_attr.attr,
 	&sensor_dev_attr_pwm2_auto_point1_temp.dev_attr.attr,
 	&sensor_dev_attr_pwm2_auto_point2_temp.dev_attr.attr,
@@ -3286,7 +3159,7 @@ static struct attribute *asus_fan_curve_attr[] = {
 	&sensor_dev_attr_pwm2_auto_point6_pwm.dev_attr.attr,
 	&sensor_dev_attr_pwm2_auto_point7_pwm.dev_attr.attr,
 	&sensor_dev_attr_pwm2_auto_point8_pwm.dev_attr.attr,
-	/* MID */
+	 
 	&sensor_dev_attr_pwm3_enable.dev_attr.attr,
 	&sensor_dev_attr_pwm3_auto_point1_temp.dev_attr.attr,
 	&sensor_dev_attr_pwm3_auto_point2_temp.dev_attr.attr,
@@ -3313,10 +3186,7 @@ static umode_t asus_fan_curve_is_visible(struct kobject *kobj,
 	struct device *dev = kobj_to_dev(kobj);
 	struct asus_wmi *asus = dev_get_drvdata(dev->parent);
 
-	/*
-	 * Check the char instead of casting attr as there are two attr types
-	 * involved here (attr1 and attr2)
-	 */
+	 
 	if (asus->cpu_fan_curve_available && attr->name[3] == '1')
 		return 0644;
 
@@ -3335,10 +3205,7 @@ static const struct attribute_group asus_fan_curve_attr_group = {
 };
 __ATTRIBUTE_GROUPS(asus_fan_curve_attr);
 
-/*
- * Must be initialised after throttle_thermal_policy_check_present() as
- * we check the status of throttle_thermal_policy_available during init.
- */
+ 
 static int asus_wmi_custom_fan_curve_init(struct asus_wmi *asus)
 {
 	struct device *dev = &asus->platform_device->dev;
@@ -3377,7 +3244,7 @@ static int asus_wmi_custom_fan_curve_init(struct asus_wmi *asus)
 	return 0;
 }
 
-/* Throttle thermal policy ****************************************************/
+ 
 
 static int throttle_thermal_policy_check_present(struct asus_wmi *asus)
 {
@@ -3426,7 +3293,7 @@ static int throttle_thermal_policy_write(struct asus_wmi *asus)
 		return -EIO;
 	}
 
-	/* Must set to disabled if mode is toggled */
+	 
 	if (asus->cpu_fan_curve_available)
 		asus->custom_fan_curves[FAN_CURVE_DEV_CPU].enabled = false;
 	if (asus->gpu_fan_curve_available)
@@ -3459,10 +3326,7 @@ static int throttle_thermal_policy_switch_next(struct asus_wmi *asus)
 	if (err)
 		return err;
 
-	/*
-	 * Ensure that platform_profile updates userspace with the change to ensure
-	 * that platform_profile and throttle_thermal_policy_mode are in sync.
-	 */
+	 
 	platform_profile_notify();
 
 	return 0;
@@ -3498,19 +3362,16 @@ static ssize_t throttle_thermal_policy_store(struct device *dev,
 	if (err)
 		return err;
 
-	/*
-	 * Ensure that platform_profile updates userspace with the change to ensure
-	 * that platform_profile and throttle_thermal_policy_mode are in sync.
-	 */
+	 
 	platform_profile_notify();
 
 	return count;
 }
 
-// Throttle thermal policy: 0 - default, 1 - overboost, 2 - silent
+
 static DEVICE_ATTR_RW(throttle_thermal_policy);
 
-/* Platform profile ***********************************************************/
+ 
 static int asus_wmi_platform_profile_get(struct platform_profile_handler *pprof,
 					enum platform_profile_option *profile)
 {
@@ -3569,10 +3430,7 @@ static int platform_profile_setup(struct asus_wmi *asus)
 	struct device *dev = &asus->platform_device->dev;
 	int err;
 
-	/*
-	 * Not an error if a component platform_profile relies on is unavailable
-	 * so early return, skipping the setup of platform_profile.
-	 */
+	 
 	if (!asus->throttle_thermal_policy_available)
 		return 0;
 
@@ -3595,7 +3453,7 @@ static int platform_profile_setup(struct asus_wmi *asus)
 	return 0;
 }
 
-/* Backlight ******************************************************************/
+ 
 
 static int read_backlight_power(struct asus_wmi *asus)
 {
@@ -3675,8 +3533,7 @@ static int update_bl_status(struct backlight_device *bd)
 		if (asus->driver->quirks->store_backlight_power)
 			asus->driver->panel_power = bd->props.power;
 
-		/* When using scalar brightness, updating the brightness
-		 * will mess with the backlight power */
+		 
 		if (asus->driver->quirks->scalar_panel_brightness)
 			return err;
 	}
@@ -3766,7 +3623,7 @@ static void asus_wmi_backlight_exit(struct asus_wmi *asus)
 
 static int is_display_toggle(int code)
 {
-	/* display toggle keys */
+	 
 	if ((code >= 0x61 && code <= 0x67) ||
 	    (code >= 0x8c && code <= 0x93) ||
 	    (code >= 0xa0 && code <= 0xa7) ||
@@ -3776,7 +3633,7 @@ static int is_display_toggle(int code)
 	return 0;
 }
 
-/* Fn-lock ********************************************************************/
+ 
 
 static bool asus_wmi_has_fnlock_key(struct asus_wmi *asus)
 {
@@ -3795,7 +3652,7 @@ static void asus_wmi_fnlock_update(struct asus_wmi *asus)
 	asus_wmi_set_devstate(ASUS_WMI_DEVID_FNLOCK, mode, NULL);
 }
 
-/* WMI events *****************************************************************/
+ 
 
 static int asus_wmi_get_event_code(u32 value)
 {
@@ -3902,10 +3759,7 @@ static void asus_wmi_notify(u32 value, void *context)
 
 		asus_wmi_handle_event_code(code, asus);
 
-		/*
-		 * Double check that queue is present:
-		 * ATK (with queue) uses 0xff, ASUSWMI (without) 0xd2.
-		 */
+		 
 		if (!asus->wmi_event_queue || value != WMI_EVENT_VALUE_ATK)
 			return;
 	}
@@ -3933,7 +3787,7 @@ static int asus_wmi_notify_queue_flush(struct asus_wmi *asus)
 	return -EIO;
 }
 
-/* Sysfs **********************************************************************/
+ 
 
 static ssize_t store_sys_wmi(struct asus_wmi *asus, int devid,
 			     const char *buf, size_t count)
@@ -4116,7 +3970,7 @@ static int asus_wmi_sysfs_init(struct platform_device *device)
 	return sysfs_create_group(&device->dev.kobj, &platform_attribute_group);
 }
 
-/* Platform device ************************************************************/
+ 
 
 static int asus_wmi_platform_init(struct asus_wmi *asus)
 {
@@ -4124,40 +3978,23 @@ static int asus_wmi_platform_init(struct asus_wmi *asus)
 	char *wmi_uid;
 	int rv;
 
-	/* INIT enable hotkeys on some models */
+	 
 	if (!asus_wmi_evaluate_method(ASUS_WMI_METHODID_INIT, 0, 0, &rv))
 		pr_info("Initialization: %#x\n", rv);
 
-	/* We don't know yet what to do with this version... */
+	 
 	if (!asus_wmi_evaluate_method(ASUS_WMI_METHODID_SPEC, 0, 0x9, &rv)) {
 		pr_info("BIOS WMI version: %d.%d\n", rv >> 16, rv & 0xFF);
 		asus->spec = rv;
 	}
 
-	/*
-	 * The SFUN method probably allows the original driver to get the list
-	 * of features supported by a given model. For now, 0x0100 or 0x0800
-	 * bit signifies that the laptop is equipped with a Wi-Fi MiniPCI card.
-	 * The significance of others is yet to be found.
-	 */
+	 
 	if (!asus_wmi_evaluate_method(ASUS_WMI_METHODID_SFUN, 0, 0, &rv)) {
 		pr_info("SFUN value: %#x\n", rv);
 		asus->sfun = rv;
 	}
 
-	/*
-	 * Eee PC and Notebooks seems to have different method_id for DSTS,
-	 * but it may also be related to the BIOS's SPEC.
-	 * Note, on most Eeepc, there is no way to check if a method exist
-	 * or note, while on notebooks, they returns 0xFFFFFFFE on failure,
-	 * but once again, SPEC may probably be used for that kind of things.
-	 *
-	 * Additionally at least TUF Gaming series laptops return nothing for
-	 * unknown methods, so the detection in this way is not possible.
-	 *
-	 * There is strong indication that only ACPI WMI devices that have _UID
-	 * equal to "ASUSWMI" use DCTS whereas those with "ATK" use DSTS.
-	 */
+	 
 	wmi_uid = wmi_get_acpi_device_uid(ASUS_WMI_MGMT_GUID);
 	if (!wmi_uid)
 		return -ENODEV;
@@ -4170,15 +4007,7 @@ static int asus_wmi_platform_init(struct asus_wmi *asus)
 		asus->dsts_id = ASUS_WMI_METHODID_DSTS;
 	}
 
-	/*
-	 * Some devices can have multiple event codes stored in a queue before
-	 * the module load if it was unloaded intermittently after calling
-	 * the INIT method (enables event handling). The WMI notify handler is
-	 * expected to retrieve all event codes until a retrieved code equals
-	 * queue end marker (One or Ones). Old codes are flushed from the queue
-	 * upon module load. Not enabling this when it should be has minimal
-	 * visible impact so fall back if anything goes wrong.
-	 */
+	 
 	wmi_uid = wmi_get_acpi_device_uid(asus->driver->event_guid);
 	if (wmi_uid && !strcmp(wmi_uid, ASUS_ACPI_UID_ATK)) {
 		dev_info(dev, "Detected ATK, enable event queue\n");
@@ -4187,8 +4016,7 @@ static int asus_wmi_platform_init(struct asus_wmi *asus)
 			asus->wmi_event_queue = true;
 	}
 
-	/* CWAP allow to define the behavior of the Fn+F2 key,
-	 * this method doesn't seems to be present on Eee PCs */
+	 
 	if (asus->driver->quirks->wapf >= 0)
 		asus_wmi_set_devstate(ASUS_WMI_DEVID_CWAP,
 				      asus->driver->quirks->wapf, NULL);
@@ -4196,7 +4024,7 @@ static int asus_wmi_platform_init(struct asus_wmi *asus)
 	return 0;
 }
 
-/* debugfs ********************************************************************/
+ 
 
 struct asus_wmi_debugfs_node {
 	struct asus_wmi *asus;
@@ -4321,7 +4149,7 @@ static void asus_wmi_debugfs_init(struct asus_wmi *asus)
 	}
 }
 
-/* Init / exit ****************************************************************/
+ 
 
 static int asus_wmi_add(struct platform_device *pdev)
 {
@@ -4387,7 +4215,7 @@ static int asus_wmi_add(struct platform_device *pdev)
 	if (err)
 		goto fail_input;
 
-	err = asus_wmi_fan_init(asus); /* probably no problems on error */
+	err = asus_wmi_fan_init(asus);  
 
 	err = asus_wmi_hwmon_init(asus);
 	if (err)
@@ -4497,7 +4325,7 @@ static int asus_wmi_remove(struct platform_device *device)
 	return 0;
 }
 
-/* Platform driver - hibernate/resume callbacks *******************************/
+ 
 
 static int asus_hotk_thaw(struct device *device)
 {
@@ -4506,11 +4334,7 @@ static int asus_hotk_thaw(struct device *device)
 	if (asus->wlan.rfkill) {
 		bool wlan;
 
-		/*
-		 * Work around bios bug - acpi _PTS turns off the wireless led
-		 * during suspend.  Normally it restores it on resume, but
-		 * we should kick it ourselves in case hibernation is aborted.
-		 */
+		 
 		wlan = asus_wmi_get_devstate_simple(asus, ASUS_WMI_DEVID_WLAN);
 		asus_wmi_set_devstate(ASUS_WMI_DEVID_WLAN, wlan, NULL);
 	}
@@ -4537,7 +4361,7 @@ static int asus_hotk_restore(struct device *device)
 	struct asus_wmi *asus = dev_get_drvdata(device);
 	int bl;
 
-	/* Refresh both wlan rfkill state and pci hotplug */
+	 
 	if (asus->wlan.rfkill)
 		asus_rfkill_hotplug(asus);
 
@@ -4578,7 +4402,7 @@ static const struct dev_pm_ops asus_pm_ops = {
 	.resume = asus_hotk_resume,
 };
 
-/* Registration ***************************************************************/
+ 
 
 static int asus_wmi_probe(struct platform_device *pdev)
 {

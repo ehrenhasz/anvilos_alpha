@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011-2016 Synaptics Incorporated
- * Copyright (c) 2011 Unixphere
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/device.h>
@@ -39,13 +36,7 @@ void rmi_dbg(int flags, struct device *dev, const char *fmt, ...)
 }
 EXPORT_SYMBOL_GPL(rmi_dbg);
 
-/*
- * RMI Physical devices
- *
- * Physical RMI device consists of several functions serving particular
- * purpose. For example F11 is a 2D touch sensor while F01 is a generic
- * function present in every RMI device.
- */
+ 
 
 static void rmi_release_device(struct device *dev)
 {
@@ -64,13 +55,7 @@ bool rmi_is_physical_device(struct device *dev)
 	return dev->type == &rmi_device_type;
 }
 
-/**
- * rmi_register_transport_device - register a transport device connection
- * on the RMI bus.  Transport drivers provide communication from the devices
- * on a bus (such as SPI, I2C, and so on) to the RMI4 sensor.
- *
- * @xport: the transport device to register
- */
+ 
 int rmi_register_transport_device(struct rmi_transport_dev *xport)
 {
 	static atomic_t transport_device_count = ATOMIC_INIT(0);
@@ -110,11 +95,7 @@ err_put_device:
 }
 EXPORT_SYMBOL_GPL(rmi_register_transport_device);
 
-/**
- * rmi_unregister_transport_device - unregister a transport device connection
- * @xport: the transport driver to unregister
- *
- */
+ 
 void rmi_unregister_transport_device(struct rmi_transport_dev *xport)
 {
 	struct rmi_device *rmi_dev = xport->rmi_dev;
@@ -125,7 +106,7 @@ void rmi_unregister_transport_device(struct rmi_transport_dev *xport)
 EXPORT_SYMBOL(rmi_unregister_transport_device);
 
 
-/* Function specific stuff */
+ 
 
 static void rmi_release_function(struct device *dev)
 {
@@ -284,16 +265,7 @@ void rmi_unregister_function(struct rmi_function *fn)
 	put_device(&fn->dev);
 }
 
-/**
- * __rmi_register_function_handler - register a handler for an RMI function
- * @handler: RMI handler that should be registered.
- * @owner: pointer to module that implements the handler
- * @mod_name: name of the module implementing the handler
- *
- * This function performs additional setup of RMI function handler and
- * registers it with the RMI core so that it can be bound to
- * RMI function devices.
- */
+ 
 int __rmi_register_function_handler(struct rmi_function_handler *handler,
 				     struct module *owner,
 				     const char *mod_name)
@@ -318,26 +290,20 @@ int __rmi_register_function_handler(struct rmi_function_handler *handler,
 }
 EXPORT_SYMBOL_GPL(__rmi_register_function_handler);
 
-/**
- * rmi_unregister_function_handler - unregister given RMI function handler
- * @handler: RMI handler that should be unregistered.
- *
- * This function unregisters given function handler from RMI core which
- * causes it to be unbound from the function devices.
- */
+ 
 void rmi_unregister_function_handler(struct rmi_function_handler *handler)
 {
 	driver_unregister(&handler->driver);
 }
 EXPORT_SYMBOL_GPL(rmi_unregister_function_handler);
 
-/* Bus specific stuff */
+ 
 
 static int rmi_bus_match(struct device *dev, struct device_driver *drv)
 {
 	bool physical = rmi_is_physical_device(dev);
 
-	/* First see if types are not compatible */
+	 
 	if (physical != rmi_is_physical_driver(drv))
 		return 0;
 
@@ -461,10 +427,7 @@ module_init(rmi_bus_init);
 
 static void __exit rmi_bus_exit(void)
 {
-	/*
-	 * We should only ever get here if all drivers are unloaded, so
-	 * all we have to do at this point is unregister ourselves.
-	 */
+	 
 
 	rmi_unregister_physical_driver();
 	rmi_unregister_function_handlers();

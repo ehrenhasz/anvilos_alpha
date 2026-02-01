@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * (C) COPYRIGHT 2018 ARM Limited. All rights reserved.
- * Author: James.Qian.Wang <james.qian.wang@arm.com>
- *
- */
+
+ 
 #include "d71_dev.h"
 #include "komeda_kms.h"
 #include "malidp_io.h"
@@ -77,7 +73,7 @@ static void get_values_from_reg(void __iomem *reg, u32 offset,
 
 	for (i = 0; i < count; i++) {
 		addr = offset + (i << 2);
-		/* 0xA4 is WO register */
+		 
 		if (addr != 0xA4)
 			val[i] = malidp_read32(reg, addr);
 		else
@@ -106,9 +102,7 @@ static void dump_block_header(struct seq_file *sf, void __iomem *reg)
 			   i, hdr.output_ids[i]);
 }
 
-/* On D71, we are using the global line size. From D32, every component have
- * a line size register to indicate the fifo size.
- */
+ 
 static u32 __get_blk_line_size(struct d71_dev *d71, u32 __iomem *reg,
 			       u32 max_default)
 {
@@ -175,7 +169,7 @@ static inline u32 to_d71_input_id(struct komeda_component_state *st, int idx)
 {
 	struct komeda_component_output *input = &st->inputs[idx];
 
-	/* if input is not active, set hw input_id(0) to disable it */
+	 
 	if (has_bit(idx, st->active_inputs))
 		return input->component->hw_id + input->output_port;
 	else
@@ -232,7 +226,7 @@ static void d71_layer_update(struct komeda_component *c,
 							     st->afbc_crop_r));
 		malidp_write32(reg, LAYER_AD_V_CROP, HV_CROP(st->afbc_crop_t,
 							     st->afbc_crop_b));
-		/* afbc 1.2 wants payload, afbc 1.0/1.1 wants end_addr */
+		 
 		if (fb->modifier & AFBC_FORMAT_MOD_TILED)
 			addr = st->addr[0] + kfb->offset_payload;
 		else
@@ -258,7 +252,7 @@ static void d71_layer_update(struct komeda_component *c,
 		case DRM_FORMAT_YUV420_10BIT:
 		case DRM_FORMAT_YUV420:
 		case DRM_FORMAT_P010:
-		/* these fmt support MPGE/JPEG both, here perfer JPEG*/
+		 
 			upsampling = LR_CHI420_JPEG;
 			break;
 		case DRM_FORMAT_X0L2:
@@ -432,17 +426,17 @@ static int d71_layer_init(struct d71_dev *d71,
 		layer->layer_type = KOMEDA_FMT_SIMPLE_LAYER;
 
 	if (!d71->periph_addr) {
-		/* D32 or newer product */
+		 
 		layer->line_sz = malidp_read32(reg, BLK_MAX_LINE_SIZE);
 		layer->yuv_line_sz = L_INFO_YUV_MAX_LINESZ(layer_info);
 	} else if (d71->max_line_size > 2048) {
-		/* D71 4K */
+		 
 		layer->line_sz = d71->max_line_size;
 		layer->yuv_line_sz = layer->line_sz / 2;
 	} else	{
-		/* D71 2K */
+		 
 		if (layer->layer_type == KOMEDA_FMT_RICH_LAYER) {
-			/* rich layer is 4K configuration */
+			 
 			layer->line_sz = d71->max_line_size * 2;
 			layer->yuv_line_sz = layer->line_sz / 2;
 		} else {
@@ -562,10 +556,7 @@ static void d71_component_disable(struct komeda_component *c)
 	for (i = 0; i < c->max_active_inputs; i++) {
 		malidp_write32(reg, BLK_INPUT_ID0 + (i << 2), 0);
 
-		/* Besides clearing the input ID to zero, D71 compiz also has
-		 * input enable bit in CU_INPUTx_CONTROL which need to be
-		 * cleared.
-		 */
+		 
 		if (has_bit(c->id, KOMEDA_PIPELINE_COMPIZS))
 			malidp_write32(reg, CU_INPUT0_CONTROL +
 				       i * CU_PER_INPUT_REGS * 4,
@@ -735,24 +726,7 @@ static void d71_scaler_update(struct komeda_component *c,
 	malidp_write32(reg, SC_OUT_SIZE, HV_SIZE(st->hsize_out, st->vsize_out));
 	malidp_write32(reg, SC_H_CROP, HV_CROP(st->left_crop, st->right_crop));
 
-	/* for right part, HW only sample the valid pixel which means the pixels
-	 * in left_crop will be jumpped, and the first sample pixel is:
-	 *
-	 * dst_a = st->total_hsize_out - st->hsize_out + st->left_crop + 0.5;
-	 *
-	 * Then the corresponding texel in src is:
-	 *
-	 * h_delta_phase = st->total_hsize_in / st->total_hsize_out;
-	 * src_a = dst_A * h_delta_phase;
-	 *
-	 * and h_init_phase is src_a deduct the real source start src_S;
-	 *
-	 * src_S = st->total_hsize_in - st->hsize_in;
-	 * h_init_phase = src_a - src_S;
-	 *
-	 * And HW precision for the initial/delta_phase is 16:16 fixed point,
-	 * the following is the simplified formula
-	 */
+	 
 	if (st->right_part) {
 		u32 dst_a = st->total_hsize_out - st->hsize_out + st->left_crop;
 
@@ -781,7 +755,7 @@ static void d71_scaler_update(struct komeda_component *c,
 	ctrl |= st->en_scaling ? SC_CTRL_SCL : 0;
 	ctrl |= st->en_alpha ? SC_CTRL_AP : 0;
 	ctrl |= st->en_img_enhancement ? SC_CTRL_IENH : 0;
-	/* If we use the hardware splitter we shouldn't set SC_CTRL_LS */
+	 
 	if (st->en_split &&
 	    state->inputs[0].component->id != KOMEDA_COMPONENT_SPLITTER)
 		ctrl |= SC_CTRL_LS;
@@ -876,25 +850,7 @@ static int d71_downscaling_clk_check(struct komeda_pipeline *pipe,
 	u32 v_out = dflow->out_h;
 	u64 fraction, denominator;
 
-	/* D71 downscaling must satisfy the following equation
-	 *
-	 *   ACLK                   h_in * v_in
-	 * ------- >= ---------------------------------------------
-	 *  PXLCLK     (h_total - (1 + 2 * v_in / v_out)) * v_out
-	 *
-	 * In only horizontal downscaling situation, the right side should be
-	 * multiplied by (h_total - 3) / (h_active - 3), then equation becomes
-	 *
-	 *   ACLK          h_in
-	 * ------- >= ----------------
-	 *  PXLCLK     (h_active - 3)
-	 *
-	 * To avoid precision lost the equation 1 will be convert to:
-	 *
-	 *   ACLK             h_in * v_in
-	 * ------- >= -----------------------------------
-	 *  PXLCLK     (h_total -1 ) * v_out -  2 * v_in
-	 */
+	 
 	if (v_in == v_out) {
 		fraction = h_in;
 		denominator = mode->hdisplay - 3;
@@ -1064,20 +1020,20 @@ static void d71_improc_update(struct komeda_component *c,
 			malidp_write_group(pipe->dou_ft_coeff_addr, FT_COEFF0,
 					   KOMEDA_N_GAMMA_COEFFS,
 					   st->fgamma_coeffs);
-			ctrl |= IPS_CTRL_FT; /* enable gamma */
+			ctrl |= IPS_CTRL_FT;  
 		}
 
 		if (crtc_st->ctm) {
 			malidp_write_group(reg, IPS_RGB_RGB_COEFF0,
 					   KOMEDA_N_CTM_COEFFS,
 					   st->ctm_coeffs);
-			ctrl |= IPS_CTRL_RGB; /* enable gamut */
+			ctrl |= IPS_CTRL_RGB;  
 		}
 	}
 
 	mask |= IPS_CTRL_YUV | IPS_CTRL_CHD422 | IPS_CTRL_CHD420;
 
-	/* config color format */
+	 
 	if (st->color_format == DRM_COLOR_FORMAT_YCBCR420)
 		ctrl |= IPS_CTRL_YUV | IPS_CTRL_CHD422 | IPS_CTRL_CHD420;
 	else if (st->color_format == DRM_COLOR_FORMAT_YCBCR422)
@@ -1195,7 +1151,7 @@ static void d71_timing_ctrlr_update(struct komeda_component *c,
 	malidp_write32(reg, BS_PROG_LINE, D71_DEFAULT_PREPRETCH_LINE - 1);
 	malidp_write32(reg, BS_PREFETCH_LINE, D71_DEFAULT_PREPRETCH_LINE);
 
-	/* configure bs control register */
+	 
 	value = BS_CTRL_EN | BS_CTRL_VM;
 	if (c->pipeline->dual_link) {
 		malidp_write32(reg, BS_DRIFT_TO, hfront_porch + 16);

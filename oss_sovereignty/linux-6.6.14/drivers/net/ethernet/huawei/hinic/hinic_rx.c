@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Huawei HiNIC PCI Express Linux driver
- * Copyright(c) 2017 Huawei Technologies Co., Ltd
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -46,10 +43,7 @@
 	(HINIC_GET_RX_PKT_TYPE(be32_to_cpu((cqe)->offload_type)) == \
 	 HINIC_RX_IPV6_PKT ? LRO_PKT_HDR_LEN_IPV6 : LRO_PKT_HDR_LEN_IPV4)
 
-/**
- * hinic_rxq_clean_stats - Clean the statistics of specific queue
- * @rxq: Logical Rx Queue
- **/
+ 
 static void hinic_rxq_clean_stats(struct hinic_rxq *rxq)
 {
 	struct hinic_rxq_stats *rxq_stats = &rxq->rxq_stats;
@@ -63,11 +57,7 @@ static void hinic_rxq_clean_stats(struct hinic_rxq *rxq)
 	u64_stats_update_end(&rxq_stats->syncp);
 }
 
-/**
- * hinic_rxq_get_stats - get statistics of Rx Queue
- * @rxq: Logical Rx Queue
- * @stats: return updated stats here
- **/
+ 
 void hinic_rxq_get_stats(struct hinic_rxq *rxq, struct hinic_rxq_stats *stats)
 {
 	struct hinic_rxq_stats *rxq_stats = &rxq->rxq_stats;
@@ -84,10 +74,7 @@ void hinic_rxq_get_stats(struct hinic_rxq *rxq, struct hinic_rxq_stats *stats)
 	} while (u64_stats_fetch_retry(&rxq_stats->syncp, start));
 }
 
-/**
- * rxq_stats_init - Initialize the statistics of specific queue
- * @rxq: Logical Rx Queue
- **/
+ 
 static void rxq_stats_init(struct hinic_rxq *rxq)
 {
 	struct hinic_rxq_stats *rxq_stats = &rxq->rxq_stats;
@@ -117,13 +104,7 @@ static void rx_csum(struct hinic_rxq *rxq, u32 status,
 	}
 }
 
-/**
- * rx_alloc_skb - allocate skb and map it to dma address
- * @rxq: rx queue
- * @dma_addr: returned dma address for the skb
- *
- * Return skb
- **/
+ 
 static struct sk_buff *rx_alloc_skb(struct hinic_rxq *rxq,
 				    dma_addr_t *dma_addr)
 {
@@ -155,11 +136,7 @@ err_rx_map:
 	return NULL;
 }
 
-/**
- * rx_unmap_skb - unmap the dma address of the skb
- * @rxq: rx queue
- * @dma_addr: dma address of the skb
- **/
+ 
 static void rx_unmap_skb(struct hinic_rxq *rxq, dma_addr_t dma_addr)
 {
 	struct hinic_dev *nic_dev = netdev_priv(rxq->netdev);
@@ -171,12 +148,7 @@ static void rx_unmap_skb(struct hinic_rxq *rxq, dma_addr_t dma_addr)
 			 DMA_FROM_DEVICE);
 }
 
-/**
- * rx_free_skb - unmap and free skb
- * @rxq: rx queue
- * @skb: skb to free
- * @dma_addr: dma address of the skb
- **/
+ 
 static void rx_free_skb(struct hinic_rxq *rxq, struct sk_buff *skb,
 			dma_addr_t dma_addr)
 {
@@ -184,12 +156,7 @@ static void rx_free_skb(struct hinic_rxq *rxq, struct sk_buff *skb,
 	dev_kfree_skb_any(skb);
 }
 
-/**
- * rx_alloc_pkts - allocate pkts in rx queue
- * @rxq: rx queue
- *
- * Return number of skbs allocated
- **/
+ 
 static int rx_alloc_pkts(struct hinic_rxq *rxq)
 {
 	struct hinic_dev *nic_dev = netdev_priv(rxq->netdev);
@@ -203,7 +170,7 @@ static int rx_alloc_pkts(struct hinic_rxq *rxq)
 
 	free_wqebbs = hinic_get_rq_free_wqebbs(rxq->rq);
 
-	/* Limit the allocation chunks */
+	 
 	if (free_wqebbs > nic_dev->rx_weight)
 		free_wqebbs = nic_dev->rx_weight;
 
@@ -228,7 +195,7 @@ static int rx_alloc_pkts(struct hinic_rxq *rxq)
 
 skb_out:
 	if (i) {
-		wmb();  /* write all the wqes before update PI */
+		wmb();   
 
 		hinic_rq_update(rxq->rq, prod_idx);
 	}
@@ -236,10 +203,7 @@ skb_out:
 	return i;
 }
 
-/**
- * free_all_rx_skbs - free all skbs in rx queue
- * @rxq: rx queue
- **/
+ 
 static void free_all_rx_skbs(struct hinic_rxq *rxq)
 {
 	struct hinic_rq *rq = rxq->rq;
@@ -259,15 +223,7 @@ static void free_all_rx_skbs(struct hinic_rxq *rxq)
 	}
 }
 
-/**
- * rx_recv_jumbo_pkt - Rx handler for jumbo pkt
- * @rxq: rx queue
- * @head_skb: the first skb in the list
- * @left_pkt_len: left size of the pkt exclude head skb
- * @ci: consumer index
- *
- * Return number of wqes that used for the left of the pkt
- **/
+ 
 static int rx_recv_jumbo_pkt(struct hinic_rxq *rxq, struct sk_buff *head_skb,
 			     unsigned int left_pkt_len, u16 ci)
 {
@@ -344,13 +300,7 @@ static void hinic_copy_lp_data(struct hinic_dev *nic_dev,
 	nic_dev->lb_test_rx_idx++;
 }
 
-/**
- * rxq_recv - Rx handler
- * @rxq: rx queue
- * @budget: maximum pkts to process
- *
- * Return number of pkts received
- **/
+ 
 static int rxq_recv(struct hinic_rxq *rxq, int budget)
 {
 	struct hinic_qp *qp = container_of(rxq->rq, struct hinic_qp, rq);
@@ -381,7 +331,7 @@ static int rxq_recv(struct hinic_rxq *rxq, int budget)
 		if (!rq_wqe)
 			break;
 
-		/* make sure we read rx_done before packet length */
+		 
 		dma_rmb();
 
 		cqe = rq->cqe[ci];
@@ -496,7 +446,7 @@ static irqreturn_t rx_irq(int irq, void *data)
 	struct hinic_rq *rq = rxq->rq;
 	struct hinic_dev *nic_dev;
 
-	/* Disable the interrupt until napi will be completed */
+	 
 	nic_dev = netdev_priv(rxq->netdev);
 	if (!HINIC_IS_VF(nic_dev->hwdev->hwif))
 		hinic_hwdev_set_msix_state(nic_dev->hwdev,
@@ -569,14 +519,7 @@ static void rx_free_irq(struct hinic_rxq *rxq)
 	rx_del_napi(rxq);
 }
 
-/**
- * hinic_init_rxq - Initialize the Rx Queue
- * @rxq: Logical Rx Queue
- * @rq: Hardware Rx Queue to connect the Logical queue with
- * @netdev: network device to connect the Logical queue with
- *
- * Return 0 - Success, negative - Failure
- **/
+ 
 int hinic_init_rxq(struct hinic_rxq *rxq, struct hinic_rq *rq,
 		   struct net_device *netdev)
 {
@@ -616,10 +559,7 @@ err_rx_pkts:
 	return err;
 }
 
-/**
- * hinic_clean_rxq - Clean the Rx Queue
- * @rxq: Logical Rx Queue
- **/
+ 
 void hinic_clean_rxq(struct hinic_rxq *rxq)
 {
 	struct net_device *netdev = rxq->netdev;

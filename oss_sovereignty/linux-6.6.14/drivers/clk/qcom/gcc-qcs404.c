@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2018, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/platform_device.h>
@@ -128,7 +126,7 @@ static struct clk_alpha_pll gpll1_out_main = {
 	},
 };
 
-/* 930MHz configuration */
+ 
 static const struct alpha_pll_config gpll3_config = {
 	.l = 48,
 	.alpha = 0x0,
@@ -2235,7 +2233,7 @@ static struct clk_branch gcc_prng_ahb_clk = {
 	},
 };
 
-/* PWM clks do not have XO as parent as src clk is a balance root */
+ 
 static struct clk_branch gcc_pwm0_xo512_clk = {
 	.halt_reg = 0x44018,
 	.halt_check = BRANCH_HALT,

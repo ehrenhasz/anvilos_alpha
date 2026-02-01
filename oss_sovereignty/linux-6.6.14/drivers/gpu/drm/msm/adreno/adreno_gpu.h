@@ -1,10 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- *
- * Copyright (c) 2014,2017, 2019 The Linux Foundation. All rights reserved.
- */
+ 
+ 
 
 #ifndef __ADRENO_GPU_H__
 #define __ADRENO_GPU_H__
@@ -22,30 +17,24 @@ extern bool allow_vram_carveout;
 
 enum {
 	ADRENO_FW_PM4 = 0,
-	ADRENO_FW_SQE = 0, /* a6xx */
+	ADRENO_FW_SQE = 0,  
 	ADRENO_FW_PFP = 1,
-	ADRENO_FW_GMU = 1, /* a6xx */
+	ADRENO_FW_GMU = 1,  
 	ADRENO_FW_GPMU = 2,
 	ADRENO_FW_MAX,
 };
 
-/**
- * @enum adreno_family: identify generation and possibly sub-generation
- *
- * In some cases there are distinct sub-generations within a major revision
- * so it helps to be able to group the GPU devices by generation and if
- * necessary sub-generation.
- */
+ 
 enum adreno_family {
-	ADRENO_2XX_GEN1,  /* a20x */
-	ADRENO_2XX_GEN2,  /* a22x */
+	ADRENO_2XX_GEN1,   
+	ADRENO_2XX_GEN2,   
 	ADRENO_3XX,
 	ADRENO_4XX,
 	ADRENO_5XX,
-	ADRENO_6XX_GEN1,  /* a630 family */
-	ADRENO_6XX_GEN2,  /* a640 family */
-	ADRENO_6XX_GEN3,  /* a650 family */
-	ADRENO_6XX_GEN4,  /* a660 family */
+	ADRENO_6XX_GEN1,   
+	ADRENO_6XX_GEN2,   
+	ADRENO_6XX_GEN3,   
+	ADRENO_6XX_GEN4,   
 };
 
 #define ADRENO_QUIRK_TWO_PASS_USE_WFI		BIT(0)
@@ -54,9 +43,7 @@ enum adreno_family {
 #define ADRENO_QUIRK_HAS_HW_APRIV		BIT(3)
 #define ADRENO_QUIRK_HAS_CACHED_COHERENT	BIT(4)
 
-/* Helper for formating the chip_id in the way that userspace tools like
- * crashdec expect.
- */
+ 
 #define ADRENO_CHIPID_FMT "u.%u.%u.%u"
 #define ADRENO_CHIPID_ARGS(_c) \
 	(((_c) >> 24) & 0xff), \
@@ -84,11 +71,7 @@ struct adreno_speedbin {
 
 struct adreno_info {
 	const char *machine;
-	/**
-	 * @chipids: Table of matching chip-ids
-	 *
-	 * Terminated with 0 sentinal
-	 */
+	 
 	uint32_t *chip_ids;
 	enum adreno_family family;
 	uint32_t revn;
@@ -100,33 +83,13 @@ struct adreno_info {
 	u32 inactive_period;
 	const struct adreno_reglist *hwcg;
 	u64 address_space_size;
-	/**
-	 * @speedbins: Optional table of fuse to speedbin mappings
-	 *
-	 * Consists of pairs of fuse, index mappings, terminated with
-	 * {SHRT_MAX, 0} sentinal.
-	 */
+	 
 	struct adreno_speedbin *speedbins;
 };
 
 #define ADRENO_CHIP_IDS(tbl...) (uint32_t[]) { tbl, 0 }
 
-/*
- * Helper to build a speedbin table, ie. the table:
- *      fuse | speedbin
- *      -----+---------
- *        0  |   0
- *       169 |   1
- *       174 |   2
- *
- * would be declared as:
- *
- *     .speedbins = ADRENO_SPEEDBINS(
- *                      { 0,   0 },
- *                      { 169, 1 },
- *                      { 174, 2 },
- *     ),
- */
+ 
 #define ADRENO_SPEEDBINS(tbl...) (struct adreno_speedbin[]) { tbl {SHRT_MAX, 0} }
 
 struct adreno_gpu {
@@ -136,38 +99,21 @@ struct adreno_gpu {
 	uint16_t speedbin;
 	const struct adreno_gpu_funcs *funcs;
 
-	/* interesting register offsets to dump: */
+	 
 	const unsigned int *registers;
 
-	/*
-	 * Are we loading fw from legacy path?  Prior to addition
-	 * of gpu firmware to linux-firmware, the fw files were
-	 * placed in toplevel firmware directory, following qcom's
-	 * android kernel.  But linux-firmware preferred they be
-	 * placed in a 'qcom' subdirectory.
-	 *
-	 * For backwards compatibility, we try first to load from
-	 * the new path, using request_firmware_direct() to avoid
-	 * any potential timeout waiting for usermode helper, then
-	 * fall back to the old path (with direct load).  And
-	 * finally fall back to request_firmware() with the new
-	 * path to allow the usermode helper.
-	 */
+	 
 	enum {
 		FW_LOCATION_UNKNOWN = 0,
-		FW_LOCATION_NEW,       /* /lib/firmware/qcom/$fwfile */
-		FW_LOCATION_LEGACY,    /* /lib/firmware/$fwfile */
+		FW_LOCATION_NEW,        
+		FW_LOCATION_LEGACY,     
 		FW_LOCATION_HELPER,
 	} fwloc;
 
-	/* firmware: */
+	 
 	const struct firmware *fw[ADRENO_FW_MAX];
 
-	/*
-	 * Register offsets are different between some GPUs.
-	 * GPU specific offsets will be exported by GPU specific
-	 * code (a3xx_gpu.c) and stored in this common location.
-	 */
+	 
 	const unsigned int *reg_offsets;
 	bool gmu_is_wrapper;
 };
@@ -179,7 +125,7 @@ struct adreno_ocmem {
 	void *hdl;
 };
 
-/* platform config data (ie. from DT, or pdata) */
+ 
 struct adreno_platform_config {
 	uint32_t chip_id;
 	const struct adreno_info *info;
@@ -201,10 +147,7 @@ struct adreno_platform_config {
 
 static inline uint8_t adreno_patchid(const struct adreno_gpu *gpu)
 {
-	/* It is probably ok to assume legacy "adreno_rev" format
-	 * for all a6xx devices, but probably best to limit this
-	 * to older things.
-	 */
+	 
 	WARN_ON_ONCE(gpu->info->family >= ADRENO_6XX_GEN1);
 	return gpu->chip_id & 0xff;
 }
@@ -247,7 +190,7 @@ static inline bool adreno_is_a305(const struct adreno_gpu *gpu)
 
 static inline bool adreno_is_a306(const struct adreno_gpu *gpu)
 {
-	/* yes, 307, because a305c is 306 */
+	 
 	return adreno_is_revn(gpu, 307);
 }
 
@@ -371,7 +314,7 @@ static inline int adreno_is_a690(const struct adreno_gpu *gpu)
 	return gpu->info->chip_ids[0] == 0x06090000;
 }
 
-/* check for a615, a616, a618, a619 or any a630 derivatives */
+ 
 static inline int adreno_is_a630_family(const struct adreno_gpu *gpu)
 {
 	if (WARN_ON_ONCE(!gpu->info))
@@ -386,7 +329,7 @@ static inline int adreno_is_a660_family(const struct adreno_gpu *gpu)
 	return gpu->info->family == ADRENO_6XX_GEN4;
 }
 
-/* check for a650, a660, or any derivatives */
+ 
 static inline int adreno_is_a650_family(const struct adreno_gpu *gpu)
 {
 	if (WARN_ON_ONCE(!gpu->info))
@@ -440,10 +383,7 @@ int adreno_gpu_state_put(struct msm_gpu_state *state);
 void adreno_show_object(struct drm_printer *p, void **ptr, int len,
 		bool *encoded);
 
-/*
- * Common helper function to initialize the default address space for arm-smmu
- * attached targets
- */
+ 
 struct msm_gem_address_space *
 adreno_create_address_space(struct msm_gpu *gpu,
 			    struct platform_device *pdev);
@@ -459,13 +399,10 @@ int adreno_fault_handler(struct msm_gpu *gpu, unsigned long iova, int flags,
 
 int adreno_read_speedbin(struct device *dev, u32 *speedbin);
 
-/*
- * For a5xx and a6xx targets load the zap shader that is used to pull the GPU
- * out of secure mode
- */
+ 
 int adreno_zap_shader_load(struct msm_gpu *gpu, u32 pasid);
 
-/* ringbuffer helpers (the parts that are adreno specific) */
+ 
 
 static inline void
 OUT_PKT0(struct msm_ringbuffer *ring, uint16_t regindx, uint16_t cnt)
@@ -474,7 +411,7 @@ OUT_PKT0(struct msm_ringbuffer *ring, uint16_t regindx, uint16_t cnt)
 	OUT_RING(ring, CP_TYPE0_PKT | ((cnt-1) << 16) | (regindx & 0x7FFF));
 }
 
-/* no-op packet: */
+ 
 static inline void
 OUT_PKT2(struct msm_ringbuffer *ring)
 {
@@ -497,7 +434,7 @@ static inline u32 PM4_PARITY(u32 val)
 		(val >> 28)))) & 1;
 }
 
-/* Maximum number of values that can be executed for one opcode */
+ 
 #define TYPE4_MAX_PAYLOAD 127
 
 #define PKT4(_reg, _cnt) \
@@ -530,26 +467,12 @@ static inline uint32_t get_wptr(struct msm_ringbuffer *ring)
 	return (ring->cur - ring->start) % (MSM_GPU_RINGBUFFER_SZ >> 2);
 }
 
-/*
- * Given a register and a count, return a value to program into
- * REG_CP_PROTECT_REG(n) - this will block both reads and writes for _len
- * registers starting at _reg.
- *
- * The register base needs to be a multiple of the length. If it is not, the
- * hardware will quietly mask off the bits for you and shift the size. For
- * example, if you intend the protection to start at 0x07 for a length of 4
- * (0x07-0x0A) the hardware will actually protect (0x04-0x07) which might
- * expose registers you intended to protect!
- */
+ 
 #define ADRENO_PROTECT_RW(_reg, _len) \
 	((1 << 30) | (1 << 29) | \
 	((ilog2((_len)) & 0x1F) << 24) | (((_reg) << 2) & 0xFFFFF))
 
-/*
- * Same as above, but allow reads over the range. For areas of mixed use (such
- * as performance counters) this allows us to protect a much larger range with a
- * single register
- */
+ 
 #define ADRENO_PROTECT_RDONLY(_reg, _len) \
 	((1 << 29) \
 	((ilog2((_len)) & 0x1F) << 24) | (((_reg) << 2) & 0xFFFFF))
@@ -559,4 +482,4 @@ static inline uint32_t get_wptr(struct msm_ringbuffer *ring)
 	readl_poll_timeout((gpu)->mmio + ((addr) << 2), val, cond, \
 		interval, timeout)
 
-#endif /* __ADRENO_GPU_H__ */
+#endif  

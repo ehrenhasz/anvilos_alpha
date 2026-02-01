@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0+
 
-/*
- *  HID driver for UC-Logic devices not fully compliant with HID standard
- *
- *  Copyright (c) 2022 José Expósito <jose.exposito89@gmail.com>
- */
+
+ 
 
 #include <kunit/test.h>
 #include "./hid-uclogic-params.h"
@@ -68,7 +64,7 @@ static void hid_test_uclogic_exec_event_hook_test(struct kunit *test)
 	bool res;
 	int n;
 
-	/* Initialize the list of events to hook */
+	 
 	p.event_hooks = kunit_kzalloc(test, sizeof(*p.event_hooks), GFP_KERNEL);
 	KUNIT_ASSERT_NOT_ERR_OR_NULL(test, p.event_hooks);
 	INIT_LIST_HEAD(&p.event_hooks->list);
@@ -87,7 +83,7 @@ static void hid_test_uclogic_exec_event_hook_test(struct kunit *test)
 		list_add_tail(&filter->list, &p.event_hooks->list);
 	}
 
-	/* Test uclogic_exec_event_hook() */
+	 
 	for (n = 0; n < ARRAY_SIZE(test_events); n++) {
 		res = uclogic_exec_event_hook(&p, &test_events[n].event[0],
 					      test_events[n].size);

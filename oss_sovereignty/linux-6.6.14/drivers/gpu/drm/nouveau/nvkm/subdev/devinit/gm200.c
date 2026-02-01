@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "nv50.h"
 
 #include <subdev/bios.h>
@@ -114,9 +92,7 @@ pmu_load(struct nv50_devinit *init, u8 type, bool post,
 void
 gm200_devinit_preos(struct nv50_devinit *init, bool post)
 {
-	/* Optional: Execute PRE_OS application on PMU, which should at
-	 * least take care of fans until a full PMU has been loaded.
-	 */
+	 
 	pmu_load(init, 0x01, post, NULL, NULL);
 }
 
@@ -137,14 +113,14 @@ gm200_devinit_post(struct nvkm_devinit *base, bool post)
 		return -EINVAL;
 	}
 
-	/* Upload DEVINIT application from VBIOS onto PMU. */
+	 
 	ret = pmu_load(init, 0x04, post, &exec, &args);
 	if (ret) {
 		nvkm_error(subdev, "VBIOS PMU/DEVINIT not found\n");
 		return ret;
 	}
 
-	/* Upload tables required by opcodes in boot scripts. */
+	 
 	if (post) {
 		u32 pmu = pmu_args(init, args + 0x08, 0x08);
 		u32 img = nvbios_rd16(bios, bit_I.offset + 0x14);
@@ -152,7 +128,7 @@ gm200_devinit_post(struct nvkm_devinit *base, bool post)
 		pmu_data(init, pmu, img, len);
 	}
 
-	/* Upload boot scripts. */
+	 
 	if (post) {
 		u32 pmu = pmu_args(init, args + 0x08, 0x10);
 		u32 img = nvbios_rd16(bios, bit_I.offset + 0x18);
@@ -160,7 +136,7 @@ gm200_devinit_post(struct nvkm_devinit *base, bool post)
 		pmu_data(init, pmu, img, len);
 	}
 
-	/* Execute DEVINIT. */
+	 
 	if (post) {
 		nvkm_wr32(device, 0x10a040, 0x00005000);
 		pmu_exec(init, exec);

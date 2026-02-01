@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2010 IBM Corporation
- * Copyright (C) 2010 Politecnico di Torino, Italy
- *                    TORSEC group -- https://security.polito.it
- *
- * Authors:
- * Mimi Zohar <zohar@us.ibm.com>
- * Roberto Sassu <roberto.sassu@polito.it>
- *
- * See Documentation/security/keys/trusted-encrypted.rst
- */
+
+ 
 
 #include <linux/uaccess.h>
 #include <linux/err.h>
@@ -17,13 +7,7 @@
 #include <keys/encrypted-type.h>
 #include "encrypted.h"
 
-/*
- * request_trusted_key - request the trusted key
- *
- * Trusted keys are sealed to PCRs and other metadata. Although userspace
- * manages both trusted/encrypted key-types, like the encrypted key type
- * data, trusted key type data is not visible decrypted from userspace.
- */
+ 
 struct key *request_trusted_key(const char *trusted_desc,
 				const u8 **master_key, size_t *master_keylen)
 {

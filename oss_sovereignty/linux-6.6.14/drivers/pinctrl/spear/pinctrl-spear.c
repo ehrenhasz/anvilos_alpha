@@ -1,17 +1,4 @@
-/*
- * Driver for the ST Microelectronics SPEAr pinmux
- *
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * Inspired from:
- * - U300 Pinctl drivers
- * - Tegra Pinctl drivers
- *
- * This file is licensed under the terms of the GNU General Public
- * License version 2. This program is licensed "as is" without any
- * warranty of any kind, whether express or implied.
- */
+ 
 
 #include <linux/err.h>
 #include <linux/mfd/syscon.h>
@@ -156,7 +143,7 @@ static int spear_pinctrl_dt_node_to_map(struct pinctrl_dev *pctldev,
 	const char *function, *group;
 	int ret, index = 0, count = 0;
 
-	/* calculate number of maps required */
+	 
 	for_each_child_of_node(np_config, np) {
 		ret = of_property_read_string(np, "st,function", &function);
 		if (ret < 0) {
@@ -254,7 +241,7 @@ static int spear_pinctrl_endisable(struct pinctrl_dev *pctldev,
 	for (i = 0; i < pgroup->nmodemuxs; i++) {
 		modemux = &pgroup->modemuxs[i];
 
-		/* SoC have any modes */
+		 
 		if (pmx->machdata->modes_supported) {
 			if (!(pmx->machdata->mode & modemux->modes))
 				continue;
@@ -280,7 +267,7 @@ static int spear_pinctrl_set_mux(struct pinctrl_dev *pctldev, unsigned function,
 	return spear_pinctrl_endisable(pctldev, function, group, true);
 }
 
-/* gpio with pinmux */
+ 
 static struct spear_gpio_pingroup *get_gpio_pingroup(struct spear_pmx *pmx,
 		unsigned pin)
 {
@@ -309,19 +296,13 @@ static int gpio_request_endisable(struct pinctrl_dev *pctldev,
 	struct spear_pinctrl_machdata *machdata = pmx->machdata;
 	struct spear_gpio_pingroup *gpio_pingroup;
 
-	/*
-	 * Some SoC have configuration options applicable to group of pins,
-	 * rather than a single pin.
-	 */
+	 
 	gpio_pingroup = get_gpio_pingroup(pmx, offset);
 	if (gpio_pingroup)
 		muxregs_endisable(pmx, gpio_pingroup->muxregs,
 				gpio_pingroup->nmuxregs, enable);
 
-	/*
-	 * SoC may need some extra configurations, or configurations for single
-	 * pin
-	 */
+	 
 	if (machdata->gpio_request_endisable)
 		machdata->gpio_request_endisable(pmx, offset, enable);
 
@@ -379,7 +360,7 @@ int spear_pinctrl_probe(struct platform_device *pdev,
 	pmx->dev = &pdev->dev;
 	pmx->machdata = machdata;
 
-	/* configure mode, if supported by SoC */
+	 
 	if (machdata->modes_supported) {
 		int mode = 0;
 

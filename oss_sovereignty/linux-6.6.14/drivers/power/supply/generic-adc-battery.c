@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Generic battery driver using IIO
- * Copyright (C) 2012, Anish Kumar <anish198519851985@gmail.com>
- * Copyright (c) 2023, Sebastian Reichel <sre@kernel.org>
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/platform_device.h>
 #include <linux/power_supply.h>
@@ -20,7 +16,7 @@
 #include <linux/of.h>
 #include <linux/devm-helpers.h>
 
-#define JITTER_DEFAULT 10 /* hope 10ms is enough */
+#define JITTER_DEFAULT 10  
 
 enum gab_chan_type {
 	GAB_VOLTAGE = 0,
@@ -30,10 +26,7 @@ enum gab_chan_type {
 	GAB_MAX_CHAN_TYPE
 };
 
-/*
- * gab_chan_name suggests the standard channel names for commonly used
- * channel types.
- */
+ 
 static const char *const gab_chan_name[] = {
 	[GAB_VOLTAGE]	= "voltage",
 	[GAB_CURRENT]	= "current",
@@ -66,10 +59,7 @@ static const enum power_supply_property gab_props[] = {
 	POWER_SUPPLY_PROP_STATUS,
 };
 
-/*
- * This properties are set based on the received platform data and this
- * should correspond one-to-one with enum chan_type.
- */
+ 
 static const enum power_supply_property gab_dyn_props[] = {
 	POWER_SUPPLY_PROP_VOLTAGE_NOW,
 	POWER_SUPPLY_PROP_CURRENT_NOW,
@@ -171,16 +161,13 @@ static int gab_probe(struct platform_device *pdev)
 	psy_desc = &adc_bat->psy_desc;
 	psy_desc->name = dev_name(&pdev->dev);
 
-	/* bootup default values for the battery */
+	 
 	adc_bat->status = POWER_SUPPLY_STATUS_DISCHARGING;
 	psy_desc->type = POWER_SUPPLY_TYPE_BATTERY;
 	psy_desc->get_property = gab_get_property;
 	psy_desc->external_power_changed = gab_ext_power_changed;
 
-	/*
-	 * copying the static properties and allocating extra memory for holding
-	 * the extra configurable properties received from platform data.
-	 */
+	 
 	properties = devm_kcalloc(&pdev->dev,
 				  ARRAY_SIZE(gab_props) +
 				  ARRAY_SIZE(gab_chan_name),
@@ -191,10 +178,7 @@ static int gab_probe(struct platform_device *pdev)
 
 	memcpy(properties, gab_props, sizeof(gab_props));
 
-	/*
-	 * getting channel from iio and copying the battery properties
-	 * based on the channel supported by consumer device.
-	 */
+	 
 	for (chan = 0; chan < ARRAY_SIZE(gab_chan_name); chan++) {
 		adc_bat->channel[chan] = devm_iio_channel_get(&pdev->dev, gab_chan_name[chan]);
 		if (IS_ERR(adc_bat->channel[chan])) {
@@ -203,29 +187,24 @@ static int gab_probe(struct platform_device *pdev)
 				return dev_err_probe(&pdev->dev, ret, "Failed to get ADC channel %s\n", gab_chan_name[chan]);
 			adc_bat->channel[chan] = NULL;
 		} else if (adc_bat->channel[chan]) {
-			/* copying properties for supported channels only */
+			 
 			int index2;
 
 			for (index2 = 0; index2 < index; index2++) {
 				if (properties[index2] == gab_dyn_props[chan])
-					break;	/* already known */
+					break;	 
 			}
-			if (index2 == index)	/* really new */
+			if (index2 == index)	 
 				properties[index++] = gab_dyn_props[chan];
 			any = true;
 		}
 	}
 
-	/* none of the channels are supported so let's bail out */
+	 
 	if (!any)
 		return dev_err_probe(&pdev->dev, -ENODEV, "Failed to get any ADC channel\n");
 
-	/*
-	 * Total number of properties is equal to static properties
-	 * plus the dynamic properties.Some properties may not be set
-	 * as come channels may be not be supported by the device.So
-	 * we need to take care of that.
-	 */
+	 
 	psy_desc->properties = properties;
 	psy_desc->num_properties = index;
 
@@ -251,7 +230,7 @@ static int gab_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, adc_bat);
 
-	/* Schedule timer to check current status */
+	 
 	schedule_delayed_work(&adc_bat->bat_work,
 			msecs_to_jiffies(0));
 	return 0;
@@ -270,7 +249,7 @@ static int __maybe_unused gab_resume(struct device *dev)
 {
 	struct gab *adc_bat = dev_get_drvdata(dev);
 
-	/* Schedule timer to check current status */
+	 
 	schedule_delayed_work(&adc_bat->bat_work,
 			      msecs_to_jiffies(JITTER_DEFAULT));
 

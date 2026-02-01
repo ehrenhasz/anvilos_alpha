@@ -1,12 +1,4 @@
-/*
- *  font.h -- `Soft' font definitions
- *
- *  Created 1995 by Geert Uytterhoeven
- *
- *  This file is subject to the terms and conditions of the GNU General Public
- *  License.  See the file COPYING in the main directory of this archive
- *  for more details.
- */
+ 
 
 #ifndef _VIDEO_FONT_H
 #define _VIDEO_FONT_H
@@ -50,19 +42,19 @@ extern const struct font_desc	font_vga_8x8,
 			font_ter_16x32,
 			font_6x8;
 
-/* Find a font with a specific name */
+ 
 
 extern const struct font_desc *find_font(const char *name);
 
-/* Get the default font for a specific screen size */
+ 
 
 extern const struct font_desc *get_default_font(int xres, int yres,
 						u32 font_w, u32 font_h);
 
-/* Max. length for the name of a predefined font */
+ 
 #define MAX_FONT_NAME	32
 
-/* Extra word getters */
+ 
 #define REFCOUNT(fd)	(((int *)(fd))[-1])
 #define FNTSIZE(fd)	(((int *)(fd))[-2])
 #define FNTCHARCNT(fd)	(((int *)(fd))[-3])
@@ -75,4 +67,4 @@ struct font_data {
 	const unsigned char data[];
 } __packed;
 
-#endif /* _VIDEO_FONT_H */
+#endif  

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
+ 
 #ifndef _ASM_X86_GSSEG_H
 #define _ASM_X86_GSSEG_H
 
@@ -14,7 +14,7 @@
 
 extern asmlinkage void asm_load_gs_index(u16 selector);
 
-/* Replace with "lkgs %di" once binutils support LKGS instruction */
+ 
 #define LKGS_DI _ASM_BYTES(0xf2,0x0f,0x00,0xf7)
 
 static inline void native_lkgs(unsigned int selector)
@@ -38,7 +38,7 @@ static inline void native_load_gs_index(unsigned int selector)
 	}
 }
 
-#endif /* CONFIG_X86_64 */
+#endif  
 
 static inline void __init lkgs_init(void)
 {
@@ -61,6 +61,6 @@ static inline void load_gs_index(unsigned int selector)
 #endif
 }
 
-#endif /* CONFIG_PARAVIRT_XXL */
+#endif  
 
-#endif /* _ASM_X86_GSSEG_H */
+#endif  

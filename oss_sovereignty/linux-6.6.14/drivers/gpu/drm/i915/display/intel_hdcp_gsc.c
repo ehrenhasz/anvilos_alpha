@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright 2023, Intel Corporation.
- */
+
+ 
 
 #include <drm/i915_hdcp_interface.h>
 
@@ -615,7 +613,7 @@ static const struct i915_hdcp_ops gsc_hdcp_ops = {
 	.close_hdcp_session = gsc_hdcp_close_session,
 };
 
-/*This function helps allocate memory for the command that we will send to gsc cs */
+ 
 static int intel_hdcp_gsc_initialize_message(struct drm_i915_private *i915,
 					     struct intel_hdcp_gsc_message *hdcp_message)
 {
@@ -625,7 +623,7 @@ static int intel_hdcp_gsc_initialize_message(struct drm_i915_private *i915,
 	void *cmd_in, *cmd_out;
 	int err;
 
-	/* allocate object of two page for HDCP command memory and store it */
+	 
 	obj = i915_gem_object_create_shmem(i915, 2 * PAGE_SIZE);
 
 	if (IS_ERR(obj)) {
@@ -677,10 +675,7 @@ static int intel_hdcp_gsc_hdcp2_init(struct drm_i915_private *i915)
 	if (!hdcp_message)
 		return -ENOMEM;
 
-	/*
-	 * NOTE: No need to lock the comp mutex here as it is already
-	 * going to be taken before this function called
-	 */
+	 
 	i915->display.hdcp.hdcp_message = hdcp_message;
 	ret = intel_hdcp_gsc_initialize_message(i915, hdcp_message);
 
@@ -744,10 +739,7 @@ static int intel_gsc_send_sync(struct drm_i915_private *i915,
 		return ret;
 	}
 
-	/*
-	 * Checking validity marker and header status to see if some error has
-	 * blocked us from sending message to gsc cs
-	 */
+	 
 	if (header_out->validity_marker != GSC_HECI_VALIDITY_MARKER) {
 		drm_err(&i915->drm, "invalid validity marker\n");
 		return -EINVAL;
@@ -767,13 +759,7 @@ static int intel_gsc_send_sync(struct drm_i915_private *i915,
 	return 0;
 }
 
-/*
- * This function can now be used for sending requests and will also handle
- * receipt of reply messages hence no different function of message retrieval
- * is required. We will initialize intel_hdcp_gsc_message structure then add
- * gsc cs memory header as stated in specs after which the normal HDCP payload
- * will follow
- */
+ 
 ssize_t intel_hdcp_gsc_msg_send(struct drm_i915_private *i915, u8 *msg_in,
 				size_t msg_in_len, u8 *msg_out,
 				size_t msg_out_len)
@@ -807,17 +793,12 @@ ssize_t intel_hdcp_gsc_msg_send(struct drm_i915_private *i915, u8 *msg_in,
 					      msg_size_in, host_session_id);
 	memcpy(hdcp_message->hdcp_cmd_in + sizeof(*header_in), msg_in, msg_in_len);
 
-	/*
-	 * Keep sending request in case the pending bit is set no need to add
-	 * message handle as we are using same address hence loc. of header is
-	 * same and it will contain the message handle. we will send the message
-	 * 20 times each message 50 ms apart
-	 */
+	 
 	do {
 		ret = intel_gsc_send_sync(i915, header_in, header_out, addr_in,
 					  addr_out, msg_out_len);
 
-		/* Only try again if gsc says so */
+		 
 		if (ret != -EAGAIN)
 			break;
 
@@ -828,7 +809,7 @@ ssize_t intel_hdcp_gsc_msg_send(struct drm_i915_private *i915, u8 *msg_in,
 	if (ret)
 		goto err;
 
-	/* we use the same mem for the reply, so header is in the same loc */
+	 
 	reply_size = header_out->message_size - sizeof(*header_out);
 	if (reply_size > msg_out_len) {
 		drm_warn(&i915->drm, "caller with insufficient HDCP reply size %u (%d)\n",

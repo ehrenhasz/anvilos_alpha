@@ -1,27 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef DC_HW_TYPES_H
 #define DC_HW_TYPES_H
@@ -30,17 +7,7 @@
 #include "fixed31_32.h"
 #include "signal_types.h"
 
-/******************************************************************************
- * Data types for Virtual HW Layer of DAL3.
- * (see DAL3 design documents for HW Layer definition)
- *
- * The intended uses are:
- * 1. Generation pseudocode sequences for HW programming.
- * 2. Implementation of real HW programming by HW Sequencer of DAL3.
- *
- * Note: do *not* add any types which are *not* used for HW programming - this
- * will ensure separation of Logic layer from HW layer.
- ******************************************************************************/
+ 
 
 union large_integer {
 	struct {
@@ -76,7 +43,7 @@ struct dc_plane_address {
 			union large_integer dcc_const_color;
 		} grph;
 
-		/*stereo*/
+		 
 		struct {
 			PHYSICAL_ADDRESS_LOC left_addr;
 			PHYSICAL_ADDRESS_LOC left_meta_addr;
@@ -96,7 +63,7 @@ struct dc_plane_address {
 
 		} grph_stereo;
 
-		/*video  progressive*/
+		 
 		struct {
 			PHYSICAL_ADDRESS_LOC luma_addr;
 			PHYSICAL_ADDRESS_LOC luma_meta_addr;
@@ -136,10 +103,7 @@ struct rect {
 };
 
 struct plane_size {
-	/* Graphic surface pitch in pixels.
-	 * In LINEAR_GENERAL mode, pitch
-	 * is 32 pixel aligned.
-	 */
+	 
 	int surface_pitch;
 	int chroma_pitch;
 	struct rect surface_size;
@@ -158,37 +122,35 @@ struct dc_plane_dcc_param {
 	uint8_t dcc_ind_blk_c;
 };
 
-/*Displayable pixel format in fb*/
+ 
 enum surface_pixel_format {
 	SURFACE_PIXEL_FORMAT_GRPH_BEGIN = 0,
-	/*TOBE REMOVED paletta 256 colors*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_PALETA_256_COLORS =
 		SURFACE_PIXEL_FORMAT_GRPH_BEGIN,
-	/*16 bpp*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ARGB1555,
-	/*16 bpp*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_RGB565,
-	/*32 bpp*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ARGB8888,
-	/*32 bpp swaped*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ABGR8888,
 
 	SURFACE_PIXEL_FORMAT_GRPH_ARGB2101010,
-	/*swaped*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ABGR2101010,
-	/*TOBE REMOVED swaped, XR_BIAS has no differance
-	 * for pixel layout than previous and we can
-	 * delete this after discusion*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ABGR2101010_XR_BIAS,
-	/*64 bpp */
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616,
-	/*swapped*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616,
-	/*float*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ARGB16161616F,
-	/*swaped & float*/
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_ABGR16161616F,
-	/*grow graphics here if necessary */
+	 
 	SURFACE_PIXEL_FORMAT_GRPH_RGB111110_FIX,
 	SURFACE_PIXEL_FORMAT_GRPH_BGR101111_FIX,
 	SURFACE_PIXEL_FORMAT_GRPH_RGB111110_FLOAT,
@@ -208,14 +170,14 @@ enum surface_pixel_format {
 	SURFACE_PIXEL_FORMAT_VIDEO_AYCrCb8888,
 	SURFACE_PIXEL_FORMAT_INVALID
 
-	/*grow 444 video here if necessary */
+	 
 };
 
 
 
-/* Pixel format */
+ 
 enum pixel_format {
-	/*graph*/
+	 
 	PIXEL_FORMAT_UNINITIALIZED,
 	PIXEL_FORMAT_INDEX8,
 	PIXEL_FORMAT_RGB565,
@@ -223,10 +185,10 @@ enum pixel_format {
 	PIXEL_FORMAT_ARGB2101010,
 	PIXEL_FORMAT_ARGB2101010_XRBIAS,
 	PIXEL_FORMAT_FP16,
-	/*video*/
+	 
 	PIXEL_FORMAT_420BPP8,
 	PIXEL_FORMAT_420BPP10,
-	/*end of pixel format definition*/
+	 
 	PIXEL_FORMAT_INVALID,
 
 	PIXEL_FORMAT_GRPH_BEGIN = PIXEL_FORMAT_INDEX8,
@@ -236,17 +198,13 @@ enum pixel_format {
 	PIXEL_FORMAT_UNKNOWN
 };
 
-/*
- * This structure holds a surface address.  There could be multiple addresses
- * in cases such as Stereo 3D, Planar YUV, etc.  Other per-flip attributes such
- * as frame durations and DCC format can also be set.
- */
+ 
 #define DC_MAX_DIRTY_RECTS 3
 struct dc_flip_addrs {
 	struct dc_plane_address address;
 	unsigned int flip_timestamp_in_us;
 	bool flip_immediate;
-	/* TODO: add flip duration for FreeSync */
+	 
 	bool triplebuffer_flips;
 	unsigned int dirty_rect_count;
 	struct rect dirty_rects[DC_MAX_DIRTY_RECTS];
@@ -264,9 +222,7 @@ enum tripleBuffer_enable {
 	DC_TRIPLEBUFFER_ENABLE = 0x1,
 };
 
-/* TODO: These values come from hardware spec. We need to readdress this
- * if they ever change.
- */
+ 
 enum array_mode_values {
 	DC_ARRAY_LINEAR_GENERAL = 0,
 	DC_ARRAY_LINEAR_ALLIGNED,
@@ -323,64 +279,26 @@ enum swizzle_mode_values {
 union dc_tiling_info {
 
 	struct {
-		/* Specifies the number of memory banks for tiling
-		 *	purposes.
-		 * Only applies to 2D and 3D tiling modes.
-		 *	POSSIBLE VALUES: 2,4,8,16
-		 */
+		 
 		unsigned int num_banks;
-		/* Specifies the number of tiles in the x direction
-		 *	to be incorporated into the same bank.
-		 * Only applies to 2D and 3D tiling modes.
-		 *	POSSIBLE VALUES: 1,2,4,8
-		 */
+		 
 		unsigned int bank_width;
 		unsigned int bank_width_c;
-		/* Specifies the number of tiles in the y direction to
-		 *	be incorporated into the same bank.
-		 * Only applies to 2D and 3D tiling modes.
-		 *	POSSIBLE VALUES: 1,2,4,8
-		 */
+		 
 		unsigned int bank_height;
 		unsigned int bank_height_c;
-		/* Specifies the macro tile aspect ratio. Only applies
-		 * to 2D and 3D tiling modes.
-		 */
+		 
 		unsigned int tile_aspect;
 		unsigned int tile_aspect_c;
-		/* Specifies the number of bytes that will be stored
-		 *	contiguously for each tile.
-		 * If the tile data requires more storage than this
-		 *	amount, it is split into multiple slices.
-		 * This field must not be larger than
-		 *	GB_ADDR_CONFIG.DRAM_ROW_SIZE.
-		 * Only applies to 2D and 3D tiling modes.
-		 * For color render targets, TILE_SPLIT >= 256B.
-		 */
+		 
 		enum tile_split_values tile_split;
 		enum tile_split_values tile_split_c;
-		/* Specifies the addressing within a tile.
-		 *	0x0 - DISPLAY_MICRO_TILING
-		 *	0x1 - THIN_MICRO_TILING
-		 *	0x2 - DEPTH_MICRO_TILING
-		 *	0x3 - ROTATED_MICRO_TILING
-		 */
+		 
 		enum tile_mode_values tile_mode;
 		enum tile_mode_values tile_mode_c;
-		/* Specifies the number of pipes and how they are
-		 *	interleaved in the surface.
-		 * Refer to memory addressing document for complete
-		 *	details and constraints.
-		 */
+		 
 		unsigned int pipe_config;
-		/* Specifies the tiling mode of the surface.
-		 * THIN tiles use an 8x8x1 tile size.
-		 * THICK tiles use an 8x8x4 tile size.
-		 * 2D tiling modes rotate banks for successive Z slices
-		 * 3D tiling modes rotate pipes and banks for Z slices
-		 * Refer to memory addressing document for complete
-		 *	details and constraints.
-		 */
+		 
 		enum array_mode_values array_mode;
 	} gfx8;
 
@@ -402,7 +320,7 @@ union dc_tiling_info {
 	} gfx9;
 };
 
-/* Rotation angle */
+ 
 enum dc_rotation_angle {
 	ROTATION_ANGLE_0 = 0,
 	ROTATION_ANGLE_90,
@@ -413,47 +331,28 @@ enum dc_rotation_angle {
 
 enum dc_scan_direction {
 	SCAN_DIRECTION_UNKNOWN = 0,
-	SCAN_DIRECTION_HORIZONTAL = 1,  /* 0, 180 rotation */
-	SCAN_DIRECTION_VERTICAL = 2,    /* 90, 270 rotation */
+	SCAN_DIRECTION_HORIZONTAL = 1,   
+	SCAN_DIRECTION_VERTICAL = 2,     
 };
 
-/**
- * struct dc_cursor_position: Hardware cursor data.
- *
- * This struct keeps the action information related to the cursor that will be
- * sent and received from our DC core.
- */
+ 
 struct dc_cursor_position {
-	/**
-	 * @x: It represents the top left abscissa coordinate of the cursor.
-	 */
+	 
 	uint32_t x;
 
-	/**
-	 * @y: It is the top ordinate of the cursor coordinate.
-	 */
+	 
 	uint32_t y;
 
-	/**
-	 * @x_hotspot: Define the abscissa point where mouse click happens.
-	 */
+	 
 	uint32_t x_hotspot;
 
-	/**
-	 * @y_hotspot: Define the ordinate point where mouse click happens.
-	 */
+	 
 	uint32_t y_hotspot;
 
-	/**
-	 * @enable: This parameter indicates whether hardware cursor should be
-	 * enabled.
-	 */
+	 
 	bool enable;
 
-	/**
-	 * @translate_by_source: Translate cursor x/y by the source rectangle
-	 * for each plane.
-	 */
+	 
 	bool translate_by_source;
 };
 
@@ -468,7 +367,7 @@ struct dc_cursor_mi_param {
 	struct dc_stream_state *stream;
 };
 
-/* IPP related types */
+ 
 
 enum {
 	GAMMA_RGB_256_ENTRIES = 256,
@@ -507,25 +406,17 @@ struct dc_gamma {
 		struct fixed31_32 blue[GAMMA_MAX_ENTRIES];
 	} entries;
 
-	/* private to DC core */
+	 
 	struct dc_context *ctx;
 
-	/* is_identity is used for RGB256 gamma identity which can also be programmed in INPUT_LUT.
-	 * is_logical_identity indicates the given gamma ramp regardless of type is identity.
-	 */
+	 
 	bool is_identity;
 };
 
-/* Used by both ipp amd opp functions*/
-/* TODO: to be consolidated with enum color_space */
+ 
+ 
 
-/**
- * enum dc_cursor_color_format - DC cursor programming mode
- *
- * This enum is for programming CURSOR_MODE register field. What this register
- * should be programmed to depends on OS requested cursor shape flags and what
- * we stored in the cursor surface.
- */
+ 
 enum dc_cursor_color_format {
 	CURSOR_MODE_MONO,
 	CURSOR_MODE_COLOR_1BIT_AND,
@@ -535,11 +426,7 @@ enum dc_cursor_color_format {
 	CURSOR_MODE_COLOR_64BIT_FP_UN_PRE_MULTIPLIED
 };
 
-/*
- * This is all the parameters required by DAL in order to update the cursor
- * attributes, including the new cursor image surface address, size, hotspot
- * location, color format, etc.
- */
+ 
 
 union dc_cursor_attribute_flags {
 	struct {
@@ -557,39 +444,23 @@ union dc_cursor_attribute_flags {
 };
 
 struct dc_cursor_attributes {
-	/**
-	 * @address: This field represents the framebuffer address associated
-	 * with the cursor. It is important to highlight that this address is
-	 * divided into a high and low parts.
-	 */
+	 
 	PHYSICAL_ADDRESS_LOC address;
 
-	/**
-	 * @pitch: Cursor line stride.
-	 */
+	 
 	uint32_t pitch;
 
-	/**
-	 * @width: Width should correspond to cursor surface width.
-	 */
+	 
 	uint32_t width;
-	/**
-	 * @heigh: Height should correspond to cursor surface heigh.
-	 */
+	 
 	uint32_t height;
 
-	/**
-	 * @color_format: DC cursor programming mode.
-	 */
+	 
 	enum dc_cursor_color_format color_format;
-	/**
-	 * @sdr_white_level: Boosting (SDR) cursor in HDR mode.
-	 */
+	 
 	uint32_t sdr_white_level;
 
-	/**
-	 * @rotation_angle: In case we support HW Cursor rotation in the future
-	 */
+	 
 	enum dc_rotation_angle rotation_angle;
 
 	union dc_cursor_attribute_flags attribute_flags;
@@ -600,7 +471,7 @@ struct dpp_cursor_attributes {
 	int scale;
 };
 
-/* OPP */
+ 
 
 enum dc_color_space {
 	COLOR_SPACE_UNKNOWN,
@@ -666,9 +537,9 @@ enum dc_dynamic_expansion {
 	DYN_EXPANSION_DISABLE
 };
 
-/* XFM */
+ 
 
-/* used in  struct dc_plane_state */
+ 
 struct scaling_taps {
 	uint32_t v_taps;
 	uint32_t h_taps;
@@ -693,9 +564,9 @@ enum dc_timing_standard {
 	DC_TIMING_STANDARD_TV_PAL_CN,
 	DC_TIMING_STANDARD_TV_SECAM,
 	DC_TIMING_STANDARD_EXPLICIT,
-	/*!< For explicit timings from EDID, VBIOS, etc.*/
+	 
 	DC_TIMING_STANDARD_USER_OVERRIDE,
-	/*!< For mode timing override by user*/
+	 
 	DC_TIMING_STANDARD_MAX
 };
 
@@ -740,36 +611,27 @@ enum scanning_type {
 
 struct dc_crtc_timing_flags {
 	uint32_t INTERLACE :1;
-	uint32_t HSYNC_POSITIVE_POLARITY :1; /* when set to 1,
-	 it is positive polarity --reversed with dal1 or video bios define*/
-	uint32_t VSYNC_POSITIVE_POLARITY :1; /* when set to 1,
-	 it is positive polarity --reversed with dal1 or video bios define*/
+	uint32_t HSYNC_POSITIVE_POLARITY :1;  
+	uint32_t VSYNC_POSITIVE_POLARITY :1;  
 
 	uint32_t HORZ_COUNT_BY_TWO:1;
 
-	uint32_t EXCLUSIVE_3D :1; /* if this bit set,
-	 timing can be driven in 3D format only
-	 and there is no corresponding 2D timing*/
-	uint32_t RIGHT_EYE_3D_POLARITY :1; /* 1 - means right eye polarity
-	 (right eye = '1', left eye = '0') */
-	uint32_t SUB_SAMPLE_3D :1; /* 1 - means left/right  images subsampled
-	 when mixed into 3D image. 0 - means summation (3D timing is doubled)*/
-	uint32_t USE_IN_3D_VIEW_ONLY :1; /* Do not use this timing in 2D View,
-	 because corresponding 2D timing also present in the list*/
-	uint32_t STEREO_3D_PREFERENCE :1; /* Means this is 2D timing
-	 and we want to match priority of corresponding 3D timing*/
+	uint32_t EXCLUSIVE_3D :1;  
+	uint32_t RIGHT_EYE_3D_POLARITY :1;  
+	uint32_t SUB_SAMPLE_3D :1;  
+	uint32_t USE_IN_3D_VIEW_ONLY :1;  
+	uint32_t STEREO_3D_PREFERENCE :1;  
 	uint32_t Y_ONLY :1;
 
-	uint32_t YCBCR420 :1; /* TODO: shouldn't need this flag, should be a separate pixel format */
-	uint32_t DTD_COUNTER :5; /* values 1 to 16 */
+	uint32_t YCBCR420 :1;  
+	uint32_t DTD_COUNTER :5;  
 
 	uint32_t FORCE_HDR :1;
 
-	/* HDMI 2.0 - Support scrambling for TMDS character
-	 * rates less than or equal to 340Mcsc */
+	 
 	uint32_t LTE_340MCSC_SCRAMBLE:1;
 
-	uint32_t DSC : 1; /* Use DSC with this timing */
+	uint32_t DSC : 1;  
 #ifndef TRIM_FSFT
 	uint32_t FAST_TRANSPORT: 1;
 #endif
@@ -778,11 +640,11 @@ struct dc_crtc_timing_flags {
 
 enum dc_timing_3d_format {
 	TIMING_3D_FORMAT_NONE,
-	TIMING_3D_FORMAT_FRAME_ALTERNATE, /* No stereosync at all*/
-	TIMING_3D_FORMAT_INBAND_FA, /* Inband Frame Alternate (DVI/DP)*/
-	TIMING_3D_FORMAT_DP_HDMI_INBAND_FA, /* Inband FA to HDMI Frame Pack*/
-	/* for active DP-HDMI dongle*/
-	TIMING_3D_FORMAT_SIDEBAND_FA, /* Sideband Frame Alternate (eDP)*/
+	TIMING_3D_FORMAT_FRAME_ALTERNATE,  
+	TIMING_3D_FORMAT_INBAND_FA,  
+	TIMING_3D_FORMAT_DP_HDMI_INBAND_FA,  
+	 
+	TIMING_3D_FORMAT_SIDEBAND_FA,  
 	TIMING_3D_FORMAT_HW_FRAME_PACKING,
 	TIMING_3D_FORMAT_SW_FRAME_PACKING,
 	TIMING_3D_FORMAT_ROW_INTERLEAVE,
@@ -791,9 +653,9 @@ enum dc_timing_3d_format {
 	TIMING_3D_FORMAT_SIDE_BY_SIDE,
 	TIMING_3D_FORMAT_TOP_AND_BOTTOM,
 	TIMING_3D_FORMAT_SBS_SW_PACKED,
-	/* Side-by-side, packed by application/driver into 2D frame*/
+	 
 	TIMING_3D_FORMAT_TB_SW_PACKED,
-	/* Top-and-bottom, packed by application/driver into 2D frame*/
+	 
 
 	TIMING_3D_FORMAT_MAX,
 };
@@ -822,121 +684,61 @@ struct dc_dsc_rc_params_override {
 };
 
 struct dc_dsc_config {
-	uint32_t num_slices_h; /* Number of DSC slices - horizontal */
-	uint32_t num_slices_v; /* Number of DSC slices - vertical */
-	uint32_t bits_per_pixel; /* DSC target bitrate in 1/16 of bpp (e.g. 128 -> 8bpp) */
-	bool block_pred_enable; /* DSC block prediction enable */
-	uint32_t linebuf_depth; /* DSC line buffer depth */
-	uint32_t version_minor; /* DSC minor version. Full version is formed as 1.version_minor. */
-	bool ycbcr422_simple; /* Tell DSC engine to convert YCbCr 4:2:2 to 'YCbCr 4:2:2 simple'. */
-	int32_t rc_buffer_size; /* DSC RC buffer block size in bytes */
+	uint32_t num_slices_h;  
+	uint32_t num_slices_v;  
+	uint32_t bits_per_pixel;  
+	bool block_pred_enable;  
+	uint32_t linebuf_depth;  
+	uint32_t version_minor;  
+	bool ycbcr422_simple;  
+	int32_t rc_buffer_size;  
 #if defined(CONFIG_DRM_AMD_DC_FP)
-	bool is_frl; /* indicate if DSC is applied based on HDMI FRL sink's capability */
+	bool is_frl;  
 #endif
-	bool is_dp; /* indicate if DSC is applied based on DP's capability */
-	uint32_t mst_pbn; /* pbn of display on dsc mst hub */
-	const struct dc_dsc_rc_params_override *rc_params_ovrd; /* DM owned memory. If not NULL, apply custom dsc rc params */
+	bool is_dp;  
+	uint32_t mst_pbn;  
+	const struct dc_dsc_rc_params_override *rc_params_ovrd;  
 };
 
-/**
- * struct dc_crtc_timing - Timing parameters used to configure DCN blocks
- *
- * DCN provides multiple signals and parameters that can be used to adjust
- * timing parameters, this struct aggregate multiple of these values for easy
- * access. In this struct, fields prefixed with h_* are related to horizontal
- * timing, and v_* to vertical timing. Keep in mind that when we talk about
- * vertical timings, the values, in general, are described in the number of
- * lines; on the other hand, the horizontal values are in pixels.
- */
+ 
 struct dc_crtc_timing {
-	/**
-	 * @h_total: The total number of pixels from the rising edge of HSync
-	 * until the rising edge of the current HSync.
-	 */
+	 
 	uint32_t h_total;
 
-	/**
-	 * @h_border_left: The black pixels related to the left border
-	 */
+	 
 	uint32_t h_border_left;
 
-	/**
-	 * @h_addressable: It is the range of pixels displayed horizontally.
-	 * For example, if the display resolution is 3840@2160, the horizontal
-	 * addressable area is 3840.
-	 */
+	 
 	uint32_t h_addressable;
 
-	/**
-	 * @h_border_right: The black pixels related to the right border
-	 */
+	 
 	uint32_t h_border_right;
 
-	/**
-	 * @h_front_porch: Period (in pixels) between HBlank start and the
-	 * rising edge of HSync.
-	 */
+	 
 	uint32_t h_front_porch;
 
-	/**
-	 * @h_sync_width: HSync duration in pixels.
-	 */
+	 
 	uint32_t h_sync_width;
 
-	/**
-	 * @v_total: It is the total number of lines from the rising edge of
-	 * the previous VSync until the rising edge of the current VSync.
-	 *
-	 *          |--------------------------|
-	 *          +-+        V_TOTAL         +-+
-	 *          | |                        | |
-	 * VSync ---+ +--------- // -----------+ +---
-	 */
+	 
 	uint32_t v_total;
 
-	/**
-	 * @v_border_top: The black border on the top.
-	 */
+	 
 	uint32_t v_border_top;
 
-	/**
-	 * @v_addressable: It is the range of the scanout at which the
-	 * framebuffer is displayed. For example, if the display resolution is
-	 * 3840@2160, the addressable area is 2160 lines, or if the resolution
-	 * is 1920x1080, the addressable area is 1080 lines.
-	 */
+	 
 	uint32_t v_addressable;
 
-	/**
-	 * @v_border_bottom: The black border on the bottom.
-	 */
+	 
 	uint32_t v_border_bottom;
 
-	/**
-	 * @v_front_porch: Period (in lines) between VBlank start and rising
-	 * edge of VSync.
-	 *                  +-+
-	 * VSync            | |
-	 *        ----------+ +--------...
-	 *          +------------------...
-	 * VBlank   |
-	 *        --+
-	 *          |-------|
-	 *        v_front_porch
-	 */
+	 
 	uint32_t v_front_porch;
 
-	/**
-	 * @v_sync_width: VSync signal width in lines.
-	 */
+	 
 	uint32_t v_sync_width;
 
-	/**
-	 * @pix_clk_100hz: Pipe pixel precision
-	 *
-	 * This field is used to communicate pixel clocks with 100 Hz accuracy
-	 * from dc_crtc_timing to BIOS command table.
-	 */
+	 
 	uint32_t pix_clk_100hz;
 
 	uint32_t min_refresh_in_uhz;
@@ -956,7 +758,7 @@ struct dc_crtc_timing {
 #endif
 
 	struct dc_crtc_timing_flags flags;
-	uint32_t dsc_fixed_bits_per_pixel_x16; /* DSC target bitrate in 1/16 of bpp (e.g. 128 -> 8bpp) */
+	uint32_t dsc_fixed_bits_per_pixel_x16;  
 	struct dc_dsc_config dsc_cfg;
 };
 
@@ -985,7 +787,7 @@ struct dc_crtc_timing_adjust {
 };
 
 
-/* Passed on init */
+ 
 enum vram_type {
 	VIDEO_MEMORY_TYPE_GDDR5  = 2,
 	VIDEO_MEMORY_TYPE_DDR3   = 3,
@@ -1005,10 +807,10 @@ enum dwb_output_depth {
 };
 
 enum dwb_capture_rate {
-	dwb_capture_rate_0 = 0,	/* Every frame is captured. */
-	dwb_capture_rate_1 = 1,	/* Every other frame is captured. */
-	dwb_capture_rate_2 = 2,	/* Every 3rd frame is captured. */
-	dwb_capture_rate_3 = 3,	/* Every 4th frame is captured. */
+	dwb_capture_rate_0 = 0,	 
+	dwb_capture_rate_1 = 1,	 
+	dwb_capture_rate_2 = 2,	 
+	dwb_capture_rate_3 = 3,	 
 };
 
 enum dwb_scaler_mode {
@@ -1024,13 +826,13 @@ enum dwb_subsample_position {
 };
 
 enum dwb_stereo_eye_select {
-	DWB_STEREO_EYE_LEFT  = 1,		/* Capture left eye only */
-	DWB_STEREO_EYE_RIGHT = 2,		/* Capture right eye only */
+	DWB_STEREO_EYE_LEFT  = 1,		 
+	DWB_STEREO_EYE_RIGHT = 2,		 
 };
 
 enum dwb_stereo_type {
-	DWB_STEREO_TYPE_FRAME_PACKING = 0,		/* Frame packing */
-	DWB_STEREO_TYPE_FRAME_SEQUENTIAL = 3,	/* Frame sequential */
+	DWB_STEREO_TYPE_FRAME_PACKING = 0,		 
+	DWB_STEREO_TYPE_FRAME_SEQUENTIAL = 3,	 
 };
 
 enum dwb_out_format {
@@ -1080,7 +882,7 @@ struct mcif_buf_params {
 
 #define MAX_TG_COLOR_VALUE 0x3FF
 struct tg_color {
-	/* Maximum 10 bits color value */
+	 
 	uint16_t color_r_cr;
 	uint16_t color_g_y;
 	uint16_t color_b_cb;
@@ -1100,5 +902,5 @@ struct phy_state {
 	enum symclk_state symclk_state;
 };
 
-#endif /* DC_HW_TYPES_H */
+#endif  
 

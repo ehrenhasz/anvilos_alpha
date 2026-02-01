@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*******************************************************************************
- * This file contains the configfs implementation for iSCSI Target mode
- * from the LIO-Target Project.
- *
- * (c) Copyright 2007-2013 Datera, Inc.
- *
- * Author: Nicholas A. Bellinger <nab@linux-iscsi.org>
- *
- ****************************************************************************/
+
+ 
 
 #include <linux/configfs.h>
 #include <linux/ctype.h>
@@ -29,7 +21,7 @@
 #include <target/iscsi/iscsi_target_stat.h>
 
 
-/* Start items for lio_target_portal_cit */
+ 
 
 static inline struct iscsi_tpg_np *to_iscsi_tpg_np(struct config_item *item)
 {
@@ -145,9 +137,9 @@ static struct configfs_attribute *lio_target_portal_attrs[] = {
 	NULL,
 };
 
-/* Stop items for lio_target_portal_cit */
+ 
 
-/* Start items for lio_target_np_cit */
+ 
 
 #define MAX_PORTAL_LEN		256
 
@@ -179,9 +171,9 @@ static struct se_tpg_np *lio_target_call_addnptotpg(
 			return ERR_PTR(-EINVAL);
 		}
 
-		ip_str = str + 1; /* Skip over leading "[" */
-		*str2 = '\0'; /* Terminate the unbracketed IPv6 address */
-		str2++; /* Skip over the \0 */
+		ip_str = str + 1;  
+		*str2 = '\0';  
+		str2++;  
 
 		port_str = strstr(str2, ":");
 		if (!port_str) {
@@ -189,8 +181,8 @@ static struct se_tpg_np *lio_target_call_addnptotpg(
 				" in IPv6 iSCSI network portal address\n");
 			return ERR_PTR(-EINVAL);
 		}
-		*port_str = '\0'; /* Terminate string for IP */
-		port_str++; /* Skip over ":" */
+		*port_str = '\0';  
+		port_str++;  
 	} else {
 		ip_str = &buf[0];
 		port_str = strstr(ip_str, ":");
@@ -199,8 +191,8 @@ static struct se_tpg_np *lio_target_call_addnptotpg(
 				" in IPv4 iSCSI network portal address\n");
 			return ERR_PTR(-EINVAL);
 		}
-		*port_str = '\0'; /* Terminate string for IP */
-		port_str++; /* Skip over ":" */
+		*port_str = '\0';  
+		port_str++;  
 	}
 
 	ret = inet_pton_with_scope(&init_net, AF_UNSPEC, ip_str,
@@ -219,19 +211,7 @@ static struct se_tpg_np *lio_target_call_addnptotpg(
 		" PORTAL: %s\n",
 		config_item_name(&se_tpg->se_tpg_wwn->wwn_group.cg_item),
 		tpg->tpgt, name);
-	/*
-	 * Assume ISCSI_TCP by default.  Other network portals for other
-	 * iSCSI fabrics:
-	 *
-	 * Traditional iSCSI over SCTP (initial support)
-	 * iSER/TCP (TODO, hardware available)
-	 * iSER/SCTP (TODO, software emulation with osc-iwarp)
-	 * iSER/IB (TODO, hardware available)
-	 *
-	 * can be enabled with attributes under
-	 * sys/kernel/config/iscsi/$IQN/$TPG/np/$IP:$PORT/
-	 *
-	 */
+	 
 	tpg_np = iscsit_tpg_add_network_portal(tpg, &sockaddr, NULL,
 				ISCSI_TCP);
 	if (IS_ERR(tpg_np)) {
@@ -272,9 +252,9 @@ out:
 	iscsit_put_tpg(tpg);
 }
 
-/* End items for lio_target_np_cit */
+ 
 
-/* Start items for lio_target_nacl_attrib_cit */
+ 
 
 #define ISCSI_NACL_ATTR(name)						\
 static ssize_t iscsi_nacl_attrib_##name##_show(struct config_item *item,\
@@ -357,9 +337,9 @@ static struct configfs_attribute *lio_target_nacl_attrib_attrs[] = {
 	NULL,
 };
 
-/* End items for lio_target_nacl_attrib_cit */
+ 
 
-/* Start items for lio_target_nacl_auth_cit */
+ 
 
 #define __DEF_NACL_AUTH_STR(prefix, name, flags)			\
 static ssize_t __iscsi_##prefix##_##name##_show(			\
@@ -417,9 +397,7 @@ static ssize_t iscsi_nacl_auth_##name##_store(struct config_item *item,	\
 									\
 CONFIGFS_ATTR(iscsi_nacl_auth_, name)
 
-/*
- * One-way authentication userid
- */
+ 
 DEF_NACL_AUTH_STR(userid, NAF_USERID_SET);
 DEF_NACL_AUTH_STR(password, NAF_PASSWORD_SET);
 DEF_NACL_AUTH_STR(userid_mutual, NAF_USERID_IN_SET);
@@ -460,9 +438,9 @@ static struct configfs_attribute *lio_target_nacl_auth_attrs[] = {
 	NULL,
 };
 
-/* End items for lio_target_nacl_auth_cit */
+ 
 
-/* Start items for lio_target_nacl_param_cit */
+ 
 
 #define ISCSI_NACL_PARAM(name)						\
 static ssize_t iscsi_nacl_param_##name##_show(struct config_item *item,	\
@@ -517,9 +495,9 @@ static struct configfs_attribute *lio_target_nacl_param_attrs[] = {
 	NULL,
 };
 
-/* End items for lio_target_nacl_param_cit */
+ 
 
-/* Start items for lio_target_acl_cit */
+ 
 
 static ssize_t lio_target_nacl_info_show(struct config_item *item, char *page)
 {
@@ -734,9 +712,9 @@ static int lio_target_init_nodeacl(struct se_node_acl *se_nacl,
 	return 0;
 }
 
-/* End items for lio_target_acl_cit */
+ 
 
-/* Start items for lio_target_tpg_attrib_cit */
+ 
 
 #define DEF_TPG_ATTRIB(name)						\
 									\
@@ -812,9 +790,9 @@ static struct configfs_attribute *lio_target_tpg_attrib_attrs[] = {
 	NULL,
 };
 
-/* End items for lio_target_tpg_attrib_cit */
+ 
 
-/* Start items for lio_target_tpg_auth_cit */
+ 
 
 #define __DEF_TPG_AUTH_STR(prefix, name, flags)					\
 static ssize_t __iscsi_##prefix##_##name##_show(struct se_portal_group *se_tpg,	\
@@ -908,9 +886,9 @@ static struct configfs_attribute *lio_target_tpg_auth_attrs[] = {
 	NULL,
 };
 
-/* End items for lio_target_tpg_auth_cit */
+ 
 
-/* Start items for lio_target_tpg_param_cit */
+ 
 
 #define DEF_TPG_PARAM(name)						\
 static ssize_t iscsi_tpg_param_##name##_show(struct config_item *item,	\
@@ -948,7 +926,7 @@ static ssize_t iscsi_tpg_param_##name##_store(struct config_item *item, \
 		return -ENOMEM;						\
 	len = snprintf(buf, PAGE_SIZE, "%s=%s", __stringify(name), page);	\
 	if (isspace(buf[len-1]))					\
-		buf[len-1] = '\0'; /* Kill newline */			\
+		buf[len-1] = '\0';  			\
 									\
 	if (iscsit_get_tpg(tpg) < 0) {					\
 		kfree(buf);						\
@@ -1016,9 +994,9 @@ static struct configfs_attribute *lio_target_tpg_param_attrs[] = {
 	NULL,
 };
 
-/* End items for lio_target_tpg_param_cit */
+ 
 
-/* Start items for lio_target_tpg_cit */
+ 
 
 static ssize_t lio_target_tpg_dynamic_sessions_show(struct config_item *item,
 		char *page)
@@ -1033,9 +1011,9 @@ static struct configfs_attribute *lio_target_tpg_attrs[] = {
 	NULL,
 };
 
-/* End items for lio_target_tpg_cit */
+ 
 
-/* Start items for lio_target_tiqn_cit */
+ 
 
 static struct se_portal_group *lio_target_tiqn_addtpg(struct se_wwn *wwn,
 						      const char *name)
@@ -1047,17 +1025,14 @@ static struct se_portal_group *lio_target_tiqn_addtpg(struct se_wwn *wwn,
 	u16 tpgt;
 
 	tiqn = container_of(wwn, struct iscsi_tiqn, tiqn_wwn);
-	/*
-	 * Only tpgt_# directory groups can be created below
-	 * target/iscsi/iqn.superturodiskarry/
-	 */
+	 
 	tpgt_str = strstr(name, "tpgt_");
 	if (!tpgt_str) {
 		pr_err("Unable to locate \"tpgt_#\" directory"
 				" group\n");
 		return NULL;
 	}
-	tpgt_str += 5; /* Skip ahead of "tpgt_" */
+	tpgt_str += 5;  
 	ret = kstrtou16(tpgt_str, 0, &tpgt);
 	if (ret)
 		return NULL;
@@ -1100,9 +1075,7 @@ static int lio_target_tiqn_enabletpg(struct se_portal_group *se_tpg,
 		if (ret < 0)
 			goto out;
 	} else {
-		/*
-		 * iscsit_tpg_disable_portal_group() assumes force=1
-		 */
+		 
 		ret = iscsit_tpg_disable_portal_group(tpg, 1);
 		if (ret < 0)
 			goto out;
@@ -1122,16 +1095,14 @@ static void lio_target_tiqn_deltpg(struct se_portal_group *se_tpg)
 
 	tpg = to_iscsi_tpg(se_tpg);
 	tiqn = tpg->tpg_tiqn;
-	/*
-	 * iscsit_tpg_del_portal_group() assumes force=1
-	 */
+	 
 	pr_debug("LIO_Target_ConfigFS: DEREGISTER -> Releasing TPG\n");
 	iscsit_tpg_del_portal_group(tiqn, tpg, 1);
 }
 
-/* End items for lio_target_tiqn_cit */
+ 
 
-/* Start LIO-Target TIQN struct contig_item lio_target_cit */
+ 
 
 static ssize_t lio_target_wwn_lio_version_show(struct config_item *item,
 		char *page)
@@ -1239,9 +1210,9 @@ static void lio_target_call_coredeltiqn(
 	iscsit_del_tiqn(tiqn);
 }
 
-/* End LIO-Target TIQN struct contig_lio_target_cit */
+ 
 
-/* Start lio_target_discovery_auth_cit */
+ 
 
 #define DEF_DISC_AUTH_STR(name, flags)					\
 	__DEF_NACL_AUTH_STR(disc, name, flags)				\
@@ -1312,9 +1283,7 @@ static ssize_t iscsi_disc_enforce_discovery_auth_store(struct config_item *item,
 		return -EINVAL;
 
 	if (op) {
-		/*
-		 * Reset the AuthMethod key to CHAP.
-		 */
+		 
 		if (iscsi_update_param_value(param, CHAP) < 0)
 			return -EINVAL;
 
@@ -1324,9 +1293,7 @@ static ssize_t iscsi_disc_enforce_discovery_auth_store(struct config_item *item,
 			" authentication enforcement for iSCSI"
 			" Discovery TPG\n");
 	} else {
-		/*
-		 * Reset the AuthMethod key to CHAP,None
-		 */
+		 
 		if (iscsi_update_param_value(param, "CHAP,None") < 0)
 			return -EINVAL;
 
@@ -1352,9 +1319,9 @@ static struct configfs_attribute *lio_target_discovery_auth_attrs[] = {
 	NULL,
 };
 
-/* End lio_target_discovery_auth_cit */
+ 
 
-/* Start functions for target_core_fabric_ops */
+ 
 
 static int iscsi_get_cmd_state(struct se_cmd *se_cmd)
 {
@@ -1376,9 +1343,7 @@ static u32 lio_sess_get_initiator_sid(
 	u32 size)
 {
 	struct iscsit_session *sess = se_sess->fabric_sess_ptr;
-	/*
-	 * iSCSI Initiator Session Identifier from RFC-3720.
-	 */
+	 
 	return snprintf(buf, size, "%6phN", sess->isid);
 }
 
@@ -1470,19 +1435,13 @@ static int lio_tpg_check_prod_mode_write_protect(
 static int lio_tpg_check_prot_fabric_only(
 	struct se_portal_group *se_tpg)
 {
-	/*
-	 * Only report fabric_prot_type if t10_pi has also been enabled
-	 * for incoming ib_isert sessions.
-	 */
+	 
 	if (!to_iscsi_tpg(se_tpg)->tpg_attrib.t10_pi)
 		return 0;
 	return to_iscsi_tpg(se_tpg)->tpg_attrib.fabric_prot_type;
 }
 
-/*
- * This function calls iscsit_inc_session_usage_count() on the
- * struct iscsit_session in question.
- */
+ 
 static void lio_tpg_close_session(struct se_session *se_sess)
 {
 	struct iscsit_session *sess = se_sess->fabric_sess_ptr;

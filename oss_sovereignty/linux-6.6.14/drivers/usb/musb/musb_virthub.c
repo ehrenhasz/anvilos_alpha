@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MUSB OTG driver virtual root hub support
- *
- * Copyright 2005 Mentor Graphics Corporation
- * Copyright (C) 2005-2006 by Texas Instruments
- * Copyright (C) 2006-2007 Nokia Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -33,16 +27,12 @@ void musb_host_finish_resume(struct work_struct *work)
 	musb_dbg(musb, "root port resume stopped, power %02x", power);
 	musb_writeb(musb->mregs, MUSB_POWER, power);
 
-	/*
-	 * ISSUE:  DaVinci (RTL 1.300) disconnects after
-	 * resume of high speed peripherals (but not full
-	 * speed ones).
-	 */
+	 
 	musb->is_active = 1;
 	musb->port1_status &= ~(USB_PORT_STAT_SUSPEND | MUSB_PORT_STAT_RESUME);
 	musb->port1_status |= USB_PORT_STAT_C_SUSPEND << 16;
 	usb_hcd_poll_rh_status(musb->hcd);
-	/* NOTE: it might really be A_WAIT_BCON ... */
+	 
 	musb_set_state(musb, OTG_STATE_A_HOST);
 
 	spin_unlock_irqrestore(&musb->lock, flags);
@@ -56,11 +46,7 @@ int musb_port_suspend(struct musb *musb, bool do_suspend)
 	if (!is_host_active(musb))
 		return 0;
 
-	/* NOTE:  this doesn't necessarily put PHY into low power mode,
-	 * turning off its clock; that's a function of PHY integration and
-	 * MUSB_POWER_ENSUSPEND.  PHY may need a clock (sigh) to detect
-	 * SE0 changing to connect (J) or wakeup (K) states.
-	 */
+	 
 	power = musb_readb(mbase, MUSB_POWER);
 	if (do_suspend) {
 		int retries = 10000;
@@ -72,7 +58,7 @@ int musb_port_suspend(struct musb *musb, bool do_suspend)
 			power |= MUSB_POWER_SUSPENDM;
 			musb_writeb(mbase, MUSB_POWER, power);
 
-			/* Needed for OPT A tests */
+			 
 			power = musb_readb(mbase, MUSB_POWER);
 			while (power & MUSB_POWER_SUSPENDM) {
 				power = musb_readb(mbase, MUSB_POWER);
@@ -133,23 +119,15 @@ void musb_port_reset(struct musb *musb, bool do_reset)
 	if (!is_host_active(musb))
 		return;
 
-	/* NOTE:  caller guarantees it will turn off the reset when
-	 * the appropriate amount of time has passed
-	 */
+	 
 	power = musb_readb(mbase, MUSB_POWER);
 	if (do_reset) {
-		/*
-		 * If RESUME is set, we must make sure it stays minimum 20 ms.
-		 * Then we must clear RESUME and wait a bit to let musb start
-		 * generating SOFs. If we don't do this, OPT HS A 6.8 tests
-		 * fail with "Error! Did not receive an SOF before suspend
-		 * detected".
-		 */
+		 
 		if (power &  MUSB_POWER_RESUME) {
 			long remain = (unsigned long) musb->rh_timer - jiffies;
 
 			if (musb->rh_timer > 0 && remain > 0) {
-				/* take into account the minimum delay after resume */
+				 
 				schedule_delayed_work(
 					&musb->deassert_reset_work, remain);
 				return;
@@ -158,7 +136,7 @@ void musb_port_reset(struct musb *musb, bool do_reset)
 			musb_writeb(mbase, MUSB_POWER,
 				    power & ~MUSB_POWER_RESUME);
 
-			/* Give the core 1 ms to clear MUSB_POWER_RESUME */
+			 
 			schedule_delayed_work(&musb->deassert_reset_work,
 					      msecs_to_jiffies(1));
 			return;
@@ -226,15 +204,15 @@ void musb_root_disconnect(struct musb *musb)
 EXPORT_SYMBOL_GPL(musb_root_disconnect);
 
 
-/*---------------------------------------------------------------------*/
+ 
 
-/* Caller may or may not hold musb->lock */
+ 
 int musb_hub_status_data(struct usb_hcd *hcd, char *buf)
 {
 	struct musb	*musb = hcd_to_musb(hcd);
 	int		retval = 0;
 
-	/* called in_irq() via usb_hcd_poll_rh_status() */
+	 
 	if (musb->port1_status & 0xffff0000) {
 		*buf = 0x02;
 		retval = 1;
@@ -244,12 +222,7 @@ int musb_hub_status_data(struct usb_hcd *hcd, char *buf)
 
 static int musb_has_gadget(struct musb *musb)
 {
-	/*
-	 * In host-only mode we start a connection right away. In OTG mode
-	 * we have to wait until we loaded a gadget. We don't really need a
-	 * gadget if we operate as a host but we should not start a session
-	 * as a device without a gadget or else we explode.
-	 */
+	 
 #ifdef CONFIG_USB_MUSB_HOST
 	return 1;
 #else
@@ -278,10 +251,7 @@ int musb_hub_control(
 		return -ESHUTDOWN;
 	}
 
-	/* hub features:  always zero, setting is a NOP
-	 * port features: reported, sometimes updated when host is active
-	 * no indicators
-	 */
+	 
 	switch (typeReq) {
 	case ClearHubFeature:
 	case SetHubFeature:
@@ -327,14 +297,14 @@ int musb_hub_control(
 		desc->bDescriptorType = USB_DT_HUB;
 		desc->bNbrPorts = 1;
 		desc->wHubCharacteristics = cpu_to_le16(
-			HUB_CHAR_INDV_PORT_LPSM /* per-port power switching */
-			| HUB_CHAR_NO_OCPM	/* no overcurrent reporting */
+			HUB_CHAR_INDV_PORT_LPSM  
+			| HUB_CHAR_NO_OCPM	 
 			);
-		desc->bPwrOn2PwrGood = 5;	/* msec/2 */
+		desc->bPwrOn2PwrGood = 5;	 
 		desc->bHubContrCurrent = 0;
 
-		/* workaround bogus struct definition */
-		desc->u.hs.DeviceRemovable[0] = 0x02;	/* port 1 */
+		 
+		desc->u.hs.DeviceRemovable[0] = 0x02;	 
 		desc->u.hs.DeviceRemovable[1] = 0xff;
 		}
 		break;
@@ -350,7 +320,7 @@ int musb_hub_control(
 					& ~MUSB_PORT_STAT_RESUME),
 				(__le32 *) buf);
 
-		/* port change status is more interesting */
+		 
 		musb_dbg(musb, "port status %08x", musb->port1_status);
 		break;
 	case SetPortFeature:
@@ -359,16 +329,7 @@ int musb_hub_control(
 
 		switch (wValue) {
 		case USB_PORT_FEAT_POWER:
-			/* NOTE: this controller has a strange state machine
-			 * that involves "requesting sessions" according to
-			 * magic side effects from incompletely-described
-			 * rules about startup...
-			 *
-			 * This call is what really starts the host mode; be
-			 * very careful about side effects if you reorder any
-			 * initialization logic, e.g. for OTG, or change any
-			 * logic relating to VBUS power-up.
-			 */
+			 
 			if (!hcd->self.is_b_host && musb_has_gadget(musb))
 				start_musb = true;
 			break;
@@ -427,7 +388,7 @@ int musb_hub_control(
 
 	default:
 error:
-		/* "protocol stall" on error */
+		 
 		retval = -EPIPE;
 	}
 	spin_unlock_irqrestore(&musb->lock, flags);

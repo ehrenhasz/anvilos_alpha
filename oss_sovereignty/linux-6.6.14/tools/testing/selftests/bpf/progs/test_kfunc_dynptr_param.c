@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
- *
- * Author: Roberto Sassu <roberto.sassu@huawei.com>
- */
+
+ 
 
 #include "vmlinux.h"
 #include <errno.h>
@@ -69,7 +65,7 @@ int BPF_PROG(dynptr_data_null, int cmd, union bpf_attr *attr, unsigned int size)
 	if (!value)
 		return 0;
 
-	/* Pass invalid flags. */
+	 
 	ret = bpf_dynptr_from_mem(value, sizeof(*value), ((__u64)~0ULL), &ptr);
 	if (ret != -EINVAL)
 		return 0;

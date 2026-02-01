@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) ST-Ericsson SA 2010
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_TC3589x_H
 #define __LINUX_MFD_TC3589x_H
@@ -22,7 +20,7 @@ enum tx3589x_block {
 #define TC3589x_DKBDMSK_ELINT	(1 << 1)
 #define TC3589x_DKBDMSK_EINT	(1 << 0)
 
-/* Keyboard Configuration Registers */
+ 
 #define TC3589x_KBDSETTLE_REG   0x01
 #define TC3589x_KBDBOUNCE       0x02
 #define TC3589x_KBDSIZE         0x03
@@ -48,7 +46,7 @@ enum tx3589x_block {
 #define TC3589x_EXTRSTN		0x83
 #define TC3589x_RSTINTCLR	0x84
 
-/* Pull up/down configuration registers */
+ 
 #define TC3589x_IOCFG           0xA7
 #define TC3589x_IOPULLCFG0_LSB  0xAA
 #define TC3589x_IOPULLCFG0_MSB  0xAB
@@ -136,20 +134,14 @@ extern int tc3589x_block_write(struct tc3589x *tc3589x, u8 reg, u8 length,
 			       const u8 *values);
 extern int tc3589x_set_bits(struct tc3589x *tc3589x, u8 reg, u8 mask, u8 val);
 
-/*
- * Keypad related platform specific constants
- * These values may be modified for fine tuning
- */
+ 
 #define TC_KPD_ROWS             0x8
 #define TC_KPD_COLUMNS          0x8
 #define TC_KPD_DEBOUNCE_PERIOD  0xA3
 #define TC_KPD_SETTLE_TIME      0xA3
 
 
-/**
- * struct tc3589x_platform_data - TC3589x platform data
- * @block: bitmask of blocks to enable (use TC3589x_BLOCK_*)
- */
+ 
 struct tc3589x_platform_data {
 	unsigned int block;
 };

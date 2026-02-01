@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/******************************************************************************
- * rtl871x_pwrctrl.c
- *
- * Copyright(c) 2007 - 2010 Realtek Corporation. All rights reserved.
- * Linux device driver for RTL8192SU
- *
- * Modifications for inclusion into the Linux staging tree are
- * Copyright(c) 2010 Larry Finger. All rights reserved.
- *
- * Contact information:
- * WLAN FAE <wlanfae@realtek.com>
- * Larry Finger <Larry.Finger@lwfinger.net>
- *
- ******************************************************************************/
+
+ 
 
 #define _RTL871X_PWRCTRL_C_
 
@@ -39,9 +26,7 @@ void r8712_set_rpwm(struct _adapter *padapter, u8 val8)
 	case PS_STATE_S1:
 		pwrpriv->cpwm = val8;
 		break;
-	case PS_STATE_S2:/* only for USB normal powersave mode use,
-			  * temp mark some code.
-			  */
+	case PS_STATE_S2: 
 	case PS_STATE_S3:
 	case PS_STATE_S4:
 		pwrpriv->cpwm = val8;
@@ -61,7 +46,7 @@ void r8712_set_ps_mode(struct _adapter *padapter, uint ps_mode, uint smart_ps)
 
 	if (ps_mode > PM_Card_Disable)
 		return;
-	/* if driver is in active state, we dont need set smart_ps.*/
+	 
 	if (ps_mode == PS_MODE_ACTIVE)
 		smart_ps = 0;
 	if ((pwrpriv->pwr_mode != ps_mode) || (pwrpriv->smart_ps != smart_ps)) {
@@ -75,14 +60,7 @@ void r8712_set_ps_mode(struct _adapter *padapter, uint ps_mode, uint smart_ps)
 	}
 }
 
-/*
- * Caller:ISR handler...
- *
- * This will be called when CPWM interrupt is up.
- *
- * using to update cpwn of drv; and drv will make a decision to up or
- * down pwr level
- */
+ 
 void r8712_cpwm_int_hdl(struct _adapter *padapter,
 			struct reportpwrstate_parm *preportpwrstate)
 {
@@ -170,23 +148,14 @@ void r8712_init_pwrctrl_priv(struct _adapter *padapter)
 	pwrctrlpriv->pwr_mode = PS_MODE_ACTIVE;
 	pwrctrlpriv->smart_ps = 0;
 	pwrctrlpriv->tog = 0x80;
-/* clear RPWM to ensure driver and fw back to initial state. */
+ 
 	r8712_write8(padapter, 0x1025FE58, 0);
 	INIT_WORK(&pwrctrlpriv->SetPSModeWorkItem, SetPSModeWorkItemCallback);
 	INIT_WORK(&pwrctrlpriv->rpwm_workitem, rpwm_workitem_callback);
 	timer_setup(&pwrctrlpriv->rpwm_check_timer, rpwm_check_handler, 0);
 }
 
-/*
- * Caller: r8712_cmd_thread
- * Check if the fw_pwrstate is okay for issuing cmd.
- * If not (cpwm should be is less than P2 state), then the sub-routine
- * will raise the cpwm to be greater than or equal to P2.
- * Calling Context: Passive
- * Return Value:
- * 0:	    r8712_cmd_thread can issue cmds to firmware afterwards.
- * -EINVAL: r8712_cmd_thread can not do anything.
- */
+ 
 int r8712_register_cmd_alive(struct _adapter *padapter)
 {
 	int res = 0;
@@ -202,12 +171,7 @@ int r8712_register_cmd_alive(struct _adapter *padapter)
 	return res;
 }
 
-/*
- * Caller: ISR
- * If ISR's txdone,
- * No more pkts for TX,
- * Then driver shall call this fun. to power down firmware again.
- */
+ 
 void r8712_unregister_cmd_alive(struct _adapter *padapter)
 {
 	struct pwrctrl_priv *pwrctrl = &padapter->pwrctrlpriv;

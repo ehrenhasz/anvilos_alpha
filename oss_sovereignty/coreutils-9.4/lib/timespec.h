@@ -1,26 +1,4 @@
-/* timespec -- System time interface
-
-   Copyright (C) 2000, 2002, 2004-2005, 2007, 2009-2023 Free Software
-   Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation, either version 3 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#if ! defined TIMESPEC_H
-#define TIMESPEC_H
-
-/* This file uses _GL_INLINE_HEADER_BEGIN, _GL_INLINE, _GL_ATTRIBUTE_CONST,
-   _GL_ATTRIBUTE_PURE, _GL_CMP.  */
+ 
 #if !_GL_CONFIG_H_INCLUDED
  #error "Please include config.h first."
 #endif
@@ -38,19 +16,17 @@ extern "C" {
 
 #include "arg-nonnull.h"
 
-/* Inverse resolution of timespec timestamps (in units per second),
-   and log base 10 of the inverse resolution.  */
+ 
 
 enum { TIMESPEC_HZ = 1000000000 };
 enum { LOG10_TIMESPEC_HZ = 9 };
 
-/* Obsolescent names for backward compatibility.
-   They are misnomers, because TIMESPEC_RESOLUTION is not a resolution.  */
+ 
 
 enum { TIMESPEC_RESOLUTION = TIMESPEC_HZ };
 enum { LOG10_TIMESPEC_RESOLUTION = LOG10_TIMESPEC_HZ };
 
-/* Return a timespec with seconds S and nanoseconds NS.  */
+ 
 
 _GL_TIMESPEC_INLINE struct timespec
 make_timespec (time_t s, long int ns)
@@ -58,7 +34,7 @@ make_timespec (time_t s, long int ns)
   return (struct timespec) { .tv_sec = s, .tv_nsec = ns };
 }
 
-/* Return negative, zero, positive if A < B, A == B, A > B, respectively.  */
+ 
 
 _GL_TIMESPEC_INLINE int _GL_ATTRIBUTE_PURE
 timespec_cmp (struct timespec a, struct timespec b)
@@ -66,8 +42,7 @@ timespec_cmp (struct timespec a, struct timespec b)
   return 2 * _GL_CMP (a.tv_sec, b.tv_sec) + _GL_CMP (a.tv_nsec, b.tv_nsec);
 }
 
-/* Return -1, 0, 1, depending on the sign of A.  A.tv_nsec must be
-   nonnegative.  */
+ 
 _GL_TIMESPEC_INLINE int _GL_ATTRIBUTE_PURE
 timespec_sign (struct timespec a)
 {
@@ -81,7 +56,7 @@ struct timespec timespec_sub (struct timespec, struct timespec)
 struct timespec dtotimespec (double)
   _GL_ATTRIBUTE_CONST;
 
-/* Return an approximation to A, of type 'double'.  */
+ 
 _GL_TIMESPEC_INLINE double
 timespectod (struct timespec a)
 {

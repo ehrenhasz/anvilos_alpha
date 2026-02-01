@@ -1,15 +1,13 @@
-// SPDX-License-Identifier: (GPL-2.0-only OR BSD-3-Clause)
-//
-// This file is provided under a dual BSD/GPLv2 license. When using or
-// redistributing this file, you may do so under either license.
-//
-// Copyright(c) 2021 Advanced Micro Devices, Inc.
-//
-// Authors: Ajit Kumar Pandey <AjitKumar.Pandey@amd.com>
 
-/*
- * Hardware interface for generic AMD audio DSP ACP IP
- */
+
+
+
+
+
+
+
+
+ 
 
 #include "../ops.h"
 #include "acp-dsp-offset.h"
@@ -87,7 +85,7 @@ int acp_dsp_stream_config(struct snd_sof_dev *sdev, struct acp_dsp_stream *strea
 		return -EINVAL;
 	}
 
-	/* write phy_addr in scratch memory */
+	 
 
 	phy_addr_offset = sdev->debug_box.offset +
 			  offsetof(struct scratch_reg_conf, reg_offset);
@@ -97,7 +95,7 @@ int acp_dsp_stream_config(struct snd_sof_dev *sdev, struct acp_dsp_stream *strea
 	snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACP_SCRATCH_REG_0 +
 			  phy_addr_offset, stream->reg_offset);
 
-	/* Group Enable */
+	 
 	offset = offset + sdev->debug_box.offset;
 	reg_val = desc->sram_pte_offset + offset;
 	snd_sof_dsp_write(sdev, ACP_DSP_BAR, pte_reg, reg_val | BIT(31));
@@ -106,7 +104,7 @@ int acp_dsp_stream_config(struct snd_sof_dev *sdev, struct acp_dsp_stream *strea
 	for (page_idx = 0; page_idx < stream->num_pages; page_idx++) {
 		addr = snd_sgbuf_get_addr(stream->dmab, page_idx * PAGE_SIZE);
 
-		/* Load the low address of page int ACP SRAM through SRBM */
+		 
 		low = lower_32_bits(addr);
 		high = upper_32_bits(addr);
 
@@ -114,11 +112,11 @@ int acp_dsp_stream_config(struct snd_sof_dev *sdev, struct acp_dsp_stream *strea
 
 		high |= BIT(31);
 		snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACP_SCRATCH_REG_0 + offset + 4, high);
-		/* Move to next physically contiguous page */
+		 
 		offset += 8;
 	}
 
-	/* Flush ATU Cache after PTE Update */
+	 
 	snd_sof_dsp_write(sdev, ACP_DSP_BAR, ACPAXI2AXI_ATU_CTRL, ACP_ATU_CACHE_INVALID);
 
 	return 0;
@@ -134,13 +132,13 @@ struct acp_dsp_stream *acp_dsp_stream_get(struct snd_sof_dev *sdev, int tag)
 		if (stream->active)
 			continue;
 
-		/* return stream if tag not specified*/
+		 
 		if (!tag) {
 			stream->active = 1;
 			return stream;
 		}
 
-		/* check if this is the requested stream tag */
+		 
 		if (stream->stream_tag == tag) {
 			stream->active = 1;
 			return stream;
@@ -159,7 +157,7 @@ int acp_dsp_stream_put(struct snd_sof_dev *sdev,
 	struct acp_dsp_stream *stream = adata->stream_buf;
 	int i;
 
-	/* Free an active stream */
+	 
 	for (i = 0; i < ACP_MAX_STREAM; i++, stream++) {
 		if (stream == acp_stream) {
 			stream->active = 0;

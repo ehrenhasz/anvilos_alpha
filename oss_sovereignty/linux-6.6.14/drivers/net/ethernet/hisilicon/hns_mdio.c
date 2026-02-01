@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2014-2015 Hisilicon Limited.
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/errno.h>
@@ -35,19 +33,19 @@ struct hns_mdio_sc_reg {
 };
 
 struct hns_mdio_device {
-	u8 __iomem *vbase;		/* mdio reg base address */
+	u8 __iomem *vbase;		 
 	struct regmap *subctrl_vbase;
 	struct hns_mdio_sc_reg sc_reg;
 };
 
-/* mdio reg */
+ 
 #define MDIO_COMMAND_REG		0x0
 #define MDIO_ADDR_REG			0x4
 #define MDIO_WDATA_REG			0x8
 #define MDIO_RDATA_REG			0xc
 #define MDIO_STA_REG			0x10
 
-/* cfg phy bit map */
+ 
 #define MDIO_CMD_DEVAD_M	0x1f
 #define MDIO_CMD_DEVAD_S	0
 #define MDIO_CMD_PRTAD_M	0x1f
@@ -84,7 +82,7 @@ enum mdio_c45_op_seq {
 	MDIO_C45_READ
 };
 
-/* peri subctrl reg */
+ 
 #define MDIO_SC_CLK_EN		0x338
 #define MDIO_SC_CLK_DIS		0x33C
 #define MDIO_SC_RESET_REQ	0xA38
@@ -174,8 +172,8 @@ static int hns_mdio_wait_ready(struct mii_bus *bus)
 	u32 cmd_reg_value;
 	int i;
 
-	/* waiting for MDIO_COMMAND_REG's mdio_start==0 */
-	/* after that can do read or write*/
+	 
+	 
 	for (i = 0; i < MDIO_TIMEOUT; i++) {
 		cmd_reg_value = MDIO_GET_REG_BIT(mdio_dev,
 						 MDIO_COMMAND_REG,
@@ -205,15 +203,7 @@ static void hns_mdio_cmd_write(struct hns_mdio_device *mdio_dev,
 	MDIO_WRITE_REG(mdio_dev, MDIO_COMMAND_REG, cmd_reg_value);
 }
 
-/**
- * hns_mdio_write_c22 - access phy register
- * @bus: mdio bus
- * @phy_id: phy id
- * @regnum: register num
- * @data: register value
- *
- * Return 0 on success, negative on failure
- */
+ 
 static int hns_mdio_write_c22(struct mii_bus *bus,
 			      int phy_id, int regnum, u16 data)
 {
@@ -228,7 +218,7 @@ static int hns_mdio_write_c22(struct mii_bus *bus,
 	dev_dbg(&bus->dev, "phy id=%d, reg=%#x, write data=%d\n",
 		phy_id, reg, data);
 
-	/* wait for ready */
+	 
 	ret = hns_mdio_wait_ready(bus);
 	if (ret) {
 		dev_err(&bus->dev, "MDIO bus is busy\n");
@@ -246,16 +236,7 @@ static int hns_mdio_write_c22(struct mii_bus *bus,
 	return 0;
 }
 
-/**
- * hns_mdio_write_c45 - access phy register
- * @bus: mdio bus
- * @phy_id: phy id
- * @devad: device address to read
- * @regnum: register num
- * @data: register value
- *
- * Return 0 on success, negative on failure
- */
+ 
 static int hns_mdio_write_c45(struct mii_bus *bus, int phy_id, int devad,
 			      int regnum, u16 data)
 {
@@ -270,27 +251,27 @@ static int hns_mdio_write_c45(struct mii_bus *bus, int phy_id, int devad,
 	dev_dbg(&bus->dev, "phy id=%d, devad=%d, reg=%#x, write data=%d\n",
 		phy_id, devad, reg, data);
 
-	/* wait for ready */
+	 
 	ret = hns_mdio_wait_ready(bus);
 	if (ret) {
 		dev_err(&bus->dev, "MDIO bus is busy\n");
 		return ret;
 	}
 
-	/* config the cmd-reg to write addr*/
+	 
 	MDIO_SET_REG_FIELD(mdio_dev, MDIO_ADDR_REG, MDIO_ADDR_DATA_M,
 			   MDIO_ADDR_DATA_S, reg);
 
 	hns_mdio_cmd_write(mdio_dev, true, MDIO_C45_WRITE_ADDR, phy_id, devad);
 
-	/* check for read or write opt is finished */
+	 
 	ret = hns_mdio_wait_ready(bus);
 	if (ret) {
 		dev_err(&bus->dev, "MDIO bus is busy\n");
 		return ret;
 	}
 
-	/* config the data needed writing */
+	 
 	cmd_reg_cfg = devad;
 	op = MDIO_C45_WRITE_DATA;
 
@@ -302,14 +283,7 @@ static int hns_mdio_write_c45(struct mii_bus *bus, int phy_id, int devad,
 	return 0;
 }
 
-/**
- * hns_mdio_read_c22 - access phy register
- * @bus: mdio bus
- * @phy_id: phy id
- * @regnum: register num
- *
- * Return phy register value
- */
+ 
 static int hns_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
 {
 	struct hns_mdio_device *mdio_dev = bus->priv;
@@ -321,7 +295,7 @@ static int hns_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
 		bus->id, mdio_dev->vbase);
 	dev_dbg(&bus->dev, "phy id=%d, reg=%#x!\n", phy_id, reg);
 
-	/* Step 1: wait for ready */
+	 
 	ret = hns_mdio_wait_ready(bus);
 	if (ret) {
 		dev_err(&bus->dev, "MDIO bus is busy\n");
@@ -330,8 +304,8 @@ static int hns_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
 
 	hns_mdio_cmd_write(mdio_dev, false, MDIO_C22_READ, phy_id, reg);
 
-	/* Step 2: waiting for MDIO_COMMAND_REG 's mdio_start==0,*/
-	/* check for read or write opt is finished */
+	 
+	 
 	ret = hns_mdio_wait_ready(bus);
 	if (ret) {
 		dev_err(&bus->dev, "MDIO bus is busy\n");
@@ -344,22 +318,14 @@ static int hns_mdio_read_c22(struct mii_bus *bus, int phy_id, int regnum)
 		return -EBUSY;
 	}
 
-	/* Step 3; get out data*/
+	 
 	reg_val = (u16)MDIO_GET_REG_FIELD(mdio_dev, MDIO_RDATA_REG,
 					  MDIO_RDATA_DATA_M, MDIO_RDATA_DATA_S);
 
 	return reg_val;
 }
 
-/**
- * hns_mdio_read_c45 - access phy register
- * @bus: mdio bus
- * @phy_id: phy id
- * @devad: device address to read
- * @regnum: register num
- *
- * Return phy register value
- */
+ 
 static int hns_mdio_read_c45(struct mii_bus *bus, int phy_id, int devad,
 			     int regnum)
 {
@@ -373,7 +339,7 @@ static int hns_mdio_read_c45(struct mii_bus *bus, int phy_id, int devad,
 	dev_dbg(&bus->dev, "phy id=%d, devad=%d, reg=%#x!\n",
 		phy_id, devad, reg);
 
-	/* Step 1: wait for ready */
+	 
 	ret = hns_mdio_wait_ready(bus);
 	if (ret) {
 		dev_err(&bus->dev, "MDIO bus is busy\n");
@@ -383,10 +349,10 @@ static int hns_mdio_read_c45(struct mii_bus *bus, int phy_id, int devad,
 	MDIO_SET_REG_FIELD(mdio_dev, MDIO_ADDR_REG, MDIO_ADDR_DATA_M,
 			   MDIO_ADDR_DATA_S, reg);
 
-	/* Step 2; config the cmd-reg to write addr*/
+	 
 	hns_mdio_cmd_write(mdio_dev, true, MDIO_C45_WRITE_ADDR, phy_id, devad);
 
-	/* Step 3: check for read or write opt is finished */
+	 
 	ret = hns_mdio_wait_ready(bus);
 	if (ret) {
 		dev_err(&bus->dev, "MDIO bus is busy\n");
@@ -395,8 +361,8 @@ static int hns_mdio_read_c45(struct mii_bus *bus, int phy_id, int devad,
 
 	hns_mdio_cmd_write(mdio_dev, true, MDIO_C45_READ, phy_id, devad);
 
-	/* Step 5: waiting for MDIO_COMMAND_REG 's mdio_start==0,*/
-	/* check for read or write opt is finished */
+	 
+	 
 	ret = hns_mdio_wait_ready(bus);
 	if (ret) {
 		dev_err(&bus->dev, "MDIO bus is busy\n");
@@ -409,19 +375,14 @@ static int hns_mdio_read_c45(struct mii_bus *bus, int phy_id, int devad,
 		return -EBUSY;
 	}
 
-	/* Step 6; get out data*/
+	 
 	reg_val = (u16)MDIO_GET_REG_FIELD(mdio_dev, MDIO_RDATA_REG,
 					  MDIO_RDATA_DATA_M, MDIO_RDATA_DATA_S);
 
 	return reg_val;
 }
 
-/**
- * hns_mdio_reset - reset mdio bus
- * @bus: mdio bus
- *
- * Return 0 on success, negative on failure
- */
+ 
 static int hns_mdio_reset(struct mii_bus *bus)
 {
 	struct hns_mdio_device *mdio_dev = bus->priv;
@@ -435,7 +396,7 @@ static int hns_mdio_reset(struct mii_bus *bus)
 		}
 
 		sc_reg = &mdio_dev->sc_reg;
-		/* 1. reset req, and read reset st check */
+		 
 		ret = mdio_sc_cfg_reg_write(mdio_dev, sc_reg->mdio_reset_req,
 					    0x1, sc_reg->mdio_reset_st, 0x1,
 					    MDIO_CHECK_SET_ST);
@@ -444,7 +405,7 @@ static int hns_mdio_reset(struct mii_bus *bus)
 			return ret;
 		}
 
-		/* 2. dis clk, and read clk st check */
+		 
 		ret = mdio_sc_cfg_reg_write(mdio_dev, sc_reg->mdio_clk_dis,
 					    0x1, sc_reg->mdio_clk_st, 0x1,
 					    MDIO_CHECK_CLR_ST);
@@ -453,7 +414,7 @@ static int hns_mdio_reset(struct mii_bus *bus)
 			return ret;
 		}
 
-		/* 3. reset dreq, and read reset st check */
+		 
 		ret = mdio_sc_cfg_reg_write(mdio_dev, sc_reg->mdio_reset_dreq,
 					    0x1, sc_reg->mdio_reset_st, 0x1,
 					    MDIO_CHECK_CLR_ST);
@@ -462,7 +423,7 @@ static int hns_mdio_reset(struct mii_bus *bus)
 			return ret;
 		}
 
-		/* 4. en clk, and read clk st check */
+		 
 		ret = mdio_sc_cfg_reg_write(mdio_dev, sc_reg->mdio_clk_en,
 					    0x1, sc_reg->mdio_clk_st, 0x1,
 					    MDIO_CHECK_SET_ST);
@@ -486,12 +447,7 @@ static int hns_mdio_reset(struct mii_bus *bus)
 	return ret;
 }
 
-/**
- * hns_mdio_probe - probe mdio device
- * @pdev: mdio platform device
- *
- * Return 0 on success, negative on failure
- */
+ 
 static int hns_mdio_probe(struct platform_device *pdev)
 {
 	struct hns_mdio_device *mdio_dev;
@@ -560,7 +516,7 @@ static int hns_mdio_probe(struct platform_device *pdev)
 					mdio_dev->sc_reg.mdio_reset_st =
 						(u16)reg_args.args[3];
 				} else {
-					/* for compatible */
+					 
 					mdio_dev->sc_reg.mdio_clk_en =
 						MDIO_SC_CLK_EN;
 					mdio_dev->sc_reg.mdio_clk_dis =
@@ -582,13 +538,13 @@ static int hns_mdio_probe(struct platform_device *pdev)
 
 		ret = of_mdiobus_register(new_bus, pdev->dev.of_node);
 	} else if (is_acpi_node(pdev->dev.fwnode)) {
-		/* Clear all the IRQ properties */
+		 
 		memset(new_bus->irq, PHY_POLL, 4 * PHY_MAX_ADDR);
 
-		/* Mask out all PHYs from auto probing. */
+		 
 		new_bus->phy_mask = ~0;
 
-		/* Register the MDIO bus */
+		 
 		ret = mdiobus_register(new_bus);
 	} else {
 		dev_err(&pdev->dev, "Can not get cfg data from DT or ACPI\n");
@@ -604,12 +560,7 @@ static int hns_mdio_probe(struct platform_device *pdev)
 	return 0;
 }
 
-/**
- * hns_mdio_remove - remove mdio device
- * @pdev: mdio platform device
- *
- * Return 0 on success, negative on failure
- */
+ 
 static int hns_mdio_remove(struct platform_device *pdev)
 {
 	struct mii_bus *bus;

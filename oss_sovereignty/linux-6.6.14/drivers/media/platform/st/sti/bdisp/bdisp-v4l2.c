@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Fabien Dessenne <fabien.dessenne@st.com> for STMicroelectronics.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/interrupt.h>
@@ -21,12 +18,12 @@
 
 #define BDISP_WORK_TIMEOUT      ((100 * HZ) / 1000)
 
-/* User configuration change */
-#define BDISP_PARAMS            BIT(0) /* Config updated */
-#define BDISP_SRC_FMT           BIT(1) /* Source set */
-#define BDISP_DST_FMT           BIT(2) /* Destination set */
-#define BDISP_CTX_STOP_REQ      BIT(3) /* Stop request */
-#define BDISP_CTX_ABORT         BIT(4) /* Abort while device run */
+ 
+#define BDISP_PARAMS            BIT(0)  
+#define BDISP_SRC_FMT           BIT(1)  
+#define BDISP_DST_FMT           BIT(2)  
+#define BDISP_CTX_STOP_REQ      BIT(3)  
+#define BDISP_CTX_ABORT         BIT(4)  
 
 #define BDISP_MIN_W             1
 #define BDISP_MAX_W             8191
@@ -36,32 +33,32 @@
 #define fh_to_ctx(__fh) container_of(__fh, struct bdisp_ctx, fh)
 
 enum bdisp_dev_flags {
-	ST_M2M_OPEN,            /* Driver opened */
-	ST_M2M_RUNNING,         /* HW device running */
-	ST_M2M_SUSPENDED,       /* Driver suspended */
-	ST_M2M_SUSPENDING,      /* Driver being suspended */
+	ST_M2M_OPEN,             
+	ST_M2M_RUNNING,          
+	ST_M2M_SUSPENDED,        
+	ST_M2M_SUSPENDING,       
 };
 
 static const struct bdisp_fmt bdisp_formats[] = {
-	/* ARGB888. [31:0] A:R:G:B 8:8:8:8 little endian */
+	 
 	{
-		.pixelformat    = V4L2_PIX_FMT_ABGR32, /* is actually ARGB */
+		.pixelformat    = V4L2_PIX_FMT_ABGR32,  
 		.nb_planes      = 1,
 		.bpp            = 32,
 		.bpp_plane0     = 32,
 		.w_align        = 1,
 		.h_align        = 1
 	},
-	/* XRGB888. [31:0] x:R:G:B 8:8:8:8 little endian */
+	 
 	{
-		.pixelformat    = V4L2_PIX_FMT_XBGR32, /* is actually xRGB */
+		.pixelformat    = V4L2_PIX_FMT_XBGR32,  
 		.nb_planes      = 1,
 		.bpp            = 32,
 		.bpp_plane0     = 32,
 		.w_align        = 1,
 		.h_align        = 1
 	},
-	/* RGB565. [15:0] R:G:B 5:6:5 little endian */
+	 
 	{
 		.pixelformat    = V4L2_PIX_FMT_RGB565,
 		.nb_planes      = 1,
@@ -70,7 +67,7 @@ static const struct bdisp_fmt bdisp_formats[] = {
 		.w_align        = 1,
 		.h_align        = 1
 	},
-	/* NV12. YUV420SP - 1 plane for Y + 1 plane for (CbCr) */
+	 
 	{
 		.pixelformat    = V4L2_PIX_FMT_NV12,
 		.nb_planes      = 2,
@@ -79,7 +76,7 @@ static const struct bdisp_fmt bdisp_formats[] = {
 		.w_align        = 2,
 		.h_align        = 2
 	},
-	/* RGB888. [23:0] B:G:R 8:8:8 little endian */
+	 
 	{
 		.pixelformat    = V4L2_PIX_FMT_RGB24,
 		.nb_planes      = 1,
@@ -88,9 +85,7 @@ static const struct bdisp_fmt bdisp_formats[] = {
 		.w_align        = 1,
 		.h_align        = 1
 	},
-	/* YU12. YUV420P - 1 plane for Y + 1 plane for Cb + 1 plane for Cr
-	 * To keep as the LAST element of this table (no support on capture)
-	 */
+	 
 	{
 		.pixelformat    = V4L2_PIX_FMT_YUV420,
 		.nb_planes      = 3,
@@ -101,7 +96,7 @@ static const struct bdisp_fmt bdisp_formats[] = {
 	}
 };
 
-/* Default format : HD ARGB32*/
+ 
 #define BDISP_DEF_WIDTH         1920
 #define BDISP_DEF_HEIGHT        1080
 
@@ -259,12 +254,12 @@ static int bdisp_get_addr(struct bdisp_ctx *ctx, struct vb2_buffer *vb,
 	paddr[0] = vb2_dma_contig_plane_dma_addr(vb, 0);
 
 	if (frame->fmt->nb_planes > 1)
-		/* UV (NV12) or U (420P) */
+		 
 		paddr[1] = (dma_addr_t)(paddr[0] +
 				frame->bytesperline * frame->height);
 
 	if (frame->fmt->nb_planes > 2)
-		/* V (420P) */
+		 
 		paddr[2] = (dma_addr_t)(paddr[1] +
 				(frame->bytesperline * frame->height) / 4);
 
@@ -484,7 +479,7 @@ static void bdisp_buf_queue(struct vb2_buffer *vb)
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
 	struct bdisp_ctx *ctx = vb2_get_drv_priv(vb->vb2_queue);
 
-	/* return to V4L2 any 0-size buffer so it can be dequeued by user */
+	 
 	if (!vb2_get_plane_payload(vb, 0)) {
 		dev_dbg(ctx->bdisp_dev->dev, "0 data buffer, skip it\n");
 		vb2_buffer_done(vb, VB2_BUF_STATE_DONE);
@@ -581,7 +576,7 @@ static int bdisp_open(struct file *file)
 	if (mutex_lock_interruptible(&bdisp->lock))
 		return -ERESTARTSYS;
 
-	/* Allocate memory for both context and node */
+	 
 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
 	if (!ctx) {
 		ret = -ENOMEM;
@@ -603,16 +598,16 @@ static int bdisp_open(struct file *file)
 		goto error_fh;
 	}
 
-	/* Use separate control handler per file handle */
+	 
 	ctx->fh.ctrl_handler = &ctx->ctrl_handler;
 	file->private_data = &ctx->fh;
 	v4l2_fh_add(&ctx->fh);
 
-	/* Default format */
+	 
 	ctx->src = bdisp_dflt_fmt;
 	ctx->dst = bdisp_dflt_fmt;
 
-	/* Setup the device context for mem2mem mode. */
+	 
 	ctx->fh.m2m_ctx = v4l2_m2m_ctx_init(bdisp->m2m.m2m_dev, ctx,
 					    queue_init);
 	if (IS_ERR(ctx->fh.m2m_ctx)) {
@@ -752,19 +747,19 @@ static int bdisp_try_fmt(struct file *file, void *fh, struct v4l2_format *f)
 		return -EINVAL;
 	}
 
-	/* YUV420P only supported for VIDEO_OUTPUT */
+	 
 	if ((format->pixelformat == V4L2_PIX_FMT_YUV420) &&
 	    (f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE)) {
 		dev_dbg(ctx->bdisp_dev->dev, "No YU12 on capture\n");
 		return -EINVAL;
 	}
 
-	/* Field (interlaced only supported on OUTPUT) */
+	 
 	if ((f->type == V4L2_BUF_TYPE_VIDEO_CAPTURE) ||
 	    (pix->field != V4L2_FIELD_INTERLACED))
 		pix->field = V4L2_FIELD_NONE;
 
-	/* Adjust width & height */
+	 
 	in_w = pix->width;
 	in_h = pix->height;
 	v4l_bound_align_image(&pix->width,
@@ -856,12 +851,12 @@ static int bdisp_g_selection(struct file *file, void *fh,
 	case V4L2_BUF_TYPE_VIDEO_OUTPUT:
 		switch (s->target) {
 		case V4L2_SEL_TGT_CROP:
-			/* cropped frame */
+			 
 			s->r = frame->crop;
 			break;
 		case V4L2_SEL_TGT_CROP_DEFAULT:
 		case V4L2_SEL_TGT_CROP_BOUNDS:
-			/* complete frame */
+			 
 			s->r.left = 0;
 			s->r.top = 0;
 			s->r.width = frame->width;
@@ -877,12 +872,12 @@ static int bdisp_g_selection(struct file *file, void *fh,
 		switch (s->target) {
 		case V4L2_SEL_TGT_COMPOSE:
 		case V4L2_SEL_TGT_COMPOSE_PADDED:
-			/* composed (cropped) frame */
+			 
 			s->r = frame->crop;
 			break;
 		case V4L2_SEL_TGT_COMPOSE_DEFAULT:
 		case V4L2_SEL_TGT_COMPOSE_BOUNDS:
-			/* complete frame */
+			 
 			s->r.left = 0;
 			s->r.top = 0;
 			s->r.width = frame->width;
@@ -904,7 +899,7 @@ static int bdisp_g_selection(struct file *file, void *fh,
 
 static int is_rect_enclosed(struct v4l2_rect *a, struct v4l2_rect *b)
 {
-	/* Return 1 if a is enclosed in b, or 0 otherwise. */
+	 
 
 	if (a->left < b->left || a->top < b->top)
 		return 0;
@@ -948,7 +943,7 @@ static int bdisp_s_selection(struct file *file, void *fh,
 	in = &s->r;
 	out = *in;
 
-	/* Align and check origin */
+	 
 	out.left = ALIGN(in->left, frame->fmt->w_align);
 	out.top = ALIGN(in->top, frame->fmt->h_align);
 
@@ -961,7 +956,7 @@ static int bdisp_s_selection(struct file *file, void *fh,
 		return -EINVAL;
 	}
 
-	/* Align and check size */
+	 
 	out.width = ALIGN(in->width, frame->fmt->w_align);
 	out.height = ALIGN(in->height, frame->fmt->w_align);
 
@@ -974,7 +969,7 @@ static int bdisp_s_selection(struct file *file, void *fh,
 		return -EINVAL;
 	}
 
-	/* Checks adjust constraints flags */
+	 
 	if (s->flags & V4L2_SEL_FLAG_LE && !is_rect_enclosed(&out, in))
 		return -ERANGE;
 
@@ -1313,7 +1308,7 @@ static int bdisp_probe(struct platform_device *pdev)
 	spin_lock_init(&bdisp->slock);
 	mutex_init(&bdisp->lock);
 
-	/* get resources */
+	 
 	bdisp->regs = devm_platform_ioremap_resource(pdev, 0);
 	if (IS_ERR(bdisp->regs)) {
 		ret = PTR_ERR(bdisp->regs);
@@ -1346,17 +1341,17 @@ static int bdisp_probe(struct platform_device *pdev)
 		goto err_clk;
 	}
 
-	/* v4l2 register */
+	 
 	ret = v4l2_device_register(dev, &bdisp->v4l2_dev);
 	if (ret) {
 		dev_err(dev, "failed to register\n");
 		goto err_clk;
 	}
 
-	/* Debug */
+	 
 	bdisp_debugfs_create(bdisp);
 
-	/* Power management */
+	 
 	pm_runtime_enable(dev);
 	ret = pm_runtime_resume_and_get(dev);
 	if (ret < 0) {
@@ -1364,14 +1359,14 @@ static int bdisp_probe(struct platform_device *pdev)
 		goto err_remove;
 	}
 
-	/* Filters */
+	 
 	if (bdisp_hw_alloc_filters(bdisp->dev)) {
 		dev_err(bdisp->dev, "no memory for filters\n");
 		ret = -ENOMEM;
 		goto err_pm;
 	}
 
-	/* Register */
+	 
 	ret = bdisp_register_device(bdisp);
 	if (ret) {
 		dev_err(dev, "failed to register\n");
@@ -1404,7 +1399,7 @@ static const struct of_device_id bdisp_match_types[] = {
 	{
 		.compatible = "st,stih407-bdisp",
 	},
-	{ /* end node */ }
+	{   }
 };
 
 MODULE_DEVICE_TABLE(of, bdisp_match_types);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * rt1305.c  --  RT1305 ALSA SoC amplifier component driver
- *
- * Copyright 2018 Realtek Semiconductor Corp.
- * Author: Shuming Fan <shumingf@realtek.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/moduleparam.h>
@@ -60,9 +55,9 @@ static const struct reg_sequence init_list[] = {
 	{ RT1305_SPK_TEMP_PROTECTION_2, 0x0707 },
 	{ RT1305_SPK_TEMP_PROTECTION_3, 0x4090 },
 
-	{ RT1305_DAC_SET_1, 0xdfdf },	/* 4 ohm 2W  */
+	{ RT1305_DAC_SET_1, 0xdfdf },	 
 	{ RT1305_ADC_SET_3, 0x0219 },
-	{ RT1305_ADC_SET_1, 0x170f },	/* 0.2 ohm RSense*/
+	{ RT1305_ADC_SET_1, 0x170f },	 
 
 };
 #define RT1305_INIT_REG_LEN ARRAY_SIZE(init_list)
@@ -397,7 +392,7 @@ static const struct snd_kcontrol_new rt1305_snd_controls[] = {
 	SOC_DOUBLE_TLV("DAC Playback Volume", RT1305_DAC_SET_1,
 			8, 0, 0xff, 0, dac_vol_tlv),
 
-	/* I2S Data Channel Selection */
+	 
 	SOC_ENUM("RX Channel Select", rt1305_rx_data_ch_enum),
 };
 
@@ -532,10 +527,10 @@ static const struct snd_soc_dapm_widget rt1305_dapm_widgets[] = {
 		RT1305_EN_VCM_6172_BIT, 0, NULL, 0),
 
 
-	/* Audio Interface */
+	 
 	SND_SOC_DAPM_AIF_IN("AIF1RX", "AIF1 Playback", 0, SND_SOC_NOPM, 0, 0),
 
-	/* Digital Interface */
+	 
 	SND_SOC_DAPM_SUPPLY("DAC L Power", RT1305_POWER_CTRL_2,
 		RT1305_POW_DAC1_L_BIT, 0, NULL, 0),
 	SND_SOC_DAPM_SUPPLY("DAC R Power", RT1305_POWER_CTRL_2,
@@ -544,7 +539,7 @@ static const struct snd_soc_dapm_widget rt1305_dapm_widgets[] = {
 	SND_SOC_DAPM_SWITCH("DAC L", SND_SOC_NOPM, 0, 0, &rt1305_sto_dac_l),
 	SND_SOC_DAPM_SWITCH("DAC R", SND_SOC_NOPM, 0, 0, &rt1305_sto_dac_r),
 
-	/* Output Lines */
+	 
 	SND_SOC_DAPM_PGA_E("CLASS D", SND_SOC_NOPM, 0, 0, NULL, 0,
 		rt1305_classd_event,
 		SND_SOC_DAPM_PRE_PMD | SND_SOC_DAPM_POST_PMU),
@@ -867,7 +862,7 @@ static int rt1305_probe(struct snd_soc_component *component)
 
 	rt1305->component = component;
 
-	/* initial settings */
+	 
 	rt1305_reg_init(component);
 
 	return 0;
@@ -1006,7 +1001,7 @@ static void rt1305_calibrate(struct rt1305_priv *rt1305)
 	regmap_write(rt1305->regmap, RT1305_EFUSE_1, 0x0880);
 	regmap_write(rt1305->regmap, RT1305_POWER_CTRL_1, 0x0dfe);
 
-	/* Sin Gen */
+	 
 	regmap_write(rt1305->regmap, RT1305_PR_BASE + 0x5d, 0x0442);
 
 	regmap_write(rt1305->regmap, RT1305_CAL_EFUSE_CLOCK, 0xb000);
@@ -1021,7 +1016,7 @@ static void rt1305_calibrate(struct rt1305_priv *rt1305)
 	regmap_write(rt1305->regmap, RT1305_POWER_CTRL_3, 0xfce0);
 	regmap_write(rt1305->regmap, RT1305_POWER_CTRL_3, 0xfcf0);
 
-	/* EFUSE read */
+	 
 	regmap_write(rt1305->regmap, RT1305_EFUSE_1, 0x0080);
 	regmap_write(rt1305->regmap, RT1305_EFUSE_1, 0x0880);
 	regmap_write(rt1305->regmap, RT1305_EFUSE_1, 0x0880);
@@ -1039,7 +1034,7 @@ static void rt1305_calibrate(struct rt1305_priv *rt1305)
 	offsetr = valmsb << 16 | vallsb;
 	pr_info("DC offsetl=0x%x, offsetr=0x%x\n", offsetl, offsetr);
 
-	/* R0 calibration */
+	 
 	regmap_write(rt1305->regmap, RT1305_PR_BASE + 0x5d, 0x9542);
 	regmap_write(rt1305->regmap, RT1305_POWER_CTRL_3, 0xfcf0);
 	regmap_write(rt1305->regmap, RT1305_POWER_CTRL_2, 0xffff);
@@ -1100,7 +1095,7 @@ static void rt1305_calibrate(struct rt1305_priv *rt1305)
 		pr_err("R0 calibration failed\n");
 	}
 
-	/* restore some registers */
+	 
 	regmap_write(rt1305->regmap, RT1305_POWER_CTRL_1, 0x0dfe);
 	usleep_range(200000, 400000);
 	regmap_write(rt1305->regmap, RT1305_PR_BASE + 0x5d, 0x0442);

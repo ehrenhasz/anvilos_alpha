@@ -1,17 +1,4 @@
-/*
- * axp20x power button driver.
- *
- * Copyright (C) 2013 Carlo Caione <carlo@caione.org>
- *
- * This file is subject to the terms and conditions of the GNU General
- * Public License. See the file "COPYING" in the main directory of this
- * archive for more details.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- */
+ 
 
 #include <linux/acpi.h>
 #include <linux/errno.h>
@@ -209,10 +196,7 @@ static irqreturn_t axp20x_pek_irq(int irq, void *pwr)
 	struct input_dev *idev = pwr;
 	struct axp20x_pek *axp20x_pek = input_get_drvdata(idev);
 
-	/*
-	 * The power-button is connected to ground so a falling edge (dbf)
-	 * means it is pressed.
-	 */
+	 
 	if (irq == axp20x_pek->irq_dbf)
 		input_report_key(idev, KEY_POWER, true);
 	else if (irq == axp20x_pek->irq_dbr)
@@ -290,12 +274,7 @@ static bool axp20x_pek_should_register_input(struct axp20x_pek *axp20x_pek)
 {
 	if (IS_ENABLED(CONFIG_INPUT_SOC_BUTTON_ARRAY) &&
 	    axp20x_pek->axp20x->variant == AXP288_ID) {
-		/*
-		 * On Cherry Trail platforms (hrv == 3), do not register the
-		 * input device if there is an "INTCFD9" or "ACPI0011" gpio
-		 * button ACPI device, as that handles the power button too,
-		 * and otherwise we end up reporting all presses twice.
-		 */
+		 
 		if (soc_intel_is_cht() &&
 				(acpi_dev_present("INTCFD9", NULL, -1) ||
 				 acpi_dev_present("ACPI0011", NULL, -1)))
@@ -340,10 +319,7 @@ static int axp20x_pek_suspend(struct device *dev)
 {
 	struct axp20x_pek *axp20x_pek = dev_get_drvdata(dev);
 
-	/*
-	 * As nested threaded IRQs are not automatically disabled during
-	 * suspend, we must explicitly disable non-wakeup IRQs.
-	 */
+	 
 	if (device_may_wakeup(dev)) {
 		enable_irq_wake(axp20x_pek->irq_dbf);
 		enable_irq_wake(axp20x_pek->irq_dbr);
@@ -377,10 +353,7 @@ static int __maybe_unused axp20x_pek_resume_noirq(struct device *dev)
 	if (axp20x_pek->axp20x->variant != AXP288_ID)
 		return 0;
 
-	/*
-	 * Clear interrupts from button presses during suspend, to avoid
-	 * a wakeup power-button press getting reported to userspace.
-	 */
+	 
 	regmap_write(axp20x_pek->axp20x->regmap,
 		     AXP20X_IRQ1_STATE + AXP288_IRQ_POKN / 8,
 		     BIT(AXP288_IRQ_POKN % 8));
@@ -402,7 +375,7 @@ static const struct platform_device_id axp_pek_id_match[] = {
 		.name = "axp221-pek",
 		.driver_data = (kernel_ulong_t)&axp221_info,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, axp_pek_id_match);
 

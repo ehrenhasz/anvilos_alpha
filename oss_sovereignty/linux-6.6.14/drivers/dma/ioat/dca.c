@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel I/OAT DMA Linux driver
- * Copyright(c) 2007 - 2009 Intel Corporation.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -10,7 +7,7 @@
 #include <linux/interrupt.h>
 #include <linux/dca.h>
 
-/* either a kernel change is needed, or we need something like this in kernel */
+ 
 #ifndef CONFIG_SMP
 #include <asm/smp.h>
 #undef cpu_physical_id
@@ -20,11 +17,7 @@
 #include "dma.h"
 #include "registers.h"
 
-/*
- * Bit 7 of a tag map entry is the "valid" bit, if it is set then bits 0:6
- * contain the bit number of the APIC ID to map into the DCA tag.  If the valid
- * bit is not set, then the value must be 0 or 1 and defines the bit in the tag.
- */
+ 
 #define DCA_TAG_MAP_VALID 0x80
 
 #define DCA3_TAG_MAP_BIT_TO_INV 0x80
@@ -33,22 +26,19 @@
 
 #define DCA_TAG_MAP_MASK 0xDF
 
-/* expected tag map bytes for I/OAT ver.2 */
+ 
 #define DCA2_TAG_MAP_BYTE0 0x80
 #define DCA2_TAG_MAP_BYTE1 0x0
 #define DCA2_TAG_MAP_BYTE2 0x81
 #define DCA2_TAG_MAP_BYTE3 0x82
 #define DCA2_TAG_MAP_BYTE4 0x82
 
-/*
- * "Legacy" DCA systems do not implement the DCA register set in the
- * I/OAT device.  Software needs direct support for their tag mappings.
- */
+ 
 
 #define APICID_BIT(x)		(DCA_TAG_MAP_VALID | (x))
 #define IOAT_TAG_MAP_LEN	8
 
-/* pack PCI B/D/F into a u16 */
+ 
 static inline u16 dcaid_from_pcidev(struct pci_dev *pci)
 {
 	return pci_dev_id(pci);
@@ -56,8 +46,8 @@ static inline u16 dcaid_from_pcidev(struct pci_dev *pci)
 
 static int dca_enabled_in_bios(struct pci_dev *pdev)
 {
-	/* CPUID level 9 returns DCA configuration */
-	/* Bit 0 indicates DCA enabled by the BIOS */
+	 
+	 
 	unsigned long cpuid_level_9;
 	int res;
 
@@ -79,8 +69,8 @@ int system_has_dca_enabled(struct pci_dev *pdev)
 }
 
 struct ioat_dca_slot {
-	struct pci_dev *pdev;	/* requester device */
-	u16 rid;		/* requester id, as used by IOAT */
+	struct pci_dev *pdev;	 
+	u16 rid;		 
 };
 
 #define IOAT_DCA_MAX_REQ 6
@@ -118,7 +108,7 @@ static int ioat_dca_add_requester(struct dca_provider *dca, struct device *dev)
 	u16 id;
 	u16 global_req_table;
 
-	/* This implementation only supports PCI-Express */
+	 
 	if (!dev_is_pci(dev))
 		return -ENODEV;
 	pdev = to_pci_dev(dev);
@@ -129,7 +119,7 @@ static int ioat_dca_add_requester(struct dca_provider *dca, struct device *dev)
 
 	for (i = 0; i < ioatdca->max_requesters; i++) {
 		if (ioatdca->req_slots[i].pdev == NULL) {
-			/* found an empty slot */
+			 
 			ioatdca->requester_count++;
 			ioatdca->req_slots[i].pdev = pdev;
 			ioatdca->req_slots[i].rid = id;
@@ -140,7 +130,7 @@ static int ioat_dca_add_requester(struct dca_provider *dca, struct device *dev)
 			return i;
 		}
 	}
-	/* Error, ioatdma->requester_count is out of whack */
+	 
 	return -EFAULT;
 }
 
@@ -152,7 +142,7 @@ static int ioat_dca_remove_requester(struct dca_provider *dca,
 	int i;
 	u16 global_req_table;
 
-	/* This implementation only supports PCI-Express */
+	 
 	if (!dev_is_pci(dev))
 		return -ENODEV;
 	pdev = to_pci_dev(dev);
@@ -229,14 +219,7 @@ static int ioat_dca_count_dca_slots(void *iobase, u16 dca_offset)
 
 static inline int dca3_tag_map_invalid(u8 *tag_map)
 {
-	/*
-	 * If the tag map is not programmed by the BIOS the default is:
-	 * 0x80 0x80 0x80 0x80 0x80 0x00 0x00 0x00
-	 *
-	 * This an invalid map and will result in only 2 possible tags
-	 * 0x1F and 0x00.  0x00 is an invalid DCA tag so we know that
-	 * this entire definition is invalid.
-	 */
+	 
 	return ((tag_map[0] == DCA_TAG_MAP_VALID) &&
 		(tag_map[1] == DCA_TAG_MAP_VALID) &&
 		(tag_map[2] == DCA_TAG_MAP_VALID) &&
@@ -285,7 +268,7 @@ struct dca_provider *ioat_dca_init(struct pci_dev *pdev, void __iomem *iobase)
 	ioatdca->dca_base = iobase + dca_offset;
 	ioatdca->max_requesters = slots;
 
-	/* some bios might not know to turn these on */
+	 
 	csi_fsb_control = readw(ioatdca->dca_base + IOAT3_CSI_CONTROL_OFFSET);
 	if ((csi_fsb_control & IOAT3_CSI_CONTROL_PREFETCH) == 0) {
 		csi_fsb_control |= IOAT3_CSI_CONTROL_PREFETCH;
@@ -300,9 +283,9 @@ struct dca_provider *ioat_dca_init(struct pci_dev *pdev, void __iomem *iobase)
 	}
 
 
-	/* TODO version, compatibility and configuration checks */
+	 
 
-	/* copy out the APIC to DCA tag map */
+	 
 	tag_map.low =
 		readl(ioatdca->dca_base + IOAT3_APICID_TAG_MAP_OFFSET_LOW);
 	tag_map.high =

@@ -1,21 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Xilinx Video IP Core
- *
- * Copyright (C) 2013-2015 Ideas on Board
- * Copyright (C) 2013-2015 Xilinx, Inc.
- *
- * Contacts: Hyun Kwon <hyun.kwon@xilinx.com>
- *           Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #ifndef __DT_BINDINGS_MEDIA_XILINX_VIP_H__
 #define __DT_BINDINGS_MEDIA_XILINX_VIP_H__
 
-/*
- * Video format codes as defined in "AXI4-Stream Video IP and System Design
- * Guide".
- */
+ 
 #define XVIP_VF_YUV_422			0
 #define XVIP_VF_YUV_444			1
 #define XVIP_VF_RBG			2
@@ -33,4 +22,4 @@
 #define XVIP_VF_CUSTOM3			14
 #define XVIP_VF_CUSTOM4			15
 
-#endif /* __DT_BINDINGS_MEDIA_XILINX_VIP_H__ */
+#endif  

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2021 Google LLC.
- *
- * Driver for Semtech's SX9324 capacitive proximity/button solution.
- * Based on SX9324 driver and copy of datasheet at:
- * https://edit.wpgdadawant.com/uploads/news_file/program/2019/30184/tech_files/program_30184_suggest_other_file.pdf
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bits.h>
@@ -25,7 +19,7 @@
 
 #include "sx_common.h"
 
-/* Register definitions. */
+ 
 #define SX9324_REG_IRQ_SRC		SX_COMMON_REG_IRQ_SRC
 #define SX9324_REG_STAT0		0x01
 #define SX9324_REG_STAT1		0x02
@@ -158,7 +152,7 @@
 #define SX9324_REG_SAR_LSB		0x6a
 
 #define SX9324_REG_RESET		0x9f
-/* Write this to REG_RESET to do a soft reset. */
+ 
 #define SX9324_SOFT_RESET		0xde
 
 #define SX9324_REG_WHOAMI		0xfa
@@ -166,9 +160,9 @@
 
 #define SX9324_REG_REVISION		0xfe
 
-/* 4 channels, as defined in STAT0: PH0, PH1, PH2 and PH3. */
+ 
 #define SX9324_NUM_CHANNELS		4
-/* 3 CS pins: CS0, CS1, CS2. */
+ 
 #define SX9324_NUM_PINS			3
 
 static const char * const sx9324_cs_pin_usage[] = { "HZ", "MI", "DS", "GD" };
@@ -231,53 +225,50 @@ static const struct iio_chan_spec_ext_info sx9324_channel_ext_info[] = {
 }
 
 static const struct iio_chan_spec sx9324_channels[] = {
-	SX9324_CHANNEL(0),			/* Phase 0 */
-	SX9324_CHANNEL(1),			/* Phase 1 */
-	SX9324_CHANNEL(2),			/* Phase 2 */
-	SX9324_CHANNEL(3),			/* Phase 3 */
+	SX9324_CHANNEL(0),			 
+	SX9324_CHANNEL(1),			 
+	SX9324_CHANNEL(2),			 
+	SX9324_CHANNEL(3),			 
 	IIO_CHAN_SOFT_TIMESTAMP(4),
 };
 
-/*
- * Each entry contains the integer part (val) and the fractional part, in micro
- * seconds. It conforms to the IIO output IIO_VAL_INT_PLUS_MICRO.
- */
+ 
 static const struct {
 	int val;
 	int val2;
 } sx9324_samp_freq_table[] = {
-	{ 1000, 0 },  /* 00000: Min (no idle time) */
-	{ 500, 0 },  /* 00001: 2 ms */
-	{ 250, 0 },  /* 00010: 4 ms */
-	{ 166, 666666 },  /* 00011: 6 ms */
-	{ 125, 0 },  /* 00100: 8 ms */
-	{ 100, 0 },  /* 00101: 10 ms */
-	{ 71, 428571 },  /* 00110: 14 ms */
-	{ 55, 555556 },  /* 00111: 18 ms */
-	{ 45, 454545 },  /* 01000: 22 ms */
-	{ 38, 461538 },  /* 01001: 26 ms */
-	{ 33, 333333 },  /* 01010: 30 ms */
-	{ 29, 411765 },  /* 01011: 34 ms */
-	{ 26, 315789 },  /* 01100: 38 ms */
-	{ 23, 809524 },  /* 01101: 42 ms */
-	{ 21, 739130 },  /* 01110: 46 ms */
-	{ 20, 0 },  /* 01111: 50 ms */
-	{ 17, 857143 },  /* 10000: 56 ms */
-	{ 16, 129032 },  /* 10001: 62 ms */
-	{ 14, 705882 },  /* 10010: 68 ms */
-	{ 13, 513514 },  /* 10011: 74 ms */
-	{ 12, 500000 },  /* 10100: 80 ms */
-	{ 11, 111111 },  /* 10101: 90 ms */
-	{ 10, 0 },  /* 10110: 100 ms (Typ.) */
-	{ 5, 0 },  /* 10111: 200 ms */
-	{ 3, 333333 },  /* 11000: 300 ms */
-	{ 2, 500000 },  /* 11001: 400 ms */
-	{ 1, 666667 },  /* 11010: 600 ms */
-	{ 1, 250000 },  /* 11011: 800 ms */
-	{ 1, 0 },  /* 11100: 1 s */
-	{ 0, 500000 },  /* 11101: 2 s */
-	{ 0, 333333 },  /* 11110: 3 s */
-	{ 0, 250000 },  /* 11111: 4 s */
+	{ 1000, 0 },   
+	{ 500, 0 },   
+	{ 250, 0 },   
+	{ 166, 666666 },   
+	{ 125, 0 },   
+	{ 100, 0 },   
+	{ 71, 428571 },   
+	{ 55, 555556 },   
+	{ 45, 454545 },   
+	{ 38, 461538 },   
+	{ 33, 333333 },   
+	{ 29, 411765 },   
+	{ 26, 315789 },   
+	{ 23, 809524 },   
+	{ 21, 739130 },   
+	{ 20, 0 },   
+	{ 17, 857143 },   
+	{ 16, 129032 },   
+	{ 14, 705882 },   
+	{ 13, 513514 },   
+	{ 12, 500000 },   
+	{ 11, 111111 },   
+	{ 10, 0 },   
+	{ 5, 0 },   
+	{ 3, 333333 },   
+	{ 2, 500000 },   
+	{ 1, 666667 },   
+	{ 1, 250000 },   
+	{ 1, 0 },   
+	{ 0, 500000 },   
+	{ 0, 333333 },   
+	{ 0, 250000 },   
 };
 
 static const unsigned int sx9324_scan_period_table[] = {
@@ -286,14 +277,11 @@ static const unsigned int sx9324_scan_period_table[] = {
 };
 
 static const struct regmap_range sx9324_writable_reg_ranges[] = {
-	/*
-	 * To set COMPSTAT for compensation, even if datasheet says register is
-	 * RO.
-	 */
+	 
 	regmap_reg_range(SX9324_REG_STAT2, SX9324_REG_STAT2),
 	regmap_reg_range(SX9324_REG_IRQ_MSK, SX9324_REG_IRQ_CFG2),
 	regmap_reg_range(SX9324_REG_GNRL_CTRL0, SX9324_REG_GNRL_CTRL1),
-	/* Leave i2c and clock spreading as unavailable */
+	 
 	regmap_reg_range(SX9324_REG_AFE_CTRL0, SX9324_REG_AFE_CTRL9),
 	regmap_reg_range(SX9324_REG_PROX_CTRL0, SX9324_REG_PROX_CTRL7),
 	regmap_reg_range(SX9324_REG_ADV_CTRL0, SX9324_REG_ADV_CTRL20),
@@ -307,10 +295,7 @@ static const struct regmap_access_table sx9324_writeable_regs = {
 	.n_yes_ranges = ARRAY_SIZE(sx9324_writable_reg_ranges),
 };
 
-/*
- * All allocated registers are readable, so we just list unallocated
- * ones.
- */
+ 
 static const struct regmap_range sx9324_non_readable_reg_ranges[] = {
 	regmap_reg_range(SX9324_REG_IRQ_CFG2 + 1, SX9324_REG_GNRL_CTRL0 - 1),
 	regmap_reg_range(SX9324_REG_GNRL_CTRL1 + 1, SX9324_REG_AFE_CTRL0 - 1),
@@ -365,10 +350,7 @@ static int sx9324_read_prox_data(struct sx_common_data *data,
 	return regmap_bulk_read(data->regmap, chan->address, val, sizeof(*val));
 }
 
-/*
- * If we have no interrupt support, we have to wait for a scan period
- * after enabling a channel to get a result.
- */
+ 
 static int sx9324_wait_for_sample(struct sx_common_data *data)
 {
 	int ret;
@@ -512,11 +494,7 @@ static int sx9324_read_thresh(struct sx_common_data *data,
 	unsigned int reg;
 	int ret;
 
-	/*
-	 * TODO(gwendal): Depending on the phase function
-	 * (proximity/table/body), retrieve the right threshold.
-	 * For now, return the proximity threshold.
-	 */
+	 
 	reg = SX9324_REG_PROX_CTRL6 + chan->channel / 2;
 	ret = regmap_read(data->regmap, reg, &regval);
 	if (ret)
@@ -787,11 +765,7 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
 	{ SX9324_REG_IRQ_CFG1, SX9324_REG_IRQ_CFG1_FAILCOND, "irq_cfg1" },
 	{ SX9324_REG_IRQ_CFG2, 0x00, "irq_cfg2" },
 	{ SX9324_REG_GNRL_CTRL0, SX9324_REG_GNRL_CTRL0_SCANPERIOD_100MS, "gnrl_ctrl0" },
-	/*
-	 * The lower 4 bits should not be set as it enable sensors measurements.
-	 * Turning the detection on before the configuration values are set to
-	 * good values can cause the device to return erroneous readings.
-	 */
+	 
 	{ SX9324_REG_GNRL_CTRL1, SX9324_REG_GNRL_CTRL1_PAUSECTRL, "gnrl_ctrl1" },
 
 	{ SX9324_REG_AFE_CTRL0, SX9324_REG_AFE_CTRL0_RINT_LOWEST, "afe_ctrl0" },
@@ -802,7 +776,7 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
 	{ SX9324_REG_AFE_CTRL7, SX9324_REG_AFE_CTRL4_FREQ_83_33HZ |
 		SX9324_REG_AFE_CTRL4_RES_100, "afe_ctrl7" },
 
-	/* TODO(gwendal): PHx use chip default or all grounded? */
+	 
 	{ SX9324_REG_AFE_PH0, 0x29, "afe_ph0" },
 	{ SX9324_REG_AFE_PH1, 0x26, "afe_ph1" },
 	{ SX9324_REG_AFE_PH2, 0x1a, "afe_ph2" },
@@ -837,11 +811,11 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
 	{ SX9324_REG_ADV_CTRL7, 0x00, "adv_ctrl7" },
 	{ SX9324_REG_ADV_CTRL8, 0x00, "adv_ctrl8" },
 	{ SX9324_REG_ADV_CTRL9, 0x00, "adv_ctrl9" },
-	/* Body/Table threshold */
+	 
 	{ SX9324_REG_ADV_CTRL10, 0x00, "adv_ctrl10" },
 	{ SX9324_REG_ADV_CTRL11, 0x00, "adv_ctrl11" },
 	{ SX9324_REG_ADV_CTRL12, 0x00, "adv_ctrl12" },
-	/* TODO(gwendal): SAR currenly disabled */
+	 
 	{ SX9324_REG_ADV_CTRL13, 0x00, "adv_ctrl13" },
 	{ SX9324_REG_ADV_CTRL14, 0x00, "adv_ctrl14" },
 	{ SX9324_REG_ADV_CTRL15, 0x00, "adv_ctrl15" },
@@ -854,14 +828,14 @@ static const struct sx_common_reg_default sx9324_default_regs[] = {
 		SX9324_REG_ADV_CTRL19_HIGHT_FAILURE_THRESH_SATURATION, "adv_ctrl20" },
 };
 
-/* Activate all channels and perform an initial compensation. */
+ 
 static int sx9324_init_compensation(struct iio_dev *indio_dev)
 {
 	struct sx_common_data *data = iio_priv(indio_dev);
 	unsigned int val;
 	int ret;
 
-	/* run the compensation phase on all channels */
+	 
 	ret = regmap_update_bits(data->regmap, SX9324_REG_STAT2,
 				 SX9324_REG_STAT2_COMPSTAT_MASK,
 				 SX9324_REG_STAT2_COMPSTAT_MASK);
@@ -970,17 +944,7 @@ sx9324_get_default_reg(struct device *dev, int idx,
 				"semtech,input-analog-gain", &raw);
 		if (ret)
 			break;
-		/*
-		 * The analog gain has the following setting:
-		 * +---------+----------------+----------------+
-		 * | dt(raw) | physical value | register value |
-		 * +---------+----------------+----------------+
-		 * |  0      |      x1.247    |      6         |
-		 * |  1      |      x1        |      8         |
-		 * |  2      |      x0.768    |     11         |
-		 * |  3      |      x0.552    |     15         |
-		 * +---------+----------------+----------------+
-		 */
+		 
 		reg_def->def &= ~SX9324_REG_AFE_CTRL9_AGAIN_MASK;
 		reg_def->def |= FIELD_PREP(SX9324_REG_AFE_CTRL9_AGAIN_MASK,
 					   6 + raw * (raw + 3) / 2);
@@ -1002,7 +966,7 @@ sx9324_get_default_reg(struct device *dev, int idx,
 		if (ret)
 			break;
 
-		/* Powers of 2, except for a gap between 16 and 64 */
+		 
 		raw = clamp(ilog2(pos), 3, 11) - (pos >= 32 ? 4 : 3);
 
 		reg_def->def &= ~SX9324_REG_PROX_CTRL4_AVGPOSFILT_MASK;
@@ -1032,10 +996,7 @@ sx9324_get_default_reg(struct device *dev, int idx,
 static int sx9324_check_whoami(struct device *dev,
 			       struct iio_dev *indio_dev)
 {
-	/*
-	 * Only one sensor for this driver. Assuming the device tree
-	 * is correct, just set the sensor name.
-	 */
+	 
 	indio_dev->name = "sx9324";
 	return 0;
 }
@@ -1094,7 +1055,7 @@ static int sx9324_suspend(struct device *dev)
 	if (ret < 0)
 		goto out;
 
-	/* Disable all phases, send the device to sleep. */
+	 
 	ret = regmap_write(data->regmap, SX9324_REG_GNRL_CTRL1, 0);
 
 out:
@@ -1145,11 +1106,7 @@ static struct i2c_driver sx9324_driver = {
 		.of_match_table = sx9324_of_match,
 		.pm = pm_sleep_ptr(&sx9324_pm_ops),
 
-		/*
-		 * Lots of i2c transfers in probe + over 200 ms waiting in
-		 * sx9324_init_compensation() mean a slow probe; prefer async
-		 * so we don't delay boot if we're builtin to the kernel.
-		 */
+		 
 		.probe_type = PROBE_PREFER_ASYNCHRONOUS,
 	},
 	.probe		= sx9324_probe,

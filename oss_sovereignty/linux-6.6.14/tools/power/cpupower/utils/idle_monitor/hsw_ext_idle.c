@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  (C) 2010,2011       Thomas Renninger <trenn@suse.de>, Novell Inc.
- *
- *  Based on SandyBridge monitor. Implements the new package C-states
- *  (PC8, PC9, PC10) coming with a specific Haswell (family 0x45) CPU.
- */
+
+ 
 
 #if defined(__i386__) || defined(__x86_64__)
 
@@ -56,7 +51,7 @@ static unsigned long long tsc_at_measure_start;
 static unsigned long long tsc_at_measure_end;
 static unsigned long long *previous_count[HSW_EXT_CSTATE_COUNT];
 static unsigned long long *current_count[HSW_EXT_CSTATE_COUNT];
-/* valid flag for all CPUs. If a MSR read failed it will be zero */
+ 
 static int *is_valid;
 
 static int hsw_ext_get_count(enum intel_hsw_ext_id id, unsigned long long *val,
@@ -152,7 +147,7 @@ static struct cpuidle_monitor *hsw_ext_register(void)
 		return NULL;
 
 	switch (cpupower_cpu_info.model) {
-	case 0x45: /* HSW */
+	case 0x45:  
 		break;
 	default:
 		return NULL;
@@ -188,7 +183,6 @@ struct cpuidle_monitor intel_hsw_ext_monitor = {
 	.do_register		= hsw_ext_register,
 	.unregister		= hsw_ext_unregister,
 	.flags.needs_root	= 1,
-	.overflow_s		= 922000000 /* 922337203 seconds TSC overflow
-					       at 20GHz */
+	.overflow_s		= 922000000  
 };
-#endif /* defined(__i386__) || defined(__x86_64__) */
+#endif  

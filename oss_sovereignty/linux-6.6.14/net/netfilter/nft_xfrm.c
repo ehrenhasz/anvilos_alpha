@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Generic part shared by ipv4 and ipv6 backends.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -92,9 +89,7 @@ static int nft_xfrm_get_init(const struct nft_ctx *ctx,
 					NULL, NFT_DATA_VALUE, len);
 }
 
-/* Return true if key asks for daddr/saddr and current
- * state does have a valid address (BEET, TUNNEL).
- */
+ 
 static bool xfrm_state_addr_ok(enum nft_xfrm_keys k, u8 family, u8 mode)
 {
 	switch (k) {

@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0)
-/*
- * Microchip coreQSPI QSPI controller driver
- *
- * Copyright (C) 2018-2022 Microchip Technology Inc. and its subsidiaries
- *
- * Author: Naga Sureshkumar Relli <nagasuresh.relli@microchip.com>
- *
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -21,9 +14,7 @@
 #include <linux/spi/spi.h>
 #include <linux/spi/spi-mem.h>
 
-/*
- * QSPI Control register mask defines
- */
+ 
 #define CONTROL_ENABLE		BIT(0)
 #define CONTROL_MASTER		BIT(1)
 #define CONTROL_XIP		BIT(2)
@@ -39,9 +30,7 @@
 #define CONTROL_CLKRATE_MASK	GENMASK(27, 24)
 #define CONTROL_CLKRATE_SHIFT	24
 
-/*
- * QSPI Frames register mask defines
- */
+ 
 #define FRAMES_TOTALBYTES_MASK	GENMASK(15, 0)
 #define FRAMES_CMDBYTES_MASK	GENMASK(24, 16)
 #define FRAMES_CMDBYTES_SHIFT	16
@@ -51,9 +40,7 @@
 #define FRAMES_FLAGBYTE		BIT(30)
 #define FRAMES_FLAGWORD		BIT(31)
 
-/*
- * QSPI Interrupt Enable register mask defines
- */
+ 
 #define IEN_TXDONE		BIT(0)
 #define IEN_RXDONE		BIT(1)
 #define IEN_RXAVAILABLE		BIT(2)
@@ -61,9 +48,7 @@
 #define IEN_RXFIFOEMPTY		BIT(4)
 #define IEN_TXFIFOFULL		BIT(5)
 
-/*
- * QSPI Status register mask defines
- */
+ 
 #define STATUS_TXDONE		BIT(0)
 #define STATUS_RXDONE		BIT(1)
 #define STATUS_RXAVAILABLE	BIT(2)
@@ -81,12 +66,10 @@
 #define MIN_DIVIDER		0
 #define MAX_DATA_CMD_LEN	256
 
-/* QSPI ready time out value */
+ 
 #define TIMEOUT_MS		500
 
-/*
- * QSPI Register offsets.
- */
+ 
 #define REG_CONTROL		(0x00)
 #define REG_FRAMES		(0x04)
 #define REG_IEN			(0x0c)
@@ -99,23 +82,12 @@
 #define REG_X4_TX_DATA		(0x4c)
 #define REG_FRAMESUP		(0x50)
 
-/**
- * struct mchp_coreqspi - Defines qspi driver instance
- * @regs:              Virtual address of the QSPI controller registers
- * @clk:               QSPI Operating clock
- * @data_completion:   completion structure
- * @op_lock:           lock access to the device
- * @txbuf:             TX buffer
- * @rxbuf:             RX buffer
- * @irq:               IRQ number
- * @tx_len:            Number of bytes left to transfer
- * @rx_len:            Number of bytes left to receive
- */
+ 
 struct mchp_coreqspi {
 	void __iomem *regs;
 	struct clk *clk;
 	struct completion data_completion;
-	struct mutex op_lock; /* lock access to the device */
+	struct mutex op_lock;  
 	u8 *txbuf;
 	u8 *rxbuf;
 	int irq;
@@ -127,17 +99,7 @@ static int mchp_coreqspi_set_mode(struct mchp_coreqspi *qspi, const struct spi_m
 {
 	u32 control = readl_relaxed(qspi->regs + REG_CONTROL);
 
-	/*
-	 * The operating mode can be configured based on the command that needs to be send.
-	 * bits[15:14]: Sets whether multiple bit SPI operates in normal, extended or full modes.
-	 *		00: Normal (single DQ0 TX and single DQ1 RX lines)
-	 *		01: Extended RO (command and address bytes on DQ0 only)
-	 *		10: Extended RW (command byte on DQ0 only)
-	 *		11: Full. (command and address are on all DQ lines)
-	 * bit[13]:	Sets whether multiple bit SPI uses 2 or 4 bits of data
-	 *		0: 2-bits (BSPI)
-	 *		1: 4-bits (QSPI)
-	 */
+	 
 	if (op->data.buswidth == 4 || op->data.buswidth == 2) {
 		control &= ~CONTROL_MODE12_MASK;
 		if (op->cmd.buswidth == 1 && (op->addr.buswidth == 1 || op->addr.buswidth == 0))
@@ -167,10 +129,7 @@ static inline void mchp_coreqspi_read_op(struct mchp_coreqspi *qspi)
 
 	control = readl_relaxed(qspi->regs + REG_CONTROL);
 
-	/*
-	 * Read 4-bytes from the SPI FIFO in single transaction and then read
-	 * the reamaining data byte wise.
-	 */
+	 
 	control |= CONTROL_FLAGSX4;
 	writel_relaxed(control, qspi->regs + REG_CONTROL);
 
@@ -318,32 +277,7 @@ static inline void mchp_coreqspi_config_op(struct mchp_coreqspi *qspi, const str
 	cmd_bytes = op->cmd.nbytes + op->addr.nbytes;
 	total_bytes = cmd_bytes + op->data.nbytes;
 
-	/*
-	 * As per the coreQSPI IP spec,the number of command and data bytes are
-	 * controlled by the frames register for each SPI sequence. This supports
-	 * the SPI flash memory read and writes sequences as below. so configure
-	 * the cmd and total bytes accordingly.
-	 * ---------------------------------------------------------------------
-	 * TOTAL BYTES  |  CMD BYTES | What happens                             |
-	 * ______________________________________________________________________
-	 *              |            |                                          |
-	 *     1        |   1        | The SPI core will transmit a single byte |
-	 *              |            | and receive data is discarded            |
-	 *              |            |                                          |
-	 *     1        |   0        | The SPI core will transmit a single byte |
-	 *              |            | and return a single byte                 |
-	 *              |            |                                          |
-	 *     10       |   4        | The SPI core will transmit 4 command     |
-	 *              |            | bytes discarding the receive data and    |
-	 *              |            | transmits 6 dummy bytes returning the 6  |
-	 *              |            | received bytes and return a single byte  |
-	 *              |            |                                          |
-	 *     10       |   10       | The SPI core will transmit 10 command    |
-	 *              |            |                                          |
-	 *     10       |    0       | The SPI core will transmit 10 command    |
-	 *              |            | bytes and returning 10 received bytes    |
-	 * ______________________________________________________________________
-	 */
+	 
 	if (!(op->data.dir == SPI_MEM_DATA_IN))
 		cmd_bytes = total_bytes;
 
@@ -461,19 +395,7 @@ static bool mchp_coreqspi_supports_op(struct spi_mem *mem, const struct spi_mem_
 
 	if ((op->data.buswidth == 4 || op->data.buswidth == 2) &&
 	    (op->cmd.buswidth == 1 && (op->addr.buswidth == 1 || op->addr.buswidth == 0))) {
-		/*
-		 * If the command and address are on DQ0 only, then this
-		 * controller doesn't support sending data on dual and
-		 * quad lines. but it supports reading data on dual and
-		 * quad lines with same configuration as command and
-		 * address on DQ0.
-		 * i.e. The control register[15:13] :EX_RO(read only) is
-		 * meant only for the command and address are on DQ0 but
-		 * not to write data, it is just to read.
-		 * Ex: 0x34h is Quad Load Program Data which is not
-		 * supported. Then the spi-mem layer will iterate over
-		 * each command and it will chose the supported one.
-		 */
+		 
 		if (op->data.dir == SPI_MEM_DATA_OUT)
 			return false;
 	}
@@ -579,7 +501,7 @@ static void mchp_coreqspi_remove(struct platform_device *pdev)
 
 static const struct of_device_id mchp_coreqspi_of_match[] = {
 	{ .compatible = "microchip,coreqspi-rtl-v2" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, mchp_coreqspi_of_match);
 

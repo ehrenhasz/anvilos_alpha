@@ -1,11 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 
 #include "vmlinux.h"
 #include <bpf/bpf_helpers.h>
 #include <bpf/bpf_tracing.h>
 
-/* modifiers and typedefs are ignored when comparing key/value types */
+ 
 typedef struct my_key { long x; } key_type;
 typedef struct my_value { long x; } value_type;
 
@@ -23,7 +23,7 @@ struct {
 	__uint(max_entries, 8);
 } map2 SEC(".maps");
 
-/* this definition will lose, but it has to exactly match the winner */
+ 
 struct {
 	__uint(type, BPF_MAP_TYPE_ARRAY);
 	__type(key, int);
@@ -38,7 +38,7 @@ int output_weak2;
 SEC("raw_tp/sys_enter")
 int BPF_PROG(handler_enter2)
 {
-	/* update values with key = 2 */
+	 
 	int key = 2, val = 2;
 	key_type key_struct = { .x = 2 };
 	value_type val_struct = { .x = 2000 };
@@ -53,7 +53,7 @@ int BPF_PROG(handler_enter2)
 SEC("raw_tp/sys_exit")
 int BPF_PROG(handler_exit2)
 {
-	/* lookup values with key = 1, set in another file */
+	 
 	int key = 1, *val;
 	key_type key_struct = { .x = 1 };
 	value_type *value_struct;

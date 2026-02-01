@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) STMicroelectronics SA 2014
- * Authors: Benjamin Gaignard <benjamin.gaignard@st.com>
- *          Fabien Dessenne <fabien.dessenne@st.com>
- *          for STMicroelectronics.
- */
+
+ 
 
 #include <linux/moduleparam.h>
 #include <linux/seq_file.h>
@@ -15,12 +10,12 @@
 #include "sti_mixer.h"
 #include "sti_vtg.h"
 
-/* Module parameter to set the background color of the mixer */
+ 
 static unsigned int bkg_color = 0x000000;
 MODULE_PARM_DESC(bkgcolor, "Value of the background color 0xRRGGBB");
 module_param_named(bkgcolor, bkg_color, int, 0644);
 
-/* regs offset */
+ 
 #define GAM_MIXER_CTL      0x00
 #define GAM_MIXER_BKC      0x04
 #define GAM_MIXER_BCO      0x0C
@@ -32,7 +27,7 @@ module_param_named(bkgcolor, bkg_color, int, 0644);
 #define GAM_MIXER_MBP      0x3C
 #define GAM_MIXER_MX0      0x80
 
-/* id for depth of CRB reg */
+ 
 #define GAM_DEPTH_VID0_ID  1
 #define GAM_DEPTH_VID1_ID  2
 #define GAM_DEPTH_GDP0_ID  3
@@ -41,7 +36,7 @@ module_param_named(bkgcolor, bkg_color, int, 0644);
 #define GAM_DEPTH_GDP3_ID  6
 #define GAM_DEPTH_MASK_ID  7
 
-/* mask in CTL reg */
+ 
 #define GAM_CTL_BACK_MASK  BIT(0)
 #define GAM_CTL_VID0_MASK  BIT(1)
 #define GAM_CTL_VID1_MASK  BIT(2)
@@ -257,14 +252,14 @@ int sti_mixer_set_plane_depth(struct sti_mixer *mixer, struct sti_plane *plane)
 		plane_id = GAM_DEPTH_VID0_ID;
 		break;
 	case STI_CURSOR:
-		/* no need to set depth for cursor */
+		 
 		return 0;
 	default:
 		DRM_ERROR("Unknown plane %d\n", plane->desc);
 		return 1;
 	}
 
-	/* Search if a previous depth was already assigned to the plane */
+	 
 	val = sti_mixer_reg_read(mixer, GAM_MIXER_CRB);
 	for (i = 0; i < GAM_MIXER_NB_DEPTH_LEVEL; i++) {
 		mask = GAM_DEPTH_MASK_ID << (3 * i);

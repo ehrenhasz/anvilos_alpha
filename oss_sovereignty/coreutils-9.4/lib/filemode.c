@@ -1,54 +1,15 @@
-/* filemode.c -- make a string describing file modes
-
-   Copyright (C) 1985, 1990, 1993, 1998-2000, 2004, 2006, 2009-2023 Free
-   Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include "filemode.h"
-
-#if ! HAVE_DECL_STRMODE
-
-/* Return a character indicating the type of file described by
-   file mode BITS:
-   '-' regular file
-   'b' block special file
-   'c' character special file
-   'C' high performance ("contiguous data") file
-   'd' directory
-   'D' door
-   'l' symbolic link
-   'm' multiplexed file (7th edition Unix; obsolete)
-   'n' network special file (HP-UX)
-   'p' fifo (named pipe)
-   'P' port
-   's' socket
-   'w' whiteout (4.4BSD)
-   '?' some other file type  */
+ 
 
 static char
 ftypelet (mode_t bits)
 {
-  /* These are the most common, so test for them first.  */
+   
   if (S_ISREG (bits))
     return '-';
   if (S_ISDIR (bits))
     return 'd';
 
-  /* Other letters standardized by POSIX 1003.1-2004.  */
+   
   if (S_ISBLK (bits))
     return 'b';
   if (S_ISCHR (bits))
@@ -58,11 +19,11 @@ ftypelet (mode_t bits)
   if (S_ISFIFO (bits))
     return 'p';
 
-  /* Other file types (though not letters) standardized by POSIX.  */
+   
   if (S_ISSOCK (bits))
     return 's';
 
-  /* Nonstandard file types.  */
+   
   if (S_ISCTG (bits))
     return 'C';
   if (S_ISDOOR (bits))
@@ -79,7 +40,7 @@ ftypelet (mode_t bits)
   return '?';
 }
 
-/* Like filemodestring, but rely only on MODE.  */
+ 
 
 void
 strmode (mode_t mode, char *str)
@@ -104,51 +65,9 @@ strmode (mode_t mode, char *str)
   str[11] = '\0';
 }
 
-#endif /* ! HAVE_DECL_STRMODE */
+#endif  
 
-/* filemodestring - fill in string STR with an ls-style ASCII
-   representation of the st_mode field of file stats block STATP.
-   12 characters are stored in STR.
-   The characters stored in STR are:
-
-   0    File type, as in ftypelet above, except that other letters are used
-        for files whose type cannot be determined solely from st_mode:
-
-            'F' semaphore
-            'Q' message queue
-            'S' shared memory object
-            'T' typed memory object
-
-   1    'r' if the owner may read, '-' otherwise.
-
-   2    'w' if the owner may write, '-' otherwise.
-
-   3    'x' if the owner may execute, 's' if the file is
-        set-user-id, '-' otherwise.
-        'S' if the file is set-user-id, but the execute
-        bit isn't set.
-
-   4    'r' if group members may read, '-' otherwise.
-
-   5    'w' if group members may write, '-' otherwise.
-
-   6    'x' if group members may execute, 's' if the file is
-        set-group-id, '-' otherwise.
-        'S' if it is set-group-id but not executable.
-
-   7    'r' if any user may read, '-' otherwise.
-
-   8    'w' if any user may write, '-' otherwise.
-
-   9    'x' if any user may execute, 't' if the file is "sticky"
-        (will be retained in swap space after execution), '-'
-        otherwise.
-        'T' if the file is sticky but not executable.
-
-   10   ' ' for compatibility with 4.4BSD strmode,
-        since this interface does not support ACLs.
-
-   11   '\0'.  */
+ 
 
 void
 filemodestring (struct stat const *statp, char *str)

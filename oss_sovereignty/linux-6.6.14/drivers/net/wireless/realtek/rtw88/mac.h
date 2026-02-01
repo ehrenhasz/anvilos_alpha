@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause */
-/* Copyright(c) 2018-2019  Realtek Corporation
- */
+ 
+ 
 
 #ifndef __RTW_MAC_H__
 #define __RTW_MAC_H__
@@ -13,7 +12,7 @@
 #define PHY_STATUS_SIZE		4
 #define ILLEGAL_KEY_GROUP	0xFAAAAA00
 
-/* HW memory address */
+ 
 #define OCPBASE_RXBUF_FW_88XX		0x18680000
 #define OCPBASE_TXBUF_88XX		0x18780000
 #define OCPBASE_ROM_88XX		0x00000000

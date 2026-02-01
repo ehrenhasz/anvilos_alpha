@@ -1,19 +1,11 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Functions corresponding to password object type attributes under
- * BIOS PASSWORD for use with hp-bioscfg driver.
- *
- * Copyright (c) 2022 HP Development Company, L.P.
- */
+
+ 
 
 #include "bioscfg.h"
 #include <asm-generic/posix_types.h>
 
 GET_INSTANCE_ID(password);
-/*
- * Clear all passwords copied to memory for a particular
- * authentication instance
- */
+ 
 static int clear_passwords(const int instance)
 {
 	struct password_data *password_data = &bioscfg_drv.password_data[instance];
@@ -29,20 +21,17 @@ static int clear_passwords(const int instance)
 	return 0;
 }
 
-/*
- * Clear all credentials copied to memory for both Power-ON and Setup
- * BIOS instances
- */
+ 
 int hp_clear_all_credentials(void)
 {
 	int count = bioscfg_drv.password_instances_count;
 	int instance;
 
-	/* clear all passwords */
+	 
 	for (instance = 0; instance < count; instance++)
 		clear_passwords(instance);
 
-	/* clear auth_token */
+	 
 	kfree(bioscfg_drv.spm_data.auth_token);
 	bioscfg_drv.spm_data.auth_token = NULL;
 
@@ -200,7 +189,7 @@ int hp_alloc_password_data(void)
 	return 0;
 }
 
-/* Expected Values types associated with each element */
+ 
 static const acpi_object_type expected_password_types[] = {
 	[NAME] = ACPI_TYPE_STRING,
 	[VALUE] = ACPI_TYPE_STRING,
@@ -238,7 +227,7 @@ static int hp_populate_password_elements_from_package(union acpi_object *passwor
 		return -EINVAL;
 
 	for (elem = 1, eloc = 1; elem < password_obj_count; elem++, eloc++) {
-		/* ONLY look at the first PASSWORD_ELEM_CNT elements */
+		 
 		if (eloc == PSWD_ELEM_CNT)
 			goto exit_package;
 
@@ -260,7 +249,7 @@ static int hp_populate_password_elements_from_package(union acpi_object *passwor
 			continue;
 		}
 
-		/* Check that both expected and read object type match */
+		 
 		if (expected_password_types[eloc] != password_obj[elem].type) {
 			pr_err("Error expected type %d for elem %d, but got type %d instead\n",
 			       expected_password_types[eloc], elem, password_obj[elem].type);
@@ -268,7 +257,7 @@ static int hp_populate_password_elements_from_package(union acpi_object *passwor
 			return -EIO;
 		}
 
-		/* Assign appropriate element value to corresponding field*/
+		 
 		switch (eloc) {
 		case VALUE:
 			break;
@@ -295,12 +284,7 @@ static int hp_populate_password_elements_from_package(union acpi_object *passwor
 			}
 			password_data->common.prerequisites_size = int_value;
 
-			/* This step is needed to keep the expected
-			 * element list pointing to the right obj[elem].type
-			 * when the size is zero. PREREQUISITES
-			 * object is omitted by BIOS when the size is
-			 * zero.
-			 */
+			 
 			if (int_value == 0)
 				eloc++;
 			break;
@@ -342,12 +326,7 @@ static int hp_populate_password_elements_from_package(union acpi_object *passwor
 			}
 			password_data->encodings_size = int_value;
 
-			/* This step is needed to keep the expected
-			 * element list pointing to the right obj[elem].type
-			 * when the size is zero. PSWD_ENCODINGS
-			 * object is omitted by BIOS when the size is
-			 * zero.
-			 */
+			 
 			if (int_value == 0)
 				eloc++;
 			break;
@@ -385,14 +364,7 @@ exit_package:
 	return 0;
 }
 
-/**
- * hp_populate_password_package_data()
- *	Populate all properties for an instance under password attribute
- *
- * @password_obj: ACPI object with password data
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int hp_populate_password_package_data(union acpi_object *password_obj, int instance_id,
 				      struct kobject *attr_name_kobj)
 {
@@ -423,58 +395,45 @@ static int hp_populate_password_elements_from_buffer(u8 *buffer_ptr, u32 *buffer
 	struct password_data *password_data = &bioscfg_drv.password_data[instance_id];
 	int ret = 0;
 
-	/*
-	 * Only data relevant to this driver and its functionality is
-	 * read. BIOS defines the order in which each * element is
-	 * read. Element 0 data is not relevant to this
-	 * driver hence it is ignored. For clarity, all element names
-	 * (DISPLAY_IN_UI) which defines the order in which is read
-	 * and the name matches the variable where the data is stored.
-	 *
-	 * In earlier implementation, reported errors were ignored
-	 * causing the data to remain uninitialized. It is not
-	 * possible to determine if data read from BIOS is valid or
-	 * not. It is for this reason functions may return a error
-	 * without validating the data itself.
-	 */
+	 
 
-	// VALUE:
+	
 	ret = hp_get_string_from_buffer(&buffer_ptr, buffer_size, password_data->current_password,
 					sizeof(password_data->current_password));
 	if (ret < 0)
 		goto buffer_exit;
 
-	// COMMON:
+	
 	ret = hp_get_common_data_from_buffer(&buffer_ptr, buffer_size,
 					     &password_data->common);
 	if (ret < 0)
 		goto buffer_exit;
 
-	// PSWD_MIN_LENGTH:
+	
 	ret = hp_get_integer_from_buffer(&buffer_ptr, buffer_size,
 					 &password_data->min_password_length);
 	if (ret < 0)
 		goto buffer_exit;
 
-	// PSWD_MAX_LENGTH:
+	
 	ret = hp_get_integer_from_buffer(&buffer_ptr, buffer_size,
 					 &password_data->max_password_length);
 	if (ret < 0)
 		goto buffer_exit;
 
-	// PSWD_SIZE:
+	
 	ret = hp_get_integer_from_buffer(&buffer_ptr, buffer_size,
 					 &password_data->encodings_size);
 	if (ret < 0)
 		goto buffer_exit;
 
 	if (password_data->encodings_size > MAX_ENCODINGS_SIZE) {
-		/* Report a message and limit possible values size to maximum value */
+		 
 		pr_warn("Password Encoding size value exceeded the maximum number of elements supported or data may be malformed\n");
 		password_data->encodings_size = MAX_ENCODINGS_SIZE;
 	}
 
-	// PSWD_ENCODINGS:
+	
 	for (values = 0; values < password_data->encodings_size; values++) {
 		ret = hp_get_string_from_buffer(&buffer_ptr, buffer_size,
 						password_data->encodings[values],
@@ -483,7 +442,7 @@ static int hp_populate_password_elements_from_buffer(u8 *buffer_ptr, u32 *buffer
 			break;
 	}
 
-	// PSWD_IS_SET:
+	
 	ret = hp_get_integer_from_buffer(&buffer_ptr, buffer_size, &isreadonly);
 	if (ret < 0)
 		goto buffer_exit;
@@ -494,15 +453,7 @@ buffer_exit:
 	return ret;
 }
 
-/**
- * hp_populate_password_buffer_data()
- * Populate all properties for an instance under password object attribute
- *
- * @buffer_ptr: Buffer pointer
- * @buffer_size: Buffer size
- * @instance_id: The instance to enumerate
- * @attr_name_kobj: The parent kernel object
- */
+ 
 int hp_populate_password_buffer_data(u8 *buffer_ptr, u32 *buffer_size, int instance_id,
 				     struct kobject *attr_name_kobj)
 {
@@ -511,7 +462,7 @@ int hp_populate_password_buffer_data(u8 *buffer_ptr, u32 *buffer_size, int insta
 
 	password_data->attr_name_kobj = attr_name_kobj;
 
-	/* Populate Password attributes */
+	 
 	ret = hp_populate_password_elements_from_buffer(buffer_ptr, buffer_size,
 							instance_id);
 	if (ret < 0)
@@ -527,11 +478,7 @@ int hp_populate_password_buffer_data(u8 *buffer_ptr, u32 *buffer_size, int insta
 	return sysfs_create_group(attr_name_kobj, &password_attr_group);
 }
 
-/**
- * hp_exit_password_attributes() - Clear all attribute data
- *
- * Clears all data allocated for this group of attributes
- */
+ 
 void hp_exit_password_attributes(void)
 {
 	int instance_id;

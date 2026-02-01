@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2022-2023 Intel Corporation
- */
+ 
+ 
 
 #ifndef __INTEL_DISPLAY_DRIVER_H__
 #define __INTEL_DISPLAY_DRIVER_H__
@@ -27,10 +25,10 @@ void intel_display_driver_unregister(struct drm_i915_private *i915);
 int intel_display_driver_suspend(struct drm_i915_private *i915);
 void intel_display_driver_resume(struct drm_i915_private *i915);
 
-/* interface for intel_display_reset.c */
+ 
 int __intel_display_driver_resume(struct drm_i915_private *i915,
 				  struct drm_atomic_state *state,
 				  struct drm_modeset_acquire_ctx *ctx);
 
-#endif /* __INTEL_DISPLAY_DRIVER_H__ */
+#endif  
 

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * ACRN Hypervisor Service Module (HSM)
- *
- * Copyright (C) 2020 Intel Corporation. All rights reserved.
- *
- * Authors:
- *	Fengwei Yin <fengwei.yin@intel.com>
- *	Yakui Zhao <yakui.zhao@intel.com>
- */
+
+ 
 
 #include <linux/cpu.h>
 #include <linux/io.h>
@@ -20,12 +12,7 @@
 
 #include "acrn_drv.h"
 
-/*
- * When /dev/acrn_hsm is opened, a 'struct acrn_vm' object is created to
- * represent a VM instance and continues to be associated with the opened file
- * descriptor. All ioctl operations on this file descriptor will be targeted to
- * the VM instance. Release of this file descriptor will destroy the object.
- */
+ 
 static int acrn_dev_open(struct inode *inode, struct file *filp)
 {
 	struct acrn_vm *vm;
@@ -100,10 +87,7 @@ static int pmcmd_ioctl(u64 cmd, void __user *uptr)
 	return ret;
 }
 
-/*
- * HSM relies on hypercall layer of the ACRN hypervisor to do the
- * sanity check against the input parameters.
- */
+ 
 static long acrn_dev_ioctl(struct file *filp, unsigned int cmd,
 			   unsigned long ioctl_param)
 {

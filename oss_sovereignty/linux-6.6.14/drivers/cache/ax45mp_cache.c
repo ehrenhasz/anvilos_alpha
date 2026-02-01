@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * non-coherent cache functions for Andes AX45MP
- *
- * Copyright (C) 2023 Renesas Electronics Corp.
- */
+
+ 
 
 #include <linux/cacheflush.h>
 #include <linux/cacheinfo.h>
@@ -13,26 +9,26 @@
 
 #include <asm/dma-noncoherent.h>
 
-/* L2 cache registers */
+ 
 #define AX45MP_L2C_REG_CTL_OFFSET		0x8
 
 #define AX45MP_L2C_REG_C0_CMD_OFFSET		0x40
 #define AX45MP_L2C_REG_C0_ACC_OFFSET		0x48
 #define AX45MP_L2C_REG_STATUS_OFFSET		0x80
 
-/* D-cache operation */
-#define AX45MP_CCTL_L1D_VA_INVAL		0 /* Invalidate an L1 cache entry */
-#define AX45MP_CCTL_L1D_VA_WB			1 /* Write-back an L1 cache entry */
+ 
+#define AX45MP_CCTL_L1D_VA_INVAL		0  
+#define AX45MP_CCTL_L1D_VA_WB			1  
 
-/* L2 CCTL status */
+ 
 #define AX45MP_CCTL_L2_STATUS_IDLE		0
 
-/* L2 CCTL status cores mask */
+ 
 #define AX45MP_CCTL_L2_STATUS_C0_MASK		0xf
 
-/* L2 cache operation */
-#define AX45MP_CCTL_L2_PA_INVAL			0x8 /* Invalidate an L2 cache entry */
-#define AX45MP_CCTL_L2_PA_WB			0x9 /* Write-back an L2 cache entry */
+ 
+#define AX45MP_CCTL_L2_PA_INVAL			0x8  
+#define AX45MP_CCTL_L2_PA_WB			0x9  
 
 #define AX45MP_L2C_REG_PER_CORE_OFFSET		0x10
 #define AX45MP_CCTL_L2_STATUS_PER_CORE_OFFSET	4
@@ -56,7 +52,7 @@ struct ax45mp_priv {
 
 static struct ax45mp_priv ax45mp_priv;
 
-/* L2 Cache operations */
+ 
 static inline uint32_t ax45mp_cpu_l2c_get_cctl_status(void)
 {
 	return readl(ax45mp_priv.l2c_base + AX45MP_L2C_REG_STATUS_OFFSET);
@@ -86,14 +82,14 @@ static void ax45mp_cpu_cache_operation(unsigned long start, unsigned long end,
 	}
 }
 
-/* Write-back L1 and L2 cache entry */
+ 
 static inline void ax45mp_cpu_dcache_wb_range(unsigned long start, unsigned long end)
 {
 	ax45mp_cpu_cache_operation(start, end, AX45MP_CCTL_L1D_VA_WB,
 				   AX45MP_CCTL_L2_PA_WB);
 }
 
-/* Invalidate the L1 and L2 cache entry */
+ 
 static inline void ax45mp_cpu_dcache_inval_range(unsigned long start, unsigned long end)
 {
 	ax45mp_cpu_cache_operation(start, end, AX45MP_CCTL_L1D_VA_INVAL,
@@ -169,7 +165,7 @@ static const struct riscv_nonstd_cache_ops ax45mp_cmo_ops __initdata = {
 
 static const struct of_device_id ax45mp_cache_ids[] = {
 	{ .compatible = "andestech,ax45mp-cache" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int __init ax45mp_cache_init(void)
@@ -186,13 +182,7 @@ static int __init ax45mp_cache_init(void)
 	if (ret)
 		return ret;
 
-	/*
-	 * If IOCP is present on the Andes AX45MP core riscv_cbom_block_size
-	 * will be 0 for sure, so we can definitely rely on it. If
-	 * riscv_cbom_block_size = 0 we don't need to handle CMO using SW any
-	 * more so we just return success here and only if its being set we
-	 * continue further in the probe path.
-	 */
+	 
 	if (!riscv_cbom_block_size)
 		return 0;
 

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause OR GPL-2.0
-/* Copyright (c) 2019-2020 Marvell International Ltd. All rights reserved */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/if_bridge.h>
@@ -263,7 +263,7 @@ struct prestera_msg_event_port_param {
 			u8 mdix;
 			u8 fc;
 			u8 __pad[2];
-		} __packed phy; /* make sure always 12 bytes size */
+		} __packed phy;  
 	};
 };
 
@@ -545,7 +545,7 @@ struct prestera_msg_ip_addr {
 		__be32 ipv4;
 		__be32 ipv6[4];
 	} u;
-	u8 v; /* e.g. PRESTERA_IPV4 */
+	u8 v;  
 	u8 __pad[3];
 };
 
@@ -649,7 +649,7 @@ struct prestera_msg_policer_req {
 		struct {
 			__le64 cir;
 			__le32 cbs;
-		} __packed sr_tcm; /* make sure always 12 bytes size */
+		} __packed sr_tcm;  
 		__le32 reserved[6];
 	};
 	u8 mode;
@@ -741,7 +741,7 @@ struct prestera_msg_mdb_destroy_req {
 
 static void prestera_hw_build_tests(void)
 {
-	/* check requests */
+	 
 	BUILD_BUG_ON(sizeof(struct prestera_msg_common_req) != 4);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_switch_attr_req) != 16);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_port_attr_req) != 144);
@@ -776,13 +776,13 @@ static void prestera_hw_build_tests(void)
 	BUILD_BUG_ON(sizeof(struct prestera_msg_nh_chunk_req) != 8);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_nh_grp_req) != 12);
 
-	/*  structure that are part of req/resp fw messages */
+	 
 	BUILD_BUG_ON(sizeof(struct prestera_msg_iface) != 16);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_ip_addr) != 20);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_flood_domain_port) != 12);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_nh) != 28);
 
-	/* check responses */
+	 
 	BUILD_BUG_ON(sizeof(struct prestera_msg_common_resp) != 8);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_switch_init_resp) != 24);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_port_attr_resp) != 136);
@@ -800,7 +800,7 @@ static void prestera_hw_build_tests(void)
 	BUILD_BUG_ON(sizeof(struct prestera_msg_nh_chunk_resp) != 1032);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_nh_grp_resp) != 12);
 
-	/* check events */
+	 
 	BUILD_BUG_ON(sizeof(struct prestera_msg_event_port) != 20);
 	BUILD_BUG_ON(sizeof(struct prestera_msg_event_fdb) != 20);
 }
@@ -1348,7 +1348,7 @@ prestera_acl_rule_add_put_action(struct prestera_msg_acl_action *action,
 	case PRESTERA_ACL_RULE_ACTION_ACCEPT:
 	case PRESTERA_ACL_RULE_ACTION_DROP:
 	case PRESTERA_ACL_RULE_ACTION_TRAP:
-		/* just rule action id, no specific data */
+		 
 		break;
 	case PRESTERA_ACL_RULE_ACTION_JUMP:
 		action->jump.index = __cpu_to_le32(info->jump.index);
@@ -1389,11 +1389,11 @@ int prestera_hw_vtcam_rule_add(struct prestera_switch *sw,
 	req->n_act = __cpu_to_le32(n_act);
 	actions_msg = buff + sizeof(*req);
 
-	/* put acl matches into the message */
+	 
 	memcpy(req->key, key, sizeof(req->key));
 	memcpy(req->keymask, keymask, sizeof(req->keymask));
 
-	/* put acl actions into the message */
+	 
 	for (i = 0; i < n_act; i++) {
 		err = prestera_acl_rule_add_put_action(&actions_msg[i],
 						       &act[i]);
@@ -2108,7 +2108,7 @@ int prestera_hw_nh_entries_set(struct prestera_switch *sw, int count,
 }
 
 int prestera_hw_nhgrp_blk_get(struct prestera_switch *sw,
-			      u8 *hw_state, u32 buf_size /* Buffer in bytes */)
+			      u8 *hw_state, u32 buf_size  )
 {
 	static struct prestera_msg_nh_chunk_resp resp;
 	struct prestera_msg_nh_chunk_req req;
@@ -2122,7 +2122,7 @@ int prestera_hw_nhgrp_blk_get(struct prestera_switch *sw,
 			break;
 
 		memset(&req, 0, sizeof(req));
-		req.offset = __cpu_to_le32(buf_offset * 8); /* 8 bits in u8 */
+		req.offset = __cpu_to_le32(buf_offset * 8);  
 		err = prestera_cmd_ret(sw,
 				       PRESTERA_CMD_TYPE_ROUTER_NH_GRP_BLK_GET,
 				       &req.cmd, sizeof(req), &resp.ret,

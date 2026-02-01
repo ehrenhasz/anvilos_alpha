@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Clock implementation for VIA/Wondermedia SoC's
- * Copyright (C) 2012 Tony Prisk <linux@prisktech.co.nz>
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/of.h>
@@ -14,7 +11,7 @@
 
 #define LEGACY_PMC_BASE		0xD8130000
 
-/* All clocks share the same lock as none can be changed concurrently */
+ 
 static DEFINE_SPINLOCK(_lock);
 
 struct clk_device {
@@ -26,12 +23,7 @@ struct clk_device {
 	spinlock_t	*lock;
 };
 
-/*
- * Add new PLL_TYPE_x definitions here as required. Use the first known model
- * to support the new type as the name.
- * Add case statements to vtwm_pll_recalc_rate(), vtwm_pll_round_round() and
- * vtwm_pll_set_rate() to handle the new PLL_TYPE_x
- */
+ 
 
 #define PLL_TYPE_VT8500		0
 #define PLL_TYPE_WM8650		1
@@ -117,11 +109,11 @@ static unsigned long vt8500_dclk_recalc_rate(struct clk_hw *hw,
 	struct clk_device *cdev = to_clk_device(hw);
 	u32 div = readl(cdev->div_reg) & cdev->div_mask;
 
-	/* Special case for SDMMC devices */
+	 
 	if ((cdev->div_mask == 0x3F) && (div & BIT(5)))
 		div = 64 * (div & 0x1f);
 
-	/* div == 0 is actually the highest divisor */
+	 
 	if (div == 0)
 		div = (cdev->div_mask + 1);
 
@@ -139,14 +131,11 @@ static long vt8500_dclk_round_rate(struct clk_hw *hw, unsigned long rate,
 
 	divisor = *prate / rate;
 
-	/* If prate / rate would be decimal, incr the divisor */
+	 
 	if (rate * divisor < *prate)
 		divisor++;
 
-	/*
-	 * If this is a request for SDMMC we have to adjust the divisor
-	 * when >31 to use the fixed predivisor
-	 */
+	 
 	if ((cdev->div_mask == 0x3F) && (divisor > 31)) {
 		divisor = 64 * ((divisor / 64) + 1);
 	}
@@ -169,12 +158,9 @@ static int vt8500_dclk_set_rate(struct clk_hw *hw, unsigned long rate,
 	if (divisor == cdev->div_mask + 1)
 		divisor = 0;
 
-	/* SDMMC mask may need to be corrected before testing if its valid */
+	 
 	if ((cdev->div_mask == 0x3F) && (divisor > 31)) {
-		/*
-		 * Bit 5 is a fixed /64 predivisor. If the requested divisor
-		 * is >31 then correct for the fixed divisor being required.
-		 */
+		 
 		divisor = 0x20 + (divisor / 64);
 	}
 
@@ -255,10 +241,7 @@ static __init void vtwm_device_clk_init(struct device_node *node)
 	rc = of_property_read_u32(node, "divisor-reg", &div_reg);
 	if (!rc) {
 		dev_clk->div_reg = pmc_base + div_reg;
-		/*
-		 * use 0x1f as the default mask since it covers
-		 * almost all the clocks and reduces dts properties
-		 */
+		 
 		dev_clk->div_mask = 0x1f;
 
 		of_property_read_u32(node, "divisor-mask", &dev_clk->div_mask);
@@ -303,11 +286,11 @@ static __init void vtwm_device_clk_init(struct device_node *node)
 }
 CLK_OF_DECLARE(vt8500_device, "via,vt8500-device-clock", vtwm_device_clk_init);
 
-/* PLL clock related functions */
+ 
 
 #define to_clk_pll(_hw) container_of(_hw, struct clk_pll, hw)
 
-/* Helper macros for PLL_VT8500 */
+ 
 #define VT8500_PLL_MUL(x)	((x & 0x1F) << 1)
 #define VT8500_PLL_DIV(x)	((x & 0x100) ? 1 : 2)
 
@@ -317,7 +300,7 @@ CLK_OF_DECLARE(vt8500_device, "via,vt8500-device-clock", vtwm_device_clk_init);
 #define VT8500_BITS_TO_VAL(m, d)					\
 				((d == 2 ? 0 : 0x100) | ((m >> 1) & 0x1F))
 
-/* Helper macros for PLL_WM8650 */
+ 
 #define WM8650_PLL_MUL(x)	(x & 0x3FF)
 #define WM8650_PLL_DIV(x)	(((x >> 10) & 7) * (1 << ((x >> 13) & 3)))
 
@@ -327,7 +310,7 @@ CLK_OF_DECLARE(vt8500_device, "via,vt8500-device-clock", vtwm_device_clk_init);
 #define WM8650_BITS_TO_VAL(m, d1, d2)					\
 				((d2 << 13) | (d1 << 10) | (m & 0x3FF))
 
-/* Helper macros for PLL_WM8750 */
+ 
 #define WM8750_PLL_MUL(x)	(((x >> 16) & 0xFF) + 1)
 #define WM8750_PLL_DIV(x)	((((x >> 8) & 1) + 1) * (1 << (x & 7)))
 
@@ -337,7 +320,7 @@ CLK_OF_DECLARE(vt8500_device, "via,vt8500-device-clock", vtwm_device_clk_init);
 #define WM8750_BITS_TO_VAL(f, m, d1, d2)				\
 		((f << 24) | ((m - 1) << 16) | ((d1 - 1) << 8) | d2)
 
-/* Helper macros for PLL_WM8850 */
+ 
 #define WM8850_PLL_MUL(x)	((((x >> 16) & 0x7F) + 1) * 2)
 #define WM8850_PLL_DIV(x)	((((x >> 8) & 1) + 1) * (1 << (x & 3)))
 
@@ -352,7 +335,7 @@ static int vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 {
 	unsigned long tclk;
 
-	/* sanity check */
+	 
 	if ((rate < parent_rate * 4) || (rate > parent_rate * 62)) {
 		pr_err("%s: requested rate out of range\n", __func__);
 		*multiplier = 0;
@@ -360,7 +343,7 @@ static int vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 		return -EINVAL;
 	}
 	if (rate <= parent_rate * 31)
-		/* use the prediv to double the resolution */
+		 
 		*prediv = 2;
 	else
 		*prediv = 1;
@@ -375,17 +358,7 @@ static int vt8500_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 	return 0;
 }
 
-/*
- * M * parent [O1] => / P [O2] => / D [O3]
- * Where O1 is 900MHz...3GHz;
- * O2 is 600MHz >= (M * parent) / P >= 300MHz;
- * M is 36...120 [25MHz parent]; D is 1 or 2 or 4 or 8.
- * Possible ranges (O3):
- * D = 8: 37,5MHz...75MHz
- * D = 4: 75MHz...150MHz
- * D = 2: 150MHz...300MHz
- * D = 1: 300MHz...600MHz
- */
+ 
 static int wm8650_find_pll_bits(unsigned long rate,
 	unsigned long parent_rate, u32 *multiplier, u32 *divisor1,
 	u32 *divisor2)
@@ -397,10 +370,7 @@ static int wm8650_find_pll_bits(unsigned long rate,
 
 	*divisor2 = rate <= 75000000 ? 3 : rate <= 150000000 ? 2 :
 					   rate <= 300000000 ? 1 : 0;
-	/*
-	 * Divisor P cannot be calculated. Test all divisors and find where M
-	 * will be as close as possible to the requested rate.
-	 */
+	 
 	min_err = ULONG_MAX;
 	for (*divisor1 = 5; *divisor1 >= 3; (*divisor1)--) {
 		O1 = rate * *divisor1 * (1 << (*divisor2));
@@ -424,7 +394,7 @@ static int wm8650_find_pll_bits(unsigned long rate,
 
 static u32 wm8750_get_filter(u32 parent_rate, u32 divisor1)
 {
-	/* calculate frequency (MHz) after pre-divisor */
+	 
 	u32 freq = (parent_rate / 1000000) / (divisor1 + 1);
 
 	if ((freq < 10) || (freq > 200))
@@ -458,14 +428,14 @@ static int wm8750_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 
 	best_err = (unsigned long)-1;
 
-	/* Find the closest match (lower or equal to requested) */
+	 
 	for (div1 = 1; div1 >= 0; div1--)
 		for (div2 = 7; div2 >= 0; div2--)
 			for (mul = 0; mul <= 255; mul++) {
 				tclk = parent_rate * (mul + 1) / ((div1 + 1) * (1 << div2));
 				if (tclk > rate)
 					continue;
-				/* error will always be +ve */
+				 
 				rate_err = rate - tclk;
 				if (rate_err == 0) {
 					*filter = wm8750_get_filter(parent_rate, div1);
@@ -488,7 +458,7 @@ static int wm8750_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 		return -EINVAL;
 	}
 
-	/* if we got here, it wasn't an exact match */
+	 
 	pr_warn("%s: requested rate %lu, found rate %lu\n", __func__, rate,
 							rate - best_err);
 
@@ -506,7 +476,7 @@ static int wm8850_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 
 	best_err = (unsigned long)-1;
 
-	/* Find the closest match (lower or equal to requested) */
+	 
 	for (div1 = 1; div1 >= 0; div1--)
 		for (div2 = 3; div2 >= 0; div2--)
 			for (mul = 0; mul <= 127; mul++) {
@@ -514,7 +484,7 @@ static int wm8850_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 						((div1 + 1) * (1 << div2));
 				if (tclk > rate)
 					continue;
-				/* error will always be +ve */
+				 
 				rate_err = rate - tclk;
 				if (rate_err == 0) {
 					*multiplier = mul;
@@ -536,7 +506,7 @@ static int wm8850_find_pll_bits(unsigned long rate, unsigned long parent_rate,
 		return -EINVAL;
 	}
 
-	/* if we got here, it wasn't an exact match */
+	 
 	pr_warn("%s: requested rate %lu, found rate %lu\n", __func__, rate,
 							rate - best_err);
 
@@ -552,7 +522,7 @@ static int vtwm_pll_set_rate(struct clk_hw *hw, unsigned long rate,
 	unsigned long flags = 0;
 	int ret;
 
-	/* sanity check */
+	 
 
 	switch (pll->type) {
 	case PLL_TYPE_VT8500:
@@ -717,7 +687,7 @@ static __init void vtwm_pll_clk_init(struct device_node *node, int pll_type)
 }
 
 
-/* Wrappers for initialization functions */
+ 
 
 static void __init vt8500_pll_init(struct device_node *node)
 {

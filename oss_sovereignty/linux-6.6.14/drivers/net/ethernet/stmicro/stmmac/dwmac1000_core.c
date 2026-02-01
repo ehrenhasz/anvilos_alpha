@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*******************************************************************************
-  This is the driver for the GMAC on-chip Ethernet controller for ST SoCs.
-  DWC Ether MAC 10/100/1000 Universal version 3.41a  has been used for
-  developing this code.
 
-  This only implements the mac core functions for this chip.
-
-  Copyright (C) 2007-2009  STMicroelectronics Ltd
-
-
-  Author: Giuseppe Cavallaro <peppe.cavallaro@st.com>
-*******************************************************************************/
+ 
 
 #include <linux/crc32.h>
 #include <linux/slab.h>
@@ -27,7 +16,7 @@ static void dwmac1000_core_init(struct mac_device_info *hw,
 	u32 value = readl(ioaddr + GMAC_CONTROL);
 	int mtu = dev->mtu;
 
-	/* Configure GMAC core */
+	 
 	value |= GMAC_CORE_INIT;
 
 	if (mtu > 1500)
@@ -54,7 +43,7 @@ static void dwmac1000_core_init(struct mac_device_info *hw,
 
 	writel(value, ioaddr + GMAC_CONTROL);
 
-	/* Mask GMAC interrupts */
+	 
 	value = GMAC_INT_DEFAULT_MASK;
 
 	if (hw->pcs)
@@ -63,7 +52,7 @@ static void dwmac1000_core_init(struct mac_device_info *hw,
 	writel(value, ioaddr + GMAC_INT_MASK);
 
 #ifdef STMMAC_VLAN_TAG_USED
-	/* Tag detection without filtering */
+	 
 	writel(0x0, ioaddr + GMAC_VLAN_TAG);
 #endif
 }
@@ -154,29 +143,22 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
 	if (dev->flags & IFF_PROMISC) {
 		value = GMAC_FRAME_FILTER_PR | GMAC_FRAME_FILTER_PCF;
 	} else if (dev->flags & IFF_ALLMULTI) {
-		value = GMAC_FRAME_FILTER_PM;	/* pass all multi */
+		value = GMAC_FRAME_FILTER_PM;	 
 	} else if (!netdev_mc_empty(dev) && (mcbitslog2 == 0)) {
-		/* Fall back to all multicast if we've no filter */
+		 
 		value = GMAC_FRAME_FILTER_PM;
 	} else if (!netdev_mc_empty(dev)) {
 		struct netdev_hw_addr *ha;
 
-		/* Hash filter for multicast */
+		 
 		value = GMAC_FRAME_FILTER_HMC;
 
 		netdev_for_each_mc_addr(ha, dev) {
-			/* The upper n bits of the calculated CRC are used to
-			 * index the contents of the hash table. The number of
-			 * bits used depends on the hardware configuration
-			 * selected at core configuration time.
-			 */
+			 
 			int bit_nr = bitrev32(~crc32_le(~0, ha->addr,
 					      ETH_ALEN)) >>
 					      (32 - mcbitslog2);
-			/* The most significant bit determines the register to
-			 * use (H/L) while the other 5 bits determine the bit
-			 * within the register.
-			 */
+			 
 			mc_filter[bit_nr >> 5] |= 1 << (bit_nr & 31);
 		}
 	}
@@ -184,11 +166,9 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
 	value |= GMAC_FRAME_FILTER_HPF;
 	dwmac1000_set_mchash(ioaddr, mc_filter, mcbitslog2);
 
-	/* Handle multiple unicast addresses (perfect filtering) */
+	 
 	if (netdev_uc_count(dev) > perfect_addr_number)
-		/* Switch to promiscuous mode if more than unicast
-		 * addresses are requested than supported by hardware.
-		 */
+		 
 		value |= GMAC_FRAME_FILTER_PR;
 	else {
 		int reg = 1;
@@ -209,7 +189,7 @@ static void dwmac1000_set_filter(struct mac_device_info *hw,
 	}
 
 #ifdef FRAME_FILTER_DEBUG
-	/* Enable Receive all mode (to debug filtering_fail errors) */
+	 
 	value |= GMAC_FRAME_FILTER_RA;
 #endif
 	writel(value, ioaddr + GMAC_FRAME_FILTER);
@@ -221,9 +201,7 @@ static void dwmac1000_flow_ctrl(struct mac_device_info *hw, unsigned int duplex,
 				u32 tx_cnt)
 {
 	void __iomem *ioaddr = hw->pcsr;
-	/* Set flow such that DZPQ in Mac Register 6 is 0,
-	 * and unicast pause detect is enabled.
-	 */
+	 
 	unsigned int flow = GMAC_FLOW_CTRL_UP;
 
 	pr_debug("GMAC Flow-Control:\n");
@@ -261,7 +239,7 @@ static void dwmac1000_pmt(struct mac_device_info *hw, unsigned long mode)
 	writel(pmt, ioaddr + GMAC_PMT);
 }
 
-/* RGMII or SMII interface */
+ 
 static void dwmac1000_rgsmii(void __iomem *ioaddr, struct stmmac_extra_stats *x)
 {
 	u32 status;
@@ -269,7 +247,7 @@ static void dwmac1000_rgsmii(void __iomem *ioaddr, struct stmmac_extra_stats *x)
 	status = readl(ioaddr + GMAC_RGSMIIIS);
 	x->irq_rgmii_n++;
 
-	/* Check the link status */
+	 
 	if (status & GMAC_RGSMIIIS_LNKSTS) {
 		int speed_value;
 
@@ -302,10 +280,10 @@ static int dwmac1000_irq_status(struct mac_device_info *hw,
 	u32 intr_mask = readl(ioaddr + GMAC_INT_MASK);
 	int ret = 0;
 
-	/* Discard masked bits */
+	 
 	intr_status &= ~intr_mask;
 
-	/* Not used events (e.g. MMC interrupts) are not handled. */
+	 
 	if ((intr_status & GMAC_INT_STATUS_MMCTIS))
 		x->mmc_tx_irq_n++;
 	if (unlikely(intr_status & GMAC_INT_STATUS_MMCRIS))
@@ -313,14 +291,14 @@ static int dwmac1000_irq_status(struct mac_device_info *hw,
 	if (unlikely(intr_status & GMAC_INT_STATUS_MMCCSUM))
 		x->mmc_rx_csum_offload_irq_n++;
 	if (unlikely(intr_status & GMAC_INT_DISABLE_PMT)) {
-		/* clear the PMT bits 5 and 6 by reading the PMT status reg */
+		 
 		readl(ioaddr + GMAC_PMT);
 		x->irq_receive_pmt_irq_n++;
 	}
 
-	/* MAC tx/rx EEE LPI entry/exit interrupts */
+	 
 	if (intr_status & GMAC_INT_STATUS_LPIIS) {
-		/* Clean LPI interrupt by reading the Reg 12 */
+		 
 		ret = readl(ioaddr + LPI_CTRL_STATUS);
 
 		if (ret & LPI_CTRL_STATUS_TLPIEN)
@@ -347,12 +325,9 @@ static void dwmac1000_set_eee_mode(struct mac_device_info *hw,
 	void __iomem *ioaddr = hw->pcsr;
 	u32 value;
 
-	/*TODO - en_tx_lpi_clockgating treatment */
+	 
 
-	/* Enable the link status receive on RGMII, SGMII ore SMII
-	 * receive path and instruct the transmit to enter in LPI
-	 * state.
-	 */
+	 
 	value = readl(ioaddr + LPI_CTRL_STATUS);
 	value |= LPI_CTRL_STATUS_LPIEN | LPI_CTRL_STATUS_LPITXA;
 	writel(value, ioaddr + LPI_CTRL_STATUS);
@@ -388,13 +363,7 @@ static void dwmac1000_set_eee_timer(struct mac_device_info *hw, int ls, int tw)
 	void __iomem *ioaddr = hw->pcsr;
 	int value = ((tw & 0xffff)) | ((ls & 0x7ff) << 16);
 
-	/* Program the timers in the LPI timer control register:
-	 * LS: minimum time (ms) for which the link
-	 *  status from PHY should be ok before transmitting
-	 *  the LPI pattern.
-	 * TW: minimum time (us) for which the core waits
-	 *  after it has stopped transmitting the LPI pattern.
-	 */
+	 
 	writel(value, ioaddr + LPI_TIMER_CTRL);
 }
 

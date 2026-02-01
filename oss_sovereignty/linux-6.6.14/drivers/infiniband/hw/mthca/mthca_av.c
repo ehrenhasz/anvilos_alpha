@@ -1,35 +1,4 @@
-/*
- * Copyright (c) 2004 Topspin Communications.  All rights reserved.
- * Copyright (c) 2005 Sun Microsystems, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/string.h>
 #include <linux/slab.h>
@@ -94,7 +63,7 @@ static enum ib_rate tavor_rate_to_ib(u8 mthca_rate, u8 port_rate)
 enum ib_rate mthca_rate_to_ib(struct mthca_dev *dev, u8 mthca_rate, u32 port)
 {
 	if (mthca_is_memfree(dev)) {
-		/* Handle old Arbel FW */
+		 
 		if (dev->limits.stat_rate_support == 0x3 && mthca_rate)
 			return IB_RATE_2_5_GBPS;
 
@@ -108,10 +77,7 @@ static u8 ib_rate_to_memfree(u8 req_rate, u8 cur_rate)
 	if (cur_rate <= req_rate)
 		return 0;
 
-	/*
-	 * Inter-packet delay (IPD) to get from rate X down to a rate
-	 * no more than Y is (X - 1) / Y.
-	 */
+	 
 	switch ((cur_rate - 1) / req_rate) {
 	case 0:	 return MTHCA_RATE_MEMFREE_FULL;
 	case 1:	 return MTHCA_RATE_MEMFREE_HALF;
@@ -171,7 +137,7 @@ int mthca_create_ah(struct mthca_dev *dev,
 		 !(dev->mthca_flags & MTHCA_FLAG_DDR_HIDDEN)) {
 		index = mthca_alloc(&dev->av_table.alloc);
 
-		/* fall back to allocate in host memory */
+		 
 		if (index == -1)
 			goto on_hca_fail;
 
@@ -200,7 +166,7 @@ on_hca_fail:
 				  (rdma_ah_get_port_num(ah_attr) << 24));
 	av->g_slid  = rdma_ah_get_path_bits(ah_attr);
 	av->dlid    = cpu_to_be16(rdma_ah_get_dlid(ah_attr));
-	av->msg_sr  = (3 << 4) | /* 2K message */
+	av->msg_sr  = (3 << 4) |  
 		mthca_get_rate(dev, rdma_ah_get_static_rate(ah_attr),
 			       rdma_ah_get_port_num(ah_attr));
 	av->sl_tclass_flowlabel = cpu_to_be32(rdma_ah_get_sl(ah_attr) << 28);
@@ -217,7 +183,7 @@ on_hca_fail:
 				    grh->flow_label);
 		memcpy(av->dgid, grh->dgid.raw, 16);
 	} else {
-		/* Arbel workaround -- low byte of GID must be 2 */
+		 
 		av->dgid[3] = cpu_to_be32(2);
 	}
 
@@ -295,7 +261,7 @@ int mthca_ah_query(struct ib_ah *ibah, struct rdma_ah_attr *attr)
 	struct mthca_dev *dev = to_mdev(ibah->device);
 	u32 port_num = be32_to_cpu(ah->av->port_pd) >> 24;
 
-	/* Only implement for MAD and memfree ah for now. */
+	 
 	if (ah->type == MTHCA_AH_ON_HCA)
 		return -ENOSYS;
 

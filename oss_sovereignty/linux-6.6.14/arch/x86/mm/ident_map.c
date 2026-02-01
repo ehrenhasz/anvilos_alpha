@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Helper routines for building identity mapping page tables. This is
- * included by both the compressed kernel and the regular kernel.
- */
+
+ 
 
 static void ident_pmd_init(struct x86_mapping_info *info, pmd_t *pmd_page,
 			   unsigned long addr, unsigned long end)
@@ -102,11 +99,11 @@ int kernel_ident_mapping_init(struct x86_mapping_info *info, pgd_t *pgd_page,
 	unsigned long next;
 	int result;
 
-	/* Set the default pagetable flags if not supplied */
+	 
 	if (!info->kernpg_flag)
 		info->kernpg_flag = _KERNPG_TABLE;
 
-	/* Filter out unsupported __PAGE_KERNEL_* bits: */
+	 
 	info->kernpg_flag &= __default_kernel_pte_mask;
 
 	for (; addr < end; addr = next) {
@@ -134,10 +131,7 @@ int kernel_ident_mapping_init(struct x86_mapping_info *info, pgd_t *pgd_page,
 		if (pgtable_l5_enabled()) {
 			set_pgd(pgd, __pgd(__pa(p4d) | info->kernpg_flag));
 		} else {
-			/*
-			 * With p4d folded, pgd is equal to p4d.
-			 * The pgd entry has to point to the pud page table in this case.
-			 */
+			 
 			pud_t *pud = pud_offset(p4d, 0);
 			set_pgd(pgd, __pgd(__pa(pud) | info->kernpg_flag));
 		}

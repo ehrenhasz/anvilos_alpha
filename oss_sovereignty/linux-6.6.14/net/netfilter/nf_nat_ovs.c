@@ -1,12 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Support nat functions for openvswitch and used by OVS and TC conntrack. */
+
+ 
 
 #include <net/netfilter/nf_nat.h>
 
-/* Modelled after nf_nat_ipv[46]_fn().
- * range is only used for new, uninitialized NAT state.
- * Returns either NF_ACCEPT or NF_DROP.
- */
+ 
 static int nf_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
 			     enum ip_conntrack_info ctinfo, int *action,
 			     const struct nf_nat_range2 *range,
@@ -15,11 +12,11 @@ static int nf_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
 	__be16 proto = skb_protocol(skb, true);
 	int hooknum, err = NF_ACCEPT;
 
-	/* See HOOK2MANIP(). */
+	 
 	if (maniptype == NF_NAT_MANIP_SRC)
-		hooknum = NF_INET_LOCAL_IN; /* Source NAT */
+		hooknum = NF_INET_LOCAL_IN;  
 	else
-		hooknum = NF_INET_LOCAL_OUT; /* Destination NAT */
+		hooknum = NF_INET_LOCAL_OUT;  
 
 	switch (ctinfo) {
 	case IP_CT_RELATED:
@@ -46,18 +43,14 @@ static int nf_ct_nat_execute(struct sk_buff *skb, struct nf_conn *ct,
 				goto out;
 			}
 		}
-		/* Non-ICMP, fall thru to initialize if needed. */
+		 
 		fallthrough;
 	case IP_CT_NEW:
-		/* Seen it before?  This can happen for loopback, retrans,
-		 * or local packets.
-		 */
+		 
 		if (!nf_nat_initialized(ct, maniptype)) {
-			/* Initialize according to the NAT action. */
+			 
 			err = (range && range->flags & NF_NAT_RANGE_MAP_IPS)
-				/* Action is set up to establish a new
-				 * mapping.
-				 */
+				 
 				? nf_nat_setup_info(ct, range, maniptype)
 				: nf_nat_alloc_null_binding(ct, hooknum);
 			if (err != NF_ACCEPT)
@@ -91,18 +84,15 @@ int nf_ct_nat(struct sk_buff *skb, struct nf_conn *ct,
 
 	*action = 0;
 
-	/* Add NAT extension if not confirmed yet. */
+	 
 	if (!nf_ct_is_confirmed(ct) && !nf_ct_nat_ext_add(ct))
-		return NF_DROP;   /* Can't NAT. */
+		return NF_DROP;    
 
 	if (ctinfo != IP_CT_NEW && (ct->status & IPS_NAT_MASK) &&
 	    (ctinfo != IP_CT_RELATED || commit)) {
-		/* NAT an established or related connection like before. */
+		 
 		if (CTINFO2DIR(ctinfo) == IP_CT_DIR_REPLY)
-			/* This is the REPLY direction for a connection
-			 * for which NAT was applied in the forward
-			 * direction.  Do the reverse NAT.
-			 */
+			 
 			maniptype = ct->status & IPS_SRC_NAT
 				? NF_NAT_MANIP_DST : NF_NAT_MANIP_SRC;
 		else

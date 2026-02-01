@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * IBM OPAL RTC driver
- * Copyright (C) 2014 IBM
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -61,8 +58,8 @@ static int opal_get_rtc_time(struct device *dev, struct rtc_time *tm)
 			msleep(OPAL_BUSY_DELAY_MS);
 		} else if (rc == OPAL_HARDWARE || rc == OPAL_INTERNAL_ERROR) {
 			if (retries--) {
-				msleep(10); /* Wait 10ms before retry */
-				rc = OPAL_BUSY; /* go around again */
+				msleep(10);  
+				rc = OPAL_BUSY;  
 			}
 		}
 	}
@@ -95,8 +92,8 @@ static int opal_set_rtc_time(struct device *dev, struct rtc_time *tm)
 			msleep(OPAL_BUSY_DELAY_MS);
 		} else if (rc == OPAL_HARDWARE || rc == OPAL_INTERNAL_ERROR) {
 			if (retries--) {
-				msleep(10); /* Wait 10ms before retry */
-				rc = OPAL_BUSY; /* go around again */
+				msleep(10);  
+				rc = OPAL_BUSY;  
 			}
 		}
 	}
@@ -104,13 +101,7 @@ static int opal_set_rtc_time(struct device *dev, struct rtc_time *tm)
 	return rc == OPAL_SUCCESS ? 0 : -EIO;
 }
 
-/*
- * TPO	Timed Power-On
- *
- * TPO get/set OPAL calls care about the hour and min and to make it consistent
- * with the rtc utility time conversion functions, we use the 'u64' to store
- * its value and perform bit shift by 32 before use..
- */
+ 
 static int opal_get_tpo_time(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	__be32 __y_m_d, __h_m;
@@ -148,7 +139,7 @@ static int opal_get_tpo_time(struct device *dev, struct rtc_wkalrm *alarm)
 	y_m_d = be32_to_cpu(__y_m_d);
 	h_m_s_ms = ((u64)be32_to_cpu(__h_m) << 32);
 
-	/* check if no alarm is set */
+	 
 	if (y_m_d == 0 && h_m_s_ms == 0) {
 		pr_debug("No alarm is set\n");
 		rc = -ENOENT;
@@ -164,7 +155,7 @@ exit:
 	return rc;
 }
 
-/* Set Timed Power-On */
+ 
 static int opal_set_tpo_time(struct device *dev, struct rtc_wkalrm *alarm)
 {
 	u64 h_m_s_ms = 0;
@@ -172,7 +163,7 @@ static int opal_set_tpo_time(struct device *dev, struct rtc_wkalrm *alarm)
 	u32 y_m_d = 0;
 	int token, rc;
 
-	/* if alarm is enabled */
+	 
 	if (alarm->enabled) {
 		tm_to_opal(&alarm->time, &y_m_d, &h_m_s_ms);
 		pr_debug("Alarm set to %x %llx\n", y_m_d, h_m_s_ms);
@@ -189,7 +180,7 @@ static int opal_set_tpo_time(struct device *dev, struct rtc_wkalrm *alarm)
 		return token;
 	}
 
-	/* TPO, we care about hour and minute */
+	 
 	rc = opal_tpo_write(token, y_m_d,
 			    (u32)((h_m_s_ms >> 32) & 0xffff0000));
 	if (rc != OPAL_ASYNC_COMPLETION) {
@@ -216,11 +207,7 @@ static int opal_tpo_alarm_irq_enable(struct device *dev, unsigned int enabled)
 {
 	struct rtc_wkalrm alarm = { .enabled = 0 };
 
-	/*
-	 * TPO is automatically enabled when opal_set_tpo_time() is called with
-	 * non-zero rtc-time. We only handle disable case which needs to be
-	 * explicitly told to opal.
-	 */
+	 
 	return enabled ? 0 : opal_set_tpo_time(dev, &alarm);
 }
 
@@ -242,7 +229,7 @@ static int opal_rtc_probe(struct platform_device *pdev)
 
 	if (pdev->dev.of_node &&
 	    (of_property_read_bool(pdev->dev.of_node, "wakeup-source") ||
-	     of_property_read_bool(pdev->dev.of_node, "has-tpo")/* legacy */))
+	     of_property_read_bool(pdev->dev.of_node, "has-tpo") ))
 		device_set_wakeup_capable(&pdev->dev, true);
 	else
 		clear_bit(RTC_FEATURE_ALARM, rtc->features);

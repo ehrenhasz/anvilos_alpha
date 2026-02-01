@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PolarFire SoC (MPFS) Peripheral Clock Reset Controller
- *
- * Author: Conor Dooley <conor.dooley@microchip.com>
- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
- *
- */
+
+ 
 #include <linux/auxiliary_bus.h>
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -15,22 +9,16 @@
 #include <dt-bindings/clock/microchip,mpfs-clock.h>
 #include <soc/microchip/mpfs.h>
 
-/*
- * The ENVM reset is the lowest bit in the register & I am using the CLK_FOO
- * defines in the dt to make things easier to configure - so this is accounting
- * for the offset of 3 there.
- */
+ 
 #define MPFS_PERIPH_OFFSET	CLK_ENVM
 #define MPFS_NUM_RESETS		30u
 #define MPFS_SLEEP_MIN_US	100
 #define MPFS_SLEEP_MAX_US	200
 
-/* block concurrent access to the soft reset register */
+ 
 static DEFINE_SPINLOCK(mpfs_reset_lock);
 
-/*
- * Peripheral clock resets
- */
+ 
 
 static int mpfs_assert(struct reset_controller_dev *rcdev, unsigned long id)
 {
@@ -68,10 +56,7 @@ static int mpfs_status(struct reset_controller_dev *rcdev, unsigned long id)
 {
 	u32 reg = mpfs_reset_read(rcdev->dev);
 
-	/*
-	 * It is safe to return here as MPFS_NUM_RESETS makes sure the sign bit
-	 * is never hit.
-	 */
+	 
 	return (reg & BIT(id));
 }
 
@@ -98,11 +83,7 @@ static int mpfs_reset_xlate(struct reset_controller_dev *rcdev,
 {
 	unsigned int index = reset_spec->args[0];
 
-	/*
-	 * CLK_RESERVED does not map to a clock, but it does map to a reset,
-	 * so it has to be accounted for here. It is the reset for the fabric,
-	 * so if this reset gets called - do not reset it.
-	 */
+	 
 	if (index == CLK_RESERVED) {
 		dev_err(rcdev->dev, "Resetting the fabric is not supported\n");
 		return -EINVAL;

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_VIRTIO_PCI_LEGACY_H
 #define _LINUX_VIRTIO_PCI_LEGACY_H
 
@@ -9,9 +9,9 @@
 struct virtio_pci_legacy_device {
 	struct pci_dev *pci_dev;
 
-	/* Where to read and clear interrupt */
+	 
 	u8 __iomem *isr;
-	/* The IO mapping for the PCI config space (legacy mode only) */
+	 
 	void __iomem *ioaddr;
 
 	struct virtio_device_id id;

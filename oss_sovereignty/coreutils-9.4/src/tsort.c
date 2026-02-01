@@ -1,24 +1,6 @@
-/* tsort - topological sort.
-   Copyright (C) 1998-2023 Free Software Foundation, Inc.
+ 
 
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Mark Kettenis <kettenis@phys.uva.nl>.  */
-
-/* The topological sort is done according to Algorithm T (Topological
-   sort) in Donald E. Knuth, The Art of Computer Programming, Volume
-   1/Fundamental Algorithms, page 262.  */
+ 
 
 #include <config.h>
 
@@ -32,43 +14,43 @@
 #include "stdio--.h"
 #include "quote.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "tsort"
 
 #define AUTHORS proper_name ("Mark Kettenis")
 
-/* Token delimiters when reading from a file.  */
+ 
 #define DELIM " \t\n"
 
-/* Members of the list of successors.  */
+ 
 struct successor
 {
   struct item *suc;
   struct successor *next;
 };
 
-/* Each string is held in memory as the head of a list of successors.  */
+ 
 struct item
 {
   char const *str;
   struct item *left, *right;
-  signed char balance; /* -1, 0, or +1 */
+  signed char balance;  
   bool printed;
   size_t count;
   struct item *qlink;
   struct successor *top;
 };
 
-/* The head of the sorted list.  */
+ 
 static struct item *head = nullptr;
 
-/* The tail of the list of 'zeros', strings that have no predecessors.  */
+ 
 static struct item *zeros = nullptr;
 
-/* Used for loop detection.  */
+ 
 static struct item *loop = nullptr;
 
-/* The number of strings to sort.  */
+ 
 static size_t n_strings = 0;
 
 void

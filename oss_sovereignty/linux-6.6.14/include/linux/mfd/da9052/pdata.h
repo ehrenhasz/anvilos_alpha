@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Platform data declarations for DA9052 PMICs.
- *
- * Copyright(c) 2011 Dialog Semiconductor Ltd.
- *
- * Author: David Dajun Chen <dchen@diasemi.com>
- */
+ 
+ 
 
 #ifndef __MFD_DA9052_PDATA_H__
 #define __MFD_DA9052_PDATA_H__

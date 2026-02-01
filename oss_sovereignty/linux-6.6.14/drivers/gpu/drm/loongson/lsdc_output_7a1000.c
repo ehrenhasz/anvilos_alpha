@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2023 Loongson Technology Corporation Limited
- */
+
+ 
 
 #include <drm/drm_atomic_helper.h>
 #include <drm/drm_edid.h>
@@ -10,33 +8,7 @@
 #include "lsdc_drv.h"
 #include "lsdc_output.h"
 
-/*
- * The display controller in the LS7A1000 exports two DVO interfaces, thus
- * external encoder is required, except connected to the DPI panel directly.
- *
- *       ___________________                                     _________
- *      |            -------|                                   |         |
- *      |  CRTC0 --> | DVO0 ----> Encoder0 ---> Connector0 ---> | Display |
- *      |  _   _     -------|        ^             ^            |_________|
- *      | | | | |  +------+ |        |             |
- *      | |_| |_|  | i2c6 | <--------+-------------+
- *      |          +------+ |
- *      |                   |
- *      |  DC in LS7A1000   |
- *      |                   |
- *      |  _   _   +------+ |
- *      | | | | |  | i2c7 | <--------+-------------+
- *      | |_| |_|  +------+ |        |             |             _________
- *      |            -------|        |             |            |         |
- *      |  CRTC1 --> | DVO1 ----> Encoder1 ---> Connector1 ---> |  Panel  |
- *      |            -------|                                   |_________|
- *      |___________________|
- *
- * Currently, we assume the external encoders connected to the DVO are
- * transparent. Loongson's DVO interface can directly drive RGB888 panels.
- *
- *  TODO: Add support for non-transparent encoders
- */
+ 
 
 static int ls7a1000_dpi_connector_get_modes(struct drm_connector *conn)
 {
@@ -105,10 +77,7 @@ static void ls7a1000_pipe0_encoder_reset(struct drm_encoder *encoder)
 	struct drm_device *ddev = encoder->dev;
 	struct lsdc_device *ldev = to_lsdc(ddev);
 
-	/*
-	 * We need this for S3 support, screen will not lightup if don't set
-	 * this register correctly.
-	 */
+	 
 	lsdc_wreg32(ldev, LSDC_CRTC0_DVO_CONF_REG,
 		    PHY_CLOCK_POL | PHY_CLOCK_EN | PHY_DATA_EN);
 }
@@ -118,12 +87,9 @@ static void ls7a1000_pipe1_encoder_reset(struct drm_encoder *encoder)
 	struct drm_device *ddev = encoder->dev;
 	struct lsdc_device *ldev = to_lsdc(ddev);
 
-	/*
-	 * We need this for S3 support, screen will not lightup if don't set
-	 * this register correctly.
-	 */
+	 
 
-	/* DVO */
+	 
 	lsdc_wreg32(ldev, LSDC_CRTC1_DVO_CONF_REG,
 		    BIT(31) | PHY_CLOCK_POL | PHY_CLOCK_EN | PHY_DATA_EN);
 }

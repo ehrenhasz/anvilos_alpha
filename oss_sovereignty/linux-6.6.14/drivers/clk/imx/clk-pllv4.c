@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2016 Freescale Semiconductor, Inc.
- * Copyright 2017~2018 NXP
- *
- * Author: Dong Aisheng <aisheng.dong@nxp.com>
- *
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/clk-provider.h>
@@ -16,22 +10,22 @@
 
 #include "clk.h"
 
-/* PLL Control Status Register (xPLLCSR) */
+ 
 #define PLL_CSR_OFFSET		0x0
 #define PLL_VLD			BIT(24)
 #define PLL_EN			BIT(0)
 
-/* PLL Configuration Register (xPLLCFG) */
+ 
 #define PLL_CFG_OFFSET		0x08
 #define IMX8ULP_PLL_CFG_OFFSET	0x10
 #define BP_PLL_MULT		16
 #define BM_PLL_MULT		(0x7f << 16)
 
-/* PLL Numerator Register (xPLLNUM) */
+ 
 #define PLL_NUM_OFFSET		0x10
 #define IMX8ULP_PLL_NUM_OFFSET	0x1c
 
-/* PLL Denominator Register (xPLLDENOM) */
+ 
 #define PLL_DENOM_OFFSET	0x14
 #define IMX8ULP_PLL_DENOM_OFFSET	0x18
 
@@ -47,10 +41,10 @@ struct clk_pllv4 {
 	bool		use_mult_range;
 };
 
-/* Valid PLL MULT Table */
+ 
 static const int pllv4_mult_table[] = {33, 27, 22, 20, 17, 16};
 
-/* Valid PLL MULT range, (max, min) */
+ 
 static const int pllv4_mult_range[] = {54, 27};
 
 #define to_clk_pllv4(__hw) container_of(__hw, struct clk_pllv4, hw)
@@ -139,12 +133,7 @@ static long clk_pllv4_round_rate(struct clk_hw *hw, unsigned long rate,
 	do_div(temp64, parent_rate);
 	mfn = temp64;
 
-	/*
-	 * NOTE: The value of numerator must always be configured to be
-	 * less than the value of the denominator. If we can't get a proper
-	 * pair of mfn/mfd, we simply return the round_rate without using
-	 * the frac part.
-	 */
+	 
 	if (mfn >= mfd)
 		return round_rate;
 
@@ -159,7 +148,7 @@ static bool clk_pllv4_is_valid_mult(struct clk_pllv4 *pll, unsigned int mult)
 {
 	int i;
 
-	/* check if mult is in valid MULT table */
+	 
 	if (pll->use_mult_range) {
 		if (mult >= pllv4_mult_range[1] &&
 		    mult <= pllv4_mult_range[0])

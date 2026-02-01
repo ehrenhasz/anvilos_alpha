@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Ingenic JZ4780 DMA controller
- *
- * Copyright (c) 2015 Imagination Technologies
- * Author: Alex Smith <alex@alex-smith.me.uk>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dmapool.h>
@@ -20,7 +15,7 @@
 #include "dmaengine.h"
 #include "virt-dma.h"
 
-/* Global registers. */
+ 
 #define JZ_DMA_REG_DMAC		0x00
 #define JZ_DMA_REG_DIRQP	0x04
 #define JZ_DMA_REG_DDR		0x08
@@ -34,7 +29,7 @@
 #define JZ_DMA_REG_DCIRQP	0x28
 #define JZ_DMA_REG_DCIRQM	0x2c
 
-/* Per-channel registers. */
+ 
 #define JZ_DMA_REG_CHAN(n)	(n * 0x20)
 #define JZ_DMA_REG_DSA		0x00
 #define JZ_DMA_REG_DTA		0x04
@@ -87,22 +82,14 @@
 
 #define JZ4780_DMA_CTRL_OFFSET	0x1000
 
-/* macros for use with jz4780_dma_soc_data.flags */
+ 
 #define JZ_SOC_DATA_ALLOW_LEGACY_DT	BIT(0)
 #define JZ_SOC_DATA_PROGRAMMABLE_DMA	BIT(1)
 #define JZ_SOC_DATA_PER_CHAN_PM		BIT(2)
 #define JZ_SOC_DATA_NO_DCKES_DCKEC	BIT(3)
 #define JZ_SOC_DATA_BREAK_LINKS		BIT(4)
 
-/**
- * struct jz4780_dma_hwdesc - descriptor structure read by the DMA controller.
- * @dcm: value for the DCM (channel command) register
- * @dsa: source address
- * @dta: target address
- * @dtc: transfer count (number of blocks of the transfer size specified in DCM
- * to transfer) in the low 24 bits, offset of the next descriptor from the
- * descriptor base address in the upper 8 bits.
- */
+ 
 struct jz4780_dma_hwdesc {
 	u32 dcm;
 	u32 dsa;
@@ -110,7 +97,7 @@ struct jz4780_dma_hwdesc {
 	u32 dtc;
 };
 
-/* Size of allocations for hardware descriptor blocks. */
+ 
 #define JZ_DMA_DESC_BLOCK_SIZE	PAGE_SIZE
 #define JZ_DMA_MAX_DESC		\
 	(JZ_DMA_DESC_BLOCK_SIZE / sizeof(struct jz4780_dma_hwdesc))
@@ -274,13 +261,7 @@ static u32 jz4780_dma_transfer_size(struct jz4780_dma_chan *jzchan,
 	struct jz4780_dma_dev *jzdma = jz4780_dma_chan_parent(jzchan);
 	int ord = ffs(val) - 1;
 
-	/*
-	 * 8 byte transfer sizes unsupported so fall back on 4. If it's larger
-	 * than the maximum, just limit it. It is perfectly safe to fall back
-	 * in this way since we won't exceed the maximum burst size supported
-	 * by the device, the only effect is reduced efficiency. This is better
-	 * than refusing to perform the request at all.
-	 */
+	 
 	if (ord == 3)
 		ord = 2;
 	else if (ord > jzdma->soc_data->transfer_ord_max)
@@ -329,13 +310,7 @@ static int jz4780_dma_setup_hwdesc(struct jz4780_dma_chan *jzchan,
 		maxburst = config->src_maxburst;
 	}
 
-	/*
-	 * This calculates the maximum transfer size that can be used with the
-	 * given address, length, width and maximum burst size. The address
-	 * must be aligned to the transfer size, the total length must be
-	 * divisible by the transfer size, and we must not use more than the
-	 * maximum burst specified by the user.
-	 */
+	 
 	tsz = jz4780_dma_transfer_size(jzchan, addr | len | (width * maxburst),
 				       &jzchan->transfer_shift);
 
@@ -387,14 +362,10 @@ static struct dma_async_tx_descriptor *jz4780_dma_prep_slave_sg(
 
 		if (i != (sg_len - 1) &&
 		    !(jzdma->soc_data->flags & JZ_SOC_DATA_BREAK_LINKS)) {
-			/* Automatically proceed to the next descriptor. */
+			 
 			desc->desc[i].dcm |= JZ_DMA_DCM_LINK;
 
-			/*
-			 * The upper 8 bits of the DTC field in the descriptor
-			 * must be set to (offset from descriptor base of next
-			 * descriptor >> 4).
-			 */
+			 
 			desc->desc[i].dtc |=
 				(((i + 1) * sizeof(*desc->desc)) >> 4) << 24;
 		}
@@ -432,20 +403,10 @@ static struct dma_async_tx_descriptor *jz4780_dma_prep_dma_cyclic(
 
 		buf_addr += period_len;
 
-		/*
-		 * Set the link bit to indicate that the controller should
-		 * automatically proceed to the next descriptor. In
-		 * jz4780_dma_begin(), this will be cleared if we need to issue
-		 * an interrupt after each period.
-		 */
+		 
 		desc->desc[i].dcm |= JZ_DMA_DCM_TIE | JZ_DMA_DCM_LINK;
 
-		/*
-		 * The upper 8 bits of the DTC field in the descriptor must be
-		 * set to (offset from descriptor base of next descriptor >> 4).
-		 * If this is the last descriptor, link it back to the first,
-		 * i.e. leave offset set to 0, otherwise point to the next one.
-		 */
+		 
 		if (i != (periods - 1)) {
 			desc->desc[i].dtc |=
 				(((i + 1) * sizeof(*desc->desc)) >> 4) << 24;
@@ -501,59 +462,37 @@ static void jz4780_dma_begin(struct jz4780_dma_chan *jzchan)
 		jzchan->curr_hwdesc = 0;
 
 		if (jzchan->desc->type == DMA_CYCLIC && vdesc->tx.callback) {
-			/*
-			 * The DMA controller doesn't support triggering an
-			 * interrupt after processing each descriptor, only
-			 * after processing an entire terminated list of
-			 * descriptors. For a cyclic DMA setup the list of
-			 * descriptors is not terminated so we can never get an
-			 * interrupt.
-			 *
-			 * If the user requested a callback for a cyclic DMA
-			 * setup then we workaround this hardware limitation
-			 * here by degrading to a set of unlinked descriptors
-			 * which we will submit in sequence in response to the
-			 * completion of processing the previous descriptor.
-			 */
+			 
 			for (i = 0; i < jzchan->desc->count; i++)
 				jzchan->desc->desc[i].dcm &= ~JZ_DMA_DCM_LINK;
 		}
 	} else {
-		/*
-		 * There is an existing transfer, therefore this must be one
-		 * for which we unlinked the descriptors above. Advance to the
-		 * next one in the list.
-		 */
+		 
 		jzchan->curr_hwdesc =
 			(jzchan->curr_hwdesc + 1) % jzchan->desc->count;
 	}
 
-	/* Enable the channel's clock. */
+	 
 	jz4780_dma_chan_enable(jzdma, jzchan->id);
 
-	/* Use 4-word descriptors. */
+	 
 	jz4780_dma_chn_writel(jzdma, jzchan->id, JZ_DMA_REG_DCS, 0);
 
-	/* Set transfer type. */
+	 
 	jz4780_dma_chn_writel(jzdma, jzchan->id, JZ_DMA_REG_DRT,
 			      jzchan->desc->transfer_type);
 
-	/*
-	 * Set the transfer count. This is redundant for a descriptor-driven
-	 * transfer. However, there can be a delay between the transfer start
-	 * time and when DTCn reg contains the new transfer count. Setting
-	 * it explicitly ensures residue is computed correctly at all times.
-	 */
+	 
 	jz4780_dma_chn_writel(jzdma, jzchan->id, JZ_DMA_REG_DTC,
 				jzchan->desc->desc[jzchan->curr_hwdesc].dtc);
 
-	/* Write descriptor address and initiate descriptor fetch. */
+	 
 	desc_phys = jzchan->desc->desc_phys +
 		    (jzchan->curr_hwdesc * sizeof(*jzchan->desc->desc));
 	jz4780_dma_chn_writel(jzdma, jzchan->id, JZ_DMA_REG_DDA, desc_phys);
 	jz4780_dma_ctrl_writel(jzdma, JZ_DMA_REG_DDRS, BIT(jzchan->id));
 
-	/* Enable the channel. */
+	 
 	jz4780_dma_chn_writel(jzdma, jzchan->id, JZ_DMA_REG_DCS,
 			      JZ_DMA_DCS_CTE);
 }
@@ -580,7 +519,7 @@ static int jz4780_dma_terminate_all(struct dma_chan *chan)
 
 	spin_lock_irqsave(&jzchan->vchan.lock, flags);
 
-	/* Clear the DMA status and stop the transfer. */
+	 
 	jz4780_dma_chn_writel(jzdma, jzchan->id, JZ_DMA_REG_DCS, 0);
 	if (jzchan->desc) {
 		vchan_terminate_vdesc(&jzchan->desc->vdesc);
@@ -615,7 +554,7 @@ static int jz4780_dma_config(struct dma_chan *chan,
 	   || (config->dst_addr_width == DMA_SLAVE_BUSWIDTH_8_BYTES))
 		return -EINVAL;
 
-	/* Copy the reset of the slave configuration, it is used later. */
+	 
 	memcpy(&jzchan->config, config, sizeof(jzchan->config));
 
 	return 0;
@@ -655,7 +594,7 @@ static enum dma_status jz4780_dma_tx_status(struct dma_chan *chan,
 
 	vdesc = vchan_find_desc(&jzchan->vchan, cookie);
 	if (vdesc) {
-		/* On the issued list, so hasn't been processed yet */
+		 
 		residue = jz4780_dma_desc_residue(jzchan,
 					to_jz4780_dma_desc(vdesc), 0);
 	} else if (cookie == jzchan->desc->vdesc.tx.cookie) {
@@ -713,7 +652,7 @@ static bool jz4780_dma_chan_irq(struct jz4780_dma_dev *jzdma,
 
 				jz4780_dma_begin(jzchan);
 			} else {
-				/* False positive - continue the transfer */
+				 
 				ack = false;
 				jz4780_dma_chn_writel(jzdma, jzchan->id,
 						      JZ_DMA_REG_DCS,
@@ -745,12 +684,12 @@ static irqreturn_t jz4780_dma_irq_handler(int irq, void *data)
 			pending &= ~BIT(i);
 	}
 
-	/* Clear halt and address error status of all channels. */
+	 
 	dmac = jz4780_dma_ctrl_readl(jzdma, JZ_DMA_REG_DMAC);
 	dmac &= ~(JZ_DMA_DMAC_HLT | JZ_DMA_DMAC_AR);
 	jz4780_dma_ctrl_writel(jzdma, JZ_DMA_REG_DMAC, dmac);
 
-	/* Clear interrupt pending status. */
+	 
 	jz4780_dma_ctrl_writel(jzdma, JZ_DMA_REG_DIRQP, pending);
 
 	return IRQ_HANDLED;
@@ -829,7 +768,7 @@ static struct dma_chan *jz4780_of_dma_xlate(struct of_phandle_args *dma_spec,
 			return NULL;
 		}
 
-		/* Can only select a channel marked as reserved. */
+		 
 		if (!(jzdma->chan_reserved & BIT(data.channel))) {
 			dev_err(jzdma->dma_device.dev,
 				"device requested unreserved channel %u\n",
@@ -885,11 +824,7 @@ static int jz4780_dma_probe(struct platform_device *pdev)
 		if (IS_ERR(jzdma->ctrl_base))
 			return PTR_ERR(jzdma->ctrl_base);
 	} else if (soc_data->flags & JZ_SOC_DATA_ALLOW_LEGACY_DT) {
-		/*
-		 * On JZ4780, if the second memory resource was not supplied,
-		 * assume we're using an old devicetree, and calculate the
-		 * offset to the control registers.
-		 */
+		 
 		jzdma->ctrl_base = jzdma->chn_base + JZ4780_DMA_CTRL_OFFSET;
 	} else {
 		dev_err(dev, "failed to get I/O memory\n");
@@ -905,18 +840,13 @@ static int jz4780_dma_probe(struct platform_device *pdev)
 
 	clk_prepare_enable(jzdma->clk);
 
-	/* Property is optional, if it doesn't exist the value will remain 0. */
+	 
 	of_property_read_u32_index(dev->of_node, "ingenic,reserved-channels",
 				   0, &jzdma->chan_reserved);
 
 	dd = &jzdma->dma_device;
 
-	/*
-	 * The real segment size limit is dependent on the size unit selected
-	 * for the transfer. Because the size unit is selected automatically
-	 * and may be as small as 1 byte, use a safe limit of 2^24-1 bytes to
-	 * ensure the 24-bit transfer count in the descriptor cannot overflow.
-	 */
+	 
 	dma_set_max_seg_size(dev, 0xffffff);
 
 	dma_cap_set(DMA_MEMCPY, dd->cap_mask);
@@ -941,11 +871,7 @@ static int jz4780_dma_probe(struct platform_device *pdev)
 	dd->residue_granularity = DMA_RESIDUE_GRANULARITY_BURST;
 	dd->max_sg_burst = JZ_DMA_MAX_DESC;
 
-	/*
-	 * Enable DMA controller, mark all channels as not programmable.
-	 * Also set the FMSC bit - it increases MSC performance, so it makes
-	 * little sense not to enable it.
-	 */
+	 
 	jz4780_dma_ctrl_writel(jzdma, JZ_DMA_REG_DMAC, JZ_DMA_DMAC_DMAE |
 			       JZ_DMA_DMAC_FAIC | JZ_DMA_DMAC_FMSC);
 
@@ -962,11 +888,7 @@ static int jz4780_dma_probe(struct platform_device *pdev)
 		jzchan->vchan.desc_free = jz4780_dma_desc_free;
 	}
 
-	/*
-	 * On JZ4760, chan0 won't enable properly the first time.
-	 * Enabling then disabling chan1 will magically make chan0 work
-	 * correctly.
-	 */
+	 
 	jz4780_dma_chan_enable(jzdma, 1);
 	jz4780_dma_chan_disable(jzdma, 1);
 
@@ -989,7 +911,7 @@ static int jz4780_dma_probe(struct platform_device *pdev)
 		goto err_free_irq;
 	}
 
-	/* Register with OF DMA helpers. */
+	 
 	ret = of_dma_controller_register(dev->of_node, jz4780_of_dma_xlate,
 					 jzdma);
 	if (ret) {

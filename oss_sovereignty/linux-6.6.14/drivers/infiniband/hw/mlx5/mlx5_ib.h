@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/*
- * Copyright (c) 2013-2020, Mellanox Technologies inc. All rights reserved.
- * Copyright (c) 2020, Intel Corporation. All rights reserved.
- */
+ 
+ 
 
 #ifndef MLX5_IB_H
 #define MLX5_IB_H
@@ -55,18 +52,12 @@ __mlx5_log_page_size_to_bitmap(unsigned int log_pgsz_bits,
 		min_t(unsigned long, (1ULL << log_pgsz_bits) - 1 + pgsz_shift,
 		      BITS_PER_LONG - 1);
 
-	/*
-	 * Despite a command allowing it, the device does not support lower than
-	 * 4k page size.
-	 */
+	 
 	pgsz_shift = max_t(unsigned int, MLX5_ADAPTER_PAGE_SHIFT, pgsz_shift);
 	return GENMASK(largest_pg_shift, pgsz_shift);
 }
 
-/*
- * For mkc users, instead of a page_offset the command has a start_iova which
- * specifies both the page_offset and the on-the-wire IOVA
- */
+ 
 #define mlx5_umem_find_best_pgsz(umem, typ, log_pgsz_fld, pgsz_shift, iova)    \
 	ib_umem_find_best_pgsz(umem,                                           \
 			       __mlx5_log_page_size_to_bitmap(                 \
@@ -85,11 +76,7 @@ __mlx5_page_offset_to_bitmask(unsigned int page_offset_bits,
 	return GENMASK(largest_offset_shift, offset_shift);
 }
 
-/*
- * QP/CQ/WQ/etc type commands take a page offset that satisifies:
- *   page_offset_quantized * (page_size/scale) = page_offset
- * Which restricts allowed page sizes to ones that satisify the above.
- */
+ 
 unsigned long __mlx5_umem_find_best_quantized_pgoff(
 	struct ib_umem *umem, unsigned long pgsz_bitmap,
 	unsigned int page_offset_bits, u64 pgoff_bitmask, unsigned int scale,
@@ -180,9 +167,7 @@ struct mlx5_bfreg_info {
 	int num_low_latency_bfregs;
 	unsigned int *count;
 
-	/*
-	 * protect bfreg allocation data structs
-	 */
+	 
 	struct mutex lock;
 	u32 ver;
 	u8 lib_uar_4k : 1;
@@ -197,17 +182,16 @@ struct mlx5_ib_ucontext {
 	struct ib_ucontext	ibucontext;
 	struct list_head	db_page_list;
 
-	/* protect doorbell record alloc/free
-	 */
+	 
 	struct mutex		db_page_mutex;
 	struct mlx5_bfreg_info	bfregi;
 	u8			cqe_version;
-	/* Transport Domain number */
+	 
 	u32			tdn;
 
 	u64			lib_caps;
 	u16			devx_uid;
-	/* For RoCE LAG TX affinity */
+	 
 	atomic_t		tx_port_affinity;
 };
 
@@ -305,23 +289,14 @@ struct mlx5_ib_flow_db {
 	struct mlx5_ib_flow_prio	rdma_tx[MLX5_IB_NUM_FLOW_FT];
 	struct mlx5_ib_flow_prio	opfcs[MLX5_IB_OPCOUNTER_MAX];
 	struct mlx5_flow_table		*lag_demux_ft;
-	/* Protect flow steering bypass flow tables
-	 * when add/del flow rules.
-	 * only single add/removal of flow steering rule could be done
-	 * simultaneously.
-	 */
+	 
 	struct mutex			lock;
 };
 
-/* Use macros here so that don't have to duplicate
- * enum ib_qp_type for low-level driver
- */
+ 
 
 #define MLX5_IB_QPT_REG_UMR	IB_QPT_RESERVED1
-/*
- * IB_QPT_GSI creates the software wrapper around GSI, and MLX5_IB_QPT_HW_GSI
- * creates the actual hardware QP.
- */
+ 
 #define MLX5_IB_QPT_HW_GSI	IB_QPT_RESERVED2
 #define MLX5_IB_QPT_DCI		IB_QPT_RESERVED3
 #define MLX5_IB_QPT_DCT		IB_QPT_RESERVED4
@@ -335,11 +310,7 @@ struct mlx5_ib_flow_db {
 #define MLX5_IB_UPD_XLT_ACCESS	      BIT(5)
 #define MLX5_IB_UPD_XLT_INDIRECT      BIT(6)
 
-/* Private QP creation flags to be passed in ib_qp_init_attr.create_flags.
- *
- * These flags are intended for internal use by the mlx5_ib driver, and they
- * rely on the range reserved for that use in the ib_qp_create_flags enum.
- */
+ 
 #define MLX5_IB_QP_CREATE_SQPN_QP1	IB_QP_CREATE_RESERVED_START
 #define MLX5_IB_QP_CREATE_WC_TEST	(IB_QP_CREATE_RESERVED_START << 1)
 
@@ -361,8 +332,7 @@ struct mlx5_ib_wq {
 	unsigned	       *wqe_head;
 	u16		        unsig_count;
 
-	/* serialize post to the work queue
-	 */
+	 
 	spinlock_t		lock;
 	int			wqe_cnt;
 	int			max_post;
@@ -406,7 +376,7 @@ struct mlx5_ib_rwq {
 	u32			wqe_count;
 	u32			wqe_shift;
 	int			wq_sig;
-	u32			create_flags; /* Use enum mlx5_ib_wq_flags */
+	u32			create_flags;  
 };
 
 struct mlx5_ib_rwq_ind_table {
@@ -483,10 +453,7 @@ struct mlx5_ib_gsi_qp {
 	struct mlx5_ib_gsi_wr *outstanding_wrs;
 	u32 outstanding_pi, outstanding_ci;
 	int num_qps;
-	/* Protects access to the tx_qps. Post send operations synchronize
-	 * with tx_qp creation in setup_qp(). Also protects the
-	 * outstanding_wrs array and indices.
-	 */
+	 
 	spinlock_t lock;
 	struct ib_qp **tx_qps;
 };
@@ -509,10 +476,9 @@ struct mlx5_ib_qp {
 	u8			next_fence;
 	struct mlx5_ib_wq	sq;
 
-	/* serialize qp state modifications
-	 */
+	 
 	struct mutex		mutex;
-	/* cached variant of create_flags from struct ib_qp_init_attr */
+	 
 	u32			flags;
 	u32			port;
 	u8			state;
@@ -521,9 +487,7 @@ struct mlx5_ib_qp {
 	u8			has_rq:1;
 	u8			is_rss:1;
 
-	/* only for user space QPs. For kernel
-	 * we have it from the bf object
-	 */
+	 
 	int			bfregn;
 
 	struct list_head	qps_list;
@@ -532,14 +496,9 @@ struct mlx5_ib_qp {
 	struct mlx5_rate_limit	rl;
 	u32                     underlay_qpn;
 	u32			flags_en;
-	/*
-	 * IB/core doesn't store low-level QP types, so
-	 * store both MLX and IBTA types in the field below.
-	 */
+	 
 	enum ib_qp_type		type;
-	/* A flag to indicate if there's a new counter is configured
-	 * but not take effective
-	 */
+	 
 	u32                     counter_pending;
 	u16			gsi_lag_port;
 };
@@ -563,12 +522,10 @@ struct mlx5_ib_cq {
 	struct mlx5_ib_cq_buf	buf;
 	struct mlx5_db		db;
 
-	/* serialize access to the CQ
-	 */
+	 
 	spinlock_t		lock;
 
-	/* protect resize cq
-	 */
+	 
 	struct mutex		resize_mutex;
 	struct mlx5_ib_cq_buf  *resize_buf;
 	struct ib_umem	       *resize_umem;
@@ -579,7 +536,7 @@ struct mlx5_ib_cq {
 	struct list_head	wc_list;
 	enum ib_cq_notify_flags notify_flags;
 	struct work_struct	notify_work;
-	u16			private_flags; /* Use mlx5_ib_cq_pr_flags */
+	u16			private_flags;  
 };
 
 struct mlx5_ib_wc {
@@ -594,15 +551,13 @@ struct mlx5_ib_srq {
 	struct mlx5_db		db;
 	struct mlx5_frag_buf_ctrl fbc;
 	u64		       *wrid;
-	/* protect SRQ hanlding
-	 */
+	 
 	spinlock_t		lock;
 	int			head;
 	int			tail;
 	u16			wqe_ctr;
 	struct ib_umem	       *umem;
-	/* serialize arming a SRQ
-	 */
+	 
 	struct mutex		mutex;
 	int			wq_sig;
 };
@@ -643,7 +598,7 @@ struct mlx5_ib_mkey {
 	unsigned int ndescs;
 	struct wait_queue_head wait;
 	refcount_t usecount;
-	/* User Mkey must hold either a rb_key or a cache_ent. */
+	 
 	struct mlx5r_cache_rb_key rb_key;
 	struct mlx5_cache_ent *cache_ent;
 };
@@ -671,7 +626,7 @@ struct mlx5_ib_mr {
 	struct ib_umem *umem;
 
 	union {
-		/* Used only by kernel MRs (umem == NULL) */
+		 
 		struct {
 			void *descs;
 			void *descs_alloc;
@@ -680,7 +635,7 @@ struct mlx5_ib_mr {
 			int desc_size;
 			int access_mode;
 
-			/* For Kernel IB_MR_TYPE_INTEGRITY */
+			 
 			struct mlx5_core_sig_ctx *sig;
 			struct mlx5_ib_mr *pi_mr;
 			struct mlx5_ib_mr *klm_mr;
@@ -692,13 +647,13 @@ struct mlx5_ib_mr {
 			int data_length;
 		};
 
-		/* Used only by User MRs (umem != NULL) */
+		 
 		struct {
 			unsigned int page_shift;
-			/* Current access_flags */
+			 
 			int access_flags;
 
-			/* For User ODP */
+			 
 			struct mlx5_ib_mr *parent;
 			struct xarray implicit_children;
 			union {
@@ -744,11 +699,9 @@ struct umr_common {
 	struct ib_pd	*pd;
 	struct ib_cq	*cq;
 	struct ib_qp	*qp;
-	/* Protects from UMR QP overflow
-	 */
+	 
 	struct semaphore	sem;
-	/* Protects from using UMR while the UMR is not active
-	 */
+	 
 	struct mutex lock;
 	unsigned int state;
 };
@@ -767,14 +720,11 @@ struct mlx5_cache_ent {
 	u8 disabled:1;
 	u8 fill_to_high_water:1;
 
-	/*
-	 * - limit is the low water mark for stored mkeys, 2* limit is the
-	 *   upper water mark.
-	 */
+	 
 	u32 in_use;
 	u32 limit;
 
-	/* Statistics */
+	 
 	u32                     miss;
 
 	struct mlx5_ib_dev     *dev;
@@ -845,14 +795,12 @@ struct mlx5_ib_multiport_info;
 
 struct mlx5_ib_multiport {
 	struct mlx5_ib_multiport_info *mpi;
-	/* To be held when accessing the multiport info */
+	 
 	spinlock_t mpi_lock;
 };
 
 struct mlx5_roce {
-	/* Protect mlx5_ib_get_netdev from invoking dev_hold() with a NULL
-	 * netdev pointer
-	 */
+	 
 	rwlock_t		netdev_lock;
 	struct net_device	*netdev;
 	struct notifier_block	nb;
@@ -921,7 +869,7 @@ enum {
 struct mlx5_ib_delay_drop {
 	struct mlx5_ib_dev     *dev;
 	struct work_struct	delay_drop_work;
-	/* serialize setting of delay drop */
+	 
 	struct mutex		lock;
 	u32			timeout;
 	bool			activate;
@@ -998,10 +946,7 @@ struct mlx5_ib_flow_action {
 
 struct mlx5_dm {
 	struct mlx5_core_dev *dev;
-	/* This lock is used to protect the access to the shared
-	 * allocation map when concurrent requests by different
-	 * processes are handled.
-	 */
+	 
 	spinlock_t lock;
 	DECLARE_BITMAP(memic_alloc_pages, MLX5_MAX_MEMIC_PAGES);
 };
@@ -1019,19 +964,19 @@ enum mlx5_ib_counters_type {
 struct mlx5_ib_mcounters {
 	struct ib_counters ibcntrs;
 	enum mlx5_ib_counters_type type;
-	/* number of counters supported for this counters type */
+	 
 	u32 counters_num;
 	struct mlx5_fc *hw_cntrs_hndl;
-	/* read function for this counters type */
+	 
 	int (*read_counters)(struct ib_device *ibdev,
 			     struct mlx5_read_counters_attr *read_attr);
-	/* max index set as part of create_flow */
+	 
 	u32 cntrs_max_index;
-	/* number of counters data entries (<description,index> pair) */
+	 
 	u32 ncounters;
-	/* counters data array for descriptions and indexes */
+	 
 	struct mlx5_ib_flow_counters_desc *counters_data;
-	/* protects access to mcounters internal data */
+	 
 	struct mutex mcntrs_mutex;
 };
 
@@ -1045,7 +990,7 @@ int parse_flow_flow_action(struct mlx5_ib_flow_action *maction,
 			   bool is_egress,
 			   struct mlx5_flow_act *action);
 struct mlx5_ib_lb_state {
-	/* protect the user_td */
+	 
 	struct mutex		mutex;
 	u32			user_td;
 	int			qps;
@@ -1057,20 +1002,20 @@ struct mlx5_ib_pf_eq {
 	struct mlx5_ib_dev *dev;
 	struct mlx5_eq *core;
 	struct work_struct work;
-	spinlock_t lock; /* Pagefaults spinlock */
+	spinlock_t lock;  
 	struct workqueue_struct *wq;
 	mempool_t *pool;
 };
 
 struct mlx5_devx_event_table {
 	struct mlx5_nb devx_nb;
-	/* serialize updating the event_xa */
+	 
 	struct mutex event_xa_lock;
 	struct xarray event_xa;
 };
 
 struct mlx5_var_table {
-	/* serialize updating the bitmap */
+	 
 	struct mutex bitmap_lock;
 	unsigned long *bitmap;
 	u64 hw_start_addr;
@@ -1091,7 +1036,7 @@ struct mlx5_special_mkeys {
 };
 
 struct mlx5_macsec {
-	struct mutex lock; /* Protects mlx5_macsec internal contexts */
+	struct mutex lock;  
 	struct list_head macsec_devices_list;
 	struct notifier_block blocking_events_nb;
 };
@@ -1101,8 +1046,7 @@ struct mlx5_ib_dev {
 	struct mlx5_core_dev		*mdev;
 	struct notifier_block		mdev_events;
 	int				num_ports;
-	/* serialize update of capability mask
-	 */
+	 
 	struct mutex			cap_mask_mutex;
 	u8				ib_active:1;
 	u8				is_rep:1;
@@ -1110,14 +1054,13 @@ struct mlx5_ib_dev {
 	u8				wc_support:1;
 	u8				fill_delay;
 	struct umr_common		umrc;
-	/* sync used page count stats
-	 */
+	 
 	struct mlx5_ib_resources	devr;
 
 	atomic_t			mkey_var;
 	struct mlx5_mkey_cache		cache;
 	struct timer_list		delay_timer;
-	/* Prevents soft lock on massive reg MRs */
+	 
 	struct mutex			slow_path_mutex;
 	struct ib_odp_caps	odp_caps;
 	u64			odp_max_size;
@@ -1127,10 +1070,10 @@ struct mlx5_ib_dev {
 	struct xarray		odp_mkeys;
 
 	struct mlx5_ib_flow_db	*flow_db;
-	/* protect resources needed as part of reset flow */
+	 
 	spinlock_t		reset_flow_resource_lock;
 	struct list_head	qp_list;
-	/* Array with num_ports elements */
+	 
 	struct mlx5_ib_port	*port;
 	struct mlx5_sq_bfreg	bfreg;
 	struct mlx5_sq_bfreg	wc_bfreg;
@@ -1406,7 +1349,7 @@ int mlx5_ib_advise_mr_prefetch(struct ib_pd *pd,
 			       u32 flags, struct ib_sge *sg_list, u32 num_sge);
 int mlx5_ib_init_odp_mr(struct mlx5_ib_mr *mr);
 int mlx5_ib_init_dmabuf_mr(struct mlx5_ib_mr *mr);
-#else /* CONFIG_INFINIBAND_ON_DEMAND_PAGING */
+#else  
 static inline int mlx5_ib_odp_init_one(struct mlx5_ib_dev *ibdev) { return 0; }
 static inline int mlx5r_odp_create_eq(struct mlx5_ib_dev *dev,
 				      struct mlx5_ib_pf_eq *eq)
@@ -1438,11 +1381,11 @@ static inline int mlx5_ib_init_dmabuf_mr(struct mlx5_ib_mr *mr)
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_INFINIBAND_ON_DEMAND_PAGING */
+#endif  
 
 extern const struct mmu_interval_notifier_ops mlx5_mn_ops;
 
-/* Needed for rep profile */
+ 
 void __mlx5_ib_remove(struct mlx5_ib_dev *dev,
 		      const struct mlx5_ib_profile *profile,
 		      int stage);
@@ -1467,7 +1410,7 @@ __be16 mlx5_get_roce_udp_sport_min(const struct mlx5_ib_dev *dev,
 void mlx5_ib_cleanup_cong_debugfs(struct mlx5_ib_dev *dev, u32 port_num);
 void mlx5_ib_init_cong_debugfs(struct mlx5_ib_dev *dev, u32 port_num);
 
-/* GSI QP helper functions */
+ 
 int mlx5_ib_create_gsi(struct ib_pd *pd, struct mlx5_ib_qp *mqp,
 		       struct ib_qp_init_attr *attr);
 int mlx5_ib_destroy_gsi(struct mlx5_ib_qp *mqp);
@@ -1505,10 +1448,7 @@ static inline int is_qp1(enum ib_qp_type qp_type)
 
 static inline u32 check_cq_create_flags(u32 flags)
 {
-	/*
-	 * It returns non-zero value for unsupported CQ
-	 * create flags, otherwise it returns zero.
-	 */
+	 
 	return (flags & ~(IB_UVERBS_CQ_FLAGS_IGNORE_OVERRUN |
 			  IB_UVERBS_CQ_FLAGS_TIMESTAMP_COMPLETION));
 }
@@ -1583,14 +1523,14 @@ static inline int mlx5r_store_odp_mkey(struct mlx5_ib_dev *dev,
 			       mmkey, GFP_KERNEL));
 }
 
-/* deref an mkey that can participate in ODP flow */
+ 
 static inline void mlx5r_deref_odp_mkey(struct mlx5_ib_mkey *mmkey)
 {
 	if (refcount_dec_and_test(&mmkey->usecount))
 		wake_up(&mmkey->wait);
 }
 
-/* deref an mkey that can participate in ODP flow and wait for relese */
+ 
 static inline void mlx5r_deref_wait_odp_mkey(struct mlx5_ib_mkey *mmkey)
 {
 	mlx5r_deref_odp_mkey(mmkey);
@@ -1601,13 +1541,7 @@ int mlx5_ib_test_wc(struct mlx5_ib_dev *dev);
 
 static inline bool mlx5_ib_lag_should_assign_affinity(struct mlx5_ib_dev *dev)
 {
-	/*
-	 * If the driver is in hash mode and the port_select_flow_table_bypass cap
-	 * is supported, it means that the driver no longer needs to assign the port
-	 * affinity by default. If a user wants to set the port affinity explicitly,
-	 * the user has a dedicated API to do that, so there is no need to assign
-	 * the port affinity by default.
-	 */
+	 
 	if (dev->lag_active &&
 	    mlx5_lag_mode_is_hash(dev->mdev) &&
 	    MLX5_CAP_PORT_SELECTION(dev->mdev, port_select_flow_table_bypass))
@@ -1627,33 +1561,7 @@ static inline bool rt_supported(int ts_cap)
 	       ts_cap == MLX5_TIMESTAMP_FORMAT_CAP_FREE_RUNNING_AND_REAL_TIME;
 }
 
-/*
- * PCI Peer to Peer is a trainwreck. If no switch is present then things
- * sometimes work, depending on the pci_distance_p2p logic for excluding broken
- * root complexes. However if a switch is present in the path, then things get
- * really ugly depending on how the switch is setup. This table assumes that the
- * root complex is strict and is validating that all req/reps are matches
- * perfectly - so any scenario where it sees only half the transaction is a
- * failure.
- *
- * CR/RR/DT  ATS RO P2P
- * 00X       X   X  OK
- * 010       X   X  fails (request is routed to root but root never sees comp)
- * 011       0   X  fails (request is routed to root but root never sees comp)
- * 011       1   X  OK
- * 10X       X   1  OK
- * 101       X   0  fails (completion is routed to root but root didn't see req)
- * 110       X   0  SLOW
- * 111       0   0  SLOW
- * 111       1   0  fails (completion is routed to root but root didn't see req)
- * 111       1   1  OK
- *
- * Unfortunately we cannot reliably know if a switch is present or what the
- * CR/RR/DT ACS settings are, as in a VM that is all hidden. Assume that
- * CR/RR/DT is 111 if the ATS cap is enabled and follow the last three rows.
- *
- * For now assume if the umem is a dma_buf then it is P2P.
- */
+ 
 static inline bool mlx5_umem_needs_ats(struct mlx5_ib_dev *dev,
 				       struct ib_umem *umem, int access_flags)
 {
@@ -1665,4 +1573,4 @@ static inline bool mlx5_umem_needs_ats(struct mlx5_ib_dev *dev,
 int set_roce_addr(struct mlx5_ib_dev *dev, u32 port_num,
 		  unsigned int index, const union ib_gid *gid,
 		  const struct ib_gid_attr *attr);
-#endif /* MLX5_IB_H */
+#endif  

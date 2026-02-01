@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, MediaTek Inc.
- * Copyright (c) 2021-2022, Intel Corporation.
- *
- * Authors:
- *  Amir Hanania <amir.hanania@intel.com>
- *  Haijun Liu <haijun.liu@mediatek.com>
- *  Moises Veleta <moises.veleta@intel.com>
- *  Ricardo Martinez <ricardo.martinez@linux.intel.com>
- *
- * Contributors:
- *  Chiranjeevi Rapolu <chiranjeevi.rapolu@intel.com>
- *  Eliot Lee <eliot.lee@intel.com>
- *  Sreehari Kancharla <sreehari.kancharla@intel.com>
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/gfp.h>
@@ -104,7 +90,7 @@ static void t7xx_dpmaif_irq_cb(struct dpmaif_isr_para *isr_para)
 		case DPF_INTR_UL_DRB_EMPTY:
 		case DPF_INTR_UL_MD_NOTREADY:
 		case DPF_INTR_UL_MD_PWR_NOTREADY:
-			/* No need to log an error for these */
+			 
 			break;
 
 		case DPF_INTR_DL_BATCNT_LEN_ERR:
@@ -519,19 +505,7 @@ int t7xx_dpmaif_md_state_callback(struct dpmaif_ctrl *dpmaif_ctrl, enum md_state
 	return ret;
 }
 
-/**
- * t7xx_dpmaif_hif_init() - Initialize data path.
- * @t7xx_dev: MTK context structure.
- * @callbacks: Callbacks implemented by the network layer to handle RX skb and
- *	       event notifications.
- *
- * Allocate and initialize datapath control block.
- * Register datapath ISR, TX and RX resources.
- *
- * Return:
- * * dpmaif_ctrl pointer - Pointer to DPMAIF context structure.
- * * NULL		 - In case of error.
- */
+ 
 struct dpmaif_ctrl *t7xx_dpmaif_hif_init(struct t7xx_pci_dev *t7xx_dev,
 					 struct dpmaif_callbacks *callbacks)
 {

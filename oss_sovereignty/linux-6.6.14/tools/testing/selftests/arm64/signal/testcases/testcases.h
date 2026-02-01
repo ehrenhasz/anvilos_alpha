@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (C) 2019 ARM Limited */
+ 
+ 
 #ifndef __TESTCASES_H__
 #define __TESTCASES_H__
 
@@ -11,7 +11,7 @@
 #include <ucontext.h>
 #include <signal.h>
 
-/* Architecture specific sigframe definitions */
+ 
 #include <asm/sigcontext.h>
 
 #define FPSIMD_CTX	(1 << 0)
@@ -65,17 +65,7 @@
 	}								 \
 } while (0)
 
-/*
- * A simple record-walker for __reserved area: it walks through assuming
- * only to find a proper struct __aarch64_ctx header descriptor.
- *
- * Instead it makes no assumptions on the content and ordering of the
- * records, any needed bounds checking must be enforced by the caller
- * if wanted: this way can be used by caller on any maliciously built bad
- * contexts.
- *
- * head->size accounts both for payload and header _aarch64_ctx size !
- */
+ 
 #define GET_RESV_NEXT_HEAD(h) \
 	(struct _aarch64_ctx *)((char *)(h) + (h)->size)
 

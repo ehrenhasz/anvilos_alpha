@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  LEDs driver for the Cobalt Raq series.
- *
- *  Copyright (C) 2007  Yoichi Yuasa <yuasa@linux-mips.org>
- */
+
+ 
 #include <linux/init.h>
 #include <linux/io.h>
 #include <linux/ioport.h>

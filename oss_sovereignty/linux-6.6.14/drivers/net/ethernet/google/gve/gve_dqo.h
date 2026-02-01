@@ -1,8 +1,4 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT)
- * Google virtual Ethernet (gve) driver
- *
- * Copyright (C) 2015-2021 Google, Inc.
- */
+ 
 
 #ifndef _GVE_DQO_H_
 #define _GVE_DQO_H_
@@ -20,16 +16,10 @@
 #define GVE_RX_IRQ_RATELIMIT_US_DQO 20
 #define GVE_MAX_ITR_INTERVAL_DQO (GVE_ITR_INTERVAL_DQO_MASK * 2)
 
-/* Timeout in seconds to wait for a reinjection completion after receiving
- * its corresponding miss completion.
- */
+ 
 #define GVE_REINJECT_COMPL_TIMEOUT 1
 
-/* Timeout in seconds to deallocate the completion tag for a packet that was
- * prematurely freed for not receiving a valid completion. This should be large
- * enough to rule out the possibility of receiving the corresponding valid
- * completion after this interval.
- */
+ 
 #define GVE_DEALLOCATE_COMPL_TIMEOUT 60
 
 netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev);
@@ -54,14 +44,12 @@ gve_tx_put_doorbell_dqo(const struct gve_priv *priv,
 	iowrite32(val, &priv->db_bar2[index]);
 }
 
-/* Builds register value to write to DQO IRQ doorbell to enable with specified
- * ITR interval.
- */
+ 
 static inline u32 gve_setup_itr_interval_dqo(u32 interval_us)
 {
 	u32 result = GVE_ITR_ENABLE_BIT_DQO;
 
-	/* Interval has 2us granularity. */
+	 
 	interval_us >>= 1;
 
 	interval_us &= GVE_ITR_INTERVAL_DQO_MASK;
@@ -79,9 +67,7 @@ gve_write_irq_doorbell_dqo(const struct gve_priv *priv,
 	iowrite32(val, &priv->db_bar2[index]);
 }
 
-/* Sets interrupt throttling interval and enables interrupt
- * by writing to IRQ doorbell.
- */
+ 
 static inline void
 gve_set_itr_coalesce_usecs_dqo(struct gve_priv *priv,
 			       struct gve_notify_block *block,
@@ -90,4 +76,4 @@ gve_set_itr_coalesce_usecs_dqo(struct gve_priv *priv,
 	gve_write_irq_doorbell_dqo(priv, block,
 				   gve_setup_itr_interval_dqo(usecs));
 }
-#endif /* _GVE_DQO_H_ */
+#endif  

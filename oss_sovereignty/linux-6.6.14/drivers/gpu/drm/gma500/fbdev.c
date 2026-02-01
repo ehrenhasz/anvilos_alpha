@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/**************************************************************************
- * Copyright (c) 2007-2011, Intel Corporation.
- * All Rights Reserved.
- *
- **************************************************************************/
+
+ 
 
 #include <linux/fb.h>
 #include <linux/pfn_t.h>
@@ -16,9 +12,7 @@
 #include "gem.h"
 #include "psb_drv.h"
 
-/*
- * VM area struct
- */
+ 
 
 static vm_fault_t psb_fbdev_vm_fault(struct vm_fault *vmf)
 {
@@ -47,9 +41,7 @@ static const struct vm_operations_struct psb_fbdev_vm_ops = {
 	.fault	= psb_fbdev_vm_fault,
 };
 
-/*
- * struct fb_ops
- */
+ 
 
 #define CMAP_TOHW(_val, _width) ((((_val) << (_width)) + 0x7FFF - (_val)) >> 16)
 
@@ -100,11 +92,7 @@ static int psb_fbdev_fb_mmap(struct fb_info *info, struct vm_area_struct *vma)
 	if (vma->vm_pgoff > (~0UL >> PAGE_SHIFT))
 		return -EINVAL;
 
-	/*
-	 * If this is a GEM object then info->screen_base is the virtual
-	 * kernel remapping of the object. FIXME: Review if this is
-	 * suitable for our mmap work
-	 */
+	 
 	vma->vm_ops = &psb_fbdev_vm_ops;
 	vma->vm_private_data = info;
 	vm_flags_set(vma, VM_IO | VM_MIXEDMAP | VM_DONTEXPAND | VM_DONTDUMP);
@@ -143,9 +131,7 @@ static const struct fb_ops psb_fbdev_fb_ops = {
 	.fb_destroy = psb_fbdev_fb_destroy,
 };
 
-/*
- * struct drm_fb_helper_funcs
- */
+ 
 
 static int psb_fbdev_fb_probe(struct drm_fb_helper *fb_helper,
 			      struct drm_fb_helper_surface_size *sizes)
@@ -162,7 +148,7 @@ static int psb_fbdev_fb_probe(struct drm_fb_helper *fb_helper,
 	struct drm_gem_object *obj;
 	u32 bpp, depth;
 
-	/* No 24-bit packed mode */
+	 
 	if (sizes->surface_bpp == 24) {
 		sizes->surface_bpp = 32;
 		sizes->surface_depth = 24;
@@ -170,11 +156,7 @@ static int psb_fbdev_fb_probe(struct drm_fb_helper *fb_helper,
 	bpp = sizes->surface_bpp;
 	depth = sizes->surface_depth;
 
-	/*
-	 * If the mode does not fit in 32 bit then switch to 16 bit to get
-	 * a console on full resolution. The X mode setting server will
-	 * allocate its own 32-bit GEM framebuffer.
-	 */
+	 
 	size = ALIGN(sizes->surface_width * DIV_ROUND_UP(bpp, 8), 64) *
 		     sizes->surface_height;
 	size = ALIGN(size, PAGE_SIZE);
@@ -194,7 +176,7 @@ static int psb_fbdev_fb_probe(struct drm_fb_helper *fb_helper,
 	size = mode_cmd.pitches[0] * mode_cmd.height;
 	size = ALIGN(size, PAGE_SIZE);
 
-	/* Allocate the framebuffer in the GTT with stolen page backing */
+	 
 	backing = psb_gem_create(dev, size, "fb", true, PAGE_SIZE);
 	if (IS_ERR(backing))
 		return PTR_ERR(backing);
@@ -216,7 +198,7 @@ static int psb_fbdev_fb_probe(struct drm_fb_helper *fb_helper,
 
 	info->fbops = &psb_fbdev_fb_ops;
 
-	/* Accessed stolen memory directly */
+	 
 	info->screen_base = dev_priv->vram_addr + backing->offset;
 	info->screen_size = size;
 
@@ -231,7 +213,7 @@ static int psb_fbdev_fb_probe(struct drm_fb_helper *fb_helper,
 
 	fb_memset_io(info->screen_base, 0, info->screen_size);
 
-	/* Use default scratch pixmap (info->pixmap.flags = FB_PIXMAP_SYSTEM) */
+	 
 
 	dev_dbg(dev->dev, "allocated %dx%d fb\n", fb->width, fb->height);
 
@@ -251,9 +233,7 @@ static const struct drm_fb_helper_funcs psb_fbdev_fb_helper_funcs = {
 	.fb_probe = psb_fbdev_fb_probe,
 };
 
-/*
- * struct drm_client_funcs and setup code
- */
+ 
 
 static void psb_fbdev_client_unregister(struct drm_client_dev *client)
 {

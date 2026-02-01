@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1 OR BSD-2-Clause
-/* Copyright (c) 2022, NVIDIA CORPORATION & AFFILIATES. All rights reserved. */
+
+ 
 
 #include <stdnoreturn.h>
 #include <stdlib.h>
@@ -58,7 +58,7 @@ static void noreturn cleanup(int sig)
 		close(prog_fd);
 		if (err < 0) {
 			fprintf(stderr, "Error: bpf_set_link_xdp_fd_opts: %s\n", strerror(-err));
-			/* Not an error if already replaced by someone else. */
+			 
 			if (err != -EEXIST) {
 				fprintf(stderr, "Failed to detach XDP program\n");
 				exit(1);

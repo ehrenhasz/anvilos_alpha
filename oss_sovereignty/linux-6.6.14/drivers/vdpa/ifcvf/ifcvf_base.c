@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Intel IFC VF NIC driver for virtio dataplane offloading
- *
- * Copyright (C) 2020 Intel Corporation.
- *
- * Author: Zhu Lingshan <lingshan.zhu@intel.com>
- *
- */
+
+ 
 
 #include "ifcvf_base.h"
 
@@ -79,10 +72,7 @@ static u16 ifcvf_get_vq_size(struct ifcvf_hw *hw, u16 qid)
 	return queue_size;
 }
 
-/* This function returns the max allowed safe size for
- * all virtqueues. It is the minimal size that can be
- * suppprted by all virtqueues.
- */
+ 
 u16 ifcvf_get_max_vq_size(struct ifcvf_hw *hw)
 {
 	u16 queue_size, max_size, qid;
@@ -90,7 +80,7 @@ u16 ifcvf_get_max_vq_size(struct ifcvf_hw *hw)
 	max_size = ifcvf_get_vq_size(hw, 0);
 	for (qid = 1; qid < hw->nr_vring; qid++) {
 		queue_size = ifcvf_get_vq_size(hw, qid);
-		/* 0 means the queue is unavailable */
+		 
 		if (!queue_size)
 			continue;
 
@@ -226,7 +216,7 @@ u64 ifcvf_get_hw_features(struct ifcvf_hw *hw)
 	return features;
 }
 
-/* return provisioned vDPA dev features */
+ 
 u64 ifcvf_get_dev_features(struct ifcvf_hw *hw)
 {
 	return hw->dev_features;
@@ -266,11 +256,7 @@ u32 ifcvf_get_config_size(struct ifcvf_hw *hw)
 	u32 cap_size = hw->cap_dev_config_size;
 	u32 config_size;
 
-	/* If the onboard device config space size is greater than
-	 * the size of struct virtio_net/blk_config, only the spec
-	 * implementing contents size is returned, this is very
-	 * unlikely, defensive programming.
-	 */
+	 
 	switch (hw->dev_type) {
 	case VIRTIO_ID_NET:
 		config_size = min(cap_size, net_config_size);

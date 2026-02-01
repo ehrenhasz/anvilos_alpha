@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * vivid-ctrls.c - control support functions.
- *
- * Copyright 2014 Cisco Systems, Inc. and/or its affiliates. All rights reserved.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/kernel.h>
@@ -104,7 +100,7 @@
 #define VIVID_CID_META_CAP_GENERATE_PTS	(VIVID_CID_VIVID_BASE + 111)
 #define VIVID_CID_META_CAP_GENERATE_SCR	(VIVID_CID_VIVID_BASE + 112)
 
-/* General User Controls */
+ 
 
 static void vivid_unregister_dev(bool valid, struct video_device *vdev)
 {
@@ -357,7 +353,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_ro_int32 = {
 	.step = 1,
 };
 
-/* Framebuffer Controls */
+ 
 
 static int vivid_fb_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -384,7 +380,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_clear_fb = {
 };
 
 
-/* Video User Controls */
+ 
 
 static int vivid_user_vid_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -437,7 +433,7 @@ static const struct v4l2_ctrl_ops vivid_user_vid_ctrl_ops = {
 };
 
 
-/* Video Capture Controls */
+ 
 
 static int vivid_vid_cap_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -966,7 +962,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_limited_rgb_range = {
 };
 
 
-/* Video Loop Control */
+ 
 
 static int vivid_loop_cap_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -997,7 +993,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_loop_video = {
 };
 
 
-/* VBI Capture Control */
+ 
 
 static int vivid_vbi_cap_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1025,7 +1021,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_vbi_cap_interlaced = {
 };
 
 
-/* Video Output Controls */
+ 
 
 static int vivid_vid_out_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1145,7 +1141,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_display_present = {
 	.step = 1,
 };
 
-/* Streaming Controls */
+ 
 
 static int vivid_streaming_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1280,7 +1276,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_time_wrap = {
 };
 
 
-/* SDTV Capture Controls */
+ 
 
 static int vivid_sdtv_cap_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1339,7 +1335,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_standard = {
 
 
 
-/* Radio Receiver Controls */
+ 
 
 static int vivid_radio_rx_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1437,7 +1433,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_radio_hw_seek_prog_lim = {
 };
 
 
-/* Radio Transmitter Controls */
+ 
 
 static int vivid_radio_tx_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1494,7 +1490,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_radio_tx_rds_blockio = {
 };
 
 
-/* SDR Capture Controls */
+ 
 
 static int vivid_sdr_cap_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1523,7 +1519,7 @@ static const struct v4l2_ctrl_config vivid_ctrl_sdr_cap_fm_deviation = {
 	.step =     1,
 };
 
-/* Metadata Capture Control */
+ 
 
 static int vivid_meta_cap_s_ctrl(struct v4l2_ctrl *ctrl)
 {
@@ -1640,7 +1636,7 @@ int vivid_create_controls(struct vivid_dev *dev, bool show_ccs_cap,
 	v4l2_ctrl_handler_init(hdl_tch_cap, 2);
 	v4l2_ctrl_new_custom(hdl_tch_cap, &vivid_ctrl_class, NULL);
 
-	/* User Controls */
+	 
 	dev->volume = v4l2_ctrl_new_std(hdl_user_aud, NULL,
 		V4L2_CID_AUDIO_VOLUME, 0, 255, 1, 200);
 	dev->mute = v4l2_ctrl_new_std(hdl_user_aud, NULL,
@@ -1686,7 +1682,7 @@ int vivid_create_controls(struct vivid_dev *dev, bool show_ccs_cap,
 	v4l2_ctrl_new_custom(hdl_user_gen, &vivid_ctrl_s64_array, NULL);
 
 	if (dev->has_vid_cap) {
-		/* Image Processing Controls */
+		 
 		struct v4l2_ctrl_config vivid_ctrl_test_pattern = {
 			.ops = &vivid_vid_cap_ctrl_ops,
 			.id = VIVID_CID_TEST_PATTERN,
@@ -1738,12 +1734,7 @@ int vivid_create_controls(struct vivid_dev *dev, bool show_ccs_cap,
 			&vivid_ctrl_has_scaler_out, NULL);
 	}
 
-	/*
-	 * Testing this driver with v4l2-compliance will trigger the error
-	 * injection controls, and after that nothing will work as expected.
-	 * So we have a module option to drop these error injecting controls
-	 * allowing us to run v4l2_compliance again.
-	 */
+	 
 	if (!no_error_inj) {
 		v4l2_ctrl_new_custom(hdl_user_gen, &vivid_ctrl_disconnect, NULL);
 		v4l2_ctrl_new_custom(hdl_streaming, &vivid_ctrl_dqbuf_error, NULL);
@@ -1802,10 +1793,7 @@ int vivid_create_controls(struct vivid_dev *dev, bool show_ccs_cap,
 	if (dev->num_hdmi_outputs) {
 		s64 hdmi_output_mask = GENMASK(dev->num_hdmi_outputs - 1, 0);
 
-		/*
-		 * We aren't doing anything with this at the moment, but
-		 * HDMI outputs typically have this controls.
-		 */
+		 
 		dev->ctrl_tx_rgb_range = v4l2_ctrl_new_std_menu(hdl_vid_out, NULL,
 			V4L2_CID_DV_TX_RGB_RANGE, V4L2_DV_RGB_RANGE_FULL,
 			0, V4L2_DV_RGB_RANGE_AUTO);

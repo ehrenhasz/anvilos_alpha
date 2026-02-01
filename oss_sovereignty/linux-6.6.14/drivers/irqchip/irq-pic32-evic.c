@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Cristian Birsan <cristian.birsan@microchip.com>
- * Joshua Henderson <joshua.henderson@microchip.com>
- * Copyright (C) 2016 Microchip Technology Inc.  All rights reserved.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/interrupt.h>
@@ -55,10 +51,7 @@ static struct evic_chip_data *irqd_to_priv(struct irq_data *data)
 
 static int pic32_set_ext_polarity(int bit, u32 type)
 {
-	/*
-	 * External interrupts can be either edge rising or edge falling,
-	 * but not both.
-	 */
+	 
 	switch (type) {
 	case IRQ_TYPE_EDGE_RISING:
 		writel(BIT(bit), evic_base + PIC32_SET(REG_INTCON));
@@ -83,7 +76,7 @@ static int pic32_set_type_edge(struct irq_data *data,
 	if (!(flow_type & IRQ_TYPE_EDGE_BOTH))
 		return -EBADR;
 
-	/* set polarity for external interrupts only */
+	 
 	for (i = 0; i < ARRAY_SIZE(priv->ext_irqs); i++) {
 		if (priv->ext_irqs[i] == data->hwirq) {
 			ret = pic32_set_ext_polarity(i, flow_type);
@@ -134,12 +127,7 @@ static int pic32_irq_domain_map(struct irq_domain *d, unsigned int virq,
 	if (ret)
 		return ret;
 
-	/*
-	 * Piggyback on xlate function to move to an alternate chip as necessary
-	 * at time of mapping instead of allowing the flow handler/chip to be
-	 * changed later. This requires all interrupts to be configured through
-	 * DT.
-	 */
+	 
 	if (priv->irq_types[hw] & IRQ_TYPE_SENSE_MASK) {
 		data = irq_domain_get_irq_data(d, virq);
 		irqd_set_trigger_type(data, priv->irq_types[hw]);
@@ -151,11 +139,11 @@ static int pic32_irq_domain_map(struct irq_domain *d, unsigned int virq,
 	iecclr = PIC32_CLR(REG_IEC_OFFSET + reg * 0x10);
 	ifsclr = PIC32_CLR(REG_IFS_OFFSET + reg * 0x10);
 
-	/* mask and clear flag */
+	 
 	writel(mask, evic_base + iecclr);
 	writel(mask, evic_base + ifsclr);
 
-	/* default priority is required */
+	 
 	pic32_set_irq_priority(hw, PIC32_INT_PRI(2, 0));
 
 	return ret;
@@ -237,14 +225,7 @@ static int __init pic32_of_init(struct device_node *node,
 		goto err_free_priv;
 	}
 
-	/*
-	 * The PIC32 EVIC has a linear list of irqs and the type of each
-	 * irq is determined by the hardware peripheral the EVIC is arbitrating.
-	 * These irq types are defined in the datasheet as "persistent" and
-	 * "non-persistent" which are mapped here to level and edge
-	 * respectively. To manage the different flow handler requirements of
-	 * each irq type, different chip_types are used.
-	 */
+	 
 	ret = irq_alloc_domain_generic_chips(evic_irq_domain, 32, 2,
 					     "evic-level", handle_level_irq,
 					     clr, 0, 0);
@@ -262,12 +243,7 @@ static int __init pic32_of_init(struct device_node *node,
 		gc->reg_base = evic_base;
 		gc->unused = 0;
 
-		/*
-		 * Level/persistent interrupts have a special requirement that
-		 * the condition generating the interrupt be cleared before the
-		 * interrupt flag (ifs) can be cleared. chip.irq_eoi is used to
-		 * complete the interrupt with an ack.
-		 */
+		 
 		gc->chip_types[0].type			= IRQ_TYPE_LEVEL_MASK;
 		gc->chip_types[0].handler		= handle_fasteoi_irq;
 		gc->chip_types[0].regs.ack		= ifsclr;
@@ -278,7 +254,7 @@ static int __init pic32_of_init(struct device_node *node,
 		gc->chip_types[0].chip.irq_unmask	= irq_gc_mask_set_bit;
 		gc->chip_types[0].chip.flags		= IRQCHIP_SKIP_SET_WAKE;
 
-		/* Edge interrupts */
+		 
 		gc->chip_types[1].type			= IRQ_TYPE_EDGE_BOTH;
 		gc->chip_types[1].handler		= handle_edge_irq;
 		gc->chip_types[1].regs.ack		= ifsclr;
@@ -295,11 +271,7 @@ static int __init pic32_of_init(struct device_node *node,
 
 	irq_set_default_host(evic_irq_domain);
 
-	/*
-	 * External interrupts have software configurable edge polarity. These
-	 * interrupts are defined in DT allowing polarity to be configured only
-	 * for these interrupts when requested.
-	 */
+	 
 	pic32_ext_irq_of_init(evic_irq_domain);
 
 	return 0;

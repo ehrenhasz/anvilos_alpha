@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Earthsoft PT3 driver
- *
- * Copyright (C) 2014 Akihiro Tsukada <tskd08@gmail.com>
- */
+
+ 
 
 #include <linux/freezer.h>
 #include <linux/kernel.h>
@@ -128,11 +124,7 @@ static inline struct pt3_adapter *pt3_find_adapter(struct dvb_frontend *fe)
 	return container_of(fe->dvb, struct pt3_adapter, dvb_adap);
 }
 
-/*
- * all 4 tuners in PT3 are packaged in a can module (Sharp VA4M6JC2103).
- * it seems that they share the power lines and Amp power line and
- * adaps[3] controls those powers.
- */
+ 
 static int
 pt3_set_tuner_power(struct pt3_board *pt3, bool tuner_on, bool amp_on)
 {
@@ -152,7 +144,7 @@ static int pt3_set_lna(struct dvb_frontend *fe)
 	u32 val;
 	int ret;
 
-	/* LNA is shared btw. 2 TERR-tuners */
+	 
 
 	adap = pt3_find_adapter(fe);
 	val = fe->dtv_property_cache.lna;
@@ -186,7 +178,7 @@ static int pt3_set_voltage(struct dvb_frontend *fe, enum fe_sec_voltage volt)
 	struct pt3_board *pt3;
 	bool on;
 
-	/* LNB power is shared btw. 2 SAT-tuners */
+	 
 
 	adap = pt3_find_adapter(fe);
 	on = (volt != SEC_VOLTAGE_OFF);
@@ -212,7 +204,7 @@ static int pt3_set_voltage(struct dvb_frontend *fe, enum fe_sec_voltage volt)
 	return 0;
 }
 
-/* register values used in pt3_fe_init() */
+ 
 
 static const struct reg_val init0_sat[] = {
 	{ 0x03, 0x01 },
@@ -230,15 +222,7 @@ static const struct reg_val cfg_ter[] = {
 	{ 0x1d, 0x01 },
 };
 
-/*
- * pt3_fe_init: initialize demod sub modules and ISDB-T tuners all at once.
- *
- * As for demod IC (TC90522) and ISDB-T tuners (MxL301RF),
- * the i2c sequences for init'ing them are not public and hidden in a ROM,
- * and include the board specific configurations as well.
- * They are stored in a lump and cannot be taken out / accessed separately,
- * thus cannot be moved to the FE/tuner driver.
- */
+ 
 static int pt3_fe_init(struct pt3_board *pt3)
 {
 	int i, ret;
@@ -251,7 +235,7 @@ static int pt3_fe_init(struct pt3_board *pt3)
 		return ret;
 	}
 
-	/* additional config? */
+	 
 	for (i = 0; i < PT3_NUM_FE; i++) {
 		fe = pt3->adaps[i]->fe;
 
@@ -278,7 +262,7 @@ static int pt3_fe_init(struct pt3_board *pt3)
 		return ret;
 	}
 
-	/* output pin configuration */
+	 
 	for (i = 0; i < PT3_NUM_FE; i++) {
 		fe = pt3->adaps[i]->fe;
 		if (fe->ops.delsys[0] == SYS_ISDBS)
@@ -299,7 +283,7 @@ static int pt3_fe_init(struct pt3_board *pt3)
 		fe = pt3->adaps[i]->fe;
 		if (fe->ops.delsys[0] != SYS_ISDBS)
 			continue;
-		/* init and wake-up ISDB-S tuners */
+		 
 		ret = fe->ops.tuner_ops.init(fe);
 		if (ret < 0) {
 			dev_warn(&pt3->pdev->dev,
@@ -319,16 +303,13 @@ static int pt3_fe_init(struct pt3_board *pt3)
 		return ret;
 	}
 
-	/* Wake up all tuners and make an initial tuning,
-	 * in order to avoid interference among the tuners in the module,
-	 * according to the doc from the manufacturer.
-	 */
+	 
 	for (i = 0; i < PT3_NUM_FE; i++) {
 		fe = pt3->adaps[i]->fe;
 		ret = 0;
 		if (fe->ops.delsys[0] == SYS_ISDBT)
 			ret = fe->ops.tuner_ops.init(fe);
-		/* set only when called from pt3_probe(), not resume() */
+		 
 		if (ret == 0 && fe->dtv_property_cache.frequency == 0) {
 			fe->dtv_property_cache.frequency =
 						adap_conf[i].init_freq;
@@ -341,7 +322,7 @@ static int pt3_fe_init(struct pt3_board *pt3)
 		}
 	}
 
-	/* and sleep again, waiting to be opened by users. */
+	 
 	for (i = 0; i < PT3_NUM_FE; i++) {
 		fe = pt3->adaps[i]->fe;
 		if (fe->ops.tuner_ops.sleep)
@@ -459,7 +440,7 @@ static int pt3_start_streaming(struct pt3_adapter *adap)
 {
 	struct task_struct *thread;
 
-	/* start fetching thread */
+	 
 	thread = kthread_run(pt3_fetch_thread, adap, "pt3-ad%i-dmx%i",
 				adap->dvb_adap.num, adap->dmxdev.dvbdev->id);
 	if (IS_ERR(thread)) {
@@ -486,7 +467,7 @@ static int pt3_stop_streaming(struct pt3_adapter *adap)
 			 "PT3: failed to stop streaming of adap:%d/FE:%d\n",
 			 adap->dvb_adap.num, adap->fe->id);
 
-	/* kill the fetching thread */
+	 
 	ret = kthread_stop(adap->thread);
 	adap->thread = NULL;
 	return ret;
@@ -600,7 +581,7 @@ static void pt3_cleanup_adapter(struct pt3_board *pt3, int index)
 	if (adap == NULL)
 		return;
 
-	/* stop demux kthread */
+	 
 	if (adap->thread)
 		pt3_stop_streaming(adap);
 
@@ -673,7 +654,7 @@ static int pt3_resume(struct device *dev)
 	return 0;
 }
 
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 
 static void pt3_remove(struct pci_dev *pdev)

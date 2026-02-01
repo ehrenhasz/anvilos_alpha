@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "hmm.h"
 
@@ -26,9 +14,7 @@
 #define NV12_TILEY_TILE_WIDTH  128
 #define NV12_TILEY_TILE_HEIGHT  32
 
-/**************************************************************************
-**	Static functions declarations
-**************************************************************************/
+ 
 static void frame_init_plane(struct ia_css_frame_plane *plane,
 			     unsigned int width,
 			     unsigned int stride,
@@ -84,9 +70,7 @@ static unsigned
 ia_css_elems_bytes_from_info(
     const struct ia_css_frame_info *info);
 
-/**************************************************************************
-**	CSS API functions, exposed by ia_css.h
-**************************************************************************/
+ 
 
 int ia_css_frame_allocate_from_info(struct ia_css_frame **frame,
 	const struct ia_css_frame_info *info)
@@ -149,9 +133,7 @@ void ia_css_frame_free(struct ia_css_frame *frame)
 	IA_CSS_LEAVE_PRIVATE("void");
 }
 
-/**************************************************************************
-**	Module public functions
-**************************************************************************/
+ 
 
 int ia_css_frame_check_info(const struct ia_css_frame_info *info)
 {
@@ -195,9 +177,7 @@ int ia_css_frame_init_planes(struct ia_css_frame *frame)
 	case IA_CSS_FRAME_FORMAT_PLANAR_RGB888:
 		frame_init_rgb_planes(frame, 1);
 		break;
-	/* yuyv and uyvu have the same frame layout, only the data
-	 * positioning differs.
-	 */
+	 
 	case IA_CSS_FRAME_FORMAT_YUYV:
 	case IA_CSS_FRAME_FORMAT_UYVY:
 	case IA_CSS_FRAME_FORMAT_CSI_MIPI_YUV420_8:
@@ -207,7 +187,7 @@ int ia_css_frame_init_planes(struct ia_css_frame *frame)
 					frame->frame_info.padded_width * 2, 1);
 		break;
 	case IA_CSS_FRAME_FORMAT_YUV_LINE:
-		/* Needs 3 extra lines to allow vf_pp prefetching */
+		 
 		frame_init_single_plane(frame, &frame->planes.yuyv,
 					frame->frame_info.res.height * 3 / 2 + 3,
 					frame->frame_info.padded_width, 1);
@@ -215,9 +195,7 @@ int ia_css_frame_init_planes(struct ia_css_frame *frame)
 	case IA_CSS_FRAME_FORMAT_NV11:
 		frame_init_nv_planes(frame, 4, 1, 1);
 		break;
-	/* nv12 and nv21 have the same frame layout, only the data
-	 * positioning differs.
-	 */
+	 
 	case IA_CSS_FRAME_FORMAT_NV12:
 	case IA_CSS_FRAME_FORMAT_NV21:
 	case IA_CSS_FRAME_FORMAT_NV12_TILEY:
@@ -226,9 +204,7 @@ int ia_css_frame_init_planes(struct ia_css_frame *frame)
 	case IA_CSS_FRAME_FORMAT_NV12_16:
 		frame_init_nv_planes(frame, 2, 2, 2);
 		break;
-	/* nv16 and nv61 have the same frame layout, only the data
-	 * positioning differs.
-	 */
+	 
 	case IA_CSS_FRAME_FORMAT_NV16:
 	case IA_CSS_FRAME_FORMAT_NV61:
 		frame_init_nv_planes(frame, 2, 1, 1);
@@ -272,11 +248,7 @@ int ia_css_frame_init_planes(struct ia_css_frame *frame)
 unsigned int ia_css_frame_pad_width(unsigned int width, enum ia_css_frame_format format)
 {
 	switch (format) {
-	/*
-	 * Frames with a U and V plane of 8 bits per pixel need to have
-	 * all planes aligned, this means double the alignment for the
-	 * Y plane if the horizontal decimation is 2.
-	 */
+	 
 	case IA_CSS_FRAME_FORMAT_YUV420:
 	case IA_CSS_FRAME_FORMAT_YV12:
 	case IA_CSS_FRAME_FORMAT_NV12:
@@ -362,16 +334,16 @@ void ia_css_frame_free_multiple(unsigned int num_frames,
 int ia_css_frame_allocate_with_buffer_size(struct ia_css_frame **frame,
 					   const unsigned int buffer_size_bytes)
 {
-	/* AM: Body coppied from frame_allocate_with_data(). */
+	 
 	int err;
 	struct ia_css_frame *me = frame_create(0, 0,
-					       IA_CSS_FRAME_FORMAT_NUM,/* Not valid format yet */
+					       IA_CSS_FRAME_FORMAT_NUM, 
 					       0, 0, false);
 
 	if (!me)
 		return -ENOMEM;
 
-	/* Get the data size */
+	 
 	me->data_bytes = buffer_size_bytes;
 
 	err = frame_allocate_buffer_data(me);
@@ -443,9 +415,7 @@ int ia_css_dma_configure_from_info(struct dma_port_config *config,
 	return 0;
 }
 
-/**************************************************************************
-**	Static functions
-**************************************************************************/
+ 
 
 static void frame_init_plane(struct ia_css_frame_plane *plane,
 			     unsigned int width,
@@ -468,12 +438,7 @@ static void frame_init_single_plane(struct ia_css_frame *frame,
 	unsigned int stride;
 
 	stride = subpixels_per_line * bytes_per_pixel;
-	/* Frame height needs to be even number - needed by hw ISYS2401
-	   In case of odd number, round up to even.
-	   Images won't be impacted by this round up,
-	   only needed by jpeg/embedded data.
-	   As long as buffer allocation and release are using data_bytes,
-	   there won't be memory leak. */
+	 
 	frame->data_bytes = stride * CEIL_MUL2(height, 2);
 	frame_init_plane(plane, subpixels_per_line, stride, height, 0);
 	return;
@@ -672,7 +637,7 @@ static struct ia_css_frame *frame_create(unsigned int width,
 	me->valid = valid;
 	me->data_bytes = 0;
 	me->data = mmgr_NULL;
-	/* To indicate it is not valid frame. */
+	 
 	me->dynamic_queue_id = (int)SH_CSS_INVALID_QUEUE_ID;
 	me->buf_type = IA_CSS_BUFFER_TYPE_INVALID;
 
@@ -683,33 +648,29 @@ static unsigned
 ia_css_elems_bytes_from_info(const struct ia_css_frame_info *info)
 {
 	if (info->format == IA_CSS_FRAME_FORMAT_RGB565)
-		return 2; /* bytes per pixel */
+		return 2;  
 	if (info->format == IA_CSS_FRAME_FORMAT_YUV420_16)
-		return 2; /* bytes per pixel */
+		return 2;  
 	if (info->format == IA_CSS_FRAME_FORMAT_YUV422_16)
-		return 2; /* bytes per pixel */
-	/* Note: Essentially NV12_16 is a 2 bytes per pixel format, this return value is used
-	 * to configure DMA for the output buffer,
-	 * At least in SKC this data is overwritten by isp_output_init.sp.c except for elements(elems),
-	 * which is configured from this return value,
-	 * NV12_16 is implemented by a double buffer of 8 bit elements hence elems should be configured as 8 */
+		return 2;  
+	 
 	if (info->format == IA_CSS_FRAME_FORMAT_NV12_16)
-		return 1; /* bytes per pixel */
+		return 1;  
 
 	if (info->format == IA_CSS_FRAME_FORMAT_RAW
 	    || (info->format == IA_CSS_FRAME_FORMAT_RAW_PACKED)) {
 		if (info->raw_bit_depth)
 			return CEIL_DIV(info->raw_bit_depth, 8);
 		else
-			return 2; /* bytes per pixel */
+			return 2;  
 	}
 	if (info->format == IA_CSS_FRAME_FORMAT_PLANAR_RGB888)
-		return 3; /* bytes per pixel */
+		return 3;  
 	if (info->format == IA_CSS_FRAME_FORMAT_RGBA888)
-		return 4; /* bytes per pixel */
+		return 4;  
 	if (info->format == IA_CSS_FRAME_FORMAT_QPLANE6)
-		return 2; /* bytes per pixel */
-	return 1; /* Default is 1 byte per pixel */
+		return 2;  
+	return 1;  
 }
 
 void ia_css_frame_info_to_frame_sp_info(
@@ -740,7 +701,7 @@ int ia_css_frame_init_from_info(struct ia_css_frame *frame,
 	frame->frame_info.padded_width = frame_info->padded_width;
 	frame->frame_info.raw_bit_depth = frame_info->raw_bit_depth;
 	frame->valid = true;
-	/* To indicate it is not valid frame. */
+	 
 	frame->dynamic_queue_id = SH_CSS_INVALID_QUEUE_ID;
 	frame->buf_type = IA_CSS_BUFFER_TYPE_INVALID;
 

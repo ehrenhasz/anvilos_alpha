@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Memory-mapped interface driver for DW SPI Core
- *
- * Copyright (c) 2010, Octasic semiconductor.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/err.h>
@@ -50,30 +46,17 @@ struct dw_spi_mmio {
 
 struct dw_spi_mscc {
 	struct regmap       *syscon;
-	void __iomem        *spi_mst; /* Not sparx5 */
+	void __iomem        *spi_mst;  
 };
 
-/*
- * Elba SoC does not use ssi, pin override is used for cs 0,1 and
- * gpios for cs 2,3 as defined in the device tree.
- *
- * cs:  |       1               0
- * bit: |---3-------2-------1-------0
- *      |  cs1   cs1_ovr   cs0   cs0_ovr
- */
+ 
 #define ELBA_SPICS_REG			0x2468
 #define ELBA_SPICS_OFFSET(cs)		((cs) << 1)
 #define ELBA_SPICS_MASK(cs)		(GENMASK(1, 0) << ELBA_SPICS_OFFSET(cs))
 #define ELBA_SPICS_SET(cs, val)		\
 		((((val) << 1) | BIT(0)) << ELBA_SPICS_OFFSET(cs))
 
-/*
- * The Designware SPI controller (referred to as master in the documentation)
- * automatically deasserts chip select when the tx fifo is empty. The chip
- * selects then needs to be either driven as GPIOs or, for the first 4 using
- * the SPI boot controller registers. the final chip select is an OR gate
- * between the Designware SPI controller and the SPI boot controller.
- */
+ 
 static void dw_spi_mscc_set_cs(struct spi_device *spi, bool enable)
 {
 	struct dw_spi *dws = spi_controller_get_devdata(spi->controller);
@@ -113,10 +96,10 @@ static int dw_spi_mscc_init(struct platform_device *pdev,
 	if (IS_ERR(dwsmscc->syscon))
 		return PTR_ERR(dwsmscc->syscon);
 
-	/* Deassert all CS */
+	 
 	writel(0, dwsmscc->spi_mst + MSCC_SPI_MST_SW_MODE);
 
-	/* Select the owner of the SI interface */
+	 
 	regmap_update_bits(dwsmscc->syscon, MSCC_CPU_SYSTEM_CTRL_GENERAL_CTRL,
 			   MSCC_IF_SI_OWNER_MASK << if_si_owner_offset,
 			   MSCC_IF_SI_OWNER_SIMC << if_si_owner_offset);
@@ -141,12 +124,7 @@ static int dw_spi_mscc_jaguar2_init(struct platform_device *pdev,
 				JAGUAR2_IF_SI_OWNER_OFFSET);
 }
 
-/*
- * The Designware SPI controller (referred to as master in the
- * documentation) automatically deasserts chip select when the tx fifo
- * is empty. The chip selects then needs to be driven by a CS override
- * register. enable is an active low signal.
- */
+ 
 static void dw_spi_sparx5_set_cs(struct spi_device *spi, bool enable)
 {
 	struct dw_spi *dws = spi_controller_get_devdata(spi->controller);
@@ -155,18 +133,18 @@ static void dw_spi_sparx5_set_cs(struct spi_device *spi, bool enable)
 	u8 cs = spi_get_chipselect(spi, 0);
 
 	if (!enable) {
-		/* CS override drive enable */
+		 
 		regmap_write(dwsmscc->syscon, SPARX5_FORCE_ENA, 1);
-		/* Now set CSx enabled */
+		 
 		regmap_write(dwsmscc->syscon, SPARX5_FORCE_VAL, ~BIT(cs));
-		/* Allow settle */
+		 
 		usleep_range(1, 5);
 	} else {
-		/* CS value */
+		 
 		regmap_write(dwsmscc->syscon, SPARX5_FORCE_VAL, ~0);
-		/* Allow settle */
+		 
 		usleep_range(1, 5);
-		/* CS override drive disable */
+		 
 		regmap_write(dwsmscc->syscon, SPARX5_FORCE_ENA, 0);
 	}
 
@@ -236,19 +214,11 @@ static int dw_spi_intel_init(struct platform_device *pdev,
 	return 0;
 }
 
-/*
- * DMA-based mem ops are not configured for this device and are not tested.
- */
+ 
 static int dw_spi_mountevans_imc_init(struct platform_device *pdev,
 				      struct dw_spi_mmio *dwsmmio)
 {
-	/*
-	 * The Intel Mount Evans SoC's Integrated Management Complex DW
-	 * apb_ssi_v4.02a controller has an errata where a full TX FIFO can
-	 * result in data corruption. The suggested workaround is to never
-	 * completely fill the FIFO. The TX FIFO has a size of 32 so the
-	 * fifo_len is set to 31.
-	 */
+	 
 	dwsmmio->dws.fifo_len = 31;
 
 	return 0;
@@ -257,13 +227,7 @@ static int dw_spi_mountevans_imc_init(struct platform_device *pdev,
 static int dw_spi_canaan_k210_init(struct platform_device *pdev,
 				   struct dw_spi_mmio *dwsmmio)
 {
-	/*
-	 * The Canaan Kendryte K210 SoC DW apb_ssi v4 spi controller is
-	 * documented to have a 32 word deep TX and RX FIFO, which
-	 * spi_hw_init() detects. However, when the RX FIFO is filled up to
-	 * 32 entries (RXFLR = 32), an RX FIFO overrun error occurs. Avoid this
-	 * problem by force setting fifo_len to 31.
-	 */
+	 
 	dwsmmio->dws.fifo_len = 31;
 
 	return 0;
@@ -286,10 +250,7 @@ static void dw_spi_elba_set_cs(struct spi_device *spi, bool enable)
 	if (cs < 2)
 		dw_spi_elba_override_cs(syscon, spi_get_chipselect(spi, 0), enable);
 
-	/*
-	 * The DW SPI controller needs a native CS bit selected to start
-	 * the serial engine.
-	 */
+	 
 	spi_set_chipselect(spi, 0, 0);
 	dw_spi_set_cs(spi, enable);
 	spi_set_chipselect(spi, 0, cs);
@@ -329,7 +290,7 @@ static int dw_spi_mmio_probe(struct platform_device *pdev)
 
 	dws = &dwsmmio->dws;
 
-	/* Get basic io resource and map it */
+	 
 	dws->regs = devm_platform_get_and_ioremap_resource(pdev, 0, &mem);
 	if (IS_ERR(dws->regs))
 		return PTR_ERR(dws->regs);
@@ -338,7 +299,7 @@ static int dw_spi_mmio_probe(struct platform_device *pdev)
 
 	dws->irq = platform_get_irq(pdev, 0);
 	if (dws->irq < 0)
-		return dws->irq; /* -ENXIO */
+		return dws->irq;  
 
 	dwsmmio->clk = devm_clk_get(&pdev->dev, NULL);
 	if (IS_ERR(dwsmmio->clk))
@@ -347,7 +308,7 @@ static int dw_spi_mmio_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* Optional clock needed to access the registers */
+	 
 	dwsmmio->pclk = devm_clk_get_optional(&pdev->dev, "pclk");
 	if (IS_ERR(dwsmmio->pclk)) {
 		ret = PTR_ERR(dwsmmio->pclk);
@@ -357,7 +318,7 @@ static int dw_spi_mmio_probe(struct platform_device *pdev)
 	if (ret)
 		goto out_clk;
 
-	/* find an optional reset controller */
+	 
 	dwsmmio->rstc = devm_reset_control_get_optional_exclusive(&pdev->dev, "spi");
 	if (IS_ERR(dwsmmio->rstc)) {
 		ret = PTR_ERR(dwsmmio->rstc);
@@ -432,7 +393,7 @@ static const struct of_device_id dw_spi_mmio_of_match[] = {
 	{ .compatible = "microchip,sparx5-spi", dw_spi_mscc_sparx5_init},
 	{ .compatible = "canaan,k210-spi", dw_spi_canaan_k210_init},
 	{ .compatible = "amd,pensando-elba-spi", .data = dw_spi_elba_init},
-	{ /* end of table */}
+	{  }
 };
 MODULE_DEVICE_TABLE(of, dw_spi_mmio_of_match);
 

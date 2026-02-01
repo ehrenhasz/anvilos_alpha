@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * aQuantia Corporation Network Driver
- * Copyright (C) 2014-2017 aQuantia Corporation. All rights reserved
- */
+ 
+ 
 
-/* File hw_atl_a0_internal.h: Definition of Atlantic A0 chip specific
- * constants.
- */
+ 
 
 #ifndef HW_ATL_A0_INTERNAL_H
 #define HW_ATL_A0_INTERNAL_H
@@ -26,7 +21,7 @@
 #define HW_ATL_A0_MAC_MIN  1U
 #define HW_ATL_A0_MAC_MAX  33U
 
-/* interrupts */
+ 
 #define HW_ATL_A0_ERR_INT 8U
 #define HW_ATL_A0_INT_MASK  0xFFFFFFFFU
 
@@ -87,4 +82,4 @@
 #define HW_ATL_A0_MAX_RXD 8184U
 #define HW_ATL_A0_MAX_TXD 8184U
 
-#endif /* HW_ATL_A0_INTERNAL_H */
+#endif  

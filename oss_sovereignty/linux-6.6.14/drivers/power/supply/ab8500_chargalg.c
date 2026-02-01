@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) ST-Ericsson SA 2012
- * Copyright (c) 2012 Sony Mobile Communications AB
- *
- * Charging algorithm driver for AB8500
- *
- * Authors:
- *	Johan Palsson <johan.palsson@stericsson.com>
- *	Karl Komierowski <karl.komierowski@stericsson.com>
- *	Arun R Murthy <arun.murthy@stericsson.com>
- *	Author: Imre Sunyi <imre.sunyi@sonymobile.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -34,23 +23,19 @@
 #include "ab8500-bm.h"
 #include "ab8500-chargalg.h"
 
-/* Watchdog kick interval */
+ 
 #define CHG_WD_INTERVAL			(6 * HZ)
 
-/* End-of-charge criteria counter */
+ 
 #define EOC_COND_CNT			10
 
-/* One hour expressed in seconds */
+ 
 #define ONE_HOUR_IN_SECONDS            3600
 
-/* Five minutes expressed in seconds */
+ 
 #define FIVE_MINUTES_IN_SECONDS        300
 
-/*
- * This is the battery capacity limit that will trigger a new
- * full charging cycle in the case where maintenance charging
- * has been disabled
- */
+ 
 #define AB8500_RECHARGE_CAP		95
 
 enum ab8500_chargers {
@@ -165,19 +150,7 @@ struct ab8500_chargalg_events {
 	bool vbus_collapsed;
 };
 
-/**
- * struct ab8500_charge_curr_maximization - Charger maximization parameters
- * @original_iset_ua:	the non optimized/maximised charger current
- * @current_iset_ua:	the charging current used at this moment
- * @condition_cnt:	number of iterations needed before a new charger current
-			is set
- * @max_current_ua:	maximum charger current
- * @wait_cnt:		to avoid too fast current step down in case of charger
- *			voltage collapse, we insert this delay between step
- *			down
- * @level:		tells in how many steps the charging current has been
-			increased
- */
+ 
 struct ab8500_charge_curr_maximization {
 	int original_iset_ua;
 	int current_iset_ua;
@@ -193,33 +166,7 @@ enum maxim_ret {
 	MAXIM_RET_IBAT_TOO_HIGH,
 };
 
-/**
- * struct ab8500_chargalg - ab8500 Charging algorithm device information
- * @dev:		pointer to the structure device
- * @charge_status:	battery operating status
- * @eoc_cnt:		counter used to determine end-of_charge
- * @maintenance_chg:	indicate if maintenance charge is active
- * @t_hyst_norm		temperature hysteresis when the temperature has been
- *			over or under normal limits
- * @t_hyst_lowhigh	temperature hysteresis when the temperature has been
- *			over or under the high or low limits
- * @charge_state:	current state of the charging algorithm
- * @ccm			charging current maximization parameters
- * @chg_info:		information about connected charger types
- * @batt_data:		data of the battery
- * @bm:           	Platform specific battery management information
- * @parent:		pointer to the struct ab8500
- * @chargalg_psy:	structure that holds the battery properties exposed by
- *			the charging algorithm
- * @events:		structure for information about events triggered
- * @chargalg_wq:		work queue for running the charging algorithm
- * @chargalg_periodic_work:	work to run the charging algorithm periodically
- * @chargalg_wd_work:		work to kick the charger watchdog periodically
- * @chargalg_work:		work to run the charging algorithm instantly
- * @safety_timer:		charging safety timer
- * @maintenance_timer:		maintenance charging timer
- * @chargalg_kobject:		structure of type kobject
- */
+ 
 struct ab8500_chargalg {
 	struct device *dev;
 	int charge_status;
@@ -246,19 +193,13 @@ struct ab8500_chargalg {
 	struct kobject chargalg_kobject;
 };
 
-/* Main battery properties */
+ 
 static enum power_supply_property ab8500_chargalg_props[] = {
 	POWER_SUPPLY_PROP_STATUS,
 	POWER_SUPPLY_PROP_HEALTH,
 };
 
-/**
- * ab8500_chargalg_safety_timer_expired() - Expiration of the safety timer
- * @timer:     pointer to the hrtimer structure
- *
- * This function gets called when the safety timer for the charger
- * expires
- */
+ 
 static enum hrtimer_restart
 ab8500_chargalg_safety_timer_expired(struct hrtimer *timer)
 {
@@ -267,20 +208,13 @@ ab8500_chargalg_safety_timer_expired(struct hrtimer *timer)
 	dev_err(di->dev, "Safety timer expired\n");
 	di->events.safety_timer_expired = true;
 
-	/* Trigger execution of the algorithm instantly */
+	 
 	queue_work(di->chargalg_wq, &di->chargalg_work);
 
 	return HRTIMER_NORESTART;
 }
 
-/**
- * ab8500_chargalg_maintenance_timer_expired() - Expiration of
- * the maintenance timer
- * @timer:     pointer to the timer structure
- *
- * This function gets called when the maintenance timer
- * expires
- */
+ 
 static enum hrtimer_restart
 ab8500_chargalg_maintenance_timer_expired(struct hrtimer *timer)
 {
@@ -291,18 +225,13 @@ ab8500_chargalg_maintenance_timer_expired(struct hrtimer *timer)
 	dev_dbg(di->dev, "Maintenance timer expired\n");
 	di->events.maintenance_timer_expired = true;
 
-	/* Trigger execution of the algorithm instantly */
+	 
 	queue_work(di->chargalg_wq, &di->chargalg_work);
 
 	return HRTIMER_NORESTART;
 }
 
-/**
- * ab8500_chargalg_state_to() - Change charge state
- * @di:		pointer to the ab8500_chargalg structure
- *
- * This function gets called when a charge state change should occur
- */
+ 
 static void ab8500_chargalg_state_to(struct ab8500_chargalg *di,
 	enum ab8500_chargalg_states state)
 {
@@ -342,17 +271,11 @@ static int ab8500_chargalg_check_charger_enable(struct ab8500_chargalg *di)
 	return 0;
 }
 
-/**
- * ab8500_chargalg_check_charger_connection() - Check charger connection change
- * @di:		pointer to the ab8500_chargalg structure
- *
- * This function will check if there is a change in the charger connection
- * and change charge state accordingly. AC has precedence over USB.
- */
+ 
 static int ab8500_chargalg_check_charger_connection(struct ab8500_chargalg *di)
 {
 	if (di->chg_info.conn_chg != di->chg_info.prev_conn_chg) {
-		/* Charger state changed since last update */
+		 
 		if (di->chg_info.conn_chg & AC_CHG) {
 			dev_info(di->dev, "Charging source is AC\n");
 			if (di->chg_info.charger_type != AC_CHG) {
@@ -373,16 +296,10 @@ static int ab8500_chargalg_check_charger_connection(struct ab8500_chargalg *di)
 	return di->chg_info.conn_chg;
 }
 
-/**
- * ab8500_chargalg_start_safety_timer() - Start charging safety timer
- * @di:		pointer to the ab8500_chargalg structure
- *
- * The safety timer is used to avoid overcharging of old or bad batteries.
- * There are different timers for AC and USB
- */
+ 
 static void ab8500_chargalg_start_safety_timer(struct ab8500_chargalg *di)
 {
-	/* Charger-dependent expiration time in hours*/
+	 
 	int timer_expiration = 0;
 
 	switch (di->chg_info.charger_type) {
@@ -406,31 +323,18 @@ static void ab8500_chargalg_start_safety_timer(struct ab8500_chargalg *di)
 	hrtimer_start_expires(&di->safety_timer, HRTIMER_MODE_REL);
 }
 
-/**
- * ab8500_chargalg_stop_safety_timer() - Stop charging safety timer
- * @di:		pointer to the ab8500_chargalg structure
- *
- * The safety timer is stopped whenever the NORMAL state is exited
- */
+ 
 static void ab8500_chargalg_stop_safety_timer(struct ab8500_chargalg *di)
 {
 	if (hrtimer_try_to_cancel(&di->safety_timer) >= 0)
 		di->events.safety_timer_expired = false;
 }
 
-/**
- * ab8500_chargalg_start_maintenance_timer() - Start charging maintenance timer
- * @di:		pointer to the ab8500_chargalg structure
- * @duration:	duration of the maintenance timer in minutes
- *
- * The maintenance timer is used to maintain the charge in the battery once
- * the battery is considered full. These timers are chosen to match the
- * discharge curve of the battery
- */
+ 
 static void ab8500_chargalg_start_maintenance_timer(struct ab8500_chargalg *di,
 	int duration)
 {
-	/* Set a timer in minutes with a 30 second range */
+	 
 	hrtimer_set_expires_range(&di->maintenance_timer,
 		ktime_set(duration * 60, 0),
 		ktime_set(30, 0));
@@ -438,29 +342,17 @@ static void ab8500_chargalg_start_maintenance_timer(struct ab8500_chargalg *di,
 	hrtimer_start_expires(&di->maintenance_timer, HRTIMER_MODE_REL);
 }
 
-/**
- * ab8500_chargalg_stop_maintenance_timer() - Stop maintenance timer
- * @di:		pointer to the ab8500_chargalg structure
- *
- * The maintenance timer is stopped whenever maintenance ends or when another
- * state is entered
- */
+ 
 static void ab8500_chargalg_stop_maintenance_timer(struct ab8500_chargalg *di)
 {
 	if (hrtimer_try_to_cancel(&di->maintenance_timer) >= 0)
 		di->events.maintenance_timer_expired = false;
 }
 
-/**
- * ab8500_chargalg_kick_watchdog() - Kick charger watchdog
- * @di:		pointer to the ab8500_chargalg structure
- *
- * The charger watchdog have to be kicked periodically whenever the charger is
- * on, else the ABB will reset the system
- */
+ 
 static int ab8500_chargalg_kick_watchdog(struct ab8500_chargalg *di)
 {
-	/* Check if charger exists and kick watchdog if charging */
+	 
 	if (di->ac_chg && di->ac_chg->ops.kick_wd &&
 	    di->chg_info.online_chg & AC_CHG) {
 		return di->ac_chg->ops.kick_wd(di->ac_chg);
@@ -471,23 +363,14 @@ static int ab8500_chargalg_kick_watchdog(struct ab8500_chargalg *di)
 	return -ENXIO;
 }
 
-/**
- * ab8500_chargalg_ac_en() - Turn on/off the AC charger
- * @di:		pointer to the ab8500_chargalg structure
- * @enable:	charger on/off
- * @vset_uv:	requested charger output voltage in microvolt
- * @iset_ua:	requested charger output current in microampere
- *
- * The AC charger will be turned on/off with the requested charge voltage and
- * current
- */
+ 
 static int ab8500_chargalg_ac_en(struct ab8500_chargalg *di, int enable,
 	int vset_uv, int iset_ua)
 {
 	if (!di->ac_chg || !di->ac_chg->ops.enable)
 		return -ENXIO;
 
-	/* Select maximum of what both the charger and the battery supports */
+	 
 	if (di->ac_chg->max_out_volt_uv)
 		vset_uv = min(vset_uv, di->ac_chg->max_out_volt_uv);
 	if (di->ac_chg->max_out_curr_ua)
@@ -499,23 +382,14 @@ static int ab8500_chargalg_ac_en(struct ab8500_chargalg *di, int enable,
 	return di->ac_chg->ops.enable(di->ac_chg, enable, vset_uv, iset_ua);
 }
 
-/**
- * ab8500_chargalg_usb_en() - Turn on/off the USB charger
- * @di:		pointer to the ab8500_chargalg structure
- * @enable:	charger on/off
- * @vset_uv:	requested charger output voltage in microvolt
- * @iset_ua:	requested charger output current in microampere
- *
- * The USB charger will be turned on/off with the requested charge voltage and
- * current
- */
+ 
 static int ab8500_chargalg_usb_en(struct ab8500_chargalg *di, int enable,
 	int vset_uv, int iset_ua)
 {
 	if (!di->usb_chg || !di->usb_chg->ops.enable)
 		return -ENXIO;
 
-	/* Select maximum of what both the charger and the battery supports */
+	 
 	if (di->usb_chg->max_out_volt_uv)
 		vset_uv = min(vset_uv, di->usb_chg->max_out_volt_uv);
 	if (di->usb_chg->max_out_curr_ua)
@@ -527,24 +401,14 @@ static int ab8500_chargalg_usb_en(struct ab8500_chargalg *di, int enable,
 	return di->usb_chg->ops.enable(di->usb_chg, enable, vset_uv, iset_ua);
 }
 
-/**
- * ab8500_chargalg_update_chg_curr() - Update charger current
- * @di:		pointer to the ab8500_chargalg structure
- * @iset_ua:	requested charger output current in microampere
- *
- * The charger output current will be updated for the charger
- * that is currently in use
- */
+ 
 static int ab8500_chargalg_update_chg_curr(struct ab8500_chargalg *di,
 		int iset_ua)
 {
-	/* Check if charger exists and update current if charging */
+	 
 	if (di->ac_chg && di->ac_chg->ops.update_curr &&
 			di->chg_info.charger_type & AC_CHG) {
-		/*
-		 * Select maximum of what both the charger
-		 * and the battery supports
-		 */
+		 
 		if (di->ac_chg->max_out_curr_ua)
 			iset_ua = min(iset_ua, di->ac_chg->max_out_curr_ua);
 
@@ -553,10 +417,7 @@ static int ab8500_chargalg_update_chg_curr(struct ab8500_chargalg *di,
 		return di->ac_chg->ops.update_curr(di->ac_chg, iset_ua);
 	} else if (di->usb_chg && di->usb_chg->ops.update_curr &&
 			di->chg_info.charger_type & USB_CHG) {
-		/*
-		 * Select maximum of what both the charger
-		 * and the battery supports
-		 */
+		 
 		if (di->usb_chg->max_out_curr_ua)
 			iset_ua = min(iset_ua, di->usb_chg->max_out_curr_ua);
 
@@ -568,14 +429,7 @@ static int ab8500_chargalg_update_chg_curr(struct ab8500_chargalg *di,
 	return -ENXIO;
 }
 
-/**
- * ab8500_chargalg_stop_charging() - Stop charging
- * @di:		pointer to the ab8500_chargalg structure
- *
- * This function is called from any state where charging should be stopped.
- * All charging is disabled and all status parameters and timers are changed
- * accordingly
- */
+ 
 static void ab8500_chargalg_stop_charging(struct ab8500_chargalg *di)
 {
 	ab8500_chargalg_ac_en(di, false, 0, 0);
@@ -588,14 +442,7 @@ static void ab8500_chargalg_stop_charging(struct ab8500_chargalg *di)
 	power_supply_changed(di->chargalg_psy);
 }
 
-/**
- * ab8500_chargalg_hold_charging() - Pauses charging
- * @di:		pointer to the ab8500_chargalg structure
- *
- * This function is called in the case where maintenance charging has been
- * disabled and instead a battery voltage mode is entered to check when the
- * battery voltage has reached a certain recharge voltage
- */
+ 
 static void ab8500_chargalg_hold_charging(struct ab8500_chargalg *di)
 {
 	ab8500_chargalg_ac_en(di, false, 0, 0);
@@ -608,15 +455,7 @@ static void ab8500_chargalg_hold_charging(struct ab8500_chargalg *di)
 	power_supply_changed(di->chargalg_psy);
 }
 
-/**
- * ab8500_chargalg_start_charging() - Start the charger
- * @di:		pointer to the ab8500_chargalg structure
- * @vset_uv:	requested charger output voltage in microvolt
- * @iset_ua:	requested charger output current in microampere
- *
- * A charger will be enabled depending on the requested charger type that was
- * detected previously.
- */
+ 
 static void ab8500_chargalg_start_charging(struct ab8500_chargalg *di,
 	int vset_uv, int iset_ua)
 {
@@ -641,20 +480,14 @@ static void ab8500_chargalg_start_charging(struct ab8500_chargalg *di,
 	}
 }
 
-/**
- * ab8500_chargalg_check_temp() - Check battery temperature ranges
- * @di:		pointer to the ab8500_chargalg structure
- *
- * The battery temperature is checked against the predefined limits and the
- * charge state is changed accordingly
- */
+ 
 static void ab8500_chargalg_check_temp(struct ab8500_chargalg *di)
 {
 	struct power_supply_battery_info *bi = di->bm->bi;
 
 	if (di->batt_data.temp > (bi->temp_alert_min + di->t_hyst_norm) &&
 		di->batt_data.temp < (bi->temp_alert_max - di->t_hyst_norm)) {
-		/* Temp OK! */
+		 
 		di->events.btemp_underover = false;
 		di->events.btemp_low = false;
 		di->events.btemp_high = false;
@@ -663,28 +496,28 @@ static void ab8500_chargalg_check_temp(struct ab8500_chargalg *di)
 	} else {
 		if ((di->batt_data.temp >= bi->temp_alert_max) &&
 		    (di->batt_data.temp < (bi->temp_max - di->t_hyst_lowhigh))) {
-			/* Alert zone for high temperature */
+			 
 			di->events.btemp_underover = false;
 			di->events.btemp_high = true;
 			di->t_hyst_norm = di->bm->temp_hysteresis;
 			di->t_hyst_lowhigh = 0;
 		} else if ((di->batt_data.temp > (bi->temp_min + di->t_hyst_lowhigh)) &&
 			   (di->batt_data.temp <= bi->temp_alert_min)) {
-			/* Alert zone for low temperature */
+			 
 			di->events.btemp_underover = false;
 			di->events.btemp_low = true;
 			di->t_hyst_norm = di->bm->temp_hysteresis;
 			di->t_hyst_lowhigh = 0;
 		} else if (di->batt_data.temp <= bi->temp_min ||
 			di->batt_data.temp >= bi->temp_max) {
-			/* TEMP major!!!!! */
+			 
 			di->events.btemp_underover = true;
 			di->events.btemp_low = false;
 			di->events.btemp_high = false;
 			di->t_hyst_norm = 0;
 			di->t_hyst_lowhigh = di->bm->temp_hysteresis;
 		} else {
-			/* Within hysteresis */
+			 
 			dev_dbg(di->dev, "Within hysteresis limit temp: %d "
 				"hyst_lowhigh %d, hyst normal %d\n",
 				di->batt_data.temp, di->t_hyst_lowhigh,
@@ -693,12 +526,7 @@ static void ab8500_chargalg_check_temp(struct ab8500_chargalg *di)
 	}
 }
 
-/**
- * ab8500_chargalg_check_charger_voltage() - Check charger voltage
- * @di:		pointer to the ab8500_chargalg structure
- *
- * Charger voltage is checked against maximum limit
- */
+ 
 static void ab8500_chargalg_check_charger_voltage(struct ab8500_chargalg *di)
 {
 	if (di->chg_info.usb_volt_uv > di->bm->chg_params->usb_volt_max_uv)
@@ -713,14 +541,7 @@ static void ab8500_chargalg_check_charger_voltage(struct ab8500_chargalg *di)
 
 }
 
-/**
- * ab8500_chargalg_end_of_charge() - Check if end-of-charge criteria is fulfilled
- * @di:		pointer to the ab8500_chargalg structure
- *
- * End-of-charge criteria is fulfilled when the battery voltage is above a
- * certain limit and the battery current is below a certain limit for a
- * predefined number of consecutive seconds. If true, the battery is full
- */
+ 
 static void ab8500_chargalg_end_of_charge(struct ab8500_chargalg *di)
 {
 	if (di->charge_status == POWER_SUPPLY_STATUS_CHARGING &&
@@ -760,15 +581,7 @@ static void init_maxim_chg_curr(struct ab8500_chargalg *di)
 	di->ccm.level = 0;
 }
 
-/**
- * ab8500_chargalg_chg_curr_maxim - increases the charger current to
- *			compensate for the system load
- * @di		pointer to the ab8500_chargalg structure
- *
- * This maximization function is used to raise the charger current to get the
- * battery current as close to the optimal value as possible. The battery
- * current during charging is affected by the system load
- */
+ 
 static enum maxim_ret ab8500_chargalg_chg_curr_maxim(struct ab8500_chargalg *di)
 {
 
@@ -788,7 +601,7 @@ static enum maxim_ret ab8500_chargalg_chg_curr_maxim(struct ab8500_chargalg *di)
 			return MAXIM_RET_CHANGE;
 		} else {
 			dev_dbg(di->dev, "waiting\n");
-			/* Let's go in here twice before lowering curr again */
+			 
 			di->ccm.wait_cnt = (di->ccm.wait_cnt + 1) % 3;
 			return MAXIM_RET_NOACTION;
 		}
@@ -839,7 +652,7 @@ static void handle_maxim_chg_curr(struct ab8500_chargalg *di)
 
 	case MAXIM_RET_NOACTION:
 	default:
-		/* Do nothing..*/
+		 
 		break;
 	}
 }
@@ -856,29 +669,23 @@ static int ab8500_chargalg_get_ext_psy_data(struct device *dev, void *data)
 
 	psy = (struct power_supply *)data;
 	di = power_supply_get_drvdata(psy);
-	/* For all psy where the driver name appears in any supplied_to */
+	 
 	j = match_string(supplicants, ext->num_supplicants, psy->desc->name);
 	if (j < 0)
 		return 0;
 
-	/*
-	 *  If external is not registering 'POWER_SUPPLY_PROP_CAPACITY' to its
-	 * property because of handling that sysfs entry on its own, this is
-	 * the place to get the battery capacity.
-	 */
+	 
 	if (!power_supply_get_property(ext, POWER_SUPPLY_PROP_CAPACITY, &ret)) {
 		di->batt_data.percent = ret.intval;
 		capacity_updated = true;
 	}
 
-	/* Go through all properties for the psy */
+	 
 	for (j = 0; j < ext->desc->num_properties; j++) {
 		enum power_supply_property prop;
 		prop = ext->desc->properties[j];
 
-		/*
-		 * Initialize chargers if not already done.
-		 * The ab8500_charger*/
+		 
 		if (!di->ac_chg &&
 			ext->desc->type == POWER_SUPPLY_TYPE_MAINS)
 			di->ac_chg = psy_to_ux500_charger(ext);
@@ -892,22 +699,22 @@ static int ab8500_chargalg_get_ext_psy_data(struct device *dev, void *data)
 		case POWER_SUPPLY_PROP_PRESENT:
 			switch (ext->desc->type) {
 			case POWER_SUPPLY_TYPE_BATTERY:
-				/* Battery present */
+				 
 				if (ret.intval)
 					di->events.batt_rem = false;
-				/* Battery removed */
+				 
 				else
 					di->events.batt_rem = true;
 				break;
 			case POWER_SUPPLY_TYPE_MAINS:
-				/* AC disconnected */
+				 
 				if (!ret.intval &&
 					(di->chg_info.conn_chg & AC_CHG)) {
 					di->chg_info.prev_conn_chg =
 						di->chg_info.conn_chg;
 					di->chg_info.conn_chg &= ~AC_CHG;
 				}
-				/* AC connected */
+				 
 				else if (ret.intval &&
 					!(di->chg_info.conn_chg & AC_CHG)) {
 					di->chg_info.prev_conn_chg =
@@ -916,14 +723,14 @@ static int ab8500_chargalg_get_ext_psy_data(struct device *dev, void *data)
 				}
 				break;
 			case POWER_SUPPLY_TYPE_USB:
-				/* USB disconnected */
+				 
 				if (!ret.intval &&
 					(di->chg_info.conn_chg & USB_CHG)) {
 					di->chg_info.prev_conn_chg =
 						di->chg_info.conn_chg;
 					di->chg_info.conn_chg &= ~USB_CHG;
 				}
-				/* USB connected */
+				 
 				else if (ret.intval &&
 					!(di->chg_info.conn_chg & USB_CHG)) {
 					di->chg_info.prev_conn_chg =
@@ -941,14 +748,14 @@ static int ab8500_chargalg_get_ext_psy_data(struct device *dev, void *data)
 			case POWER_SUPPLY_TYPE_BATTERY:
 				break;
 			case POWER_SUPPLY_TYPE_MAINS:
-				/* AC offline */
+				 
 				if (!ret.intval &&
 					(di->chg_info.online_chg & AC_CHG)) {
 					di->chg_info.prev_online_chg =
 						di->chg_info.online_chg;
 					di->chg_info.online_chg &= ~AC_CHG;
 				}
-				/* AC online */
+				 
 				else if (ret.intval &&
 					!(di->chg_info.online_chg & AC_CHG)) {
 					di->chg_info.prev_online_chg =
@@ -959,14 +766,14 @@ static int ab8500_chargalg_get_ext_psy_data(struct device *dev, void *data)
 				}
 				break;
 			case POWER_SUPPLY_TYPE_USB:
-				/* USB offline */
+				 
 				if (!ret.intval &&
 					(di->chg_info.online_chg & USB_CHG)) {
 					di->chg_info.prev_online_chg =
 						di->chg_info.online_chg;
 					di->chg_info.online_chg &= ~USB_CHG;
 				}
-				/* USB online */
+				 
 				else if (ret.intval &&
 					!(di->chg_info.online_chg & USB_CHG)) {
 					di->chg_info.prev_online_chg =
@@ -1084,8 +891,7 @@ static int ab8500_chargalg_get_ext_psy_data(struct device *dev, void *data)
 		case POWER_SUPPLY_PROP_VOLTAGE_AVG:
 			switch (ext->desc->type) {
 			case POWER_SUPPLY_TYPE_MAINS:
-				/* AVG is used to indicate when we are
-				 * in CV mode */
+				 
 				if (ret.intval)
 					di->events.ac_cv_active = true;
 				else
@@ -1093,8 +899,7 @@ static int ab8500_chargalg_get_ext_psy_data(struct device *dev, void *data)
 
 				break;
 			case POWER_SUPPLY_TYPE_USB:
-				/* AVG is used to indicate when we are
-				 * in CV mode */
+				 
 				if (ret.intval)
 					di->events.usb_cv_active = true;
 				else
@@ -1166,47 +971,30 @@ static int ab8500_chargalg_get_ext_psy_data(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * ab8500_chargalg_external_power_changed() - callback for power supply changes
- * @psy:       pointer to the structure power_supply
- *
- * This function is the entry point of the pointer external_power_changed
- * of the structure power_supply.
- * This function gets executed when there is a change in any external power
- * supply that this driver needs to be notified of.
- */
+ 
 static void ab8500_chargalg_external_power_changed(struct power_supply *psy)
 {
 	struct ab8500_chargalg *di = power_supply_get_drvdata(psy);
 
-	/*
-	 * Trigger execution of the algorithm instantly and read
-	 * all power_supply properties there instead
-	 */
+	 
 	if (di->chargalg_wq)
 		queue_work(di->chargalg_wq, &di->chargalg_work);
 }
 
-/**
- * ab8500_chargalg_time_to_restart() - time to restart CC/CV charging?
- * @di: charging algorithm state
- *
- * This checks if the voltage or capacity of the battery has fallen so
- * low that we need to restart the CC/CV charge cycle.
- */
+ 
 static bool ab8500_chargalg_time_to_restart(struct ab8500_chargalg *di)
 {
 	struct power_supply_battery_info *bi = di->bm->bi;
 
-	/* Sanity check - these need to have some reasonable values */
+	 
 	if (!di->batt_data.volt_uv || !di->batt_data.percent)
 		return false;
 
-	/* Some batteries tell us at which voltage we should restart charging */
+	 
 	if (bi->charge_restart_voltage_uv > 0) {
 		if (di->batt_data.volt_uv <= bi->charge_restart_voltage_uv)
 			return true;
-		/* Else we restart as we reach a certain capacity */
+		 
 	} else {
 		if (di->batt_data.percent <= AB8500_RECHARGE_CAP)
 			return true;
@@ -1215,14 +1003,7 @@ static bool ab8500_chargalg_time_to_restart(struct ab8500_chargalg *di)
 	return false;
 }
 
-/**
- * ab8500_chargalg_algorithm() - Main function for the algorithm
- * @di:		pointer to the ab8500_chargalg structure
- *
- * This is the main control function for the charging algorithm.
- * It is called periodically or when something happens that will
- * trigger a state change
- */
+ 
 static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 {
 	struct power_supply_battery_info *bi = di->bm->bi;
@@ -1230,7 +1011,7 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 	int charger_status;
 	int ret;
 
-	/* Collect data from all power_supply class devices */
+	 
 	class_for_each_device(power_supply_class, NULL,
 		di->chargalg_psy, ab8500_chargalg_get_ext_psy_data);
 
@@ -1247,11 +1028,7 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 					": Returned Value %d\n", ret);
 	}
 
-	/*
-	 * First check if we have a charger connected.
-	 * Also we don't allow charging of unknown batteries if configured
-	 * this way
-	 */
+	 
 	if (!charger_status ||
 		(di->events.batt_unknown && !di->bm->chg_unknown_bat)) {
 		if (di->charge_state != STATE_HANDHELD) {
@@ -1260,33 +1037,27 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 		}
 	}
 
-	/* Safety timer expiration */
+	 
 	else if (di->events.safety_timer_expired) {
 		if (di->charge_state != STATE_SAFETY_TIMER_EXPIRED)
 			ab8500_chargalg_state_to(di,
 				STATE_SAFETY_TIMER_EXPIRED_INIT);
 	}
-	/*
-	 * Check if any interrupts has occurred
-	 * that will prevent us from charging
-	 */
+	 
 
-	/* Battery removed */
+	 
 	else if (di->events.batt_rem) {
 		if (di->charge_state != STATE_BATT_REMOVED)
 			ab8500_chargalg_state_to(di, STATE_BATT_REMOVED_INIT);
 	}
-	/* Main or USB charger not ok. */
+	 
 	else if (di->events.mainextchnotok || di->events.usbchargernotok) {
-		/*
-		 * If vbus_collapsed is set, we have to lower the charger
-		 * current, which is done in the normal state below
-		 */
+		 
 		if (di->charge_state != STATE_CHG_NOT_OK &&
 				!di->events.vbus_collapsed)
 			ab8500_chargalg_state_to(di, STATE_CHG_NOT_OK_INIT);
 	}
-	/* VBUS, Main or VBAT OVV. */
+	 
 	else if (di->events.vbus_ovv ||
 			di->events.main_ovv ||
 			di->events.batt_ovv ||
@@ -1295,26 +1066,26 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 		if (di->charge_state != STATE_OVV_PROTECT)
 			ab8500_chargalg_state_to(di, STATE_OVV_PROTECT_INIT);
 	}
-	/* USB Thermal, stop charging */
+	 
 	else if (di->events.main_thermal_prot ||
 		di->events.usb_thermal_prot) {
 		if (di->charge_state != STATE_HW_TEMP_PROTECT)
 			ab8500_chargalg_state_to(di,
 				STATE_HW_TEMP_PROTECT_INIT);
 	}
-	/* Battery temp over/under */
+	 
 	else if (di->events.btemp_underover) {
 		if (di->charge_state != STATE_TEMP_UNDEROVER)
 			ab8500_chargalg_state_to(di,
 				STATE_TEMP_UNDEROVER_INIT);
 	}
-	/* Watchdog expired */
+	 
 	else if (di->events.ac_wd_expired ||
 		di->events.usb_wd_expired) {
 		if (di->charge_state != STATE_WD_EXPIRED)
 			ab8500_chargalg_state_to(di, STATE_WD_EXPIRED_INIT);
 	}
-	/* Battery temp high/low */
+	 
 	else if (di->events.btemp_low || di->events.btemp_high) {
 		if (di->charge_state != STATE_TEMP_LOWHIGH)
 			ab8500_chargalg_state_to(di, STATE_TEMP_LOWHIGH_INIT);
@@ -1409,12 +1180,12 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 		fallthrough;
 
 	case STATE_SAFETY_TIMER_EXPIRED:
-		/* We exit this state when charger is removed */
+		 
 		break;
 
 	case STATE_NORMAL_INIT:
 		if (bi->constant_charge_current_max_ua == 0)
-			/* "charging" with 0 uA */
+			 
 			ab8500_chargalg_stop_charging(di);
 		else {
 			ab8500_chargalg_start_charging(di,
@@ -1437,11 +1208,7 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 		handle_maxim_chg_curr(di);
 		if (di->charge_status == POWER_SUPPLY_STATUS_FULL &&
 			di->maintenance_chg) {
-			/*
-			 * The battery is fully charged, check if we support
-			 * maintenance charging else go back to waiting for
-			 * the recharge voltage limit.
-			 */
+			 
 			if (!power_supply_supports_maintenance_charging(bi))
 				ab8500_chargalg_state_to(di,
 					STATE_WAIT_FOR_RECHARGE_INIT);
@@ -1451,7 +1218,7 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 		}
 		break;
 
-	/* This state will be used when the maintenance state is disabled */
+	 
 	case STATE_WAIT_FOR_RECHARGE_INIT:
 		ab8500_chargalg_hold_charging(di);
 		ab8500_chargalg_state_to(di, STATE_WAIT_FOR_RECHARGE);
@@ -1465,7 +1232,7 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 	case STATE_MAINTENANCE_A_INIT:
 		mt = power_supply_get_maintenance_charging_setting(bi, 0);
 		if (!mt) {
-			/* No maintenance A state, go back to normal */
+			 
 			ab8500_chargalg_state_to(di, STATE_NORMAL_INIT);
 			power_supply_changed(di->chargalg_psy);
 			break;
@@ -1485,10 +1252,7 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 			ab8500_chargalg_stop_maintenance_timer(di);
 			ab8500_chargalg_state_to(di, STATE_MAINTENANCE_B_INIT);
 		}
-		/*
-		 * This happens if the voltage drops too quickly during
-		 * maintenance charging, especially in older batteries.
-		 */
+		 
 		if (ab8500_chargalg_time_to_restart(di)) {
 			ab8500_chargalg_state_to(di, STATE_NORMAL_INIT);
 			dev_info(di->dev, "restarted charging from maintenance state A - battery getting old?\n");
@@ -1498,7 +1262,7 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 	case STATE_MAINTENANCE_B_INIT:
 		mt = power_supply_get_maintenance_charging_setting(bi, 1);
 		if (!mt) {
-			/* No maintenance B state, go back to normal */
+			 
 			ab8500_chargalg_state_to(di, STATE_NORMAL_INIT);
 			power_supply_changed(di->chargalg_psy);
 			break;
@@ -1517,10 +1281,7 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 			ab8500_chargalg_stop_maintenance_timer(di);
 			ab8500_chargalg_state_to(di, STATE_NORMAL_INIT);
 		}
-		/*
-		 * This happens if the voltage drops too quickly during
-		 * maintenance charging, especially in older batteries.
-		 */
+		 
 		if (ab8500_chargalg_time_to_restart(di)) {
 			ab8500_chargalg_state_to(di, STATE_NORMAL_INIT);
 			dev_info(di->dev, "restarted charging from maintenance state B - battery getting old?\n");
@@ -1574,19 +1335,14 @@ static void ab8500_chargalg_algorithm(struct ab8500_chargalg *di)
 		break;
 	}
 
-	/* Start charging directly if the new state is a charge state */
+	 
 	if (di->charge_state == STATE_NORMAL_INIT ||
 			di->charge_state == STATE_MAINTENANCE_A_INIT ||
 			di->charge_state == STATE_MAINTENANCE_B_INIT)
 		queue_work(di->chargalg_wq, &di->chargalg_work);
 }
 
-/**
- * ab8500_chargalg_periodic_work() - Periodic work for the algorithm
- * @work:	pointer to the work_struct structure
- *
- * Work queue function for the charging algorithm
- */
+ 
 static void ab8500_chargalg_periodic_work(struct work_struct *work)
 {
 	struct ab8500_chargalg *di = container_of(work,
@@ -1594,10 +1350,7 @@ static void ab8500_chargalg_periodic_work(struct work_struct *work)
 
 	ab8500_chargalg_algorithm(di);
 
-	/*
-	 * If a charger is connected then the battery has to be monitored
-	 * frequently, else the work can be delayed.
-	 */
+	 
 	if (di->chg_info.conn_chg)
 		queue_delayed_work(di->chargalg_wq,
 			&di->chargalg_periodic_work,
@@ -1608,12 +1361,7 @@ static void ab8500_chargalg_periodic_work(struct work_struct *work)
 			di->bm->interval_not_charging * HZ);
 }
 
-/**
- * ab8500_chargalg_wd_work() - periodic work to kick the charger watchdog
- * @work:	pointer to the work_struct structure
- *
- * Work queue function for kicking the charger watchdog
- */
+ 
 static void ab8500_chargalg_wd_work(struct work_struct *work)
 {
 	int ret;
@@ -1628,12 +1376,7 @@ static void ab8500_chargalg_wd_work(struct work_struct *work)
 		&di->chargalg_wd_work, CHG_WD_INTERVAL);
 }
 
-/**
- * ab8500_chargalg_work() - Work to run the charging algorithm instantly
- * @work:	pointer to the work_struct structure
- *
- * Work queue function for calling the charging algorithm
- */
+ 
 static void ab8500_chargalg_work(struct work_struct *work)
 {
 	struct ab8500_chargalg *di = container_of(work,
@@ -1642,18 +1385,7 @@ static void ab8500_chargalg_work(struct work_struct *work)
 	ab8500_chargalg_algorithm(di);
 }
 
-/**
- * ab8500_chargalg_get_property() - get the chargalg properties
- * @psy:	pointer to the power_supply structure
- * @psp:	pointer to the power_supply_property structure
- * @val:	pointer to the power_supply_propval union
- *
- * This function gets called when an application tries to get the
- * chargalg properties by reading the sysfs files.
- * status:     charging/discharging/full/unknown
- * health:     health of the battery
- * Returns error code in case of failure else 0 on success
- */
+ 
 static int ab8500_chargalg_get_property(struct power_supply *psy,
 	enum power_supply_property psp,
 	union power_supply_propval *val)
@@ -1689,14 +1421,11 @@ static int __maybe_unused ab8500_chargalg_resume(struct device *dev)
 {
 	struct ab8500_chargalg *di = dev_get_drvdata(dev);
 
-	/* Kick charger watchdog if charging (any charger online) */
+	 
 	if (di->chg_info.online_chg)
 		queue_delayed_work(di->chargalg_wq, &di->chargalg_wd_work, 0);
 
-	/*
-	 * Run the charging algorithm directly to be sure we don't
-	 * do it too seldom
-	 */
+	 
 	queue_delayed_work(di->chargalg_wq, &di->chargalg_periodic_work, 0);
 
 	return 0;
@@ -1732,7 +1461,7 @@ static int ab8500_chargalg_bind(struct device *dev, struct device *master,
 {
 	struct ab8500_chargalg *di = dev_get_drvdata(dev);
 
-	/* Create a work queue for the chargalg */
+	 
 	di->chargalg_wq = alloc_ordered_workqueue("ab8500_chargalg_wq",
 						  WQ_MEM_RECLAIM);
 	if (di->chargalg_wq == NULL) {
@@ -1740,7 +1469,7 @@ static int ab8500_chargalg_bind(struct device *dev, struct device *master,
 		return -ENOMEM;
 	}
 
-	/* Run the charging algorithm */
+	 
 	queue_delayed_work(di->chargalg_wq, &di->chargalg_periodic_work, 0);
 
 	return 0;
@@ -1751,7 +1480,7 @@ static void ab8500_chargalg_unbind(struct device *dev, struct device *master,
 {
 	struct ab8500_chargalg *di = dev_get_drvdata(dev);
 
-	/* Stop all timers and work */
+	 
 	hrtimer_cancel(&di->safety_timer);
 	hrtimer_cancel(&di->maintenance_timer);
 
@@ -1759,7 +1488,7 @@ static void ab8500_chargalg_unbind(struct device *dev, struct device *master,
 	cancel_delayed_work_sync(&di->chargalg_wd_work);
 	cancel_work_sync(&di->chargalg_work);
 
-	/* Delete the work queue */
+	 
 	destroy_workqueue(di->chargalg_wq);
 }
 
@@ -1780,7 +1509,7 @@ static int ab8500_chargalg_probe(struct platform_device *pdev)
 
 	di->bm = &ab8500_bm_data;
 
-	/* get device struct and parent */
+	 
 	di->dev = dev;
 	di->parent = dev_get_drvdata(pdev->dev.parent);
 
@@ -1788,28 +1517,28 @@ static int ab8500_chargalg_probe(struct platform_device *pdev)
 	psy_cfg.num_supplicants = ARRAY_SIZE(supply_interface);
 	psy_cfg.drv_data = di;
 
-	/* Initilialize safety timer */
+	 
 	hrtimer_init(&di->safety_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	di->safety_timer.function = ab8500_chargalg_safety_timer_expired;
 
-	/* Initilialize maintenance timer */
+	 
 	hrtimer_init(&di->maintenance_timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
 	di->maintenance_timer.function =
 		ab8500_chargalg_maintenance_timer_expired;
 
-	/* Init work for chargalg */
+	 
 	INIT_DEFERRABLE_WORK(&di->chargalg_periodic_work,
 		ab8500_chargalg_periodic_work);
 	INIT_DEFERRABLE_WORK(&di->chargalg_wd_work,
 		ab8500_chargalg_wd_work);
 
-	/* Init work for chargalg */
+	 
 	INIT_WORK(&di->chargalg_work, ab8500_chargalg_work);
 
-	/* To detect charger at startup */
+	 
 	di->chg_info.prev_conn_chg = -1;
 
-	/* Register chargalg power supply class */
+	 
 	di->chargalg_psy = devm_power_supply_register(di->dev,
 						 &ab8500_chargalg_desc,
 						 &psy_cfg);

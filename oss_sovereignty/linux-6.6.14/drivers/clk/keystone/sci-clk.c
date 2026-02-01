@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * SCI Clock driver for keystone based devices
- *
- * Copyright (C) 2015-2016 Texas Instruments Incorporated - https://www.ti.com/
- *	Tero Kristo <t-kristo@ti.com>
- */
+
+ 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
 #include <linux/io.h>
@@ -20,14 +15,7 @@
 #define SCI_CLK_ALLOW_FREQ_CHANGE	BIT(1)
 #define SCI_CLK_INPUT_TERMINATION	BIT(2)
 
-/**
- * struct sci_clk_provider - TI SCI clock provider representation
- * @sci: Handle to the System Control Interface protocol handler
- * @ops: Pointer to the SCI ops to be used by the clocks
- * @dev: Device pointer for the clock provider
- * @clocks: Clocks array for this device
- * @num_clocks: Total number of clocks for this provider
- */
+ 
 struct sci_clk_provider {
 	const struct ti_sci_handle *sci;
 	const struct ti_sci_clk_ops *ops;
@@ -36,18 +24,7 @@ struct sci_clk_provider {
 	int num_clocks;
 };
 
-/**
- * struct sci_clk - TI SCI clock representation
- * @hw:		 Hardware clock cookie for common clock framework
- * @dev_id:	 Device index
- * @clk_id:	 Clock index
- * @num_parents: Number of parents for this clock
- * @provider:	 Master clock provider
- * @flags:	 Flags for the clock
- * @node:	 Link for handling clocks probed via DT
- * @cached_req:	 Cached requested freq for determine rate calls
- * @cached_res:	 Cached result freq for determine rate calls
- */
+ 
 struct sci_clk {
 	struct clk_hw hw;
 	u16 dev_id;
@@ -62,12 +39,7 @@ struct sci_clk {
 
 #define to_sci_clk(_hw) container_of(_hw, struct sci_clk, hw)
 
-/**
- * sci_clk_prepare - Prepare (enable) a TI SCI clock
- * @hw: clock to prepare
- *
- * Prepares a clock to be actively used. Returns the SCI protocol status.
- */
+ 
 static int sci_clk_prepare(struct clk_hw *hw)
 {
 	struct sci_clk *clk = to_sci_clk(hw);
@@ -81,12 +53,7 @@ static int sci_clk_prepare(struct clk_hw *hw)
 					     input_termination);
 }
 
-/**
- * sci_clk_unprepare - Un-prepares (disables) a TI SCI clock
- * @hw: clock to unprepare
- *
- * Un-prepares a clock from active state.
- */
+ 
 static void sci_clk_unprepare(struct clk_hw *hw)
 {
 	struct sci_clk *clk = to_sci_clk(hw);
@@ -100,13 +67,7 @@ static void sci_clk_unprepare(struct clk_hw *hw)
 			clk->dev_id, clk->clk_id, ret);
 }
 
-/**
- * sci_clk_is_prepared - Check if a TI SCI clock is prepared or not
- * @hw: clock to check status for
- *
- * Checks if a clock is prepared (enabled) in hardware. Returns non-zero
- * value if clock is enabled, zero otherwise.
- */
+ 
 static int sci_clk_is_prepared(struct clk_hw *hw)
 {
 	struct sci_clk *clk = to_sci_clk(hw);
@@ -126,14 +87,7 @@ static int sci_clk_is_prepared(struct clk_hw *hw)
 	return req_state;
 }
 
-/**
- * sci_clk_recalc_rate - Get clock rate for a TI SCI clock
- * @hw: clock to get rate for
- * @parent_rate: parent rate provided by common clock framework, not used
- *
- * Gets the current clock rate of a TI SCI clock. Returns the current
- * clock rate, or zero in failure.
- */
+ 
 static unsigned long sci_clk_recalc_rate(struct clk_hw *hw,
 					 unsigned long parent_rate)
 {
@@ -153,16 +107,7 @@ static unsigned long sci_clk_recalc_rate(struct clk_hw *hw,
 	return freq;
 }
 
-/**
- * sci_clk_determine_rate - Determines a clock rate a clock can be set to
- * @hw: clock to change rate for
- * @req: requested rate configuration for the clock
- *
- * Determines a suitable clock rate and parent for a TI SCI clock.
- * The parent handling is un-used, as generally the parent clock rates
- * are not known by the kernel; instead these are internally handled
- * by the firmware. Returns 0 on success, negative error value on failure.
- */
+ 
 static int sci_clk_determine_rate(struct clk_hw *hw,
 				  struct clk_rate_request *req)
 {
@@ -197,15 +142,7 @@ static int sci_clk_determine_rate(struct clk_hw *hw,
 	return 0;
 }
 
-/**
- * sci_clk_set_rate - Set rate for a TI SCI clock
- * @hw: clock to change rate for
- * @rate: target rate for the clock
- * @parent_rate: rate of the clock parent, not used for TI SCI clocks
- *
- * Sets a clock frequency for a TI SCI clock. Returns the TI SCI
- * protocol status.
- */
+ 
 static int sci_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 			    unsigned long parent_rate)
 {
@@ -216,12 +153,7 @@ static int sci_clk_set_rate(struct clk_hw *hw, unsigned long rate,
 					    rate / 10 * 11);
 }
 
-/**
- * sci_clk_get_parent - Get the current parent of a TI SCI clock
- * @hw: clock to get parent for
- *
- * Returns the index of the currently selected parent for a TI SCI clock.
- */
+ 
 static u8 sci_clk_get_parent(struct clk_hw *hw)
 {
 	struct sci_clk *clk = to_sci_clk(hw);
@@ -242,13 +174,7 @@ static u8 sci_clk_get_parent(struct clk_hw *hw)
 	return (u8)parent_id;
 }
 
-/**
- * sci_clk_set_parent - Set the parent of a TI SCI clock
- * @hw: clock to set parent for
- * @index: new parent index for the clock
- *
- * Sets the parent of a TI SCI clock. Return TI SCI protocol status.
- */
+ 
 static int sci_clk_set_parent(struct clk_hw *hw, u8 index)
 {
 	struct sci_clk *clk = to_sci_clk(hw);
@@ -271,17 +197,7 @@ static const struct clk_ops sci_clk_ops = {
 	.set_parent = sci_clk_set_parent,
 };
 
-/**
- * _sci_clk_get - Gets a handle for an SCI clock
- * @provider: Handle to SCI clock provider
- * @sci_clk: Handle to the SCI clock to populate
- *
- * Gets a handle to an existing TI SCI hw clock, or builds a new clock
- * entry and registers it with the common clock framework. Called from
- * the common clock framework, when a corresponding of_clk_get call is
- * executed, or recursively from itself when parsing parent clocks.
- * Returns 0 on success, negative error code on failure.
- */
+ 
 static int _sci_clk_build(struct sci_clk_provider *provider,
 			  struct sci_clk *sci_clk)
 {
@@ -298,12 +214,7 @@ static int _sci_clk_build(struct sci_clk_provider *provider,
 
 	init.name = name;
 
-	/*
-	 * From kernel point of view, we only care about a clocks parents,
-	 * if it has more than 1 possible parent. In this case, it is going
-	 * to have mux functionality. Otherwise it is going to act as a root
-	 * clock.
-	 */
+	 
 	if (sci_clk->num_parents < 2)
 		sci_clk->num_parents = 0;
 
@@ -365,16 +276,7 @@ static int _cmp_sci_clk(const void *a, const void *b)
 	return -1;
 }
 
-/**
- * sci_clk_get - Xlate function for getting clock handles
- * @clkspec: device tree clock specifier
- * @data: pointer to the clock provider
- *
- * Xlate function for retrieving clock TI SCI hw clock handles based on
- * device tree clock specifier. Called from the common clock framework,
- * when a corresponding of_clk_get call is executed. Returns a pointer
- * to the TI SCI hw clock struct, or ERR_PTR value in failure.
- */
+ 
 static struct clk_hw *sci_clk_get(struct of_phandle_args *clkspec, void *data)
 {
 	struct sci_clk_provider *provider = data;
@@ -412,7 +314,7 @@ static int ti_sci_init_clocks(struct sci_clk_provider *p)
 
 static const struct of_device_id ti_sci_clk_of_match[] = {
 	{ .compatible = "ti,k2g-sci-clk" },
-	{ /* Sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, ti_sci_clk_of_match);
 
@@ -566,16 +468,7 @@ static int ti_sci_scan_clocks_from_dt(struct sci_clk_provider *provider)
 				if (num_parents == 1)
 					num_parents = 0;
 
-				/*
-				 * Linux kernel has inherent limitation
-				 * of 255 clock parents at the moment.
-				 * Right now, it is not expected that
-				 * any mux clock from sci-clk driver
-				 * would exceed that limit either, but
-				 * the ABI basically provides that
-				 * possibility. Print out a warning if
-				 * this happens for any clock.
-				 */
+				 
 				if (num_parents >= 255) {
 					dev_warn(dev, "too many parents for dev=%d, clk=%d (%d), cropping to 255.\n",
 						 sci_clk->dev_id,
@@ -629,16 +522,7 @@ static int ti_sci_scan_clocks_from_dt(struct sci_clk_provider *provider)
 }
 #endif
 
-/**
- * ti_sci_clk_probe - Probe function for the TI SCI clock driver
- * @pdev: platform device pointer to be probed
- *
- * Probes the TI SCI clock device. Allocates a new clock provider
- * and registers this to the common clock framework. Also applies
- * any required flags to the identified clocks via clock lists
- * supplied from DT. Returns 0 for success, negative error value
- * for failure.
- */
+ 
 static int ti_sci_clk_probe(struct platform_device *pdev)
 {
 	struct device *dev = &pdev->dev;
@@ -682,14 +566,7 @@ static int ti_sci_clk_probe(struct platform_device *pdev)
 	return of_clk_add_hw_provider(np, sci_clk_get, provider);
 }
 
-/**
- * ti_sci_clk_remove - Remove TI SCI clock device
- * @pdev: platform device pointer for the device to be removed
- *
- * Removes the TI SCI device. Unregisters the clock provider registered
- * via common clock framework. Any memory allocated for the device will
- * be free'd silently via the devm framework. Returns 0 always.
- */
+ 
 static void ti_sci_clk_remove(struct platform_device *pdev)
 {
 	of_clk_del_provider(pdev->dev.of_node);

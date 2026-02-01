@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright (C) 2022 MediaTek Inc.
- *
- * Author: Lorenzo Bianconi <lorenzo@kernel.org>
- *	   Sujuan Chen <sujuan.chen@mediatek.com>
- */
+
+ 
 
 #include <linux/firmware.h>
 #include <linux/of_address.h>
@@ -117,7 +113,7 @@ mtk_wed_mcu_skb_send_msg(struct mtk_wed_wo *wo, struct sk_buff *skb,
 {
 	struct mtk_wed_mcu_hdr *hdr;
 
-	/* TODO: make it dynamic based on cmd */
+	 
 	wo->mcu.timeout = 20 * HZ;
 
 	hdr = (struct mtk_wed_mcu_hdr *)skb_push(skb, sizeof(*hdr));
@@ -309,7 +305,7 @@ mtk_wed_mcu_load_firmware(struct mtk_wed_wo *wo)
 	u32 val, boot_cr;
 	int ret, i;
 
-	/* load firmware region metadata */
+	 
 	for (i = 0; i < ARRAY_SIZE(mem_region); i++) {
 		ret = mtk_wed_get_memory_region(wo, &mem_region[i]);
 		if (ret)
@@ -321,11 +317,11 @@ mtk_wed_mcu_load_firmware(struct mtk_wed_wo *wo)
 	if (ret)
 		return ret;
 
-	/* set dummy cr */
+	 
 	wed_w32(wo->hw->wed_dev, MTK_WED_SCR0 + 4 * MTK_WED_DUMMY_CR_FWDL,
 		wo->hw->index + 1);
 
-	/* load firmware */
+	 
 	if (of_device_is_compatible(wo->hw->node, "mediatek,mt7981-wed"))
 		fw_name = MT7981_FIRMWARE_WO;
 	else
@@ -349,11 +345,11 @@ mtk_wed_mcu_load_firmware(struct mtk_wed_wo *wo)
 			goto out;
 	}
 
-	/* set the start address */
+	 
 	boot_cr = wo->hw->index ? MTK_WO_MCU_CFG_LS_WA_BOOT_ADDR_ADDR
 				: MTK_WO_MCU_CFG_LS_WM_BOOT_ADDR_ADDR;
 	wo_w32(wo, boot_cr, mem_region[MTK_WED_WO_REGION_EMI].phy_addr >> 16);
-	/* wo firmware reset */
+	 
 	wo_w32(wo, MTK_WO_MCU_CFG_LS_WF_MCCR_CLR_ADDR, 0xc00);
 
 	val = wo_r32(wo, MTK_WO_MCU_CFG_LS_WF_MCU_CFG_WM_WA_ADDR);

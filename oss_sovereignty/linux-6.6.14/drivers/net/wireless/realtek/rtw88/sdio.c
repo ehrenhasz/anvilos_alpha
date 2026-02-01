@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/* Copyright (C) 2021 Martin Blumenstingl <martin.blumenstingl@googlemail.com>
- * Copyright (C) 2021 Jernej Skrabec <jernej.skrabec@gmail.com>
- *
- * Based on rtw88/pci.c:
- *   Copyright(c) 2018-2019  Realtek Corporation
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/mmc/host.h>
@@ -520,15 +515,10 @@ static int rtw_sdio_read_port(struct rtw_dev *rtwdev, u8 *buf, size_t count)
 				 "Failed to read %zu byte(s) from SDIO port 0x%08x: %d",
 				 bytes, rxaddr, err);
 
-			 /* Signal to the caller that reading did not work and
-			  * that the data in the buffer is short/corrupted.
-			  */
+			  
 			ret = err;
 
-			/* Don't stop here - instead drain the remaining data
-			 * from the card's buffer, else the card will return
-			 * corrupt data for the next rtw_sdio_read_port() call.
-			 */
+			 
 		}
 
 		count -= bytes;
@@ -556,17 +546,17 @@ static int rtw_sdio_check_free_txpg(struct rtw_dev *rtwdev, u8 queue,
 		case RTW_TX_QUEUE_H2C:
 		case RTW_TX_QUEUE_HI0:
 		case RTW_TX_QUEUE_MGMT:
-			/* high */
+			 
 			pages_free = free_txpg & 0xff;
 			break;
 		case RTW_TX_QUEUE_VI:
 		case RTW_TX_QUEUE_VO:
-			/* normal */
+			 
 			pages_free = (free_txpg >> 8) & 0xff;
 			break;
 		case RTW_TX_QUEUE_BE:
 		case RTW_TX_QUEUE_BK:
-			/* low */
+			 
 			pages_free = (free_txpg >> 16) & 0xff;
 			break;
 		default:
@@ -574,7 +564,7 @@ static int rtw_sdio_check_free_txpg(struct rtw_dev *rtwdev, u8 queue,
 			return -EINVAL;
 		}
 
-		/* add the pages from the public queue */
+		 
 		pages_free += (free_txpg >> 24) & 0xff;
 	} else {
 		u32 free_txpg[3];
@@ -587,21 +577,21 @@ static int rtw_sdio_check_free_txpg(struct rtw_dev *rtwdev, u8 queue,
 		case RTW_TX_QUEUE_BCN:
 		case RTW_TX_QUEUE_H2C:
 		case RTW_TX_QUEUE_HI0:
-			/* high */
+			 
 			pages_free = free_txpg[0] & 0xfff;
 			break;
 		case RTW_TX_QUEUE_VI:
 		case RTW_TX_QUEUE_VO:
-			/* normal */
+			 
 			pages_free = (free_txpg[0] >> 16) & 0xfff;
 			break;
 		case RTW_TX_QUEUE_BE:
 		case RTW_TX_QUEUE_BK:
-			/* low */
+			 
 			pages_free = free_txpg[1] & 0xfff;
 			break;
 		case RTW_TX_QUEUE_MGMT:
-			/* extra */
+			 
 			pages_free = free_txpg[2] & 0xfff;
 			break;
 		default:
@@ -609,7 +599,7 @@ static int rtw_sdio_check_free_txpg(struct rtw_dev *rtwdev, u8 queue,
 			return -EINVAL;
 		}
 
-		/* add the pages from the public queue */
+		 
 		pages_free += (free_txpg[1] >> 16) & 0xfff;
 	}
 
@@ -685,7 +675,7 @@ static void rtw_sdio_enable_rx_aggregation(struct rtw_dev *rtwdev)
 		timeout = 0x1;
 	}
 
-	/* Make the firmware honor the size limit configured below */
+	 
 	rtw_write32_set(rtwdev, REG_RXDMA_AGG_PG_TH, BIT_EN_PRE_CALC);
 
 	rtw_write8_set(rtwdev, REG_TXDMA_PQ_MAP, BIT_RXDMA_AGG_EN);
@@ -731,7 +721,7 @@ static u8 rtw_sdio_get_tx_qsel(struct rtw_dev *rtwdev, struct sk_buff *skb,
 
 static int rtw_sdio_setup(struct rtw_dev *rtwdev)
 {
-	/* nothing to do */
+	 
 	return 0;
 }
 
@@ -755,16 +745,14 @@ static void rtw_sdio_deep_ps_enter(struct rtw_dev *rtwdev)
 	u8 queue;
 
 	if (!rtw_fw_feature_check(&rtwdev->fw, FW_FEATURE_TX_WAKE)) {
-		/* Deep PS state is not allowed to TX-DMA */
+		 
 		for (queue = 0; queue < RTK_MAX_TX_QUEUE_NUM; queue++) {
-			/* BCN queue is rsvd page, does not have DMA interrupt
-			 * H2C queue is managed by firmware
-			 */
+			 
 			if (queue == RTW_TX_QUEUE_BCN ||
 			    queue == RTW_TX_QUEUE_H2C)
 				continue;
 
-			/* check if there is any skb DMAing */
+			 
 			if (skb_queue_len(&rtwsdio->tx_queue[queue])) {
 				tx_empty = false;
 				break;
@@ -806,7 +794,7 @@ static void rtw_sdio_tx_kick_off(struct rtw_dev *rtwdev)
 
 static void rtw_sdio_link_ps(struct rtw_dev *rtwdev, bool enter)
 {
-	/* nothing to do */
+	 
 }
 
 static void rtw_sdio_interface_cfg(struct rtw_dev *rtwdev)
@@ -846,17 +834,12 @@ static void rtw_sdio_tx_skb_prepare(struct rtw_dev *rtwdev,
 	aligned_addr = ALIGN(data_addr, RTW_SDIO_DATA_PTR_ALIGN);
 
 	if (data_addr != aligned_addr) {
-		/* Ensure that the start of the pkt_desc is always aligned at
-		 * RTW_SDIO_DATA_PTR_ALIGN.
-		 */
+		 
 		offset = RTW_SDIO_DATA_PTR_ALIGN - (aligned_addr - data_addr);
 
 		pkt_desc = skb_push(skb, offset);
 
-		/* By inserting padding to align the start of the pkt_desc we
-		 * need to inform the firmware that the actual data starts at
-		 * a different offset than normal.
-		 */
+		 
 		pkt_info->offset += offset;
 	}
 
@@ -989,10 +972,7 @@ static void rtw_sdio_rxfifo_recv(struct rtw_dev *rtwdev, u32 rx_len)
 				     RTW_SDIO_DATA_PTR_ALIGN);
 
 		if ((curr_pkt_len + pkt_desc_sz) >= rx_len) {
-			/* Use the original skb (with it's adjusted offset)
-			 * when processing the last (or even the only) entry to
-			 * have it's memory freed automatically.
-			 */
+			 
 			rtw_sdio_rx_skb(rtwdev, skb, pkt_offset, &pkt_stat,
 					&rx_status);
 			break;
@@ -1011,7 +991,7 @@ static void rtw_sdio_rxfifo_recv(struct rtw_dev *rtwdev, u32 rx_len)
 		rtw_sdio_rx_skb(rtwdev, split_skb, pkt_offset, &pkt_stat,
 				&rx_status);
 
-		/* Move to the start of the next RX descriptor */
+		 
 		skb_reserve(skb, curr_pkt_len);
 		rx_len -= curr_pkt_len;
 	}
@@ -1035,20 +1015,10 @@ static void rtw_sdio_rx_isr(struct rtw_dev *rtwdev)
 		total_rx_bytes += rx_len;
 
 		if (rtw_chip_wcpu_11n(rtwdev)) {
-			/* Stop if no more RX requests are pending, even if
-			 * rx_len could be greater than zero in the next
-			 * iteration. This is needed because the RX buffer may
-			 * already contain data while either HW or FW are not
-			 * done filling that buffer yet. Still reading the
-			 * buffer can result in packets where
-			 * rtw_rx_pkt_stat.pkt_len is zero or points beyond the
-			 * end of the buffer.
-			 */
+			 
 			hisr = rtw_read32(rtwdev, REG_SDIO_HISR);
 		} else {
-			/* RTW_WCPU_11AC chips have improved hardware or
-			 * firmware and can use rx_len unconditionally.
-			 */
+			 
 			hisr = REG_SDIO_HISR_RX_REQUEST;
 		}
 	} while (total_rx_bytes < SZ_64K && hisr & REG_SDIO_HISR_RX_REQUEST);
@@ -1191,13 +1161,13 @@ static void rtw_sdio_indicate_tx_status(struct rtw_dev *rtwdev,
 	struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
 	struct ieee80211_hw *hw = rtwdev->hw;
 
-	/* enqueue to wait for tx report */
+	 
 	if (info->flags & IEEE80211_TX_CTL_REQ_TX_STATUS) {
 		rtw_tx_report_enqueue(rtwdev, skb, tx_data->sn);
 		return;
 	}
 
-	/* always ACK for others, then they won't be marked as drop */
+	 
 	ieee80211_tx_info_clear_status(info);
 	if (info->flags & IEEE80211_TX_CTL_NO_ACK)
 		info->flags |= IEEE80211_TX_STAT_NOACK_TRANSMITTED;

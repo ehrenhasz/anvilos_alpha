@@ -1,32 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * media_device_test.c - Media Controller Device ioctl loop Test
- *
- * Copyright (c) 2016 Shuah Khan <shuahkh@osg.samsung.com>
- * Copyright (c) 2016 Samsung Electronics Co., Ltd.
- *
- */
 
-/*
- * This file adds a test for Media Controller API.
- * This test should be run as root and should not be
- * included in the Kselftest run. This test should be
- * run when hardware and driver that makes use Media
- * Controller API are present in the system.
- *
- * This test opens user specified Media Device and calls
- * MEDIA_IOC_DEVICE_INFO ioctl in a loop once every 10
- * seconds.
- *
- * Usage:
- *	sudo ./media_device_test -d /dev/mediaX
- *
- *	While test is running, remove the device and
- *	ensure there are no use after free errors and
- *	other Oops in the dmesg. Enable KaSan kernel
- *	config option for use-after-free error detection.
-*/
+ 
+
+ 
 
 #include <stdio.h>
 #include <unistd.h>
@@ -55,7 +31,7 @@ int main(int argc, char **argv)
 		exit(-1);
 	}
 
-	/* Process arguments */
+	 
 	while ((opt = getopt(argc, argv, "d:")) != -1) {
 		switch (opt) {
 		case 'd':
@@ -71,11 +47,11 @@ int main(int argc, char **argv)
 	if (getuid() != 0)
 		ksft_exit_skip("Please run the test as root - Exiting.\n");
 
-	/* Generate random number of interations */
+	 
 	srand((unsigned int) time(NULL));
 	count = rand();
 
-	/* Open Media device and keep it open */
+	 
 	fd = open(media_device, O_RDWR);
 	if (fd == -1) {
 		printf("Media Device open errno %s\n", strerror(errno));

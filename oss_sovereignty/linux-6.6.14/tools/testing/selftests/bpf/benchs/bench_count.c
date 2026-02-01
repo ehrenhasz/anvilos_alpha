@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include "bench.h"
 
-/* COUNT-GLOBAL benchmark */
+ 
 
 static struct count_global_ctx {
 	struct counter hits;
@@ -25,7 +25,7 @@ static void count_global_measure(struct bench_res *res)
 	res->hits = atomic_swap(&ctx->hits.value, 0);
 }
 
-/* COUNT-local benchmark */
+ 
 
 static struct count_local_ctx {
 	struct counter *hits;

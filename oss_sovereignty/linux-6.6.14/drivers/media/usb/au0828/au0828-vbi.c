@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
-   au0828-vbi.c - VBI driver for au0828
 
-   Copyright (C) 2010 Devin Heitmueller <dheitmueller@kernellabs.com>
-
-   This work was sponsored by GetWellNetwork Inc.
-
- */
+ 
 
 #include "au0828.h"
 
@@ -16,7 +9,7 @@
 #include <linux/slab.h>
 #include <media/v4l2-mc.h>
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int vbi_queue_setup(struct vb2_queue *vq,
 			   unsigned int *nbuffers, unsigned int *nplanes,

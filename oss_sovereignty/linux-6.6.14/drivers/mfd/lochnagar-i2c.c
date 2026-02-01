@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Lochnagar I2C bus interface
- *
- * Copyright (c) 2012-2018 Cirrus Logic, Inc. and
- *                         Cirrus Logic International Semiconductor Ltd.
- *
- * Author: Charles Keepax <ckeepax@opensource.cirrus.com>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -211,7 +204,7 @@ static int lochnagar_wait_for_boot(struct regmap *regmap, unsigned int *id)
 	for (i = 0; i < LOCHNAGAR_BOOT_RETRIES; ++i) {
 		msleep(LOCHNAGAR_BOOT_DELAY_MS);
 
-		/* The reset register will return the device ID when read */
+		 
 		ret = regmap_read(regmap, LOCHNAGAR_SOFTWARE_RESET, id);
 		if (!ret)
 			return ret;
@@ -220,14 +213,7 @@ static int lochnagar_wait_for_boot(struct regmap *regmap, unsigned int *id)
 	return -ETIMEDOUT;
 }
 
-/**
- * lochnagar_update_config - Synchronise the boards analogue configuration to
- *                           the hardware.
- *
- * @lochnagar: A pointer to the primary core data structure.
- *
- * Return: Zero on success or an appropriate negative error code on failure.
- */
+ 
 int lochnagar_update_config(struct lochnagar *lochnagar)
 {
 	struct regmap *regmap = lochnagar->regmap;
@@ -241,11 +227,7 @@ int lochnagar_update_config(struct lochnagar *lochnagar)
 	if (lochnagar->type != LOCHNAGAR2)
 		return 0;
 
-	/*
-	 * Toggle the ANALOGUE_PATH_UPDATE bit and wait for the device to
-	 * acknowledge that any outstanding changes to the analogue
-	 * configuration have been applied.
-	 */
+	 
 	ret = regmap_write(regmap, LOCHNAGAR2_ANALOGUE_PATH_CTRL1, 0);
 	if (ret < 0)
 		return ret;
@@ -307,13 +289,13 @@ static int lochnagar_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Leave the Lochnagar in reset for a reasonable amount of time */
+	 
 	msleep(20);
 
-	/* Bring Lochnagar out of reset */
+	 
 	gpiod_set_value_cansleep(reset, 1);
 
-	/* Identify Lochnagar */
+	 
 	lochnagar->type = config->type;
 
 	lochnagar->regmap = devm_regmap_init_i2c(i2c, config->regmap);
@@ -323,7 +305,7 @@ static int lochnagar_i2c_probe(struct i2c_client *i2c)
 		return ret;
 	}
 
-	/* Wait for Lochnagar to boot */
+	 
 	ret = lochnagar_wait_for_boot(lochnagar->regmap, &val);
 	if (ret < 0) {
 		dev_err(dev, "Failed to read device ID: %d\n", ret);
@@ -340,7 +322,7 @@ static int lochnagar_i2c_probe(struct i2c_client *i2c)
 		return -ENODEV;
 	}
 
-	/* Identify firmware */
+	 
 	ret = regmap_read(lochnagar->regmap, LOCHNAGAR_FIRMWARE_ID1, &val);
 	if (ret < 0) {
 		dev_err(dev, "Failed to read firmware id 1: %d\n", ret);

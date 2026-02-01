@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <errno.h>
 #include <inttypes.h>
 #include <string.h>
@@ -122,11 +122,7 @@ size_t perf_event__fprintf_time_conv(union perf_event *event, FILE *fp)
 	ret += fprintf(fp, "... Time Muliplier  %" PRI_lu64 "\n", tc->time_mult);
 	ret += fprintf(fp, "... Time Zero       %" PRI_lu64 "\n", tc->time_zero);
 
-	/*
-	 * The event TIME_CONV was extended for the fields from "time_cycles"
-	 * when supported cap_user_time_short, for backward compatibility,
-	 * prints the extended fields only if they are contained in the event.
-	 */
+	 
 	if (event_contains(*tc, time_cycles)) {
 		ret += fprintf(fp, "... Time Cycles     %" PRI_lu64 "\n",
 			       tc->time_cycles);

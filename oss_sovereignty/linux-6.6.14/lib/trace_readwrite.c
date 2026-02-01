@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Register read and write tracepoints
- *
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include <linux/ftrace.h>
 #include <linux/module.h>
@@ -44,4 +40,4 @@ void log_post_read_mmio(u64 val, u8 width, const volatile void __iomem *addr,
 }
 EXPORT_SYMBOL_GPL(log_post_read_mmio);
 EXPORT_TRACEPOINT_SYMBOL_GPL(rwmmio_post_read);
-#endif /* CONFIG_TRACE_MMIO_ACCESS */
+#endif  

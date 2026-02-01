@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../efuse.h"
@@ -239,7 +239,7 @@ static void _rtl8723be_fwlps_leave(struct ieee80211_hw *hw)
 	u8 rpwm_val = 0, fw_pwrmode = FW_PS_ACTIVE_MODE;
 
 	if (ppsc->low_power_enable) {
-		rpwm_val = (FW_PS_STATE_ALL_ON | FW_PS_ACK);/* RF on */
+		rpwm_val = (FW_PS_STATE_ALL_ON | FW_PS_ACK); 
 		_rtl8723be_set_fw_clock_on(hw, rpwm_val, false);
 		rtlhal->allow_sw_to_change_hwclc = false;
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_H2C_FW_PWRMODE,
@@ -247,7 +247,7 @@ static void _rtl8723be_fwlps_leave(struct ieee80211_hw *hw)
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_FW_PSMODE_STATUS,
 					      (u8 *)(&fw_current_inps));
 	} else {
-		rpwm_val = FW_PS_STATE_ALL_ON;	/* RF on */
+		rpwm_val = FW_PS_STATE_ALL_ON;	 
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_SET_RPWM,
 					      (u8 *)(&rpwm_val));
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_H2C_FW_PWRMODE,
@@ -267,7 +267,7 @@ static void _rtl8723be_fwlps_enter(struct ieee80211_hw *hw)
 	u8 rpwm_val;
 
 	if (ppsc->low_power_enable) {
-		rpwm_val = FW_PS_STATE_RF_OFF_LOW_PWR;	/* RF off */
+		rpwm_val = FW_PS_STATE_RF_OFF_LOW_PWR;	 
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_FW_PSMODE_STATUS,
 					      (u8 *)(&fw_current_inps));
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_H2C_FW_PWRMODE,
@@ -275,7 +275,7 @@ static void _rtl8723be_fwlps_enter(struct ieee80211_hw *hw)
 		rtlhal->allow_sw_to_change_hwclc = true;
 		_rtl8723be_set_fw_clock_off(hw, rpwm_val);
 	} else {
-		rpwm_val = FW_PS_STATE_RF_OFF;	/* RF off */
+		rpwm_val = FW_PS_STATE_RF_OFF;	 
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_FW_PSMODE_STATUS,
 					      (u8 *)(&fw_current_inps));
 		rtlpriv->cfg->ops->set_hw_reg(hw, HW_VAR_H2C_FW_PWRMODE,
@@ -816,11 +816,11 @@ static bool _rtl8723be_init_mac(struct ieee80211_hw *hw)
 
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL, 0x00);
 
-	/*Auto Power Down to CHIP-off State*/
+	 
 	bytetmp = rtl_read_byte(rtlpriv, REG_APS_FSMCO + 1) & (~BIT(7));
 	rtl_write_byte(rtlpriv, REG_APS_FSMCO + 1, bytetmp);
 
-	/* HW Power on sequence */
+	 
 	if (!rtl_hal_pwrseqcmdparsing(rtlpriv, PWR_CUT_ALL_MSK,
 				      PWR_FAB_ALL_MSK, PWR_INTF_PCI_MSK,
 				      RTL8723_NIC_ENABLE_FLOW)) {
@@ -869,7 +869,7 @@ static bool _rtl8723be_init_mac(struct ieee80211_hw *hw)
 	rtl_write_dword(rtlpriv, REG_HISR, 0xffffffff);
 	rtl_write_dword(rtlpriv, REG_HISRE, 0xffffffff);
 
-	/* Enable FW Beamformer Interrupt */
+	 
 	bytetmp = rtl_read_byte(rtlpriv, REG_FWIMR + 3);
 	rtl_write_byte(rtlpriv, REG_FWIMR + 3, bytetmp | BIT(6));
 
@@ -913,19 +913,15 @@ static bool _rtl8723be_init_mac(struct ieee80211_hw *hw)
 
 	rtl_write_byte(rtlpriv, REG_SECONDARY_CCA_CTRL, 0x3);
 
-	/* <20130114, Kordan> The following setting is
-	 * only for DPDT and Fixed board type.
-	 * TODO:  A better solution is configure it
-	 * according EFUSE during the run-time.
-	 */
-	rtl_set_bbreg(hw, 0x64, BIT(20), 0x0);/* 0x66[4]=0 */
-	rtl_set_bbreg(hw, 0x64, BIT(24), 0x0);/* 0x66[8]=0 */
-	rtl_set_bbreg(hw, 0x40, BIT(4), 0x0)/* 0x40[4]=0 */;
-	rtl_set_bbreg(hw, 0x40, BIT(3), 0x1)/* 0x40[3]=1 */;
-	rtl_set_bbreg(hw, 0x4C, BIT(24) | BIT(23), 0x2)/* 0x4C[24:23]=10 */;
-	rtl_set_bbreg(hw, 0x944, BIT(1) | BIT(0), 0x3)/* 0x944[1:0]=11 */;
-	rtl_set_bbreg(hw, 0x930, MASKBYTE0, 0x77)/* 0x930[7:0]=77 */;
-	rtl_set_bbreg(hw, 0x38, BIT(11), 0x1)/* 0x38[11]=1 */;
+	 
+	rtl_set_bbreg(hw, 0x64, BIT(20), 0x0); 
+	rtl_set_bbreg(hw, 0x64, BIT(24), 0x0); 
+	rtl_set_bbreg(hw, 0x40, BIT(4), 0x0) ;
+	rtl_set_bbreg(hw, 0x40, BIT(3), 0x1) ;
+	rtl_set_bbreg(hw, 0x4C, BIT(24) | BIT(23), 0x2) ;
+	rtl_set_bbreg(hw, 0x944, BIT(1) | BIT(0), 0x3) ;
+	rtl_set_bbreg(hw, 0x930, MASKBYTE0, 0x77) ;
+	rtl_set_bbreg(hw, 0x38, BIT(11), 0x1) ;
 
 	bytetmp = rtl_read_byte(rtlpriv, REG_RXDMA_CONTROL);
 	rtl_write_byte(rtlpriv, REG_RXDMA_CONTROL, bytetmp & (~BIT(2)));
@@ -941,25 +937,25 @@ static void _rtl8723be_hw_configure(struct ieee80211_hw *hw)
 	u32 reg_rrsr;
 
 	reg_rrsr = RATE_ALL_CCK | RATE_ALL_OFDM_AG;
-	/* Init value for RRSR. */
+	 
 	rtl_write_dword(rtlpriv, REG_RRSR, reg_rrsr);
 
-	/* ARFB table 9 for 11ac 5G 2SS */
+	 
 	rtl_write_dword(rtlpriv, REG_ARFR0 + 4, 0xfffff000);
 
-	/* ARFB table 10 for 11ac 5G 1SS */
+	 
 	rtl_write_dword(rtlpriv, REG_ARFR1 + 4, 0x003ff000);
 
-	/* CF-End setting. */
+	 
 	rtl_write_word(rtlpriv, REG_FWHW_TXQ_CTRL, 0x1F00);
 
-	/* 0x456 = 0x70, sugguested by Zhilin */
+	 
 	rtl_write_byte(rtlpriv, REG_AMPDU_MAX_TIME, 0x70);
 
-	/* Set retry limit */
+	 
 	rtl_write_word(rtlpriv, REG_RL, 0x0707);
 
-	/* Set Data / Response auto rate fallack retry count */
+	 
 	rtl_write_dword(rtlpriv, REG_DARFRC, 0x01000000);
 	rtl_write_dword(rtlpriv, REG_DARFRC + 4, 0x07060504);
 	rtl_write_dword(rtlpriv, REG_RARFRC, 0x01000000);
@@ -968,12 +964,12 @@ static void _rtl8723be_hw_configure(struct ieee80211_hw *hw)
 	rtlpci->reg_bcn_ctrl_val = 0x1d;
 	rtl_write_byte(rtlpriv, REG_BCN_CTRL, rtlpci->reg_bcn_ctrl_val);
 
-	/* TBTT prohibit hold time. Suggested by designer TimChen. */
-	rtl_write_byte(rtlpriv, REG_TBTT_PROHIBIT + 1, 0xff); /* 8 ms */
+	 
+	rtl_write_byte(rtlpriv, REG_TBTT_PROHIBIT + 1, 0xff);  
 
 	rtl_write_word(rtlpriv, REG_NAV_PROT_LEN, 0x0040);
 
-	/*For Rx TP. Suggested by SD1 Richard. Added by tynli. 2010.04.12.*/
+	 
 	rtl_write_dword(rtlpriv, REG_FAST_EDCA_CTRL, 0x03086666);
 
 	rtl_write_byte(rtlpriv, REG_HT_SINGLE_AMPDU, 0x80);
@@ -1010,15 +1006,15 @@ static void _rtl8723be_dbi_write(struct rtl_priv *rtlpriv, u16 addr, u8 data)
 	u8 tmp = 0, count = 0;
 	u16 write_addr = 0, remainder = addr % 4;
 
-	/* Write DBI 1Byte Data */
+	 
 	write_addr = REG_DBI_WDATA + remainder;
 	rtl_write_byte(rtlpriv, write_addr, data);
 
-	/* Write DBI 2Byte Address & Write Enable */
+	 
 	write_addr = (addr & 0xfffc) | (BIT(0) << (remainder + 12));
 	rtl_write_word(rtlpriv, REG_DBI_ADDR, write_addr);
 
-	/* Write DBI Write Flag */
+	 
 	rtl_write_byte(rtlpriv, REG_DBI_FLAG, 0x1);
 
 	tmp = rtl_read_byte(rtlpriv, REG_DBI_FLAG);
@@ -1071,10 +1067,7 @@ static void _rtl8723be_enable_aspm_back_door(struct ieee80211_hw *hw)
 	u8 tmp8 = 0;
 	u16 tmp16 = 0;
 
-	/* <Roger_Notes> Overwrite following ePHY parameter for
-	 * some platform compatibility issue,
-	 * especially when CLKReq is enabled, 2012.11.09.
-	 */
+	 
 	tmp16 = _rtl8723be_mdio_read(rtlpriv, 0x01);
 	if (tmp16 != 0x0663)
 		_rtl8723be_mdio_write(rtlpriv, 0x01, 0x0663);
@@ -1107,14 +1100,12 @@ static void _rtl8723be_enable_aspm_back_door(struct ieee80211_hw *hw)
 	if (tmp16 != 0x0070)
 		_rtl8723be_mdio_write(rtlpriv, 0x0B, 0x0070);
 
-	/* Configuration Space offset 0x70f BIT7 is used to control L0S */
+	 
 	tmp8 = _rtl8723be_dbi_read(rtlpriv, 0x70f);
 	_rtl8723be_dbi_write(rtlpriv, 0x70f, tmp8 | BIT(7) |
 			     ASPM_L1_LATENCY << 3);
 
-	/* Configuration Space offset 0x719 Bit3 is for L1
-	 * BIT4 is for clock request
-	 */
+	 
 	tmp8 = _rtl8723be_dbi_read(rtlpriv, 0x719);
 	_rtl8723be_dbi_write(rtlpriv, 0x719, tmp8 | BIT(3) | BIT(4));
 }
@@ -1159,39 +1150,39 @@ static void _rtl8723be_poweroff_adapter(struct ieee80211_hw *hw)
 	u8 u1b_tmp;
 
 	rtlhal->mac_func_enable = false;
-	/* Combo (PCIe + USB) Card and PCIe-MF Card */
-	/* 1. Run LPS WL RFOFF flow */
+	 
+	 
 	rtl_hal_pwrseqcmdparsing(rtlpriv, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK,
 				 PWR_INTF_PCI_MSK, RTL8723_NIC_LPS_ENTER_FLOW);
 
-	/* 2. 0x1F[7:0] = 0 */
-	/* turn off RF */
-	/* rtl_write_byte(rtlpriv, REG_RF_CTRL, 0x00); */
+	 
+	 
+	 
 	if ((rtl_read_byte(rtlpriv, REG_MCUFWDL) & BIT(7)) &&
 	    rtlhal->fw_ready) {
 		rtl8723be_firmware_selfreset(hw);
 	}
 
-	/* Reset MCU. Suggested by Filen. */
+	 
 	u1b_tmp = rtl_read_byte(rtlpriv, REG_SYS_FUNC_EN + 1);
 	rtl_write_byte(rtlpriv, REG_SYS_FUNC_EN + 1, (u1b_tmp & (~BIT(2))));
 
-	/* g.	MCUFWDL 0x80[1:0]=0	 */
-	/* reset MCU ready status */
+	 
+	 
 	rtl_write_byte(rtlpriv, REG_MCUFWDL, 0x00);
 
-	/* HW card disable configuration. */
+	 
 	rtl_hal_pwrseqcmdparsing(rtlpriv, PWR_CUT_ALL_MSK, PWR_FAB_ALL_MSK,
 				 PWR_INTF_PCI_MSK, RTL8723_NIC_DISABLE_FLOW);
 
-	/* Reset MCU IO Wrapper */
+	 
 	u1b_tmp = rtl_read_byte(rtlpriv, REG_RSV_CTRL + 1);
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL + 1, (u1b_tmp & (~BIT(0))));
 	u1b_tmp = rtl_read_byte(rtlpriv, REG_RSV_CTRL + 1);
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL + 1, u1b_tmp | BIT(0));
 
-	/* 7. RSV_CTRL 0x1C[7:0] = 0x0E */
-	/* lock ISO/CLK/Power control register */
+	 
+	 
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL, 0x0e);
 }
 
@@ -1199,16 +1190,14 @@ static bool _rtl8723be_check_pcie_dma_hang(struct rtl_priv *rtlpriv)
 {
 	u8 tmp;
 
-	/* write reg 0x350 Bit[26]=1. Enable debug port. */
+	 
 	tmp = rtl_read_byte(rtlpriv, REG_DBI_CTRL + 3);
 	if (!(tmp & BIT(2))) {
 		rtl_write_byte(rtlpriv, REG_DBI_CTRL + 3, (tmp | BIT(2)));
-		mdelay(100); /* Suggested by DD Justin_tsai. */
+		mdelay(100);  
 	}
 
-	/* read reg 0x350 Bit[25] if 1 : RX hang
-	 * read reg 0x350 Bit[24] if 1 : TX hang
-	 */
+	 
 	tmp = rtl_read_byte(rtlpriv, REG_DBI_CTRL + 3);
 	if ((tmp & BIT(0)) || (tmp & BIT(1))) {
 		rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
@@ -1228,15 +1217,9 @@ static void _rtl8723be_reset_pcie_interface_dma(struct rtl_priv *rtlpriv,
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 		"ResetPcieInterfaceDMA8723BE()\n");
 
-	/* Revise Note: Follow the document "PCIe RX DMA Hang Reset Flow_v03"
-	 * released by SD1 Alan.
-	 * 2013.05.07, by tynli.
-	 */
+	 
 
-	/* 1. disable register write lock
-	 *	write 0x1C bit[1:0] = 2'h0
-	 *	write 0xCC bit[2] = 1'b1
-	 */
+	 
 	tmp = rtl_read_byte(rtlpriv, REG_RSV_CTRL);
 	tmp &= ~(BIT(1) | BIT(0));
 	rtl_write_byte(rtlpriv, REG_RSV_CTRL, tmp);
@@ -1244,13 +1227,10 @@ static void _rtl8723be_reset_pcie_interface_dma(struct rtl_priv *rtlpriv,
 	tmp |= BIT(2);
 	rtl_write_byte(rtlpriv, REG_PMC_DBG_CTRL2, tmp);
 
-	/* 2. Check and pause TRX DMA
-	 *	write 0x284 bit[18] = 1'b1
-	 *	write 0x301 = 0xFF
-	 */
+	 
 	tmp = rtl_read_byte(rtlpriv, REG_RXDMA_CONTROL);
 	if (tmp & BIT(2)) {
-		/* Already pause before the function for another purpose. */
+		 
 		release_mac_rx_pause = false;
 	} else {
 		rtl_write_byte(rtlpriv, REG_RXDMA_CONTROL, (tmp | BIT(2)));
@@ -1262,55 +1242,35 @@ static void _rtl8723be_reset_pcie_interface_dma(struct rtl_priv *rtlpriv,
 		rtl_write_byte(rtlpriv, REG_PCIE_CTRL_REG + 1, 0xFF);
 
 	if (mac_power_on) {
-		/* 3. reset TRX function
-		 *	write 0x100 = 0x00
-		 */
+		 
 		rtl_write_byte(rtlpriv, REG_CR, 0);
 	}
 
-	/* 4. Reset PCIe DMA
-	 *	write 0x003 bit[0] = 0
-	 */
+	 
 	tmp = rtl_read_byte(rtlpriv, REG_SYS_FUNC_EN + 1);
 	tmp &= ~(BIT(0));
 	rtl_write_byte(rtlpriv, REG_SYS_FUNC_EN + 1, tmp);
 
-	/* 5. Enable PCIe DMA
-	 *	write 0x003 bit[0] = 1
-	 */
+	 
 	tmp = rtl_read_byte(rtlpriv, REG_SYS_FUNC_EN + 1);
 	tmp |= BIT(0);
 	rtl_write_byte(rtlpriv, REG_SYS_FUNC_EN + 1, tmp);
 
 	if (mac_power_on) {
-		/* 6. enable TRX function
-		 *	write 0x100 = 0xFF
-		 */
+		 
 		rtl_write_byte(rtlpriv, REG_CR, 0xFF);
 
-		/* We should init LLT & RQPN and
-		 * prepare Tx/Rx descrptor address later
-		 * because MAC function is reset.
-		 */
+		 
 	}
 
-	/* 7. Restore PCIe autoload down bit
-	 *	write 0xF8 bit[17] = 1'b1
-	 */
+	 
 	tmp = rtl_read_byte(rtlpriv, REG_MAC_PHY_CTRL_NORMAL + 2);
 	tmp |= BIT(1);
 	rtl_write_byte(rtlpriv, REG_MAC_PHY_CTRL_NORMAL + 2, tmp);
 
-	/* In MAC power on state, BB and RF maybe in ON state,
-	 * if we release TRx DMA here
-	 * it will cause packets to be started to Tx/Rx,
-	 * so we release Tx/Rx DMA later.
-	 */
+	 
 	if (!mac_power_on) {
-		/* 8. release TRX DMA
-		 *	write 0x284 bit[18] = 1'b0
-		 *	write 0x301 = 0x00
-		 */
+		 
 		if (release_mac_rx_pause) {
 			tmp = rtl_read_byte(rtlpriv, REG_RXDMA_CONTROL);
 			rtl_write_byte(rtlpriv, REG_RXDMA_CONTROL,
@@ -1320,9 +1280,7 @@ static void _rtl8723be_reset_pcie_interface_dma(struct rtl_priv *rtlpriv,
 			       backup_pcie_dma_pause);
 	}
 
-	/* 9. lock system register
-	 *	write 0xCC bit[2] = 1'b0
-	 */
+	 
 	tmp = rtl_read_byte(rtlpriv, REG_PMC_DBG_CTRL2);
 	tmp &= ~(BIT(2));
 	rtl_write_byte(rtlpriv, REG_PMC_DBG_CTRL2, tmp);
@@ -1341,7 +1299,7 @@ int rtl8723be_hw_init(struct ieee80211_hw *hw)
 	u8 tmp_u1b;
 	unsigned long flags;
 
-	/* reenable interrupts to not interfere with other devices */
+	 
 	local_save_flags(flags);
 	local_irq_enable();
 
@@ -1387,11 +1345,7 @@ int rtl8723be_hw_init(struct ieee80211_hw *hw)
 
 	rtlhal->last_hmeboxnum = 0;
 	rtl8723be_phy_mac_config(hw);
-	/* because last function modify RCR, so we update
-	 * rcr var here, or TP will unstable for receive_config
-	 * is wrong, RX RCR_ACRC32 will cause TP unstable & Rx
-	 * RCR_APP_ICV will cause mac80211 unassoc for cisco 1252
-	 */
+	 
 	rtlpci->receive_config = rtl_read_dword(rtlpriv, REG_RCR);
 	rtlpci->receive_config &= ~(RCR_ACRC32 | RCR_AICV);
 	rtl_write_dword(rtlpriv, REG_RCR, rtlpci->receive_config);
@@ -1421,10 +1375,7 @@ int rtl8723be_hw_init(struct ieee80211_hw *hw)
 
 	if (ppsc->rfpwr_state == ERFON) {
 		rtl8723be_phy_set_rfpath_switch(hw, 1);
-		/* when use 1ant NIC, iqk will disturb BT music
-		 * root cause is not clear now, is something
-		 * related with 'mdelay' and Reg[0x948]
-		 */
+		 
 		if (rtlpriv->btcoexist.btc_info.ant_num == ANT_X2 ||
 		    !rtlpriv->cfg->ops->get_btc_status()) {
 			rtl8723be_phy_iq_calibrate(hw,
@@ -1437,14 +1388,14 @@ int rtl8723be_hw_init(struct ieee80211_hw *hw)
 	}
 	rtl_write_byte(rtlpriv, REG_NAV_UPPER, ((30000 + 127) / 128));
 
-	/* Release Rx DMA. */
+	 
 	tmp_u1b = rtl_read_byte(rtlpriv, REG_RXDMA_CONTROL);
 	if (tmp_u1b & BIT(2)) {
-		/* Release Rx DMA if needed */
+		 
 		tmp_u1b &= (~BIT(2));
 		rtl_write_byte(rtlpriv, REG_RXDMA_CONTROL, tmp_u1b);
 	}
-	/* Release Tx/Rx PCIE DMA. */
+	 
 	rtl_write_byte(rtlpriv, REG_PCIE_CTRL_REG + 1, 0);
 
 	rtl8723be_dm_init(hw);
@@ -1469,13 +1420,13 @@ static enum version_8723e _rtl8723be_read_chip_version(struct ieee80211_hw *hw)
 
 	rtlphy->rf_type = RF_1T1R;
 
-	/* treat rtl8723be chip as  MP version in default */
+	 
 	version = (enum version_8723e)(version | NORMAL_CHIP);
 
 	value32 = rtl_read_dword(rtlpriv, REG_SYS_CFG);
-	/* cut version */
+	 
 	version |= (enum version_8723e)(value32 & CHIP_VER_RTL_MASK);
-	/* Manufacture */
+	 
 	if (((value32 & EXT_VENDOR_ID) >> 18) == 0x01)
 		version = (enum version_8723e)(version | CHIP_VENDOR_SMIC);
 
@@ -1523,12 +1474,7 @@ static int _rtl8723be_set_media_status(struct ieee80211_hw *hw,
 		return 1;
 	}
 
-	/* MSR_INFRA == Link in infrastructure network;
-	 * MSR_ADHOC == Link in ad hoc network;
-	 * Therefore, check link state is necessary.
-	 *
-	 * MSR_AP == AP mode; link state is not cared here.
-	 */
+	 
 	if (mode != MSR_AP && rtlpriv->mac80211.link_state < MAC80211_LINKED) {
 		mode = MSR_NOLINK;
 		ledaction = LED_CTL_NO_LINK;
@@ -1596,9 +1542,7 @@ int rtl8723be_set_network_type(struct ieee80211_hw *hw,
 	return 0;
 }
 
-/* don't set REG_EDCA_BE_PARAM here
- * because mac80211 will send pkt when scan
- */
+ 
 void rtl8723be_set_qos(struct ieee80211_hw *hw, int aci)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
@@ -1631,7 +1575,7 @@ void rtl8723be_enable_interrupt(struct ieee80211_hw *hw)
 	rtl_write_dword(rtlpriv, REG_HIMRE, rtlpci->irq_mask[1] & 0xFFFFFFFF);
 	rtlpci->irq_enabled = true;
 
-	/*enable system interrupt*/
+	 
 	rtl_write_dword(rtlpriv, REG_HSIMR, rtlpci->sys_irq_mask & 0xFFFFFFFF);
 }
 
@@ -1643,7 +1587,7 @@ void rtl8723be_disable_interrupt(struct ieee80211_hw *hw)
 	rtl_write_dword(rtlpriv, REG_HIMR, IMR_DISABLED);
 	rtl_write_dword(rtlpriv, REG_HIMRE, IMR_DISABLED);
 	rtlpci->irq_enabled = false;
-	/*synchronize_irq(rtlpci->pdev->irq);*/
+	 
 }
 
 void rtl8723be_card_disable(struct ieee80211_hw *hw)
@@ -1662,7 +1606,7 @@ void rtl8723be_card_disable(struct ieee80211_hw *hw)
 	RT_SET_PS_LEVEL(ppsc, RT_RF_OFF_LEVL_HALT_NIC);
 	_rtl8723be_poweroff_adapter(hw);
 
-	/* after power off we should do iqk again */
+	 
 	if (!rtlpriv->cfg->ops->get_btc_status())
 		rtlpriv->phy.iqk_initialized = false;
 }
@@ -1688,7 +1632,7 @@ void rtl8723be_set_beacon_related_registers(struct ieee80211_hw *hw)
 	u16 bcn_interval, atim_window;
 
 	bcn_interval = mac->beacon_interval;
-	atim_window = 2;	/*FIX MERGE */
+	atim_window = 2;	 
 	rtl8723be_disable_interrupt(hw);
 	rtl_write_word(rtlpriv, REG_ATIMWND, atim_window);
 	rtl_write_word(rtlpriv, REG_BCN_INTERVAL, bcn_interval);
@@ -1753,14 +1697,14 @@ static void _rtl8723be_read_power_value_fromprom(struct ieee80211_hw *hw,
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 		"hal_ReadPowerValueFromPROM8723BE(): PROMContent[0x%x]=0x%x\n",
 		(addr + 1), hwinfo[addr + 1]);
-	if (0xFF == hwinfo[addr + 1])  /*YJ,add,120316*/
+	if (0xFF == hwinfo[addr + 1])   
 		autoload_fail = true;
 
 	if (autoload_fail) {
 		rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
 			"auto load fail : Use Default value!\n");
 		for (path = 0; path < MAX_RF_PATH; path++) {
-			/* 2.4G default value */
+			 
 			for (group = 0 ; group < MAX_CHNL_GROUP_24G; group++) {
 				pw2g->index_cck_base[path][group] = 0x2D;
 				pw2g->index_bw40_base[path][group] = 0x2D;
@@ -1781,7 +1725,7 @@ static void _rtl8723be_read_power_value_fromprom(struct ieee80211_hw *hw,
 	}
 
 	for (path = 0; path < MAX_RF_PATH; path++) {
-		/*2.4G default value*/
+		 
 		for (group = 0; group < MAX_CHNL_GROUP_24G; group++) {
 			pw2g->index_cck_base[path][group] = hwinfo[addr++];
 			if (pw2g->index_cck_base[path][group] == 0xFF)
@@ -1801,7 +1745,7 @@ static void _rtl8723be_read_power_value_fromprom(struct ieee80211_hw *hw,
 				} else {
 					pw2g->bw20_diff[path][cnt] =
 						(hwinfo[addr] & 0xf0) >> 4;
-					/*bit sign number to 8 bit sign number*/
+					 
 					if (pw2g->bw20_diff[path][cnt] & BIT(3))
 						pw2g->bw20_diff[path][cnt] |=
 									  0xF0;
@@ -1812,7 +1756,7 @@ static void _rtl8723be_read_power_value_fromprom(struct ieee80211_hw *hw,
 				} else {
 					pw2g->ofdm_diff[path][cnt] =
 							(hwinfo[addr] & 0x0f);
-					/*bit sign number to 8 bit sign number*/
+					 
 					if (pw2g->ofdm_diff[path][cnt] & BIT(3))
 						pw2g->ofdm_diff[path][cnt] |=
 									  0xF0;
@@ -1864,7 +1808,7 @@ static void _rtl8723be_read_power_value_fromprom(struct ieee80211_hw *hw,
 			}
 		}
 
-		/*5G default value*/
+		 
 		for (group = 0; group < MAX_CHNL_GROUP_5G; group++) {
 			pw5g->index_bw40_base[path][group] = hwinfo[addr++];
 			if (pw5g->index_bw40_base[path][group] == 0xFF)
@@ -1999,7 +1943,7 @@ static void _rtl8723be_read_txpower_info_from_hwpg(struct ieee80211_hw *hw,
 
 	if (!autoload_fail) {
 		rtlefuse->eeprom_regulatory =
-			hwinfo[EEPROM_RF_BOARD_OPTION_88E] & 0x07;/*bit0~2*/
+			hwinfo[EEPROM_RF_BOARD_OPTION_88E] & 0x07; 
 		if (hwinfo[EEPROM_RF_BOARD_OPTION_88E] == 0xFF)
 			rtlefuse->eeprom_regulatory = 0;
 	} else {
@@ -2075,7 +2019,7 @@ static void _rtl8723be_read_adapter_info(struct ieee80211_hw *hw,
 	};
 
 	if (pseudo_test) {
-		/* needs to be added */
+		 
 		return;
 	}
 
@@ -2086,7 +2030,7 @@ static void _rtl8723be_read_adapter_info(struct ieee80211_hw *hw,
 	if (rtl_get_hwinfo(hw, rtlpriv, HWSET_MAX_SIZE, hwinfo, params))
 		goto exit;
 
-	/*parse xtal*/
+	 
 	rtlefuse->crystalcap = hwinfo[EEPROM_XTAL_8723BE];
 	if (rtlefuse->crystalcap == 0xFF)
 		rtlefuse->crystalcap = 0x20;
@@ -2099,7 +2043,7 @@ static void _rtl8723be_read_adapter_info(struct ieee80211_hw *hw,
 						 hwinfo);
 
 	if (rtlpriv->btcoexist.btc_info.btcoexist == 1)
-		rtlefuse->board_type |= BIT(2); /* ODM_BOARD_BT */
+		rtlefuse->board_type |= BIT(2);  
 
 	rtlhal->board_type = rtlefuse->board_type;
 	rtl_dbg(rtlpriv, COMP_INIT, DBG_LOUD,
@@ -2107,32 +2051,32 @@ static void _rtl8723be_read_adapter_info(struct ieee80211_hw *hw,
 
 	rtlhal->package_type = _rtl8723be_read_package_type(hw);
 
-	/* set channel plan from efuse */
+	 
 	rtlefuse->channel_plan = rtlefuse->eeprom_channelplan;
 
 	if (rtlhal->oem_id == RT_CID_DEFAULT) {
-		/* Does this one have a Toshiba SMID from group 1? */
+		 
 		for (i = 0; i < ARRAY_SIZE(toshiba_smid1); i++) {
 			if (rtlefuse->eeprom_smid == toshiba_smid1[i]) {
 				is_toshiba_smid1 = true;
 				break;
 			}
 		}
-		/* Does this one have a Toshiba SMID from group 2? */
+		 
 		for (i = 0; i < ARRAY_SIZE(toshiba_smid2); i++) {
 			if (rtlefuse->eeprom_smid == toshiba_smid2[i]) {
 				is_toshiba_smid2 = true;
 				break;
 			}
 		}
-		/* Does this one have a Samsung SMID? */
+		 
 		for (i = 0; i < ARRAY_SIZE(samsung_smid); i++) {
 			if (rtlefuse->eeprom_smid == samsung_smid[i]) {
 				is_samsung_smid = true;
 				break;
 			}
 		}
-		/* Does this one have a Lenovo SMID? */
+		 
 		for (i = 0; i < ARRAY_SIZE(lenovo_smid); i++) {
 			if (rtlefuse->eeprom_smid == lenovo_smid[i]) {
 				is_lenovo_smid = true;
@@ -2680,7 +2624,7 @@ void rtl8723be_read_bt_coexist_info_from_hwpg(struct ieee80211_hw *hw,
 		rtlpriv->btcoexist.btc_info.bt_type = BT_RTL8723B;
 		rtlpriv->btcoexist.btc_info.ant_num = (value & 0x1);
 		rtlpriv->btcoexist.btc_info.single_ant_path =
-			 (value & 0x40 ? ANT_AUX : ANT_MAIN);	/*0xc3[6]*/
+			 (value & 0x40 ? ANT_AUX : ANT_MAIN);	 
 	} else {
 		rtlpriv->btcoexist.btc_info.btcoexist = 0;
 		rtlpriv->btcoexist.btc_info.bt_type = BT_RTL8723B;
@@ -2688,7 +2632,7 @@ void rtl8723be_read_bt_coexist_info_from_hwpg(struct ieee80211_hw *hw,
 		rtlpriv->btcoexist.btc_info.single_ant_path = ANT_MAIN;
 	}
 
-	/* override ant_num / ant_path */
+	 
 	if (mod_params->ant_sel) {
 		rtlpriv->btcoexist.btc_info.ant_num =
 			(mod_params->ant_sel == 1 ? ANT_X1 : ANT_X2);
@@ -2702,11 +2646,11 @@ void rtl8723be_bt_reg_init(struct ieee80211_hw *hw)
 {
 	struct rtl_priv *rtlpriv = rtl_priv(hw);
 
-	/* 0:Low, 1:High, 2:From Efuse. */
+	 
 	rtlpriv->btcoexist.reg_bt_iso = 2;
-	/* 0:Idle, 1:None-SCO, 2:SCO, 3:From Counter. */
+	 
 	rtlpriv->btcoexist.reg_bt_sco = 3;
-	/* 0:Disable BT control A-MPDU, 1:Enable BT control A-MPDU. */
+	 
 	rtlpriv->btcoexist.reg_bt_sco = 0;
 }
 

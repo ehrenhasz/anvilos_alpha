@@ -1,36 +1,4 @@
-/* Test of splitting a double into fraction and mantissa.
-   Copyright (C) 2012-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-static DOUBLE
-my_ldexp (DOUBLE x, int d)
-{
-  for (; d > 0; d--)
-    x *= L_(2.0);
-  for (; d < 0; d++)
-    x *= L_(0.5);
-  return x;
-}
-
-static void
-test_function (void)
-{
-  int i;
-  VOLATILE DOUBLE x;
-
-  { /* NaN.  */
+ 
     int exp = -9999;
     DOUBLE mantissa;
     x = NAN;
@@ -38,7 +6,7 @@ test_function (void)
     ASSERT (ISNAN (mantissa));
   }
 
-  { /* Positive infinity.  */
+  {  
     int exp = -9999;
     DOUBLE mantissa;
     x = INFINITY;
@@ -46,7 +14,7 @@ test_function (void)
     ASSERT (mantissa == x);
   }
 
-  { /* Negative infinity.  */
+  {  
     int exp = -9999;
     DOUBLE mantissa;
     x = - INFINITY;
@@ -54,7 +22,7 @@ test_function (void)
     ASSERT (mantissa == x);
   }
 
-  { /* Positive zero.  */
+  {  
     int exp = -9999;
     DOUBLE mantissa;
     x = L_(0.0);
@@ -64,7 +32,7 @@ test_function (void)
     ASSERT (!signbit (mantissa));
   }
 
-  { /* Negative zero.  */
+  {  
     int exp = -9999;
     DOUBLE mantissa;
     x = MINUS_ZERO;
@@ -166,10 +134,10 @@ test_function (void)
       ASSERT (mantissa == my_ldexp (x, - exp));
     }
 
-  /* Randomized tests.  */
+   
   for (i = 0; i < SIZEOF (RANDOM); i++)
     {
-      x = L_(20.0) * RANDOM[i] - L_(10.0); /* -10.0 <= x <= 10.0 */
+      x = L_(20.0) * RANDOM[i] - L_(10.0);  
       {
         int exp = -9999;
         DOUBLE mantissa = FREXP (x, &exp);

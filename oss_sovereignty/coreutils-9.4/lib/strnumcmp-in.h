@@ -1,21 +1,4 @@
-/* Compare numeric strings.  This is an internal include file.
-
-   Copyright (C) 1988-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Mike Haertel.  */
+ 
 
 #ifndef STRNUMCMP_IN_H
 # define STRNUMCMP_IN_H 1
@@ -27,48 +10,13 @@
 # define NEGATION_SIGN   '-'
 # define NUMERIC_ZERO    '0'
 
-/* ISDIGIT differs from isdigit, as follows:
-   - Its arg may be any int or unsigned int; it need not be an unsigned char
-     or EOF.
-   - It's typically faster.
-   POSIX says that only '0' through '9' are digits.  Prefer ISDIGIT to
-   isdigit unless it's important to use the locale's definition
-   of 'digit' even when the host does not conform to POSIX.  */
+ 
 # define ISDIGIT(c) ((unsigned int) (c) - '0' <= 9)
 
 
-/* Compare strings A and B containing decimal fractions < 1.
-   DECIMAL_POINT is the decimal point.  Each string
-   should begin with a decimal point followed immediately by the digits
-   of the fraction.  Strings not of this form are treated as zero.  */
+ 
 
-/* The goal here, is to take two numbers a and b... compare these
-   in parallel.  Instead of converting each, and then comparing the
-   outcome.  Most likely stopping the comparison before the conversion
-   is complete.  The algorithm used, in the old "sort" utility:
-
-   Algorithm: fraccompare
-   Action   : compare two decimal fractions
-   accepts  : char *a, char *b
-   returns  : -1 if a<b, 0 if a=b, 1 if a>b.
-   implement:
-
-   if *a == decimal_point AND *b == decimal_point
-     find first character different in a and b.
-     if both are digits, return the difference *a - *b.
-     if *a is a digit
-       skip past zeros
-       if digit return 1, else 0
-     if *b is a digit
-       skip past zeros
-       if digit return -1, else 0
-   if *a is a decimal_point
-     skip past decimal_point and zeros
-     if digit return 1, else 0
-   if *b is a decimal_point
-     skip past decimal_point and zeros
-     if digit return -1, else 0
-   return 0 */
+ 
 
 static inline int _GL_ATTRIBUTE_PURE
 fraccompare (char const *a, char const *b, char decimal_point)
@@ -103,12 +51,7 @@ fraccompare (char const *a, char const *b, char decimal_point)
   return 0;
 }
 
-/* Compare strings A and B as numbers without explicitly converting
-   them to machine numbers, to avoid overflow problems and perhaps
-   improve performance.  DECIMAL_POINT is the decimal point and
-   THOUSANDS_SEP the thousands separator.  A DECIMAL_POINT outside
-   'char' range causes comparisons to act as if there is no decimal point
-   character, and likewise for THOUSANDS_SEP.  */
+ 
 
 static inline int _GL_ATTRIBUTE_PURE
 numcompare (char const *a, char const *b,

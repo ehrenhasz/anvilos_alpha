@@ -1,12 +1,4 @@
-/*
- * Tegra ACONNECT Bus Driver
- *
- * Copyright (C) 2016, NVIDIA CORPORATION.  All rights reserved.
- *
- * This file is subject to the terms and conditions of the GNU General Public
- * License.  See the file "COPYING" in the main directory of this archive
- * for more details.
- */
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2018 BayLibre SAS
-// Author: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-//
-// Battery charger driver for MAXIM 77650/77651 charger/power-supply.
+
+
+
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/interrupt.h>
@@ -21,31 +21,31 @@
 #define MAX77650_CHG_DETAILS_BITS(_reg) \
 		(((_reg) & MAX77650_CHG_DETAILS_MASK) >> 4)
 
-/* Charger is OFF. */
+ 
 #define MAX77650_CHG_OFF			0x00
-/* Charger is in prequalification mode. */
+ 
 #define MAX77650_CHG_PREQ			0x01
-/* Charger is in fast-charge constant current mode. */
+ 
 #define MAX77650_CHG_ON_CURR			0x02
-/* Charger is in JEITA modified fast-charge constant-current mode. */
+ 
 #define MAX77650_CHG_ON_CURR_JEITA		0x03
-/* Charger is in fast-charge constant-voltage mode. */
+ 
 #define MAX77650_CHG_ON_VOLT			0x04
-/* Charger is in JEITA modified fast-charge constant-voltage mode. */
+ 
 #define MAX77650_CHG_ON_VOLT_JEITA		0x05
-/* Charger is in top-off mode. */
+ 
 #define MAX77650_CHG_ON_TOPOFF			0x06
-/* Charger is in JEITA modified top-off mode. */
+ 
 #define MAX77650_CHG_ON_TOPOFF_JEITA		0x07
-/* Charger is done. */
+ 
 #define MAX77650_CHG_DONE			0x08
-/* Charger is JEITA modified done. */
+ 
 #define MAX77650_CHG_DONE_JEITA			0x09
-/* Charger is suspended due to a prequalification timer fault. */
+ 
 #define MAX77650_CHG_SUSP_PREQ_TIM_FAULT	0x0a
-/* Charger is suspended due to a fast-charge timer fault. */
+ 
 #define MAX77650_CHG_SUSP_FAST_CHG_TIM_FAULT	0x0b
-/* Charger is suspended due to a battery temperature fault. */
+ 
 #define MAX77650_CHG_SUSP_BATT_TEMP_FAULT	0x0c
 
 #define MAX77650_CHGIN_DETAILS_MASK		GENMASK(3, 2)
@@ -178,7 +178,7 @@ static irqreturn_t max77650_charger_check_status(int irq, void *data)
 		max77650_charger_enable(chg);
 		break;
 	default:
-		/* May be 0x10 - debouncing */
+		 
 		break;
 	}
 

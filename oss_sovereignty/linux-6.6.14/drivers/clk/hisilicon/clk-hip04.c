@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Hisilicon HiP04 clock driver
- *
- * Copyright (c) 2013-2014 Hisilicon Limited.
- * Copyright (c) 2013-2014 Linaro Limited.
- *
- * Author: Haojian Zhuang <haojian.zhuang@linaro.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -17,7 +10,7 @@
 
 #include "clk.h"
 
-/* fixed rate clocks */
+ 
 static struct hisi_fixed_rate_clock hip04_fixed_rate_clks[] __initdata = {
 	{ HIP04_OSC50M,   "osc50m",   NULL, 0, 50000000, },
 	{ HIP04_CLK_50M,  "clk50m",   NULL, 0, 50000000, },

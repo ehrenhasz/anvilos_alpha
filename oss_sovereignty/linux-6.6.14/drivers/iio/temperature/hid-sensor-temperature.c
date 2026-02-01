@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HID Sensors Driver
- * Copyright (c) 2017, Intel Corporation.
- */
+
+ 
 #include <linux/device.h>
 #include <linux/hid-sensor-hub.h>
 #include <linux/iio/buffer.h>
@@ -30,7 +27,7 @@ static const u32 temperature_sensitivity_addresses[] = {
 	HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE,
 };
 
-/* Channel definitions */
+ 
 static const struct iio_chan_spec temperature_channels[] = {
 	{
 		.type = IIO_TEMP,
@@ -43,14 +40,14 @@ static const struct iio_chan_spec temperature_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(1),
 };
 
-/* Adjust channel real bits based on report descriptor */
+ 
 static void temperature_adjust_channel_bit_mask(struct iio_chan_spec *channels,
 					int channel, int size)
 {
 	channels[channel].scan_type.sign = 's';
-	/* Real storage bits will change based on the report desc. */
+	 
 	channels[channel].scan_type.realbits = size * 8;
-	/* Maximum size of a sample to capture is s32 */
+	 
 	channels[channel].scan_type.storagebits = sizeof(s32) * 8;
 }
 
@@ -123,7 +120,7 @@ static const struct iio_info temperature_info = {
 	.write_raw = &temperature_write_raw,
 };
 
-/* Callback handler to send event after all samples are received and captured */
+ 
 static int temperature_proc_event(struct hid_sensor_hub_device *hsdev,
 				unsigned int usage_id, void *pdev)
 {
@@ -137,7 +134,7 @@ static int temperature_proc_event(struct hid_sensor_hub_device *hsdev,
 	return 0;
 }
 
-/* Capture samples in local storage */
+ 
 static int temperature_capture_sample(struct hid_sensor_hub_device *hsdev,
 				unsigned int usage_id, size_t raw_len,
 				char *raw_data, void *pdev)
@@ -154,7 +151,7 @@ static int temperature_capture_sample(struct hid_sensor_hub_device *hsdev,
 	}
 }
 
-/* Parse report which is specific to an usage id*/
+ 
 static int temperature_parse_report(struct platform_device *pdev,
 				struct hid_sensor_hub_device *hsdev,
 				struct iio_chan_spec *channels,
@@ -186,7 +183,7 @@ static struct hid_sensor_hub_callbacks temperature_callbacks = {
 	.capture_sample = &temperature_capture_sample,
 };
 
-/* Function to initialize the processing for usage id */
+ 
 static int hid_temperature_probe(struct platform_device *pdev)
 {
 	static const char *name = "temperature";
@@ -256,7 +253,7 @@ error_remove_trigger:
 	return ret;
 }
 
-/* Function to deinitialize the processing for usage id */
+ 
 static int hid_temperature_remove(struct platform_device *pdev)
 {
 	struct hid_sensor_hub_device *hsdev = dev_get_platdata(&pdev->dev);
@@ -271,10 +268,10 @@ static int hid_temperature_remove(struct platform_device *pdev)
 
 static const struct platform_device_id hid_temperature_ids[] = {
 	{
-		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
+		 
 		.name = "HID-SENSOR-200033",
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, hid_temperature_ids);
 

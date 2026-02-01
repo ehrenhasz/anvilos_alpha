@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *  Copyright 2013 Matthew Garrett <mjg59@srcf.ucam.org>
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/module.h>

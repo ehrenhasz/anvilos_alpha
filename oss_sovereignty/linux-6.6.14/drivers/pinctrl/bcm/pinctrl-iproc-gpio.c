@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2014-2017 Broadcom
- */
 
-/*
- * This file contains the Broadcom Iproc GPIO driver that supports 3
- * GPIO controllers on Iproc including the ASIU GPIO controller, the
- * chipCommonG GPIO controller, and the always-on GPIO controller. Basic
- * PINCONF such as bias pull up/down, and drive strength are also supported
- * in this driver.
- *
- * It provides the functionality where pins from the GPIO can be
- * individually muxed to GPIO function, if individual pad
- * configuration is supported, through the interaction with respective
- * SoCs IOMUX controller.
- */
+ 
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/interrupt.h>
@@ -46,14 +33,14 @@
 #define IPROC_GPIO_PAD_RES_OFFSET   0x34
 #define IPROC_GPIO_RES_EN_OFFSET    0x38
 
-/* drive strength control for ASIU GPIO */
+ 
 #define IPROC_GPIO_ASIU_DRV0_CTRL_OFFSET 0x58
 
-/* pinconf for CCM GPIO */
+ 
 #define IPROC_GPIO_PULL_DN_OFFSET   0x10
 #define IPROC_GPIO_PULL_UP_OFFSET   0x14
 
-/* pinconf for CRMU(aon) GPIO and CCM GPIO*/
+ 
 #define IPROC_GPIO_DRV_CTRL_OFFSET  0x00
 
 #define GPIO_BANK_SIZE 0x200
@@ -81,25 +68,7 @@ enum iproc_pinconf_ctrl_type {
 	IOCTRL_TYPE_INVALID,
 };
 
-/*
- * Iproc GPIO core
- *
- * @dev: pointer to device
- * @base: I/O register base for Iproc GPIO controller
- * @io_ctrl: I/O register base for certain type of Iproc GPIO controller that
- * has the PINCONF support implemented outside of the GPIO block
- * @lock: lock to protect access to I/O registers
- * @gc: GPIO chip
- * @num_banks: number of GPIO banks, each bank supports up to 32 GPIOs
- * @pinmux_is_supported: flag to indicate this GPIO controller contains pins
- * that can be individually muxed to GPIO
- * @pinconf_disable: contains a list of PINCONF parameters that need to be
- * disabled
- * @nr_pinconf_disable: total number of PINCONF parameters that need to be
- * disabled
- * @pctl: pointer to pinctrl_dev
- * @pctldesc: pinctrl descriptor
- */
+ 
 struct iproc_gpio {
 	struct device *dev;
 
@@ -121,23 +90,13 @@ struct iproc_gpio {
 	struct pinctrl_desc pctldesc;
 };
 
-/*
- * Mapping from PINCONF pins to GPIO pins is 1-to-1
- */
+ 
 static inline unsigned iproc_pin_to_gpio(unsigned pin)
 {
 	return pin;
 }
 
-/**
- *  iproc_set_bit - set or clear one bit (corresponding to the GPIO pin) in a
- *  Iproc GPIO register
- *
- *  @chip: Iproc GPIO device
- *  @reg: register offset
- *  @gpio: GPIO pin
- *  @set: set or clear
- */
+ 
 static inline void iproc_set_bit(struct iproc_gpio *chip, unsigned int reg,
 				  unsigned gpio, bool set)
 {
@@ -171,7 +130,7 @@ static void iproc_gpio_irq_handler(struct irq_desc *desc)
 
 	chained_irq_enter(irq_chip, desc);
 
-	/* go through the entire GPIO banks and handle all interrupts */
+	 
 	for (i = 0; i < chip->num_banks; i++) {
 		unsigned long val = readl(chip->base + (i * GPIO_BANK_SIZE) +
 					  IPROC_GPIO_INT_MSTAT_OFFSET);
@@ -179,10 +138,7 @@ static void iproc_gpio_irq_handler(struct irq_desc *desc)
 		for_each_set_bit(bit, &val, NGPIOS_PER_BANK) {
 			unsigned pin = NGPIOS_PER_BANK * i + bit;
 
-			/*
-			 * Clear the interrupt before invoking the
-			 * handler, so we do not leave any window
-			 */
+			 
 			writel(BIT(bit), chip->base + (i * GPIO_BANK_SIZE) +
 			       IPROC_GPIO_INT_CLR_OFFSET);
 
@@ -207,12 +163,7 @@ static void iproc_gpio_irq_ack(struct irq_data *d)
 	writel(val, chip->base + offset);
 }
 
-/**
- *  iproc_gpio_irq_set_mask - mask/unmask a GPIO interrupt
- *
- *  @d: IRQ chip data
- *  @unmask: mask/unmask GPIO interrupt
- */
+ 
 static void iproc_gpio_irq_set_mask(struct irq_data *d, bool unmask)
 {
 	struct gpio_chip *gc = irq_data_get_irq_chip_data(d);
@@ -324,15 +275,13 @@ static const struct irq_chip iproc_gpio_irq_chip = {
 	GPIOCHIP_IRQ_RESOURCE_HELPERS,
 };
 
-/*
- * Request the Iproc IOMUX pinmux controller to mux individual pins to GPIO
- */
+ 
 static int iproc_gpio_request(struct gpio_chip *gc, unsigned offset)
 {
 	struct iproc_gpio *chip = gpiochip_get_data(gc);
 	unsigned gpio = gc->base + offset;
 
-	/* not all Iproc GPIO pins can be muxed individually */
+	 
 	if (!chip->pinmux_is_supported)
 		return 0;
 
@@ -414,10 +363,7 @@ static int iproc_gpio_get(struct gpio_chip *gc, unsigned gpio)
 	return !!(readl(chip->base + offset) & BIT(shift));
 }
 
-/*
- * Mapping of the iProc PINCONF parameters to the generic pin configuration
- * parameters
- */
+ 
 static const enum pin_config_param iproc_pinconf_disable_map[] = {
 	[IPROC_PINCONF_DRIVE_STRENGTH] = PIN_CONFIG_DRIVE_STRENGTH,
 	[IPROC_PINCONF_BIAS_DISABLE] = PIN_CONFIG_BIAS_DISABLE,
@@ -446,17 +392,14 @@ static int iproc_pinconf_disable_map_create(struct iproc_gpio *chip,
 	unsigned int map_size = ARRAY_SIZE(iproc_pinconf_disable_map);
 	unsigned int bit, nbits = 0;
 
-	/* figure out total number of PINCONF parameters to disable */
+	 
 	for_each_set_bit(bit, &disable_mask, map_size)
 		nbits++;
 
 	if (!nbits)
 		return 0;
 
-	/*
-	 * Allocate an array to store PINCONF parameters that need to be
-	 * disabled
-	 */
+	 
 	chip->pinconf_disable = devm_kcalloc(chip->dev, nbits,
 					     sizeof(*chip->pinconf_disable),
 					     GFP_KERNEL);
@@ -465,7 +408,7 @@ static int iproc_pinconf_disable_map_create(struct iproc_gpio *chip,
 
 	chip->nr_pinconf_disable = nbits;
 
-	/* now store these parameters */
+	 
 	nbits = 0;
 	for_each_set_bit(bit, &disable_mask, map_size)
 		chip->pinconf_disable[nbits++] = iproc_pinconf_disable_map[bit];
@@ -478,10 +421,7 @@ static int iproc_get_groups_count(struct pinctrl_dev *pctldev)
 	return 1;
 }
 
-/*
- * Only one group: "gpio_grp", since this local pinctrl device only performs
- * GPIO specific PINCONF configurations
- */
+ 
 static const char *iproc_get_group_name(struct pinctrl_dev *pctldev,
 					 unsigned selector)
 {
@@ -511,7 +451,7 @@ static int iproc_gpio_set_pull(struct iproc_gpio *chip, unsigned gpio,
 		val_1 = readl(base + IPROC_GPIO_PULL_UP_OFFSET);
 		val_2 = readl(base + IPROC_GPIO_PULL_DN_OFFSET);
 		if (disable) {
-			/* no pull-up or pull-down */
+			 
 			val_1 &= ~BIT(shift);
 			val_2 &= ~BIT(shift);
 		} else if (pull_up) {
@@ -581,7 +521,7 @@ static int iproc_gpio_set_strength(struct iproc_gpio *chip, unsigned gpio,
 	u32 val;
 	unsigned long flags;
 
-	/* make sure drive strength is supported */
+	 
 	if (strength < 2 ||  strength > 16 || (strength % 2))
 		return -ENOTSUPP;
 
@@ -635,7 +575,7 @@ static int iproc_gpio_get_strength(struct iproc_gpio *chip, unsigned gpio,
 		*strength += (val << i);
 	}
 
-	/* convert to mA */
+	 
 	*strength = (*strength + 1) * 2;
 	raw_spin_unlock_irqrestore(&chip->lock, flags);
 
@@ -738,7 +678,7 @@ static int iproc_pin_config_set(struct pinctrl_dev *pctldev, unsigned pin,
 			dev_err(chip->dev, "invalid configuration\n");
 			return -ENOTSUPP;
 		}
-	} /* for each config */
+	}  
 
 out:
 	return ret;
@@ -750,13 +690,7 @@ static const struct pinconf_ops iproc_pconf_ops = {
 	.pin_config_set = iproc_pin_config_set,
 };
 
-/*
- * Iproc GPIO controller supports some PINCONF related configurations such as
- * pull up, pull down, and drive strength, when the pin is configured to GPIO
- *
- * Here a local pinctrl device is created with simple 1-to-1 pin mapping to the
- * local GPIO pins
- */
+ 
 static int iproc_gpio_register_pinconf(struct iproc_gpio *chip)
 {
 	struct pinctrl_desc *pctldesc = &chip->pctldesc;
@@ -798,7 +732,7 @@ static const struct of_device_id iproc_gpio_of_match[] = {
 	{ .compatible = "brcm,cygnus-crmu-gpio" },
 	{ .compatible = "brcm,iproc-nsp-gpio" },
 	{ .compatible = "brcm,iproc-stingray-gpio" },
-	{ /* sentinel */ }
+	{   }
 };
 
 static int iproc_gpio_probe(struct platform_device *pdev)
@@ -812,10 +746,10 @@ static int iproc_gpio_probe(struct platform_device *pdev)
 	bool no_pinconf = false;
 	enum iproc_pinconf_ctrl_type io_ctrl_type = IOCTRL_TYPE_INVALID;
 
-	/* NSP does not support drive strength config */
+	 
 	if (of_device_is_compatible(dev->of_node, "brcm,iproc-nsp-gpio"))
 		pinconf_disable_mask = BIT(IPROC_PINCONF_DRIVE_STRENGTH);
-	/* Stingray does not support pinconf in this controller */
+	 
 	else if (of_device_is_compatible(dev->of_node,
 					 "brcm,iproc-stingray-gpio"))
 		no_pinconf = true;
@@ -871,7 +805,7 @@ static int iproc_gpio_probe(struct platform_device *pdev)
 	chip->pinmux_is_supported = of_property_read_bool(dev->of_node,
 							"gpio-ranges");
 
-	/* optional GPIO interrupt support */
+	 
 	irq = platform_get_irq_optional(pdev, 0);
 	if (irq > 0) {
 		struct gpio_irq_chip *girq;

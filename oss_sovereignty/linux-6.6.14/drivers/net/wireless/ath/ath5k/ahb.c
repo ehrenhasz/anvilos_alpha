@@ -1,20 +1,4 @@
-/*
- * Copyright (c) 2008-2009 Atheros Communications Inc.
- * Copyright (c) 2009 Gabor Juhos <juhosg@openwrt.org>
- * Copyright (c) 2009 Imre Kaloz <kaloz@openwrt.org>
- *
- * Permission to use, copy, modify, and/or distribute this software for any
- * purpose with or without fee is hereby granted, provided that the above
- * copyright notice and this permission notice appear in all copies.
- *
- * THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES
- * WITH REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF
- * MERCHANTABILITY AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR
- * ANY SPECIAL, DIRECT, INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES
- * WHATSOEVER RESULTING FROM LOSS OF USE, DATA OR PROFITS, WHETHER IN AN
- * ACTION OF CONTRACT, NEGLIGENCE OR OTHER TORTIOUS ACTION, ARISING OUT OF
- * OR IN CONNECTION WITH THE USE OR PERFORMANCE OF THIS SOFTWARE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/nl80211.h>
@@ -26,7 +10,7 @@
 #include "base.h"
 #include "reg.h"
 
-/* return bus cachesize in 4B word units */
+ 
 static void ath5k_ahb_read_cachesize(struct ath_common *common, int *csz)
 {
 	*csz = L1_CACHE_BYTES >> 2;
@@ -81,7 +65,7 @@ static const struct ath_bus_ops ath_ahb_bus_ops = {
 	.eeprom_read_mac = ath5k_ahb_eeprom_read_mac,
 };
 
-/*Initialization*/
+ 
 static int ath_ahb_probe(struct platform_device *pdev)
 {
 	struct ar231x_board_config *bcfg = dev_get_platdata(&pdev->dev);
@@ -134,18 +118,18 @@ static int ath_ahb_probe(struct platform_device *pdev)
 	ah->devid = bcfg->devid;
 
 	if (bcfg->devid >= AR5K_SREV_AR2315_R6) {
-		/* Enable WMAC AHB arbitration */
+		 
 		reg = ioread32((void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
 		reg |= AR5K_AR2315_AHB_ARB_CTL_WLAN;
 		iowrite32(reg, (void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
 
-		/* Enable global WMAC swapping */
+		 
 		reg = ioread32((void __iomem *) AR5K_AR2315_BYTESWAP);
 		reg |= AR5K_AR2315_BYTESWAP_WMAC;
 		iowrite32(reg, (void __iomem *) AR5K_AR2315_BYTESWAP);
 	} else {
-		/* Enable WMAC DMA access (assuming 5312 or 231x*/
-		/* TODO: check other platforms */
+		 
+		 
 		reg = ioread32((void __iomem *) AR5K_AR5312_ENABLE);
 		if (to_platform_device(ah->dev)->id == 0)
 			reg |= AR5K_AR5312_ENABLE_WLAN0;
@@ -153,11 +137,7 @@ static int ath_ahb_probe(struct platform_device *pdev)
 			reg |= AR5K_AR5312_ENABLE_WLAN1;
 		iowrite32(reg, (void __iomem *) AR5K_AR5312_ENABLE);
 
-		/*
-		 * On a dual-band AR5312, the multiband radio is only
-		 * used as pass-through. Disable 2 GHz support in the
-		 * driver for it
-		 */
+		 
 		if (to_platform_device(ah->dev)->id == 0 &&
 		    (bcfg->config->flags & (BD_WLAN0 | BD_WLAN1)) ==
 		     (BD_WLAN1 | BD_WLAN0))
@@ -198,12 +178,12 @@ static int ath_ahb_remove(struct platform_device *pdev)
 	ah = hw->priv;
 
 	if (bcfg->devid >= AR5K_SREV_AR2315_R6) {
-		/* Disable WMAC AHB arbitration */
+		 
 		reg = ioread32((void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
 		reg &= ~AR5K_AR2315_AHB_ARB_CTL_WLAN;
 		iowrite32(reg, (void __iomem *) AR5K_AR2315_AHB_ARB_CTL);
 	} else {
-		/*Stop DMA access */
+		 
 		reg = ioread32((void __iomem *) AR5K_AR5312_ENABLE);
 		if (to_platform_device(ah->dev)->id == 0)
 			reg &= ~AR5K_AR5312_ENABLE_WLAN0;

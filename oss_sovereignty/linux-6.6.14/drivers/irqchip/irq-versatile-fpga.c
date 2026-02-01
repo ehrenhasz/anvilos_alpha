@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  Support for Versatile FPGA-based IRQ controllers
- */
+
+ 
 #include <linux/bitops.h>
 #include <linux/irq.h>
 #include <linux/io.h>
@@ -29,15 +27,9 @@
 #define FIQ_ENABLE_SET		0x28
 #define FIQ_ENABLE_CLEAR	0x2C
 
-#define PIC_ENABLES             0x20	/* set interrupt pass through bits */
+#define PIC_ENABLES             0x20	 
 
-/**
- * struct fpga_irq_data - irq data container for the FPGA IRQ controller
- * @base: memory offset in virtual memory
- * @domain: IRQ domain for this instance
- * @valid: mask for valid IRQs on this controller
- * @used_irqs: number of active IRQs on this controller
- */
+ 
 struct fpga_irq_data {
 	void __iomem *base;
 	u32 valid;
@@ -45,7 +37,7 @@ struct fpga_irq_data {
 	u8 used_irqs;
 };
 
-/* we cannot allocate memory when the controllers are initially registered */
+ 
 static struct fpga_irq_data fpga_irq_devices[CONFIG_VERSATILE_FPGA_IRQ_NR];
 static int fpga_irq_id;
 
@@ -104,11 +96,7 @@ out:
 	chained_irq_exit(chip, desc);
 }
 
-/*
- * Handle each interrupt in a single FPGA IRQ controller.  Returns non-zero
- * if we've handled at least one interrupt.  This does a single read of the
- * status register and handles all interrupts in order from LSB first.
- */
+ 
 static int handle_one_fpga(struct fpga_irq_data *f, struct pt_regs *regs)
 {
 	int handled = 0;
@@ -124,10 +112,7 @@ static int handle_one_fpga(struct fpga_irq_data *f, struct pt_regs *regs)
 	return handled;
 }
 
-/*
- * Keep iterating over all registered FPGA IRQ controllers until there are
- * no pending interrupts.
- */
+ 
 static asmlinkage void __exception_irq_entry fpga_handle_irq(struct pt_regs *regs)
 {
 	int i, handled;
@@ -143,7 +128,7 @@ static int fpga_irqdomain_map(struct irq_domain *d, unsigned int irq,
 {
 	struct fpga_irq_data *f = d->host_data;
 
-	/* Skip invalid IRQs, only register handlers for the real ones */
+	 
 	if (!(f->valid & BIT(hwirq)))
 		return -EPERM;
 	irq_set_chip_data(irq, f);
@@ -179,10 +164,10 @@ static void __init fpga_irq_init(void __iomem *base, int parent_irq,
 	f->domain = irq_domain_add_linear(node, fls(valid),
 					  &fpga_irqdomain_ops, f);
 
-	/* This will allocate all valid descriptors in the linear case */
+	 
 	for (i = 0; i < fls(valid); i++)
 		if (valid & BIT(i)) {
-			/* Is this still required? */
+			 
 			irq_create_mapping(f->domain, i);
 			f->used_irqs++;
 		}
@@ -221,7 +206,7 @@ static int __init fpga_irq_of_init(struct device_node *node,
 	writel(clear_mask, base + IRQ_ENABLE_CLEAR);
 	writel(clear_mask, base + FIQ_ENABLE_CLEAR);
 
-	/* Some chips are cascaded from a parent IRQ */
+	 
 	parent_irq = irq_of_parse_and_map(node, 0);
 	if (!parent_irq) {
 		set_handle_irq(fpga_handle_irq);
@@ -230,11 +215,7 @@ static int __init fpga_irq_of_init(struct device_node *node,
 
 	fpga_irq_init(base, parent_irq, valid_mask, node);
 
-	/*
-	 * On Versatile AB/PB, some secondary interrupts have a direct
-	 * pass-thru to the primary controller for IRQs 20 and 22-31 which need
-	 * to be enabled. See section 3.10 of the Versatile AB user guide.
-	 */
+	 
 	if (of_device_is_compatible(node, "arm,versatile-sic"))
 		writel(0xffd00000, base + PIC_ENABLES);
 

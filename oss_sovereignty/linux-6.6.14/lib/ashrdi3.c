@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- */
+
+ 
 
 #include <linux/export.h>
 
@@ -18,7 +17,7 @@ long long notrace __ashrdi3(long long u, word_type b)
 	bm = 32 - b;
 
 	if (bm <= 0) {
-		/* w.s.high = 1..1 or 0..0 */
+		 
 		w.s.high =
 		    uu.s.high >> 31;
 		w.s.low = uu.s.high >> -bm;

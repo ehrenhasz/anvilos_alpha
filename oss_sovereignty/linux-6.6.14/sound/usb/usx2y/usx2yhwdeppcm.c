@@ -1,42 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- */
 
-/* USX2Y "rawusb" aka hwdep_pcm implementation
+ 
 
- Its usb's unableness to atomically handle power of 2 period sized data chuncs
- at standard samplerates,
- what led to this part of the usx2y module:
- It provides the alsa kernel half of the usx2y-alsa-jack driver pair.
- The pair uses a hardware dependent alsa-device for mmaped pcm transport.
- Advantage achieved:
-         The usb_hc moves pcm data from/into memory via DMA.
-         That memory is mmaped by jack's usx2y driver.
-         Jack's usx2y driver is the first/last to read/write pcm data.
-         Read/write is a combination of power of 2 period shaping and
-         float/int conversation.
-         Compared to mainline alsa/jack we leave out power of 2 period shaping inside
-         snd-usb-usx2y which needs memcpy() and additional buffers.
-         As a side effect possible unwanted pcm-data coruption resulting of
-         standard alsa's snd-usb-usx2y period shaping scheme falls away.
-         Result is sane jack operation at buffering schemes down to 128frames,
-         2 periods.
-         plain usx2y alsa mode is able to achieve 64frames, 4periods, but only at the
-         cost of easier triggered i.e. aeolus xruns (128 or 256frames,
-         2periods works but is useless cause of crackling).
-
- This is a first "proof of concept" implementation.
- Later, functionalities should migrate to more appropriate places:
- Userland:
- - The jackd could mmap its float-pcm buffers directly from alsa-lib.
- - alsa-lib could provide power of 2 period sized shaping combined with int/float
-   conversation.
-   Currently the usx2y jack driver provides above 2 services.
- Kernel:
- - rawusb dma pcm buffer transport should go to snd-usb-lib, so also snd-usb-audio
-   devices can use it.
-   Currently rawusb dma pcm buffer transport (this file) is only available to snd-usb-usx2y.
-*/
+ 
 
 #include <linux/delay.h>
 #include <linux/gfp.h>
@@ -54,7 +19,7 @@ static int usx2y_usbpcm_urb_capt_retire(struct snd_usx2y_substream *subs)
 	struct usx2ydev	*usx2y = subs->usx2y;
 	int head;
 
-	if (usx2y->hwdep_pcm_shm->capture_iso_start < 0) { //FIXME
+	if (usx2y->hwdep_pcm_shm->capture_iso_start < 0) { 
 		head = usx2y->hwdep_pcm_shm->captured_iso_head + 1;
 		if (head >= ARRAY_SIZE(usx2y->hwdep_pcm_shm->captured_iso))
 			head = 0;
@@ -62,7 +27,7 @@ static int usx2y_usbpcm_urb_capt_retire(struct snd_usx2y_substream *subs)
 		snd_printdd("cap start %i\n", head);
 	}
 	for (i = 0; i < nr_of_packs(); i++) {
-		if (urb->iso_frame_desc[i].status) { /* active? hmm, skip this */
+		if (urb->iso_frame_desc[i].status) {  
 			snd_printk(KERN_ERR
 				   "active frame status %i. Most probably some hardware problem.\n",
 				   urb->iso_frame_desc[i].status);
@@ -75,7 +40,7 @@ static int usx2y_usbpcm_urb_capt_retire(struct snd_usx2y_substream *subs)
 		hwptr_done -= runtime->buffer_size;
 	subs->hwptr_done = hwptr_done;
 	subs->transfer_done += lens;
-	/* update the pointer, call callback if necessary */
+	 
 	if (subs->transfer_done >= runtime->period_size) {
 		subs->transfer_done -= runtime->period_size;
 		snd_pcm_period_elapsed(subs->pcm_substream);
@@ -86,19 +51,10 @@ static int usx2y_usbpcm_urb_capt_retire(struct snd_usx2y_substream *subs)
 static int usx2y_iso_frames_per_buffer(struct snd_pcm_runtime *runtime,
 					      struct usx2ydev *usx2y)
 {
-	return (runtime->buffer_size * 1000) / usx2y->rate + 1;	//FIXME: so far only correct period_size == 2^x ?
+	return (runtime->buffer_size * 1000) / usx2y->rate + 1;	
 }
 
-/*
- * prepare urb for playback data pipe
- *
- * we copy the data directly from the pcm buffer.
- * the current position to be copied is held in hwptr field.
- * since a urb can handle only a single linear buffer, if the total
- * transferred area overflows the buffer boundary, we cannot send
- * it directly from the buffer.  thus the data is once copied to
- * a temporary buffer and urb points to that.
- */
+ 
 static int usx2y_hwdep_urb_play_prepare(struct snd_usx2y_substream *subs,
 					struct urb *urb)
 {
@@ -117,13 +73,13 @@ static int usx2y_hwdep_urb_play_prepare(struct snd_usx2y_substream *subs,
 
 	count = 0;
 	for (pack = 0; pack < nr_of_packs(); pack++) {
-		/* calculate the size of a packet */
+		 
 		counts = shm->captured_iso[shm->playback_iso_head].length / usx2y->stride;
 		if (counts < 43 || counts > 50) {
 			snd_printk(KERN_ERR "should not be here with counts=%i\n", counts);
 			return -EPIPE;
 		}
-		/* set up descriptor */
+		 
 		urb->iso_frame_desc[pack].offset = shm->captured_iso[shm->playback_iso_head].offset;
 		urb->iso_frame_desc[pack].length = shm->captured_iso[shm->playback_iso_head].length;
 		if (atomic_read(&subs->state) != STATE_RUNNING)
@@ -268,9 +224,7 @@ static void usx2y_hwdep_urb_release(struct urb **urb)
 	*urb = NULL;
 }
 
-/*
- * release a substream
- */
+ 
 static void usx2y_usbpcm_urbs_release(struct snd_usx2y_substream *subs)
 {
 	int i;
@@ -308,9 +262,7 @@ static void i_usx2y_usbpcm_subs_startup(struct urb *urb)
 	i_usx2y_usbpcm_urb_complete(urb);
 }
 
-/*
- * initialize a substream's urbs
- */
+ 
 static int usx2y_usbpcm_urbs_allocate(struct snd_usx2y_substream *subs)
 {
 	int i;
@@ -325,7 +277,7 @@ static int usx2y_usbpcm_urbs_allocate(struct snd_usx2y_substream *subs)
 	if (!subs->maxpacksize)
 		return -EINVAL;
 
-	/* allocate and initialize data urbs */
+	 
 	for (i = 0; i < NRURBS; i++) {
 		purb = subs->urb + i;
 		if (*purb) {
@@ -353,9 +305,7 @@ static int usx2y_usbpcm_urbs_allocate(struct snd_usx2y_substream *subs)
 	return 0;
 }
 
-/*
- * free the buffer
- */
+ 
 static int snd_usx2y_usbpcm_hw_free(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -403,7 +353,7 @@ static void usx2y_usbpcm_subs_startup(struct snd_usx2y_substream *subs)
 
 	usx2y->prepare_subs = subs;
 	subs->urb[0]->start_frame = -1;
-	smp_wmb();	// Make sure above modifications are seen by i_usx2y_subs_startup()
+	smp_wmb();	
 	usx2y_urbs_set_complete(usx2y, i_usx2y_usbpcm_subs_startup);
 }
 
@@ -478,8 +428,8 @@ static int usx2y_usbpcm_urbs_start(struct snd_usx2y_substream *subs)
 
  cleanup:
 	if (err) {
-		usx2y_subs_startup_finish(usx2y);	// Call it now
-		usx2y_clients_stop(usx2y);	// something is completely wrong > stop everything
+		usx2y_subs_startup_finish(usx2y);	
+		usx2y_clients_stop(usx2y);	
 	}
 	return err;
 }
@@ -487,11 +437,7 @@ static int usx2y_usbpcm_urbs_start(struct snd_usx2y_substream *subs)
 #define USX2Y_HWDEP_PCM_PAGES	\
 	PAGE_ALIGN(sizeof(struct snd_usx2y_hwdep_pcm_shm))
 
-/*
- * prepare callback
- *
- * set format and initialize urbs
- */
+ 
 static int snd_usx2y_usbpcm_prepare(struct snd_pcm_substream *substream)
 {
 	struct snd_pcm_runtime *runtime = substream->runtime;
@@ -515,8 +461,8 @@ static int snd_usx2y_usbpcm_prepare(struct snd_pcm_substream *substream)
 	}
 
 	usx2y_subs_prepare(subs);
-	// Start hardware streams
-	// SyncStream first....
+	
+	
 	if (atomic_read(&capsubs->state) < STATE_PREPARED) {
 		if (usx2y->format != runtime->format) {
 			err = usx2y_format_set(usx2y, runtime->format);
@@ -696,7 +642,7 @@ static int snd_usx2y_hwdep_pcm_mmap(struct snd_hwdep *hw, struct file *filp, str
 	if (!(usx2y->chip_status & USX2Y_STAT_CHIP_INIT))
 		return -EBUSY;
 
-	/* if userspace tries to mmap beyond end of our buffer, fail */
+	 
 	if (size > USX2Y_HWDEP_PCM_PAGES) {
 		snd_printd("%lu > %lu\n", size, (unsigned long)USX2Y_HWDEP_PCM_PAGES);
 		return -EINVAL;

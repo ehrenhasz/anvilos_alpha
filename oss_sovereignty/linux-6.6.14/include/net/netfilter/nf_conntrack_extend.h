@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _NF_CONNTRACK_EXTEND_H
 #define _NF_CONNTRACK_EXTEND_H
 
@@ -34,7 +34,7 @@ enum nf_ct_ext_id {
 	NF_CT_EXT_NUM,
 };
 
-/* Extensions: optional stuff which isn't permanently in struct. */
+ 
 struct nf_ct_ext {
 	u8 offset[NF_CT_EXT_NUM];
 	u8 len;
@@ -67,13 +67,11 @@ static inline void *nf_ct_ext_find(const struct nf_conn *ct, u8 id)
 	return (void *)ct->ext + ct->ext->offset[id];
 }
 
-/* Add this type, returns pointer to data or NULL. */
+ 
 void *nf_ct_ext_add(struct nf_conn *ct, enum nf_ct_ext_id id, gfp_t gfp);
 
-/* ext genid.  if ext->id != ext_genid, extensions cannot be used
- * anymore unless conntrack has CONFIRMED bit set.
- */
+ 
 extern atomic_t nf_conntrack_ext_genid;
 void nf_ct_ext_bump_genid(void);
 
-#endif /* _NF_CONNTRACK_EXTEND_H */
+#endif  

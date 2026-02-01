@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Data transmitting implementation.
- *
- * Copyright (c) 2017-2020, Silicon Laboratories, Inc.
- * Copyright (c) 2010, ST-Ericsson
- */
+
+ 
 #include <net/mac80211.h>
 #include <linux/etherdevice.h>
 
@@ -30,9 +25,7 @@ static int wfx_get_hw_rate(struct wfx_dev *wdev, const struct ieee80211_tx_rate 
 		}
 		return rate->idx + 14;
 	}
-	/* The device only support 2GHz, else band information should be retrieved from
-	 * ieee80211_tx_info
-	 */
+	 
 	band = wdev->hw->wiphy->bands[NL80211_BAND_2GHZ];
 	if (rate->idx >= band->n_bitrates) {
 		WARN(1, "wrong rate->idx value: %d", rate->idx);
@@ -41,7 +34,7 @@ static int wfx_get_hw_rate(struct wfx_dev *wdev, const struct ieee80211_tx_rate 
 	return band->bitrates[rate->idx].hw_value;
 }
 
-/* TX policy cache implementation */
+ 
 
 static void wfx_tx_policy_build(struct wfx_vif *wvif, struct wfx_tx_policy *policy,
 				struct ieee80211_tx_rate *rates)
@@ -57,7 +50,7 @@ static void wfx_tx_policy_build(struct wfx_vif *wvif, struct wfx_tx_policy *poli
 			break;
 		WARN_ON(rates[i].count > 15);
 		rateid = wfx_get_hw_rate(wdev, &rates[i]);
-		/* Pack two values in each byte of policy->rates */
+		 
 		count = rates[i].count;
 		if (rateid % 2)
 			count <<= 4;
@@ -117,7 +110,7 @@ static int wfx_tx_policy_get(struct wfx_vif *wvif, struct ieee80211_tx_rate *rat
 	if (idx >= 0) {
 		*renew = false;
 	} else {
-		/* If policy is not found create a new one using the oldest entry in "free" list */
+		 
 		*renew = true;
 		entry = list_entry(cache->free.prev, struct wfx_tx_policy, link);
 		memcpy(entry->rates, wanted.rates, sizeof(entry->rates));
@@ -195,7 +188,7 @@ void wfx_tx_policy_init(struct wfx_vif *wvif)
 		list_add(&cache->cache[i].link, &cache->free);
 }
 
-/* Tx implementation */
+ 
 
 static bool wfx_is_action_back(struct ieee80211_hdr *hdr)
 {
@@ -232,11 +225,7 @@ static void wfx_tx_fixup_rates(struct ieee80211_tx_rate *rates)
 	for (i = 1, j = 1; j < IEEE80211_TX_MAX_RATES; j++) {
 		if (rates[j].idx == -1)
 			break;
-		/* The device use the rates in descending order, whatever the request from minstrel.
-		 * We have to trade off here. Most important is to respect the primary rate
-		 * requested by minstrel. So, we drops the entries with rate higher than the
-		 * previous.
-		 */
+		 
 		if (rates[j].idx >= rates[i - 1].idx) {
 			rates[i - 1].count += rates[j].count;
 			rates[i - 1].count = min_t(u16, 15, rates[i - 1].count);
@@ -244,15 +233,15 @@ static void wfx_tx_fixup_rates(struct ieee80211_tx_rate *rates)
 			memcpy(rates + i, rates + j, sizeof(rates[i]));
 			if (rates[i].idx == 0)
 				has_rate0 = true;
-			/* The device apply Short GI only on the first rate */
+			 
 			rates[i].flags &= ~IEEE80211_TX_RC_SHORT_GI;
 			i++;
 		}
 	}
-	/* Ensure that MCS0 or 1Mbps is present at the end of the retry list */
+	 
 	if (!has_rate0 && i < IEEE80211_TX_MAX_RATES) {
 		rates[i].idx = 0;
-		rates[i].count = 8; /* == hw->max_rate_tries */
+		rates[i].count = 8;  
 		rates[i].flags = rates[0].flags & IEEE80211_TX_RC_MCS;
 		i++;
 	}
@@ -316,13 +305,13 @@ static int wfx_tx_inner(struct wfx_vif *wvif, struct ieee80211_sta *sta, struct 
 	WARN(queue_id >= IEEE80211_NUM_ACS, "unsupported queue_id");
 	wfx_tx_fixup_rates(tx_info->driver_rates);
 
-	/* From now tx_info->control is unusable */
+	 
 	memset(tx_info->rate_driver_data, 0, sizeof(struct wfx_tx_priv));
-	/* Fill tx_priv */
+	 
 	tx_priv = (struct wfx_tx_priv *)tx_info->rate_driver_data;
 	tx_priv->icv_size = wfx_tx_get_icv_len(hw_key);
 
-	/* Fill hif_msg */
+	 
 	WARN(skb_headroom(skb) < wmsg_len, "not enough space in skb");
 	WARN(offset & 1, "attempt to transmit an unaligned frame");
 	skb_put(skb, tx_priv->icv_size);
@@ -340,17 +329,15 @@ static int wfx_tx_inner(struct wfx_vif *wvif, struct ieee80211_sta *sta, struct 
 		return -EIO;
 	}
 
-	/* Fill tx request */
+	 
 	req = (struct wfx_hif_req_tx *)hif_msg->body;
-	/* packet_id just need to be unique on device. 32bits are more than necessary for that task,
-	 * so we take advantage of it to add some extra data for debug.
-	 */
+	 
 	req->packet_id = atomic_add_return(1, &wvif->wdev->packet_id) & 0xFFFF;
 	req->packet_id |= IEEE80211_SEQ_TO_SN(le16_to_cpu(hdr->seq_ctrl)) << 16;
 	req->packet_id |= queue_id << 28;
 
 	req->fc_offset = offset;
-	/* Queue index are inverted between firmware and Linux */
+	 
 	req->queue_id = 3 - queue_id;
 	req->peer_sta_id = wfx_tx_get_link_id(wvif, sta, hdr);
 	req->retry_policy_index = wfx_tx_get_retry_policy_id(wvif, tx_info);
@@ -360,7 +347,7 @@ static int wfx_tx_inner(struct wfx_vif *wvif, struct ieee80211_sta *sta, struct 
 	if (tx_info->flags & IEEE80211_TX_CTL_SEND_AFTER_DTIM)
 		req->after_dtim = 1;
 
-	/* Auxiliary operations */
+	 
 	wfx_tx_queues_put(wvif, skb);
 	if (tx_info->flags & IEEE80211_TX_CTL_SEND_AFTER_DTIM)
 		schedule_work(&wvif->update_tim_work);
@@ -380,16 +367,14 @@ void wfx_tx(struct ieee80211_hw *hw, struct ieee80211_tx_control *control, struc
 	BUILD_BUG_ON_MSG(sizeof(struct wfx_tx_priv) > driver_data_room,
 			 "struct tx_priv is too large");
 	WARN(skb->next || skb->prev, "skb is already member of a list");
-	/* control.vif can be NULL for injected frames */
+	 
 	if (tx_info->control.vif)
 		wvif = (struct wfx_vif *)tx_info->control.vif->drv_priv;
 	else
 		wvif = wvif_iterate(wdev, NULL);
 	if (WARN_ON(!wvif))
 		goto drop;
-	/* Because of TX_AMPDU_SETUP_IN_HW, mac80211 does not try to send any BlockAck session
-	 * management frame. The check below exist just in case.
-	 */
+	 
 	if (wfx_is_action_back(hdr)) {
 		dev_info(wdev->dev, "drop BA action\n");
 		goto drop;
@@ -428,7 +413,7 @@ static void wfx_tx_fill_rates(struct wfx_dev *wdev, struct ieee80211_tx_info *tx
 
 	tx_count = arg->ack_failures;
 	if (!arg->status || arg->ack_failures)
-		tx_count += 1; /* Also report success */
+		tx_count += 1;  
 	for (i = 0; i < IEEE80211_TX_MAX_RATES; i++) {
 		rate = &tx_info->status.rates[i];
 		if (rate->idx < 0)
@@ -475,13 +460,13 @@ void wfx_tx_confirm_cb(struct wfx_dev *wdev, const struct wfx_hif_cnf_tx *arg)
 	if (!wvif)
 		return;
 
-	/* Note that wfx_pending_get_pkt_us_delay() get data from tx_info */
+	 
 	_trace_tx_stats(arg, skb, wfx_pending_get_pkt_us_delay(wdev, skb));
 	wfx_tx_fill_rates(wdev, tx_info, arg);
 	skb_trim(skb, skb->len - tx_priv->icv_size);
 
-	/* From now, you can touch to tx_info->status, but do not touch to tx_priv anymore */
-	/* FIXME: use ieee80211_tx_info_clear_status() */
+	 
+	 
 	memset(tx_info->rate_driver_data, 0, sizeof(tx_info->rate_driver_data));
 	memset(tx_info->pad, 0, sizeof(tx_info->pad));
 
@@ -495,7 +480,7 @@ void wfx_tx_confirm_cb(struct wfx_dev *wdev, const struct wfx_hif_cnf_tx *arg)
 	} else if (arg->status == HIF_STATUS_TX_FAIL_REQUEUE) {
 		WARN(!arg->requeue, "incoherent status and result_flags");
 		if (tx_info->flags & IEEE80211_TX_CTL_SEND_AFTER_DTIM) {
-			wvif->after_dtim_tx_allowed = false; /* DTIM period elapsed */
+			wvif->after_dtim_tx_allowed = false;  
 			schedule_work(&wvif->update_tim_work);
 		}
 		tx_info->flags |= IEEE80211_TX_STAT_TX_FILTERED;

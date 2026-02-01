@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * SPEAr SPDIF OUT controller header file
- *
- * Copyright (ST) 2011 Vipin Kumar (vipin.kumar@st.com)
- */
+ 
+ 
 
 #ifndef SPDIF_OUT_REGS_H
 #define SPDIF_OUT_REGS_H
@@ -63,4 +59,4 @@
 	#define SPDIF_OUT_FDMA_TRIG_16	(16 << 8)
 	#define SPDIF_OUT_FDMA_TRIG_18	(18 << 8)
 
-#endif /* SPDIF_OUT_REGS_H */
+#endif  

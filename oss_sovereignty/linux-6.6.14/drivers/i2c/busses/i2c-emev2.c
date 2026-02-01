@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * I2C driver for the Renesas EMEV2 SoC
- *
- * Copyright (C) 2015 Wolfram Sang <wsa@sang-engineering.com>
- * Copyright 2013 Codethink Ltd.
- * Copyright 2010-2015 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -20,21 +14,21 @@
 #include <linux/platform_device.h>
 #include <linux/sched.h>
 
-/* I2C Registers */
-#define I2C_OFS_IICACT0		0x00	/* start */
-#define I2C_OFS_IIC0		0x04	/* shift */
-#define I2C_OFS_IICC0		0x08	/* control */
-#define I2C_OFS_SVA0		0x0c	/* slave address */
-#define I2C_OFS_IICCL0		0x10	/* clock select */
-#define I2C_OFS_IICX0		0x14	/* extension */
-#define I2C_OFS_IICS0		0x18	/* status */
-#define I2C_OFS_IICSE0		0x1c	/* status For emulation */
-#define I2C_OFS_IICF0		0x20	/* IIC flag */
+ 
+#define I2C_OFS_IICACT0		0x00	 
+#define I2C_OFS_IIC0		0x04	 
+#define I2C_OFS_IICC0		0x08	 
+#define I2C_OFS_SVA0		0x0c	 
+#define I2C_OFS_IICCL0		0x10	 
+#define I2C_OFS_IICX0		0x14	 
+#define I2C_OFS_IICS0		0x18	 
+#define I2C_OFS_IICSE0		0x1c	 
+#define I2C_OFS_IICF0		0x20	 
 
-/* I2C IICACT0 Masks */
+ 
 #define I2C_BIT_IICE0		0x0001
 
-/* I2C IICC0 Masks */
+ 
 #define I2C_BIT_LREL0		0x0040
 #define I2C_BIT_WREL0		0x0020
 #define I2C_BIT_SPIE0		0x0010
@@ -43,11 +37,11 @@
 #define I2C_BIT_STT0		0x0002
 #define I2C_BIT_SPT0		0x0001
 
-/* I2C IICCL0 Masks */
+ 
 #define I2C_BIT_SMC0		0x0008
 #define I2C_BIT_DFC0		0x0004
 
-/* I2C IICSE0 Masks */
+ 
 #define I2C_BIT_MSTS0		0x0080
 #define I2C_BIT_ALD0		0x0040
 #define I2C_BIT_EXC0		0x0020
@@ -57,7 +51,7 @@
 #define I2C_BIT_STD0		0x0002
 #define I2C_BIT_SPD0		0x0001
 
-/* I2C IICF0 Masks */
+ 
 #define I2C_BIT_STCF		0x0080
 #define I2C_BIT_IICBSY		0x0040
 #define I2C_BIT_STCEN		0x0002
@@ -95,10 +89,10 @@ static int em_i2c_wait_for_event(struct em_i2c_device *priv)
 
 static void em_i2c_stop(struct em_i2c_device *priv)
 {
-	/* Send Stop condition */
+	 
 	em_clear_set_bit(priv, 0, I2C_BIT_SPT0 | I2C_BIT_SPIE0, I2C_OFS_IICC0);
 
-	/* Wait for stop condition */
+	 
 	em_i2c_wait_for_event(priv);
 }
 
@@ -107,9 +101,9 @@ static void em_i2c_reset(struct i2c_adapter *adap)
 	struct em_i2c_device *priv = i2c_get_adapdata(adap);
 	int retr;
 
-	/* If I2C active */
+	 
 	if (readb(priv->base + I2C_OFS_IICACT0) & I2C_BIT_IICE0) {
-		/* Disable I2C operation */
+		 
 		writeb(0, priv->base + I2C_OFS_IICACT0);
 
 		retr = 1000;
@@ -118,16 +112,16 @@ static void em_i2c_reset(struct i2c_adapter *adap)
 		WARN_ON(retr == 0);
 	}
 
-	/* Transfer mode set */
+	 
 	writeb(I2C_BIT_DFC0, priv->base + I2C_OFS_IICCL0);
 
-	/* Can Issue start without detecting a stop, Reservation disabled. */
+	 
 	writeb(I2C_BIT_STCEN | I2C_BIT_IICRSV, priv->base + I2C_OFS_IICF0);
 
-	/* I2C enable, 9 bit interrupt mode */
+	 
 	writeb(I2C_BIT_WTIM0, priv->base + I2C_OFS_IICC0);
 
-	/* Enable I2C operation */
+	 
 	writeb(I2C_BIT_IICE0, priv->base + I2C_OFS_IICACT0);
 
 	retr = 1000;
@@ -142,54 +136,54 @@ static int __em_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msg,
 	struct em_i2c_device *priv = i2c_get_adapdata(adap);
 	int count, status, read = !!(msg->flags & I2C_M_RD);
 
-	/* Send start condition */
+	 
 	em_clear_set_bit(priv, 0, I2C_BIT_ACKE0 | I2C_BIT_WTIM0, I2C_OFS_IICC0);
 	em_clear_set_bit(priv, 0, I2C_BIT_STT0, I2C_OFS_IICC0);
 
-	/* Send slave address and R/W type */
+	 
 	writeb(i2c_8bit_addr_from_msg(msg), priv->base + I2C_OFS_IIC0);
 
-	/* Wait for transaction */
+	 
 	status = em_i2c_wait_for_event(priv);
 	if (status < 0)
 		goto out_reset;
 
-	/* Received NACK (result of setting slave address and R/W) */
+	 
 	if (!(status & I2C_BIT_ACKD0)) {
 		em_i2c_stop(priv);
 		goto out;
 	}
 
-	/* Extra setup for read transactions */
+	 
 	if (read) {
-		/* 8 bit interrupt mode */
+		 
 		em_clear_set_bit(priv, I2C_BIT_WTIM0, I2C_BIT_ACKE0, I2C_OFS_IICC0);
 		em_clear_set_bit(priv, I2C_BIT_WTIM0, I2C_BIT_WREL0, I2C_OFS_IICC0);
 
-		/* Wait for transaction */
+		 
 		status = em_i2c_wait_for_event(priv);
 		if (status < 0)
 			goto out_reset;
 	}
 
-	/* Send / receive data */
+	 
 	for (count = 0; count < msg->len; count++) {
-		if (read) { /* Read transaction */
+		if (read) {  
 			msg->buf[count] = readb(priv->base + I2C_OFS_IIC0);
 			em_clear_set_bit(priv, 0, I2C_BIT_WREL0, I2C_OFS_IICC0);
 
-		} else { /* Write transaction */
-			/* Received NACK */
+		} else {  
+			 
 			if (!(status & I2C_BIT_ACKD0)) {
 				em_i2c_stop(priv);
 				goto out;
 			}
 
-			/* Write data */
+			 
 			writeb(msg->buf[count], priv->base + I2C_OFS_IIC0);
 		}
 
-		/* Wait for R/W transaction */
+		 
 		status = em_i2c_wait_for_event(priv);
 		if (status < 0)
 			goto out_reset;
@@ -221,7 +215,7 @@ static int em_i2c_xfer(struct i2c_adapter *adap, struct i2c_msg *msgs,
 			return ret;
 	}
 
-	/* I2C transfer completed */
+	 
 	return num;
 }
 
@@ -236,45 +230,45 @@ static bool em_i2c_slave_irq(struct em_i2c_device *priv)
 
 	status = readb(priv->base + I2C_OFS_IICSE0);
 
-	/* Extension code, do not participate */
+	 
 	if (status & I2C_BIT_EXC0) {
 		em_clear_set_bit(priv, 0, I2C_BIT_LREL0, I2C_OFS_IICC0);
 		return true;
 	}
 
-	/* Stop detected, we don't know if it's for slave or master */
+	 
 	if (status & I2C_BIT_SPD0) {
-		/* Notify slave device */
+		 
 		i2c_slave_event(priv->slave, I2C_SLAVE_STOP, &value);
-		/* Pretend we did not handle the interrupt */
+		 
 		return false;
 	}
 
-	/* Only handle interrupts addressed to us */
+	 
 	if (!(status & I2C_BIT_COI0))
 		return false;
 
-	/* Enable stop interrupts */
+	 
 	em_clear_set_bit(priv, 0, I2C_BIT_SPIE0, I2C_OFS_IICC0);
 
-	/* Transmission or Reception */
+	 
 	if (status & I2C_BIT_TRC0) {
 		if (status & I2C_BIT_ACKD0) {
-			/* 9 bit interrupt mode */
+			 
 			em_clear_set_bit(priv, 0, I2C_BIT_WTIM0, I2C_OFS_IICC0);
 
-			/* Send data */
+			 
 			event = status & I2C_BIT_STD0 ?
 				I2C_SLAVE_READ_REQUESTED :
 				I2C_SLAVE_READ_PROCESSED;
 			i2c_slave_event(priv->slave, event, &value);
 			writeb(value, priv->base + I2C_OFS_IIC0);
 		} else {
-			/* NACK, stop transmitting */
+			 
 			em_clear_set_bit(priv, 0, I2C_BIT_LREL0, I2C_OFS_IICC0);
 		}
 	} else {
-		/* 8 bit interrupt mode */
+		 
 		em_clear_set_bit(priv, I2C_BIT_WTIM0, I2C_BIT_ACKE0,
 				I2C_OFS_IICC0);
 		em_clear_set_bit(priv, I2C_BIT_WTIM0, I2C_BIT_WREL0,
@@ -284,7 +278,7 @@ static bool em_i2c_slave_irq(struct em_i2c_device *priv)
 			i2c_slave_event(priv->slave, I2C_SLAVE_WRITE_REQUESTED,
 					&value);
 		} else {
-			/* Recv data */
+			 
 			value = readb(priv->base + I2C_OFS_IIC0);
 			ret = i2c_slave_event(priv->slave,
 					I2C_SLAVE_WRITE_RECEIVED, &value);
@@ -326,7 +320,7 @@ static int em_i2c_reg_slave(struct i2c_client *slave)
 
 	priv->slave = slave;
 
-	/* Set slave address */
+	 
 	writeb(slave->addr << 1, priv->base + I2C_OFS_SVA0);
 
 	return 0;
@@ -340,11 +334,7 @@ static int em_i2c_unreg_slave(struct i2c_client *slave)
 
 	writeb(0, priv->base + I2C_OFS_SVA0);
 
-	/*
-	 * Wait for interrupt to finish. New slave irqs cannot happen because we
-	 * cleared the slave address and, thus, only extension codes will be
-	 * detected which do not use the slave ptr.
-	 */
+	 
 	synchronize_irq(priv->irq);
 	priv->slave = NULL;
 

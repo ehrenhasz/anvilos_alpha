@@ -1,9 +1,4 @@
-/* Copyright (c) 2013-2015 PLUMgrid, http://plumgrid.com
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #include "vmlinux.h"
 #include <linux/version.h>
 #include <bpf/bpf_helpers.h>
@@ -22,7 +17,7 @@ struct {
 	__uint(max_entries, 4096);
 } my_map SEC(".maps");
 
-/* from /sys/kernel/tracing/events/block/block_io_start/format */
+ 
 SEC("tracepoint/block/block_io_start")
 int bpf_prog1(struct trace_event_raw_block_rq *ctx)
 {
@@ -54,7 +49,7 @@ struct {
 	__uint(max_entries, SLOTS);
 } lat_map SEC(".maps");
 
-/* from /sys/kernel/tracing/events/block/block_io_done/format */
+ 
 SEC("tracepoint/block/block_io_done")
 int bpf_prog2(struct trace_event_raw_block_rq *ctx)
 {
@@ -75,14 +70,7 @@ int bpf_prog2(struct trace_event_raw_block_rq *ctx)
 
 	bpf_map_delete_elem(&my_map, &key);
 
-	/* the lines below are computing index = log10(delta)*10
-	 * using integer arithmetic
-	 * index = 29 ~ 1 usec
-	 * index = 59 ~ 1 msec
-	 * index = 89 ~ 1 sec
-	 * index = 99 ~ 10sec or more
-	 * log10(x)*10 = log2(x)*10/log2(10) = log2(x)*3
-	 */
+	 
 	l = log2l(delta);
 	base = 1ll << l;
 	index = (l * 64 + (delta - base) * 64 / base) * 3 / 64;

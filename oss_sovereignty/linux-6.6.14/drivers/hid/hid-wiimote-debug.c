@@ -1,11 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Debug support for HID Nintendo Wii / Wii U peripherals
- * Copyright (c) 2011-2013 David Herrmann <dh.herrmann@gmail.com>
- */
 
-/*
- */
+ 
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/module.h>

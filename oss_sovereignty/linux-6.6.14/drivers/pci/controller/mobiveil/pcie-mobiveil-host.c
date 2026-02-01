@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCIe host controller driver for Mobiveil PCIe Host controller
- *
- * Copyright (c) 2018 Mobiveil Inc.
- * Copyright 2019-2020 NXP
- *
- * Author: Subrahmanya Lingappa <l.subrahmanya@mobiveil.co.in>
- *	   Hou Zhiqiang <Zhiqiang.Hou@nxp.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/interrupt.h>
@@ -26,24 +18,18 @@
 
 static bool mobiveil_pcie_valid_device(struct pci_bus *bus, unsigned int devfn)
 {
-	/* Only one device down on each root port */
+	 
 	if (pci_is_root_bus(bus) && (devfn > 0))
 		return false;
 
-	/*
-	 * Do not read more than one device on the bus directly
-	 * attached to RC
-	 */
+	 
 	if ((bus->primary == to_pci_host_bridge(bus->bridge)->busnr) && (PCI_SLOT(devfn) > 0))
 		return false;
 
 	return true;
 }
 
-/*
- * mobiveil_pcie_map_bus - routine to get the configuration base of either
- * root port or endpoint
- */
+ 
 static void __iomem *mobiveil_pcie_map_bus(struct pci_bus *bus,
 					   unsigned int devfn, int where)
 {
@@ -54,16 +40,11 @@ static void __iomem *mobiveil_pcie_map_bus(struct pci_bus *bus,
 	if (!mobiveil_pcie_valid_device(bus, devfn))
 		return NULL;
 
-	/* RC config access */
+	 
 	if (pci_is_root_bus(bus))
 		return pcie->csr_axi_slave_base + where;
 
-	/*
-	 * EP config access (in Config/APIO space)
-	 * Program PEX Address base (31..16 bits) with appropriate value
-	 * (BDF) in PAB_AXI_AMAP_PEX_WIN_L0 Register.
-	 * Relies on pci_lock serialization
-	 */
+	 
 	value = bus->number << PAB_BUS_SHIFT |
 		PCI_SLOT(devfn) << PAB_DEVICE_SHIFT |
 		PCI_FUNC(devfn) << PAB_FUNCTION_SHIFT;
@@ -91,19 +72,16 @@ static void mobiveil_pcie_isr(struct irq_desc *desc)
 	unsigned long shifted_status;
 	u32 bit, val, mask;
 
-	/*
-	 * The core provides a single interrupt for both INTx/MSI messages.
-	 * So we'll read both INTx and MSI status
-	 */
+	 
 
 	chained_irq_enter(chip, desc);
 
-	/* read INTx status */
+	 
 	val = mobiveil_csr_readl(pcie, PAB_INTP_AMBA_MISC_STAT);
 	mask = mobiveil_csr_readl(pcie, PAB_INTP_AMBA_MISC_ENB);
 	intr_status = val & mask;
 
-	/* Handle INTx */
+	 
 	if (intr_status & PAB_INTP_INTX_MASK) {
 		shifted_status = mobiveil_csr_readl(pcie,
 						    PAB_INTP_AMBA_MISC_STAT);
@@ -118,7 +96,7 @@ static void mobiveil_pcie_isr(struct irq_desc *desc)
 					dev_err_ratelimited(dev, "unexpected IRQ, INT%d\n",
 							    bit);
 
-				/* clear interrupt handled */
+				 
 				mobiveil_csr_writel(pcie,
 						    1 << (PAB_INTX_START + bit),
 						    PAB_INTP_AMBA_MISC_STAT);
@@ -131,19 +109,14 @@ static void mobiveil_pcie_isr(struct irq_desc *desc)
 		} while (shifted_status != 0);
 	}
 
-	/* read extra MSI status register */
+	 
 	msi_status = readl_relaxed(pcie->apb_csr_base + MSI_STATUS_OFFSET);
 
-	/* handle MSI interrupts */
+	 
 	while (msi_status & 1) {
 		msi_data = readl_relaxed(pcie->apb_csr_base + MSI_DATA_OFFSET);
 
-		/*
-		 * MSI_STATUS_OFFSET register gets updated to zero
-		 * once we pop not only the MSI data but also address
-		 * from MSI hardware FIFO. So keeping these following
-		 * two dummy reads.
-		 */
+		 
 		msi_addr_lo = readl_relaxed(pcie->apb_csr_base +
 					    MSI_ADDR_L_OFFSET);
 		msi_addr_hi = readl_relaxed(pcie->apb_csr_base +
@@ -157,7 +130,7 @@ static void mobiveil_pcie_isr(struct irq_desc *desc)
 					   MSI_STATUS_OFFSET);
 	}
 
-	/* Clear the interrupt status */
+	 
 	mobiveil_csr_writel(pcie, intr_status, PAB_INTP_AMBA_MISC_STAT);
 	chained_irq_exit(chip, desc);
 }
@@ -170,7 +143,7 @@ static int mobiveil_pcie_parse_dt(struct mobiveil_pcie *pcie)
 	struct mobiveil_root_port *rp = &pcie->rp;
 	struct resource *res;
 
-	/* map config resource */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 					   "config_axi_slave");
 	rp->config_axi_slave_base = devm_pci_remap_cfg_resource(dev, res);
@@ -178,7 +151,7 @@ static int mobiveil_pcie_parse_dt(struct mobiveil_pcie *pcie)
 		return PTR_ERR(rp->config_axi_slave_base);
 	rp->ob_io_res = res;
 
-	/* map csr resource */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 					   "csr_axi_slave");
 	pcie->csr_axi_slave_base = devm_pci_remap_cfg_resource(dev, res);
@@ -186,7 +159,7 @@ static int mobiveil_pcie_parse_dt(struct mobiveil_pcie *pcie)
 		return PTR_ERR(pcie->csr_axi_slave_base);
 	pcie->pcie_reg_base = res->start;
 
-	/* read the number of windows requested */
+	 
 	if (of_property_read_u32(node, "apio-wins", &pcie->apio_wins))
 		pcie->apio_wins = MAX_PIO_WINDOWS;
 
@@ -223,57 +196,43 @@ int mobiveil_host_init(struct mobiveil_pcie *pcie, bool reinit)
 	pcie->ob_wins_configured = 0;
 
 	if (!reinit) {
-		/* setup bus numbers */
+		 
 		value = mobiveil_csr_readl(pcie, PCI_PRIMARY_BUS);
 		value &= 0xff000000;
 		value |= 0x00ff0100;
 		mobiveil_csr_writel(pcie, value, PCI_PRIMARY_BUS);
 	}
 
-	/*
-	 * program Bus Master Enable Bit in Command Register in PAB Config
-	 * Space
-	 */
+	 
 	value = mobiveil_csr_readl(pcie, PCI_COMMAND);
 	value |= PCI_COMMAND_IO | PCI_COMMAND_MEMORY | PCI_COMMAND_MASTER;
 	mobiveil_csr_writel(pcie, value, PCI_COMMAND);
 
-	/*
-	 * program PIO Enable Bit to 1 (and PEX PIO Enable to 1) in PAB_CTRL
-	 * register
-	 */
+	 
 	pab_ctrl = mobiveil_csr_readl(pcie, PAB_CTRL);
 	pab_ctrl |= (1 << AMBA_PIO_ENABLE_SHIFT) | (1 << PEX_PIO_ENABLE_SHIFT);
 	mobiveil_csr_writel(pcie, pab_ctrl, PAB_CTRL);
 
-	/*
-	 * program PIO Enable Bit to 1 and Config Window Enable Bit to 1 in
-	 * PAB_AXI_PIO_CTRL Register
-	 */
+	 
 	value = mobiveil_csr_readl(pcie, PAB_AXI_PIO_CTRL);
 	value |= APIO_EN_MASK;
 	mobiveil_csr_writel(pcie, value, PAB_AXI_PIO_CTRL);
 
-	/* Enable PCIe PIO master */
+	 
 	value = mobiveil_csr_readl(pcie, PAB_PEX_PIO_CTRL);
 	value |= 1 << PIO_ENABLE_SHIFT;
 	mobiveil_csr_writel(pcie, value, PAB_PEX_PIO_CTRL);
 
-	/*
-	 * we'll program one outbound window for config reads and
-	 * another default inbound window for all the upstream traffic
-	 * rest of the outbound windows will be configured according to
-	 * the "ranges" field defined in device tree
-	 */
+	 
 
-	/* config outbound translation window */
+	 
 	program_ob_windows(pcie, WIN_NUM_0, rp->ob_io_res->start, 0,
 			   CFG_WINDOW_TYPE, resource_size(rp->ob_io_res));
 
-	/* memory inbound translation window */
+	 
 	program_ib_windows(pcie, WIN_NUM_0, 0, 0, MEM_WINDOW_TYPE, IB_WIN_SIZE);
 
-	/* Get the I/O and memory ranges from DT */
+	 
 	resource_list_for_each_entry(win, &bridge->windows) {
 		if (resource_type(win->res) == IORESOURCE_MEM)
 			type = MEM_WINDOW_TYPE;
@@ -282,14 +241,14 @@ int mobiveil_host_init(struct mobiveil_pcie *pcie, bool reinit)
 		else
 			continue;
 
-		/* configure outbound translation window */
+		 
 		program_ob_windows(pcie, pcie->ob_wins_configured,
 				   win->res->start,
 				   win->res->start - win->offset,
 				   type, resource_size(win->res));
 	}
 
-	/* fixup for PCIe class register */
+	 
 	value = mobiveil_csr_readl(pcie, PAB_INTP_AXI_PIO_CLASS);
 	value &= 0xff;
 	value |= PCI_CLASS_BRIDGE_PCI_NORMAL << 8;
@@ -338,7 +297,7 @@ static struct irq_chip intx_irq_chip = {
 	.irq_unmask = mobiveil_unmask_intx_irq,
 };
 
-/* routine to setup the INTx related data */
+ 
 static int mobiveil_pcie_intx_map(struct irq_domain *domain, unsigned int irq,
 				  irq_hw_number_t hwirq)
 {
@@ -348,7 +307,7 @@ static int mobiveil_pcie_intx_map(struct irq_domain *domain, unsigned int irq,
 	return 0;
 }
 
-/* INTx domain operations structure */
+ 
 static const struct irq_domain_ops intx_domain_ops = {
 	.map = mobiveil_pcie_intx_map,
 };
@@ -471,7 +430,7 @@ static int mobiveil_pcie_init_irq_domain(struct mobiveil_pcie *pcie)
 	struct device_node *node = dev->of_node;
 	struct mobiveil_root_port *rp = &pcie->rp;
 
-	/* setup INTx */
+	 
 	rp->intx_domain = irq_domain_add_linear(node, PCI_NUM_INTX,
 						&intx_domain_ops, pcie);
 
@@ -482,7 +441,7 @@ static int mobiveil_pcie_init_irq_domain(struct mobiveil_pcie *pcie)
 
 	raw_spin_lock_init(&rp->intx_mask_lock);
 
-	/* setup MSI */
+	 
 	return mobiveil_allocate_msi_domains(pcie);
 }
 
@@ -494,20 +453,20 @@ static int mobiveil_pcie_integrated_interrupt_init(struct mobiveil_pcie *pcie)
 	struct resource *res;
 	int ret;
 
-	/* map MSI config resource */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "apb_csr");
 	pcie->apb_csr_base = devm_pci_remap_cfg_resource(dev, res);
 	if (IS_ERR(pcie->apb_csr_base))
 		return PTR_ERR(pcie->apb_csr_base);
 
-	/* setup MSI hardware registers */
+	 
 	mobiveil_pcie_enable_msi(pcie);
 
 	rp->irq = platform_get_irq(pdev, 0);
 	if (rp->irq < 0)
 		return rp->irq;
 
-	/* initialize the IRQ domains */
+	 
 	ret = mobiveil_pcie_init_irq_domain(pcie);
 	if (ret) {
 		dev_err(dev, "Failed creating IRQ Domain\n");
@@ -516,7 +475,7 @@ static int mobiveil_pcie_integrated_interrupt_init(struct mobiveil_pcie *pcie)
 
 	irq_set_chained_handler_and_data(rp->irq, mobiveil_pcie_isr, pcie);
 
-	/* Enable interrupts */
+	 
 	mobiveil_csr_writel(pcie, (PAB_INTP_INTX_MASK | PAB_INTP_MSI_MASK),
 			    PAB_INTP_AMBA_MISC_ENB);
 
@@ -560,10 +519,7 @@ int mobiveil_pcie_host_probe(struct mobiveil_pcie *pcie)
 	if (!mobiveil_pcie_is_bridge(pcie))
 		return -ENODEV;
 
-	/*
-	 * configure all inbound and outbound windows and prepare the RC for
-	 * config access
-	 */
+	 
 	ret = mobiveil_host_init(pcie, false);
 	if (ret) {
 		dev_err(dev, "Failed to initialize host\n");
@@ -576,7 +532,7 @@ int mobiveil_pcie_host_probe(struct mobiveil_pcie *pcie)
 		return ret;
 	}
 
-	/* Initialize bridge */
+	 
 	bridge->sysdata = pcie;
 	bridge->ops = &mobiveil_pcie_ops;
 

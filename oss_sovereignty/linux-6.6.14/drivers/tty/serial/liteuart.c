@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * LiteUART serial controller (LiteX) Driver
- *
- * Copyright (C) 2019-2020 Antmicro <www.antmicro.com>
- */
+
+ 
 
 #include <linux/bits.h>
 #include <linux/console.h>
@@ -19,18 +15,7 @@
 #include <linux/tty_flip.h>
 #include <linux/xarray.h>
 
-/*
- * CSRs definitions (base address offsets + width)
- *
- * The definitions below are true for LiteX SoC configured for 8-bit CSR Bus,
- * 32-bit aligned.
- *
- * Supporting other configurations might require new definitions or a more
- * generic way of indexing the LiteX CSRs.
- *
- * For more details on how CSRs are defined and handled in LiteX, see comments
- * in the LiteX SoC Driver: drivers/soc/litex/litex_soc_ctrl.c
- */
+ 
 #define OFF_RXTX	0x00
 #define OFF_TXFULL	0x04
 #define OFF_RXEMPTY	0x08
@@ -38,7 +23,7 @@
 #define OFF_EV_PENDING	0x10
 #define OFF_EV_ENABLE	0x14
 
-/* events */
+ 
 #define EV_TX		BIT(0)
 #define EV_RX		BIT(1)
 
@@ -95,7 +80,7 @@ static void liteuart_stop_rx(struct uart_port *port)
 {
 	struct liteuart_port *uart = to_liteuart_port(port);
 
-	/* just delete timer */
+	 
 	del_timer(&uart->timer);
 }
 
@@ -108,10 +93,10 @@ static void liteuart_rx_chars(struct uart_port *port)
 		ch = litex_read8(membase + OFF_RXTX);
 		port->icount.rx++;
 
-		/* necessary for RXEMPTY to refresh its value */
+		 
 		litex_write8(membase + OFF_EV_PENDING, EV_RX);
 
-		/* no overflow bits in status */
+		 
 		if (!(uart_handle_sysrq_char(port, ch)))
 			uart_insert_char(port, 1, 0, ch, TTY_NORMAL);
 	}
@@ -135,10 +120,7 @@ static irqreturn_t liteuart_interrupt(int irq, void *data)
 	unsigned long flags;
 	u8 isr;
 
-	/*
-	 * if polling, the context would be "in_serving_softirq", so use
-	 * irq[save|restore] spin_lock variants to cover all possibilities
-	 */
+	 
 	spin_lock_irqsave(&port->lock, flags);
 	isr = litex_read8(port->membase + OFF_EV_PENDING) & uart->irq_reg;
 	if (isr & EV_RX)
@@ -161,7 +143,7 @@ static void liteuart_timer(struct timer_list *t)
 
 static unsigned int liteuart_tx_empty(struct uart_port *port)
 {
-	/* not really tx empty, just checking if tx is not full */
+	 
 	if (!litex_read8(port->membase + OFF_TXFULL))
 		return TIOCSER_TEMT;
 
@@ -170,7 +152,7 @@ static unsigned int liteuart_tx_empty(struct uart_port *port)
 
 static void liteuart_set_mctrl(struct uart_port *port, unsigned int mctrl)
 {
-	/* modem control register is not present in LiteUART */
+	 
 }
 
 static unsigned int liteuart_get_mctrl(struct uart_port *port)
@@ -196,7 +178,7 @@ static int liteuart_startup(struct uart_port *port)
 	}
 
 	spin_lock_irqsave(&port->lock, flags);
-	/* only enabling rx irqs during startup */
+	 
 	liteuart_update_irq_reg(port, true, EV_RX);
 	spin_unlock_irqrestore(&port->lock, flags);
 
@@ -231,7 +213,7 @@ static void liteuart_set_termios(struct uart_port *port, struct ktermios *new,
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* update baudrate */
+	 
 	baud = uart_get_baud_rate(port, new, old, 0, 460800);
 	uart_update_timeout(port, new->c_cflag, baud);
 
@@ -245,11 +227,7 @@ static const char *liteuart_type(struct uart_port *port)
 
 static void liteuart_config_port(struct uart_port *port, int flags)
 {
-	/*
-	 * Driver core for serial ports forces a non-zero value for port type.
-	 * Write an arbitrary value here to accommodate the serial core driver,
-	 * as ID part of UAPI is redundant.
-	 */
+	 
 	port->type = 1;
 }
 
@@ -290,7 +268,7 @@ static int liteuart_probe(struct platform_device *pdev)
 
 	port = &uart->port;
 
-	/* get membase */
+	 
 	port->membase = devm_platform_get_and_ioremap_resource(pdev, 0, NULL);
 	if (IS_ERR(port->membase))
 		return PTR_ERR(port->membase);
@@ -301,7 +279,7 @@ static int liteuart_probe(struct platform_device *pdev)
 	if (ret > 0)
 		port->irq = ret;
 
-	/* look for aliases; auto-enumerate for free index if not found */
+	 
 	dev_id = of_alias_get_id(pdev->dev.of_node, "serial");
 	if (dev_id < 0)
 		limit = XA_LIMIT(0, CONFIG_SERIAL_LITEUART_MAX_PORTS);
@@ -312,7 +290,7 @@ static int liteuart_probe(struct platform_device *pdev)
 	if (ret)
 		return ret;
 
-	/* values not from device tree */
+	 
 	port->dev = &pdev->dev;
 	port->iotype = UPIO_MEM;
 	port->flags = UPF_BOOT_AUTOCONF;
@@ -448,7 +426,7 @@ static int __init early_liteuart_setup(struct earlycon_device *device,
 }
 
 OF_EARLYCON_DECLARE(liteuart, "litex,liteuart", early_liteuart_setup);
-#endif /* CONFIG_SERIAL_LITEUART_CONSOLE */
+#endif  
 
 static int __init liteuart_init(void)
 {

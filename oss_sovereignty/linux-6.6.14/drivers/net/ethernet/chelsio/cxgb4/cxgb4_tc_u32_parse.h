@@ -1,47 +1,15 @@
-/*
- * This file is part of the Chelsio T4 Ethernet driver for Linux.
- *
- * Copyright (c) 2016 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #ifndef __CXGB4_TC_U32_PARSE_H
 #define __CXGB4_TC_U32_PARSE_H
 
 struct cxgb4_match_field {
-	int off; /* Offset from the beginning of the header to match */
-	/* Fill the value/mask pair in the spec if matched */
+	int off;  
+	 
 	int (*val)(struct ch_filter_specification *f, __be32 val, __be32 mask);
 };
 
-/* IPv4 match fields */
+ 
 static inline int cxgb4_fill_ipv4_tos(struct ch_filter_specification *f,
 				      __be32 val, __be32 mask)
 {
@@ -60,10 +28,10 @@ static inline int cxgb4_fill_ipv4_frag(struct ch_filter_specification *f,
 	frag_val = (ntohl(val) >> 13) & 0x00000007;
 	mask_val = ntohl(mask) & 0x0000FFFF;
 
-	if (frag_val == 0x1 && mask_val != 0x3FFF) { /* MF set */
+	if (frag_val == 0x1 && mask_val != 0x3FFF) {  
 		f->val.frag = 1;
 		f->mask.frag = 1;
-	} else if (frag_val == 0x2 && mask_val != 0x3FFF) { /* DF set */
+	} else if (frag_val == 0x2 && mask_val != 0x3FFF) {  
 		f->val.frag = 0;
 		f->mask.frag = 1;
 	} else {
@@ -109,7 +77,7 @@ static const struct cxgb4_match_field cxgb4_ipv4_fields[] = {
 	{ .val = NULL }
 };
 
-/* IPv6 match fields */
+ 
 static inline int cxgb4_fill_ipv6_tos(struct ch_filter_specification *f,
 				      __be32 val, __be32 mask)
 {
@@ -214,7 +182,7 @@ static const struct cxgb4_match_field cxgb4_ipv6_fields[] = {
 	{ .val = NULL }
 };
 
-/* TCP/UDP match */
+ 
 static inline int cxgb4_fill_l4_ports(struct ch_filter_specification *f,
 				      __be32 val, __be32 mask)
 {
@@ -237,23 +205,17 @@ static const struct cxgb4_match_field cxgb4_udp_fields[] = {
 };
 
 struct cxgb4_next_header {
-	/* Offset, shift, and mask added to beginning of the header
-	 * to get to next header.  Useful when using a header
-	 * field's value to jump to next header such as IHL field
-	 * in IPv4 header.
-	 */
+	 
 	struct tc_u32_sel sel;
 	struct tc_u32_key key;
-	/* location of jump to make */
+	 
 	const struct cxgb4_match_field *jump;
 };
 
-/* Accept a rule with a jump to transport layer header based on IHL field in
- * IPv4 header.
- */
+ 
 static const struct cxgb4_next_header cxgb4_ipv4_jumps[] = {
 	{
-		/* TCP Jump */
+		 
 		.sel = {
 			.off = 0,
 			.offoff = 0,
@@ -268,7 +230,7 @@ static const struct cxgb4_next_header cxgb4_ipv4_jumps[] = {
 		.jump = cxgb4_tcp_fields,
 	},
 	{
-		/* UDP Jump */
+		 
 		.sel = {
 			.off = 0,
 			.offoff = 0,
@@ -285,12 +247,10 @@ static const struct cxgb4_next_header cxgb4_ipv4_jumps[] = {
 	{ .jump = NULL },
 };
 
-/* Accept a rule with a jump directly past the 40 Bytes of IPv6 fixed header
- * to get to transport layer header.
- */
+ 
 static const struct cxgb4_next_header cxgb4_ipv6_jumps[] = {
 	{
-		/* TCP Jump */
+		 
 		.sel = {
 			.off = 40,
 			.offoff = 0,
@@ -305,7 +265,7 @@ static const struct cxgb4_next_header cxgb4_ipv6_jumps[] = {
 		.jump = cxgb4_tcp_fields,
 	},
 	{
-		/* UDP Jump */
+		 
 		.sel = {
 			.off = 40,
 			.offoff = 0,
@@ -323,14 +283,14 @@ static const struct cxgb4_next_header cxgb4_ipv6_jumps[] = {
 };
 
 struct cxgb4_link {
-	const struct cxgb4_match_field *match_field;  /* Next header */
-	struct ch_filter_specification fs; /* Match spec associated with link */
-	u32 link_handle;         /* Knode handle associated with the link */
-	unsigned long *tid_map;  /* Bitmap for filter tids */
+	const struct cxgb4_match_field *match_field;   
+	struct ch_filter_specification fs;  
+	u32 link_handle;          
+	unsigned long *tid_map;   
 };
 
 struct cxgb4_tc_u32_table {
-	unsigned int size;          /* number of entries in table */
-	struct cxgb4_link table[]; /* Jump table */
+	unsigned int size;           
+	struct cxgb4_link table[];  
 };
-#endif /* __CXGB4_TC_U32_PARSE_H */
+#endif  

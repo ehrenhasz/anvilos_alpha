@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Broadcom Blutonium firmware driver
- *
- *  Copyright (C) 2003  Maxim Krasnyansky <maxk@qualcomm.com>
- *  Copyright (C) 2003  Marcel Holtmann <marcel@holtmann.org>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -25,10 +19,10 @@
 #define VERSION "1.2"
 
 static const struct usb_device_id bcm203x_table[] = {
-	/* Broadcom Blutonium (BCM2033) */
+	 
 	{ USB_DEVICE(0x0a5c, 0x2033) },
 
-	{ }	/* Terminating entry */
+	{ }	 
 };
 
 MODULE_DEVICE_TABLE(usb, bcm203x_table);
@@ -83,7 +77,7 @@ static void bcm203x_complete(struct urb *urb)
 
 		data->state = BCM203X_SELECT_MEMORY;
 
-		/* use workqueue to have a small delay */
+		 
 		schedule_work(&data->work);
 		break;
 
@@ -224,7 +218,7 @@ static int bcm203x_probe(struct usb_interface *intf, const struct usb_device_id 
 
 	usb_set_intfdata(intf, data);
 
-	/* use workqueue to have a small delay */
+	 
 	schedule_work(&data->work);
 
 	return 0;

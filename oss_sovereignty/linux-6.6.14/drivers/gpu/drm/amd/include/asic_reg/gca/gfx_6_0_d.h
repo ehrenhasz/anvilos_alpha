@@ -1,24 +1,4 @@
-/*
- *
- * Copyright (C) 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included
- * in all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN
- * AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #ifndef GFX_6_0_D_H
 #define GFX_6_0_D_H
@@ -1757,7 +1737,7 @@
 #define mmVGT_VTX_CNT_EN 0xA2AE
 #define mmVGT_VTX_VECT_EJECT_REG 0x222C
 
-/* manually added from old sid.h */
+ 
 #define mmCB_PERFCOUNTER0_SELECT0                       0x2688
 #define mmCB_PERFCOUNTER1_SELECT0                       0x268A
 #define mmCB_PERFCOUNTER1_SELECT1                       0x268B

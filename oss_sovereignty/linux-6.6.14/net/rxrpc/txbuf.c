@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* RxRPC Tx data buffering.
- *
- * Copyright (C) 2022 Red Hat, Inc. All Rights Reserved.
- * Written by David Howells (dhowells@redhat.com)
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -13,9 +9,7 @@
 static atomic_t rxrpc_txbuf_debug_ids;
 atomic_t rxrpc_nr_txbuf;
 
-/*
- * Allocate and partially initialise an I/O request structure.
- */
+ 
 struct rxrpc_txbuf *rxrpc_alloc_txbuf(struct rxrpc_call *call, u8 packet_type,
 				      gfp_t gfp)
 {
@@ -99,9 +93,7 @@ void rxrpc_put_txbuf(struct rxrpc_txbuf *txb, enum rxrpc_txbuf_trace what)
 	}
 }
 
-/*
- * Shrink the transmit buffer.
- */
+ 
 void rxrpc_shrink_call_tx_buffer(struct rxrpc_call *call)
 {
 	struct rxrpc_txbuf *txb;

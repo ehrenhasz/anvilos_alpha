@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Comtrol RocketPort EXPRESS/INFINITY cards
- *
- * Copyright (C) 2012 Kevin Cernekee <cernekee@gmail.com>
- *
- * Inspired by, and loosely based on:
- *
- *   ar933x_uart.c
- *     Copyright (C) 2011 Gabor Juhos <juhosg@openwrt.org>
- *
- *   rocketport_infinity_express-linux-1.20.tar.gz
- *     Copyright (C) 2004-2011 Comtrol, Inc.
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/compiler.h>
@@ -47,14 +35,14 @@
 #define DEFAULT_BAUD_DIV		(UART_CLOCK / (9600 * 16))
 #define FIFO_SIZE			512
 
-/* BAR0 registers */
+ 
 #define RP2_FPGA_CTL0			0x110
 #define RP2_FPGA_CTL1			0x11c
 #define RP2_IRQ_MASK			0x1ec
 #define RP2_IRQ_MASK_EN_m		BIT(0)
 #define RP2_IRQ_STATUS			0x1f0
 
-/* BAR1 registers */
+ 
 #define RP2_ASIC_SPACING		0x1000
 #define RP2_ASIC_OFFSET(i)		((i) << ilog2(RP2_ASIC_SPACING))
 
@@ -72,7 +60,7 @@
 #define RP2_GLOBAL_CMD			0xd0c
 #define RP2_ASIC_CFG			0xd04
 
-/* port registers */
+ 
 #define RP2_DATA_DWORD			0x000
 
 #define RP2_DATA_BYTE			0x008
@@ -81,7 +69,7 @@
 #define RP2_DATA_BYTE_ERR_FRAMING_m	BIT(10)
 #define RP2_DATA_BYTE_BREAK_m		BIT(11)
 
-/* This lets uart_insert_char() drop bytes received on a !CREAD port */
+ 
 #define RP2_DUMMY_READ			BIT(16)
 
 #define RP2_DATA_BYTE_EXCEPTION_MASK	(RP2_DATA_BYTE_ERR_PARITY_m | \
@@ -153,7 +141,7 @@
 
 #define RP2_BAUD			0x01c
 
-/* ucode registers */
+ 
 #define RP2_TX_SWFLOW			0x02
 #define RP2_TX_SWFLOW_ena		0x81
 #define RP2_TX_SWFLOW_dis		0x9d
@@ -216,7 +204,7 @@ static int rp2_alloc_ports(int n_ports)
 
 	spin_lock(&rp2_minor_lock);
 	if (rp2_minor_next + n_ports <= CONFIG_SERIAL_RP2_NR_UARTS) {
-		/* sorry, no support for hot unplugging individual cards */
+		 
 		ret = rp2_minor_next;
 		rp2_minor_next += n_ports;
 	}
@@ -271,11 +259,7 @@ static unsigned int rp2_uart_tx_empty(struct uart_port *port)
 	struct rp2_uart_port *up = port_to_up(port);
 	unsigned long tx_fifo_bytes, flags;
 
-	/*
-	 * This should probably check the transmitter, not the FIFO.
-	 * But the TXEMPTY bit doesn't seem to work unless the TX IRQ is
-	 * enabled.
-	 */
+	 
 	spin_lock_irqsave(&up->port.lock, flags);
 	tx_fifo_bytes = readw(up->base + RP2_TX_FIFO_COUNT);
 	spin_unlock_irqrestore(&up->port.lock, flags);
@@ -339,10 +323,10 @@ static void __rp2_uart_set_termios(struct rp2_uart_port *up,
 				   unsigned long ifl,
 				   unsigned int baud_div)
 {
-	/* baud rate divisor (calculated elsewhere).  0 = divide-by-1 */
+	 
 	writew(baud_div - 1, up->base + RP2_BAUD);
 
-	/* data bits and stop bits */
+	 
 	rp2_rmw(up, RP2_UART_CTL,
 		RP2_UART_CTL_STOPBITS_m | RP2_UART_CTL_DATABITS_m,
 		((cfl & CSTOPB) ? RP2_UART_CTL_STOPBITS_m : 0) |
@@ -351,7 +335,7 @@ static void __rp2_uart_set_termios(struct rp2_uart_port *up,
 		(((cfl & CSIZE) == CS6) ? RP2_UART_CTL_DATABITS_6 : 0) |
 		(((cfl & CSIZE) == CS5) ? RP2_UART_CTL_DATABITS_5 : 0));
 
-	/* parity and hardware flow control */
+	 
 	rp2_rmw(up, RP2_TXRX_CTL,
 		RP2_TXRX_CTL_PARENB_m | RP2_TXRX_CTL_nPARODD_m |
 		RP2_TXRX_CTL_CMSPAR_m | RP2_TXRX_CTL_DTRFLOW_m |
@@ -363,7 +347,7 @@ static void __rp2_uart_set_termios(struct rp2_uart_port *up,
 		((cfl & CRTSCTS) ? (RP2_TXRX_CTL_RTSFLOW_m |
 				    RP2_TXRX_CTL_CTSFLOW_m) : 0));
 
-	/* XON/XOFF software flow control */
+	 
 	writeb((ifl & IXON) ? RP2_TX_SWFLOW_ena : RP2_TX_SWFLOW_dis,
 	       up->ucode + RP2_TX_SWFLOW);
 	writeb((ifl & IXOFF) ? RP2_RX_SWFLOW_ena : RP2_RX_SWFLOW_dis,
@@ -385,7 +369,7 @@ static void rp2_uart_set_termios(struct uart_port *port, struct ktermios *new,
 
 	spin_lock_irqsave(&port->lock, flags);
 
-	/* ignore all characters if CREAD is not set */
+	 
 	port->ignore_status_mask = (new->c_cflag & CREAD) ? 0 : RP2_DUMMY_READ;
 
 	__rp2_uart_set_termios(up, new->c_cflag, new->c_iflag, baud_div);
@@ -442,10 +426,7 @@ static void rp2_ch_interrupt(struct rp2_uart_port *up)
 
 	spin_lock(&up->port.lock);
 
-	/*
-	 * The IRQ status bits are clear-on-write.  Other status bits in
-	 * this register aren't, so it's harmless to write to them.
-	 */
+	 
 	status = readl(up->base + RP2_CHAN_STAT);
 	writel(status, up->base + RP2_CHAN_STAT);
 
@@ -529,12 +510,12 @@ static const char *rp2_uart_type(struct uart_port *port)
 
 static void rp2_uart_release_port(struct uart_port *port)
 {
-	/* Nothing to release ... */
+	 
 }
 
 static int rp2_uart_request_port(struct uart_port *port)
 {
-	/* UARTs always present */
+	 
 	return 0;
 }
 
@@ -582,12 +563,12 @@ static void rp2_reset_asic(struct rp2_card *card, unsigned int asic_id)
 	msleep(100);
 	writel(0, base + RP2_CLK_PRESCALER);
 
-	/* TDM clock configuration */
+	 
 	clk_cfg = readw(base + RP2_ASIC_CFG);
 	clk_cfg = (clk_cfg & ~BIT(8)) | BIT(9);
 	writew(clk_cfg, base + RP2_ASIC_CFG);
 
-	/* IRQ routing */
+	 
 	writel(ALL_PORTS_MASK, base + RP2_CH_IRQ_MASK);
 	writel(RP2_ASIC_IRQ_EN_m, base + RP2_ASIC_IRQ);
 }
@@ -769,38 +750,38 @@ static void rp2_remove(struct pci_dev *pdev)
 
 static const struct pci_device_id rp2_pci_tbl[] = {
 
-	/* RocketPort INFINITY cards */
+	 
 
-	{ RP_ID(0x0040), RP_CAP(8,  0) }, /* INF Octa, RJ45, selectable */
-	{ RP_ID(0x0041), RP_CAP(32, 0) }, /* INF 32, ext interface */
-	{ RP_ID(0x0042), RP_CAP(8,  0) }, /* INF Octa, ext interface */
-	{ RP_ID(0x0043), RP_CAP(16, 0) }, /* INF 16, ext interface */
-	{ RP_ID(0x0044), RP_CAP(4,  0) }, /* INF Quad, DB, selectable */
-	{ RP_ID(0x0045), RP_CAP(8,  0) }, /* INF Octa, DB, selectable */
-	{ RP_ID(0x0046), RP_CAP(4,  0) }, /* INF Quad, ext interface */
-	{ RP_ID(0x0047), RP_CAP(4,  0) }, /* INF Quad, RJ45 */
-	{ RP_ID(0x004a), RP_CAP(4,  0) }, /* INF Plus, Quad */
-	{ RP_ID(0x004b), RP_CAP(8,  0) }, /* INF Plus, Octa */
-	{ RP_ID(0x004c), RP_CAP(8,  0) }, /* INF III, Octa */
-	{ RP_ID(0x004d), RP_CAP(4,  0) }, /* INF III, Quad */
-	{ RP_ID(0x004e), RP_CAP(2,  0) }, /* INF Plus, 2, RS232 */
-	{ RP_ID(0x004f), RP_CAP(2,  1) }, /* INF Plus, 2, SMPTE */
-	{ RP_ID(0x0050), RP_CAP(4,  0) }, /* INF Plus, Quad, RJ45 */
-	{ RP_ID(0x0051), RP_CAP(8,  0) }, /* INF Plus, Octa, RJ45 */
-	{ RP_ID(0x0052), RP_CAP(8,  1) }, /* INF Octa, SMPTE */
+	{ RP_ID(0x0040), RP_CAP(8,  0) },  
+	{ RP_ID(0x0041), RP_CAP(32, 0) },  
+	{ RP_ID(0x0042), RP_CAP(8,  0) },  
+	{ RP_ID(0x0043), RP_CAP(16, 0) },  
+	{ RP_ID(0x0044), RP_CAP(4,  0) },  
+	{ RP_ID(0x0045), RP_CAP(8,  0) },  
+	{ RP_ID(0x0046), RP_CAP(4,  0) },  
+	{ RP_ID(0x0047), RP_CAP(4,  0) },  
+	{ RP_ID(0x004a), RP_CAP(4,  0) },  
+	{ RP_ID(0x004b), RP_CAP(8,  0) },  
+	{ RP_ID(0x004c), RP_CAP(8,  0) },  
+	{ RP_ID(0x004d), RP_CAP(4,  0) },  
+	{ RP_ID(0x004e), RP_CAP(2,  0) },  
+	{ RP_ID(0x004f), RP_CAP(2,  1) },  
+	{ RP_ID(0x0050), RP_CAP(4,  0) },  
+	{ RP_ID(0x0051), RP_CAP(8,  0) },  
+	{ RP_ID(0x0052), RP_CAP(8,  1) },  
 
-	/* RocketPort EXPRESS cards */
+	 
 
-	{ RP_ID(0x0060), RP_CAP(8,  0) }, /* EXP Octa, RJ45, selectable */
-	{ RP_ID(0x0061), RP_CAP(32, 0) }, /* EXP 32, ext interface */
-	{ RP_ID(0x0062), RP_CAP(8,  0) }, /* EXP Octa, ext interface */
-	{ RP_ID(0x0063), RP_CAP(16, 0) }, /* EXP 16, ext interface */
-	{ RP_ID(0x0064), RP_CAP(4,  0) }, /* EXP Quad, DB, selectable */
-	{ RP_ID(0x0065), RP_CAP(8,  0) }, /* EXP Octa, DB, selectable */
-	{ RP_ID(0x0066), RP_CAP(4,  0) }, /* EXP Quad, ext interface */
-	{ RP_ID(0x0067), RP_CAP(4,  0) }, /* EXP Quad, RJ45 */
-	{ RP_ID(0x0068), RP_CAP(8,  0) }, /* EXP Octa, RJ11 */
-	{ RP_ID(0x0072), RP_CAP(8,  1) }, /* EXP Octa, SMPTE */
+	{ RP_ID(0x0060), RP_CAP(8,  0) },  
+	{ RP_ID(0x0061), RP_CAP(32, 0) },  
+	{ RP_ID(0x0062), RP_CAP(8,  0) },  
+	{ RP_ID(0x0063), RP_CAP(16, 0) },  
+	{ RP_ID(0x0064), RP_CAP(4,  0) },  
+	{ RP_ID(0x0065), RP_CAP(8,  0) },  
+	{ RP_ID(0x0066), RP_CAP(4,  0) },  
+	{ RP_ID(0x0067), RP_CAP(4,  0) },  
+	{ RP_ID(0x0068), RP_CAP(8,  0) },  
+	{ RP_ID(0x0072), RP_CAP(8,  1) },  
 	{ }
 };
 MODULE_DEVICE_TABLE(pci, rp2_pci_tbl);

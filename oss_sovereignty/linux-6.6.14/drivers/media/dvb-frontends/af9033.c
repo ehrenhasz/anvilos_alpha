@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Afatech AF9033 demodulator driver
- *
- * Copyright (C) 2009 Antti Palosaari <crope@iki.fi>
- * Copyright (C) 2012 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include "af9033_priv.h"
 
@@ -21,14 +16,14 @@ struct af9033_dev {
 	bool ts_mode_serial;
 
 	enum fe_status fe_status;
-	u64 post_bit_error_prev; /* for old read_ber we return (curr - prev) */
+	u64 post_bit_error_prev;  
 	u64 post_bit_error;
 	u64 post_bit_count;
 	u64 error_block_count;
 	u64 total_block_count;
 };
 
-/* Write reg val table using reg addr auto increment */
+ 
 static int af9033_wr_reg_val_tab(struct af9033_dev *dev,
 				 const struct reg_val *tab, int tab_len)
 {
@@ -105,7 +100,7 @@ static int af9033_init(struct dvb_frontend *fe)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Main clk control */
+	 
 	utmp = div_u64((u64)dev->cfg.clock * 0x80000, 1000000);
 	buf[0] = (utmp >>  0) & 0xff;
 	buf[1] = (utmp >>  8) & 0xff;
@@ -117,7 +112,7 @@ static int af9033_init(struct dvb_frontend *fe)
 
 	dev_dbg(&client->dev, "clk=%u clk_cw=%08x\n", dev->cfg.clock, utmp);
 
-	/* ADC clk control */
+	 
 	for (i = 0; i < ARRAY_SIZE(clock_adc_lut); i++) {
 		if (clock_adc_lut[i].clock == dev->cfg.clock)
 			break;
@@ -140,7 +135,7 @@ static int af9033_init(struct dvb_frontend *fe)
 	dev_dbg(&client->dev, "adc=%u adc_cw=%06x\n",
 		clock_adc_lut[i].adc, utmp);
 
-	/* Config register table */
+	 
 	for (i = 0; i < ARRAY_SIZE(tab); i++) {
 		ret = regmap_update_bits(dev->regmap, tab[i].reg, tab[i].mask,
 					 tab[i].val);
@@ -148,14 +143,14 @@ static int af9033_init(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* Demod clk output */
+	 
 	if (dev->cfg.dyn0_clk) {
 		ret = regmap_write(dev->regmap, 0x80fba8, 0x00);
 		if (ret)
 			goto err;
 	}
 
-	/* TS interface */
+	 
 	if (dev->cfg.ts_mode == AF9033_TS_MODE_USB) {
 		ret = regmap_update_bits(dev->regmap, 0x80f9a5, 0x01, 0x00);
 		if (ret)
@@ -172,7 +167,7 @@ static int af9033_init(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* Demod core settings */
+	 
 	dev_dbg(&client->dev, "load ofsm settings\n");
 	switch (dev->cfg.tuner) {
 	case AF9033_TUNER_IT9135_38:
@@ -197,7 +192,7 @@ static int af9033_init(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* Demod tuner specific settings */
+	 
 	dev_dbg(&client->dev, "load tuner specific settings\n");
 	switch (dev->cfg.tuner) {
 	case AF9033_TUNER_TUA9001:
@@ -280,8 +275,8 @@ static int af9033_init(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	dev->bandwidth_hz = 0; /* Force to program all parameters */
-	/* Init stats here in order signal app which stats are supported */
+	dev->bandwidth_hz = 0;  
+	 
 	c->strength.len = 1;
 	c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	c->cnr.len = 1;
@@ -324,9 +319,9 @@ static int af9033_sleep(struct dvb_frontend *fe)
 	if (ret)
 		goto err;
 
-	/* Prevent current leak by setting TS interface to parallel mode */
+	 
 	if (dev->cfg.ts_mode == AF9033_TS_MODE_SERIAL) {
-		/* Enable parallel TS */
+		 
 		ret = regmap_update_bits(dev->regmap, 0x00d917, 0x01, 0x00);
 		if (ret)
 			goto err;
@@ -344,7 +339,7 @@ err:
 static int af9033_get_tune_settings(struct dvb_frontend *fe,
 				    struct dvb_frontend_tune_settings *fesettings)
 {
-	/* 800 => 2000 because IT9135 v2 is slow to gain lock */
+	 
 	fesettings->min_delay_ms = 2000;
 	fesettings->step_size = 0;
 	fesettings->max_drift = 0;
@@ -365,7 +360,7 @@ static int af9033_set_frontend(struct dvb_frontend *fe)
 	dev_dbg(&client->dev, "frequency=%u bandwidth_hz=%u\n",
 		c->frequency, c->bandwidth_hz);
 
-	/* Check bandwidth */
+	 
 	switch (c->bandwidth_hz) {
 	case 6000000:
 		bandwidth_reg_val = 0x00;
@@ -382,11 +377,11 @@ static int af9033_set_frontend(struct dvb_frontend *fe)
 		goto err;
 	}
 
-	/* Program tuner */
+	 
 	if (fe->ops.tuner_ops.set_params)
 		fe->ops.tuner_ops.set_params(fe);
 
-	/* Coefficients */
+	 
 	if (c->bandwidth_hz != dev->bandwidth_hz) {
 		for (i = 0; i < ARRAY_SIZE(coeff_lut); i++) {
 			if (coeff_lut[i].clock == dev->cfg.clock &&
@@ -408,7 +403,7 @@ static int af9033_set_frontend(struct dvb_frontend *fe)
 			goto err;
 	}
 
-	/* IF frequency control */
+	 
 	if (c->bandwidth_hz != dev->bandwidth_hz) {
 		for (i = 0; i < ARRAY_SIZE(clock_adc_lut); i++) {
 			if (clock_adc_lut[i].clock == dev->cfg.clock)
@@ -426,7 +421,7 @@ static int af9033_set_frontend(struct dvb_frontend *fe)
 		if (dev->cfg.adc_multiplier == AF9033_ADC_MULTIPLIER_2X)
 			adc_freq = 2 * adc_freq;
 
-		/* Get used IF frequency */
+		 
 		if (fe->ops.tuner_ops.get_if_frequency)
 			fe->ops.tuner_ops.get_if_frequency(fe, &if_frequency);
 		else
@@ -465,14 +460,14 @@ static int af9033_set_frontend(struct dvb_frontend *fe)
 		goto err;
 
 	if (c->frequency <= 230000000)
-		tmp = 0x00; /* VHF */
+		tmp = 0x00;  
 	else
-		tmp = 0x01; /* UHF */
+		tmp = 0x01;  
 
 	ret = regmap_write(dev->regmap, 0x80004b, tmp);
 	if (ret)
 		goto err;
-	/* Reset FSM */
+	 
 	ret = regmap_write(dev->regmap, 0x800000, 0x00);
 	if (ret)
 		goto err;
@@ -493,7 +488,7 @@ static int af9033_get_frontend(struct dvb_frontend *fe,
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Read all needed TPS registers */
+	 
 	ret = regmap_bulk_read(dev->regmap, 0x80f900, buf, 8);
 	if (ret)
 		goto err;
@@ -622,17 +617,17 @@ static int af9033_read_status(struct dvb_frontend *fe, enum fe_status *status)
 
 	*status = 0;
 
-	/* Radio channel status: 0=no result, 1=has signal, 2=no signal */
+	 
 	ret = regmap_read(dev->regmap, 0x800047, &utmp);
 	if (ret)
 		goto err;
 
-	/* Has signal */
+	 
 	if (utmp == 0x01)
 		*status |= FE_HAS_SIGNAL;
 
 	if (utmp != 0x02) {
-		/* TPS lock */
+		 
 		ret = regmap_read(dev->regmap, 0x80f5a9, &utmp);
 		if (ret)
 			goto err;
@@ -641,7 +636,7 @@ static int af9033_read_status(struct dvb_frontend *fe, enum fe_status *status)
 			*status |= FE_HAS_SIGNAL | FE_HAS_CARRIER |
 					FE_HAS_VITERBI;
 
-		/* Full lock */
+		 
 		ret = regmap_read(dev->regmap, 0x80f999, &utmp);
 		if (ret)
 			goto err;
@@ -654,7 +649,7 @@ static int af9033_read_status(struct dvb_frontend *fe, enum fe_status *status)
 
 	dev->fe_status = *status;
 
-	/* Signal strength */
+	 
 	if (dev->fe_status & FE_HAS_SIGNAL) {
 		if (dev->is_af9035) {
 			ret = regmap_read(dev->regmap, 0x80004a, &utmp);
@@ -676,16 +671,16 @@ static int af9033_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->strength.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* CNR */
+	 
 	if (dev->fe_status & FE_HAS_VITERBI) {
-		/* Read raw SNR value */
+		 
 		ret = regmap_bulk_read(dev->regmap, 0x80002c, buf, 3);
 		if (ret)
 			goto err;
 
 		utmp1 = buf[2] << 16 | buf[1] << 8 | buf[0] << 0;
 
-		/* Read superframe number */
+		 
 		ret = regmap_read(dev->regmap, 0x80f78b, &utmp);
 		if (ret)
 			goto err;
@@ -693,22 +688,22 @@ static int af9033_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		if (utmp)
 			utmp1 /= utmp;
 
-		/* Read current transmission mode */
+		 
 		ret = regmap_read(dev->regmap, 0x80f900, &utmp);
 		if (ret)
 			goto err;
 
 		switch ((utmp >> 0) & 3) {
 		case 0:
-			/* 2k */
+			 
 			utmp1 *= 4;
 			break;
 		case 1:
-			/* 8k */
+			 
 			utmp1 *= 1;
 			break;
 		case 2:
-			/* 4k */
+			 
 			utmp1 *= 2;
 			break;
 		default:
@@ -716,40 +711,28 @@ static int af9033_read_status(struct dvb_frontend *fe, enum fe_status *status)
 			break;
 		}
 
-		/* Read current modulation */
+		 
 		ret = regmap_read(dev->regmap, 0x80f903, &utmp);
 		if (ret)
 			goto err;
 
 		switch ((utmp >> 0) & 3) {
 		case 0:
-			/*
-			 * QPSK
-			 * CNR[dB] 13 * -log10((1690000 - value) / value) + 2.6
-			 * value [653799, 1689999], 2.6 / 13 = 3355443
-			 */
+			 
 			utmp1 = clamp(utmp1, 653799U, 1689999U);
 			utmp1 = ((u64)(intlog10(utmp1)
 				 - intlog10(1690000 - utmp1)
 				 + 3355443) * 13 * 1000) >> 24;
 			break;
 		case 1:
-			/*
-			 * QAM-16
-			 * CNR[dB] 6 * log10((value - 370000) / (828000 - value)) + 15.7
-			 * value [371105, 827999], 15.7 / 6 = 43900382
-			 */
+			 
 			utmp1 = clamp(utmp1, 371105U, 827999U);
 			utmp1 = ((u64)(intlog10(utmp1 - 370000)
 				 - intlog10(828000 - utmp1)
 				 + 43900382) * 6 * 1000) >> 24;
 			break;
 		case 2:
-			/*
-			 * QAM-64
-			 * CNR[dB] 8 * log10((value - 193000) / (425000 - value)) + 23.8
-			 * value [193246, 424999], 23.8 / 8 = 49912218
-			 */
+			 
 			utmp1 = clamp(utmp1, 193246U, 424999U);
 			utmp1 = ((u64)(intlog10(utmp1 - 193000)
 				 - intlog10(425000 - utmp1)
@@ -768,17 +751,14 @@ static int af9033_read_status(struct dvb_frontend *fe, enum fe_status *status)
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 	}
 
-	/* UCB/PER/BER */
+	 
 	if (dev->fe_status & FE_HAS_LOCK) {
-		/* Outer FEC, 204 byte packets */
+		 
 		u16 abort_packet_count, rsd_packet_count;
-		/* Inner FEC, bits */
+		 
 		u32 rsd_bit_err_count;
 
-		/*
-		 * Packet count used for measurement is 10000
-		 * (rsd_packet_count). Maybe it should be increased?
-		 */
+		 
 
 		ret = regmap_bulk_read(dev->regmap, 0x800032, buf, 7);
 		if (ret)
@@ -826,22 +806,22 @@ static int af9033_read_snr(struct dvb_frontend *fe, u16 *snr)
 
 	dev_dbg(&client->dev, "\n");
 
-	/* Use DVBv5 CNR */
+	 
 	if (c->cnr.stat[0].scale == FE_SCALE_DECIBEL) {
-		/* Return 0.1 dB for AF9030 and 0-0xffff for IT9130. */
+		 
 		if (dev->is_af9035) {
-			/* 1000x => 10x (0.1 dB) */
+			 
 			*snr = div_s64(c->cnr.stat[0].svalue, 100);
 		} else {
-			/* 1000x => 1x (1 dB) */
+			 
 			*snr = div_s64(c->cnr.stat[0].svalue, 1000);
 
-			/* Read current modulation */
+			 
 			ret = regmap_read(dev->regmap, 0x80f903, &utmp);
 			if (ret)
 				goto err;
 
-			/* scale value to 0x0000-0xffff */
+			 
 			switch ((utmp >> 0) & 3) {
 			case 0:
 				*snr = *snr * 0xffff / 23;
@@ -879,12 +859,12 @@ static int af9033_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 	dev_dbg(&client->dev, "\n");
 
 	if (dev->is_af9035) {
-		/* Read signal strength of 0-100 scale */
+		 
 		ret = regmap_read(dev->regmap, 0x800048, &utmp);
 		if (ret)
 			goto err;
 
-		/* Scale value to 0x0000-0xffff */
+		 
 		*strength = utmp * 0xffff / 100;
 	} else {
 		ret = regmap_read(dev->regmap, 0x8000f7, &utmp);
@@ -896,9 +876,9 @@ static int af9033_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 			goto err;
 
 		if (c->frequency <= 300000000)
-			gain_offset = 7; /* VHF */
+			gain_offset = 7;  
 		else
-			gain_offset = 4; /* UHF */
+			gain_offset = 4;  
 
 		power_real = (utmp - 100 - gain_offset) -
 			power_reference[((buf[3] >> 0) & 3)][((buf[6] >> 0) & 7)];
@@ -914,7 +894,7 @@ static int af9033_read_signal_strength(struct dvb_frontend *fe, u16 *strength)
 		else
 			tmp = 100;
 
-		/* Scale value to 0x0000-0xffff */
+		 
 		*strength = tmp * 0xffff / 100;
 	}
 
@@ -1061,14 +1041,14 @@ static int af9033_probe(struct i2c_client *client)
 		.val_bits    =  8,
 	};
 
-	/* Allocate memory for the internal state */
+	 
 	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
 	if (!dev) {
 		ret = -ENOMEM;
 		goto err;
 	}
 
-	/* Setup the state */
+	 
 	dev->client = client;
 	memcpy(&dev->cfg, cfg, sizeof(dev->cfg));
 	switch (dev->cfg.ts_mode) {
@@ -1079,7 +1059,7 @@ static int af9033_probe(struct i2c_client *client)
 		dev->ts_mode_serial = true;
 		break;
 	case AF9033_TS_MODE_USB:
-		/* USB mode for AF9035 */
+		 
 	default:
 		break;
 	}
@@ -1092,14 +1072,14 @@ static int af9033_probe(struct i2c_client *client)
 		goto err_kfree;
 	}
 
-	/* Create regmap */
+	 
 	dev->regmap = regmap_init_i2c(client, &regmap_config);
 	if (IS_ERR(dev->regmap)) {
 		ret = PTR_ERR(dev->regmap);
 		goto err_kfree;
 	}
 
-	/* Firmware version */
+	 
 	switch (dev->cfg.tuner) {
 	case AF9033_TUNER_IT9135_38:
 	case AF9033_TUNER_IT9135_51:
@@ -1128,8 +1108,8 @@ static int af9033_probe(struct i2c_client *client)
 		 buf[0], buf[1], buf[2], buf[3],
 		 buf[4], buf[5], buf[6], buf[7]);
 
-	/* Sleep as chip seems to be partly active by default */
-	/* IT9135 did not like to sleep at that early */
+	 
+	 
 	if (dev->is_af9035) {
 		ret = regmap_write(dev->regmap, 0x80004c, 0x01);
 		if (ret)
@@ -1139,7 +1119,7 @@ static int af9033_probe(struct i2c_client *client)
 			goto err_regmap_exit;
 	}
 
-	/* Create dvb frontend */
+	 
 	memcpy(&dev->fe.ops, &af9033_ops, sizeof(dev->fe.ops));
 	dev->fe.demodulator_priv = dev;
 	*cfg->fe = &dev->fe;

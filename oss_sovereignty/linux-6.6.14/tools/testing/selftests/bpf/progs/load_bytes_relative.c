@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include <errno.h>
 #include <linux/bpf.h>
@@ -26,7 +24,7 @@ int load_bytes_relative(struct __sk_buff *skb)
 	__u32 map_key = 0;
 	__u32 test_passed = 0;
 
-	/* MAC header is not set by the time cgroup_skb/egress triggers */
+	 
 	if (bpf_skb_load_bytes_relative(skb, 0, &eth, sizeof(eth),
 					BPF_HDR_START_MAC) != -EFAULT)
 		goto fail;

@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Hantro VPU codec driver
- *
- * Copyright (C) 2018 Collabora, Ltd.
- * Copyright 2018 Google LLC.
- *	Tomasz Figa <tfiga@chromium.org>
- *
- * Based on s5p-mfc driver by Samsung Electronics Co., Ltd.
- * Copyright (C) 2011 Samsung Electronics Co., Ltd.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/module.h>
@@ -103,11 +94,7 @@ void hantro_irq_done(struct hantro_dev *vpu,
 	struct hantro_ctx *ctx =
 		v4l2_m2m_get_curr_priv(vpu->m2m_dev);
 
-	/*
-	 * If cancel_delayed_work returns false
-	 * the timeout expired. The watchdog is running,
-	 * and will take care of finishing the job.
-	 */
+	 
 	if (cancel_delayed_work(&vpu->watchdog_work)) {
 		if (result == VB2_BUF_STATE_DONE && ctx->codec_ops->done)
 			ctx->codec_ops->done(ctx);
@@ -162,7 +149,7 @@ void hantro_end_prepare_run(struct hantro_ctx *ctx)
 	v4l2_ctrl_request_complete(src_buf->vb2_buf.req_obj.req,
 				   &ctx->ctrl_handler);
 
-	/* Kick the watchdog. */
+	 
 	schedule_delayed_work(&ctx->dev->watchdog_work,
 			      msecs_to_jiffies(2000));
 }
@@ -211,11 +198,7 @@ queue_init(void *priv, struct vb2_queue *src_vq, struct vb2_queue *dst_vq)
 	src_vq->ops = &hantro_queue_ops;
 	src_vq->mem_ops = &vb2_dma_contig_memops;
 
-	/*
-	 * Driver does mostly sequential access, so sacrifice TLB efficiency
-	 * for faster allocation. Also, no CPU access on the source queue,
-	 * so no kernel mapping needed.
-	 */
+	 
 	src_vq->dma_attrs = DMA_ATTR_ALLOC_SINGLE_PAGES |
 			    DMA_ATTR_NO_KERNEL_MAPPING;
 	src_vq->buf_struct_size = sizeof(struct v4l2_m2m_buffer);
@@ -231,10 +214,7 @@ queue_init(void *priv, struct vb2_queue *src_vq, struct vb2_queue *dst_vq)
 	dst_vq->bidirectional = true;
 	dst_vq->mem_ops = &vb2_dma_contig_memops;
 	dst_vq->dma_attrs = DMA_ATTR_ALLOC_SINGLE_PAGES;
-	/*
-	 * The Kernel needs access to the JPEG destination buffer for the
-	 * JPEG encoder to fill in the JPEG headers.
-	 */
+	 
 	if (!ctx->is_encoder)
 		dst_vq->dma_attrs |= DMA_ATTR_NO_KERNEL_MAPPING;
 
@@ -256,24 +236,24 @@ static int hantro_try_ctrl(struct v4l2_ctrl *ctrl)
 		const struct v4l2_ctrl_h264_sps *sps = ctrl->p_new.p_h264_sps;
 
 		if (sps->chroma_format_idc > 1)
-			/* Only 4:0:0 and 4:2:0 are supported */
+			 
 			return -EINVAL;
 		if (sps->bit_depth_luma_minus8 != sps->bit_depth_chroma_minus8)
-			/* Luma and chroma bit depth mismatch */
+			 
 			return -EINVAL;
 		if (sps->bit_depth_luma_minus8 != 0)
-			/* Only 8-bit is supported */
+			 
 			return -EINVAL;
 	} else if (ctrl->id == V4L2_CID_STATELESS_HEVC_SPS) {
 		const struct v4l2_ctrl_hevc_sps *sps = ctrl->p_new.p_hevc_sps;
 
 		if (sps->bit_depth_luma_minus8 != 0 && sps->bit_depth_luma_minus8 != 2)
-			/* Only 8-bit and 10-bit are supported */
+			 
 			return -EINVAL;
 	} else if (ctrl->id == V4L2_CID_STATELESS_VP9_FRAME) {
 		const struct v4l2_ctrl_vp9_frame *dec_params = ctrl->p_new.p_vp9_frame;
 
-		/* We only support profile 0 */
+		 
 		if (dec_params->profile != 0)
 			return -EINVAL;
 	} else if (ctrl->id == V4L2_CID_STATELESS_AV1_SEQUENCE) {
@@ -427,14 +407,7 @@ static const struct hantro_ctrl controls[] = {
 			.id = V4L2_CID_JPEG_ACTIVE_MARKER,
 			.max = HANTRO_JPEG_ACTIVE_MARKERS,
 			.def = HANTRO_JPEG_ACTIVE_MARKERS,
-			/*
-			 * Changing the set of active markers/segments also
-			 * messes up the alignment of the JPEG header, which
-			 * is needed to allow the hardware to write directly
-			 * to the output buffer. Implementing this introduces
-			 * a lot of complexity for little gain, as the markers
-			 * enabled is already the minimum required set.
-			 */
+			 
 			.flags = V4L2_CTRL_FLAG_READ_ONLY,
 		},
 	}, {
@@ -617,9 +590,7 @@ static int hantro_ctrls_setup(struct hantro_dev *vpu,
 	return v4l2_ctrl_handler_setup(&ctx->ctrl_handler);
 }
 
-/*
- * V4L2 file operations.
- */
+ 
 
 static int hantro_open(struct file *filp)
 {
@@ -629,14 +600,7 @@ static int hantro_open(struct file *filp)
 	struct hantro_ctx *ctx;
 	int allowed_codecs, ret;
 
-	/*
-	 * We do not need any extra locking here, because we operate only
-	 * on local data here, except reading few fields from dev, which
-	 * do not change through device's lifetime (which is guaranteed by
-	 * reference on module from open()) and V4L2 internal objects (such
-	 * as vdev and ctx->fh), which have proper locking done in respective
-	 * helper functions used here.
-	 */
+	 
 
 	ctx = kzalloc(sizeof(*ctx), GFP_KERNEL);
 	if (!ctx)
@@ -688,10 +652,7 @@ static int hantro_release(struct file *filp)
 	struct hantro_ctx *ctx =
 		container_of(filp->private_data, struct hantro_ctx, fh);
 
-	/*
-	 * No need for extra locking because this was the last reference
-	 * to this file.
-	 */
+	 
 	v4l2_m2m_ctx_release(ctx->fh.m2m_ctx);
 	v4l2_fh_del(&ctx->fh);
 	v4l2_fh_exit(&ctx->fh);
@@ -734,7 +695,7 @@ static const struct of_device_id of_hantro_match[] = {
 #ifdef CONFIG_VIDEO_HANTRO_SUNXI
 	{ .compatible = "allwinner,sun50i-h6-vpu-g2", .data = &sunxi_vpu_variant, },
 #endif
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, of_hantro_match);
 
@@ -779,7 +740,7 @@ static int hantro_attach_func(struct hantro_dev *vpu,
 	struct media_link *link;
 	int ret;
 
-	/* Create the three encoder entities with their pads */
+	 
 	func->source_pad.flags = MEDIA_PAD_FL_SOURCE;
 	ret = hantro_register_entity(mdev, &func->vdev.entity, "source",
 				     &func->source_pad, 1, MEDIA_ENT_F_IO_V4L,
@@ -802,7 +763,7 @@ static int hantro_attach_func(struct hantro_dev *vpu,
 	if (ret)
 		goto err_rel_entity1;
 
-	/* Connect the three entities */
+	 
 	ret = media_create_pad_link(&func->vdev.entity, 0, &func->proc, 0,
 				    MEDIA_LNK_FL_IMMUTABLE |
 				    MEDIA_LNK_FL_ENABLED);
@@ -815,7 +776,7 @@ static int hantro_attach_func(struct hantro_dev *vpu,
 	if (ret)
 		goto err_rm_links0;
 
-	/* Create video interface */
+	 
 	func->intf_devnode = media_devnode_create(mdev, MEDIA_INTF_T_V4L_VIDEO,
 						  0, VIDEO_MAJOR,
 						  func->vdev.minor);
@@ -824,7 +785,7 @@ static int hantro_attach_func(struct hantro_dev *vpu,
 		goto err_rm_links1;
 	}
 
-	/* Connect the two DMA engines to the interface */
+	 
 	link = media_create_intf_link(&func->vdev.entity,
 				      &func->intf_devnode->intf,
 				      MEDIA_LNK_FL_IMMUTABLE |
@@ -1004,11 +965,7 @@ static int hantro_probe(struct platform_device *pdev)
 	match = of_match_node(of_hantro_match, pdev->dev.of_node);
 	vpu->variant = match->data;
 
-	/*
-	 * Support for nxp,imx8mq-vpu is kept for backwards compatibility
-	 * but it's deprecated. Please update your DTS file to use
-	 * nxp,imx8mq-vpu-g1 or nxp,imx8mq-vpu-g2 instead.
-	 */
+	 
 	if (of_device_is_compatible(pdev->dev.of_node, "nxp,imx8mq-vpu"))
 		dev_warn(&pdev->dev, "%s compatible is deprecated\n",
 			 match->compatible);
@@ -1029,10 +986,7 @@ static int hantro_probe(struct platform_device *pdev)
 		if (ret)
 			return ret;
 	} else {
-		/*
-		 * If the driver has a single clk, chances are there will be no
-		 * actual name in the DT bindings.
-		 */
+		 
 		vpu->clocks[0].clk = devm_clk_get(&pdev->dev, NULL);
 		if (IS_ERR(vpu->clocks[0].clk))
 			return PTR_ERR(vpu->clocks[0].clk);
@@ -1058,11 +1012,7 @@ static int hantro_probe(struct platform_device *pdev)
 	vpu->enc_base = vpu->reg_bases[0] + vpu->variant->enc_offset;
 	vpu->dec_base = vpu->reg_bases[0] + vpu->variant->dec_offset;
 
-	/**
-	 * TODO: Eventually allow taking advantage of full 64-bit address space.
-	 * Until then we assume the MSB portion of buffers' base addresses is
-	 * always 0 due to this masking operation.
-	 */
+	 
 	ret = dma_set_coherent_mask(vpu->dev, DMA_BIT_MASK(32));
 	if (ret) {
 		dev_err(vpu->dev, "Could not set DMA coherent mask.\n");
@@ -1081,10 +1031,7 @@ static int hantro_probe(struct platform_device *pdev)
 			irq_name = vpu->variant->irqs[i].name;
 			irq = platform_get_irq_byname(vpu->pdev, irq_name);
 		} else {
-			/*
-			 * If the driver has a single IRQ, chances are there
-			 * will be no actual name in the DT bindings.
-			 */
+			 
 			irq_name = "default";
 			irq = platform_get_irq(vpu->pdev, 0);
 		}

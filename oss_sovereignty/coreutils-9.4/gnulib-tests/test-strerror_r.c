@@ -1,37 +1,4 @@
-/* Test of strerror_r() function.
-   Copyright (C) 2007-2023 Free Software Foundation, Inc.
-
-   This program is free software; you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3, or (at your option)
-   any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program; if not, see <https://www.gnu.org/licenses/>.  */
-
-#include <config.h>
-
-#include <string.h>
-
-#include "signature.h"
-SIGNATURE_CHECK (strerror_r, int, (int, char *, size_t));
-
-#include <errno.h>
-
-#include "macros.h"
-
-int
-main (void)
-{
-  char buf[100];
-  int ret;
-
-  /* Test results with valid errnum and enough room.  */
+ 
 
   errno = 0;
   buf[0] = '\0';
@@ -54,10 +21,7 @@ main (void)
   ASSERT (errno == 0);
   ASSERT (strlen (buf) < sizeof buf);
 
-  /* POSIX requires strerror (0) to succeed.  Reject use of "Unknown
-     error", but allow "Success", "No error", or even Solaris' "Error
-     0" which are distinct patterns from true out-of-range strings.
-     http://austingroupbugs.net/view.php?id=382  */
+   
   errno = 0;
   buf[0] = '\0';
   ret = strerror_r (0, buf, sizeof buf);
@@ -67,9 +31,7 @@ main (void)
   ASSERT (strstr (buf, "nknown") == NULL);
   ASSERT (strstr (buf, "ndefined") == NULL);
 
-  /* Test results with out-of-range errnum and enough room.  POSIX
-     allows an empty string on success, and allows an unchanged buf on
-     error, but these are not useful, so we guarantee contents.  */
+   
   errno = 0;
   buf[0] = '^';
   ret = strerror_r (-3, buf, sizeof buf);
@@ -79,13 +41,7 @@ main (void)
   ASSERT (errno == 0);
   ASSERT (strlen (buf) < sizeof buf);
 
-  /* Test results with a too small buffer.  POSIX requires an error;
-     only ERANGE for 0 and valid errors, and a choice of ERANGE or
-     EINVAL for out-of-range values.  On error, POSIX permits buf to
-     be empty, unchanged, or unterminated, but these are not useful,
-     so we guarantee NUL-terminated truncated contents for all but
-     size 0.  http://austingroupbugs.net/view.php?id=398.  Also ensure
-     that no out-of-bounds writes occur.  */
+   
   {
     int errs[] = { EACCES, 0, -3, };
     int j;
@@ -130,9 +86,7 @@ main (void)
   }
 
 #if GNULIB_STRERROR
-  /* Test that strerror_r does not clobber strerror buffer.  On some
-     platforms, this test can only succeed if gnulib also replaces
-     strerror.  */
+   
   {
     const char *msg1;
     const char *msg2;

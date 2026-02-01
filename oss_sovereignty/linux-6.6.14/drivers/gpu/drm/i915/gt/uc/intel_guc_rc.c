@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2021 Intel Corporation
- */
+
+ 
 
 #include <linux/string_helpers.h>
 
@@ -12,7 +10,7 @@
 
 static bool __guc_rc_supported(struct intel_guc *guc)
 {
-	/* GuC RC is unavailable for pre-Gen12 */
+	 
 	return guc->submission_supported &&
 		GRAPHICS_VER(guc_to_gt(guc)->i915) >= 12;
 }

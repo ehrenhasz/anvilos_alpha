@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This file is part of wl18xx
- *
- * Copyright (C) 2011 Texas Instruments Inc.
- */
+
+ 
 
 #include "../wlcore/cmd.h"
 #include "../wlcore/debug.h"
@@ -128,11 +124,7 @@ out:
 
 }
 
-/*
- * this command is basically the same as wl1271_acx_ht_capabilities,
- * with the addition of supported rates. they should be unified in
- * the next fw api change
- */
+ 
 int wl18xx_acx_set_peer_cap(struct wl1271 *wl,
 			    struct ieee80211_sta_ht_cap *ht_cap,
 			    bool allow_ht_operation,
@@ -153,16 +145,13 @@ int wl18xx_acx_set_peer_cap(struct wl1271 *wl,
 	}
 
 	if (allow_ht_operation && ht_cap->ht_supported) {
-		/* no need to translate capabilities - use the spec values */
+		 
 		ht_capabilites = ht_cap->cap;
 
-		/*
-		 * this bit is not employed by the spec but only by FW to
-		 * indicate peer HT support
-		 */
+		 
 		ht_capabilites |= WL12XX_HT_CAP_HT_OPERATION;
 
-		/* get data from A-MPDU parameters field */
+		 
 		acx->ampdu_max_length = ht_cap->ampdu_factor;
 		acx->ampdu_min_spacing = ht_cap->ampdu_density;
 	}
@@ -182,10 +171,7 @@ out:
 	return ret;
 }
 
-/*
- * When the host is suspended, we don't want to get any fast-link/PSM
- * notifications
- */
+ 
 int wl18xx_acx_interrupt_notify_config(struct wl1271 *wl,
 				       bool action)
 {
@@ -210,10 +196,7 @@ out:
 	return ret;
 }
 
-/*
- * When the host is suspended, we can configure the FW to disable RX BA
- * notifications.
- */
+ 
 int wl18xx_acx_rx_ba_filter(struct wl1271 *wl, bool action)
 {
 	struct wl18xx_acx_rx_ba_filter *acx;

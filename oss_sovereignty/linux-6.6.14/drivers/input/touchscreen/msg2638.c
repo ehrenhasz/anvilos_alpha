@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for MStar msg2638 touchscreens
- *
- * Copyright (c) 2021 Vincent Knecht <vincent.knecht@mailoo.org>
- *
- * Checksum and IRQ handler based on mstar_drv_common.c and
- * mstar_drv_mutual_fw_control.c
- * Copyright (c) 2006-2012 MStar Semiconductor, Inc.
- *
- * Driver structure based on zinitix.c by Michael Srba <Michael.Srba@seznam.cz>
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -43,7 +33,7 @@ struct msg_chip_data {
 };
 
 struct msg2138_packet {
-	u8	xy_hi; /* higher bits of x and y coordinates */
+	u8	xy_hi;  
 	u8	x_low;
 	u8	y_low;
 };
@@ -55,7 +45,7 @@ struct msg2138_touch_event {
 };
 
 struct msg2638_packet {
-	u8	xy_hi; /* higher bits of x and y coordinates */
+	u8	xy_hi;  
 	u8	x_low;
 	u8	y_low;
 	u8	pressure;
@@ -94,7 +84,7 @@ static void msg2138_report_keys(struct msg2638_ts_data *msg2638, u8 keys)
 {
 	int i;
 
-	/* keys can be 0x00 or 0xff when all keys have been released */
+	 
 	if (keys == 0xff)
 		keys = 0;
 
@@ -139,7 +129,7 @@ static irqreturn_t msg2138_ts_irq_handler(int irq, void *msg2638_handler)
 	p0 = &touch_event.pkt[0];
 	p1 = &touch_event.pkt[1];
 
-	/* Ignore non-pressed finger data, but check for key code */
+	 
 	if (p0->xy_hi == 0xFF && p0->x_low == 0xFF && p0->y_low == 0xFF) {
 		if (p1->xy_hi == 0xFF && p1->y_low == 0xFF)
 			msg2138_report_keys(msg2638, p1->x_low);
@@ -153,15 +143,15 @@ static irqreturn_t msg2138_ts_irq_handler(int irq, void *msg2638_handler)
 	input_mt_report_slot_state(input, MT_TOOL_FINGER, true);
 	touchscreen_report_pos(input, &msg2638->prop, x, y, true);
 
-	/* Ignore non-pressed finger data */
+	 
 	if (p1->xy_hi == 0xFF && p1->x_low == 0xFF && p1->y_low == 0xFF)
 		goto report;
 
-	/* Second finger is reported as a delta position */
+	 
 	delta_x = ((p1->xy_hi & 0xF0) << 4) | p1->x_low;
 	delta_y = ((p1->xy_hi & 0x0F) << 8) | p1->y_low;
 
-	/* Ignore second finger if both deltas equal 0 */
+	 
 	if (delta_x == 0 && delta_y == 0)
 		goto report;
 
@@ -220,7 +210,7 @@ static irqreturn_t msg2638_ts_irq_handler(int irq, void *msg2638_handler)
 	for (i = 0; i < msg2638->max_fingers; i++) {
 		p = &touch_event.pkt[i];
 
-		/* Ignore non-pressed finger data */
+		 
 		if (p->xy_hi == 0xFF && p->x_low == 0xFF && p->y_low == 0xFF)
 			continue;
 

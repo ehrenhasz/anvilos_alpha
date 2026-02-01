@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Texas Instruments switchdev Driver
- *
- * Copyright (C) 2019 Texas Instruments
- *
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/if_bridge.h>
@@ -153,10 +148,10 @@ static void cpsw_set_pvid(struct cpsw_priv *priv, u16 vid, bool cfi, u32 cos)
 
 		if (cpsw->version == CPSW_VERSION_1)
 			reg = CPSW1_PORT_VLAN;
-		/* no barrier */
+		 
 		slave_write(cpsw->slaves + (priv->emac_port - 1), pvid, reg);
 	} else {
-		/* CPU port */
+		 
 		port_vlan_reg = &cpsw->host_port_regs->port_vlan;
 		writel(pvid, port_vlan_reg);
 	}
@@ -226,9 +221,7 @@ static int cpsw_port_vlan_del(struct cpsw_priv *priv, u16 vid,
 	if (ret != 0)
 		return ret;
 
-	/* We don't care for the return value here, error is returned only if
-	 * the unicast entry is not present
-	 */
+	 
 	if (cpu_port)
 		cpsw_ale_del_ucast(cpsw->ale, priv->mac_addr,
 				   HOST_PORT_NUM, ALE_VLAN, vid);
@@ -236,9 +229,7 @@ static int cpsw_port_vlan_del(struct cpsw_priv *priv, u16 vid,
 	if (vid == cpsw_get_pvid(priv))
 		cpsw_set_pvid(priv, 0, 0, 0);
 
-	/* We don't care for the return value here, error is returned only if
-	 * the multicast entry is not present
-	 */
+	 
 	cpsw_ale_del_mcast(cpsw->ale, priv->ndev->broadcast,
 			   port_mask, ALE_VLAN, vid);
 	dev_dbg(priv->dev, "VID del: %s: vid:%u ports:%X\n",
@@ -425,7 +416,7 @@ static void cpsw_switchdev_event_work(struct work_struct *work)
 	dev_put(priv->ndev);
 }
 
-/* called under rcu_read_lock() */
+ 
 static int cpsw_switchdev_event(struct notifier_block *unused,
 				unsigned long event, void *ptr)
 {

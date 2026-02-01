@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2005 Stephen Street / StreetFire Sound Labs
- * Copyright (C) 2013, 2021 Intel Corporation
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/bitops.h>
@@ -37,13 +34,7 @@ MODULE_ALIAS("platform:pxa2xx-spi");
 
 #define TIMOUT_DFLT		1000
 
-/*
- * For testing SSCR1 changes that require SSP restart, basically
- * everything except the service and interrupt enables, the PXA270 developer
- * manual says only SSCR1_SCFR, SSCR1_SPH, SSCR1_SPO need to be in this
- * list, but the PXA255 developer manual says all bits without really meaning
- * the service and interrupt enables.
- */
+ 
 #define SSCR1_CHANGE_MASK (SSCR1_TTELP | SSCR1_TTE | SSCR1_SCFR \
 				| SSCR1_ECRA | SSCR1_ECRB | SSCR1_SCLKDIR \
 				| SSCR1_SFRMDIR | SSCR1_RWOT | SSCR1_TRAIL \
@@ -75,28 +66,28 @@ MODULE_ALIAS("platform:pxa2xx-spi");
 #define LPSS_PRIV_CLOCK_GATE_CLK_CTL_FORCE_ON 0x3
 
 struct lpss_config {
-	/* LPSS offset from drv_data->ioaddr */
+	 
 	unsigned offset;
-	/* Register offsets from drv_data->lpss_base or -1 */
+	 
 	int reg_general;
 	int reg_ssp;
 	int reg_cs_ctrl;
 	int reg_capabilities;
-	/* FIFO thresholds */
+	 
 	u32 rx_threshold;
 	u32 tx_threshold_lo;
 	u32 tx_threshold_hi;
-	/* Chip select control */
+	 
 	unsigned cs_sel_shift;
 	unsigned cs_sel_mask;
 	unsigned cs_num;
-	/* Quirks */
+	 
 	unsigned cs_clk_stays_gated : 1;
 };
 
-/* Keep these sorted with enum pxa_ssp_type */
+ 
 static const struct lpss_config lpss_platforms[] = {
-	{	/* LPSS_LPT_SSP */
+	{	 
 		.offset = 0x800,
 		.reg_general = 0x08,
 		.reg_ssp = 0x0c,
@@ -106,7 +97,7 @@ static const struct lpss_config lpss_platforms[] = {
 		.tx_threshold_lo = 160,
 		.tx_threshold_hi = 224,
 	},
-	{	/* LPSS_BYT_SSP */
+	{	 
 		.offset = 0x400,
 		.reg_general = 0x08,
 		.reg_ssp = 0x0c,
@@ -116,7 +107,7 @@ static const struct lpss_config lpss_platforms[] = {
 		.tx_threshold_lo = 160,
 		.tx_threshold_hi = 224,
 	},
-	{	/* LPSS_BSW_SSP */
+	{	 
 		.offset = 0x400,
 		.reg_general = 0x08,
 		.reg_ssp = 0x0c,
@@ -129,7 +120,7 @@ static const struct lpss_config lpss_platforms[] = {
 		.cs_sel_mask = 1 << 2,
 		.cs_num = 2,
 	},
-	{	/* LPSS_SPT_SSP */
+	{	 
 		.offset = 0x200,
 		.reg_general = -1,
 		.reg_ssp = 0x20,
@@ -139,7 +130,7 @@ static const struct lpss_config lpss_platforms[] = {
 		.tx_threshold_lo = 32,
 		.tx_threshold_hi = 56,
 	},
-	{	/* LPSS_BXT_SSP */
+	{	 
 		.offset = 0x200,
 		.reg_general = -1,
 		.reg_ssp = 0x20,
@@ -152,7 +143,7 @@ static const struct lpss_config lpss_platforms[] = {
 		.cs_sel_mask = 3 << 8,
 		.cs_clk_stays_gated = true,
 	},
-	{	/* LPSS_CNL_SSP */
+	{	 
 		.offset = 0x200,
 		.reg_general = -1,
 		.reg_ssp = 0x20,
@@ -304,10 +295,7 @@ static u32 pxa2xx_configure_sscr0(const struct driver_data *drv_data,
 	}
 }
 
-/*
- * Read and write LPSS SSP private registers. Caller must first check that
- * is_lpss_ssp() returns true before these can be called.
- */
+ 
 static u32 __lpss_ssp_read_priv(struct driver_data *drv_data, unsigned offset)
 {
 	WARN_ON(!drv_data->lpss_base);
@@ -321,13 +309,7 @@ static void __lpss_ssp_write_priv(struct driver_data *drv_data,
 	writel(value, drv_data->lpss_base + offset);
 }
 
-/*
- * lpss_ssp_setup - perform LPSS SSP specific setup
- * @drv_data: pointer to the driver private data
- *
- * Perform LPSS SSP specific setup. This function must be called first if
- * one is going to use LPSS SSP private registers.
- */
+ 
 static void lpss_ssp_setup(struct driver_data *drv_data)
 {
 	const struct lpss_config *config;
@@ -336,13 +318,13 @@ static void lpss_ssp_setup(struct driver_data *drv_data)
 	config = lpss_get_config(drv_data);
 	drv_data->lpss_base = drv_data->ssp->mmio_base + config->offset;
 
-	/* Enable software chip select control */
+	 
 	value = __lpss_ssp_read_priv(drv_data, config->reg_cs_ctrl);
 	value &= ~(LPSS_CS_CONTROL_SW_MODE | LPSS_CS_CONTROL_CS_HIGH);
 	value |= LPSS_CS_CONTROL_SW_MODE | LPSS_CS_CONTROL_CS_HIGH;
 	__lpss_ssp_write_priv(drv_data, config->reg_cs_ctrl, value);
 
-	/* Enable multiblock DMA transfers */
+	 
 	if (drv_data->controller_info->enable_dma) {
 		__lpss_ssp_write_priv(drv_data, config->reg_ssp, 1);
 
@@ -371,13 +353,7 @@ static void lpss_ssp_select_cs(struct spi_device *spi,
 	cs = spi_get_chipselect(spi, 0);
 	cs <<= config->cs_sel_shift;
 	if (cs != (value & config->cs_sel_mask)) {
-		/*
-		 * When switching another chip select output active the
-		 * output must be selected first and wait 2 ssp_clk cycles
-		 * before changing state to active. Otherwise a short
-		 * glitch will occur on the previous chip select since
-		 * output select is latched but state control is not.
-		 */
+		 
 		value &= ~config->cs_sel_mask;
 		value |= cs;
 		__lpss_ssp_write_priv(drv_data,
@@ -408,12 +384,7 @@ static void lpss_ssp_cs_control(struct spi_device *spi, bool enable)
 	if (config->cs_clk_stays_gated) {
 		u32 clkgate;
 
-		/*
-		 * Changing CS alone when dynamic clock gating is on won't
-		 * actually flip CS at that time. This ruins SPI transfers
-		 * that specify delays, or have no data. Toggle the clock mode
-		 * to force on briefly to poke the CS pin to move.
-		 */
+		 
 		clkgate = __lpss_ssp_read_priv(drv_data, LPSS_PRIV_CLOCK_GATE);
 		value = (clkgate & ~LPSS_PRIV_CLOCK_GATE_CLK_CTL_MASK) |
 			LPSS_PRIV_CLOCK_GATE_CLK_CTL_FORCE_ON;
@@ -446,7 +417,7 @@ static void cs_deassert(struct spi_device *spi)
 	if (drv_data->ssp_type == CE4100_SSP)
 		return;
 
-	/* Wait until SSP becomes idle before deasserting the CS */
+	 
 	timeout = jiffies + msecs_to_jiffies(10);
 	while (pxa2xx_spi_read(drv_data, SSSR) & SSSR_BSY &&
 	       !time_after(jiffies, timeout))
@@ -479,7 +450,7 @@ int pxa2xx_spi_flush(struct driver_data *drv_data)
 
 static void pxa2xx_spi_off(struct driver_data *drv_data)
 {
-	/* On MMP, disabling SSE seems to corrupt the Rx FIFO */
+	 
 	if (is_mmp2_ssp(drv_data))
 		return;
 
@@ -607,7 +578,7 @@ static void reset_sccr1(struct driver_data *drv_data)
 
 static void int_stop_and_reset(struct driver_data *drv_data)
 {
-	/* Clear and disable interrupts */
+	 
 	write_SSSR_CS(drv_data, drv_data->clear_sr);
 	reset_sccr1(drv_data);
 	if (pxa25x_ssp_comp(drv_data))
@@ -661,7 +632,7 @@ static irqreturn_t interrupt_transfer(struct driver_data *drv_data)
 		}
 	}
 
-	/* Drain Rx FIFO, Fill Tx FIFO and prevent overruns */
+	 
 	do {
 		if (drv_data->read(drv_data)) {
 			int_transfer_complete(drv_data);
@@ -681,10 +652,7 @@ static irqreturn_t interrupt_transfer(struct driver_data *drv_data)
 		sccr1_reg = pxa2xx_spi_read(drv_data, SSCR1);
 		sccr1_reg &= ~SSCR1_TIE;
 
-		/*
-		 * PXA25x_SSP has no timeout, set up Rx threshold for
-		 * the remaining Rx bytes.
-		 */
+		 
 		if (pxa25x_ssp_comp(drv_data)) {
 			u32 rx_thre;
 
@@ -709,7 +677,7 @@ static irqreturn_t interrupt_transfer(struct driver_data *drv_data)
 		pxa2xx_spi_write(drv_data, SSCR1, sccr1_reg);
 	}
 
-	/* We did something */
+	 
 	return IRQ_HANDLED;
 }
 
@@ -728,32 +696,22 @@ static irqreturn_t ssp_int(int irq, void *dev_id)
 	u32 mask = drv_data->mask_sr;
 	u32 status;
 
-	/*
-	 * The IRQ might be shared with other peripherals so we must first
-	 * check that are we RPM suspended or not. If we are we assume that
-	 * the IRQ was not for us (we shouldn't be RPM suspended when the
-	 * interrupt is enabled).
-	 */
+	 
 	if (pm_runtime_suspended(drv_data->ssp->dev))
 		return IRQ_NONE;
 
-	/*
-	 * If the device is not yet in RPM suspended state and we get an
-	 * interrupt that is meant for another device, check if status bits
-	 * are all set to one. That means that the device is already
-	 * powered off.
-	 */
+	 
 	status = pxa2xx_spi_read(drv_data, SSSR);
 	if (status == ~0)
 		return IRQ_NONE;
 
 	sccr1_reg = pxa2xx_spi_read(drv_data, SSCR1);
 
-	/* Ignore possible writes if we don't need to write */
+	 
 	if (!(sccr1_reg & SSCR1_TIE))
 		mask &= ~SSSR_TFS;
 
-	/* Ignore RX timeout interrupt if it is disabled */
+	 
 	if (!(sccr1_reg & SSCR1_TINTE))
 		mask &= ~SSSR_TINT;
 
@@ -765,125 +723,89 @@ static irqreturn_t ssp_int(int irq, void *dev_id)
 
 	if (!drv_data->controller->cur_msg) {
 		handle_bad_msg(drv_data);
-		/* Never fail */
+		 
 		return IRQ_HANDLED;
 	}
 
 	return drv_data->transfer_handler(drv_data);
 }
 
-/*
- * The Quark SPI has an additional 24 bit register (DDS_CLK_RATE) to multiply
- * input frequency by fractions of 2^24. It also has a divider by 5.
- *
- * There are formulas to get baud rate value for given input frequency and
- * divider parameters, such as DDS_CLK_RATE and SCR:
- *
- * Fsys = 200MHz
- *
- * Fssp = Fsys * DDS_CLK_RATE / 2^24			(1)
- * Baud rate = Fsclk = Fssp / (2 * (SCR + 1))		(2)
- *
- * DDS_CLK_RATE either 2^n or 2^n / 5.
- * SCR is in range 0 .. 255
- *
- * Divisor = 5^i * 2^j * 2 * k
- *       i = [0, 1]      i = 1 iff j = 0 or j > 3
- *       j = [0, 23]     j = 0 iff i = 1
- *       k = [1, 256]
- * Special case: j = 0, i = 1: Divisor = 2 / 5
- *
- * Accordingly to the specification the recommended values for DDS_CLK_RATE
- * are:
- *	Case 1:		2^n, n = [0, 23]
- *	Case 2:		2^24 * 2 / 5 (0x666666)
- *	Case 3:		less than or equal to 2^24 / 5 / 16 (0x33333)
- *
- * In all cases the lowest possible value is better.
- *
- * The function calculates parameters for all cases and chooses the one closest
- * to the asked baud rate.
- */
+ 
 static unsigned int quark_x1000_get_clk_div(int rate, u32 *dds)
 {
 	unsigned long xtal = 200000000;
-	unsigned long fref = xtal / 2;		/* mandatory division by 2,
-						   see (2) */
-						/* case 3 */
-	unsigned long fref1 = fref / 2;		/* case 1 */
-	unsigned long fref2 = fref * 2 / 5;	/* case 2 */
+	unsigned long fref = xtal / 2;		 
+						 
+	unsigned long fref1 = fref / 2;		 
+	unsigned long fref2 = fref * 2 / 5;	 
 	unsigned long scale;
 	unsigned long q, q1, q2;
 	long r, r1, r2;
 	u32 mul;
 
-	/* Case 1 */
+	 
 
-	/* Set initial value for DDS_CLK_RATE */
+	 
 	mul = (1 << 24) >> 1;
 
-	/* Calculate initial quot */
+	 
 	q1 = DIV_ROUND_UP(fref1, rate);
 
-	/* Scale q1 if it's too big */
+	 
 	if (q1 > 256) {
-		/* Scale q1 to range [1, 512] */
+		 
 		scale = fls_long(q1 - 1);
 		if (scale > 9) {
 			q1 >>= scale - 9;
 			mul >>= scale - 9;
 		}
 
-		/* Round the result if we have a remainder */
+		 
 		q1 += q1 & 1;
 	}
 
-	/* Decrease DDS_CLK_RATE as much as we can without loss in precision */
+	 
 	scale = __ffs(q1);
 	q1 >>= scale;
 	mul >>= scale;
 
-	/* Get the remainder */
+	 
 	r1 = abs(fref1 / (1 << (24 - fls_long(mul))) / q1 - rate);
 
-	/* Case 2 */
+	 
 
 	q2 = DIV_ROUND_UP(fref2, rate);
 	r2 = abs(fref2 / q2 - rate);
 
-	/*
-	 * Choose the best between two: less remainder we have the better. We
-	 * can't go case 2 if q2 is greater than 256 since SCR register can
-	 * hold only values 0 .. 255.
-	 */
+	 
 	if (r2 >= r1 || q2 > 256) {
-		/* case 1 is better */
+		 
 		r = r1;
 		q = q1;
 	} else {
-		/* case 2 is better */
+		 
 		r = r2;
 		q = q2;
 		mul = (1 << 24) * 2 / 5;
 	}
 
-	/* Check case 3 only if the divisor is big enough */
+	 
 	if (fref / rate >= 80) {
 		u64 fssp;
 		u32 m;
 
-		/* Calculate initial quot */
+		 
 		q1 = DIV_ROUND_UP(fref, rate);
 		m = (1 << 24) / q1;
 
-		/* Get the remainder */
+		 
 		fssp = (u64)fref * m;
 		do_div(fssp, 1 << 24);
 		r1 = abs(fssp - rate);
 
-		/* Choose this one if it suits better */
+		 
 		if (r1 < r) {
-			/* case 3 is better */
+			 
 			q = 1;
 			mul = m;
 		}
@@ -900,10 +822,7 @@ static unsigned int ssp_get_clk_div(struct driver_data *drv_data, int rate)
 
 	rate = min_t(int, ssp_clk, rate);
 
-	/*
-	 * Calculate the divisor for the SCR (Serial Clock Rate), avoiding
-	 * that the SSP transmission rate can be greater than the device rate.
-	 */
+	 
 	if (ssp->type == PXA25x_SSP || ssp->type == CE4100_SSP)
 		return (DIV_ROUND_UP(ssp_clk, 2 * rate) - 1) & 0xff;
 	else
@@ -957,10 +876,10 @@ static int pxa2xx_spi_transfer_one(struct spi_controller *controller,
 	int err;
 	int dma_mapped;
 
-	/* Check if we can DMA this transfer */
+	 
 	if (transfer->len > MAX_DMA_LEN && chip->enable_dma) {
 
-		/* Reject already-mapped transfers; PIO won't always work */
+		 
 		if (message->is_dma_mapped
 				|| transfer->rx_dma || transfer->tx_dma) {
 			dev_err(&spi->dev,
@@ -969,13 +888,13 @@ static int pxa2xx_spi_transfer_one(struct spi_controller *controller,
 			return -EINVAL;
 		}
 
-		/* Warn ... we force this to PIO mode */
+		 
 		dev_warn_ratelimited(&spi->dev,
 				     "DMA disabled for transfer length %u greater than %d\n",
 				     transfer->len, MAX_DMA_LEN);
 	}
 
-	/* Setup the transfer state based on the type of transfer */
+	 
 	if (pxa2xx_spi_flush(drv_data) == 0) {
 		dev_err(&spi->dev, "Flush failed\n");
 		return -EIO;
@@ -985,7 +904,7 @@ static int pxa2xx_spi_transfer_one(struct spi_controller *controller,
 	drv_data->rx = transfer->rx_buf;
 	drv_data->rx_end = drv_data->rx + transfer->len;
 
-	/* Change speed and bit per word on a per transfer */
+	 
 	bits = transfer->bits_per_word;
 	speed = transfer->speed_hz;
 
@@ -1004,10 +923,7 @@ static int pxa2xx_spi_transfer_one(struct spi_controller *controller,
 		drv_data->read = drv_data->rx ? u32_reader : null_reader;
 		drv_data->write = drv_data->tx ? u32_writer : null_writer;
 	}
-	/*
-	 * If bits per word is changed in DMA mode, then must check
-	 * the thresholds and burst also.
-	 */
+	 
 	if (chip->enable_dma) {
 		if (pxa2xx_spi_set_dma_burst_and_threshold(chip,
 						spi,
@@ -1022,28 +938,28 @@ static int pxa2xx_spi_transfer_one(struct spi_controller *controller,
 		     controller->cur_msg_mapped;
 	if (dma_mapped) {
 
-		/* Ensure we have the correct interrupt handler */
+		 
 		drv_data->transfer_handler = pxa2xx_spi_dma_transfer;
 
 		err = pxa2xx_spi_dma_prepare(drv_data, transfer);
 		if (err)
 			return err;
 
-		/* Clear status and start DMA engine */
+		 
 		cr1 = chip->cr1 | dma_thresh | drv_data->dma_cr1;
 		pxa2xx_spi_write(drv_data, SSSR, drv_data->clear_sr);
 
 		pxa2xx_spi_dma_start(drv_data);
 	} else {
-		/* Ensure we have the correct interrupt handler	*/
+		 
 		drv_data->transfer_handler = interrupt_transfer;
 
-		/* Clear status  */
+		 
 		cr1 = chip->cr1 | chip->threshold | drv_data->int_cr1;
 		write_SSSR_CS(drv_data, drv_data->clear_sr);
 	}
 
-	/* NOTE:  PXA25x_SSP _could_ use external clocking ... */
+	 
 	cr0 = pxa2xx_configure_sscr0(drv_data, clk_div, bits);
 	if (!pxa25x_ssp_comp(drv_data))
 		dev_dbg(&spi->dev, "%u Hz actual, %s\n",
@@ -1074,27 +990,27 @@ static int pxa2xx_spi_transfer_one(struct spi_controller *controller,
 	if (is_quark_x1000_ssp(drv_data))
 		pxa2xx_spi_update(drv_data, DDS_RATE, GENMASK(23, 0), chip->dds_rate);
 
-	/* Stop the SSP */
+	 
 	if (!is_mmp2_ssp(drv_data))
 		pxa_ssp_disable(drv_data->ssp);
 
 	if (!pxa25x_ssp_comp(drv_data))
 		pxa2xx_spi_write(drv_data, SSTO, chip->timeout);
 
-	/* First set CR1 without interrupt and service enables */
+	 
 	pxa2xx_spi_update(drv_data, SSCR1, change_mask, cr1);
 
-	/* See if we need to reload the configuration registers */
+	 
 	pxa2xx_spi_update(drv_data, SSCR0, GENMASK(31, 0), cr0);
 
-	/* Restart the SSP */
+	 
 	pxa_ssp_enable(drv_data->ssp);
 
 	if (is_mmp2_ssp(drv_data)) {
 		u8 tx_level = read_SSSR_bits(drv_data, SSSR_TFL_MASK) >> 8;
 
 		if (tx_level) {
-			/* On MMP2, flipping SSE doesn't to empty Tx FIFO. */
+			 
 			dev_warn(&spi->dev, "%u bytes of garbage in Tx FIFO!\n", tx_level);
 			if (tx_level > transfer->len)
 				tx_level = transfer->len;
@@ -1112,10 +1028,7 @@ static int pxa2xx_spi_transfer_one(struct spi_controller *controller,
 		}
 	}
 
-	/*
-	 * Release the data by enabling service requests and interrupts,
-	 * without changing any mode bits.
-	 */
+	 
 	pxa2xx_spi_write(drv_data, SSCR1, cr1);
 
 	return 1;
@@ -1137,16 +1050,10 @@ static void pxa2xx_spi_handle_err(struct spi_controller *controller,
 
 	int_stop_and_reset(drv_data);
 
-	/* Disable the SSP */
+	 
 	pxa2xx_spi_off(drv_data);
 
-	/*
-	 * Stop the DMA if running. Note DMA callback handler may have unset
-	 * the dma_running already, which is fine as stopping is not needed
-	 * then but we shouldn't rely this flag for anything else than
-	 * stopping. For instance to differentiate between PIO and DMA
-	 * transfers.
-	 */
+	 
 	if (atomic_read(&drv_data->dma_running))
 		pxa2xx_spi_dma_stop(drv_data);
 }
@@ -1155,7 +1062,7 @@ static int pxa2xx_spi_unprepare_transfer(struct spi_controller *controller)
 {
 	struct driver_data *drv_data = spi_controller_get_devdata(controller);
 
-	/* Disable the SSP now */
+	 
 	pxa2xx_spi_off(drv_data);
 
 	return 0;
@@ -1209,7 +1116,7 @@ static int setup(struct spi_device *spi)
 		break;
 	}
 
-	/* Only allocate on the first setup */
+	 
 	chip = spi_get_ctldata(spi);
 	if (!chip) {
 		chip = kzalloc(sizeof(struct chip_data), GFP_KERNEL);
@@ -1228,13 +1135,10 @@ static int setup(struct spi_device *spi)
 		chip->timeout = TIMOUT_DFLT;
 	}
 
-	/*
-	 * Protocol drivers may change the chip settings, so...
-	 * if chip_info exists, use it.
-	 */
+	 
 	chip_info = spi->controller_data;
 
-	/* chip_info isn't always needed */
+	 
 	if (chip_info) {
 		if (chip_info->timeout)
 			chip->timeout = chip_info->timeout;
@@ -1266,13 +1170,9 @@ static int setup(struct spi_device *spi)
 		chip->lpss_tx_threshold = tx_thres;
 	}
 
-	/*
-	 * Set DMA burst and threshold outside of chip_info path so that if
-	 * chip_info goes away after setting chip->enable_dma, the burst and
-	 * threshold can still respond to changes in bits_per_word.
-	 */
+	 
 	if (chip->enable_dma) {
-		/* Set up legal burst and threshold for DMA */
+		 
 		if (pxa2xx_spi_set_dma_burst_and_threshold(chip, spi,
 						spi->bits_per_word,
 						&chip->dma_burst_size,
@@ -1355,7 +1255,7 @@ pxa2xx_spi_init_pdata(struct platform_device *pdev)
 		type = (enum pxa_ssp_type)value;
 	}
 
-	/* Validate the SSP type correctness */
+	 
 	if (!(type > SSP_UNDEFINED && type < SSP_MAX))
 		return ERR_PTR(-EINVAL);
 
@@ -1371,7 +1271,7 @@ pxa2xx_spi_init_pdata(struct platform_device *pdev)
 
 	ssp->phys_base = res->start;
 
-	/* Platforms with iDMA 64-bit */
+	 
 	if (is_lpss_priv) {
 		pdata->tx_param = parent;
 		pdata->rx_param = parent;
@@ -1410,11 +1310,7 @@ static int pxa2xx_spi_fw_translate_cs(struct spi_controller *controller,
 
 	if (has_acpi_companion(drv_data->ssp->dev)) {
 		switch (drv_data->ssp_type) {
-		/*
-		 * For Atoms the ACPI DeviceSelection used by the Windows
-		 * driver starts from 1 instead of 0 so translate it here
-		 * to match what Linux expects.
-		 */
+		 
 		case LPSS_BYT_SSP:
 		case LPSS_BSW_SSP:
 			return cs - 1;
@@ -1478,7 +1374,7 @@ static int pxa2xx_spi_probe(struct platform_device *pdev)
 
 	device_set_node(&controller->dev, dev_fwnode(dev));
 
-	/* The spi->mode bits understood by this driver: */
+	 
 	controller->mode_bits = SPI_CPOL | SPI_CPHA | SPI_CS_HIGH | SPI_LOOP;
 
 	controller->bus_num = ssp->port_id;
@@ -1526,7 +1422,7 @@ static int pxa2xx_spi_probe(struct platform_device *pdev)
 		goto out_error_controller_alloc;
 	}
 
-	/* Setup DMA if requested */
+	 
 	if (platform_info->enable_dma) {
 		status = pxa2xx_spi_dma_setup(drv_data);
 		if (status) {
@@ -1540,16 +1436,13 @@ static int pxa2xx_spi_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Enable SOC clock */
+	 
 	status = clk_prepare_enable(ssp->clk);
 	if (status)
 		goto out_error_dma_irq_alloc;
 
 	controller->max_speed_hz = clk_get_rate(ssp->clk);
-	/*
-	 * Set minimum speed for all other platforms than Intel Quark which is
-	 * able do under 1 Hz transfers.
-	 */
+	 
 	if (!pxa25x_ssp_comp(drv_data))
 		controller->min_speed_hz =
 			DIV_ROUND_UP(controller->max_speed_hz, 4096);
@@ -1559,14 +1452,14 @@ static int pxa2xx_spi_probe(struct platform_device *pdev)
 
 	pxa_ssp_disable(ssp);
 
-	/* Load default SSP configuration */
+	 
 	switch (drv_data->ssp_type) {
 	case QUARK_X1000_SSP:
 		tmp = QUARK_X1000_SSCR1_RxTresh(RX_THRESH_QUARK_X1000_DFLT) |
 		      QUARK_X1000_SSCR1_TxTresh(TX_THRESH_QUARK_X1000_DFLT);
 		pxa2xx_spi_write(drv_data, SSCR1, tmp);
 
-		/* Using the Motorola SPI protocol and use 8 bit frame */
+		 
 		tmp = QUARK_X1000_SSCR0_Motorola | QUARK_X1000_SSCR0_DataSize(8);
 		pxa2xx_spi_write(drv_data, SSCR0, tmp);
 		break;
@@ -1634,7 +1527,7 @@ static int pxa2xx_spi_probe(struct platform_device *pdev)
 	pm_runtime_set_active(&pdev->dev);
 	pm_runtime_enable(&pdev->dev);
 
-	/* Register with the SPI framework */
+	 
 	platform_set_drvdata(pdev, drv_data);
 	status = spi_register_controller(controller);
 	if (status) {
@@ -1668,21 +1561,21 @@ static void pxa2xx_spi_remove(struct platform_device *pdev)
 
 	spi_unregister_controller(drv_data->controller);
 
-	/* Disable the SSP at the peripheral and SOC level */
+	 
 	pxa_ssp_disable(ssp);
 	clk_disable_unprepare(ssp->clk);
 
-	/* Release DMA */
+	 
 	if (drv_data->controller_info->enable_dma)
 		pxa2xx_spi_dma_release(drv_data);
 
 	pm_runtime_put_noidle(&pdev->dev);
 	pm_runtime_disable(&pdev->dev);
 
-	/* Release IRQ */
+	 
 	free_irq(ssp->irq, drv_data);
 
-	/* Release SSP */
+	 
 	pxa_ssp_free(ssp);
 }
 
@@ -1710,14 +1603,14 @@ static int pxa2xx_spi_resume(struct device *dev)
 	struct ssp_device *ssp = drv_data->ssp;
 	int status;
 
-	/* Enable the SSP clock */
+	 
 	if (!pm_runtime_suspended(dev)) {
 		status = clk_prepare_enable(ssp->clk);
 		if (status)
 			return status;
 	}
 
-	/* Start the queue running */
+	 
 	return spi_controller_resume(drv_data->controller);
 }
 

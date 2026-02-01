@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "../dmub_srv.h"
 #include "dmub_dcn20.h"
@@ -37,37 +14,33 @@
 #include "dmub_dcn316.h"
 #include "dmub_dcn32.h"
 #include "os_types.h"
-/*
- * Note: the DMUB service is standalone. No additional headers should be
- * added below or above this line unless they reside within the DMUB
- * folder.
- */
+ 
 
-/* Alignment for framebuffer memory. */
+ 
 #define DMUB_FB_ALIGNMENT (1024 * 1024)
 
-/* Stack size. */
+ 
 #define DMUB_STACK_SIZE (128 * 1024)
 
-/* Context size. */
+ 
 #define DMUB_CONTEXT_SIZE (512 * 1024)
 
-/* Mailbox size : Ring buffers are required for both inbox and outbox */
+ 
 #define DMUB_MAILBOX_SIZE ((2 * DMUB_RB_SIZE))
 
-/* Default state size if meta is absent. */
+ 
 #define DMUB_FW_STATE_SIZE (64 * 1024)
 
-/* Default tracebuffer size if meta is absent. */
+ 
 #define DMUB_TRACE_BUFFER_SIZE (64 * 1024)
 
 
-/* Default scratch mem size. */
+ 
 #define DMUB_SCRATCH_MEM_SIZE (256)
 
-/* Number of windows in use. */
+ 
 #define DMUB_NUM_WINDOWS (DMUB_WINDOW_TOTAL)
-/* Base addresses. */
+ 
 
 #define DMUB_CW0_BASE (0x60000000)
 #define DMUB_CW1_BASE (0x61000000)
@@ -89,16 +62,13 @@ void dmub_flush_buffer_mem(const struct dmub_fb *fb)
 	uint8_t buf[64];
 	uint32_t pos, end;
 
-	/**
-	 * Read 64-byte chunks since we don't want to store a
-	 * large temporary buffer for this purpose.
-	 */
+	 
 	end = fb->size / sizeof(buf) * sizeof(buf);
 
 	for (pos = 0; pos < end; pos += sizeof(buf))
 		dmub_memcpy(buf, base + pos, sizeof(buf));
 
-	/* Read anything leftover into the buffer. */
+	 
 	if (end < fb->size)
 		dmub_memcpy(buf, base + pos, fb->size - end);
 }
@@ -129,12 +99,12 @@ dmub_get_fw_meta_info(const struct dmub_srv_region_params *params)
 	const struct dmub_fw_meta_info *info = NULL;
 
 	if (params->fw_bss_data && params->bss_data_size) {
-		/* Legacy metadata region. */
+		 
 		info = dmub_get_fw_meta_info_from_blob(params->fw_bss_data,
 						       params->bss_data_size,
 						       DMUB_FW_META_OFFSET);
 	} else if (params->fw_inst_const && params->inst_const_size) {
-		/* Combined metadata region - can be aligned to 16-bytes. */
+		 
 		uint32_t i;
 
 		for (i = 0; i < 16; ++i) {
@@ -180,12 +150,12 @@ static bool dmub_srv_hw_setup(struct dmub_srv *dmub, enum dmub_asic asic)
 		funcs->skip_dmub_panel_power_sequence = dmub_dcn20_skip_dmub_panel_power_sequence;
 		funcs->get_current_time = dmub_dcn20_get_current_time;
 
-		// Out mailbox register access functions for RN and above
+		 
 		funcs->setup_out_mailbox = dmub_dcn20_setup_out_mailbox;
 		funcs->get_outbox1_wptr = dmub_dcn20_get_outbox1_wptr;
 		funcs->set_outbox1_rptr = dmub_dcn20_set_outbox1_rptr;
 
-		//outbox0 call stacks
+		 
 		funcs->setup_outbox0 = dmub_dcn20_setup_outbox0;
 		funcs->get_outbox0_wptr = dmub_dcn20_get_outbox0_wptr;
 		funcs->set_outbox0_rptr = dmub_dcn20_set_outbox0_rptr;
@@ -258,7 +228,7 @@ static bool dmub_srv_hw_setup(struct dmub_srv *dmub, enum dmub_asic asic)
 		funcs->get_fw_boot_option = dmub_dcn31_get_fw_boot_option;
 		funcs->enable_dmub_boot_options = dmub_dcn31_enable_dmub_boot_options;
 		funcs->skip_dmub_panel_power_sequence = dmub_dcn31_skip_dmub_panel_power_sequence;
-		//outbox0 call stacks
+		 
 		funcs->setup_outbox0 = dmub_dcn31_setup_outbox0;
 		funcs->get_outbox0_wptr = dmub_dcn31_get_outbox0_wptr;
 		funcs->set_outbox0_rptr = dmub_dcn31_set_outbox0_rptr;
@@ -298,7 +268,7 @@ static bool dmub_srv_hw_setup(struct dmub_srv *dmub, enum dmub_asic asic)
 		funcs->enable_dmub_boot_options = dmub_dcn32_enable_dmub_boot_options;
 		funcs->skip_dmub_panel_power_sequence = dmub_dcn32_skip_dmub_panel_power_sequence;
 
-		/* outbox0 call stacks */
+		 
 		funcs->setup_outbox0 = dmub_dcn32_setup_outbox0;
 		funcs->get_outbox0_wptr = dmub_dcn32_get_outbox0_wptr;
 		funcs->set_outbox0_rptr = dmub_dcn32_set_outbox0_rptr;
@@ -327,13 +297,13 @@ enum dmub_status dmub_srv_create(struct dmub_srv *dmub,
 	dmub->fw_version = params->fw_version;
 	dmub->is_virtual = params->is_virtual;
 
-	/* Setup asic dependent hardware funcs. */
+	 
 	if (!dmub_srv_hw_setup(dmub, params->asic)) {
 		status = DMUB_STATUS_INVALID;
 		goto cleanup;
 	}
 
-	/* Override (some) hardware funcs based on user params. */
+	 
 	if (params->hw_funcs) {
 		if (params->hw_funcs->emul_get_inbox1_rptr)
 			dmub->hw_funcs.emul_get_inbox1_rptr =
@@ -348,7 +318,7 @@ enum dmub_status dmub_srv_create(struct dmub_srv *dmub,
 				params->hw_funcs->is_supported;
 	}
 
-	/* Sanity checks for required hw func pointers. */
+	 
 	if (!dmub->hw_funcs.get_inbox1_rptr ||
 	    !dmub->hw_funcs.set_inbox1_wptr) {
 		status = DMUB_STATUS_INVALID;
@@ -400,10 +370,7 @@ dmub_srv_calc_region_info(struct dmub_srv *dmub,
 	data->base = dmub_align(inst->top, 256);
 	data->top = data->base + params->bss_data_size;
 
-	/*
-	 * All cache windows below should be aligned to the size
-	 * of the DMCUB cache line, 64 bytes.
-	 */
+	 
 
 	stack->base = dmub_align(data->top, 256);
 	stack->top = stack->base + DMUB_STACK_SIZE + DMUB_CONTEXT_SIZE;
@@ -427,13 +394,7 @@ dmub_srv_calc_region_info(struct dmub_srv *dmub,
 		fw_state_size = fw_info->fw_region_size;
 		trace_buffer_size = fw_info->trace_buffer_size;
 
-		/**
-		 * If DM didn't fill in a version, then fill it in based on
-		 * the firmware meta now that we have it.
-		 *
-		 * TODO: Make it easier for driver to extract this out to
-		 * pass during creation.
-		 */
+		 
 		if (dmub->fw_version == 0)
 			dmub->fw_version = fw_info->fw_version;
 	}
@@ -556,7 +517,7 @@ enum dmub_status dmub_srv_hw_init(struct dmub_srv *dmub,
 	if (dmub->hw_funcs.reset)
 		dmub->hw_funcs.reset(dmub);
 
-	/* reset the cache of the last wptr as well now that hw is reset */
+	 
 	dmub->inbox1_last_wptr = 0;
 
 	cw0.offset.quad_part = inst_fb->gpu_addr;
@@ -571,11 +532,7 @@ enum dmub_status dmub_srv_hw_init(struct dmub_srv *dmub,
 		dmub->hw_funcs.configure_dmub_in_system_memory(dmub);
 
 	if (params->load_inst_const && dmub->hw_funcs.backdoor_load) {
-		/**
-		 * Read back all the instruction memory so we don't hang the
-		 * DMCUB when backdoor loading if the write from x86 hasn't been
-		 * flushed yet. This only occurs in backdoor loading.
-		 */
+		 
 		dmub_flush_buffer_mem(inst_fb);
 
 		if (params->fw_in_system_memory && dmub->hw_funcs.backdoor_load_zfb_mode)
@@ -596,13 +553,7 @@ enum dmub_status dmub_srv_hw_init(struct dmub_srv *dmub,
 	cw4.region.base = DMUB_CW4_BASE;
 	cw4.region.top = cw4.region.base + mail_fb->size;
 
-	/**
-	 * Doubled the mailbox region to accomodate inbox and outbox.
-	 * Note: Currently, currently total mailbox size is 16KB. It is split
-	 * equally into 8KB between inbox and outbox. If this config is
-	 * changed, then uncached base address configuration of outbox1
-	 * has to be updated in funcs->setup_out_mailbox.
-	 */
+	 
 	inbox1.base = cw4.region.base;
 	inbox1.top = cw4.region.base + DMUB_RB_SIZE;
 	outbox1.base = inbox1.top;
@@ -640,7 +591,7 @@ enum dmub_status dmub_srv_hw_init(struct dmub_srv *dmub,
 	rb_params.capacity = DMUB_RB_SIZE;
 	dmub_rb_init(&dmub->inbox1_rb, &rb_params);
 
-	// Initialize outbox1 ring buffer
+	
 	rb_params.ctx = dmub;
 	rb_params.base_address = (void *) ((uint8_t *) (mail_fb->cpu_addr) + DMUB_RB_SIZE);
 	rb_params.capacity = DMUB_RB_SIZE;
@@ -652,7 +603,7 @@ enum dmub_status dmub_srv_hw_init(struct dmub_srv *dmub,
 	outbox0_rb_params.capacity = tracebuff_fb->size - dmub_align(TRACE_BUFFER_ENTRY_OFFSET, 64);
 	dmub_rb_init(&dmub->outbox0_rb, &outbox0_rb_params);
 
-	/* Report to DMUB what features are supported by current driver */
+	 
 	if (dmub->hw_funcs.enable_dmub_boot_options)
 		dmub->hw_funcs.enable_dmub_boot_options(dmub, params);
 
@@ -697,7 +648,7 @@ enum dmub_status dmub_srv_hw_reset(struct dmub_srv *dmub)
 	if (dmub->hw_funcs.reset)
 		dmub->hw_funcs.reset(dmub);
 
-	/* mailboxes have been reset in hw, so reset the sw state as well */
+	 
 	dmub->inbox1_last_wptr = 0;
 	dmub->inbox1_rb.wrpt = 0;
 	dmub->inbox1_rb.rptr = 0;
@@ -735,11 +686,7 @@ enum dmub_status dmub_srv_cmd_execute(struct dmub_srv *dmub)
 	if (!dmub->hw_init)
 		return DMUB_STATUS_INVALID;
 
-	/**
-	 * Read back all the queued commands to ensure that they've
-	 * been flushed to framebuffer memory. Otherwise DMCUB might
-	 * read back stale, fully invalid or partially invalid data.
-	 */
+	 
 	flush_rb = dmub->inbox1_rb;
 	flush_rb.rptr = dmub->inbox1_last_wptr;
 	dmub_rb_flush_pending(&flush_rb);
@@ -906,25 +853,25 @@ enum dmub_status dmub_srv_cmd_with_reply_data(struct dmub_srv *dmub,
 {
 	enum dmub_status status = DMUB_STATUS_OK;
 
-	// Queue command
+	
 	status = dmub_srv_cmd_queue(dmub, cmd);
 
 	if (status != DMUB_STATUS_OK)
 		return status;
 
-	// Execute command
+	
 	status = dmub_srv_cmd_execute(dmub);
 
 	if (status != DMUB_STATUS_OK)
 		return status;
 
-	// Wait for DMUB to process command
+	
 	status = dmub_srv_wait_for_idle(dmub, 100000);
 
 	if (status != DMUB_STATUS_OK)
 		return status;
 
-	// Copy data back from ring buffer into command
+	
 	dmub_rb_get_return_data(&dmub->inbox1_rb, cmd);
 
 	return status;
@@ -942,7 +889,7 @@ static inline bool dmub_rb_out_trace_buffer_front(struct dmub_rb *rb,
 		return false;
 
 	loop_count = sizeof(struct dmcub_trace_buf_entry) / sizeof(uint64_t);
-	// copying data
+	
 	for (i = 0; i < loop_count; i++)
 		*dst++ = *src++;
 

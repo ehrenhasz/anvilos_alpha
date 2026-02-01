@@ -1,8 +1,8 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define DISABLE_BRANCH_PROFILING
 #define pr_fmt(fmt) "kasan: " fmt
 
-/* cpu_feature_enabled() cannot be used this early */
+ 
 #define USE_EARLY_PGTABLE_L5
 
 #include <linux/memblock.h>
@@ -169,15 +169,12 @@ static void __init clear_pgds(unsigned long start,
 			unsigned long end)
 {
 	pgd_t *pgd;
-	/* See comment in kasan_init() */
+	 
 	unsigned long pgd_end = end & PGDIR_MASK;
 
 	for (; start < pgd_end; start += PGDIR_SIZE) {
 		pgd = pgd_offset_k(start);
-		/*
-		 * With folded p4d, pgd_clear() is nop, use p4d_clear()
-		 * instead.
-		 */
+		 
 		if (pgtable_l5_enabled())
 			pgd_clear(pgd);
 		else
@@ -230,7 +227,7 @@ static void __init kasan_early_p4d_populate(pgd_t *pgd,
 
 static void __init kasan_map_early_shadow(pgd_t *pgd)
 {
-	/* See comment in kasan_init() */
+	 
 	unsigned long addr = KASAN_SHADOW_START & PGDIR_MASK;
 	unsigned long end = KASAN_SHADOW_END;
 	unsigned long next;
@@ -277,10 +274,7 @@ static void __init kasan_shallow_populate_pgds(void *start, void *end)
 			pgd_populate(&init_mm, pgd, p);
 		}
 
-		/*
-		 * we need to populate p4ds to be synced when running in
-		 * four level mode - see sync_global_pgds_l4()
-		 */
+		 
 		kasan_shallow_populate_p4ds(pgd, addr, next);
 	} while (pgd++, addr = next, addr != (unsigned long)end);
 }
@@ -294,7 +288,7 @@ void __init kasan_early_init(void)
 	pudval_t pud_val = __pa_nodebug(kasan_early_shadow_pmd) | _KERNPG_TABLE;
 	p4dval_t p4d_val = __pa_nodebug(kasan_early_shadow_pud) | _KERNPG_TABLE;
 
-	/* Mask out unsupported __PAGE_KERNEL bits: */
+	 
 	pte_val &= __default_kernel_pte_mask;
 	pmd_val &= __default_kernel_pte_mask;
 	pud_val &= __default_kernel_pte_mask;
@@ -346,19 +340,7 @@ void __init kasan_init(void)
 
 	memcpy(early_top_pgt, init_top_pgt, sizeof(early_top_pgt));
 
-	/*
-	 * We use the same shadow offset for 4- and 5-level paging to
-	 * facilitate boot-time switching between paging modes.
-	 * As result in 5-level paging mode KASAN_SHADOW_START and
-	 * KASAN_SHADOW_END are not aligned to PGD boundary.
-	 *
-	 * KASAN_SHADOW_START doesn't share PGD with anything else.
-	 * We claim whole PGD entry to make things easier.
-	 *
-	 * KASAN_SHADOW_END lands in the last PGD entry and it collides with
-	 * bunch of things like kernel code, modules, EFI mapping, etc.
-	 * We need to take extra steps to not overwrite them.
-	 */
+	 
 	if (pgtable_l5_enabled()) {
 		void *ptr;
 
@@ -392,11 +374,7 @@ void __init kasan_init(void)
 		kasan_mem_to_shadow((void *)PAGE_OFFSET + MAXMEM),
 		kasan_mem_to_shadow((void *)VMALLOC_START));
 
-	/*
-	 * If we're in full vmalloc mode, don't back vmalloc space with early
-	 * shadow pages. Instead, prepopulate pgds/p4ds so they are synced to
-	 * the global table and we can populate the lower levels on demand.
-	 */
+	 
 	if (IS_ENABLED(CONFIG_KASAN_VMALLOC))
 		kasan_shallow_populate_pgds(
 			kasan_mem_to_shadow((void *)VMALLOC_START),
@@ -410,12 +388,7 @@ void __init kasan_init(void)
 		kasan_mem_to_shadow((void *)VMALLOC_END + 1),
 		(void *)shadow_cea_begin);
 
-	/*
-	 * Populate the shadow for the shared portion of the CPU entry area.
-	 * Shadows for the per-CPU areas are mapped on-demand, as each CPU's
-	 * area is randomly placed somewhere in the 512GiB range and mapping
-	 * the entire 512GiB range is prohibitively expensive.
-	 */
+	 
 	kasan_populate_shadow(shadow_cea_begin,
 			      shadow_cea_per_cpu_begin, 0);
 
@@ -432,11 +405,7 @@ void __init kasan_init(void)
 	load_cr3(init_top_pgt);
 	__flush_tlb_all();
 
-	/*
-	 * kasan_early_shadow_page has been used as early shadow memory, thus
-	 * it may contain some garbage. Now we can clear and write protect it,
-	 * since after the TLB flush no one should write to it.
-	 */
+	 
 	memset(kasan_early_shadow_page, 0, PAGE_SIZE);
 	for (i = 0; i < PTRS_PER_PTE; i++) {
 		pte_t pte;
@@ -448,7 +417,7 @@ void __init kasan_init(void)
 		pte = __pte(__pa(kasan_early_shadow_page) | pgprot_val(prot));
 		set_pte(&kasan_early_shadow_pte[i], pte);
 	}
-	/* Flush TLBs again to be sure that write protection applied. */
+	 
 	__flush_tlb_all();
 
 	init_task.kasan_depth = 0;

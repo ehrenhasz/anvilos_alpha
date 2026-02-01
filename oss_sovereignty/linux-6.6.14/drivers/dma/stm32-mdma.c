@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) STMicroelectronics SA 2017
- * Author(s): M'boumba Cedric Madianga <cedric.madianga@gmail.com>
- *            Pierre-Yves Mordret <pierre-yves.mordret@st.com>
- *
- * Driver for STM32 MDMA controller
- *
- * Inspired by stm32-dma.c and dma-jz4780.c
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -32,10 +23,10 @@
 
 #include "virt-dma.h"
 
-#define STM32_MDMA_GISR0		0x0000 /* MDMA Int Status Reg 1 */
+#define STM32_MDMA_GISR0		0x0000  
 
-/* MDMA Channel x interrupt/status register */
-#define STM32_MDMA_CISR(x)		(0x40 + 0x40 * (x)) /* x = 0..62 */
+ 
+#define STM32_MDMA_CISR(x)		(0x40 + 0x40 * (x))  
 #define STM32_MDMA_CISR_CRQA		BIT(16)
 #define STM32_MDMA_CISR_TCIF		BIT(4)
 #define STM32_MDMA_CISR_BTIF		BIT(3)
@@ -43,7 +34,7 @@
 #define STM32_MDMA_CISR_CTCIF		BIT(1)
 #define STM32_MDMA_CISR_TEIF		BIT(0)
 
-/* MDMA Channel x interrupt flag clear register */
+ 
 #define STM32_MDMA_CIFCR(x)		(0x44 + 0x40 * (x))
 #define STM32_MDMA_CIFCR_CLTCIF		BIT(4)
 #define STM32_MDMA_CIFCR_CBTIF		BIT(3)
@@ -56,7 +47,7 @@
 					| STM32_MDMA_CIFCR_CCTCIF \
 					| STM32_MDMA_CIFCR_CTEIF)
 
-/* MDMA Channel x error status register */
+ 
 #define STM32_MDMA_CESR(x)		(0x48 + 0x40 * (x))
 #define STM32_MDMA_CESR_BSE		BIT(11)
 #define STM32_MDMA_CESR_ASR		BIT(10)
@@ -65,7 +56,7 @@
 #define STM32_MDMA_CESR_TED		BIT(7)
 #define STM32_MDMA_CESR_TEA_MASK	GENMASK(6, 0)
 
-/* MDMA Channel x control register */
+ 
 #define STM32_MDMA_CCR(x)		(0x4C + 0x40 * (x))
 #define STM32_MDMA_CCR_SWRQ		BIT(16)
 #define STM32_MDMA_CCR_WEX		BIT(14)
@@ -86,7 +77,7 @@
 					| STM32_MDMA_CCR_CTCIE \
 					| STM32_MDMA_CCR_TEIE)
 
-/* MDMA Channel x transfer configuration register */
+ 
 #define STM32_MDMA_CTCR(x)		(0x50 + 0x40 * (x))
 #define STM32_MDMA_CTCR_BWM		BIT(31)
 #define STM32_MDMA_CTCR_SWRM		BIT(30)
@@ -125,7 +116,7 @@
 					| STM32_MDMA_CTCR_LEN2_MSK \
 					| STM32_MDMA_CTCR_TRGM_MSK)
 
-/* MDMA Channel x block number of data register */
+ 
 #define STM32_MDMA_CBNDTR(x)		(0x54 + 0x40 * (x))
 #define STM32_MDMA_CBNDTR_BRC_MK	GENMASK(31, 20)
 #define STM32_MDMA_CBNDTR_BRC(n)	FIELD_PREP(STM32_MDMA_CBNDTR_BRC_MK, (n))
@@ -136,33 +127,33 @@
 #define STM32_MDMA_CBNDTR_BNDT_MASK	GENMASK(16, 0)
 #define STM32_MDMA_CBNDTR_BNDT(n)	FIELD_PREP(STM32_MDMA_CBNDTR_BNDT_MASK, (n))
 
-/* MDMA Channel x source address register */
+ 
 #define STM32_MDMA_CSAR(x)		(0x58 + 0x40 * (x))
 
-/* MDMA Channel x destination address register */
+ 
 #define STM32_MDMA_CDAR(x)		(0x5C + 0x40 * (x))
 
-/* MDMA Channel x block repeat address update register */
+ 
 #define STM32_MDMA_CBRUR(x)		(0x60 + 0x40 * (x))
 #define STM32_MDMA_CBRUR_DUV_MASK	GENMASK(31, 16)
 #define STM32_MDMA_CBRUR_DUV(n)		FIELD_PREP(STM32_MDMA_CBRUR_DUV_MASK, (n))
 #define STM32_MDMA_CBRUR_SUV_MASK	GENMASK(15, 0)
 #define STM32_MDMA_CBRUR_SUV(n)		FIELD_PREP(STM32_MDMA_CBRUR_SUV_MASK, (n))
 
-/* MDMA Channel x link address register */
+ 
 #define STM32_MDMA_CLAR(x)		(0x64 + 0x40 * (x))
 
-/* MDMA Channel x trigger and bus selection register */
+ 
 #define STM32_MDMA_CTBR(x)		(0x68 + 0x40 * (x))
 #define STM32_MDMA_CTBR_DBUS		BIT(17)
 #define STM32_MDMA_CTBR_SBUS		BIT(16)
 #define STM32_MDMA_CTBR_TSEL_MASK	GENMASK(5, 0)
 #define STM32_MDMA_CTBR_TSEL(n)		FIELD_PREP(STM32_MDMA_CTBR_TSEL_MASK, (n))
 
-/* MDMA Channel x mask address register */
+ 
 #define STM32_MDMA_CMAR(x)		(0x70 + 0x40 * (x))
 
-/* MDMA Channel x mask data register */
+ 
 #define STM32_MDMA_CMDR(x)		(0x74 + 0x40 * (x))
 
 #define STM32_MDMA_MAX_BUF_LEN		128
@@ -198,7 +189,7 @@ struct stm32_mdma_chan_config {
 	u32 transfer_config;
 	u32 mask_addr;
 	u32 mask_data;
-	bool m2m_hw; /* True when MDMA is triggered by STM32 DMA */
+	bool m2m_hw;  
 };
 
 struct stm32_mdma_hwdesc {
@@ -228,9 +219,9 @@ struct stm32_mdma_desc {
 };
 
 struct stm32_mdma_dma_config {
-	u32 request;	/* STM32 DMA channel stream id, triggering MDMA */
-	u32 cmar;	/* STM32 DMA interrupt flag clear register address */
-	u32 cmdr;	/* STM32 DMA Transfer Complete flag */
+	u32 request;	 
+	u32 cmar;	 
+	u32 cmdr;	 
 };
 
 struct stm32_mdma_chan {
@@ -379,10 +370,7 @@ static enum dma_slave_buswidth stm32_mdma_get_max_width(dma_addr_t addr,
 	for (max_width = DMA_SLAVE_BUSWIDTH_8_BYTES;
 	     max_width > DMA_SLAVE_BUSWIDTH_1_BYTE;
 	     max_width >>= 1) {
-		/*
-		 * Address and buffer length both have to be aligned on
-		 * bus width
-		 */
+		 
 		if ((((buf_len | addr) & (max_width - 1)) == 0) &&
 		    tlen >= max_width)
 			break;
@@ -411,14 +399,14 @@ static int stm32_mdma_disable_chan(struct stm32_mdma_chan *chan)
 	id = chan->id;
 	reg = STM32_MDMA_CCR(id);
 
-	/* Disable interrupts */
+	 
 	stm32_mdma_clr_bits(dmadev, reg, STM32_MDMA_CCR_IRQ_MASK);
 
 	ccr = stm32_mdma_read(dmadev, reg);
 	if (ccr & STM32_MDMA_CCR_EN) {
 		stm32_mdma_clr_bits(dmadev, reg, STM32_MDMA_CCR_EN);
 
-		/* Ensure that any ongoing transfer has been completed */
+		 
 		ret = readl_relaxed_poll_timeout_atomic(
 				dmadev->base + STM32_MDMA_CISR(id), cisr,
 				(cisr & STM32_MDMA_CISR_CTCIF), 10, 1000);
@@ -437,12 +425,12 @@ static void stm32_mdma_stop(struct stm32_mdma_chan *chan)
 	u32 status;
 	int ret;
 
-	/* Disable DMA */
+	 
 	ret = stm32_mdma_disable_chan(chan);
 	if (ret < 0)
 		return;
 
-	/* Clear interrupt status if it is there */
+	 
 	status = stm32_mdma_read(dmadev, STM32_MDMA_CISR(chan->id));
 	if (status) {
 		dev_dbg(chan2dev(chan), "%s(): clearing interrupt: 0x%08x\n",
@@ -459,7 +447,7 @@ static void stm32_mdma_set_bus(struct stm32_mdma_device *dmadev, u32 *ctbr,
 	u32 mask;
 	int i;
 
-	/* Check if memory device is on AHB or AXI */
+	 
 	*ctbr &= ~ctbr_mask;
 	mask = src_addr & 0xF0000000;
 	for (i = 0; i < dmadev->nr_ahb_addr_masks; i++) {
@@ -493,25 +481,22 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 	ctcr = stm32_mdma_read(dmadev, STM32_MDMA_CTCR(chan->id));
 	ctbr = stm32_mdma_read(dmadev, STM32_MDMA_CTBR(chan->id));
 
-	/* Enable HW request mode */
+	 
 	ctcr &= ~STM32_MDMA_CTCR_SWRM;
 
-	/* Set DINC, SINC, DINCOS, SINCOS, TRGM and TLEN retrieve from DT */
+	 
 	ctcr &= ~STM32_MDMA_CTCR_CFG_MASK;
 	ctcr |= chan_config->transfer_config & STM32_MDMA_CTCR_CFG_MASK;
 
-	/*
-	 * For buffer transfer length (TLEN) we have to set
-	 * the number of bytes - 1 in CTCR register
-	 */
+	 
 	tlen = STM32_MDMA_CTCR_LEN2_GET(ctcr);
 	ctcr &= ~STM32_MDMA_CTCR_LEN2_MSK;
 	ctcr |= STM32_MDMA_CTCR_TLEN((tlen - 1));
 
-	/* Disable Pack Enable */
+	 
 	ctcr &= ~STM32_MDMA_CTCR_PKE;
 
-	/* Check burst size constraints */
+	 
 	if (src_maxburst * src_addr_width > STM32_MDMA_MAX_BURST ||
 	    dst_maxburst * dst_addr_width > STM32_MDMA_MAX_BURST) {
 		dev_err(chan2dev(chan),
@@ -526,17 +511,12 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 		return -EINVAL;
 	}
 
-	/*
-	 * Configure channel control:
-	 * - Clear SW request as in this case this is a HW one
-	 * - Clear WEX, HEX and BEX bits
-	 * - Set priority level
-	 */
+	 
 	ccr &= ~(STM32_MDMA_CCR_SWRQ | STM32_MDMA_CCR_WEX | STM32_MDMA_CCR_HEX |
 		 STM32_MDMA_CCR_BEX | STM32_MDMA_CCR_PL_MASK);
 	ccr |= STM32_MDMA_CCR_PL(chan_config->priority_level);
 
-	/* Configure Trigger selection */
+	 
 	ctbr &= ~STM32_MDMA_CTBR_TSEL_MASK;
 	ctbr |= STM32_MDMA_CTBR_TSEL(chan_config->request);
 
@@ -544,7 +524,7 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 	case DMA_MEM_TO_DEV:
 		dst_addr = chan->dma_config.dst_addr;
 
-		/* Set device data size */
+		 
 		if (chan_config->m2m_hw)
 			dst_addr_width = stm32_mdma_get_max_width(dst_addr, buf_len,
 								  STM32_MDMA_MAX_BUF_LEN);
@@ -558,7 +538,7 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 			ctcr |= STM32_MDMA_CTCR_DINCOS(dst_bus_width);
 		}
 
-		/* Set device burst value */
+		 
 		if (chan_config->m2m_hw)
 			dst_maxburst = STM32_MDMA_MAX_BUF_LEN / dst_addr_width;
 
@@ -569,7 +549,7 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 		ctcr &= ~STM32_MDMA_CTCR_DBURST_MASK;
 		ctcr |= STM32_MDMA_CTCR_DBURST((ilog2(dst_best_burst)));
 
-		/* Set memory data size */
+		 
 		src_addr_width = stm32_mdma_get_max_width(addr, buf_len, tlen);
 		chan->mem_width = src_addr_width;
 		src_bus_width = stm32_mdma_get_width(chan, src_addr_width);
@@ -580,7 +560,7 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 		ctcr |= STM32_MDMA_CTCR_SSIZE(src_bus_width) |
 			STM32_MDMA_CTCR_SINCOS(src_bus_width);
 
-		/* Set memory burst value */
+		 
 		src_maxburst = STM32_MDMA_MAX_BUF_LEN / src_addr_width;
 		src_best_burst = stm32_mdma_get_best_burst(buf_len, tlen,
 							   src_maxburst,
@@ -589,21 +569,21 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 		ctcr &= ~STM32_MDMA_CTCR_SBURST_MASK;
 		ctcr |= STM32_MDMA_CTCR_SBURST((ilog2(src_best_burst)));
 
-		/* Select bus */
+		 
 		stm32_mdma_set_bus(dmadev, &ctbr, STM32_MDMA_CTBR_DBUS,
 				   dst_addr);
 
 		if (dst_bus_width != src_bus_width)
 			ctcr |= STM32_MDMA_CTCR_PKE;
 
-		/* Set destination address */
+		 
 		stm32_mdma_write(dmadev, STM32_MDMA_CDAR(chan->id), dst_addr);
 		break;
 
 	case DMA_DEV_TO_MEM:
 		src_addr = chan->dma_config.src_addr;
 
-		/* Set device data size */
+		 
 		if (chan_config->m2m_hw)
 			src_addr_width = stm32_mdma_get_max_width(src_addr, buf_len,
 								  STM32_MDMA_MAX_BUF_LEN);
@@ -618,7 +598,7 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 			ctcr |= STM32_MDMA_CTCR_SINCOS(src_bus_width);
 		}
 
-		/* Set device burst value */
+		 
 		if (chan_config->m2m_hw)
 			src_maxburst = STM32_MDMA_MAX_BUF_LEN / src_addr_width;
 
@@ -628,7 +608,7 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 		ctcr &= ~STM32_MDMA_CTCR_SBURST_MASK;
 		ctcr |= STM32_MDMA_CTCR_SBURST((ilog2(src_best_burst)));
 
-		/* Set memory data size */
+		 
 		dst_addr_width = stm32_mdma_get_max_width(addr, buf_len, tlen);
 		chan->mem_width = dst_addr_width;
 		dst_bus_width = stm32_mdma_get_width(chan, dst_addr_width);
@@ -639,7 +619,7 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 		ctcr |= STM32_MDMA_CTCR_DSIZE(dst_bus_width) |
 			STM32_MDMA_CTCR_DINCOS(dst_bus_width);
 
-		/* Set memory burst value */
+		 
 		dst_maxburst = STM32_MDMA_MAX_BUF_LEN / dst_addr_width;
 		dst_best_burst = stm32_mdma_get_best_burst(buf_len, tlen,
 							   dst_maxburst,
@@ -647,14 +627,14 @@ static int stm32_mdma_set_xfer_param(struct stm32_mdma_chan *chan,
 		ctcr &= ~STM32_MDMA_CTCR_DBURST_MASK;
 		ctcr |= STM32_MDMA_CTCR_DBURST((ilog2(dst_best_burst)));
 
-		/* Select bus */
+		 
 		stm32_mdma_set_bus(dmadev, &ctbr, STM32_MDMA_CTBR_SBUS,
 				   src_addr);
 
 		if (dst_bus_width != src_bus_width)
 			ctcr |= STM32_MDMA_CTCR_PKE;
 
-		/* Set source address */
+		 
 		stm32_mdma_write(dmadev, STM32_MDMA_CSAR(chan->id), src_addr);
 		break;
 
@@ -774,7 +754,7 @@ static int stm32_mdma_setup_xfer(struct stm32_mdma_chan *chan,
 					i == sg_len - 1, i == 0, false);
 	}
 
-	/* Enable interrupts */
+	 
 	ccr &= ~STM32_MDMA_CCR_IRQ_MASK;
 	ccr |= STM32_MDMA_CCR_TEIE | STM32_MDMA_CCR_CTCIE;
 	desc->ccr = ccr;
@@ -792,11 +772,7 @@ stm32_mdma_prep_slave_sg(struct dma_chan *c, struct scatterlist *sgl,
 	struct stm32_mdma_desc *desc;
 	int i, ret;
 
-	/*
-	 * Once DMA is in setup cyclic mode the channel we cannot assign this
-	 * channel anymore. The DMA channel needs to be aborted or terminated
-	 * for allowing another request.
-	 */
+	 
 	if (chan->desc && chan->desc->cyclic) {
 		dev_err(chan2dev(chan),
 			"Request not allowed when dma in cyclic mode\n");
@@ -811,11 +787,7 @@ stm32_mdma_prep_slave_sg(struct dma_chan *c, struct scatterlist *sgl,
 	if (ret < 0)
 		goto xfer_setup_err;
 
-	/*
-	 * In case of M2M HW transfer triggered by STM32 DMA, we do not have to clear the
-	 * transfer complete flag by hardware in order to let the CPU rearm the STM32 DMA
-	 * with the next sg element and update some data in dmaengine framework.
-	 */
+	 
 	if (chan_config->m2m_hw && direction == DMA_MEM_TO_DEV) {
 		struct stm32_mdma_hwdesc *hwdesc;
 
@@ -853,11 +825,7 @@ stm32_mdma_prep_dma_cyclic(struct dma_chan *c, dma_addr_t buf_addr,
 	u32 ccr, ctcr, ctbr, count;
 	int i, ret;
 
-	/*
-	 * Once DMA is in setup cyclic mode the channel we cannot assign this
-	 * channel anymore. The DMA channel needs to be aborted or terminated
-	 * for allowing another request.
-	 */
+	 
 	if (chan->desc && chan->desc->cyclic) {
 		dev_err(chan2dev(chan),
 			"Request not allowed when dma in cyclic mode\n");
@@ -880,7 +848,7 @@ stm32_mdma_prep_dma_cyclic(struct dma_chan *c, dma_addr_t buf_addr,
 	if (!desc)
 		return NULL;
 
-	/* Select bus */
+	 
 	if (direction == DMA_MEM_TO_DEV) {
 		src_addr = buf_addr;
 		ret = stm32_mdma_set_xfer_param(chan, direction, &ccr, &ctcr,
@@ -898,12 +866,12 @@ stm32_mdma_prep_dma_cyclic(struct dma_chan *c, dma_addr_t buf_addr,
 	if (ret < 0)
 		goto xfer_setup_err;
 
-	/* Enable interrupts */
+	 
 	ccr &= ~STM32_MDMA_CCR_IRQ_MASK;
 	ccr |= STM32_MDMA_CCR_TEIE | STM32_MDMA_CCR_CTCIE | STM32_MDMA_CCR_BTIE;
 	desc->ccr = ccr;
 
-	/* Configure hwdesc list */
+	 
 	for (i = 0; i < count; i++) {
 		if (direction == DMA_MEM_TO_DEV) {
 			src_addr = buf_addr + i * period_len;
@@ -949,11 +917,7 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 	int src_bus_width, dst_bus_width;
 	int i;
 
-	/*
-	 * Once DMA is in setup cyclic mode the channel we cannot assign this
-	 * channel anymore. The DMA channel needs to be aborted or terminated
-	 * to allow another request
-	 */
+	 
 	if (chan->desc && chan->desc->cyclic) {
 		dev_err(chan2dev(chan),
 			"Request not allowed when dma in cyclic mode\n");
@@ -970,13 +934,13 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 	ctbr = stm32_mdma_read(dmadev, STM32_MDMA_CTBR(chan->id));
 	cbndtr = stm32_mdma_read(dmadev, STM32_MDMA_CBNDTR(chan->id));
 
-	/* Enable sw req, some interrupts and clear other bits */
+	 
 	ccr &= ~(STM32_MDMA_CCR_WEX | STM32_MDMA_CCR_HEX |
 		 STM32_MDMA_CCR_BEX | STM32_MDMA_CCR_PL_MASK |
 		 STM32_MDMA_CCR_IRQ_MASK);
 	ccr |= STM32_MDMA_CCR_TEIE;
 
-	/* Enable SW request mode, dest/src inc and clear other bits */
+	 
 	ctcr &= ~(STM32_MDMA_CTCR_BWM | STM32_MDMA_CTCR_TRGM_MSK |
 		  STM32_MDMA_CTCR_PAM_MASK | STM32_MDMA_CTCR_PKE |
 		  STM32_MDMA_CTCR_TLEN_MSK | STM32_MDMA_CTCR_DBURST_MASK |
@@ -987,25 +951,25 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 	ctcr |= STM32_MDMA_CTCR_SWRM | STM32_MDMA_CTCR_SINC(STM32_MDMA_INC) |
 		STM32_MDMA_CTCR_DINC(STM32_MDMA_INC);
 
-	/* Reset HW request */
+	 
 	ctbr &= ~STM32_MDMA_CTBR_TSEL_MASK;
 
-	/* Select bus */
+	 
 	stm32_mdma_set_bus(dmadev, &ctbr, STM32_MDMA_CTBR_SBUS, src);
 	stm32_mdma_set_bus(dmadev, &ctbr, STM32_MDMA_CTBR_DBUS, dest);
 
-	/* Clear CBNDTR registers */
+	 
 	cbndtr &= ~(STM32_MDMA_CBNDTR_BRC_MK | STM32_MDMA_CBNDTR_BRDUM |
 			STM32_MDMA_CBNDTR_BRSUM | STM32_MDMA_CBNDTR_BNDT_MASK);
 
 	if (len <= STM32_MDMA_MAX_BLOCK_LEN) {
 		cbndtr |= STM32_MDMA_CBNDTR_BNDT(len);
 		if (len <= STM32_MDMA_MAX_BUF_LEN) {
-			/* Setup a buffer transfer */
+			 
 			ccr |= STM32_MDMA_CCR_TCIE | STM32_MDMA_CCR_CTCIE;
 			ctcr |= STM32_MDMA_CTCR_TRGM(STM32_MDMA_BUFFER);
 		} else {
-			/* Setup a block transfer */
+			 
 			ccr |= STM32_MDMA_CCR_BTIE | STM32_MDMA_CCR_CTCIE;
 			ctcr |= STM32_MDMA_CTCR_TRGM(STM32_MDMA_BLOCK);
 		}
@@ -1013,7 +977,7 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 		tlen = STM32_MDMA_MAX_BUF_LEN;
 		ctcr |= STM32_MDMA_CTCR_TLEN((tlen - 1));
 
-		/* Set source best burst size */
+		 
 		max_width = stm32_mdma_get_max_width(src, len, tlen);
 		src_bus_width = stm32_mdma_get_width(chan, max_width);
 
@@ -1026,7 +990,7 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 			STM32_MDMA_CTCR_SSIZE(src_bus_width) |
 			STM32_MDMA_CTCR_SINCOS(src_bus_width);
 
-		/* Set destination best burst size */
+		 
 		max_width = stm32_mdma_get_max_width(dest, len, tlen);
 		dst_bus_width = stm32_mdma_get_width(chan, max_width);
 
@@ -1042,7 +1006,7 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 		if (dst_bus_width != src_bus_width)
 			ctcr |= STM32_MDMA_CTCR_PKE;
 
-		/* Prepare hardware descriptor */
+		 
 		hwdesc = desc->node[0].hwdesc;
 		hwdesc->ctcr = ctcr;
 		hwdesc->cbndtr = cbndtr;
@@ -1056,7 +1020,7 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 
 		stm32_mdma_dump_hwdesc(chan, &desc->node[0]);
 	} else {
-		/* Setup a LLI transfer */
+		 
 		ctcr |= STM32_MDMA_CTCR_TRGM(STM32_MDMA_LINKED_LIST) |
 			STM32_MDMA_CTCR_TLEN((STM32_MDMA_MAX_BUF_LEN - 1));
 		ccr |= STM32_MDMA_CCR_BTIE | STM32_MDMA_CCR_CTCIE;
@@ -1067,7 +1031,7 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 			xfer_count = min_t(size_t, len - offset,
 					   STM32_MDMA_MAX_BLOCK_LEN);
 
-			/* Set source best burst size */
+			 
 			max_width = stm32_mdma_get_max_width(src, len, tlen);
 			src_bus_width = stm32_mdma_get_width(chan, max_width);
 
@@ -1081,7 +1045,7 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 				STM32_MDMA_CTCR_SSIZE(src_bus_width) |
 				STM32_MDMA_CTCR_SINCOS(src_bus_width);
 
-			/* Set destination best burst size */
+			 
 			max_width = stm32_mdma_get_max_width(dest, len, tlen);
 			dst_bus_width = stm32_mdma_get_width(chan, max_width);
 
@@ -1098,7 +1062,7 @@ stm32_mdma_prep_dma_memcpy(struct dma_chan *c, dma_addr_t dest, dma_addr_t src,
 			if (dst_bus_width != src_bus_width)
 				ctcr |= STM32_MDMA_CTCR_PKE;
 
-			/* Prepare hardware descriptor */
+			 
 			stm32_mdma_setup_hwdesc(chan, desc, DMA_MEM_TO_MEM, i,
 						src + offset, dest + offset,
 						xfer_count, ctcr, ctbr,
@@ -1170,17 +1134,17 @@ static void stm32_mdma_start_transfer(struct stm32_mdma_chan *chan)
 	stm32_mdma_write(dmadev, STM32_MDMA_CMAR(id), hwdesc->cmar);
 	stm32_mdma_write(dmadev, STM32_MDMA_CMDR(id), hwdesc->cmdr);
 
-	/* Clear interrupt status if it is there */
+	 
 	status = stm32_mdma_read(dmadev, STM32_MDMA_CISR(id));
 	if (status)
 		stm32_mdma_set_bits(dmadev, STM32_MDMA_CIFCR(id), status);
 
 	stm32_mdma_dump_reg(chan);
 
-	/* Start DMA */
+	 
 	stm32_mdma_set_bits(dmadev, STM32_MDMA_CCR(id), STM32_MDMA_CCR_EN);
 
-	/* Set SW request in case of MEM2MEM transfer */
+	 
 	if (hwdesc->ctcr & STM32_MDMA_CTCR_SWRM) {
 		reg = STM32_MDMA_CCR(id);
 		stm32_mdma_set_bits(dmadev, reg, STM32_MDMA_CCR_SWRQ);
@@ -1234,7 +1198,7 @@ static int stm32_mdma_resume(struct dma_chan *c)
 	unsigned long flags;
 	u32 status, reg;
 
-	/* Transfer can be terminated */
+	 
 	if (!chan->desc || (stm32_mdma_read(dmadev, STM32_MDMA_CCR(chan->id)) & STM32_MDMA_CCR_EN))
 		return -EPERM;
 
@@ -1242,21 +1206,21 @@ static int stm32_mdma_resume(struct dma_chan *c)
 
 	spin_lock_irqsave(&chan->vchan.lock, flags);
 
-	/* Re-configure control register */
+	 
 	stm32_mdma_write(dmadev, STM32_MDMA_CCR(chan->id), chan->desc->ccr);
 
-	/* Clear interrupt status if it is there */
+	 
 	status = stm32_mdma_read(dmadev, STM32_MDMA_CISR(chan->id));
 	if (status)
 		stm32_mdma_set_bits(dmadev, STM32_MDMA_CIFCR(chan->id), status);
 
 	stm32_mdma_dump_reg(chan);
 
-	/* Re-start DMA */
+	 
 	reg = STM32_MDMA_CCR(chan->id);
 	stm32_mdma_set_bits(dmadev, reg, STM32_MDMA_CCR_EN);
 
-	/* Set SW request in case of MEM2MEM transfer */
+	 
 	if (hwdesc->ctcr & STM32_MDMA_CTCR_SWRM)
 		stm32_mdma_set_bits(dmadev, reg, STM32_MDMA_CCR_SWRQ);
 
@@ -1302,7 +1266,7 @@ static int stm32_mdma_slave_config(struct dma_chan *c,
 
 	memcpy(&chan->dma_config, config, sizeof(*config));
 
-	/* Check if user is requesting STM32 DMA to trigger MDMA */
+	 
 	if (config->peripheral_size) {
 		struct stm32_mdma_dma_config *mdma_config;
 
@@ -1329,15 +1293,15 @@ static size_t stm32_mdma_desc_residue(struct stm32_mdma_chan *chan,
 	cisr = stm32_mdma_read(dmadev, STM32_MDMA_CISR(chan->id));
 
 	residue = 0;
-	/* Get the next hw descriptor to process from current transfer */
+	 
 	clar = stm32_mdma_read(dmadev, STM32_MDMA_CLAR(chan->id));
 	for (i = desc->count - 1; i >= 0; i--) {
 		hwdesc = desc->node[i].hwdesc;
 
 		if (hwdesc->clar == clar)
-			break;/* Current transfer found, stop cumulating */
+			break; 
 
-		/* Cumulate residue of unprocessed hw descriptors */
+		 
 		residue += STM32_MDMA_CBNDTR_BNDT(hwdesc->cbndtr);
 	}
 	cbndtr = stm32_mdma_read(dmadev, STM32_MDMA_CBNDTR(chan->id));
@@ -1393,7 +1357,7 @@ static void stm32_mdma_xfer_end(struct stm32_mdma_chan *chan)
 	chan->desc = NULL;
 	chan->busy = false;
 
-	/* Start the next transfer if this driver has a next desc */
+	 
 	stm32_mdma_start_transfer(chan);
 }
 
@@ -1403,7 +1367,7 @@ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
 	struct stm32_mdma_chan *chan;
 	u32 reg, id, ccr, ien, status;
 
-	/* Find out which channel generates the interrupt */
+	 
 	status = readl_relaxed(dmadev->base + STM32_MDMA_GISR0);
 	if (!status) {
 		dev_dbg(mdma2dev(dmadev), "spurious it\n");
@@ -1412,10 +1376,10 @@ static irqreturn_t stm32_mdma_irq_handler(int irq, void *devid)
 	id = __ffs(status);
 	chan = &dmadev->chan[id];
 
-	/* Handle interrupt for the channel */
+	 
 	spin_lock(&chan->vchan.lock);
 	status = stm32_mdma_read(dmadev, STM32_MDMA_CISR(id));
-	/* Mask Channel ReQuest Active bit which can be set in case of MEM2MEM */
+	 
 	status &= ~STM32_MDMA_CISR_CRQA;
 	ccr = stm32_mdma_read(dmadev, STM32_MDMA_CCR(id));
 	ien = (ccr & STM32_MDMA_CCR_IRQ_MASK) >> 1;
@@ -1532,7 +1496,7 @@ static bool stm32_mdma_filter_fn(struct dma_chan *c, void *fn_param)
 	struct stm32_mdma_chan *chan = to_stm32_mdma_chan(c);
 	struct stm32_mdma_device *dmadev = stm32_mdma_get_dev(chan);
 
-	/* Check if chan is marked Secure */
+	 
 	if (dmadev->chan_reserved & BIT(chan->id))
 		return false;
 
@@ -1584,7 +1548,7 @@ static struct dma_chan *stm32_mdma_of_xlate(struct of_phandle_args *dma_spec,
 
 static const struct of_device_id stm32_mdma_of_match[] = {
 	{ .compatible = "st,stm32h7-mdma", },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, stm32_mdma_of_match);
 

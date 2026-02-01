@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef WB_THROTTLE_H
 #define WB_THROTTLE_H
 
@@ -28,6 +28,6 @@ static inline void wbt_set_write_cache(struct request_queue *q, bool wc)
 {
 }
 
-#endif /* CONFIG_BLK_WBT */
+#endif  
 
 #endif

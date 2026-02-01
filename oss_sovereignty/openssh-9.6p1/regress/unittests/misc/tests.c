@@ -1,9 +1,5 @@
-/* 	$OpenBSD: tests.c,v 1.10 2023/01/06 02:59:50 djm Exp $ */
-/*
- * Regress test for misc helper functions.
- *
- * Placed in the public domain.
- */
+ 
+ 
 
 #include "includes.h"
 

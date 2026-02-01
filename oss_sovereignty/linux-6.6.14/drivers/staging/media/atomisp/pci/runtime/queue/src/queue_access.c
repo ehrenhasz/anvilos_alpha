@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2010 - 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+
+ 
 
 #include "hmm.h"
 
@@ -38,12 +26,7 @@ int ia_css_queue_load(
 							   + offsetof(ia_css_circbuf_desc_t, size));
 
 			if (cb_desc->size == 0) {
-				/* Adding back the workaround which was removed
-				   while refactoring queues. When reading size
-				   through sp_dmem_load_*, sometimes we get back
-				   the value as zero. This causes division by 0
-				   exception as the size is used in a modular
-				   division operation. */
+				 
 				return -EDOM;
 			}
 		}
@@ -64,12 +47,12 @@ int ia_css_queue_load(
 							   + offsetof(ia_css_circbuf_desc_t, step));
 
 	} else if (rdesc->location == IA_CSS_QUEUE_LOC_HOST) {
-		/* doing DMA transfer of entire structure */
+		 
 		hmm_load(rdesc->desc.remote.cb_desc_addr,
 			  (void *)cb_desc,
 			  sizeof(ia_css_circbuf_desc_t));
 	} else if (rdesc->location == IA_CSS_QUEUE_LOC_ISP) {
-		/* Not supported yet */
+		 
 		return -ENOTSUPP;
 	}
 
@@ -111,12 +94,12 @@ int ia_css_queue_store(
 					    + offsetof(ia_css_circbuf_desc_t, step),
 					    cb_desc->step);
 	} else if (rdesc->location == IA_CSS_QUEUE_LOC_HOST) {
-		/* doing DMA transfer of entire structure */
+		 
 		hmm_store(rdesc->desc.remote.cb_desc_addr,
 			   (void *)cb_desc,
 			   sizeof(ia_css_circbuf_desc_t));
 	} else if (rdesc->location == IA_CSS_QUEUE_LOC_ISP) {
-		/* Not supported yet */
+		 
 		return -ENOTSUPP;
 	}
 
@@ -143,7 +126,7 @@ int ia_css_queue_item_load(
 			  (void *)item,
 			  sizeof(ia_css_circbuf_elem_t));
 	} else if (rdesc->location == IA_CSS_QUEUE_LOC_ISP) {
-		/* Not supported yet */
+		 
 		return -ENOTSUPP;
 	}
 
@@ -170,7 +153,7 @@ int ia_css_queue_item_store(
 			   (void *)item,
 			   sizeof(ia_css_circbuf_elem_t));
 	} else if (rdesc->location == IA_CSS_QUEUE_LOC_ISP) {
-		/* Not supported yet */
+		 
 		return -ENOTSUPP;
 	}
 

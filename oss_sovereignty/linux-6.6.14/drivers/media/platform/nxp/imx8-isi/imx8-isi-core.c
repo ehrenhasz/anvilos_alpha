@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019-2020 NXP
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/device.h>
@@ -25,9 +23,7 @@
 
 #include "imx8-isi-core.h"
 
-/* -----------------------------------------------------------------------------
- * V4L2 async subdevs
- */
+ 
 
 struct mxc_isi_async_subdev {
 	struct v4l2_async_connection asd;
@@ -60,11 +56,7 @@ static int mxc_isi_async_notifier_bound(struct v4l2_async_notifier *notifier,
 	dev_dbg(isi->dev, "Bound subdev %s to crossbar input %u\n", sd->name,
 		masd->port);
 
-	/*
-	 * Enforce suspend/resume ordering between the source (supplier) and
-	 * the ISI (consumer). The source will be suspended before and resume
-	 * after the ISI.
-	 */
+	 
 	link = device_link_add(isi->dev, sd->dev, DL_FLAG_STATELESS);
 	if (!link) {
 		dev_err(isi->dev,
@@ -121,14 +113,14 @@ static int mxc_isi_v4l2_init(struct mxc_isi_dev *isi)
 	unsigned int i;
 	int ret;
 
-	/* Initialize the media device. */
+	 
 	strscpy(media_dev->model, "FSL Capture Media Device",
 		sizeof(media_dev->model));
 	media_dev->dev = isi->dev;
 
 	media_device_init(media_dev);
 
-	/* Initialize and register the V4L2 device. */
+	 
 	v4l2_dev->mdev = media_dev;
 	strscpy(v4l2_dev->name, "mx8-img-md", sizeof(v4l2_dev->name));
 
@@ -139,14 +131,14 @@ static int mxc_isi_v4l2_init(struct mxc_isi_dev *isi)
 		goto err_media;
 	}
 
-	/* Register the crossbar switch subdev. */
+	 
 	ret = mxc_isi_crossbar_register(&isi->crossbar);
 	if (ret < 0) {
 		dev_err(isi->dev, "Failed to register crossbar: %d\n", ret);
 		goto err_v4l2;
 	}
 
-	/* Register the pipeline subdevs and link them to the crossbar switch. */
+	 
 	for (i = 0; i < isi->pdata->num_channels; ++i) {
 		struct mxc_isi_pipe *pipe = &isi->pipes[i];
 
@@ -167,14 +159,14 @@ static int mxc_isi_v4l2_init(struct mxc_isi_dev *isi)
 			goto err_v4l2;
 	}
 
-	/* Register the M2M device. */
+	 
 	ret = mxc_isi_m2m_register(isi, v4l2_dev);
 	if (ret < 0) {
 		dev_err(isi->dev, "Failed to register M2M device: %d\n", ret);
 		goto err_v4l2;
 	}
 
-	/* Initialize, fill and register the async notifier. */
+	 
 	v4l2_async_nf_init(&isi->notifier, v4l2_dev);
 	isi->notifier.ops = &mxc_isi_async_notifier_ops;
 
@@ -239,13 +231,11 @@ static void mxc_isi_v4l2_cleanup(struct mxc_isi_dev *isi)
 	media_device_cleanup(&isi->media_dev);
 }
 
-/* -----------------------------------------------------------------------------
- * Device information
- */
+ 
 
-/* Panic will assert when the buffers are 50% full */
+ 
 
-/* For i.MX8QXP C0 and i.MX8MN ISI IER version */
+ 
 static const struct mxc_isi_ier_reg mxc_imx8_isi_ier_v1 = {
 	.oflw_y_buf_en = { .offset = 19, .mask = 0x80000  },
 	.oflw_u_buf_en = { .offset = 21, .mask = 0x200000 },
@@ -256,7 +246,7 @@ static const struct mxc_isi_ier_reg mxc_imx8_isi_ier_v1 = {
 	.panic_v_buf_en = {.offset = 24, .mask = 0x1000000 },
 };
 
-/* For i.MX8MP ISI IER version */
+ 
 static const struct mxc_isi_ier_reg mxc_imx8_isi_ier_v2 = {
 	.oflw_y_buf_en = { .offset = 18, .mask = 0x40000  },
 	.oflw_u_buf_en = { .offset = 20, .mask = 0x100000 },
@@ -267,7 +257,7 @@ static const struct mxc_isi_ier_reg mxc_imx8_isi_ier_v2 = {
 	.panic_v_buf_en = {.offset = 23, .mask = 0x800000 },
 };
 
-/* Panic will assert when the buffers are 50% full */
+ 
 static const struct mxc_isi_set_thd mxc_imx8_isi_thd_v1 = {
 	.panic_set_thd_y = { .mask = 0x0000f, .offset = 0,  .threshold = 0x7 },
 	.panic_set_thd_u = { .mask = 0x00f00, .offset = 8,  .threshold = 0x7 },
@@ -321,9 +311,7 @@ static const struct mxc_isi_plat_data mxc_imx93_data = {
 	.has_36bit_dma		= false,
 };
 
-/* -----------------------------------------------------------------------------
- * Power management
- */
+ 
 
 static int mxc_isi_pm_suspend(struct device *dev)
 {
@@ -357,10 +345,7 @@ static int mxc_isi_pm_resume(struct device *dev)
 		if (ret) {
 			dev_err(dev, "Failed to resume pipeline %u (%d)\n", i,
 				ret);
-			/*
-			 * Record the last error as it's as meaningful as any,
-			 * and continue resuming the other pipelines.
-			 */
+			 
 			err = ret;
 		}
 	}
@@ -396,9 +381,7 @@ static const struct dev_pm_ops mxc_isi_pm_ops = {
 	RUNTIME_PM_OPS(mxc_isi_runtime_suspend, mxc_isi_runtime_resume, NULL)
 };
 
-/* -----------------------------------------------------------------------------
- * Probe, remove & driver
- */
+ 
 
 static int mxc_isi_clk_get(struct mxc_isi_dev *isi)
 {
@@ -533,7 +516,7 @@ static const struct of_device_id mxc_isi_of_match[] = {
 	{ .compatible = "fsl,imx8mn-isi", .data = &mxc_imx8mn_data },
 	{ .compatible = "fsl,imx8mp-isi", .data = &mxc_imx8mp_data },
 	{ .compatible = "fsl,imx93-isi", .data = &mxc_imx93_data },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mxc_isi_of_match);
 

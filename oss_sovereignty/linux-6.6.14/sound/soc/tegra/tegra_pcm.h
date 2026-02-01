@@ -1,18 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * tegra_pcm.h - Definitions for Tegra PCM driver
- *
- * Author: Stephen Warren <swarren@nvidia.com>
- * Copyright (C) 2010,2012 - NVIDIA, Inc.
- *
- * Based on code copyright/by:
- *
- * Copyright (c) 2009-2010, NVIDIA Corporation.
- * Scott Peterson <speterson@nvidia.com>
- *
- * Copyright (C) 2010 Google, Inc.
- * Iliyan Malchev <malchev@google.com>
- */
+ 
+ 
 
 #ifndef __TEGRA_PCM_H__
 #define __TEGRA_PCM_H__

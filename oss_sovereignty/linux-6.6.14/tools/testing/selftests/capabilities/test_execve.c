@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #define _GNU_SOURCE
 
 #include <cap-ng.h>
@@ -29,7 +29,7 @@
 #endif
 
 static int nerrs;
-static pid_t mpid;	/*  main() pid is used to avoid duplicate test counts */
+static pid_t mpid;	 
 
 static void vmaybe_write_file(bool enoent_ok, char *filename, char *fmt, va_list ap)
 {
@@ -96,9 +96,7 @@ static bool create_and_enter_ns(uid_t inner_uid)
 	outer_uid = getuid();
 	outer_gid = getgid();
 
-	/*
-	 * TODO: If we're already root, we could skip creating the userns.
-	 */
+	 
 
 	if (unshare(CLONE_NEWNS) == 0) {
 		ksft_print_msg("[NOTE]\tUsing global UIDs for tests\n");
@@ -108,7 +106,7 @@ static bool create_and_enter_ns(uid_t inner_uid)
 		if (setresuid(inner_uid, inner_uid, -1) != 0)
 			ksft_exit_fail_msg("setresuid - %s\n", strerror(errno));
 
-		// Re-enable effective caps
+		 
 		capng_get_caps_process();
 		for (i = 0; i < CAP_LAST_CAP; i++)
 			if (capng_have_capability(CAPNG_PERMITTED, i))
@@ -168,7 +166,7 @@ static void copy_fromat_to(int fromfd, const char *fromname, const char *toname)
 			ksft_exit_fail_msg("read - %s\n", strerror(errno));
 
 		if (write(to, buf, sz) != sz)
-			/* no short writes on tmpfs */
+			 
 			ksft_exit_fail_msg("write - %s\n", strerror(errno));
 	}
 
@@ -192,7 +190,7 @@ static bool fork_wait(void)
 			ksft_print_msg("Child failed\n");
 			nerrs++;
 		} else {
-			/* don't print this message for mpid */
+			 
 			if (getpid() != mpid)
 				ksft_test_result_pass("Passed\n");
 		}
@@ -264,7 +262,7 @@ static int do_tests(int uid, const char *our_path)
 
 	capng_get_caps_process();
 
-	/* Make sure that i starts out clear */
+	 
 	capng_update(CAPNG_DROP, CAPNG_INHERITABLE, CAP_NET_BIND_SERVICE);
 	if (capng_apply(CAPNG_SELECT_CAPS) != 0)
 		ksft_exit_fail_msg("capng_apply - %s\n", strerror(errno));
@@ -281,7 +279,7 @@ static int do_tests(int uid, const char *our_path)
 
 	ksft_print_msg("Check cap_ambient manipulation rules\n");
 
-	/* We should not be able to add ambient caps yet. */
+	 
 	if (prctl(PR_CAP_AMBIENT, PR_CAP_AMBIENT_RAISE, CAP_NET_BIND_SERVICE, 0, 0, 0) != -1 || errno != EPERM) {
 		if (errno == EINVAL)
 			ksft_test_result_fail(
@@ -368,7 +366,7 @@ static int do_tests(int uid, const char *our_path)
 	if (fork_wait())
 		exec_validate_cap(true, true, true, true);
 
-	/* The remaining tests need real privilege */
+	 
 
 	if (!have_outer_privilege) {
 		ksft_test_result_skip("SUID/SGID tests (needs privilege)\n");
@@ -430,7 +428,7 @@ int main(int argc, char **argv)
 {
 	char *tmp1, *tmp2, *our_path;
 
-	/* Find our path */
+	 
 	tmp1 = strdup(argv[0]);
 	if (!tmp1)
 		ksft_exit_fail_msg("strdup - %s\n", strerror(errno));

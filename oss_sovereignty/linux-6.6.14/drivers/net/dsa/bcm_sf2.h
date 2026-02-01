@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * Broadcom Starfighter2 private context
- *
- * Copyright (C) 2014, Broadcom Corporation
- */
+ 
+ 
 
 #ifndef __BCM_SF2_H
 #define __BCM_SF2_H
@@ -50,7 +46,7 @@ struct bcm_sf2_port_status {
 };
 
 struct bcm_sf2_cfp_priv {
-	/* Mutex protecting concurrent accesses to the CFP registers */
+	 
 	struct mutex lock;
 	DECLARE_BITMAP(used, CFP_NUM_RULES);
 	DECLARE_BITMAP(unique, CFP_NUM_RULES);
@@ -59,7 +55,7 @@ struct bcm_sf2_cfp_priv {
 };
 
 struct bcm_sf2_priv {
-	/* Base registers, keep those in order with BCM_SF2_REGS_NAME */
+	 
 	void __iomem			*core;
 	void __iomem			*reg;
 	void __iomem			*intrl2_0;
@@ -69,14 +65,14 @@ struct bcm_sf2_priv {
 
 	struct reset_control		*rcdev;
 
-	/* Register offsets indirection tables */
+	 
 	u32 				type;
 	const u16			*reg_offsets;
 	unsigned int			core_reg_align;
 	unsigned int			num_cfp_rules;
 	unsigned int			num_crossbar_int_ports;
 
-	/* spinlock protecting access to the indirect registers */
+	 
 	spinlock_t			indir_lock;
 
 	int				irq0;
@@ -86,35 +82,35 @@ struct bcm_sf2_priv {
 	u32				irq1_stat;
 	u32				irq1_mask;
 
-	/* Backing b53_device */
+	 
 	struct b53_device		*dev;
 
 	struct bcm_sf2_hw_params	hw_params;
 
 	struct bcm_sf2_port_status	port_sts[DSA_MAX_PORTS];
 
-	/* Mask of ports enabled for Wake-on-LAN */
+	 
 	u32				wol_ports_mask;
 
 	struct clk			*clk;
 	struct clk			*clk_mdiv;
 
-	/* MoCA port location */
+	 
 	int				moca_port;
 
-	/* Bitmask of ports having an integrated PHY */
+	 
 	unsigned int			int_phy_mask;
 
-	/* Master and slave MDIO bus controller */
+	 
 	unsigned int			indir_phy_mask;
 	struct device_node		*master_mii_dn;
 	struct mii_bus			*slave_mii_bus;
 	struct mii_bus			*master_mii_bus;
 
-	/* Bitmask of ports needing BRCM tags */
+	 
 	unsigned int			brcm_tag_mask;
 
-	/* CFP rules context */
+	 
 	struct bcm_sf2_cfp_priv		cfp;
 };
 
@@ -141,11 +137,7 @@ static inline void name##_writel(struct bcm_sf2_priv *priv,		\
 	writel_relaxed(val, priv->name + off);				\
 }									\
 
-/* Accesses to 64-bits register requires us to latch the hi/lo pairs
- * using the REG_DIR_DATA_{READ,WRITE} ancillary registers. The 'indir_lock'
- * spinlock is automatically grabbed and released to provide relative
- * atomiticy with latched reads/writes.
- */
+ 
 #define SF2_IO64_MACRO(name) \
 static inline u64 name##_readq(struct bcm_sf2_priv *priv, u32 off)	\
 {									\
@@ -220,7 +212,7 @@ static inline void reg_led_writel(struct bcm_sf2_priv *priv, u32 val, u16 off, u
 	writel_relaxed(val, priv->reg + priv->reg_offsets[off] + reg);
 }
 
-/* RXNFC */
+ 
 int bcm_sf2_get_rxnfc(struct dsa_switch *ds, int port,
 		      struct ethtool_rxnfc *nfc, u32 *rule_locs);
 int bcm_sf2_set_rxnfc(struct dsa_switch *ds, int port,
@@ -234,4 +226,4 @@ void bcm_sf2_cfp_get_ethtool_stats(struct dsa_switch *ds, int port,
 				   uint64_t *data);
 int bcm_sf2_cfp_get_sset_count(struct dsa_switch *ds, int port, int sset);
 
-#endif /* __BCM_SF2_H */
+#endif  

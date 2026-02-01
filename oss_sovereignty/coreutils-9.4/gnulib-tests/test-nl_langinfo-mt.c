@@ -1,31 +1,15 @@
-/* Multithread-safety test for nl_langinfo().
-   Copyright (C) 2019-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2019.  */
+ 
 
 #include <config.h>
 
-/* Work around GCC bug 44511.  */
+ 
 #if 4 < __GNUC__ + (3 <= __GNUC_MINOR__)
 # pragma GCC diagnostic ignored "-Wreturn-type"
 #endif
 
 #if USE_ISOC_THREADS || USE_POSIX_THREADS || USE_ISOC_AND_POSIX_THREADS || USE_WINDOWS_THREADS
 
-/* Specification.  */
+ 
 #include <langinfo.h>
 
 #include <locale.h>
@@ -37,7 +21,7 @@
 #include "glthread/thread.h"
 
 
-/* Some common locale names.  */
+ 
 
 #if defined _WIN32 && !defined __CYGWIN__
 # define ENGLISH "English_United States"
@@ -76,7 +60,7 @@ thread1_func (void *arg)
         }
     }
 
-  /*NOTREACHED*/
+   
 }
 
 static char *expected2;
@@ -94,7 +78,7 @@ thread2_func (void *arg)
         }
     }
 
-  /*NOTREACHED*/
+   
 }
 
 static char *expected3;
@@ -112,7 +96,7 @@ thread3_func (void *arg)
         }
     }
 
-  /*NOTREACHED*/
+   
 }
 
 static char *expected4;
@@ -130,7 +114,7 @@ thread4_func (void *arg)
         }
     }
 
-  /*NOTREACHED*/
+   
 }
 
 static char *expected5;
@@ -148,7 +132,7 @@ thread5_func (void *arg)
         }
     }
 
-  /*NOTREACHED*/
+   
 }
 
 static char *expected6;
@@ -166,7 +150,7 @@ thread6_func (void *arg)
         }
     }
 
-  /*NOTREACHED*/
+   
 }
 
 static void *
@@ -174,19 +158,19 @@ threadN_func (void *arg)
 {
   for (;;)
     {
-      nl_langinfo (CODESET);   /* LC_CTYPE */    /* locale charmap */
-      nl_langinfo (AM_STR);    /* LC_TIME */     /* locale -k am_pm */
-      nl_langinfo (PM_STR);    /* LC_TIME */     /* locale -k am_pm */
-      nl_langinfo (DAY_2);     /* LC_TIME */     /* locale -k day */
-      nl_langinfo (DAY_5);     /* LC_TIME */     /* locale -k day */
-      nl_langinfo (ALTMON_2);  /* LC_TIME */     /* locale -k alt_mon */
-      nl_langinfo (ALTMON_9);  /* LC_TIME */     /* locale -k alt_mon */
-      nl_langinfo (CRNCYSTR);  /* LC_MONETARY */ /* locale -k currency_symbol */
-      nl_langinfo (RADIXCHAR); /* LC_NUMERIC */  /* locale -k decimal_point */
-      nl_langinfo (THOUSEP);   /* LC_NUMERIC */  /* locale -k thousands_sep */
+      nl_langinfo (CODESET);         
+      nl_langinfo (AM_STR);           
+      nl_langinfo (PM_STR);           
+      nl_langinfo (DAY_2);            
+      nl_langinfo (DAY_5);            
+      nl_langinfo (ALTMON_2);         
+      nl_langinfo (ALTMON_9);         
+      nl_langinfo (CRNCYSTR);     
+      nl_langinfo (RADIXCHAR);     
+      nl_langinfo (THOUSEP);       
     }
 
-  /*NOTREACHED*/
+   
 }
 
 int
@@ -215,17 +199,17 @@ main (int argc, char *argv[])
   expected5 = strdup (nl_langinfo (CRNCYSTR));
   expected6 = strdup (nl_langinfo (RADIXCHAR));
 
-  /* Create the checker threads.  */
+   
   gl_thread_create (thread1_func, NULL);
   gl_thread_create (thread2_func, NULL);
   gl_thread_create (thread3_func, NULL);
   gl_thread_create (thread4_func, NULL);
   gl_thread_create (thread5_func, NULL);
   gl_thread_create (thread6_func, NULL);
-  /* Create the disturber thread.  */
+   
   gl_thread_create (threadN_func, NULL);
 
-  /* Let them run for 2 seconds.  */
+   
   {
     struct timespec duration;
     duration.tv_sec = (argc > 1 ? atoi (argv[1]) : 2);
@@ -239,7 +223,7 @@ main (int argc, char *argv[])
 
 #else
 
-/* No multithreading available.  */
+ 
 
 #include <stdio.h>
 

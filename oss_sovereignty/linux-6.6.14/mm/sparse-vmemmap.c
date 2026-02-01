@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Virtual Memory Map support
- *
- * (C) 2007 sgi. Christoph Lameter.
- *
- * Virtual memory maps allow VM primitives pfn_to_page, page_to_pfn,
- * virt_to_page, page_address() to be implemented as a base offset
- * calculation without memory access.
- *
- * However, virtual mappings need a page table and TLBs. Many Linux
- * architectures already map their physical space using 1-1 mappings
- * via TLBs. For those arches the virtual memory map is essentially
- * for free if we use the same page size as the 1-1 mappings. In that
- * case the overhead consists of a few additional pages that are
- * allocated to create a view of memory for vmemmap.
- *
- * The architecture is expected to provide a vmemmap_populate() function
- * to instantiate the mapping.
- */
+
+ 
 #include <linux/mm.h>
 #include <linux/mmzone.h>
 #include <linux/memblock.h>
@@ -31,11 +13,7 @@
 #include <asm/dma.h>
 #include <asm/pgalloc.h>
 
-/*
- * Allocate a block of memory to be used to back the virtual memory map
- * or to back the page tables that are used to create the mapping.
- * Uses the main allocators if they are available, else bootmem.
- */
+ 
 
 static void * __ref __earlyonly_bootmem_alloc(int node,
 				unsigned long size,
@@ -48,7 +26,7 @@ static void * __ref __earlyonly_bootmem_alloc(int node,
 
 void * __meminit vmemmap_alloc_block(unsigned long size, int node)
 {
-	/* If the main allocator is up use that, fallback to bootmem. */
+	 
 	if (slab_is_available()) {
 		gfp_t gfp_mask = GFP_KERNEL|__GFP_RETRY_MAYFAIL|__GFP_NOWARN;
 		int order = get_order(size);
@@ -73,7 +51,7 @@ void * __meminit vmemmap_alloc_block(unsigned long size, int node)
 static void * __meminit altmap_alloc_block_buf(unsigned long size,
 					       struct vmem_altmap *altmap);
 
-/* need to make sure size is all the same during early stage */
+ 
 void * __meminit vmemmap_alloc_block_buf(unsigned long size, int node,
 					 struct vmem_altmap *altmap)
 {
@@ -155,15 +133,7 @@ pte_t * __meminit vmemmap_pte_populate(pmd_t *pmd, unsigned long addr, int node,
 			if (!p)
 				return NULL;
 		} else {
-			/*
-			 * When a PTE/PMD entry is freed from the init_mm
-			 * there's a free_pages() call to this page allocated
-			 * above. Thus this get_page() is paired with the
-			 * put_page_testzero() on the freeing path.
-			 * This can only called by certain ZONE_DEVICE path,
-			 * and through vmemmap_populate_compound_pages() when
-			 * slab is available.
-			 */
+			 
 			get_page(reuse);
 			p = page_to_virt(reuse);
 		}
@@ -340,14 +310,7 @@ int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
 				vmemmap_set_pmd(pmd, p, node, addr, next);
 				continue;
 			} else if (altmap) {
-				/*
-				 * No fallback: In any case we care about, the
-				 * altmap should be reasonably sized and aligned
-				 * such that vmemmap_alloc_block_buf() will always
-				 * succeed. For consistency with the PTE case,
-				 * return an error here as failure could indicate
-				 * a configuration issue with the size of the altmap.
-				 */
+				 
 				return -ENOMEM;
 			}
 		} else if (vmemmap_check_pmd(pmd, node, addr, next))
@@ -359,16 +322,7 @@ int __meminit vmemmap_populate_hugepages(unsigned long start, unsigned long end,
 }
 
 #ifndef vmemmap_populate_compound_pages
-/*
- * For compound pages bigger than section size (e.g. x86 1G compound
- * pages with 2M subsection size) fill the rest of sections as tail
- * pages.
- *
- * Note that memremap_pages() resets @nr_range value and will increment
- * it after each range successful onlining. Thus the value or @nr_range
- * at section memmap populate corresponds to the in-progress range
- * being onlined here.
- */
+ 
 static bool __meminit reuse_compound_section(unsigned long start_pfn,
 					     struct dev_pagemap *pgmap)
 {
@@ -385,10 +339,7 @@ static pte_t * __meminit compound_section_tail_page(unsigned long addr)
 
 	addr -= PAGE_SIZE;
 
-	/*
-	 * Assuming sections are populated sequentially, the previous section's
-	 * page data can be reused.
-	 */
+	 
 	pte = pte_offset_kernel(pmd_off_k(addr), addr);
 	if (!pte)
 		return NULL;
@@ -410,10 +361,7 @@ static int __meminit vmemmap_populate_compound_pages(unsigned long start_pfn,
 		if (!pte)
 			return -ENOMEM;
 
-		/*
-		 * Reuse the page that was populated in the prior iteration
-		 * with just tail struct pages.
-		 */
+		 
 		return vmemmap_populate_range(start, end, node, NULL,
 					      pte_page(ptep_get(pte)));
 	}
@@ -422,21 +370,18 @@ static int __meminit vmemmap_populate_compound_pages(unsigned long start_pfn,
 	for (addr = start; addr < end; addr += size) {
 		unsigned long next, last = addr + size;
 
-		/* Populate the head page vmemmap page */
+		 
 		pte = vmemmap_populate_address(addr, node, NULL, NULL);
 		if (!pte)
 			return -ENOMEM;
 
-		/* Populate the tail pages vmemmap page */
+		 
 		next = addr + PAGE_SIZE;
 		pte = vmemmap_populate_address(next, node, NULL, NULL);
 		if (!pte)
 			return -ENOMEM;
 
-		/*
-		 * Reuse the previous page for the rest of tail pages
-		 * See layout diagram in Documentation/mm/vmemmap_dedup.rst
-		 */
+		 
 		next += PAGE_SIZE;
 		rc = vmemmap_populate_range(next, last, node, NULL,
 					    pte_page(ptep_get(pte)));

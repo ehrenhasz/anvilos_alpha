@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 2017 Stefano Stabellini <stefano@aporeto.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/net.h>
@@ -39,16 +37,16 @@ struct pvcalls_bedata {
 	wait_queue_head_t inflight_req;
 	struct xen_pvcalls_response rsp[PVCALLS_NR_RSP_PER_RING];
 };
-/* Only one front/back connection supported. */
+ 
 static struct xenbus_device *pvcalls_front_dev;
 static atomic_t pvcalls_refcount;
 
-/* first increment refcount, then proceed */
+ 
 #define pvcalls_enter() {               \
 	atomic_inc(&pvcalls_refcount);      \
 }
 
-/* first complete other operations, then decrement refcount */
+ 
 #define pvcalls_exit() {                \
 	atomic_dec(&pvcalls_refcount);      \
 }
@@ -70,21 +68,12 @@ struct sock_mapping {
 			wait_queue_head_t inflight_conn_req;
 		} active;
 		struct {
-		/*
-		 * Socket status, needs to be 64-bit aligned due to the
-		 * test_and_* functions which have this requirement on arm64.
-		 */
+		 
 #define PVCALLS_STATUS_UNINITALIZED  0
 #define PVCALLS_STATUS_BIND          1
 #define PVCALLS_STATUS_LISTEN        2
 			uint8_t status __attribute__((aligned(8)));
-		/*
-		 * Internal state-machine flags.
-		 * Only one accept operation can be inflight for a socket.
-		 * Only one poll operation can be inflight for a given socket.
-		 * flags needs to be 64-bit aligned due to the test_and_*
-		 * functions which have this requirement on arm64.
-		 */
+		 
 #define PVCALLS_FLAG_ACCEPT_INFLIGHT 0
 #define PVCALLS_FLAG_POLL_INFLIGHT   1
 #define PVCALLS_FLAG_POLL_RET        2
@@ -191,11 +180,7 @@ again:
 
 			clear_bit(PVCALLS_FLAG_POLL_INFLIGHT,
 				  (void *)&map->passive.flags);
-			/*
-			 * clear INFLIGHT, then set RET. It pairs with
-			 * the checks at the beginning of
-			 * pvcalls_front_poll_passive.
-			 */
+			 
 			smp_wmb();
 			set_bit(PVCALLS_FLAG_POLL_RET,
 				(void *)&map->passive.flags);
@@ -204,10 +189,7 @@ again:
 			      sizeof(rsp->req_id);
 			src = (uint8_t *)rsp + sizeof(rsp->req_id);
 			memcpy(dst, src, sizeof(*rsp) - sizeof(rsp->req_id));
-			/*
-			 * First copy the rest of the data, then req_id. It is
-			 * paired with the barrier when accessing bedata->rsp.
-			 */
+			 
 			smp_wmb();
 			bedata->rsp[req_id].req_id = req_id;
 		}
@@ -274,13 +256,7 @@ int pvcalls_front_socket(struct socket *sock)
 	struct xen_pvcalls_request *req;
 	int notify, req_id, ret;
 
-	/*
-	 * PVCalls only supports domain AF_INET,
-	 * type SOCK_STREAM and protocol 0 sockets for now.
-	 *
-	 * Check socket type here, AF_INET and protocol checks are done
-	 * by the caller.
-	 */
+	 
 	if (sock->type != SOCK_STREAM)
 		return -EOPNOTSUPP;
 
@@ -307,12 +283,7 @@ int pvcalls_front_socket(struct socket *sock)
 		return ret;
 	}
 
-	/*
-	 * sock->sk->sk_send_head is not used for ip sockets: reuse the
-	 * field to store a pointer to the struct sock_mapping
-	 * corresponding to the socket. This way, we can easily get the
-	 * struct sock_mapping from the struct socket.
-	 */
+	 
 	sock->sk->sk_send_head = (void *)map;
 	list_add_tail(&map->list, &bedata->socket_mappings);
 
@@ -333,7 +304,7 @@ int pvcalls_front_socket(struct socket *sock)
 	wait_event(bedata->inflight_req,
 		   READ_ONCE(bedata->rsp[req_id].req_id) == req_id);
 
-	/* read req_id, then the content */
+	 
 	smp_rmb();
 	ret = bedata->rsp[req_id].ret;
 	bedata->rsp[req_id].req_id = PVCALLS_INVALID_ID;
@@ -479,7 +450,7 @@ int pvcalls_front_connect(struct socket *sock, struct sockaddr *addr,
 	wait_event(bedata->inflight_req,
 		   READ_ONCE(bedata->rsp[req_id].req_id) == req_id);
 
-	/* read req_id, then the content */
+	 
 	smp_rmb();
 	ret = bedata->rsp[req_id].ret;
 	bedata->rsp[req_id].req_id = PVCALLS_INVALID_ID;
@@ -501,7 +472,7 @@ static int __write_ring(struct pvcalls_data_intf *intf,
 		return error;
 	cons = intf->out_cons;
 	prod = intf->out_prod;
-	/* read indexes before continuing */
+	 
 	virt_mb();
 
 	size = pvcalls_queued(prod, cons, array_size);
@@ -531,7 +502,7 @@ static int __write_ring(struct pvcalls_data_intf *intf,
 		}
 	}
 out:
-	/* write to ring before updating pointer */
+	 
 	virt_wmb();
 	intf->out_prod += len;
 
@@ -594,7 +565,7 @@ static int __read_ring(struct pvcalls_data_intf *intf,
 	cons = intf->in_cons;
 	prod = intf->in_prod;
 	error = intf->in_error;
-	/* get pointers before reading from the ring */
+	 
 	virt_rmb();
 
 	size = pvcalls_queued(prod, cons, array_size);
@@ -623,7 +594,7 @@ static int __read_ring(struct pvcalls_data_intf *intf,
 		}
 	}
 out:
-	/* read data from the ring before increasing the index */
+	 
 	virt_mb();
 	if (!(flags & MSG_PEEK))
 		intf->in_cons += len;
@@ -710,7 +681,7 @@ int pvcalls_front_bind(struct socket *sock, struct sockaddr *addr, int addr_len)
 	wait_event(bedata->inflight_req,
 		   READ_ONCE(bedata->rsp[req_id].req_id) == req_id);
 
-	/* read req_id, then the content */
+	 
 	smp_rmb();
 	ret = bedata->rsp[req_id].ret;
 	bedata->rsp[req_id].req_id = PVCALLS_INVALID_ID;
@@ -759,7 +730,7 @@ int pvcalls_front_listen(struct socket *sock, int backlog)
 	wait_event(bedata->inflight_req,
 		   READ_ONCE(bedata->rsp[req_id].req_id) == req_id);
 
-	/* read req_id, then the content */
+	 
 	smp_rmb();
 	ret = bedata->rsp[req_id].ret;
 	bedata->rsp[req_id].req_id = PVCALLS_INVALID_ID;
@@ -789,10 +760,7 @@ int pvcalls_front_accept(struct socket *sock, struct socket *newsock, int flags)
 	}
 
 	nonblock = flags & SOCK_NONBLOCK;
-	/*
-	 * Backend only supports 1 inflight accept request, will return
-	 * errors for the others
-	 */
+	 
 	if (test_and_set_bit(PVCALLS_FLAG_ACCEPT_INFLIGHT,
 			     (void *)&map->passive.flags)) {
 		req_id = READ_ONCE(map->passive.inflight_req_id);
@@ -865,7 +833,7 @@ int pvcalls_front_accept(struct socket *sock, struct socket *newsock, int flags)
 	spin_unlock(&bedata->socket_lock);
 	if (notify)
 		notify_remote_via_irq(bedata->irq);
-	/* We could check if we have received a response before returning. */
+	 
 	if (nonblock) {
 		WRITE_ONCE(map->passive.inflight_req_id, req_id);
 		pvcalls_exit_sock(sock);
@@ -877,7 +845,7 @@ int pvcalls_front_accept(struct socket *sock, struct socket *newsock, int flags)
 		pvcalls_exit_sock(sock);
 		return -EINTR;
 	}
-	/* read req_id, then the content */
+	 
 	smp_rmb();
 
 received:
@@ -929,11 +897,7 @@ static __poll_t pvcalls_front_poll_passive(struct file *file,
 			       (void *)&map->passive.flags))
 		return EPOLLIN | EPOLLRDNORM;
 
-	/*
-	 * First check RET, then INFLIGHT. No barriers necessary to
-	 * ensure execution ordering because of the conditional
-	 * instructions creating control dependencies.
-	 */
+	 
 
 	if (test_and_set_bit(PVCALLS_FLAG_POLL_INFLIGHT,
 			     (void *)&map->passive.flags)) {
@@ -1048,19 +1012,11 @@ int pvcalls_front_release(struct socket *sock)
 		   READ_ONCE(bedata->rsp[req_id].req_id) == req_id);
 
 	if (map->active_socket) {
-		/*
-		 * Set in_error and wake up inflight_conn_req to force
-		 * recvmsg waiters to exit.
-		 */
+		 
 		map->active.ring->in_error = -EBADF;
 		wake_up_interruptible(&map->active.inflight_conn_req);
 
-		/*
-		 * We need to make sure that sendmsg/recvmsg on this socket have
-		 * not started before we've cleared sk_send_head here. The
-		 * easiest way to guarantee this is to see that no pvcalls
-		 * (other than us) is in progress on this socket.
-		 */
+		 
 		while (atomic_read(&map->refcount) > 1)
 			cpu_relax();
 
@@ -1117,7 +1073,7 @@ static void pvcalls_front_remove(struct xenbus_device *dev)
 		cpu_relax();
 	list_for_each_entry_safe(map, n, &bedata->socket_mappings, list) {
 		if (map->active_socket) {
-			/* No need to lock, refcount is 0 */
+			 
 			pvcalls_front_free_map(bedata, map);
 		} else {
 			list_del(&map->list);
@@ -1164,7 +1120,7 @@ static int pvcalls_front_probe(struct xenbus_device *dev,
 		return -ENODEV;
 	function_calls = xenbus_read_unsigned(dev->otherend,
 					      "function-calls", 0);
-	/* See XENBUS_FUNCTIONS_CALLS in pvcalls.h */
+	 
 	if (function_calls != 1)
 		return -ENODEV;
 	pr_info("%s max-page-order is %u\n", __func__, max_page_order);
@@ -1269,7 +1225,7 @@ static void pvcalls_front_changed(struct xenbus_device *dev,
 	case XenbusStateClosed:
 		if (dev->state == XenbusStateClosed)
 			break;
-		/* Missed the backend's CLOSING state */
+		 
 		fallthrough;
 	case XenbusStateClosing:
 		xenbus_frontend_closed(dev);

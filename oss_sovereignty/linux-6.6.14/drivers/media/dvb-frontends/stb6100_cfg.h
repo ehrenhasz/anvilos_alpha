@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
-	STB6100 Silicon Tuner
-	Copyright (C) Manu Abraham (abraham.manu@gmail.com)
-
-	Copyright (C) ST Microelectronics
-
-*/
+ 
+ 
 
 #include <linux/dvb/frontend.h>
 #include <media/dvb_frontend.h>
@@ -35,7 +29,7 @@ static int stb6100_set_frequency(struct dvb_frontend *fe, u32 frequency)
 	int err = 0;
 
 	c->frequency = frequency;
-	c->bandwidth_hz = 0;		/* Don't adjust the bandwidth */
+	c->bandwidth_hz = 0;		 
 
 	if (tuner_ops->set_params) {
 		err = tuner_ops->set_params(fe);
@@ -73,7 +67,7 @@ static int stb6100_set_bandwidth(struct dvb_frontend *fe, u32 bandwidth)
 	int err = 0;
 
 	c->bandwidth_hz = bandwidth;
-	c->frequency = 0;		/* Don't adjust the frequency */
+	c->frequency = 0;		 
 
 	if (tuner_ops->set_params) {
 		err = tuner_ops->set_params(fe);

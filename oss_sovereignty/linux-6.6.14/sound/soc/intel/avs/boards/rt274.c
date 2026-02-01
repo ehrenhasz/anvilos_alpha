@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2021-2022 Intel Corporation. All rights reserved.
-//
-// Authors: Cezary Rojewski <cezary.rojewski@intel.com>
-//          Amadeusz Slawinski <amadeuszx.slawinski@linux.intel.com>
-//
+
+
+
+
+
+
+
 
 #include <linux/module.h>
 #include <sound/jack.h>
@@ -35,7 +35,7 @@ avs_rt274_clock_control(struct snd_soc_dapm_widget *w, struct snd_kcontrol *cont
 	if (!codec_dai)
 		return -EINVAL;
 
-	/* Codec needs clock for Jack detection and button press */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, RT274_SCLK_S_PLL2, AVS_RT274_FREQ_OUT,
 				     SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -107,7 +107,7 @@ static int avs_rt274_codec_init(struct snd_soc_pcm_runtime *runtime)
 
 	snd_soc_component_set_jack(component, jack, NULL);
 
-	/* TDM 4 slots 24 bit, set Rx & Tx bitmask to 4 active slots */
+	 
 	ret = snd_soc_dai_set_tdm_slot(codec_dai, 0xF, 0xF, 4, 24);
 	if (ret < 0) {
 		dev_err(card->dev, "can't set codec pcm format %d\n", ret);
@@ -133,11 +133,11 @@ static int avs_rt274_be_fixup(struct snd_soc_pcm_runtime *runtime, struct snd_pc
 	channels = hw_param_interval(params, SNDRV_PCM_HW_PARAM_CHANNELS);
 	fmt = hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT);
 
-	/* The ADSP will convert the FE rate to 48k, stereo */
+	 
 	rate->min = rate->max = AVS_RT274_BE_FIXUP_RATE;
 	channels->min = channels->max = 2;
 
-	/* set SSPN to 24 bit */
+	 
 	snd_mask_none(fmt);
 	snd_mask_set_format(fmt, SNDRV_PCM_FORMAT_S24_LE);
 

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Copyright (C) 2013 Boris BREZILLON <b.brezillon@overkiz.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/clkdev.h>
@@ -13,10 +11,7 @@
 
 #include "pmc.h"
 
-/*
- * The purpose of this clock is to generate a 480 MHz signal. A different
- * rate can't be configured.
- */
+ 
 #define UTMI_RATE	480000000
 
 struct clk_utmi {
@@ -46,11 +41,7 @@ static int clk_utmi_prepare(struct clk_hw *hw)
 	unsigned int utmi_ref_clk_freq;
 	unsigned long parent_rate;
 
-	/*
-	 * If mainck rate is different from 12 MHz, we have to configure the
-	 * FREQ field of the SFR_UTMICKTRIM register to generate properly
-	 * the utmi clock.
-	 */
+	 
 	hw_parent = clk_hw_get_parent(hw);
 	parent_rate = clk_hw_get_rate(hw_parent);
 
@@ -64,10 +55,7 @@ static int clk_utmi_prepare(struct clk_hw *hw)
 	case 24000000:
 		utmi_ref_clk_freq = 2;
 		break;
-	/*
-	 * Not supported on SAMA5D2 but it's not an issue since MAINCK
-	 * maximum value is 24 MHz.
-	 */
+	 
 	case 48000000:
 		utmi_ref_clk_freq = 3;
 		break;
@@ -110,7 +98,7 @@ static void clk_utmi_unprepare(struct clk_hw *hw)
 static unsigned long clk_utmi_recalc_rate(struct clk_hw *hw,
 					  unsigned long parent_rate)
 {
-	/* UTMI clk rate is fixed. */
+	 
 	return UTMI_RATE;
 }
 

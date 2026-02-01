@@ -1,24 +1,4 @@
-/*
- * Copyright 2019 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 #include "priv.h"
 
 #include <core/firmware.h>
@@ -138,11 +118,9 @@ nvkm_acr_bootstrap_falcons(struct nvkm_device *device, unsigned long mask)
 	struct nvkm_acr_lsf *rtos = nvkm_acr_rtos(acr);
 	unsigned long id;
 
-	/* If there's no LS FW managing bootstrapping of other LS falcons,
-	 * we depend on the HS firmware being able to do it instead.
-	 */
+	 
 	if (!rtos) {
-		/* Which isn't possible everywhere... */
+		 
 		if ((mask & acr->func->bootstrap_falcons) == mask) {
 			int ret = nvkm_acr_reload(acr);
 			if (ret)
@@ -230,11 +208,9 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 		return 0;
 	}
 
-	/* Determine layout/size of WPR image up-front, as we need to know
-	 * it to allocate memory before we begin constructing it.
-	 */
+	 
 	list_for_each_entry_safe(lsfw, lsft, &acr->lsfw, head) {
-		/* Cull unknown falcons that are present in WPR image. */
+		 
 		if (acr->wpr_fw) {
 			if (!lsfw->func) {
 				nvkm_acr_lsfw_del(lsfw);
@@ -244,7 +220,7 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 			wpr_size = acr->wpr_fw->size;
 		}
 
-		/* Ensure we've fetched falcon configuration. */
+		 
 		ret = nvkm_falcon_get(lsfw->falcon, subdev);
 		if (ret)
 			return ret;
@@ -260,7 +236,7 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 		acr->managed_falcons |= BIT_ULL(lsf->id);
 	}
 
-	/* Ensure the falcon that'll provide ACR functions is booted first. */
+	 
 	rtos = nvkm_acr_rtos(acr);
 	if (rtos) {
 		falcons = rtos->func->bootstrap_falcons;
@@ -269,9 +245,7 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 		falcons = acr->func->bootstrap_falcons;
 	}
 
-	/* Cull falcons that can't be bootstrapped, or the HSFW can fail to
-	 * boot and leave the GPU in a weird state.
-	 */
+	 
 	list_for_each_entry_safe(lsfw, lsft, &acr->lsfw, head) {
 		if (!(falcons & BIT_ULL(lsfw->id))) {
 			nvkm_warn(subdev, "%s falcon cannot be bootstrapped\n",
@@ -283,12 +257,7 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 	if (!acr->wpr_fw || acr->wpr_comp)
 		wpr_size = acr->func->wpr_layout(acr);
 
-	/* Allocate/Locate WPR + fill ucode blob pointer.
-	 *
-	 *  dGPU: allocate WPR + shadow blob
-	 * Tegra: locate WPR with regs, ensure size is sufficient,
-	 *        allocate ucode blob.
-	 */
+	 
 	ret = acr->func->wpr_alloc(acr, wpr_size);
 	if (ret)
 		return ret;
@@ -296,7 +265,7 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 	nvkm_debug(subdev, "WPR region is from 0x%llx-0x%llx (shadow 0x%llx)\n",
 		   acr->wpr_start, acr->wpr_end, acr->shadow_start);
 
-	/* Write WPR to ucode blob. */
+	 
 	nvkm_kmap(acr->wpr);
 	if (acr->wpr_fw && !acr->wpr_comp)
 		nvkm_wobj(acr->wpr, 0, acr->wpr_fw->data, acr->wpr_fw->size);
@@ -319,7 +288,7 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 	}
 	nvkm_done(acr->wpr);
 
-	/* Allocate instance block for ACR-related stuff. */
+	 
 	ret = nvkm_memory_new(device, NVKM_MEM_TARGET_INST, 0x1000, 0, true,
 			      &acr->inst);
 	if (ret)
@@ -335,7 +304,7 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 	if (ret)
 		return ret;
 
-	/* Load HS firmware blobs into ACR VMM. */
+	 
 	list_for_each_entry(hsfw, &acr->hsfw, head) {
 		switch (hsfw->falcon_id) {
 		case NVKM_ACR_HSF_PMU : falcon = &device->pmu->falcon; break;
@@ -351,7 +320,7 @@ nvkm_acr_oneinit(struct nvkm_subdev *subdev)
 			return ret;
 	}
 
-	/* Kill temporary data. */
+	 
 	nvkm_acr_cleanup(acr);
 	return 0;
 }
@@ -403,9 +372,7 @@ nvkm_acr_ctor_wpr(struct nvkm_acr *acr, int ver)
 	if (ret < 0)
 		return ret;
 
-	/* Pre-add LSFs in the order they appear in the FW WPR image so that
-	 * we're able to do a binary comparison with our own generator.
-	 */
+	 
 	ret = acr->func->wpr_parse(acr);
 	if (ret)
 		return ret;

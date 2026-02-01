@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Copyright (C) 2018 Oleksij Rempel <linux@rempel-privat.de>
- *
- * Driver for Alcor Micro AU6601 and AU6621 controllers
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/interrupt.h>
@@ -142,7 +138,7 @@ static int alcor_pci_probe(struct pci_dev *pdev,
 		goto error_release_regions;
 	}
 
-	/* make sure irqs are disabled */
+	 
 	alcor_write32(priv, 0, AU6601_REG_INT_ENABLE);
 	alcor_write32(priv, 0, AU6601_MS_INT_ENABLE);
 
@@ -208,7 +204,7 @@ static int alcor_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM_SLEEP */
+#endif  
 
 static SIMPLE_DEV_PM_OPS(alcor_pci_pm_ops, alcor_suspend, alcor_resume);
 

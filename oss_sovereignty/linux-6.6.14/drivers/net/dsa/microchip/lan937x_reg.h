@@ -1,13 +1,11 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Microchip LAN937X switch register definitions
- * Copyright (C) 2019-2021 Microchip Technology Inc.
- */
+ 
+ 
 #ifndef __LAN937X_REG_H
 #define __LAN937X_REG_H
 
 #define PORT_CTRL_ADDR(port, addr)	((addr) | (((port) + 1)  << 12))
 
-/* 0 - Operation */
+ 
 #define REG_GLOBAL_CTRL_0		0x0007
 
 #define SW_PHY_REG_BLOCK		BIT(7)
@@ -32,12 +30,12 @@
 #define REG_SW_PORT_INT_STATUS__4	0x0018
 #define REG_SW_PORT_INT_MASK__4		0x001C
 
-/* 1 - Global */
+ 
 #define REG_SW_GLOBAL_OUTPUT_CTRL__1	0x0103
 #define SW_CLK125_ENB			BIT(1)
 #define SW_CLK25_ENB			BIT(0)
 
-/* 3 - Operation Control */
+ 
 #define REG_SW_OPERATION		0x0300
 
 #define SW_DOUBLE_TAG			BIT(7)
@@ -86,7 +84,7 @@
 #define SW_MIB_COUNTER_FLUSH		BIT(7)
 #define SW_MIB_COUNTER_FREEZE		BIT(6)
 
-/* 4 - LUE */
+ 
 #define REG_SW_ALU_STAT_CTRL__4		0x041C
 
 #define REG_SW_ALU_VAL_B		0x0424
@@ -94,7 +92,7 @@
 #define ALU_V_USE_FID			BIT(30)
 #define ALU_V_PORT_MAP			0xFF
 
-/* 7 - VPhy */
+ 
 #define REG_VPHY_IND_ADDR__2		0x075C
 #define REG_VPHY_IND_DATA__2		0x0760
 
@@ -121,9 +119,9 @@
 #define VPHY_SPEED_100			BIT(3)
 #define VPHY_FULL_DUPLEX		BIT(2)
 
-/* Port Registers */
+ 
 
-/* 0 - Operation */
+ 
 #define REG_PORT_INT_STATUS		0x001B
 #define REG_PORT_INT_MASK		0x001F
 
@@ -145,10 +143,10 @@
 #define PORT_TAIL_TAG_ENABLE		BIT(2)
 #define PORT_QUEUE_SPLIT_ENABLE		0x3
 
-/* 1 - Phy */
+ 
 #define REG_PORT_T1_PHY_CTRL_BASE	0x0100
 
-/* 3 - xMII */
+ 
 #define PORT_SGMII_SEL			BIT(7)
 #define PORT_GRXC_ENABLE		BIT(0)
 
@@ -160,7 +158,7 @@
 #define PORT_DLL_RESET			BIT(15)
 #define PORT_TUNE_ADJ			GENMASK(13, 7)
 
-/* 4 - MAC */
+ 
 #define REG_PORT_MAC_CTRL_0		0x0400
 #define PORT_CHECK_LENGTH		BIT(2)
 #define PORT_BROADCAST_STORM		BIT(1)
@@ -173,7 +171,7 @@
 #define PORT_MAX_FR_SIZE		0x404
 #define FR_MIN_SIZE		1522
 
-/* 8 - Classification and Policing */
+ 
 #define REG_PORT_MRI_PRIO_CTRL		0x0801
 #define PORT_HIGHEST_PRIO		BIT(7)
 #define PORT_OR_PRIO			BIT(6)
@@ -185,10 +183,10 @@
 
 #define P_PRIO_CTRL			REG_PORT_MRI_PRIO_CTRL
 
-/* 9 - Shaping */
+ 
 #define REG_PORT_MTI_CREDIT_INCREMENT	0x091C
 
-/* The port number as per the datasheet */
+ 
 #define RGMII_2_PORT_NUM		5
 #define RGMII_1_PORT_NUM		6
 

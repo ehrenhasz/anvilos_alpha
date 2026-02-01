@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Renesas RZ/G2L USBPHY control driver
- *
- * Copyright (C) 2021 Renesas Electronics Corporation
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/module.h>
@@ -90,7 +86,7 @@ static int rzg2l_usbphy_ctrl_status(struct reset_controller_dev *rcdev,
 
 static const struct of_device_id rzg2l_usbphy_ctrl_match_table[] = {
 	{ .compatible = "renesas,rzg2l-usbphy-ctrl" },
-	{ /* Sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rzg2l_usbphy_ctrl_match_table);
 
@@ -146,7 +142,7 @@ static int rzg2l_usbphy_ctrl_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, error, "pm_runtime_resume_and_get failed");
 	}
 
-	/* put pll and phy into reset state */
+	 
 	spin_lock_irqsave(&priv->lock, flags);
 	val = readl(priv->base + RESET);
 	val |= RESET_SEL_PLLRESET | RESET_PLLRESET | PHY_RESET_PORT2 | PHY_RESET_PORT1;

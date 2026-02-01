@@ -1,10 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022 ARM Limited.
- * Original author: Mark Brown <broonie@kernel.org>
- */
 
-// SPDX-License-Identifier: GPL-2.0-only
+ 
+
+
 
 #include <linux/sched.h>
 #include <linux/wait.h>
@@ -16,11 +13,7 @@
 int fork_test(void);
 int verify_fork(void);
 
-/*
- * If we fork the value in the parent should be unchanged and the
- * child should start with the same value.  This is called from the
- * fork_test() asm function.
- */
+ 
 int fork_test_c(void)
 {
 	pid_t newpid, waiting;
@@ -28,7 +21,7 @@ int fork_test_c(void)
 
 	newpid = fork();
 	if (newpid == 0) {
-		/* In child */
+		 
 		if (!verify_fork()) {
 			ksft_print_msg("ZA state invalid in child\n");
 			exit(0);
@@ -78,11 +71,7 @@ int main(int argc, char **argv)
 
 	ksft_print_msg("PID: %d\n", getpid());
 
-	/*
-	 * This test is run with nolibc which doesn't support hwcap and
-	 * it's probably disproportionate to implement so instead check
-	 * for the default vector length configuration in /proc.
-	 */
+	 
 	ret = open("/proc/sys/abi/sme_default_vector_length", O_RDONLY, 0);
 	if (ret >= 0) {
 		ksft_test_result(fork_test(), "fork_test\n");

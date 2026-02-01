@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012 Red Hat
- *
- * Authors: Matthew Garrett
- *          Dave Airlie
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/pci.h>
@@ -53,7 +48,7 @@ resource_size_t mgag200_probe_vram(void __iomem *mem, resource_size_t size)
 	int orig1, orig2;
 	size_t vram_size;
 
-	/* Probe */
+	 
 	orig = ioread16(mem);
 	iowrite16(0, mem);
 
@@ -84,9 +79,7 @@ resource_size_t mgag200_probe_vram(void __iomem *mem, resource_size_t size)
 	return offset - 65536;
 }
 
-/*
- * DRM driver
- */
+ 
 
 DEFINE_DRM_GEM_FOPS(mgag200_driver_fops);
 
@@ -102,9 +95,7 @@ static const struct drm_driver mgag200_driver = {
 	DRM_GEM_SHMEM_DRIVER_OPS,
 };
 
-/*
- * DRM device
- */
+ 
 
 resource_size_t mgag200_device_probe_vram(struct mga_device *mdev)
 {
@@ -118,7 +109,7 @@ int mgag200_device_preinit(struct mga_device *mdev)
 	resource_size_t start, len;
 	struct resource *res;
 
-	/* BAR 1 contains registers */
+	 
 
 	start = pci_resource_start(pdev, 1);
 	len = pci_resource_len(pdev, 1);
@@ -134,7 +125,7 @@ int mgag200_device_preinit(struct mga_device *mdev)
 	if (!mdev->rmmio)
 		return -ENOMEM;
 
-	/* BAR 0 is VRAM */
+	 
 
 	start = pci_resource_start(pdev, 0);
 	len = pci_resource_len(pdev, 0);
@@ -146,7 +137,7 @@ int mgag200_device_preinit(struct mga_device *mdev)
 	}
 	mdev->vram_res = res;
 
-	/* Don't fail on errors, but performance might be reduced. */
+	 
 	devm_arch_io_reserve_memtype_wc(dev->dev, res->start, resource_size(res));
 	devm_arch_phys_wc_add(dev->dev, res->start, resource_size(res));
 
@@ -190,9 +181,7 @@ int mgag200_device_init(struct mga_device *mdev,
 	return 0;
 }
 
-/*
- * PCI driver
- */
+ 
 
 static const struct pci_device_id mgag200_pciidlist[] = {
 	{ PCI_VENDOR_ID_MATROX, 0x520, PCI_ANY_ID, PCI_ANY_ID, 0, 0, G200_PCI },
@@ -265,10 +254,7 @@ mgag200_pci_probe(struct pci_dev *pdev, const struct pci_device_id *ent)
 	if (ret)
 		return ret;
 
-	/*
-	 * FIXME: A 24-bit color depth does not work with 24 bpp on
-	 * G200ER. Force 32 bpp.
-	 */
+	 
 	drm_fbdev_generic_setup(dev, 32);
 
 	return 0;

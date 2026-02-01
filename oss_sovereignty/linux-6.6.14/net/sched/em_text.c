@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * net/sched/em_text.c	Textsearch ematch
- *
- * Authors:	Thomas Graf <tgraf@suug.ch>
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/module.h>

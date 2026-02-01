@@ -1,10 +1,6 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/******************************************************************************
- *
- * Copyright(c) 2007 - 2012 Realtek Corporation. All rights reserved.
- *
- ******************************************************************************/
-/*  The following is for 8723B 1ANT BT Co-exist definition */
+ 
+ 
+ 
 #define	BT_INFO_8723B_1ANT_B_FTP		BIT7
 #define	BT_INFO_8723B_1ANT_B_A2DP		BIT6
 #define	BT_INFO_8723B_1ANT_B_HID		BIT5
@@ -19,7 +15,7 @@
 
 #define	BTC_RSSI_COEX_THRESH_TOL_8723B_1ANT 2
 
-#define  BT_8723B_1ANT_WIFI_NOISY_THRESH 30   /* max: 255 */
+#define  BT_8723B_1ANT_WIFI_NOISY_THRESH 30    
 
 enum {
 	BT_INFO_SRC_8723B_1ANT_WIFI_FW			= 0x0,
@@ -64,7 +60,7 @@ enum {
 };
 
 struct coex_dm_8723b_1ant {
-	/*  fw mechanism */
+	 
 	bool bCurIgnoreWlanAct;
 	bool bPreIgnoreWlanAct;
 	u8 prePsTdma;
@@ -81,7 +77,7 @@ struct coex_dm_8723b_1ant {
 	u8 preRpwm;
 	u8 curRpwm;
 
-	/*  sw mechanism */
+	 
 	bool bPreLowPenaltyRa;
 	bool bCurLowPenaltyRa;
 	u32 preVal0x6c0;
@@ -94,12 +90,12 @@ struct coex_dm_8723b_1ant {
 	u8 curVal0x6cc;
 	bool bLimitedDig;
 
-	u32 backupArfrCnt1;	/*  Auto Rate Fallback Retry cnt */
-	u32 backupArfrCnt2;	/*  Auto Rate Fallback Retry cnt */
+	u32 backupArfrCnt1;	 
+	u32 backupArfrCnt2;	 
 	u16 backupRetryLimit;
 	u8 backupAmpduMaxTime;
 
-	/*  algorithm related */
+	 
 	u8 preAlgorithm;
 	u8 curAlgorithm;
 	u8 btStatus;
@@ -140,8 +136,8 @@ struct coex_sta_8723b_1ant {
 	u8 btInfoC2h[BT_INFO_SRC_8723B_1ANT_MAX][10];
 	u32 btInfoC2hCnt[BT_INFO_SRC_8723B_1ANT_MAX];
 	bool bC2hBtInquiryPage;
-	bool bC2hBtPage; /* Add for win8.1 page out issue */
-	bool bWiFiIsHighPriTask; /* Add for win8.1 page out issue */
+	bool bC2hBtPage;  
+	bool bWiFiIsHighPriTask;  
 	u8 btRetryCnt;
 	u8 btInfoExt;
 	u32 popEventCnt;
@@ -164,9 +160,9 @@ struct coex_sta_8723b_1ant {
 	bool bForceLpsOn;
 };
 
-/*  */
-/*  The following is interface which will notify coex module. */
-/*  */
+ 
+ 
+ 
 void EXhalbtc8723b1ant_PowerOnSetting(struct btc_coexist *pBtCoexist);
 void EXhalbtc8723b1ant_InitHwConfig(struct btc_coexist *pBtCoexist, bool bWifiOnly);
 void EXhalbtc8723b1ant_InitCoexDm(struct btc_coexist *pBtCoexist);

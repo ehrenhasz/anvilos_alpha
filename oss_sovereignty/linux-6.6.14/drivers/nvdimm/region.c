@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright(c) 2013-2015 Intel Corporation. All rights reserved.
- */
+
+ 
 #include <linux/memregion.h>
 #include <linux/cpumask.h>
 #include <linux/module.h>
@@ -60,15 +58,7 @@ static int nd_region_probe(struct device *dev)
 	if (err == 0)
 		return 0;
 
-	/*
-	 * Given multiple namespaces per region, we do not want to
-	 * disable all the successfully registered peer namespaces upon
-	 * a single registration failure.  If userspace is missing a
-	 * namespace that it expects it can disable/re-enable the region
-	 * to retry discovery after correcting the failure.
-	 * <regionX>/namespaces returns the current
-	 * "<async-registered>/<total>" namespace count.
-	 */
+	 
 	dev_err(dev, "failed to register %d namespace%s, continuing...\n",
 			err, err == 1 ? "" : "s");
 	return 0;
@@ -86,7 +76,7 @@ static void nd_region_remove(struct device *dev)
 
 	device_for_each_child(dev, NULL, child_unregister);
 
-	/* flush attribute readers and disable */
+	 
 	nvdimm_bus_lock(dev);
 	nd_region->ns_seed = NULL;
 	nd_region->btt_seed = NULL;
@@ -95,20 +85,11 @@ static void nd_region_remove(struct device *dev)
 	dev_set_drvdata(dev, NULL);
 	nvdimm_bus_unlock(dev);
 
-	/*
-	 * Note, this assumes device_lock() context to not race
-	 * nd_region_notify()
-	 */
+	 
 	sysfs_put(nd_region->bb_state);
 	nd_region->bb_state = NULL;
 
-	/*
-	 * Try to flush caches here since a disabled region may be subject to
-	 * secure erase while disabled, and previous dirty data should not be
-	 * written back to a new instance of the region. This only matters on
-	 * bare metal where security commands are available, so silent failure
-	 * here is ok.
-	 */
+	 
 	if (cpu_cache_has_invalidate_memregion())
 		cpu_cache_invalidate_memregion(IORES_DESC_PERSISTENT_MEMORY);
 }

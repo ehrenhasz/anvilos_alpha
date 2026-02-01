@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * VFIO PCI I/O Port & MMIO access
- *
- * Copyright (C) 2012 Red Hat, Inc.  All rights reserved.
- *     Author: Alex Williamson <alex.williamson@redhat.com>
- *
- * Derived from original vfio:
- * Copyright 2010 Cisco Systems, Inc.  All rights reserved.
- * Author: Tom Lyon, pugs@cisco.com
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/pci.h>
@@ -88,12 +79,7 @@ VFIO_IOREAD(8)
 VFIO_IOREAD(16)
 VFIO_IOREAD(32)
 
-/*
- * Read or write from an __iomem region (MMIO or I/O port) with an excluded
- * range which is inaccessible.  The excluded range drops writes and fills
- * reads with -1.  This is intended for handling MSI-X vector tables and
- * leftover space for ROM BARs.
- */
+ 
 static ssize_t do_io_rw(struct vfio_pci_core_device *vdev, bool test_mem,
 			void __iomem *io, char __user *buf,
 			loff_t off, size_t count, size_t x_start,
@@ -179,7 +165,7 @@ static ssize_t do_io_rw(struct vfio_pci_core_device *vdev, bool test_mem,
 
 			filled = 1;
 		} else {
-			/* Fill reads with -1, drop writes */
+			 
 			filled = min(count, (size_t)(x_end - off));
 			if (!iswrite) {
 				u8 val = 0xFF;
@@ -250,11 +236,7 @@ ssize_t vfio_pci_bar_rw(struct vfio_pci_core_device *vdev, char __user *buf,
 	count = min(count, (size_t)(end - pos));
 
 	if (bar == PCI_ROM_RESOURCE) {
-		/*
-		 * The ROM can fill less space than the BAR, so we start the
-		 * excluded range at the end of the actual ROM.  This makes
-		 * filling large ROM BARs much faster.
-		 */
+		 
 		io = pci_map_rom(pdev, &x_start);
 		if (!io) {
 			done = -ENOMEM;
@@ -340,11 +322,7 @@ ssize_t vfio_pci_vga_rw(struct vfio_pci_core_device *vdev, char __user *buf,
 		return ret;
 	}
 
-	/*
-	 * VGA MMIO is a legacy, non-BAR resource that hopefully allows
-	 * probing, so we don't currently worry about access in relation
-	 * to the memory enable bit in the command register.
-	 */
+	 
 	done = do_io_rw(vdev, false, iomem, buf, off, count, 0, 0, iswrite);
 
 	vga_put(vdev->pdev, rsrc);
@@ -390,7 +368,7 @@ static int vfio_pci_ioeventfd_handler(void *opaque, void *unused)
 
 	if (ioeventfd->test_mem) {
 		if (!down_read_trylock(&vdev->memory_lock))
-			return 1; /* Lock contended, use thread */
+			return 1;  
 		if (!__vfio_pci_memory_enabled(vdev)) {
 			up_read(&vdev->memory_lock);
 			return 0;
@@ -420,14 +398,14 @@ int vfio_pci_ioeventfd(struct vfio_pci_core_device *vdev, loff_t offset,
 	int ret, bar = VFIO_PCI_OFFSET_TO_INDEX(offset);
 	struct vfio_pci_ioeventfd *ioeventfd;
 
-	/* Only support ioeventfds into BARs */
+	 
 	if (bar > VFIO_PCI_BAR5_REGION_INDEX)
 		return -EINVAL;
 
 	if (pos + count > pci_resource_len(pdev, bar))
 		return -EINVAL;
 
-	/* Disallow ioeventfds working around MSI-X table writes */
+	 
 	if (bar == vdev->msix_bar &&
 	    !(pos + count <= vdev->msix_offset ||
 	      pos >= vdev->msix_offset + vdev->msix_size))

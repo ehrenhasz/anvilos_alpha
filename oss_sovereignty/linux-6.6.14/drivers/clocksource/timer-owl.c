@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Actions Semi Owl timer
- *
- * Copyright 2012 Actions Semi Inc.
- * Author: Actions Semi, Inc.
- *
- * Copyright (c) 2017 SUSE Linux GmbH
- * Author: Andreas Färber
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clockchips.h>
@@ -42,7 +34,7 @@ static inline void owl_timer_set_enabled(void __iomem *base, bool enabled)
 {
 	u32 ctl = readl(base + OWL_Tx_CTL);
 
-	/* PD bit is cleared when set */
+	 
 	ctl &= ~OWL_Tx_CTL_PD;
 
 	if (enabled)

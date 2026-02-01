@@ -1,27 +1,4 @@
-/* du -- summarize device usage
-   Copyright (C) 1988-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Differences from the Unix du:
-   * Doesn't simply ignore the names of regular files given as arguments
-     when -a is given.
-
-   By tege@sics.se, Torbjörn Granlund,
-   and djm@ai.mit.edu, David MacKenzie.
-   Variable blocks added by lm@sgi.com and eggert@twinsun.com.
-   Rewritten to use nftw, then to use fts by Jim Meyering.  */
+ 
 
 #include <config.h>
 #include <getopt.h>
@@ -45,7 +22,7 @@
 
 extern bool fts_debug;
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "du"
 
 #define AUTHORS \
@@ -60,32 +37,29 @@ extern bool fts_debug;
 # define FTS_CROSS_CHECK(Fts)
 #endif
 
-/* A set of dev/ino pairs to help identify files and directories
-   whose sizes have already been counted.  */
+ 
 static struct di_set *di_files;
 
-/* A set containing a dev/ino pair for each local mount point directory.  */
+ 
 static struct di_set *di_mnt;
 
-/* Keep track of the preceding "level" (depth in hierarchy)
-   from one call of process_file to the next.  */
+ 
 static size_t prev_level;
 
-/* Define a class for collecting directory information. */
+ 
 struct duinfo
 {
-  /* Size of files in directory.  */
+   
   uintmax_t size;
 
-  /* Number of inodes in directory.  */
+   
   uintmax_t inodes;
 
-  /* Latest timestamp found.  If tmax.tv_sec == TYPE_MINIMUM (time_t)
-     && tmax.tv_nsec < 0, no timestamp has been found.  */
+   
   struct timespec tmax;
 };
 
-/* Initialize directory data.  */
+ 
 static inline void
 duinfo_init (struct duinfo *a)
 {
@@ -95,7 +69,7 @@ duinfo_init (struct duinfo *a)
   a->tmax.tv_nsec = -1;
 }
 
-/* Set directory data.  */
+ 
 static inline void
 duinfo_set (struct duinfo *a, uintmax_t size, struct timespec tmax)
 {
@@ -104,7 +78,7 @@ duinfo_set (struct duinfo *a, uintmax_t size, struct timespec tmax)
   a->tmax = tmax;
 }
 
-/* Accumulate directory data.  */
+ 
 static inline void
 duinfo_add (struct duinfo *a, struct duinfo const *b)
 {
@@ -115,91 +89,86 @@ duinfo_add (struct duinfo *a, struct duinfo const *b)
     a->tmax = b->tmax;
 }
 
-/* A structure for per-directory level information.  */
+ 
 struct dulevel
 {
-  /* Entries in this directory.  */
+   
   struct duinfo ent;
 
-  /* Total for subdirectories.  */
+   
   struct duinfo subdir;
 };
 
-/* If true, display counts for all files, not just directories.  */
+ 
 static bool opt_all = false;
 
-/* If true, rather than using the device usage of each file,
-   use the apparent size (stat.st_size if usable, 0 otherwise).  */
+ 
 static bool apparent_size = false;
 
-/* If true, count each hard link of files with multiple links.  */
+ 
 static bool opt_count_all = false;
 
-/* If true, hash all files to look for hard links.  */
+ 
 static bool hash_all;
 
-/* If true, output the NUL byte instead of a newline at the end of each line. */
+ 
 static bool opt_nul_terminate_output = false;
 
-/* If true, print a grand total at the end.  */
+ 
 static bool print_grand_total = false;
 
-/* If nonzero, do not add sizes of subdirectories.  */
+ 
 static bool opt_separate_dirs = false;
 
-/* Show the total for each directory (and file if --all) that is at
-   most MAX_DEPTH levels down from the root of the hierarchy.  The root
-   is at level 0, so 'du --max-depth=0' is equivalent to 'du -s'.  */
+ 
 static idx_t max_depth = IDX_MAX;
 
-/* Only output entries with at least this SIZE if positive,
-   or at most if negative.  See --threshold option.  */
+ 
 static intmax_t opt_threshold = 0;
 
-/* Human-readable options for output.  */
+ 
 static int human_output_opts;
 
-/* Output inodes count instead of blocks used.  */
+ 
 static bool opt_inodes = false;
 
-/* If true, print most recently modified date, using the specified format.  */
+ 
 static bool opt_time = false;
 
-/* Type of time to display. controlled by --time.  */
+ 
 
 enum time_type
   {
-    time_mtime,			/* default */
+    time_mtime,			 
     time_ctime,
     time_atime
   };
 
 static enum time_type time_type = time_mtime;
 
-/* User specified date / time style */
+ 
 static char const *time_style = nullptr;
 
-/* Format used to display date / time. Controlled by --time-style */
+ 
 static char const *time_format = nullptr;
 
-/* The local time zone rules, as per the TZ environment variable.  */
+ 
 static timezone_t localtz;
 
-/* The units to use when printing sizes.  */
+ 
 static uintmax_t output_block_size;
 
-/* File name patterns to exclude.  */
+ 
 static struct exclude *exclude;
 
-/* Grand total size of all args, in bytes. Also latest modified date. */
+ 
 static struct duinfo tot_dui;
 
 #define IS_DIR_TYPE(Type)	\
   ((Type) == FTS_DP		\
    || (Type) == FTS_DNR)
 
-/* For long options that have no equivalent short option, use a
-   non-character as a pseudo short option, starting with CHAR_MAX + 1.  */
+ 
 enum
 {
   APPARENT_SIZE_OPTION = CHAR_MAX + 1,
@@ -219,7 +188,7 @@ static struct option const long_options[] =
   {"block-size", required_argument, nullptr, 'B'},
   {"bytes", no_argument, nullptr, 'b'},
   {"count-links", no_argument, nullptr, 'l'},
-  /* {"-debug", no_argument, nullptr, FTS_DEBUG}, */
+   
   {"dereference", no_argument, nullptr, 'L'},
   {"dereference-args", no_argument, nullptr, 'D'},
   {"exclude", required_argument, nullptr, EXCLUDE_OPTION},
@@ -253,14 +222,12 @@ static enum time_type const time_types[] =
 };
 ARGMATCH_VERIFY (time_args, time_types);
 
-/* 'full-iso' uses full ISO-style dates and times.  'long-iso' uses longer
-   ISO-style timestamps, though shorter than 'full-iso'.  'iso' uses shorter
-   ISO-style timestamps.  */
+ 
 enum time_style
   {
-    full_iso_time_style,       /* --time-style=full-iso */
-    long_iso_time_style,       /* --time-style=long-iso */
-    iso_time_style	       /* --time-style=iso */
+    full_iso_time_style,        
+    long_iso_time_style,        
+    iso_time_style	        
   };
 
 static char const *const time_style_args[] =

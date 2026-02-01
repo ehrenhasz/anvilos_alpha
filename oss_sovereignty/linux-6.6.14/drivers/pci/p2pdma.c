@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * PCI Peer 2 Peer DMA support.
- *
- * Copyright (c) 2016-2018, Logan Gunthorpe
- * Copyright (c) 2016-2017, Microsemi Corporation
- * Copyright (c) 2017, Christoph Hellwig
- * Copyright (c) 2018, Eideticom Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) "pci-p2pdma: " fmt
 #include <linux/ctype.h>
@@ -100,7 +93,7 @@ static int p2pmem_alloc_mmap(struct file *filp, struct kobject *kobj,
 	void *kaddr;
 	int ret;
 
-	/* prevent private mappings from being established */
+	 
 	if ((vma->vm_flags & VM_MAYSHARE) != VM_MAYSHARE) {
 		pci_info_ratelimited(pdev,
 				     "%s: fail, attempted private mapping\n",
@@ -128,11 +121,7 @@ static int p2pmem_alloc_mmap(struct file *filp, struct kobject *kobj,
 		goto out;
 	}
 
-	/*
-	 * vm_insert_page() can sleep, so a reference is taken to mapping
-	 * such that rcu_read_unlock() can be done before inserting the
-	 * pages
-	 */
+	 
 	if (unlikely(!percpu_ref_tryget_live_rcu(ref))) {
 		ret = -ENODEV;
 		goto out_free_mem;
@@ -164,12 +153,7 @@ out:
 static struct bin_attribute p2pmem_alloc_attr = {
 	.attr = { .name = "allocate", .mode = 0660 },
 	.mmap = p2pmem_alloc_mmap,
-	/*
-	 * Some places where we want to call mmap (ie. python) will check
-	 * that the file size is greater than the mmap size before allowing
-	 * the mmap to continue. To work around this, just set the size
-	 * to be very large.
-	 */
+	 
 	.size = SZ_1T,
 };
 
@@ -194,7 +178,7 @@ static const struct attribute_group p2pmem_group = {
 static void p2pdma_page_free(struct page *page)
 {
 	struct pci_p2pdma_pagemap *pgmap = to_p2p_pgmap(page->pgmap);
-	/* safe to dereference while a reference is held to the percpu ref */
+	 
 	struct pci_p2pdma *p2pdma =
 		rcu_dereference_protected(pgmap->provider->p2pdma, 1);
 	struct percpu_ref *ref;
@@ -217,7 +201,7 @@ static void pci_p2pdma_release(void *data)
 	if (!p2pdma)
 		return;
 
-	/* Flush and disable pci_alloc_p2p_mem() */
+	 
 	pdev->p2pdma = NULL;
 	synchronize_rcu();
 
@@ -263,25 +247,12 @@ static void pci_p2pdma_unmap_mappings(void *data)
 {
 	struct pci_dev *pdev = data;
 
-	/*
-	 * Removing the alloc attribute from sysfs will call
-	 * unmap_mapping_range() on the inode, teardown any existing userspace
-	 * mappings and prevent new ones from being created.
-	 */
+	 
 	sysfs_remove_file_from_group(&pdev->dev.kobj, &p2pmem_alloc_attr.attr,
 				     p2pmem_group.name);
 }
 
-/**
- * pci_p2pdma_add_resource - add memory for use as p2p memory
- * @pdev: the device to add the memory to
- * @bar: PCI BAR to add
- * @size: size of the memory to add, may be zero to use the whole BAR
- * @offset: offset into the PCI BAR
- *
- * The memory will be given ZONE_DEVICE struct pages so that it may
- * be used with any DMA request.
- */
+ 
 int pci_p2pdma_add_resource(struct pci_dev *pdev, int bar, size_t size,
 			    u64 offset)
 {
@@ -356,11 +327,7 @@ pgmap_free:
 }
 EXPORT_SYMBOL_GPL(pci_p2pdma_add_resource);
 
-/*
- * Note this function returns the parent PCI device with a
- * reference taken. It is the caller's responsibility to drop
- * the reference.
- */
+ 
 static struct pci_dev *find_parent_pci_dev(struct device *dev)
 {
 	struct device *parent;
@@ -379,11 +346,7 @@ static struct pci_dev *find_parent_pci_dev(struct device *dev)
 	return NULL;
 }
 
-/*
- * Check if a PCI bridge has its ACS redirection bits set to redirect P2P
- * TLPs upstream via ACS. Returns 1 if the packets will be redirected
- * upstream, 0 otherwise.
- */
+ 
 static int pci_bridge_has_acs_redir(struct pci_dev *pdev)
 {
 	int pos;
@@ -414,7 +377,7 @@ static bool cpu_supports_p2pdma(void)
 #ifdef CONFIG_X86
 	struct cpuinfo_x86 *c = &cpu_data(0);
 
-	/* Any AMD CPU whose family ID is Zen or newer supports p2pdma */
+	 
 	if (c->x86_vendor == X86_VENDOR_AMD && c->x86 >= 0x17)
 		return true;
 #endif
@@ -429,13 +392,13 @@ static const struct pci_p2pdma_whitelist_entry {
 		REQ_SAME_HOST_BRIDGE	= 1 << 0,
 	} flags;
 } pci_p2pdma_whitelist[] = {
-	/* Intel Xeon E5/Core i7 */
+	 
 	{PCI_VENDOR_ID_INTEL,	0x3c00, REQ_SAME_HOST_BRIDGE},
 	{PCI_VENDOR_ID_INTEL,	0x3c01, REQ_SAME_HOST_BRIDGE},
-	/* Intel Xeon E7 v3/Xeon E5 v3/Core i7 */
+	 
 	{PCI_VENDOR_ID_INTEL,	0x2f00, REQ_SAME_HOST_BRIDGE},
 	{PCI_VENDOR_ID_INTEL,	0x2f01, REQ_SAME_HOST_BRIDGE},
-	/* Intel Skylake-E */
+	 
 	{PCI_VENDOR_ID_INTEL,	0x2030, 0},
 	{PCI_VENDOR_ID_INTEL,	0x2031, 0},
 	{PCI_VENDOR_ID_INTEL,	0x2032, 0},
@@ -445,23 +408,7 @@ static const struct pci_p2pdma_whitelist_entry {
 	{}
 };
 
-/*
- * If the first device on host's root bus is either devfn 00.0 or a PCIe
- * Root Port, return it.  Otherwise return NULL.
- *
- * We often use a devfn 00.0 "host bridge" in the pci_p2pdma_whitelist[]
- * (though there is no PCI/PCIe requirement for such a device).  On some
- * platforms, e.g., Intel Skylake, there is no such host bridge device, and
- * pci_p2pdma_whitelist[] may contain a Root Port at any devfn.
- *
- * This function is similar to pci_get_slot(host->bus, 0), but it does
- * not take the pci_bus_sem lock since __host_bridge_whitelist() must not
- * sleep.
- *
- * For this to be safe, the caller should hold a reference to a device on the
- * bridge, which should ensure the host_bridge device will not be freed
- * or removed from the head of the devices list.
- */
+ 
 static struct pci_dev *pci_host_bridge_dev(struct pci_host_bridge *host)
 {
 	struct pci_dev *root;
@@ -510,10 +457,7 @@ static bool __host_bridge_whitelist(struct pci_host_bridge *host,
 	return false;
 }
 
-/*
- * If we can't find a common upstream bridge take a look at the root
- * complex and compare it to a whitelist of known good hardware.
- */
+ 
 static bool host_bridge_whitelist(struct pci_dev *a, struct pci_dev *b,
 				  bool warn)
 {
@@ -535,42 +479,7 @@ static unsigned long map_types_idx(struct pci_dev *client)
 	return (pci_domain_nr(client->bus) << 16) | pci_dev_id(client);
 }
 
-/*
- * Calculate the P2PDMA mapping type and distance between two PCI devices.
- *
- * If the two devices are the same PCI function, return
- * PCI_P2PDMA_MAP_BUS_ADDR and a distance of 0.
- *
- * If they are two functions of the same device, return
- * PCI_P2PDMA_MAP_BUS_ADDR and a distance of 2 (one hop up to the bridge,
- * then one hop back down to another function of the same device).
- *
- * In the case where two devices are connected to the same PCIe switch,
- * return a distance of 4. This corresponds to the following PCI tree:
- *
- *     -+  Root Port
- *      \+ Switch Upstream Port
- *       +-+ Switch Downstream Port 0
- *       + \- Device A
- *       \-+ Switch Downstream Port 1
- *         \- Device B
- *
- * The distance is 4 because we traverse from Device A to Downstream Port 0
- * to the common Switch Upstream Port, back down to Downstream Port 1 and
- * then to Device B. The mapping type returned depends on the ACS
- * redirection setting of the ports along the path.
- *
- * If ACS redirect is set on any port in the path, traffic between the
- * devices will go through the host bridge, so return
- * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE; otherwise return
- * PCI_P2PDMA_MAP_BUS_ADDR.
- *
- * Any two devices that have a data path that goes through the host bridge
- * will consult a whitelist. If the host bridge is in the whitelist, return
- * PCI_P2PDMA_MAP_THRU_HOST_BRIDGE with the distance set to the number of
- * ports per above. If the device is not in the whitelist, return
- * PCI_P2PDMA_MAP_NOT_SUPPORTED.
- */
+ 
 static enum pci_p2pdma_map_type
 calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
 		int *dist, bool verbose)
@@ -587,11 +496,7 @@ calc_map_type_and_dist(struct pci_dev *provider, struct pci_dev *client,
 
 	seq_buf_init(&acs_list, buf, sizeof(buf));
 
-	/*
-	 * Note, we don't need to take references to devices returned by
-	 * pci_upstream_bridge() seeing we hold a reference to a child
-	 * device which will already hold a reference to the upstream bridge.
-	 */
+	 
 	while (a) {
 		dist_b = 0;
 
@@ -640,7 +545,7 @@ check_b_path_acs:
 	}
 
 	if (verbose) {
-		acs_list.buffer[acs_list.len-1] = 0; /* drop final semicolon */
+		acs_list.buffer[acs_list.len-1] = 0;  
 		pci_warn(client, "ACS redirect is set between the client and provider (%s)\n",
 			 pci_name(provider));
 		pci_warn(client, "to disable ACS redirect for this path, add the kernel parameter: pci=disable_acs_redir=%s\n",
@@ -666,23 +571,7 @@ done:
 	return map_type;
 }
 
-/**
- * pci_p2pdma_distance_many - Determine the cumulative distance between
- *	a p2pdma provider and the clients in use.
- * @provider: p2pdma provider to check against the client list
- * @clients: array of devices to check (NULL-terminated)
- * @num_clients: number of clients in the array
- * @verbose: if true, print warnings for devices when we return -1
- *
- * Returns -1 if any of the clients are not compatible, otherwise returns a
- * positive number where a lower number is the preferable choice. (If there's
- * one client that's the same as the provider it will return 0, which is best
- * choice).
- *
- * "compatible" means the provider and the clients are either all behind
- * the same PCI root port or the host bridges connected to each of the devices
- * are listed in the 'pci_p2pdma_whitelist'.
- */
+ 
 int pci_p2pdma_distance_many(struct pci_dev *provider, struct device **clients,
 			     int num_clients, bool verbose)
 {
@@ -725,10 +614,7 @@ int pci_p2pdma_distance_many(struct pci_dev *provider, struct device **clients,
 }
 EXPORT_SYMBOL_GPL(pci_p2pdma_distance_many);
 
-/**
- * pci_has_p2pmem - check if a given PCI device has published any p2pmem
- * @pdev: PCI device to check
- */
+ 
 bool pci_has_p2pmem(struct pci_dev *pdev)
 {
 	struct pci_p2pdma *p2pdma;
@@ -743,22 +629,7 @@ bool pci_has_p2pmem(struct pci_dev *pdev)
 }
 EXPORT_SYMBOL_GPL(pci_has_p2pmem);
 
-/**
- * pci_p2pmem_find_many - find a peer-to-peer DMA memory device compatible with
- *	the specified list of clients and shortest distance
- * @clients: array of devices to check (NULL-terminated)
- * @num_clients: number of client devices in the list
- *
- * If multiple devices are behind the same switch, the one "closest" to the
- * client devices in use will be chosen first. (So if one of the providers is
- * the same as one of the clients, that provider will be used ahead of any
- * other providers that are unrelated). If multiple providers are an equal
- * distance away, one will be chosen at random.
- *
- * Returns a pointer to the PCI device with a reference taken (use pci_dev_put
- * to return the reference) or NULL if no compatible device is found. The
- * found provider will also be assigned to the client list.
- */
+ 
 struct pci_dev *pci_p2pmem_find_many(struct device **clients, int num_clients)
 {
 	struct pci_dev *pdev = NULL;
@@ -807,24 +678,14 @@ struct pci_dev *pci_p2pmem_find_many(struct device **clients, int num_clients)
 }
 EXPORT_SYMBOL_GPL(pci_p2pmem_find_many);
 
-/**
- * pci_alloc_p2pmem - allocate peer-to-peer DMA memory
- * @pdev: the device to allocate memory from
- * @size: number of bytes to allocate
- *
- * Returns the allocated memory or NULL on error.
- */
+ 
 void *pci_alloc_p2pmem(struct pci_dev *pdev, size_t size)
 {
 	void *ret = NULL;
 	struct percpu_ref *ref;
 	struct pci_p2pdma *p2pdma;
 
-	/*
-	 * Pairs with synchronize_rcu() in pci_p2pdma_release() to
-	 * ensure pdev->p2pdma is non-NULL for the duration of the
-	 * read-lock.
-	 */
+	 
 	rcu_read_lock();
 	p2pdma = rcu_dereference(pdev->p2pdma);
 	if (unlikely(!p2pdma))
@@ -845,12 +706,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(pci_alloc_p2pmem);
 
-/**
- * pci_free_p2pmem - free peer-to-peer DMA memory
- * @pdev: the device the memory was allocated from
- * @addr: address of the memory that was allocated
- * @size: number of bytes that were allocated
- */
+ 
 void pci_free_p2pmem(struct pci_dev *pdev, void *addr, size_t size)
 {
 	struct percpu_ref *ref;
@@ -862,12 +718,7 @@ void pci_free_p2pmem(struct pci_dev *pdev, void *addr, size_t size)
 }
 EXPORT_SYMBOL_GPL(pci_free_p2pmem);
 
-/**
- * pci_p2pmem_virt_to_bus - return the PCI bus address for a given virtual
- *	address obtained with pci_alloc_p2pmem()
- * @pdev: the device the memory was allocated from
- * @addr: address of the memory that was allocated
- */
+ 
 pci_bus_addr_t pci_p2pmem_virt_to_bus(struct pci_dev *pdev, void *addr)
 {
 	struct pci_p2pdma *p2pdma;
@@ -879,23 +730,12 @@ pci_bus_addr_t pci_p2pmem_virt_to_bus(struct pci_dev *pdev, void *addr)
 	if (!p2pdma)
 		return 0;
 
-	/*
-	 * Note: when we added the memory to the pool we used the PCI
-	 * bus address as the physical address. So gen_pool_virt_to_phys()
-	 * actually returns the bus address despite the misleading name.
-	 */
+	 
 	return gen_pool_virt_to_phys(p2pdma->pool, (unsigned long)addr);
 }
 EXPORT_SYMBOL_GPL(pci_p2pmem_virt_to_bus);
 
-/**
- * pci_p2pmem_alloc_sgl - allocate peer-to-peer DMA memory in a scatterlist
- * @pdev: the device to allocate memory from
- * @nents: the number of SG entries in the list
- * @length: number of bytes to allocate
- *
- * Return: %NULL on error or &struct scatterlist pointer and @nents on success
- */
+ 
 struct scatterlist *pci_p2pmem_alloc_sgl(struct pci_dev *pdev,
 					 unsigned int *nents, u32 length)
 {
@@ -922,11 +762,7 @@ out_free_sg:
 }
 EXPORT_SYMBOL_GPL(pci_p2pmem_alloc_sgl);
 
-/**
- * pci_p2pmem_free_sgl - free a scatterlist allocated by pci_p2pmem_alloc_sgl()
- * @pdev: the device to allocate memory from
- * @sgl: the allocated scatterlist
- */
+ 
 void pci_p2pmem_free_sgl(struct pci_dev *pdev, struct scatterlist *sgl)
 {
 	struct scatterlist *sg;
@@ -942,17 +778,7 @@ void pci_p2pmem_free_sgl(struct pci_dev *pdev, struct scatterlist *sgl)
 }
 EXPORT_SYMBOL_GPL(pci_p2pmem_free_sgl);
 
-/**
- * pci_p2pmem_publish - publish the peer-to-peer DMA memory for use by
- *	other devices with pci_p2pmem_find()
- * @pdev: the device with peer-to-peer DMA memory to publish
- * @publish: set to true to publish the memory, false to unpublish it
- *
- * Published memory can be used by other PCI device drivers for
- * peer-2-peer DMA operations. Non-published memory is reserved for
- * exclusive use of the device driver that registers the peer-to-peer
- * memory.
- */
+ 
 void pci_p2pmem_publish(struct pci_dev *pdev, bool publish)
 {
 	struct pci_p2pdma *p2pdma;
@@ -996,23 +822,7 @@ static enum pci_p2pdma_map_type pci_p2pdma_map_type(struct dev_pagemap *pgmap,
 	return type;
 }
 
-/**
- * pci_p2pdma_map_segment - map an sg segment determining the mapping type
- * @state: State structure that should be declared outside of the for_each_sg()
- *	loop and initialized to zero.
- * @dev: DMA device that's doing the mapping operation
- * @sg: scatterlist segment to map
- *
- * This is a helper to be used by non-IOMMU dma_map_sg() implementations where
- * the sg segment is the same for the page_link and the dma_address.
- *
- * Attempt to map a single segment in an SGL with the PCI bus address.
- * The segment must point to a PCI P2PDMA page and thus must be
- * wrapped in a is_pci_p2pdma_page(sg_page(sg)) check.
- *
- * Returns the type of mapping used and maps the page if the type is
- * PCI_P2PDMA_MAP_BUS_ADDR.
- */
+ 
 enum pci_p2pdma_map_type
 pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
 		       struct scatterlist *sg)
@@ -1032,26 +842,7 @@ pci_p2pdma_map_segment(struct pci_p2pdma_map_state *state, struct device *dev,
 	return state->map;
 }
 
-/**
- * pci_p2pdma_enable_store - parse a configfs/sysfs attribute store
- *		to enable p2pdma
- * @page: contents of the value to be stored
- * @p2p_dev: returns the PCI device that was selected to be used
- *		(if one was specified in the stored value)
- * @use_p2pdma: returns whether to enable p2pdma or not
- *
- * Parses an attribute value to decide whether to enable p2pdma.
- * The value can select a PCI device (using its full BDF device
- * name) or a boolean (in any format kstrtobool() accepts). A false
- * value disables p2pdma, a true value expects the caller
- * to automatically find a compatible device and specifying a PCI device
- * expects the caller to use the specific provider.
- *
- * pci_p2pdma_enable_show() should be used as the show operation for
- * the attribute.
- *
- * Returns 0 on success
- */
+ 
 int pci_p2pdma_enable_store(const char *page, struct pci_dev **p2p_dev,
 			    bool *use_p2pdma)
 {
@@ -1072,12 +863,7 @@ int pci_p2pdma_enable_store(const char *page, struct pci_dev **p2p_dev,
 
 		return 0;
 	} else if ((page[0] == '0' || page[0] == '1') && !iscntrl(page[1])) {
-		/*
-		 * If the user enters a PCI device that  doesn't exist
-		 * like "0000:01:00.1", we don't want kstrtobool to think
-		 * it's a '0' when it's clearly not what the user wanted.
-		 * So we require 0's and 1's to be exactly one character.
-		 */
+		 
 	} else if (!kstrtobool(page, use_p2pdma)) {
 		return 0;
 	}
@@ -1087,18 +873,7 @@ int pci_p2pdma_enable_store(const char *page, struct pci_dev **p2p_dev,
 }
 EXPORT_SYMBOL_GPL(pci_p2pdma_enable_store);
 
-/**
- * pci_p2pdma_enable_show - show a configfs/sysfs attribute indicating
- *		whether p2pdma is enabled
- * @page: contents of the stored value
- * @p2p_dev: the selected p2p device (NULL if no device is selected)
- * @use_p2pdma: whether p2pdma has been enabled
- *
- * Attributes that use pci_p2pdma_enable_store() should use this function
- * to show the value of the attribute.
- *
- * Returns 0 on success
- */
+ 
 ssize_t pci_p2pdma_enable_show(char *page, struct pci_dev *p2p_dev,
 			       bool use_p2pdma)
 {

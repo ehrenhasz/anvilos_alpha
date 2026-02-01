@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020, Intel Corporation. */
+
+ 
 
 #include <linux/vmalloc.h>
 
@@ -12,7 +12,7 @@
 
 static int ice_active_port_option = -1;
 
-/* context for devlink info version reporting */
+ 
 struct ice_info_ctx {
 	char buf[128];
 	struct ice_orom_info pending_orom;
@@ -21,21 +21,13 @@ struct ice_info_ctx {
 	struct ice_hw_dev_caps dev_caps;
 };
 
-/* The following functions are used to format specific strings for various
- * devlink info versions. The ctx parameter is used to provide the storage
- * buffer, as well as any ancillary information calculated when the info
- * request was made.
- *
- * If a version does not exist, for example when attempting to get the
- * inactive version of flash when there is no pending update, the function
- * should leave the buffer in the ctx structure empty.
- */
+ 
 
 static void ice_info_get_dsn(struct ice_pf *pf, struct ice_info_ctx *ctx)
 {
 	u8 dsn[8];
 
-	/* Copy the DSN into an array in Big Endian format */
+	 
 	put_unaligned_be64(pci_get_dsn(pf->pdev), dsn);
 
 	snprintf(ctx->buf, sizeof(ctx->buf), "%8phD", dsn);
@@ -48,7 +40,7 @@ static void ice_info_pba(struct ice_pf *pf, struct ice_info_ctx *ctx)
 
 	status = ice_read_pba_string(hw, (u8 *)ctx->buf, sizeof(ctx->buf));
 	if (status)
-		/* We failed to locate the PBA, so just skip this entry */
+		 
 		dev_dbg(ice_pf_to_dev(pf), "Failed to read Product Board Assembly string, status %d\n",
 			status);
 }
@@ -155,7 +147,7 @@ static void ice_info_netlist_ver(struct ice_pf *pf, struct ice_info_ctx *ctx)
 {
 	struct ice_netlist_info *netlist = &pf->hw.flash.netlist;
 
-	/* The netlist version fields are BCD formatted */
+	 
 	snprintf(ctx->buf, sizeof(ctx->buf), "%x.%x.%x-%x.%x.%x",
 		 netlist->major, netlist->minor,
 		 netlist->type >> 16, netlist->type & 0xFFFF,
@@ -175,7 +167,7 @@ ice_info_pending_netlist_ver(struct ice_pf __always_unused *pf,
 {
 	struct ice_netlist_info *netlist = &ctx->pending_netlist;
 
-	/* The netlist version fields are BCD formatted */
+	 
 	if (ctx->dev_caps.common_cap.nvm_update_pending_netlist)
 		snprintf(ctx->buf, sizeof(ctx->buf), "%x.%x.%x-%x.%x.%x",
 			 netlist->major, netlist->minor,
@@ -197,16 +189,7 @@ ice_info_pending_netlist_build(struct ice_pf __always_unused *pf,
 #define running(key, getter) { ICE_VERSION_RUNNING, key, getter, NULL }
 #define stored(key, getter, fallback) { ICE_VERSION_STORED, key, getter, fallback }
 
-/* The combined() macro inserts both the running entry as well as a stored
- * entry. The running entry will always report the version from the active
- * handler. The stored entry will first try the pending handler, and fallback
- * to the active handler if the pending function does not report a version.
- * The pending handler should check the status of a pending update for the
- * relevant flash component. It should only fill in the buffer in the case
- * where a valid pending version is available. This ensures that the related
- * stored and running versions remain in sync, and that stored versions are
- * correctly reported as expected.
- */
+ 
 #define combined(key, active, pending) \
 	running(key, active), \
 	stored(key, pending, active)
@@ -237,17 +220,7 @@ static const struct ice_devlink_version {
 	combined("fw.netlist.build", ice_info_netlist_build, ice_info_pending_netlist_build),
 };
 
-/**
- * ice_devlink_info_get - .info_get devlink handler
- * @devlink: devlink instance structure
- * @req: the devlink info request
- * @extack: extended netdev ack structure
- *
- * Callback for the devlink .info_get operation. Reports information about the
- * device.
- *
- * Return: zero on success or an error code on failure.
- */
+ 
 static int ice_devlink_info_get(struct devlink *devlink,
 				struct devlink_info_req *req,
 				struct netlink_ext_ack *extack)
@@ -269,7 +242,7 @@ static int ice_devlink_info_get(struct devlink *devlink,
 	if (!ctx)
 		return -ENOMEM;
 
-	/* discover capabilities first */
+	 
 	err = ice_discover_dev_caps(hw, &ctx->dev_caps);
 	if (err) {
 		dev_dbg(dev, "Failed to discover device capabilities, status %d aq_err %s\n",
@@ -284,7 +257,7 @@ static int ice_devlink_info_get(struct devlink *devlink,
 			dev_dbg(dev, "Unable to read inactive Option ROM version data, status %d aq_err %s\n",
 				err, ice_aq_str(hw->adminq.sq_last_status));
 
-			/* disable display of pending Option ROM */
+			 
 			ctx->dev_caps.common_cap.nvm_update_pending_orom = false;
 		}
 	}
@@ -295,7 +268,7 @@ static int ice_devlink_info_get(struct devlink *devlink,
 			dev_dbg(dev, "Unable to read inactive NVM version data, status %d aq_err %s\n",
 				err, ice_aq_str(hw->adminq.sq_last_status));
 
-			/* disable display of pending Option ROM */
+			 
 			ctx->dev_caps.common_cap.nvm_update_pending_nvm = false;
 		}
 	}
@@ -306,7 +279,7 @@ static int ice_devlink_info_get(struct devlink *devlink,
 			dev_dbg(dev, "Unable to read inactive Netlist version data, status %d aq_err %s\n",
 				err, ice_aq_str(hw->adminq.sq_last_status));
 
-			/* disable display of pending Option ROM */
+			 
 			ctx->dev_caps.common_cap.nvm_update_pending_netlist = false;
 		}
 	}
@@ -327,15 +300,11 @@ static int ice_devlink_info_get(struct devlink *devlink,
 
 		ice_devlink_versions[i].getter(pf, ctx);
 
-		/* If the default getter doesn't report a version, use the
-		 * fallback function. This is primarily useful in the case of
-		 * "stored" versions that want to report the same value as the
-		 * running version in the normal case of no pending update.
-		 */
+		 
 		if (ctx->buf[0] == '\0' && ice_devlink_versions[i].fallback)
 			ice_devlink_versions[i].fallback(pf, ctx);
 
-		/* Do not report missing versions */
+		 
 		if (ctx->buf[0] == '\0')
 			continue;
 
@@ -369,20 +338,7 @@ out_free_ctx:
 	return err;
 }
 
-/**
- * ice_devlink_reload_empr_start - Start EMP reset to activate new firmware
- * @pf: pointer to the pf instance
- * @extack: netlink extended ACK structure
- *
- * Allow user to activate new Embedded Management Processor firmware by
- * issuing device specific EMP reset. Called in response to
- * a DEVLINK_CMD_RELOAD with the DEVLINK_RELOAD_ACTION_FW_ACTIVATE.
- *
- * Note that teardown and rebuild of the driver state happens automatically as
- * part of an interrupt and watchdog task. This is because all physical
- * functions on the device must be able to reset when an EMP reset occurs from
- * any source.
- */
+ 
 static int
 ice_devlink_reload_empr_start(struct ice_pf *pf,
 			      struct netlink_ext_ack *extack)
@@ -396,11 +352,7 @@ ice_devlink_reload_empr_start(struct ice_pf *pf,
 	if (err)
 		return err;
 
-	/* pending is a bitmask of which flash banks have a pending update,
-	 * including the main NVM bank, the Option ROM bank, and the netlist
-	 * bank. If any of these bits are set, then there is a pending update
-	 * waiting to be activated.
-	 */
+	 
 	if (!pending) {
 		NL_SET_ERR_MSG_MOD(extack, "No pending firmware update");
 		return -ECANCELED;
@@ -424,14 +376,7 @@ ice_devlink_reload_empr_start(struct ice_pf *pf,
 	return 0;
 }
 
-/**
- * ice_devlink_reload_down - prepare for reload
- * @devlink: pointer to the devlink instance to reload
- * @netns_change: if true, the network namespace is changing
- * @action: the action to perform
- * @limit: limits on what reload should do, such as not resetting
- * @extack: netlink extended ACK structure
- */
+ 
 static int
 ice_devlink_reload_down(struct devlink *devlink, bool netns_change,
 			enum devlink_reload_action action,
@@ -467,15 +412,7 @@ ice_devlink_reload_down(struct devlink *devlink, bool netns_change,
 	}
 }
 
-/**
- * ice_devlink_reload_empr_finish - Wait for EMP reset to finish
- * @pf: pointer to the pf instance
- * @extack: netlink extended ACK structure
- *
- * Wait for driver to finish rebuilding after EMP reset is completed. This
- * includes time to wait for both the actual device reset as well as the time
- * for the driver's rebuild to complete.
- */
+ 
 static int
 ice_devlink_reload_empr_finish(struct ice_pf *pf,
 			       struct netlink_ext_ack *extack)
@@ -491,10 +428,7 @@ ice_devlink_reload_empr_finish(struct ice_pf *pf,
 	return 0;
 }
 
-/**
- * ice_devlink_port_opt_speed_str - convert speed to a string
- * @speed: speed value
- */
+ 
 static const char *ice_devlink_port_opt_speed_str(u8 speed)
 {
 	switch (speed & ICE_AQC_PORT_OPT_MAX_LANE_M) {
@@ -520,12 +454,7 @@ static const char *ice_devlink_port_opt_speed_str(u8 speed)
 }
 
 #define ICE_PORT_OPT_DESC_LEN	50
-/**
- * ice_devlink_port_options_print - Print available port split options
- * @pf: the PF to print split port options
- *
- * Prints a table with available port split options and max port speeds
- */
+ 
 static void ice_devlink_port_options_print(struct ice_pf *pf)
 {
 	u8 i, j, options_count, cnt, speed, pending_idx, active_idx;
@@ -591,15 +520,7 @@ err:
 	kfree(options);
 }
 
-/**
- * ice_devlink_aq_set_port_option - Send set port option admin queue command
- * @pf: the PF to print split port options
- * @option_idx: selected port option
- * @extack: extended netdev ack structure
- *
- * Sends set port option admin queue command with selected port option and
- * calls NVM write activate.
- */
+ 
 static int
 ice_devlink_aq_set_port_option(struct ice_pf *pf, u8 option_idx,
 			       struct netlink_ext_ack *extack)
@@ -638,24 +559,7 @@ ice_devlink_aq_set_port_option(struct ice_pf *pf, u8 option_idx,
 	return 0;
 }
 
-/**
- * ice_devlink_port_split - .port_split devlink handler
- * @devlink: devlink instance structure
- * @port: devlink port structure
- * @count: number of ports to split to
- * @extack: extended netdev ack structure
- *
- * Callback for the devlink .port_split operation.
- *
- * Unfortunately, the devlink expression of available options is limited
- * to just a number, so search for an FW port option which supports
- * the specified number. As there could be multiple FW port options with
- * the same port split count, allow switching between them. When the same
- * port split count request is issued again, switch to the next FW port
- * option with the same port split count.
- *
- * Return: zero on success or an error code on failure.
- */
+ 
 static int
 ice_devlink_port_split(struct devlink *devlink, struct devlink_port *port,
 		       unsigned int count, struct netlink_ext_ack *extack)
@@ -681,10 +585,7 @@ ice_devlink_port_split(struct devlink *devlink, struct devlink_port *port,
 	new_option = ICE_AQC_PORT_OPT_MAX;
 	active_idx = pending_valid ? pending_idx : active_idx;
 	for (i = 1; i <= option_count; i++) {
-		/* In order to allow switching between FW port options with
-		 * the same port split count, search for a new option starting
-		 * from the active/pending option (with array wrap around).
-		 */
+		 
 		j = (active_idx + i) % option_count;
 
 		if (count == options[j].pmd) {
@@ -717,18 +618,7 @@ ice_devlink_port_split(struct devlink *devlink, struct devlink_port *port,
 	return 0;
 }
 
-/**
- * ice_devlink_port_unsplit - .port_unsplit devlink handler
- * @devlink: devlink instance structure
- * @port: devlink port structure
- * @extack: extended netdev ack structure
- *
- * Callback for the devlink .port_unsplit operation.
- * Calls ice_devlink_port_split with split count set to 1.
- * There could be no FW option available with split count 1.
- *
- * Return: zero on success or an error code on failure.
- */
+ 
 static int
 ice_devlink_port_unsplit(struct devlink *devlink, struct devlink_port *port,
 			 struct netlink_ext_ack *extack)
@@ -736,12 +626,7 @@ ice_devlink_port_unsplit(struct devlink *devlink, struct devlink_port *port,
 	return ice_devlink_port_split(devlink, port, 1, extack);
 }
 
-/**
- * ice_tear_down_devlink_rate_tree - removes devlink-rate exported tree
- * @pf: pf struct
- *
- * This function tears down tree exported during VF's creation.
- */
+ 
 void ice_tear_down_devlink_rate_tree(struct ice_pf *pf)
 {
 	struct devlink *devlink;
@@ -762,20 +647,14 @@ void ice_tear_down_devlink_rate_tree(struct ice_pf *pf)
 	devl_unlock(devlink);
 }
 
-/**
- * ice_enable_custom_tx - try to enable custom Tx feature
- * @pf: pf struct
- *
- * This function tries to enable custom Tx feature,
- * it's not possible to enable it, if DCB or ADQ is active.
- */
+ 
 static bool ice_enable_custom_tx(struct ice_pf *pf)
 {
 	struct ice_port_info *pi = ice_get_main_vsi(pf)->port_info;
 	struct device *dev = ice_pf_to_dev(pf);
 
 	if (pi->is_custom_tx_enabled)
-		/* already enabled, return true */
+		 
 		return true;
 
 	if (ice_is_adq_active(pf)) {
@@ -793,16 +672,7 @@ static bool ice_enable_custom_tx(struct ice_pf *pf)
 	return true;
 }
 
-/**
- * ice_traverse_tx_tree - traverse Tx scheduler tree
- * @devlink: devlink struct
- * @node: current node, used for recursion
- * @tc_node: tc_node struct, that is treated as a root
- * @pf: pf struct
- *
- * This function traverses Tx scheduler tree and exports
- * entire structure to the devlink-rate.
- */
+ 
 static void ice_traverse_tx_tree(struct devlink *devlink, struct ice_sched_node *node,
 				 struct ice_sched_node *tc_node, struct ice_pf *pf)
 {
@@ -811,15 +681,13 @@ static void ice_traverse_tx_tree(struct devlink *devlink, struct ice_sched_node 
 	int i;
 
 	if (node->parent == tc_node) {
-		/* create root node */
+		 
 		rate_node = devl_rate_node_create(devlink, node, node->name, NULL);
 	} else if (node->vsi_handle &&
 		   pf->vsi[node->vsi_handle]->vf) {
 		vf = pf->vsi[node->vsi_handle]->vf;
 		if (!vf->devlink_port.devlink_rate)
-			/* leaf nodes doesn't have children
-			 * so we don't set rate_node
-			 */
+			 
 			devl_rate_leaf_create(&vf->devlink_port, node,
 					      node->parent->rate_node);
 	} else if (node->info.data.elem_type != ICE_AQC_ELEM_TYPE_LEAF &&
@@ -835,14 +703,7 @@ static void ice_traverse_tx_tree(struct devlink *devlink, struct ice_sched_node 
 		ice_traverse_tx_tree(devlink, node->children[i], tc_node, pf);
 }
 
-/**
- * ice_devlink_rate_init_tx_topology - export Tx scheduler tree to devlink rate
- * @devlink: devlink struct
- * @vsi: main vsi struct
- *
- * This function finds a root node, then calls ice_traverse_tx tree, which
- * traverses the tree and exports it's contents to devlink rate.
- */
+ 
 int ice_devlink_rate_init_tx_topology(struct devlink *devlink, struct ice_vsi *vsi)
 {
 	struct ice_port_info *pi = vsi->port_info;
@@ -861,22 +722,14 @@ int ice_devlink_rate_init_tx_topology(struct devlink *devlink, struct ice_vsi *v
 	return 0;
 }
 
-/**
- * ice_set_object_tx_share - sets node scheduling parameter
- * @pi: devlink struct instance
- * @node: node struct instance
- * @bw: bandwidth in bytes per second
- * @extack: extended netdev ack structure
- *
- * This function sets ICE_MIN_BW scheduling BW limit.
- */
+ 
 static int ice_set_object_tx_share(struct ice_port_info *pi, struct ice_sched_node *node,
 				   u64 bw, struct netlink_ext_ack *extack)
 {
 	int status;
 
 	mutex_lock(&pi->sched_lock);
-	/* converts bytes per second to kilo bits per second */
+	 
 	node->tx_share = div_u64(bw, 125);
 	status = ice_sched_set_node_bw_lmt(pi, node, ICE_MIN_BW, node->tx_share);
 	mutex_unlock(&pi->sched_lock);
@@ -887,22 +740,14 @@ static int ice_set_object_tx_share(struct ice_port_info *pi, struct ice_sched_no
 	return status;
 }
 
-/**
- * ice_set_object_tx_max - sets node scheduling parameter
- * @pi: devlink struct instance
- * @node: node struct instance
- * @bw: bandwidth in bytes per second
- * @extack: extended netdev ack structure
- *
- * This function sets ICE_MAX_BW scheduling BW limit.
- */
+ 
 static int ice_set_object_tx_max(struct ice_port_info *pi, struct ice_sched_node *node,
 				 u64 bw, struct netlink_ext_ack *extack)
 {
 	int status;
 
 	mutex_lock(&pi->sched_lock);
-	/* converts bytes per second value to kilo bits per second */
+	 
 	node->tx_max = div_u64(bw, 125);
 	status = ice_sched_set_node_bw_lmt(pi, node, ICE_MAX_BW, node->tx_max);
 	mutex_unlock(&pi->sched_lock);
@@ -913,15 +758,7 @@ static int ice_set_object_tx_max(struct ice_port_info *pi, struct ice_sched_node
 	return status;
 }
 
-/**
- * ice_set_object_tx_priority - sets node scheduling parameter
- * @pi: devlink struct instance
- * @node: node struct instance
- * @priority: value representing priority for strict priority arbitration
- * @extack: extended netdev ack structure
- *
- * This function sets priority of node among siblings.
- */
+ 
 static int ice_set_object_tx_priority(struct ice_port_info *pi, struct ice_sched_node *node,
 				      u32 priority, struct netlink_ext_ack *extack)
 {
@@ -943,15 +780,7 @@ static int ice_set_object_tx_priority(struct ice_port_info *pi, struct ice_sched
 	return status;
 }
 
-/**
- * ice_set_object_tx_weight - sets node scheduling parameter
- * @pi: devlink struct instance
- * @node: node struct instance
- * @weight: value represeting relative weight for WFQ arbitration
- * @extack: extended netdev ack structure
- *
- * This function sets node weight for WFQ algorithm.
- */
+ 
 static int ice_set_object_tx_weight(struct ice_port_info *pi, struct ice_sched_node *node,
 				    u32 weight, struct netlink_ext_ack *extack)
 {
@@ -973,12 +802,7 @@ static int ice_set_object_tx_weight(struct ice_port_info *pi, struct ice_sched_n
 	return status;
 }
 
-/**
- * ice_get_pi_from_dev_rate - get port info from devlink_rate
- * @rate_node: devlink struct instance
- *
- * This function returns corresponding port_info struct of devlink_rate
- */
+ 
 static struct ice_port_info *ice_get_pi_from_dev_rate(struct devlink_rate *rate_node)
 {
 	struct ice_pf *pf = devlink_priv(rate_node->devlink);
@@ -997,7 +821,7 @@ static int ice_devlink_rate_node_new(struct devlink_rate *rate_node, void **priv
 	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink)))
 		return -EBUSY;
 
-	/* preallocate memory for ice_sched_node */
+	 
 	node = devm_kzalloc(ice_hw_to_dev(pi->hw), sizeof(*node), GFP_KERNEL);
 	*priv = node;
 
@@ -1020,7 +844,7 @@ static int ice_devlink_rate_node_del(struct devlink_rate *rate_node, void *priv,
 	if (!ice_enable_custom_tx(devlink_priv(rate_node->devlink)))
 		return -EBUSY;
 
-	/* can't allow to delete a node with children */
+	 
 	if (node->num_children)
 		return -EINVAL;
 
@@ -1185,7 +1009,7 @@ static int ice_devlink_set_parent(struct devlink_rate *devlink_rate,
 
 	parent_node = parent_priv;
 
-	/* if the node doesn't exist, create it */
+	 
 	if (!node->parent) {
 		mutex_lock(&pi->sched_lock);
 		status = ice_sched_add_elems(pi, tc_node, parent_node,
@@ -1220,14 +1044,7 @@ static int ice_devlink_set_parent(struct devlink_rate *devlink_rate,
 	return status;
 }
 
-/**
- * ice_devlink_reload_up - do reload up after reinit
- * @devlink: pointer to the devlink instance reloading
- * @action: the action requested
- * @limit: limits imposed by userspace, such as not resetting
- * @actions_performed: on return, indicate what actions actually performed
- * @extack: netlink extended ACK structure
- */
+ 
 static int
 ice_devlink_reload_up(struct devlink *devlink,
 		      enum devlink_reload_action action,
@@ -1397,14 +1214,7 @@ static void ice_devlink_free(void *devlink_ptr)
 	devlink_free((struct devlink *)devlink_ptr);
 }
 
-/**
- * ice_allocate_pf - Allocate devlink and return PF structure pointer
- * @dev: the device to allocate for
- *
- * Allocate a devlink instance for this device and return the private area as
- * the PF structure. The devlink memory is kept track of through devres by
- * adding an action to remove it when unwinding.
- */
+ 
 struct ice_pf *ice_allocate_pf(struct device *dev)
 {
 	struct devlink *devlink;
@@ -1413,21 +1223,14 @@ struct ice_pf *ice_allocate_pf(struct device *dev)
 	if (!devlink)
 		return NULL;
 
-	/* Add an action to teardown the devlink when unwinding the driver */
+	 
 	if (devm_add_action_or_reset(dev, ice_devlink_free, devlink))
 		return NULL;
 
 	return devlink_priv(devlink);
 }
 
-/**
- * ice_devlink_register - Register devlink interface for this PF
- * @pf: the PF to register the devlink for.
- *
- * Register the devlink instance associated with this physical function.
- *
- * Return: zero on success or an error code on failure.
- */
+ 
 void ice_devlink_register(struct ice_pf *pf)
 {
 	struct devlink *devlink = priv_to_devlink(pf);
@@ -1435,22 +1238,13 @@ void ice_devlink_register(struct ice_pf *pf)
 	devlink_register(devlink);
 }
 
-/**
- * ice_devlink_unregister - Unregister devlink resources for this PF.
- * @pf: the PF structure to cleanup
- *
- * Releases resources used by devlink and cleans up associated memory.
- */
+ 
 void ice_devlink_unregister(struct ice_pf *pf)
 {
 	devlink_unregister(priv_to_devlink(pf));
 }
 
-/**
- * ice_devlink_set_switch_id - Set unique switch id based on pci dsn
- * @pf: the PF to create a devlink port for
- * @ppid: struct with switch id information
- */
+ 
 static void
 ice_devlink_set_switch_id(struct ice_pf *pf, struct netdev_phys_item_id *ppid)
 {
@@ -1477,13 +1271,7 @@ void ice_devlink_unregister_params(struct ice_pf *pf)
 				  ARRAY_SIZE(ice_devlink_params));
 }
 
-/**
- * ice_devlink_set_port_split_options - Set port split options
- * @pf: the PF to set port split options
- * @attrs: devlink attributes
- *
- * Sets devlink port split options based on available FW port options
- */
+ 
 static void
 ice_devlink_set_port_split_options(struct ice_pf *pf,
 				   struct devlink_port_attrs *attrs)
@@ -1502,7 +1290,7 @@ ice_devlink_set_port_split_options(struct ice_pf *pf,
 		return;
 	}
 
-	/* find the biggest available port split count */
+	 
 	for (i = 0; i < option_count; i++)
 		attrs->lanes = max_t(int, attrs->lanes, options[i].pmd);
 
@@ -1515,14 +1303,7 @@ static const struct devlink_port_ops ice_devlink_port_ops = {
 	.port_unsplit = ice_devlink_port_unsplit,
 };
 
-/**
- * ice_devlink_create_pf_port - Create a devlink port for this PF
- * @pf: the PF to create a devlink port for
- *
- * Create and register a devlink_port for this PF.
- *
- * Return: zero on success or an error code on failure.
- */
+ 
 int ice_devlink_create_pf_port(struct ice_pf *pf)
 {
 	struct devlink_port_attrs attrs = {};
@@ -1543,9 +1324,7 @@ int ice_devlink_create_pf_port(struct ice_pf *pf)
 	attrs.flavour = DEVLINK_PORT_FLAVOUR_PHYSICAL;
 	attrs.phys.port_number = pf->hw.bus.func;
 
-	/* As FW supports only port split options for whole device,
-	 * set port split options only for first PF.
-	 */
+	 
 	if (pf->hw.pf_id == 0)
 		ice_devlink_set_port_split_options(pf, &attrs);
 
@@ -1565,25 +1344,13 @@ int ice_devlink_create_pf_port(struct ice_pf *pf)
 	return 0;
 }
 
-/**
- * ice_devlink_destroy_pf_port - Destroy the devlink_port for this PF
- * @pf: the PF to cleanup
- *
- * Unregisters the devlink_port structure associated with this PF.
- */
+ 
 void ice_devlink_destroy_pf_port(struct ice_pf *pf)
 {
 	devlink_port_unregister(&pf->devlink_port);
 }
 
-/**
- * ice_devlink_create_vf_port - Create a devlink port for this VF
- * @vf: the VF to create a port for
- *
- * Create and register a devlink_port for this VF.
- *
- * Return: zero on success or an error code on failure.
- */
+ 
 int ice_devlink_create_vf_port(struct ice_vf *vf)
 {
 	struct devlink_port_attrs attrs = {};
@@ -1621,12 +1388,7 @@ int ice_devlink_create_vf_port(struct ice_vf *vf)
 	return 0;
 }
 
-/**
- * ice_devlink_destroy_vf_port - Destroy the devlink_port for this VF
- * @vf: the VF to cleanup
- *
- * Unregisters the devlink_port structure associated with this VF.
- */
+ 
 void ice_devlink_destroy_vf_port(struct ice_vf *vf)
 {
 	devl_rate_leaf_destroy(&vf->devlink_port);
@@ -1638,23 +1400,7 @@ void ice_devlink_destroy_vf_port(struct ice_vf *vf)
 static const struct devlink_region_ops ice_nvm_region_ops;
 static const struct devlink_region_ops ice_sram_region_ops;
 
-/**
- * ice_devlink_nvm_snapshot - Capture a snapshot of the NVM flash contents
- * @devlink: the devlink instance
- * @ops: the devlink region to snapshot
- * @extack: extended ACK response structure
- * @data: on exit points to snapshot data buffer
- *
- * This function is called in response to a DEVLINK_CMD_REGION_NEW for either
- * the nvm-flash or shadow-ram region.
- *
- * It captures a snapshot of the NVM or Shadow RAM flash contents. This
- * snapshot can then later be viewed via the DEVLINK_CMD_REGION_READ netlink
- * interface.
- *
- * @returns zero on success, and updates the data pointer. Returns a non-zero
- * error code on failure.
- */
+ 
 static int ice_devlink_nvm_snapshot(struct devlink *devlink,
 				    const struct devlink_region_ops *ops,
 				    struct netlink_ext_ack *extack, u8 **data)
@@ -1687,12 +1433,7 @@ static int ice_devlink_nvm_snapshot(struct devlink *devlink,
 	tmp = nvm_data;
 	left = nvm_size;
 
-	/* Some systems take longer to read the NVM than others which causes the
-	 * FW to reclaim the NVM lock before the entire NVM has been read. Fix
-	 * this by breaking the reads of the NVM into smaller chunks that will
-	 * probably not take as long. This has some overhead since we are
-	 * increasing the number of AQ commands, but it should always work
-	 */
+	 
 	for (i = 0; i < num_blks; i++) {
 		u32 read_sz = min_t(u32, ICE_DEVLINK_READ_BLK_SIZE, left);
 
@@ -1726,23 +1467,7 @@ static int ice_devlink_nvm_snapshot(struct devlink *devlink,
 	return 0;
 }
 
-/**
- * ice_devlink_nvm_read - Read a portion of NVM flash contents
- * @devlink: the devlink instance
- * @ops: the devlink region to snapshot
- * @extack: extended ACK response structure
- * @offset: the offset to start at
- * @size: the amount to read
- * @data: the data buffer to read into
- *
- * This function is called in response to DEVLINK_CMD_REGION_READ to directly
- * read a section of the NVM contents.
- *
- * It reads from either the nvm-flash or shadow-ram region contents.
- *
- * @returns zero on success, and updates the data pointer. Returns a non-zero
- * error code on failure.
- */
+ 
 static int ice_devlink_nvm_read(struct devlink *devlink,
 				const struct devlink_region_ops *ops,
 				struct netlink_ext_ack *extack,
@@ -1793,20 +1518,7 @@ static int ice_devlink_nvm_read(struct devlink *devlink,
 	return 0;
 }
 
-/**
- * ice_devlink_devcaps_snapshot - Capture snapshot of device capabilities
- * @devlink: the devlink instance
- * @ops: the devlink region being snapshotted
- * @extack: extended ACK response structure
- * @data: on exit points to snapshot data buffer
- *
- * This function is called in response to the DEVLINK_CMD_REGION_TRIGGER for
- * the device-caps devlink region. It captures a snapshot of the device
- * capabilities reported by firmware.
- *
- * @returns zero on success, and updates the data pointer. Returns a non-zero
- * error code on failure.
- */
+ 
 static int
 ice_devlink_devcaps_snapshot(struct devlink *devlink,
 			     const struct devlink_region_ops *ops,
@@ -1857,13 +1569,7 @@ static const struct devlink_region_ops ice_devcaps_region_ops = {
 	.snapshot = ice_devlink_devcaps_snapshot,
 };
 
-/**
- * ice_devlink_init_regions - Initialize devlink regions
- * @pf: the PF device structure
- *
- * Create devlink regions used to enable access to dump the contents of the
- * flash memory on the device.
- */
+ 
 void ice_devlink_init_regions(struct ice_pf *pf)
 {
 	struct devlink *devlink = priv_to_devlink(pf);
@@ -1898,12 +1604,7 @@ void ice_devlink_init_regions(struct ice_pf *pf)
 	}
 }
 
-/**
- * ice_devlink_destroy_regions - Destroy devlink regions
- * @pf: the PF device structure
- *
- * Remove previously created regions for this PF.
- */
+ 
 void ice_devlink_destroy_regions(struct ice_pf *pf)
 {
 	if (pf->nvm_region)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Loongson Extend I/O Interrupt Controller support
- *
- * Copyright (C) 2020-2022 Loongson Technology Corporation Limited
- */
+
+ 
 
 #define pr_fmt(fmt) "eiointc: " fmt
 
@@ -69,7 +65,7 @@ static void eiointc_set_irq_route(int pos, unsigned int cpu, unsigned int mnode,
 	data_byte = pos & 3;
 	data_mask = ~BIT_MASK(data_byte) & 0xf;
 
-	/* Calculate node and coremap of target irq */
+	 
 	cpu_node = cpu_logical_map(cpu) / CORES_PER_EIO_NODE;
 	coremap = BIT(cpu_logical_map(cpu) % CORES_PER_EIO_NODE);
 
@@ -78,7 +74,7 @@ static void eiointc_set_irq_route(int pos, unsigned int cpu, unsigned int mnode,
 		if (!node_isset(node, *node_map))
 			continue;
 
-		/* EIO node 0 is in charge of inter-node interrupt dispatch */
+		 
 		route_node = (node == mnode) ? cpu_node : node;
 		data = ((coremap | (route_node << 4)) << (data_byte * 8));
 		csr_any_send(EIOINTC_REG_ROUTE + pos_off, data, data_mask, node * CORES_PER_EIO_NODE);
@@ -109,14 +105,14 @@ static int eiointc_set_irq_affinity(struct irq_data *d, const struct cpumask *af
 	vector = d->hwirq;
 	regaddr = EIOINTC_REG_ENABLE + ((vector >> 5) << 2);
 
-	/* Mask target vector */
+	 
 	csr_any_send(regaddr, EIOINTC_ALL_ENABLE & (~BIT(vector & 0x1F)),
 			0x0, priv->node * CORES_PER_EIO_NODE);
 
-	/* Set route for target vector */
+	 
 	eiointc_set_irq_route(vector, cpu, priv->node, &priv->node_map);
 
-	/* Unmask target vector */
+	 
 	csr_any_send(regaddr, EIOINTC_ALL_ENABLE,
 			0x0, priv->node * CORES_PER_EIO_NODE);
 
@@ -160,13 +156,13 @@ static int eiointc_router_init(unsigned int cpu)
 		}
 
 		for (i = 0; i < eiointc_priv[0]->vec_count / 32 / 4; i++) {
-			bit = BIT(1 + index); /* Route to IP[1 + index] */
+			bit = BIT(1 + index);  
 			data = bit | (bit << 8) | (bit << 16) | (bit << 24);
 			iocsr_write32(data, EIOINTC_REG_IPMAP + i * 4);
 		}
 
 		for (i = 0; i < eiointc_priv[0]->vec_count / 4; i++) {
-			/* Route to Node-0 Core-0 */
+			 
 			if (index == 0)
 				bit = BIT(cpu_logical_map(0));
 			else
@@ -482,10 +478,7 @@ static int __init eiointc_of_init(struct device_node *of_node,
 	if (ret < 0)
 		goto out_free_priv;
 
-	/*
-	 * In particular, the number of devices supported by the LS2K0500
-	 * extended I/O interrupt vector is 128.
-	 */
+	 
 	if (of_device_is_compatible(of_node, "loongson,ls2k0500-eiointc"))
 		priv->vec_count = 128;
 	else

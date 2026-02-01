@@ -1,11 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * da7213.h - DA7213 ASoC Codec Driver Platform Data
- *
- * Copyright (c) 2013 Dialog Semiconductor
- *
- * Author: Adam Thomson <Adam.Thomson.Opensource@diasemi.com>
- */
+ 
+ 
 
 #ifndef _DA7213_PDATA_H
 #define _DA7213_PDATA_H
@@ -33,14 +27,14 @@ enum da7213_dmic_clk_rate {
 };
 
 struct da7213_platform_data {
-	/* Mic Bias voltage */
+	 
 	enum da7213_micbias_voltage micbias1_lvl;
 	enum da7213_micbias_voltage micbias2_lvl;
 
-	/* DMIC config */
+	 
 	enum da7213_dmic_data_sel dmic_data_sel;
 	enum da7213_dmic_samplephase dmic_samplephase;
 	enum da7213_dmic_clk_rate dmic_clk_rate;
 };
 
-#endif /* _DA7213_PDATA_H */
+#endif  

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2017 Rockchip Electronics Co. Ltd.
- * Author: Elaine <zhangqing@rock-chips.com>
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/io.h>
@@ -19,7 +16,7 @@ enum rk3128_plls {
 };
 
 static struct rockchip_pll_rate_table rk3128_pll_rates[] = {
-	/* _mhz, _refdiv, _fbdiv, _postdiv1, _postdiv2, _dsmpd, _frac */
+	 
 	RK3036_PLL_RATE(1608000000, 1, 67, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1584000000, 1, 66, 1, 1, 1, 0),
 	RK3036_PLL_RATE(1560000000, 1, 65, 1, 1, 1, 0),
@@ -62,7 +59,7 @@ static struct rockchip_pll_rate_table rk3128_pll_rates[] = {
 	RK3036_PLL_RATE(312000000, 1, 52, 2, 2, 1, 0),
 	RK3036_PLL_RATE(216000000, 1, 72, 4, 2, 1, 0),
 	RK3036_PLL_RATE(96000000, 1, 64, 4, 4, 1, 0),
-	{ /* sentinel */ },
+	{   },
 };
 
 #define RK3128_DIV_CPU_MASK		0x1f
@@ -195,9 +192,7 @@ static struct rockchip_clk_branch rk3128_uart2_fracmux __initdata =
 			RK2928_CLKSEL_CON(15), 8, 2, MFLAGS);
 
 static struct rockchip_clk_branch common_clk_branches[] __initdata = {
-	/*
-	 * Clock-Architecture Diagram 1
-	 */
+	 
 
 	FACTOR(PLL_GPLL_DIV2, "gpll_div2", "gpll", 0, 1, 2),
 	FACTOR(PLL_GPLL_DIV3, "gpll_div3", "gpll", 0, 1, 3),
@@ -205,7 +200,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 	DIV(0, "clk_24m", "xin24m", CLK_IGNORE_UNUSED,
 			RK2928_CLKSEL_CON(4), 8, 5, DFLAGS),
 
-	/* PD_DDR */
+	 
 	GATE(0, "dpll_ddr", "dpll", CLK_IGNORE_UNUSED,
 			RK2928_CLKGATE_CON(0), 2, GFLAGS),
 	GATE(0, "gpll_div2_ddr", "gpll_div2", CLK_IGNORE_UNUSED,
@@ -215,7 +210,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 	FACTOR(SCLK_DDRC, "clk_ddrc", "ddrphy2x", 0, 1, 2),
 	FACTOR(0, "clk_ddrphy", "ddrphy2x", 0, 1, 2),
 
-	/* PD_CORE */
+	 
 	GATE(0, "apll_core", "apll", CLK_IGNORE_UNUSED,
 			RK2928_CLKGATE_CON(0), 6, GFLAGS),
 	GATE(0, "gpll_div2_core", "gpll_div2", CLK_IGNORE_UNUSED,
@@ -227,11 +222,11 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(1), 4, 3, DFLAGS | CLK_DIVIDER_READ_ONLY,
 			RK2928_CLKGATE_CON(0), 7, GFLAGS),
 
-	/* PD_MISC */
+	 
 	MUX(SCLK_USB480M, "usb480m", mux_usb480m_p, CLK_SET_RATE_PARENT,
 			RK2928_MISC_CON, 15, 1, MFLAGS),
 
-	/* PD_CPU */
+	 
 	COMPOSITE(0, "aclk_cpu_src", mux_aclk_cpu_src_p, 0,
 			RK2928_CLKSEL_CON(0), 13, 2, MFLAGS, 8, 5, DFLAGS,
 			RK2928_CLKGATE_CON(0), 1, GFLAGS),
@@ -247,7 +242,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(24), 0, 2, DFLAGS,
 			RK2928_CLKGATE_CON(0), 12, GFLAGS),
 
-	/* PD_VIDEO */
+	 
 	COMPOSITE(ACLK_VEPU, "aclk_vepu", mux_pll_src_5plls_p, 0,
 			RK2928_CLKSEL_CON(32), 5, 3, MFLAGS, 0, 5, DFLAGS,
 			RK2928_CLKGATE_CON(3), 9, GFLAGS),
@@ -263,7 +258,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(34), 13, 3, MFLAGS, 8, 5, DFLAGS,
 			RK2928_CLKGATE_CON(3), 10, GFLAGS),
 
-	/* PD_VIO */
+	 
 	COMPOSITE(ACLK_VIO0, "aclk_vio0", mux_pll_src_5plls_p, 0,
 			RK2928_CLKSEL_CON(31), 5, 3, MFLAGS, 0, 5, DFLAGS,
 			RK2928_CLKGATE_CON(3), 0, GFLAGS),
@@ -274,7 +269,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(30), 14, 2, MFLAGS, 8, 5, DFLAGS,
 			RK2928_CLKGATE_CON(0), 11, GFLAGS),
 
-	/* PD_PERI */
+	 
 	COMPOSITE(0, "clk_peri_src", mux_clk_peri_src_p, 0,
 			RK2928_CLKSEL_CON(10), 14, 2, MFLAGS, 0, 5, DFLAGS,
 			RK2928_CLKGATE_CON(2), 0, GFLAGS),
@@ -325,9 +320,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 	DIV(SCLK_PVTM, "clk_pvtm", "clk_pvtm_func", 0,
 			RK2928_CLKSEL_CON(2), 0, 7, DFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 2
-	 */
+	 
 	COMPOSITE(DCLK_VOP, "dclk_vop", mux_sclk_vop_src_p, 0,
 			RK2928_CLKSEL_CON(27), 0, 2, MFLAGS, 8, 8, DFLAGS,
 			RK2928_CLKGATE_CON(3), 1, GFLAGS),
@@ -399,7 +392,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(25), 8, 2, MFLAGS, 0, 7, DFLAGS,
 			RK2928_CLKGATE_CON(2), 9, GFLAGS),
 
-	/* PD_UART */
+	 
 	COMPOSITE(0, "uart0_src", mux_pll_src_4plls_p, 0,
 			RK2928_CLKSEL_CON(13), 12, 2, MFLAGS, 0, 7, DFLAGS,
 			RK2928_CLKGATE_CON(1), 8, GFLAGS),
@@ -450,11 +443,9 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 			RK2928_CLKSEL_CON(29), 8, 6, DFLAGS,
 			RK2928_CLKGATE_CON(1), 0, GFLAGS),
 
-	/*
-	 * Clock-Architecture Diagram 3
-	 */
+	 
 
-	/* PD_VOP */
+	 
 	GATE(ACLK_LCDC0, "aclk_lcdc0", "aclk_vio0", 0, RK2928_CLKGATE_CON(6), 0, GFLAGS),
 	GATE(ACLK_CIF, "aclk_cif", "aclk_vio0", 0, RK2928_CLKGATE_CON(6), 5, GFLAGS),
 	GATE(ACLK_RGA, "aclk_rga", "aclk_vio0", 0, RK2928_CLKGATE_CON(6), 11, GFLAGS),
@@ -472,7 +463,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 	GATE(HCLK_CIF, "hclk_cif", "hclk_vio", 0, RK2928_CLKGATE_CON(6), 4, GFLAGS),
 	GATE(HCLK_EBC, "hclk_ebc", "hclk_vio", 0, RK2928_CLKGATE_CON(9), 9, GFLAGS),
 
-	/* PD_PERI */
+	 
 	GATE(0, "aclk_peri_axi", "aclk_peri", CLK_IGNORE_UNUSED, RK2928_CLKGATE_CON(4), 3, GFLAGS),
 	GATE(ACLK_GMAC, "aclk_gmac", "aclk_peri", 0, RK2928_CLKGATE_CON(10), 10, GFLAGS),
 	GATE(ACLK_DMAC, "aclk_dmac", "aclk_peri", 0, RK2928_CLKGATE_CON(5), 1, GFLAGS),
@@ -516,7 +507,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 	GATE(PCLK_GPIO2, "pclk_gpio2", "pclk_peri", 0, RK2928_CLKGATE_CON(8), 11, GFLAGS),
 	GATE(PCLK_GPIO3, "pclk_gpio3", "pclk_peri", 0, RK2928_CLKGATE_CON(8), 12, GFLAGS),
 
-	/* PD_BUS */
+	 
 	GATE(0, "aclk_initmem", "aclk_cpu", CLK_IGNORE_UNUSED, RK2928_CLKGATE_CON(4), 12, GFLAGS),
 	GATE(0, "aclk_strc_sys", "aclk_cpu", CLK_IGNORE_UNUSED, RK2928_CLKGATE_CON(4), 10, GFLAGS),
 
@@ -531,7 +522,7 @@ static struct rockchip_clk_branch common_clk_branches[] __initdata = {
 	GATE(0, "pclk_pmu", "pclk_pmu_pre", 0, RK2928_CLKGATE_CON(9), 2, GFLAGS),
 	GATE(0, "pclk_pmu_niu", "pclk_pmu_pre", CLK_IGNORE_UNUSED, RK2928_CLKGATE_CON(9), 3, GFLAGS),
 
-	/* PD_MMC */
+	 
 	MMC(SCLK_SDMMC_DRV,    "sdmmc_drv",    "sclk_sdmmc", RK3228_SDMMC_CON0, 1),
 	MMC(SCLK_SDMMC_SAMPLE, "sdmmc_sample", "sclk_sdmmc", RK3228_SDMMC_CON1, 0),
 

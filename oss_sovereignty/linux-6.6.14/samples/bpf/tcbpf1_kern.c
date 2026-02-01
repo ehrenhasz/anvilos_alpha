@@ -10,7 +10,7 @@
 #include <bpf/bpf_helpers.h>
 #include "bpf_legacy.h"
 
-/* compiler workaround */
+ 
 #define _htonl __builtin_bswap32
 
 static inline void set_dst_mac(struct __sk_buff *skb, char *mac)

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017 Icenowy Zheng <icenowy@aosc.io>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -148,21 +146,14 @@ static struct clk_hw_onecell_data sun50i_a64_de2_hw_clks = {
 
 static struct ccu_reset_map sun8i_a83t_de2_resets[] = {
 	[RST_MIXER0]	= { 0x08, BIT(0) },
-	/*
-	 * Mixer1 reset line is shared with wb, so only RST_WB is
-	 * exported here.
-	 */
+	 
 	[RST_WB]	= { 0x08, BIT(2) },
 	[RST_ROT]	= { 0x08, BIT(3) },
 };
 
 static struct ccu_reset_map sun8i_h3_de2_resets[] = {
 	[RST_MIXER0]	= { 0x08, BIT(0) },
-	/*
-	 * Mixer1 reset line is shared with wb, so only RST_WB is
-	 * exported here.
-	 * V3s doesn't have mixer1, so it also shares this struct.
-	 */
+	 
 	[RST_WB]	= { 0x08, BIT(2) },
 };
 
@@ -270,7 +261,7 @@ static int sunxi_de2_clk_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, PTR_ERR(rstc),
 				     "Couldn't get reset control\n");
 
-	/* The clocks need to be enabled for us to access the registers */
+	 
 	ret = clk_prepare_enable(bus_clk);
 	if (ret) {
 		dev_err(&pdev->dev, "Couldn't enable bus clk: %d\n", ret);
@@ -283,7 +274,7 @@ static int sunxi_de2_clk_probe(struct platform_device *pdev)
 		goto err_disable_bus_clk;
 	}
 
-	/* The reset control needs to be asserted for the controls to work */
+	 
 	ret = reset_control_deassert(rstc);
 	if (ret) {
 		dev_err(&pdev->dev,

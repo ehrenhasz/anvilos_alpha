@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2020-21 Intel Corporation.
- */
+
+ 
 
 #include <linux/etherdevice.h>
 #include <linux/if_arp.h>
@@ -18,13 +16,7 @@
 #define IOSM_IP_TYPE_IPV4 0x40
 #define IOSM_IP_TYPE_IPV6 0x60
 
-/**
- * struct iosm_netdev_priv - netdev WWAN driver specific private data
- * @ipc_wwan:	Pointer to iosm_wwan struct
- * @netdev:	Pointer to network interface device structure
- * @if_id:	Interface id for device.
- * @ch_id:	IPC channel number for which interface device is created.
- */
+ 
 struct iosm_netdev_priv {
 	struct iosm_wwan *ipc_wwan;
 	struct net_device *netdev;
@@ -32,20 +24,14 @@ struct iosm_netdev_priv {
 	int ch_id;
 };
 
-/**
- * struct iosm_wwan - This structure contains information about WWAN root device
- *		      and interface to the IPC layer.
- * @ipc_imem:		Pointer to imem data-struct
- * @sub_netlist:	List of active netdevs
- * @dev:		Pointer device structure
- */
+ 
 struct iosm_wwan {
 	struct iosm_imem *ipc_imem;
 	struct iosm_netdev_priv __rcu *sub_netlist[IP_MUX_SESSION_END + 1];
 	struct device *dev;
 };
 
-/* Bring-up the wwan net link */
+ 
 static int ipc_wwan_link_open(struct net_device *netdev)
 {
 	struct iosm_netdev_priv *priv = wwan_netdev_drvpriv(netdev);
@@ -56,7 +42,7 @@ static int ipc_wwan_link_open(struct net_device *netdev)
 	    if_id >= ARRAY_SIZE(ipc_wwan->sub_netlist))
 		return -EINVAL;
 
-	/* get channel id */
+	 
 	priv->ch_id = ipc_imem_sys_wwan_open(ipc_wwan->ipc_imem, if_id);
 
 	if (priv->ch_id < 0) {
@@ -66,7 +52,7 @@ static int ipc_wwan_link_open(struct net_device *netdev)
 		return -ENODEV;
 	}
 
-	/* enable tx path, DL data may follow */
+	 
 	netif_start_queue(netdev);
 
 	dev_dbg(ipc_wwan->dev, "Channel id %d allocated to if_id %d",
@@ -75,7 +61,7 @@ static int ipc_wwan_link_open(struct net_device *netdev)
 	return 0;
 }
 
-/* Bring-down the wwan net link */
+ 
 static int ipc_wwan_link_stop(struct net_device *netdev)
 {
 	struct iosm_netdev_priv *priv = wwan_netdev_drvpriv(netdev);
@@ -89,7 +75,7 @@ static int ipc_wwan_link_stop(struct net_device *netdev)
 	return 0;
 }
 
-/* Transmit a packet */
+ 
 static netdev_tx_t ipc_wwan_link_transmit(struct sk_buff *skb,
 					  struct net_device *netdev)
 {
@@ -99,18 +85,16 @@ static netdev_tx_t ipc_wwan_link_transmit(struct sk_buff *skb,
 	int if_id = priv->if_id;
 	int ret;
 
-	/* Interface IDs from 1 to 8 are for IP data
-	 * & from 257 to 261 are for non-IP data
-	 */
+	 
 	if (if_id < IP_MUX_SESSION_START ||
 	    if_id >= ARRAY_SIZE(ipc_wwan->sub_netlist))
 		return -EINVAL;
 
-	/* Send the SKB to device for transmission */
+	 
 	ret = ipc_imem_sys_wwan_transmit(ipc_wwan->ipc_imem,
 					 if_id, priv->ch_id, skb);
 
-	/* Return code of zero is success */
+	 
 	if (ret == 0) {
 		netdev->stats.tx_packets++;
 		netdev->stats.tx_bytes += len;
@@ -125,7 +109,7 @@ static netdev_tx_t ipc_wwan_link_transmit(struct sk_buff *skb,
 	return ret;
 
 exit:
-	/* Log any skb drop */
+	 
 	if (if_id)
 		dev_dbg(ipc_wwan->dev, "skb dropped. IF_ID: %d, ret: %d", if_id,
 			ret);
@@ -135,14 +119,14 @@ exit:
 	return NETDEV_TX_OK;
 }
 
-/* Ops structure for wwan net link */
+ 
 static const struct net_device_ops ipc_inm_ops = {
 	.ndo_open = ipc_wwan_link_open,
 	.ndo_stop = ipc_wwan_link_stop,
 	.ndo_start_xmit = ipc_wwan_link_transmit,
 };
 
-/* Setup function for creating new net link */
+ 
 static void ipc_wwan_setup(struct net_device *iosm_dev)
 {
 	iosm_dev->header_ops = NULL;
@@ -160,7 +144,7 @@ static void ipc_wwan_setup(struct net_device *iosm_dev)
 	iosm_dev->netdev_ops = &ipc_inm_ops;
 }
 
-/* Create new wwan net link */
+ 
 static int ipc_wwan_newlink(void *ctxt, struct net_device *dev,
 			    u32 if_id, struct netlink_ext_ack *extack)
 {
@@ -205,7 +189,7 @@ static void ipc_wwan_dellink(void *ctxt, struct net_device *dev,
 		return;
 
 	RCU_INIT_POINTER(ipc_wwan->sub_netlist[if_id], NULL);
-	/* unregistering includes synchronize_net() */
+	 
 	unregister_netdevice_queue(dev, head);
 }
 
@@ -297,7 +281,7 @@ struct iosm_wwan *ipc_wwan_init(struct iosm_imem *ipc_imem, struct device *dev)
 	ipc_wwan->dev = dev;
 	ipc_wwan->ipc_imem = ipc_imem;
 
-	/* WWAN core will create a netdev for the default IP MUX channel */
+	 
 	if (wwan_register_ops(ipc_wwan->dev, &iosm_wwan_ops, ipc_wwan,
 			      IP_MUX_SESSION_DEFAULT)) {
 		kfree(ipc_wwan);
@@ -309,7 +293,7 @@ struct iosm_wwan *ipc_wwan_init(struct iosm_imem *ipc_imem, struct device *dev)
 
 void ipc_wwan_deinit(struct iosm_wwan *ipc_wwan)
 {
-	/* This call will remove all child netdev(s) */
+	 
 	wwan_unregister_ops(ipc_wwan->dev);
 
 	kfree(ipc_wwan);

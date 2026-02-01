@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
 
-/*
- * Copyright (C) 2021, Linaro Limited. All rights reserved.
- */
+
+ 
 #include <linux/dma-mapping.h>
 #include <linux/interrupt.h>
 #include <crypto/gcm.h>
@@ -139,7 +137,7 @@ qce_aead_prepare_dst_buf(struct aead_request *req)
 		return ERR_PTR(ret);
 
 	if (IS_CCM(rctx->flags) && assoclen) {
-		/* Get the dst buffer */
+		 
 		msg_sg = scatterwalk_ffwd(__sg, req->dst, assoclen);
 
 		sg = qce_sgtable_add(&rctx->dst_tbl, &rctx->adata_sg,
@@ -148,7 +146,7 @@ qce_aead_prepare_dst_buf(struct aead_request *req)
 			ret = PTR_ERR(sg);
 			goto dst_tbl_free;
 		}
-		/* dst buffer */
+		 
 		sg = qce_sgtable_add(&rctx->dst_tbl, msg_sg, rctx->cryptlen);
 		if (IS_ERR(sg)) {
 			ret = PTR_ERR(sg);
@@ -200,7 +198,7 @@ qce_aead_ccm_prepare_buf_assoclen(struct aead_request *req)
 		cryptlen = rctx->cryptlen;
 	totallen = cryptlen + req->assoclen;
 
-	/* Get the msg */
+	 
 	msg_sg = scatterwalk_ffwd(__sg, req->src, req->assoclen);
 
 	rctx->adata = kzalloc((ALIGN(assoclen, 16) + MAX_CCM_ADATA_HEADER_LEN) *
@@ -208,13 +206,7 @@ qce_aead_ccm_prepare_buf_assoclen(struct aead_request *req)
 	if (!rctx->adata)
 		return -ENOMEM;
 
-	/*
-	 * Format associated data (RFC3610 and NIST 800-38C)
-	 * Even though specification allows for AAD to be up to 2^64 - 1 bytes,
-	 * the assoclen field in aead_request is unsigned int and thus limits
-	 * the AAD to be up to 2^32 - 1 bytes. So we handle only two scenarios
-	 * while forming the header for AAD.
-	 */
+	 
 	if (assoclen < 0xff00) {
 		adata_header_len = 2;
 		*(__be16 *)rctx->adata = cpu_to_be16(assoclen);
@@ -224,13 +216,13 @@ qce_aead_ccm_prepare_buf_assoclen(struct aead_request *req)
 		*(__be32 *)(rctx->adata + 2) = cpu_to_be32(assoclen);
 	}
 
-	/* Copy the associated data */
+	 
 	if (sg_copy_to_buffer(req->src, sg_nents_for_len(req->src, assoclen),
 			      rctx->adata + adata_header_len,
 			      assoclen) != assoclen)
 		return -EINVAL;
 
-	/* Pad associated data to block size */
+	 
 	rctx->assoclen = ALIGN(assoclen + adata_header_len, 16);
 
 	diff_dst = (req->src != req->dst) ? true : false;
@@ -245,7 +237,7 @@ qce_aead_ccm_prepare_buf_assoclen(struct aead_request *req)
 	if (ret)
 		return ret;
 
-	/* Associated Data */
+	 
 	sg_init_one(&rctx->adata_sg, rctx->adata, rctx->assoclen);
 	sg = qce_sgtable_add(&rctx->src_tbl, &rctx->adata_sg,
 			     rctx->assoclen);
@@ -253,18 +245,14 @@ qce_aead_ccm_prepare_buf_assoclen(struct aead_request *req)
 		ret = PTR_ERR(sg);
 		goto err_free;
 	}
-	/* src msg */
+	 
 	sg = qce_sgtable_add(&rctx->src_tbl, msg_sg, cryptlen);
 	if (IS_ERR(sg)) {
 		ret = PTR_ERR(sg);
 		goto err_free;
 	}
 	if (!diff_dst) {
-		/*
-		 * For decrypt, when src and dst buffers are same, there is already space
-		 * in the buffer for padded 0's which is output in lieu of
-		 * the MAC that is input. So skip the below.
-		 */
+		 
 		if (!IS_DECRYPT(rctx->flags)) {
 			sg = qce_aead_prepare_ccm_result_buf(&rctx->src_tbl, req);
 			if (IS_ERR(sg)) {
@@ -369,25 +357,19 @@ static int qce_aead_create_ccm_nonce(struct qce_aead_reqctx *rctx, struct qce_ae
 
 	msglen_size = rctx->iv[0] + 1;
 
-	/* Verify that msg len size is valid */
+	 
 	if (msglen_size < 2 || msglen_size > 8)
 		return -EINVAL;
 
 	ivsize = rctx->ivsize;
 
-	/*
-	 * Clear the msglen bytes in IV.
-	 * Else the h/w engine and nonce will use any stray value pending there.
-	 */
+	 
 	if (!IS_CCM_RFC4309(rctx->flags)) {
 		for (i = 0; i < msglen_size; i++)
 			rctx->iv[ivsize - i - 1] = 0;
 	}
 
-	/*
-	 * The crypto framework encodes cryptlen as unsigned int. Thus, even though
-	 * spec allows for upto 8 bytes to encode msg_len only 4 bytes are needed.
-	 */
+	 
 	if (msglen_size > 4)
 		msglen_size = 4;
 
@@ -515,15 +497,15 @@ static int qce_aead_crypt(struct aead_request *req, int encrypt)
 	else
 		rctx->cryptlen = req->cryptlen - ctx->authsize;
 
-	/* CE does not handle 0 length messages */
+	 
 	if (!rctx->cryptlen) {
 		if (!(IS_CCM(rctx->flags) && IS_DECRYPT(rctx->flags)))
 			ctx->need_fallback = true;
 	}
 
-	/* If fallback is needed, schedule and exit */
+	 
 	if (ctx->need_fallback) {
-		/* Reset need_fallback in case the same ctx is used for another transaction */
+		 
 		ctx->need_fallback = false;
 
 		aead_request_set_tfm(&rctx->fallback_req, ctx->fallback);
@@ -537,14 +519,11 @@ static int qce_aead_crypt(struct aead_request *req, int encrypt)
 				 crypto_aead_decrypt(&rctx->fallback_req);
 	}
 
-	/*
-	 * CBC algorithms require message lengths to be
-	 * multiples of block size.
-	 */
+	 
 	if (IS_CBC(rctx->flags) && !IS_ALIGNED(rctx->cryptlen, blocksize))
 		return -EINVAL;
 
-	/* RFC4309 supported AAD size 16 bytes/20 bytes */
+	 
 	if (IS_CCM_RFC4309(rctx->flags))
 		if (crypto_ipsec_check_assoclen(req->assoclen))
 			return -EINVAL;
@@ -616,19 +595,14 @@ static int qce_aead_setkey(struct crypto_aead *tfm, const u8 *key, unsigned int 
 		err = verify_aead_des3_key(tfm, authenc_keys.enckey, authenc_keys.enckeylen);
 		if (err)
 			return err;
-		/*
-		 * The crypto engine does not support any two keys
-		 * being the same for triple des algorithms. The
-		 * verify_skcipher_des3_key does not check for all the
-		 * below conditions. Schedule fallback in this case.
-		 */
+		 
 		memcpy(_key, authenc_keys.enckey, DES3_EDE_KEY_SIZE);
 		if (!((_key[0] ^ _key[2]) | (_key[1] ^ _key[3])) ||
 		    !((_key[2] ^ _key[4]) | (_key[3] ^ _key[5])) ||
 		    !((_key[0] ^ _key[4]) | (_key[1] ^ _key[5])))
 			ctx->need_fallback = true;
 	} else if (IS_AES(flags)) {
-		/* No random key sizes */
+		 
 		if (authenc_keys.enckeylen != AES_KEYSIZE_128 &&
 		    authenc_keys.enckeylen != AES_KEYSIZE_192 &&
 		    authenc_keys.enckeylen != AES_KEYSIZE_256)

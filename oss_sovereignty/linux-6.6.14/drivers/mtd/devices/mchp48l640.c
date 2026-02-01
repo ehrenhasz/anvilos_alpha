@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Microchip 48L640 64 Kb SPI Serial EERAM
- *
- * Copyright Heiko Schocher <hs@denx.de>
- *
- * datasheet: http://ww1.microchip.com/downloads/en/DeviceDoc/20006055B.pdf
- *
- * we set continuous mode but reading/writing more bytes than
- * pagesize seems to bring chip into state where readden values
- * are wrong ... no idea why.
- *
- */
+
+ 
 #include <linux/delay.h>
 #include <linux/device.h>
 #include <linux/jiffies.h>
@@ -216,10 +205,7 @@ static int mchp48l640_write(struct mtd_info *mtd, loff_t to, size_t len,
 	size_t ws;
 	size_t page_sz = flash->caps->page_size;
 
-	/*
-	 * we set PRO bit (page rollover), but writing length > page size
-	 * does result in total chaos, so write in 32 byte chunks.
-	 */
+	 
 	while (wlen < len) {
 		ws = min((len - wlen), page_sz);
 		ret = mchp48l640_write_page(mtd, woff, ws, retlen, &buf[wlen]);
@@ -274,10 +260,7 @@ static int mchp48l640_read(struct mtd_info *mtd, loff_t from, size_t len,
 	size_t ws;
 	size_t page_sz = flash->caps->page_size;
 
-	/*
-	 * we set PRO bit (page rollover), but if read length > page size
-	 * does result in total chaos in result ...
-	 */
+	 
 	while (wlen < len) {
 		ws = min((len - wlen), page_sz);
 		ret = mchp48l640_read_page(mtd, woff, ws, retlen, &buf[wlen]);

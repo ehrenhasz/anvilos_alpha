@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2016 Oleksij Rempel <linux@rempel-privat.de>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/interrupt.h>
@@ -11,22 +9,22 @@
 #include <linux/platform_device.h>
 #include <linux/rtc.h>
 
-/* Miscellaneous registers */
-/* Interrupt Location Register */
+ 
+ 
 #define HW_ILR			0x00
 #define BM_RTCALF		BIT(1)
 #define BM_RTCCIF		BIT(0)
 
-/* Clock Control Register */
+ 
 #define HW_CCR			0x08
-/* Calibration counter disable */
+ 
 #define BM_CCALOFF		BIT(4)
-/* Reset internal oscillator divider */
+ 
 #define BM_CTCRST		BIT(1)
-/* Clock Enable */
+ 
 #define BM_CLKEN		BIT(0)
 
-/* Counter Increment Interrupt Register */
+ 
 #define HW_CIIR			0x0C
 #define BM_CIIR_IMYEAR		BIT(7)
 #define BM_CIIR_IMMON		BIT(6)
@@ -37,7 +35,7 @@
 #define BM_CIIR_IMMIN		BIT(1)
 #define BM_CIIR_IMSEC		BIT(0)
 
-/* Alarm Mask Register */
+ 
 #define HW_AMR			0x10
 #define BM_AMR_IMYEAR		BIT(7)
 #define BM_AMR_IMMON		BIT(6)
@@ -49,7 +47,7 @@
 #define BM_AMR_IMSEC		BIT(0)
 #define BM_AMR_OFF		0xff
 
-/* Consolidated time registers */
+ 
 #define HW_CTIME0		0x14
 #define BM_CTIME0_DOW_S		24
 #define BM_CTIME0_DOW_M		0x7
@@ -72,7 +70,7 @@
 #define BM_CTIME2_DOY_S		0
 #define BM_CTIME2_DOY_M		0xfff
 
-/* Time counter registers */
+ 
 #define HW_SEC			0x20
 #define HW_MIN			0x24
 #define HW_HOUR			0x28
@@ -86,14 +84,14 @@
 #define BM_CALDIR_BACK		BIT(17)
 #define BM_CALVAL_M		0x1ffff
 
-/* General purpose registers */
+ 
 #define HW_GPREG0		0x44
 #define HW_GPREG1		0x48
 #define HW_GPREG2		0x4C
 #define HW_GPREG3		0x50
 #define HW_GPREG4		0x54
 
-/* Alarm register group */
+ 
 #define HW_ALSEC		0x60
 #define HW_ALMIN		0x64
 #define HW_ALHOUR		0x68
@@ -143,10 +141,7 @@ static int asm9260_rtc_read_time(struct device *dev, struct rtc_time *tm)
 	ctime2 = ioread32(priv->iobase + HW_CTIME2);
 
 	if (ctime1 != ioread32(priv->iobase + HW_CTIME1)) {
-		/*
-		 * woops, counter flipped right now. Now we are safe
-		 * to reread.
-		 */
+		 
 		ctime0 = ioread32(priv->iobase + HW_CTIME0);
 		ctime1 = ioread32(priv->iobase + HW_CTIME1);
 		ctime2 = ioread32(priv->iobase + HW_CTIME2);
@@ -170,10 +165,7 @@ static int asm9260_rtc_set_time(struct device *dev, struct rtc_time *tm)
 {
 	struct asm9260_rtc_priv *priv = dev_get_drvdata(dev);
 
-	/*
-	 * make sure SEC counter will not flip other counter on write time,
-	 * real value will be written at the enf of sequence.
-	 */
+	 
 	iowrite32(0, priv->iobase + HW_SEC);
 
 	iowrite32(tm->tm_year, priv->iobase + HW_YEAR);
@@ -274,7 +266,7 @@ static int asm9260_rtc_probe(struct platform_device *pdev)
 	}
 
 	ccr = ioread32(priv->iobase + HW_CCR);
-	/* if dev is not enabled, reset it */
+	 
 	if ((ccr & (BM_CLKEN | BM_CTCRST)) != BM_CLKEN) {
 		iowrite32(BM_CTCRST, priv->iobase + HW_CCR);
 		ccr = 0;
@@ -312,7 +304,7 @@ static void asm9260_rtc_remove(struct platform_device *pdev)
 {
 	struct asm9260_rtc_priv *priv = platform_get_drvdata(pdev);
 
-	/* Disable alarm matching */
+	 
 	iowrite32(BM_AMR_OFF, priv->iobase + HW_AMR);
 	clk_disable_unprepare(priv->clk);
 }

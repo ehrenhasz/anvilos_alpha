@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * linux/sound/soc/pxa/mmp-sspa.c
- * Base on pxa2xx-ssp.c
- *
- * Copyright (C) 2011 Marvell International Ltd.
- */
+
+ 
 #include <linux/init.h>
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -24,9 +19,7 @@
 #include <sound/dmaengine_pcm.h>
 #include "mmp-sspa.h"
 
-/*
- * SSPA audio private data
- */
+ 
 struct sspa_priv {
 	void __iomem *tx_base;
 	void __iomem *rx_base;
@@ -100,9 +93,7 @@ static void mmp_sspa_shutdown(struct snd_pcm_substream *substream,
 	clk_disable_unprepare(sspa->sysclk);
 }
 
-/*
- * Set the SSP ports SYSCLK.
- */
+ 
 static int mmp_sspa_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 				    int clk_id, unsigned int freq, int dir)
 {
@@ -121,7 +112,7 @@ static int mmp_sspa_set_dai_sysclk(struct snd_soc_dai *cpu_dai,
 		break;
 	case MMP_SSPA_CLK_PLL:
 	case MMP_SSPA_CLK_VCXO:
-		/* not support yet */
+		 
 		return -EINVAL;
 	default:
 		return -EINVAL;
@@ -159,15 +150,13 @@ static int mmp_sspa_set_dai_pll(struct snd_soc_dai *cpu_dai, int pll_id,
 	return 0;
 }
 
-/*
- * Set up the sspa dai format.
- */
+ 
 static int mmp_sspa_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 				 unsigned int fmt)
 {
 	struct sspa_priv *sspa = snd_soc_dai_get_drvdata(cpu_dai);
 
-	/* reset port settings */
+	 
 	sspa->sp   = SSPA_SP_WEN | SSPA_SP_S_RST | SSPA_SP_FFLUSH;
 	sspa->ctrl = 0;
 
@@ -197,17 +186,11 @@ static int mmp_sspa_set_dai_fmt(struct snd_soc_dai *cpu_dai,
 		return -EINVAL;
 	}
 
-	/* Since we are configuring the timings for the format by hand
-	 * we have to defer some things until hw_params() where we
-	 * know parameters like the sample size.
-	 */
+	 
 	return 0;
 }
 
-/*
- * Set the SSPA audio DMA parameters and sample size.
- * Can be called multiple times by oss emulation.
- */
+ 
 static int mmp_sspa_hw_params(struct snd_pcm_substream *substream,
 			       struct snd_pcm_hw_params *params,
 			       struct snd_soc_dai *dai)
@@ -287,12 +270,7 @@ static int mmp_sspa_trigger(struct snd_pcm_substream *substream, int cmd,
 	case SNDRV_PCM_TRIGGER_START:
 	case SNDRV_PCM_TRIGGER_RESUME:
 	case SNDRV_PCM_TRIGGER_PAUSE_RELEASE:
-		/*
-		 * whatever playback or capture, must enable rx.
-		 * this is a hw issue, so need check if rx has been
-		 * enabled or not; if has been enabled by another
-		 * stream, do not enable again.
-		 */
+		 
 		if (!sspa->running_cnt)
 			mmp_sspa_rx_enable(sspa);
 
@@ -310,7 +288,7 @@ static int mmp_sspa_trigger(struct snd_pcm_substream *substream, int cmd,
 		if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK)
 			mmp_sspa_tx_disable(sspa);
 
-		/* have no capture stream, disable rx port */
+		 
 		if (!sspa->running_cnt)
 			mmp_sspa_rx_disable(sspa);
 		break;
@@ -418,7 +396,7 @@ static int mmp_sspa_open(struct snd_soc_component *component,
 
 	pm_runtime_get_sync(component->dev);
 
-	/* we can only change the settings if the port is not in use */
+	 
 	if ((__raw_readl(sspa->tx_base + SSPA_SP) & SSPA_SP_S_EN) ||
 	    (__raw_readl(sspa->rx_base + SSPA_SP) & SSPA_SP_S_EN)) {
 		dev_err(component->dev,
@@ -433,13 +411,7 @@ static int mmp_sspa_open(struct snd_soc_component *component,
 	__raw_writel(sspa->sp, sspa->tx_base + SSPA_SP);
 	__raw_writel(sspa->sp, sspa->rx_base + SSPA_SP);
 
-	/*
-	 * FIXME: hw issue, for the tx serial port,
-	 * can not config the master/slave mode;
-	 * so must clean this bit.
-	 * The master/slave mode has been set in the
-	 * rx port.
-	 */
+	 
 	__raw_writel(sspa->sp & ~SSPA_SP_MSL, sspa->tx_base + SSPA_SP);
 
 	__raw_writel(sspa->ctrl, sspa->tx_base + SSPA_CTL);
@@ -523,7 +495,7 @@ static int asoc_mmp_sspa_probe(struct platform_device *pdev)
 
 	sspa->playback_dma_data.maxburst = 4;
 	sspa->capture_dma_data.maxburst = 4;
-	/* You know, these addresses are actually ignored. */
+	 
 	sspa->capture_dma_data.addr = SSPA_D;
 	sspa->playback_dma_data.addr = 0x80 + SSPA_D;
 

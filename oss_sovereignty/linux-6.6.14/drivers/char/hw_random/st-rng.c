@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * ST Random Number Generator Driver ST's Platforms
- *
- * Author: Pankaj Dev: <pankaj.dev@st.com>
- *         Lee Jones <lee.jones@linaro.org>
- *
- * Copyright (C) 2015 STMicroelectronics (R&D) Limited
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -18,26 +11,20 @@
 #include <linux/platform_device.h>
 #include <linux/slab.h>
 
-/* Registers */
+ 
 #define ST_RNG_STATUS_REG		0x20
 #define ST_RNG_DATA_REG			0x24
 
-/* Registers fields */
+ 
 #define ST_RNG_STATUS_BAD_SEQUENCE	BIT(0)
 #define ST_RNG_STATUS_BAD_ALTERNANCE	BIT(1)
 #define ST_RNG_STATUS_FIFO_FULL		BIT(5)
 
-#define ST_RNG_SAMPLE_SIZE		2 /* 2 Byte (16bit) samples */
+#define ST_RNG_SAMPLE_SIZE		2  
 #define ST_RNG_FIFO_DEPTH		4
 #define ST_RNG_FIFO_SIZE		(ST_RNG_FIFO_DEPTH * ST_RNG_SAMPLE_SIZE)
 
-/*
- * Samples are documented to be available every 0.667us, so in theory
- * the 4 sample deep FIFO should take 2.668us to fill.  However, during
- * thorough testing, it became apparent that filling the FIFO actually
- * takes closer to 12us.  We then multiply by 2 in order to account for
- * the lack of udelay()'s reliability, suggested by Russell King.
- */
+ 
 #define ST_RNG_FILL_FIFO_TIMEOUT	(12 * 2)
 
 struct st_rng_data {
@@ -51,7 +38,7 @@ static int st_rng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 	u32 status;
 	int i;
 
-	/* Wait until FIFO is full - max 4uS*/
+	 
 	for (i = 0; i < ST_RNG_FILL_FIFO_TIMEOUT; i++) {
 		status = readl_relaxed(ddata->base + ST_RNG_STATUS_REG);
 		if (status & ST_RNG_STATUS_FIFO_FULL)
@@ -66,7 +53,7 @@ static int st_rng_read(struct hwrng *rng, void *data, size_t max, bool wait)
 		*(u16 *)(data + i) =
 			readl_relaxed(ddata->base + ST_RNG_DATA_REG);
 
-	return i;	/* No of bytes read */
+	return i;	 
 }
 
 static int st_rng_probe(struct platform_device *pdev)

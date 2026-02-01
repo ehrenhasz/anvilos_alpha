@@ -1,31 +1,4 @@
-/*
- *  Copyright (C) 2007-2010 Lawrence Livermore National Security, LLC.
- *  Copyright (C) 2007 The Regents of the University of California.
- *  Produced at Lawrence Livermore National Laboratory (cf, DISCLAIMER).
- *  Written by Brian Behlendorf <behlendorf1@llnl.gov>.
- *  UCRL-CODE-235197
- *
- *  This file is part of the SPL, Solaris Porting Layer.
- *
- *  The SPL is free software; you can redistribute it and/or modify it
- *  under the terms of the GNU General Public License as published by the
- *  Free Software Foundation; either version 2 of the License, or (at your
- *  option) any later version.
- *
- *  The SPL is distributed in the hope that it will be useful, but WITHOUT
- *  ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- *  FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License
- *  for more details.
- *
- *  You should have received a copy of the GNU General Public License along
- *  with the SPL.  If not, see <http://www.gnu.org/licenses/>.
- *
- *  Solaris Porting Layer (SPL) Kstat Implementation.
- *
- *  Links to Illumos.org for more information on kstat function:
- *  [1] https://illumos.org/man/1M/kstat
- *  [2] https://illumos.org/man/9f/kstat_create
- */
+ 
 
 #include <linux/seq_file.h>
 #include <sys/kstat.h>
@@ -138,13 +111,10 @@ kstat_seq_show_named(struct seq_file *f, kstat_named_t *knp)
 
 	switch (knp->data_type) {
 		case KSTAT_DATA_CHAR:
-			knp->value.c[15] = '\0'; /* NULL terminate */
+			knp->value.c[15] = '\0';  
 			seq_printf(f, "%-16s", knp->value.c);
 			break;
-		/*
-		 * NOTE - We need to be more careful able what tokens are
-		 * used for each arch, for now this is correct for x86_64.
-		 */
+		 
 		case KSTAT_DATA_INT32:
 			seq_printf(f, "%d", knp->value.i32);
 			break;
@@ -194,7 +164,7 @@ kstat_seq_show_intr(struct seq_file *f, kstat_intr_t *kip)
 static int
 kstat_seq_show_io(struct seq_file *f, kstat_io_t *kip)
 {
-	/* though wlentime & friends are signed, they will never be negative */
+	 
 	seq_printf(f,
 	    "%-8llu %-8llu %-8u %-8u %-8llu %-8llu "
 	    "%-8llu %-8llu %-8llu %-8llu %-8u %-8u\n",
@@ -318,7 +288,7 @@ kstat_seq_start(struct seq_file *f, loff_t *pos)
 		ksp->ks_raw_buf = vmem_alloc(ksp->ks_raw_bufsize, KM_SLEEP);
 	}
 
-	/* Dynamically update kstat, on error existing kstats are used */
+	 
 	(void) ksp->ks_update(ksp, KSTAT_READ);
 
 	ksp->ks_snaptime = gethrtime();
@@ -594,11 +564,7 @@ kstat_detect_collision(kstat_proc_entry_t *kpep)
 	return (0);
 }
 
-/*
- * Add a file to the proc filesystem under the kstat namespace (i.e.
- * /proc/spl/kstat/). The file need not necessarily be implemented as a
- * kstat.
- */
+ 
 void
 kstat_proc_entry_install(kstat_proc_entry_t *kpep, mode_t mode,
     const kstat_proc_op_t *proc_ops, void *data)
@@ -622,10 +588,7 @@ kstat_proc_entry_install(kstat_proc_entry_t *kpep, mode_t mode,
 			goto out;
 	}
 
-	/*
-	 * Only one entry by this name per-module, on failure the module
-	 * shouldn't be deleted because we know it has at least one entry.
-	 */
+	 
 	list_for_each_entry(tmp, &module->ksm_kstat_list, kpe_list) {
 		if (strncmp(tmp->kpe_name, kpep->kpe_name, KSTAT_STRLEN) == 0)
 			goto out;
@@ -652,7 +615,7 @@ __kstat_install(kstat_t *ksp)
 {
 	ASSERT(ksp);
 	mode_t mode;
-	/* Specify permission modes for different kstats */
+	 
 	if (strncmp(ksp->ks_proc.kpe_name, "dbufs", KSTAT_STRLEN) == 0) {
 		mode = 0600;
 	} else {
@@ -673,10 +636,7 @@ kstat_proc_entry_delete(kstat_proc_entry_t *kpep)
 	mutex_enter(&kstat_module_lock);
 	list_del_init(&kpep->kpe_list);
 
-	/*
-	 * Remove top level module directory if it wasn't empty before, but now
-	 * is.
-	 */
+	 
 	if (kpep->kpe_proc && list_empty(&module->ksm_kstat_list))
 		kstat_delete_module(module);
 	mutex_exit(&kstat_module_lock);

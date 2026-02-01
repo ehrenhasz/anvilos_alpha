@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- *  FUJITSU Extended Socket Network Device driver
- *  Copyright (c) 2015 FUJITSU LIMITED
- */
+ 
+ 
 
 #ifndef FJES_REGS_H_
 #define FJES_REGS_H_
@@ -11,37 +8,37 @@
 
 #define XSCT_DEVICE_REGISTER_SIZE 0x1000
 
-/* register offset */
-/* Information registers */
-#define XSCT_OWNER_EPID     0x0000  /* Owner EPID */
-#define XSCT_MAX_EP         0x0004  /* Maximum EP */
+ 
+ 
+#define XSCT_OWNER_EPID     0x0000   
+#define XSCT_MAX_EP         0x0004   
 
-/* Device Control registers */
-#define XSCT_DCTL           0x0010  /* Device Control */
+ 
+#define XSCT_DCTL           0x0010   
 
-/* Command Control registers */
-#define XSCT_CR             0x0020  /* Command request */
-#define XSCT_CS             0x0024  /* Command status */
-#define XSCT_SHSTSAL        0x0028  /* Share status address Low */
-#define XSCT_SHSTSAH        0x002C  /* Share status address High */
+ 
+#define XSCT_CR             0x0020   
+#define XSCT_CS             0x0024   
+#define XSCT_SHSTSAL        0x0028   
+#define XSCT_SHSTSAH        0x002C   
 
-#define XSCT_REQBL          0x0034  /* Request Buffer length */
-#define XSCT_REQBAL         0x0038  /* Request Buffer Address Low */
-#define XSCT_REQBAH         0x003C  /* Request Buffer Address High */
+#define XSCT_REQBL          0x0034   
+#define XSCT_REQBAL         0x0038   
+#define XSCT_REQBAH         0x003C   
 
-#define XSCT_RESPBL         0x0044  /* Response Buffer Length */
-#define XSCT_RESPBAL        0x0048  /* Response Buffer Address Low */
-#define XSCT_RESPBAH        0x004C  /* Response Buffer Address High */
+#define XSCT_RESPBL         0x0044   
+#define XSCT_RESPBAL        0x0048   
+#define XSCT_RESPBAH        0x004C   
 
-/* Interrupt Control registers */
-#define XSCT_IS             0x0080  /* Interrupt status */
-#define XSCT_IMS            0x0084  /* Interrupt mask set */
-#define XSCT_IMC            0x0088  /* Interrupt mask clear */
-#define XSCT_IG             0x008C  /* Interrupt generator */
-#define XSCT_ICTL           0x0090  /* Interrupt control */
+ 
+#define XSCT_IS             0x0080   
+#define XSCT_IMS            0x0084   
+#define XSCT_IMC            0x0088   
+#define XSCT_IG             0x008C   
+#define XSCT_ICTL           0x0090   
 
-/* register structure */
-/* Information registers */
+ 
+ 
 union REG_OWNER_EPID {
 	struct {
 		__le32 epid:16;
@@ -58,7 +55,7 @@ union REG_MAX_EP {
 	__le32 reg;
 };
 
-/* Device Control registers */
+ 
 union REG_DCTL {
 	struct {
 		__le32 reset:1;
@@ -68,7 +65,7 @@ union REG_DCTL {
 	__le32 reg;
 };
 
-/* Command Control registers */
+ 
 union REG_CR {
 	struct {
 		__le32 req_code:16;
@@ -89,7 +86,7 @@ union REG_CS {
 	__le32 reg;
 };
 
-/* Interrupt Control registers */
+ 
 union REG_ICTL {
 	struct {
 		__le32 automak:1;
@@ -124,4 +121,4 @@ do { \
 
 #define rd32(reg) (fjes_hw_rd32(hw, reg))
 
-#endif /* FJES_REGS_H_ */
+#endif  

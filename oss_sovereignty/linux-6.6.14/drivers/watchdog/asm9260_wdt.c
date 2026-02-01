@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Watchdog driver for Alphascale ASM9260.
- *
- * Copyright (c) 2014 Oleksij Rempel <linux@rempel-privat.de>
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/clk.h>
@@ -18,29 +14,25 @@
 
 #define CLOCK_FREQ	1000000
 
-/* Watchdog Mode register */
+ 
 #define HW_WDMOD			0x00
-/* Wake interrupt. Set by HW, can't be cleared. */
+ 
 #define BM_MOD_WDINT			BIT(3)
-/* This bit set if timeout reached. Cleared by SW. */
+ 
 #define BM_MOD_WDTOF			BIT(2)
-/* HW Reset on timeout */
+ 
 #define BM_MOD_WDRESET			BIT(1)
-/* WD enable */
+ 
 #define BM_MOD_WDEN			BIT(0)
 
-/*
- * Watchdog Timer Constant register
- * Minimal value is 0xff, the meaning of this value
- * depends on used clock: T = WDCLK * (0xff + 1) * 4
- */
+ 
 #define HW_WDTC				0x04
 #define BM_WDTC_MAX(freq)		(0x7fffffff / (freq))
 
-/* Watchdog Feed register */
+ 
 #define HW_WDFEED			0x08
 
-/* Watchdog Timer Value register */
+ 
 #define HW_WDTV				0x0c
 
 #define ASM9260_WDT_DEFAULT_TIMEOUT	30
@@ -117,7 +109,7 @@ static int asm9260_wdt_disable(struct watchdog_device *wdd)
 {
 	struct asm9260_wdt_priv *priv = watchdog_get_drvdata(wdd);
 
-	/* The only way to disable WD is to reset it. */
+	 
 	reset_control_assert(priv->rst);
 	reset_control_deassert(priv->rst);
 
@@ -134,17 +126,14 @@ static int asm9260_wdt_settimeout(struct watchdog_device *wdd, unsigned int to)
 
 static void asm9260_wdt_sys_reset(struct asm9260_wdt_priv *priv)
 {
-	/* init WD if it was not started */
+	 
 
 	iowrite32(BM_MOD_WDEN | BM_MOD_WDRESET, priv->iobase + HW_WDMOD);
 
 	iowrite32(0xff, priv->iobase + HW_WDTC);
-	/* first pass correct sequence */
+	 
 	asm9260_wdt_feed(&priv->wdd);
-	/*
-	 * Then write wrong pattern to the feed to trigger reset
-	 * ASAP.
-	 */
+	 
 	iowrite32(0xff, priv->iobase + HW_WDFEED);
 
 	mdelay(1000);
@@ -211,7 +200,7 @@ static int asm9260_wdt_get_dt_clks(struct asm9260_wdt_priv *priv)
 		return PTR_ERR(priv->clk);
 	}
 
-	/* configure AHB clock */
+	 
 	priv->clk_ahb = devm_clk_get(priv->dev, "ahb");
 	if (IS_ERR(priv->clk_ahb)) {
 		dev_err(priv->dev, "Failed to get \"ahb\" clk\n");
@@ -246,7 +235,7 @@ static int asm9260_wdt_get_dt_clks(struct asm9260_wdt_priv *priv)
 	if (err)
 		return err;
 
-	/* wdt has internal divider */
+	 
 	clk = clk_get_rate(priv->clk);
 	if (!clk) {
 		dev_err(priv->dev, "Failed, clk is 0!\n");
@@ -263,7 +252,7 @@ static void asm9260_wdt_get_dt_mode(struct asm9260_wdt_priv *priv)
 	const char *tmp;
 	int ret;
 
-	/* default mode */
+	 
 	priv->mode = HW_RESET;
 
 	ret = of_property_read_string(priv->dev->of_node,
@@ -317,11 +306,7 @@ static int asm9260_wdt_probe(struct platform_device *pdev)
 
 	watchdog_set_drvdata(wdd, priv);
 
-	/*
-	 * If 'timeout-sec' unspecified in devicetree, assume a 30 second
-	 * default, unless the max timeout is less than 30 seconds, then use
-	 * the max instead.
-	 */
+	 
 	wdd->timeout = ASM9260_WDT_DEFAULT_TIMEOUT;
 	watchdog_init_timeout(wdd, 0, dev);
 
@@ -331,10 +316,7 @@ static int asm9260_wdt_probe(struct platform_device *pdev)
 		priv->irq = platform_get_irq(pdev, 0);
 
 	if (priv->irq > 0) {
-		/*
-		 * Not all supported platforms specify an interrupt for the
-		 * watchdog, so let's make it optional.
-		 */
+		 
 		ret = devm_request_irq(dev, priv->irq, asm9260_wdt_irq, 0,
 				       pdev->name, priv);
 		if (ret < 0)

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/etherdevice.h>
 #include "ipvlan.h"
 #include <linux/if_vlan.h>
@@ -82,9 +82,7 @@ static int ipvtap_newlink(struct net *src_net, struct net_device *dev,
 
 	INIT_LIST_HEAD(&vlantap->tap.queue_list);
 
-	/* Since macvlan supports all offloads by default, make
-	 * tap support all offloads also.
-	 */
+	 
 	vlantap->tap.tap_features = TUN_OFFLOADS;
 	vlantap->tap.count_tx_dropped = ipvtap_count_tx_dropped;
 	vlantap->tap.update_features =	ipvtap_update_features;
@@ -94,9 +92,7 @@ static int ipvtap_newlink(struct net *src_net, struct net_device *dev,
 	if (err)
 		return err;
 
-	/* Don't put anything that may fail after macvlan_common_newlink
-	 * because we can't undo what it does.
-	 */
+	 
 	err =  ipvlan_link_new(src_net, dev, tb, data, extack);
 	if (err) {
 		netdev_rx_handler_unregister(dev);
@@ -151,10 +147,7 @@ static int ipvtap_device_event(struct notifier_block *unused,
 
 	switch (event) {
 	case NETDEV_REGISTER:
-		/* Create the device node here after the network device has
-		 * been registered but before register_netdevice has
-		 * finished running.
-		 */
+		 
 		err = tap_get_minor(ipvtap_major, &vlantap->tap);
 		if (err)
 			return notifier_from_errno(err);
@@ -172,7 +165,7 @@ static int ipvtap_device_event(struct notifier_block *unused,
 			return notifier_from_errno(err);
 		break;
 	case NETDEV_UNREGISTER:
-		/* vlan->minor == 0 if NETDEV_REGISTER above failed */
+		 
 		if (vlantap->tap.minor == 0)
 			break;
 		sysfs_remove_link(&dev->dev.kobj, tap_name);

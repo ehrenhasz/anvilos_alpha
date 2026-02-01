@@ -1,13 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C)2003-2006 Helsinki University of Technology
- * Copyright (C)2003-2006 USAGI/WIDE Project
- */
-/*
- * Authors:
- *	Noriaki TAKAMIYA @USAGI
- *	Masahide NAKAMURA @USAGI
- */
+
+ 
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -131,10 +124,7 @@ static int mip6_destopt_input(struct xfrm_state *x, struct sk_buff *skb)
 	return err;
 }
 
-/* Destination Option Header is inserted.
- * IP Header's src address is replaced with Home Address Option in
- * Destination Option Header.
- */
+ 
 static int mip6_destopt_output(struct xfrm_state *x, struct sk_buff *skb)
 {
 	struct ipv6hdr *iph;
@@ -266,10 +256,7 @@ static int mip6_destopt_init_state(struct xfrm_state *x, struct netlink_ext_ack 
 	return 0;
 }
 
-/*
- * Do nothing about destroying since it has no specific operation for
- * destination options header unlike IPsec protocols.
- */
+ 
 static void mip6_destopt_destroy(struct xfrm_state *x)
 {
 }
@@ -300,9 +287,7 @@ static int mip6_rthdr_input(struct xfrm_state *x, struct sk_buff *skb)
 	return err;
 }
 
-/* Routing Header type 2 is inserted.
- * IP Header's dst address is replaced with Routing Header's Home Address.
- */
+ 
 static int mip6_rthdr_output(struct xfrm_state *x, struct sk_buff *skb)
 {
 	struct ipv6hdr *iph;
@@ -348,10 +333,7 @@ static int mip6_rthdr_init_state(struct xfrm_state *x, struct netlink_ext_ack *e
 	return 0;
 }
 
-/*
- * Do nothing about destroying since it has no specific operation for routing
- * header type 2 unlike IPsec protocols.
- */
+ 
 static void mip6_rthdr_destroy(struct xfrm_state *x)
 {
 }

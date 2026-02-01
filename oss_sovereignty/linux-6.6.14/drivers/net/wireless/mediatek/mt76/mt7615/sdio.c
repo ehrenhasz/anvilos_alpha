@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2020 MediaTek Inc.
- *
- * Author: Felix Fietkau <nbd@nbd.name>
- *	   Lorenzo Bianconi <lorenzo@kernel.org>
- *	   Sean Wang <sean.wang@mediatek.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/iopoll.h>
@@ -21,7 +16,7 @@
 
 static const struct sdio_device_id mt7663s_table[] = {
 	{ SDIO_DEVICE(SDIO_VENDOR_ID_MEDIATEK, 0x7603) },
-	{ }	/* Terminating entry */
+	{ }	 
 };
 
 static void mt7663s_txrx_worker(struct mt76_worker *w)

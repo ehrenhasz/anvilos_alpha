@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <net/ipv6.h>
@@ -104,9 +102,7 @@ struct sk_buff *nf_reject_skb_v6_unreach(struct net *net,
 	if (!nf_reject_ip6hdr_validate(oldskb))
 		return NULL;
 
-	/* Include "As much of invoking packet as possible without the ICMPv6
-	 * packet exceeding the minimum IPv6 MTU" in the ICMP payload.
-	 */
+	 
 	len = min_t(unsigned int, 1220, oldskb->len);
 
 	if (!pskb_may_pull(oldskb, len))
@@ -166,7 +162,7 @@ const struct tcphdr *nf_reject_ip6_tcphdr_get(struct sk_buff *oldskb,
 
 	*otcplen = oldskb->len - tcphoff;
 
-	/* IP header checks: fragment, too short. */
+	 
 	if (proto != IPPROTO_TCP || *otcplen < sizeof(struct tcphdr)) {
 		pr_debug("proto(%d) != IPPROTO_TCP or too short (len = %d)\n",
 			 proto, *otcplen);
@@ -178,13 +174,13 @@ const struct tcphdr *nf_reject_ip6_tcphdr_get(struct sk_buff *oldskb,
 	if (otcph == NULL)
 		return NULL;
 
-	/* No RST for RST. */
+	 
 	if (otcph->rst) {
 		pr_debug("RST is set\n");
 		return NULL;
 	}
 
-	/* Check checksum. */
+	 
 	if (nf_ip6_checksum(oldskb, hook, tcphoff, IPPROTO_TCP)) {
 		pr_debug("TCP checksum is invalid\n");
 		return NULL;
@@ -227,7 +223,7 @@ void nf_reject_ip6_tcphdr_put(struct sk_buff *nskb,
 
 	skb_reset_transport_header(nskb);
 	tcph = skb_put(nskb, sizeof(struct tcphdr));
-	/* Truncate to length (no data) */
+	 
 	tcph->doff = sizeof(struct tcphdr)/4;
 	tcph->source = oth->dest;
 	tcph->dest = oth->source;
@@ -243,7 +239,7 @@ void nf_reject_ip6_tcphdr_put(struct sk_buff *nskb,
 		tcph->seq = 0;
 	}
 
-	/* Reset flags */
+	 
 	((u_int8_t *)tcph)[13] = 0;
 	tcph->rst = 1;
 	tcph->ack = needs_ack;
@@ -251,7 +247,7 @@ void nf_reject_ip6_tcphdr_put(struct sk_buff *nskb,
 	tcph->urg_ptr = 0;
 	tcph->check = 0;
 
-	/* Adjust TCP checksum */
+	 
 	tcph->check = csum_ipv6_magic(&ipv6_hdr(nskb)->saddr,
 				      &ipv6_hdr(nskb)->daddr,
 				      sizeof(struct tcphdr), IPPROTO_TCP,
@@ -347,12 +343,7 @@ void nf_send_reset6(struct net *net, struct sock *sk, struct sk_buff *oldskb,
 	nf_ct_set_closing(skb_nfct(oldskb));
 
 #if IS_ENABLED(CONFIG_BRIDGE_NETFILTER)
-	/* If we use ip6_local_out for bridged traffic, the MAC source on
-	 * the RST will be ours, instead of the destination's.  This confuses
-	 * some routers/firewalls, and they drop the packet.  So we need to
-	 * build the eth header using the original destination's MAC as the
-	 * source, and send the RST packet directly.
-	 */
+	 
 	if (nf_bridge_info_exists(oldskb)) {
 		struct ethhdr *oeth = eth_hdr(oldskb);
 		struct net_device *br_indev;

@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * TI Camera Access Layer (CAL) - CAMERARX
- *
- * Copyright (c) 2015-2020 Texas Instruments Inc.
- *
- * Authors:
- *	Benoit Parrot <bparrot@ti.com>
- *	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -25,10 +17,7 @@
 #include "cal.h"
 #include "cal_regs.h"
 
-/* ------------------------------------------------------------------
- *	I/O Register Accessors
- * ------------------------------------------------------------------
- */
+ 
 
 static inline u32 camerarx_read(struct cal_camerarx *phy, u32 offset)
 {
@@ -40,10 +29,7 @@ static inline void camerarx_write(struct cal_camerarx *phy, u32 offset, u32 val)
 	iowrite32(val, phy->base + offset);
 }
 
-/* ------------------------------------------------------------------
- *	CAMERARX Management
- * ------------------------------------------------------------------
- */
+ 
 
 static s64 cal_camerarx_get_ext_link_freq(struct cal_camerarx *phy)
 {
@@ -89,10 +75,7 @@ static void cal_camerarx_lane_config(struct cal_camerarx *phy)
 	cal_set_field(&val, mipi_csi2->clock_lane + 1, lane_mask);
 	cal_set_field(&val, mipi_csi2->lane_polarities[0], polarity_mask);
 	for (lane = 0; lane < mipi_csi2->num_data_lanes; lane++) {
-		/*
-		 * Every lane are one nibble apart starting with the
-		 * clock followed by the data lanes so shift masks by 4.
-		 */
+		 
 		lane_mask <<= 4;
 		polarity_mask <<= 4;
 		cal_set_field(&val, mipi_csi2->data_lanes[lane] + 1, lane_mask);
@@ -110,9 +93,9 @@ static void cal_camerarx_enable(struct cal_camerarx *phy)
 	u32 num_lanes = phy->cal->data->camerarx[phy->instance].num_lanes;
 
 	regmap_field_write(phy->fields[F_CAMMODE], 0);
-	/* Always enable all lanes at the phy control level */
+	 
 	regmap_field_write(phy->fields[F_LANEENABLE], (1 << num_lanes) - 1);
-	/* F_CSI_MODE is not present on every architecture */
+	 
 	if (phy->fields[F_CSI_MODE])
 		regmap_field_write(phy->fields[F_CSI_MODE], 1);
 	regmap_field_write(phy->fields[F_CTRLCLKEN], 1);
@@ -123,9 +106,7 @@ void cal_camerarx_disable(struct cal_camerarx *phy)
 	regmap_field_write(phy->fields[F_CTRLCLKEN], 0);
 }
 
-/*
- * TCLK values are OK at their reset values
- */
+ 
 #define TCLK_TERM	0
 #define TCLK_MISS	1
 #define TCLK_SETTLE	14
@@ -135,13 +116,13 @@ static void cal_camerarx_config(struct cal_camerarx *phy, s64 link_freq)
 	unsigned int reg0, reg1;
 	unsigned int ths_term, ths_settle;
 
-	/* DPHY timing configuration */
+	 
 
-	/* THS_TERM: Programmed value = floor(20 ns/DDRClk period) */
+	 
 	ths_term = div_s64(20 * link_freq, 1000 * 1000 * 1000);
 	phy_dbg(1, phy, "ths_term: %d (0x%02x)\n", ths_term, ths_term);
 
-	/* THS_SETTLE: Programmed value = floor(105 ns/DDRClk period) + 4 */
+	 
 	ths_settle = div_s64(105 * link_freq, 1000 * 1000 * 1000) + 4;
 	phy_dbg(1, phy, "ths_settle: %d (0x%02x)\n", ths_settle, ths_settle);
 
@@ -249,7 +230,7 @@ static void cal_camerarx_enable_irqs(struct cal_camerarx *phy)
 		CAL_CSI2_VC_IRQ_ECC_CORRECTION_IRQ_MASK(2) |
 		CAL_CSI2_VC_IRQ_ECC_CORRECTION_IRQ_MASK(3);
 
-	/* Enable CIO & VC error IRQs. */
+	 
 	cal_write(phy->cal, CAL_HL_IRQENABLE_SET(0),
 		  CAL_HL_IRQ_CIO_MASK(phy->instance) |
 		  CAL_HL_IRQ_VC_MASK(phy->instance));
@@ -261,7 +242,7 @@ static void cal_camerarx_enable_irqs(struct cal_camerarx *phy)
 
 static void cal_camerarx_disable_irqs(struct cal_camerarx *phy)
 {
-	/* Disable CIO error irqs */
+	 
 	cal_write(phy->cal, CAL_HL_IRQENABLE_CLR(0),
 		  CAL_HL_IRQ_CIO_MASK(phy->instance) |
 		  CAL_HL_IRQ_VC_MASK(phy->instance));
@@ -308,33 +289,15 @@ static int cal_camerarx_start(struct cal_camerarx *phy)
 
 	cal_camerarx_enable_irqs(phy);
 
-	/*
-	 * CSI-2 PHY Link Initialization Sequence, according to the DRA74xP /
-	 * DRA75xP / DRA76xP / DRA77xP TRM. The DRA71x / DRA72x and the AM65x /
-	 * DRA80xM TRMs have a slightly simplified sequence.
-	 */
+	 
 
-	/*
-	 * 1. Configure all CSI-2 low level protocol registers to be ready to
-	 *    receive signals/data from the CSI-2 PHY.
-	 *
-	 *    i.-v. Configure the lanes position and polarity.
-	 */
+	 
 	cal_camerarx_lane_config(phy);
 
-	/*
-	 *    vi.-vii. Configure D-PHY mode, enable the required lanes and
-	 *             enable the CAMERARX clock.
-	 */
+	 
 	cal_camerarx_enable(phy);
 
-	/*
-	 * 2. CSI PHY and link initialization sequence.
-	 *
-	 *    a. Deassert the CSI-2 PHY reset. Do not wait for reset completion
-	 *       at this point, as it requires the external source to send the
-	 *       CSI-2 HS clock.
-	 */
+	 
 	cal_write_field(phy->cal, CAL_CSI2_COMPLEXIO_CFG(phy->instance),
 			CAL_CSI2_COMPLEXIO_CFG_RESET_CTRL_OPERATIONAL,
 			CAL_CSI2_COMPLEXIO_CFG_RESET_CTRL_MASK);
@@ -342,22 +305,13 @@ static int cal_camerarx_start(struct cal_camerarx *phy)
 		phy->instance,
 		cal_read(phy->cal, CAL_CSI2_COMPLEXIO_CFG(phy->instance)));
 
-	/* Dummy read to allow SCP reset to complete. */
+	 
 	camerarx_read(phy, CAL_CSI2_PHY_REG0);
 
-	/* Program the PHY timing parameters. */
+	 
 	cal_camerarx_config(phy, link_freq);
 
-	/*
-	 *    b. Assert the FORCERXMODE signal.
-	 *
-	 * The stop-state-counter is based on fclk cycles, and we always use
-	 * the x16 and x4 settings, so stop-state-timeout =
-	 * fclk-cycle * 16 * 4 * counter.
-	 *
-	 * Stop-state-timeout must be more than 100us as per CSI-2 spec, so we
-	 * calculate a timeout that's 100us (rounding up).
-	 */
+	 
 	sscounter = DIV_ROUND_UP(clk_get_rate(phy->cal->fclk), 10000 *  16 * 4);
 
 	val = cal_read(phy->cal, CAL_CSI2_TIMING(phy->instance));
@@ -370,30 +324,19 @@ static int cal_camerarx_start(struct cal_camerarx *phy)
 		phy->instance,
 		cal_read(phy->cal, CAL_CSI2_TIMING(phy->instance)));
 
-	/* Assert the FORCERXMODE signal. */
+	 
 	cal_write_field(phy->cal, CAL_CSI2_TIMING(phy->instance),
 			1, CAL_CSI2_TIMING_FORCE_RX_MODE_IO1_MASK);
 	phy_dbg(3, phy, "CAL_CSI2_TIMING(%d) = 0x%08x Force RXMODE\n",
 		phy->instance,
 		cal_read(phy->cal, CAL_CSI2_TIMING(phy->instance)));
 
-	/*
-	 * c. Connect pull-down on CSI-2 PHY link (using pad control).
-	 *
-	 * This is not required on DRA71x, DRA72x, AM65x and DRA80xM. Not
-	 * implemented.
-	 */
+	 
 
-	/*
-	 * d. Power up the CSI-2 PHY.
-	 * e. Check whether the state status reaches the ON state.
-	 */
+	 
 	cal_camerarx_power(phy, true);
 
-	/*
-	 * Start the source to enable the CSI-2 HS clock. We can now wait for
-	 * CSI-2 PHY reset to complete.
-	 */
+	 
 	ret = v4l2_subdev_call(phy->source, video, s_stream, 1);
 	if (ret) {
 		v4l2_subdev_call(phy->source, core, s_power, 0);
@@ -404,20 +347,15 @@ static int cal_camerarx_start(struct cal_camerarx *phy)
 
 	cal_camerarx_wait_reset(phy);
 
-	/* f. Wait for STOPSTATE=1 for all enabled lane modules. */
+	 
 	cal_camerarx_wait_stop_state(phy);
 
 	phy_dbg(1, phy, "CSI2_%u_REG1 = 0x%08x (bits 31-28 should be set)\n",
 		phy->instance, camerarx_read(phy, CAL_CSI2_PHY_REG1));
 
-	/*
-	 * g. Disable pull-down on CSI-2 PHY link (using pad control).
-	 *
-	 * This is not required on DRA71x, DRA72x, AM65x and DRA80xM. Not
-	 * implemented.
-	 */
+	 
 
-	/* Finally, enable the PHY Protocol Interface (PPI). */
+	 
 	cal_camerarx_ppi_enable(phy);
 
 	phy->enable_count++;
@@ -438,7 +376,7 @@ static void cal_camerarx_stop(struct cal_camerarx *phy)
 
 	cal_camerarx_power(phy, false);
 
-	/* Assert Complex IO Reset */
+	 
 	cal_write_field(phy->cal, CAL_CSI2_COMPLEXIO_CFG(phy->instance),
 			CAL_CSI2_COMPLEXIO_CFG_RESET_CTRL,
 			CAL_CSI2_COMPLEXIO_CFG_RESET_CTRL_MASK);
@@ -447,7 +385,7 @@ static void cal_camerarx_stop(struct cal_camerarx *phy)
 		phy->instance,
 		cal_read(phy->cal, CAL_CSI2_COMPLEXIO_CFG(phy->instance)));
 
-	/* Disable the phy */
+	 
 	cal_camerarx_disable(phy);
 
 	if (v4l2_subdev_call(phy->source, video, s_stream, 0))
@@ -458,25 +396,7 @@ static void cal_camerarx_stop(struct cal_camerarx *phy)
 		phy_err(phy, "power off failed in subdev\n");
 }
 
-/*
- *   Errata i913: CSI2 LDO Needs to be disabled when module is powered on
- *
- *   Enabling CSI2 LDO shorts it to core supply. It is crucial the 2 CSI2
- *   LDOs on the device are disabled if CSI-2 module is powered on
- *   (0x4845 B304 | 0x4845 B384 [28:27] = 0x1) or in ULPS (0x4845 B304
- *   | 0x4845 B384 [28:27] = 0x2) mode. Common concerns include: high
- *   current draw on the module supply in active mode.
- *
- *   Errata does not apply when CSI-2 module is powered off
- *   (0x4845 B304 | 0x4845 B384 [28:27] = 0x0).
- *
- * SW Workaround:
- *	Set the following register bits to disable the LDO,
- *	which is essentially CSI2 REG10 bit 6:
- *
- *		Core 0:  0x4845 B828 = 0x0000 0040
- *		Core 1:  0x4845 B928 = 0x0000 0040
- */
+ 
 void cal_camerarx_i913_errata(struct cal_camerarx *phy)
 {
 	u32 reg10 = camerarx_read(phy, CAL_CSI2_PHY_REG10);
@@ -505,10 +425,7 @@ static int cal_camerarx_regmap_init(struct cal_dev *cal,
 			.msb = phy_data->fields[i].msb,
 		};
 
-		/*
-		 * Here we update the reg offset with the
-		 * value found in DT
-		 */
+		 
 		phy->fields[i] = devm_regmap_field_alloc(cal->dev,
 							 cal->syscon_camerrx,
 							 field);
@@ -529,17 +446,11 @@ static int cal_camerarx_parse_dt(struct cal_camerarx *phy)
 	unsigned int i;
 	int ret;
 
-	/*
-	 * Find the endpoint node for the port corresponding to the PHY
-	 * instance, and parse its CSI-2-related properties.
-	 */
+	 
 	ep_node = of_graph_get_endpoint_by_regs(phy->cal->dev->of_node,
 						phy->instance, 0);
 	if (!ep_node) {
-		/*
-		 * The endpoint is not mandatory, not all PHY instances need to
-		 * be connected in DT.
-		 */
+		 
 		phy_dbg(3, phy, "Port has no endpoint\n");
 		return 0;
 	}
@@ -572,7 +483,7 @@ static int cal_camerarx_parse_dt(struct cal_camerarx *phy)
 		endpoint->bus.mipi_csi2.clock_lane, data_lanes,
 		endpoint->bus.mipi_csi2.flags);
 
-	/* Retrieve the connected device and store it for later use. */
+	 
 	phy->source_ep_node = of_graph_get_remote_endpoint(ep_node);
 	phy->source_node = of_graph_get_port_parent(phy->source_ep_node);
 	if (!phy->source_node) {
@@ -589,10 +500,7 @@ done:
 	return ret;
 }
 
-/* ------------------------------------------------------------------
- *	V4L2 Subdev Operations
- * ------------------------------------------------------------------
- */
+ 
 
 static inline struct cal_camerarx *to_cal_camerarx(struct v4l2_subdev *sd)
 {
@@ -623,7 +531,7 @@ static int cal_camerarx_sd_enum_mbus_code(struct v4l2_subdev *sd,
 {
 	struct cal_camerarx *phy = to_cal_camerarx(sd);
 
-	/* No transcoding, source and sink codes must match. */
+	 
 	if (cal_rx_pad_is_source(code->pad)) {
 		struct v4l2_mbus_framefmt *fmt;
 
@@ -652,7 +560,7 @@ static int cal_camerarx_sd_enum_frame_size(struct v4l2_subdev *sd,
 	if (fse->index > 0)
 		return -EINVAL;
 
-	/* No transcoding, source and sink formats must match. */
+	 
 	if (cal_rx_pad_is_source(fse->pad)) {
 		struct v4l2_mbus_framefmt *fmt;
 
@@ -687,19 +595,16 @@ static int cal_camerarx_sd_set_fmt(struct v4l2_subdev *sd,
 	struct v4l2_mbus_framefmt *fmt;
 	unsigned int bpp;
 
-	/* No transcoding, source and sink formats must match. */
+	 
 	if (cal_rx_pad_is_source(format->pad))
 		return v4l2_subdev_get_fmt(sd, state, format);
 
-	/*
-	 * Default to the first format if the requested media bus code isn't
-	 * supported.
-	 */
+	 
 	fmtinfo = cal_format_by_code(format->format.code);
 	if (!fmtinfo)
 		fmtinfo = &cal_formats[0];
 
-	/* Clamp the size, update the code. The colorspace is accepted as-is. */
+	 
 	bpp = ALIGN(fmtinfo->bpp, 8);
 
 	format->format.width = clamp_t(unsigned int, format->format.width,
@@ -711,7 +616,7 @@ static int cal_camerarx_sd_set_fmt(struct v4l2_subdev *sd,
 	format->format.code = fmtinfo->code;
 	format->format.field = V4L2_FIELD_NONE;
 
-	/* Store the format and propagate it to the source pad. */
+	 
 
 	fmt = v4l2_subdev_get_pad_format(sd, state, CAL_CAMERARX_PAD_SINK);
 	*fmt = format->format;
@@ -801,10 +706,7 @@ static struct media_entity_operations cal_camerarx_media_ops = {
 	.link_validate = v4l2_subdev_link_validate,
 };
 
-/* ------------------------------------------------------------------
- *	Create and Destroy
- * ------------------------------------------------------------------
- */
+ 
 
 struct cal_camerarx *cal_camerarx_create(struct cal_dev *cal,
 					 unsigned int instance)
@@ -845,7 +747,7 @@ struct cal_camerarx *cal_camerarx_create(struct cal_dev *cal,
 	if (ret)
 		return ERR_PTR(ret);
 
-	/* Initialize the V4L2 subdev and media entity. */
+	 
 	sd = &phy->subdev;
 	v4l2_subdev_init(sd, &cal_camerarx_subdev_ops);
 	sd->entity.function = MEDIA_ENT_F_VID_IF_BRIDGE;

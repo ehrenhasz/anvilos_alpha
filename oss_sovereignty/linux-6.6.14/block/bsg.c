@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * bsg.c - block layer implementation of the sg v4 interface
- */
+
+ 
 #include <linux/module.h>
 #include <linux/init.h>
 #include <linux/file.h>
@@ -110,17 +108,13 @@ static long bsg_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 	int val;
 
 	switch (cmd) {
-	/*
-	 * Our own ioctls
-	 */
+	 
 	case SG_GET_COMMAND_Q:
 		return bsg_get_command_q(bd, uarg);
 	case SG_SET_COMMAND_Q:
 		return bsg_set_command_q(bd, uarg);
 
-	/*
-	 * SCSI/sg ioctls
-	 */
+	 
 	case SG_GET_VERSION_NUM:
 		return put_user(30527, intp);
 	case SCSI_IOCTL_GET_IDLUN:

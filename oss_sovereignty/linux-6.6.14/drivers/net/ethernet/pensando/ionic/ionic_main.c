@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2017 - 2019 Pensando Systems, Inc */
+
+ 
 
 #include <linux/printk.h>
 #include <linux/dynamic_debug.h>
@@ -383,11 +383,11 @@ int ionic_adminq_wait(struct ionic_lif *lif, struct ionic_admin_ctx *ctx,
 		remaining = wait_for_completion_timeout(&ctx->work,
 							IONIC_ADMINQ_TIME_SLICE);
 
-		/* check for done */
+		 
 		if (remaining)
 			break;
 
-		/* force a check of FW status and break out if FW reset */
+		 
 		ionic_heartbeat_check(lif->ionic);
 		if ((test_bit(IONIC_LIF_F_FW_RESET, lif->state) &&
 		     !lif->ionic->idev.fw_status_ready) ||
@@ -460,9 +460,7 @@ static int __ionic_dev_cmd_wait(struct ionic *ionic, unsigned long max_seconds,
 	int opcode;
 	int err;
 
-	/* Wait for dev cmd to complete, retrying if we get EAGAIN,
-	 * but don't wait any longer than max_seconds.
-	 */
+	 
 	max_wait = jiffies + (max_seconds * HZ);
 try_again:
 	opcode = readb(&idev->dev_cmd_regs->cmd.cmd.opcode);

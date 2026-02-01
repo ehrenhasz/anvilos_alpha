@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * NXP Wireless LAN device driver: 802.11n RX Re-ordering
- *
- * Copyright 2011-2020 NXP
- */
+ 
+ 
 
 #ifndef _MWIFIEX_11N_RXREORDER_H_
 #define _MWIFIEX_11N_RXREORDER_H_
@@ -71,4 +67,4 @@ void mwifiex_11n_del_rx_reorder_tbl_by_ta(struct mwifiex_private *priv, u8 *ta);
 void mwifiex_update_rxreor_flags(struct mwifiex_adapter *adapter, u8 flags);
 void mwifiex_11n_rxba_sync_event(struct mwifiex_private *priv,
 				 u8 *event_buf, u16 len);
-#endif /* _MWIFIEX_11N_RXREORDER_H_ */
+#endif  

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2021-2022 NVIDIA Corporation
- *
- * Author: Dipen Patel <dipenp@nvidia.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -19,7 +15,7 @@
 
 #define HTE_TS_NAME_LEN		10
 
-/* Global list of the HTE devices */
+ 
 static DEFINE_SPINLOCK(hte_lock);
 static LIST_HEAD(hte_devices);
 
@@ -30,27 +26,7 @@ enum {
 	HTE_TS_QUEUE_WK,
 };
 
-/**
- * struct hte_ts_info - Information related to requested timestamp.
- *
- * @xlated_id: Timestamp ID as understood between HTE subsys and HTE provider,
- * See xlate callback API.
- * @flags: Flags holding state information.
- * @hte_cb_flags: Callback related flags.
- * @seq: Timestamp sequence counter.
- * @line_name: HTE allocated line name.
- * @free_attr_name: If set, free the attr name.
- * @cb: A nonsleeping callback function provided by clients.
- * @tcb: A secondary sleeping callback function provided by clients.
- * @dropped_ts: Dropped timestamps.
- * @slock: Spin lock to synchronize between disable/enable,
- * request/release APIs.
- * @cb_work: callback workqueue, used when tcb is specified.
- * @req_mlock: Lock during timestamp request/release APIs.
- * @ts_dbg_root: Root for the debug fs.
- * @gdev: HTE abstract device that this timestamp information belongs to.
- * @cl_data: Client specific data.
- */
+ 
 struct hte_ts_info {
 	u32 xlated_id;
 	unsigned long flags;
@@ -69,17 +45,7 @@ struct hte_ts_info {
 	void *cl_data;
 };
 
-/**
- * struct hte_device - HTE abstract device
- * @nlines: Number of entities this device supports.
- * @ts_req: Total number of entities requested.
- * @sdev: Device used at various debug prints.
- * @dbg_root: Root directory for debug fs.
- * @list: List node to store hte_device for each provider.
- * @chip: HTE chip providing this HTE device.
- * @owner: helps prevent removal of modules when in use.
- * @ei: Timestamp information.
- */
+ 
 struct hte_device {
 	u32 nlines;
 	atomic_t ts_req;
@@ -97,7 +63,7 @@ static struct dentry *hte_root;
 
 static int __init hte_subsys_dbgfs_init(void)
 {
-	/* creates /sys/kernel/debug/hte/ */
+	 
 	hte_root = debugfs_create_dir("hte", NULL);
 
 	return 0;
@@ -140,15 +106,7 @@ static void hte_ts_dbgfs_init(const char *name, struct hte_ts_info *ei)
 
 #endif
 
-/**
- * hte_ts_put() - Release and disable timestamp for the given desc.
- *
- * @desc: timestamp descriptor.
- *
- * Context: debugfs_remove_recursive() function call may use sleeping locks,
- *	    not suitable from atomic context.
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int hte_ts_put(struct hte_ts_desc *desc)
 {
 	int ret = 0;
@@ -306,30 +264,14 @@ out:
 	return ret;
 }
 
-/**
- * hte_disable_ts() - Disable timestamp on given descriptor.
- *
- * The API does not release any resources associated with desc.
- *
- * @desc: ts descriptor, this is the same as returned by the request API.
- *
- * Context: Holds mutex lock, not suitable from atomic context.
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int hte_disable_ts(struct hte_ts_desc *desc)
 {
 	return hte_ts_dis_en_common(desc, false);
 }
 EXPORT_SYMBOL_GPL(hte_disable_ts);
 
-/**
- * hte_enable_ts() - Enable timestamp on given descriptor.
- *
- * @desc: ts descriptor, this is the same as returned by the request API.
- *
- * Context: Holds mutex lock, not suitable from atomic context.
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int hte_enable_ts(struct hte_ts_desc *desc)
 {
 	return hte_ts_dis_en_common(desc, true);
@@ -359,10 +301,7 @@ static int __hte_req_ts(struct hte_ts_desc *desc, hte_ts_cb_t cb,
 	struct hte_ts_info *ei = desc->hte_data;
 
 	gdev = ei->gdev;
-	/*
-	 * There is a chance that multiple consumers requesting same entity,
-	 * lock here.
-	 */
+	 
 	mutex_lock(&ei->req_mlock);
 
 	if (test_bit(HTE_TS_REGISTERED, &ei->flags) ||
@@ -473,17 +412,7 @@ static struct hte_device *hte_find_dev_from_linedata(struct hte_ts_desc *desc)
 	return ERR_PTR(-ENODEV);
 }
 
-/**
- * of_hte_req_count - Return the number of entities to timestamp.
- *
- * The function returns the total count of the requested entities to timestamp
- * by parsing device tree.
- *
- * @dev: The HTE consumer.
- *
- * Returns: Positive number on success, -ENOENT if no entries,
- * -EINVAL for other errors.
- */
+ 
 int of_hte_req_count(struct device *dev)
 {
 	int count;
@@ -519,7 +448,7 @@ static struct hte_device *hte_of_get_dev(struct device *dev,
 	np = dev->of_node;
 
 	if (!of_property_present(np, "timestamp-names")) {
-		/* Let hte core construct it during request time */
+		 
 		desc->attr.name = NULL;
 	} else {
 		ret = of_property_read_string_index(np, "timestamp-names",
@@ -549,21 +478,7 @@ static struct hte_device *hte_of_get_dev(struct device *dev,
 	return of_node_to_htedevice(args->np);
 }
 
-/**
- * hte_ts_get() - The function to initialize and obtain HTE desc.
- *
- * The function initializes the consumer provided HTE descriptor. If consumer
- * has device tree node, index is used to parse the line id and other details.
- * The function needs to be called before using any request APIs.
- *
- * @dev: HTE consumer/client device, used in case of parsing device tree node.
- * @desc: Pre-allocated timestamp descriptor.
- * @index: The index will be used as an index to parse line_id from the
- * device tree node if node is present.
- *
- * Context: Holds mutex lock.
- * Returns: Returns 0 on success or negative error code on failure.
- */
+ 
 int hte_ts_get(struct device *dev, struct hte_ts_desc *desc, int index)
 {
 	struct hte_device *gdev;
@@ -637,22 +552,7 @@ static void __devm_hte_release_ts(void *res)
 	hte_ts_put(res);
 }
 
-/**
- * hte_request_ts_ns() - The API to request and enable hardware timestamp in
- * nanoseconds.
- *
- * The entity is provider specific for example, GPIO lines, signals, buses
- * etc...The API allocates necessary resources and enables the timestamp.
- *
- * @desc: Pre-allocated and initialized timestamp descriptor.
- * @cb: Callback to push the timestamp data to consumer.
- * @tcb: Optional callback. If its provided, subsystem initializes
- * workqueue. It is called when cb returns HTE_RUN_SECOND_CB.
- * @data: Client data, used during cb and tcb callbacks.
- *
- * Context: Holds mutex lock.
- * Returns: Returns 0 on success or negative error code on failure.
- */
+ 
 int hte_request_ts_ns(struct hte_ts_desc *desc, hte_ts_cb_t cb,
 		      hte_ts_sec_cb_t tcb, void *data)
 {
@@ -677,24 +577,7 @@ int hte_request_ts_ns(struct hte_ts_desc *desc, hte_ts_cb_t cb,
 }
 EXPORT_SYMBOL_GPL(hte_request_ts_ns);
 
-/**
- * devm_hte_request_ts_ns() - Resource managed API to request and enable
- * hardware timestamp in nanoseconds.
- *
- * The entity is provider specific for example, GPIO lines, signals, buses
- * etc...The API allocates necessary resources and enables the timestamp. It
- * deallocates and disables automatically when the consumer exits.
- *
- * @dev: HTE consumer/client device.
- * @desc: Pre-allocated and initialized timestamp descriptor.
- * @cb: Callback to push the timestamp data to consumer.
- * @tcb: Optional callback. If its provided, subsystem initializes
- * workqueue. It is called when cb returns HTE_RUN_SECOND_CB.
- * @data: Client data, used during cb and tcb callbacks.
- *
- * Context: Holds mutex lock.
- * Returns: Returns 0 on success or negative error code on failure.
- */
+ 
 int devm_hte_request_ts_ns(struct device *dev, struct hte_ts_desc *desc,
 			   hte_ts_cb_t cb, hte_ts_sec_cb_t tcb,
 			   void *data)
@@ -716,22 +599,7 @@ int devm_hte_request_ts_ns(struct device *dev, struct hte_ts_desc *desc,
 }
 EXPORT_SYMBOL_GPL(devm_hte_request_ts_ns);
 
-/**
- * hte_init_line_attr() - Initialize line attributes.
- *
- * Zeroes out line attributes and initializes with provided arguments.
- * The function needs to be called before calling any consumer facing
- * functions.
- *
- * @desc: Pre-allocated timestamp descriptor.
- * @line_id: line id.
- * @edge_flags: edge flags related to line_id.
- * @name: name of the line.
- * @data: line data related to line_id.
- *
- * Context: Any.
- * Returns: 0 on success or negative error code for the failure.
- */
+ 
 int hte_init_line_attr(struct hte_ts_desc *desc, u32 line_id,
 		       unsigned long edge_flags, const char *name, void *data)
 {
@@ -755,16 +623,7 @@ int hte_init_line_attr(struct hte_ts_desc *desc, u32 line_id,
 }
 EXPORT_SYMBOL_GPL(hte_init_line_attr);
 
-/**
- * hte_get_clk_src_info() - Get the clock source information for a ts
- * descriptor.
- *
- * @desc: ts descriptor, same as returned from request API.
- * @ci: The API fills this structure with the clock information data.
- *
- * Context: Any context.
- * Returns: 0 on success else negative error code on failure.
- */
+ 
 int hte_get_clk_src_info(const struct hte_ts_desc *desc,
 			 struct hte_clk_info *ci)
 {
@@ -788,18 +647,7 @@ int hte_get_clk_src_info(const struct hte_ts_desc *desc,
 }
 EXPORT_SYMBOL_GPL(hte_get_clk_src_info);
 
-/**
- * hte_push_ts_ns() - Push timestamp data in nanoseconds.
- *
- * It is used by the provider to push timestamp data.
- *
- * @chip: The HTE chip, used during the registration.
- * @xlated_id: entity id understood by both subsystem and provider, this is
- * obtained from xlate callback during request API.
- * @data: timestamp data.
- *
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int hte_push_ts_ns(const struct hte_chip *chip, u32 xlated_id,
 		   struct hte_ts_data *data)
 {
@@ -818,7 +666,7 @@ int hte_push_ts_ns(const struct hte_chip *chip, u32 xlated_id,
 
 	spin_lock_irqsave(&ei->slock, flag);
 
-	/* timestamp sequence counter */
+	 
 	data->seq = ei->seq++;
 
 	if (!test_bit(HTE_TS_REGISTERED, &ei->flags) ||
@@ -919,16 +767,7 @@ static void _hte_devm_unregister_chip(void *chip)
 	hte_unregister_chip(chip);
 }
 
-/**
- * devm_hte_register_chip() - Resource managed API to register HTE chip.
- *
- * It is used by the provider to register itself with the HTE subsystem.
- * The unregistration is done automatically when the provider exits.
- *
- * @chip: the HTE chip to add to subsystem.
- *
- * Returns: 0 on success or a negative error code on failure.
- */
+ 
 int devm_hte_register_chip(struct hte_chip *chip)
 {
 	int err;

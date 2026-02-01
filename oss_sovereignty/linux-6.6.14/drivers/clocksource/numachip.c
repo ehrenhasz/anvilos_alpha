@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *
- * Copyright (C) 2015 Numascale AS. All rights reserved.
- */
+
+ 
 
 #include <linux/clockchips.h>
 
@@ -59,7 +56,7 @@ static __init void numachip_timer_each(struct work_struct *work)
 	unsigned local_apicid = __this_cpu_read(x86_cpu_to_apicid) & 0xff;
 	struct clock_event_device *ced = this_cpu_ptr(&numachip2_ced);
 
-	/* Setup IPI vector to local core and relative timing mode */
+	 
 	numachip2_write64_lcsr(NUMACHIP2_TIMER_INT + numachip2_timer(),
 		(3 << 22) | (X86_PLATFORM_IPI_VECTOR << 14) |
 		(local_apicid << 6));
@@ -74,11 +71,11 @@ static int __init numachip_timer_init(void)
 	if (numachip_system != 2)
 		return -ENODEV;
 
-	/* Reset timer */
+	 
 	numachip2_write64_lcsr(NUMACHIP2_TIMER_RESET, 0);
 	clocksource_register_hz(&numachip2_clocksource, NSEC_PER_SEC);
 
-	/* Setup per-cpu clockevents */
+	 
 	x86_platform_ipi_callback = numachip_timer_interrupt;
 	schedule_on_each_cpu(&numachip_timer_each);
 

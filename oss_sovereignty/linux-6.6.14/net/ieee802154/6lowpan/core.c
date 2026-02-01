@@ -1,48 +1,8 @@
-/* Copyright 2011, Siemens AG
- * written by Alexander Smirnov <alex.bluesman.smirnov@gmail.com>
- */
+ 
 
-/* Based on patches from Jon Smirl <jonsmirl@gmail.com>
- * Copyright (c) 2011 Jon Smirl <jonsmirl@gmail.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License version 2
- * as published by the Free Software Foundation.
- *
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
- * GNU General Public License for more details.
- */
+ 
 
-/* Jon's code is based on 6lowpan implementation for Contiki which is:
- * Copyright (c) 2008, Swedish Institute of Computer Science.
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- * 2. Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- * 3. Neither the name of the Institute nor the names of its contributors
- *    may be used to endorse or promote products derived from this software
- *    without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE INSTITUTE AND CONTRIBUTORS ``AS IS'' AND
- * ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
- * IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
- * ARE DISCLAIMED.  IN NO EVENT SHALL THE INSTITUTE OR CONTRIBUTORS BE LIABLE
- * FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
- * DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS
- * OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION)
- * HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT
- * LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY
- * OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
- * SUCH DAMAGE.
- */
+ 
 
 #include <linux/module.h>
 #include <linux/netdevice.h>
@@ -86,7 +46,7 @@ static int lowpan_neigh_construct(struct net_device *dev, struct neighbour *n)
 {
 	struct lowpan_802154_neigh *neigh = lowpan_802154_neigh(neighbour_priv(n));
 
-	/* default no short_addr is available for a neighbour */
+	 
 	neigh->short_addr = cpu_to_le16(IEEE802154_ADDR_SHORT_UNSPEC);
 	return 0;
 }
@@ -108,7 +68,7 @@ static const struct net_device_ops lowpan_netdev_ops = {
 static void lowpan_setup(struct net_device *ldev)
 {
 	memset(ldev->broadcast, 0xff, IEEE802154_ADDR_LEN);
-	/* We need an ipv6hdr as minimum len when calling xmit */
+	 
 	ldev->hard_header_len	= sizeof(struct ipv6hdr);
 	ldev->flags		= IFF_BROADCAST | IFF_MULTICAST;
 	ldev->priv_flags	|= IFF_NO_QUEUE;
@@ -142,7 +102,7 @@ static int lowpan_newlink(struct net *src_net, struct net_device *ldev,
 
 	if (!tb[IFLA_LINK])
 		return -EINVAL;
-	/* find and hold wpan device */
+	 
 	wdev = dev_get_by_index(dev_net(ldev), nla_get_u32(tb[IFLA_LINK]));
 	if (!wdev)
 		return -ENODEV;
@@ -157,14 +117,9 @@ static int lowpan_newlink(struct net *src_net, struct net_device *ldev,
 	}
 
 	lowpan_802154_dev(ldev)->wdev = wdev;
-	/* Set the lowpan hardware address to the wpan hardware address. */
+	 
 	__dev_addr_set(ldev, wdev->dev_addr, IEEE802154_ADDR_LEN);
-	/* We need headroom for possible wpan_dev_hard_header call and tailroom
-	 * for encryption/fcs handling. The lowpan interface will replace
-	 * the IPv6 header with 6LoWPAN header. At worst case the 6LoWPAN
-	 * header has LOWPAN_IPHC_MAX_HEADER_LEN more bytes than the IPv6
-	 * header.
-	 */
+	 
 	ldev->needed_headroom = LOWPAN_IPHC_MAX_HEADER_LEN +
 				wdev->needed_headroom;
 	ldev->needed_tailroom = wdev->needed_tailroom;
@@ -225,10 +180,7 @@ static int lowpan_device_event(struct notifier_block *unused,
 
 	switch (event) {
 	case NETDEV_UNREGISTER:
-		/* Check if wpan interface is unregistered that we
-		 * also delete possible lowpan interfaces which belongs
-		 * to the wpan interface.
-		 */
+		 
 		if (wpan_dev->lowpan_dev)
 			lowpan_dellink(wpan_dev->lowpan_dev, NULL);
 		break;

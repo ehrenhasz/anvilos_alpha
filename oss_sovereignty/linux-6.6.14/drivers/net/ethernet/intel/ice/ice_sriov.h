@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2018, Intel Corporation. */
+ 
+ 
 
 #ifndef _ICE_SRIOV_H_
 #define _ICE_SRIOV_H_
@@ -7,15 +7,15 @@
 #include "ice_vf_lib.h"
 #include "ice_virtchnl.h"
 
-/* Static VF transaction/status register def */
+ 
 #define VF_DEVICE_STATUS		0xAA
 #define VF_TRANS_PENDING_M		0x20
 
-/* wait defines for polling PF_PCI_CIAD register status */
+ 
 #define ICE_PCI_CIAD_WAIT_COUNT		100
 #define ICE_PCI_CIAD_WAIT_DELAY_US	1
 
-/* VF resource constraints */
+ 
 #define ICE_MIN_QS_PER_VF		1
 #define ICE_NONQ_VECS_VF		1
 #define ICE_NUM_VF_MSIX_MED		17
@@ -60,7 +60,7 @@ void ice_print_vfs_mdd_events(struct ice_pf *pf);
 void ice_print_vf_rx_mdd_event(struct ice_vf *vf);
 bool
 ice_vc_validate_pattern(struct ice_vf *vf, struct virtchnl_proto_hdrs *proto);
-#else /* CONFIG_PCI_IOV */
+#else  
 static inline void ice_process_vflr_event(struct ice_pf *pf) { }
 static inline void ice_free_vfs(struct ice_pf *pf) { }
 static inline
@@ -142,5 +142,5 @@ ice_get_vf_stats(struct net_device __always_unused *netdev,
 {
 	return -EOPNOTSUPP;
 }
-#endif /* CONFIG_PCI_IOV */
-#endif /* _ICE_SRIOV_H_ */
+#endif  
+#endif  

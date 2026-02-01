@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2009 by Sascha Hauer, Pengutronix
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/init.h>
@@ -139,7 +137,7 @@ static void __init __mx25_clocks_init(void __iomem *ccm_base)
 	clk[ssi2_ipg_per] = imx_clk_gate("ssi2_ipg_per", "per14", ccm(CCM_CGCR0), 14);
 	clk[uart_ipg_per] = imx_clk_gate("uart_ipg_per", "per15", ccm(CCM_CGCR0), 15);
 	clk[ata_ahb] = imx_clk_gate("ata_ahb", "ahb", ccm(CCM_CGCR0), 16);
-	/* CCM_CGCR0(17): reserved */
+	 
 	clk[csi_ahb] = imx_clk_gate("csi_ahb", "ahb", ccm(CCM_CGCR0), 18);
 	clk[emi_ahb] = imx_clk_gate("emi_ahb", "ahb", ccm(CCM_CGCR0), 19);
 	clk[esai_ahb] = imx_clk_gate("esai_ahb", "ahb", ccm(CCM_CGCR0), 20);
@@ -151,8 +149,8 @@ static void __init __mx25_clocks_init(void __iomem *ccm_base)
 	clk[sdma_ahb] = imx_clk_gate("sdma_ahb", "ahb", ccm(CCM_CGCR0), 26);
 	clk[slcdc_ahb] = imx_clk_gate("slcdc_ahb", "ahb", ccm(CCM_CGCR0), 27);
 	clk[usbotg_ahb] = imx_clk_gate("usbotg_ahb", "ahb", ccm(CCM_CGCR0), 28);
-	/* CCM_CGCR0(29-31): reserved */
-	/* CCM_CGCR1(0): reserved in datasheet, used as audmux in FSL kernel */
+	 
+	 
 	clk[can1_ipg] = imx_clk_gate("can1_ipg", "ipg", ccm(CCM_CGCR1),  2);
 	clk[can2_ipg] = imx_clk_gate("can2_ipg", "ipg", ccm(CCM_CGCR1),  3);
 	clk[csi_ipg] = imx_clk_gate("csi_ipg", "ipg", ccm(CCM_CGCR1),  4);
@@ -163,32 +161,32 @@ static void __init __mx25_clocks_init(void __iomem *ccm_base)
 	clk[ect_ipg] = imx_clk_gate("ect_ipg", "ipg", ccm(CCM_CGCR1),  9);
 	clk[epit1_ipg] = imx_clk_gate("epit1_ipg", "ipg", ccm(CCM_CGCR1),  10);
 	clk[epit2_ipg] = imx_clk_gate("epit2_ipg", "ipg", ccm(CCM_CGCR1),  11);
-	/* CCM_CGCR1(12): reserved in datasheet, used as esai in FSL kernel */
+	 
 	clk[esdhc1_ipg] = imx_clk_gate("esdhc1_ipg", "ipg", ccm(CCM_CGCR1), 13);
 	clk[esdhc2_ipg] = imx_clk_gate("esdhc2_ipg", "ipg", ccm(CCM_CGCR1), 14);
 	clk[fec_ipg] = imx_clk_gate("fec_ipg", "ipg", ccm(CCM_CGCR1), 15);
-	/* CCM_CGCR1(16): reserved in datasheet, used as gpio1 in FSL kernel */
-	/* CCM_CGCR1(17): reserved in datasheet, used as gpio2 in FSL kernel */
-	/* CCM_CGCR1(18): reserved in datasheet, used as gpio3 in FSL kernel */
+	 
+	 
+	 
 	clk[gpt1_ipg] = imx_clk_gate("gpt1_ipg", "ipg", ccm(CCM_CGCR1), 19);
 	clk[gpt2_ipg] = imx_clk_gate("gpt2_ipg", "ipg", ccm(CCM_CGCR1), 20);
 	clk[gpt3_ipg] = imx_clk_gate("gpt3_ipg", "ipg", ccm(CCM_CGCR1), 21);
 	clk[gpt4_ipg] = imx_clk_gate("gpt4_ipg", "ipg", ccm(CCM_CGCR1), 22);
-	/* CCM_CGCR1(23): reserved in datasheet, used as i2c1 in FSL kernel */
-	/* CCM_CGCR1(24): reserved in datasheet, used as i2c2 in FSL kernel */
-	/* CCM_CGCR1(25): reserved in datasheet, used as i2c3 in FSL kernel */
+	 
+	 
+	 
 	clk[iim_ipg] = imx_clk_gate("iim_ipg", "ipg", ccm(CCM_CGCR1), 26);
-	/* CCM_CGCR1(27): reserved in datasheet, used as iomuxc in FSL kernel */
-	/* CCM_CGCR1(28): reserved in datasheet, used as kpp in FSL kernel */
+	 
+	 
 	clk[kpp_ipg] = imx_clk_gate("kpp_ipg", "ipg", ccm(CCM_CGCR1), 28);
 	clk[lcdc_ipg] = imx_clk_gate("lcdc_ipg", "ipg", ccm(CCM_CGCR1), 29);
-	/* CCM_CGCR1(30): reserved in datasheet, used as owire in FSL kernel */
+	 
 	clk[pwm1_ipg] = imx_clk_gate("pwm1_ipg", "ipg", ccm(CCM_CGCR1), 31);
 	clk[pwm2_ipg] = imx_clk_gate("pwm2_ipg", "ipg", ccm(CCM_CGCR2),  0);
 	clk[pwm3_ipg] = imx_clk_gate("pwm3_ipg", "ipg", ccm(CCM_CGCR2),  1);
 	clk[pwm4_ipg] = imx_clk_gate("pwm4_ipg", "ipg", ccm(CCM_CGCR2),  2);
 	clk[rngb_ipg] = imx_clk_gate("rngb_ipg", "ipg", ccm(CCM_CGCR2),  3);
-	/* CCM_CGCR2(4): reserved in datasheet, used as rtic in FSL kernel */
+	 
 	clk[scc_ipg] = imx_clk_gate("scc_ipg", "ipg", ccm(CCM_CGCR2),  5);
 	clk[sdma_ipg] = imx_clk_gate("sdma_ipg", "ipg", ccm(CCM_CGCR2),  6);
 	clk[sim1_ipg] = imx_clk_gate("sim1_ipg", "ipg", ccm(CCM_CGCR2),  7);
@@ -203,20 +201,17 @@ static void __init __mx25_clocks_init(void __iomem *ccm_base)
 	clk[uart3_ipg] = imx_clk_gate("uart3_ipg", "ipg", ccm(CCM_CGCR2), 16);
 	clk[uart4_ipg] = imx_clk_gate("uart4_ipg", "ipg", ccm(CCM_CGCR2), 17);
 	clk[uart5_ipg] = imx_clk_gate("uart5_ipg", "ipg", ccm(CCM_CGCR2), 18);
-	/* CCM_CGCR2(19): reserved in datasheet, but used as wdt in FSL kernel */
+	 
 	clk[wdt_ipg] = imx_clk_gate("wdt_ipg", "ipg", ccm(CCM_CGCR2), 19);
 
 	imx_check_clocks(clk, ARRAY_SIZE(clk));
 
 	clk_prepare_enable(clk[emi_ahb]);
 
-	/* Clock source for gpt must be derived from AHB */
+	 
 	clk_set_parent(clk[per5_sel], clk[ahb]);
 
-	/*
-	 * Let's initially set up CLKO parent as ipg, since this configuration
-	 * is used on some imx25 board designs to clock the audio codec.
-	 */
+	 
 	clk_set_parent(clk[cko_sel], clk[ipg]);
 
 	imx_register_uart_clocks();

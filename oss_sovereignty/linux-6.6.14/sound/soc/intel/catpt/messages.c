@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-only
-//
-// Copyright(c) 2020 Intel Corporation. All rights reserved.
-//
-// Author: Cezary Rojewski <cezary.rojewski@intel.com>
-//
+
+
+
+
+
+
 
 #include <linux/slab.h>
 #include "core.h"
@@ -36,10 +36,10 @@ struct catpt_alloc_stream_input {
 	struct catpt_audio_format input_format;
 	struct catpt_ring_info ring_info;
 	u8 num_entries;
-	/* flex array with entries here */
+	 
 	struct catpt_memory_info persistent_mem;
 	struct catpt_memory_info scratch_mem;
-	u32 num_notifications; /* obsolete */
+	u32 num_notifications;  
 } __packed;
 
 int catpt_ipc_alloc_stream(struct catpt_dev *cdev,
@@ -83,7 +83,7 @@ int catpt_ipc_alloc_stream(struct catpt_dev *cdev,
 		input.scratch_mem.size = resource_size(scratch);
 	}
 
-	/* re-arrange the input: account for flex array 'entries' */
+	 
 	memcpy(payload, &input, sizeof(input));
 	memmove(payload + off + arrsz, payload + off, sizeof(input) - off);
 	memcpy(payload + off, modules, arrsz);

@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * MS5611 pressure and temperature sensor driver (SPI bus)
- *
- * Copyright (c) Tomasz Duszynski <tduszyns@gmail.com>
- *
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -56,10 +51,7 @@ static int ms5611_spi_read_adc_temp_and_pressure(struct ms5611_state *st,
 	int ret;
 	const struct ms5611_osr *osr = st->temp_osr;
 
-	/*
-	 * Warning: &osr->cmd MUST be aligned on a word boundary since used as
-	 * 2nd argument (void*) of spi_write_then_read.
-	 */
+	 
 	ret = spi_write_then_read(st->client, &osr->cmd, 1, NULL, 0);
 	if (ret < 0)
 		return ret;

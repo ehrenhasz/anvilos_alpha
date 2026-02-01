@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/types.h>
 #include <linux/tty.h>
 #include <linux/tty_flip.h>
@@ -15,12 +15,9 @@ struct spk_ldisc_data {
 	struct spk_synth *synth;
 };
 
-/*
- * This allows to catch within spk_ttyio_ldisc_open whether it is getting set
- * on for a speakup-driven device.
- */
+ 
 static struct tty_struct *speakup_tty;
-/* This mutex serializes the use of such global speakup_tty variable */
+ 
 static DEFINE_MUTEX(speakup_tty_mutex);
 
 static int ser_to_dev(int ser, dev_t *dev_no)
@@ -36,7 +33,7 @@ static int ser_to_dev(int ser, dev_t *dev_no)
 
 static int get_dev_to_use(struct spk_synth *synth, dev_t *dev_no)
 {
-	/* use ser only when dev is not specified */
+	 
 	if (strcmp(synth->dev_name, SYNTH_DEFAULT_DEV) ||
 	    synth->ser == SYNTH_DEFAULT_SER)
 		return tty_dev_name_to_number(synth->dev_name, dev_no);
@@ -49,7 +46,7 @@ static int spk_ttyio_ldisc_open(struct tty_struct *tty)
 	struct spk_ldisc_data *ldisc_data;
 
 	if (tty != speakup_tty)
-		/* Somebody tried to use this line discipline outside speakup */
+		 
 		return -ENODEV;
 
 	if (!tty->ops->write)
@@ -87,12 +84,10 @@ static size_t spk_ttyio_receive_buf2(struct tty_struct *tty, const u8 *cp,
 	}
 
 	if (!ldisc_data->buf_free)
-		/* ttyio_in will tty_flip_buffer_push */
+		 
 		return 0;
 
-	/* Make sure the consumer has read buf before we have seen
-	 * buf_free == true and overwrite buf
-	 */
+	 
 	mb();
 
 	ldisc_data->buf = cp[0];
@@ -166,16 +161,12 @@ static int spk_ttyio_initialise_ldisc(struct spk_synth *synth)
 	}
 
 	clear_bit(TTY_HUPPED, &tty->flags);
-	/* ensure hardware flow control is enabled */
+	 
 	get_termios(tty, &tmp_termios);
 	if (!(tmp_termios.c_cflag & CRTSCTS)) {
 		tmp_termios.c_cflag |= CRTSCTS;
 		tty_set_termios(tty, &tmp_termios);
-		/*
-		 * check c_cflag to see if it's updated as tty_set_termios
-		 * may not return error even when no tty bits are
-		 * changed by the request.
-		 */
+		 
 		get_termios(tty, &tmp_termios);
 		if (!(tmp_termios.c_cflag & CRTSCTS))
 			pr_warn("speakup: Failed to set hardware flow control\n");
@@ -190,7 +181,7 @@ static int spk_ttyio_initialise_ldisc(struct spk_synth *synth)
 	mutex_unlock(&speakup_tty_mutex);
 
 	if (!ret) {
-		/* Success */
+		 
 		struct spk_ldisc_data *ldisc_data = tty->disc_data;
 
 		ldisc_data->synth = synth;
@@ -232,19 +223,16 @@ static int spk_ttyio_out(struct spk_synth *in_synth, const char ch)
 	ret = tty->ops->write(tty, &ch, 1);
 
 	if (ret == 0)
-		/* No room */
+		 
 		return 0;
 
 	if (ret > 0)
-		/* Success */
+		 
 		return 1;
 
 	pr_warn("%s: I/O error, deactivating speakup\n",
 		in_synth->long_name);
-	/* No synth any more, so nobody will restart TTYs,
-	 * and we thus need to do it ourselves.  Now that there
-	 * is no synth we can let application flood anyway
-	 */
+	 
 	in_synth->alive = 0;
 	speakup_start_ttys();
 	return 0;
@@ -305,12 +293,10 @@ static unsigned char ttyio_in(struct spk_synth *in_synth, int timeout)
 	}
 
 	rv = ldisc_data->buf;
-	/* Make sure we have read buf before we set buf_free to let
-	 * the producer overwrite it
-	 */
+	 
 	mb();
 	ldisc_data->buf_free = true;
-	/* Let TTY push more characters */
+	 
 	tty_flip_buffer_push(tty->port);
 
 	return rv;

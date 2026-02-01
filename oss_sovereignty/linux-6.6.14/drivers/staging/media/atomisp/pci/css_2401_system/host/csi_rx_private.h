@@ -1,17 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Support for Intel Camera Imaging ISP subsystem.
- * Copyright (c) 2015, Intel Corporation.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms and conditions of the GNU General Public License,
- * version 2, as published by the Free Software Foundation.
- *
- * This program is distributed in the hope it will be useful, but WITHOUT
- * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
- * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
- * more details.
- */
+ 
+ 
 
 #ifndef __CSI_RX_PRIVATE_H_INCLUDED__
 #define __CSI_RX_PRIVATE_H_INCLUDED__
@@ -20,20 +8,13 @@
 #include "mipi_backend_defs.h"
 #include "csi_rx.h"
 
-#include "device_access.h"	/* ia_css_device_load_uint32 */
+#include "device_access.h"	 
 
-#include "assert_support.h" /* assert */
-#include "print_support.h" /* print */
+#include "assert_support.h"  
+#include "print_support.h"  
 
-/*****************************************************
- *
- * Device level interface (DLI).
- *
- *****************************************************/
-/**
- * @brief Load the register value.
- * Refer to "csi_rx_public.h" for details.
- */
+ 
+ 
 static inline hrt_data csi_rx_fe_ctrl_reg_load(
     const csi_rx_frontend_ID_t ID,
     const hrt_address reg)
@@ -44,10 +25,7 @@ static inline hrt_data csi_rx_fe_ctrl_reg_load(
 					     hrt_data));
 }
 
-/**
- * @brief Store a value to the register.
- * Refer to "ibuf_ctrl_public.h" for details.
- */
+ 
 static inline void csi_rx_fe_ctrl_reg_store(
     const csi_rx_frontend_ID_t ID,
     const hrt_address reg,
@@ -60,10 +38,7 @@ static inline void csi_rx_fe_ctrl_reg_store(
 				   value);
 }
 
-/**
- * @brief Load the register value.
- * Refer to "csi_rx_public.h" for details.
- */
+ 
 static inline hrt_data csi_rx_be_ctrl_reg_load(
     const csi_rx_backend_ID_t ID,
     const hrt_address reg)
@@ -74,10 +49,7 @@ static inline hrt_data csi_rx_be_ctrl_reg_load(
 					     hrt_data));
 }
 
-/**
- * @brief Store a value to the register.
- * Refer to "ibuf_ctrl_public.h" for details.
- */
+ 
 static inline void csi_rx_be_ctrl_reg_store(
     const csi_rx_backend_ID_t ID,
     const hrt_address reg,
@@ -90,17 +62,10 @@ static inline void csi_rx_be_ctrl_reg_store(
 				   value);
 }
 
-/* end of DLI */
+ 
 
-/*****************************************************
- *
- * Native command interface (NCI).
- *
- *****************************************************/
-/**
- * @brief Get the state of the csi rx fe dlane process.
- * Refer to "csi_rx_public.h" for details.
- */
+ 
+ 
 static inline void csi_rx_fe_ctrl_get_dlane_state(
     const csi_rx_frontend_ID_t ID,
     const u32 lane,
@@ -112,10 +77,7 @@ static inline void csi_rx_fe_ctrl_get_dlane_state(
 	    csi_rx_fe_ctrl_reg_load(ID, _HRT_CSI_RX_DLY_CNT_SETTLE_DLANE_REG_IDX(lane));
 }
 
-/**
- * @brief Get the csi rx fe state.
- * Refer to "csi_rx_public.h" for details.
- */
+ 
 static inline void csi_rx_fe_ctrl_get_state(
     const csi_rx_frontend_ID_t ID,
     csi_rx_fe_ctrl_state_t *state)
@@ -139,10 +101,7 @@ static inline void csi_rx_fe_ctrl_get_state(
 	state->clane.settle =
 	    csi_rx_fe_ctrl_reg_load(ID, _HRT_CSI_RX_DLY_CNT_SETTLE_CLANE_REG_IDX);
 
-	/*
-	 * Get the values of the register-set per
-	 * dlane.
-	 */
+	 
 	for (i = 0; i < N_CSI_RX_FE_CTRL_DLANES[ID]; i++) {
 		csi_rx_fe_ctrl_get_dlane_state(
 		    ID,
@@ -151,10 +110,7 @@ static inline void csi_rx_fe_ctrl_get_state(
 	}
 }
 
-/**
- * @brief dump the csi rx fe state.
- * Refer to "csi_rx_public.h" for details.
- */
+ 
 static inline void csi_rx_fe_ctrl_dump_state(
     const csi_rx_frontend_ID_t ID,
     csi_rx_fe_ctrl_state_t *state)
@@ -177,10 +133,7 @@ static inline void csi_rx_fe_ctrl_dump_state(
 	ia_css_print("CSI RX FE STATE Controller %d Status term settle LP 0x%x\n", ID,
 		     state->clane.settle);
 
-	/*
-	 * Get the values of the register-set per
-	 * dlane.
-	 */
+	 
 	for (i = 0; i < N_CSI_RX_FE_CTRL_DLANES[ID]; i++) {
 		ia_css_print("CSI RX FE STATE Controller %d DLANE ID %d termen 0x%x\n", ID, i,
 			     state->dlane[i].termen);
@@ -189,10 +142,7 @@ static inline void csi_rx_fe_ctrl_dump_state(
 	}
 }
 
-/**
- * @brief Get the csi rx be state.
- * Refer to "csi_rx_public.h" for details.
- */
+ 
 static inline void csi_rx_be_ctrl_get_state(
     const csi_rx_backend_ID_t ID,
     csi_rx_be_ctrl_state_t *state)
@@ -220,8 +170,8 @@ static inline void csi_rx_be_ctrl_get_state(
 	    csi_rx_be_ctrl_reg_load(ID, _HRT_MIPI_BACKEND_FORCE_RAW8_REG_IDX);
 	state->irq_status =
 	    csi_rx_be_ctrl_reg_load(ID, _HRT_MIPI_BACKEND_IRQ_STATUS_REG_IDX);
-#if 0 /* device access error for these registers */
-	/* ToDo: rootcause this failure */
+#if 0  
+	 
 	state->custom_mode_enable =
 	    csi_rx_be_ctrl_reg_load(ID, _HRT_MIPI_BACKEND_CUST_EN_REG_IDX);
 
@@ -238,10 +188,7 @@ static inline void csi_rx_be_ctrl_get_state(
 	    csi_rx_be_ctrl_reg_load(ID, _HRT_MIPI_BACKEND_GLOBAL_LUT_DISREGARD_REG_IDX);
 	state->packet_status_stall =
 	    csi_rx_be_ctrl_reg_load(ID, _HRT_MIPI_BACKEND_PKT_STALL_STATUS_REG_IDX);
-	/*
-	 * Get the values of the register-set per
-	 * lut.
-	 */
+	 
 	for (i = 0; i < N_SHORT_PACKET_LUT_ENTRIES[ID]; i++) {
 		state->short_packet_lut_entry[i] =
 		    csi_rx_be_ctrl_reg_load(ID, _HRT_MIPI_BACKEND_SP_LUT_ENTRY_0_REG_IDX + i);
@@ -252,10 +199,7 @@ static inline void csi_rx_be_ctrl_get_state(
 	}
 }
 
-/**
- * @brief Dump the csi rx be state.
- * Refer to "csi_rx_public.h" for details.
- */
+ 
 static inline void csi_rx_be_ctrl_dump_state(
     const csi_rx_backend_ID_t ID,
     csi_rx_be_ctrl_state_t *state)
@@ -275,7 +219,7 @@ static inline void csi_rx_be_ctrl_dump_state(
 		     state->force_raw8);
 	ia_css_print("CSI RX BE STATE Controller %d IRQ state 0x%x\n", ID,
 		     state->irq_status);
-#if 0   /* ToDo:Getting device access error for this register */
+#if 0    
 	for (i = 0; i < N_CSI_RX_BE_MIPI_CUSTOM_PEC ; i++) {
 		ia_css_print("CSI RX BE STATE Controller %d PEC ID %d custom pec 0x%x\n", ID, i,
 			     state->pec[i]);
@@ -285,10 +229,7 @@ static inline void csi_rx_be_ctrl_dump_state(
 		     ID, state->global_lut_disregard_reg);
 	ia_css_print("CSI RX BE STATE Controller %d packet stall reg 0x%x\n", ID,
 		     state->packet_status_stall);
-	/*
-	 * Get the values of the register-set per
-	 * lut.
-	 */
+	 
 	for (i = 0; i < N_SHORT_PACKET_LUT_ENTRIES[ID]; i++) {
 		ia_css_print("CSI RX BE STATE Controller ID %d Short packet entry %d short packet lut id 0x%x\n",
 			     ID, i,
@@ -301,6 +242,6 @@ static inline void csi_rx_be_ctrl_dump_state(
 	}
 }
 
-/* end of NCI */
+ 
 
-#endif /* __CSI_RX_PRIVATE_H_INCLUDED__ */
+#endif  

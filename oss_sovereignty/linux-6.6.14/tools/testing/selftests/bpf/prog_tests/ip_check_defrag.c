@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 #include <net/if.h>
 #include <linux/netfilter.h>
@@ -6,24 +6,7 @@
 #include "ip_check_defrag.skel.h"
 #include "ip_check_defrag_frags.h"
 
-/*
- * This selftest spins up a client and an echo server, each in their own
- * network namespace. The client will send a fragmented message to the server.
- * The prog attached to the server will shoot down any fragments. Thus, if
- * the server is able to correctly echo back the message to the client, we will
- * have verified that netfilter is reassembling packets for us.
- *
- * Topology:
- * =========
- *           NS0         |         NS1
- *                       |
- *         client        |       server
- *       ----------      |     ----------
- *       |  veth0  | --------- |  veth1  |
- *       ----------    peer    ----------
- *                       |
- *                       |       with bpf
- */
+ 
 
 #define NS0		"defrag_ns0"
 #define NS1		"defrag_ns1"
@@ -31,7 +14,7 @@
 #define VETH1		"veth1"
 #define VETH0_ADDR	"172.16.1.100"
 #define VETH0_ADDR6	"fc00::100"
-/* The following constants must stay in sync with `generate_udp_fragments.py` */
+ 
 #define VETH1_ADDR	"172.16.1.200"
 #define VETH1_ADDR6	"fc00::200"
 #define CLIENT_PORT	48878
@@ -56,7 +39,7 @@ static int setup_topology(bool ipv6)
 	SYS(fail, "ip -net " NS0 " link set dev " VETH0 " up");
 	SYS(fail, "ip -net " NS1 " link set dev " VETH1 " up");
 
-	/* Wait for up to 5s for links to come up */
+	 
 	for (i = 0; i < 5; ++i) {
 		if (ipv6)
 			up = !system("ip netns exec " NS0 " ping -6 -c 1 -W 1 " VETH1_ADDR6 " &>/dev/null");
@@ -134,7 +117,7 @@ static int send_frags6(int client)
 	int err;
 
 	saddr_p = (struct sockaddr *)&saddr;
-	/* Port needs to be set to 0 for raw ipv6 socket for some reason */
+	 
 	err = make_sockaddr(AF_INET6, VETH1_ADDR6, 0, &saddr, &saddr_len);
 	if (!ASSERT_OK(err, "make_sockaddr"))
 		return -1;
@@ -186,7 +169,7 @@ void test_bpf_ip_check_defrag_ok(bool ipv6)
 	if (!ASSERT_OK(attach(skel, ipv6), "attach"))
 		goto out;
 
-	/* Start server in ns1 */
+	 
 	nstoken = open_netns(NS1);
 	if (!ASSERT_OK_PTR(nstoken, "setns ns1"))
 		goto out;
@@ -195,7 +178,7 @@ void test_bpf_ip_check_defrag_ok(bool ipv6)
 	if (!ASSERT_GE(srv_fd, 0, "start_server"))
 		goto out;
 
-	/* Open tx raw socket in ns0 */
+	 
 	nstoken = open_netns(NS0);
 	if (!ASSERT_OK_PTR(nstoken, "setns ns0"))
 		goto out;
@@ -204,7 +187,7 @@ void test_bpf_ip_check_defrag_ok(bool ipv6)
 	if (!ASSERT_GE(client_tx_fd, 0, "connect_to_fd_opts"))
 		goto out;
 
-	/* Open rx socket in ns0 */
+	 
 	nstoken = open_netns(NS0);
 	if (!ASSERT_OK_PTR(nstoken, "setns ns0"))
 		goto out;
@@ -213,7 +196,7 @@ void test_bpf_ip_check_defrag_ok(bool ipv6)
 	if (!ASSERT_GE(client_rx_fd, 0, "connect_to_fd_opts"))
 		goto out;
 
-	/* Bind rx socket to a premeditated port */
+	 
 	memset(&caddr, 0, sizeof(caddr));
 	nstoken = open_netns(NS0);
 	if (!ASSERT_OK_PTR(nstoken, "setns ns0"))
@@ -237,7 +220,7 @@ void test_bpf_ip_check_defrag_ok(bool ipv6)
 	if (!ASSERT_OK(err, "bind"))
 		goto out;
 
-	/* Send message in fragments */
+	 
 	if (ipv6) {
 		if (!ASSERT_OK(send_frags6(client_tx_fd), "send_frags6"))
 			goto out;
@@ -249,7 +232,7 @@ void test_bpf_ip_check_defrag_ok(bool ipv6)
 	if (!ASSERT_EQ(skel->bss->shootdowns, 0, "shootdowns"))
 		goto out;
 
-	/* Receive reassembled msg on server and echo back to client */
+	 
 	caddr_len = sizeof(caddr);
 	len = recvfrom(srv_fd, buf, sizeof(buf), 0, (struct sockaddr *)&caddr, &caddr_len);
 	if (!ASSERT_GE(len, 0, "server recvfrom"))
@@ -258,7 +241,7 @@ void test_bpf_ip_check_defrag_ok(bool ipv6)
 	if (!ASSERT_GE(len, 0, "server sendto"))
 		goto out;
 
-	/* Expect reassembed message to be echoed back */
+	 
 	len = recvfrom(client_rx_fd, buf, sizeof(buf), 0, NULL, NULL);
 	if (!ASSERT_EQ(len, sizeof(MAGIC_MESSAGE) - 1, "client short read"))
 		goto out;

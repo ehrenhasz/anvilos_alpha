@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * V4L2 Driver for PXA camera host
- *
- * Copyright (C) 2006, Sascha Hauer, Pengutronix
- * Copyright (C) 2008, Guennadi Liakhovetski <kernel@pengutronix.de>
- * Copyright (C) 2016, Robert Jarzmik <robert.jarzmik@free.fr>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>
@@ -50,7 +44,7 @@
 #define DEFAULT_WIDTH	640
 #define DEFAULT_HEIGHT	480
 
-/* Camera Interface */
+ 
 #define CICR0		0x0000
 #define CICR1		0x0004
 #define CICR2		0x0008
@@ -63,87 +57,80 @@
 #define CIBR1		0x0030
 #define CIBR2		0x0038
 
-#define CICR0_DMAEN	(1UL << 31)	/* DMA request enable */
-#define CICR0_PAR_EN	(1 << 30)	/* Parity enable */
-#define CICR0_SL_CAP_EN	(1 << 29)	/* Capture enable for slave mode */
-#define CICR0_ENB	(1 << 28)	/* Camera interface enable */
-#define CICR0_DIS	(1 << 27)	/* Camera interface disable */
-#define CICR0_SIM	(0x7 << 24)	/* Sensor interface mode mask */
-#define CICR0_TOM	(1 << 9)	/* Time-out mask */
-#define CICR0_RDAVM	(1 << 8)	/* Receive-data-available mask */
-#define CICR0_FEM	(1 << 7)	/* FIFO-empty mask */
-#define CICR0_EOLM	(1 << 6)	/* End-of-line mask */
-#define CICR0_PERRM	(1 << 5)	/* Parity-error mask */
-#define CICR0_QDM	(1 << 4)	/* Quick-disable mask */
-#define CICR0_CDM	(1 << 3)	/* Disable-done mask */
-#define CICR0_SOFM	(1 << 2)	/* Start-of-frame mask */
-#define CICR0_EOFM	(1 << 1)	/* End-of-frame mask */
-#define CICR0_FOM	(1 << 0)	/* FIFO-overrun mask */
+#define CICR0_DMAEN	(1UL << 31)	 
+#define CICR0_PAR_EN	(1 << 30)	 
+#define CICR0_SL_CAP_EN	(1 << 29)	 
+#define CICR0_ENB	(1 << 28)	 
+#define CICR0_DIS	(1 << 27)	 
+#define CICR0_SIM	(0x7 << 24)	 
+#define CICR0_TOM	(1 << 9)	 
+#define CICR0_RDAVM	(1 << 8)	 
+#define CICR0_FEM	(1 << 7)	 
+#define CICR0_EOLM	(1 << 6)	 
+#define CICR0_PERRM	(1 << 5)	 
+#define CICR0_QDM	(1 << 4)	 
+#define CICR0_CDM	(1 << 3)	 
+#define CICR0_SOFM	(1 << 2)	 
+#define CICR0_EOFM	(1 << 1)	 
+#define CICR0_FOM	(1 << 0)	 
 
-#define CICR1_TBIT	(1UL << 31)	/* Transparency bit */
-#define CICR1_RGBT_CONV	(0x3 << 29)	/* RGBT conversion mask */
-#define CICR1_PPL	(0x7ff << 15)	/* Pixels per line mask */
-#define CICR1_RGB_CONV	(0x7 << 12)	/* RGB conversion mask */
-#define CICR1_RGB_F	(1 << 11)	/* RGB format */
-#define CICR1_YCBCR_F	(1 << 10)	/* YCbCr format */
-#define CICR1_RGB_BPP	(0x7 << 7)	/* RGB bis per pixel mask */
-#define CICR1_RAW_BPP	(0x3 << 5)	/* Raw bis per pixel mask */
-#define CICR1_COLOR_SP	(0x3 << 3)	/* Color space mask */
-#define CICR1_DW	(0x7 << 0)	/* Data width mask */
+#define CICR1_TBIT	(1UL << 31)	 
+#define CICR1_RGBT_CONV	(0x3 << 29)	 
+#define CICR1_PPL	(0x7ff << 15)	 
+#define CICR1_RGB_CONV	(0x7 << 12)	 
+#define CICR1_RGB_F	(1 << 11)	 
+#define CICR1_YCBCR_F	(1 << 10)	 
+#define CICR1_RGB_BPP	(0x7 << 7)	 
+#define CICR1_RAW_BPP	(0x3 << 5)	 
+#define CICR1_COLOR_SP	(0x3 << 3)	 
+#define CICR1_DW	(0x7 << 0)	 
 
-#define CICR2_BLW	(0xff << 24)	/* Beginning-of-line pixel clock
-					   wait count mask */
-#define CICR2_ELW	(0xff << 16)	/* End-of-line pixel clock
-					   wait count mask */
-#define CICR2_HSW	(0x3f << 10)	/* Horizontal sync pulse width mask */
-#define CICR2_BFPW	(0x3f << 3)	/* Beginning-of-frame pixel clock
-					   wait count mask */
-#define CICR2_FSW	(0x7 << 0)	/* Frame stabilization
-					   wait count mask */
+#define CICR2_BLW	(0xff << 24)	 
+#define CICR2_ELW	(0xff << 16)	 
+#define CICR2_HSW	(0x3f << 10)	 
+#define CICR2_BFPW	(0x3f << 3)	 
+#define CICR2_FSW	(0x7 << 0)	 
 
-#define CICR3_BFW	(0xff << 24)	/* Beginning-of-frame line clock
-					   wait count mask */
-#define CICR3_EFW	(0xff << 16)	/* End-of-frame line clock
-					   wait count mask */
-#define CICR3_VSW	(0x3f << 10)	/* Vertical sync pulse width mask */
-#define CICR3_BFPW	(0x3f << 3)	/* Beginning-of-frame pixel clock
-					   wait count mask */
-#define CICR3_LPF	(0x7ff << 0)	/* Lines per frame mask */
+#define CICR3_BFW	(0xff << 24)	 
+#define CICR3_EFW	(0xff << 16)	 
+#define CICR3_VSW	(0x3f << 10)	 
+#define CICR3_BFPW	(0x3f << 3)	 
+#define CICR3_LPF	(0x7ff << 0)	 
 
-#define CICR4_MCLK_DLY	(0x3 << 24)	/* MCLK Data Capture Delay mask */
-#define CICR4_PCLK_EN	(1 << 23)	/* Pixel clock enable */
-#define CICR4_PCP	(1 << 22)	/* Pixel clock polarity */
-#define CICR4_HSP	(1 << 21)	/* Horizontal sync polarity */
-#define CICR4_VSP	(1 << 20)	/* Vertical sync polarity */
-#define CICR4_MCLK_EN	(1 << 19)	/* MCLK enable */
-#define CICR4_FR_RATE	(0x7 << 8)	/* Frame rate mask */
-#define CICR4_DIV	(0xff << 0)	/* Clock divisor mask */
+#define CICR4_MCLK_DLY	(0x3 << 24)	 
+#define CICR4_PCLK_EN	(1 << 23)	 
+#define CICR4_PCP	(1 << 22)	 
+#define CICR4_HSP	(1 << 21)	 
+#define CICR4_VSP	(1 << 20)	 
+#define CICR4_MCLK_EN	(1 << 19)	 
+#define CICR4_FR_RATE	(0x7 << 8)	 
+#define CICR4_DIV	(0xff << 0)	 
 
-#define CISR_FTO	(1 << 15)	/* FIFO time-out */
-#define CISR_RDAV_2	(1 << 14)	/* Channel 2 receive data available */
-#define CISR_RDAV_1	(1 << 13)	/* Channel 1 receive data available */
-#define CISR_RDAV_0	(1 << 12)	/* Channel 0 receive data available */
-#define CISR_FEMPTY_2	(1 << 11)	/* Channel 2 FIFO empty */
-#define CISR_FEMPTY_1	(1 << 10)	/* Channel 1 FIFO empty */
-#define CISR_FEMPTY_0	(1 << 9)	/* Channel 0 FIFO empty */
-#define CISR_EOL	(1 << 8)	/* End of line */
-#define CISR_PAR_ERR	(1 << 7)	/* Parity error */
-#define CISR_CQD	(1 << 6)	/* Camera interface quick disable */
-#define CISR_CDD	(1 << 5)	/* Camera interface disable done */
-#define CISR_SOF	(1 << 4)	/* Start of frame */
-#define CISR_EOF	(1 << 3)	/* End of frame */
-#define CISR_IFO_2	(1 << 2)	/* FIFO overrun for Channel 2 */
-#define CISR_IFO_1	(1 << 1)	/* FIFO overrun for Channel 1 */
-#define CISR_IFO_0	(1 << 0)	/* FIFO overrun for Channel 0 */
+#define CISR_FTO	(1 << 15)	 
+#define CISR_RDAV_2	(1 << 14)	 
+#define CISR_RDAV_1	(1 << 13)	 
+#define CISR_RDAV_0	(1 << 12)	 
+#define CISR_FEMPTY_2	(1 << 11)	 
+#define CISR_FEMPTY_1	(1 << 10)	 
+#define CISR_FEMPTY_0	(1 << 9)	 
+#define CISR_EOL	(1 << 8)	 
+#define CISR_PAR_ERR	(1 << 7)	 
+#define CISR_CQD	(1 << 6)	 
+#define CISR_CDD	(1 << 5)	 
+#define CISR_SOF	(1 << 4)	 
+#define CISR_EOF	(1 << 3)	 
+#define CISR_IFO_2	(1 << 2)	 
+#define CISR_IFO_1	(1 << 1)	 
+#define CISR_IFO_0	(1 << 0)	 
 
-#define CIFR_FLVL2	(0x7f << 23)	/* FIFO 2 level mask */
-#define CIFR_FLVL1	(0x7f << 16)	/* FIFO 1 level mask */
-#define CIFR_FLVL0	(0xff << 8)	/* FIFO 0 level mask */
-#define CIFR_THL_0	(0x3 << 4)	/* Threshold Level for Channel 0 FIFO */
-#define CIFR_RESET_F	(1 << 3)	/* Reset input FIFOs */
-#define CIFR_FEN2	(1 << 2)	/* FIFO enable for channel 2 */
-#define CIFR_FEN1	(1 << 1)	/* FIFO enable for channel 1 */
-#define CIFR_FEN0	(1 << 0)	/* FIFO enable for channel 0 */
+#define CIFR_FLVL2	(0x7f << 23)	 
+#define CIFR_FLVL1	(0x7f << 16)	 
+#define CIFR_FLVL0	(0xff << 8)	 
+#define CIFR_THL_0	(0x3 << 4)	 
+#define CIFR_RESET_F	(1 << 3)	 
+#define CIFR_FEN2	(1 << 2)	 
+#define CIFR_FEN1	(1 << 1)	 
+#define CIFR_FEN0	(1 << 0)	 
 
 #define CICR0_SIM_MP	(0 << 24)
 #define CICR0_SIM_SP	(1 << 24)
@@ -151,22 +138,22 @@
 #define CICR0_SIM_EP	(3 << 24)
 #define CICR0_SIM_ES	(4 << 24)
 
-#define CICR1_DW_VAL(x)   ((x) & CICR1_DW)	    /* Data bus width */
-#define CICR1_PPL_VAL(x)  (((x) << 15) & CICR1_PPL) /* Pixels per line */
-#define CICR1_COLOR_SP_VAL(x)	(((x) << 3) & CICR1_COLOR_SP)	/* color space */
-#define CICR1_RGB_BPP_VAL(x)	(((x) << 7) & CICR1_RGB_BPP)	/* bpp for rgb */
-#define CICR1_RGBT_CONV_VAL(x)	(((x) << 29) & CICR1_RGBT_CONV)	/* rgbt conv */
+#define CICR1_DW_VAL(x)   ((x) & CICR1_DW)	     
+#define CICR1_PPL_VAL(x)  (((x) << 15) & CICR1_PPL)  
+#define CICR1_COLOR_SP_VAL(x)	(((x) << 3) & CICR1_COLOR_SP)	 
+#define CICR1_RGB_BPP_VAL(x)	(((x) << 7) & CICR1_RGB_BPP)	 
+#define CICR1_RGBT_CONV_VAL(x)	(((x) << 29) & CICR1_RGBT_CONV)	 
 
-#define CICR2_BLW_VAL(x)  (((x) << 24) & CICR2_BLW) /* Beginning-of-line pixel clock wait count */
-#define CICR2_ELW_VAL(x)  (((x) << 16) & CICR2_ELW) /* End-of-line pixel clock wait count */
-#define CICR2_HSW_VAL(x)  (((x) << 10) & CICR2_HSW) /* Horizontal sync pulse width */
-#define CICR2_BFPW_VAL(x) (((x) << 3) & CICR2_BFPW) /* Beginning-of-frame pixel clock wait count */
-#define CICR2_FSW_VAL(x)  (((x) << 0) & CICR2_FSW)  /* Frame stabilization wait count */
+#define CICR2_BLW_VAL(x)  (((x) << 24) & CICR2_BLW)  
+#define CICR2_ELW_VAL(x)  (((x) << 16) & CICR2_ELW)  
+#define CICR2_HSW_VAL(x)  (((x) << 10) & CICR2_HSW)  
+#define CICR2_BFPW_VAL(x) (((x) << 3) & CICR2_BFPW)  
+#define CICR2_FSW_VAL(x)  (((x) << 0) & CICR2_FSW)   
 
-#define CICR3_BFW_VAL(x)  (((x) << 24) & CICR3_BFW) /* Beginning-of-frame line clock wait count  */
-#define CICR3_EFW_VAL(x)  (((x) << 16) & CICR3_EFW) /* End-of-frame line clock wait count */
-#define CICR3_VSW_VAL(x)  (((x) << 11) & CICR3_VSW) /* Vertical sync pulse width */
-#define CICR3_LPF_VAL(x)  (((x) << 0) & CICR3_LPF)  /* Lines per frame */
+#define CICR3_BFW_VAL(x)  (((x) << 24) & CICR3_BFW)  
+#define CICR3_EFW_VAL(x)  (((x) << 16) & CICR3_EFW)  
+#define CICR3_VSW_VAL(x)  (((x) << 11) & CICR3_VSW)  
+#define CICR3_LPF_VAL(x)  (((x) << 0) & CICR3_LPF)   
 
 #define CICR0_IRQ_MASK (CICR0_TOM | CICR0_RDAVM | CICR0_FEM | CICR0_EOLM | \
 			CICR0_PERRM | CICR0_QDM | CICR0_CDM | CICR0_SOFM | \
@@ -175,46 +162,22 @@
 #define sensor_call(cam, o, f, args...) \
 	v4l2_subdev_call(cam->sensor, o, f, ##args)
 
-/*
- * Format handling
- */
+ 
 
-/**
- * enum pxa_mbus_packing - data packing types on the media-bus
- * @PXA_MBUS_PACKING_NONE:	no packing, bit-for-bit transfer to RAM, one
- *				sample represents one pixel
- * @PXA_MBUS_PACKING_2X8_PADHI:	16 bits transferred in 2 8-bit samples, in the
- *				possibly incomplete byte high bits are padding
- * @PXA_MBUS_PACKING_EXTEND16:	sample width (e.g., 10 bits) has to be extended
- *				to 16 bits
- */
+ 
 enum pxa_mbus_packing {
 	PXA_MBUS_PACKING_NONE,
 	PXA_MBUS_PACKING_2X8_PADHI,
 	PXA_MBUS_PACKING_EXTEND16,
 };
 
-/**
- * enum pxa_mbus_order - sample order on the media bus
- * @PXA_MBUS_ORDER_LE:		least significant sample first
- * @PXA_MBUS_ORDER_BE:		most significant sample first
- */
+ 
 enum pxa_mbus_order {
 	PXA_MBUS_ORDER_LE,
 	PXA_MBUS_ORDER_BE,
 };
 
-/**
- * enum pxa_mbus_layout - planes layout in memory
- * @PXA_MBUS_LAYOUT_PACKED:		color components packed
- * @PXA_MBUS_LAYOUT_PLANAR_2Y_U_V:	YUV components stored in 3 planes (4:2:2)
- * @PXA_MBUS_LAYOUT_PLANAR_2Y_C:	YUV components stored in a luma and a
- *					chroma plane (C plane is half the size
- *					of Y plane)
- * @PXA_MBUS_LAYOUT_PLANAR_Y_C:		YUV components stored in a luma and a
- *					chroma plane (C plane is the same size
- *					as Y plane)
- */
+ 
 enum pxa_mbus_layout {
 	PXA_MBUS_LAYOUT_PACKED = 0,
 	PXA_MBUS_LAYOUT_PLANAR_2Y_U_V,
@@ -222,16 +185,7 @@ enum pxa_mbus_layout {
 	PXA_MBUS_LAYOUT_PLANAR_Y_C,
 };
 
-/**
- * struct pxa_mbus_pixelfmt - Data format on the media bus
- * @name:		Name of the format
- * @fourcc:		Fourcc code, that will be obtained if the data is
- *			stored in memory in the following way:
- * @packing:		Type of sample-packing, that has to be used
- * @order:		Sample order when storing in memory
- * @layout:		Planes layout in memory
- * @bits_per_sample:	How many bits the bridge has to sample
- */
+ 
 struct pxa_mbus_pixelfmt {
 	const char		*name;
 	u32			fourcc;
@@ -241,11 +195,7 @@ struct pxa_mbus_pixelfmt {
 	u8			bits_per_sample;
 };
 
-/**
- * struct pxa_mbus_lookup - Lookup FOURCC IDs by mediabus codes for pass-through
- * @code:	mediabus pixel-code
- * @fmt:	pixel format description
- */
+ 
 struct pxa_mbus_lookup {
 	u32	code;
 	struct pxa_mbus_pixelfmt	fmt;
@@ -604,38 +554,27 @@ static const struct pxa_mbus_pixelfmt *pxa_mbus_get_fmtdesc(
 	return pxa_mbus_find_fmtdesc(code, mbus_fmt, ARRAY_SIZE(mbus_fmt));
 }
 
-/**
- * struct pxa_camera_format_xlate - match between host and sensor formats
- * @code: code of a sensor provided format
- * @host_fmt: host format after host translation from code
- *
- * Host and sensor translation structure. Used in table of host and sensor
- * formats matchings in pxa_camera_device. A host can override the generic list
- * generation by implementing get_formats(), and use it for format checks and
- * format setup.
- */
+ 
 struct pxa_camera_format_xlate {
 	u32 code;
 	const struct pxa_mbus_pixelfmt *host_fmt;
 };
 
-/*
- * Structures
- */
+ 
 enum pxa_camera_active_dma {
 	DMA_Y = 0x1,
 	DMA_U = 0x2,
 	DMA_V = 0x4,
 };
 
-/* buffer for one video frame */
+ 
 struct pxa_buffer {
-	/* common v4l buffer stuff -- must be first */
+	 
 	struct vb2_v4l2_buffer		vbuf;
 	struct list_head		queue;
 	u32	code;
 	int				nb_planes;
-	/* our descriptor lists for Y, U and V channels */
+	 
 	struct dma_async_tx_descriptor	*descs[3];
 	dma_cookie_t			cookie[3];
 	struct scatterlist		*sg[3];
@@ -655,11 +594,7 @@ struct pxa_camera_dev {
 	const struct pxa_camera_format_xlate *current_fmt;
 	struct v4l2_pix_format	current_pix;
 
-	/*
-	 * PXA27x is only supposed to handle one camera on its Quick Capture
-	 * interface. If anyone ever builds hardware to enable more than
-	 * one camera, they will have to modify this driver too
-	 */
+	 
 	struct clk		*clk;
 
 	unsigned int		irq;
@@ -674,7 +609,7 @@ struct pxa_camera_dev {
 	unsigned long		ciclk;
 	unsigned long		mclk;
 	u32			mclk_divisor;
-	u16			width_flags;	/* max 10 bits */
+	u16			width_flags;	 
 
 	struct list_head	capture;
 
@@ -694,9 +629,7 @@ struct pxa_cam {
 
 static const char *pxa_cam_driver_description = "PXA_Camera";
 
-/*
- * Format translation functions
- */
+ 
 static const struct pxa_camera_format_xlate
 *pxa_mbus_xlate_by_fourcc(struct pxa_camera_format_xlate *user_formats,
 			  unsigned int fourcc)
@@ -726,10 +659,7 @@ static struct pxa_camera_format_xlate *pxa_mbus_build_fmts_xlate(
 		code.index++;
 	}
 
-	/*
-	 * First pass - only count formats this host-sensor
-	 * configuration can provide
-	 */
+	 
 	for (i = 0; i < raw_fmts; i++) {
 		ret = get_formats(v4l2_dev, i, NULL);
 		if (ret < 0)
@@ -744,7 +674,7 @@ static struct pxa_camera_format_xlate *pxa_mbus_build_fmts_xlate(
 	if (!user_formats)
 		return ERR_PTR(-ENOMEM);
 
-	/* Second pass - actually fill data formats */
+	 
 	fmts = 0;
 	for (i = 0; i < raw_fmts; i++) {
 		ret = get_formats(v4l2_dev, i, user_formats + fmts);
@@ -760,9 +690,7 @@ egfmt:
 	return ERR_PTR(ret);
 }
 
-/*
- *  Videobuf operations
- */
+ 
 static struct pxa_buffer *vb2_to_pxa_buffer(struct vb2_buffer *vb)
 {
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
@@ -804,18 +732,7 @@ static void pxa_camera_dma_irq_v(void *data)
 	pxa_camera_dma_irq(pcdev, DMA_V);
 }
 
-/**
- * pxa_init_dma_channel - init dma descriptors
- * @pcdev: pxa camera device
- * @buf: pxa camera buffer
- * @channel: dma channel (0 => 'Y', 1 => 'U', 2 => 'V')
- * @sg: dma scatter list
- * @sglen: dma scatter list length
- *
- * Prepares the pxa dma descriptors to transfer one camera channel.
- *
- * Returns 0 if success or -ENOMEM if no memory is available
- */
+ 
 static int pxa_init_dma_channel(struct pxa_camera_dev *pcdev,
 				struct pxa_buffer *buf, int channel,
 				struct scatterlist *sg, int sglen)
@@ -862,13 +779,7 @@ static void pxa_video_buf_set_actdma(struct pxa_camera_dev *pcdev,
 		buf->active_dma |= DMA_U | DMA_V;
 }
 
-/**
- * pxa_dma_start_channels - start DMA channel for active buffer
- * @pcdev: pxa camera device
- *
- * Initialize DMA channels to the beginning of the active video buffer, and
- * start these channels.
- */
+ 
 static void pxa_dma_start_channels(struct pxa_camera_dev *pcdev)
 {
 	int i;
@@ -904,21 +815,14 @@ static void pxa_dma_add_tail_buf(struct pxa_camera_dev *pcdev,
 	}
 }
 
-/**
- * pxa_camera_start_capture - start video capturing
- * @pcdev: camera device
- *
- * Launch capturing. DMA channels should not be active yet. They should get
- * activated at the end of frame interrupt, to capture only whole frames, and
- * never begin the capture of a partial frame.
- */
+ 
 static void pxa_camera_start_capture(struct pxa_camera_dev *pcdev)
 {
 	unsigned long cicr0;
 
 	dev_dbg(pcdev_to_dev(pcdev), "%s\n", __func__);
 	__raw_writel(__raw_readl(pcdev->base + CISR), pcdev->base + CISR);
-	/* Enable End-Of-Frame Interrupt */
+	 
 	cicr0 = __raw_readl(pcdev->base + CICR0) | CICR0_ENB;
 	cicr0 &= ~CICR0_EOFM;
 	__raw_writel(cicr0, pcdev->base + CICR0);
@@ -944,7 +848,7 @@ static void pxa_camera_wakeup(struct pxa_camera_dev *pcdev,
 	struct vb2_buffer *vb = &buf->vbuf.vb2_buf;
 	struct vb2_v4l2_buffer *vbuf = to_vb2_v4l2_buffer(vb);
 
-	/* _init is used to debug races, see comment in pxa_camera_reqbufs() */
+	 
 	list_del_init(&buf->queue);
 	vb->timestamp = ktime_get_ns();
 	vbuf->sequence = pcdev->buf_sequence++;
@@ -962,24 +866,7 @@ static void pxa_camera_wakeup(struct pxa_camera_dev *pcdev,
 				   struct pxa_buffer, queue);
 }
 
-/**
- * pxa_camera_check_link_miss - check missed DMA linking
- * @pcdev: camera device
- * @last_submitted: an opaque DMA cookie for last submitted
- * @last_issued: an opaque DMA cookie for last issued
- *
- * The DMA chaining is done with DMA running. This means a tiny temporal window
- * remains, where a buffer is queued on the chain, while the chain is already
- * stopped. This means the tailed buffer would never be transferred by DMA.
- * This function restarts the capture for this corner case, where :
- *  - DADR() == DADDR_STOP
- *  - a video buffer is queued on the pcdev->capture list
- *
- * Please check the "DMA hot chaining timeslice issue" in
- *   Documentation/driver-api/media/drivers/pxa_camera.rst
- *
- * Context: should only be called within the dma irq handler
- */
+ 
 static void pxa_camera_check_link_miss(struct pxa_camera_dev *pcdev,
 				       dma_cookie_t last_submitted,
 				       dma_cookie_t last_issued)
@@ -1013,28 +900,14 @@ static void pxa_camera_dma_irq(struct pxa_camera_dev *pcdev,
 	if (pcdev->channels == 3)
 		overrun |= CISR_IFO_1 | CISR_IFO_2;
 
-	/*
-	 * pcdev->active should not be NULL in DMA irq handler.
-	 *
-	 * But there is one corner case : if capture was stopped due to an
-	 * overrun of channel 1, and at that same channel 2 was completed.
-	 *
-	 * When handling the overrun in DMA irq for channel 1, we'll stop the
-	 * capture and restart it (and thus set pcdev->active to NULL). But the
-	 * DMA irq handler will already be pending for channel 2. So on entering
-	 * the DMA irq handler for channel 2 there will be no active buffer, yet
-	 * that is normal.
-	 */
+	 
 	if (!pcdev->active)
 		goto out;
 
 	buf = pcdev->active;
 	WARN_ON(buf->inwork || list_empty(&buf->queue));
 
-	/*
-	 * It's normal if the last frame creates an overrun, as there
-	 * are no more DMA descriptors to fetch from QCI fifos
-	 */
+	 
 	switch (act_dma) {
 	case DMA_U:
 		chan = 1;
@@ -1082,17 +955,17 @@ static u32 mclk_get_divisor(struct platform_device *pdev,
 	lcdclk = clk_get_rate(pcdev->clk);
 	pcdev->ciclk = lcdclk;
 
-	/* mclk <= ciclk / 4 (27.4.2) */
+	 
 	if (mclk > lcdclk / 4) {
 		mclk = lcdclk / 4;
 		dev_warn(&pdev->dev,
 			 "Limiting master clock to %lu\n", mclk);
 	}
 
-	/* We verify mclk != 0, so if anyone breaks it, here comes their Oops */
+	 
 	div = (lcdclk + 2 * mclk - 1) / (2 * mclk) - 1;
 
-	/* If we're not supplying MCLK, leave it at 0 */
+	 
 	if (pcdev->platform_flags & PXA_CAMERA_MCLK_EN)
 		pcdev->mclk = lcdclk / (2 * (div + 1));
 
@@ -1105,7 +978,7 @@ static u32 mclk_get_divisor(struct platform_device *pdev,
 static void recalculate_fifo_timeout(struct pxa_camera_dev *pcdev,
 				     unsigned long pclk)
 {
-	/* We want a timeout > 1 pixel time, not ">=" */
+	 
 	u32 ciclk_per_pixel = pcdev->ciclk / pclk + 1;
 
 	__raw_writel(ciclk_per_pixel, pcdev->base + CITOR);
@@ -1115,7 +988,7 @@ static void pxa_camera_activate(struct pxa_camera_dev *pcdev)
 {
 	u32 cicr4 = 0;
 
-	/* disable all interrupts */
+	 
 	__raw_writel(0x3ff, pcdev->base + CICR0);
 
 	if (pcdev->platform_flags & PXA_CAMERA_PCLK_EN)
@@ -1132,10 +1005,10 @@ static void pxa_camera_activate(struct pxa_camera_dev *pcdev)
 	__raw_writel(pcdev->mclk_divisor | cicr4, pcdev->base + CICR4);
 
 	if (pcdev->platform_flags & PXA_CAMERA_MCLK_EN)
-		/* Initialise the timeout under the assumption pclk = mclk */
+		 
 		recalculate_fifo_timeout(pcdev, pcdev->mclk);
 	else
-		/* "Safe default" - 13MHz */
+		 
 		recalculate_fifo_timeout(pcdev, 13000000);
 
 	clk_prepare_enable(pcdev->clk);
@@ -1156,7 +1029,7 @@ static void pxa_camera_eof(struct tasklet_struct *t)
 		"Camera interrupt status 0x%x\n",
 		__raw_readl(pcdev->base + CISR));
 
-	/* Reset the FIFOs */
+	 
 	cifr = __raw_readl(pcdev->base + CIFR) | CIFR_RESET_F;
 	__raw_writel(cifr, pcdev->base + CIFR);
 
@@ -1201,10 +1074,7 @@ static void pxa_camera_setup_cicr(struct pxa_camera_dev *pcdev,
 	if (ret < 0)
 		y_skip_top = 0;
 
-	/*
-	 * Datawidth is now guaranteed to be equal to one of the three values.
-	 * We fix bit-per-pixel equal to data-width...
-	 */
+	 
 	switch (pcdev->current_fmt->host_fmt->bits_per_sample) {
 	case 10:
 		dw = 4;
@@ -1215,10 +1085,7 @@ static void pxa_camera_setup_cicr(struct pxa_camera_dev *pcdev,
 		bpp = 0x20;
 		break;
 	default:
-		/*
-		 * Actually it can only be 8 now,
-		 * default is just to silence compiler warnings
-		 */
+		 
 	case 8:
 		dw = 2;
 		bpp = 0;
@@ -1245,13 +1112,7 @@ static void pxa_camera_setup_cicr(struct pxa_camera_dev *pcdev,
 	case V4L2_PIX_FMT_YUV422P:
 		pcdev->channels = 3;
 		cicr1 |= CICR1_YCBCR_F;
-		/*
-		 * Normally, pxa bus wants as input UYVY format. We allow all
-		 * reorderings of the YUV422 format, as no processing is done,
-		 * and the YUV stream is just passed through without any
-		 * transformation. Note that UYVY is the only format that
-		 * should be used if pxa framebuffer Overlay2 is used.
-		 */
+		 
 		fallthrough;
 	case V4L2_PIX_FMT_UYVY:
 	case V4L2_PIX_FMT_VYUY:
@@ -1278,16 +1139,14 @@ static void pxa_camera_setup_cicr(struct pxa_camera_dev *pcdev,
 	__raw_writel(cicr3, pcdev->base + CICR3);
 	__raw_writel(cicr4, pcdev->base + CICR4);
 
-	/* CIF interrupts are not used, only DMA */
+	 
 	cicr0 = (cicr0 & CICR0_ENB) | (pcdev->platform_flags & PXA_CAMERA_MASTER ?
 		CICR0_SIM_MP : (CICR0_SL_CAP_EN | CICR0_SIM_SP));
 	cicr0 |= CICR0_DMAEN | CICR0_IRQ_MASK;
 	__raw_writel(cicr0, pcdev->base + CICR0);
 }
 
-/*
- * Videobuf2 section
- */
+ 
 static void pxa_buffer_cleanup(struct pxa_buffer *buf)
 {
 	int i;
@@ -1371,12 +1230,7 @@ static void pxac_vb2_queue(struct vb2_buffer *vb)
 	pxa_dma_add_tail_buf(pcdev, buf);
 }
 
-/*
- * Please check the DMA prepared buffer structure in :
- *   Documentation/driver-api/media/drivers/pxa_camera.rst
- * Please check also in pxa_camera_check_link_miss() to understand why DMA chain
- * modification while DMA chain is running will work anyway.
- */
+ 
 static int pxac_vb2_prepare(struct vb2_buffer *vb)
 {
 	struct pxa_camera_dev *pcdev = vb2_get_drv_priv(vb->vb2_queue);
@@ -1402,19 +1256,13 @@ static int pxac_vb2_prepare(struct vb2_buffer *vb)
 	WARN_ON(!pcdev->current_fmt);
 
 #ifdef DEBUG
-	/*
-	 * This can be useful if you want to see if we actually fill
-	 * the buffer with something
-	 */
+	 
 	for (i = 0; i < vb->num_planes; i++)
 		memset((void *)vb2_plane_vaddr(vb, i),
 		       0xaa, vb2_get_plane_payload(vb, i));
 #endif
 
-	/*
-	 * I think, in buf_prepare you only have to protect global data,
-	 * the actual buffer is yours
-	 */
+	 
 	buf->inwork = 0;
 	pxa_video_buf_set_actdma(pcdev, buf);
 
@@ -1444,11 +1292,7 @@ static int pxac_vb2_queue_setup(struct vb2_queue *vq,
 	dev_dbg(pcdev_to_dev(pcdev),
 		 "%s(vq=%p nbufs=%d num_planes=%d size=%d)\n",
 		__func__, vq, *nbufs, *num_planes, size);
-	/*
-	 * Called from VIDIOC_REQBUFS or in compatibility mode For YUV422P
-	 * format, even if there are 3 planes Y, U and V, we reply there is only
-	 * one plane, containing Y, U and V data, one after the other.
-	 */
+	 
 	if (*num_planes)
 		return sizes[0] < size ? -EINVAL : 0;
 
@@ -1531,9 +1375,7 @@ static int pxa_camera_init_videobuf2(struct pxa_camera_dev *pcdev)
 	return ret;
 }
 
-/*
- * Video ioctls section
- */
+ 
 static int pxa_camera_set_bus_param(struct pxa_camera_dev *pcdev)
 {
 	unsigned int bus_width = pcdev->current_fmt->host_fmt->bits_per_sample;
@@ -1550,7 +1392,7 @@ static int pxa_camera_set_bus_param(struct pxa_camera_dev *pcdev)
 
 	pcdev->channels = 1;
 
-	/* Make choices, based on platform preferences */
+	 
 	mbus_config = 0;
 	if (pcdev->platform_flags & PXA_CAMERA_MASTER)
 		mbus_config |= V4L2_MBUS_MASTER;
@@ -1580,13 +1422,7 @@ static int pxa_camera_set_bus_param(struct pxa_camera_dev *pcdev)
 		return ret;
 	}
 
-	/*
-	 * If the media bus configuration of the sensor differs, make sure it
-	 * is supported by the platform.
-	 *
-	 * PXA does not support V4L2_MBUS_DATA_ACTIVE_LOW and the bus mastering
-	 * roles should match.
-	 */
+	 
 	if (cfg.bus.parallel.flags != mbus_config) {
 		unsigned int pxa_mbus_role = mbus_config & (V4L2_MBUS_MASTER |
 							    V4L2_MBUS_SLAVE);
@@ -1622,7 +1458,7 @@ static const struct pxa_mbus_pixelfmt pxa_camera_formats[] = {
 	},
 };
 
-/* This will be corrected as we get more formats */
+ 
 static bool pxa_camera_packing_supported(const struct pxa_mbus_pixelfmt *fmt)
 {
 	return	fmt->packing == PXA_MBUS_PACKING_NONE ||
@@ -1646,7 +1482,7 @@ static int pxa_camera_get_formats(struct v4l2_device *v4l2_dev,
 
 	ret = sensor_call(pcdev, pad, enum_mbus_code, NULL, &code);
 	if (ret < 0)
-		/* No more formats */
+		 
 		return 0;
 
 	fmt = pxa_mbus_get_fmtdesc(code.code);
@@ -1688,7 +1524,7 @@ static int pxa_camera_get_formats(struct v4l2_device *v4l2_dev,
 		break;
 	}
 
-	/* Generic pass-through */
+	 
 	formats++;
 	if (xlate) {
 		xlate->host_fmt	= fmt;
@@ -1719,7 +1555,7 @@ static void pxa_camera_destroy_formats(struct pxa_camera_dev *pcdev)
 
 static int pxa_camera_check_frame(u32 width, u32 height)
 {
-	/* limit to pxa hardware capabilities */
+	 
 	return height < 32 || height > 2048 || width < 48 || width > 2048 ||
 		(width & 0x01);
 }
@@ -1809,12 +1645,7 @@ static int pxac_vidioc_try_fmt_vid_cap(struct file *filp, void *priv,
 		return -EINVAL;
 	}
 
-	/*
-	 * Limit to pxa hardware capabilities.  YUV422P planar format requires
-	 * images size to be a multiple of 16 bytes.  If not, zeros will be
-	 * inserted between Y and U planes, and U and V planes, which violates
-	 * the YUV422P standard.
-	 */
+	 
 	v4l_bound_align_image(&pix->width, 48, 2048, 1,
 			      &pix->height, 32, 2048, 0,
 			      pixfmt == V4L2_PIX_FMT_YUV422P ? 4 : 0);
@@ -1826,14 +1657,14 @@ static int pxac_vidioc_try_fmt_vid_cap(struct file *filp, void *priv,
 
 	v4l2_fill_pix_format(pix, mf);
 
-	/* Only progressive video supported so far */
+	 
 	switch (mf->field) {
 	case V4L2_FIELD_ANY:
 	case V4L2_FIELD_NONE:
 		pix->field = V4L2_FIELD_NONE;
 		break;
 	default:
-		/* TODO: support interlaced at least in pass-through mode */
+		 
 		dev_err(pcdev_to_dev(pcdev), "Field type %d unsupported.\n",
 			mf->field);
 		return -EINVAL;
@@ -2132,10 +1963,10 @@ static void pxa_camera_sensor_unbind(struct v4l2_async_notifier *notifier,
 		 "PXA Camera driver detached from camera %s\n",
 		 subdev->name);
 
-	/* disable capture, disable interrupts */
+	 
 	__raw_writel(0x3ff, pcdev->base + CICR0);
 
-	/* Stop DMA engine */
+	 
 	pxa_dma_stop_channels(pcdev);
 
 	pxa_camera_destroy_formats(pcdev);
@@ -2151,9 +1982,7 @@ static const struct v4l2_async_notifier_operations pxa_camera_sensor_ops = {
 	.unbind = pxa_camera_sensor_unbind,
 };
 
-/*
- * Driver probe, remove, suspend and resume operations
- */
+ 
 static int pxa_camera_suspend(struct device *dev)
 {
 	struct pxa_camera_dev *pcdev = dev_get_drvdata(dev);
@@ -2186,7 +2015,7 @@ static int pxa_camera_resume(struct device *dev)
 		ret = pxac_sensor_set_power(pcdev, 1);
 	}
 
-	/* Restart frame capture if active buffer exists */
+	 
 	if (!ret && pcdev->active)
 		pxa_camera_start_capture(pcdev);
 
@@ -2288,9 +2117,7 @@ static int pxa_camera_probe(struct platform_device *pdev)
 	if (IS_ERR(pcdev->clk))
 		return PTR_ERR(pcdev->clk);
 
-	/*
-	 * Request the regions.
-	 */
+	 
 	base = devm_platform_get_and_ioremap_resource(pdev, 0, &res);
 	if (IS_ERR(base))
 		return PTR_ERR(base);
@@ -2326,10 +2153,7 @@ static int pxa_camera_probe(struct platform_device *pdev)
 
 	if (!(pcdev->platform_flags & (PXA_CAMERA_DATAWIDTH_8 |
 			PXA_CAMERA_DATAWIDTH_9 | PXA_CAMERA_DATAWIDTH_10))) {
-		/*
-		 * Platform hasn't set available data widths. This is bad.
-		 * Warn and use a default.
-		 */
+		 
 		dev_warn(&pdev->dev, "WARNING! Platform hasn't set available data widths, using default 10 bit\n");
 		pcdev->platform_flags |= PXA_CAMERA_DATAWIDTH_10;
 	}
@@ -2351,7 +2175,7 @@ static int pxa_camera_probe(struct platform_device *pdev)
 	spin_lock_init(&pcdev->lock);
 	mutex_init(&pcdev->mlock);
 
-	/* request dma */
+	 
 	pcdev->dma_chans[0] = dma_request_chan(&pdev->dev, "CI_Y");
 	if (IS_ERR(pcdev->dma_chans[0])) {
 		dev_err(&pdev->dev, "Can't request DMA for Y\n");
@@ -2393,7 +2217,7 @@ static int pxa_camera_probe(struct platform_device *pdev)
 	if (err)
 		goto exit_deactivate;
 
-	/* request irq */
+	 
 	err = devm_request_irq(&pdev->dev, pcdev->irq, pxa_camera_irq, 0,
 			       PXA_CAM_DRV_NAME, pcdev);
 	if (err) {

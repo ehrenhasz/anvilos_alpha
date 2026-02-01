@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (C) Copyright David Gibson <dwg@au1.ibm.com>, IBM Corporation.  2007.
- */
+
+ 
 
 #include "dtc.h"
 #include "srcpos.h"
@@ -191,11 +189,9 @@ out:
 	return error;
 }
 
-/*
- * Utility check functions
- */
+ 
 
-/* A check which always fails, for testing purposes only */
+ 
 static inline void check_always_fail(struct check *c, struct dt_info *dti,
 				     struct node *node)
 {
@@ -211,7 +207,7 @@ static void check_is_string(struct check *c, struct dt_info *dti,
 
 	prop = get_property(node, propname);
 	if (!prop)
-		return; /* Not present, assumed ok */
+		return;  
 
 	if (!data_is_one_string(prop->val))
 		FAIL_PROP(c, dti, node, prop, "property is not a string");
@@ -231,7 +227,7 @@ static void check_is_string_list(struct check *c, struct dt_info *dti,
 
 	prop = get_property(node, propname);
 	if (!prop)
-		return; /* Not present, assumed ok */
+		return;  
 
 	str = prop->val.val;
 	rem = prop->val.len;
@@ -258,7 +254,7 @@ static void check_is_cell(struct check *c, struct dt_info *dti,
 
 	prop = get_property(node, propname);
 	if (!prop)
-		return; /* Not present, assumed ok */
+		return;  
 
 	if (prop->val.len != sizeof(cell_t))
 		FAIL_PROP(c, dti, node, prop, "property is not a single cell");
@@ -268,9 +264,7 @@ static void check_is_cell(struct check *c, struct dt_info *dti,
 #define ERROR_IF_NOT_CELL(nm, propname) \
 	ERROR(nm, check_is_cell, (propname))
 
-/*
- * Structural check functions
- */
+ 
 
 static void check_duplicate_node_names(struct check *c, struct dt_info *dti,
 				       struct node *node)
@@ -360,7 +354,7 @@ static void check_unit_address_vs_reg(struct check *c, struct dt_info *dti,
 	struct property *prop = get_property(node, "reg");
 
 	if (get_subnode(node, "__overlay__")) {
-		/* HACK: Overlay fragments are a special case */
+		 
 		return;
 	}
 
@@ -408,14 +402,11 @@ static void check_property_name_chars_strict(struct check *c,
 		if (n == strlen(prop->name))
 			continue;
 
-		/* Certain names are whitelisted */
+		 
 		if (streq(name, "device_type"))
 			continue;
 
-		/*
-		 * # is only allowed at the beginning of property names not counting
-		 * the vendor prefix.
-		 */
+		 
 		if (name[n] == '#' && ((n == 0) || (name[n-1] == ','))) {
 			name += n + 1;
 			n = strspn(name, c->data);
@@ -504,17 +495,11 @@ static cell_t check_phandle_prop(struct check *c, struct dt_info *dti,
 	for_each_marker_of_type(m, REF_PHANDLE) {
 		assert(m->offset == 0);
 		if (node != get_node_by_ref(root, m->ref))
-			/* "Set this node's phandle equal to some
-			 * other node's phandle".  That's nonsensical
-			 * by construction. */ {
+			  {
 			FAIL(c, dti, node, "%s is a reference to another node",
 			     prop->name);
 		}
-		/* But setting this node's phandle equal to its own
-		 * phandle is allowed - that means allocate a unique
-		 * phandle for this node, even if it's not otherwise
-		 * referenced.  The value will be filled in later, so
-		 * we treat it as having no phandle data for now. */
+		 
 		return 0;
 	}
 
@@ -536,7 +521,7 @@ static void check_explicit_phandles(struct check *c, struct dt_info *dti,
 	struct node *other;
 	cell_t phandle, linux_phandle;
 
-	/* Nothing should have assigned phandles yet */
+	 
 	assert(!node->phandle);
 
 	phandle = check_phandle_prop(c, dti, node, "phandle");
@@ -544,7 +529,7 @@ static void check_explicit_phandles(struct check *c, struct dt_info *dti,
 	linux_phandle = check_phandle_prop(c, dti, node, "linux,phandle");
 
 	if (!phandle && !linux_phandle)
-		/* No valid phandles; nothing further to check */
+		 
 		return;
 
 	if (linux_phandle && phandle && (phandle != linux_phandle))
@@ -577,15 +562,14 @@ static void check_name_properties(struct check *c, struct dt_info *dti,
 		}
 
 	if (!prop)
-		return; /* No name property, that's fine */
+		return;  
 
 	if ((prop->val.len != node->basenamelen + 1U)
 	    || (memcmp(prop->val.val, node->name, node->basenamelen) != 0)) {
 		FAIL(c, dti, node, "\"name\" property is incorrect (\"%s\" instead"
 		     " of base node name)", prop->val.val);
 	} else {
-		/* The name property is correct, and therefore redundant.
-		 * Delete it */
+		 
 		*pp = prop->next;
 		free(prop->name);
 		data_free(prop->val);
@@ -595,9 +579,7 @@ static void check_name_properties(struct check *c, struct dt_info *dti,
 ERROR_IF_NOT_STRING(name_is_string, "name");
 ERROR(name_properties, check_name_properties, NULL, &name_is_string);
 
-/*
- * Reference fixup functions
- */
+ 
 
 static void fixup_phandle_references(struct check *c, struct dt_info *dti,
 				     struct node *node)
@@ -618,7 +600,7 @@ static void fixup_phandle_references(struct check *c, struct dt_info *dti,
 				if (!(dti->dtsflags & DTSF_PLUGIN))
 					FAIL(c, dti, node, "Reference to non-existent node or "
 							"label \"%s\"\n", m->ref);
-				else /* mark the entry as unresolved */
+				else  
 					*((fdt32_t *)(prop->val.val + m->offset)) =
 						cpu_to_fdt32(0xffffffff);
 				continue;
@@ -675,9 +657,7 @@ static void fixup_omit_unused_nodes(struct check *c, struct dt_info *dti,
 }
 ERROR(omit_unused_nodes, fixup_omit_unused_nodes, NULL, &phandle_references, &path_references);
 
-/*
- * Semantic checks
- */
+ 
 WARNING_IF_NOT_CELL(address_cells_is_cell, "#address-cells");
 WARNING_IF_NOT_CELL(size_cells_is_cell, "#size-cells");
 
@@ -760,7 +740,7 @@ static void check_reg_format(struct check *c, struct dt_info *dti,
 
 	prop = get_property(node, "reg");
 	if (!prop)
-		return; /* No "reg", that's fine */
+		return;  
 
 	if (!node->parent) {
 		FAIL(c, dti, node, "Root node has a \"reg\" property");
@@ -990,7 +970,7 @@ static void check_simple_bus_reg(struct check *c, struct dt_info *dti, struct no
 	else {
 		prop = get_property(node, "ranges");
 		if (prop && prop->val.len)
-			/* skip of child address */
+			 
 			cells = ((cell_t *)prop->val.val) + node_addr_cells(node);
 	}
 
@@ -1066,7 +1046,7 @@ static void check_i2c_bus_reg(struct check *c, struct dt_info *dti, struct node 
 	}
 
 	reg = fdt32_to_cpu(*cells);
-	/* Ignore I2C_OWN_SLAVE_ADDRESS */
+	 
 	reg &= ~I2C_OWN_SLAVE_ADDRESS;
 	snprintf(unit_addr, sizeof(unit_addr), "%x", reg);
 	if (!streq(unitname, unit_addr))
@@ -1075,7 +1055,7 @@ static void check_i2c_bus_reg(struct check *c, struct dt_info *dti, struct node 
 
 	for (len = prop->val.len; len > 0; len -= 4) {
 		reg = fdt32_to_cpu(*(cells++));
-		/* Ignore I2C_OWN_SLAVE_ADDRESS */
+		 
 		reg &= ~I2C_OWN_SLAVE_ADDRESS;
 
 		if ((reg & I2C_TEN_BIT_ADDRESS) && ((reg & ~I2C_TEN_BIT_ADDRESS) > 0x3ff))
@@ -1099,7 +1079,7 @@ static void check_spi_bus_bridge(struct check *c, struct dt_info *dti, struct no
 	if (strprefixeq(node->name, node->basenamelen, "spi")) {
 		node->bus = &spi_bus;
 	} else {
-		/* Try to detect SPI buses which don't have proper node name */
+		 
 		struct node *child;
 
 		if (node_addr_cells(node) != 1 || node_size_cells(node) != 0)
@@ -1177,7 +1157,7 @@ static void check_unit_address_format(struct check *c, struct dt_info *dti,
 
 	if (!strncmp(unitname, "0x", 2)) {
 		FAIL(c, dti, node, "unit name should not have leading \"0x\"");
-		/* skip over 0x for next test */
+		 
 		unitname += 2;
 	}
 	if (unitname[0] == '0' && isxdigit(unitname[1]))
@@ -1186,16 +1166,14 @@ static void check_unit_address_format(struct check *c, struct dt_info *dti,
 WARNING(unit_address_format, check_unit_address_format, NULL,
 	&node_name_format, &pci_bridge, &simple_bus_bridge);
 
-/*
- * Style checks
- */
+ 
 static void check_avoid_default_addr_size(struct check *c, struct dt_info *dti,
 					  struct node *node)
 {
 	struct property *reg, *ranges;
 
 	if (!node->parent)
-		return; /* Ignore root node */
+		return;  
 
 	reg = get_property(node, "reg");
 	ranges = get_property(node, "ranges");
@@ -1404,12 +1382,9 @@ static void check_property_phandle_args(struct check *c,
 		unsigned int expected;
 
 		phandle = propval_cell_n(prop, cell);
-		/*
-		 * Some bindings use a cell value 0 or -1 to skip over optional
-		 * entries when each index position has a specific definition.
-		 */
+		 
 		if (!phandle_is_valid(phandle)) {
-			/* Give up if this is an overlay with external references */
+			 
 			if (dti->dtsflags & DTSF_PLUGIN)
 				break;
 
@@ -1417,7 +1392,7 @@ static void check_property_phandle_args(struct check *c,
 			continue;
 		}
 
-		/* If we have markers, verify the current cell is a phandle */
+		 
 		if (prop->val.markers) {
 			struct marker *m = prop->val.markers;
 			for_each_marker_of_type(m, REF_PHANDLE) {
@@ -1498,10 +1473,7 @@ WARNING_PROPERTY_PHANDLE_CELLS(thermal_sensors, "thermal-sensors", "#thermal-sen
 
 static bool prop_is_gpio(struct property *prop)
 {
-	/*
-	 * *-gpios and *-gpio can appear in property names,
-	 * so skip over any false matches (only one known ATM)
-	 */
+	 
 	if (strends(prop->name, ",nr-gpios"))
 		return false;
 
@@ -1517,7 +1489,7 @@ static void check_gpios_property(struct check *c,
 {
 	struct property *prop;
 
-	/* Skip GPIO hog nodes which have 'gpios' property */
+	 
 	if (get_property(node, "gpio-hog"))
 		return;
 
@@ -1643,7 +1615,7 @@ static void check_interrupt_map(struct check *c,
 
 		phandle = propval_cell_n(irq_map_prop, cell);
 		if (!phandle_is_valid(phandle)) {
-			/* Give up if this is an overlay with external references */
+			 
 			if (!(dti->dtsflags & DTSF_PLUGIN))
 				FAIL_PROP(c, dti, node, irq_map_prop,
 					  "Cell %zu is not a phandle(%d)",
@@ -1704,8 +1676,7 @@ static void check_interrupts_property(struct check *c,
 		if (prop) {
 			phandle = propval_cell(prop);
 			if (!phandle_is_valid(phandle)) {
-				/* Give up if this is an overlay with
-				 * external references */
+				 
 				if (dti->dtsflags & DTSF_PLUGIN)
 					return;
 				FAIL_PROP(c, dti, parent, prop, "Invalid phandle");
@@ -1734,7 +1705,7 @@ static void check_interrupts_property(struct check *c,
 
 	prop = get_property(irq_node, "#interrupt-cells");
 	if (!prop) {
-		/* We warn about that already in another test. */
+		 
 		return;
 	}
 
@@ -1767,7 +1738,7 @@ static void check_graph_nodes(struct check *c, struct dt_info *dti,
 
 		node->bus = &graph_port_bus;
 
-		/* The parent of 'port' nodes can be either 'ports' or a device */
+		 
 		if (!node->parent->bus &&
 		    (streq(node->parent->name, "ports") || get_property(node, "reg")))
 			node->parent->bus = &graph_ports_bus;
@@ -1790,7 +1761,7 @@ static void check_graph_child_address(struct check *c, struct dt_info *dti,
 	for_each_child(node, child) {
 		struct property *prop = get_property(child, "reg");
 
-		/* No error if we have any non-zero unit address */
+		 
 		if (prop && propval_cell(prop) != 0)
 			return;
 
@@ -1859,7 +1830,7 @@ static struct node *get_remote_endpoint(struct check *c, struct dt_info *dti,
 		return NULL;
 
 	phandle = propval_cell(prop);
-	/* Give up if this is an overlay with external references */
+	 
 	if (!phandle_is_valid(phandle))
 		return NULL;
 
@@ -1988,7 +1959,7 @@ static void enable_warning_error(struct check *c, bool warn, bool error)
 {
 	int i;
 
-	/* Raising level, also raise it for prereqs */
+	 
 	if ((warn && !c->warn) || (error && !c->error))
 		for (i = 0; i < c->num_prereqs; i++)
 			enable_warning_error(c->prereq[i], warn, error);
@@ -2001,8 +1972,7 @@ static void disable_warning_error(struct check *c, bool warn, bool error)
 {
 	unsigned int i;
 
-	/* Lowering level, also lower it for things this is the prereq
-	 * for */
+	 
 	if ((warn && c->warn) || (error && c->error)) {
 		for (i = 0; i < ARRAY_SIZE(check_table); i++) {
 			struct check *cc = check_table[i];

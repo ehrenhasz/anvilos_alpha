@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// CS35l41 ALSA HDA audio driver
-//
-// Copyright 2021 Cirrus Logic, Inc.
-//
-// Author: Lucas Tanure <tanureal@opensource.cirrus.com>
+
+
+
+
+
+
+
 
 #include <linux/acpi.h>
 #include <linux/module.h>
@@ -40,62 +40,62 @@ MODULE_PARM_DESC(firmware_autostart, "Allow automatic firmware download on boot"
 			     "(0=Disable, 1=Enable) (default=1); ");
 
 static const struct reg_sequence cs35l41_hda_config[] = {
-	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, // 3072000Hz, BCLK Input, PLL_REFCLK_EN = 1
-	{ CS35L41_DSP_CLK_CTRL,		0x00000003 }, // DSP CLK EN
-	{ CS35L41_GLOBAL_CLK_CTRL,	0x00000003 }, // GLOBAL_FS = 48 kHz
-	{ CS35L41_SP_ENABLES,		0x00010000 }, // ASP_RX1_EN = 1
-	{ CS35L41_SP_RATE_CTRL,		0x00000021 }, // ASP_BCLK_FREQ = 3.072 MHz
-	{ CS35L41_SP_FORMAT,		0x20200200 }, // 32 bits RX/TX slots, I2S, clk consumer
-	{ CS35L41_SP_HIZ_CTRL,		0x00000002 }, // Hi-Z unused
-	{ CS35L41_SP_TX_WL,		0x00000018 }, // 24 cycles/slot
-	{ CS35L41_SP_RX_WL,		0x00000018 }, // 24 cycles/slot
-	{ CS35L41_DAC_PCM1_SRC,		0x00000008 }, // DACPCM1_SRC = ASPRX1
-	{ CS35L41_ASP_TX1_SRC,		0x00000018 }, // ASPTX1 SRC = VMON
-	{ CS35L41_ASP_TX2_SRC,		0x00000019 }, // ASPTX2 SRC = IMON
-	{ CS35L41_ASP_TX3_SRC,		0x00000032 }, // ASPTX3 SRC = ERRVOL
-	{ CS35L41_ASP_TX4_SRC,		0x00000033 }, // ASPTX4 SRC = CLASSH_TGT
-	{ CS35L41_DSP1_RX1_SRC,		0x00000008 }, // DSP1RX1 SRC = ASPRX1
-	{ CS35L41_DSP1_RX2_SRC,		0x00000009 }, // DSP1RX2 SRC = ASPRX2
-	{ CS35L41_DSP1_RX3_SRC,         0x00000018 }, // DSP1RX3 SRC = VMON
-	{ CS35L41_DSP1_RX4_SRC,         0x00000019 }, // DSP1RX4 SRC = IMON
-	{ CS35L41_DSP1_RX5_SRC,         0x00000020 }, // DSP1RX5 SRC = ERRVOL
+	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, 
+	{ CS35L41_DSP_CLK_CTRL,		0x00000003 }, 
+	{ CS35L41_GLOBAL_CLK_CTRL,	0x00000003 }, 
+	{ CS35L41_SP_ENABLES,		0x00010000 }, 
+	{ CS35L41_SP_RATE_CTRL,		0x00000021 }, 
+	{ CS35L41_SP_FORMAT,		0x20200200 }, 
+	{ CS35L41_SP_HIZ_CTRL,		0x00000002 }, 
+	{ CS35L41_SP_TX_WL,		0x00000018 }, 
+	{ CS35L41_SP_RX_WL,		0x00000018 }, 
+	{ CS35L41_DAC_PCM1_SRC,		0x00000008 }, 
+	{ CS35L41_ASP_TX1_SRC,		0x00000018 }, 
+	{ CS35L41_ASP_TX2_SRC,		0x00000019 }, 
+	{ CS35L41_ASP_TX3_SRC,		0x00000032 }, 
+	{ CS35L41_ASP_TX4_SRC,		0x00000033 }, 
+	{ CS35L41_DSP1_RX1_SRC,		0x00000008 }, 
+	{ CS35L41_DSP1_RX2_SRC,		0x00000009 }, 
+	{ CS35L41_DSP1_RX3_SRC,         0x00000018 }, 
+	{ CS35L41_DSP1_RX4_SRC,         0x00000019 }, 
+	{ CS35L41_DSP1_RX5_SRC,         0x00000020 }, 
 };
 
 static const struct reg_sequence cs35l41_hda_config_dsp[] = {
-	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, // 3072000Hz, BCLK Input, PLL_REFCLK_EN = 1
-	{ CS35L41_DSP_CLK_CTRL,		0x00000003 }, // DSP CLK EN
-	{ CS35L41_GLOBAL_CLK_CTRL,	0x00000003 }, // GLOBAL_FS = 48 kHz
-	{ CS35L41_SP_ENABLES,		0x00010001 }, // ASP_RX1_EN = 1, ASP_TX1_EN = 1
-	{ CS35L41_SP_RATE_CTRL,		0x00000021 }, // ASP_BCLK_FREQ = 3.072 MHz
-	{ CS35L41_SP_FORMAT,		0x20200200 }, // 32 bits RX/TX slots, I2S, clk consumer
-	{ CS35L41_SP_HIZ_CTRL,		0x00000003 }, // Hi-Z unused/disabled
-	{ CS35L41_SP_TX_WL,		0x00000018 }, // 24 cycles/slot
-	{ CS35L41_SP_RX_WL,		0x00000018 }, // 24 cycles/slot
-	{ CS35L41_DAC_PCM1_SRC,		0x00000032 }, // DACPCM1_SRC = ERR_VOL
-	{ CS35L41_ASP_TX1_SRC,		0x00000018 }, // ASPTX1 SRC = VMON
-	{ CS35L41_ASP_TX2_SRC,		0x00000019 }, // ASPTX2 SRC = IMON
-	{ CS35L41_ASP_TX3_SRC,		0x00000028 }, // ASPTX3 SRC = VPMON
-	{ CS35L41_ASP_TX4_SRC,		0x00000029 }, // ASPTX4 SRC = VBSTMON
-	{ CS35L41_DSP1_RX1_SRC,		0x00000008 }, // DSP1RX1 SRC = ASPRX1
-	{ CS35L41_DSP1_RX2_SRC,		0x00000008 }, // DSP1RX2 SRC = ASPRX1
-	{ CS35L41_DSP1_RX3_SRC,         0x00000018 }, // DSP1RX3 SRC = VMON
-	{ CS35L41_DSP1_RX4_SRC,         0x00000019 }, // DSP1RX4 SRC = IMON
-	{ CS35L41_DSP1_RX5_SRC,         0x00000029 }, // DSP1RX5 SRC = VBSTMON
+	{ CS35L41_PLL_CLK_CTRL,		0x00000430 }, 
+	{ CS35L41_DSP_CLK_CTRL,		0x00000003 }, 
+	{ CS35L41_GLOBAL_CLK_CTRL,	0x00000003 }, 
+	{ CS35L41_SP_ENABLES,		0x00010001 }, 
+	{ CS35L41_SP_RATE_CTRL,		0x00000021 }, 
+	{ CS35L41_SP_FORMAT,		0x20200200 }, 
+	{ CS35L41_SP_HIZ_CTRL,		0x00000003 }, 
+	{ CS35L41_SP_TX_WL,		0x00000018 }, 
+	{ CS35L41_SP_RX_WL,		0x00000018 }, 
+	{ CS35L41_DAC_PCM1_SRC,		0x00000032 }, 
+	{ CS35L41_ASP_TX1_SRC,		0x00000018 }, 
+	{ CS35L41_ASP_TX2_SRC,		0x00000019 }, 
+	{ CS35L41_ASP_TX3_SRC,		0x00000028 }, 
+	{ CS35L41_ASP_TX4_SRC,		0x00000029 }, 
+	{ CS35L41_DSP1_RX1_SRC,		0x00000008 }, 
+	{ CS35L41_DSP1_RX2_SRC,		0x00000008 }, 
+	{ CS35L41_DSP1_RX3_SRC,         0x00000018 }, 
+	{ CS35L41_DSP1_RX4_SRC,         0x00000019 }, 
+	{ CS35L41_DSP1_RX5_SRC,         0x00000029 }, 
 };
 
 static const struct reg_sequence cs35l41_hda_unmute[] = {
-	{ CS35L41_AMP_DIG_VOL_CTRL,	0x00008000 }, // AMP_HPF_PCM_EN = 1, AMP_VOL_PCM  0.0 dB
-	{ CS35L41_AMP_GAIN_CTRL,	0x00000084 }, // AMP_GAIN_PCM 4.5 dB
+	{ CS35L41_AMP_DIG_VOL_CTRL,	0x00008000 }, 
+	{ CS35L41_AMP_GAIN_CTRL,	0x00000084 }, 
 };
 
 static const struct reg_sequence cs35l41_hda_unmute_dsp[] = {
-	{ CS35L41_AMP_DIG_VOL_CTRL,	0x00008000 }, // AMP_HPF_PCM_EN = 1, AMP_VOL_PCM  0.0 dB
-	{ CS35L41_AMP_GAIN_CTRL,	0x00000233 }, // AMP_GAIN_PCM = 17.5dB AMP_GAIN_PDM = 19.5dB
+	{ CS35L41_AMP_DIG_VOL_CTRL,	0x00008000 }, 
+	{ CS35L41_AMP_GAIN_CTRL,	0x00000233 }, 
 };
 
 static const struct reg_sequence cs35l41_hda_mute[] = {
-	{ CS35L41_AMP_GAIN_CTRL,	0x00000000 }, // AMP_GAIN_PCM 0.5 dB
-	{ CS35L41_AMP_DIG_VOL_CTRL,	0x0000A678 }, // AMP_HPF_PCM_EN = 1, AMP_VOL_PCM Mute
+	{ CS35L41_AMP_GAIN_CTRL,	0x00000000 }, 
+	{ CS35L41_AMP_DIG_VOL_CTRL,	0x0000A678 }, 
 };
 
 static void cs35l41_add_controls(struct cs35l41_hda *cs35l41)
@@ -146,10 +146,7 @@ static int cs35l41_request_firmware_file(struct cs35l41_hda *cs35l41,
 	if (*filename == NULL)
 		return -ENOMEM;
 
-	/*
-	 * Make sure that filename is lower-case and any non alpha-numeric
-	 * characters except full stop and '/' are replaced with hyphens.
-	 */
+	 
 	s = *filename;
 	while (*s) {
 		c = *s;
@@ -178,13 +175,13 @@ static int cs35l41_request_firmware_files_spkid(struct cs35l41_hda *cs35l41,
 {
 	int ret;
 
-	/* try cirrus/part-dspN-fwtype-sub<-spkidN><-ampname>.wmfw */
+	 
 	ret = cs35l41_request_firmware_file(cs35l41, wmfw_firmware, wmfw_filename,
 					    CS35L41_FIRMWARE_ROOT,
 					    cs35l41->acpi_subsystem_id, cs35l41->amp_name,
 					    cs35l41->speaker_id, "wmfw");
 	if (!ret) {
-		/* try cirrus/part-dspN-fwtype-sub<-spkidN><-ampname>.bin */
+		 
 		ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware, coeff_filename,
 						    CS35L41_FIRMWARE_ROOT,
 						    cs35l41->acpi_subsystem_id, cs35l41->amp_name,
@@ -195,12 +192,12 @@ static int cs35l41_request_firmware_files_spkid(struct cs35l41_hda *cs35l41,
 		return 0;
 	}
 
-	/* try cirrus/part-dspN-fwtype-sub<-ampname>.wmfw */
+	 
 	ret = cs35l41_request_firmware_file(cs35l41, wmfw_firmware, wmfw_filename,
 					    CS35L41_FIRMWARE_ROOT, cs35l41->acpi_subsystem_id,
 					    cs35l41->amp_name, -1, "wmfw");
 	if (!ret) {
-		/* try cirrus/part-dspN-fwtype-sub<-spkidN><-ampname>.bin */
+		 
 		ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware, coeff_filename,
 						    CS35L41_FIRMWARE_ROOT,
 						    cs35l41->acpi_subsystem_id, cs35l41->amp_name,
@@ -211,18 +208,18 @@ static int cs35l41_request_firmware_files_spkid(struct cs35l41_hda *cs35l41,
 		return 0;
 	}
 
-	/* try cirrus/part-dspN-fwtype-sub<-spkidN>.wmfw */
+	 
 	ret = cs35l41_request_firmware_file(cs35l41, wmfw_firmware, wmfw_filename,
 					    CS35L41_FIRMWARE_ROOT, cs35l41->acpi_subsystem_id,
 					    NULL, cs35l41->speaker_id, "wmfw");
 	if (!ret) {
-		/* try cirrus/part-dspN-fwtype-sub<-spkidN><-ampname>.bin */
+		 
 		ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware, coeff_filename,
 						    CS35L41_FIRMWARE_ROOT,
 						    cs35l41->acpi_subsystem_id,
 						    cs35l41->amp_name, cs35l41->speaker_id, "bin");
 		if (ret)
-			/* try cirrus/part-dspN-fwtype-sub<-spkidN>.bin */
+			 
 			ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware,
 							    coeff_filename, CS35L41_FIRMWARE_ROOT,
 							    cs35l41->acpi_subsystem_id, NULL,
@@ -233,18 +230,18 @@ static int cs35l41_request_firmware_files_spkid(struct cs35l41_hda *cs35l41,
 		return 0;
 	}
 
-	/* try cirrus/part-dspN-fwtype-sub.wmfw */
+	 
 	ret = cs35l41_request_firmware_file(cs35l41, wmfw_firmware, wmfw_filename,
 					    CS35L41_FIRMWARE_ROOT, cs35l41->acpi_subsystem_id,
 					    NULL, -1, "wmfw");
 	if (!ret) {
-		/* try cirrus/part-dspN-fwtype-sub<-spkidN><-ampname>.bin */
+		 
 		ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware, coeff_filename,
 						    CS35L41_FIRMWARE_ROOT,
 						    cs35l41->acpi_subsystem_id, cs35l41->amp_name,
 						    cs35l41->speaker_id, "bin");
 		if (ret)
-			/* try cirrus/part-dspN-fwtype-sub<-spkidN>.bin */
+			 
 			ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware,
 							    coeff_filename, CS35L41_FIRMWARE_ROOT,
 							    cs35l41->acpi_subsystem_id, NULL,
@@ -268,16 +265,16 @@ static int cs35l41_fallback_firmware_file(struct cs35l41_hda *cs35l41,
 {
 	int ret;
 
-	/* Handle fallback */
+	 
 	dev_warn(cs35l41->dev, "Falling back to default firmware.\n");
 
-	/* fallback try cirrus/part-dspN-fwtype.wmfw */
+	 
 	ret = cs35l41_request_firmware_file(cs35l41, wmfw_firmware, wmfw_filename,
 					    CS35L41_FIRMWARE_ROOT, NULL, NULL, -1, "wmfw");
 	if (ret)
 		goto err;
 
-	/* fallback try cirrus/part-dspN-fwtype.bin */
+	 
 	ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware, coeff_filename,
 					    CS35L41_FIRMWARE_ROOT, NULL, NULL, -1, "bin");
 	if (ret) {
@@ -306,12 +303,12 @@ static int cs35l41_request_firmware_files(struct cs35l41_hda *cs35l41,
 		goto out;
 	}
 
-	/* try cirrus/part-dspN-fwtype-sub<-ampname>.wmfw */
+	 
 	ret = cs35l41_request_firmware_file(cs35l41, wmfw_firmware, wmfw_filename,
 					    CS35L41_FIRMWARE_ROOT, cs35l41->acpi_subsystem_id,
 					    cs35l41->amp_name, -1, "wmfw");
 	if (!ret) {
-		/* try cirrus/part-dspN-fwtype-sub<-ampname>.bin */
+		 
 		ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware, coeff_filename,
 						    CS35L41_FIRMWARE_ROOT,
 						    cs35l41->acpi_subsystem_id, cs35l41->amp_name,
@@ -322,18 +319,18 @@ static int cs35l41_request_firmware_files(struct cs35l41_hda *cs35l41,
 		goto out;
 	}
 
-	/* try cirrus/part-dspN-fwtype-sub.wmfw */
+	 
 	ret = cs35l41_request_firmware_file(cs35l41, wmfw_firmware, wmfw_filename,
 					    CS35L41_FIRMWARE_ROOT, cs35l41->acpi_subsystem_id,
 					    NULL, -1, "wmfw");
 	if (!ret) {
-		/* try cirrus/part-dspN-fwtype-sub<-ampname>.bin */
+		 
 		ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware, coeff_filename,
 						    CS35L41_FIRMWARE_ROOT,
 						    cs35l41->acpi_subsystem_id,
 						    cs35l41->amp_name, -1, "bin");
 		if (ret)
-			/* try cirrus/part-dspN-fwtype-sub.bin */
+			 
 			ret = cs35l41_request_firmware_file(cs35l41, coeff_firmware, coeff_filename,
 							    CS35L41_FIRMWARE_ROOT,
 							    cs35l41->acpi_subsystem_id, NULL, -1,
@@ -344,7 +341,7 @@ static int cs35l41_request_firmware_files(struct cs35l41_hda *cs35l41,
 
 out:
 	if (ret)
-		/* if all attempts at finding firmware fail, try fallback */
+		 
 		goto fallback;
 
 	return 0;
@@ -407,15 +404,15 @@ static int cs35l41_save_calibration(struct cs35l41_hda *cs35l41)
 	u8 *data = NULL;
 	u32 attr;
 
-	/* Get real size of UEFI variable */
+	 
 	status = efi.get_variable(efi_name, &efi_guid, &attr, &data_size, data);
 	if (status == EFI_BUFFER_TOO_SMALL) {
 		ret = -ENODEV;
-		/* Allocate data buffer of data_size bytes */
+		 
 		data = vmalloc(data_size);
 		if (!data)
 			return -ENOMEM;
-		/* Get variable contents into buffer */
+		 
 		status = efi.get_variable(efi_name, &efi_guid, &attr, &data_size, data);
 		if (status == EFI_SUCCESS) {
 			efi_data = (struct cs35l41_amp_efi_data *)data;
@@ -427,7 +424,7 @@ static int cs35l41_save_calibration(struct cs35l41_hda *cs35l41)
 					"Calibration: Ambient=%02x, Status=%02x, R0=%d\n",
 					cl->calAmbient, cl->calStatus, cl->calR);
 
-				/* Calibration can only be applied whilst the DSP is not running */
+				 
 				ret = cs35l41_apply_calibration(cs35l41,
 								cpu_to_be32(cl->calAmbient),
 								cpu_to_be32(cl->calR),
@@ -518,7 +515,7 @@ static void cs35l41_remove_dsp(struct cs35l41_hda *cs35l41)
 	mutex_unlock(&cs35l41->fw_mutex);
 }
 
-/* Protection release cycle to get the speaker out of Safe-Mode */
+ 
 static void cs35l41_error_release(struct device *dev, struct regmap *regmap, unsigned int mask)
 {
 	regmap_write(regmap, CS35L41_PROTECT_REL_ERR_IGN, 0);
@@ -526,7 +523,7 @@ static void cs35l41_error_release(struct device *dev, struct regmap *regmap, uns
 	regmap_clear_bits(regmap, CS35L41_PROTECT_REL_ERR_IGN, mask);
 }
 
-/* Clear all errors to release safe mode. Global Enable must be cleared first. */
+ 
 static void cs35l41_irq_release(struct cs35l41_hda *cs35l41)
 {
 	cs35l41_error_release(cs35l41->dev, cs35l41->regmap, cs35l41->irq_errors);
@@ -633,12 +630,7 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
 
 	switch (action) {
 	case HDA_GEN_PCM_ACT_OPEN:
-		/*
-		 * All amps must be resumed before we can start playing back.
-		 * This ensures, for external boost, that all amps are in AMP_SAFE mode.
-		 * Do this in HDA_GEN_PCM_ACT_OPEN, since this is run prior to any of the
-		 * other actions.
-		 */
+		 
 		pm_runtime_get_sync(dev);
 		break;
 	case HDA_GEN_PCM_ACT_PREPARE:
@@ -661,10 +653,7 @@ static void cs35l41_hda_playback_hook(struct device *dev, int action)
 		}
 		mutex_unlock(&cs35l41->fw_mutex);
 
-		/*
-		 * Playback must be finished for all amps before we start runtime suspend.
-		 * This ensures no amps are playing back when we start putting them to sleep.
-		 */
+		 
 		pm_runtime_mark_last_busy(dev);
 		pm_runtime_put_autosuspend(dev);
 		break;
@@ -723,7 +712,7 @@ static int cs35l41_ready_for_reset(struct cs35l41_hda *cs35l41)
 			goto err;
 		}
 
-		/* Test key needs to be unlocked to allow the OTP settings to re-apply */
+		 
 		cs35l41_test_key_unlock(cs35l41->dev, cs35l41->regmap);
 		ret = regcache_sync(cs35l41->regmap);
 		cs35l41_test_key_lock(cs35l41->dev, cs35l41->regmap);
@@ -755,7 +744,7 @@ static int cs35l41_system_suspend_prep(struct device *dev)
 
 	if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST_NO_VSPK_SWITCH) {
 		dev_err_once(cs35l41->dev, "System Suspend not supported\n");
-		return 0; /* don't block the whole system suspend */
+		return 0;  
 	}
 
 	mutex_lock(&cs35l41->fw_mutex);
@@ -775,7 +764,7 @@ static int cs35l41_system_suspend(struct device *dev)
 
 	if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST_NO_VSPK_SWITCH) {
 		dev_err_once(cs35l41->dev, "System Suspend not supported\n");
-		return 0; /* don't block the whole system suspend */
+		return 0;  
 	}
 
 	mutex_lock(&cs35l41->fw_mutex);
@@ -789,16 +778,13 @@ static int cs35l41_system_suspend(struct device *dev)
 		return ret;
 	}
 
-	/* Shutdown DSP before system suspend */
+	 
 	ret = cs35l41_ready_for_reset(cs35l41);
 
 	if (ret)
 		dev_err(dev, "System Suspend Failed, not ready for Reset: %d\n", ret);
 
-	/*
-	 * Reset GPIO may be shared, so cannot reset here.
-	 * However beyond this point, amps may be powered down.
-	 */
+	 
 	return ret;
 }
 
@@ -811,7 +797,7 @@ static int cs35l41_system_resume(struct device *dev)
 
 	if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST_NO_VSPK_SWITCH) {
 		dev_err_once(cs35l41->dev, "System Resume not supported\n");
-		return 0; /* don't block the whole system resume */
+		return 0;  
 	}
 
 	if (cs35l41->reset_gpio) {
@@ -843,7 +829,7 @@ static int cs35l41_runtime_idle(struct device *dev)
 	struct cs35l41_hda *cs35l41 = dev_get_drvdata(dev);
 
 	if (cs35l41->hw_cfg.bst_type == CS35L41_EXT_BOOST_NO_VSPK_SWITCH)
-		return -EBUSY; /* suspend not supported yet on this model */
+		return -EBUSY;  
 	return 0;
 }
 
@@ -903,7 +889,7 @@ static int cs35l41_runtime_resume(struct device *dev)
 		}
 	}
 
-	/* Test key needs to be unlocked to allow the OTP settings to re-apply */
+	 
 	cs35l41_test_key_unlock(cs35l41->dev, cs35l41->regmap);
 	ret = regcache_sync(cs35l41->regmap);
 	cs35l41_test_key_lock(cs35l41->dev, cs35l41->regmap);
@@ -1001,7 +987,7 @@ static void cs35l41_fw_load_work(struct work_struct *work)
 
 	mutex_lock(&cs35l41->fw_mutex);
 
-	/* Recheck if playback is ongoing, mutex will block playback during firmware loading */
+	 
 	if (cs35l41->playback_started)
 		dev_err(cs35l41->dev, "Cannot Load/Unload firmware during Playback. Retrying...\n");
 	else
@@ -1027,7 +1013,7 @@ static int cs35l41_fw_load_ctl_put(struct snd_kcontrol *kcontrol,
 		return -EBUSY;
 	}
 
-	/* Check if playback is ongoing when initial request is made */
+	 
 	if (cs35l41->playback_started) {
 		dev_err(cs35l41->dev, "Cannot Load/Unload firmware during Playback\n");
 		return -EBUSY;
@@ -1472,9 +1458,7 @@ static int cs35l41_hda_read_acpi(struct cs35l41_hda *cs35l41, const char *hid, i
 		goto err;
 	}
 
-	/* To use the same release code for all laptop variants we can't use devm_ version of
-	 * gpiod_get here, as CLSA010* don't have a fully functional bios with an _DSD node
-	 */
+	 
 	cs35l41->reset_gpio = fwnode_gpiod_get_index(acpi_fwnode_handle(adev), "reset", cs35l41->index,
 						     GPIOD_OUT_LOW, "cs35l41-reset");
 

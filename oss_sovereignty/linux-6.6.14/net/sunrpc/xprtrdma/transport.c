@@ -1,53 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (c) 2014-2017 Oracle.  All rights reserved.
- * Copyright (c) 2003-2007 Network Appliance, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the BSD-type
- * license below:
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- *      Redistributions of source code must retain the above copyright
- *      notice, this list of conditions and the following disclaimer.
- *
- *      Redistributions in binary form must reproduce the above
- *      copyright notice, this list of conditions and the following
- *      disclaimer in the documentation and/or other materials provided
- *      with the distribution.
- *
- *      Neither the name of the Network Appliance, Inc. nor the names of
- *      its contributors may be used to endorse or promote products
- *      derived from this software without specific prior written
- *      permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
- * "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
- * LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR
- * A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT
- * OWNER OR CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL,
- * SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT
- * LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE,
- * DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY
- * THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
- * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
 
-/*
- * transport.c
- *
- * This file contains the top-level implementation of an RPC RDMA
- * transport.
- *
- * Naming convention: functions beginning with xprt_ are part of the
- * transport switch. All others are RPC RDMA internal.
- */
+ 
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -60,9 +14,7 @@
 #include "xprt_rdma.h"
 #include <trace/events/rpcrdma.h>
 
-/*
- * tunables
- */
+ 
 
 static unsigned int xprt_rdma_slot_table_entries = RPCRDMA_DEF_SLOT_TABLE;
 unsigned int xprt_rdma_max_inline_read = RPCRDMA_DEF_INLINE;
@@ -212,14 +164,7 @@ xprt_rdma_free_addresses(struct rpc_xprt *xprt)
 		}
 }
 
-/**
- * xprt_rdma_connect_worker - establish connection in the background
- * @work: worker thread context
- *
- * Requester holds the xprt's send lock to prevent activity on this
- * transport while a fresh connection is being established. RPC tasks
- * sleep on the xprt's pending queue waiting for connect to complete.
- */
+ 
 static void
 xprt_rdma_connect_worker(struct work_struct *work)
 {
@@ -247,15 +192,7 @@ xprt_rdma_connect_worker(struct work_struct *work)
 	current_restore_flags(pflags, PF_MEMALLOC);
 }
 
-/**
- * xprt_rdma_inject_disconnect - inject a connection fault
- * @xprt: transport context
- *
- * If @xprt is connected, disconnect it to simulate spurious
- * connection loss. Caller must hold @xprt's send lock to
- * ensure that data structures and hardware resources are
- * stable during the rdma_disconnect() call.
- */
+ 
 static void
 xprt_rdma_inject_disconnect(struct rpc_xprt *xprt)
 {
@@ -265,13 +202,7 @@ xprt_rdma_inject_disconnect(struct rpc_xprt *xprt)
 	rdma_disconnect(r_xprt->rx_ep->re_id);
 }
 
-/**
- * xprt_rdma_destroy - Full tear down of transport
- * @xprt: doomed transport context
- *
- * Caller guarantees there will be no more calls to us with
- * this @xprt.
- */
+ 
 static void
 xprt_rdma_destroy(struct rpc_xprt *xprt)
 {
@@ -288,17 +219,13 @@ xprt_rdma_destroy(struct rpc_xprt *xprt)
 	module_put(THIS_MODULE);
 }
 
-/* 60 second timeout, no retries */
+ 
 static const struct rpc_timeout xprt_rdma_default_timeout = {
 	.to_initval = 60 * HZ,
 	.to_maxval = 60 * HZ,
 };
 
-/**
- * xprt_setup_rdma - Set up transport to use RDMA
- *
- * @args: rpc transport arguments
- */
+ 
 static struct rpc_xprt *
 xprt_setup_rdma(struct xprt_create *args)
 {
@@ -327,16 +254,13 @@ xprt_setup_rdma(struct xprt_create *args)
 	xprt->reestablish_timeout = RPCRDMA_INIT_REEST_TO;
 	xprt->idle_timeout = RPCRDMA_IDLE_DISC_TO;
 
-	xprt->resvport = 0;		/* privileged port not needed */
+	xprt->resvport = 0;		 
 	xprt->ops = &xprt_rdma_procs;
 
-	/*
-	 * Set up RDMA-specific connect data.
-	 */
+	 
 	sap = args->dstaddr;
 
-	/* Ensure xprt->addr holds valid server TCP (not RDMA)
-	 * address, for any side protocols which peek at it */
+	 
 	xprt->prot = IPPROTO_TCP;
 	xprt->xprt_class = &xprt_rdma;
 	xprt->addrlen = args->addrlen;
@@ -363,15 +287,7 @@ xprt_setup_rdma(struct xprt_create *args)
 	return xprt;
 }
 
-/**
- * xprt_rdma_close - close a transport connection
- * @xprt: transport context
- *
- * Called during autoclose or device removal.
- *
- * Caller holds @xprt's send lock to prevent activity on this
- * transport while the connection is torn down.
- */
+ 
 void xprt_rdma_close(struct rpc_xprt *xprt)
 {
 	struct rpcrdma_xprt *r_xprt = rpcx_to_rdmax(xprt);
@@ -383,13 +299,7 @@ void xprt_rdma_close(struct rpc_xprt *xprt)
 	xprt_disconnect_done(xprt);
 }
 
-/**
- * xprt_rdma_set_port - update server port with rpcbind result
- * @xprt: controlling RPC transport
- * @port: new port value
- *
- * Transport connect status is unchanged.
- */
+ 
 static void
 xprt_rdma_set_port(struct rpc_xprt *xprt, u16 port)
 {
@@ -407,32 +317,14 @@ xprt_rdma_set_port(struct rpc_xprt *xprt, u16 port)
 	xprt->address_strings[RPC_DISPLAY_HEX_PORT] = kstrdup(buf, GFP_KERNEL);
 }
 
-/**
- * xprt_rdma_timer - invoked when an RPC times out
- * @xprt: controlling RPC transport
- * @task: RPC task that timed out
- *
- * Invoked when the transport is still connected, but an RPC
- * retransmit timeout occurs.
- *
- * Since RDMA connections don't have a keep-alive, forcibly
- * disconnect and retry to connect. This drives full
- * detection of the network path, and retransmissions of
- * all pending RPCs.
- */
+ 
 static void
 xprt_rdma_timer(struct rpc_xprt *xprt, struct rpc_task *task)
 {
 	xprt_force_disconnect(xprt);
 }
 
-/**
- * xprt_rdma_set_connect_timeout - set timeouts for establishing a connection
- * @xprt: controlling transport instance
- * @connect_timeout: reconnect timeout after client disconnects
- * @reconnect_timeout: reconnect timeout after server disconnects
- *
- */
+ 
 static void xprt_rdma_set_connect_timeout(struct rpc_xprt *xprt,
 					  unsigned long connect_timeout,
 					  unsigned long reconnect_timeout)
@@ -464,12 +356,7 @@ static void xprt_rdma_set_connect_timeout(struct rpc_xprt *xprt,
 	spin_unlock(&xprt->transport_lock);
 }
 
-/**
- * xprt_rdma_connect - schedule an attempt to reconnect
- * @xprt: transport state
- * @task: RPC scheduler context (unused)
- *
- */
+ 
 static void
 xprt_rdma_connect(struct rpc_xprt *xprt, struct rpc_task *task)
 {
@@ -488,15 +375,7 @@ xprt_rdma_connect(struct rpc_xprt *xprt, struct rpc_task *task)
 	queue_delayed_work(system_long_wq, &r_xprt->rx_connect_worker, delay);
 }
 
-/**
- * xprt_rdma_alloc_slot - allocate an rpc_rqst
- * @xprt: controlling RPC transport
- * @task: RPC task requesting a fresh rpc_rqst
- *
- * tk_status values:
- *	%0 if task->tk_rqstp points to a fresh rpc_rqst
- *	%-EAGAIN if no rpc_rqst is available; queued on backlog
- */
+ 
 static void
 xprt_rdma_alloc_slot(struct rpc_xprt *xprt, struct rpc_task *task)
 {
@@ -515,12 +394,7 @@ out_sleep:
 	xprt_add_backlog(xprt, task);
 }
 
-/**
- * xprt_rdma_free_slot - release an rpc_rqst
- * @xprt: controlling RPC transport
- * @rqst: rpc_rqst to release
- *
- */
+ 
 static void
 xprt_rdma_free_slot(struct rpc_xprt *xprt, struct rpc_rqst *rqst)
 {
@@ -546,15 +420,7 @@ static bool rpcrdma_check_regbuf(struct rpcrdma_xprt *r_xprt,
 	return true;
 }
 
-/**
- * xprt_rdma_allocate - allocate transport resources for an RPC
- * @task: RPC task
- *
- * Return values:
- *        0:	Success; rq_buffer points to RPC buffer to use
- *   ENOMEM:	Out of memory, call again later
- *      EIO:	A permanent error occurred, do not retry
- */
+ 
 static int
 xprt_rdma_allocate(struct rpc_task *task)
 {
@@ -578,12 +444,7 @@ out_fail:
 	return -ENOMEM;
 }
 
-/**
- * xprt_rdma_free - release resources allocated by xprt_rdma_allocate
- * @task: RPC task
- *
- * Caller guarantees rqst->rq_buffer is non-NULL.
- */
+ 
 static void
 xprt_rdma_free(struct rpc_task *task)
 {
@@ -595,29 +456,10 @@ xprt_rdma_free(struct rpc_task *task)
 		frwr_unmap_sync(rpcx_to_rdmax(rqst->rq_xprt), req);
 	}
 
-	/* XXX: If the RPC is completing because of a signal and
-	 * not because a reply was received, we ought to ensure
-	 * that the Send completion has fired, so that memory
-	 * involved with the Send is not still visible to the NIC.
-	 */
+	 
 }
 
-/**
- * xprt_rdma_send_request - marshal and send an RPC request
- * @rqst: RPC message in rq_snd_buf
- *
- * Caller holds the transport's write lock.
- *
- * Returns:
- *	%0 if the RPC message has been sent
- *	%-ENOTCONN if the caller should reconnect and call again
- *	%-EAGAIN if the caller should call again
- *	%-ENOBUFS if the caller should call again after a delay
- *	%-EMSGSIZE if encoding ran out of buffer space. The request
- *		was not sent. Do not try to send this message again.
- *	%-EIO if an I/O error occurred. The request was not sent.
- *		Do not try to send this message again.
- */
+ 
 static int
 xprt_rdma_send_request(struct rpc_rqst *rqst)
 {
@@ -629,7 +471,7 @@ xprt_rdma_send_request(struct rpc_rqst *rqst)
 #if defined(CONFIG_SUNRPC_BACKCHANNEL)
 	if (unlikely(!rqst->rq_buffer))
 		return xprt_rdma_bc_send_reply(rqst);
-#endif	/* CONFIG_SUNRPC_BACKCHANNEL */
+#endif	 
 
 	if (!xprt_connected(xprt))
 		return -ENOTCONN;
@@ -641,7 +483,7 @@ xprt_rdma_send_request(struct rpc_rqst *rqst)
 	if (rc < 0)
 		goto failed_marshal;
 
-	/* Must suppress retransmit to maintain credits */
+	 
 	if (rqst->rq_connect_cookie == xprt->connect_cookie)
 		goto drop_connection;
 	rqst->rq_xtime = ktime_get();
@@ -651,9 +493,7 @@ xprt_rdma_send_request(struct rpc_rqst *rqst)
 
 	rqst->rq_xmit_bytes_sent += rqst->rq_snd_buf.len;
 
-	/* An RPC with no reply will throw off credit accounting,
-	 * so drop the connection to reset the credit grant.
-	 */
+	 
 	if (!rpc_reply_expected(rqst->rq_task))
 		goto drop_connection;
 	return 0;
@@ -676,7 +516,7 @@ void xprt_rdma_print_stats(struct rpc_xprt *xprt, struct seq_file *seq)
 
 	seq_puts(seq, "\txprt:\trdma ");
 	seq_printf(seq, "%u %lu %lu %lu %ld %lu %lu %lu %llu %llu ",
-		   0,	/* need a local port? */
+		   0,	 
 		   xprt->stat.bind_count,
 		   xprt->stat.connect_count,
 		   xprt->stat.connect_time / HZ,
@@ -718,19 +558,17 @@ xprt_rdma_disable_swap(struct rpc_xprt *xprt)
 {
 }
 
-/*
- * Plumbing for rpc transport switch and kernel module
- */
+ 
 
 static const struct rpc_xprt_ops xprt_rdma_procs = {
 	.reserve_xprt		= xprt_reserve_xprt_cong,
-	.release_xprt		= xprt_release_xprt_cong, /* sunrpc/xprt.c */
+	.release_xprt		= xprt_release_xprt_cong,  
 	.alloc_slot		= xprt_rdma_alloc_slot,
 	.free_slot		= xprt_rdma_free_slot,
-	.release_request	= xprt_release_rqst_cong,       /* ditto */
-	.wait_for_reply_request	= xprt_wait_for_reply_request_def, /* ditto */
+	.release_request	= xprt_release_rqst_cong,        
+	.wait_for_reply_request	= xprt_wait_for_reply_request_def,  
 	.timer			= xprt_rdma_timer,
-	.rpcbind		= rpcb_getport_async,	/* sunrpc/rpcb_clnt.c */
+	.rpcbind		= rpcb_getport_async,	 
 	.set_port		= xprt_rdma_set_port,
 	.connect		= xprt_rdma_connect,
 	.buf_alloc		= xprt_rdma_allocate,

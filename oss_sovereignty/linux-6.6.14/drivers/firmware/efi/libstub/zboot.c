@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <linux/efi.h>
 #include <linux/pe.h>
@@ -52,8 +52,8 @@ static unsigned long alloc_preferred_address(unsigned long alloc_size)
 void __weak efi_cache_sync_image(unsigned long image_base,
 				 unsigned long alloc_size)
 {
-	// Provided by the arch to perform the cache maintenance necessary for
-	// executable code loaded into memory to be safe for execution.
+	
+	
 }
 
 struct screen_info *alloc_screen_info(void)
@@ -89,20 +89,20 @@ efi_zboot_entry(efi_handle_t handle, efi_system_table_t *systab)
 
 	efi_info("Decompressing Linux Kernel...\n");
 
-	// SizeOfImage from the compressee's PE/COFF header
+	
 	alloc_size = round_up(get_unaligned_le32(_gzdata_end - 4),
 			      EFI_ALLOC_ALIGN);
 
-	 // If the architecture has a preferred address for the image,
-	 // try that first.
+	 
+	 
 	image_base = alloc_preferred_address(alloc_size);
 	if (image_base == ULONG_MAX) {
 		unsigned long min_kimg_align = efi_get_kimg_min_align();
 		u32 seed = U32_MAX;
 
 		if (!IS_ENABLED(CONFIG_RANDOMIZE_BASE)) {
-			// Setting the random seed to 0x0 is the same as
-			// allocating as low as possible
+			
+			
 			seed = 0;
 		} else if (efi_nokaslr) {
 			efi_info("KASLR disabled on kernel command line\n");
@@ -126,7 +126,7 @@ efi_zboot_entry(efi_handle_t handle, efi_system_table_t *systab)
 		}
 	}
 
-	// Decompress the payload into the newly allocated buffer.
+	
 	ret = __decompress(_gzdata_start, compressed_size, NULL, NULL,
 			   (void *)image_base, alloc_size, NULL, error);
 	if (ret	< 0) {

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2019, Linaro Limited
- */
+
+ 
 
 #include <linux/bitops.h>
 #include <linux/regmap.h>
@@ -9,11 +7,11 @@
 #include <linux/slab.h>
 #include "tsens.h"
 
-/* ----- SROT ------ */
+ 
 #define SROT_HW_VER_OFF	0x0000
 #define SROT_CTRL_OFF		0x0004
 
-/* ----- TM ------ */
+ 
 #define TM_INT_EN_OFF				0x0000
 #define TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF	0x0004
 #define TM_Sn_STATUS_OFF			0x0044
@@ -66,7 +64,7 @@ static int calibrate_v1(struct tsens_priv *priv)
 	return 0;
 }
 
-/* v1.x: msm8956,8976,qcs404,405 */
+ 
 
 static struct tsens_features tsens_v1_feat = {
 	.ver_major	= VER_1_X,
@@ -80,25 +78,25 @@ static struct tsens_features tsens_v1_feat = {
 };
 
 static const struct reg_field tsens_v1_regfields[MAX_REGFIELDS] = {
-	/* ----- SROT ------ */
-	/* VERSION */
+	 
+	 
 	[VER_MAJOR] = REG_FIELD(SROT_HW_VER_OFF, 28, 31),
 	[VER_MINOR] = REG_FIELD(SROT_HW_VER_OFF, 16, 27),
 	[VER_STEP]  = REG_FIELD(SROT_HW_VER_OFF,  0, 15),
-	/* CTRL_OFFSET */
+	 
 	[TSENS_EN]     = REG_FIELD(SROT_CTRL_OFF, 0,  0),
 	[TSENS_SW_RST] = REG_FIELD(SROT_CTRL_OFF, 1,  1),
 	[SENSOR_EN]    = REG_FIELD(SROT_CTRL_OFF, 3, 13),
 
-	/* ----- TM ------ */
-	/* INTERRUPT ENABLE */
+	 
+	 
 	[INT_EN]     = REG_FIELD(TM_INT_EN_OFF, 0, 0),
 
-	/* UPPER/LOWER TEMPERATURE THRESHOLDS */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(LOW_THRESH,    TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF,  0,  9),
 	REG_FIELD_FOR_EACH_SENSOR11(UP_THRESH,     TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF, 10, 19),
 
-	/* UPPER/LOWER INTERRUPTS [CLEAR/STATUS] */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(LOW_INT_CLEAR, TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF, 20, 20),
 	REG_FIELD_FOR_EACH_SENSOR11(UP_INT_CLEAR,  TM_Sn_UPPER_LOWER_STATUS_CTRL_OFF, 21, 21),
 	[LOW_INT_STATUS_0] = REG_FIELD(TM_HIGH_LOW_INT_STATUS_OFF,  0,  0),
@@ -118,19 +116,19 @@ static const struct reg_field tsens_v1_regfields[MAX_REGFIELDS] = {
 	[UP_INT_STATUS_6]  = REG_FIELD(TM_HIGH_LOW_INT_STATUS_OFF, 14, 14),
 	[UP_INT_STATUS_7]  = REG_FIELD(TM_HIGH_LOW_INT_STATUS_OFF, 15, 15),
 
-	/* NO CRITICAL INTERRUPT SUPPORT on v1 */
+	 
 
-	/* Sn_STATUS */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(LAST_TEMP,    TM_Sn_STATUS_OFF,  0,  9),
 	REG_FIELD_FOR_EACH_SENSOR11(VALID,        TM_Sn_STATUS_OFF, 14, 14),
-	/* xxx_STATUS bits: 1 == threshold violated */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(MIN_STATUS,   TM_Sn_STATUS_OFF, 10, 10),
 	REG_FIELD_FOR_EACH_SENSOR11(LOWER_STATUS, TM_Sn_STATUS_OFF, 11, 11),
 	REG_FIELD_FOR_EACH_SENSOR11(UPPER_STATUS, TM_Sn_STATUS_OFF, 12, 12),
-	/* No CRITICAL field on v1.x */
+	 
 	REG_FIELD_FOR_EACH_SENSOR11(MAX_STATUS,   TM_Sn_STATUS_OFF, 13, 13),
 
-	/* TRDY: 1=ready, 0=in progress */
+	 
 	[TRDY] = REG_FIELD(TM_TRDY_OFF, 0, 0),
 };
 

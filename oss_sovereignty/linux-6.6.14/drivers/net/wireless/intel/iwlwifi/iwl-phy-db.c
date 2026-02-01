@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR BSD-3-Clause
-/*
- * Copyright (C) 2005-2014, 2020-2021 Intel Corporation
- * Copyright (C) 2016 Intel Deutschland GmbH
- */
+
+ 
 #include <linux/slab.h>
 #include <linux/string.h>
 #include <linux/export.h>
@@ -18,17 +15,7 @@ struct iwl_phy_db_entry {
 	u8	*data;
 };
 
-/**
- * struct iwl_phy_db - stores phy configuration and calibration data.
- *
- * @cfg: phy configuration.
- * @calib_nch: non channel specific calibration data.
- * @n_group_papd: number of entries in papd channel group.
- * @calib_ch_group_papd: calibration data related to papd channel group.
- * @n_group_txp: number of entries in tx power channel group.
- * @calib_ch_group_txp: calibration data related to tx power chanel group.
- * @trans: transport layer
- */
+ 
 struct iwl_phy_db {
 	struct iwl_phy_db_entry	cfg;
 	struct iwl_phy_db_entry	calib_nch;
@@ -51,7 +38,7 @@ enum iwl_phy_db_section_type {
 
 #define PHY_DB_CMD 0x6c
 
-/* for parsing of tx power channel group data that comes from the firmware*/
+ 
 struct iwl_phy_db_chg_txp {
 	__le32 space;
 	__le16 max_channel_idx;
@@ -70,15 +57,12 @@ struct iwl_phy_db *iwl_phy_db_init(struct iwl_trans *trans)
 	phy_db->n_group_txp = -1;
 	phy_db->n_group_papd = -1;
 
-	/* TODO: add default values of the phy db. */
+	 
 	return phy_db;
 }
 IWL_EXPORT_SYMBOL(iwl_phy_db_init);
 
-/*
- * get phy db section: returns a pointer to a phy db section specified by
- * type and channel group id.
- */
+ 
 static struct iwl_phy_db_entry *
 iwl_phy_db_get_section(struct iwl_phy_db *phy_db,
 		       enum iwl_phy_db_section_type type,
@@ -168,10 +152,7 @@ int iwl_phy_db_set_section(struct iwl_phy_db *phy_db,
 	if (type == IWL_PHY_DB_CALIB_CHG_PAPD) {
 		chg_id = le16_to_cpup((__le16 *)phy_db_notif->data);
 		if (phy_db && !phy_db->calib_ch_group_papd) {
-			/*
-			 * Firmware sends the largest index first, so we can use
-			 * it to know how much we should allocate.
-			 */
+			 
 			phy_db->calib_ch_group_papd = kcalloc(chg_id + 1,
 							      sizeof(struct iwl_phy_db_entry),
 							      GFP_ATOMIC);
@@ -182,10 +163,7 @@ int iwl_phy_db_set_section(struct iwl_phy_db *phy_db,
 	} else if (type == IWL_PHY_DB_CALIB_CHG_TXP) {
 		chg_id = le16_to_cpup((__le16 *)phy_db_notif->data);
 		if (phy_db && !phy_db->calib_ch_group_txp) {
-			/*
-			 * Firmware sends the largest index first, so we can use
-			 * it to know how much we should allocate.
-			 */
+			 
 			phy_db->calib_ch_group_txp = kcalloc(chg_id + 1,
 							     sizeof(struct iwl_phy_db_entry),
 							     GFP_ATOMIC);
@@ -267,10 +245,7 @@ static u16 channel_id_to_txp(struct iwl_phy_db *phy_db, u16 ch_id)
 		txp_chg = (void *)phy_db->calib_ch_group_txp[i].data;
 		if (!txp_chg)
 			return 0xff;
-		/*
-		 * Looking for the first channel group that its max channel is
-		 * higher then wanted channel.
-		 */
+		 
 		if (le16_to_cpu(txp_chg->max_channel_idx) >= ch_index)
 			return i;
 	}
@@ -286,7 +261,7 @@ int iwl_phy_db_get_section_data(struct iwl_phy_db *phy_db,
 	if (!phy_db)
 		return -EINVAL;
 
-	/* find wanted channel group */
+	 
 	if (type == IWL_PHY_DB_CALIB_CHG_PAPD)
 		ch_group_id = channel_id_to_papd(ch_id);
 	else if (type == IWL_PHY_DB_CALIB_CHG_TXP)
@@ -318,11 +293,11 @@ static int iwl_send_phy_db_cmd(struct iwl_phy_db *phy_db, u16 type,
 		       "Sending PHY-DB hcmd of type %d, of length %d\n",
 		       type, length);
 
-	/* Set phy db cmd variables */
+	 
 	phy_db_cmd.type = cpu_to_le16(type);
 	phy_db_cmd.length = cpu_to_le16(length);
 
-	/* Set hcmd variables */
+	 
 	cmd.data[0] = &phy_db_cmd;
 	cmd.len[0] = sizeof(struct iwl_phy_db_cmd);
 	cmd.data[1] = data;
@@ -341,7 +316,7 @@ static int iwl_phy_db_send_all_channel_groups(
 	int err;
 	struct iwl_phy_db_entry *entry;
 
-	/* Send all the  channel specific groups to operational fw */
+	 
 	for (i = 0; i < max_ch_groups; i++) {
 		entry = iwl_phy_db_get_section(phy_db,
 					       type,
@@ -352,7 +327,7 @@ static int iwl_phy_db_send_all_channel_groups(
 		if (!entry->size)
 			continue;
 
-		/* Send the requested PHY DB section */
+		 
 		err = iwl_send_phy_db_cmd(phy_db,
 					  type,
 					  entry->size,
@@ -381,7 +356,7 @@ int iwl_send_phy_db_data(struct iwl_phy_db *phy_db)
 	IWL_DEBUG_INFO(phy_db->trans,
 		       "Sending phy db data and configuration to runtime image\n");
 
-	/* Send PHY DB CFG section */
+	 
 	err = iwl_phy_db_get_section_data(phy_db, IWL_PHY_DB_CFG,
 					  &data, &size, 0);
 	if (err) {
@@ -411,7 +386,7 @@ int iwl_send_phy_db_data(struct iwl_phy_db *phy_db)
 		return err;
 	}
 
-	/* Send all the TXP channel specific data */
+	 
 	err = iwl_phy_db_send_all_channel_groups(phy_db,
 						 IWL_PHY_DB_CALIB_CHG_PAPD,
 						 phy_db->n_group_papd);
@@ -421,7 +396,7 @@ int iwl_send_phy_db_data(struct iwl_phy_db *phy_db)
 		return err;
 	}
 
-	/* Send all the TXP channel specific data */
+	 
 	err = iwl_phy_db_send_all_channel_groups(phy_db,
 						 IWL_PHY_DB_CALIB_CHG_TXP,
 						 phy_db->n_group_txp);

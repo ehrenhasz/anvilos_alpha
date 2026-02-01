@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019~2020 NXP
- */
+
+ 
 
 #include <dt-bindings/pinctrl/pads-imx8dxl.h>
 #include <linux/err.h>
@@ -166,7 +164,7 @@ static const struct imx_pinctrl_soc_info imx8dxl_pinctrl_info = {
 
 static const struct of_device_id imx8dxl_pinctrl_of_match[] = {
 	{ .compatible = "fsl,imx8dxl-iomuxc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, imx8dxl_pinctrl_of_match);
 

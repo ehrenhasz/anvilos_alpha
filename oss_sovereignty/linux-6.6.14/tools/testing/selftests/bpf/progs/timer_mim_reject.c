@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <linux/bpf.h>
 #include <time.h>
 #include <errno.h>
@@ -8,7 +8,7 @@
 
 char _license[] SEC("license") = "GPL";
 struct hmap_elem {
-	int pad; /* unused */
+	int pad;  
 	struct bpf_timer timer;
 };
 
@@ -37,7 +37,7 @@ __u64 err;
 __u64 ok;
 __u64 cnt;
 
-/* callback for inner hash map */
+ 
 static int timer_cb(void *map, int *key, struct hmap_elem *val)
 {
 	return 0;

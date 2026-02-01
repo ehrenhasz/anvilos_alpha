@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012  Google, Inc.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/compiler.h>
@@ -20,7 +18,7 @@
 #include <asm/barrier.h>
 #include "internal.h"
 
-/* This doesn't need to be atomic: speed is chosen over correctness here. */
+ 
 static u64 pstore_ftrace_stamp;
 
 static void notrace pstore_ftrace_call(unsigned long ip,

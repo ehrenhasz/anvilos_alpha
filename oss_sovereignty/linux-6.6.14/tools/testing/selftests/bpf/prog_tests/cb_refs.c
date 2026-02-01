@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "bpf/libbpf.h"
 #include <test_progs.h>
 #include <network_helpers.h>
@@ -13,8 +13,8 @@ struct {
 } cb_refs_tests[] = {
 	{ "underflow_prog", "reference has not been acquired before" },
 	{ "leak_prog", "Unreleased reference" },
-	{ "nested_cb", "Unreleased reference id=4 alloc_insn=2" }, /* alloc_insn=2{4,5} */
-	{ "non_cb_transfer_ref", "Unreleased reference id=4 alloc_insn=1" }, /* alloc_insn=1{1,2} */
+	{ "nested_cb", "Unreleased reference id=4 alloc_insn=2" },  
+	{ "non_cb_transfer_ref", "Unreleased reference id=4 alloc_insn=1" },  
 };
 
 void test_cb_refs(void)

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Converted from tools/testing/selftests/bpf/verifier/stack_ptr.c */
+
+ 
 
 #include <linux/bpf.h>
 #include <bpf/bpf_helpers.h>
@@ -443,7 +443,7 @@ __success __retval(42)
 __naked void array_map_using_bpf_b(void)
 {
 	asm volatile ("					\
-	/* Load pointer to map. */			\
+	 			\
 	r2 = r10;					\
 	r2 += -8;					\
 	r1 = 0;						\
@@ -454,9 +454,9 @@ __naked void array_map_using_bpf_b(void)
 	r0 = 2;						\
 	exit;						\
 l0_%=:	r1 = r0;					\
-	/* Copy R10 to R9. */				\
+	 				\
 	r9 = r10;					\
-	/* Pollute other registers with unaligned values. */\
+	 \
 	r2 = -1;					\
 	r3 = -1;					\
 	r4 = -1;					\
@@ -464,12 +464,12 @@ l0_%=:	r1 = r0;					\
 	r6 = -1;					\
 	r7 = -1;					\
 	r8 = -1;					\
-	/* Store both R9 and R10 with BPF_B and read back. */\
+	 \
 	*(u8*)(r1 + 0) = r10;				\
 	r2 = *(u8*)(r1 + 0);				\
 	*(u8*)(r1 + 0) = r9;				\
 	r3 = *(u8*)(r1 + 0);				\
-	/* Should read back as same value. */		\
+	 		\
 	if r2 == r3 goto l1_%=;				\
 	r0 = 1;						\
 	exit;						\

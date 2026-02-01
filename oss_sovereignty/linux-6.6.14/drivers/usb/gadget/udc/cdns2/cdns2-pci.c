@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Cadence USBHS-DEV controller - PCI Glue driver.
- *
- * Copyright (C) 2023 Cadence.
- *
- * Author: Pawel Laszczak <pawell@cadence.com>
- *
- */
+
+ 
 
 #include <linux/pm_runtime.h>
 #include <linux/slab.h>
@@ -29,7 +22,7 @@ static int cdns2_pci_probe(struct pci_dev *pdev,
 	struct resource *res;
 	int ret;
 
-	/* For GADGET PCI (devfn) function number is 0. */
+	 
 	if (!id || pdev->devfn != PCI_DEV_FN_DEVICE ||
 	    pdev->class != PCI_CLASS_SERIAL_USB_DEVICE)
 		return -EINVAL;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (C) 2016 Felix Fietkau <nbd@nbd.name>
- */
+
+ 
 
 #include <linux/delay.h>
 #include "mt76x2.h"
@@ -164,15 +162,15 @@ mt76x2_power_on_rf(struct mt76x02_dev *dev, int unit)
 {
 	int shift = unit ? 8 : 0;
 
-	/* Enable RF BG */
+	 
 	mt76_set(dev, 0x10130, BIT(0) << shift);
 	udelay(10);
 
-	/* Enable RFDIG LDO/AFE/ABB/ADDA */
+	 
 	mt76_set(dev, 0x10130, (BIT(1) | BIT(3) | BIT(4) | BIT(5)) << shift);
 	udelay(10);
 
-	/* Switch RFDIG power to internal LDO */
+	 
 	mt76_clear(dev, 0x10130, BIT(2) << shift);
 	udelay(10);
 
@@ -186,7 +184,7 @@ mt76x2_power_on(struct mt76x02_dev *dev)
 {
 	u32 val;
 
-	/* Turn on WL MTCMOS */
+	 
 	mt76_set(dev, MT_WLAN_MTC_CTRL, MT_WLAN_MTC_CTRL_MTCMOS_PWR_UP);
 
 	val = MT_WLAN_MTC_CTRL_STATE_UP |
@@ -204,13 +202,13 @@ mt76x2_power_on(struct mt76x02_dev *dev)
 	mt76_set(dev, MT_WLAN_MTC_CTRL, 0xf << 24);
 	mt76_clear(dev, MT_WLAN_MTC_CTRL, 0xfff);
 
-	/* Turn on AD/DA power down */
+	 
 	mt76_clear(dev, 0x11204, BIT(3));
 
-	/* WLAN function enable */
+	 
 	mt76_set(dev, 0x10080, BIT(0));
 
-	/* Release BBP software reset */
+	 
 	mt76_clear(dev, 0x10064, BIT(18));
 
 	mt76x2_power_on_rf(dev, 0);

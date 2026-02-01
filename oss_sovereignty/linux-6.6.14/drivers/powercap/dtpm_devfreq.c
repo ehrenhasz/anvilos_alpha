@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2021 Linaro Limited
- *
- * Author: Daniel Lezcano <daniel.lezcano@linaro.org>
- *
- * The devfreq device combined with the energy model and the load can
- * give an estimation of the power consumption as well as limiting the
- * power.
- *
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
 #include <linux/cpumask.h>

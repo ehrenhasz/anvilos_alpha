@@ -1,16 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * bebob_terratec.c - a part of driver for BeBoB based devices
- *
- * Copyright (c) 2013-2014 Takashi Sakamoto
- */
+
+ 
 
 #include "./bebob.h"
 
 static const enum snd_bebob_clock_type phase88_rack_clk_src_types[] = {
 	SND_BEBOB_CLOCK_TYPE_INTERNAL,
-	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* S/PDIF */
-	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	/* Word Clock */
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	 
+	SND_BEBOB_CLOCK_TYPE_EXTERNAL,	 
 };
 static int
 phase88_rack_clk_src_get(struct snd_bebob *bebob, unsigned int *id)
@@ -40,7 +36,7 @@ static const struct snd_bebob_rate_spec phase_series_rate_spec = {
 	.set	= &snd_bebob_stream_set_rate,
 };
 
-/* PHASE 88 Rack FW */
+ 
 static const struct snd_bebob_clock_spec phase88_rack_clk = {
 	.num	= ARRAY_SIZE(phase88_rack_clk_src_types),
 	.types	= phase88_rack_clk_src_types,

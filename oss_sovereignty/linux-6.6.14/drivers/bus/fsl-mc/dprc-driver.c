@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Freescale data path resource container (DPRC) driver
- *
- * Copyright (C) 2014-2016 Freescale Semiconductor, Inc.
- * Copyright 2019-2020 NXP
- * Author: German Rivera <German.Rivera@freescale.com>
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/slab.h>
@@ -74,27 +67,13 @@ static int __fsl_mc_device_remove(struct device *dev, void *data)
 	return 0;
 }
 
-/**
- * dprc_remove_devices - Removes devices for objects removed from a DPRC
- *
- * @mc_bus_dev: pointer to the fsl-mc device that represents a DPRC object
- * @obj_desc_array: array of object descriptors for child objects currently
- * present in the DPRC in the MC.
- * @num_child_objects_in_mc: number of entries in obj_desc_array
- *
- * Synchronizes the state of the Linux bus driver with the actual state of
- * the MC by removing devices that represent MC objects that have
- * been dynamically removed in the physical DPRC.
- */
+ 
 void dprc_remove_devices(struct fsl_mc_device *mc_bus_dev,
 			 struct fsl_mc_obj_desc *obj_desc_array,
 			 int num_child_objects_in_mc)
 {
 	if (num_child_objects_in_mc != 0) {
-		/*
-		 * Remove child objects that are in the DPRC in Linux,
-		 * but not in the MC:
-		 */
+		 
 		struct fsl_mc_child_objs objs;
 
 		objs.child_count = num_child_objects_in_mc;
@@ -102,10 +81,7 @@ void dprc_remove_devices(struct fsl_mc_device *mc_bus_dev,
 		device_for_each_child(&mc_bus_dev->dev, &objs,
 				      __fsl_mc_device_remove_if_not_in_mc);
 	} else {
-		/*
-		 * There are no child objects for this DPRC in the MC.
-		 * So, remove all the child devices from Linux:
-		 */
+		 
 		device_for_each_child(&mc_bus_dev->dev, NULL,
 				      __fsl_mc_device_remove);
 	}
@@ -131,17 +107,7 @@ struct fsl_mc_device *fsl_mc_device_lookup(struct fsl_mc_obj_desc *obj_desc,
 	return dev ? to_fsl_mc_device(dev) : NULL;
 }
 
-/**
- * check_plugged_state_change - Check change in an MC object's plugged state
- *
- * @mc_dev: pointer to the fsl-mc device for a given MC object
- * @obj_desc: pointer to the MC object's descriptor in the MC
- *
- * If the plugged state has changed from unplugged to plugged, the fsl-mc
- * device is bound to the corresponding device driver.
- * If the plugged state has changed from plugged to unplugged, the fsl-mc
- * device is unbound from the corresponding device driver.
- */
+ 
 static void check_plugged_state_change(struct fsl_mc_device *mc_dev,
 				       struct fsl_mc_obj_desc *obj_desc)
 {
@@ -172,9 +138,7 @@ static void fsl_mc_obj_device_add(struct fsl_mc_device *mc_bus_dev,
 	int error;
 	struct fsl_mc_device *child_dev;
 
-	/*
-	 * Check if device is already known to Linux:
-	 */
+	 
 	child_dev = fsl_mc_device_lookup(obj_desc, mc_bus_dev);
 	if (child_dev) {
 		check_plugged_state_change(child_dev, obj_desc);
@@ -187,25 +151,14 @@ static void fsl_mc_obj_device_add(struct fsl_mc_device *mc_bus_dev,
 	}
 }
 
-/**
- * dprc_add_new_devices - Adds devices to the logical bus for a DPRC
- *
- * @mc_bus_dev: pointer to the fsl-mc device that represents a DPRC object
- * @obj_desc_array: array of device descriptors for child devices currently
- * present in the physical DPRC.
- * @num_child_objects_in_mc: number of entries in obj_desc_array
- *
- * Synchronizes the state of the Linux bus driver with the actual
- * state of the MC by adding objects that have been newly discovered
- * in the physical DPRC.
- */
+ 
 static void dprc_add_new_devices(struct fsl_mc_device *mc_bus_dev,
 				 struct fsl_mc_obj_desc *obj_desc_array,
 				 int num_child_objects_in_mc)
 {
 	int i;
 
-	/* probe the allocable objects first */
+	 
 	for (i = 0; i < num_child_objects_in_mc; i++) {
 		struct fsl_mc_obj_desc *obj_desc = &obj_desc_array[i];
 
@@ -223,25 +176,7 @@ static void dprc_add_new_devices(struct fsl_mc_device *mc_bus_dev,
 	}
 }
 
-/**
- * dprc_scan_objects - Discover objects in a DPRC
- *
- * @mc_bus_dev: pointer to the fsl-mc device that represents a DPRC object
- * @alloc_interrupts: if true the function allocates the interrupt pool,
- * otherwise the interrupt allocation is delayed
- *
- * Detects objects added and removed from a DPRC and synchronizes the
- * state of the Linux bus driver, MC by adding and removing
- * devices accordingly.
- * Two types of devices can be found in a DPRC: allocatable objects (e.g.,
- * dpbp, dpmcp) and non-allocatable devices (e.g., dprc, dpni).
- * All allocatable devices needed to be probed before all non-allocatable
- * devices, to ensure that device drivers for non-allocatable
- * devices can allocate any type of allocatable devices.
- * That is, we need to ensure that the corresponding resource pools are
- * populated before they can get allocation requests from probe callbacks
- * of the device drivers for the non-allocatable devices.
- */
+ 
 int dprc_scan_objects(struct fsl_mc_device *mc_bus_dev,
 		      bool alloc_interrupts)
 {
@@ -272,9 +207,7 @@ int dprc_scan_objects(struct fsl_mc_device *mc_bus_dev,
 		if (!child_obj_desc_array)
 			return -ENOMEM;
 
-		/*
-		 * Discover objects currently present in the physical DPRC:
-		 */
+		 
 		dprc_get_obj_failures = 0;
 		for (i = 0; i < num_child_objects; i++) {
 			struct fsl_mc_obj_desc *obj_desc =
@@ -288,20 +221,14 @@ int dprc_scan_objects(struct fsl_mc_device *mc_bus_dev,
 				dev_err(&mc_bus_dev->dev,
 					"dprc_get_obj(i=%d) failed: %d\n",
 					i, error);
-				/*
-				 * Mark the obj entry as "invalid", by using the
-				 * empty string as obj type:
-				 */
+				 
 				obj_desc->type[0] = '\0';
 				obj_desc->id = error;
 				dprc_get_obj_failures++;
 				continue;
 			}
 
-			/*
-			 * add a quirk for all versions of dpsec < 4.0...none
-			 * are coherent regardless of what the MC reports.
-			 */
+			 
 			if ((strcmp(obj_desc->type, "dpseci") == 0) &&
 			    (obj_desc->ver_major < 4))
 				obj_desc->flags |=
@@ -320,10 +247,7 @@ int dprc_scan_objects(struct fsl_mc_device *mc_bus_dev,
 		}
 	}
 
-	/*
-	 * Allocate IRQ's before binding the scanned devices with their
-	 * respective drivers.
-	 */
+	 
 	if (dev_get_msi_domain(&mc_bus_dev->dev)) {
 		if (irq_count > FSL_MC_IRQ_POOL_MAX_TOTAL_IRQS) {
 			dev_warn(&mc_bus_dev->dev,
@@ -351,16 +275,7 @@ int dprc_scan_objects(struct fsl_mc_device *mc_bus_dev,
 	return 0;
 }
 
-/**
- * dprc_scan_container - Scans a physical DPRC and synchronizes Linux bus state
- *
- * @mc_bus_dev: pointer to the fsl-mc device that represents a DPRC object
- * @alloc_interrupts: if true the function allocates the interrupt pool,
- *                    otherwise the interrupt allocation is delayed
- * Scans the physical DPRC and synchronizes the state of the Linux
- * bus driver with the actual state of the MC by adding and removing
- * devices as appropriate.
- */
+ 
 int dprc_scan_container(struct fsl_mc_device *mc_bus_dev,
 			bool alloc_interrupts)
 {
@@ -369,9 +284,7 @@ int dprc_scan_container(struct fsl_mc_device *mc_bus_dev,
 
 	fsl_mc_init_all_resource_pools(mc_bus_dev);
 
-	/*
-	 * Discover objects in the DPRC:
-	 */
+	 
 	mutex_lock(&mc_bus->scan_mutex);
 	error = dprc_scan_objects(mc_bus_dev, alloc_interrupts);
 	mutex_unlock(&mc_bus->scan_mutex);
@@ -380,23 +293,13 @@ int dprc_scan_container(struct fsl_mc_device *mc_bus_dev,
 }
 EXPORT_SYMBOL_GPL(dprc_scan_container);
 
-/**
- * dprc_irq0_handler - Regular ISR for DPRC interrupt 0
- *
- * @irq_num: IRQ number of the interrupt being handled
- * @arg: Pointer to device structure
- */
+ 
 static irqreturn_t dprc_irq0_handler(int irq_num, void *arg)
 {
 	return IRQ_WAKE_THREAD;
 }
 
-/**
- * dprc_irq0_handler_thread - Handler thread function for DPRC interrupt 0
- *
- * @irq_num: IRQ number of the interrupt being handled
- * @arg: Pointer to device structure
- */
+ 
 static irqreturn_t dprc_irq0_handler_thread(int irq_num, void *arg)
 {
 	int error;
@@ -442,12 +345,7 @@ static irqreturn_t dprc_irq0_handler_thread(int irq_num, void *arg)
 
 		error = dprc_scan_objects(mc_dev, true);
 		if (error < 0) {
-			/*
-			 * If the error is -ENXIO, we ignore it, as it indicates
-			 * that the object scan was aborted, as we detected that
-			 * an object was removed from the DPRC in the MC, while
-			 * we were scanning the DPRC.
-			 */
+			 
 			if (error != -ENXIO) {
 				dev_err(dev, "dprc_scan_objects() failed: %d\n",
 					error);
@@ -462,18 +360,14 @@ out:
 	return IRQ_HANDLED;
 }
 
-/*
- * Disable and clear interrupt for a given DPRC object
- */
+ 
 int disable_dprc_irq(struct fsl_mc_device *mc_dev)
 {
 	struct fsl_mc_bus *mc_bus = to_fsl_mc_bus(mc_dev);
 	int error;
 	struct fsl_mc_io *mc_io = mc_dev->mc_io;
 
-	/*
-	 * Disable generation of interrupt, while we configure it:
-	 */
+	 
 	error = dprc_set_irq_enable(mc_io, 0, mc_dev->mc_handle, 0, 0);
 	if (error < 0) {
 		dev_err(&mc_dev->dev,
@@ -482,9 +376,7 @@ int disable_dprc_irq(struct fsl_mc_device *mc_dev)
 		return error;
 	}
 
-	/*
-	 * Disable all interrupt causes for the interrupt:
-	 */
+	 
 	error = dprc_set_irq_mask(mc_io, 0, mc_dev->mc_handle, 0, 0x0);
 	if (error < 0) {
 		dev_err(&mc_dev->dev,
@@ -493,9 +385,7 @@ int disable_dprc_irq(struct fsl_mc_device *mc_dev)
 		return error;
 	}
 
-	/*
-	 * Clear any leftover interrupts:
-	 */
+	 
 	error = dprc_clear_irq_status(mc_io, 0, mc_dev->mc_handle, 0, ~0x0U);
 	if (error < 0) {
 		dev_err(&mc_dev->dev,
@@ -521,10 +411,7 @@ static int register_dprc_irq_handler(struct fsl_mc_device *mc_dev)
 	int error;
 	struct fsl_mc_device_irq *irq = mc_dev->irqs[0];
 
-	/*
-	 * NOTE: devm_request_threaded_irq() invokes the device-specific
-	 * function that programs the MSI physically in the device
-	 */
+	 
 	error = devm_request_threaded_irq(&mc_dev->dev,
 					  irq->virq,
 					  dprc_irq0_handler,
@@ -547,9 +434,7 @@ int enable_dprc_irq(struct fsl_mc_device *mc_dev)
 	struct fsl_mc_bus *mc_bus = to_fsl_mc_bus(mc_dev);
 	int error;
 
-	/*
-	 * Enable all interrupt causes for the interrupt:
-	 */
+	 
 	error = dprc_set_irq_mask(mc_dev->mc_io, 0, mc_dev->mc_handle, 0,
 				  ~0x0u);
 	if (error < 0) {
@@ -560,9 +445,7 @@ int enable_dprc_irq(struct fsl_mc_device *mc_dev)
 		return error;
 	}
 
-	/*
-	 * Enable generation of the interrupt:
-	 */
+	 
 	error = dprc_set_irq_enable(mc_dev->mc_io, 0, mc_dev->mc_handle, 0, 1);
 	if (error < 0) {
 		dev_err(&mc_dev->dev,
@@ -577,9 +460,7 @@ int enable_dprc_irq(struct fsl_mc_device *mc_dev)
 	return 0;
 }
 
-/*
- * Setup interrupt for a given DPRC device
- */
+ 
 static int dprc_setup_irq(struct fsl_mc_device *mc_dev)
 {
 	int error;
@@ -607,14 +488,7 @@ error_free_irqs:
 	return error;
 }
 
-/**
- * dprc_setup - opens and creates a mc_io for DPRC
- *
- * @mc_dev: Pointer to fsl-mc device representing a DPRC
- *
- * It opens the physical DPRC in the MC.
- * It configures the DPRC portal used to communicate with MC
- */
+ 
 
 int dprc_setup(struct fsl_mc_device *mc_dev)
 {
@@ -635,9 +509,7 @@ int dprc_setup(struct fsl_mc_device *mc_dev)
 		return -EINVAL;
 
 	if (!mc_dev->mc_io) {
-		/*
-		 * This is a child DPRC:
-		 */
+		 
 		if (!dev_is_fsl_mc(parent_dev))
 			return -EINVAL;
 
@@ -725,16 +597,7 @@ error_cleanup_msi_domain:
 }
 EXPORT_SYMBOL_GPL(dprc_setup);
 
-/**
- * dprc_probe - callback invoked when a DPRC is being bound to this driver
- *
- * @mc_dev: Pointer to fsl-mc device representing a DPRC
- *
- * It opens the physical DPRC in the MC.
- * It scans the DPRC to discover the MC objects contained in it.
- * It creates the interrupt pool for the MC bus associated with the DPRC.
- * It configures the interrupts for the DPRC device itself.
- */
+ 
 static int dprc_probe(struct fsl_mc_device *mc_dev)
 {
 	int error;
@@ -743,16 +606,12 @@ static int dprc_probe(struct fsl_mc_device *mc_dev)
 	if (error < 0)
 		return error;
 
-	/*
-	 * Discover MC objects in DPRC object:
-	 */
+	 
 	error = dprc_scan_container(mc_dev, true);
 	if (error < 0)
 		goto dprc_cleanup;
 
-	/*
-	 * Configure interrupt for the DPRC object associated with this MC bus:
-	 */
+	 
 	error = dprc_setup_irq(mc_dev);
 	if (error < 0)
 		goto scan_cleanup;
@@ -767,9 +626,7 @@ dprc_cleanup:
 	return error;
 }
 
-/*
- * Tear down interrupt for a given DPRC object
- */
+ 
 static void dprc_teardown_irq(struct fsl_mc_device *mc_dev)
 {
 	struct fsl_mc_device_irq *irq = mc_dev->irqs[0];
@@ -781,23 +638,14 @@ static void dprc_teardown_irq(struct fsl_mc_device *mc_dev)
 	fsl_mc_free_irqs(mc_dev);
 }
 
-/**
- * dprc_cleanup - function that cleanups a DPRC
- *
- * @mc_dev: Pointer to fsl-mc device representing the DPRC
- *
- * It closes the DPRC device in the MC.
- * It destroys the interrupt pool associated with this MC bus.
- */
+ 
 
 int dprc_cleanup(struct fsl_mc_device *mc_dev)
 {
 	struct fsl_mc_bus *mc_bus = to_fsl_mc_bus(mc_dev);
 	int error;
 
-	/* this function should be called only for DPRCs, it
-	 * is an error to call it for regular objects
-	 */
+	 
 	if (!is_fsl_mc_bus_dprc(mc_dev))
 		return -EINVAL;
 
@@ -808,9 +656,7 @@ int dprc_cleanup(struct fsl_mc_device *mc_dev)
 
 	fsl_mc_cleanup_all_resource_pools(mc_dev);
 
-	/* if this step fails we cannot go further with cleanup as there is no way of
-	 * communicating with the firmware
-	 */
+	 
 	if (!mc_dev->mc_io) {
 		dev_err(&mc_dev->dev, "mc_io is NULL, tear down cannot be performed in firmware\n");
 		return -EINVAL;
@@ -831,16 +677,7 @@ int dprc_cleanup(struct fsl_mc_device *mc_dev)
 }
 EXPORT_SYMBOL_GPL(dprc_cleanup);
 
-/**
- * dprc_remove - callback invoked when a DPRC is being unbound from this driver
- *
- * @mc_dev: Pointer to fsl-mc device representing the DPRC
- *
- * It removes the DPRC's child objects from Linux (not from the MC) and
- * closes the DPRC device in the MC.
- * It tears down the interrupts that were configured for the DPRC device.
- * It destroys the interrupt pool associated with this MC bus.
- */
+ 
 static void dprc_remove(struct fsl_mc_device *mc_dev)
 {
 	struct fsl_mc_bus *mc_bus = to_fsl_mc_bus(mc_dev);

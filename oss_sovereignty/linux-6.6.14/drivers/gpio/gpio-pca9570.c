@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for PCA9570 I2C GPO expander
- *
- * Copyright (C) 2020 Sungbo Eo <mans0n@gorani.run>
- *
- * Based on gpio-tpic2810.c
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
- *	Andrew F. Davis <afd@ti.com>
- */
+
+ 
 
 #include <linux/gpio/driver.h>
 #include <linux/i2c.h>
@@ -17,23 +9,13 @@
 
 #define SLG7XL45106_GPO_REG	0xDB
 
-/**
- * struct pca9570_chip_data - GPIO platformdata
- * @ngpio: no of gpios
- * @command: Command to be sent
- */
+ 
 struct pca9570_chip_data {
 	u16 ngpio;
 	u32 command;
 };
 
-/**
- * struct pca9570 - GPIO driver data
- * @chip: GPIO controller chip
- * @chip_data: GPIO controller platform data
- * @lock: Protects write sequences
- * @out: Buffer for device register
- */
+ 
 struct pca9570 {
 	struct gpio_chip chip;
 	const struct pca9570_chip_data *chip_data;
@@ -71,7 +53,7 @@ static int pca9570_write(struct pca9570 *gpio, u8 value)
 static int pca9570_get_direction(struct gpio_chip *chip,
 				 unsigned offset)
 {
-	/* This device always output */
+	 
 	return GPIO_LINE_DIRECTION_OUT;
 }
 
@@ -133,7 +115,7 @@ static int pca9570_probe(struct i2c_client *client)
 
 	mutex_init(&gpio->lock);
 
-	/* Read the current output level */
+	 
 	pca9570_read(gpio, &gpio->out);
 
 	i2c_set_clientdata(client, gpio);
@@ -158,7 +140,7 @@ static const struct i2c_device_id pca9570_id_table[] = {
 	{ "pca9570", (kernel_ulong_t)&pca9570_gpio},
 	{ "pca9571", (kernel_ulong_t)&pca9571_gpio },
 	{ "slg7xl45106", (kernel_ulong_t)&slg7xl45106_gpio },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(i2c, pca9570_id_table);
 
@@ -166,7 +148,7 @@ static const struct of_device_id pca9570_of_match_table[] = {
 	{ .compatible = "dlg,slg7xl45106", .data = &slg7xl45106_gpio},
 	{ .compatible = "nxp,pca9570", .data = &pca9570_gpio },
 	{ .compatible = "nxp,pca9571", .data = &pca9571_gpio },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, pca9570_of_match_table);
 

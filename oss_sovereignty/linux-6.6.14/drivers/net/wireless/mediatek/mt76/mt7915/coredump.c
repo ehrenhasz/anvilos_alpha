@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: ISC
-/* Copyright (C) 2022 MediaTek Inc. */
+
+ 
 
 #include <linux/devcoredump.h>
 #include <linux/kernel.h>
@@ -120,9 +120,9 @@ static int mt7915_coredump_get_mem_size(struct mt7915_dev *dev)
 		mem_region++;
 	}
 
-	/* reserve space for the headers */
+	 
 	size += num * sizeof(struct mt7915_mem_hdr);
-	/* make sure it is aligned 4 bytes for debug message print out */
+	 
 	size = ALIGN(size, 4);
 
 	return size;
@@ -152,7 +152,7 @@ mt7915_coredump_fw_state(struct mt7915_dev *dev, struct mt7915_coredump *dump,
 		(u32)mt76_get_field(dev, MT_FW_EXCEPT_COUNT, GENMASK(15, 8)) :
 		(u32)mt76_get_field(dev, MT_FW_EXCEPT_COUNT, GENMASK(7, 0));
 
-	/* normal mode: driver can manually trigger assert for detail info */
+	 
 	if (!count)
 		strscpy(dump->fw_state, "normal", sizeof(dump->fw_state));
 	else if (state > 1 && (count == 1) && type == 5)
@@ -169,7 +169,7 @@ mt7915_coredump_fw_trace(struct mt7915_dev *dev, struct mt7915_coredump *dump,
 {
 	u32 n, irq, sch, base = MT_FW_EINT_INFO;
 
-	/* trap or run? */
+	 
 	dump->last_msg_id = mt76_rr(dev, MT_FW_LAST_MSG_ID);
 
 	n = is_mt7915(&dev->mt76) ?
@@ -190,7 +190,7 @@ mt7915_coredump_fw_trace(struct mt7915_dev *dev, struct mt7915_coredump *dump,
 	if (exception) {
 		u32 i, y;
 
-		/* sched trace */
+		 
 		n = is_mt7915(&dev->mt76) ?
 		    FIELD_GET(GENMASK(15, 8), sch) : FIELD_GET(GENMASK(7, 0), sch);
 		n = n > 60 ? 60 : n;
@@ -204,7 +204,7 @@ mt7915_coredump_fw_trace(struct mt7915_dev *dev, struct mt7915_coredump *dump,
 			y = y >= n ? 0 : y;
 		}
 
-		/* irq trace */
+		 
 		n = is_mt7915(&dev->mt76) ?
 		    FIELD_GET(GENMASK(15, 8), irq) : FIELD_GET(GENMASK(7, 0), irq);
 		n = n > 60 ? 60 : n;
@@ -226,7 +226,7 @@ mt7915_coredump_fw_stack(struct mt7915_dev *dev, struct mt7915_coredump *dump,
 {
 	u32 oldest, i, idx;
 
-	/* stop call stack record */
+	 
 	if (!exception)
 		mt76_clear(dev, 0x89050200, BIT(0));
 
@@ -236,7 +236,7 @@ mt7915_coredump_fw_stack(struct mt7915_dev *dev, struct mt7915_coredump *dump,
 		dump->call_stack[i] = mt76_rr(dev, 0x89050204 + idx * 4);
 	}
 
-	/* start call stack record */
+	 
 	if (!exception)
 		mt76_set(dev, 0x89050200, BIT(0));
 }
@@ -272,7 +272,7 @@ mt7915_coredump_fw_context(struct mt7915_dev *dev, struct mt7915_coredump *dump)
 
 	count = mt76_rr(dev, MT_FW_CIRQ_COUNT);
 
-	/* current context */
+	 
 	if (!count) {
 		strscpy(dump->fw_context, "(context) interrupt",
 			sizeof(dump->fw_context));
@@ -315,9 +315,7 @@ static struct mt7915_coredump *mt7915_coredump_build(struct mt7915_dev *dev)
 
 	sofar += hdr_len;
 
-	/* this is going to get big when we start dumping memory and such,
-	 * so go ahead and use vmalloc.
-	 */
+	 
 	buf = vzalloc(len);
 	if (!buf)
 		return NULL;
@@ -327,7 +325,7 @@ static struct mt7915_coredump *mt7915_coredump_build(struct mt7915_dev *dev)
 	dump = (struct mt7915_coredump *)(buf);
 	dump->len = len;
 
-	/* plain text */
+	 
 	strscpy(dump->magic, "mt76-crash-dump", sizeof(dump->magic));
 	strscpy(dump->kernel, init_utsname()->release, sizeof(dump->kernel));
 	strscpy(dump->fw_ver, dev->mt76.hw->wiphy->fw_version,
@@ -344,7 +342,7 @@ static struct mt7915_coredump *mt7915_coredump_build(struct mt7915_dev *dev)
 	mt7915_coredump_fw_context(dev, dump);
 	mt7915_coredump_fw_stack(dev, dump, exception);
 
-	/* gather memory content */
+	 
 	dump_mem = (struct mt7915_coredump_mem *)(buf + sofar);
 	dump_mem->len = crash_data->memdump_buf_len;
 	if (coredump_memdump && crash_data->memdump_buf_len)
@@ -384,7 +382,7 @@ int mt7915_coredump_register(struct mt7915_dev *dev)
 	if (coredump_memdump) {
 		crash_data->memdump_buf_len = mt7915_coredump_get_mem_size(dev);
 		if (!crash_data->memdump_buf_len)
-			/* no memory content */
+			 
 			return 0;
 
 		crash_data->memdump_buf = vzalloc(crash_data->memdump_buf_len);

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: ISC
-/*
- * Copyright (c) 2014 Broadcom Corporation
- */
+
+ 
 
 #include <linux/netdevice.h>
 #include <linux/module.h>
@@ -18,9 +16,7 @@
 
 #define BRCMF_FW_UNSUPPORTED	23
 
-/*
- * expand feature list to array of feature strings.
- */
+ 
 #define BRCMF_FEAT_DEF(_f) \
 	#_f,
 static const char *brcmf_feat_names[] = {
@@ -46,9 +42,7 @@ static const struct brcmf_feat_fwcap brcmf_fwcap_map[] = {
 };
 
 #ifdef DEBUG
-/*
- * expand quirk list to array of quirk strings.
- */
+ 
 #define BRCMF_QUIRK_DEF(_q) \
 	#_q,
 static const char * const brcmf_quirk_names[] = {
@@ -56,12 +50,7 @@ static const char * const brcmf_quirk_names[] = {
 };
 #undef BRCMF_QUIRK_DEF
 
-/**
- * brcmf_feat_debugfs_read() - expose feature info to debugfs.
- *
- * @seq: sequence for debugfs entry.
- * @data: raw data pointer.
- */
+ 
 static int brcmf_feat_debugfs_read(struct seq_file *seq, void *data)
 {
 	struct brcmf_bus *bus_if = dev_get_drvdata(seq->private);
@@ -84,7 +73,7 @@ static int brcmf_feat_debugfs_read(struct seq_file *seq, void *data)
 {
 	return 0;
 }
-#endif /* DEBUG */
+#endif  
 
 struct brcmf_feat_fwfeat {
 	const char * const fwid;
@@ -92,13 +81,13 @@ struct brcmf_feat_fwfeat {
 };
 
 static const struct brcmf_feat_fwfeat brcmf_feat_fwfeat_map[] = {
-	/* brcmfmac43602-pcie.ap.bin from linux-firmware.git commit ea1178515b88 */
+	 
 	{ "01-6cb8e269", BIT(BRCMF_FEAT_MONITOR) },
-	/* brcmfmac4366b-pcie.bin from linux-firmware.git commit 52442afee990 */
+	 
 	{ "01-c47a91a4", BIT(BRCMF_FEAT_MONITOR) },
-	/* brcmfmac4366b-pcie.bin from linux-firmware.git commit 211de1679a68 */
+	 
 	{ "01-801fb449", BIT(BRCMF_FEAT_MONITOR_FMT_HW_RX_HDR) },
-	/* brcmfmac4366c-pcie.bin from linux-firmware.git commit 211de1679a68 */
+	 
 	{ "01-d2cbb8fd", BIT(BRCMF_FEAT_MONITOR_FMT_HW_RX_HDR) },
 };
 
@@ -173,20 +162,14 @@ static void brcmf_feat_wlc_version_overrides(struct brcmf_pub *drv)
 	drv->feat_flags |= feat_flags;
 }
 
-/**
- * brcmf_feat_iovar_int_get() - determine feature through iovar query.
- *
- * @ifp: interface to query.
- * @id: feature id.
- * @name: iovar name.
- */
+ 
 static void brcmf_feat_iovar_int_get(struct brcmf_if *ifp,
 				     enum brcmf_feat_id id, char *name)
 {
 	u32 data;
 	int err;
 
-	/* we need to know firmware error */
+	 
 	ifp->fwil_fwerr = true;
 
 	err = brcmf_fil_iovar_int_get(ifp, name, &data);
@@ -207,7 +190,7 @@ static void brcmf_feat_iovar_data_set(struct brcmf_if *ifp,
 {
 	int err;
 
-	/* we need to know firmware error */
+	 
 	ifp->fwil_fwerr = true;
 
 	err = brcmf_fil_iovar_data_set(ifp, name, data, len);
@@ -248,12 +231,7 @@ static void brcmf_feat_firmware_capabilities(struct brcmf_if *ifp)
 	}
 }
 
-/**
- * brcmf_feat_fwcap_debugfs_read() - expose firmware capabilities to debugfs.
- *
- * @seq: sequence for debugfs entry.
- * @data: raw data pointer.
- */
+ 
 static int brcmf_feat_fwcap_debugfs_read(struct seq_file *seq, void *data)
 {
 	struct brcmf_bus *bus_if = dev_get_drvdata(seq->private);
@@ -269,15 +247,15 @@ static int brcmf_feat_fwcap_debugfs_read(struct seq_file *seq, void *data)
 		return err;
 	}
 
-	/* Put every capability in a new line */
+	 
 	for (tmp = caps; *tmp; tmp++) {
 		if (*tmp == ' ')
 			*tmp = '\n';
 	}
 
-	/* Usually there is a space at the end of capabilities string */
+	 
 	seq_printf(seq, "%s", caps);
-	/* So make sure we don't print two line breaks */
+	 
 	if (tmp > caps && *(tmp - 1) != '\n')
 		seq_printf(seq, "\n");
 
@@ -316,7 +294,7 @@ void brcmf_feat_attach(struct brcmf_pub *drvr)
 					BIT(BRCMF_FEAT_WOWL_GTK);
 		}
 	}
-	/* MBSS does not work for all chips */
+	 
 	switch (drvr->bus_if->chip) {
 	case BRCM_CC_4330_CHIP_ID:
 	case BRCM_CC_43362_CHIP_ID:
@@ -349,7 +327,7 @@ void brcmf_feat_attach(struct brcmf_pub *drvr)
 	brcmf_feat_wlc_version_overrides(drvr);
 	brcmf_feat_firmware_overrides(drvr);
 
-	/* set chip related quirks */
+	 
 	switch (drvr->bus_if->chip) {
 	case BRCM_CC_43236_CHIP_ID:
 		drvr->chip_quirks |= BIT(BRCMF_FEAT_QUIRK_AUTO_AUTH);
@@ -358,7 +336,7 @@ void brcmf_feat_attach(struct brcmf_pub *drvr)
 		drvr->chip_quirks |= BIT(BRCMF_FEAT_QUIRK_NEED_MPC);
 		break;
 	default:
-		/* no quirks */
+		 
 		break;
 	}
 }

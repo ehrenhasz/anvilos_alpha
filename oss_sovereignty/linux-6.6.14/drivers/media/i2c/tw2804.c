@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2005-2006 Micronas USA Inc.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -41,7 +39,7 @@ static const u8 global_registers[] = {
 	0x3e, 0x82,
 	0x3f, 0x82,
 	0x78, 0x00,
-	0xff, 0xff, /* Terminator (reg 0xff does not exist) */
+	0xff, 0xff,  
 };
 
 static const u8 channel_registers[] = {
@@ -100,7 +98,7 @@ static const u8 channel_registers[] = {
 	0x35, 0x00,
 	0x36, 0x00,
 	0x37, 0x00,
-	0xff, 0xff, /* Terminator (reg 0xff does not exist) */
+	0xff, 0xff,  
 };
 
 static int write_reg(struct i2c_client *client, u8 reg, u8 value, u8 channel)
@@ -148,19 +146,7 @@ static int tw2804_log_status(struct v4l2_subdev *sd)
 	return v4l2_ctrl_subdev_log_status(sd);
 }
 
-/*
- * These volatile controls are needed because all four channels share
- * these controls. So a change made to them through one channel would
- * require another channel to be updated.
- *
- * Normally this would have been done in a different way, but since the one
- * board that uses this driver sees this single chip as if it was on four
- * different i2c adapters (each adapter belonging to a separate instance of
- * the same USB driver) there is no reliable method that I have found to let
- * the instances know about each other.
- *
- * So implementing these global registers as volatile is the best we can do.
- */
+ 
 static int tw2804_g_volatile_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct tw2804 *state = to_state_from_ctrl(ctrl);

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-// IOMapped CAN bus driver for Bosch M_CAN controller
-// Copyright (C) 2014 Freescale Semiconductor, Inc.
-//	Dong Aisheng <b29396@freescale.com>
-//
-// Copyright (C) 2018-19 Texas Instruments Incorporated - http://www.ti.com/
+
+
+
+
+
+
 
 #include <linux/hrtimer.h>
 #include <linux/phy/phy.h>
@@ -115,7 +115,7 @@ static int m_can_plat_probe(struct platform_device *pdev)
 			     HRTIMER_MODE_REL_PINNED);
 	}
 
-	/* message ram could be shared */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "message_ram");
 	if (!res) {
 		ret = -ENODEV;
@@ -223,7 +223,7 @@ static const struct dev_pm_ops m_can_pmops = {
 
 static const struct of_device_id m_can_of_table[] = {
 	{ .compatible = "bosch,m_can", .data = NULL },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, m_can_of_table);
 

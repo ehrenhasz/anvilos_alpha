@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm A53 PLL driver
- *
- * Copyright (c) 2017, Linaro Limited
- * Author: Georgi Djakov <georgi.djakov@linaro.org>
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/clk-provider.h>
@@ -71,7 +66,7 @@ static struct pll_freq_tbl *qcom_a53pll_get_freq_tbl(struct device *dev)
 		if (IS_ERR(opp))
 			return NULL;
 
-		/* Skip the freq that is not divisible */
+		 
 		if (freq % xo_freq)
 			continue;
 
@@ -117,11 +112,11 @@ static int qcom_a53pll_probe(struct platform_device *pdev)
 
 	pll->freq_tbl = qcom_a53pll_get_freq_tbl(dev);
 	if (!pll->freq_tbl) {
-		/* Fall on a53pll_freq if no freq_tbl is found from OPP */
+		 
 		pll->freq_tbl = a53pll_freq;
 	}
 
-	/* Use an unique name by appending @unit-address */
+	 
 	init.name = devm_kasprintf(dev, GFP_KERNEL, "a53pll%s",
 				   strchrnul(np->full_name, '@'));
 	if (!init.name)

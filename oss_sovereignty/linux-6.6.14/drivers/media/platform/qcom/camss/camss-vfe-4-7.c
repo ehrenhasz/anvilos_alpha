@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * camss-vfe-4-7.c
- *
- * Qualcomm MSM Camera Subsystem - VFE (Video Front End) Module v4.7
- *
- * Copyright (c) 2013-2015, The Linux Foundation. All rights reserved.
- * Copyright (C) 2015-2018 Linaro Ltd.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/interrupt.h>
@@ -302,7 +295,7 @@ static void vfe_global_reset(struct vfe_device *vfe)
 
 	writel_relaxed(BIT(31), vfe->base + VFE_0_IRQ_MASK_0);
 
-	/* Enforce barrier between IRQ mask setup and global reset */
+	 
 	wmb();
 	writel_relaxed(reset_bits, vfe->base + VFE_0_GLOBAL_RESET_CMD);
 }
@@ -463,12 +456,12 @@ static void vfe_wm_set_ub_cfg(struct vfe_device *vfe, u8 wm,
 
 static void vfe_bus_reload_wm(struct vfe_device *vfe, u8 wm)
 {
-	/* Enforce barrier between any outstanding register write */
+	 
 	wmb();
 
 	writel_relaxed(VFE_0_BUS_CMD_Mx_RLD_CMD(wm), vfe->base + VFE_0_BUS_CMD);
 
-	/* Use barrier to make sure bus reload is issued before anything else */
+	 
 	wmb();
 }
 
@@ -683,11 +676,11 @@ static void vfe_reg_update(struct vfe_device *vfe, enum vfe_line_id line_id)
 {
 	vfe->reg_update |= VFE_0_REG_UPDATE_line_n(line_id);
 
-	/* Enforce barrier between line update and commit */
+	 
 	wmb();
 	writel_relaxed(vfe->reg_update, vfe->base + VFE_0_REG_UPDATE);
 
-	/* Make sure register update is issued before further reg writes */
+	 
 	wmb();
 }
 
@@ -933,7 +926,7 @@ static void vfe_set_ds(struct vfe_device *vfe)
 
 static void vfe_set_cgc_override(struct vfe_device *vfe, u8 wm, u8 enable)
 {
-	/* empty */
+	 
 }
 
 static void vfe_set_camif_cfg(struct vfe_device *vfe, struct vfe_line *line)
@@ -992,7 +985,7 @@ static void vfe_set_camif_cmd(struct vfe_device *vfe, u8 enable)
 	cmd = VFE_0_CAMIF_CMD_CLEAR_CAMIF_STATUS | VFE_0_CAMIF_CMD_NO_CHANGE;
 	writel_relaxed(cmd, vfe->base + VFE_0_CAMIF_CMD);
 
-	/* Make sure camif command is issued written before it is changed again */
+	 
 	wmb();
 
 	if (enable)
@@ -1037,13 +1030,7 @@ static int vfe_camif_wait_for_stop(struct vfe_device *vfe, struct device *dev)
 
 
 
-/*
- * vfe_isr - VFE module interrupt handler
- * @irq: Interrupt line
- * @dev: VFE device
- *
- * Return IRQ_HANDLED on success
- */
+ 
 static irqreturn_t vfe_isr(int irq, void *dev)
 {
 	struct vfe_device *vfe = dev;
@@ -1098,15 +1085,12 @@ static void vfe_isr_read(struct vfe_device *vfe, u32 *value0, u32 *value1)
 	writel_relaxed(*value0, vfe->base + VFE_0_IRQ_CLEAR_0);
 	writel_relaxed(*value1, vfe->base + VFE_0_IRQ_CLEAR_1);
 
-	/* Enforce barrier between local & global IRQ clear */
+	 
 	wmb();
 	writel_relaxed(VFE_0_IRQ_CMD_GLOBAL_CLEAR, vfe->base + VFE_0_IRQ_CMD);
 }
 
-/*
- * vfe_pm_domain_off - Disable power domains specific to this VFE.
- * @vfe: VFE Device
- */
+ 
 static void vfe_pm_domain_off(struct vfe_device *vfe)
 {
 	struct camss *camss;
@@ -1119,10 +1103,7 @@ static void vfe_pm_domain_off(struct vfe_device *vfe)
 	device_link_del(camss->genpd_link[vfe->id]);
 }
 
-/*
- * vfe_pm_domain_on - Enable power domains specific to this VFE.
- * @vfe: VFE Device
- */
+ 
 static int vfe_pm_domain_on(struct vfe_device *vfe)
 {
 	struct camss *camss = vfe->camss;

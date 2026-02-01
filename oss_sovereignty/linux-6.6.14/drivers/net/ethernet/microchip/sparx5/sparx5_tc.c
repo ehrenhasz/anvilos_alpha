@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/* Microchip Sparx5 Switch driver
- *
- * Copyright (c) 2022 Microchip Technology Inc. and its subsidiaries.
- */
+
+ 
 
 #include <net/pkt_cls.h>
 #include <net/pkt_sched.h>
@@ -11,7 +8,7 @@
 #include "sparx5_main.h"
 #include "sparx5_qos.h"
 
-/* tc block handling */
+ 
 static LIST_HEAD(sparx5_block_cb_list);
 
 static int sparx5_tc_block_cb(enum tc_setup_type type,
@@ -116,23 +113,23 @@ static int sparx5_tc_setup_qdisc_ets(struct net_device *ndev,
 	struct sparx5_port *port = netdev_priv(ndev);
 	int i;
 
-	/* Only allow ets on ports  */
+	 
 	if (qopt->parent != TC_H_ROOT)
 		return -EOPNOTSUPP;
 
 	switch (qopt->command) {
 	case TC_ETS_REPLACE:
 
-		/* We support eight priorities */
+		 
 		if (params->bands != SPX5_PRIOS)
 			return -EOPNOTSUPP;
 
-		/* Sanity checks */
+		 
 		for (i = 0; i < SPX5_PRIOS; ++i) {
-			/* Priority map is *always* reverse e.g: 7 6 5 .. 0 */
+			 
 			if (params->priomap[i] != (7 - i))
 				return -EOPNOTSUPP;
-			/* Throw an error if we receive zero weights by tc */
+			 
 			if (params->quanta[i] && params->weights[i] == 0) {
 				pr_err("Invalid ets configuration; band %d has weight zero",
 				       i);

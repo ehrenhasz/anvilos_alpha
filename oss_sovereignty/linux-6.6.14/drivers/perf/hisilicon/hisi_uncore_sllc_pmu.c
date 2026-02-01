@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * HiSilicon SLLC uncore Hardware event counters support
- *
- * Copyright (C) 2020 HiSilicon Limited
- * Author: Shaokun Zhang <zhangshaokun@hisilicon.com>
- *
- * This code is based on the uncore PMUs like arm-cci and arm-ccn.
- */
+
+ 
 #include <linux/acpi.h>
 #include <linux/cpuhotplug.h>
 #include <linux/interrupt.h>
@@ -16,7 +9,7 @@
 
 #include "hisi_uncore_pmu.h"
 
-/* SLLC register definition */
+ 
 #define SLLC_INT_MASK			0x0814
 #define SLLC_INT_STATUS			0x0818
 #define SLLC_INT_CLEAR			0x081c
@@ -91,7 +84,7 @@ static void hisi_sllc_pmu_config_tgtid(struct perf_event *event)
 		u32 val = (max << SLLC_TGTID_MAX_SHIFT) | (min << SLLC_TGTID_MIN_SHIFT);
 
 		writel(val, sllc_pmu->base + SLLC_TGTID_CTRL);
-		/* Enable the tgtid */
+		 
 		val = readl(sllc_pmu->base + SLLC_PERF_CTRL);
 		val |= SLLC_TGTID_EN | SLLC_FILT_EN;
 		writel(val, sllc_pmu->base + SLLC_PERF_CTRL);
@@ -108,7 +101,7 @@ static void hisi_sllc_pmu_clear_tgtid(struct perf_event *event)
 		u32 val;
 
 		writel(SLLC_TGTID_NONE, sllc_pmu->base + SLLC_TGTID_CTRL);
-		/* Disable the tgtid */
+		 
 		val = readl(sllc_pmu->base + SLLC_PERF_CTRL);
 		val &= ~(SLLC_TGTID_EN | SLLC_FILT_EN);
 		writel(val, sllc_pmu->base + SLLC_PERF_CTRL);
@@ -126,7 +119,7 @@ static void hisi_sllc_pmu_config_srcid(struct perf_event *event)
 		msk = hisi_get_srcid_msk(event);
 		val = (cmd << SLLC_SRCID_CMD_SHIFT) | (msk << SLLC_SRCID_MSK_SHIFT);
 		writel(val, sllc_pmu->base + SLLC_SRCID_CTRL);
-		/* Enable the srcid */
+		 
 		val = readl(sllc_pmu->base + SLLC_PERF_CTRL);
 		val |= SLLC_SRCID_EN | SLLC_FILT_EN;
 		writel(val, sllc_pmu->base + SLLC_PERF_CTRL);
@@ -142,7 +135,7 @@ static void hisi_sllc_pmu_clear_srcid(struct perf_event *event)
 		u32 val;
 
 		writel(SLLC_SRCID_NONE, sllc_pmu->base + SLLC_SRCID_CTRL);
-		/* Disable the srcid */
+		 
 		val = readl(sllc_pmu->base + SLLC_PERF_CTRL);
 		val &= ~(SLLC_SRCID_EN | SLLC_FILT_EN);
 		writel(val, sllc_pmu->base + SLLC_PERF_CTRL);
@@ -191,18 +184,12 @@ static void hisi_sllc_pmu_write_evtype(struct hisi_pmu *sllc_pmu, int idx,
 {
 	u32 reg, reg_idx, shift, val;
 
-	/*
-	 * Select the appropriate event select register(SLLC_EVENT_TYPE0/1).
-	 * There are 2 event select registers for the 8 hardware counters.
-	 * Event code is 8-bits and for the former 4 hardware counters,
-	 * SLLC_EVENT_TYPE0 is chosen. For the latter 4 hardware counters,
-	 * SLLC_EVENT_TYPE1 is chosen.
-	 */
+	 
 	reg = SLLC_EVENT_TYPE0 + (idx / 4) * 4;
 	reg_idx = idx % 4;
 	shift = 8 * reg_idx;
 
-	/* Write event code to SLLC_EVENT_TYPEx Register */
+	 
 	val = readl(sllc_pmu->base + reg);
 	val &= ~(SLLC_EVTYPE_MASK << shift);
 	val |= (type << shift);
@@ -253,7 +240,7 @@ static void hisi_sllc_pmu_enable_counter_int(struct hisi_pmu *sllc_pmu,
 	u32 val;
 
 	val = readl(sllc_pmu->base + SLLC_INT_MASK);
-	/* Write 0 to enable interrupt */
+	 
 	val &= ~(1 << hwc->idx);
 	writel(val, sllc_pmu->base + SLLC_INT_MASK);
 }
@@ -264,7 +251,7 @@ static void hisi_sllc_pmu_disable_counter_int(struct hisi_pmu *sllc_pmu,
 	u32 val;
 
 	val = readl(sllc_pmu->base + SLLC_INT_MASK);
-	/* Write 1 to mask interrupt */
+	 
 	val |= 1 << hwc->idx;
 	writel(val, sllc_pmu->base + SLLC_INT_MASK);
 }
@@ -288,10 +275,7 @@ MODULE_DEVICE_TABLE(acpi, hisi_sllc_pmu_acpi_match);
 static int hisi_sllc_pmu_init_data(struct platform_device *pdev,
 				   struct hisi_pmu *sllc_pmu)
 {
-	/*
-	 * Use the SCCL_ID and the index ID to identify the SLLC PMU,
-	 * while SCCL_ID is from MPIDR_EL1 by CPU.
-	 */
+	 
 	if (device_property_read_u32(&pdev->dev, "hisilicon,scl-id",
 				     &sllc_pmu->sccl_id)) {
 		dev_err(&pdev->dev, "Cannot read sccl-id!\n");
@@ -304,7 +288,7 @@ static int hisi_sllc_pmu_init_data(struct platform_device *pdev,
 		return -EINVAL;
 	}
 
-	/* SLLC PMUs only share the same SCCL */
+	 
 	sllc_pmu->ccl_id = -1;
 
 	sllc_pmu->base = devm_platform_ioremap_resource(pdev, 0);

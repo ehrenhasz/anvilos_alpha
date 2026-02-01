@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * SCSI Block Commands (SBC) parsing and emulation.
- *
- * (c) Copyright 2002-2013 Datera, Inc.
- *
- * Nicholas A. Bellinger <nab@kernel.org>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -38,18 +32,7 @@ sbc_emulate_readcapacity(struct se_cmd *cmd)
 	unsigned char buf[8];
 	u32 blocks;
 
-	/*
-	 * SBC-2 says:
-	 *   If the PMI bit is set to zero and the LOGICAL BLOCK
-	 *   ADDRESS field is not set to zero, the device server shall
-	 *   terminate the command with CHECK CONDITION status with
-	 *   the sense key set to ILLEGAL REQUEST and the additional
-	 *   sense code set to INVALID FIELD IN CDB.
-	 *
-	 * In SBC-3, these fields are obsolete, but some SCSI
-	 * compliance tests actually check this, so we might as well
-	 * follow SBC-2.
-	 */
+	 
 	if (!(cdb[8] & 1) && !!(cdb[2] | cdb[3] | cdb[4] | cdb[5]))
 		return TCM_INVALID_CDB_FIELD;
 
@@ -85,14 +68,9 @@ sbc_emulate_readcapacity_16(struct se_cmd *cmd)
 	memset(buf, 0, sizeof(buf));
 	put_unaligned_be64(blocks, &buf[0]);
 	put_unaligned_be32(dev->dev_attrib.block_size, &buf[8]);
-	/*
-	 * Set P_TYPE and PROT_EN bits for DIF support
-	 */
+	 
 	if (sess->sup_prot_ops & (TARGET_PROT_DIN_PASS | TARGET_PROT_DOUT_PASS)) {
-		/*
-		 * Only override a device's pi_prot_type if no T10-PI is
-		 * available, and sess_prot_type has been explicitly enabled.
-		 */
+		 
 		if (!pi_prot_type)
 			pi_prot_type = sess->sess_prot_type;
 
@@ -109,17 +87,11 @@ sbc_emulate_readcapacity_16(struct se_cmd *cmd)
 		put_unaligned_be16(lalba, &buf[14]);
 	}
 
-	/*
-	 * Set Thin Provisioning Enable bit following sbc3r22 in section
-	 * READ CAPACITY (16) byte 14 if emulate_tpu or emulate_tpws is enabled.
-	 */
+	 
 	if (dev->dev_attrib.emulate_tpu || dev->dev_attrib.emulate_tpws) {
 		buf[14] |= 0x80;
 
-		/*
-		 * LBPRZ signifies that zeroes will be read back from an LBA after
-		 * an UNMAP or WRITE SAME w/ unmap bit (sbc3r36 5.16.2)
-		 */
+		 
 		if (dev->dev_attrib.unmap_zeroes_data)
 			buf[14] |= 0x40;
 	}
@@ -139,26 +111,15 @@ sbc_emulate_startstop(struct se_cmd *cmd)
 {
 	unsigned char *cdb = cmd->t_task_cdb;
 
-	/*
-	 * See sbc3r36 section 5.25
-	 * Immediate bit should be set since there is nothing to complete
-	 * POWER CONDITION MODIFIER 0h
-	 */
+	 
 	if (!(cdb[1] & 1) || cdb[2] || cdb[3])
 		return TCM_INVALID_CDB_FIELD;
 
-	/*
-	 * See sbc3r36 section 5.25
-	 * POWER CONDITION 0h START_VALID - process START and LOEJ
-	 */
+	 
 	if (cdb[4] >> 4 & 0xf)
 		return TCM_INVALID_CDB_FIELD;
 
-	/*
-	 * See sbc3r36 section 5.25
-	 * LOEJ 0h - nothing to load or unload
-	 * START 1h - we are ready
-	 */
+	 
 	if (!(cdb[4] & 1) || (cdb[4] & 2) || (cdb[4] & 4))
 		return TCM_INVALID_CDB_FIELD;
 
@@ -174,13 +135,10 @@ sector_t sbc_get_write_same_sectors(struct se_cmd *cmd)
 		num_blocks = get_unaligned_be16(&cmd->t_task_cdb[7]);
 	else if (cmd->t_task_cdb[0] == WRITE_SAME_16)
 		num_blocks = get_unaligned_be32(&cmd->t_task_cdb[10]);
-	else /* WRITE_SAME_32 via VARIABLE_LENGTH_CMD */
+	else  
 		num_blocks = get_unaligned_be32(&cmd->t_task_cdb[28]);
 
-	/*
-	 * Use the explicit range when non zero is supplied, otherwise calculate
-	 * the remaining range based on ->get_blocks() - starting LBA.
-	 */
+	 
 	if (num_blocks)
 		return num_blocks;
 
@@ -220,14 +178,7 @@ static inline u32 sbc_get_size(struct se_cmd *cmd, u32 sectors)
 
 static inline u32 transport_get_sectors_6(unsigned char *cdb)
 {
-	/*
-	 * Use 8-bit sector value.  SBC-3 says:
-	 *
-	 *   A TRANSFER LENGTH field set to zero specifies that 256
-	 *   logical blocks shall be written.  Any other value
-	 *   specifies the number of logical blocks that shall be
-	 *   written.
-	 */
+	 
 	return cdb[4] ? : 256;
 }
 
@@ -246,9 +197,7 @@ static inline u32 transport_get_sectors_16(unsigned char *cdb)
 	return get_unaligned_be32(&cdb[10]);
 }
 
-/*
- * Used for VARIABLE_LENGTH_CDB WRITE_32 and READ_32 variants
- */
+ 
 static inline u32 transport_get_sectors_32(unsigned char *cdb)
 {
 	return get_unaligned_be32(&cdb[28]);
@@ -290,9 +239,7 @@ sbc_setup_write_same(struct se_cmd *cmd, unsigned char flags,
 			sectors, cmd->se_dev->dev_attrib.max_write_same_len);
 		return TCM_INVALID_CDB_FIELD;
 	}
-	/*
-	 * Sanity check for LBA wrap and request past end of device.
-	 */
+	 
 	if (((cmd->t_task_lba + sectors) < cmd->t_task_lba) ||
 	    ((cmd->t_task_lba + sectors) > end_lba)) {
 		pr_err("WRITE_SAME exceeds last lba %llu (lba %llu, sectors %u)\n",
@@ -300,7 +247,7 @@ sbc_setup_write_same(struct se_cmd *cmd, unsigned char flags,
 		return TCM_ADDRESS_OUT_OF_RANGE;
 	}
 
-	/* We always have ANC_SUP == 0 so setting ANCHOR is always an error */
+	 
 	if (flags & 0x10) {
 		pr_warn("WRITE SAME with ANCHOR not supported\n");
 		return TCM_INVALID_CDB_FIELD;
@@ -311,10 +258,7 @@ sbc_setup_write_same(struct se_cmd *cmd, unsigned char flags,
 		return TCM_INVALID_CDB_FIELD;
 	}
 
-	/*
-	 * Special case for WRITE_SAME w/ UNMAP=1 that ends up getting
-	 * translated into block discard requests within backend code.
-	 */
+	 
 	if (flags & 0x08) {
 		if (!ops->execute_unmap)
 			return TCM_UNSUPPORTED_SCSI_OPCODE;
@@ -362,19 +306,13 @@ static sense_reason_t compare_and_write_post(struct se_cmd *cmd, bool success,
 	}
 	spin_unlock_irq(&cmd->t_state_lock);
 
-	/*
-	 * Unlock ->caw_sem originally obtained during sbc_compare_and_write()
-	 * before the original READ I/O submission.
-	 */
+	 
 	up(&dev->caw_sem);
 
 	return ret;
 }
 
-/*
- * compare @cmp_len bytes of @read_sgl with @cmp_sgl. On miscompare, fill
- * @miscmp_off and return TCM_MISCOMPARE_VERIFY.
- */
+ 
 static sense_reason_t
 compare_and_write_do_cmp(struct scatterlist *read_sgl, unsigned int read_nents,
 			 struct scatterlist *cmp_sgl, unsigned int cmp_nents,
@@ -399,9 +337,7 @@ compare_and_write_do_cmp(struct scatterlist *read_sgl, unsigned int read_nents,
 		ret = TCM_OUT_OF_RESOURCES;
 		goto out;
 	}
-	/*
-	 * Compare SCSI READ payload against verify payload
-	 */
+	 
 	offset = 0;
 	ret = TCM_NO_SENSE;
 	for_each_sg(read_sgl, sg, read_nents, sg_cnt) {
@@ -448,30 +384,19 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 	int i;
 
 	if (!success) {
-		/*
-		 * Handle early failure in transport_generic_request_failure(),
-		 * which will not have taken ->caw_sem yet..
-		 */
+		 
 		if (!cmd->t_data_sg || !cmd->t_bidi_data_sg)
 			return TCM_NO_SENSE;
 
-		/*
-		 * The command has been stopped or aborted so
-		 * we don't have to perform the write operation.
-		 */
+		 
 		WARN_ON(!(cmd->transport_state &
 			(CMD_T_ABORTED | CMD_T_STOP)));
 		goto out;
 	}
-	/*
-	 * Handle special case for zero-length COMPARE_AND_WRITE
-	 */
+	 
 	if (!cmd->data_length)
 		goto out;
-	/*
-	 * Immediately exit + release dev->caw_sem if command has already
-	 * been failed with a non-zero SCSI status.
-	 */
+	 
 	if (cmd->scsi_status) {
 		pr_debug("compare_and_write_callback: non zero scsi_status:"
 			" 0x%02x\n", cmd->scsi_status);
@@ -488,12 +413,7 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 				       compare_len,
 				       &miscmp_off);
 	if (ret == TCM_MISCOMPARE_VERIFY) {
-		/*
-		 * SBC-4 r15: 5.3 COMPARE AND WRITE command
-		 * In the sense data (see 4.18 and SPC-5) the offset from the
-		 * start of the Data-Out Buffer to the first byte of data that
-		 * was not equal shall be reported in the INFORMATION field.
-		 */
+		 
 		cmd->sense_info = miscmp_off;
 		goto out;
 	} else if (ret)
@@ -509,9 +429,7 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 	i = 0;
 	len = compare_len;
 	sg_miter_start(&m, cmd->t_data_sg, cmd->t_data_nents, SG_MITER_TO_SG);
-	/*
-	 * Currently assumes NoLB=1 and SGLs are PAGE_SIZE..
-	 */
+	 
 	while (len) {
 		sg_miter_next(&m);
 
@@ -527,11 +445,7 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 		i++;
 	}
 	sg_miter_stop(&m);
-	/*
-	 * Save the original SGL + nents values before updating to new
-	 * assignments, to be released in transport_free_pages() ->
-	 * transport_reset_sgl_orig()
-	 */
+	 
 	cmd->t_data_sg_orig = cmd->t_data_sg;
 	cmd->t_data_sg = write_sg;
 	cmd->t_data_nents_orig = cmd->t_data_nents;
@@ -539,10 +453,7 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 
 	cmd->sam_task_attr = TCM_HEAD_TAG;
 	cmd->transport_complete_callback = compare_and_write_post;
-	/*
-	 * Now reset ->execute_cmd() to the normal sbc_execute_rw() handler
-	 * for submitting the adjusted SGL to write instance user-data.
-	 */
+	 
 	cmd->execute_cmd = sbc_execute_rw;
 
 	spin_lock_irq(&cmd->t_state_lock);
@@ -555,10 +466,7 @@ static sense_reason_t compare_and_write_callback(struct se_cmd *cmd, bool succes
 	return ret;
 
 out:
-	/*
-	 * In the MISCOMPARE or failure case, unlock ->caw_sem obtained in
-	 * sbc_compare_and_write() before the original READ I/O submission.
-	 */
+	 
 	up(&dev->caw_sem);
 	sg_free_table(&write_tbl);
 	return ret;
@@ -571,20 +479,13 @@ sbc_compare_and_write(struct se_cmd *cmd)
 	struct se_device *dev = cmd->se_dev;
 	sense_reason_t ret;
 	int rc;
-	/*
-	 * Submit the READ first for COMPARE_AND_WRITE to perform the
-	 * comparision using SGLs at cmd->t_bidi_data_sg..
-	 */
+	 
 	rc = down_interruptible(&dev->caw_sem);
 	if (rc != 0) {
 		cmd->transport_complete_callback = NULL;
 		return TCM_LOGICAL_UNIT_COMMUNICATION_FAILURE;
 	}
-	/*
-	 * Reset cmd->data_length to individual block_size in order to not
-	 * confuse backend drivers that depend on this value matching the
-	 * size of the I/O being submitted.
-	 */
+	 
 	cmd->data_length = cmd->t_task_nolb * dev->dev_attrib.block_size;
 
 	ret = ops->execute_rw(cmd, cmd->t_bidi_data_sg, cmd->t_bidi_data_nents,
@@ -594,11 +495,7 @@ sbc_compare_and_write(struct se_cmd *cmd)
 		up(&dev->caw_sem);
 		return ret;
 	}
-	/*
-	 * Unlock of dev->caw_sem to occur in compare_and_write_callback()
-	 * upon MISCOMPARE, or in compare_and_write_done() upon completion
-	 * of WRITE instance user-data.
-	 */
+	 
 	return TCM_NO_SENSE;
 }
 
@@ -696,11 +593,7 @@ sbc_check_prot(struct se_device *dev, struct se_cmd *cmd, unsigned char protect,
 		cmd->reftag_seed = cmd->t_task_lba;
 		break;
 	case TARGET_DIF_TYPE0_PROT:
-		/*
-		 * See if the fabric supports T10-PI, and the session has been
-		 * configured to allow export PROTECT=1 feature bit with backend
-		 * devices that don't support T10-PI.
-		 */
+		 
 		fabric_prot = is_write ?
 			      !!(sp_ops & (TARGET_PROT_DOUT_PASS | TARGET_PROT_DOUT_STRIP)) :
 			      !!(sp_ops & (TARGET_PROT_DIN_PASS | TARGET_PROT_DIN_INSERT));
@@ -724,12 +617,7 @@ sbc_check_prot(struct se_device *dev, struct se_cmd *cmd, unsigned char protect,
 	cmd->prot_type = pi_prot_type;
 	cmd->prot_length = dev->prot_length * sectors;
 
-	/**
-	 * In case protection information exists over the wire
-	 * we modify command data length to describe pure data.
-	 * The actual transfer length is data length + protection
-	 * length
-	 **/
+	 
 	if (protect)
 		cmd->data_length = sectors * dev->dev_attrib.block_size;
 
@@ -745,7 +633,7 @@ static int
 sbc_check_dpofua(struct se_device *dev, struct se_cmd *cmd, unsigned char *cdb)
 {
 	if (cdb[1] & 0x10) {
-		/* see explanation in spc_emulate_modesense */
+		 
 		if (!target_check_fua(dev)) {
 			pr_err("Got CDB: 0x%02x with DPO bit set, but device"
 			       " does not advertise support for DPO\n", cdb[0]);
@@ -909,9 +797,7 @@ sbc_parse_cdb(struct se_cmd *cmd, struct exec_cmd_ops *ops)
 			return TCM_UNSUPPORTED_SCSI_OPCODE;
 		}
 		sectors = cdb[13];
-		/*
-		 * Currently enforce COMPARE_AND_WRITE for a single sector
-		 */
+		 
 		if (sectors > 1) {
 			pr_err("COMPARE_AND_WRITE contains NoLB: %u greater"
 			       " than 1\n", sectors);
@@ -920,10 +806,7 @@ sbc_parse_cdb(struct se_cmd *cmd, struct exec_cmd_ops *ops)
 		if (sbc_check_dpofua(dev, cmd, cdb))
 			return TCM_INVALID_CDB_FIELD;
 
-		/*
-		 * Double size because we have two buffers, note that
-		 * zero is not an error..
-		 */
+		 
 		size = 2 * sbc_get_size(cmd, sectors);
 		cmd->t_task_lba = get_unaligned_be64(&cdb[2]);
 		cmd->t_task_nolb = sectors;
@@ -1002,10 +885,7 @@ sbc_parse_cdb(struct se_cmd *cmd, struct exec_cmd_ops *ops)
 		size = sbc_get_size(cmd, 1);
 		cmd->t_task_lba = get_unaligned_be32(&cdb[2]);
 
-		/*
-		 * Follow sbcr26 with WRITE_SAME (10) and check for the existence
-		 * of byte 1 bit 3 UNMAP instead of original reserved field
-		 */
+		 
 		ret = sbc_setup_write_same(cmd, cdb[1], ops);
 		if (ret)
 			return ret;
@@ -1025,12 +905,7 @@ sbc_parse_cdb(struct se_cmd *cmd, struct exec_cmd_ops *ops)
 	case REZERO_UNIT:
 	case SEEK_6:
 	case SEEK_10:
-		/*
-		 * There are still clients out there which use these old SCSI-2
-		 * commands. This mainly happens when running VMs with legacy
-		 * guest systems, connected via SCSI command pass-through to
-		 * iSCSI targets. Make them happy and return status GOOD.
-		 */
+		 
 		size = 0;
 		cmd->execute_cmd = sbc_emulate_noop;
 		break;
@@ -1044,7 +919,7 @@ sbc_parse_cdb(struct se_cmd *cmd, struct exec_cmd_ops *ops)
 			return ret;
 	}
 
-	/* reject any command that we don't have a handler for */
+	 
 	if (!cmd->execute_cmd)
 		return TCM_UNSUPPORTED_SCSI_OPCODE;
 
@@ -1086,7 +961,7 @@ sbc_execute_unmap(struct se_cmd *cmd)
 	sense_reason_t ret = 0;
 	int dl, bd_dl;
 
-	/* We never set ANC_SUP */
+	 
 	if (cmd->t_task_cdb[1])
 		return TCM_INVALID_CDB_FIELD;
 
@@ -1120,7 +995,7 @@ sbc_execute_unmap(struct se_cmd *cmd)
 		goto err;
 	}
 
-	/* First UNMAP block descriptor starts at 8 byte offset */
+	 
 	ptr = &buf[8];
 	pr_debug("UNMAP: Sub: %s Using dl: %u bd_dl: %u size: %u"
 		" ptr: %p\n", dev->transport->name, dl, bd_dl, size, ptr);

@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include <linux/bitops.h>
 #include <linux/delay.h>
@@ -30,7 +30,7 @@ enum {
 #define MT6360_ISNK_MASK		GENMASK(4, 0)
 #define MT6360_CHRINDSEL_MASK		BIT(3)
 
-/* Virtual definition for multicolor */
+ 
 #define MT6360_VIRTUAL_MULTICOLOR	(MT6360_MAX_LEDS + 1)
 #define MULTICOLOR_NUM_CHANNELS		3
 
@@ -166,10 +166,7 @@ static int mt6360_torch_brightness_set(struct led_classdev *lcdev,
 
 	mutex_lock(&priv->lock);
 
-	/*
-	 * Only one set of flash control logic, use the flag to avoid strobe is
-	 * currently used.
-	 */
+	 
 	if (priv->fled_strobe_used) {
 		dev_warn(lcdev->dev, "Please disable strobe first [%d]\n",
 			 priv->fled_strobe_used);
@@ -208,12 +205,7 @@ unlock:
 static int mt6360_flash_brightness_set(struct led_classdev_flash *fl_cdev,
 				       u32 brightness)
 {
-	/*
-	 * Due to the current spike when turning on flash, let brightness to be
-	 * kept by framework.
-	 * This empty function is used to prevent led_classdev_flash register
-	 * ops check failure.
-	 */
+	 
 	return 0;
 }
 
@@ -245,10 +237,7 @@ static int mt6360_strobe_set(struct led_classdev_flash *fl_cdev, bool state)
 
 	mutex_lock(&priv->lock);
 
-	/*
-	 * Only one set of flash control logic, use the flag to avoid torch is
-	 * currently used
-	 */
+	 
 	if (priv->fled_torch_used) {
 		dev_warn(lcdev->dev, "Please disable torch first [0x%x]\n",
 			 priv->fled_torch_used);
@@ -272,19 +261,12 @@ static int mt6360_strobe_set(struct led_classdev_flash *fl_cdev, bool state)
 		goto unlock;
 	}
 
-	/*
-	 * If the flash need to be on, config the flash current ramping up to
-	 * the setting value.
-	 * Else, always recover back to the minimum one
-	 */
+	 
 	ret = _mt6360_flash_brightness_set(fl_cdev, state ? s->val : s->min);
 	if (ret)
 		goto unlock;
 
-	/*
-	 * For the flash turn on/off, HW rampping up/down time is 5ms/500us,
-	 * respectively.
-	 */
+	 
 	if (!prev && curr)
 		usleep_range(5000, 6000);
 	else if (prev && !curr)
@@ -523,10 +505,7 @@ static int mt6360_led_register(struct device *parent, struct mt6360_led *led,
 	if ((led->led_no == MT6360_LED_ISNK1 ||
 	     led->led_no == MT6360_VIRTUAL_MULTICOLOR) &&
 	     (priv->leds_active & BIT(MT6360_LED_ISNK1))) {
-		/*
-		 * Change isink1 to SW control mode, disconnect it with
-		 * charger state
-		 */
+		 
 		ret = regmap_update_bits(priv->regmap, MT6360_REG_RGBEN,
 					 MT6360_CHRINDSEL_MASK,
 					 MT6360_CHRINDSEL_MASK);
@@ -728,10 +707,7 @@ static int mt6360_init_flash_properties(struct mt6360_led *led,
 	s->step = MT6360_ISTRB_STEPUA;
 	s->val = s->max = val;
 
-	/*
-	 * Always configure as min level when off to prevent flash current
-	 * spike.
-	 */
+	 
 	ret = _mt6360_flash_brightness_set(flash, s->min);
 	if (ret)
 		return ret;

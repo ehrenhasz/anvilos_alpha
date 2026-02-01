@@ -1,20 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * as3722 definitions
- *
- * Copyright (C) 2013 ams
- * Copyright (c) 2013, NVIDIA Corporation. All rights reserved.
- *
- * Author: Florian Lobmaier <florian.lobmaier@ams.com>
- * Author: Laxman Dewangan <ldewangan@nvidia.com>
- */
+ 
+ 
 
 #ifndef __LINUX_MFD_AS3722_H__
 #define __LINUX_MFD_AS3722_H__
 
 #include <linux/regmap.h>
 
-/* AS3722 registers */
+ 
 #define AS3722_SD0_VOLTAGE_REG				0x00
 #define AS3722_SD1_VOLTAGE_REG				0x01
 #define AS3722_SD2_VOLTAGE_REG				0x02
@@ -171,7 +163,7 @@
 #define AS3722_OVCURRENT_SD6_TRIP_MASK			0x18
 #define AS3722_OVCURRENT_SD6_TRIP_SHIFT			0x03
 
-/* AS3722 register bits and bit masks */
+ 
 #define AS3722_LDO_ILIMIT_MASK				BIT(7)
 #define AS3722_LDO_ILIMIT_BIT				BIT(7)
 #define AS3722_LDO0_VSEL_MASK				0x1F
@@ -284,7 +276,7 @@
 
 #define AS3722_CTRL_SEQU1_AC_OK_PWR_ON			BIT(0)
 
-/* GPIO modes */
+ 
 #define AS3722_GPIO_MODE_MASK				0x07
 #define AS3722_GPIO_MODE_INPUT				0x00
 #define AS3722_GPIO_MODE_OUTPUT_VDDH			0x01
@@ -335,7 +327,7 @@
 
 #define AS3722_FUSE7_SD0_LOW_VOLTAGE			BIT(4)
 
-/* Interrupt IDs */
+ 
 enum as3722_irq {
 	AS3722_IRQ_LID,
 	AS3722_IRQ_ACOK,
@@ -415,4 +407,4 @@ static inline int as3722_irq_get_virq(struct as3722 *as3722, int irq)
 {
 	return regmap_irq_get_virq(as3722->irq_data, irq);
 }
-#endif /* __LINUX_MFD_AS3722_H__ */
+#endif  

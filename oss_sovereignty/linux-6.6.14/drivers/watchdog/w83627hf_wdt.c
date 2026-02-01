@@ -1,29 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- *	w83627hf/thf WDT driver
- *
- *	(c) Copyright 2013 Guenter Roeck
- *		converted to watchdog infrastructure
- *
- *	(c) Copyright 2007 Vlad Drukker <vlad@storewiz.com>
- *		added support for W83627THF.
- *
- *	(c) Copyright 2003,2007 Pádraig Brady <P@draigBrady.com>
- *
- *	Based on advantechwdt.c which is based on wdt.c.
- *	Original copyright messages:
- *
- *	(c) Copyright 2000-2001 Marek Michalkiewicz <marekm@linux.org.pl>
- *
- *	(c) Copyright 1996 Alan Cox <alan@lxorguk.ukuu.org.uk>,
- *						All Rights Reserved.
- *
- *	Neither Alan Cox nor CymruNet Ltd. admit liability nor provide
- *	warranty for any of this software. This material is provided
- *	"AS-IS" and at no charge.
- *
- *	(c) Copyright 1995    Alan Cox <alan@lxorguk.ukuu.org.uk>
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -37,21 +13,21 @@
 #include <linux/dmi.h>
 
 #define WATCHDOG_NAME "w83627hf/thf/hg/dhg WDT"
-#define WATCHDOG_TIMEOUT 60		/* 60 sec default timeout */
+#define WATCHDOG_TIMEOUT 60		 
 
 static int wdt_io;
-static int cr_wdt_timeout;	/* WDT timeout register */
-static int cr_wdt_control;	/* WDT control register */
-static int cr_wdt_csr;		/* WDT control & status register */
-static int wdt_cfg_enter = 0x87;/* key to unlock configuration space */
-static int wdt_cfg_leave = 0xAA;/* key to lock configuration space */
+static int cr_wdt_timeout;	 
+static int cr_wdt_control;	 
+static int cr_wdt_csr;		 
+static int wdt_cfg_enter = 0x87; 
+static int wdt_cfg_leave = 0xAA; 
 
 enum chips { w83627hf, w83627s, w83697hf, w83697ug, w83637hf, w83627thf,
 	     w83687thf, w83627ehf, w83627dhg, w83627uhg, w83667hg, w83627dhg_p,
 	     w83667hg_b, nct6775, nct6776, nct6779, nct6791, nct6792, nct6793,
 	     nct6795, nct6796, nct6102, nct6116 };
 
-static int timeout;			/* in seconds */
+static int timeout;			 
 module_param(timeout, int, 0);
 MODULE_PARM_DESC(timeout,
 		"Watchdog timeout in seconds. 1 <= timeout <= 255, default="
@@ -67,14 +43,11 @@ static int early_disable;
 module_param(early_disable, int, 0);
 MODULE_PARM_DESC(early_disable, "Disable watchdog at boot time (default=0)");
 
-/*
- *	Kernel methods.
- */
+ 
 
-#define WDT_EFER (wdt_io+0)   /* Extended Function Enable Registers */
-#define WDT_EFIR (wdt_io+0)   /* Extended Function Index Register
-							(same as EFER) */
-#define WDT_EFDR (WDT_EFIR+1) /* Extended Function Data Register */
+#define WDT_EFER (wdt_io+0)    
+#define WDT_EFIR (wdt_io+0)    
+#define WDT_EFDR (WDT_EFIR+1)  
 
 #define W83627HF_LD_WDT		0x08
 
@@ -100,7 +73,7 @@ MODULE_PARM_DESC(early_disable, "Disable watchdog at boot time (default=0)");
 #define NCT6792_ID		0xc9
 #define NCT6793_ID		0xd1
 #define NCT6795_ID		0xd3
-#define NCT6796_ID		0xd4	/* also NCT9697D, NCT9698D */
+#define NCT6796_ID		0xd4	 
 
 #define W83627HF_WDT_TIMEOUT	0xf6
 #define W83697HF_WDT_TIMEOUT	0xf4
@@ -134,8 +107,8 @@ static int superio_enter(void)
 	if (!request_muxed_region(wdt_io, 2, WATCHDOG_NAME))
 		return -EBUSY;
 
-	outb_p(wdt_cfg_enter, WDT_EFER); /* Enter extended function mode */
-	outb_p(wdt_cfg_enter, WDT_EFER); /* Again according to manual */
+	outb_p(wdt_cfg_enter, WDT_EFER);  
+	outb_p(wdt_cfg_enter, WDT_EFER);  
 
 	return 0;
 }
@@ -147,7 +120,7 @@ static void superio_select(int ld)
 
 static void superio_exit(void)
 {
-	outb_p(wdt_cfg_leave, WDT_EFER); /* Leave extended function mode */
+	outb_p(wdt_cfg_leave, WDT_EFER);  
 	release_region(wdt_io, 2);
 }
 
@@ -162,7 +135,7 @@ static int w83627hf_init(struct watchdog_device *wdog, enum chips chip)
 
 	superio_select(W83627HF_LD_WDT);
 
-	/* set CR30 bit 0 to activate GPIO2 */
+	 
 	t = superio_inb(0x30);
 	if (!(t & 0x01))
 		superio_outb(0x30, t | 0x01);
@@ -171,36 +144,35 @@ static int w83627hf_init(struct watchdog_device *wdog, enum chips chip)
 	case w83627hf:
 	case w83627s:
 		t = superio_inb(0x2B) & ~0x10;
-		superio_outb(0x2B, t); /* set GPIO24 to WDT0 */
+		superio_outb(0x2B, t);  
 		break;
 	case w83697hf:
-		/* Set pin 119 to WDTO# mode (= CR29, WDT0) */
+		 
 		t = superio_inb(0x29) & ~0x60;
 		t |= 0x20;
 		superio_outb(0x29, t);
 		break;
 	case w83697ug:
-		/* Set pin 118 to WDTO# mode */
+		 
 		t = superio_inb(0x2b) & ~0x04;
 		superio_outb(0x2b, t);
 		break;
 	case w83627thf:
 		t = (superio_inb(0x2B) & ~0x08) | 0x04;
-		superio_outb(0x2B, t); /* set GPIO3 to WDT0 */
+		superio_outb(0x2B, t);  
 		break;
 	case w83627dhg:
 	case w83627dhg_p:
-		t = superio_inb(0x2D) & ~0x01; /* PIN77 -> WDT0# */
-		superio_outb(0x2D, t); /* set GPIO5 to WDT0 */
+		t = superio_inb(0x2D) & ~0x01;  
+		superio_outb(0x2D, t);  
 		t = superio_inb(cr_wdt_control);
-		t |= 0x02;	/* enable the WDTO# output low pulse
-				 * to the KBRST# pin */
+		t |= 0x02;	 
 		superio_outb(cr_wdt_control, t);
 		break;
 	case w83637hf:
 		break;
 	case w83687thf:
-		t = superio_inb(0x2C) & ~0x80; /* PIN47 -> WDT0# */
+		t = superio_inb(0x2C) & ~0x80;  
 		superio_outb(0x2C, t);
 		break;
 	case w83627ehf:
@@ -217,15 +189,9 @@ static int w83627hf_init(struct watchdog_device *wdog, enum chips chip)
 	case nct6796:
 	case nct6102:
 	case nct6116:
-		/*
-		 * These chips have a fixed WDTO# output pin (W83627UHG),
-		 * or support more than one WDTO# output pin.
-		 * Don't touch its configuration, and hope the BIOS
-		 * does the right thing.
-		 */
+		 
 		t = superio_inb(cr_wdt_control);
-		t |= 0x02;	/* enable the WDTO# output low pulse
-				 * to the KBRST# pin */
+		t |= 0x02;	 
 		superio_outb(cr_wdt_control, t);
 		break;
 	default:
@@ -244,7 +210,7 @@ static int w83627hf_init(struct watchdog_device *wdog, enum chips chip)
 		}
 	}
 
-	/* set second mode & disable keyboard turning off watchdog */
+	 
 	t = superio_inb(cr_wdt_control) & ~0x0C;
 	superio_outb(cr_wdt_control, t);
 
@@ -252,7 +218,7 @@ static int w83627hf_init(struct watchdog_device *wdog, enum chips chip)
 	if (t & WDT_CSR_STATUS)
 		wdog->bootstatus |= WDIOF_CARDRESET;
 
-	/* reset status, disable keyboard & mouse turning off watchdog */
+	 
 	t &= ~(WDT_CSR_STATUS | WDT_CSR_KBD | WDT_CSR_MOUSE);
 	superio_outb(cr_wdt_csr, t);
 
@@ -309,9 +275,7 @@ static unsigned int wdt_get_time(struct watchdog_device *wdog)
 	return timeleft;
 }
 
-/*
- *	Kernel Interfaces
- */
+ 
 
 static const struct watchdog_info wdt_info = {
 	.options = WDIOF_SETTIMEOUT | WDIOF_KEEPALIVEPING | WDIOF_MAGICCLOSE,
@@ -334,10 +298,7 @@ static struct watchdog_device wdt_dev = {
 	.max_timeout = 255,
 };
 
-/*
- *	The WDT needs to learn about soft shutdowns in order to
- *	turn the timebomb registers off.
- */
+ 
 
 static int wdt_find(int addr)
 {
@@ -445,11 +406,7 @@ static int wdt_find(int addr)
 	return ret;
 }
 
-/*
- * On some systems, the NCT6791D comes with a companion chip and the
- * watchdog function is in this companion chip. We must use a different
- * unlocking sequence to access the companion chip.
- */
+ 
 static int __init wdt_use_alt_key(const struct dmi_system_id *d)
 {
 	wdt_cfg_enter = 0x88;
@@ -501,7 +458,7 @@ static int __init wdt_init(void)
 		"NCT6116",
 	};
 
-	/* Apply system-specific quirks */
+	 
 	dmi_check_system(wdt_dmi_table);
 
 	wdt_io = 0x2e;

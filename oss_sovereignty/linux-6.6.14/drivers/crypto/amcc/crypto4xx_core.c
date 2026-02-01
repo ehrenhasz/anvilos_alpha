@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * AMCC SoC PPC4xx Crypto Driver
- *
- * Copyright (c) 2008 Applied Micro Circuits Corporation.
- * All rights reserved. James Hsiao <jhsiao@amcc.com>
- *
- * This file implements AMCC crypto offload Linux device driver for use with
- * Linux CryptoAPI.
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/interrupt.h>
@@ -44,9 +36,7 @@
 
 #define PPC4XX_SEC_VERSION_STR			"0.5"
 
-/*
- * PPC4xx Crypto Engine Initialization Routine
- */
+ 
 static void crypto4xx_hw_init(struct crypto4xx_device *dev)
 {
 	union ce_ring_size ring_size;
@@ -58,7 +48,7 @@ static void crypto4xx_hw_init(struct crypto4xx_device *dev)
 	u32 device_ctrl;
 
 	writel(PPC4XX_BYTE_ORDER, dev->ce_base + CRYPTO4XX_BYTE_ORDER_CFG);
-	/* setup pe dma, include reset sg, pdr and pe, then release reset */
+	 
 	pe_dma_cfg.w = 0;
 	pe_dma_cfg.bf.bo_sgpd_en = 1;
 	pe_dma_cfg.bf.bo_data_en = 0;
@@ -69,7 +59,7 @@ static void crypto4xx_hw_init(struct crypto4xx_device *dev)
 	pe_dma_cfg.bf.reset_pdr = 1;
 	pe_dma_cfg.bf.reset_pe = 1;
 	writel(pe_dma_cfg.w, dev->ce_base + CRYPTO4XX_PE_DMA_CFG);
-	/* un reset pe,sg and pdr */
+	 
 	pe_dma_cfg.bf.pe_mode = 0;
 	pe_dma_cfg.bf.reset_sg = 0;
 	pe_dma_cfg.bf.reset_pdr = 0;
@@ -110,14 +100,14 @@ static void crypto4xx_hw_init(struct crypto4xx_device *dev)
 	writel(0, dev->ce_base + CRYPTO4XX_SA_UADDR);
 	writel(0, dev->ce_base + CRYPTO4XX_GATH_RING_BASE_UADDR);
 	writel(0, dev->ce_base + CRYPTO4XX_SCAT_RING_BASE_UADDR);
-	/* un reset pe,sg and pdr */
+	 
 	pe_dma_cfg.bf.pe_mode = 1;
 	pe_dma_cfg.bf.reset_sg = 0;
 	pe_dma_cfg.bf.reset_pdr = 0;
 	pe_dma_cfg.bf.reset_pe = 0;
 	pe_dma_cfg.bf.bo_td_en = 0;
 	writel(pe_dma_cfg.w, dev->ce_base + CRYPTO4XX_PE_DMA_CFG);
-	/*clear all pending interrupt*/
+	 
 	writel(PPC4XX_INTERRUPT_CLR, dev->ce_base + CRYPTO4XX_INT_CLR);
 	writel(PPC4XX_INT_DESCR_CNT, dev->ce_base + CRYPTO4XX_INT_DESCR_CNT);
 	writel(PPC4XX_INT_DESCR_CNT, dev->ce_base + CRYPTO4XX_INT_DESCR_CNT);
@@ -159,11 +149,7 @@ void crypto4xx_free_sa(struct crypto4xx_ctx *ctx)
 	ctx->sa_len = 0;
 }
 
-/*
- * alloc memory for the gather ring
- * no need to alloc buf for the ring
- * gdr_tail, gdr_head and gdr_count are initialized by this function
- */
+ 
 static u32 crypto4xx_build_pdr(struct crypto4xx_device *dev)
 {
 	int i;
@@ -201,10 +187,10 @@ static u32 crypto4xx_build_pdr(struct crypto4xx_device *dev)
 		pd->sa = dev->shadow_sa_pool_pa +
 			sizeof(union shadow_sa_buf) * i;
 
-		/* alloc 256 bytes which is enough for any kind of dynamic sa */
+		 
 		pd_uinfo->sa_va = &dev->shadow_sa_pool[i].sa;
 
-		/* alloc state record */
+		 
 		pd_uinfo->sr_va = &dev->shadow_sr_pool[i];
 		pd_uinfo->sr_pa = dev->shadow_sr_pool_pa +
 		    sizeof(struct sa_state_record) * i;
@@ -268,11 +254,7 @@ static u32 crypto4xx_put_pd_to_pdr(struct crypto4xx_device *dev, u32 idx)
 	return tail;
 }
 
-/*
- * alloc memory for the gather ring
- * no need to alloc buf for the ring
- * gdr_tail, gdr_head and gdr_count are initialized by this function
- */
+ 
 static u32 crypto4xx_build_gdr(struct crypto4xx_device *dev)
 {
 	dev->gdr = dma_alloc_coherent(dev->core_dev->device,
@@ -292,10 +274,7 @@ static inline void crypto4xx_destroy_gdr(struct crypto4xx_device *dev)
 			  dev->gdr, dev->gdr_pa);
 }
 
-/*
- * when this function is called.
- * preemption or interrupt must be disabled
- */
+ 
 static u32 crypto4xx_get_n_gd(struct crypto4xx_device *dev, int n)
 {
 	u32 retval;
@@ -346,11 +325,7 @@ static inline struct ce_gd *crypto4xx_get_gdp(struct crypto4xx_device *dev,
 	return &dev->gdr[idx];
 }
 
-/*
- * alloc memory for the scatter ring
- * need to alloc buf for the ring
- * sdr_tail, sdr_head and sdr_count are initialized by this function
- */
+ 
 static u32 crypto4xx_build_sdr(struct crypto4xx_device *dev)
 {
 	int i;
@@ -362,7 +337,7 @@ static u32 crypto4xx_build_sdr(struct crypto4xx_device *dev)
 	if (!dev->scatter_buffer_va)
 		return -ENOMEM;
 
-	/* alloc memory for scatter descriptor ring */
+	 
 	dev->sdr = dma_alloc_coherent(dev->core_dev->device,
 				      sizeof(struct ce_sd) * PPC4XX_NUM_SD,
 				      &dev->sdr_pa, GFP_KERNEL);
@@ -391,10 +366,7 @@ static void crypto4xx_destroy_sdr(struct crypto4xx_device *dev)
 				  dev->scatter_buffer_pa);
 }
 
-/*
- * when this function is called.
- * preemption or interrupt must be disabled
- */
+ 
 static u32 crypto4xx_get_n_sd(struct crypto4xx_device *dev, int n)
 {
 	u32 retval;
@@ -411,7 +383,7 @@ static u32 crypto4xx_get_n_sd(struct crypto4xx_device *dev, int n)
 	} else if (dev->sdr_head < dev->sdr_tail) {
 		if (tmp < dev->sdr_head || tmp >= dev->sdr_tail)
 			return ERING_WAS_FULL;
-	} /* the head = tail, or empty case is already take cared */
+	}  
 	dev->sdr_head = tmp;
 
 	return retval;
@@ -455,11 +427,7 @@ static void crypto4xx_copy_pkt_to_dst(struct crypto4xx_device *dev,
 	unsigned int to_copy;
 	unsigned int dst_start = 0;
 
-	/*
-	 * Because the scatter buffers are all neatly organized in one
-	 * big continuous ringbuffer; scatterwalk_map_and_copy() can
-	 * be instructed to copy a range of buffers in one go.
-	 */
+	 
 
 	last_sd = (first_sd + pd_uinfo->num_sd);
 	if (last_sd > PPC4XX_LAST_SD) {
@@ -588,14 +556,14 @@ static void crypto4xx_aead_done(struct crypto4xx_device *dev,
 	}
 
 	if (pd_uinfo->sa_va->sa_command_0.bf.dir == DIR_OUTBOUND) {
-		/* append icv at the end */
+		 
 		crypto4xx_memcpy_from_le32(icv, pd_uinfo->sr_va->save_digest,
 					   sizeof(icv));
 
 		scatterwalk_map_and_copy(icv, dst, aead_req->cryptlen,
 					 cp_len, 1);
 	} else {
-		/* check icv at the end */
+		 
 		scatterwalk_map_and_copy(icv, aead_req->src,
 			aead_req->assoclen + aead_req->cryptlen -
 			cp_len, cp_len, 0);
@@ -701,23 +669,12 @@ int crypto4xx_build_pd(struct crypto_async_request *req,
 	int tmp;
 	bool is_busy, force_sd;
 
-	/*
-	 * There's a very subtile/disguised "bug" in the hardware that
-	 * gets indirectly mentioned in 18.1.3.5 Encryption/Decryption
-	 * of the hardware spec:
-	 * *drum roll* the AES/(T)DES OFB and CFB modes are listed as
-	 * operation modes for >>> "Block ciphers" <<<.
-	 *
-	 * To workaround this issue and stop the hardware from causing
-	 * "overran dst buffer" on crypttexts that are not a multiple
-	 * of 16 (AES_BLOCK_SIZE), we force the driver to use the
-	 * scatter buffers.
-	 */
+	 
 	force_sd = (req_sa->sa_command_1.bf.crypto_mode9_8 == CRYPTO_MODE_CFB
 		|| req_sa->sa_command_1.bf.crypto_mode9_8 == CRYPTO_MODE_OFB)
 		&& (datalen % AES_BLOCK_SIZE);
 
-	/* figure how many gd are needed */
+	 
 	tmp = sg_nents_for_len(src, assoclen + datalen);
 	if (tmp < 0) {
 		dev_err(dev->core_dev->device, "Invalid number of src SG.\n");
@@ -732,7 +689,7 @@ int crypto4xx_build_pd(struct crypto_async_request *req,
 		dst = scatterwalk_ffwd(_dst, dst, assoclen);
 	}
 
-	/* figure how many sd are needed */
+	 
 	if (sg_is_last(dst) && force_sd == false) {
 		num_sd = 0;
 	} else {
@@ -745,29 +702,14 @@ int crypto4xx_build_pd(struct crypto_async_request *req,
 		}
 	}
 
-	/*
-	 * The follow section of code needs to be protected
-	 * The gather ring and scatter ring needs to be consecutive
-	 * In case of run out of any kind of descriptor, the descriptor
-	 * already got must be return the original place.
-	 */
+	 
 	spin_lock_irqsave(&dev->core_dev->lock, flags);
-	/*
-	 * Let the caller know to slow down, once more than 13/16ths = 81%
-	 * of the available data contexts are being used simultaneously.
-	 *
-	 * With PPC4XX_NUM_PD = 256, this will leave a "backlog queue" for
-	 * 31 more contexts. Before new requests have to be rejected.
-	 */
+	 
 	if (req->flags & CRYPTO_TFM_REQ_MAY_BACKLOG) {
 		is_busy = ((dev->pdr_head - dev->pdr_tail) % PPC4XX_NUM_PD) >=
 			((PPC4XX_NUM_PD * 13) / 16);
 	} else {
-		/*
-		 * To fix contention issues between ipsec (no blacklog) and
-		 * dm-crypto (backlog) reserve 32 entries for "no backlog"
-		 * data contexts.
-		 */
+		 
 		is_busy = ((dev->pdr_head - dev->pdr_tail) % PPC4XX_NUM_PD) >=
 			((PPC4XX_NUM_PD * 15) / 16);
 
@@ -827,14 +769,14 @@ int crypto4xx_build_pd(struct crypto_async_request *req,
 		dma_addr_t gd_dma;
 		struct scatterlist *sg;
 
-		/* get first gd we are going to use */
+		 
 		gd_idx = fst_gd;
 		pd_uinfo->first_gd = fst_gd;
 		gd = crypto4xx_get_gdp(dev, &gd_dma, gd_idx);
 		pd->src = gd_dma;
-		/* enable gather */
+		 
 		sa->sa_command_0.bf.gather = 1;
-		/* walk the sg, and setup gather array */
+		 
 
 		sg = src;
 		while (nbytes) {
@@ -858,20 +800,13 @@ int crypto4xx_build_pd(struct crypto_async_request *req,
 		pd->src = (u32)dma_map_page(dev->core_dev->device, sg_page(src),
 				src->offset, min(nbytes, src->length),
 				DMA_TO_DEVICE);
-		/*
-		 * Disable gather in sa command
-		 */
+		 
 		sa->sa_command_0.bf.gather = 0;
-		/*
-		 * Indicate gather array is not used
-		 */
+		 
 		pd_uinfo->first_gd = 0xffffffff;
 	}
 	if (!num_sd) {
-		/*
-		 * we know application give us dst a whole piece of memory
-		 * no need to use scatter ring.
-		 */
+		 
 		pd_uinfo->first_sd = 0xffffffff;
 		sa->sa_command_0.bf.scatter = 0;
 		pd->dest = (u32)dma_map_page(dev->core_dev->device,
@@ -888,10 +823,10 @@ int crypto4xx_build_pd(struct crypto_async_request *req,
 		pd_uinfo->first_sd = fst_sd;
 		sd = crypto4xx_get_sdp(dev, &sd_dma, sd_idx);
 		pd->dest = sd_dma;
-		/* setup scatter descriptor */
+		 
 		sd->ctl.done = 0;
 		sd->ctl.rdy = 1;
-		/* sd->ptr should be setup by sd_init routine*/
+		 
 		if (nbytes >= PPC4XX_SD_BUFFER_SIZE)
 			nbytes -= PPC4XX_SD_BUFFER_SIZE;
 		else
@@ -899,16 +834,13 @@ int crypto4xx_build_pd(struct crypto_async_request *req,
 		while (nbytes) {
 			sd_idx = get_next_sd(sd_idx);
 			sd = crypto4xx_get_sdp(dev, &sd_dma, sd_idx);
-			/* setup scatter descriptor */
+			 
 			sd->ctl.done = 0;
 			sd->ctl.rdy = 1;
 			if (nbytes >= PPC4XX_SD_BUFFER_SIZE) {
 				nbytes -= PPC4XX_SD_BUFFER_SIZE;
 			} else {
-				/*
-				 * SD entry can hold PPC4XX_SD_BUFFER_SIZE,
-				 * which is more than nbytes, so done.
-				 */
+				 
 				nbytes = 0;
 			}
 		}
@@ -922,15 +854,13 @@ int crypto4xx_build_pd(struct crypto_async_request *req,
 	pd_uinfo->state = PD_ENTRY_INUSE | (is_busy ? PD_ENTRY_BUSY : 0);
 
 	wmb();
-	/* write any value to push engine to read a pd */
+	 
 	writel(0, dev->ce_base + CRYPTO4XX_INT_DESCR_RD);
 	writel(1, dev->ce_base + CRYPTO4XX_INT_DESCR_RD);
 	return is_busy ? -EBUSY : -EINPROGRESS;
 }
 
-/*
- * Algorithm Registration Functions
- */
+ 
 static void crypto4xx_ctx_init(struct crypto4xx_alg *amcc_alg,
 			       struct crypto4xx_ctx *ctx)
 {
@@ -1089,15 +1019,13 @@ static void crypto4xx_bh_tasklet_cb(unsigned long data)
 			crypto4xx_pd_done(core_dev->dev, tail);
 			tail = crypto4xx_put_pd_to_pdr(core_dev->dev, tail);
 		} else {
-			/* if tail not done, break */
+			 
 			break;
 		}
 	} while (head != tail);
 }
 
-/*
- * Top Half of isr.
- */
+ 
 static inline irqreturn_t crypto4xx_interrupt_handler(int irq, void *data,
 						      u32 clr_val)
 {
@@ -1128,12 +1056,12 @@ static int ppc4xx_prng_data_read(struct crypto4xx_device *dev,
 	u32 val[2];
 
 	do {
-		/* trigger PRN generation */
+		 
 		writel(PPC4XX_PRNG_CTRL_AUTO_EN,
 		       dev->ce_base + CRYPTO4XX_PRNG_CTRL);
 
 		for (i = 0; i < 1024; i++) {
-			/* usually 19 iterations are enough */
+			 
 			if ((readl(dev->ce_base + CRYPTO4XX_PRNG_STAT) &
 			     CRYPTO4XX_PRNG_STAT_BUSY))
 				continue;
@@ -1150,7 +1078,7 @@ static int ppc4xx_prng_data_read(struct crypto4xx_device *dev,
 			data += 8;
 			curr += 8;
 		} else {
-			/* copy only remaining bytes */
+			 
 			memcpy(data, &val, max - curr);
 			break;
 		}
@@ -1184,11 +1112,9 @@ static int crypto4xx_prng_seed(struct crypto_rng *tfm, const u8 *seed,
 	return 0;
 }
 
-/*
- * Supported Crypto Algorithms
- */
+ 
 static struct crypto4xx_alg_common crypto4xx_alg[] = {
-	/* Crypto AES modes */
+	 
 	{ .type = CRYPTO_ALG_TYPE_SKCIPHER, .u.cipher = {
 		.base = {
 			.cra_name = "cbc(aes)",
@@ -1310,7 +1236,7 @@ static struct crypto4xx_alg_common crypto4xx_alg[] = {
 		.exit = crypto4xx_sk_exit,
 	} },
 
-	/* AEAD */
+	 
 	{ .type = CRYPTO_ALG_TYPE_AEAD, .u.aead = {
 		.setkey		= crypto4xx_setkey_aes_ccm,
 		.setauthsize	= crypto4xx_setauthsize_aead,
@@ -1367,9 +1293,7 @@ static struct crypto4xx_alg_common crypto4xx_alg[] = {
 	} },
 };
 
-/*
- * Module Initialization Routine
- */
+ 
 static int crypto4xx_probe(struct platform_device *ofdev)
 {
 	int rc;
@@ -1425,10 +1349,7 @@ static int crypto4xx_probe(struct platform_device *ofdev)
 	if (!core_dev->dev)
 		goto err_alloc_dev;
 
-	/*
-	 * Older version of 460EX/GT have a hardware bug.
-	 * Hence they do not support H/W based security intr coalescing
-	 */
+	 
 	pvr = mfspr(SPRN_PVR);
 	if (is_revb && ((pvr >> 4) == 0x130218A)) {
 		u32 min = PVR_MIN(pvr);
@@ -1457,7 +1378,7 @@ static int crypto4xx_probe(struct platform_device *ofdev)
 	if (rc)
 		goto err_build_sdr;
 
-	/* Init tasklet for bottom half processing */
+	 
 	tasklet_init(&core_dev->tasklet, crypto4xx_bh_tasklet_cb,
 		     (unsigned long) dev);
 
@@ -1468,7 +1389,7 @@ static int crypto4xx_probe(struct platform_device *ofdev)
 		goto err_iomap;
 	}
 
-	/* Register for Crypto isr, Crypto Engine IRQ */
+	 
 	core_dev->irq = irq_of_parse_and_map(ofdev->dev.of_node, 0);
 	rc = request_irq(core_dev->irq, is_revb ?
 			 crypto4xx_ce_interrupt_handler_revb :
@@ -1477,10 +1398,10 @@ static int crypto4xx_probe(struct platform_device *ofdev)
 	if (rc)
 		goto err_request_irq;
 
-	/* need to setup pdr, rdr, gdr and sdr before this */
+	 
 	crypto4xx_hw_init(core_dev->dev);
 
-	/* Register security algorithms with Linux CryptoAPI */
+	 
 	rc = crypto4xx_register_alg(core_dev->dev, crypto4xx_alg,
 			       ARRAY_SIZE(crypto4xx_alg));
 	if (rc)
@@ -1518,10 +1439,10 @@ static int crypto4xx_remove(struct platform_device *ofdev)
 	irq_dispose_mapping(core_dev->irq);
 
 	tasklet_kill(&core_dev->tasklet);
-	/* Un-register with Linux CryptoAPI */
+	 
 	crypto4xx_unregister_alg(core_dev->dev);
 	mutex_destroy(&core_dev->rng_lock);
-	/* Free all allocated memory */
+	 
 	crypto4xx_stop_all(core_dev);
 
 	return 0;

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2021 Facebook */
+
+ 
 #include <test_progs.h>
 #include "test_legacy_printk.skel.h"
 
@@ -16,7 +16,7 @@ static int execute_one_variant(bool legacy)
 	bpf_program__set_autoload(skel->progs.handle_modern, !legacy);
 
 	err = test_legacy_printk__load(skel);
-	/* no ASSERT_OK, we expect one of two variants can fail here */
+	 
 	if (err)
 		goto err_out;
 
@@ -34,7 +34,7 @@ static int execute_one_variant(bool legacy)
 	if (!ASSERT_OK(err, "skel_attach"))
 		goto err_out;
 
-	usleep(1); /* trigger */
+	usleep(1);  
 
 	if (legacy) {
 		map_fd = bpf_map__fd(skel->maps.res_map);
@@ -57,9 +57,9 @@ err_out:
 
 void test_legacy_printk(void)
 {
-	/* legacy variant should work everywhere */
-	ASSERT_OK(execute_one_variant(true /* legacy */), "legacy_case");
+	 
+	ASSERT_OK(execute_one_variant(true  ), "legacy_case");
 
-	/* execute modern variant, can fail the load on old kernels */
+	 
 	execute_one_variant(false);
 }

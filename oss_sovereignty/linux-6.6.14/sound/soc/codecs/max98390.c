@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * max98390.c  --  MAX98390 ALSA Soc Audio driver
- *
- * Copyright (C) 2020 Maxim Integrated Products
- *
- */
+
+ 
 
 #include <linux/acpi.h>
 #include <linux/cdev.h>
@@ -206,7 +201,7 @@ static int max98390_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 		MAX98390_PCM_MODE_CFG_PCM_BCLKEDGE,
 		invert);
 
-	/* interface format */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_I2S:
 		format = MAX98390_PCM_FORMAT_I2S;
@@ -235,11 +230,11 @@ static int max98390_dai_set_fmt(struct snd_soc_dai *codec_dai, unsigned int fmt)
 static int max98390_get_bclk_sel(int bclk)
 {
 	int i;
-	/* BCLKs per LRCLK */
+	 
 	static int bclk_sel_table[] = {
 		32, 48, 64, 96, 128, 192, 256, 320, 384, 512,
 	};
-	/* match BCLKs per LRCLK */
+	 
 	for (i = 0; i < ARRAY_SIZE(bclk_sel_table); i++) {
 		if (bclk_sel_table[i] == bclk)
 			return i + 2;
@@ -252,20 +247,20 @@ static int max98390_set_clock(struct snd_soc_component *component,
 {
 	struct max98390_priv *max98390 =
 		snd_soc_component_get_drvdata(component);
-	/* codec MCLK rate in master mode */
+	 
 	static int rate_table[] = {
 		5644800, 6000000, 6144000, 6500000,
 		9600000, 11289600, 12000000, 12288000,
 		13000000, 19200000,
 	};
-	/* BCLK/LRCLK ratio calculation */
+	 
 	int blr_clk_ratio = params_channels(params)
 		* snd_pcm_format_width(params_format(params));
 	int value;
 
 	if (max98390->provider) {
 		int i;
-		/* match rate to closest value */
+		 
 		for (i = 0; i < ARRAY_SIZE(rate_table); i++) {
 			if (rate_table[i] >= max98390->sysclk)
 				break;
@@ -282,7 +277,7 @@ static int max98390_set_clock(struct snd_soc_component *component,
 	}
 
 	if (!max98390->tdm_mode) {
-		/* BCLK configuration */
+		 
 		value = max98390_get_bclk_sel(blr_clk_ratio);
 		if (!value) {
 			dev_err(component->dev, "format unsupported %d\n",
@@ -310,7 +305,7 @@ static int max98390_dai_hw_params(struct snd_pcm_substream *substream,
 	unsigned int sampling_rate;
 	unsigned int chan_sz;
 
-	/* pcm mode configuration */
+	 
 	switch (snd_pcm_format_width(params_format(params))) {
 	case 16:
 		chan_sz = MAX98390_PCM_MODE_CFG_CHANSZ_16;
@@ -334,7 +329,7 @@ static int max98390_dai_hw_params(struct snd_pcm_substream *substream,
 	dev_dbg(component->dev, "format supported %d",
 		params_format(params));
 
-	/* sampling rate configuration */
+	 
 	switch (params_rate(params)) {
 	case 8000:
 		sampling_rate = MAX98390_PCM_SR_SET1_SR_8000;
@@ -369,7 +364,7 @@ static int max98390_dai_hw_params(struct snd_pcm_substream *substream,
 		goto err;
 	}
 
-	/* set DAI_SR to correct LRCLK frequency */
+	 
 	regmap_update_bits(max98390->regmap,
 		MAX98390_PCM_SR_SETUP,
 		MAX98390_PCM_SR_SET1_SR_MASK,
@@ -399,7 +394,7 @@ static int max98390_dai_tdm_slot(struct snd_soc_dai *dai,
 	dev_dbg(component->dev,
 		"Tdm mode : %d\n", max98390->tdm_mode);
 
-	/* BCLK configuration */
+	 
 	bsel = max98390_get_bclk_sel(slots * slot_width);
 	if (!bsel) {
 		dev_err(component->dev, "BCLK %d not supported\n",
@@ -412,7 +407,7 @@ static int max98390_dai_tdm_slot(struct snd_soc_dai *dai,
 		MAX98390_PCM_CLK_SETUP_BSEL_MASK,
 		bsel);
 
-	/* Channel size configuration */
+	 
 	switch (slot_width) {
 	case 16:
 		chan_sz = MAX98390_PCM_MODE_CFG_CHANSZ_16;
@@ -433,7 +428,7 @@ static int max98390_dai_tdm_slot(struct snd_soc_dai *dai,
 		MAX98390_PCM_MODE_CFG,
 		MAX98390_PCM_MODE_CFG_CHANSZ_MASK, chan_sz);
 
-	/* Rx slot configuration */
+	 
 	regmap_write(max98390->regmap,
 		MAX98390_PCM_RX_EN_A,
 		rx_mask & 0xFF);
@@ -441,7 +436,7 @@ static int max98390_dai_tdm_slot(struct snd_soc_dai *dai,
 		MAX98390_PCM_RX_EN_B,
 		(rx_mask & 0xFF00) >> 8);
 
-	/* Tx slot Hi-Z configuration */
+	 
 	regmap_write(max98390->regmap,
 		MAX98390_PCM_TX_HIZ_CTRL_A,
 		~tx_mask & 0xFF);
@@ -626,7 +621,7 @@ static int max98390_adaptive_rdc_get(struct snd_kcontrol *kcontrol,
 static int max98390_dsm_calib_get(struct snd_kcontrol *kcontrol,
 		struct snd_ctl_elem_value *ucontrol)
 {
-	/* Do nothing */
+	 
 	return 0;
 }
 
@@ -642,7 +637,7 @@ static int max98390_dsm_calib_put(struct snd_kcontrol *kcontrol,
 
 	regmap_read(max98390->regmap, MAX98390_R23FF_GLOBAL_EN, &val);
 	if (!val) {
-		/* Enable the codec for the duration of calibration readout */
+		 
 		regmap_update_bits(max98390->regmap, MAX98390_R203A_AMP_EN,
 				   MAX98390_AMP_EN_MASK, 1);
 		regmap_update_bits(max98390->regmap, MAX98390_R23FF_GLOBAL_EN,
@@ -654,7 +649,7 @@ static int max98390_dsm_calib_put(struct snd_kcontrol *kcontrol,
 	regmap_read(max98390->regmap, MAX98390_MEAS_ADC_CH2_READ, &temp);
 
 	if (!val) {
-		/* Disable the codec if it was disabled */
+		 
 		regmap_update_bits(max98390->regmap, MAX98390_R23FF_GLOBAL_EN,
 				   MAX98390_GLOBAL_EN_MASK, 0);
 		regmap_update_bits(max98390->regmap, MAX98390_R203A_AMP_EN,
@@ -722,7 +717,7 @@ static const struct snd_soc_dapm_widget max98390_dapm_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route max98390_audio_map[] = {
-	/* Plabyack */
+	 
 	{"DAI Sel Mux", "Left", "Amp Enable"},
 	{"DAI Sel Mux", "Right", "Amp Enable"},
 	{"DAI Sel Mux", "LeftRight", "Amp Enable"},
@@ -868,7 +863,7 @@ static void max98390_init_regs(struct snd_soc_component *component)
 	regmap_write(max98390->regmap, MAX98390_BOOST_BYPASS1, 0x46);
 	regmap_write(max98390->regmap, MAX98390_FET_SCALING3, 0x03);
 
-	/* voltage, current slot configuration */
+	 
 	regmap_write(max98390->regmap,
 		MAX98390_PCM_CH_SRC_2,
 		(max98390->i_l_slot << 4 |
@@ -917,15 +912,15 @@ static int max98390_probe(struct snd_soc_component *component)
 		snd_soc_component_get_drvdata(component);
 
 	regmap_write(max98390->regmap, MAX98390_SOFTWARE_RESET, 0x01);
-	/* Sleep reset settle time */
+	 
 	msleep(20);
 
-	/* Amp init setting */
+	 
 	max98390_init_regs(component);
-	/* Update dsm bin param */
+	 
 	max98390_dsm_init(component);
 
-	/* Dsm Setting */
+	 
 	if (max98390->ref_rdc_value) {
 		regmap_write(max98390->regmap, DSM_TPROT_RECIP_RDC_ROOM_BYTE0,
 			max98390->ref_rdc_value & 0x000000ff);
@@ -1062,10 +1057,10 @@ static int max98390_i2c_probe(struct i2c_client *i2c)
 	if (ret)
 		max98390->dsm_param_name = "default";
 
-	/* voltage/current slot configuration */
+	 
 	max98390_slot_config(i2c, max98390);
 
-	/* regmap initialization */
+	 
 	max98390->regmap = devm_regmap_init_i2c(i2c, &max98390_regmap);
 	if (IS_ERR(max98390->regmap)) {
 		ret = PTR_ERR(max98390->regmap);
@@ -1077,15 +1072,15 @@ static int max98390_i2c_probe(struct i2c_client *i2c)
 	reset_gpio = devm_gpiod_get_optional(&i2c->dev,
 					     "reset", GPIOD_OUT_HIGH);
 
-	/* Power on device */
+	 
 	if (reset_gpio) {
 		usleep_range(1000, 2000);
-		/* bring out of reset */
+		 
 		gpiod_set_value_cansleep(reset_gpio, 0);
 		usleep_range(1000, 2000);
 	}
 
-	/* Check Revision ID */
+	 
 	ret = regmap_read(max98390->regmap,
 		MAX98390_R24FF_REV_ID, &reg);
 	if (ret) {

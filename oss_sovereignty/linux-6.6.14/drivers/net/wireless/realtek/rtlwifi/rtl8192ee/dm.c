@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2009-2014  Realtek Corporation.*/
+
+ 
 
 #include "../wifi.h"
 #include "../base.h"
@@ -71,18 +71,18 @@ static void rtl92ee_dm_false_alarm_counter_statistics(struct ieee80211_hw *hw)
 	falsealm_cnt->cnt_cca_all = falsealm_cnt->cnt_ofdm_cca +
 				    falsealm_cnt->cnt_cck_cca;
 
-	/*reset false alarm counter registers*/
+	 
 	rtl_set_bbreg(hw, DM_REG_OFDM_FA_RSTC_11N, BIT(31), 1);
 	rtl_set_bbreg(hw, DM_REG_OFDM_FA_RSTC_11N, BIT(31), 0);
 	rtl_set_bbreg(hw, DM_REG_OFDM_FA_RSTD_11N, BIT(27), 1);
 	rtl_set_bbreg(hw, DM_REG_OFDM_FA_RSTD_11N, BIT(27), 0);
-	/*update ofdm counter*/
+	 
 	rtl_set_bbreg(hw, DM_REG_OFDM_FA_HOLDC_11N, BIT(31), 0);
 	rtl_set_bbreg(hw, DM_REG_OFDM_FA_RSTD_11N, BIT(31), 0);
-	/*reset CCK CCA counter*/
+	 
 	rtl_set_bbreg(hw, DM_REG_CCK_FA_RST_11N, BIT(13) | BIT(12), 0);
 	rtl_set_bbreg(hw, DM_REG_CCK_FA_RST_11N, BIT(13) | BIT(12), 2);
-	/*reset CCK FA counter*/
+	 
 	rtl_set_bbreg(hw, DM_REG_CCK_FA_RST_11N, BIT(15) | BIT(14), 0);
 	rtl_set_bbreg(hw, DM_REG_CCK_FA_RST_11N, BIT(15) | BIT(14), 2);
 
@@ -136,7 +136,7 @@ static void rtl92ee_dm_dig(struct ieee80211_hw *hw)
 	u8 current_igi = dm_dig->cur_igvalue;
 	u8 offset;
 
-	/* AP,BT */
+	 
 	if (mac->act_scanning)
 		return;
 
@@ -302,24 +302,21 @@ static void rtl92ee_rssi_dump_to_register(struct ieee80211_hw *hw)
 		       rtlpriv->stats.rx_rssi_percentage[0]);
 	rtl_write_byte(rtlpriv, RB_RSSIDUMP,
 		       rtlpriv->stats.rx_rssi_percentage[1]);
-	/*It seems the following values are not initialized.
-	  *According to Windows code,
-	  *these value will only be valid with JAGUAR chips
-	  */
-	/* Rx EVM */
+	 
+	 
 	rtl_write_byte(rtlpriv, RS1_RXEVMDUMP, rtlpriv->stats.rx_evm_dbm[0]);
 	rtl_write_byte(rtlpriv, RS2_RXEVMDUMP, rtlpriv->stats.rx_evm_dbm[1]);
-	/* Rx SNR */
+	 
 	rtl_write_byte(rtlpriv, RA_RXSNRDUMP,
 		       (u8)(rtlpriv->stats.rx_snr_db[0]));
 	rtl_write_byte(rtlpriv, RB_RXSNRDUMP,
 		       (u8)(rtlpriv->stats.rx_snr_db[1]));
-	/* Rx Cfo_Short */
+	 
 	rtl_write_word(rtlpriv, RA_CFOSHORTDUMP,
 		       rtlpriv->stats.rx_cfo_short[0]);
 	rtl_write_word(rtlpriv, RB_CFOSHORTDUMP,
 		       rtlpriv->stats.rx_cfo_short[1]);
-	/* Rx Cfo_Tail */
+	 
 	rtl_write_word(rtlpriv, RA_CFOLONGDUMP, rtlpriv->stats.rx_cfo_tail[0]);
 	rtl_write_word(rtlpriv, RB_CFOLONGDUMP, rtlpriv->stats.rx_cfo_tail[1]);
 }
@@ -330,7 +327,7 @@ static void rtl92ee_dm_find_minimum_rssi(struct ieee80211_hw *hw)
 	struct dig_t *rtl_dm_dig = &rtlpriv->dm_digtable;
 	struct rtl_mac *mac = rtl_mac(rtlpriv);
 
-	/* Determine the minimum RSSI  */
+	 
 	if ((mac->link_state < MAC80211_LINKED) &&
 	    (rtlpriv->dm.entry_min_undec_sm_pwdb == 0)) {
 		rtl_dm_dig->min_undec_pwdb_for_dm = 0;
@@ -378,7 +375,7 @@ static void rtl92ee_dm_check_rssi_monitor(struct ieee80211_hw *hw)
 	if (mac->opmode == NL80211_IFTYPE_AP ||
 	    mac->opmode == NL80211_IFTYPE_ADHOC ||
 	    mac->opmode == NL80211_IFTYPE_MESH_POINT) {
-		/* AP & ADHOC & MESH */
+		 
 		spin_lock_bh(&rtlpriv->locks.entry_list_lock);
 		list_for_each_entry(drv_priv, &rtlpriv->entry_list, list) {
 			struct rssi_sta *stat = &drv_priv->rssi_stat;
@@ -396,7 +393,7 @@ static void rtl92ee_dm_check_rssi_monitor(struct ieee80211_hw *hw)
 		}
 		spin_unlock_bh(&rtlpriv->locks.entry_list_lock);
 
-		/* If associated entry is found */
+		 
 		if (max != 0) {
 			dm->entry_max_undec_sm_pwdb = max;
 			RTPRINT(rtlpriv, FDM, DM_PWDB,
@@ -404,7 +401,7 @@ static void rtl92ee_dm_check_rssi_monitor(struct ieee80211_hw *hw)
 		} else {
 			dm->entry_max_undec_sm_pwdb = 0;
 		}
-		/* If associated entry is found */
+		 
 		if (min != 0xff) {
 			dm->entry_min_undec_sm_pwdb = min;
 			RTPRINT(rtlpriv, FDM, DM_PWDB,
@@ -414,7 +411,7 @@ static void rtl92ee_dm_check_rssi_monitor(struct ieee80211_hw *hw)
 		}
 	}
 
-	/* Indicate Rx signal strength to FW. */
+	 
 	if (dm->useramask) {
 		h2c[3] = 0;
 		h2c[2] = (u8)(dm->undec_sm_pwdb & 0xFF);
@@ -472,7 +469,7 @@ static void rtl92ee_dm_check_edca_turbo(struct ieee80211_hw *hw)
 	u64 cur_txok_cnt = 0;
 	u64 cur_rxok_cnt = 0;
 	u32 edca_be_ul = 0x5ea42b;
-	u32 edca_be_dl = 0x5ea42b; /*not sure*/
+	u32 edca_be_dl = 0x5ea42b;  
 	u32 edca_be = 0x5ea42b;
 	bool is_cur_rdlstate;
 	bool b_edca_turbo_on = false;
@@ -484,7 +481,7 @@ static void rtl92ee_dm_check_edca_turbo(struct ieee80211_hw *hw)
 	cur_txok_cnt = rtlpriv->stats.txbytesunicast - last_txok_cnt;
 	cur_rxok_cnt = rtlpriv->stats.rxbytesunicast - last_rxok_cnt;
 
-	/*b_bias_on_rx = false;*/
+	 
 	b_edca_turbo_on = ((!rtlpriv->dm.is_any_nonbepkts) &&
 			   (!rtlpriv->dm.disable_framebursting)) ?
 			  true : false;
@@ -579,7 +576,7 @@ static void rtl92ee_dm_dynamic_primary_cca_ckeck(struct ieee80211_hw *hw)
 	bw_lsc_cnt = falsealm_cnt->cnt_bw_lsc;
 	is40mhz = rtlpriv->mac80211.bw_40;
 	sec_ch_offset = rtlpriv->mac80211.cur_40_prime_sc;
-	/* NIC: 2: sec is below,  1: sec is above */
+	 
 
 	if (rtlpriv->mac80211.opmode == NL80211_IFTYPE_AP) {
 		cur_mf_state = MF_USC_LSC;
@@ -594,9 +591,7 @@ static void rtl92ee_dm_dynamic_primary_cca_ckeck(struct ieee80211_hw *hw)
 		return;
 
 	if (primarycca->pricca_flag == 0) {
-		/* Primary channel is above
-		 * NOTE: duplicate CTS can remove this condition
-		 */
+		 
 		if (sec_ch_offset == 2) {
 			if ((ofdm_cca > OFDMCCA_TH) &&
 			    (bw_lsc_cnt > (bw_usc_cnt + BW_IND_BIAS)) &&
@@ -652,13 +647,13 @@ static void rtl92ee_dm_dynamic_primary_cca_ckeck(struct ieee80211_hw *hw)
 				primarycca->dup_rts_flag = 0;
 			}
 		}
-	} else {/* PrimaryCCA->PriCCA_flag==1 */
+	} else { 
 		count_down--;
 		if (count_down == 0) {
 			count_down = MONITOR_TIME;
 			primarycca->pricca_flag = 0;
 			cur_mf_state = MF_USC_LSC;
-			/* default */
+			 
 			rtl92ee_dm_write_dynamic_cca(hw, cur_mf_state);
 			rtlpriv->rtlhal.rts_en = 0;
 			primarycca->dup_rts_flag = 0;
@@ -683,7 +678,7 @@ static void rtl92ee_dm_dynamic_atc_switch(struct ieee80211_hw *hw)
 				      ATC_STATUS_ON);
 			rtldm->atc_status = ATC_STATUS_ON;
 		}
-		/* Disable CFO tracking for BT */
+		 
 		if (rtlpriv->cfg->ops->get_btc_status()) {
 			if (!rtlpriv->btcoexist.btc_ops->
 			    btc_is_bt_disabled(rtlpriv)) {
@@ -692,7 +687,7 @@ static void rtl92ee_dm_dynamic_atc_switch(struct ieee80211_hw *hw)
 				return;
 			}
 		}
-		/* Reset Crystal Cap */
+		 
 		if (rtldm->crystal_cap != rtlpriv->efuse.crystalcap) {
 			rtldm->crystal_cap = rtlpriv->efuse.crystalcap;
 			crystal_cap = rtldm->crystal_cap & 0x3f;
@@ -824,12 +819,7 @@ static bool _rtl92ee_dm_ra_state_check(struct ieee80211_hw *hw,
 	u32 low_rssithresh_for_ra = p_ra->low_rssi_thresh_for_ra40m;
 	u8 state;
 
-	/* Threshold Adjustment:
-	 * when RSSI state trends to go up one or two levels,
-	 * make sure RSSI is high enough.
-	 * Here GoUpGap is added to solve
-	 * the boundary's level alternation issue.
-	 */
+	 
 	switch (*ratr_state) {
 	case DM_RATR_STA_INIT:
 	case DM_RATR_STA_HIGH:
@@ -847,7 +837,7 @@ static bool _rtl92ee_dm_ra_state_check(struct ieee80211_hw *hw,
 		break;
 	}
 
-	/* Decide RATRState by RSSI. */
+	 
 	if (rssi > high_rssithresh_for_ra)
 		state = DM_RATR_STA_HIGH;
 	else if (rssi > low_rssithresh_for_ra)
@@ -989,7 +979,7 @@ void rtl92ee_dm_dynamic_arfb_select(struct ieee80211_hw *hw,
 				rtl_write_dword(rtlpriv, REG_DARFRC + 4,
 						0x09090808);
 			}
-		} else {   /* collision_state == 0 */
+		} else {    
 			if (rate == DESC92C_RATEMCS12) {
 				rtl_write_dword(rtlpriv, REG_DARFRC,
 						0x05010000);
@@ -1017,7 +1007,7 @@ void rtl92ee_dm_dynamic_arfb_select(struct ieee80211_hw *hw,
 						0x0b0a0909);
 			}
 		}
-	} else {  /* MCS13~MCS15,  1SS, G-mode */
+	} else {   
 		if (collision_state == 1) {
 			if (rate == DESC92C_RATEMCS15) {
 				rtl_write_dword(rtlpriv, REG_DARFRC,
@@ -1040,7 +1030,7 @@ void rtl92ee_dm_dynamic_arfb_select(struct ieee80211_hw *hw,
 				rtl_write_dword(rtlpriv, REG_DARFRC + 4,
 						0x06050402);
 			}
-		} else{   /* collision_state == 0 */
+		} else{    
 			if (rate == DESC92C_RATEMCS15) {
 				rtl_write_dword(rtlpriv, REG_DARFRC,
 						0x03020000);

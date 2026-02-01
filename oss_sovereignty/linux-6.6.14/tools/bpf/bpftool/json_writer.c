@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0-or-later OR BSD-2-Clause)
-/*
- * Simple streaming JSON writer
- *
- * This takes care of the annoying bits of JSON syntax like the commas
- * after elements
- *
- * Authors:	Stephen Hemminger <stephen@networkplumber.org>
- */
+
+ 
 
 #include <stdio.h>
 #include <stdbool.h>
@@ -19,13 +12,13 @@
 #include "json_writer.h"
 
 struct json_writer {
-	FILE		*out;	/* output file */
-	unsigned	depth;  /* nesting */
-	bool		pretty; /* optional whitepace */
-	char		sep;	/* either nul or comma */
+	FILE		*out;	 
+	unsigned	depth;   
+	bool		pretty;  
+	char		sep;	 
 };
 
-/* indentation for pretty print */
+ 
 static void jsonw_indent(json_writer_t *self)
 {
 	unsigned i;
@@ -33,7 +26,7 @@ static void jsonw_indent(json_writer_t *self)
 		fputs("    ", self->out);
 }
 
-/* end current line and indent if pretty printing */
+ 
 static void jsonw_eol(json_writer_t *self)
 {
 	if (!self->pretty)
@@ -43,7 +36,7 @@ static void jsonw_eol(json_writer_t *self)
 	jsonw_indent(self);
 }
 
-/* If current object is not empty print a comma */
+ 
 static void jsonw_eor(json_writer_t *self)
 {
 	if (self->sep != '\0')
@@ -52,8 +45,8 @@ static void jsonw_eor(json_writer_t *self)
 }
 
 
-/* Output JSON encoded string */
-/* Handles C escapes, does not do Unicode */
+ 
+ 
 static void jsonw_puts(json_writer_t *self, const char *str)
 {
 	putc('"', self->out);
@@ -86,7 +79,7 @@ static void jsonw_puts(json_writer_t *self, const char *str)
 	putc('"', self->out);
 }
 
-/* Create a new JSON stream */
+ 
 json_writer_t *jsonw_new(FILE *f)
 {
 	json_writer_t *self = malloc(sizeof(*self));
@@ -99,7 +92,7 @@ json_writer_t *jsonw_new(FILE *f)
 	return self;
 }
 
-/* End output to JSON stream */
+ 
 void jsonw_destroy(json_writer_t **self_p)
 {
 	json_writer_t *self = *self_p;
@@ -122,7 +115,7 @@ void jsonw_reset(json_writer_t *self)
 	self->sep = '\0';
 }
 
-/* Basic blocks */
+ 
 static void jsonw_begin(json_writer_t *self, int c)
 {
 	jsonw_eor(self);
@@ -143,7 +136,7 @@ static void jsonw_end(json_writer_t *self, int c)
 }
 
 
-/* Add a JSON property name */
+ 
 void jsonw_name(json_writer_t *self, const char *name)
 {
 	jsonw_eor(self);
@@ -173,7 +166,7 @@ void jsonw_printf(json_writer_t *self, const char *fmt, ...)
 	va_end(ap);
 }
 
-/* Collections */
+ 
 void jsonw_start_object(json_writer_t *self)
 {
 	jsonw_begin(self, '{');
@@ -194,7 +187,7 @@ void jsonw_end_array(json_writer_t *self)
 	jsonw_end(self, ']');
 }
 
-/* JSON value types */
+ 
 void jsonw_string(json_writer_t *self, const char *value)
 {
 	jsonw_eor(self);
@@ -243,7 +236,7 @@ void jsonw_int(json_writer_t *self, int64_t num)
 	jsonw_printf(self, "%"PRId64, num);
 }
 
-/* Basic name/value objects */
+ 
 void jsonw_string_field(json_writer_t *self, const char *prop, const char *val)
 {
 	jsonw_name(self, prop);

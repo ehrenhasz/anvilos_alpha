@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/clk-provider.h>
 #include <linux/mfd/syscon.h>
 #include <linux/slab.h>
@@ -43,10 +43,7 @@ static const struct {
 	unsigned long flags;
 	u8 id;
 } sama5d2_systemck[] = {
-	/*
-	 * ddrck feeds DDR controller and is enabled by bootloader thus we need
-	 * to keep it enabled in case there is no Linux consumer for it.
-	 */
+	 
 	{ .n = "ddrck", .p = "masterck_div", .id = 2, .flags = CLK_IS_CRITICAL },
 	{ .n = "lcdck", .p = "masterck_div", .id = 3 },
 	{ .n = "uhpck", .p = "usbck",        .id = 6 },
@@ -110,10 +107,7 @@ static const struct {
 	{ .n = "aes_clk",     .id = 9, },
 	{ .n = "aesb_clk",    .id = 10, },
 	{ .n = "sha_clk",     .id = 12, },
-	/*
-	 * mpddr_clk feeds DDR controller and is enabled by bootloader thus we
-	 * need to keep it enabled in case there is no Linux consumer for it.
-	 */
+	 
 	{ .n = "mpddr_clk",   .id = 13, .flags = CLK_IS_CRITICAL },
 	{ .n = "matrix0_clk", .id = 15, },
 	{ .n = "sdmmc0_hclk", .id = 31, },

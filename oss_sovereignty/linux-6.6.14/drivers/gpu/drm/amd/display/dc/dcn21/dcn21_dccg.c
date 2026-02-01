@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "reg_helper.h"
 #include "core_types.h"
@@ -53,35 +30,15 @@ static void dccg21_update_dpp_dto(struct dccg *dccg, int dpp_inst, int req_dppcl
 		int phase;
 
 		if (req_dppclk) {
-			/*
-			 * program DPP DTO phase and modulo as below
-			 * phase = ceiling(dpp_pipe_clk_mhz / 10)
-			 * module = trunc(dpp_global_clk_mhz / 10)
-			 *
-			 * storing frequencies in registers allow dmcub fw
-			 * to run time lower clocks when possible for power saving
-			 *
-			 * ceiling phase and truncate modulo guarentees the divided
-			 * down per pipe dpp clock has high enough frequency
-			 */
+			 
 			phase = (req_dppclk + 9999) / 10000;
 
 			if (phase > modulo) {
-				/* phase > modulo result in screen corruption
-				 * ie phase = 30, mod = 29 for 4k@60 HDMI
-				 * in these case we don't want pipe clock to be divided
-				 */
+				 
 				phase = modulo;
 			}
 		} else {
-			/*
-			 *  set phase to 10 if dpp isn't used to
-			 *  prevent hard hang if access dpp register
-			 *  on unused pipe
-			 *
-			 *  DTO should be on to divide down un-used
-			 *  pipe clock for power saving
-			 */
+			 
 			phase = 10;
 		}
 

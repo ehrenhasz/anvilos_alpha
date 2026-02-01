@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * TDX guest user interface driver
- *
- * Copyright (C) 2022 Intel Corporation
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/miscdevice.h>
@@ -38,7 +34,7 @@ static long tdx_get_report0(struct tdx_report_req __user *req)
 		goto out;
 	}
 
-	/* Generate TDREPORT0 using "TDG.MR.REPORT" TDCALL */
+	 
 	ret = tdx_mcall_get_report0(reportdata, tdreport);
 	if (ret)
 		goto out;

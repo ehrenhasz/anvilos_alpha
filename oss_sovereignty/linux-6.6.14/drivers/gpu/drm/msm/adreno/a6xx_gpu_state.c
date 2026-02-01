@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2018-2019 The Linux Foundation. All rights reserved. */
+
+ 
 
 #include <linux/ascii85.h>
 #include "msm_gem.h"
@@ -110,10 +110,7 @@ static void *state_kmemdup(struct a6xx_gpu_state *a6xx_state, void *src,
 	return dst;
 }
 
-/*
- * Allocate 1MB for the crashdumper scratch region - 8k for the script and
- * the rest for the data
- */
+ 
 #define A6XX_CD_DATA_OFFSET 8192
 #define A6XX_CD_DATA_SIZE  (SZ_1M - 8192)
 
@@ -144,7 +141,7 @@ static int a6xx_crashdumper_run(struct msm_gpu *gpu,
 	if (!a6xx_gmu_sptprac_is_on(&a6xx_gpu->gmu))
 		return -EINVAL;
 
-	/* Make sure all pending memory writes are posted */
+	 
 	wmb();
 
 	gpu_write64(gpu, REG_A6XX_CP_CRASH_SCRIPT_BASE, dumper->iova);
@@ -159,7 +156,7 @@ static int a6xx_crashdumper_run(struct msm_gpu *gpu,
 	return ret;
 }
 
-/* read a value from the GX debug bus */
+ 
 static int debugbus_read(struct msm_gpu *gpu, u32 block, u32 offset,
 		u32 *data)
 {
@@ -171,7 +168,7 @@ static int debugbus_read(struct msm_gpu *gpu, u32 block, u32 offset,
 	gpu_write(gpu, REG_A6XX_DBGC_CFG_DBGBUS_SEL_C, reg);
 	gpu_write(gpu, REG_A6XX_DBGC_CFG_DBGBUS_SEL_D, reg);
 
-	/* Wait 1 us to make sure the data is flowing */
+	 
 	udelay(1);
 
 	data[0] = gpu_read(gpu, REG_A6XX_DBGC_CFG_DBGBUS_TRACE_BUF2);
@@ -186,7 +183,7 @@ static int debugbus_read(struct msm_gpu *gpu, u32 block, u32 offset,
 #define cxdbg_read(ptr, offset) \
 	msm_readl((ptr) + ((offset) << 2))
 
-/* read a value from the CX debug bus */
+ 
 static int cx_debugbus_read(void __iomem *cxdbg, u32 block, u32 offset,
 		u32 *data)
 {
@@ -198,7 +195,7 @@ static int cx_debugbus_read(void __iomem *cxdbg, u32 block, u32 offset,
 	cxdbg_write(cxdbg, REG_A6XX_CX_DBGC_CFG_DBGBUS_SEL_C, reg);
 	cxdbg_write(cxdbg, REG_A6XX_CX_DBGC_CFG_DBGBUS_SEL_D, reg);
 
-	/* Wait 1 us to make sure the data is flowing */
+	 
 	udelay(1);
 
 	data[0] = cxdbg_read(cxdbg, REG_A6XX_CX_DBGC_CFG_DBGBUS_TRACE_BUF2);
@@ -207,7 +204,7 @@ static int cx_debugbus_read(void __iomem *cxdbg, u32 block, u32 offset,
 	return 2;
 }
 
-/* Read a chunk of data from the VBIF debug bus */
+ 
 static int vbif_debugbus_read(struct msm_gpu *gpu, u32 ctrl0, u32 ctrl1,
 		u32 reg, int count, u32 *data)
 {
@@ -246,17 +243,17 @@ static void a6xx_get_vbif_debugbus_block(struct msm_gpu *gpu,
 
 	obj->handle = NULL;
 
-	/* Get the current clock setting */
+	 
 	clk = gpu_read(gpu, REG_A6XX_VBIF_CLKON);
 
-	/* Force on the bus so we can read it */
+	 
 	gpu_write(gpu, REG_A6XX_VBIF_CLKON,
 		clk | A6XX_VBIF_CLKON_FORCE_ON_TESTBUS);
 
-	/* We will read from BUS2 first, so disable BUS1 */
+	 
 	gpu_write(gpu, REG_A6XX_VBIF_TEST_BUS1_CTRL0, 0);
 
-	/* Enable the VBIF bus for reading */
+	 
 	gpu_write(gpu, REG_A6XX_VBIF_TEST_BUS_OUT_CTRL, 1);
 
 	ptr = obj->data;
@@ -273,7 +270,7 @@ static void a6xx_get_vbif_debugbus_block(struct msm_gpu *gpu,
 			REG_A6XX_VBIF_TEST_BUS2_CTRL1,
 			1 << i, 18, ptr);
 
-	/* Stop BUS2 so we can turn on BUS1 */
+	 
 	gpu_write(gpu, REG_A6XX_VBIF_TEST_BUS2_CTRL0, 0);
 
 	for (i = 0; i < XIN_CORE_BLOCKS; i++)
@@ -282,7 +279,7 @@ static void a6xx_get_vbif_debugbus_block(struct msm_gpu *gpu,
 			REG_A6XX_VBIF_TEST_BUS1_CTRL1,
 			1 << i, 12, ptr);
 
-	/* Restore the VBIF clock setting */
+	 
 	gpu_write(gpu, REG_A6XX_VBIF_CLKON, clk);
 }
 
@@ -329,7 +326,7 @@ static void a6xx_get_debugbus(struct msm_gpu *gpu,
 	void __iomem *cxdbg = NULL;
 	int nr_debugbus_blocks;
 
-	/* Set up the GX debug bus */
+	 
 
 	gpu_write(gpu, REG_A6XX_DBGC_CFG_DBGBUS_CNTLT,
 		A6XX_DBGC_CFG_DBGBUS_CNTLT_SEGT(0xf));
@@ -350,9 +347,7 @@ static void a6xx_get_debugbus(struct msm_gpu *gpu,
 	gpu_write(gpu, REG_A6XX_DBGC_CFG_DBGBUS_MASKL_2, 0);
 	gpu_write(gpu, REG_A6XX_DBGC_CFG_DBGBUS_MASKL_3, 0);
 
-	/* Set up the CX debug bus - it lives elsewhere in the system so do a
-	 * temporary ioremap for the registers
-	 */
+	 
 	res = platform_get_resource_byname(gpu->pdev, IORESOURCE_MEM,
 			"cx_dbgc");
 
@@ -402,11 +397,7 @@ static void a6xx_get_debugbus(struct msm_gpu *gpu,
 
 		a6xx_state->nr_debugbus = ARRAY_SIZE(a6xx_debugbus_blocks);
 
-		/*
-		 * GBIF has same debugbus as of other GPU blocks, fall back to
-		 * default path if GPU uses GBIF, also GBIF uses exactly same
-		 * ID as of VBIF.
-		 */
+		 
 		if (a6xx_has_gbif(to_adreno_gpu(gpu))) {
 			a6xx_get_debugbus_block(gpu, a6xx_state,
 				&a6xx_gbif_debugbus_block,
@@ -425,7 +416,7 @@ static void a6xx_get_debugbus(struct msm_gpu *gpu,
 		}
 	}
 
-	/*  Dump the VBIF debugbus on applicable targets */
+	 
 	if (!a6xx_has_gbif(to_adreno_gpu(gpu))) {
 		a6xx_state->vbif_debugbus =
 			state_kcalloc(a6xx_state, 1,
@@ -461,7 +452,7 @@ static void a6xx_get_debugbus(struct msm_gpu *gpu,
 
 #define RANGE(reg, a) ((reg)[(a) + 1] - (reg)[(a)] + 1)
 
-/* Read a data cluster from behind the AHB aperture */
+ 
 static void a6xx_get_dbgahb_cluster(struct msm_gpu *gpu,
 		struct a6xx_gpu_state *a6xx_state,
 		const struct a6xx_dbgahb_cluster *dbgahb,
@@ -529,7 +520,7 @@ static void a6xx_get_dbgahb_clusters(struct msm_gpu *gpu,
 			&a6xx_state->dbgahb_clusters[i], dumper);
 }
 
-/* Read a data cluster from the CP aperture with the crashdumper */
+ 
 static void a6xx_get_cluster(struct msm_gpu *gpu,
 		struct a6xx_gpu_state *a6xx_state,
 		const struct a6xx_cluster *cluster,
@@ -543,7 +534,7 @@ static void a6xx_get_cluster(struct msm_gpu *gpu,
 	int i, regcount = 0;
 	u32 id = cluster->id;
 
-	/* Skip registers that are not present on older generation */
+	 
 	if (!adreno_is_a660_family(adreno_gpu) &&
 			cluster->registers == a660_fe_cluster)
 		return;
@@ -552,7 +543,7 @@ static void a6xx_get_cluster(struct msm_gpu *gpu,
 			cluster->registers == a6xx_ps_cluster)
 		id = CLUSTER_VPC_PS;
 
-	/* Some clusters need a selector register to be programmed too */
+	 
 	if (cluster->sel_reg)
 		in += CRASHDUMP_WRITE(in, cluster->sel_reg, cluster->sel_val);
 
@@ -609,7 +600,7 @@ static void a6xx_get_clusters(struct msm_gpu *gpu,
 			&a6xx_state->clusters[i], dumper);
 }
 
-/* Read a shader / debug block from the HLSQ aperture with the crashdumper */
+ 
 static void a6xx_get_shader_block(struct msm_gpu *gpu,
 		struct a6xx_gpu_state *a6xx_state,
 		const struct a6xx_shader_block *block,
@@ -660,7 +651,7 @@ static void a6xx_get_shaders(struct msm_gpu *gpu,
 			&a6xx_state->shaders[i], dumper);
 }
 
-/* Read registers from behind the HLSQ aperture with the crashdumper */
+ 
 static void a6xx_get_crashdumper_hlsq_registers(struct msm_gpu *gpu,
 		struct a6xx_gpu_state *a6xx_state,
 		const struct a6xx_registers *regs,
@@ -698,7 +689,7 @@ static void a6xx_get_crashdumper_hlsq_registers(struct msm_gpu *gpu,
 		regcount * sizeof(u32));
 }
 
-/* Read a block of registers using the crashdumper */
+ 
 static void a6xx_get_crashdumper_registers(struct msm_gpu *gpu,
 		struct a6xx_gpu_state *a6xx_state,
 		const struct a6xx_registers *regs,
@@ -710,12 +701,12 @@ static void a6xx_get_crashdumper_registers(struct msm_gpu *gpu,
 	u64 out = dumper->iova + A6XX_CD_DATA_OFFSET;
 	int i, regcount = 0;
 
-	/* Skip unsupported registers on older generations */
+	 
 	if (!adreno_is_a660_family(to_adreno_gpu(gpu)) &&
 			(regs->registers == a660_registers))
 		return;
 
-	/* Some blocks might need to program a selector register first */
+	 
 	if (regs->val0)
 		in += CRASHDUMP_WRITE(in, regs->val0, regs->val1);
 
@@ -741,7 +732,7 @@ static void a6xx_get_crashdumper_registers(struct msm_gpu *gpu,
 		regcount * sizeof(u32));
 }
 
-/* Read a block of registers via AHB */
+ 
 static void a6xx_get_ahb_gpu_registers(struct msm_gpu *gpu,
 		struct a6xx_gpu_state *a6xx_state,
 		const struct a6xx_registers *regs,
@@ -749,7 +740,7 @@ static void a6xx_get_ahb_gpu_registers(struct msm_gpu *gpu,
 {
 	int i, regcount = 0, index = 0;
 
-	/* Skip unsupported registers on older generations */
+	 
 	if (!adreno_is_a660_family(to_adreno_gpu(gpu)) &&
 			(regs->registers == a660_registers))
 		return;
@@ -772,7 +763,7 @@ static void a6xx_get_ahb_gpu_registers(struct msm_gpu *gpu,
 	}
 }
 
-/* Read a block of GMU registers */
+ 
 static void _a6xx_get_gmu_registers(struct msm_gpu *gpu,
 		struct a6xx_gpu_state *a6xx_state,
 		const struct a6xx_registers *regs,
@@ -824,7 +815,7 @@ static void a6xx_get_gmu_registers(struct msm_gpu *gpu,
 
 	a6xx_state->nr_gmu_registers = 3;
 
-	/* Get the CX GMU registers from AHB */
+	 
 	_a6xx_get_gmu_registers(gpu, a6xx_state, &a6xx_gmu_reglist[0],
 		&a6xx_state->gmu_registers[0], false);
 	_a6xx_get_gmu_registers(gpu, a6xx_state, &a6xx_gmu_reglist[1],
@@ -833,7 +824,7 @@ static void a6xx_get_gmu_registers(struct msm_gpu *gpu,
 	if (!a6xx_gmu_gx_is_on(&a6xx_gpu->gmu))
 		return;
 
-	/* Set the fence to ALLOW mode so we can access the registers */
+	 
 	gpu_write(gpu, REG_A6XX_GMU_AO_AHB_FENCE_CTRL, 0);
 
 	_a6xx_get_gmu_registers(gpu, a6xx_state, &a6xx_gmu_reglist[2],
@@ -915,13 +906,7 @@ static void a6xx_get_registers(struct msm_gpu *gpu,
 				a6xx_state, &a6xx_vbif_reglist,
 				&a6xx_state->registers[index++]);
 	if (!dumper) {
-		/*
-		 * We can't use the crashdumper when the SMMU is stalled,
-		 * because the GPU has no memory access until we resume
-		 * translation (but we don't want to do that until after
-		 * we have captured as much useful GPU state as possible).
-		 * So instead collect registers via the CPU:
-		 */
+		 
 		for (i = 0; i < ARRAY_SIZE(a6xx_reglist); i++)
 			a6xx_get_ahb_gpu_registers(gpu,
 				a6xx_state, &a6xx_reglist[i],
@@ -944,11 +929,11 @@ static void a6xx_get_registers(struct msm_gpu *gpu,
 
 static u32 a6xx_get_cp_roq_size(struct msm_gpu *gpu)
 {
-	/* The value at [16:31] is in 4dword units. Convert it to dwords */
+	 
 	return gpu_read(gpu, REG_A6XX_CP_ROQ_THRESHOLDS_2) >> 14;
 }
 
-/* Read a block of data from an indexed register pair */
+ 
 static void a6xx_get_indexed_regs(struct msm_gpu *gpu,
 		struct a6xx_gpu_state *a6xx_state,
 		struct a6xx_indexed_registers *indexed,
@@ -964,10 +949,10 @@ static void a6xx_get_indexed_regs(struct msm_gpu *gpu,
 	if (!obj->data)
 		return;
 
-	/* All the indexed banks start at address 0 */
+	 
 	gpu_write(gpu, indexed->addr, 0);
 
-	/* Read the data - each read increments the internal address by 1 */
+	 
 	for (i = 0; i < indexed->count; i++)
 		obj->data[i] = gpu_read(gpu, indexed->data);
 }
@@ -994,7 +979,7 @@ static void a6xx_get_indexed_registers(struct msm_gpu *gpu,
 		val = gpu_read(gpu, REG_A6XX_CP_CHICKEN_DBG);
 		gpu_write(gpu, REG_A6XX_CP_CHICKEN_DBG, val | 4);
 
-		/* Get the contents of the CP mempool */
+		 
 		a6xx_get_indexed_regs(gpu, a6xx_state, &a6xx_cp_mempool_indexed,
 			&a6xx_state->indexed_regs[i]);
 
@@ -1003,21 +988,18 @@ static void a6xx_get_indexed_registers(struct msm_gpu *gpu,
 		return;
 	}
 
-	/* Set the CP mempool size to 0 to stabilize it while dumping */
+	 
 	mempool_size = gpu_read(gpu, REG_A6XX_CP_MEM_POOL_SIZE);
 	gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, 0);
 
-	/* Get the contents of the CP mempool */
+	 
 	a6xx_get_indexed_regs(gpu, a6xx_state, &a6xx_cp_mempool_indexed,
 		&a6xx_state->indexed_regs[i]);
 
-	/*
-	 * Offset 0x2000 in the mempool is the size - copy the saved size over
-	 * so the data is consistent
-	 */
+	 
 	a6xx_state->indexed_regs[i].data[0x2000] = mempool_size;
 
-	/* Restore the size in the hardware */
+	 
 	gpu_write(gpu, REG_A6XX_CP_MEM_POOL_SIZE, mempool_size);
 
 	a6xx_state->nr_indexed_regs = count;
@@ -1038,7 +1020,7 @@ struct msm_gpu_state *a6xx_gpu_state_get(struct msm_gpu *gpu)
 
 	INIT_LIST_HEAD(&a6xx_state->objs);
 
-	/* Get the generic state from the adreno core */
+	 
 	adreno_gpu_state_get(gpu, &a6xx_state->base);
 
 	if (!adreno_has_gmu_wrapper(adreno_gpu)) {
@@ -1051,19 +1033,14 @@ struct msm_gpu_state *a6xx_gpu_state_get(struct msm_gpu *gpu)
 		a6xx_snapshot_gmu_hfi_history(gpu, a6xx_state);
 	}
 
-	/* If GX isn't on the rest of the data isn't going to be accessible */
+	 
 	if (!adreno_has_gmu_wrapper(adreno_gpu) && !a6xx_gmu_gx_is_on(&a6xx_gpu->gmu))
 		return &a6xx_state->base;
 
-	/* Get the banks of indexed registers */
+	 
 	a6xx_get_indexed_registers(gpu, a6xx_state);
 
-	/*
-	 * Try to initialize the crashdumper, if we are not dumping state
-	 * with the SMMU stalled.  The crashdumper needs memory access to
-	 * write out GPU state, so we need to skip this when the SMMU is
-	 * stalled in response to an iova fault
-	 */
+	 
 	if (!stalled && !gpu->needs_hw_init &&
 	    !a6xx_crashdumper_init(gpu, &_dumper)) {
 		dumper = &_dumper;
@@ -1269,10 +1246,7 @@ static void a6xx_show_debugbus_block(const struct a6xx_debugbus_block *block,
 	if (block) {
 		print_name(p, "  - debugbus-block: ", block->name);
 
-		/*
-		 * count for regular debugbus data is in quadwords,
-		 * but print the size in dwords for consistency
-		 */
+		 
 		drm_printf(p, "    count: %d\n", block->count << 1);
 
 		print_ascii85(p, block->count << 3, data);
@@ -1296,7 +1270,7 @@ static void a6xx_show_debugbus(struct a6xx_gpu_state *a6xx_state,
 		drm_puts(p, "  - debugbus-block: A6XX_DBGBUS_VBIF\n");
 		drm_printf(p, "    count: %d\n", VBIF_DEBUGBUS_BLOCK_SIZE);
 
-		/* vbif debugbus data is in dwords.  Confusing, huh? */
+		 
 		print_ascii85(p, VBIF_DEBUGBUS_BLOCK_SIZE << 2, obj->data);
 	}
 

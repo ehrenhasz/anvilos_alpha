@@ -1,23 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2021 HabanaLabs, Ltd.
- * All Rights Reserved.
- */
+
+ 
 
 #include <linux/vmalloc.h>
 #include <uapi/drm/habanalabs_accel.h>
 #include "habanalabs.h"
 
-/**
- * hl_format_as_binary - helper function, format an integer as binary
- *                       using supplied scratch buffer
- * @buf: the buffer to use
- * @buf_len: buffer capacity
- * @n: number to format
- *
- * Returns pointer to buffer
- */
+ 
 char *hl_format_as_binary(char *buf, size_t buf_len, u32 n)
 {
 	int i;
@@ -33,13 +22,11 @@ char *hl_format_as_binary(char *buf, size_t buf_len, u32 n)
 	wrptr[0] = '0';
 	wrptr[1] = 'b';
 	wrptr += 2;
-	/* Remove 3 characters from length for '0b' and '\0' termination */
+	 
 	buf_len -= 3;
 
 	for (i = 0; i < sizeof(n) * BITS_PER_BYTE && buf_len; ++i, n <<= 1) {
-		/* Writing bit calculation in one line would cause a false
-		 * positive static code analysis error, so splitting.
-		 */
+		 
 		bit = n & (1 << (sizeof(n) * BITS_PER_BYTE - 1));
 		bit = !!bit;
 		leading0 &= !bit;
@@ -54,16 +41,7 @@ char *hl_format_as_binary(char *buf, size_t buf_len, u32 n)
 	return buf;
 }
 
-/**
- * resize_to_fit - helper function, resize buffer to fit given amount of data
- * @buf: destination buffer double pointer
- * @size: pointer to the size container
- * @desired_size: size the buffer must contain
- *
- * Returns 0 on success or error code on failure.
- * On success, the size of buffer is at least desired_size. Buffer is allocated
- * via vmalloc and must be freed with vfree.
- */
+ 
 static int resize_to_fit(char **buf, size_t *size, size_t desired_size)
 {
 	char *resized_buf;
@@ -72,7 +50,7 @@ static int resize_to_fit(char **buf, size_t *size, size_t desired_size)
 	if (*size >= desired_size)
 		return 0;
 
-	/* Not enough space to print all, have to resize */
+	 
 	new_size = max_t(size_t, PAGE_SIZE, round_up(desired_size, PAGE_SIZE));
 	resized_buf = vmalloc(new_size);
 	if (!resized_buf)
@@ -85,23 +63,7 @@ static int resize_to_fit(char **buf, size_t *size, size_t desired_size)
 	return 1;
 }
 
-/**
- * hl_snprintf_resize() - print formatted data to buffer, resize as needed
- * @buf: buffer double pointer, to be written to and resized, must be either
- *       NULL or allocated with vmalloc.
- * @size: current size of the buffer
- * @offset: current offset to write to
- * @format: format of the data
- *
- * This function will write formatted data into the buffer. If buffer is not
- * large enough, it will be resized using vmalloc. Size may be modified if the
- * buffer was resized, offset will be advanced by the number of bytes written
- * not including the terminating character
- *
- * Returns 0 on success or error code on failure
- *
- * Note that the buffer has to be manually released using vfree.
- */
+ 
 int hl_snprintf_resize(char **buf, size_t *size, size_t *offset,
 			   const char *format, ...)
 {
@@ -120,7 +82,7 @@ int hl_snprintf_resize(char **buf, size_t *size, size_t *offset,
 	if (rc < 0)
 		return rc;
 	else if (rc > 0) {
-		/* Resize was needed, write again */
+		 
 		va_start(args, format);
 		length = vsnprintf(*buf + *offset, *size - *offset, format,
 				   args);
@@ -132,12 +94,7 @@ int hl_snprintf_resize(char **buf, size_t *size, size_t *offset,
 	return 0;
 }
 
-/**
- * hl_sync_engine_to_string - convert engine type enum to string literal
- * @engine_type: engine type (TPC/MME/DMA)
- *
- * Return the resolved string literal
- */
+ 
 const char *hl_sync_engine_to_string(enum hl_sync_engine_type engine_type)
 {
 	switch (engine_type) {
@@ -151,17 +108,7 @@ const char *hl_sync_engine_to_string(enum hl_sync_engine_type engine_type)
 	return "Invalid Engine Type";
 }
 
-/**
- * hl_print_resize_sync_engine - helper function, format engine name and ID
- * using hl_snprintf_resize
- * @buf: destination buffer double pointer to be used with hl_snprintf_resize
- * @size: pointer to the size container
- * @offset: pointer to the offset container
- * @engine_type: engine type (TPC/MME/DMA)
- * @engine_id: engine numerical id
- *
- * Returns 0 on success or error code on failure
- */
+ 
 static int hl_print_resize_sync_engine(char **buf, size_t *size, size_t *offset,
 				enum hl_sync_engine_type engine_type,
 				u32 engine_id)
@@ -170,15 +117,7 @@ static int hl_print_resize_sync_engine(char **buf, size_t *size, size_t *offset,
 			hl_sync_engine_to_string(engine_type), engine_id);
 }
 
-/**
- * hl_state_dump_get_sync_name - transform sync object id to name if available
- * @hdev: pointer to the device
- * @sync_id: sync object id
- *
- * Returns a name literal or NULL if not resolved.
- * Note: returning NULL shall not be considered as a failure, as not all
- * sync objects are named.
- */
+ 
 const char *hl_state_dump_get_sync_name(struct hl_device *hdev, u32 sync_id)
 {
 	struct hl_state_dump_specs *sds = &hdev->state_dump_specs;
@@ -192,16 +131,7 @@ const char *hl_state_dump_get_sync_name(struct hl_device *hdev, u32 sync_id)
 	return NULL;
 }
 
-/**
- * hl_state_dump_get_monitor_name - transform monitor object dump to monitor
- * name if available
- * @hdev: pointer to the device
- * @mon: monitor state dump
- *
- * Returns a name literal or NULL if not resolved.
- * Note: returning NULL shall not be considered as a failure, as not all
- * monitors are named.
- */
+ 
 const char *hl_state_dump_get_monitor_name(struct hl_device *hdev,
 					struct hl_mon_state_dump *mon)
 {
@@ -216,12 +146,7 @@ const char *hl_state_dump_get_monitor_name(struct hl_device *hdev,
 	return NULL;
 }
 
-/**
- * hl_state_dump_free_sync_to_engine_map - free sync object to engine map
- * @map: sync object to engine map
- *
- * Note: generic free implementation, the allocation is implemented per ASIC.
- */
+ 
 void hl_state_dump_free_sync_to_engine_map(struct hl_sync_to_engine_map *map)
 {
 	struct hl_sync_to_engine_map_entry *entry;
@@ -234,16 +159,7 @@ void hl_state_dump_free_sync_to_engine_map(struct hl_sync_to_engine_map *map)
 	}
 }
 
-/**
- * hl_state_dump_get_sync_to_engine - transform sync_id to
- * hl_sync_to_engine_map_entry if available for current id
- * @map: sync object to engine map
- * @sync_id: sync object id
- *
- * Returns the translation entry if found or NULL if not.
- * Note, returned NULL shall not be considered as a failure as the map
- * does not cover all possible, it is a best effort sync ids.
- */
+ 
 static struct hl_sync_to_engine_map_entry *
 hl_state_dump_get_sync_to_engine(struct hl_sync_to_engine_map *map, u32 sync_id)
 {
@@ -255,18 +171,12 @@ hl_state_dump_get_sync_to_engine(struct hl_sync_to_engine_map *map, u32 sync_id)
 	return NULL;
 }
 
-/**
- * hl_state_dump_read_sync_objects - read sync objects array
- * @hdev: pointer to the device
- * @index: sync manager block index starting with E_N
- *
- * Returns array of size SP_SYNC_OBJ_AMOUNT on success or NULL on failure
- */
+ 
 static u32 *hl_state_dump_read_sync_objects(struct hl_device *hdev, u32 index)
 {
 	struct hl_state_dump_specs *sds = &hdev->state_dump_specs;
 	u32 *sync_objects;
-	s64 base_addr; /* Base addr can be negative */
+	s64 base_addr;  
 	int i;
 
 	base_addr = sds->props[SP_SYNC_OBJ_BASE_ADDR] +
@@ -282,29 +192,14 @@ static u32 *hl_state_dump_read_sync_objects(struct hl_device *hdev, u32 index)
 	return sync_objects;
 }
 
-/**
- * hl_state_dump_free_sync_objects - free sync objects array allocated by
- * hl_state_dump_read_sync_objects
- * @sync_objects: sync objects array
- */
+ 
 static void hl_state_dump_free_sync_objects(u32 *sync_objects)
 {
 	vfree(sync_objects);
 }
 
 
-/**
- * hl_state_dump_print_syncs_single_block - print active sync objects on a
- * single block
- * @hdev: pointer to the device
- * @index: sync manager block index starting with E_N
- * @buf: destination buffer double pointer to be used with hl_snprintf_resize
- * @size: pointer to the size container
- * @offset: pointer to the offset container
- * @map: sync engines names map
- *
- * Returns 0 on success or error code on failure
- */
+ 
 static int
 hl_state_dump_print_syncs_single_block(struct hl_device *hdev, u32 index,
 				char **buf, size_t *size, size_t *offset,
@@ -355,7 +250,7 @@ hl_state_dump_print_syncs_single_block(struct hl_device *hdev, u32 index,
 		if (rc)
 			goto free_sync_objects;
 
-		/* Append engine string */
+		 
 		entry = hl_state_dump_get_sync_to_engine(map,
 			(u32)sync_object_addr);
 		if (entry) {
@@ -381,15 +276,7 @@ out:
 	return rc;
 }
 
-/**
- * hl_state_dump_print_syncs - print active sync objects
- * @hdev: pointer to the device
- * @buf: destination buffer double pointer to be used with hl_snprintf_resize
- * @size: pointer to the size container
- * @offset: pointer to the offset container
- *
- * Returns 0 on success or error code on failure
- */
+ 
 static int hl_state_dump_print_syncs(struct hl_device *hdev,
 					char **buf, size_t *size,
 					size_t *offset)
@@ -436,21 +323,13 @@ free_map_mem:
 	return rc;
 }
 
-/**
- * hl_state_dump_alloc_read_sm_block_monitors - read monitors for a specific
- * block
- * @hdev: pointer to the device
- * @index: sync manager block index starting with E_N
- *
- * Returns an array of monitor data of size SP_MONITORS_AMOUNT or NULL
- * on error
- */
+ 
 static struct hl_mon_state_dump *
 hl_state_dump_alloc_read_sm_block_monitors(struct hl_device *hdev, u32 index)
 {
 	struct hl_state_dump_specs *sds = &hdev->state_dump_specs;
 	struct hl_mon_state_dump *monitors;
-	s64 base_addr; /* Base addr can be negative */
+	s64 base_addr;  
 	int i;
 
 	monitors = vmalloc(sds->props[SP_MONITORS_AMOUNT] *
@@ -486,27 +365,13 @@ hl_state_dump_alloc_read_sm_block_monitors(struct hl_device *hdev, u32 index)
 	return monitors;
 }
 
-/**
- * hl_state_dump_free_monitors - free the monitors structure
- * @monitors: monitors array created with
- *            hl_state_dump_alloc_read_sm_block_monitors
- */
+ 
 static void hl_state_dump_free_monitors(struct hl_mon_state_dump *monitors)
 {
 	vfree(monitors);
 }
 
-/**
- * hl_state_dump_print_monitors_single_block - print active monitors on a
- * single block
- * @hdev: pointer to the device
- * @index: sync manager block index starting with E_N
- * @buf: destination buffer double pointer to be used with hl_snprintf_resize
- * @size: pointer to the size container
- * @offset: pointer to the offset container
- *
- * Returns 0 on success or error code on failure
- */
+ 
 static int hl_state_dump_print_monitors_single_block(struct hl_device *hdev,
 						u32 index,
 						char **buf, size_t *size,
@@ -534,7 +399,7 @@ static int hl_state_dump_print_monitors_single_block(struct hl_device *hdev,
 		if (!(sds->funcs.monitor_valid(&monitors[i])))
 			continue;
 
-		/* Monitor is valid, dump it */
+		 
 		rc = sds->funcs.print_single_monitor(buf, size, offset, hdev,
 							&monitors[i]);
 		if (rc)
@@ -549,15 +414,7 @@ out:
 	return rc;
 }
 
-/**
- * hl_state_dump_print_monitors - print active monitors
- * @hdev: pointer to the device
- * @buf: destination buffer double pointer to be used with hl_snprintf_resize
- * @size: pointer to the size container
- * @offset: pointer to the offset container
- *
- * Returns 0 on success or error code on failure
- */
+ 
 static int hl_state_dump_print_monitors(struct hl_device *hdev,
 					char **buf, size_t *size,
 					size_t *offset)
@@ -591,15 +448,7 @@ out:
 	return rc;
 }
 
-/**
- * hl_state_dump_print_engine_fences - print active fences for a specific
- * engine
- * @hdev: pointer to the device
- * @engine_type: engine type to use
- * @buf: destination buffer double pointer to be used with hl_snprintf_resize
- * @size: pointer to the size container
- * @offset: pointer to the offset container
- */
+ 
 static int
 hl_state_dump_print_engine_fences(struct hl_device *hdev,
 				  enum hl_sync_engine_type engine_type,
@@ -643,13 +492,7 @@ out:
 	return rc;
 }
 
-/**
- * hl_state_dump_print_fences - print active fences
- * @hdev: pointer to the device
- * @buf: destination buffer double pointer to be used with hl_snprintf_resize
- * @size: pointer to the size container
- * @offset: pointer to the offset container
- */
+ 
 static int hl_state_dump_print_fences(struct hl_device *hdev, char **buf,
 				      size_t *size, size_t *offset)
 {
@@ -675,10 +518,7 @@ out:
 	return rc;
 }
 
-/**
- * hl_state_dump() - dump system state
- * @hdev: pointer to device structure
- */
+ 
 int hl_state_dump(struct hl_device *hdev)
 {
 	char *buf = NULL;

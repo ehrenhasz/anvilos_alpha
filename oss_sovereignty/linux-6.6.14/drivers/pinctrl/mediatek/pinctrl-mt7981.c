@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * The MT7981 driver based on Linux generic pinctrl binding.
- *
- * Copyright (C) 2020 MediaTek Inc.
- * Author: Sam Shih <sam.shih@mediatek.com>
- */
+
+ 
 
 #include "pinctrl-moore.h"
 
@@ -437,35 +432,35 @@ static const struct mtk_pin_field_calc mt7981_pin_r1_range[] = {
 };
 
 static const unsigned int mt7981_pull_type[] = {
-	MTK_PULL_PUPD_R1R0_TYPE,/*0*/ MTK_PULL_PUPD_R1R0_TYPE,/*1*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*2*/ MTK_PULL_PUPD_R1R0_TYPE,/*3*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*4*/ MTK_PULL_PUPD_R1R0_TYPE,/*5*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*6*/ MTK_PULL_PUPD_R1R0_TYPE,/*7*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*8*/ MTK_PULL_PUPD_R1R0_TYPE,/*9*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*10*/ MTK_PULL_PUPD_R1R0_TYPE,/*11*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*12*/ MTK_PULL_PUPD_R1R0_TYPE,/*13*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*14*/ MTK_PULL_PUPD_R1R0_TYPE,/*15*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*16*/ MTK_PULL_PUPD_R1R0_TYPE,/*17*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*18*/ MTK_PULL_PUPD_R1R0_TYPE,/*19*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*20*/ MTK_PULL_PUPD_R1R0_TYPE,/*21*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*22*/ MTK_PULL_PUPD_R1R0_TYPE,/*23*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*24*/ MTK_PULL_PUPD_R1R0_TYPE,/*25*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*26*/ MTK_PULL_PUPD_R1R0_TYPE,/*27*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*28*/ MTK_PULL_PUPD_R1R0_TYPE,/*29*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*30*/ MTK_PULL_PUPD_R1R0_TYPE,/*31*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*32*/ MTK_PULL_PUPD_R1R0_TYPE,/*33*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*34*/ MTK_PULL_PUPD_R1R0_TYPE,/*35*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*36*/ MTK_PULL_PUPD_R1R0_TYPE,/*37*/
-	MTK_PULL_PUPD_R1R0_TYPE,/*38*/ MTK_PULL_PUPD_R1R0_TYPE,/*39*/
-	MTK_PULL_PU_PD_TYPE,/*40*/ MTK_PULL_PU_PD_TYPE,/*41*/
-	MTK_PULL_PU_PD_TYPE,/*42*/ MTK_PULL_PU_PD_TYPE,/*43*/
-	MTK_PULL_PU_PD_TYPE,/*44*/ MTK_PULL_PU_PD_TYPE,/*45*/
-	MTK_PULL_PU_PD_TYPE,/*46*/ MTK_PULL_PU_PD_TYPE,/*47*/
-	MTK_PULL_PU_PD_TYPE,/*48*/ MTK_PULL_PU_PD_TYPE,/*49*/
-	MTK_PULL_PU_PD_TYPE,/*50*/ MTK_PULL_PU_PD_TYPE,/*51*/
-	MTK_PULL_PU_PD_TYPE,/*52*/ MTK_PULL_PU_PD_TYPE,/*53*/
-	MTK_PULL_PU_PD_TYPE,/*54*/ MTK_PULL_PU_PD_TYPE,/*55*/
-	MTK_PULL_PU_PD_TYPE,/*56*/
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PUPD_R1R0_TYPE,  MTK_PULL_PUPD_R1R0_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE,  MTK_PULL_PU_PD_TYPE, 
+	MTK_PULL_PU_PD_TYPE, 
 };
 
 static const struct mtk_pin_reg_calc mt7981_reg_cals[] = {
@@ -543,12 +538,9 @@ static const struct mtk_pin_desc mt7981_pins[] = {
 	MT7981_PIN(56, "WF_HB10"),
 };
 
-/* List all groups consisting of these pins dedicated to the enablement of
- * certain hardware block and the corresponding mode for all of the pins.
- * The hardware probably has multiple combinations of these pinouts.
- */
+ 
 
-/* WA_AICE */
+ 
 static int mt7981_wa_aice1_pins[] = { 0, 1, };
 static int mt7981_wa_aice1_funcs[] = { 2, 2, };
 
@@ -564,7 +556,7 @@ static int mt7981_wm_aice1_funcs[] = { 2, 2, };
 static int mt7981_wm_aice2_pins[] = { 30, 31, };
 static int mt7981_wm_aice2_funcs[] = { 5, 5, };
 
-/* WM_UART */
+ 
 static int mt7981_wm_uart_0_pins[] = { 0, 1, };
 static int mt7981_wm_uart_0_funcs[] = { 5, 5, };
 
@@ -574,59 +566,59 @@ static int mt7981_wm_uart_1_funcs[] = { 4, 4, };
 static int mt7981_wm_uart_2_pins[] = { 30, 31, };
 static int mt7981_wm_uart_2_funcs[] = { 3, 3, };
 
-/* DFD */
+ 
 static int mt7981_dfd_pins[] = { 0, 1, 4, 5, };
 static int mt7981_dfd_funcs[] = { 5, 5, 6, 6, };
 
-/* SYS_WATCHDOG */
+ 
 static int mt7981_watchdog_pins[] = { 2, };
 static int mt7981_watchdog_funcs[] = { 1, };
 
 static int mt7981_watchdog1_pins[] = { 13, };
 static int mt7981_watchdog1_funcs[] = { 5, };
 
-/* PCIE_PERESET_N */
+ 
 static int mt7981_pcie_pereset_pins[] = { 3, };
 static int mt7981_pcie_pereset_funcs[] = { 1, };
 
-/* JTAG */
+ 
 static int mt7981_jtag_pins[] = { 4, 5, 6, 7, 8, };
 static int mt7981_jtag_funcs[] = { 1, 1, 1, 1, 1, };
 
-/* WM_JTAG */
+ 
 static int mt7981_wm_jtag_0_pins[] = { 4, 5, 6, 7, 8, };
 static int mt7981_wm_jtag_0_funcs[] = { 2, 2, 2, 2, 2, };
 
 static int mt7981_wm_jtag_1_pins[] = { 20, 21, 22, 23, 24, };
 static int mt7981_wm_jtag_1_funcs[] = { 5, 5, 5, 5, 5, };
 
-/* WO0_JTAG */
+ 
 static int mt7981_wo0_jtag_0_pins[] = { 9, 10, 11, 12, 13, };
 static int mt7981_wo0_jtag_0_funcs[] = { 1, 1, 1, 1, 1, };
 
 static int mt7981_wo0_jtag_1_pins[] = { 25, 26, 27, 28, 29, };
 static int mt7981_wo0_jtag_1_funcs[] = { 5, 5, 5, 5, 5, };
 
-/* UART2 */
+ 
 static int mt7981_uart2_0_pins[] = { 4, 5, 6, 7, };
 static int mt7981_uart2_0_funcs[] = { 3, 3, 3, 3, };
 
-/* GBE_LED0 */
+ 
 static int mt7981_gbe_led0_pins[] = { 8, };
 static int mt7981_gbe_led0_funcs[] = { 3, };
 
-/* PTA_EXT */
+ 
 static int mt7981_pta_ext_0_pins[] = { 4, 5, 6, };
 static int mt7981_pta_ext_0_funcs[] = { 4, 4, 4, };
 
 static int mt7981_pta_ext_1_pins[] = { 22, 23, 24, };
 static int mt7981_pta_ext_1_funcs[] = { 4, 4, 4, };
 
-/* PWM2 */
+ 
 static int mt7981_pwm2_pins[] = { 7, };
 static int mt7981_pwm2_funcs[] = { 4, };
 
-/* NET_WO0_UART_TXD */
+ 
 static int mt7981_net_wo0_uart_txd_0_pins[] = { 8, };
 static int mt7981_net_wo0_uart_txd_0_funcs[] = { 4, };
 
@@ -636,11 +628,11 @@ static int mt7981_net_wo0_uart_txd_1_funcs[] = { 3, };
 static int mt7981_net_wo0_uart_txd_2_pins[] = { 15, };
 static int mt7981_net_wo0_uart_txd_2_funcs[] = { 4, };
 
-/* SPI1 */
+ 
 static int mt7981_spi1_0_pins[] = { 4, 5, 6, 7, };
 static int mt7981_spi1_0_funcs[] = { 5, 5, 5, 5, };
 
-/* I2C */
+ 
 static int mt7981_i2c0_0_pins[] = { 6, 7, };
 static int mt7981_i2c0_0_funcs[] = { 6, 6, };
 
@@ -662,264 +654,262 @@ static int mt7981_sgmii1_phy_i2c_funcs[] = { 2, 2, };
 static int mt7981_sgmii0_phy_i2c_pins[] = { 32, 33, };
 static int mt7981_sgmii0_phy_i2c_funcs[] = { 5, 5, };
 
-/* DFD_NTRST */
+ 
 static int mt7981_dfd_ntrst_pins[] = { 8, };
 static int mt7981_dfd_ntrst_funcs[] = { 6, };
 
-/* PWM0 */
+ 
 static int mt7981_pwm0_0_pins[] = { 13, };
 static int mt7981_pwm0_0_funcs[] = { 2, };
 
 static int mt7981_pwm0_1_pins[] = { 15, };
 static int mt7981_pwm0_1_funcs[] = { 1, };
 
-/* PWM1 */
+ 
 static int mt7981_pwm1_0_pins[] = { 14, };
 static int mt7981_pwm1_0_funcs[] = { 2, };
 
 static int mt7981_pwm1_1_pins[] = { 15, };
 static int mt7981_pwm1_1_funcs[] = { 3, };
 
-/* GBE_LED1 */
+ 
 static int mt7981_gbe_led1_pins[] = { 13, };
 static int mt7981_gbe_led1_funcs[] = { 3, };
 
-/* PCM */
+ 
 static int mt7981_pcm_pins[] = { 9, 10, 11, 12, 13, 25 };
 static int mt7981_pcm_funcs[] = { 4, 4, 4, 4, 4, 4, };
 
-/* UDI */
+ 
 static int mt7981_udi_pins[] = { 9, 10, 11, 12, 13, };
 static int mt7981_udi_funcs[] = { 6, 6, 6, 6, 6, };
 
-/* DRV_VBUS */
+ 
 static int mt7981_drv_vbus_pins[] = { 14, };
 static int mt7981_drv_vbus_funcs[] = { 1, };
 
-/* EMMC */
+ 
 static int mt7981_emmc_45_pins[] = { 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, };
 static int mt7981_emmc_45_funcs[] = { 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, };
 
-/* SNFI */
+ 
 static int mt7981_snfi_pins[] = { 16, 17, 18, 19, 20, 21, };
 static int mt7981_snfi_funcs[] = { 3, 3, 3, 3, 3, 3, };
 
-/* SPI0 */
+ 
 static int mt7981_spi0_pins[] = { 16, 17, 18, 19, };
 static int mt7981_spi0_funcs[] = { 1, 1, 1, 1, };
 
-/* SPI0 */
+ 
 static int mt7981_spi0_wp_hold_pins[] = { 20, 21, };
 static int mt7981_spi0_wp_hold_funcs[] = { 1, 1, };
 
-/* SPI1 */
+ 
 static int mt7981_spi1_1_pins[] = { 22, 23, 24, 25, };
 static int mt7981_spi1_1_funcs[] = { 1, 1, 1, 1, };
 
-/* SPI2 */
+ 
 static int mt7981_spi2_pins[] = { 26, 27, 28, 29, };
 static int mt7981_spi2_funcs[] = { 1, 1, 1, 1, };
 
-/* SPI2 */
+ 
 static int mt7981_spi2_wp_hold_pins[] = { 30, 31, };
 static int mt7981_spi2_wp_hold_funcs[] = { 1, 1, };
 
-/* UART1 */
+ 
 static int mt7981_uart1_0_pins[] = { 16, 17, 18, 19, };
 static int mt7981_uart1_0_funcs[] = { 4, 4, 4, 4, };
 
 static int mt7981_uart1_1_pins[] = { 26, 27, 28, 29, };
 static int mt7981_uart1_1_funcs[] = { 2, 2, 2, 2, };
 
-/* UART2 */
+ 
 static int mt7981_uart2_1_pins[] = { 22, 23, 24, 25, };
 static int mt7981_uart2_1_funcs[] = { 3, 3, 3, 3, };
 
-/* UART0 */
+ 
 static int mt7981_uart0_pins[] = { 32, 33, };
 static int mt7981_uart0_funcs[] = { 1, 1, };
 
-/* PCIE_CLK_REQ */
+ 
 static int mt7981_pcie_clk_pins[] = { 34, };
 static int mt7981_pcie_clk_funcs[] = { 2, };
 
-/* PCIE_WAKE_N */
+ 
 static int mt7981_pcie_wake_pins[] = { 35, };
 static int mt7981_pcie_wake_funcs[] = { 2, };
 
-/* MDC_MDIO */
+ 
 static int mt7981_smi_mdc_mdio_pins[] = { 36, 37, };
 static int mt7981_smi_mdc_mdio_funcs[] = { 1, 1, };
 
 static int mt7981_gbe_ext_mdc_mdio_pins[] = { 36, 37, };
 static int mt7981_gbe_ext_mdc_mdio_funcs[] = { 3, 3, };
 
-/* WF0_MODE1 */
+ 
 static int mt7981_wf0_mode1_pins[] = { 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56 };
 static int mt7981_wf0_mode1_funcs[] = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
 
-/* WF0_MODE3 */
+ 
 static int mt7981_wf0_mode3_pins[] = { 45, 46, 47, 48, 49, 51 };
 static int mt7981_wf0_mode3_funcs[] = { 2, 2, 2, 2, 2, 2 };
 
-/* WF2G_LED */
+ 
 static int mt7981_wf2g_led0_pins[] = { 30, };
 static int mt7981_wf2g_led0_funcs[] = { 2, };
 
 static int mt7981_wf2g_led1_pins[] = { 34, };
 static int mt7981_wf2g_led1_funcs[] = { 1, };
 
-/* WF5G_LED */
+ 
 static int mt7981_wf5g_led0_pins[] = { 31, };
 static int mt7981_wf5g_led0_funcs[] = { 2, };
 
 static int mt7981_wf5g_led1_pins[] = { 35, };
 static int mt7981_wf5g_led1_funcs[] = { 1, };
 
-/* MT7531_INT */
+ 
 static int mt7981_mt7531_int_pins[] = { 38, };
 static int mt7981_mt7531_int_funcs[] = { 1, };
 
-/* ANT_SEL */
+ 
 static int mt7981_ant_sel_pins[] = { 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 34, 35 };
 static int mt7981_ant_sel_funcs[] = { 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6, 6 };
 
 static const struct group_desc mt7981_groups[] = {
-	/* @GPIO(0,1): WA_AICE(2) */
+	 
 	PINCTRL_PIN_GROUP("wa_aice1", mt7981_wa_aice1),
-	/* @GPIO(0,1): WA_AICE(3) */
+	 
 	PINCTRL_PIN_GROUP("wa_aice2", mt7981_wa_aice2),
-	/* @GPIO(0,1): WM_UART(5) */
+	 
 	PINCTRL_PIN_GROUP("wm_uart_0", mt7981_wm_uart_0),
-	/* @GPIO(0,1,4,5): DFD(6) */
+	 
 	PINCTRL_PIN_GROUP("dfd", mt7981_dfd),
-	/* @GPIO(2): SYS_WATCHDOG(1) */
+	 
 	PINCTRL_PIN_GROUP("watchdog", mt7981_watchdog),
-	/* @GPIO(3): PCIE_PERESET_N(1) */
+	 
 	PINCTRL_PIN_GROUP("pcie_pereset", mt7981_pcie_pereset),
-	/* @GPIO(4,8) JTAG(1) */
+	 
 	PINCTRL_PIN_GROUP("jtag", mt7981_jtag),
-	/* @GPIO(4,8) WM_JTAG(2) */
+	 
 	PINCTRL_PIN_GROUP("wm_jtag_0", mt7981_wm_jtag_0),
-	/* @GPIO(9,13) WO0_JTAG(1) */
+	 
 	PINCTRL_PIN_GROUP("wo0_jtag_0", mt7981_wo0_jtag_0),
-	/* @GPIO(4,7) WM_JTAG(3) */
+	 
 	PINCTRL_PIN_GROUP("uart2_0", mt7981_uart2_0),
-	/* @GPIO(8) GBE_LED0(3) */
+	 
 	PINCTRL_PIN_GROUP("gbe_led0", mt7981_gbe_led0),
-	/* @GPIO(4,6) PTA_EXT(4) */
+	 
 	PINCTRL_PIN_GROUP("pta_ext_0", mt7981_pta_ext_0),
-	/* @GPIO(7) PWM2(4) */
+	 
 	PINCTRL_PIN_GROUP("pwm2", mt7981_pwm2),
-	/* @GPIO(8) NET_WO0_UART_TXD(4) */
+	 
 	PINCTRL_PIN_GROUP("net_wo0_uart_txd_0", mt7981_net_wo0_uart_txd_0),
-	/* @GPIO(4,7) SPI1(5) */
+	 
 	PINCTRL_PIN_GROUP("spi1_0", mt7981_spi1_0),
-	/* @GPIO(6,7) I2C(5) */
+	 
 	PINCTRL_PIN_GROUP("i2c0_0", mt7981_i2c0_0),
-	/* @GPIO(0,1,4,5): DFD_NTRST(6) */
+	 
 	PINCTRL_PIN_GROUP("dfd_ntrst", mt7981_dfd_ntrst),
-	/* @GPIO(9,10): WM_AICE(2) */
+	 
 	PINCTRL_PIN_GROUP("wm_aice1", mt7981_wm_aice1),
-	/* @GPIO(13): PWM0(2) */
+	 
 	PINCTRL_PIN_GROUP("pwm0_0", mt7981_pwm0_0),
-	/* @GPIO(15): PWM0(1) */
+	 
 	PINCTRL_PIN_GROUP("pwm0_1", mt7981_pwm0_1),
-	/* @GPIO(14): PWM1(2) */
+	 
 	PINCTRL_PIN_GROUP("pwm1_0", mt7981_pwm1_0),
-	/* @GPIO(15): PWM1(3) */
+	 
 	PINCTRL_PIN_GROUP("pwm1_1", mt7981_pwm1_1),
-	/* @GPIO(14) NET_WO0_UART_TXD(3) */
+	 
 	PINCTRL_PIN_GROUP("net_wo0_uart_txd_1", mt7981_net_wo0_uart_txd_1),
-	/* @GPIO(15) NET_WO0_UART_TXD(4) */
+	 
 	PINCTRL_PIN_GROUP("net_wo0_uart_txd_2", mt7981_net_wo0_uart_txd_2),
-	/* @GPIO(13) GBE_LED0(3) */
+	 
 	PINCTRL_PIN_GROUP("gbe_led1", mt7981_gbe_led1),
-	/* @GPIO(9,13) PCM(4) */
+	 
 	PINCTRL_PIN_GROUP("pcm", mt7981_pcm),
-	/* @GPIO(13): SYS_WATCHDOG1(5) */
+	 
 	PINCTRL_PIN_GROUP("watchdog1", mt7981_watchdog1),
-	/* @GPIO(9,13) UDI(4) */
+	 
 	PINCTRL_PIN_GROUP("udi", mt7981_udi),
-	/* @GPIO(14) DRV_VBUS(1) */
+	 
 	PINCTRL_PIN_GROUP("drv_vbus", mt7981_drv_vbus),
-	/* @GPIO(15,25): EMMC(2) */
+	 
 	PINCTRL_PIN_GROUP("emmc_45", mt7981_emmc_45),
-	/* @GPIO(16,21): SNFI(3) */
+	 
 	PINCTRL_PIN_GROUP("snfi", mt7981_snfi),
-	/* @GPIO(16,19): SPI0(1) */
+	 
 	PINCTRL_PIN_GROUP("spi0", mt7981_spi0),
-	/* @GPIO(20,21): SPI0(1) */
+	 
 	PINCTRL_PIN_GROUP("spi0_wp_hold", mt7981_spi0_wp_hold),
-	/* @GPIO(22,25) SPI1(1) */
+	 
 	PINCTRL_PIN_GROUP("spi1_1", mt7981_spi1_1),
-	/* @GPIO(26,29): SPI2(1) */
+	 
 	PINCTRL_PIN_GROUP("spi2", mt7981_spi2),
-	/* @GPIO(30,31): SPI0(1) */
+	 
 	PINCTRL_PIN_GROUP("spi2_wp_hold", mt7981_spi2_wp_hold),
-	/* @GPIO(16,19): UART1(4) */
+	 
 	PINCTRL_PIN_GROUP("uart1_0", mt7981_uart1_0),
-	/* @GPIO(26,29): UART1(2) */
+	 
 	PINCTRL_PIN_GROUP("uart1_1", mt7981_uart1_1),
-	/* @GPIO(22,25): UART1(3) */
+	 
 	PINCTRL_PIN_GROUP("uart2_1", mt7981_uart2_1),
-	/* @GPIO(22,24) PTA_EXT(4) */
+	 
 	PINCTRL_PIN_GROUP("pta_ext_1", mt7981_pta_ext_1),
-	/* @GPIO(20,21): WM_UART(4) */
+	 
 	PINCTRL_PIN_GROUP("wm_aurt_1", mt7981_wm_uart_1),
-	/* @GPIO(30,31): WM_UART(3) */
+	 
 	PINCTRL_PIN_GROUP("wm_aurt_2", mt7981_wm_uart_2),
-	/* @GPIO(20,24) WM_JTAG(5) */
+	 
 	PINCTRL_PIN_GROUP("wm_jtag_1", mt7981_wm_jtag_1),
-	/* @GPIO(25,29) WO0_JTAG(5) */
+	 
 	PINCTRL_PIN_GROUP("wo0_jtag_1", mt7981_wo0_jtag_1),
-	/* @GPIO(28,29): WA_AICE(3) */
+	 
 	PINCTRL_PIN_GROUP("wa_aice3", mt7981_wa_aice3),
-	/* @GPIO(30,31): WM_AICE(5) */
+	 
 	PINCTRL_PIN_GROUP("wm_aice2", mt7981_wm_aice2),
-	/* @GPIO(30,31): I2C(4) */
+	 
 	PINCTRL_PIN_GROUP("i2c0_1", mt7981_i2c0_1),
-	/* @GPIO(30,31): I2C(6) */
+	 
 	PINCTRL_PIN_GROUP("u2_phy_i2c", mt7981_u2_phy_i2c),
-	/* @GPIO(32,33): I2C(1) */
+	 
 	PINCTRL_PIN_GROUP("uart0", mt7981_uart0),
-	/* @GPIO(32,33): I2C(2) */
+	 
 	PINCTRL_PIN_GROUP("sgmii1_phy_i2c", mt7981_sgmii1_phy_i2c),
-	/* @GPIO(32,33): I2C(3) */
+	 
 	PINCTRL_PIN_GROUP("u3_phy_i2c", mt7981_u3_phy_i2c),
-	/* @GPIO(32,33): I2C(5) */
+	 
 	PINCTRL_PIN_GROUP("sgmii0_phy_i2c", mt7981_sgmii0_phy_i2c),
-	/* @GPIO(34): PCIE_CLK_REQ(2) */
+	 
 	PINCTRL_PIN_GROUP("pcie_clk", mt7981_pcie_clk),
-	/* @GPIO(35): PCIE_WAKE_N(2) */
+	 
 	PINCTRL_PIN_GROUP("pcie_wake", mt7981_pcie_wake),
-	/* @GPIO(36,37): I2C(2) */
+	 
 	PINCTRL_PIN_GROUP("i2c0_2", mt7981_i2c0_2),
-	/* @GPIO(36,37): MDC_MDIO(1) */
+	 
 	PINCTRL_PIN_GROUP("smi_mdc_mdio", mt7981_smi_mdc_mdio),
-	/* @GPIO(36,37): MDC_MDIO(3) */
+	 
 	PINCTRL_PIN_GROUP("gbe_ext_mdc_mdio", mt7981_gbe_ext_mdc_mdio),
-	/* @GPIO(69,85): WF0_MODE1(1) */
+	 
 	PINCTRL_PIN_GROUP("wf0_mode1", mt7981_wf0_mode1),
-	/* @GPIO(74,80): WF0_MODE3(3) */
+	 
 	PINCTRL_PIN_GROUP("wf0_mode3", mt7981_wf0_mode3),
-	/* @GPIO(30): WF2G_LED(2) */
+	 
 	PINCTRL_PIN_GROUP("wf2g_led0", mt7981_wf2g_led0),
-	/* @GPIO(34): WF2G_LED(1) */
+	 
 	PINCTRL_PIN_GROUP("wf2g_led1", mt7981_wf2g_led1),
-	/* @GPIO(31): WF5G_LED(2) */
+	 
 	PINCTRL_PIN_GROUP("wf5g_led0", mt7981_wf5g_led0),
-	/* @GPIO(35): WF5G_LED(1) */
+	 
 	PINCTRL_PIN_GROUP("wf5g_led1", mt7981_wf5g_led1),
-	/* @GPIO(38): MT7531_INT(1) */
+	 
 	PINCTRL_PIN_GROUP("mt7531_int", mt7981_mt7531_int),
-	/* @GPIO(14,15,26,17,18,19,20,21,22,23,24,25,34,35): ANT_SEL(1) */
+	 
 	PINCTRL_PIN_GROUP("ant_sel", mt7981_ant_sel),
 };
 
-/* Joint those groups owning the same capability in user point of view which
- * allows that people tend to use through the device tree.
- */
+ 
 static const char *mt7981_wa_aice_groups[] = { "wa_aice1", "wa_aice2", "wm_aice1_1",
 	"wa_aice3", "wm_aice1_2", };
 static const char *mt7981_uart_groups[] = { "wm_uart_0", "uart2_0",

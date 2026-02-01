@@ -1,45 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2017 ATMEL
- * Copyright 2017 Free Electrons
- *
- * Author: Boris Brezillon <boris.brezillon@free-electrons.com>
- *
- * Derived from the atmel_nand.c driver which contained the following
- * copyrights:
- *
- *   Copyright 2003 Rick Bronson
- *
- *   Derived from drivers/mtd/nand/autcpu12.c (removed in v3.8)
- *	Copyright 2001 Thomas Gleixner (gleixner@autronix.de)
- *
- *   Derived from drivers/mtd/spia.c (removed in v3.8)
- *	Copyright 2000 Steven J. Hill (sjhill@cotw.com)
- *
- *   Add Hardware ECC support for AT91SAM9260 / AT91SAM9263
- *	Richard Genoud (richard.genoud@gmail.com), Adeneo Copyright 2007
- *
- *   Derived from Das U-Boot source code
- *	(u-boot-1.1.5/board/atmel/at91sam9263ek/nand.c)
- *      Copyright 2006 ATMEL Rousset, Lacressonniere Nicolas
- *
- *   Add Programmable Multibit ECC support for various AT91 SoC
- *	Copyright 2012 ATMEL, Hong Xu
- *
- *   Add Nand Flash Controller support for SAMA5 SoC
- *	Copyright 2013 ATMEL, Josh Wu (josh.wu@atmel.com)
- *
- * The PMECC is an hardware assisted BCH engine, which means part of the
- * ECC algorithm is left to the software. The hardware/software repartition
- * is explained in the "PMECC Controller Functional Description" chapter in
- * Atmel datasheets, and some of the functions in this file are directly
- * implementing the algorithms described in the "Software Implementation"
- * sub-section.
- *
- * TODO: it seems that the software BCH implementation in lib/bch.c is already
- * providing some of the logic we are implementing here. It would be smart
- * to expose the needed lib/bch.c helpers/functions and re-use them here.
- */
+
+ 
 
 #include <linux/genalloc.h>
 #include <linux/iopoll.h>
@@ -52,21 +12,21 @@
 
 #include "pmecc.h"
 
-/* Galois field dimension */
+ 
 #define PMECC_GF_DIMENSION_13			13
 #define PMECC_GF_DIMENSION_14			14
 
-/* Primitive Polynomial used by PMECC */
+ 
 #define PMECC_GF_13_PRIMITIVE_POLY		0x201b
 #define PMECC_GF_14_PRIMITIVE_POLY		0x4443
 
 #define PMECC_LOOKUP_TABLE_SIZE_512		0x2000
 #define PMECC_LOOKUP_TABLE_SIZE_1024		0x4000
 
-/* Time out value for reading PMECC status register */
+ 
 #define PMECC_MAX_TIMEOUT_MS			100
 
-/* PMECC Register Definitions */
+ 
 #define ATMEL_PMECC_CFG				0x0
 #define PMECC_CFG_BCH_STRENGTH(x)		(x)
 #define PMECC_CFG_BCH_STRENGTH_MASK		GENMASK(2, 0)
@@ -108,7 +68,7 @@
 #define ATMEL_PMECC_REM(sector, n)		\
 	((((sector) + 1) * 0x40) + ((n) * 4) + 0x200)
 
-/* PMERRLOC Register Definitions */
+ 
 #define ATMEL_PMERRLOC_ELCFG			0x0
 #define PMERRLOC_ELCFG_SECTOR_512		(0 << 0)
 #define PMERRLOC_ELCFG_SECTOR_1024		(1 << 0)
@@ -185,7 +145,7 @@ static const struct atmel_pmecc_gf_tables *pmecc_gf_tables_1024;
 
 static inline int deg(unsigned int poly)
 {
-	/* polynomial degree is the most-significant bit index */
+	 
 	return fls(poly) - 1;
 }
 
@@ -196,7 +156,7 @@ static int atmel_pmecc_build_gf_tables(int mm, unsigned int poly,
 	const unsigned int k = BIT(deg(poly));
 	unsigned int nn = BIT(mm) - 1;
 
-	/* primitive polynomial must be of degree m */
+	 
 	if (k != (1u << mm))
 		return -EINVAL;
 
@@ -204,7 +164,7 @@ static int atmel_pmecc_build_gf_tables(int mm, unsigned int poly,
 		gf_tables->alpha_to[i] = x;
 		gf_tables->index_of[x] = i;
 		if (i && (x == 1))
-			/* polynomial is not primitive (a^i=1 with 0<i<2^m-1) */
+			 
 			return -EINVAL;
 		x <<= 1;
 		if (x & k)
@@ -353,12 +313,12 @@ atmel_pmecc_create_user(struct atmel_pmecc *pmecc,
 
 	size = sizeof(*user);
 	size = ALIGN(size, sizeof(u16));
-	/* Reserve space for partial_syn, si and smu */
+	 
 	size += ((2 * req->ecc.strength) + 1) * sizeof(u16) *
 		(2 + req->ecc.strength + 2);
-	/* Reserve space for lmu. */
+	 
 	size += (req->ecc.strength + 1) * sizeof(u16);
-	/* Reserve space for mu, dmu and delta. */
+	 
 	size = ALIGN(size, sizeof(s32));
 	size += (req->ecc.strength + 1) * sizeof(s32) * 3;
 
@@ -432,7 +392,7 @@ static void atmel_pmecc_gen_syndrome(struct atmel_pmecc_user *user, int sector)
 	u32 value;
 	int i;
 
-	/* Fill odd syndromes */
+	 
 	for (i = 0; i < strength; i++) {
 		value = readl_relaxed(user->pmecc->regs.base +
 				      ATMEL_PMECC_REM(sector, i / 2));
@@ -454,23 +414,20 @@ static void atmel_pmecc_substitute(struct atmel_pmecc_user *user)
 	s16 *si;
 	int i, j;
 
-	/*
-	 * si[] is a table that holds the current syndrome value,
-	 * an element of that table belongs to the field
-	 */
+	 
 	si = user->si;
 
 	memset(&si[1], 0, sizeof(s16) * ((2 * strength) - 1));
 
-	/* Computation 2t syndromes based on S(x) */
-	/* Odd syndromes */
+	 
+	 
 	for (i = 1; i < 2 * strength; i += 2) {
 		for (j = 0; j < degree; j++) {
 			if (partial_syn[i] & BIT(j))
 				si[i] = alpha_to[i * j] ^ si[i];
 		}
 	}
-	/* Even syndrome = (Odd syndrome) ** 2 */
+	 
 	for (i = 2, j = 1; j <= strength; i = ++j << 1) {
 		if (si[j] == 0) {
 			si[i] = 0;
@@ -501,50 +458,50 @@ static void atmel_pmecc_get_sigma(struct atmel_pmecc_user *user)
 	u32 dmu_0_count, tmp;
 	s16 *smu = user->smu;
 
-	/* index of largest delta */
+	 
 	int ro;
 	int largest;
 	int diff;
 
 	dmu_0_count = 0;
 
-	/* First Row */
+	 
 
-	/* Mu */
+	 
 	mu[0] = -1;
 
 	memset(smu, 0, sizeof(s16) * num);
 	smu[0] = 1;
 
-	/* discrepancy set to 1 */
+	 
 	dmu[0] = 1;
-	/* polynom order set to 0 */
+	 
 	lmu[0] = 0;
 	delta[0] = (mu[0] * 2 - lmu[0]) >> 1;
 
-	/* Second Row */
+	 
 
-	/* Mu */
+	 
 	mu[1] = 0;
-	/* Sigma(x) set to 1 */
+	 
 	memset(&smu[num], 0, sizeof(s16) * num);
 	smu[num] = 1;
 
-	/* discrepancy set to S1 */
+	 
 	dmu[1] = si[1];
 
-	/* polynom order set to 0 */
+	 
 	lmu[1] = 0;
 
 	delta[1] = (mu[1] * 2 - lmu[1]) >> 1;
 
-	/* Init the Sigma(x) last row */
+	 
 	memset(&smu[(strength + 1) * num], 0, sizeof(s16) * num);
 
 	for (i = 1; i <= strength; i++) {
 		mu[i + 1] = i << 1;
-		/* Begin Computing Sigma (Mu+1) and L(mu) */
-		/* check if discrepancy is set to 0 */
+		 
+		 
 		if (dmu[i] == 0) {
 			dmu_0_count++;
 
@@ -563,16 +520,16 @@ static void atmel_pmecc_get_sigma(struct atmel_pmecc_user *user)
 				return;
 			}
 
-			/* copy polynom */
+			 
 			for (j = 0; j <= lmu[i] >> 1; j++)
 				smu[(i + 1) * num + j] = smu[i * num + j];
 
-			/* copy previous polynom order to the next */
+			 
 			lmu[i + 1] = lmu[i];
 		} else {
 			ro = 0;
 			largest = -1;
-			/* find largest delta with dmu != 0 */
+			 
 			for (j = 0; j < i; j++) {
 				if ((dmu[j]) && (delta[j] > largest)) {
 					largest = delta[j];
@@ -580,20 +537,20 @@ static void atmel_pmecc_get_sigma(struct atmel_pmecc_user *user)
 				}
 			}
 
-			/* compute difference */
+			 
 			diff = (mu[i] - mu[ro]);
 
-			/* Compute degree of the new smu polynomial */
+			 
 			if ((lmu[i] >> 1) > ((lmu[ro] >> 1) + diff))
 				lmu[i + 1] = lmu[i];
 			else
 				lmu[i + 1] = ((lmu[ro] >> 1) + diff) * 2;
 
-			/* Init smu[i+1] with 0 */
+			 
 			for (k = 0; k < num; k++)
 				smu[(i + 1) * num + k] = 0;
 
-			/* Compute smu[i+1] */
+			 
 			for (k = 0; k <= lmu[ro] >> 1; k++) {
 				s16 a, b, c;
 
@@ -612,11 +569,11 @@ static void atmel_pmecc_get_sigma(struct atmel_pmecc_user *user)
 				smu[(i + 1) * num + k] ^= smu[i * num + k];
 		}
 
-		/* End Computing Sigma (Mu+1) and L(mu) */
-		/* In either case compute delta */
+		 
+		 
 		delta[i + 1] = (mu[i + 1] * 2 - lmu[i + 1]) >> 1;
 
-		/* Do not compute discrepancy for the last iteration */
+		 
 		if (i >= strength)
 			continue;
 
@@ -676,14 +633,11 @@ static int atmel_pmecc_err_location(struct atmel_pmecc_user *user)
 	}
 
 	roots_nbr = (val & PMERRLOC_ERR_NUM_MASK) >> 8;
-	/* Number of roots == degree of smu hence <= cap */
+	 
 	if (roots_nbr == user->lmu[strength + 1] >> 1)
 		return err_nbr - 1;
 
-	/*
-	 * Number of roots does not match the degree of smu
-	 * unable to correct error.
-	 */
+	 
 	return -EBADMSG;
 }
 
@@ -851,7 +805,7 @@ static struct atmel_pmecc *atmel_pmecc_create(struct platform_device *pdev,
 	if (IS_ERR(pmecc->regs.errloc))
 		return ERR_CAST(pmecc->regs.errloc);
 
-	/* Disable all interrupts before registering the PMECC handler. */
+	 
 	writel(0xffffffff, pmecc->regs.base + ATMEL_PMECC_IDR);
 	atmel_pmecc_reset(pmecc);
 
@@ -923,7 +877,7 @@ static struct atmel_pmecc_caps sama5d2_caps = {
 static const struct of_device_id __maybe_unused atmel_pmecc_legacy_match[] = {
 	{ .compatible = "atmel,sama5d4-nand", &sama5d4_caps },
 	{ .compatible = "atmel,sama5d2-nand", &sama5d2_caps },
-	{ /* sentinel */ }
+	{   }
 };
 
 struct atmel_pmecc *devm_atmel_pmecc_get(struct device *userdev)
@@ -942,23 +896,19 @@ struct atmel_pmecc *devm_atmel_pmecc_get(struct device *userdev)
 		pmecc = atmel_pmecc_get_by_node(userdev, np);
 		of_node_put(np);
 	} else {
-		/*
-		 * Support old DT bindings: in this case the PMECC iomem
-		 * resources are directly defined in the user pdev at position
-		 * 1 and 2. Extract all relevant information from there.
-		 */
+		 
 		struct platform_device *pdev = to_platform_device(userdev);
 		const struct atmel_pmecc_caps *caps;
 		const struct of_device_id *match;
 
-		/* No PMECC engine available. */
+		 
 		if (!of_property_read_bool(userdev->of_node,
 					   "atmel,has-pmecc"))
 			return NULL;
 
 		caps = &at91sam9g45_caps;
 
-		/* Find the caps associated to the NAND dev node. */
+		 
 		match = of_match_node(atmel_pmecc_legacy_match,
 				      userdev->of_node);
 		if (match && match->data)
@@ -975,7 +925,7 @@ static const struct of_device_id atmel_pmecc_match[] = {
 	{ .compatible = "atmel,at91sam9g45-pmecc", &at91sam9g45_caps },
 	{ .compatible = "atmel,sama5d4-pmecc", &sama5d4_caps },
 	{ .compatible = "atmel,sama5d2-pmecc", &sama5d2_caps },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, atmel_pmecc_match);
 

@@ -1,13 +1,4 @@
-/*
- * JFFS2 -- Journalling Flash File System, Version 2.
- *
- * Copyright © 2006  NEC Corporation
- *
- * Created by KaiGai Kohei <kaigai@ak.jp.nec.com>
- *
- * For licensing information, see the file 'LICENCE' in this directory.
- *
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/slab.h>
@@ -22,7 +13,7 @@
 #include <linux/security.h>
 #include "nodelist.h"
 
-/* ---- Initial Security Label(s) Attachment callback --- */
+ 
 static int jffs2_initxattrs(struct inode *inode,
 			    const struct xattr *xattr_array, void *fs_info)
 {
@@ -39,7 +30,7 @@ static int jffs2_initxattrs(struct inode *inode,
 	return err;
 }
 
-/* ---- Initial Security Label(s) Attachment ----------- */
+ 
 int jffs2_init_security(struct inode *inode, struct inode *dir,
 			const struct qstr *qstr)
 {
@@ -47,7 +38,7 @@ int jffs2_init_security(struct inode *inode, struct inode *dir,
 					    &jffs2_initxattrs, NULL);
 }
 
-/* ---- XATTR Handler for "security.*" ----------------- */
+ 
 static int jffs2_security_getxattr(const struct xattr_handler *handler,
 				   struct dentry *unused, struct inode *inode,
 				   const char *name, void *buffer, size_t size)

@@ -1,7 +1,7 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVBIOS_PLL_H__
 #define __NVBIOS_PLL_H__
-/*XXX: kill me */
+ 
 struct nvkm_pll_vals {
 	union {
 		struct {
@@ -20,11 +20,7 @@ struct nvkm_pll_vals {
 	int refclk;
 };
 
-/* these match types in pll limits table version 0x40,
- * nvkm uses them on all chipsets internally where a
- * specific pll needs to be referenced, but the exact
- * register isn't known.
- */
+ 
 enum nvbios_pll_type {
 	PLL_CORE   = 0x01,
 	PLL_SHADER = 0x02,
@@ -50,14 +46,7 @@ struct nvbios_pll {
 	u8 max_p;
 	u8 bias_p;
 
-	/*
-	 * for most pre nv50 cards setting a log2P of 7 (the common max_log2p
-	 * value) is no different to 6 (at least for vplls) so allowing the MNP
-	 * calc to use 7 causes the generated clock to be out by a factor of 2.
-	 * however, max_log2p cannot be fixed-up during parsing as the
-	 * unmodified max_log2p value is still needed for setting mplls, hence
-	 * an additional max_usable_log2p member
-	 */
+	 
 	u8 max_p_usable;
 
 	struct {

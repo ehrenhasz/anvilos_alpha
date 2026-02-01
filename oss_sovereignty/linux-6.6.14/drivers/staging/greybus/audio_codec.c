@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * APBridge ALSA SoC dummy codec driver
- * Copyright 2016 Google Inc.
- * Copyright 2016 Linaro Ltd.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/pm_runtime.h>
@@ -52,7 +48,7 @@ static int gbaudio_module_enable_tx(struct gbaudio_codec_info *codec,
 	struct gbaudio_data_connection *data;
 	struct gbaudio_stream_params *params;
 
-	/* find the dai */
+	 
 	data = find_data(module, id);
 	if (!data) {
 		dev_err(module->dev, "%d:DATA connection missing\n", id);
@@ -66,9 +62,9 @@ static int gbaudio_module_enable_tx(struct gbaudio_codec_info *codec,
 		return -EINVAL;
 	}
 
-	/* register cport */
+	 
 	if (module_state < GBAUDIO_CODEC_STARTUP) {
-		i2s_port = 0;	/* fixed for now */
+		i2s_port = 0;	 
 		cportid = data->connection->hd_cport_id;
 		ret = gb_audio_apbridgea_register_cport(data->connection,
 							i2s_port, cportid,
@@ -81,7 +77,7 @@ static int gbaudio_module_enable_tx(struct gbaudio_codec_info *codec,
 		dev_dbg(module->dev, "Dynamic Register %d DAI\n", cportid);
 	}
 
-	/* hw_params */
+	 
 	if (module_state < GBAUDIO_CODEC_HWPARAMS) {
 		format = params->format;
 		channels = params->channels;
@@ -98,7 +94,7 @@ static int gbaudio_module_enable_tx(struct gbaudio_codec_info *codec,
 		dev_dbg(module->dev, "Dynamic hw_params %d DAI\n", data_cport);
 	}
 
-	/* prepare */
+	 
 	if (module_state < GBAUDIO_CODEC_PREPARE) {
 		data_cport = data->connection->intf_cport_id;
 		ret = gb_audio_gb_set_tx_data_size(module->mgmt_connection,
@@ -129,7 +125,7 @@ static int gbaudio_module_disable_tx(struct gbaudio_module_info *module, int id)
 	int module_state;
 	struct gbaudio_data_connection *data;
 
-	/* find the dai */
+	 
 	data = find_data(module, id);
 	if (!data) {
 		dev_err(module->dev, "%d:DATA connection missing\n", id);
@@ -151,7 +147,7 @@ static int gbaudio_module_disable_tx(struct gbaudio_module_info *module, int id)
 	}
 
 	if (module_state > GBAUDIO_CODEC_SHUTDOWN) {
-		i2s_port = 0;	/* fixed for now */
+		i2s_port = 0;	 
 		cportid = data->connection->hd_cport_id;
 		ret = gb_audio_apbridgea_unregister_cport(data->connection,
 							  i2s_port, cportid,
@@ -178,7 +174,7 @@ static int gbaudio_module_enable_rx(struct gbaudio_codec_info *codec,
 	struct gbaudio_data_connection *data;
 	struct gbaudio_stream_params *params;
 
-	/* find the dai */
+	 
 	data = find_data(module, id);
 	if (!data) {
 		dev_err(module->dev, "%d:DATA connection missing\n", id);
@@ -192,9 +188,9 @@ static int gbaudio_module_enable_rx(struct gbaudio_codec_info *codec,
 		return -EINVAL;
 	}
 
-	/* register cport */
+	 
 	if (module_state < GBAUDIO_CODEC_STARTUP) {
-		i2s_port = 0;	/* fixed for now */
+		i2s_port = 0;	 
 		cportid = data->connection->hd_cport_id;
 		ret = gb_audio_apbridgea_register_cport(data->connection,
 							i2s_port, cportid,
@@ -207,7 +203,7 @@ static int gbaudio_module_enable_rx(struct gbaudio_codec_info *codec,
 		dev_dbg(module->dev, "Dynamic Register %d DAI\n", cportid);
 	}
 
-	/* hw_params */
+	 
 	if (module_state < GBAUDIO_CODEC_HWPARAMS) {
 		format = params->format;
 		channels = params->channels;
@@ -224,7 +220,7 @@ static int gbaudio_module_enable_rx(struct gbaudio_codec_info *codec,
 		dev_dbg(module->dev, "Dynamic hw_params %d DAI\n", data_cport);
 	}
 
-	/* prepare */
+	 
 	if (module_state < GBAUDIO_CODEC_PREPARE) {
 		data_cport = data->connection->intf_cport_id;
 		ret = gb_audio_gb_set_rx_data_size(module->mgmt_connection,
@@ -256,7 +252,7 @@ static int gbaudio_module_disable_rx(struct gbaudio_module_info *module, int id)
 	int module_state;
 	struct gbaudio_data_connection *data;
 
-	/* find the dai */
+	 
 	data = find_data(module, id);
 	if (!data) {
 		dev_err(module->dev, "%d:DATA connection missing\n", id);
@@ -278,7 +274,7 @@ static int gbaudio_module_disable_rx(struct gbaudio_module_info *module, int id)
 	}
 
 	if (module_state > GBAUDIO_CODEC_SHUTDOWN) {
-		i2s_port = 0;	/* fixed for now */
+		i2s_port = 0;	 
 		cportid = data->connection->hd_cport_id;
 		ret = gb_audio_apbridgea_unregister_cport(data->connection,
 							  i2s_port, cportid,
@@ -310,7 +306,7 @@ int gbaudio_module_update(struct gbaudio_codec_info *codec,
 		return 0;
 	}
 
-	/* parse dai_id from AIF widget's stream_name */
+	 
 	ret = sscanf(w->sname, "%s %d %s", intf_name, &dai_id, dir);
 	if (ret < 3) {
 		dev_err(codec->dev, "Error while parsing dai_id for %s\n", w->name);
@@ -336,9 +332,7 @@ int gbaudio_module_update(struct gbaudio_codec_info *codec,
 }
 EXPORT_SYMBOL(gbaudio_module_update);
 
-/*
- * codec DAI ops
- */
+ 
 static int gbcodec_startup(struct snd_pcm_substream *substream,
 			   struct snd_soc_dai *dai)
 {
@@ -361,7 +355,7 @@ static int gbcodec_startup(struct snd_pcm_substream *substream,
 	}
 	params->state = GBAUDIO_CODEC_STARTUP;
 	mutex_unlock(&codec->lock);
-	/* to prevent suspend in case of active audio */
+	 
 	pm_stay_awake(dai->dev);
 
 	return 0;
@@ -410,10 +404,7 @@ static int gbcodec_hw_params(struct snd_pcm_substream *substream,
 		return -ENODEV;
 	}
 
-	/*
-	 * assuming, currently only 48000 Hz, 16BIT_LE, stereo
-	 * is supported, validate params before configuring codec
-	 */
+	 
 	if (params_channels(hwparams) != 2) {
 		dev_err(dai->dev, "Invalid channel count:%d\n",
 			params_channels(hwparams));
@@ -437,7 +428,7 @@ static int gbcodec_hw_params(struct snd_pcm_substream *substream,
 	}
 	format = GB_AUDIO_PCM_FMT_S16_LE;
 
-	/* find the data connection */
+	 
 	list_for_each_entry(module, &codec->module_list, list) {
 		data = find_data(module, dai->id);
 		if (data)
@@ -512,7 +503,7 @@ static int gbcodec_prepare(struct snd_pcm_substream *substream,
 	}
 
 	list_for_each_entry(iter, &codec->module_list, list) {
-		/* find the dai */
+		 
 		data = find_data(iter, dai->id);
 		if (data) {
 			module = iter;
@@ -595,7 +586,7 @@ static int gbcodec_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 	}
 
 	list_for_each_entry(iter, &codec->module_list, list) {
-		/* find the dai */
+		 
 		data = find_data(iter, dai->id);
 		if (data) {
 			module = iter;
@@ -616,22 +607,22 @@ static int gbcodec_mute_stream(struct snd_soc_dai *dai, int mute, int stream)
 		return ret;
 	}
 
-	if (!mute && !stream) {/* start playback */
+	if (!mute && !stream) { 
 		ret = gb_audio_apbridgea_prepare_tx(data->connection, 0);
 		if (!ret)
 			ret = gb_audio_apbridgea_start_tx(data->connection, 0, 0);
 		params->state = GBAUDIO_CODEC_START;
-	} else if (!mute && stream) {/* start capture */
+	} else if (!mute && stream) { 
 		ret = gb_audio_apbridgea_prepare_rx(data->connection, 0);
 		if (!ret)
 			ret = gb_audio_apbridgea_start_rx(data->connection, 0);
 		params->state = GBAUDIO_CODEC_START;
-	} else if (mute && !stream) {/* stop playback */
+	} else if (mute && !stream) { 
 		ret = gb_audio_apbridgea_stop_tx(data->connection, 0);
 		if (!ret)
 			ret = gb_audio_apbridgea_shutdown_tx(data->connection, 0);
 		params->state = GBAUDIO_CODEC_STOP;
-	} else if (mute && stream) {/* stop capture */
+	} else if (mute && stream) { 
 		ret = gb_audio_apbridgea_stop_rx(data->connection, 0);
 		if (!ret)
 			ret = gb_audio_apbridgea_shutdown_rx(data->connection, 0);
@@ -714,7 +705,7 @@ static int gbaudio_init_jack(struct gbaudio_module_info *module,
 		return ret;
 	}
 
-	/* Add to module's jack list */
+	 
 	list_add(&module->headset.list, &module->jack_list);
 
 	if (!module->button_mask)
@@ -739,16 +730,10 @@ static int gbaudio_init_jack(struct gbaudio_module_info *module,
 		goto free_jacks;
 	}
 
-	/* Add to module's jack list */
+	 
 	list_add(&module->button.list, &module->jack_list);
 
-	/*
-	 * Currently, max 4 buttons are supported with following key mapping
-	 * BTN_0 = KEY_MEDIA
-	 * BTN_1 = KEY_VOICECOMMAND
-	 * BTN_2 = KEY_VOLUMEUP
-	 * BTN_3 = KEY_VOLUMEDOWN
-	 */
+	 
 
 	if (module->button_mask & SND_JACK_BTN_0) {
 		ret = snd_jack_set_key(module->button.jack.jack, SND_JACK_BTN_0,
@@ -786,11 +771,7 @@ static int gbaudio_init_jack(struct gbaudio_module_info *module,
 		}
 	}
 
-	/* FIXME
-	 * verify if this is really required
-	set_bit(INPUT_PROP_NO_DUMMY_RELEASE,
-		module->button.jack.jack->input_dev->propbit);
-	*/
+	 
 
 	return 0;
 
@@ -842,14 +823,11 @@ int gbaudio_register_module(struct gbaudio_module_info *module)
 		snd_soc_dapm_add_routes(&comp->dapm, module->dapm_routes,
 					module->num_dapm_routes);
 
-	/* card already instantiated, create widgets here only */
+	 
 	if (comp->card->instantiated) {
 		gbaudio_dapm_link_component_dai_widgets(comp->card, &comp->dapm);
 #ifdef CONFIG_SND_JACK
-		/*
-		 * register jack devices for this module
-		 * from codec->jack_list
-		 */
+		 
 		list_for_each_entry(jack, &module->jack_list, list) {
 			snd_device_register(comp->card->snd_card,
 					    jack->jack.jack);
@@ -883,7 +861,7 @@ static void gbaudio_codec_clean_data_tx(struct gbaudio_data_connection *data)
 		if (ret)
 			return;
 	}
-	i2s_port = 0;	/* fixed for now */
+	i2s_port = 0;	 
 	cportid = data->connection->hd_cport_id;
 	ret = gb_audio_apbridgea_unregister_cport(data->connection,
 						  i2s_port, cportid,
@@ -904,7 +882,7 @@ static void gbaudio_codec_clean_data_rx(struct gbaudio_data_connection *data)
 		if (ret)
 			return;
 	}
-	i2s_port = 0;	/* fixed for now */
+	i2s_port = 0;	 
 	cportid = data->connection->hd_cport_id;
 	ret = gb_audio_apbridgea_unregister_cport(data->connection,
 						  i2s_port, cportid,
@@ -946,7 +924,7 @@ void gbaudio_unregister_module(struct gbaudio_module_info *module)
 	mutex_unlock(&gbcodec->lock);
 
 #ifdef CONFIG_SND_JACK
-	/* free jack devices for this module jack_list */
+	 
 	list_for_each_entry_safe(jack, n, &module->jack_list, list) {
 		if (jack == &module->headset)
 			mask = GBCODEC_JACK_MASK;
@@ -974,7 +952,7 @@ void gbaudio_unregister_module(struct gbaudio_module_info *module)
 	if (module->controls) {
 		dev_dbg(comp->dev, "Removing %d controls\n",
 			module->num_controls);
-		/* release control semaphore */
+		 
 		gbaudio_remove_component_controls(comp, module->controls,
 						  module->num_controls);
 	}
@@ -991,9 +969,7 @@ void gbaudio_unregister_module(struct gbaudio_module_info *module)
 }
 EXPORT_SYMBOL(gbaudio_unregister_module);
 
-/*
- * component driver ops
- */
+ 
 static int gbcodec_probe(struct snd_soc_component *comp)
 {
 	int i;
@@ -1010,7 +986,7 @@ static int gbcodec_probe(struct snd_soc_component *comp)
 	mutex_init(&info->register_mutex);
 	INIT_LIST_HEAD(&info->dai_list);
 
-	/* init dai_list used to maintain runtime stream info */
+	 
 	for (i = 0; i < ARRAY_SIZE(gbaudio_dai); i++) {
 		dai = devm_kzalloc(comp->dev, sizeof(*dai), GFP_KERNEL);
 		if (!dai)

@@ -1,24 +1,4 @@
-/*
- * Copyright 2011 Red Hat, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * on the rights to use, copy, modify, merge, publish, distribute, sub
- * license, and/or sell copies of the Software, and to permit persons to whom
- * the Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NON-INFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER
- * IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/iosys-map.h>
 
@@ -38,9 +18,7 @@ static int alloc_clips(struct qxl_device *qdev,
 	return qxl_alloc_bo_reserved(qdev, release, size, clips_bo);
 }
 
-/* returns a pointer to the already allocated qxl_rect array inside
- * the qxl_clip_rects. This is *not* the same as the memory allocated
- * on the device, it is offset to qxl_clip_rects.chunk.data */
+ 
 static struct qxl_rect *drawable_set_clipping(struct qxl_device *qdev,
 					      unsigned int num_clips,
 					      struct qxl_bo *clips_bo)
@@ -52,7 +30,7 @@ static struct qxl_rect *drawable_set_clipping(struct qxl_device *qdev,
 	ret = qxl_bo_vmap_locked(clips_bo, &map);
 	if (ret)
 		return NULL;
-	dev_clips = map.vaddr; /* TODO: Use mapping abstraction properly */
+	dev_clips = map.vaddr;  
 
 	dev_clips->num_rects = num_clips;
 	dev_clips->chunk.next_chunk = 0;
@@ -74,7 +52,7 @@ free_drawable(struct qxl_device *qdev, struct qxl_release *release)
 	qxl_release_free(qdev, release);
 }
 
-/* release needs to be reserved at this point */
+ 
 static int
 make_drawable(struct qxl_device *qdev, int surface, uint8_t type,
 	      const struct qxl_rect *rect,
@@ -89,22 +67,17 @@ make_drawable(struct qxl_device *qdev, int surface, uint8_t type,
 
 	drawable->type = type;
 
-	drawable->surface_id = surface;		/* Only primary for now */
+	drawable->surface_id = surface;		 
 	drawable->effect = QXL_EFFECT_OPAQUE;
 	drawable->self_bitmap = 0;
 	drawable->self_bitmap_area.top = 0;
 	drawable->self_bitmap_area.left = 0;
 	drawable->self_bitmap_area.bottom = 0;
 	drawable->self_bitmap_area.right = 0;
-	/* FIXME: add clipping */
+	 
 	drawable->clip.type = SPICE_CLIP_TYPE_NONE;
 
-	/*
-	 * surfaces_dest[i] should apparently be filled out with the
-	 * surfaces that we depend on, and surface_rects should be
-	 * filled with the rectangles of those surfaces that we
-	 * are going to use.
-	 */
+	 
 	for (i = 0; i < 3; ++i)
 		drawable->surfaces_dest[i] = -1;
 
@@ -116,13 +89,7 @@ make_drawable(struct qxl_device *qdev, int surface, uint8_t type,
 	return 0;
 }
 
-/* push a draw command using the given clipping rectangles as
- * the sources from the shadow framebuffer.
- *
- * Right now implementing with a single draw and a clip list. Clip
- * lists are known to be a problem performance wise, this can be solved
- * by treating them differently in the server.
- */
+ 
 void qxl_draw_dirty_fb(struct qxl_device *qdev,
 		       struct drm_framebuffer *fb,
 		       struct qxl_bo *bo,
@@ -131,12 +98,7 @@ void qxl_draw_dirty_fb(struct qxl_device *qdev,
 		       unsigned int num_clips, int inc,
 		       uint32_t dumb_shadow_offset)
 {
-	/*
-	 * TODO: if flags & DRM_MODE_FB_DIRTY_ANNOTATE_FILL then we should
-	 * send a fill command instead, much cheaper.
-	 *
-	 * See include/drm/drm_mode.h
-	 */
+	 
 	struct drm_clip_rect *clips_ptr;
 	int i;
 	int left, right, top, bottom;
@@ -145,7 +107,7 @@ void qxl_draw_dirty_fb(struct qxl_device *qdev,
 	struct qxl_rect drawable_rect;
 	struct qxl_rect *rects;
 	int stride = fb->pitches[0];
-	/* depth is not actually interesting, we don't mask with it */
+	 
 	int depth = fb->format->cpp[0] * 8;
 	struct iosys_map surface_map;
 	uint8_t *surface_base;
@@ -166,7 +128,7 @@ void qxl_draw_dirty_fb(struct qxl_device *qdev,
 	top = clips->y1;
 	bottom = clips->y2;
 
-	/* skip the first clip rect */
+	 
 	for (i = 1, clips_ptr = clips + inc;
 	     i < num_clips; i++, clips_ptr += inc) {
 		left = min_t(int, left, (int)clips_ptr->x1);
@@ -188,7 +150,7 @@ void qxl_draw_dirty_fb(struct qxl_device *qdev,
 	if (ret)
 		goto out_free_clips;
 
-	/* do a reservation run over all the objects we just allocated */
+	 
 	ret = qxl_release_reserve_list(release, true);
 	if (ret)
 		goto out_free_image;
@@ -206,7 +168,7 @@ void qxl_draw_dirty_fb(struct qxl_device *qdev,
 	ret = qxl_bo_vmap_locked(bo, &surface_map);
 	if (ret)
 		goto out_release_backoff;
-	surface_base = surface_map.vaddr; /* TODO: Use mapping abstraction properly */
+	surface_base = surface_map.vaddr;  
 
 	ret = qxl_image_init(qdev, release, dimage, surface_base,
 			     left - dumb_shadow_offset,
@@ -261,7 +223,7 @@ out_free_image:
 out_free_clips:
 	qxl_bo_unref(&clips_bo);
 out_free_drawable:
-	/* only free drawable on error */
+	 
 	if (ret)
 		free_drawable(qdev, release);
 

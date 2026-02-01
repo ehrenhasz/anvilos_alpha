@@ -1,42 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  linux/net/sunrpc/xprt.c
- *
- *  This is a generic RPC call interface supporting congestion avoidance,
- *  and asynchronous calls.
- *
- *  The interface works like this:
- *
- *  -	When a process places a call, it allocates a request slot if
- *	one is available. Otherwise, it sleeps on the backlog queue
- *	(xprt_reserve).
- *  -	Next, the caller puts together the RPC message, stuffs it into
- *	the request struct, and calls xprt_transmit().
- *  -	xprt_transmit sends the message and installs the caller on the
- *	transport's wait list. At the same time, if a reply is expected,
- *	it installs a timer that is run after the packet's timeout has
- *	expired.
- *  -	When a packet arrives, the data_ready handler walks the list of
- *	pending requests for that transport. If a matching XID is found, the
- *	caller is woken up, and the timer removed.
- *  -	When no reply arrives within the timeout interval, the timer is
- *	fired by the kernel and runs xprt_timer(). It either adjusts the
- *	timeout values (minor timeout) or wakes up the caller with a status
- *	of -ETIMEDOUT.
- *  -	When the caller receives a notification from RPC that a reply arrived,
- *	it should release the RPC slot, and process the reply.
- *	If the call timed out, it may choose to retry the operation by
- *	adjusting the initial timeout value, and simply calling rpc_call
- *	again.
- *
- *  Support for async RPC is done through a set of RPC-specific scheduling
- *  primitives that `transparently' work for processes as well as async
- *  tasks that rely on callbacks.
- *
- *  Copyright (C) 1995-1997, Olaf Kirch <okir@monad.swb.de>
- *
- *  Transport switch API copyright (C) 2005, Chuck Lever <cel@netapp.com>
- */
+
+ 
 
 #include <linux/module.h>
 
@@ -58,17 +21,13 @@
 #include "sysfs.h"
 #include "fail.h"
 
-/*
- * Local variables
- */
+ 
 
 #if IS_ENABLED(CONFIG_SUNRPC_DEBUG)
 # define RPCDBG_FACILITY	RPCDBG_XPRT
 #endif
 
-/*
- * Local functions
- */
+ 
 static void	xprt_init(struct rpc_xprt *xprt, struct net *net);
 static __be32	xprt_alloc_xid(struct rpc_xprt *xprt);
 static void	xprt_destroy(struct rpc_xprt *xprt);
@@ -87,18 +46,7 @@ static unsigned long xprt_request_timeout(const struct rpc_rqst *req)
 	return req->rq_majortimeo;
 }
 
-/**
- * xprt_register_transport - register a transport implementation
- * @transport: transport to register
- *
- * If a transport implementation is loaded as a kernel module, it can
- * call this interface to make itself known to the RPC client.
- *
- * Returns:
- * 0:		transport successfully registered
- * -EEXIST:	transport already registered
- * -EINVAL:	transport module being unloaded
- */
+ 
 int xprt_register_transport(struct xprt_class *transport)
 {
 	struct xprt_class *t;
@@ -107,7 +55,7 @@ int xprt_register_transport(struct xprt_class *transport)
 	result = -EEXIST;
 	spin_lock(&xprt_list_lock);
 	list_for_each_entry(t, &xprt_list, list) {
-		/* don't register the same transport class twice */
+		 
 		if (t->ident == transport->ident)
 			goto out;
 	}
@@ -123,14 +71,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(xprt_register_transport);
 
-/**
- * xprt_unregister_transport - unregister a transport implementation
- * @transport: transport to unregister
- *
- * Returns:
- * 0:		transport successfully unregistered
- * -ENOENT:	transport never registered
- */
+ 
 int xprt_unregister_transport(struct xprt_class *transport)
 {
 	struct xprt_class *t;
@@ -222,14 +163,7 @@ xprt_class_find_by_netid(const char *netid)
 	return t;
 }
 
-/**
- * xprt_find_transport_ident - convert a netid into a transport identifier
- * @netid: transport to load
- *
- * Returns:
- * > 0:		transport identifier
- * -ENOENT:	transport module not available
- */
+ 
 int xprt_find_transport_ident(const char *netid)
 {
 	const struct xprt_class *t;
@@ -253,15 +187,7 @@ static void xprt_clear_locked(struct rpc_xprt *xprt)
 		queue_work(xprtiod_workqueue, &xprt->task_cleanup);
 }
 
-/**
- * xprt_reserve_xprt - serialize write access to transports
- * @task: task that is requesting access to the transport
- * @xprt: pointer to the target transport
- *
- * This prevents mixing the payload of separate requests, and prevents
- * transport connects from colliding with writes.  No congestion control
- * is provided.
- */
+ 
 int xprt_reserve_xprt(struct rpc_xprt *xprt, struct rpc_task *task)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -302,7 +228,7 @@ static void
 xprt_set_congestion_window_wait(struct rpc_xprt *xprt)
 {
 	if (!list_empty(&xprt->xmit_queue)) {
-		/* Peek at head of queue to see if it can make progress */
+		 
 		if (list_first_entry(&xprt->xmit_queue, struct rpc_rqst,
 					rq_xmit)->rq_cong)
 			return;
@@ -317,15 +243,7 @@ xprt_test_and_clear_congestion_window_wait(struct rpc_xprt *xprt)
 		clear_bit(XPRT_CWND_WAIT, &xprt->state);
 }
 
-/*
- * xprt_reserve_xprt_cong - serialize write access to transports
- * @task: task that is requesting access to the transport
- *
- * Same as xprt_reserve_xprt, but Van Jacobson congestion control is
- * integrated into the decision of whether a request is allowed to be
- * woken up and given access to the transport.
- * Note that the lock is only granted if we know there are free slots.
- */
+ 
 int xprt_reserve_xprt_cong(struct rpc_xprt *xprt, struct rpc_task *task)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -409,13 +327,7 @@ out_unlock:
 	xprt_clear_locked(xprt);
 }
 
-/**
- * xprt_release_xprt - allow other requests to use a transport
- * @xprt: transport with other tasks potentially waiting
- * @task: task that is releasing access to the transport
- *
- * Note that "task" can be NULL.  No congestion control is provided.
- */
+ 
 void xprt_release_xprt(struct rpc_xprt *xprt, struct rpc_task *task)
 {
 	if (xprt->snd_task == task) {
@@ -426,14 +338,7 @@ void xprt_release_xprt(struct rpc_xprt *xprt, struct rpc_task *task)
 }
 EXPORT_SYMBOL_GPL(xprt_release_xprt);
 
-/**
- * xprt_release_xprt_cong - allow other requests to use a transport
- * @xprt: transport with other tasks potentially waiting
- * @task: task that is releasing access to the transport
- *
- * Note that "task" can be NULL.  Another task is awoken to use the
- * transport if the transport's congestion window allows it.
- */
+ 
 void xprt_release_xprt_cong(struct rpc_xprt *xprt, struct rpc_task *task)
 {
 	if (xprt->snd_task == task) {
@@ -453,10 +358,7 @@ void xprt_release_write(struct rpc_xprt *xprt, struct rpc_task *task)
 	spin_unlock(&xprt->transport_lock);
 }
 
-/*
- * Van Jacobson congestion avoidance. Check if the congestion window
- * overflowed. Put the task to sleep if this is the case.
- */
+ 
 static int
 __xprt_get_cong(struct rpc_xprt *xprt, struct rpc_rqst *req)
 {
@@ -472,10 +374,7 @@ __xprt_get_cong(struct rpc_xprt *xprt, struct rpc_rqst *req)
 	return 1;
 }
 
-/*
- * Adjust the congestion window, and wake up the next task
- * that has been sleeping due to congestion
- */
+ 
 static void
 __xprt_put_cong(struct rpc_xprt *xprt, struct rpc_rqst *req)
 {
@@ -488,13 +387,7 @@ __xprt_put_cong(struct rpc_xprt *xprt, struct rpc_rqst *req)
 	__xprt_lock_write_next_cong(xprt);
 }
 
-/**
- * xprt_request_get_cong - Request congestion control credits
- * @xprt: pointer to transport
- * @req: pointer to RPC request
- *
- * Useful for transports that require congestion control.
- */
+ 
 bool
 xprt_request_get_cong(struct rpc_xprt *xprt, struct rpc_rqst *req)
 {
@@ -509,12 +402,7 @@ xprt_request_get_cong(struct rpc_xprt *xprt, struct rpc_rqst *req)
 }
 EXPORT_SYMBOL_GPL(xprt_request_get_cong);
 
-/**
- * xprt_release_rqst_cong - housekeeping when request is complete
- * @task: RPC request that recently completed
- *
- * Useful for transports that require congestion control.
- */
+ 
 void xprt_release_rqst_cong(struct rpc_task *task)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -529,10 +417,7 @@ static void xprt_clear_congestion_window_wait_locked(struct rpc_xprt *xprt)
 		__xprt_lock_write_next_cong(xprt);
 }
 
-/*
- * Clear the congestion window wait flag and wake up the next
- * entry on xprt->sending
- */
+ 
 static void
 xprt_clear_congestion_window_wait(struct rpc_xprt *xprt)
 {
@@ -543,30 +428,14 @@ xprt_clear_congestion_window_wait(struct rpc_xprt *xprt)
 	}
 }
 
-/**
- * xprt_adjust_cwnd - adjust transport congestion window
- * @xprt: pointer to xprt
- * @task: recently completed RPC request used to adjust window
- * @result: result code of completed RPC request
- *
- * The transport code maintains an estimate on the maximum number of out-
- * standing RPC requests, using a smoothed version of the congestion
- * avoidance implemented in 44BSD. This is basically the Van Jacobson
- * congestion algorithm: If a retransmit occurs, the congestion window is
- * halved; otherwise, it is incremented by 1/cwnd when
- *
- *	-	a reply is received and
- *	-	a full number of requests are outstanding and
- *	-	the congestion window hasn't been updated recently.
- */
+ 
 void xprt_adjust_cwnd(struct rpc_xprt *xprt, struct rpc_task *task, int result)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
 	unsigned long cwnd = xprt->cwnd;
 
 	if (result >= 0 && cwnd <= xprt->cong) {
-		/* The (cwnd >> 1) term makes sure
-		 * the result gets rounded properly. */
+		 
 		cwnd += (RPC_CWNDSCALE * RPC_CWNDSCALE + (cwnd >> 1)) / cwnd;
 		if (cwnd > RPC_MAXCWND(xprt))
 			cwnd = RPC_MAXCWND(xprt);
@@ -583,12 +452,7 @@ void xprt_adjust_cwnd(struct rpc_xprt *xprt, struct rpc_task *task, int result)
 }
 EXPORT_SYMBOL_GPL(xprt_adjust_cwnd);
 
-/**
- * xprt_wake_pending_tasks - wake all tasks on a transport's pending queue
- * @xprt: transport with waiting tasks
- * @status: result code to plant in each task before waking it
- *
- */
+ 
 void xprt_wake_pending_tasks(struct rpc_xprt *xprt, int status)
 {
 	if (status < 0)
@@ -598,14 +462,7 @@ void xprt_wake_pending_tasks(struct rpc_xprt *xprt, int status)
 }
 EXPORT_SYMBOL_GPL(xprt_wake_pending_tasks);
 
-/**
- * xprt_wait_for_buffer_space - wait for transport output buffer to clear
- * @xprt: transport
- *
- * Note that we only set the timer for the case of RPC_IS_SOFT(), since
- * we don't in general want to force a socket disconnection due to
- * an incomplete RPC call transmission.
- */
+ 
 void xprt_wait_for_buffer_space(struct rpc_xprt *xprt)
 {
 	set_bit(XPRT_WRITE_SPACE, &xprt->state);
@@ -624,12 +481,7 @@ xprt_clear_write_space_locked(struct rpc_xprt *xprt)
 	return false;
 }
 
-/**
- * xprt_write_space - wake the task waiting for transport output buffer space
- * @xprt: transport with waiting tasks
- *
- * Can be called in a soft IRQ context, so xprt_write_space never sleeps.
- */
+ 
 bool xprt_write_space(struct rpc_xprt *xprt)
 {
 	bool ret;
@@ -689,11 +541,7 @@ static void xprt_init_majortimeo(struct rpc_task *task, struct rpc_rqst *req)
 	req->rq_minortimeo = time_init + req->rq_timeout;
 }
 
-/**
- * xprt_adjust_timeout - adjust timeout values for next retransmit
- * @req: RPC request containing parameters to use for the adjustment
- *
- */
+ 
 int xprt_adjust_timeout(struct rpc_rqst *req)
 {
 	struct rpc_xprt *xprt = req->rq_xprt;
@@ -714,7 +562,7 @@ int xprt_adjust_timeout(struct rpc_rqst *req)
 		req->rq_timeout = to->to_initval;
 		req->rq_retries = 0;
 		xprt_reset_majortimeo(req);
-		/* Reset the RTT counters == "slow start" */
+		 
 		spin_lock(&xprt->transport_lock);
 		rpc_init_rtt(req->rq_task->tk_client->cl_rtt, to->to_initval);
 		spin_unlock(&xprt->transport_lock);
@@ -745,11 +593,7 @@ static void xprt_autoclose(struct work_struct *work)
 	memalloc_nofs_restore(pflags);
 }
 
-/**
- * xprt_disconnect_done - mark a transport as disconnected
- * @xprt: transport to flag for disconnect
- *
- */
+ 
 void xprt_disconnect_done(struct rpc_xprt *xprt)
 {
 	trace_xprt_disconnect_done(xprt);
@@ -762,10 +606,7 @@ void xprt_disconnect_done(struct rpc_xprt *xprt)
 }
 EXPORT_SYMBOL_GPL(xprt_disconnect_done);
 
-/**
- * xprt_schedule_autoclose_locked - Try to schedule an autoclose RPC call
- * @xprt: transport to disconnect
- */
+ 
 static void xprt_schedule_autoclose_locked(struct rpc_xprt *xprt)
 {
 	if (test_and_set_bit(XPRT_CLOSE_WAIT, &xprt->state))
@@ -777,16 +618,12 @@ static void xprt_schedule_autoclose_locked(struct rpc_xprt *xprt)
 						   xprt->snd_task, -ENOTCONN);
 }
 
-/**
- * xprt_force_disconnect - force a transport to disconnect
- * @xprt: transport to disconnect
- *
- */
+ 
 void xprt_force_disconnect(struct rpc_xprt *xprt)
 {
 	trace_xprt_disconnect_force(xprt);
 
-	/* Don't race with the test_bit() in xprt_clear_locked() */
+	 
 	spin_lock(&xprt->transport_lock);
 	xprt_schedule_autoclose_locked(xprt);
 	spin_unlock(&xprt->transport_lock);
@@ -809,20 +646,10 @@ xprt_request_retransmit_after_disconnect(struct rpc_task *task)
 		!xprt_connected(xprt);
 }
 
-/**
- * xprt_conditional_disconnect - force a transport to disconnect
- * @xprt: transport to disconnect
- * @cookie: 'connection cookie'
- *
- * This attempts to break the connection if and only if 'cookie' matches
- * the current transport 'connection cookie'. It ensures that we don't
- * try to break the connection more than once when we need to retransmit
- * a batch of RPC requests.
- *
- */
+ 
 void xprt_conditional_disconnect(struct rpc_xprt *xprt, unsigned int cookie)
 {
-	/* Don't race with the test_bit() in xprt_clear_locked() */
+	 
 	spin_lock(&xprt->transport_lock);
 	if (cookie != xprt->connect_cookie)
 		goto out;
@@ -855,7 +682,7 @@ xprt_init_autodisconnect(struct timer_list *t)
 
 	if (!RB_EMPTY_ROOT(&xprt->recv_queue))
 		return;
-	/* Reset xprt->last_used to avoid connect/autodisconnect cycling */
+	 
 	xprt->last_used = jiffies;
 	if (test_and_set_bit(XPRT_LOCKED, &xprt->state))
 		return;
@@ -912,11 +739,7 @@ out:
 }
 EXPORT_SYMBOL_GPL(xprt_unlock_connect);
 
-/**
- * xprt_connect - schedule a transport connect operation
- * @task: RPC task that is requesting the connect
- *
- */
+ 
 void xprt_connect(struct rpc_task *task)
 {
 	struct rpc_xprt	*xprt = task->tk_rqstp->rq_xprt;
@@ -939,7 +762,7 @@ void xprt_connect(struct rpc_task *task)
 			return;
 		if (xprt_test_and_set_connecting(xprt))
 			return;
-		/* Race breaker */
+		 
 		if (!xprt_connected(xprt)) {
 			xprt->stat.connect_start = jiffies;
 			xprt->ops->connect(xprt, task);
@@ -952,11 +775,7 @@ void xprt_connect(struct rpc_task *task)
 	xprt_release_write(xprt, task);
 }
 
-/**
- * xprt_reconnect_delay - compute the wait before scheduling a connect
- * @xprt: transport instance
- *
- */
+ 
 unsigned long xprt_reconnect_delay(const struct rpc_xprt *xprt)
 {
 	unsigned long start, now = jiffies;
@@ -968,12 +787,7 @@ unsigned long xprt_reconnect_delay(const struct rpc_xprt *xprt)
 }
 EXPORT_SYMBOL_GPL(xprt_reconnect_delay);
 
-/**
- * xprt_reconnect_backoff - compute the new re-establish timeout
- * @xprt: transport instance
- * @init_to: initial reestablish timeout
- *
- */
+ 
 void xprt_reconnect_backoff(struct rpc_xprt *xprt, unsigned long init_to)
 {
 	xprt->reestablish_timeout <<= 1;
@@ -1053,13 +867,7 @@ xprt_request_rb_remove(struct rpc_xprt *xprt, struct rpc_rqst *req)
 	rb_erase(&req->rq_recv, &xprt->recv_queue);
 }
 
-/**
- * xprt_lookup_rqst - find an RPC request corresponding to an XID
- * @xprt: transport on which the original request was transmitted
- * @xid: RPC XID of incoming reply
- *
- * Caller holds xprt->queue_lock.
- */
+ 
 struct rpc_rqst *xprt_lookup_rqst(struct rpc_xprt *xprt, __be32 xid)
 {
 	struct rpc_rqst *entry;
@@ -1085,25 +893,14 @@ xprt_is_pinned_rqst(struct rpc_rqst *req)
 	return atomic_read(&req->rq_pin) != 0;
 }
 
-/**
- * xprt_pin_rqst - Pin a request on the transport receive list
- * @req: Request to pin
- *
- * Caller must ensure this is atomic with the call to xprt_lookup_rqst()
- * so should be holding xprt->queue_lock.
- */
+ 
 void xprt_pin_rqst(struct rpc_rqst *req)
 {
 	atomic_inc(&req->rq_pin);
 }
 EXPORT_SYMBOL_GPL(xprt_pin_rqst);
 
-/**
- * xprt_unpin_rqst - Unpin a request on the transport receive list
- * @req: Request to pin
- *
- * Caller should be holding xprt->queue_lock.
- */
+ 
 void xprt_unpin_rqst(struct rpc_rqst *req)
 {
 	if (!test_bit(RPC_TASK_MSG_PIN_WAIT, &req->rq_task->tk_runstate)) {
@@ -1134,11 +931,7 @@ xprt_request_need_enqueue_receive(struct rpc_task *task, struct rpc_rqst *req)
 		READ_ONCE(task->tk_rqstp->rq_reply_bytes_recvd) == 0;
 }
 
-/**
- * xprt_request_enqueue_receive - Add an request to the receive queue
- * @task: RPC task
- *
- */
+ 
 int
 xprt_request_enqueue_receive(struct rpc_task *task)
 {
@@ -1154,26 +947,21 @@ xprt_request_enqueue_receive(struct rpc_task *task)
 		return ret;
 	spin_lock(&xprt->queue_lock);
 
-	/* Update the softirq receive buffer */
+	 
 	memcpy(&req->rq_private_buf, &req->rq_rcv_buf,
 			sizeof(req->rq_private_buf));
 
-	/* Add request to the receive list */
+	 
 	xprt_request_rb_insert(xprt, req);
 	set_bit(RPC_TASK_NEED_RECV, &task->tk_runstate);
 	spin_unlock(&xprt->queue_lock);
 
-	/* Turn off autodisconnect */
+	 
 	del_timer_sync(&xprt->timer);
 	return 0;
 }
 
-/**
- * xprt_request_dequeue_receive_locked - Remove a request from the receive queue
- * @task: RPC task
- *
- * Caller must hold xprt->queue_lock.
- */
+ 
 static void
 xprt_request_dequeue_receive_locked(struct rpc_task *task)
 {
@@ -1183,12 +971,7 @@ xprt_request_dequeue_receive_locked(struct rpc_task *task)
 		xprt_request_rb_remove(req->rq_xprt, req);
 }
 
-/**
- * xprt_update_rtt - Update RPC RTT statistics
- * @task: RPC request that recently completed
- *
- * Caller holds xprt->queue_lock.
- */
+ 
 void xprt_update_rtt(struct rpc_task *task)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -1204,13 +987,7 @@ void xprt_update_rtt(struct rpc_task *task)
 }
 EXPORT_SYMBOL_GPL(xprt_update_rtt);
 
-/**
- * xprt_complete_rqst - called when reply processing is complete
- * @task: RPC request that recently completed
- * @copied: actual number of bytes received from the transport
- *
- * Caller holds xprt->queue_lock.
- */
+ 
 void xprt_complete_rqst(struct rpc_task *task, int copied)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -1221,8 +998,8 @@ void xprt_complete_rqst(struct rpc_task *task, int copied)
 	xdr_free_bvec(&req->rq_rcv_buf);
 	req->rq_private_buf.bvec = NULL;
 	req->rq_private_buf.len = copied;
-	/* Ensure all writes are done before we update */
-	/* req->rq_reply_bytes_recvd */
+	 
+	 
 	smp_wmb();
 	req->rq_reply_bytes_recvd = copied;
 	xprt_request_dequeue_receive_locked(task);
@@ -1246,15 +1023,7 @@ static void xprt_timer(struct rpc_task *task)
 		task->tk_status = 0;
 }
 
-/**
- * xprt_wait_for_reply_request_def - wait for reply
- * @task: pointer to rpc_task
- *
- * Set a request's retransmit timeout based on the transport's
- * default timeout parameters.  Used by transports that don't adjust
- * the retransmit timeout based on round-trip time estimation,
- * and put the task to sleep on the pending queue.
- */
+ 
 void xprt_wait_for_reply_request_def(struct rpc_task *task)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -1264,13 +1033,7 @@ void xprt_wait_for_reply_request_def(struct rpc_task *task)
 }
 EXPORT_SYMBOL_GPL(xprt_wait_for_reply_request_def);
 
-/**
- * xprt_wait_for_reply_request_rtt - wait for reply using RTT estimator
- * @task: pointer to rpc_task
- *
- * Set a request's retransmit timeout using the RTT estimator,
- * and put the task to sleep on the pending queue.
- */
+ 
 void xprt_wait_for_reply_request_rtt(struct rpc_task *task)
 {
 	int timer = task->tk_msg.rpc_proc->p_timer;
@@ -1289,11 +1052,7 @@ void xprt_wait_for_reply_request_rtt(struct rpc_task *task)
 }
 EXPORT_SYMBOL_GPL(xprt_wait_for_reply_request_rtt);
 
-/**
- * xprt_request_wait_receive - wait for the reply to an RPC request
- * @task: RPC task about to send a request
- *
- */
+ 
 void xprt_request_wait_receive(struct rpc_task *task)
 {
 	struct rpc_rqst *req = task->tk_rqstp;
@@ -1301,19 +1060,11 @@ void xprt_request_wait_receive(struct rpc_task *task)
 
 	if (!test_bit(RPC_TASK_NEED_RECV, &task->tk_runstate))
 		return;
-	/*
-	 * Sleep on the pending queue if we're expecting a reply.
-	 * The spinlock ensures atomicity between the test of
-	 * req->rq_reply_bytes_recvd, and the call to rpc_sleep_on().
-	 */
+	 
 	spin_lock(&xprt->queue_lock);
 	if (test_bit(RPC_TASK_NEED_RECV, &task->tk_runstate)) {
 		xprt->ops->wait_for_reply_request(task);
-		/*
-		 * Send an extra queue wakeup call if the
-		 * connection was dropped in case the call to
-		 * rpc_sleep_on() raced.
-		 */
+		 
 		if (xprt_request_retransmit_after_disconnect(task))
 			rpc_wake_up_queued_task_set_status(&xprt->pending,
 					task, -ENOTCONN);
@@ -1327,12 +1078,7 @@ xprt_request_need_enqueue_transmit(struct rpc_task *task, struct rpc_rqst *req)
 	return !test_bit(RPC_TASK_NEED_XMIT, &task->tk_runstate);
 }
 
-/**
- * xprt_request_enqueue_transmit - queue a task for transmission
- * @task: pointer to rpc_task
- *
- * Add a task to the transmission queue.
- */
+ 
 void
 xprt_request_enqueue_transmit(struct rpc_task *task)
 {
@@ -1348,16 +1094,13 @@ xprt_request_enqueue_transmit(struct rpc_task *task)
 		}
 		req->rq_bytes_sent = 0;
 		spin_lock(&xprt->queue_lock);
-		/*
-		 * Requests that carry congestion control credits are added
-		 * to the head of the list to avoid starvation issues.
-		 */
+		 
 		if (req->rq_cong) {
 			xprt_clear_congestion_window_wait(xprt);
 			list_for_each_entry(pos, &xprt->xmit_queue, rq_xmit) {
 				if (pos->rq_cong)
 					continue;
-				/* Note: req is added _before_ pos */
+				 
 				list_add_tail(&req->rq_xmit, &pos->rq_xmit);
 				INIT_LIST_HEAD(&req->rq_xmit2);
 				goto out;
@@ -1380,13 +1123,7 @@ out:
 	}
 }
 
-/**
- * xprt_request_dequeue_transmit_locked - remove a task from the transmission queue
- * @task: pointer to rpc_task
- *
- * Remove a task from the transmission queue
- * Caller must hold xprt->queue_lock
- */
+ 
 static void
 xprt_request_dequeue_transmit_locked(struct rpc_task *task)
 {
@@ -1408,12 +1145,7 @@ xprt_request_dequeue_transmit_locked(struct rpc_task *task)
 	xdr_free_bvec(&req->rq_snd_buf);
 }
 
-/**
- * xprt_request_dequeue_transmit - remove a task from the transmission queue
- * @task: pointer to rpc_task
- *
- * Remove a task from the transmission queue
- */
+ 
 static void
 xprt_request_dequeue_transmit(struct rpc_task *task)
 {
@@ -1425,13 +1157,7 @@ xprt_request_dequeue_transmit(struct rpc_task *task)
 	spin_unlock(&xprt->queue_lock);
 }
 
-/**
- * xprt_request_dequeue_xprt - remove a task from the transmit+receive queue
- * @task: pointer to rpc_task
- *
- * Remove a task from the transmit and receive queues, and ensure that
- * it is not pinned by the receive work item.
- */
+ 
 void
 xprt_request_dequeue_xprt(struct rpc_task *task)
 {
@@ -1456,15 +1182,7 @@ xprt_request_dequeue_xprt(struct rpc_task *task)
 	}
 }
 
-/**
- * xprt_request_prepare - prepare an encoded request for transport
- * @req: pointer to rpc_rqst
- * @buf: pointer to send/rcv xdr_buf
- *
- * Calls into the transport layer to do whatever is needed to prepare
- * the request for transmission or receive.
- * Returns error, or zero.
- */
+ 
 static int
 xprt_request_prepare(struct rpc_rqst *req, struct xdr_buf *buf)
 {
@@ -1475,30 +1193,21 @@ xprt_request_prepare(struct rpc_rqst *req, struct xdr_buf *buf)
 	return 0;
 }
 
-/**
- * xprt_request_need_retransmit - Test if a task needs retransmission
- * @task: pointer to rpc_task
- *
- * Test for whether a connection breakage requires the task to retransmit
- */
+ 
 bool
 xprt_request_need_retransmit(struct rpc_task *task)
 {
 	return xprt_request_retransmit_after_disconnect(task);
 }
 
-/**
- * xprt_prepare_transmit - reserve the transport before sending a request
- * @task: RPC task about to send a request
- *
- */
+ 
 bool xprt_prepare_transmit(struct rpc_task *task)
 {
 	struct rpc_rqst	*req = task->tk_rqstp;
 	struct rpc_xprt	*xprt = req->rq_xprt;
 
 	if (!xprt_lock_write(xprt, task)) {
-		/* Race breaker: someone may have transmitted us */
+		 
 		if (!test_bit(RPC_TASK_NEED_XMIT, &task->tk_runstate))
 			rpc_wake_up_queued_task_set_status(&xprt->sending,
 					task, 0);
@@ -1506,7 +1215,7 @@ bool xprt_prepare_transmit(struct rpc_task *task)
 
 	}
 	if (atomic_read(&xprt->swapper))
-		/* This will be clear in __rpc_execute */
+		 
 		current->flags |= PF_MEMALLOC;
 	return true;
 }
@@ -1519,16 +1228,7 @@ void xprt_end_transmit(struct rpc_task *task)
 	xprt_release_write(xprt, task);
 }
 
-/**
- * xprt_request_transmit - send an RPC request on a transport
- * @req: pointer to request to transmit
- * @snd_task: RPC task that owns the transport lock
- *
- * This performs the transmission of a single request.
- * Note that if the request is not the same as snd_task, then it
- * does need to be pinned.
- * Returns '0' on success.
- */
+ 
 static int
 xprt_request_transmit(struct rpc_rqst *req, struct rpc_task *snd_task)
 {
@@ -1543,7 +1243,7 @@ xprt_request_transmit(struct rpc_rqst *req, struct rpc_task *snd_task)
 			status = 0;
 			goto out_dequeue;
 		}
-		/* Verify that our message lies in the RPCSEC_GSS window */
+		 
 		if (rpcauth_xmit_need_reencode(task)) {
 			status = -EBADMSG;
 			goto out_dequeue;
@@ -1554,11 +1254,7 @@ xprt_request_transmit(struct rpc_rqst *req, struct rpc_task *snd_task)
 		}
 	}
 
-	/*
-	 * Update req->rq_ntrans before transmitting to avoid races with
-	 * xprt_update_rtt(), which needs to know that it is recording a
-	 * reply to the first transmission.
-	 */
+	 
 	req->rq_ntrans++;
 
 	trace_rpc_xdr_sendto(task, &req->rq_snd_buf);
@@ -1595,15 +1291,7 @@ out_dequeue:
 	return status;
 }
 
-/**
- * xprt_transmit - send an RPC request on a transport
- * @task: controlling RPC task
- *
- * Attempts to drain the transmit queue. On exit, either the transport
- * signalled an error that needs to be handled before transmission can
- * resume, or @task finished transmitting, and detected that it already
- * received a reply.
- */
+ 
 void
 xprt_transmit(struct rpc_task *task)
 {
@@ -1629,7 +1317,7 @@ xprt_transmit(struct rpc_task *task)
 				task->tk_status = status;
 			break;
 		}
-		/* Was @task transmitted, and has it received a reply? */
+		 
 		if (xprt_request_data_received(task) &&
 		    !test_bit(RPC_TASK_NEED_XMIT, &task->tk_runstate))
 			break;
@@ -1656,7 +1344,7 @@ static bool __xprt_set_rq(struct rpc_task *task, void *data)
 	struct rpc_rqst *req = data;
 
 	if (task->tk_rqstp == NULL) {
-		memset(req, 0, sizeof(*req));	/* mark unused */
+		memset(req, 0, sizeof(*req));	 
 		task->tk_rqstp = req;
 		return true;
 	}
@@ -1760,7 +1448,7 @@ void xprt_free_slot(struct rpc_xprt *xprt, struct rpc_rqst *req)
 	spin_lock(&xprt->reserve_lock);
 	if (!xprt_wake_up_backlog(xprt, req) &&
 	    !xprt_dynamic_free_slot(xprt, req)) {
-		memset(req, 0, sizeof(*req));	/* mark unused */
+		memset(req, 0, sizeof(*req));	 
 		list_add(&req->rq_list, &xprt->free);
 	}
 	spin_unlock(&xprt->reserve_lock);
@@ -1899,14 +1587,7 @@ xprt_do_reserve(struct rpc_xprt *xprt, struct rpc_task *task)
 		xprt_request_init(task);
 }
 
-/**
- * xprt_reserve - allocate an RPC request slot
- * @task: RPC task requesting a slot allocation
- *
- * If the transport is marked as being congested, or if no more
- * slots are available, place the task on the transport's
- * backlog queue.
- */
+ 
 void xprt_reserve(struct rpc_task *task)
 {
 	struct rpc_xprt *xprt = task->tk_xprt;
@@ -1920,15 +1601,7 @@ void xprt_reserve(struct rpc_task *task)
 		xprt_do_reserve(xprt, task);
 }
 
-/**
- * xprt_retry_reserve - allocate an RPC request slot
- * @task: RPC task requesting a slot allocation
- *
- * If no more slots are available, place the task on the transport's
- * backlog queue.
- * Note that the only difference with xprt_reserve is that we now
- * ignore the value of the XPRT_CONGESTED flag.
- */
+ 
 void xprt_retry_reserve(struct rpc_task *task)
 {
 	struct rpc_xprt *xprt = task->tk_xprt;
@@ -1941,11 +1614,7 @@ void xprt_retry_reserve(struct rpc_task *task)
 	xprt_do_reserve(xprt, task);
 }
 
-/**
- * xprt_release - release an RPC request slot
- * @task: task which is finished with the slot
- *
- */
+ 
 void xprt_release(struct rpc_task *task)
 {
 	struct rpc_xprt	*xprt;
@@ -1990,10 +1659,7 @@ xprt_init_bc_request(struct rpc_rqst *req, struct rpc_task *task)
 	task->tk_rqstp = req;
 	req->rq_task = task;
 	xprt_init_connect_cookie(req, req->rq_xprt);
-	/*
-	 * Set up the xdr_buf length.
-	 * This also indicates that the buffer is XDR encoded already.
-	 */
+	 
 	xbufp->len = xbufp->head[0].iov_len + xbufp->page_len +
 		xbufp->tail[0].iov_len;
 }
@@ -2013,7 +1679,7 @@ static void xprt_init(struct rpc_xprt *xprt, struct net *net)
 #if defined(CONFIG_SUNRPC_BACKCHANNEL)
 	spin_lock_init(&xprt->bc_pa_lock);
 	INIT_LIST_HEAD(&xprt->bc_pa_list);
-#endif /* CONFIG_SUNRPC_BACKCHANNEL */
+#endif  
 	INIT_LIST_HEAD(&xprt->xprt_switch);
 
 	xprt->last_used = jiffies;
@@ -2030,11 +1696,7 @@ static void xprt_init(struct rpc_xprt *xprt, struct net *net)
 	xprt->xprt_net = get_net_track(net, &xprt->ns_tracker, GFP_KERNEL);
 }
 
-/**
- * xprt_create_transport - create an RPC transport
- * @args: rpc transport creation arguments
- *
- */
+ 
 struct rpc_xprt *xprt_create_transport(struct xprt_create *args)
 {
 	struct rpc_xprt	*xprt;
@@ -2089,42 +1751,25 @@ static void xprt_destroy_cb(struct work_struct *work)
 	rpc_destroy_wait_queue(&xprt->sending);
 	rpc_destroy_wait_queue(&xprt->backlog);
 	kfree(xprt->servername);
-	/*
-	 * Destroy any existing back channel
-	 */
+	 
 	xprt_destroy_backchannel(xprt, UINT_MAX);
 
-	/*
-	 * Tear down transport state and free the rpc_xprt
-	 */
+	 
 	xprt->ops->destroy(xprt);
 }
 
-/**
- * xprt_destroy - destroy an RPC transport, killing off all requests.
- * @xprt: transport to destroy
- *
- */
+ 
 static void xprt_destroy(struct rpc_xprt *xprt)
 {
-	/*
-	 * Exclude transport connect/disconnect handlers and autoclose
-	 */
+	 
 	wait_on_bit_lock(&xprt->state, XPRT_LOCKED, TASK_UNINTERRUPTIBLE);
 
-	/*
-	 * xprt_schedule_autodisconnect() can run after XPRT_LOCKED
-	 * is cleared.  We use ->transport_lock to ensure the mod_timer()
-	 * can only run *before* del_time_sync(), never after.
-	 */
+	 
 	spin_lock(&xprt->transport_lock);
 	del_timer_sync(&xprt->timer);
 	spin_unlock(&xprt->transport_lock);
 
-	/*
-	 * Destroy sockets etc from the system workqueue so they can
-	 * safely flush receive work running on rpciod.
-	 */
+	 
 	INIT_WORK(&xprt->task_cleanup, xprt_destroy_cb);
 	schedule_work(&xprt->task_cleanup);
 }
@@ -2134,11 +1779,7 @@ static void xprt_destroy_kref(struct kref *kref)
 	xprt_destroy(container_of(kref, struct rpc_xprt, kref));
 }
 
-/**
- * xprt_get - return a reference to an RPC transport.
- * @xprt: pointer to the transport
- *
- */
+ 
 struct rpc_xprt *xprt_get(struct rpc_xprt *xprt)
 {
 	if (xprt != NULL && kref_get_unless_zero(&xprt->kref))
@@ -2147,11 +1788,7 @@ struct rpc_xprt *xprt_get(struct rpc_xprt *xprt)
 }
 EXPORT_SYMBOL_GPL(xprt_get);
 
-/**
- * xprt_put - release a reference to an RPC transport.
- * @xprt: pointer to the transport
- *
- */
+ 
 void xprt_put(struct rpc_xprt *xprt)
 {
 	if (xprt != NULL)

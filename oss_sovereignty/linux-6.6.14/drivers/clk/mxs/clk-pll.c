@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright 2012 Freescale Semiconductor, Inc.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/delay.h>
@@ -10,16 +8,7 @@
 #include <linux/slab.h>
 #include "clk.h"
 
-/**
- * struct clk_pll - mxs pll clock
- * @hw: clk_hw for the pll
- * @base: base address of the pll
- * @power: the shift of power bit
- * @rate: the clock rate of the pll
- *
- * The mxs pll is a fixed rate clock with power and gate control,
- * and the shift of gate bit is always 31.
- */
+ 
 struct clk_pll {
 	struct clk_hw hw;
 	void __iomem *base;

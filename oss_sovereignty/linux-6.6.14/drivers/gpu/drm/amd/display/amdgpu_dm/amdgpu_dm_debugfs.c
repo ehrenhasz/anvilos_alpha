@@ -1,27 +1,4 @@
-/*
- * Copyright 2018 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include <linux/string_helpers.h>
 #include <linux/uaccess.h>
@@ -61,14 +38,7 @@ static const char *const mst_progress_status[] = {
 	"clear_allocated_payload",
 };
 
-/* parse_write_buffer_into_params - Helper function to parse debugfs write buffer into an array
- *
- * Function takes in attributes passed to debugfs write entry
- * and writes into param array.
- * The user passes max_param_num to identify maximum number of
- * parameters that could be parsed.
- *
- */
+ 
 static int parse_write_buffer_into_params(char *wr_buf, uint32_t wr_buf_size,
 					  long *param, const char __user *buf,
 					  int max_param_num,
@@ -85,15 +55,15 @@ static int parse_write_buffer_into_params(char *wr_buf, uint32_t wr_buf_size,
 
 	wr_buf_ptr = wr_buf;
 
-	/* r is bytes not be copied */
+	 
 	if (copy_from_user(wr_buf_ptr, buf, wr_buf_size)) {
 		DRM_DEBUG_DRIVER("user data could not be read successfully\n");
 		return -EFAULT;
 	}
 
-	/* check number of parameters. isspace could not differ space and \n */
+	 
 	while ((*wr_buf_ptr != 0xa) && (wr_buf_count < wr_buf_size)) {
-		/* skip space*/
+		 
 		while (isspace(*wr_buf_ptr) && (wr_buf_count < wr_buf_size)) {
 			wr_buf_ptr++;
 			wr_buf_count++;
@@ -102,7 +72,7 @@ static int parse_write_buffer_into_params(char *wr_buf, uint32_t wr_buf_size,
 		if (wr_buf_count == wr_buf_size)
 			break;
 
-		/* skip non-space*/
+		 
 		while ((!isspace(*wr_buf_ptr)) && (wr_buf_count < wr_buf_size)) {
 			wr_buf_ptr++;
 			wr_buf_count++;
@@ -117,8 +87,8 @@ static int parse_write_buffer_into_params(char *wr_buf, uint32_t wr_buf_size,
 	if (*param_nums > max_param_num)
 		*param_nums = max_param_num;
 
-	wr_buf_ptr = wr_buf; /* reset buf pointer */
-	wr_buf_count = 0; /* number of char already checked */
+	wr_buf_ptr = wr_buf;  
+	wr_buf_count = 0;  
 
 	while (isspace(*wr_buf_ptr) && (wr_buf_count < wr_buf_size)) {
 		wr_buf_ptr++;
@@ -126,7 +96,7 @@ static int parse_write_buffer_into_params(char *wr_buf, uint32_t wr_buf_size,
 	}
 
 	while (param_index < *param_nums) {
-		/* after strsep, wr_buf_ptr will be moved to after space */
+		 
 		sub_str = strsep(&wr_buf_ptr, delimiter);
 
 		r = kstrtol(sub_str, 16, &(param[param_index]));
@@ -140,47 +110,7 @@ static int parse_write_buffer_into_params(char *wr_buf, uint32_t wr_buf_size,
 	return 0;
 }
 
-/* function description
- * get/ set DP configuration: lane_count, link_rate, spread_spectrum
- *
- * valid lane count value: 1, 2, 4
- * valid link rate value:
- * 06h = 1.62Gbps per lane
- * 0Ah = 2.7Gbps per lane
- * 0Ch = 3.24Gbps per lane
- * 14h = 5.4Gbps per lane
- * 1Eh = 8.1Gbps per lane
- *
- * debugfs is located at /sys/kernel/debug/dri/0/DP-x/link_settings
- *
- * --- to get dp configuration
- *
- * cat /sys/kernel/debug/dri/0/DP-x/link_settings
- *
- * It will list current, verified, reported, preferred dp configuration.
- * current -- for current video mode
- * verified --- maximum configuration which pass link training
- * reported --- DP rx report caps (DPCD register offset 0, 1 2)
- * preferred --- user force settings
- *
- * --- set (or force) dp configuration
- *
- * echo <lane_count>  <link_rate> > link_settings
- *
- * for example, to force to  2 lane, 2.7GHz,
- * echo 4 0xa > /sys/kernel/debug/dri/0/DP-x/link_settings
- *
- * spread_spectrum could not be changed dynamically.
- *
- * in case invalid lane count, link rate are force, no hw programming will be
- * done. please check link settings after force operation to see if HW get
- * programming.
- *
- * cat /sys/kernel/debug/dri/0/DP-x/link_settings
- *
- * check current and preferred settings.
- *
- */
+ 
 static ssize_t dp_link_settings_read(struct file *f, char __user *buf,
 				 size_t size, loff_t *pos)
 {
@@ -236,7 +166,7 @@ static ssize_t dp_link_settings_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -259,7 +189,7 @@ static ssize_t dp_link_settings_write(struct file *f, const char __user *buf,
 	struct dc_link_settings prefer_link_settings;
 	char *wr_buf = NULL;
 	const uint32_t wr_buf_size = 40;
-	/* 0: lane_count; 1: link_rate */
+	 
 	int max_param_num = 2;
 	uint8_t param_nums = 0;
 	long param[2];
@@ -320,9 +250,7 @@ static ssize_t dp_link_settings_write(struct file *f, const char __user *buf,
 		return size;
 	}
 
-	/* save user force lane_count, link_rate to preferred settings
-	 * spread spectrum will not be changed
-	 */
+	 
 	prefer_link_settings.link_spread = link->cur_link_settings.link_spread;
 	prefer_link_settings.use_link_rate_set = false;
 	prefer_link_settings.lane_count = param[0];
@@ -356,30 +284,7 @@ static bool dp_mst_is_end_device(struct amdgpu_dm_connector *aconnector)
 	return is_end_device;
 }
 
-/* Change MST link setting
- *
- * valid lane count value: 1, 2, 4
- * valid link rate value:
- * 06h = 1.62Gbps per lane
- * 0Ah = 2.7Gbps per lane
- * 0Ch = 3.24Gbps per lane
- * 14h = 5.4Gbps per lane
- * 1Eh = 8.1Gbps per lane
- * 3E8h = 10.0Gbps per lane
- * 546h = 13.5Gbps per lane
- * 7D0h = 20.0Gbps per lane
- *
- * debugfs is located at /sys/kernel/debug/dri/0/DP-x/mst_link_settings
- *
- * for example, to force to  2 lane, 10.0GHz,
- * echo 2 0x3e8 > /sys/kernel/debug/dri/0/DP-x/mst_link_settings
- *
- * Valid input will trigger hotplug event to get new link setting applied
- * Invalid input will trigger training setting reset
- *
- * The usage can be referred to link_settings entry
- *
- */
+ 
 static ssize_t dp_mst_link_setting(struct file *f, const char __user *buf,
 				 size_t size, loff_t *pos)
 {
@@ -390,7 +295,7 @@ static ssize_t dp_mst_link_setting(struct file *f, const char __user *buf,
 	struct dc_link_settings prefer_link_settings;
 	char *wr_buf = NULL;
 	const uint32_t wr_buf_size = 40;
-	/* 0: lane_count; 1: link_rate */
+	 
 	int max_param_num = 2;
 	uint8_t param_nums = 0;
 	long param[2];
@@ -454,15 +359,13 @@ static ssize_t dp_mst_link_setting(struct file *f, const char __user *buf,
 		return -EINVAL;
 	}
 
-	/* save user force lane_count, link_rate to preferred settings
-	 * spread spectrum will not be changed
-	 */
+	 
 	prefer_link_settings.link_spread = link->cur_link_settings.link_spread;
 	prefer_link_settings.use_link_rate_set = false;
 	prefer_link_settings.lane_count = param[0];
 	prefer_link_settings.link_rate = param[1];
 
-	/* skip immediate retrain, and train to new link setting after hotplug event triggered */
+	 
 	mutex_lock(&adev->dm.dc_lock);
 	dc_link_set_preferred_training_settings(dc, &prefer_link_settings, NULL, link, true);
 	mutex_unlock(&adev->dm.dc_lock);
@@ -483,47 +386,7 @@ static ssize_t dp_mst_link_setting(struct file *f, const char __user *buf,
 	return size;
 }
 
-/* function: get current DP PHY settings: voltage swing, pre-emphasis,
- * post-cursor2 (defined by VESA DP specification)
- *
- * valid values
- * voltage swing: 0,1,2,3
- * pre-emphasis : 0,1,2,3
- * post cursor2 : 0,1,2,3
- *
- *
- * how to use this debugfs
- *
- * debugfs is located at /sys/kernel/debug/dri/0/DP-x
- *
- * there will be directories, like DP-1, DP-2,DP-3, etc. for DP display
- *
- * To figure out which DP-x is the display for DP to be check,
- * cd DP-x
- * ls -ll
- * There should be debugfs file, like link_settings, phy_settings.
- * cat link_settings
- * from lane_count, link_rate to figure which DP-x is for display to be worked
- * on
- *
- * To get current DP PHY settings,
- * cat phy_settings
- *
- * To change DP PHY settings,
- * echo <voltage_swing> <pre-emphasis> <post_cursor2> > phy_settings
- * for examle, to change voltage swing to 2, pre-emphasis to 3, post_cursor2 to
- * 0,
- * echo 2 3 0 > phy_settings
- *
- * To check if change be applied, get current phy settings by
- * cat phy_settings
- *
- * In case invalid values are set by user, like
- * echo 1 4 0 > phy_settings
- *
- * HW will NOT be programmed by these settings.
- * cat phy_settings will show the previous valid settings.
- */
+ 
 static ssize_t dp_phy_settings_read(struct file *f, char __user *buf,
 				 size_t size, loff_t *pos)
 {
@@ -553,7 +416,7 @@ static ssize_t dp_phy_settings_read(struct file *f, char __user *buf,
 		r = put_user((*(rd_buf + result)), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -646,7 +509,7 @@ static ssize_t dp_phy_settings_write(struct file *f, const char __user *buf,
 		return size;
 	}
 
-	/* get link settings: lane count, link rate */
+	 
 	use_prefer_link_setting =
 		((link->preferred_link_setting.link_rate != LINK_RATE_UNKNOWN) &&
 		(link->test_pattern_enabled));
@@ -669,7 +532,7 @@ static ssize_t dp_phy_settings_write(struct file *f, const char __user *buf,
 				link->cur_link_settings.link_spread;
 	}
 
-	/* apply phy settings from user */
+	 
 	for (r = 0; r < link_lane_settings.link_settings.lane_count; r++) {
 		link_lane_settings.hw_lane_settings[r].VOLTAGE_SWING =
 				(enum dc_voltage_swing) (param[0]);
@@ -679,71 +542,14 @@ static ssize_t dp_phy_settings_write(struct file *f, const char __user *buf,
 				(enum dc_post_cursor2) (param[2]);
 	}
 
-	/* program ASIC registers and DPCD registers */
+	 
 	dc_link_set_drive_settings(dc, &link_lane_settings, link);
 
 	kfree(wr_buf);
 	return size;
 }
 
-/* function description
- *
- * set PHY layer or Link layer test pattern
- * PHY test pattern is used for PHY SI check.
- * Link layer test will not affect PHY SI.
- *
- * Reset Test Pattern:
- * 0 = DP_TEST_PATTERN_VIDEO_MODE
- *
- * PHY test pattern supported:
- * 1 = DP_TEST_PATTERN_D102
- * 2 = DP_TEST_PATTERN_SYMBOL_ERROR
- * 3 = DP_TEST_PATTERN_PRBS7
- * 4 = DP_TEST_PATTERN_80BIT_CUSTOM
- * 5 = DP_TEST_PATTERN_CP2520_1
- * 6 = DP_TEST_PATTERN_CP2520_2 = DP_TEST_PATTERN_HBR2_COMPLIANCE_EYE
- * 7 = DP_TEST_PATTERN_CP2520_3
- *
- * DP PHY Link Training Patterns
- * 8 = DP_TEST_PATTERN_TRAINING_PATTERN1
- * 9 = DP_TEST_PATTERN_TRAINING_PATTERN2
- * a = DP_TEST_PATTERN_TRAINING_PATTERN3
- * b = DP_TEST_PATTERN_TRAINING_PATTERN4
- *
- * DP Link Layer Test pattern
- * c = DP_TEST_PATTERN_COLOR_SQUARES
- * d = DP_TEST_PATTERN_COLOR_SQUARES_CEA
- * e = DP_TEST_PATTERN_VERTICAL_BARS
- * f = DP_TEST_PATTERN_HORIZONTAL_BARS
- * 10= DP_TEST_PATTERN_COLOR_RAMP
- *
- * debugfs phy_test_pattern is located at /syskernel/debug/dri/0/DP-x
- *
- * --- set test pattern
- * echo <test pattern #> > test_pattern
- *
- * If test pattern # is not supported, NO HW programming will be done.
- * for DP_TEST_PATTERN_80BIT_CUSTOM, it needs extra 10 bytes of data
- * for the user pattern. input 10 bytes data are separated by space
- *
- * echo 0x4 0x11 0x22 0x33 0x44 0x55 0x66 0x77 0x88 0x99 0xaa > test_pattern
- *
- * --- reset test pattern
- * echo 0 > test_pattern
- *
- * --- HPD detection is disabled when set PHY test pattern
- *
- * when PHY test pattern (pattern # within [1,7]) is set, HPD pin of HW ASIC
- * is disable. User could unplug DP display from DP connected and plug scope to
- * check test pattern PHY SI.
- * If there is need unplug scope and plug DP display back, do steps below:
- * echo 0 > phy_test_pattern
- * unplug scope
- * plug DP display.
- *
- * "echo 0 > phy_test_pattern" will re-enable HPD pin again so that video sw
- * driver could detect "unplug scope" and "plug DP display"
- */
+ 
 static ssize_t dp_phy_test_pattern_debugfs_write(struct file *f, const char __user *buf,
 				 size_t size, loff_t *pos)
 {
@@ -757,7 +563,7 @@ static ssize_t dp_phy_test_pattern_debugfs_write(struct file *f, const char __us
 	bool disable_hpd = false;
 	bool valid_test_pattern = false;
 	uint8_t param_nums = 0;
-	/* init with default 80bit custom pattern */
+	 
 	uint8_t custom_pattern[10] = {
 			0x1f, 0x7c, 0xf0, 0xc1, 0x07,
 			0x1f, 0x7c, 0xf0, 0xc1, 0x07
@@ -832,20 +638,13 @@ static ssize_t dp_phy_test_pattern_debugfs_write(struct file *f, const char __us
 		}
 
 		if (i < 10) {
-			/* not use default value */
+			 
 			for (i = 0; i < 10; i++)
 				custom_pattern[i] = (uint8_t) param[i + 1];
 		}
 	}
 
-	/* Usage: set DP physical test pattern using debugfs with normal DP
-	 * panel. Then plug out DP panel and connect a scope to measure
-	 * For normal video mode and test pattern generated from CRCT,
-	 * they are visibile to user. So do not disable HPD.
-	 * Video Mode is also set to clear the test pattern, so enable HPD
-	 * because it might have been disabled after a test pattern was set.
-	 * AUX depends on HPD * sequence dependent, do not move!
-	 */
+	 
 	if (!disable_hpd)
 		dc_link_enable_hpd(link);
 
@@ -879,11 +678,7 @@ static ssize_t dp_phy_test_pattern_debugfs_write(struct file *f, const char __us
 		custom_pattern,
 		10);
 
-	/* Usage: Set DP physical test pattern using AMDDP with normal DP panel
-	 * Then plug out DP panel and connect a scope to measure DP PHY signal.
-	 * Need disable interrupt to avoid SW driver disable DP output. This is
-	 * done after the test pattern is set.
-	 */
+	 
 	if (valid_test_pattern && disable_hpd)
 		dc_link_disable_hpd(link);
 
@@ -892,10 +687,7 @@ static ssize_t dp_phy_test_pattern_debugfs_write(struct file *f, const char __us
 	return size;
 }
 
-/*
- * Returns the DMCUB tracebuffer contents.
- * Example usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_dmub_tracebuffer
- */
+ 
 static int dmub_tracebuffer_show(struct seq_file *m, void *data)
 {
 	struct amdgpu_device *adev = m->private;
@@ -936,10 +728,7 @@ static int dmub_tracebuffer_show(struct seq_file *m, void *data)
 	return 0;
 }
 
-/*
- * Returns the DMCUB firmware state contents.
- * Example usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_dmub_fw_state
- */
+ 
 static int dmub_fw_state_show(struct seq_file *m, void *data)
 {
 	struct amdgpu_device *adev = m->private;
@@ -959,20 +748,7 @@ static int dmub_fw_state_show(struct seq_file *m, void *data)
 	return seq_write(m, state_base, state_size);
 }
 
-/* psr_capability_show() - show eDP panel PSR capability
- *
- * The read function: sink_psr_capability_show
- * Shows if sink has PSR capability or not.
- * If yes - the PSR version is appended
- *
- *	cat /sys/kernel/debug/dri/0/eDP-X/psr_capability
- *
- * Expected output:
- * "Sink support: no\n" - if panel doesn't support PSR
- * "Sink support: yes [0x01]\n" - if panel supports PSR1
- * "Driver support: no\n" - if driver doesn't support PSR
- * "Driver support: yes [0x01]\n" - if driver supports PSR1
- */
+ 
 static int psr_capability_show(struct seq_file *m, void *data)
 {
 	struct drm_connector *connector = m->private;
@@ -1001,10 +777,7 @@ static int psr_capability_show(struct seq_file *m, void *data)
 	return 0;
 }
 
-/*
- * Returns the current bpc for the crtc.
- * Example usage: cat /sys/kernel/debug/dri/0/crtc-0/amdgpu_current_bpc
- */
+ 
 static int amdgpu_current_bpc_show(struct seq_file *m, void *data)
 {
 	struct drm_crtc *crtc = m->private;
@@ -1053,10 +826,7 @@ unlock:
 }
 DEFINE_SHOW_ATTRIBUTE(amdgpu_current_bpc);
 
-/*
- * Returns the current colorspace for the crtc.
- * Example usage: cat /sys/kernel/debug/dri/0/crtc-0/amdgpu_current_colorspace
- */
+ 
 static int amdgpu_current_colorspace_show(struct seq_file *m, void *data)
 {
 	struct drm_crtc *crtc = m->private;
@@ -1108,13 +878,7 @@ unlock:
 DEFINE_SHOW_ATTRIBUTE(amdgpu_current_colorspace);
 
 
-/*
- * Example usage:
- * Disable dsc passthrough, i.e.,: have dsc decoding at converver, not external RX
- *   echo 1 /sys/kernel/debug/dri/0/DP-1/dsc_disable_passthrough
- * Enable dsc passthrough, i.e.,: have dsc passthrough to external RX
- *   echo 0 /sys/kernel/debug/dri/0/DP-1/dsc_disable_passthrough
- */
+ 
 static ssize_t dp_dsc_passthrough_set(struct file *f, const char __user *buf,
 				 size_t size, loff_t *pos)
 {
@@ -1149,15 +913,7 @@ static ssize_t dp_dsc_passthrough_set(struct file *f, const char __user *buf,
 	return 0;
 }
 
-/*
- * Returns the HDCP capability of the Display (1.4 for now).
- *
- * NOTE* Not all HDMI displays report their HDCP caps even when they are capable.
- * Since its rare for a display to not be HDCP 1.4 capable, we set HDMI as always capable.
- *
- * Example usage: cat /sys/kernel/debug/dri/0/DP-1/hdcp_sink_capability
- *		or cat /sys/kernel/debug/dri/0/HDMI-A-1/hdcp_sink_capability
- */
+ 
 static int hdcp_sink_capability_show(struct seq_file *m, void *data)
 {
 	struct drm_connector *connector = m->private;
@@ -1186,10 +942,7 @@ static int hdcp_sink_capability_show(struct seq_file *m, void *data)
 	return 0;
 }
 
-/*
- * Returns whether the connected display is internal and not hotpluggable.
- * Example usage: cat /sys/kernel/debug/dri/0/DP-1/internal_display
- */
+ 
 static int internal_display_show(struct seq_file *m, void *data)
 {
 	struct drm_connector *connector = m->private;
@@ -1201,20 +954,7 @@ static int internal_display_show(struct seq_file *m, void *data)
 	return 0;
 }
 
-/* function description
- *
- * generic SDP message access for testing
- *
- * debugfs sdp_message is located at /syskernel/debug/dri/0/DP-x
- *
- * SDP header
- * Hb0 : Secondary-Data Packet ID
- * Hb1 : Secondary-Data Packet type
- * Hb2 : Secondary-Data-packet-specific header, Byte 0
- * Hb3 : Secondary-Data-packet-specific header, Byte 1
- *
- * for using custom sdp message: input 4 bytes SDP header and 32 bytes raw data
- */
+ 
 static ssize_t dp_sdp_message_debugfs_write(struct file *f, const char __user *buf,
 				 size_t size, loff_t *pos)
 {
@@ -1241,15 +981,7 @@ static ssize_t dp_sdp_message_debugfs_write(struct file *f, const char __user *b
 	return write_size;
 }
 
-/* function: Read link's DSC & FEC capabilities
- *
- *
- * Access it with the following command (you need to specify
- * connector like DP-1):
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/dp_dsc_fec_support
- *
- */
+ 
 static int dp_dsc_fec_support_show(struct seq_file *m, void *data)
 {
 	struct drm_connector *connector = m->private;
@@ -1282,11 +1014,7 @@ static int dp_dsc_fec_support_show(struct seq_file *m, void *data)
 		}
 		dpcd_caps = aconnector->dc_link->dpcd_caps;
 		if (aconnector->mst_output_port) {
-			/* aconnector sets dsc_aux during get_modes call
-			 * if MST connector has it means it can either
-			 * enable DSC on the sink device or on MST branch
-			 * its connected to.
-			 */
+			 
 			if (aconnector->dsc_aux) {
 				is_fec_supported = true;
 				is_dsc_supported = true;
@@ -1306,21 +1034,7 @@ static int dp_dsc_fec_support_show(struct seq_file *m, void *data)
 	return ret;
 }
 
-/* function: Trigger virtual HPD redetection on connector
- *
- * This function will perform link rediscovery, link disable
- * and enable, and dm connector state update.
- *
- * Retrigger HPD on an existing connector by echoing 1 into
- * its respectful "trigger_hotplug" debugfs entry:
- *
- *	echo 1 > /sys/kernel/debug/dri/0/DP-X/trigger_hotplug
- *
- * This function can perform HPD unplug:
- *
- *	echo 0 > /sys/kernel/debug/dri/0/DP-X/trigger_hotplug
- *
- */
+ 
 static ssize_t trigger_hotplug(struct file *f, const char __user *buf,
 							size_t size, loff_t *pos)
 {
@@ -1367,7 +1081,7 @@ static ssize_t trigger_hotplug(struct file *f, const char __user *buf,
 
 	mutex_lock(&aconnector->hpd_lock);
 
-	/* Don't support for mst end device*/
+	 
 	if (aconnector->mst_root) {
 		mutex_unlock(&aconnector->hpd_lock);
 		return -EINVAL;
@@ -1410,7 +1124,7 @@ static ssize_t trigger_hotplug(struct file *f, const char __user *buf,
 
 		amdgpu_dm_update_connector_after_detect(aconnector);
 
-		/* If the aconnector is the root node in mst topology */
+		 
 		if (aconnector->mst_mgr.mst_state == true)
 			dc_link_reset_cur_dp_mst_topology(link);
 
@@ -1427,21 +1141,7 @@ unlock:
 	return size;
 }
 
-/* function: read DSC status on the connector
- *
- * The read function: dp_dsc_clock_en_read
- * returns current status of DSC clock on the connector.
- * The return is a boolean flag: 1 or 0.
- *
- * Access it with the following command (you need to specify
- * connector like DP-1):
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/dsc_clock_en
- *
- * Expected output:
- * 1 - means that DSC is currently enabled
- * 0 - means that DSC is disabled
- */
+ 
 static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
 				    size_t size, loff_t *pos)
 {
@@ -1485,7 +1185,7 @@ static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -1498,31 +1198,7 @@ static ssize_t dp_dsc_clock_en_read(struct file *f, char __user *buf,
 	return result;
 }
 
-/* function: write force DSC on the connector
- *
- * The write function: dp_dsc_clock_en_write
- * enables to force DSC on the connector.
- * User can write to either force enable or force disable DSC
- * on the next modeset or set it to driver default
- *
- * Accepted inputs:
- * 0 - default DSC enablement policy
- * 1 - force enable DSC on the connector
- * 2 - force disable DSC on the connector (might cause fail in atomic_check)
- *
- * Writing DSC settings is done with the following command:
- * - To force enable DSC (you need to specify
- * connector like DP-1):
- *
- *	echo 0x1 > /sys/kernel/debug/dri/0/DP-X/dsc_clock_en
- *
- * - To return to default state set the flag to zero and
- * let driver deal with DSC automatically
- * (you need to specify connector like DP-1):
- *
- *	echo 0x0 > /sys/kernel/debug/dri/0/DP-X/dsc_clock_en
- *
- */
+ 
 static ssize_t dp_dsc_clock_en_write(struct file *f, const char __user *buf,
 				     size_t size, loff_t *pos)
 {
@@ -1573,7 +1249,7 @@ static ssize_t dp_dsc_clock_en_write(struct file *f, const char __user *buf,
 	if (!pipe_ctx->stream)
 		goto done;
 
-	// Get CRTC state
+	
 	mutex_lock(&dev->mode_config.mutex);
 	drm_modeset_lock(&dev->mode_config.connection_mutex, NULL);
 
@@ -1612,22 +1288,7 @@ done:
 	return size;
 }
 
-/* function: read DSC slice width parameter on the connector
- *
- * The read function: dp_dsc_slice_width_read
- * returns dsc slice width used in the current configuration
- * The return is an integer: 0 or other positive number
- *
- * Access the status with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/dsc_slice_width
- *
- * 0 - means that DSC is disabled
- *
- * Any other number more than zero represents the
- * slice width currently used by DSC in pixels
- *
- */
+ 
 static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
 				    size_t size, loff_t *pos)
 {
@@ -1671,7 +1332,7 @@ static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -1684,29 +1345,7 @@ static ssize_t dp_dsc_slice_width_read(struct file *f, char __user *buf,
 	return result;
 }
 
-/* function: write DSC slice width parameter
- *
- * The write function: dp_dsc_slice_width_write
- * overwrites automatically generated DSC configuration
- * of slice width.
- *
- * The user has to write the slice width divisible by the
- * picture width.
- *
- * Also the user has to write width in hexidecimal
- * rather than in decimal.
- *
- * Writing DSC settings is done with the following command:
- * - To force overwrite slice width: (example sets to 1920 pixels)
- *
- *	echo 0x780 > /sys/kernel/debug/dri/0/DP-X/dsc_slice_width
- *
- *  - To stop overwriting and let driver find the optimal size,
- * set the width to zero:
- *
- *	echo 0x0 > /sys/kernel/debug/dri/0/DP-X/dsc_slice_width
- *
- */
+ 
 static ssize_t dp_dsc_slice_width_write(struct file *f, const char __user *buf,
 				     size_t size, loff_t *pos)
 {
@@ -1757,7 +1396,7 @@ static ssize_t dp_dsc_slice_width_write(struct file *f, const char __user *buf,
 	if (!pipe_ctx->stream)
 		goto done;
 
-	// Safely get CRTC state
+	
 	mutex_lock(&dev->mode_config.mutex);
 	drm_modeset_lock(&dev->mode_config.connection_mutex, NULL);
 
@@ -1796,22 +1435,7 @@ done:
 	return size;
 }
 
-/* function: read DSC slice height parameter on the connector
- *
- * The read function: dp_dsc_slice_height_read
- * returns dsc slice height used in the current configuration
- * The return is an integer: 0 or other positive number
- *
- * Access the status with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/dsc_slice_height
- *
- * 0 - means that DSC is disabled
- *
- * Any other number more than zero represents the
- * slice height currently used by DSC in pixels
- *
- */
+ 
 static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
 				    size_t size, loff_t *pos)
 {
@@ -1855,7 +1479,7 @@ static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -1868,29 +1492,7 @@ static ssize_t dp_dsc_slice_height_read(struct file *f, char __user *buf,
 	return result;
 }
 
-/* function: write DSC slice height parameter
- *
- * The write function: dp_dsc_slice_height_write
- * overwrites automatically generated DSC configuration
- * of slice height.
- *
- * The user has to write the slice height divisible by the
- * picture height.
- *
- * Also the user has to write height in hexidecimal
- * rather than in decimal.
- *
- * Writing DSC settings is done with the following command:
- * - To force overwrite slice height (example sets to 128 pixels):
- *
- *	echo 0x80 > /sys/kernel/debug/dri/0/DP-X/dsc_slice_height
- *
- *  - To stop overwriting and let driver find the optimal size,
- * set the height to zero:
- *
- *	echo 0x0 > /sys/kernel/debug/dri/0/DP-X/dsc_slice_height
- *
- */
+ 
 static ssize_t dp_dsc_slice_height_write(struct file *f, const char __user *buf,
 				     size_t size, loff_t *pos)
 {
@@ -1941,7 +1543,7 @@ static ssize_t dp_dsc_slice_height_write(struct file *f, const char __user *buf,
 	if (!pipe_ctx->stream)
 		goto done;
 
-	// Get CRTC state
+	
 	mutex_lock(&dev->mode_config.mutex);
 	drm_modeset_lock(&dev->mode_config.connection_mutex, NULL);
 
@@ -1980,18 +1582,7 @@ done:
 	return size;
 }
 
-/* function: read DSC target rate on the connector in bits per pixel
- *
- * The read function: dp_dsc_bits_per_pixel_read
- * returns target rate of compression in bits per pixel
- * The return is an integer: 0 or other positive integer
- *
- * Access it with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/dsc_bits_per_pixel
- *
- *  0 - means that DSC is disabled
- */
+ 
 static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
 				    size_t size, loff_t *pos)
 {
@@ -2035,7 +1626,7 @@ static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -2048,26 +1639,7 @@ static ssize_t dp_dsc_bits_per_pixel_read(struct file *f, char __user *buf,
 	return result;
 }
 
-/* function: write DSC target rate in bits per pixel
- *
- * The write function: dp_dsc_bits_per_pixel_write
- * overwrites automatically generated DSC configuration
- * of DSC target bit rate.
- *
- * Also the user has to write bpp in hexidecimal
- * rather than in decimal.
- *
- * Writing DSC settings is done with the following command:
- * - To force overwrite rate (example sets to 256 bpp x 1/16):
- *
- *	echo 0x100 > /sys/kernel/debug/dri/0/DP-X/dsc_bits_per_pixel
- *
- *  - To stop overwriting and let driver find the optimal rate,
- * set the rate to zero:
- *
- *	echo 0x0 > /sys/kernel/debug/dri/0/DP-X/dsc_bits_per_pixel
- *
- */
+ 
 static ssize_t dp_dsc_bits_per_pixel_write(struct file *f, const char __user *buf,
 				     size_t size, loff_t *pos)
 {
@@ -2118,7 +1690,7 @@ static ssize_t dp_dsc_bits_per_pixel_write(struct file *f, const char __user *bu
 	if (!pipe_ctx->stream)
 		goto done;
 
-	// Get CRTC state
+	
 	mutex_lock(&dev->mode_config.mutex);
 	drm_modeset_lock(&dev->mode_config.connection_mutex, NULL);
 
@@ -2152,21 +1724,7 @@ done:
 	return size;
 }
 
-/* function: read DSC picture width parameter on the connector
- *
- * The read function: dp_dsc_pic_width_read
- * returns dsc picture width used in the current configuration
- * It is the same as h_addressable of the current
- * display's timing
- * The return is an integer: 0 or other positive integer
- * If 0 then DSC is disabled.
- *
- * Access it with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/dsc_pic_width
- *
- * 0 - means that DSC is disabled
- */
+ 
 static ssize_t dp_dsc_pic_width_read(struct file *f, char __user *buf,
 				    size_t size, loff_t *pos)
 {
@@ -2210,7 +1768,7 @@ static ssize_t dp_dsc_pic_width_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -2266,7 +1824,7 @@ static ssize_t dp_dsc_pic_height_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -2279,21 +1837,7 @@ static ssize_t dp_dsc_pic_height_read(struct file *f, char __user *buf,
 	return result;
 }
 
-/* function: read DSC chunk size parameter on the connector
- *
- * The read function: dp_dsc_chunk_size_read
- * returns dsc chunk size set in the current configuration
- * The value is calculated automatically by DSC code
- * and depends on slice parameters and bpp target rate
- * The return is an integer: 0 or other positive integer
- * If 0 then DSC is disabled.
- *
- * Access it with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/dsc_chunk_size
- *
- * 0 - means that DSC is disabled
- */
+ 
 static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
 				    size_t size, loff_t *pos)
 {
@@ -2337,7 +1881,7 @@ static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -2350,21 +1894,7 @@ static ssize_t dp_dsc_chunk_size_read(struct file *f, char __user *buf,
 	return result;
 }
 
-/* function: read DSC slice bpg offset on the connector
- *
- * The read function: dp_dsc_slice_bpg_offset_read
- * returns dsc bpg slice offset set in the current configuration
- * The value is calculated automatically by DSC code
- * and depends on slice parameters and bpp target rate
- * The return is an integer: 0 or other positive integer
- * If 0 then DSC is disabled.
- *
- * Access it with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/dsc_slice_bpg_offset
- *
- * 0 - means that DSC is disabled
- */
+ 
 static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
 				    size_t size, loff_t *pos)
 {
@@ -2408,7 +1938,7 @@ static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 
 		buf += 1;
@@ -2422,14 +1952,7 @@ static ssize_t dp_dsc_slice_bpg_offset_read(struct file *f, char __user *buf,
 }
 
 
-/*
- * function description: Read max_requested_bpc property from the connector
- *
- * Access it with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/max_bpc
- *
- */
+ 
 static ssize_t dp_max_bpc_read(struct file *f, char __user *buf,
 		size_t size, loff_t *pos)
 {
@@ -2467,7 +1990,7 @@ static ssize_t dp_max_bpc_read(struct file *f, char __user *buf,
 
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
-			result = r; /* r = -EFAULT */
+			result = r;  
 			goto unlock;
 		}
 		buf += 1;
@@ -2483,28 +2006,7 @@ unlock:
 }
 
 
-/*
- * function description: Set max_requested_bpc property on the connector
- *
- * This function will not force the input BPC on connector, it will only
- * change the max value. This is equivalent to setting max_bpc through
- * xrandr.
- *
- * The BPC value written must be >= 6 and <= 16. Values outside of this
- * range will result in errors.
- *
- * BPC values:
- *	0x6 - 6 BPC
- *	0x8 - 8 BPC
- *	0xa - 10 BPC
- *	0xc - 12 BPC
- *	0x10 - 16 BPC
- *
- * Write the max_bpc in the following way:
- *
- * echo 0x6 > /sys/kernel/debug/dri/0/DP-X/max_bpc
- *
- */
+ 
 static ssize_t dp_max_bpc_write(struct file *f, const char __user *buf,
 				     size_t size, loff_t *pos)
 {
@@ -2564,13 +2066,7 @@ unlock:
 	return size;
 }
 
-/*
- * Backlight at this moment.  Read only.
- * As written to display, taking ABM and backlight lut into account.
- * Ranges from 0x0 to 0x10000 (= 100% PWM)
- *
- * Example usage: cat /sys/kernel/debug/dri/0/eDP-1/current_backlight
- */
+ 
 static int current_backlight_show(struct seq_file *m, void *unused)
 {
 	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(m->private);
@@ -2583,13 +2079,7 @@ static int current_backlight_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-/*
- * Backlight value that is being approached.  Read only.
- * As written to display, taking ABM and backlight lut into account.
- * Ranges from 0x0 to 0x10000 (= 100% PWM)
- *
- * Example usage: cat /sys/kernel/debug/dri/0/eDP-1/target_backlight
- */
+ 
 static int target_backlight_show(struct seq_file *m, void *unused)
 {
 	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(m->private);
@@ -2602,19 +2092,7 @@ static int target_backlight_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-/*
- * function description: Determine if the connector is mst connector
- *
- * This function helps to determine whether a connector is a mst connector.
- * - "root" stands for the root connector of the topology
- * - "branch" stands for branch device of the topology
- * - "end" stands for leaf node connector of the topology
- * - "no" stands for the connector is not a device of a mst topology
- * Access it with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/is_mst_connector
- *
- */
+ 
 static int dp_is_mst_connector_show(struct seq_file *m, void *unused)
 {
 	struct drm_connector *connector = m->private;
@@ -2652,17 +2130,7 @@ static int dp_is_mst_connector_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-/*
- * function description: Read out the mst progress status
- *
- * This function helps to determine the mst progress status of
- * a mst connector.
- *
- * Access it with the following command:
- *
- *	cat /sys/kernel/debug/dri/0/DP-X/mst_progress_status
- *
- */
+ 
 static int dp_mst_progress_status_show(struct seq_file *m, void *unused)
 {
 	struct drm_connector *connector = m->private;
@@ -2688,10 +2156,7 @@ static int dp_mst_progress_status_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-/*
- * Reports whether the connected display is a USB4 DPIA tunneled display
- * Example usage: cat /sys/kernel/debug/dri/0/DP-8/is_dpia_link
- */
+ 
 static int is_dpia_link_show(struct seq_file *m, void *data)
 {
 	struct drm_connector *connector = m->private;
@@ -2855,9 +2320,7 @@ static const struct {
 		{"hdcp_sink_capability", &hdcp_sink_capability_fops}
 };
 
-/*
- * Force YUV420 output if available from the given mode
- */
+ 
 static int force_yuv420_output_set(void *data, u64 val)
 {
 	struct amdgpu_dm_connector *connector = data;
@@ -2867,9 +2330,7 @@ static int force_yuv420_output_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Check if YUV420 is forced when available from the given mode
- */
+ 
 static int force_yuv420_output_get(void *data, u64 *val)
 {
 	struct amdgpu_dm_connector *connector = data;
@@ -2882,9 +2343,7 @@ static int force_yuv420_output_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(force_yuv420_output_fops, force_yuv420_output_get,
 			 force_yuv420_output_set, "%llu\n");
 
-/*
- *  Read PSR state
- */
+ 
 static int psr_get(void *data, u64 *val)
 {
 	struct amdgpu_dm_connector *connector = data;
@@ -2898,9 +2357,7 @@ static int psr_get(void *data, u64 *val)
 	return 0;
 }
 
-/*
- *  Read PSR state residency
- */
+ 
 static int psr_read_residency(void *data, u64 *val)
 {
 	struct amdgpu_dm_connector *connector = data;
@@ -2914,7 +2371,7 @@ static int psr_read_residency(void *data, u64 *val)
 	return 0;
 }
 
-/* read allow_edp_hotplug_detection */
+ 
 static int allow_edp_hotplug_detection_get(void *data, u64 *val)
 {
 	struct amdgpu_dm_connector *aconnector = data;
@@ -2927,7 +2384,7 @@ static int allow_edp_hotplug_detection_get(void *data, u64 *val)
 	return 0;
 }
 
-/* set allow_edp_hotplug_detection */
+ 
 static int allow_edp_hotplug_detection_set(void *data, u64 val)
 {
 	struct amdgpu_dm_connector *aconnector = data;
@@ -2940,11 +2397,7 @@ static int allow_edp_hotplug_detection_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Set dmcub trace event IRQ enable or disable.
- * Usage to enable dmcub trace event IRQ: echo 1 > /sys/kernel/debug/dri/0/amdgpu_dm_dmcub_trace_event_en
- * Usage to disable dmcub trace event IRQ: echo 0 > /sys/kernel/debug/dri/0/amdgpu_dm_dmcub_trace_event_en
- */
+ 
 static int dmcub_trace_event_state_set(void *data, u64 val)
 {
 	struct amdgpu_device *adev = data;
@@ -2958,11 +2411,7 @@ static int dmcub_trace_event_state_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * The interface doesn't need get function, so it will return the
- * value of zero
- * Usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_dmcub_trace_event_en
- */
+ 
 static int dmcub_trace_event_state_get(void *data, u64 *val)
 {
 	struct amdgpu_device *adev = data;
@@ -2994,10 +2443,7 @@ static const struct {
 		{"internal_display", &internal_display_fops}
 };
 
-/*
- * Returns supported customized link rates by this eDP panel.
- * Example usage: cat /sys/kernel/debug/dri/0/eDP-x/ilr_setting
- */
+ 
 static int edp_ilr_show(struct seq_file *m, void *unused)
 {
 	struct amdgpu_dm_connector *aconnector = to_amdgpu_dm_connector(m->private);
@@ -3028,15 +2474,7 @@ static int edp_ilr_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-/*
- * Set supported customized link rate to eDP panel.
- *
- * echo <lane_count>  <link_rate option> > ilr_setting
- *
- * for example, supported ILR : [0] 1620000 kHz [1] 2160000 kHz [2] 2430000 kHz ...
- * echo 4 1 > /sys/kernel/debug/dri/0/eDP-x/ilr_setting
- * to set 4 lanes and 2.16 GHz
- */
+ 
 static ssize_t edp_ilr_write(struct file *f, const char __user *buf,
 				 size_t size, loff_t *pos)
 {
@@ -3047,7 +2485,7 @@ static ssize_t edp_ilr_write(struct file *f, const char __user *buf,
 	struct dc_link_settings prefer_link_settings;
 	char *wr_buf = NULL;
 	const uint32_t wr_buf_size = 40;
-	/* 0: lane_count; 1: link_rate */
+	 
 	int max_param_num = 2;
 	uint8_t param_nums = 0;
 	long param[2];
@@ -3096,9 +2534,7 @@ static ssize_t edp_ilr_write(struct file *f, const char __user *buf,
 		return size;
 	}
 
-	/* save user force lane_count, link_rate to preferred settings
-	 * spread spectrum will not be changed
-	 */
+	 
 	prefer_link_settings.link_spread = link->cur_link_settings.link_spread;
 	prefer_link_settings.lane_count = param[0];
 	prefer_link_settings.use_link_rate_set = true;
@@ -3172,9 +2608,7 @@ void connector_debugfs_init(struct amdgpu_dm_connector *connector)
 }
 
 #ifdef CONFIG_DRM_AMD_SECURE_DISPLAY
-/*
- * Set crc window coordinate x start
- */
+ 
 static int crc_win_x_start_set(void *data, u64 val)
 {
 	struct drm_crtc *crtc = data;
@@ -3189,9 +2623,7 @@ static int crc_win_x_start_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Get crc window coordinate x start
- */
+ 
 static int crc_win_x_start_get(void *data, u64 *val)
 {
 	struct drm_crtc *crtc = data;
@@ -3209,9 +2641,7 @@ DEFINE_DEBUGFS_ATTRIBUTE(crc_win_x_start_fops, crc_win_x_start_get,
 			 crc_win_x_start_set, "%llu\n");
 
 
-/*
- * Set crc window coordinate y start
- */
+ 
 static int crc_win_y_start_set(void *data, u64 val)
 {
 	struct drm_crtc *crtc = data;
@@ -3226,9 +2656,7 @@ static int crc_win_y_start_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Get crc window coordinate y start
- */
+ 
 static int crc_win_y_start_get(void *data, u64 *val)
 {
 	struct drm_crtc *crtc = data;
@@ -3245,9 +2673,7 @@ static int crc_win_y_start_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(crc_win_y_start_fops, crc_win_y_start_get,
 			 crc_win_y_start_set, "%llu\n");
 
-/*
- * Set crc window coordinate x end
- */
+ 
 static int crc_win_x_end_set(void *data, u64 val)
 {
 	struct drm_crtc *crtc = data;
@@ -3262,9 +2688,7 @@ static int crc_win_x_end_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Get crc window coordinate x end
- */
+ 
 static int crc_win_x_end_get(void *data, u64 *val)
 {
 	struct drm_crtc *crtc = data;
@@ -3281,9 +2705,7 @@ static int crc_win_x_end_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(crc_win_x_end_fops, crc_win_x_end_get,
 			 crc_win_x_end_set, "%llu\n");
 
-/*
- * Set crc window coordinate y end
- */
+ 
 static int crc_win_y_end_set(void *data, u64 val)
 {
 	struct drm_crtc *crtc = data;
@@ -3298,9 +2720,7 @@ static int crc_win_y_end_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Get crc window coordinate y end
- */
+ 
 static int crc_win_y_end_get(void *data, u64 *val)
 {
 	struct drm_crtc *crtc = data;
@@ -3316,9 +2736,7 @@ static int crc_win_y_end_get(void *data, u64 *val)
 
 DEFINE_DEBUGFS_ATTRIBUTE(crc_win_y_end_fops, crc_win_y_end_get,
 			 crc_win_y_end_set, "%llu\n");
-/*
- * Trigger to commit crc window
- */
+ 
 static int crc_win_update_set(void *data, u64 val)
 {
 	struct drm_crtc *crtc = data;
@@ -3328,9 +2746,7 @@ static int crc_win_update_set(void *data, u64 val)
 	if (val) {
 		acrtc = to_amdgpu_crtc(crtc);
 		mutex_lock(&adev->dm.dc_lock);
-		/* PSR may write to OTG CRC window control register,
-		 * so close it before starting secure_display.
-		 */
+		 
 		amdgpu_dm_psr_disable(acrtc->dm_irq_params.stream);
 
 		spin_lock_irq(&adev_to_drm(adev)->event_lock);
@@ -3346,9 +2762,7 @@ static int crc_win_update_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Get crc window update flag
- */
+ 
 static int crc_win_update_get(void *data, u64 *val)
 {
 	*val = 0;
@@ -3384,10 +2798,7 @@ void crtc_debugfs_init(struct drm_crtc *crtc)
 			    crtc, &amdgpu_current_colorspace_fops);
 }
 
-/*
- * Writes DTN log state to the user supplied buffer.
- * Example usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_dtn_log
- */
+ 
 static ssize_t dtn_log_read(
 	struct file *f,
 	char __user *buf,
@@ -3423,10 +2834,7 @@ static ssize_t dtn_log_read(
 	return result;
 }
 
-/*
- * Writes DTN log state to dmesg when triggered via a write.
- * Example usage: echo 1 > /sys/kernel/debug/dri/0/amdgpu_dm_dtn_log
- */
+ 
 static ssize_t dtn_log_write(
 	struct file *f,
 	const char __user *buf,
@@ -3436,7 +2844,7 @@ static ssize_t dtn_log_write(
 	struct amdgpu_device *adev = file_inode(f)->i_private;
 	struct dc *dc = adev->dm.dc;
 
-	/* Write triggers log output via dmesg. */
+	 
 	if (size == 0)
 		return 0;
 
@@ -3461,7 +2869,7 @@ static int mst_topo_show(struct seq_file *m, void *unused)
 
 		aconnector = to_amdgpu_dm_connector(connector);
 
-		/* Ensure we're only dumping the topology of a root mst node */
+		 
 		if (!aconnector->mst_mgr.mst_state)
 			continue;
 
@@ -3473,13 +2881,7 @@ static int mst_topo_show(struct seq_file *m, void *unused)
 	return 0;
 }
 
-/*
- * Sets trigger hpd for MST topologies.
- * All connected connectors will be rediscovered and re started as needed if val of 1 is sent.
- * All topologies will be disconnected if val of 0 is set .
- * Usage to enable topologies: echo 1 > /sys/kernel/debug/dri/0/amdgpu_dm_trigger_hpd_mst
- * Usage to disable topologies: echo 0 > /sys/kernel/debug/dri/0/amdgpu_dm_trigger_hpd_mst
- */
+ 
 static int trigger_hpd_mst_set(void *data, u64 val)
 {
 	struct amdgpu_device *adev = data;
@@ -3527,11 +2929,7 @@ static int trigger_hpd_mst_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * The interface doesn't need get function, so it will return the
- * value of zero
- * Usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_trigger_hpd_mst
- */
+ 
 static int trigger_hpd_mst_get(void *data, u64 *val)
 {
 	*val = 0;
@@ -3542,11 +2940,7 @@ DEFINE_DEBUGFS_ATTRIBUTE(trigger_hpd_mst_ops, trigger_hpd_mst_get,
 			 trigger_hpd_mst_set, "%llu\n");
 
 
-/*
- * Sets the force_timing_sync debug option from the given string.
- * All connected displays will be force synchronized immediately.
- * Usage: echo 1 > /sys/kernel/debug/dri/0/amdgpu_dm_force_timing_sync
- */
+ 
 static int force_timing_sync_set(void *data, u64 val)
 {
 	struct amdgpu_device *adev = data;
@@ -3558,10 +2952,7 @@ static int force_timing_sync_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Gets the force_timing_sync debug option value into the given buffer.
- * Usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_force_timing_sync
- */
+ 
 static int force_timing_sync_get(void *data, u64 *val)
 {
 	struct amdgpu_device *adev = data;
@@ -3575,10 +2966,7 @@ DEFINE_DEBUGFS_ATTRIBUTE(force_timing_sync_ops, force_timing_sync_get,
 			 force_timing_sync_set, "%llu\n");
 
 
-/*
- * Disables all HPD and HPD RX interrupt handling in the
- * driver when set to 1. Default is 0.
- */
+ 
 static int disable_hpd_set(void *data, u64 val)
 {
 	struct amdgpu_device *adev = data;
@@ -3589,10 +2977,7 @@ static int disable_hpd_set(void *data, u64 val)
 }
 
 
-/*
- * Returns 1 if HPD and HPRX interrupt handling is disabled,
- * 0 otherwise.
- */
+ 
 static int disable_hpd_get(void *data, u64 *val)
 {
 	struct amdgpu_device *adev = data;
@@ -3605,10 +2990,7 @@ static int disable_hpd_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(disable_hpd_ops, disable_hpd_get,
 			 disable_hpd_set, "%llu\n");
 
-/*
- * Temporary w/a to force sst sequence in M42D DP2 mst receiver
- * Example usage: echo 1 > /sys/kernel/debug/dri/0/amdgpu_dm_dp_set_mst_en_for_sst
- */
+ 
 static int dp_force_sst_set(void *data, u64 val)
 {
 	struct amdgpu_device *adev = data;
@@ -3629,10 +3011,7 @@ static int dp_force_sst_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(dp_set_mst_en_for_sst_ops, dp_force_sst_get,
 			 dp_force_sst_set, "%llu\n");
 
-/*
- * Force DP2 sequence without VESA certified cable.
- * Example usage: echo 1 > /sys/kernel/debug/dri/0/amdgpu_dm_dp_ignore_cable_id
- */
+ 
 static int dp_ignore_cable_id_set(void *data, u64 val)
 {
 	struct amdgpu_device *adev = data;
@@ -3653,10 +3032,7 @@ static int dp_ignore_cable_id_get(void *data, u64 *val)
 DEFINE_DEBUGFS_ATTRIBUTE(dp_ignore_cable_id_ops, dp_ignore_cable_id_get,
 			 dp_ignore_cable_id_set, "%llu\n");
 
-/*
- * Sets the DC visual confirm debug option from the given string.
- * Example usage: echo 1 > /sys/kernel/debug/dri/0/amdgpu_visual_confirm
- */
+ 
 static int visual_confirm_set(void *data, u64 val)
 {
 	struct amdgpu_device *adev = data;
@@ -3666,10 +3042,7 @@ static int visual_confirm_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Reads the DC visual confirm debug option value into the given buffer.
- * Example usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_visual_confirm
- */
+ 
 static int visual_confirm_get(void *data, u64 *val)
 {
 	struct amdgpu_device *adev = data;
@@ -3684,10 +3057,7 @@ DEFINE_DEBUGFS_ATTRIBUTE(visual_confirm_fops, visual_confirm_get,
 			 visual_confirm_set, "%llu\n");
 
 
-/*
- * Sets the DC skip_detection_link_training debug option from the given string.
- * Example usage: echo 1 > /sys/kernel/debug/dri/0/amdgpu_skip_detection_link_training
- */
+ 
 static int skip_detection_link_training_set(void *data, u64 val)
 {
 	struct amdgpu_device *adev = data;
@@ -3700,10 +3070,7 @@ static int skip_detection_link_training_set(void *data, u64 val)
 	return 0;
 }
 
-/*
- * Reads the DC skip_detection_link_training debug option value into the given buffer.
- * Example usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_skip_detection_link_training
- */
+ 
 static int skip_detection_link_training_get(void *data, u64 *val)
 {
 	struct amdgpu_device *adev = data;
@@ -3717,10 +3084,7 @@ DEFINE_DEBUGFS_ATTRIBUTE(skip_detection_link_training_fops,
 			 skip_detection_link_training_get,
 			 skip_detection_link_training_set, "%llu\n");
 
-/*
- * Dumps the DCC_EN bit for each pipe.
- * Example usage: cat /sys/kernel/debug/dri/0/amdgpu_dm_dcc_en
- */
+ 
 static ssize_t dcc_en_bits_read(
 	struct file *f,
 	char __user *buf,
@@ -3767,7 +3131,7 @@ static ssize_t dcc_en_bits_read(
 		r = put_user(*(rd_buf + result), buf);
 		if (r) {
 			kfree(rd_buf);
-			return r; /* r = -EFAULT */
+			return r;  
 		}
 		buf += 1;
 		size -= 1;

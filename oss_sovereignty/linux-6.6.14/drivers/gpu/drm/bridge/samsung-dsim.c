@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Samsung MIPI DSIM bridge driver.
- *
- * Copyright (C) 2021 Amarula Solutions(India)
- * Copyright (c) 2014 Samsung Electronics Co., Ltd
- * Author: Jagan Teki <jagan@amarulasolutions.com>
- *
- * Based on exynos_drm_dsi from
- * Tomasz Figa <t.figa@samsung.com>
- */
+
+ 
 
 #include <asm/unaligned.h>
 
@@ -26,24 +17,24 @@
 #include <drm/drm_panel.h>
 #include <drm/drm_print.h>
 
-/* returns true iff both arguments logically differs */
+ 
 #define NEQV(a, b) (!(a) ^ !(b))
 
-/* DSIM_STATUS */
+ 
 #define DSIM_STOP_STATE_DAT(x)		(((x) & 0xf) << 0)
 #define DSIM_STOP_STATE_CLK		BIT(8)
 #define DSIM_TX_READY_HS_CLK		BIT(10)
 #define DSIM_PLL_STABLE			BIT(31)
 
-/* DSIM_SWRST */
+ 
 #define DSIM_FUNCRST			BIT(16)
 #define DSIM_SWRST			BIT(0)
 
-/* DSIM_TIMEOUT */
+ 
 #define DSIM_LPDR_TIMEOUT(x)		((x) << 0)
 #define DSIM_BTA_TIMEOUT(x)		((x) << 16)
 
-/* DSIM_CLKCTRL */
+ 
 #define DSIM_ESC_PRESCALER(x)		(((x) & 0xffff) << 0)
 #define DSIM_ESC_PRESCALER_MASK		(0xffff << 0)
 #define DSIM_LANE_ESC_CLK_EN_CLK	BIT(19)
@@ -56,7 +47,7 @@
 #define DSIM_ESC_CLKEN			BIT(28)
 #define DSIM_TX_REQUEST_HSCLK		BIT(31)
 
-/* DSIM_CONFIG */
+ 
 #define DSIM_LANE_EN_CLK		BIT(0)
 #define DSIM_LANE_EN(x)			(((x) & 0xf) << 1)
 #define DSIM_NUM_OF_DATA_LANE(x)	(((x) & 0x3) << 5)
@@ -71,22 +62,7 @@
 #define DSIM_HSA_DISABLE_MODE		BIT(20)
 #define DSIM_HBP_DISABLE_MODE		BIT(21)
 #define DSIM_HFP_DISABLE_MODE		BIT(22)
-/*
- * The i.MX 8M Mini Applications Processor Reference Manual,
- * Rev. 3, 11/2020 Page 4091
- * The i.MX 8M Nano Applications Processor Reference Manual,
- * Rev. 2, 07/2022 Page 3058
- * The i.MX 8M Plus Applications Processor Reference Manual,
- * Rev. 1, 06/2021 Page 5436
- * all claims this bit is 'HseDisableMode' with the definition
- * 0 = Disables transfer
- * 1 = Enables transfer
- *
- * This clearly states that HSE is not a disabled bit.
- *
- * The naming convention follows as per the manual and the
- * driver logic is based on the MIPI_DSI_MODE_VIDEO_HSE flag.
- */
+ 
 #define DSIM_HSE_DISABLE_MODE		BIT(23)
 #define DSIM_AUTO_MODE			BIT(24)
 #define DSIM_VIDEO_MODE			BIT(25)
@@ -94,10 +70,10 @@
 #define DSIM_SYNC_INFORM		BIT(27)
 #define DSIM_EOT_DISABLE		BIT(28)
 #define DSIM_MFLUSH_VS			BIT(29)
-/* This flag is valid only for exynos3250/3472/5260/5430 */
+ 
 #define DSIM_CLKLANE_STOP		BIT(30)
 
-/* DSIM_ESCMODE */
+ 
 #define DSIM_TX_TRIGGER_RST		BIT(4)
 #define DSIM_TX_LPDT_LP			BIT(6)
 #define DSIM_CMD_LPDT_LP		BIT(7)
@@ -106,12 +82,12 @@
 #define DSIM_STOP_STATE_CNT(x)		(((x) & 0x7ff) << 21)
 #define DSIM_STOP_STATE_CNT_MASK	(0x7ff << 21)
 
-/* DSIM_MDRESOL */
+ 
 #define DSIM_MAIN_STAND_BY		BIT(31)
 #define DSIM_MAIN_VRESOL(x, num_bits)	(((x) & ((1 << (num_bits)) - 1)) << 16)
 #define DSIM_MAIN_HRESOL(x, num_bits)	(((x) & ((1 << (num_bits)) - 1)) << 0)
 
-/* DSIM_MVPORCH */
+ 
 #define DSIM_CMD_ALLOW(x)		((x) << 28)
 #define DSIM_STABLE_VFP(x)		((x) << 16)
 #define DSIM_MAIN_VBP(x)		((x) << 0)
@@ -119,19 +95,19 @@
 #define DSIM_STABLE_VFP_MASK		(0x7ff << 16)
 #define DSIM_MAIN_VBP_MASK		(0x7ff << 0)
 
-/* DSIM_MHPORCH */
+ 
 #define DSIM_MAIN_HFP(x)		((x) << 16)
 #define DSIM_MAIN_HBP(x)		((x) << 0)
 #define DSIM_MAIN_HFP_MASK		((0xffff) << 16)
 #define DSIM_MAIN_HBP_MASK		((0xffff) << 0)
 
-/* DSIM_MSYNC */
+ 
 #define DSIM_MAIN_VSA(x)		((x) << 22)
 #define DSIM_MAIN_HSA(x)		((x) << 0)
 #define DSIM_MAIN_VSA_MASK		((0x3ff) << 22)
 #define DSIM_MAIN_HSA_MASK		((0xffff) << 0)
 
-/* DSIM_SDRESOL */
+ 
 #define DSIM_SUB_STANDY(x)		((x) << 31)
 #define DSIM_SUB_VRESOL(x)		((x) << 16)
 #define DSIM_SUB_HRESOL(x)		((x) << 0)
@@ -139,7 +115,7 @@
 #define DSIM_SUB_VRESOL_MASK		((0x7ff) << 16)
 #define DSIM_SUB_HRESOL_MASK		((0x7ff) << 0)
 
-/* DSIM_INTSRC */
+ 
 #define DSIM_INT_PLL_STABLE		BIT(31)
 #define DSIM_INT_SW_RST_RELEASE		BIT(30)
 #define DSIM_INT_SFR_FIFO_EMPTY		BIT(29)
@@ -154,7 +130,7 @@
 #define DSIM_INT_RX_ECC_ERR		BIT(15)
 #define DSIM_INT_RX_CRC_ERR		BIT(14)
 
-/* DSIM_FIFOCTRL */
+ 
 #define DSIM_RX_DATA_FULL		BIT(25)
 #define DSIM_RX_DATA_EMPTY		BIT(24)
 #define DSIM_SFR_HEADER_FULL		BIT(23)
@@ -179,11 +155,11 @@
 #define DSIM_SD_FIFO			BIT(1)
 #define DSIM_MD_FIFO			BIT(0)
 
-/* DSIM_PHYACCHR */
+ 
 #define DSIM_AFC_EN			BIT(14)
 #define DSIM_AFC_CTL(x)			(((x) & 0x7) << 5)
 
-/* DSIM_PLLCTRL */
+ 
 #define DSIM_PLL_DPDNSWAP_CLK		(1 << 25)
 #define DSIM_PLL_DPDNSWAP_DAT		(1 << 24)
 #define DSIM_FREQ_BAND(x)		((x) << 24)
@@ -192,22 +168,22 @@
 #define DSIM_PLL_M(x)			((x) << 4)
 #define DSIM_PLL_S(x)			((x) << 1)
 
-/* DSIM_PHYCTRL */
+ 
 #define DSIM_PHYCTRL_ULPS_EXIT(x)	(((x) & 0x1ff) << 0)
 #define DSIM_PHYCTRL_B_DPHYCTL_VREG_LP	BIT(30)
 #define DSIM_PHYCTRL_B_DPHYCTL_SLEW_UP	BIT(14)
 
-/* DSIM_PHYTIMING */
+ 
 #define DSIM_PHYTIMING_LPX(x)		((x) << 8)
 #define DSIM_PHYTIMING_HS_EXIT(x)	((x) << 0)
 
-/* DSIM_PHYTIMING1 */
+ 
 #define DSIM_PHYTIMING1_CLK_PREPARE(x)	((x) << 24)
 #define DSIM_PHYTIMING1_CLK_ZERO(x)	((x) << 16)
 #define DSIM_PHYTIMING1_CLK_POST(x)	((x) << 8)
 #define DSIM_PHYTIMING1_CLK_TRAIL(x)	((x) << 0)
 
-/* DSIM_PHYTIMING2 */
+ 
 #define DSIM_PHYTIMING2_HS_PREPARE(x)	((x) << 16)
 #define DSIM_PHYTIMING2_HS_ZERO(x)	((x) << 8)
 #define DSIM_PHYTIMING2_HS_TRAIL(x)	((x) << 0)
@@ -237,23 +213,23 @@ enum samsung_dsim_transfer_type {
 };
 
 enum reg_idx {
-	DSIM_STATUS_REG,	/* Status register */
-	DSIM_SWRST_REG,		/* Software reset register */
-	DSIM_CLKCTRL_REG,	/* Clock control register */
-	DSIM_TIMEOUT_REG,	/* Time out register */
-	DSIM_CONFIG_REG,	/* Configuration register */
-	DSIM_ESCMODE_REG,	/* Escape mode register */
+	DSIM_STATUS_REG,	 
+	DSIM_SWRST_REG,		 
+	DSIM_CLKCTRL_REG,	 
+	DSIM_TIMEOUT_REG,	 
+	DSIM_CONFIG_REG,	 
+	DSIM_ESCMODE_REG,	 
 	DSIM_MDRESOL_REG,
-	DSIM_MVPORCH_REG,	/* Main display Vporch register */
-	DSIM_MHPORCH_REG,	/* Main display Hporch register */
-	DSIM_MSYNC_REG,		/* Main display sync area register */
-	DSIM_INTSRC_REG,	/* Interrupt source register */
-	DSIM_INTMSK_REG,	/* Interrupt mask register */
-	DSIM_PKTHDR_REG,	/* Packet Header FIFO register */
-	DSIM_PAYLOAD_REG,	/* Payload FIFO register */
-	DSIM_RXFIFO_REG,	/* Read FIFO register */
-	DSIM_FIFOCTRL_REG,	/* FIFO status and control register */
-	DSIM_PLLCTRL_REG,	/* PLL control register */
+	DSIM_MVPORCH_REG,	 
+	DSIM_MHPORCH_REG,	 
+	DSIM_MSYNC_REG,		 
+	DSIM_INTSRC_REG,	 
+	DSIM_INTMSK_REG,	 
+	DSIM_PKTHDR_REG,	 
+	DSIM_PAYLOAD_REG,	 
+	DSIM_RXFIFO_REG,	 
+	DSIM_FIFOCTRL_REG,	 
+	DSIM_PLLCTRL_REG,	 
 	DSIM_PHYCTRL_REG,
 	DSIM_PHYTIMING_REG,
 	DSIM_PHYTIMING1_REG,
@@ -485,10 +461,7 @@ static const struct samsung_dsim_driver_data imx8mm_dsi_driver_data = {
 	.max_freq = 2100,
 	.wait_for_reset = 0,
 	.num_bits_resol = 12,
-	/*
-	 * Unlike Exynos, PLL_P(PMS_P) offset 14 is used in i.MX8M Mini/Nano/Plus
-	 * downstream driver - drivers/gpu/drm/bridge/sec-dsim.c
-	 */
+	 
 	.pll_p_offset = 14,
 	.reg_values = imx8mm_dsim_reg_values,
 	.m_min = 64,
@@ -676,10 +649,10 @@ static int samsung_dsim_enable_clock(struct samsung_dsim *dsi)
 	struct drm_display_mode *m = &dsi->mode;
 	int bpp = mipi_dsi_pixel_format_to_bpp(dsi->format);
 
-	/* m->clock is in KHz */
+	 
 	pix_clk = m->clock * 1000;
 
-	/* Use burst_clk_rate if available, otherwise use the pix_clk */
+	 
 	if (dsi->burst_clk_rate)
 		hs_clk = samsung_dsim_set_pll(dsi, dsi->burst_clk_rate);
 	else
@@ -733,21 +706,7 @@ static void samsung_dsim_set_phy_ctrl(struct samsung_dsim *dsi)
 	phy_mipi_dphy_get_default_config_for_hsclk(dsi->hs_clock,
 						   dsi->lanes, &cfg);
 
-	/*
-	 * TODO:
-	 * The tech Applications Processor manuals for i.MX8M Mini, Nano,
-	 * and Plus don't state what the definition of the PHYTIMING
-	 * bits are beyond their address and bit position.
-	 * After reviewing NXP's downstream code, it appears
-	 * that the various PHYTIMING registers take the number
-	 * of cycles and use various dividers on them.  This
-	 * calculation does not result in an exact match to the
-	 * downstream code, but it is very close to the values
-	 * generated by their lookup table, and it appears
-	 * to sync at a variety of resolutions. If someone
-	 * can get a more accurate mathematical equation needed
-	 * for these registers, this should be updated.
-	 */
+	 
 
 	lpx = PS_TO_CYCLE(cfg.lpx, byte_clock);
 	hs_exit = PS_TO_CYCLE(cfg.hs_exit, byte_clock);
@@ -759,35 +718,19 @@ static void samsung_dsim_set_phy_ctrl(struct samsung_dsim *dsi)
 	hs_zero = PS_TO_CYCLE(cfg.hs_zero, byte_clock);
 	hs_trail = PS_TO_CYCLE(cfg.hs_trail, byte_clock);
 
-	/* B D-PHY: D-PHY Master & Slave Analog Block control */
+	 
 	reg = reg_values[PHYCTRL_ULPS_EXIT] | reg_values[PHYCTRL_VREG_LP] |
 		reg_values[PHYCTRL_SLEW_UP];
 
 	samsung_dsim_write(dsi, DSIM_PHYCTRL_REG, reg);
 
-	/*
-	 * T LPX: Transmitted length of any Low-Power state period
-	 * T HS-EXIT: Time that the transmitter drives LP-11 following a HS
-	 *	burst
-	 */
+	 
 
 	reg  = DSIM_PHYTIMING_LPX(lpx) | DSIM_PHYTIMING_HS_EXIT(hs_exit);
 
 	samsung_dsim_write(dsi, DSIM_PHYTIMING_REG, reg);
 
-	/*
-	 * T CLK-PREPARE: Time that the transmitter drives the Clock Lane LP-00
-	 *	Line state immediately before the HS-0 Line state starting the
-	 *	HS transmission
-	 * T CLK-ZERO: Time that the transmitter drives the HS-0 state prior to
-	 *	transmitting the Clock.
-	 * T CLK_POST: Time that the transmitter continues to send HS clock
-	 *	after the last associated Data Lane has transitioned to LP Mode
-	 *	Interval is defined as the period from the end of T HS-TRAIL to
-	 *	the beginning of T CLK-TRAIL
-	 * T CLK-TRAIL: Time that the transmitter drives the HS-0 state after
-	 *	the last payload clock bit of a HS transmission burst
-	 */
+	 
 
 	reg = DSIM_PHYTIMING1_CLK_PREPARE(clk_prepare)	|
 	      DSIM_PHYTIMING1_CLK_ZERO(clk_zero)	|
@@ -796,15 +739,7 @@ static void samsung_dsim_set_phy_ctrl(struct samsung_dsim *dsi)
 
 	samsung_dsim_write(dsi, DSIM_PHYTIMING1_REG, reg);
 
-	/*
-	 * T HS-PREPARE: Time that the transmitter drives the Data Lane LP-00
-	 *	Line state immediately before the HS-0 Line state starting the
-	 *	HS transmission
-	 * T HS-ZERO: Time that the transmitter drives the HS-0 state prior to
-	 *	transmitting the Sync sequence.
-	 * T HS-TRAIL: Time that the transmitter drives the flipped differential
-	 *	state after last payload data bit of a HS transmission burst
-	 */
+	 
 
 	reg = DSIM_PHYTIMING2_HS_PREPARE(hs_prepare) |
 	      DSIM_PHYTIMING2_HS_ZERO(hs_zero) |
@@ -843,7 +778,7 @@ static int samsung_dsim_init_link(struct samsung_dsim *dsi)
 	u32 reg;
 	u32 lanes_mask;
 
-	/* Initialize FIFO pointers */
+	 
 	reg = samsung_dsim_read(dsi, DSIM_FIFOCTRL_REG);
 	reg &= ~0x1f;
 	samsung_dsim_write(dsi, DSIM_FIFOCTRL_REG, reg);
@@ -854,21 +789,14 @@ static int samsung_dsim_init_link(struct samsung_dsim *dsi)
 	samsung_dsim_write(dsi, DSIM_FIFOCTRL_REG, reg);
 	usleep_range(9000, 11000);
 
-	/* DSI configuration */
+	 
 	reg = 0;
 
-	/*
-	 * The first bit of mode_flags specifies display configuration.
-	 * If this bit is set[= MIPI_DSI_MODE_VIDEO], dsi will support video
-	 * mode, otherwise it will support command mode.
-	 */
+	 
 	if (dsi->mode_flags & MIPI_DSI_MODE_VIDEO) {
 		reg |= DSIM_VIDEO_MODE;
 
-		/*
-		 * The user manual describes that following bits are ignored in
-		 * command mode.
-		 */
+		 
 		if (!(dsi->mode_flags & MIPI_DSI_MODE_VSYNC_FLUSH))
 			reg |= DSIM_MFLUSH_VS;
 		if (dsi->mode_flags & MIPI_DSI_MODE_VIDEO_SYNC_PULSE)
@@ -908,14 +836,7 @@ static int samsung_dsim_init_link(struct samsung_dsim *dsi)
 		return -EINVAL;
 	}
 
-	/*
-	 * Use non-continuous clock mode if the periparal wants and
-	 * host controller supports
-	 *
-	 * In non-continous clock mode, host controller will turn off
-	 * the HS clock between high-speed transmissions to reduce
-	 * power consumption.
-	 */
+	 
 	if (driver_data->has_clklane_stop &&
 	    dsi->mode_flags & MIPI_DSI_CLOCK_NON_CONTINUOUS)
 		reg |= DSIM_CLKLANE_STOP;
@@ -924,7 +845,7 @@ static int samsung_dsim_init_link(struct samsung_dsim *dsi)
 	lanes_mask = BIT(dsi->lanes) - 1;
 	samsung_dsim_enable_lane(dsi, lanes_mask);
 
-	/* Check clock and data lane state are stop state */
+	 
 	timeout = 100;
 	do {
 		if (timeout-- == 0) {
@@ -965,7 +886,7 @@ static void samsung_dsim_set_display_mode(struct samsung_dsim *dsi)
 		int hbp = (m->htotal - m->hsync_end) * byte_clk_khz / m->clock;
 		int hsa = (m->hsync_end - m->hsync_start) * byte_clk_khz / m->clock;
 
-		/* remove packet overhead when possible */
+		 
 		hfp = max(hfp - 6, 0);
 		hbp = max(hbp - 6, 0);
 		hsa = max(hsa - 6, 0);
@@ -1017,10 +938,7 @@ static int samsung_dsim_wait_for_hdr_fifo(struct samsung_dsim *dsi)
 				return 0;
 		} else {
 			if (!(reg & DSIM_SFR_HEADER_FULL)) {
-				/*
-				 * Wait a little bit, so the pending data can
-				 * actually leave the FIFO to avoid overflow.
-				 */
+				 
 				if (!cond_resched())
 					usleep_range(950, 1050);
 				return 0;
@@ -1072,7 +990,7 @@ static void samsung_dsim_send_to_fifo(struct samsung_dsim *dsi,
 
 	xfer->tx_done += length;
 
-	/* Send payload */
+	 
 	while (length >= 4) {
 		reg = get_unaligned_le32(payload);
 		samsung_dsim_write(dsi, DSIM_PAYLOAD_REG, reg);
@@ -1094,7 +1012,7 @@ static void samsung_dsim_send_to_fifo(struct samsung_dsim *dsi,
 		break;
 	}
 
-	/* Send packet header */
+	 
 	if (!first)
 		return;
 
@@ -1163,7 +1081,7 @@ static void samsung_dsim_read_from_fifo(struct samsung_dsim *dsi,
 	length = xfer->rx_len - xfer->rx_done;
 	xfer->rx_done += length;
 
-	/* Receive payload */
+	 
 	while (length >= 4) {
 		reg = samsung_dsim_read(dsi, DSIM_RXFIFO_REG);
 		payload[0] = (reg >>  0) & 0xff;
@@ -1221,7 +1139,7 @@ again:
 
 	if (xfer->packet.payload_length &&
 	    xfer->tx_done == xfer->packet.payload_length)
-		/* waiting for RX */
+		 
 		return;
 
 	samsung_dsim_send_to_fifo(dsi, xfer);
@@ -1345,7 +1263,7 @@ static int samsung_dsim_transfer(struct samsung_dsim *dsi,
 		return -ETIMEDOUT;
 	}
 
-	/* Also covers hardware timeout condition */
+	 
 	return xfer->result;
 }
 
@@ -1454,10 +1372,7 @@ static void samsung_dsim_atomic_pre_enable(struct drm_bridge *bridge,
 
 	dsi->state |= DSIM_STATE_ENABLED;
 
-	/*
-	 * For Exynos-DSIM the downstream bridge, or panel are expecting
-	 * the host initialization during DSI transfer.
-	 */
+	 
 	if (!samsung_dsim_hw_is_exynos(dsi->plat_data->hw_type)) {
 		ret = samsung_dsim_init(dsi);
 		if (ret)
@@ -1508,12 +1423,7 @@ static void samsung_dsim_atomic_post_disable(struct drm_bridge *bridge,
 	pm_runtime_put_sync(dsi->dev);
 }
 
-/*
- * This pixel output formats list referenced from,
- * AN13573 i.MX 8/RT MIPI DSI/CSI-2, Rev. 0, 21 March 2022
- * 3.7.4 Pixel formats
- * Table 14. DSI pixel packing formats
- */
+ 
 static const u32 samsung_dsim_pixel_output_fmts[] = {
 	MEDIA_BUS_FMT_YUYV10_1X20,
 	MEDIA_BUS_FMT_YUYV12_1X24,
@@ -1555,11 +1465,7 @@ samsung_dsim_atomic_get_input_bus_fmts(struct drm_bridge *bridge,
 		return NULL;
 
 	if (!samsung_dsim_pixel_output_fmt_supported(output_fmt))
-		/*
-		 * Some bridge/display drivers are still not able to pass the
-		 * correct format, so handle those pipelines by falling back
-		 * to the default format till the supported formats finalized.
-		 */
+		 
 		output_fmt = MEDIA_BUS_FMT_RGB888_1X24;
 
 	input_fmts[0] = output_fmt;
@@ -1576,20 +1482,7 @@ static int samsung_dsim_atomic_check(struct drm_bridge *bridge,
 	struct samsung_dsim *dsi = bridge_to_dsi(bridge);
 	struct drm_display_mode *adjusted_mode = &crtc_state->adjusted_mode;
 
-	/*
-	 * The i.MX8M Mini/Nano glue logic between LCDIF and DSIM
-	 * inverts HS/VS/DE sync signals polarity, therefore, while
-	 * i.MX 8M Mini Applications Processor Reference Manual Rev. 3, 11/2020
-	 * 13.6.3.5.2 RGB interface
-	 * i.MX 8M Nano Applications Processor Reference Manual Rev. 2, 07/2022
-	 * 13.6.2.7.2 RGB interface
-	 * both claim "Vsync, Hsync, and VDEN are active high signals.", the
-	 * LCDIF must generate inverted HS/VS/DE signals, i.e. active LOW.
-	 *
-	 * The i.MX8M Plus glue logic between LCDIFv3 and DSIM does not
-	 * implement the same behavior, therefore LCDIFv3 must generate
-	 * HS/VS/DE signals active HIGH.
-	 */
+	 
 	if (dsi->plat_data->hw_type == DSIM_TYPE_IMX8MM) {
 		adjusted_mode->flags |= (DRM_MODE_FLAG_NHSYNC | DRM_MODE_FLAG_NVSYNC);
 		adjusted_mode->flags &= ~(DRM_MODE_FLAG_PHSYNC | DRM_MODE_FLAG_PVSYNC);
@@ -1679,13 +1572,7 @@ static int samsung_dsim_host_attach(struct mipi_dsi_host *host,
 	struct drm_panel *panel;
 	int ret;
 
-	/*
-	 * Devices can also be child nodes when we also control that device
-	 * through the upstream device (ie, MIPI-DCS for a MIPI-DSI device).
-	 *
-	 * Lookup for a child node of the given parent that isn't either port
-	 * or ports.
-	 */
+	 
 	for_each_available_child_of_node(np, remote) {
 		if (of_node_name_eq(remote, "port") ||
 		    of_node_name_eq(remote, "ports"))
@@ -1694,12 +1581,7 @@ static int samsung_dsim_host_attach(struct mipi_dsi_host *host,
 		goto of_find_panel_or_bridge;
 	}
 
-	/*
-	 * of_graph_get_remote_node() produces a noisy error message if port
-	 * node isn't found and the absence of the port is a legit case here,
-	 * so at first we silently check whether graph presents in the
-	 * device-tree node.
-	 */
+	 
 	if (!of_graph_is_present(np))
 		return -ENODEV;
 
@@ -1730,12 +1612,7 @@ of_find_panel_or_bridge:
 
 	drm_bridge_add(&dsi->bridge);
 
-	/*
-	 * This is a temporary solution and should be made by more generic way.
-	 *
-	 * If attached panel device is for command mode one, dsi should register
-	 * TE interrupt handler.
-	 */
+	 
 	if (!(device->mode_flags & MIPI_DSI_MODE_VIDEO)) {
 		ret = samsung_dsim_register_te_irq(dsi, &device->dev);
 		if (ret)
@@ -1837,7 +1714,7 @@ static int samsung_dsim_parse_dt(struct samsung_dsim *dsi)
 
 	ret = samsung_dsim_of_read_u32(node, "samsung,pll-clock-frequency",
 				       &dsi->pll_clk_rate, 1);
-	/* If it doesn't exist, read it from the clock instead of failing */
+	 
 	if (ret < 0) {
 		dev_dbg(dev, "Using sclk_mipi for pll clock frequency\n");
 		pll_clk = devm_clk_get(dev, "sclk_mipi");
@@ -1847,7 +1724,7 @@ static int samsung_dsim_parse_dt(struct samsung_dsim *dsi)
 			return PTR_ERR(pll_clk);
 	}
 
-	/* If it doesn't exist, use pixel clock instead of failing */
+	 
 	ret = samsung_dsim_of_read_u32(node, "samsung,burst-clock-frequency",
 				       &dsi->burst_clk_rate, 1);
 	if (ret < 0) {
@@ -1863,7 +1740,7 @@ static int samsung_dsim_parse_dt(struct samsung_dsim *dsi)
 	endpoint = of_graph_get_endpoint_by_regs(node, 1, -1);
 	nr_lanes = of_property_count_u32_elems(endpoint, "data-lanes");
 	if (nr_lanes > 0 && nr_lanes <= 4) {
-		/* Polarity 0 is clock lane, 1..4 are data lanes. */
+		 
 		of_property_read_u32_array(endpoint, "lane-polarities",
 					   lane_polarities, nr_lanes + 1);
 		for (i = 1; i <= nr_lanes; i++) {
@@ -1984,7 +1861,7 @@ int samsung_dsim_probe(struct platform_device *pdev)
 	dsi->bridge.of_node = dev->of_node;
 	dsi->bridge.type = DRM_MODE_CONNECTOR_DSI;
 
-	/* DE_LOW: i.MX8M Mini/Nano LCDIF-DSIM glue logic inverts HS/VS/DE */
+	 
 	if (dsi->plat_data->hw_type == DSIM_TYPE_IMX8MM)
 		dsi->bridge.timings = &samsung_dsim_bridge_timings_de_low;
 	else
@@ -2108,7 +1985,7 @@ static const struct of_device_id samsung_dsim_of_match[] = {
 		.compatible = "fsl,imx8mp-mipi-dsim",
 		.data = &samsung_dsim_imx8mp_pdata,
 	},
-	{ /* sentinel. */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, samsung_dsim_of_match);
 

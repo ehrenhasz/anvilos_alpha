@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright(c) 2008 - 2010 Realtek Corporation. All rights reserved.
- *
- * Contact Information: wlanfae <wlanfae@realtek.com>
- */
+
+ 
 #include <linux/bitops.h>
 #include "rtl_core.h"
 #include "r8192E_hw.h"
@@ -14,7 +10,7 @@
 
 #include "table.h"
 
-/*************************Define local function prototype**********************/
+ 
 
 static u32 _rtl92e_phy_rf_fw_read(struct net_device *dev,
 				  enum rf90_radio_path eRFPath, u32 Offset);
@@ -642,7 +638,7 @@ static u8 _rtl92e_phy_switch_channel_step(struct net_device *dev, u8 channel,
 
 			break;
 		} while (true);
-	} /*for (Number of RF paths)*/
+	}  
 
 	(*delay) = CurrentCmd->msDelay;
 	(*step)++;

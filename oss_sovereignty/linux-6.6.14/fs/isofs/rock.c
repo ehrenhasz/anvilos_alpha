@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/isofs/rock.c
- *
- *  (C) 1992, 1993  Eric Youngdale
- *
- *  Rock Ridge Extensions to iso9660
- */
+
+ 
 
 #include <linux/slab.h>
 #include <linux/pagemap.h>
@@ -13,16 +7,9 @@
 #include "isofs.h"
 #include "rock.h"
 
-/*
- * These functions are designed to read the system areas of a directory record
- * and extract relevant information.  There are different functions provided
- * depending upon what information we need at the time.  One function fills
- * out an inode structure, a second one extracts a filename, a third one
- * returns a symbolic link name, and a fourth one returns the extent number
- * for the file.
- */
+ 
 
-#define SIG(A,B) ((A) | ((B) << 8))	/* isonum_721() */
+#define SIG(A,B) ((A) | ((B) << 8))	 
 
 struct rock_state {
 	void *buffer;
@@ -35,10 +22,7 @@ struct rock_state {
 	struct inode *inode;
 };
 
-/*
- * This is a way of ensuring that we have something in the system
- * use fields that is compatible with Rock Ridge.  Return zero on success.
- */
+ 
 
 static int check_sp(struct rock_ridge *rr, struct inode *inode)
 {
@@ -75,13 +59,10 @@ static void init_rock_state(struct rock_state *rs, struct inode *inode)
 	rs->inode = inode;
 }
 
-/* Maximum number of Rock Ridge continuation entries */
+ 
 #define RR_MAX_CE_ENTRIES 32
 
-/*
- * Returns 0 if the caller should continue scanning, 1 if the scan must end
- * and -ve on error.
- */
+ 
 static int rock_continue(struct rock_state *rs)
 {
 	int ret = 1;
@@ -132,10 +113,7 @@ out:
 	return ret;
 }
 
-/*
- * We think there's a record of type `sig' at rs->chr.  Parse the signature
- * and make sure that there's really room for a record of that type.
- */
+ 
 static int rock_check_overflow(struct rock_state *rs, int sig)
 {
 	int len;
@@ -192,9 +170,7 @@ static int rock_check_overflow(struct rock_state *rs, int sig)
 	return 0;
 }
 
-/*
- * return length of name field; 0: not found, -1: to be ignored
- */
+ 
 int get_rock_ridge_filename(struct iso_directory_record *de,
 			    char *retname, struct inode *inode)
 {
@@ -215,26 +191,19 @@ int get_rock_ridge_filename(struct iso_directory_record *de,
 	setup_rock_ridge(de, inode, &rs);
 repeat:
 
-	while (rs.len > 2) { /* There may be one byte for padding somewhere */
+	while (rs.len > 2) {  
 		rr = (struct rock_ridge *)rs.chr;
-		/*
-		 * Ignore rock ridge info if rr->len is out of range, but
-		 * don't return -EIO because that would make the file
-		 * invisible.
-		 */
+		 
 		if (rr->len < 3)
-			goto out;	/* Something got screwed up here */
+			goto out;	 
 		sig = isonum_721(rs.chr);
 		if (rock_check_overflow(&rs, sig))
 			goto eio;
 		rs.chr += rr->len;
 		rs.len -= rr->len;
-		/*
-		 * As above, just ignore the rock ridge info if rr->len
-		 * is bogus.
-		 */
+		 
 		if (rs.len < 0)
-			goto out;	/* Something got screwed up here */
+			goto out;	 
 
 		switch (sig) {
 		case SIG('R', 'R'):
@@ -255,13 +224,7 @@ repeat:
 				break;
 			if (rr->len < 5)
 				break;
-			/*
-			 * If the flags are 2 or 4, this indicates '.' or '..'.
-			 * We don't want to do anything with this, because it
-			 * screws up the code that calls us.  We don't really
-			 * care anyways, since we can just use the non-RR
-			 * name.
-			 */
+			 
 			if (rr->u.NM.flags & 6)
 				break;
 
@@ -293,7 +256,7 @@ repeat:
 	if (ret == 0)
 		goto repeat;
 	if (ret == 1)
-		return retnamlen; /* If 0, this file did not have a NM field */
+		return retnamlen;  
 out:
 	kfree(rs.buffer);
 	return ret;
@@ -331,29 +294,22 @@ parse_rock_ridge_inode_internal(struct iso_directory_record *de,
 	}
 
 repeat:
-	while (rs.len > 2) { /* There may be one byte for padding somewhere */
+	while (rs.len > 2) {  
 		rr = (struct rock_ridge *)rs.chr;
-		/*
-		 * Ignore rock ridge info if rr->len is out of range, but
-		 * don't return -EIO because that would make the file
-		 * invisible.
-		 */
+		 
 		if (rr->len < 3)
-			goto out;	/* Something got screwed up here */
+			goto out;	 
 		sig = isonum_721(rs.chr);
 		if (rock_check_overflow(&rs, sig))
 			goto eio;
 		rs.chr += rr->len;
 		rs.len -= rr->len;
-		/*
-		 * As above, just ignore the rock ridge info if rr->len
-		 * is bogus.
-		 */
+		 
 		if (rs.len < 0)
-			goto out;	/* Something got screwed up here */
+			goto out;	 
 
 		switch (sig) {
-#ifndef CONFIG_ZISOFS		/* No flag for SF or ZF */
+#ifndef CONFIG_ZISOFS		 
 		case SIG('R', 'R'):
 			if ((rr->u.RR.flags[0] &
 			     (RR_PX | RR_TF | RR_SL | RR_CL)) == 0)
@@ -370,7 +326,7 @@ repeat:
 			rs.cont_size = isonum_733(rr->u.CE.size);
 			break;
 		case SIG('E', 'R'):
-			/* Invalid length of ER tag id? */
+			 
 			if (rr->u.ER.len_id + offsetof(struct rock_ridge, u.ER.data) > rr->len)
 				goto out;
 			ISOFS_SB(inode->i_sb)->s_rock = 1;
@@ -393,16 +349,7 @@ repeat:
 				int high, low;
 				high = isonum_733(rr->u.PN.dev_high);
 				low = isonum_733(rr->u.PN.dev_low);
-				/*
-				 * The Rock Ridge standard specifies that if
-				 * sizeof(dev_t) <= 4, then the high field is
-				 * unused, and the device number is completely
-				 * stored in the low field.  Some writers may
-				 * ignore this subtlety,
-				 * and as a result we test to see if the entire
-				 * device number is
-				 * stored in the low field, and use that.
-				 */
+				 
 				if ((low & ~0xff) && high == 0) {
 					inode->i_rdev =
 					    MKDEV(low >> 8, low & 0xff);
@@ -413,12 +360,8 @@ repeat:
 			}
 			break;
 		case SIG('T', 'F'):
-			/*
-			 * Some RRIP writers incorrectly place ctime in the
-			 * TF_CREATE field. Try to handle this correctly for
-			 * either case.
-			 */
-			/* Rock ridge never appears on a High Sierra disk */
+			 
+			 
 			cnt = 0;
 			if (rr->u.TF.flags & TF_CREATE) {
 				inode_set_ctime(inode,
@@ -488,10 +431,7 @@ repeat:
 						break;
 					}
 
-					/*
-					 * If this component record isn't
-					 * continued, then append a '/'.
-					 */
+					 
 					if (!rootflag
 					    && (oldslp->flags & 1) == 0)
 						inode->i_size += 1;
@@ -552,17 +492,10 @@ repeat:
 						"size of 2^%d\n",
 						block_shift);
 				} else {
-					/*
-					 * Note: we don't change
-					 * i_blocks here
-					 */
+					 
 					ISOFS_I(inode)->i_file_format =
 						isofs_file_compressed;
-					/*
-					 * Parameters to compression
-					 * algorithm (header size,
-					 * block size)
-					 */
+					 
 					ISOFS_I(inode)->i_format_parm[0] =
 						isonum_711(&rr->u.ZF.parms[0]);
 					ISOFS_I(inode)->i_format_parm[1] =
@@ -641,10 +574,7 @@ static char *get_symlink_chunk(char *rpnt, struct rock_ridge *rr, char *plimit)
 		slp = (struct SL_component *)((char *)slp + slp->len + 2);
 
 		if (slen < 2) {
-			/*
-			 * If there is another SL record, and this component
-			 * record isn't continued, then add a slash.
-			 */
+			 
 			if ((!rootflag) && (rr->u.SL.flags & 1) &&
 			    !(oldslp->flags & 1)) {
 				if (rpnt >= plimit)
@@ -654,9 +584,7 @@ static char *get_symlink_chunk(char *rpnt, struct rock_ridge *rr, char *plimit)
 			break;
 		}
 
-		/*
-		 * If this component record isn't continued, then append a '/'.
-		 */
+		 
 		if (!rootflag && !(oldslp->flags & 1)) {
 			if (rpnt >= plimit)
 				return NULL;
@@ -672,10 +600,7 @@ int parse_rock_ridge_inode(struct iso_directory_record *de, struct inode *inode,
 	int flags = relocated ? RR_RELOC_DE : 0;
 	int result = parse_rock_ridge_inode_internal(de, inode, flags);
 
-	/*
-	 * if rockridge flag was reset and we didn't look for attributes
-	 * behind eventual XA attributes, have a look there
-	 */
+	 
 	if ((ISOFS_SB(inode->i_sb)->s_rock_offset == -1)
 	    && (ISOFS_SB(inode->i_sb)->s_rock == 2)) {
 		result = parse_rock_ridge_inode_internal(de, inode,
@@ -684,10 +609,7 @@ int parse_rock_ridge_inode(struct iso_directory_record *de, struct inode *inode,
 	return result;
 }
 
-/*
- * read_folio() for symlinks: reads symlink contents into the folio and either
- * makes it uptodate and returns 0 or returns error (-EIO)
- */
+ 
 static int rock_ridge_symlink_read_folio(struct file *file, struct folio *folio)
 {
 	struct page *page = &folio->page;
@@ -720,31 +642,26 @@ static int rock_ridge_symlink_read_folio(struct file *file, struct folio *folio)
 
 	raw_de = (struct iso_directory_record *)pnt;
 
-	/*
-	 * If we go past the end of the buffer, there is some sort of error.
-	 */
+	 
 	if (offset + *pnt > bufsize)
 		goto out_bad_span;
 
-	/*
-	 * Now test for possible Rock Ridge extensions which will override
-	 * some of these numbers in the inode structure.
-	 */
+	 
 
 	setup_rock_ridge(raw_de, inode, &rs);
 
 repeat:
-	while (rs.len > 2) { /* There may be one byte for padding somewhere */
+	while (rs.len > 2) {  
 		rr = (struct rock_ridge *)rs.chr;
 		if (rr->len < 3)
-			goto out;	/* Something got screwed up here */
+			goto out;	 
 		sig = isonum_721(rs.chr);
 		if (rock_check_overflow(&rs, sig))
 			goto out;
 		rs.chr += rr->len;
 		rs.len -= rr->len;
 		if (rs.len < 0)
-			goto out;	/* corrupted isofs */
+			goto out;	 
 
 		switch (sig) {
 		case SIG('R', 'R'):
@@ -762,7 +679,7 @@ repeat:
 				goto out;
 			break;
 		case SIG('C', 'E'):
-			/* This tells is if there is a continuation record */
+			 
 			rs.cont_extent = isonum_733(rr->u.CE.extent);
 			rs.cont_offset = isonum_733(rr->u.CE.offset);
 			rs.cont_size = isonum_733(rr->u.CE.size);
@@ -785,7 +702,7 @@ repeat:
 	unlock_page(page);
 	return 0;
 
-	/* error exit from macro */
+	 
 out:
 	kfree(rs.buffer);
 	goto fail;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- */
+
+ 
 
 #include <linux/bcd.h>
 #include <linux/bitfield.h>
@@ -23,7 +21,7 @@
 #define PCF8523_REG_CONTROL3 0x02
 #define PCF8523_CONTROL3_PM  GENMASK(7, 5)
 #define PCF8523_PM_STANDBY   0x7
-#define PCF8523_CONTROL3_BLF BIT(2) /* battery low bit, read-only */
+#define PCF8523_CONTROL3_BLF BIT(2)  
 #define PCF8523_CONTROL3_BSF BIT(3)
 
 #define PCF8523_REG_SECONDS  0x03
@@ -132,7 +130,7 @@ static int pcf8523_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	if (err < 0)
 		return err;
 
-	/* This will purposely overwrite PCF8523_SECONDS_OS */
+	 
 	regs[0] = bin2bcd(tm->tm_sec);
 	regs[1] = bin2bcd(tm->tm_min);
 	regs[2] = bin2bcd(tm->tm_hour);
@@ -144,11 +142,7 @@ static int pcf8523_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	err = regmap_bulk_write(pcf8523->regmap, PCF8523_REG_SECONDS, regs,
 				sizeof(regs));
 	if (err < 0) {
-		/*
-		 * If the time cannot be set, restart the RTC anyway. Note
-		 * that errors are ignored if the RTC cannot be started so
-		 * that we have a chance to propagate the original error.
-		 */
+		 
 		regmap_update_bits(pcf8523->regmap, PCF8523_REG_CONTROL1,
 				   PCF8523_CONTROL1_STOP, 0);
 		return err;
@@ -346,7 +340,7 @@ static int pcf8523_rtc_read_offset(struct device *dev, long *offset)
 	if (err < 0)
 		return err;
 
-	/* sign extend the 7-bit offset value */
+	 
 	val = value << 1;
 	*offset = (value & PCF8523_OFFSET_MODE ? 4069 : 4340) * (val >> 1);
 

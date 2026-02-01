@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <asm/bug.h>
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -27,7 +27,7 @@
 #include "dsos.h"
 #include "machine.h"
 #include "auxtrace.h"
-#include "util.h" /* O_CLOEXEC for older systems */
+#include "util.h"  
 #include "debug.h"
 #include "string2.h"
 #include "vdso.h"
@@ -133,7 +133,7 @@ int dso__read_binary_type_filename(const struct dso *dso,
 		if (ret)
 			break;
 
-		/* Check predefined locations where debug file might reside */
+		 
 		ret = -1;
 		for (i = 0; i < ARRAY_SIZE(debuglink_paths); i++) {
 			snprintf(filename, size,
@@ -167,11 +167,7 @@ int dso__read_binary_type_filename(const struct dso *dso,
 		break;
 
 	case DSO_BINARY_TYPE__MIXEDUP_UBUNTU_DEBUGINFO:
-		/*
-		 * Ubuntu can mixup /usr/lib with /lib, putting debuginfo in
-		 * /usr/lib/debug/lib when it is expected to be in
-		 * /usr/lib/debug/usr/lib
-		 */
+		 
 		if (strlen(dso->long_name) < 9 ||
 		    strncmp(dso->long_name, "/usr/lib/", 9)) {
 			ret = -1;
@@ -295,7 +291,7 @@ bool is_kernel_module(const char *pathname, int cpumode)
 	case PERF_RECORD_MISC_HYPERVISOR:
 	case PERF_RECORD_MISC_GUEST_USER:
 		return false;
-	/* Treat PERF_RECORD_MISC_CPUMODE_UNKNOWN as kernel */
+	 
 	default:
 		if (kmod_path__parse(&m, pathname)) {
 			pr_err("Failed to check whether %s is a kernel module or not. Assume it is.",
@@ -319,19 +315,7 @@ int filename__decompress(const char *name, char *pathname,
 	char tmpbuf[] = KMOD_DECOMP_NAME;
 	int fd = -1;
 
-	/*
-	 * We have proper compression id for DSO and yet the file
-	 * behind the 'name' can still be plain uncompressed object.
-	 *
-	 * The reason is behind the logic we open the DSO object files,
-	 * when we try all possible 'debug' objects until we find the
-	 * data. So even if the DSO is represented by 'krava.xz' module,
-	 * we can end up here opening ~/.debug/....23432432/debug' file
-	 * which is not compressed.
-	 *
-	 * To keep this transparent, we detect this and return the file
-	 * descriptor to the uncompressed file.
-	 */
+	 
 	if (!compressions[comp].is_compressed(name))
 		return open(name, O_RDONLY);
 
@@ -383,22 +367,7 @@ int dso__decompress_kmodule_path(struct dso *dso, const char *name,
 	return fd >= 0 ? 0 : -1;
 }
 
-/*
- * Parses kernel module specified in @path and updates
- * @m argument like:
- *
- *    @comp - true if @path contains supported compression suffix,
- *            false otherwise
- *    @kmod - true if @path contains '.ko' suffix in right position,
- *            false otherwise
- *    @name - if (@alloc_name && @kmod) is true, it contains strdup-ed base name
- *            of the kernel module without suffixes, otherwise strudup-ed
- *            base name of @path
- *    @ext  - if (@alloc_ext && @comp) is true, it contains strdup-ed string
- *            the compression suffix
- *
- * Returns 0 if there's no strdup error, -ENOMEM otherwise.
- */
+ 
 int __kmod_path__parse(struct kmod_path *m, const char *path,
 		       bool alloc_name)
 {
@@ -409,14 +378,7 @@ int __kmod_path__parse(struct kmod_path *m, const char *path,
 	memset(m, 0x0, sizeof(*m));
 	name = name ? name + 1 : path;
 
-	/*
-	 * '.' is also a valid character for module name. For example:
-	 * [aaa.bbb] is a valid module name. '[' should have higher
-	 * priority than '.ko' suffix.
-	 *
-	 * The kernel names are from machine__mmap_name. Such
-	 * name should belong to kernel itself, not kernel module.
-	 */
+	 
 	if (name[0] == '[') {
 		is_simple_name = true;
 		if ((strncmp(name, "[kernel.kallsyms]", 17) == 0) ||
@@ -431,7 +393,7 @@ int __kmod_path__parse(struct kmod_path *m, const char *path,
 			m->kmod = true;
 	}
 
-	/* No extension, just return name. */
+	 
 	if ((ext == NULL) || is_simple_name) {
 		if (alloc_name) {
 			m->name = strdup(name);
@@ -444,7 +406,7 @@ int __kmod_path__parse(struct kmod_path *m, const char *path,
 	if (m->comp > COMP_ID__NONE)
 		ext -= 3;
 
-	/* Check .ko extension only if there's enough name left. */
+	 
 	if (ext > name)
 		m->kmod = !strncmp(ext, ".ko", 3);
 
@@ -471,7 +433,7 @@ void dso__set_module_info(struct dso *dso, struct kmod_path *m,
 	else
 		dso->symtab_type = DSO_BINARY_TYPE__GUEST_KMODULE;
 
-	/* _KMODULE_COMP should be next to _KMODULE */
+	 
 	if (m->kmod && m->comp) {
 		dso->symtab_type++;
 		dso->comp = m->comp;
@@ -480,9 +442,7 @@ void dso__set_module_info(struct dso *dso, struct kmod_path *m,
 	dso__set_short_name(dso, strdup(m->name), true);
 }
 
-/*
- * Global list of open DSOs and the counter.
- */
+ 
 static LIST_HEAD(dso__data_open);
 static long dso__data_open_cnt;
 static pthread_mutex_t dso__data_open_lock = PTHREAD_MUTEX_INITIALIZER;
@@ -587,13 +547,7 @@ out:
 
 static void check_data_close(void);
 
-/**
- * dso_close - Open DSO data file
- * @dso: dso object
- *
- * Open @dso's data file descriptor and updates
- * list/count of open DSO objects.
- */
+ 
 static int open_dso(struct dso *dso, struct machine *machine)
 {
 	int fd;
@@ -610,10 +564,7 @@ static int open_dso(struct dso *dso, struct machine *machine)
 
 	if (fd >= 0) {
 		dso__list_add(dso);
-		/*
-		 * Check if we crossed the allowed number
-		 * of opened DSOs and close one if needed.
-		 */
+		 
 		check_data_close();
 	}
 
@@ -630,13 +581,7 @@ static void close_data_fd(struct dso *dso)
 	}
 }
 
-/**
- * dso_close - Close DSO data file
- * @dso: dso object
- *
- * Close @dso's data file descriptor and updates
- * list/count of open DSO objects.
- */
+ 
 static void close_dso(struct dso *dso)
 {
 	close_data_fd(dso);
@@ -655,7 +600,7 @@ static rlim_t get_fd_limit(void)
 	struct rlimit l;
 	rlim_t limit = 0;
 
-	/* Allow half of the current open fd limit. */
+	 
 	if (getrlimit(RLIMIT_NOFILE, &l) == 0) {
 		if (l.rlim_cur == RLIM_INFINITY)
 			limit = l.rlim_cur;
@@ -671,11 +616,7 @@ static rlim_t get_fd_limit(void)
 
 static rlim_t fd_limit;
 
-/*
- * Used only by tests/dso-data.c to reset the environment
- * for tests. I dont expect we should change this during
- * standard runtime.
- */
+ 
 void reset_fd_limit(void)
 {
 	fd_limit = 0;
@@ -692,11 +633,7 @@ static bool may_cache_fd(void)
 	return fd_limit > (rlim_t) dso__data_open_cnt;
 }
 
-/*
- * Check and close LRU dso if we crossed allowed limit
- * for opened dso file descriptors. The limit is half
- * of the RLIMIT_NOFILE files opened.
-*/
+ 
 static void check_data_close(void)
 {
 	bool cache_fd = may_cache_fd();
@@ -705,12 +642,7 @@ static void check_data_close(void)
 		close_first_dso();
 }
 
-/**
- * dso__data_close - Close DSO data file
- * @dso: dso object
- *
- * External interface to close @dso's data file descriptor.
- */
+ 
 void dso__data_close(struct dso *dso)
 {
 	pthread_mutex_lock(&dso__data_open_lock);
@@ -750,15 +682,7 @@ out:
 		dso->data.status = DSO_DATA_STATUS_ERROR;
 }
 
-/**
- * dso__data_get_fd - Get dso's data file descriptor
- * @dso: dso object
- * @machine: machine object
- *
- * External interface to find dso's file, open it and
- * returns file descriptor.  It should be paired with
- * dso__data_put_fd() if it returns non-negative value.
- */
+ 
 int dso__data_get_fd(struct dso *dso, struct machine *machine)
 {
 	if (dso->data.status == DSO_DATA_STATUS_ERROR)
@@ -830,7 +754,7 @@ static int bpf_size(struct dso *dso)
 	dso->data.file_size = node->info_linear->info.jited_prog_len;
 	return 0;
 }
-#endif // HAVE_LIBBPF_SUPPORT
+#endif 
 
 static void
 dso_cache__free(struct dso *dso)
@@ -929,10 +853,7 @@ static ssize_t file_read(struct dso *dso, struct machine *machine,
 
 	pthread_mutex_lock(&dso__data_open_lock);
 
-	/*
-	 * dso->data.fd might be closed if other thread opened another
-	 * file (dso) due to open file limit (RLIMIT_NOFILE).
-	 */
+	 
 	try_to_open_dso(dso, machine);
 
 	if (dso->data.fd < 0) {
@@ -980,7 +901,7 @@ static struct dso_cache *dso_cache__populate(struct dso *dso,
 
 	old = dso_cache__insert(dso, cache);
 	if (old) {
-		/* we lose the race */
+		 
 		free(cache);
 		cache = old;
 	}
@@ -1011,11 +932,7 @@ static ssize_t dso_cache_io(struct dso *dso, struct machine *machine,
 	return dso_cache__memcpy(cache, offset, data, size, out);
 }
 
-/*
- * Reads and caches dso data DSO__DATA_CACHE_SIZE size chunks
- * in the rb_tree. Any read to already cached data is served
- * by cached data. Writes update the cache only, not the backing file.
- */
+ 
 static ssize_t cached_io(struct dso *dso, struct machine *machine,
 			 u64 offset, u8 *data, ssize_t size, bool out)
 {
@@ -1029,7 +946,7 @@ static ssize_t cached_io(struct dso *dso, struct machine *machine,
 		if (ret < 0)
 			return ret;
 
-		/* Reached EOF, return what we have. */
+		 
 		if (!ret)
 			break;
 
@@ -1053,10 +970,7 @@ static int file_size(struct dso *dso, struct machine *machine)
 
 	pthread_mutex_lock(&dso__data_open_lock);
 
-	/*
-	 * dso->data.fd might be closed if other thread opened another
-	 * file (dso) due to open file limit (RLIMIT_NOFILE).
-	 */
+	 
 	try_to_open_dso(dso, machine);
 
 	if (dso->data.fd < 0) {
@@ -1093,19 +1007,13 @@ int dso__data_file_size(struct dso *dso, struct machine *machine)
 	return file_size(dso, machine);
 }
 
-/**
- * dso__data_size - Return dso data size
- * @dso: dso object
- * @machine: machine object
- *
- * Return: dso data size
- */
+ 
 off_t dso__data_size(struct dso *dso, struct machine *machine)
 {
 	if (dso__data_file_size(dso, machine))
 		return -1;
 
-	/* For now just estimate dso data size is close to file size */
+	 
 	return dso->data.file_size;
 }
 
@@ -1116,7 +1024,7 @@ static ssize_t data_read_write_offset(struct dso *dso, struct machine *machine,
 	if (dso__data_file_size(dso, machine))
 		return -1;
 
-	/* Check the offset sanity. */
+	 
 	if (offset > dso->data.file_size)
 		return -1;
 
@@ -1126,17 +1034,7 @@ static ssize_t data_read_write_offset(struct dso *dso, struct machine *machine,
 	return cached_io(dso, machine, offset, data, size, out);
 }
 
-/**
- * dso__data_read_offset - Read data from dso file offset
- * @dso: dso object
- * @machine: machine object
- * @offset: file offset
- * @data: buffer to store data
- * @size: size of the @data buffer
- *
- * External interface to read data from dso file offset. Open
- * dso data file and use cached_read to get the data.
- */
+ 
 ssize_t dso__data_read_offset(struct dso *dso, struct machine *machine,
 			      u64 offset, u8 *data, ssize_t size)
 {
@@ -1146,16 +1044,7 @@ ssize_t dso__data_read_offset(struct dso *dso, struct machine *machine,
 	return data_read_write_offset(dso, machine, offset, data, size, true);
 }
 
-/**
- * dso__data_read_addr - Read data from dso address
- * @dso: dso object
- * @machine: machine object
- * @add: virtual memory address
- * @data: buffer to store data
- * @size: size of the @data buffer
- *
- * External interface to read data from dso address.
- */
+ 
 ssize_t dso__data_read_addr(struct dso *dso, struct map *map,
 			    struct machine *machine, u64 addr,
 			    u8 *data, ssize_t size)
@@ -1165,20 +1054,11 @@ ssize_t dso__data_read_addr(struct dso *dso, struct map *map,
 	return dso__data_read_offset(dso, machine, offset, data, size);
 }
 
-/**
- * dso__data_write_cache_offs - Write data to dso data cache at file offset
- * @dso: dso object
- * @machine: machine object
- * @offset: file offset
- * @data: buffer to write
- * @size: size of the @data buffer
- *
- * Write into the dso file data cache, but do not change the file itself.
- */
+ 
 ssize_t dso__data_write_cache_offs(struct dso *dso, struct machine *machine,
 				   u64 offset, const u8 *data_in, ssize_t size)
 {
-	u8 *data = (u8 *)data_in; /* cast away const to use same fns for r/w */
+	u8 *data = (u8 *)data_in;  
 
 	if (dso->data.status == DSO_DATA_STATUS_ERROR)
 		return -1;
@@ -1186,17 +1066,7 @@ ssize_t dso__data_write_cache_offs(struct dso *dso, struct machine *machine,
 	return data_read_write_offset(dso, machine, offset, data, size, false);
 }
 
-/**
- * dso__data_write_cache_addr - Write data to dso data cache at dso address
- * @dso: dso object
- * @machine: machine object
- * @add: virtual memory address
- * @data: buffer to write
- * @size: size of the @data buffer
- *
- * External interface to write into the dso file data cache, but do not change
- * the file itself.
- */
+ 
 ssize_t dso__data_write_cache_addr(struct dso *dso, struct map *map,
 				   struct machine *machine, u64 addr,
 				   const u8 *data, ssize_t size)
@@ -1222,15 +1092,10 @@ struct map *dso__new_map(const char *name)
 struct dso *machine__findnew_kernel(struct machine *machine, const char *name,
 				    const char *short_name, int dso_type)
 {
-	/*
-	 * The kernel dso could be created by build_id processing.
-	 */
+	 
 	struct dso *dso = machine__findnew_dso(machine, name);
 
-	/*
-	 * We need to run this in all cases, since during the build_id
-	 * processing we had no idea this was the kernel dso.
-	 */
+	 
 	if (dso != NULL) {
 		dso__set_short_name(dso, short_name, false);
 		dso->kernel = dso_type;
@@ -1251,10 +1116,7 @@ static void dso__set_long_name_id(struct dso *dso, const char *name, struct dso_
 
 	if (root) {
 		rb_erase(&dso->rb_node, root);
-		/*
-		 * __dsos__findnew_link_by_longname_id() isn't guaranteed to
-		 * add it back, so a clean removal is required here.
-		 */
+		 
 		RB_CLEAR_NODE(&dso->rb_node);
 		dso->root = NULL;
 	}
@@ -1362,7 +1224,7 @@ void dso__delete(struct dso *dso)
 		pr_err("DSO %s is still in rbtree when being deleted!\n",
 		       dso->long_name);
 
-	/* free inlines first, as they reference symbols */
+	 
 	inlines__tree_delete(&dso->inlined_nodes);
 	srcline__tree_delete(&dso->srclines);
 	symbols__delete(&dso->symbols);
@@ -1410,10 +1272,7 @@ void dso__set_build_id(struct dso *dso, struct build_id *bid)
 bool dso__build_id_equal(const struct dso *dso, struct build_id *bid)
 {
 	if (dso->bid.size > bid->size && dso->bid.size == BUILD_ID_SIZE) {
-		/*
-		 * For the backward compatibility, it allows a build-id has
-		 * trailing zeros.
-		 */
+		 
 		return !memcmp(dso->bid.data, bid->data, bid->size) &&
 			!memchr_inv(&dso->bid.data[bid->size], 0,
 				    dso->bid.size - bid->size);
@@ -1438,10 +1297,7 @@ int dso__kernel_module_get_build_id(struct dso *dso,
 				    const char *root_dir)
 {
 	char filename[PATH_MAX];
-	/*
-	 * kernel module short names are of the form "[module]" and
-	 * we need just "module" here.
-	 */
+	 
 	const char *name = dso->short_name + 1;
 
 	snprintf(filename, sizeof(filename),
@@ -1497,9 +1353,7 @@ enum dso_type dso__type(struct dso *dso, struct machine *machine)
 int dso__strerror_load(struct dso *dso, char *buf, size_t buflen)
 {
 	int idx, errnum = dso->load_errno;
-	/*
-	 * This must have a same ordering as the enum dso_load_errno.
-	 */
+	 
 	static const char *dso_load__error_str[] = {
 	"Internal tools/perf/ library error",
 	"Invalid ELF file",

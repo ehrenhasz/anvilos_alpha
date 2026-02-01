@@ -1,26 +1,4 @@
-/*
- * Copyright 2013 Red Hat Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: Ben Skeggs
- */
+ 
 #include "ramnv40.h"
 
 #include <subdev/bios.h>
@@ -75,7 +53,7 @@ nv40_ram_prog(struct nvkm_ram *base)
 	u8  sr1[2];
 	int i;
 
-	/* determine which CRTCs are active, fetch VGA_SR1 for each */
+	 
 	for (i = 0; i < 2; i++) {
 		u32 vbl = nvkm_rd32(device, 0x600808 + (i * 0x2000));
 		u32 cnt = 0;
@@ -91,7 +69,7 @@ nv40_ram_prog(struct nvkm_ram *base)
 		} while (cnt++ < 32);
 	}
 
-	/* wait for vblank start on active crtcs, disable memory access */
+	 
 	for (i = 0; i < 2; i++) {
 		if (!(crtc_mask & (1 << i)))
 			continue;
@@ -112,14 +90,14 @@ nv40_ram_prog(struct nvkm_ram *base)
 		nvkm_wr08(device, 0x0c03c5 + (i * 0x2000), sr1[i] | 0x20);
 	}
 
-	/* prepare ram for reclocking */
-	nvkm_wr32(device, 0x1002d4, 0x00000001); /* precharge */
-	nvkm_wr32(device, 0x1002d0, 0x00000001); /* refresh */
-	nvkm_wr32(device, 0x1002d0, 0x00000001); /* refresh */
-	nvkm_mask(device, 0x100210, 0x80000000, 0x00000000); /* no auto refresh */
-	nvkm_wr32(device, 0x1002dc, 0x00000001); /* enable self-refresh */
+	 
+	nvkm_wr32(device, 0x1002d4, 0x00000001);  
+	nvkm_wr32(device, 0x1002d0, 0x00000001);  
+	nvkm_wr32(device, 0x1002d0, 0x00000001);  
+	nvkm_mask(device, 0x100210, 0x80000000, 0x00000000);  
+	nvkm_wr32(device, 0x1002dc, 0x00000001);  
 
-	/* change the PLL of each memory partition */
+	 
 	nvkm_mask(device, 0x00c040, 0x0000c000, 0x00000000);
 	switch (device->chipset) {
 	case 0x40:
@@ -146,18 +124,16 @@ nv40_ram_prog(struct nvkm_ram *base)
 	udelay(100);
 	nvkm_mask(device, 0x00c040, 0x0000c000, 0x0000c000);
 
-	/* re-enable normal operation of memory controller */
+	 
 	nvkm_wr32(device, 0x1002dc, 0x00000000);
 	nvkm_mask(device, 0x100210, 0x80000000, 0x80000000);
 	udelay(100);
 
-	/* execute memory reset script from vbios */
+	 
 	if (!bit_entry(bios, 'M', &M))
 		nvbios_init(subdev, nvbios_rd16(bios, M.offset + 0x00));
 
-	/* make sure we're in vblank (hopefully the same one as before), and
-	 * then re-enable crtc memory access
-	 */
+	 
 	for (i = 0; i < 2; i++) {
 		if (!(crtc_mask & (1 << i)))
 			continue;

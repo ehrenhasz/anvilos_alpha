@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __X86_MM_NUMA_INTERNAL_H
 #define __X86_MM_NUMA_INTERNAL_H
 
@@ -31,4 +31,4 @@ static inline void numa_emulation(struct numa_meminfo *numa_meminfo,
 { }
 #endif
 
-#endif	/* __X86_MM_NUMA_INTERNAL_H */
+#endif	 

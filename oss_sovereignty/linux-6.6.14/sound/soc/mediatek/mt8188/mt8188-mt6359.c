@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * mt8188-mt6359.c  --  MT8188-MT6359 ALSA SoC machine driver
- *
- * Copyright (c) 2022 MediaTek Inc.
- * Author: Trevor Wu <trevor.wu@mediatek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/input.h>
@@ -31,21 +26,17 @@
 
 #define NAU8825_HS_PRESENT	BIT(0)
 
-/*
- * Maxim MAX98390
- */
+ 
 #define MAX98390_CODEC_DAI     "max98390-aif1"
-#define MAX98390_DEV0_NAME     "max98390.0-0038" /* rear right */
-#define MAX98390_DEV1_NAME     "max98390.0-0039" /* rear left */
-#define MAX98390_DEV2_NAME     "max98390.0-003a" /* front right */
-#define MAX98390_DEV3_NAME     "max98390.0-003b" /* front left */
+#define MAX98390_DEV0_NAME     "max98390.0-0038"  
+#define MAX98390_DEV1_NAME     "max98390.0-0039"  
+#define MAX98390_DEV2_NAME     "max98390.0-003a"  
+#define MAX98390_DEV3_NAME     "max98390.0-003b"  
 
-/*
- * Nau88l25
- */
+ 
 #define NAU8825_CODEC_DAI  "nau8825-hifi"
 
-/* FE */
+ 
 SND_SOC_DAILINK_DEFS(playback2,
 		     DAILINK_COMP_ARRAY(COMP_CPU("DL2")),
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
@@ -126,7 +117,7 @@ SND_SOC_DAILINK_DEFS(capture10,
 		     DAILINK_COMP_ARRAY(COMP_DUMMY()),
 		     DAILINK_COMP_ARRAY(COMP_EMPTY()));
 
-/* BE */
+ 
 SND_SOC_DAILINK_DEFS(dl_src,
 		     DAILINK_COMP_ARRAY(COMP_CPU("DL_SRC")),
 		     DAILINK_COMP_ARRAY(COMP_CODEC("mt6359-sound",
@@ -247,7 +238,7 @@ static const struct snd_soc_dapm_widget mt8188_mt6359_widgets[] = {
 	SND_SOC_DAPM_SINK("HDMI"),
 	SND_SOC_DAPM_SINK("DP"),
 
-	/* dynamic pinctrl */
+	 
 	SND_SOC_DAPM_PINCTRL("ETDM_SPK_PIN", "aud_etdm_spk_on", "aud_etdm_spk_off"),
 	SND_SOC_DAPM_PINCTRL("ETDM_HP_PIN", "aud_etdm_hp_on", "aud_etdm_hp_off"),
 	SND_SOC_DAPM_PINCTRL("MTKAIF_PIN", "aud_mtkaif_on", "aud_mtkaif_off"),
@@ -327,9 +318,9 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
 	pm_runtime_get_sync(afe->dev);
 	mt6359_mtkaif_calibration_enable(cmpnt_codec);
 
-	/* set test type to synchronizer pulse */
+	 
 	regmap_write(afe_priv->topckgen, CKSYS_AUD_TOP_CFG, RG_TEST_TYPE);
-	mtkaif_calibration_num_phase = 42;	/* mt6359: 0 ~ 42 */
+	mtkaif_calibration_num_phase = 42;	 
 	mtkaif_calibration_ok = true;
 
 	for (phase = 0;
@@ -359,7 +350,7 @@ static int mt8188_mt6359_mtkaif_calibration(struct snd_soc_pcm_runtime *rtd)
 			if (test_done_2 == 1)
 				cycle_2 = FIELD_GET(TEST_MISO_COUNT_2, monitor);
 
-			/* handle if never test done */
+			 
 			if (++counter > 10000) {
 				dev_err(afe->dev, "%s(), test fail, cycle_1 %d, cycle_2 %d, monitor 0x%x\n",
 					__func__, cycle_1, cycle_2, monitor);
@@ -435,11 +426,11 @@ static int mt8188_mt6359_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_component *cmpnt_codec =
 		asoc_rtd_to_codec(rtd, 0)->component;
 
-	/* set mtkaif protocol */
+	 
 	mt6359_set_mtkaif_protocol(cmpnt_codec,
 				   MT6359_MTKAIF_PROTOCOL_2_CLK_P2);
 
-	/* mtkaif calibration */
+	 
 	mt8188_mt6359_mtkaif_calibration(rtd);
 
 	return 0;
@@ -492,7 +483,7 @@ static const struct snd_soc_ops mt8188_dptx_ops = {
 static int mt8188_dptx_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 				       struct snd_pcm_hw_params *params)
 {
-	/* fix BE i2s format to 32bit, clean param mask first */
+	 
 	snd_mask_reset_range(hw_param_mask(params, SNDRV_PCM_HW_PARAM_FORMAT),
 			     0, (__force unsigned int)SNDRV_PCM_FORMAT_LAST);
 
@@ -608,7 +599,7 @@ static int mt8188_max98390_codec_init(struct snd_soc_pcm_runtime *rtd)
 	struct snd_soc_card *card = rtd->card;
 	int ret;
 
-	/* add regular speakers dapm route */
+	 
 	ret = snd_soc_dapm_new_controls(&card->dapm, mt8188_dual_spk_widgets,
 					ARRAY_SIZE(mt8188_dual_spk_widgets));
 	if (ret) {
@@ -626,12 +617,12 @@ static int mt8188_max98390_codec_init(struct snd_soc_pcm_runtime *rtd)
 	if (rtd->dai_link->num_codecs <= 2)
 		return 0;
 
-	/* add widgets/controls/dapm for rear speakers */
+	 
 	ret = snd_soc_dapm_new_controls(&card->dapm, mt8188_rear_spk_widgets,
 					ARRAY_SIZE(mt8188_rear_spk_widgets));
 	if (ret) {
 		dev_err(rtd->dev, "unable to add Rear Speaker widget, ret %d\n", ret);
-		/* Don't need to add routes if widget addition failed */
+		 
 		return ret;
 	}
 
@@ -711,7 +702,7 @@ static int mt8188_nau8825_hw_params(struct snd_pcm_substream *substream,
 
 	clk_freq = rate * 2 * bit_width;
 
-	/* Configure clock for codec */
+	 
 	ret = snd_soc_dai_set_sysclk(codec_dai, NAU8825_CLK_FLL_BLK, 0,
 				     SND_SOC_CLOCK_IN);
 	if (ret < 0) {
@@ -719,7 +710,7 @@ static int mt8188_nau8825_hw_params(struct snd_pcm_substream *substream,
 		return ret;
 	}
 
-	/* Configure pll for codec */
+	 
 	ret = snd_soc_dai_set_pll(codec_dai, 0, 0, clk_freq,
 				  params_rate(params) * 256);
 	if (ret < 0) {
@@ -734,7 +725,7 @@ static const struct snd_soc_ops mt8188_nau8825_ops = {
 	.hw_params = mt8188_nau8825_hw_params,
 };
 static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
-	/* FE */
+	 
 	[DAI_LINK_DL2_FE] = {
 		.name = "DL2_FE",
 		.stream_name = "DL2 Playback",
@@ -926,7 +917,7 @@ static struct snd_soc_dai_link mt8188_mt6359_dai_links[] = {
 		.dpcm_capture = 1,
 		SND_SOC_DAILINK_REG(capture10),
 	},
-	/* BE */
+	 
 	[DAI_LINK_DL_SRC_BE] = {
 		.name = "DL_SRC_BE",
 		.no_pcm = 1,
@@ -1154,7 +1145,7 @@ static struct mt8188_card_data mt8188_nau8825_card = {
 static const struct of_device_id mt8188_mt6359_dt_match[] = {
 	{ .compatible = "mediatek,mt8188-mt6359-evb", .data = &mt8188_evb_card, },
 	{ .compatible = "mediatek,mt8188-nau8825", .data = &mt8188_nau8825_card, },
-	{ /* sentinel */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, mt8188_mt6359_dt_match);
 
@@ -1169,7 +1160,7 @@ static struct platform_driver mt8188_mt6359_driver = {
 
 module_platform_driver(mt8188_mt6359_driver);
 
-/* Module information */
+ 
 MODULE_DESCRIPTION("MT8188-MT6359 ALSA SoC machine driver");
 MODULE_AUTHOR("Trevor Wu <trevor.wu@mediatek.com>");
 MODULE_LICENSE("GPL");

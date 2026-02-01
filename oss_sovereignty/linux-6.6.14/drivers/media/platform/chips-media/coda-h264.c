@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Coda multi-standard codec IP - H.264 helper functions
- *
- * Copyright (C) 2012 Vista Silicon S.L.
- *    Javier Martin, <javier.martin@vista-silicon.com>
- *    Xavier Duret
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/string.h>
@@ -33,7 +27,7 @@ int coda_sps_parse_profile(struct coda_ctx *ctx, struct vb2_buffer *vb)
 	const u8 *buf = vb2_plane_vaddr(vb, 0);
 	const u8 *end = buf + vb2_get_plane_payload(vb, 0);
 
-	/* Find SPS header */
+	 
 	do {
 		buf = coda_find_nal_header(buf, end);
 		if (!buf)
@@ -57,7 +51,7 @@ int coda_h264_filler_nal(int size, char *p)
 	p[3] = 0x01;
 	p[4] = 0x0c;
 	memset(p + 5, 0xff, size - 6);
-	/* Add rbsp stop bit and trailing at the end */
+	 
 	p[size - 1] = 0x80;
 
 	return 0;
@@ -235,18 +229,7 @@ static int rbsp_read_sev(struct rbsp *rbsp, int *val)
 	return 0;
 }
 
-/**
- * coda_h264_sps_fixup - fixes frame cropping values in h.264 SPS
- * @ctx: encoder context
- * @width: visible width
- * @height: visible height
- * @buf: buffer containing h.264 SPS RBSP, starting with NAL header
- * @size: modified RBSP size return value
- * @max_size: available size in buf
- *
- * Rewrites the frame cropping values in an h.264 SPS RBSP correctly for the
- * given visible width and height.
- */
+ 
 int coda_h264_sps_fixup(struct coda_ctx *ctx, int width, int height, char *buf,
 			int *size, int max_size)
 {
@@ -263,15 +246,15 @@ int coda_h264_sps_fixup(struct coda_ctx *ctx, int width, int height, char *buf,
 	if (*size < 8 || *size >= max_size)
 		return -EINVAL;
 
-	sps.buf = buf + 5; /* Skip NAL header */
+	sps.buf = buf + 5;  
 	sps.size = *size - 5;
 
 	profile_idc = sps.buf[0];
-	/* Skip constraint_set[0-5]_flag, reserved_zero_2bits */
-	/* Skip level_idc */
+	 
+	 
 	sps.pos = 24;
 
-	/* seq_parameter_set_id */
+	 
 	ret = rbsp_read_uev(&sps, NULL);
 	if (ret)
 		return ret;
@@ -287,7 +270,7 @@ int coda_h264_sps_fixup(struct coda_ctx *ctx, int width, int height, char *buf,
 		return -EINVAL;
 	}
 
-	/* log2_max_frame_num_minus4 */
+	 
 	ret = rbsp_read_uev(&sps, NULL);
 	if (ret)
 		return ret;
@@ -297,22 +280,22 @@ int coda_h264_sps_fixup(struct coda_ctx *ctx, int width, int height, char *buf,
 		return ret;
 
 	if (pic_order_cnt_type == 0) {
-		/* log2_max_pic_order_cnt_lsb_minus4 */
+		 
 		ret = rbsp_read_uev(&sps, NULL);
 		if (ret)
 			return ret;
 	} else if (pic_order_cnt_type == 1) {
 		unsigned int i, num_ref_frames_in_pic_order_cnt_cycle;
 
-		/* delta_pic_order_always_zero_flag */
+		 
 		ret = rbsp_read_bit(&sps);
 		if (ret < 0)
 			return ret;
-		/* offset_for_non_ref_pic */
+		 
 		ret = rbsp_read_sev(&sps, NULL);
 		if (ret)
 			return ret;
-		/* offset_for_top_to_bottom_field */
+		 
 		ret = rbsp_read_sev(&sps, NULL);
 		if (ret)
 			return ret;
@@ -322,19 +305,19 @@ int coda_h264_sps_fixup(struct coda_ctx *ctx, int width, int height, char *buf,
 		if (ret)
 			return ret;
 		for (i = 0; i < num_ref_frames_in_pic_order_cnt_cycle; i++) {
-			/* offset_for_ref_frame */
+			 
 			ret = rbsp_read_sev(&sps, NULL);
 			if (ret)
 				return ret;
 		}
 	}
 
-	/* max_num_ref_frames */
+	 
 	ret = rbsp_read_uev(&sps, NULL);
 	if (ret)
 		return ret;
 
-	/* gaps_in_frame_num_value_allowed_flag */
+	 
 	ret = rbsp_read_bit(&sps);
 	if (ret < 0)
 		return ret;
@@ -348,17 +331,17 @@ int coda_h264_sps_fixup(struct coda_ctx *ctx, int width, int height, char *buf,
 	if (ret < 0)
 		return ret;
 	if (!frame_mbs_only_flag) {
-		/* mb_adaptive_frame_field_flag */
+		 
 		ret = rbsp_read_bit(&sps);
 		if (ret < 0)
 			return ret;
 	}
-	/* direct_8x8_inference_flag */
+	 
 	ret = rbsp_read_bit(&sps);
 	if (ret < 0)
 		return ret;
 
-	/* Mark position of the frame cropping flag */
+	 
 	pos = sps.pos;
 	frame_cropping_flag = ret = rbsp_read_bit(&sps);
 	if (ret < 0)
@@ -404,19 +387,19 @@ int coda_h264_sps_fixup(struct coda_ctx *ctx, int width, int height, char *buf,
 	ret = rbsp_write_bit(&sps, frame_cropping_flag);
 	if (ret)
 		return ret;
-	ret = rbsp_write_uev(&sps, 0); /* crop_left */
+	ret = rbsp_write_uev(&sps, 0);  
 	if (ret)
 		return ret;
 	ret = rbsp_write_uev(&sps, crop_right);
 	if (ret)
 		return ret;
-	ret = rbsp_write_uev(&sps, 0); /* crop_top */
+	ret = rbsp_write_uev(&sps, 0);  
 	if (ret)
 		return ret;
 	ret = rbsp_write_uev(&sps, crop_bottom);
 	if (ret)
 		return ret;
-	ret = rbsp_write_bit(&sps, 0); /* vui_parameters_present_flag */
+	ret = rbsp_write_bit(&sps, 0);  
 	if (ret)
 		return ret;
 	ret = rbsp_write_bit(&sps, 1);

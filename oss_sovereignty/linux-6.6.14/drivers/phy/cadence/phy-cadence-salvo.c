@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Salvo PHY is a 28nm PHY, it is a legacy PHY, and only
- * for USB3 and USB2.
- *
- * Copyright (c) 2019-2020 NXP
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/clk.h>
@@ -18,7 +13,7 @@
 
 #define USB3_PHY_OFFSET			0x0
 #define USB2_PHY_OFFSET			0x38000
-/* USB3 PHY register definition */
+ 
 #define PHY_PMA_CMN_CTRL1			0xC800
 #define TB_ADDR_CMN_DIAG_HSCLK_SEL		0x01e0
 #define TB_ADDR_CMN_PLL0_VCOCAL_INIT_TMR	0x0084
@@ -90,13 +85,13 @@
 #define TB_ADDR_XCVR_DIAG_LANE_FCM_EN_MGN_TMR	0x40f2
 #define TB_ADDR_TX_RCVDETSC_CTRL	        0x4124
 
-/* USB2 PHY register definition */
+ 
 #define UTMI_REG15				0xaf
 #define UTMI_AFE_RX_REG0			0x0d
 #define UTMI_AFE_RX_REG5			0x12
 #define UTMI_AFE_BC_REG4			0x29
 
-/* Align UTMI_AFE_RX_REG0 bit[7:6] define */
+ 
 enum usb2_disconn_threshold {
 	USB2_DISCONN_THRESHOLD_575 = 0x0,
 	USB2_DISCONN_THRESHOLD_610 = 0x1,
@@ -105,16 +100,11 @@ enum usb2_disconn_threshold {
 
 #define RX_USB2_DISCONN_MASK			GENMASK(7, 6)
 
-/* TB_ADDR_TX_RCVDETSC_CTRL */
+ 
 #define RXDET_IN_P3_32KHZ			BIT(0)
-/*
- * UTMI_REG15
- *
- * Gate how many us for the txvalid signal until analog
- * HS/FS transmitters have powered up
- */
+ 
 #define TXVALID_GATE_THRESHOLD_HS_MASK		(BIT(4) | BIT(5))
-/* 0us, txvalid is ready just after HS/FS transmitters have powered up */
+ 
 #define TXVALID_GATE_THRESHOLD_HS_0US		(BIT(4) | BIT(5))
 
 #define SET_B_SESSION_VALID			(BIT(6) | BIT(5))
@@ -160,10 +150,7 @@ static void cdns_salvo_write(struct cdns_salvo_phy *salvo_phy, u32 offset,
 		reg * (1 << salvo_phy->data->reg_offset_shift));
 }
 
-/*
- * Below bringup sequence pair are from Cadence PHY's User Guide
- * and NXP platform tuning results.
- */
+ 
 static const struct cdns_reg_pairs cdns_nxp_sequence_pair[] = {
 	{0x0830, PHY_PMA_CMN_CTRL1},
 	{0x0010, TB_ADDR_CMN_DIAG_HSCLK_SEL},
@@ -237,7 +224,7 @@ static const struct cdns_reg_pairs cdns_nxp_sequence_pair[] = {
 	{0x0002, TB_ADDR_XCVR_PSM_A3OUT_TMR},
 	{0x0002, TB_ADDR_XCVR_PSM_A4OUT_TMR},
 	{0x0002, TB_ADDR_XCVR_PSM_A5OUT_TMR},
-	/* Change rx detect parameter */
+	 
 	{0x0960, TB_ADDR_TX_RCVDET_EN_TMR},
 	{0x01e0, TB_ADDR_TX_RCVDET_ST_TMR},
 	{0x0090, TB_ADDR_XCVR_DIAG_LANE_FCM_EN_MGN_TMR},
@@ -260,7 +247,7 @@ static int cdns_salvo_phy_init(struct phy *phy)
 		cdns_salvo_write(salvo_phy, USB3_PHY_OFFSET, reg_pair->off, reg_pair->val);
 	}
 
-	/* RXDET_IN_P3_32KHZ, Receiver detect slow clock enable */
+	 
 	value = cdns_salvo_read(salvo_phy, USB3_PHY_OFFSET, TB_ADDR_TX_RCVDETSC_CTRL);
 	value |= RXDET_IN_P3_32KHZ;
 	cdns_salvo_write(salvo_phy, USB3_PHY_OFFSET, TB_ADDR_TX_RCVDETSC_CTRL,

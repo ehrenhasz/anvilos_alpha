@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Hisilicon Kirin SoCs drm master driver
- *
- * Copyright (c) 2016 Linaro Limited.
- * Copyright (c) 2014-2016 HiSilicon Limited.
- *
- * Author:
- *	Xinliang Liu <z.liuxinliang@hisilicon.com>
- *	Xinliang Liu <xinliang.liu@linaro.org>
- *	Xinwei Kong <kong.kongxinwei@hisilicon.com>
- */
+
+ 
 
 #include <linux/component.h>
 #include <linux/module.h>
@@ -44,9 +34,7 @@ static int kirin_drm_crtc_init(struct drm_device *dev, struct drm_crtc *crtc,
 	struct device_node *port;
 	int ret;
 
-	/* set crtc port so that
-	 * drm_of_find_possible_crtcs call works
-	 */
+	 
 	port = of_get_child_by_name(dev->dev->of_node, "port");
 	if (!port) {
 		DRM_ERROR("no port node found in %pOF\n", dev->dev->of_node);
@@ -124,11 +112,7 @@ static int kirin_drm_private_init(struct drm_device *dev,
 	}
 	kirin_priv->hw_ctx = ctx;
 
-	/*
-	 * plane init
-	 * TODO: Now only support primary plane, overlay planes
-	 * need to do.
-	 */
+	 
 	for (ch = 0; ch < driver_data->num_planes; ch++) {
 		if (ch == driver_data->prim_plane)
 			type = DRM_PLANE_TYPE_PRIMARY;
@@ -142,7 +126,7 @@ static int kirin_drm_private_init(struct drm_device *dev,
 		kirin_priv->planes[ch].hw_ctx = ctx;
 	}
 
-	/* crtc init */
+	 
 	prim_plane = &kirin_priv->planes[driver_data->prim_plane].base;
 	ret = kirin_drm_crtc_init(dev, &kirin_priv->crtc.base,
 				  prim_plane, driver_data);
@@ -159,7 +143,7 @@ static int kirin_drm_kms_init(struct drm_device *dev,
 {
 	int ret;
 
-	/* dev->mode_config initialization */
+	 
 	drm_mode_config_init(dev);
 	dev->mode_config.min_width = 0;
 	dev->mode_config.min_height = 0;
@@ -167,29 +151,29 @@ static int kirin_drm_kms_init(struct drm_device *dev,
 	dev->mode_config.max_height = driver_data->config_max_width;
 	dev->mode_config.funcs = driver_data->mode_config_funcs;
 
-	/* display controller init */
+	 
 	ret = kirin_drm_private_init(dev, driver_data);
 	if (ret)
 		goto err_mode_config_cleanup;
 
-	/* bind and init sub drivers */
+	 
 	ret = component_bind_all(dev->dev, dev);
 	if (ret) {
 		DRM_ERROR("failed to bind all component.\n");
 		goto err_private_cleanup;
 	}
 
-	/* vblank init */
+	 
 	ret = drm_vblank_init(dev, dev->mode_config.num_crtc);
 	if (ret) {
 		DRM_ERROR("failed to initialize vblank.\n");
 		goto err_unbind_all;
 	}
 
-	/* reset all the states of crtc/plane/encoder/connector */
+	 
 	drm_mode_config_reset(dev);
 
-	/* init kms poll for handling hpd */
+	 
 	drm_kms_helper_poll_init(dev);
 
 	return 0;
@@ -227,7 +211,7 @@ static int kirin_drm_bind(struct device *dev)
 		return PTR_ERR(drm_dev);
 	dev_set_drvdata(dev, drm_dev);
 
-	/* display controller init */
+	 
 	ret = kirin_drm_kms_init(drm_dev, driver_data);
 	if (ret)
 		goto err_drm_dev_put;
@@ -288,7 +272,7 @@ static const struct of_device_id kirin_drm_dt_ids[] = {
 	{ .compatible = "hisilicon,hi6220-ade",
 	  .data = &ade_driver_data,
 	},
-	{ /* end node */ },
+	{   },
 };
 MODULE_DEVICE_TABLE(of, kirin_drm_dt_ids);
 

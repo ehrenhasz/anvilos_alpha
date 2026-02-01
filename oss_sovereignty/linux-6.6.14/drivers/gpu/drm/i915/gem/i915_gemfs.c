@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2017 Intel Corporation
- */
+ 
 
 #include <linux/fs.h>
 #include <linux/mount.h>
@@ -13,21 +9,11 @@
 
 void i915_gemfs_init(struct drm_i915_private *i915)
 {
-	char huge_opt[] = "huge=within_size"; /* r/w */
+	char huge_opt[] = "huge=within_size";  
 	struct file_system_type *type;
 	struct vfsmount *gemfs;
 
-	/*
-	 * By creating our own shmemfs mountpoint, we can pass in
-	 * mount flags that better match our usecase.
-	 *
-	 * One example, although it is probably better with a per-file
-	 * control, is selecting huge page allocations ("huge=within_size").
-	 * However, we only do so on platforms which benefit from it, or to
-	 * offset the overhead of iommu lookups, where with latter it is a net
-	 * win even on platforms which would otherwise see some performance
-	 * regressions such a slow reads issue on Broadwell and Skylake.
-	 */
+	 
 
 	if (GRAPHICS_VER(i915) < 11 && !i915_vtd_active(i915))
 		return;

@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 OR Linux-OpenIB */
-/* Copyright (c) 2021 Mellanox Technologies. */
+ 
+ 
 
 #undef TRACE_SYSTEM
 #define TRACE_SYSTEM mlx5
@@ -147,7 +147,7 @@ DEFINE_EVENT(mlx5_esw_bridge_mdb_port_change_template,
 
 #endif
 
-/* This part must be outside protection */
+ 
 #undef TRACE_INCLUDE_PATH
 #define TRACE_INCLUDE_PATH esw/diag
 #undef TRACE_INCLUDE_FILE

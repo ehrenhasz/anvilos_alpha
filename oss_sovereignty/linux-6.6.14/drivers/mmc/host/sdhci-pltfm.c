@@ -1,20 +1,7 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * sdhci-pltfm.c Support for SDHCI platform devices
- * Copyright (c) 2009 Intel Corporation
- *
- * Copyright (c) 2007, 2011 Freescale Semiconductor, Inc.
- * Copyright (c) 2009 MontaVista Software, Inc.
- *
- * Authors: Xiaobo Xie <X.Xie@freescale.com>
- *	    Anton Vorontsov <avorontsov@ru.mvista.com>
- */
 
-/* Supports:
- * SDHCI platform devices
- *
- * Inspired by sdhci-pci.c, by Pierre Ossman
- */
+ 
+
+ 
 
 #include <linux/err.h>
 #include <linux/module.h>
@@ -46,12 +33,12 @@ static bool sdhci_wp_inverted(struct device *dev)
 	    device_property_present(dev, "wp-inverted"))
 		return true;
 
-	/* Old device trees don't have the wp-inverted property. */
+	 
 #ifdef CONFIG_PPC
 	return machine_is(mpc837x_rdb) || machine_is(mpc837x_mds);
 #else
 	return false;
-#endif /* CONFIG_PPC */
+#endif  
 }
 
 static void sdhci_get_compatibility(struct platform_device *pdev)
@@ -104,7 +91,7 @@ void sdhci_get_property(struct platform_device *pdev)
 		host->mmc->pm_caps |= MMC_PM_KEEP_POWER;
 
 	if (device_property_read_bool(dev, "wakeup-source") ||
-	    device_property_read_bool(dev, "enable-sdio-wakeup")) /* legacy */
+	    device_property_read_bool(dev, "enable-sdio-wakeup"))  
 		host->mmc->pm_caps |= MMC_PM_WAKE_SDIO_IRQ;
 }
 EXPORT_SYMBOL_GPL(sdhci_get_property);

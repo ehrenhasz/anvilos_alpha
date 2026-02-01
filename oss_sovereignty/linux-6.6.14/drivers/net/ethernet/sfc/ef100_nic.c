@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2018 Solarflare Communications Inc.
- * Copyright 2019-2022 Xilinx Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+
+ 
 
 #include "ef100_nic.h"
 #include "efx_common.h"
@@ -34,8 +26,7 @@
 
 #define EF100_RESET_PORT ((ETH_RESET_MAC | ETH_RESET_PHY) << ETH_RESET_SHARED_SHIFT)
 
-/*	MCDI
- */
+ 
 static u8 *ef100_mcdi_buf(struct efx_nic *efx, u8 bufid, dma_addr_t *dma_addr)
 {
 	struct ef100_nic_data *nic_data = efx->nic_data;
@@ -73,12 +64,7 @@ static void ef100_mcdi_request(struct efx_nic *efx,
 	memcpy(pdu + hdr_len, sdu, sdu_len);
 	wmb();
 
-	/* The hardware provides 'low' and 'high' (doorbell) registers
-	 * for passing the 64-bit address of an MCDI request to
-	 * firmware.  However the dwords are swapped by firmware.  The
-	 * least significant bits of the doorbell are then 0 for all
-	 * MCDI requests due to alignment.
-	 */
+	 
 	_efx_writed(efx, cpu_to_le32((u64)dma_addr >> 32),  efx_reg(efx, ER_GZ_MC_DB_LWRD));
 	_efx_writed(efx, cpu_to_le32((u32)dma_addr),  efx_reg(efx, ER_GZ_MC_DB_HWRD));
 }
@@ -108,11 +94,7 @@ static int ef100_mcdi_poll_reboot(struct efx_nic *efx)
 
 	rc = ef100_get_warm_boot_count(efx);
 	if (rc < 0) {
-		/* The firmware is presumably in the process of
-		 * rebooting.  However, we are supposed to report each
-		 * reboot just once, so we must only do that once we
-		 * can read and store the updated warm boot count.
-		 */
+		 
 		return 0;
 	}
 
@@ -128,8 +110,7 @@ static void ef100_mcdi_reboot_detected(struct efx_nic *efx)
 {
 }
 
-/*	MCDI calls
- */
+ 
 int ef100_get_mac_address(struct efx_nic *efx, u8 *mac_address,
 			  int client_handle, bool empty_ok)
 {
@@ -206,9 +187,7 @@ int efx_ef100_init_datapath_caps(struct efx_nic *efx)
 		net_dev->features |= tso;
 		net_dev->hw_features |= tso;
 		net_dev->hw_enc_features |= tso;
-		/* EF100 HW can only offload outer checksums if they are UDP,
-		 * so for GRE_CSUM we have to use GSO_PARTIAL.
-		 */
+		 
 		net_dev->gso_partial_features |= NETIF_F_GSO_GRE_CSUM;
 	}
 	efx->num_mac_stats = MCDI_WORD(outbuf,
@@ -219,11 +198,10 @@ int efx_ef100_init_datapath_caps(struct efx_nic *efx)
 	return 0;
 }
 
-/*	Event handling
- */
+ 
 static int ef100_ev_probe(struct efx_channel *channel)
 {
-	/* Allocate an extra descriptor for the QMDA status completion entry */
+	 
 	return efx_nic_alloc_buffer(channel->efx, &channel->eventq,
 				    (channel->eventq_mask + 2) *
 				    sizeof(efx_qword_t),
@@ -234,7 +212,7 @@ static int ef100_ev_init(struct efx_channel *channel)
 {
 	struct ef100_nic_data *nic_data = channel->efx->nic_data;
 
-	/* initial phase is 0 */
+	 
 	clear_bit(channel->channel, nic_data->evq_phases);
 
 	return efx_mcdi_ev_init(channel, false, false);
@@ -334,11 +312,11 @@ static irqreturn_t ef100_msi_interrupt(int irq, void *dev_id)
 		   "IRQ %d on CPU %d\n", irq, raw_smp_processor_id());
 
 	if (likely(READ_ONCE(efx->irq_soft_enabled))) {
-		/* Note test interrupts */
+		 
 		if (context->index == efx->irq_level)
 			efx->last_irq_cpu = raw_smp_processor_id();
 
-		/* Schedule processing of the channel */
+		 
 		efx_schedule_channel_irq(efx->channel[context->index]);
 	}
 
@@ -350,7 +328,7 @@ int ef100_phy_probe(struct efx_nic *efx)
 	struct efx_mcdi_phy_data *phy_data;
 	int rc;
 
-	/* Probe for the PHY */
+	 
 	efx->phy_data = kzalloc(sizeof(struct efx_mcdi_phy_data), GFP_KERNEL);
 	if (!efx->phy_data)
 		return -ENOMEM;
@@ -359,22 +337,20 @@ int ef100_phy_probe(struct efx_nic *efx)
 	if (rc)
 		return rc;
 
-	/* Populate driver and ethtool settings */
+	 
 	phy_data = efx->phy_data;
 	mcdi_to_ethtool_linkset(phy_data->media, phy_data->supported_cap,
 				efx->link_advertising);
 	efx->fec_config = mcdi_fec_caps_to_ethtool(phy_data->supported_cap,
 						   false);
 
-	/* Default to Autonegotiated flow control if the PHY supports it */
+	 
 	efx->wanted_fc = EFX_FC_RX | EFX_FC_TX;
 	if (phy_data->supported_cap & (1 << MC_CMD_PHY_CAP_AN_LBN))
 		efx->wanted_fc |= EFX_FC_AUTO;
 	efx_link_set_wanted_fc(efx, efx->wanted_fc);
 
-	/* Push settings to the PHY. Failure is not fatal, the user can try to
-	 * fix it using ethtool.
-	 */
+	 
 	rc = efx_mcdi_port_reconfigure(efx);
 	if (rc && rc != -EPERM)
 		netif_warn(efx, drv, efx->net_dev,
@@ -400,14 +376,12 @@ static int ef100_filter_table_up(struct efx_nic *efx)
 	rc = efx_mcdi_filter_add_vlan(efx, 0);
 	if (rc)
 		goto fail_vlan0;
-	/* Drop the lock: we've finished altering table existence, and
-	 * filter insertion will need to take the lock for read.
-	 */
+	 
 	up_write(&efx->filter_sem);
 	if (IS_ENABLED(CONFIG_SFC_SRIOV))
 		rc = efx_tc_insert_rep_filters(efx);
 
-	/* Rep filter failure is nonfatal */
+	 
 	if (rc)
 		netif_warn(efx, drv, efx->net_dev,
 			   "Failed to insert representor filters, rc %d\n",
@@ -433,8 +407,7 @@ static void ef100_filter_table_down(struct efx_nic *efx)
 	up_write(&efx->filter_sem);
 }
 
-/*	Other
- */
+ 
 static int ef100_reconfigure_mac(struct efx_nic *efx, bool mtu_only)
 {
 	WARN_ON(!mutex_is_locked(&efx->mac_lock));
@@ -455,7 +428,7 @@ static enum reset_type ef100_map_reset_reason(enum reset_type reason)
 
 static int ef100_map_reset_flags(u32 *flags)
 {
-	/* Only perform a RESET_TYPE_ALL because we don't support MC_REBOOTs */
+	 
 	if ((*flags & EF100_RESET_PORT)) {
 		*flags &= ~EF100_RESET_PORT;
 		return RESET_TYPE_ALL;
@@ -487,7 +460,7 @@ static int ef100_reset(struct efx_nic *efx, enum reset_type reset_type)
 
 		rc = dev_open(efx->net_dev, NULL);
 	} else {
-		rc = 1;	/* Leave the device closed */
+		rc = 1;	 
 	}
 	return rc;
 }
@@ -700,9 +673,7 @@ static void efx_ef100_ev_test_generate(struct efx_channel *channel)
 
 	MCDI_SET_DWORD(inbuf, DRIVER_EVENT_IN_EVQ, channel->channel);
 
-	/* MCDI_SET_QWORD is not appropriate here since EFX_POPULATE_* has
-	 * already swapped the data to little-endian order.
-	 */
+	 
 	memcpy(MCDI_PTR(inbuf, DRIVER_EVENT_IN_DATA), &event.u64[0],
 	       sizeof(efx_qword_t));
 
@@ -737,7 +708,7 @@ static unsigned int ef100_check_caps(const struct efx_nic *efx,
 
 static unsigned int efx_ef100_recycle_ring_size(const struct efx_nic *efx)
 {
-	/* Maximum link speed for Riverhead is 100G */
+	 
 	return 10 * EFX_RECYCLE_RING_SIZE_10G;
 }
 
@@ -747,24 +718,22 @@ static int efx_ef100_get_base_mport(struct efx_nic *efx)
 	u32 selector, id;
 	int rc;
 
-	/* Construct mport selector for "physical network port" */
+	 
 	efx_mae_mport_wire(efx, &selector);
-	/* Look up actual mport ID */
+	 
 	rc = efx_mae_fw_lookup_mport(efx, selector, &id);
 	if (rc)
 		return rc;
-	/* The ID should always fit in 16 bits, because that's how wide the
-	 * corresponding fields in the RX prefix & TX override descriptor are
-	 */
+	 
 	if (id >> 16)
 		netif_warn(efx, probe, efx->net_dev, "Bad base m-port id %#x\n",
 			   id);
 	nic_data->base_mport = id;
 	nic_data->have_mport = true;
 
-	/* Construct mport selector for "calling PF" */
+	 
 	efx_mae_mport_uplink(efx, &selector);
-	/* Look up actual mport ID */
+	 
 	rc = efx_mae_fw_lookup_mport(efx, selector, &id);
 	if (rc)
 		return rc;
@@ -829,7 +798,7 @@ static int ef100_tlv_feed(struct ef100_tlv_state *state, u8 byte)
 		state->type = byte & 0x7f;
 		state->state = (byte & 0x80) ? EF100_TLV_TYPE_CONT
 					     : EF100_TLV_LENGTH;
-		/* Clear ready to read in a new entry */
+		 
 		state->value = 0;
 		state->value_offset = 0;
 		return 0;
@@ -839,10 +808,10 @@ static int ef100_tlv_feed(struct ef100_tlv_state *state, u8 byte)
 		return 0;
 	case EF100_TLV_LENGTH:
 		state->len = byte;
-		/* We only handle TLVs that fit in a u64 */
+		 
 		if (state->len > sizeof(state->value))
 			return -EOPNOTSUPP;
-		/* len may be zero, implying a value of zero */
+		 
 		state->state = state->len ? EF100_TLV_VALUE : EF100_TLV_TYPE;
 		return 0;
 	case EF100_TLV_VALUE:
@@ -851,7 +820,7 @@ static int ef100_tlv_feed(struct ef100_tlv_state *state, u8 byte)
 		if (state->value_offset >= state->len)
 			state->state = EF100_TLV_TYPE;
 		return 0;
-	default: /* state machine error, can't happen */
+	default:  
 		WARN_ON_ONCE(1);
 		return -EIO;
 	}
@@ -863,29 +832,25 @@ static int ef100_process_design_param(struct efx_nic *efx,
 	struct ef100_nic_data *nic_data = efx->nic_data;
 
 	switch (reader->type) {
-	case ESE_EF100_DP_GZ_PAD: /* padding, skip it */
+	case ESE_EF100_DP_GZ_PAD:  
 		return 0;
 	case ESE_EF100_DP_GZ_PARTIAL_TSTAMP_SUB_NANO_BITS:
-		/* Driver doesn't support timestamping yet, so we don't care */
+		 
 		return 0;
 	case ESE_EF100_DP_GZ_EVQ_UNSOL_CREDIT_SEQ_BITS:
-		/* Driver doesn't support unsolicited-event credits yet, so
-		 * we don't care
-		 */
+		 
 		return 0;
 	case ESE_EF100_DP_GZ_NMMU_GROUP_SIZE:
-		/* Driver doesn't manage the NMMU (so we don't care) */
+		 
 		return 0;
 	case ESE_EF100_DP_GZ_RX_L4_CSUM_PROTOCOLS:
-		/* Driver uses CHECKSUM_COMPLETE, so we don't care about
-		 * protocol checksum validation
-		 */
+		 
 		return 0;
 	case ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN:
 		nic_data->tso_max_hdr_len = min_t(u64, reader->value, 0xffff);
 		return 0;
 	case ESE_EF100_DP_GZ_TSO_MAX_HDR_NUM_SEGS:
-		/* We always put HDR_NUM_SEGS=1 in our TSO descriptors */
+		 
 		if (!reader->value) {
 			netif_err(efx, probe, efx->net_dev,
 				  "TSO_MAX_HDR_NUM_SEGS < 1\n");
@@ -894,11 +859,7 @@ static int ef100_process_design_param(struct efx_nic *efx,
 		return 0;
 	case ESE_EF100_DP_GZ_RXQ_SIZE_GRANULARITY:
 	case ESE_EF100_DP_GZ_TXQ_SIZE_GRANULARITY:
-		/* Our TXQ and RXQ sizes are always power-of-two and thus divisible by
-		 * EFX_MIN_DMAQ_SIZE, so we just need to check that
-		 * EFX_MIN_DMAQ_SIZE is divisible by GRANULARITY.
-		 * This is very unlikely to fail.
-		 */
+		 
 		if (!reader->value || reader->value > EFX_MIN_DMAQ_SIZE ||
 		    EFX_MIN_DMAQ_SIZE % (u32)reader->value) {
 			netif_err(efx, probe, efx->net_dev,
@@ -931,20 +892,16 @@ static int ef100_process_design_param(struct efx_nic *efx,
 		}
 		return 0;
 	case ESE_EF100_DP_GZ_MEM2MEM_MAX_LEN:
-		/* Driver doesn't use mem2mem transfers */
+		 
 		return 0;
 	case ESE_EF100_DP_GZ_EVQ_TIMER_TICK_NANOS:
-		/* Driver doesn't currently use EVQ_TIMER */
+		 
 		return 0;
 	case ESE_EF100_DP_GZ_NMMU_PAGE_SIZES:
-		/* Driver doesn't manage the NMMU (so we don't care) */
+		 
 		return 0;
 	case ESE_EF100_DP_GZ_VI_STRIDES:
-		/* We never try to set the VI stride, and we don't rely on
-		 * being able to find VIs past VI 0 until after we've learned
-		 * the current stride from MC_CMD_GET_CAPABILITIES.
-		 * So the value of this shouldn't matter.
-		 */
+		 
 		if (reader->value != ESE_EF100_DP_GZ_VI_STRIDES_DEFAULT)
 			netif_dbg(efx, probe, efx->net_dev,
 				  "NIC has other than default VI_STRIDES (mask "
@@ -952,15 +909,10 @@ static int ef100_process_design_param(struct efx_nic *efx,
 				  reader->value);
 		return 0;
 	case ESE_EF100_DP_GZ_RX_MAX_RUNT:
-		/* Driver doesn't look at L2_STATUS:LEN_ERR bit, so we don't
-		 * care whether it indicates runt or overlength for any given
-		 * packet, so we don't care about this parameter.
-		 */
+		 
 		return 0;
 	default:
-		/* Host interface says "Drivers should ignore design parameters
-		 * that they do not recognise."
-		 */
+		 
 		netif_dbg(efx, probe, efx->net_dev,
 			  "Ignoring unrecognised design parameter %u\n",
 			  reader->type);
@@ -984,7 +936,7 @@ static int ef100_check_design_params(struct efx_nic *efx)
 		data = EFX_DWORD_FIELD(reg, EFX_DWORD_0);
 		for (i = 0; i < sizeof(data); i++) {
 			rc = ef100_tlv_feed(&reader, data);
-			/* Got a complete value? */
+			 
 			if (!rc && reader.state == EF100_TLV_TYPE)
 				rc = ef100_process_design_param(efx, &reader);
 			if (rc)
@@ -993,10 +945,7 @@ static int ef100_check_design_params(struct efx_nic *efx)
 			offset++;
 		}
 	}
-	/* Check we didn't end halfway through a TLV entry, which could either
-	 * mean that the TLV stream is truncated or just that it's corrupted
-	 * and our state machine is out of sync.
-	 */
+	 
 	if (reader.state != EF100_TLV_TYPE) {
 		if (reader.state == EF100_TLV_TYPE_CONT)
 			netif_err(efx, probe, efx->net_dev,
@@ -1012,8 +961,7 @@ out:
 	return rc;
 }
 
-/*	NIC probe and remove
- */
+ 
 static int ef100_probe_main(struct efx_nic *efx)
 {
 	unsigned int bar_size = resource_size(&efx->pci_dev->resource[efx->mem_bar]);
@@ -1032,31 +980,29 @@ static int ef100_probe_main(struct efx_nic *efx)
 	nic_data->efx = efx;
 	efx->max_vis = EF100_MAX_VIS;
 
-	/* Populate design-parameter defaults */
+	 
 	nic_data->tso_max_hdr_len = ESE_EF100_DP_GZ_TSO_MAX_HDR_LEN_DEFAULT;
 	nic_data->tso_max_frames = ESE_EF100_DP_GZ_TSO_MAX_NUM_FRAMES_DEFAULT;
 	nic_data->tso_max_payload_num_segs = ESE_EF100_DP_GZ_TSO_MAX_PAYLOAD_NUM_SEGS_DEFAULT;
 	nic_data->tso_max_payload_len = ESE_EF100_DP_GZ_TSO_MAX_PAYLOAD_LEN_DEFAULT;
 
-	/* Read design parameters */
+	 
 	rc = ef100_check_design_params(efx);
 	if (rc) {
 		pci_err(efx->pci_dev, "Unsupported design parameters\n");
 		goto fail;
 	}
 
-	/* we assume later that we can copy from this buffer in dwords */
+	 
 	BUILD_BUG_ON(MCDI_CTL_SDU_LEN_MAX_V2 % 4);
 
-	/* MCDI buffers must be 256 byte aligned. */
+	 
 	rc = efx_nic_alloc_buffer(efx, &nic_data->mcdi_buf, MCDI_BUF_LEN,
 				  GFP_KERNEL);
 	if (rc)
 		goto fail;
 
-	/* Get the MC's warm boot count.  In case it's rebooting right
-	 * now, be prepared to retry.
-	 */
+	 
 	i = 0;
 	for (;;) {
 		rc = ef100_get_warm_boot_count(efx);
@@ -1068,23 +1014,19 @@ static int ef100_probe_main(struct efx_nic *efx)
 	}
 	nic_data->warm_boot_count = rc;
 
-	/* In case we're recovering from a crash (kexec), we want to
-	 * cancel any outstanding request by the previous user of this
-	 * function.  We send a special message using the least
-	 * significant bits of the 'high' (doorbell) register.
-	 */
+	 
 	_efx_writed(efx, cpu_to_le32(1), efx_reg(efx, ER_GZ_MC_DB_HWRD));
 
-	/* Post-IO section. */
+	 
 
 	rc = efx_mcdi_init(efx);
 	if (rc)
 		goto fail;
-	/* Reset (most) configuration for this function */
+	 
 	rc = efx_mcdi_reset(efx, RESET_TYPE_ALL);
 	if (rc)
 		goto fail;
-	/* Enable event logging */
+	 
 	rc = efx_mcdi_log_ctrl(efx, true, false, 0);
 	if (rc)
 		goto fail;
@@ -1102,7 +1044,7 @@ static int ef100_probe_main(struct efx_nic *efx)
 	pci_dbg(efx->pci_dev, "Firmware version %s\n", fw_version);
 
 	rc = efx_mcdi_get_privilege_mask(efx, &priv_mask);
-	if (rc) /* non-fatal, and priv_mask will still be 0 */
+	if (rc)  
 		pci_info(efx->pci_dev,
 			 "Failed to get privilege mask from FW, rc %d\n", rc);
 	nic_data->grp_mae = !!(priv_mask & MC_CMD_PRIVILEGE_MASK_IN_GRP_MAE);
@@ -1124,10 +1066,7 @@ fail:
 	return rc;
 }
 
-/* MCDI commands are related to the same device issuing them. This function
- * allows to do an MCDI command on behalf of another device, mainly PFs setting
- * things for VFs.
- */
+ 
 int efx_ef100_lookup_client_id(struct efx_nic *efx, efx_qword_t pciefn, u32 *id)
 {
 	MCDI_DECLARE_BUF(outbuf, MC_CMD_GET_CLIENT_HANDLE_OUT_LEN);
@@ -1181,13 +1120,7 @@ int ef100_probe_netdev_pf(struct efx_nic *efx)
 
 	rc = efx_init_tc(efx);
 	if (rc) {
-		/* Either we don't have an MAE at all (i.e. legacy v-switching),
-		 * or we do but we failed to probe it.  In the latter case, we
-		 * may not have set up default rules, in which case we won't be
-		 * able to pass any traffic.  However, we don't fail the probe,
-		 * because the user might need to use the netdevice to apply
-		 * configuration changes to fix whatever's wrong with the MAE.
-		 */
+		 
 		netif_warn(efx, probe, net_dev, "Failed to probe MAE rc %d\n",
 			   rc);
 	} else {
@@ -1219,8 +1152,7 @@ void ef100_remove(struct efx_nic *efx)
 	efx->nic_data = NULL;
 }
 
-/*	NIC level access functions
- */
+ 
 #define EF100_OFFLOAD_FEATURES	(NETIF_F_HW_CSUM | NETIF_F_RXCSUM |	\
 	NETIF_F_HIGHDMA | NETIF_F_SG | NETIF_F_FRAGLIST | NETIF_F_NTUPLE | \
 	NETIF_F_RXHASH | NETIF_F_RXFCS | NETIF_F_TSO_ECN | NETIF_F_RXALL | \
@@ -1306,9 +1238,7 @@ const struct efx_nic_type ef100_pf_nic_type = {
 	.sriov_configure = IS_ENABLED(CONFIG_SFC_SRIOV) ?
 		efx_ef100_sriov_configure : NULL,
 
-	/* Per-type bar/size configuration not used on ef100. Location of
-	 * registers is defined by extended capabilities.
-	 */
+	 
 	.mem_bar = NULL,
 	.mem_map_size = NULL,
 

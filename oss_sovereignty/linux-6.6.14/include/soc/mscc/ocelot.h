@@ -1,6 +1,5 @@
-/* SPDX-License-Identifier: (GPL-2.0 OR MIT) */
-/* Copyright (c) 2017 Microsemi Corporation
- */
+ 
+ 
 
 #ifndef _SOC_MSCC_OCELOT_H
 #define _SOC_MSCC_OCELOT_H
@@ -13,55 +12,9 @@
 
 struct tc_mqprio_qopt_offload;
 
-/* Port Group IDs (PGID) are masks of destination ports.
- *
- * For L2 forwarding, the switch performs 3 lookups in the PGID table for each
- * frame, and forwards the frame to the ports that are present in the logical
- * AND of all 3 PGIDs.
- *
- * These PGID lookups are:
- * - In one of PGID[0-63]: for the destination masks. There are 2 paths by
- *   which the switch selects a destination PGID:
- *     - The {DMAC, VID} is present in the MAC table. In that case, the
- *       destination PGID is given by the DEST_IDX field of the MAC table entry
- *       that matched.
- *     - The {DMAC, VID} is not present in the MAC table (it is unknown). The
- *       frame is disseminated as being either unicast, multicast or broadcast,
- *       and according to that, the destination PGID is chosen as being the
- *       value contained by ANA_FLOODING_FLD_UNICAST,
- *       ANA_FLOODING_FLD_MULTICAST or ANA_FLOODING_FLD_BROADCAST.
- *   The destination PGID can be an unicast set: the first PGIDs, 0 to
- *   ocelot->num_phys_ports - 1, or a multicast set: the PGIDs from
- *   ocelot->num_phys_ports to 63. By convention, a unicast PGID corresponds to
- *   a physical port and has a single bit set in the destination ports mask:
- *   that corresponding to the port number itself. In contrast, a multicast
- *   PGID will have potentially more than one single bit set in the destination
- *   ports mask.
- * - In one of PGID[64-79]: for the aggregation mask. The switch classifier
- *   dissects each frame and generates a 4-bit Link Aggregation Code which is
- *   used for this second PGID table lookup. The goal of link aggregation is to
- *   hash multiple flows within the same LAG on to different destination ports.
- *   The first lookup will result in a PGID with all the LAG members present in
- *   the destination ports mask, and the second lookup, by Link Aggregation
- *   Code, will ensure that each flow gets forwarded only to a single port out
- *   of that mask (there are no duplicates).
- * - In one of PGID[80-90]: for the source mask. The third time, the PGID table
- *   is indexed with the ingress port (plus 80). These PGIDs answer the
- *   question "is port i allowed to forward traffic to port j?" If yes, then
- *   BIT(j) of PGID 80+i will be found set. The third PGID lookup can be used
- *   to enforce the L2 forwarding matrix imposed by e.g. a Linux bridge.
- */
+ 
 
-/* Reserve some destination PGIDs at the end of the range:
- * PGID_BLACKHOLE: used for not forwarding the frames
- * PGID_CPU: used for whitelisting certain MAC addresses, such as the addresses
- *           of the switch port net devices, towards the CPU port module.
- * PGID_UC: the flooding destinations for unknown unicast traffic.
- * PGID_MC: the flooding destinations for non-IP multicast traffic.
- * PGID_MCIPV4: the flooding destinations for IPv4 multicast traffic.
- * PGID_MCIPV6: the flooding destinations for IPv6 multicast traffic.
- * PGID_BC: the flooding destinations for broadcast traffic.
- */
+ 
 #define PGID_BLACKHOLE			57
 #define PGID_CPU			58
 #define PGID_UC				59
@@ -85,10 +38,10 @@ struct tc_mqprio_qopt_offload;
 	     (pgid) < PGID_SRC;					\
 	     (pgid)++)
 
-/* Aggregation PGIDs, one per Link Aggregation Code */
+ 
 #define PGID_AGGR			64
 
-/* Source PGIDs, one per physical port */
+ 
 #define PGID_SRC			80
 
 #define OCELOT_NUM_TC			8
@@ -608,16 +561,16 @@ enum ocelot_regfield {
 };
 
 enum {
-	/* VCAP_CORE_CFG */
+	 
 	VCAP_CORE_UPDATE_CTRL,
 	VCAP_CORE_MV_CFG,
-	/* VCAP_CORE_CACHE */
+	 
 	VCAP_CACHE_ENTRY_DAT,
 	VCAP_CACHE_MASK_DAT,
 	VCAP_CACHE_ACTION_DAT,
 	VCAP_CACHE_CNT_DAT,
 	VCAP_CACHE_TG_DAT,
-	/* VCAP_CONST */
+	 
 	VCAP_CONST_VCAP_VER,
 	VCAP_CONST_ENTRY_WIDTH,
 	VCAP_CONST_ENTRY_CNT,
@@ -688,13 +641,13 @@ struct ocelot_bridge_vlan {
 };
 
 enum ocelot_port_tag_config {
-	/* all VLANs are egress-untagged */
+	 
 	OCELOT_PORT_TAG_DISABLED = 0,
-	/* all VLANs except the native VLAN and VID 0 are egress-tagged */
+	 
 	OCELOT_PORT_TAG_NATIVE = 1,
-	/* all VLANs except VID 0 are egress-tagged */
+	 
 	OCELOT_PORT_TAG_TRUNK_NO_VID0 = 2,
-	/* all VLANs are egress-tagged */
+	 
 	OCELOT_PORT_TAG_TRUNK = 3,
 };
 
@@ -702,7 +655,7 @@ struct ocelot_psfp_list {
 	struct list_head stream_list;
 	struct list_head sfi_list;
 	struct list_head sgi_list;
-	/* Serialize access to the lists */
+	 
 	struct mutex lock;
 };
 
@@ -718,12 +671,7 @@ enum ocelot_sb_pool {
 	OCELOT_SB_POOL_NUM,
 };
 
-/* MAC table entry types.
- * ENTRYTYPE_NORMAL is subject to aging.
- * ENTRYTYPE_LOCKED is not subject to aging.
- * ENTRYTYPE_MACv4 is not subject to aging. For IPv4 multicast.
- * ENTRYTYPE_MACv6 is not subject to aging. For IPv6 multicast.
- */
+ 
 enum macaccess_entry_type {
 	ENTRYTYPE_NORMAL = 0,
 	ENTRYTYPE_LOCKED,
@@ -771,7 +719,7 @@ struct ocelot_port {
 
 	struct ocelot_port		*dsa_8021q_cpu;
 
-	/* VLAN that untagged frames are classified to, on ingress */
+	 
 	const struct ocelot_bridge_vlan	*pvid_vlan;
 
 	struct tc_taprio_qopt_offload	*taprio;
@@ -826,13 +774,10 @@ struct ocelot {
 	struct list_head		traps;
 	struct list_head		lag_fdbs;
 
-	/* Switches like VSC9959 have flooding per traffic class */
+	 
 	int				num_flooding_pgids;
 
-	/* In tables like ANA:PORT and the ANA:PGID:PGID mask,
-	 * the CPU is located after the physical ports (at the
-	 * num_phys_ports index).
-	 */
+	 
 	u8				num_phys_ports;
 
 	int				npi;
@@ -853,21 +798,18 @@ struct ocelot {
 
 	struct ocelot_psfp_list		psfp;
 
-	/* Workqueue to check statistics for overflow */
+	 
 	struct delayed_work		stats_work;
 	struct workqueue_struct		*stats_queue;
-	/* Lock for serializing access to the statistics array */
+	 
 	spinlock_t			stats_lock;
 	u64				*stats;
 
-	/* Lock for serializing indirect access to STAT_VIEW registers */
+	 
 	struct mutex			stat_view_lock;
-	/* Lock for serializing access to the MAC table */
+	 
 	struct mutex			mact_lock;
-	/* Lock for serializing forwarding domain changes, including the
-	 * configuration of the Time-Aware Shaper, MAC Merge layer and
-	 * cut-through forwarding, on which it depends
-	 */
+	 
 	struct mutex			fwd_domain_lock;
 
 	struct workqueue_struct		*owq;
@@ -877,9 +819,9 @@ struct ocelot {
 	struct ptp_clock		*ptp_clock;
 	struct ptp_clock_info		ptp_info;
 	unsigned int			ptp_skbs_in_flight;
-	/* Protects the 2-step TX timestamp ID logic */
+	 
 	spinlock_t			ts_id_lock;
-	/* Protects the PTP clock */
+	 
 	spinlock_t			ptp_clock_lock;
 	struct ptp_pin_desc		ptp_pins[OCELOT_PTP_PINS_NUM];
 
@@ -889,8 +831,8 @@ struct ocelot {
 };
 
 struct ocelot_policer {
-	u32 rate; /* kilobit per second */
-	u32 burst; /* bytes */
+	u32 rate;  
+	u32 burst;  
 };
 
 #define ocelot_bulk_read(ocelot, reg, buf, count) \
@@ -948,7 +890,7 @@ struct ocelot_policer {
 #define ocelot_target_write(ocelot, target, val, reg) \
 	__ocelot_target_write_ix(ocelot, target, val, reg, 0)
 
-/* I/O */
+ 
 u32 ocelot_port_readl(struct ocelot_port *port, enum ocelot_reg reg);
 void ocelot_port_writel(struct ocelot_port *port, u32 val, enum ocelot_reg reg);
 void ocelot_port_rmwl(struct ocelot_port *port, u32 val, u32 mask,
@@ -965,7 +907,7 @@ u32 __ocelot_target_read_ix(struct ocelot *ocelot, enum ocelot_target target,
 void __ocelot_target_write_ix(struct ocelot *ocelot, enum ocelot_target target,
 			      u32 val, u32 reg, u32 offset);
 
-/* Packet I/O */
+ 
 bool ocelot_can_inject(struct ocelot *ocelot, int grp);
 void ocelot_port_inject_frame(struct ocelot *ocelot, int port, int grp,
 			      u32 rew_op, struct sk_buff *skb);
@@ -975,7 +917,7 @@ void ocelot_drain_cpu_queue(struct ocelot *ocelot, int grp);
 void ocelot_ptp_rx_timestamp(struct ocelot *ocelot, struct sk_buff *skb,
 			     u64 timestamp);
 
-/* Hardware initialization */
+ 
 int ocelot_regfields_init(struct ocelot *ocelot,
 			  const struct reg_field *const regfields);
 struct regmap *ocelot_regmap_init(struct ocelot *ocelot, struct resource *res);
@@ -991,12 +933,12 @@ void ocelot_port_assign_dsa_8021q_cpu(struct ocelot *ocelot, int port, int cpu);
 void ocelot_port_unassign_dsa_8021q_cpu(struct ocelot *ocelot, int port);
 u32 ocelot_port_assigned_dsa_8021q_cpu_mask(struct ocelot *ocelot, int port);
 
-/* Watermark interface */
+ 
 u16 ocelot_wm_enc(u16 value);
 u16 ocelot_wm_dec(u16 wm);
 void ocelot_wm_stat(u32 val, u32 *inuse, u32 *maxuse);
 
-/* DSA callbacks */
+ 
 void ocelot_get_strings(struct ocelot *ocelot, int port, u32 sset, u8 *data);
 void ocelot_get_ethtool_stats(struct ocelot *ocelot, int port, u64 *data);
 int ocelot_get_sset_count(struct ocelot *ocelot, int port, int sset);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2012-2016 Mentor Graphics Inc.
- * Copyright (C) 2005-2009 Freescale Semiconductor, Inc.
- */
+
+ 
 #include <linux/io.h>
 #include "ipu-prv.h"
 
@@ -15,11 +12,11 @@ struct ipu_vdi {
 };
 
 
-/* VDI Register Offsets */
+ 
 #define VDI_FSIZE 0x0000
 #define VDI_C     0x0004
 
-/* VDI Register Fields */
+ 
 #define VDI_C_CH_420             (0 << 1)
 #define VDI_C_CH_422             (1 << 1)
 #define VDI_C_MOT_SEL_MASK       (0x3 << 2)
@@ -127,10 +124,7 @@ void ipu_vdi_setup(struct ipu_vdi *vdi, u32 code, int xres, int yres)
 	reg = ((yres - 1) << 16) | (xres - 1);
 	ipu_vdi_write(vdi, reg, VDI_FSIZE);
 
-	/*
-	 * Full motion, only vertical filter is used.
-	 * Burst size is 4 accesses
-	 */
+	 
 	if (code == MEDIA_BUS_FMT_UYVY8_2X8 ||
 	    code == MEDIA_BUS_FMT_UYVY8_1X16 ||
 	    code == MEDIA_BUS_FMT_YUYV8_2X8 ||

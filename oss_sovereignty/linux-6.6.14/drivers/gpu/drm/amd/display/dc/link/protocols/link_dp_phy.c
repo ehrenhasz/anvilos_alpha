@@ -1,34 +1,6 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
-/* FILE POLICY AND INTENDED USAGE:
- * This file implements basic dp phy functionality such as enable/disable phy
- * output and set lane/drive settings. This file is responsible for maintaining
- * and update software state representing current phy status such as current
- * link settings.
- */
+ 
 
 #include "link_dp_phy.h"
 #include "link_dpcd.h"
@@ -78,7 +50,7 @@ void dp_disable_link_phy(struct dc_link *link,
 		dpcd_write_rx_power_ctrl(link, false);
 
 	dc->hwss.disable_link_output(link, link_res, signal);
-	/* Clear current link setting.*/
+	 
 	memset(&link->cur_link_settings, 0,
 			sizeof(link->cur_link_settings));
 
@@ -119,24 +91,20 @@ void dp_set_drive_settings(
 	const struct link_resource *link_res,
 	struct link_training_settings *lt_settings)
 {
-	/* program ASIC PHY settings*/
+	 
 	dp_set_hw_lane_settings(link, link_res, lt_settings, DPRX);
 
 	dp_hw_to_dpcd_lane_settings(lt_settings,
 			lt_settings->hw_lane_settings,
 			lt_settings->dpcd_lane_settings);
 
-	/* Notify DP sink the PHY settings from source */
+	 
 	dpcd_set_lane_settings(link, lt_settings, DPRX);
 }
 
 enum dc_status dp_set_fec_ready(struct dc_link *link, const struct link_resource *link_res, bool ready)
 {
-	/* FEC has to be "set ready" before the link training.
-	 * The policy is to always train with FEC
-	 * if the sink supports it and leave it enabled on link.
-	 * If FEC is not supported, disable it.
-	 */
+	 
 	struct link_encoder *link_enc = NULL;
 	enum dc_status status = DC_OK;
 	uint8_t fec_config = 0;
@@ -190,13 +158,7 @@ void dp_set_fec_enable(struct dc_link *link, bool enable)
 	if (link_enc->funcs->fec_set_enable &&
 			link->dpcd_caps.fec_cap.bits.FEC_CAPABLE) {
 		if (link->fec_state == dc_link_fec_ready && enable) {
-			/* Accord to DP spec, FEC enable sequence can first
-			 * be transmitted anytime after 1000 LL codes have
-			 * been transmitted on the link after link training
-			 * completion. Using 1 lane RBR should have the maximum
-			 * time for transmitting 1000 LL codes which is 6.173 us.
-			 * So use 7 microseconds delay instead.
-			 */
+			 
 			udelay(7);
 			link_enc->funcs->fec_set_enable(link_enc, true);
 			link->fec_state = dc_link_fec_enabled;

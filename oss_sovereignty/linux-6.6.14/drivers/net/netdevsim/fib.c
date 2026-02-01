@@ -1,18 +1,4 @@
-/*
- * Copyright (c) 2018 Cumulus Networks. All rights reserved.
- * Copyright (c) 2018 David Ahern <dsa@cumulusnetworks.com>
- *
- * This software is licensed under the GNU General License Version 2,
- * June 1991 as shown in the file COPYING in the top-level directory of this
- * source tree.
- *
- * THE COPYRIGHT HOLDERS AND/OR OTHER PARTIES PROVIDE THE PROGRAM "AS IS"
- * WITHOUT WARRANTY OF ANY KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING,
- * BUT NOT LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
- * FOR A PARTICULAR PURPOSE. THE ENTIRE RISK AS TO THE QUALITY AND PERFORMANCE
- * OF THE PROGRAM IS WITH YOU. SHOULD THE PROGRAM PROVE DEFECTIVE, YOU ASSUME
- * THE COST OF ALL NECESSARY SERVICING, REPAIR OR CORRECTION.
- */
+ 
 
 #include <linux/bitmap.h>
 #include <linux/in6.h>
@@ -49,15 +35,15 @@ struct nsim_fib_data {
 	struct nsim_fib_entry nexthops;
 	struct rhashtable fib_rt_ht;
 	struct list_head fib_rt_list;
-	struct mutex fib_lock; /* Protects FIB HT and list */
+	struct mutex fib_lock;  
 	struct notifier_block nexthop_nb;
 	struct rhashtable nexthop_ht;
 	struct devlink *devlink;
 	struct work_struct fib_event_work;
 	struct work_struct fib_flush_work;
 	struct list_head fib_event_queue;
-	spinlock_t fib_event_queue_lock; /* Protects fib event queue list */
-	struct mutex nh_lock; /* Protects NH HT */
+	spinlock_t fib_event_queue_lock;  
+	struct mutex nh_lock;  
 	struct dentry *ddir;
 	bool fail_route_offload;
 	bool fail_res_nexthop_group_replace;
@@ -75,7 +61,7 @@ struct nsim_fib_rt_key {
 struct nsim_fib_rt {
 	struct nsim_fib_rt_key key;
 	struct rhash_head ht_node;
-	struct list_head list;	/* Member of fib_rt_list */
+	struct list_head list;	 
 };
 
 struct nsim_fib4_rt {
@@ -92,7 +78,7 @@ struct nsim_fib6_rt {
 };
 
 struct nsim_fib6_rt_nh {
-	struct list_head list;	/* Member of nh_list */
+	struct list_head list;	 
 	struct fib6_info *rt;
 };
 
@@ -102,7 +88,7 @@ struct nsim_fib6_event {
 };
 
 struct nsim_fib_event {
-	struct list_head list; /* node in fib queue */
+	struct list_head list;  
 	union {
 		struct fib_entry_notifier_info fen_info;
 		struct nsim_fib6_event fib6_event;
@@ -365,16 +351,14 @@ static int nsim_fib4_rt_add(struct nsim_fib_data *data,
 	if (err)
 		goto err_fib_dismiss;
 
-	/* Simulate hardware programming latency. */
+	 
 	msleep(1);
 	nsim_fib4_rt_hw_flags_set(net, fib4_rt, true);
 
 	return 0;
 
 err_fib_dismiss:
-	/* Drop the accounting that was increased from the notification
-	 * context when FIB_EVENT_ENTRY_REPLACE was triggered.
-	 */
+	 
 	nsim_fib_account(&data->ipv4.fib, false);
 	return err;
 }
@@ -386,9 +370,7 @@ static int nsim_fib4_rt_replace(struct nsim_fib_data *data,
 	struct net *net = devlink_net(data->devlink);
 	int err;
 
-	/* We are replacing a route, so need to remove the accounting which
-	 * was increased when FIB_EVENT_ENTRY_REPLACE was triggered.
-	 */
+	 
 	err = nsim_fib_account(&data->ipv4.fib, false);
 	if (err)
 		return err;
@@ -415,10 +397,7 @@ static int nsim_fib4_rt_insert(struct nsim_fib_data *data,
 	int err;
 
 	if (data->fail_route_offload) {
-		/* For testing purposes, user set debugfs fail_route_offload
-		 * value to true. Simulate hardware programming latency and then
-		 * fail.
-		 */
+		 
 		msleep(1);
 		return -EINVAL;
 	}
@@ -552,10 +531,7 @@ nsim_fib6_rt_create(struct nsim_fib_data *data,
 			 sizeof(rt->fib6_dst.addr), rt->fib6_dst.plen, AF_INET6,
 			 rt->fib6_table->tb6_id);
 
-	/* We consider a multipath IPv6 route as one entry, but it can be made
-	 * up from several fib6_info structs (one for each nexthop), so we
-	 * add them all to the same list under the entry.
-	 */
+	 
 	INIT_LIST_HEAD(&fib6_rt->nh_list);
 
 	for (i = 0; i < nrt6; i++) {
@@ -609,10 +585,7 @@ static int nsim_fib6_rt_append(struct nsim_fib_data *data,
 	int i, err;
 
 	if (data->fail_route_offload) {
-		/* For testing purposes, user set debugfs fail_route_offload
-		 * value to true. Simulate hardware programming latency and then
-		 * fail.
-		 */
+		 
 		msleep(1);
 		return -EINVAL;
 	}
@@ -696,9 +669,7 @@ static int nsim_fib6_rt_add(struct nsim_fib_data *data,
 	return 0;
 
 err_fib_dismiss:
-	/* Drop the accounting that was increased from the notification
-	 * context when FIB_EVENT_ENTRY_REPLACE was triggered.
-	 */
+	 
 	nsim_fib_account(&data->ipv6.fib, false);
 	return err;
 }
@@ -709,9 +680,7 @@ static int nsim_fib6_rt_replace(struct nsim_fib_data *data,
 {
 	int err;
 
-	/* We are replacing a route, so need to remove the accounting which
-	 * was increased when FIB_EVENT_ENTRY_REPLACE was triggered.
-	 */
+	 
 	err = nsim_fib_account(&data->ipv6.fib, false);
 	if (err)
 		return err;
@@ -741,10 +710,7 @@ static int nsim_fib6_rt_insert(struct nsim_fib_data *data,
 	int err;
 
 	if (data->fail_route_offload) {
-		/* For testing purposes, user set debugfs fail_route_offload
-		 * value to true. Simulate hardware programming latency and then
-		 * fail.
-		 */
+		 
 		msleep(1);
 		return -EINVAL;
 	}
@@ -773,18 +739,12 @@ static void nsim_fib6_rt_remove(struct nsim_fib_data *data,
 	struct nsim_fib6_rt *fib6_rt;
 	int i;
 
-	/* Multipath routes are first added to the FIB trie and only then
-	 * notified. If we vetoed the addition, we will get a delete
-	 * notification for a route we do not have. Therefore, do not warn if
-	 * route was not found.
-	 */
+	 
 	fib6_rt = nsim_fib6_rt_lookup(&data->fib_rt_ht, rt);
 	if (!fib6_rt)
 		return;
 
-	/* If not all the nexthops are deleted, then only reduce the nexthop
-	 * group.
-	 */
+	 
 	if (fib6_event->nrt6 != fib6_rt->nhs) {
 		for (i = 0; i < fib6_event->nrt6; i++)
 			nsim_fib6_rt_nh_del(fib6_rt, fib6_event->rt_arr[i]);
@@ -924,9 +884,7 @@ static int nsim_fib4_prepare_event(struct fib_notifier_info *info,
 		break;
 	}
 
-	/* Take reference on fib_info to prevent it from being
-	 * freed while event is queued. Release it afterwards.
-	 */
+	 
 	fib_info_hold(fib_event->fen_info.fi);
 
 	return 0;
@@ -982,9 +940,7 @@ static int nsim_fib_event_schedule_work(struct nsim_fib_data *data,
 	int err;
 
 	if (info->family != AF_INET && info->family != AF_INET6)
-		/* netdevsim does not support 'RTNL_FAMILY_IP6MR' and
-		 * 'RTNL_FAMILY_IPMR' and should ignore them.
-		 */
+		 
 		return NOTIFY_DONE;
 
 	fib_event = kzalloc(sizeof(*fib_event), GFP_ATOMIC);
@@ -1007,7 +963,7 @@ static int nsim_fib_event_schedule_work(struct nsim_fib_data *data,
 	if (err)
 		goto err_fib_prepare_event;
 
-	/* Enqueue the event and trigger the work */
+	 
 	spin_lock_bh(&data->fib_event_queue_lock);
 	list_add_tail(&fib_event->list, &data->fib_event_queue);
 	spin_unlock_bh(&data->fib_event_queue_lock);
@@ -1086,19 +1042,17 @@ static void nsim_fib_rt_free(void *ptr, void *arg)
 	}
 }
 
-/* inconsistent dump, trying again */
+ 
 static void nsim_fib_dump_inconsistent(struct notifier_block *nb)
 {
 	struct nsim_fib_data *data = container_of(nb, struct nsim_fib_data,
 						  fib_nb);
 	struct nsim_fib_rt *fib_rt, *fib_rt_tmp;
 
-	/* Flush the work to make sure there is no race with notifications. */
+	 
 	flush_work(&data->fib_event_work);
 
-	/* The notifier block is still not registered, so we do not need to
-	 * take any locks here.
-	 */
+	 
 	list_for_each_entry_safe(fib_rt, fib_rt_tmp, &data->fib_rt_list, list) {
 		rhashtable_remove_fast(&data->fib_rt_ht, &fib_rt->ht_node,
 				       nsim_fib_rt_ht_params);
@@ -1122,9 +1076,7 @@ static struct nsim_nexthop *nsim_nexthop_create(struct nsim_fib_data *data,
 
 	nexthop->id = info->id;
 
-	/* Determine the number of nexthop entries the new nexthop will
-	 * occupy.
-	 */
+	 
 
 	switch (info->type) {
 	case NH_NOTIFIER_INFO_TYPE_SINGLE:
@@ -1503,7 +1455,7 @@ static void nsim_fib_flush_work(struct work_struct *work)
 						  fib_flush_work);
 	struct nsim_fib_rt *fib_rt, *fib_rt_tmp;
 
-	/* Process pending work. */
+	 
 	flush_work(&data->fib_event_work);
 
 	mutex_lock(&data->fib_lock);

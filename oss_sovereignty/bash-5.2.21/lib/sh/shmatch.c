@@ -1,24 +1,6 @@
-/*
- * shmatch.c -- shell interface to posix regular expression matching.
- */
+ 
 
-/* Copyright (C) 2003-2022 Free Software Foundation, Inc.
-
-   This file is part of GNU Bash, the Bourne Again SHell.
-
-   Bash is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   Bash is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with Bash.  If not, see <http://www.gnu.org/licenses/>.
-*/
+ 
 
 #ifdef HAVE_CONFIG_H
 #  include <config.h>
@@ -75,7 +57,7 @@ sh_regmatch (string, pattern, flags)
 #endif
 
   if (regcomp (&regex, pattern, rflags))
-    return 2;		/* flag for printing a warning here. */
+    return 2;		 
 
 #if defined (ARRAY_VARS)
   matches = (regmatch_t *)malloc (sizeof (regmatch_t) * (regex.re_nsub + 1));
@@ -83,24 +65,22 @@ sh_regmatch (string, pattern, flags)
   matches = NULL;
 #endif
 
-  /* man regexec: NULL PMATCH ignored if NMATCH == 0 */
+   
   if (regexec (&regex, string, matches ? regex.re_nsub + 1 : 0, matches, 0))
     result = EXECUTION_FAILURE;
   else
-    result = EXECUTION_SUCCESS;		/* match */
+    result = EXECUTION_SUCCESS;		 
 
 #if defined (ARRAY_VARS)
   subexp_len = strlen (string) + 10;
   subexp_str = malloc (subexp_len + 1);
 
-  /* Store the parenthesized subexpressions in the array BASH_REMATCH.
-     Element 0 is the portion that matched the entire regexp.  Element 1
-     is the part that matched the first subexpression, and so on. */
+   
 #if 1
   unbind_global_variable_noref ("BASH_REMATCH");
   rematch = make_new_array_variable ("BASH_REMATCH");
 #else
-  /* TAG:bash-5.3 */
+   
   rematch = builtin_find_indexed_array ("BASH_REMATCH", 1);
 #endif
   amatch = rematch ? array_cell (rematch) : (ARRAY *)0;
@@ -122,11 +102,11 @@ sh_regmatch (string, pattern, flags)
 
   free (subexp_str);
   free (matches);
-#endif /* ARRAY_VARS */
+#endif  
 
   regfree (&regex);
 
   return result;
 }
 
-#endif /* HAVE_POSIX_REGEXP */
+#endif  

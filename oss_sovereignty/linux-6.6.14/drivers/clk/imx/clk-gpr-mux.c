@@ -1,6 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- */
+
+ 
 
 #define pr_fmt(fmt) "imx:clk-gpr-mux: " fmt
 
@@ -51,9 +50,7 @@ get_parent_err:
 	pr_err("%s: failed to get parent (%pe)\n",
 	       clk_hw_get_name(hw), ERR_PTR(ret));
 
-	/* return some realistic non negative value. Potentially we could
-	 * give index to some dummy error parent.
-	 */
+	 
 	return 0;
 }
 

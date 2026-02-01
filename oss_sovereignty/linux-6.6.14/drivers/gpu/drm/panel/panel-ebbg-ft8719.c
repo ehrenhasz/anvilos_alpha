@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2022 Joel Selvaraj <jo@jsfamily.in>
- * Generated with linux-mdss-dsi-panel-driver-generator from vendor device tree:
- * Copyright (c) 2013, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/gpio/consumer.h>
@@ -264,7 +260,7 @@ static void ebbg_ft8719_remove(struct mipi_dsi_device *dsi)
 
 static const struct of_device_id ebbg_ft8719_of_match[] = {
 	{ .compatible = "ebbg,ft8719" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ebbg_ft8719_of_match);
 

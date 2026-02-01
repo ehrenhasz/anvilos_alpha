@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* (C) 1999-2001 Paul `Rusty' Russell
- * (C) 2002-2004 Netfilter Core Team <coreteam@netfilter.org>
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/ipv6.h>
@@ -56,7 +54,7 @@ static unsigned int ipv6_defrag(void *priv,
 	int err;
 
 #if IS_ENABLED(CONFIG_NF_CONNTRACK)
-	/* Previously seen (loopback)?	*/
+	 
 	if (skb_nfct(skb) && !nf_ct_is_template((struct nf_conn *)skb_nfct(skb)))
 		return NF_ACCEPT;
 
@@ -66,7 +64,7 @@ static unsigned int ipv6_defrag(void *priv,
 
 	err = nf_ct_frag6_gather(state->net, skb,
 				 nf_ct6_defrag_user(state->hook, skb));
-	/* queued */
+	 
 	if (err == -EINPROGRESS)
 		return NF_STOLEN;
 

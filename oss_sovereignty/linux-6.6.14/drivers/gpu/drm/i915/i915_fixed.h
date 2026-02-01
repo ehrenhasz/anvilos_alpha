@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2018 Intel Corporation
- */
+ 
+ 
 
 #ifndef _I915_FIXED_H_
 #define _I915_FIXED_H_
@@ -145,4 +143,4 @@ static inline uint_fixed_16_16_t add_fixed16_u32(uint_fixed_16_16_t add1,
 	return clamp_u64_to_fixed16(tmp);
 }
 
-#endif /* _I915_FIXED_H_ */
+#endif  

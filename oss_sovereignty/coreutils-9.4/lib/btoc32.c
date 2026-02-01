@@ -1,25 +1,9 @@
-/* Convert unibyte character to 32-bit wide character.
-   Copyright (C) 2020-2023 Free Software Foundation, Inc.
-
-   This file is free software: you can redistribute it and/or modify
-   it under the terms of the GNU Lesser General Public License as
-   published by the Free Software Foundation; either version 2.1 of the
-   License, or (at your option) any later version.
-
-   This file is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU Lesser General Public License for more details.
-
-   You should have received a copy of the GNU Lesser General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Bruno Haible <bruno@clisp.org>, 2020.  */
+ 
 
 #include <config.h>
 
 #define IN_BTOC32
-/* Specification.  */
+ 
 #include <uchar.h>
 
 #include <stdio.h>
@@ -37,8 +21,7 @@ wint_t
 btoc32 (int c)
 {
 #if HAVE_WORKING_MBRTOC32 && !_GL_WCHAR_T_IS_UCS4
-  /* The char32_t encoding of a multibyte character may be different than its
-     wchar_t encoding.  */
+   
   if (c != EOF)
     {
       mbstate_t state;
@@ -52,8 +35,7 @@ btoc32 (int c)
     }
   return WEOF;
 #else
-  /* In all known locale encodings, unibyte characters correspond only to
-     characters in the BMP.  */
+   
   wint_t wc = btowc (c);
 # if GL_CHAR32_T_IS_UNICODE && GL_CHAR32_T_VS_WCHAR_T_NEEDS_CONVERSION
   if (wc != WEOF && wc != 0)

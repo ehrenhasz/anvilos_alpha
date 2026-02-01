@@ -1,13 +1,13 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _ASM_GENERIC_ERROR_INJECTION_H
 #define _ASM_GENERIC_ERROR_INJECTION_H
 
 #if defined(__KERNEL__) && !defined(__ASSEMBLY__)
 enum {
-	EI_ETYPE_NULL,		/* Return NULL if failure */
-	EI_ETYPE_ERRNO,		/* Return -ERRNO if failure */
-	EI_ETYPE_ERRNO_NULL,	/* Return -ERRNO or NULL if failure */
-	EI_ETYPE_TRUE,		/* Return true if failure */
+	EI_ETYPE_NULL,		 
+	EI_ETYPE_ERRNO,		 
+	EI_ETYPE_ERRNO_NULL,	 
+	EI_ETYPE_TRUE,		 
 };
 
 struct error_injection_entry {
@@ -18,12 +18,7 @@ struct error_injection_entry {
 struct pt_regs;
 
 #ifdef CONFIG_FUNCTION_ERROR_INJECTION
-/*
- * Whitelist generating macro. Specify functions which can be error-injectable
- * using this macro. If you unsure what is required for the error-injectable
- * functions, please read Documentation/fault-injection/fault-injection.rst
- * 'Error Injectable Functions' section.
- */
+ 
 #define ALLOW_ERROR_INJECTION(fname, _etype)				\
 static struct error_injection_entry __used				\
 	__section("_error_injection_whitelist")				\
@@ -40,4 +35,4 @@ static inline void override_function_with_return(struct pt_regs *regs) { }
 #endif
 #endif
 
-#endif /* _ASM_GENERIC_ERROR_INJECTION_H */
+#endif  

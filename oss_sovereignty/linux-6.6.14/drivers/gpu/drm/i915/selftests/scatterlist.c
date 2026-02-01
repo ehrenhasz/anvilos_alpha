@@ -1,25 +1,4 @@
-/*
- * Copyright © 2016 Intel Corporation
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
- * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS
- * IN THE SOFTWARE.
- */
+ 
 
 #include <linux/prime_numbers.h>
 #include <linux/random.h>
@@ -194,7 +173,7 @@ static unsigned int random_page_size_pages(unsigned long n,
 					   unsigned long count,
 					   struct rnd_state *rnd)
 {
-	/* 4K, 64K, 2M */
+	 
 	static unsigned int page_count[] = {
 		BIT(12) >> PAGE_SHIFT,
 		BIT(16) >> PAGE_SHIFT,
@@ -220,7 +199,7 @@ static int alloc_table(struct pfn_table *pt,
 	struct scatterlist *sg;
 	unsigned long n, pfn;
 
-	/* restricted by sg_alloc_table */
+	 
 	if (overflows_type(max, unsigned int))
 		return -E2BIG;
 
@@ -228,20 +207,17 @@ static int alloc_table(struct pfn_table *pt,
 			   GFP_KERNEL | __GFP_NORETRY | __GFP_NOWARN))
 		return alloc_error;
 
-	/* count should be less than 20 to prevent overflowing sg->length */
+	 
 	GEM_BUG_ON(overflows_type(count * PAGE_SIZE, sg->length));
 
-	/* Construct a table where each scatterlist contains different number
-	 * of entries. The idea is to check that we can iterate the individual
-	 * pages from inside the coalesced lists.
-	 */
+	 
 	pt->start = PFN_BIAS;
 	pfn = pt->start;
 	sg = pt->st.sgl;
 	for (n = 0; n < count; n++) {
 		unsigned long npages = npages_fn(n, count, rnd);
 
-		/* Nobody expects the Sparse Memmap! */
+		 
 		if (!page_contiguous(pfn_to_page(pfn),
 				     pfn_to_page(pfn + npages),
 				     npages)) {
@@ -278,7 +254,7 @@ static const npages_fn_t npages_funcs[] = {
 static int igt_sg_alloc(void *ignored)
 {
 	IGT_TIMEOUT(end_time);
-	const unsigned long max_order = 20; /* approximating a 4GiB object */
+	const unsigned long max_order = 20;  
 	struct rnd_state prng;
 	unsigned long prime;
 	int alloc_error = -ENOMEM;
@@ -314,7 +290,7 @@ static int igt_sg_alloc(void *ignored)
 			}
 		}
 
-		/* Test at least one continuation before accepting oom */
+		 
 		if (size > SG_MAX_SINGLE_ALLOC)
 			alloc_error = -ENOSPC;
 	}
@@ -325,7 +301,7 @@ static int igt_sg_alloc(void *ignored)
 static int igt_sg_trim(void *ignored)
 {
 	IGT_TIMEOUT(end_time);
-	const unsigned long max = PAGE_SIZE; /* not prime! */
+	const unsigned long max = PAGE_SIZE;  
 	struct pfn_table pt;
 	unsigned long prime;
 	int alloc_error = -ENOMEM;
@@ -365,7 +341,7 @@ static int igt_sg_trim(void *ignored)
 				return err;
 		}
 
-		/* Test at least one continuation before accepting oom */
+		 
 		if (prime > SG_MAX_SINGLE_ALLOC)
 			alloc_error = -ENOSPC;
 	}

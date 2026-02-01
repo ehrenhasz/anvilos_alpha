@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/module.h>
@@ -223,7 +221,7 @@ static int video_cc_sc7180_probe(struct platform_device *pdev)
 
 	clk_fabia_pll_configure(&video_pll0, regmap, &video_pll0_config);
 
-	/* Keep VIDEO_CC_XO_CLK ALWAYS-ON */
+	 
 	regmap_update_bits(regmap, 0x984, 0x1, 0x1);
 
 	return qcom_cc_really_probe(pdev, &video_cc_sc7180_desc, regmap);

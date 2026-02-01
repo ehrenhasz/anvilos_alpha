@@ -1,12 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/****************************************************************************
- * Driver for Solarflare network controllers and boards
- * Copyright 2019 Solarflare Communications Inc.
- *
- * This program is free software; you can redistribute it and/or modify it
- * under the terms of the GNU General Public License version 2 as published
- * by the Free Software Foundation, incorporated herein by reference.
- */
+ 
+ 
 #ifndef EFX_MCDI_FILTERS_H
 #define EFX_MCDI_FILTERS_H
 
@@ -37,7 +30,7 @@ enum efx_mcdi_filter_default_filters {
 	EFX_EF10_NUM_DEFAULT_FILTERS
 };
 
-/* Per-VLAN filters information */
+ 
 struct efx_mcdi_filter_vlan {
 	struct list_head list;
 	u16 vid;
@@ -51,45 +44,40 @@ struct efx_mcdi_dev_addr {
 };
 
 struct efx_mcdi_filter_table {
-/* The MCDI match masks supported by this fw & hw, in order of priority */
+ 
 	u32 rx_match_mcdi_flags[
 		MC_CMD_GET_PARSER_DISP_INFO_OUT_SUPPORTED_MATCHES_MAXNUM * 2];
 	unsigned int rx_match_count;
-	/* Our RSS context is exclusive (as opposed to shared) */
+	 
 	bool rx_rss_context_exclusive;
 
-	struct rw_semaphore lock; /* Protects entries */
+	struct rw_semaphore lock;  
 	struct {
-		unsigned long spec;	/* pointer to spec plus flag bits */
-/* AUTO_OLD is used to mark and sweep MAC filters for the device address lists. */
-/* unused flag	1UL */
+		unsigned long spec;	 
+ 
+ 
 #define EFX_EF10_FILTER_FLAG_AUTO_OLD	2UL
 #define EFX_EF10_FILTER_FLAGS		3UL
-		u64 handle;		/* firmware handle */
+		u64 handle;		 
 	} *entry;
-/* Shadow of net_device address lists, guarded by mac_lock */
+ 
 	struct efx_mcdi_dev_addr dev_uc_list[EFX_EF10_FILTER_DEV_UC_MAX];
 	struct efx_mcdi_dev_addr dev_mc_list[EFX_EF10_FILTER_DEV_MC_MAX];
 	int dev_uc_count;
 	int dev_mc_count;
 	bool uc_promisc;
 	bool mc_promisc;
-/* Whether in multicast promiscuous mode when last changed */
+ 
 	bool mc_promisc_last;
-	bool mc_overflow; /* Too many MC addrs; should always imply mc_promisc */
-	/* RSS contexts have yet to be restored after MC reboot */
+	bool mc_overflow;  
+	 
 	bool must_restore_rss_contexts;
-	/* filters have yet to be restored after MC reboot */
+	 
 	bool must_restore_filters;
-	/* Multicast filter chaining allows less-specific filters to receive
-	 * multicast packets that matched more-specific filters.  Early EF10
-	 * firmware didn't support this (SF bug 26807); if mc_chaining == false
-	 * then we still subscribe the dev_mc_list even when mc_promisc to
-	 * prevent another VI stealing the traffic.
-	 */
+	 
 	bool mc_chaining;
 	bool vlan_filter;
-	/* Entries on the vlan_list are added/removed under filter_sem */
+	 
 	struct list_head vlan_list;
 };
 
@@ -100,19 +88,7 @@ void efx_mcdi_filter_table_restore(struct efx_nic *efx);
 
 void efx_mcdi_filter_table_reset_mc_allocations(struct efx_nic *efx);
 
-/*
- * The filter table(s) are managed by firmware and we have write-only
- * access.  When removing filters we must identify them to the
- * firmware by a 64-bit handle, but this is too wide for Linux kernel
- * interfaces (32-bit for RX NFC, 16-bit for RFS).  Also, we need to
- * be able to tell in advance whether a requested insertion will
- * replace an existing filter.  Therefore we maintain a software hash
- * table, which should be at least as large as the hardware hash
- * table.
- *
- * Huntington has a single 8K filter table shared between all filter
- * types and both ports.
- */
+ 
 #define EFX_MCDI_FILTER_TBL_ROWS 8192
 
 bool efx_mcdi_filter_match_supported(struct efx_mcdi_filter_table *table,
@@ -169,7 +145,7 @@ void efx_mcdi_rx_restore_rss_contexts(struct efx_nic *efx);
 
 static inline void efx_mcdi_update_rx_scatter(struct efx_nic *efx)
 {
-	/* no need to do anything here */
+	 
 }
 
 bool efx_mcdi_filter_rfs_expire_one(struct efx_nic *efx, u32 flow_id,

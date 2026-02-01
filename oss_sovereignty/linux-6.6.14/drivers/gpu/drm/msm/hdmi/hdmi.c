@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014 The Linux Foundation. All rights reserved.
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/of_irq.h>
 #include <linux/of_gpio.h>
@@ -45,27 +41,24 @@ static irqreturn_t msm_hdmi_irq(int irq, void *dev_id)
 {
 	struct hdmi *hdmi = dev_id;
 
-	/* Process HPD: */
+	 
 	msm_hdmi_hpd_irq(hdmi->bridge);
 
-	/* Process DDC: */
+	 
 	msm_hdmi_i2c_irq(hdmi->i2c);
 
-	/* Process HDCP: */
+	 
 	if (hdmi->hdcp_ctrl)
 		msm_hdmi_hdcp_irq(hdmi->hdcp_ctrl);
 
-	/* TODO audio.. */
+	 
 
 	return IRQ_HANDLED;
 }
 
 static void msm_hdmi_destroy(struct hdmi *hdmi)
 {
-	/*
-	 * at this point, hpd has been disabled,
-	 * after flush workq, it's safe to deinit hdcp
-	 */
+	 
 	if (hdmi->workq)
 		destroy_workqueue(hdmi->workq);
 	msm_hdmi_hdcp_destroy(hdmi);
@@ -112,10 +105,7 @@ static int msm_hdmi_get_phy(struct hdmi *hdmi)
 	return 0;
 }
 
-/* construct hdmi at bind/probe time, grab all the resources.  If
- * we are to EPROBE_DEFER we want to do it here, rather than later
- * at modeset_init() time
- */
+ 
 static int msm_hdmi_init(struct hdmi *hdmi)
 {
 	struct platform_device *pdev = hdmi->pdev;
@@ -149,14 +139,7 @@ fail:
 	return ret;
 }
 
-/* Second part of initialization, the drm/kms level modeset_init,
- * constructs/initializes mode objects, etc, is called from master
- * driver (not hdmi sub-device's probe/bind!)
- *
- * Any resource (regulator/clk/etc) which could be missing at boot
- * should be handled in msm_hdmi_init() so that failure happens from
- * hdmi sub-device's probe.
- */
+ 
 int msm_hdmi_modeset_init(struct hdmi *hdmi,
 		struct drm_device *dev, struct drm_encoder *encoder)
 {
@@ -220,7 +203,7 @@ int msm_hdmi_modeset_init(struct hdmi *hdmi,
 	return 0;
 
 fail:
-	/* bridge is normally destroyed by drm: */
+	 
 	if (hdmi->bridge) {
 		msm_hdmi_bridge_destroy(hdmi->bridge);
 		hdmi->bridge = NULL;
@@ -233,9 +216,7 @@ fail:
 	return ret;
 }
 
-/*
- * The hdmi device:
- */
+ 
 
 #define HDMI_CFG(item, entry) \
 	.item ## _names = item ##_names_ ## entry, \
@@ -261,9 +242,7 @@ static const struct hdmi_platform_config hdmi_tx_8974_config = {
 		.hpd_freq      = hpd_clk_freq_8x74,
 };
 
-/*
- * HDMI audio codec callbacks
- */
+ 
 static int msm_hdmi_audio_hw_params(struct device *dev, void *data,
 				    struct hdmi_codec_daifmt *daifmt,
 				    struct hdmi_codec_params *params)
@@ -272,7 +251,7 @@ static int msm_hdmi_audio_hw_params(struct device *dev, void *data,
 	unsigned int chan;
 	unsigned int channel_allocation = 0;
 	unsigned int rate;
-	unsigned int level_shift  = 0; /* 0dB */
+	unsigned int level_shift  = 0;  
 	bool down_mix = false;
 
 	DRM_DEV_DEBUG(dev, "%u Hz, %d bit, %d channels\n", params->sample_rate,
@@ -280,22 +259,22 @@ static int msm_hdmi_audio_hw_params(struct device *dev, void *data,
 
 	switch (params->cea.channels) {
 	case 2:
-		/* FR and FL speakers */
+		 
 		channel_allocation  = 0;
 		chan = MSM_HDMI_AUDIO_CHANNEL_2;
 		break;
 	case 4:
-		/* FC, LFE, FR and FL speakers */
+		 
 		channel_allocation  = 0x3;
 		chan = MSM_HDMI_AUDIO_CHANNEL_4;
 		break;
 	case 6:
-		/* RR, RL, FC, LFE, FR and FL speakers */
+		 
 		channel_allocation  = 0x0B;
 		chan = MSM_HDMI_AUDIO_CHANNEL_6;
 		break;
 	case 8:
-		/* FRC, FLC, RR, RL, FC, LFE, FR and FL speakers */
+		 
 		channel_allocation  = 0x1F;
 		chan = MSM_HDMI_AUDIO_CHANNEL_8;
 		break;
@@ -433,7 +412,7 @@ static int msm_hdmi_dev_probe(struct platform_device *pdev)
 	if (IS_ERR(hdmi->mmio))
 		return PTR_ERR(hdmi->mmio);
 
-	/* HDCP needs physical address of hdmi register */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM,
 		"core_physical");
 	if (!res)
@@ -517,7 +496,7 @@ static int msm_hdmi_dev_probe(struct platform_device *pdev)
 	}
 
 	hdmi->hpd_gpiod = devm_gpiod_get_optional(&pdev->dev, "hpd", GPIOD_IN);
-	/* This will catch e.g. -EPROBE_DEFER */
+	 
 	if (IS_ERR(hdmi->hpd_gpiod))
 		return dev_err_probe(dev, PTR_ERR(hdmi->hpd_gpiod),
 				     "failed to get hpd gpio\n");

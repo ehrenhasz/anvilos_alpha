@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Maxim MAX5522
- * Dual, Ultra-Low-Power 10-Bit, Voltage-Output DACs
- *
- * Copyright 2022 Timesys Corp.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/kernel.h>

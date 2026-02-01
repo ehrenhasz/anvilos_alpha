@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "builtin.h"
 
 #include "util/counts.h"
@@ -215,7 +215,7 @@ enum {
 	OUTPUT_TYPE_MAX
 };
 
-/* default set to maintain compatibility with current format */
+ 
 static struct {
 	bool user_set;
 	bool wildcard_set;
@@ -328,7 +328,7 @@ struct evsel_script {
        char *filename;
        FILE *fp;
        u64  samples;
-       /* For metric output */
+        
        u64  val;
        int  gnum;
 };
@@ -434,7 +434,7 @@ static int evsel__do_check_stype(struct evsel *evsel, u64 sample_type, const cha
 		return -1;
 	}
 
-	/* user did not ask for it explicitly so remove from the default list */
+	 
 	output[type].fields &= ~field;
 	evname = evsel__name(evsel);
 	pr_debug("Samples for '%s' event do not have %s attribute set. "
@@ -600,10 +600,7 @@ static struct evsel *find_first_output_type(struct evlist *evlist,
 	return NULL;
 }
 
-/*
- * verify all user requested events exist and the samples
- * have the expected data
- */
+ 
 static int perf_session__check_output_opt(struct perf_session *session)
 {
 	bool tod = false;
@@ -613,10 +610,7 @@ static int perf_session__check_output_opt(struct perf_session *session)
 	for (j = 0; j < OUTPUT_TYPE_MAX; ++j) {
 		evsel = find_first_output_type(session->evlist, j);
 
-		/*
-		 * even if fields is set to 0 (ie., show nothing) event must
-		 * exist if user explicitly includes it on the command line
-		 */
+		 
 		if (!evsel && output[j].user_set && !output[j].wildcard_set &&
 		    j != OUTPUT_TYPE_SYNTH) {
 			pr_err("%s events do not exist. "
@@ -632,7 +626,7 @@ static int perf_session__check_output_opt(struct perf_session *session)
 		if (evsel == NULL)
 			continue;
 
-		/* 'dsoff' implys 'dso' field */
+		 
 		if (output[j].fields & PERF_OUTPUT_DSOFF)
 			output[j].fields |= PERF_OUTPUT_DSO;
 
@@ -655,10 +649,7 @@ static int perf_session__check_output_opt(struct perf_session *session)
 			symbol_conf.use_callchain = false;
 	}
 
-	/*
-	 * set default for tracepoints to print symbols only
-	 * if callchains are present
-	 */
+	 
 	if (symbol_conf.use_callchain &&
 	    !output[PERF_TYPE_TRACEPOINT].user_set) {
 		j = PERF_TYPE_TRACEPOINT;
@@ -785,7 +776,7 @@ static int perf_sample__fprintf_start(struct perf_script *script,
 	if (PRINT_FIELD(MACHINE_PID) && sample->machine_pid)
 		printed += fprintf(fp, "VM:%5d ", sample->machine_pid);
 
-	/* Print VCPU only for guest events i.e. with machine_pid */
+	 
 	if (PRINT_FIELD(VCPU) && sample->machine_pid)
 		printed += fprintf(fp, "VCPU:%03d ", sample->vcpu);
 
@@ -1052,12 +1043,7 @@ static int grab_bb(u8 *buffer, u64 start, u64 end,
 	else
 		*cpumode = PERF_RECORD_MISC_USER;
 
-	/*
-	 * Block overlaps between kernel and user.
-	 * This can happen due to ring filtering
-	 * On Intel CPUs the entry into the kernel is filtered,
-	 * but the exit is not. Let the caller patch it up.
-	 */
+	 
 	if (kernel != machine__kernel_ip(machine, end)) {
 		pr_debug("\tblock %" PRIx64 "-%" PRIx64 " transfers between kernel and user\n", start, end);
 		return -ENXIO;
@@ -1081,7 +1067,7 @@ static int grab_bb(u8 *buffer, u64 start, u64 end,
 		goto out;
 	}
 
-	/* Load maps to ensure dso->is_64_bit has been updated */
+	 
 	map__load(al.map);
 
 	offset = map__map_ip(al.map, start);
@@ -1115,7 +1101,7 @@ static int map__fprintf_srccode(struct map *map, u64 addr, FILE *fp, struct srcc
 	if (!srcfile)
 		return 0;
 
-	/* Avoid redundant printing */
+	 
 	if (state &&
 	    state->srcfile &&
 	    !strcmp(state->srcfile, srcfile) &&
@@ -1251,7 +1237,7 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
 
 	printed += fprintf(fp, "%c", '\n');
 
-	/* Handle first from jump, of which we don't know the entry. */
+	 
 	len = grab_bb(buffer, entries[nr-1].from,
 			entries[nr-1].from,
 			machine, thread, &x.is64bit, &x.cpumode, false);
@@ -1265,7 +1251,7 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
 			printed += print_srccode(thread, x.cpumode, entries[nr - 1].from);
 	}
 
-	/* Print all blocks */
+	 
 	for (i = nr - 2; i >= 0; i--) {
 		if (entries[i].from || entries[i].to)
 			pr_debug("%d: %" PRIx64 "-%" PRIx64 "\n", i,
@@ -1275,7 +1261,7 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
 		end   = entries[i].from;
 
 		len = grab_bb(buffer, start, end, machine, thread, &x.is64bit, &x.cpumode, false);
-		/* Patch up missing kernel transfers due to ring filters */
+		 
 		if (len == -ENXIO && i > 0) {
 			end = entries[--i].from;
 			pr_debug("\tpatching up to %" PRIx64 "-%" PRIx64 "\n", start, end);
@@ -1313,33 +1299,23 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
 			printed += fprintf(fp, "\tmismatch of LBR data and executable\n");
 	}
 
-	/*
-	 * Hit the branch? In this case we are already done, and the target
-	 * has not been executed yet.
-	 */
+	 
 	if (entries[0].from == sample->ip)
 		goto out;
 	if (entries[0].flags.abort)
 		goto out;
 
-	/*
-	 * Print final block up to sample
-	 *
-	 * Due to pipeline delays the LBRs might be missing a branch
-	 * or two, which can result in very large or negative blocks
-	 * between final branch and sample. When this happens just
-	 * continue walking after the last TO until we hit a branch.
-	 */
+	 
 	start = entries[0].to;
 	end = sample->ip;
 	if (end < start) {
-		/* Missing jump. Scan 128 bytes for the next branch */
+		 
 		end = start + 128;
 	}
 	len = grab_bb(buffer, start, end, machine, thread, &x.is64bit, &x.cpumode, true);
 	printed += ip__fprintf_sym(start, thread, x.cpumode, x.cpu, &lastsym, attr, fp);
 	if (len <= 0) {
-		/* Print at least last IP if basic block did not work */
+		 
 		len = grab_bb(buffer, sample->ip, sample->ip,
 			      machine, thread, &x.is64bit, &x.cpumode, false);
 		if (len <= 0)
@@ -1364,9 +1340,7 @@ static int perf_sample__fprintf_brstackinsn(struct perf_sample *sample,
 		if (ilen == 0)
 			break;
 		if (arch_is_branch(buffer + off, len - off, x.is64bit) && start + off != sample->ip) {
-			/*
-			 * Hit a missing branch. Just stop.
-			 */
+			 
 			printed += fprintf(fp, "\t... not reaching sample ...\n");
 			break;
 		}
@@ -1450,10 +1424,7 @@ static int perf_sample__fprintf_callindent(struct perf_sample *sample,
 	int dlen = 0;
 	u64 ip = 0;
 
-	/*
-	 * The 'return' has already been popped off the stack so the depth has
-	 * to be adjusted to match the 'call'.
-	 */
+	 
 	if (thread__ts(thread) && sample->flags & PERF_IP_FLAG_RETURN)
 		depth += 1;
 
@@ -1473,10 +1444,7 @@ static int perf_sample__fprintf_callindent(struct perf_sample *sample,
 	if (len < 0)
 		return len;
 
-	/*
-	 * Try to keep the output length from changing frequently so that the
-	 * output lines up more nicely.
-	 */
+	 
 	if (len > spacing || (len && len < spacing - 52))
 		spacing = round_up(len + 4, 32);
 
@@ -1552,7 +1520,7 @@ static int perf_sample__fprintf_bts(struct perf_sample *sample,
 	if (PRINT_FIELD(CALLINDENT))
 		printed += perf_sample__fprintf_callindent(sample, evsel, thread, al, addr_al, fp);
 
-	/* print branch_from information */
+	 
 	if (PRINT_FIELD(IP)) {
 		unsigned int print_opts = output[type].print_ip_opts;
 		struct callchain_cursor *cursor = NULL;
@@ -1577,7 +1545,7 @@ static int perf_sample__fprintf_bts(struct perf_sample *sample,
 					       symbol_conf.bt_stop_list, fp);
 	}
 
-	/* print branch_to information */
+	 
 	if (PRINT_FIELD(ADDR) ||
 	    ((evsel->core.attr.sample_type & PERF_SAMPLE_ADDR) &&
 	     !output[type].user_set)) {
@@ -1784,7 +1752,7 @@ static int perf_sample__fprintf_pt_spacing(int len, FILE *fp)
 	return perf_sample__fprintf_spacing(len, 34, fp);
 }
 
-/* If a value contains only printable ASCII characters padded with NULLs */
+ 
 static bool ptw_is_prt(u64 val)
 {
 	char c;
@@ -1907,7 +1875,7 @@ static int perf_sample__fprintf_synth_psb(struct perf_sample *sample, FILE *fp)
 	return len + perf_sample__fprintf_pt_spacing(len, fp);
 }
 
-/* Intel PT Event Trace */
+ 
 static int perf_sample__fprintf_synth_evt(struct perf_sample *sample, FILE *fp)
 {
 	struct perf_synth_intel_evt *data = perf_sample__synth_ptr(sample);
@@ -2075,7 +2043,7 @@ static void perf_sample__fprint_metric(struct perf_script *script,
 	u64 val;
 
 	if (!evsel->stats)
-		evlist__alloc_stats(&stat_config, script->session->evlist, /*alloc_raw=*/false);
+		evlist__alloc_stats(&stat_config, script->session->evlist,  false);
 	if (evsel_script(leader)->gnum++ == 0)
 		perf_stat__reset_shadow_stats();
 	val = sample->period * evsel->scale;
@@ -2356,7 +2324,7 @@ static int process_sample_event(struct perf_tool *tool,
 	struct addr_location addr_al;
 	int ret = 0;
 
-	/* Set thread to NULL to indicate addr_al and al are not initialized */
+	 
 	addr_location__init(&al);
 	addr_location__init(&addr_al);
 
@@ -2429,7 +2397,7 @@ out_put:
 	return ret;
 }
 
-// Used when scr->per_event_dump is not set
+ 
 static struct evsel_script es_stdout;
 
 static int process_attr(struct perf_tool *tool, union perf_event *event,
@@ -2453,7 +2421,7 @@ static int process_attr(struct perf_tool *tool, union perf_event *event,
 			evsel->priv = evsel_script__new(evsel, scr->session->data);
 			if (!evsel->priv)
 				return -ENOMEM;
-		} else { // Replicate what is done in perf_script__setup_per_event_dump()
+		} else {  
 			es_stdout.fp = stdout;
 			evsel->priv = &es_stdout;
 		}
@@ -2474,14 +2442,11 @@ static int process_attr(struct perf_tool *tool, union perf_event *event,
 			return err;
 	}
 
-	/*
-	 * Check if we need to enable callchains based
-	 * on events sample_type.
-	 */
+	 
 	sample_type = evlist__combined_sample_type(evlist);
 	callchain_param_setup(sample_type, perf_env__arch((*pevlist)->env));
 
-	/* Enable fields for callchain entries */
+	 
 	if (symbol_conf.use_callchain &&
 	    (sample_type & PERF_SAMPLE_CALLCHAIN ||
 	     sample_type & PERF_SAMPLE_BRANCH_STACK ||
@@ -2594,7 +2559,7 @@ static int process_exit_event(struct perf_tool *tool,
 			      struct perf_sample *sample,
 			      struct machine *machine)
 {
-	/* Print before 'exit' deletes anything */
+	 
 	if (print_event_with_time(tool, event, sample, machine, event->fork.pid,
 				  event->fork.tid, event->fork.time))
 		return -1;
@@ -2736,13 +2701,7 @@ static int perf_script__fopen_per_event_dump(struct perf_script *script)
 	struct evsel *evsel;
 
 	evlist__for_each_entry(script->session->evlist, evsel) {
-		/*
-		 * Already setup? I.e. we may be called twice in cases like
-		 * Intel PT, one for the intel_pt// and dummy events, then
-		 * for the evsels synthesized from the auxtrace info.
-		 *
-		 * Ses perf_script__process_auxtrace_info.
-		 */
+		 
 		if (evsel->priv != NULL)
 			continue;
 
@@ -2798,7 +2757,7 @@ static int __cmd_script(struct perf_script *script)
 
 	signal(SIGINT, sig_handler);
 
-	/* override event processing functions */
+	 
 	if (script->show_task_events) {
 		script->tool.comm = process_comm_event;
 		script->tool.fork = process_fork_event;
@@ -2923,7 +2882,7 @@ static void list_available_languages(void)
 	fprintf(stderr, "\n");
 }
 
-/* Find script file relative to current directory or exec path */
+ 
 static char *find_script(const char *script)
 {
 	char path[PATH_MAX];
@@ -3016,10 +2975,7 @@ static int parse_output_fields(const struct option *opt __maybe_unused,
 	if (!str)
 		return -ENOMEM;
 
-	/* first word can state for which event type the user is specifying
-	 * the fields. If no type exists, the specified fields apply to all
-	 * event types found in the file minus the invalid fields for a type.
-	 */
+	 
 	tok = strchr(str, ':');
 	if (tok) {
 		*tok = '\0';
@@ -3046,7 +3002,7 @@ static int parse_output_fields(const struct option *opt __maybe_unused,
 			pr_warning("Overriding previous field request for %s events.\n",
 				   event_type(type));
 
-		/* Don't override defaults for +- */
+		 
 		if (strchr(tok, '+') || strchr(tok, '-'))
 			goto parse;
 
@@ -3063,7 +3019,7 @@ static int parse_output_fields(const struct option *opt __maybe_unused,
 			goto out;
 		}
 
-		/* Don't override defaults for +- */
+		 
 		if (strchr(str, '+') || strchr(str, '-'))
 			goto parse;
 
@@ -3110,9 +3066,7 @@ parse:
 		}
 
 		if (type == -1) {
-			/* add user option to all events types for
-			 * which it is valid
-			 */
+			 
 			for (j = 0; j < OUTPUT_TYPE_MAX; ++j) {
 				if (output[j].invalid_fields & all_output_options[i].field) {
 					pr_warning("\'%s\' not valid for %s events. Ignoring.\n",
@@ -3404,15 +3358,7 @@ static void free_dlarg(void)
 	free(dlargv);
 }
 
-/*
- * Some scripts specify the required events in their "xxx-record" file,
- * this function will check if the events in perf.data match those
- * mentioned in the "xxx-record".
- *
- * Fixme: All existing "xxx-record" are all in good formats "-e event ",
- * which is covered well now. And new parsing code should be added to
- * cover the future complex formats like event groups etc.
- */
+ 
 static int check_ev_match(char *dir_name, char *scriptname,
 			struct perf_session *session)
 {
@@ -3465,13 +3411,7 @@ static int check_ev_match(char *dir_name, char *scriptname,
 	return 0;
 }
 
-/*
- * Return -1 if none is found, otherwise the actual scripts number.
- *
- * Currently the only user of this function is the script browser, which
- * will list all statically runnable scripts, select one, execute it and
- * show the output in a perf browser.
- */
+ 
 int find_scripts(char **scripts_array, char **scripts_path_array, int num,
 		 int pathlen)
 {
@@ -3515,7 +3455,7 @@ int find_scripts(char **scripts_array, char **scripts_path_array, int num,
 			continue;
 
 		for_each_script(lang_path, lang_dir, script_dirent) {
-			/* Skip those real time scripts: xxxtop.p[yl] */
+			 
 			if (strstr(script_dirent->d_name, "top."))
 				continue;
 			if (i >= num)
@@ -3664,10 +3604,7 @@ static int process_stat_config_event(struct perf_session *session __maybe_unused
 {
 	perf_event__read_stat_config(&stat_config, &event->stat_config);
 
-	/*
-	 * Aggregation modes are not used since post-processing scripts are
-	 * supposed to take care of such requirements
-	 */
+	 
 	stat_config.aggr_mode = AGGR_NONE;
 
 	return 0;
@@ -3685,7 +3622,7 @@ static int set_maps(struct perf_script *script)
 
 	perf_evlist__set_maps(&evlist->core, script->cpus, script->threads);
 
-	if (evlist__alloc_stats(&stat_config, evlist, /*alloc_raw=*/true))
+	if (evlist__alloc_stats(&stat_config, evlist,  true))
 		return -ENOMEM;
 
 	script->allocated = true;
@@ -4019,9 +3956,7 @@ int cmd_script(int argc, const char **argv)
 	    symbol_conf.default_guest_kallsyms ||
 	    symbol_conf.default_guest_modules ||
 	    symbol_conf.guest_code) {
-		/*
-		 * Enable guest sample processing.
-		 */
+		 
 		perf_guest = true;
 	}
 
@@ -4063,7 +3998,7 @@ int cmd_script(int argc, const char **argv)
 	    itrace_synth_opts.callchain_sz > scripting_max_stack)
 		scripting_max_stack = itrace_synth_opts.callchain_sz;
 
-	/* make sure PERF_EXEC_PATH is set for scripts */
+	 
 	set_argv_exec_path(get_argv_exec_path());
 
 	if (argc && !script_name && !rec_script_path && !rep_script_path) {
@@ -4239,7 +4174,7 @@ script_found:
 		goto out_delete;
 
 	uname(&uts);
-	if (data.is_pipe) { /* Assume pipe_mode indicates native_arch */
+	if (data.is_pipe) {  
 		native_arch = true;
 	} else if (session->header.env.arch) {
 		if (!strcmp(uts.machine, session->header.env.arch))
@@ -4291,7 +4226,7 @@ script_found:
 			goto out_delete;
 		}
 
-		input = open(data.path, O_RDONLY);	/* input_name */
+		input = open(data.path, O_RDONLY);	 
 		if (input < 0) {
 			err = -errno;
 			perror("failed to open file");

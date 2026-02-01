@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2015 MediaTek Inc.
- */
+
+ 
 
 #include <drm/drm_fourcc.h>
 
@@ -74,10 +72,7 @@ struct mtk_disp_rdma_data {
 	size_t num_formats;
 };
 
-/*
- * struct mtk_disp_rdma - DISP_RDMA driver structure
- * @data: local driver data
- */
+ 
 struct mtk_disp_rdma {
 	struct clk			*clk;
 	void __iomem			*regs;
@@ -92,7 +87,7 @@ static irqreturn_t mtk_disp_rdma_irq_handler(int irq, void *dev_id)
 {
 	struct mtk_disp_rdma *priv = dev_id;
 
-	/* Clear frame completion interrupt */
+	 
 	writel(0x0, priv->regs + DISP_REG_RDMA_INT_STATUS);
 
 	if (!priv->vblank_cb)
@@ -200,12 +195,7 @@ void mtk_rdma_config(struct device *dev, unsigned int width,
 	else
 		rdma_fifo_size = RDMA_FIFO_SIZE(rdma);
 
-	/*
-	 * Enable FIFO underflow since DSI and DPI can't be blocked.
-	 * Keep the FIFO pseudo size reset default of 8 KiB. Set the
-	 * output threshold to 70% of max fifo size to make sure the
-	 * threhold will not overflow
-	 */
+	 
 	threshold = rdma_fifo_size * 7 / 10;
 	reg = RDMA_FIFO_UNDERFLOW_EN |
 	      RDMA_FIFO_PSEUDO_SIZE(rdma_fifo_size) |
@@ -216,11 +206,7 @@ void mtk_rdma_config(struct device *dev, unsigned int width,
 static unsigned int rdma_fmt_convert(struct mtk_disp_rdma *rdma,
 				     unsigned int fmt)
 {
-	/* The return value in switch "MEM_MODE_INPUT_FORMAT_XXX"
-	 * is defined in mediatek HW data sheet.
-	 * The alphabet order in XXX is no relation to data
-	 * arrangement in memory.
-	 */
+	 
 	switch (fmt) {
 	default:
 	case DRM_FORMAT_RGB565:
@@ -353,7 +339,7 @@ static int mtk_disp_rdma_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* Disable and clear pending interrupts */
+	 
 	writel(0x0, priv->regs + DISP_REG_RDMA_INT_ENABLE);
 	writel(0x0, priv->regs + DISP_REG_RDMA_INT_STATUS);
 

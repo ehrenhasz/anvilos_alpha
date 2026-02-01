@@ -1,25 +1,4 @@
-/*
- * Copyright 2016 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- */
+ 
 #include <linux/module.h>
 #include <linux/pci.h>
 #include <linux/slab.h>
@@ -56,7 +35,7 @@ static const void *get_powerplay_table(struct pp_hwmgr *hwmgr)
 				smu_atom_get_data_table(hwmgr->adev, index,
 						&size, &frev, &crev);
 
-		hwmgr->soft_pp_table = table_address;	/*Cache the result in RAM.*/
+		hwmgr->soft_pp_table = table_address;	 
 		hwmgr->soft_pp_table_size = size;
 	}
 
@@ -738,12 +717,7 @@ static int get_dcefclk_voltage_dependency_table(
 	PP_ASSERT_WITH_CODE((clk_dep_table->ucNumEntries != 0),
 			"Invalid PowerPlay Table!", return -1);
 
-/*
- * workaround needed to add another DPM level for pioneer cards
- * as VBIOS is locked down.
- * This DPM level was added to support 3DPM monitors @ 4K120Hz
- *
- */
+ 
 	dev_id = adev->pdev->device;
 	rev_id = adev->pdev->revision;
 
@@ -831,7 +805,7 @@ static int get_hard_limits(
 	PP_ASSERT_WITH_CODE(limit_table->ucNumEntries,
 			"Invalid PowerPlay Table!", return -1);
 
-	/* currently we always take entries[0] parameters */
+	 
 	limits->sclk = le32_to_cpu(limit_table->entries[0].ulSOCCLKLimit);
 	limits->mclk = le32_to_cpu(limit_table->entries[0].ulMCLKLimit);
 	limits->gfxclk = le32_to_cpu(limit_table->entries[0].ulGFXCLKLimit);
@@ -1096,7 +1070,7 @@ static int init_dpm_2_parameters(
 	pp_table_info->vddmem_lookup_table = NULL;
 	pp_table_info->vddci_lookup_table = NULL;
 
-	/* TDP limits */
+	 
 	hwmgr->platform_descriptor.TDPODLimit =
 		le16_to_cpu(powerplay_table->usPowerControlLimit);
 	hwmgr->platform_descriptor.TDPAdjustment = 0;
@@ -1108,7 +1082,7 @@ static int init_dpm_2_parameters(
 
 	disable_power_control = 0;
 	if (!disable_power_control) {
-		/* enable TDP overdrive (PowerControl) feature as well if supported */
+		 
 		if (hwmgr->platform_descriptor.TDPODLimit)
 			phm_cap_set(hwmgr->platform_descriptor.platformCaps,
 			PHM_PlatformCaps_PowerControl);

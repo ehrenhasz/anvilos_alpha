@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2019-2021, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -113,7 +111,7 @@ static struct clk_alpha_pll_postdiv gpll0_out_main = {
 	},
 };
 
-/* 1152MHz configuration */
+ 
 static const struct alpha_pll_config gpll10_config = {
 	.l = 0x3c,
 	.vco_val = 0x1 << 20,
@@ -164,7 +162,7 @@ static struct clk_alpha_pll_postdiv gpll10_out_main = {
 	},
 };
 
-/* 600MHz configuration */
+ 
 static const struct alpha_pll_config gpll11_config = {
 	.l = 0x1F,
 	.alpha = 0x0,
@@ -354,7 +352,7 @@ static struct clk_alpha_pll_postdiv gpll7_out_main = {
 	},
 };
 
-/* 800MHz configuration */
+ 
 static const struct alpha_pll_config gpll8_config = {
 	.l = 0x29,
 	.alpha = 0xAAAAAAAA,
@@ -412,7 +410,7 @@ static struct clk_alpha_pll_postdiv gpll8_out_main = {
 	},
 };
 
-/* 1152MHz configuration */
+ 
 static const struct alpha_pll_config gpll9_config = {
 	.l = 0x3C,
 	.alpha = 0x0,
@@ -2714,7 +2712,7 @@ static struct clk_branch gcc_sdcc1_apps_clk = {
 				&gcc_sdcc1_apps_clk_src.clkr.hw,
 			},
 			.num_parents = 1,
-			.flags = CLK_SET_RATE_PARENT /* | CLK_ENABLE_HAND_OFF */,
+			.flags = CLK_SET_RATE_PARENT  ,
 			.ops = &clk_branch2_ops,
 		},
 	},

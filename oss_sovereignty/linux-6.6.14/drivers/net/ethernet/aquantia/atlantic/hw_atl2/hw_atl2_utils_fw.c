@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Atlantic Network Driver
- * Copyright (C) 2020 Marvell International Ltd.
- */
+
+ 
 
 #include <linux/iopoll.h>
 
@@ -40,9 +38,7 @@
 		sizeof(VARIABLE) / sizeof(u32));\
 }
 
-/* This should never be used on non atomic fields,
- * treat any > u32 read as non atomic.
- */
+ 
 #define hw_atl2_shared_buffer_read(HW, ITEM, VARIABLE) \
 {\
 	BUILD_BUG_ON_MSG((offsetof(struct fw_interface_out, ITEM) % \
@@ -272,7 +268,7 @@ static int aq_a2_fw_set_state(struct aq_hw_s *self,
 		break;
 	case MPI_RESET:
 	case MPI_POWER:
-		/* No actions */
+		 
 		break;
 	}
 
@@ -456,9 +452,7 @@ static int aq_a2_fw_get_phy_temp(struct aq_hw_s *self, int *temp)
 
 static int aq_a2_fw_get_mac_temp(struct aq_hw_s *self, int *temp)
 {
-	/* There's only one temperature sensor on A2, use it for
-	 * both MAC and PHY.
-	 */
+	 
 	return aq_a2_fw_get_phy_temp(self, temp);
 }
 
@@ -501,9 +495,7 @@ static int aq_a2_fw_renegotiate(struct aq_hw_s *self)
 
 	err = hw_atl2_shared_buffer_finish_ack(self);
 
-	/* We should put renegotiate status back to zero
-	 * after command completes
-	 */
+	 
 	link_options.link_renegotiate = 0U;
 	hw_atl2_shared_buffer_write(self, link_options, link_options);
 
@@ -562,7 +554,7 @@ u32 hw_atl2_utils_get_fw_version(struct aq_hw_s *self)
 
 	hw_atl2_shared_buffer_read_safe(self, version, &version);
 
-	/* A2 FW version is stored in reverse order */
+	 
 	return version.bundle.major << 24 |
 	       version.bundle.minor << 16 |
 	       version.bundle.build;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2014, The Linux Foundation. All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/kernel.h>
@@ -55,7 +53,7 @@ static int qcom_ipq806x_sata_phy_init(struct phy *generic_phy)
 	struct qcom_ipq806x_sata_phy *phy = phy_get_drvdata(generic_phy);
 	u32 reg;
 
-	/* Setting SSC_EN to 1 */
+	 
 	reg = readl_relaxed(phy->mmio + SATA_PHY_P0_PARAM3);
 	reg = reg | SATA_PHY_SSC_EN;
 	writel_relaxed(reg, phy->mmio + SATA_PHY_P0_PARAM3);
@@ -81,23 +79,23 @@ static int qcom_ipq806x_sata_phy_init(struct phy *generic_phy)
 	reg |= SATA_PHY_P0_PARAM2_RX_EQ(0x3);
 	writel_relaxed(reg, phy->mmio + SATA_PHY_P0_PARAM2);
 
-	/* Setting PHY_RESET to 1 */
+	 
 	reg = readl_relaxed(phy->mmio + SATA_PHY_P0_PARAM4);
 	reg = reg | SATA_PHY_RESET;
 	writel_relaxed(reg, phy->mmio + SATA_PHY_P0_PARAM4);
 
-	/* Setting REF_SSP_EN to 1 */
+	 
 	reg = readl_relaxed(phy->mmio + SATA_PHY_P0_PARAM4);
 	reg = reg | SATA_PHY_REF_SSP_EN | SATA_PHY_RESET;
 	writel_relaxed(reg, phy->mmio + SATA_PHY_P0_PARAM4);
 
-	/* make sure all changes complete before we let the PHY out of reset */
+	 
 	mb();
 
-	/* sleep for max. 50us more to combine processor wakeups */
+	 
 	usleep_range(20, 20 + 50);
 
-	/* Clearing PHY_RESET to 0 */
+	 
 	reg = readl_relaxed(phy->mmio + SATA_PHY_P0_PARAM4);
 	reg = reg & ~SATA_PHY_RESET;
 	writel_relaxed(reg, phy->mmio + SATA_PHY_P0_PARAM4);
@@ -110,7 +108,7 @@ static int qcom_ipq806x_sata_phy_exit(struct phy *generic_phy)
 	struct qcom_ipq806x_sata_phy *phy = phy_get_drvdata(generic_phy);
 	u32 reg;
 
-	/* Setting PHY_RESET to 1 */
+	 
 	reg = readl_relaxed(phy->mmio + SATA_PHY_P0_PARAM4);
 	reg = reg | SATA_PHY_RESET;
 	writel_relaxed(reg, phy->mmio + SATA_PHY_P0_PARAM4);

@@ -1,29 +1,4 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2013, 2014 Damien P. George
- * Copyright (c) 2014 Paul Sokolovsky
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include <stdlib.h>
 #include <string.h>
@@ -39,7 +14,7 @@
 #if MICROPY_LONGINT_IMPL == MICROPY_LONGINT_IMPL_LONGLONG
 
 #if MICROPY_PY_SYS_MAXSIZE
-// Export value for sys.maxsize
+
 const mp_obj_int_t mp_sys_maxsize_obj = {{&mp_type_int}, MP_SSIZE_MAX};
 #endif
 
@@ -98,8 +73,8 @@ mp_obj_t mp_obj_int_unary_op(mp_unary_op_t op, mp_obj_t o_in) {
         case MP_UNARY_OP_BOOL:
             return mp_obj_new_bool(o->val != 0);
 
-        // truncate value to fit in mp_int_t, which gives the same hash as
-        // small int if the value fits without truncation
+        
+        
         case MP_UNARY_OP_HASH:
             return MP_OBJ_NEW_SMALL_INT((mp_int_t)o->val);
 
@@ -115,14 +90,14 @@ mp_obj_t mp_obj_int_unary_op(mp_unary_op_t op, mp_obj_t o_in) {
                 return o_in;
             }
             self = mp_obj_new_int_from_ll(self->val);
-            // TODO could overflow long long
+            
             self->val = -self->val;
             return MP_OBJ_FROM_PTR(self);
         }
         case MP_UNARY_OP_INT_MAYBE:
             return o_in;
         default:
-            return MP_OBJ_NULL;      // op not supported
+            return MP_OBJ_NULL;      
     }
 }
 
@@ -142,7 +117,7 @@ mp_obj_t mp_obj_int_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs_i
     } else if (mp_obj_is_exact_type(rhs_in, &mp_type_int)) {
         rhs_val = ((mp_obj_int_t *)rhs_in)->val;
     } else {
-        // delegate to generic function to check for extra cases
+        
         return mp_obj_int_binary_op_extra_cases(op, lhs_in, rhs_in);
     }
 
@@ -221,7 +196,7 @@ mp_obj_t mp_obj_int_binary_op(mp_binary_op_t op, mp_obj_t lhs_in, mp_obj_t rhs_i
             return mp_obj_new_bool(lhs_val == rhs_val);
 
         default:
-            return MP_OBJ_NULL; // op not supported
+            return MP_OBJ_NULL; 
     }
 
 zero_division:
@@ -236,8 +211,8 @@ mp_obj_t mp_obj_new_int(mp_int_t value) {
 }
 
 mp_obj_t mp_obj_new_int_from_uint(mp_uint_t value) {
-    // SMALL_INT accepts only signed numbers, so make sure the input
-    // value fits completely in the small-int positive range.
+    
+    
     if ((value & ~MP_SMALL_INT_POSITIVE_MASK) == 0) {
         return MP_OBJ_NEW_SMALL_INT(value);
     }
@@ -251,7 +226,7 @@ mp_obj_t mp_obj_new_int_from_ll(long long val) {
 }
 
 mp_obj_t mp_obj_new_int_from_ull(unsigned long long val) {
-    // TODO raise an exception if the unsigned long long won't fit
+    
     if (val >> (sizeof(unsigned long long) * 8 - 1) != 0) {
         mp_raise_msg(&mp_type_OverflowError, MP_ERROR_TEXT("ulonglong too large"));
     }
@@ -261,8 +236,8 @@ mp_obj_t mp_obj_new_int_from_ull(unsigned long long val) {
 }
 
 mp_obj_t mp_obj_new_int_from_str_len(const char **str, size_t len, bool neg, unsigned int base) {
-    // TODO this does not honor the given length of the string, but it all cases it should anyway be null terminated
-    // TODO check overflow
+    
+    
     mp_obj_int_t *o = mp_obj_malloc(mp_obj_int_t, &mp_type_int);
     char *endptr;
     o->val = strtoll(*str, &endptr, base);
@@ -280,7 +255,7 @@ mp_int_t mp_obj_int_get_truncated(mp_const_obj_t self_in) {
 }
 
 mp_int_t mp_obj_int_get_checked(mp_const_obj_t self_in) {
-    // TODO: Check overflow
+    
     return mp_obj_int_get_truncated(self_in);
 }
 

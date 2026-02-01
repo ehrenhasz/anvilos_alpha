@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/slab.h>
@@ -64,7 +62,7 @@ struct clk *tegra_clk_register_sync_source(const char *name,
 	init.parent_names = NULL;
 	init.num_parents = 0;
 
-	/* Data in .init is copied by clk_register(), so stack variable OK */
+	 
 	sync->hw.init = &init;
 
 	clk = clk_register(NULL, &sync->hw);

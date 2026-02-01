@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _CRYPTO_CAST5_H
 #define _CRYPTO_CAST5_H
 
@@ -13,7 +13,7 @@
 struct cast5_ctx {
 	u32 Km[16];
 	u8 Kr[16];
-	int rr;	/* rr ? rounds = 12 : rounds = 16; (rfc 2144) */
+	int rr;	 
 };
 
 int cast5_setkey(struct crypto_tfm *tfm, const u8 *key, unsigned int keylen);

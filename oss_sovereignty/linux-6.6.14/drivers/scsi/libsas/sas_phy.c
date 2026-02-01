@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Serial Attached SCSI (SAS) Phy class
- *
- * Copyright (C) 2005 Adaptec, Inc.  All rights reserved.
- * Copyright (C) 2005 Luben Tuikov <luben_tuikov@adaptec.com>
- */
+
+ 
 
 #include "sas_internal.h"
 #include <scsi/scsi_host.h>
@@ -12,7 +7,7 @@
 #include <scsi/scsi_transport_sas.h>
 #include "scsi_sas_internal.h"
 
-/* ---------- Phy events ---------- */
+ 
 
 static void sas_phye_loss_of_signal(struct work_struct *work)
 {
@@ -77,7 +72,7 @@ static void sas_phye_resume_timeout(struct work_struct *work)
 	struct asd_sas_event *ev = to_asd_sas_event(work);
 	struct asd_sas_phy *phy = ev->phy;
 
-	/* phew, lldd got the phy back in the nick of time */
+	 
 	if (!phy->suspended) {
 		dev_info(&phy->phy->dev, "resume timeout cancelled\n");
 		return;
@@ -111,13 +106,13 @@ static void sas_phye_shutdown(struct work_struct *work)
 	phy->in_shutdown = 0;
 }
 
-/* ---------- Phy class registration ---------- */
+ 
 
 int sas_register_phys(struct sas_ha_struct *sas_ha)
 {
 	int i;
 
-	/* Now register the phys. */
+	 
 	for (i = 0; i < sas_ha->num_phys; i++) {
 		struct asd_sas_phy *phy = sas_ha->sas_phy[i];
 

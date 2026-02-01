@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 
 #include "sas_internal.h"
 
@@ -7,7 +7,7 @@
 #include <scsi/sas.h>
 #include <scsi/libsas.h>
 
-/* fill task_status_struct based on SSP response frame */
+ 
 void sas_ssp_task_response(struct device *dev, struct sas_task *task,
 			   struct ssp_response_iu *iu)
 {
@@ -34,7 +34,7 @@ void sas_ssp_task_response(struct device *dev, struct sas_task *task,
 				 SAS_ADDR(task->dev->sas_addr), iu->status);
 		break;
 	default:
-		/* when datapres contains corrupt/unknown value... */
+		 
 		tstat->stat = SAS_SAM_STAT_CHECK_CONDITION;
 	}
 }

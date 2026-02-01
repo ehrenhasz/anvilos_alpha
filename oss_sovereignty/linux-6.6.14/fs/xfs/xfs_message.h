@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef __XFS_MESSAGE_H
 #define __XFS_MESSAGE_H 1
 
@@ -96,4 +96,4 @@ extern void xfs_hex_dump(const void *p, int length);
 void xfs_buf_alert_ratelimited(struct xfs_buf *bp, const char *rlmsg,
 			       const char *fmt, ...);
 
-#endif	/* __XFS_MESSAGE_H */
+#endif	 

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// ALSA SoC Audio Layer - Samsung I2S Controller driver
-//
-// Copyright (c) 2010 Samsung Electronics Co. Ltd.
-//	Jaswinder Singh <jassisinghbrar@gmail.com>
+
+
+
+
+
+
 
 #include <dt-bindings/sound/samsung-i2s.h>
 #include <linux/delay.h>
@@ -57,29 +57,26 @@ struct samsung_i2s_dai_data {
 };
 
 struct i2s_dai {
-	/* Platform device for this DAI */
+	 
 	struct platform_device *pdev;
 
-	/* Frame clock */
+	 
 	unsigned frmclk;
-	/*
-	 * Specifically requested RCLK, BCLK by machine driver.
-	 * 0 indicates CPU driver is free to choose any value.
-	 */
+	 
 	unsigned rfs, bfs;
-	/* Pointer to the Primary_Fifo if this is Sec_Fifo, NULL otherwise */
+	 
 	struct i2s_dai *pri_dai;
-	/* Pointer to the Secondary_Fifo if it has one, NULL otherwise */
+	 
 	struct i2s_dai *sec_dai;
 
-#define DAI_OPENED	(1 << 0) /* DAI is opened */
-#define DAI_MANAGER	(1 << 1) /* DAI is the manager */
+#define DAI_OPENED	(1 << 0)  
+#define DAI_MANAGER	(1 << 1)  
 	unsigned mode;
 
-	/* Driver for this DAI */
+	 
 	struct snd_soc_dai_driver *drv;
 
-	/* DMA parameters */
+	 
 	struct snd_dmaengine_dai_dma_data dma_playback;
 	struct snd_dmaengine_dai_dma_data dma_capture;
 	struct snd_dmaengine_dai_dma_data idma_playback;
@@ -92,24 +89,24 @@ struct samsung_i2s_priv {
 	struct platform_device *pdev;
 	struct platform_device *pdev_sec;
 
-	/* Lock for cross interface checks */
+	 
 	spinlock_t pcm_lock;
 
-	/* CPU DAIs and their corresponding drivers */
+	 
 	struct i2s_dai *dai;
 	struct snd_soc_dai_driver *dai_drv;
 	int num_dais;
 
-	/* The I2S controller's core clock */
+	 
 	struct clk *clk;
 
-	/* Clock for generating I2S signals */
+	 
 	struct clk *op_clk;
 
-	/* Rate of RCLK source clock */
+	 
 	unsigned long rclk_srcrate;
 
-	/* Cache of selected I2S registers for system suspend */
+	 
 	u32 suspend_i2smod;
 	u32 suspend_i2scon;
 	u32 suspend_i2spsr;
@@ -121,27 +118,27 @@ struct samsung_i2s_priv {
 						struct snd_soc_dai *dai);
 	u32 quirks;
 
-	/* The clock provider's data */
+	 
 	struct clk *clk_table[3];
 	struct clk_onecell_data clk_data;
 
-	/* Spinlock protecting member fields below */
+	 
 	spinlock_t lock;
 
-	/* Memory mapped SFR region */
+	 
 	void __iomem *addr;
 
-	/* A flag indicating the I2S slave mode operation */
+	 
 	bool slave_mode;
 };
 
-/* Returns true if this is the 'overlay' stereo DAI */
+ 
 static inline bool is_secondary(struct i2s_dai *i2s)
 {
 	return i2s->drv->id == SAMSUNG_I2S_ID_SECONDARY;
 }
 
-/* If this interface of the controller is transmitting data */
+ 
 static inline bool tx_active(struct i2s_dai *i2s)
 {
 	u32 active;
@@ -159,13 +156,13 @@ static inline bool tx_active(struct i2s_dai *i2s)
 	return active ? true : false;
 }
 
-/* Return pointer to the other DAI */
+ 
 static inline struct i2s_dai *get_other_dai(struct i2s_dai *i2s)
 {
 	return i2s->pri_dai ? : i2s->sec_dai;
 }
 
-/* If the other interface of the controller is transmitting data */
+ 
 static inline bool other_tx_active(struct i2s_dai *i2s)
 {
 	struct i2s_dai *other = get_other_dai(i2s);
@@ -173,13 +170,13 @@ static inline bool other_tx_active(struct i2s_dai *i2s)
 	return tx_active(other);
 }
 
-/* If any interface of the controller is transmitting data */
+ 
 static inline bool any_tx_active(struct i2s_dai *i2s)
 {
 	return tx_active(i2s) || other_tx_active(i2s);
 }
 
-/* If this interface of the controller is receiving data */
+ 
 static inline bool rx_active(struct i2s_dai *i2s)
 {
 	u32 active;
@@ -192,7 +189,7 @@ static inline bool rx_active(struct i2s_dai *i2s)
 	return active ? true : false;
 }
 
-/* If the other interface of the controller is receiving data */
+ 
 static inline bool other_rx_active(struct i2s_dai *i2s)
 {
 	struct i2s_dai *other = get_other_dai(i2s);
@@ -200,25 +197,25 @@ static inline bool other_rx_active(struct i2s_dai *i2s)
 	return rx_active(other);
 }
 
-/* If any interface of the controller is receiving data */
+ 
 static inline bool any_rx_active(struct i2s_dai *i2s)
 {
 	return rx_active(i2s) || other_rx_active(i2s);
 }
 
-/* If the other DAI is transmitting or receiving data */
+ 
 static inline bool other_active(struct i2s_dai *i2s)
 {
 	return other_rx_active(i2s) || other_tx_active(i2s);
 }
 
-/* If this DAI is transmitting or receiving data */
+ 
 static inline bool this_active(struct i2s_dai *i2s)
 {
 	return tx_active(i2s) || rx_active(i2s);
 }
 
-/* If the controller is active anyway */
+ 
 static inline bool any_active(struct i2s_dai *i2s)
 {
 	return this_active(i2s) || other_active(i2s);
@@ -247,7 +244,7 @@ static inline bool is_manager(struct i2s_dai *i2s)
 		return false;
 }
 
-/* Read RCLK of I2S (in multiples of LRCLK) */
+ 
 static inline unsigned get_rfs(struct i2s_dai *i2s)
 {
 	struct samsung_i2s_priv *priv = i2s->priv;
@@ -268,7 +265,7 @@ static inline unsigned get_rfs(struct i2s_dai *i2s)
 	}
 }
 
-/* Write RCLK of I2S (in multiples of LRCLK) */
+ 
 static inline void set_rfs(struct i2s_dai *i2s, unsigned rfs)
 {
 	struct samsung_i2s_priv *priv = i2s->priv;
@@ -307,7 +304,7 @@ static inline void set_rfs(struct i2s_dai *i2s, unsigned rfs)
 	writel(mod, priv->addr + I2SMOD);
 }
 
-/* Read bit-clock of I2S (in multiples of LRCLK) */
+ 
 static inline unsigned get_bfs(struct i2s_dai *i2s)
 {
 	struct samsung_i2s_priv *priv = i2s->priv;
@@ -329,7 +326,7 @@ static inline unsigned get_bfs(struct i2s_dai *i2s)
 	}
 }
 
-/* Write bit-clock of I2S (in multiples of LRCLK) */
+ 
 static inline void set_bfs(struct i2s_dai *i2s, unsigned bfs)
 {
 	struct samsung_i2s_priv *priv = i2s->priv;
@@ -337,7 +334,7 @@ static inline void set_bfs(struct i2s_dai *i2s, unsigned bfs)
 	int tdm = priv->quirks & QUIRK_SUPPORTS_TDM;
 	int bfs_shift = priv->variant_regs->bfs_off;
 
-	/* Non-TDM I2S controllers do not support BCLK > 48 * FS */
+	 
 	if (!tdm && bfs > 48) {
 		dev_err(&i2s->pdev->dev, "Unsupported BCLK divider\n");
 		return;
@@ -381,7 +378,7 @@ static inline void set_bfs(struct i2s_dai *i2s, unsigned bfs)
 	writel(mod, priv->addr + I2SMOD);
 }
 
-/* Sample size */
+ 
 static inline int get_blc(struct i2s_dai *i2s)
 {
 	int blc = readl(i2s->priv->addr + I2SMOD);
@@ -395,7 +392,7 @@ static inline int get_blc(struct i2s_dai *i2s)
 	}
 }
 
-/* TX channel control */
+ 
 static void i2s_txctrl(struct i2s_dai *i2s, int on)
 {
 	struct samsung_i2s_priv *priv = i2s->priv;
@@ -446,7 +443,7 @@ static void i2s_txctrl(struct i2s_dai *i2s, int on)
 	writel(con, addr + I2SCON);
 }
 
-/* RX Channel Control */
+ 
 static void i2s_rxctrl(struct i2s_dai *i2s, int on)
 {
 	struct samsung_i2s_priv *priv = i2s->priv;
@@ -477,7 +474,7 @@ static void i2s_rxctrl(struct i2s_dai *i2s, int on)
 	writel(con, addr + I2SCON);
 }
 
-/* Flush FIFO of an interface */
+ 
 static inline void i2s_fifo(struct i2s_dai *i2s, u32 flush)
 {
 	void __iomem *fic;
@@ -491,11 +488,11 @@ static inline void i2s_fifo(struct i2s_dai *i2s, u32 flush)
 	else
 		fic = i2s->priv->addr + I2SFIC;
 
-	/* Flush the FIFO */
+	 
 	writel(readl(fic) | flush, fic);
 
-	/* Be patient */
-	val = msecs_to_loops(1) / 1000; /* 1 usec */
+	 
+	val = msecs_to_loops(1) / 1000;  
 	while (--val)
 		cpu_relax();
 
@@ -528,7 +525,7 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id, unsigned int rfs,
 		break;
 	case SAMSUNG_I2S_CDCLK:
 		mask = 1 << i2s_regs->cdclkcon_off;
-		/* Shouldn't matter in GATING(CLOCK_IN) mode */
+		 
 		if (dir == SND_SOC_CLOCK_IN)
 			rfs = 0;
 
@@ -550,8 +547,8 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id, unsigned int rfs,
 		i2s->rfs = rfs;
 		break;
 
-	case SAMSUNG_I2S_RCLKSRC_0: /* clock corrsponding to IISMOD[10] := 0 */
-	case SAMSUNG_I2S_RCLKSRC_1: /* clock corrsponding to IISMOD[10] := 1 */
+	case SAMSUNG_I2S_RCLKSRC_0:  
+	case SAMSUNG_I2S_RCLKSRC_1:  
 		mask = 1 << i2s_regs->rclksrc_off;
 
 		if ((priv->quirks & QUIRK_NO_MUXPSR)
@@ -601,7 +598,7 @@ static int i2s_set_sysclk(struct snd_soc_dai *dai, int clk_id, unsigned int rfs,
 			ret = -EAGAIN;
 			goto err;
 		} else {
-			/* Call can't be on the active DAI */
+			 
 			goto done;
 		}
 
@@ -643,7 +640,7 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	sdf_mask = MOD_SDF_MASK << sdf_shift;
 	lrp_rlow = MOD_LR_RLOW << lrp_shift;
 
-	/* Format is priority */
+	 
 	switch (fmt & SND_SOC_DAIFMT_FORMAT_MASK) {
 	case SND_SOC_DAIFMT_RIGHT_J:
 		tmp |= lrp_rlow;
@@ -661,10 +658,7 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		return -EINVAL;
 	}
 
-	/*
-	 * INV flag is relative to the FORMAT flag - if set it simply
-	 * flips the polarity specified by the Standard
-	 */
+	 
 	switch (fmt & SND_SOC_DAIFMT_INV_MASK) {
 	case SND_SOC_DAIFMT_NB_NF:
 		break;
@@ -684,11 +678,7 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 		tmp |= mod_slave;
 		break;
 	case SND_SOC_DAIFMT_BP_FP:
-		/*
-		 * Set default source clock in Master mode, only when the
-		 * CLK_I2S_RCLK_SRC clock is not exposed so we ensure any
-		 * clock configuration assigned in DT is not overwritten.
-		 */
+		 
 		if (priv->rclk_srcrate == 0 && priv->clk_data.clks == NULL)
 			i2s_set_sysclk(dai, SAMSUNG_I2S_RCLKSRC_0,
 							0, SND_SOC_CLOCK_IN);
@@ -701,10 +691,7 @@ static int i2s_set_fmt(struct snd_soc_dai *dai, unsigned int fmt)
 	pm_runtime_get_sync(dai->dev);
 	spin_lock_irqsave(&priv->lock, flags);
 	mod = readl(priv->addr + I2SMOD);
-	/*
-	 * Don't change the I2S mode if any controller is active on this
-	 * channel.
-	 */
+	 
 	if (any_active(i2s) &&
 		((mod & (sdf_mask | lrp_rlow | mod_slave)) != tmp)) {
 		spin_unlock_irqrestore(&priv->lock, flags);
@@ -820,7 +807,7 @@ static int i2s_hw_params(struct snd_pcm_substream *substream,
 	return 0;
 }
 
-/* We set constraints on the substream according to the version of I2S */
+ 
 static int i2s_startup(struct snd_pcm_substream *substream,
 	  struct snd_soc_dai *dai)
 {
@@ -864,7 +851,7 @@ static void i2s_shutdown(struct snd_pcm_substream *substream,
 	if (is_opened(other))
 		other->mode |= DAI_MANAGER;
 
-	/* Reset any constraint on RFS and BFS */
+	 
 	i2s->rfs = 0;
 	i2s->bfs = 0;
 
@@ -887,7 +874,7 @@ static int config_setup(struct i2s_dai *i2s)
 	if (!bfs && other)
 		bfs = other->bfs;
 
-	/* Select least possible multiple(2) if no constraint set */
+	 
 	if (!bfs)
 		bfs = blc * 2;
 
@@ -909,7 +896,7 @@ static int config_setup(struct i2s_dai *i2s)
 			rfs = 384;
 	}
 
-	/* If already setup and running */
+	 
 	if (any_active(i2s) && (get_rfs(i2s) != rfs || get_bfs(i2s) != bfs)) {
 		dev_err(&i2s->pdev->dev,
 				"%s:%d Other DAI busy\n", __func__, __LINE__);
@@ -919,7 +906,7 @@ static int config_setup(struct i2s_dai *i2s)
 	set_bfs(i2s, bfs);
 	set_rfs(i2s, rfs);
 
-	/* Don't bother with PSR in Slave mode */
+	 
 	if (priv->slave_mode)
 		return 0;
 
@@ -1063,7 +1050,7 @@ static int samsung_i2s_dai_probe(struct snd_soc_dai *dai)
 	pm_runtime_get_sync(dai->dev);
 
 	if (is_secondary(i2s)) {
-		/* If this is probe on the secondary DAI */
+		 
 		snd_soc_dai_init_dma_data(dai, &i2s->dma_playback, NULL);
 	} else {
 		snd_soc_dai_init_dma_data(dai, &i2s->dma_playback,
@@ -1077,7 +1064,7 @@ static int samsung_i2s_dai_probe(struct snd_soc_dai *dai)
 					   other->idma_playback.addr);
 	}
 
-	/* Reset any constraint on RFS and BFS */
+	 
 	i2s->rfs = 0;
 	i2s->bfs = 0;
 
@@ -1089,7 +1076,7 @@ static int samsung_i2s_dai_probe(struct snd_soc_dai *dai)
 	i2s_fifo(i2s, FIC_RXFLUSH);
 	spin_unlock_irqrestore(&priv->lock, flags);
 
-	/* Gate CDCLK by default */
+	 
 	if (!is_opened(other))
 		i2s_set_sysclk(dai, SAMSUNG_I2S_CDCLK,
 				0, SND_SOC_CLOCK_IN);
@@ -1133,11 +1120,11 @@ static const struct snd_soc_dai_ops samsung_i2s_dai_ops = {
 };
 
 static const struct snd_soc_dapm_widget samsung_i2s_widgets[] = {
-	/* Backend DAI  */
+	 
 	SND_SOC_DAPM_AIF_OUT("Mixer DAI TX", NULL, 0, SND_SOC_NOPM, 0, 0),
 	SND_SOC_DAPM_AIF_IN("Mixer DAI RX", NULL, 0, SND_SOC_NOPM, 0, 0),
 
-	/* Playback Mixer */
+	 
 	SND_SOC_DAPM_MIXER("Playback Mixer", SND_SOC_NOPM, 0, 0, NULL, 0),
 };
 
@@ -1206,7 +1193,7 @@ static int i2s_alloc_dais(struct samsung_i2s_priv *priv,
 		priv->dai[i].pdev = priv->pdev;
 	}
 
-	/* Initialize capture only for the primary DAI */
+	 
 	dai_drv = &priv->dai_drv[SAMSUNG_I2S_ID_PRIMARY - 1];
 
 	dai_drv->capture.channels_min = 1;
@@ -1256,7 +1243,7 @@ static int i2s_runtime_resume(struct device *dev)
 
 	return 0;
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static void i2s_unregister_clocks(struct samsung_i2s_priv *priv)
 {
@@ -1287,11 +1274,11 @@ static int i2s_register_clock_provider(struct samsung_i2s_priv *priv)
 	struct clk *rclksrc;
 	int ret, i;
 
-	/* Register the clock provider only if it's expected in the DTB */
+	 
 	if (!of_property_present(dev->of_node, "#clock-cells"))
 		return 0;
 
-	/* Get the RCLKSRC mux clock parent clock names */
+	 
 	for (i = 0; i < ARRAY_SIZE(p_names); i++) {
 		rclksrc = clk_get(dev, clk_name[i]);
 		if (IS_ERR(rclksrc))
@@ -1308,7 +1295,7 @@ static int i2s_register_clock_provider(struct samsung_i2s_priv *priv)
 	}
 
 	if (!(priv->quirks & QUIRK_NO_MUXPSR)) {
-		/* Activate the prescaler */
+		 
 		u32 val = readl(priv->addr + I2SPSR);
 		writel(val | PSR_PSREN, priv->addr + I2SPSR);
 
@@ -1348,7 +1335,7 @@ static int i2s_register_clock_provider(struct samsung_i2s_priv *priv)
 	return ret;
 }
 
-/* Create platform device for the secondary PCM */
+ 
 static int i2s_create_secondary_device(struct samsung_i2s_priv *priv)
 {
 	struct platform_device *pdev_sec;
@@ -1411,7 +1398,7 @@ static int samsung_i2s_probe(struct platform_device *pdev)
 	} else {
 		id = platform_get_device_id(pdev);
 
-		/* Nothing to do if it is the secondary device probe */
+		 
 		if (!id)
 			return 0;
 
@@ -1563,7 +1550,7 @@ static void samsung_i2s_remove(struct platform_device *pdev)
 {
 	struct samsung_i2s_priv *priv = dev_get_drvdata(&pdev->dev);
 
-	/* The secondary device has no driver data assigned */
+	 
 	if (!priv)
 		return;
 
@@ -1754,7 +1741,7 @@ static struct platform_driver samsung_i2s_driver = {
 
 module_platform_driver(samsung_i2s_driver);
 
-/* Module information */
+ 
 MODULE_AUTHOR("Jaswinder Singh, <jassisinghbrar@gmail.com>");
 MODULE_DESCRIPTION("Samsung I2S Interface");
 MODULE_ALIAS("platform:samsung-i2s");

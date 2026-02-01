@@ -1,36 +1,6 @@
-/****************************************************************************
- * Copyright 2019-2020,2021 Thomas E. Dickey                                *
- * Copyright 1998-2010,2011 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Thomas E. Dickey 1996-on                                        *
- *     and: Juergen Pfeifer                                                 *
- ****************************************************************************/
+ 
 
 #include <curses.priv.h>
 
@@ -45,10 +15,7 @@ cleanup_lines(struct ldat *data, int length)
     return ERR;
 }
 
-/*
- * If we have reallocated the ldat structs, we will have to repair pointers
- * used in subwindows.
- */
+ 
 static void
 repair_subwindows(WINDOW *cmp)
 {
@@ -99,11 +66,7 @@ repair_subwindows(WINDOW *cmp)
     _nc_unlock_global(curses);
 }
 
-/*
- * Reallocate a curses WINDOW struct to either shrink or grow to the specified
- * new lines/columns.  If it grows, the new character cells are filled with
- * blanks.  The application is responsible for repainting the blank area.
- */
+ 
 NCURSES_EXPORT(int)
 wresize(WINDOW *win, int ToLines, int ToCols)
 {
@@ -136,11 +99,7 @@ wresize(WINDOW *win, int ToLines, int ToCols)
 	returnCode(OK);
 
     if (IS_SUBWIN(win)) {
-	/*
-	 * Check if the new limits will fit into the parent window's size.  If
-	 * not, do not resize.  We could adjust the location of the subwindow,
-	 * but the application may not like that.
-	 */
+	 
 	if (win->_pary + ToLines > win->_parent->_maxy
 	    || win->_parx + ToCols > win->_parent->_maxx) {
 	    returnCode(ERR);
@@ -150,20 +109,12 @@ wresize(WINDOW *win, int ToLines, int ToCols)
 	pline = 0;
     }
 
-    /*
-     * Allocate new memory as needed.  Do the allocations without modifying
-     * the original window, in case an allocation fails.  Always allocate
-     * (at least temporarily) the array pointing to the individual lines.
-     */
+     
     new_lines = typeCalloc(struct ldat, (unsigned) (ToLines + 1));
     if (new_lines == 0)
 	returnCode(ERR);
 
-    /*
-     * For each line in the target, allocate or adjust pointers for the
-     * corresponding text, depending on whether this is a window or a
-     * subwindow.
-     */
+     
     for (row = 0; row <= ToLines; ++row) {
 	int begin = (row > size_y) ? 0 : (size_x + 1);
 	int end = ToCols;
@@ -210,10 +161,10 @@ wresize(WINDOW *win, int ToLines, int ToCols)
 	    new_lines[row].lastchar = win->_line[row].lastchar;
 	}
 	if ((ToCols != size_x) || (row > size_y)) {
-	    if (end >= begin) {	/* growing */
+	    if (end >= begin) {	 
 		if (new_lines[row].firstchar < begin)
 		    new_lines[row].firstchar = (NCURSES_SIZE_T) begin;
-	    } else {		/* shrinking */
+	    } else {		 
 		new_lines[row].firstchar = 0;
 	    }
 	    new_lines[row].lastchar = (NCURSES_SIZE_T) ToCols;
@@ -221,9 +172,7 @@ wresize(WINDOW *win, int ToLines, int ToCols)
 	new_lines[row].text = s;
     }
 
-    /*
-     * Dispose of unwanted memory.
-     */
+     
     if (!(win->_flags & _SUBWIN)) {
 	if (ToCols == size_x) {
 	    for (row = ToLines + 1; row <= size_y; row++) {
@@ -239,10 +188,7 @@ wresize(WINDOW *win, int ToLines, int ToCols)
     FreeAndNull(win->_line);
     win->_line = new_lines;
 
-    /*
-     * Finally, adjust the parameters showing screen size and cursor
-     * position:
-     */
+     
     win->_maxx = (NCURSES_SIZE_T) ToCols;
     win->_maxy = (NCURSES_SIZE_T) ToLines;
 
@@ -257,10 +203,7 @@ wresize(WINDOW *win, int ToLines, int ToCols)
     if (win->_cury > win->_maxy)
 	win->_cury = win->_maxy;
 
-    /*
-     * Check for subwindows of this one, and readjust pointers to our text,
-     * if needed.
-     */
+     
     repair_subwindows(win);
 
 #ifdef TRACE

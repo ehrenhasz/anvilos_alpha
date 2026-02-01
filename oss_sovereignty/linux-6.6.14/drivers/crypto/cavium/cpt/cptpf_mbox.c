@@ -1,22 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2016 Cavium, Inc.
- */
+
+ 
 #include <linux/module.h>
 #include "cptpf.h"
 
 static void cpt_send_msg_to_vf(struct cpt_device *cpt, int vf,
 			       struct cpt_mbox *mbx)
 {
-	/* Writing mbox(0) causes interrupt */
+	 
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_VFX_MBOXX(0, vf, 1),
 			mbx->data);
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_VFX_MBOXX(0, vf, 0), mbx->msg);
 }
 
-/* ACKs VF's mailbox message
- * @vf: VF to which ACK to be sent
- */
+ 
 static void cpt_mbox_send_ack(struct cpt_device *cpt, int vf,
 			      struct cpt_mbox *mbx)
 {
@@ -27,13 +23,11 @@ static void cpt_mbox_send_ack(struct cpt_device *cpt, int vf,
 
 static void cpt_clear_mbox_intr(struct cpt_device *cpt, u32 vf)
 {
-	/* W1C for the VF */
+	 
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_MBOX_INTX(0, 0), (1 << vf));
 }
 
-/*
- *  Configure QLEN/Chunk sizes for VF
- */
+ 
 static void cpt_cfg_qlen_for_vf(struct cpt_device *cpt, int vf, u32 size)
 {
 	union cptx_pf_qx_ctl pf_qx_ctl;
@@ -44,9 +38,7 @@ static void cpt_cfg_qlen_for_vf(struct cpt_device *cpt, int vf, u32 size)
 	cpt_write_csr64(cpt->reg_base, CPTX_PF_QX_CTL(0, vf), pf_qx_ctl.u);
 }
 
-/*
- * Configure VQ priority
- */
+ 
 static void cpt_cfg_vq_priority(struct cpt_device *cpt, int vf, u32 pri)
 {
 	union cptx_pf_qx_ctl pf_qx_ctl;
@@ -82,17 +74,14 @@ static int cpt_bind_vq_to_grp(struct cpt_device *cpt, u8 q, u8 grp)
 	return mcode[grp].is_ae ? AE_TYPES : SE_TYPES;
 }
 
-/* Interrupt handler to handle mailbox messages from VFs */
+ 
 static void cpt_handle_mbox_intr(struct cpt_device *cpt, int vf)
 {
 	struct cpt_vf_info *vfx = &cpt->vfinfo[vf];
 	struct cpt_mbox mbx = {};
 	int vftype;
 	struct device *dev = &cpt->pdev->dev;
-	/*
-	 * MBOX[0] contains msg
-	 * MBOX[1] contains data
-	 */
+	 
 	mbx.msg  = cpt_read_csr64(cpt->reg_base, CPTX_PF_VFX_MBOXX(0, vf, 0));
 	mbx.data = cpt_read_csr64(cpt->reg_base, CPTX_PF_VFX_MBOXX(0, vf, 1));
 	dev_dbg(dev, "%s: Mailbox msg 0x%llx from VF%d", __func__, mbx.msg, vf);
@@ -108,7 +97,7 @@ static void cpt_handle_mbox_intr(struct cpt_device *cpt, int vf)
 		cpt_send_msg_to_vf(cpt, vf, &mbx);
 		break;
 	case CPT_MSG_VF_DOWN:
-		/* First msg in VF teardown sequence */
+		 
 		vfx->state = VF_STATE_DOWN;
 		module_put(THIS_MODULE);
 		cpt_mbox_send_ack(cpt, vf, &mbx);

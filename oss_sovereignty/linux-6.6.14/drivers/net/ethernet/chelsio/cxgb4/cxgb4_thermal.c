@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *  Copyright (C) 2017 Chelsio Communications.  All rights reserved.
- *
- *  Written by: Ganesh Goudar (ganeshgr@chelsio.com)
- */
+
+ 
 
 #include "cxgb4.h"
 
@@ -43,9 +39,7 @@ int cxgb4_thermal_init(struct adapter *adap)
 	u32 param, val;
 	int ret;
 
-	/* on older firmwares we may not get the trip temperature,
-	 * set the num of trips to 0.
-	 */
+	 
 	param = (FW_PARAMS_MNEM_V(FW_PARAMS_MNEM_DEV) |
 		 FW_PARAMS_PARAM_X_V(FW_PARAMS_PARAM_DEV_DIAG) |
 		 FW_PARAMS_PARAM_Y_V(FW_PARAM_DEV_DIAG_MAXTMPTHRESH));
@@ -53,7 +47,7 @@ int cxgb4_thermal_init(struct adapter *adap)
 	ret = t4_query_params(adap, adap->mbox, adap->pf, 0, 1,
 			      &param, &val);
 	if (ret < 0) {
-		num_trip = 0; /* could not get trip temperature */
+		num_trip = 0;  
 	} else {
 		trip.temperature = val * 1000;
 	}

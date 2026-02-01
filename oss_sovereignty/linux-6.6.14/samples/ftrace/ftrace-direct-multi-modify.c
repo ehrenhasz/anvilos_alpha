@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0-only
+
 #include <linux/module.h>
 #include <linux/kthread.h>
 #include <linux/ftrace.h>
@@ -61,7 +61,7 @@ asm (
 "	.popsection\n"
 );
 
-#endif /* CONFIG_X86_64 */
+#endif  
 
 #ifdef CONFIG_S390
 
@@ -103,7 +103,7 @@ asm (
 "       .popsection\n"
 );
 
-#endif /* CONFIG_S390 */
+#endif  
 
 #ifdef CONFIG_ARM64
 
@@ -112,7 +112,7 @@ asm (
 "	.type		my_tramp1, @function\n"
 "	.globl		my_tramp1\n"
 "   my_tramp1:"
-"	hint	34\n" // bti	c
+"	hint	34\n" 
 "	sub	sp, sp, #32\n"
 "	stp	x9, x30, [sp]\n"
 "	str	x0, [sp, #16]\n"
@@ -127,7 +127,7 @@ asm (
 "	.type		my_tramp2, @function\n"
 "	.globl		my_tramp2\n"
 "   my_tramp2:"
-"	hint	34\n" // bti	c
+"	hint	34\n" 
 "	sub	sp, sp, #32\n"
 "	stp	x9, x30, [sp]\n"
 "	str	x0, [sp, #16]\n"
@@ -141,7 +141,7 @@ asm (
 "	.popsection\n"
 );
 
-#endif /* CONFIG_ARM64 */
+#endif  
 
 #ifdef CONFIG_LOONGARCH
 #include <asm/asm.h>
@@ -182,7 +182,7 @@ asm (
 "	.popsection\n"
 );
 
-#endif /* CONFIG_LOONGARCH */
+#endif  
 
 static unsigned long my_tramp = (unsigned long)my_tramp1;
 static unsigned long tramps[2] = {

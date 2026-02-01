@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include "util.h"
 #include "debug.h"
 #include "event.h"
@@ -24,9 +24,7 @@
 #include "strlist.h"
 #include "string2.h"
 
-/*
- * XXX We need to find a better place for these things...
- */
+ 
 
 const char *input_name;
 
@@ -87,7 +85,7 @@ void event_attr_init(struct perf_event_attr *attr)
 		attr->exclude_host  = 1;
 	if (!perf_guest)
 		attr->exclude_guest = 1;
-	/* to capture ABI version */
+	 
 	attr->size = sizeof(*attr);
 }
 
@@ -134,20 +132,7 @@ static bool match_pat(char *file, const char **pat)
 	return false;
 }
 
-/*
- * The depth specify how deep the removal will go.
- * 0       - will remove only files under the 'path' directory
- * 1 .. x  - will dive in x-level deep under the 'path' directory
- *
- * If specified the pat is array of string patterns ended with NULL,
- * which are checked upon every file/directory found. Only matching
- * ones are removed.
- *
- * The function returns:
- *    0 on success
- *   -1 on removal failure with errno set
- *   -2 on pattern failure
- */
+ 
 static int rm_rf_depth_pat(const char *path, int depth, const char **pat)
 {
 	DIR *dir;
@@ -156,16 +141,16 @@ static int rm_rf_depth_pat(const char *path, int depth, const char **pat)
 	char namebuf[PATH_MAX];
 	struct stat statbuf;
 
-	/* Do not fail if there's no file. */
+	 
 	ret = lstat(path, &statbuf);
 	if (ret)
 		return 0;
 
-	/* Try to remove any file we get. */
+	 
 	if (!(statbuf.st_mode & S_IFDIR))
 		return unlink(path);
 
-	/* We have directory in path. */
+	 
 	dir = opendir(path);
 	if (dir == NULL)
 		return -1;
@@ -183,7 +168,7 @@ static int rm_rf_depth_pat(const char *path, int depth, const char **pat)
 		scnprintf(namebuf, sizeof(namebuf), "%s/%s",
 			  path, d->d_name);
 
-		/* We have to check symbolic link itself */
+		 
 		ret = lstat(namebuf, &statbuf);
 		if (ret < 0) {
 			pr_debug("stat failed: %s\n", namebuf);
@@ -269,13 +254,13 @@ int rm_rf(const char *path)
 	return rm_rf_depth_pat(path, INT_MAX, NULL);
 }
 
-/* A filter which removes dot files */
+ 
 bool lsdir_no_dot_filter(const char *name __maybe_unused, struct dirent *d)
 {
 	return d->d_name[0] != '.';
 }
 
-/* lsdir reads a directory and store it in strlist */
+ 
 struct strlist *lsdir(const char *name,
 		      bool (*filter)(const char *, struct dirent *))
 {
@@ -455,11 +440,7 @@ char *perf_exe(char *buf, int len)
 
 void perf_debuginfod_setup(struct perf_debuginfod *di)
 {
-	/*
-	 * By default '!di->set' we clear DEBUGINFOD_URLS, so debuginfod
-	 * processing is not triggered, otherwise we set it to 'di->urls'
-	 * value. If 'di->urls' is "system" we keep DEBUGINFOD_URLS value.
-	 */
+	 
 	if (!di->set)
 		setenv("DEBUGINFOD_URLS", "", 1);
 	else if (di->urls && strcmp(di->urls, "system"))
@@ -473,10 +454,7 @@ void perf_debuginfod_setup(struct perf_debuginfod *di)
 #endif
 }
 
-/*
- * Return a new filename prepended with task's root directory if it's in
- * a chroot.  Callers should free the returned string.
- */
+ 
 char *filename_with_chroot(int pid, const char *filename)
 {
 	char buf[PATH_MAX];
@@ -489,7 +467,7 @@ char *filename_with_chroot(int pid, const char *filename)
 	if (ret <= 0)
 		return NULL;
 
-	/* readlink(2) does not append a null byte to buf */
+	 
 	buf[ret] = '\0';
 
 	if (!strcmp(buf, "/"))
@@ -504,11 +482,7 @@ char *filename_with_chroot(int pid, const char *filename)
 	return new_name;
 }
 
-/*
- * Reallocate an array *arr of size *arr_sz so that it is big enough to contain
- * x elements of size msz, initializing new entries to *init_val or zero if
- * init_val is NULL
- */
+ 
 int do_realloc_array_as_needed(void **arr, size_t *arr_sz, size_t x, size_t msz, const void *init_val)
 {
 	size_t new_sz = *arr_sz;
@@ -516,7 +490,7 @@ int do_realloc_array_as_needed(void **arr, size_t *arr_sz, size_t x, size_t msz,
 	size_t i;
 
 	if (!new_sz)
-		new_sz = msz >= 64 ? 1 : roundup(64, msz); /* Start with at least 64 bytes */
+		new_sz = msz >= 64 ? 1 : roundup(64, msz);  
 	while (x >= new_sz) {
 		if (check_mul_overflow(new_sz, (size_t)2, &new_sz))
 			return -ENOMEM;

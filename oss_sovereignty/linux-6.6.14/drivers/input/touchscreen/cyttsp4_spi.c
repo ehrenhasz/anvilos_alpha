@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Source for:
- * Cypress TrueTouch(TM) Standard Product (TTSP) SPI touchscreen driver.
- * For use with Cypress Txx4xx parts.
- * Supported parts include:
- * TMA4XX
- * TMA1036
- *
- * Copyright (C) 2009, 2010, 2011 Cypress Semiconductor, Inc.
- * Copyright (C) 2012 Javier Martinez Canillas <javier@dowhile0.org>
- * Copyright (C) 2013 Cypress Semiconductor
- *
- * Contact Cypress Semiconductor at www.cypress.com <ttdrivers@cypress.com>
- */
+
+ 
 
 #include "cyttsp4_core.h"
 
@@ -20,7 +7,7 @@
 #include <linux/input.h>
 #include <linux/spi/spi.h>
 
-#define CY_SPI_WR_OP		0x00 /* r/~w */
+#define CY_SPI_WR_OP		0x00  
 #define CY_SPI_RD_OP		0x01
 #define CY_SPI_BITS_PER_WORD	8
 #define CY_SPI_A8_BIT		0x02
@@ -28,7 +15,7 @@
 #define CY_SPI_RD_HEADER_BYTES	1
 #define CY_SPI_CMD_BYTES	2
 #define CY_SPI_SYNC_BYTE	0
-#define CY_SPI_SYNC_ACK		0x62 /* from TRM *A protocol */
+#define CY_SPI_SYNC_ACK		0x62  
 #define CY_SPI_DATA_SIZE	(2 * 256)
 
 #define CY_SPI_DATA_BUF_SIZE	(CY_SPI_CMD_BYTES + CY_SPI_DATA_SIZE)
@@ -63,10 +50,7 @@ static int cyttsp_spi_xfer(struct device *dev, u8 *xfer_buf,
 	memset(xfer, 0, sizeof(xfer));
 	spi_message_init(&msg);
 
-	/*
-	  We set both TX and RX buffers because Cypress TTSP
-	  requires full duplex operation.
-	*/
+	 
 	xfer[0].tx_buf = wr_buf;
 	xfer[0].rx_buf = rd_buf;
 	switch (op) {
@@ -94,11 +78,7 @@ static int cyttsp_spi_xfer(struct device *dev, u8 *xfer_buf,
 		dev_dbg(dev, "%s: spi_sync() error %d, len=%d, op=%d\n",
 			__func__, retval, xfer[1].len, op);
 
-		/*
-		 * do not return here since was a bad ACK sequence
-		 * let the following ACK check handle any errors and
-		 * allow silent retries
-		 */
+		 
 	}
 
 	if (rd_buf[CY_SPI_SYNC_BYTE] != CY_SPI_SYNC_ACK) {
@@ -148,7 +128,7 @@ static int cyttsp4_spi_probe(struct spi_device *spi)
 	struct cyttsp4 *ts;
 	int error;
 
-	/* Set up SPI*/
+	 
 	spi->bits_per_word = CY_SPI_BITS_PER_WORD;
 	spi->mode = SPI_MODE_0;
 	error = spi_setup(spi);

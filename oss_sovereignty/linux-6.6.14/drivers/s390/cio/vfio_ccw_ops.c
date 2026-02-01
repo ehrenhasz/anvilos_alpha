@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Physical device callbacks for vfio_ccw
- *
- * Copyright IBM Corp. 2017
- * Copyright Red Hat, Inc. 2019
- *
- * Author(s): Dong Jia Shi <bjsdjshi@linux.vnet.ibm.com>
- *            Xiao Feng Ren <renxiaof@linux.vnet.ibm.com>
- *            Cornelia Huck <cohuck@redhat.com>
- */
+
+ 
 
 #include <linux/vfio.h>
 #include <linux/nospec.h>
@@ -20,10 +11,7 @@ static const struct vfio_device_ops vfio_ccw_dev_ops;
 
 static int vfio_ccw_mdev_reset(struct vfio_ccw_private *private)
 {
-	/*
-	 * If the FSM state is seen as Not Operational after closing
-	 * and re-opening the mdev, return an error.
-	 */
+	 
 	vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_CLOSE);
 	vfio_ccw_fsm_event(private, VFIO_CCW_EVENT_OPEN);
 	if (private->state == VFIO_CCW_STATE_NOT_OPER)
@@ -37,7 +25,7 @@ static void vfio_ccw_dma_unmap(struct vfio_device *vdev, u64 iova, u64 length)
 	struct vfio_ccw_private *private =
 		container_of(vdev, struct vfio_ccw_private, vdev);
 
-	/* Drivers MUST unpin pages in response to an invalidation. */
+	 
 	if (!cp_iova_pinned(&private->cp, iova, length))
 		return;
 
@@ -168,7 +156,7 @@ static int vfio_ccw_mdev_open_device(struct vfio_device *vdev)
 		container_of(vdev, struct vfio_ccw_private, vdev);
 	int ret;
 
-	/* Device cannot simply be opened again from this state */
+	 
 	if (private->state == VFIO_CCW_STATE_NOT_OPER)
 		return -EINVAL;
 
@@ -326,7 +314,7 @@ static int vfio_ccw_mdev_get_region_info(struct vfio_ccw_private *private,
 		info->flags = VFIO_REGION_INFO_FLAG_READ
 			      | VFIO_REGION_INFO_FLAG_WRITE;
 		return 0;
-	default: /* all other regions are handled via capability chain */
+	default:  
 	{
 		struct vfio_info_cap caps = { .buf = NULL, .size = 0 };
 		struct vfio_region_info_cap_type cap_type = {
@@ -599,7 +587,7 @@ static ssize_t vfio_ccw_mdev_ioctl(struct vfio_device *vdev,
 	}
 }
 
-/* Request removal of the device*/
+ 
 static void vfio_ccw_mdev_request(struct vfio_device *vdev, unsigned int count)
 {
 	struct vfio_ccw_private *private =

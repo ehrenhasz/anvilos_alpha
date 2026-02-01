@@ -1,22 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Utility functions for parsing Tegra CVB voltage tables
- *
- * Copyright (C) 2012-2019 NVIDIA Corporation.  All rights reserved.
- */
+
+ 
 #include <linux/err.h>
 #include <linux/kernel.h>
 #include <linux/pm_opp.h>
 
 #include "cvb.h"
 
-/* cvb_mv = ((c2 * speedo / s_scale + c1) * speedo / s_scale + c0) */
+ 
 static inline int get_cvb_voltage(int speedo, int s_scale,
 				  const struct cvb_coefficients *cvb)
 {
 	int mv;
 
-	/* apply only speedo scale: output mv = cvb_mv * v_scale */
+	 
 	mv = DIV_ROUND_CLOSEST(cvb->c2 * speedo, s_scale);
 	mv = DIV_ROUND_CLOSEST((mv + cvb->c1) * speedo, s_scale) + cvb->c0;
 	return mv;
@@ -25,7 +21,7 @@ static inline int get_cvb_voltage(int speedo, int s_scale,
 static int round_cvb_voltage(int mv, int v_scale,
 			     const struct rail_alignment *align)
 {
-	/* combined: apply voltage scale and round to cvb alignment step */
+	 
 	int uv;
 	int step = (align->step_uv ? : 1000) * v_scale;
 	int offset = align->offset_uv * v_scale;
@@ -81,24 +77,7 @@ static int build_opp_table(struct device *dev, const struct cvb_table *table,
 	return 0;
 }
 
-/**
- * tegra_cvb_add_opp_table - build OPP table from Tegra CVB tables
- * @dev: the struct device * for which the OPP table is built
- * @tables: array of CVB tables
- * @count: size of the previously mentioned array
- * @align: parameters of the regulator step and offset
- * @process_id: process id of the HW module
- * @speedo_id: speedo id of the HW module
- * @speedo_value: speedo value of the HW module
- * @max_freq: highest safe clock rate
- *
- * On Tegra, a CVB table encodes the relationship between operating voltage
- * and safe maximal frequency for a given module (e.g. GPU or CPU). This
- * function calculates the optimal voltage-frequency operating points
- * for the given arguments and exports them via the OPP library for the
- * given @dev. Returns a pointer to the struct cvb_table that matched
- * or an ERR_PTR on failure.
- */
+ 
 const struct cvb_table *
 tegra_cvb_add_opp_table(struct device *dev, const struct cvb_table *tables,
 			size_t count, struct rail_alignment *align,

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: MIT */
+ 
 #ifndef __NVKM_FBRAM_FUC_H__
 #define __NVKM_FBRAM_FUC_H__
 #include <subdev/fb.h>
@@ -14,7 +14,7 @@ struct ramfuc_reg {
 	int sequence;
 	bool force;
 	u32 addr;
-	u32 stride; /* in bytes */
+	u32 stride;  
 	u32 mask;
 	u32 data;
 };

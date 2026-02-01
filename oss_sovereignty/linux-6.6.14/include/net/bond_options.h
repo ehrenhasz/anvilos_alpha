@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- * drivers/net/bond/bond_options.h - bonding options
- * Copyright (c) 2013 Nikolay Aleksandrov <nikolay@redhat.com>
- */
+ 
+ 
 
 #ifndef _NET_BOND_OPTIONS_H
 #define _NET_BOND_OPTIONS_H
@@ -19,28 +16,21 @@ struct nlattr;
 #define BOND_OPT_VALID(opt) ((opt) < BOND_OPT_LAST)
 #define BOND_MODE_ALL_EX(x) (~(x))
 
-/* Option flags:
- * BOND_OPTFLAG_NOSLAVES - check if the bond device is empty before setting
- * BOND_OPTFLAG_IFDOWN - check if the bond device is down before setting
- * BOND_OPTFLAG_RAWVAL - the option parses the value itself
- */
+ 
 enum {
 	BOND_OPTFLAG_NOSLAVES	= BIT(0),
 	BOND_OPTFLAG_IFDOWN	= BIT(1),
 	BOND_OPTFLAG_RAWVAL	= BIT(2)
 };
 
-/* Value type flags:
- * BOND_VALFLAG_DEFAULT - mark the value as default
- * BOND_VALFLAG_(MIN|MAX) - mark the value as min/max
- */
+ 
 enum {
 	BOND_VALFLAG_DEFAULT	= BIT(0),
 	BOND_VALFLAG_MIN	= BIT(1),
 	BOND_VALFLAG_MAX	= BIT(2)
 };
 
-/* Option IDs, their bit positions correspond to their IDs */
+ 
 enum {
 	BOND_OPT_MODE,
 	BOND_OPT_PACKETS_PER_SLAVE,
@@ -79,13 +69,7 @@ enum {
 	BOND_OPT_LAST
 };
 
-/* This structure is used for storing option values and for passing option
- * values when changing an option. The logic when used as an arg is as follows:
- * - if value != ULLONG_MAX -> parse value
- * - if string != NULL -> parse string
- * - if the opt is RAW data and length less than maxlen,
- *   copy the data to extra storage
- */
+ 
 
 #define BOND_OPT_EXTRA_MAXLEN 16
 struct bond_opt_value {
@@ -106,13 +90,9 @@ struct bond_option {
 	const char *desc;
 	u32 flags;
 
-	/* unsuppmodes is used to denote modes in which the option isn't
-	 * supported.
-	 */
+	 
 	unsigned long unsuppmodes;
-	/* supported values which this option can have, can be a subset of
-	 * BOND_OPTVAL_RANGE's value range
-	 */
+	 
 	const struct bond_opt_value *values;
 
 	int (*set)(struct bonding *bond, const struct bond_opt_value *val);
@@ -131,10 +111,7 @@ const struct bond_option *bond_opt_get(unsigned int option);
 const struct bond_option *bond_opt_get_by_name(const char *name);
 const struct bond_opt_value *bond_opt_get_val(unsigned int option, u64 val);
 
-/* This helper is used to initialize a bond_opt_value structure for parameter
- * passing. There should be either a valid string or value, but not both.
- * When value is ULLONG_MAX then string will be used.
- */
+ 
 static inline void __bond_opt_init(struct bond_opt_value *optval,
 				   char *string, u64 value,
 				   void *extra, size_t extra_len)
@@ -161,4 +138,4 @@ void bond_option_arp_ip_targets_clear(struct bonding *bond);
 void bond_option_ns_ip6_targets_clear(struct bonding *bond);
 #endif
 
-#endif /* _NET_BOND_OPTIONS_H */
+#endif  

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef ISCSI_TARGET_TPG_H
 #define ISCSI_TARGET_TPG_H
 
@@ -50,4 +50,4 @@ extern int iscsit_ta_fabric_prot_type(struct iscsi_portal_group *, u32);
 extern int iscsit_ta_tpg_enabled_sendtargets(struct iscsi_portal_group *, u32);
 extern int iscsit_ta_login_keys_workaround(struct iscsi_portal_group *, u32);
 
-#endif /* ISCSI_TARGET_TPG_H */
+#endif  

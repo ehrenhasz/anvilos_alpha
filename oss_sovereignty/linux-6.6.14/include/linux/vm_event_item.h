@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef VM_EVENT_ITEM_H_INCLUDED
 #define VM_EVENT_ITEM_H_INCLUDED
 
@@ -87,13 +87,13 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 		CMA_ALLOC_SUCCESS,
 		CMA_ALLOC_FAIL,
 #endif
-		UNEVICTABLE_PGCULLED,	/* culled to noreclaim list */
-		UNEVICTABLE_PGSCANNED,	/* scanned for reclaimability */
-		UNEVICTABLE_PGRESCUED,	/* rescued from noreclaim list */
+		UNEVICTABLE_PGCULLED,	 
+		UNEVICTABLE_PGSCANNED,	 
+		UNEVICTABLE_PGRESCUED,	 
 		UNEVICTABLE_PGMLOCKED,
 		UNEVICTABLE_PGMUNLOCKED,
-		UNEVICTABLE_PGCLEARED,	/* on COW, page truncate */
-		UNEVICTABLE_PGSTRANDED,	/* unable to isolate on unlock */
+		UNEVICTABLE_PGCLEARED,	 
+		UNEVICTABLE_PGSTRANDED,	 
 #ifdef CONFIG_TRANSPARENT_HUGEPAGE
 		THP_FAULT_ALLOC,
 		THP_FAULT_FALLBACK,
@@ -127,11 +127,11 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 #endif
 #endif
 #ifdef CONFIG_DEBUG_TLBFLUSH
-		NR_TLB_REMOTE_FLUSH,	/* cpu tried to flush others' tlbs */
-		NR_TLB_REMOTE_FLUSH_RECEIVED,/* cpu received ipi for flush */
+		NR_TLB_REMOTE_FLUSH,	 
+		NR_TLB_REMOTE_FLUSH_RECEIVED, 
 		NR_TLB_LOCAL_FLUSH_ALL,
 		NR_TLB_LOCAL_FLUSH_ONE,
-#endif /* CONFIG_DEBUG_TLBFLUSH */
+#endif  
 #ifdef CONFIG_SWAP
 		SWAP_RA,
 		SWAP_RA_HIT,
@@ -166,4 +166,4 @@ enum vm_event_item { PGPGIN, PGPGOUT, PSWPIN, PSWPOUT,
 #define THP_FILE_MAPPED ({ BUILD_BUG(); 0; })
 #endif
 
-#endif		/* VM_EVENT_ITEM_H_INCLUDED */
+#endif		 

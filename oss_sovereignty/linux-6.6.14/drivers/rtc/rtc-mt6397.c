@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
-* Copyright (c) 2014-2015 MediaTek Inc.
-* Author: Tianping.Fang <tianping.fang@mediatek.com>
-*/
+
+ 
 
 #include <linux/err.h>
 #include <linux/interrupt.h>
@@ -96,19 +93,14 @@ static int mtk_rtc_read_time(struct device *dev, struct rtc_time *tm)
 			goto exit;
 	} while (sec < tm->tm_sec);
 
-	/* HW register use 7 bits to store year data, minus
-	 * RTC_MIN_YEAR_OFFSET before write year data to register, and plus
-	 * RTC_MIN_YEAR_OFFSET back after read year from register
-	 */
+	 
 	tm->tm_year += RTC_MIN_YEAR_OFFSET;
 
-	/* HW register start mon from one, but tm_mon start from zero. */
+	 
 	tm->tm_mon--;
 	time = rtc_tm_to_time64(tm);
 
-	/* rtc_tm_to_time64 covert Gregorian date to seconds since
-	 * 01-01-1970 00:00:00, and this date is Thursday.
-	 */
+	 
 	days = div_s64(time, 86400);
 	tm->tm_wday = (days + 4) % 7;
 
@@ -138,7 +130,7 @@ static int mtk_rtc_set_time(struct device *dev, struct rtc_time *tm)
 	if (ret < 0)
 		goto exit;
 
-	/* Time register write to hardware after call trigger function */
+	 
 	ret = mtk_rtc_write_trigger(rtc);
 
 exit:
@@ -240,10 +232,7 @@ static int mtk_rtc_set_alarm(struct device *dev, struct rtc_wkalrm *alm)
 			goto exit;
 	}
 
-	/* All alarm time register write to hardware after calling
-	 * mtk_rtc_write_trigger. This can avoid race condition if alarm
-	 * occur happen during writing alarm time register.
-	 */
+	 
 	ret = mtk_rtc_write_trigger(rtc);
 exit:
 	mutex_unlock(&rtc->lock);

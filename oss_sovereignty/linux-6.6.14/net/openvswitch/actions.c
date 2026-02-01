@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2007-2017 Nicira, Inc.
- */
+
+ 
 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 
@@ -39,7 +37,7 @@ struct deferred_action {
 	const struct nlattr *actions;
 	int actions_len;
 
-	/* Store pkt_key clone when creating deferred action. */
+	 
 	struct sw_flow_key pkt_key;
 };
 
@@ -49,7 +47,7 @@ struct ovs_frag_data {
 	struct vport *vport;
 	struct ovs_skb_cb cb;
 	__be16 inner_protocol;
-	u16 network_offset;	/* valid only for MPLS */
+	u16 network_offset;	 
 	u16 vlan_tci;
 	__be16 vlan_proto;
 	unsigned int l2_len;
@@ -65,7 +63,7 @@ static DEFINE_PER_CPU(struct ovs_frag_data, ovs_frag_data_storage);
 struct action_fifo {
 	int head;
 	int tail;
-	/* Deferred action fifo queue storage. */
+	 
 	struct deferred_action fifo[DEFERRED_ACTION_FIFO_SIZE];
 };
 
@@ -77,9 +75,7 @@ static struct action_fifo __percpu *action_fifos;
 static struct action_flow_keys __percpu *flow_keys;
 static DEFINE_PER_CPU(int, exec_actions_level);
 
-/* Make a clone of the 'key', using the pre-allocated percpu 'flow_keys'
- * space. Return NULL if out of key spaces.
- */
+ 
 static struct sw_flow_key *clone_key(const struct sw_flow_key *key_)
 {
 	struct action_flow_keys *keys = this_cpu_ptr(flow_keys);
@@ -121,7 +117,7 @@ static struct deferred_action *action_fifo_put(struct action_fifo *fifo)
 	return &fifo->fifo[fifo->head++];
 }
 
-/* Return true if fifo is not full */
+ 
 static struct deferred_action *add_deferred_actions(struct sk_buff *skb,
 				    const struct sw_flow_key *key,
 				    const struct nlattr *actions,
@@ -242,7 +238,7 @@ static int push_vlan(struct sk_buff *skb, struct sw_flow_key *key,
 			     ntohs(vlan->vlan_tci) & ~VLAN_CFI_MASK);
 }
 
-/* 'src' is already properly masked. */
+ 
 static void ether_addr_copy_masked(u8 *dst_, const u8 *src_, const u8 *mask_)
 {
 	u16 *dst = (u16 *)dst_;
@@ -278,9 +274,7 @@ static int set_eth_addr(struct sk_buff *skb, struct sw_flow_key *flow_key,
 	return 0;
 }
 
-/* pop_eth does not support VLAN packets as this action is never called
- * for them.
- */
+ 
 static int pop_eth(struct sk_buff *skb, struct sw_flow_key *key)
 {
 	int err;
@@ -289,7 +283,7 @@ static int pop_eth(struct sk_buff *skb, struct sw_flow_key *key)
 	if (err)
 		return err;
 
-	/* safe right before invalidate_flow_key */
+	 
 	key->mac_proto = MAC_PROTO_NONE;
 	invalidate_flow_key(key);
 	return 0;
@@ -305,7 +299,7 @@ static int push_eth(struct sk_buff *skb, struct sw_flow_key *key,
 	if (err)
 		return err;
 
-	/* safe right before invalidate_flow_key */
+	 
 	key->mac_proto = MAC_PROTO_ETHERNET;
 	invalidate_flow_key(key);
 	return 0;
@@ -320,7 +314,7 @@ static int push_nsh(struct sk_buff *skb, struct sw_flow_key *key,
 	if (err)
 		return err;
 
-	/* safe right before invalidate_flow_key */
+	 
 	key->mac_proto = MAC_PROTO_NONE;
 	invalidate_flow_key(key);
 	return 0;
@@ -334,7 +328,7 @@ static int pop_nsh(struct sk_buff *skb, struct sw_flow_key *key)
 	if (err)
 		return err;
 
-	/* safe right before invalidate_flow_key */
+	 
 	if (skb->protocol == htons(ETH_P_TEB))
 		key->mac_proto = MAC_PROTO_ETHERNET;
 	else
@@ -447,7 +441,7 @@ static void set_ipv6_fl(struct sk_buff *skb, struct ipv6hdr *nh, u32 fl, u32 mas
 	ofl = nh->flow_lbl[0] << 16 |  nh->flow_lbl[1] << 8 |  nh->flow_lbl[2];
 	fl = OVS_MASKED(ofl, fl, mask);
 
-	/* Bits 21-24 are always unmasked, so this retains their values. */
+	 
 	nh->flow_lbl[0] = (u8)(fl >> 16);
 	nh->flow_lbl[1] = (u8)(fl >> 8);
 	nh->flow_lbl[2] = (u8)fl;
@@ -490,10 +484,7 @@ static int set_ipv4(struct sk_buff *skb, struct sw_flow_key *flow_key,
 
 	nh = ip_hdr(skb);
 
-	/* Setting an IP addresses is typically only a side effect of
-	 * matching on them in the current userspace implementation, so it
-	 * makes sense to check if the value actually changed.
-	 */
+	 
 	if (mask->ipv4_src) {
 		new_addr = OVS_MASKED(nh->saddr, key->ipv4_src, mask->ipv4_src);
 
@@ -541,10 +532,7 @@ static int set_ipv6(struct sk_buff *skb, struct sw_flow_key *flow_key,
 
 	nh = ipv6_hdr(skb);
 
-	/* Setting an IP addresses is typically only a side effect of
-	 * matching on them in the current userspace implementation, so it
-	 * makes sense to check if the value actually changed.
-	 */
+	 
 	if (is_ipv6_mask_nonzero(mask->ipv6_src)) {
 		__be32 *saddr = (__be32 *)&nh->saddr;
 		__be32 masked[4];
@@ -614,14 +602,14 @@ static int set_nsh(struct sk_buff *skb, struct sw_flow_key *flow_key,
 	if (err)
 		return err;
 
-	/* Make sure the NSH base header is there */
+	 
 	if (!pskb_may_pull(skb, skb_network_offset(skb) + NSH_BASE_HDR_LEN))
 		return -ENOMEM;
 
 	nh = nsh_hdr(skb);
 	length = nsh_hdr_len(nh);
 
-	/* Make sure the whole NSH header is there */
+	 
 	err = skb_ensure_writable(skb, skb_network_offset(skb) +
 				       length);
 	if (unlikely(err))
@@ -660,7 +648,7 @@ static int set_nsh(struct sk_buff *skb, struct sw_flow_key *flow_key,
 	return 0;
 }
 
-/* Must follow skb_ensure_writable() since that can move the skb data. */
+ 
 static void set_tp_port(struct sk_buff *skb, __be16 *port,
 			__be16 new_port, __sum16 *check)
 {
@@ -683,7 +671,7 @@ static int set_udp(struct sk_buff *skb, struct sw_flow_key *flow_key,
 		return err;
 
 	uh = udp_hdr(skb);
-	/* Either of the masks is non-zero, so do not bother checking them. */
+	 
 	src = OVS_MASKED(uh->source, key->udp_src, mask->udp_src);
 	dst = OVS_MASKED(uh->dest, key->udp_dst, mask->udp_dst);
 
@@ -763,7 +751,7 @@ static int set_sctp(struct sk_buff *skb, struct sw_flow_key *flow_key,
 
 	new_csum = sctp_compute_cksum(skb, sctphoff);
 
-	/* Carry any checksum errors through. */
+	 
 	sh->checksum = old_csum ^ old_correct_csum ^ new_csum;
 
 	skb_clear_hash(skb);
@@ -794,7 +782,7 @@ static int ovs_vport_output(struct net *net, struct sock *sk,
 	else
 		__vlan_hwaccel_clear_tag(skb);
 
-	/* Reconstruct the MAC header.  */
+	 
 	skb_push(skb, data->l2_len);
 	memcpy(skb->data, &data->l2_data, data->l2_len);
 	skb_postpush_rcsum(skb, skb->data, data->l2_len);
@@ -821,9 +809,7 @@ static struct dst_ops ovs_dst_ops = {
 	.mtu = ovs_dst_get_mtu,
 };
 
-/* prepare_frag() is called once per (larger-than-MTU) frame; its inverse is
- * ovs_vport_output(), which is called once per fragmented packet.
- */
+ 
 static void prepare_frag(struct vport *vport, struct sk_buff *skb,
 			 u16 orig_network_offset, u8 mac_proto)
 {
@@ -975,7 +961,7 @@ static int output_userspace(struct datapath *dp, struct sk_buff *skb,
 			break;
 
 		case OVS_USERSPACE_ATTR_EGRESS_TUN_PORT: {
-			/* Get out tunnel info. */
+			 
 			struct vport *vport;
 
 			vport = ovs_vport_rcu(dp, nla_get_u32(a));
@@ -991,13 +977,13 @@ static int output_userspace(struct datapath *dp, struct sk_buff *skb,
 		}
 
 		case OVS_USERSPACE_ATTR_ACTIONS: {
-			/* Include actions. */
+			 
 			upcall.actions = actions;
 			upcall.actions_len = actions_len;
 			break;
 		}
 
-		} /* End of switch. */
+		}  
 	}
 
 	return ovs_dp_upcall(dp, skb, key, &upcall, cutlen);
@@ -1007,7 +993,7 @@ static int dec_ttl_exception_handler(struct datapath *dp, struct sk_buff *skb,
 				     struct sw_flow_key *key,
 				     const struct nlattr *attr)
 {
-	/* The first attribute is always 'OVS_DEC_TTL_ATTR_ACTION'. */
+	 
 	struct nlattr *actions = nla_data(attr);
 
 	if (nla_len(actions))
@@ -1018,10 +1004,7 @@ static int dec_ttl_exception_handler(struct datapath *dp, struct sk_buff *skb,
 	return 0;
 }
 
-/* When 'last' is true, sample() should always consume the 'skb'.
- * Otherwise, sample() should keep 'skb' intact regardless what
- * actions are executed within sample().
- */
+ 
 static int sample(struct datapath *dp, struct sk_buff *skb,
 		  struct sw_flow_key *key, const struct nlattr *attr,
 		  bool last)
@@ -1032,7 +1015,7 @@ static int sample(struct datapath *dp, struct sk_buff *skb,
 	const struct sample_arg *arg;
 	bool clone_flow_key;
 
-	/* The first action is always 'OVS_SAMPLE_ATTR_ARG'. */
+	 
 	sample_arg = nla_data(attr);
 	arg = nla_data(sample_arg);
 	actions = nla_next(sample_arg, &rem);
@@ -1049,10 +1032,7 @@ static int sample(struct datapath *dp, struct sk_buff *skb,
 			     clone_flow_key);
 }
 
-/* When 'last' is true, clone() should always consume the 'skb'.
- * Otherwise, clone() should keep 'skb' intact regardless what
- * actions are executed within clone().
- */
+ 
 static int clone(struct datapath *dp, struct sk_buff *skb,
 		 struct sw_flow_key *key, const struct nlattr *attr,
 		 bool last)
@@ -1062,7 +1042,7 @@ static int clone(struct datapath *dp, struct sk_buff *skb,
 	int rem = nla_len(attr);
 	bool dont_clone_flow_key;
 
-	/* The first action is always 'OVS_CLONE_ATTR_EXEC'. */
+	 
 	clone_arg = nla_data(attr);
 	dont_clone_flow_key = nla_get_u32(clone_arg);
 	actions = nla_next(clone_arg, &rem);
@@ -1078,12 +1058,10 @@ static void execute_hash(struct sk_buff *skb, struct sw_flow_key *key,
 	u32 hash = 0;
 
 	if (hash_act->hash_alg == OVS_HASH_ALG_L4) {
-		/* OVS_HASH_ALG_L4 hasing type. */
+		 
 		hash = skb_get_hash(skb);
 	} else if (hash_act->hash_alg == OVS_HASH_ALG_SYM_L4) {
-		/* OVS_HASH_ALG_SYM_L4 hashing type.  NOTE: this doesn't
-		 * extend past an encapsulated header.
-		 */
+		 
 		hash = __skb_get_hash_symmetric(skb);
 	}
 
@@ -1098,7 +1076,7 @@ static int execute_set_action(struct sk_buff *skb,
 			      struct sw_flow_key *flow_key,
 			      const struct nlattr *a)
 {
-	/* Only tunnel set execution is supported without a mask. */
+	 
 	if (nla_type(a) == OVS_KEY_ATTR_TUNNEL_INFO) {
 		struct ovs_tunnel_info *tun = nla_data(a);
 
@@ -1111,7 +1089,7 @@ static int execute_set_action(struct sk_buff *skb,
 	return -EINVAL;
 }
 
-/* Mask is at the midpoint of the data. */
+ 
 #define get_mask(a, type) ((const type)nla_data(a) + 1)
 
 static int execute_masked_set_action(struct sk_buff *skb,
@@ -1133,7 +1111,7 @@ static int execute_masked_set_action(struct sk_buff *skb,
 		break;
 
 	case OVS_KEY_ATTR_TUNNEL_INFO:
-		/* Masked data not supported for tunnel. */
+		 
 		err = -EINVAL;
 		break;
 
@@ -1218,9 +1196,7 @@ static int execute_check_pkt_len(struct datapath *dp, struct sk_buff *skb,
 	const struct check_pkt_len_arg *arg;
 	bool clone_flow_key;
 
-	/* The first netlink attribute in 'attr' is always
-	 * 'OVS_CHECK_PKT_LEN_ATTR_ARG'.
-	 */
+	 
 	cpl_arg = nla_data(attr);
 	arg = nla_data(cpl_arg);
 
@@ -1229,15 +1205,11 @@ static int execute_check_pkt_len(struct datapath *dp, struct sk_buff *skb,
 
 	if ((skb_is_gso(skb) && skb_gso_validate_mac_len(skb, max_len)) ||
 	    len <= max_len) {
-		/* Second netlink attribute in 'attr' is always
-		 * 'OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_LESS_EQUAL'.
-		 */
+		 
 		actions = nla_next(cpl_arg, &rem);
 		clone_flow_key = !arg->exec_for_lesser_equal;
 	} else {
-		/* Third netlink attribute in 'attr' is always
-		 * 'OVS_CHECK_PKT_LEN_ATTR_ACTIONS_IF_GREATER'.
-		 */
+		 
 		actions = nla_next(cpl_arg, &rem);
 		actions = nla_next(actions, &rem);
 		clone_flow_key = !arg->exec_for_greater;
@@ -1286,7 +1258,7 @@ static int execute_dec_ttl(struct sk_buff *skb, struct sw_flow_key *key)
 	return 0;
 }
 
-/* Execute a list of actions against 'skb'. */
+ 
 static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
 			      struct sw_flow_key *key,
 			      const struct nlattr *attr, int len)
@@ -1301,22 +1273,16 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
 		if (trace_ovs_do_execute_action_enabled())
 			trace_ovs_do_execute_action(dp, skb, key, a, rem);
 
-		/* Actions that rightfully have to consume the skb should do it
-		 * and return directly.
-		 */
+		 
 		switch (nla_type(a)) {
 		case OVS_ACTION_ATTR_OUTPUT: {
 			int port = nla_get_u32(a);
 			struct sk_buff *clone;
 
-			/* Every output action needs a separate clone
-			 * of 'skb', In case the output action is the
-			 * last action, cloning can be avoided.
-			 */
+			 
 			if (nla_is_last(a, rem)) {
 				do_output(dp, skb, port, key);
-				/* 'skb' has been used for output.
-				 */
+				 
 				return 0;
 			}
 
@@ -1384,10 +1350,7 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
 
 			err = execute_recirc(dp, skb, key, a, last);
 			if (last) {
-				/* If this is the last action, the skb has
-				 * been consumed or freed.
-				 * Return immediately.
-				 */
+				 
 				return err;
 			}
 			break;
@@ -1422,7 +1385,7 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
 			err = ovs_ct_execute(ovs_dp_get_net(dp), skb, key,
 					     nla_data(a));
 
-			/* Hide stolen IP fragments from user space. */
+			 
 			if (err)
 				return err == -EINPROGRESS ? 0 : err;
 			break;
@@ -1509,12 +1472,7 @@ static int do_execute_actions(struct datapath *dp, struct sk_buff *skb,
 	return 0;
 }
 
-/* Execute the actions on the clone of the packet. The effect of the
- * execution does not affect the original 'skb' nor the original 'key'.
- *
- * The execution may be deferred in case the actions can not be executed
- * immediately.
- */
+ 
 static int clone_execute(struct datapath *dp, struct sk_buff *skb,
 			 struct sw_flow_key *key, u32 recirc_id,
 			 const struct nlattr *actions, int len,
@@ -1525,22 +1483,16 @@ static int clone_execute(struct datapath *dp, struct sk_buff *skb,
 
 	skb = last ? skb : skb_clone(skb, GFP_ATOMIC);
 	if (!skb) {
-		/* Out of memory, skip this action.
-		 */
+		 
 		return 0;
 	}
 
-	/* When clone_flow_key is false, the 'key' will not be change
-	 * by the actions, then the 'key' can be used directly.
-	 * Otherwise, try to clone key from the next recursion level of
-	 * 'flow_keys'. If clone is successful, execute the actions
-	 * without deferring.
-	 */
+	 
 	clone = clone_flow_key ? clone_key(key) : key;
 	if (clone) {
 		int err = 0;
 
-		if (actions) { /* Sample action */
+		if (actions) {  
 			if (clone_flow_key)
 				__this_cpu_inc(exec_actions_level);
 
@@ -1549,31 +1501,29 @@ static int clone_execute(struct datapath *dp, struct sk_buff *skb,
 
 			if (clone_flow_key)
 				__this_cpu_dec(exec_actions_level);
-		} else { /* Recirc action */
+		} else {  
 			clone->recirc_id = recirc_id;
 			ovs_dp_process_packet(skb, clone);
 		}
 		return err;
 	}
 
-	/* Out of 'flow_keys' space. Defer actions */
+	 
 	da = add_deferred_actions(skb, key, actions, len);
 	if (da) {
-		if (!actions) { /* Recirc action */
+		if (!actions) {  
 			key = &da->pkt_key;
 			key->recirc_id = recirc_id;
 		}
 	} else {
-		/* Out of per CPU action FIFO space. Drop the 'skb' and
-		 * log an error.
-		 */
+		 
 		ovs_kfree_skb_reason(skb, OVS_DROP_DEFERRED_LIMIT);
 
 		if (net_ratelimit()) {
-			if (actions) { /* Sample action */
+			if (actions) {  
 				pr_warn("%s: deferred action limit reached, drop sample action\n",
 					ovs_dp_name(dp));
-			} else {  /* Recirc action */
+			} else {   
 				pr_warn("%s: deferred action limit reached, drop recirc action (recirc_id=%#x)\n",
 					ovs_dp_name(dp), recirc_id);
 			}
@@ -1586,11 +1536,11 @@ static void process_deferred_actions(struct datapath *dp)
 {
 	struct action_fifo *fifo = this_cpu_ptr(action_fifos);
 
-	/* Do not touch the FIFO in case there is no deferred actions. */
+	 
 	if (action_fifo_is_empty(fifo))
 		return;
 
-	/* Finishing executing all deferred actions. */
+	 
 	do {
 		struct deferred_action *da = action_fifo_get(fifo);
 		struct sk_buff *skb = da->skb;
@@ -1604,11 +1554,11 @@ static void process_deferred_actions(struct datapath *dp)
 			ovs_dp_process_packet(skb, key);
 	} while (!action_fifo_is_empty(fifo));
 
-	/* Reset FIFO for the next packet.  */
+	 
 	action_fifo_init(fifo);
 }
 
-/* Execute a list of actions against 'skb'. */
+ 
 int ovs_execute_actions(struct datapath *dp, struct sk_buff *skb,
 			const struct sw_flow_actions *acts,
 			struct sw_flow_key *key)

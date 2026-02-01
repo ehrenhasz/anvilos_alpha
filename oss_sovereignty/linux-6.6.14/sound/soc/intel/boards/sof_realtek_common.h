@@ -1,12 +1,7 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright(c) 2020 Intel Corporation.
- */
+ 
+ 
 
-/*
- * This file defines data structures used in Machine Driver for Intel
- * platforms with Realtek Codecs.
- */
+ 
 #ifndef __SOF_REALTEK_COMMON_H
 #define __SOF_REALTEK_COMMON_H
 
@@ -44,4 +39,4 @@ void sof_rt1308_dai_link(struct snd_soc_dai_link *link);
 
 void sof_rt1019p_dai_link(struct snd_soc_dai_link *link);
 
-#endif /* __SOF_REALTEK_COMMON_H */
+#endif  

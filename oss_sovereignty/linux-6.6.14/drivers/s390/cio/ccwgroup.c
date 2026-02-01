@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  bus driver for ccwgroup
- *
- *  Copyright IBM Corp. 2002, 2012
- *
- *  Author(s): Arnd Bergmann (arndb@de.ibm.com)
- *	       Cornelia Huck (cornelia.huck@de.ibm.com)
- */
+
+ 
 #include <linux/module.h>
 #include <linux/errno.h>
 #include <linux/slab.h>
@@ -24,12 +17,7 @@
 
 #define CCW_BUS_ID_SIZE		10
 
-/* In Linux 2.4, we had a channel device layer called "chandev"
- * that did all sorts of obscure stuff for networking devices.
- * This is another driver that serves as a replacement for just
- * one of its functions, namely the translation of single subchannels
- * to devices that use multiple subchannels.
- */
+ 
 
 static struct bus_type ccwgroup_bus_type;
 
@@ -45,14 +33,7 @@ static void __ccwgroup_remove_symlinks(struct ccwgroup_device *gdev)
 	}
 }
 
-/**
- * ccwgroup_set_online() - enable a ccwgroup device
- * @gdev: target ccwgroup device
- *
- * This function attempts to put the ccwgroup device into the online state.
- * Returns:
- *  %0 on success and a negative error value on failure.
- */
+ 
 int ccwgroup_set_online(struct ccwgroup_device *gdev)
 {
 	struct ccwgroup_driver *gdrv = to_ccwgroupdrv(gdev->dev.driver);
@@ -74,15 +55,7 @@ out:
 }
 EXPORT_SYMBOL(ccwgroup_set_online);
 
-/**
- * ccwgroup_set_offline() - disable a ccwgroup device
- * @gdev: target ccwgroup device
- * @call_gdrv: Call the registered gdrv set_offline function
- *
- * This function attempts to put the ccwgroup device into the offline state.
- * Returns:
- *  %0 on success and a negative error value on failure.
- */
+ 
 int ccwgroup_set_offline(struct ccwgroup_device *gdev, bool call_gdrv)
 {
 	struct ccwgroup_driver *gdrv = to_ccwgroupdrv(gdev->dev.driver);
@@ -150,10 +123,7 @@ static ssize_t ccwgroup_online_show(struct device *dev,
 	return scnprintf(buf, PAGE_SIZE, "%d\n", online);
 }
 
-/*
- * Provide an 'ungroup' attribute so the user can remove group devices no
- * longer needed or accidentally created. Saves memory :)
- */
+ 
 static void ccwgroup_ungroup(struct ccwgroup_device *gdev)
 {
 	mutex_lock(&gdev->reg_mutex);
@@ -171,7 +141,7 @@ static ssize_t ccwgroup_ungroup_store(struct device *dev,
 	struct ccwgroup_device *gdev = to_ccwgroupdev(dev);
 	int rc = 0;
 
-	/* Prevent concurrent online/offline processing and ungrouping. */
+	 
 	if (atomic_cmpxchg(&gdev->onoff, 0, 1) != 0)
 		return -EAGAIN;
 	if (gdev->state != CCWGROUP_OFFLINE) {
@@ -185,7 +155,7 @@ static ssize_t ccwgroup_ungroup_store(struct device *dev,
 		rc = -ENODEV;
 out:
 	if (rc) {
-		/* Release onoff "lock" when ungrouping failed. */
+		 
 		atomic_set(&gdev->onoff, 0);
 		return rc;
 	}
@@ -273,7 +243,7 @@ static int __get_next_id(const char **buf, struct ccw_dev_id *id)
 	start = (char *)*buf;
 	end = strchr(start, ',');
 	if (!end) {
-		/* Last entry. Strip trailing newline, if applicable. */
+		 
 		end = strchr(start, '\n');
 		if (end)
 			*end = '\0';
@@ -296,20 +266,7 @@ static int __get_next_id(const char **buf, struct ccw_dev_id *id)
 	return ret;
 }
 
-/**
- * ccwgroup_create_dev() - create and register a ccw group device
- * @parent: parent device for the new device
- * @gdrv: driver for the new group device
- * @num_devices: number of slave devices
- * @buf: buffer containing comma separated bus ids of slave devices
- *
- * Create and register a new ccw group device as a child of @parent. Slave
- * devices are obtained from the list of bus ids given in @buf.
- * Returns:
- *  %0 on success and an error code on failure.
- * Context:
- *  non-atomic
- */
+ 
 int ccwgroup_create_dev(struct device *parent, struct ccwgroup_driver *gdrv,
 			int num_devices, const char *buf)
 {
@@ -339,10 +296,7 @@ int ccwgroup_create_dev(struct device *parent, struct ccwgroup_driver *gdrv,
 		if (rc != 0)
 			goto error;
 		gdev->cdev[i] = get_ccwdev_by_dev_id(&dev_id);
-		/*
-		 * All devices have to be of the same type in
-		 * order to be grouped.
-		 */
+		 
 		if (!gdev->cdev[i] || !gdev->cdev[i]->drv ||
 		    gdev->cdev[i]->drv != gdev->cdev[0]->drv ||
 		    gdev->cdev[i]->id.driver_info !=
@@ -350,7 +304,7 @@ int ccwgroup_create_dev(struct device *parent, struct ccwgroup_driver *gdrv,
 			rc = -EINVAL;
 			goto error;
 		}
-		/* Don't allow a device to belong to more than one group. */
+		 
 		spin_lock_irq(gdev->cdev[i]->ccwlock);
 		if (dev_get_drvdata(&gdev->cdev[i]->dev)) {
 			spin_unlock_irq(gdev->cdev[i]->ccwlock);
@@ -360,17 +314,17 @@ int ccwgroup_create_dev(struct device *parent, struct ccwgroup_driver *gdrv,
 		dev_set_drvdata(&gdev->cdev[i]->dev, gdev);
 		spin_unlock_irq(gdev->cdev[i]->ccwlock);
 	}
-	/* Check for sufficient number of bus ids. */
+	 
 	if (i < num_devices) {
 		rc = -EINVAL;
 		goto error;
 	}
-	/* Check for trailing stuff. */
+	 
 	if (i == num_devices && buf && strlen(buf) > 0) {
 		rc = -EINVAL;
 		goto error;
 	}
-	/* Check if the devices are bound to the required ccw driver. */
+	 
 	if (gdrv && gdrv->ccw_driver &&
 	    gdev->cdev[0]->drv != gdrv->ccw_driver) {
 		rc = -EINVAL;
@@ -443,7 +397,7 @@ static void __exit cleanup_ccwgroup(void)
 module_init(init_ccwgroup);
 module_exit(cleanup_ccwgroup);
 
-/************************** driver stuff ******************************/
+ 
 
 static void ccwgroup_remove(struct device *dev)
 {
@@ -478,75 +432,50 @@ bool dev_is_ccwgroup(struct device *dev)
 }
 EXPORT_SYMBOL(dev_is_ccwgroup);
 
-/**
- * ccwgroup_driver_register() - register a ccw group driver
- * @cdriver: driver to be registered
- *
- * This function is mainly a wrapper around driver_register().
- */
+ 
 int ccwgroup_driver_register(struct ccwgroup_driver *cdriver)
 {
-	/* register our new driver with the core */
+	 
 	cdriver->driver.bus = &ccwgroup_bus_type;
 
 	return driver_register(&cdriver->driver);
 }
 EXPORT_SYMBOL(ccwgroup_driver_register);
 
-/**
- * ccwgroup_driver_unregister() - deregister a ccw group driver
- * @cdriver: driver to be deregistered
- *
- * This function is mainly a wrapper around driver_unregister().
- */
+ 
 void ccwgroup_driver_unregister(struct ccwgroup_driver *cdriver)
 {
 	driver_unregister(&cdriver->driver);
 }
 EXPORT_SYMBOL(ccwgroup_driver_unregister);
 
-/**
- * ccwgroup_probe_ccwdev() - probe function for slave devices
- * @cdev: ccw device to be probed
- *
- * This is a dummy probe function for ccw devices that are slave devices in
- * a ccw group device.
- * Returns:
- *  always %0
- */
+ 
 int ccwgroup_probe_ccwdev(struct ccw_device *cdev)
 {
 	return 0;
 }
 EXPORT_SYMBOL(ccwgroup_probe_ccwdev);
 
-/**
- * ccwgroup_remove_ccwdev() - remove function for slave devices
- * @cdev: ccw device to be removed
- *
- * This is a remove function for ccw devices that are slave devices in a ccw
- * group device. It sets the ccw device offline and also deregisters the
- * embedding ccw group device.
- */
+ 
 void ccwgroup_remove_ccwdev(struct ccw_device *cdev)
 {
 	struct ccwgroup_device *gdev;
 
-	/* Ignore offlining errors, device is gone anyway. */
+	 
 	ccw_device_set_offline(cdev);
-	/* If one of its devices is gone, the whole group is done for. */
+	 
 	spin_lock_irq(cdev->ccwlock);
 	gdev = dev_get_drvdata(&cdev->dev);
 	if (!gdev) {
 		spin_unlock_irq(cdev->ccwlock);
 		return;
 	}
-	/* Get ccwgroup device reference for local processing. */
+	 
 	get_device(&gdev->dev);
 	spin_unlock_irq(cdev->ccwlock);
-	/* Unregister group device. */
+	 
 	ccwgroup_ungroup(gdev);
-	/* Release ccwgroup device reference for local processing. */
+	 
 	put_device(&gdev->dev);
 }
 EXPORT_SYMBOL(ccwgroup_remove_ccwdev);

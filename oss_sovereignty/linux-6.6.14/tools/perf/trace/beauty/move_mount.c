@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: LGPL-2.1
-/*
- * trace/beauty/move_mount.c
- *
- *  Copyright (C) 2019, Red Hat Inc, Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 
 #include "trace/beauty/beauty.h"
 #include <linux/log2.h>

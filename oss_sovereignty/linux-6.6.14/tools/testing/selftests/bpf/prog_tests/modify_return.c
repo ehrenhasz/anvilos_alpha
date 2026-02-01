@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright 2020 Google LLC.
- */
+
+ 
 
 #include <test_progs.h>
 #include "modify_return.skel.h"
@@ -49,13 +47,13 @@ cleanup:
 	modify_return__destroy(skel);
 }
 
-/* TODO: conflict with get_func_ip_test */
+ 
 void serial_test_modify_return(void)
 {
-	run_test(0 /* input_retval */,
-		 2 /* want_side_effect */,
-		 33 /* want_ret */);
-	run_test(-EINVAL /* input_retval */,
-		 0 /* want_side_effect */,
-		 -EINVAL * 2 /* want_ret */);
+	run_test(0  ,
+		 2  ,
+		 33  );
+	run_test(-EINVAL  ,
+		 0  ,
+		 -EINVAL * 2  );
 }

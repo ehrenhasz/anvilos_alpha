@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2018 Noralf Trønnes
- */
+
+ 
 
 #include <linux/dma-buf.h>
 #include <linux/export.h>
@@ -25,17 +23,7 @@
 
 MODULE_IMPORT_NS(DMA_BUF);
 
-/**
- * DOC: overview
- *
- * This library provides helpers for GEM objects backed by shmem buffers
- * allocated using anonymous pageable memory.
- *
- * Functions that operate on the GEM object receive struct &drm_gem_shmem_object.
- * For GEM callback helpers in struct &drm_gem_object functions, see likewise
- * named functions with an _object_ infix (e.g., drm_gem_shmem_object_vmap() wraps
- * drm_gem_shmem_vmap()). These helpers perform the necessary type conversion.
- */
+ 
 
 static const struct drm_gem_object_funcs drm_gem_shmem_funcs = {
 	.free = drm_gem_shmem_object_free,
@@ -75,7 +63,7 @@ __drm_gem_shmem_create(struct drm_device *dev, size_t size, bool private)
 
 	if (private) {
 		drm_gem_private_object_init(dev, obj, size);
-		shmem->map_wc = false; /* dma-buf mappings use always writecombine */
+		shmem->map_wc = false;  
 	} else {
 		ret = drm_gem_object_init(dev, obj, size);
 	}
@@ -91,13 +79,7 @@ __drm_gem_shmem_create(struct drm_device *dev, size_t size, bool private)
 	INIT_LIST_HEAD(&shmem->madv_list);
 
 	if (!private) {
-		/*
-		 * Our buffers are kept pinned, so allocating them
-		 * from the MOVABLE zone is a really bad idea, and
-		 * conflicts with CMA. See comments above new_inode()
-		 * why this is required _and_ expected if you're
-		 * going to pin these pages.
-		 */
+		 
 		mapping_set_gfp_mask(obj->filp->f_mapping, GFP_HIGHUSER |
 				     __GFP_RETRY_MAYFAIL | __GFP_NOWARN);
 	}
@@ -111,30 +93,14 @@ err_free:
 
 	return ERR_PTR(ret);
 }
-/**
- * drm_gem_shmem_create - Allocate an object with the given size
- * @dev: DRM device
- * @size: Size of the object to allocate
- *
- * This function creates a shmem GEM object.
- *
- * Returns:
- * A struct drm_gem_shmem_object * on success or an ERR_PTR()-encoded negative
- * error code on failure.
- */
+ 
 struct drm_gem_shmem_object *drm_gem_shmem_create(struct drm_device *dev, size_t size)
 {
 	return __drm_gem_shmem_create(dev, size, false);
 }
 EXPORT_SYMBOL_GPL(drm_gem_shmem_create);
 
-/**
- * drm_gem_shmem_free - Free resources associated with a shmem GEM object
- * @shmem: shmem GEM object to free
- *
- * This function cleans up the GEM object state and frees the memory used to
- * store the object itself.
- */
+ 
 void drm_gem_shmem_free(struct drm_gem_shmem_object *shmem)
 {
 	struct drm_gem_object *obj = &shmem->base;
@@ -183,11 +149,7 @@ static int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem)
 		return PTR_ERR(pages);
 	}
 
-	/*
-	 * TODO: Allocating WC pages which are correctly flushed is only
-	 * supported on x86. Ideal solution would be a GFP_WC flag, which also
-	 * ttm_pool.c could use.
-	 */
+	 
 #ifdef CONFIG_X86
 	if (shmem->map_wc)
 		set_pages_array_wc(pages, obj->size >> PAGE_SHIFT);
@@ -198,12 +160,7 @@ static int drm_gem_shmem_get_pages(struct drm_gem_shmem_object *shmem)
 	return 0;
 }
 
-/*
- * drm_gem_shmem_put_pages - Decrease use count on the backing pages for a shmem GEM object
- * @shmem: shmem GEM object
- *
- * This function decreases the use count and puts the backing pages when use drops to zero.
- */
+ 
 void drm_gem_shmem_put_pages(struct drm_gem_shmem_object *shmem)
 {
 	struct drm_gem_object *obj = &shmem->base;
@@ -246,16 +203,7 @@ static void drm_gem_shmem_unpin_locked(struct drm_gem_shmem_object *shmem)
 	drm_gem_shmem_put_pages(shmem);
 }
 
-/**
- * drm_gem_shmem_pin - Pin backing pages for a shmem GEM object
- * @shmem: shmem GEM object
- *
- * This function makes sure the backing pages are pinned in memory while the
- * buffer is exported.
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int drm_gem_shmem_pin(struct drm_gem_shmem_object *shmem)
 {
 	struct drm_gem_object *obj = &shmem->base;
@@ -273,13 +221,7 @@ int drm_gem_shmem_pin(struct drm_gem_shmem_object *shmem)
 }
 EXPORT_SYMBOL(drm_gem_shmem_pin);
 
-/**
- * drm_gem_shmem_unpin - Unpin backing pages for a shmem GEM object
- * @shmem: shmem GEM object
- *
- * This function removes the requirement that the backing pages are pinned in
- * memory.
- */
+ 
 void drm_gem_shmem_unpin(struct drm_gem_shmem_object *shmem)
 {
 	struct drm_gem_object *obj = &shmem->base;
@@ -292,21 +234,7 @@ void drm_gem_shmem_unpin(struct drm_gem_shmem_object *shmem)
 }
 EXPORT_SYMBOL(drm_gem_shmem_unpin);
 
-/*
- * drm_gem_shmem_vmap - Create a virtual mapping for a shmem GEM object
- * @shmem: shmem GEM object
- * @map: Returns the kernel virtual address of the SHMEM GEM object's backing
- *       store.
- *
- * This function makes sure that a contiguous kernel virtual address mapping
- * exists for the buffer backing the shmem GEM object. It hides the differences
- * between dma-buf imported and natively allocated objects.
- *
- * Acquired mappings should be cleaned up by calling drm_gem_shmem_vunmap().
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int drm_gem_shmem_vmap(struct drm_gem_shmem_object *shmem,
 		       struct iosys_map *map)
 {
@@ -362,18 +290,7 @@ err_zero_use:
 }
 EXPORT_SYMBOL(drm_gem_shmem_vmap);
 
-/*
- * drm_gem_shmem_vunmap - Unmap a virtual mapping for a shmem GEM object
- * @shmem: shmem GEM object
- * @map: Kernel virtual address where the SHMEM GEM object was mapped
- *
- * This function cleans up a kernel virtual address mapping acquired by
- * drm_gem_shmem_vmap(). The mapping is only removed when the use count drops to
- * zero.
- *
- * This function hides the differences between dma-buf imported and natively
- * allocated objects.
- */
+ 
 void drm_gem_shmem_vunmap(struct drm_gem_shmem_object *shmem,
 			  struct iosys_map *map)
 {
@@ -410,20 +327,15 @@ drm_gem_shmem_create_with_handle(struct drm_file *file_priv,
 	if (IS_ERR(shmem))
 		return PTR_ERR(shmem);
 
-	/*
-	 * Allocate an id of idr table where the obj is registered
-	 * and handle has the id what user can see.
-	 */
+	 
 	ret = drm_gem_handle_create(file_priv, &shmem->base, handle);
-	/* drop reference from allocate - handle holds it now. */
+	 
 	drm_gem_object_put(&shmem->base);
 
 	return ret;
 }
 
-/* Update madvise status, returns true if not purged, else
- * false or -errno.
- */
+ 
 int drm_gem_shmem_madvise(struct drm_gem_shmem_object *shmem, int madv)
 {
 	dma_resv_assert_held(shmem->base.resv);
@@ -458,34 +370,14 @@ void drm_gem_shmem_purge(struct drm_gem_shmem_object *shmem)
 	drm_vma_node_unmap(&obj->vma_node, dev->anon_inode->i_mapping);
 	drm_gem_free_mmap_offset(obj);
 
-	/* Our goal here is to return as much of the memory as
-	 * is possible back to the system as we are called from OOM.
-	 * To do this we must instruct the shmfs to drop all of its
-	 * backing pages, *now*.
-	 */
+	 
 	shmem_truncate_range(file_inode(obj->filp), 0, (loff_t)-1);
 
 	invalidate_mapping_pages(file_inode(obj->filp)->i_mapping, 0, (loff_t)-1);
 }
 EXPORT_SYMBOL(drm_gem_shmem_purge);
 
-/**
- * drm_gem_shmem_dumb_create - Create a dumb shmem buffer object
- * @file: DRM file structure to create the dumb buffer for
- * @dev: DRM device
- * @args: IOCTL data
- *
- * This function computes the pitch of the dumb buffer and rounds it up to an
- * integer number of bytes per pixel. Drivers for hardware that doesn't have
- * any additional restrictions on the pitch can directly use this function as
- * their &drm_driver.dumb_create callback.
- *
- * For hardware with additional restrictions, drivers can adjust the fields
- * set up by userspace before calling into this function.
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int drm_gem_shmem_dumb_create(struct drm_file *file, struct drm_device *dev,
 			      struct drm_mode_create_dumb *args)
 {
@@ -495,7 +387,7 @@ int drm_gem_shmem_dumb_create(struct drm_file *file, struct drm_device *dev,
 		args->pitch = min_pitch;
 		args->size = PAGE_ALIGN(args->pitch * args->height);
 	} else {
-		/* ensure sane minimum values */
+		 
 		if (args->pitch < min_pitch)
 			args->pitch = min_pitch;
 		if (args->size < args->pitch * args->height)
@@ -516,7 +408,7 @@ static vm_fault_t drm_gem_shmem_fault(struct vm_fault *vmf)
 	struct page *page;
 	pgoff_t page_offset;
 
-	/* We don't use vmf->pgoff since that has the fake offset */
+	 
 	page_offset = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
 
 	dma_resv_lock(shmem->base.resv, NULL);
@@ -545,11 +437,7 @@ static void drm_gem_shmem_vm_open(struct vm_area_struct *vma)
 
 	dma_resv_lock(shmem->base.resv, NULL);
 
-	/*
-	 * We should have already pinned the pages when the buffer was first
-	 * mmap'd, vm_open() just grabs an additional reference for the new
-	 * mm the vma is getting copied into (ie. on fork()).
-	 */
+	 
 	if (!drm_WARN_ON_ONCE(obj->dev, !shmem->pages_use_count))
 		shmem->pages_use_count++;
 
@@ -577,33 +465,20 @@ const struct vm_operations_struct drm_gem_shmem_vm_ops = {
 };
 EXPORT_SYMBOL_GPL(drm_gem_shmem_vm_ops);
 
-/**
- * drm_gem_shmem_mmap - Memory-map a shmem GEM object
- * @shmem: shmem GEM object
- * @vma: VMA for the area to be mapped
- *
- * This function implements an augmented version of the GEM DRM file mmap
- * operation for shmem objects.
- *
- * Returns:
- * 0 on success or a negative error code on failure.
- */
+ 
 int drm_gem_shmem_mmap(struct drm_gem_shmem_object *shmem, struct vm_area_struct *vma)
 {
 	struct drm_gem_object *obj = &shmem->base;
 	int ret;
 
 	if (obj->import_attach) {
-		/* Reset both vm_ops and vm_private_data, so we don't end up with
-		 * vm_ops pointing to our implementation if the dma-buf backend
-		 * doesn't set those fields.
-		 */
+		 
 		vma->vm_private_data = NULL;
 		vma->vm_ops = NULL;
 
 		ret = dma_buf_mmap(obj->dma_buf, vma, 0);
 
-		/* Drop the reference drm_gem_mmap_obj() acquired.*/
+		 
 		if (!ret)
 			drm_gem_object_put(obj);
 
@@ -626,12 +501,7 @@ int drm_gem_shmem_mmap(struct drm_gem_shmem_object *shmem, struct vm_area_struct
 }
 EXPORT_SYMBOL_GPL(drm_gem_shmem_mmap);
 
-/**
- * drm_gem_shmem_print_info() - Print &drm_gem_shmem_object info for debugfs
- * @shmem: shmem GEM object
- * @p: DRM printer
- * @indent: Tab indentation level
- */
+ 
 void drm_gem_shmem_print_info(const struct drm_gem_shmem_object *shmem,
 			      struct drm_printer *p, unsigned int indent)
 {
@@ -644,20 +514,7 @@ void drm_gem_shmem_print_info(const struct drm_gem_shmem_object *shmem,
 }
 EXPORT_SYMBOL(drm_gem_shmem_print_info);
 
-/**
- * drm_gem_shmem_get_sg_table - Provide a scatter/gather table of pinned
- *                              pages for a shmem GEM object
- * @shmem: shmem GEM object
- *
- * This function exports a scatter/gather table suitable for PRIME usage by
- * calling the standard DMA mapping API.
- *
- * Drivers who need to acquire an scatter/gather table for objects need to call
- * drm_gem_shmem_get_pages_sgt() instead.
- *
- * Returns:
- * A pointer to the scatter/gather table of pinned pages or error pointer on failure.
- */
+ 
 struct sg_table *drm_gem_shmem_get_sg_table(struct drm_gem_shmem_object *shmem)
 {
 	struct drm_gem_object *obj = &shmem->base;
@@ -688,7 +545,7 @@ static struct sg_table *drm_gem_shmem_get_pages_sgt_locked(struct drm_gem_shmem_
 		ret = PTR_ERR(sgt);
 		goto err_put_pages;
 	}
-	/* Map the pages for use by the h/w. */
+	 
 	ret = dma_map_sgtable(obj->dev->dev, sgt, DMA_BIDIRECTIONAL, 0);
 	if (ret)
 		goto err_free_sgt;
@@ -705,22 +562,7 @@ err_put_pages:
 	return ERR_PTR(ret);
 }
 
-/**
- * drm_gem_shmem_get_pages_sgt - Pin pages, dma map them, and return a
- *				 scatter/gather table for a shmem GEM object.
- * @shmem: shmem GEM object
- *
- * This function returns a scatter/gather table suitable for driver usage. If
- * the sg table doesn't exist, the pages are pinned, dma-mapped, and a sg
- * table created.
- *
- * This is the main function for drivers to get at backing storage, and it hides
- * and difference between dma-buf imported and natively allocated objects.
- * drm_gem_shmem_get_sg_table() should not be directly called by drivers.
- *
- * Returns:
- * A pointer to the scatter/gather table of pinned pages or errno on failure.
- */
+ 
 struct sg_table *drm_gem_shmem_get_pages_sgt(struct drm_gem_shmem_object *shmem)
 {
 	int ret;
@@ -736,21 +578,7 @@ struct sg_table *drm_gem_shmem_get_pages_sgt(struct drm_gem_shmem_object *shmem)
 }
 EXPORT_SYMBOL_GPL(drm_gem_shmem_get_pages_sgt);
 
-/**
- * drm_gem_shmem_prime_import_sg_table - Produce a shmem GEM object from
- *                 another driver's scatter/gather table of pinned pages
- * @dev: Device to import into
- * @attach: DMA-BUF attachment
- * @sgt: Scatter/gather table of pinned pages
- *
- * This function imports a scatter/gather table exported via DMA-BUF by
- * another driver. Drivers that use the shmem helpers should set this as their
- * &drm_driver.gem_prime_import_sg_table callback.
- *
- * Returns:
- * A pointer to a newly created GEM object or an ERR_PTR-encoded negative
- * error code on failure.
- */
+ 
 struct drm_gem_object *
 drm_gem_shmem_prime_import_sg_table(struct drm_device *dev,
 				    struct dma_buf_attachment *attach,

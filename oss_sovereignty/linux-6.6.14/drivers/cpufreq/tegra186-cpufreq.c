@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2017, NVIDIA CORPORATION. All rights reserved
- */
+
+ 
 
 #include <linux/cpufreq.h>
 #include <linux/dma-mapping.h>
@@ -25,32 +23,32 @@ struct tegra186_cpufreq_cpu {
 };
 
 static const struct tegra186_cpufreq_cpu tegra186_cpus[] = {
-	/* CPU0 - A57 Cluster */
+	 
 	{
 		.bpmp_cluster_id = 1,
 		.edvd_offset = EDVD_OFFSET_A57(0)
 	},
-	/* CPU1 - Denver Cluster */
+	 
 	{
 		.bpmp_cluster_id = 0,
 		.edvd_offset = EDVD_OFFSET_DENVER(0)
 	},
-	/* CPU2 - Denver Cluster */
+	 
 	{
 		.bpmp_cluster_id = 0,
 		.edvd_offset = EDVD_OFFSET_DENVER(1)
 	},
-	/* CPU3 - A57 Cluster */
+	 
 	{
 		.bpmp_cluster_id = 1,
 		.edvd_offset = EDVD_OFFSET_A57(1)
 	},
-	/* CPU4 - A57 Cluster */
+	 
 	{
 		.bpmp_cluster_id = 1,
 		.edvd_offset = EDVD_OFFSET_A57(2)
 	},
-	/* CPU5 - A57 Cluster */
+	 
 	{
 		.bpmp_cluster_id = 1,
 		.edvd_offset = EDVD_OFFSET_A57(3)
@@ -170,7 +168,7 @@ static struct cpufreq_frequency_table *init_vhint_table(
 		if (ndiv < data->ndiv_min || ndiv > data->ndiv_max)
 			continue;
 
-		/* Only store lowest voltage index for each rate */
+		 
 		if (i > 0 && ndiv == data->ndiv[i - 1])
 			continue;
 
@@ -195,7 +193,7 @@ static struct cpufreq_frequency_table *init_vhint_table(
 		if (ndiv < data->ndiv_min || ndiv > data->ndiv_max)
 			continue;
 
-		/* Only store lowest voltage index for each rate */
+		 
 		if (i > 0 && ndiv == data->ndiv[i - 1])
 			continue;
 

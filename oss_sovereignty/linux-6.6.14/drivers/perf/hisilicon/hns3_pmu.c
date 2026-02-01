@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * This driver adds support for HNS3 PMU iEP device. Related perf events are
- * bandwidth, latency, packet rate, interrupt rate etc.
- *
- * Copyright (C) 2022 HiSilicon Limited
- */
+
+ 
 #include <linux/bitfield.h>
 #include <linux/bitmap.h>
 #include <linux/bug.h>
@@ -25,7 +20,7 @@
 #include <linux/perf_event.h>
 #include <linux/smp.h>
 
-/* registers offset address */
+ 
 #define HNS3_PMU_REG_GLOBAL_CTRL		0x0000
 #define HNS3_PMU_REG_CLOCK_FREQ			0x0020
 #define HNS3_PMU_REG_BDF			0x0fe0
@@ -73,37 +68,8 @@
 
 #define HNS3_PMU_MAX_HW_EVENTS			8
 
-/*
- * Each hardware event contains two registers (counter and ext_counter) for
- * bandwidth, packet rate, latency and interrupt rate. These two registers will
- * be triggered to run at the same when a hardware event is enabled. The meaning
- * of counter and ext_counter of different event type are different, their
- * meaning show as follow:
- *
- * +----------------+------------------+---------------+
- * |   event type   |     counter      |  ext_counter  |
- * +----------------+------------------+---------------+
- * | bandwidth      | byte number      | cycle number  |
- * +----------------+------------------+---------------+
- * | packet rate    | packet number    | cycle number  |
- * +----------------+------------------+---------------+
- * | latency        | cycle number     | packet number |
- * +----------------+------------------+---------------+
- * | interrupt rate | interrupt number | cycle number  |
- * +----------------+------------------+---------------+
- *
- * The cycle number indicates increment of counter of hardware timer, the
- * frequency of hardware timer can be read from hw_clk_freq file.
- *
- * Performance of each hardware event is calculated by: counter / ext_counter.
- *
- * Since processing of data is preferred to be done in userspace, we expose
- * ext_counter as a separate event for userspace and use bit 16 to indicate it.
- * For example, event 0x00001 and 0x10001 are actually one event for hardware
- * because bit 0-15 are same. If the bit 16 of one event is 0 means to read
- * counter register, otherwise means to read ext_counter register.
- */
-/* bandwidth events */
+ 
+ 
 #define HNS3_PMU_EVT_BW_SSU_EGU_BYTE_NUM		0x00001
 #define HNS3_PMU_EVT_BW_SSU_EGU_TIME			0x10001
 #define HNS3_PMU_EVT_BW_SSU_RPU_BYTE_NUM		0x00002
@@ -135,7 +101,7 @@
 #define HNS3_PMU_EVT_BW_WR_PAY_M1_BYTE_NUM		0x00010
 #define HNS3_PMU_EVT_BW_WR_PAY_M1_TIME			0x10010
 
-/* packet rate events */
+ 
 #define HNS3_PMU_EVT_PPS_IGU_SSU_PACKET_NUM		0x00100
 #define HNS3_PMU_EVT_PPS_IGU_SSU_TIME			0x10100
 #define HNS3_PMU_EVT_PPS_SSU_EGU_PACKET_NUM		0x00101
@@ -175,7 +141,7 @@
 #define HNS3_PMU_EVT_PPS_NICROH_RX_PRE_PACKET_NUM	0x00112
 #define HNS3_PMU_EVT_PPS_NICROH_RX_PRE_TIME		0x10112
 
-/* latency events */
+ 
 #define HNS3_PMU_EVT_DLY_TX_PUSH_TIME			0x00202
 #define HNS3_PMU_EVT_DLY_TX_PUSH_PACKET_NUM		0x10202
 #define HNS3_PMU_EVT_DLY_TX_TIME			0x00204
@@ -217,11 +183,11 @@
 #define HNS3_PMU_EVT_DLY_MSIX_WRITE_TIME		0x0021c
 #define HNS3_PMU_EVT_DLY_MSIX_WRITE_PACKET_NUM		0x1021c
 
-/* interrupt rate events */
+ 
 #define HNS3_PMU_EVT_PPS_MSIX_NIC_INTR_NUM		0x00300
 #define HNS3_PMU_EVT_PPS_MSIX_NIC_TIME			0x10300
 
-/* filter mode supported by each bandwidth event */
+ 
 #define HNS3_PMU_FILTER_BW_SSU_EGU		0x07
 #define HNS3_PMU_FILTER_BW_SSU_RPU		0x1f
 #define HNS3_PMU_FILTER_BW_SSU_ROCE		0x0f
@@ -238,7 +204,7 @@
 #define HNS3_PMU_FILTER_BW_WR_PAY_M0		0x01
 #define HNS3_PMU_FILTER_BW_WR_PAY_M1		0x01
 
-/* filter mode supported by each packet rate event */
+ 
 #define HNS3_PMU_FILTER_PPS_IGU_SSU		0x07
 #define HNS3_PMU_FILTER_PPS_SSU_EGU		0x07
 #define HNS3_PMU_FILTER_PPS_SSU_RPU		0x1f
@@ -259,7 +225,7 @@
 #define HNS3_PMU_FILTER_PPS_NICROH_TX_PRE	0x01
 #define HNS3_PMU_FILTER_PPS_NICROH_RX_PRE	0x01
 
-/* filter mode supported by each latency event */
+ 
 #define HNS3_PMU_FILTER_DLY_TX_PUSH		0x01
 #define HNS3_PMU_FILTER_DLY_TX			0x01
 #define HNS3_PMU_FILTER_DLY_SSU_TX_NIC		0x07
@@ -281,7 +247,7 @@
 #define HNS3_PMU_FILTER_DLY_WR_PAY_M1		0x01
 #define HNS3_PMU_FILTER_DLY_MSIX_WRITE		0x01
 
-/* filter mode supported by each interrupt rate event */
+ 
 #define HNS3_PMU_FILTER_INTR_MSIX_NIC		0x01
 
 enum hns3_pmu_hw_filter_mode {
@@ -307,8 +273,8 @@ struct hns3_pmu {
 	int irq;
 	int on_cpu;
 	u32 identifier;
-	u32 hw_clk_freq; /* hardware clock frequency of PMU */
-	/* maximum and minimum bdf allowed by PMU */
+	u32 hw_clk_freq;  
+	 
 	u16 bdf_min;
 	u16 bdf_max;
 };
@@ -515,7 +481,7 @@ static ssize_t hw_clk_freq_show(struct device *dev,
 static DEVICE_ATTR_RO(hw_clk_freq);
 
 static struct attribute *hns3_pmu_events_attr[] = {
-	/* bandwidth events */
+	 
 	HNS3_PMU_BW_EVT_PAIR(bw_ssu_egu, SSU_EGU),
 	HNS3_PMU_BW_EVT_PAIR(bw_ssu_rpu, SSU_RPU),
 	HNS3_PMU_BW_EVT_PAIR(bw_ssu_roce, SSU_ROCE),
@@ -532,7 +498,7 @@ static struct attribute *hns3_pmu_events_attr[] = {
 	HNS3_PMU_BW_EVT_PAIR(bw_wr_pay_m0, WR_PAY_M0),
 	HNS3_PMU_BW_EVT_PAIR(bw_wr_pay_m1, WR_PAY_M1),
 
-	/* packet rate events */
+	 
 	HNS3_PMU_PPS_EVT_PAIR(pps_igu_ssu, IGU_SSU),
 	HNS3_PMU_PPS_EVT_PAIR(pps_ssu_egu, SSU_EGU),
 	HNS3_PMU_PPS_EVT_PAIR(pps_ssu_rpu, SSU_RPU),
@@ -553,7 +519,7 @@ static struct attribute *hns3_pmu_events_attr[] = {
 	HNS3_PMU_PPS_EVT_PAIR(pps_intr_nicroh_tx_pre, NICROH_TX_PRE),
 	HNS3_PMU_PPS_EVT_PAIR(pps_intr_nicroh_rx_pre, NICROH_RX_PRE),
 
-	/* latency events */
+	 
 	HNS3_PMU_DLY_EVT_PAIR(dly_tx_push_to_mac, TX_PUSH),
 	HNS3_PMU_DLY_EVT_PAIR(dly_tx_normal_to_mac, TX),
 	HNS3_PMU_DLY_EVT_PAIR(dly_ssu_tx_th_nic, SSU_TX_NIC),
@@ -575,14 +541,14 @@ static struct attribute *hns3_pmu_events_attr[] = {
 	HNS3_PMU_DLY_EVT_PAIR(dly_wr_pay_m1, WR_PAY_M1),
 	HNS3_PMU_DLY_EVT_PAIR(dly_msix_write, MSIX_WRITE),
 
-	/* interrupt rate events */
+	 
 	HNS3_PMU_INTR_EVT_PAIR(pps_intr_msix_nic, MSIX_NIC),
 
 	NULL
 };
 
 static struct attribute *hns3_pmu_filter_mode_attr[] = {
-	/* bandwidth events */
+	 
 	HNS3_PMU_BW_FLT_MODE_PAIR(bw_ssu_egu, SSU_EGU),
 	HNS3_PMU_BW_FLT_MODE_PAIR(bw_ssu_rpu, SSU_RPU),
 	HNS3_PMU_BW_FLT_MODE_PAIR(bw_ssu_roce, SSU_ROCE),
@@ -599,7 +565,7 @@ static struct attribute *hns3_pmu_filter_mode_attr[] = {
 	HNS3_PMU_BW_FLT_MODE_PAIR(bw_wr_pay_m0, WR_PAY_M0),
 	HNS3_PMU_BW_FLT_MODE_PAIR(bw_wr_pay_m1, WR_PAY_M1),
 
-	/* packet rate events */
+	 
 	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_igu_ssu, IGU_SSU),
 	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_ssu_egu, SSU_EGU),
 	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_ssu_rpu, SSU_RPU),
@@ -620,7 +586,7 @@ static struct attribute *hns3_pmu_filter_mode_attr[] = {
 	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_intr_nicroh_tx_pre, NICROH_TX_PRE),
 	HNS3_PMU_PPS_FLT_MODE_PAIR(pps_intr_nicroh_rx_pre, NICROH_RX_PRE),
 
-	/* latency events */
+	 
 	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_tx_push_to_mac, TX_PUSH),
 	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_tx_normal_to_mac, TX),
 	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_ssu_tx_th_nic, SSU_TX_NIC),
@@ -642,7 +608,7 @@ static struct attribute *hns3_pmu_filter_mode_attr[] = {
 	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_wr_pay_m1, WR_PAY_M1),
 	HNS3_PMU_DLY_FLT_MODE_PAIR(dly_msix_write, MSIX_WRITE),
 
-	/* interrupt rate events */
+	 
 	HNS3_PMU_INTR_FLT_MODE_PAIR(pps_intr_msix_nic, MSIX_NIC),
 
 	NULL
@@ -796,16 +762,16 @@ static int hns3_pmu_find_related_event_idx(struct hns3_pmu *hns3_pmu,
 		if (!hns3_pmu_cmp_event(sibling, event))
 			continue;
 
-		/* Related events is used in group */
+		 
 		if (sibling->group_leader == event->group_leader)
 			return idx;
 	}
 
-	/* No related event and all hardware events are used up */
+	 
 	if (hw_event_used >= HNS3_PMU_MAX_HW_EVENTS)
 		return -EBUSY;
 
-	/* No related event and there is extra hardware events can be use */
+	 
 	return -ENOENT;
 }
 
@@ -858,7 +824,7 @@ static bool hns3_pmu_qid_req_start(struct hns3_pmu *hns3_pmu, u32 idx)
 	u32 reg_qid_ctrl, val;
 	int err;
 
-	/* enable queue id request */
+	 
 	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_QID_CTRL, idx,
 			HNS3_PMU_QID_CTRL_REQ_ENABLE);
 
@@ -873,7 +839,7 @@ static bool hns3_pmu_qid_req_start(struct hns3_pmu *hns3_pmu, u32 idx)
 	queue_id_valid = !(val & HNS3_PMU_QID_CTRL_MISS);
 
 out:
-	/* disable qid request and clear status */
+	 
 	hns3_pmu_writel(hns3_pmu, HNS3_PMU_REG_EVENT_QID_CTRL, idx, 0);
 
 	return queue_id_valid;
@@ -1239,7 +1205,7 @@ static int hns3_pmu_event_init(struct perf_event *event)
 	if (event->attr.type != event->pmu->type)
 		return -ENOENT;
 
-	/* Sampling is not supported */
+	 
 	if (is_sampling_event(event) || event->attach_state & PERF_ATTACH_TASK)
 		return -EOPNOTSUPP;
 
@@ -1321,7 +1287,7 @@ static void hns3_pmu_stop(struct perf_event *event, int flags)
 	if (hwc->state & PERF_HES_UPTODATE)
 		return;
 
-	/* Read hardware counter and update the perf counter statistics */
+	 
 	hns3_pmu_read(event);
 	hwc->state |= PERF_HES_UPTODATE;
 }
@@ -1334,12 +1300,12 @@ static int hns3_pmu_add(struct perf_event *event, int flags)
 
 	hwc->state = PERF_HES_STOPPED | PERF_HES_UPTODATE;
 
-	/* Check all working events to find a related event. */
+	 
 	idx = hns3_pmu_find_related_event_idx(hns3_pmu, event);
 	if (idx < 0 && idx != -ENOENT)
 		return idx;
 
-	/* Current event shares an enabled hardware event with related event */
+	 
 	if (idx >= 0 && idx < HNS3_PMU_MAX_HW_EVENTS) {
 		hwc->idx = idx;
 		goto start_count;
@@ -1445,10 +1411,7 @@ static irqreturn_t hns3_pmu_irq(int irq, void *data)
 					     HNS3_PMU_REG_EVENT_INTR_STATUS,
 					     idx);
 
-		/*
-		 * As each counter will restart from 0 when it is overflowed,
-		 * extra processing is no need, just clear interrupt status.
-		 */
+		 
 		if (intr_status)
 			hns3_pmu_clear_intr_status(hns3_pmu, idx);
 	}
@@ -1481,11 +1444,11 @@ static int hns3_pmu_offline_cpu(unsigned int cpu, struct hlist_node *node)
 	if (!hns3_pmu)
 		return -ENODEV;
 
-	/* Nothing to do if this CPU doesn't own the PMU */
+	 
 	if (hns3_pmu->on_cpu != cpu)
 		return 0;
 
-	/* Choose a new CPU from all online cpus */
+	 
 	target = cpumask_any_but(cpu_online_mask, cpu);
 	if (target >= nr_cpu_ids)
 		return 0;

@@ -1,22 +1,14 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/**************************************************************************
- * Copyright (c) 2007-2011, Intel Corporation.
- * All Rights Reserved.
- *
- **************************************************************************/
+ 
+ 
 
 #ifndef __MMU_H
 #define __MMU_H
 
 struct psb_mmu_driver {
-	/* protects driver- and pd structures. Always take in read mode
-	 * before taking the page table spinlock.
-	 */
+	 
 	struct rw_semaphore sem;
 
-	/* protects page tables, directory tables and pt tables.
-	 * and pt structures.
-	 */
+	 
 	spinlock_t lock;
 
 	atomic_t needs_tlbflush;

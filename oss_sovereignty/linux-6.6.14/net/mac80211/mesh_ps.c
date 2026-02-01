@@ -1,26 +1,18 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright 2012-2013, Marco Porsch <marco.porsch@s2005.tu-chemnitz.de>
- * Copyright 2012-2013, cozybit Inc.
- * Copyright (C) 2021 Intel Corporation
- * Copyright (C) 2023 Intel Corporation
- */
+
+ 
 
 #include "mesh.h"
 #include "wme.h"
 
 
-/* mesh PS management */
+ 
 
-/**
- * mps_qos_null_get - create pre-addressed QoS Null frame for mesh powersave
- * @sta: the station to get the frame for
- */
+ 
 static struct sk_buff *mps_qos_null_get(struct sta_info *sta)
 {
 	struct ieee80211_sub_if_data *sdata = sta->sdata;
 	struct ieee80211_local *local = sdata->local;
-	struct ieee80211_hdr *nullfunc; /* use 4addr header */
+	struct ieee80211_hdr *nullfunc;  
 	struct sk_buff *skb;
 	int size = sizeof(*nullfunc);
 	__le16 fc;
@@ -37,18 +29,15 @@ static struct sk_buff *mps_qos_null_get(struct sta_info *sta)
 	nullfunc->frame_control = fc;
 	nullfunc->duration_id = 0;
 	nullfunc->seq_ctrl = 0;
-	/* no address resolution for this frame -> set addr 1 immediately */
+	 
 	memcpy(nullfunc->addr1, sta->sta.addr, ETH_ALEN);
-	skb_put_zero(skb, 2); /* append QoS control field */
+	skb_put_zero(skb, 2);  
 	ieee80211_mps_set_frame_flags(sdata, sta, nullfunc);
 
 	return skb;
 }
 
-/**
- * mps_qos_null_tx - send a QoS Null to indicate link-specific power mode
- * @sta: the station to send to
- */
+ 
 static void mps_qos_null_tx(struct sta_info *sta)
 {
 	struct sk_buff *skb;
@@ -60,7 +49,7 @@ static void mps_qos_null_tx(struct sta_info *sta)
 	mps_dbg(sta->sdata, "announcing peer-specific power mode to %pM\n",
 		sta->sta.addr);
 
-	/* don't unintentionally start a MPSP */
+	 
 	if (!test_sta_flag(sta, WLAN_STA_PS_STA)) {
 		u8 *qc = ieee80211_get_qos_ctl((void *) skb->data);
 
@@ -70,14 +59,7 @@ static void mps_qos_null_tx(struct sta_info *sta)
 	ieee80211_tx_skb(sta->sdata, skb);
 }
 
-/**
- * ieee80211_mps_local_status_update - track status of local link-specific PMs
- *
- * @sdata: local mesh subif
- *
- * sets the non-peer power mode and triggers the driver PS (re-)configuration
- * Return BSS_CHANGED_BEACON if a beacon update is necessary.
- */
+ 
 u64 ieee80211_mps_local_status_update(struct ieee80211_sub_if_data *sdata)
 {
 	struct ieee80211_if_mesh *ifmsh = &sdata->u.mesh;
@@ -111,13 +93,7 @@ u64 ieee80211_mps_local_status_update(struct ieee80211_sub_if_data *sdata)
 	}
 	rcu_read_unlock();
 
-	/*
-	 * Set non-peer mode to active during peering/scanning/authentication
-	 * (see IEEE802.11-2012 13.14.8.3). The non-peer mesh power mode is
-	 * deep sleep if the local STA is in light or deep sleep towards at
-	 * least one mesh peer (see 13.14.3.1). Otherwise, set it to the
-	 * user-configured default value.
-	 */
+	 
 	if (peering) {
 		mps_dbg(sdata, "setting non-peer PM to active for peering\n");
 		nonpeer_pm = NL80211_MESH_POWER_ACTIVE;
@@ -129,7 +105,7 @@ u64 ieee80211_mps_local_status_update(struct ieee80211_sub_if_data *sdata)
 		nonpeer_pm = ifmsh->mshcfg.power_mode;
 	}
 
-	/* need update if sleep counts move between 0 and non-zero */
+	 
 	if (ifmsh->nonpeer_pm != nonpeer_pm ||
 	    !ifmsh->ps_peers_light_sleep != !light_sleep_cnt ||
 	    !ifmsh->ps_peers_deep_sleep != !deep_sleep_cnt)
@@ -142,13 +118,7 @@ u64 ieee80211_mps_local_status_update(struct ieee80211_sub_if_data *sdata)
 	return changed;
 }
 
-/**
- * ieee80211_mps_set_sta_local_pm - set local PM towards a mesh STA
- *
- * @sta: mesh STA
- * @pm: the power mode to set
- * Return BSS_CHANGED_BEACON if a beacon update is in order.
- */
+ 
 u64 ieee80211_mps_set_sta_local_pm(struct sta_info *sta,
 				   enum nl80211_mesh_power_mode pm)
 {
@@ -162,28 +132,14 @@ u64 ieee80211_mps_set_sta_local_pm(struct sta_info *sta,
 
 	sta->mesh->local_pm = pm;
 
-	/*
-	 * announce peer-specific power mode transition
-	 * (see IEEE802.11-2012 13.14.3.2 and 13.14.3.3)
-	 */
+	 
 	if (sta->mesh->plink_state == NL80211_PLINK_ESTAB)
 		mps_qos_null_tx(sta);
 
 	return ieee80211_mps_local_status_update(sdata);
 }
 
-/**
- * ieee80211_mps_set_frame_flags - set mesh PS flags in FC (and QoS Control)
- *
- * @sdata: local mesh subif
- * @sta: mesh STA
- * @hdr: 802.11 frame header
- *
- * see IEEE802.11-2012 8.2.4.1.7 and 8.2.4.5.11
- *
- * NOTE: sta must be given when an individually-addressed QoS frame header
- * is handled, for group-addressed and management frames it is not used
- */
+ 
 void ieee80211_mps_set_frame_flags(struct ieee80211_sub_if_data *sdata,
 				   struct sta_info *sta,
 				   struct ieee80211_hdr *hdr)
@@ -222,26 +178,17 @@ void ieee80211_mps_set_frame_flags(struct ieee80211_sub_if_data *sdata,
 		qc[1] &= ~(IEEE80211_QOS_CTL_MESH_PS_LEVEL >> 8);
 }
 
-/**
- * ieee80211_mps_sta_status_update - update buffering status of neighbor STA
- *
- * @sta: mesh STA
- *
- * called after change of peering status or non-peer/peer-specific power mode
- */
+ 
 void ieee80211_mps_sta_status_update(struct sta_info *sta)
 {
 	enum nl80211_mesh_power_mode pm;
 	bool do_buffer;
 
-	/* For non-assoc STA, prevent buffering or frame transmission */
+	 
 	if (sta->sta_state < IEEE80211_STA_ASSOC)
 		return;
 
-	/*
-	 * use peer-specific power mode if peering is established and the
-	 * peer's power mode is known
-	 */
+	 
 	if (sta->mesh->plink_state == NL80211_PLINK_ESTAB &&
 	    sta->mesh->peer_pm != NL80211_MESH_POWER_UNKNOWN)
 		pm = sta->mesh->peer_pm;
@@ -250,7 +197,7 @@ void ieee80211_mps_sta_status_update(struct sta_info *sta)
 
 	do_buffer = (pm != NL80211_MESH_POWER_ACTIVE);
 
-	/* clear the MPSP flags for non-peers or active STA */
+	 
 	if (sta->mesh->plink_state != NL80211_PLINK_ESTAB) {
 		clear_sta_flag(sta, WLAN_STA_MPSP_OWNER);
 		clear_sta_flag(sta, WLAN_STA_MPSP_RECIPIENT);
@@ -258,7 +205,7 @@ void ieee80211_mps_sta_status_update(struct sta_info *sta)
 		clear_sta_flag(sta, WLAN_STA_MPSP_OWNER);
 	}
 
-	/* Don't let the same PS state be set twice */
+	 
 	if (test_sta_flag(sta, WLAN_STA_PS_STA) == do_buffer)
 		return;
 
@@ -278,16 +225,7 @@ static void mps_set_sta_peer_pm(struct sta_info *sta,
 	enum nl80211_mesh_power_mode pm;
 	u8 *qc = ieee80211_get_qos_ctl(hdr);
 
-	/*
-	 * Test Power Management field of frame control (PW) and
-	 * mesh power save level subfield of QoS control field (PSL)
-	 *
-	 * | PM | PSL| Mesh PM |
-	 * +----+----+---------+
-	 * | 0  |Rsrv|  Active |
-	 * | 1  | 0  |  Light  |
-	 * | 1  | 1  |  Deep   |
-	 */
+	 
 	if (ieee80211_has_pm(hdr->frame_control)) {
 		if (qc[1] & (IEEE80211_QOS_CTL_MESH_PS_LEVEL >> 8))
 			pm = NL80211_MESH_POWER_DEEP_SLEEP;
@@ -329,37 +267,26 @@ static void mps_set_sta_nonpeer_pm(struct sta_info *sta,
 	ieee80211_mps_sta_status_update(sta);
 }
 
-/**
- * ieee80211_mps_rx_h_sta_process - frame receive handler for mesh powersave
- *
- * @sta: STA info that transmitted the frame
- * @hdr: IEEE 802.11 (QoS) Header
- */
+ 
 void ieee80211_mps_rx_h_sta_process(struct sta_info *sta,
 				    struct ieee80211_hdr *hdr)
 {
 	if (is_unicast_ether_addr(hdr->addr1) &&
 	    ieee80211_is_data_qos(hdr->frame_control)) {
-		/*
-		 * individually addressed QoS Data/Null frames contain
-		 * peer link-specific PS mode towards the local STA
-		 */
+		 
 		mps_set_sta_peer_pm(sta, hdr);
 
-		/* check for mesh Peer Service Period trigger frames */
+		 
 		ieee80211_mpsp_trigger_process(ieee80211_get_qos_ctl(hdr),
 					       sta, false, false);
 	} else {
-		/*
-		 * can only determine non-peer PS mode
-		 * (see IEEE802.11-2012 8.2.4.1.7)
-		 */
+		 
 		mps_set_sta_nonpeer_pm(sta, hdr);
 	}
 }
 
 
-/* mesh PS frame release */
+ 
 
 static void mpsp_trigger_send(struct sta_info *sta, bool rspi, bool eosp)
 {
@@ -377,14 +304,7 @@ static void mpsp_trigger_send(struct sta_info *sta, bool rspi, bool eosp)
 	if (!eosp)
 		nullfunc->frame_control |=
 				cpu_to_le16(IEEE80211_FCTL_MOREDATA);
-	/*
-	 * | RSPI | EOSP |  MPSP triggering   |
-	 * +------+------+--------------------+
-	 * |  0   |  0   | local STA is owner |
-	 * |  0   |  1   | no MPSP (MPSP end) |
-	 * |  1   |  0   | both STA are owner |
-	 * |  1   |  1   | peer STA is owner  | see IEEE802.11-2012 13.14.9.2
-	 */
+	 
 	qc = ieee80211_get_qos_ctl(nullfunc);
 	if (rspi)
 		qc[1] |= (IEEE80211_QOS_CTL_RSPI >> 8);
@@ -402,15 +322,7 @@ static void mpsp_trigger_send(struct sta_info *sta, bool rspi, bool eosp)
 	ieee80211_tx_skb(sdata, skb);
 }
 
-/**
- * mpsp_qos_null_append - append QoS Null frame to MPSP skb queue if needed
- * @sta: the station to handle
- * @frames: the frame list to append to
- *
- * To properly end a mesh MPSP the last transmitted frame has to set the EOSP
- * flag in the QoS Control field. In case the current tailing frame is not a
- * QoS Data frame, append a QoS Null to carry the flag.
- */
+ 
 static void mpsp_qos_null_append(struct sta_info *sta,
 				 struct sk_buff_head *frames)
 {
@@ -428,10 +340,7 @@ static void mpsp_qos_null_append(struct sta_info *sta,
 
 	mps_dbg(sdata, "appending QoS Null in MPSP towards %pM\n",
 		sta->sta.addr);
-	/*
-	 * This frame has to be transmitted last. Assign lowest priority to
-	 * make sure it cannot pass other frames when releasing multiple ACs.
-	 */
+	 
 	new_skb->priority = 1;
 	skb_set_queue_mapping(new_skb, IEEE80211_AC_BK);
 	ieee80211_set_qos_hdr(sdata, new_skb);
@@ -443,12 +352,7 @@ static void mpsp_qos_null_append(struct sta_info *sta,
 	__skb_queue_tail(frames, new_skb);
 }
 
-/**
- * mps_frame_deliver - transmit frames during mesh powersave
- *
- * @sta: STA info to transmit to
- * @n_frames: number of frames to transmit. -1 for all
- */
+ 
 static void mps_frame_deliver(struct sta_info *sta, int n_frames)
 {
 	struct ieee80211_local *local = sta->sdata->local;
@@ -459,7 +363,7 @@ static void mps_frame_deliver(struct sta_info *sta, int n_frames)
 
 	skb_queue_head_init(&frames);
 
-	/* collect frame(s) from buffers */
+	 
 	for (ac = 0; ac < IEEE80211_NUM_ACS; ac++) {
 		while (n_frames != 0) {
 			skb = skb_dequeue(&sta->tx_filtered[ac]);
@@ -480,29 +384,25 @@ static void mps_frame_deliver(struct sta_info *sta, int n_frames)
 			more_data = true;
 	}
 
-	/* nothing to send? -> EOSP */
+	 
 	if (skb_queue_empty(&frames)) {
 		mpsp_trigger_send(sta, false, true);
 		return;
 	}
 
-	/* in a MPSP make sure the last skb is a QoS Data frame */
+	 
 	if (test_sta_flag(sta, WLAN_STA_MPSP_OWNER))
 		mpsp_qos_null_append(sta, &frames);
 
 	mps_dbg(sta->sdata, "sending %d frames to PS STA %pM\n",
 		skb_queue_len(&frames), sta->sta.addr);
 
-	/* prepare collected frames for transmission */
+	 
 	skb_queue_walk(&frames, skb) {
 		struct ieee80211_tx_info *info = IEEE80211_SKB_CB(skb);
 		struct ieee80211_hdr *hdr = (void *) skb->data;
 
-		/*
-		 * Tell TX path to send this frame even though the
-		 * STA may still remain is PS mode after this frame
-		 * exchange.
-		 */
+		 
 		info->flags |= IEEE80211_TX_CTL_NO_PS_BUFFER;
 
 		if (more_data || !skb_queue_is_last(&frames, skb))
@@ -516,7 +416,7 @@ static void mps_frame_deliver(struct sta_info *sta, int n_frames)
 		    ieee80211_is_data_qos(hdr->frame_control)) {
 			u8 *qoshdr = ieee80211_get_qos_ctl(hdr);
 
-			/* MPSP trigger frame ends service period */
+			 
 			*qoshdr |= IEEE80211_QOS_CTL_EOSP;
 			info->flags |= IEEE80211_TX_CTL_REQ_TX_STATUS;
 		}
@@ -526,16 +426,7 @@ static void mps_frame_deliver(struct sta_info *sta, int n_frames)
 	sta_info_recalc_tim(sta);
 }
 
-/**
- * ieee80211_mpsp_trigger_process - track status of mesh Peer Service Periods
- *
- * @qc: QoS Control field
- * @sta: peer to start a MPSP with
- * @tx: frame was transmitted by the local STA
- * @acked: frame has been transmitted successfully
- *
- * NOTE: active mode STA may only serve as MPSP owner
- */
+ 
 void ieee80211_mpsp_trigger_process(u8 *qc, struct sta_info *sta,
 				    bool tx, bool acked)
 {
@@ -563,17 +454,7 @@ void ieee80211_mpsp_trigger_process(u8 *qc, struct sta_info *sta,
 	}
 }
 
-/**
- * ieee80211_mps_frame_release - release frames buffered due to mesh power save
- *
- * @sta: mesh STA
- * @elems: IEs of beacon or probe response
- *
- * For peers if we have individually-addressed frames buffered or the peer
- * indicates buffered frames, send a corresponding MPSP trigger frame. Since
- * we do not evaluate the awake window duration, QoS Nulls are used as MPSP
- * trigger frames. If the neighbour STA is not a peer, only send single frames.
- */
+ 
 void ieee80211_mps_frame_release(struct sta_info *sta,
 				 struct ieee802_11_elems *elems)
 {
@@ -588,7 +469,7 @@ void ieee80211_mps_frame_release(struct sta_info *sta,
 		mps_dbg(sta->sdata, "%pM indicates buffered frames\n",
 			sta->sta.addr);
 
-	/* only transmit to PS STA with announced, non-zero awake window */
+	 
 	if (test_sta_flag(sta, WLAN_STA_PS_STA) &&
 	    (!elems->awake_window || !get_unaligned_le16(elems->awake_window)))
 		return;

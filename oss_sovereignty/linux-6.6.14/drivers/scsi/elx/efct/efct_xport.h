@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) 2021 Broadcom. All Rights Reserved. The term
- * “Broadcom” refers to Broadcom Inc. and/or its subsidiaries.
- */
+ 
+ 
 
 #if !defined(__EFCT_XPORT_H__)
 #define __EFCT_XPORT_H__
@@ -112,47 +109,44 @@ struct efct_xport_fcp_stats {
 
 struct efct_xport {
 	struct efct		*efct;
-	/* wwpn requested by user for primary nport */
+	 
 	u64			req_wwpn;
-	/* wwnn requested by user for primary nport */
+	 
 	u64			req_wwnn;
 
-	/* Nodes */
-	/* number of allocated nodes */
+	 
+	 
 	u32			nodes_count;
-	/* used to track how often IO pool is empty */
+	 
 	atomic_t		io_alloc_failed_count;
-	/* array of pointers to nodes */
+	 
 	struct efc_node		**nodes;
 
-	/* Io pool and counts */
-	/* pointer to IO pool */
+	 
+	 
 	struct efct_io_pool	*io_pool;
-	/* lock for io_pending_list */
+	 
 	spinlock_t		io_pending_lock;
-	/* list of IOs waiting for HW resources
-	 *  lock: xport->io_pending_lock
-	 *  link: efct_io_s->io_pending_link
-	 */
+	 
 	struct list_head	io_pending_list;
-	/* count of totals IOS allocated */
+	 
 	atomic_t		io_total_alloc;
-	/* count of totals IOS free'd */
+	 
 	atomic_t		io_total_free;
-	/* count of totals IOS that were pended */
+	 
 	atomic_t		io_total_pending;
-	/* count of active IOS */
+	 
 	atomic_t		io_active_count;
-	/* count of pending IOS */
+	 
 	atomic_t		io_pending_count;
-	/* non-zero if efct_scsi_check_pending is executing */
+	 
 	atomic_t		io_pending_recursing;
 
-	/* Port */
-	/* requested link state */
+	 
+	 
 	u32			configured_link_state;
 
-	/* Timer for Statistics */
+	 
 	struct timer_list	stats_timer;
 	union efct_xport_stats_u fc_xport_stats;
 	struct efct_xport_fcp_stats fcp_stats;
@@ -183,4 +177,4 @@ struct scsi_transport_template *efct_attach_vport_fc_transport(void);
 void
 efct_release_fc_transport(struct scsi_transport_template *transport_template);
 
-#endif /* __EFCT_XPORT_H__ */
+#endif  

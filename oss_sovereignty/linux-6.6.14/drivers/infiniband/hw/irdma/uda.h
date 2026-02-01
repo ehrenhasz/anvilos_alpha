@@ -1,5 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 or Linux-OpenIB */
-/* Copyright (c) 2016 - 2021 Intel Corporation */
+ 
+ 
 #ifndef IRDMA_UDA_H
 #define IRDMA_UDA_H
 
@@ -84,4 +84,4 @@ static inline int irdma_sc_destroy_mcast_grp(struct irdma_sc_cqp *cqp,
 	return irdma_access_mcast_grp(cqp, info, IRDMA_CQP_OP_DESTROY_MCAST_GRP,
 				      scratch);
 }
-#endif /* IRDMA_UDA_H */
+#endif  

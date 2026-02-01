@@ -1,51 +1,10 @@
-/* SPDX-License-Identifier: MIT */
-/*
- * Copyright © 2014-2021 Intel Corporation
- */
+ 
+ 
 
 #ifndef _ABI_GUC_ACTIONS_ABI_H
 #define _ABI_GUC_ACTIONS_ABI_H
 
-/**
- * DOC: HOST2GUC_SELF_CFG
- *
- * This message is used by Host KMD to setup of the `GuC Self Config KLVs`_.
- *
- * This message must be sent as `MMIO HXG Message`_.
- *
- *  +---+-------+--------------------------------------------------------------+
- *  |   | Bits  | Description                                                  |
- *  +===+=======+==============================================================+
- *  | 0 |    31 | ORIGIN = GUC_HXG_ORIGIN_HOST_                                |
- *  |   +-------+--------------------------------------------------------------+
- *  |   | 30:28 | TYPE = GUC_HXG_TYPE_REQUEST_                                 |
- *  |   +-------+--------------------------------------------------------------+
- *  |   | 27:16 | DATA0 = MBZ                                                  |
- *  |   +-------+--------------------------------------------------------------+
- *  |   |  15:0 | ACTION = _`GUC_ACTION_HOST2GUC_SELF_CFG` = 0x0508            |
- *  +---+-------+--------------------------------------------------------------+
- *  | 1 | 31:16 | **KLV_KEY** - KLV key, see `GuC Self Config KLVs`_           |
- *  |   +-------+--------------------------------------------------------------+
- *  |   |  15:0 | **KLV_LEN** - KLV length                                     |
- *  |   |       |                                                              |
- *  |   |       |   - 32 bit KLV = 1                                           |
- *  |   |       |   - 64 bit KLV = 2                                           |
- *  +---+-------+--------------------------------------------------------------+
- *  | 2 |  31:0 | **VALUE32** - Bits 31-0 of the KLV value                     |
- *  +---+-------+--------------------------------------------------------------+
- *  | 3 |  31:0 | **VALUE64** - Bits 63-32 of the KLV value (**KLV_LEN** = 2)  |
- *  +---+-------+--------------------------------------------------------------+
- *
- *  +---+-------+--------------------------------------------------------------+
- *  |   | Bits  | Description                                                  |
- *  +===+=======+==============================================================+
- *  | 0 |    31 | ORIGIN = GUC_HXG_ORIGIN_GUC_                                 |
- *  |   +-------+--------------------------------------------------------------+
- *  |   | 30:28 | TYPE = GUC_HXG_TYPE_RESPONSE_SUCCESS_                        |
- *  |   +-------+--------------------------------------------------------------+
- *  |   |  27:0 | DATA0 = **NUM** - 1 if KLV was parsed, 0 if not recognized   |
- *  +---+-------+--------------------------------------------------------------+
- */
+ 
 #define GUC_ACTION_HOST2GUC_SELF_CFG			0x0508
 
 #define HOST2GUC_SELF_CFG_REQUEST_MSG_LEN		(GUC_HXG_REQUEST_MSG_MIN_LEN + 3u)
@@ -58,40 +17,7 @@
 #define HOST2GUC_SELF_CFG_RESPONSE_MSG_LEN		GUC_HXG_RESPONSE_MSG_MIN_LEN
 #define HOST2GUC_SELF_CFG_RESPONSE_MSG_0_NUM		GUC_HXG_RESPONSE_MSG_0_DATA0
 
-/**
- * DOC: HOST2GUC_CONTROL_CTB
- *
- * This H2G action allows Vf Host to enable or disable H2G and G2H `CT Buffer`_.
- *
- * This message must be sent as `MMIO HXG Message`_.
- *
- *  +---+-------+--------------------------------------------------------------+
- *  |   | Bits  | Description                                                  |
- *  +===+=======+==============================================================+
- *  | 0 |    31 | ORIGIN = GUC_HXG_ORIGIN_HOST_                                |
- *  |   +-------+--------------------------------------------------------------+
- *  |   | 30:28 | TYPE = GUC_HXG_TYPE_REQUEST_                                 |
- *  |   +-------+--------------------------------------------------------------+
- *  |   | 27:16 | DATA0 = MBZ                                                  |
- *  |   +-------+--------------------------------------------------------------+
- *  |   |  15:0 | ACTION = _`GUC_ACTION_HOST2GUC_CONTROL_CTB` = 0x4509         |
- *  +---+-------+--------------------------------------------------------------+
- *  | 1 |  31:0 | **CONTROL** - control `CTB based communication`_             |
- *  |   |       |                                                              |
- *  |   |       |   - _`GUC_CTB_CONTROL_DISABLE` = 0                           |
- *  |   |       |   - _`GUC_CTB_CONTROL_ENABLE` = 1                            |
- *  +---+-------+--------------------------------------------------------------+
- *
- *  +---+-------+--------------------------------------------------------------+
- *  |   | Bits  | Description                                                  |
- *  +===+=======+==============================================================+
- *  | 0 |    31 | ORIGIN = GUC_HXG_ORIGIN_GUC_                                 |
- *  |   +-------+--------------------------------------------------------------+
- *  |   | 30:28 | TYPE = GUC_HXG_TYPE_RESPONSE_SUCCESS_                        |
- *  |   +-------+--------------------------------------------------------------+
- *  |   |  27:0 | DATA0 = MBZ                                                  |
- *  +---+-------+--------------------------------------------------------------+
- */
+ 
 #define GUC_ACTION_HOST2GUC_CONTROL_CTB			0x4509
 
 #define HOST2GUC_CONTROL_CTB_REQUEST_MSG_LEN		(GUC_HXG_REQUEST_MSG_MIN_LEN + 1u)
@@ -103,7 +29,7 @@
 #define HOST2GUC_CONTROL_CTB_RESPONSE_MSG_LEN		GUC_HXG_RESPONSE_MSG_MIN_LEN
 #define HOST2GUC_CONTROL_CTB_RESPONSE_MSG_0_MBZ		GUC_HXG_RESPONSE_MSG_0_DATA0
 
-/* legacy definitions */
+ 
 
 enum intel_guc_action {
 	INTEL_GUC_ACTION_DEFAULT = 0x0,
@@ -181,4 +107,4 @@ enum intel_guc_state_capture_event_status {
 
 #define INTEL_GUC_STATE_CAPTURE_EVENT_STATUS_MASK      0x000000FF
 
-#endif /* _ABI_GUC_ACTIONS_ABI_H */
+#endif  

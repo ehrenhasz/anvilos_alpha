@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0+
+
 
 #include <linux/module.h>
 #include <linux/if_bridge.h>
@@ -39,29 +39,29 @@ struct lan966x_main_io_resource {
 };
 
 static const struct lan966x_main_io_resource lan966x_main_iomap[] =  {
-	{ TARGET_CPU,                   0xc0000, 0 }, /* 0xe00c0000 */
-	{ TARGET_FDMA,                  0xc0400, 0 }, /* 0xe00c0400 */
-	{ TARGET_ORG,                         0, 1 }, /* 0xe2000000 */
-	{ TARGET_GCB,                    0x4000, 1 }, /* 0xe2004000 */
-	{ TARGET_QS,                     0x8000, 1 }, /* 0xe2008000 */
-	{ TARGET_PTP,                    0xc000, 1 }, /* 0xe200c000 */
-	{ TARGET_CHIP_TOP,              0x10000, 1 }, /* 0xe2010000 */
-	{ TARGET_REW,                   0x14000, 1 }, /* 0xe2014000 */
-	{ TARGET_VCAP,                  0x18000, 1 }, /* 0xe2018000 */
-	{ TARGET_VCAP + 1,              0x20000, 1 }, /* 0xe2020000 */
-	{ TARGET_VCAP + 2,              0x24000, 1 }, /* 0xe2024000 */
-	{ TARGET_SYS,                   0x28000, 1 }, /* 0xe2028000 */
-	{ TARGET_DEV,                   0x34000, 1 }, /* 0xe2034000 */
-	{ TARGET_DEV +  1,              0x38000, 1 }, /* 0xe2038000 */
-	{ TARGET_DEV +  2,              0x3c000, 1 }, /* 0xe203c000 */
-	{ TARGET_DEV +  3,              0x40000, 1 }, /* 0xe2040000 */
-	{ TARGET_DEV +  4,              0x44000, 1 }, /* 0xe2044000 */
-	{ TARGET_DEV +  5,              0x48000, 1 }, /* 0xe2048000 */
-	{ TARGET_DEV +  6,              0x4c000, 1 }, /* 0xe204c000 */
-	{ TARGET_DEV +  7,              0x50000, 1 }, /* 0xe2050000 */
-	{ TARGET_QSYS,                 0x100000, 1 }, /* 0xe2100000 */
-	{ TARGET_AFI,                  0x120000, 1 }, /* 0xe2120000 */
-	{ TARGET_ANA,                  0x140000, 1 }, /* 0xe2140000 */
+	{ TARGET_CPU,                   0xc0000, 0 },  
+	{ TARGET_FDMA,                  0xc0400, 0 },  
+	{ TARGET_ORG,                         0, 1 },  
+	{ TARGET_GCB,                    0x4000, 1 },  
+	{ TARGET_QS,                     0x8000, 1 },  
+	{ TARGET_PTP,                    0xc000, 1 },  
+	{ TARGET_CHIP_TOP,              0x10000, 1 },  
+	{ TARGET_REW,                   0x14000, 1 },  
+	{ TARGET_VCAP,                  0x18000, 1 },  
+	{ TARGET_VCAP + 1,              0x20000, 1 },  
+	{ TARGET_VCAP + 2,              0x24000, 1 },  
+	{ TARGET_SYS,                   0x28000, 1 },  
+	{ TARGET_DEV,                   0x34000, 1 },  
+	{ TARGET_DEV +  1,              0x38000, 1 },  
+	{ TARGET_DEV +  2,              0x3c000, 1 },  
+	{ TARGET_DEV +  3,              0x40000, 1 },  
+	{ TARGET_DEV +  4,              0x44000, 1 },  
+	{ TARGET_DEV +  5,              0x48000, 1 },  
+	{ TARGET_DEV +  6,              0x4c000, 1 },  
+	{ TARGET_DEV +  7,              0x50000, 1 },  
+	{ TARGET_QSYS,                 0x100000, 1 },  
+	{ TARGET_AFI,                  0x120000, 1 },  
+	{ TARGET_ANA,                  0x140000, 1 },  
 };
 
 static int lan966x_create_targets(struct platform_device *pdev,
@@ -71,11 +71,7 @@ static int lan966x_create_targets(struct platform_device *pdev,
 	void __iomem *begin[IO_RANGES];
 	int idx;
 
-	/* Initially map the entire range and after that update each target to
-	 * point inside the region at the correct offset. It is possible that
-	 * other devices access the same region so don't add any checks about
-	 * this.
-	 */
+	 
 	for (idx = 0; idx < IO_RANGES; idx++) {
 		iores[idx] = platform_get_resource(pdev, IORESOURCE_MEM,
 						   idx);
@@ -132,18 +128,16 @@ static int lan966x_port_set_mac_address(struct net_device *dev, void *p)
 	if (ether_addr_equal(addr->sa_data, dev->dev_addr))
 		return 0;
 
-	/* Learn the new net device MAC address in the mac table. */
+	 
 	ret = lan966x_mac_cpu_learn(lan966x, addr->sa_data, HOST_PVID);
 	if (ret)
 		return ret;
 
-	/* If there is another port with the same address as the dev, then don't
-	 * delete it from the MAC table
-	 */
+	 
 	if (!lan966x_port_unique_address(dev))
 		goto out;
 
-	/* Then forget the previous one. */
+	 
 	ret = lan966x_mac_cpu_forget(lan966x, dev->dev_addr, HOST_PVID);
 	if (ret)
 		return ret;
@@ -172,9 +166,7 @@ static int lan966x_port_open(struct net_device *dev)
 	struct lan966x *lan966x = port->lan966x;
 	int err;
 
-	/* Enable receiving frames on the port, and activate auto-learning of
-	 * MAC addresses.
-	 */
+	 
 	lan_rmw(ANA_PORT_CFG_LEARNAUTO_SET(1) |
 		ANA_PORT_CFG_RECV_ENA_SET(1) |
 		ANA_PORT_CFG_PORTID_VAL_SET(port->chip_port),
@@ -238,14 +230,14 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
 	    (QS_INJ_STATUS_WMARK_REACHED_GET(val) & BIT(grp)))
 		goto err;
 
-	/* Write start of frame */
+	 
 	lan_wr(QS_INJ_CTRL_GAP_SIZE_SET(1) |
 	       QS_INJ_CTRL_SOF_SET(1),
 	       lan966x, QS_INJ_CTRL(grp));
 
-	/* Write IFH header */
+	 
 	for (i = 0; i < IFH_LEN; ++i) {
-		/* Wait until the fifo is ready */
+		 
 		err = lan966x_port_inj_ready(lan966x, grp);
 		if (err)
 			goto err;
@@ -253,11 +245,11 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
 		lan_wr((__force u32)ifh[i], lan966x, QS_INJ_WR(grp));
 	}
 
-	/* Write frame */
+	 
 	count = DIV_ROUND_UP(skb->len, 4);
 	last = skb->len % 4;
 	for (i = 0; i < count; ++i) {
-		/* Wait until the fifo is ready */
+		 
 		err = lan966x_port_inj_ready(lan966x, grp);
 		if (err)
 			goto err;
@@ -265,9 +257,9 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
 		lan_wr(((u32 *)skb->data)[i], lan966x, QS_INJ_WR(grp));
 	}
 
-	/* Add padding */
+	 
 	while (i < (LAN966X_BUFFER_MIN_SZ / 4)) {
-		/* Wait until the fifo is ready */
+		 
 		err = lan966x_port_inj_ready(lan966x, grp);
 		if (err)
 			goto err;
@@ -276,14 +268,14 @@ static int lan966x_port_ifh_xmit(struct sk_buff *skb,
 		++i;
 	}
 
-	/* Inidcate EOF and valid bytes in the last word */
+	 
 	lan_wr(QS_INJ_CTRL_GAP_SIZE_SET(1) |
 	       QS_INJ_CTRL_VLD_BYTES_SET(skb->len < LAN966X_BUFFER_MIN_SZ ?
 				     0 : last) |
 	       QS_INJ_CTRL_EOF_SET(1),
 	       lan966x, QS_INJ_CTRL(grp));
 
-	/* Add dummy CRC */
+	 
 	lan_wr(0, lan966x, QS_INJ_WR(grp));
 	skb_tx_timestamp(skb);
 
@@ -313,9 +305,7 @@ static void lan966x_ifh_set(u8 *ifh, size_t val, size_t pos, size_t length)
 		u8 p = IFH_LEN_BYTES - (pos + i) / 8 - 1;
 		u8 v = val >> i & 0xff;
 
-		/* There is no need to check for limits of the array, as these
-		 * will never be written
-		 */
+		 
 		ifh[p] |= v << ((pos + i) % 8);
 		ifh[p - 1] |= v >> (8 - (pos + i) % 8);
 
@@ -519,10 +509,7 @@ bool lan966x_hw_offload(struct lan966x *lan966x, u32 port, struct sk_buff *skb)
 {
 	u32 val;
 
-	/* The IGMP and MLD frames are not forward by the HW if
-	 * multicast snooping is enabled, therefor don't mark as
-	 * offload to allow the SW to forward the frames accordingly.
-	 */
+	 
 	val = lan_rd(lan966x, ANA_CPU_FWD_CFG(port));
 	if (!(val & (ANA_CPU_FWD_CFG_IGMP_REDIR_ENA |
 		     ANA_CPU_FWD_CFG_MLD_REDIR_ENA)))
@@ -689,14 +676,14 @@ static irqreturn_t lan966x_xtr_irq_handler(int irq, void *args)
 			len += sz;
 		} while (len < buf_len);
 
-		/* Read the FCS */
+		 
 		sz = lan966x_rx_frame_word(lan966x, grp, &val);
 		if (sz < 0) {
 			kfree_skb(skb);
 			goto recover;
 		}
 
-		/* Update the statistics if part of the FCS was read before */
+		 
 		len -= ETH_FCS_LEN - sz;
 
 		if (unlikely(dev->features & NETIF_F_RXFCS)) {
@@ -883,51 +870,47 @@ static void lan966x_init(struct lan966x *lan966x)
 {
 	u32 p, i;
 
-	/* MAC table initialization */
+	 
 	lan966x_mac_init(lan966x);
 
 	lan966x_vlan_init(lan966x);
 
-	/* Flush queues */
+	 
 	lan_wr(lan_rd(lan966x, QS_XTR_FLUSH) |
 	       GENMASK(1, 0),
 	       lan966x, QS_XTR_FLUSH);
 
-	/* Allow to drain */
+	 
 	mdelay(1);
 
-	/* All Queues normal */
+	 
 	lan_wr(lan_rd(lan966x, QS_XTR_FLUSH) &
 	       ~(GENMASK(1, 0)),
 	       lan966x, QS_XTR_FLUSH);
 
-	/* Set MAC age time to default value, the entry is aged after
-	 * 2 * AGE_PERIOD
-	 */
+	 
 	lan_wr(ANA_AUTOAGE_AGE_PERIOD_SET(BR_DEFAULT_AGEING_TIME / 2 / HZ),
 	       lan966x, ANA_AUTOAGE);
 
-	/* Disable learning for frames discarded by VLAN ingress filtering */
+	 
 	lan_rmw(ANA_ADVLEARN_VLAN_CHK_SET(1),
 		ANA_ADVLEARN_VLAN_CHK,
 		lan966x, ANA_ADVLEARN);
 
-	/* Setup frame ageing - "2 sec" - The unit is 6.5 us on lan966x */
+	 
 	lan_wr(SYS_FRM_AGING_AGE_TX_ENA_SET(1) |
 	       (20000000 / 65),
 	       lan966x,  SYS_FRM_AGING);
 
-	/* Map the 8 CPU extraction queues to CPU port */
+	 
 	lan_wr(0, lan966x, QSYS_CPU_GROUP_MAP);
 
-	/* Do byte-swap and expect status after last data word
-	 * Extraction: Mode: manual extraction) | Byte_swap
-	 */
+	 
 	lan_wr(QS_XTR_GRP_CFG_MODE_SET(lan966x->fdma ? 2 : 1) |
 	       QS_XTR_GRP_CFG_BYTE_SWAP_SET(1),
 	       lan966x, QS_XTR_GRP_CFG(0));
 
-	/* Injection: Mode: manual injection | Byte_swap */
+	 
 	lan_wr(QS_INJ_GRP_CFG_MODE_SET(lan966x->fdma ? 2 : 1) |
 	       QS_INJ_GRP_CFG_BYTE_SWAP_SET(1),
 	       lan966x, QS_INJ_GRP_CFG(0));
@@ -936,19 +919,19 @@ static void lan966x_init(struct lan966x *lan966x)
 		QS_INJ_CTRL_GAP_SIZE,
 		lan966x, QS_INJ_CTRL(0));
 
-	/* Enable IFH insertion/parsing on CPU ports */
+	 
 	lan_wr(SYS_PORT_MODE_INCL_INJ_HDR_SET(1) |
 	       SYS_PORT_MODE_INCL_XTR_HDR_SET(1),
 	       lan966x, SYS_PORT_MODE(CPU_PORT));
 
-	/* Setup flooding PGIDs */
+	 
 	lan_wr(ANA_FLOODING_IPMC_FLD_MC4_DATA_SET(PGID_MCIPV4) |
 	       ANA_FLOODING_IPMC_FLD_MC4_CTRL_SET(PGID_MC) |
 	       ANA_FLOODING_IPMC_FLD_MC6_DATA_SET(PGID_MCIPV6) |
 	       ANA_FLOODING_IPMC_FLD_MC6_CTRL_SET(PGID_MC),
 	       lan966x, ANA_FLOODING_IPMC);
 
-	/* There are 8 priorities */
+	 
 	for (i = 0; i < 8; ++i)
 		lan_rmw(ANA_FLOODING_FLD_MULTICAST_SET(PGID_MC) |
 			ANA_FLOODING_FLD_UNICAST_SET(PGID_UC) |
@@ -959,36 +942,34 @@ static void lan966x_init(struct lan966x *lan966x)
 			lan966x, ANA_FLOODING(i));
 
 	for (i = 0; i < PGID_ENTRIES; ++i)
-		/* Set all the entries to obey VLAN_VLAN */
+		 
 		lan_rmw(ANA_PGID_CFG_OBEY_VLAN_SET(1),
 			ANA_PGID_CFG_OBEY_VLAN,
 			lan966x, ANA_PGID_CFG(i));
 
 	for (p = 0; p < lan966x->num_phys_ports; p++) {
-		/* Disable bridging by default */
+		 
 		lan_rmw(ANA_PGID_PGID_SET(0x0),
 			ANA_PGID_PGID,
 			lan966x, ANA_PGID(p + PGID_SRC));
 
-		/* Do not forward BPDU frames to the front ports and copy them
-		 * to CPU
-		 */
+		 
 		lan_wr(0xffff, lan966x, ANA_CPU_FWD_BPDU_CFG(p));
 	}
 
-	/* Set source buffer size for each priority and each port to 1500 bytes */
+	 
 	for (i = 0; i <= QSYS_Q_RSRV; ++i) {
 		lan_wr(1500 / 64, lan966x, QSYS_RES_CFG(i));
 		lan_wr(1500 / 64, lan966x, QSYS_RES_CFG(512 + i));
 	}
 
-	/* Enable switching to/from cpu port */
+	 
 	lan_wr(QSYS_SW_PORT_MODE_PORT_ENA_SET(1) |
 	       QSYS_SW_PORT_MODE_SCH_NEXT_CFG_SET(1) |
 	       QSYS_SW_PORT_MODE_INGRESS_DROP_MODE_SET(1),
 	       lan966x,  QSYS_SW_PORT_MODE(CPU_PORT));
 
-	/* Configure and enable the CPU port */
+	 
 	lan_rmw(ANA_PGID_PGID_SET(0),
 		ANA_PGID_PGID,
 		lan966x, ANA_PGID(CPU_PORT));
@@ -996,12 +977,12 @@ static void lan966x_init(struct lan966x *lan966x)
 		ANA_PGID_PGID,
 		lan966x, ANA_PGID(PGID_CPU));
 
-	/* Multicast to all other ports */
+	 
 	lan_rmw(GENMASK(lan966x->num_phys_ports - 1, 0),
 		ANA_PGID_PGID,
 		lan966x, ANA_PGID(PGID_MC));
 
-	/* This will be controlled by mrouter ports */
+	 
 	lan_rmw(GENMASK(lan966x->num_phys_ports - 1, 0),
 		ANA_PGID_PGID,
 		lan966x, ANA_PGID(PGID_MCIPV4));
@@ -1010,12 +991,12 @@ static void lan966x_init(struct lan966x *lan966x)
 		ANA_PGID_PGID,
 		lan966x, ANA_PGID(PGID_MCIPV6));
 
-	/* Unicast to all other ports */
+	 
 	lan_rmw(GENMASK(lan966x->num_phys_ports - 1, 0),
 		ANA_PGID_PGID,
 		lan966x, ANA_PGID(PGID_UC));
 
-	/* Broadcast to the CPU port and to other ports */
+	 
 	lan_rmw(ANA_PGID_PGID_SET(BIT(CPU_PORT) | GENMASK(lan966x->num_phys_ports - 1, 0)),
 		ANA_PGID_PGID,
 		lan966x, ANA_PGID(PGID_BC));
@@ -1051,13 +1032,7 @@ static int lan966x_reset_switch(struct lan966x *lan966x)
 
 	reset_control_reset(switch_reset);
 
-	/* Don't reinitialize the switch core, if it is already initialized. In
-	 * case it is initialized twice, some pointers inside the queue system
-	 * in HW will get corrupted and then after a while the queue system gets
-	 * full and no traffic is passing through the switch. The issue is seen
-	 * when loading and unloading the driver and sending traffic through the
-	 * switch.
-	 */
+	 
 	if (lan_rd(lan966x, SYS_RESET_CFG) & SYS_RESET_CFG_CORE_ENA)
 		return 0;
 
@@ -1114,10 +1089,10 @@ static int lan966x_probe(struct platform_device *pdev)
 	if (!lan966x->ports)
 		return -ENOMEM;
 
-	/* There QS system has 32KB of memory */
+	 
 	lan966x->shared_queue_sz = LAN966X_BUFFER_MEMORY;
 
-	/* set irq */
+	 
 	lan966x->xtr_irq = platform_get_irq_byname(pdev, "xtr");
 	if (lan966x->xtr_irq < 0)
 		return lan966x->xtr_irq;
@@ -1180,11 +1155,11 @@ static int lan966x_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, -ENODEV,
 				     "no ethernet-ports child found\n");
 
-	/* init switch */
+	 
 	lan966x_init(lan966x);
 	lan966x_stats_init(lan966x);
 
-	/* go over the child nodes */
+	 
 	fwnode_for_each_available_child_node(ports, portnp) {
 		phy_interface_t phy_mode;
 		struct phy *serdes;
@@ -1198,7 +1173,7 @@ static int lan966x_probe(struct platform_device *pdev)
 		if (err)
 			goto cleanup_ports;
 
-		/* Read needed configuration */
+		 
 		lan966x->ports[p]->config.portmode = phy_mode;
 		lan966x->ports[p]->fwnode = fwnode_handle_get(portnp);
 

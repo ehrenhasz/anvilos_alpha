@@ -1,36 +1,4 @@
-/*
- * This file is part of the Chelsio FCoE driver for Linux.
- *
- * Copyright (c) 2008-2012 Chelsio Communications, Inc. All rights reserved.
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and/or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 
 #include <linux/kernel.h>
 #include <linux/pci.h>
@@ -70,13 +38,7 @@ csio_nondata_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * csio_fwevt_handler - Common FW event handler routine.
- * @hw: HW module.
- *
- * This is the ISR for FW events. It is shared b/w MSIX
- * and INTx handlers.
- */
+ 
 static void
 csio_fwevt_handler(struct csio_hw *hw)
 {
@@ -94,16 +56,9 @@ csio_fwevt_handler(struct csio_hw *hw)
 	}
 	spin_unlock_irqrestore(&hw->lock, flags);
 
-} /* csio_fwevt_handler */
+}  
 
-/*
- * csio_fwevt_isr() - FW events MSIX ISR
- * @irq:
- * @dev_id:
- *
- * Process WRs on the FW event queue.
- *
- */
+ 
 static irqreturn_t
 csio_fwevt_isr(int irq, void *dev_id)
 {
@@ -122,26 +77,15 @@ csio_fwevt_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * csio_fwevt_isr() - INTx wrapper for handling FW events.
- * @irq:
- * @dev_id:
- */
+ 
 void
 csio_fwevt_intx_handler(struct csio_hw *hw, void *wr, uint32_t len,
 			   struct csio_fl_dma_buf *flb, void *priv)
 {
 	csio_fwevt_handler(hw);
-} /* csio_fwevt_intx_handler */
+}  
 
-/*
- * csio_process_scsi_cmpl - Process a SCSI WR completion.
- * @hw: HW module.
- * @wr: The completed WR from the ingress queue.
- * @len: Length of the WR.
- * @flb: Freelist buffer array.
- *
- */
+ 
 static void
 csio_process_scsi_cmpl(struct csio_hw *hw, void *wr, uint32_t len,
 			struct csio_fl_dma_buf *flb, void *cbfn_q)
@@ -170,17 +114,7 @@ csio_process_scsi_cmpl(struct csio_hw *hw, void *wr, uint32_t len,
 			else
 				csio_scsi_aborted(ioreq,
 						  (struct list_head *)cbfn_q);
-			/*
-			 * We call scsi_done for I/Os that driver thinks aborts
-			 * have timed out. If there is a race caused by FW
-			 * completing abort at the exact same time that the
-			 * driver has deteced the abort timeout, the following
-			 * check prevents calling of scsi_done twice for the
-			 * same command: once from the eh_abort_handler, another
-			 * from csio_scsi_isr_handler(). This also avoids the
-			 * need to check if csio_scsi_cmnd(req) is NULL in the
-			 * fast path.
-			 */
+			 
 			cmnd = csio_scsi_cmnd(ioreq);
 			if (unlikely(cmnd == NULL))
 				list_del_init(&ioreq->sm.sm_list);
@@ -198,16 +132,7 @@ csio_process_scsi_cmpl(struct csio_hw *hw, void *wr, uint32_t len,
 	}
 }
 
-/*
- * csio_scsi_isr_handler() - Common SCSI ISR handler.
- * @iq: Ingress queue pointer.
- *
- * Processes SCSI completions on the SCSI IQ indicated by scm->iq_idx
- * by calling csio_wr_process_iq_idx. If there are completions on the
- * isr_cbfn_q, yank them out into a local queue and call their io_cbfns.
- * Once done, add these completions onto the freelist.
- * This routine is shared b/w MSIX and INTx.
- */
+ 
 static inline irqreturn_t
 csio_scsi_isr_handler(struct csio_q *iq)
 {
@@ -224,19 +149,19 @@ csio_scsi_isr_handler(struct csio_q *iq)
 					&cbfn_q) != 0))
 		return IRQ_NONE;
 
-	/* Call back the completion routines */
+	 
 	list_for_each(tmp, &cbfn_q) {
 		ioreq = (struct csio_ioreq *)tmp;
 		isr_completions++;
 		ioreq->io_cbfn(hw, ioreq);
-		/* Release ddp buffer if used for this req */
+		 
 		if (unlikely(ioreq->dcopy))
 			csio_put_scsi_ddp_list_lock(hw, scm, &ioreq->gen_list,
 						    ioreq->nsge);
 	}
 
 	if (isr_completions) {
-		/* Return the ioreqs back to ioreq->freelist */
+		 
 		csio_put_scsi_ioreq_list_lock(hw, scm, &cbfn_q,
 					      isr_completions);
 	}
@@ -244,14 +169,7 @@ csio_scsi_isr_handler(struct csio_q *iq)
 	return IRQ_HANDLED;
 }
 
-/*
- * csio_scsi_isr() - SCSI MSIX handler
- * @irq:
- * @dev_id:
- *
- * This is the top level SCSI MSIX handler. Calls csio_scsi_isr_handler()
- * for handling SCSI completions.
- */
+ 
 static irqreturn_t
 csio_scsi_isr(int irq, void *dev_id)
 {
@@ -273,14 +191,7 @@ csio_scsi_isr(int irq, void *dev_id)
 	return IRQ_HANDLED;
 }
 
-/*
- * csio_scsi_intx_handler() - SCSI INTx handler
- * @irq:
- * @dev_id:
- *
- * This is the top level SCSI INTx handler. Calls csio_scsi_isr_handler()
- * for handling SCSI completions.
- */
+ 
 void
 csio_scsi_intx_handler(struct csio_hw *hw, void *wr, uint32_t len,
 			struct csio_fl_dma_buf *flb, void *priv)
@@ -289,15 +200,9 @@ csio_scsi_intx_handler(struct csio_hw *hw, void *wr, uint32_t len,
 
 	csio_scsi_isr_handler(iq);
 
-} /* csio_scsi_intx_handler */
+}  
 
-/*
- * csio_fcoe_isr() - INTx/MSI interrupt service routine for FCoE.
- * @irq:
- * @dev_id:
- *
- *
- */
+ 
 static irqreturn_t
 csio_fcoe_isr(int irq, void *dev_id)
 {
@@ -315,23 +220,20 @@ csio_fcoe_isr(int irq, void *dev_id)
 		return IRQ_NONE;
 	}
 
-	/* Disable the interrupt for this PCI function. */
+	 
 	if (hw->intr_mode == CSIO_IM_INTX)
 		csio_wr_reg32(hw, 0, MYPF_REG(PCIE_PF_CLI_A));
 
-	/*
-	 * The read in the following function will flush the
-	 * above write.
-	 */
+	 
 	if (csio_hw_slow_intr_handler(hw))
 		ret = IRQ_HANDLED;
 
-	/* Get the INTx Forward interrupt IQ. */
+	 
 	intx_q = csio_get_q(hw, hw->intr_iq_idx);
 
 	CSIO_DB_ASSERT(intx_q);
 
-	/* IQ handler is not possible for intx_q, hence pass in NULL */
+	 
 	if (likely(csio_wr_process_iq(hw, intx_q, NULL, NULL) == 0))
 		ret = IRQ_HANDLED;
 
@@ -357,7 +259,7 @@ csio_add_msix_desc(struct csio_hw *hw)
 	int len = sizeof(entryp->desc) - 1;
 	int cnt = hw->num_sqsets + k;
 
-	/* Non-data vector */
+	 
 	memset(entryp->desc, 0, len + 1);
 	snprintf(entryp->desc, len, "csio-%02x:%02x:%x-nondata",
 		 CSIO_PCI_BUS(hw), CSIO_PCI_DEV(hw), CSIO_PCI_FUNC(hw));
@@ -368,7 +270,7 @@ csio_add_msix_desc(struct csio_hw *hw)
 		 CSIO_PCI_BUS(hw), CSIO_PCI_DEV(hw), CSIO_PCI_FUNC(hw));
 	entryp++;
 
-	/* Name SCSI vecs */
+	 
 	for (i = k; i < cnt; i++, entryp++) {
 		memset(entryp->desc, 0, len + 1);
 		snprintf(entryp->desc, len, "csio-%02x:%02x:%x-scsi%d",
@@ -397,7 +299,7 @@ csio_request_irqs(struct csio_hw *hw)
 		goto out;
 	}
 
-	/* Add the MSIX vector descriptions */
+	 
 	csio_add_msix_desc(hw);
 
 	rv = request_irq(pci_irq_vector(pdev, k), csio_nondata_isr, 0,
@@ -420,7 +322,7 @@ csio_request_irqs(struct csio_hw *hw)
 
 	entryp[k++].dev_id = (void *)hw;
 
-	/* Allocate IRQs for SCSI */
+	 
 	for (i = 0; i < hw->num_pports; i++) {
 		info = &hw->scsi_cpu_info[i];
 		for (j = 0; j < info->max_cpus; j++, k++) {
@@ -438,8 +340,8 @@ csio_request_irqs(struct csio_hw *hw)
 
 			entryp[k].dev_id = q;
 
-		} /* for all scsi cpus */
-	} /* for all ports */
+		}  
+	}  
 
 out:
 	hw->flags |= CSIO_HWF_HOST_INTR_ENABLED;
@@ -452,7 +354,7 @@ out_free_irqs:
 	return -EINVAL;
 }
 
-/* Reduce per-port max possible CPUs */
+ 
 static void
 csio_reduce_sqsets(struct csio_hw *hw, int cnt)
 {
@@ -511,7 +413,7 @@ csio_enable_msix(struct csio_hw *hw)
 	min = hw->num_pports + extra;
 	cnt = hw->num_sqsets + extra;
 
-	/* Max vectors required based on #niqs configured in fw */
+	 
 	if (hw->flags & CSIO_HWF_USING_SOFT_PARAMS || !csio_is_hw_master(hw))
 		cnt = min_t(uint8_t, hw->cfg_niq, cnt);
 
@@ -527,7 +429,7 @@ csio_enable_msix(struct csio_hw *hw)
 		csio_reduce_sqsets(hw, cnt - extra);
 	}
 
-	/* Distribute vectors */
+	 
 	k = 0;
 	csio_set_nondata_intr_idx(hw, k);
 	csio_set_mb_intr_idx(csio_hw_to_mbm(hw), k++);
@@ -553,11 +455,11 @@ csio_intr_enable(struct csio_hw *hw)
 	hw->intr_mode = CSIO_IM_NONE;
 	hw->flags &= ~CSIO_HWF_HOST_INTR_ENABLED;
 
-	/* Try MSIX, then MSI or fall back to INTx */
+	 
 	if ((csio_msi == 2) && !csio_enable_msix(hw))
 		hw->intr_mode = CSIO_IM_MSIX;
 	else {
-		/* Max iqs required based on #niqs configured in fw */
+		 
 		if (hw->flags & CSIO_HWF_USING_SOFT_PARAMS ||
 			!csio_is_hw_master(hw)) {
 			int extra = CSIO_EXTRA_MSI_IQS;

@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef __KSMBD_CONNECTION_H__
 #define __KSMBD_CONNECTION_H__
@@ -51,19 +49,19 @@ struct ksmbd_conn {
 	struct unicode_map		*um;
 	struct list_head		conns_list;
 	struct rw_semaphore		session_lock;
-	/* smb session 1 per user */
+	 
 	struct xarray			sessions;
 	unsigned long			last_active;
-	/* How many request are running currently */
+	 
 	atomic_t			req_running;
-	/* References which are made for this Server object*/
+	 
 	atomic_t			r_count;
 	unsigned int			total_credits;
 	unsigned int			outstanding_credits;
 	spinlock_t			credits_lock;
 	wait_queue_head_t		req_running_q;
 	wait_queue_head_t		r_count_q;
-	/* Lock to protect requests list*/
+	 
 	spinlock_t			request_lock;
 	struct list_head		requests;
 	struct list_head		async_requests;
@@ -84,7 +82,7 @@ struct ksmbd_conn {
 	bool				use_spnego:1;
 	__u16				cli_sec_mode;
 	__u16				srv_sec_mode;
-	/* dialect index that server chose */
+	 
 	__u16				dialect;
 
 	char				*mechToken;
@@ -92,12 +90,12 @@ struct ksmbd_conn {
 
 	struct ksmbd_conn_ops	*conn_ops;
 
-	/* Preauth Session Table */
+	 
 	struct list_head		preauth_sess_table;
 
 	struct sockaddr_storage		peer_addr;
 
-	/* Identifier for async message */
+	 
 	struct ida			async_ida;
 
 	__le16				cipher_type;
@@ -167,12 +165,7 @@ void ksmbd_conn_transport_destroy(void);
 void ksmbd_conn_lock(struct ksmbd_conn *conn);
 void ksmbd_conn_unlock(struct ksmbd_conn *conn);
 
-/*
- * WARNING
- *
- * This is a hack. We will move status to a proper place once we land
- * a multi-sessions support.
- */
+ 
 static inline bool ksmbd_conn_good(struct ksmbd_conn *conn)
 {
 	return READ_ONCE(conn->status) == KSMBD_SESS_GOOD;
@@ -229,4 +222,4 @@ static inline void ksmbd_conn_set_releasing(struct ksmbd_conn *conn)
 }
 
 void ksmbd_all_conn_set_status(u64 sess_id, u32 status);
-#endif /* __CONNECTION_H__ */
+#endif  

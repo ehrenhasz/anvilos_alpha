@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- *  Support for a cx23417 mpeg encoder via cx23885 host port.
- *
- *    (c) 2004 Jelle Foks <jelle@foks.us>
- *    (c) 2004 Gerd Knorr <kraxel@bytesex.org>
- *    (c) 2008 Steven Toth <stoth@linuxtv.org>
- *      - CX23885/7/8 support
- *
- *  Includes parts from the ivtv driver <http://sourceforge.net/projects/ivtv/>
- */
+
+ 
 
 #include "cx23885.h"
 #include "cx23885-ioctl.h"
@@ -87,7 +77,7 @@ static struct cx23885_tvnorm cx23885_tvnorms[] = {
 	}
 };
 
-/* ------------------------------------------------------------------ */
+ 
 enum cx23885_capture_type {
 	CX23885_MPEG_CAPTURE,
 	CX23885_RAW_CAPTURE,
@@ -102,12 +92,12 @@ enum cx23885_capture_bits {
 	CX23885_RAW_BITS_TO_HOST_CAPTURE  = 0x10
 };
 enum cx23885_capture_end {
-	CX23885_END_AT_GOP, /* stop at the end of gop, generate irq */
-	CX23885_END_NOW, /* stop immediately, no irq */
+	CX23885_END_AT_GOP,  
+	CX23885_END_NOW,  
 };
 enum cx23885_framerate {
-	CX23885_FRAMERATE_NTSC_30, /* NTSC: 30fps */
-	CX23885_FRAMERATE_PAL_25   /* PAL: 25fps */
+	CX23885_FRAMERATE_NTSC_30,  
+	CX23885_FRAMERATE_PAL_25    
 };
 enum cx23885_stream_port {
 	CX23885_OUTPUT_PORT_MEMORY,
@@ -163,14 +153,14 @@ enum cx23885_notification_mailbox {
 	CX23885_NOTIFICATION_NO_MAILBOX = -1,
 };
 enum cx23885_field1_lines {
-	CX23885_FIELD1_SAA7114 = 0x00EF, /* 239 */
-	CX23885_FIELD1_SAA7115 = 0x00F0, /* 240 */
-	CX23885_FIELD1_MICRONAS = 0x0105, /* 261 */
+	CX23885_FIELD1_SAA7114 = 0x00EF,  
+	CX23885_FIELD1_SAA7115 = 0x00F0,  
+	CX23885_FIELD1_MICRONAS = 0x0105,  
 };
 enum cx23885_field2_lines {
-	CX23885_FIELD2_SAA7114 = 0x00EF, /* 239 */
-	CX23885_FIELD2_SAA7115 = 0x00F0, /* 240 */
-	CX23885_FIELD2_MICRONAS = 0x0106, /* 262 */
+	CX23885_FIELD2_SAA7114 = 0x00EF,  
+	CX23885_FIELD2_SAA7115 = 0x00F0,  
+	CX23885_FIELD2_MICRONAS = 0x0106,  
 };
 enum cx23885_custom_data_type {
 	CX23885_CUSTOM_EXTENSION_USR_DATA,
@@ -191,14 +181,14 @@ enum cx23885_mute_video_shift {
 	CX23885_MUTE_VIDEO_Y_SHIFT = 24,
 };
 
-/* defines below are from ivtv-driver.h */
+ 
 #define IVTV_CMD_HW_BLOCKS_RST 0xFFFFFFFF
 
-/* Firmware API commands */
+ 
 #define IVTV_API_STD_TIMEOUT 500
 
-/* Registers */
-/* IVTV_REG_OFFSET */
+ 
+ 
 #define IVTV_REG_ENC_SDRAM_REFRESH (0x07F8)
 #define IVTV_REG_ENC_SDRAM_PRECHARGE (0x07FC)
 #define IVTV_REG_SPU (0x9050)
@@ -206,20 +196,7 @@ enum cx23885_mute_video_shift {
 #define IVTV_REG_VPU (0x9058)
 #define IVTV_REG_APU (0xA064)
 
-/**** Bit definitions for MC417_RWD and MC417_OEN registers  ***
-  bits 31-16
-+-----------+
-| Reserved  |
-+-----------+
-  bit 15  bit 14  bit 13 bit 12  bit 11  bit 10  bit 9   bit 8
-+-------+-------+-------+-------+-------+-------+-------+-------+
-| MIWR# | MIRD# | MICS# |MIRDY# |MIADDR3|MIADDR2|MIADDR1|MIADDR0|
-+-------+-------+-------+-------+-------+-------+-------+-------+
- bit 7   bit 6   bit 5   bit 4   bit 3   bit 2   bit 1   bit 0
-+-------+-------+-------+-------+-------+-------+-------+-------+
-|MIDATA7|MIDATA6|MIDATA5|MIDATA4|MIDATA3|MIDATA2|MIDATA1|MIDATA0|
-+-------+-------+-------+-------+-------+-------+-------+-------+
-***/
+ 
 #define MC417_MIWR	0x8000
 #define MC417_MIRD	0x4000
 #define MC417_MICS	0x2000
@@ -227,7 +204,7 @@ enum cx23885_mute_video_shift {
 #define MC417_MIADDR	0x0F00
 #define MC417_MIDATA	0x00FF
 
-/* MIADDR* nibble definitions */
+ 
 #define  MCI_MEMORY_DATA_BYTE0          0x000
 #define  MCI_MEMORY_DATA_BYTE1          0x100
 #define  MCI_MEMORY_DATA_BYTE2          0x200
@@ -243,28 +220,23 @@ enum cx23885_mute_video_shift {
 #define  MCI_REGISTER_ADDRESS_BYTE1     0xD00
 #define  MCI_REGISTER_MODE              0xE00
 
-/* Read and write modes */
+ 
 #define  MCI_MODE_REGISTER_READ         0
 #define  MCI_MODE_REGISTER_WRITE        1
 #define  MCI_MODE_MEMORY_READ           0
 #define  MCI_MODE_MEMORY_WRITE          0x40
 
-/*** Bit definitions for MC417_CTL register ****
- bits 31-6   bits 5-4   bit 3    bits 2-1       Bit 0
-+--------+-------------+--------+--------------+------------+
-|Reserved|MC417_SPD_CTL|Reserved|MC417_GPIO_SEL|UART_GPIO_EN|
-+--------+-------------+--------+--------------+------------+
-***/
+ 
 #define MC417_SPD_CTL(x)	(((x) << 4) & 0x00000030)
 #define MC417_GPIO_SEL(x)	(((x) << 1) & 0x00000006)
 #define MC417_UART_GPIO_EN	0x00000001
 
-/* Values for speed control */
+ 
 #define MC417_SPD_CTL_SLOW	0x1
 #define MC417_SPD_CTL_MEDIUM	0x0
-#define MC417_SPD_CTL_FAST	0x3     /* b'1x, but we use b'11 */
+#define MC417_SPD_CTL_FAST	0x3      
 
-/* Values for GPIO select */
+ 
 #define MC417_GPIO_SEL_GPIO3	0x3
 #define MC417_GPIO_SEL_GPIO2	0x2
 #define MC417_GPIO_SEL_GPIO1	0x1
@@ -276,17 +248,17 @@ void cx23885_mc417_init(struct cx23885_dev *dev)
 
 	dprintk(2, "%s()\n", __func__);
 
-	/* Configure MC417_CTL register to defaults. */
+	 
 	regval = MC417_SPD_CTL(MC417_SPD_CTL_FAST)	|
 		 MC417_GPIO_SEL(MC417_GPIO_SEL_GPIO3)	|
 		 MC417_UART_GPIO_EN;
 	cx_write(MC417_CTL, regval);
 
-	/* Configure MC417_OEN to defaults. */
+	 
 	regval = MC417_MIRDY;
 	cx_write(MC417_OEN, regval);
 
-	/* Configure MC417_RWD to defaults. */
+	 
 	regval = MC417_MIWR | MC417_MIRD | MC417_MICS;
 	cx_write(MC417_RWD, regval);
 }
@@ -310,63 +282,61 @@ int mc417_register_write(struct cx23885_dev *dev, u16 address, u32 value)
 {
 	u32 regval;
 
-	/* Enable MC417 GPIO outputs except for MC417_MIRDY,
-	 * which is an input.
-	 */
+	 
 	cx_write(MC417_OEN, MC417_MIRDY);
 
-	/* Write data byte 0 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_DATA_BYTE0 |
 		(value & 0x000000FF);
 	cx_write(MC417_RWD, regval);
 
-	/* Transition CS/WR to effect write transaction across bus. */
+	 
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write data byte 1 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_DATA_BYTE1 |
 		((value >> 8) & 0x000000FF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write data byte 2 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_DATA_BYTE2 |
 		((value >> 16) & 0x000000FF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write data byte 3 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_DATA_BYTE3 |
 		((value >> 24) & 0x000000FF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write address byte 0 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_ADDRESS_BYTE0 |
 		(address & 0xFF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write address byte 1 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_ADDRESS_BYTE1 |
 		((address >> 8) & 0xFF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Indicate that this is a write. */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_MODE |
 		MCI_MODE_REGISTER_WRITE;
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Wait for the trans to complete (MC417_MIRDY asserted). */
+	 
 	return mc417_wait_ready(dev);
 }
 
@@ -377,59 +347,53 @@ int mc417_register_read(struct cx23885_dev *dev, u16 address, u32 *value)
 	u32 tempval;
 	u32 dataval;
 
-	/* Enable MC417 GPIO outputs except for MC417_MIRDY,
-	 * which is an input.
-	 */
+	 
 	cx_write(MC417_OEN, MC417_MIRDY);
 
-	/* Write address byte 0 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_ADDRESS_BYTE0 |
 		((address & 0x00FF));
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write address byte 1 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_ADDRESS_BYTE1 |
 		((address >> 8) & 0xFF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Indicate that this is a register read. */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_MODE |
 		MCI_MODE_REGISTER_READ;
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Wait for the trans to complete (MC417_MIRDY asserted). */
+	 
 	retval = mc417_wait_ready(dev);
 
-	/* switch the DAT0-7 GPIO[10:3] to input mode */
+	 
 	cx_write(MC417_OEN, MC417_MIRDY | MC417_MIDATA);
 
-	/* Read data byte 0 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_DATA_BYTE0;
 	cx_write(MC417_RWD, regval);
 
-	/* Transition RD to effect read transaction across bus.
-	 * Transition 0x5000 -> 0x9000 correct (RD/RDY -> WR/RDY)?
-	 * Should it be 0x9000 -> 0xF000 (also why is RDY being set, its
-	 * input only...)
-	 */
+	 
 	regval = MC417_MIWR | MC417_MIRDY | MCI_REGISTER_DATA_BYTE0;
 	cx_write(MC417_RWD, regval);
 
-	/* Collect byte */
+	 
 	tempval = cx_read(MC417_RWD);
 	dataval = tempval & 0x000000FF;
 
-	/* Bring CS and RD high. */
+	 
 	regval = MC417_MIWR | MC417_MIRD | MC417_MICS | MC417_MIRDY;
 	cx_write(MC417_RWD, regval);
 
-	/* Read data byte 1 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_DATA_BYTE1;
 	cx_write(MC417_RWD, regval);
 	regval = MC417_MIWR | MC417_MIRDY | MCI_REGISTER_DATA_BYTE1;
@@ -439,7 +403,7 @@ int mc417_register_read(struct cx23885_dev *dev, u16 address, u32 *value)
 	regval = MC417_MIWR | MC417_MIRD | MC417_MICS | MC417_MIRDY;
 	cx_write(MC417_RWD, regval);
 
-	/* Read data byte 2 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_DATA_BYTE2;
 	cx_write(MC417_RWD, regval);
 	regval = MC417_MIWR | MC417_MIRDY | MCI_REGISTER_DATA_BYTE2;
@@ -449,7 +413,7 @@ int mc417_register_read(struct cx23885_dev *dev, u16 address, u32 *value)
 	regval = MC417_MIWR | MC417_MIRD | MC417_MICS | MC417_MIRDY;
 	cx_write(MC417_RWD, regval);
 
-	/* Read data byte 3 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_REGISTER_DATA_BYTE3;
 	cx_write(MC417_RWD, regval);
 	regval = MC417_MIWR | MC417_MIRDY | MCI_REGISTER_DATA_BYTE3;
@@ -468,63 +432,61 @@ int mc417_memory_write(struct cx23885_dev *dev, u32 address, u32 value)
 {
 	u32 regval;
 
-	/* Enable MC417 GPIO outputs except for MC417_MIRDY,
-	 * which is an input.
-	 */
+	 
 	cx_write(MC417_OEN, MC417_MIRDY);
 
-	/* Write data byte 0 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_DATA_BYTE0 |
 		(value & 0x000000FF);
 	cx_write(MC417_RWD, regval);
 
-	/* Transition CS/WR to effect write transaction across bus. */
+	 
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write data byte 1 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_DATA_BYTE1 |
 		((value >> 8) & 0x000000FF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write data byte 2 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_DATA_BYTE2 |
 		((value >> 16) & 0x000000FF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write data byte 3 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_DATA_BYTE3 |
 		((value >> 24) & 0x000000FF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write address byte 2 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_ADDRESS_BYTE2 |
 		MCI_MODE_MEMORY_WRITE | ((address >> 16) & 0x3F);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write address byte 1 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_ADDRESS_BYTE1 |
 		((address >> 8) & 0xFF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write address byte 0 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_ADDRESS_BYTE0 |
 		(address & 0xFF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Wait for the trans to complete (MC417_MIRDY asserted). */
+	 
 	return mc417_wait_ready(dev);
 }
 
@@ -535,55 +497,53 @@ int mc417_memory_read(struct cx23885_dev *dev, u32 address, u32 *value)
 	u32 tempval;
 	u32 dataval;
 
-	/* Enable MC417 GPIO outputs except for MC417_MIRDY,
-	 * which is an input.
-	 */
+	 
 	cx_write(MC417_OEN, MC417_MIRDY);
 
-	/* Write address byte 2 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_ADDRESS_BYTE2 |
 		MCI_MODE_MEMORY_READ | ((address >> 16) & 0x3F);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write address byte 1 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_ADDRESS_BYTE1 |
 		((address >> 8) & 0xFF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Write address byte 0 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_ADDRESS_BYTE0 |
 		(address & 0xFF);
 	cx_write(MC417_RWD, regval);
 	regval |= MC417_MICS | MC417_MIWR;
 	cx_write(MC417_RWD, regval);
 
-	/* Wait for the trans to complete (MC417_MIRDY asserted). */
+	 
 	retval = mc417_wait_ready(dev);
 
-	/* switch the DAT0-7 GPIO[10:3] to input mode */
+	 
 	cx_write(MC417_OEN, MC417_MIRDY | MC417_MIDATA);
 
-	/* Read data byte 3 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_DATA_BYTE3;
 	cx_write(MC417_RWD, regval);
 
-	/* Transition RD to effect read transaction across bus. */
+	 
 	regval = MC417_MIWR | MC417_MIRDY | MCI_MEMORY_DATA_BYTE3;
 	cx_write(MC417_RWD, regval);
 
-	/* Collect byte */
+	 
 	tempval = cx_read(MC417_RWD);
 	dataval = ((tempval & 0x000000FF) << 24);
 
-	/* Bring CS and RD high. */
+	 
 	regval = MC417_MIWR | MC417_MIRD | MC417_MICS | MC417_MIRDY;
 	cx_write(MC417_RWD, regval);
 
-	/* Read data byte 2 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_DATA_BYTE2;
 	cx_write(MC417_RWD, regval);
 	regval = MC417_MIWR | MC417_MIRDY | MCI_MEMORY_DATA_BYTE2;
@@ -593,7 +553,7 @@ int mc417_memory_read(struct cx23885_dev *dev, u32 address, u32 *value)
 	regval = MC417_MIWR | MC417_MIRD | MC417_MICS | MC417_MIRDY;
 	cx_write(MC417_RWD, regval);
 
-	/* Read data byte 1 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_DATA_BYTE1;
 	cx_write(MC417_RWD, regval);
 	regval = MC417_MIWR | MC417_MIRDY | MCI_MEMORY_DATA_BYTE1;
@@ -603,7 +563,7 @@ int mc417_memory_read(struct cx23885_dev *dev, u32 address, u32 *value)
 	regval = MC417_MIWR | MC417_MIRD | MC417_MICS | MC417_MIRDY;
 	cx_write(MC417_RWD, regval);
 
-	/* Read data byte 0 */
+	 
 	regval = MC417_MIRD | MC417_MIRDY | MCI_MEMORY_DATA_BYTE0;
 	cx_write(MC417_RWD, regval);
 	regval = MC417_MIWR | MC417_MIRDY | MCI_MEMORY_DATA_BYTE0;
@@ -622,7 +582,7 @@ void mc417_gpio_set(struct cx23885_dev *dev, u32 mask)
 {
 	u32 val;
 
-	/* Set the gpio value */
+	 
 	mc417_register_read(dev, 0x900C, &val);
 	val |= (mask & 0x000ffff);
 	mc417_register_write(dev, 0x900C, val);
@@ -632,7 +592,7 @@ void mc417_gpio_clear(struct cx23885_dev *dev, u32 mask)
 {
 	u32 val;
 
-	/* Clear the gpio value */
+	 
 	mc417_register_read(dev, 0x900C, &val);
 	val &= ~(mask & 0x0000ffff);
 	mc417_register_write(dev, 0x900C, val);
@@ -642,7 +602,7 @@ void mc417_gpio_enable(struct cx23885_dev *dev, u32 mask, int asoutput)
 {
 	u32 val;
 
-	/* Enable GPIO direction bits */
+	 
 	mc417_register_read(dev, 0x9020, &val);
 	if (asoutput)
 		val |= (mask & 0x0000ffff);
@@ -651,9 +611,9 @@ void mc417_gpio_enable(struct cx23885_dev *dev, u32 mask, int asoutput)
 
 	mc417_register_write(dev, 0x9020, val);
 }
-/* ------------------------------------------------------------------ */
+ 
 
-/* MPEG encoder API */
+ 
 static char *cmd_to_str(int cmd)
 {
 	switch (cmd) {
@@ -756,8 +716,7 @@ static int cx23885_mbox_func(void *priv,
 	dprintk(3, "%s: command(0x%X) = %s\n", __func__, command,
 		cmd_to_str(command));
 
-	/* this may not be 100% safe if we can't read any memory location
-	   without side effects */
+	 
 	mc417_memory_read(dev, dev->cx23417_mailbox - 4, &value);
 	if (value != 0x12345678) {
 		pr_err("Firmware and/or mailbox pointer not initialized or corrupted, signature = 0x%x, cmd = %s\n",
@@ -765,9 +724,7 @@ static int cx23885_mbox_func(void *priv,
 		return -1;
 	}
 
-	/* This read looks at 32 bits, but flag is only 8 bits.
-	 * Seems we also bail if CMD or TIMEOUT bytes are set???
-	 */
+	 
 	mc417_memory_read(dev, dev->cx23417_mailbox, &flag);
 	if (flag) {
 		pr_err("ERROR: Mailbox appears to be in use (%x), cmd = %s\n",
@@ -775,14 +732,14 @@ static int cx23885_mbox_func(void *priv,
 		return -1;
 	}
 
-	flag |= 1; /* tell 'em we're working on it */
+	flag |= 1;  
 	mc417_memory_write(dev, dev->cx23417_mailbox, flag);
 
-	/* write command + args + fill remaining with zeros */
-	/* command code */
+	 
+	 
 	mc417_memory_write(dev, dev->cx23417_mailbox + 1, command);
 	mc417_memory_write(dev, dev->cx23417_mailbox + 3,
-		IVTV_API_STD_TIMEOUT); /* timeout */
+		IVTV_API_STD_TIMEOUT);  
 	for (i = 0; i < in; i++) {
 		mc417_memory_write(dev, dev->cx23417_mailbox + 4 + i, data[i]);
 		dprintk(3, "API Input %d = %d\n", i, data[i]);
@@ -790,10 +747,10 @@ static int cx23885_mbox_func(void *priv,
 	for (; i < CX2341X_MBOX_MAX_DATA; i++)
 		mc417_memory_write(dev, dev->cx23417_mailbox + 4 + i, 0);
 
-	flag |= 3; /* tell 'em we're done writing */
+	flag |= 3;  
 	mc417_memory_write(dev, dev->cx23417_mailbox, flag);
 
-	/* wait for firmware to handle the API command */
+	 
 	timeout = jiffies + msecs_to_jiffies(10);
 	for (;;) {
 		mc417_memory_read(dev, dev->cx23417_mailbox, &flag);
@@ -806,7 +763,7 @@ static int cx23885_mbox_func(void *priv,
 		udelay(10);
 	}
 
-	/* read output values */
+	 
 	for (i = 0; i < out; i++) {
 		mc417_memory_read(dev, dev->cx23417_mailbox + 4 + i, data + i);
 		dprintk(3, "API Output %d = %d\n", i, data[i]);
@@ -821,9 +778,7 @@ static int cx23885_mbox_func(void *priv,
 	return retval;
 }
 
-/* We don't need to call the API often, so using just one
- * mailbox will probably suffice
- */
+ 
 static int cx23885_api_cmd(struct cx23885_dev *dev,
 			   u32 command,
 			   u32 inputcnt,
@@ -896,7 +851,7 @@ static int cx23885_load_firmware(struct cx23885_dev *dev)
 
 	dprintk(2, "%s()\n", __func__);
 
-	/* Save GPIO settings before reset of APU */
+	 
 	retval |= mc417_memory_read(dev, 0x9020, &gpio_output);
 	retval |= mc417_memory_read(dev, 0x900C, &gpio_value);
 
@@ -940,7 +895,7 @@ static int cx23885_load_firmware(struct cx23885_dev *dev)
 		return -1;
 	}
 
-	/* transfer to the chip */
+	 
 	dprintk(2, "Loading firmware ...\n");
 	dataptr = (u32 *)firmware->data;
 	for (i = 0; i < (firmware->size >> 2); i++) {
@@ -954,7 +909,7 @@ static int cx23885_load_firmware(struct cx23885_dev *dev)
 		dataptr++;
 	}
 
-	/* read back to verify with the checksum */
+	 
 	dprintk(1, "Verifying firmware ...\n");
 	for (i--; i >= 0; i--) {
 		if (mc417_memory_read(dev, i, &value) != 0) {
@@ -975,14 +930,14 @@ static int cx23885_load_firmware(struct cx23885_dev *dev)
 	retval |= mc417_register_write(dev, IVTV_REG_HW_BLOCKS,
 		IVTV_CMD_HW_BLOCKS_RST);
 
-	/* F/W power up disturbs the GPIOs, restore state */
+	 
 	retval |= mc417_register_write(dev, 0x9020, gpio_output);
 	retval |= mc417_register_write(dev, 0x900C, gpio_value);
 
 	retval |= mc417_register_read(dev, IVTV_REG_VPU, &value);
 	retval |= mc417_register_write(dev, IVTV_REG_VPU, value & 0xFFFFFFE8);
 
-	/* Hardcoded GPIO's here */
+	 
 	retval |= mc417_register_write(dev, 0x9020, 0x4000);
 	retval |= mc417_register_write(dev, 0x900C, 0x4000);
 
@@ -1008,13 +963,13 @@ static void cx23885_codec_settings(struct cx23885_dev *dev)
 {
 	dprintk(1, "%s()\n", __func__);
 
-	/* Dynamically change the height based on video standard */
+	 
 	if (dev->encodernorm.id & V4L2_STD_525_60)
 		dev->ts1.height = 480;
 	else
 		dev->ts1.height = 576;
 
-	/* assign frame size */
+	 
 	cx23885_api_cmd(dev, CX2341X_ENC_SET_FRAME_SIZE, 2, 0,
 				dev->ts1.height, dev->ts1.width);
 
@@ -1037,7 +992,7 @@ static int cx23885_initialize_codec(struct cx23885_dev *dev, int startencoder)
 
 	dprintk(1, "%s()\n", __func__);
 
-	retval = cx23885_api_cmd(dev, CX2341X_ENC_PING_FW, 0, 0); /* ping */
+	retval = cx23885_api_cmd(dev, CX2341X_ENC_PING_FW, 0, 0);  
 	if (retval < 0) {
 		dprintk(2, "%s() PING OK\n", __func__);
 		retval = cx23885_load_firmware(dev);
@@ -1076,14 +1031,14 @@ static int cx23885_initialize_codec(struct cx23885_dev *dev, int startencoder)
 		CX23885_CUSTOM_EXTENSION_USR_DATA, 0, 0, 0, 0, 0, 0, 0, 0, 0,
 		0, 0);
 
-	/* Setup to capture VBI */
+	 
 	data[0] = 0x0001BD00;
-	data[1] = 1;          /* frames per interrupt */
-	data[2] = 4;          /* total bufs */
-	data[3] = 0x91559155; /* start codes */
-	data[4] = 0x206080C0; /* stop codes */
-	data[5] = 6;          /* lines */
-	data[6] = 64;         /* BPL */
+	data[1] = 1;           
+	data[2] = 4;           
+	data[3] = 0x91559155;  
+	data[4] = 0x206080C0;  
+	data[5] = 6;           
+	data[6] = 64;          
 
 	cx23885_api_cmd(dev, CX2341X_ENC_SET_VBI_CONFIG, 7, 0, data[0], data[1],
 		data[2], data[3], data[4], data[5], data[6]);
@@ -1101,14 +1056,14 @@ static int cx23885_initialize_codec(struct cx23885_dev *dev, int startencoder)
 	cx23885_api_cmd(dev, CX2341X_ENC_MUTE_AUDIO, 1, 0, CX23885_UNMUTE);
 	msleep(60);
 
-	/* initialize the video input */
+	 
 	cx23885_api_cmd(dev, CX2341X_ENC_INITIALIZE_INPUT, 0, 0);
 	msleep(60);
 
-	/* Enable VIP style pixel invalidation so we work with scaled mode */
+	 
 	mc417_memory_write(dev, 2120, 0x00000080);
 
-	/* start capturing to the host interface */
+	 
 	if (startencoder) {
 		cx23885_api_cmd(dev, CX2341X_ENC_START_CAPTURE, 2, 0,
 			CX23885_MPEG_CAPTURE, CX23885_RAW_BITS_NONE);
@@ -1118,7 +1073,7 @@ static int cx23885_initialize_codec(struct cx23885_dev *dev, int startencoder)
 	return 0;
 }
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int queue_setup(struct vb2_queue *q,
 			   unsigned int *num_buffers, unsigned int *num_planes,
@@ -1195,7 +1150,7 @@ static void cx23885_stop_streaming(struct vb2_queue *q)
 {
 	struct cx23885_dev *dev = q->drv_priv;
 
-	/* stop mpeg capture */
+	 
 	cx23885_api_cmd(dev, CX2341X_ENC_STOP_CAPTURE, 3, 0,
 			CX23885_END_NOW, CX23885_MPEG_CAPTURE,
 			CX23885_RAW_BITS_NONE);
@@ -1216,7 +1171,7 @@ static const struct vb2_ops cx23885_qops = {
 	.stop_streaming = cx23885_stop_streaming,
 };
 
-/* ------------------------------------------------------------------ */
+ 
 
 static int vidioc_g_std(struct file *file, void *priv, v4l2_std_id *id)
 {
@@ -1287,7 +1242,7 @@ static int vidioc_s_tuner(struct file *file, void *priv,
 	if (dev->tuner_type == TUNER_ABSENT)
 		return -EINVAL;
 
-	/* Update the A/V core */
+	 
 	call_all(dev, tuner, s_tuner, t);
 
 	return 0;
@@ -1490,7 +1445,7 @@ static struct video_device *cx23885_video_dev_alloc(
 
 int cx23885_417_register(struct cx23885_dev *dev)
 {
-	/* FIXME: Port1 hardcoded here */
+	 
 	int err = -ENODEV;
 	struct cx23885_tsport *tsport = &dev->ts1;
 	struct vb2_queue *q;
@@ -1500,7 +1455,7 @@ int cx23885_417_register(struct cx23885_dev *dev)
 	if (cx23885_boards[dev->board].portb != CX23885_MPEG_ENCODER)
 		return err;
 
-	/* Set default TV standard */
+	 
 	dev->encodernorm = cx23885_tvnorms[0];
 
 	if (dev->encodernorm.id & V4L2_STD_525_60)
@@ -1518,7 +1473,7 @@ int cx23885_417_register(struct cx23885_dev *dev)
 	cx2341x_handler_set_50hz(&dev->cxhdl, tsport->height == 576);
 	v4l2_ctrl_add_handler(&dev->ctrl_handler, &dev->cxhdl.hdl, NULL, false);
 
-	/* Allocate and initialize V4L video device */
+	 
 	dev->v4l_device = cx23885_video_dev_alloc(tsport,
 		dev->pci, &cx23885_mpeg_template, "mpeg");
 	q = &dev->vb2_mpegq;
@@ -1554,10 +1509,7 @@ int cx23885_417_register(struct cx23885_dev *dev)
 	pr_info("%s: registered device %s [mpeg]\n",
 	       dev->name, video_device_node_name(dev->v4l_device));
 
-	/* ST: Configure the encoder parameters, but don't begin
-	 * encoding, this resolves an issue where the first time the
-	 * encoder is started video can be choppy.
-	 */
+	 
 	cx23885_initialize_codec(dev, 0);
 
 	return 0;

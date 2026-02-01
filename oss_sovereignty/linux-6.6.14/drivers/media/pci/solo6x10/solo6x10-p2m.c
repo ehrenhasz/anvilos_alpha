@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (C) 2010-2013 Bluecherry, LLC <https://www.bluecherrydvr.com>
- *
- * Original author:
- * Ben Collins <bcollins@ubuntu.com>
- *
- * Additional work by:
- * John Brooks <john.brooks@bluecherry.net>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -51,7 +43,7 @@ int solo_p2m_dma(struct solo_dev *solo_dev, int wr,
 	return ret;
 }
 
-/* Mutex must be held for p2m_id before calling this!! */
+ 
 int solo_p2m_dma_desc(struct solo_dev *solo_dev,
 		      struct solo_p2m_desc *desc, dma_addr_t desc_dma,
 		      int desc_cnt)
@@ -62,7 +54,7 @@ int solo_p2m_dma_desc(struct solo_dev *solo_dev,
 	int ret = 0;
 	unsigned int p2m_id = 0;
 
-	/* Get next ID. According to Softlogic, 6110 has problems on !=0 P2M */
+	 
 	if (solo_dev->type != SOLO_DEV_6110 && multi_p2m)
 		p2m_id = atomic_inc_return(&solo_dev->p2m_count) % SOLO_NR_P2M;
 
@@ -75,7 +67,7 @@ int solo_p2m_dma_desc(struct solo_dev *solo_dev,
 	p2m_dev->error = 0;
 
 	if (desc_cnt > 1 && solo_dev->type != SOLO_DEV_6110 && desc_mode) {
-		/* For 6010 with more than one desc, we can do a one-shot */
+		 
 		p2m_dev->desc_count = p2m_dev->desc_idx = 0;
 		config = solo_reg_read(solo_dev, SOLO_P2M_CONFIG(p2m_id));
 
@@ -84,7 +76,7 @@ int solo_p2m_dma_desc(struct solo_dev *solo_dev,
 		solo_reg_write(solo_dev, SOLO_P2M_CONFIG(p2m_id), config |
 			       SOLO_P2M_DESC_MODE);
 	} else {
-		/* For single descriptors and 6110, we need to run each desc */
+		 
 		p2m_dev->desc_count = desc_cnt;
 		p2m_dev->desc_idx = 1;
 		p2m_dev->descs = desc;
@@ -111,8 +103,7 @@ int solo_p2m_dma_desc(struct solo_dev *solo_dev,
 
 	solo_reg_write(solo_dev, SOLO_P2M_CONTROL(p2m_id), 0);
 
-	/* Don't write here for the no_desc_mode case, because config is 0.
-	 * We can't test no_desc_mode again, it might race. */
+	 
 	if (desc_cnt > 1 && solo_dev->type != SOLO_DEV_6110 && config)
 		solo_reg_write(solo_dev, SOLO_P2M_CONFIG(p2m_id), config);
 
@@ -151,7 +142,7 @@ int solo_p2m_dma_t(struct solo_dev *solo_dev, int wr,
 	solo_p2m_fill_desc(&desc[1], wr, dma_addr, ext_addr, size, repeat,
 			   ext_size);
 
-	/* No need for desc_dma since we know it is a single-shot */
+	 
 	return solo_p2m_dma_desc(solo_dev, desc, 0, 1);
 }
 
@@ -165,7 +156,7 @@ void solo_p2m_isr(struct solo_dev *solo_dev, int id)
 		return;
 	}
 
-	/* Setup next descriptor */
+	 
 	p2m_dev->desc_idx++;
 	desc = &p2m_dev->descs[p2m_dev->desc_idx];
 
@@ -267,7 +258,7 @@ int solo_p2m_init(struct solo_dev *solo_dev)
 		solo_irq_on(solo_dev, SOLO_IRQ_P2M(i));
 	}
 
-	/* Find correct SDRAM size */
+	 
 	for (solo_dev->sdram_size = 0, i = 2; i >= 0; i--) {
 		solo_reg_write(solo_dev, SOLO_DMA_CTRL,
 			       SOLO_DMA_CTRL_REFRESH_CYCLE(1) |

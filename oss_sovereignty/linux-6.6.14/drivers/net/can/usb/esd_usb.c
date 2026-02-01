@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * CAN driver for esd electronics gmbh CAN-USB/2, CAN-USB/3 and CAN-USB/Micro
- *
- * Copyright (C) 2010-2012 esd electronic system design gmbh, Matthias Fuchs <socketcan@esd.eu>
- * Copyright (C) 2022-2023 esd electronics gmbh, Frank Jungclaus <frank.jungclaus@esd.eu>
- */
+
+ 
 
 #include <linux/can.h>
 #include <linux/can/dev.h>
@@ -22,62 +17,62 @@ MODULE_AUTHOR("Frank Jungclaus <frank.jungclaus@esd.eu>");
 MODULE_DESCRIPTION("CAN driver for esd electronics gmbh CAN-USB/2, CAN-USB/3 and CAN-USB/Micro interfaces");
 MODULE_LICENSE("GPL v2");
 
-/* USB vendor and product ID */
+ 
 #define ESD_USB_ESDGMBH_VENDOR_ID	0x0ab4
 #define ESD_USB_CANUSB2_PRODUCT_ID	0x0010
 #define ESD_USB_CANUSBM_PRODUCT_ID	0x0011
 #define ESD_USB_CANUSB3_PRODUCT_ID	0x0014
 
-/* CAN controller clock frequencies */
-#define ESD_USB_2_CAN_CLOCK	(60 * MEGA) /* Hz */
-#define ESD_USB_M_CAN_CLOCK	(36 * MEGA) /* Hz */
-#define ESD_USB_3_CAN_CLOCK	(80 * MEGA) /* Hz */
+ 
+#define ESD_USB_2_CAN_CLOCK	(60 * MEGA)  
+#define ESD_USB_M_CAN_CLOCK	(36 * MEGA)  
+#define ESD_USB_3_CAN_CLOCK	(80 * MEGA)  
 
-/* Maximum number of CAN nets */
+ 
 #define ESD_USB_MAX_NETS	2
 
-/* USB commands */
-#define ESD_USB_CMD_VERSION		1 /* also used for VERSION_REPLY */
-#define ESD_USB_CMD_CAN_RX		2 /* device to host only */
-#define ESD_USB_CMD_CAN_TX		3 /* also used for TX_DONE */
-#define ESD_USB_CMD_SETBAUD		4 /* also used for SETBAUD_REPLY */
-#define ESD_USB_CMD_TS			5 /* also used for TS_REPLY */
-#define ESD_USB_CMD_IDADD		6 /* also used for IDADD_REPLY */
+ 
+#define ESD_USB_CMD_VERSION		1  
+#define ESD_USB_CMD_CAN_RX		2  
+#define ESD_USB_CMD_CAN_TX		3  
+#define ESD_USB_CMD_SETBAUD		4  
+#define ESD_USB_CMD_TS			5  
+#define ESD_USB_CMD_IDADD		6  
 
-/* esd CAN message flags - dlc field */
+ 
 #define ESD_USB_RTR	BIT(4)
 #define ESD_USB_NO_BRS	BIT(4)
 #define ESD_USB_ESI	BIT(5)
 #define ESD_USB_FD	BIT(7)
 
-/* esd CAN message flags - id field */
+ 
 #define ESD_USB_EXTID	BIT(29)
 #define ESD_USB_EVENT	BIT(30)
 #define ESD_USB_IDMASK	GENMASK(28, 0)
 
-/* esd CAN event ids */
-#define ESD_USB_EV_CAN_ERROR_EXT	2 /* CAN controller specific diagnostic data */
+ 
+#define ESD_USB_EV_CAN_ERROR_EXT	2  
 
-/* baudrate message flags */
-#define ESD_USB_LOM	BIT(30) /* Listen Only Mode */
-#define ESD_USB_UBR	BIT(31) /* User Bit Rate (controller BTR) in bits 0..27 */
-#define ESD_USB_NO_BAUDRATE	GENMASK(30, 0) /* bit rate unconfigured */
+ 
+#define ESD_USB_LOM	BIT(30)  
+#define ESD_USB_UBR	BIT(31)  
+#define ESD_USB_NO_BAUDRATE	GENMASK(30, 0)  
 
-/* bit timing esd CAN-USB */
+ 
 #define ESD_USB_2_TSEG1_SHIFT	16
 #define ESD_USB_2_TSEG2_SHIFT	20
 #define ESD_USB_2_SJW_SHIFT	14
 #define ESD_USB_M_SJW_SHIFT	24
 #define ESD_USB_TRIPLE_SAMPLES	BIT(23)
 
-/* Transmitter Delay Compensation */
+ 
 #define ESD_USB_3_TDC_MODE_AUTO	0
 
-/* esd IDADD message */
+ 
 #define ESD_USB_ID_ENABLE	BIT(7)
 #define ESD_USB_MAX_ID_SEGMENT	64
 
-/* SJA1000 ECC register (emulated by usb firmware) */
+ 
 #define ESD_USB_SJA1000_ECC_SEG		GENMASK(4, 0)
 #define ESD_USB_SJA1000_ECC_DIR		BIT(5)
 #define ESD_USB_SJA1000_ECC_ERR		BIT(2, 1)
@@ -86,7 +81,7 @@ MODULE_LICENSE("GPL v2");
 #define ESD_USB_SJA1000_ECC_STUFF	BIT(7)
 #define ESD_USB_SJA1000_ECC_MASK	GENMASK(7, 6)
 
-/* esd bus state event codes */
+ 
 #define ESD_USB_BUSSTATE_MASK	GENMASK(7, 6)
 #define ESD_USB_BUSSTATE_WARN	BIT(6)
 #define ESD_USB_BUSSTATE_ERRPASSIVE	BIT(7)
@@ -94,31 +89,31 @@ MODULE_LICENSE("GPL v2");
 
 #define ESD_USB_RX_BUFFER_SIZE		1024
 #define ESD_USB_MAX_RX_URBS		4
-#define ESD_USB_MAX_TX_URBS		16 /* must be power of 2 */
+#define ESD_USB_MAX_TX_URBS		16  
 
-/* Modes for CAN-USB/3, to be used for esd_usb_3_set_baudrate_msg_x.mode */
-#define ESD_USB_3_BAUDRATE_MODE_DISABLE		0 /* remove from bus */
-#define ESD_USB_3_BAUDRATE_MODE_INDEX		1 /* ESD (CiA) bit rate idx */
-#define ESD_USB_3_BAUDRATE_MODE_BTR_CTRL	2 /* BTR values (controller)*/
-#define ESD_USB_3_BAUDRATE_MODE_BTR_CANONICAL	3 /* BTR values (canonical) */
-#define ESD_USB_3_BAUDRATE_MODE_NUM		4 /* numerical bit rate */
-#define ESD_USB_3_BAUDRATE_MODE_AUTOBAUD	5 /* autobaud */
+ 
+#define ESD_USB_3_BAUDRATE_MODE_DISABLE		0  
+#define ESD_USB_3_BAUDRATE_MODE_INDEX		1  
+#define ESD_USB_3_BAUDRATE_MODE_BTR_CTRL	2  
+#define ESD_USB_3_BAUDRATE_MODE_BTR_CANONICAL	3  
+#define ESD_USB_3_BAUDRATE_MODE_NUM		4  
+#define ESD_USB_3_BAUDRATE_MODE_AUTOBAUD	5  
 
-/* Flags for CAN-USB/3, to be used for esd_usb_3_set_baudrate_msg_x.flags */
-#define ESD_USB_3_BAUDRATE_FLAG_FD	BIT(0) /* enable CAN FD mode */
-#define ESD_USB_3_BAUDRATE_FLAG_LOM	BIT(1) /* enable listen only mode */
-#define ESD_USB_3_BAUDRATE_FLAG_STM	BIT(2) /* enable self test mode */
-#define ESD_USB_3_BAUDRATE_FLAG_TRS	BIT(3) /* enable triple sampling */
-#define ESD_USB_3_BAUDRATE_FLAG_TXP	BIT(4) /* enable transmit pause */
+ 
+#define ESD_USB_3_BAUDRATE_FLAG_FD	BIT(0)  
+#define ESD_USB_3_BAUDRATE_FLAG_LOM	BIT(1)  
+#define ESD_USB_3_BAUDRATE_FLAG_STM	BIT(2)  
+#define ESD_USB_3_BAUDRATE_FLAG_TRS	BIT(3)  
+#define ESD_USB_3_BAUDRATE_FLAG_TXP	BIT(4)  
 
 struct esd_usb_header_msg {
-	u8 len; /* total message length in 32bit words */
+	u8 len;  
 	u8 cmd;
 	u8 rsvd[2];
 };
 
 struct esd_usb_version_msg {
-	u8 len; /* total message length in 32bit words */
+	u8 len;  
 	u8 cmd;
 	u8 rsvd;
 	u8 flags;
@@ -126,7 +121,7 @@ struct esd_usb_version_msg {
 };
 
 struct esd_usb_version_reply_msg {
-	u8 len; /* total message length in 32bit words */
+	u8 len;  
 	u8 cmd;
 	u8 nets;
 	u8 features;
@@ -137,31 +132,31 @@ struct esd_usb_version_reply_msg {
 };
 
 struct esd_usb_rx_msg {
-	u8 len; /* total message length in 32bit words */
+	u8 len;  
 	u8 cmd;
 	u8 net;
 	u8 dlc;
 	__le32 ts;
-	__le32 id; /* upper 3 bits contain flags */
+	__le32 id;  
 	union {
 		u8 data[CAN_MAX_DLEN];
 		u8 data_fd[CANFD_MAX_DLEN];
 		struct {
-			u8 status; /* CAN Controller Status */
-			u8 ecc;    /* Error Capture Register */
-			u8 rec;    /* RX Error Counter */
-			u8 tec;    /* TX Error Counter */
-		} ev_can_err_ext;  /* For ESD_EV_CAN_ERROR_EXT */
+			u8 status;  
+			u8 ecc;     
+			u8 rec;     
+			u8 tec;     
+		} ev_can_err_ext;   
 	};
 };
 
 struct esd_usb_tx_msg {
-	u8 len; /* total message length in 32bit words */
+	u8 len;  
 	u8 cmd;
 	u8 net;
 	u8 dlc;
-	u32 hnd;	/* opaque handle, not used by device */
-	__le32 id; /* upper 3 bits contain flags */
+	u32 hnd;	 
+	__le32 id;  
 	union {
 		u8 data[CAN_MAX_DLEN];
 		u8 data_fd[CANFD_MAX_DLEN];
@@ -169,75 +164,61 @@ struct esd_usb_tx_msg {
 };
 
 struct esd_usb_tx_done_msg {
-	u8 len; /* total message length in 32bit words */
+	u8 len;  
 	u8 cmd;
 	u8 net;
 	u8 status;
-	u32 hnd;	/* opaque handle, not used by device */
+	u32 hnd;	 
 	__le32 ts;
 };
 
 struct esd_usb_id_filter_msg {
-	u8 len; /* total message length in 32bit words */
+	u8 len;  
 	u8 cmd;
 	u8 net;
 	u8 option;
-	__le32 mask[ESD_USB_MAX_ID_SEGMENT + 1]; /* +1 for 29bit extended IDs */
+	__le32 mask[ESD_USB_MAX_ID_SEGMENT + 1];  
 };
 
 struct esd_usb_set_baudrate_msg {
-	u8 len; /* total message length in 32bit words */
+	u8 len;  
 	u8 cmd;
 	u8 net;
 	u8 rsvd;
 	__le32 baud;
 };
 
-/* CAN-USB/3 baudrate configuration, used for nominal as well as for data bit rate */
+ 
 struct esd_usb_3_baudrate_cfg {
-	__le16 brp;	/* bit rate pre-scaler */
-	__le16 tseg1;	/* time segment before sample point */
-	__le16 tseg2;	/* time segment after sample point */
-	__le16 sjw;	/* synchronization jump Width */
+	__le16 brp;	 
+	__le16 tseg1;	 
+	__le16 tseg2;	 
+	__le16 sjw;	 
 };
 
-/* In principle, the esd CAN-USB/3 supports Transmitter Delay Compensation (TDC),
- * but currently only the automatic TDC mode is supported by this driver.
- * An implementation for manual TDC configuration will follow.
- *
- * For information about struct esd_usb_3_tdc_cfg, see
- * NTCAN Application Developers Manual, 6.2.25 NTCAN_TDC_CFG + related chapters
- * https://esd.eu/fileadmin/esd/docs/manuals/NTCAN_Part1_Function_API_Manual_en_56.pdf
- */
+ 
 struct esd_usb_3_tdc_cfg {
-	u8 tdc_mode;	/* transmitter delay compensation mode  */
-	u8 ssp_offset;	/* secondary sample point offset in mtq */
-	s8 ssp_shift;	/* secondary sample point shift in mtq */
-	u8 tdc_filter;	/* TDC filter in mtq */
+	u8 tdc_mode;	 
+	u8 ssp_offset;	 
+	s8 ssp_shift;	 
+	u8 tdc_filter;	 
 };
 
-/* Extended version of the above set_baudrate_msg for a CAN-USB/3
- * to define the CAN bit timing configuration of the CAN controller in
- * CAN FD mode as well as in Classical CAN mode.
- *
- * The payload of this command is a NTCAN_BAUDRATE_X structure according to
- * esd electronics gmbh, NTCAN Application Developers Manual, 6.2.15 NTCAN_BAUDRATE_X
- * https://esd.eu/fileadmin/esd/docs/manuals/NTCAN_Part1_Function_API_Manual_en_56.pdf
- */
+ 
 struct esd_usb_3_set_baudrate_msg_x {
-	u8 len;	/* total message length in 32bit words */
+	u8 len;	 
 	u8 cmd;
 	u8 net;
-	u8 rsvd;	/*reserved */
-	/* Payload ... */
-	__le16 mode;	/* mode word, see ESD_USB_3_BAUDRATE_MODE_xxx */
-	__le16 flags;	/* control flags, see ESD_USB_3_BAUDRATE_FLAG_xxx */
-	struct esd_usb_3_tdc_cfg tdc;	/* TDC configuration */
-	struct esd_usb_3_baudrate_cfg nom;	/* nominal bit rate */
-	struct esd_usb_3_baudrate_cfg data;	/* data bit rate */
+	u8 rsvd;	 
+	 
+	__le16 mode;	 
+	__le16 flags;	 
+	struct esd_usb_3_tdc_cfg tdc;	 
+	struct esd_usb_3_baudrate_cfg nom;	 
+	struct esd_usb_3_baudrate_cfg data;	 
 };
 
-/* Main message type used between library and application */
+ 
 union __packed esd_usb_msg {
 	struct esd_usb_header_msg hdr;
 	struct esd_usb_version_msg version;
@@ -279,7 +260,7 @@ struct esd_usb {
 };
 
 struct esd_usb_net_priv {
-	struct can_priv can; /* must be the first member */
+	struct can_priv can;  
 
 	atomic_t active_tx_jobs;
 	struct usb_anchor tx_submitted;
@@ -312,7 +293,7 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
 			   msg->rx.dlc, state, ecc,
 			   priv->bec.rxerr, priv->bec.txerr);
 
-		/* if berr-reporting is off, only pass through on state change ... */
+		 
 		if (!(priv->can.ctrlmode & CAN_CTRLMODE_BERR_REPORTING) &&
 		    state == priv->old_state)
 			return;
@@ -371,11 +352,11 @@ static void esd_usb_rx_event(struct esd_usb_net_priv *priv,
 				break;
 			}
 
-			/* Error occurred during transmission? */
+			 
 			if (!(ecc & ESD_USB_SJA1000_ECC_DIR))
 				cf->data[2] |= CAN_ERR_PROT_TX;
 
-			/* Bit stream position in CAN frame as the error was detected */
+			 
 			cf->data[3] = ecc & ESD_USB_SJA1000_ECC_SEG;
 		}
 
@@ -422,7 +403,7 @@ static void esd_usb_rx_can_msg(struct esd_usb_net_priv *priv,
 		cfd->can_id = id & ESD_USB_IDMASK;
 
 		if (msg->rx.dlc & ESD_USB_FD) {
-			/* masking by 0x0F is already done within can_fd_dlc2len() */
+			 
 			cfd->len = can_fd_dlc2len(msg->rx.dlc);
 			len = cfd->len;
 			if ((msg->rx.dlc & ESD_USB_NO_BRS) == 0)
@@ -470,7 +451,7 @@ static void esd_usb_tx_done_msg(struct esd_usb_net_priv *priv,
 		can_free_echo_skb(netdev, context->echo_index, NULL);
 	}
 
-	/* Release context */
+	 
 	context->echo_index = ESD_USB_MAX_TX_URBS;
 	atomic_dec(&priv->active_tx_jobs);
 
@@ -485,7 +466,7 @@ static void esd_usb_read_bulk_callback(struct urb *urb)
 	int i;
 
 	switch (urb->status) {
-	case 0: /* success */
+	case 0:  
 		break;
 
 	case -ENOENT:
@@ -526,7 +507,7 @@ static void esd_usb_read_bulk_callback(struct urb *urb)
 			break;
 		}
 
-		pos += msg->hdr.len * sizeof(u32); /* convert to # of bytes */
+		pos += msg->hdr.len * sizeof(u32);  
 
 		if (pos > urb->actual_length) {
 			dev_err(dev->udev->dev.parent, "format error\n");
@@ -551,7 +532,7 @@ resubmit_urb:
 	}
 }
 
-/* callback for bulk IN urb */
+ 
 static void esd_usb_write_bulk_callback(struct urb *urb)
 {
 	struct esd_tx_urb_context *context = urb->context;
@@ -564,7 +545,7 @@ static void esd_usb_write_bulk_callback(struct urb *urb)
 	priv = context->priv;
 	netdev = priv->netdev;
 
-	/* free up our allocated buffer */
+	 
 	usb_free_coherent(urb->dev, size,
 			  urb->transfer_buffer, urb->transfer_dma);
 
@@ -620,7 +601,7 @@ static int esd_usb_send_msg(struct esd_usb *dev, union esd_usb_msg *msg)
 	return usb_bulk_msg(dev->udev,
 			    usb_sndbulkpipe(dev->udev, 2),
 			    msg,
-			    msg->hdr.len * sizeof(u32), /* convert to # of bytes */
+			    msg->hdr.len * sizeof(u32),  
 			    &actual_length,
 			    1000);
 }
@@ -650,7 +631,7 @@ static int esd_usb_setup_rx_urbs(struct esd_usb *dev)
 		u8 *buf = NULL;
 		dma_addr_t buf_dma;
 
-		/* create a URB, and a buffer for it */
+		 
 		urb = usb_alloc_urb(0, GFP_KERNEL);
 		if (!urb) {
 			err = -ENOMEM;
@@ -687,19 +668,19 @@ static int esd_usb_setup_rx_urbs(struct esd_usb *dev)
 		dev->rxbuf_dma[i] = buf_dma;
 
 freeurb:
-		/* Drop reference, USB core will take care of freeing it */
+		 
 		usb_free_urb(urb);
 		if (err)
 			break;
 	}
 
-	/* Did we submit any URBs */
+	 
 	if (i == 0) {
 		dev_err(dev->udev->dev.parent, "couldn't setup read URBs\n");
 		return err;
 	}
 
-	/* Warn if we've couldn't transmit all the URBs */
+	 
 	if (i < ESD_USB_MAX_RX_URBS) {
 		dev_warn(dev->udev->dev.parent,
 			 "rx performance may be slow\n");
@@ -709,7 +690,7 @@ freeurb:
 	return 0;
 }
 
-/* Start interface */
+ 
 static int esd_usb_start(struct esd_usb_net_priv *priv)
 {
 	struct esd_usb *dev = priv->usb;
@@ -723,25 +704,14 @@ static int esd_usb_start(struct esd_usb_net_priv *priv)
 		goto out;
 	}
 
-	/* Enable all IDs
-	 * The IDADD message takes up to 64 32 bit bitmasks (2048 bits).
-	 * Each bit represents one 11 bit CAN identifier. A set bit
-	 * enables reception of the corresponding CAN identifier. A cleared
-	 * bit disabled this identifier. An additional bitmask value
-	 * following the CAN 2.0A bits is used to enable reception of
-	 * extended CAN frames. Only the LSB of this final mask is checked
-	 * for the complete 29 bit ID range. The IDADD message also allows
-	 * filter configuration for an ID subset. In this case you can add
-	 * the number of the starting bitmask (0..64) to the filter.option
-	 * field followed by only some bitmasks.
-	 */
+	 
 	msg->hdr.cmd = ESD_USB_CMD_IDADD;
-	msg->hdr.len = sizeof(struct esd_usb_id_filter_msg) / sizeof(u32); /* # of 32bit words */
+	msg->hdr.len = sizeof(struct esd_usb_id_filter_msg) / sizeof(u32);  
 	msg->filter.net = priv->index;
-	msg->filter.option = ESD_USB_ID_ENABLE; /* start with segment 0 */
+	msg->filter.option = ESD_USB_ID_ENABLE;  
 	for (i = 0; i < ESD_USB_MAX_ID_SEGMENT; i++)
 		msg->filter.mask[i] = cpu_to_le32(GENMASK(31, 0));
-	/* enable 29bit extended IDs */
+	 
 	msg->filter.mask[ESD_USB_MAX_ID_SEGMENT] = cpu_to_le32(BIT(0));
 
 	err = esd_usb_send_msg(dev, msg);
@@ -792,12 +762,12 @@ static int esd_usb_open(struct net_device *netdev)
 	struct esd_usb_net_priv *priv = netdev_priv(netdev);
 	int err;
 
-	/* common open */
+	 
 	err = open_candev(netdev);
 	if (err)
 		return err;
 
-	/* finally start device */
+	 
 	err = esd_usb_start(priv);
 	if (err) {
 		netdev_warn(netdev, "couldn't start device: %d\n", err);
@@ -828,7 +798,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
 	if (can_dev_dropped_skb(netdev, skb))
 		return NETDEV_TX_OK;
 
-	/* create a URB, and a buffer for it, and copy the data to the URB */
+	 
 	urb = usb_alloc_urb(0, GFP_ATOMIC);
 	if (!urb) {
 		stats->tx_dropped++;
@@ -847,7 +817,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
 
 	msg = (union esd_usb_msg *)buf;
 
-	/* minimal length as # of 32bit words */
+	 
 	msg->hdr.len = offsetof(struct esd_usb_tx_msg, data) / sizeof(u32);
 	msg->hdr.cmd = ESD_USB_CMD_CAN_TX;
 	msg->tx.net = priv->index;
@@ -872,7 +842,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
 
 	memcpy(msg->tx.data_fd, cfd->data, cfd->len);
 
-	/* round up, then divide by 4 to add the payload length as # of 32bit words */
+	 
 	msg->hdr.len += DIV_ROUND_UP(cfd->len, sizeof(u32));
 
 	for (i = 0; i < ESD_USB_MAX_TX_URBS; i++) {
@@ -882,7 +852,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
 		}
 	}
 
-	/* This may never happen */
+	 
 	if (!context) {
 		netdev_warn(netdev, "couldn't find free context\n");
 		ret = NETDEV_TX_BUSY;
@@ -892,11 +862,11 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
 	context->priv = priv;
 	context->echo_index = i;
 
-	/* hnd must not be 0 - MSB is stripped in txdone handling */
-	msg->tx.hnd = BIT(31) | i; /* returned in TX done message */
+	 
+	msg->tx.hnd = BIT(31) | i;  
 
 	usb_fill_bulk_urb(urb, dev->udev, usb_sndbulkpipe(dev->udev, 2), buf,
-			  msg->hdr.len * sizeof(u32), /* convert to # of bytes */
+			  msg->hdr.len * sizeof(u32),  
 			  esd_usb_write_bulk_callback, context);
 
 	urb->transfer_flags |= URB_NO_TRANSFER_DMA_MAP;
@@ -907,7 +877,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
 
 	atomic_inc(&priv->active_tx_jobs);
 
-	/* Slow down tx path */
+	 
 	if (atomic_read(&priv->active_tx_jobs) >= ESD_USB_MAX_TX_URBS)
 		netif_stop_queue(netdev);
 
@@ -930,9 +900,7 @@ static netdev_tx_t esd_usb_start_xmit(struct sk_buff *skb,
 
 	netif_trans_update(netdev);
 
-	/* Release our reference to this URB, the USB core will eventually free
-	 * it entirely.
-	 */
+	 
 	usb_free_urb(urb);
 
 	return NETDEV_TX_OK;
@@ -957,18 +925,18 @@ static int esd_usb_close(struct net_device *netdev)
 	if (!msg)
 		return -ENOMEM;
 
-	/* Disable all IDs (see esd_usb_start()) */
+	 
 	msg->hdr.cmd = ESD_USB_CMD_IDADD;
-	msg->hdr.len = sizeof(struct esd_usb_id_filter_msg) / sizeof(u32);/* # of 32bit words */
+	msg->hdr.len = sizeof(struct esd_usb_id_filter_msg) / sizeof(u32); 
 	msg->filter.net = priv->index;
-	msg->filter.option = ESD_USB_ID_ENABLE; /* start with segment 0 */
+	msg->filter.option = ESD_USB_ID_ENABLE;  
 	for (i = 0; i <= ESD_USB_MAX_ID_SEGMENT; i++)
 		msg->filter.mask[i] = 0;
 	if (esd_usb_send_msg(priv->usb, msg) < 0)
 		netdev_err(netdev, "sending idadd message failed\n");
 
-	/* set CAN controller to reset mode */
-	msg->hdr.len = sizeof(struct esd_usb_set_baudrate_msg) / sizeof(u32); /* # of 32bit words */
+	 
+	msg->hdr.len = sizeof(struct esd_usb_set_baudrate_msg) / sizeof(u32);  
 	msg->hdr.cmd = ESD_USB_CMD_SETBAUD;
 	msg->setbaud.net = priv->index;
 	msg->setbaud.rsvd = 0;
@@ -1046,7 +1014,7 @@ static int esd_usb_2_set_bittiming(struct net_device *netdev)
 	if (!msg)
 		return -ENOMEM;
 
-	msg->hdr.len = sizeof(struct esd_usb_set_baudrate_msg) / sizeof(u32); /* # of 32bit words */
+	msg->hdr.len = sizeof(struct esd_usb_set_baudrate_msg) / sizeof(u32);  
 	msg->hdr.cmd = ESD_USB_CMD_SETBAUD;
 	msg->setbaud.net = priv->index;
 	msg->setbaud.rsvd = 0;
@@ -1060,10 +1028,7 @@ static int esd_usb_2_set_bittiming(struct net_device *netdev)
 	return err;
 }
 
-/* Nominal bittiming constants, see
- * Microchip SAM E70/S70/V70/V71, Data Sheet, Rev. G - 07/2022
- * 48.6.8 MCAN Nominal Bit Timing and Prescaler Register
- */
+ 
 static const struct can_bittiming_const esd_usb_3_nom_bittiming_const = {
 	.name = "esd_usb_3",
 	.tseg1_min = 2,
@@ -1076,10 +1041,7 @@ static const struct can_bittiming_const esd_usb_3_nom_bittiming_const = {
 	.brp_inc = 1,
 };
 
-/* Data bittiming constants, see
- * Microchip SAM E70/S70/V70/V71, Data Sheet, Rev. G - 07/2022
- * 48.6.4 MCAN Data Bit Timing and Prescaler Register
- */
+ 
 static const struct can_bittiming_const esd_usb_3_data_bittiming_const = {
 	.name = "esd_usb_3",
 	.tseg1_min = 2,
@@ -1110,7 +1072,7 @@ static int esd_usb_3_set_bittiming(struct net_device *netdev)
 
 	baud_x = &msg->setbaud_x;
 
-	/* Canonical is the most reasonable mode for SocketCAN on CAN-USB/3 ... */
+	 
 	baud_x->mode = cpu_to_le16(ESD_USB_3_BAUDRATE_MODE_BTR_CANONICAL);
 
 	if (priv->can.ctrlmode & CAN_CTRLMODE_LISTENONLY)
@@ -1134,7 +1096,7 @@ static int esd_usb_3_set_bittiming(struct net_device *netdev)
 		flags |= ESD_USB_3_BAUDRATE_FLAG_FD;
 	}
 
-	/* Currently this driver only supports the automatic TDC mode */
+	 
 	baud_x->tdc.tdc_mode = ESD_USB_3_TDC_MODE_AUTO;
 	baud_x->tdc.ssp_offset = 0;
 	baud_x->tdc.ssp_shift = 0;
@@ -1144,7 +1106,7 @@ static int esd_usb_3_set_bittiming(struct net_device *netdev)
 	baud_x->net = priv->index;
 	baud_x->rsvd = 0;
 
-	/* set len as # of 32bit words */
+	 
 	msg->hdr.len = sizeof(struct esd_usb_3_set_baudrate_msg_x) / sizeof(u32);
 	msg->hdr.cmd = ESD_USB_CMD_SETBAUD;
 
@@ -1245,7 +1207,7 @@ static int esd_usb_probe_one_net(struct usb_interface *intf, int index)
 	priv->can.do_set_mode = esd_usb_set_mode;
 	priv->can.do_get_berr_counter = esd_usb_get_berr_counter;
 
-	netdev->flags |= IFF_ECHO; /* we support local echo */
+	netdev->flags |= IFF_ECHO;  
 
 	netdev->netdev_ops = &esd_usb_netdev_ops;
 	netdev->ethtool_ops = &esd_usb_ethtool_ops;
@@ -1268,11 +1230,7 @@ done:
 	return err;
 }
 
-/* probe function for new USB devices
- *
- * check version information and number of available
- * CAN interfaces
- */
+ 
 static int esd_usb_probe(struct usb_interface *intf,
 			 const struct usb_device_id *id)
 {
@@ -1298,9 +1256,9 @@ static int esd_usb_probe(struct usb_interface *intf,
 		goto free_msg;
 	}
 
-	/* query number of CAN interfaces (nets) */
+	 
 	msg->hdr.cmd = ESD_USB_CMD_VERSION;
-	msg->hdr.len = sizeof(struct esd_usb_version_msg) / sizeof(u32); /* # of 32bit words */
+	msg->hdr.len = sizeof(struct esd_usb_version_msg) / sizeof(u32);  
 	msg->version.rsvd = 0;
 	msg->version.flags = 0;
 	msg->version.drv_version = 0;
@@ -1332,7 +1290,7 @@ static int esd_usb_probe(struct usb_interface *intf,
 		dev_err(&intf->dev,
 			"Couldn't create device file for nets\n");
 
-	/* do per device probing */
+	 
 	for (i = 0; i < dev->net_count; i++)
 		esd_usb_probe_one_net(intf, i);
 
@@ -1344,7 +1302,7 @@ done:
 	return err;
 }
 
-/* called by the usb core when the device is removed from the system */
+ 
 static void esd_usb_disconnect(struct usb_interface *intf)
 {
 	struct esd_usb *dev = usb_get_intfdata(intf);
@@ -1370,7 +1328,7 @@ static void esd_usb_disconnect(struct usb_interface *intf)
 	}
 }
 
-/* usb specific object needed to register this driver with the usb subsystem */
+ 
 static struct usb_driver esd_usb_driver = {
 	.name = KBUILD_MODNAME,
 	.probe = esd_usb_probe,

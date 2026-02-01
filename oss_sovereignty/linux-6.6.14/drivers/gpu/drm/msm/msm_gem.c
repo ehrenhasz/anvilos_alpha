@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2013 Red Hat
- * Author: Rob Clark <robdclark@gmail.com>
- */
+
+ 
 
 #include <linux/dma-map-ops.h>
 #include <linux/vmalloc.h>
@@ -33,19 +30,7 @@ static bool use_pages(struct drm_gem_object *obj)
 	return !msm_obj->vram_node;
 }
 
-/*
- * Cache sync.. this is a bit over-complicated, to fit dma-mapping
- * API.  Really GPU cache is out of scope here (handled on cmdstream)
- * and all we need to do is invalidate newly allocated pages before
- * mapping to CPU as uncached/writecombine.
- *
- * On top of this, we have the added headache, that depending on
- * display generation, the display's iommu may be wired up to either
- * the toplevel drm device (mdss), or to the mdp sub-node, meaning
- * that here we either have dma-direct or iommu ops.
- *
- * Let this be a cautionary tail of abstraction gone wrong.
- */
+ 
 
 static void sync_for_device(struct msm_gem_object *msm_obj)
 {
@@ -104,7 +89,7 @@ static void update_lru(struct drm_gem_object *obj)
 	mutex_unlock(&priv->lru.lock);
 }
 
-/* allocate pages from VRAM carveout, used when no IOMMU: */
+ 
 static struct page **get_pages_vram(struct drm_gem_object *obj, int npages)
 {
 	struct msm_gem_object *msm_obj = to_msm_bo(obj);
@@ -167,9 +152,7 @@ static struct page **get_pages(struct drm_gem_object *obj)
 			return ptr;
 		}
 
-		/* For non-cached buffers, ensure the new pages are clean
-		 * because display controller, GPU, etc. are not coherent:
-		 */
+		 
 		if (msm_obj->flags & MSM_BO_WC)
 			sync_for_device(msm_obj);
 
@@ -197,10 +180,7 @@ static void put_pages(struct drm_gem_object *obj)
 
 	if (msm_obj->pages) {
 		if (msm_obj->sgt) {
-			/* For non-cached buffers, ensure the new
-			 * pages are clean because display controller,
-			 * GPU, etc. are not coherent:
-			 */
+			 
 			if (msm_obj->flags & MSM_BO_WC)
 				sync_for_cpu(msm_obj);
 
@@ -235,9 +215,7 @@ static struct page **msm_gem_pin_pages_locked(struct drm_gem_object *obj,
 	return get_pages(obj);
 }
 
-/*
- * Update the pin count of the object, call under lru.lock
- */
+ 
 void msm_gem_pin_obj_locked(struct drm_gem_object *obj)
 {
 	struct msm_drm_private *priv = obj->dev->dev_private;
@@ -295,10 +273,7 @@ static vm_fault_t msm_gem_fault(struct vm_fault *vmf)
 	int err;
 	vm_fault_t ret;
 
-	/*
-	 * vm_ops.open/drm_gem_mmap_obj and close get and put
-	 * a reference on obj. So, we dont need to hold one here.
-	 */
+	 
 	err = msm_gem_lock_interruptible(obj);
 	if (err) {
 		ret = VM_FAULT_NOPAGE;
@@ -310,14 +285,14 @@ static vm_fault_t msm_gem_fault(struct vm_fault *vmf)
 		return VM_FAULT_SIGBUS;
 	}
 
-	/* make sure we have pages attached now */
+	 
 	pages = get_pages(obj);
 	if (IS_ERR(pages)) {
 		ret = vmf_error(PTR_ERR(pages));
 		goto out_unlock;
 	}
 
-	/* We don't use vmf->pgoff since that has the fake offset: */
+	 
 	pgoff = (vmf->address - vma->vm_start) >> PAGE_SHIFT;
 
 	pfn = page_to_pfn(pages[pgoff]);
@@ -333,7 +308,7 @@ out:
 	return ret;
 }
 
-/** get mmap offset */
+ 
 static uint64_t mmap_offset(struct drm_gem_object *obj)
 {
 	struct drm_device *dev = obj->dev;
@@ -341,7 +316,7 @@ static uint64_t mmap_offset(struct drm_gem_object *obj)
 
 	msm_gem_assert_locked(obj);
 
-	/* Make it mmapable */
+	 
 	ret = drm_gem_create_mmap_offset(obj);
 
 	if (ret) {
@@ -404,12 +379,7 @@ static void del_vma(struct msm_gem_vma *vma)
 	kfree(vma);
 }
 
-/*
- * If close is true, this also closes the VMA (releasing the allocated
- * iova range) in addition to removing the iommu mapping.  In the eviction
- * case (!close), we keep the iova allocated, but only remove the iommu
- * mapping.
- */
+ 
 static void
 put_iova_spaces(struct drm_gem_object *obj, bool close)
 {
@@ -427,7 +397,7 @@ put_iova_spaces(struct drm_gem_object *obj, bool close)
 	}
 }
 
-/* Called with msm_obj locked */
+ 
 static void
 put_iova_vmas(struct drm_gem_object *obj)
 {
@@ -510,12 +480,7 @@ void msm_gem_unpin_locked(struct drm_gem_object *obj)
 	mutex_unlock(&priv->lru.lock);
 }
 
-/* Special unpin path for use in fence-signaling path, avoiding the need
- * to hold the obj lock by only depending on things that a protected by
- * the LRU lock.  In particular we know that that we already have backing
- * and and that the object's dma_resv has the fence for the current
- * submit/job which will prevent us racing against page eviction.
- */
+ 
 void msm_gem_unpin_active(struct drm_gem_object *obj)
 {
 	struct msm_gem_object *msm_obj = to_msm_bo(obj);
@@ -553,10 +518,7 @@ static int get_and_pin_iova_range_locked(struct drm_gem_object *obj,
 	return ret;
 }
 
-/*
- * get iova and pin it. Should have a matching put
- * limits iova to specified range (in pages)
- */
+ 
 int msm_gem_get_and_pin_iova_range(struct drm_gem_object *obj,
 		struct msm_gem_address_space *aspace, uint64_t *iova,
 		u64 range_start, u64 range_end)
@@ -570,17 +532,14 @@ int msm_gem_get_and_pin_iova_range(struct drm_gem_object *obj,
 	return ret;
 }
 
-/* get iova and pin it. Should have a matching put */
+ 
 int msm_gem_get_and_pin_iova(struct drm_gem_object *obj,
 		struct msm_gem_address_space *aspace, uint64_t *iova)
 {
 	return msm_gem_get_and_pin_iova_range(obj, aspace, iova, 0, U64_MAX);
 }
 
-/*
- * Get an iova but don't pin it. Doesn't need a put because iovas are currently
- * valid for the life of the object
- */
+ 
 int msm_gem_get_iova(struct drm_gem_object *obj,
 		struct msm_gem_address_space *aspace, uint64_t *iova)
 {
@@ -614,13 +573,7 @@ static int clear_iova(struct drm_gem_object *obj,
 	return 0;
 }
 
-/*
- * Get the requested iova but don't pin it.  Fails if the requested iova is
- * not available.  Doesn't need a put because iovas are currently valid for
- * the life of the object.
- *
- * Setting an iova of zero will clear the vma.
- */
+ 
 int msm_gem_set_iova(struct drm_gem_object *obj,
 		     struct msm_gem_address_space *aspace, uint64_t iova)
 {
@@ -644,11 +597,7 @@ int msm_gem_set_iova(struct drm_gem_object *obj,
 	return ret;
 }
 
-/*
- * Unpin a iova by updating the reference counts. The memory isn't actually
- * purged until something else (shrinker, mm_notifier, destroy, etc) decides
- * to get rid of it
- */
+ 
 void msm_gem_unpin_iova(struct drm_gem_object *obj,
 		struct msm_gem_address_space *aspace)
 {
@@ -677,7 +626,7 @@ int msm_gem_dumb_map_offset(struct drm_file *file, struct drm_device *dev,
 	struct drm_gem_object *obj;
 	int ret = 0;
 
-	/* GEM does all our handle to object mapping */
+	 
 	obj = drm_gem_object_lookup(file, handle);
 	if (obj == NULL) {
 		ret = -ENOENT;
@@ -709,12 +658,7 @@ static void *get_vaddr(struct drm_gem_object *obj, unsigned madv)
 
 	pin_obj_locked(obj);
 
-	/* increment vmap_count *before* vmap() call, so shrinker can
-	 * check vmap_count (is_vunmapable()) outside of msm_obj lock.
-	 * This guarantees that we won't try to msm_gem_vunmap() this
-	 * same object from within the vmap() call (while we already
-	 * hold msm_obj lock)
-	 */
+	 
 	msm_obj->vmap_count++;
 
 	if (!msm_obj->vaddr) {
@@ -750,12 +694,7 @@ void *msm_gem_get_vaddr(struct drm_gem_object *obj)
 	return ret;
 }
 
-/*
- * Don't use this!  It is for the very special case of dumping
- * submits from GPU hangs or faults, were the bo may already
- * be MSM_MADV_DONTNEED, but we know the buffer is still on the
- * active list.
- */
+ 
 void *msm_gem_get_vaddr_active(struct drm_gem_object *obj)
 {
 	return get_vaddr(obj, __MSM_MADV_PURGED);
@@ -779,9 +718,7 @@ void msm_gem_put_vaddr(struct drm_gem_object *obj)
 	msm_gem_unlock(obj);
 }
 
-/* Update madvise status, returns true if not purged, else
- * false or -errno.
- */
+ 
 int msm_gem_madvise(struct drm_gem_object *obj, unsigned madv)
 {
 	struct msm_drm_private *priv = obj->dev->dev_private;
@@ -796,9 +733,7 @@ int msm_gem_madvise(struct drm_gem_object *obj, unsigned madv)
 
 	madv = msm_obj->madv;
 
-	/* If the obj is inactive, we might need to move it
-	 * between inactive lists
-	 */
+	 
 	update_lru_locked(obj);
 
 	mutex_unlock(&priv->lru.lock);
@@ -817,7 +752,7 @@ void msm_gem_purge(struct drm_gem_object *obj)
 	msm_gem_assert_locked(obj);
 	GEM_WARN_ON(!is_purgeable(msm_obj));
 
-	/* Get rid of any iommu mapping(s): */
+	 
 	put_iova_spaces(obj, true);
 
 	msm_gem_vunmap(obj);
@@ -829,26 +764,20 @@ void msm_gem_purge(struct drm_gem_object *obj)
 	put_iova_vmas(obj);
 
 	mutex_lock(&priv->lru.lock);
-	/* A one-way transition: */
+	 
 	msm_obj->madv = __MSM_MADV_PURGED;
 	mutex_unlock(&priv->lru.lock);
 
 	drm_gem_free_mmap_offset(obj);
 
-	/* Our goal here is to return as much of the memory as
-	 * is possible back to the system as we are called from OOM.
-	 * To do this we must instruct the shmfs to drop all of its
-	 * backing pages, *now*.
-	 */
+	 
 	shmem_truncate_range(file_inode(obj->filp), 0, (loff_t)-1);
 
 	invalidate_mapping_pages(file_inode(obj->filp)->i_mapping,
 			0, (loff_t)-1);
 }
 
-/*
- * Unpin the backing pages and make them available to be swapped out.
- */
+ 
 void msm_gem_evict(struct drm_gem_object *obj)
 {
 	struct drm_device *dev = obj->dev;
@@ -857,7 +786,7 @@ void msm_gem_evict(struct drm_gem_object *obj)
 	msm_gem_assert_locked(obj);
 	GEM_WARN_ON(is_unevictable(msm_obj));
 
-	/* Get rid of any iommu mapping(s): */
+	 
 	put_iova_spaces(obj, false);
 
 	drm_vma_node_unmap(&obj->vma_node, dev->anon_inode->i_mapping);
@@ -907,14 +836,14 @@ int msm_gem_cpu_prep(struct drm_gem_object *obj, uint32_t op, ktime_t *timeout)
 	else if (ret < 0)
 		return ret;
 
-	/* TODO cache maintenance */
+	 
 
 	return 0;
 }
 
 int msm_gem_cpu_fini(struct drm_gem_object *obj)
 {
-	/* TODO cache maintenance */
+	 
 	return 0;
 }
 
@@ -1026,7 +955,7 @@ void msm_gem_describe_objects(struct list_head *list, struct seq_file *m)
 }
 #endif
 
-/* don't call directly!  Use drm_gem_object_put() */
+ 
 static void msm_gem_free_object(struct drm_gem_object *obj)
 {
 	struct msm_gem_object *msm_obj = to_msm_bo(obj);
@@ -1042,9 +971,7 @@ static void msm_gem_free_object(struct drm_gem_object *obj)
 	if (obj->import_attach) {
 		GEM_WARN_ON(msm_obj->vaddr);
 
-		/* Don't drop the pages for imported dmabuf, as they are not
-		 * ours, just free the array we allocated:
-		 */
+		 
 		kvfree(msm_obj->pages);
 
 		put_iova_vmas(obj);
@@ -1071,7 +998,7 @@ static int msm_gem_object_mmap(struct drm_gem_object *obj, struct vm_area_struct
 	return 0;
 }
 
-/* convenience method to construct a GEM buffer object, and userspace handle */
+ 
 int msm_gem_new_handle(struct drm_device *dev, struct drm_file *file,
 		uint32_t size, uint32_t flags, uint32_t *handle,
 		char *name)
@@ -1089,7 +1016,7 @@ int msm_gem_new_handle(struct drm_device *dev, struct drm_file *file,
 
 	ret = drm_gem_handle_create(file, obj, handle);
 
-	/* drop reference from allocate - handle holds it now */
+	 
 	drm_gem_object_put(obj);
 
 	return ret;
@@ -1182,9 +1109,7 @@ struct drm_gem_object *msm_gem_new(struct drm_device *dev, uint32_t size, uint32
 	if (GEM_WARN_ON(use_vram && !priv->vram.size))
 		return ERR_PTR(-EINVAL);
 
-	/* Disallow zero sized objects as they make the underlying
-	 * infrastructure grumpy
-	 */
+	 
 	if (size == 0)
 		return ERR_PTR(-EINVAL);
 
@@ -1224,12 +1149,7 @@ struct drm_gem_object *msm_gem_new(struct drm_device *dev, uint32_t size, uint32
 		ret = drm_gem_object_init(dev, obj, size);
 		if (ret)
 			goto fail;
-		/*
-		 * Our buffers are kept pinned, so allocating them from the
-		 * MOVABLE zone is a really bad idea, and conflicts with CMA.
-		 * See comments above new_inode() why this is required _and_
-		 * expected if you're going to pin these pages.
-		 */
+		 
 		mapping_set_gfp_mask(obj->filp->f_mapping, GFP_HIGHUSER);
 	}
 
@@ -1259,7 +1179,7 @@ struct drm_gem_object *msm_gem_import(struct drm_device *dev,
 	uint32_t size;
 	int ret, npages;
 
-	/* if we don't have IOMMU, don't bother pretending we can import: */
+	 
 	if (!msm_use_mmu(dev)) {
 		DRM_DEV_ERROR(dev->dev, "cannot import without IOMMU\n");
 		return ERR_PTR(-EINVAL);

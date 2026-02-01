@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2015-2019 Jason A. Donenfeld <Jason@zx2c4.com>. All Rights Reserved.
- */
+
+ 
 
 #include "queueing.h"
 #include "timers.h"
@@ -24,7 +22,7 @@ static void wg_packet_send_handshake_initiation(struct wg_peer *peer)
 
 	if (!wg_birthdate_has_expired(atomic64_read(&peer->last_sent_handshake),
 				      REKEY_TIMEOUT))
-		return; /* This function is rate limited. */
+		return;  
 
 	atomic64_set(&peer->last_sent_handshake, ktime_get_coarse_boottime_ns());
 	net_dbg_ratelimited("%s: Sending handshake initiation to peer %llu (%pISpfsc)\n",
@@ -59,24 +57,17 @@ void wg_packet_send_queued_handshake_initiation(struct wg_peer *peer,
 		peer->timer_handshake_attempts = 0;
 
 	rcu_read_lock_bh();
-	/* We check last_sent_handshake here in addition to the actual function
-	 * we're queueing up, so that we don't queue things if not strictly
-	 * necessary:
-	 */
+	 
 	if (!wg_birthdate_has_expired(atomic64_read(&peer->last_sent_handshake),
 				      REKEY_TIMEOUT) ||
 			unlikely(READ_ONCE(peer->is_dead)))
 		goto out;
 
 	wg_peer_get(peer);
-	/* Queues up calling packet_send_queued_handshakes(peer), where we do a
-	 * peer_put(peer) after:
-	 */
+	 
 	if (!queue_work(peer->device->handshake_send_wq,
 			&peer->transmit_handshake_work))
-		/* If the work was already queued, we want to drop the
-		 * extra reference:
-		 */
+		 
 		wg_peer_put(peer);
 out:
 	rcu_read_unlock_bh();
@@ -145,12 +136,7 @@ static unsigned int calculate_skb_padding(struct sk_buff *skb)
 	if (unlikely(!PACKET_CB(skb)->mtu))
 		return ALIGN(last_unit, MESSAGE_PADDING_MULTIPLE) - last_unit;
 
-	/* We do this modulo business with the MTU, just in case the networking
-	 * layer gives us a packet that's bigger than the MTU. In that case, we
-	 * wouldn't want the final subtraction to overflow in the case of the
-	 * padded_size being clamped. Fortunately, that's very rarely the case,
-	 * so we optimize for that not happening.
-	 */
+	 
 	if (unlikely(last_unit > PACKET_CB(skb)->mtu))
 		last_unit %= PACKET_CB(skb)->mtu;
 
@@ -167,40 +153,32 @@ static bool encrypt_packet(struct sk_buff *skb, struct noise_keypair *keypair)
 	struct sk_buff *trailer;
 	int num_frags;
 
-	/* Force hash calculation before encryption so that flow analysis is
-	 * consistent over the inner packet.
-	 */
+	 
 	skb_get_hash(skb);
 
-	/* Calculate lengths. */
+	 
 	padding_len = calculate_skb_padding(skb);
 	trailer_len = padding_len + noise_encrypted_len(0);
 	plaintext_len = skb->len + padding_len;
 
-	/* Expand data section to have room for padding and auth tag. */
+	 
 	num_frags = skb_cow_data(skb, trailer_len, &trailer);
 	if (unlikely(num_frags < 0 || num_frags > ARRAY_SIZE(sg)))
 		return false;
 
-	/* Set the padding to zeros, and make sure it and the auth tag are part
-	 * of the skb.
-	 */
+	 
 	memset(skb_tail_pointer(trailer), 0, padding_len);
 
-	/* Expand head section to have room for our header and the network
-	 * stack's headers.
-	 */
+	 
 	if (unlikely(skb_cow_head(skb, DATA_PACKET_HEAD_ROOM) < 0))
 		return false;
 
-	/* Finalize checksum calculation for the inner packet, if required. */
+	 
 	if (unlikely(skb->ip_summed == CHECKSUM_PARTIAL &&
 		     skb_checksum_help(skb)))
 		return false;
 
-	/* Only after checksumming can we safely add on the padding at the end
-	 * and the header.
-	 */
+	 
 	skb_set_inner_network_header(skb, 0);
 	header = (struct message_data *)skb_push(skb, sizeof(*header));
 	header->header.type = cpu_to_le32(MESSAGE_DATA);
@@ -208,7 +186,7 @@ static bool encrypt_packet(struct sk_buff *skb, struct noise_keypair *keypair)
 	header->counter = cpu_to_le64(PACKET_CB(skb)->nonce);
 	pskb_put(skb, trailer, trailer_len);
 
-	/* Now we can encrypt the scattergather segments */
+	 
 	sg_init_table(sg, num_frags);
 	if (skb_to_sgvec(skb, sg, sizeof(struct message_data),
 			 noise_encrypted_len(plaintext_len)) <= 0)
@@ -345,7 +323,7 @@ void wg_packet_send_staged_packets(struct wg_peer *peer)
 	struct sk_buff_head packets;
 	struct sk_buff *skb;
 
-	/* Steal the current queue into our local one. */
+	 
 	__skb_queue_head_init(&packets);
 	spin_lock_bh(&peer->staged_packet_queue.lock);
 	skb_queue_splice_init(&peer->staged_packet_queue, &packets);
@@ -353,7 +331,7 @@ void wg_packet_send_staged_packets(struct wg_peer *peer)
 	if (unlikely(skb_queue_empty(&packets)))
 		return;
 
-	/* First we make sure we have a valid reference to a valid key. */
+	 
 	rcu_read_lock_bh();
 	keypair = wg_noise_keypair_get(
 		rcu_dereference_bh(peer->keypairs.current_keypair));
@@ -366,15 +344,9 @@ void wg_packet_send_staged_packets(struct wg_peer *peer)
 					      REJECT_AFTER_TIME)))
 		goto out_invalid;
 
-	/* After we know we have a somewhat valid key, we now try to assign
-	 * nonces to all of the packets in the queue. If we can't assign nonces
-	 * for all of them, we just consider it a failure and wait for the next
-	 * handshake.
-	 */
+	 
 	skb_queue_walk(&packets, skb) {
-		/* 0 for no outer TOS: no leak. TODO: at some later point, we
-		 * might consider using flowi->tos as outer instead.
-		 */
+		 
 		PACKET_CB(skb)->ds = ip_tunnel_ecn_encap(0, ip_hdr(skb), skb);
 		PACKET_CB(skb)->nonce =
 				atomic64_inc_return(&keypair->sending_counter) - 1;
@@ -393,22 +365,14 @@ out_invalid:
 out_nokey:
 	wg_noise_keypair_put(keypair, false);
 
-	/* We orphan the packets if we're waiting on a handshake, so that they
-	 * don't block a socket's pool.
-	 */
+	 
 	skb_queue_walk(&packets, skb)
 		skb_orphan(skb);
-	/* Then we put them back on the top of the queue. We're not too
-	 * concerned about accidentally getting things a little out of order if
-	 * packets are being added really fast, because this queue is for before
-	 * packets can even be sent and it's small anyway.
-	 */
+	 
 	spin_lock_bh(&peer->staged_packet_queue.lock);
 	skb_queue_splice(&packets, &peer->staged_packet_queue);
 	spin_unlock_bh(&peer->staged_packet_queue.lock);
 
-	/* If we're exiting because there's something wrong with the key, it
-	 * means we should initiate a new handshake.
-	 */
+	 
 	wg_packet_send_queued_handshake_initiation(peer, false);
 }

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Intel Speed Select -- Enumerate and control features
- * Copyright (c) 2019 Intel Corporation.
- */
+
+ 
 
 #include <linux/isst_if.h>
 #include <sys/utsname.h>
@@ -47,7 +44,7 @@ static int auto_mode;
 static int fact_enable_fail;
 static int cgroupv2;
 
-/* clos related */
+ 
 static int current_clos = -1;
 static int clos_epp = -1;
 static int clos_prop_prio = -1;
@@ -150,7 +147,7 @@ static int update_cpu_model(void)
 		cpu_model += ((fms >> 16) & 0xf) << 4;
 
 	cpu_stepping = fms & 0xf;
-	/* only three CascadeLake-N models are supported */
+	 
 	if (is_clx_n_platform()) {
 		FILE *fp;
 		size_t n = 0;
@@ -182,7 +179,7 @@ int api_version(void)
         return isst_platform_info.api_version;
 }
 
-/* Open a file, and exit on failure */
+ 
 static FILE *fopen_or_exit(const char *path, const char *mode)
 {
 	FILE *filep = fopen(path, mode);
@@ -193,7 +190,7 @@ static FILE *fopen_or_exit(const char *path, const char *mode)
 	return filep;
 }
 
-/* Parse a file containing a single int */
+ 
 static int parse_int_file(int fatal, const char *fmt, ...)
 {
 	va_list args;
@@ -276,7 +273,7 @@ static void store_cpu_topology(void)
 
 	fp = fopen(pathname, "rb");
 	if (fp) {
-		/* Mapping already exists */
+		 
 		fclose(fp);
 		return;
 	}
@@ -569,7 +566,7 @@ void for_each_online_power_domain_in_set(void (*callback)(struct isst_id *, void
 		online = parse_int_file(
 			i != 0, "/sys/devices/system/cpu/cpu%d/online", i);
 		if (online < 0)
-			online = 1; /* online entry for CPU 0 needs some special configs */
+			online = 1;  
 
 		if (!online)
 			continue;
@@ -587,10 +584,7 @@ void for_each_online_power_domain_in_set(void (*callback)(struct isst_id *, void
 
 	for (i = 0; i < MAX_PACKAGE_COUNT; i++) {
 		for (j = 0; j < MAX_DIE_PER_PACKAGE; j++) {
-			/*
-			 * Fix me:
-			 * How to check a non-cpu die for a package/die with all cpu offlined?
-			 */
+			 
 			if (!valid_mask[i][j])
 				continue;
 			for (k = 0; k < MAX_PUNIT_PER_DIE; k++) {
@@ -622,7 +616,7 @@ static void for_each_online_target_cpu_in_set(
 				1, "/sys/devices/system/cpu/cpu%d/online", i);
 		else
 			online =
-				1; /* online entry for CPU 0 needs some special configs */
+				1;  
 
 		set_isst_id(&id, i);
 		if (online && callback) {
@@ -716,34 +710,16 @@ int get_cpu_count(struct isst_id *id)
 static void update_punit_cpu_info(__u32 physical_cpu, struct _cpu_map *cpu_map)
 {
 	if (api_version() > 1) {
-		/*
-		 * MSR 0x54 format
-		 *	[15:11] PM_DOMAIN_ID
-		 *	[10:3] MODULE_ID (aka IDI_AGENT_ID)
-		 *	[2:0] LP_ID (We don't care about these bits we only
-		 *		care die and core id
-		 *	For Atom:
-		 *	[2] Always 0
-		 *	[1:0] core ID within module
-		 *	For Core
-		 *	[2:1] Always 0
-		 *	[0] thread ID
-		 */
+		 
 		cpu_map->punit_id = (physical_cpu >> 11) & 0x1f;
 		cpu_map->punit_cpu_core = (physical_cpu >> 3) & 0xff;
 		cpu_map->punit_cpu = physical_cpu & 0x7ff;
 	} else {
 		int punit_id;
 
-		/*
-		 * MSR 0x53 format
-		 * Format
-		 *      Bit 0 – thread ID
-		 *      Bit 8:1 – core ID
-		 *      Bit 13:9 – punit ID
-		 */
+		 
 		cpu_map->punit_cpu = physical_cpu & 0x1ff;
-		cpu_map->punit_cpu_core = (cpu_map->punit_cpu >> 1); // shift to get core id
+		cpu_map->punit_cpu_core = (cpu_map->punit_cpu >> 1);  
 		punit_id = (physical_cpu >> 9) & 0x1f;
 
 		if (punit_id >= MAX_PUNIT_PER_DIE)
@@ -761,7 +737,7 @@ static void create_cpu_map(void)
 	int i, fd = 0;
 	struct isst_if_cpu_maps map;
 
-	/* Use calloc to make sure the memory is initialized to Zero */
+	 
 	cpu_map = calloc(topo_max_cpus, sizeof(*cpu_map));
 	if (!cpu_map)
 		err(3, "cpumap");
@@ -777,7 +753,7 @@ static void create_cpu_map(void)
 		char buffer[256];
 		int pkg_id, die_id, core_id, punit_id;
 
-		/* check if CPU is online */
+		 
 		snprintf(buffer, sizeof(buffer),
 			 "/sys/devices/system/cpu/cpu%d", i);
 		dir = opendir(buffer);
@@ -1054,7 +1030,7 @@ void get_isst_status(struct isst_id *id, void *arg1, void *arg2, void *arg3, voi
 	int *max_level = (int *)arg4;
 	int j, ret;
 
-	/* Only check the first cpu power domain */
+	 
 	if (id->cpu < 0 || tid->cpu >= 0)
 		return;
 
@@ -1140,7 +1116,7 @@ static void isst_print_platform_information(void)
 		exit(0);
 	}
 
-	/* Early initialization to create working cpu_map */
+	 
 	set_max_cpu_num();
 	create_cpu_map();
 
@@ -1223,7 +1199,7 @@ static int clx_n_get_base_ratio(void)
 
 	while (getline(&line, &n, fp) > 0) {
 		if (strstr(line, "model name")) {
-			/* this is true for CascadeLake-N */
+			 
 			begin = strstr(line, "@ ") + 2;
 			end = strstr(line, "GHz");
 			strncpy(number, begin, end - begin);
@@ -1249,7 +1225,7 @@ static int clx_n_config(struct isst_id *id)
 	ctdp_level->core_cpumask_size =
 			alloc_cpu_set(&ctdp_level->core_cpumask);
 
-	/* find the frequency base ratio */
+	 
 	ctdp_level->tdp_ratio = clx_n_get_base_ratio();
 	if (ctdp_level->tdp_ratio == 0) {
 		debug_printf("CLX: cn base ratio is zero\n");
@@ -1257,7 +1233,7 @@ static int clx_n_config(struct isst_id *id)
 		goto error_ret;
 	}
 
-	/* find the high and low priority frequencies */
+	 
 	pbf_info->p1_high = 0;
 	pbf_info->p1_low = ~0;
 
@@ -1292,11 +1268,11 @@ static int clx_n_config(struct isst_id *id)
 		goto error_ret;
 	}
 
-	/* convert frequencies back to ratios */
+	 
 	pbf_info->p1_high = pbf_info->p1_high / 100000;
 	pbf_info->p1_low = pbf_info->p1_low / 100000;
 
-	/* create high priority cpu mask */
+	 
 	pbf_info->core_cpumask_size = alloc_cpu_set(&pbf_info->core_cpumask);
 	for (i = 0; i < topo_max_cpus; i++) {
 		if (!CPU_ISSET_S(i, present_cpumask_size, present_cpumask))
@@ -1314,11 +1290,11 @@ static int clx_n_config(struct isst_id *id)
 				  pbf_info->core_cpumask);
 	}
 
-	/* extra ctdp & pbf struct parameters */
+	 
 	ctdp_level->processed = 1;
-	ctdp_level->pbf_support = 1; /* PBF is always supported and enabled */
+	ctdp_level->pbf_support = 1;  
 	ctdp_level->pbf_enabled = 1;
-	ctdp_level->fact_support = 0; /* FACT is never supported */
+	ctdp_level->fact_support = 0;  
 	ctdp_level->fact_enabled = 0;
 
 	return 0;
@@ -1434,10 +1410,10 @@ display_result:
 	if (force_online_offline && id->cpu >= 0) {
 		struct isst_pkg_ctdp_level_info ctdp_level;
 
-		/* Wait for updated base frequencies */
+		 
 		usleep(2000);
 
-		/* Adjusting uncore freq */
+		 
 		isst_adjust_uncore_freq(id, tdp_level, &ctdp_level);
 
 		fprintf(stderr, "Option is set to online/offline\n");
@@ -2089,7 +2065,7 @@ static void set_fact_for_cpu(struct isst_id *id, void *arg1, void *arg2, void *a
 		goto disp_results;
 	}
 
-	/* Set TRL */
+	 
 	if (status) {
 		struct isst_pkg_ctdp pkg_dev;
 
@@ -2109,7 +2085,7 @@ disp_results:
 		if (ret)
 			fact_enable_fail = ret;
 	} else {
-		/* Since we modified TRL during Fact enable, restore it */
+		 
 		isst_set_trl_from_current_tdp(id, fact_trl);
 		isst_display_result(id, outf, "turbo-freq", "disable", ret);
 	}
@@ -2150,11 +2126,7 @@ static void set_fact_enable(int arg)
 					       NULL, &enable);
 
 	if (!fact_enable_fail && enable && auto_mode) {
-		/*
-		 * When we adjust CLOS param, we have to set for siblings also.
-		 * So for the each user specified CPU, also add the sibling
-		 * in the present_cpu_mask.
-		 */
+		 
 		for (i = 0; i < get_topo_max_cpus(); ++i) {
 			char buffer[128], sibling_list[128], *cpu_str;
 			int fd, len;
@@ -2555,7 +2527,7 @@ static void set_turbo_mode(int arg)
 				1, "/sys/devices/system/cpu/cpu%d/online", i);
 		else
 			online =
-				1; /* online entry for CPU 0 needs some special configs */
+				1;  
 
 		if (online) {
 			set_isst_id(&id, i);
@@ -2650,10 +2622,7 @@ static struct process_cmd_struct isst_cmds[] = {
 	{ NULL, NULL, NULL }
 };
 
-/*
- * parse cpuset with following syntax
- * 1,2,4..6,8-10 and set bits in cpu_subset
- */
+ 
 void parse_cpu_command(char *optarg)
 {
 	unsigned int start, end, invalid_count;
@@ -2663,7 +2632,7 @@ void parse_cpu_command(char *optarg)
 	invalid_count = 0;
 
 	while (next && *next) {
-		if (*next == '-') /* no negative cpu numbers */
+		if (*next == '-')  
 			goto error;
 
 		start = strtoul(next, &next, 10);
@@ -2682,11 +2651,11 @@ void parse_cpu_command(char *optarg)
 		}
 
 		if (*next == '-') {
-			next += 1; /* start range */
+			next += 1;  
 		} else if (*next == '.') {
 			next += 1;
 			if (*next == '.')
-				next += 1; /* start range */
+				next += 1;  
 			else
 				goto error;
 		}
@@ -2789,7 +2758,7 @@ static void parse_cmd_args(int argc, int start, char **argv)
 				exit(1);
 			}
 			break;
-		/* CLOS related */
+		 
 		case 'c':
 			current_clos = atoi(optarg);
 			break;

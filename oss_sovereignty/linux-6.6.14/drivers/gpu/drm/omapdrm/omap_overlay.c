@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2018 Texas Instruments Incorporated -  http://www.ti.com/
- * Author: Benoit Parrot <bparrot@ti.com>
- */
+
+ 
 
 #include <drm/drm_atomic.h>
 #include <drm/drm_atomic_helper.h>
@@ -10,9 +7,7 @@
 #include "omap_dmm_tiler.h"
 #include "omap_drv.h"
 
-/*
- * overlay funcs
- */
+ 
 static const char * const overlay_id_to_name[] = {
 	[OMAP_DSS_GFX] = "gfx",
 	[OMAP_DSS_VIDEO1] = "vid1",
@@ -20,9 +15,7 @@ static const char * const overlay_id_to_name[] = {
 	[OMAP_DSS_VIDEO3] = "vid3",
 };
 
-/*
- * Find a free overlay with the required caps and supported fourcc
- */
+ 
 static struct omap_hw_overlay *
 omap_plane_find_free_overlay(struct drm_device *dev, struct drm_plane *hwoverlay_to_plane[],
 			     u32 caps, u32 fourcc)
@@ -38,15 +31,15 @@ omap_plane_find_free_overlay(struct drm_device *dev, struct drm_plane *hwoverlay
 		DBG("%d: id: %d cur->caps: %x",
 		    cur->idx, cur->id, cur->caps);
 
-		/* skip if already in-use */
+		 
 		if (hwoverlay_to_plane[cur->idx])
 			continue;
 
-		/* skip if doesn't support some required caps: */
+		 
 		if (caps & ~cur->caps)
 			continue;
 
-		/* check supported format */
+		 
 		if (!dispc_ovl_color_mode_supported(priv->dispc,
 						    cur->id, fourcc))
 			continue;
@@ -58,18 +51,12 @@ omap_plane_find_free_overlay(struct drm_device *dev, struct drm_plane *hwoverlay
 	return NULL;
 }
 
-/*
- * Assign a new overlay to a plane with the required caps and supported fourcc
- * If a plane need a new overlay, the previous one should have been released
- * with omap_overlay_release()
- * This should be called from the plane atomic_check() in order to prepare the
- * next global overlay_map to be enabled when atomic transaction is valid.
- */
+ 
 int omap_overlay_assign(struct drm_atomic_state *s, struct drm_plane *plane,
 			u32 caps, u32 fourcc, struct omap_hw_overlay **overlay,
 			struct omap_hw_overlay **r_overlay)
 {
-	/* Get the global state of the current atomic transaction */
+	 
 	struct omap_global_state *state = omap_get_global_state(s);
 	struct drm_plane **overlay_map = state->hwoverlay_to_plane;
 	struct omap_hw_overlay *ovl, *r_ovl;
@@ -104,15 +91,10 @@ int omap_overlay_assign(struct drm_atomic_state *s, struct drm_plane *plane,
 	return 0;
 }
 
-/*
- * Release an overlay from a plane if the plane gets not visible or the plane
- * need a new overlay if overlay caps changes.
- * This should be called from the plane atomic_check() in order to prepare the
- * next global overlay_map to be enabled when atomic transaction is valid.
- */
+ 
 void omap_overlay_release(struct drm_atomic_state *s, struct omap_hw_overlay *overlay)
 {
-	/* Get the global state of the current atomic transaction */
+	 
 	struct omap_global_state *state = omap_get_global_state(s);
 	struct drm_plane **overlay_map = state->hwoverlay_to_plane;
 
@@ -127,23 +109,18 @@ void omap_overlay_release(struct drm_atomic_state *s, struct omap_hw_overlay *ov
 	overlay_map[overlay->idx] = NULL;
 }
 
-/*
- * Update an overlay state that was attached to a plane before the current atomic state.
- * This should be called from the plane atomic_update() or atomic_disable(),
- * where an overlay association to a plane could have changed between the old and current
- * atomic state.
- */
+ 
 void omap_overlay_update_state(struct omap_drm_private *priv,
 			       struct omap_hw_overlay *overlay)
 {
 	struct omap_global_state *state = omap_get_existing_global_state(priv);
 	struct drm_plane **overlay_map = state->hwoverlay_to_plane;
 
-	/* Check if this overlay is not used anymore, then disable it */
+	 
 	if (!overlay_map[overlay->idx]) {
 		DBG("%s: disabled", overlay->name);
 
-		/* disable the overlay */
+		 
 		dispc_ovl_enable(priv->dispc, overlay->id, false);
 	}
 }

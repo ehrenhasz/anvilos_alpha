@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #undef _GNU_SOURCE
 #define _GNU_SOURCE 1
 #undef __USE_GNU
@@ -55,16 +55,13 @@ int main(int argc, char **argv, char **envp)
 {
 	int err = 0;
 
-	/* SIGILL triggers on 32-bit kernels w/o fcomi emulation
-	 * when run with "no387 nofxsr". Other signals are caught
-	 * just in case.
-	 */
+	 
 	signal(SIGILL, sighandler);
 	signal(SIGFPE, sighandler);
 	signal(SIGSEGV, sighandler);
 
 	printf("[RUN]\tTesting fcmovCC instructions\n");
-	/* If fcmovCC() returns 1.0, the move wasn't done */
+	 
 	err |= !(fcmovb(0)   == 1.0); err |= !(fcmovnb(0)  != 1.0);
 	err |= !(fcmove(0)   == 1.0); err |= !(fcmovne(0)  != 1.0);
 	err |= !(fcmovbe(0)  == 1.0); err |= !(fcmovnbe(0) != 1.0);

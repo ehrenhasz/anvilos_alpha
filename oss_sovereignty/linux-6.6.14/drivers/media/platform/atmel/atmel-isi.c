@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2011 Atmel Corporation
- * Josh Wu, <josh.wu@atmel.com>
- *
- * Based on previous work by Lars Haring, <lars.haring@atmel.com>
- * and Sedji Gaouaou
- * Based on the bttv driver for Bt848 with respective copyright holders
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/completion.h>
@@ -39,13 +32,13 @@
 #define MIN_FRAME_RATE			15
 #define FRAME_INTERVAL_MILLI_SEC	(1000 / MIN_FRAME_RATE)
 
-/* Frame buffer descriptor */
+ 
 struct fbd {
-	/* Physical address of the frame buffer */
+	 
 	u32 fb_address;
-	/* DMA Control Register(only in HISI2) */
+	 
 	u32 dma_ctrl;
-	/* Physical address of the next fbd */
+	 
 	u32 next_fbd_address;
 };
 
@@ -60,7 +53,7 @@ struct isi_dma_desc {
 	dma_addr_t fbd_phys;
 };
 
-/* Frame buffer data */
+ 
 struct frame_buffer {
 	struct vb2_v4l2_buffer vb;
 	struct isi_dma_desc *p_dma_desc;
@@ -73,15 +66,7 @@ struct isi_graph_entity {
 	struct v4l2_subdev *subdev;
 };
 
-/*
- * struct isi_format - ISI media bus format information
- * @fourcc:		Fourcc code for this format
- * @mbus_code:		V4L2 media bus format code.
- * @bpp:		Bytes per pixel (when stored in memory)
- * @swap:		Byte swap configuration value
- * @support:		Indicates format supported by subdev
- * @skip:		Skip duplicate format supported by subdev
- */
+ 
 struct isi_format {
 	u32	fourcc;
 	u32	mbus_code;
@@ -91,14 +76,14 @@ struct isi_format {
 
 
 struct atmel_isi {
-	/* Protects the access of variables shared with the ISR */
+	 
 	spinlock_t			irqlock;
 	struct device			*dev;
 	void __iomem			*regs;
 
 	int				sequence;
 
-	/* Allocate descriptors for dma buffer use */
+	 
 	struct fbd			*p_fb_descriptors;
 	dma_addr_t			fb_descriptors_phys;
 	struct				list_head dma_desc_head;
@@ -106,12 +91,12 @@ struct atmel_isi {
 	bool				enable_preview_path;
 
 	struct completion		complete;
-	/* ISI peripheral clock */
+	 
 	struct clk			*pclk;
 	unsigned int			irq;
 
 	struct isi_platform_data	pdata;
-	u16				width_flags;	/* max 12 bits */
+	u16				width_flags;	 
 
 	struct list_head		video_buffer_list;
 	struct frame_buffer		*active;
@@ -150,19 +135,19 @@ static void configure_geometry(struct atmel_isi *isi)
 				   fourcc == V4L2_PIX_FMT_RGB32 ||
 				   fourcc == V4L2_PIX_FMT_Y16;
 
-	/* According to sensor's output format to set cfg2 */
+	 
 	cfg2 = isi->current_fmt->swap;
 
 	isi_writel(isi, ISI_CTRL, ISI_CTRL_DIS);
-	/* Set width */
+	 
 	cfg2 |= ((isi->fmt.fmt.pix.width - 1) << ISI_CFG2_IM_HSIZE_OFFSET) &
 			ISI_CFG2_IM_HSIZE_MASK;
-	/* Set height */
+	 
 	cfg2 |= ((isi->fmt.fmt.pix.height - 1) << ISI_CFG2_IM_VSIZE_OFFSET)
 			& ISI_CFG2_IM_VSIZE_MASK;
 	isi_writel(isi, ISI_CFG2, cfg2);
 
-	/* No down sampling, preview size equal to sensor output size */
+	 
 	psize = ((isi->fmt.fmt.pix.width - 1) << ISI_PSIZE_PREV_HSIZE_OFFSET) &
 		ISI_PSIZE_PREV_HSIZE_MASK;
 	psize |= ((isi->fmt.fmt.pix.height - 1) << ISI_PSIZE_PREV_VSIZE_OFFSET) &
@@ -187,7 +172,7 @@ static irqreturn_t atmel_isi_handle_streaming(struct atmel_isi *isi)
 	if (list_empty(&isi->video_buffer_list)) {
 		isi->active = NULL;
 	} else {
-		/* start next dma frame. */
+		 
 		isi->active = list_entry(isi->video_buffer_list.next,
 					struct frame_buffer, list);
 		if (!isi->enable_preview_path) {
@@ -207,7 +192,7 @@ static irqreturn_t atmel_isi_handle_streaming(struct atmel_isi *isi)
 	return IRQ_HANDLED;
 }
 
-/* ISI interrupt service routine */
+ 
 static irqreturn_t isi_interrupt(int irq, void *dev_id)
 {
 	struct atmel_isi *isi = dev_id;
@@ -243,10 +228,7 @@ static irqreturn_t isi_interrupt(int irq, void *dev_id)
 static int atmel_isi_wait_status(struct atmel_isi *isi, int wait_reset)
 {
 	unsigned long timeout;
-	/*
-	 * The reset or disable will only succeed if we have a
-	 * pixel clock from the camera.
-	 */
+	 
 	init_completion(&isi->complete);
 
 	if (wait_reset) {
@@ -265,9 +247,7 @@ static int atmel_isi_wait_status(struct atmel_isi *isi, int wait_reset)
 	return 0;
 }
 
-/* ------------------------------------------------------------------
-	Videobuf operations
-   ------------------------------------------------------------------*/
+ 
 static int queue_setup(struct vb2_queue *vq,
 				unsigned int *nbuffers, unsigned int *nplanes,
 				unsigned int sizes[], struct device *alloc_devs[])
@@ -277,7 +257,7 @@ static int queue_setup(struct vb2_queue *vq,
 
 	size = isi->fmt.fmt.pix.sizeimage;
 
-	/* Make sure the image size is large enough. */
+	 
 	if (*nplanes)
 		return sizes[0] < size ? -EINVAL : 0;
 
@@ -326,13 +306,13 @@ static int buffer_prepare(struct vb2_buffer *vb)
 			dev_err(isi->dev, "Not enough dma descriptors.\n");
 			return -EINVAL;
 		} else {
-			/* Get an available descriptor */
+			 
 			desc = list_entry(isi->dma_desc_head.next,
 						struct isi_dma_desc, list);
-			/* Delete the descriptor since now it is used */
+			 
 			list_del_init(&desc->list);
 
-			/* Initialize the dma descriptor */
+			 
 			desc->p_fbd->fb_address =
 					vb2_dma_contig_plane_dma_addr(vb, 0);
 			desc->p_fbd->next_fbd_address = 0;
@@ -350,7 +330,7 @@ static void buffer_cleanup(struct vb2_buffer *vb)
 	struct atmel_isi *isi = vb2_get_drv_priv(vb->vb2_queue);
 	struct frame_buffer *buf = container_of(vbuf, struct frame_buffer, vb);
 
-	/* This descriptor is available now and we add to head list */
+	 
 	if (buf->p_dma_desc)
 		list_add(&buf->p_dma_desc->list, &isi->dma_desc_head);
 }
@@ -360,11 +340,11 @@ static void start_dma(struct atmel_isi *isi, struct frame_buffer *buffer)
 	u32 ctrl, cfg1;
 
 	cfg1 = isi_readl(isi, ISI_CFG1);
-	/* Enable irq: cxfr for the codec path, pxfr for the preview path */
+	 
 	isi_writel(isi, ISI_INTEN,
 			ISI_SR_CXFR_DONE | ISI_SR_PXFR_DONE);
 
-	/* Check if already in a frame */
+	 
 	if (!isi->enable_preview_path) {
 		if (isi_readl(isi, ISI_STATUS) & ISI_CTRL_CDC) {
 			dev_err(isi->dev, "Already in frame handling.\n");
@@ -385,10 +365,10 @@ static void start_dma(struct atmel_isi *isi, struct frame_buffer *buffer)
 	}
 
 	cfg1 &= ~ISI_CFG1_FRATE_DIV_MASK;
-	/* Enable linked list */
+	 
 	cfg1 |= isi->pdata.frate | ISI_CFG1_DISCR;
 
-	/* Enable ISI */
+	 
 	ctrl = ISI_CTRL_EN;
 
 	if (!isi->enable_preview_path)
@@ -426,27 +406,27 @@ static int start_streaming(struct vb2_queue *vq, unsigned int count)
 	if (ret < 0)
 		return ret;
 
-	/* Enable stream on the sub device */
+	 
 	ret = v4l2_subdev_call(isi->entity.subdev, video, s_stream, 1);
 	if (ret && ret != -ENOIOCTLCMD) {
 		dev_err(isi->dev, "stream on failed in subdev\n");
 		goto err_start_stream;
 	}
 
-	/* Reset ISI */
+	 
 	ret = atmel_isi_wait_status(isi, WAIT_ISI_RESET);
 	if (ret < 0) {
 		dev_err(isi->dev, "Reset ISI timed out\n");
 		goto err_reset;
 	}
-	/* Disable all interrupts */
+	 
 	isi_writel(isi, ISI_INTDIS, (u32)~0UL);
 
 	isi->sequence = 0;
 	configure_geometry(isi);
 
 	spin_lock_irq(&isi->irqlock);
-	/* Clear any pending interrupt */
+	 
 	isi_readl(isi, ISI_STATUS);
 
 	start_dma(isi, isi->active);
@@ -462,7 +442,7 @@ err_start_stream:
 
 	spin_lock_irq(&isi->irqlock);
 	isi->active = NULL;
-	/* Release all active buffers */
+	 
 	list_for_each_entry_safe(buf, node, &isi->video_buffer_list, list) {
 		list_del_init(&buf->list);
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_QUEUED);
@@ -472,7 +452,7 @@ err_start_stream:
 	return ret;
 }
 
-/* abort streaming and wait for last buffer */
+ 
 static void stop_streaming(struct vb2_queue *vq)
 {
 	struct atmel_isi *isi = vb2_get_drv_priv(vq);
@@ -480,14 +460,14 @@ static void stop_streaming(struct vb2_queue *vq)
 	int ret = 0;
 	unsigned long timeout;
 
-	/* Disable stream on the sub device */
+	 
 	ret = v4l2_subdev_call(isi->entity.subdev, video, s_stream, 0);
 	if (ret && ret != -ENOIOCTLCMD)
 		dev_err(isi->dev, "stream off failed in subdev\n");
 
 	spin_lock_irq(&isi->irqlock);
 	isi->active = NULL;
-	/* Release all active buffers */
+	 
 	list_for_each_entry_safe(buf, node, &isi->video_buffer_list, list) {
 		list_del_init(&buf->list);
 		vb2_buffer_done(&buf->vb.vb2_buf, VB2_BUF_STATE_ERROR);
@@ -496,7 +476,7 @@ static void stop_streaming(struct vb2_queue *vq)
 
 	if (!isi->enable_preview_path) {
 		timeout = jiffies + (FRAME_INTERVAL_MILLI_SEC * HZ) / 1000;
-		/* Wait until the end of the current frame. */
+		 
 		while ((isi_readl(isi, ISI_STATUS) & ISI_CTRL_CDC) &&
 				time_before(jiffies, timeout))
 			msleep(1);
@@ -506,11 +486,11 @@ static void stop_streaming(struct vb2_queue *vq)
 				"Timeout waiting for finishing codec request\n");
 	}
 
-	/* Disable interrupts */
+	 
 	isi_writel(isi, ISI_INTDIS,
 			ISI_SR_CXFR_DONE | ISI_SR_PXFR_DONE);
 
-	/* Disable ISI and wait for it is done */
+	 
 	ret = atmel_isi_wait_status(isi, WAIT_ISI_DISABLE);
 	if (ret < 0)
 		dev_err(isi->dev, "Disable ISI timed out\n");
@@ -567,10 +547,7 @@ static void isi_try_fse(struct atmel_isi *isi, const struct isi_format *isi_fmt,
 
 	ret = v4l2_subdev_call(isi->entity.subdev, pad, enum_frame_size,
 			       sd_state, &fse);
-	/*
-	 * Attempt to obtain format size from subdev. If not available,
-	 * just use the maximum ISI can receive.
-	 */
+	 
 	if (ret) {
 		sd_state->pads->try_crop.width = MAX_SUPPORT_WIDTH;
 		sd_state->pads->try_crop.height = MAX_SUPPORT_HEIGHT;
@@ -600,7 +577,7 @@ static int isi_try_fmt(struct atmel_isi *isi, struct v4l2_format *f,
 		pixfmt->pixelformat = isi_fmt->fourcc;
 	}
 
-	/* Limit to Atmel ISI hardware capabilities */
+	 
 	pixfmt->width = clamp(pixfmt->width, 0U, MAX_SUPPORT_WIDTH);
 	pixfmt->height = clamp(pixfmt->height, 0U, MAX_SUPPORT_HEIGHT);
 
@@ -792,7 +769,7 @@ static int isi_camera_set_bus_param(struct atmel_isi *isi)
 	u32 cfg1 = 0;
 	int ret;
 
-	/* set bus param for ISI */
+	 
 	if (isi->pdata.hsync_act_low)
 		cfg1 |= ISI_CFG1_HSYNC_POL_ACTIVE_LOW;
 	if (isi->pdata.vsync_act_low)
@@ -806,7 +783,7 @@ static int isi_camera_set_bus_param(struct atmel_isi *isi)
 
 	cfg1 |= ISI_CFG1_THMASK_BEATS_16;
 
-	/* Enable PM and peripheral clock before operate isi registers */
+	 
 	ret = pm_runtime_resume_and_get(isi->dev);
 	if (ret < 0)
 		return ret;
@@ -819,7 +796,7 @@ static int isi_camera_set_bus_param(struct atmel_isi *isi)
 	return 0;
 }
 
-/* -----------------------------------------------------------------------*/
+ 
 static int atmel_isi_parse_dt(struct atmel_isi *isi,
 			struct platform_device *pdev)
 {
@@ -827,7 +804,7 @@ static int atmel_isi_parse_dt(struct atmel_isi *isi,
 	struct v4l2_fwnode_endpoint ep = { .bus_type = 0 };
 	int err;
 
-	/* Default settings for ISI */
+	 
 	isi->pdata.full_mode = 1;
 	isi->pdata.frate = ISI_CFG1_FRATE_CAPTURE_ALL;
 
@@ -1055,13 +1032,13 @@ static int isi_formats_init(struct atmel_isi *isi)
 			if (isi_formats[i].mbus_code != mbus_code.code)
 				continue;
 
-			/* Code supported, have we got this fourcc yet? */
+			 
 			for (j = 0; j < num_fmts; j++)
 				if (isi_fmts[j]->fourcc == isi_formats[i].fourcc)
-					/* Already available */
+					 
 					break;
 			if (j == num_fmts)
-				/* new */
+				 
 				isi_fmts[num_fmts++] = isi_formats + i;
 		}
 		mbus_code.index++;
@@ -1126,7 +1103,7 @@ static void isi_graph_notify_unbind(struct v4l2_async_notifier *notifier,
 
 	dev_dbg(isi->dev, "Removing %s\n", video_device_node_name(isi->vdev));
 
-	/* Checks internally if vdev have been init or not */
+	 
 	video_unregister_device(isi->vdev);
 }
 
@@ -1210,7 +1187,7 @@ static int atmel_isi_probe(struct platform_device *pdev)
 
 	q = &isi->queue;
 
-	/* Initialize the top-level structure */
+	 
 	ret = v4l2_device_register(&pdev->dev, &isi->v4l2_dev);
 	if (ret)
 		return ret;
@@ -1221,7 +1198,7 @@ static int atmel_isi_probe(struct platform_device *pdev)
 		goto err_vdev_alloc;
 	}
 
-	/* video node */
+	 
 	isi->vdev->fops = &isi_fops;
 	isi->vdev->v4l2_dev = &isi->v4l2_dev;
 	isi->vdev->queue = &isi->queue;
@@ -1233,7 +1210,7 @@ static int atmel_isi_probe(struct platform_device *pdev)
 		V4L2_CAP_READWRITE;
 	video_set_drvdata(isi->vdev, isi);
 
-	/* buffer queue */
+	 
 	q->type = V4L2_BUF_TYPE_VIDEO_CAPTURE;
 	q->io_modes = VB2_MMAP | VB2_READ | VB2_DMABUF;
 	q->lock = &isi->lock;
@@ -1344,7 +1321,7 @@ static int atmel_isi_runtime_resume(struct device *dev)
 
 	return clk_prepare_enable(isi->pclk);
 }
-#endif /* CONFIG_PM */
+#endif  
 
 static const struct dev_pm_ops atmel_isi_dev_pm_ops = {
 	SET_RUNTIME_PM_OPS(atmel_isi_runtime_suspend,

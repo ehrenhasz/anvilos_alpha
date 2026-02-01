@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/****************************************************************
 
-Siano Mobile Silicon, Inc.
-MDTV receiver kernel modules.
-Copyright (C) 2006-2008, Uri Shkolnik
-
-
-****************************************************************/
+ 
 
 #include "smscoreapi.h"
 
@@ -60,7 +53,7 @@ static u32 sms_to_modulation_table[] = {
 };
 
 
-/* Events that may come from DVB v3 adapter */
+ 
 static void sms_board_dvb3_event(struct smsdvb_client_t *client,
 		enum SMS_DVB3_EVENTS event) {
 
@@ -130,22 +123,19 @@ static void smsdvb_stats_not_ready(struct dvb_frontend *fe)
 		n_layers = 1;
 	}
 
-	/* Global stats */
+	 
 	c->strength.len = 1;
 	c->cnr.len = 1;
 	c->strength.stat[0].scale = FE_SCALE_DECIBEL;
 	c->cnr.stat[0].scale = FE_SCALE_DECIBEL;
 
-	/* Per-layer stats */
+	 
 	c->post_bit_error.len = n_layers;
 	c->post_bit_count.len = n_layers;
 	c->block_error.len = n_layers;
 	c->block_count.len = n_layers;
 
-	/*
-	 * Put all of them at FE_SCALE_NOT_AVAILABLE. They're dynamically
-	 * changed when the stats become available.
-	 */
+	 
 	for (i = 0; i < n_layers; i++) {
 		c->post_bit_error.stat[i].scale = FE_SCALE_NOT_AVAILABLE;
 		c->post_bit_count.stat[i].scale = FE_SCALE_NOT_AVAILABLE;
@@ -264,30 +254,30 @@ static void smsdvb_update_per_slices(struct smsdvb_client_t *client,
 	client->fe_status = sms_to_status(p->is_demod_locked, p->is_rf_locked);
 	c->modulation = sms_to_modulation(p->constellation);
 
-	/* signal Strength, in DBm */
+	 
 	c->strength.stat[0].uvalue = p->in_band_power * 1000;
 
-	/* Carrier to noise ratio, in DB */
+	 
 	c->cnr.stat[0].svalue = p->snr * 1000;
 
-	/* PER/BER requires demod lock */
+	 
 	if (!p->is_demod_locked)
 		return;
 
-	/* TS PER */
+	 
 	client->last_per = c->block_error.stat[0].uvalue;
 	c->block_error.stat[0].scale = FE_SCALE_COUNTER;
 	c->block_count.stat[0].scale = FE_SCALE_COUNTER;
 	c->block_error.stat[0].uvalue += p->ets_packets;
 	c->block_count.stat[0].uvalue += p->ets_packets + p->ts_packets;
 
-	/* ber */
+	 
 	c->post_bit_error.stat[0].scale = FE_SCALE_COUNTER;
 	c->post_bit_count.stat[0].scale = FE_SCALE_COUNTER;
 	c->post_bit_error.stat[0].uvalue += p->ber_error_count;
 	c->post_bit_count.stat[0].uvalue += p->ber_bit_count;
 
-	/* Legacy PER/BER */
+	 
 	tmp = p->ets_packets * 65535ULL;
 	if (p->ts_packets + p->ets_packets)
 		do_div(tmp, p->ts_packets + p->ets_packets);
@@ -305,7 +295,7 @@ static void smsdvb_update_dvb_stats(struct smsdvb_client_t *client,
 
 	client->fe_status = sms_to_status(p->is_demod_locked, p->is_rf_locked);
 
-	/* Update DVB modulation parameters */
+	 
 	c->frequency = p->frequency;
 	client->fe_status = sms_to_status(p->is_demod_locked, 0);
 	c->bandwidth_hz = sms_to_bw(p->bandwidth);
@@ -316,33 +306,33 @@ static void smsdvb_update_dvb_stats(struct smsdvb_client_t *client,
 	c->hierarchy = sms_to_hierarchy(p->hierarchy);
 	c->modulation = sms_to_modulation(p->constellation);
 
-	/* update reception data */
+	 
 	c->lna = p->is_external_lna_on ? 1 : 0;
 
-	/* Carrier to noise ratio, in DB */
+	 
 	c->cnr.stat[0].svalue = p->SNR * 1000;
 
-	/* signal Strength, in DBm */
+	 
 	c->strength.stat[0].uvalue = p->in_band_pwr * 1000;
 
-	/* PER/BER requires demod lock */
+	 
 	if (!p->is_demod_locked)
 		return;
 
-	/* TS PER */
+	 
 	client->last_per = c->block_error.stat[0].uvalue;
 	c->block_error.stat[0].scale = FE_SCALE_COUNTER;
 	c->block_count.stat[0].scale = FE_SCALE_COUNTER;
 	c->block_error.stat[0].uvalue += p->error_ts_packets;
 	c->block_count.stat[0].uvalue += p->total_ts_packets;
 
-	/* ber */
+	 
 	c->post_bit_error.stat[0].scale = FE_SCALE_COUNTER;
 	c->post_bit_count.stat[0].scale = FE_SCALE_COUNTER;
 	c->post_bit_error.stat[0].uvalue += p->ber_error_count;
 	c->post_bit_count.stat[0].uvalue += p->ber_bit_count;
 
-	/* Legacy PER/BER */
+	 
 	client->legacy_ber = p->ber;
 };
 
@@ -359,18 +349,14 @@ static void smsdvb_update_isdbt_stats(struct smsdvb_client_t *client,
 
 	client->fe_status = sms_to_status(p->is_demod_locked, p->is_rf_locked);
 
-	/*
-	 * Firmware 2.1 seems to report only lock status and
-	 * signal strength. The signal strength indicator is at the
-	 * wrong field.
-	 */
+	 
 	if (p->statistics_type == 0) {
 		c->strength.stat[0].uvalue = ((s32)p->transmission_mode) * 1000;
 		c->cnr.stat[0].scale = FE_SCALE_NOT_AVAILABLE;
 		return;
 	}
 
-	/* Update ISDB-T transmission parameters */
+	 
 	c->frequency = p->frequency;
 	c->bandwidth_hz = sms_to_bw(p->bandwidth);
 	c->transmission_mode = sms_to_isdbt_mode(p->transmission_mode);
@@ -383,22 +369,22 @@ static void smsdvb_update_isdbt_stats(struct smsdvb_client_t *client,
 		n_layers = 3;
 	c->isdbt_layer_enabled = 0;
 
-	/* update reception data */
+	 
 	c->lna = p->is_external_lna_on ? 1 : 0;
 
-	/* Carrier to noise ratio, in DB */
+	 
 	c->cnr.stat[0].svalue = p->SNR * 1000;
 
-	/* signal Strength, in DBm */
+	 
 	c->strength.stat[0].uvalue = p->in_band_pwr * 1000;
 
-	/* PER/BER and per-layer stats require demod lock */
+	 
 	if (!p->is_demod_locked)
 		return;
 
 	client->last_per = c->block_error.stat[0].uvalue;
 
-	/* Clears global counters, as the code below will sum it again */
+	 
 	c->block_error.stat[0].uvalue = 0;
 	c->block_count.stat[0].uvalue = 0;
 	c->block_error.stat[0].scale = FE_SCALE_COUNTER;
@@ -411,7 +397,7 @@ static void smsdvb_update_isdbt_stats(struct smsdvb_client_t *client,
 	for (i = 0; i < n_layers; i++) {
 		lr = &p->layer_info[i];
 
-		/* Update per-layer transmission parameters */
+		 
 		if (lr->number_of_segments > 0 && lr->number_of_segments < 13) {
 			c->isdbt_layer_enabled |= 1 << i;
 			c->layer[i].segment_count = lr->number_of_segments;
@@ -421,26 +407,26 @@ static void smsdvb_update_isdbt_stats(struct smsdvb_client_t *client,
 		c->layer[i].modulation = sms_to_modulation(lr->constellation);
 		c->layer[i].fec = sms_to_code_rate(lr->code_rate);
 
-		/* Time interleaving */
+		 
 		c->layer[i].interleaving = (u8)lr->ti_ldepth_i;
 
-		/* TS PER */
+		 
 		c->block_error.stat[i + 1].scale = FE_SCALE_COUNTER;
 		c->block_count.stat[i + 1].scale = FE_SCALE_COUNTER;
 		c->block_error.stat[i + 1].uvalue += lr->error_ts_packets;
 		c->block_count.stat[i + 1].uvalue += lr->total_ts_packets;
 
-		/* Update global PER counter */
+		 
 		c->block_error.stat[0].uvalue += lr->error_ts_packets;
 		c->block_count.stat[0].uvalue += lr->total_ts_packets;
 
-		/* BER */
+		 
 		c->post_bit_error.stat[i + 1].scale = FE_SCALE_COUNTER;
 		c->post_bit_count.stat[i + 1].scale = FE_SCALE_COUNTER;
 		c->post_bit_error.stat[i + 1].uvalue += lr->ber_error_count;
 		c->post_bit_count.stat[i + 1].uvalue += lr->ber_bit_count;
 
-		/* Update global BER counter */
+		 
 		c->post_bit_error.stat[0].uvalue += lr->ber_error_count;
 		c->post_bit_count.stat[0].uvalue += lr->ber_bit_count;
 	}
@@ -457,7 +443,7 @@ static void smsdvb_update_isdbt_stats_ex(struct smsdvb_client_t *client,
 	if (client->prt_isdb_stats_ex)
 		client->prt_isdb_stats_ex(client->debug_data, p);
 
-	/* Update ISDB-T transmission parameters */
+	 
 	c->frequency = p->frequency;
 	client->fe_status = sms_to_status(p->is_demod_locked, 0);
 	c->bandwidth_hz = sms_to_bw(p->bandwidth);
@@ -471,22 +457,22 @@ static void smsdvb_update_isdbt_stats_ex(struct smsdvb_client_t *client,
 		n_layers = 3;
 	c->isdbt_layer_enabled = 0;
 
-	/* update reception data */
+	 
 	c->lna = p->is_external_lna_on ? 1 : 0;
 
-	/* Carrier to noise ratio, in DB */
+	 
 	c->cnr.stat[0].svalue = p->SNR * 1000;
 
-	/* signal Strength, in DBm */
+	 
 	c->strength.stat[0].uvalue = p->in_band_pwr * 1000;
 
-	/* PER/BER and per-layer stats require demod lock */
+	 
 	if (!p->is_demod_locked)
 		return;
 
 	client->last_per = c->block_error.stat[0].uvalue;
 
-	/* Clears global counters, as the code below will sum it again */
+	 
 	c->block_error.stat[0].uvalue = 0;
 	c->block_count.stat[0].uvalue = 0;
 	c->block_error.stat[0].scale = FE_SCALE_COUNTER;
@@ -503,7 +489,7 @@ static void smsdvb_update_isdbt_stats_ex(struct smsdvb_client_t *client,
 	for (i = 0; i < n_layers; i++) {
 		lr = &p->layer_info[i];
 
-		/* Update per-layer transmission parameters */
+		 
 		if (lr->number_of_segments > 0 && lr->number_of_segments < 13) {
 			c->isdbt_layer_enabled |= 1 << i;
 			c->layer[i].segment_count = lr->number_of_segments;
@@ -513,26 +499,26 @@ static void smsdvb_update_isdbt_stats_ex(struct smsdvb_client_t *client,
 		c->layer[i].modulation = sms_to_modulation(lr->constellation);
 		c->layer[i].fec = sms_to_code_rate(lr->code_rate);
 
-		/* Time interleaving */
+		 
 		c->layer[i].interleaving = (u8)lr->ti_ldepth_i;
 
-		/* TS PER */
+		 
 		c->block_error.stat[i + 1].scale = FE_SCALE_COUNTER;
 		c->block_count.stat[i + 1].scale = FE_SCALE_COUNTER;
 		c->block_error.stat[i + 1].uvalue += lr->error_ts_packets;
 		c->block_count.stat[i + 1].uvalue += lr->total_ts_packets;
 
-		/* Update global PER counter */
+		 
 		c->block_error.stat[0].uvalue += lr->error_ts_packets;
 		c->block_count.stat[0].uvalue += lr->total_ts_packets;
 
-		/* ber */
+		 
 		c->post_bit_error.stat[i + 1].scale = FE_SCALE_COUNTER;
 		c->post_bit_count.stat[i + 1].scale = FE_SCALE_COUNTER;
 		c->post_bit_error.stat[i + 1].uvalue += lr->ber_error_count;
 		c->post_bit_count.stat[i + 1].uvalue += lr->ber_bit_count;
 
-		/* Update global ber counter */
+		 
 		c->post_bit_error.stat[0].uvalue += lr->ber_error_count;
 		c->post_bit_count.stat[0].uvalue += lr->ber_bit_count;
 	}
@@ -550,10 +536,7 @@ static int smsdvb_onresponse(void *context, struct smscore_buffer_t *cb)
 
 	switch (phdr->msg_type) {
 	case MSG_SMS_DVBT_BDA_DATA:
-		/*
-		 * Only feed data to dvb demux if are there any feed listening
-		 * to it and if the device has tuned
-		 */
+		 
 		if (client->feed_users && client->has_tuned)
 			dvb_dmx_swfilter(&client->demux, p,
 					 cb->size - sizeof(struct sms_msg_hdr));
@@ -597,16 +580,16 @@ static int smsdvb_onresponse(void *context, struct smscore_buffer_t *cb)
 			smsdvb_update_isdbt_stats(client, p);
 			break;
 		default:
-			/* Skip sms_msg_statistics_info:request_result field */
+			 
 			smsdvb_update_dvb_stats(client, p + sizeof(u32));
 		}
 
 		is_status_update = true;
 		break;
 
-	/* Only for ISDB-T */
+	 
 	case MSG_SMS_GET_STATISTICS_EX_RES:
-		/* Skip sms_msg_statistics_info:request_result field? */
+		 
 		smsdvb_update_isdbt_stats_ex(client, p + sizeof(u32));
 		is_status_update = true;
 		break;
@@ -650,7 +633,7 @@ static void smsdvb_media_device_unregister(struct smsdvb_client_t *client)
 
 static void smsdvb_unregister_client(struct smsdvb_client_t *client)
 {
-	/* must be called under clientslock */
+	 
 
 	list_del(&client->entry);
 
@@ -737,7 +720,7 @@ static int smsdvb_send_statistics_request(struct smsdvb_client_t *client)
 	int rc;
 	struct sms_msg_hdr msg;
 
-	/* Don't request stats too fast */
+	 
 	if (client->get_stats_jiffies &&
 	   (!time_after(jiffies, client->get_stats_jiffies)))
 		return 0;
@@ -751,9 +734,7 @@ static int smsdvb_send_statistics_request(struct smsdvb_client_t *client)
 	switch (smscore_get_device_mode(client->coredev)) {
 	case DEVICE_MODE_ISDBT:
 	case DEVICE_MODE_ISDBT_BDA:
-		/*
-		* Check for firmware version, to avoid breaking for old cards
-		*/
+		 
 		if (client->coredev->fw_version >= 0x800)
 			msg.msg_type = MSG_SMS_GET_STATISTICS_EX_REQ;
 		else
@@ -843,7 +824,7 @@ static int smsdvb_read_snr(struct dvb_frontend *fe, u16 *snr)
 
 	rc = smsdvb_send_statistics_request(client);
 
-	/* Preferred scale for SNR with legacy API: 0.1 dB */
+	 
 	*snr = ((u32)c->cnr.stat[0].svalue) / 100;
 
 	led_feedback(client);
@@ -923,12 +904,12 @@ static int smsdvb_dvbt_set_frontend(struct dvb_frontend *fe)
 	default:
 		return -EINVAL;
 	}
-	/* Disable LNA, if any. An error is returned if no LNA is present */
+	 
 	ret = sms_board_lna_control(client->coredev, 0);
 	if (ret == 0) {
 		enum fe_status status;
 
-		/* tune with LNA off at first */
+		 
 		ret = smsdvb_sendrequest_and_wait(client, &msg, sizeof(msg),
 						  &client->tune_done);
 
@@ -937,7 +918,7 @@ static int smsdvb_dvbt_set_frontend(struct dvb_frontend *fe)
 		if (status & FE_HAS_LOCK)
 			return ret;
 
-		/* previous tune didn't lock - enable LNA and tune again */
+		 
 		sms_board_lna_control(client->coredev, 1);
 	}
 
@@ -994,12 +975,12 @@ static int smsdvb_isdbt_set_frontend(struct dvb_frontend *fe)
 		 c->frequency, c->isdbt_sb_segment_count,
 		 c->isdbt_sb_segment_idx);
 
-	/* Disable LNA, if any. An error is returned if no LNA is present */
+	 
 	ret = sms_board_lna_control(client->coredev, 0);
 	if (ret == 0) {
 		enum fe_status status;
 
-		/* tune with LNA off at first */
+		 
 		ret = smsdvb_sendrequest_and_wait(client, &msg, sizeof(msg),
 						  &client->tune_done);
 
@@ -1008,7 +989,7 @@ static int smsdvb_isdbt_set_frontend(struct dvb_frontend *fe)
 		if (status & FE_HAS_LOCK)
 			return ret;
 
-		/* previous tune didn't lock - enable LNA and tune again */
+		 
 		sms_board_lna_control(client->coredev, 1);
 	}
 	return smsdvb_sendrequest_and_wait(client, &msg, sizeof(msg),
@@ -1066,7 +1047,7 @@ static int smsdvb_sleep(struct dvb_frontend *fe)
 
 static void smsdvb_release(struct dvb_frontend *fe)
 {
-	/* do nothing */
+	 
 }
 
 static const struct dvb_frontend_ops smsdvb_fe_ops = {
@@ -1107,14 +1088,14 @@ static int smsdvb_hotplug(struct smscore_device_t *coredev,
 	struct smsdvb_client_t *client;
 	int rc;
 
-	/* device removal handled by onremove callback */
+	 
 	if (!arrival)
 		return 0;
 	client = kzalloc(sizeof(struct smsdvb_client_t), GFP_KERNEL);
 	if (!client)
 		return -ENOMEM;
 
-	/* register dvb adapter */
+	 
 	rc = dvb_register_adapter(&client->adapter,
 				  sms_get_board(
 					smscore_get_board_id(coredev))->name,
@@ -1125,9 +1106,9 @@ static int smsdvb_hotplug(struct smscore_device_t *coredev,
 	}
 	dvb_register_media_controller(&client->adapter, coredev->media_dev);
 
-	/* init dvb demux */
+	 
 	client->demux.dmx.capabilities = DMX_TS_FILTERING;
-	client->demux.filternum = 32; /* todo: nova ??? */
+	client->demux.filternum = 32;  
 	client->demux.feednum = 32;
 	client->demux.start_feed = smsdvb_start_feed;
 	client->demux.stop_feed = smsdvb_stop_feed;
@@ -1138,7 +1119,7 @@ static int smsdvb_hotplug(struct smscore_device_t *coredev,
 		goto dvbdmx_error;
 	}
 
-	/* init dmxdev */
+	 
 	client->dmxdev.filternum = 32;
 	client->dmxdev.demux = &client->demux.dmx;
 	client->dmxdev.capabilities = 0;
@@ -1149,7 +1130,7 @@ static int smsdvb_hotplug(struct smscore_device_t *coredev,
 		goto dmxdev_error;
 	}
 
-	/* init and register frontend */
+	 
 	memcpy(&client->frontend.ops, &smsdvb_fe_ops,
 	       sizeof(struct dvb_frontend_ops));
 

@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// test-component.c  --  Test Audio Component driver
-//
-// Copyright (C) 2020 Renesas Electronics Corporation
-// Kuninori Morimoto <kuninori.morimoto.gx@renesas.com>
+
+
+
+
+
+
 
 #include <linux/slab.h>
 #include <linux/of_device.h>
@@ -190,13 +190,7 @@ static int test_dai_bespoke_trigger(struct snd_pcm_substream *substream,
 }
 
 static u64 test_dai_formats =
-	/*
-	 * Select below from Sound Card, not auto
-	 *	SND_SOC_POSSIBLE_DAIFMT_BP_FP
-	 *	SND_SOC_POSSIBLE_DAIFMT_BC_FP
-	 *	SND_SOC_POSSIBLE_DAIFMT_BP_FC
-	 *	SND_SOC_POSSIBLE_DAIFMT_BC_FC
-	 */
+	 
 	SND_SOC_POSSIBLE_DAIFMT_I2S	|
 	SND_SOC_POSSIBLE_DAIFMT_RIGHT_J	|
 	SND_SOC_POSSIBLE_DAIFMT_LEFT_J	|
@@ -337,7 +331,7 @@ static int test_component_set_bias_level(struct snd_soc_component *component,
 }
 
 static const struct snd_pcm_hardware test_component_hardware = {
-	/* Random values to keep userspace happy when checking constraints */
+	 
 	.info			= SNDRV_PCM_INFO_INTERLEAVED	|
 				  SNDRV_PCM_INFO_MMAP		|
 				  SNDRV_PCM_INFO_MMAP_VALID,
@@ -356,7 +350,7 @@ static int test_component_open(struct snd_soc_component *component,
 
 	mile_stone(component);
 
-	/* BE's dont need dummy params */
+	 
 	if (!rtd->dai_link->no_pcm)
 		snd_soc_set_runtime_hwparams(substream, &test_component_hardware);
 
@@ -435,7 +429,7 @@ static int test_component_trigger(struct snd_soc_component *component,
 	switch (cmd) {
 	case SNDRV_PCM_TRIGGER_START:
 		test_component_timer_start(priv);
-		priv->substream = substream; /* set substream later */
+		priv->substream = substream;  
 		break;
 	case SNDRV_PCM_TRIGGER_STOP:
 		priv->substream = NULL;
@@ -466,7 +460,7 @@ static snd_pcm_uframes_t test_component_pointer(struct snd_soc_component *compon
 	if (pointer > PREALLOC_BUFFER)
 		pointer = 0;
 
-	/* mile_stone(component); */
+	 
 
 	return bytes_to_frames(runtime, pointer);
 }
@@ -491,12 +485,12 @@ static int test_component_be_hw_params_fixup(struct snd_soc_pcm_runtime *rtd,
 	return 0;
 }
 
-/* CPU */
+ 
 static const struct test_adata test_cpu		= { .is_cpu = 1, .cmp_v = 0, .dai_v = 0, };
 static const struct test_adata test_cpu_vv	= { .is_cpu = 1, .cmp_v = 1, .dai_v = 1, };
 static const struct test_adata test_cpu_nv	= { .is_cpu = 1, .cmp_v = 0, .dai_v = 1, };
 static const struct test_adata test_cpu_vn	= { .is_cpu = 1, .cmp_v = 1, .dai_v = 0, };
-/* Codec */
+ 
 static const struct test_adata test_codec	= { .is_cpu = 0, .cmp_v = 0, .dai_v = 0, };
 static const struct test_adata test_codec_vv	= { .is_cpu = 0, .cmp_v = 1, .dai_v = 1, };
 static const struct test_adata test_codec_nv	= { .is_cpu = 0, .cmp_v = 0, .dai_v = 1, };
@@ -516,12 +510,7 @@ static const struct of_device_id test_of_match[] = {
 MODULE_DEVICE_TABLE(of, test_of_match);
 
 static const struct snd_soc_dapm_widget widgets[] = {
-	/*
-	 * FIXME
-	 *
-	 * Just IN/OUT is OK for now,
-	 * but need to be updated ?
-	 */
+	 
 	SND_SOC_DAPM_INPUT("IN"),
 	SND_SOC_DAPM_OUTPUT("OUT"),
 };

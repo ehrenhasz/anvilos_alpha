@@ -1,15 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Qualcomm Global Clock Controller driver for MSM8956/76
- *
- * Copyright (c) 2016-2021, AngeloGioacchino Del Regno
- *                     <angelogioacchino.delregno@somainline.org>
- *
- * Driver cleanup and modernization
- * Copyright (c) 2021, Konrad Dybcio <konrad.dybcio@somainline.org>
- *                     Marijn Suijten <marijn.suijten@somainline.org>
- *
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/err.h>
@@ -79,7 +69,7 @@ static struct clk_regmap gpll0_vote = {
 			&gpll0.clkr.hw,
 		},
 		.num_parents = 1,
-		/* This clock is required for other ones to function. */
+		 
 		.flags = CLK_IS_CRITICAL,
 		.ops = &clk_pll_vote_ops,
 	},
@@ -153,7 +143,7 @@ static struct clk_regmap gpll3_vote = {
 	},
 };
 
-/* GPLL3 at 1100MHz, main output enabled. */
+ 
 static const struct pll_config gpll3_config = {
 	.l = 57,
 	.m = 7,
@@ -517,11 +507,7 @@ static struct clk_rcg2 apss_ahb_clk_src = {
 		.parent_data = gcc_parent_data_8_a,
 		.num_parents = ARRAY_SIZE(gcc_parent_data_8_a),
 		.ops = &clk_rcg2_ops,
-		/*
-		 * This clock allows the CPUs to communicate with
-		 * the rest of the SoC. Without it, the brain will
-		 * operate without the rest of the body.
-		 */
+		 
 		.flags = CLK_IS_CRITICAL,
 	},
 };
@@ -3431,7 +3417,7 @@ static struct clk_branch gcc_venus0_vcodec0_clk = {
 	},
 };
 
-/* Vote clocks */
+ 
 static struct clk_branch gcc_apss_ahb_clk = {
 	.halt_reg = 0x4601c,
 	.halt_check = BRANCH_HALT_VOTED,
@@ -4091,7 +4077,7 @@ static const struct qcom_cc_desc gcc_msm8976_desc = {
 };
 
 static const struct of_device_id gcc_msm8976_match_table[] = {
-	{ .compatible = "qcom,gcc-msm8976" }, /* Also valid for 8x56 */
+	{ .compatible = "qcom,gcc-msm8976" },  
 	{ .compatible = "qcom,gcc-msm8976-v1.1" },
 	{ }
 };
@@ -4112,19 +4098,19 @@ static int gcc_msm8976_probe(struct platform_device *pdev)
 	if (IS_ERR(regmap))
 		return PTR_ERR(regmap);
 
-	/* Set Sleep and Wakeup cycles to 0 for GMEM clock */
+	 
 	ret = regmap_update_bits(regmap, gcc_oxili_gmem_clk.clkr.enable_reg, 0xff0, 0);
 	if (ret)
 		return ret;
 
 	clk_pll_configure_sr_hpm_lp(&gpll3, regmap, &gpll3_config, true);
 
-	/* Enable AUX2 clock for APSS */
+	 
 	ret = regmap_update_bits(regmap, 0x60000, BIT(2), BIT(2));
 	if (ret)
 		return ret;
 
-	/* Set Sleep cycles to 0 for OXILI clock */
+	 
 	ret = regmap_update_bits(regmap, gcc_oxili_gfx3d_clk.clkr.enable_reg, 0xf0, 0);
 	if (ret)
 		return ret;

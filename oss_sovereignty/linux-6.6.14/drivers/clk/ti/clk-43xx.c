@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AM43XX Clock init
- *
- * Copyright (C) 2013 Texas Instruments, Inc
- *     Tero Kristo (t-kristo@ti.com)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/list.h>
@@ -266,7 +261,7 @@ static struct ti_dt_clk am43xx_clks[] = {
 };
 
 static const char *enable_init_clks[] = {
-	/* AM4_L3_L3_MAIN_CLKCTRL, needed during suspend */
+	 
 	"l3-clkctrl:0000:0",
 };
 
@@ -283,16 +278,7 @@ int __init am43xx_dt_clk_init(void)
 
 	ti_clk_add_aliases();
 
-	/*
-	 * cpsw_cpts_rft_clk  has got the choice of 3 clocksources
-	 * dpll_core_m4_ck, dpll_core_m5_ck and dpll_disp_m2_ck.
-	 * By default dpll_core_m4_ck is selected, witn this as clock
-	 * source the CPTS doesnot work properly. It gives clockcheck errors
-	 * while running PTP.
-	 * clockcheck: clock jumped backward or running slower than expected!
-	 * By selecting dpll_core_m5_ck as the clocksource fixes this issue.
-	 * In AM335x dpll_core_m5_ck is the default clocksource.
-	 */
+	 
 	clk1 = clk_get_sys(NULL, "cpsw_cpts_rft_clk");
 	clk2 = clk_get_sys(NULL, "dpll_core_m5_ck");
 	clk_set_parent(clk1, clk2);

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include <trace/events/devlink.h>
 
@@ -14,16 +11,7 @@ struct devlink_stats {
 	struct u64_stats_sync syncp;
 };
 
-/**
- * struct devlink_trap_policer_item - Packet trap policer attributes.
- * @policer: Immutable packet trap policer attributes.
- * @rate: Rate in packets / sec.
- * @burst: Burst size in packets.
- * @list: trap_policer_list member.
- *
- * Describes packet trap policer attributes. Created by devlink during trap
- * policer registration.
- */
+ 
 struct devlink_trap_policer_item {
 	const struct devlink_trap_policer *policer;
 	u64 rate;
@@ -31,16 +19,7 @@ struct devlink_trap_policer_item {
 	struct list_head list;
 };
 
-/**
- * struct devlink_trap_group_item - Packet trap group attributes.
- * @group: Immutable packet trap group attributes.
- * @policer_item: Associated policer item. Can be NULL.
- * @list: trap_group_list member.
- * @stats: Trap group statistics.
- *
- * Describes packet trap group attributes. Created by devlink during trap
- * group registration.
- */
+ 
 struct devlink_trap_group_item {
 	const struct devlink_trap_group *group;
 	struct devlink_trap_policer_item *policer_item;
@@ -48,18 +27,7 @@ struct devlink_trap_group_item {
 	struct devlink_stats __percpu *stats;
 };
 
-/**
- * struct devlink_trap_item - Packet trap attributes.
- * @trap: Immutable packet trap attributes.
- * @group_item: Associated group item.
- * @list: trap_list member.
- * @action: Trap action.
- * @stats: Trap statistics.
- * @priv: Driver private information.
- *
- * Describes both mutable and immutable packet trap attributes. Created by
- * devlink during trap registration and used for all trap related operations.
- */
+ 
 struct devlink_trap_item {
 	const struct devlink_trap *trap;
 	struct devlink_trap_group_item *group_item;
@@ -1344,15 +1312,7 @@ static void devlink_trap_disable(struct devlink *devlink,
 	trap_item->action = DEVLINK_TRAP_ACTION_DROP;
 }
 
-/**
- * devl_traps_register - Register packet traps with devlink.
- * @devlink: devlink.
- * @traps: Packet traps.
- * @traps_count: Count of provided packet traps.
- * @priv: Driver private information.
- *
- * Return: Non-zero value on failure.
- */
+ 
 int devl_traps_register(struct devlink *devlink,
 			const struct devlink_trap *traps,
 			size_t traps_count, void *priv)
@@ -1385,17 +1345,7 @@ err_trap_verify:
 }
 EXPORT_SYMBOL_GPL(devl_traps_register);
 
-/**
- * devlink_traps_register - Register packet traps with devlink.
- * @devlink: devlink.
- * @traps: Packet traps.
- * @traps_count: Count of provided packet traps.
- * @priv: Driver private information.
- *
- * Context: Takes and release devlink->lock <mutex>.
- *
- * Return: Non-zero value on failure.
- */
+ 
 int devlink_traps_register(struct devlink *devlink,
 			   const struct devlink_trap *traps,
 			   size_t traps_count, void *priv)
@@ -1409,12 +1359,7 @@ int devlink_traps_register(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_traps_register);
 
-/**
- * devl_traps_unregister - Unregister packet traps from devlink.
- * @devlink: devlink.
- * @traps: Packet traps.
- * @traps_count: Count of provided packet traps.
- */
+ 
 void devl_traps_unregister(struct devlink *devlink,
 			   const struct devlink_trap *traps,
 			   size_t traps_count)
@@ -1422,9 +1367,7 @@ void devl_traps_unregister(struct devlink *devlink,
 	int i;
 
 	devl_assert_locked(devlink);
-	/* Make sure we do not have any packets in-flight while unregistering
-	 * traps by disabling all of them and waiting for a grace period.
-	 */
+	 
 	for (i = traps_count - 1; i >= 0; i--)
 		devlink_trap_disable(devlink, &traps[i]);
 	synchronize_rcu();
@@ -1433,14 +1376,7 @@ void devl_traps_unregister(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_traps_unregister);
 
-/**
- * devlink_traps_unregister - Unregister packet traps from devlink.
- * @devlink: devlink.
- * @traps: Packet traps.
- * @traps_count: Count of provided packet traps.
- *
- * Context: Takes and release devlink->lock <mutex>.
- */
+ 
 void devlink_traps_unregister(struct devlink *devlink,
 			      const struct devlink_trap *traps,
 			      size_t traps_count)
@@ -1481,14 +1417,7 @@ devlink_trap_report_metadata_set(struct devlink_trap_metadata *metadata,
 	spin_unlock(&in_devlink_port->type_lock);
 }
 
-/**
- * devlink_trap_report - Report trapped packet to drop monitor.
- * @devlink: devlink.
- * @skb: Trapped packet.
- * @trap_ctx: Trap context.
- * @in_devlink_port: Input devlink port.
- * @fa_cookie: Flow action cookie. Could be NULL.
- */
+ 
 void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
 			 void *trap_ctx, struct devlink_port *in_devlink_port,
 			 const struct flow_action_cookie *fa_cookie)
@@ -1509,12 +1438,7 @@ void devlink_trap_report(struct devlink *devlink, struct sk_buff *skb,
 }
 EXPORT_SYMBOL_GPL(devlink_trap_report);
 
-/**
- * devlink_trap_ctx_priv - Trap context to driver private information.
- * @trap_ctx: Trap context.
- *
- * Return: Driver private information passed during registration.
- */
+ 
 void *devlink_trap_ctx_priv(void *trap_ctx)
 {
 	struct devlink_trap_item *trap_item = trap_ctx;
@@ -1605,14 +1529,7 @@ devlink_trap_group_unregister(struct devlink *devlink,
 	kfree(group_item);
 }
 
-/**
- * devl_trap_groups_register - Register packet trap groups with devlink.
- * @devlink: devlink.
- * @groups: Packet trap groups.
- * @groups_count: Count of provided packet trap groups.
- *
- * Return: Non-zero value on failure.
- */
+ 
 int devl_trap_groups_register(struct devlink *devlink,
 			      const struct devlink_trap_group *groups,
 			      size_t groups_count)
@@ -1642,16 +1559,7 @@ err_trap_group_verify:
 }
 EXPORT_SYMBOL_GPL(devl_trap_groups_register);
 
-/**
- * devlink_trap_groups_register - Register packet trap groups with devlink.
- * @devlink: devlink.
- * @groups: Packet trap groups.
- * @groups_count: Count of provided packet trap groups.
- *
- * Context: Takes and release devlink->lock <mutex>.
- *
- * Return: Non-zero value on failure.
- */
+ 
 int devlink_trap_groups_register(struct devlink *devlink,
 				 const struct devlink_trap_group *groups,
 				 size_t groups_count)
@@ -1665,12 +1573,7 @@ int devlink_trap_groups_register(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_trap_groups_register);
 
-/**
- * devl_trap_groups_unregister - Unregister packet trap groups from devlink.
- * @devlink: devlink.
- * @groups: Packet trap groups.
- * @groups_count: Count of provided packet trap groups.
- */
+ 
 void devl_trap_groups_unregister(struct devlink *devlink,
 				 const struct devlink_trap_group *groups,
 				 size_t groups_count)
@@ -1683,14 +1586,7 @@ void devl_trap_groups_unregister(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_trap_groups_unregister);
 
-/**
- * devlink_trap_groups_unregister - Unregister packet trap groups from devlink.
- * @devlink: devlink.
- * @groups: Packet trap groups.
- * @groups_count: Count of provided packet trap groups.
- *
- * Context: Takes and release devlink->lock <mutex>.
- */
+ 
 void devlink_trap_groups_unregister(struct devlink *devlink,
 				    const struct devlink_trap_group *groups,
 				    size_t groups_count)
@@ -1801,14 +1697,7 @@ devlink_trap_policer_unregister(struct devlink *devlink,
 	kfree(policer_item);
 }
 
-/**
- * devl_trap_policers_register - Register packet trap policers with devlink.
- * @devlink: devlink.
- * @policers: Packet trap policers.
- * @policers_count: Count of provided packet trap policers.
- *
- * Return: Non-zero value on failure.
- */
+ 
 int
 devl_trap_policers_register(struct devlink *devlink,
 			    const struct devlink_trap_policer *policers,
@@ -1841,12 +1730,7 @@ err_trap_policer_verify:
 }
 EXPORT_SYMBOL_GPL(devl_trap_policers_register);
 
-/**
- * devl_trap_policers_unregister - Unregister packet trap policers from devlink.
- * @devlink: devlink.
- * @policers: Packet trap policers.
- * @policers_count: Count of provided packet trap policers.
- */
+ 
 void
 devl_trap_policers_unregister(struct devlink *devlink,
 			      const struct devlink_trap_policer *policers,

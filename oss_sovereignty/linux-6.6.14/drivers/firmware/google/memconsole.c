@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * memconsole.c
- *
- * Architecture-independent parts of the memory based BIOS console.
- *
- * Copyright 2017 Google Inc.
- */
+
+ 
 
 #include <linux/sysfs.h>
 #include <linux/kobject.h>

@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * partition.c
- *
- * PURPOSE
- *      Partition handling routines for the OSTA-UDF(tm) filesystem.
- *
- * COPYRIGHT
- *  (C) 1998-2001 Ben Fennema
- *
- * HISTORY
- *
- * 12/06/98 blf  Created file.
- *
- */
+
+ 
 
 #include "udfdecl.h"
 #include "udf_sb.h"
@@ -258,12 +245,12 @@ int udf_relocate_blocks(struct super_block *sb, long old_block, long *new_block)
 
 			ret = 1;
 			goto out;
-		} /* if old_block */
+		}  
 	}
 
 	if (i == sbi->s_partitions) {
-		/* outside of partitions */
-		/* for now, fail =) */
+		 
+		 
 		ret = 1;
 	}
 
@@ -288,7 +275,7 @@ static uint32_t udf_try_read_meta(struct inode *inode, uint32_t block,
 		phyblock = 0xFFFFFFFF;
 	else {
 		map = &UDF_SB(sb)->s_partmaps[partition];
-		/* map to sparable/physical partition desc */
+		 
 		phyblock = udf_get_pblock(sb, eloc.logicalBlockNum,
 			map->s_type_specific.s_metadata.s_phys_partition_ref,
 			ext_offset + offset);

@@ -1,32 +1,4 @@
-/* Copyright 2008 - 2016 Freescale Semiconductor, Inc.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions are met:
- *     * Redistributions of source code must retain the above copyright
- *	 notice, this list of conditions and the following disclaimer.
- *     * Redistributions in binary form must reproduce the above copyright
- *	 notice, this list of conditions and the following disclaimer in the
- *	 documentation and/or other materials provided with the distribution.
- *     * Neither the name of Freescale Semiconductor nor the
- *	 names of its contributors may be used to endorse or promote products
- *	 derived from this software without specific prior written permission.
- *
- * ALTERNATIVELY, this software may be distributed under the terms of the
- * GNU General Public License ("GPL") as published by the Free Software
- * Foundation, either version 2 of that License or (at your option) any
- * later version.
- *
- * THIS SOFTWARE IS PROVIDED BY Freescale Semiconductor ``AS IS'' AND ANY
- * EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
- * WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
- * DISCLAIMED. IN NO EVENT SHALL Freescale Semiconductor BE LIABLE FOR ANY
- * DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
- * (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
- * LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
- * ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
- * (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
- * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
+ 
 
 #include "qman_test.h"
 
@@ -61,7 +33,7 @@ static struct qman_fq fq_base = {
 static DECLARE_WAIT_QUEUE_HEAD(waitqueue);
 static int retire_complete, sdqcr_complete;
 
-/* Helpers for initialising and "incrementing" a frame descriptor */
+ 
 static void fd_init(struct qm_fd *fd)
 {
 	qm_fd_addr_set64(fd, 0xabdeadbeefLLU);
@@ -90,7 +62,7 @@ static void fd_inc(struct qm_fd *fd)
 	be32_add_cpu(&fd->cmd, 1);
 }
 
-/* The only part of the 'fd' we can't memcmp() is the ppid */
+ 
 static bool fd_neq(const struct qm_fd *a, const struct qm_fd *b)
 {
 	bool neq = qm_fd_addr_get64(a) != qm_fd_addr_get64(b);
@@ -102,7 +74,7 @@ static bool fd_neq(const struct qm_fd *a, const struct qm_fd *b)
 	return neq;
 }
 
-/* test */
+ 
 static int do_enqueues(struct qman_fq *fq)
 {
 	unsigned int loop;
@@ -129,7 +101,7 @@ int qman_test_api(void)
 	fd_init(&fd);
 	fd_init(&fd_dq);
 
-	/* Initialise (parked) FQ */
+	 
 	err = qman_create_fq(0, FQ_FLAGS, fq);
 	if (err) {
 		pr_crit("qman_create_fq() failed\n");
@@ -140,7 +112,7 @@ int qman_test_api(void)
 		pr_crit("qman_init_fq() failed\n");
 		goto failed;
 	}
-	/* Do enqueues + VDQCR, twice. (Parked FQ) */
+	 
 	err = do_enqueues(fq);
 	if (err)
 		goto failed;
@@ -181,7 +153,7 @@ int qman_test_api(void)
 	}
 	wait_event(waitqueue, sdqcr_complete);
 
-	/* Retire and OOS the FQ */
+	 
 	err = qman_retire_fq(fq, &flags);
 	if (err < 0) {
 		pr_crit("qman_retire_fq() failed\n");

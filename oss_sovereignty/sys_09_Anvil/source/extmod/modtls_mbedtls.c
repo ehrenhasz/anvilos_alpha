@@ -1,37 +1,11 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Linaro Ltd.
- * Copyright (c) 2019 Paul Sokolovsky
- * Copyright (c) 2023 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 
 #include "py/mpconfig.h"
 #if MICROPY_PY_SSL && MICROPY_SSL_MBEDTLS
 
 #include <stdio.h>
 #include <string.h>
-#include <errno.h> // needed because mp_is_nonblocking_error uses system error codes
+#include <errno.h> 
 
 #include "py/runtime.h"
 #include "py/stream.h"
@@ -39,7 +13,7 @@
 #include "py/reader.h"
 #include "extmod/vfs.h"
 
-// mbedtls_time_t
+
 #include "mbedtls/platform.h"
 #include "mbedtls/ssl.h"
 #include "mbedtls/x509_crt.h"
@@ -56,7 +30,7 @@
 
 #define MP_STREAM_POLL_RDWR (MP_STREAM_POLL_RD | MP_STREAM_POLL_WR)
 
-// This corresponds to an SSLContext object.
+
 typedef struct _mp_obj_ssl_context_t {
     mp_obj_base_t base;
     mbedtls_entropy_context entropy;
@@ -70,15 +44,15 @@ typedef struct _mp_obj_ssl_context_t {
     mp_obj_t handler;
 } mp_obj_ssl_context_t;
 
-// This corresponds to an SSLSocket object.
+
 typedef struct _mp_obj_ssl_socket_t {
     mp_obj_base_t base;
     mp_obj_ssl_context_t *ssl_context;
     mp_obj_t sock;
     mbedtls_ssl_context ssl;
 
-    uintptr_t poll_mask; // Indicates which read or write operations the protocol needs next
-    int last_error; // The last error code, if any
+    uintptr_t poll_mask; 
+    int last_error; 
 } mp_obj_ssl_socket_t;
 
 static const mp_obj_type_t ssl_context_type;
@@ -89,8 +63,8 @@ static const MP_DEFINE_STR_OBJ(mbedtls_version_obj, MBEDTLS_VERSION_STRING_FULL)
 static mp_obj_t ssl_socket_make_new(mp_obj_ssl_context_t *ssl_context, mp_obj_t sock,
     bool server_side, bool do_handshake_on_connect, mp_obj_t server_hostname);
 
-/******************************************************************************/
-// Helper functions.
+ 
+
 
 #ifdef MBEDTLS_DEBUG_C
 static void mbedtls_debug(void *ctx, int level, const char *file, int line, const char *str) {
@@ -101,7 +75,7 @@ static void mbedtls_debug(void *ctx, int level, const char *file, int line, cons
 #endif
 
 static NORETURN void mbedtls_raise_error(int err) {
-    // Handle special cases.
+    
     if (err == MBEDTLS_ERR_SSL_ALLOC_FAILED) {
         mp_raise_OSError(MP_ENOMEM);
     } else if (err == MBEDTLS_ERR_PK_BAD_INPUT_DATA) {
@@ -110,42 +84,42 @@ static NORETURN void mbedtls_raise_error(int err) {
         mp_raise_ValueError(MP_ERROR_TEXT("invalid cert"));
     }
 
-    // _mbedtls_ssl_send and _mbedtls_ssl_recv (below) turn positive error codes from the
-    // underlying socket into negative codes to pass them through mbedtls. Here we turn them
-    // positive again so they get interpreted as the OSError they really are. The
-    // cut-off of -256 is a bit hacky, sigh.
+    
+    
+    
+    
     if (err < 0 && err > -256) {
         mp_raise_OSError(-err);
     }
 
     #if defined(MBEDTLS_ERROR_C)
-    // Including mbedtls_strerror takes about 1.5KB due to the error strings.
-    // MBEDTLS_ERROR_C is the define used by mbedtls to conditionally include mbedtls_strerror.
-    // It is set/unset in the MBEDTLS_CONFIG_FILE which is defined in the Makefile.
+    
+    
+    
 
-    // Try to allocate memory for the message
-    #define ERR_STR_MAX 80  // mbedtls_strerror truncates if it doesn't fit
+    
+    #define ERR_STR_MAX 80  
     mp_obj_str_t *o_str = m_new_obj_maybe(mp_obj_str_t);
     byte *o_str_buf = m_new_maybe(byte, ERR_STR_MAX);
     if (o_str == NULL || o_str_buf == NULL) {
         mp_raise_OSError(err);
     }
 
-    // print the error message into the allocated buffer
+    
     mbedtls_strerror(err, (char *)o_str_buf, ERR_STR_MAX);
     size_t len = strlen((char *)o_str_buf);
 
-    // Put the exception object together
+    
     o_str->base.type = &mp_type_str;
     o_str->data = o_str_buf;
     o_str->len = len;
     o_str->hash = qstr_compute_hash(o_str->data, o_str->len);
-    // raise
+    
     mp_obj_t args[2] = { MP_OBJ_NEW_SMALL_INT(err), MP_OBJ_FROM_PTR(o_str)};
     nlr_raise(mp_obj_exception_make_new(&mp_type_OSError, 2, 0, args));
     #else
-    // mbedtls is compiled without error strings so we simply return the err number
-    mp_raise_OSError(err); // err is typically a large negative number
+    
+    mp_raise_OSError(err); 
     #endif
 }
 
@@ -157,25 +131,25 @@ static void ssl_check_async_handshake_failure(mp_obj_ssl_socket_t *sslsock, int 
         (*errcode < 0) && (*errcode != MBEDTLS_ERR_SSL_CONN_EOF)
         #endif
         ) {
-        // Asynchronous handshake is done by mbdetls_ssl_read/write.  If the return code is
-        // MBEDTLS_ERR_XX (i.e < 0) and the handshake is not done due to a handshake failure,
-        // then notify peer with proper error code and raise local error with mbedtls_raise_error.
+        
+        
+        
 
         if (*errcode == MBEDTLS_ERR_SSL_NO_CLIENT_CERTIFICATE) {
-            // Check if TLSv1.3 and use proper alert for this case (to be implemented)
-            // uint8_t alert = MBEDTLS_SSL_ALERT_MSG_CERT_REQUIRED; tlsv1.3
-            // uint8_t alert = MBEDTLS_SSL_ALERT_MSG_HANDSHAKE_FAILURE; tlsv1.2
+            
+            
+            
             mbedtls_ssl_send_alert_message(&sslsock->ssl, MBEDTLS_SSL_ALERT_LEVEL_FATAL,
                 MBEDTLS_SSL_ALERT_MSG_HANDSHAKE_FAILURE);
         }
 
         if (*errcode == MBEDTLS_ERR_X509_CERT_VERIFY_FAILED) {
-            // The certificate may have been rejected for several reasons.
+            
             char xcbuf[256];
             uint32_t flags = mbedtls_ssl_get_verify_result(&sslsock->ssl);
             int ret = mbedtls_x509_crt_verify_info(xcbuf, sizeof(xcbuf), "\n", flags);
-            // The length of the string written (not including the terminated nul byte),
-            // or a negative err code.
+            
+            
             if (ret > 0) {
                 sslsock->sock = MP_OBJ_NULL;
                 mbedtls_ssl_free(&sslsock->ssl);
@@ -199,23 +173,23 @@ static int ssl_sock_cert_verify(void *ptr, mbedtls_x509_crt *crt, int depth, uin
     return mp_obj_get_int(mp_call_function_2(o->handler, MP_OBJ_FROM_PTR(&cert), MP_OBJ_NEW_SMALL_INT(depth)));
 }
 
-/******************************************************************************/
-// SSLContext type.
+ 
+
 
 static mp_obj_t ssl_context_make_new(const mp_obj_type_t *type_in, size_t n_args, size_t n_kw, const mp_obj_t *args) {
     mp_arg_check_num(n_args, n_kw, 1, 1, false);
 
-    // This is the "protocol" argument.
+    
     mp_int_t endpoint = mp_obj_get_int(args[0]);
 
-    // Create SSLContext object.
+    
     #if MICROPY_PY_SSL_FINALISER
     mp_obj_ssl_context_t *self = mp_obj_malloc_with_finaliser(mp_obj_ssl_context_t, type_in);
     #else
     mp_obj_ssl_context_t *self = mp_obj_malloc(mp_obj_ssl_context_t, type_in);
     #endif
 
-    // Initialise mbedTLS state.
+    
     mbedtls_ssl_config_init(&self->conf);
     mbedtls_entropy_init(&self->entropy);
     mbedtls_ctr_drbg_init(&self->ctr_drbg);
@@ -226,12 +200,12 @@ static mp_obj_t ssl_context_make_new(const mp_obj_type_t *type_in, size_t n_args
     self->handler = mp_const_none;
 
     #ifdef MBEDTLS_DEBUG_C
-    // Debug level (0-4) 1=warning, 2=info, 3=debug, 4=verbose
+    
     mbedtls_debug_set_threshold(3);
     #endif
 
-    // Whenever the PSA interface is used (if MBEDTLS_PSA_CRYPTO), psa_crypto_init() needs to be called before any TLS related operations.
-    // TLSv1.3 depends on the PSA interface, TLSv1.2 only uses the PSA stack if MBEDTLS_USE_PSA_CRYPTO is defined.
+    
+    
     #if defined(MBEDTLS_SSL_PROTO_TLS1_3) || defined(MBEDTLS_USE_PSA_CRYPTO)
     psa_crypto_init();
     #endif
@@ -266,17 +240,17 @@ static mp_obj_t ssl_context_make_new(const mp_obj_type_t *type_in, size_t n_args
 static void ssl_context_attr(mp_obj_t self_in, qstr attr, mp_obj_t *dest) {
     mp_obj_ssl_context_t *self = MP_OBJ_TO_PTR(self_in);
     if (dest[0] == MP_OBJ_NULL) {
-        // Load attribute.
+        
         if (attr == MP_QSTR_verify_mode) {
             dest[0] = MP_OBJ_NEW_SMALL_INT(self->authmode);
         } else if (attr == MP_QSTR_verify_callback) {
             dest[0] = self->handler;
         } else {
-            // Continue lookup in locals_dict.
+            
             dest[1] = MP_OBJ_SENTINEL;
         }
     } else if (dest[1] != MP_OBJ_NULL) {
-        // Store attribute.
+        
         if (attr == MP_QSTR_verify_mode) {
             self->authmode = mp_obj_get_int(dest[1]);
             dest[0] = MP_OBJ_NULL;
@@ -302,7 +276,7 @@ static mp_obj_t ssl_context___del__(mp_obj_t self_in) {
 static MP_DEFINE_CONST_FUN_OBJ_1(ssl_context___del___obj, ssl_context___del__);
 #endif
 
-// SSLContext.get_ciphers()
+
 static mp_obj_t ssl_context_get_ciphers(mp_obj_t self_in) {
     mp_obj_t list = mp_obj_new_list(0, NULL);
     for (const int *cipher_list = mbedtls_ssl_list_ciphersuites(); *cipher_list; ++cipher_list) {
@@ -313,11 +287,11 @@ static mp_obj_t ssl_context_get_ciphers(mp_obj_t self_in) {
 }
 static MP_DEFINE_CONST_FUN_OBJ_1(ssl_context_get_ciphers_obj, ssl_context_get_ciphers);
 
-// SSLContext.set_ciphers(ciphersuite)
+
 static mp_obj_t ssl_context_set_ciphers(mp_obj_t self_in, mp_obj_t ciphersuite) {
     mp_obj_ssl_context_t *ssl_context = MP_OBJ_TO_PTR(self_in);
 
-    // Check that ciphersuite is a list or tuple.
+    
     size_t len = 0;
     mp_obj_t *ciphers;
     mp_obj_get_array(ciphersuite, &len, &ciphers);
@@ -325,7 +299,7 @@ static mp_obj_t ssl_context_set_ciphers(mp_obj_t self_in, mp_obj_t ciphersuite) 
         mbedtls_raise_error(MBEDTLS_ERR_SSL_BAD_CONFIG);
     }
 
-    // Parse list of ciphers.
+    
     ssl_context->ciphersuites = m_new(int, len + 1);
     for (size_t i = 0; i < len; ++i) {
         const char *ciphername = mp_obj_str_get_str(ciphers[i]);
@@ -337,7 +311,7 @@ static mp_obj_t ssl_context_set_ciphers(mp_obj_t self_in, mp_obj_t ciphersuite) 
     }
     ssl_context->ciphersuites[len] = 0;
 
-    // Configure ciphersuite.
+    
     mbedtls_ssl_conf_ciphersuites(&ssl_context->conf, (const int *)ssl_context->ciphersuites);
 
     return mp_const_none;
@@ -347,7 +321,7 @@ static MP_DEFINE_CONST_FUN_OBJ_2(ssl_context_set_ciphers_obj, ssl_context_set_ci
 static void ssl_context_load_key(mp_obj_ssl_context_t *self, mp_obj_t key_obj, mp_obj_t cert_obj) {
     size_t key_len;
     const byte *key = (const byte *)mp_obj_str_get_data(key_obj, &key_len);
-    // len should include terminating null
+    
     int ret;
     #if MBEDTLS_VERSION_NUMBER >= 0x03000000
     ret = mbedtls_pk_parse_key(&self->pkey, key, key_len + 1, NULL, 0, mbedtls_ctr_drbg_random, &self->ctr_drbg);
@@ -355,15 +329,15 @@ static void ssl_context_load_key(mp_obj_ssl_context_t *self, mp_obj_t key_obj, m
     ret = mbedtls_pk_parse_key(&self->pkey, key, key_len + 1, NULL, 0);
     #endif
     if (ret != 0) {
-        mbedtls_raise_error(MBEDTLS_ERR_PK_BAD_INPUT_DATA); // use general error for all key errors
+        mbedtls_raise_error(MBEDTLS_ERR_PK_BAD_INPUT_DATA); 
     }
 
     size_t cert_len;
     const byte *cert = (const byte *)mp_obj_str_get_data(cert_obj, &cert_len);
-    // len should include terminating null
+    
     ret = mbedtls_x509_crt_parse(&self->cert, cert, cert_len + 1);
     if (ret != 0) {
-        mbedtls_raise_error(MBEDTLS_ERR_X509_BAD_INPUT_DATA); // use general error for all cert errors
+        mbedtls_raise_error(MBEDTLS_ERR_X509_BAD_INPUT_DATA); 
     }
 
     ret = mbedtls_ssl_conf_own_cert(&self->conf, &self->cert, &self->pkey);
@@ -372,7 +346,7 @@ static void ssl_context_load_key(mp_obj_ssl_context_t *self, mp_obj_t key_obj, m
     }
 }
 
-// SSLContext.load_cert_chain(certfile, keyfile)
+
 static mp_obj_t ssl_context_load_cert_chain(mp_obj_t self_in, mp_obj_t cert, mp_obj_t pkey) {
     mp_obj_ssl_context_t *self = MP_OBJ_TO_PTR(self_in);
     ssl_context_load_key(self, pkey, cert);
@@ -383,16 +357,16 @@ static MP_DEFINE_CONST_FUN_OBJ_3(ssl_context_load_cert_chain_obj, ssl_context_lo
 static void ssl_context_load_cadata(mp_obj_ssl_context_t *self, mp_obj_t cadata_obj) {
     size_t cacert_len;
     const byte *cacert = (const byte *)mp_obj_str_get_data(cadata_obj, &cacert_len);
-    // len should include terminating null
+    
     int ret = mbedtls_x509_crt_parse(&self->cacert, cacert, cacert_len + 1);
     if (ret != 0) {
-        mbedtls_raise_error(MBEDTLS_ERR_X509_BAD_INPUT_DATA); // use general error for all cert errors
+        mbedtls_raise_error(MBEDTLS_ERR_X509_BAD_INPUT_DATA); 
     }
 
     mbedtls_ssl_conf_ca_chain(&self->conf, &self->cacert, NULL);
 }
 
-// SSLContext.load_verify_locations(cadata)
+
 static mp_obj_t ssl_context_load_verify_locations(mp_obj_t self_in, mp_obj_t cadata) {
 
     mp_obj_ssl_context_t *self = MP_OBJ_TO_PTR(self_in);
@@ -409,13 +383,13 @@ static mp_obj_t ssl_context_wrap_socket(size_t n_args, const mp_obj_t *pos_args,
         { MP_QSTR_server_hostname, MP_ARG_KW_ONLY | MP_ARG_OBJ, {.u_rom_obj = MP_ROM_NONE} },
     };
 
-    // Parse arguments.
+    
     mp_obj_ssl_context_t *self = MP_OBJ_TO_PTR(pos_args[0]);
     mp_obj_t sock = pos_args[1];
     mp_arg_val_t args[MP_ARRAY_SIZE(allowed_args)];
     mp_arg_parse_all(n_args - 2, pos_args + 2, kw_args, MP_ARRAY_SIZE(allowed_args), allowed_args, args);
 
-    // Create and return the new SSLSocket object.
+    
     return ssl_socket_make_new(self, sock, args[ARG_server_side].u_bool,
         args[ARG_do_handshake_on_connect].u_bool, args[ARG_server_hostname].u_obj);
 }
@@ -442,8 +416,8 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &ssl_context_locals_dict
     );
 
-/******************************************************************************/
-// SSLSocket type.
+ 
+
 
 static int _mbedtls_ssl_send(void *ctx, const byte *buf, size_t len) {
     mp_obj_t sock = *(mp_obj_t *)ctx;
@@ -456,13 +430,13 @@ static int _mbedtls_ssl_send(void *ctx, const byte *buf, size_t len) {
         if (mp_is_nonblocking_error(err)) {
             return MBEDTLS_ERR_SSL_WANT_WRITE;
         }
-        return -err; // convert an MP_ERRNO to something mbedtls passes through as error
+        return -err; 
     } else {
         return out_sz;
     }
 }
 
-// _mbedtls_ssl_recv is called by mbedtls to receive bytes from the underlying socket
+
 static int _mbedtls_ssl_recv(void *ctx, byte *buf, size_t len) {
     mp_obj_t sock = *(mp_obj_t *)ctx;
 
@@ -483,7 +457,7 @@ static int _mbedtls_ssl_recv(void *ctx, byte *buf, size_t len) {
 static mp_obj_t ssl_socket_make_new(mp_obj_ssl_context_t *ssl_context, mp_obj_t sock,
     bool server_side, bool do_handshake_on_connect, mp_obj_t server_hostname) {
 
-    // Verify the socket object has the full stream protocol
+    
     mp_get_stream_raise(sock, MP_STREAM_OP_READ | MP_STREAM_OP_WRITE | MP_STREAM_OP_IOCTL);
 
     #if MICROPY_PY_SSL_FINALISER
@@ -543,8 +517,8 @@ cleanup:
     if (ret == MBEDTLS_ERR_X509_CERT_VERIFY_FAILED) {
         char xcbuf[256];
         int ret_info = mbedtls_x509_crt_verify_info(xcbuf, sizeof(xcbuf), "\n", flags);
-        // The length of the string written (not including the terminated nul byte),
-        // or a negative err code.
+        
+        
         if (ret_info > 0) {
             mp_raise_msg_varg(&mp_type_ValueError, MP_ERROR_TEXT("%s"), xcbuf);
         }
@@ -590,7 +564,7 @@ static mp_uint_t socket_read(mp_obj_t o_in, void *buf, mp_uint_t size, int *errc
 
     int ret = mbedtls_ssl_read(&o->ssl, buf, size);
     if (ret == MBEDTLS_ERR_SSL_PEER_CLOSE_NOTIFY) {
-        // end of stream
+        
         return 0;
     }
     if (ret >= 0) {
@@ -599,17 +573,17 @@ static mp_uint_t socket_read(mp_obj_t o_in, void *buf, mp_uint_t size, int *errc
     if (ret == MBEDTLS_ERR_SSL_WANT_READ) {
         ret = MP_EWOULDBLOCK;
     } else if (ret == MBEDTLS_ERR_SSL_WANT_WRITE) {
-        // If handshake is not finished, read attempt may end up in protocol
-        // wanting to write next handshake message. The same may happen with
-        // renegotiation.
+        
+        
+        
         ret = MP_EWOULDBLOCK;
         o->poll_mask = MP_STREAM_POLL_WR;
     #if defined(MBEDTLS_SSL_PROTO_TLS1_3)
     } else if (ret == MBEDTLS_ERR_SSL_RECEIVED_NEW_SESSION_TICKET) {
-        // It appears a new session ticket being issued by the server right after
-        // completed handshake is not uncommon and shouldn't be treated as fatal.
-        // mbedtls itself states "This error code is experimental and may be
-        // changed or removed without notice."
+        
+        
+        
+        
         ret = MP_EWOULDBLOCK;
     #endif
     } else {
@@ -636,9 +610,9 @@ static mp_uint_t socket_write(mp_obj_t o_in, const void *buf, mp_uint_t size, in
     if (ret == MBEDTLS_ERR_SSL_WANT_WRITE) {
         ret = MP_EWOULDBLOCK;
     } else if (ret == MBEDTLS_ERR_SSL_WANT_READ) {
-        // If handshake is not finished, write attempt may end up in protocol
-        // wanting to read next handshake message. The same may happen with
-        // renegotiation.
+        
+        
+        
         ret = MP_EWOULDBLOCK;
         o->poll_mask = MP_STREAM_POLL_RD;
     } else {
@@ -667,48 +641,48 @@ static mp_uint_t socket_ioctl(mp_obj_t o_in, mp_uint_t request, uintptr_t arg, i
 
     if (request == MP_STREAM_CLOSE) {
         if (sock == MP_OBJ_NULL) {
-            // Already closed socket, do nothing.
+            
             return 0;
         }
         self->sock = MP_OBJ_NULL;
         mbedtls_ssl_free(&self->ssl);
     } else if (request == MP_STREAM_POLL) {
         if (sock == MP_OBJ_NULL || self->last_error != 0) {
-            // Closed or error socket, return NVAL flag.
+            
             return MP_STREAM_POLL_NVAL;
         }
 
-        // If the library signaled us that it needs reading or writing, only check that direction,
-        // but save what the caller asked because we need to restore it later
+        
+        
         if (self->poll_mask && (arg & MP_STREAM_POLL_RDWR)) {
             saved_arg = arg & MP_STREAM_POLL_RDWR;
             arg = (arg & ~saved_arg) | self->poll_mask;
         }
 
-        // Take into account that the library might have buffered data already
+        
         int has_pending = 0;
         if (arg & MP_STREAM_POLL_RD) {
             has_pending = mbedtls_ssl_check_pending(&self->ssl);
             if (has_pending) {
                 ret |= MP_STREAM_POLL_RD;
                 if (arg == MP_STREAM_POLL_RD) {
-                    // Shortcut if we only need to read and we have buffered data, no need to go to the underlying socket
+                    
                     return MP_STREAM_POLL_RD;
                 }
             }
         }
     } else {
-        // Unsupported ioctl.
+        
         *errcode = MP_EINVAL;
         return MP_STREAM_ERROR;
     }
 
-    // Pass all requests down to the underlying socket
+    
     ret |= mp_get_stream(sock)->ioctl(sock, request, arg, errcode);
 
     if (request == MP_STREAM_POLL) {
-        // The direction the library needed is available, return a fake result to the caller so that
-        // it reenters a read or a write to allow the handshake to progress
+        
+        
         if (ret & self->poll_mask) {
             ret |= saved_arg;
         }
@@ -750,16 +724,16 @@ static MP_DEFINE_CONST_OBJ_TYPE(
     locals_dict, &ssl_socket_locals_dict
     );
 
-/******************************************************************************/
-// ssl module.
+ 
+
 
 static const mp_rom_map_elem_t mp_module_tls_globals_table[] = {
     { MP_ROM_QSTR(MP_QSTR___name__), MP_ROM_QSTR(MP_QSTR_tls) },
 
-    // Classes.
+    
     { MP_ROM_QSTR(MP_QSTR_SSLContext), MP_ROM_PTR(&ssl_context_type) },
 
-    // Constants.
+    
     { MP_ROM_QSTR(MP_QSTR_MBEDTLS_VERSION), MP_ROM_PTR(&mbedtls_version_obj)},
     { MP_ROM_QSTR(MP_QSTR_PROTOCOL_TLS_CLIENT), MP_ROM_INT(MBEDTLS_SSL_IS_CLIENT) },
     { MP_ROM_QSTR(MP_QSTR_PROTOCOL_TLS_SERVER), MP_ROM_INT(MBEDTLS_SSL_IS_SERVER) },
@@ -776,4 +750,4 @@ const mp_obj_module_t mp_module_tls = {
 
 MP_REGISTER_MODULE(MP_QSTR_tls, mp_module_tls);
 
-#endif // MICROPY_PY_SSL && MICROPY_SSL_MBEDTLS
+#endif 

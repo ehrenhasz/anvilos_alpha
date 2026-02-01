@@ -1,23 +1,19 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * A-Link DTU(m) remote controller keytable
- *
- * Copyright (C) 2010 Antti Palosaari <crope@iki.fi>
- */
+
+ 
 
 #include <media/rc-map.h>
 #include <linux/module.h>
 
-/* A-Link DTU(m) slim remote, 6 rows, 3 columns. */
+ 
 static struct rc_map_table alink_dtu_m[] = {
 	{ 0x0800, KEY_VOLUMEUP },
 	{ 0x0801, KEY_NUMERIC_1 },
 	{ 0x0802, KEY_NUMERIC_3 },
 	{ 0x0803, KEY_NUMERIC_7 },
 	{ 0x0804, KEY_NUMERIC_9 },
-	{ 0x0805, KEY_NEW },             /* symbol: PIP */
+	{ 0x0805, KEY_NEW },              
 	{ 0x0806, KEY_NUMERIC_0 },
-	{ 0x0807, KEY_CHANNEL },         /* JUMP */
+	{ 0x0807, KEY_CHANNEL },          
 	{ 0x080d, KEY_NUMERIC_5 },
 	{ 0x080f, KEY_NUMERIC_2 },
 	{ 0x0812, KEY_POWER2 },

@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: (GPL-2.0 OR MIT)
-/* Google virtual Ethernet (gve) driver
- *
- * Copyright (C) 2015-2021 Google, Inc.
- */
+
+ 
 
 #include "gve.h"
 #include "gve_adminq.h"
@@ -13,7 +10,7 @@
 #include <linux/slab.h>
 #include <linux/skbuff.h>
 
-/* Returns true if tx_bufs are available. */
+ 
 static bool gve_has_free_tx_qpl_bufs(struct gve_tx_ring *tx, int count)
 {
 	int num_avail;
@@ -28,7 +25,7 @@ static bool gve_has_free_tx_qpl_bufs(struct gve_tx_ring *tx, int count)
 	if (count <= num_avail)
 		return true;
 
-	/* Update cached value from dqo_compl. */
+	 
 	tx->dqo_tx.free_tx_qpl_buf_cnt =
 		atomic_read_acquire(&tx->dqo_compl.free_tx_qpl_buf_cnt);
 
@@ -46,9 +43,7 @@ gve_alloc_tx_qpl_buf(struct gve_tx_ring *tx)
 
 	index = tx->dqo_tx.free_tx_qpl_buf_head;
 
-	/* No TX buffers available, try to steal the list from the
-	 * completion handler.
-	 */
+	 
 	if (unlikely(index == -1)) {
 		tx->dqo_tx.free_tx_qpl_buf_head =
 			atomic_xchg(&tx->dqo_compl.free_tx_qpl_buf_head, -1);
@@ -58,7 +53,7 @@ gve_alloc_tx_qpl_buf(struct gve_tx_ring *tx)
 			return index;
 	}
 
-	/* Remove TX buf from free list */
+	 
 	tx->dqo_tx.free_tx_qpl_buf_head = tx->dqo.tx_qpl_buf_next[index];
 
 	return index;
@@ -75,7 +70,7 @@ gve_free_tx_qpl_bufs(struct gve_tx_ring *tx,
 		return;
 
 	index = pkt->tx_qpl_buf_ids[0];
-	/* Create a linked list of buffers to be added to the free list */
+	 
 	for (i = 1; i < pkt->num_bufs; i++) {
 		tx->dqo.tx_qpl_buf_next[index] = pkt->tx_qpl_buf_ids[i];
 		index = pkt->tx_qpl_buf_ids[i];
@@ -96,14 +91,14 @@ gve_free_tx_qpl_bufs(struct gve_tx_ring *tx,
 	pkt->num_bufs = 0;
 }
 
-/* Returns true if a gve_tx_pending_packet_dqo object is available. */
+ 
 static bool gve_has_pending_packet(struct gve_tx_ring *tx)
 {
-	/* Check TX path's list. */
+	 
 	if (tx->dqo_tx.free_pending_packets != -1)
 		return true;
 
-	/* Check completion handler's list. */
+	 
 	if (atomic_read_acquire(&tx->dqo_compl.free_pending_packets) != -1)
 		return true;
 
@@ -118,9 +113,7 @@ gve_alloc_pending_packet(struct gve_tx_ring *tx)
 
 	index = tx->dqo_tx.free_pending_packets;
 
-	/* No pending_packets available, try to steal the list from the
-	 * completion handler.
-	 */
+	 
 	if (unlikely(index == -1)) {
 		tx->dqo_tx.free_pending_packets =
 			atomic_xchg(&tx->dqo_compl.free_pending_packets, -1);
@@ -132,7 +125,7 @@ gve_alloc_pending_packet(struct gve_tx_ring *tx)
 
 	pending_packet = &tx->dqo.pending_packets[index];
 
-	/* Remove pending_packet from free list */
+	 
 	tx->dqo_tx.free_pending_packets = pending_packet->next;
 	pending_packet->state = GVE_PACKET_STATE_PENDING_DATA_COMPL;
 
@@ -157,8 +150,7 @@ gve_free_pending_packet(struct gve_tx_ring *tx,
 	}
 }
 
-/* gve_tx_free_desc - Cleans up all pending tx requests and buffers.
- */
+ 
 static void gve_tx_clean_pending_packets(struct gve_tx_ring *tx)
 {
 	int i;
@@ -244,7 +236,7 @@ static int gve_tx_qpl_buf_init(struct gve_tx_ring *tx)
 
 	tx->dqo.num_tx_qpl_bufs = num_tx_qpl_bufs;
 
-	/* Generate free TX buf list */
+	 
 	for (i = 0; i < num_tx_qpl_bufs - 1; i++)
 		tx->dqo.tx_qpl_buf_next[i] = i + 1;
 	tx->dqo.tx_qpl_buf_next[num_tx_qpl_bufs - 1] = -1;
@@ -267,29 +259,20 @@ static int gve_tx_alloc_ring_dqo(struct gve_priv *priv, int idx)
 	tx->netdev_txq = netdev_get_tx_queue(priv->dev, idx);
 	atomic_set_release(&tx->dqo_compl.hw_tx_head, 0);
 
-	/* Queue sizes must be a power of 2 */
+	 
 	tx->mask = priv->tx_desc_cnt - 1;
 	tx->dqo.complq_mask = priv->queue_format == GVE_DQO_RDA_FORMAT ?
 		priv->options_dqo_rda.tx_comp_ring_entries - 1 :
 		tx->mask;
 
-	/* The max number of pending packets determines the maximum number of
-	 * descriptors which maybe written to the completion queue.
-	 *
-	 * We must set the number small enough to make sure we never overrun the
-	 * completion queue.
-	 */
+	 
 	num_pending_packets = tx->dqo.complq_mask + 1;
 
-	/* Reserve space for descriptor completions, which will be reported at
-	 * most every GVE_TX_MIN_RE_INTERVAL packets.
-	 */
+	 
 	num_pending_packets -=
 		(tx->dqo.complq_mask + 1) / GVE_TX_MIN_RE_INTERVAL;
 
-	/* Each packet may have at most 2 buffer completions if it receives both
-	 * a miss and reinjection completion.
-	 */
+	 
 	num_pending_packets /= 2;
 
 	tx->dqo.num_pending_packets = min_t(int, num_pending_packets, S16_MAX);
@@ -299,7 +282,7 @@ static int gve_tx_alloc_ring_dqo(struct gve_priv *priv, int idx)
 	if (!tx->dqo.pending_packets)
 		goto err;
 
-	/* Set up linked list of pending packets */
+	 
 	for (i = 0; i < tx->dqo.num_pending_packets - 1; i++)
 		tx->dqo.pending_packets[i].next = i + 1;
 
@@ -376,7 +359,7 @@ void gve_tx_free_rings_dqo(struct gve_priv *priv)
 	for (i = 0; i < priv->tx_cfg.num_queues; i++) {
 		struct gve_tx_ring *tx = &priv->tx[i];
 
-		gve_clean_tx_done_dqo(priv, tx, /*napi=*/NULL);
+		gve_clean_tx_done_dqo(priv, tx,  NULL);
 		netdev_tx_reset_queue(tx->netdev_txq);
 		gve_tx_clean_pending_packets(tx);
 
@@ -384,7 +367,7 @@ void gve_tx_free_rings_dqo(struct gve_priv *priv)
 	}
 }
 
-/* Returns the number of slots available in the ring */
+ 
 static u32 num_avail_tx_slots(const struct gve_tx_ring *tx)
 {
 	u32 num_used = (tx->dqo_tx.tail - tx->dqo_tx.head) & tx->mask;
@@ -400,31 +383,27 @@ static bool gve_has_avail_slots_tx_dqo(struct gve_tx_ring *tx,
 		   gve_has_free_tx_qpl_bufs(tx, buf_count);
 }
 
-/* Stops the queue if available descriptors is less than 'count'.
- * Return: 0 if stop is not required.
- */
+ 
 static int gve_maybe_stop_tx_dqo(struct gve_tx_ring *tx,
 				 int desc_count, int buf_count)
 {
 	if (likely(gve_has_avail_slots_tx_dqo(tx, desc_count, buf_count)))
 		return 0;
 
-	/* Update cached TX head pointer */
+	 
 	tx->dqo_tx.head = atomic_read_acquire(&tx->dqo_compl.hw_tx_head);
 
 	if (likely(gve_has_avail_slots_tx_dqo(tx, desc_count, buf_count)))
 		return 0;
 
-	/* No space, so stop the queue */
+	 
 	tx->stop_queue++;
 	netif_tx_stop_queue(tx->netdev_txq);
 
-	/* Sync with restarting queue in `gve_tx_poll_dqo()` */
+	 
 	mb();
 
-	/* After stopping queue, check if we can transmit again in order to
-	 * avoid TOCTOU bug.
-	 */
+	 
 	tx->dqo_tx.head = atomic_read_acquire(&tx->dqo_compl.hw_tx_head);
 
 	if (likely(!gve_has_avail_slots_tx_dqo(tx, desc_count, buf_count)))
@@ -479,10 +458,7 @@ static void gve_tx_fill_pkt_desc_dqo(struct gve_tx_ring *tx, u32 *desc_idx,
 	}
 }
 
-/* Validates and prepares `skb` for TSO.
- *
- * Returns header length, or < 0 if invalid.
- */
+ 
 static int gve_prep_tso(struct sk_buff *skb)
 {
 	struct tcphdr *tcp;
@@ -490,25 +466,19 @@ static int gve_prep_tso(struct sk_buff *skb)
 	u32 paylen;
 	int err;
 
-	/* Note: HW requires MSS (gso_size) to be <= 9728 and the total length
-	 * of the TSO to be <= 262143.
-	 *
-	 * However, we don't validate these because:
-	 * - Hypervisor enforces a limit of 9K MTU
-	 * - Kernel will not produce a TSO larger than 64k
-	 */
+	 
 
 	if (unlikely(skb_shinfo(skb)->gso_size < GVE_TX_MIN_TSO_MSS_DQO))
 		return -1;
 
-	/* Needed because we will modify header. */
+	 
 	err = skb_cow_head(skb, 0);
 	if (err < 0)
 		return err;
 
 	tcp = tcp_hdr(skb);
 
-	/* Remove payload length from checksum. */
+	 
 	paylen = skb->len - skb_transport_offset(skb);
 
 	switch (skb_shinfo(skb)->gso_type) {
@@ -517,7 +487,7 @@ static int gve_prep_tso(struct sk_buff *skb)
 		csum_replace_by_diff(&tcp->check,
 				     (__force __wsum)htonl(paylen));
 
-		/* Compute length of segmentation header. */
+		 
 		header_len = skb_tcp_all_headers(skb);
 		break;
 	default:
@@ -585,16 +555,10 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
 	const struct skb_shared_info *shinfo = skb_shinfo(skb);
 	int i;
 
-	/* Note: HW requires that the size of a non-TSO packet be within the
-	 * range of [17, 9728].
-	 *
-	 * We don't double check because
-	 * - We limited `netdev->min_mtu` to ETH_MIN_MTU.
-	 * - Hypervisor won't allow MTU larger than 9216.
-	 */
+	 
 
 	pkt->num_bufs = 0;
-	/* Map the linear portion of skb */
+	 
 	{
 		u32 len = skb_headlen(skb);
 		dma_addr_t addr;
@@ -609,7 +573,7 @@ static int gve_tx_add_skb_no_copy_dqo(struct gve_tx_ring *tx,
 
 		gve_tx_fill_pkt_desc_dqo(tx, desc_idx, skb, len, addr,
 					 completion_tag,
-					 /*eop=*/shinfo->nr_frags == 0, is_gso);
+					  shinfo->nr_frags == 0, is_gso);
 	}
 
 	for (i = 0; i < shinfo->nr_frags; i++) {
@@ -649,10 +613,7 @@ err:
 	return -1;
 }
 
-/* Tx buffer i corresponds to
- * qpl_page_id = i / GVE_TX_BUFS_PER_PAGE_DQO
- * qpl_page_offset = (i % GVE_TX_BUFS_PER_PAGE_DQO) * GVE_TX_BUF_SIZE_DQO
- */
+ 
 static void gve_tx_buf_get_addr(struct gve_tx_ring *tx,
 				s16 index,
 				void **va, dma_addr_t *dma_addr)
@@ -677,7 +638,7 @@ static int gve_tx_add_skb_copy_dqo(struct gve_tx_ring *tx,
 	s16 index;
 	void *va;
 
-	/* Break the packet into buffer size chunks */
+	 
 	pkt->num_bufs = 0;
 	while (copy_offset < skb->len) {
 		index = gve_alloc_tx_qpl_buf(tx);
@@ -706,16 +667,12 @@ static int gve_tx_add_skb_copy_dqo(struct gve_tx_ring *tx,
 
 	return 0;
 err:
-	/* Should not be here if gve_has_free_tx_qpl_bufs() check is correct */
+	 
 	gve_free_tx_qpl_bufs(tx, pkt);
 	return -ENOMEM;
 }
 
-/* Returns 0 on success, or < 0 on error.
- *
- * Before this function is called, the caller must ensure
- * gve_has_pending_packet(tx) returns true.
- */
+ 
 static int gve_tx_add_skb_dqo(struct gve_tx_ring *tx,
 			      struct sk_buff *skb)
 {
@@ -759,12 +716,10 @@ static int gve_tx_add_skb_dqo(struct gve_tx_ring *tx,
 
 	tx->dqo_tx.posted_packet_desc_cnt += pkt->num_bufs;
 
-	/* Commit the changes to our state */
+	 
 	tx->dqo_tx.tail = desc_idx;
 
-	/* Request a descriptor completion on the last descriptor of the
-	 * packet if we are allowed to by the HW enforced interval.
-	 */
+	 
 	{
 		u32 last_desc_idx = (desc_idx - 1) & tx->mask;
 		u32 last_report_event_interval =
@@ -808,13 +763,7 @@ static int gve_num_buffer_descs_needed(const struct sk_buff *skb)
 	return num_descs;
 }
 
-/* Returns true if HW is capable of sending TSO represented by `skb`.
- *
- * Each segment must not span more than GVE_TX_MAX_DATA_DESCS buffers.
- * - The header is counted as one buffer for every single segment.
- * - A buffer which is split between two segments is counted for both.
- * - If a buffer contains both header and payload, it is counted as two buffers.
- */
+ 
 static bool gve_can_send_tso(const struct sk_buff *skb)
 {
 	const int max_bufs_per_seg = GVE_TX_MAX_DATA_DESCS - 1;
@@ -843,11 +792,7 @@ static bool gve_can_send_tso(const struct sk_buff *skb)
 	return true;
 }
 
-/* Attempt to transmit specified SKB.
- *
- * Returns 0 if the SKB was transmitted or dropped.
- * Returns -1 if there is not currently enough space to transmit the SKB.
- */
+ 
 static int gve_try_tx_skb(struct gve_priv *priv, struct gve_tx_ring *tx,
 			  struct sk_buff *skb)
 {
@@ -859,19 +804,11 @@ static int gve_try_tx_skb(struct gve_priv *priv, struct gve_tx_ring *tx,
 			if (unlikely(ipv6_hopopt_jumbo_remove(skb)))
 				goto drop;
 
-		/* We do not need to verify the number of buffers used per
-		 * packet or per segment in case of TSO as with 2K size buffers
-		 * none of the TX packet rules would be violated.
-		 *
-		 * gve_can_send_tso() checks that each TCP segment of gso_size is
-		 * not distributed over more than 9 SKB frags..
-		 */
+		 
 		num_buffer_descs = DIV_ROUND_UP(skb->len, GVE_TX_BUF_SIZE_DQO);
 	} else {
 		if (skb_is_gso(skb)) {
-			/* If TSO doesn't meet HW requirements, attempt to linearize the
-			 * packet.
-			 */
+			 
 			if (unlikely(!gve_can_send_tso(skb) &&
 				     skb_linearize(skb) < 0)) {
 				net_err_ratelimited("%s: Failed to transmit TSO packet\n",
@@ -895,7 +832,7 @@ static int gve_try_tx_skb(struct gve_priv *priv, struct gve_tx_ring *tx,
 		}
 	}
 
-	/* Metadata + (optional TSO) + data descriptors. */
+	 
 	total_num_descs = 1 + skb_is_gso(skb) + num_buffer_descs;
 	if (unlikely(gve_maybe_stop_tx_dqo(tx, total_num_descs +
 			GVE_TX_MIN_DESC_PREVENT_CACHE_OVERLAP,
@@ -916,7 +853,7 @@ drop:
 	return 0;
 }
 
-/* Transmit a given skb and ring the doorbell. */
+ 
 netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev)
 {
 	struct gve_priv *priv = netdev_priv(dev);
@@ -924,10 +861,7 @@ netdev_tx_t gve_tx_dqo(struct sk_buff *skb, struct net_device *dev)
 
 	tx = &priv->tx[skb_get_queue_mapping(skb)];
 	if (unlikely(gve_try_tx_skb(priv, tx, skb) < 0)) {
-		/* We need to ring the txq doorbell -- we have stopped the Tx
-		 * queue for want of resources, but prior calls to gve_tx()
-		 * may have added descriptors without ringing the doorbell.
-		 */
+		 
 		gve_tx_put_doorbell_dqo(priv, tx->q_resources, tx->dqo_tx.tail);
 		return NETDEV_TX_BUSY;
 	}
@@ -966,13 +900,13 @@ static void remove_from_list(struct gve_tx_ring *tx,
 	next_index = pkt->next;
 
 	if (prev_index == -1) {
-		/* Node is head */
+		 
 		list->head = next_index;
 	} else {
 		tx->dqo.pending_packets[prev_index].next = next_index;
 	}
 	if (next_index == -1) {
-		/* Node is tail */
+		 
 		list->tail = prev_index;
 	} else {
 		tx->dqo.pending_packets[next_index].prev = prev_index;
@@ -984,7 +918,7 @@ static void gve_unmap_packet(struct device *dev,
 {
 	int i;
 
-	/* SKB linear portion is guaranteed to be mapped */
+	 
 	dma_unmap_single(dev, dma_unmap_addr(pkt, dma[0]),
 			 dma_unmap_len(pkt, len[0]), DMA_TO_DEVICE);
 	for (i = 1; i < pkt->num_bufs; i++) {
@@ -994,12 +928,7 @@ static void gve_unmap_packet(struct device *dev,
 	pkt->num_bufs = 0;
 }
 
-/* Completion types and expected behavior:
- * No Miss compl + Packet compl = Packet completed normally.
- * Miss compl + Re-inject compl = Packet completed normally.
- * No Miss compl + Re-inject compl = Skipped i.e. packet not completed.
- * Miss compl + Packet compl = Skipped i.e. packet not completed.
- */
+ 
 static void gve_handle_packet_completion(struct gve_priv *priv,
 					 struct gve_tx_ring *tx, bool is_napi,
 					 u16 compl_tag, u64 *bytes, u64 *pkts,
@@ -1020,9 +949,7 @@ static void gve_handle_packet_completion(struct gve_priv *priv,
 			     GVE_PACKET_STATE_TIMED_OUT_COMPL)) {
 			net_err_ratelimited("%s: Re-injection completion: %d received after timeout.\n",
 					    priv->dev->name, (int)compl_tag);
-			/* Packet was already completed as a result of timeout,
-			 * so just remove from list and free pending packet.
-			 */
+			 
 			remove_from_list(tx,
 					 &tx->dqo_compl.timed_out_completions,
 					 pending_packet);
@@ -1031,11 +958,7 @@ static void gve_handle_packet_completion(struct gve_priv *priv,
 		}
 		if (unlikely(pending_packet->state !=
 			     GVE_PACKET_STATE_PENDING_REINJECT_COMPL)) {
-			/* No outstanding miss completion but packet allocated
-			 * implies packet receives a re-injection completion
-			 * without a prior miss completion. Return without
-			 * completing the packet.
-			 */
+			 
 			net_err_ratelimited("%s: Re-injection completion received without corresponding miss completion: %d\n",
 					    priv->dev->name, (int)compl_tag);
 			return;
@@ -1043,7 +966,7 @@ static void gve_handle_packet_completion(struct gve_priv *priv,
 		remove_from_list(tx, &tx->dqo_compl.miss_completions,
 				 pending_packet);
 	} else {
-		/* Packet is allocated but not a pending data completion. */
+		 
 		if (unlikely(pending_packet->state !=
 			     GVE_PACKET_STATE_PENDING_DATA_COMPL)) {
 			net_err_ratelimited("%s: No pending data completion: %d\n",
@@ -1086,7 +1009,7 @@ static void gve_handle_miss_completion(struct gve_priv *priv,
 	}
 
 	pending_packet->state = GVE_PACKET_STATE_PENDING_REINJECT_COMPL;
-	/* jiffies can wraparound but time comparisons can handle overflows. */
+	 
 	pending_packet->timeout_jiffies =
 			jiffies +
 			msecs_to_jiffies(GVE_REINJECT_COMPL_TIMEOUT *
@@ -1107,23 +1030,19 @@ static void remove_miss_completions(struct gve_priv *priv,
 	while (next_index != -1) {
 		pending_packet = &tx->dqo.pending_packets[next_index];
 		next_index = pending_packet->next;
-		/* Break early because packets should timeout in order. */
+		 
 		if (time_is_after_jiffies(pending_packet->timeout_jiffies))
 			break;
 
 		remove_from_list(tx, &tx->dqo_compl.miss_completions,
 				 pending_packet);
-		/* Unmap/free TX buffers and free skb but do not unallocate packet i.e.
-		 * the completion tag is not freed to ensure that the driver
-		 * can take appropriate action if a corresponding valid
-		 * completion is received later.
-		 */
+		 
 		if (tx->dqo.qpl)
 			gve_free_tx_qpl_bufs(tx, pending_packet);
 		else
 			gve_unmap_packet(tx->dev, pending_packet);
 
-		/* This indicates the packet was dropped. */
+		 
 		dev_kfree_skb_any(pending_packet->skb);
 		pending_packet->skb = NULL;
 		tx->dropped_pkt++;
@@ -1136,9 +1055,7 @@ static void remove_miss_completions(struct gve_priv *priv,
 				jiffies +
 				msecs_to_jiffies(GVE_DEALLOCATE_COMPL_TIMEOUT *
 						 MSEC_PER_SEC);
-		/* Maintain pending packet in another list so the packet can be
-		 * unallocated at a later time.
-		 */
+		 
 		add_to_list(tx, &tx->dqo_compl.timed_out_completions,
 			    pending_packet);
 	}
@@ -1154,7 +1071,7 @@ static void remove_timed_out_completions(struct gve_priv *priv,
 	while (next_index != -1) {
 		pending_packet = &tx->dqo.pending_packets[next_index];
 		next_index = pending_packet->next;
-		/* Break early because packets should timeout in order. */
+		 
 		if (time_is_after_jiffies(pending_packet->timeout_jiffies))
 			break;
 
@@ -1175,7 +1092,7 @@ int gve_clean_tx_done_dqo(struct gve_priv *priv, struct gve_tx_ring *tx,
 	u64 pkt_compl_bytes = 0;
 	u64 pkt_compl_pkts = 0;
 
-	/* Limit in order to avoid blocking for too long */
+	 
 	while (!napi || pkt_compl_pkts < napi->weight) {
 		struct gve_tx_compl_desc *compl_desc =
 			&tx->dqo.compl_ring[tx->dqo_compl.head];
@@ -1184,16 +1101,16 @@ int gve_clean_tx_done_dqo(struct gve_priv *priv, struct gve_tx_ring *tx,
 		if (compl_desc->generation == tx->dqo_compl.cur_gen_bit)
 			break;
 
-		/* Prefetch the next descriptor. */
+		 
 		prefetch(&tx->dqo.compl_ring[(tx->dqo_compl.head + 1) &
 				tx->dqo.complq_mask]);
 
-		/* Do not read data until we own the descriptor */
+		 
 		dma_rmb();
 		type = compl_desc->type;
 
 		if (type == GVE_COMPL_TYPE_DQO_DESC) {
-			/* This is the last descriptor fetched by HW plus one */
+			 
 			u16 tx_head = le16_to_cpu(compl_desc->tx_head);
 
 			atomic_set_release(&tx->dqo_compl.hw_tx_head, tx_head);
@@ -1229,7 +1146,7 @@ int gve_clean_tx_done_dqo(struct gve_priv *priv, struct gve_tx_ring *tx,
 
 		tx->dqo_compl.head =
 			(tx->dqo_compl.head + 1) & tx->dqo.complq_mask;
-		/* Flip the generation bit when we wrap around */
+		 
 		tx->dqo_compl.cur_gen_bit ^= tx->dqo_compl.head == 0;
 		num_descs_cleaned++;
 	}
@@ -1258,7 +1175,7 @@ bool gve_tx_poll_dqo(struct gve_notify_block *block, bool do_clean)
 		int num_descs_cleaned = gve_clean_tx_done_dqo(priv, tx,
 							      &block->napi);
 
-		/* Sync with queue being stopped in `gve_maybe_stop_tx_dqo()` */
+		 
 		mb();
 
 		if (netif_tx_queue_stopped(tx->netdev_txq) &&
@@ -1268,7 +1185,7 @@ bool gve_tx_poll_dqo(struct gve_notify_block *block, bool do_clean)
 		}
 	}
 
-	/* Return true if we still have work. */
+	 
 	compl_desc = &tx->dqo.compl_ring[tx->dqo_compl.head];
 	return compl_desc->generation != tx->dqo_compl.cur_gen_bit;
 }

@@ -1,51 +1,27 @@
-/*
- * This file is part of the MicroPython project, http://micropython.org/
- *
- * The MIT License (MIT)
- *
- * Copyright (c) 2016 Damien P. George
- *
- * Permission is hereby granted, free of charge, to any person obtaining a copy
- * of this software and associated documentation files (the "Software"), to deal
- * in the Software without restriction, including without limitation the rights
- * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
- * copies of the Software, and to permit persons to whom the Software is
- * furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
- * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
- * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
- * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
- * THE SOFTWARE.
- */
+ 
 #ifndef MICROPY_INCLUDED_PY_ASMXTENSA_H
 #define MICROPY_INCLUDED_PY_ASMXTENSA_H
 
 #include "py/misc.h"
 #include "py/asmbase.h"
 
-// calling conventions:
-// up to 6 args in a2-a7
-// return value in a2
-// PC stored in a0
-// stack pointer is a1, stack full descending, is aligned to 16 bytes
-// callee save: a1, a12, a13, a14, a15
-// caller save: a3
 
-// With windowed registers, size 8:
-// - a0: return PC
-// - a1: stack pointer, full descending, aligned to 16 bytes
-// - a2-a7: incoming args, and essentially callee save
-// - a2: return value
-// - a8-a15: caller save temporaries
-// - a10-a15: input args to called function
-// - a10: return value of called function
-// note: a0-a7 are saved automatically via window shift of called function
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 #define ASM_XTENSA_REG_A0  (0)
 #define ASM_XTENSA_REG_A1  (1)
@@ -64,11 +40,11 @@
 #define ASM_XTENSA_REG_A14 (14)
 #define ASM_XTENSA_REG_A15 (15)
 
-// for bccz
+
 #define ASM_XTENSA_CCZ_EQ (0)
 #define ASM_XTENSA_CCZ_NE (1)
 
-// for bcc and setcc
+
 #define ASM_XTENSA_CC_NONE  (0)
 #define ASM_XTENSA_CC_EQ    (1)
 #define ASM_XTENSA_CC_LT    (2)
@@ -82,7 +58,7 @@
 #define ASM_XTENSA_CC_NALL  (12)
 #define ASM_XTENSA_CC_BS    (13)
 
-// macros for encoding instructions (little endian versions)
+
 #define ASM_XTENSA_ENCODE_RRR(op0, op1, op2, r, s, t) \
     ((((uint32_t)op2) << 20) | (((uint32_t)op1) << 16) | ((r) << 12) | ((s) << 8) | ((t) << 4) | (op0))
 #define ASM_XTENSA_ENCODE_RRI4(op0, op1, r, s, t, imm4) \
@@ -106,7 +82,7 @@
 #define ASM_XTENSA_ENCODE_RI7(op0, s, imm7) \
     ((((imm7) & 0xf) << 12) | ((s) << 8) | ((imm7) & 0x70) | (op0))
 
-// Number of registers saved on the stack upon entry to function
+
 #define ASM_XTENSA_NUM_REGS_SAVED (5)
 #define ASM_XTENSA_NUM_REGS_SAVED_WIN (1)
 
@@ -129,7 +105,7 @@ void asm_xtensa_exit_win(asm_xtensa_t *as);
 void asm_xtensa_op16(asm_xtensa_t *as, uint16_t op);
 void asm_xtensa_op24(asm_xtensa_t *as, uint32_t op);
 
-// raw instructions
+
 
 static inline void asm_xtensa_op_entry(asm_xtensa_t *as, uint reg_src, int32_t num_bytes) {
     asm_xtensa_op24(as, ASM_XTENSA_ENCODE_BRI12(6, reg_src, 0, 3, (num_bytes / 8) & 0xfff));
@@ -203,7 +179,7 @@ static inline void asm_xtensa_op_movi(asm_xtensa_t *as, uint reg_dest, int32_t i
     asm_xtensa_op24(as, ASM_XTENSA_ENCODE_RRI8(2, 10, (imm12 >> 8) & 0xf, reg_dest, imm12 & 0xff));
 }
 
-// Argument must be in the range (-32 .. 95) inclusive.
+
 static inline void asm_xtensa_op_movi_n(asm_xtensa_t *as, uint reg_dest, int imm7) {
     asm_xtensa_op16(as, ASM_XTENSA_ENCODE_RI7(12, reg_dest, imm7));
 }
@@ -272,7 +248,7 @@ static inline void asm_xtensa_op_xor(asm_xtensa_t *as, uint reg_dest, uint reg_s
     asm_xtensa_op24(as, ASM_XTENSA_ENCODE_RRR(0, 0, 3, reg_dest, reg_src_a, reg_src_b));
 }
 
-// convenience functions
+
 void asm_xtensa_j_label(asm_xtensa_t *as, uint label);
 void asm_xtensa_bccz_reg_label(asm_xtensa_t *as, uint cond, uint reg, uint label);
 void asm_xtensa_bcc_reg_reg_label(asm_xtensa_t *as, uint cond, uint reg1, uint reg2, uint label);
@@ -288,19 +264,19 @@ void asm_xtensa_s32i_optimised(asm_xtensa_t *as, uint reg_src, uint reg_base, ui
 void asm_xtensa_call_ind(asm_xtensa_t *as, uint idx);
 void asm_xtensa_call_ind_win(asm_xtensa_t *as, uint idx);
 
-// Holds a pointer to mp_fun_table
+
 #define ASM_XTENSA_REG_FUN_TABLE ASM_XTENSA_REG_A15
 #define ASM_XTENSA_REG_FUN_TABLE_WIN ASM_XTENSA_REG_A7
 
 #if GENERIC_ASM_API
 
-// The following macros provide a (mostly) arch-independent API to
-// generate native code, and are used by the native emitter.
+
+
 
 #define ASM_WORD_SIZE (4)
 
 #if !GENERIC_ASM_API_WIN
-// Configuration for non-windowed calls
+
 
 #define REG_RET ASM_XTENSA_REG_A2
 #define REG_ARG_1 ASM_XTENSA_REG_A2
@@ -326,7 +302,7 @@ void asm_xtensa_call_ind_win(asm_xtensa_t *as, uint idx);
 #define ASM_CALL_IND(as, idx)   asm_xtensa_call_ind((as), (idx))
 
 #else
-// Configuration for windowed calls with window size 8
+
 
 #define REG_PARENT_RET ASM_XTENSA_REG_A2
 #define REG_PARENT_ARG_1 ASM_XTENSA_REG_A2
@@ -410,6 +386,6 @@ void asm_xtensa_call_ind_win(asm_xtensa_t *as, uint idx);
 #define ASM_STORE16_REG_REG(as, reg_src, reg_base) asm_xtensa_op_s16i((as), (reg_src), (reg_base), 0)
 #define ASM_STORE32_REG_REG(as, reg_src, reg_base) asm_xtensa_op_s32i_n((as), (reg_src), (reg_base), 0)
 
-#endif // GENERIC_ASM_API
+#endif 
 
-#endif // MICROPY_INCLUDED_PY_ASMXTENSA_H
+#endif 

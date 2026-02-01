@@ -1,32 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * consumer.h -- SoC Regulator consumer support.
- *
- * Copyright (C) 2007, 2008 Wolfson Microelectronics PLC.
- *
- * Author: Liam Girdwood <lrg@slimlogic.co.uk>
- *
- * Regulator Consumer Interface.
- *
- * A Power Management Regulator framework for SoC based devices.
- * Features:-
- *   o Voltage and current level control.
- *   o Operating mode control.
- *   o Regulator status.
- *   o sysfs entries for showing client devices and status
- *
- * EXPERIMENTAL FEATURES:
- *   Dynamic Regulator operating Mode Switching (DRMS) - allows regulators
- *   to use most efficient operating mode depending upon voltage and load and
- *   is transparent to client drivers.
- *
- *   e.g. Devices x,y,z share regulator r. Device x and y draw 20mA each during
- *   IO and 1mA at idle. Device z draws 100mA when under load and 5mA when
- *   idling. Regulator r has > 90% efficiency in NORMAL mode at loads > 100mA
- *   but this drops rapidly to 60% when below 100mA. Regulator r has > 90%
- *   efficiency in IDLE mode at loads < 10mA. Thus regulator r will operate
- *   in normal mode for loads > 10mA and in IDLE mode for load <= 10mA.
- */
+ 
+ 
 
 #ifndef __LINUX_REGULATOR_CONSUMER_H_
 #define __LINUX_REGULATOR_CONSUMER_H_
@@ -39,44 +12,7 @@ struct notifier_block;
 struct regmap;
 struct regulator_dev;
 
-/*
- * Regulator operating modes.
- *
- * Regulators can run in a variety of different operating modes depending on
- * output load. This allows further system power savings by selecting the
- * best (and most efficient) regulator mode for a desired load.
- *
- * Most drivers will only care about NORMAL. The modes below are generic and
- * will probably not match the naming convention of your regulator data sheet
- * but should match the use cases in the datasheet.
- *
- * In order of power efficiency (least efficient at top).
- *
- *  Mode       Description
- *  FAST       Regulator can handle fast changes in it's load.
- *             e.g. useful in CPU voltage & frequency scaling where
- *             load can quickly increase with CPU frequency increases.
- *
- *  NORMAL     Normal regulator power supply mode. Most drivers will
- *             use this mode.
- *
- *  IDLE       Regulator runs in a more efficient mode for light
- *             loads. Can be used for devices that have a low power
- *             requirement during periods of inactivity. This mode
- *             may be more noisy than NORMAL and may not be able
- *             to handle fast load switching.
- *
- *  STANDBY    Regulator runs in the most efficient mode for very
- *             light loads. Can be used by devices when they are
- *             in a sleep/standby state. This mode is likely to be
- *             the most noisy and may not be able to handle fast load
- *             switching.
- *
- * NOTE: Most regulators will only support a subset of these modes. Some
- * will only just support NORMAL.
- *
- * These modes can be OR'ed together to make up a mask of valid register modes.
- */
+ 
 
 #define REGULATOR_MODE_INVALID			0x0
 #define REGULATOR_MODE_FAST			0x1
@@ -84,27 +20,7 @@ struct regulator_dev;
 #define REGULATOR_MODE_IDLE			0x4
 #define REGULATOR_MODE_STANDBY			0x8
 
-/*
- * Regulator notifier events.
- *
- * UNDER_VOLTAGE  Regulator output is under voltage.
- * OVER_CURRENT   Regulator output current is too high.
- * REGULATION_OUT Regulator output is out of regulation.
- * FAIL           Regulator output has failed.
- * OVER_TEMP      Regulator over temp.
- * FORCE_DISABLE  Regulator forcibly shut down by software.
- * VOLTAGE_CHANGE Regulator voltage changed.
- *                Data passed is old voltage cast to (void *).
- * DISABLE        Regulator was disabled.
- * PRE_VOLTAGE_CHANGE   Regulator is about to have voltage changed.
- *                      Data passed is "struct pre_voltage_change_data"
- * ABORT_VOLTAGE_CHANGE Regulator voltage change failed for some reason.
- *                      Data passed is old voltage cast to (void *).
- * PRE_DISABLE    Regulator is about to be disabled
- * ABORT_DISABLE  Regulator disable failed for some reason
- *
- * NOTE: These events can be OR'ed together when passed into handler.
- */
+ 
 
 #define REGULATOR_EVENT_UNDER_VOLTAGE		0x01
 #define REGULATOR_EVENT_OVER_CURRENT		0x02
@@ -119,28 +35,14 @@ struct regulator_dev;
 #define REGULATOR_EVENT_PRE_DISABLE		0x400
 #define REGULATOR_EVENT_ABORT_DISABLE		0x800
 #define REGULATOR_EVENT_ENABLE			0x1000
-/*
- * Following notifications should be emitted only if detected condition
- * is such that the HW is likely to still be working but consumers should
- * take a recovery action to prevent problems esacalating into errors.
- */
+ 
 #define REGULATOR_EVENT_UNDER_VOLTAGE_WARN	0x2000
 #define REGULATOR_EVENT_OVER_CURRENT_WARN	0x4000
 #define REGULATOR_EVENT_OVER_VOLTAGE_WARN	0x8000
 #define REGULATOR_EVENT_OVER_TEMP_WARN		0x10000
 #define REGULATOR_EVENT_WARN_MASK		0x1E000
 
-/*
- * Regulator errors that can be queried using regulator_get_error_flags
- *
- * UNDER_VOLTAGE  Regulator output is under voltage.
- * OVER_CURRENT   Regulator output current is too high.
- * REGULATION_OUT Regulator output is out of regulation.
- * FAIL           Regulator output has failed.
- * OVER_TEMP      Regulator over temp.
- *
- * NOTE: These errors can be OR'ed together.
- */
+ 
 
 #define REGULATOR_ERROR_UNDER_VOLTAGE		BIT(1)
 #define REGULATOR_ERROR_OVER_CURRENT		BIT(2)
@@ -153,13 +55,7 @@ struct regulator_dev;
 #define REGULATOR_ERROR_OVER_VOLTAGE_WARN	BIT(8)
 #define REGULATOR_ERROR_OVER_TEMP_WARN		BIT(9)
 
-/**
- * struct pre_voltage_change_data - Data sent with PRE_VOLTAGE_CHANGE event
- *
- * @old_uV: Current voltage before change.
- * @min_uV: Min voltage we'll change to.
- * @max_uV: Max voltage we'll change to.
- */
+ 
 struct pre_voltage_change_data {
 	unsigned long old_uV;
 	unsigned long min_uV;
@@ -168,33 +64,19 @@ struct pre_voltage_change_data {
 
 struct regulator;
 
-/**
- * struct regulator_bulk_data - Data used for bulk regulator operations.
- *
- * @supply:       The name of the supply.  Initialised by the user before
- *                using the bulk regulator APIs.
- * @init_load_uA: After getting the regulator, regulator_set_load() will be
- *                called with this load.  Initialised by the user before
- *                using the bulk regulator APIs.
- * @consumer:     The regulator consumer for the supply.  This will be managed
- *                by the bulk API.
- *
- * The regulator APIs provide a series of regulator_bulk_() API calls as
- * a convenience to consumers which require multiple supplies.  This
- * structure is used to manage data for these calls.
- */
+ 
 struct regulator_bulk_data {
 	const char *supply;
 	int init_load_uA;
 	struct regulator *consumer;
 
-	/* private: Internal use */
+	 
 	int ret;
 };
 
 #if defined(CONFIG_REGULATOR)
 
-/* regulator get and put */
+ 
 struct regulator *__must_check regulator_get(struct device *dev,
 					     const char *id);
 struct regulator *__must_check devm_regulator_get(struct device *dev,
@@ -235,7 +117,7 @@ int devm_regulator_bulk_register_supply_alias(struct device *dev,
 					      const char *const *alias_id,
 					      int num_id);
 
-/* regulator output control and status */
+ 
 int __must_check regulator_enable(struct regulator *regulator);
 int regulator_disable(struct regulator *regulator);
 int regulator_force_disable(struct regulator *regulator);
@@ -295,7 +177,7 @@ int regulator_get_hardware_vsel_register(struct regulator *regulator,
 int regulator_list_hardware_vsel(struct regulator *regulator,
 				 unsigned selector);
 
-/* regulator notifier block */
+ 
 int regulator_register_notifier(struct regulator *regulator,
 			      struct notifier_block *nb);
 int devm_regulator_register_notifier(struct regulator *regulator,
@@ -305,7 +187,7 @@ int regulator_unregister_notifier(struct regulator *regulator,
 void devm_regulator_unregister_notifier(struct regulator *regulator,
 					struct notifier_block *nb);
 
-/* regulator suspend */
+ 
 int regulator_suspend_enable(struct regulator_dev *rdev,
 			     suspend_state_t state);
 int regulator_suspend_disable(struct regulator_dev *rdev,
@@ -313,11 +195,11 @@ int regulator_suspend_disable(struct regulator_dev *rdev,
 int regulator_set_suspend_voltage(struct regulator *regulator, int min_uV,
 				  int max_uV, suspend_state_t state);
 
-/* driver data - core doesn't touch */
+ 
 void *regulator_get_drvdata(struct regulator *regulator);
 void regulator_set_drvdata(struct regulator *regulator, void *data);
 
-/* misc helpers */
+ 
 
 void regulator_bulk_set_supply_names(struct regulator_bulk_data *consumers,
 				     const char *const *supply_names,
@@ -327,21 +209,11 @@ bool regulator_is_equal(struct regulator *reg1, struct regulator *reg2);
 
 #else
 
-/*
- * Make sure client drivers will still build on systems with no software
- * controllable voltage or current regulators.
- */
+ 
 static inline struct regulator *__must_check regulator_get(struct device *dev,
 	const char *id)
 {
-	/* Nothing except the stubbed out regulator API should be
-	 * looking at the value except to check if it is an error
-	 * value. Drivers are free to handle NULL specifically by
-	 * skipping all regulator API calls, but they don't have to.
-	 * Drivers which don't, should make sure they properly handle
-	 * corner cases of the API, such as regulator_get_voltage()
-	 * returning 0.
-	 */
+	 
 	return NULL;
 }
 

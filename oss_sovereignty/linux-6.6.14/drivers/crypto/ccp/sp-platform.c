@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * AMD Secure Processor device driver
- *
- * Copyright (C) 2014,2018 Advanced Micro Devices, Inc.
- *
- * Author: Tom Lendacky <thomas.lendacky@amd.com>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>

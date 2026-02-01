@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2019 Intel Corporation
- */
+
+ 
 
 #include "intel_context.h"
 #include "intel_engine_pm.h"
@@ -17,7 +15,7 @@ static u64 rc6_residency(struct intel_rc6 *rc6)
 {
 	u64 result;
 
-	/* XXX VLV_GT_MEDIA_RC6? */
+	 
 
 	result = intel_rc6_residency_ns(rc6, INTEL_RC6_RES_RC6);
 	if (HAS_RC6p(rc6_to_i915(rc6)))
@@ -39,24 +37,21 @@ int live_rc6_manual(void *arg)
 	u64 res[2];
 	int err = 0;
 
-	/*
-	 * Our claim is that we can "encourage" the GPU to enter rc6 at will.
-	 * Let's try it!
-	 */
+	 
 
 	if (!rc6->enabled)
 		return 0;
 
-	/* bsw/byt use a PCU and decouple RC6 from our manual control */
+	 
 	if (IS_VALLEYVIEW(gt->i915) || IS_CHERRYVIEW(gt->i915))
 		return 0;
 
 	has_power = librapl_supported(gt->i915);
 	wakeref = intel_runtime_pm_get(gt->uncore->rpm);
 
-	/* Force RC6 off for starters */
+	 
 	__intel_rc6_disable(rc6);
-	msleep(1); /* wakeup is not immediate, takes about 100us on icl */
+	msleep(1);  
 
 	res[0] = rc6_residency(rc6);
 
@@ -83,7 +78,7 @@ int live_rc6_manual(void *arg)
 		}
 	}
 
-	/* Manually enter RC6 */
+	 
 	intel_rc6_park(rc6);
 
 	res[0] = rc6_residency(rc6);
@@ -114,7 +109,7 @@ int live_rc6_manual(void *arg)
 		}
 	}
 
-	/* Restore what should have been the original state! */
+	 
 	intel_rc6_unpark(rc6);
 
 out_unlock:
@@ -192,7 +187,7 @@ int live_rc6_ctx_wa(void *arg)
 	I915_RND_STATE(prng);
 	int err = 0;
 
-	/* A read of CTX_INFO upsets rc6. Poke the bear! */
+	 
 	if (GRAPHICS_VER(gt->i915) < 8)
 		return 0;
 
@@ -211,7 +206,7 @@ int live_rc6_ctx_wa(void *arg)
 				i915_reset_engine_count(error, engine);
 			const u32 *res;
 
-			/* Use a sacrifical context */
+			 
 			ce = intel_context_create(engine);
 			if (IS_ERR(ce)) {
 				err = PTR_ERR(ce);

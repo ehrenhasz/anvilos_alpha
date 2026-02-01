@@ -1,36 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * adm1025.c
- *
- * Copyright (C) 2000       Chen-Yuan Wu <gwu@esoft.com>
- * Copyright (C) 2003-2009  Jean Delvare <jdelvare@suse.de>
- *
- * The ADM1025 is a sensor chip made by Analog Devices. It reports up to 6
- * voltages (including its own power source) and up to two temperatures
- * (its own plus up to one external one). Voltages are scaled internally
- * (which is not the common way) with ratios such that the nominal value
- * of each voltage correspond to a register value of 192 (which means a
- * resolution of about 0.5% of the nominal value). Temperature values are
- * reported with a 1 deg resolution and a 3 deg accuracy. Complete
- * datasheet can be obtained from Analog's website at:
- *   https://www.onsemi.com/PowerSolutions/product.do?id=ADM1025
- *
- * This driver also supports the ADM1025A, which differs from the ADM1025
- * only in that it has "open-drain VID inputs while the ADM1025 has
- * on-chip 100k pull-ups on the VID inputs". It doesn't make any
- * difference for us.
- *
- * This driver also supports the NE1619, a sensor chip made by Philips.
- * That chip is similar to the ADM1025A, with a few differences. The only
- * difference that matters to us is that the NE1619 has only two possible
- * addresses while the ADM1025A has a third one. Complete datasheet can be
- * obtained from Philips's website at:
- *   http://www.semiconductors.philips.com/pip/NE1619DS.html
- *
- * Since the ADM1025 was the first chipset supported by this driver, most
- * comments will refer to this chipset, but are actually general and
- * concern all supported chipsets, unless mentioned otherwise.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -43,19 +12,13 @@
 #include <linux/err.h>
 #include <linux/mutex.h>
 
-/*
- * Addresses to scan
- * ADM1025 and ADM1025A have three possible addresses: 0x2c, 0x2d and 0x2e.
- * NE1619 has two possible addresses: 0x2c and 0x2d.
- */
+ 
 
 static const unsigned short normal_i2c[] = { 0x2c, 0x2d, 0x2e, I2C_CLIENT_END };
 
 enum chips { adm1025, ne1619 };
 
-/*
- * The ADM1025 registers
- */
+ 
 
 #define ADM1025_REG_MAN_ID		0x3E
 #define ADM1025_REG_CHIP_ID		0x3F
@@ -71,10 +34,7 @@ enum chips { adm1025, ne1619 };
 #define ADM1025_REG_VID			0x47
 #define ADM1025_REG_VID4		0x49
 
-/*
- * Conversions and various macros
- * The ADM1025 uses signed 8-bit values for temperatures.
- */
+ 
 
 static const int in_scale[6] = { 2500, 2250, 3300, 5000, 12000, 3300 };
 
@@ -89,25 +49,23 @@ static const int in_scale[6] = { 2500, 2250, 3300, 5000, 12000, 3300 };
 				 (((val) < 0 ? (val) - 500 : \
 				   (val) + 500) / 1000))
 
-/*
- * Client data (each client gets its own)
- */
+ 
 
 struct adm1025_data {
 	struct i2c_client *client;
 	const struct attribute_group *groups[3];
 	struct mutex update_lock;
-	bool valid; /* false until following fields are valid */
-	unsigned long last_updated; /* in jiffies */
+	bool valid;  
+	unsigned long last_updated;  
 
-	u8 in[6];		/* register value */
-	u8 in_max[6];		/* register value */
-	u8 in_min[6];		/* register value */
-	s8 temp[2];		/* register value */
-	s8 temp_min[2];		/* register value */
-	s8 temp_max[2];		/* register value */
-	u16 alarms;		/* register values, combined */
-	u8 vid;			/* register values, combined */
+	u8 in[6];		 
+	u8 in_max[6];		 
+	u8 in_min[6];		 
+	s8 temp[2];		 
+	s8 temp_min[2];		 
+	s8 temp_max[2];		 
+	u16 alarms;		 
+	u8 vid;			 
 	u8 vrm;
 };
 
@@ -156,9 +114,7 @@ static struct adm1025_data *adm1025_update_device(struct device *dev)
 	return data;
 }
 
-/*
- * Sysfs stuff
- */
+ 
 
 static ssize_t
 in_show(struct device *dev, struct device_attribute *attr, char *buf)
@@ -381,9 +337,7 @@ static ssize_t vrm_store(struct device *dev, struct device_attribute *attr,
 }
 static DEVICE_ATTR_RW(vrm);
 
-/*
- * Real code
- */
+ 
 
 static struct attribute *adm1025_attributes[] = {
 	&sensor_dev_attr_in0_input.dev_attr.attr,
@@ -437,7 +391,7 @@ static const struct attribute_group adm1025_group_in4 = {
 	.attrs = adm1025_attributes_in4,
 };
 
-/* Return 0 if detection is successful, -ENODEV otherwise */
+ 
 static int adm1025_detect(struct i2c_client *client,
 			  struct i2c_board_info *info)
 {
@@ -448,7 +402,7 @@ static int adm1025_detect(struct i2c_client *client,
 	if (!i2c_check_functionality(adapter, I2C_FUNC_SMBUS_BYTE_DATA))
 		return -ENODEV;
 
-	/* Check for unused bits */
+	 
 	if ((i2c_smbus_read_byte_data(client, ADM1025_REG_CONFIG) & 0x80)
 	 || (i2c_smbus_read_byte_data(client, ADM1025_REG_STATUS1) & 0xC0)
 	 || (i2c_smbus_read_byte_data(client, ADM1025_REG_STATUS2) & 0xBC)) {
@@ -457,7 +411,7 @@ static int adm1025_detect(struct i2c_client *client,
 		return -ENODEV;
 	}
 
-	/* Identification */
+	 
 	chip_id = i2c_smbus_read_byte_data(client, ADM1025_REG_CHIP_ID);
 	if ((chip_id & 0xF0) != 0x20)
 		return -ENODEV;
@@ -483,14 +437,7 @@ static void adm1025_init_client(struct i2c_client *client)
 
 	data->vrm = vid_which_vrm();
 
-	/*
-	 * Set high limits
-	 * Usually we avoid setting limits on driver init, but it happens
-	 * that the ADM1025 comes with stupid default limits (all registers
-	 * set to 0). In case the chip has not gone through any limit
-	 * setting yet, we better set the high limits to the max so that
-	 * no alarm triggers.
-	 */
+	 
 	for (i = 0; i < 6; i++) {
 		reg = i2c_smbus_read_byte_data(client,
 					       ADM1025_REG_IN_MAX(i));
@@ -508,9 +455,7 @@ static void adm1025_init_client(struct i2c_client *client)
 						  0x7F);
 	}
 
-	/*
-	 * Start the conversions
-	 */
+	 
 	reg = i2c_smbus_read_byte_data(client, ADM1025_REG_CONFIG);
 	if (!(reg & 0x01))
 		i2c_smbus_write_byte_data(client, ADM1025_REG_CONFIG,
@@ -532,12 +477,12 @@ static int adm1025_probe(struct i2c_client *client)
 	data->client = client;
 	mutex_init(&data->update_lock);
 
-	/* Initialize the ADM1025 chip */
+	 
 	adm1025_init_client(client);
 
-	/* sysfs hooks */
+	 
 	data->groups[0] = &adm1025_group;
-	/* Pin 11 is either in4 (+12V) or VID4 */
+	 
 	config = i2c_smbus_read_byte_data(client, ADM1025_REG_CONFIG);
 	if (!(config & 0x20))
 		data->groups[1] = &adm1025_group_in4;

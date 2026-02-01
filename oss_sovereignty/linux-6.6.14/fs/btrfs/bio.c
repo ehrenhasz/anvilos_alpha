@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2007 Oracle.  All rights reserved.
- * Copyright (C) 2022 Christoph Hellwig.
- */
+
+ 
 
 #include <linux/bio.h>
 #include "bio.h"
@@ -27,7 +24,7 @@ struct btrfs_failed_bio {
 	atomic_t repair_count;
 };
 
-/* Is this a data path I/O that needs storage layer checksum and repair? */
+ 
 static inline bool is_data_bbio(struct btrfs_bio *bbio)
 {
 	return bbio->inode && is_data_inode(&bbio->inode->vfs_inode);
@@ -38,10 +35,7 @@ static bool bbio_has_ordered_extent(struct btrfs_bio *bbio)
 	return is_data_bbio(bbio) && btrfs_op(&bbio->bio) == BTRFS_MAP_WRITE;
 }
 
-/*
- * Initialize a btrfs_bio structure.  This skips the embedded bio itself as it
- * is already initialized by the block layer.
- */
+ 
 void btrfs_bio_init(struct btrfs_bio *bbio, struct btrfs_fs_info *fs_info,
 		    btrfs_bio_end_io_t end_io, void *private)
 {
@@ -52,13 +46,7 @@ void btrfs_bio_init(struct btrfs_bio *bbio, struct btrfs_fs_info *fs_info,
 	atomic_set(&bbio->pending_ios, 1);
 }
 
-/*
- * Allocate a btrfs_bio structure.  The btrfs_bio is the main I/O container for
- * btrfs, and is used for all I/O submitted through btrfs_submit_bio.
- *
- * Just like the underlying bio_alloc_bioset it will not fail as it is backed by
- * a mempool.
- */
+ 
 struct btrfs_bio *btrfs_bio_alloc(unsigned int nr_vecs, blk_opf_t opf,
 				  struct btrfs_fs_info *fs_info,
 				  btrfs_bio_end_io_t end_io, void *private)
@@ -101,7 +89,7 @@ static struct btrfs_bio *btrfs_split_bio(struct btrfs_fs_info *fs_info,
 	return bbio;
 }
 
-/* Free a bio that was never submitted to the underlying device. */
+ 
 static void btrfs_cleanup_bio(struct btrfs_bio *bbio)
 {
 	if (bbio_has_ordered_extent(bbio))
@@ -132,12 +120,7 @@ static void btrfs_orig_write_end_io(struct bio *bio);
 static void btrfs_bbio_propagate_error(struct btrfs_bio *bbio,
 				       struct btrfs_bio *orig_bbio)
 {
-	/*
-	 * For writes we tolerate nr_mirrors - 1 write failures, so we can't
-	 * just blindly propagate a write failure here.  Instead increment the
-	 * error count in the original I/O context so that it is guaranteed to
-	 * be larger than the error tolerance.
-	 */
+	 
 	if (bbio->bio.bi_end_io == &btrfs_orig_write_end_io) {
 		struct btrfs_io_stripe *orig_stripe = orig_bbio->bio.bi_private;
 		struct btrfs_io_context *orig_bioc = orig_stripe->bioc;
@@ -223,13 +206,7 @@ done:
 	bio_put(&repair_bbio->bio);
 }
 
-/*
- * Try to kick off a repair read to the next available mirror for a bad sector.
- *
- * This primarily tries to recover good data to serve the actual read request,
- * but also tries to write the good data back to the bad mirror(s) when a
- * read succeeded to restore the redundancy.
- */
+ 
 static struct btrfs_failed_bio *repair_one_sector(struct btrfs_bio *failed_bbio,
 						  u32 bio_offset,
 						  struct bio_vec *bv,
@@ -289,19 +266,16 @@ static void btrfs_check_read_bio(struct btrfs_bio *bbio, struct btrfs_device *de
 	struct btrfs_failed_bio *fbio = NULL;
 	u32 offset = 0;
 
-	/* Read-repair requires the inode field to be set by the submitter. */
+	 
 	ASSERT(inode);
 
-	/*
-	 * Hand off repair bios to the repair code as there is no upper level
-	 * submitter for them.
-	 */
+	 
 	if (bbio->bio.bi_pool == &btrfs_repair_bioset) {
 		btrfs_end_repair_bio(bbio, dev);
 		return;
 	}
 
-	/* Clear the I/O error. A failed repair will reset it. */
+	 
 	bbio->bio.bi_status = BLK_STS_OK;
 
 	while (iter->bi_size) {
@@ -351,7 +325,7 @@ static void btrfs_end_bio_work(struct work_struct *work)
 {
 	struct btrfs_bio *bbio = container_of(work, struct btrfs_bio, end_io_work);
 
-	/* Metadata reads are checked and repaired by the submitter. */
+	 
 	if (is_data_bbio(bbio))
 		btrfs_check_read_bio(bbio, bbio->bio.bi_private);
 	else
@@ -407,10 +381,7 @@ static void btrfs_orig_write_end_io(struct bio *bio)
 		btrfs_log_dev_io_error(bio, stripe->dev);
 	}
 
-	/*
-	 * Only send an error to the higher layers if it is beyond the tolerance
-	 * threshold.
-	 */
+	 
 	if (atomic_read(&bioc->error) > bioc->max_errors)
 		bio->bi_status = BLK_STS_IOERR;
 	else
@@ -429,7 +400,7 @@ static void btrfs_clone_write_end_io(struct bio *bio)
 		btrfs_log_dev_io_error(bio, stripe->dev);
 	}
 
-	/* Pass on control to the original bio this one was cloned from */
+	 
 	bio_endio(stripe->bioc->orig_bio);
 	bio_put(bio);
 }
@@ -446,10 +417,7 @@ static void btrfs_submit_dev_bio(struct btrfs_device *dev, struct bio *bio)
 
 	bio_set_dev(bio, dev->bdev);
 
-	/*
-	 * For zone append writing, bi_sector must point the beginning of the
-	 * zone
-	 */
+	 
 	if (bio_op(bio) == REQ_OP_ZONE_APPEND) {
 		u64 physical = bio->bi_iter.bi_sector << SECTOR_SHIFT;
 		u64 zone_start = round_down(physical, dev->fs_info->zone_size);
@@ -477,7 +445,7 @@ static void btrfs_submit_mirrored_bio(struct btrfs_io_context *bioc, int dev_nr)
 
 	ASSERT(bio_op(orig_bio) != REQ_OP_READ);
 
-	/* Reuse the bio embedded into the btrfs_bio for the last mirror */
+	 
 	if (dev_nr == bioc->num_stripes - 1) {
 		bio = orig_bio;
 		bio->bi_end_io = btrfs_orig_write_end_io;
@@ -497,7 +465,7 @@ static void __btrfs_submit_bio(struct bio *bio, struct btrfs_io_context *bioc,
 			       struct btrfs_io_stripe *smap, int mirror_num)
 {
 	if (!bioc) {
-		/* Single mirror read/write fast path. */
+		 
 		btrfs_bio(bio)->mirror_num = mirror_num;
 		bio->bi_iter.bi_sector = smap->physical >> SECTOR_SHIFT;
 		if (bio_op(bio) != REQ_OP_READ)
@@ -506,7 +474,7 @@ static void __btrfs_submit_bio(struct bio *bio, struct btrfs_io_context *bioc,
 		bio->bi_end_io = btrfs_simple_end_io;
 		btrfs_submit_dev_bio(smap->dev, bio);
 	} else if (bioc->map_type & BTRFS_BLOCK_GROUP_RAID56_MASK) {
-		/* Parity RAID write or read recovery. */
+		 
 		bio->bi_private = bioc;
 		bio->bi_end_io = btrfs_raid56_end_io;
 		if (bio_op(bio) == REQ_OP_READ)
@@ -514,7 +482,7 @@ static void __btrfs_submit_bio(struct bio *bio, struct btrfs_io_context *bioc,
 		else
 			raid56_parity_write(bio, bioc);
 	} else {
-		/* Write to multiple mirrors. */
+		 
 		int total_devs = bioc->num_stripes;
 
 		bioc->orig_bio = bio;
@@ -530,10 +498,7 @@ static blk_status_t btrfs_bio_csum(struct btrfs_bio *bbio)
 	return btrfs_csum_one_bio(bbio);
 }
 
-/*
- * Async submit bios are used to offload expensive checksumming onto the worker
- * threads.
- */
+ 
 struct async_submit_bio {
 	struct btrfs_bio *bbio;
 	struct btrfs_io_context *bioc;
@@ -542,14 +507,7 @@ struct async_submit_bio {
 	struct btrfs_work work;
 };
 
-/*
- * In order to insert checksums into the metadata in large chunks, we wait
- * until bio submission time.   All the pages in the bio are checksummed and
- * sums are attached onto the ordered extent record.
- *
- * At IO completion time the csums attached on the ordered extent record are
- * inserted into the btree.
- */
+ 
 static void run_one_async_start(struct btrfs_work *work)
 {
 	struct async_submit_bio *async =
@@ -561,31 +519,20 @@ static void run_one_async_start(struct btrfs_work *work)
 		async->bbio->bio.bi_status = ret;
 }
 
-/*
- * In order to insert checksums into the metadata in large chunks, we wait
- * until bio submission time.   All the pages in the bio are checksummed and
- * sums are attached onto the ordered extent record.
- *
- * At IO completion time the csums attached on the ordered extent record are
- * inserted into the tree.
- */
+ 
 static void run_one_async_done(struct btrfs_work *work)
 {
 	struct async_submit_bio *async =
 		container_of(work, struct async_submit_bio, work);
 	struct bio *bio = &async->bbio->bio;
 
-	/* If an error occurred we just want to clean up the bio and move on. */
+	 
 	if (bio->bi_status) {
 		btrfs_orig_bbio_end_io(async->bbio);
 		return;
 	}
 
-	/*
-	 * All of the bios that pass through here are from async helpers.
-	 * Use REQ_BTRFS_CGROUP_PUNT to issue them from the owning cgroup's
-	 * context.  This changes nothing when cgroups aren't in use.
-	 */
+	 
 	bio->bi_opf |= REQ_BTRFS_CGROUP_PUNT;
 	__btrfs_submit_bio(bio, async->bioc, &async->smap, async->mirror_num);
 }
@@ -597,29 +544,22 @@ static void run_one_async_free(struct btrfs_work *work)
 
 static bool should_async_write(struct btrfs_bio *bbio)
 {
-	/* Submit synchronously if the checksum implementation is fast. */
+	 
 	if (test_bit(BTRFS_FS_CSUM_IMPL_FAST, &bbio->fs_info->flags))
 		return false;
 
-	/*
-	 * Try to defer the submission to a workqueue to parallelize the
-	 * checksum calculation unless the I/O is issued synchronously.
-	 */
+	 
 	if (op_is_sync(bbio->bio.bi_opf))
 		return false;
 
-	/* Zoned devices require I/O to be submitted in order. */
+	 
 	if ((bbio->bio.bi_opf & REQ_META) && btrfs_is_zoned(bbio->fs_info))
 		return false;
 
 	return true;
 }
 
-/*
- * Submit bio to an async queue.
- *
- * Return true if the work has been succesfuly submitted, else false.
- */
+ 
 static bool btrfs_wq_submit_bio(struct btrfs_bio *bbio,
 				struct btrfs_io_context *bioc,
 				struct btrfs_io_stripe *smap, int mirror_num)
@@ -674,10 +614,7 @@ static bool btrfs_submit_chunk(struct btrfs_bio *bbio, int mirror_num)
 		bio = &bbio->bio;
 	}
 
-	/*
-	 * Save the iter for the end_io handler and preload the checksums for
-	 * data reads.
-	 */
+	 
 	if (bio_op(bio) == REQ_OP_READ && is_data_bbio(bbio)) {
 		bbio->saved_iter = bio->bi_iter;
 		ret = btrfs_lookup_bio_sums(bbio);
@@ -691,10 +628,7 @@ static bool btrfs_submit_chunk(struct btrfs_bio *bbio, int mirror_num)
 			bio->bi_opf |= REQ_OP_ZONE_APPEND;
 		}
 
-		/*
-		 * Csum items for reloc roots have already been cloned at this
-		 * point, so they are handled as part of the no-checksum case.
-		 */
+		 
 		if (inode && !(inode->flags & BTRFS_INODE_NODATASUM) &&
 		    !test_bit(BTRFS_FS_STATE_NO_CSUMS, &fs_info->fs_state) &&
 		    !btrfs_is_data_reloc_root(inode->root)) {
@@ -722,29 +656,20 @@ fail_put_bio:
 fail:
 	btrfs_bio_counter_dec(fs_info);
 	btrfs_bio_end_io(orig_bbio, ret);
-	/* Do not submit another chunk */
+	 
 	return true;
 }
 
 void btrfs_submit_bio(struct btrfs_bio *bbio, int mirror_num)
 {
-	/* If bbio->inode is not populated, its file_offset must be 0. */
+	 
 	ASSERT(bbio->inode || bbio->file_offset == 0);
 
 	while (!btrfs_submit_chunk(bbio, mirror_num))
 		;
 }
 
-/*
- * Submit a repair write.
- *
- * This bypasses btrfs_submit_bio deliberately, as that writes all copies in a
- * RAID setup.  Here we only want to write the one bad copy, so we do the
- * mapping ourselves and submit the bio directly.
- *
- * The I/O is issued synchronously to block the repair read completion from
- * freeing the bio.
- */
+ 
 int btrfs_repair_io_failure(struct btrfs_fs_info *fs_info, u64 ino, u64 start,
 			    u64 length, u64 logical, struct page *page,
 			    unsigned int pg_offset, int mirror_num)
@@ -760,11 +685,7 @@ int btrfs_repair_io_failure(struct btrfs_fs_info *fs_info, u64 ino, u64 start,
 	if (btrfs_repair_one_zone(fs_info, logical))
 		return 0;
 
-	/*
-	 * Avoid races with device replace and make sure our bioc has devices
-	 * associated to its stripes that don't go away while we are doing the
-	 * read repair operation.
-	 */
+	 
 	btrfs_bio_counter_inc_blocked(fs_info);
 	ret = btrfs_map_repair_block(fs_info, &smap, logical, length, mirror_num);
 	if (ret < 0)
@@ -783,7 +704,7 @@ int btrfs_repair_io_failure(struct btrfs_fs_info *fs_info, u64 ino, u64 start,
 	btrfsic_check_bio(&bio);
 	ret = submit_bio_wait(&bio);
 	if (ret) {
-		/* try to remap that extent elsewhere? */
+		 
 		btrfs_dev_stat_inc_and_print(smap.dev, BTRFS_DEV_STAT_WRITE_ERRS);
 		goto out_bio_uninit;
 	}
@@ -801,11 +722,7 @@ out_counter_dec:
 	return ret;
 }
 
-/*
- * Submit a btrfs_bio based repair write.
- *
- * If @dev_replace is true, the write would be submitted to dev-replace target.
- */
+ 
 void btrfs_submit_repair_write(struct btrfs_bio *bbio, int mirror_num, bool dev_replace)
 {
 	struct btrfs_fs_info *fs_info = bbio->fs_info;

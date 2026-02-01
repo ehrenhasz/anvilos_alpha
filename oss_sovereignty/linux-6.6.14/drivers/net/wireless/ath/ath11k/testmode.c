@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: BSD-3-Clause-Clear
-/*
- * Copyright (c) 2018-2019 The Linux Foundation. All rights reserved.
- * Copyright (c) 2023 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+
+ 
 
 #include "testmode.h"
 #include <net/netlink.h>
@@ -41,9 +38,7 @@ static struct ath11k *ath11k_tm_get_ar(struct ath11k_base *ab)
 	return ar;
 }
 
-/* This function handles unsegmented events. Data in various events are aggregated
- * in application layer, this event is unsegmented from host perspective.
- */
+ 
 static void ath11k_tm_wmi_event_unsegmented(struct ath11k_base *ab, u32 cmd_id,
 					    struct sk_buff *skb)
 {
@@ -90,9 +85,7 @@ out:
 	ath11k_warn(ab, "Failed to send testmode event to higher layers\n");
 }
 
-/* This function handles segmented events. Data of various events received
- * from firmware is aggregated and sent to application layer
- */
+ 
 static int ath11k_tm_process_event(struct ath11k_base *ab, u32 cmd_id,
 				   const struct wmi_ftm_event_msg *ftm_msg,
 				   u16 length)
@@ -271,7 +264,7 @@ static int ath11k_tm_cmd_testmode_start(struct ath11k *ar, struct nlattr *tb[])
 		goto err;
 	}
 
-	/* start utf only when the driver is not in use  */
+	 
 	if (ar->state != ATH11K_STATE_OFF) {
 		ret = -EBUSY;
 		goto err;
@@ -330,9 +323,7 @@ static int ath11k_tm_cmd_wmi(struct ath11k *ar, struct nlattr *tb[],
 
 	cmd_id = nla_get_u32(tb[ATH11K_TM_ATTR_WMI_CMDID]);
 
-	/* Make sure that the buffer length is long enough to
-	 * hold TLV and pdev/vdev id.
-	 */
+	 
 	if (buf_len < sizeof(struct wmi_tlv) + sizeof(u32)) {
 		ret = -EINVAL;
 		goto out;
@@ -341,7 +332,7 @@ static int ath11k_tm_cmd_wmi(struct ath11k *ar, struct nlattr *tb[],
 	ptr = buf;
 	tag = FIELD_GET(WMI_TLV_TAG, *ptr);
 
-	/* pdev/vdev id start after TLV header */
+	 
 	ptr++;
 
 	if (tag == WMI_TAG_PDEV_SET_PARAM_CMD)

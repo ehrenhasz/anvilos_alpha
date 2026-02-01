@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * wl12xx SDIO routines
- *
- * Copyright (C) 2005 Texas Instruments Incorporated
- * Copyright (C) 2008 Google Inc
- * Copyright (C) 2009 Bob Copeland (me@bobcopeland.com)
- */
+
+ 
 #include <linux/interrupt.h>
 #include <linux/module.h>
 #include <linux/mod_devicetable.h>
@@ -36,7 +30,7 @@ static void wl1251_sdio_interrupt(struct sdio_func *func)
 
 	wl1251_debug(DEBUG_IRQ, "IRQ");
 
-	/* FIXME should be synchronous for sdio */
+	 
 	ieee80211_queue_work(wl->hw, &wl->irq_work);
 }
 
@@ -79,12 +73,7 @@ static void wl1251_sdio_read_elp(struct wl1251 *wl, int addr, u32 *val)
 	struct wl1251_sdio *wl_sdio = wl->if_priv;
 	struct sdio_func *func = wl_sdio->func;
 
-	/*
-	 * The hardware only supports RAW (read after write) access for
-	 * reading, regular sdio_readb won't work here (it interprets
-	 * the unused bits of CMD52 as write data even if we send read
-	 * request).
-	 */
+	 
 	sdio_claim_host(func);
 	*val = sdio_writeb_readb(func, wl_sdio->elp_val, addr, &ret);
 	sdio_release_host(func);
@@ -131,7 +120,7 @@ static void wl1251_sdio_disable_irq(struct wl1251 *wl)
 	sdio_release_host(func);
 }
 
-/* Interrupts when using dedicated WLAN_IRQ pin */
+ 
 static irqreturn_t wl1251_line_irq(int irq, void *cookie)
 {
 	struct wl1251 *wl = cookie;
@@ -259,7 +248,7 @@ static int wl1251_sdio_probe(struct sdio_func *func,
 
 	sdio_set_drvdata(func, wl);
 
-	/* Tell PM core that we don't need the card to be powered now */
+	 
 	pm_runtime_put_noidle(&func->dev);
 
 	return ret;
@@ -283,7 +272,7 @@ static void wl1251_sdio_remove(struct sdio_func *func)
 	struct wl1251 *wl = sdio_get_drvdata(func);
 	struct wl1251_sdio *wl_sdio = wl->if_priv;
 
-	/* Undo decrement done above in wl1251_probe */
+	 
 	pm_runtime_get_noresume(&func->dev);
 
 	if (wl->irq)
@@ -299,10 +288,7 @@ static void wl1251_sdio_remove(struct sdio_func *func)
 
 static int wl1251_suspend(struct device *dev)
 {
-	/*
-	 * Tell MMC/SDIO core it's OK to power down the card
-	 * (if it isn't already), but not to remove it completely.
-	 */
+	 
 	return 0;
 }
 

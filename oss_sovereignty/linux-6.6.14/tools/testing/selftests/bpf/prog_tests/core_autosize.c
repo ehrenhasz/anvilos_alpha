@@ -1,13 +1,12 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 
 #include <test_progs.h>
 #include <bpf/btf.h>
 
-/* real layout and sizes according to test's (32-bit) BTF
- * needs to be defined before skeleton is included */
+ 
 struct test_struct___real {
-	unsigned int ptr; /* can't use `void *`, it is always 8 byte in BPF target */
+	unsigned int ptr;  
 	unsigned int val2;
 	unsigned long long val1;
 	unsigned short val3;
@@ -66,29 +65,16 @@ void test_core_autosize(void)
 	btf = btf__new_empty();
 	if (!ASSERT_OK_PTR(btf, "empty_btf"))
 		return;
-	/* Emit the following struct with 32-bit pointer size:
-	 *
-	 * struct test_struct {
-	 *     void *ptr;
-	 *     unsigned long val2;
-	 *     unsigned long long val1;
-	 *     unsigned short val3;
-	 *     unsigned char val4;
-	 *     char: 8;
-	 * };
-	 *
-	 * This struct is going to be used as the "kernel BTF" for this test.
-	 * It's equivalent memory-layout-wise to test_struct__real above.
-	 */
+	 
 
-	/* force 32-bit pointer size */
+	 
 	btf__set_pointer_size(btf, 4);
 
 	char_id = btf__add_int(btf, "unsigned char", 1, 0);
 	ASSERT_EQ(char_id, 1, "char_id");
 	short_id = btf__add_int(btf, "unsigned short", 2, 0);
 	ASSERT_EQ(short_id, 2, "short_id");
-	/* "long unsigned int" of 4 byte size tells BTF that sizeof(void *) == 4 */
+	 
 	int_id = btf__add_int(btf, "long unsigned int", 4, 0);
 	ASSERT_EQ(int_id, 3, "int_id");
 	long_long_id = btf__add_int(btf, "unsigned long long", 8, 0);
@@ -96,7 +82,7 @@ void test_core_autosize(void)
 	void_ptr_id = btf__add_ptr(btf, 0);
 	ASSERT_EQ(void_ptr_id, 5, "void_ptr_id");
 
-	id = btf__add_struct(btf, "test_struct", 20 /* bytes */);
+	id = btf__add_struct(btf, "test_struct", 20  );
 	ASSERT_EQ(id, 6, "struct_id");
 	err = btf__add_field(btf, "ptr", void_ptr_id, 0, 0);
 	err = err ?: btf__add_field(btf, "val2", int_id, 32, 0);
@@ -124,13 +110,13 @@ void test_core_autosize(void)
 	close(fd);
 	fd = -1;
 
-	/* open and load BPF program with custom BTF as the kernel BTF */
+	 
 	open_opts.btf_custom_path = btf_file;
 	skel = test_core_autosize__open_opts(&open_opts);
 	if (!ASSERT_OK_PTR(skel, "skel_open"))
 		goto cleanup;
 
-	/* disable handle_signed() for now */
+	 
 	prog = bpf_object__find_program_by_name(skel->obj, "handle_signed");
 	if (!ASSERT_OK_PTR(prog, "prog_find"))
 		goto cleanup;
@@ -202,7 +188,7 @@ void test_core_autosize(void)
 	test_core_autosize__destroy(skel);
 	skel = NULL;
 
-	/* now re-load with handle_signed() enabled, it should fail loading */
+	 
 	open_opts.btf_custom_path = btf_file;
 	skel = test_core_autosize__open_opts(&open_opts);
 	if (!ASSERT_OK_PTR(skel, "skel_open"))

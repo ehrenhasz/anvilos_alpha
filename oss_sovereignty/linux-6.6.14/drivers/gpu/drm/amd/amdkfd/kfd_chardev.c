@@ -1,25 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0 OR MIT
-/*
- * Copyright 2014-2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/export.h>
@@ -152,7 +132,7 @@ static int kfd_open(struct inode *inode, struct file *filep)
 		return -EFAULT;
 	}
 
-	/* filep now owns the reference returned by kfd_create_process */
+	 
 	filep->private_data = process;
 
 	dev_dbg(kfd_device, "process %d opened, compat mode (32 bit) - %d\n",
@@ -185,11 +165,7 @@ static int kfd_ioctl_get_version(struct file *filep, struct kfd_process *p,
 static int set_queue_properties_from_user(struct queue_properties *q_properties,
 				struct kfd_ioctl_create_queue_args *args)
 {
-	/*
-	 * Repurpose queue percentage to accommodate new features:
-	 * bit 0-7: queue percentage
-	 * bit 8-15: pm4_target_xcc
-	 */
+	 
 	if ((args->queue_percentage & 0xFF) > KFD_MAX_QUEUE_PERCENTAGE) {
 		pr_err("Queue percentage must be between 0 to KFD_MAX_QUEUE_PERCENTAGE\n");
 		return -EINVAL;
@@ -241,7 +217,7 @@ static int set_queue_properties_from_user(struct queue_properties *q_properties,
 	q_properties->is_interop = false;
 	q_properties->is_gws = false;
 	q_properties->queue_percent = args->queue_percentage & 0xFF;
-	/* bit 8-15 are repurposed to be PM4 target XCC */
+	 
 	q_properties->pm4_target_xcc = (args->queue_percentage >> 8) & 0xFF;
 	q_properties->priority = args->queue_priority;
 	q_properties->queue_address = args->ring_base_address;
@@ -341,9 +317,7 @@ static int kfd_ioctl_create_queue(struct file *filep, struct kfd_process *p,
 		}
 	}
 
-	/* Starting with GFX11, wptr BOs must be mapped to GART for MES to determine work
-	 * on unmapped queues for usermode queue oversubscription (no aggregated doorbell)
-	 */
+	 
 	if (dev->kfd->shared_resources.enable_mes &&
 			((dev->adev->mes.sched_version & AMDGPU_MES_API_VERSION_MASK)
 			>> AMDGPU_MES_API_VERSION_SHIFT) >= 2) {
@@ -390,13 +364,11 @@ static int kfd_ioctl_create_queue(struct file *filep, struct kfd_process *p,
 	args->queue_id = queue_id;
 
 
-	/* Return gpu_id as doorbell offset for mmap usage */
+	 
 	args->doorbell_offset = KFD_MMAP_TYPE_DOORBELL;
 	args->doorbell_offset |= KFD_MMAP_GPU_ID(args->gpu_id);
 	if (KFD_IS_SOC15(dev))
-		/* On SOC15 ASICs, include the doorbell offset within the
-		 * process doorbell frame, which is 2 pages.
-		 */
+		 
 		args->doorbell_offset |= doorbell_offset_in_process;
 
 	mutex_unlock(&p->mutex);
@@ -450,11 +422,7 @@ static int kfd_ioctl_update_queue(struct file *filp, struct kfd_process *p,
 	struct kfd_ioctl_update_queue_args *args = data;
 	struct queue_properties properties;
 
-	/*
-	 * Repurpose queue percentage to accommodate new features:
-	 * bit 0-7: queue percentage
-	 * bit 8-15: pm4_target_xcc
-	 */
+	 
 	if ((args->queue_percentage & 0xFF) > KFD_MAX_QUEUE_PERCENTAGE) {
 		pr_err("Queue percentage must be between 0 to KFD_MAX_QUEUE_PERCENTAGE\n");
 		return -EINVAL;
@@ -480,7 +448,7 @@ static int kfd_ioctl_update_queue(struct file *filp, struct kfd_process *p,
 	properties.queue_address = args->ring_base_address;
 	properties.queue_size = args->ring_size;
 	properties.queue_percent = args->queue_percentage & 0xFF;
-	/* bit 8-15 are repurposed to be PM4 target XCC */
+	 
 	properties.pm4_target_xcc = (args->queue_percentage >> 8) & 0xFF;
 	properties.priority = args->queue_priority;
 
@@ -518,10 +486,7 @@ static int kfd_ioctl_set_cu_mask(struct file *filp, struct kfd_process *p,
 		return -EINVAL;
 	}
 
-	/* To prevent an unreasonably large CU mask size, set an arbitrary
-	 * limit of max_num_cus bits.  We can then just drop any CU mask bits
-	 * past max_num_cus bits and just use the first max_num_cus bits.
-	 */
+	 
 	if (minfo.cu_mask.count > max_num_cus) {
 		pr_debug("CU mask cannot be greater than 1024 bits");
 		minfo.cu_mask.count = max_num_cus;
@@ -670,7 +635,7 @@ static int kfd_ioctl_dbg_address_watch(struct file *filep,
 	return -EPERM;
 }
 
-/* Parse and generate fixed size data structure for wave control */
+ 
 static int kfd_ioctl_dbg_wave_control(struct file *filep,
 					struct kfd_process *p, void *data)
 {
@@ -687,17 +652,17 @@ static int kfd_ioctl_get_clock_counters(struct file *filep,
 	pdd = kfd_process_device_data_by_id(p, args->gpu_id);
 	mutex_unlock(&p->mutex);
 	if (pdd)
-		/* Reading GPU clock counter from KGD */
+		 
 		args->gpu_clock_counter = amdgpu_amdkfd_get_gpu_clock_counter(pdd->dev->adev);
 	else
-		/* Node without GPU resource */
+		 
 		args->gpu_clock_counter = 0;
 
-	/* No access to rdtsc. Using raw monotonic time */
+	 
 	args->cpu_clock_counter = ktime_get_raw_ns();
 	args->system_clock_counter = ktime_get_boottime_ns();
 
-	/* Since the counter is in nano-seconds we use 1GHz frequency */
+	 
 	args->system_clock_freq = 1000000000;
 
 	return 0;
@@ -716,7 +681,7 @@ static int kfd_ioctl_get_process_apertures(struct file *filp,
 	args->num_of_nodes = 0;
 
 	mutex_lock(&p->mutex);
-	/* Run over all pdd of the process */
+	 
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 
@@ -766,18 +731,13 @@ static int kfd_ioctl_get_process_apertures_new(struct file *filp,
 	dev_dbg(kfd_device, "get apertures for PASID 0x%x", p->pasid);
 
 	if (args->num_of_nodes == 0) {
-		/* Return number of nodes, so that user space can alloacate
-		 * sufficient memory
-		 */
+		 
 		mutex_lock(&p->mutex);
 		args->num_of_nodes = p->n_pdds;
 		goto out_unlock;
 	}
 
-	/* Fill in process-aperture information for all available
-	 * nodes, but not more than args->num_of_nodes as that is
-	 * the amount of memory allocated by user
-	 */
+	 
 	pa = kzalloc((sizeof(struct kfd_process_device_apertures) *
 				args->num_of_nodes), GFP_KERNEL);
 	if (!pa)
@@ -791,7 +751,7 @@ static int kfd_ioctl_get_process_apertures_new(struct file *filp,
 		goto out_unlock;
 	}
 
-	/* Run over all pdd of the process */
+	 
 	for (i = 0; i < min(p->n_pdds, args->num_of_nodes); i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 
@@ -839,10 +799,7 @@ static int kfd_ioctl_create_event(struct file *filp, struct kfd_process *p,
 	struct kfd_ioctl_create_event_args *args = data;
 	int err;
 
-	/* For dGPUs the event page is allocated in user mode. The
-	 * handle is passed to KFD with the first call to this IOCTL
-	 * through the event_page_offset field.
-	 */
+	 
 	if (args->event_page_offset) {
 		mutex_lock(&p->mutex);
 		err = kfd_kmap_event_page(p, args->event_page_offset);
@@ -1006,7 +963,7 @@ static int kfd_ioctl_acquire_vm(struct file *filep, struct kfd_process *p,
 	if (ret)
 		goto err_unlock;
 
-	/* On success, the PDD keeps the drm_file reference */
+	 
 	mutex_unlock(&p->mutex);
 
 	return 0;
@@ -1069,9 +1026,7 @@ static int kfd_ioctl_alloc_memory_of_gpu(struct file *filep,
 		return -EINVAL;
 
 #if IS_ENABLED(CONFIG_HSA_AMD_SVM)
-	/* Flush pending deferred work to avoid racing with deferred actions
-	 * from previous memory map changes (e.g. munmap).
-	 */
+	 
 	svm_range_list_lock_and_flush_work(&p->svms, current->mm);
 	mutex_lock(&p->svms.lock);
 	mmap_write_unlock(current->mm);
@@ -1084,9 +1039,7 @@ static int kfd_ioctl_alloc_memory_of_gpu(struct file *filep,
 		return -EADDRINUSE;
 	}
 
-	/* When register user buffer check if it has been registered by svm by
-	 * buffer cpu virtual address.
-	 */
+	 
 	if ((flags & KFD_IOC_ALLOC_MEM_FLAGS_USERPTR) &&
 	    interval_tree_iter_first(&p->svms.objects,
 				     args->mmap_offset >> PAGE_SHIFT,
@@ -1158,7 +1111,7 @@ static int kfd_ioctl_alloc_memory_of_gpu(struct file *filep,
 		goto err_free;
 	}
 
-	/* Update the VRAM usage count */
+	 
 	if (flags & KFD_IOC_ALLOC_MEM_FLAGS_VRAM) {
 		uint64_t size = args->size;
 
@@ -1172,9 +1125,7 @@ static int kfd_ioctl_alloc_memory_of_gpu(struct file *filep,
 	args->handle = MAKE_HANDLE(args->gpu_id, idr_handle);
 	args->mmap_offset = offset;
 
-	/* MMIO is mapped through kfd device
-	 * Generate a kfd mmap offset
-	 */
+	 
 	if (flags & KFD_IOC_ALLOC_MEM_FLAGS_MMIO_REMAP)
 		args->mmap_offset = KFD_MMAP_TYPE_MMIO
 					| KFD_MMAP_GPU_ID(args->gpu_id);
@@ -1201,10 +1152,7 @@ static int kfd_ioctl_free_memory_of_gpu(struct file *filep,
 	uint64_t size = 0;
 
 	mutex_lock(&p->mutex);
-	/*
-	 * Safeguard to prevent user space from freeing signal BO.
-	 * It will be freed at process termination.
-	 */
+	 
 	if (p->signal_handle && (p->signal_handle == args->handle)) {
 		pr_err("Free signal BO is not allowed\n");
 		ret = -EPERM;
@@ -1228,9 +1176,7 @@ static int kfd_ioctl_free_memory_of_gpu(struct file *filep,
 	ret = amdgpu_amdkfd_gpuvm_free_memory_of_gpu(pdd->dev->adev,
 				(struct kgd_mem *)mem, pdd->drm_priv, &size);
 
-	/* If freeing the buffer failed, leave the handle in place for
-	 * clean-up during process tear-down.
-	 */
+	 
 	if (!ret)
 		kfd_process_device_remove_obj_handle(
 			pdd, GET_IDR_HANDLE(args->handle));
@@ -1338,7 +1284,7 @@ static int kfd_ioctl_map_memory_to_gpu(struct file *filep,
 
 	mutex_unlock(&p->mutex);
 
-	/* Flush TLBs after waiting for the page table updates to complete */
+	 
 	for (i = 0; i < args->n_devices; i++) {
 		peer_pdd = kfd_process_device_data_by_id(p, devices_arr[i]);
 		if (WARN_ON_ONCE(!peer_pdd))
@@ -1435,7 +1381,7 @@ static int kfd_ioctl_unmap_memory_from_gpu(struct file *filep,
 	mutex_unlock(&p->mutex);
 
 	if (flush_tlb) {
-		/* Flush TLBs after waiting for the page table updates to complete */
+		 
 		for (i = 0; i < args->n_devices; i++) {
 			peer_pdd = kfd_process_device_data_by_id(p, devices_arr[i]);
 			if (WARN_ON_ONCE(!peer_pdd))
@@ -1514,7 +1460,7 @@ static int kfd_ioctl_get_dmabuf_info(struct file *filep,
 	unsigned int i;
 	int r;
 
-	/* Find a KFD GPU device that supports the get_dmabuf_info query */
+	 
 	for (i = 0; kfd_topology_enum_kfd_devices(i, &dev) == 0; i++)
 		if (dev)
 			break;
@@ -1527,7 +1473,7 @@ static int kfd_ioctl_get_dmabuf_info(struct file *filep,
 			return -ENOMEM;
 	}
 
-	/* Get dmabuf info from KGD */
+	 
 	r = amdgpu_amdkfd_get_dmabuf_info(dev->adev, args->dmabuf_fd,
 					  &dmabuf_adev, &args->size,
 					  metadata_buffer, args->metadata_size,
@@ -1541,7 +1487,7 @@ static int kfd_ioctl_get_dmabuf_info(struct file *filep,
 		args->gpu_id = dmabuf_adev->kfd.dev->nodes[0]->id;
 	args->flags = flags;
 
-	/* Copy metadata buffer to user mode */
+	 
 	if (metadata_buffer) {
 		r = copy_to_user((void __user *)args->metadata_ptr,
 				 metadata_buffer, args->metadata_size);
@@ -1651,9 +1597,7 @@ static int kfd_ioctl_export_dmabuf(struct file *filep,
 		dma_buf_put(dmabuf);
 		goto err_out;
 	}
-	/* dma_buf_fd assigns the reference count to the fd, no need to
-	 * put the reference here.
-	 */
+	 
 	args->dmabuf_fd = ret;
 
 	return 0;
@@ -1664,7 +1608,7 @@ err_out:
 	return ret;
 }
 
-/* Handle requests for watching SMI events */
+ 
 static int kfd_ioctl_smi_events(struct file *filep,
 				struct kfd_process *p, void *data)
 {
@@ -1756,10 +1700,7 @@ static int criu_checkpoint_process(struct kfd_process *p,
 	memset(&process_priv, 0, sizeof(process_priv));
 
 	process_priv.version = KFD_CRIU_PRIV_VERSION;
-	/* For CR, we don't consider negative xnack mode which is used for
-	 * querying without changing it, here 0 simply means disabled and 1
-	 * means enabled so retry for finding a valid PTE.
-	 */
+	 
 	process_priv.xnack_mode = p->xnack_enabled ? 1 : 0;
 
 	ret = copy_to_user(user_priv_data + *priv_offset,
@@ -1802,10 +1743,7 @@ static int criu_checkpoint_devices(struct kfd_process *p,
 		device_buckets[i].user_gpu_id = pdd->user_gpu_id;
 		device_buckets[i].actual_gpu_id = pdd->dev->id;
 
-		/*
-		 * priv_data does not contain useful information for now and is reserved for
-		 * future use, so we do not set its contents.
-		 */
+		 
 	}
 
 	ret = copy_to_user(user_addr, device_buckets, num_devices * sizeof(*device_buckets));
@@ -1835,7 +1773,7 @@ static uint32_t get_process_num_bos(struct kfd_process *p)
 	uint32_t num_of_bos = 0;
 	int i;
 
-	/* Run over all PDDs of the process */
+	 
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 		void *mem;
@@ -1916,10 +1854,7 @@ static int criu_checkpoint_bos(struct kfd_process *p,
 			kgd_mem = (struct kgd_mem *)mem;
 			dumper_bo = kgd_mem->bo;
 
-			/* Skip checkpointing BOs that are used for Trap handler
-			 * code and state. Currently, these BOs have a VA that
-			 * is less GPUVM Base
-			 */
+			 
 			if (kgd_mem->va && kgd_mem->va <= pdd->gpuvm_base)
 				continue;
 
@@ -2063,10 +1998,10 @@ static int criu_checkpoint(struct file *filep,
 		goto exit_unlock;
 	}
 
-	/* Confirm all process queues are evicted */
+	 
 	if (!p->queues_paused) {
 		pr_err("Cannot dump process when queues are not in evicted state\n");
-		/* CRIU plugin did not call op PROCESS_INFO before checkpointing */
+		 
 		ret = -EINVAL;
 		goto exit_unlock;
 	}
@@ -2084,7 +2019,7 @@ static int criu_checkpoint(struct file *filep,
 		goto exit_unlock;
 	}
 
-	/* each function will store private data inside priv_data and adjust priv_offset */
+	 
 	ret = criu_checkpoint_process(p, (uint8_t __user *)args->priv_data, &priv_offset);
 	if (ret)
 		goto exit_unlock;
@@ -2094,10 +2029,7 @@ static int criu_checkpoint(struct file *filep,
 	if (ret)
 		goto exit_unlock;
 
-	/* Leave room for BOs in the private data. They need to be restored
-	 * before events, but we checkpoint them last to simplify the error
-	 * handling.
-	 */
+	 
 	bo_priv_offset = priv_offset;
 	priv_offset += num_bos * sizeof(struct kfd_criu_bo_priv_data);
 
@@ -2117,9 +2049,7 @@ static int criu_checkpoint(struct file *filep,
 			goto exit_unlock;
 	}
 
-	/* This must be the last thing in this function that can fail.
-	 * Otherwise we leak dmabuf file descriptors.
-	 */
+	 
 	ret = criu_checkpoint_bos(p, num_bos, (uint8_t __user *)args->bos,
 			   (uint8_t __user *)args->priv_data, &bo_priv_offset);
 
@@ -2207,7 +2137,7 @@ static int criu_restore_devices(struct kfd_process *p,
 		struct kfd_process_device *pdd;
 		struct file *drm_file;
 
-		/* device private data is not currently used */
+		 
 
 		if (!device_buckets[i].user_gpu_id) {
 			pr_err("Invalid user gpu_id\n");
@@ -2245,19 +2175,15 @@ static int criu_restore_devices(struct kfd_process *p,
 			goto exit;
 		}
 
-		/* create the vm using render nodes for kfd pdd */
+		 
 		if (kfd_process_device_init_vm(pdd, drm_file)) {
 			pr_err("could not init vm for given pdd\n");
-			/* On success, the PDD keeps the drm_file reference */
+			 
 			fput(drm_file);
 			ret = -EINVAL;
 			goto exit;
 		}
-		/*
-		 * pdd now already has the vm bound to render node so below api won't create a new
-		 * exclusive kfd mapping but use existing one with renderDXXX but is still needed
-		 * for iommu v2 binding  and runtime pm.
-		 */
+		 
 		pdd = kfd_bind_process_to_device(dev, p);
 		if (IS_ERR(pdd)) {
 			ret = PTR_ERR(pdd);
@@ -2271,10 +2197,7 @@ static int criu_restore_devices(struct kfd_process *p,
 		}
 	}
 
-	/*
-	 * We are not copying device private data from user as we are not using the data for now,
-	 * but we still adjust for its private data.
-	 */
+	 
 	*priv_offset += args->num_devices * sizeof(*device_privs);
 
 exit:
@@ -2301,7 +2224,7 @@ static int criu_restore_memory_of_gpu(struct kfd_process_device *pdd,
 		if (!offset)
 			return -ENOMEM;
 	} else if (bo_bucket->alloc_flags & KFD_IOC_ALLOC_MEM_FLAGS_MMIO_REMAP) {
-		/* MMIO BOs need remapped bus address */
+		 
 		if (bo_bucket->size != PAGE_SIZE) {
 			pr_err("Invalid page size\n");
 			return -EINVAL;
@@ -2314,7 +2237,7 @@ static int criu_restore_memory_of_gpu(struct kfd_process_device *pdd,
 	} else if (bo_bucket->alloc_flags & KFD_IOC_ALLOC_MEM_FLAGS_USERPTR) {
 		offset = bo_priv->user_addr;
 	}
-	/* Create the BO */
+	 
 	ret = amdgpu_amdkfd_gpuvm_alloc_memory_of_gpu(pdd->dev->adev, bo_bucket->addr,
 						      bo_bucket->size, pdd->drm_priv, kgd_mem,
 						      &offset, bo_bucket->alloc_flags, criu_resume);
@@ -2325,7 +2248,7 @@ static int criu_restore_memory_of_gpu(struct kfd_process_device *pdd,
 	pr_debug("New BO created: size:0x%llx addr:0x%llx offset:0x%llx\n",
 		 bo_bucket->size, bo_bucket->addr, offset);
 
-	/* Restore previous IDR handle */
+	 
 	pr_debug("Restoring old IDR handle for the BO");
 	idr_handle = idr_alloc(&pdd->alloc_idr, *kgd_mem, bo_priv->idr_handle,
 			       bo_priv->idr_handle + 1, GFP_KERNEL);
@@ -2345,7 +2268,7 @@ static int criu_restore_memory_of_gpu(struct kfd_process_device *pdd,
 		bo_bucket->restored_offset = offset;
 	} else if (bo_bucket->alloc_flags & KFD_IOC_ALLOC_MEM_FLAGS_VRAM) {
 		bo_bucket->restored_offset = offset;
-		/* Update the VRAM usage count */
+		 
 		WRITE_ONCE(pdd->vram_usage, pdd->vram_usage + bo_bucket->size);
 	}
 	return 0;
@@ -2374,7 +2297,7 @@ static int criu_restore_bo(struct kfd_process *p,
 	if (ret)
 		return ret;
 
-	/* now map these BOs to GPU/s */
+	 
 	for (j = 0; j < p->n_pdds; j++) {
 		struct kfd_node *peer;
 		struct kfd_process_device *peer_pdd;
@@ -2401,7 +2324,7 @@ static int criu_restore_bo(struct kfd_process *p,
 	}
 
 	pr_debug("map memory was successful for the BO\n");
-	/* create the dmabuf object and export the bo */
+	 
 	if (bo_bucket->alloc_flags
 	    & (KFD_IOC_ALLOC_MEM_FLAGS_VRAM | KFD_IOC_ALLOC_MEM_FLAGS_GTT)) {
 		ret = criu_get_prime_handle(kgd_mem, DRM_RDWR,
@@ -2428,7 +2351,7 @@ static int criu_restore_bos(struct kfd_process *p,
 	if (*priv_offset + (args->num_bos * sizeof(*bo_privs)) > max_priv_data_size)
 		return -EINVAL;
 
-	/* Prevent MMU notifications until stage-4 IOCTL (CRIU_RESUME) is received */
+	 
 	amdgpu_amdkfd_block_mmu_notifications(p->kgd_process_info);
 
 	bo_buckets = kvmalloc_array(args->num_bos, sizeof(*bo_buckets), GFP_KERNEL);
@@ -2458,16 +2381,16 @@ static int criu_restore_bos(struct kfd_process *p,
 	}
 	*priv_offset += args->num_bos * sizeof(*bo_privs);
 
-	/* Create and map new BOs */
+	 
 	for (; i < args->num_bos; i++) {
 		ret = criu_restore_bo(p, &bo_buckets[i], &bo_privs[i]);
 		if (ret) {
 			pr_debug("Failed to restore BO[%d] ret%d\n", i, ret);
 			goto exit;
 		}
-	} /* done */
+	}  
 
-	/* Copy only the buckets back so user can read bo_buckets[N].restored_offset */
+	 
 	ret = copy_to_user((void __user *)args->bos,
 				bo_buckets,
 				(args->num_bos * sizeof(*bo_buckets)));
@@ -2557,15 +2480,12 @@ static int criu_restore(struct file *filep,
 
 	mutex_lock(&p->mutex);
 
-	/*
-	 * Set the process to evicted state to avoid running any new queues before all the memory
-	 * mappings are ready.
-	 */
+	 
 	ret = kfd_process_evict_queues(p, KFD_QUEUE_EVICTION_CRIU_RESTORE);
 	if (ret)
 		goto exit_unlock;
 
-	/* Each function will adjust priv_offset based on how many bytes they consumed */
+	 
 	ret = criu_restore_process(p, args, &priv_offset, args->priv_data_size);
 	if (ret)
 		goto exit_unlock;
@@ -2758,13 +2678,7 @@ static int runtime_enable(struct kfd_process *p, uint64_t r_debug,
 		if (pdd->qpd.queue_count)
 			return -EEXIST;
 
-		/*
-		 * Setup TTMPs by default.
-		 * Note that this call must remain here for MES ADD QUEUE to
-		 * skip_process_ctx_clear unconditionally as the first call to
-		 * SET_SHADER_DEBUGGER clears any stale process context data
-		 * saved in MES.
-		 */
+		 
 		if (pdd->dev->kfd->shared_resources.enable_mes)
 			kfd_dbg_set_mes_debug_mode(pdd, !kfd_dbg_has_cwsr_workaround(pdd->dev));
 	}
@@ -2846,7 +2760,7 @@ static int runtime_disable(struct kfd_process *p)
 
 	p->runtime_info.ttmp_setup = false;
 
-	/* disable ttmp setup */
+	 
 	for (i = 0; i < p->n_pdds; i++) {
 		struct kfd_process_device *pdd = p->pdds[i];
 
@@ -2939,7 +2853,7 @@ static int kfd_ioctl_set_debug_trap(struct file *filep, struct kfd_process *p, v
 		goto out;
 	}
 
-	/* Check if target is still PTRACED. */
+	 
 	rcu_read_lock();
 	if (target != p && args->op != KFD_IOC_DBG_TRAP_DISABLE
 				&& ptrace_parent(target->lead_thread) != current) {
@@ -3106,7 +3020,7 @@ out:
 	[_IOC_NR(ioctl)] = {.cmd = ioctl, .func = _func, .flags = _flags, \
 			    .cmd_drv = 0, .name = #ioctl}
 
-/** Ioctl table */
+ 
 static const struct amdkfd_ioctl_desc amdkfd_ioctls[] = {
 	AMDKFD_IOCTL_DEF(AMDKFD_IOC_GET_VERSION,
 			kfd_ioctl_get_version, 0),
@@ -3255,10 +3169,7 @@ static long kfd_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 
 	dev_dbg(kfd_device, "ioctl cmd 0x%x (#0x%x), arg 0x%lx\n", cmd, nr, arg);
 
-	/* Get the process struct from the filep. Only the process
-	 * that opened /dev/kfd can use the file descriptor. Child
-	 * processes need to create their own KFD device context.
-	 */
+	 
 	process = filep->private_data;
 
 	rcu_read_lock();
@@ -3274,7 +3185,7 @@ static long kfd_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 		goto err_i1;
 	}
 
-	/* Do not trust userspace, use our own definition */
+	 
 	func = ioctl->func;
 
 	if (unlikely(!func)) {
@@ -3283,11 +3194,7 @@ static long kfd_ioctl(struct file *filep, unsigned int cmd, unsigned long arg)
 		goto err_i1;
 	}
 
-	/*
-	 * Versions of docker shipped in Ubuntu 18.xx and 20.xx do not support
-	 * CAP_CHECKPOINT_RESTORE, so we also allow access if CAP_SYS_ADMIN as CAP_SYS_ADMIN is a
-	 * more priviledged access.
-	 */
+	 
 	if (unlikely(ioctl->flags & KFD_IOC_FLAG_CHECKPOINT_RESTORE)) {
 		if (!capable(CAP_CHECKPOINT_RESTORE) &&
 						!capable(CAP_SYS_ADMIN)) {

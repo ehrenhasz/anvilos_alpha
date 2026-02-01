@@ -1,20 +1,4 @@
-/* chroot -- run command or shell with special root directory
-   Copyright (C) 1995-2023 Free Software Foundation, Inc.
-
-   This program is free software: you can redistribute it and/or modify
-   it under the terms of the GNU General Public License as published by
-   the Free Software Foundation, either version 3 of the License, or
-   (at your option) any later version.
-
-   This program is distributed in the hope that it will be useful,
-   but WITHOUT ANY WARRANTY; without even the implied warranty of
-   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-   GNU General Public License for more details.
-
-   You should have received a copy of the GNU General Public License
-   along with this program.  If not, see <https://www.gnu.org/licenses/>.  */
-
-/* Written by Roland McGrath.  */
+ 
 
 #include <config.h>
 #include <getopt.h>
@@ -31,7 +15,7 @@
 #include "userspec.h"
 #include "xstrtol.h"
 
-/* The official name of this program (e.g., no 'g' prefix).  */
+ 
 #define PROGRAM_NAME "chroot"
 
 #define AUTHORS proper_name ("Roland McGrath")
@@ -63,15 +47,13 @@ static struct option const long_opts[] =
 };
 
 #if ! HAVE_SETGROUPS
-/* At least Interix lacks supplemental group support.  */
+ 
 static int
 setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
 {
   if (size == 0)
     {
-      /* Return success when clearing supplemental groups
-         as ! HAVE_SETGROUPS should only be the case on
-         platforms that don't support supplemental groups.  */
+       
       return 0;
     }
   else
@@ -82,13 +64,7 @@ setgroups (size_t size, MAYBE_UNUSED gid_t const *list)
 }
 #endif
 
-/* Determine the group IDs for the specified supplementary GROUPS,
-   which is a comma separated list of supplementary groups (names or numbers).
-   Allocate an array for the parsed IDs and store it in PGIDS,
-   which may be allocated even on parse failure.
-   Update the number of parsed groups in PN_GIDS on success.
-   Upon any failure return nonzero, and issue diagnostic if SHOW_ERRORS is true.
-   Otherwise return zero.  */
+ 
 
 static int
 parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
@@ -113,12 +89,12 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
             tmp++;
           if (*tmp != '+')
             {
-              /* Handle the case where the name is numeric.  */
+               
               g = getgrnam (tmp);
               if (g != nullptr)
                 value = g->gr_gid;
             }
-          /* Flag that we've got a group from the number.  */
+           
           g = (struct group *) (intptr_t) ! nullptr;
         }
       else
@@ -162,9 +138,7 @@ parse_additional_groups (char const *groups, GETGROUPS_T **pgids,
   return ret;
 }
 
-/* Return whether the passed path is equivalent to "/".
-   Note we don't compare against get_root_dev_ino() as "/"
-   could be bind mounted to a separate location.  */
+ 
 
 static bool
 is_root (char const *dir)

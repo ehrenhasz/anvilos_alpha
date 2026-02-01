@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Marvell Armada 375 SoC clocks
- *
- * Copyright (C) 2014 Marvell
- *
- * Gregory CLEMENT <gregory.clement@free-electrons.com>
- * Sebastian Hesselbarth <sebastian.hesselbarth@gmail.com>
- * Andrew Lunn <andrew@lunn.ch>
- *
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/clk-provider.h>
@@ -16,26 +7,9 @@
 #include <linux/of.h>
 #include "common.h"
 
-/*
- * Core Clocks
- */
+ 
 
-/*
- * For the Armada 375 SoCs, the CPU, DDR and L2 clocks frequencies are
- * all modified at the same time, and not separately as for the Armada
- * 370 or the Armada XP SoCs.
- *
- * SAR1[21:17]   : CPU frequency    DDR frequency   L2 frequency
- *		 6   =  400 MHz	    400 MHz	    200 MHz
- *		 15  =  600 MHz	    600 MHz	    300 MHz
- *		 21  =  800 MHz	    534 MHz	    400 MHz
- *		 25  = 1000 MHz	    500 MHz	    500 MHz
- *		 others reserved.
- *
- * SAR1[22]   : TCLK frequency
- *		 0 = 166 MHz
- *		 1 = 200 MHz
- */
+ 
 
 #define SAR1_A375_TCLK_FREQ_OPT		   22
 #define SAR1_A375_TCLK_FREQ_OPT_MASK	   0x1
@@ -144,9 +118,7 @@ static void __init armada_375_coreclk_init(struct device_node *np)
 CLK_OF_DECLARE(armada_375_core_clk, "marvell,armada-375-core-clock",
 	       armada_375_coreclk_init);
 
-/*
- * Clock Gating Control
- */
+ 
 static const struct clk_gating_soc_desc armada_375_gating_desc[] __initconst = {
 	{ "mu", NULL, 2 },
 	{ "pp", NULL, 3 },

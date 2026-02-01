@@ -1,10 +1,10 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// mcp251xfd - Microchip MCP251xFD Family CAN controller driver
-//
-// Copyright (c) 2021, 2022 Pengutronix,
-//               Marc Kleine-Budde <kernel@pengutronix.de>
-//
+
+
+
+
+
+
+
 
 #include <linux/ethtool.h>
 
@@ -61,9 +61,7 @@ static int mcp251xfd_ring_get_coalesce(struct net_device *ndev,
 	struct mcp251xfd_priv *priv = netdev_priv(ndev);
 	u32 rx_max_frames, tx_max_frames;
 
-	/* The ethtool doc says:
-	 * To disable coalescing, set usecs = 0 and max_frames = 1.
-	 */
+	 
 	if (priv->rx_obj_num_coalesce_irq == 0)
 		rx_max_frames = 1;
 	else

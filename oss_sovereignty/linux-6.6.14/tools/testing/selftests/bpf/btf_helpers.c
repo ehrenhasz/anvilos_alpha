@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright (c) 2020 Facebook */
+
+ 
 #include <stdio.h>
 #include <errno.h>
 #include <bpf/btf.h>
@@ -210,9 +210,7 @@ int fprintf_btf_type_raw(FILE *out, const struct btf *btf, __u32 id)
 	return 0;
 }
 
-/* Print raw BTF type dump into a local buffer and return string pointer back.
- * Buffer *will* be overwritten by subsequent btf_type_raw_dump() calls
- */
+ 
 const char *btf_type_raw_dump(const struct btf *btf, int type_id)
 {
 	static char buf[16 * 1024];
@@ -251,9 +249,7 @@ static void btf_dump_printf(void *ctx, const char *fmt, va_list args)
 	vfprintf(ctx, fmt, args);
 }
 
-/* Print BTF-to-C dump into a local buffer and return string pointer back.
- * Buffer *will* be overwritten by subsequent btf_type_raw_dump() calls
- */
+ 
 const char *btf_type_c_dump(const struct btf *btf)
 {
 	static char buf[16 * 1024];

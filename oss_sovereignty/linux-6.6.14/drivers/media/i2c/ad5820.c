@@ -1,18 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * drivers/media/i2c/ad5820.c
- *
- * AD5820 DAC driver for camera voice coil focus.
- *
- * Copyright (C) 2008 Nokia Corporation
- * Copyright (C) 2007 Texas Instruments
- * Copyright (C) 2016 Pavel Machek <pavel@ucw.cz>
- *
- * Contact: Tuukka Toivonen <tuukkat76@gmail.com>
- *	    Sakari Ailus <sakari.ailus@iki.fi>
- *
- * Based on af_d88.c by Texas Instruments.
- */
+
+ 
 
 #include <linux/errno.h>
 #include <linux/i2c.h>
@@ -25,7 +12,7 @@
 #include <media/v4l2-device.h>
 #include <media/v4l2-subdev.h>
 
-/* Register definitions */
+ 
 #define AD5820_POWER_DOWN		(1 << 15)
 #define AD5820_DAC_SHIFT		4
 #define AD5820_RAMP_MODE_LINEAR		(0 << 3)
@@ -79,11 +66,7 @@ static int ad5820_write(struct ad5820_device *coil, u16 data)
 	return 0;
 }
 
-/*
- * Calculate status word and write it to the device based on current
- * values of V4L2 controls. It is assumed that the stored V4L2 control
- * values are properly limited and rounded.
- */
+ 
 static int ad5820_update_hw(struct ad5820_device *coil)
 {
 	u16 status;
@@ -99,17 +82,12 @@ static int ad5820_update_hw(struct ad5820_device *coil)
 	return ad5820_write(coil, status);
 }
 
-/*
- * Power handling
- */
+ 
 static int ad5820_power_off(struct ad5820_device *coil, bool standby)
 {
 	int ret = 0, ret2;
 
-	/*
-	 * Go to standby first as real power off my be denied by the hardware
-	 * (single power line control for both coil and sensor).
-	 */
+	 
 	if (standby) {
 		coil->standby = true;
 		ret = ad5820_update_hw(coil);
@@ -134,7 +112,7 @@ static int ad5820_power_on(struct ad5820_device *coil, bool restore)
 	gpiod_set_value_cansleep(coil->enable_gpio, 1);
 
 	if (restore) {
-		/* Restore the hardware settings. */
+		 
 		coil->standby = false;
 		ret = ad5820_update_hw(coil);
 		if (ret)
@@ -150,9 +128,7 @@ fail:
 	return ret;
 }
 
-/*
- * V4L2 controls
- */
+ 
 static int ad5820_set_ctrl(struct v4l2_ctrl *ctrl)
 {
 	struct ad5820_device *coil =
@@ -176,18 +152,7 @@ static int ad5820_init_controls(struct ad5820_device *coil)
 {
 	v4l2_ctrl_handler_init(&coil->ctrls, 1);
 
-	/*
-	 * V4L2_CID_FOCUS_ABSOLUTE
-	 *
-	 * Minimum current is 0 mA, maximum is 100 mA. Thus, 1 code is
-	 * equivalent to 100/1023 = 0.0978 mA. Nevertheless, we do not use [mA]
-	 * for focus position, because it is meaningless for user. Meaningful
-	 * would be to use focus distance or even its inverse, but since the
-	 * driver doesn't have sufficiently knowledge to do the conversion, we
-	 * will just use abstract codes here. In any case, smaller value = focus
-	 * position farther from camera. The default zero value means focus at
-	 * infinity, and also least current consumption.
-	 */
+	 
 	v4l2_ctrl_new_std(&coil->ctrls, &ad5820_ctrl_ops,
 			  V4L2_CID_FOCUS_ABSOLUTE, 0, 1023, 1, 0);
 
@@ -203,9 +168,7 @@ static int ad5820_init_controls(struct ad5820_device *coil)
 	return 0;
 }
 
-/*
- * V4L2 subdev operations
- */
+ 
 static int ad5820_registered(struct v4l2_subdev *subdev)
 {
 	struct ad5820_device *coil = to_ad5820_device(subdev);
@@ -221,10 +184,7 @@ ad5820_set_power(struct v4l2_subdev *subdev, int on)
 
 	mutex_lock(&coil->power_lock);
 
-	/*
-	 * If the power count is modified from 0 to != 0 or from != 0 to 0,
-	 * update the power state.
-	 */
+	 
 	if (coil->power_count == !on) {
 		ret = on ? ad5820_power_on(coil, true) :
 			ad5820_power_off(coil, true);
@@ -232,7 +192,7 @@ ad5820_set_power(struct v4l2_subdev *subdev, int on)
 			goto done;
 	}
 
-	/* Update the power count. */
+	 
 	coil->power_count += on ? 1 : -1;
 	WARN_ON(coil->power_count < 0);
 
@@ -265,9 +225,7 @@ static const struct v4l2_subdev_internal_ops ad5820_internal_ops = {
 	.close = ad5820_close,
 };
 
-/*
- * I2C driver
- */
+ 
 static int __maybe_unused ad5820_suspend(struct device *dev)
 {
 	struct v4l2_subdev *subdev = dev_get_drvdata(dev);

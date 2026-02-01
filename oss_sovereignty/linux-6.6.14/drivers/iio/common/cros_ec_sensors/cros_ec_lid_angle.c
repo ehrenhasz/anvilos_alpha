@@ -1,14 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * cros_ec_lid_angle - Driver for CrOS EC lid angle sensor.
- *
- * Copyright 2018 Google, Inc
- *
- * This driver uses the cros-ec interface to communicate with the Chrome OS
- * EC about counter sensors. Counters are presented through
- * iio sysfs.
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/device.h>
@@ -28,9 +20,7 @@
 
 #define DRV_NAME "cros-ec-lid-angle"
 
-/*
- * One channel for the lid angle, the other for timestamp.
- */
+ 
 static const struct iio_chan_spec cros_ec_lid_angle_channels[] = {
 	{
 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
@@ -42,9 +32,9 @@ static const struct iio_chan_spec cros_ec_lid_angle_channels[] = {
 	IIO_CHAN_SOFT_TIMESTAMP(1)
 };
 
-/* State data for ec_sensors iio driver. */
+ 
 struct cros_ec_lid_angle_state {
-	/* Shared by all sensors */
+	 
 	struct cros_ec_sensors_core_state core;
 };
 
@@ -121,7 +111,7 @@ static const struct platform_device_id cros_ec_lid_angle_ids[] = {
 	{
 		.name = DRV_NAME,
 	},
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, cros_ec_lid_angle_ids);
 

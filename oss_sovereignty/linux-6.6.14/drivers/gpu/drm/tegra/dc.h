@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Avionic Design GmbH
- * Copyright (C) 2012 NVIDIA CORPORATION.  All rights reserved.
- */
+ 
+ 
 
 #ifndef TEGRA_DC_H
 #define TEGRA_DC_H 1
@@ -157,7 +154,7 @@ struct tegra_dc_window {
 	u32 swap;
 };
 
-/* from dc.c */
+ 
 bool tegra_dc_has_output(struct tegra_dc *dc, struct device *dev);
 void tegra_dc_commit(struct tegra_dc *dc);
 int tegra_dc_state_setup_clock(struct tegra_dc *dc,
@@ -167,7 +164,7 @@ int tegra_dc_state_setup_clock(struct tegra_dc *dc,
 void tegra_crtc_atomic_post_commit(struct drm_crtc *crtc,
 				   struct drm_atomic_state *state);
 
-/* from rgb.c */
+ 
 int tegra_dc_rgb_probe(struct tegra_dc *dc);
 void tegra_dc_rgb_remove(struct tegra_dc *dc);
 int tegra_dc_rgb_init(struct drm_device *drm, struct tegra_dc *dc);
@@ -648,16 +645,16 @@ int tegra_dc_rgb_exit(struct tegra_dc *dc);
 #define WIN_COLOR_DEPTH_X8R8G8B8       66
 
 #define DC_WIN_POSITION				0x704
-#define H_POSITION(x) (((x) & 0x1fff) <<  0) /* XXX 0x7fff on Tegra186 */
-#define V_POSITION(x) (((x) & 0x1fff) << 16) /* XXX 0x7fff on Tegra186 */
+#define H_POSITION(x) (((x) & 0x1fff) <<  0)  
+#define V_POSITION(x) (((x) & 0x1fff) << 16)  
 
 #define DC_WIN_SIZE				0x705
-#define H_SIZE(x) (((x) & 0x1fff) <<  0) /* XXX 0x7fff on Tegra186 */
-#define V_SIZE(x) (((x) & 0x1fff) << 16) /* XXX 0x7fff on Tegra186 */
+#define H_SIZE(x) (((x) & 0x1fff) <<  0)  
+#define V_SIZE(x) (((x) & 0x1fff) << 16)  
 
 #define DC_WIN_PRESCALED_SIZE			0x706
 #define H_PRESCALED_SIZE(x) (((x) & 0x7fff) <<  0)
-#define V_PRESCALED_SIZE(x) (((x) & 0x1fff) << 16) /* XXX 0x7fff on Tegra186 */
+#define V_PRESCALED_SIZE(x) (((x) & 0x1fff) << 16)  
 
 #define DC_WIN_H_INITIAL_DDA			0x707
 #define DC_WIN_V_INITIAL_DDA			0x708
@@ -727,7 +724,7 @@ int tegra_dc_rgb_exit(struct tegra_dc *dc);
 #define DC_WINBUF_BD_UFLOW_STATUS		0xdca
 #define DC_WINBUF_CD_UFLOW_STATUS		0xfca
 
-/* Tegra186 and later */
+ 
 #define DC_DISP_CORE_SOR_SET_CONTROL(x)		(0x403 + (x))
 #define PROTOCOL_MASK (0xf << 8)
 #define PROTOCOL_SINGLE_TMDS_A (0x1 << 8)
@@ -837,4 +834,4 @@ int tegra_dc_rgb_exit(struct tegra_dc *dc);
 #define OFFSET_Y(x) (((x) & 0xffff) << 16)
 #define OFFSET_X(x) (((x) & 0xffff) << 0)
 
-#endif /* TEGRA_DC_H */
+#endif  

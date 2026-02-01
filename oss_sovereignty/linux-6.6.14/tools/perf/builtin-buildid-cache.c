@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * builtin-buildid-cache.c
- *
- * Builtin buildid-cache command: Manages build-id cache
- *
- * Copyright (C) 2010, Red Hat Inc.
- * Copyright (C) 2010, Arnaldo Carvalho de Melo <acme@redhat.com>
- */
+
+ 
 #include <sys/types.h>
 #include <sys/time.h>
 #include <time.h>
@@ -150,17 +143,17 @@ static int build_id_cache__add_kcore(const char *filename, bool force)
 		return -1;
 
 	if (kcore_copy(from_dir, to_dir)) {
-		/* Remove YYYYmmddHHMMSShh directory */
+		 
 		if (!rmdir(to_dir)) {
 			p = strrchr(to_dir, '/');
 			if (p)
 				*p = '\0';
-			/* Try to remove buildid directory */
+			 
 			if (!rmdir(to_dir)) {
 				p = strrchr(to_dir, '/');
 				if (p)
 					*p = '\0';
-				/* Try to remove [kernel.kcore] directory */
+				 
 				rmdir(to_dir);
 			}
 		}
@@ -433,7 +426,7 @@ int cmd_buildid_cache(int argc, const char **argv)
 
 	perf_debuginfod_setup(&debuginfod);
 
-	/* -l is exclusive. It can not be used with other options. */
+	 
 	if (list_files && opts_flag) {
 		usage_with_options_msg(buildid_cache_usage,
 			buildid_cache_options, "-l is exclusive.\n");

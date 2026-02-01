@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Kontron PLD GPIO driver
- *
- * Copyright (c) 2010-2013 Kontron Europe GmbH
- * Author: Michael Brunner <michael.brunner@kontron.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/kernel.h>
@@ -27,10 +22,7 @@ struct kempld_gpio_data {
 	struct kempld_device_data	*pld;
 };
 
-/*
- * Set or clear GPIO bit
- * kempld_get_mutex must be called prior to calling this function.
- */
+ 
 static void kempld_gpio_bitop(struct kempld_device_data *pld,
 			      u8 reg, u8 bit, u8 val)
 {
@@ -116,13 +108,13 @@ static int kempld_gpio_pincount(struct kempld_device_data *pld)
 
 	kempld_get_mutex(pld);
 
-	/* Backup event register as it might be already initialized */
+	 
 	evt_back = kempld_read16(pld, KEMPLD_GPIO_EVT_LVL_EDGE);
-	/* Clear event register */
+	 
 	kempld_write16(pld, KEMPLD_GPIO_EVT_LVL_EDGE, 0x0000);
-	/* Read back event register */
+	 
 	evt = kempld_read16(pld, KEMPLD_GPIO_EVT_LVL_EDGE);
-	/* Restore event register */
+	 
 	kempld_write16(pld, KEMPLD_GPIO_EVT_LVL_EDGE, evt_back);
 
 	kempld_release_mutex(pld);

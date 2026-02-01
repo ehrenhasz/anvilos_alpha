@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Calxeda Highbank AHCI SATA platform driver
- * Copyright 2012 Calxeda, Inc.
- *
- * based on the AHCI SATA platform driver by Jeff Garzik and Anton Vorontsov
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/gfp.h>
 #include <linux/module.h>
@@ -50,9 +45,7 @@
 #define CPHY_PORT_COUNT			(CPHY_PHY_COUNT * CPHY_LANE_COUNT)
 
 static DEFINE_SPINLOCK(cphy_lock);
-/* Each of the 6 phys can have up to 4 sata ports attached to i. Map 0-based
- * sata ports to their phys and then to their lanes within the phys
- */
+ 
 struct phy_lane_info {
 	void __iomem *phy_base;
 	u8 lane_mapping;
@@ -70,7 +63,7 @@ static DEFINE_SPINLOCK(sgpio_lock);
 
 struct ecx_plat_data {
 	u32		n_ports;
-	/* number of extra clocks that the SGPIO PIC controller expects */
+	 
 	u32		pre_clocks;
 	u32		post_clocks;
 	struct gpio_desc *sgpio_gpiod[SGPIO_PINS];
@@ -113,10 +106,7 @@ static void ecx_parse_sgpio(struct ecx_plat_data *pdata, u32 port, u32 state)
 						ECX_FAULT_SHIFT);
 }
 
-/*
- * Tell the LED controller that the signal has changed by raising the clock
- * line for 50 uS and then lowering it for 50 uS.
- */
+ 
 static void ecx_led_cycle_clock(struct ecx_plat_data *pdata)
 {
 	gpiod_set_value(pdata->sgpio_gpiod[SCLOCK], 1);
@@ -136,7 +126,7 @@ static ssize_t ecx_transmit_led_message(struct ata_port *ap, u32 state,
 	struct ahci_em_priv *emp;
 	u32 sgpio_out;
 
-	/* get the slot number from the message */
+	 
 	pmp = (state & EM_MSG_LED_PMP_SLOT) >> 8;
 	if (pmp < EM_MAX_SLOTS)
 		emp = &pp->em_priv[pmp];
@@ -155,10 +145,7 @@ static ssize_t ecx_transmit_led_message(struct ata_port *ap, u32 state,
 	gpiod_set_value(pdata->sgpio_gpiod[SLOAD], 1);
 	ecx_led_cycle_clock(pdata);
 	gpiod_set_value(pdata->sgpio_gpiod[SLOAD], 0);
-	/*
-	 * bit-bang out the SGPIO pattern, by consuming a bit and then
-	 * clocking it out.
-	 */
+	 
 	for (i = 0; i < (SGPIO_SIGNALS * pdata->n_ports); i++) {
 		gpiod_set_value(pdata->sgpio_gpiod[SDATA], sgpio_out & 1);
 		sgpio_out >>= 1;
@@ -167,7 +154,7 @@ static ssize_t ecx_transmit_led_message(struct ata_port *ap, u32 state,
 	for (i = 0; i < pdata->post_clocks; i++)
 		ecx_led_cycle_clock(pdata);
 
-	/* save off new led state for port/slot */
+	 
 	emp->led_state = state;
 
 	spin_unlock_irqrestore(&sgpio_lock, flags);
@@ -204,7 +191,7 @@ static void highbank_set_em_messages(struct device *dev,
 				&pdata->post_clocks))
 		pdata->post_clocks = 0;
 
-	/* store em_loc */
+	 
 	hpriv->em_loc = 0;
 	hpriv->em_buf_sz = 4;
 	hpriv->em_msg_type = EM_MSG_TYPE_LED;
@@ -366,22 +353,7 @@ static int highbank_initialize_phys(struct device *dev, void __iomem *addr)
 	return 0;
 }
 
-/*
- * The Calxeda SATA phy intermittently fails to bring up a link with Gen3
- * Retrying the phy hard reset can work around the issue, but the drive
- * may fail again. In less than 150 out of 15000 test runs, it took more
- * than 10 tries for the link to be established (but never more than 35).
- * Triple the maximum observed retry count to provide plenty of margin for
- * rare events and to guarantee that the link is established.
- *
- * Also, the default 2 second time-out on a failed drive is too long in
- * this situation. The uboot implementation of the same driver function
- * uses a much shorter time-out period and never experiences a time out
- * issue. Reducing the time-out to 500ms improves the responsiveness.
- * The other timing constants were kept the same as the stock AHCI driver.
- * This change was also tested 15000 times on 24 drives and none of them
- * experienced a time out.
- */
+ 
 static int ahci_highbank_hardreset(struct ata_link *link, unsigned int *class,
 				unsigned long deadline)
 {
@@ -398,7 +370,7 @@ static int ahci_highbank_hardreset(struct ata_link *link, unsigned int *class,
 
 	hpriv->stop_engine(ap);
 
-	/* clear D2H reception area to properly wait for D2H FIS */
+	 
 	ata_tf_init(link->device, &tf);
 	tf.status = ATA_BUSY;
 	ata_tf_to_fis(&tf, 0, 0, d2h_fis);
@@ -408,9 +380,7 @@ static int ahci_highbank_hardreset(struct ata_link *link, unsigned int *class,
 		rc = sata_link_hardreset(link, timing, deadline, &online, NULL);
 		highbank_cphy_override_lane(link->ap->port_no);
 
-		/* If the status is 1, we are connected, but the link did not
-		 * come up. So retry resetting the link again.
-		 */
+		 
 		if (sata_scr_read(link, SCR_STATUS, &sstatus))
 			break;
 		if (!(sstatus & 0x3))
@@ -444,7 +414,7 @@ static const struct scsi_host_template ahci_highbank_platform_sht = {
 
 static const struct of_device_id ahci_of_match[] = {
 	{ .compatible = "calxeda,hb-ahci" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, ahci_of_match);
 
@@ -501,7 +471,7 @@ static int ahci_highbank_probe(struct platform_device *pdev)
 
 	ahci_save_initial_config(dev, hpriv);
 
-	/* prepare host */
+	 
 	if (hpriv->cap & HOST_CAP_NCQ)
 		pi.flags |= ATA_FLAG_NCQ;
 
@@ -511,11 +481,7 @@ static int ahci_highbank_probe(struct platform_device *pdev)
 	if (hpriv->cap & HOST_CAP_64)
 		dma_set_coherent_mask(dev, DMA_BIT_MASK(64));
 
-	/* CAP.NP sometimes indicate the index of the last enabled
-	 * port, at other times, that of the last possible port, so
-	 * determining the maximum port number requires looking at
-	 * both CAP.NP and port_map.
-	 */
+	 
 	n_ports = max(ahci_nr_ports(hpriv->cap), fls(hpriv->port_map));
 
 	pdata->n_ports = n_ports;
@@ -539,11 +505,11 @@ static int ahci_highbank_probe(struct platform_device *pdev)
 		ata_port_desc(ap, "mmio %pR", mem);
 		ata_port_desc(ap, "port 0x%x", 0x100 + ap->port_no * 0x80);
 
-		/* set enclosure management message type */
+		 
 		if (ap->flags & ATA_FLAG_EM)
 			ap->em_message_type = hpriv->em_msg_type;
 
-		/* disabled/not-implemented port */
+		 
 		if (!(hpriv->port_map & (1 << i)))
 			ap->ops = &ata_dummy_port_ops;
 	}
@@ -577,15 +543,11 @@ static int ahci_highbank_suspend(struct device *dev)
 		return -EIO;
 	}
 
-	/*
-	 * AHCI spec rev1.1 section 8.3.3:
-	 * Software must disable interrupts prior to requesting a
-	 * transition of the HBA to D3 state.
-	 */
+	 
 	ctl = readl(mmio + HOST_CTL);
 	ctl &= ~HOST_IRQ_EN;
 	writel(ctl, mmio + HOST_CTL);
-	readl(mmio + HOST_CTL); /* flush */
+	readl(mmio + HOST_CTL);  
 
 	ata_host_suspend(host, PMSG_SUSPEND);
 	return 0;

@@ -1,17 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/* Copyright (c) 2012 GCT Semiconductor, Inc. All rights reserved. */
+ 
+ 
 
 #ifndef _HCI_PACKET_H_
 #define _HCI_PACKET_H_
 
 #define HCI_HEADER_SIZE 4
 
-/*
- * The NIC type definition:
- * For backward compatibility, lower 16 bits used as they were.
- * Lower 16 bit: NIC_TYPE values
- * Uppoer 16 bit: NIC_TYPE Flags
- */
+ 
 #define NIC_TYPE_NIC0		0x00000010
 #define NIC_TYPE_NIC1		0x00000011
 #define NIC_TYPE_NIC2		0x00000012
@@ -79,4 +74,4 @@ struct hci_connect_ind {
 	__dev32 connect;
 } __packed;
 
-#endif /* _HCI_PACKET_H_ */
+#endif  

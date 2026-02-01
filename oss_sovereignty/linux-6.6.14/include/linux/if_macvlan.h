@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 #ifndef _LINUX_IF_MACVLAN_H
 #define _LINUX_IF_MACVLAN_H
 
@@ -107,4 +107,4 @@ static inline int macvlan_release_l2fw_offload(struct net_device *dev)
 	macvlan->accel_priv = NULL;
 	return dev_uc_add(macvlan->lowerdev, dev->dev_addr);
 }
-#endif /* _LINUX_IF_MACVLAN_H */
+#endif  

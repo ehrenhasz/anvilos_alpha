@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <test_progs.h>
 
 #define nr_iters 2
@@ -16,13 +16,11 @@ void serial_test_bpf_obj_id(void)
 	struct bpf_link *links[nr_iters] = {};
 	struct bpf_program *prog;
 	int prog_fds[nr_iters], map_fds[nr_iters];
-	/* +1 to test for the info_len returned by kernel */
+	 
 	struct bpf_prog_info prog_infos[nr_iters + 1];
 	struct bpf_map_info map_infos[nr_iters + 1];
 	struct bpf_link_info link_infos[nr_iters + 1];
-	/* Each prog only uses one map. +1 to test nr_map_ids
-	 * returned by kernel.
-	 */
+	 
 	__u32 map_ids[nr_iters + 1];
 	char jited_insns[128], xlated_insns[128], zeros[128], tp_name[128];
 	__u32 i, next_id, info_len, nr_id_found, duration = 0;
@@ -44,19 +42,17 @@ void serial_test_bpf_obj_id(void)
 	CHECK(err >= 0 || errno != ENOENT,
 	      "get-fd-by-notexist-link-id", "err %d errno %d\n", err, errno);
 
-	/* Check bpf_map_get_info_by_fd() */
+	 
 	bzero(zeros, sizeof(zeros));
 	for (i = 0; i < nr_iters; i++) {
 		now = time(NULL);
 		err = bpf_prog_test_load(file, BPF_PROG_TYPE_RAW_TRACEPOINT,
 				    &objs[i], &prog_fds[i]);
-		/* test_obj_id.o is a dumb prog. It should never fail
-		 * to load.
-		 */
+		 
 		if (CHECK_FAIL(err))
 			continue;
 
-		/* Insert a magic value to the map */
+		 
 		map_fds[i] = bpf_find_map(__func__, objs[i], "test_map_id");
 		if (CHECK_FAIL(map_fds[i] < 0))
 			goto done;
@@ -76,7 +72,7 @@ void serial_test_bpf_obj_id(void)
 			goto done;
 		}
 
-		/* Check getting map info */
+		 
 		info_len = sizeof(struct bpf_map_info) * 2;
 		bzero(&map_infos[i], info_len);
 		err = bpf_map_get_info_by_fd(map_fds[i], &map_infos[i],
@@ -101,7 +97,7 @@ void serial_test_bpf_obj_id(void)
 			  map_infos[i].name, expected_map_name))
 			goto done;
 
-		/* Check getting prog info */
+		 
 		info_len = sizeof(struct bpf_prog_info) * 2;
 		bzero(&prog_infos[i], info_len);
 		bzero(jited_insns, sizeof(jited_insns));
@@ -156,7 +152,7 @@ void serial_test_bpf_obj_id(void)
 			  prog_infos[i].name, expected_prog_name))
 			goto done;
 
-		/* Check getting link info */
+		 
 		info_len = sizeof(struct bpf_link_info) * 2;
 		bzero(&link_infos[i], info_len);
 		link_infos[i].raw_tracepoint.tp_name = ptr_to_u64(&tp_name);
@@ -184,7 +180,7 @@ void serial_test_bpf_obj_id(void)
 
 	}
 
-	/* Check bpf_prog_get_next_id() */
+	 
 	nr_id_found = 0;
 	next_id = 0;
 	while (!bpf_prog_get_next_id(next_id, &next_id)) {
@@ -196,7 +192,7 @@ void serial_test_bpf_obj_id(void)
 
 		prog_fd = bpf_prog_get_fd_by_id(next_id);
 		if (prog_fd < 0 && errno == ENOENT)
-			/* The bpf_prog is in the dead row */
+			 
 			continue;
 		if (CHECK(prog_fd < 0, "get-prog-fd(next_id)",
 			  "prog_fd %d next_id %d errno %d\n",
@@ -212,10 +208,7 @@ void serial_test_bpf_obj_id(void)
 
 		nr_id_found++;
 
-		/* Negative test:
-		 * prog_info.nr_map_ids = 1
-		 * prog_info.map_ids = NULL
-		 */
+		 
 		prog_info.nr_map_ids = 1;
 		err = bpf_prog_get_info_by_fd(prog_fd, &prog_info, &info_len);
 		if (CHECK(!err || errno != EFAULT,
@@ -246,7 +239,7 @@ void serial_test_bpf_obj_id(void)
 	      "nr_id_found %u(%u)\n",
 	      nr_id_found, nr_iters);
 
-	/* Check bpf_map_get_next_id() */
+	 
 	nr_id_found = 0;
 	next_id = 0;
 	while (!bpf_map_get_next_id(next_id, &next_id)) {
@@ -257,7 +250,7 @@ void serial_test_bpf_obj_id(void)
 
 		map_fd = bpf_map_get_fd_by_id(next_id);
 		if (map_fd < 0 && errno == ENOENT)
-			/* The bpf_map is in the dead row */
+			 
 			continue;
 		if (CHECK(map_fd < 0, "get-map-fd(next_id)",
 			  "map_fd %d next_id %u errno %d\n",
@@ -294,7 +287,7 @@ void serial_test_bpf_obj_id(void)
 	      "nr_id_found %u(%u)\n",
 	      nr_id_found, nr_iters);
 
-	/* Check bpf_link_get_next_id() */
+	 
 	nr_id_found = 0;
 	next_id = 0;
 	while (!bpf_link_get_next_id(next_id, &next_id)) {
@@ -306,7 +299,7 @@ void serial_test_bpf_obj_id(void)
 
 		link_fd = bpf_link_get_fd_by_id(next_id);
 		if (link_fd < 0 && errno == ENOENT)
-			/* The bpf_link is in the dead row */
+			 
 			continue;
 		if (CHECK(link_fd < 0, "get-link-fd(next_id)",
 			  "link_fd %d next_id %u errno %d\n",

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Generic NAND driver
- *
- * Author: Vitaly Wool <vitalywool@gmail.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/io.h>
@@ -32,9 +28,7 @@ static const struct nand_controller_ops plat_nand_ops = {
 	.attach_chip = plat_nand_attach_chip,
 };
 
-/*
- * Probe for the NAND device.
- */
+ 
 static int plat_nand_probe(struct platform_device *pdev)
 {
 	struct platform_nand_data *pdata = dev_get_platdata(&pdev->dev);
@@ -53,7 +47,7 @@ static int plat_nand_probe(struct platform_device *pdev)
 		return -EINVAL;
 	}
 
-	/* Allocate memory for the device structure (and zero it) */
+	 
 	data = devm_kzalloc(&pdev->dev, sizeof(struct plat_nand_data),
 			    GFP_KERNEL);
 	if (!data)
@@ -84,21 +78,17 @@ static int plat_nand_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, data);
 
-	/* Handle any platform specific setup */
+	 
 	if (pdata->ctrl.probe) {
 		err = pdata->ctrl.probe(pdev);
 		if (err)
 			goto out;
 	}
 
-	/*
-	 * This driver assumes that the default ECC engine should be TYPE_SOFT.
-	 * Set ->engine_type before registering the NAND devices in order to
-	 * provide a driver specific default value.
-	 */
+	 
 	data->chip.ecc.engine_type = NAND_ECC_ENGINE_TYPE_SOFT;
 
-	/* Scan to find existence of the device */
+	 
 	err = nand_scan(&data->chip, pdata->chip.nr_chips);
 	if (err)
 		goto out;
@@ -119,9 +109,7 @@ out:
 	return err;
 }
 
-/*
- * Remove a NAND device.
- */
+ 
 static void plat_nand_remove(struct platform_device *pdev)
 {
 	struct plat_nand_data *data = platform_get_drvdata(pdev);

@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+ 
 
 #include "iavf_status.h"
 #include "iavf_type.h"
@@ -7,15 +7,10 @@
 #include "iavf_adminq.h"
 #include "iavf_prototype.h"
 
-/**
- *  iavf_adminq_init_regs - Initialize AdminQ registers
- *  @hw: pointer to the hardware structure
- *
- *  This assumes the alloc_asq and alloc_arq functions have already been called
- **/
+ 
 static void iavf_adminq_init_regs(struct iavf_hw *hw)
 {
-	/* set head and tail registers in our local struct */
+	 
 	hw->aq.asq.tail = IAVF_VF_ATQT1;
 	hw->aq.asq.head = IAVF_VF_ATQH1;
 	hw->aq.asq.len  = IAVF_VF_ATQLEN1;
@@ -28,10 +23,7 @@ static void iavf_adminq_init_regs(struct iavf_hw *hw)
 	hw->aq.arq.bah  = IAVF_VF_ARQBAH1;
 }
 
-/**
- *  iavf_alloc_adminq_asq_ring - Allocate Admin Queue send rings
- *  @hw: pointer to the hardware structure
- **/
+ 
 static enum iavf_status iavf_alloc_adminq_asq_ring(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code;
@@ -55,10 +47,7 @@ static enum iavf_status iavf_alloc_adminq_asq_ring(struct iavf_hw *hw)
 	return ret_code;
 }
 
-/**
- *  iavf_alloc_adminq_arq_ring - Allocate Admin Queue receive rings
- *  @hw: pointer to the hardware structure
- **/
+ 
 static enum iavf_status iavf_alloc_adminq_arq_ring(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code;
@@ -72,34 +61,19 @@ static enum iavf_status iavf_alloc_adminq_arq_ring(struct iavf_hw *hw)
 	return ret_code;
 }
 
-/**
- *  iavf_free_adminq_asq - Free Admin Queue send rings
- *  @hw: pointer to the hardware structure
- *
- *  This assumes the posted send buffers have already been cleaned
- *  and de-allocated
- **/
+ 
 static void iavf_free_adminq_asq(struct iavf_hw *hw)
 {
 	iavf_free_dma_mem(hw, &hw->aq.asq.desc_buf);
 }
 
-/**
- *  iavf_free_adminq_arq - Free Admin Queue receive rings
- *  @hw: pointer to the hardware structure
- *
- *  This assumes the posted receive buffers have already been cleaned
- *  and de-allocated
- **/
+ 
 static void iavf_free_adminq_arq(struct iavf_hw *hw)
 {
 	iavf_free_dma_mem(hw, &hw->aq.arq.desc_buf);
 }
 
-/**
- *  iavf_alloc_arq_bufs - Allocate pre-posted buffers for the receive queue
- *  @hw: pointer to the hardware structure
- **/
+ 
 static enum iavf_status iavf_alloc_arq_bufs(struct iavf_hw *hw)
 {
 	struct iavf_aq_desc *desc;
@@ -107,11 +81,9 @@ static enum iavf_status iavf_alloc_arq_bufs(struct iavf_hw *hw)
 	enum iavf_status ret_code;
 	int i;
 
-	/* We'll be allocating the buffer info memory first, then we can
-	 * allocate the mapped buffers for the event processing
-	 */
+	 
 
-	/* buffer_info structures do not need alignment */
+	 
 	ret_code = iavf_allocate_virt_mem(hw, &hw->aq.arq.dma_head,
 					  (hw->aq.num_arq_entries *
 					   sizeof(struct iavf_dma_mem)));
@@ -119,7 +91,7 @@ static enum iavf_status iavf_alloc_arq_bufs(struct iavf_hw *hw)
 		goto alloc_arq_bufs;
 	hw->aq.arq.r.arq_bi = (struct iavf_dma_mem *)hw->aq.arq.dma_head.va;
 
-	/* allocate the mapped buffers */
+	 
 	for (i = 0; i < hw->aq.num_arq_entries; i++) {
 		bi = &hw->aq.arq.r.arq_bi[i];
 		ret_code = iavf_allocate_dma_mem(hw, bi,
@@ -129,16 +101,14 @@ static enum iavf_status iavf_alloc_arq_bufs(struct iavf_hw *hw)
 		if (ret_code)
 			goto unwind_alloc_arq_bufs;
 
-		/* now configure the descriptors for use */
+		 
 		desc = IAVF_ADMINQ_DESC(hw->aq.arq, i);
 
 		desc->flags = cpu_to_le16(IAVF_AQ_FLAG_BUF);
 		if (hw->aq.arq_buf_size > IAVF_AQ_LARGE_BUF)
 			desc->flags |= cpu_to_le16(IAVF_AQ_FLAG_LB);
 		desc->opcode = 0;
-		/* This is in accordance with Admin queue design, there is no
-		 * register for buffer size configuration
-		 */
+		 
 		desc->datalen = cpu_to_le16((u16)bi->size);
 		desc->retval = 0;
 		desc->cookie_high = 0;
@@ -155,7 +125,7 @@ alloc_arq_bufs:
 	return ret_code;
 
 unwind_alloc_arq_bufs:
-	/* don't try to free the one that failed... */
+	 
 	i--;
 	for (; i >= 0; i--)
 		iavf_free_dma_mem(hw, &hw->aq.arq.r.arq_bi[i]);
@@ -164,17 +134,14 @@ unwind_alloc_arq_bufs:
 	return ret_code;
 }
 
-/**
- *  iavf_alloc_asq_bufs - Allocate empty buffer structs for the send queue
- *  @hw: pointer to the hardware structure
- **/
+ 
 static enum iavf_status iavf_alloc_asq_bufs(struct iavf_hw *hw)
 {
 	struct iavf_dma_mem *bi;
 	enum iavf_status ret_code;
 	int i;
 
-	/* No mapped memory needed yet, just the buffer info structures */
+	 
 	ret_code = iavf_allocate_virt_mem(hw, &hw->aq.asq.dma_head,
 					  (hw->aq.num_asq_entries *
 					   sizeof(struct iavf_dma_mem)));
@@ -182,7 +149,7 @@ static enum iavf_status iavf_alloc_asq_bufs(struct iavf_hw *hw)
 		goto alloc_asq_bufs;
 	hw->aq.asq.r.asq_bi = (struct iavf_dma_mem *)hw->aq.asq.dma_head.va;
 
-	/* allocate the mapped buffers */
+	 
 	for (i = 0; i < hw->aq.num_asq_entries; i++) {
 		bi = &hw->aq.asq.r.asq_bi[i];
 		ret_code = iavf_allocate_dma_mem(hw, bi,
@@ -196,7 +163,7 @@ alloc_asq_bufs:
 	return ret_code;
 
 unwind_alloc_asq_bufs:
-	/* don't try to free the one that failed... */
+	 
 	i--;
 	for (; i >= 0; i--)
 		iavf_free_dma_mem(hw, &hw->aq.asq.r.asq_bi[i]);
@@ -205,70 +172,59 @@ unwind_alloc_asq_bufs:
 	return ret_code;
 }
 
-/**
- *  iavf_free_arq_bufs - Free receive queue buffer info elements
- *  @hw: pointer to the hardware structure
- **/
+ 
 static void iavf_free_arq_bufs(struct iavf_hw *hw)
 {
 	int i;
 
-	/* free descriptors */
+	 
 	for (i = 0; i < hw->aq.num_arq_entries; i++)
 		iavf_free_dma_mem(hw, &hw->aq.arq.r.arq_bi[i]);
 
-	/* free the descriptor memory */
+	 
 	iavf_free_dma_mem(hw, &hw->aq.arq.desc_buf);
 
-	/* free the dma header */
+	 
 	iavf_free_virt_mem(hw, &hw->aq.arq.dma_head);
 }
 
-/**
- *  iavf_free_asq_bufs - Free send queue buffer info elements
- *  @hw: pointer to the hardware structure
- **/
+ 
 static void iavf_free_asq_bufs(struct iavf_hw *hw)
 {
 	int i;
 
-	/* only unmap if the address is non-NULL */
+	 
 	for (i = 0; i < hw->aq.num_asq_entries; i++)
 		if (hw->aq.asq.r.asq_bi[i].pa)
 			iavf_free_dma_mem(hw, &hw->aq.asq.r.asq_bi[i]);
 
-	/* free the buffer info list */
+	 
 	iavf_free_virt_mem(hw, &hw->aq.asq.cmd_buf);
 
-	/* free the descriptor memory */
+	 
 	iavf_free_dma_mem(hw, &hw->aq.asq.desc_buf);
 
-	/* free the dma header */
+	 
 	iavf_free_virt_mem(hw, &hw->aq.asq.dma_head);
 }
 
-/**
- *  iavf_config_asq_regs - configure ASQ registers
- *  @hw: pointer to the hardware structure
- *
- *  Configure base address and length registers for the transmit queue
- **/
+ 
 static enum iavf_status iavf_config_asq_regs(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code = 0;
 	u32 reg = 0;
 
-	/* Clear Head and Tail */
+	 
 	wr32(hw, hw->aq.asq.head, 0);
 	wr32(hw, hw->aq.asq.tail, 0);
 
-	/* set starting point */
+	 
 	wr32(hw, hw->aq.asq.len, (hw->aq.num_asq_entries |
 				  IAVF_VF_ATQLEN1_ATQENABLE_MASK));
 	wr32(hw, hw->aq.asq.bal, lower_32_bits(hw->aq.asq.desc_buf.pa));
 	wr32(hw, hw->aq.asq.bah, upper_32_bits(hw->aq.asq.desc_buf.pa));
 
-	/* Check one register to verify that config was applied */
+	 
 	reg = rd32(hw, hw->aq.asq.bal);
 	if (reg != lower_32_bits(hw->aq.asq.desc_buf.pa))
 		ret_code = IAVF_ERR_ADMIN_QUEUE_ERROR;
@@ -276,31 +232,26 @@ static enum iavf_status iavf_config_asq_regs(struct iavf_hw *hw)
 	return ret_code;
 }
 
-/**
- *  iavf_config_arq_regs - ARQ register configuration
- *  @hw: pointer to the hardware structure
- *
- * Configure base address and length registers for the receive (event queue)
- **/
+ 
 static enum iavf_status iavf_config_arq_regs(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code = 0;
 	u32 reg = 0;
 
-	/* Clear Head and Tail */
+	 
 	wr32(hw, hw->aq.arq.head, 0);
 	wr32(hw, hw->aq.arq.tail, 0);
 
-	/* set starting point */
+	 
 	wr32(hw, hw->aq.arq.len, (hw->aq.num_arq_entries |
 				  IAVF_VF_ARQLEN1_ARQENABLE_MASK));
 	wr32(hw, hw->aq.arq.bal, lower_32_bits(hw->aq.arq.desc_buf.pa));
 	wr32(hw, hw->aq.arq.bah, upper_32_bits(hw->aq.arq.desc_buf.pa));
 
-	/* Update tail in the HW to post pre-allocated buffers */
+	 
 	wr32(hw, hw->aq.arq.tail, hw->aq.num_arq_entries - 1);
 
-	/* Check one register to verify that config was applied */
+	 
 	reg = rd32(hw, hw->aq.arq.bal);
 	if (reg != lower_32_bits(hw->aq.arq.desc_buf.pa))
 		ret_code = IAVF_ERR_ADMIN_QUEUE_ERROR;
@@ -308,31 +259,19 @@ static enum iavf_status iavf_config_arq_regs(struct iavf_hw *hw)
 	return ret_code;
 }
 
-/**
- *  iavf_init_asq - main initialization routine for ASQ
- *  @hw: pointer to the hardware structure
- *
- *  This is the main initialization routine for the Admin Send Queue
- *  Prior to calling this function, drivers *MUST* set the following fields
- *  in the hw->aq structure:
- *     - hw->aq.num_asq_entries
- *     - hw->aq.arq_buf_size
- *
- *  Do *NOT* hold the lock when calling this as the memory allocation routines
- *  called are not going to be atomic context safe
- **/
+ 
 static enum iavf_status iavf_init_asq(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code = 0;
 	int i;
 
 	if (hw->aq.asq.count > 0) {
-		/* queue already initialized */
+		 
 		ret_code = IAVF_ERR_NOT_READY;
 		goto init_adminq_exit;
 	}
 
-	/* verify input for valid configuration */
+	 
 	if ((hw->aq.num_asq_entries == 0) ||
 	    (hw->aq.asq_buf_size == 0)) {
 		ret_code = IAVF_ERR_CONFIG;
@@ -342,22 +281,22 @@ static enum iavf_status iavf_init_asq(struct iavf_hw *hw)
 	hw->aq.asq.next_to_use = 0;
 	hw->aq.asq.next_to_clean = 0;
 
-	/* allocate the ring memory */
+	 
 	ret_code = iavf_alloc_adminq_asq_ring(hw);
 	if (ret_code)
 		goto init_adminq_exit;
 
-	/* allocate buffers in the rings */
+	 
 	ret_code = iavf_alloc_asq_bufs(hw);
 	if (ret_code)
 		goto init_adminq_free_rings;
 
-	/* initialize base registers */
+	 
 	ret_code = iavf_config_asq_regs(hw);
 	if (ret_code)
 		goto init_free_asq_bufs;
 
-	/* success! */
+	 
 	hw->aq.asq.count = hw->aq.num_asq_entries;
 	goto init_adminq_exit;
 
@@ -373,31 +312,19 @@ init_adminq_exit:
 	return ret_code;
 }
 
-/**
- *  iavf_init_arq - initialize ARQ
- *  @hw: pointer to the hardware structure
- *
- *  The main initialization routine for the Admin Receive (Event) Queue.
- *  Prior to calling this function, drivers *MUST* set the following fields
- *  in the hw->aq structure:
- *     - hw->aq.num_asq_entries
- *     - hw->aq.arq_buf_size
- *
- *  Do *NOT* hold the lock when calling this as the memory allocation routines
- *  called are not going to be atomic context safe
- **/
+ 
 static enum iavf_status iavf_init_arq(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code = 0;
 	int i;
 
 	if (hw->aq.arq.count > 0) {
-		/* queue already initialized */
+		 
 		ret_code = IAVF_ERR_NOT_READY;
 		goto init_adminq_exit;
 	}
 
-	/* verify input for valid configuration */
+	 
 	if ((hw->aq.num_arq_entries == 0) ||
 	    (hw->aq.arq_buf_size == 0)) {
 		ret_code = IAVF_ERR_CONFIG;
@@ -407,22 +334,22 @@ static enum iavf_status iavf_init_arq(struct iavf_hw *hw)
 	hw->aq.arq.next_to_use = 0;
 	hw->aq.arq.next_to_clean = 0;
 
-	/* allocate the ring memory */
+	 
 	ret_code = iavf_alloc_adminq_arq_ring(hw);
 	if (ret_code)
 		goto init_adminq_exit;
 
-	/* allocate buffers in the rings */
+	 
 	ret_code = iavf_alloc_arq_bufs(hw);
 	if (ret_code)
 		goto init_adminq_free_rings;
 
-	/* initialize base registers */
+	 
 	ret_code = iavf_config_arq_regs(hw);
 	if (ret_code)
 		goto init_free_arq_bufs;
 
-	/* success! */
+	 
 	hw->aq.arq.count = hw->aq.num_arq_entries;
 	goto init_adminq_exit;
 
@@ -437,12 +364,7 @@ init_adminq_exit:
 	return ret_code;
 }
 
-/**
- *  iavf_shutdown_asq - shutdown the ASQ
- *  @hw: pointer to the hardware structure
- *
- *  The main shutdown routine for the Admin Send Queue
- **/
+ 
 static enum iavf_status iavf_shutdown_asq(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code = 0;
@@ -454,16 +376,16 @@ static enum iavf_status iavf_shutdown_asq(struct iavf_hw *hw)
 		goto shutdown_asq_out;
 	}
 
-	/* Stop firmware AdminQ processing */
+	 
 	wr32(hw, hw->aq.asq.head, 0);
 	wr32(hw, hw->aq.asq.tail, 0);
 	wr32(hw, hw->aq.asq.len, 0);
 	wr32(hw, hw->aq.asq.bal, 0);
 	wr32(hw, hw->aq.asq.bah, 0);
 
-	hw->aq.asq.count = 0; /* to indicate uninitialized queue */
+	hw->aq.asq.count = 0;  
 
-	/* free ring buffers */
+	 
 	iavf_free_asq_bufs(hw);
 
 shutdown_asq_out:
@@ -471,12 +393,7 @@ shutdown_asq_out:
 	return ret_code;
 }
 
-/**
- *  iavf_shutdown_arq - shutdown ARQ
- *  @hw: pointer to the hardware structure
- *
- *  The main shutdown routine for the Admin Receive Queue
- **/
+ 
 static enum iavf_status iavf_shutdown_arq(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code = 0;
@@ -488,16 +405,16 @@ static enum iavf_status iavf_shutdown_arq(struct iavf_hw *hw)
 		goto shutdown_arq_out;
 	}
 
-	/* Stop firmware AdminQ processing */
+	 
 	wr32(hw, hw->aq.arq.head, 0);
 	wr32(hw, hw->aq.arq.tail, 0);
 	wr32(hw, hw->aq.arq.len, 0);
 	wr32(hw, hw->aq.arq.bal, 0);
 	wr32(hw, hw->aq.arq.bah, 0);
 
-	hw->aq.arq.count = 0; /* to indicate uninitialized queue */
+	hw->aq.arq.count = 0;  
 
-	/* free ring buffers */
+	 
 	iavf_free_arq_bufs(hw);
 
 shutdown_arq_out:
@@ -505,22 +422,12 @@ shutdown_arq_out:
 	return ret_code;
 }
 
-/**
- *  iavf_init_adminq - main initialization routine for Admin Queue
- *  @hw: pointer to the hardware structure
- *
- *  Prior to calling this function, drivers *MUST* set the following fields
- *  in the hw->aq structure:
- *     - hw->aq.num_asq_entries
- *     - hw->aq.num_arq_entries
- *     - hw->aq.arq_buf_size
- *     - hw->aq.asq_buf_size
- **/
+ 
 enum iavf_status iavf_init_adminq(struct iavf_hw *hw)
 {
 	enum iavf_status ret_code;
 
-	/* verify input for valid configuration */
+	 
 	if ((hw->aq.num_arq_entries == 0) ||
 	    (hw->aq.num_asq_entries == 0) ||
 	    (hw->aq.arq_buf_size == 0) ||
@@ -529,23 +436,23 @@ enum iavf_status iavf_init_adminq(struct iavf_hw *hw)
 		goto init_adminq_exit;
 	}
 
-	/* Set up register offsets */
+	 
 	iavf_adminq_init_regs(hw);
 
-	/* setup ASQ command write back timeout */
+	 
 	hw->aq.asq_cmd_timeout = IAVF_ASQ_CMD_TIMEOUT;
 
-	/* allocate the ASQ */
+	 
 	ret_code = iavf_init_asq(hw);
 	if (ret_code)
 		goto init_adminq_destroy_locks;
 
-	/* allocate the ARQ */
+	 
 	ret_code = iavf_init_arq(hw);
 	if (ret_code)
 		goto init_adminq_free_asq;
 
-	/* success! */
+	 
 	goto init_adminq_exit;
 
 init_adminq_free_asq:
@@ -556,10 +463,7 @@ init_adminq_exit:
 	return ret_code;
 }
 
-/**
- *  iavf_shutdown_adminq - shutdown routine for the Admin Queue
- *  @hw: pointer to the hardware structure
- **/
+ 
 enum iavf_status iavf_shutdown_adminq(struct iavf_hw *hw)
 {
 	if (iavf_check_asq_alive(hw))
@@ -571,12 +475,7 @@ enum iavf_status iavf_shutdown_adminq(struct iavf_hw *hw)
 	return 0;
 }
 
-/**
- *  iavf_clean_asq - cleans Admin send queue
- *  @hw: pointer to the hardware structure
- *
- *  returns the number of free desc
- **/
+ 
 static u16 iavf_clean_asq(struct iavf_hw *hw)
 {
 	struct iavf_adminq_ring *asq = &hw->aq.asq;
@@ -612,35 +511,17 @@ static u16 iavf_clean_asq(struct iavf_hw *hw)
 	return IAVF_DESC_UNUSED(asq);
 }
 
-/**
- *  iavf_asq_done - check if FW has processed the Admin Send Queue
- *  @hw: pointer to the hw struct
- *
- *  Returns true if the firmware has processed all descriptors on the
- *  admin send queue. Returns false if there are still requests pending.
- **/
+ 
 bool iavf_asq_done(struct iavf_hw *hw)
 {
-	/* AQ designers suggest use of head for better
-	 * timing reliability than DD bit
-	 */
+	 
 	return rd32(hw, hw->aq.asq.head) == hw->aq.asq.next_to_use;
 }
 
-/**
- *  iavf_asq_send_command - send command to Admin Queue
- *  @hw: pointer to the hw struct
- *  @desc: prefilled descriptor describing the command (non DMA mem)
- *  @buff: buffer to use for indirect commands
- *  @buff_size: size of buffer for indirect commands
- *  @cmd_details: pointer to command details structure
- *
- *  This is the main send command driver routine for the Admin Queue send
- *  queue.  It runs the queue, cleans the queue, etc
- **/
+ 
 enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 				       struct iavf_aq_desc *desc,
-				       void *buff, /* can be NULL */
+				       void *buff,  
 				       u16  buff_size,
 				       struct iavf_asq_cmd_details *cmd_details)
 {
@@ -675,10 +556,7 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 	if (cmd_details) {
 		*details = *cmd_details;
 
-		/* If the cmd_details are defined copy the cookie.  The
-		 * cpu_to_le32 is not needed here because the data is ignored
-		 * by the FW, only used by the driver
-		 */
+		 
 		if (details->cookie) {
 			desc->cookie_high =
 				cpu_to_le32(upper_32_bits(details->cookie));
@@ -689,7 +567,7 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 		memset(details, 0, sizeof(struct iavf_asq_cmd_details));
 	}
 
-	/* clear requested flags and then set additional flags if defined */
+	 
 	desc->flags &= ~cpu_to_le16(details->flags_dis);
 	desc->flags |= cpu_to_le16(details->flags_ena);
 
@@ -710,13 +588,8 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 		goto asq_send_command_error;
 	}
 
-	/* call clean and check queue available function to reclaim the
-	 * descriptors that were processed by FW, the function returns the
-	 * number of desc available
-	 */
-	/* the clean function called here could be called in a separate thread
-	 * in case of asynchronous completions
-	 */
+	 
+	 
 	if (iavf_clean_asq(hw) == 0) {
 		iavf_debug(hw,
 			   IAVF_DEBUG_AQ_MESSAGE,
@@ -725,29 +598,27 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 		goto asq_send_command_error;
 	}
 
-	/* initialize the temp desc pointer with the right desc */
+	 
 	desc_on_ring = IAVF_ADMINQ_DESC(hw->aq.asq, hw->aq.asq.next_to_use);
 
-	/* if the desc is available copy the temp desc to the right place */
+	 
 	*desc_on_ring = *desc;
 
-	/* if buff is not NULL assume indirect command */
+	 
 	if (buff) {
 		dma_buff = &hw->aq.asq.r.asq_bi[hw->aq.asq.next_to_use];
-		/* copy the user buff into the respective DMA buff */
+		 
 		memcpy(dma_buff->va, buff, buff_size);
 		desc_on_ring->datalen = cpu_to_le16(buff_size);
 
-		/* Update the address values in the desc with the pa value
-		 * for respective buffer
-		 */
+		 
 		desc_on_ring->params.external.addr_high =
 				cpu_to_le32(upper_32_bits(dma_buff->pa));
 		desc_on_ring->params.external.addr_low =
 				cpu_to_le32(lower_32_bits(dma_buff->pa));
 	}
 
-	/* bump the tail */
+	 
 	iavf_debug(hw, IAVF_DEBUG_AQ_MESSAGE, "AQTX: desc and buffer:\n");
 	iavf_debug_aq(hw, IAVF_DEBUG_AQ_COMMAND, (void *)desc_on_ring,
 		      buff, buff_size);
@@ -757,16 +628,12 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 	if (!details->postpone)
 		wr32(hw, hw->aq.asq.tail, hw->aq.asq.next_to_use);
 
-	/* if cmd_details are not defined or async flag is not set,
-	 * we need to wait for desc write back
-	 */
+	 
 	if (!details->async && !details->postpone) {
 		u32 total_delay = 0;
 
 		do {
-			/* AQ designers suggest use of head for better
-			 * timing reliability than DD bit
-			 */
+			 
 			if (iavf_asq_done(hw))
 				break;
 			udelay(50);
@@ -774,7 +641,7 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 		} while (total_delay < hw->aq.asq_cmd_timeout);
 	}
 
-	/* if ready, copy the desc back to temp */
+	 
 	if (iavf_asq_done(hw)) {
 		*desc = *desc_on_ring;
 		if (buff)
@@ -786,7 +653,7 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 				   "AQTX: Command completed with error 0x%X.\n",
 				   retval);
 
-			/* strip off FW internal code */
+			 
 			retval &= 0xff;
 		}
 		cmd_completed = true;
@@ -803,11 +670,11 @@ enum iavf_status iavf_asq_send_command(struct iavf_hw *hw,
 		   "AQTX: desc and buffer writeback:\n");
 	iavf_debug_aq(hw, IAVF_DEBUG_AQ_COMMAND, (void *)desc, buff, buff_size);
 
-	/* save writeback aq if requested */
+	 
 	if (details->wb_desc)
 		*details->wb_desc = *desc_on_ring;
 
-	/* update the error if time out occurred */
+	 
 	if ((!cmd_completed) &&
 	    (!details->async && !details->postpone)) {
 		if (rd32(hw, hw->aq.asq.len) & IAVF_VF_ATQLEN1_ATQCRIT_MASK) {
@@ -826,31 +693,16 @@ asq_send_command_error:
 	return status;
 }
 
-/**
- *  iavf_fill_default_direct_cmd_desc - AQ descriptor helper function
- *  @desc:     pointer to the temp descriptor (non DMA mem)
- *  @opcode:   the opcode can be used to decide which flags to turn off or on
- *
- *  Fill the desc with default values
- **/
+ 
 void iavf_fill_default_direct_cmd_desc(struct iavf_aq_desc *desc, u16 opcode)
 {
-	/* zero out the desc */
+	 
 	memset((void *)desc, 0, sizeof(struct iavf_aq_desc));
 	desc->opcode = cpu_to_le16(opcode);
 	desc->flags = cpu_to_le16(IAVF_AQ_FLAG_SI);
 }
 
-/**
- *  iavf_clean_arq_element
- *  @hw: pointer to the hw struct
- *  @e: event info from the receive descriptor, includes any buffers
- *  @pending: number of events that could be left to process
- *
- *  This function cleans one Admin Receive Queue element and returns
- *  the contents through e.  It can also return how many events are
- *  left to process through 'pending'
- **/
+ 
 enum iavf_status iavf_clean_arq_element(struct iavf_hw *hw,
 					struct iavf_arq_event_info *e,
 					u16 *pending)
@@ -864,10 +716,10 @@ enum iavf_status iavf_clean_arq_element(struct iavf_hw *hw,
 	u16 flags;
 	u16 ntu;
 
-	/* pre-clean the event info */
+	 
 	memset(&e->desc, 0, sizeof(e->desc));
 
-	/* take the lock before we start messing with the ring */
+	 
 	mutex_lock(&hw->aq.arq_mutex);
 
 	if (hw->aq.arq.count == 0) {
@@ -877,15 +729,15 @@ enum iavf_status iavf_clean_arq_element(struct iavf_hw *hw,
 		goto clean_arq_element_err;
 	}
 
-	/* set next_to_use to head */
+	 
 	ntu = rd32(hw, hw->aq.arq.head) & IAVF_VF_ARQH1_ARQH_MASK;
 	if (ntu == ntc) {
-		/* nothing to do - shouldn't need to update ring's values */
+		 
 		ret_code = IAVF_ERR_ADMIN_QUEUE_NO_WORK;
 		goto clean_arq_element_out;
 	}
 
-	/* now clean the next descriptor */
+	 
 	desc = IAVF_ADMINQ_DESC(hw->aq.arq, ntc);
 	desc_idx = ntc;
 
@@ -911,10 +763,7 @@ enum iavf_status iavf_clean_arq_element(struct iavf_hw *hw,
 	iavf_debug_aq(hw, IAVF_DEBUG_AQ_COMMAND, (void *)desc, e->msg_buf,
 		      hw->aq.arq_buf_size);
 
-	/* Restore the original datalen and buffer address in the desc,
-	 * FW updates datalen to indicate the event message
-	 * size
-	 */
+	 
 	bi = &hw->aq.arq.r.arq_bi[ntc];
 	memset((void *)desc, 0, sizeof(struct iavf_aq_desc));
 
@@ -925,9 +774,9 @@ enum iavf_status iavf_clean_arq_element(struct iavf_hw *hw,
 	desc->params.external.addr_high = cpu_to_le32(upper_32_bits(bi->pa));
 	desc->params.external.addr_low = cpu_to_le32(lower_32_bits(bi->pa));
 
-	/* set tail = the last cleaned desc index. */
+	 
 	wr32(hw, hw->aq.arq.tail, ntc);
-	/* ntc is updated to tail + 1 */
+	 
 	ntc++;
 	if (ntc == hw->aq.num_arq_entries)
 		ntc = 0;
@@ -935,7 +784,7 @@ enum iavf_status iavf_clean_arq_element(struct iavf_hw *hw,
 	hw->aq.arq.next_to_use = ntu;
 
 clean_arq_element_out:
-	/* Set pending if needed, unlock and return */
+	 
 	if (pending)
 		*pending = (ntc > ntu ? hw->aq.arq.count : 0) + (ntu - ntc);
 

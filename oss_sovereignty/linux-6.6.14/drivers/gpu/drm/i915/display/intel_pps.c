@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: MIT
-/*
- * Copyright © 2020 Intel Corporation
- */
+
+ 
 
 #include "g4x_dp.h"
 #include "i915_drv.h"
@@ -30,10 +28,7 @@ static const char *pps_name(struct drm_i915_private *i915,
 	if (IS_VALLEYVIEW(i915) || IS_CHERRYVIEW(i915)) {
 		switch (pps->pps_pipe) {
 		case INVALID_PIPE:
-			/*
-			 * FIXME would be nice if we can guarantee
-			 * to always have a valid PPS when calling this.
-			 */
+			 
 			return "PPS <none>";
 		case PIPE_A:
 			return "PPS A";
@@ -63,9 +58,7 @@ intel_wakeref_t intel_pps_lock(struct intel_dp *intel_dp)
 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
 	intel_wakeref_t wakeref;
 
-	/*
-	 * See intel_pps_reset_all() why we need a power domain reference here.
-	 */
+	 
 	wakeref = intel_display_power_get(dev_priv, POWER_DOMAIN_DISPLAY_CORE);
 	mutex_lock(&dev_priv->display.pps.mutex);
 
@@ -106,9 +99,7 @@ vlv_power_sequencer_kick(struct intel_dp *intel_dp)
 		    pps_name(dev_priv, &intel_dp->pps),
 		    dig_port->base.base.base.id, dig_port->base.base.name);
 
-	/* Preserve the BIOS-computed detected bit. This is
-	 * supposed to be read-only.
-	 */
+	 
 	DP = intel_de_read(dev_priv, intel_dp->output_reg) & DP_DETECTED;
 	DP |= DP_VOLTAGE_0_4 | DP_PRE_EMPHASIS_0;
 	DP |= DP_PORT_WIDTH(1);
@@ -121,10 +112,7 @@ vlv_power_sequencer_kick(struct intel_dp *intel_dp)
 
 	pll_enabled = intel_de_read(dev_priv, DPLL(pipe)) & DPLL_VCO_ENABLE;
 
-	/*
-	 * The DPLL for the pipe must be enabled for this to work.
-	 * So enable temporarily it if it's not already enabled.
-	 */
+	 
 	if (!pll_enabled) {
 		release_cl_override = IS_CHERRYVIEW(dev_priv) &&
 			!chv_phy_powergate_ch(dev_priv, phy, ch, true);
@@ -137,12 +125,7 @@ vlv_power_sequencer_kick(struct intel_dp *intel_dp)
 		}
 	}
 
-	/*
-	 * Similar magic as in intel_dp_enable_port().
-	 * We _must_ do this port enable + disable trick
-	 * to make this power sequencer lock onto the port.
-	 * Otherwise even VDD force bit won't work.
-	 */
+	 
 	intel_de_write(dev_priv, intel_dp->output_reg, DP);
 	intel_de_posting_read(dev_priv, intel_dp->output_reg);
 
@@ -165,10 +148,7 @@ static enum pipe vlv_find_free_pps(struct drm_i915_private *dev_priv)
 	struct intel_encoder *encoder;
 	unsigned int pipes = (1 << PIPE_A) | (1 << PIPE_B);
 
-	/*
-	 * We don't have power sequencer currently.
-	 * Pick one that's not used by other ports.
-	 */
+	 
 	for_each_intel_dp(&dev_priv->drm, encoder) {
 		struct intel_dp *intel_dp = enc_to_intel_dp(encoder);
 
@@ -204,7 +184,7 @@ vlv_power_sequencer_pipe(struct intel_dp *intel_dp)
 
 	lockdep_assert_held(&dev_priv->display.pps.mutex);
 
-	/* We should never land here with regular DP ports */
+	 
 	drm_WARN_ON(&dev_priv->drm, !intel_dp_is_edp(intel_dp));
 
 	drm_WARN_ON(&dev_priv->drm, intel_dp->pps.active_pipe != INVALID_PIPE &&
@@ -215,10 +195,7 @@ vlv_power_sequencer_pipe(struct intel_dp *intel_dp)
 
 	pipe = vlv_find_free_pps(dev_priv);
 
-	/*
-	 * Didn't find one. This should not happen since there
-	 * are two power sequencers and up to two eDP ports.
-	 */
+	 
 	if (drm_WARN_ON(&dev_priv->drm, pipe == INVALID_PIPE))
 		pipe = PIPE_A;
 
@@ -230,14 +207,11 @@ vlv_power_sequencer_pipe(struct intel_dp *intel_dp)
 		    pps_name(dev_priv, &intel_dp->pps),
 		    dig_port->base.base.base.id, dig_port->base.base.name);
 
-	/* init power sequencer on this pipe and port */
+	 
 	pps_init_delays(intel_dp);
 	pps_init_registers(intel_dp, true);
 
-	/*
-	 * Even vdd force doesn't work until we've made
-	 * the power sequencer lock in on the port.
-	 */
+	 
 	vlv_power_sequencer_kick(intel_dp);
 
 	return intel_dp->pps.pps_pipe;
@@ -251,7 +225,7 @@ bxt_power_sequencer_idx(struct intel_dp *intel_dp)
 
 	lockdep_assert_held(&dev_priv->display.pps.mutex);
 
-	/* We should never land here with regular DP ports */
+	 
 	drm_WARN_ON(&dev_priv->drm, !intel_dp_is_edp(intel_dp));
 
 	if (!intel_dp->pps.pps_reset)
@@ -259,10 +233,7 @@ bxt_power_sequencer_idx(struct intel_dp *intel_dp)
 
 	intel_dp->pps.pps_reset = false;
 
-	/*
-	 * Only the HW needs to be reprogrammed, the SW state is fixed and
-	 * has been setup during connector init.
-	 */
+	 
 	pps_init_registers(intel_dp, false);
 
 	return pps_idx;
@@ -316,20 +287,20 @@ vlv_initial_power_sequencer_setup(struct intel_dp *intel_dp)
 
 	lockdep_assert_held(&dev_priv->display.pps.mutex);
 
-	/* try to find a pipe with this port selected */
-	/* first pick one where the panel is on */
+	 
+	 
 	intel_dp->pps.pps_pipe = vlv_initial_pps_pipe(dev_priv, port,
 						      pps_has_pp_on);
-	/* didn't find one? pick one where vdd is on */
+	 
 	if (intel_dp->pps.pps_pipe == INVALID_PIPE)
 		intel_dp->pps.pps_pipe = vlv_initial_pps_pipe(dev_priv, port,
 							      pps_has_vdd_on);
-	/* didn't find one? pick one with just the correct port */
+	 
 	if (intel_dp->pps.pps_pipe == INVALID_PIPE)
 		intel_dp->pps.pps_pipe = vlv_initial_pps_pipe(dev_priv, port,
 							      pps_any);
 
-	/* didn't find one? just let vlv_power_sequencer_pipe() pick one when needed */
+	 
 	if (intel_dp->pps.pps_pipe == INVALID_PIPE) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "[ENCODER:%d:%s] no initial power sequencer\n",
@@ -399,7 +370,7 @@ pps_initial_setup(struct intel_dp *intel_dp)
 		return true;
 	}
 
-	/* first ask the VBT */
+	 
 	if (intel_num_pps(i915) > 1)
 		intel_dp->pps.pps_idx = connector->panel.vbt.backlight.controller;
 	else
@@ -408,13 +379,13 @@ pps_initial_setup(struct intel_dp *intel_dp)
 	if (drm_WARN_ON(&i915->drm, intel_dp->pps.pps_idx >= intel_num_pps(i915)))
 		intel_dp->pps.pps_idx = -1;
 
-	/* VBT wasn't parsed yet? pick one where the panel is on */
+	 
 	if (intel_dp->pps.pps_idx < 0)
 		intel_dp->pps.pps_idx = bxt_initial_pps_idx(i915, pps_has_pp_on);
-	/* didn't find one? pick one where vdd is on */
+	 
 	if (intel_dp->pps.pps_idx < 0)
 		intel_dp->pps.pps_idx = bxt_initial_pps_idx(i915, pps_has_vdd_on);
-	/* didn't find one? pick any */
+	 
 	if (intel_dp->pps.pps_idx < 0) {
 		intel_dp->pps.pps_idx = bxt_initial_pps_idx(i915, pps_any);
 
@@ -442,15 +413,7 @@ void intel_pps_reset_all(struct drm_i915_private *dev_priv)
 	if (!HAS_DISPLAY(dev_priv))
 		return;
 
-	/*
-	 * We can't grab pps_mutex here due to deadlock with power_domain
-	 * mutex when power_domain functions are called while holding pps_mutex.
-	 * That also means that in order to use pps_pipe the code needs to
-	 * hold both a power domain reference and pps_mutex, and the power domain
-	 * reference get/put must be done while _not_ holding pps_mutex.
-	 * pps_{lock,unlock}() do these steps in the correct order, so one
-	 * should use them always.
-	 */
+	 
 
 	for_each_intel_dp(&dev_priv->drm, encoder) {
 		struct intel_dp *intel_dp = enc_to_intel_dp(encoder);
@@ -496,7 +459,7 @@ static void intel_pps_get_registers(struct intel_dp *intel_dp,
 	regs->pp_on = PP_ON_DELAYS(pps_idx);
 	regs->pp_off = PP_OFF_DELAYS(pps_idx);
 
-	/* Cycle delay moved from PP_DIVISOR to PP_CONTROL */
+	 
 	if (IS_GEMINILAKE(dev_priv) || IS_BROXTON(dev_priv) ||
 	    INTEL_PCH_TYPE(dev_priv) >= PCH_CNP)
 		regs->pp_div = INVALID_MMIO_REG;
@@ -650,13 +613,11 @@ static void wait_panel_power_cycle(struct intel_dp *intel_dp)
 		    dig_port->base.base.base.id, dig_port->base.base.name,
 		    pps_name(i915, &intel_dp->pps));
 
-	/* take the difference of current time and panel power off time
-	 * and then make panel wait for t11_t12 if needed. */
+	 
 	panel_power_on_time = ktime_get_boottime();
 	panel_power_off_duration = ktime_ms_delta(panel_power_on_time, intel_dp->pps.panel_power_off_time);
 
-	/* When we disable the VDD override bit last we have to do the manual
-	 * wait. */
+	 
 	if (panel_power_off_duration < (s64)intel_dp->pps.panel_power_cycle_delay)
 		wait_remaining_ms_from_jiffies(jiffies,
 				       intel_dp->pps.panel_power_cycle_delay - panel_power_off_duration);
@@ -687,9 +648,7 @@ static void edp_wait_backlight_off(struct intel_dp *intel_dp)
 				       intel_dp->pps.backlight_off_delay);
 }
 
-/* Read the current pp_control value, unlocking the register if it
- * is locked
- */
+ 
 
 static  u32 ilk_get_pp_control(struct intel_dp *intel_dp)
 {
@@ -707,11 +666,7 @@ static  u32 ilk_get_pp_control(struct intel_dp *intel_dp)
 	return control;
 }
 
-/*
- * Must be paired with intel_pps_vdd_off_unlocked().
- * Must hold pps_mutex around the whole on/off sequence.
- * Can be nested with intel_pps_vdd_{on,off}() calls.
- */
+ 
 bool intel_pps_vdd_on_unlocked(struct intel_dp *intel_dp)
 {
 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
@@ -755,9 +710,7 @@ bool intel_pps_vdd_on_unlocked(struct intel_dp *intel_dp)
 		    pps_name(dev_priv, &intel_dp->pps),
 		    intel_de_read(dev_priv, pp_stat_reg),
 		    intel_de_read(dev_priv, pp_ctrl_reg));
-	/*
-	 * If the panel wasn't on, delay before accessing aux channel
-	 */
+	 
 	if (!edp_have_panel_power(intel_dp)) {
 		drm_dbg_kms(&dev_priv->drm,
 			    "[ENCODER:%d:%s] %s panel power wasn't enabled\n",
@@ -769,12 +722,7 @@ bool intel_pps_vdd_on_unlocked(struct intel_dp *intel_dp)
 	return need_to_disable;
 }
 
-/*
- * Must be paired with intel_pps_off().
- * Nested calls to these functions are not allowed since
- * we drop the lock. Caller must use some higher level
- * locking to prevent nested calls from other threads.
- */
+ 
 void intel_pps_vdd_on(struct intel_dp *intel_dp)
 {
 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
@@ -821,7 +769,7 @@ static void intel_pps_vdd_off_sync_unlocked(struct intel_dp *intel_dp)
 	intel_de_write(dev_priv, pp_ctrl_reg, pp);
 	intel_de_posting_read(dev_priv, pp_ctrl_reg);
 
-	/* Make sure sequencer is idle before allowing subsequent activity */
+	 
 	drm_dbg_kms(&dev_priv->drm, "[ENCODER:%d:%s] %s PP_STATUS: 0x%08x PP_CONTROL: 0x%08x\n",
 		    dig_port->base.base.base.id, dig_port->base.base.name,
 		    pps_name(dev_priv, &intel_dp->pps),
@@ -844,10 +792,7 @@ void intel_pps_vdd_off_sync(struct intel_dp *intel_dp)
 		return;
 
 	cancel_delayed_work_sync(&intel_dp->pps.panel_vdd_work);
-	/*
-	 * vdd might still be enabled due to the delayed vdd off.
-	 * Make sure vdd is actually turned off here.
-	 */
+	 
 	with_intel_pps_lock(intel_dp, wakeref)
 		intel_pps_vdd_off_sync_unlocked(intel_dp);
 }
@@ -870,28 +815,17 @@ static void edp_panel_vdd_schedule_off(struct intel_dp *intel_dp)
 	struct drm_i915_private *i915 = dp_to_i915(intel_dp);
 	unsigned long delay;
 
-	/*
-	 * We may not yet know the real power sequencing delays,
-	 * so keep VDD enabled until we're done with init.
-	 */
+	 
 	if (intel_dp->pps.initializing)
 		return;
 
-	/*
-	 * Queue the timer to fire a long time from now (relative to the power
-	 * down delay) to keep the panel power up across a sequence of
-	 * operations.
-	 */
+	 
 	delay = msecs_to_jiffies(intel_dp->pps.panel_power_cycle_delay * 5);
 	queue_delayed_work(i915->unordered_wq,
 			   &intel_dp->pps.panel_vdd_work, delay);
 }
 
-/*
- * Must be paired with edp_panel_vdd_on().
- * Must hold pps_mutex around the whole on/off sequence.
- * Can be nested with intel_pps_vdd_{on,off}() calls.
- */
+ 
 void intel_pps_vdd_off_unlocked(struct intel_dp *intel_dp, bool sync)
 {
 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
@@ -943,7 +877,7 @@ void intel_pps_on_unlocked(struct intel_dp *intel_dp)
 	pp_ctrl_reg = _pp_ctrl_reg(intel_dp);
 	pp = ilk_get_pp_control(intel_dp);
 	if (IS_IRONLAKE(dev_priv)) {
-		/* ILK workaround: disable reset around power sequence */
+		 
 		pp &= ~PANEL_POWER_RESET;
 		intel_de_write(dev_priv, pp_ctrl_reg, pp);
 		intel_de_posting_read(dev_priv, pp_ctrl_reg);
@@ -960,7 +894,7 @@ void intel_pps_on_unlocked(struct intel_dp *intel_dp)
 	intel_dp->pps.last_power_on = jiffies;
 
 	if (IS_IRONLAKE(dev_priv)) {
-		pp |= PANEL_POWER_RESET; /* restore panel reset bit */
+		pp |= PANEL_POWER_RESET;  
 		intel_de_write(dev_priv, pp_ctrl_reg, pp);
 		intel_de_posting_read(dev_priv, pp_ctrl_reg);
 	}
@@ -999,8 +933,7 @@ void intel_pps_off_unlocked(struct intel_dp *intel_dp)
 		 pps_name(dev_priv, &intel_dp->pps));
 
 	pp = ilk_get_pp_control(intel_dp);
-	/* We need to switch off panel power _and_ force vdd, for otherwise some
-	 * panels get very unhappy and cease to work. */
+	 
 	pp &= ~(PANEL_POWER_ON | PANEL_POWER_RESET | EDP_FORCE_VDD |
 		EDP_BLC_ENABLE);
 
@@ -1014,7 +947,7 @@ void intel_pps_off_unlocked(struct intel_dp *intel_dp)
 	wait_panel_off(intel_dp);
 	intel_dp->pps.panel_power_off_time = ktime_get_boottime();
 
-	/* We got a reference when we enabled the VDD. */
+	 
 	intel_display_power_put(dev_priv,
 				intel_aux_power_domain(dig_port),
 				fetch_and_zero(&intel_dp->pps.vdd_wakeref));
@@ -1031,18 +964,13 @@ void intel_pps_off(struct intel_dp *intel_dp)
 		intel_pps_off_unlocked(intel_dp);
 }
 
-/* Enable backlight in the panel power control. */
+ 
 void intel_pps_backlight_on(struct intel_dp *intel_dp)
 {
 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
 	intel_wakeref_t wakeref;
 
-	/*
-	 * If we enable the backlight right away following a panel power
-	 * on, we may see slight flicker as the panel syncs with the eDP
-	 * link.  So delay a bit to make sure the image is solid before
-	 * allowing it to appear.
-	 */
+	 
 	wait_backlight_on(intel_dp);
 
 	with_intel_pps_lock(intel_dp, wakeref) {
@@ -1057,7 +985,7 @@ void intel_pps_backlight_on(struct intel_dp *intel_dp)
 	}
 }
 
-/* Disable backlight in the panel power control. */
+ 
 void intel_pps_backlight_off(struct intel_dp *intel_dp)
 {
 	struct drm_i915_private *dev_priv = dp_to_i915(intel_dp);
@@ -1081,10 +1009,7 @@ void intel_pps_backlight_off(struct intel_dp *intel_dp)
 	edp_wait_backlight_off(intel_dp);
 }
 
-/*
- * Hook for controlling the panel power control backlight through the bl_power
- * sysfs attribute. Take care to handle multiple calls.
- */
+ 
 void intel_pps_backlight_power(struct intel_connector *connector, bool enable)
 {
 	struct drm_i915_private *i915 = to_i915(connector->base.dev);
@@ -1121,15 +1046,7 @@ static void vlv_detach_power_sequencer(struct intel_dp *intel_dp)
 
 	intel_pps_vdd_off_sync_unlocked(intel_dp);
 
-	/*
-	 * VLV seems to get confused when multiple power sequencers
-	 * have the same port selected (even if only one has power/vdd
-	 * enabled). The failure manifests as vlv_wait_port_ready() failing
-	 * CHV on the other hand doesn't seem to mind having the same port
-	 * selected in multiple power sequencers, but let's clear the
-	 * port select always when logically disconnecting a power sequencer
-	 * from a port.
-	 */
+	 
 	drm_dbg_kms(&dev_priv->drm,
 		    "detaching %s from [ENCODER:%d:%s]\n",
 		    pps_name(dev_priv, &intel_dp->pps),
@@ -1163,7 +1080,7 @@ static void vlv_steal_power_sequencer(struct drm_i915_private *dev_priv,
 			    pipe_name(pipe), encoder->base.base.id,
 			    encoder->base.name);
 
-		/* make sure vdd is off before we steal it */
+		 
 		vlv_detach_power_sequencer(intel_dp);
 	}
 }
@@ -1181,18 +1098,11 @@ void vlv_pps_init(struct intel_encoder *encoder,
 
 	if (intel_dp->pps.pps_pipe != INVALID_PIPE &&
 	    intel_dp->pps.pps_pipe != crtc->pipe) {
-		/*
-		 * If another power sequencer was being used on this
-		 * port previously make sure to turn off vdd there while
-		 * we still have control of it.
-		 */
+		 
 		vlv_detach_power_sequencer(intel_dp);
 	}
 
-	/*
-	 * We may be stealing the power
-	 * sequencer from another port.
-	 */
+	 
 	vlv_steal_power_sequencer(dev_priv, crtc->pipe);
 
 	intel_dp->pps.active_pipe = crtc->pipe;
@@ -1200,7 +1110,7 @@ void vlv_pps_init(struct intel_encoder *encoder,
 	if (!intel_dp_is_edp(intel_dp))
 		return;
 
-	/* now it's all ours */
+	 
 	intel_dp->pps.pps_pipe = crtc->pipe;
 
 	drm_dbg_kms(&dev_priv->drm,
@@ -1208,7 +1118,7 @@ void vlv_pps_init(struct intel_encoder *encoder,
 		    pps_name(dev_priv, &intel_dp->pps),
 		    encoder->base.base.id, encoder->base.name);
 
-	/* init power sequencer on this pipe and port */
+	 
 	pps_init_delays(intel_dp);
 	pps_init_registers(intel_dp, true);
 }
@@ -1223,12 +1133,7 @@ static void pps_vdd_init(struct intel_dp *intel_dp)
 	if (!edp_have_panel_vdd(intel_dp))
 		return;
 
-	/*
-	 * The VDD bit needs a power domain reference, so if the bit is
-	 * already enabled when we boot or resume, grab this reference and
-	 * schedule a vdd off, so we don't hold on to the reference
-	 * indefinitely.
-	 */
+	 
 	drm_dbg_kms(&dev_priv->drm,
 		    "[ENCODER:%d:%s] %s VDD left on by BIOS, adjusting state tracking\n",
 		    dig_port->base.base.base.id, dig_port->base.base.name,
@@ -1253,12 +1158,7 @@ bool intel_pps_have_panel_power_or_vdd(struct intel_dp *intel_dp)
 
 static void pps_init_timestamps(struct intel_dp *intel_dp)
 {
-	/*
-	 * Initialize panel power off time to 0, assuming panel power could have
-	 * been toggled between kernel boot and now only by a previously loaded
-	 * and removed i915, which has already ensured sufficient power off
-	 * delay at module remove.
-	 */
+	 
 	intel_dp->pps.panel_power_off_time = 0;
 	intel_dp->pps.last_power_on = jiffies;
 	intel_dp->pps.last_backlight_off = jiffies;
@@ -1275,14 +1175,14 @@ intel_pps_readout_hw_state(struct intel_dp *intel_dp, struct edp_power_seq *seq)
 
 	pp_ctl = ilk_get_pp_control(intel_dp);
 
-	/* Ensure PPS is unlocked */
+	 
 	if (!HAS_DDI(dev_priv))
 		intel_de_write(dev_priv, regs.pp_ctrl, pp_ctl);
 
 	pp_on = intel_de_read(dev_priv, regs.pp_on);
 	pp_off = intel_de_read(dev_priv, regs.pp_off);
 
-	/* Pull timing values out of registers */
+	 
 	seq->t1_t3 = REG_FIELD_GET(PANEL_POWER_UP_DELAY_MASK, pp_on);
 	seq->t8 = REG_FIELD_GET(PANEL_LIGHT_ON_DELAY_MASK, pp_on);
 	seq->t9 = REG_FIELD_GET(PANEL_LIGHT_OFF_DELAY_MASK, pp_off);
@@ -1359,11 +1259,7 @@ static void pps_init_delays_vbt(struct intel_dp *intel_dp,
 	if (!pps_delays_valid(vbt))
 		return;
 
-	/* On Toshiba Satellite P50-C-18C system the VBT T12 delay
-	 * of 500ms appears to be too short. Ocassionally the panel
-	 * just fails to power back on. Increasing the delay to 800ms
-	 * seems sufficient to avoid this problem.
-	 */
+	 
 	if (intel_has_quirk(dev_priv, QUIRK_INCREASE_T12_DELAY)) {
 		vbt->t11_t12 = max_t(u16, vbt->t11_t12, 1300 * 10);
 		drm_dbg_kms(&dev_priv->drm,
@@ -1371,10 +1267,7 @@ static void pps_init_delays_vbt(struct intel_dp *intel_dp,
 			    vbt->t11_t12);
 	}
 
-	/* T11_T12 delay is special and actually in units of 100ms, but zero
-	 * based in the hw (so we need to add 100 ms). But the sw vbt
-	 * table multiplies it with 1000 to make it in units of 100usec,
-	 * too. */
+	 
 	vbt->t11_t12 += 100 * 10;
 
 	intel_pps_dump_state(intel_dp, "vbt", vbt);
@@ -1387,16 +1280,12 @@ static void pps_init_delays_spec(struct intel_dp *intel_dp,
 
 	lockdep_assert_held(&dev_priv->display.pps.mutex);
 
-	/* Upper limits from eDP 1.3 spec. Note that we use the clunky units of
-	 * our hw here, which are all in 100usec. */
+	 
 	spec->t1_t3 = 210 * 10;
-	spec->t8 = 50 * 10; /* no limit for t8, use t7 instead */
-	spec->t9 = 50 * 10; /* no limit for t9, make it symmetric with t8 */
+	spec->t8 = 50 * 10;  
+	spec->t9 = 50 * 10;  
 	spec->t10 = 500 * 10;
-	/* This one is special and actually in units of 100ms, but zero
-	 * based in the hw (so we need to add 100 ms). But the sw vbt
-	 * table multiplies it with 1000 to make it in units of 100usec,
-	 * too. */
+	 
 	spec->t11_t12 = (510 + 100) * 10;
 
 	intel_pps_dump_state(intel_dp, "spec", spec);
@@ -1410,7 +1299,7 @@ static void pps_init_delays(struct intel_dp *intel_dp)
 
 	lockdep_assert_held(&dev_priv->display.pps.mutex);
 
-	/* already initialized? */
+	 
 	if (pps_delays_valid(final))
 		return;
 
@@ -1418,8 +1307,7 @@ static void pps_init_delays(struct intel_dp *intel_dp)
 	pps_init_delays_vbt(intel_dp, &vbt);
 	pps_init_delays_spec(intel_dp, &spec);
 
-	/* Use the max of the register settings and vbt. If both are
-	 * unset, fall back to the spec limits. */
+	 
 #define assign_final(field)	final->field = (max(cur.field, vbt.field) == 0 ? \
 				       spec.field : \
 				       max(cur.field, vbt.field))
@@ -1448,20 +1336,11 @@ static void pps_init_delays(struct intel_dp *intel_dp)
 		    intel_dp->pps.backlight_on_delay,
 		    intel_dp->pps.backlight_off_delay);
 
-	/*
-	 * We override the HW backlight delays to 1 because we do manual waits
-	 * on them. For T8, even BSpec recommends doing it. For T9, if we
-	 * don't do this, we'll end up waiting for the backlight off delay
-	 * twice: once when we do the manual sleep, and once when we disable
-	 * the panel and wait for the PP_STATUS bit to become zero.
-	 */
+	 
 	final->t8 = 1;
 	final->t9 = 1;
 
-	/*
-	 * HW has only a 100msec granularity for t11_t12 so round it up
-	 * accordingly.
-	 */
+	 
 	final->t11_t12 = roundup(final->t11_t12, 100 * 10);
 }
 
@@ -1478,18 +1357,7 @@ static void pps_init_registers(struct intel_dp *intel_dp, bool force_disable_vdd
 
 	intel_pps_get_registers(intel_dp, &regs);
 
-	/*
-	 * On some VLV machines the BIOS can leave the VDD
-	 * enabled even on power sequencers which aren't
-	 * hooked up to any port. This would mess up the
-	 * power domain tracking the first time we pick
-	 * one of these power sequencers for use since
-	 * intel_pps_vdd_on_unlocked() would notice that the VDD was
-	 * already on and therefore wouldn't grab the power
-	 * domain reference. Disable VDD first to avoid this.
-	 * This also avoids spuriously turning the VDD on as
-	 * soon as the new power sequencer gets initialized.
-	 */
+	 
 	if (force_disable_vdd) {
 		u32 pp = ilk_get_pp_control(intel_dp);
 
@@ -1510,8 +1378,7 @@ static void pps_init_registers(struct intel_dp *intel_dp, bool force_disable_vdd
 	pp_off = REG_FIELD_PREP(PANEL_LIGHT_OFF_DELAY_MASK, seq->t9) |
 		REG_FIELD_PREP(PANEL_POWER_DOWN_DELAY_MASK, seq->t10);
 
-	/* Haswell doesn't have any port selection bits for the panel
-	 * power sequencer any more. */
+	 
 	if (IS_VALLEYVIEW(dev_priv) || IS_CHERRYVIEW(dev_priv)) {
 		port_sel = PANEL_PORT_SELECT_VLV(port);
 	} else if (HAS_PCH_IBX(dev_priv) || HAS_PCH_CPT(dev_priv)) {
@@ -1536,9 +1403,7 @@ static void pps_init_registers(struct intel_dp *intel_dp, bool force_disable_vdd
 	intel_de_write(dev_priv, regs.pp_on, pp_on);
 	intel_de_write(dev_priv, regs.pp_off, pp_off);
 
-	/*
-	 * Compute the divisor for the pp clock, simply match the Bspec formula.
-	 */
+	 
 	if (i915_mmio_reg_valid(regs.pp_div))
 		intel_de_write(dev_priv, regs.pp_div,
 			       REG_FIELD_PREP(PP_REFERENCE_DIVIDER_MASK, (100 * div) / 2 - 1) | REG_FIELD_PREP(PANEL_POWER_CYCLE_DELAY_MASK, DIV_ROUND_UP(seq->t11_t12, 1000)));
@@ -1565,10 +1430,7 @@ void intel_pps_encoder_reset(struct intel_dp *intel_dp)
 		return;
 
 	with_intel_pps_lock(intel_dp, wakeref) {
-		/*
-		 * Reinit the power sequencer also on the resume path, in case
-		 * BIOS did something nasty with it.
-		 */
+		 
 		if (IS_VALLEYVIEW(i915) || IS_CHERRYVIEW(i915))
 			vlv_initial_power_sequencer_setup(intel_dp);
 
@@ -1629,7 +1491,7 @@ void intel_pps_init_late(struct intel_dp *intel_dp)
 	intel_wakeref_t wakeref;
 
 	with_intel_pps_lock(intel_dp, wakeref) {
-		/* Reinit delays after per-panel info has been parsed from VBT */
+		 
 		pps_init_late(intel_dp);
 
 		memset(&intel_dp->pps.pps_delays, 0, sizeof(intel_dp->pps.pps_delays));
@@ -1650,10 +1512,7 @@ void intel_pps_unlock_regs_wa(struct drm_i915_private *dev_priv)
 
 	if (!HAS_DISPLAY(dev_priv) || HAS_DDI(dev_priv))
 		return;
-	/*
-	 * This w/a is needed at least on CPT/PPT, but to be sure apply it
-	 * everywhere where registers can be write protected.
-	 */
+	 
 	pps_num = intel_num_pps(dev_priv);
 
 	for (pps_idx = 0; pps_idx < pps_num; pps_idx++)
@@ -1705,7 +1564,7 @@ void assert_pps_unlocked(struct drm_i915_private *dev_priv, enum pipe pipe)
 			break;
 		}
 	} else if (IS_VALLEYVIEW(dev_priv) || IS_CHERRYVIEW(dev_priv)) {
-		/* presumably write lock depends on pipe, not port select */
+		 
 		pp_reg = PP_CONTROL(pipe);
 		panel_pipe = pipe;
 	} else {

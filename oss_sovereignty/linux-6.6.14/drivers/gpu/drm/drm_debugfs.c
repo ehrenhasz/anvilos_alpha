@@ -1,27 +1,4 @@
-/*
- * Created: Sun Dec 21 13:08:50 2008 by bgamari@gmail.com
- *
- * Copyright 2008 Ben Gamari <bgamari@gmail.com>
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice (including the next
- * paragraph) shall be included in all copies or substantial portions of the
- * Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * VA LINUX SYSTEMS AND/OR ITS SUPPLIERS BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- */
+ 
 
 #include <linux/debugfs.h>
 #include <linux/export.h>
@@ -47,9 +24,7 @@
 
 #if defined(CONFIG_DEBUG_FS)
 
-/***************************************************
- * Initialization, etc.
- **************************************************/
+ 
 
 static int drm_name_info(struct seq_file *m, void *data)
 {
@@ -87,16 +62,14 @@ static int drm_clients_info(struct seq_file *m, void *data)
 		   "uid",
 		   "magic");
 
-	/* dev->filelist is sorted youngest first, but we want to present
-	 * oldest first (i.e. kernel, servers, clients), so walk backwardss.
-	 */
+	 
 	mutex_lock(&dev->filelist_mutex);
 	list_for_each_entry_reverse(priv, &dev->filelist, lhead) {
 		bool is_current_master = drm_is_current_master(priv);
 		struct task_struct *task;
 		struct pid *pid;
 
-		rcu_read_lock(); /* Locks priv->pid and pid_task()->comm! */
+		rcu_read_lock();  
 		pid = rcu_dereference(priv->pid);
 		task = pid_task(pid, PIDTYPE_TGID);
 		uid = task ? __task_cred(task)->euid : GLOBAL_ROOT_UID;
@@ -179,18 +152,7 @@ static const struct file_operations drm_debugfs_fops = {
 	.release = single_release,
 };
 
-/**
- * drm_debugfs_gpuva_info - dump the given DRM GPU VA space
- * @m: pointer to the &seq_file to write
- * @mgr: the &drm_gpuva_manager representing the GPU VA space
- *
- * Dumps the GPU VA mappings of a given DRM GPU VA manager.
- *
- * For each DRM GPU VA space drivers should call this function from their
- * &drm_info_list's show callback.
- *
- * Returns: 0 on success, -ENODEV if the &mgr is not initialized
- */
+ 
 int drm_debugfs_gpuva_info(struct seq_file *m,
 			   struct drm_gpuva_manager *mgr)
 {
@@ -219,18 +181,7 @@ int drm_debugfs_gpuva_info(struct seq_file *m,
 }
 EXPORT_SYMBOL(drm_debugfs_gpuva_info);
 
-/**
- * drm_debugfs_create_files - Initialize a given set of debugfs files for DRM
- * 			minor
- * @files: The array of files to create
- * @count: The number of files given
- * @root: DRI debugfs dir entry.
- * @minor: device minor number
- *
- * Create a given set of debugfs files represented by an array of
- * &struct drm_info_list in the given root directory. These files will be removed
- * automatically on drm_debugfs_cleanup().
- */
+ 
 void drm_debugfs_create_files(const struct drm_info_list *files, int count,
 			      struct dentry *root, struct drm_minor *minor)
 {
@@ -360,16 +311,7 @@ void drm_debugfs_cleanup(struct drm_minor *minor)
 	minor->debugfs_root = NULL;
 }
 
-/**
- * drm_debugfs_add_file - Add a given file to the DRM device debugfs file list
- * @dev: drm device for the ioctl
- * @name: debugfs file name
- * @show: show callback
- * @data: driver-private data, should not be device-specific
- *
- * Add a given file entry to the DRM device debugfs file list to be created on
- * drm_debugfs_init.
- */
+ 
 void drm_debugfs_add_file(struct drm_device *dev, const char *name,
 			  int (*show)(struct seq_file*, void*), void *data)
 {
@@ -389,15 +331,7 @@ void drm_debugfs_add_file(struct drm_device *dev, const char *name,
 }
 EXPORT_SYMBOL(drm_debugfs_add_file);
 
-/**
- * drm_debugfs_add_files - Add an array of files to the DRM device debugfs file list
- * @dev: drm device for the ioctl
- * @files: The array of files to create
- * @count: The number of files given
- *
- * Add a given set of debugfs files represented by an array of
- * &struct drm_debugfs_info in the DRM device debugfs file list.
- */
+ 
 void drm_debugfs_add_files(struct drm_device *dev, const struct drm_debugfs_info *files, int count)
 {
 	int i;
@@ -486,10 +420,7 @@ static ssize_t edid_write(struct file *file, const char __user *ubuf,
 	return ret ? ret : len;
 }
 
-/*
- * Returns the min and max vrr vfreq through the connector's debugfs file.
- * Example usage: cat /sys/kernel/debug/dri/0/DP-1/vrr_range
- */
+ 
 static int vrr_range_show(struct seq_file *m, void *data)
 {
 	struct drm_connector *connector = m->private;
@@ -504,10 +435,7 @@ static int vrr_range_show(struct seq_file *m, void *data)
 }
 DEFINE_SHOW_ATTRIBUTE(vrr_range);
 
-/*
- * Returns Connector's max supported bpc through debugfs file.
- * Example usage: cat /sys/kernel/debug/dri/0/DP-1/output_bpc
- */
+ 
 static int output_bpc_show(struct seq_file *m, void *data)
 {
 	struct drm_connector *connector = m->private;
@@ -551,19 +479,19 @@ void drm_debugfs_connector_add(struct drm_connector *connector)
 	root = debugfs_create_dir(connector->name, minor->debugfs_root);
 	connector->debugfs_entry = root;
 
-	/* force */
+	 
 	debugfs_create_file("force", 0644, root, connector,
 			    &drm_connector_fops);
 
-	/* edid */
+	 
 	debugfs_create_file("edid_override", 0644, root, connector,
 			    &drm_edid_fops);
 
-	/* vrr range */
+	 
 	debugfs_create_file("vrr_range", 0444, root, connector,
 			    &vrr_range_fops);
 
-	/* max bpc */
+	 
 	debugfs_create_file("output_bpc", 0444, root, connector,
 			    &output_bpc_fops);
 
@@ -605,4 +533,4 @@ void drm_debugfs_crtc_remove(struct drm_crtc *crtc)
 	crtc->debugfs_entry = NULL;
 }
 
-#endif /* CONFIG_DEBUG_FS */
+#endif  

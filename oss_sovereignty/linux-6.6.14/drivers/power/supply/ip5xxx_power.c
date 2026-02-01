@@ -1,6 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Copyright (C) 2021 Samuel Holland <samuel@sholland.org>
+
+
+
 
 #include <linux/i2c.h>
 #include <linux/module.h>
@@ -79,14 +79,7 @@ struct ip5xxx {
 	bool initialized;
 };
 
-/*
- * The IP5xxx charger only responds on I2C when it is "awake". The charger is
- * generally only awake when VIN is powered or when its boost converter is
- * enabled. Going into shutdown resets all register values. To handle this:
- *  1) When any bus error occurs, assume the charger has gone into shutdown.
- *  2) Attempt the initialization sequence on each subsequent register access
- *     until it succeeds.
- */
+ 
 static int ip5xxx_read(struct ip5xxx *ip5xxx, unsigned int reg,
 		       unsigned int *val)
 {
@@ -119,10 +112,7 @@ static int ip5xxx_initialize(struct power_supply *psy)
 	if (ip5xxx->initialized)
 		return 0;
 
-	/*
-	 * Disable shutdown under light load.
-	 * Enable power on when under load.
-	 */
+	 
 	ret = ip5xxx_update_bits(ip5xxx, IP5XXX_SYS_CTL1,
 				 IP5XXX_SYS_CTL1_LIGHT_SHDN_EN |
 				 IP5XXX_SYS_CTL1_LOAD_PWRUP_EN,
@@ -130,28 +120,21 @@ static int ip5xxx_initialize(struct power_supply *psy)
 	if (ret)
 		return ret;
 
-	/*
-	 * Enable shutdown after a long button press (as configured below).
-	 */
+	 
 	ret = ip5xxx_update_bits(ip5xxx, IP5XXX_SYS_CTL3,
 				 IP5XXX_SYS_CTL3_BTN_SHDN_EN,
 				 IP5XXX_SYS_CTL3_BTN_SHDN_EN);
 	if (ret)
 		return ret;
 
-	/*
-	 * Power on automatically when VIN is removed.
-	 */
+	 
 	ret = ip5xxx_update_bits(ip5xxx, IP5XXX_SYS_CTL4,
 				 IP5XXX_SYS_CTL4_VIN_PULLOUT_BOOST_EN,
 				 IP5XXX_SYS_CTL4_VIN_PULLOUT_BOOST_EN);
 	if (ret)
 		return ret;
 
-	/*
-	 * Enable the NTC.
-	 * Configure the button for two presses => LED, long press => shutdown.
-	 */
+	 
 	ret = ip5xxx_update_bits(ip5xxx, IP5XXX_SYS_CTL5,
 				 IP5XXX_SYS_CTL5_NTC_DIS |
 				 IP5XXX_SYS_CTL5_WLED_MODE_SEL |
@@ -269,10 +252,7 @@ static int ip5xxx_battery_get_voltage_max(struct ip5xxx *ip5xxx, int *val)
 	if (ret)
 		return ret;
 
-	/*
-	 * It is not clear what this will return if
-	 * IP5XXX_CHG_CTL4_BAT_TYPE_SEL_EN is not set...
-	 */
+	 
 	switch (rval & IP5XXX_CHG_CTL2_BAT_TYPE_SEL) {
 	case IP5XXX_CHG_CTL2_BAT_TYPE_SEL_4_2V:
 		*val = 4200000;

@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2016 Anders K. Pedersen <akp@cohaesio.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/netlink.h>

@@ -1,23 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Driver for Texas Instruments TMP512, TMP513 power monitor chips
- *
- * TMP513:
- * Thermal/Power Management with Triple Remote and
- * Local Temperature Sensor and Current Shunt Monitor
- * Datasheet: https://www.ti.com/lit/gpn/tmp513
- *
- * TMP512:
- * Thermal/Power Management with Dual Remote
- *	and Local Temperature Sensor and Current Shunt Monitor
- * Datasheet: https://www.ti.com/lit/gpn/tmp512
- *
- * Copyright (C) 2019 Eric Tremblay <etremblay@distech-controls.com>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; version 2 of the License.
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/hwmon.h>
@@ -29,7 +11,7 @@
 #include <linux/slab.h>
 #include <linux/util_macros.h>
 
-// Common register definition
+
 #define TMP51X_SHUNT_CONFIG		0x00
 #define TMP51X_TEMP_CONFIG		0x01
 #define TMP51X_STATUS			0x02
@@ -55,18 +37,18 @@
 #define TMP51X_MAN_ID_REG		0xFE
 #define TMP51X_DEVICE_ID_REG		0xFF
 
-// TMP513 specific register definition
+
 #define TMP513_REMOTE_TEMP_RESULT_3	0x0B
 #define TMP513_REMOTE_TEMP_LIMIT_3	0x14
 #define TMP513_N_FACTOR_3		0x18
 
-// Common attrs, and NULL
+
 #define TMP51X_MANUFACTURER_ID		0x55FF
 
 #define TMP512_DEVICE_ID		0x22FF
 #define TMP513_DEVICE_ID		0x23FF
 
-// Default config
+
 #define TMP51X_SHUNT_CONFIG_DEFAULT	0x399F
 #define TMP51X_SHUNT_VALUE_DEFAULT	1000
 #define TMP51X_VBUS_RANGE_DEFAULT	TMP51X_VBUS_RANGE_32V
@@ -76,7 +58,7 @@
 #define TMP512_TEMP_CONFIG_DEFAULT	0xBF80
 #define TMP513_TEMP_CONFIG_DEFAULT	0xFF80
 
-// Mask and shift
+
 #define CURRENT_SENSE_VOLTAGE_320_MASK	0x1800
 #define CURRENT_SENSE_VOLTAGE_160_MASK	0x1000
 #define CURRENT_SENSE_VOLTAGE_80_MASK	0x0800
@@ -89,7 +71,7 @@
 #define TMP51X_BUS_VOLTAGE_SHIFT	3
 #define TMP51X_TEMP_SHIFT		3
 
-// Alarms
+
 #define TMP51X_SHUNT_CURRENT_H_LIMIT_POS	15
 #define TMP51X_SHUNT_CURRENT_L_LIMIT_POS	14
 #define TMP51X_BUS_VOLTAGE_H_LIMIT_POS		13
@@ -103,11 +85,11 @@
 #define TMP51X_VBUS_RANGE_32V		32000000
 #define TMP51X_VBUS_RANGE_16V		16000000
 
-// Max and Min value
+
 #define MAX_BUS_VOLTAGE_32_LIMIT	32764
 #define MAX_BUS_VOLTAGE_16_LIMIT	16382
 
-// Max possible value is -256 to +256 but datasheet indicated -40 to 125.
+
 #define MAX_TEMP_LIMIT			125000
 #define MIN_TEMP_LIMIT			-40000
 
@@ -173,7 +155,7 @@ struct tmp51x_data {
 	struct regmap *regmap;
 };
 
-// Set the shift based on the gain 8=4, 4=3, 2=2, 1=1
+
 static inline u8 tmp51x_get_pga_shift(struct tmp51x_data *data)
 {
 	return 5 - ffs(data->pga_gain);
@@ -189,28 +171,23 @@ static int tmp51x_get_value(struct tmp51x_data *data, u8 reg, u8 pos,
 	case TMP51X_SHUNT_CURRENT_RESULT:
 	case TMP51X_SHUNT_CURRENT_H_LIMIT:
 	case TMP51X_SHUNT_CURRENT_L_LIMIT:
-		/*
-		 * The valus is read in voltage in the chip but reported as
-		 * current to the user.
-		 * 2's complement number shifted by one to four depending
-		 * on the pga gain setting. 1lsb = 10uV
-		 */
+		 
 		*val = sign_extend32(regval, 17 - tmp51x_get_pga_shift(data));
 		*val = DIV_ROUND_CLOSEST(*val * 10000, data->shunt_uohms);
 		break;
 	case TMP51X_BUS_VOLTAGE_RESULT:
 	case TMP51X_BUS_VOLTAGE_H_LIMIT:
 	case TMP51X_BUS_VOLTAGE_L_LIMIT:
-		// 1lsb = 4mV
+		
 		*val = (regval >> TMP51X_BUS_VOLTAGE_SHIFT) * 4;
 		break;
 	case TMP51X_POWER_RESULT:
 	case TMP51X_POWER_LIMIT:
-		// Power = (current * BusVoltage) / 5000
+		
 		*val = regval * data->pwr_lsb_uw;
 		break;
 	case TMP51X_BUS_CURRENT_RESULT:
-		// Current = (ShuntVoltage * CalibrationRegister) / 4096
+		
 		*val = sign_extend32(regval, 16) * data->curr_lsb_ua;
 		*val = DIV_ROUND_CLOSEST(*val, 1000);
 		break;
@@ -222,16 +199,16 @@ static int tmp51x_get_value(struct tmp51x_data *data, u8 reg, u8 pos,
 	case TMP51X_REMOTE_TEMP_LIMIT_1:
 	case TMP51X_REMOTE_TEMP_LIMIT_2:
 	case TMP513_REMOTE_TEMP_LIMIT_3:
-		// 1lsb = 0.0625 degrees centigrade
+		
 		*val = sign_extend32(regval, 16) >> TMP51X_TEMP_SHIFT;
 		*val = DIV_ROUND_CLOSEST(*val * 625, 10);
 		break;
 	case TMP51X_N_FACTOR_AND_HYST_1:
-		// 1lsb = 0.5 degrees centigrade
+		
 		*val = (regval & TMP51X_HYST_MASK) * 500;
 		break;
 	default:
-		// Programmer goofed
+		
 		WARN_ON_ONCE(1);
 		*val = 0;
 		return -EOPNOTSUPP;
@@ -248,17 +225,14 @@ static int tmp51x_set_value(struct tmp51x_data *data, u8 reg, long val)
 	switch (reg) {
 	case TMP51X_SHUNT_CURRENT_H_LIMIT:
 	case TMP51X_SHUNT_CURRENT_L_LIMIT:
-		/*
-		 * The user enter current value and we convert it to
-		 * voltage. 1lsb = 10uV
-		 */
+		 
 		val = DIV_ROUND_CLOSEST(val * data->shunt_uohms, 10000);
 		max_val = U16_MAX >> tmp51x_get_pga_shift(data);
 		regval = clamp_val(val, -max_val, max_val);
 		break;
 	case TMP51X_BUS_VOLTAGE_H_LIMIT:
 	case TMP51X_BUS_VOLTAGE_L_LIMIT:
-		// 1lsb = 4mV
+		
 		max_val = (data->vbus_range_uvolt == TMP51X_VBUS_RANGE_32V) ?
 			MAX_BUS_VOLTAGE_32_LIMIT : MAX_BUS_VOLTAGE_16_LIMIT;
 
@@ -273,18 +247,18 @@ static int tmp51x_set_value(struct tmp51x_data *data, u8 reg, long val)
 	case TMP51X_REMOTE_TEMP_LIMIT_1:
 	case TMP51X_REMOTE_TEMP_LIMIT_2:
 	case TMP513_REMOTE_TEMP_LIMIT_3:
-		// 1lsb = 0.0625 degrees centigrade
+		
 		val = clamp_val(val, MIN_TEMP_LIMIT, MAX_TEMP_LIMIT);
 		regval = DIV_ROUND_CLOSEST(val * 10, 625) << TMP51X_TEMP_SHIFT;
 		break;
 	case TMP51X_N_FACTOR_AND_HYST_1:
-		// 1lsb = 0.5 degrees centigrade
+		
 		val = clamp_val(val, 0, MAX_TEMP_HYST);
 		regval = DIV_ROUND_CLOSEST(val, 500);
 		mask = TMP51X_HYST_MASK;
 		break;
 	default:
-		// Programmer goofed
+		
 		WARN_ON_ONCE(1);
 		return -EOPNOTSUPP;
 	}
@@ -524,31 +498,21 @@ static const struct hwmon_chip_info tmp51x_chip_info = {
 	.info = tmp51x_info,
 };
 
-/*
- * Calibrate the tmp51x following the datasheet method
- */
+ 
 static int tmp51x_calibrate(struct tmp51x_data *data)
 {
 	int vshunt_max = data->pga_gain * 40;
 	u64 max_curr_ma;
 	u32 div;
 
-	/*
-	 * If shunt_uohms is equal to 0, the calibration should be set to 0.
-	 * The consequence will be that the current and power measurement engine
-	 * of the sensor will not work. Temperature and voltage sensing will
-	 * continue to work.
-	 */
+	 
 	if (data->shunt_uohms == 0)
 		return regmap_write(data->regmap, TMP51X_SHUNT_CALIBRATION, 0);
 
 	max_curr_ma = DIV_ROUND_CLOSEST_ULL(vshunt_max * 1000 * 1000,
 					    data->shunt_uohms);
 
-	/*
-	 * Calculate the minimal bit resolution for the current and the power.
-	 * Those values will be used during register interpretation.
-	 */
+	 
 	data->curr_lsb_ua = DIV_ROUND_CLOSEST_ULL(max_curr_ma * 1000, 32767);
 	data->pwr_lsb_uw = 20 * data->curr_lsb_ua;
 
@@ -559,9 +523,7 @@ static int tmp51x_calibrate(struct tmp51x_data *data)
 			    DIV_ROUND_CLOSEST(40960, div));
 }
 
-/*
- * Initialize the configuration and calibration registers.
- */
+ 
 static int tmp51x_init(struct tmp51x_data *data)
 {
 	unsigned int regval;
@@ -574,7 +536,7 @@ static int tmp51x_init(struct tmp51x_data *data)
 	if (ret < 0)
 		return ret;
 
-	// nFactor configuration
+	
 	ret = regmap_update_bits(data->regmap, TMP51X_N_FACTOR_AND_HYST_1,
 				 TMP51X_NFACTOR_MASK, data->nfactor[0] << 8);
 	if (ret < 0)
@@ -596,7 +558,7 @@ static int tmp51x_init(struct tmp51x_data *data)
 	if (ret < 0)
 		return ret;
 
-	// Read the status register before using as the datasheet propose
+	
 	return regmap_read(data->regmap, TMP51X_STATUS, &regval);
 }
 
@@ -678,7 +640,7 @@ static int tmp51x_read_properties(struct device *dev, struct tmp51x_data *data)
 	if (ret >= 0)
 		memcpy(data->nfactor, nfactor, (data->id == tmp513) ? 3 : 2);
 
-	// Check if shunt value is compatible with pga-gain
+	
 	if (data->shunt_uohms > data->pga_gain * 40 * 1000 * 1000) {
 		dev_err(dev, "shunt-resistor: %u too big for pga_gain: %u\n",
 			data->shunt_uohms, data->pga_gain);

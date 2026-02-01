@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * pmi backend for the cbe_cpufreq driver
- *
- * (C) Copyright IBM Deutschland Entwicklung GmbH 2005-2007
- *
- * Author: Christian Krafft <krafft@de.ibm.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/types.h>
@@ -27,9 +21,7 @@
 bool cbe_cpufreq_has_pmi = false;
 EXPORT_SYMBOL_GPL(cbe_cpufreq_has_pmi);
 
-/*
- * hardware specific functions
- */
+ 
 
 int cbe_cpufreq_set_pmode_pmi(int cpu, unsigned int pmode)
 {

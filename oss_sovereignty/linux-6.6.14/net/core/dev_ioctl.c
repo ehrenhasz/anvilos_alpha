@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kmod.h>
 #include <linux/netdevice.h>
 #include <linux/inetdevice.h>
@@ -13,16 +13,9 @@
 
 #include "dev.h"
 
-/*
- *	Map an interface index to its name (SIOCGIFNAME)
- */
+ 
 
-/*
- *	We need this ioctl for efficient implementation of the
- *	if_indextoname() function required by the IPv6 API.  Without
- *	it, we would have to search all the interfaces to find a
- *	match.  --pb
- */
+ 
 
 static int dev_ifname(struct net *net, struct ifreq *ifr)
 {
@@ -30,11 +23,7 @@ static int dev_ifname(struct net *net, struct ifreq *ifr)
 	return netdev_get_name(net, ifr->ifr_name, ifr->ifr_ifindex);
 }
 
-/*
- *	Perform a SIOCGIFCONF call. This structure will change
- *	size eventually, and there is nothing I can do about it.
- *	Thus we will need a 'compatibility mode'.
- */
+ 
 int dev_ifconf(struct net *net, struct ifconf __user *uifc)
 {
 	struct net_device *dev;
@@ -42,7 +31,7 @@ int dev_ifconf(struct net *net, struct ifconf __user *uifc)
 	size_t size;
 	int len, total = 0, done;
 
-	/* both the ifconf and the ifreq structures are slightly different */
+	 
 	if (in_compat_syscall()) {
 		struct compat_ifconf ifc32;
 
@@ -63,7 +52,7 @@ int dev_ifconf(struct net *net, struct ifconf __user *uifc)
 		size = sizeof(struct ifreq);
 	}
 
-	/* Loop over the interfaces, and write an info block for each. */
+	 
 	rtnl_lock();
 	for_each_netdev(net, dev) {
 		if (!pos)
@@ -132,9 +121,7 @@ static int dev_setifmap(struct net_device *dev, struct ifreq *ifr)
 	return dev->netdev_ops->ndo_set_config(dev, &ifr->ifr_map);
 }
 
-/*
- *	Perform the SIOCxIFxxx calls, inside rcu_read_lock()
- */
+ 
 static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cmd)
 {
 	int err;
@@ -144,16 +131,15 @@ static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cm
 		return -ENODEV;
 
 	switch (cmd) {
-	case SIOCGIFFLAGS:	/* Get interface flags */
+	case SIOCGIFFLAGS:	 
 		ifr->ifr_flags = (short) dev_get_flags(dev);
 		return 0;
 
-	case SIOCGIFMETRIC:	/* Get the metric on the interface
-				   (currently unused) */
+	case SIOCGIFMETRIC:	 
 		ifr->ifr_metric = 0;
 		return 0;
 
-	case SIOCGIFMTU:	/* Get the MTU of a device */
+	case SIOCGIFMTU:	 
 		ifr->ifr_mtu = dev->mtu;
 		return 0;
 
@@ -173,9 +159,7 @@ static int dev_ifsioc_locked(struct net *net, struct ifreq *ifr, unsigned int cm
 		return 0;
 
 	default:
-		/* dev_ioctl() should ensure this case
-		 * is never reached
-		 */
+		 
 		WARN_ON(1);
 		err = -ENOTTY;
 		break;
@@ -205,7 +189,7 @@ static int net_hwtstamp_validate(const struct kernel_hwtstamp_config *cfg)
 		tx_type_valid = 1;
 		break;
 	case __HWTSTAMP_TX_CNT:
-		/* not a real value */
+		 
 		break;
 	}
 
@@ -229,7 +213,7 @@ static int net_hwtstamp_validate(const struct kernel_hwtstamp_config *cfg)
 		rx_filter_valid = 1;
 		break;
 	case __HWTSTAMP_FILTER_CNT:
-		/* not a real value */
+		 
 		break;
 	}
 
@@ -253,21 +237,7 @@ static int dev_eth_ioctl(struct net_device *dev,
 	return ops->ndo_eth_ioctl(dev, ifr, cmd);
 }
 
-/**
- * dev_get_hwtstamp_phylib() - Get hardware timestamping settings of NIC
- *	or of attached phylib PHY
- * @dev: Network device
- * @cfg: Timestamping configuration structure
- *
- * Helper for enforcing a common policy that phylib timestamping, if available,
- * should take precedence in front of hardware timestamping provided by the
- * netdev.
- *
- * Note: phy_mii_ioctl() only handles SIOCSHWTSTAMP (not SIOCGHWTSTAMP), and
- * there only exists a phydev->mii_ts->hwtstamp() method. So this will return
- * -EOPNOTSUPP for phylib for now, which is still more accurate than letting
- * the netdev handle the GET request.
- */
+ 
 static int dev_get_hwtstamp_phylib(struct net_device *dev,
 				   struct kernel_hwtstamp_config *cfg)
 {
@@ -285,7 +255,7 @@ static int dev_get_hwtstamp(struct net_device *dev, struct ifreq *ifr)
 	int err;
 
 	if (!ops->ndo_hwtstamp_get)
-		return dev_eth_ioctl(dev, ifr, SIOCGHWTSTAMP); /* legacy */
+		return dev_eth_ioctl(dev, ifr, SIOCGHWTSTAMP);  
 
 	if (!netif_device_present(dev))
 		return -ENODEV;
@@ -295,9 +265,7 @@ static int dev_get_hwtstamp(struct net_device *dev, struct ifreq *ifr)
 	if (err)
 		return err;
 
-	/* If the request was resolved through an unconverted driver, omit
-	 * the copy_to_user(), since the implementation has already done that
-	 */
+	 
 	if (!kernel_cfg.copied_to_user) {
 		hwtstamp_config_from_kernel(&cfg, &kernel_cfg);
 
@@ -308,20 +276,7 @@ static int dev_get_hwtstamp(struct net_device *dev, struct ifreq *ifr)
 	return 0;
 }
 
-/**
- * dev_set_hwtstamp_phylib() - Change hardware timestamping of NIC
- *	or of attached phylib PHY
- * @dev: Network device
- * @cfg: Timestamping configuration structure
- * @extack: Netlink extended ack message structure, for error reporting
- *
- * Helper for enforcing a common policy that phylib timestamping, if available,
- * should take precedence in front of hardware timestamping provided by the
- * netdev. If the netdev driver needs to perform specific actions even for PHY
- * timestamping to work properly (a switch port must trap the timestamped
- * frames and not forward them), it must set IFF_SEE_ALL_HWTSTAMP_REQUESTS in
- * dev->priv_flags.
- */
+ 
 static int dev_set_hwtstamp_phylib(struct net_device *dev,
 				   struct kernel_hwtstamp_config *cfg,
 				   struct netlink_ext_ack *extack)
@@ -390,7 +345,7 @@ static int dev_set_hwtstamp(struct net_device *dev, struct ifreq *ifr)
 	}
 
 	if (!ops->ndo_hwtstamp_set)
-		return dev_eth_ioctl(dev, ifr, SIOCSHWTSTAMP); /* legacy */
+		return dev_eth_ioctl(dev, ifr, SIOCSHWTSTAMP);  
 
 	if (!netif_device_present(dev))
 		return -ENODEV;
@@ -399,9 +354,7 @@ static int dev_set_hwtstamp(struct net_device *dev, struct ifreq *ifr)
 	if (err)
 		return err;
 
-	/* The driver may have modified the configuration, so copy the
-	 * updated version of it back to user space
-	 */
+	 
 	if (!kernel_cfg.copied_to_user) {
 		hwtstamp_config_from_kernel(&cfg, &kernel_cfg);
 
@@ -442,7 +395,7 @@ int generic_hwtstamp_get_lower(struct net_device *dev,
 	if (ops->ndo_hwtstamp_get)
 		return dev_get_hwtstamp_phylib(dev, kernel_cfg);
 
-	/* Legacy path: unconverted lower driver */
+	 
 	return generic_hwtstamp_ioctl_lower(dev, SIOCGHWTSTAMP, kernel_cfg);
 }
 EXPORT_SYMBOL(generic_hwtstamp_get_lower);
@@ -459,7 +412,7 @@ int generic_hwtstamp_set_lower(struct net_device *dev,
 	if (ops->ndo_hwtstamp_set)
 		return dev_set_hwtstamp_phylib(dev, kernel_cfg, extack);
 
-	/* Legacy path: unconverted lower driver */
+	 
 	return generic_hwtstamp_ioctl_lower(dev, SIOCSHWTSTAMP, kernel_cfg);
 }
 EXPORT_SYMBOL(generic_hwtstamp_set_lower);
@@ -508,9 +461,7 @@ static int dev_siocwandev(struct net_device *dev, struct if_settings *ifs)
 	return -EOPNOTSUPP;
 }
 
-/*
- *	Perform the SIOCxIFxxx calls, inside rtnl_lock()
- */
+ 
 static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
 		      unsigned int cmd)
 {
@@ -525,14 +476,13 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
 	ops = dev->netdev_ops;
 
 	switch (cmd) {
-	case SIOCSIFFLAGS:	/* Set interface flags */
+	case SIOCSIFFLAGS:	 
 		return dev_change_flags(dev, ifr->ifr_flags, NULL);
 
-	case SIOCSIFMETRIC:	/* Set the metric on the interface
-				   (currently unused) */
+	case SIOCSIFMETRIC:	 
 		return -EOPNOTSUPP;
 
-	case SIOCSIFMTU:	/* Set the MTU of a device */
+	case SIOCSIFMTU:	 
 		return dev_set_mtu(dev, ifr->ifr_mtu);
 
 	case SIOCSIFHWADDR:
@@ -615,22 +565,14 @@ static int dev_ifsioc(struct net *net, struct ifreq *ifr, void __user *data,
 	case SIOCBONDCHANGEACTIVE:
 		return dev_siocbond(dev, ifr, cmd);
 
-	/* Unknown ioctl */
+	 
 	default:
 		err = -EINVAL;
 	}
 	return err;
 }
 
-/**
- *	dev_load 	- load a network module
- *	@net: the applicable net namespace
- *	@name: name of interface
- *
- *	If a network interface is not present and the process has suitable
- *	privileges this function loads the module. If module loading is not
- *	available in this kernel then it becomes a nop.
- */
+ 
 
 void dev_load(struct net *net, const char *name)
 {
@@ -649,24 +591,9 @@ void dev_load(struct net *net, const char *name)
 }
 EXPORT_SYMBOL(dev_load);
 
-/*
- *	This function handles all "interface"-type I/O control requests. The actual
- *	'doing' part of this is dev_ifsioc above.
- */
+ 
 
-/**
- *	dev_ioctl	-	network device ioctl
- *	@net: the applicable net namespace
- *	@cmd: command to issue
- *	@ifr: pointer to a struct ifreq in user space
- *	@data: data exchanged with userspace
- *	@need_copyout: whether or not copy_to_user() should be called
- *
- *	Issue ioctl functions to devices. This is normally called by the
- *	user space syscall interfaces but can sometimes be useful for
- *	other purposes. The return value is the return from the syscall if
- *	positive or a negative errno code on error.
- */
+ 
 
 int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
 	      void __user *data, bool *need_copyout)
@@ -685,9 +612,7 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
 	if (colon)
 		*colon = 0;
 
-	/*
-	 *	See which interface the caller is talking about.
-	 */
+	 
 
 	switch (cmd) {
 	case SIOCGIFHWADDR:
@@ -696,12 +621,7 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
 		if (colon)
 			*colon = ':';
 		return ret;
-	/*
-	 *	These ioctl calls:
-	 *	- can be done by all.
-	 *	- atomic and do not require locking.
-	 *	- return a value
-	 */
+	 
 	case SIOCGIFFLAGS:
 	case SIOCGIFMETRIC:
 	case SIOCGIFMTU:
@@ -724,12 +644,7 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
 			*colon = ':';
 		return ret;
 
-	/*
-	 *	These ioctl calls:
-	 *	- require superuser power.
-	 *	- require strict serialization.
-	 *	- return a value
-	 */
+	 
 	case SIOCGMIIPHY:
 	case SIOCGMIIREG:
 	case SIOCSIFNAME:
@@ -743,23 +658,13 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
 			*colon = ':';
 		return ret;
 
-	/*
-	 *	These ioctl calls:
-	 *	- require superuser power.
-	 *	- require strict serialization.
-	 *	- do not return a value
-	 */
+	 
 	case SIOCSIFMAP:
 	case SIOCSIFTXQLEN:
 		if (!capable(CAP_NET_ADMIN))
 			return -EPERM;
 		fallthrough;
-	/*
-	 *	These ioctl calls:
-	 *	- require local superuser power.
-	 *	- require strict serialization.
-	 *	- do not return a value
-	 */
+	 
 	case SIOCSIFFLAGS:
 	case SIOCSIFMETRIC:
 	case SIOCSIFMTU:
@@ -790,17 +695,13 @@ int dev_ioctl(struct net *net, unsigned int cmd, struct ifreq *ifr,
 		return ret;
 
 	case SIOCGIFMEM:
-		/* Get the per device memory space. We can add this but
-		 * currently do not support it */
+		 
 	case SIOCSIFMEM:
-		/* Set the per device memory buffer space.
-		 * Not applicable in our case */
+		 
 	case SIOCSIFLINK:
 		return -ENOTTY;
 
-	/*
-	 *	Unknown or private ioctl.
-	 */
+	 
 	default:
 		if (cmd == SIOCWANDEV ||
 		    cmd == SIOCGHWTSTAMP ||

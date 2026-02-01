@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * inet fragments management
- *
- * 		Authors:	Pavel Emelyanov <xemul@openvz.org>
- *				Started as consolidation of ipv4/ip_fragment.c,
- *				ipv6/reassembly. and ipv6 nf conntrack reassembly
- */
+
+ 
 
 #include <linux/list.h>
 #include <linux/spinlock.h>
@@ -24,14 +18,7 @@
 #include <net/ip.h>
 #include <net/ipv6.h>
 
-/* Use skb->cb to track consecutive/adjacent fragments coming at
- * the end of the queue. Nodes in the rb-tree queue will
- * contain "runs" of one or more adjacent fragments.
- *
- * Invariants:
- * - next_frag is NULL at the tail of a "run";
- * - the head of a "run" has the sum of all fragment lengths in frag_run_len.
- */
+ 
 struct ipfrag_skb_cb {
 	union {
 		struct inet_skb_parm	h4;
@@ -50,7 +37,7 @@ static void fragcb_clear(struct sk_buff *skb)
 	FRAG_CB(skb)->frag_run_len = skb->len;
 }
 
-/* Append skb to the last "run". */
+ 
 static void fragrun_append_to_last(struct inet_frag_queue *q,
 				   struct sk_buff *skb)
 {
@@ -61,7 +48,7 @@ static void fragrun_append_to_last(struct inet_frag_queue *q,
 	q->fragments_tail = skb;
 }
 
-/* Create a new "run" with the skb. */
+ 
 static void fragrun_create(struct inet_frag_queue *q, struct sk_buff *skb)
 {
 	BUILD_BUG_ON(sizeof(struct ipfrag_skb_cb) > sizeof(skb->cb));
@@ -78,17 +65,14 @@ static void fragrun_create(struct inet_frag_queue *q, struct sk_buff *skb)
 	q->last_run_head = skb;
 }
 
-/* Given the OR values of all fragments, apply RFC 3168 5.3 requirements
- * Value : 0xff if frame should be dropped.
- *         0 or INET_ECN_CE value, to be ORed in to final iph->tos field
- */
+ 
 const u8 ip_frag_ecn_table[16] = {
-	/* at least one fragment had CE, and others ECT_0 or ECT_1 */
+	 
 	[IPFRAG_ECN_CE | IPFRAG_ECN_ECT_0]			= INET_ECN_CE,
 	[IPFRAG_ECN_CE | IPFRAG_ECN_ECT_1]			= INET_ECN_CE,
 	[IPFRAG_ECN_CE | IPFRAG_ECN_ECT_0 | IPFRAG_ECN_ECT_1]	= INET_ECN_CE,
 
-	/* invalid combinations : drop frame */
+	 
 	[IPFRAG_ECN_NOT_ECT | IPFRAG_ECN_CE] = 0xff,
 	[IPFRAG_ECN_NOT_ECT | IPFRAG_ECN_ECT_0] = 0xff,
 	[IPFRAG_ECN_NOT_ECT | IPFRAG_ECN_ECT_1] = 0xff,
@@ -124,7 +108,7 @@ void inet_frags_fini(struct inet_frags *f)
 }
 EXPORT_SYMBOL(inet_frags_fini);
 
-/* called from rhashtable_free_and_destroy() at netns_frags dismantle */
+ 
 static void inet_frags_free_cb(void *ptr, void *arg)
 {
 	struct inet_frag_queue *fq = ptr;
@@ -154,13 +138,10 @@ static void fqdir_free_fn(struct work_struct *work)
 	struct fqdir *fqdir, *tmp;
 	struct inet_frags *f;
 
-	/* Atomically snapshot the list of fqdirs to free */
+	 
 	kill_list = llist_del_all(&fqdir_free_list);
 
-	/* We need to make sure all ongoing call_rcu(..., inet_frag_destroy_rcu)
-	 * have completed, since they need to dereference fqdir.
-	 * Would it not be nice to have kfree_rcu_barrier() ? :)
-	 */
+	 
 	rcu_barrier();
 
 	llist_for_each_entry_safe(fqdir, tmp, kill_list, free_list) {
@@ -233,11 +214,7 @@ void inet_frag_kill(struct inet_frag_queue *fq)
 
 		fq->flags |= INET_FRAG_COMPLETE;
 		rcu_read_lock();
-		/* The RCU read lock provides a memory barrier
-		 * guaranteeing that if fqdir->dead is false then
-		 * the hash table destruction will not start until
-		 * after we unlock.  Paired with fqdir_pre_exit().
-		 */
+		 
 		if (!READ_ONCE(fqdir->dead)) {
 			rhashtable_remove_fast(&fqdir->rhashtable, &fq->node,
 					       fqdir->f->rhash_params);
@@ -297,7 +274,7 @@ void inet_frag_destroy(struct inet_frag_queue *q)
 			SKB_CONSUMED;
 	WARN_ON(del_timer(&q->timer) != 0);
 
-	/* Release all fragment data. */
+	 
 	fqdir = q->fqdir;
 	f = fqdir->f;
 	sum_truesize = inet_frag_rbtree_purge(&q->rb_fragments, reason);
@@ -355,10 +332,10 @@ static struct inet_frag_queue *inet_frag_create(struct fqdir *fqdir,
 	return q;
 }
 
-/* TODO : call from rcu_read_lock() and no longer use refcount_inc_not_zero() */
+ 
 struct inet_frag_queue *inet_frag_find(struct fqdir *fqdir, void *key)
 {
-	/* This pairs with WRITE_ONCE() in fqdir_pre_exit(). */
+	 
 	long high_thresh = READ_ONCE(fqdir->high_thresh);
 	struct inet_frag_queue *fq = NULL, *prev;
 
@@ -385,20 +362,12 @@ int inet_frag_queue_insert(struct inet_frag_queue *q, struct sk_buff *skb,
 {
 	struct sk_buff *last = q->fragments_tail;
 
-	/* RFC5722, Section 4, amended by Errata ID : 3089
-	 *                          When reassembling an IPv6 datagram, if
-	 *   one or more its constituent fragments is determined to be an
-	 *   overlapping fragment, the entire datagram (and any constituent
-	 *   fragments) MUST be silently discarded.
-	 *
-	 * Duplicates, however, should be ignored (i.e. skb dropped, but the
-	 * queue/fragments kept for later reassembly).
-	 */
+	 
 	if (!last)
-		fragrun_create(q, skb);  /* First fragment. */
+		fragrun_create(q, skb);   
 	else if (last->ip_defrag_offset + last->len < end) {
-		/* This is the common case: skb goes to the end. */
-		/* Detect and discard overlaps. */
+		 
+		 
 		if (offset < last->ip_defrag_offset + last->len)
 			return IPFRAG_OVERLAP;
 		if (offset == last->ip_defrag_offset + last->len)
@@ -406,9 +375,7 @@ int inet_frag_queue_insert(struct inet_frag_queue *q, struct sk_buff *skb,
 		else
 			fragrun_create(q, skb);
 	} else {
-		/* Binary search. Note that skb can become the first fragment,
-		 * but not the last (covered above).
-		 */
+		 
 		struct rb_node **rbn, *parent;
 
 		rbn = &q->rb_fragments.rb_node;
@@ -430,9 +397,7 @@ int inet_frag_queue_insert(struct inet_frag_queue *q, struct sk_buff *skb,
 			else
 				return IPFRAG_OVERLAP;
 		} while (*rbn);
-		/* Here we have parent properly set, and rbn pointing to
-		 * one of its NULL left/right children. Insert skb.
-		 */
+		 
 		fragcb_clear(skb);
 		rb_link_node(&skb->rbnode, parent, rbn);
 		rb_insert_color(&skb->rbnode, &q->rb_fragments);
@@ -474,7 +439,7 @@ void *inet_frag_reasm_prepare(struct inet_frag_queue *q, struct sk_buff *skb,
 
 	delta = -head->truesize;
 
-	/* Head of list must not be cloned. */
+	 
 	if (skb_unclone(head, GFP_ATOMIC))
 		return NULL;
 
@@ -482,10 +447,7 @@ void *inet_frag_reasm_prepare(struct inet_frag_queue *q, struct sk_buff *skb,
 	if (delta)
 		add_frag_mem_limit(q->fqdir, delta);
 
-	/* If the first fragment is fragmented itself, we split
-	 * it to two chunks: the first with data and paged part
-	 * and the second, holding only fragments.
-	 */
+	 
 	if (skb_has_frag_list(head)) {
 		struct sk_buff *clone;
 		int i, plen = 0;
@@ -523,17 +485,15 @@ void inet_frag_reasm_finish(struct inet_frag_queue *q, struct sk_buff *head,
 
 	skb_push(head, head->data - skb_network_header(head));
 
-	/* Traverse the tree in order, to build frag_list. */
+	 
 	fp = FRAG_CB(head)->next_frag;
 	rbn = rb_next(&head->rbnode);
 	rb_erase(&head->rbnode, &q->rb_fragments);
 
 	sum_truesize = head->truesize;
 	while (rbn || fp) {
-		/* fp points to the next sk_buff in the current run;
-		 * rbn points to the next run.
-		 */
-		/* Go through the current run. */
+		 
+		 
 		while (fp) {
 			struct sk_buff *next_frag = FRAG_CB(fp)->next_frag;
 			bool stolen;
@@ -563,7 +523,7 @@ void inet_frag_reasm_finish(struct inet_frag_queue *q, struct sk_buff *head,
 
 			fp = next_frag;
 		}
-		/* Move to the next run. */
+		 
 		if (rbn) {
 			struct rb_node *rbnext = rb_next(rbn);
 

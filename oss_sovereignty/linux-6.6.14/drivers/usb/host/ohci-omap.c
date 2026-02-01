@@ -1,19 +1,5 @@
-// SPDX-License-Identifier: GPL-1.0+
-/*
- * OHCI HCD (Host Controller Driver) for USB.
- *
- * (C) Copyright 1999 Roman Weissgaerber <weissg@vienna.at>
- * (C) Copyright 2000-2005 David Brownell
- * (C) Copyright 2002 Hewlett-Packard Company
- *
- * OMAP Bus Glue
- *
- * Modified for OMAP by Tony Lindgren <tony@atomide.com>
- * Based on the 2.4 OMAP OHCI driver originally done by MontaVista Software Inc.
- * and on ohci-sa1111.c by Christopher Hoover <ch@hpl.hp.com>
- *
- * This file is licenced under the GPL.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/dma-mapping.h>
@@ -59,7 +45,7 @@ static void omap_ohci_clock_power(struct ohci_omap_priv *priv, int on)
 	if (on) {
 		clk_enable(priv->usb_dc_ck);
 		clk_enable(priv->usb_host_ck);
-		/* guesstimate for T5 == 1x 32K clock + APLL lock time */
+		 
 		udelay(100);
 	} else {
 		clk_disable(priv->usb_host_ck);
@@ -85,7 +71,7 @@ static void start_hnp(struct ohci_hcd *ohci)
 	local_irq_restore(flags);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 static int ohci_omap_reset(struct usb_hcd *hcd)
 {
@@ -99,11 +85,11 @@ static int ohci_omap_reset(struct usb_hcd *hcd)
 
 	if (config->otg) {
 		hcd->self.otg_port = config->otg;
-		/* default/minimum OTG power budget:  8 mA */
+		 
 		hcd->power_budget = 8;
 	}
 
-	/* XXX OMAP16xx only */
+	 
 	if (config->ocpi_enable)
 		config->ocpi_enable();
 
@@ -139,60 +125,47 @@ static int ohci_omap_reset(struct usb_hcd *hcd)
 		writel(OHCI_CTRL_RWC, &ohci->regs->control);
 	}
 
-	/* board-specific power switching and overcurrent support */
+	 
 	if (machine_is_omap_osk()) {
 		u32	rh = roothub_a (ohci);
 
-		/* power switching (ganged by default) */
+		 
 		rh &= ~RH_A_NPS;
 
-		/* TPS2045 switch for internal transceiver (port 1) */
+		 
 		if (machine_is_omap_osk()) {
 			ohci_to_hcd(ohci)->power_budget = 250;
 
 			rh &= ~RH_A_NOCP;
 
-			/* gpio9 for overcurrent detction */
+			 
 			omap_cfg_reg(W8_1610_GPIO9);
 
-			/* for paranoia's sake:  disable USB.PUEN */
+			 
 			omap_cfg_reg(W4_USB_HIGHZ);
 		}
 		ohci_writel(ohci, rh, &ohci->regs->roothub.a);
 		ohci->flags &= ~OHCI_QUIRK_HUB_POWER;
 	} else if (machine_is_nokia770()) {
-		/* We require a self-powered hub, which should have
-		 * plenty of power. */
+		 
 		ohci_to_hcd(ohci)->power_budget = 0;
 	}
 
-	/* FIXME hub_wq hub requests should manage power switching */
+	 
 	if (config->transceiver_power)
 		return config->transceiver_power(1);
 
 	if (priv->power)
 		gpiod_set_value_cansleep(priv->power, 0);
 
-	/* board init will have already handled HMC and mux setup.
-	 * any external transceiver should already be initialized
-	 * too, so all configured ports use the right signaling now.
-	 */
+	 
 
 	return 0;
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/**
- * ohci_hcd_omap_probe - initialize OMAP-based HCDs
- * @pdev:	USB controller to probe
- *
- * Context: task context, might sleep
- *
- * Allocates basic resources for this USB host controller, and
- * then invokes the start() method for the HCD associated with it
- * through the hotplug entry's driver_data.
- */
+ 
 static int ohci_hcd_omap_probe(struct platform_device *pdev)
 {
 	int retval, irq;
@@ -220,7 +193,7 @@ static int ohci_hcd_omap_probe(struct platform_device *pdev)
 	hcd->rsrc_len = pdev->resource[0].end - pdev->resource[0].start + 1;
 	priv = hcd_to_ohci_omap_priv(hcd);
 
-	/* Obtain two optional GPIO lines */
+	 
 	priv->power = devm_gpiod_get_optional(&pdev->dev, "power", GPIOD_ASIS);
 	if (IS_ERR(priv->power)) {
 		retval = PTR_ERR(priv->power);
@@ -229,11 +202,7 @@ static int ohci_hcd_omap_probe(struct platform_device *pdev)
 	if (priv->power)
 		gpiod_set_consumer_name(priv->power, "OHCI power");
 
-	/*
-	 * This "overcurrent" GPIO line isn't really used in the code,
-	 * but has a designated hardware function.
-	 * TODO: implement proper overcurrent handling.
-	 */
+	 
 	priv->overcurrent = devm_gpiod_get_optional(&pdev->dev, "overcurrent",
 						    GPIOD_IN);
 	if (IS_ERR(priv->overcurrent)) {
@@ -309,18 +278,9 @@ err_put_hcd:
 }
 
 
-/* may be called with controller, bus, and devices active */
+ 
 
-/**
- * ohci_hcd_omap_remove - shutdown processing for OMAP-based HCDs
- * @pdev: USB Host Controller being removed
- *
- * Context: task context, might sleep
- *
- * Reverses the effect of ohci_hcd_omap_probe(), first invoking
- * the HCD's stop() method.  It is always called from a thread
- * context, normally "rmmod", "apmd", or something similar.
- */
+ 
 static void ohci_hcd_omap_remove(struct platform_device *pdev)
 {
 	struct usb_hcd	*hcd = platform_get_drvdata(pdev);
@@ -342,7 +302,7 @@ static void ohci_hcd_omap_remove(struct platform_device *pdev)
 	usb_put_hcd(hcd);
 }
 
-/*-------------------------------------------------------------------------*/
+ 
 
 #ifdef	CONFIG_PM
 
@@ -383,11 +343,9 @@ static int ohci_omap_resume(struct platform_device *dev)
 
 #endif
 
-/*-------------------------------------------------------------------------*/
+ 
 
-/*
- * Driver definition to register with the OMAP bus
- */
+ 
 static struct platform_driver ohci_hcd_omap_driver = {
 	.probe		= ohci_hcd_omap_probe,
 	.remove_new	= ohci_hcd_omap_remove,

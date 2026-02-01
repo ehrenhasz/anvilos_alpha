@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2016 MediaTek Inc.
- * Author: PC Chen <pc.chen@mediatek.com>
- *         Tiffany Lin <tiffany.lin@mediatek.com>
- */
+
+ 
 
 #include <linux/bitfield.h>
 #include <linux/slab.h>
@@ -72,7 +68,7 @@ static irqreturn_t mtk_vcodec_dec_irq_handler(int irq, void *priv)
 		MTK_VDEC_IRQ_STATUS_DEC_SUCCESS)
 		return IRQ_HANDLED;
 
-	/* clear interrupt */
+	 
 	writel((readl(vdec_misc_addr) | VDEC_IRQ_CFG),
 		dev->reg_base[VDEC_MISC] + VDEC_IRQ_CFG_REG);
 	writel((readl(vdec_misc_addr) & ~VDEC_IRQ_CLR),
@@ -106,12 +102,7 @@ static int mtk_vcodec_get_reg_bases(struct mtk_vcodec_dec_dev *dev)
 		"hwg"
 	};
 
-	/*
-	 * If we have reg-names in devicetree, this means that we're on a new
-	 * register organization, which implies that the VDEC_SYS iospace gets
-	 * R/W through a syscon (regmap).
-	 * Here we try to get the "misc" iostart only to check if we have reg-names
-	 */
+	 
 	res = platform_get_resource_byname(pdev, IORESOURCE_MEM, "misc");
 	if (res)
 		has_vdecsys_reg = false;
@@ -121,7 +112,7 @@ static int mtk_vcodec_get_reg_bases(struct mtk_vcodec_dec_dev *dev)
 	num_max_vdec_regs = has_vdecsys_reg ? NUM_MAX_VDEC_REG_BASE :
 					      ARRAY_SIZE(mtk_dec_reg_names);
 
-	/* Sizeof(u32) * 4 bytes for each register base. */
+	 
 	reg_num = of_property_count_elems_of_size(pdev->dev.of_node, "reg",
 						  sizeof(u32) * 4);
 	if (reg_num <= 0 || reg_num > num_max_vdec_regs) {
@@ -247,15 +238,10 @@ static int fops_vcodec_open(struct file *file)
 	mtk_vcodec_dec_set_default_params(ctx);
 
 	if (v4l2_fh_is_singular(&ctx->fh)) {
-		/*
-		 * Does nothing if firmware was already loaded.
-		 */
+		 
 		ret = mtk_vcodec_fw_load_firmware(dev->fw_handler);
 		if (ret < 0) {
-			/*
-			 * Return 0 if downloading firmware successfully,
-			 * otherwise it is failed
-			 */
+			 
 			mtk_v4l2_vdec_err(ctx, "failed to load firmware!");
 			goto err_load_fw;
 		}
@@ -275,7 +261,7 @@ static int fops_vcodec_open(struct file *file)
 	mtk_v4l2_vdec_dbg(0, ctx, "%s decoder [%d]", dev_name(&dev->plat_dev->dev), ctx->id);
 	return ret;
 
-	/* Deinit when failure occurred */
+	 
 err_load_fw:
 	v4l2_m2m_ctx_release(ctx->m2m_ctx);
 err_m2m_ctx_init:
@@ -297,12 +283,7 @@ static int fops_vcodec_release(struct file *file)
 	mtk_v4l2_vdec_dbg(0, ctx, "[%d] decoder", ctx->id);
 	mutex_lock(&dev->dev_mutex);
 
-	/*
-	 * Call v4l2_m2m_ctx_release before mtk_vcodec_dec_release. First, it
-	 * makes sure the worker thread is not running after vdec_if_deinit.
-	 * Second, the decoder will be flushed and all the buffers will be
-	 * returned in stop_streaming.
-	 */
+	 
 	v4l2_m2m_ctx_release(ctx->m2m_ctx);
 	mtk_vcodec_dec_release(ctx);
 

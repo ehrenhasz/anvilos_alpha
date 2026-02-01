@@ -1,34 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for AMD7930 sound chips found on Sparcs.
- * Copyright (C) 2002, 2008 David S. Miller <davem@davemloft.net>
- *
- * Based entirely upon drivers/sbus/audio/amd7930.c which is:
- * Copyright (C) 1996,1997 Thomas K. Dyas (tdyas@eden.rutgers.edu)
- *
- * --- Notes from Thomas's original driver ---
- * This is the lowlevel driver for the AMD7930 audio chip found on all
- * sun4c machines and some sun4m machines.
- *
- * The amd7930 is actually an ISDN chip which has a very simple
- * integrated audio encoder/decoder. When Sun decided on what chip to
- * use for audio, they had the brilliant idea of using the amd7930 and
- * only connecting the audio encoder/decoder pins.
- *
- * Thanks to the AMD engineer who was able to get us the AMD79C30
- * databook which has all the programming information and gain tables.
- *
- * Advanced Micro Devices' Am79C30A is an ISDN/audio chip used in the
- * SparcStation 1+.  The chip provides microphone and speaker interfaces
- * which provide mono-channel audio at 8K samples per second via either
- * 8-bit A-law or 8-bit mu-law encoding.  Also, the chip features an
- * ISDN BRI Line Interface Unit (LIU), I.430 S/T physical interface,
- * which performs basic D channel LAPD processing and provides raw
- * B channel data.  The digital audio channel, the two ISDN B channels,
- * and two 64 Kbps channels to the microprocessor are all interconnected
- * via a multiplexer.
- * --- End of notes from Thoamas's original driver ---
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/kernel.h>
@@ -48,9 +19,9 @@
 
 #include <asm/irq.h>
 
-static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	/* Index 0-MAX */
-static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	/* ID for this card */
-static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	/* Enable this card */
+static int index[SNDRV_CARDS] = SNDRV_DEFAULT_IDX;	 
+static char *id[SNDRV_CARDS] = SNDRV_DEFAULT_STR;	 
+static bool enable[SNDRV_CARDS] = SNDRV_DEFAULT_ENABLE_PNP;	 
 
 module_param_array(index, int, NULL, 0444);
 MODULE_PARM_DESC(index, "Index value for Sun AMD7930 soundcard.");
@@ -62,23 +33,23 @@ MODULE_AUTHOR("Thomas K. Dyas and David S. Miller");
 MODULE_DESCRIPTION("Sun AMD7930");
 MODULE_LICENSE("GPL");
 
-/* Device register layout.  */
+ 
 
-/* Register interface presented to the CPU by the amd7930. */
-#define AMD7930_CR	0x00UL		/* Command Register (W) */
-#define AMD7930_IR	AMD7930_CR	/* Interrupt Register (R) */
-#define AMD7930_DR	0x01UL		/* Data Register (R/W) */
-#define AMD7930_DSR1	0x02UL		/* D-channel Status Register 1 (R) */
-#define AMD7930_DER	0x03UL		/* D-channel Error Register (R) */
-#define AMD7930_DCTB	0x04UL		/* D-channel Transmit Buffer (W) */
-#define AMD7930_DCRB	AMD7930_DCTB	/* D-channel Receive Buffer (R) */
-#define AMD7930_BBTB	0x05UL		/* Bb-channel Transmit Buffer (W) */
-#define AMD7930_BBRB	AMD7930_BBTB	/* Bb-channel Receive Buffer (R) */
-#define AMD7930_BCTB	0x06UL		/* Bc-channel Transmit Buffer (W) */
-#define AMD7930_BCRB	AMD7930_BCTB	/* Bc-channel Receive Buffer (R) */
-#define AMD7930_DSR2	0x07UL		/* D-channel Status Register 2 (R) */
+ 
+#define AMD7930_CR	0x00UL		 
+#define AMD7930_IR	AMD7930_CR	 
+#define AMD7930_DR	0x01UL		 
+#define AMD7930_DSR1	0x02UL		 
+#define AMD7930_DER	0x03UL		 
+#define AMD7930_DCTB	0x04UL		 
+#define AMD7930_DCRB	AMD7930_DCTB	 
+#define AMD7930_BBTB	0x05UL		 
+#define AMD7930_BBRB	AMD7930_BBTB	 
+#define AMD7930_BCTB	0x06UL		 
+#define AMD7930_BCRB	AMD7930_BCTB	 
+#define AMD7930_DSR2	0x07UL		 
 
-/* Indirect registers in the Main Audio Processor. */
+ 
 struct amd7930_map {
 	__u16	x[8];
 	__u16	r[8];
@@ -92,28 +63,20 @@ struct amd7930_map {
 	__u8	mmr2;
 };
 
-/* After an amd7930 interrupt, reading the Interrupt Register (ir)
- * clears the interrupt and returns a bitmask indicating which
- * interrupt source(s) require service.
- */
+ 
 
-#define AMR_IR_DTTHRSH			0x01 /* D-channel xmit threshold */
-#define AMR_IR_DRTHRSH			0x02 /* D-channel recv threshold */
-#define AMR_IR_DSRI			0x04 /* D-channel packet status */
-#define AMR_IR_DERI			0x08 /* D-channel error */
-#define AMR_IR_BBUF			0x10 /* B-channel data xfer */
-#define AMR_IR_LSRI			0x20 /* LIU status */
-#define AMR_IR_DSR2I			0x40 /* D-channel buffer status */
-#define AMR_IR_MLTFRMI			0x80 /* multiframe or PP */
+#define AMR_IR_DTTHRSH			0x01  
+#define AMR_IR_DRTHRSH			0x02  
+#define AMR_IR_DSRI			0x04  
+#define AMR_IR_DERI			0x08  
+#define AMR_IR_BBUF			0x10  
+#define AMR_IR_LSRI			0x20  
+#define AMR_IR_DSR2I			0x40  
+#define AMR_IR_MLTFRMI			0x80  
 
-/* The amd7930 has "indirect registers" which are accessed by writing
- * the register number into the Command Register and then reading or
- * writing values from the Data Register as appropriate. We define the
- * AMR_* macros to be the indirect register numbers and AM_* macros to
- * be bits in whatever register is referred to.
- */
+ 
 
-/* Initialization */
+ 
 #define	AMR_INIT			0x21
 #define		AM_INIT_ACTIVE			0x01
 #define		AM_INIT_DATAONLY		0x02
@@ -123,7 +86,7 @@ struct amd7930_map {
 #define		AM_INIT2_ENABLE_POWERDOWN	0x20
 #define		AM_INIT2_ENABLE_MULTIFRAME	0x10
 
-/* Line Interface Unit */
+ 
 #define	AMR_LIU_LSR			0xA1
 #define		AM_LIU_LSR_STATE		0x07
 #define		AM_LIU_LSR_F3			0x08
@@ -153,7 +116,7 @@ struct amd7930_map {
 #define	AMR_LIU_MFSB			0xA7
 #define	AMR_LIU_MFQB			0xA8
 
-/* Multiplexor */
+ 
 #define	AMR_MUX_MCR1			0x41
 #define	AMR_MUX_MCR2			0x42
 #define	AMR_MUX_MCR3			0x43
@@ -171,7 +134,7 @@ struct amd7930_map {
 #define		AM_MUX_MCR4_REVERSE_Bc		0x20
 #define	AMR_MUX_1_4			0x45
 
-/* Main Audio Processor */
+ 
 #define	AMR_MAP_X			0x61
 #define	AMR_MAP_R			0x62
 #define	AMR_MAP_GX			0x63
@@ -205,7 +168,7 @@ struct amd7930_map {
 #define	AMR_MAP_PEAKR			0x71
 #define	AMR_MAP_15_16			0x72
 
-/* Data Link Controller */
+ 
 #define	AMR_DLC_FRAR_1_2_3		0x81
 #define	AMR_DLC_SRAR_1_2_3		0x82
 #define	AMR_DLC_TAR			0x83
@@ -298,7 +261,7 @@ struct amd7930_map {
 #define AMR_DER_OVRN			0x40
 #define AMR_DER_UNRN			0x80
 
-/* Peripheral Port */
+ 
 #define	AMR_PP_PPCR1			0xC0
 #define	AMR_PP_PPSR			0xC1
 #define	AMR_PP_PPIER			0xC2
@@ -325,7 +288,7 @@ struct snd_amd7930 {
 	struct snd_pcm_substream	*playback_substream;
 	struct snd_pcm_substream	*capture_substream;
 
-	/* Playback/Capture buffer state. */
+	 
 	unsigned char		*p_orig, *p_cur;
 	int			p_left;
 	unsigned char		*c_orig, *c_cur;
@@ -342,7 +305,7 @@ struct snd_amd7930 {
 
 static struct snd_amd7930 *amd7930_list;
 
-/* Idle the AMD7930 chip.  The amd->lock is not held.  */
+ 
 static __inline__ void amd7930_idle(struct snd_amd7930 *amd)
 {
 	unsigned long flags;
@@ -353,7 +316,7 @@ static __inline__ void amd7930_idle(struct snd_amd7930 *amd)
 	spin_unlock_irqrestore(&amd->lock, flags);
 }
 
-/* Enable chip interrupts.  The amd->lock is not held.  */
+ 
 static __inline__ void amd7930_enable_ints(struct snd_amd7930 *amd)
 {
 	unsigned long flags;
@@ -364,7 +327,7 @@ static __inline__ void amd7930_enable_ints(struct snd_amd7930 *amd)
 	spin_unlock_irqrestore(&amd->lock, flags);
 }
 
-/* Disable chip interrupts.  The amd->lock is not held.  */
+ 
 static __inline__ void amd7930_disable_ints(struct snd_amd7930 *amd)
 {
 	unsigned long flags;
@@ -375,9 +338,7 @@ static __inline__ void amd7930_disable_ints(struct snd_amd7930 *amd)
 	spin_unlock_irqrestore(&amd->lock, flags);
 }
 
-/* Commit amd7930_map settings to the hardware.
- * The amd->lock is held and local interrupts are disabled.
- */
+ 
 static void __amd7930_write_map(struct snd_amd7930 *amd)
 {
 	struct amd7930_map *map = &amd->map;
@@ -405,11 +366,7 @@ static void __amd7930_write_map(struct snd_amd7930 *amd)
 	sbus_writeb(map->mmr2, amd->regs + AMD7930_DR);
 }
 
-/* gx, gr & stg gains.  this table must contain 256 elements with
- * the 0th being "infinity" (the magic value 9008).  The remaining
- * elements match sun's gain curve (but with higher resolution):
- * -18 to 0dB in .16dB steps then 0 to 12dB in .08dB steps.
- */
+ 
 static __const__ __u16 gx_coeff[256] = {
 	0x9008, 0x8b7c, 0x8b51, 0x8b45, 0x8b42, 0x8b3b, 0x8b36, 0x8b33,
 	0x8b32, 0x8b2a, 0x8b2b, 0x8b2c, 0x8b25, 0x8b23, 0x8b22, 0x8b22,
@@ -446,32 +403,30 @@ static __const__ __u16 gx_coeff[256] = {
 };
 
 static __const__ __u16 ger_coeff[] = {
-	0x431f, /* 5. dB */
-	0x331f, /* 5.5 dB */
-	0x40dd, /* 6. dB */
-	0x11dd, /* 6.5 dB */
-	0x440f, /* 7. dB */
-	0x411f, /* 7.5 dB */
-	0x311f, /* 8. dB */
-	0x5520, /* 8.5 dB */
-	0x10dd, /* 9. dB */
-	0x4211, /* 9.5 dB */
-	0x410f, /* 10. dB */
-	0x111f, /* 10.5 dB */
-	0x600b, /* 11. dB */
-	0x00dd, /* 11.5 dB */
-	0x4210, /* 12. dB */
-	0x110f, /* 13. dB */
-	0x7200, /* 14. dB */
-	0x2110, /* 15. dB */
-	0x2200, /* 15.9 dB */
-	0x000b, /* 16.9 dB */
-	0x000f  /* 18. dB */
+	0x431f,  
+	0x331f,  
+	0x40dd,  
+	0x11dd,  
+	0x440f,  
+	0x411f,  
+	0x311f,  
+	0x5520,  
+	0x10dd,  
+	0x4211,  
+	0x410f,  
+	0x111f,  
+	0x600b,  
+	0x00dd,  
+	0x4210,  
+	0x110f,  
+	0x7200,  
+	0x2110,  
+	0x2200,  
+	0x000b,  
+	0x000f   
 };
 
-/* Update amd7930_map settings and program them into the hardware.
- * The amd->lock is held and local interrupts are disabled.
- */
+ 
 static void __amd7930_update_map(struct snd_amd7930 *amd)
 {
 	struct amd7930_map *map = &amd->map;
@@ -543,7 +498,7 @@ static int snd_amd7930_trigger(struct snd_amd7930 *amd, unsigned int flag, int c
 		if (!(amd->flags & flag)) {
 			amd->flags |= flag;
 
-			/* Enable B channel interrupts.  */
+			 
 			sbus_writeb(AMR_MUX_MCR4, amd->regs + AMD7930_CR);
 			sbus_writeb(AM_MUX_MCR4_ENABLE_INTS, amd->regs + AMD7930_DR);
 		}
@@ -551,7 +506,7 @@ static int snd_amd7930_trigger(struct snd_amd7930 *amd, unsigned int flag, int c
 		if (amd->flags & flag) {
 			amd->flags &= ~flag;
 
-			/* Disable B channel interrupts.  */
+			 
 			sbus_writeb(AMR_MUX_MCR4, amd->regs + AMD7930_CR);
 			sbus_writeb(0, amd->regs + AMD7930_DR);
 		}
@@ -589,11 +544,11 @@ static int snd_amd7930_playback_prepare(struct snd_pcm_substream *substream)
 
 	amd->flags |= AMD7930_FLAG_PLAYBACK;
 
-	/* Setup the pseudo-dma transfer pointers.  */
+	 
 	amd->p_orig = amd->p_cur = runtime->dma_area;
 	amd->p_left = size;
 
-	/* Put the chip into the correct encoding format.  */
+	 
 	new_mmr1 = amd->map.mmr1;
 	if (runtime->format == SNDRV_PCM_FORMAT_A_LAW)
 		new_mmr1 |= AM_MAP_MMR1_ALAW;
@@ -621,11 +576,11 @@ static int snd_amd7930_capture_prepare(struct snd_pcm_substream *substream)
 
 	amd->flags |= AMD7930_FLAG_CAPTURE;
 
-	/* Setup the pseudo-dma transfer pointers.  */
+	 
 	amd->c_orig = amd->c_cur = runtime->dma_area;
 	amd->c_left = size;
 
-	/* Put the chip into the correct encoding format.  */
+	 
 	new_mmr1 = amd->map.mmr1;
 	if (runtime->format == SNDRV_PCM_FORMAT_A_LAW)
 		new_mmr1 |= AM_MAP_MMR1_ALAW;
@@ -664,7 +619,7 @@ static snd_pcm_uframes_t snd_amd7930_capture_pointer(struct snd_pcm_substream *s
 	return bytes_to_frames(substream->runtime, ptr);
 }
 
-/* Playback and capture have identical properties.  */
+ 
 static const struct snd_pcm_hardware snd_amd7930_pcm_hw =
 {
 	.info			= (SNDRV_PCM_INFO_MMAP |
@@ -743,10 +698,10 @@ static int snd_amd7930_pcm(struct snd_amd7930 *amd)
 	int err;
 
 	if ((err = snd_pcm_new(amd->card,
-			       /* ID */             "sun_amd7930",
-			       /* device */         0,
-			       /* playback count */ 1,
-			       /* capture count */  1, &pcm)) < 0)
+			                     "sun_amd7930",
+			                 0,
+			         1,
+			          1, &pcm)) < 0)
 		return err;
 
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &snd_amd7930_playback_ops);
@@ -967,7 +922,7 @@ static int snd_amd7930_create(struct snd_card *card,
 
 	__amd7930_update_map(amd);
 
-	/* Always MUX audio (Ba) to channel Bb. */
+	 
 	sbus_writeb(AMR_MUX_MCR1, amd->regs + AMD7930_CR);
 	sbus_writeb(AM_MUX_CHANNEL_Ba | (AM_MUX_CHANNEL_Bb << 4),
 		    amd->regs + AMD7930_DR);

@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Simple USB RGB LED driver
- *
- * Copyright 2016 Heiner Kallweit <hkallweit1@gmail.com>
- * Based on drivers/hid/hid-thingm.c and
- * drivers/usb/misc/usbled.c
- */
+
+ 
 
 #include <linux/hid.h>
 #include <linux/hidraw.h>
@@ -29,15 +23,15 @@ enum hidled_type {
 };
 
 static unsigned const char riso_kagaku_tbl[] = {
-/* R+2G+4B -> riso kagaku color index */
-	[0] = 0, /* black   */
-	[1] = 2, /* red     */
-	[2] = 1, /* green   */
-	[3] = 5, /* yellow  */
-	[4] = 3, /* blue    */
-	[5] = 6, /* magenta */
-	[6] = 4, /* cyan    */
-	[7] = 7  /* white   */
+ 
+	[0] = 0,  
+	[1] = 2,  
+	[2] = 1,  
+	[3] = 5,  
+	[4] = 3,  
+	[5] = 6,  
+	[6] = 4,  
+	[7] = 7   
 };
 
 #define RISO_KAGAKU_IX(r, g, b) riso_kagaku_tbl[((r)?1:0)+((g)?2:0)+((b)?4:0)]
@@ -116,10 +110,7 @@ static int hidled_send(struct hidled_device *ldev, __u8 *buf)
 
 	mutex_lock(&ldev->lock);
 
-	/*
-	 * buffer provided to hid_hw_raw_request must not be on the stack
-	 * and must not be part of a data structure
-	 */
+	 
 	memcpy(ldev->buf, buf, ldev->config->report_size);
 
 	if (ldev->config->report_type == RAW_REQUEST)
@@ -141,7 +132,7 @@ static int hidled_send(struct hidled_device *ldev, __u8 *buf)
 	return ret == ldev->config->report_size ? 0 : -EMSGSIZE;
 }
 
-/* reading data is supported for report type RAW_REQUEST only */
+ 
 static int hidled_recv(struct hidled_device *ldev, __u8 *buf)
 {
 	int ret;
@@ -216,7 +207,7 @@ static int dream_cheeky_init(struct hidled_device *ldev)
 {
 	__u8 buf[MAX_REPORT_SIZE] = {};
 
-	/* Dream Cheeky magic */
+	 
 	buf[1] = 0x1f;
 	buf[2] = 0x02;
 	buf[4] = 0x5f;
@@ -269,7 +260,7 @@ static int thingm_init(struct hidled_device *ldev)
 	if (ret)
 		return ret;
 
-	/* Check for firmware major version 1 */
+	 
 	if (buf[3] == '1')
 		ldev->config = &hidled_config_thingm_v1;
 
@@ -311,11 +302,7 @@ static int delcom_write(struct led_classdev *cdev, enum led_brightness br)
 	struct hidled_led *led = to_hidled_led(cdev);
 	int ret;
 
-	/*
-	 * enable LED
-	 * We can't do this in the init function already because the device
-	 * is internally reset later.
-	 */
+	 
 	ret = delcom_enable_led(led);
 	if (ret)
 		return ret;
@@ -331,10 +318,7 @@ static int delcom_init(struct hidled_device *ldev)
 	ret = hidled_recv(ldev, dp.data);
 	if (ret)
 		return ret;
-	/*
-	 * Several Delcom devices share the same USB VID/PID
-	 * Check for family id 2 for Visual Signal Indicator
-	 */
+	 
 	return le16_to_cpu(dp.fw.family_code) == 2 ? 0 : -ENODEV;
 }
 
@@ -431,17 +415,17 @@ static int hidled_init_rgb(struct hidled_rgb *rgb, unsigned int minor)
 {
 	int ret;
 
-	/* Register the red diode */
+	 
 	ret = hidled_init_led(&rgb->red, "red", rgb, minor);
 	if (ret)
 		return ret;
 
-	/* Register the green diode */
+	 
 	ret = hidled_init_led(&rgb->green, "green", rgb, minor);
 	if (ret)
 		return ret;
 
-	/* Register the blue diode */
+	 
 	return hidled_init_led(&rgb->blue, "blue", rgb, minor);
 }
 

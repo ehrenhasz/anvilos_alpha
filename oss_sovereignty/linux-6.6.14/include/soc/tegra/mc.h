@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2014 NVIDIA Corporation
- */
+ 
+ 
 
 #ifndef __SOC_TEGRA_MC_H__
 #define __SOC_TEGRA_MC_H__
@@ -30,11 +28,7 @@ struct tegra_mc_client {
 	unsigned int bpmp_id;
 	enum tegra_icc_client_type type;
 	const char *name;
-	/*
-	 * For Tegra210 and earlier, this is the SWGROUP ID used for IOVA translations in the
-	 * Tegra SMMU, whereas on Tegra186 and later this is the ID used to override the ARM SMMU
-	 * stream ID used for IOVA translations for the given memory client.
-	 */
+	 
 	union {
 		unsigned int swgroup;
 		unsigned int sid;
@@ -43,13 +37,13 @@ struct tegra_mc_client {
 	unsigned int fifo_size;
 
 	struct {
-		/* Tegra SMMU enable (Tegra210 and earlier) */
+		 
 		struct {
 			unsigned int reg;
 			unsigned int bit;
 		} smmu;
 
-		/* latency allowance */
+		 
 		struct {
 			unsigned int reg;
 			unsigned int shift;
@@ -57,7 +51,7 @@ struct tegra_mc_client {
 			unsigned int def;
 		} la;
 
-		/* stream ID overrides (Tegra186 and later) */
+		 
 		struct {
 			unsigned int override;
 			unsigned int security;
@@ -179,10 +173,7 @@ struct icc_node *tegra_mc_icc_xlate(struct of_phandle_args *spec, void *data);
 extern const struct tegra_mc_icc_ops tegra_mc_icc_ops;
 
 struct tegra_mc_ops {
-	/*
-	 * @probe: Callback to set up SoC-specific bits of the memory controller. This is called
-	 * after basic, common set up that is done by the SoC-agnostic bits.
-	 */
+	 
 	int (*probe)(struct tegra_mc *mc);
 	void (*remove)(struct tegra_mc *mc);
 	int (*suspend)(struct tegra_mc *mc);
@@ -280,4 +271,4 @@ tegra_mc_get_carveout_info(struct tegra_mc *mc, unsigned int id,
 }
 #endif
 
-#endif /* __SOC_TEGRA_MC_H__ */
+#endif  

@@ -1,8 +1,4 @@
-/*
- * SPDX-License-Identifier: MIT
- *
- * Copyright © 2016 Intel Corporation
- */
+ 
 
 #ifndef __HUGE_GEM_OBJECT_H
 #define __HUGE_GEM_OBJECT_H
@@ -30,4 +26,4 @@ huge_gem_object_dma_size(struct drm_i915_gem_object *obj)
 	return obj->base.size;
 }
 
-#endif /* !__HUGE_GEM_OBJECT_H */
+#endif  

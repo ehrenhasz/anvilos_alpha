@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PWM-based multi-color LED control
- *
- * Copyright 2022 Sven Schwermer <sven.schwermer@disruptive-technologies.com>
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/kernel.h>
@@ -71,7 +67,7 @@ static int iterate_subleds(struct device *dev, struct pwm_mc_led *priv,
 	u32 color;
 	int ret;
 
-	/* iterate over the nodes inside the multi-led node */
+	 
 	fwnode_for_each_child_node(mcnode, fwnode) {
 		pwmled = &priv->leds[priv->mc_cdev.num_colors];
 		pwmled->pwm = devm_fwnode_pwm_get(dev, fwnode, NULL);
@@ -114,7 +110,7 @@ static int led_pwm_mc_probe(struct platform_device *pdev)
 		return dev_err_probe(&pdev->dev, -ENODEV,
 				     "expected multi-led node\n");
 
-	/* count the nodes inside the multi-led node */
+	 
 	fwnode_for_each_child_node(mcnode, fwnode)
 		count++;
 
@@ -133,7 +129,7 @@ static int led_pwm_mc_probe(struct platform_device *pdev)
 	}
 	priv->mc_cdev.subled_info = subled;
 
-	/* init the multicolor's LED class device */
+	 
 	cdev = &priv->mc_cdev.led_cdev;
 	fwnode_property_read_u32(mcnode, "max-brightness",
 				 &cdev->max_brightness);

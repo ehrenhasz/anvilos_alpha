@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/* Copyright(c) 2013 - 2018 Intel Corporation. */
+
+ 
 
 #include "i40e.h"
 #include "i40e_osdep.h"
@@ -9,14 +9,9 @@
 #include "i40e_lan_hmc.h"
 #include "i40e_prototype.h"
 
-/* lan specific interface functions */
+ 
 
-/**
- * i40e_align_l2obj_base - aligns base object pointer to 512 bytes
- * @offset: base address offset needing alignment
- *
- * Aligns the layer 2 function private memory so it's 512-byte aligned.
- **/
+ 
 static u64 i40e_align_l2obj_base(u64 offset)
 {
 	u64 aligned_offset = offset;
@@ -28,16 +23,7 @@ static u64 i40e_align_l2obj_base(u64 offset)
 	return aligned_offset;
 }
 
-/**
- * i40e_calculate_l2fpm_size - calculates layer 2 FPM memory size
- * @txq_num: number of Tx queues needing backing context
- * @rxq_num: number of Rx queues needing backing context
- * @fcoe_cntx_num: amount of FCoE statefull contexts needing backing context
- * @fcoe_filt_num: number of FCoE filters needing backing context
- *
- * Calculates the maximum amount of memory for the function required, based
- * on the number of resources it must provide context for.
- **/
+ 
 static u64 i40e_calculate_l2fpm_size(u32 txq_num, u32 rxq_num,
 			      u32 fcoe_cntx_num, u32 fcoe_filt_num)
 {
@@ -58,22 +44,7 @@ static u64 i40e_calculate_l2fpm_size(u32 txq_num, u32 rxq_num,
 	return fpm_size;
 }
 
-/**
- * i40e_init_lan_hmc - initialize i40e_hmc_info struct
- * @hw: pointer to the HW structure
- * @txq_num: number of Tx queues needing backing context
- * @rxq_num: number of Rx queues needing backing context
- * @fcoe_cntx_num: amount of FCoE statefull contexts needing backing context
- * @fcoe_filt_num: number of FCoE filters needing backing context
- *
- * This function will be called once per physical function initialization.
- * It will fill out the i40e_hmc_obj_info structure for LAN objects based on
- * the driver's provided input, as well as information from the HMC itself
- * loaded from NVRAM.
- *
- * Assumptions:
- *   - HMC Resource Profile has been selected before calling this function.
- **/
+ 
 int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 		      u32 rxq_num, u32 fcoe_cntx_num,
 		      u32 fcoe_filt_num)
@@ -86,7 +57,7 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 	hw->hmc.signature = I40E_HMC_INFO_SIGNATURE;
 	hw->hmc.hmc_fn_id = hw->pf_id;
 
-	/* allocate memory for hmc_obj */
+	 
 	ret_code = i40e_allocate_virt_mem(hw, &hw->hmc.hmc_obj_virt_mem,
 			sizeof(struct i40e_hmc_obj_info) * I40E_HMC_LAN_MAX);
 	if (ret_code)
@@ -94,14 +65,14 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 	hw->hmc.hmc_obj = (struct i40e_hmc_obj_info *)
 			  hw->hmc.hmc_obj_virt_mem.va;
 
-	/* The full object will be used to create the LAN HMC SD */
+	 
 	full_obj = &hw->hmc.hmc_obj[I40E_HMC_LAN_FULL];
 	full_obj->max_cnt = 0;
 	full_obj->cnt = 0;
 	full_obj->base = 0;
 	full_obj->size = 0;
 
-	/* Tx queue context information */
+	 
 	obj = &hw->hmc.hmc_obj[I40E_HMC_LAN_TX];
 	obj->max_cnt = rd32(hw, I40E_GLHMC_LANQMAX);
 	obj->cnt = txq_num;
@@ -109,7 +80,7 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 	size_exp = rd32(hw, I40E_GLHMC_LANTXOBJSZ);
 	obj->size = BIT_ULL(size_exp);
 
-	/* validate values requested by driver don't exceed HMC capacity */
+	 
 	if (txq_num > obj->max_cnt) {
 		ret_code = -EINVAL;
 		hw_dbg(hw, "i40e_init_lan_hmc: Tx context: asks for 0x%x but max allowed is 0x%x, returns error %d\n",
@@ -117,11 +88,11 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 		goto init_lan_hmc_out;
 	}
 
-	/* aggregate values into the full LAN object for later */
+	 
 	full_obj->max_cnt += obj->max_cnt;
 	full_obj->cnt += obj->cnt;
 
-	/* Rx queue context information */
+	 
 	obj = &hw->hmc.hmc_obj[I40E_HMC_LAN_RX];
 	obj->max_cnt = rd32(hw, I40E_GLHMC_LANQMAX);
 	obj->cnt = rxq_num;
@@ -132,7 +103,7 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 	size_exp = rd32(hw, I40E_GLHMC_LANRXOBJSZ);
 	obj->size = BIT_ULL(size_exp);
 
-	/* validate values requested by driver don't exceed HMC capacity */
+	 
 	if (rxq_num > obj->max_cnt) {
 		ret_code = -EINVAL;
 		hw_dbg(hw, "i40e_init_lan_hmc: Rx context: asks for 0x%x but max allowed is 0x%x, returns error %d\n",
@@ -140,11 +111,11 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 		goto init_lan_hmc_out;
 	}
 
-	/* aggregate values into the full LAN object for later */
+	 
 	full_obj->max_cnt += obj->max_cnt;
 	full_obj->cnt += obj->cnt;
 
-	/* FCoE context information */
+	 
 	obj = &hw->hmc.hmc_obj[I40E_HMC_FCOE_CTX];
 	obj->max_cnt = rd32(hw, I40E_GLHMC_FCOEMAX);
 	obj->cnt = fcoe_cntx_num;
@@ -155,7 +126,7 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 	size_exp = rd32(hw, I40E_GLHMC_FCOEDDPOBJSZ);
 	obj->size = BIT_ULL(size_exp);
 
-	/* validate values requested by driver don't exceed HMC capacity */
+	 
 	if (fcoe_cntx_num > obj->max_cnt) {
 		ret_code = -EINVAL;
 		hw_dbg(hw, "i40e_init_lan_hmc: FCoE context: asks for 0x%x but max allowed is 0x%x, returns error %d\n",
@@ -163,11 +134,11 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 		goto init_lan_hmc_out;
 	}
 
-	/* aggregate values into the full LAN object for later */
+	 
 	full_obj->max_cnt += obj->max_cnt;
 	full_obj->cnt += obj->cnt;
 
-	/* FCoE filter information */
+	 
 	obj = &hw->hmc.hmc_obj[I40E_HMC_FCOE_FILT];
 	obj->max_cnt = rd32(hw, I40E_GLHMC_FCOEFMAX);
 	obj->cnt = fcoe_filt_num;
@@ -178,7 +149,7 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 	size_exp = rd32(hw, I40E_GLHMC_FCOEFOBJSZ);
 	obj->size = BIT_ULL(size_exp);
 
-	/* validate values requested by driver don't exceed HMC capacity */
+	 
 	if (fcoe_filt_num > obj->max_cnt) {
 		ret_code = -EINVAL;
 		hw_dbg(hw, "i40e_init_lan_hmc: FCoE filter: asks for 0x%x but max allowed is 0x%x, returns error %d\n",
@@ -186,7 +157,7 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 		goto init_lan_hmc_out;
 	}
 
-	/* aggregate values into the full LAN object for later */
+	 
 	full_obj->max_cnt += obj->max_cnt;
 	full_obj->cnt += obj->cnt;
 
@@ -199,7 +170,7 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 				   (l2fpm_size + I40E_HMC_DIRECT_BP_SIZE - 1) /
 				   I40E_HMC_DIRECT_BP_SIZE;
 
-		/* allocate the sd_entry members in the sd_table */
+		 
 		ret_code = i40e_allocate_virt_mem(hw, &hw->hmc.sd_table.addr,
 					  (sizeof(struct i40e_hmc_sd_entry) *
 					  hw->hmc.sd_table.sd_cnt));
@@ -208,27 +179,14 @@ int i40e_init_lan_hmc(struct i40e_hw *hw, u32 txq_num,
 		hw->hmc.sd_table.sd_entry =
 			(struct i40e_hmc_sd_entry *)hw->hmc.sd_table.addr.va;
 	}
-	/* store in the LAN full object for later */
+	 
 	full_obj->size = l2fpm_size;
 
 init_lan_hmc_out:
 	return ret_code;
 }
 
-/**
- * i40e_remove_pd_page - Remove a page from the page descriptor table
- * @hw: pointer to the HW structure
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: segment descriptor index to find the relevant page descriptor
- *
- * This function:
- *	1. Marks the entry in pd table (for paged address mode) invalid
- *	2. write to register PMPDINV to invalidate the backing page in FV cache
- *	3. Decrement the ref count for  pd_entry
- * assumptions:
- *	1. caller can deallocate the memory used by pd after this function
- *	   returns.
- **/
+ 
 static int i40e_remove_pd_page(struct i40e_hw *hw,
 			       struct i40e_hmc_info *hmc_info,
 			       u32 idx)
@@ -241,21 +199,7 @@ static int i40e_remove_pd_page(struct i40e_hw *hw,
 	return ret_code;
 }
 
-/**
- * i40e_remove_sd_bp - remove a backing page from a segment descriptor
- * @hw: pointer to our HW structure
- * @hmc_info: pointer to the HMC configuration information structure
- * @idx: the page index
- *
- * This function:
- *	1. Marks the entry in sd table (for direct address mode) invalid
- *	2. write to register PMSDCMD, PMSDDATALOW(PMSDDATALOW.PMSDVALID set
- *	   to 0) and PMSDDATAHIGH to invalidate the sd page
- *	3. Decrement the ref count for the sd_entry
- * assumptions:
- *	1. caller can deallocate the memory used by backing storage after this
- *	   function returns.
- **/
+ 
 static int i40e_remove_sd_bp(struct i40e_hw *hw,
 			     struct i40e_hmc_info *hmc_info,
 			     u32 idx)
@@ -268,14 +212,7 @@ static int i40e_remove_sd_bp(struct i40e_hw *hw,
 	return ret_code;
 }
 
-/**
- * i40e_create_lan_hmc_object - allocate backing store for hmc objects
- * @hw: pointer to the HW structure
- * @info: pointer to i40e_hmc_create_obj_info struct
- *
- * This will allocate memory for PDs and backing pages and populate
- * the sd and pd entries.
- **/
+ 
 static int i40e_create_lan_hmc_object(struct i40e_hw *hw,
 				      struct i40e_hmc_lan_create_obj_info *info)
 {
@@ -318,7 +255,7 @@ static int i40e_create_lan_hmc_object(struct i40e_hw *hw,
 		goto exit;
 	}
 
-	/* find sd index and limit */
+	 
 	I40E_FIND_SD_INDEX_LIMIT(info->hmc_info, info->rsrc_type,
 				 info->start_idx, info->count,
 				 &sd_idx, &sd_lmt);
@@ -327,25 +264,20 @@ static int i40e_create_lan_hmc_object(struct i40e_hw *hw,
 		ret_code = -EINVAL;
 		goto exit;
 	}
-	/* find pd index */
+	 
 	I40E_FIND_PD_INDEX_LIMIT(info->hmc_info, info->rsrc_type,
 				 info->start_idx, info->count, &pd_idx,
 				 &pd_lmt);
 
-	/* This is to cover for cases where you may not want to have an SD with
-	 * the full 2M memory but something smaller. By not filling out any
-	 * size, the function will default the SD size to be 2M.
-	 */
+	 
 	if (info->direct_mode_sz == 0)
 		sd_size = I40E_HMC_DIRECT_BP_SIZE;
 	else
 		sd_size = info->direct_mode_sz;
 
-	/* check if all the sds are valid. If not, allocate a page and
-	 * initialize it.
-	 */
+	 
 	for (j = sd_idx; j < sd_lmt; j++) {
-		/* update the sd table entry */
+		 
 		ret_code = i40e_add_sd_table_entry(hw, info->hmc_info, j,
 						   info->entry_type,
 						   sd_size);
@@ -353,16 +285,14 @@ static int i40e_create_lan_hmc_object(struct i40e_hw *hw,
 			goto exit_sd_error;
 		sd_entry = &info->hmc_info->sd_table.sd_entry[j];
 		if (I40E_SD_TYPE_PAGED == sd_entry->entry_type) {
-			/* check if all the pds in this sd are valid. If not,
-			 * allocate a page and initialize it.
-			 */
+			 
 
-			/* find pd_idx and pd_lmt in this sd */
+			 
 			pd_idx1 = max(pd_idx, (j * I40E_HMC_MAX_BP_COUNT));
 			pd_lmt1 = min(pd_lmt,
 				      ((j + 1) * I40E_HMC_MAX_BP_COUNT));
 			for (i = pd_idx1; i < pd_lmt1; i++) {
-				/* update the pd table entry */
+				 
 				ret_code = i40e_add_pd_table_entry(hw,
 								info->hmc_info,
 								i, NULL);
@@ -372,7 +302,7 @@ static int i40e_create_lan_hmc_object(struct i40e_hw *hw,
 				}
 			}
 			if (pd_error) {
-				/* remove the backing pages from pd_idx1 to i */
+				 
 				while (i && (i > pd_idx1)) {
 					i40e_remove_pd_bp(hw, info->hmc_info,
 							  (i - 1));
@@ -401,7 +331,7 @@ static int i40e_create_lan_hmc_object(struct i40e_hw *hw,
 	goto exit;
 
 exit_sd_error:
-	/* cleanup for sd entries from j to sd_idx */
+	 
 	while (j && (j > sd_idx)) {
 		sd_entry = &info->hmc_info->sd_table.sd_entry[j - 1];
 		switch (sd_entry->entry_type) {
@@ -426,15 +356,7 @@ exit:
 	return ret_code;
 }
 
-/**
- * i40e_configure_lan_hmc - prepare the HMC backing store
- * @hw: pointer to the hw structure
- * @model: the model for the layout of the SD/PD tables
- *
- * - This function will be called once per physical function initialization.
- * - This function will be called after i40e_init_lan_hmc() and before
- *   any LAN/FCoE HMC objects can be created.
- **/
+ 
 int i40e_configure_lan_hmc(struct i40e_hw *hw,
 			   enum i40e_hmc_model model)
 {
@@ -443,64 +365,64 @@ int i40e_configure_lan_hmc(struct i40e_hw *hw,
 	struct i40e_hmc_obj_info *obj;
 	int ret_code = 0;
 
-	/* Initialize part of the create object info struct */
+	 
 	info.hmc_info = &hw->hmc;
 	info.rsrc_type = I40E_HMC_LAN_FULL;
 	info.start_idx = 0;
 	info.direct_mode_sz = hw->hmc.hmc_obj[I40E_HMC_LAN_FULL].size;
 
-	/* Build the SD entry for the LAN objects */
+	 
 	switch (model) {
 	case I40E_HMC_MODEL_DIRECT_PREFERRED:
 	case I40E_HMC_MODEL_DIRECT_ONLY:
 		info.entry_type = I40E_SD_TYPE_DIRECT;
-		/* Make one big object, a single SD */
+		 
 		info.count = 1;
 		ret_code = i40e_create_lan_hmc_object(hw, &info);
 		if (ret_code && (model == I40E_HMC_MODEL_DIRECT_PREFERRED))
 			goto try_type_paged;
 		else if (ret_code)
 			goto configure_lan_hmc_out;
-		/* else clause falls through the break */
+		 
 		break;
 	case I40E_HMC_MODEL_PAGED_ONLY:
 try_type_paged:
 		info.entry_type = I40E_SD_TYPE_PAGED;
-		/* Make one big object in the PD table */
+		 
 		info.count = 1;
 		ret_code = i40e_create_lan_hmc_object(hw, &info);
 		if (ret_code)
 			goto configure_lan_hmc_out;
 		break;
 	default:
-		/* unsupported type */
+		 
 		ret_code = -EINVAL;
 		hw_dbg(hw, "i40e_configure_lan_hmc: Unknown SD type: %d\n",
 			  ret_code);
 		goto configure_lan_hmc_out;
 	}
 
-	/* Configure and program the FPM registers so objects can be created */
+	 
 
-	/* Tx contexts */
+	 
 	obj = &hw->hmc.hmc_obj[I40E_HMC_LAN_TX];
 	wr32(hw, I40E_GLHMC_LANTXBASE(hmc_fn_id),
 	     (u32)((obj->base & I40E_GLHMC_LANTXBASE_FPMLANTXBASE_MASK) / 512));
 	wr32(hw, I40E_GLHMC_LANTXCNT(hmc_fn_id), obj->cnt);
 
-	/* Rx contexts */
+	 
 	obj = &hw->hmc.hmc_obj[I40E_HMC_LAN_RX];
 	wr32(hw, I40E_GLHMC_LANRXBASE(hmc_fn_id),
 	     (u32)((obj->base & I40E_GLHMC_LANRXBASE_FPMLANRXBASE_MASK) / 512));
 	wr32(hw, I40E_GLHMC_LANRXCNT(hmc_fn_id), obj->cnt);
 
-	/* FCoE contexts */
+	 
 	obj = &hw->hmc.hmc_obj[I40E_HMC_FCOE_CTX];
 	wr32(hw, I40E_GLHMC_FCOEDDPBASE(hmc_fn_id),
 	 (u32)((obj->base & I40E_GLHMC_FCOEDDPBASE_FPMFCOEDDPBASE_MASK) / 512));
 	wr32(hw, I40E_GLHMC_FCOEDDPCNT(hmc_fn_id), obj->cnt);
 
-	/* FCoE filters */
+	 
 	obj = &hw->hmc.hmc_obj[I40E_HMC_FCOE_FILT];
 	wr32(hw, I40E_GLHMC_FCOEFBASE(hmc_fn_id),
 	     (u32)((obj->base & I40E_GLHMC_FCOEFBASE_FPMFCOEFBASE_MASK) / 512));
@@ -510,16 +432,7 @@ configure_lan_hmc_out:
 	return ret_code;
 }
 
-/**
- * i40e_delete_lan_hmc_object - remove hmc objects
- * @hw: pointer to the HW structure
- * @info: pointer to i40e_hmc_delete_obj_info struct
- *
- * This will de-populate the SDs and PDs.  It frees
- * the memory for PDS and backing storage.  After this function is returned,
- * caller should deallocate memory allocated previously for
- * book-keeping information about PDs and backing storage.
- **/
+ 
 static int i40e_delete_lan_hmc_object(struct i40e_hw *hw,
 				      struct i40e_hmc_lan_delete_obj_info *info)
 {
@@ -593,7 +506,7 @@ static int i40e_delete_lan_hmc_object(struct i40e_hw *hw,
 		}
 	}
 
-	/* find sd index and limit */
+	 
 	I40E_FIND_SD_INDEX_LIMIT(info->hmc_info, info->rsrc_type,
 				 info->start_idx, info->count,
 				 &sd_idx, &sd_lmt);
@@ -625,13 +538,7 @@ exit:
 	return ret_code;
 }
 
-/**
- * i40e_shutdown_lan_hmc - Remove HMC backing store, free allocated memory
- * @hw: pointer to the hw structure
- *
- * This must be called by drivers as they are shutting down and being
- * removed from the OS.
- **/
+ 
 int i40e_shutdown_lan_hmc(struct i40e_hw *hw)
 {
 	struct i40e_hmc_lan_delete_obj_info info;
@@ -642,15 +549,15 @@ int i40e_shutdown_lan_hmc(struct i40e_hw *hw)
 	info.start_idx = 0;
 	info.count = 1;
 
-	/* delete the object */
+	 
 	ret_code = i40e_delete_lan_hmc_object(hw, &info);
 
-	/* free the SD table entry for LAN */
+	 
 	i40e_free_virt_mem(hw, &hw->hmc.sd_table.addr);
 	hw->hmc.sd_table.sd_cnt = 0;
 	hw->hmc.sd_table.sd_entry = NULL;
 
-	/* free memory used for hmc_obj */
+	 
 	i40e_free_virt_mem(hw, &hw->hmc.hmc_obj_virt_mem);
 	hw->hmc.hmc_obj = NULL;
 
@@ -668,9 +575,9 @@ struct i40e_context_ele {
 	u16 lsb;
 };
 
-/* LAN Tx Queue Context */
+ 
 static struct i40e_context_ele i40e_hmc_txq_ce_info[] = {
-					     /* Field      Width    LSB */
+					      
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, head),           13,      0 },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, new_context),     1,     30 },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, base),           57,     32 },
@@ -679,7 +586,7 @@ static struct i40e_context_ele i40e_hmc_txq_ce_info[] = {
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, fd_ena),          1,     91 },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, alt_vlan_ena),    1,     92 },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, cpuid),           8,     96 },
-/* line 1 */
+ 
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, thead_wb),       13,  0 + 128 },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, head_wb_ena),     1, 32 + 128 },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, qlen),           13, 33 + 128 },
@@ -687,16 +594,16 @@ static struct i40e_context_ele i40e_hmc_txq_ce_info[] = {
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, tphrpacket_ena),  1, 47 + 128 },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, tphwdesc_ena),    1, 48 + 128 },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, head_wb_addr),   64, 64 + 128 },
-/* line 7 */
+ 
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, crc),            32,  0 + (7 * 128) },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, rdylist),        10, 84 + (7 * 128) },
 	{I40E_HMC_STORE(i40e_hmc_obj_txq, rdylist_act),     1, 94 + (7 * 128) },
 	{ 0 }
 };
 
-/* LAN Rx Queue Context */
+ 
 static struct i40e_context_ele i40e_hmc_rxq_ce_info[] = {
-					 /* Field      Width    LSB */
+					  
 	{ I40E_HMC_STORE(i40e_hmc_obj_rxq, head),        13,	0   },
 	{ I40E_HMC_STORE(i40e_hmc_obj_rxq, cpuid),        8,	13  },
 	{ I40E_HMC_STORE(i40e_hmc_obj_rxq, base),        57,	32  },
@@ -721,12 +628,7 @@ static struct i40e_context_ele i40e_hmc_rxq_ce_info[] = {
 	{ 0 }
 };
 
-/**
- * i40e_write_byte - replace HMC context byte
- * @hmc_bits: pointer to the HMC memory
- * @ce_info: a description of the struct to be read from
- * @src: the struct to be read from
- **/
+ 
 static void i40e_write_byte(u8 *hmc_bits,
 			    struct i40e_context_ele *ce_info,
 			    u8 *src)
@@ -735,38 +637,33 @@ static void i40e_write_byte(u8 *hmc_bits,
 	u8 *from, *dest;
 	u16 shift_width;
 
-	/* copy from the next struct field */
+	 
 	from = src + ce_info->offset;
 
-	/* prepare the bits and mask */
+	 
 	shift_width = ce_info->lsb % 8;
 	mask = (u8)(BIT(ce_info->width) - 1);
 
 	src_byte = *from;
 	src_byte &= mask;
 
-	/* shift to correct alignment */
+	 
 	mask <<= shift_width;
 	src_byte <<= shift_width;
 
-	/* get the current bits from the target bit string */
+	 
 	dest = hmc_bits + (ce_info->lsb / 8);
 
 	memcpy(&dest_byte, dest, sizeof(dest_byte));
 
-	dest_byte &= ~mask;	/* get the bits not changing */
-	dest_byte |= src_byte;	/* add in the new bits */
+	dest_byte &= ~mask;	 
+	dest_byte |= src_byte;	 
 
-	/* put it all back */
+	 
 	memcpy(dest, &dest_byte, sizeof(dest_byte));
 }
 
-/**
- * i40e_write_word - replace HMC context word
- * @hmc_bits: pointer to the HMC memory
- * @ce_info: a description of the struct to be read from
- * @src: the struct to be read from
- **/
+ 
 static void i40e_write_word(u8 *hmc_bits,
 			    struct i40e_context_ele *ce_info,
 			    u8 *src)
@@ -776,41 +673,34 @@ static void i40e_write_word(u8 *hmc_bits,
 	u16 shift_width;
 	__le16 dest_word;
 
-	/* copy from the next struct field */
+	 
 	from = src + ce_info->offset;
 
-	/* prepare the bits and mask */
+	 
 	shift_width = ce_info->lsb % 8;
 	mask = BIT(ce_info->width) - 1;
 
-	/* don't swizzle the bits until after the mask because the mask bits
-	 * will be in a different bit position on big endian machines
-	 */
+	 
 	src_word = *(u16 *)from;
 	src_word &= mask;
 
-	/* shift to correct alignment */
+	 
 	mask <<= shift_width;
 	src_word <<= shift_width;
 
-	/* get the current bits from the target bit string */
+	 
 	dest = hmc_bits + (ce_info->lsb / 8);
 
 	memcpy(&dest_word, dest, sizeof(dest_word));
 
-	dest_word &= ~(cpu_to_le16(mask));	/* get the bits not changing */
-	dest_word |= cpu_to_le16(src_word);	/* add in the new bits */
+	dest_word &= ~(cpu_to_le16(mask));	 
+	dest_word |= cpu_to_le16(src_word);	 
 
-	/* put it all back */
+	 
 	memcpy(dest, &dest_word, sizeof(dest_word));
 }
 
-/**
- * i40e_write_dword - replace HMC context dword
- * @hmc_bits: pointer to the HMC memory
- * @ce_info: a description of the struct to be read from
- * @src: the struct to be read from
- **/
+ 
 static void i40e_write_dword(u8 *hmc_bits,
 			     struct i40e_context_ele *ce_info,
 			     u8 *src)
@@ -820,49 +710,39 @@ static void i40e_write_dword(u8 *hmc_bits,
 	u16 shift_width;
 	__le32 dest_dword;
 
-	/* copy from the next struct field */
+	 
 	from = src + ce_info->offset;
 
-	/* prepare the bits and mask */
+	 
 	shift_width = ce_info->lsb % 8;
 
-	/* if the field width is exactly 32 on an x86 machine, then the shift
-	 * operation will not work because the SHL instructions count is masked
-	 * to 5 bits so the shift will do nothing
-	 */
+	 
 	if (ce_info->width < 32)
 		mask = BIT(ce_info->width) - 1;
 	else
 		mask = ~(u32)0;
 
-	/* don't swizzle the bits until after the mask because the mask bits
-	 * will be in a different bit position on big endian machines
-	 */
+	 
 	src_dword = *(u32 *)from;
 	src_dword &= mask;
 
-	/* shift to correct alignment */
+	 
 	mask <<= shift_width;
 	src_dword <<= shift_width;
 
-	/* get the current bits from the target bit string */
+	 
 	dest = hmc_bits + (ce_info->lsb / 8);
 
 	memcpy(&dest_dword, dest, sizeof(dest_dword));
 
-	dest_dword &= ~(cpu_to_le32(mask));	/* get the bits not changing */
-	dest_dword |= cpu_to_le32(src_dword);	/* add in the new bits */
+	dest_dword &= ~(cpu_to_le32(mask));	 
+	dest_dword |= cpu_to_le32(src_dword);	 
 
-	/* put it all back */
+	 
 	memcpy(dest, &dest_dword, sizeof(dest_dword));
 }
 
-/**
- * i40e_write_qword - replace HMC context qword
- * @hmc_bits: pointer to the HMC memory
- * @ce_info: a description of the struct to be read from
- * @src: the struct to be read from
- **/
+ 
 static void i40e_write_qword(u8 *hmc_bits,
 			     struct i40e_context_ele *ce_info,
 			     u8 *src)
@@ -872,65 +752,50 @@ static void i40e_write_qword(u8 *hmc_bits,
 	u16 shift_width;
 	__le64 dest_qword;
 
-	/* copy from the next struct field */
+	 
 	from = src + ce_info->offset;
 
-	/* prepare the bits and mask */
+	 
 	shift_width = ce_info->lsb % 8;
 
-	/* if the field width is exactly 64 on an x86 machine, then the shift
-	 * operation will not work because the SHL instructions count is masked
-	 * to 6 bits so the shift will do nothing
-	 */
+	 
 	if (ce_info->width < 64)
 		mask = BIT_ULL(ce_info->width) - 1;
 	else
 		mask = ~(u64)0;
 
-	/* don't swizzle the bits until after the mask because the mask bits
-	 * will be in a different bit position on big endian machines
-	 */
+	 
 	src_qword = *(u64 *)from;
 	src_qword &= mask;
 
-	/* shift to correct alignment */
+	 
 	mask <<= shift_width;
 	src_qword <<= shift_width;
 
-	/* get the current bits from the target bit string */
+	 
 	dest = hmc_bits + (ce_info->lsb / 8);
 
 	memcpy(&dest_qword, dest, sizeof(dest_qword));
 
-	dest_qword &= ~(cpu_to_le64(mask));	/* get the bits not changing */
-	dest_qword |= cpu_to_le64(src_qword);	/* add in the new bits */
+	dest_qword &= ~(cpu_to_le64(mask));	 
+	dest_qword |= cpu_to_le64(src_qword);	 
 
-	/* put it all back */
+	 
 	memcpy(dest, &dest_qword, sizeof(dest_qword));
 }
 
-/**
- * i40e_clear_hmc_context - zero out the HMC context bits
- * @hw:       the hardware struct
- * @context_bytes: pointer to the context bit array (DMA memory)
- * @hmc_type: the type of HMC resource
- **/
+ 
 static int i40e_clear_hmc_context(struct i40e_hw *hw,
 				  u8 *context_bytes,
 				  enum i40e_hmc_lan_rsrc_type hmc_type)
 {
-	/* clean the bit array */
+	 
 	memset(context_bytes, 0, (u32)hw->hmc.hmc_obj[hmc_type].size);
 
 	return 0;
 }
 
-/**
- * i40e_set_hmc_context - replace HMC context bits
- * @context_bytes: pointer to the context bit array
- * @ce_info:  a description of the struct to be filled
- * @dest:     the struct to be filled
- **/
+ 
 static int i40e_set_hmc_context(u8 *context_bytes,
 				struct i40e_context_ele *ce_info,
 				u8 *dest)
@@ -939,10 +804,7 @@ static int i40e_set_hmc_context(u8 *context_bytes,
 
 	for (f = 0; ce_info[f].width != 0; f++) {
 
-		/* we have to deal with each element of the HMC using the
-		 * correct size so that we are correct regardless of the
-		 * endianness of the machine
-		 */
+		 
 		switch (ce_info[f].size_of) {
 		case 1:
 			i40e_write_byte(context_bytes, &ce_info[f], dest);
@@ -962,16 +824,7 @@ static int i40e_set_hmc_context(u8 *context_bytes,
 	return 0;
 }
 
-/**
- * i40e_hmc_get_object_va - retrieves an object's virtual address
- * @hw: the hardware struct, from which we obtain the i40e_hmc_info pointer
- * @object_base: pointer to u64 to get the va
- * @rsrc_type: the hmc resource type
- * @obj_idx: hmc object index
- *
- * This function retrieves the object's virtual address from the object
- * base pointer.  This function is used for LAN Queue contexts.
- **/
+ 
 static
 int i40e_hmc_get_object_va(struct i40e_hw *hw, u8 **object_base,
 			   enum i40e_hmc_lan_rsrc_type rsrc_type,
@@ -1012,7 +865,7 @@ int i40e_hmc_get_object_va(struct i40e_hw *hw, u8 **object_base,
 		ret_code = -EINVAL;
 		goto exit;
 	}
-	/* find sd index and limit */
+	 
 	I40E_FIND_SD_INDEX_LIMIT(hmc_info, rsrc_type, obj_idx, 1,
 				 &sd_idx, &sd_lmt);
 
@@ -1037,11 +890,7 @@ exit:
 	return ret_code;
 }
 
-/**
- * i40e_clear_lan_tx_queue_context - clear the HMC context for the queue
- * @hw:    the hardware struct
- * @queue: the queue we care about
- **/
+ 
 int i40e_clear_lan_tx_queue_context(struct i40e_hw *hw,
 				    u16 queue)
 {
@@ -1056,12 +905,7 @@ int i40e_clear_lan_tx_queue_context(struct i40e_hw *hw,
 	return i40e_clear_hmc_context(hw, context_bytes, I40E_HMC_LAN_TX);
 }
 
-/**
- * i40e_set_lan_tx_queue_context - set the HMC context for the queue
- * @hw:    the hardware struct
- * @queue: the queue we care about
- * @s:     the struct to be filled
- **/
+ 
 int i40e_set_lan_tx_queue_context(struct i40e_hw *hw,
 				  u16 queue,
 				  struct i40e_hmc_obj_txq *s)
@@ -1078,11 +922,7 @@ int i40e_set_lan_tx_queue_context(struct i40e_hw *hw,
 				    i40e_hmc_txq_ce_info, (u8 *)s);
 }
 
-/**
- * i40e_clear_lan_rx_queue_context - clear the HMC context for the queue
- * @hw:    the hardware struct
- * @queue: the queue we care about
- **/
+ 
 int i40e_clear_lan_rx_queue_context(struct i40e_hw *hw,
 				    u16 queue)
 {
@@ -1097,12 +937,7 @@ int i40e_clear_lan_rx_queue_context(struct i40e_hw *hw,
 	return i40e_clear_hmc_context(hw, context_bytes, I40E_HMC_LAN_RX);
 }
 
-/**
- * i40e_set_lan_rx_queue_context - set the HMC context for the queue
- * @hw:    the hardware struct
- * @queue: the queue we care about
- * @s:     the struct to be filled
- **/
+ 
 int i40e_set_lan_rx_queue_context(struct i40e_hw *hw,
 				  u16 queue,
 				  struct i40e_hmc_obj_rxq *s)

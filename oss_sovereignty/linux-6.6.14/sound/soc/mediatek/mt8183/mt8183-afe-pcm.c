@@ -1,9 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0
-//
-// Mediatek ALSA SoC AFE platform driver for 8183
-//
-// Copyright (c) 2018 MediaTek Inc.
-// Author: KaiChieh Chuang <kaichieh.chuang@mediatek.com>
+
+
+
+
+
+
 
 #include <linux/delay.h>
 #include <linux/module.h>
@@ -177,7 +177,7 @@ static int mt8183_irq_fs(struct snd_pcm_substream *substream, unsigned int rate)
 			 SNDRV_PCM_FMTBIT_S32_LE)
 
 static struct snd_soc_dai_driver mt8183_memif_dai_driver[] = {
-	/* FE DAIs: memory intefaces to CPU */
+	 
 	{
 		.name = "DL1",
 		.id = MT8183_MEMIF_DL1,
@@ -288,7 +288,7 @@ static struct snd_soc_dai_driver mt8183_memif_dai_driver[] = {
 	},
 };
 
-/* dma widget & routes*/
+ 
 static const struct snd_kcontrol_new memif_ul1_ch1_mix[] = {
 	SOC_DAPM_SINGLE_AUTODISABLE("ADDA_UL_CH1", AFE_CONN21,
 				    I_ADDA_UL_CH1, 1, 0),
@@ -361,7 +361,7 @@ static const struct snd_kcontrol_new memif_ul_mono_1_mix[] = {
 };
 
 static const struct snd_soc_dapm_widget mt8183_memif_widgets[] = {
-	/* memif */
+	 
 	SND_SOC_DAPM_MIXER("UL1_CH1", SND_SOC_NOPM, 0, 0,
 			   memif_ul1_ch1_mix, ARRAY_SIZE(memif_ul1_ch1_mix)),
 	SND_SOC_DAPM_MIXER("UL1_CH2", SND_SOC_NOPM, 0, 0,
@@ -388,7 +388,7 @@ static const struct snd_soc_dapm_widget mt8183_memif_widgets[] = {
 };
 
 static const struct snd_soc_dapm_route mt8183_memif_routes[] = {
-	/* capture */
+	 
 	{"UL1", NULL, "UL1_CH1"},
 	{"UL1", NULL, "UL1_CH2"},
 	{"UL1_CH1", "ADDA_UL_CH1", "ADDA Capture"},
@@ -603,7 +603,7 @@ static const struct mtk_base_memif_data memif_data[MT8183_MEMIF_NUM] = {
 		.fs_maskbit = -1,
 		.mono_reg = -1,
 		.mono_shift = -1,
-		.enable_reg = -1,	/* control in tdm for sync start */
+		.enable_reg = -1,	 
 		.enable_shift = -1,
 		.hd_reg = AFE_MEMIF_HD_MODE,
 		.hd_align_reg = AFE_MEMIF_HDALIGN,
@@ -764,11 +764,11 @@ static const struct mtk_base_irq_data irq_data[MT8183_IRQ_NUM] = {
 
 static bool mt8183_is_volatile_reg(struct device *dev, unsigned int reg)
 {
-	/* these auto-gen reg has read-only bit, so put it as volatile */
-	/* volatile reg cannot be cached, so cannot be set when power off */
+	 
+	 
 	switch (reg) {
-	case AUDIO_TOP_CON0:	/* reg bit controlled by CCF */
-	case AUDIO_TOP_CON1:	/* reg bit controlled by CCF */
+	case AUDIO_TOP_CON0:	 
+	case AUDIO_TOP_CON1:	 
 	case AUDIO_TOP_CON3:
 	case AFE_DL1_CUR:
 	case AFE_DL1_END:
@@ -935,11 +935,11 @@ static irqreturn_t mt8183_afe_irq_handler(int irq_id, void *dev)
 	int i;
 	irqreturn_t irq_ret = IRQ_HANDLED;
 
-	/* get irq that is sent to MCU */
+	 
 	regmap_read(afe->regmap, AFE_IRQ_MCU_EN, &mcu_en);
 
 	ret = regmap_read(afe->regmap, AFE_IRQ_MCU_STATUS, &status);
-	/* only care IRQ which is sent to MCU */
+	 
 	status_mcu = status & mcu_en & AFE_IRQ_STATUS_BITS;
 
 	if (ret || status_mcu == 0) {
@@ -966,7 +966,7 @@ static irqreturn_t mt8183_afe_irq_handler(int irq_id, void *dev)
 	}
 
 err_irq:
-	/* clear irq */
+	 
 	regmap_write(afe->regmap,
 		     AFE_IRQ_MCU_CLR,
 		     status_mcu);
@@ -984,7 +984,7 @@ static int mt8183_afe_runtime_suspend(struct device *dev)
 	if (!afe->regmap || afe_priv->pm_runtime_bypass_reg_ctl)
 		goto skip_regmap;
 
-	/* disable AFE */
+	 
 	regmap_update_bits(afe->regmap, AFE_DAC_CON0, AFE_ON_MASK_SFT, 0x0);
 
 	ret = regmap_read_poll_timeout(afe->regmap,
@@ -996,11 +996,11 @@ static int mt8183_afe_runtime_suspend(struct device *dev)
 	if (ret)
 		dev_warn(afe->dev, "%s(), ret %d\n", __func__, ret);
 
-	/* make sure all irq status are cleared, twice intended */
+	 
 	regmap_update_bits(afe->regmap, AFE_IRQ_MCU_CLR, 0xffff, 0xffff);
 	regmap_update_bits(afe->regmap, AFE_IRQ_MCU_CLR, 0xffff, 0xffff);
 
-	/* cache only */
+	 
 	regcache_cache_only(afe->regmap, true);
 	regcache_mark_dirty(afe->regmap);
 
@@ -1024,18 +1024,18 @@ static int mt8183_afe_runtime_resume(struct device *dev)
 	regcache_cache_only(afe->regmap, false);
 	regcache_sync(afe->regmap);
 
-	/* enable audio sys DCM for power saving */
+	 
 	regmap_update_bits(afe->regmap, AUDIO_TOP_CON0, 0x1 << 29, 0x1 << 29);
 
-	/* force cpu use 8_24 format when writing 32bit data */
+	 
 	regmap_update_bits(afe->regmap, AFE_MEMIF_MSB,
 			   CPU_HD_ALIGN_MASK_SFT, 0 << CPU_HD_ALIGN_SFT);
 
-	/* set all output port to 24bit */
+	 
 	regmap_write(afe->regmap, AFE_CONN_24BIT, 0xffffffff);
 	regmap_write(afe->regmap, AFE_CONN_24BIT_1, 0xffffffff);
 
-	/* enable AFE */
+	 
 	regmap_update_bits(afe->regmap, AFE_DAC_CON0, 0x1, 0x1);
 
 skip_regmap:
@@ -1106,7 +1106,7 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 	afe->dev = &pdev->dev;
 	dev = afe->dev;
 
-	/* initial audio related clock */
+	 
 	ret = mt8183_init_clock(afe);
 	if (ret) {
 		dev_err(dev, "init clock error\n");
@@ -1115,7 +1115,7 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 
 	pm_runtime_enable(dev);
 
-	/* regmap init */
+	 
 	afe->regmap = syscon_node_to_regmap(dev->parent->of_node);
 	if (IS_ERR(afe->regmap)) {
 		dev_err(dev, "could not get regmap from parent\n");
@@ -1141,7 +1141,7 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 		goto err_pm_disable;
 	}
 
-	/* enable clock for regcache get default value from hw */
+	 
 	afe_priv->pm_runtime_bypass_reg_ctl = true;
 	pm_runtime_get_sync(&pdev->dev);
 
@@ -1157,7 +1157,7 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 	regcache_cache_only(afe->regmap, true);
 	regcache_mark_dirty(afe->regmap);
 
-	/* init memif */
+	 
 	afe->memif_size = MT8183_MEMIF_NUM;
 	afe->memif = devm_kcalloc(dev, afe->memif_size, sizeof(*afe->memif),
 				  GFP_KERNEL);
@@ -1176,8 +1176,8 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 
 	mutex_init(&afe->irq_alloc_lock);
 
-	/* init memif */
-	/* irq initialize */
+	 
+	 
 	afe->irqs_size = MT8183_IRQ_NUM;
 	afe->irqs = devm_kcalloc(dev, afe->irqs_size, sizeof(*afe->irqs),
 				 GFP_KERNEL);
@@ -1189,7 +1189,7 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 	for (i = 0; i < afe->irqs_size; i++)
 		afe->irqs[i].irq_data = &irq_data[i];
 
-	/* request irq */
+	 
 	irq_id = platform_get_irq(pdev, 0);
 	if (irq_id < 0) {
 		ret = irq_id;
@@ -1203,7 +1203,7 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 		goto err_pm_disable;
 	}
 
-	/* init sub_dais */
+	 
 	INIT_LIST_HEAD(&afe->sub_dais);
 
 	for (i = 0; i < ARRAY_SIZE(dai_register_cbs); i++) {
@@ -1215,7 +1215,7 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 		}
 	}
 
-	/* init dai_driver and component_driver */
+	 
 	ret = mtk_afe_combine_sub_dai(afe);
 	if (ret) {
 		dev_warn(afe->dev, "mtk_afe_combine_sub_dai fail, ret %d\n",
@@ -1230,7 +1230,7 @@ static int mt8183_afe_pcm_dev_probe(struct platform_device *pdev)
 	afe->runtime_resume = mt8183_afe_runtime_resume;
 	afe->runtime_suspend = mt8183_afe_runtime_suspend;
 
-	/* register component */
+	 
 	ret = devm_snd_soc_register_component(&pdev->dev,
 					      &mt8183_afe_component,
 					      NULL, 0);

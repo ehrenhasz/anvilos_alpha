@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * PCM3168A codec spi driver
- *
- * Copyright (C) 2015 Imagination Technologies Ltd.
- *
- * Author: Damien Horsley <Damien.Horsley@imgtec.com>
- */
+
+ 
 
 #include <linux/init.h>
 #include <linux/module.h>

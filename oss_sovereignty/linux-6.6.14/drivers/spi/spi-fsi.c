@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-// Copyright (C) IBM Corporation 2020
+
+
 
 #include <linux/bitfield.h>
 #include <linux/bits.h>
@@ -68,13 +68,13 @@
 #define SPI_FSI_PORT_CTRL		0x9
 
 struct fsi2spi {
-	struct fsi_device *fsi; /* FSI2SPI CFAM engine device */
-	struct mutex lock; /* lock access to the device */
+	struct fsi_device *fsi;  
+	struct mutex lock;  
 };
 
 struct fsi_spi {
-	struct device *dev;	/* SPI controller device */
-	struct fsi2spi *bridge; /* FSI2SPI device */
+	struct device *dev;	 
+	struct fsi2spi *bridge;  
 	u32 base;
 };
 
@@ -229,7 +229,7 @@ static int fsi_spi_data_out(u64 *out, const u8 *tx, int len)
 	int num_bytes = min(len, 8);
 	u8 *out_bytes = (u8 *)out;
 
-	/* Unused bytes of the tx data should be 0. */
+	 
 	*out = 0ULL;
 
 	for (i = 0; i < num_bytes; ++i)
@@ -279,12 +279,7 @@ static int fsi_spi_status(struct fsi_spi *ctx, u64 *status, const char *dir)
 
 static void fsi_spi_sequence_add(struct fsi_spi_sequence *seq, u8 val)
 {
-	/*
-	 * Add the next byte of instruction to the 8-byte sequence register.
-	 * Then decrement the counter so that the next instruction will go in
-	 * the right place. Return the index of the slot we just filled in the
-	 * sequence register.
-	 */
+	 
 	seq->data |= (u64)val << seq->bit;
 	seq->bit -= 8;
 }
@@ -438,7 +433,7 @@ static int fsi_spi_transfer_one_message(struct spi_controller *ctlr,
 		struct fsi_spi_sequence seq;
 		struct spi_transfer *next = NULL;
 
-		/* Sequencer must do shift out (tx) first. */
+		 
 		if (!transfer->tx_buf || transfer->len > SPI_FSI_MAX_TX_SIZE) {
 			rc = -EINVAL;
 			goto error;
@@ -465,7 +460,7 @@ static int fsi_spi_transfer_one_message(struct spi_controller *ctlr,
 				  &mesg->transfers)) {
 			next = list_next_entry(transfer, transfer_list);
 
-			/* Sequencer can only do shift in (rx) after tx. */
+			 
 			if (next->rx_buf) {
 				u8 shift;
 

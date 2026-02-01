@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012-2020, The Linux Foundation. All rights reserved.
- * Copyright (c) 2023, Linaro Limited
- *
- * This driver supports what is known as "Master Stats v2" in Qualcomm
- * downstream kernel terms, which seems to be the only version which has
- * ever shipped, all the way from 2013 to 2023.
- */
+
+ 
 
 #include <linux/debugfs.h>
 #include <linux/io.h>
@@ -27,11 +20,11 @@ struct rpm_master_stats {
 	u64 wakeup_idx;
 	u64 bringup_req;
 	u64 bringup_ack;
-	u32 wakeup_reason; /* 0 = "rude wakeup", 1 = scheduled wakeup */
+	u32 wakeup_reason;  
 	u32 last_sleep_trans_dur;
 	u32 last_wake_trans_dur;
 
-	/* Per-subsystem (*not necessarily* SoC-wide) XO shutdown stats */
+	 
 	u32 xo_count;
 	u64 xo_last_enter;
 	u64 last_exit;
@@ -93,10 +86,7 @@ static int master_stats_probe(struct platform_device *pdev)
 					     "Couldn't parse MSG RAM phandle idx %d", i);
 		}
 
-		/*
-		 * Purposefully skip devm_platform helpers as we're using a
-		 * shared resource.
-		 */
+		 
 		ret = of_address_to_resource(msgram_np, 0, &res);
 		of_node_put(msgram_np);
 		if (ret < 0) {
@@ -119,10 +109,7 @@ static int master_stats_probe(struct platform_device *pdev)
 					     "Could not read name idx %d!\n", i);
 		}
 
-		/*
-		 * Generally it's not advised to fail on debugfs errors, but this
-		 * driver's only job is exposing data therein.
-		 */
+		 
 		dent = debugfs_create_file(data[i].label, 0444, root,
 					   &data[i], &master_stats_fops);
 		if (IS_ERR(dent)) {

@@ -1,4 +1,4 @@
-/* SPDX-License-Identifier: GPL-2.0 */
+ 
 
 BPF_RETVAL_HOOK(ingress, "cgroup_skb/ingress", __sk_buff, -EINVAL)
 BPF_RETVAL_HOOK(egress, "cgroup_skb/egress", __sk_buff, -EINVAL)

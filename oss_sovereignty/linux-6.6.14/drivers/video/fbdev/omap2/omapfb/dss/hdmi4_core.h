@@ -1,16 +1,12 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * HDMI header definition for OMAP4 HDMI core IP
- *
- * Copyright (C) 2010-2011 Texas Instruments Incorporated - https://www.ti.com/
- */
+ 
+ 
 
 #ifndef _HDMI4_CORE_H_
 #define _HDMI4_CORE_H_
 
 #include "hdmi.h"
 
-/* OMAP4 HDMI IP Core System */
+ 
 
 #define HDMI_CORE_SYS_VND_IDL			0x0
 #define HDMI_CORE_SYS_DEV_IDL			0x8
@@ -82,13 +78,13 @@
 #define HDMI_CORE_SYS_INTR_CTRL			0x1E4
 #define HDMI_CORE_SYS_TMDS_CTRL			0x208
 
-/* value definitions for HDMI_CORE_SYS_SYS_CTRL1 fields */
+ 
 #define HDMI_CORE_SYS_SYS_CTRL1_VEN_FOLLOWVSYNC	0x1
 #define HDMI_CORE_SYS_SYS_CTRL1_HEN_FOLLOWHSYNC	0x1
 #define HDMI_CORE_SYS_SYS_CTRL1_BSEL_24BITBUS	0x1
 #define HDMI_CORE_SYS_SYS_CTRL1_EDGE_RISINGEDGE	0x1
 
-/* HDMI DDC E-DID */
+ 
 #define HDMI_CORE_DDC_ADDR			0x3B4
 #define HDMI_CORE_DDC_SEGM			0x3B8
 #define HDMI_CORE_DDC_OFFSET			0x3BC
@@ -98,7 +94,7 @@
 #define HDMI_CORE_DDC_CMD			0x3CC
 #define HDMI_CORE_DDC_DATA			0x3D0
 
-/* HDMI IP Core Audio Video */
+ 
 
 #define HDMI_CORE_AV_ACR_CTRL			0x4
 #define HDMI_CORE_AV_FREQ_SVAL			0x8

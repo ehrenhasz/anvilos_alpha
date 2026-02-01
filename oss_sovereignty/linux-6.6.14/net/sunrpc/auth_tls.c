@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2021, 2022 Oracle.  All rights reserved.
- *
- * The AUTH_TLS credential is used only to probe a remote peer
- * for RPC-over-TLS support.
- */
+
+ 
 
 #include <linux/types.h>
 #include <linux/module.h>
@@ -103,10 +98,10 @@ static int tls_marshal(struct rpc_task *task, struct xdr_stream *xdr)
 	p = xdr_reserve_space(xdr, 4 * XDR_UNIT);
 	if (!p)
 		return -EMSGSIZE;
-	/* Credential */
+	 
 	*p++ = rpc_auth_tls;
 	*p++ = xdr_zero;
-	/* Verifier */
+	 
 	*p++ = rpc_auth_null;
 	*p   = xdr_zero;
 	return 0;

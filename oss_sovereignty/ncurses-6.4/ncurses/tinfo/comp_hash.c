@@ -1,43 +1,8 @@
-/****************************************************************************
- * Copyright 2019,2020 Thomas E. Dickey                                     *
- * Copyright 1998-2008,2009 Free Software Foundation, Inc.                  *
- *                                                                          *
- * Permission is hereby granted, free of charge, to any person obtaining a  *
- * copy of this software and associated documentation files (the            *
- * "Software"), to deal in the Software without restriction, including      *
- * without limitation the rights to use, copy, modify, merge, publish,      *
- * distribute, distribute with modifications, sublicense, and/or sell       *
- * copies of the Software, and to permit persons to whom the Software is    *
- * furnished to do so, subject to the following conditions:                 *
- *                                                                          *
- * The above copyright notice and this permission notice shall be included  *
- * in all copies or substantial portions of the Software.                   *
- *                                                                          *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS  *
- * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF               *
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.   *
- * IN NO EVENT SHALL THE ABOVE COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM,   *
- * DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR    *
- * OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR    *
- * THE USE OR OTHER DEALINGS IN THE SOFTWARE.                               *
- *                                                                          *
- * Except as contained in this notice, the name(s) of the above copyright   *
- * holders shall not be used in advertising or otherwise to promote the     *
- * sale, use or other dealings in this Software without prior written       *
- * authorization.                                                           *
- ****************************************************************************/
+ 
 
-/****************************************************************************
- *  Author: Zeyd M. Ben-Halim <zmbenhal@netcom.com> 1992,1995               *
- *     and: Eric S. Raymond <esr@snark.thyrsus.com>                         *
- *     and: Thomas E. Dickey                        1996-on                 *
- ****************************************************************************/
+ 
 
-/*
- *	comp_hash.c --- Routines to deal with the hashtable of capability
- *			names.
- *
- */
+ 
 
 #define USE_TERMLIB 1
 #include <curses.priv.h>
@@ -47,11 +12,8 @@
 
 MODULE_ID("$Id: comp_hash.c,v 1.53 2020/02/02 23:34:34 tom Exp $")
 
-/*
- * Finds the entry for the given string in the hash table if present.
- * Returns a pointer to the entry in the table or 0 if not found.
- */
-/* entrypoint used by tack 1.07 */
+ 
+ 
 NCURSES_EXPORT(struct name_table_entry const *)
 _nc_find_entry(const char *string,
 	       const HashValue * hash_table)
@@ -83,13 +45,7 @@ _nc_find_entry(const char *string,
     return (ptr);
 }
 
-/*
- * Finds the entry for the given name with the given type in the given table if
- * present (as distinct from _nc_find_entry, which finds the last entry
- * regardless of type).
- *
- * Returns a pointer to the entry in the table or 0 if not found.
- */
+ 
 NCURSES_EXPORT(struct name_table_entry const *)
 _nc_find_type_entry(const char *string,
 		    int type,
@@ -147,4 +103,4 @@ _nc_find_user_entry(const char *string)
 
     return (ptr);
 }
-#endif /* NCURSES_XNAMES */
+#endif  

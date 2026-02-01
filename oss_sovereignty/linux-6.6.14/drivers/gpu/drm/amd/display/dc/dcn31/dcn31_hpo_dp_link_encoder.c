@@ -1,27 +1,4 @@
-/*
- * Copyright 2019 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- *  and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #include "dc_bios_types.h"
 #include "dcn31_hpo_dp_link_encoder.h"
@@ -53,20 +30,20 @@ void dcn31_hpo_dp_link_enc_enable(
 	struct dcn31_hpo_dp_link_encoder *enc3 = DCN3_1_HPO_DP_LINK_ENC_FROM_HPO_LINK_ENC(enc);
 	uint32_t dp_link_enabled;
 
-	/* get current status of link enabled */
+	 
 	REG_GET(DP_DPHY_SYM32_STATUS,
 			STATUS, &dp_link_enabled);
 
-	/* Enable clocks first */
+	 
 	REG_UPDATE(DP_LINK_ENC_CLOCK_CONTROL, DP_LINK_ENC_CLOCK_EN, 1);
 
-	/* Reset DPHY.  Only reset if going from disable to enable */
+	 
 	if (!dp_link_enabled) {
 		REG_UPDATE(DP_DPHY_SYM32_CONTROL, DPHY_RESET, 1);
 		REG_UPDATE(DP_DPHY_SYM32_CONTROL, DPHY_RESET, 0);
 	}
 
-	/* Configure DPHY settings */
+	 
 	REG_UPDATE_3(DP_DPHY_SYM32_CONTROL,
 			DPHY_ENABLE, 1,
 			PRECODER_ENABLE, 1,
@@ -78,11 +55,11 @@ void dcn31_hpo_dp_link_enc_disable(
 {
 	struct dcn31_hpo_dp_link_encoder *enc3 = DCN3_1_HPO_DP_LINK_ENC_FROM_HPO_LINK_ENC(enc);
 
-	/* Configure DPHY settings */
+	 
 	REG_UPDATE(DP_DPHY_SYM32_CONTROL,
 			DPHY_ENABLE, 0);
 
-	/* Shut down clock last */
+	 
 	REG_UPDATE(DP_LINK_ENC_CLOCK_CONTROL, DP_LINK_ENC_CLOCK_EN, 0);
 }
 
@@ -278,7 +255,7 @@ static void fill_stream_allocation_row_info(
 	}
 }
 
-/* programs DP VC payload allocation */
+ 
 void dcn31_hpo_dp_link_enc_update_stream_allocation_table(
 		struct hpo_dp_link_encoder *enc,
 		const struct link_mst_stream_allocation_table *table)
@@ -287,13 +264,9 @@ void dcn31_hpo_dp_link_enc_update_stream_allocation_table(
 	uint32_t slots = 0;
 	uint32_t src = 0;
 
-	/* --- Set MSE Stream Attribute -
-	 * Setup VC Payload Table on Tx Side,
-	 * Issue allocation change trigger
-	 * to commit payload on both tx and rx side
-	 */
+	 
 
-	/* we should clean-up table each time */
+	 
 
 	if (table->stream_count >= 1) {
 		fill_stream_allocation_row_info(
@@ -351,30 +324,16 @@ void dcn31_hpo_dp_link_enc_update_stream_allocation_table(
 			SAT_STREAM_SOURCE, src,
 			SAT_SLOT_COUNT, slots);
 
-	/* --- wait for transaction finish */
+	 
 
-	/* send allocation change trigger (ACT)
-	 * this step first sends the ACT,
-	 * then double buffers the SAT into the hardware
-	 * making the new allocation active on the DP MST mode link
-	 */
+	 
 
-	/* SAT_UPDATE:
-	 * 0 - No Action
-	 * 1 - Update SAT with trigger
-	 * 2 - Update SAT without trigger
-	 */
+	 
 	REG_UPDATE(DP_DPHY_SYM32_SAT_UPDATE,
 			SAT_UPDATE, 1);
 
-	/* wait for update to complete
-	 * (i.e. SAT_UPDATE_PENDING field is set to 0)
-	 * No need for HW to enforce keepout.
-	 */
-	/* Best case and worst case wait time for SAT_UPDATE_PENDING
-	 *   best: 109 us
-	 *   worst: 868 us
-	 */
+	 
+	 
 	REG_WAIT(DP_DPHY_SYM32_STATUS,
 			SAT_UPDATE_PENDING, 0,
 			10, DP_SAT_UPDATE_MAX_RETRY);
@@ -420,11 +379,8 @@ void dcn31_hpo_dp_link_enc_set_throttled_vcp_size(
 		ASSERT(0);
 	}
 
-	/* Best case and worst case wait time for RATE_UPDATE_PENDING
-	 *   best: 116 ns
-	 *   worst: 903 ns
-	 */
-	/* wait for update to be completed on the link */
+	 
+	 
 	REG_WAIT(DP_DPHY_SYM32_STATUS,
 			RATE_UPDATE_PENDING, 0,
 			1, 10);
@@ -438,7 +394,7 @@ static bool dcn31_hpo_dp_link_enc_is_in_alt_mode(
 
 	ASSERT((enc->transmitter >= TRANSMITTER_UNIPHY_A) && (enc->transmitter <= TRANSMITTER_UNIPHY_E));
 
-	/* if value == 1 alt mode is disabled, otherwise it is enabled */
+	 
 	REG_GET(RDPCSTX_PHY_CNTL6[enc->transmitter], RDPCS_PHY_DPALT_DISABLE, &dp_alt_mode_disable);
 	return (dp_alt_mode_disable == 0);
 }
@@ -497,7 +453,7 @@ static enum bp_result link_transmitter_control(
 	return result;
 }
 
-/* enables DP PHY output for 128b132b encoding */
+ 
 void dcn31_hpo_dp_link_enc_enable_dp_output(
 	struct hpo_dp_link_encoder *enc,
 	const struct dc_link_settings *link_settings,
@@ -508,17 +464,17 @@ void dcn31_hpo_dp_link_enc_enable_dp_output(
 	struct bp_transmitter_control cntl = { 0 };
 	enum bp_result result;
 
-	/* Set the transmitter */
+	 
 	enc3->base.transmitter = transmitter;
 
-	/* Set the hpd source */
+	 
 	enc3->base.hpd_source = hpd_source;
 
-	/* Enable the PHY */
+	 
 	cntl.action = TRANSMITTER_CONTROL_ENABLE;
 	cntl.engine_id = ENGINE_ID_UNKNOWN;
 	cntl.transmitter = enc3->base.transmitter;
-	//cntl.pll_id = clock_source;
+	
 	cntl.signal = SIGNAL_TYPE_DISPLAY_PORT_MST;
 	cntl.lanes_number = link_settings->lane_count;
 	cntl.hpd_sel = enc3->base.hpd_source;
@@ -543,7 +499,7 @@ void dcn31_hpo_dp_link_enc_disable_output(
 	struct bp_transmitter_control cntl = { 0 };
 	enum bp_result result;
 
-	/* disable transmitter */
+	 
 	cntl.action = TRANSMITTER_CONTROL_DISABLE;
 	cntl.transmitter = enc3->base.transmitter;
 	cntl.hpd_sel = enc3->base.hpd_source;
@@ -558,7 +514,7 @@ void dcn31_hpo_dp_link_enc_disable_output(
 		return;
 	}
 
-	/* disable encoder */
+	 
 	dcn31_hpo_dp_link_enc_disable(enc);
 }
 
@@ -571,7 +527,7 @@ void dcn31_hpo_dp_link_enc_set_ffe(
 	struct bp_transmitter_control cntl = { 0 };
 	enum bp_result result;
 
-	/* disable transmitter */
+	 
 	cntl.transmitter = enc3->base.transmitter;
 	cntl.action = TRANSMITTER_CONTROL_SET_VOLTAGE_AND_PREEMPASIS;
 	cntl.signal = SIGNAL_TYPE_DISPLAY_PORT_MST;

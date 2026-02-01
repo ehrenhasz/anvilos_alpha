@@ -1,9 +1,4 @@
-/* Copyright (c) 2016 Facebook
- *
- * This program is free software; you can redistribute it and/or
- * modify it under the terms of version 2 of the GNU General Public
- * License as published by the Free Software Foundation.
- */
+ 
 #define KBUILD_MODNAME "foo"
 #include <uapi/linux/bpf.h>
 #include <uapi/linux/if_ether.h>
@@ -30,7 +25,7 @@ struct bpf_elf_map {
 	__u32 pinning;
 };
 
-/* copy of 'struct ethhdr' without __packed */
+ 
 struct eth_hdr {
 	unsigned char   h_dest[ETH_ALEN];
 	unsigned char   h_source[ETH_ALEN];
@@ -142,7 +137,7 @@ int _l2_to_iptun_ingress_redirect(struct __sk_buff *skb)
 
 	tkey.tunnel_id = 10000;
 	tkey.tunnel_ttl = 64;
-	tkey.remote_ipv4 = 0x0a020166; /* 10.2.1.102 */
+	tkey.remote_ipv4 = 0x0a020166;  
 	bpf_skb_set_tunnel_key(skb, &tkey, sizeof(tkey), 0);
 	return bpf_redirect(*ifindex, 0);
 }
@@ -193,7 +188,7 @@ int _l2_to_ip6tun_ingress_redirect(struct __sk_buff *skb)
 
 	tkey.tunnel_id = 10000;
 	tkey.tunnel_ttl = 64;
-	/* 2401:db02:0:0:0:0:0:66 */
+	 
 	tkey.remote_ipv6[0] = _htonl(0x2401db02);
 	tkey.remote_ipv6[1] = 0;
 	tkey.remote_ipv6[2] = 0;

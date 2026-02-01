@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-or-later */
-/*
- *   Copyright (C) 2018 Samsung Electronics Co., Ltd.
- */
+ 
+ 
 
 #ifndef __USER_SESSION_MANAGEMENT_H__
 #define __USER_SESSION_MANAGEMENT_H__
@@ -101,4 +99,4 @@ void ksmbd_release_tree_conn_id(struct ksmbd_session *sess, int id);
 int ksmbd_session_rpc_open(struct ksmbd_session *sess, char *rpc_name);
 void ksmbd_session_rpc_close(struct ksmbd_session *sess, int id);
 int ksmbd_session_rpc_method(struct ksmbd_session *sess, int id);
-#endif /* __USER_SESSION_MANAGEMENT_H__ */
+#endif  

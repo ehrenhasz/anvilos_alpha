@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0+ */
-/*
- * Copyright (C) 2018 Jernej Skrabec <jernej.skrabec@siol.net>
- */
+ 
+ 
 
 #ifndef _SUN8I_DW_HDMI_H_
 #define _SUN8I_DW_HDMI_H_
@@ -207,4 +205,4 @@ void sun8i_hdmi_phy_set_ops(struct sun8i_hdmi_phy *phy,
 int sun8i_phy_clk_create(struct sun8i_hdmi_phy *phy, struct device *dev,
 			 bool second_parent);
 
-#endif /* _SUN8I_DW_HDMI_H_ */
+#endif  

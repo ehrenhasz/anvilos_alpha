@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * K3 NAVSS DMA glue interface
- *
- * Copyright (C) 2019 Texas Instruments Incorporated - http://www.ti.com
- *
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/atomic.h>
@@ -88,7 +83,7 @@ struct k3_udma_glue_rx_channel {
 
 static void k3_udma_chan_dev_release(struct device *dev)
 {
-	/* The struct containing the device is devm managed */
+	 
 }
 
 static struct class k3_udma_glue_devclass = {
@@ -163,7 +158,7 @@ static int of_k3_udma_glue_parse_chn(struct device_node *chn_np,
 		goto out_put_spec;
 	}
 
-	/* get psil endpoint config */
+	 
 	common->ep_config = psil_get_ep_config(thread_id);
 	if (IS_ERR(common->ep_config)) {
 		dev_err(common->dev,
@@ -268,7 +263,7 @@ struct k3_udma_glue_tx_channel *k3_udma_glue_request_tx_chn(struct device *dev,
 	tx_chn->tx_filt_pswords = cfg->tx_filt_pswords;
 	tx_chn->tx_supr_tdpkt = cfg->tx_supr_tdpkt;
 
-	/* parse of udmap channel */
+	 
 	ret = of_k3_udma_glue_parse_chn(dev->of_node, name,
 					&tx_chn->common, true);
 	if (ret)
@@ -283,7 +278,7 @@ struct k3_udma_glue_tx_channel *k3_udma_glue_request_tx_chn(struct device *dev,
 	else
 		tx_chn->udma_tchan_id = -1;
 
-	/* request and cfg UDMAP TX channel */
+	 
 	tx_chn->udma_tchanx = xudma_tchan_get(tx_chn->common.udmax,
 					      tx_chn->udma_tchan_id);
 	if (IS_ERR(tx_chn->udma_tchanx)) {
@@ -306,7 +301,7 @@ struct k3_udma_glue_tx_channel *k3_udma_glue_request_tx_chn(struct device *dev,
 	}
 
 	if (xudma_is_pktdma(tx_chn->common.udmax)) {
-		/* prepare the channel device as coherent */
+		 
 		tx_chn->common.chan_dev.dma_coherent = true;
 		dma_coerce_mask_and_coherent(&tx_chn->common.chan_dev,
 					     DMA_BIT_MASK(48));
@@ -319,7 +314,7 @@ struct k3_udma_glue_tx_channel *k3_udma_glue_request_tx_chn(struct device *dev,
 	else
 		tx_chn->udma_tflow_id = tx_chn->udma_tchan_id;
 
-	/* request and cfg rings */
+	 
 	ret =  k3_ringacc_request_rings_pair(tx_chn->common.ringacc,
 					     tx_chn->udma_tflow_id, -1,
 					     &tx_chn->ringtx,
@@ -329,11 +324,11 @@ struct k3_udma_glue_tx_channel *k3_udma_glue_request_tx_chn(struct device *dev,
 		goto err;
 	}
 
-	/* Set the dma_dev for the rings to be configured */
+	 
 	cfg->tx_cfg.dma_dev = k3_udma_glue_tx_get_dma_device(tx_chn);
 	cfg->txcq_cfg.dma_dev = cfg->tx_cfg.dma_dev;
 
-	/* Set the ASEL value for DMA rings of PKTDMA */
+	 
 	if (xudma_is_pktdma(tx_chn->common.udmax)) {
 		cfg->tx_cfg.asel = tx_chn->common.atype_asel;
 		cfg->txcq_cfg.asel = tx_chn->common.atype_asel;
@@ -351,7 +346,7 @@ struct k3_udma_glue_tx_channel *k3_udma_glue_request_tx_chn(struct device *dev,
 		goto err;
 	}
 
-	/* request and cfg psi-l */
+	 
 	tx_chn->common.src_thread =
 			xudma_dev_get_psil_base(tx_chn->common.udmax) +
 			tx_chn->udma_tchan_id;
@@ -511,13 +506,7 @@ void k3_udma_glue_reset_tx_chn(struct k3_udma_glue_tx_channel *tx_chn,
 	dma_addr_t desc_dma;
 	int occ_tx, i, ret;
 
-	/*
-	 * TXQ reset need to be special way as it is input for udma and its
-	 * state cached by udma, so:
-	 * 1) save TXQ occ
-	 * 2) clean up TXQ and call callback .cleanup() for each desc
-	 * 3) reset TXQ in a special way
-	 */
+	 
 	occ_tx = k3_ringacc_ring_get_occ(tx_chn->ringtx);
 	dev_dbg(dev, "TX reset occ_tx %u\n", occ_tx);
 
@@ -531,7 +520,7 @@ void k3_udma_glue_reset_tx_chn(struct k3_udma_glue_tx_channel *tx_chn,
 		cleanup(data, desc_dma);
 	}
 
-	/* reset TXCQ as it is not input for udma - expected to be empty */
+	 
 	k3_ringacc_ring_reset(tx_chn->ringtxcq);
 	k3_ringacc_ring_reset_dma(tx_chn->ringtx, occ_tx);
 }
@@ -614,15 +603,11 @@ static int k3_udma_glue_cfg_rx_chn(struct k3_udma_glue_rx_channel *rx_chn)
 	req.nav_id = tisci_rm->tisci_dev_id;
 	req.index = rx_chn->udma_rchan_id;
 	req.rx_fetch_size = rx_chn->common.hdesc_size >> 2;
-	/*
-	 * TODO: we can't support rxcq_qnum/RCHAN[a]_RCQ cfg with current sysfw
-	 * and udmax impl, so just configure it to invalid value.
-	 * req.rxcq_qnum = k3_ringacc_get_ring_id(rx_chn->flows[0].ringrx);
-	 */
+	 
 	req.rxcq_qnum = 0xFFFF;
 	if (!xudma_is_pktdma(rx_chn->common.udmax) && rx_chn->flow_num &&
 	    rx_chn->flow_id_base != rx_chn->udma_rchan_id) {
-		/* Default flow + extra ones */
+		 
 		req.valid_params |= TI_SCI_MSG_VALUE_RM_UDMAP_CH_RX_FLOWID_START_VALID |
 				    TI_SCI_MSG_VALUE_RM_UDMAP_CH_RX_FLOWID_CNT_VALID;
 		req.flowid_start = rx_chn->flow_id_base;
@@ -692,7 +677,7 @@ static int k3_udma_glue_cfg_rx_flow(struct k3_udma_glue_rx_channel *rx_chn,
 		rx_ringfdq_id = flow_cfg->ring_rxfdq0_id;
 	}
 
-	/* request and cfg rings */
+	 
 	ret =  k3_ringacc_request_rings_pair(rx_chn->common.ringacc,
 					     rx_ringfdq_id, rx_ring_id,
 					     &flow->ringrxfdq,
@@ -702,11 +687,11 @@ static int k3_udma_glue_cfg_rx_flow(struct k3_udma_glue_rx_channel *rx_chn,
 		goto err_rflow_put;
 	}
 
-	/* Set the dma_dev for the rings to be configured */
+	 
 	flow_cfg->rx_cfg.dma_dev = k3_udma_glue_rx_get_dma_device(rx_chn);
 	flow_cfg->rxfdq_cfg.dma_dev = flow_cfg->rx_cfg.dma_dev;
 
-	/* Set the ASEL value for DMA rings of PKTDMA */
+	 
 	if (xudma_is_pktdma(rx_chn->common.udmax)) {
 		flow_cfg->rx_cfg.asel = rx_chn->common.atype_asel;
 		flow_cfg->rxfdq_cfg.asel = rx_chn->common.atype_asel;
@@ -842,16 +827,16 @@ k3_udma_glue_allocate_rx_flows(struct k3_udma_glue_rx_channel *rx_chn,
 {
 	int ret;
 
-	/* default rflow */
+	 
 	if (cfg->flow_id_use_rxchan_id)
 		return 0;
 
-	/* not a GP rflows */
+	 
 	if (rx_chn->flow_id_base != -1 &&
 	    !xudma_rflow_is_gp(rx_chn->common.udmax, rx_chn->flow_id_base))
 		return 0;
 
-	/* Allocate range of GP rflows */
+	 
 	ret = xudma_alloc_gp_rflow_range(rx_chn->common.udmax,
 					 rx_chn->flow_id_base,
 					 rx_chn->flow_num);
@@ -888,7 +873,7 @@ k3_udma_glue_request_rx_chn_priv(struct device *dev, const char *name,
 	rx_chn->common.swdata_size = cfg->swdata_size;
 	rx_chn->remote = false;
 
-	/* parse of udmap channel */
+	 
 	ret = of_k3_udma_glue_parse_chn(dev->of_node, name,
 					&rx_chn->common, false);
 	if (ret)
@@ -905,7 +890,7 @@ k3_udma_glue_request_rx_chn_priv(struct device *dev, const char *name,
 	else
 		rx_chn->udma_rchan_id = -1;
 
-	/* request and cfg UDMAP RX channel */
+	 
 	rx_chn->udma_rchanx = xudma_rchan_get(rx_chn->common.udmax,
 					      rx_chn->udma_rchan_id);
 	if (IS_ERR(rx_chn->udma_rchanx)) {
@@ -928,7 +913,7 @@ k3_udma_glue_request_rx_chn_priv(struct device *dev, const char *name,
 	}
 
 	if (xudma_is_pktdma(rx_chn->common.udmax)) {
-		/* prepare the channel device as coherent */
+		 
 		rx_chn->common.chan_dev.dma_coherent = true;
 		dma_coerce_mask_and_coherent(&rx_chn->common.chan_dev,
 					     DMA_BIT_MASK(48));
@@ -952,7 +937,7 @@ k3_udma_glue_request_rx_chn_priv(struct device *dev, const char *name,
 	} else {
 		rx_chn->flow_id_base = cfg->flow_id_base;
 
-		/* Use RX channel id as flow id: target dev can't generate flow_id */
+		 
 		if (cfg->flow_id_use_rxchan_id)
 			rx_chn->flow_id_base = rx_chn->udma_rchan_id;
 	}
@@ -973,7 +958,7 @@ k3_udma_glue_request_rx_chn_priv(struct device *dev, const char *name,
 	for (i = 0; i < rx_chn->flow_num; i++)
 		rx_chn->flows[i].udma_rflow_id = rx_chn->flow_id_base + i;
 
-	/* request and cfg psi-l */
+	 
 	rx_chn->common.dst_thread =
 			xudma_dev_get_psil_base(rx_chn->common.udmax) +
 			rx_chn->udma_rchan_id;
@@ -984,7 +969,7 @@ k3_udma_glue_request_rx_chn_priv(struct device *dev, const char *name,
 		goto err;
 	}
 
-	/* init default RX flow only if flow_num = 1 */
+	 
 	if (cfg->def_flow_cfg) {
 		ret = k3_udma_glue_cfg_rx_flow(rx_chn, 0, cfg->def_flow_cfg);
 		if (ret)
@@ -1013,10 +998,7 @@ k3_udma_glue_request_remote_rx_chn(struct device *dev, const char *name,
 	    cfg->flow_id_base < 0)
 		return ERR_PTR(-EINVAL);
 
-	/*
-	 * Remote RX channel is under control of Remote CPU core, so
-	 * Linux can only request and manipulate by dedicated RX flows
-	 */
+	 
 
 	rx_chn = devm_kzalloc(dev, sizeof(*rx_chn), GFP_KERNEL);
 	if (!rx_chn)
@@ -1030,7 +1012,7 @@ k3_udma_glue_request_remote_rx_chn(struct device *dev, const char *name,
 	rx_chn->flow_id_base = cfg->flow_id_base;
 	rx_chn->psil_paired = false;
 
-	/* parse of udmap channel */
+	 
 	ret = of_k3_udma_glue_parse_chn(dev->of_node, name,
 					&rx_chn->common, false);
 	if (ret)
@@ -1060,7 +1042,7 @@ k3_udma_glue_request_remote_rx_chn(struct device *dev, const char *name,
 	}
 
 	if (xudma_is_pktdma(rx_chn->common.udmax)) {
-		/* prepare the channel device as coherent */
+		 
 		rx_chn->common.chan_dev.dma_coherent = true;
 		dma_coerce_mask_and_coherent(&rx_chn->common.chan_dev,
 					     DMA_BIT_MASK(48));
@@ -1331,21 +1313,15 @@ void k3_udma_glue_reset_rx_chn(struct k3_udma_glue_rx_channel *rx_chn,
 	dma_addr_t desc_dma;
 	int occ_rx, i, ret;
 
-	/* reset RXCQ as it is not input for udma - expected to be empty */
+	 
 	occ_rx = k3_ringacc_ring_get_occ(flow->ringrx);
 	dev_dbg(dev, "RX reset flow %u occ_rx %u\n", flow_num, occ_rx);
 
-	/* Skip RX FDQ in case one FDQ is used for the set of flows */
+	 
 	if (skip_fdq)
 		goto do_reset;
 
-	/*
-	 * RX FDQ reset need to be special way as it is input for udma and its
-	 * state cached by udma, so:
-	 * 1) save RX FDQ occ
-	 * 2) clean up RX FDQ and call callback .cleanup() for each desc
-	 * 3) reset RX FDQ in a special way
-	 */
+	 
 	occ_rx = k3_ringacc_ring_get_occ(flow->ringrxfdq);
 	dev_dbg(dev, "RX reset flow %u occ_rx_fdq %u\n", flow_num, occ_rx);
 

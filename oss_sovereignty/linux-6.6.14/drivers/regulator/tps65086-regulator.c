@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2015 Texas Instruments Incorporated - https://www.ti.com/
- *
- * Author: Andrew F. Davis <afd@ti.com>
- *
- * Based on the TPS65912 driver
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/of.h>
@@ -17,7 +11,7 @@
 enum tps65086_regulators { BUCK1, BUCK2, BUCK3, BUCK4, BUCK5, BUCK6, LDOA1,
 	LDOA2, LDOA3, VTT, SWA1, SWB1, SWB2 };
 
-/* Selector for regulator configuration regarding PMIC chip ID. */
+ 
 enum tps65086_ids {
 	TPS6508640 = 0,
 	TPS65086401,
@@ -112,7 +106,7 @@ static const struct linear_range tps65086_ldoa23_ranges[] = {
 	REGULATOR_LINEAR_RANGE(1400000, 0xE, 0xF, 100000),
 };
 
-/* Operations permitted on regulators */
+ 
 static const struct regulator_ops reg_ops = {
 	.enable			= regulator_enable_regmap,
 	.disable		= regulator_disable_regmap,
@@ -123,7 +117,7 @@ static const struct regulator_ops reg_ops = {
 	.list_voltage		= regulator_list_voltage_linear_range,
 };
 
-/* Operations permitted on load switches */
+ 
 static const struct regulator_ops switch_ops = {
 	.enable			= regulator_enable_regmap,
 	.disable		= regulator_disable_regmap,
@@ -307,7 +301,7 @@ static int tps65086_of_parse_cb(struct device_node *node,
 	struct tps65086_regulator *regulators = tps->reg_config->config;
 	int ret;
 
-	/* Check for 25mV step mode */
+	 
 	if (of_property_read_bool(node, "ti,regulator-step-size-25mv")) {
 		switch (desc->id) {
 		case BUCK1:
@@ -331,7 +325,7 @@ static int tps65086_of_parse_cb(struct device_node *node,
 		}
 	}
 
-	/* Check for decay mode */
+	 
 	if (desc->id <= BUCK6 && of_property_read_bool(node, "ti,regulator-decay")) {
 		ret = regmap_write_bits(config->regmap,
 					regulators[desc->id].decay_reg,
@@ -354,7 +348,7 @@ static int tps65086_regulator_probe(struct platform_device *pdev)
 	struct regulator_dev *rdev;
 	int i;
 
-	/* Select regulator configuration for used PMIC device */
+	 
 	switch (tps->chip_id) {
 	case TPS6508640_ID:
 		selector_reg_config = TPS6508640;
@@ -400,7 +394,7 @@ static int tps65086_regulator_probe(struct platform_device *pdev)
 
 static const struct platform_device_id tps65086_regulator_id_table[] = {
 	{ "tps65086-regulator", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(platform, tps65086_regulator_id_table);
 

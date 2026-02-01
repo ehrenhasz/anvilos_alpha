@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: BSD-3-Clause-Clear */
-/*
- * Copyright (c) 2018-2021 The Linux Foundation. All rights reserved.
- * Copyright (c) 2021-2022 Qualcomm Innovation Center, Inc. All rights reserved.
- */
+ 
+ 
 
 #ifndef _ATH12K_DEBUG_H_
 #define _ATH12K_DEBUG_H_
@@ -42,7 +39,7 @@ void ath12k_dbg_dump(struct ath12k_base *ab,
 		     enum ath12k_debug_mask mask,
 		     const char *msg, const char *prefix,
 		     const void *buf, size_t len);
-#else /* CONFIG_ATH12K_DEBUG */
+#else  
 static inline void __ath12k_dbg(struct ath12k_base *ab,
 				enum ath12k_debug_mask dbg_mask,
 				const char *fmt, ...)
@@ -55,7 +52,7 @@ static inline void ath12k_dbg_dump(struct ath12k_base *ab,
 				   const void *buf, size_t len)
 {
 }
-#endif /* CONFIG_ATH12K_DEBUG */
+#endif  
 
 #define ath12k_dbg(ar, dbg_mask, fmt, ...)			\
 do {								\
@@ -64,4 +61,4 @@ do {								\
 		__ath12k_dbg(ar, mask, fmt, ##__VA_ARGS__);	\
 } while (0)
 
-#endif /* _ATH12K_DEBUG_H_ */
+#endif  

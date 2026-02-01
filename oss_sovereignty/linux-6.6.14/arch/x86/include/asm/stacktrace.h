@@ -1,8 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- *  Copyright (C) 1991, 1992  Linus Torvalds
- *  Copyright (C) 2000, 2001, 2002 Andi Kleen, SuSE Labs
- */
+ 
+ 
 
 #ifndef _ASM_X86_STACKTRACE_H
 #define _ASM_X86_STACKTRACE_H
@@ -41,10 +38,10 @@ bool get_stack_info_noinstr(unsigned long *stack, struct task_struct *task,
 static __always_inline
 bool get_stack_guard_info(unsigned long *stack, struct stack_info *info)
 {
-	/* make sure it's not in the stack proper */
+	 
 	if (get_stack_info_noinstr(stack, current, info))
 		return false;
-	/* but if it is in the page below it, we hit a guard */
+	 
 	return get_stack_info_noinstr((void *)stack + PAGE_SIZE, current, info);
 }
 
@@ -84,7 +81,7 @@ get_frame_pointer(struct task_struct *task, struct pt_regs *regs)
 {
 	return NULL;
 }
-#endif /* CONFIG_FRAME_POINTER */
+#endif  
 
 static inline unsigned long *
 get_stack_pointer(struct task_struct *task, struct pt_regs *regs)
@@ -98,7 +95,7 @@ get_stack_pointer(struct task_struct *task, struct pt_regs *regs)
 	return (unsigned long *)task->thread.sp;
 }
 
-/* The form of the top of the frame on the stack */
+ 
 struct stack_frame {
 	struct stack_frame *next_frame;
 	unsigned long return_address;
@@ -111,4 +108,4 @@ struct stack_frame_ia32 {
 
 void show_opcodes(struct pt_regs *regs, const char *loglvl);
 void show_ip(struct pt_regs *regs, const char *loglvl);
-#endif /* _ASM_X86_STACKTRACE_H */
+#endif  

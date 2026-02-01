@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
 
-  Broadcom B43legacy wireless driver
-
-  debugfs driver debugging code
-
-  Copyright (c) 2005-2007 Michael Buesch <m@bues.ch>
-
-
-*/
+ 
 
 #include <linux/fs.h>
 #include <linux/debugfs.h>
@@ -25,16 +16,16 @@
 #include "xmit.h"
 
 
-/* The root directory. */
+ 
 static struct dentry *rootdir;
 
 struct b43legacy_debugfs_fops {
 	ssize_t (*read)(struct b43legacy_wldev *dev, char *buf, size_t bufsize);
 	int (*write)(struct b43legacy_wldev *dev, const char *buf, size_t count);
 	struct file_operations fops;
-	/* Offset of struct b43legacy_dfs_file in struct b43legacy_dfsentry */
+	 
 	size_t file_struct_offset;
-	/* Take wl->irq_lock before calling read/write? */
+	 
 	bool take_irqlock;
 };
 
@@ -62,7 +53,7 @@ struct b43legacy_dfs_file * fops_to_dfs_file(struct b43legacy_wldev *dev,
 	} while (0)
 
 
-/* wl->irq_lock is locked */
+ 
 static ssize_t tsf_read_file(struct b43legacy_wldev *dev, char *buf, size_t bufsize)
 {
 	ssize_t count = 0;
@@ -76,7 +67,7 @@ static ssize_t tsf_read_file(struct b43legacy_wldev *dev, char *buf, size_t bufs
 	return count;
 }
 
-/* wl->irq_lock is locked */
+ 
 static int tsf_write_file(struct b43legacy_wldev *dev, const char *buf, size_t count)
 {
 	u64 tsf;
@@ -88,7 +79,7 @@ static int tsf_write_file(struct b43legacy_wldev *dev, const char *buf, size_t c
 	return 0;
 }
 
-/* wl->irq_lock is locked */
+ 
 static ssize_t ucode_regs_read_file(struct b43legacy_wldev *dev, char *buf, size_t bufsize)
 {
 	ssize_t count = 0;
@@ -102,7 +93,7 @@ static ssize_t ucode_regs_read_file(struct b43legacy_wldev *dev, char *buf, size
 	return count;
 }
 
-/* wl->irq_lock is locked */
+ 
 static ssize_t shm_read_file(struct b43legacy_wldev *dev, char *buf, size_t bufsize)
 {
 	ssize_t count = 0;
@@ -169,7 +160,7 @@ out_unlock:
 	return count;
 }
 
-/* wl->irq_lock is locked */
+ 
 static int restart_write_file(struct b43legacy_wldev *dev, const char *buf, size_t count)
 {
 	int err = 0;
@@ -192,7 +183,7 @@ static ssize_t b43legacy_debugfs_read(struct file *file, char __user *userbuf,
 	struct b43legacy_dfs_file *dfile;
 	ssize_t ret;
 	char *buf;
-	const size_t bufsize = 1024 * 16; /* 16 KiB buffer */
+	const size_t bufsize = 1024 * 16;  
 	const size_t buforder = get_order(bufsize);
 	int err = 0;
 

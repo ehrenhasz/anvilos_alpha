@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Battery driver for Marvell 88PM860x PMIC
- *
- * Copyright (c) 2012 Marvell International Ltd.
- * Author:	Jett Zhou <jtzhou@marvell.com>
- *		Haojian Zhuang <haojian.zhuang@marvell.com>
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -17,13 +11,13 @@
 #include <linux/uaccess.h>
 #include <asm/div64.h>
 
-/* bit definitions of Status Query Interface 2 */
+ 
 #define STATUS2_CHG		(1 << 2)
 
-/* bit definitions of Reset Out Register */
+ 
 #define RESET_SW_PD		(1 << 7)
 
-/* bit definitions of PreReg 1 */
+ 
 #define PREREG1_90MA		(0x0)
 #define PREREG1_180MA		(0x1)
 #define PREREG1_450MA		(0x4)
@@ -31,7 +25,7 @@
 #define PREREG1_1350MA		(0xE)
 #define PREREG1_VSYS_4_5V	(3 << 4)
 
-/* bit definitions of Charger Control 1 Register */
+ 
 #define CC1_MODE_OFF		(0)
 #define CC1_MODE_PRECHARGE	(1)
 #define CC1_MODE_FASTCHARGE	(2)
@@ -40,36 +34,36 @@
 #define CC1_ITERM_60MA		(2 << 2)
 #define CC1_VFCHG_4_2V		(9 << 4)
 
-/* bit definitions of Charger Control 2 Register */
+ 
 #define CC2_ICHG_100MA		(0x1)
 #define CC2_ICHG_500MA		(0x9)
 #define CC2_ICHG_1000MA		(0x13)
 
-/* bit definitions of Charger Control 3 Register */
+ 
 #define CC3_180MIN_TIMEOUT	(0x6 << 4)
 #define CC3_270MIN_TIMEOUT	(0x7 << 4)
 #define CC3_360MIN_TIMEOUT	(0xA << 4)
 #define CC3_DISABLE_TIMEOUT	(0xF << 4)
 
-/* bit definitions of Charger Control 4 Register */
+ 
 #define CC4_IPRE_40MA		(7)
 #define CC4_VPCHG_3_2V		(3 << 4)
 #define CC4_IFCHG_MON_EN	(1 << 6)
 #define CC4_BTEMP_MON_EN	(1 << 7)
 
-/* bit definitions of Charger Control 6 Register */
+ 
 #define CC6_BAT_OV_EN		(1 << 2)
 #define CC6_BAT_UV_EN		(1 << 3)
-#define CC6_UV_VBAT_SET		(0x3 << 6)	/* 2.8v */
+#define CC6_UV_VBAT_SET		(0x3 << 6)	 
 
-/* bit definitions of Charger Control 7 Register */
+ 
 #define CC7_BAT_REM_EN		(1 << 3)
 #define CC7_IFSM_EN		(1 << 7)
 
-/* bit definitions of Measurement Enable 1 Register */
+ 
 #define MEAS1_VBAT		(1 << 0)
 
-/* bit definitions of Measurement Enable 3 Register */
+ 
 #define MEAS3_IBAT_EN		(1 << 0)
 #define MEAS3_CC_EN		(1 << 2)
 
@@ -83,11 +77,11 @@
 #define CHARGE_THRESHOLD	4000
 #define DISCHARGE_THRESHOLD	4180
 
-/* over-temperature on PM8606 setting */
+ 
 #define OVER_TEMP_FLAG		(1 << 6)
 #define OVTEMP_AUTORECOVER	(1 << 3)
 
-/* over-voltage protect on vchg setting mv */
+ 
 #define VCHG_NORMAL_LOW		4200
 #define VCHG_NORMAL_CHECK	5800
 #define VCHG_NORMAL_HIGH	6000
@@ -103,9 +97,9 @@ struct pm860x_charger_info {
 	struct mutex lock;
 	int irq_nums;
 	int irq[7];
-	unsigned state:3;	/* fsm state */
-	unsigned online:1;	/* usb charger */
-	unsigned present:1;	/* battery present */
+	unsigned state:3;	 
+	unsigned online:1;	 
+	unsigned present:1;	 
 	unsigned allowed:1;
 };
 
@@ -123,7 +117,7 @@ static int measure_vchg(struct pm860x_charger_info *info, int *data)
 		return ret;
 
 	*data = ((buf[0] & 0xff) << 4) | (buf[1] & 0x0f);
-	/* V_BATT_MEAS(mV) = value * 5 * 1.8 * 1000 / (2^12) */
+	 
 	*data = ((*data & 0xfff) * 9 * 125) >> 9;
 
 	dev_dbg(info->dev, "%s, vchg: %d mv\n", __func__, *data);
@@ -136,7 +130,7 @@ static void set_vchg_threshold(struct pm860x_charger_info *info,
 {
 	int data;
 
-	/* (tmp << 8) * / 5 / 1800 */
+	 
 	if (min <= 0)
 		data = 0;
 	else
@@ -158,7 +152,7 @@ static void set_vbatt_threshold(struct pm860x_charger_info *info,
 {
 	int data;
 
-	/* (tmp << 8) * 3 / 1800 */
+	 
 	if (min <= 0)
 		data = 0;
 	else
@@ -187,17 +181,17 @@ static int start_precharge(struct pm860x_charger_info *info)
 			       PREREG1_1350MA | PREREG1_VSYS_4_5V);
 	if (ret < 0)
 		goto out;
-	/* stop charging */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_CHG_CTRL1, 3,
 			      CC1_MODE_OFF);
 	if (ret < 0)
 		goto out;
-	/* set 270 minutes timeout */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_CHG_CTRL3, (0xf << 4),
 			      CC3_270MIN_TIMEOUT);
 	if (ret < 0)
 		goto out;
-	/* set precharge current, termination voltage, IBAT & TBAT monitor */
+	 
 	ret = pm860x_reg_write(info->i2c, PM8607_CHG_CTRL4,
 			       CC4_IPRE_40MA | CC4_VPCHG_3_2V |
 			       CC4_IFCHG_MON_EN | CC4_BTEMP_MON_EN);
@@ -208,7 +202,7 @@ static int start_precharge(struct pm860x_charger_info *info)
 			      CC7_BAT_REM_EN | CC7_IFSM_EN);
 	if (ret < 0)
 		goto out;
-	/* trigger precharge */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_CHG_CTRL1, 3,
 			      CC1_MODE_PRECHARGE);
 out:
@@ -221,7 +215,7 @@ static int start_fastcharge(struct pm860x_charger_info *info)
 
 	dev_dbg(info->dev, "Start Fast-charging!\n");
 
-	/* set fastcharge termination current & voltage, disable charging */
+	 
 	ret = pm860x_reg_write(info->i2c, PM8607_CHG_CTRL1,
 			       CC1_MODE_OFF | CC1_ITERM_60MA |
 			       CC1_VFCHG_4_2V);
@@ -235,12 +229,12 @@ static int start_fastcharge(struct pm860x_charger_info *info)
 			      CC2_ICHG_500MA);
 	if (ret < 0)
 		goto out;
-	/* set 270 minutes timeout */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_CHG_CTRL3, (0xf << 4),
 			      CC3_270MIN_TIMEOUT);
 	if (ret < 0)
 		goto out;
-	/* set IBAT & TBAT monitor */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_CHG_CTRL4,
 			      CC4_IFCHG_MON_EN | CC4_BTEMP_MON_EN,
 			      CC4_IFCHG_MON_EN | CC4_BTEMP_MON_EN);
@@ -258,10 +252,10 @@ static int start_fastcharge(struct pm860x_charger_info *info)
 			      CC7_BAT_REM_EN | CC7_IFSM_EN);
 	if (ret < 0)
 		goto out;
-	/* launch fast-charge */
+	 
 	ret = pm860x_set_bits(info->i2c, PM8607_CHG_CTRL1, 3,
 			      CC1_MODE_FASTCHARGE);
-	/* vchg threshold setting */
+	 
 	set_vchg_threshold(info, VCHG_NORMAL_LOW, VCHG_NORMAL_HIGH);
 out:
 	return ret;
@@ -439,7 +433,7 @@ static irqreturn_t pm860x_temp_handler(int irq, void *data)
 	value = temp.intval / 10;
 
 	mutex_lock(&info->lock);
-	/* Temperature < -10 C or >40 C, Will not allow charge */
+	 
 	if (value < -10 || value > 40)
 		info->allowed = 0;
 	else
@@ -475,15 +469,12 @@ static irqreturn_t pm860x_done_handler(int irq, void *data)
 	int vbatt;
 
 	mutex_lock(&info->lock);
-	/* pre-charge done, will transimit to fast-charge stage */
+	 
 	if (info->state == FSM_PRECHARGE) {
 		info->allowed = 1;
 		goto out;
 	}
-	/*
-	 * Fast charge done, delay to read
-	 * the correct status of CHG_DET.
-	 */
+	 
 	mdelay(5);
 	info->allowed = 0;
 	psy = power_supply_get_by_name(pm860x_supplied_to[0]);
@@ -494,13 +485,7 @@ static irqreturn_t pm860x_done_handler(int irq, void *data)
 	if (ret)
 		goto out_psy_put;
 	vbatt = val.intval / 1000;
-	/*
-	 * CHG_DONE interrupt is faster than CHG_DET interrupt when
-	 * plug in/out usb, So we can not rely on info->online, we
-	 * need check pm8607 status register to check usb is online
-	 * or not, then we can decide it is real charge done
-	 * automatically or it is triggered by usb plug out;
-	 */
+	 
 	ret = pm860x_reg_read(info->i2c, PM8607_STATUS_2);
 	if (ret < 0)
 		goto out_psy_put;
@@ -551,10 +536,10 @@ static irqreturn_t pm860x_vchg_handler(int irq, void *data)
 	mutex_lock(&info->lock);
 	if (!info->online) {
 		int status;
-		/* check if over-temp on pm8606 or not */
+		 
 		status = pm860x_reg_read(info->i2c_8606, PM8606_FLAGS);
 		if (status & OVER_TEMP_FLAG) {
-			/* clear over temp flag and set auto recover */
+			 
 			pm860x_set_bits(info->i2c_8606, PM8606_FLAGS,
 					OVER_TEMP_FLAG, OVER_TEMP_FLAG);
 			pm860x_set_bits(info->i2c_8606,
@@ -694,7 +679,7 @@ static int pm860x_charger_probe(struct platform_device *pdev)
 	}
 	info->dev = &pdev->dev;
 
-	/* set init value for the case we are not using battery */
+	 
 	set_vchg_threshold(info, VCHG_NORMAL_LOW, VCHG_OVP_LOW);
 
 	mutex_init(&info->lock);

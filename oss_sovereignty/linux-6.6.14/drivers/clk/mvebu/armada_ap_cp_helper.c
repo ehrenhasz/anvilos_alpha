@@ -1,12 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Marvell Armada AP and CP110 helper
- *
- * Copyright (C) 2018 Marvell
- *
- * Gregory Clement <gregory.clement@bootlin.com>
- *
- */
+
+ 
 
 #include "armada_ap_cp_helper.h"
 #include <linux/device.h>
@@ -18,7 +11,7 @@ char *ap_cp_unique_name(struct device *dev, struct device_node *np,
 {
 	struct resource res;
 
-	/* Do not create a name if there is no clock */
+	 
 	if (!name)
 		return NULL;
 

@@ -1,24 +1,4 @@
-/*
- * via-pmu event device for reporting some events that come through the PMU
- *
- * Copyright 2006 Johannes Berg <johannes@sipsolutions.net>
- *
- * This program is free software; you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation; either version 2 of the License, or
- * (at your option) any later version.
- *
- * This program is distributed in the hope that it will be useful, but
- * WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY OR FITNESS FOR A PARTICULAR PURPOSE, GOOD TITLE or
- * NON INFRINGEMENT.  See the GNU General Public License for more
- * details.
- *
- * You should have received a copy of the GNU General Public License
- * along with this program; if not, write to the Free Software
- * Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301 USA
- *
- */
+ 
 
 #include <linux/input.h>
 #include <linux/adb.h>
@@ -31,7 +11,7 @@ static int __init via_pmu_event_init(void)
 {
 	int err;
 
-	/* do other models report button/lid status? */
+	 
 	if (pmu_get_model() != PMU_KEYLARGO_BASED)
 		return -ENODEV;
 
@@ -70,7 +50,7 @@ void via_pmu_event(int key, int down)
 		input_report_switch(pmu_input_dev, SW_LID, down);
 		break;
 	default:
-		/* no such key handled */
+		 
 		return;
 	}
 

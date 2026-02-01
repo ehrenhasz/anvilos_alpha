@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- *	xt_iprange - Netfilter module to match IP address ranges
- *
- *	(C) 2003 Jozsef Kadlecsik <kadlec@netfilter.org>
- *	(C) CC Computer Consultants GmbH, 2008
- */
+
+ 
 #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
 #include <linux/module.h>
 #include <linux/skbuff.h>

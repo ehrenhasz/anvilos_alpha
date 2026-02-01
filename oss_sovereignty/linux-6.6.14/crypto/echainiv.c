@@ -1,17 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * echainiv: Encrypted Chain IV Generator
- *
- * This generator generates an IV based on a sequence number by multiplying
- * it with a salt and then encrypting it with the same key as used to encrypt
- * the plain text.  This algorithm requires that the block size be equal
- * to the IV size.  It is mainly useful for CBC.
- *
- * This generator can only be used by algorithms where authentication
- * is performed after encryption (i.e., authenc).
- *
- * Copyright (c) 2015 Herbert Xu <herbert@gondor.apana.org.au>
- */
+
+ 
 
 #include <crypto/internal/geniv.h>
 #include <crypto/scatterwalk.h>

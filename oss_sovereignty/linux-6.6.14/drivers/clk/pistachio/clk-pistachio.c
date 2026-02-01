@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Pistachio SoC clock controllers
- *
- * Copyright (C) 2014 Google, Inc.
- */
+
+ 
 
 #include <linux/clk-provider.h>
 #include <linux/init.h>

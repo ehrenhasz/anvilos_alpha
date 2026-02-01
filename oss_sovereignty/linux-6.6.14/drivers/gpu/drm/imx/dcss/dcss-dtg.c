@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright 2019 NXP.
- */
+
+ 
 
 #include <linux/clk.h>
 #include <linux/delay.h>
@@ -248,10 +246,10 @@ void dcss_dtg_sync_set(struct dcss_dtg *dtg, struct videomode *vm)
 
 	dcss_dtg_write(dtg, sb_ctxld_trig | db_ctxld_trig, DCSS_DTG_TC_CTXLD);
 
-	/* vblank trigger */
+	 
 	dcss_dtg_write(dtg, 0, DCSS_DTG_LINE1_INT);
 
-	/* CTXLD trigger */
+	 
 	dcss_dtg_write(dtg, ((90 * dis_lrc_y) / 100) << 16, DCSS_DTG_LINE0_INT);
 }
 
@@ -288,17 +286,14 @@ bool dcss_dtg_global_alpha_changed(struct dcss_dtg *dtg, int ch_num, int alpha)
 void dcss_dtg_plane_alpha_set(struct dcss_dtg *dtg, int ch_num,
 			      const struct drm_format_info *format, int alpha)
 {
-	/* we care about alpha only when channel 0 is concerned */
+	 
 	if (ch_num)
 		return;
 
-	/*
-	 * Use global alpha if pixel format does not have alpha channel or the
-	 * user explicitly chose to use global alpha (i.e. alpha is not OPAQUE).
-	 */
+	 
 	if (!format->has_alpha || alpha != 255)
 		dtg->alpha_cfg = (alpha << DEFAULT_FG_ALPHA_POS) & DEFAULT_FG_ALPHA_MASK;
-	else /* use per-pixel alpha otherwise */
+	else  
 		dtg->alpha_cfg = CH1_ALPHA_SEL;
 
 	dtg->alpha = alpha;

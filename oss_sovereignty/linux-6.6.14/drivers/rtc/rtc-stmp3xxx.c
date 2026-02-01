@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * Freescale STMP37XX/STMP378X Real Time Clock driver
- *
- * Copyright (c) 2007 Sigmatel, Inc.
- * Peter Hartley, <peter.hartley@sigmatel.com>
- *
- * Copyright 2008 Freescale Semiconductor, Inc. All Rights Reserved.
- * Copyright 2008 Embedded Alley Solutions, Inc All Rights Reserved.
- * Copyright 2011 Wolfram Sang, Pengutronix e.K.
- */
+
+ 
 #include <linux/kernel.h>
 #include <linux/module.h>
 #include <linux/io.h>
@@ -50,7 +41,7 @@
 #define STMP3XXX_RTC_PERSISTENT0_ALARM_WAKE		(1 << 7)
 
 #define STMP3XXX_RTC_PERSISTENT1		0x70
-/* missing bitmask in headers */
+ 
 #define STMP3XXX_RTC_PERSISTENT1_FORCE_UPDATER	0x80000000
 
 struct stmp3xxx_rtc_data {
@@ -60,19 +51,7 @@ struct stmp3xxx_rtc_data {
 };
 
 #if IS_ENABLED(CONFIG_STMP3XXX_RTC_WATCHDOG)
-/**
- * stmp3xxx_wdt_set_timeout - configure the watchdog inside the STMP3xxx RTC
- * @dev: the parent device of the watchdog (= the RTC)
- * @timeout: the desired value for the timeout register of the watchdog.
- *           0 disables the watchdog
- *
- * The watchdog needs one register and two bits which are in the RTC domain.
- * To handle the resource conflict, the RTC driver will create another
- * platform_device for the watchdog driver as a child of the RTC device.
- * The watchdog driver is passed the below accessor function via platform_data
- * to configure the watchdog. Locking is not needed because accessing SET/CLR
- * registers is atomic.
- */
+ 
 
 static void stmp3xxx_wdt_set_timeout(struct device *dev, u32 timeout)
 {
@@ -118,21 +97,12 @@ static void stmp3xxx_wdt_register(struct platform_device *rtc_pdev)
 static void stmp3xxx_wdt_register(struct platform_device *rtc_pdev)
 {
 }
-#endif /* CONFIG_STMP3XXX_RTC_WATCHDOG */
+#endif  
 
 static int stmp3xxx_wait_time(struct stmp3xxx_rtc_data *rtc_data)
 {
-	int timeout = 5000; /* 3ms according to i.MX28 Ref Manual */
-	/*
-	 * The i.MX28 Applications Processor Reference Manual, Rev. 1, 2010
-	 * states:
-	 * | The order in which registers are updated is
-	 * | Persistent 0, 1, 2, 3, 4, 5, Alarm, Seconds.
-	 * | (This list is in bitfield order, from LSB to MSB, as they would
-	 * | appear in the STALE_REGS and NEW_REGS bitfields of the HW_RTC_STAT
-	 * | register. For example, the Seconds register corresponds to
-	 * | STALE_REGS or NEW_REGS containing 0x80.)
-	 */
+	int timeout = 5000;  
+	 
 	do {
 		if (!(readl(rtc_data->io + STMP3XXX_RTC_STAT) &
 				(0x80 << STMP3XXX_RTC_STAT_STALE_SHIFT)))
@@ -143,7 +113,7 @@ static int stmp3xxx_wait_time(struct stmp3xxx_rtc_data *rtc_data)
 		(0x80 << STMP3XXX_RTC_STAT_STALE_SHIFT)) ? -ETIME : 0;
 }
 
-/* Time read/write */
+ 
 static int stmp3xxx_rtc_gettime(struct device *dev, struct rtc_time *rtc_tm)
 {
 	int ret;
@@ -165,7 +135,7 @@ static int stmp3xxx_rtc_settime(struct device *dev, struct rtc_time *rtc_tm)
 	return stmp3xxx_wait_time(rtc_data);
 }
 
-/* interrupt(s) handler */
+ 
 static irqreturn_t stmp3xxx_rtc_interrupt(int irq, void *dev_id)
 {
 	struct stmp3xxx_rtc_data *rtc_data = dev_get_drvdata(dev_id);
@@ -277,11 +247,7 @@ static int stmp3xxx_rtc_probe(struct platform_device *pdev)
 
 	platform_set_drvdata(pdev, rtc_data);
 
-	/*
-	 * Resetting the rtc stops the watchdog timer that is potentially
-	 * running. So (assuming it is running on purpose) don't reset if the
-	 * watchdog is enabled.
-	 */
+	 
 	if (readl(rtc_data->io + STMP3XXX_RTC_CTRL) &
 	    STMP3XXX_RTC_CTRL_WATCHDOGEN) {
 		dev_info(&pdev->dev,
@@ -295,15 +261,7 @@ static int stmp3xxx_rtc_probe(struct platform_device *pdev)
 		}
 	}
 
-	/*
-	 * Obviously the rtc needs a clock input to be able to run.
-	 * This clock can be provided by an external 32k crystal. If that one is
-	 * missing XTAL must not be disabled in suspend which consumes a
-	 * lot of power. Normally the presence and exact frequency (supported
-	 * are 32000 Hz and 32768 Hz) is detectable from fuses, but as reality
-	 * proves these fuses are not blown correctly on all machines, so the
-	 * frequency can be overridden in the device tree.
-	 */
+	 
 	if (rtc_stat & STMP3XXX_RTC_STAT_XTAL32000_PRESENT)
 		crystalfreq = 32000;
 	else if (rtc_stat & STMP3XXX_RTC_STAT_XTAL32768_PRESENT)
@@ -314,14 +272,14 @@ static int stmp3xxx_rtc_probe(struct platform_device *pdev)
 
 	switch (crystalfreq) {
 	case 32000:
-		/* keep 32kHz crystal running in low-power mode */
+		 
 		pers0_set = STMP3XXX_RTC_PERSISTENT0_XTAL32_FREQ |
 			STMP3XXX_RTC_PERSISTENT0_XTAL32KHZ_PWRUP |
 			STMP3XXX_RTC_PERSISTENT0_CLOCKSOURCE;
 		pers0_clr = STMP3XXX_RTC_PERSISTENT0_XTAL24MHZ_PWRUP;
 		break;
 	case 32768:
-		/* keep 32.768kHz crystal running in low-power mode */
+		 
 		pers0_set = STMP3XXX_RTC_PERSISTENT0_XTAL32KHZ_PWRUP |
 			STMP3XXX_RTC_PERSISTENT0_CLOCKSOURCE;
 		pers0_clr = STMP3XXX_RTC_PERSISTENT0_XTAL24MHZ_PWRUP |
@@ -332,7 +290,7 @@ static int stmp3xxx_rtc_probe(struct platform_device *pdev)
 			 "invalid crystal-freq specified in device-tree. Assuming no crystal\n");
 		fallthrough;
 	case 0:
-		/* keep XTAL on in low-power mode */
+		 
 		pers0_set = STMP3XXX_RTC_PERSISTENT0_XTAL24MHZ_PWRUP;
 		pers0_clr = STMP3XXX_RTC_PERSISTENT0_XTAL32KHZ_PWRUP |
 			STMP3XXX_RTC_PERSISTENT0_CLOCKSOURCE;
@@ -397,7 +355,7 @@ static SIMPLE_DEV_PM_OPS(stmp3xxx_rtc_pm_ops, stmp3xxx_rtc_suspend,
 
 static const struct of_device_id rtc_dt_ids[] = {
 	{ .compatible = "fsl,stmp3xxx-rtc", },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, rtc_dt_ids);
 

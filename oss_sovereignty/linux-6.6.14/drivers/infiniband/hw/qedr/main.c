@@ -1,34 +1,4 @@
-/* QLogic qedr NIC Driver
- * Copyright (c) 2015-2016  QLogic Corporation
- *
- * This software is available to you under a choice of one of two
- * licenses.  You may choose to be licensed under the terms of the GNU
- * General Public License (GPL) Version 2, available from the file
- * COPYING in the main directory of this source tree, or the
- * OpenIB.org BSD license below:
- *
- *     Redistribution and use in source and binary forms, with or
- *     without modification, are permitted provided that the following
- *     conditions are met:
- *
- *      - Redistributions of source code must retain the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer.
- *
- *      - Redistributions in binary form must reproduce the above
- *        copyright notice, this list of conditions and the following
- *        disclaimer in the documentation and /or other materials
- *        provided with the distribution.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
- * EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
- * MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
- * NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS
- * BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN
- * ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN
- * CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
- * SOFTWARE.
- */
+ 
 #include <linux/module.h>
 #include <rdma/ib_verbs.h>
 #include <rdma/ib_addr.h>
@@ -117,7 +87,7 @@ static int qedr_iw_port_immutable(struct ib_device *ibdev, u32 port_num,
 	return 0;
 }
 
-/* QEDR sysfs interface */
+ 
 static ssize_t hw_rev_show(struct device *device, struct device_attribute *attr,
 			   char *buf)
 {
@@ -267,7 +237,7 @@ static int qedr_register_device(struct qedr_dev *dev)
 	return ib_register_device(&dev->ibdev, "qedr%d", &dev->pdev->dev);
 }
 
-/* This function allocates fast-path status block memory */
+ 
 static int qedr_alloc_mem_sb(struct qedr_dev *dev,
 			     struct qed_sb_info *sb_info, u16 sb_id)
 {
@@ -350,7 +320,7 @@ static int qedr_alloc_resources(struct qedr_dev *dev)
 		}
 	}
 
-	/* Allocate Status blocks for CNQ */
+	 
 	dev->sb_array = kcalloc(dev->num_cnq, sizeof(*dev->sb_array),
 				GFP_KERNEL);
 	if (!dev->sb_array) {
@@ -367,7 +337,7 @@ static int qedr_alloc_resources(struct qedr_dev *dev)
 
 	dev->sb_start = dev->ops->rdma_get_start_sb(dev->cdev);
 
-	/* Allocate CNQ PBLs */
+	 
 	params.num_elems = min_t(u32, QED_RDMA_MAX_CNQ_SIZE,
 				 QEDR_ROCE_MAX_CNQ_SIZE);
 
@@ -446,7 +416,7 @@ static irqreturn_t qedr_irq_handler(int irq, void *handle)
 	hw_comp_cons = le16_to_cpu(*cnq->hw_cons_ptr);
 	sw_comp_cons = qed_chain_get_cons_idx(&cnq->pbl);
 
-	/* Align protocol-index and chain reads */
+	 
 	rmb();
 
 	while (sw_comp_cons != hw_comp_cons) {
@@ -476,12 +446,7 @@ static irqreturn_t qedr_irq_handler(int irq, void *handle)
 			(*cq->ibcq.comp_handler)
 				(&cq->ibcq, cq->ibcq.cq_context);
 
-		/* The CQ's CNQ notification counter is checked before
-		 * destroying the CQ in a busy-wait loop that waits for all of
-		 * the CQ's CNQ interrupts to be processed. It is increased
-		 * here, only after the completion handler, to ensure that
-		 * the handler is not running when the CQ is destroyed.
-		 */
+		 
 		cq->cnq_notif++;
 
 		sw_comp_cons = qed_chain_get_cons_idx(&cnq->pbl);
@@ -552,7 +517,7 @@ static int qedr_setup_irqs(struct qedr_dev *dev)
 
 	DP_DEBUG(dev, QEDR_MSG_INIT, "qedr_setup_irqs\n");
 
-	/* Learn Interrupt configuration */
+	 
 	rc = dev->ops->rdma_set_rdma_int(dev->cdev, dev->num_cnq);
 	if (rc < 0)
 		return rc;
@@ -582,10 +547,10 @@ static int qedr_set_device_attr(struct qedr_dev *dev)
 	struct qedr_device_attr *attr;
 	u32 page_size;
 
-	/* Part 1 - query core capabilities */
+	 
 	qed_attr = dev->ops->rdma_query_device(dev->rdma_ctx);
 
-	/* Part 2 - check capabilities */
+	 
 	page_size = ~qed_attr->page_size_caps + 1;
 	if (page_size > PAGE_SIZE) {
 		DP_ERR(dev,
@@ -594,7 +559,7 @@ static int qedr_set_device_attr(struct qedr_dev *dev)
 		return -ENODEV;
 	}
 
-	/* Part 3 - copy and update capabilities */
+	 
 	attr = &dev->attr;
 	attr->vendor_id = qed_attr->vendor_id;
 	attr->vendor_part_id = qed_attr->vendor_part_id;
@@ -939,9 +904,7 @@ init_err:
 
 static void qedr_remove(struct qedr_dev *dev)
 {
-	/* First unregister with stack to stop all the active traffic
-	 * of the registered clients.
-	 */
+	 
 	ib_unregister_device(&dev->ibdev);
 
 	qedr_stop_hw(dev);
@@ -978,7 +941,7 @@ static void qedr_mac_address_change(struct qedr_dev *dev)
 	u8 guid[8], mac_addr[6];
 	int rc;
 
-	/* Update SGID */
+	 
 	ether_addr_copy(&mac_addr[0], dev->ndev->dev_addr);
 	guid[0] = mac_addr[0] ^ 2;
 	guid[1] = mac_addr[1];
@@ -991,7 +954,7 @@ static void qedr_mac_address_change(struct qedr_dev *dev)
 	sgid->global.subnet_prefix = cpu_to_be64(0xfe80000000000000LL);
 	memcpy(&sgid->raw[8], guid, sizeof(guid));
 
-	/* Update LL2 */
+	 
 	rc = dev->ops->ll2_set_mac_filter(dev->cdev,
 					  dev->gsi_ll2_mac_address,
 					  dev->ndev->dev_addr);
@@ -1004,10 +967,7 @@ static void qedr_mac_address_change(struct qedr_dev *dev)
 		DP_ERR(dev, "Error updating mac filter\n");
 }
 
-/* event handling via NIC driver ensures that all the NIC specific
- * initialization done before RoCE driver notifies
- * event to stack.
- */
+ 
 static void qedr_notify(struct qedr_dev *dev, enum qede_rdma_event event)
 {
 	switch (event) {

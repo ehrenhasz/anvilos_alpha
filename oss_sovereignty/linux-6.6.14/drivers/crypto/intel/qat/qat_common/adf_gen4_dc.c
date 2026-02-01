@@ -1,5 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/* Copyright(c) 2022 Intel Corporation */
+
+ 
 #include "adf_accel_devices.h"
 #include "icp_qat_fw_comp.h"
 #include "icp_qat_hw_20_comp.h"
@@ -62,7 +62,7 @@ static void qat_comp_build_deflate(void *ctx)
 						      ICP_QAT_FW_COMP_NO_APPEND_CRC,
 						      ICP_QAT_FW_COMP_NO_DROP_DATA);
 
-	/* Fill second half of the template for decompression */
+	 
 	memcpy(req_tmpl + 1, req_tmpl, sizeof(*req_tmpl));
 	req_tmpl++;
 	header = &req_tmpl->comn_hdr;

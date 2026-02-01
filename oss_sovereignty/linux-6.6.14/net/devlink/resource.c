@@ -1,26 +1,9 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * Copyright (c) 2016 Mellanox Technologies. All rights reserved.
- * Copyright (c) 2016 Jiri Pirko <jiri@mellanox.com>
- */
+
+ 
 
 #include "devl_internal.h"
 
-/**
- * struct devlink_resource - devlink resource
- * @name: name of the resource
- * @id: id, per devlink instance
- * @size: size of the resource
- * @size_new: updated size of the resource, reload is needed
- * @size_valid: valid in case the total size of the resource is valid
- *              including its children
- * @parent: parent resource
- * @size_params: size parameters
- * @list: parent list
- * @resource_list: list of child resources
- * @occ_get: occupancy getter callback
- * @occ_get_priv: occupancy getter callback priv
- */
+ 
 struct devlink_resource {
 	const char *name;
 	u64 id;
@@ -317,20 +300,7 @@ int devlink_resources_validate(struct devlink *devlink,
 	return err;
 }
 
-/**
- * devl_resource_register - devlink resource register
- *
- * @devlink: devlink
- * @resource_name: resource's name
- * @resource_size: resource's size
- * @resource_id: resource's id
- * @parent_resource_id: resource's parent id
- * @size_params: size parameters
- *
- * Generic resources should reuse the same names across drivers.
- * Please see the generic resources list at:
- * Documentation/networking/devlink/devlink-resource.rst
- */
+ 
 int devl_resource_register(struct devlink *devlink,
 			   const char *resource_name,
 			   u64 resource_size,
@@ -384,22 +354,7 @@ int devl_resource_register(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_resource_register);
 
-/**
- *	devlink_resource_register - devlink resource register
- *
- *	@devlink: devlink
- *	@resource_name: resource's name
- *	@resource_size: resource's size
- *	@resource_id: resource's id
- *	@parent_resource_id: resource's parent id
- *	@size_params: size parameters
- *
- *	Generic resources should reuse the same names across drivers.
- *	Please see the generic resources list at:
- *	Documentation/networking/devlink/devlink-resource.rst
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 int devlink_resource_register(struct devlink *devlink,
 			      const char *resource_name,
 			      u64 resource_size,
@@ -430,11 +385,7 @@ static void devlink_resource_unregister(struct devlink *devlink,
 	}
 }
 
-/**
- * devl_resources_unregister - free all resources
- *
- * @devlink: devlink
- */
+ 
 void devl_resources_unregister(struct devlink *devlink)
 {
 	struct devlink_resource *tmp, *child_resource;
@@ -450,13 +401,7 @@ void devl_resources_unregister(struct devlink *devlink)
 }
 EXPORT_SYMBOL_GPL(devl_resources_unregister);
 
-/**
- *	devlink_resources_unregister - free all resources
- *
- *	@devlink: devlink
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 void devlink_resources_unregister(struct devlink *devlink)
 {
 	devl_lock(devlink);
@@ -465,13 +410,7 @@ void devlink_resources_unregister(struct devlink *devlink)
 }
 EXPORT_SYMBOL_GPL(devlink_resources_unregister);
 
-/**
- * devl_resource_size_get - get and update size
- *
- * @devlink: devlink
- * @resource_id: the requested resource id
- * @p_resource_size: ptr to update
- */
+ 
 int devl_resource_size_get(struct devlink *devlink,
 			   u64 resource_id,
 			   u64 *p_resource_size)
@@ -489,14 +428,7 @@ int devl_resource_size_get(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_resource_size_get);
 
-/**
- * devl_resource_occ_get_register - register occupancy getter
- *
- * @devlink: devlink
- * @resource_id: resource id
- * @occ_get: occupancy getter callback
- * @occ_get_priv: occupancy getter callback priv
- */
+ 
 void devl_resource_occ_get_register(struct devlink *devlink,
 				    u64 resource_id,
 				    devlink_resource_occ_get_t *occ_get,
@@ -516,16 +448,7 @@ void devl_resource_occ_get_register(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_resource_occ_get_register);
 
-/**
- *	devlink_resource_occ_get_register - register occupancy getter
- *
- *	@devlink: devlink
- *	@resource_id: resource id
- *	@occ_get: occupancy getter callback
- *	@occ_get_priv: occupancy getter callback priv
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 void devlink_resource_occ_get_register(struct devlink *devlink,
 				       u64 resource_id,
 				       devlink_resource_occ_get_t *occ_get,
@@ -538,12 +461,7 @@ void devlink_resource_occ_get_register(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devlink_resource_occ_get_register);
 
-/**
- * devl_resource_occ_get_unregister - unregister occupancy getter
- *
- * @devlink: devlink
- * @resource_id: resource id
- */
+ 
 void devl_resource_occ_get_unregister(struct devlink *devlink,
 				      u64 resource_id)
 {
@@ -561,14 +479,7 @@ void devl_resource_occ_get_unregister(struct devlink *devlink,
 }
 EXPORT_SYMBOL_GPL(devl_resource_occ_get_unregister);
 
-/**
- *	devlink_resource_occ_get_unregister - unregister occupancy getter
- *
- *	@devlink: devlink
- *	@resource_id: resource id
- *
- *	Context: Takes and release devlink->lock <mutex>.
- */
+ 
 void devlink_resource_occ_get_unregister(struct devlink *devlink,
 					 u64 resource_id)
 {

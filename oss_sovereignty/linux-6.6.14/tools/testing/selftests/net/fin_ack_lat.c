@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 
 #include <arpa/inet.h>
 #include <errno.h>
@@ -128,7 +128,7 @@ int main(int argc, char const *argv[])
 
 	address.sin_family = AF_INET;
 	address.sin_addr.s_addr = INADDR_ANY;
-	/* dynamically allocate unused port */
+	 
 	address.sin_port = 0;
 
 	if (bind(sock, (struct sockaddr *)&address, sizeof(address)) < 0)

@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/* 
- *    EISA "eeprom" support routines
- *
- *    Copyright (C) 2001 Thomas Bogendoerfer <tsbogend at parisc-linux.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -62,9 +58,7 @@ static int eisa_eeprom_release(struct inode *inode, struct file *file)
 	return 0;
 }
 
-/*
- *	The various file operations we support.
- */
+ 
 static const struct file_operations eisa_eeprom_fops = {
 	.owner =	THIS_MODULE,
 	.llseek =	eisa_eeprom_llseek,

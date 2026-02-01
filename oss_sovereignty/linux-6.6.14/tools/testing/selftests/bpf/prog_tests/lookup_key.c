@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2022 Huawei Technologies Duesseldorf GmbH
- *
- * Author: Roberto Sassu <roberto.sassu@huawei.com>
- */
+
+ 
 
 #include <linux/keyctl.h>
 #include <test_progs.h>
@@ -66,28 +62,28 @@ void test_lookup_key(void)
 	skel->bss->monitored_pid = getpid();
 	skel->bss->key_serial = KEY_SPEC_THREAD_KEYRING;
 
-	/* The thread-specific keyring does not exist, this test fails. */
+	 
 	skel->bss->flags = 0;
 
 	ret = bpf_prog_get_next_id(0, &next_id);
 	if (!ASSERT_LT(ret, 0, "bpf_prog_get_next_id"))
 		goto close_prog;
 
-	/* Force creation of the thread-specific keyring, this test succeeds. */
+	 
 	skel->bss->flags = KEY_LOOKUP_CREATE;
 
 	ret = bpf_prog_get_next_id(0, &next_id);
 	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
 		goto close_prog;
 
-	/* Pass both lookup flags for parameter validation. */
+	 
 	skel->bss->flags = KEY_LOOKUP_CREATE | KEY_LOOKUP_PARTIAL;
 
 	ret = bpf_prog_get_next_id(0, &next_id);
 	if (!ASSERT_OK(ret, "bpf_prog_get_next_id"))
 		goto close_prog;
 
-	/* Pass invalid flags. */
+	 
 	skel->bss->flags = UINT64_MAX;
 
 	ret = bpf_prog_get_next_id(0, &next_id);

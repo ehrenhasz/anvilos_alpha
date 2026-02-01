@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0 */
-/*
- * Copyright (C) STRATO AG 2012.  All rights reserved.
- */
+ 
+ 
 
 #ifndef BTRFS_DEV_REPLACE_H
 #define BTRFS_DEV_REPLACE_H

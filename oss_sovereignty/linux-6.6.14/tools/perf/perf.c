@@ -1,18 +1,11 @@
-/*
- * perf.c
- *
- * Performance analysis utility.
- *
- * This is the main hub from which the sub-commands (perf stat,
- * perf top, perf record, perf report, etc.) are started.
- */
+ 
 #include "builtin.h"
 #include "perf.h"
 
 #include "util/build-id.h"
 #include "util/cache.h"
 #include "util/env.h"
-#include <internal/lib.h> // page_size
+#include <internal/lib.h> 
 #include <subcmd/exec-cmd.h>
 #include "util/config.h"
 #include <subcmd/run-command.h>
@@ -20,7 +13,7 @@
 #include <subcmd/parse-options.h>
 #include "util/debug.h"
 #include "util/event.h"
-#include "util/util.h" // usage()
+#include "util/util.h" 
 #include "ui/ui.h"
 #include "perf-sys.h"
 #include <api/fs/fs.h>
@@ -113,7 +106,7 @@ static int pager_command_config(const char *var, const char *value, void *data)
 	return 0;
 }
 
-/* returns 0 for "no pager", 1 for "use pager", and -1 for "not specified" */
+ 
 static int check_pager_config(const char *cmd)
 {
 	int err;
@@ -134,10 +127,7 @@ static int browser_command_config(const char *var, const char *value, void *data
 	return 0;
 }
 
-/*
- * returns 0 for "no tui", 1 for "use tui", 2 for "use gtk",
- * and -1 for "not specified"
- */
+ 
 static int check_browser_config(const char *cmd)
 {
 	int err;
@@ -155,7 +145,7 @@ static void commit_pager_choice(void)
 		setenv(PERF_PAGER_ENVIRONMENT, "cat", 1);
 		break;
 	case 1:
-		/* setup_pager(); */
+		 
 		break;
 	default:
 		break;
@@ -186,18 +176,11 @@ static int handle_options(const char ***argv, int *argc, int *envchanged)
 		if (cmd[0] != '-')
 			break;
 
-		/*
-		 * For legacy reasons, the "version" and "help"
-		 * commands can be written with "--" prepended
-		 * to make them look like flags.
-		 */
+		 
 		if (!strcmp(cmd, "--help") || !strcmp(cmd, "--version"))
 			break;
 
-		/*
-		 * Shortcut for '-h' and '-v' options to invoke help
-		 * and version command.
-		 */
+		 
 		if (!strcmp(cmd, "-h")) {
 			(*argv)[0] = "--help";
 			break;
@@ -214,9 +197,7 @@ static int handle_options(const char ***argv, int *argc, int *envchanged)
 			break;
 		}
 
-		/*
-		 * Check remaining flags.
-		 */
+		 
 		if (strstarts(cmd, CMD_EXEC_PATH)) {
 			cmd += strlen(CMD_EXEC_PATH);
 			if (*cmd == '=')
@@ -327,15 +308,15 @@ static int run_builtin(struct cmd_struct *p, int argc, const char **argv)
 	if (status)
 		return status & 0xff;
 
-	/* Somebody closed stdout? */
+	 
 	if (fstat(fileno(stdout), &st))
 		return 0;
-	/* Ignore write errors for pipes and sockets.. */
+	 
 	if (S_ISFIFO(st.st_mode) || S_ISSOCK(st.st_mode))
 		return 0;
 
 	status = 1;
-	/* Check for ENOSPC and EIO errors.. */
+	 
 	if (fflush(stdout)) {
 		fprintf(stderr, "write failure on standard output: %s",
 			str_error_r(errno, sbuf, sizeof(sbuf)));
@@ -360,7 +341,7 @@ static void handle_internal_command(int argc, const char **argv)
 	const char *cmd = argv[0];
 	unsigned int i;
 
-	/* Turn "perf cmd --help" into "perf help cmd" */
+	 
 	if (argc > 1 && !strcmp(argv[1], "--help")) {
 		argv[1] = argv[0];
 		argv[0] = cmd = "help";
@@ -385,19 +366,11 @@ static void execv_dashed_external(const char **argv)
 	if (asprintf(&cmd, "perf-%s", argv[0]) < 0)
 		goto do_die;
 
-	/*
-	 * argv[0] must be the perf command, but the argv array
-	 * belongs to the caller, and may be reused in
-	 * subsequent loop iterations. Save argv[0] and
-	 * restore it on error.
-	 */
+	 
 	tmp = argv[0];
 	argv[0] = cmd;
 
-	/*
-	 * if we fail because the command is not found, it is
-	 * OK to return. Otherwise, we just pass along the status code.
-	 */
+	 
 	status = run_command_v_opt(argv, 0);
 	if (status != -ERR_RUN_COMMAND_EXEC) {
 		if (IS_RUN_COMMAND_ERR(status)) {
@@ -407,7 +380,7 @@ do_die:
 		}
 		exit(-status);
 	}
-	errno = ENOENT; /* as if we called execvp */
+	errno = ENOENT;  
 
 	argv[0] = tmp;
 	zfree(&cmd);
@@ -415,10 +388,10 @@ do_die:
 
 static int run_argv(int *argcp, const char ***argv)
 {
-	/* See if it's an internal command */
+	 
 	handle_internal_command(*argcp, *argv);
 
-	/* .. then try the external ones */
+	 
 	execv_dashed_external(*argv);
 	return 0;
 }
@@ -437,7 +410,7 @@ int main(int argc, const char **argv)
 
 	perf_debug_setup();
 
-	/* libsubcmd init */
+	 
 	exec_cmd_init("perf", PREFIX, PERF_EXEC_PATH, EXEC_PATH_ENVIRONMENT);
 	pager_init(PERF_PAGER_ENVIRONMENT);
 
@@ -449,7 +422,7 @@ int main(int argc, const char **argv)
 
 	srandom(time(NULL));
 
-	/* Setting $PERF_CONFIG makes perf read _only_ the given config file. */
+	 
 	config_exclusive_filename = getenv("PERF_CONFIG");
 
 	err = perf_config(perf_default_config, NULL);
@@ -457,26 +430,12 @@ int main(int argc, const char **argv)
 		return err;
 	set_buildid_dir(NULL);
 
-	/*
-	 * "perf-xxxx" is the same as "perf xxxx", but we obviously:
-	 *
-	 *  - cannot take flags in between the "perf" and the "xxxx".
-	 *  - cannot execute it externally (since it would just do
-	 *    the same thing over again)
-	 *
-	 * So we just directly call the internal command handler. If that one
-	 * fails to handle this, then maybe we just run a renamed perf binary
-	 * that contains a dash in its name. To handle this scenario, we just
-	 * fall through and ignore the "xxxx" part of the command string.
-	 */
+	 
 	if (strstarts(cmd, "perf-")) {
 		cmd += 5;
 		argv[0] = cmd;
 		handle_internal_command(argc, argv);
-		/*
-		 * If the command is handled, the above function does not
-		 * return undo changes and fall through in such a case.
-		 */
+		 
 		cmd -= 5;
 		argv[0] = cmd;
 	}
@@ -495,7 +454,7 @@ int main(int argc, const char **argv)
 		return cmd_trace(argc, argv);
 #endif
 	}
-	/* Look for flags.. */
+	 
 	argv++;
 	argc--;
 	handle_options(&argv, &argc, NULL);
@@ -505,7 +464,7 @@ int main(int argc, const char **argv)
 		if (strstarts(argv[0], "--"))
 			argv[0] += 2;
 	} else {
-		/* The user didn't specify a command; give them help */
+		 
 		printf("\n usage: %s\n\n", perf_usage_string);
 		list_common_cmds_help();
 		printf("\n %s\n\n", perf_more_info_string);
@@ -515,18 +474,9 @@ int main(int argc, const char **argv)
 
 	test_attr__init();
 
-	/*
-	 * We use PATH to find perf commands, but we prepend some higher
-	 * precedence paths: the "--exec-path" option, the PERF_EXEC_PATH
-	 * environment, and the $(perfexecdir) from the Makefile at build
-	 * time.
-	 */
+	 
 	setup_path();
-	/*
-	 * Block SIGWINCH notifications so that the thread that wants it can
-	 * unblock and get syscalls like select interrupted instead of waiting
-	 * forever while the signal goes to some other non interested thread.
-	 */
+	 
 	pthread__block_sigwinch();
 
 	while (1) {

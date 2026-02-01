@@ -1,10 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2022, Red Hat, Inc.
- *
- * Tests for Hyper-V extensions to SVM.
- */
-#define _GNU_SOURCE /* for program_invocation_short_name */
+
+ 
+#define _GNU_SOURCE  
 #include <fcntl.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,10 +17,10 @@
 
 #define L2_GUEST_STACK_SIZE 256
 
-/* Exit to L1 from L2 with RDMSR instruction */
+ 
 static inline void rdmsr_from_l2(uint32_t msr)
 {
-	/* Currently, L1 doesn't preserve GPRs during vmexits. */
+	 
 	__asm__ __volatile__ ("rdmsr" : : "c"(msr) :
 			      "rax", "rbx", "rdx", "rsi", "rdi", "r8", "r9",
 			      "r10", "r11", "r12", "r13", "r14", "r15");
@@ -35,34 +31,31 @@ void l2_guest_code(void)
 	u64 unused;
 
 	GUEST_SYNC(3);
-	/* Exit to L1 */
+	 
 	vmmcall();
 
-	/* MSR-Bitmap tests */
-	rdmsr_from_l2(MSR_FS_BASE); /* intercepted */
-	rdmsr_from_l2(MSR_FS_BASE); /* intercepted */
-	rdmsr_from_l2(MSR_GS_BASE); /* not intercepted */
+	 
+	rdmsr_from_l2(MSR_FS_BASE);  
+	rdmsr_from_l2(MSR_FS_BASE);  
+	rdmsr_from_l2(MSR_GS_BASE);  
 	vmmcall();
-	rdmsr_from_l2(MSR_GS_BASE); /* intercepted */
+	rdmsr_from_l2(MSR_GS_BASE);  
 
 	GUEST_SYNC(5);
 
-	/* L2 TLB flush tests */
+	 
 	hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE |
 			 HV_HYPERCALL_FAST_BIT, 0x0,
 			 HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES |
 			 HV_FLUSH_ALL_PROCESSORS);
 	rdmsr_from_l2(MSR_FS_BASE);
-	/*
-	 * Note: hypercall status (RAX) is not preserved correctly by L1 after
-	 * synthetic vmexit, use unchecked version.
-	 */
+	 
 	__hyperv_hypercall(HVCALL_FLUSH_VIRTUAL_ADDRESS_SPACE |
 			   HV_HYPERCALL_FAST_BIT, 0x0,
 			   HV_FLUSH_ALL_VIRTUAL_ADDRESS_SPACES |
 			   HV_FLUSH_ALL_PROCESSORS, &unused);
 
-	/* Done, exit to L1 and never come back.  */
+	 
 	vmmcall();
 }
 
@@ -81,11 +74,11 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm,
 	enable_vp_assist(hv_pages->vp_assist_gpa, hv_pages->vp_assist);
 
 	GUEST_ASSERT(svm->vmcb_gpa);
-	/* Prepare for L2 execution. */
+	 
 	generic_svm_setup(svm, l2_guest_code,
 			  &l2_guest_stack[L2_GUEST_STACK_SIZE]);
 
-	/* L2 TLB flush setup */
+	 
 	hve->partition_assist_page = hv_pages->partition_assist_gpa;
 	hve->hv_enlightenments_control.nested_flush_hypercall = 1;
 	hve->hv_vm_id = 1;
@@ -99,43 +92,40 @@ static void __attribute__((__flatten__)) guest_code(struct svm_test_data *svm,
 	GUEST_SYNC(4);
 	vmcb->save.rip += 3;
 
-	/* Intercept RDMSR 0xc0000100 */
+	 
 	vmcb->control.intercept |= 1ULL << INTERCEPT_MSR_PROT;
 	__set_bit(2 * (MSR_FS_BASE & 0x1fff), svm->msr + 0x800);
 	run_guest(vmcb, svm->vmcb_gpa);
 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
-	vmcb->save.rip += 2; /* rdmsr */
+	vmcb->save.rip += 2;  
 
-	/* Enable enlightened MSR bitmap */
+	 
 	hve->hv_enlightenments_control.msr_bitmap = 1;
 	run_guest(vmcb, svm->vmcb_gpa);
 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
-	vmcb->save.rip += 2; /* rdmsr */
+	vmcb->save.rip += 2;  
 
-	/* Intercept RDMSR 0xc0000101 without telling KVM about it */
+	 
 	__set_bit(2 * (MSR_GS_BASE & 0x1fff), svm->msr + 0x800);
-	/* Make sure HV_VMX_ENLIGHTENED_CLEAN_FIELD_MSR_BITMAP is set */
+	 
 	vmcb->control.clean |= HV_VMCB_NESTED_ENLIGHTENMENTS;
 	run_guest(vmcb, svm->vmcb_gpa);
-	/* Make sure we don't see SVM_EXIT_MSR here so eMSR bitmap works */
+	 
 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_VMMCALL);
-	vmcb->save.rip += 3; /* vmcall */
+	vmcb->save.rip += 3;  
 
-	/* Now tell KVM we've changed MSR-Bitmap */
+	 
 	vmcb->control.clean &= ~HV_VMCB_NESTED_ENLIGHTENMENTS;
 	run_guest(vmcb, svm->vmcb_gpa);
 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
-	vmcb->save.rip += 2; /* rdmsr */
+	vmcb->save.rip += 2;  
 
 
-	/*
-	 * L2 TLB flush test. First VMCALL should be handled directly by L0,
-	 * no VMCALL exit expected.
-	 */
+	 
 	run_guest(vmcb, svm->vmcb_gpa);
 	GUEST_ASSERT(vmcb->control.exit_code == SVM_EXIT_MSR);
-	vmcb->save.rip += 2; /* rdmsr */
-	/* Enable synthetic vmexit */
+	vmcb->save.rip += 2;  
+	 
 	*(u32 *)(hv_pages->partition_assist) = 1;
 	run_guest(vmcb, svm->vmcb_gpa);
 	GUEST_ASSERT(vmcb->control.exit_code == HV_SVM_EXITCODE_ENL);
@@ -159,7 +149,7 @@ int main(int argc, char *argv[])
 
 	TEST_REQUIRE(kvm_cpu_has(X86_FEATURE_SVM));
 
-	/* Create VM */
+	 
 	vm = vm_create_with_one_vcpu(&vcpu, guest_code);
 	vcpu_set_hv_cpuid(vcpu);
 	vcpu_alloc_svm(vm, &nested_gva);
@@ -178,7 +168,7 @@ int main(int argc, char *argv[])
 		switch (get_ucall(vcpu, &uc)) {
 		case UCALL_ABORT:
 			REPORT_GUEST_ASSERT(uc);
-			/* NOT REACHED */
+			 
 		case UCALL_SYNC:
 			break;
 		case UCALL_DONE:
@@ -187,7 +177,7 @@ int main(int argc, char *argv[])
 			TEST_FAIL("Unknown ucall %lu", uc.cmd);
 		}
 
-		/* UCALL_SYNC is handled here.  */
+		 
 		TEST_ASSERT(!strcmp((const char *)uc.args[0], "hello") &&
 			    uc.args[1] == stage, "Stage %d: Unexpected register values vmexit, got %lx",
 			    stage, (ulong)uc.args[1]);

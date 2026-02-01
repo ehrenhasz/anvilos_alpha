@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (C) 2017 Etnaviv Project
- */
+
+ 
 
 #include <linux/moduleparam.h>
 
@@ -38,21 +36,14 @@ static enum drm_gpu_sched_stat etnaviv_sched_timedout_job(struct drm_sched_job
 	u32 dma_addr;
 	int change;
 
-	/* block scheduler */
+	 
 	drm_sched_stop(&gpu->sched, sched_job);
 
-	/*
-	 * If the GPU managed to complete this jobs fence, the timout is
-	 * spurious. Bail out.
-	 */
+	 
 	if (dma_fence_is_signaled(submit->out_fence))
 		goto out_no_timeout;
 
-	/*
-	 * If the GPU is still making forward progress on the front-end (which
-	 * should never loop) we shift out the timeout to give it a chance to
-	 * finish the job.
-	 */
+	 
 	dma_addr = gpu_read(gpu, VIVS_FE_DMA_ADDRESS);
 	change = dma_addr - gpu->hangcheck_dma_addr;
 	if (gpu->state == ETNA_GPU_STATE_RUNNING &&
@@ -66,7 +57,7 @@ static enum drm_gpu_sched_stat etnaviv_sched_timedout_job(struct drm_sched_job
 	if(sched_job)
 		drm_sched_increase_karma(sched_job);
 
-	/* get the GPU back into the init state */
+	 
 	etnaviv_core_dump(submit);
 	etnaviv_gpu_recover_hang(submit);
 
@@ -76,7 +67,7 @@ static enum drm_gpu_sched_stat etnaviv_sched_timedout_job(struct drm_sched_job
 	return DRM_GPU_SCHED_STAT_NOMINAL;
 
 out_no_timeout:
-	/* restart scheduler after GPU is usable again */
+	 
 	drm_sched_start(&gpu->sched, true);
 	return DRM_GPU_SCHED_STAT_NOMINAL;
 }
@@ -101,11 +92,7 @@ int etnaviv_sched_push_job(struct etnaviv_gem_submit *submit)
 	struct etnaviv_gpu *gpu = submit->gpu;
 	int ret;
 
-	/*
-	 * Hold the sched lock across the whole operation to avoid jobs being
-	 * pushed out of order with regard to their sched fence seqnos as
-	 * allocated in drm_sched_job_arm.
-	 */
+	 
 	mutex_lock(&gpu->sched_lock);
 
 	drm_sched_job_arm(&submit->sched_job);
@@ -119,7 +106,7 @@ int etnaviv_sched_push_job(struct etnaviv_gem_submit *submit)
 		goto out_unlock;
 	}
 
-	/* the scheduler holds on to the job now */
+	 
 	kref_get(&submit->refcount);
 
 	drm_sched_entity_push_job(&submit->sched_job);

@@ -1,27 +1,20 @@
-/* SPDX-License-Identifier: GPL-2.0 WITH Linux-syscall-note */
+ 
 #ifndef _LINUX_XFRM_H
 #define _LINUX_XFRM_H
 
 #include <linux/in6.h>
 #include <linux/types.h>
 
-/* All of the structures in this file may not change size as they are
- * passed into the kernel from userspace via netlink sockets.
- */
+ 
 
-/* Structure to encapsulate addresses. I do not want to use
- * "standard" structure. My apologies.
- */
+ 
 typedef union {
 	__be32		a4;
 	__be32		a6[4];
 	struct in6_addr	in6;
 } xfrm_address_t;
 
-/* Ident of a specific xfrm_state. It is used on input to lookup
- * the state by (spi,daddr,ah/esp) or to store information about
- * spi, protocol and tunnel address on output.
- */
+ 
 struct xfrm_id {
 	xfrm_address_t	daddr;
 	__be32		spi;
@@ -36,15 +29,15 @@ struct xfrm_sec_ctx {
 	char	ctx_str[];
 };
 
-/* Security Context Domains of Interpretation */
+ 
 #define XFRM_SC_DOI_RESERVED 0
 #define XFRM_SC_DOI_LSM 1
 
-/* Security Context Algorithms */
+ 
 #define XFRM_SC_ALG_RESERVED 0
 #define XFRM_SC_ALG_SELINUX 1
 
-/* Selector, used as selector both on policy rules (SPD) and SAs. */
+ 
 
 struct xfrm_selector {
 	xfrm_address_t	daddr;
@@ -101,21 +94,21 @@ struct xfrm_replay_state_esn {
 
 struct xfrm_algo {
 	char		alg_name[64];
-	unsigned int	alg_key_len;    /* in bits */
+	unsigned int	alg_key_len;     
 	char		alg_key[];
 };
 
 struct xfrm_algo_auth {
 	char		alg_name[64];
-	unsigned int	alg_key_len;    /* in bits */
-	unsigned int	alg_trunc_len;  /* in bits */
+	unsigned int	alg_key_len;     
+	unsigned int	alg_trunc_len;   
 	char		alg_key[];
 };
 
 struct xfrm_algo_aead {
 	char		alg_name[64];
-	unsigned int	alg_key_len;	/* in bits */
-	unsigned int	alg_icv_len;	/* in bits */
+	unsigned int	alg_key_len;	 
+	unsigned int	alg_icv_len;	 
 	char		alg_key[];
 };
 
@@ -141,10 +134,10 @@ enum {
 };
 
 enum {
-	XFRM_SHARE_ANY,		/* No limitations */
-	XFRM_SHARE_SESSION,	/* For this session only */
-	XFRM_SHARE_USER,	/* For this user only */
-	XFRM_SHARE_UNIQUE	/* Use once */
+	XFRM_SHARE_ANY,		 
+	XFRM_SHARE_SESSION,	 
+	XFRM_SHARE_USER,	 
+	XFRM_SHARE_UNIQUE	 
 };
 
 #define XFRM_MODE_TRANSPORT 0
@@ -154,7 +147,7 @@ enum {
 #define XFRM_MODE_BEET 4
 #define XFRM_MODE_MAX 5
 
-/* Netlink configuration messages.  */
+ 
 enum {
 	XFRM_MSG_BASE = 0x10,
 
@@ -226,14 +219,11 @@ enum {
 
 #define XFRM_NR_MSGTYPES (XFRM_MSG_MAX + 1 - XFRM_MSG_BASE)
 
-/*
- * Generic LSM security context for comunicating to user space
- * NOTE: Same format as sadb_x_sec_ctx
- */
+ 
 struct xfrm_user_sec_ctx {
 	__u16			len;
 	__u16			exttype;
-	__u8			ctx_alg;  /* LSMs: e.g., selinux == 1 */
+	__u8			ctx_alg;   
 	__u8			ctx_doi;
 	__u16			ctx_len;
 };
@@ -258,16 +248,16 @@ struct xfrm_encap_tmpl {
 	xfrm_address_t	encap_oa;
 };
 
-/* AEVENT flags  */
+ 
 enum xfrm_ae_ftype_t {
 	XFRM_AE_UNSPEC,
-	XFRM_AE_RTHR=1,	/* replay threshold*/
-	XFRM_AE_RVAL=2, /* replay value */
-	XFRM_AE_LVAL=4, /* lifetime value */
-	XFRM_AE_ETHR=8, /* expiry timer threshold */
-	XFRM_AE_CR=16, /* Event cause is replay update */
-	XFRM_AE_CE=32, /* Event cause is timer expiry */
-	XFRM_AE_CU=64, /* Event cause is policy update */
+	XFRM_AE_RTHR=1,	 
+	XFRM_AE_RVAL=2,  
+	XFRM_AE_LVAL=4,  
+	XFRM_AE_ETHR=8,  
+	XFRM_AE_CR=16,  
+	XFRM_AE_CE=32,  
+	XFRM_AE_CU=64,  
 	__XFRM_AE_MAX
 
 #define XFRM_AE_MAX (__XFRM_AE_MAX - 1)
@@ -279,50 +269,50 @@ struct xfrm_userpolicy_type {
 	__u8		reserved2;
 };
 
-/* Netlink message attributes.  */
+ 
 enum xfrm_attr_type_t {
 	XFRMA_UNSPEC,
-	XFRMA_ALG_AUTH,		/* struct xfrm_algo */
-	XFRMA_ALG_CRYPT,	/* struct xfrm_algo */
-	XFRMA_ALG_COMP,		/* struct xfrm_algo */
-	XFRMA_ENCAP,		/* struct xfrm_algo + struct xfrm_encap_tmpl */
-	XFRMA_TMPL,		/* 1 or more struct xfrm_user_tmpl */
-	XFRMA_SA,		/* struct xfrm_usersa_info  */
-	XFRMA_POLICY,		/*struct xfrm_userpolicy_info */
-	XFRMA_SEC_CTX,		/* struct xfrm_sec_ctx */
+	XFRMA_ALG_AUTH,		 
+	XFRMA_ALG_CRYPT,	 
+	XFRMA_ALG_COMP,		 
+	XFRMA_ENCAP,		 
+	XFRMA_TMPL,		 
+	XFRMA_SA,		 
+	XFRMA_POLICY,		 
+	XFRMA_SEC_CTX,		 
 	XFRMA_LTIME_VAL,
 	XFRMA_REPLAY_VAL,
 	XFRMA_REPLAY_THRESH,
 	XFRMA_ETIMER_THRESH,
-	XFRMA_SRCADDR,		/* xfrm_address_t */
-	XFRMA_COADDR,		/* xfrm_address_t */
-	XFRMA_LASTUSED,		/* __u64 */
-	XFRMA_POLICY_TYPE,	/* struct xfrm_userpolicy_type */
+	XFRMA_SRCADDR,		 
+	XFRMA_COADDR,		 
+	XFRMA_LASTUSED,		 
+	XFRMA_POLICY_TYPE,	 
 	XFRMA_MIGRATE,
-	XFRMA_ALG_AEAD,		/* struct xfrm_algo_aead */
-	XFRMA_KMADDRESS,        /* struct xfrm_user_kmaddress */
-	XFRMA_ALG_AUTH_TRUNC,	/* struct xfrm_algo_auth */
-	XFRMA_MARK,		/* struct xfrm_mark */
-	XFRMA_TFCPAD,		/* __u32 */
-	XFRMA_REPLAY_ESN_VAL,	/* struct xfrm_replay_state_esn */
-	XFRMA_SA_EXTRA_FLAGS,	/* __u32 */
-	XFRMA_PROTO,		/* __u8 */
-	XFRMA_ADDRESS_FILTER,	/* struct xfrm_address_filter */
+	XFRMA_ALG_AEAD,		 
+	XFRMA_KMADDRESS,         
+	XFRMA_ALG_AUTH_TRUNC,	 
+	XFRMA_MARK,		 
+	XFRMA_TFCPAD,		 
+	XFRMA_REPLAY_ESN_VAL,	 
+	XFRMA_SA_EXTRA_FLAGS,	 
+	XFRMA_PROTO,		 
+	XFRMA_ADDRESS_FILTER,	 
 	XFRMA_PAD,
-	XFRMA_OFFLOAD_DEV,	/* struct xfrm_user_offload */
-	XFRMA_SET_MARK,		/* __u32 */
-	XFRMA_SET_MARK_MASK,	/* __u32 */
-	XFRMA_IF_ID,		/* __u32 */
-	XFRMA_MTIMER_THRESH,	/* __u32 in seconds for input SA */
+	XFRMA_OFFLOAD_DEV,	 
+	XFRMA_SET_MARK,		 
+	XFRMA_SET_MARK_MASK,	 
+	XFRMA_IF_ID,		 
+	XFRMA_MTIMER_THRESH,	 
 	__XFRMA_MAX
 
-#define XFRMA_OUTPUT_MARK XFRMA_SET_MARK	/* Compatibility */
+#define XFRMA_OUTPUT_MARK XFRMA_SET_MARK	 
 #define XFRMA_MAX (__XFRMA_MAX - 1)
 };
 
 struct xfrm_mark {
-	__u32           v; /* value */
-	__u32           m; /* mask */
+	__u32           v;  
+	__u32           m;  
 };
 
 enum xfrm_sadattr_type_t {
@@ -335,8 +325,8 @@ enum xfrm_sadattr_type_t {
 };
 
 struct xfrmu_sadhinfo {
-	__u32 sadhcnt; /* current hash bkts */
-	__u32 sadhmcnt; /* max allowed hash bkts */
+	__u32 sadhcnt;  
+	__u32 sadhmcnt;  
 };
 
 enum xfrm_spdattr_type_t {
@@ -379,7 +369,7 @@ struct xfrm_usersa_info {
 	__u32				seq;
 	__u32				reqid;
 	__u16				family;
-	__u8				mode;		/* XFRM_MODE_xxx */
+	__u8				mode;		 
 	__u8				replay_window;
 	__u8				flags;
 #define XFRM_STATE_NOECN	1
@@ -426,8 +416,8 @@ struct xfrm_userpolicy_info {
 #define XFRM_POLICY_ALLOW	0
 #define XFRM_POLICY_BLOCK	1
 	__u8				flags;
-#define XFRM_POLICY_LOCALOK	1	/* Allow user to override global policy */
-	/* Automatically expand selector to include matching ICMP payloads. */
+#define XFRM_POLICY_LOCALOK	1	 
+	 
 #define XFRM_POLICY_ICMP	2
 	__u8				share;
 };
@@ -468,8 +458,7 @@ struct xfrm_user_report {
 	struct xfrm_selector		sel;
 };
 
-/* Used by MIGRATE to pass addresses IKE should use to perform
- * SA negotiation with the peer */
+ 
 struct xfrm_user_kmaddress {
 	xfrm_address_t                  local;
 	xfrm_address_t                  remote;
@@ -511,19 +500,10 @@ struct xfrm_user_offload {
 	int				ifindex;
 	__u8				flags;
 };
-/* This flag was exposed without any kernel code that supports it.
- * Unfortunately, strongswan has the code that sets this flag,
- * which makes it impossible to reuse this bit.
- *
- * So leave it here to make sure that it won't be reused by mistake.
- */
+ 
 #define XFRM_OFFLOAD_IPV6	1
 #define XFRM_OFFLOAD_INBOUND	2
-/* Two bits above are relevant for state path only, while
- * offload is used for both policy and state flows.
- *
- * In policy offload mode, they are free and can be safely reused.
- */
+ 
 #define XFRM_OFFLOAD_PACKET	4
 
 struct xfrm_userpolicy_default {
@@ -536,7 +516,7 @@ struct xfrm_userpolicy_default {
 };
 
 #ifndef __KERNEL__
-/* backwards compatibility for userspace */
+ 
 #define XFRMGRP_ACQUIRE		1
 #define XFRMGRP_EXPIRE		2
 #define XFRMGRP_SA		4
@@ -567,4 +547,4 @@ enum xfrm_nlgroups {
 };
 #define XFRMNLGRP_MAX	(__XFRMNLGRP_MAX - 1)
 
-#endif /* _LINUX_XFRM_H */
+#endif  

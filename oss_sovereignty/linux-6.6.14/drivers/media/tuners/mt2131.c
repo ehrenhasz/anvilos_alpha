@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *  Driver for Microtune MT2131 "QAM/8VSB single chip tuner"
- *
- *  Copyright (c) 2006 Steven Toth <stoth@linuxtv.org>
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -92,7 +88,7 @@ static int mt2131_set_params(struct dvb_frontend *fe)
 
 	priv = fe->tuner_priv;
 
-	freq = c->frequency / 1000;  /* Hz -> kHz */
+	freq = c->frequency / 1000;   
 	dprintk(1, "%s() freq=%d\n", __func__, freq);
 
 	f_lo1 = freq + MT2131_IF1 * 1000;
@@ -101,12 +97,12 @@ static int mt2131_set_params(struct dvb_frontend *fe)
 
 	priv->frequency =  (f_lo1 - f_lo2 - MT2131_IF2) * 1000;
 
-	/* Frequency LO1 = 16MHz * (DIV1 + NUM1/8192 ) */
+	 
 	num1 = f_lo1 * 64 / (MT2131_FREF / 128);
 	div1 = num1 / 8192;
 	num1 &= 0x1fff;
 
-	/* Frequency LO2 = 16MHz * (DIV2 + NUM2/8192 ) */
+	 
 	num2 = f_lo2 * 64 / (MT2131_FREF / 128);
 	div2 = num2 / 8192;
 	num2 &= 0x1fff;
@@ -154,7 +150,7 @@ static int mt2131_set_params(struct dvb_frontend *fe)
 
 	mt2131_writereg(priv, 0x0b, if_band_center);
 
-	/* Wait for lock */
+	 
 	i = 0;
 	do {
 		mt2131_readreg(priv, 0x08, &lockval);

@@ -1,9 +1,5 @@
-/* SPDX-License-Identifier: LGPL-2.1 OR MIT */
-/*
- * rseq-bits-template.h
- *
- * (C) Copyright 2016-2022 - Mathieu Desnoyers <mathieu.desnoyers@efficios.com>
- */
+ 
+ 
 
 #ifdef RSEQ_TEMPLATE_CPU_ID
 # define RSEQ_TEMPLATE_CPU_ID_OFFSET	RSEQ_CPU_ID_OFFSET

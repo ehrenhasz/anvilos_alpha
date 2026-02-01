@@ -1,14 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *   serial-generic.c
- *   Copyright (c) by Daniel Kaehn <kaehndan@gmail.com
- *   Based on serial-u16550.c by Jaroslav Kysela <perex@perex.cz>,
- *		                 Isaku Yamahata <yamahata@private.email.ne.jp>,
- *		                 George Hansper <ghansper@apana.org.au>,
- *		                 Hannu Savolainen
- *
- * Generic serial MIDI driver using the serdev serial bus API for hardware interaction
- */
+
+ 
 
 #include <linux/err.h>
 #include <linux/init.h>
@@ -47,7 +38,7 @@ struct snd_serial_generic {
 
 	unsigned int baudrate;
 
-	unsigned long filemode;		/* open status of file */
+	unsigned long filemode;		 
 	struct work_struct tx_work;
 	unsigned long tx_state;
 
@@ -241,7 +232,7 @@ static void snd_serial_generic_output_drain(struct snd_rawmidi_substream *substr
 {
 	struct snd_serial_generic *drvdata = substream->rmidi->card->private_data;
 
-	/* Flush any pending characters */
+	 
 	serdev_device_write_flush(drvdata->serdev);
 	cancel_work_sync(&drvdata->tx_work);
 }

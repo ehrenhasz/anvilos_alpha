@@ -1,16 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0+
-/*
- * u_audio.c -- interface to USB gadget "ALSA sound card" utilities
- *
- * Copyright (C) 2016
- * Author: Ruslan Bilovol <ruslan.bilovol@gmail.com>
- *
- * Sound card implementation was cut-and-pasted with changes
- * from f_uac2.c and has:
- *    Copyright (C) 2011
- *    Yadwinder Singh (yadi.brar01@gmail.com)
- *    Jaswinder Singh (jaswinder.singh@linaro.org)
- */
+
+ 
 
 #include <linux/kernel.h>
 #include <linux/module.h>
@@ -35,39 +24,39 @@ enum {
 	UAC_RATE_CTRL,
 };
 
-/* Runtime data params for one stream */
+ 
 struct uac_rtd_params {
-	struct snd_uac_chip *uac; /* parent chip */
-	bool ep_enabled; /* if the ep is enabled */
+	struct snd_uac_chip *uac;  
+	bool ep_enabled;  
 
 	struct snd_pcm_substream *ss;
 
-	/* Ring buffer */
+	 
 	ssize_t hw_ptr;
 
 	void *rbuf;
 
-	unsigned int pitch;	/* Stream pitch ratio to 1000000 */
-	unsigned int max_psize;	/* MaxPacketSize of endpoint */
+	unsigned int pitch;	 
+	unsigned int max_psize;	 
 
 	struct usb_request **reqs;
 
-	struct usb_request *req_fback; /* Feedback endpoint request */
-	bool fb_ep_enabled; /* if the ep is enabled */
+	struct usb_request *req_fback;  
+	bool fb_ep_enabled;  
 
-  /* Volume/Mute controls and their state */
-  int fu_id; /* Feature Unit ID */
+   
+  int fu_id;  
   struct snd_kcontrol *snd_kctl_volume;
   struct snd_kcontrol *snd_kctl_mute;
   s16 volume_min, volume_max, volume_res;
   s16 volume;
   int mute;
 
-	struct snd_kcontrol *snd_kctl_rate; /* read-only current rate */
-	int srate; /* selected samplerate */
-	int active; /* playback/capture running */
+	struct snd_kcontrol *snd_kctl_rate;  
+	int srate;  
+	int active;  
 
-  spinlock_t lock; /* lock for control transfers */
+  spinlock_t lock;  
 
 };
 
@@ -80,7 +69,7 @@ struct snd_uac_chip {
 	struct snd_card *card;
 	struct snd_pcm *pcm;
 
-	/* pre-calculated values for playback iso completion */
+	 
 	unsigned long long p_residue_mil;
 	unsigned int p_interval;
 	unsigned int p_framesize;
@@ -106,37 +95,13 @@ static void u_audio_set_fback_frequency(enum usb_device_speed speed,
 	u32 ff = 0;
 	const struct usb_endpoint_descriptor *ep_desc;
 
-	/*
-	 * Because the pitch base is 1000000, the final divider here
-	 * will be 1000 * 1000000 = 1953125 << 9
-	 *
-	 * Instead of dealing with big numbers lets fold this 9 left shift
-	 */
+	 
 
 	if (speed == USB_SPEED_FULL) {
-		/*
-		 * Full-speed feedback endpoints report frequency
-		 * in samples/frame
-		 * Format is encoded in Q10.10 left-justified in the 24 bits,
-		 * so that it has a Q10.14 format.
-		 *
-		 * ff = (freq << 14) / 1000
-		 */
+		 
 		freq <<= 5;
 	} else {
-		/*
-		 * High-speed feedback endpoints report frequency
-		 * in samples/microframe.
-		 * Format is encoded in Q12.13 fitted into four bytes so that
-		 * the binary point is located between the second and the third
-		 * byte fromat (that is Q16.16)
-		 *
-		 * ff = (freq << 16) / 8000
-		 *
-		 * Win10 and OSX UAC2 drivers require number of samples per packet
-		 * in order to honor the feedback value.
-		 * Linux snd-usb-audio detects the applied bit-shift automatically.
-		 */
+		 
 		ep_desc = out_ep->desc;
 		freq <<= 4 + (ep_desc->bInterval - 1);
 	}
@@ -159,7 +124,7 @@ static void u_audio_iso_complete(struct usb_ep *ep, struct usb_request *req)
 	unsigned long long pitched_rate_mil, p_pktsize_residue_mil,
 			residue_frames_mil, div_result;
 
-	/* i/f shutting down */
+	 
 	if (!prm->ep_enabled) {
 		usb_ep_free_request(ep, req);
 		return;
@@ -168,17 +133,14 @@ static void u_audio_iso_complete(struct usb_ep *ep, struct usb_request *req)
 	if (req->status == -ESHUTDOWN)
 		return;
 
-	/*
-	 * We can't really do much about bad xfers.
-	 * Afterall, the ISOCH xfers could fail legitimately.
-	 */
+	 
 	if (status)
 		pr_debug("%s: iso_complete status(%d) %d/%d\n",
 			__func__, status, req->actual, req->length);
 
 	substream = prm->ss;
 
-	/* Do nothing if ALSA isn't active */
+	 
 	if (!substream)
 		goto exit;
 
@@ -191,12 +153,7 @@ static void u_audio_iso_complete(struct usb_ep *ep, struct usb_request *req)
 	}
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
-		/*
-		 * For each IN packet, take the quotient of the current data
-		 * rate and the endpoint's interval as the base packet size.
-		 * If there is a residue from this division, add it to the
-		 * residue accumulator.
-		 */
+		 
 		unsigned long long p_interval_mil = uac->p_interval * 1000000ULL;
 
 		pitched_rate_mil = (unsigned long long) prm->srate * prm->pitch;
@@ -221,11 +178,7 @@ static void u_audio_iso_complete(struct usb_ep *ep, struct usb_request *req)
 		req->length = p_pktsize;
 		uac->p_residue_mil += p_pktsize_residue_mil;
 
-		/*
-		 * Whenever there are more bytes in the accumulator p_residue_mil than we
-		 * need to add one more sample frame, increase this packet's
-		 * size and decrease the accumulator.
-		 */
+		 
 		div_result = uac->p_residue_mil;
 		do_div(div_result, uac->p_interval);
 		do_div(div_result, 1000000);
@@ -241,7 +194,7 @@ static void u_audio_iso_complete(struct usb_ep *ep, struct usb_request *req)
 
 	hw_ptr = prm->hw_ptr;
 
-	/* Pack USB load in ALSA ring buffer */
+	 
 	pending = runtime->dma_bytes - hw_ptr;
 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK) {
@@ -264,7 +217,7 @@ static void u_audio_iso_complete(struct usb_ep *ep, struct usb_request *req)
 		}
 	}
 
-	/* update hw_ptr after data is copied to memory */
+	 
 	prm->hw_ptr = (hw_ptr + req->actual) % runtime->dma_bytes;
 	hw_ptr = prm->hw_ptr;
 	snd_pcm_stream_unlock(substream);
@@ -285,7 +238,7 @@ static void u_audio_iso_fback_complete(struct usb_ep *ep,
 	struct g_audio *audio_dev = uac->audio_dev;
 	int status = req->status;
 
-	/* i/f shutting down */
+	 
 	if (!prm->fb_ep_enabled) {
 		kfree(req->buf);
 		usb_ep_free_request(ep, req);
@@ -295,10 +248,7 @@ static void u_audio_iso_fback_complete(struct usb_ep *ep,
 	if (req->status == -ESHUTDOWN)
 		return;
 
-	/*
-	 * We can't really do much about bad xfers.
-	 * Afterall, the ISOCH xfers could fail legitimately.
-	 */
+	 
 	if (status)
 		pr_debug("%s: iso_complete status(%d) %d/%d\n",
 			__func__, status, req->actual, req->length);
@@ -327,7 +277,7 @@ static int uac_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 	else
 		prm = &uac->c_prm;
 
-	/* Reset */
+	 
 	prm->hw_ptr = 0;
 
 	switch (cmd) {
@@ -343,7 +293,7 @@ static int uac_pcm_trigger(struct snd_pcm_substream *substream, int cmd)
 		err = -EINVAL;
 	}
 
-	/* Clear buffer after Play stops */
+	 
 	if (substream->stream == SNDRV_PCM_STREAM_PLAYBACK && !prm->ss)
 		memset(prm->rbuf, 0, prm->max_psize * params->req_number);
 
@@ -423,7 +373,7 @@ static int uac_pcm_open(struct snd_pcm_substream *substream)
 	return 0;
 }
 
-/* ALSA cries without these function pointers */
+ 
 static int uac_pcm_null(struct snd_pcm_substream *substream)
 {
 	return 0;
@@ -454,11 +404,7 @@ static inline void free_ep(struct uac_rtd_params *prm, struct usb_ep *ep)
 		if (prm->reqs[i]) {
 			if (usb_ep_dequeue(ep, prm->reqs[i]))
 				usb_ep_free_request(ep, prm->reqs[i]);
-			/*
-			 * If usb_ep_dequeue() cannot successfully dequeue the
-			 * request, the request will be freed by the completion
-			 * callback.
-			 */
+			 
 
 			prm->reqs[i] = NULL;
 		}
@@ -493,7 +439,7 @@ static inline void free_ep_fback(struct uac_rtd_params *prm, struct usb_ep *ep)
 
 static void set_active(struct uac_rtd_params *prm, bool active)
 {
-	// notifying through the Rate ctrl
+	 
 	struct snd_kcontrol *kctl = prm->snd_kctl_rate;
 	unsigned long flags;
 
@@ -629,7 +575,7 @@ int u_audio_start_capture(struct g_audio *audio_dev)
 	if (!ep_fback)
 		return 0;
 
-	/* Setup feedback endpoint */
+	 
 	config_ep_by_speed(gadget, &audio_dev->func, ep_fback);
 	prm->fb_ep_enabled = true;
 	usb_ep_enable(ep_fback);
@@ -649,11 +595,7 @@ int u_audio_start_capture(struct g_audio *audio_dev)
 	if (!req_fback->buf)
 		return -ENOMEM;
 
-	/*
-	 * Configure the feedback endpoint's reported frequency.
-	 * Always start with original frequency since its deviation can't
-	 * be meauserd at start of playback
-	 */
+	 
 	prm->pitch = 1000000;
 	u_audio_set_fback_frequency(audio_dev->gadget->speed, ep,
 				    prm->srate, prm->pitch,
@@ -697,18 +639,16 @@ int u_audio_start_playback(struct g_audio *audio_dev)
 	config_ep_by_speed(gadget, &audio_dev->func, ep);
 
 	ep_desc = ep->desc;
-	/*
-	 * Always start with original frequency
-	 */
+	 
 	prm->pitch = 1000000;
 
-	/* pre-calculate the playback endpoint's interval */
+	 
 	if (gadget->speed == USB_SPEED_FULL)
 		factor = 1000;
 	else
 		factor = 8000;
 
-	/* pre-compute some values for iso_complete() */
+	 
 	uac->p_framesize = params->p_ssize *
 			    num_channels(params->p_chmask);
 	uac->p_interval = factor / (1 << (ep_desc->bInterval - 1));
@@ -972,9 +912,7 @@ static int u_audio_mute_put(struct snd_kcontrol *kcontrol,
 	return change;
 }
 
-/*
- * TLV callback for mixer volume controls
- */
+ 
 static int u_audio_volume_tlv(struct snd_kcontrol *kcontrol, int op_flag,
 			 unsigned int size, unsigned int __user *_tlv)
 {
@@ -984,7 +922,7 @@ static int u_audio_volume_tlv(struct snd_kcontrol *kcontrol, int op_flag,
 	if (size < sizeof(scale))
 		return -ENOMEM;
 
-	/* UAC volume resolution is 1/256 dB, TLV is 1/100 dB */
+	 
 	scale[2] = (prm->volume_min * 100) / 256;
 	scale[3] = (prm->volume_max * 100) / 256;
 	if (copy_to_user(_tlv, scale, sizeof(scale)))
@@ -1108,7 +1046,7 @@ static int u_audio_rate_get(struct snd_kcontrol *kcontrol,
 	if (prm->active)
 		ucontrol->value.integer.value[0] = prm->srate;
 	else
-		/* not active: reporting zero rate */
+		 
 		ucontrol->value.integer.value[0] = 0;
 	spin_unlock_irqrestore(&prm->lock, flags);
 	return 0;
@@ -1131,21 +1069,21 @@ static struct snd_kcontrol_new u_audio_controls[]  = {
 	},
   [UAC_MUTE_CTRL] {
 		.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
-		.name =		"", /* will be filled later */
+		.name =		"",  
 		.info =		u_audio_mute_info,
 		.get =		u_audio_mute_get,
 		.put =		u_audio_mute_put,
 	},
 	[UAC_VOLUME_CTRL] {
 		.iface =	SNDRV_CTL_ELEM_IFACE_MIXER,
-		.name =		"", /* will be filled later */
+		.name =		"",  
 		.info =		u_audio_volume_info,
 		.get =		u_audio_volume_get,
 		.put =		u_audio_volume_put,
 	},
 	[UAC_RATE_CTRL] {
 		.iface =	SNDRV_CTL_ELEM_IFACE_PCM,
-		.name =		"", /* will be filled later */
+		.name =		"",  
 		.access =	SNDRV_CTL_ELEM_ACCESS_READ | SNDRV_CTL_ELEM_ACCESS_VOLATILE,
 		.info =		u_audio_rate_info,
 		.get =		u_audio_rate_get,
@@ -1226,7 +1164,7 @@ int g_audio_setup(struct g_audio *g_audio, const char *pcm_name,
 		}
 	}
 
-	/* Choose any slot, with no id */
+	 
 	err = snd_card_new(&g_audio->gadget->dev,
 			-1, NULL, THIS_MODULE, 0, &card);
 	if (err < 0)
@@ -1234,10 +1172,7 @@ int g_audio_setup(struct g_audio *g_audio, const char *pcm_name,
 
 	uac->card = card;
 
-	/*
-	 * Create first PCM device
-	 * Create a substream only for non-zero channel streams
-	 */
+	 
 	err = snd_pcm_new(uac->card, pcm_name, 0,
 			       p_chmask ? 1 : 0, c_chmask ? 1 : 0, &pcm);
 	if (err < 0)
@@ -1250,10 +1185,7 @@ int g_audio_setup(struct g_audio *g_audio, const char *pcm_name,
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_PLAYBACK, &uac_pcm_ops);
 	snd_pcm_set_ops(pcm, SNDRV_PCM_STREAM_CAPTURE, &uac_pcm_ops);
 
-	/*
-	 * Create mixer and controls
-	 * Create only if it's required on USB side
-	 */
+	 
 	if ((c_chmask && g_audio->in_ep_fback)
 			|| (p_chmask && params->p_fu.id)
 			|| (c_chmask && params->c_fu.id))
@@ -1366,7 +1298,7 @@ int g_audio_setup(struct g_audio *g_audio, const char *pcm_name,
 			prm->volume_res = fu->volume_res;
 		}
 
-		/* Add rate control */
+		 
 		snprintf(ctrl_name, sizeof(ctrl_name),
 				"%s Rate", direction);
 		u_audio_controls[UAC_RATE_CTRL].name = ctrl_name;

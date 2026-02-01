@@ -1,4 +1,4 @@
-// SPDX-License-Identifier: GPL-2.0
+
 #include <linux/kernel.h>
 #include <linux/types.h>
 
@@ -6,7 +6,7 @@
 
 #include "pinctrl-nomadik.h"
 
-/* All the pins that can be used for GPIO and some other functions */
+ 
 #define _GPIO(offset)		(offset)
 
 #define STN8815_PIN_B4		_GPIO(0)
@@ -133,14 +133,9 @@
 #define STN8815_PIN_M22		_GPIO(121)
 #define STN8815_PIN_M19		_GPIO(122)
 #define STN8815_PIN_J22		_GPIO(123)
-/* GPIOs 124-127 not routed to pins */
+ 
 
-/*
- * The names of the pins are denoted by GPIO number and ball name, even
- * though they can be used for other things than GPIO, this is the first
- * column in the table of the data sheet and often used on schematics and
- * such.
- */
+ 
 static const struct pinctrl_pin_desc nmk_stn8815_pins[] = {
 	PINCTRL_PIN(STN8815_PIN_B4, "GPIO0_B4"),
 	PINCTRL_PIN(STN8815_PIN_D5, "GPIO1_D5"),
@@ -268,16 +263,12 @@ static const struct pinctrl_pin_desc nmk_stn8815_pins[] = {
 	PINCTRL_PIN(STN8815_PIN_J22, "GPIO123_J22"),
 };
 
-/*
- * Read the pin group names like this:
- * u0_a_1    = first groups of pins for uart0 on alt function a
- * i2c2_b_2  = second group of pins for i2c2 on alt function b
- */
+ 
 
-/* Altfunction A */
+ 
 static const unsigned u0txrx_a_1_pins[] = { STN8815_PIN_B4, STN8815_PIN_D5 };
 static const unsigned u0ctsrts_a_1_pins[] = { STN8815_PIN_C5, STN8815_PIN_B6 };
-/* Modem pins: DCD, DSR, RI, DTR */
+ 
 static const unsigned u0modem_a_1_pins[] = { STN8815_PIN_A4, STN8815_PIN_B5,
 	STN8815_PIN_D6, STN8815_PIN_C6 };
 static const unsigned mmcsd_a_1_pins[] = { STN8815_PIN_B10, STN8815_PIN_A10,
@@ -288,13 +279,13 @@ static const unsigned u1_a_1_pins[] = { STN8815_PIN_M2, STN8815_PIN_L1,
 					STN8815_PIN_F3, STN8815_PIN_F2 };
 static const unsigned i2c1_a_1_pins[] = { STN8815_PIN_L4, STN8815_PIN_L3 };
 static const unsigned i2c0_a_1_pins[] = { STN8815_PIN_D3, STN8815_PIN_D2 };
-/* Altfunction B */
+ 
 static const unsigned u1_b_1_pins[] = { STN8815_PIN_B16, STN8815_PIN_A16 };
 static const unsigned i2cusb_b_1_pins[] = { STN8815_PIN_C21, STN8815_PIN_C20 };
 static const unsigned clcd_16_23_b_1_pins[] = { STN8815_PIN_AB6,
 	STN8815_PIN_AA6, STN8815_PIN_Y6, STN8815_PIN_Y5, STN8815_PIN_AA5,
 	STN8815_PIN_AB5, STN8815_PIN_AB4, STN8815_PIN_Y4 };
-/* Full-speed and high-speed USB pins */
+ 
 static const unsigned usbfs_b_1_pins[] = { STN8815_PIN_E21, STN8815_PIN_E20,
 					   STN8815_PIN_C22, STN8815_PIN_D21,
 					   STN8815_PIN_D20, STN8815_PIN_C21,
@@ -322,7 +313,7 @@ static const struct nmk_pingroup nmk_stn8815_groups[] = {
 	NMK_PIN_GROUP(usbhs_c_1, NMK_GPIO_ALT_C),
 };
 
-/* We use this macro to define the groups applicable to a function */
+ 
 #define STN8815_FUNC_GROUPS(a, b...)	   \
 static const char * const a##_groups[] = { b };
 

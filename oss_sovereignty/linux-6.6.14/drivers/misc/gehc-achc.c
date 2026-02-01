@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * datasheet: https://www.nxp.com/docs/en/data-sheet/K20P144M120SF3.pdf
- *
- * Copyright (C) 2018-2021 Collabora
- * Copyright (C) 2018-2021 GE Healthcare
- */
+
+ 
 
 #include <linux/delay.h>
 #include <linux/firmware.h>
@@ -22,7 +17,7 @@ struct achc_data {
 	struct spi_device *ezport;
 	struct gpio_desc *reset;
 
-	struct mutex device_lock; /* avoid concurrent device access */
+	struct mutex device_lock;  
 };
 
 #define EZPORT_RESET_DELAY_MS	100
@@ -30,23 +25,23 @@ struct achc_data {
 #define EZPORT_WRITE_WAIT_MS	10
 #define EZPORT_TRANSFER_SIZE	2048
 
-#define EZPORT_CMD_SP		0x02 /* flash section program */
-#define EZPORT_CMD_RDSR		0x05 /* read status register */
-#define EZPORT_CMD_WREN		0x06 /* write enable */
-#define EZPORT_CMD_FAST_READ	0x0b /* flash read data at high speed */
-#define EZPORT_CMD_RESET	0xb9 /* reset chip */
-#define EZPORT_CMD_BE		0xc7 /* bulk erase */
-#define EZPORT_CMD_SE		0xd8 /* sector erase */
+#define EZPORT_CMD_SP		0x02  
+#define EZPORT_CMD_RDSR		0x05  
+#define EZPORT_CMD_WREN		0x06  
+#define EZPORT_CMD_FAST_READ	0x0b  
+#define EZPORT_CMD_RESET	0xb9  
+#define EZPORT_CMD_BE		0xc7  
+#define EZPORT_CMD_SE		0xd8  
 
 #define EZPORT_SECTOR_SIZE	4096
 #define EZPORT_SECTOR_MASK	(EZPORT_SECTOR_SIZE - 1)
 
-#define EZPORT_STATUS_WIP	BIT(0) /* write in progress */
-#define EZPORT_STATUS_WEN	BIT(1) /* write enable */
-#define EZPORT_STATUS_BEDIS	BIT(2) /* bulk erase disable */
-#define EZPORT_STATUS_FLEXRAM	BIT(3) /* FlexRAM mode */
-#define EZPORT_STATUS_WEF	BIT(6) /* write error flag */
-#define EZPORT_STATUS_FS	BIT(7) /* flash security */
+#define EZPORT_STATUS_WIP	BIT(0)  
+#define EZPORT_STATUS_WEN	BIT(1)  
+#define EZPORT_STATUS_BEDIS	BIT(2)  
+#define EZPORT_STATUS_FLEXRAM	BIT(3)  
+#define EZPORT_STATUS_WEF	BIT(6)  
+#define EZPORT_STATUS_FS	BIT(7)  
 
 static void ezport_reset(struct gpio_desc *reset)
 {
@@ -67,7 +62,7 @@ static int ezport_start_programming(struct spi_device *spi, struct gpio_desc *re
 
 	spi_bus_lock(spi->master);
 
-	/* assert chip select */
+	 
 	spi_message_init(&msg);
 	spi_message_add_tail(&assert_cs, &msg);
 	ret = spi_sync_locked(spi, &msg);
@@ -76,10 +71,10 @@ static int ezport_start_programming(struct spi_device *spi, struct gpio_desc *re
 
 	msleep(EZPORT_STARTUP_DELAY_MS);
 
-	/* reset with asserted chip select to switch into programming mode */
+	 
 	ezport_reset(reset);
 
-	/* release chip select */
+	 
 	spi_message_init(&msg);
 	spi_message_add_tail(&release_cs, &msg);
 	ret = spi_sync_locked(spi, &msg);
@@ -91,7 +86,7 @@ fail:
 
 static void ezport_stop_programming(struct spi_device *spi, struct gpio_desc *reset)
 {
-	/* reset without asserted chip select to return into normal mode */
+	 
 	spi_bus_lock(spi->master);
 	ezport_reset(reset);
 	spi_bus_unlock(spi->master);
@@ -276,7 +271,7 @@ static int ezport_flash_compare(struct spi_device *spi, u32 address,
 	if (ret)
 		goto err;
 
-	/* FAST_READ receives one dummy byte before the real data */
+	 
 	ret = memcmp(payload, buffer + 4 + 1, payload_size);
 	if (ret) {
 		ret = -EBADMSG;
@@ -369,7 +364,7 @@ static int ezport_firmware_flash_data(struct spi_device *spi,
 	dev_dbg(&spi->dev, "EzPort verify flashed data...\n");
 	ret = ezport_firmware_compare_data(spi, data, size);
 
-	/* allow missing FW verfication in secure mode */
+	 
 	if (ret == -EACCES)
 		ret = 0;
 
@@ -401,16 +396,7 @@ static int ezport_firmware_load(struct spi_device *spi, const char *fwname)
 	return ret;
 }
 
-/**
- * ezport_flash - flash device firmware
- * @spi: SPI device for NXP EzPort interface
- * @reset: the gpio connected to the device reset pin
- * @fwname: filename of the firmware that should be flashed
- *
- * Context: can sleep
- *
- * Return: 0 on success; negative errno on failure
- */
+ 
 static int ezport_flash(struct spi_device *spi, struct gpio_desc *reset, const char *fwname)
 {
 	int ret;
@@ -546,7 +532,7 @@ MODULE_DEVICE_TABLE(spi, gehc_achc_id);
 
 static const struct of_device_id gehc_achc_of_match[] = {
 	{ .compatible = "ge,achc" },
-	{ /* sentinel */ }
+	{   }
 };
 MODULE_DEVICE_TABLE(of, gehc_achc_of_match);
 

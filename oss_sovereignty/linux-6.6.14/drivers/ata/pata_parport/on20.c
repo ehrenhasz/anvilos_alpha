@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- * (c) 1996-1998  Grant R. Guenther <grant@torque.net>
- *
- * on20.c is a low-level protocol driver for the
- * Onspec 90c20 parallel to IDE adapter.
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/init.h>
@@ -29,10 +24,7 @@
 
 #define j44(a, b)	(((a >> 4) & 0x0f) | (b & 0xf0))
 
-/*
- * cont = 0 - access the IDE register file
- * cont = 1 - access the IDE command set
- */
+ 
 
 static int on20_read_regr(struct pi_adapter *pi, int cont, int regr)
 {

@@ -1,8 +1,6 @@
-// SPDX-License-Identifier: GPL-2.0
 
-/*
- * Copyright (C) 2020 Google LLC.
- */
+
+ 
 
 #include <test_progs.h>
 #include <sys/mman.h>
@@ -61,7 +59,7 @@ static int test_lsm(struct lsm *skel)
 	if (!ASSERT_OK(err, "attach"))
 		return err;
 
-	/* Check that already linked program can't be attached again. */
+	 
 	link = bpf_program__attach(skel->progs.test_int_hook);
 	if (!ASSERT_ERR_PTR(link, "attach_link"))
 		return -1;

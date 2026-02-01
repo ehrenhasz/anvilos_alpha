@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Builtin evlist command: Show the list of event selectors present
- * in a perf.data file.
- */
+
+ 
 #include "builtin.h"
 
 #include <linux/list.h>
@@ -36,7 +33,7 @@ static int __cmd_evlist(const char *file_name, struct perf_attr_details *details
 		.force     = details->force,
 	};
 	struct perf_tool tool = {
-		/* only needed for pipe mode */
+		 
 		.attr = perf_event__process_attr,
 		.feature = process_header_feature,
 	};

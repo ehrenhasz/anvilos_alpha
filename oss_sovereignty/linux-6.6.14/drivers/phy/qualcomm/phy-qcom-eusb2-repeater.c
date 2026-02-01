@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- * Copyright (c) 2023, Linaro Limited
- */
+
+ 
 
 #include <linux/module.h>
 #include <linux/platform_device.h>
@@ -10,11 +8,11 @@
 #include <linux/of.h>
 #include <linux/phy/phy.h>
 
-/* eUSB2 status registers */
+ 
 #define EUSB2_RPTR_STATUS		0x08
 #define	RPTR_OK				BIT(7)
 
-/* eUSB2 control registers */
+ 
 #define EUSB2_EN_CTL1			0x46
 #define EUSB2_RPTR_EN			BIT(7)
 
@@ -157,7 +155,7 @@ static int eusb2_repeater_init(struct phy *phy)
 		if (init_tbl[i]) {
 			regmap_field_update_bits(rptr->regs[i], init_tbl[i], init_tbl[i]);
 		} else {
-			/* Write 0 if there's no value set */
+			 
 			u32 mask = GENMASK(regfields[i].msb, regfields[i].lsb);
 
 			regmap_field_update_bits(rptr->regs[i], mask, 0);
@@ -179,23 +177,14 @@ static int eusb2_repeater_set_mode(struct phy *phy,
 
 	switch (mode) {
 	case PHY_MODE_USB_HOST:
-		/*
-		 * CM.Lx is prohibited when repeater is already into Lx state as
-		 * per eUSB 1.2 Spec. Below implement software workaround until
-		 * PHY and controller is fixing seen observation.
-		 */
+		 
 		regmap_field_update_bits(rptr->regs[F_FORCE_EN_5],
 					 F_CLK_19P2M_EN, F_CLK_19P2M_EN);
 		regmap_field_update_bits(rptr->regs[F_FORCE_VAL_5],
 					 V_CLK_19P2M_EN, V_CLK_19P2M_EN);
 		break;
 	case PHY_MODE_USB_DEVICE:
-		/*
-		 * In device mode clear host mode related workaround as there
-		 * is no repeater reset available, and enable/disable of
-		 * repeater doesn't clear previous value due to shared
-		 * regulators (say host <-> device mode switch).
-		 */
+		 
 		regmap_field_update_bits(rptr->regs[F_FORCE_EN_5],
 					 F_CLK_19P2M_EN, 0);
 		regmap_field_update_bits(rptr->regs[F_FORCE_VAL_5],

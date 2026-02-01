@@ -1,11 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * skl-sst-cldma.c - Code Loader DMA handler
- *
- * Copyright (C) 2015, Intel Corporation.
- * Author: Subhransu S. Prusty <subhransu.s.prusty@intel.com>
- * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/io.h>
@@ -39,7 +33,7 @@ static void skl_cldma_stream_run(struct sst_dsp  *ctx, bool enable)
 	udelay(3);
 	timeout = 300;
 	do {
-		/* waiting for hardware to report that the stream Run bit set */
+		 
 		val = sst_dsp_shim_read(ctx, SKL_ADSP_REG_CL_SD_CTL) &
 			CL_SD_CTL_RUN_MASK;
 		if (enable && val)
@@ -55,7 +49,7 @@ static void skl_cldma_stream_run(struct sst_dsp  *ctx, bool enable)
 
 static void skl_cldma_stream_clear(struct sst_dsp  *ctx)
 {
-	/* make sure Run bit is cleared before setting stream register */
+	 
 	skl_cldma_stream_run(ctx, 0);
 
 	sst_dsp_shim_update_bits(ctx, SKL_ADSP_REG_CL_SD_CTL,
@@ -74,7 +68,7 @@ static void skl_cldma_stream_clear(struct sst_dsp  *ctx)
 	sst_dsp_shim_write(ctx, SKL_ADSP_REG_CL_SD_LVI, 0);
 }
 
-/* Code loader helper APIs */
+ 
 static void skl_cldma_setup_bdle(struct sst_dsp *ctx,
 		struct snd_dma_buffer *dmab_data,
 		__le32 **bdlp, int size, int with_ioc)
@@ -103,12 +97,7 @@ static void skl_cldma_setup_bdle(struct sst_dsp *ctx,
 	}
 }
 
-/*
- * Setup controller
- * Configure the registers to update the dma buffer address and
- * enable interrupts.
- * Note: Using the channel 1 for transfer
- */
+ 
 static void skl_cldma_setup_controller(struct sst_dsp  *ctx,
 		struct snd_dma_buffer *dmab_bdl, unsigned int max_size,
 		u32 count)
@@ -198,11 +187,7 @@ static void skl_cldma_fill_buffer(struct sst_dsp *ctx, unsigned int size,
 			ctx->cl_dev.dma_buffer_offset, trigger);
 	dev_dbg(ctx->dev, "spib position: %d\n", ctx->cl_dev.curr_spib_pos);
 
-	/*
-	 * Check if the size exceeds buffer boundary. If it exceeds
-	 * max_buffer size, then copy till buffer size and then copy
-	 * remaining buffer from the start of ring buffer.
-	 */
+	 
 	if (ctx->cl_dev.dma_buffer_offset + size > ctx->cl_dev.bufsize) {
 		unsigned int size_b = ctx->cl_dev.bufsize -
 					ctx->cl_dev.dma_buffer_offset;
@@ -231,21 +216,7 @@ static void skl_cldma_fill_buffer(struct sst_dsp *ctx, unsigned int size,
 		ctx->cl_dev.ops.cl_trigger(ctx, true);
 }
 
-/*
- * The CL dma doesn't have any way to update the transfer status until a BDL
- * buffer is fully transferred
- *
- * So Copying is divided in two parts.
- * 1. Interrupt on buffer done where the size to be transferred is more than
- *    ring buffer size.
- * 2. Polling on fw register to identify if data left to transferred doesn't
- *    fill the ring buffer. Caller takes care of polling the required status
- *    register to identify the transfer status.
- * 3. if wait flag is set, waits for DBL interrupt to copy the next chunk till
- *    bytes_left is 0.
- *    if wait flag is not set, doesn't wait for BDL interrupt. after ccopying
- *    the first chunk return the no of bytes_left to be copied.
- */
+ 
 static int
 skl_cldma_copy_to_buf(struct sst_dsp *ctx, const void *bin,
 			u32 total_size, bool wait)
@@ -265,10 +236,7 @@ skl_cldma_copy_to_buf(struct sst_dsp *ctx, const void *bin,
 	while (bytes_left) {
 		if (bytes_left > ctx->cl_dev.bufsize) {
 
-			/*
-			 * dma transfers only till the write pointer as
-			 * updated in spib
-			 */
+			 
 			if (ctx->cl_dev.curr_spib_pos == 0)
 				ctx->cl_dev.curr_spib_pos = ctx->cl_dev.bufsize;
 
@@ -332,7 +300,7 @@ int skl_cldma_prepare(struct sst_dsp *ctx)
 
 	ctx->cl_dev.bufsize = SKL_MAX_BUFFER_SIZE;
 
-	/* Allocate cl ops */
+	 
 	ctx->cl_dev.ops.cl_setup_bdle = skl_cldma_setup_bdle;
 	ctx->cl_dev.ops.cl_setup_controller = skl_cldma_setup_controller;
 	ctx->cl_dev.ops.cl_setup_spb = skl_cldma_setup_spb;
@@ -342,7 +310,7 @@ int skl_cldma_prepare(struct sst_dsp *ctx)
 	ctx->cl_dev.ops.cl_copy_to_dmabuf = skl_cldma_copy_to_buf;
 	ctx->cl_dev.ops.cl_stop_dma = skl_cldma_stop;
 
-	/* Allocate buffer*/
+	 
 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV_SG, ctx->dev, ctx->cl_dev.bufsize,
 				  &ctx->cl_dev.dmab_data);
 	if (ret < 0) {
@@ -350,7 +318,7 @@ int skl_cldma_prepare(struct sst_dsp *ctx)
 		return ret;
 	}
 
-	/* Setup Code loader BDL */
+	 
 	ret = snd_dma_alloc_pages(SNDRV_DMA_TYPE_DEV, ctx->dev, BDL_SIZE, &ctx->cl_dev.dmab_bdl);
 	if (ret < 0) {
 		dev_err(ctx->dev, "Alloc buffer for blde failed: %x\n", ret);
@@ -359,7 +327,7 @@ int skl_cldma_prepare(struct sst_dsp *ctx)
 	}
 	bdl = (__le32 *)ctx->cl_dev.dmab_bdl.area;
 
-	/* Allocate BDLs */
+	 
 	ctx->cl_dev.ops.cl_setup_bdle(ctx, &ctx->cl_dev.dmab_data,
 			&bdl, ctx->cl_dev.bufsize, 1);
 	ctx->cl_dev.ops.cl_setup_controller(ctx, &ctx->cl_dev.dmab_bdl,

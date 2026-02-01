@@ -1,7 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (c) 2012, 2013, NVIDIA CORPORATION.  All rights reserved.
- */
+
+ 
 
 #include <linux/io.h>
 #include <linux/clk-provider.h>
@@ -570,7 +568,7 @@ static u32 mux_pllm_pllc2_c_c3_pllp_plla_pllc4_idx[] = {
 	[0] = 0, [1] = 1, [2] = 2, [3] = 3, [4] = 4, [5] = 6, [6] = 7,
 };
 
-/* SOR1 mux'es */
+ 
 static const char *mux_pllp_plld_plld2_clkm[] = {
 	"pll_p", "pll_d_out0", "pll_d2_out0", "clk_m"
 };
@@ -946,7 +944,7 @@ static void __init init_pllp(void __iomem *clk_base, void __iomem *pmc_base,
 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_p, tegra_clks);
 	if (dt_clk) {
-		/* PLLP */
+		 
 		clk = tegra_clk_register_pll("pll_p", "pll_ref", clk_base,
 					pmc_base, 0, pll_params, NULL);
 		clk_register_clkdev(clk, "pll_p", NULL);
@@ -976,13 +974,7 @@ static void __init init_pllp(void __iomem *clk_base, void __iomem *pmc_base,
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_p_out_cpu,
 			tegra_clks);
 	if (dt_clk) {
-		/*
-		 * Tegra210 has control on enabling/disabling PLLP branches to
-		 * CPU, register a gate clock "pll_p_out_cpu" for this gating
-		 * function and parent "pll_p_out4" to it, so when we are
-		 * re-parenting CPU off from "pll_p_out4" the PLLP branching to
-		 * CPU can be disabled automatically.
-		 */
+		 
 		clk = tegra_clk_register_divider("pll_p_out4_div",
 				"pll_p_out_cpu", clk_base + PLLP_OUTB, 0, 0, 24,
 				8, 1, &PLLP_OUTB_lock);
@@ -1000,7 +992,7 @@ static void __init init_pllp(void __iomem *clk_base, void __iomem *pmc_base,
 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_p_out_hsio, tegra_clks);
 	if (dt_clk) {
-		/* PLLP_OUT_HSIO */
+		 
 		clk = clk_register_gate(NULL, "pll_p_out_hsio", "pll_p",
 				CLK_SET_RATE_PARENT | CLK_IGNORE_UNUSED,
 				clk_base + PLLP_MISC1, 29, 0, NULL);
@@ -1009,7 +1001,7 @@ static void __init init_pllp(void __iomem *clk_base, void __iomem *pmc_base,
 
 	dt_clk = tegra_lookup_dt_id(tegra_clk_pll_p_out_xusb, tegra_clks);
 	if (dt_clk) {
-		/* PLLP_OUT_XUSB */
+		 
 		clk = clk_register_gate(NULL, "pll_p_out_xusb",
 				"pll_p_out_hsio", CLK_SET_RATE_PARENT |
 				CLK_IGNORE_UNUSED, clk_base + PLLP_MISC1, 28, 0,

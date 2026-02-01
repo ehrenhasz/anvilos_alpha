@@ -1,10 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Copyright (C) 2012 ST Microelectronics
- * Viresh Kumar <vireshk@kernel.org>
- *
- * General Purpose Timer Synthesizer clock implementation
- */
+
+ 
 
 #define pr_fmt(fmt) "clk-gpt-synth: " fmt
 
@@ -18,13 +13,7 @@
 #define GPT_NSCALE_SHIFT	12
 #define GPT_NSCALE_MASK		0xF
 
-/*
- * DOC: General Purpose Timer Synthesizer clock
- *
- * Calculates gpt synth clk rate for different values of mscale and nscale
- *
- * Fout= Fin/((2 ^ (N+1)) * (M+1))
- */
+ 
 
 #define to_clk_gpt(_hw) container_of(_hw, struct clk_gpt, hw)
 
@@ -73,7 +62,7 @@ static unsigned long clk_gpt_recalc_rate(struct clk_hw *hw,
 	return parent_rate / div;
 }
 
-/* Configures new clock rate of gpt */
+ 
 static int clk_gpt_set_rate(struct clk_hw *hw, unsigned long drate,
 				unsigned long prate)
 {
@@ -125,7 +114,7 @@ struct clk *clk_register_gpt(const char *name, const char *parent_name, unsigned
 	if (!gpt)
 		return ERR_PTR(-ENOMEM);
 
-	/* struct clk_gpt assignments */
+	 
 	gpt->reg = reg;
 	gpt->rtbl = rtbl;
 	gpt->rtbl_cnt = rtbl_cnt;

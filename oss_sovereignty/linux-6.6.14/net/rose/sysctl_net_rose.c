@@ -1,8 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-or-later
-/*
- *
- * Copyright (C) 1996 Mike Shaver (shaver@zeroknowledge.com)
- */
+
+ 
 #include <linux/mm.h>
 #include <linux/sysctl.h>
 #include <linux/init.h>

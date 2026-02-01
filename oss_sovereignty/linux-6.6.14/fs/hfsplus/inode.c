@@ -1,13 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/hfsplus/inode.c
- *
- * Copyright (C) 2001
- * Brad Boyer (flar@allandria.com)
- * (C) 2003 Ardis Technologies <roman@ardistech.com>
- *
- * Inode handling routines
- */
+
+ 
 
 #include <linux/blkdev.h>
 #include <linux/mm.h>
@@ -134,10 +126,7 @@ static ssize_t hfsplus_direct_IO(struct kiocb *iocb, struct iov_iter *iter)
 
 	ret = blockdev_direct_IO(iocb, inode, iter, hfsplus_get_block);
 
-	/*
-	 * In case of error extending write may have instantiated a few
-	 * blocks outside i_size. Trim these off again.
-	 */
+	 
 	if (unlikely(iov_iter_rw(iter) == WRITE && ret < 0)) {
 		loff_t isize = i_size_read(inode);
 		loff_t end = iocb->ki_pos + count;
@@ -315,14 +304,10 @@ int hfsplus_file_fsync(struct file *file, loff_t start, loff_t end,
 		return error;
 	inode_lock(inode);
 
-	/*
-	 * Sync inode metadata into the catalog and extent trees.
-	 */
+	 
 	sync_inode_metadata(inode, 1);
 
-	/*
-	 * And explicitly write out the btrees.
-	 */
+	 
 	if (test_and_clear_bit(HFSPLUS_I_CAT_DIRTY, &hip->flags))
 		error = filemap_write_and_wait(sbi->cat_tree->inode->i_mapping);
 
@@ -590,11 +575,11 @@ int hfsplus_cat_write_inode(struct inode *inode)
 		return 0;
 
 	if (hfs_find_init(HFSPLUS_SB(main_inode->i_sb)->cat_tree, &fd))
-		/* panic? */
+		 
 		return -EIO;
 
 	if (hfsplus_find_cat(main_inode->i_sb, main_inode->i_ino, &fd))
-		/* panic? */
+		 
 		goto out;
 
 	if (S_ISDIR(main_inode->i_mode)) {
@@ -607,7 +592,7 @@ int hfsplus_cat_write_inode(struct inode *inode)
 		}
 		hfs_bnode_read(fd.bnode, &entry, fd.entryoffset,
 					sizeof(struct hfsplus_cat_folder));
-		/* simple node checks? */
+		 
 		hfsplus_cat_set_perms(inode, &folder->permissions);
 		folder->access_date = hfsp_ut2mt(inode->i_atime);
 		folder->content_mod_date = hfsp_ut2mt(inode->i_mtime);
@@ -685,7 +670,7 @@ int hfsplus_fileattr_set(struct mnt_idmap *idmap,
 	if (fileattr_has_fsx(fa))
 		return -EOPNOTSUPP;
 
-	/* don't silently ignore unsupported ext2 flags */
+	 
 	if (fa->flags & ~(FS_IMMUTABLE_FL|FS_APPEND_FL|FS_NODUMP_FL))
 		return -EOPNOTSUPP;
 

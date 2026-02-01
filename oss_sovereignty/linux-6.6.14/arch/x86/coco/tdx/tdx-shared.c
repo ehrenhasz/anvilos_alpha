@@ -14,12 +14,7 @@ static unsigned long try_accept_one(phys_addr_t start, unsigned long len,
 	if (len < accept_size)
 		return 0;
 
-	/*
-	 * Pass the page physical address to the TDX module to accept the
-	 * pending, private page.
-	 *
-	 * Bits 2:0 of RCX encode page size: 0 - 4K, 1 - 2M, 2 - 1G.
-	 */
+	 
 	switch (pg_level) {
 	case PG_LEVEL_4K:
 		page_size = 0;
@@ -43,19 +38,12 @@ static unsigned long try_accept_one(phys_addr_t start, unsigned long len,
 
 bool tdx_accept_memory(phys_addr_t start, phys_addr_t end)
 {
-	/*
-	 * For shared->private conversion, accept the page using
-	 * TDX_ACCEPT_PAGE TDX module call.
-	 */
+	 
 	while (start < end) {
 		unsigned long len = end - start;
 		unsigned long accept_size;
 
-		/*
-		 * Try larger accepts first. It gives chance to VMM to keep
-		 * 1G/2M Secure EPT entries where possible and speeds up
-		 * process by cutting number of hypercalls (if successful).
-		 */
+		 
 
 		accept_size = try_accept_one(start, len, PG_LEVEL_1G);
 		if (!accept_size)

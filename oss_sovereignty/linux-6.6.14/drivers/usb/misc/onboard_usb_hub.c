@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0-only
-/*
- * Driver for onboard USB hubs
- *
- * Copyright (c) 2022, Google LLC
- */
+
+ 
 
 #include <linux/device.h>
 #include <linux/export.h>
@@ -27,10 +23,7 @@
 
 #include "onboard_usb_hub.h"
 
-/*
- * Use generic names, as the actual names might differ between hubs. If a new
- * hub requires more than the currently supported supplies, add a new one here.
- */
+ 
 static const char * const supply_names[] = {
 	"vdd",
 	"vdd2",
@@ -43,7 +36,7 @@ static void onboard_hub_attach_usb_driver(struct work_struct *work);
 static struct usb_device_driver onboard_hub_usbdev_driver;
 static DECLARE_WORK(attach_usb_driver_work, onboard_hub_attach_usb_driver);
 
-/************************** Platform driver **************************/
+ 
 
 struct usbdev_node {
 	struct usb_device *udev;
@@ -286,14 +279,7 @@ static int onboard_hub_probe(struct platform_device *pdev)
 	if (err)
 		return err;
 
-	/*
-	 * The USB driver might have been detached from the USB devices by
-	 * onboard_hub_remove() (e.g. through an 'unbind' by userspace),
-	 * make sure to re-attach it if needed.
-	 *
-	 * This needs to be done deferred to avoid self-deadlocks on systems
-	 * with nested onboard hubs.
-	 */
+	 
 	schedule_work(&attach_usb_driver_work);
 
 	return 0;
@@ -309,15 +295,12 @@ static void onboard_hub_remove(struct platform_device *pdev)
 
 	mutex_lock(&hub->lock);
 
-	/* unbind the USB devices to avoid dangling references to this device */
+	 
 	while (!list_empty(&hub->udev_list)) {
 		node = list_first_entry(&hub->udev_list, struct usbdev_node, list);
 		udev = node->udev;
 
-		/*
-		 * Unbinding the driver will call onboard_hub_remove_usbdev(),
-		 * which acquires hub->lock.  We must release the lock first.
-		 */
+		 
 		get_device(&udev->dev);
 		mutex_unlock(&hub->lock);
 		device_release_driver(&udev->dev);
@@ -348,7 +331,7 @@ static struct platform_driver onboard_hub_driver = {
 	},
 };
 
-/************************** USB driver **************************/
+ 
 
 #define VENDOR_ID_CYPRESS	0x04b4
 #define VENDOR_ID_GENESYS	0x05e3
@@ -357,10 +340,7 @@ static struct platform_driver onboard_hub_driver = {
 #define VENDOR_ID_TI		0x0451
 #define VENDOR_ID_VIA		0x2109
 
-/*
- * Returns the onboard_hub platform device that is associated with the USB
- * device passed as parameter.
- */
+ 
 static struct onboard_hub *_find_onboard_hub(struct device *dev)
 {
 	struct platform_device *pdev;
@@ -385,13 +365,7 @@ static struct onboard_hub *_find_onboard_hub(struct device *dev)
 	hub = dev_get_drvdata(&pdev->dev);
 	put_device(&pdev->dev);
 
-	/*
-	 * The presence of drvdata ('hub') indicates that the platform driver
-	 * finished probing. This handles the case where (conceivably) we could
-	 * be running at the exact same time as the platform driver's probe. If
-	 * we detect the race we request probe deferral and we'll come back and
-	 * try again.
-	 */
+	 
 	if (!hub)
 		return ERR_PTR(-EPROBE_DEFER);
 
@@ -404,7 +378,7 @@ static int onboard_hub_usbdev_probe(struct usb_device *udev)
 	struct onboard_hub *hub;
 	int err;
 
-	/* ignore supported hubs without device tree node */
+	 
 	if (!dev->of_node)
 		return -ENODEV;
 
@@ -429,24 +403,24 @@ static void onboard_hub_usbdev_disconnect(struct usb_device *udev)
 }
 
 static const struct usb_device_id onboard_hub_id_table[] = {
-	{ USB_DEVICE(VENDOR_ID_CYPRESS, 0x6504) }, /* CYUSB33{0,1,2}x/CYUSB230x 3.0 */
-	{ USB_DEVICE(VENDOR_ID_CYPRESS, 0x6506) }, /* CYUSB33{0,1,2}x/CYUSB230x 2.0 */
-	{ USB_DEVICE(VENDOR_ID_GENESYS, 0x0608) }, /* Genesys Logic GL850G USB 2.0 */
-	{ USB_DEVICE(VENDOR_ID_GENESYS, 0x0610) }, /* Genesys Logic GL852G USB 2.0 */
-	{ USB_DEVICE(VENDOR_ID_GENESYS, 0x0620) }, /* Genesys Logic GL3523 USB 3.1 */
-	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2412) }, /* USB2412 USB 2.0 */
-	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2514) }, /* USB2514B USB 2.0 */
-	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2517) }, /* USB2517 USB 2.0 */
-	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2744) }, /* USB5744 USB 2.0 */
-	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x5744) }, /* USB5744 USB 3.0 */
-	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x0411) }, /* RTS5411 USB 3.1 */
-	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x5411) }, /* RTS5411 USB 2.1 */
-	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x0414) }, /* RTS5414 USB 3.2 */
-	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x5414) }, /* RTS5414 USB 2.1 */
-	{ USB_DEVICE(VENDOR_ID_TI, 0x8140) }, /* TI USB8041 3.0 */
-	{ USB_DEVICE(VENDOR_ID_TI, 0x8142) }, /* TI USB8041 2.0 */
-	{ USB_DEVICE(VENDOR_ID_VIA, 0x0817) }, /* VIA VL817 3.1 */
-	{ USB_DEVICE(VENDOR_ID_VIA, 0x2817) }, /* VIA VL817 2.0 */
+	{ USB_DEVICE(VENDOR_ID_CYPRESS, 0x6504) },  
+	{ USB_DEVICE(VENDOR_ID_CYPRESS, 0x6506) },  
+	{ USB_DEVICE(VENDOR_ID_GENESYS, 0x0608) },  
+	{ USB_DEVICE(VENDOR_ID_GENESYS, 0x0610) },  
+	{ USB_DEVICE(VENDOR_ID_GENESYS, 0x0620) },  
+	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2412) },  
+	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2514) },  
+	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2517) },  
+	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x2744) },  
+	{ USB_DEVICE(VENDOR_ID_MICROCHIP, 0x5744) },  
+	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x0411) },  
+	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x5411) },  
+	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x0414) },  
+	{ USB_DEVICE(VENDOR_ID_REALTEK, 0x5414) },  
+	{ USB_DEVICE(VENDOR_ID_TI, 0x8140) },  
+	{ USB_DEVICE(VENDOR_ID_TI, 0x8142) },  
+	{ USB_DEVICE(VENDOR_ID_VIA, 0x0817) },  
+	{ USB_DEVICE(VENDOR_ID_VIA, 0x2817) },  
 	{}
 };
 MODULE_DEVICE_TABLE(usb, onboard_hub_id_table);

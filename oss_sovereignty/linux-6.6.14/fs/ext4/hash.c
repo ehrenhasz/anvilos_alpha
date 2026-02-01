@@ -1,9 +1,5 @@
-// SPDX-License-Identifier: GPL-2.0
-/*
- *  linux/fs/ext4/hash.c
- *
- * Copyright (C) 2002 by Theodore Ts'o
- */
+
+ 
 
 #include <linux/fs.h>
 #include <linux/unicode.h>
@@ -30,31 +26,24 @@ static void TEA_transform(__u32 buf[4], __u32 const in[])
 	buf[1] += b1;
 }
 
-/* F, G and H are basic MD4 functions: selection, majority, parity */
+ 
 #define F(x, y, z) ((z) ^ ((x) & ((y) ^ (z))))
 #define G(x, y, z) (((x) & (y)) + (((x) ^ (y)) & (z)))
 #define H(x, y, z) ((x) ^ (y) ^ (z))
 
-/*
- * The generic round function.  The application is so specific that
- * we don't bother protecting all the arguments with parens, as is generally
- * good macro practice, in favor of extra legibility.
- * Rotation is separate from addition to prevent recomputation
- */
+ 
 #define ROUND(f, a, b, c, d, x, s)	\
 	(a += f(b, c, d) + x, a = rol32(a, s))
 #define K1 0
 #define K2 013240474631UL
 #define K3 015666365641UL
 
-/*
- * Basic cut-down MD4 transform.  Returns only 32 bits of result.
- */
+ 
 static __u32 half_md4_transform(__u32 buf[4], __u32 const in[8])
 {
 	__u32 a = buf[0], b = buf[1], c = buf[2], d = buf[3];
 
-	/* Round 1 */
+	 
 	ROUND(F, a, b, c, d, in[0] + K1,  3);
 	ROUND(F, d, a, b, c, in[1] + K1,  7);
 	ROUND(F, c, d, a, b, in[2] + K1, 11);
@@ -64,7 +53,7 @@ static __u32 half_md4_transform(__u32 buf[4], __u32 const in[8])
 	ROUND(F, c, d, a, b, in[6] + K1, 11);
 	ROUND(F, b, c, d, a, in[7] + K1, 19);
 
-	/* Round 2 */
+	 
 	ROUND(G, a, b, c, d, in[1] + K2,  3);
 	ROUND(G, d, a, b, c, in[3] + K2,  5);
 	ROUND(G, c, d, a, b, in[5] + K2,  9);
@@ -74,7 +63,7 @@ static __u32 half_md4_transform(__u32 buf[4], __u32 const in[8])
 	ROUND(G, c, d, a, b, in[4] + K2,  9);
 	ROUND(G, b, c, d, a, in[6] + K2, 13);
 
-	/* Round 3 */
+	 
 	ROUND(H, a, b, c, d, in[3] + K3,  3);
 	ROUND(H, d, a, b, c, in[7] + K3,  9);
 	ROUND(H, c, d, a, b, in[2] + K3, 11);
@@ -89,7 +78,7 @@ static __u32 half_md4_transform(__u32 buf[4], __u32 const in[8])
 	buf[2] += c;
 	buf[3] += d;
 
-	return buf[1]; /* "most hashed" word */
+	return buf[1];  
 }
 #undef ROUND
 #undef K1
@@ -99,7 +88,7 @@ static __u32 half_md4_transform(__u32 buf[4], __u32 const in[8])
 #undef G
 #undef H
 
-/* The old legacy hash */
+ 
 static __u32 dx_hack_hash_unsigned(const char *name, int len)
 {
 	__u32 hash, hash0 = 0x12a3fe2d, hash1 = 0x37abe8f9;
@@ -184,19 +173,7 @@ static void str2hashbuf_unsigned(const char *msg, int len, __u32 *buf, int num)
 		*buf++ = pad;
 }
 
-/*
- * Returns the hash of a filename.  If len is 0 and name is NULL, then
- * this function can be used to test whether or not a hash version is
- * supported.
- *
- * The seed is an 4 longword (32 bits) "secret" which can be used to
- * uniquify a hash.  If the seed is all zero's, then some default seed
- * may be used.
- *
- * A particular hash version specifies whether or not the seed is
- * represented, and whether or not the returned hash is 32 bits or 64
- * bits.  32 bit hashes will return 0 for the minor hash.
- */
+ 
 static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 			    struct dx_hash_info *hinfo)
 {
@@ -208,13 +185,13 @@ static int __ext4fs_dirhash(const struct inode *dir, const char *name, int len,
 	void		(*str2hashbuf)(const char *, int, __u32 *, int) =
 				str2hashbuf_signed;
 
-	/* Initialize the default seed for the hash checksum functions */
+	 
 	buf[0] = 0x67452301;
 	buf[1] = 0xefcdab89;
 	buf[2] = 0x98badcfe;
 	buf[3] = 0x10325476;
 
-	/* Check to see if the seed is all zero's */
+	 
 	if (hinfo->seed) {
 		for (i = 0; i < 4; i++) {
 			if (hinfo->seed[i]) {

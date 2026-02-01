@@ -1,7 +1,5 @@
-/* SPDX-License-Identifier: GPL-2.0-only */
-/*
- * Copyright (C) 2012 Russell King
- */
+ 
+ 
 #ifndef ARMADA_DRM_H
 #define ARMADA_DRM_H
 
@@ -32,7 +30,7 @@ static inline uint32_t armada_pitch(uint32_t width, uint32_t bpp)
 {
 	uint32_t pitch = bpp != 4 ? width * ((bpp + 7) / 8) : width / 2;
 
-	/* 88AP510 spec recommends pitch be a multiple of 128 */
+	 
 	return ALIGN(pitch, 128);
 }
 
@@ -49,13 +47,13 @@ struct armada_variant {
 	void (*enable)(struct armada_crtc *, const struct drm_display_mode *);
 };
 
-/* Variant ops */
+ 
 extern const struct armada_variant armada510_ops;
 
 struct armada_private {
 	struct drm_device	drm;
 	struct armada_crtc	*dcrtc[2];
-	struct drm_mm		linear; /* protected by linear_lock */
+	struct drm_mm		linear;  
 	struct mutex		linear_lock;
 	struct drm_property	*colorkey_prop;
 	struct drm_property	*colorkey_min_prop;

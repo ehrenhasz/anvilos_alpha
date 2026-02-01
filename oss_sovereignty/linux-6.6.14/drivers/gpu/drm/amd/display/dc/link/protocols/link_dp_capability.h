@@ -1,27 +1,4 @@
-/*
- * Copyright 2022 Advanced Micro Devices, Inc.
- *
- * Permission is hereby granted, free of charge, to any person obtaining a
- * copy of this software and associated documentation files (the "Software"),
- * to deal in the Software without restriction, including without limitation
- * the rights to use, copy, modify, merge, publish, distribute, sublicense,
- * and/or sell copies of the Software, and to permit persons to whom the
- * Software is furnished to do so, subject to the following conditions:
- *
- * The above copyright notice and this permission notice shall be included in
- * all copies or substantial portions of the Software.
- *
- * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
- * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
- * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.  IN NO EVENT SHALL
- * THE COPYRIGHT HOLDER(S) OR AUTHOR(S) BE LIABLE FOR ANY CLAIM, DAMAGES OR
- * OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
- * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
- * OTHER DEALINGS IN THE SOFTWARE.
- *
- * Authors: AMD
- *
- */
+ 
 
 #ifndef __DC_LINK_DP_CAPABILITY_H__
 #define __DC_LINK_DP_CAPABILITY_H__
@@ -45,7 +22,7 @@ enum dp_link_encoding link_dp_get_encoding_format(
 
 enum dc_status dp_retrieve_lttpr_cap(struct dc_link *link);
 
-/* Convert PHY repeater count read from DPCD uint8_t. */
+ 
 uint8_t dp_parse_lttpr_repeater_count(uint8_t lttpr_repeater_count);
 
 bool dp_is_sink_present(struct dc_link *link);
@@ -64,7 +41,7 @@ bool dp_should_enable_fec(const struct dc_link *link);
 
 bool dp_is_128b_132b_signal(struct pipe_ctx *pipe_ctx);
 
-/* Initialize output parameter lt_settings. */
+ 
 void dp_decide_training_settings(
 	struct dc_link *link,
 	const struct dc_link_settings *link_setting,
@@ -86,7 +63,7 @@ enum dp_link_encoding mst_decide_link_encoding_format(const struct dc_link *link
 
 void dpcd_set_source_specific_data(struct dc_link *link);
 
-/*query dpcd for version and mst cap addresses*/
+ 
 bool read_is_mst_supported(struct dc_link *link);
 
 bool decide_fallback_link_setting(
@@ -104,4 +81,4 @@ uint32_t link_bw_kbps_from_raw_frl_link_rate_data(uint8_t bw);
 
 bool dp_overwrite_extended_receiver_cap(struct dc_link *link);
 
-#endif /* __DC_LINK_DP_CAPABILITY_H__ */
+#endif  
